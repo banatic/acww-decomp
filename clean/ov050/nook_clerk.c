@@ -352,9 +352,9 @@ static void nclerk_walk_toward(NookClerk *clerk, int distance, int hurry, const 
 /* Whether the item code at `item` is empty (0xfff1, or a variant of the empty item). */
 static int nclerk_is_empty(u16 *item)
 {
-    if (ItemCode_HasVariant(item)) {
+    if (ItemCode_IsFurniture(item)) {
         u16 none = ITEM_CODE_NONE;
-        return ItemCode_VariantItem(item) == ItemCode_VariantItem(&none);
+        return ItemCode_FurnitureNumber(item) == ItemCode_FurnitureNumber(&none);
     }
     return *item == ITEM_CODE_NONE;
 }
@@ -382,7 +382,7 @@ static int nclerk_todays_event(NookClerk *clerk)
  * asked about. Whether one of them took over. */
 static int nclerk_noticed(NookClerk *clerk)
 {
-    return NookClerk_CheckJobDoor(clerk) || NookClerk_CheckSpotTaken(clerk) || NookClerk_CheckDatePassed(clerk) ||
+    return NookClerk_CheckJobDoor(clerk) || NookClerk_CheckAtExit(clerk) || NookClerk_CheckClosingTime(clerk) ||
            NookClerk_OfferShown(clerk);
 }
 
@@ -461,10 +461,10 @@ int NookClerk_IsNook(NookClerk *clerk)
 CLEAN_AS(func_ov050_02260510, NookClerk_IsNook)
 
 /* func_ov050_02260528: not during an event, unlinked (and without the game variable 0x4a) and
- * with the player not at work, once the date of main's block part 0x18 has passed: Tom Nook's
+ * with the player not at work, once closing time (main's block part 0x18) has passed: Tom Nook's
  * talk takes mode 6, twin 0x74's mode 0x1d (twin 0x75's keeps its mode), and an event of kind
  * 6 is asked for. Whether it was. */
-int NookClerk_CheckDatePassed(NookClerk *clerk)
+int NookClerk_CheckClosingTime(NookClerk *clerk)
 {
     if (EventQueue_HasCurrent() != 0) {
         return 0;
@@ -479,27 +479,27 @@ int NookClerk_CheckDatePassed(NookClerk *clerk)
         return 0;
     }
     if (NookClerk_IsNook(clerk)) {
-        NookClerkTalk_SetMode(&clerk->talk, NOOK_CLERK_MODE_NOOK_DATE);
+        NookClerkTalk_SetMode(&clerk->talk, NOOK_CLERK_MODE_CLOSING);
     } else if (NookClerk_IsTwinA(clerk)) {
-        NookClerkTalk_SetMode(&clerk->talk, NOOK_CLERK_MODE_TWIN_A_DATE);
+        NookClerkTalk_SetMode(&clerk->talk, NOOK_CLERK_MODE_TWIN_A_CLOSING);
     }
     EventQueue_RequestKind6(clerk, 0);
     return 1;
 }
-CLEAN_AS(func_ov050_02260528, NookClerk_CheckDatePassed)
+CLEAN_AS(func_ov050_02260528, NookClerk_CheckClosingTime)
 
-/* func_ov050_022605c0: whether the clerk talks because the player's start point is claimed on
- * the collision map. Unless the talk is about that already (modes 1 and 0x12): a twin that is
+/* func_ov050_022605c0: whether the clerk says farewell because the player stands at the shop's
+ * exit (the start point claimed on the collision map). Unless the talk is about that already (modes 1 and 0x12): a twin that is
  * not the nearer of the two only faces the player when the point is claimed, and answers no;
  * linked (or with the game variable 0x4a), or with the player at work, the answer is no. When
  * the point is claimed the talk takes mode 0x12 (a twin) or 1 (Tom Nook), an event of kind 6
  * is asked for and the clerk turns to ask (state 18). */
-int NookClerk_CheckSpotTaken(NookClerk *clerk)
+int NookClerk_CheckAtExit(NookClerk *clerk)
 {
     Vec3 start = *PlayerActorOps_StartPosition(NOOK_CLERK_PLAYER_ACTOR);
 
-    if (NookClerkTalk_Mode(&clerk->talk) != NOOK_CLERK_MODE_SPOT_TAKEN &&
-        NookClerkTalk_Mode(&clerk->talk) != NOOK_CLERK_MODE_TWIN_SPOT) {
+    if (NookClerkTalk_Mode(&clerk->talk) != NOOK_CLERK_MODE_FAREWELL &&
+        NookClerkTalk_Mode(&clerk->talk) != NOOK_CLERK_MODE_TWIN_FAREWELL) {
         if (NookClerk_IsTwin(clerk) && NookClerk_IsNearerThanTwin(clerk) == 0) {
             if (CollisionMap_IsClaimedAtPoint(&start)) {
                 nclerk_face_player(clerk);
@@ -515,9 +515,9 @@ int NookClerk_CheckSpotTaken(NookClerk *clerk)
     }
     if (CollisionMap_IsClaimedAtPoint(&start)) {
         if (NookClerk_IsTwin(clerk)) {
-            NookClerkTalk_SetMode(&clerk->talk, NOOK_CLERK_MODE_TWIN_SPOT);
+            NookClerkTalk_SetMode(&clerk->talk, NOOK_CLERK_MODE_TWIN_FAREWELL);
         } else {
-            NookClerkTalk_SetMode(&clerk->talk, NOOK_CLERK_MODE_SPOT_TAKEN);
+            NookClerkTalk_SetMode(&clerk->talk, NOOK_CLERK_MODE_FAREWELL);
         }
         EventQueue_RequestKind6(clerk, 0);
         NookClerk_SetState(clerk, NOOK_CLERK_STATE_TURN_ASK);
@@ -525,7 +525,7 @@ int NookClerk_CheckSpotTaken(NookClerk *clerk)
     }
     return 0;
 }
-CLEAN_AS(func_ov050_022605c0, NookClerk_CheckSpotTaken)
+CLEAN_AS(func_ov050_022605c0, NookClerk_CheckAtExit)
 
 /* func_ov050_022606b4: with the player at work and its start point past (13.0, 8.0) of the
  * store toward the door (x beyond 13.0, z short of 8.0), the talk takes mode 0x1e and an event
@@ -626,7 +626,7 @@ int NookClerk_FindShown(NookClerk *clerk)
     } else if (nclerk_in(item, NOOK_CLERK_PAINT_FIRST, NOOK_CLERK_PAINT_LAST)) {
         PlayerRecords_Current();
         row = TalkChecks_IsHostOrAlone() ? NOOK_CLERK_ROW_PAINT : NOOK_CLERK_ROW_PAINT_GUEST;
-    } else if (ItemLists_IsVariantGroup4(&item)) {
+    } else if (ItemLists_IsFurnitureGroup4(&item)) {
         row = NOOK_CLERK_ROW_GROUP_4;
     }
     NookClerkTalk_SetMode(&clerk->talk, (unsigned long) data_ov050_022650e4[row][twin]);
@@ -714,10 +714,10 @@ void NookClerk_OnEvent(NookClerk *clerk, int code, int participant)
                 unsigned long mode = NookClerkTalk_Mode(&clerk->talk);
                 if (mode == NOOK_CLERK_MODE_NOOK_GREET || NookClerkTalk_Mode(&clerk->talk) == NOOK_CLERK_MODE_TWIN_GREET) {
                     NookClerk_SetState(clerk, NOOK_CLERK_STATE_TALK);
-                } else if (NookClerkTalk_Mode(&clerk->talk) == NOOK_CLERK_MODE_SPOT_TAKEN ||
-                           NookClerkTalk_Mode(&clerk->talk) == NOOK_CLERK_MODE_TWIN_SPOT ||
-                           NookClerkTalk_Mode(&clerk->talk) == NOOK_CLERK_MODE_NOOK_DATE ||
-                           NookClerkTalk_Mode(&clerk->talk) == NOOK_CLERK_MODE_TWIN_A_DATE) {
+                } else if (NookClerkTalk_Mode(&clerk->talk) == NOOK_CLERK_MODE_FAREWELL ||
+                           NookClerkTalk_Mode(&clerk->talk) == NOOK_CLERK_MODE_TWIN_FAREWELL ||
+                           NookClerkTalk_Mode(&clerk->talk) == NOOK_CLERK_MODE_CLOSING ||
+                           NookClerkTalk_Mode(&clerk->talk) == NOOK_CLERK_MODE_TWIN_A_CLOSING) {
                     NookClerk_SetState(clerk, NOOK_CLERK_STATE_TALK_LEAVE);
                 } else if (nclerk_linked_or_variable(session)) {
                     nclerk_reset_talk(clerk);
@@ -751,10 +751,10 @@ void NookClerk_OnEvent(NookClerk *clerk, int code, int participant)
             if (LinkGlobal_HoldsScene()) {
                 NetSession *session = data_020ccf94;
                 nclerk_set_slots(clerk, session->local_slot, SCENE_SHARE_NO_SLOT);
-                if (NookClerkTalk_Mode(&clerk->talk) != NOOK_CLERK_MODE_SPOT_TAKEN &&
-                    NookClerkTalk_Mode(&clerk->talk) != NOOK_CLERK_MODE_TWIN_SPOT &&
-                    NookClerkTalk_Mode(&clerk->talk) != NOOK_CLERK_MODE_NOOK_DATE &&
-                    NookClerkTalk_Mode(&clerk->talk) != NOOK_CLERK_MODE_TWIN_A_DATE) {
+                if (NookClerkTalk_Mode(&clerk->talk) != NOOK_CLERK_MODE_FAREWELL &&
+                    NookClerkTalk_Mode(&clerk->talk) != NOOK_CLERK_MODE_TWIN_FAREWELL &&
+                    NookClerkTalk_Mode(&clerk->talk) != NOOK_CLERK_MODE_CLOSING &&
+                    NookClerkTalk_Mode(&clerk->talk) != NOOK_CLERK_MODE_TWIN_A_CLOSING) {
                     if (nclerk_linked_or_variable(session)) {
                         NookClerk_SetState(clerk, NOOK_CLERK_STATE_LINKED_STAND);
                     } else {

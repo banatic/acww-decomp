@@ -433,13 +433,13 @@ CLEAN_AS(func_ov140_0229a4a0, HostPicker_MoveCursor)
 
 /* func_ov140_0229a544: the sprite shows the third look of its set (a press let go) and the
  * scene waits for it (sub state 4) before going back to this sub state. */
-void HostPicker_PressAndReturn(HostPicker *self)
+void HostPicker_ReleaseAndReturn(HostPicker *self)
 {
     Glider_ShowThirdOfSet(&self->cursor_sprite);
     self->return_sub_state = self->base.sub_state;
     MenuScene_SetSubState(host_scene(self), HOST_PICKER_SUB_PRESS_RELEASE);
 }
-CLEAN_AS(func_ov140_0229a544, HostPicker_PressAndReturn)
+CLEAN_AS(func_ov140_0229a544, HostPicker_ReleaseAndReturn)
 
 /* func_ov140_0229a570: the sprite shows the second look of its set (pressed) and, once it has,
  * the press is acted on (sub state 3). */
@@ -621,7 +621,7 @@ void HostPicker_FadeRowsIn(HostPicker *self)
         HostPicker_ResumeByTouch(self);
     } else {
         MenuScene_SetSubState(host_scene(self), HOST_PICKER_SUB_KEYS);
-        HostPicker_PressAndReturn(self);
+        HostPicker_ReleaseAndReturn(self);
     }
     HostPicker_ClearFlags(self, HOST_PICKER_FLAG_PAGING);
 }
@@ -706,7 +706,7 @@ void HostPicker_ActOnPress(HostPicker *self)
         HostPicker_SetFlags(self, HOST_PICKER_FLAG_SILENT);
     }
     MenuScene_SetSubState(host_scene(self), HOST_PICKER_SUB_KEYS);
-    HostPicker_PressAndReturn(self);
+    HostPicker_ReleaseAndReturn(self);
 }
 CLEAN_AS(func_ov140_0229a914, HostPicker_ActOnPress)
 

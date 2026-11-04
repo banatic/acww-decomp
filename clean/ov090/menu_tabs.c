@@ -358,8 +358,9 @@ CLEAN_AS(func_ov090_02299258, MenuTabs_UpdateError)
  * back to sub state 0. Nothing is asked for the close tab. */
 void MenuTabs_RequestTabGroup(MenuTabs *self)
 {
-    static const u8 bar_groups[MENU_TAB_6 + 1] = {
-        [MENU_TAB_1] = 3, [MENU_TAB_2] = 4, [MENU_TAB_3] = 5, [MENU_TAB_4] = 6, [MENU_TAB_5] = 7, [MENU_TAB_6] = 0x24,
+    static const u8 bar_groups[MENU_TAB_FRIENDS + 1] = {
+        [MENU_TAB_DESIGNS] = 3, [MENU_TAB_FISH] = 4, [MENU_TAB_INSECTS] = 5,
+        [MENU_TAB_CHAT] = 6,    [MENU_TAB_MAP] = 7,  [MENU_TAB_FRIENDS] = 0x24,
     };
 
     if (data_ov090_02299960 != 0) {
@@ -369,7 +370,7 @@ void MenuTabs_RequestTabGroup(MenuTabs *self)
     u8 tab = *menu_tabs_byte(self, MENU_TABS_BYTE_TAB);
     if (tab == MENU_TAB_POCKETS) {
         OverlayGroups_RequestForOwner(data_020e54a8 == 0 ? MENU_TABS_POCKETS_TOWN_GROUP : MENU_TABS_POCKETS_ROOM_GROUP);
-    } else if (tab <= MENU_TAB_6) {
+    } else if (tab <= MENU_TAB_FRIENDS) {
         OverlayGroups_RequestForOwner(bar_groups[tab]);
     } else if (tab == MENU_TAB_LETTER_WRITE) {
         OverlayGroups_RequestForOwner(8);

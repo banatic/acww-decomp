@@ -60,7 +60,7 @@ u8 FurnitureInfo_CountInSeries(u32 group)
 {
     u8 count = 0;
     for (u32 number = 0; number < FURNITURE_INFO_NUMBERS; number++) {
-        (void) ItemCode_MakeVariant((int) number, 0);
+        (void) ItemCode_MakeFurniture((int) number, 0);
         if (group == FurnitureInfo_Series((int) number)) {
             count++;
         }
@@ -78,11 +78,11 @@ u8 FurnitureInfo_IndexInSeries(const ItemCode *item)
     int group = FurnitureInfo_ItemSeries(item);
     int count = 0;
     for (u32 number = 0; number < FURNITURE_INFO_NUMBERS; number++) {
-        ItemCode code = ItemCode_MakeVariant((int) number, 0);
+        ItemCode code = ItemCode_MakeFurniture((int) number, 0);
         int found;
-        if (ItemCode_HasVariant(&code)) {
-            int own = ItemCode_VariantItem(&code);
-            found = own == ItemCode_VariantItem(item);
+        if (ItemCode_IsFurniture(&code)) {
+            int own = ItemCode_FurnitureNumber(&code);
+            found = own == ItemCode_FurnitureNumber(item);
         } else {
             found = code == *item;
         }
@@ -115,7 +115,7 @@ CLEAN_AS(func_020535b4, FurnitureInfo_CountFossilKind)
 int FurnitureInfo_FossilKind(const ItemCode *item)
 {
     if (*item >= MUSEUM_FOSSIL_FIRST && *item <= MUSEUM_FOSSIL_LAST) {
-        return FurnitureInfo_Kind(ItemCode_VariantItem(item));
+        return FurnitureInfo_Kind(ItemCode_FurnitureNumber(item));
     }
     return 0;
 }
@@ -149,8 +149,8 @@ CLEAN_AS(func_02053690, FurnitureInfo_Scale)
 /* func_020536c8 */
 int FurnitureInfo_ItemIndoorFlags2Bit0(const ItemCode *item)
 {
-    if (ItemCode_HasVariant(item)) {
-        return FurnitureInfo_IndoorFlags2Bit0(ItemCode_VariantItem(item));
+    if (ItemCode_IsFurniture(item)) {
+        return FurnitureInfo_IndoorFlags2Bit0(ItemCode_FurnitureNumber(item));
     }
     return 0;
 }
@@ -167,8 +167,8 @@ CLEAN_AS(func_020536e8, FurnitureInfo_IndoorFlags2Bit0)
 /* func_02053728 */
 int FurnitureInfo_ItemIndoorBit7(const ItemCode *item)
 {
-    if (ItemCode_HasVariant(item)) {
-        return FurnitureInfo_IndoorBit7(ItemCode_VariantItem(item));
+    if (ItemCode_IsFurniture(item)) {
+        return FurnitureInfo_IndoorBit7(ItemCode_FurnitureNumber(item));
     }
     return 0;
 }
@@ -248,8 +248,8 @@ CLEAN_AS(func_0205395c, FurnitureInfo_DmaUnk1A)
 /* func_02053990 */
 int FurnitureInfo_ItemCategory(const ItemCode *item)
 {
-    if (ItemCode_HasVariant(item)) {
-        return FurnitureInfo_Category(ItemCode_VariantItem(item));
+    if (ItemCode_IsFurniture(item)) {
+        return FurnitureInfo_Category(ItemCode_FurnitureNumber(item));
     }
     return 0;
 }
@@ -266,8 +266,8 @@ CLEAN_AS(func_020539b0, FurnitureInfo_Category)
 /* func_020539e4 */
 int FurnitureInfo_ItemFeel(const ItemCode *item)
 {
-    if (ItemCode_HasVariant(item)) {
-        return FurnitureInfo_Feel(ItemCode_VariantItem(item));
+    if (ItemCode_IsFurniture(item)) {
+        return FurnitureInfo_Feel(ItemCode_FurnitureNumber(item));
     }
     return 0;
 }
@@ -294,8 +294,8 @@ CLEAN_AS(func_02053a04, FurnitureInfo_Feel)
 /* func_02053a88 */
 int FurnitureInfo_ItemEra(const ItemCode *item)
 {
-    if (ItemCode_HasVariant(item)) {
-        return FurnitureInfo_Era(ItemCode_VariantItem(item));
+    if (ItemCode_IsFurniture(item)) {
+        return FurnitureInfo_Era(ItemCode_FurnitureNumber(item));
     }
     return 0;
 }
@@ -329,8 +329,8 @@ CLEAN_AS(func_02053b2c, FurnitureInfo_FlagBit4)
 /* func_02053b6c */
 int FurnitureInfo_ItemTheme(const ItemCode *item)
 {
-    if (ItemCode_HasVariant(item)) {
-        return FurnitureInfo_Theme(ItemCode_VariantItem(item));
+    if (ItemCode_IsFurniture(item)) {
+        return FurnitureInfo_Theme(ItemCode_FurnitureNumber(item));
     }
     return 0;
 }
@@ -347,8 +347,8 @@ CLEAN_AS(func_02053b8c, FurnitureInfo_Theme)
 /* func_02053bc0 */
 int FurnitureInfo_ItemShape(const ItemCode *item)
 {
-    if (ItemCode_HasVariant(item)) {
-        return FurnitureInfo_Shape(ItemCode_VariantItem(item));
+    if (ItemCode_IsFurniture(item)) {
+        return FurnitureInfo_Shape(ItemCode_FurnitureNumber(item));
     }
     return 0;
 }
@@ -365,8 +365,8 @@ CLEAN_AS(func_02053be0, FurnitureInfo_Shape)
 /* func_02053c14 */
 int FurnitureInfo_ItemListGroup(const ItemCode *item)
 {
-    if (ItemCode_HasVariant(item)) {
-        return FurnitureInfo_ListGroup(ItemCode_VariantItem(item));
+    if (ItemCode_IsFurniture(item)) {
+        return FurnitureInfo_ListGroup(ItemCode_FurnitureNumber(item));
     }
     return 0;
 }
@@ -383,8 +383,8 @@ CLEAN_AS(func_02053c34, FurnitureInfo_ListGroup)
 /* func_02053c68 */
 int FurnitureInfo_ItemSeries(const ItemCode *item)
 {
-    if (ItemCode_HasVariant(item)) {
-        return FurnitureInfo_Series(ItemCode_VariantItem(item));
+    if (ItemCode_IsFurniture(item)) {
+        return FurnitureInfo_Series(ItemCode_FurnitureNumber(item));
     }
     return 0;
 }

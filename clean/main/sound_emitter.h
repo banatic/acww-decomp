@@ -37,9 +37,9 @@ struct SoundEmitter;
 
 typedef struct SoundEmitterVtable {
     const void *destruct[2];                                       /* 0x00 */
-    void (*stop)(struct SoundEmitter *emitter);                    /* 0x08 */
+    void (*reset)(struct SoundEmitter *emitter);                   /* 0x08 */
     void (*update)(struct SoundEmitter *emitter, const Vec3 *pos); /* 0x0c */
-    int (*vfunc_10)(struct SoundEmitter *emitter);                 /* 0x10 */
+    int (*finish)(struct SoundEmitter *emitter);                   /* 0x10 */
 } SoundEmitterVtable;
 
 typedef struct SoundEmitter {
@@ -54,16 +54,16 @@ void SoundSource_Update(SoundSource *source, const Vec3 *pos);
 void SoundSource_UpdateAt(SoundSource *source, const Vec3 *pos);
 int SoundSource_Init(SoundSource *source);
 
-int SoundEmitter_Vfunc10(SoundEmitter *emitter);
+int SoundEmitter_Finish(SoundEmitter *emitter);
 int SoundEmitter_Play(SoundEmitter *emitter, int number, int volume, int arg);
 void SoundEmitter_PlayAlternating(SoundEmitter *emitter, u32 number, u32 flag);
 void SoundEmitter_UpdateAt(SoundEmitter *emitter, const Vec3 *pos);
-void SoundEmitter_Stop(SoundEmitter *emitter);
-int SoundEmitter_Vfunc10B(SoundEmitter *emitter);
+void SoundEmitter_Reset(SoundEmitter *emitter);
+int SoundEmitter_FinishB(SoundEmitter *emitter);
 int SoundEmitter_PlayEx(SoundEmitter *emitter, int number, int arg2, int arg3);
 int SoundEmitter_PlayB(SoundEmitter *emitter, int number, int volume, int arg);
 void SoundEmitter_UpdateAtB(SoundEmitter *emitter, const Vec3 *pos);
-void SoundEmitter_StopB(SoundEmitter *emitter);
+void SoundEmitter_ResetB(SoundEmitter *emitter);
 void *SoundEmitter_Destruct(SoundEmitter *emitter);
 void *SoundEmitter_DestructDelete(SoundEmitter *emitter);
 

@@ -125,7 +125,7 @@
 #include "villager_state.h"
 #include "waiting_letter.h"
 #include "wfc_delivery.h"
-#include "wfc_stats.h"
+#include "mystery_cat_record.h"
 #include "wireless_icon.h"
 #include "letter.h"
 #include "mail_part_texts.h"
@@ -1626,7 +1626,7 @@ void StaticInit_StateBlock(void)
     MailPostOffice_Construct((MailPostOffice *) block->post_office);
     Constellations_ConstructList((int) (uintptr_t) block->constellations);
     __cxa_vec_ctor(block->part_16800, STATE_BLOCK_PLAYERS, sizeof(block->part_16800[0]), func_0203a690, func_0203a68c);
-    WfcStats_Construct((WfcStats *) block->part_16ad0);
+    MysteryCatRecord_Construct((MysteryCatRecord *) block->part_16ad0);
     HouseLooks_Construct((HouseLooksRecord *) block->house_looks);
     BottleMail_ConstructState((BottleState *) block->bottle);
     WaitingLetter_Construct((WaitingLetter *) block->part_1704c);
@@ -1670,16 +1670,16 @@ int StaticInit_StartMenu(void)
 }
 CLEAN_AS(__sinit_020c66e0, StaticInit_StartMenu)
 
-/* The Wi-Fi session's letter, notice and statistics (wfc_session.c) and the activity's jobs'
+/* The Wi-Fi session's letter, notice and mystery cat record (wfc_session.c) and the activity's jobs'
  * starts and steps (activity_process.c). */
 #define STATIC_INIT_ACTIVITY_FNS 64
 extern WfcLetter data_021f3d90;
 extern WfcNotice data_021f3cbc;
-extern WfcStats data_021f40a4;
+extern MysteryCatRecord data_021f40a4;
 extern StaticInitRecord data_021f3c40, data_021f3c4c, data_021f3c58;
 extern void func_0203f664(void *letter); /* the letter's destructor */
 extern void func_0203f5dc(void *notice); /* the notice's destructor */
-extern void func_02088264(void *stats);  /* the statistics' destructor */
+extern void func_02088264(void *record); /* the mystery cat record's destructor */
 extern MemberPointer data_021f3ea4[STATIC_INIT_ACTIVITY_FNS];
 extern const MemberPointer data_020e3a48, data_020e3a40, data_020e38c8, data_020e3a30, data_020e3a28, data_020e38b8,
     data_020e3888, data_020e3a10, data_020e3a08, data_020e3a00, data_020e39f8, data_020e39f0, data_020e39e8, data_020e38d8,
@@ -1691,7 +1691,7 @@ extern const MemberPointer data_020e3a48, data_020e3a40, data_020e38c8, data_020
     data_020e38f8, data_020e3920, data_020e3928, data_020e3938, data_020e3960, data_020e3980, data_020e3998, data_020e3a20,
     data_020e3a58, data_020e3850;
 
-/* __sinit_020c6790: the Wi-Fi letter, notice and statistics, and the activity's jobs' member
+/* __sinit_020c6790: the Wi-Fi letter, notice and mystery cat record, and the activity's jobs' member
  * functions. */
 void StaticInit_Activity(void)
 {
@@ -1711,7 +1711,7 @@ void StaticInit_Activity(void)
     static_init_register(&data_021f3d90, func_0203f664, &data_021f3c40);
     WfcDelivery_ConstructNotice(&data_021f3cbc);
     static_init_register(&data_021f3cbc, func_0203f5dc, &data_021f3c4c);
-    WfcStats_Construct(&data_021f40a4);
+    MysteryCatRecord_Construct(&data_021f40a4);
     static_init_register(&data_021f40a4, func_02088264, &data_021f3c58);
     static_init_copy(data_021f3ea4, job_fns, STATIC_INIT_ACTIVITY_FNS);
 }

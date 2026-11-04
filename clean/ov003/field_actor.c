@@ -2250,10 +2250,10 @@ CLEAN_AS(func_ov003_0220ee04, FieldActor_UpdateState6E)
  * func_0204bc64 of it and of nothing. */
 static BOOL holds_nothing(u16 *item)
 {
-    if (ItemCode_HasVariant(item)) {
+    if (ItemCode_IsFurniture(item)) {
         item[1] = ITEM_CODE_NONE;
-        int held = ItemCode_VariantItem(&item[0]);
-        return held == ItemCode_VariantItem(&item[1]);
+        int held = ItemCode_FurnitureNumber(&item[0]);
+        return held == ItemCode_FurnitureNumber(&item[1]);
     }
     return item[0] == ITEM_CODE_NONE;
 }
@@ -3300,10 +3300,10 @@ static int send_request(FieldActor *actor, StateRequest *request)
  * of it and of ITEM_CODE_NONE (held in a temporary); otherwise by the code itself. */
 static BOOL item_is_nothing(u16 *item)
 {
-    if (ItemCode_HasVariant(item)) {
+    if (ItemCode_IsFurniture(item)) {
         u16 none = ITEM_CODE_NONE;
-        int code = ItemCode_VariantItem(item);
-        return code == ItemCode_VariantItem(&none);
+        int code = ItemCode_FurnitureNumber(item);
+        return code == ItemCode_FurnitureNumber(&none);
     }
     return *item == ITEM_CODE_NONE;
 }

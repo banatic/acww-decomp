@@ -2,7 +2,7 @@
 # in this repository). Boot: as in tools.txt, on Wednesday 16 September 2026; the new day's
 # start keeps the player in the house longer, so the moves at 2600-2720 do nothing and the
 # player stands in front of the house from about 2950.
-# Save: blanca: the town's game statistics record in use (main/wfc_stats.h): the spawner makes
+# Save: blanca: the town's mystery cat record in use (main/mystery_cat_record.h): the spawner makes
 # the faceless cat of overlay 74 (Spawner_CheckD020In; on the seed's Friday an event of
 # 0x3b-0x44 keeps her away), who stands near tile 23, 31 at the boot. South, west and north
 # (3000-4100) to her and A: her talk; the first choice's second answer (DOWN), A on to the

@@ -827,10 +827,10 @@ CLEAN_AS(func_ov054_02262620, PostClerk_Start)
 static int clerk_is_day_person(PostClerk *clerk)
 {
     u16 *person = (u16 *) (void *) clerk_part(clerk, POST_CLERK_PERSON);
-    if (ItemCode_HasVariant(person)) {
+    if (ItemCode_IsFurniture(person)) {
         u16 day = data_ov054_02262990[POST_CLERK_DAY];
-        int own = ItemCode_VariantItem(person);
-        return own == ItemCode_VariantItem(&day);
+        int own = ItemCode_FurnitureNumber(person);
+        return own == ItemCode_FurnitureNumber(&day);
     }
     return *person == data_ov054_02262990[POST_CLERK_DAY];
 }

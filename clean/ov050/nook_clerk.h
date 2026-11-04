@@ -29,7 +29,7 @@
  *   3  walk:         the clerk walks along the counter toward the player, then stands;
  *   4  talk:         turns to the one talked with and talks; then the event ends;
  *   5  talk, leave:  the same, then the player is put out of the store (exit 0, or exit 1 for
- *                    a twin once the date of main's block part 0x18 has passed);
+ *                    a twin once closing time (main's block part 0x18) has passed);
  *   6  talked:       nothing;
  *   7  act:          the motion of kind 10, then the clerk stands;
  *   8  await:        while the session decides who runs the clerk (linked);
@@ -86,16 +86,16 @@ typedef struct NookClerkStep {
 
 /* NookClerkTalk.mode: what the talk is about, which picks the line it starts with
  * (data_ov050_02265114, NookClerkTalk_Line). The ones named in the code: */
-#define NOOK_CLERK_MODE_NOOK_GREET 0x00  /* Tom Nook's greeting (state 0) */
-#define NOOK_CLERK_MODE_SPOT_TAKEN 0x01  /* the player's start point is claimed (Tom Nook) */
-#define NOOK_CLERK_MODE_NOOK_TALKED 0x05 /* the player talked to Tom Nook */
-#define NOOK_CLERK_MODE_NOOK_DATE 0x06   /* the date of main's block part 0x18 passed (Tom Nook) */
-#define NOOK_CLERK_MODE_DRAMA 0x0f       /* a dated event of kind 3: its own line */
-#define NOOK_CLERK_MODE_TWIN_GREET 0x11  /* a twin's greeting (state 0) */
-#define NOOK_CLERK_MODE_TWIN_SPOT 0x12   /* the player's start point is claimed (a twin) */
-#define NOOK_CLERK_MODE_TWIN_TALKED 0x13 /* the player talked to a twin */
-#define NOOK_CLERK_MODE_TWIN_A_DATE 0x1d /* the date of main's block part 0x18 passed (twin 0x74) */
-#define NOOK_CLERK_MODE_JOB_DOOR 0x1e    /* the player at work went toward the door */
+#define NOOK_CLERK_MODE_NOOK_GREET 0x00     /* Tom Nook's greeting (state 0) */
+#define NOOK_CLERK_MODE_FAREWELL 0x01       /* the player at the shop's exit, the start point claimed (Tom Nook) */
+#define NOOK_CLERK_MODE_NOOK_TALKED 0x05    /* the player talked to Tom Nook */
+#define NOOK_CLERK_MODE_CLOSING 0x06        /* closing time (main's block part 0x18) passed (Tom Nook) */
+#define NOOK_CLERK_MODE_DRAMA 0x0f          /* a dated event of kind 3: its own line */
+#define NOOK_CLERK_MODE_TWIN_GREET 0x11     /* a twin's greeting (state 0) */
+#define NOOK_CLERK_MODE_TWIN_FAREWELL 0x12  /* the player at the shop's exit, the start point claimed (a twin) */
+#define NOOK_CLERK_MODE_TWIN_TALKED 0x13    /* the player talked to a twin */
+#define NOOK_CLERK_MODE_TWIN_A_CLOSING 0x1d /* closing time (main's block part 0x18) passed (twin 0x74) */
+#define NOOK_CLERK_MODE_JOB_DOOR 0x1e       /* the player at work went toward the door */
 #define NOOK_CLERK_MODES 0x1f
 
 struct NookClerk;
@@ -154,8 +154,8 @@ int NookClerk_IsTwin(NookClerk *clerk);
 int NookClerk_IsTwinA(NookClerk *clerk);
 int NookClerk_IsTwinB(NookClerk *clerk);
 int NookClerk_IsNook(NookClerk *clerk);
-int NookClerk_CheckDatePassed(NookClerk *clerk);
-int NookClerk_CheckSpotTaken(NookClerk *clerk);
+int NookClerk_CheckClosingTime(NookClerk *clerk);
+int NookClerk_CheckAtExit(NookClerk *clerk);
 int NookClerk_CheckJobDoor(NookClerk *clerk);
 int NookClerk_OfferShown(NookClerk *clerk);
 int NookClerk_FindShown(NookClerk *clerk);

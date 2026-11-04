@@ -255,9 +255,9 @@ static const char *ntalk_file(NookClerkTalk *talk)
 /* Whether the item code at `item` is empty (0xfff1, or a variant of the empty item). */
 static int ntalk_is_empty(u16 *item)
 {
-    if (ItemCode_HasVariant(item)) {
+    if (ItemCode_IsFurniture(item)) {
         u16 none = ITEM_CODE_NONE;
-        return ItemCode_VariantItem(item) == ItemCode_VariantItem(&none);
+        return ItemCode_FurnitureNumber(item) == ItemCode_FurnitureNumber(&none);
     }
     return *item == ITEM_CODE_NONE;
 }
@@ -764,11 +764,11 @@ CLEAN_AS(func_ov050_022618d0, NookClerkTalk_PickPaint)
 
 /* func_ov050_02261908 (the ends of lines 0x49 to 0x53, the house grown): the house's next loan
  * taken. */
-void NookClerkTalk_PayLoanLine(void)
+void NookClerkTalk_TakeNextLoan(void)
 {
     HouseRecord_TakeNextLoan(&data_021ebcd4);
 }
-CLEAN_AS(func_ov050_02261908, NookClerkTalk_PayLoanLine)
+CLEAN_AS(func_ov050_02261908, NookClerkTalk_TakeNextLoan)
 
 /* The items whose first purchase Tom Nook remarks on: the item range, the player record's flag
  * that notes it, and the line. */
@@ -889,12 +889,12 @@ void NookClerkTalk_OnLineEnded(NookClerkTalk *talk)
         &data_ov050_02265770, /* 0x18: NookClerkTalk_OpenOrder */
         &data_ov050_022655c8, /* 0x22: NookClerkTalk_PaintBought */
         &data_ov050_022655c0, /* 0x23: NookClerkTalk_ReactToPurchase */
-        &data_ov050_022655b8, /* 0x49: NookClerkTalk_PayLoanLine */
-        &data_ov050_022655b0, /* 0x4b: NookClerkTalk_PayLoanLine */
-        &data_ov050_02265788, /* 0x4d: NookClerkTalk_PayLoanLine */
-        &data_ov050_022655a0, /* 0x4f: NookClerkTalk_PayLoanLine */
-        &data_ov050_02265760, /* 0x51: NookClerkTalk_PayLoanLine */
-        &data_ov050_02265750, /* 0x53: NookClerkTalk_PayLoanLine */
+        &data_ov050_022655b8, /* 0x49: NookClerkTalk_TakeNextLoan */
+        &data_ov050_022655b0, /* 0x4b: NookClerkTalk_TakeNextLoan */
+        &data_ov050_02265788, /* 0x4d: NookClerkTalk_TakeNextLoan */
+        &data_ov050_022655a0, /* 0x4f: NookClerkTalk_TakeNextLoan */
+        &data_ov050_02265760, /* 0x51: NookClerkTalk_TakeNextLoan */
+        &data_ov050_02265750, /* 0x53: NookClerkTalk_TakeNextLoan */
     };
     u8 *record = PlayerRecords_Current();
     PlayerRecord_VillagerPart(record);
@@ -1149,7 +1149,7 @@ void NookClerkTalk_Line(NookClerkTalk *talk, NookClerkLine *out)
     if (talk->mode < NOOK_CLERK_MODES) {
         out->message = data_ov050_02265114[talk->mode].message;
         out->text = data_ov050_02265114[talk->mode].text;
-        if (talk->mode == NOOK_CLERK_MODE_TWIN_SPOT) {
+        if (talk->mode == NOOK_CLERK_MODE_TWIN_FAREWELL) {
             NookClerk *other = (NookClerk *) Actor_FindNextOfProfile(NookClerk_OtherTwin(talk->owner), NULL);
             if (other != NULL) {
                 NookClerk_SetState(other, NOOK_CLERK_STATE_STILL);
@@ -1671,9 +1671,9 @@ CLEAN_AS(func_ov050_0226310c, NookClerkTalk_JobLine0C)
 static int ntalk_in_uniform(u8 *record)
 {
     u16 *clothes = PlayerRecord_Clothes(record);
-    if (ItemCode_HasVariant(clothes)) {
+    if (ItemCode_IsFurniture(clothes)) {
         u16 uniform = NOOK_CLERK_UNIFORM;
-        return ItemCode_VariantItem(clothes) == ItemCode_VariantItem(&uniform);
+        return ItemCode_FurnitureNumber(clothes) == ItemCode_FurnitureNumber(&uniform);
     }
     return *clothes == NOOK_CLERK_UNIFORM;
 }

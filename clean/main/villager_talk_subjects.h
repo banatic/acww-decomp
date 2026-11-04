@@ -24,7 +24,7 @@ typedef struct VillagerTalkSubjectsTexts {
     u8 count;
 } VillagerTalkSubjectsTexts;
 
-int VillagerTalkSubjects_SayStateFlags(VillagerTalk *talk);
+int VillagerTalkSubjects_SayRoomScore(VillagerTalk *talk);
 int VillagerTalkSubjects_SayLast(VillagerTalk *talk);
 int VillagerTalkSubjects_SayDesignClothes(VillagerTalk *talk);
 int VillagerTalkSubjects_Say8c80(VillagerTalk *talk);
@@ -33,8 +33,8 @@ int VillagerTalkSubjects_SayHolding8af8(VillagerTalk *talk);
 int VillagerTalkSubjects_SayHoldingOnAcre(VillagerTalk *talk);
 int VillagerTalkSubjects_SayHoldingWateringCan(VillagerTalk *talk);
 int VillagerTalkSubjects_SayHolding8a68(VillagerTalk *talk);
-int VillagerTalkSubjects_SayHoldingNamed(VillagerTalk *talk);
-int VillagerTalkSubjects_SayHolding1369(VillagerTalk *talk);
+int VillagerTalkSubjects_SayHoldingStyle(VillagerTalk *talk);
+int VillagerTalkSubjects_SayHoldingShovel(VillagerTalk *talk);
 int VillagerTalkSubjects_SayFishWithRod(VillagerTalk *talk);
 int VillagerTalkSubjects_SayInsectWithNet(VillagerTalk *talk);
 void VillagerTalkSubjects_SayForMode(VillagerTalk *talk, int mode, const VillagerTalkSubjectsTexts *texts);

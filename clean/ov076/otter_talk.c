@@ -117,9 +117,9 @@ static u8 otter_talk_shown(const OtterTalk *talk)
 /* Whether an item is `code`: by its variant's item for an item with a variant, else by code. */
 static int otter_talk_is_item(const u16 *item, u16 code)
 {
-    if (ItemCode_HasVariant(item)) {
-        int own = ItemCode_VariantItem(item);
-        return own == ItemCode_VariantItem(&code);
+    if (ItemCode_IsFurniture(item)) {
+        int own = ItemCode_FurnitureNumber(item);
+        return own == ItemCode_FurnitureNumber(&code);
     }
     return *item == code;
 }

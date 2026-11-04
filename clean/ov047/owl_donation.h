@@ -24,7 +24,7 @@
 void OwlTalk_OnLineEnded(OwlTalk *talk);
 void OwlTalk_TakeItem(OwlTalk *talk);
 void OwlTalk_EndProgressAsk(OwlTalk *talk);
-void OwlTalk_EndThanks(OwlTalk *talk);
+void OwlTalk_EndReturnDuplicate(OwlTalk *talk);
 void OwlTalk_EndHaveIt(OwlTalk *talk);
 void OwlTalk_EndFish(OwlTalk *talk);
 void OwlTalk_EndInsect(OwlTalk *talk);
@@ -38,7 +38,7 @@ void OwlTalk_EndAssess(OwlTalk *talk);
 void OwlTalk_EndNotGiven(OwlTalk *talk);
 void OwlTalk_EndMenuLine(OwlTalk *talk);
 void OwlTalk_EndOffer6a(OwlTalk *talk);
-void OwlTalk_EndOther(OwlTalk *talk);
+void OwlTalk_EndFakePainting(OwlTalk *talk);
 void OwlTalk_EndAskFossil(OwlTalk *talk);
 void OwlTalk_EndAskGift(OwlTalk *talk);
 

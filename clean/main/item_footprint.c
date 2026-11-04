@@ -69,10 +69,10 @@ CLEAN_AS(func_02052e38, ItemFootprint_Destruct)
 ItemFootprint *ItemFootprint_Construct(ItemFootprint *footprint, u16 *code)
 {
     footprint->shape = ITEM_FOOTPRINT_NONE;
-    int number = ItemCode_VariantItem(code);
+    int number = ItemCode_FurnitureNumber(code);
     if (number != -1) {
         footprint->shape = FurnitureInfo_Shape(number);
-        footprint->side = ItemCode_Variant(code);
+        footprint->side = ItemCode_Side(code);
     }
     return footprint;
 }

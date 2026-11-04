@@ -391,9 +391,9 @@ void MabelTalk_TakeErrand(MabelTalk *talk)
             u16 item = CurrentPockets_Item(slot);
             CurrentPockets_Empty(slot);
             int empty;
-            if (ItemCode_HasVariant(&item)) {
+            if (ItemCode_IsFurniture(&item)) {
                 u16 none = ITEM_CODE_NONE;
-                empty = ItemCode_VariantItem(&item) == ItemCode_VariantItem(&none);
+                empty = ItemCode_FurnitureNumber(&item) == ItemCode_FurnitureNumber(&none);
             } else {
                 empty = item == ITEM_CODE_NONE;
             }
@@ -779,28 +779,28 @@ CLEAN_AS(func_ov049_02261764, MabelTalk_OnAnswerFee)
 /* func_ov049_022617b4 (the answers at lines 0x04, 0x15, 0x1a and 0x38): linked (or with the
  * game variable 0x4a), the third answer gives line 0x1c and the first 0x37; unlinked the
  * special character 5 joins as the second speaker. */
-void MabelTalk_OnAnswerLinked(MabelTalk *talk, int answer)
+void MabelTalk_OnMainMenu(MabelTalk *talk, int answer)
 {
     NetSession *session = data_020ccf94;
     if (mtalk_linked_or_variable(session)) {
         if (answer == 2) {
-            mtalk_say(talk, MABEL_LINE_LINKED_ANSWER_2);
+            mtalk_say(talk, MABEL_LINE_ABOUT);
         } else if (answer == 0) {
-            mtalk_say(talk, MABEL_LINE_LINKED_ANSWER_0);
+            mtalk_say(talk, MABEL_LINE_NO_DESIGN_GUESTS);
         }
     }
     mtalk_add_second_speaker(talk, session);
 }
-CLEAN_AS(func_ov049_022617b4, MabelTalk_OnAnswerLinked)
+CLEAN_AS(func_ov049_022617b4, MabelTalk_OnMainMenu)
 
 /* func_ov049_02261848 (the answers to her own lines): each handler whose line is the one
  * shown is called with the answer picked. */
 void MabelTalk_OnPlainAnswer(MabelTalk *talk)
 {
     static const MemberPointer *const handlers[MABEL_TALK_ANSWERS] = {
-        &data_ov049_022631d0, /* 0x04: MabelTalk_OnAnswerLinked */
-        &data_ov049_02263270, /* 0x15: MabelTalk_OnAnswerLinked */
-        &data_ov049_02263090, /* 0x1a: MabelTalk_OnAnswerLinked */
+        &data_ov049_022631d0, /* 0x04: MabelTalk_OnMainMenu */
+        &data_ov049_02263270, /* 0x15: MabelTalk_OnMainMenu */
+        &data_ov049_02263090, /* 0x1a: MabelTalk_OnMainMenu */
         &data_ov049_02263098, /* 0x0b: MabelTalk_OnAnswerFee */
         &data_ov049_022630a8, /* 0x10: MabelTalk_OnAnswerDesignKind */
         &data_ov049_022630b8, /* 0x1b: MabelTalk_OnAnswerSalePrice */
@@ -808,7 +808,7 @@ void MabelTalk_OnPlainAnswer(MabelTalk *talk)
         &data_ov049_02263120, /* 0x28: MabelTalk_OnAnswerItem */
         &data_ov049_02263288, /* 0x2d: MabelTalk_OnAnswerTriedOn */
         &data_ov049_02263278, /* 0x2e: MabelTalk_OnAnswerErrand */
-        &data_ov049_022630a0, /* 0x38: MabelTalk_OnAnswerLinked */
+        &data_ov049_022630a0, /* 0x38: MabelTalk_OnMainMenu */
     };
     u32 flags = data_ov049_0226360c;
     if ((flags & 1) == 0) {

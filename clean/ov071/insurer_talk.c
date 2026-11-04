@@ -1,4 +1,4 @@
-/* The insurance seller's talk scene: his lines, the insurance, the explanations and the
+/* The insurance seller's talk scene: his lines, the insurance, the survey questions and the
  * claims (insurer_talk.h). */
 #include "insurer_talk.h"
 
@@ -29,7 +29,7 @@
 static_assert(sizeof(SceneBase) == 0x80, "scene base");
 static_assert(offsetof(InsurerTalk, first) == 0xb0, "first");
 static_assert(offsetof(InsurerTalk, owner) == 0xb4, "owner");
-static_assert(offsetof(InsurerTalk, explained_count) == 0xb8, "explained count");
+static_assert(offsetof(InsurerTalk, question_count) == 0xb8, "question count");
 static_assert(offsetof(InsurerTalk, sequence) == 0xbc, "sequence");
 static_assert(offsetof(InsurerTalk, next_sequence) == 0xc4, "next sequence");
 static_assert(sizeof(InsurerTalk) == 0xcc, "talk scene");
@@ -70,8 +70,8 @@ extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 #define IT_INSURANCE_ITEM 0x149d
 #define IT_COVER_ITEM 0x14a0
 
-/* The explanations said in a row before the question that follows them. */
-#define IT_EXPLANATIONS_IN_A_ROW 4
+/* The survey questions asked in a row before the line that follows them. */
+#define IT_QUESTIONS_IN_A_ROW 4
 
 /* The answer of line 0x0c that bars his event for a week. */
 #define IT_ANSWER_BAR 4
@@ -120,10 +120,10 @@ static PocketPredicate it_claim_test(void)
 /* Whether `item` is "nothing": an item with variants is compared without its variant. */
 static int it_is_none(const u16 *item)
 {
-    if (ItemCode_HasVariant(item)) {
+    if (ItemCode_IsFurniture(item)) {
         u16 none = ITEM_CODE_NONE;
-        int number = ItemCode_VariantItem(item);
-        return number == ItemCode_VariantItem(&none);
+        int number = ItemCode_FurnitureNumber(item);
+        return number == ItemCode_FurnitureNumber(&none);
     }
     return *item == ITEM_CODE_NONE;
 }
@@ -147,7 +147,7 @@ static int it_ask_price(InsurerTalk *talk, int price)
 /* func_ov071_02278ac4 (slot 0x18, the player's answer), by the line shown and the answer:
  * - 0x28-0x2c: the first answer 0x04, the second 0x02;
  * - 0x08: the fox's weekday is the answer plus 1 (EventSchedule.fox_day), and 0x09;
- * - 0x0c, answers 0-4: 0x0d, the explanations start afresh, and his event 0x3c is barred for
+ * - 0x0c, answers 0-4: 0x0d, the survey questions start afresh, and his event 0x3c is barred for
  *   the week from the Sunday after (answer 4) or no longer barred (EventSchedule_BarInsurer);
  * - 0x15, 0x17, answered 0: the insurance's 3000 bells asked; 0x1d, 0x27: the cover's 6000;
  * - 0x20, 0x21, answered 0: 0x23;
@@ -177,9 +177,9 @@ void InsurerTalk_OnAnswer(InsurerTalk *talk)
             break;
         case INSURER_LINE_BAR_EVENT:
             if (answer >= 0 && answer <= IT_ANSWER_BAR) {
-                next = INSURER_LINE_EXPLAIN_START;
-                MI_CpuFill8(talk->owner->explained, 0, INSURER_EXPLANATIONS);
-                talk->explained_count = 0;
+                next = INSURER_LINE_SURVEY_START;
+                MI_CpuFill8(talk->owner->questions_asked, 0, INSURER_SURVEY_QUESTIONS);
+                talk->question_count = 0;
                 EventSchedule_BarInsurer(0, answer == IT_ANSWER_BAR ? 1 : 0);
             }
             break;
@@ -214,27 +214,27 @@ void InsurerTalk_OnAnswer(InsurerTalk *talk)
 }
 CLEAN_AS(func_ov071_02278ac4, InsurerTalk_OnAnswer)
 
-/* An explanation not said yet in the round, marked said (lines 0x0d-0x12); after four in a
+/* A survey question not asked yet in the round, marked asked (lines 0x0d-0x12); after four in a
  * row, without the cover 0x13, with it 0x1b and daily bit 0x28 set, the round starting afresh.
  * The line. */
-static int it_explain(InsurerTalk *talk, u8 *record)
+static int it_ask_question(InsurerTalk *talk, u8 *record)
 {
     Insurer *owner = talk->owner;
-    int index = InsurerTalk_PickExplanation((int) (u32) (uintptr_t) owner, owner->explained, INSURER_EXPLANATIONS);
-    if (owner->explained[index] == 0) {
-        owner->explained[index] = 1;
+    int index = InsurerTalk_PickQuestion((int) (u32) (uintptr_t) owner, owner->questions_asked, INSURER_SURVEY_QUESTIONS);
+    if (owner->questions_asked[index] == 0) {
+        owner->questions_asked[index] = 1;
     }
-    int next = (u8) (index + INSURER_LINE_EXPLAIN_FIRST);
-    talk->explained_count = (u8) (talk->explained_count + 1);
-    if (talk->explained_count >= IT_EXPLANATIONS_IN_A_ROW) {
+    int next = (u8) (index + INSURER_LINE_SURVEY_QUESTION_FIRST);
+    talk->question_count = (u8) (talk->question_count + 1);
+    if (talk->question_count >= IT_QUESTIONS_IN_A_ROW) {
         if (PlayerRecord_TestFlag(record, IT_FLAG_COVERED) == 0) {
-            next = INSURER_LINE_EXPLAINED;
+            next = INSURER_LINE_SURVEYED;
         } else {
-            next = INSURER_LINE_EXPLAINED_COVERED;
+            next = INSURER_LINE_SURVEYED_COVERED;
             TalkChecks_TestSetDailyBit(IT_DAILY_PITCHED, 1);
         }
-        talk->explained_count = 0;
-        MI_CpuFill8(talk->owner->explained, 0, INSURER_EXPLANATIONS);
+        talk->question_count = 0;
+        MI_CpuFill8(talk->owner->questions_asked, 0, INSURER_SURVEY_QUESTIONS);
     }
     return next;
 }
@@ -250,7 +250,7 @@ static void it_take(InsurerTalk *talk, u16 item, int price)
 /* func_ov071_02278c4c (slot 0x14, a line ended), by the line shown:
  * - 0x05, 0x14, 0x1c: the screen panels asked for; 0x15 (the insurance), or 0x1d (the cover)
  *   for an insured player;
- * - 0x0d-0x12: the next explanation (it_explain);
+ * - 0x0d-0x12: the next survey question (it_ask_question);
  * - 0x13: 0x14, or 0x1c for an insured player; 0x18: 0x19, or 0x1e for an insured player;
  * - 0x19: the insurance taken (item 0x149d, 3000 bells), the player record's flag 0x17 set
  *   and its date today; 0x1a;
@@ -266,25 +266,25 @@ void InsurerTalk_OnLineEnded(InsurerTalk *talk)
 
     switch (it_line_shown(talk)) {
         case 0x05:
-        case INSURER_LINE_EXPLAINED_UNINSURED:
-        case INSURER_LINE_EXPLAINED_INSURED:
+        case INSURER_LINE_SURVEYED_UNINSURED:
+        case INSURER_LINE_SURVEYED_INSURED:
             ScreenPanels_Request();
             next = INSURER_LINE_OFFER;
             if (PlayerRecord_TestFlag(record, IT_FLAG_INSURED) != 0) {
                 next = INSURER_LINE_OFFER_COVER_1D;
             }
             break;
-        case INSURER_LINE_EXPLAIN_START:
-        case INSURER_LINE_EXPLAIN_FIRST:
-        case INSURER_LINE_EXPLAIN_FIRST + 1:
-        case INSURER_LINE_EXPLAIN_FIRST + 2:
-        case INSURER_LINE_EXPLAIN_FIRST + 3:
-        case INSURER_LINE_EXPLAIN_END:
-            next = it_explain(talk, record);
+        case INSURER_LINE_SURVEY_START:
+        case INSURER_LINE_SURVEY_QUESTION_FIRST:
+        case INSURER_LINE_SURVEY_QUESTION_FIRST + 1:
+        case INSURER_LINE_SURVEY_QUESTION_FIRST + 2:
+        case INSURER_LINE_SURVEY_QUESTION_FIRST + 3:
+        case INSURER_LINE_SURVEY_QUESTION_END:
+            next = it_ask_question(talk, record);
             break;
-        case INSURER_LINE_EXPLAINED:
-            next = PlayerRecord_TestFlag(record, IT_FLAG_INSURED) == 0 ? INSURER_LINE_EXPLAINED_UNINSURED
-                                                                       : INSURER_LINE_EXPLAINED_INSURED;
+        case INSURER_LINE_SURVEYED:
+            next = PlayerRecord_TestFlag(record, IT_FLAG_INSURED) == 0 ? INSURER_LINE_SURVEYED_UNINSURED
+                                                                       : INSURER_LINE_SURVEYED_INSURED;
             break;
         case INSURER_LINE_CAN_PAY:
             next = PlayerRecord_TestFlag(record, IT_FLAG_INSURED) == 0 ? INSURER_LINE_INSURE : INSURER_LINE_COVER;
@@ -370,7 +370,7 @@ void InsurerTalk_FirstLine(InsurerTalk *talk, InsurerLine *out)
 CLEAN_AS(func_ov071_02278e40, InsurerTalk_FirstLine)
 
 /* func_ov071_02278f1c: his talk scene told through its vtable slot 0x08 and given its owner,
- * the first line's choice 0 and no explanation in a row. */
+ * the first line's choice 0 and no survey question in a row. */
 void InsurerTalk_Begin(InsurerTalk *talk, void *owner)
 {
     u32 vtable = *(const u32 *) (const void *) talk;
@@ -378,7 +378,7 @@ void InsurerTalk_Begin(InsurerTalk *talk, void *owner)
     ((void (*)(InsurerTalk *))(uintptr_t) code)(talk);
     talk->owner = owner;
     talk->first = INSURER_TALK_FIRST_PITCHED;
-    talk->explained_count = 0;
+    talk->question_count = 0;
 }
 CLEAN_AS(func_ov071_02278f1c, InsurerTalk_Begin)
 
@@ -424,7 +424,7 @@ CLEAN_AS(func_ov071_02278fb8, InsurerTalk_Construct)
 
 /* func_ov071_02278fd0: a line not said yet, at random: the n-th of the `count` marks of `said`
  * that are 0, n drawn below their number; 0 when there is none. */
-int InsurerTalk_PickExplanation(int unused, unsigned char *said, int count)
+int InsurerTalk_PickQuestion(int unused, unsigned char *said, int count)
 {
     int left = (int) MainRandom_Below(InsurerTalk_CountUnsaid(unused, said, count));
     for (int i = 0; i < count; i++) {
@@ -437,7 +437,7 @@ int InsurerTalk_PickExplanation(int unused, unsigned char *said, int count)
     }
     return 0;
 }
-CLEAN_AS(func_ov071_02278fd0, InsurerTalk_PickExplanation)
+CLEAN_AS(func_ov071_02278fd0, InsurerTalk_PickQuestion)
 
 /* func_ov071_02279004: how many of the `count` marks of `said` are 0. */
 int InsurerTalk_CountUnsaid(int unused, const unsigned char *said, int count)

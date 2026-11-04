@@ -662,7 +662,7 @@ void GatekeeperTalk_WaitStatus0(GatekeeperTalk *talk)
             }
         }
         members = LinkGlobal_MemberMask();
-        if (SystemPacket_SendSenderBlock(&talk->chunks_sent, members)) {
+        if (SystemPacket_SendOwnRecordTo(&talk->chunks_sent, members)) {
             Session_SetConnectMode(data_020ccf94, 0);
             LinkGlobal_SetKind(0);
             LinkGlobal_SetDoneKind(0);
@@ -747,47 +747,47 @@ void GatekeeperTalk_WaitFriends(GatekeeperTalk *talk)
 }
 CLEAN_AS(func_ov048_0226166c, GatekeeperTalk_WaitFriends)
 
-/* func_ov048_02261578 (GATEKEEPER_TALK_START_STATS_UPLOAD): the next state once the upload has
+/* func_ov048_02261578 (GATEKEEPER_TALK_START_CAT_RECORD_UPLOAD): the next state once the upload has
  * started, else the one after it. */
-void GatekeeperTalk_StartStatsUpload(GatekeeperTalk *talk)
+void GatekeeperTalk_StartCatRecordUpload(GatekeeperTalk *talk)
 {
-    set_next_state(talk, WfcSession_StartStatsUpload() ? 1 : 2);
+    set_next_state(talk, WfcSession_StartCatRecordUpload() ? 1 : 2);
 }
-CLEAN_AS(func_ov048_02261578, GatekeeperTalk_StartStatsUpload)
+CLEAN_AS(func_ov048_02261578, GatekeeperTalk_StartCatRecordUpload)
 
-/* func_ov048_02261540 (GATEKEEPER_TALK_FINISH_STATS_UPLOAD): on a server's error the request
+/* func_ov048_02261540 (GATEKEEPER_TALK_FINISH_CAT_RECORD_UPLOAD): on a server's error the request
  * is dropped (Wfc_Call022784a0) and the next state; else the next state once it finished. */
-void GatekeeperTalk_FinishStatsUpload(GatekeeperTalk *talk)
+void GatekeeperTalk_FinishCatRecordUpload(GatekeeperTalk *talk)
 {
     if (GatekeeperTalk_IsServerError()) {
         Wfc_Call022784a0();
         set_next_state(talk, 1);
-    } else if (WfcSession_FinishStatsUpload()) {
+    } else if (WfcSession_FinishCatRecordUpload()) {
         set_next_state(talk, 1);
     }
 }
-CLEAN_AS(func_ov048_02261540, GatekeeperTalk_FinishStatsUpload)
+CLEAN_AS(func_ov048_02261540, GatekeeperTalk_FinishCatRecordUpload)
 
-/* func_ov048_02261514 (GATEKEEPER_TALK_START_STATS_GET): the next state once the download has
+/* func_ov048_02261514 (GATEKEEPER_TALK_START_CAT_RECORD_GET): the next state once the download has
  * started, else the one after it. */
-void GatekeeperTalk_StartStatsGet(GatekeeperTalk *talk)
+void GatekeeperTalk_StartCatRecordGet(GatekeeperTalk *talk)
 {
-    set_next_state(talk, WfcSession_StartStatsGet() ? 1 : 2);
+    set_next_state(talk, WfcSession_StartCatRecordGet() ? 1 : 2);
 }
-CLEAN_AS(func_ov048_02261514, GatekeeperTalk_StartStatsGet)
+CLEAN_AS(func_ov048_02261514, GatekeeperTalk_StartCatRecordGet)
 
-/* func_ov048_022614dc (GATEKEEPER_TALK_FINISH_STATS_GET): as GatekeeperTalk_FinishStatsUpload
- * for the statistics' download. */
-void GatekeeperTalk_FinishStatsGet(GatekeeperTalk *talk)
+/* func_ov048_022614dc (GATEKEEPER_TALK_FINISH_CAT_RECORD_GET): as GatekeeperTalk_FinishCatRecordUpload
+ * for the mystery cat record's download. */
+void GatekeeperTalk_FinishCatRecordGet(GatekeeperTalk *talk)
 {
     if (GatekeeperTalk_IsServerError()) {
         Wfc_Call022784a0();
         set_next_state(talk, 1);
-    } else if (WfcSession_FinishStatsGet()) {
+    } else if (WfcSession_FinishCatRecordGet()) {
         set_next_state(talk, 1);
     }
 }
-CLEAN_AS(func_ov048_022614dc, GatekeeperTalk_FinishStatsGet)
+CLEAN_AS(func_ov048_022614dc, GatekeeperTalk_FinishCatRecordGet)
 
 /* func_ov048_02261640 (GATEKEEPER_TALK_START_LETTER_GET): the next state once the download has
  * started, else the one after it. */
@@ -798,7 +798,7 @@ void GatekeeperTalk_StartLetterGet(GatekeeperTalk *talk)
 CLEAN_AS(func_ov048_02261640, GatekeeperTalk_StartLetterGet)
 
 /* func_ov048_02261608 (GATEKEEPER_TALK_FINISH_LETTER_GET): as
- * GatekeeperTalk_FinishStatsUpload for the letter's download. */
+ * GatekeeperTalk_FinishCatRecordUpload for the letter's download. */
 void GatekeeperTalk_FinishLetterGet(GatekeeperTalk *talk)
 {
     if (GatekeeperTalk_IsServerError()) {
@@ -819,7 +819,7 @@ void GatekeeperTalk_StartNoticeGet(GatekeeperTalk *talk)
 CLEAN_AS(func_ov048_022615dc, GatekeeperTalk_StartNoticeGet)
 
 /* func_ov048_022615a4 (GATEKEEPER_TALK_FINISH_NOTICE_GET): as
- * GatekeeperTalk_FinishStatsUpload for the notice's download. */
+ * GatekeeperTalk_FinishCatRecordUpload for the notice's download. */
 void GatekeeperTalk_FinishNoticeGet(GatekeeperTalk *talk)
 {
     if (GatekeeperTalk_IsServerError()) {
@@ -894,7 +894,7 @@ CLEAN_AS(func_ov048_02261380, GatekeeperTalk_AfterDownloads)
 
 /* func_ov048_02261120 (GATEKEEPER_TALK_END_WFC): the talk held while the Wi-Fi Connection
  * ends; once it has, the talk released and, for a current player of number 0-3, the downloads
- * applied (statistics, letter, notice), the session ended, the friend data kept and, once the
+ * applied (mystery cat record, letter, notice), the session ended, the friend data kept and, once the
  * friend roster is saved, line 2. Then the state 0. */
 void GatekeeperTalk_EndWfc(GatekeeperTalk *talk)
 {
@@ -916,7 +916,7 @@ void GatekeeperTalk_EndWfc(GatekeeperTalk *talk)
     if (record != NULL) {
         number = PlayerRecord_Number(record);
         if (number >= 0 && number < 4) {
-            WfcSession_ApplyStats();
+            WfcSession_ApplyCatRecord();
             WfcSession_ApplyLetter();
             WfcSession_ApplyNotice();
             GatekeeperTalk_EndSession(talk);

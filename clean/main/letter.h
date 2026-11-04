@@ -77,7 +77,7 @@ typedef struct Letter {
     u16 header[LETTER_HEADER_CHARS]; /* 0x44 */
     u16 body[LETTER_BODY_CHARS];     /* 0x58 */
     u16 footer[LETTER_FOOTER_CHARS]; /* 0xd8 */
-    u8 header_line;                  /* 0xf8: the header's first line, in characters */
+    u8 name_position;                /* 0xf8: the header's first line, in characters */
     u8 paper;                        /* 0xf9 */
     u8 state;                        /* 0xfa: LetterState, and the mark in bits 6-7 */
     u8 tag;                          /* 0xfb: a value its writer gives (0x0c in a bottle's,
@@ -91,8 +91,8 @@ typedef struct LetterDefaults {
     u16 header[LETTER_HEADER_CHARS];      /* to someone else */
     u16 self_header[LETTER_HEADER_CHARS]; /* 0x14: to themself */
     u16 footer[LETTER_FOOTER_CHARS];      /* 0x28 */
-    u8 header_line;                       /* 0x48 */
-    u8 self_header_line;                  /* 0x49 */
+    u8 name_position;                     /* 0x48 */
+    u8 self_name_position;                /* 0x49 */
 } LetterDefaults;
 
 /* The wide text a letter's body is converted through (class data_020de770): a wide text base

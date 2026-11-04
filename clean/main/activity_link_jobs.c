@@ -481,7 +481,7 @@ void ActivityLinkJobs_Step16(Activity *activity)
             if (link_lost(AIDS_HOST)) {
                 return;
             }
-            if (SystemPacket_SendSenderBlock(&activity->unk_d8, new_slot_bit())) {
+            if (SystemPacket_SendOwnRecordTo(&activity->unk_d8, new_slot_bit())) {
                 activity->state = 2;
             }
             return;
@@ -1412,7 +1412,7 @@ void ActivityLinkJobs_Step1F(Activity *activity)
             activity->state = 2;
             return;
         case 2:
-            if (link_lost(AIDS_HOST) || !SystemPacket_SendRecordBlock(&activity->unk_d8)) {
+            if (link_lost(AIDS_HOST) || !SystemPacket_SendKeptLetters(&activity->unk_d8)) {
                 return;
             }
             activity->unk_d8 = 0;

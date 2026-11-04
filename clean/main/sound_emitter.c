@@ -11,7 +11,7 @@
 
 static_assert(offsetof(SoundSourceVtable, update) == 0x10, "SoundSourceVtable layout");
 static_assert(offsetof(SoundSource, flags) == 0x0a, "SoundSource layout");
-static_assert(offsetof(SoundEmitterVtable, vfunc_10) == 0x10, "SoundEmitterVtable layout");
+static_assert(offsetof(SoundEmitterVtable, finish) == 0x10, "SoundEmitterVtable layout");
 static_assert(sizeof(SoundEmitter) == 0x44, "SoundEmitter size");
 
 /* Positions handed to the sound layer are taken relative to this point, and only while the
@@ -162,12 +162,12 @@ void PointSound_StartList(char *list)
 }
 CLEAN_AS(func_02004414, PointSound_StartList)
 
-/* func_0200441c: slot 4 (vtable offset 0x10). */
-int SoundEmitter_Vfunc10(SoundEmitter *emitter)
+/* func_0200441c: slot 4 (vtable offset 0x10), finish. */
+int SoundEmitter_Finish(SoundEmitter *emitter)
 {
-    return emitter->vtable->vfunc_10(emitter);
+    return emitter->vtable->finish(emitter);
 }
-CLEAN_AS(func_0200441c, SoundEmitter_Vfunc10)
+CLEAN_AS(func_0200441c, SoundEmitter_Finish)
 
 /* func_0200442c: play sound `number`; the result is the sound layer's. */
 int SoundEmitter_Play(SoundEmitter *emitter, int number, int volume, int arg)
@@ -206,19 +206,19 @@ void SoundEmitter_UpdateAt(SoundEmitter *emitter, const Vec3 *pos)
 }
 CLEAN_AS(func_02004444, SoundEmitter_UpdateAt)
 
-/* func_02004490: slot 2, stop. */
-void SoundEmitter_Stop(SoundEmitter *emitter)
+/* func_02004490: slot 2 (vtable offset 0x08), reset. */
+void SoundEmitter_Reset(SoundEmitter *emitter)
 {
-    emitter->vtable->stop(emitter);
+    emitter->vtable->reset(emitter);
 }
-CLEAN_AS(func_02004490, SoundEmitter_Stop)
+CLEAN_AS(func_02004490, SoundEmitter_Reset)
 
-/* func_020044a0: a second copy of SoundEmitter_Vfunc10. */
-int SoundEmitter_Vfunc10B(SoundEmitter *emitter)
+/* func_020044a0: a second copy of SoundEmitter_Finish. */
+int SoundEmitter_FinishB(SoundEmitter *emitter)
 {
-    return emitter->vtable->vfunc_10(emitter);
+    return emitter->vtable->finish(emitter);
 }
-CLEAN_AS(func_020044a0, SoundEmitter_Vfunc10B)
+CLEAN_AS(func_020044a0, SoundEmitter_FinishB)
 
 /* func_020044b0: play sound `number` through the sound layer's other entry; 0 while the sound
  * state's byte 0x4d is 1. */
@@ -242,12 +242,12 @@ void SoundEmitter_UpdateAtB(SoundEmitter *emitter, const Vec3 *pos)
 }
 CLEAN_AS(func_020044d0, SoundEmitter_UpdateAtB)
 
-/* func_0200451c: a second copy of SoundEmitter_Stop. */
-void SoundEmitter_StopB(SoundEmitter *emitter)
+/* func_0200451c: a second copy of SoundEmitter_Reset. */
+void SoundEmitter_ResetB(SoundEmitter *emitter)
 {
-    emitter->vtable->stop(emitter);
+    emitter->vtable->reset(emitter);
 }
-CLEAN_AS(func_0200451c, SoundEmitter_StopB)
+CLEAN_AS(func_0200451c, SoundEmitter_ResetB)
 
 /* func_02005198: the destructor of class 0x020d8414 (the field actor's emitter at 0x880): its
  * vtable, then the base's destructor. Returns the emitter. */

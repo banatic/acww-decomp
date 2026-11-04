@@ -19,8 +19,8 @@ static_assert(sizeof(LetterParty) == 0x20 && offsetof(LetterParty, kind) == 0x1e
 static_assert(offsetof(Letter, addressee) == 0x04 && offsetof(Letter, sender) == 0x24, "letter parties");
 static_assert(offsetof(Letter, header) == 0x44 && offsetof(Letter, body) == 0x58 && offsetof(Letter, footer) == 0xd8,
               "letter texts");
-static_assert(offsetof(Letter, header_line) == 0xf8 && offsetof(Letter, item) == 0xfc && sizeof(Letter) == 0x100, "letter");
-static_assert(offsetof(LetterDefaults, footer) == 0x28 && offsetof(LetterDefaults, self_header_line) == 0x49, "defaults");
+static_assert(offsetof(Letter, name_position) == 0xf8 && offsetof(Letter, item) == 0xfc && sizeof(Letter) == 0x100, "letter");
+static_assert(offsetof(LetterDefaults, footer) == 0x28 && offsetof(LetterDefaults, self_name_position) == 0x49, "defaults");
 static_assert(offsetof(LetterBodyText, text) == 0x0e, "body text");
 
 /* The vtables: the letter's and the body text's. */
@@ -116,9 +116,9 @@ void LetterDefaults_Init(LetterDefaults *defaults)
 
     MI_CpuFill8(defaults, 0, sizeof(LetterDefaults));
     message = LETTER_MESSAGE_HEADER;
-    Letter_LoadText(&message, defaults->header, &defaults->header_line, NULL);
+    Letter_LoadText(&message, defaults->header, &defaults->name_position, NULL);
     message = LETTER_MESSAGE_SELF_HEADER;
-    Letter_LoadText(&message, defaults->self_header, &defaults->self_header_line, NULL);
+    Letter_LoadText(&message, defaults->self_header, &defaults->self_name_position, NULL);
 }
 CLEAN_AS(func_02065cc8, LetterDefaults_Init)
 
@@ -176,10 +176,10 @@ void LetterDefaults_Save(LetterDefaults *defaults, const Letter *letter)
     u16 *header;
     if (Letter_IsToSelf(letter)) {
         header = defaults->self_header;
-        defaults->self_header_line = letter->header_line;
+        defaults->self_name_position = letter->name_position;
     } else {
         header = defaults->header;
-        defaults->header_line = letter->header_line;
+        defaults->name_position = letter->name_position;
     }
     TextString_CopyChars(letter->header, header, LETTER_HEADER_CHARS);
 }
@@ -215,7 +215,7 @@ void Letter_TakeDefaultHeader(Letter *letter)
     LetterDefaults *defaults =
         (LetterDefaults *) (void *) PlayerPockets_LetterDefaults(PlayerRecord_Pockets(PlayerRecords_Current()));
     TextString_CopyChars(defaults->header, letter->header, LETTER_HEADER_CHARS);
-    letter->header_line = defaults->header_line;
+    letter->name_position = defaults->name_position;
 }
 CLEAN_AS(func_02065e60, Letter_TakeDefaultHeader)
 
@@ -553,7 +553,7 @@ void Letter_SetTexts(Letter *letter, const int *first_line, void *header, void *
 {
     WideText wide;
 
-    letter->header_line = (u8) *first_line;
+    letter->name_position = (u8) *first_line;
     WideText_Construct(&wide);
     TextBase_BytesToWide((WideTextBase *) (void *) &wide, (TextBase *) header);
     TextString_CopyChars(wide.text, letter->header, LETTER_HEADER_CHARS);
@@ -634,7 +634,7 @@ void Letter_AddressToSelf(Letter *letter)
     if (letter->addressee.kind != LETTER_PARTY_SELF) {
         LetterDefaults *defaults = (LetterDefaults *) (void *) PlayerPockets_LetterDefaults(PlayerRecord_Pockets(record));
         TextString_CopyChars(defaults->self_header, letter->header, LETTER_HEADER_CHARS);
-        letter->header_line = defaults->self_header_line;
+        letter->name_position = defaults->self_name_position;
     }
     LetterParty_SetSelf(&letter->addressee, player);
 }
@@ -670,7 +670,7 @@ void Letter_StartBottle(Letter *letter)
     Letter_SetState(letter, LETTER_STATE_BOTTLE_WRITTEN);
     LetterParty_Clear(&letter->addressee);
     message = LETTER_MESSAGE_HEADER;
-    Letter_LoadText(&message, letter->header, &letter->header_line, NULL);
+    Letter_LoadText(&message, letter->header, &letter->name_position, NULL);
 }
 CLEAN_AS(func_020665b8, Letter_StartBottle)
 

@@ -958,7 +958,7 @@ int PocketsBox_SlotMustLock(PocketsBox *self, int place)
         return 1;
     }
     int item = PocketsBox_PlaceItem(self, place);
-    if (PocketsItem_Is155d((u16) item) != 0) {
+    if (PocketsItem_IsLostItem((u16) item) != 0) {
         return 1;
     }
     u16 code = (u16) item;

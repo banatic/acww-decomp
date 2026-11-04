@@ -17,20 +17,13 @@
 #include "card_save.h"
 #include "talk_object.h"
 #include "wfc_delivery.h"
-#include "wfc_stats.h"
+#include "mystery_cat_record.h"
 
 #define NOTICE_SIZE 0xd2
 #define LETTER_SIZE 0x114
-#define STATS_SIZE 0x238
+#define CAT_RECORD_SIZE 0x238
 #define HMAC_SIZE 0x10 /* the digest, and the key's length */
 #define URL_SIZE 0x80
-
-/* The statistics record's status (byte 0x236). */
-enum WfcStatsStatus {
-    WFC_STATS_NONE = 0,     /* to be fetched */
-    WFC_STATS_RECEIVED = 1, /* fetched and checked */
-    WFC_STATS_TO_SEND = 3,  /* to be sent */
-};
 
 /* The state block flag that keeps the notice and the letter from being fetched. */
 #define STATE_BLOCK_FLAG_NO_DOWNLOADS 20
@@ -48,13 +41,13 @@ extern NetSession *data_020ccf94;
 /* What was fetched, and whether each fetch has finished since it was last applied. */
 extern u8 data_021f3cbc[NOTICE_SIZE];
 extern u8 data_021f3d90[LETTER_SIZE];
-extern u8 data_021f40a4[STATS_SIZE];
+extern u8 data_021f40a4[CAT_RECORD_SIZE];
 extern u8 data_021f3c18; /* the notice */
 extern u8 data_021f3c04; /* the letter */
-extern u8 data_021f3c14; /* the statistics */
+extern u8 data_021f3c14; /* the mystery cat record */
 
-/* The statistics record in the state block (its part at 0x16ad0). */
-extern u8 data_021f3278[STATS_SIZE];
+/* The mystery cat record in the state block (its part at 0x16ad0). */
+extern u8 data_021f3278[CAT_RECORD_SIZE];
 
 extern const char *const data_020e3800; /* "kr": the region the signed requests name */
 extern const char *const data_020e3804; /* "forest_bbs_KOR.bin" */
@@ -116,36 +109,36 @@ void WfcSession_ApplyLetter(void)
 }
 CLEAN_AS(func_0209fcd8, WfcSession_ApplyLetter)
 
-/* func_0209fd54: a statistics record that was received and whose halfwords sum to 0 marked
+/* func_0209fd54: a mystery cat record that was received and whose halfwords sum to 0 marked
  * received and copied into the state block; the received one is then cleared, with a checksum
  * of 1 so that it no longer sums to 0. */
-void WfcSession_ApplyStats(void)
+void WfcSession_ApplyCatRecord(void)
 {
     if (data_021f3c14 == 0) {
         return;
     }
     data_021f3c14 = 0;
-    if (BackupCard_Sum((unsigned short *) (void *) data_021f40a4, STATS_SIZE) == 0) {
-        WfcStats_SetStatus((WfcStats *) (void *) data_021f40a4, WFC_STATS_RECEIVED);
-        MI_CpuCopy8(data_021f40a4, data_021f3278, STATS_SIZE);
+    if (BackupCard_Sum((unsigned short *) (void *) data_021f40a4, CAT_RECORD_SIZE) == 0) {
+        MysteryCatRecord_SetStatus((MysteryCatRecord *) (void *) data_021f40a4, MYSTERY_CAT_RECORD_RECEIVED);
+        MI_CpuCopy8(data_021f40a4, data_021f3278, CAT_RECORD_SIZE);
     }
-    MI_CpuFill8(data_021f40a4, 0, STATS_SIZE);
-    WfcStats_SetChecksum((WfcStats *) (void *) data_021f40a4, 1);
+    MI_CpuFill8(data_021f40a4, 0, CAT_RECORD_SIZE);
+    MysteryCatRecord_SetChecksum((MysteryCatRecord *) (void *) data_021f40a4, 1);
 }
-CLEAN_AS(func_0209fd54, WfcSession_ApplyStats)
+CLEAN_AS(func_0209fd54, WfcSession_ApplyCatRecord)
 
 /* func_0209fdac: once the upload finished, the record in the state block reset; whether it
  * finished. */
-int WfcSession_FinishStatsUpload(void)
+int WfcSession_FinishCatRecordUpload(void)
 {
     LibraryOverlay_Require65();
     if (Wfc_FinishPost() != 0) {
-        WfcStats_Reset((WfcStats *) (void *) data_021f3278);
+        MysteryCatRecord_Reset((MysteryCatRecord *) (void *) data_021f3278);
         return 1;
     }
     return 0;
 }
-CLEAN_AS(func_0209fdac, WfcSession_FinishStatsUpload)
+CLEAN_AS(func_0209fdac, WfcSession_FinishCatRecordUpload)
 
 /* func_0209fdd4: once the notice's download finished, it is marked received; whether it
  * finished. */
@@ -172,8 +165,8 @@ int WfcSession_FinishLetterGet(void)
 }
 CLEAN_AS(func_0209fdf8, WfcSession_FinishLetterGet)
 
-/* func_0209fe1c: the same for the statistics. */
-int WfcSession_FinishStatsGet(void)
+/* func_0209fe1c: the same for the mystery cat record. */
+int WfcSession_FinishCatRecordGet(void)
 {
     LibraryOverlay_Require65();
     if (Wfc_FinishGet() != 0) {
@@ -182,7 +175,7 @@ int WfcSession_FinishStatsGet(void)
     }
     return 0;
 }
-CLEAN_AS(func_0209fe1c, WfcSession_FinishStatsGet)
+CLEAN_AS(func_0209fe1c, WfcSession_FinishCatRecordGet)
 
 /* The download of `file` from the game's page into `buffer` started; whether it was. None is
  * started while the state block's flag STATE_BLOCK_FLAG_NO_DOWNLOADS is set.
@@ -214,36 +207,36 @@ int WfcSession_StartLetterGet(void)
 }
 CLEAN_AS(func_0209fea4, WfcSession_StartLetterGet)
 
-/* func_0209ff0c: while the state block's record has status WFC_STATS_NONE, the signed download
+/* func_0209ff0c: while the state block's record has status MYSTERY_CAT_RECORD_NONE, the signed download
  * of a new one started; whether it was. */
-int WfcSession_StartStatsGet(void)
+int WfcSession_StartCatRecordGet(void)
 {
-    if (WfcStats_Status((const WfcStats *) (void *) data_021f3278) != WFC_STATS_NONE) {
+    if (MysteryCatRecord_Status((const MysteryCatRecord *) (void *) data_021f3278) != MYSTERY_CAT_RECORD_NONE) {
         return 0;
     }
     LibraryOverlay_Require65();
-    return Wfc_GetSigned(data_020e3bb0, data_021f40a4, STATS_SIZE, data_020e3800) != 0;
+    return Wfc_GetSigned(data_020e3bb0, data_021f40a4, CAT_RECORD_SIZE, data_020e3800) != 0;
 }
-CLEAN_AS(func_0209ff0c, WfcSession_StartStatsGet)
+CLEAN_AS(func_0209ff0c, WfcSession_StartCatRecordGet)
 
-/* func_0209ff54: when the state block's record has status WFC_STATS_TO_SEND, its checksum is
+/* func_0209ff54: when the state block's record has status MYSTERY_CAT_RECORD_TO_SEND, its checksum is
  * set so that its halfwords sum to 0 and its signed upload started; whether it had that
  * status.
  * QUIRK: 1 even when the upload could not be started. */
-int WfcSession_StartStatsUpload(void)
+int WfcSession_StartCatRecordUpload(void)
 {
     u8 *record = data_021f3278;
-    if (WfcStats_Status((const WfcStats *) (void *) record) != WFC_STATS_TO_SEND) {
+    if (MysteryCatRecord_Status((const MysteryCatRecord *) (void *) record) != MYSTERY_CAT_RECORD_TO_SEND) {
         return 0;
     }
-    u16 checksum = BackupCard_Checksum((const u16 *) (const void *) record, STATS_SIZE,
-                                       WfcStats_Checksum((const WfcStats *) (void *) record));
-    WfcStats_SetChecksum((WfcStats *) (void *) record, checksum);
+    u16 checksum = BackupCard_Checksum((const u16 *) (const void *) record, CAT_RECORD_SIZE,
+                                       MysteryCatRecord_Checksum((const MysteryCatRecord *) (void *) record));
+    MysteryCatRecord_SetChecksum((MysteryCatRecord *) (void *) record, checksum);
     LibraryOverlay_Require65();
-    Wfc_PostSigned(data_020e3bf0, record, STATS_SIZE, data_020e3800);
+    Wfc_PostSigned(data_020e3bf0, record, CAT_RECORD_SIZE, data_020e3800);
     return 1;
 }
-CLEAN_AS(func_0209ff54, WfcSession_StartStatsUpload)
+CLEAN_AS(func_0209ff54, WfcSession_StartCatRecordUpload)
 
 /* func_0209ffb0: the session ended (Session_End's result is given back). After a Wi-Fi
  * Connection session, with a current player of the town, what was downloaded is applied, the
@@ -265,7 +258,7 @@ int WfcSession_End(void *unused)
     if (number < 0 || number >= PLAYER_RECORDS_TOWN) {
         return result;
     }
-    WfcSession_ApplyStats();
+    WfcSession_ApplyCatRecord();
     WfcSession_ApplyLetter();
     WfcSession_ApplyNotice();
     WfcSession_KeepFriendData();

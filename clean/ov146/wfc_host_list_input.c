@@ -250,15 +250,15 @@ CLEAN_AS(func_ov146_02299a4c, WfcHostList_Activate)
 
 /* --- The pointer --- */
 
-/* func_ov146_0229a464: the pointer's press played (the third animation of its set), then back
+/* func_ov146_0229a464: the pointer's release played (the third animation of its set), then back
  * to this sub state (sub state 8). */
-void WfcHostList_PressPointer(WfcHostList *self)
+void WfcHostList_ReleasePointer(WfcHostList *self)
 {
     Glider_ShowThirdOfSet(&self->pointer);
     self->return_sub_state = self->base.sub_state;
-    MenuScene_SetSubState(wfc_host_list_input_base(self), WFC_HOST_LIST_SUB_POINTER_PRESS);
+    MenuScene_SetSubState(wfc_host_list_input_base(self), WFC_HOST_LIST_SUB_POINTER_RELEASE);
 }
-CLEAN_AS(func_ov146_0229a464, WfcHostList_PressPointer)
+CLEAN_AS(func_ov146_0229a464, WfcHostList_ReleasePointer)
 
 /* func_ov146_0229a490: A pressed: the pointer's second animation, then A acts once it has
  * played (sub state 7). */
@@ -295,7 +295,7 @@ CLEAN_AS(func_ov146_0229a4d0, WfcHostList_GlidePointerTo)
 
 /* func_ov146_0229a534: the pointer turned (set A at the bar, set B elsewhere) and gliding to the
  * cursor. */
-void WfcHostList_MoveCursor(WfcHostList *self)
+void WfcHostList_GlideToCursor(WfcHostList *self)
 {
     if (self->cursor == WFC_HOST_LIST_CURSOR_BAR) {
         Glider_TurnToSetA(&self->pointer);
@@ -306,7 +306,7 @@ void WfcHostList_MoveCursor(WfcHostList *self)
     int y = (int) WfcHostList_PointerY(self);
     WfcHostList_GlidePointerTo(self, x, y);
 }
-CLEAN_AS(func_ov146_0229a534, WfcHostList_MoveCursor)
+CLEAN_AS(func_ov146_0229a534, WfcHostList_GlideToCursor)
 
 /* func_ov146_0229a578: the pointer without an animation (hidden), and updated. */
 void WfcHostList_HidePointer(WfcHostList *self)
@@ -455,10 +455,10 @@ void WfcHostList_RunCloseDelay(WfcHostList *self)
 }
 CLEAN_AS(func_ov146_0229a778, WfcHostList_RunCloseDelay)
 
-/* func_ov146_0229a7a4 (WFC_HOST_LIST_SUB_POINTER_PRESS): once the pointer's animation has
- * played, its first animation and back to `return_sub_state`; after a row chosen by A, the
+/* func_ov146_0229a7a4 (WFC_HOST_LIST_SUB_POINTER_RELEASE): once the pointer's release
+ * animation has played, its first animation and back to `return_sub_state`; after a row chosen by A, the
  * cursor goes to the go button. */
-void WfcHostList_RunPointerPress(WfcHostList *self)
+void WfcHostList_RunPointerRelease(WfcHostList *self)
 {
     if (CellLayerSprite_IsDone(wfc_host_list_pointer_cells(self)) == 0) {
         return;
@@ -468,10 +468,10 @@ void WfcHostList_RunPointerPress(WfcHostList *self)
     if (WfcHostList_TestFlags(self, WFC_HOST_LIST_FLAG_CHOSE_ROW) != 0) {
         WfcHostList_ClearFlags(self, WFC_HOST_LIST_FLAG_CHOSE_ROW);
         self->cursor = WFC_HOST_LIST_CURSOR_GO;
-        WfcHostList_MoveCursor(self);
+        WfcHostList_GlideToCursor(self);
     }
 }
-CLEAN_AS(func_ov146_0229a7a4, WfcHostList_RunPointerPress)
+CLEAN_AS(func_ov146_0229a7a4, WfcHostList_RunPointerRelease)
 
 /* func_ov146_0229a7f4 (WFC_HOST_LIST_SUB_ACTIVATE): once the pointer's animation has played, A
  * acts at the cursor; when that did nothing of its own, back to the keys with the pointer's
@@ -483,7 +483,7 @@ void WfcHostList_RunActivate(WfcHostList *self)
     }
     if (WfcHostList_Activate(self, self->cursor) == 0) {
         MenuScene_SetSubState(wfc_host_list_input_base(self), WFC_HOST_LIST_SUB_KEYS);
-        WfcHostList_PressPointer(self);
+        WfcHostList_ReleasePointer(self);
     }
 }
 CLEAN_AS(func_ov146_0229a7f4, WfcHostList_RunActivate)
@@ -506,7 +506,7 @@ void WfcHostList_RunKnobRelease(WfcHostList *self)
 {
     if (WfcHostList_KnobReleased(self) != 0) {
         MenuScene_SetSubState(wfc_host_list_input_base(self), WFC_HOST_LIST_SUB_KEYS);
-        WfcHostList_PressPointer(self);
+        WfcHostList_ReleasePointer(self);
     }
     int x = WfcHostList_PointerX(self);
     int y = (int) WfcHostList_PointerY(self);
@@ -539,7 +539,7 @@ void WfcHostList_RunKeys(WfcHostList *self)
         return;
     }
     if (WfcHostList_MoveCursorByKeys(self, MenuScene_LatchRepeatedKeys(wfc_host_list_input_base(self))) != 0) {
-        WfcHostList_MoveCursor(self);
+        WfcHostList_GlideToCursor(self);
         return;
     }
     u16 pressed = data_021fbe40.pressed;

@@ -50,7 +50,7 @@
 /* The object types of group 0 (the villager's modes, villager_house_items.h). */
 #define VILLAGER_TALK_OBJECT_TYPE_INSECT 0
 #define VILLAGER_TALK_OBJECT_TYPE_FISH 1
-#define VILLAGER_TALK_OBJECT_TYPE_KIND_ITEM 2
+#define VILLAGER_TALK_OBJECT_TYPE_FOSSIL 2
 #define VILLAGER_TALK_OBJECT_TYPE_CLOTHES 3
 #define VILLAGER_TALK_OBJECT_TYPE_FURNITURE 4
 /* The places within group 0 the tables by place cover. */
@@ -375,7 +375,7 @@ void VillagerTalkObject_LineByType8e74(VillagerTalk *talk, VillagerTalkLine *out
 {
     VillagerTalkObjectTexts texts = data_020d9208;
     switch (object_type(talk)) {
-        case VILLAGER_TALK_OBJECT_TYPE_KIND_ITEM:
+        case VILLAGER_TALK_OBJECT_TYPE_FOSSIL:
             texts.texts = (u32) (uintptr_t) data_020c8e74;
             break;
         case VILLAGER_TALK_OBJECT_TYPE_CLOTHES:
@@ -518,7 +518,7 @@ void VillagerTalkObject_GiveReward(VillagerTalk *talk)
     switch (ItemObject_Type(object)) {
         case VILLAGER_TALK_OBJECT_TYPE_INSECT:
         case VILLAGER_TALK_OBJECT_TYPE_FISH:
-        case VILLAGER_TALK_OBJECT_TYPE_KIND_ITEM:
+        case VILLAGER_TALK_OBJECT_TYPE_FOSSIL:
             switch (step) {
                 case 0:
                 case 1:
@@ -620,7 +620,7 @@ CLEAN_AS(func_020249cc, VillagerTalkObject_Line8c60)
  * of data_021c2e54, after the villager's motion of kind 2 (func_0202d730) for type 3. */
 void VillagerTalkObject_SayByType2e6c(VillagerTalk *talk)
 {
-    if (object_type(talk) == VILLAGER_TALK_OBJECT_TYPE_KIND_ITEM) {
+    if (object_type(talk) == VILLAGER_TALK_OBJECT_TYPE_FOSSIL) {
         object_say(talk, data_021c2e6c);
     } else {
         if (object_type(talk) == VILLAGER_TALK_OBJECT_TYPE_CLOTHES) {
@@ -666,7 +666,7 @@ void VillagerTalkObject_LineByType9a9c(VillagerTalk *talk, VillagerTalkLine *out
 {
     VillagerTalkObjectTexts texts = data_020d8fb8;
     switch (object_type(talk)) {
-        case VILLAGER_TALK_OBJECT_TYPE_KIND_ITEM:
+        case VILLAGER_TALK_OBJECT_TYPE_FOSSIL:
             texts.texts = (u32) (uintptr_t) data_020d9a9c;
             break;
         case VILLAGER_TALK_OBJECT_TYPE_CLOTHES:
@@ -721,13 +721,13 @@ void VillagerTalkObject_LineByType96c4(VillagerTalk *talk, VillagerTalkLine *out
 }
 CLEAN_AS(func_02024c98, VillagerTalkObject_LineByType96c4)
 
-/* Whether the item `a` is the item `b`: for items with variants the variant item compared
- * (ItemCode_VariantItem), for others the codes. */
+/* Whether the item `a` is the item `b`: for furniture the furniture numbers compared
+ * (ItemCode_FurnitureNumber), for others the codes. */
 static int object_same_item(u16 *a, u16 *b)
 {
-    if (ItemCode_HasVariant(a)) {
-        int variant = ItemCode_VariantItem(a);
-        return variant == ItemCode_VariantItem(b);
+    if (ItemCode_IsFurniture(a)) {
+        int number = ItemCode_FurnitureNumber(a);
+        return number == ItemCode_FurnitureNumber(b);
     }
     return *a == *b;
 }
@@ -741,15 +741,15 @@ static int object_same_item(u16 *a, u16 *b)
  *     clothes, data_021c2e3c when its value (func_0204c228) is not the villager data's byte
  *     0x2a, else data_021c2e0c; the item's name in slot 2;
  *   type 4: data_021c2e24 when the villager likes the item (VillagerData_ItemLiking above 0),
- *     it has variants and the villager's house has two of it, or one and the item's shape is
- *     2; data_021c2e3c when it is liked with variants otherwise; else data_021c2e0c; the
+ *     it is furniture and the villager's house has two of it, or one and the item's shape is
+ *     2; data_021c2e3c when it is liked furniture otherwise; else data_021c2e0c; the
  *     item's name in slot 0.
  * QUIRK: other types keep the table set before; a part of -1 sets flag 255. */
 void VillagerTalkObject_SayJudgeItem(VillagerTalk *talk)
 {
     u8 *record = object_record(talk);
     switch (object_type(talk)) {
-        case VILLAGER_TALK_OBJECT_TYPE_KIND_ITEM:
+        case VILLAGER_TALK_OBJECT_TYPE_FOSSIL:
             VillagerTalkScene_SetLines(talk, data_021c2e3c);
             if (talk->item != ITEM_CODE_NONE) {
                 SceneBase_PutItemName(object_base(talk), (int) (uintptr_t) &talk->item, 0, 7);
@@ -786,7 +786,7 @@ void VillagerTalkObject_SayJudgeItem(VillagerTalk *talk)
             break;
         case VILLAGER_TALK_OBJECT_TYPE_FURNITURE:
             if (VillagerData_ItemLiking(record, &talk->item) > 0) {
-                if (ItemCode_HasVariant(&talk->item)) {
+                if (ItemCode_IsFurniture(&talk->item)) {
                     int same = VillagerHouseItems_CountSame(record, &talk->item);
                     int shape = FurnitureInfo_ItemShape(&talk->item);
                     if (same >= 2 || (same == 1 && shape == 2)) {
@@ -869,7 +869,7 @@ static void object_open_pockets(VillagerTalk *talk, MemberPointer next)
 void VillagerTalkObject_AskPocketByType(VillagerTalk *talk)
 {
     switch (object_type(talk)) {
-        case VILLAGER_TALK_OBJECT_TYPE_KIND_ITEM:
+        case VILLAGER_TALK_OBJECT_TYPE_FOSSIL:
             if (VillagerObject_Step(object_villager_object(talk)) <= 1) {
                 object_ask_predicate(talk, func_02029e18);
             } else {
@@ -896,14 +896,14 @@ void VillagerTalkObject_AskPocketByType(VillagerTalk *talk)
 }
 CLEAN_AS(func_02024fe4, VillagerTalkObject_AskPocketByType)
 
-/* func_020250c8: for an object of type 4 and an item at 0x124 with variants, the villager's
+/* func_020250c8: for an object of type 4 and a furniture item at 0x124, the villager's
  * liking of the item added to the villager object's count and the new count sent to the
  * others in the session; then the talk object given the value 1 in its low bits, that sent
  * (byte 0x0b), and the villager's state entry given flag 1. */
 void VillagerTalkObject_CountItem(VillagerTalk *talk)
 {
     u8 *record = object_record(talk);
-    if (object_type(talk) == VILLAGER_TALK_OBJECT_TYPE_FURNITURE && ItemCode_HasVariant(&talk->item)) {
+    if (object_type(talk) == VILLAGER_TALK_OBJECT_TYPE_FURNITURE && ItemCode_IsFurniture(&talk->item)) {
         u8 liking = (u8) VillagerData_ItemLiking(record, &talk->item);
         u8 count = VillagerObject_AddCount(object_villager_object(talk), liking);
         SessionVillager_SendObjectCount(record, count);
@@ -1341,7 +1341,7 @@ void VillagerTalkObject_PutItemNames(VillagerTalk *talk)
                 SceneBase_PutItemName(object_base(talk), (int) (uintptr_t) &talk->item, 0, 7);
             }
             break;
-        case VILLAGER_TALK_OBJECT_TYPE_KIND_ITEM: {
+        case VILLAGER_TALK_OBJECT_TYPE_FOSSIL: {
             if (talk->item == ITEM_CODE_NONE) {
                 u16 picked;
                 VillagerTalkObject_PickByStep(&picked, talk, (unsigned int) step);

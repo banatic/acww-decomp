@@ -8,7 +8,7 @@
  *   0x7d8  a number drawn when the villager takes a new mode (VillagerFurniture_ResetForMode)
  *
  * An item template (acre_map.h) holds 16 x 16 codes; the codes 0xf000-0xf02f stand for one of
- * the villager's ten items (func_0207ff58 gives which), with its variant in the low two bits.
+ * the villager's ten items (func_0207ff58 gives which), with its side in the low two bits.
  * A list of spots names such codes by their tile within the acre. */
 #ifndef CLEAN_MAIN_VILLAGER_FURNITURE_H
 #define CLEAN_MAIN_VILLAGER_FURNITURE_H
@@ -21,7 +21,7 @@
 /* The codes of a template that stand for one of the villager's items. */
 #define VILLAGER_FURNITURE_SLOT_FIRST 0xf000
 #define VILLAGER_FURNITURE_SLOT_LAST 0xf02f
-#define VILLAGER_FURNITURE_VARIANT_MASK 3
+#define VILLAGER_FURNITURE_SIDE_MASK 3
 /* The codes of an item template. */
 #define VILLAGER_FURNITURE_TEMPLATE_CODES 0x100
 /* A spot's tile is within an acre: 0-15 each way. */

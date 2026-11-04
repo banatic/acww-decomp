@@ -86,9 +86,9 @@ static const SceneActorRecord *object_actors_record(u16 code)
 /* Whether `item` is `code`: compared by their variants' item when `item` has variants. */
 static int object_actors_is_code(const u16 *item, u16 code)
 {
-    if (ItemCode_HasVariant(item)) {
-        int variant_item = ItemCode_VariantItem(item);
-        return variant_item == ItemCode_VariantItem(&code);
+    if (ItemCode_IsFurniture(item)) {
+        int variant_item = ItemCode_FurnitureNumber(item);
+        return variant_item == ItemCode_FurnitureNumber(&code);
     }
     return *item == code;
 }

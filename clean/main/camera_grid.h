@@ -1,4 +1,4 @@
-/* The window the menu tab opens (menu_tab.h, its member at 0x28): a sprite (vtable
+/* The window the camera tab opens (camera_tab.h, its member at 0x28): a sprite (vtable
  * data_020e2250, 0xd8 bytes, derived from main's screen sprite base, screen_sprite.h) of nine
  * buttons in a 3 by 3 grid on the touch screen, each choosing one of the field camera's preset
  * views (CameraControl_SelectPreset, camera_control.h): the centre button the middle view, the

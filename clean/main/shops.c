@@ -325,8 +325,8 @@ CLEAN_AS(func_020adb24, Shops_SpendAtStore)
 /* Whether `item` reads as a sold place. */
 static int shops_is_sold(u16 *item)
 {
-    if (ItemCode_HasVariant(item) != 0) {
-        return ItemCode_VariantItem(item) == ItemCode_VariantItem(&data_021f49f4);
+    if (ItemCode_IsFurniture(item) != 0) {
+        return ItemCode_FurnitureNumber(item) == ItemCode_FurnitureNumber(&data_021f49f4);
     }
     return *item == data_021f49f4;
 }

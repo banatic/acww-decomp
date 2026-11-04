@@ -67,7 +67,7 @@ typedef struct RoomScoreFengShui {
 #define ROOM_SCORE_CATEGORIES 0x20        /* all four categories */
 #define ROOM_SCORE_FENG_SHUI 0x40         /* 500 (2000) from the feng shui */
 #define ROOM_SCORE_COLORS 0x80            /* 2000 (6000) from RoomScore_ColorBonus */
-#define ROOM_SCORE_FLAG_BITS 0x100        /* 2000 (6000) from RoomScore_EraFeelBonus */
+#define ROOM_SCORE_ERA_FEEL 0x100         /* 2000 (6000) from RoomScore_EraFeelBonus */
 #define ROOM_SCORE_COLLECTION 0x200       /* 3000 (3200) from a collection (RoomScore_CollectionBonus) */
 #define ROOM_SCORE_SPECIAL 0x400          /* 7000 from the special items */
 #define ROOM_SCORE_LOOSE_ITEMS 0x800      /* the letter's only: items of kind 1 on the floor */

@@ -99,8 +99,8 @@ def raw(offset: int, data: bytes) -> list[tuple[int, str, int]]:
 
 # a footer of the game's letters from the shop (its five characters, at 0xd8 of a letter)
 LETTER_FOOTER_SHOP = [(0xD8 + 2 * i, "<H", c) for i, c in enumerate((0xB108, 0xAD74, 0x0020, 0xC0C1, 0xC810))]
-# the town's game statistics record (main/wfc_stats.h) in the state block
-WFC_STATS = 0x16AD0
+# the town's mystery cat record (main/mystery_cat_record.h) in the state block
+MYSTERY_CAT_RECORD = 0x16AD0
 # a town paired with the player's (main/paired_town.h): its id 0x1234 and the seed's name
 PAIRED_TOWN = bytes.fromhex("3412" + "4331" * 6)
 # the rod held, 30,000 bells and every item with variants had (the "catalog-full" save)
@@ -363,12 +363,12 @@ SAVES = {
     # (FieldActor_RequestState3D) take out an umbrella by state 0x3e instead
     "umbrella": [(HELD, "<H", 0x1380)],
 
-    # the town's game statistics record (main/wfc_stats.h, 0x238 bytes at 0x16ad0 of the state
+    # the town's mystery cat record (main/mystery_cat_record.h, 0x238 bytes at 0x16ad0 of the state
     # block; the seed's is a blank design, all bytes 0xff, and zeros) in use (status 2 at 0x236), as
     # a Wi-Fi Connection session leaves it once the date moves on, with its checksum at 0x234 made
     # good: the spawner then makes the faceless cat of overlay 74 (main/spawner.c Spawner_CheckD020In);
     # no cockroaches in the house (as for "songs")
-    "blanca": [(WFC_STATS + 0x234, "<H", 0x00FE), (WFC_STATS + 0x236, "<B", 2), (ROACHES, "<B", 0)],
+    "blanca": [(MYSTERY_CAT_RECORD + 0x234, "<H", 0x00FE), (MYSTERY_CAT_RECORD + 0x236, "<B", 2), (ROACHES, "<B", 0)],
 
     # as "catalog-full" (its first bytes mark every fish and insect had, ItemRecord_HasAllFish and
     # _HasAllInsects) with item 0x37e0 in pocket 0: the turtle of overlay 80 comes (flag 8 of
@@ -1152,7 +1152,7 @@ SAVES["fly-spot"] = SAVES["clear"] + [(HELD, "<H", 0x1376), town_item(40, 69, 0x
 SAVES["hole-axe"] = [(HELD, "<H", 0x1369), (POCKETS, "<H", 0x136B)]
 # the face item 0x1483 worn (the player record's part C at 0x240c): one of 0x1471-0x1491 whose
 # pair's head item counts (its always.bin flags bit 1), so the actor's look reads its number
-# among those pairs (FieldActor_ApplyPartC, ItemTraits_PairFaceNumber)
+# among those pairs (FieldActor_ApplyPartC, ItemTraits_PairWiltedFlowerNumber)
 SAVES["face-pair"] = [(0x14 + 0x240C, "<H", 0x1483)]
 # "full-rod" with the present 0x156b on the tile two south of the house's door: taken up with the
 # pockets full, it is swapped in as an item drawn for it (main/current_pockets.c)

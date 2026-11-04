@@ -39,7 +39,7 @@ static_assert(offsetof(LetterWriteScene, shown_header) == 0x41e0 && offsetof(Let
 static_assert(offsetof(LetterWriteScene, panel) == 0x4698 && offsetof(LetterWriteScene, error) == 0x4864, "panel");
 static_assert(offsetof(LetterWriteScene, unk_a4) == 0xa4 && offsetof(LetterWriteScene, clipboard) == 0x4230, "clipboard");
 static_assert(sizeof(LetterWriteScene) == 0x4980, "size (func_ov122_022a24bc)");
-static_assert(offsetof(Letter, header) == 0x44 && offsetof(Letter, header_line) == 0xf8, "letter");
+static_assert(offsetof(Letter, header) == 0x44 && offsetof(Letter, name_position) == 0xf8, "letter");
 
 /* The buttons, and the touch (main's bytes). */
 extern PadState data_021fbe40;
@@ -87,7 +87,7 @@ static void letter_write_update_pointer(LetterWriteScene *self)
     vtable[3](&self->pointer);
 }
 
-/* The header from character `index` on. QUIRK: `header_line` is not bounded by the header's
+/* The header from character `index` on. QUIRK: `name_position` is not bounded by the header's
  * ten characters; past them this points into the body, as the game's address does. */
 static u16 *letter_write_header_from(Letter *letter, unsigned int index)
 {
@@ -460,11 +460,11 @@ void LetterWrite_SetPosition(LetterWriteScene *self, unsigned char position)
 CLEAN_AS(func_ov122_0229f590, LetterWrite_SetPosition)
 
 /* func_ov122_0229f5a0: the cursor's character in the header: after the name it counts from
- * `header_line`. */
+ * `name_position`. */
 unsigned char LetterWrite_HeaderPosition(LetterWriteScene *self)
 {
     if (self->part == LETTER_WRITE_PART_HEADER_AFTER) {
-        return (unsigned char) (self->position + self->letter->header_line);
+        return (unsigned char) (self->position + self->letter->name_position);
     }
     return self->position;
 }
@@ -504,7 +504,7 @@ int LetterWrite_PartTextAddress(LetterWriteScene *self)
 }
 CLEAN_AS(func_ov122_0229f5f8, LetterWrite_PartTextAddress)
 
-/* func_ov122_0229f634: the text of the cursor's part, from `header_line` after the name (NULL
+/* func_ov122_0229f634: the text of the cursor's part, from `name_position` after the name (NULL
  * for no part). */
 u16 *LetterWrite_PartText(LetterWriteScene *self)
 {
@@ -512,7 +512,7 @@ u16 *LetterWrite_PartText(LetterWriteScene *self)
         case LETTER_WRITE_PART_HEADER:
             return self->letter->header;
         case LETTER_WRITE_PART_HEADER_AFTER:
-            return letter_write_header_from(self->letter, self->letter->header_line);
+            return letter_write_header_from(self->letter, self->letter->name_position);
         case LETTER_WRITE_PART_BODY:
             return self->letter->body;
         case LETTER_WRITE_PART_FOOTER:
@@ -603,16 +603,16 @@ int LetterWrite_MoveCursorByKeys(LetterWriteScene *self, int keys, int across_pa
         if (position != 0) {
             position = (u8) (position - 1);
         } else if (part == LETTER_WRITE_PART_HEADER_AFTER) {
-            position = self->letter->header_line;
+            position = self->letter->name_position;
             part = LETTER_WRITE_PART_HEADER;
         }
     } else if (KeyRepeat_HasRight(keys)) {
         switch (part) {
             case LETTER_WRITE_PART_HEADER:
-                length = self->letter->header_line;
+                length = self->letter->name_position;
                 break;
             case LETTER_WRITE_PART_HEADER_AFTER:
-                length = func_02051c8c_unk(self->letter->header, LETTER_HEADER_CHARS) - self->letter->header_line;
+                length = func_02051c8c_unk(self->letter->header, LETTER_HEADER_CHARS) - self->letter->name_position;
                 break;
             case LETTER_WRITE_PART_BODY:
                 length = func_02051c8c_unk(self->letter->body, LETTER_BODY_CHARS);
@@ -644,7 +644,7 @@ CLEAN_AS(func_ov122_0229f684, LetterWrite_MoveCursorByKeys)
 
 /* func_ov122_0229f89c: the marked characters deleted from the cursor's part; the cursor at the
  * first of them. Deleting before the name moves the name back; after it, the range counts
- * from `header_line`.
+ * from `name_position`.
  * REQUIRES: `part` is a LetterWritePart (with another the deletion writes to address 0). */
 void LetterWrite_DeleteMarked(LetterWriteScene *self)
 {
@@ -668,10 +668,10 @@ void LetterWrite_DeleteMarked(LetterWriteScene *self)
 
     switch (self->part) {
         case LETTER_WRITE_PART_HEADER:
-            self->letter->header_line = (u8) (self->letter->header_line - (high - low));
+            self->letter->name_position = (u8) (self->letter->name_position - (high - low));
             break;
         case LETTER_WRITE_PART_HEADER_AFTER: {
-            u8 line = self->letter->header_line;
+            u8 line = self->letter->name_position;
             low += line;
             high += line;
             break;
@@ -683,7 +683,7 @@ void LetterWrite_DeleteMarked(LetterWriteScene *self)
     position = (u8) SoftKeyboard_DeleteRange(letter_write_keyboard(self), (unsigned short *) (uintptr_t) text, (int) low,
                                              (int) high, length);
     if (self->part == LETTER_WRITE_PART_HEADER_AFTER) {
-        position = (u8) (position - self->letter->header_line);
+        position = (u8) (position - self->letter->name_position);
     }
     LetterWrite_SetPosition(self, position);
     LetterWrite_EndMark(self);
@@ -777,7 +777,7 @@ void LetterWrite_PlaceCursorInHeader(LetterWriteScene *self)
 
     if (self->part == LETTER_WRITE_PART_HEADER_AFTER) {
         int name_length = (int) LetterView_NameLength(&self->view);
-        shown += self->letter->header_line + name_length;
+        shown += self->letter->name_position + name_length;
     }
     self->cursor_x = (u8) (TextString_Width(self->shown_header, shown) + 0x30);
     self->cursor_y = 0x28;
@@ -835,7 +835,7 @@ int LetterWrite_DragMark(LetterWriteScene *self)
             self->part = part;
             LetterWrite_SetFlags(self, LETTER_WRITE_FLAG_1000);
             if (part == LETTER_WRITE_PART_HEADER) {
-                LetterWrite_SetPosition(self, self->letter->header_line);
+                LetterWrite_SetPosition(self, self->letter->name_position);
             } else {
                 LetterWrite_SetPosition(self, 0);
             }
@@ -979,7 +979,7 @@ void LetterWrite_EnterBody(LetterWriteScene *self, int below_to_footer)
 CLEAN_AS(func_ov122_0229fd88, LetterWrite_EnterBody)
 
 /* func_ov122_0229fe28: the header's character under x, as the view shows the header: before
- * the middle of the name, the first part (at most its end, `header_line`); from it on, the
+ * the middle of the name, the first part (at most its end, `name_position`); from it on, the
  * second (counted after the name). *part is set to which. */
 u8 LetterWrite_HeaderPositionAt(LetterWriteScene *self, int x, u8 *part)
 {
@@ -991,7 +991,7 @@ u8 LetterWrite_HeaderPositionAt(LetterWriteScene *self, int x, u8 *part)
     SoftKeyboard_TextColumnAt(letter_write_keyboard(self), self->shown_header, LETTER_WRITE_SHOWN_HEADER_CHARS, 0xa0,
                               (u8) (x - 0x30), &index);
 
-    line = self->letter->header_line;
+    line = self->letter->name_position;
     after_name = (int) LetterView_NameLength(&self->view) + line;
     middle = (line + after_name) >> 1;
 
@@ -1133,7 +1133,7 @@ extern const char data_ov122_022a27c8[]; /* "menu/chat2/b_cht.bch" */
 extern const u8 data_ov122_022a2580[];
 
 #define LETTER_WRITE_KEY_NEWLINE 0 /* the keyboard's keys the scene enables */
-#define LETTER_WRITE_KEY_6 6
+#define LETTER_WRITE_KEY_BACKSPACE 6
 #define LETTER_WRITE_KEY_COPY 11
 #define LETTER_WRITE_KEY_PASTE 12
 #define LETTER_WRITE_KEY_L 0x109 /* the keys shown pressed by L and R */
@@ -1965,11 +1965,11 @@ int LetterWrite_InsertChar(LetterWriteScene *self, int code, int notify)
     switch (self->part) {
         case LETTER_WRITE_PART_HEADER:
             if (old != position) {
-                self->letter->header_line = (u8) (self->letter->header_line + position - old);
+                self->letter->name_position = (u8) (self->letter->name_position + position - old);
             }
             break;
         case LETTER_WRITE_PART_HEADER_AFTER:
-            position = (u8) (position - self->letter->header_line);
+            position = (u8) (position - self->letter->name_position);
             break;
         default:
             break;
@@ -2045,9 +2045,9 @@ int LetterWrite_Backspace(LetterWriteScene *self, int sound_on_fail)
 
         /* Nothing after the cursor: the header's first part is empty, or the second part
          * starts after all ten characters, or the text ends there. */
-        if (part == LETTER_WRITE_PART_HEADER && self->letter->header_line == 0) {
+        if (part == LETTER_WRITE_PART_HEADER && self->letter->name_position == 0) {
             nothing = 1;
-        } else if (part == LETTER_WRITE_PART_HEADER_AFTER && self->letter->header_line == LETTER_HEADER_CHARS) {
+        } else if (part == LETTER_WRITE_PART_HEADER_AFTER && self->letter->name_position == LETTER_HEADER_CHARS) {
             nothing = 1;
         } else {
             nothing = text[0] == 0;
@@ -2292,7 +2292,7 @@ void LetterWrite_UpdateKeys(LetterWriteScene *self)
 
     if (LetterWrite_HasMark(self)) {
         SoftKeyboard_DisableEditKeys(letter_write_keyboard(self));
-        SoftKeyboard_EnableSpecial(letter_write_keyboard(self), LETTER_WRITE_KEY_6);
+        SoftKeyboard_EnableSpecial(letter_write_keyboard(self), LETTER_WRITE_KEY_BACKSPACE);
     } else if (self->position == 0) {
         SoftKeyboard_DisableEditKeys(letter_write_keyboard(self));
     } else {
@@ -2350,7 +2350,7 @@ void LetterWrite_Refresh(LetterWriteScene *self, int whole, int editing)
                 break;
             case LETTER_WRITE_PART_HEADER_AFTER: {
                 /* After the name, counted as the view shows the header. */
-                int line = self->letter->header_line;
+                int line = self->letter->name_position;
                 int shown = first + line + (int) LetterView_NameLength(&self->view);
                 LetterView_MarkGreeting(&self->view, shown, count, style);
                 break;

@@ -189,10 +189,10 @@ static void camel_draw_reward(CamelTalk *talk, int kind, int slot, int part)
 /* Whether the errand's item is 0x155f (an item with variants compared without its variant). */
 static int camel_is_errand_item(const u16 *item)
 {
-    if (ItemCode_HasVariant(item)) {
+    if (ItemCode_IsFurniture(item)) {
         u16 wanted = CAMEL_ERRAND_ITEM;
-        int number = ItemCode_VariantItem(item);
-        return number == ItemCode_VariantItem(&wanted);
+        int number = ItemCode_FurnitureNumber(item);
+        return number == ItemCode_FurnitureNumber(&wanted);
     }
     return *item == CAMEL_ERRAND_ITEM;
 }

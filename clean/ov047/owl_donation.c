@@ -166,10 +166,10 @@ static int owl_given_flag(void)
 /* Whether `item` is "nothing": an item with variants is compared without its variant. */
 static int owl_is_none(const u16 *item)
 {
-    if (ItemCode_HasVariant(item)) {
+    if (ItemCode_IsFurniture(item)) {
         u16 none = ITEM_CODE_NONE;
-        int number = ItemCode_VariantItem(item);
-        return number == ItemCode_VariantItem(&none);
+        int number = ItemCode_FurnitureNumber(item);
+        return number == ItemCode_FurnitureNumber(&none);
     }
     return *item == ITEM_CODE_NONE;
 }
@@ -213,15 +213,15 @@ void OwlTalk_EndProgressAsk(OwlTalk *talk)
 }
 CLEAN_AS(func_ov047_02260b9c, OwlTalk_EndProgressAsk)
 
-/* func_ov047_02260bc0 (lines 0x3a to 0x3d, about an item it has already): the motion of kind
+/* func_ov047_02260bc0 (lines 0x3a to 0x3d, an item the museum has already, handed back): the motion of kind
  * 17 asked for, no item, and line 0x23. */
-void OwlTalk_EndThanks(OwlTalk *talk)
+void OwlTalk_EndReturnDuplicate(OwlTalk *talk)
 {
     SceneCommand_RequestMotion17(owl_scene(talk));
     talk->item = ITEM_CODE_NONE;
     talk->next_line = 0x23;
 }
-CLEAN_AS(func_ov047_02260bc0, OwlTalk_EndThanks)
+CLEAN_AS(func_ov047_02260bc0, OwlTalk_EndReturnDuplicate)
 
 /* func_ov047_02260be0 (lines 0x37 to 0x39, the item was given already): with an item, line 0x3a
  * for a fossil, 0x3b for an insect, 0x3c for a fish, else 0x3d. */
@@ -401,14 +401,14 @@ void OwlTalk_EndOffer6a(OwlTalk *talk)
 }
 CLEAN_AS(func_ov047_02261054, OwlTalk_EndOffer6a)
 
-/* func_ov047_02261068 (lines 0x42 and 0x43, a room item): the motion of kind 17 asked for, then
+/* func_ov047_02261068 (lines 0x42 and 0x43, a fake painting): the motion of kind 17 asked for, then
  * the menu again (OwlTalk_EndMenuLine). */
-void OwlTalk_EndOther(OwlTalk *talk)
+void OwlTalk_EndFakePainting(OwlTalk *talk)
 {
     SceneCommand_RequestMotion17(owl_scene(talk));
     OwlTalk_EndMenuLine(talk);
 }
-CLEAN_AS(func_ov047_02261068, OwlTalk_EndOther)
+CLEAN_AS(func_ov047_02261068, OwlTalk_EndFakePainting)
 
 /* func_ov047_0226107c (lines 0x16 and 0x17): the pockets opened offering the fossils to assess,
  * then OwlTalk_TakeFossil. */
@@ -470,15 +470,15 @@ void OwlTalk_OnLineEnded(OwlTalk *talk)
         &data_ov047_02262a68, /* 0x37: OwlTalk_EndHaveIt */
         &data_ov047_02262a60, /* 0x38: OwlTalk_EndHaveIt */
         &data_ov047_02262a58, /* 0x39: OwlTalk_EndHaveIt */
-        &data_ov047_02262a50, /* 0x3a: OwlTalk_EndThanks */
-        &data_ov047_02262a48, /* 0x3b: OwlTalk_EndThanks */
-        &data_ov047_02262b60, /* 0x3c: OwlTalk_EndThanks */
-        &data_ov047_02262a30, /* 0x3d: OwlTalk_EndThanks */
+        &data_ov047_02262a50, /* 0x3a: OwlTalk_EndReturnDuplicate */
+        &data_ov047_02262a48, /* 0x3b: OwlTalk_EndReturnDuplicate */
+        &data_ov047_02262b60, /* 0x3c: OwlTalk_EndReturnDuplicate */
+        &data_ov047_02262a30, /* 0x3d: OwlTalk_EndReturnDuplicate */
         &data_ov047_02262a40, /* 0x3f: OwlTalk_EndProgressAsk */
         &data_ov047_02262aa8, /* 0x40: OwlTalk_EndMenuLine */
         &data_ov047_02262b20, /* 0x41: OwlTalk_EndMenuLine */
-        &data_ov047_02262a18, /* 0x42: OwlTalk_EndOther */
-        &data_ov047_02262a10, /* 0x43: OwlTalk_EndOther */
+        &data_ov047_02262a18, /* 0x42: OwlTalk_EndFakePainting */
+        &data_ov047_02262a10, /* 0x43: OwlTalk_EndFakePainting */
         &data_ov047_02262a08, /* 0x6a: OwlTalk_EndOffer6a */
     };
 
@@ -764,7 +764,7 @@ int OwlTalk_IsFossilToAssess(u16 *item, int state)
 CLEAN_AS(func_ov047_02261c00, OwlTalk_IsFossilToAssess)
 
 /* func_ov047_02261ea4: in state 0, what the museum takes or the owl knows: the fossils, the
- * fish, the insects, the paintings, the room items 0x38e4-0x3983 and the fossil to assess. */
+ * fish, the insects, the paintings, the fake paintings 0x38e4-0x3983 and the fossil to assess. */
 int OwlTalk_IsMuseumItem(u16 *item, int state)
 {
     if (state != OWL_POCKET_STATE_PLAIN) {

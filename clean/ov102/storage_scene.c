@@ -91,8 +91,8 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 /* The title label: style 4, at (0x1d6, 6), colour 15 when highlighted (else 1) and 9, message
  * 0x88 of the menu's messages. */
 #define STORAGE_TITLE_STYLE 4
-#define STORAGE_TITLE_X 0x1d6
-#define STORAGE_TITLE_Y 6
+#define STORAGE_TITLE_FIRST_TILE 0x1d6
+#define STORAGE_TITLE_CELLS 6
 #define STORAGE_TITLE_MESSAGE 0x88
 
 /* The close button's touch area. */
@@ -303,7 +303,7 @@ void StorageScene_ShowTitle(StorageScene *self, int highlighted)
 {
     int color = highlighted ? 15 : 1;
     TextLabel *label = StorageScene_NextLabel(self);
-    TextLabel_OpenStyledBox2(label, STORAGE_TITLE_STYLE, STORAGE_TITLE_X, STORAGE_TITLE_Y, (u8) color, 9, 0);
+    TextLabel_OpenStyledBox2(label, STORAGE_TITLE_STYLE, STORAGE_TITLE_FIRST_TILE, STORAGE_TITLE_CELLS, (u8) color, 9, 0);
     TextLabel_LoadMenuMessage(label, (char) STORAGE_TITLE_MESSAGE);
     TextLabel_Show(label, 1, 1);
 }
@@ -937,7 +937,7 @@ int StorageScene_CannotStore(StorageScene *self, int place)
     if (PocketsItem_InLetterRefusedRanges((unsigned int) item)) {
         return 1;
     }
-    if (PocketsItem_Is155d((u16) item)) {
+    if (PocketsItem_IsLostItem((u16) item)) {
         return 1;
     }
     return 0;

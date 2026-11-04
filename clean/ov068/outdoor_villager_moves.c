@@ -326,7 +326,7 @@ int OutdoorVillagerMoves_Start16(OutdoorVillagerBehaviour *self, u8 *villager)
         SceneMotion_RequestAnimation(moves_motion(villager), MOVES_PRIORITY, MOVES_ANIM_ITEM, 3, word, 0);
         HeldItemLink_Take(moves_link(villager), villager, &item, (void *) (uintptr_t) MOVES_ANIM_ITEM, word);
         HeldItemLink_Act(moves_link(villager), MOVES_ITEM_ACTION, 1, 3);
-        int record = HeldItemLink_Record(moves_link(villager));
+        int record = HeldItemLink_Model(moves_link(villager));
         if (record != 0) {
             u8 *frames = (u8 *) (uintptr_t) (u32) record + MOVES_ITEM_FRAMES;
             u32 end = (u32) ((FrameCtrl *) (void *) frames)->end;

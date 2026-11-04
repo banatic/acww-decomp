@@ -104,10 +104,10 @@ static int act_is_taken(u16 item)
 /* Whether `item` is 0x1546: an item with variants is compared without its variant. */
 static int act_is_spoiler(const u16 *item)
 {
-    if (ItemCode_HasVariant(item)) {
+    if (ItemCode_IsFurniture(item)) {
         u16 spoiler = ACORN_NPC_ITEM_SPOILER;
-        int number = ItemCode_VariantItem(item);
-        return number == ItemCode_VariantItem(&spoiler);
+        int number = ItemCode_FurnitureNumber(item);
+        return number == ItemCode_FurnitureNumber(&spoiler);
     }
     return *item == ACORN_NPC_ITEM_SPOILER;
 }

@@ -77,9 +77,9 @@ static_assert(offsetof(PocketsScreen, wipe_y) == 0x98 && offsetof(PocketsScreen,
 #define SMALL_BAG_LIMIT 1000
 #define WALLET_MAX 99999 /* the most bells a wallet holds (func_02098aa0) */
 /* Ten codes of one counted item, holding 1-10 of it. */
-#define ITEM_COUNTED_FIRST 0x1531
-#define ITEM_COUNTED_LAST 0x153a
-#define COUNTED_MAX 10
+#define ITEM_TURNIPS_FIRST 0x1531
+#define ITEM_TURNIPS_LAST 0x153a
+#define TURNIP_BUNDLES_MAX 10
 
 /* The scene's vtable. */
 extern const u8 data_ov096_022a23e8[];
@@ -1416,9 +1416,9 @@ static int item_in(u16 item, u16 first, u16 last)
 }
 
 /* The count of a counted item (1-10). */
-static int counted_count(u16 item)
+static int turnip_bundles(u16 item)
 {
-    return item - ITEM_COUNTED_FIRST + 1;
+    return item - ITEM_TURNIPS_FIRST + 1;
 }
 
 /* func_ov096_0229defc: puts the item `*onto` (in state `held_state`) on the item `*other` (in
@@ -1437,15 +1437,15 @@ int PocketsScreen_MergeItems(PocketsScreen *self, u16 *onto, int held_state, u16
     u16 a = *onto;
     u16 b = *other;
 
-    if (item_in(a, ITEM_COUNTED_FIRST, ITEM_COUNTED_LAST) && item_in(b, ITEM_COUNTED_FIRST, ITEM_COUNTED_LAST)) {
-        int count = counted_count(a) + counted_count(b);
+    if (item_in(a, ITEM_TURNIPS_FIRST, ITEM_TURNIPS_LAST) && item_in(b, ITEM_TURNIPS_FIRST, ITEM_TURNIPS_LAST)) {
+        int count = turnip_bundles(a) + turnip_bundles(b);
         int rest = 0;
-        if (count > COUNTED_MAX) {
-            rest = count - COUNTED_MAX;
-            count = COUNTED_MAX;
+        if (count > TURNIP_BUNDLES_MAX) {
+            rest = count - TURNIP_BUNDLES_MAX;
+            count = TURNIP_BUNDLES_MAX;
         }
-        *onto = (u16) (ITEM_COUNTED_FIRST + count - 1);
-        *other = rest > 0 ? (u16) (ITEM_COUNTED_FIRST + rest - 1) : ITEM_CODE_NONE;
+        *onto = (u16) (ITEM_TURNIPS_FIRST + count - 1);
+        *other = rest > 0 ? (u16) (ITEM_TURNIPS_FIRST + rest - 1) : ITEM_CODE_NONE;
         return 0;
     }
 
@@ -2233,7 +2233,7 @@ int PocketsScreen_CheckDrop(PocketsScreen *self, int place, int item, int state)
             return 3;
         }
         int kind = Letter_State(letter);
-        if (kind == 7 || kind == 8 || PocketsItem_Is155d(item) != 0) {
+        if (kind == 7 || kind == 8 || PocketsItem_IsLostItem(item) != 0) {
             return 2;
         }
         if (PocketsItem_InLetterRefusedRanges(item) != 0) {
@@ -2324,7 +2324,7 @@ CLEAN_AS(func_ov096_0229f150, PocketsScreen_PlaceIsEmpty)
 
 /* func_ov096_0229f1a8: what the part's object answers for `place` being taken (non-zero:
  * taken, where PocketsScreen_PlaceIsEmpty says 0); 0 for other places. */
-int PocketsScreen_PlaceIsTaken(PocketsScreen *self, int place)
+int PocketsScreen_PlaceIsDimmed(PocketsScreen *self, int place)
 {
     if (PocketsScreen_IsGridPlace(self, place)) {
         return PocketsGrid_IsDimmed((PocketsGrid *) (void *) self->grid, func_ov096_0229f7ac(self, place));
@@ -2334,7 +2334,7 @@ int PocketsScreen_PlaceIsTaken(PocketsScreen *self, int place)
     }
     return 0;
 }
-CLEAN_AS(func_ov096_0229f1a8, PocketsScreen_PlaceIsTaken)
+CLEAN_AS(func_ov096_0229f1a8, PocketsScreen_PlaceIsDimmed)
 
 /* func_ov096_0229f200: the y of `place`: by the grid's or the letters' object, 8 for the row
  * of eight, by the grid's object for 0x22-0x25, 0xb0 for 0x21, else 0. */
@@ -2705,12 +2705,12 @@ int PocketsScreen_IsGridPlace(PocketsScreen *self, unsigned int place)
 CLEAN_AS(func_ov096_0229f830, PocketsScreen_IsGridPlace)
 
 /* func_ov096_0229f83c: the objects at 0x2e8 and 0x320 updated by main's func_020b9ccc. */
-void PocketsScreen_UpdateObjects2e8(PocketsScreen *self)
+void PocketsScreen_EndLayerTasks(PocketsScreen *self)
 {
     LayerTask_End((LayerTask *) (void *) self->unk_2e8);
     LayerTask_End((LayerTask *) (void *) self->unk_320);
 }
-CLEAN_AS(func_ov096_0229f83c, PocketsScreen_UpdateObjects2e8)
+CLEAN_AS(func_ov096_0229f83c, PocketsScreen_EndLayerTasks)
 
 /* The blink of PocketsScreen_BlinkSlot, in frames. */
 #define SLOT_BLINK_FRAMES 14
@@ -2831,10 +2831,10 @@ void PocketsScreen_TouchPlace(PocketsScreen *self, int place)
     Popup_ShowQueued(&self->popup);
     self->open_delay = 2;
     PocketsScreen_FillTouchedEntries(self);
-    if (PocketsScreen_PlaceIsTaken(self, place)) {
-        PocketsScreen_ClearFlags(self, POCKETS_FLAG_04);
+    if (PocketsScreen_PlaceIsDimmed(self, place)) {
+        PocketsScreen_ClearFlags(self, POCKETS_FLAG_TOUCHED_FREE);
     } else {
-        PocketsScreen_SetFlags(self, POCKETS_FLAG_04);
+        PocketsScreen_SetFlags(self, POCKETS_FLAG_TOUCHED_FREE);
     }
     if (!PocketsScreen_IsGridPlace(self, (unsigned int) place) && place != POCKETS_PLACE_PLAYER) {
         PocketsScreen_RequestSwitchOff(self);
@@ -4056,7 +4056,7 @@ CLEAN_AS(func_ov096_022a1118, PocketsScreen_WaitPopupToOpenChoice)
 
 /* func_ov096_022a1160 (sub state 2): the choice of the touched place is open while the pen
  * stays down. A close request or the pen lifted goes to sub state 4 (the choice by touch); the
- * pen dragged more than 8 pixels from a place with POCKETS_FLAG_04 picks its thing up, the
+ * pen dragged more than 8 pixels from a place with POCKETS_FLAG_TOUCHED_FREE picks its thing up, the
  * choice asked to close and the popup hidden. */
 void PocketsScreen_HoldTouchWithChoice(PocketsScreen *self)
 {
@@ -4068,7 +4068,7 @@ void PocketsScreen_HoldTouchWithChoice(PocketsScreen *self)
         MenuScene_SetSubState(scene_of(self), 4);
         return;
     }
-    if (PocketsScreen_TestFlags(self, POCKETS_FLAG_04) == 0) {
+    if (PocketsScreen_TestFlags(self, POCKETS_FLAG_TOUCHED_FREE) == 0) {
         return;
     }
     if (PocketsScreen_TouchMoved(self) == 0) {
@@ -4083,7 +4083,7 @@ CLEAN_AS(func_ov096_022a1160, PocketsScreen_HoldTouchWithChoice)
 /* Obj_ov096_022a23e8::func_ov096_022a11d0 (sub state 1): the pen is on a touched place
  * (PocketsScreen_TouchPlace). Lifted: back to sub state 0 with the popup closing after 60
  * frames when the place offers no choice row, else sub state 3, run at once. Held, at a place
- * with POCKETS_FLAG_04: dragged more than 8 pixels it picks the thing up; while the popup is up
+ * with POCKETS_FLAG_TOUCHED_FREE: dragged more than 8 pixels it picks the thing up; while the popup is up
  * the place's choice opens after the delay (sub state 2). Else a queued popup is shown. */
 void PocketsScreen_HoldTouchOnPlace(PocketsScreen *self)
 {
@@ -4097,7 +4097,7 @@ void PocketsScreen_HoldTouchOnPlace(PocketsScreen *self)
         }
         return;
     }
-    if (PocketsScreen_TestFlags(self, POCKETS_FLAG_04) != 0) {
+    if (PocketsScreen_TestFlags(self, POCKETS_FLAG_TOUCHED_FREE) != 0) {
         if (PocketsScreen_TouchMoved(self) != 0) {
             PocketsScreen_PickUpWithTouch(self, self->touch_place);
             return;
@@ -4190,7 +4190,7 @@ CLEAN_AS(func_ov096_022a13b4, PocketsScreen_EndFrame)
  * ov094's updated. */
 void PocketsScreen_BeginFrame(PocketsScreen *self)
 {
-    PocketsScreen_UpdateObjects2e8(self);
+    PocketsScreen_EndLayerTasks(self);
     PocketsWallet_BeginFrame((PocketsWallet *) (void *) self->unk_de0);
     PocketsGrid_BeginFrame((PocketsGrid *) (void *) self->grid);
     PocketsLetters_BeginFrame(&self->letters);
@@ -4216,7 +4216,7 @@ CLEAN_AS(func_ov096_022a142c, PocketsScreen_BeginInteractiveFrame)
 /* func_ov096_022a1448: the members' teardown before the scene closes. */
 void PocketsScreen_Teardown(PocketsScreen *self)
 {
-    PocketsScreen_UpdateObjects2e8(self);
+    PocketsScreen_EndLayerTasks(self);
     PocketsWallet_Teardown((PocketsWallet *) (void *) self->unk_de0);
     PocketsGrid_Teardown((PocketsGrid *) (void *) self->grid);
     PagedChoice_Dismiss(choice_of(self));
@@ -4235,7 +4235,7 @@ void PocketsScreen_Setup(PocketsScreen *self)
     PocketsLetters_Init(&self->letters, 2);
     PocketsWallet_Init((PocketsWallet *) (void *) self->unk_de0, 6);
     self->popup_place = POCKETS_NO_PLACE;
-    Popup_SetDrawValue(&self->popup, 2);
+    Popup_SetPriority(&self->popup, 2);
     Glide_Stop(&self->glide);
     PocketsScreen_DropHeld(self);
     self->cursor = GroupParams_C50();

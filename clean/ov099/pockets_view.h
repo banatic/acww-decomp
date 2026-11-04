@@ -34,7 +34,7 @@
 enum PocketsViewFlag {
     POCKETS_VIEW_FLAG_DRAWN = 0x01,         /* the scene is drawn (func_ov099_0229ddec) */
     POCKETS_VIEW_FLAG_OBJECTS_DRAWN = 0x02, /* the grid, the letters and the wallet are drawn */
-    POCKETS_VIEW_FLAG_04 = 0x04,            /* set by func_ov099_0229d050 for a touched place of the
+    POCKETS_VIEW_FLAG_TOUCHED_FREE = 0x04,  /* set by func_ov099_0229d050 for a touched place of the
                                              * grid its object does not call taken */
     POCKETS_VIEW_FLAG_08 = 0x08,            /* the cursor sprite jumps instead of easing
                                              * (PocketsView_GlideToCursor); never set here */
@@ -152,7 +152,7 @@ void PocketsView_ClearSelection(PocketsView *self);
 int PocketsView_PlaceItemState(PocketsView *self, int place);
 int PocketsView_PlaceItem(PocketsView *self, int place);
 int PocketsView_PlaceIsEmpty(PocketsView *self, int place);
-int PocketsView_PlaceIsTaken(PocketsView *self, int place);
+int PocketsView_PlaceIsDimmed(PocketsView *self, int place);
 int PocketsView_PlaceY(PocketsView *self, int place);
 int PocketsView_PlaceX(PocketsView *self, int place);
 int PocketsView_LetterPlaceAtTouch(PocketsView *self, int x, int y, int with_letter);
@@ -165,7 +165,7 @@ u8 PocketsView_GridPlace(PocketsView *self, unsigned int index);
 int PocketsView_GridIndex(PocketsView *self, int place);
 int PocketsView_IsLetterPlace(PocketsView *self, unsigned int place);
 int PocketsView_IsGridPlace(PocketsView *self, unsigned int place);
-void PocketsView_UpdateObject94(PocketsView *self);
+void PocketsView_EndLayerTask(PocketsView *self);
 void PocketsView_GlideHeldTo(PocketsView *self, u8 place, u32 steps);
 void PocketsView_PickUpWithCursor(PocketsView *self, int place);
 void PocketsView_PickUpWithTouch(PocketsView *self, int place);

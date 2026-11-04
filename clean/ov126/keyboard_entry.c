@@ -16,7 +16,7 @@
 #include "main/text_base.h"
 #include "main/text_string.h"
 #include "main/town_name.h"
-#include "main/wfc_stats.h"
+#include "main/mystery_cat_record.h"
 #include "ov124/han_panel.h"
 
 static_assert(sizeof(MenuScene) == 0x94 && offsetof(KeyboardEntry, wipe_y) == 0x94, "wipe");
@@ -38,7 +38,7 @@ extern const u8 data_ov126_022a20c8[];
 extern int **func_02070be8(void *label);
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
 
-/* The town record's statistics (WfcStats), the town (its number and name) and the four
+/* The town's mystery cat record (MysteryCatRecord), the town (its number and name) and the four
  * players' records. */
 extern u8 data_021f3278[];
 extern u8 data_021dc7aa[];
@@ -156,8 +156,8 @@ void KeyboardEntry_Commit(KeyboardEntry *self)
         case KEYBOARD_ENTRY_MODE_CONSTELLATION:
             KeyboardEntry_CommitConstellation(self);
             break;
-        case KEYBOARD_ENTRY_MODE_RECORD_DESIGN_TITLE:
-            KeyboardEntry_CommitRecordDesignTitle(self);
+        case KEYBOARD_ENTRY_MODE_CAT_FACE_TITLE:
+            KeyboardEntry_CommitCatFaceTitle(self);
             break;
         case KEYBOARD_ENTRY_MODE_FRIEND_TOWN:
         case KEYBOARD_ENTRY_MODE_NEW_FRIEND_TOWN:
@@ -187,17 +187,17 @@ void KeyboardEntry_CommitFriendTown(KeyboardEntry *self)
 }
 CLEAN_AS(func_ov126_0229f90c, KeyboardEntry_CommitFriendTown)
 
-/* func_ov126_0229f930: the text's first ten characters as the title of the town record's
- * design. */
-void KeyboardEntry_CommitRecordDesignTitle(KeyboardEntry *self)
+/* func_ov126_0229f930: the text's first ten characters as the title of Blanca's face (the
+ * mystery cat record's design). */
+void KeyboardEntry_CommitCatFaceTitle(KeyboardEntry *self)
 {
     DesignTitle title;
-    struct Design *design = WfcStats_Design((WfcStats *) (void *) data_021f3278);
+    struct Design *design = MysteryCatRecord_Design((MysteryCatRecord *) (void *) data_021f3278);
     TextString_CopyChars(self->text, title.chars, DESIGN_TITLE_LENGTH);
     unsigned int info = Design_Info((unsigned int) (uintptr_t) design);
     DesignInfo_SetTitle((DesignInfo *) (uintptr_t) info, &title);
 }
-CLEAN_AS(func_ov126_0229f930, KeyboardEntry_CommitRecordDesignTitle)
+CLEAN_AS(func_ov126_0229f930, KeyboardEntry_CommitCatFaceTitle)
 
 /* func_ov126_0229f968: the text as the name of constellation `arg`; main is told the input
  * failed (0) when another constellation has the name, which is set all the same. */

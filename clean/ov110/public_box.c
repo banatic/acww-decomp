@@ -914,7 +914,7 @@ void PublicBox_LockSlots(PublicBox *self)
 CLEAN_AS(func_ov110_0229d17c, PublicBox_LockSlots)
 
 /* func_ov110_0229d1b8: whether the item at `place` may not move, by the mode: never an empty
- * place; always an item in a state other than 0 or one PocketsItem_Is155d accepts. Then by the
+ * place; always an item in a state other than 0 or one PocketsItem_IsLostItem accepts. Then by the
  * item's code:
  * - 0x1e: locked in 0x1492-0x14fd; free in 0x11a8-0x12a7, 0x1380-0x139f, 0x13a8-0x1428 and
  *   0x1431-0x1491; locked otherwise;
@@ -933,7 +933,7 @@ int PublicBox_SlotMustLock(PublicBox *self, int place)
         return 1;
     }
     int item = PublicBox_PlaceItem(self, place);
-    if (PocketsItem_Is155d((u16) item) != 0) {
+    if (PocketsItem_IsLostItem((u16) item) != 0) {
         return 1;
     }
     u16 code = (u16) item;

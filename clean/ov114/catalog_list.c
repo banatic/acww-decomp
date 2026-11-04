@@ -105,7 +105,7 @@ extern int **func_02070be8(void *label);
 extern void MI_CpuCopy8(const void *source, void *destination, u32 size);
 extern void MIi_CpuCopy16(const void *source, void *destination, u32 size);
 
-/* The layer of the main engine's OBJs (main/display_layers.h). */
+/* The layer of the sub engine's OBJs (main/display_layers.h, LAYER_SUB_OBJ). */
 #define CATALOG_LIST_OBJ_LAYER 8
 
 /* The sounds. */
@@ -1216,7 +1216,7 @@ void CatalogList_DrawArrows(CatalogList *self, int y)
 }
 CLEAN_AS(func_ov114_0229d5b8, CatalogList_DrawArrows)
 
-/* func_ov114_0229d688: the OBJ files of the main engine: the item icons' palettes 7-14, the
+/* func_ov114_0229d688: the OBJ files of the sub engine: the item icons' palettes 7-14, the
  * list's palettes 4-6 and its characters 0xc0-0x140 and 0x141-0x1bf. */
 void CatalogList_LoadObjFiles(CatalogList *self)
 {

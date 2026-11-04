@@ -323,14 +323,14 @@ CLEAN_AS(func_ov146_0229acfc, WfcHostList_Setup)
 
 /* func_ov146_0229adb8: the layers placed by the wipe (the rows' also by the scroll, less 0x38),
  * the wipe's y kept, the knob placed. */
-void WfcHostList_PlaceSprites(WfcHostList *self)
+void WfcHostList_ScrollWithWipe(WfcHostList *self)
 {
     MenuScene_ScrollWipe(wfc_host_list_scene(self), WFC_HOST_LIST_BG_LAYER, 0, 0);
     MenuScene_ScrollWipe(wfc_host_list_scene(self), WFC_HOST_LIST_ROWS_LAYER, 0, 0x38 - self->scroll);
     self->wipe_y = MenuScene_WipeOffsetY(wfc_host_list_scene(self));
     WfcHostList_PlaceKnob(self);
 }
-CLEAN_AS(func_ov146_0229adb8, WfcHostList_PlaceSprites)
+CLEAN_AS(func_ov146_0229adb8, WfcHostList_ScrollWithWipe)
 
 /* --- The states --- */
 
@@ -343,7 +343,7 @@ void WfcHostList_WipeOut(WfcHostList *self)
         DisplayLayer_HideAndResetScroll(WFC_HOST_LIST_ROWS_LAYER);
         MenuScene_SetPhase(wfc_host_list_scene(self), WFC_HOST_LIST_PHASE_END);
     } else {
-        WfcHostList_PlaceSprites(self);
+        WfcHostList_ScrollWithWipe(self);
     }
 }
 CLEAN_AS(func_ov146_0229adf8, WfcHostList_WipeOut)
@@ -354,7 +354,7 @@ void WfcHostList_StartWipeOut(WfcHostList *self)
 {
     MenuDispatch_SetMode(wfc_host_list_parent(self), WFC_HOST_LIST_PARENT_CLOSE, 1);
     MenuScene_StartWipeOnWindow2(wfc_host_list_scene(self), WFC_HOST_LIST_WIPE_LAYERS, 0, 0, WFC_HOST_LIST_WIPE_MARGIN);
-    WfcHostList_PlaceSprites(self);
+    WfcHostList_ScrollWithWipe(self);
     MenuScene_SetState(wfc_host_list_scene(self), WFC_HOST_LIST_STATE_CLOSE_WIPE_OUT);
 }
 CLEAN_AS(func_ov146_0229ae28, WfcHostList_StartWipeOut)
@@ -369,7 +369,7 @@ void WfcHostList_WipeIn(WfcHostList *self)
     } else {
         WfcHostList_ShowTitlesOnce(self);
     }
-    WfcHostList_PlaceSprites(self);
+    WfcHostList_ScrollWithWipe(self);
 }
 CLEAN_AS(func_ov146_0229ae60, WfcHostList_WipeIn)
 
@@ -387,7 +387,7 @@ void WfcHostList_StartWipeIn(WfcHostList *self)
     MenuScene_StartWipeCoveredOnWindow2(wfc_host_list_scene(self), WFC_HOST_LIST_WIPE_LAYERS, 4, 0, WFC_HOST_LIST_WIPE_MARGIN);
     DisplayLayer_Show(WFC_HOST_LIST_BG_LAYER);
     DisplayLayer_Show(WFC_HOST_LIST_ROWS_LAYER);
-    WfcHostList_PlaceSprites(self);
+    WfcHostList_ScrollWithWipe(self);
     WfcHostList_SetFlags(self, WFC_HOST_LIST_FLAG_DRAWN);
     MenuScene_SetState(wfc_host_list_scene(self), WFC_HOST_LIST_STATE_WIPE_IN);
 }

@@ -18,7 +18,7 @@ static_assert(offsetof(CameraControl, move_time) == 0xc8, "the move's time");
 static_assert(offsetof(CameraControl, goal) == 0xfc, "the goal view");
 static_assert(offsetof(CameraControl, saved) == 0x11c, "the saved view");
 static_assert(offsetof(CameraControl, current) == 0x148, "the current view");
-static_assert(offsetof(CameraControl, point) == 0x168, "the point");
+static_assert(offsetof(CameraControl, eye) == 0x168, "the eye");
 static_assert(offsetof(CameraControl, projection) == 0x1c4, "the projection");
 static_assert(offsetof(CameraControl, look_at) == 0x1cc, "the point looked at");
 static_assert(offsetof(CameraControl, share) == 0x1e8, "the share");
@@ -30,7 +30,7 @@ static_assert(sizeof(CameraControl) == 0x234, "the camera");
 /* The camera, NULL when there is none. */
 extern CameraControl *data_021c67a4;
 
-/* A view and point kept outside the camera (CameraControl_KeepView). */
+/* A view and eye kept outside the camera (CameraControl_KeepView). */
 extern CameraView data_021c6800;
 extern Vec3 data_021c67f4;
 
@@ -207,19 +207,19 @@ int CameraControl_IsViewSaved(void)
 }
 CLEAN_AS(func_0203ac5c, CameraControl_IsViewSaved)
 
-/* func_0203ac78: the goal view and the point set to those kept outside the camera. */
+/* func_0203ac78: the goal view and the eye set to those kept outside the camera. */
 void CameraControl_LoadKeptView(void)
 {
     data_021c67a4->goal = data_021c6800;
-    data_021c67a4->point = data_021c67f4;
+    data_021c67a4->eye = data_021c67f4;
 }
 CLEAN_AS(func_0203ac78, CameraControl_LoadKeptView)
 
-/* func_0203acd8: the goal view and the point kept outside the camera. */
+/* func_0203acd8: the goal view and the eye kept outside the camera. */
 void CameraControl_KeepView(void)
 {
     data_021c6800 = data_021c67a4->goal;
-    data_021c67f4 = data_021c67a4->point;
+    data_021c67f4 = data_021c67a4->eye;
 }
 CLEAN_AS(func_0203acd8, CameraControl_KeepView)
 

@@ -35,23 +35,23 @@
 /* GroupParams' modes the scene is opened in (GroupParams_Mode), by what KeyboardEntry_LoadText
  * and KeyboardEntry_Commit do with the text. */
 enum KeyboardEntryMode {
-    KEYBOARD_ENTRY_MODE_DESIGN_TITLE = 0x0b,        /* the title of the current player's design `arg` */
-    KEYBOARD_ENTRY_MODE_GENERAL_WORD = 0x0c,        /* compared with message `arg` of "st_general" */
-    KEYBOARD_ENTRY_MODE_SONG = 0x0d,                /* compared with the names of the songs */
-    KEYBOARD_ENTRY_MODE_PASSWORD = 0x0e,            /* compared with message `arg` of "st_password" */
-    KEYBOARD_ENTRY_MODE_PLAYER_NAME = 0x0f,         /* the current player's name */
-    KEYBOARD_ENTRY_MODE_TOWN_NAME = 0x10,           /* the town's name */
-    KEYBOARD_ENTRY_MODE_NICKNAME = 0x11,            /* main's text (GroupParams_Text); sign "a nickname" */
-    KEYBOARD_ENTRY_MODE_CONSTELLATION = 0x12,       /* the name of constellation `arg` */
-    KEYBOARD_ENTRY_MODE_13 = 0x13,                  /* starts empty; sign "who were you again?" */
-    KEYBOARD_ENTRY_MODE_RECORD_DESIGN_TITLE = 0x14, /* the title of the town record's design */
-    KEYBOARD_ENTRY_MODE_CATCHPHRASE = 0x15,         /* 0x15-0x17: main's text; sign "a catchphrase" */
-    KEYBOARD_ENTRY_MODE_GREETING = 0x16,            /* sign "a greeting" */
-    KEYBOARD_ENTRY_MODE_17 = 0x17,                  /* sign "praise me!" */
-    KEYBOARD_ENTRY_MODE_FRIEND_TOWN = 0x18,         /* the town of friend `arg` (main/wifi_friends.h) */
-    KEYBOARD_ENTRY_MODE_NEW_FRIEND_TOWN = 0x19,     /* the same for a friend being added */
-    KEYBOARD_ENTRY_MODE_FRIEND_NAME = 0x1a,         /* the name of friend `arg` */
-    KEYBOARD_ENTRY_MODE_NEW_FRIEND_NAME = 0x1b      /* the same for a friend being added */
+    KEYBOARD_ENTRY_MODE_DESIGN_TITLE = 0x0b,    /* the title of the current player's design `arg` */
+    KEYBOARD_ENTRY_MODE_GENERAL_WORD = 0x0c,    /* compared with message `arg` of "st_general" */
+    KEYBOARD_ENTRY_MODE_SONG = 0x0d,            /* compared with the names of the songs */
+    KEYBOARD_ENTRY_MODE_PASSWORD = 0x0e,        /* compared with message `arg` of "st_password" */
+    KEYBOARD_ENTRY_MODE_PLAYER_NAME = 0x0f,     /* the current player's name */
+    KEYBOARD_ENTRY_MODE_TOWN_NAME = 0x10,       /* the town's name */
+    KEYBOARD_ENTRY_MODE_NICKNAME = 0x11,        /* main's text (GroupParams_Text); sign "a nickname" */
+    KEYBOARD_ENTRY_MODE_CONSTELLATION = 0x12,   /* the name of constellation `arg` */
+    KEYBOARD_ENTRY_MODE_13 = 0x13,              /* starts empty; sign "who were you again?" */
+    KEYBOARD_ENTRY_MODE_CAT_FACE_TITLE = 0x14,  /* the title of Blanca's face (the mystery cat record's design) */
+    KEYBOARD_ENTRY_MODE_CATCHPHRASE = 0x15,     /* 0x15-0x17: main's text; sign "a catchphrase" */
+    KEYBOARD_ENTRY_MODE_GREETING = 0x16,        /* sign "a greeting" */
+    KEYBOARD_ENTRY_MODE_17 = 0x17,              /* sign "praise me!" */
+    KEYBOARD_ENTRY_MODE_FRIEND_TOWN = 0x18,     /* the town of friend `arg` (main/wifi_friends.h) */
+    KEYBOARD_ENTRY_MODE_NEW_FRIEND_TOWN = 0x19, /* the same for a friend being added */
+    KEYBOARD_ENTRY_MODE_FRIEND_NAME = 0x1a,     /* the name of friend `arg` */
+    KEYBOARD_ENTRY_MODE_NEW_FRIEND_NAME = 0x1b  /* the same for a friend being added */
 };
 
 #define KEYBOARD_ENTRY_FIRST_FRIEND_MODE KEYBOARD_ENTRY_MODE_FRIEND_TOWN
@@ -194,7 +194,7 @@ void KeyboardEntry_FilterTaboo(KeyboardEntry *self);
 void KeyboardEntry_Commit(KeyboardEntry *self);
 void KeyboardEntry_CommitFriendName(KeyboardEntry *self);
 void KeyboardEntry_CommitFriendTown(KeyboardEntry *self);
-void KeyboardEntry_CommitRecordDesignTitle(KeyboardEntry *self);
+void KeyboardEntry_CommitCatFaceTitle(KeyboardEntry *self);
 void KeyboardEntry_CommitConstellation(KeyboardEntry *self);
 void KeyboardEntry_CommitTownName(KeyboardEntry *self);
 void KeyboardEntry_CommitPlayerName(KeyboardEntry *self);

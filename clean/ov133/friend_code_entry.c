@@ -789,14 +789,14 @@ void FriendCodeEntry_ShowPointer(FriendCodeEntry *self)
 }
 CLEAN_AS(func_ov133_0229b938, FriendCodeEntry_ShowPointer)
 
-/* func_ov133_0229b958: the pointer pressed (the third of its set), until its press is over (sub
- * state 6). Answers MenuScene_SetSubState's pointer as an int. */
-int FriendCodeEntry_PressPointer(FriendCodeEntry *self)
+/* func_ov133_0229b958: the pointer's release animation (the third of its set), until it is
+ * over (sub state 6). Answers MenuScene_SetSubState's pointer as an int. */
+int FriendCodeEntry_ReleasePointer(FriendCodeEntry *self)
 {
     Glider_ShowThirdOfSet(&self->pointer);
-    return (int) (uintptr_t) MenuScene_SetSubState(friend_code_scene(self), FRIEND_CODE_SUB_POINTER_PRESS);
+    return (int) (uintptr_t) MenuScene_SetSubState(friend_code_scene(self), FRIEND_CODE_SUB_POINTER_RELEASE);
 }
-CLEAN_AS(func_ov133_0229b958, FriendCodeEntry_PressPointer)
+CLEAN_AS(func_ov133_0229b958, FriendCodeEntry_ReleasePointer)
 
 /* func_ov133_0229b978: A: at the code's row the mark moves with the d-pad while A is held (sub
  * state 9); elsewhere the pointer pressed (the second of its set), the key's action once the

@@ -184,7 +184,7 @@ CLEAN_AS(func_ov105_0229c354, LetterStorage_TurnPageByKeys)
 void LetterStorage_EndPanelDim(LetterStorage *self)
 {
     DisplayShadow_EndSubObjWindowBrightness();
-    ButtonPanel_ClearFlag2(&self->panel);
+    ButtonPanel_ClearObjWindow(&self->panel);
 }
 CLEAN_AS(func_ov105_0229c3ac, LetterStorage_EndPanelDim)
 
@@ -194,7 +194,7 @@ void LetterStorage_BeginPanelDim(LetterStorage *self)
 {
     DisplayShadow_BeginSubObjWindowBrightness();
     DisplayShadow_SetSubBrightness((u8) -6);
-    ButtonPanel_SetFlag2(&self->panel);
+    ButtonPanel_SetObjWindow(&self->panel);
 }
 CLEAN_AS(func_ov105_0229c3c8, LetterStorage_BeginPanelDim)
 
@@ -246,7 +246,7 @@ void LetterStorage_StartPageWipeIn(LetterStorage *self)
     MenuScene_StartWipeCoveredOnWindow2(scene_of(self), 2, 0, 2, 0x30);
     MenuScene_SetWipeExtent(scene_of(self), 0xc0);
     DisplayLayer_Show(4);
-    LetterStorage_SetFlags(self, LETTER_STORAGE_FLAG_PAGE_WIPE);
+    LetterStorage_SetFlags(self, LETTER_STORAGE_FLAG_PAGE_SHOWN);
     LetterStorage_ScrollPageLayer(self);
 }
 CLEAN_AS(func_ov105_0229c4cc, LetterStorage_StartPageWipeIn)
@@ -1032,24 +1032,24 @@ int LetterStorage_PlaceIsEmpty(LetterStorage *self, int place)
 CLEAN_AS(func_ov105_0229d428, LetterStorage_PlaceIsEmpty)
 
 /* func_ov105_0229d468: whether a carried letter is marked by the letters object
- * (LetterStorage_MarkCarriedLetters); such a letter is not moved. 0 for any other place. */
-int LetterStorage_PlaceIsMarked(LetterStorage *self, int place)
+ * (LetterStorage_DimCarriedLetters); such a letter is not moved. 0 for any other place. */
+int LetterStorage_PlaceIsDimmed(LetterStorage *self, int place)
 {
     if (LetterStorage_IsCarriedPlace(self, (unsigned int) place)) {
         return PocketsLetters_IsDimmed(&self->letters, LetterStorage_LetterIndex(self, (unsigned int) place));
     }
     return 0;
 }
-CLEAN_AS(func_ov105_0229d468, LetterStorage_PlaceIsMarked)
+CLEAN_AS(func_ov105_0229d468, LetterStorage_PlaceIsDimmed)
 
 /* func_ov105_0229d49c (by LetterStorage_StartWipeIn): the grid's slots 0 to 14 set by
  * func_ov094_0229a888, and the carried letters of states 7 and 8 marked (its states flag 4). */
-void LetterStorage_MarkCarriedLetters(LetterStorage *self)
+void LetterStorage_DimCarriedLetters(LetterStorage *self)
 {
     PocketsGrid_DimPlaces((PocketsGrid *) (void *) self->grid, 0, 0xe);
     PocketsLetters_DimByState(&self->letters, 4);
 }
-CLEAN_AS(func_ov105_0229d49c, LetterStorage_MarkCarriedLetters)
+CLEAN_AS(func_ov105_0229d49c, LetterStorage_DimCarriedLetters)
 
 /* func_ov105_0229d4c4: the y of `place`: a letter's by the letters object less 0x10, 0xb6 for
  * LETTER_STORAGE_BELOW, a tab's first OBJ's plus 0x58, else 0. */
@@ -1342,7 +1342,7 @@ void LetterStorage_TouchPlace(LetterStorage *self, int place)
     Popup_Queue(&self->popup);
     Popup_ShowQueued(&self->popup);
     self->open_delay = 2;
-    if (LetterStorage_PlaceIsMarked(self, place)) {
+    if (LetterStorage_PlaceIsDimmed(self, place)) {
         LetterStorage_ClearFlags(self, LETTER_STORAGE_FLAG_DRAGGABLE);
     } else {
         LetterStorage_SetFlags(self, LETTER_STORAGE_FLAG_DRAGGABLE);
@@ -1843,7 +1843,7 @@ void LetterStorage_MoveHeldByKeys(LetterStorage *self)
     u16 pressed = data_021fbe40.pressed;
     if (pressed & LETTER_STORAGE_PAD_A) {
         if (is_letter_place(self, self->cursor)) {
-            if (LetterStorage_PlaceIsMarked(self, self->cursor) == 0) {
+            if (LetterStorage_PlaceIsDimmed(self, self->cursor) == 0) {
                 if (LetterStorage_PlaceIsEmpty(self, self->cursor) != 0) {
                     LetterStorage_BeginSubState12(self, (char) self->cursor);
                 } else {
@@ -1894,7 +1894,7 @@ void LetterStorage_BrowseByKeys(LetterStorage *self)
         Popup_Hide(&self->popup, 0);
         return;
     }
-    if (LetterStorage_PlaceIsMarked(self, self->cursor) == 0) {
+    if (LetterStorage_PlaceIsDimmed(self, self->cursor) == 0) {
         u16 pressed = data_021fbe40.pressed;
         if (pressed & LETTER_STORAGE_PAD_A) {
             if (is_letter_place(self, self->cursor)) {
@@ -1996,7 +1996,7 @@ void LetterStorage_DragHeld(LetterStorage *self)
         LetterStorage_HighlightPlace(self, place);
         return;
     }
-    if (LetterStorage_PlaceIsMarked(self, place) == 0 && LetterStorage_PutHeldLetterAt(self, place) != 0) {
+    if (LetterStorage_PlaceIsDimmed(self, place) == 0 && LetterStorage_PutHeldLetterAt(self, place) != 0) {
         PocketsSound_Play0e();
         LetterStorage_EndAction(self);
         return;
@@ -2455,7 +2455,7 @@ void LetterStorage_LetterWipeOut(LetterStorage *self)
     if (MenuScene_StepWipe(scene_of(self), 0) != 0) {
         DisplayLayer_HideAndResetScroll(LETTER_STORAGE_TEXT_LAYER);
         DisplayLayer_HideAndResetScroll(LETTER_STORAGE_PAGE_LAYER);
-        LetterStorage_ClearFlags(self, LETTER_STORAGE_FLAG_80);
+        LetterStorage_ClearFlags(self, LETTER_STORAGE_FLAG_LETTER_SHOWN);
         LetterStorage_StartSetup(self);
     } else {
         LetterStorage_ScrollLetterLayers(self);
@@ -2510,13 +2510,13 @@ void LetterStorage_ShowLetter(LetterStorage *self)
     LetterStorage_ScrollLetterLayers(self);
     MenuScene_SetState(scene_of(self), LETTER_STORAGE_STATE_LETTER_WIPE_IN);
     LabelButton_ShowLowerRight(&self->button, 0x88);
-    LetterStorage_SetFlags(self, LETTER_STORAGE_FLAG_80);
+    LetterStorage_SetFlags(self, LETTER_STORAGE_FLAG_LETTER_SHOWN);
 }
 CLEAN_AS(func_ov105_0229eefc, LetterStorage_ShowLetter)
 
 /* func_ov105_0229ef90 (state 6): the scene wipes out; when done, its layer hidden and its
- * objects no longer drawn: with FLAG_100 the letter is shown (state 7, run at once), else the
- * scene is no longer drawn and the run phase begins. Else the scene layer follows the wipe and
+ * objects no longer drawn: with LETTER_STORAGE_FLAG_READ the letter is shown (state 7, run at
+ * once), else the scene is no longer drawn and asks to be deleted (phase 5). Else the scene layer follows the wipe and
  * the objects' offset with it. */
 void LetterStorage_SceneWipeOut(LetterStorage *self)
 {
@@ -2545,7 +2545,7 @@ void LetterStorage_PageWipeOut(LetterStorage *self)
 {
     if (MenuScene_StepWipe(scene_of(self), 0) != 0) {
         DisplayLayer_HideAndResetScroll(LETTER_STORAGE_PAGE_LAYER);
-        LetterStorage_ClearFlags(self, LETTER_STORAGE_FLAG_PAGE_WIPE);
+        LetterStorage_ClearFlags(self, LETTER_STORAGE_FLAG_PAGE_SHOWN);
         MenuScene_StartWipeOnWindow2(scene_of(self), 8, 0, 0, LETTER_STORAGE_WIPE_MARGIN);
         MenuScene_SetState(scene_of(self), LETTER_STORAGE_STATE_SCENE_WIPE_OUT);
         LetterStorage_SceneWipeOut(self);
@@ -2558,7 +2558,7 @@ void LetterStorage_PageWipeOut(LetterStorage *self)
 CLEAN_AS(func_ov105_0229effc, LetterStorage_PageWipeOut)
 
 /* func_ov105_0229f064 (state 4, panel button 3 or action 1): the sub screen back to normal; the
- * parent told the scene ends (code 0x44) unless a letter is to be shown (FLAG_100); the page
+ * parent told the scene ends (code 0x44) unless a letter is to be shown (LETTER_STORAGE_FLAG_READ); the page
  * starts to wipe out (state 5). */
 void LetterStorage_StartWipeOut(LetterStorage *self)
 {
@@ -2616,7 +2616,7 @@ void LetterStorage_StartWipeIn(LetterStorage *self)
     LetterStorage_PreparePanel(self);
     PocketsGrid_LoadPockets((PocketsGrid *) (void *) self->grid);
     PocketsLetters_LoadPockets(&self->letters);
-    LetterStorage_MarkCarriedLetters(self);
+    LetterStorage_DimCarriedLetters(self);
     MenuScene_StartWipeCoveredOnWindow2(scene_of(self), 8, 0, 0, LETTER_STORAGE_WIPE_MARGIN);
     DisplayLayer_Show(LETTER_STORAGE_SCENE_LAYER);
     MenuScene_SetState(scene_of(self), LETTER_STORAGE_STATE_SCENE_WIPE_IN);
@@ -2743,7 +2743,7 @@ int LetterStorage_Draw(LetterStorage *self)
     if (LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_OBJECTS_DRAWN) != 0) {
         ButtonPanel_Draw(&self->panel, self->wipe_y);
         int y = (int) ((u32) self->objects_y - 0x10);
-        if (LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_PAGE_WIPE) == 0) {
+        if (LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_PAGE_SHOWN) == 0) {
             PocketsGrid_DrawPockets((PocketsGrid *) (void *) self->grid, 0, y);
         } else if (self->wipe_x != 0) {
             PocketsGrid_DrawPocketsRightOf((PocketsGrid *) (void *) self->grid, 0, y, (int) ((u32) self->wipe_x + 0xc0));
@@ -2751,11 +2751,11 @@ int LetterStorage_Draw(LetterStorage *self)
         PocketsLetters_DrawPockets(&self->letters, 0, y);
         PocketsWallet_Draw((PocketsWallet *) (void *) self->wallet, y);
     }
-    if (LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_PAGE_WIPE) != 0) {
+    if (LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_PAGE_SHOWN) != 0) {
         PocketsLetters_DrawPage(&self->letters, self->wipe_x, -0x10);
         LetterStorage_DrawPageTabs(self);
     }
-    if (LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_80) != 0) {
+    if (LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_LETTER_SHOWN) != 0) {
         int y = MenuScene_WipeOffsetY(scene_of(self));
         /* The button's base is main's labelled sprite (label_button.h). */
         LabelSprite_SetOffset((LabelSprite *) (void *) &self->button, 0, y);

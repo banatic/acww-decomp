@@ -86,9 +86,9 @@ static int VillagerImpression_InRange(u16 code, u16 first, u16 last)
 static int VillagerImpression_HeadIs(u8 *record, u16 wanted)
 {
     u16 *head = PlayerRecord_HeadItem(record);
-    if (ItemCode_HasVariant(head)) {
-        int item = ItemCode_VariantItem(head);
-        return item == ItemCode_VariantItem(&wanted);
+    if (ItemCode_IsFurniture(head)) {
+        int item = ItemCode_FurnitureNumber(head);
+        return item == ItemCode_FurnitureNumber(&wanted);
     }
     return *head == wanted;
 }

@@ -39,8 +39,8 @@ void Ov054Init_PostClerkTables(void)
         &data_ov054_02262ed0, /* 9: PostClerkTalk_AwaitJob12 */
         &data_ov054_02262e00, /* 10: PostClerkTalk_NextLine */
         &data_ov054_02262ee0, /* 11: PostClerkTalk_AfterErrand */
-        &data_ov054_02262cf8, /* 12: PostClerkTalk_SearchGame */
-        &data_ov054_02262d20, /* 13: PostClerkTalk_AwaitConnection */
+        &data_ov054_02262cf8, /* 12: PostClerkTalk_SearchMoveTarget */
+        &data_ov054_02262d20, /* 13: PostClerkTalk_AwaitMoveTarget */
         &data_ov054_02262da0, /* 14: PostClerkTalk_AskJob1f */
         &data_ov054_02262d40, /* 15: PostClerkTalk_AwaitJob1f */
     };

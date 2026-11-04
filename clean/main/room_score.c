@@ -217,10 +217,10 @@ static void mark_special(void *context, u16 *item, u32 x, u32 z)
     (void) context;
     (void) x;
     (void) z;
-    if (!ItemCode_HasVariant(item)) {
+    if (!ItemCode_IsFurniture(item)) {
         return;
     }
-    int number = ItemCode_VariantItem(item);
+    int number = ItemCode_FurnitureNumber(item);
     if (FurnitureInfo_IndoorBit0(number) != 0) {
         ((u8 *) data_021c9774)[(u32) number >> 3] |= (u8) (1u << ((u32) number & 7));
     }
@@ -244,17 +244,17 @@ typedef struct WallPenalty {
 static void wall_penalty(void *context, u16 *item, u32 x, u32 z)
 {
     WallPenalty *p = context;
-    if (!ItemCode_HasVariant(item)) {
+    if (!ItemCode_IsFurniture(item)) {
         if (ItemCode_IsKind1(item)) {
             *p->loose = 1;
             p->total += 1;
         }
         return;
     }
-    if (FurnitureInfo_FlagBit4(ItemCode_VariantItem(item)) == 0) {
+    if (FurnitureInfo_FlagBit4(ItemCode_FurnitureNumber(item)) == 0) {
         return;
     }
-    int side = ItemCode_Variant(item);
+    int side = ItemCode_Side(item);
     /* Each edge, and the side a piece there faces it with. */
     if (x == (u32) p->room->left && side == 3) {
         *p->facing = 1;
@@ -292,7 +292,7 @@ static void count_theme(void *context, u16 *item, u32 x, u32 z)
     u8 *counts = context;
     (void) x;
     (void) z;
-    if (ItemCode_HasVariant(item)) {
+    if (ItemCode_IsFurniture(item)) {
         counts[FurnitureInfo_ItemTheme(item)]++;
     }
 }
@@ -329,10 +329,10 @@ static void count_share(void *context, u16 *item, u32 x, u32 z)
     ShareCount *s = context;
     (void) x;
     (void) z;
-    if (!ItemCode_HasVariant(item)) {
+    if (!ItemCode_IsFurniture(item)) {
         return;
     }
-    keep_distinct(s->ids, ItemCode_VariantItem(item));
+    keep_distinct(s->ids, ItemCode_FurnitureNumber(item));
     s->histogram[s->value(item)]++;
     s->count++;
 }
@@ -397,10 +397,10 @@ static void count_colors(void *context, u16 *item, u32 x, u32 z)
     ColorCount *c = context;
     (void) x;
     (void) z;
-    if (!ItemCode_HasVariant(item)) {
+    if (!ItemCode_IsFurniture(item)) {
         return;
     }
-    int number = ItemCode_VariantItem(item);
+    int number = ItemCode_FurnitureNumber(item);
     keep_distinct(c->ids, number);
     int first = FurnitureInfo_ColorA(number);
     int second = FurnitureInfo_ColorB(number);
@@ -456,8 +456,8 @@ static void add_points(void *context, u16 *item, u32 x, u32 z)
     int *total = context;
     (void) x;
     (void) z;
-    if (ItemCode_HasVariant(item)) {
-        *total += ItemInfo_ScorePoints(FurnitureInfo_ListGroup(ItemCode_VariantItem(item)));
+    if (ItemCode_IsFurniture(item)) {
+        *total += ItemInfo_ScorePoints(FurnitureInfo_ListGroup(ItemCode_FurnitureNumber(item)));
     }
 }
 
@@ -475,10 +475,10 @@ static void mark_category(void *context, u16 *item, u32 x, u32 z)
     (void) context;
     (void) x;
     (void) z;
-    if (!ItemCode_HasVariant(item)) {
+    if (!ItemCode_IsFurniture(item)) {
         return;
     }
-    int number = ItemCode_VariantItem(item);
+    int number = ItemCode_FurnitureNumber(item);
     int category = FurnitureInfo_Category(number);
     int group = FurnitureInfo_Series(number);
     u32 bit = 0;
@@ -514,7 +514,7 @@ static void mark_piece(void *context, u16 *item, u32 x, u32 z)
     GroupPieces *g = context;
     (void) x;
     (void) z;
-    if (!ItemCode_HasVariant(item)) {
+    if (!ItemCode_IsFurniture(item)) {
         return;
     }
     int group = FurnitureInfo_ItemSeries(item);
@@ -752,7 +752,7 @@ int RoomScore_Total(RoomScoreRoom *room, u16 *bonuses, int *theme, int *first, i
     int points = 0;
     int edges_score = 0;
     int colors = 0;
-    int flag_bits = 0;
+    int era_feel = 0;
     int themes = 0;
     int penalty = 0;
     int facing = 0;
@@ -779,7 +779,7 @@ int RoomScore_Total(RoomScoreRoom *room, u16 *bonuses, int *theme, int *first, i
         points += RoomScore_ItemPoints(room, map);
         edges_score += RoomScore_FengShuiBonus(room, &edges);
         colors += RoomScore_ColorBonus(room, map);
-        flag_bits += RoomScore_EraFeelBonus(room, map, first, second);
+        era_feel += RoomScore_EraFeelBonus(room, map, first, second);
         themes += RoomScore_CollectionBonus(room, map, theme);
         u8 faces = 0;
         u8 loose_items = 0;
@@ -792,7 +792,7 @@ int RoomScore_Total(RoomScoreRoom *room, u16 *bonuses, int *theme, int *first, i
         }
         RoomScoreFengShui_Destruct(&edges);
     }
-    int total = points + edges_score + colors + flag_bits + themes - penalty;
+    int total = points + edges_score + colors + era_feel + themes - penalty;
 
     int kind0_groups = 0;
     int kind1_groups = 0;
@@ -864,8 +864,8 @@ int RoomScore_Total(RoomScoreRoom *room, u16 *bonuses, int *theme, int *first, i
         if (colors >= 2000) {
             *bonuses |= ROOM_SCORE_COLORS;
         }
-        if (flag_bits >= 2000) {
-            *bonuses |= ROOM_SCORE_FLAG_BITS;
+        if (era_feel >= 2000) {
+            *bonuses |= ROOM_SCORE_ERA_FEEL;
         }
         if (themes >= 3000) {
             *bonuses |= ROOM_SCORE_COLLECTION;
@@ -902,8 +902,8 @@ int RoomScore_Total(RoomScoreRoom *room, u16 *bonuses, int *theme, int *first, i
     if (colors >= 6000) {
         found |= ROOM_SCORE_COLORS;
     }
-    if (flag_bits >= 6000) {
-        found |= ROOM_SCORE_FLAG_BITS;
+    if (era_feel >= 6000) {
+        found |= ROOM_SCORE_ERA_FEEL;
     }
     if (themes >= 3200) {
         found |= ROOM_SCORE_COLLECTION;
@@ -1245,10 +1245,10 @@ typedef struct InsideCount {
 static void count_inside(void *context, u16 *item, u32 x, u32 z)
 {
     InsideCount *c = context;
-    if (!ItemCode_HasVariant(item)) {
+    if (!ItemCode_IsFurniture(item)) {
         return;
     }
-    int number = ItemCode_VariantItem(item);
+    int number = ItemCode_FurnitureNumber(item);
     ItemFootprint footprint;
     ItemFootprint_Construct(&footprint, item);
     u32 cells = ItemFootprint_Count(&footprint);

@@ -83,10 +83,10 @@ static int floor_cell_empty(AcreMap *map, int x, int z)
     if (item == NULL) {
         return 0;
     }
-    if (ItemCode_HasVariant(item)) {
+    if (ItemCode_IsFurniture(item)) {
         u16 none = ITEM_CODE_NONE;
-        int variant = ItemCode_VariantItem(item);
-        return variant == ItemCode_VariantItem(&none);
+        int variant = ItemCode_FurnitureNumber(item);
+        return variant == ItemCode_FurnitureNumber(&none);
     }
     return *item == ITEM_CODE_NONE;
 }

@@ -62,7 +62,7 @@ void NookClerkTalk_OnAnswerCommon(NookClerkTalk *talk, int answer);
 void NookClerkTalk_OnPlainAnswer(NookClerkTalk *talk, int arg);
 void NookClerkTalk_OnAnswer(NookClerkTalk *talk, int arg);
 void NookClerkTalk_PickPaint(NookClerkTalk *talk, int row, unsigned int answer);
-void NookClerkTalk_PayLoanLine(void);
+void NookClerkTalk_TakeNextLoan(void);
 void NookClerkTalk_ReactToPurchase(NookClerkTalk *talk);
 void NookClerkTalk_PaintBought(NookClerkTalk *talk);
 void NookClerkTalk_OpenOrder(NookClerkTalk *talk);

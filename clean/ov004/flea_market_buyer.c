@@ -277,10 +277,10 @@ static void fmb_talk_slot_08(FleaMarketBuyerTalk *talk)
 /* Whether `item` is `code`: for an item with a variant, the same item of any variant. */
 static int fmb_item_is(const u16 *item, u16 code)
 {
-    if (ItemCode_HasVariant(item)) {
+    if (ItemCode_IsFurniture(item)) {
         u16 other = code;
-        int same = ItemCode_VariantItem(item);
-        return same == ItemCode_VariantItem(&other);
+        int same = ItemCode_FurnitureNumber(item);
+        return same == ItemCode_FurnitureNumber(&other);
     }
     return *item == code;
 }
@@ -314,7 +314,7 @@ static void fmb_turn_and_talk(FleaMarketBuyer *buyer, int keep_camera)
 static void fmb_choose(FleaMarketBuyer *buyer, int number)
 {
     RoomObject *object = RoomObjects_At(RoomObjects_Table(), number);
-    buyer->item = ItemCode_MakeVariant(RoomObject_Number(object), 0);
+    buyer->item = ItemCode_MakeFurniture(RoomObject_Number(object), 0);
     RoomObject_Centre(object, &buyer->target);
     FleaMarketBuyer_SetReach(buyer, object);
     FleaMarketBuyer_Remember(buyer, (u8) number);
@@ -384,7 +384,7 @@ int FleaMarketBuyer_MayBuy(FleaMarketBuyer *buyer, int number)
     if (RoomObjects_IsIdleAt(number) == 0) {
         return 0;
     }
-    u16 item = ItemCode_MakeVariant(RoomObject_Number(object), 0);
+    u16 item = ItemCode_MakeFurniture(RoomObject_Number(object), 0);
     if ((item >= FMB_DESIGNS_A_FIRST && item <= FMB_DESIGNS_A_LAST) ||
         (item >= FMB_DESIGNS_B_FIRST && item <= FMB_DESIGNS_B_LAST) ||
         (item >= FMB_DESIGNS_C_FIRST && item <= FMB_DESIGNS_C_LAST) ||

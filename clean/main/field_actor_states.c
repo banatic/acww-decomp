@@ -1614,10 +1614,10 @@ CLEAN_AS(func_02008dfc, FieldActor_UpdateState76)
  * of it and of ITEM_CODE_NONE; otherwise by the code itself. */
 static BOOL item_is_nothing(u16 *item)
 {
-    if (ItemCode_HasVariant(item)) {
+    if (ItemCode_IsFurniture(item)) {
         u16 none = ITEM_CODE_NONE;
-        int code = ItemCode_VariantItem(item);
-        return code == ItemCode_VariantItem(&none);
+        int code = ItemCode_FurnitureNumber(item);
+        return code == ItemCode_FurnitureNumber(&none);
     }
     return *item == ITEM_CODE_NONE;
 }
@@ -5823,13 +5823,13 @@ void FieldActor_StartState0(FieldActor *actor, const int *prepared)
         ActEffects_Init(effects_of(actor));
         if (is_local_player(actor) || (SceneKinds_CurrentIn6To8() && start == 8)) {
             SoundEmitter *emitter = (SoundEmitter *) ((u8 *) actor + FIELD_ACTOR_EMITTER_B);
-            SoundEmitter_StopB(emitter);
+            SoundEmitter_ResetB(emitter);
             FIELD_ACTOR_PLAYING_EMITTER(actor) = emitter;
             FIELD_ACTOR_EMITTER_B_SET(actor) = 1;
             FieldActor_SetFlag(actor, 0x19);
         } else {
             SoundEmitter *emitter = (SoundEmitter *) ((u8 *) actor + FIELD_ACTOR_EMITTER);
-            SoundEmitter_StopB(emitter);
+            SoundEmitter_ResetB(emitter);
             FIELD_ACTOR_PLAYING_EMITTER(actor) = emitter;
         }
         FieldActor_SetFlag(actor, 0xa);
@@ -5993,9 +5993,9 @@ void FieldActor_ExitState0(FieldActor *actor, int next)
         u16 item = *PlayerRecord_HeldItem(record);
         HeldItem_Take((HeldItemObject *) (void *) actor->held, &item, record);
         BOOL nothing;
-        if (ItemCode_HasVariant(&item)) {
+        if (ItemCode_IsFurniture(&item)) {
             u16 none = ITEM_CODE_NONE;
-            nothing = ItemCode_VariantItem(&item) == ItemCode_VariantItem(&none);
+            nothing = ItemCode_FurnitureNumber(&item) == ItemCode_FurnitureNumber(&none);
         } else {
             nothing = item == ITEM_CODE_NONE;
         }

@@ -482,9 +482,9 @@ void CameraControl_PutSavedViewBack(CameraControl *camera)
     camera->view_saved = 0;
     CameraControl_StillStart(camera);
     camera->goal = camera->saved;
-    camera->point = camera->saved_point;
+    camera->eye = camera->saved_eye;
     camera->fixed_target = camera->goal.second_offset;
-    camera->fixed_eye = camera->point;
+    camera->fixed_eye = camera->eye;
     CameraControl_RestartMove();
     CameraControl_SelectTiming(camera, TIMING_SAVED_VIEW);
 }
@@ -495,7 +495,7 @@ void CameraControl_SaveGoalView(CameraControl *camera)
 {
     camera->view_saved = 1;
     camera->saved = camera->goal;
-    camera->saved_point = camera->point;
+    camera->saved_eye = camera->eye;
     CameraControl_StillStart(camera);
 }
 CLEAN_AS(func_0203b994, CameraControl_SaveGoalView)

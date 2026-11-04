@@ -31,7 +31,7 @@
 #include "town_spot.h"
 #include "town_start_day.h"
 #include "unit_type_info.h"
-#include "wfc_stats.h"
+#include "mystery_cat_record.h"
 #include "scene_kinds.h"
 #include "scene_query.h"
 
@@ -59,19 +59,17 @@ static_assert(offsetof(Spawner, overlay) == 0x74 && sizeof(Spawner) == 0x78, "sp
 #define EVENT_3D 0x3d
 #define EVENT_ANY 0x13 /* in data_020d0664: whatever event is going on */
 
-/* The bit of the player's word at 0x23ec (func_020887c0) Spawner_PlayerLacksFlag18 tests, the
- * player record's flags the checks test (PlayerRecord_TestFlag) and the flag of the object at
- * data_021d27ac (func_02086108) Spawner_Profile56Allowed tests. */
+/* The bit of the player's word at 0x23ec (func_020887c0) Spawner_PlayerLacksFlag18 tests and
+ * the flag of the object at data_021d27ac (func_02086108) Spawner_Profile56Allowed tests (the
+ * player record's flags the checks test are player_record.h's PLAYER_FLAG_*). */
 #define PLAYER_BIT_18 0x18
-#define PLAYER_FLAG_1 1
-#define PLAYER_FLAG_23 0x23
 #define OBJECT_FLAG_GOLDEN_TOOL_DUE 8
 
 /* What the placers look for on the map (AcreTile_FindItemAllFlags): a building of the codes
  * 0x5014-0x501a in a tile with flag 1, or building 0x5000 in a tile with flag 0x200. */
-#define BUILDING_5014 0x5014
-#define BUILDING_501A 0x501a
-#define BUILDING_5000 0x5000
+#define SPAWNER_PLAYER_HOUSE_FIRST 0x5014
+#define SPAWNER_PLAYER_HOUSE_LAST 0x501a
+#define SPAWNER_TOWN_HALL 0x5000
 #define TILE_FLAG_1 1
 #define TILE_FLAG_200 0x200
 
@@ -379,7 +377,7 @@ int Spawner_CheckD020In(int check_mode)
             return 0;
         }
     }
-    if (WfcStats_IsInUse((const WfcStats *) (void *) data_021f3278) == 0) {
+    if (MysteryCatRecord_IsInUse((const MysteryCatRecord *) (void *) data_021f3278) == 0) {
         return 0;
     }
     return code_result(0xd020);
@@ -506,7 +504,7 @@ CLEAN_AS(func_02084388, Spawner_CheckD002In)
 /* func_02084418 (placer): outdoors, 0x4000 to +x and +z of the centre of the first tile with
  * flag 1 holding a building 0x5014-0x501a, facing angle 0xc000; 0 without a map or such a
  * tile, and in a room. */
-int Spawner_PlaceBeforeBuilding(Spawner *self, Vec3 *position, s16 *angle)
+int Spawner_PlaceBeforePlayerHouse(Spawner *self, Vec3 *position, s16 *angle)
 {
     (void) self;
     if (!outdoors()) {
@@ -517,8 +515,8 @@ int Spawner_PlaceBeforeBuilding(Spawner *self, Vec3 *position, s16 *angle)
     if (map == NULL) {
         return 0;
     }
-    u16 first = BUILDING_5014;
-    u16 last = BUILDING_501A;
+    u16 first = SPAWNER_PLAYER_HOUSE_FIRST;
+    u16 last = SPAWNER_PLAYER_HOUSE_LAST;
     if (AcreTile_FindItemAllFlags(map, &acre_x, &acre_z, &x, &z, &first, &last, TILE_FLAG_1, 0) == 0) {
         return 0;
     }
@@ -528,7 +526,7 @@ int Spawner_PlaceBeforeBuilding(Spawner *self, Vec3 *position, s16 *angle)
     angle[1] = (s16) ANGLE_THREE_QUARTERS;
     return 1;
 }
-CLEAN_AS(func_02084418, Spawner_PlaceBeforeBuilding)
+CLEAN_AS(func_02084418, Spawner_PlaceBeforePlayerHouse)
 
 /* func_020844b8 (check 4, priority 4).
  * QUIRK: declared without a result, as Spawner_CheckD023. */
@@ -568,19 +566,19 @@ int Spawner_PlaceForPlayer(Spawner *self, Vec3 *position, s16 *angle)
 {
     (void) PlayerRecords_Current();
     if (Spawner_PlayerInNookJob()) {
-        return Spawner_PlaceBesideBuilding5000(self, position, angle);
+        return Spawner_PlaceBesideTownHall(self, position, angle);
     }
-    return Spawner_PlaceBesideBuilding(self, position, angle);
+    return Spawner_PlaceBesidePlayerHouse(self, position, angle);
 }
 CLEAN_AS(func_02084560, Spawner_PlaceForPlayer)
 
-/* func_02084590 (placer): Spawner_PlaceBesideBuilding5000.
+/* func_02084590 (placer): Spawner_PlaceBesideTownHall.
  * QUIRK: declared without a result; in the ROM its answer is still in r0 when it returns. */
-void Spawner_PlaceBesideBuilding5000Void(Spawner *self, Vec3 *position, s16 *angle)
+void Spawner_PlaceBesideTownHallVoid(Spawner *self, Vec3 *position, s16 *angle)
 {
-    (void) Spawner_PlaceBesideBuilding5000(self, position, angle);
+    (void) Spawner_PlaceBesideTownHall(self, position, angle);
 }
-CLEAN_AS(func_02084590, Spawner_PlaceBesideBuilding5000Void)
+CLEAN_AS(func_02084590, Spawner_PlaceBesideTownHallVoid)
 
 /* The first tile with `flags` holding a building of the codes `first`-`last`, as a tile of the
  * whole map; 0 when there is none. */
@@ -599,12 +597,12 @@ static int find_building(AcreMap *map, u16 *first, u16 *last, int flags, int *ti
 /* func_02084598 (placer): the centre of the tile two to +x and two to +z of a building
  * 0x5014-0x501a (in a tile with flag 1), facing a random angle; 0 without a map or such a
  * tile. */
-int Spawner_PlaceBesideBuilding(Spawner *self, Vec3 *position, s16 *angle)
+int Spawner_PlaceBesidePlayerHouse(Spawner *self, Vec3 *position, s16 *angle)
 {
     (void) self;
     AcreMap *map = data_021c80bc;
-    u16 first = BUILDING_5014;
-    u16 last = BUILDING_501A;
+    u16 first = SPAWNER_PLAYER_HOUSE_FIRST;
+    u16 last = SPAWNER_PLAYER_HOUSE_LAST;
     int x, z;
     if (map == NULL || !find_building(map, &first, &last, TILE_FLAG_1, &x, &z)) {
         return 0;
@@ -613,15 +611,15 @@ int Spawner_PlaceBesideBuilding(Spawner *self, Vec3 *position, s16 *angle)
     angle[1] = (s16) MainRandom_Below(RANDOM_ANGLE_BOUND);
     return 1;
 }
-CLEAN_AS(func_02084598, Spawner_PlaceBesideBuilding)
+CLEAN_AS(func_02084598, Spawner_PlaceBesidePlayerHouse)
 
 /* func_02084630 (placer): the centre of the tile two to -x and three to +z of building 0x5000
  * (in a tile with flag 0x200), facing a random angle; 0 without a map or such a tile. */
-int Spawner_PlaceBesideBuilding5000(Spawner *self, Vec3 *position, s16 *angle)
+int Spawner_PlaceBesideTownHall(Spawner *self, Vec3 *position, s16 *angle)
 {
     (void) self;
     AcreMap *map = data_021c80bc;
-    u16 building = BUILDING_5000; /* the first and last code are the same halfword */
+    u16 building = SPAWNER_TOWN_HALL; /* the first and last code are the same halfword */
     int x, z;
     if (map == NULL || !find_building(map, &building, &building, TILE_FLAG_200, &x, &z)) {
         return 0;
@@ -630,7 +628,7 @@ int Spawner_PlaceBesideBuilding5000(Spawner *self, Vec3 *position, s16 *angle)
     angle[1] = (s16) MainRandom_Below(RANDOM_ANGLE_BOUND);
     return 1;
 }
-CLEAN_AS(func_02084630, Spawner_PlaceBesideBuilding5000)
+CLEAN_AS(func_02084630, Spawner_PlaceBesideTownHall)
 
 /* ---- The checks of profile 0x56 and the eight events */
 
@@ -725,7 +723,7 @@ CLEAN_AS(func_02084890, Spawner_Profile56Allowed)
 /* func_020848d0 (placer): 0x8000 to -x and 0x6000 to +z of the corner of the first tile with
  * flag 1 holding a building 0x5014-0x501a, at height 0, facing angle 0x4000; 0 without a map
  * or such a tile. */
-int Spawner_PlaceBelowBuilding(Spawner *self, Vec3 *position, u16 *angle)
+int Spawner_PlaceBelowPlayerHouse(Spawner *self, Vec3 *position, u16 *angle)
 {
     (void) self;
     AcreMap *map = data_021c80bc;
@@ -733,8 +731,8 @@ int Spawner_PlaceBelowBuilding(Spawner *self, Vec3 *position, u16 *angle)
     if (map == NULL) {
         return 0;
     }
-    u16 first = BUILDING_5014;
-    u16 last = BUILDING_501A;
+    u16 first = SPAWNER_PLAYER_HOUSE_FIRST;
+    u16 last = SPAWNER_PLAYER_HOUSE_LAST;
     if (AcreTile_FindItemAllFlags(map, &acre_x, &acre_z, &x, &z, &first, &last, TILE_FLAG_1, 0) == 0) {
         return 0;
     }
@@ -747,7 +745,7 @@ int Spawner_PlaceBelowBuilding(Spawner *self, Vec3 *position, u16 *angle)
     position->y = 0;
     return 1;
 }
-CLEAN_AS(func_020848d0, Spawner_PlaceBelowBuilding)
+CLEAN_AS(func_020848d0, Spawner_PlaceBelowPlayerHouse)
 
 /* func_0208496c (check 2, priority 4): the entry of code 0xd019 in scene 0 while the player
  * has flag 0x23 and the scene byte at data_020e54b0 is 1-5 or 6; 0 while either arrival flag
@@ -756,7 +754,7 @@ int Spawner_CheckD019(void)
 {
     u8 *record = PlayerRecords_Current();
     if (SceneQuery_Current() != SCENE_0 || Spawner_ArrivalPending() || in_session() || record == NULL ||
-        PlayerRecord_TestFlag(record, PLAYER_FLAG_23) == 0) {
+        PlayerRecord_TestFlag(record, PLAYER_FLAG_NEW_RESIDENT) == 0) {
         return 0;
     }
     if (SceneKinds_IsHouseRoom(SceneQuery_Previous()) != 0 || SceneQuery_Previous() == 6) {
@@ -768,7 +766,7 @@ CLEAN_AS(func_0208496c, Spawner_CheckD019)
 
 /* func_020849e8 (placer): outdoors, 0x4000 to +z of the centre of the first tile with flag 1
  * holding a building 0x5014-0x501a; 0 without a map or such a tile, and in a room. */
-int Spawner_PlaceInFrontOfBuilding(Spawner *self, Vec3 *position)
+int Spawner_PlaceInFrontOfPlayerHouse(Spawner *self, Vec3 *position)
 {
     (void) self;
     if (!outdoors()) {
@@ -779,8 +777,8 @@ int Spawner_PlaceInFrontOfBuilding(Spawner *self, Vec3 *position)
     if (map == NULL) {
         return 0;
     }
-    u16 first = BUILDING_5014;
-    u16 last = BUILDING_501A;
+    u16 first = SPAWNER_PLAYER_HOUSE_FIRST;
+    u16 last = SPAWNER_PLAYER_HOUSE_LAST;
     if (AcreTile_FindItemAllFlags(map, &acre_x, &acre_z, &x, &z, &first, &last, TILE_FLAG_1, 0) == 0) {
         return 0;
     }
@@ -788,7 +786,7 @@ int Spawner_PlaceInFrontOfBuilding(Spawner *self, Vec3 *position)
     position->z += 0x4000;
     return 1;
 }
-CLEAN_AS(func_020849e8, Spawner_PlaceInFrontOfBuilding)
+CLEAN_AS(func_020849e8, Spawner_PlaceInFrontOfPlayerHouse)
 
 /* func_02084a78 (check 1, priority 4): the entry of code 0xd011 in scene 0 while func_02087ea0
  * accepts part 0x30 of the object at data_021d27ac and this console is not in the session. */
@@ -814,7 +812,7 @@ CLEAN_AS(func_02084ad0, Spawner_ArrivalPending)
 int Spawner_PlayerInNookJob(void)
 {
     u8 *record = PlayerRecords_Current();
-    return record != NULL && PlayerRecord_TestFlag(record, PLAYER_FLAG_1) != 0;
+    return record != NULL && PlayerRecord_TestFlag(record, PLAYER_FLAG_NOOK_JOB) != 0;
 }
 CLEAN_AS(func_02084af0, Spawner_PlayerInNookJob)
 

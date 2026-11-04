@@ -51,9 +51,9 @@ typedef struct CameraControl {
     Mtx43 inverse_view;  /* 0xcc: the inverse of the view matrix (the camera in the world) */
     CameraView goal;     /* 0xfc */
     CameraView saved;    /* 0x11c: the goal kept by func_0203b994, put back by func_0203b868 */
-    Vec3 saved_point;    /* 0x13c: `point`, kept with it */
+    Vec3 saved_eye;      /* 0x13c: `eye`, kept with it */
     CameraView current;  /* 0x148 */
-    Vec3 point;          /* 0x168 */
+    Vec3 eye;            /* 0x168 */
     s16 roll;            /* 0x174: of the up vector, about Z */
     u8 unk_176[2];
     fx32 room_min_x;   /* 0x178: the bounds the point followed is kept in, indoors */
@@ -61,7 +61,7 @@ typedef struct CameraControl {
     fx32 room_min_z;   /* 0x180 */
     fx32 room_max_z;   /* 0x184 */
     Vec3 drawn_target; /* 0x188: the point looked at, bent onto the curved ground */
-    Vec3 drawn_eye;    /* 0x194: `point`, bent the same way */
+    Vec3 drawn_eye;    /* 0x194: `eye`, bent the same way */
     Vec3 up;           /* 0x1a0 */
     s16 ground_angle;  /* 0x1ac: of the curved ground under the eye */
     u8 unk_1ae[2];

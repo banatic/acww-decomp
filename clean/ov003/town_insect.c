@@ -436,7 +436,7 @@ void TownInsect_UnmarkSceneActors(TownInsectMask *mask)
                                      (unsigned int) (uintptr_t) &z, j) == 0) {
                 continue;
             }
-            if (SceneActor_Member1F4IsSet(actor) != 1) {
+            if (SceneActor_LightsLit(actor) != 1) {
                 continue;
             }
             int tile_x = x + SceneActor_TileX(actor);

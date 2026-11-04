@@ -14,7 +14,7 @@ static_assert(sizeof(Process) == 0x50, "the size RoomPlayerBeds_New allocates");
 
 /* The players whose items are placed, and the variant they are turned to. */
 #define ROOM_PLAYER_BEDS_PLAYERS 4
-#define ROOM_PLAYER_BEDS_VARIANT 3
+#define ROOM_PLAYER_BEDS_SIDE 3
 /* Items of this shape (FurnitureInfo_ItemShape) are two tiles wide, and the half of the room
  * (x below this) where they move one tile left. */
 #define ROOM_PLAYER_BEDS_WIDE_SHAPE 2
@@ -52,10 +52,10 @@ static void RoomPlayerBeds_init_tiles(void)
 /* Whether `item` is empty: for a code with a variant, whether its item is that of 0xfff1. */
 static int RoomPlayerBeds_is_empty(const ItemCode *item)
 {
-    if (ItemCode_HasVariant(item)) {
+    if (ItemCode_IsFurniture(item)) {
         ItemCode none = ITEM_CODE_NONE;
-        int item_number = ItemCode_VariantItem(item);
-        return item_number == ItemCode_VariantItem(&none);
+        int item_number = ItemCode_FurnitureNumber(item);
+        return item_number == ItemCode_FurnitureNumber(&none);
     }
     return *item == ITEM_CODE_NONE;
 }
@@ -81,7 +81,7 @@ void RoomPlayerBeds_Place(void)
         if (RoomPlayerBeds_is_empty(&item)) {
             continue;
         }
-        ItemCode_SetVariant(&item, ROOM_PLAYER_BEDS_VARIANT);
+        ItemCode_SetSide(&item, ROOM_PLAYER_BEDS_SIDE);
         if (x < ROOM_PLAYER_BEDS_LEFT_HALF && FurnitureInfo_ItemShape(&item) == ROOM_PLAYER_BEDS_WIDE_SHAPE) {
             x--;
         }

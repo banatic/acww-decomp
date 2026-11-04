@@ -578,7 +578,7 @@ void TileEvent_ReleaseAll(TileEventEntry *entries)
         if (entries->active != 0) {
             TileEvent_End(entries);
         }
-        SoundEmitter_Vfunc10B(tile_event_sound(entries));
+        SoundEmitter_FinishB(tile_event_sound(entries));
     }
 }
 CLEAN_AS(func_ov003_02221488, TileEvent_ReleaseAll)
@@ -737,7 +737,7 @@ void TileEvent_InitAll(TileEventEntry *entries)
     for (int i = 0; i < TILE_EVENT_ENTRIES; i++, entries++) {
         entries->active = 0;
         entries->id = TILE_EVENT_EMPTY;
-        SoundEmitter_StopB(tile_event_sound(entries));
+        SoundEmitter_ResetB(tile_event_sound(entries));
     }
 }
 CLEAN_AS(func_ov003_02221a38, TileEvent_InitAll)

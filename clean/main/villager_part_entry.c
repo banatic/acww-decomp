@@ -66,9 +66,9 @@ int VillagerPartEntry_Accepts(VillagerPartEntry *entry, const u16 *code)
     }
 
     u16 wanted = data_020d1a54[entry->index];
-    if (ItemCode_HasVariant(code) != 0) {
-        int item = ItemCode_VariantItem(code);
-        return item == ItemCode_VariantItem(&wanted);
+    if (ItemCode_IsFurniture(code) != 0) {
+        int item = ItemCode_FurnitureNumber(code);
+        return item == ItemCode_FurnitureNumber(&wanted);
     }
     return *code == wanted;
 }

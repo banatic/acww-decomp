@@ -47,7 +47,7 @@ static DesignManager *ShopDesignObject_designs(void)
 int ShopDesignObject_Vfunc0C(ShopDesignObject *object)
 {
     if (object->has_sound != 0) {
-        SoundEmitter_Vfunc10B(ShopDesignObject_emitter(object));
+        SoundEmitter_FinishB(ShopDesignObject_emitter(object));
     }
     return 1;
 }
@@ -75,7 +75,7 @@ CLEAN_AS(func_ov004_022139a8, ShopDesignObject_Update)
  * emitter (stopping it first) if it was not in use; done then, not done otherwise. */
 int ShopDesignObject_Start(ShopDesignObject *object)
 {
-    u16 item = ItemCode_MakeVariant(RoomObject_Number(&object->base), 0);
+    u16 item = ItemCode_MakeFurniture(RoomObject_Number(&object->base), 0);
     object->design = 0;
     if (item < SHOP_DESIGN_ITEM_FIRST || item > SHOP_DESIGN_ITEM_LAST) {
         return 0;
@@ -87,7 +87,7 @@ int ShopDesignObject_Start(ShopDesignObject *object)
     }
     MaterialBind_BindByIndex((u8 *) object->base.model_resource, data_ov004_022531c8, (G3dResTex *) (uintptr_t) texture, 0, 0);
     if (object->has_sound == 0) {
-        SoundEmitter_StopB(ShopDesignObject_emitter(object));
+        SoundEmitter_ResetB(ShopDesignObject_emitter(object));
         object->has_sound = 1;
     }
     return 1;

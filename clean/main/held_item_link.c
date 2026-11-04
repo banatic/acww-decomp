@@ -16,14 +16,14 @@ static_assert(offsetof(HeldItemLink, follows_hand) == 0x3c, "HeldItemLink layout
 /* The joint of the owner's model whose matrix the item follows. */
 #define HELD_ITEM_LINK_HAND_JOINT 14
 
-/* The owner's model (an object whose func_02055d0c reads a joint's matrix) and the word it
- * hands to the item's record. */
+/* The owner's model (an object whose func_02055d0c reads a joint's matrix) and its animation
+ * speed, which it hands to the item's model. */
 #define HELD_ITEM_LINK_OWNER_MODEL 0xec
-#define HELD_ITEM_LINK_OWNER_VALUE 0x198
+#define HELD_ITEM_LINK_OWNER_ANIM_SPEED 0x198
 #define HELD_ITEM_LINK_OWNER_MOTION 0x334
 
-/* In a held item's pool record (func_0205e8e4): the word HeldItemLink_SetRecordValue sets. */
-#define HELD_ITEM_LINK_RECORD_VALUE (0x9c + 0x10)
+/* In a held item's model (func_0205e8e4): its animation speed, HeldItemLink_SetAnimSpeed. */
+#define HELD_ITEM_LINK_MODEL_ANIM_SPEED (0x9c + 0x10)
 
 /* The held item the link stands for, or null. */
 static HeldItem *held_item_link_item(HeldItemLink *link)
@@ -37,18 +37,19 @@ static int held_item_link_is_net(u16 item)
     return item == 0x1376 || item == 0x1377;
 }
 
-/* func_020121a8: the word at 0xac of the item's pool record (func_0205eac4) becomes `value`. */
-void HeldItemLink_SetRecordValue(HeldItemLink *link, int value)
+/* func_020121a8: the animation speed of the item's model (its word at 0xac, func_0205eac4)
+ * becomes `speed`. */
+void HeldItemLink_SetAnimSpeed(HeldItemLink *link, int speed)
 {
     HeldItem *item = held_item_link_item(link);
     if (item != NULL) {
-        HeldItem_SetAnimSpeed(&item->index, value);
+        HeldItem_SetAnimSpeed(&item->index, speed);
     }
 }
-CLEAN_AS(func_020121a8, HeldItemLink_SetRecordValue)
+CLEAN_AS(func_020121a8, HeldItemLink_SetAnimSpeed)
 
-/* func_020121c4: the item's pool record (func_0205e8e4), or 0 without an item. */
-int HeldItemLink_Record(HeldItemLink *link)
+/* func_020121c4: the item's model (func_0205e8e4), or 0 without an item. */
+int HeldItemLink_Model(HeldItemLink *link)
 {
     HeldItem *item = held_item_link_item(link);
     if (item != NULL) {
@@ -56,7 +57,7 @@ int HeldItemLink_Record(HeldItemLink *link)
     }
     return 0;
 }
-CLEAN_AS(func_020121c4, HeldItemLink_Record)
+CLEAN_AS(func_020121c4, HeldItemLink_Model)
 
 /* func_020121e0: sets the item's scale; returns the item (null without one). */
 HeldItem *HeldItemLink_SetScale(HeldItemLink *link, fx32 scale)
@@ -99,15 +100,15 @@ void HeldItemLink_FollowHand(HeldItemLink *link, void *owner)
 }
 CLEAN_AS(func_02012214, HeldItemLink_FollowHand)
 
-/* func_02012250: the word at 0x198 of the owner goes to the word at 0xac of the item's pool
- * record, then the item is updated (func_0205ea60). */
+/* func_02012250: the owner's animation speed (its word at 0x198) goes to the item's model's
+ * (its word at 0xac), then the item is updated (func_0205ea60). */
 void HeldItemLink_UpdateFromOwner(HeldItemLink *link, void *owner)
 {
     HeldItem *item = held_item_link_item(link);
     if (item != NULL) {
-        int value = *(int *) ((u8 *) owner + HELD_ITEM_LINK_OWNER_VALUE);
-        u8 *record = (u8 *) (uintptr_t) (u32) HeldItem_Model(&item->index);
-        *(int *) (record + HELD_ITEM_LINK_RECORD_VALUE) = value;
+        int speed = *(int *) ((u8 *) owner + HELD_ITEM_LINK_OWNER_ANIM_SPEED);
+        u8 *model = (u8 *) (uintptr_t) (u32) HeldItem_Model(&item->index);
+        *(int *) (model + HELD_ITEM_LINK_MODEL_ANIM_SPEED) = speed;
         HeldItem_Update((HeldItemObject *) item);
     }
 }

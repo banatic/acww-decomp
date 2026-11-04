@@ -83,9 +83,9 @@ int VillagerItems_Find(u8 *villager, u16 *item)
     u16 *items = VillagerItems_At(villager, 0);
     for (int i = 0; i < VILLAGER_ITEMS_COUNT; i++) {
         int same;
-        if (ItemCode_HasVariant(item) != 0) {
-            int wanted = ItemCode_VariantItem(item);
-            same = wanted == ItemCode_VariantItem(&items[i]);
+        if (ItemCode_IsFurniture(item) != 0) {
+            int wanted = ItemCode_FurnitureNumber(item);
+            same = wanted == ItemCode_FurnitureNumber(&items[i]);
         } else {
             same = *item == items[i];
         }

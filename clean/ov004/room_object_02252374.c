@@ -196,7 +196,7 @@ CLEAN_AS(_ZN18Obj_ov004_0225237419func_ov004_02213fa8Ev, RoomObject02252374_Upda
 int RoomObject02252374_Start(RoomObject02252374 *object)
 {
     object->starting = 1;
-    ItemCode item = ItemCode_MakeVariant(RoomObject_Number(&object->base), 0);
+    ItemCode item = ItemCode_MakeFurniture(RoomObject_Number(&object->base), 0);
     if (item >= ROOM_OBJECT_02252374_ITEM_FIRST && item <= ROOM_OBJECT_02252374_ITEM_LAST) {
         ItemCode shown;
         ItemForm_ToCarried(&shown, &item);

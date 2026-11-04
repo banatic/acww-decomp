@@ -71,41 +71,41 @@ void ItemTraits_CopyCode(ItemCode *dst, const ItemCode *src)
 CLEAN_AS(func_0204c4b8, ItemTraits_CopyCode)
 
 /* func_0204be38: a head item of a pair that counts (its always.bin flag bit 1). */
-int ItemTraits_IsPairHeadItem(const ItemCode *item)
+int ItemTraits_IsPairFlower(const ItemCode *item)
 {
-    if (ItemGroup_IsHeadC(item) && ItemGroup_HeadCIndex(item) != ITEM_TRAITS_UNPAIRED) {
+    if (ItemGroup_IsFlower(item) && ItemGroup_FlowerIndex(item) != ITEM_TRAITS_UNPAIRED) {
         return ItemInfo_FlagBit1(item);
     }
     return 0;
 }
-CLEAN_AS(func_0204be38, ItemTraits_IsPairHeadItem)
+CLEAN_AS(func_0204be38, ItemTraits_IsPairFlower)
 
 /* func_0204bd84: a part C item of a pair that counts (its head item does not). */
-int ItemTraits_IsPairFaceItem(const ItemCode *item)
+int ItemTraits_IsPairWiltedFlower(const ItemCode *item)
 {
-    if (!ItemGroup_IsPartC2(item)) {
+    if (!ItemGroup_IsWiltedFlower(item)) {
         return 0;
     }
-    int index = ItemGroup_PartC2Index(item);
+    int index = ItemGroup_WiltedFlowerIndex(item);
     if (index == ITEM_TRAITS_UNPAIRED) {
         return 0;
     }
-    ItemCode head = ItemGroup_HeadC((u32) index);
-    return !ItemTraits_IsPairHeadItem(&head);
+    ItemCode head = ItemGroup_Flower((u32) index);
+    return !ItemTraits_IsPairFlower(&head);
 }
-CLEAN_AS(func_0204bd84, ItemTraits_IsPairFaceItem)
+CLEAN_AS(func_0204bd84, ItemTraits_IsPairWiltedFlower)
 
 /* func_0204beb0: into `out` the part C item of a pair that counts with this number (0 when
  * the number is not below their count); the first part C item 0x1471 when none is found. */
-void ItemTraits_PairFaceItem(ItemCode *out, u32 number)
+void ItemTraits_PairWiltedFlower(ItemCode *out, u32 number)
 {
     if (number >= ItemInfo_CountSecondOfPair()) {
         number = 0;
     }
     u32 found = 0;
     for (u32 i = 0; i < ITEM_TRAITS_PAIRS; i++) {
-        ItemCode item = ItemGroup_PartC2(i);
-        if (ItemTraits_IsPairFaceItem(&item)) {
+        ItemCode item = ItemGroup_WiltedFlower(i);
+        if (ItemTraits_IsPairWiltedFlower(&item)) {
             if (found == number) {
                 *out = item;
                 return;
@@ -113,20 +113,20 @@ void ItemTraits_PairFaceItem(ItemCode *out, u32 number)
             found++;
         }
     }
-    *out = ItemGroup_PartC2(0);
+    *out = ItemGroup_WiltedFlower(0);
 }
-CLEAN_AS(func_0204beb0, ItemTraits_PairFaceItem)
+CLEAN_AS(func_0204beb0, ItemTraits_PairWiltedFlower)
 
 /* func_0204bf38: the same for the head items of the pairs (0x1408 when none is found). */
-void ItemTraits_PairHeadItem(ItemCode *out, u32 number)
+void ItemTraits_PairFlower(ItemCode *out, u32 number)
 {
     if (number >= (u32) ItemInfo_CountFirstOfPair()) {
         number = 0;
     }
     u32 found = 0;
     for (u32 i = 0; i < ITEM_TRAITS_PAIRS; i++) {
-        ItemCode item = ItemGroup_HeadC(i);
-        if (ItemTraits_IsPairHeadItem(&item)) {
+        ItemCode item = ItemGroup_Flower(i);
+        if (ItemTraits_IsPairFlower(&item)) {
             if (found == number) {
                 *out = item;
                 return;
@@ -134,43 +134,43 @@ void ItemTraits_PairHeadItem(ItemCode *out, u32 number)
             found++;
         }
     }
-    *out = ItemGroup_HeadC(0);
+    *out = ItemGroup_Flower(0);
 }
-CLEAN_AS(func_0204bf38, ItemTraits_PairHeadItem)
+CLEAN_AS(func_0204bf38, ItemTraits_PairFlower)
 
 /* func_0204bfa0: the number of a part C item of a pair that counts, -1 for another item. */
-int ItemTraits_PairFaceNumber(const ItemCode *item)
+int ItemTraits_PairWiltedFlowerNumber(const ItemCode *item)
 {
-    if (!ItemTraits_IsPairFaceItem(item)) {
+    if (!ItemTraits_IsPairWiltedFlower(item)) {
         return -1;
     }
     for (u32 i = 0; i < ItemInfo_CountSecondOfPair(); i++) {
         ItemCode numbered;
-        ItemTraits_PairFaceItem(&numbered, i);
+        ItemTraits_PairWiltedFlower(&numbered, i);
         if (*item == numbered) {
             return (int) i;
         }
     }
     return -1;
 }
-CLEAN_AS(func_0204bfa0, ItemTraits_PairFaceNumber)
+CLEAN_AS(func_0204bfa0, ItemTraits_PairWiltedFlowerNumber)
 
 /* func_0204bff4: the number of a head item of a pair that counts, -1 for another item. */
-int ItemTraits_PairHeadNumber(const ItemCode *item)
+int ItemTraits_PairFlowerNumber(const ItemCode *item)
 {
-    if (!ItemTraits_IsPairHeadItem(item)) {
+    if (!ItemTraits_IsPairFlower(item)) {
         return -1;
     }
     for (u32 i = 0; i < (u32) ItemInfo_CountFirstOfPair(); i++) {
         ItemCode numbered;
-        ItemTraits_PairHeadItem(&numbered, i);
+        ItemTraits_PairFlower(&numbered, i);
         if (*item == numbered) {
             return (int) i;
         }
     }
     return -1;
 }
-CLEAN_AS(func_0204bff4, ItemTraits_PairHeadNumber)
+CLEAN_AS(func_0204bff4, ItemTraits_PairFlowerNumber)
 
 /* func_0204c120: the bag of bells for `bells`: with `round_up` the smallest bag worth at least
  * that much, else the biggest worth at most that much; 0xfff1 when no bag is. `*rest`, when
@@ -228,14 +228,14 @@ u32 ItemTraits_ClothStyle(const ItemCode *item)
 CLEAN_AS(func_0204c228, ItemTraits_ClothStyle)
 
 /* func_0204c260: for an item whose carried form is of kind 1 that form's always.bin flag bit
- * 4, for one with a variant its furniture's indoor flags 2 bit 0; 1 for any other. */
+ * 4, for furniture its furniture info's indoor flags 2 bit 0; 1 for any other. */
 int ItemTraits_FlagBit4(const ItemCode *item)
 {
     ItemCode carried = carried_form(item);
     if (ItemCode_Kind(&carried) == ITEM_TRAITS_KIND_CARRIED) {
         return ItemInfo_FlagBit4(&carried);
     }
-    if (ItemCode_HasVariant(&carried)) {
+    if (ItemCode_IsFurniture(&carried)) {
         return FurnitureInfo_ItemIndoorFlags2Bit0(&carried);
     }
     return 1;
@@ -249,7 +249,7 @@ int ItemTraits_FlagBit3(const ItemCode *item)
     if (ItemCode_Kind(&carried) == ITEM_TRAITS_KIND_CARRIED) {
         return ItemInfo_FlagBit3(&carried);
     }
-    if (ItemCode_HasVariant(&carried)) {
+    if (ItemCode_IsFurniture(&carried)) {
         return FurnitureInfo_ItemIndoorBit7(&carried);
     }
     return 0;
@@ -298,14 +298,14 @@ int ItemTraits_FishGroupOrder(const ItemCode *item)
 }
 CLEAN_AS(func_0204c3f0, ItemTraits_FishGroupOrder)
 
-/* func_0204c438: whether an item's carried form is of kind 1 or has a variant and is neither
+/* func_0204c438: whether an item's carried form is of kind 1 or is furniture and neither
  * an insect nor a fish; into `out`, when given, that form, else 0xfff1. */
 int ItemTraits_CarriedNonCreature(const ItemCode *item, ItemCode *out)
 {
     ItemCode result = ITEM_CODE_NONE;
     int found = 0;
     ItemCode carried = carried_form(item);
-    if ((ItemCode_IsKind1(&carried) || ItemCode_HasVariant(&carried)) && !ItemGroup_IsInsect(&carried) &&
+    if ((ItemCode_IsKind1(&carried) || ItemCode_IsFurniture(&carried)) && !ItemGroup_IsInsect(&carried) &&
         !ItemGroup_IsFish(&carried)) {
         result = carried;
         found = 1;
@@ -337,7 +337,7 @@ int ItemTraits_HasHeldModel(const ItemCode *item)
 CLEAN_AS(func_0204c4e8, ItemTraits_HasHeldModel)
 
 /* func_0204c520: an item's class. When its carried form is of kind 1, the class of the item's
- * always.bin record; for an item with a variant 0x39 (0x450c-0x45db), 0x3a (0x45dc-0x47d7 and
+ * always.bin record; for furniture 0x39 (0x450c-0x45db), 0x3a (0x45dc-0x47d7 and
  * 0x3894-0x38e3) or 0x3b; 0 for any other.
  * QUIRK: the record read is the item's own, not its carried form's: a room code whose carried
  * form is of kind 1 reads the record of the room code's low 12 bits (ItemInfo_Class). */
@@ -348,7 +348,7 @@ int ItemTraits_Class(const ItemCode *item)
         ItemCode code = *item;
         return ItemInfo_Class(&code);
     }
-    if (!ItemCode_HasVariant(&carried)) {
+    if (!ItemCode_IsFurniture(&carried)) {
         return 0;
     }
     if (ItemGroup_IsRoom450c(&carried)) {
@@ -424,13 +424,13 @@ extern int FX_Div(int numerator, int denominator);
 #define ITEM_TRAITS_LAST_FRUIT 0x151c
 #define ITEM_TRAITS_FRUITS 5
 /* A bag of bells is worth ten times its always.bin price; the town's own fruit a fifth of it;
- * the items 0x1406 and 0x1407 and the variant item 0x208 a hundred times. */
+ * the items 0x1406 and 0x1407 and the furniture 0x208 a hundred times. */
 #define ITEM_TRAITS_BAG_FACTOR 10
 #define ITEM_TRAITS_OWN_FRUIT_DIVISOR 5
 #define ITEM_TRAITS_HUNDREDFOLD 100
 #define ITEM_TRAITS_HUNDREDFOLD_A 0x1406
 #define ITEM_TRAITS_HUNDREDFOLD_B 0x1407
-#define ITEM_TRAITS_HUNDREDFOLD_VARIANT 0x208
+#define ITEM_TRAITS_HUNDREDFOLD_FURNITURE 0x208
 /* The discount of each shop points level (ShopPoints_Level), in percent. */
 #define ITEM_TRAITS_LEVEL_2_DISCOUNT 5
 #define ITEM_TRAITS_LEVEL_3_DISCOUNT 10
@@ -509,8 +509,8 @@ CLEAN_AS(func_0204c86c, ItemTraits_ShopPointsLevel)
 /* func_0204c878: an item's price in bells, by its carried form. Of kind 1: its always.bin price
  * (ItemInfo_Price), ten times that for a bag of bells (so a bag's price is the bells it
  * holds), a fifth for the town's own fruit, a hundred times for the items 0x1406 and 0x1407.
- * Of kinds 3 and 4: its variant item's FurnitureInfo_Price, a hundred times for variant
- * item 0x208. 0 for another kind.
+ * Of kinds 3 and 4: its furniture number's FurnitureInfo_Price, a hundred times for
+ * furniture 0x208. 0 for another kind.
  * QUIRK: 0x1406 and 0x1407 are looked for in the item as given, not its carried form. */
 int ItemTraits_Price(const ItemCode *item)
 {
@@ -538,9 +538,9 @@ int ItemTraits_Price(const ItemCode *item)
         }
         case ITEM_TRAITS_KIND_ROOM_A:
         case ITEM_TRAITS_KIND_ROOM_B: {
-            int variant_item = ItemCode_VariantItem(&carried);
-            int price = FurnitureInfo_Price(variant_item);
-            if (variant_item == ITEM_TRAITS_HUNDREDFOLD_VARIANT) {
+            int furniture = ItemCode_FurnitureNumber(&carried);
+            int price = FurnitureInfo_Price(furniture);
+            if (furniture == ITEM_TRAITS_HUNDREDFOLD_FURNITURE) {
                 return item_traits_times(price, ITEM_TRAITS_HUNDREDFOLD);
             }
             return price;
@@ -551,13 +551,13 @@ int ItemTraits_Price(const ItemCode *item)
 }
 CLEAN_AS(func_0204c878, ItemTraits_Price)
 
-/* func_0204ca08: whether two items are the same: by their variant items when the first has a
- * variant, else by their codes. */
+/* func_0204ca08: whether two items are the same: by their furniture numbers when the first
+ * is furniture, else by their codes. */
 int ItemTraits_SameItem(const ItemCode *a, const ItemCode *b)
 {
-    if (ItemCode_HasVariant(a)) {
-        int own = ItemCode_VariantItem(a);
-        return own == ItemCode_VariantItem(b);
+    if (ItemCode_IsFurniture(a)) {
+        int own = ItemCode_FurnitureNumber(a);
+        return own == ItemCode_FurnitureNumber(b);
     }
     return *a == *b;
 }

@@ -49,20 +49,20 @@ enum InsurerTalkSequence { INSURER_TALK_SEQUENCE_CLAIM = 0, INSURER_TALK_SEQUENC
 /* The lines of "sp_npc_insurance". */
 #define INSURER_LINE_FOX_DAY 0x08 /* answered 0-4: the fox's weekday 1-5; then 0x09 */
 #define INSURER_LINE_FOX_DAY_TAKEN 0x09
-#define INSURER_LINE_BAR_EVENT 0x0c     /* answered 0-4: 0x0d, the explanations reset; 4 bars */
-#define INSURER_LINE_EXPLAIN_START 0x0d /* 0x0d-0x12: end with an explanation */
-#define INSURER_LINE_EXPLAIN_FIRST 0x0e /* the five explanations */
-#define INSURER_LINE_EXPLAIN_END 0x12
-#define INSURER_LINE_EXPLAINED 0x13 /* after four explanations, not covered */
-#define INSURER_LINE_EXPLAINED_UNINSURED 0x14
+#define INSURER_LINE_BAR_EVENT 0x0c             /* answered 0-4: 0x0d, the explanations reset; 4 bars */
+#define INSURER_LINE_SURVEY_START 0x0d          /* 0x0d-0x12: end with an explanation */
+#define INSURER_LINE_SURVEY_QUESTION_FIRST 0x0e /* the five explanations */
+#define INSURER_LINE_SURVEY_QUESTION_END 0x12
+#define INSURER_LINE_SURVEYED 0x13 /* after four explanations, not covered */
+#define INSURER_LINE_SURVEYED_UNINSURED 0x14
 #define INSURER_LINE_OFFER 0x15 /* answered 0: 3000 bells asked */
 #define INSURER_LINE_NO_BELLS 0x16
 #define INSURER_LINE_OFFER_17 0x17
 #define INSURER_LINE_CAN_PAY 0x18
 #define INSURER_LINE_INSURE 0x19 /* ends with the insurance taken */
 #define INSURER_LINE_INSURED 0x1a
-#define INSURER_LINE_EXPLAINED_COVERED 0x1b /* after four explanations, covered */
-#define INSURER_LINE_EXPLAINED_INSURED 0x1c
+#define INSURER_LINE_SURVEYED_COVERED 0x1b /* after four explanations, covered */
+#define INSURER_LINE_SURVEYED_INSURED 0x1c
 #define INSURER_LINE_OFFER_COVER_1D 0x1d /* answered 0: 6000 bells asked */
 #define INSURER_LINE_COVER 0x1e          /* ends with the cover taken */
 #define INSURER_LINE_COVERED 0x1f
@@ -84,7 +84,7 @@ void InsurerTalk_Reset(InsurerTalk *talk);
 void *InsurerTalk_Delete(void *talk);
 void *InsurerTalk_Destroy(void *talk);
 void *InsurerTalk_Construct(void *talk);
-int InsurerTalk_PickExplanation(int unused, unsigned char *said, int count);
+int InsurerTalk_PickQuestion(int unused, unsigned char *said, int count);
 int InsurerTalk_CountUnsaid(int unused, const unsigned char *said, int count);
 void InsurerTalk_NextLine(int talk);
 void InsurerTalk_TakeClaim(InsurerTalk *talk);

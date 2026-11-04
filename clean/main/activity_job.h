@@ -19,7 +19,7 @@ int ActivityJob_IsIdleForOv048(void);
 int ActivityJob_IsIdleForOv004(void);
 int ActivityJob_Is12AtStep3(void);
 int ActivityJob_IsIdle(void);
-void ActivityJob_Ask1C(void);
+void ActivityJob_AskFindMover(void);
 void ActivityJob_Ask1F(void);
 void ActivityJob_Ask1B(void);
 void ActivityJob_Ask1A(void);

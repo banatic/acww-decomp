@@ -66,7 +66,7 @@ int ItemInfo_ScorePoints(int value);
 const ItemInfoSeries *ItemInfo_SeriesRecord(int series);
 u8 ItemInfo_SeriesKind(int series);
 u8 ItemInfo_IndoorStyle(const u16 *item);
-u8 ItemInfo_IndoorUnk01(const u16 *item);
+u8 ItemInfo_IndoorGroundSound(const u16 *item);
 int ItemInfo_FlagBit4(const u16 *item);
 int ItemInfo_FlagBit3(const u16 *item);
 int ItemInfo_FlagBit2(const u16 *item);

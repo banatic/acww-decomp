@@ -118,7 +118,7 @@ CLEAN_AS(func_ov004_0223b540, RoomPlacement_FindNearPlayer)
 static void try_turned(u32 *out, int x, int z, int side, int number, u8 layer, const Vec3 *position, int player_x,
                        int player_z)
 {
-    u16 code = ItemCode_MakeVariant(number, side);
+    u16 code = ItemCode_MakeFurniture(number, side);
     s16 side_angle = (s16) (side << 14);
     ItemFootprint footprint;
     ItemFootprint_Construct(&footprint, &code);
@@ -156,20 +156,20 @@ static void try_turned(u32 *out, int x, int z, int side, int number, u8 layer, c
 int RoomPlacement_Find(u32 *out, ItemCode *item, const Vec3 *position, int angle, int mode)
 {
     static const FootprintCell corners[4] = {{0, 0}, {-1, 0}, {0, -1}, {-1, -1}};
-    if (!ItemCode_HasVariant(item)) {
+    if (!ItemCode_IsFurniture(item)) {
         return ROOM_PLACEMENT_NOT_FURNITURE;
     }
     if (RoomObjects_FreeCount(RoomObjects_Table()) == 0) {
         return ROOM_PLACEMENT_ROOM_FULL;
     }
     if (mode == ROOM_PLACEMENT_MODE_UNPLACED) {
-        *out = (u32) Placement_Make(0, 0, ItemCode_VariantItem(item), 0, 0, ROOM_PLACEMENT_MODE_UNPLACED);
+        *out = (u32) Placement_Make(0, 0, ItemCode_FurnitureNumber(item), 0, 0, ROOM_PLACEMENT_MODE_UNPLACED);
         return ROOM_PLACEMENT_PLACED;
     }
     if (!SceneKinds_CurrentIsHouseRoom()) {
         return ROOM_PLACEMENT_NOT_FURNITURE;
     }
-    int number = ItemCode_VariantItem(item);
+    int number = ItemCode_FurnitureNumber(item);
     int shape = FurnitureInfo_Shape(number);
     int facing_actor = Angle_Side((s16) (angle + 0x8000));
     int player_x;
@@ -223,7 +223,7 @@ int RoomPlacement_TryAt(u32 *out, int x, int z, int side, int number, u8 layer, 
     int on_actor_cell = FurnitureInfo_IndoorBit2(number);
     int shape = FurnitureInfo_Shape(number);
     int stands = FurnitureInfo_DmaUnk1A(number);
-    u16 code = ItemCode_MakeVariant(number, side);
+    u16 code = ItemCode_MakeFurniture(number, side);
     ItemFootprint footprint;
     ItemFootprint_Construct(&footprint, &code);
     AcreMap *map = data_021c80bc;

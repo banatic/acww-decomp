@@ -55,10 +55,10 @@ static void scene_object_nodes_hand_on(G3dRenderState *state, void (*next)(void 
 static int scene_object_nodes_is_person(u8 *object, u16 code)
 {
     u16 *person = (u16 *) (void *) (object + SCENE_OBJECT_NODES_PERSON);
-    if (ItemCode_HasVariant(person) != 0) {
+    if (ItemCode_IsFurniture(person) != 0) {
         u16 wanted = code;
-        int own = ItemCode_VariantItem(person);
-        return own == ItemCode_VariantItem(&wanted);
+        int own = ItemCode_FurnitureNumber(person);
+        return own == ItemCode_FurnitureNumber(&wanted);
     }
     return *person == code;
 }

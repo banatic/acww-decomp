@@ -116,7 +116,7 @@ void DroppedItems_Release(DroppedItem *items)
         if (drop->state != DROPPED_ITEM_FREE) {
             DroppedItem_Finish(drop);
         }
-        SoundEmitter_Vfunc10B(DroppedItem_sound(drop));
+        SoundEmitter_FinishB(DroppedItem_sound(drop));
     }
 }
 CLEAN_AS(func_ov004_022336c4, DroppedItems_Release)
@@ -180,7 +180,7 @@ void DroppedItems_Reset(DroppedItem *items)
         drop->state = DROPPED_ITEM_FREE;
         drop->item = DROPPED_ITEM_NONE;
         drop->item_0a = DROPPED_ITEM_NONE;
-        SoundEmitter_StopB(DroppedItem_sound(drop));
+        SoundEmitter_ResetB(DroppedItem_sound(drop));
     }
 }
 CLEAN_AS(func_ov004_0223380c, DroppedItems_Reset)

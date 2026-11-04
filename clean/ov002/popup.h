@@ -32,7 +32,7 @@ typedef struct Popup {
 
 int Popup_IsUp(Popup *popup);
 void Popup_SetTimer(Popup *popup, u8 frames);
-void Popup_SetDrawValue(Popup *popup, int value);
+void Popup_SetPriority(Popup *popup, int priority);
 void Popup_ClearQueued(Popup *popup);
 void Popup_Queue(Popup *popup);
 void Popup_ShowQueued(Popup *popup);

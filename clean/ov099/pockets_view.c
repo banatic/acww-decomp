@@ -622,7 +622,7 @@ CLEAN_AS(func_ov099_0229cc74, PocketsView_PlaceIsEmpty)
 
 /* func_ov099_0229ccc8: what the part's object answers for `place` being taken; 0 for other
  * places. */
-int PocketsView_PlaceIsTaken(PocketsView *self, int place)
+int PocketsView_PlaceIsDimmed(PocketsView *self, int place)
 {
     if (PocketsView_IsGridPlace(self, (unsigned int) place)) {
         return PocketsGrid_IsDimmed((PocketsGrid *) (void *) self->grid, PocketsView_GridIndex(self, place));
@@ -633,7 +633,7 @@ int PocketsView_PlaceIsTaken(PocketsView *self, int place)
     }
     return 0;
 }
-CLEAN_AS(func_ov099_0229ccc8, PocketsView_PlaceIsTaken)
+CLEAN_AS(func_ov099_0229ccc8, PocketsView_PlaceIsDimmed)
 
 /* func_ov099_0229cd1c: the y of `place`, by its part's object; 0 for other places. */
 int PocketsView_PlaceY(PocketsView *self, int place)
@@ -781,11 +781,11 @@ int PocketsView_IsGridPlace(PocketsView *self, unsigned int place)
 CLEAN_AS(func_ov099_0229cf30, PocketsView_IsGridPlace)
 
 /* func_ov099_0229cf3c: the object at 0x94 updated by main's func_020b9ccc. */
-void PocketsView_UpdateObject94(PocketsView *self)
+void PocketsView_EndLayerTask(PocketsView *self)
 {
     LayerTask_End((LayerTask *) (void *) self->unk_94);
 }
-CLEAN_AS(func_ov099_0229cf3c, PocketsView_UpdateObject94)
+CLEAN_AS(func_ov099_0229cf3c, PocketsView_EndLayerTask)
 
 /* func_ov099_0229cf48: the held item glides from where it is drawn to `place` (kept as
  * `held_place`) in `steps` steps; sub state 0x10 waits for the glide. */
@@ -930,7 +930,7 @@ static int move_cursor_by_keys(PocketsView *self)
 }
 
 /* func_ov099_0229d050: the pen touched `place` (sub state 1): the offset from the touch to the
- * place kept and the popup queued for it; POCKETS_VIEW_FLAG_04 set for a grid place its object
+ * place kept and the popup queued for it; POCKETS_VIEW_FLAG_TOUCHED_FREE set for a grid place its object
  * does not call taken, cleared otherwise. */
 void PocketsView_TouchPlace(PocketsView *self, u8 place)
 {
@@ -942,10 +942,10 @@ void PocketsView_TouchPlace(PocketsView *self, u8 place)
     self->grab_dy = PocketsView_PlaceY(self, self->touch_place) - touch_y;
     self->popup_place = place;
     Popup_Queue(&self->popup);
-    if (PocketsView_IsLetterPlace(self, place) || PocketsView_PlaceIsTaken(self, place)) {
-        PocketsView_ClearFlags(self, POCKETS_VIEW_FLAG_04);
+    if (PocketsView_IsLetterPlace(self, place) || PocketsView_PlaceIsDimmed(self, place)) {
+        PocketsView_ClearFlags(self, POCKETS_VIEW_FLAG_TOUCHED_FREE);
     } else {
-        PocketsView_SetFlags(self, POCKETS_VIEW_FLAG_04);
+        PocketsView_SetFlags(self, POCKETS_VIEW_FLAG_TOUCHED_FREE);
     }
 }
 CLEAN_AS(func_ov099_0229d050, PocketsView_TouchPlace)
@@ -1233,7 +1233,7 @@ void PocketsView_IdleByKeys(PocketsView *self)
     if (move_cursor_by_keys(self)) {
         return;
     }
-    if (PocketsView_PlaceIsTaken(self, self->cursor) == 0 && (data_021fbe40.pressed & PAD_A) != 0) {
+    if (PocketsView_PlaceIsDimmed(self, self->cursor) == 0 && (data_021fbe40.pressed & PAD_A) != 0) {
         if (PocketsView_IsGridPlace(self, self->cursor) && PocketsView_PlaceIsEmpty(self, self->cursor) == 0) {
             PocketsView_OpenChoice(self, self->cursor);
         }
@@ -1300,7 +1300,7 @@ CLEAN_AS(func_ov099_0229d718, PocketsView_ActionChoiceByTouch)
 
 /* func_ov099_0229d7a4 (sub state 1): the pen is on a touched place (PocketsView_TouchPlace).
  * Lifted: back to sub state 0 with the popup closing after 60 frames. Held, at a place with
- * POCKETS_VIEW_FLAG_04: dragged more than 8 pixels it picks the item up; once main's byte
+ * POCKETS_VIEW_FLAG_TOUCHED_FREE: dragged more than 8 pixels it picks the item up; once main's byte
  * data_021f6c30 reaches 9 the place's choice opens. Else a queued popup is shown. */
 void PocketsView_HoldTouchOnPlace(PocketsView *self)
 {
@@ -1309,7 +1309,7 @@ void PocketsView_HoldTouchOnPlace(PocketsView *self)
         Popup_SetTimer(&self->popup, POPUP_FRAMES);
         return;
     }
-    if (PocketsView_TestFlags(self, POCKETS_VIEW_FLAG_04) != 0) {
+    if (PocketsView_TestFlags(self, POCKETS_VIEW_FLAG_TOUCHED_FREE) != 0) {
         if (PocketsView_TouchMoved(self) != 0) {
             PocketsView_PickUpWithTouch(self, self->touch_place);
             return;
@@ -1387,7 +1387,7 @@ CLEAN_AS(func_ov099_0229d8d8, PocketsView_EndFrame)
  * ov094's updated. */
 void PocketsView_BeginFrame(PocketsView *self)
 {
-    PocketsView_UpdateObject94(self);
+    PocketsView_EndLayerTask(self);
     PocketsWallet_BeginFrame((PocketsWallet *) (void *) self->wallet);
     PocketsGrid_BeginFrame((PocketsGrid *) (void *) self->grid);
     PocketsLetters_BeginFrame((PocketsLetters *) (void *) self->letters);
@@ -1413,7 +1413,7 @@ CLEAN_AS(func_ov099_0229d948, PocketsView_BeginInteractiveFrame)
 /* func_ov099_0229d964: the members' teardown before the scene closes. */
 void PocketsView_Teardown(PocketsView *self)
 {
-    PocketsView_UpdateObject94(self);
+    PocketsView_EndLayerTask(self);
     PocketsWallet_Teardown((PocketsWallet *) (void *) self->wallet);
     PocketsGrid_Teardown((PocketsGrid *) (void *) self->grid);
     PagedChoice_Dismiss(choice_of(self));

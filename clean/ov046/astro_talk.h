@@ -25,12 +25,12 @@
 struct Astro;
 
 /* The topics (AstroTalk.topic): which line it starts with (AstroTalk_Line). */
-#define ASTRO_TALK_TOPIC_FIRST_BUSY 0 /* the first talk of the day, after its animation */
-#define ASTRO_TALK_TOPIC_FIRST 1      /* the first talk of the day */
-#define ASTRO_TALK_TOPIC_AGAIN_BUSY 2 /* a later talk, after its animation */
-#define ASTRO_TALK_TOPIC_AGAIN 3      /* a later talk */
-#define ASTRO_TALK_TOPIC_CALLED 4     /* the player called it over (Astro_TakeCall) */
-#define ASTRO_TALK_TOPIC_PENDING 5    /* one of 0-3, picked when the line is asked for */
+#define ASTRO_TALK_TOPIC_FIRST_ASLEEP 0 /* the first talk of the day, woken up */
+#define ASTRO_TALK_TOPIC_FIRST 1        /* the first talk of the day */
+#define ASTRO_TALK_TOPIC_AGAIN_ASLEEP 2 /* a later talk, woken up */
+#define ASTRO_TALK_TOPIC_AGAIN 3        /* a later talk */
+#define ASTRO_TALK_TOPIC_CALLED 4       /* the player called it over (Astro_TakeCall) */
+#define ASTRO_TALK_TOPIC_PENDING 5      /* one of 0-3, picked when the line is asked for */
 #define ASTRO_TALK_TOPICS 5
 
 /* What a constellation picked from the list is for. */

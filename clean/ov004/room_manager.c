@@ -290,9 +290,9 @@ void RoomManager_PlaceMapFurniture(RoomManager *room)
         for (int z = 0; z < 16; z++) {
             for (int x = 0; x < 16; x++) {
                 u16 *tile = AcreRecord_Tile(acre, (unsigned int) x, (unsigned int) z, layer);
-                if (tile != NULL && ItemCode_HasVariant(tile)) {
-                    int number = ItemCode_VariantItem(tile);
-                    int side = ItemCode_Variant(tile);
+                if (tile != NULL && ItemCode_IsFurniture(tile)) {
+                    int number = ItemCode_FurnitureNumber(tile);
+                    int side = ItemCode_Side(tile);
                     RoomObjects_Place(x, z, number, side, (u8) layer, 0);
                 }
             }

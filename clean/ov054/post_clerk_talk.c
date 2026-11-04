@@ -140,9 +140,9 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 #define POST_CLERK_TALK_MODE_SAVINGS 0x3b
 #define POST_CLERK_TALK_MODE_TUNE_EDITOR 0x3f
 
-/* The current player's flags (player_record.h): the loan offered (1), the line 0x1a said once
- * (4), the sequence's first talk (9), the gift handed over (0x20). */
-#define POST_CLERK_TALK_FLAG_1 1
+/* The current player's flags (player_record.h): besides PLAYER_FLAG_NOOK_JOB (1, the player
+ * still works for Nook), the line 0x1a said once (4), the sequence's first talk (9), the gift
+ * handed over (0x20). */
 #define POST_CLERK_TALK_FLAG_4 4
 #define POST_CLERK_TALK_FLAG_SEQUENCE_TALKED 9
 #define POST_CLERK_TALK_FLAG_GIFT 0x20
@@ -156,7 +156,7 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 #define POST_CLERK_TALK_SAVINGS_PART 200
 #define POST_CLERK_TALK_BIG_AMOUNT 5000
 
-/* The linked game: the frames to find one, the session's start, the entries looked for (14
+/* Moving to another town over DS wireless: the frames to find a town, the session's start, the entries looked for (14
  * bytes, open when byte 0xd is 1, with a town name of 6 wide characters when byte 0xc is 0)
  * and the talk's part the name goes in. */
 #define POST_CLERK_TALK_SEARCH_FRAMES 600
@@ -169,13 +169,13 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 #define POST_CLERK_TALK_PART_TOWN 8
 
 /* Her lines named in the code (of her own file unless said). */
-#define POST_CLERK_LINE_MENU 0x00         /* also 0x52, 0x53, 0x56: they end with the menu */
-#define POST_CLERK_LINE_GOODBYE 0x01      /* the menu's last answer */
-#define POST_CLERK_LINE_JOB_12 0x02       /* activity job 0x12 reached its step 3 */
-#define POST_CLERK_LINE_NOT_POSTED 0x03   /* the letter screen closed without posting */
-#define POST_CLERK_LINE_POSTED 0x05       /* letters posted */
-#define POST_CLERK_LINE_POSTED_ALL 0x07   /* all posted; also the dated letter kept */
-#define POST_CLERK_LINE_LINKED_START 0x08 /* linked with a slot, at the first counter place */
+#define POST_CLERK_LINE_MENU 0x00            /* also 0x52, 0x53, 0x56: they end with the menu */
+#define POST_CLERK_LINE_GOODBYE 0x01         /* the menu's last answer */
+#define POST_CLERK_LINE_SAVE_FAILED 0x02     /* activity job 0x12 reached its step 3 */
+#define POST_CLERK_LINE_NOT_POSTED 0x03      /* the letter screen closed without posting */
+#define POST_CLERK_LINE_POSTED 0x05          /* letters posted */
+#define POST_CLERK_LINE_POSTED_ALL 0x07      /* all posted; also the dated letter kept */
+#define POST_CLERK_LINE_SERVICES_LINKED 0x08 /* linked with a slot, at the first counter place */
 #define POST_CLERK_LINE_NONE_POSTED 0x09
 #define POST_CLERK_LINE_DATE_SELF 0x0b  /* one letter to the player themself */
 #define POST_CLERK_LINE_DATE_TAKEN 0x0c /* the date picked for it */
@@ -189,11 +189,11 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 #define POST_CLERK_LINE_SAVINGS 0x16      /* ends opening the account's screen */
 #define POST_CLERK_LINE_SAVINGS_DONE 0x17 /* the balance told */
 #define POST_CLERK_LINE_SAVINGS_NONE 0x18
-#define POST_CLERK_LINE_LINKED_FAILED 0x37 /* no linked game found or joined */
-#define POST_CLERK_LINE_GAME_FOUND 0x38
-#define POST_CLERK_LINE_GAME_NAMED 0x39 /* a game found, its town's name in part 8 */
-#define POST_CLERK_LINE_SESSION_ENDED 0x3a
-#define POST_CLERK_LINE_JOB_1F 0x3c
+#define POST_CLERK_LINE_NO_MOVE_TARGET 0x37 /* no town to move to found or joined */
+#define POST_CLERK_LINE_MOVE_TO_NEW 0x38
+#define POST_CLERK_LINE_MOVE_TO_TOWN 0x39 /* a town found, its name in part 8 */
+#define POST_CLERK_LINE_MOVE_CANCELLED 0x3a
+#define POST_CLERK_LINE_MOVE_SAVED 0x3c
 #define POST_CLERK_LINE_ERRAND_TAKEN 0x50
 #define POST_CLERK_LINE_ERRAND_NONE 0x51
 #define POST_CLERK_LINE_ERRAND_OTHER 0x57 /* taken, though the errand was not for her */
@@ -314,12 +314,12 @@ static void pct_release(TalkObject *object)
     TalkObject_Release(object);
 }
 
-/* A linked game given up: the session ended, line 0x37, the talk let go, no step. */
-static void pct_give_up_linked(PostClerkTalk *talk)
+/* The move given up: the session ended, line 0x37, the talk let go, no step. */
+static void pct_give_up_move(PostClerkTalk *talk)
 {
     TalkObject *object = pct_object(talk);
-    PostClerkTalk_EndLinkedGame(talk);
-    pct_say(talk, POST_CLERK_LINE_LINKED_FAILED);
+    PostClerkTalk_EndMove(talk);
+    pct_say(talk, POST_CLERK_LINE_NO_MOVE_TARGET);
     pct_release(object);
     PostClerkTalk_SetStep(talk, POST_CLERK_TALK_STEP_NONE);
 }
@@ -397,16 +397,16 @@ void PostClerkTalk_RunEachStep(PostClerkTalk *talk)
 }
 CLEAN_AS(func_ov054_02261d10, PostClerkTalk_RunEachStep)
 
-/* func_ov054_02261f44: the linked session ended; when it was, overlay 68 is switched to
+/* func_ov054_02261f44: the move's linked session ended; when it was, overlay 68 is switched to
  * (LibraryOverlay_Switch68). The talk is not looked at. */
-void PostClerkTalk_EndLinkedGame(PostClerkTalk *talk)
+void PostClerkTalk_EndMove(PostClerkTalk *talk)
 {
     (void) talk;
     if (Session_End()) {
         LibraryOverlay_Switch68();
     }
 }
-CLEAN_AS(func_ov054_02261f44, PostClerkTalk_EndLinkedGame)
+CLEAN_AS(func_ov054_02261f44, PostClerkTalk_EndMove)
 
 /* ---- The lines */
 
@@ -461,7 +461,7 @@ void PostClerkTalk_Line(PostClerkTalk *talk, PostClerkTalkLine *out)
         out->message = data_ov054_02262974[clerk->spot];
         file = POST_CLERK_TALK_FILE_OWN;
         if (clerk->spot == 0 && PostClerk_HasSessionSlot(clerk) != 0) {
-            out->message = POST_CLERK_LINE_LINKED_START;
+            out->message = POST_CLERK_LINE_SERVICES_LINKED;
         }
     }
     out->name = pct_file(talk, file);
@@ -663,7 +663,7 @@ void PostClerkTalk_OfferMenu(PostClerkTalk *talk, int arg)
 
     if (TalkChecks_IsHostOrAlone() == 0) {
         menu = POST_CLERK_TALK_MENU_GUEST;
-    } else if (PlayerRecord_TestFlag(record, POST_CLERK_TALK_FLAG_1) == 0 && HouseRecord_Loan(&data_021ebcd4) != 0) {
+    } else if (PlayerRecord_TestFlag(record, PLAYER_FLAG_NOOK_JOB) == 0 && HouseRecord_Loan(&data_021ebcd4) != 0) {
         menu = PostClerk_HasSessionSlot(talk->owner) ? POST_CLERK_TALK_MENU_LINKED_LOAN : POST_CLERK_TALK_MENU_LOAN;
     } else if (PostClerk_HasSessionSlot(talk->owner)) {
         menu = POST_CLERK_TALK_MENU_LINKED;
@@ -741,7 +741,7 @@ CLEAN_AS(func_ov054_02260b70, PostClerkTalk_OnDramaAnswer)
  * - 0x0c: the first answer keeps the letter as the dated letter, 0x07;
  * - 4, 0x1c, 0x34, 0x5d, 0x5e: the third answer 0x1a the first time (flag 4 set), then 0x19;
  *   the fourth 0x60 with the current player's flag 1, else 0x35;
- * - 0x38 and 0x39 (a linked game found): the second answer ends the session, 0x3a. */
+ * - 0x38 and 0x39 (a town to move to found): the second answer ends the session, 0x3a. */
 void PostClerkTalk_OnOwnAnswer(PostClerkTalk *talk, unsigned int arg)
 {
     int answer = pct_answer(talk);
@@ -799,14 +799,14 @@ void PostClerkTalk_OnOwnAnswer(PostClerkTalk *talk, unsigned int arg)
                     line = 0x19;
                 }
             } else if (answer == 3) {
-                line = PlayerRecord_TestFlag(record, POST_CLERK_TALK_FLAG_1) != 0 ? 0x60 : 0x35;
+                line = PlayerRecord_TestFlag(record, PLAYER_FLAG_NOOK_JOB) != 0 ? 0x60 : 0x35;
             }
             break;
-        case POST_CLERK_LINE_GAME_FOUND:
-        case POST_CLERK_LINE_GAME_NAMED:
+        case POST_CLERK_LINE_MOVE_TO_NEW:
+        case POST_CLERK_LINE_MOVE_TO_TOWN:
             if (answer == 1) {
-                PostClerkTalk_EndLinkedGame(talk);
-                line = POST_CLERK_LINE_SESSION_ENDED;
+                PostClerkTalk_EndMove(talk);
+                line = POST_CLERK_LINE_MOVE_CANCELLED;
             }
             break;
         default:
@@ -952,7 +952,7 @@ static int pct_acres_line(int value)
  * - 0x55: the talk held, its spinner (sound 0), step 8 (activity job 0x12);
  * - 0x1d, 0x1e: PostClerkTalk_TellDonationRank;
  * - 0x36: the talk held, its spinner (sound 1), overlay 66 switched to, a linked session
- *   started (mode 2, two players), 600 frames to find a game, step 12;
+ *   started (mode 2, two players), 600 frames to find a town to move to, step 12;
  * - 0x3d: the town summary's line; 0x40 to 0x42: the acre summary's line;
  * - 0x3e: 0x4b when the gift was handed over (flag 0x20); else when the town's summary
  *   answered 4 long enough and this system is the host (or alone), 0x4d when the gift 0x1379
@@ -970,7 +970,7 @@ void PostClerkTalk_OnOwnLineEnd(PostClerkTalk *talk, int arg)
     int line = 0;
 
     switch (pct_shown(talk)) {
-        case POST_CLERK_LINE_JOB_12:
+        case POST_CLERK_LINE_SAVE_FAILED:
             TalkObject_Hold(object);
             break;
         case POST_CLERK_LINE_MENU:
@@ -1087,7 +1087,7 @@ void PostClerkTalk_OnOwnLineEnd(PostClerkTalk *talk, int arg)
             TalkObject_StartSpinner(object, 0);
             PostClerkTalk_SetStep(talk, POST_CLERK_TALK_STEP_ASK_JOB_1F);
             break;
-        case POST_CLERK_LINE_JOB_1F:
+        case POST_CLERK_LINE_MOVE_SAVED:
             object->mode = 0;
             PostClerk_SetState(talk->owner, POST_CLERK_LEAVE);
             break;
@@ -1305,7 +1305,7 @@ void PostClerkTalk_AwaitJob12(PostClerkTalk *talk)
     TalkObject *object = pct_object(talk);
     if (ActivityJob_Is12AtStep3()) {
         pct_release(object);
-        pct_say(talk, POST_CLERK_LINE_JOB_12);
+        pct_say(talk, POST_CLERK_LINE_SAVE_FAILED);
         PostClerkTalk_SetStep(talk, POST_CLERK_TALK_STEP_NONE);
     } else if (ActivityJob_IsIdle()) {
         pct_release(object);
@@ -1342,10 +1342,10 @@ void PostClerkTalk_AfterErrand(PostClerkTalk *talk)
                 CurrentPockets_Empty(slot);
             }
             int empty;
-            if (ItemCode_HasVariant(&item)) {
+            if (ItemCode_IsFurniture(&item)) {
                 u16 none = ITEM_CODE_NONE;
-                int own = ItemCode_VariantItem(&item);
-                empty = own == ItemCode_VariantItem(&none);
+                int own = ItemCode_FurnitureNumber(&item);
+                empty = own == ItemCode_FurnitureNumber(&none);
             } else {
                 empty = item == ITEM_CODE_NONE;
             }
@@ -1363,14 +1363,14 @@ void PostClerkTalk_AfterErrand(PostClerkTalk *talk)
 }
 CLEAN_AS(func_ov054_0226175c, PostClerkTalk_AfterErrand)
 
-/* func_ov054_02261534 (step 12, each step, looking for a linked game): the session's nothing
- * sent and the joinable games counted; once the frames to find one run out, the game is given
+/* func_ov054_02261534 (step 12, each step, looking for a town to move to): the session's nothing
+ * sent and the joinable games counted; once the frames to find one run out, the move is given
  * up. Else each listed entry (overlay 66 required before each library call) whose data is 14
- * bytes and open (byte 0xd 1) is a game found: line 0x38, or 0x39 with its town's name (6 wide
- * characters, when byte 0xc is 0) in part 8; selected, step 13 (connecting), else the game is
+ * bytes and open (byte 0xd 1) is a town found: line 0x38, or 0x39 with its town's name (6 wide
+ * characters, when byte 0xc is 0) in part 8; selected, step 13 (connecting), else the move is
  * given up. Only the first such entry is looked at.
  * QUIRK: the entries are counted with a byte, so more than 255 would never end the loop. */
-void PostClerkTalk_SearchGame(PostClerkTalk *talk)
+void PostClerkTalk_SearchMoveTarget(PostClerkTalk *talk)
 {
     TalkObject *object = pct_object(talk);
     const char *file = pct_files(talk)->own;
@@ -1378,7 +1378,7 @@ void PostClerkTalk_SearchGame(PostClerkTalk *talk)
     Session_SendNothing();
     int count = Net_CountJoinable();
     if (Countdown_Tick16(&talk->search_frames) == 0) {
-        pct_give_up_linked(talk);
+        pct_give_up_move(talk);
         return;
     }
     if (count <= 0) {
@@ -1407,35 +1407,35 @@ void PostClerkTalk_SearchGame(PostClerkTalk *talk)
         if (data[POST_CLERK_TALK_ENTRY_OPEN] != 1) {
             continue;
         }
-        u8 line = POST_CLERK_LINE_GAME_FOUND;
+        u8 line = POST_CLERK_LINE_MOVE_TO_NEW;
         if (data[POST_CLERK_TALK_ENTRY_NAMELESS] == 0) {
             TextBase_SetWide(&wide, data, POST_CLERK_TALK_ENTRY_NAME_CHARS);
             TextBase_WideToBytes((TextBase *) (void *) &name, (WideTextBase *) (void *) &wide, 0, 0);
             TalkObject_SetPart(object, POST_CLERK_TALK_PART_TOWN, (TextBase *) (void *) &name);
-            line = POST_CLERK_LINE_GAME_NAMED;
+            line = POST_CLERK_LINE_MOVE_TO_TOWN;
         }
         pct_say_in(talk, line, file);
         LibraryOverlay_Require66();
         if (Local_SelectEntry(entry) != 0) {
             PostClerkTalk_SetStep(talk, POST_CLERK_TALK_STEP_CONNECT);
         } else {
-            pct_give_up_linked(talk);
+            pct_give_up_move(talk);
         }
         break;
     }
     TownNameWideText_Destruct(&wide);
     TownNameText_Destruct(&name);
 }
-CLEAN_AS(func_ov054_02261534, PostClerkTalk_SearchGame)
+CLEAN_AS(func_ov054_02261534, PostClerkTalk_SearchMoveTarget)
 
-/* func_ov054_022614b4 (step 13, each step, connecting): once the frames run out, the game is
+/* func_ov054_022614b4 (step 13, each step, connecting): once the frames run out, the move is
  * given up; else (with the network library's overlay required) once the connection is made,
  * the talk is let go, no step. */
-void PostClerkTalk_AwaitConnection(PostClerkTalk *talk)
+void PostClerkTalk_AwaitMoveTarget(PostClerkTalk *talk)
 {
     TalkObject *object = pct_object(talk);
     if (Countdown_Tick16(&talk->search_frames) == 0) {
-        pct_give_up_linked(talk);
+        pct_give_up_move(talk);
         return;
     }
     LibraryOverlay_RequireAny();
@@ -1444,7 +1444,7 @@ void PostClerkTalk_AwaitConnection(PostClerkTalk *talk)
         PostClerkTalk_SetStep(talk, POST_CLERK_TALK_STEP_NONE);
     }
 }
-CLEAN_AS(func_ov054_022614b4, PostClerkTalk_AwaitConnection)
+CLEAN_AS(func_ov054_022614b4, PostClerkTalk_AwaitMoveTarget)
 
 /* func_ov054_02261490 (step 14, each step): once the clerk is ready (PostClerk_ReadyForJob),
  * activity job 0x1f is asked for, step 15. */
@@ -1468,7 +1468,7 @@ void PostClerkTalk_AwaitJob1f(PostClerkTalk *talk)
     }
     if (ActivityJob_IsIdleForOv054()) {
         pct_release(object);
-        pct_say(talk, POST_CLERK_LINE_JOB_1F);
+        pct_say(talk, POST_CLERK_LINE_MOVE_SAVED);
         PostClerkTalk_SetStep(talk, POST_CLERK_TALK_STEP_NONE);
     }
 }

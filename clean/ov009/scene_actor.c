@@ -47,7 +47,7 @@ static_assert(offsetof(SceneActor, code) == 0x136, "code");
 static_assert(offsetof(SceneActor, model_object) == 0x13c, "model object");
 static_assert(offsetof(SceneActor, model) == 0x198, "model");
 static_assert(offsetof(SceneActor, model_matrix) == 0x1a0, "model matrix");
-static_assert(offsetof(SceneActor, member_1f4) == 0x1f4, "member 0x1f4");
+static_assert(offsetof(SceneActor, lights) == 0x1f4, "member 0x1f4");
 static_assert(offsetof(SceneActor, tile_x) == 0x22c, "tile x");
 static_assert(offsetof(SceneActor, tile_z) == 0x230, "tile z");
 static_assert(offsetof(SceneActor, exit_step) == 0x234, "exit step");
@@ -74,9 +74,9 @@ static_assert(sizeof(SceneActor) == 0x2b4, "size");
 
 /* The scene events of vtable slot 0x4c. */
 #define SCENE_ACTOR_EVENT_TALK 0
-#define SCENE_ACTOR_EVENT_TALK_AGAIN 1
+#define SCENE_ACTOR_EVENT_CALLED 1
 #define SCENE_ACTOR_EVENT_6 6
-#define SCENE_ACTOR_EVENT_IDLE 8
+#define SCENE_ACTOR_EVENT_ENDED 8
 
 /* Sounds play at this volume. */
 #define SCENE_ACTOR_SOUND_VOLUME 0x7f
@@ -183,10 +183,10 @@ static const SceneActorRecord *scene_actor_record(const SceneActor *actor)
 /* Whether `*code` is `value`, through func_0204bc64 when func_0204bcdc says it converts. */
 static int scene_actor_code_is(u16 *code, u16 value)
 {
-    if (ItemCode_HasVariant(code) != 0) {
+    if (ItemCode_IsFurniture(code) != 0) {
         u16 other = value;
-        int converted = ItemCode_VariantItem(code);
-        return converted == ItemCode_VariantItem(&other);
+        int converted = ItemCode_FurnitureNumber(code);
+        return converted == ItemCode_FurnitureNumber(&other);
     }
     return *code == value;
 }
@@ -231,7 +231,7 @@ CLEAN_AS(func_ov009_02262ef0, SceneActorSound_Play)
 void SceneActorSound_TurnOff(SceneActorSound *sound)
 {
     if (sound->state.on) {
-        SoundEmitter_Vfunc10B(&sound->emitter);
+        SoundEmitter_FinishB(&sound->emitter);
         sound->state.on = 0;
     }
 }
@@ -251,7 +251,7 @@ CLEAN_AS(func_ov009_02262f2c, SceneActorSound_UpdateAt)
 void SceneActorSound_TurnOn(SceneActorSound *sound)
 {
     if (!sound->state.on) {
-        SoundEmitter_StopB(&sound->emitter);
+        SoundEmitter_ResetB(&sound->emitter);
         sound->state.on = 1;
     }
 }
@@ -277,11 +277,11 @@ void *SceneActorSound_Construct(SceneActorSound *sound)
 CLEAN_AS(func_ov009_02262f8c, SceneActorSound_Construct)
 
 /* func_ov009_02262fa4: whether the first word of the member object at 0x1f4 is set (1 or 0). */
-int SceneActor_Member1F4IsSet(SceneActor *actor)
+int SceneActor_LightsLit(SceneActor *actor)
 {
-    return BuildingLights_IsLit((const BuildingLights *) actor->member_1f4);
+    return BuildingLights_IsLit((const BuildingLights *) actor->lights);
 }
-CLEAN_AS(func_ov009_02262fa4, SceneActor_Member1F4IsSet)
+CLEAN_AS(func_ov009_02262fa4, SceneActor_LightsLit)
 
 /* func_ov009_02262fb4: the tile's z. */
 u32 SceneActor_TileZ(SceneActor *actor)
@@ -565,10 +565,10 @@ void SceneActor_OnSceneEvent(SceneActor *actor, unsigned int event, int arg)
             actor->exit_step = 1;
             break;
         case SCENE_ACTOR_EVENT_TALK:
-        case SCENE_ACTOR_EVENT_TALK_AGAIN:
+        case SCENE_ACTOR_EVENT_CALLED:
             SceneActor_SetState(actor, SCENE_ACTOR_VISIT);
             break;
-        case SCENE_ACTOR_EVENT_IDLE:
+        case SCENE_ACTOR_EVENT_ENDED:
             SceneActor_SetState(actor, SCENE_ACTOR_IDLE);
             break;
         default:

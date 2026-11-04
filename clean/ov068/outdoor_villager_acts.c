@@ -814,7 +814,7 @@ void OutdoorVillagerActs_Begin17(OutdoorVillagerBehaviour *self, u8 *villager)
     *(fx32 *) (void *) acts_at(villager, ACTS_ANIM_SPEED) = *acts_speed_17(self);
     SpeakerAnim_SetKeepSpeed(acts_anim(villager), 1);
     HeldItemLink_Action17(acts_link(villager), word, 0);
-    HeldItemLink_SetRecordValue(acts_link(villager), *acts_speed_17(self));
+    HeldItemLink_SetAnimSpeed(acts_link(villager), *acts_speed_17(self));
     *acts_count_17(self) = ACTS_STAY_17;
     Vec3 at = *acts_position(villager);
     int handle = EffectSystem_StartKind(ACTS_EFFECT_17_STAY, &at, NULL, NULL);

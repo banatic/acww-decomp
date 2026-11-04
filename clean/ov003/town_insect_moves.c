@@ -1063,7 +1063,7 @@ void TownInsectMove_Update23(TownInsect *insect)
 {
     switch (insect->action) {
         case 4:
-            InsectPath_CircleSnowball(insect);
+            InsectPath_RollSnowball(insect);
             break;
         case 5:
             InsectPath_Rest(insect);

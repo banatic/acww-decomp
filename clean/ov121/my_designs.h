@@ -52,7 +52,7 @@ enum MyDesignsPlace {
     MY_DESIGNS_DESIGN_FIRST = 0, /* 0-3: the top row of designs, 4-7 the bottom one */
     MY_DESIGNS_DESIGN_LAST = 7,
     MY_DESIGNS_BUTTON_BACKDROP = 8,   /* the menu backdrop's clothing (MyDesigns_UseAsBackdrop) */
-    MY_DESIGNS_BUTTON_FURNITURE = 9,  /* furniture of the series 0x3f24 (MyDesigns_PlaceFurniture) */
+    MY_DESIGNS_BUTTON_EASEL = 9,      /* an easel, the furniture series 0x3f24 (MyDesigns_PlaceEasel) */
     MY_DESIGNS_BUTTON_CARPET = 10,    /* the room's carpet, by a choice */
     MY_DESIGNS_BUTTON_WALLPAPER = 11, /* the room's wallpaper, by a choice */
     MY_DESIGNS_BUTTON_HEAD = 12,      /* the head item, or in the player's own room a choice */
@@ -275,7 +275,7 @@ int MyDesigns_RestoreCamera(MyDesigns *self);
 void MyDesigns_SaveCamera(MyDesigns *self);
 void MyDesigns_RunChoiceAction(MyDesigns *self);
 void MyDesigns_DropOnGround(MyDesigns *self);
-void MyDesigns_PlaceFurniture(MyDesigns *self);
+void MyDesigns_PlaceEasel(MyDesigns *self);
 void MyDesigns_WearPicked(MyDesigns *self, u8 kind);
 void MyDesigns_UseAsWallpaper(MyDesigns *self, int option);
 void MyDesigns_UseAsCarpet(MyDesigns *self, int option);

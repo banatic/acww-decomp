@@ -87,7 +87,7 @@ int GroundSound_ResolveAttr(int attr)
         return attr;
     }
     u16 code = *RoomShell_CarpetCode2();
-    return ItemInfo_IndoorUnk01(&code);
+    return ItemInfo_IndoorGroundSound(&code);
 }
 CLEAN_AS(func_020b1d54, GroundSound_ResolveAttr)
 

@@ -54,9 +54,9 @@ void ShopField_ShowItemTaken(u16 *item, int kind, int sound)
                 continue;
             }
             int same;
-            if (ItemCode_HasVariant(here) != 0) {
-                int a = ItemCode_VariantItem(here);
-                same = a == ItemCode_VariantItem(item);
+            if (ItemCode_IsFurniture(here) != 0) {
+                int a = ItemCode_FurnitureNumber(here);
+                same = a == ItemCode_FurnitureNumber(item);
             } else {
                 same = *here == *item;
             }
@@ -88,7 +88,7 @@ void ShopField_ShowTakenAt(int x, int z, int kind, int sound)
         return;
     }
 
-    if (ItemCode_IsF031OrVariant(item) != 0) {
+    if (ItemCode_IsF031OrFurniture(item) != 0) {
         void *object = RoomObjects_GridObjectAt(RoomObjects_Grid(), x, z, 0);
         if (object != NULL) {
             RoomObjects_Take(RoomObjects_IndexOf(RoomObjects_Table(), object));

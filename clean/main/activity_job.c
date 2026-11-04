@@ -74,12 +74,13 @@ int ActivityJob_IsIdle(void)
 }
 CLEAN_AS(func_020a186c, ActivityJob_IsIdle)
 
-/* func_020a1888 */
-void ActivityJob_Ask1C(void)
+/* func_020a1888: job 0x1c asked for: looking over DS wireless for a resident who moves in from
+ * another town (the title menu's choice, TITLE_MESSAGE_ASK_FIND_MOVER). */
+void ActivityJob_AskFindMover(void)
 {
     data_021f3c38 = 0x1c;
 }
-CLEAN_AS(func_020a1888, ActivityJob_Ask1C)
+CLEAN_AS(func_020a1888, ActivityJob_AskFindMover)
 
 /* func_020a1894 */
 void ActivityJob_Ask1F(void)

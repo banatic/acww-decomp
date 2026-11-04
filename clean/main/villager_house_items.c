@@ -82,7 +82,7 @@ void VillagerHouseItems_ReplacementFor(u16 *out, const u8 *villager, const u16 *
 {
     (void) villager;
     *out = VILLAGER_HOUSE_ITEM_NONE;
-    if (ItemCode_HasVariant(item)) {
+    if (ItemCode_IsFurniture(item)) {
         int size_class = FurnitureInfo_ItemShape(item);
         if (size_class < VILLAGER_HOUSE_CLASSES) {
             *out = data_020cd42c[size_class];
@@ -181,9 +181,9 @@ int VillagerHouseItems_CountSame(const u8 *villager, const u16 *item)
     int count = 0;
     for (int i = 0; i < VILLAGER_HOUSE_ITEMS; i++) {
         int same;
-        if (ItemCode_HasVariant(&items[i])) {
-            int index = ItemCode_VariantItem(&items[i]);
-            same = index == ItemCode_VariantItem(item);
+        if (ItemCode_IsFurniture(&items[i])) {
+            int index = ItemCode_FurnitureNumber(&items[i]);
+            same = index == ItemCode_FurnitureNumber(item);
         } else {
             same = items[i] == *item;
         }
@@ -211,7 +211,7 @@ int VillagerHouseItems_Store(u8 *villager, u16 *item)
     int mode = VillagerModeRecord_Mode(record);
     int from_2 = VillagerModeRecord_IsFrom2(record);
 
-    if (ItemCode_HasVariant(&stands_for)) {
+    if (ItemCode_IsFurniture(&stands_for)) {
         int fits = VillagerHouseItems_FitsMode(villager, item, (u32) mode);
         int size_class = FurnitureInfo_ItemShape(&stands_for);
         if (is_fossil(*item) && size_class == 2) {
@@ -420,7 +420,7 @@ CLEAN_AS(func_0207fc7c, VillagerHouseItems_ModeFilter)
  * likes (func_02080834 above 0). */
 int VillagerHouseItems_FitsMode4(u8 *villager, u16 *item)
 {
-    if (!ItemCode_HasVariant(item) || is_fossil(*item)) {
+    if (!ItemCode_IsFurniture(item) || is_fossil(*item)) {
         return 0;
     }
     return VillagerData_ItemLiking(villager, item) > 0;

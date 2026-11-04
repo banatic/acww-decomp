@@ -89,10 +89,10 @@ extern void func_020051b0(void *item);
  * variant item read first). */
 static int ShopDisplay_is_code(u16 *item, u16 code)
 {
-    if (ItemCode_HasVariant(item)) {
+    if (ItemCode_IsFurniture(item)) {
         u16 other = code;
-        int mine = ItemCode_VariantItem(item);
-        return mine == ItemCode_VariantItem(&other);
+        int mine = ItemCode_FurnitureNumber(item);
+        return mine == ItemCode_FurnitureNumber(&other);
     }
     return *item == code;
 }
@@ -256,7 +256,7 @@ int ShopDisplay_PairedIndex(int x, int z)
 CLEAN_AS(func_ov004_0224632c, ShopDisplay_PairedIndex)
 
 /* func_ov004_02246378: what is on sale at tile (x, z) of the room: for a room object standing
- * there (ItemCode_IsF031OrVariant) the code of its number (in a static), for another item of
+ * there (ItemCode_IsF031OrFurniture) the code of its number (in a static), for another item of
  * kind 1 but 0x1547 the tile's item itself, when the shop sells it (ShopDisplay_IsOnSale); else
  * the static empty code (also when the room has no map, the tile none or empty, or the cell no
  * room object). */
@@ -277,7 +277,7 @@ u16 *ShopDisplay_ItemAt(int x, int z)
     if (item == NULL || ShopDisplay_is_code(item, ITEM_CODE_NONE)) {
         return &data_ov004_0225ff04;
     }
-    if (ItemCode_IsF031OrVariant(item)) {
+    if (ItemCode_IsF031OrFurniture(item)) {
         RoomObject *object = RoomObjects_GridObjectAt(RoomObjects_Grid(), x, z, 0);
         if (object == NULL) {
             return &data_ov004_0225ff04;
@@ -287,7 +287,7 @@ u16 *ShopDisplay_ItemAt(int x, int z)
             __register_global_object(&data_ov004_0225ff08, (void *) (uintptr_t) func_020051b0, data_ov004_0225ff18);
             data_ov004_0225ff10 |= 1;
         }
-        data_ov004_0225ff08 = ItemCode_MakeVariant(RoomObject_Number(object), 0);
+        data_ov004_0225ff08 = ItemCode_MakeFurniture(RoomObject_Number(object), 0);
         if (ShopDisplay_IsOnSale(&data_ov004_0225ff08)) {
             return &data_ov004_0225ff08;
         }
@@ -446,7 +446,7 @@ int ShopDisplay_SpotKind(u16 *item)
 {
     u16 carried[2];
     ItemForm_ToCarried(carried, item);
-    if (ItemCode_HasVariant(carried)) {
+    if (ItemCode_IsFurniture(carried)) {
         return SHOP_DISPLAY_SPOT_VARIANTS;
     }
     if (ItemTraits_HasHeldModel(carried) || carried[0] == SHOP_DISPLAY_TIMER) {

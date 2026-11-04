@@ -88,8 +88,8 @@ extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(v
  * one, else by code. */
 static int fox_same_item(u16 *item, u16 *other)
 {
-    if (ItemCode_HasVariant(item) != 0) {
-        return ItemCode_VariantItem(item) == ItemCode_VariantItem(other);
+    if (ItemCode_IsFurniture(item) != 0) {
+        return ItemCode_FurnitureNumber(item) == ItemCode_FurnitureNumber(other);
     }
     return *item == *other;
 }

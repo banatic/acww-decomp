@@ -261,8 +261,8 @@ void FieldActor_ApplyPartC(FieldActor *actor)
         if (index < data_020cc7cc) {
             kind = GlassesLook_FirstKind(index);
         }
-    } else if (item >= 0x1471 && item <= 0x1491 && ItemTraits_IsPairFaceItem(&item)) {
-        int index = ItemTraits_PairFaceNumber(&item);
+    } else if (item >= 0x1471 && item <= 0x1491 && ItemTraits_IsPairWiltedFlower(&item)) {
+        int index = ItemTraits_PairWiltedFlowerNumber(&item);
         if (index >= 0 && (u32) index < data_020cc7d0) {
             kind = GlassesLook_SecondKind((u32) index);
         }

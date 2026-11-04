@@ -310,7 +310,7 @@ void BedObject_UpdatePlace(BedObject *object)
     if (object->left_half != 0 && kind == 2) {
         x--;
     }
-    int number = ItemCode_VariantItem(&object->item);
+    int number = ItemCode_FurnitureNumber(&object->item);
     if (RoomObjects_Spawn(Placement_Make(x, y, number, ITEM_PLACE_SIDE, 0, ITEM_PLACE_MODE)) != 0) {
         switch_to(object, BED_OBJECT_VANISH);
     }
@@ -345,7 +345,7 @@ void BedObject_UpdateSwap(BedObject *object)
     if (record != NULL) {
         PlayerRecord_SetBed(record, &object->item);
     }
-    u16 code = ItemCode_MakeVariant(RoomObject_Number(&object->base), 0);
+    u16 code = ItemCode_MakeFurniture(RoomObject_Number(&object->base), 0);
     CurrentPockets_Set(&code, 0, slot);
     switch_to(object, BED_OBJECT_PLACE);
 }
@@ -370,10 +370,10 @@ void BedObject_UpdateChooseItem(BedObject *object)
 CLEAN_AS(func_ov004_02217b74, BedObject_UpdateChooseItem)
 
 /* func_ov004_02217bb0: whether a pockets' slot may be chosen: in state 0, holding an item
- * ItemCode_HasVariant tells that FurnitureInfo_ItemCategory puts in category 5. */
+ * ItemCode_IsFurniture tells that FurnitureInfo_ItemCategory puts in category 5. */
 int BedObject_CanTakeItem(u16 *item, int state)
 {
-    return state == NO_ITEM_KIND_SLOT && ItemCode_HasVariant(item) != 0 && FurnitureInfo_ItemCategory(item) == ITEM_CATEGORY;
+    return state == NO_ITEM_KIND_SLOT && ItemCode_IsFurniture(item) != 0 && FurnitureInfo_ItemCategory(item) == ITEM_CATEGORY;
 }
 CLEAN_AS(func_ov004_02217bb0, BedObject_CanTakeItem)
 

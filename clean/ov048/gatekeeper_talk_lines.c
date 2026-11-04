@@ -22,7 +22,7 @@
 #include "main/talk_checks.h"
 #include "main/talk_object.h"
 #include "main/wfc_delivery.h"
-#include "main/wfc_stats.h"
+#include "main/mystery_cat_record.h"
 #include "main/wifi_friends.h"
 #include "ov004/member_pointer.h"
 #include "ov004/check_in_gate.h"
@@ -48,16 +48,16 @@ static_assert(sizeof(GatekeeperTalkStart) == 8, "GatekeeperTalkStart");
 #define GATEKEEPER_LINES_SCREEN_B 0x2f0 /* the second buffer screen 4 is given */
 #define GATEKEEPER_LINES_LETTER 0x3f0
 #define GATEKEEPER_LINES_NOTICE 0x504
-#define GATEKEEPER_LINES_STATS 0x5d8
+#define GATEKEEPER_LINES_CAT_RECORD 0x5d8
 
 /* The talk's vtable slot that resets it (SceneBase_Reset). */
 #define GATEKEEPER_LINES_SLOT_RESET 2
 
 /* The screens of the scene's command 0 (scene_command.h) it opens: screen 2 in mode 0x3c (the
  * friend roster, whose pick GatekeeperTalk_TakeFriend reads), and screen 4. */
-#define GATEKEEPER_LINES_SCREEN_MODE 2
-#define GATEKEEPER_LINES_FRIEND_SCREEN 0x3c
-#define GATEKEEPER_LINES_SCREEN_ARGS 4
+#define GATEKEEPER_LINES_FRIEND_SCREEN 2
+#define GATEKEEPER_LINES_FRIEND_MODE 0x3c
+#define GATEKEEPER_LINES_SCREEN_4 4
 
 /* The friend code's parts in the talk: three groups of four digits. */
 #define GATEKEEPER_LINES_CODE_HIGH 5
@@ -66,10 +66,9 @@ static_assert(sizeof(GatekeeperTalkStart) == 8, "GatekeeperTalkStart");
 #define GATEKEEPER_LINES_CODE_DIGITS 4
 #define GATEKEEPER_LINES_CODE_FORMAT 6
 
-/* The current player's flag set once it has met the gatekeeper, and the one that keeps it from
- * the Wi-Fi Connection's menus. */
+/* The current player's flag set once it has met the gatekeeper; PLAYER_FLAG_NOOK_JOB
+ * (player_record.h) keeps it from the Wi-Fi Connection's menus. */
 #define GATEKEEPER_LINES_FLAG_MET 5
-#define GATEKEEPER_LINES_FLAG_1 1
 
 /* The line ends GatekeeperTalk_OnMessageEnded looks through. */
 #define GATEKEEPER_LINE_ENDS 28
@@ -164,7 +163,7 @@ void GatekeeperTalk_OnAnswerSessionOrCode(GatekeeperTalk *talk, int answer)
     switch (answer) {
         case 0: {
             NetSession *session;
-            if (PlayerRecord_TestFlag(record, GATEKEEPER_LINES_FLAG_1)) {
+            if (PlayerRecord_TestFlag(record, PLAYER_FLAG_NOOK_JOB)) {
                 line = 8;
                 break;
             }
@@ -177,7 +176,7 @@ void GatekeeperTalk_OnAnswerSessionOrCode(GatekeeperTalk *talk, int answer)
             break;
         }
         case 1:
-            if (PlayerRecord_TestFlag(record, GATEKEEPER_LINES_FLAG_1)) {
+            if (PlayerRecord_TestFlag(record, PLAYER_FLAG_NOOK_JOB)) {
                 line = 0xe;
             } else {
                 line = GatekeeperTalk_LineOfSession(talk);
@@ -188,7 +187,7 @@ void GatekeeperTalk_OnAnswerSessionOrCode(GatekeeperTalk *talk, int answer)
             if (Session_IsLocalSlot(data_020ccf94, 0)) {
                 break;
             }
-            if (PlayerRecord_TestFlag(record, GATEKEEPER_LINES_FLAG_1)) {
+            if (PlayerRecord_TestFlag(record, PLAYER_FLAG_NOOK_JOB)) {
                 line = 8;
                 break;
             }
@@ -477,8 +476,8 @@ CLEAN_AS(func_ov048_0226224c, GatekeeperTalk_StartJoinParent)
  * then GATEKEEPER_TALK_TAKE_FRIEND. */
 void GatekeeperTalk_OpenFriendScreen(GatekeeperTalk *talk)
 {
-    SceneCommand_SetScreenMode(gatekeeper_lines_commands(talk), GATEKEEPER_LINES_FRIEND_SCREEN, 0);
-    SceneCommand_RequestScreen(gatekeeper_lines_commands(talk), GATEKEEPER_LINES_SCREEN_MODE);
+    SceneCommand_SetScreenMode(gatekeeper_lines_commands(talk), GATEKEEPER_LINES_FRIEND_MODE, 0);
+    SceneCommand_RequestScreen(gatekeeper_lines_commands(talk), GATEKEEPER_LINES_FRIEND_SCREEN);
     GatekeeperTalk_SetState(talk, GATEKEEPER_TALK_TAKE_FRIEND);
 }
 CLEAN_AS(func_ov048_02262298, GatekeeperTalk_OpenFriendScreen)
@@ -489,7 +488,7 @@ void GatekeeperTalk_OpenScreen4(GatekeeperTalk *talk)
 {
     SceneCommand_SetScreenArgs(gatekeeper_lines_commands(talk), (s32) (intptr_t) &talk->parent,
                                (s32) (intptr_t) gatekeeper_lines_member(talk, GATEKEEPER_LINES_SCREEN_B), 0);
-    SceneCommand_RequestScreen(gatekeeper_lines_commands(talk), GATEKEEPER_LINES_SCREEN_ARGS);
+    SceneCommand_RequestScreen(gatekeeper_lines_commands(talk), GATEKEEPER_LINES_SCREEN_4);
     GatekeeperTalk_SetState(talk, GATEKEEPER_TALK_GROUP_CHECK);
 }
 CLEAN_AS(func_ov048_022622bc, GatekeeperTalk_OpenScreen4)
@@ -730,7 +729,7 @@ CLEAN_AS(func_ov048_02262680, GatekeeperTalk_Start)
 static void gatekeeper_lines_destruct_members(GatekeeperTalk *talk)
 {
     *(const u8 **) (void *) talk = data_ov048_02264208;
-    WfcStats_Destruct((WfcStats *) (void *) gatekeeper_lines_member(talk, GATEKEEPER_LINES_STATS));
+    MysteryCatRecord_Destruct((MysteryCatRecord *) (void *) gatekeeper_lines_member(talk, GATEKEEPER_LINES_CAT_RECORD));
     WfcDelivery_DestructNotice((WfcNotice *) (void *) gatekeeper_lines_member(talk, GATEKEEPER_LINES_NOTICE));
     WfcDelivery_DestructLetter((WfcLetter *) (void *) gatekeeper_lines_member(talk, GATEKEEPER_LINES_LETTER));
     Design_Destruct((Design *) (void *) gatekeeper_lines_member(talk, GATEKEEPER_LINES_DESIGN));
@@ -746,7 +745,7 @@ GatekeeperTalk *GatekeeperTalk_DestructDelete(GatekeeperTalk *talk)
 }
 CLEAN_AS(func_ov048_022626a4, GatekeeperTalk_DestructDelete)
 
-/* func_ov048_022626f0 (vtable slot 0): the destructor: its statistics, notice, letter and
+/* func_ov048_022626f0 (vtable slot 0): the destructor: its mystery cat record, notice, letter and
  * design, then the scene base's. */
 GatekeeperTalk *GatekeeperTalk_Destruct(GatekeeperTalk *talk)
 {
@@ -756,7 +755,7 @@ GatekeeperTalk *GatekeeperTalk_Destruct(GatekeeperTalk *talk)
 CLEAN_AS(func_ov048_022626f0, GatekeeperTalk_Destruct)
 
 /* func_ov048_02262738: the constructor: the scene base, its vtable, then its design (0xbc),
- * letter (0x3f0), notice (0x504) and statistics (0x5d8). */
+ * letter (0x3f0), notice (0x504) and mystery cat record (0x5d8). */
 GatekeeperTalk *GatekeeperTalk_Construct(GatekeeperTalk *talk)
 {
     SceneBase_Construct(&talk->scene);
@@ -764,7 +763,7 @@ GatekeeperTalk *GatekeeperTalk_Construct(GatekeeperTalk *talk)
     Design_Construct((char *) gatekeeper_lines_member(talk, GATEKEEPER_LINES_DESIGN));
     WfcDelivery_ConstructLetter((WfcLetter *) (void *) gatekeeper_lines_member(talk, GATEKEEPER_LINES_LETTER));
     WfcDelivery_ConstructNotice((WfcNotice *) (void *) gatekeeper_lines_member(talk, GATEKEEPER_LINES_NOTICE));
-    WfcStats_Construct((WfcStats *) (void *) gatekeeper_lines_member(talk, GATEKEEPER_LINES_STATS));
+    MysteryCatRecord_Construct((MysteryCatRecord *) (void *) gatekeeper_lines_member(talk, GATEKEEPER_LINES_CAT_RECORD));
     return talk;
 }
 CLEAN_AS(func_ov048_02262738, GatekeeperTalk_Construct)

@@ -9,7 +9,7 @@
 #include "catch_panel.h"
 #include "clock_panel.h"
 #include "control_mode_icon.h"
-#include "menu_tab.h"
+#include "camera_tab.h"
 
 static_assert(offsetof(ScreenPanels, second) == 0xe0 && offsetof(ScreenPanels, third) == 0x1c4, "ScreenPanels");
 static_assert(offsetof(ScreenPanels, fourth) == 0x2c4 && offsetof(ScreenPanels, request) == 0x348, "ScreenPanels");
@@ -145,12 +145,12 @@ CLEAN_AS(func_0208b1d4, ScreenPanels_EnterFourth)
 void ScreenPanels_StepThird(ScreenPanels *panels)
 {
     if (requested(panels)) {
-        MenuTab_Hide((MenuTab *) (void *) panels->third);
-        if (MenuTab_IsSettled((MenuTab *) (void *) panels->third) != 0) {
+        CameraTab_Hide((CameraTab *) (void *) panels->third);
+        if (CameraTab_IsSettled((CameraTab *) (void *) panels->third) != 0) {
             ScreenPanels_EnterRequested(panels);
         }
     } else {
-        MenuTab_Show((MenuTab *) (void *) panels->third);
+        CameraTab_Show((CameraTab *) (void *) panels->third);
     }
     ScreenPanels_StepRoom(panels);
 }
@@ -245,7 +245,7 @@ void ScreenPanels_Draw(ScreenPanels *panels)
 {
     ClockPanel_CallDraw((ClockPanel *) (void *) panels->first);
     CatchPanel_CallDraw((CatchPanel *) (void *) panels->second);
-    MenuTab_CallDraw((MenuTab *) (void *) panels->third);
+    CameraTab_CallDraw((CameraTab *) (void *) panels->third);
     BellsPanel_CallDraw((BellsPanel *) (void *) panels->fourth);
 }
 CLEAN_AS(func_0208b37c, ScreenPanels_Draw)
@@ -267,7 +267,7 @@ void ScreenPanels_Update(ScreenPanels *panels)
     MemberPointer_CallVoid(&data_021d31f0[panels->state], panels);
     ClockPanel_CallUpdate((ClockPanel *) (void *) panels->first);
     CatchPanel_CallUpdate((CatchPanel *) (void *) panels->second);
-    MenuTab_Update((MenuTab *) (void *) panels->third);
+    CameraTab_Update((CameraTab *) (void *) panels->third);
     BellsPanel_CallUpdate((BellsPanel *) (void *) panels->fourth);
     ScreenPanels_FollowControlMode(panels);
 }
@@ -277,7 +277,7 @@ CLEAN_AS(func_0208b3ac, ScreenPanels_Update)
 void ScreenPanels_Rewind(ScreenPanels *panels)
 {
     BellsPanel_Rewind((BellsPanel *) (void *) panels->fourth);
-    MenuTab_Rewind((MenuTab *) (void *) panels->third);
+    CameraTab_Rewind((CameraTab *) (void *) panels->third);
     CatchPanel_Rewind((CatchPanel *) (void *) panels->second);
     ClockPanel_Rewind((ClockPanel *) (void *) panels->first);
 }
@@ -292,7 +292,7 @@ void ScreenPanels_Reset(ScreenPanels *panels)
     ScreenPanels_SelectState(panels);
     ClockPanel_Reset((ClockPanel *) (void *) panels->first);
     CatchPanel_Reset((CatchPanel *) (void *) panels->second);
-    MenuTab_Reset((MenuTab *) (void *) panels->third);
+    CameraTab_Reset((CameraTab *) (void *) panels->third);
     BellsPanel_Reset((BellsPanel *) (void *) panels->fourth);
     panels->touch = 0;
 }
@@ -371,7 +371,7 @@ static void destruct_panels(ScreenPanels *panels)
 {
     panels->unk_00 = (u32) (uintptr_t) data_020e21d4; /* the vtable */
     BellsPanel_Destruct((BellsPanel *) panels->fourth);
-    MenuTab_Destruct((MenuTab *) (void *) panels->third);
+    CameraTab_Destruct((CameraTab *) (void *) panels->third);
     CatchPanel_Destruct((CatchPanel *) (void *) panels->second);
     ClockPanel_Destruct((ClockPanel *) (void *) panels->first);
 }
@@ -401,7 +401,7 @@ ScreenPanels *ScreenPanels_Construct(ScreenPanels *panels)
     panels->state = SCREEN_PANELS_NONE;
     ClockPanel_Construct((ClockPanel *) (void *) panels->first);
     CatchPanel_Construct((CatchPanel *) (void *) panels->second);
-    MenuTab_Construct((MenuTab *) (void *) panels->third);
+    CameraTab_Construct((CameraTab *) (void *) panels->third);
     BellsPanel_Construct((BellsPanel *) panels->fourth);
     panels->request = 0;
     panels->request_2 = 0;

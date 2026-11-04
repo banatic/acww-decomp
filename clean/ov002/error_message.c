@@ -78,7 +78,7 @@ static void queue_window(ErrorMessage *error, TextLabel *label)
     SlidingWindow_SetPlace(window_of(error), 0, WINDOW_OFFSET_Y);
     Popup_Queue(&error->popup);
     SlidingWindow_SetObjWindow(window_of(error));
-    Popup_SetDrawValue(&error->popup, 0);
+    Popup_SetPriority(&error->popup, 0);
 }
 
 /* func_ov002_0220b6b0: the sub screen back to normal brightness. */

@@ -1,4 +1,4 @@
-/* The camera grid, the window of the menu tab (camera_grid.h). */
+/* The camera grid, the window of the camera tab (camera_grid.h). */
 #include "camera_grid.h"
 
 #include "autoload_2/heap.h"  /* Heap_OperatorDeleteB */

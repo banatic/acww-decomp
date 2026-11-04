@@ -24,8 +24,9 @@ typedef struct PanelCell {
 /* The bits of `flags`. */
 enum PanelSpriteFlag {
     PANEL_SPRITE_NO_SHADOW = 1, /* set by PanelSprite_ShowFlat, cleared by PanelSprite_Show */
-    PANEL_SPRITE_FLAG2 = 2,     /* the cells are drawn a second time, func_02088df8's 10th argument 2 */
-    PANEL_SPRITE_PALETTE2 = 4   /* the cells are drawn in palette 2 */
+    PANEL_SPRITE_OBJ_WINDOW =
+        2, /* the cells are drawn a second time into the OBJ window (func_02088df8's 10th argument, OBJ mode 2) */
+    PANEL_SPRITE_PALETTE2 = 4 /* the cells are drawn in palette 2 */
 };
 
 /* The text's colours, the two entries func_ov002_0220af94 loads. */
@@ -50,8 +51,8 @@ typedef struct PanelSprite {
 int PanelSprite_HasFlag4(PanelSprite *sprite);
 void PanelSprite_ClearFlag4(PanelSprite *sprite);
 void PanelSprite_SetFlag4(PanelSprite *sprite);
-void PanelSprite_ClearFlag2(PanelSprite *sprite);
-void PanelSprite_SetFlag2(PanelSprite *sprite);
+void PanelSprite_ClearObjWindow(PanelSprite *sprite);
+void PanelSprite_SetObjWindow(PanelSprite *sprite);
 int PanelSprite_StepPress(PanelSprite *sprite);
 void PanelSprite_Draw(PanelSprite *sprite, int x, int y, int priority);
 int PanelSprite_PressDepth(PanelSprite *sprite);

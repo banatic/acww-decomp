@@ -152,7 +152,7 @@ void VillagerFurniture_StoreItems(u8 *villager)
 CLEAN_AS(func_0207f454, VillagerFurniture_StoreItems)
 
 /* func_0207f4c8: the 256 codes of an item template filled for the villager: each code
- * 0xf000-0xf02f becomes the item it stands for with the code's variant, or 0xfff1 when that is
+ * 0xf000-0xf02f becomes the item it stands for with the code's side, or 0xfff1 when that is
  * not an item of kind 3 or 4. For a villager not staying as a resident (VillagerStatus_Stay),
  * a marked item of kind 3 or 4 is replaced by the one func_0207f590 gives, and an unmarked
  * one dropped. */
@@ -168,7 +168,7 @@ void VillagerFurniture_FillTemplate(u8 *villager, u16 *codes)
         u16 fetched;
         VillagerHouseItems_Get(&fetched, villager, slot);
         u16 item = fetched;
-        if (moving && ItemCode_HasVariant(&item)) {
+        if (moving && ItemCode_IsFurniture(&item)) {
             if (VillagerEntry_IsItemMarked(villager, slot)) {
                 u16 replacement;
                 VillagerHouseItems_ReplacementFor(&replacement, villager, &item);
@@ -177,8 +177,8 @@ void VillagerFurniture_FillTemplate(u8 *villager, u16 *codes)
                 item = VILLAGER_FURNITURE_NONE;
             }
         }
-        if (ItemCode_HasVariant(&item)) {
-            ItemCode_SetVariant(&item, *code & VILLAGER_FURNITURE_VARIANT_MASK);
+        if (ItemCode_IsFurniture(&item)) {
+            ItemCode_SetSide(&item, *code & VILLAGER_FURNITURE_SIDE_MASK);
             *code = item;
         } else {
             *code = VILLAGER_FURNITURE_NONE;

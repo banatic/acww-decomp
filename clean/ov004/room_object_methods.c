@@ -82,7 +82,7 @@ void RoomObject_ItemCode(ItemCode *code, RoomObject *object)
     if (object->unk_780 == KIND_NO_ITEM) {
         *code = ITEM_CODE_NONE;
     } else {
-        *code = ItemCode_MakeVariant(RoomObject_Number(object), 0);
+        *code = ItemCode_MakeFurniture(RoomObject_Number(object), 0);
     }
 }
 CLEAN_AS(func_ov004_0220e578, RoomObject_ItemCode)
@@ -230,7 +230,7 @@ int RoomObject_FindVariantCell(RoomObject *object, int *x, int *y, Vec3 *offset,
         s32 cell_x = CellList_At(&cells, (int) i)->x;
         ItemCode *item = AcreTile_ItemInAcre(map, shift_right(cell_x, 4), shift_right(cell_y, 4), cell_x & (BLOCK_CELLS - 1),
                                              cell_y & (BLOCK_CELLS - 1), layer);
-        if (item != NULL && ItemCode_HasVariant(item)) {
+        if (item != NULL && ItemCode_IsFurniture(item)) {
             *x = CellList_At(&cells, (int) i)->x;
             *y = CellList_At(&cells, (int) i)->y;
             CellList_Destruct(&cells);

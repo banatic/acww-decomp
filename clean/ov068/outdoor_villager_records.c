@@ -274,8 +274,8 @@ void OutdoorVillagerRecords_RefreshItem(u8 *villager)
         VillagerModeRecord_KindItem(&wanted, kind);
         u16 *held = VillagerState_HeldItem(state);
         int same;
-        if (ItemCode_HasVariant(held)) {
-            same = ItemCode_VariantItem(held) == ItemCode_VariantItem(&wanted);
+        if (ItemCode_IsFurniture(held)) {
+            same = ItemCode_FurnitureNumber(held) == ItemCode_FurnitureNumber(&wanted);
         } else {
             same = *held == wanted;
         }

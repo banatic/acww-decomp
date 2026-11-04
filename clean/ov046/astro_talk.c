@@ -731,8 +731,8 @@ extern const AstroTalkLine data_ov046_02261c84[ASTRO_TALK_TOPICS];
 
 /* func_ov046_02261158 (slot 0x78): the line it starts with. When the game started in a special
  * way (StartKind_IsSet), message 0x14 of "sp_etc_sequence4". Else topic PENDING becomes FIRST
- * or AGAIN by the daily bit 2 (set by the test), each with BUSY after its animation; topic
- * CALLED when not after its animation is the line of a player who called it over (as
+ * or AGAIN by the daily bit 2 (set by the test), each with ASLEEP when woken up; topic
+ * CALLED when it was not asleep is the line of a player who called it over (as
  * AstroTalk_CalledLine); the other topics take their line from the table. A topic above 4
  * leaves `line` as it was. */
 void AstroTalk_Line(AstroTalk *talk, AstroTalkLine *line)
@@ -746,13 +746,13 @@ void AstroTalk_Line(AstroTalk *talk, AstroTalkLine *line)
     }
     if ((s32) talk->topic == ASTRO_TALK_TOPIC_PENDING) {
         if (TalkChecks_TestSetDailyBit(ASTRO_TALK_DAILY_BIT, 1) == 0) {
-            talk->topic = talk->owner->was_animating ? ASTRO_TALK_TOPIC_FIRST_BUSY : ASTRO_TALK_TOPIC_FIRST;
+            talk->topic = talk->owner->was_asleep ? ASTRO_TALK_TOPIC_FIRST_ASLEEP : ASTRO_TALK_TOPIC_FIRST;
         } else {
-            talk->topic = talk->owner->was_animating ? ASTRO_TALK_TOPIC_AGAIN_BUSY : ASTRO_TALK_TOPIC_AGAIN;
+            talk->topic = talk->owner->was_asleep ? ASTRO_TALK_TOPIC_AGAIN_ASLEEP : ASTRO_TALK_TOPIC_AGAIN;
         }
     }
     topic = (s32) talk->topic;
-    if (topic == ASTRO_TALK_TOPIC_CALLED && talk->owner->was_animating == 0) {
+    if (topic == ASTRO_TALK_TOPIC_CALLED && talk->owner->was_asleep == 0) {
         line->message = astro_talk_called_line();
         line->name = data_ov046_02261fe8;
         return;

@@ -889,7 +889,7 @@ void SickVillager_MeetPlayer(SickVillager *villager)
 CLEAN_AS(func_ov004_022227e8, SickVillager_MeetPlayer)
 
 /* func_ov004_02222820: in the first acre of the scene's map (none when the map is empty), every
- * tile whose item code is 0xf031 or of a kind with variants (ItemCode_IsF031OrVariant) has its
+ * tile whose item code is 0xf031 or of a kind with variants (ItemCode_IsF031OrFurniture) has its
  * path unit unlinked, row by row. The villager is not used. */
 void SickVillager_UnlinkItemTiles(SickVillager *villager)
 {
@@ -902,7 +902,7 @@ void SickVillager_UnlinkItemTiles(SickVillager *villager)
     for (int z = 0; z < SICK_VILLAGER_ACRE_TILES; z++) {
         for (int x = 0; x < SICK_VILLAGER_ACRE_TILES; x++) {
             u16 *tile = AcreRecord_Tile(acre, (unsigned int) x, (unsigned int) z, 0);
-            if (tile != NULL && ItemCode_IsF031OrVariant(tile)) {
+            if (tile != NULL && ItemCode_IsF031OrFurniture(tile)) {
                 CollisionMap_UnlinkPathUnit(x, z);
             }
         }
@@ -1005,10 +1005,10 @@ int SickVillager_IsAskedItem(u16 *item, int state)
     if (state != 0) {
         return 0;
     }
-    if (ItemCode_HasVariant(item)) {
+    if (ItemCode_IsFurniture(item)) {
         u16 asked = SICK_VILLAGER_MEDICINE;
-        int variant = ItemCode_VariantItem(item);
-        return variant == ItemCode_VariantItem(&asked);
+        int variant = ItemCode_FurnitureNumber(item);
+        return variant == ItemCode_FurnitureNumber(&asked);
     }
     return *item == SICK_VILLAGER_MEDICINE;
 }

@@ -888,7 +888,7 @@ void DesignPicker_Setup(DesignPicker *self)
     self->picked = DESIGN_PICKER_NO_PLACE;
     self->cursor = DESIGN_PICKER_TOP_FIRST;
     GroupParams_SetC4C(0);
-    Popup_SetDrawValue(&self->popup, 2);
+    Popup_SetPriority(&self->popup, 2);
 }
 CLEAN_AS(func_ov125_022a0510, DesignPicker_Setup)
 

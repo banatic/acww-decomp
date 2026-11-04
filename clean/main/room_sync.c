@@ -103,10 +103,10 @@ int RoomSync_IsFreeTopAt(int x, int y)
     if (FurnitureInfo_DmaUnk1A(RoomObject_Number(object)) != 1 || top == NULL) {
         return 0;
     }
-    if (ItemCode_HasVariant(top)) {
+    if (ItemCode_IsFurniture(top)) {
         u16 none = ACRE_MAP_ITEM_NONE;
-        int number = ItemCode_VariantItem(top);
-        return number == ItemCode_VariantItem(&none);
+        int number = ItemCode_FurnitureNumber(top);
+        return number == ItemCode_FurnitureNumber(&none);
     }
     return *top == ACRE_MAP_ITEM_NONE;
 }

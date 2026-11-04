@@ -5,7 +5,7 @@
 #include "autoload_2/sound_emitter_class.h" /* SoundEmitterClass_ConstructBaseB, ..._DestructBaseB */
 #include "clean.h"
 #include "main/packed_bytes.h"  /* PackedBytes_UnpackPoint */
-#include "main/sound_emitter.h" /* SoundEmitter_Vfunc10B, _StopB, _UpdateAtB, _PlayB */
+#include "main/sound_emitter.h" /* SoundEmitter_FinishB, _StopB, _UpdateAtB, _PlayB */
 #include "animated_model.h"
 #include "c_library.h"
 #include "frame_ctrl.h"
@@ -497,7 +497,7 @@ int FishDisp_StartLoad(FishDisp *disp, int index)
     model->state = FISH_MODEL_LOADING;
     ModelPool_Take((ModelPool *) (void *) disp->pool, &model->slot);
     ModelPoolFiles_Reset((ModelPoolFiles *) (void *) model->files);
-    SoundEmitter_StopB((SoundEmitter *) model);
+    SoundEmitter_ResetB((SoundEmitter *) model);
     return 1;
 }
 CLEAN_AS(func_0205066c, FishDisp_StartLoad)
@@ -513,7 +513,7 @@ void FishDisp_FreeModel(FishDisp *disp, int index)
     }
     FishModel *model = &data_021c8184->models[index];
     if (model->state != FISH_MODEL_FREE && model->state != FISH_MODEL_TAKEN) {
-        SoundEmitter_Vfunc10B((SoundEmitter *) model);
+        SoundEmitter_FinishB((SoundEmitter *) model);
     }
     model->kind = FISH_DISP_KIND_NONE;
     model->state = FISH_MODEL_FREE;

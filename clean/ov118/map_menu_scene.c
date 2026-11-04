@@ -41,8 +41,8 @@ extern const char data_ov118_0229cd18[]; /* "menu/map/b_map_b_bg.bsc" */
 
 /* The cells drawn at the screen's centre: the frame's OBJs, and the two list buttons. */
 extern const OamEntry data_ov118_0229cbb0[];
-extern const OamEntry data_ov118_0229cb70[]; /* the residents' button */
-extern const OamEntry data_ov118_0229cb90[]; /* the places' button */
+extern const OamEntry data_ov118_0229cb70[]; /* the places' button */
+extern const OamEntry data_ov118_0229cb90[]; /* the residents' button */
 
 /* The heap the files are read with. */
 extern Heap *data_021fbe94;
@@ -600,17 +600,17 @@ int MapMenu_Draw(MapMenu *self)
         Glider_DrawWrapped(&self->cursor);
     }
     map_menu_draw_cells(data_ov118_0229cbb0, y, -1);
-    int places_palette;
     int residents_palette;
+    int places_palette;
     if (MapMenu_TestFlags(self, MAP_MENU_FLAG_PLACES) != 0) {
-        places_palette = 0xc;
-        residents_palette = 0xd;
+        residents_palette = 0xc;
+        places_palette = 0xd;
     } else {
-        places_palette = 0xb;
-        residents_palette = 0xe;
+        residents_palette = 0xb;
+        places_palette = 0xe;
     }
-    map_menu_draw_cells(data_ov118_0229cb70, y, residents_palette);
-    map_menu_draw_cells(data_ov118_0229cb90, y, places_palette);
+    map_menu_draw_cells(data_ov118_0229cb70, y, places_palette);
+    map_menu_draw_cells(data_ov118_0229cb90, y, residents_palette);
 
     if (StateFlags_Test2() != 0 && MapMenu_TestFlags(self, MAP_MENU_FLAG_POINTER) != 0 &&
         self->pointed_mark != MAP_MENU_NO_MARK && self->marks[self->pointed_mark].kind != MAP_MENU_MARK_NONE) {

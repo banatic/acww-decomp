@@ -45,7 +45,7 @@ static_assert(offsetof(VillagerTalk, bells) == 0x1a0, "VillagerTalk layout");
 #define VILLAGER_TALK_SCENE_LETTER_TO_SEND 7
 /* The pockets' fifteen item slots, and the state of a slot holding an item. */
 #define VILLAGER_TALK_SCENE_POCKETS 15
-#define VILLAGER_TALK_SCENE_POCKET_HELD 2
+#define VILLAGER_TALK_SCENE_POCKET_ENTRUSTED 2
 /* The villager scene object's motion, the kind of stand asked for, and its town record. */
 #define VILLAGER_TALK_SCENE_MOTION 0x564
 #define VILLAGER_TALK_SCENE_STAND_PRIORITY 2
@@ -155,19 +155,19 @@ Letter *VillagerTalkScene_LetterToSend(PlayerPockets *pockets)
 CLEAN_AS(func_0202d754, VillagerTalkScene_LetterToSend)
 
 /* func_0202d794: the place (0-14) of the first pocket holding an item (state 2) like `*item`:
- * of the same variant item when the pocket's item has variants, else the same code; -1 when
+ * of the same furniture number when the pocket's item is furniture, else the same code; -1 when
  * none does. */
 int VillagerTalkScene_PocketOfItem(PlayerPockets *pockets, u16 *item)
 {
     u16 *slot = PlayerPockets_Slot(pockets, 0);
     for (int i = 0; i < VILLAGER_TALK_SCENE_POCKETS; i++, slot++) {
-        if (PlayerPockets_SlotState(pockets, i) != VILLAGER_TALK_SCENE_POCKET_HELD) {
+        if (PlayerPockets_SlotState(pockets, i) != VILLAGER_TALK_SCENE_POCKET_ENTRUSTED) {
             continue;
         }
         int same;
-        if (ItemCode_HasVariant(slot)) {
-            int variant = ItemCode_VariantItem(slot);
-            same = variant == ItemCode_VariantItem(item);
+        if (ItemCode_IsFurniture(slot)) {
+            int number = ItemCode_FurnitureNumber(slot);
+            same = number == ItemCode_FurnitureNumber(item);
         } else {
             same = *slot == *item;
         }

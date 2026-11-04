@@ -39,7 +39,7 @@
 #include "main/speaker_anim.h"
 #include "main/town_tile.h"
 #include "main/vram_copy_task.h"
-#include "main/wfc_stats.h"
+#include "main/mystery_cat_record.h"
 #include "mystery_cat_talk.h"
 
 static_assert(sizeof(SceneBase) == 0x80, "scene base");
@@ -134,8 +134,8 @@ extern Vec3 data_ov074_02279d84[2];
 extern const char data_ov074_02279ba0[];
 /* The name of her model's material her face is copied over: the address of "f". */
 extern const char *const data_ov074_02279b44;
-/* The town's statistics record, which keeps her face. */
-extern WfcStats data_021f3278;
+/* The town's mystery cat record, which keeps her face. */
+extern MysteryCatRecord data_021f3278;
 /* The field camera, or NULL, and the point it looks at. */
 extern CameraControl *data_021c67a4;
 extern Vec3 data_021c67d0;
@@ -267,7 +267,7 @@ CLEAN_AS(func_ov074_02278a6c, MysteryCatFace_End)
  * palette 0). Nothing without the design, when it does not go in, or without textures. */
 void MysteryCatFace_Show(MysteryCatFace *face, u8 *model)
 {
-    Design *design = WfcStats_Design(&data_021f3278);
+    Design *design = MysteryCatRecord_Design(&data_021f3278);
     if (design == NULL) {
         return;
     }

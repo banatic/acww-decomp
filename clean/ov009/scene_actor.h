@@ -137,10 +137,10 @@ typedef struct SceneActor {
     u8 model_object[0x198 - 0x13c]; /* main's model object (Obj_020dd05c) ... */
     void *model;                    /* ... its model, */
     u8 unk_19C[0x1a0 - 0x19c];
-    Mtx43 model_matrix;           /* ... and the matrix it is drawn with */
-    u8 unk_1D0[0x1f4 - 0x1d0];    /* ... up to its end */
-    u8 member_1f4[0x22c - 0x1f4]; /* a member object of main's (Member_020b33b8, parts up to 0x34) */
-    int tile_x;                   /* the position's x and z over 0x2000 */
+    Mtx43 model_matrix;        /* ... and the matrix it is drawn with */
+    u8 unk_1D0[0x1f4 - 0x1d0]; /* ... up to its end */
+    u8 lights[0x22c - 0x1f4];  /* a member object of main's (Member_020b33b8, parts up to 0x34) */
+    int tile_x;                /* the position's x and z over 0x2000 */
     int tile_z;
     u8 exit_step; /* set to 1 by scene event 6, counts to 3 (SceneActor_UpdateExit) */
     u8 flags_235;
@@ -172,7 +172,7 @@ void SceneActorSound_UpdateAt(SceneActorSound *sound, const Vec3 *pos);
 void SceneActorSound_TurnOn(SceneActorSound *sound);
 void *SceneActorSound_Destroy(SceneActorSound *sound);
 void *SceneActorSound_Construct(SceneActorSound *sound);
-int SceneActor_Member1F4IsSet(SceneActor *actor);
+int SceneActor_LightsLit(SceneActor *actor);
 u32 SceneActor_TileZ(SceneActor *actor);
 int SceneActor_TileX(SceneActor *actor);
 int SceneActor_CodeAddress(SceneActor *actor);

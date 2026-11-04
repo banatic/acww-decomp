@@ -31,7 +31,7 @@
 #include "villager_object.h"
 #include "villager_roster.h"
 #include "villager_status.h"
-#include "wfc_stats.h"
+#include "mystery_cat_record.h"
 
 static_assert(sizeof(DesignCreator) == 0x1e, "creator");
 static_assert(offsetof(DesignInfo, title) == 0x1e, "title");
@@ -77,7 +77,7 @@ typedef struct ItemMap {
 
 /* The item codes that stand for one of a player's eight designs, eight per player in player
  * order. On the town map one code each; in the rooms four codes each (the low two bits are a
- * variant, ITEM_CODE_VARIANT_BASE) in four ranges; and the two codes at 0x448 and 0x44a of the
+ * variant, ITEM_CODE_FURNITURE_BASE) in four ranges; and the two codes at 0x448 and 0x44a of the
  * records at data_021ebcd4, which get 0x113e and 0x1182 back. */
 #define TOWN_DESIGN_FIRST 0xa7
 #define TOWN_DESIGN_LAST 0xc6
@@ -179,7 +179,7 @@ CLEAN_AS(func_02071628, Design_FindLocal)
 int Design_FindRecord8(int index)
 {
     (void) index;
-    return design_address(WfcStats_Design((WfcStats *) (void *) data_021f3278));
+    return design_address(MysteryCatRecord_Design((MysteryCatRecord *) (void *) data_021f3278));
 }
 CLEAN_AS(func_02071648, Design_FindRecord8)
 

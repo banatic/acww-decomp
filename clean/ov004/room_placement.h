@@ -1,4 +1,4 @@
-/* Putting a piece of furniture down in the room (an item code with a variant, ItemCode_HasVariant):
+/* Putting a piece of furniture down in the room (an item code with a variant, ItemCode_IsFurniture):
  * finding cells near an actor where its footprint (item_footprint.h) is free, on the floor or
  * on top of other furniture, and making the placement value (Placement_Make, room_object_body.h)
  * that RoomObjects_Spawn turns into the room object.

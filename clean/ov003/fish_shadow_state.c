@@ -834,7 +834,7 @@ void FishShadow_EndPlayerFish(FishShadowProcess *self)
     for (int i = 0; i < PLAYER_FISH_COUNT; i++) {
         PlayerFish *fish = &data_ov003_0225f4dc[i];
         PlayerFish_StepEnd(fish, (u8) i);
-        SoundEmitter_Vfunc10B((SoundEmitter *) (void *) fish->emitter);
+        SoundEmitter_FinishB((SoundEmitter *) (void *) fish->emitter);
     }
 }
 CLEAN_AS(func_ov003_0222847c, FishShadow_EndPlayerFish)
@@ -852,7 +852,7 @@ void FishShadow_ReleaseShadows(FishShadowProcess *self)
         }
         FishShadow_Reset(self, i);
         ModelPool_Release(&self->shadows, &fish->slot);
-        SoundEmitter_Vfunc10B((SoundEmitter *) (void *) fish->emitter);
+        SoundEmitter_FinishB((SoundEmitter *) (void *) fish->emitter);
         SoundSource_Release(&fish->source);
     }
     Heap_FreeCurrent(self->shadow_file);

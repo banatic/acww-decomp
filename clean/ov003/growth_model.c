@@ -433,7 +433,7 @@ void GrowthModel_Release(GrowthModel *model)
 {
     GrowthModel_Reset(model);
     ModelObject_Release(&growth_model_animated(model)->object);
-    SoundEmitter_Vfunc10B(&model->sound);
+    SoundEmitter_FinishB(&model->sound);
 }
 CLEAN_AS(func_ov003_022231e8, GrowthModel_Release)
 
@@ -620,7 +620,7 @@ void GrowthModel_Setup(GrowthModel *model)
     AnimatedModel_LoadAnim(animated, data_ov003_0223cf78);
     model->mode = GROWTH_MODEL_RELEASED;
     ModelObject_SetNodeCallback(&animated->object, (void *) (uintptr_t) func_ov003_02222c34, 2, 2, model, NULL);
-    SoundEmitter_StopB(&model->sound);
+    SoundEmitter_ResetB(&model->sound);
     GrowthModel_Reset(model);
 }
 CLEAN_AS(func_ov003_02223580, GrowthModel_Setup)

@@ -82,16 +82,16 @@ extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 /* Its lines (the receiver's message). */
 #define FOX_TENT_TALK_LINE_GREETING 0x06
 #define FOX_TENT_TALK_LINE_OFFER 0x07
-#define FOX_TENT_TALK_LINE_JOIN 0x08
-#define FOX_TENT_TALK_LINE_DECLINED 0x09
+#define FOX_TENT_TALK_LINE_BALK 0x08
+#define FOX_TENT_TALK_LINE_FEE_OFFER 0x09
 #define FOX_TENT_TALK_LINE_CANNOT_JOIN 0x0a
-#define FOX_TENT_TALK_LINE_NOT_JOINING 0x0c
+#define FOX_TENT_TALK_LINE_SIGN_UP 0x0c
 #define FOX_TENT_TALK_LINE_JOINED 0x10
 #define FOX_TENT_TALK_LINE_PAID 0x11
 #define FOX_TENT_TALK_LINE_OFFER_AGAIN 0x12
 #define FOX_TENT_TALK_LINE_PLAIN 0x17
-#define FOX_TENT_TALK_LINE_PLAIN_4 0x1a
-#define FOX_TENT_TALK_LINE_PLAIN_4_INSTEAD 0x30
+#define FOX_TENT_TALK_LINE_SOLD_OUT 0x1a
+#define FOX_TENT_TALK_LINE_VASE_HINT 0x30
 #define FOX_TENT_TALK_LINE_TOLD 0x1d
 #define FOX_TENT_TALK_LINE_ITEM_OFFERS 0x1e
 #define FOX_TENT_TALK_LINE_ITEM_OFFERS_LAST 0x22
@@ -136,13 +136,13 @@ static void fox_tent_talk_say(FoxTentTalk *talk, int line)
     TalkObject_SetMessage(fox_tent_talk_object(talk), &message, data_ov052_02261e50);
 }
 
-/* Whether two item codes are the same: by ItemCode_VariantItem's number for the kinds that have
+/* Whether two item codes are the same: by ItemCode_FurnitureNumber's number for the kinds that have
  * one, else by code. */
 static int fox_tent_talk_same_item(const u16 *item, const u16 *other)
 {
-    if (ItemCode_HasVariant(item)) {
-        int own = ItemCode_VariantItem(item);
-        return own == ItemCode_VariantItem(other);
+    if (ItemCode_IsFurniture(item)) {
+        int own = ItemCode_FurnitureNumber(item);
+        return own == ItemCode_FurnitureNumber(other);
     }
     return *item == *other;
 }
@@ -150,10 +150,10 @@ static int fox_tent_talk_same_item(const u16 *item, const u16 *other)
 /* Whether a code is the empty one (compared as fox_tent_talk_same_item does). */
 static int fox_tent_talk_no_item(const u16 *item)
 {
-    if (ItemCode_HasVariant(item)) {
+    if (ItemCode_IsFurniture(item)) {
         u16 none = ITEM_CODE_NONE;
-        int own = ItemCode_VariantItem(item);
-        return own == ItemCode_VariantItem(&none);
+        int own = ItemCode_FurnitureNumber(item);
+        return own == ItemCode_FurnitureNumber(&none);
     }
     return *item == ITEM_CODE_NONE;
 }
@@ -226,7 +226,7 @@ void FoxTentTalk_Reset(FoxTentTalk *talk)
 CLEAN_AS(func_ov052_02261100, FoxTentTalk_Reset)
 
 /* func_ov052_022610d4: the scene reset through its vtable slot 0x08 and given its owner; the
- * item 0x34a8 not looked for yet and the membership not declined. */
+ * item 0x34a8 not looked for yet and the membership fee not quoted yet. */
 void FoxTentTalk_Begin(FoxTentTalk *talk, FoxTent *owner)
 {
     u32 vtable = *(const u32 *) (const void *) talk;
@@ -234,7 +234,7 @@ void FoxTentTalk_Begin(FoxTentTalk *talk, FoxTent *owner)
     ((void (*)(FoxTentTalk *))(uintptr_t) code)(talk);
     talk->owner = owner;
     talk->vase_slot = FOX_TENT_TALK_VASE_UNKNOWN;
-    talk->declined = 0;
+    talk->fee_quoted = 0;
 }
 CLEAN_AS(func_ov052_022610d4, FoxTentTalk_Begin)
 
@@ -295,10 +295,10 @@ int FoxTentTalk_ShopSoldOut(FoxTentTalk *talk)
     for (int i = 0; i < FOX_SHOP_ITEMS; i++) {
         u16 *item = FoxShop_Item(&data_021f3b30, i, NULL);
         int sold;
-        if (ItemCode_HasVariant(item)) {
+        if (ItemCode_IsFurniture(item)) {
             u16 marker = FOX_TENT_TALK_SOLD_MARKER;
-            int own = ItemCode_VariantItem(item);
-            sold = own == ItemCode_VariantItem(&marker);
+            int own = ItemCode_FurnitureNumber(item);
+            sold = own == ItemCode_FurnitureNumber(&marker);
         } else {
             sold = *item == FOX_TENT_TALK_SOLD_MARKER;
         }
@@ -390,8 +390,8 @@ void FoxTentTalk_Line(FoxTentTalk *talk, FoxTentTalkStart *out)
     if (PlayerRecord_TestFlag(record, FOX_TENT_TALK_MEMBER_FLAG)) {
         if (talk->sequence == FOX_TENT_TALK_PLAIN) {
             out->message = (u8) (MainRandom_Below(FOX_TENT_TALK_PLAIN_LINES) + FOX_TENT_TALK_LINE_PLAIN);
-            if (out->message == FOX_TENT_TALK_LINE_PLAIN_4) {
-                out->message = FOX_TENT_TALK_LINE_PLAIN_4_INSTEAD;
+            if (out->message == FOX_TENT_TALK_LINE_SOLD_OUT) {
+                out->message = FOX_TENT_TALK_LINE_VASE_HINT;
             }
         }
         fox = talk->owner;
@@ -426,8 +426,8 @@ CLEAN_AS(func_ov052_02260c1c, FoxTentTalk_Line)
  * - 0x2c (the item 0x34a8 asked for), 0: the pocket it was found in emptied (when it was) and
  *   the scene's motion 14 with the item; line 0x2e;
  * - 7 and 0x12 (the membership offered), not 0: line 0xa when the player cannot pay 3,000 bells,
- *   else 8, or 0xc once declined;
- * - 9: declined; 0: line 0xc;
+ *   else 8 (he balks), or 0xc once the fee was quoted;
+ * - 9 (the fee quoted): the fee marked as quoted; 0: line 0xc;
  * - 0x1d to 0x22 (an item offered), 0: with the price at hand and a free pocket, one of the five
  *   thanks not said yet (0x24 + n); without a free pocket 0x2a; without the price 0x29. Unless
  *   thanked, the player faces no item any more.
@@ -454,17 +454,17 @@ void FoxTentTalk_OnAnswer(FoxTentTalk *talk)
             if (answer != 0) {
                 if (!SceneBells_CanPay((int) (uintptr_t) talk->owner, FOX_TENT_TALK_MEMBERSHIP)) {
                     line = FOX_TENT_TALK_LINE_CANNOT_JOIN;
-                } else if (talk->declined == 0) {
-                    line = FOX_TENT_TALK_LINE_JOIN;
+                } else if (talk->fee_quoted == 0) {
+                    line = FOX_TENT_TALK_LINE_BALK;
                 } else {
-                    line = FOX_TENT_TALK_LINE_NOT_JOINING;
+                    line = FOX_TENT_TALK_LINE_SIGN_UP;
                 }
             }
             break;
-        case FOX_TENT_TALK_LINE_DECLINED:
-            talk->declined = 1;
+        case FOX_TENT_TALK_LINE_FEE_OFFER:
+            talk->fee_quoted = 1;
             if (answer == 0) {
-                line = FOX_TENT_TALK_LINE_NOT_JOINING;
+                line = FOX_TENT_TALK_LINE_SIGN_UP;
             }
             break;
         case FOX_TENT_TALK_LINE_TOLD:

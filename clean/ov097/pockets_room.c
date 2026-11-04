@@ -69,7 +69,7 @@ int PocketsRoom_StartDrop(PocketsScreen *self, u16 item)
     u16 original = item;
     u16 converted;
     ItemForm_ToPlaced(&converted, &original, 0);
-    if (ItemCode_HasVariant(&converted) != 0) {
+    if (ItemCode_IsFurniture(&converted) != 0) {
         int value;
         switch (RoomPlacement_FindNearPlayer((u32 *) (void *) &value, &converted, 1)) {
             case 0:

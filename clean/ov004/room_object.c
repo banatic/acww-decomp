@@ -395,7 +395,7 @@ CLEAN_AS(func_ov004_0220c9fc, RoomObject_UpdateAppear)
 /* func_ov004_0220cb68 (entry of ROOM_OBJECT_APPEAR): scale 0, the wobble's start, and when
  * SessionPlayers_ActorOf(SESSION_PLAYERS_OWN) says so, whatever DroppedItems_DropFromLocalPlayer does at 0x800 above the object's
  * centre (on the floor when unk_288 is 0, else at the height RoomObjects_HeightAtPoint gives) with
- * the value ItemCode_MakeVariant makes of unk_284; its result decides. */
+ * the value ItemCode_MakeFurniture makes of unk_284; its result decides. */
 int RoomObject_EnterAppear(RoomObject *object)
 {
     object->unk_15C = 0x555;
@@ -416,7 +416,7 @@ int RoomObject_EnterAppear(RoomObject *object)
             centre.y = RoomObjects_HeightAtPoint(&centre);
         }
         centre.y += 0x800;
-        u16 code = ItemCode_MakeVariant(object->unk_284, 0);
+        u16 code = ItemCode_MakeFurniture(object->unk_284, 0);
         return DroppedItems_DropFromLocalPlayer(&code, &centre);
     }
     return 1;

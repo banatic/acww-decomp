@@ -69,7 +69,7 @@ void ScreenPanels_ClearRequest2(void);
 void ScreenPanels_ClearRequest(unsigned int unused);
 void ScreenPanels_Request(void);
 
-/* The third panel is the menu tab (menu_tab.h), the fourth the bells panel (bells_panel.h). */
+/* The third panel is the camera tab (camera_tab.h), the fourth the bells panel (bells_panel.h). */
 void ScreenPanels_DrawGlobal(void);
 void ScreenPanels_UpdateGlobal(void);
 void ScreenPanels_RewindGlobal(void);

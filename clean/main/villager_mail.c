@@ -463,7 +463,7 @@ int VillagerMail_Receive(u8 *villager, Letter *letter)
     if (item != ITEM_CODE_NONE) {
         u16 stands_for;
         ItemForm_ToPlaced(&stands_for, &item, 1);
-        if (ItemCode_HasVariant(&stands_for) ||
+        if (ItemCode_IsFurniture(&stands_for) ||
             (stands_for >= VILLAGER_MAIL_WALLPAPER_FIRST && stands_for <= VILLAGER_MAIL_WALLPAPER_LAST) ||
             (stands_for >= VILLAGER_MAIL_CARPET_FIRST && stands_for <= VILLAGER_MAIL_CARPET_LAST)) {
             VillagerItems_Add(villager, &item);

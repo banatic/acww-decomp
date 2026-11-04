@@ -11,14 +11,14 @@
  *
  * Its own states (ASTRO_*), a table of C++ pointers to member functions (an entry and a run for
  * each state, data_ov046_0226248c, filled by __sinit_ov046_02261cac):
- * - ASTRO_IDLE: stands for 120 frames, then plays animation 0xf0 (ASTRO_ANIMATE), unless the
+ * - ASTRO_IDLE: stands for 120 frames, then falls asleep (animation 0xf0, ASTRO_ASLEEP), unless the
  *   session is linked, game variable 0x4a is set or it is evening or night;
  * - ASTRO_TURN_BACK: turns back to the angle it started at, then ASTRO_IDLE;
- * - ASTRO_ANIMATE: animation 0xf0 with effect 0x3c at its joint 16;
+ * - ASTRO_ASLEEP: asleep, animation 0xf0 with effect 0x3c at its joint 16;
  * - ASTRO_TALK: turns to the one it talks with and talks; once its action ends its event is
  *   finished and it takes ASTRO_TALKED;
  * - ASTRO_TALKED: nothing.
- * While it stands or plays its animation, a player who stands near (16.5, -, 23.0) facing it
+ * While it stands or sleeps, a player who stands near (16.5, -, 23.0) facing it
  * and presses A or touches it calls it over (Astro_IsCalled, Astro_TakeCall). Told of event 0 or 1 (its
  * vtable slot 0x4c) it talks; told the act ended (code 8) it turns back. */
 #ifndef CLEAN_OV046_ASTRO_H
@@ -32,7 +32,7 @@
 /* The states. */
 #define ASTRO_IDLE 0
 #define ASTRO_TURN_BACK 1
-#define ASTRO_ANIMATE 2
+#define ASTRO_ASLEEP 2
 #define ASTRO_TALK 3
 #define ASTRO_TALKED 4
 #define ASTRO_STATES 5
@@ -49,8 +49,8 @@ typedef struct Astro {
     AstroTalk talk;    /* 0x658 */
     u16 countdown;     /* 0x738: ASTRO_IDLE's frames left */
     s16 home_angle;    /* 0x73a: the angle it faced when it started */
-    u16 anim_word;     /* 0x73c: the word ASTRO_ANIMATE's animation is asked with */
-    u8 was_animating;  /* 0x73e: set by ASTRO_ANIMATE, cleared when its talk ends */
+    u16 anim_word;     /* 0x73c: the word ASTRO_ASLEEP's animation is asked with */
+    u8 was_asleep;     /* 0x73e: set by ASTRO_ASLEEP, cleared when its talk ends */
     u8 unk_73f;        /* 0x73f */
     s32 effect;        /* 0x740: effect 0x3c's handle, -1 for none */
 } Astro;
@@ -82,8 +82,8 @@ Astro *Astro_Create(void);
 int Astro_UpdateTalked(void);
 int Astro_UpdateTalk(Astro *self);
 int Astro_EnterTalk(Astro *self);
-int Astro_UpdateAnimate(Astro *self);
-int Astro_EnterAnimate(Astro *self);
+int Astro_UpdateAsleep(Astro *self);
+int Astro_EnterAsleep(Astro *self);
 int Astro_UpdateTurnBack(Astro *self);
 int Astro_EnterTurnBack(Astro *self);
 int Astro_UpdateIdle(Astro *self);

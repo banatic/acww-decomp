@@ -34,7 +34,7 @@ extern void func_020051b0(void *item);
 /* Groups ItemLists_DrawRange never draws. */
 #define ITEM_LISTS_GROUP_18 0x18
 #define ITEM_LISTS_GROUP_19 0x19
-/* The group ItemLists_IsVariantGroup4 looks for. */
+/* The group ItemLists_IsFurnitureGroup4 looks for. */
 #define ITEM_LISTS_GROUP_4 4
 /* An item season that is every season, beside -1. */
 #define ITEM_LISTS_ALL_SEASONS 4
@@ -100,13 +100,13 @@ static int source_day(DateRandom *source)
     return ((DateRandomValue *) (uintptr_t) source->vtable->day)(source);
 }
 
-/* Whether two codes are the same item: by their numbers without the variant when `a` has a
- * variant, else as codes. */
+/* Whether two codes are the same item: by their furniture numbers when `a` is
+ * furniture, else as codes. */
 static int same_item(u16 *a, u16 *b)
 {
-    if (ItemCode_HasVariant(a)) {
-        int number = ItemCode_VariantItem(a);
-        return number == ItemCode_VariantItem(b);
+    if (ItemCode_IsFurniture(a)) {
+        int number = ItemCode_FurnitureNumber(a);
+        return number == ItemCode_FurnitureNumber(b);
     }
     return *a == *b;
 }
@@ -118,12 +118,12 @@ static int is_none(u16 *item)
     return same_item(item, &none);
 }
 
-/* func_02062fe8: whether an item has a variant and is of group 4 (ItemLists_GroupOf, turned). */
-int ItemLists_IsVariantGroup4(u16 *item)
+/* func_02062fe8: whether an item is furniture of group 4 (ItemLists_GroupOf, turned). */
+int ItemLists_IsFurnitureGroup4(u16 *item)
 {
-    return ItemCode_HasVariant(item) && ItemLists_GroupOf(item, 0) == ITEM_LISTS_GROUP_4;
+    return ItemCode_IsFurniture(item) && ItemLists_GroupOf(item, 0) == ITEM_LISTS_GROUP_4;
 }
-CLEAN_AS(func_02062fe8, ItemLists_IsVariantGroup4)
+CLEAN_AS(func_02062fe8, ItemLists_IsFurnitureGroup4)
 
 /* func_0206300c: the group of an item, by its kind; unless `raw`, the group 1-3 whose place in
  * the town's order for the kind gives it, when one does. 0x18 for an item of no kind. */
@@ -264,7 +264,7 @@ static int range_candidate(u16 *code, u16 *drawn, u32 drawn_count, int skip_draw
     int group = 0;
     if (ItemCode_IsKind1(code)) {
         group = ItemInfo_ListGroup(code);
-    } else if (ItemCode_HasVariant(code)) {
+    } else if (ItemCode_IsFurniture(code)) {
         group = FurnitureInfo_ItemListGroup(code);
     }
     if (group == ITEM_LISTS_GROUP_19 || group == ITEM_LISTS_GROUP_18) {
@@ -288,7 +288,7 @@ static int range_record_accepts(void *record, int in_record, u16 *code)
 }
 
 /* func_02063414: a code drawn from the `count` codes from `first` (in steps of four when
- * `first` has a variant): one that is none of the `drawn_count` codes at `drawn`, of style
+ * `first` is furniture): one that is none of the `drawn_count` codes at `drawn`, of style
  * `style` when it is clothes (ITEM_LISTS_ANY_STYLE for any), not of group 0x18 or 0x19,
  * passing func_0204c260 when `filter` (dropped for the ranges 0x450c-0x47d7 and
  * 0x1323-0x1368, as `first` says), and, with a player's `record`, in its item record when
@@ -304,7 +304,7 @@ void ItemLists_DrawRange(u16 *out, int first, u32 count, u16 *drawn, u32 drawn_c
     DateRandom *picker = source != NULL ? source : &clock;
 
     u16 start = (u16) first;
-    int shift = ItemCode_HasVariant(&start) ? 2 : 0;
+    int shift = ItemCode_IsFurniture(&start) ? 2 : 0;
     if ((start >= ITEM_LISTS_UNFILTERED_A_FIRST && start <= ITEM_LISTS_UNFILTERED_A_LAST) ||
         (start >= ITEM_LISTS_UNFILTERED_B_FIRST && start <= ITEM_LISTS_UNFILTERED_B_LAST) ||
         (start >= ITEM_LISTS_UNFILTERED_C_FIRST && start <= ITEM_LISTS_UNFILTERED_C_LAST)) {
@@ -588,13 +588,13 @@ void ItemLists_PileCode(int number, int unused1, int unused2)
 }
 CLEAN_AS(func_02063ca8, ItemLists_PileCode)
 
-/* func_02063cb4 (kind 0's code): the code of item `number` with variant 0.
+/* func_02063cb4 (kind 0's code): the code of item `number` with side 0.
  * QUIRK: declared without a result, as ItemLists_PileCode. */
-void ItemLists_VariantCode(int number)
+void ItemLists_FurnitureCode(int number)
 {
-    ItemCode_MakeVariant(number, 0);
+    ItemCode_MakeFurniture(number, 0);
 }
-CLEAN_AS(func_02063cb4, ItemLists_VariantCode)
+CLEAN_AS(func_02063cb4, ItemLists_FurnitureCode)
 
 /* func_02063cc0 */
 int ItemList_Group(ItemList *list)

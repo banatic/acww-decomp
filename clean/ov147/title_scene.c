@@ -156,10 +156,10 @@ void TitleScene_EnterExitScene30(TitleScene *self)
 }
 CLEAN_AS(func_ov147_02299b90, TitleScene_EnterExitScene30)
 
-/* func_ov147_02299b98 (TITLE_STATE_EXIT_JOB_1C): with the screen shown and talk 0 closed, the
- * talk let go, scene 0x2e to go to (arguments 2 and 3) with the activity's job 0x1c, and the
- * music stopped. */
-void TitleScene_ExitForJob1c(TitleScene *self)
+/* func_ov147_02299b98 (TITLE_STATE_EXIT_FIND_MOVER): with the screen shown and talk 0 closed, the
+ * talk let go, scene 0x2e to go to (arguments 2 and 3) with the activity's job 0x1c (finding a
+ * resident to move in, ActivityJob_AskFindMover), and the music stopped. */
+void TitleScene_ExitToFindMover(TitleScene *self)
 {
     if (!title_screen_shown()) {
         return;
@@ -168,18 +168,18 @@ void TitleScene_ExitForJob1c(TitleScene *self)
     if (talk->state == TALK_OBJECT_CLOSED) {
         TalkObject_DetachReceiver(talk);
         SceneExit_SetToScene(title_entry_record(), TITLE_SCENE_2E, TITLE_CHANGE_ARG, 3);
-        ActivityJob_Ask1C();
+        ActivityJob_AskFindMover();
         TitleScene_StopMusic(self);
     }
 }
-CLEAN_AS(func_ov147_02299b98, TitleScene_ExitForJob1c)
+CLEAN_AS(func_ov147_02299b98, TitleScene_ExitToFindMover)
 
-/* func_ov147_02299be0 (TITLE_STATE_EXIT_JOB_1C's entry). */
-void TitleScene_EnterExitJob1c(TitleScene *self)
+/* func_ov147_02299be0 (TITLE_STATE_EXIT_FIND_MOVER's entry). */
+void TitleScene_EnterExitFindMover(TitleScene *self)
 {
     TitleScene_EndMusicOnLeave(self);
 }
-CLEAN_AS(func_ov147_02299be0, TitleScene_EnterExitJob1c)
+CLEAN_AS(func_ov147_02299be0, TitleScene_EnterExitFindMover)
 
 /* func_ov147_02299be8 (TITLE_STATE_EXIT_NEW): with the screen shown and talk 0 closed, the talk
  * let go, scene 0x2d to go to (arguments 2 and 0) and the music stopped; the start kind set
@@ -608,7 +608,7 @@ int TitleScene_InitStateTable(void)
     };
     static const MemberPointer *const last[8] = {
         &data_ov147_0229a8dc, &data_ov147_0229a9cc, /* TITLE_STATE_EXIT_WIFI_SETUP */
-        &data_ov147_0229a8e4, &data_ov147_0229a9bc, /* TITLE_STATE_EXIT_JOB_1C */
+        &data_ov147_0229a8e4, &data_ov147_0229a9bc, /* TITLE_STATE_EXIT_FIND_MOVER */
         &data_ov147_0229a9b4, &data_ov147_0229a9ac, /* TITLE_STATE_EXIT_SCENE_30 */
         &data_ov147_0229a8fc, &data_ov147_0229a99c, /* TITLE_STATE_IDLE_RESTART */
     };

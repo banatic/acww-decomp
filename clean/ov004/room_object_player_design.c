@@ -64,7 +64,7 @@ CLEAN_AS(func_ov004_02213b8c, PlayerDesignObject_Update)
  * has a record; and the player's texture of the design on "w". Done at once. */
 int PlayerDesignObject_Start(PlayerDesignObject *object)
 {
-    u16 item = ItemCode_MakeVariant(RoomObject_Number(&object->base), 0);
+    u16 item = ItemCode_MakeFurniture(RoomObject_Number(&object->base), 0);
     object->cleared_node = PLAYER_DESIGN_NO_NODE;
     int design = 0;
     for (int i = 0; i < PLAYER_DESIGN_RANGES; i++) {

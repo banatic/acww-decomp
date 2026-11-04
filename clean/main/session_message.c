@@ -1036,9 +1036,9 @@ void SessionMessage_Handle43(int size, int kind, int scene, int slot)
             u8 *record = PlayerRecords_OfPlayer(slot);
             u16 *current = PlayerRecord_HeldItem(record);
             int same;
-            if (ItemCode_HasVariant(&item) != 0) {
-                int code = ItemCode_VariantItem(&item);
-                same = code == ItemCode_VariantItem(current);
+            if (ItemCode_IsFurniture(&item) != 0) {
+                int code = ItemCode_FurnitureNumber(&item);
+                same = code == ItemCode_FurnitureNumber(current);
             } else {
                 same = item == *current;
             }

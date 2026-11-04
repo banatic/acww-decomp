@@ -84,7 +84,7 @@ extern MemberPointer data_ov004_022574cc[CHEST_LID_STATE_COUNT];
 extern const MemberPointer data_ov004_022505b8, data_ov004_022505d8, data_ov004_02250650, data_ov004_02250648;
 
 /* The town's map (AcreTile_ItemInAcre finds the item on a cell of it), and whether an item is of the
- * kind ItemCode_HasVariant tells. */
+ * kind ItemCode_IsFurniture tells. */
 extern void *data_021c80bc;
 
 /* The receiver part as C++ converts a pointer to the chest to it: NULL stays NULL. */
@@ -215,7 +215,7 @@ static u16 *Chest_item_on_cell(void *map, s32 x, s32 y)
 /* func_ov004_02216d1c (entry of CHEST_TALK): takes the receiver (SceneObjectBase_TakeReceiver), raises the
  * link's request and names the receiver "obj_etc_nchest". Its state byte is set to one of 16
  * values: the furniture's number plus the scene, plus x + 16 y of the first of its cells that
- * holds an item ItemCode_HasVariant tells (on the town's map, when there is one).
+ * holds an item ItemCode_IsFurniture tells (on the town's map, when there is one).
  * REQUIRES: the receiver has a link once SceneObjectBase_TakeReceiver has taken it. */
 int Chest_EnterTalk(Chest *chest)
 {
@@ -234,7 +234,7 @@ int Chest_EnterTalk(Chest *chest)
             s32 x = CellList_At(&cells, (int) i)->x;
             s32 y = CellList_At(&cells, (int) i)->y;
             u16 *item = Chest_item_on_cell(map, x, y);
-            if (item != NULL && ItemCode_HasVariant(item) != 0) {
+            if (item != NULL && ItemCode_IsFurniture(item) != 0) {
                 line = (line + x + y * BLOCK_CELLS) & (LINE_COUNT - 1);
                 break;
             }

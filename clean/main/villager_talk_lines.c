@@ -388,7 +388,7 @@ void VillagerTalk_Line8ba0Group15(VillagerTalk *talk, VillagerTalkLine *out)
 CLEAN_AS(func_0201ed68, VillagerTalk_Line8ba0Group15)
 
 /* func_0201edcc: the villager gives an item for the player's item at 0x124: the pitfall seed 0x1566
- * for the worm-eaten acorn 0x1546 (compared by item without its variant when it has one), else one drawn from the list of a
+ * for the worm-eaten acorn 0x1546 (compared by furniture number when it is furniture), else one drawn from the list of a
  * kind of data_020c8e98 picked at random. It becomes the gift at 0x19c, is put into the
  * player's first free pocket and marked as had, and is shown (motion 13) with its name in slot
  * 0. QUIRK: without a free pocket the gift replaces the first pocket. */
@@ -402,10 +402,10 @@ void VillagerTalk_GiveForAcorn(VillagerTalk *talk)
     }
 
     int is_1546;
-    if (ItemCode_HasVariant(&talk->item)) {
+    if (ItemCode_IsFurniture(&talk->item)) {
         ItemCode wanted = 0x1546;
-        int held = ItemCode_VariantItem(&talk->item);
-        is_1546 = held == ItemCode_VariantItem(&wanted);
+        int held = ItemCode_FurnitureNumber(&talk->item);
+        is_1546 = held == ItemCode_FurnitureNumber(&wanted);
     } else {
         is_1546 = talk->item == 0x1546;
     }

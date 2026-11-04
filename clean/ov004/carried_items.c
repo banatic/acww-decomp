@@ -61,10 +61,10 @@ static ItemCode *item_on_cell(void *map, s32 x, s32 y)
 /* Whether `item` is "nothing": an item with variants is compared without its variant. */
 static int is_none(const ItemCode *item)
 {
-    if (ItemCode_HasVariant(item)) {
+    if (ItemCode_IsFurniture(item)) {
         ItemCode none = ITEM_CODE_NONE;
-        int number = ItemCode_VariantItem(item);
-        return number == ItemCode_VariantItem(&none);
+        int number = ItemCode_FurnitureNumber(item);
+        return number == ItemCode_FurnitureNumber(&none);
     }
     return *item == ITEM_CODE_NONE;
 }
@@ -139,7 +139,7 @@ int CarriedItems_PickUp(CarriedItems *items, RoomObject *object)
 CLEAN_AS(func_ov004_0220d594, CarriedItems_PickUp)
 
 /* func_ov004_0220d6b8: whether the object's cells hold no loose items other than items of kind
- * 1 (codes 0x1000-0x1fff) and the ones ItemCode_IsF031OrVariant names. `items` is not read. */
+ * 1 (codes 0x1000-0x1fff) and the ones ItemCode_IsF031OrFurniture names. `items` is not read. */
 int CarriedItems_CellsAreClear(CarriedItems *items, RoomObject *object)
 {
     (void) items;
@@ -151,7 +151,7 @@ int CarriedItems_CellsAreClear(CarriedItems *items, RoomObject *object)
         s32 y = CellList_At(&cells, (int) i)->y;
         s32 x = CellList_At(&cells, (int) i)->x;
         ItemCode *item = item_on_cell(map, x, y);
-        if (item != NULL && !ItemCode_IsF031OrVariant(item) && !ItemCode_IsKind1(item) && !is_none(item)) {
+        if (item != NULL && !ItemCode_IsF031OrFurniture(item) && !ItemCode_IsKind1(item) && !is_none(item)) {
             CellList_Destruct(&cells);
             return 0;
         }

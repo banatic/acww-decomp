@@ -42,7 +42,7 @@
 /* The villagers' houses, 0x5001-0x5008 for villagers 0-7. */
 #define TOWN_OBJECTS_FIRST_HOUSE 0x5001
 #define TOWN_OBJECTS_LAST_HOUSE 0x5008
-#define TOWN_OBJECTS_VILLAGER_STATE_2 2
+#define TOWN_OBJECTS_VILLAGER_ASLEEP 2
 
 #define TOWN_OBJECTS_ACRE_TILES 16
 
@@ -133,10 +133,10 @@ static TownObjectsSetMode *town_objects_set_mode(const void *actor)
  * their items are the same. */
 static int town_objects_is(u16 *item, u16 code)
 {
-    if (ItemCode_HasVariant(item)) {
+    if (ItemCode_IsFurniture(item)) {
         u16 wanted = code;
-        int own = ItemCode_VariantItem(item);
-        return own == ItemCode_VariantItem(&wanted);
+        int own = ItemCode_FurnitureNumber(item);
+        return own == ItemCode_FurnitureNumber(&wanted);
     }
     return *item == code;
 }
@@ -378,7 +378,7 @@ CLEAN_AS(func_020b2470, TownObjects_VisitAnswer)
 /* func_020b248c: this system's player asks to visit object `code`. Slot 0's system or one
  * playing alone answers at once for slot 0 (town_objects.h); the others clear the answer and
  * ask slot 0's (message 0x23).
- * QUIRK: letting the player in asks TownObjects_HouseState2 a second time, its answer
+ * QUIRK: letting the player in asks TownObjects_HouseAsleep a second time, its answer
  * dropped. */
 void TownObjects_RequestVisit(u32 code)
 {
@@ -394,12 +394,12 @@ void TownObjects_RequestVisit(u32 code)
         TownObjects_CopyRecord(&info, town_objects_info(index));
         if (after > (u32) TownObjects_RecordMaxVisitors(&info)) {
             town_objects_set_answer(record, TOWN_OBJECTS_ANSWER_FULL);
-        } else if (TownObjects_HouseState2((int) code) && before == 0) {
-            town_objects_set_answer(record, TOWN_OBJECTS_ANSWER_HOUSE);
+        } else if (TownObjects_HouseAsleep((int) code) && before == 0) {
+            town_objects_set_answer(record, TOWN_OBJECTS_ANSWER_ASLEEP);
         } else {
             town_objects_set_visitors(record, visitors);
             town_objects_set_answer(record, TOWN_OBJECTS_ANSWER_LET_IN);
-            TownObjects_HouseState2((int) code);
+            TownObjects_HouseAsleep((int) code);
         }
         TownObjects_DestroyRecord(&info);
     } else {
@@ -433,7 +433,7 @@ CLEAN_AS(func_020b25e0, TownObjects_OnLeftMessage)
 /* func_020b260c (message 0x23) from slot `slot`: an answer is kept; a request is answered as
  * TownObjects_RequestVisit answers this system's (with the sender's bit), and the answer sent
  * back with the sender's slot as the message's kind.
- * QUIRK: letting the player in asks TownObjects_HouseState2 a second time, its answer
+ * QUIRK: letting the player in asks TownObjects_HouseAsleep a second time, its answer
  * dropped; an index past 0x21 (six bits allow 63) reaches past the records. */
 void TownObjects_OnVisitMessage(u8 *payload, int slot)
 {
@@ -455,12 +455,12 @@ void TownObjects_OnVisitMessage(u8 *payload, int slot)
         town_objects_set_answer(record, TOWN_OBJECTS_ANSWER_FULL);
     } else {
         int code = MapCode_Building(index);
-        if (TownObjects_HouseState2(code) && before == 0) {
-            town_objects_set_answer(record, TOWN_OBJECTS_ANSWER_HOUSE);
+        if (TownObjects_HouseAsleep(code) && before == 0) {
+            town_objects_set_answer(record, TOWN_OBJECTS_ANSWER_ASLEEP);
         } else {
             town_objects_set_visitors(record, visitors);
             town_objects_set_answer(record, TOWN_OBJECTS_ANSWER_LET_IN);
-            TownObjects_HouseState2(code);
+            TownObjects_HouseAsleep(code);
         }
     }
 
@@ -490,28 +490,28 @@ void TownObjects_OnModeMessage(const u16 *payload)
 }
 CLEAN_AS(func_020b2734, TownObjects_OnModeMessage)
 
-/* func_020b278c: for a villager's house (0x5001-0x5008), whether its villager is in state 2;
+/* func_020b278c: for a villager's house (0x5001-0x5008), whether its villager is asleep (state 2);
  * else 0. */
-int TownObjects_HouseState2(int code)
+int TownObjects_HouseAsleep(int code)
 {
     u16 house = (u16) code;
     if (house < TOWN_OBJECTS_FIRST_HOUSE || house > TOWN_OBJECTS_LAST_HOUSE) {
         return 0;
     }
-    return TownObjects_VillagerState2(house - TOWN_OBJECTS_FIRST_HOUSE);
+    return TownObjects_VillagerAsleep(house - TOWN_OBJECTS_FIRST_HOUSE);
 }
-CLEAN_AS(func_020b278c, TownObjects_HouseState2)
+CLEAN_AS(func_020b278c, TownObjects_HouseAsleep)
 
 /* func_020b27d4: whether the town has villager `villager` and it is in state 2. */
-int TownObjects_VillagerState2(int villager)
+int TownObjects_VillagerAsleep(int villager)
 {
     u8 *record = VillagerRoster_At((VillagerTown *) (void *) data_021e5a2c, villager);
     if (record == NULL) {
         return 0;
     }
-    return VillagerStatus_Get(record) == TOWN_OBJECTS_VILLAGER_STATE_2;
+    return VillagerStatus_Get(record) == TOWN_OBJECTS_VILLAGER_ASLEEP;
 }
-CLEAN_AS(func_020b27d4, TownObjects_VillagerState2)
+CLEAN_AS(func_020b27d4, TownObjects_VillagerAsleep)
 
 /* func_020b2800: in mode 0, the scene actor is given `mode` (its vtable's slot 0x6c); when it
  * takes it on a linked system, the others are told (message 0x22). Whether it took it; 0 in

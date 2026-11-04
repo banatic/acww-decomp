@@ -342,9 +342,9 @@ void TuneEditor_EraseByTouch(TuneEditor *self)
 }
 CLEAN_AS(func_ov143_0229a4e0, TuneEditor_EraseByTouch)
 
-/* func_ov143_0229a54c (sub state 6): once the press's animation ends the sprite is shown again
+/* func_ov143_0229a54c (sub state 6): once the release animation ends the sprite is shown again
  * and the sub state it was in comes back. */
-void TuneEditor_WaitPress(TuneEditor *self)
+void TuneEditor_WaitRelease(TuneEditor *self)
 {
     if (!CellLayerSprite_IsDone(tune_sprite_cells(self))) {
         return;
@@ -352,17 +352,17 @@ void TuneEditor_WaitPress(TuneEditor *self)
     TuneEditor_ShowCursorSprite(self);
     MenuScene_SetSubState(tune_scene(self), self->return_sub_state);
 }
-CLEAN_AS(func_ov143_0229a54c, TuneEditor_WaitPress)
+CLEAN_AS(func_ov143_0229a54c, TuneEditor_WaitRelease)
 
 /* func_ov143_0229a570 (sub state 5): once the A press's animation ends the place under the
- * cursor acts; when it is no place, the keys go on (sub state 2) after a press of the
- * sprite. */
+ * cursor acts; when it is no place, the keys go on (sub state 2) after the sprite's
+ * release animation. */
 void TuneEditor_ActOnPress(TuneEditor *self)
 {
     if (CellLayerSprite_IsDone(tune_sprite_cells(self))) {
         if (!TuneEditor_Act(self, self->cursor)) {
             MenuScene_SetSubState(tune_scene(self), TUNE_EDITOR_SUB_KEYS);
-            TuneEditor_PressCursor(self);
+            TuneEditor_ReleaseCursor(self);
         }
     }
 }
@@ -381,13 +381,13 @@ CLEAN_AS(_ZN18Obj_ov143_0229b1c019func_ov143_0229a5a4Ev, TuneEditor_WaitCursorSp
 
 /* func_ov143_0229a5cc (sub state 3): while A is held, up and down (repeated) raise and lower
  * the note of the step under the cursor by a height (within 0-15): the new note sounds and the
- * sprite follows it. When A is let go the keys go on, after a press of the sprite.
+ * sprite follows it. When A is let go the keys go on, after the sprite's release animation.
  * REQUIRES: the cursor is on a step (0-15). */
 void TuneEditor_AdjustStep(TuneEditor *self)
 {
     if ((data_021fbe40.held & TUNE_EDITOR_PAD_A) == 0) {
         TuneEditor_Resume(self);
-        TuneEditor_PressCursor(self);
+        TuneEditor_ReleaseCursor(self);
         return;
     }
     int keys = (int) MenuScene_LatchRepeatedKeys(tune_scene(self));

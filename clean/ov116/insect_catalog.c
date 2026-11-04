@@ -22,7 +22,7 @@ static_assert(offsetof(CatalogScene, return_sub_state) == 0x142c, "return sub st
 static_assert(sizeof(CatalogScene) == 0x1430, "size (func_ov116_0229e7e0)");
 
 /* The tab of the menu's bar this scene is, and the list it shows. */
-#define INSECT_CATALOG_TAB MENU_TAB_3
+#define INSECT_CATALOG_TAB MENU_TAB_INSECTS
 #define INSECT_CATALOG_KIND CATALOG_KIND_INSECTS
 
 /* The scene's vtable. */
@@ -609,9 +609,9 @@ int InsectCatalog_CheckTabKeys(CatalogScene *self)
         } else if (pressed & INSECT_CATALOG_PAD_Y) {
             tab = MENU_TAB_POCKETS;
         } else if (pressed & INSECT_CATALOG_PAD_X) {
-            tab = MENU_TAB_5;
+            tab = MENU_TAB_MAP;
         } else if (pressed & INSECT_CATALOG_PAD_SELECT) {
-            tab = MENU_TAB_4;
+            tab = MENU_TAB_CHAT;
         }
     }
     return InsectCatalog_SelectTab(self, tab);

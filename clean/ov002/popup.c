@@ -34,13 +34,13 @@ void Popup_SetTimer(Popup *popup, u8 frames)
 }
 CLEAN_AS(func_ov002_02207ce4, Popup_SetTimer)
 
-/* func_ov002_02207cec: the window's word at 0x44, which its drawing (func_0208ab3c) passes to
- * func_02088df8 as the sixth argument. */
-void Popup_SetDrawValue(Popup *popup, int value)
+/* func_ov002_02207cec: the window's OBJ priority (its word at 0x44), which its drawing
+ * (func_0208ab3c) passes to func_02088df8 as the sixth argument, the priority. */
+void Popup_SetPriority(Popup *popup, int priority)
 {
-    *(int *) (popup->window + 0x40) = value;
+    *(int *) (popup->window + 0x40) = priority;
 }
-CLEAN_AS(func_ov002_02207cec, Popup_SetDrawValue)
+CLEAN_AS(func_ov002_02207cec, Popup_SetPriority)
 
 /* func_ov002_02207cf0 */
 void Popup_ClearQueued(Popup *popup)

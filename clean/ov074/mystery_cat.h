@@ -7,7 +7,7 @@
  *
  * She is a scene object of class 0x020da088 (main's special_scene_object.h) with vtable
  * 0x02279c68, 0x740 bytes, made by MysteryCat_Create, with no texture file of her own: her face
- * (MysteryCatFace, at 0x714) is the design kept in the town's record (WfcStats_Design of
+ * (MysteryCatFace, at 0x714) is the design kept in the town's record (MysteryCatRecord_Design of
  * data_021f3278), copied over her model's material "f". Her talk scene (MysteryCatTalk,
  * mystery_cat_talk.h, at 0x658) has the player draw her a face, then takes an impression of
  * the player she will imitate (VillagerImpression_Pick on the player's record).

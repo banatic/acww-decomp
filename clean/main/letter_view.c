@@ -413,7 +413,7 @@ void LetterView_SetGreeting(LetterView *view, const Letter *letter, u16 *out)
     int from = 0;
 
     LetterLine_Clear(&view->greeting);
-    for (; i < letter->header_line; i++, from++) {
+    for (; i < letter->name_position; i++, from++) {
         chars[i] = letter->header[from];
     }
     for (int k = 0; k < view->name_length; k++, i++) {
@@ -423,7 +423,7 @@ void LetterView_SetGreeting(LetterView *view, const Letter *letter, u16 *out)
         chars[i] = from < LETTER_GREETING_LENGTH ? letter->header[from] : 0;
     }
     if (view->name_length > 0) {
-        LetterLine_SetNameMark(&view->greeting, letter->header_line, (u8) view->name_length);
+        LetterLine_SetNameMark(&view->greeting, letter->name_position, (u8) view->name_length);
     }
 
     wide_construct(&text);

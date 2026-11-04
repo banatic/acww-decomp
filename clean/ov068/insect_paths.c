@@ -695,17 +695,17 @@ static_assert(offsetof(Actor, speed) == 0x98, "actor speed");
 
 /* The tiles a perch may be on: item 0x500a (building 0xa's tile) and items 0xe3-0xe7, with
  * the height the insect perches at on each. */
-#define INSECT_PATH_PERCH_BUILDING 0x500a
-#define INSECT_PATH_PERCH_FIRST 0xe3
-#define INSECT_PATH_PERCH_LAST 0xe7
-#define INSECT_PATH_PERCH_BUILDING_HEIGHT 0x27ae
-#define INSECT_PATH_PERCH_ITEM_HEIGHT 0x191f
+#define INSECT_PATH_PERCH_FREE_PLOT 0x500a
+#define INSECT_PATH_PERCH_ROCK_FIRST 0xe3
+#define INSECT_PATH_PERCH_ROCK_LAST 0xe7
+#define INSECT_PATH_PERCH_PLOT_HEIGHT 0x27ae
+#define INSECT_PATH_PERCH_ROCK_HEIGHT 0x191f
 #define INSECT_PATH_PERCH_TILE_FIRST 0x10 /* the tiles searched: within the town's inner acres */
 #define INSECT_PATH_PERCH_TILE_LAST 0x50
 
 #define INSECT_PATH_BUILDINGS 0x22 /* the codes 0x5000-0x5021 */
 
-/* Kind 0x23's ring around its snowball (InsectPath_CircleSnowball): the range of the balls'
+/* Kind 0x23's ring around its snowball (InsectPath_RollSnowball): the range of the balls'
  * sizes (a function-local static computed once; bit 0 of data_ov068_022786c4 says it was). */
 extern fx32 data_ov068_022786c0;
 extern u32 data_ov068_022786c4;
@@ -932,7 +932,7 @@ static void insect_rest(TownInsect *insect)
  * along the way round is where the ring lies: inside it, the insect moves one step outwards,
  * beyond the ring and 0.2 more three steps, else 2.4. Then the ball is placed there
  * (Snowman_Place); when it refuses, the insect rests. */
-void InsectPath_CircleSnowball(TownInsect *insect)
+void InsectPath_RollSnowball(TownInsect *insect)
 {
     Snowman *ball = Snowman_IdleLooseBall(insect->unk_21c);
     Vec3 *position = &insect->position;
@@ -984,7 +984,7 @@ void InsectPath_CircleSnowball(TownInsect *insect)
         insect_rest(insect);
     }
 }
-CLEAN_AS(func_ov068_02271160, InsectPath_CircleSnowball)
+CLEAN_AS(func_ov068_02271160, InsectPath_RollSnowball)
 
 /* func_ov068_02271358 (kind 0x23, INSECT_PATH_RESTING): while it stands on the ground
  * (func_ov003_02232414), its wait counts down, and once out it leaves (INSECT_PATH_LEAVE). */
@@ -1039,7 +1039,7 @@ CLEAN_AS(func_ov068_02271398, InsectPath_Roam)
 
 /* func_ov068_02271494: the tile of a town building nearest to the insect's tile: of the 'M'
  * tiles of each building's shape (BuildingShapes_MTile) whose scene actor stands
- * (SceneActor_Member1F4IsSet gives 1), at the actor's tile. Gives its distance in tiles, or -1
+ * (SceneActor_LightsLit gives 1), at the actor's tile. Gives its distance in tiles, or -1
  * for none; with one, *tile's x and z are its tile numbers.
  * QUIRK: the first tile found is taken only when it lies no farther north than the insect;
  * after that any nearer one.
@@ -1077,7 +1077,7 @@ int InsectPath_NearestBuildingTile(TownInsect *insect, Vec3 *tile)
                                      (unsigned int) (uintptr_t) &shape_z, j) == 0) {
                 continue;
             }
-            if (SceneActor_Member1F4IsSet(building) != 1) {
+            if (SceneActor_LightsLit(building) != 1) {
                 continue;
             }
             int tile_x = shape_x + SceneActor_TileX(building);
@@ -1198,11 +1198,11 @@ static fx32 perch_height(const u16 *item)
     if (item == NULL) {
         return 0;
     }
-    if (*item == INSECT_PATH_PERCH_BUILDING) {
-        return INSECT_PATH_PERCH_BUILDING_HEIGHT;
+    if (*item == INSECT_PATH_PERCH_FREE_PLOT) {
+        return INSECT_PATH_PERCH_PLOT_HEIGHT;
     }
-    if (*item >= INSECT_PATH_PERCH_FIRST && *item <= INSECT_PATH_PERCH_LAST) {
-        return INSECT_PATH_PERCH_ITEM_HEIGHT;
+    if (*item >= INSECT_PATH_PERCH_ROCK_FIRST && *item <= INSECT_PATH_PERCH_ROCK_LAST) {
+        return INSECT_PATH_PERCH_ROCK_HEIGHT;
     }
     return 0;
 }
@@ -1364,16 +1364,16 @@ int InsectPath_FindPerch(TownInsect *insect)
             if (item == NULL) {
                 continue;
             }
-            int on_building;
-            if (*item == INSECT_PATH_PERCH_BUILDING) {
-                on_building = 1;
-            } else if (*item >= INSECT_PATH_PERCH_FIRST && *item <= INSECT_PATH_PERCH_LAST) {
-                on_building = 0;
+            int on_plot;
+            if (*item == INSECT_PATH_PERCH_FREE_PLOT) {
+                on_plot = 1;
+            } else if (*item >= INSECT_PATH_PERCH_ROCK_FIRST && *item <= INSECT_PATH_PERCH_ROCK_LAST) {
+                on_plot = 0;
             } else {
                 continue;
             }
             AcreTile_TileCentre(perch, i, j);
-            if (on_building) {
+            if (on_plot) {
                 perch->z += 0x59a;
             }
             insect->unk_21c += 0x10;

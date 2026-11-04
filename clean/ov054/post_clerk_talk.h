@@ -27,8 +27,9 @@
  * - an amount added to the town's donations (savings.h) after the screen in mode 0x37, and the
  *   donation rank it reaches (PostClerkTalk_TellDonationRank);
  * - a villager's errand for the clerk: the item handed over from the pockets;
- * - a linked game (line 0x36): the session started, a game looked for for up to 600 frames,
- *   joined, then activity job 0x12 or 0x1f asked for (activity_job.h).
+ * - moving to another town over DS wireless (line 0x36): the session started, a town to move
+ *   to looked for for up to 600 frames, joined, then activity job 0x12 or 0x1f (the move-out
+ *   write) asked for (activity_job.h).
  *
  * Its steps (PostClerkTalk.step), a member function each from data_ov054_02263140 (filled at
  * start-up), run once when a command of the scene ends, or before each step of the scene when
@@ -52,8 +53,8 @@ enum PostClerkTalkStepId {
     POST_CLERK_TALK_STEP_AWAIT_JOB_12 = 9,   /* PostClerkTalk_AwaitJob12, each step */
     POST_CLERK_TALK_STEP_NEXT_LINE = 10,     /* PostClerkTalk_NextLine */
     POST_CLERK_TALK_STEP_ERRAND = 11,        /* PostClerkTalk_AfterErrand */
-    POST_CLERK_TALK_STEP_SEARCH = 12,        /* PostClerkTalk_SearchGame, each step */
-    POST_CLERK_TALK_STEP_CONNECT = 13,       /* PostClerkTalk_AwaitConnection, each step */
+    POST_CLERK_TALK_STEP_SEARCH = 12,        /* PostClerkTalk_SearchMoveTarget, each step */
+    POST_CLERK_TALK_STEP_CONNECT = 13,       /* PostClerkTalk_AwaitMoveTarget, each step */
     POST_CLERK_TALK_STEP_ASK_JOB_1F = 14,    /* PostClerkTalk_AskJob1f, each step */
     POST_CLERK_TALK_STEP_AWAIT_JOB_1F = 15,  /* PostClerkTalk_AwaitJob1f, each step */
     POST_CLERK_TALK_STEPS = 16
@@ -98,7 +99,7 @@ void PostClerkTalk_Begin(PostClerkTalk *talk, PostClerk *owner);
 void PostClerkTalk_SetStep(PostClerkTalk *talk, unsigned long step);
 void PostClerkTalk_RunCommandStep(PostClerkTalk *talk);
 void PostClerkTalk_RunEachStep(PostClerkTalk *talk);
-void PostClerkTalk_EndLinkedGame(PostClerkTalk *talk);
+void PostClerkTalk_EndMove(PostClerkTalk *talk);
 
 /* The lines. */
 void PostClerkTalk_Line(PostClerkTalk *talk, PostClerkTalkLine *out);
@@ -142,8 +143,8 @@ void PostClerkTalk_AskJob12(PostClerkTalk *talk);
 void PostClerkTalk_AwaitJob12(PostClerkTalk *talk);
 void PostClerkTalk_NextLine(PostClerkTalk *talk);
 void PostClerkTalk_AfterErrand(PostClerkTalk *talk);
-void PostClerkTalk_SearchGame(PostClerkTalk *talk);
-void PostClerkTalk_AwaitConnection(PostClerkTalk *talk);
+void PostClerkTalk_SearchMoveTarget(PostClerkTalk *talk);
+void PostClerkTalk_AwaitMoveTarget(PostClerkTalk *talk);
 void PostClerkTalk_AskJob1f(PostClerkTalk *talk);
 void PostClerkTalk_AwaitJob1f(PostClerkTalk *talk);
 

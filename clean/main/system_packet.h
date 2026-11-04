@@ -23,7 +23,7 @@ typedef void SystemPacketHandler(u8 *payload, u32 length, int sender);
 void SystemPacket_Dispatch(u8 *payload, u32 length, int sender, int kind);
 
 void SystemPacket_SetActivityFlag101(u8 *payload, u32 length, int sender);   /* kind 23 */
-void SystemPacket_WriteRecordBlock(u8 *payload, u32 length, int sender);     /* kind 22 */
+void SystemPacket_WriteKeptLetters(u8 *payload, u32 length, int sender);     /* kind 22 */
 void SystemPacket_WriteOwnRecord(u8 *payload, u32 length, int sender);       /* kind 21 */
 void SystemPacket_SetActivityPlayer100(u8 *payload, u32 length, int sender); /* kind 20 */
 void SystemPacket_SetActivityPlayerF4(u8 *payload, u32 length, int sender);  /* kind 19 */
@@ -41,14 +41,14 @@ void SystemPacket_RequestMode(u8 *payload, u32 length, int sender);          /* 
 void SystemPacket_SetLinkFlagC4(u8 *payload, u32 length, int sender);        /* kind 7 */
 void SystemPacket_SetOwnStatus(u8 *payload, u32 length, int sender);         /* kind 6 */
 void SystemPacket_SetSenderStatus(u8 *payload, u32 length, int sender);      /* kind 5 */
-void SystemPacket_WriteSenderBlock(u8 *payload, u32 length, int sender);     /* kind 4 */
+void SystemPacket_WriteSenderRecord(u8 *payload, u32 length, int sender);    /* kind 4 */
 void SystemPacket_SetOwnBlock(u8 *payload, u32 length, int sender);          /* kind 3 */
 void SystemPacket_WriteSlotBlock(u8 *payload, u32 length, int sender);       /* kind 2 */
 void SystemPacket_WriteActivityBuffer(u8 *payload, u32 length, int sender);  /* kind 1 */
 void SystemPacket_SetActivityMembers(u8 *payload, u32 length, int sender);   /* kind 0 */
 
 int SystemPacket_SendActivityFlag101(void);                                                                    /* kind 23 */
-int SystemPacket_SendRecordBlock(u8 *chunks_sent);                                                             /* kind 22 */
+int SystemPacket_SendKeptLetters(u8 *chunks_sent);                                                             /* kind 22 */
 int SystemPacket_SendOwnRecord(u8 *chunks_sent);                                                               /* kind 21 */
 int SystemPacket_SendActivityPlayer100(void);                                                                  /* kind 20 */
 int SystemPacket_SendActivityPlayerF4(void);                                                                   /* kind 19 */
@@ -63,7 +63,7 @@ int SystemPacket_SendDateTime(int to);                                          
 int SystemPacket_SendActivityFlagD9(void);                                                                     /* kind 9 */
 int SystemPacket_SendModeRequest(void);                                                                        /* kind 8 */
 int SystemPacket_SendLinkFlagC4(void);                                                                         /* kind 7 */
-int SystemPacket_SendSenderBlock(u8 *chunks_sent, u32 to);                                                     /* kind 4 */
+int SystemPacket_SendOwnRecordTo(u8 *chunks_sent, u32 to);                                                     /* kind 4 */
 int SystemPacket_SendSlotBlocks(int content1, int block1, int content2, int block2, int content3, int block3); /* kind 3 */
 int SystemPacket_SendOwnBlock(u8 *chunks_sent);                                                                /* kind 2 */
 int SystemPacket_SendActivityBuffer(u8 *chunks_sent, int to);                                                  /* kind 1 */

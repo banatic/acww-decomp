@@ -77,7 +77,7 @@ enum TuneEditorSubState {
     TUNE_EDITOR_SUB_ADJUST = 3,      /* TuneEditor_AdjustStep */
     TUNE_EDITOR_SUB_SPRITE_MOVE = 4, /* TuneEditor_WaitCursorSprite */
     TUNE_EDITOR_SUB_A_PRESS = 5,     /* TuneEditor_ActOnPress */
-    TUNE_EDITOR_SUB_PRESS = 6,       /* TuneEditor_WaitPress */
+    TUNE_EDITOR_SUB_RELEASE = 6,     /* TuneEditor_WaitRelease */
     TUNE_EDITOR_SUB_ERASE_TOUCH = 7, /* TuneEditor_EraseByTouch */
     TUNE_EDITOR_SUB_ERASE_KEYS = 8,  /* TuneEditor_EraseByKeys */
     TUNE_EDITOR_SUB_PANEL_PRESS = 9, /* TuneEditor_FollowPanelPress */
@@ -143,7 +143,7 @@ void TuneEditor_QueueScreen(TuneEditor *self);
 int TuneEditor_MoveCursor(TuneEditor *self, int keys);
 int TuneEditor_Act(TuneEditor *self, unsigned int place);
 int TuneEditor_TouchedPlace(TuneEditor *self, int x, int y);
-void TuneEditor_PressCursor(TuneEditor *self);
+void TuneEditor_ReleaseCursor(TuneEditor *self);
 void TuneEditor_PressA(TuneEditor *self);
 void TuneEditor_ShowCursorSprite(TuneEditor *self);
 void TuneEditor_EaseTo(TuneEditor *self, int x, int y);
@@ -168,7 +168,7 @@ void TuneEditor_EraseNo(TuneEditor *self);
 void TuneEditor_EraseYes(TuneEditor *self);
 void TuneEditor_EraseByKeys(TuneEditor *self);
 void TuneEditor_EraseByTouch(TuneEditor *self);
-void TuneEditor_WaitPress(TuneEditor *self);
+void TuneEditor_WaitRelease(TuneEditor *self);
 void TuneEditor_ActOnPress(TuneEditor *self);
 void TuneEditor_WaitCursorSprite(TuneEditor *self);
 void TuneEditor_AdjustStep(TuneEditor *self);

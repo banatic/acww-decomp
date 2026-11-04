@@ -8,7 +8,7 @@
  *   talks with and talks; 3: nothing; 4: turns back to the angle it started with, then 1.
  * - 5: walks the player to (16.0, 0, 17.5), then the event ends; 6: opens the town to visitors
  *   (hosts the Wi-Fi Connection's game or starts a local session as its parent); 7: closes it.
- * - 8 and 0xa step through the same six steps (Gatekeeper.setup_step): the player walks through
+ * - 8 and 0xa step through the same six steps (Gatekeeper.state_step): the player walks through
  *   the gate while the two gatekeepers (this one and the other, profile 0x73, overlay 4's
  *   gatekeeper2.h) turn and play animations 0x81 and 0x82; 8 then closes the screen and sets
  *   the activity's flag 0x3c08, 0xa takes the scene's exit 0.

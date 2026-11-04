@@ -3,7 +3,7 @@
 # Save: unweeded-jan, booted 12 January 2027 21:00:06: by 4400 the town insects hold a kind 0x23,
 # placed beside the loose snowball at (35.5, 62.5) (TownInsect_Place: Snowman_Find, a ball farther
 # than 12.0 from the player). The player walks from the house to it (4400-4940): it circles the
-# ball (InsectPath_CircleSnowball) and moves off as the player comes near.
+# ball (InsectPath_RollSnowball) and moves off as the player comes near.
 0 - -
 900 START -
 906 - -

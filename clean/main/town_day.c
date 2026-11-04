@@ -42,7 +42,7 @@
 #include "turnip_prices.h"
 #include "villager_town.h"
 #include "villager_day.h"
-#include "wfc_stats.h"
+#include "mystery_cat_record.h"
 #include "worker_thread.h"
 #include "house_record.h"
 #include "item_form.h"
@@ -81,7 +81,7 @@ extern u16 data_021f3a68[];
 extern u16 data_021f3a86[];
 extern u8 data_021e9aac[]; /* the town's layout (town_layout.h) */
 extern NookStore data_021f395c;
-extern WfcStats data_021f3278;
+extern MysteryCatRecord data_021f3278;
 extern VillagerTown data_021e5a2c;
 extern TurnipPrices data_021f3b0c;
 /* The events whose buildings TownDay_PutEventBuildings puts up: 0x3d, 0x3f and 0x60's. */
@@ -483,7 +483,7 @@ static int TownDay_QuietPeriod(int period)
  *   calendar's buildings (TownDay_UpdateEvents), the object's acres, the event letters, the
  *   museum, the house rooms, Nook's store, the item lists, the house's score, the layout, the
  *   sky, the bottle, mom's letters, the day plan, the room cells, the paired town, the
- *   statistics record (status 1 becomes 2) and the villagers;
+ *   mystery cat record (status 1 becomes 2) and the villagers;
  * - the counted items spoil when `to` is a Sunday, a week or more passed or `to`'s weekday is
  *   before `from`'s.
  * The marks are cleared and func_020481a0 run in any case. */
@@ -552,7 +552,7 @@ void TownDay_Pass(TownDay *town, const DateTime *from, const DateTime *to, int d
         TownSpawn_AdvanceCodesD4(town, map, days);
         TownSpawn_PutCoconutOnBeach(town, map, wide);
         TownSpawn_AfterWetDay(town, map, wide, high, wet);
-        TownSpawn_AdvanceMarked1369(town, map, wide, high);
+        TownSpawn_GildBuriedShovels(town, map, wide, high);
         EventWinner_SendLetters(&data_021f3aa4);
         MuseumRecord_CheckLetters(&data_021f38f8);
         HouseRecord_Build((HouseRecord *) (void *) data_021ebcd4);
@@ -572,8 +572,8 @@ void TownDay_Pass(TownDay *town, const DateTime *from, const DateTime *to, int d
         NookStore_Refresh(&data_021f395c, 0);
         RoomCells_ResetOther();
         PairedTown_PassDays(days);
-        if (days > 0 && WfcStats_Status(&data_021f3278) == 1) {
-            WfcStats_SetStatus(&data_021f3278, 2);
+        if (days > 0 && MysteryCatRecord_Status(&data_021f3278) == 1) {
+            MysteryCatRecord_SetStatus(&data_021f3278, 2);
         }
         VillagerDay_Begin((u8 *) &data_021e5a2c, to);
         int from_weekday = Calendar_Weekday(from->year, from->month, from->day);

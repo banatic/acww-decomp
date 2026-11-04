@@ -15,7 +15,7 @@
  * __sinit_ov053_0226182c), set by Barber_SetState and run each frame by Barber_Update:
  *   0  call:       each frame she asks for an event of kind 6 (to call the player over);
  *   1  stand:      she stands and watches the player: seated in the chair, walking to the door
- *                  with the cut paid for, or on the map's claimed object, she asks for an event;
+ *                  with the cut paid for, or at the exit (the map's claimed object), she asks for an event;
  *   2  talk:       she turns to the one she talks with and talks; then by the topic: she walks
  *                  to the chair (state 7), walks back to put the hat on again (state 6), or the
  *                  event ends (state 3);
@@ -90,7 +90,7 @@ void Barber_SetState(Barber *barber, int state);
 /* What it asks about the player (barber.c). */
 int Barber_IsPaid(int unused);
 int Barber_WearsHat(void *unused);
-int Barber_CheckClaimed(Barber *barber);
+int Barber_CheckAtExit(Barber *barber);
 int Barber_CheckLeaving(Barber *barber);
 int Barber_CheckSeated(Barber *barber);
 

@@ -450,10 +450,10 @@ static int event_winner_has_kind(const EventWinner *record)
  * empty code's item. */
 static int event_winner_item_is_none(u16 *item)
 {
-    if (ItemCode_HasVariant(item)) {
+    if (ItemCode_IsFurniture(item)) {
         u16 none = ITEM_CODE_NONE;
-        int own = ItemCode_VariantItem(item);
-        return own == ItemCode_VariantItem(&none);
+        int own = ItemCode_FurnitureNumber(item);
+        return own == ItemCode_FurnitureNumber(&none);
     }
     return *item == ITEM_CODE_NONE;
 }

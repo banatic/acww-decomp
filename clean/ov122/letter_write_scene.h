@@ -6,7 +6,7 @@
  *   ("menu/chat2/key*.bch") it keeps at 0xc0, and its own screen is "menu/chat2/b_key0.bsc";
  * - it shows the letter it is given (`letter`) in main's letter view (main/letter_view.h) and
  *   edits the letter's three texts (main/letter.h): the header (10 characters, with the
- *   addressee's name put in at `header_line`), the body (64) and the footer (16);
+ *   addressee's name put in at `name_position`), the body (64) and the footer (16);
  * - when it ends it filters the taboo words out of the three texts (LetterWrite_FilterTaboo)
  *   and keeps the header and the footer as the player's defaults (LetterWrite_SaveDefaults).
  *
@@ -56,7 +56,7 @@ enum LetterWriteFlag {
 enum LetterWritePart {
     LETTER_WRITE_PART_HEADER = 0,       /* the header before the addressee's name */
     LETTER_WRITE_PART_HEADER_AFTER = 1, /* the header after the name: `position` counts from
-                                         * `header_line` */
+                                         * `name_position` */
     LETTER_WRITE_PART_BODY = 2,
     LETTER_WRITE_PART_FOOTER = 3
 };

@@ -470,8 +470,8 @@ void HeadLook_ChooseModels(int flag, int hair, ItemCode *item, int *first, int *
         second_model = flag == 0 ? HEAD_LOOK_DESIGN_MODEL : HEAD_LOOK_DESIGN_MODEL_FLAGGED;
     } else if (head_look_in(code, HEAD_LOOK_ITEM_B_FIRST, HEAD_LOOK_ITEM_B_LAST)) {
         second_model = HeadLook_ItemBModel((unsigned int) (code - HEAD_LOOK_ITEM_B_FIRST));
-    } else if (head_look_in(code, HEAD_LOOK_ITEM_C_FIRST, HEAD_LOOK_ITEM_C_LAST) && ItemTraits_IsPairHeadItem(item) != 0) {
-        int index = ItemTraits_PairHeadNumber(item);
+    } else if (head_look_in(code, HEAD_LOOK_ITEM_C_FIRST, HEAD_LOOK_ITEM_C_LAST) && ItemTraits_IsPairFlower(item) != 0) {
+        int index = ItemTraits_PairFlowerNumber(item);
         if (index >= 0 && index < HEAD_LOOK_ITEM_C_COUNT) {
             second_model = HeadLook_ItemCModel((unsigned int) index);
             if (second_model == HEAD_LOOK_SKIPPED_MODEL) {

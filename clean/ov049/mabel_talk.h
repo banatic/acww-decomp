@@ -74,7 +74,7 @@ typedef struct MabelTalkChoices {
 /* The lines of "sp_npc_ysister" named in the code. */
 #define MABEL_LINE_FIRST 0x00            /* talk mode 0 */
 #define MABEL_LINE_AGAIN 0x01            /* talk mode 1 */
-#define MABEL_LINE_SPOT_TAKEN 0x02       /* talk mode 3 */
+#define MABEL_LINE_FAREWELL 0x02         /* talk mode 3 */
 #define MABEL_LINE_TALKED 0x04           /* talk mode 2 */
 #define MABEL_LINE_0B 0x0b               /* its first answer costs 350 bells */
 #define MABEL_LINE_NO_BELLS_FEE 0x0d     /* the player cannot pay 350 bells */
@@ -107,9 +107,9 @@ typedef struct MabelTalkChoices {
 #define MABEL_LINE_DESIGN_TOWN 0x32      /* made by another player of the town */
 #define MABEL_LINE_DESIGN_ELSEWHERE 0x33 /* made in another town */
 #define MABEL_LINE_SHOW_DESIGN 0x36      /* ends opening the screen in mode 5 */
-#define MABEL_LINE_LINKED_ANSWER_0 0x37  /* linked, the answer 0 at the lines of 022617b4 */
+#define MABEL_LINE_NO_DESIGN_GUESTS 0x37 /* linked, the answer 0 at the lines of 022617b4 */
 #define MABEL_LINE_NO_ROOM_SALE 0x38     /* the bells fit nowhere */
-#define MABEL_LINE_LINKED_ANSWER_2 0x1c  /* linked, the answer 2 at those lines */
+#define MABEL_LINE_ABOUT 0x1c            /* linked, the answer 2 at those lines */
 
 /* The talk's questions and its class (mabel_talk.c). */
 unsigned long MabelTalk_Mode(MabelTalk *talk);
@@ -151,7 +151,7 @@ void MabelTalk_OnAnswerNoSale(int unused, int answer);
 void MabelTalk_OnAnswerSalePrice(MabelTalk *talk, int answer);
 void MabelTalk_OnAnswerDesignKind(MabelTalk *talk, int answer);
 void MabelTalk_OnAnswerFee(MabelTalk *talk, int answer);
-void MabelTalk_OnAnswerLinked(MabelTalk *talk, int answer);
+void MabelTalk_OnMainMenu(MabelTalk *talk, int answer);
 
 /* The ends of lines. */
 void MabelTalk_OnLineEnded(MabelTalk *talk, void *arg);

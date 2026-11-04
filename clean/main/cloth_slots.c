@@ -49,11 +49,11 @@ static int cloth_slots_in(ItemCode item, ItemCode first, ItemCode last)
 }
 
 /* Whether the slot holding `held` already holds `item`: the same item for an item with
- * variants (ItemCode_VariantItem), else the same code. */
+ * variants (ItemCode_FurnitureNumber), else the same code. */
 static int cloth_slots_same(ItemCode *item, ItemCode *held)
 {
-    if (ItemCode_HasVariant(item)) {
-        return ItemCode_VariantItem(item) == ItemCode_VariantItem(held);
+    if (ItemCode_IsFurniture(item)) {
+        return ItemCode_FurnitureNumber(item) == ItemCode_FurnitureNumber(held);
     }
     return *item == *held;
 }

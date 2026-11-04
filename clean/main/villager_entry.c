@@ -295,7 +295,7 @@ void VillagerEntry_MarkItems(u8 *villager)
 
     *marks = 0;
     for (int i = 0; i < VILLAGER_ENTRY_ITEMS; i++) {
-        if (ItemCode_HasVariant(&items[i])) {
+        if (ItemCode_IsFurniture(&items[i])) {
             candidates |= (u16) (1u << i);
             count++;
         }

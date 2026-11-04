@@ -1,4 +1,4 @@
-/* The giraffe's talk scene: her lines, the score of what the player wears, the advice and the
+/* The giraffe's talk scene: her lines, the score of what the player wears, the quiz and the
  * dressing (giraffe_talk.h). */
 #include "giraffe_talk.h"
 
@@ -76,15 +76,15 @@ extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 
 /* The daily bits of the current player. */
 #define GT_DAILY_TALKED 7
-#define GT_DAILY_ADVICE_DONE 8
+#define GT_DAILY_QUIZ_DONE 8
 #define GT_DAILY_DRESSED 9
 
 /* The flag of the object at data_021d27ac set when the player did not pay. */
 #define GT_FLAG_NOT_PAID 10
 
-/* The advice: lines said in a row before the round ends, and before the count's lines. */
-#define GT_ADVICE_IN_A_ROW 5
-#define GT_ADVICE_COUNTING 3
+/* The quiz: questions asked in a row before the round ends, and before the count's lines. */
+#define GT_QUESTIONS_IN_A_ROW 5
+#define GT_TALKS_COUNTED 3
 
 /* A score of at least this is a high one (GIRAFFE_TALK_FIRST_HIGH). */
 #define GT_HIGH_SCORE 0x3d
@@ -154,10 +154,10 @@ static PlayerField2416 *gt_field(u8 *record)
 /* Whether `item` is "nothing": an item with variants is compared without its variant. */
 static int gt_is_none(const u16 *item)
 {
-    if (ItemCode_HasVariant(item)) {
+    if (ItemCode_IsFurniture(item)) {
         u16 none = ITEM_CODE_NONE;
-        int number = ItemCode_VariantItem(item);
-        return number == ItemCode_VariantItem(&none);
+        int number = ItemCode_FurnitureNumber(item);
+        return number == ItemCode_FurnitureNumber(&none);
     }
     return *item == ITEM_CODE_NONE;
 }
@@ -167,19 +167,19 @@ static int gt_in(u16 item, u16 first, u16 last)
     return item >= first && item <= last;
 }
 
-/* A line of advice not said yet in the round, marked said; its line. */
-static u8 gt_next_advice(Giraffe *owner)
+/* A question not asked yet in the round, marked asked; its line. */
+static u8 gt_next_question(Giraffe *owner)
 {
-    int index = GiraffeTalk_PickAdvice((int) (u32) (uintptr_t) owner, owner->advice_said, GIRAFFE_ADVICE_LINES);
-    if (owner->advice_said[index] == 0) {
-        owner->advice_said[index] = 1;
+    int index = GiraffeTalk_PickQuestion((int) (u32) (uintptr_t) owner, owner->questions_asked, GIRAFFE_QUESTIONS);
+    if (owner->questions_asked[index] == 0) {
+        owner->questions_asked[index] = 1;
     }
-    return (u8) (index + GIRAFFE_LINE_ADVICE_FIRST);
+    return (u8) (index + GIRAFFE_LINE_QUESTION_FIRST);
 }
 
 /* func_ov070_02278ab8 (slot 0x18, the player's answer), by the line shown:
- * - a line of advice (0x0f-0x22, whatever the answer): the next one while fewer than five were
- *   said in a row; else the round's marks cleared, daily bit 8 set and line 0x23;
+ * - a question (0x0f-0x22, whatever the answer): the next one while fewer than five were
+ *   asked in a row; else the round's marks cleared, daily bit 8 set and line 0x23;
  * - 0x09, answered 0: 0x0b when the pockets have a free letter, else 0x0c.
  * The line, when one was picked, is shown. */
 void GiraffeTalk_OnAnswer(GiraffeTalk *talk)
@@ -187,13 +187,13 @@ void GiraffeTalk_OnAnswer(GiraffeTalk *talk)
     unsigned int answer = TalkAnswers_Picked((TalkAnswers *) (uintptr_t) (u32) SceneBase_TalkChoices(&talk->base));
     int next = GIRAFFE_NO_LINE;
 
-    if (gt_line_shown(talk) >= GIRAFFE_LINE_ADVICE_FIRST && gt_line_shown(talk) <= GIRAFFE_LINE_ADVICE_LAST) {
-        if (talk->owner->advice_count < GT_ADVICE_IN_A_ROW) {
-            next = gt_next_advice(talk->owner);
+    if (gt_line_shown(talk) >= GIRAFFE_LINE_QUESTION_FIRST && gt_line_shown(talk) <= GIRAFFE_LINE_QUESTION_LAST) {
+        if (talk->owner->talk_count < GT_QUESTIONS_IN_A_ROW) {
+            next = gt_next_question(talk->owner);
         } else {
-            MI_CpuFill8(talk->owner->advice_said, 0, GIRAFFE_ADVICE_LINES);
-            TalkChecks_TestSetDailyBit(GT_DAILY_ADVICE_DONE, 1);
-            next = GIRAFFE_LINE_ADVICE_DONE;
+            MI_CpuFill8(talk->owner->questions_asked, 0, GIRAFFE_QUESTIONS);
+            TalkChecks_TestSetDailyBit(GT_DAILY_QUIZ_DONE, 1);
+            next = GIRAFFE_LINE_QUIZ_DONE;
         }
     }
     if (gt_line_shown(talk) == GIRAFFE_LINE_LETTER_ASK && answer == 0) {
@@ -248,13 +248,13 @@ static void gt_write_letter(GiraffeTalk *talk, u8 *record)
 }
 
 /* func_ov070_02278b64 (slot 0x14, a line ended), by the line shown:
- * - a line of advice (0x0f-0x22) while fewer than five were said: 0x46 plus that count;
- * - 0x0e and 0x47-0x4a: the next line of advice, one more said in a row;
+ * - a question (0x0f-0x22) while fewer than five were asked: 0x46 plus that count;
+ * - 0x0e and 0x47-0x4a: the next question, one more asked in a row;
  * - 0x24: her letter written (gt_write_letter);
  * - 0x00: one of two lines (a coin) of four pairs: 0x01 and 0x03 for clothes of item list
  *   group 0x22, 0x05 and 0x07 for others, the second of each when byte 0x1c of the player is
  *   not 0;
- * - 0x25: one of ten remarks (0x3a-0x43), the count of advice back to 0;
+ * - 0x25: one of ten remarks (0x3a-0x43), the count of questions back to 0;
  * - 0x28, 0x2b: with room in the pockets 0x2c and the screen panels asked for, else 0x39;
  * - 0x2c, 0x31: with room, the payment screen (mode 0x39, screen 2) with sequence 0, else 0x39;
  * - 0x36: the panels' request cleared, the player dressed (0x34 with special clothes, else
@@ -267,15 +267,16 @@ void GiraffeTalk_OnLineEnded(GiraffeTalk *talk)
     int next = GIRAFFE_NO_LINE;
     u8 line = gt_line_shown(talk);
 
-    if (line >= GIRAFFE_LINE_ADVICE_FIRST && line <= GIRAFFE_LINE_ADVICE_LAST) {
-        u8 count = talk->owner->advice_count;
-        if (count < GT_ADVICE_IN_A_ROW) {
-            next = (u8) (count + GIRAFFE_LINE_ADVICE_NEXT);
+    if (line >= GIRAFFE_LINE_QUESTION_FIRST && line <= GIRAFFE_LINE_QUESTION_LAST) {
+        u8 count = talk->owner->talk_count;
+        if (count < GT_QUESTIONS_IN_A_ROW) {
+            next = (u8) (count + GIRAFFE_LINE_QUESTION_NEXT);
         }
     }
-    if (line == GIRAFFE_LINE_ADVICE_START || (line >= GIRAFFE_LINE_ADVICE_NEXT + 1 && line <= GIRAFFE_LINE_ADVICE_NEXT_LAST)) {
-        next = gt_next_advice(talk->owner);
-        talk->owner->advice_count++;
+    if (line == GIRAFFE_LINE_QUIZ_START ||
+        (line >= GIRAFFE_LINE_QUESTION_NEXT + 1 && line <= GIRAFFE_LINE_QUESTION_NEXT_LAST)) {
+        next = gt_next_question(talk->owner);
+        talk->owner->talk_count++;
     }
     if (gt_line_shown(talk) == GIRAFFE_LINE_LETTER) {
         gt_write_letter(talk, record);
@@ -292,7 +293,7 @@ void GiraffeTalk_OnLineEnded(GiraffeTalk *talk)
         }
         case GIRAFFE_LINE_REMARK:
             next = (u8) (MainRandom_Below(10) + GIRAFFE_LINE_REMARKS);
-            talk->owner->advice_count = 0;
+            talk->owner->talk_count = 0;
             break;
         case GIRAFFE_LINE_OFFER:
         case GIRAFFE_LINE_OFFER_2B:
@@ -583,9 +584,9 @@ CLEAN_AS(func_ov070_02279538, GiraffeTalk_AddScore)
 /* func_ov070_02279550 (slot 0x78, the line the talk starts with), of "sp_npc_giraffe", by what
  * the talk starts with (GiraffeTalk.first, data_ov070_02279ba8):
  *   the first talk today (daily bit 7, set now)      GIRAFFE_TALK_FIRST_TODAY;
- *   no round of advice ended today (daily bit 8)     GIRAFFE_TALK_FIRST_ADVICE;
+ *   no round of questions ended today (daily bit 8)  GIRAFFE_TALK_FIRST_QUIZ;
  *   dressed today (daily bit 9)                      GIRAFFE_TALK_FIRST_DRESSED;
- *   fewer than three lines of advice said in a row   GIRAFFE_TALK_FIRST_COUNTING, whose line
+ *   fewer than three questions asked in a row        GIRAFFE_TALK_FIRST_COUNTING, whose line
  *                                                    is 0x4c plus the count, then one more;
  *   a score of 61 or more, or less                   GIRAFFE_TALK_FIRST_HIGH, _LOW;
  * the last three are GIRAFFE_TALK_FIRST_REFUSED once flag 10 of the object at data_021d27ac is
@@ -596,11 +597,11 @@ void GiraffeTalk_FirstLine(GiraffeTalk *talk, GiraffeLine *out)
 
     if (TalkChecks_TestSetDailyBit(GT_DAILY_TALKED, 1) == 0) {
         talk->first = GIRAFFE_TALK_FIRST_TODAY;
-    } else if (TalkChecks_TestSetDailyBit(GT_DAILY_ADVICE_DONE, 0) == 0) {
-        talk->first = GIRAFFE_TALK_FIRST_ADVICE;
+    } else if (TalkChecks_TestSetDailyBit(GT_DAILY_QUIZ_DONE, 0) == 0) {
+        talk->first = GIRAFFE_TALK_FIRST_QUIZ;
     } else if (TalkChecks_TestSetDailyBit(GT_DAILY_DRESSED, 0) != 0) {
         talk->first = GIRAFFE_TALK_FIRST_DRESSED;
-    } else if (talk->owner->advice_count < GT_ADVICE_COUNTING) {
+    } else if (talk->owner->talk_count < GT_TALKS_COUNTED) {
         talk->first = GIRAFFE_TALK_FIRST_COUNTING;
     } else if ((u32) PlayerField2416_FashionScore(field) >= GT_HIGH_SCORE) {
         talk->first = GIRAFFE_TALK_FIRST_HIGH;
@@ -618,8 +619,8 @@ void GiraffeTalk_FirstLine(GiraffeTalk *talk, GiraffeLine *out)
     }
     out->message = data_ov070_02279ba8[talk->first].message;
     if (talk->first == GIRAFFE_TALK_FIRST_COUNTING) {
-        out->message = (u8) (talk->owner->advice_count + GIRAFFE_LINE_COUNTING);
-        talk->owner->advice_count++;
+        out->message = (u8) (talk->owner->talk_count + GIRAFFE_LINE_COUNTING);
+        talk->owner->talk_count++;
     }
     out->text = data_ov070_02279ba8[talk->first].text;
 }
@@ -679,7 +680,7 @@ CLEAN_AS(func_ov070_022796ec, GiraffeTalk_Construct)
 
 /* func_ov070_02279724: a line not said yet, at random: the n-th of the `count` marks of `said`
  * that are 0, n drawn below their number; 0 when there is none. */
-int GiraffeTalk_PickAdvice(int unused, unsigned char *said, int count)
+int GiraffeTalk_PickQuestion(int unused, unsigned char *said, int count)
 {
     int left = (int) MainRandom_Below(GiraffeTalk_CountUnsaid(unused, said, count));
     for (int i = 0; i < count; i++) {
@@ -692,7 +693,7 @@ int GiraffeTalk_PickAdvice(int unused, unsigned char *said, int count)
     }
     return 0;
 }
-CLEAN_AS(func_ov070_02279724, GiraffeTalk_PickAdvice)
+CLEAN_AS(func_ov070_02279724, GiraffeTalk_PickQuestion)
 
 /* func_ov070_02279758: how many of the `count` marks of `said` are 0. */
 int GiraffeTalk_CountUnsaid(int unused, const unsigned char *said, int count)

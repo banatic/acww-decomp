@@ -75,7 +75,7 @@
 #include "town_tune.h"
 #include "turnip_prices.h"
 #include "waiting_letter.h"
-#include "wfc_stats.h"
+#include "mystery_cat_record.h"
 
 #define FLAGS_OFFSET 0x173f4 /* one word: flags 0-31 */
 
@@ -275,7 +275,7 @@ void StateBlock_SetUpTown(StateBlock *block)
     TownRecord_Start((TownRecord *) (void *) block->part_17254);
     SkyWeatherDay_Reset((SkyWeatherDay *) (void *) block->part_1737e);
     EventSchedule_Reset((EventSchedule *) (void *) block->part_17218);
-    WfcStats_Init((WfcStats *) (void *) block->part_16ad0);
+    MysteryCatRecord_Init((MysteryCatRecord *) (void *) block->part_16ad0);
     TurnipPrices_SetUp((TurnipPrices *) (void *) block->part_17364);
     LastSale_SetUp((LastSale *) (void *) block->part_17344);
     SpaceshipParts_SetUp(&block->part_0f52a);
@@ -544,7 +544,7 @@ void StateBlock_Init(StateBlock *block)
     TownRecord_Init((TownRecord *) (void *) block->part_17254);
     SkyWeatherDay_SetToday((SkyWeatherDay *) (void *) block->part_1737e);
     NookStore_Initialize((NookStore *) block->nook_store);
-    WfcStats_Reset((WfcStats *) (void *) block->part_16ad0);
+    MysteryCatRecord_Reset((MysteryCatRecord *) (void *) block->part_16ad0);
     TurnipPrices_Clear((TurnipPrices *) (void *) block->part_17364);
     LastSale_Clear((LastSale *) (void *) block->part_17344);
     SpaceshipParts_Clear(&block->part_0f52a);
@@ -604,7 +604,7 @@ StateBlock *StateBlock_Destruct(StateBlock *block)
     WaitingLetter_Destruct((WaitingLetter *) (void *) block->part_1704c);
     BottleMail_DestructState((BottleState *) block->bottle);
     HouseLooks_Destruct((HouseLooksRecord *) block->house_looks);
-    WfcStats_Destruct((WfcStats *) (void *) block->part_16ad0);
+    MysteryCatRecord_Destruct((MysteryCatRecord *) (void *) block->part_16ad0);
     __cxa_vec_cleanup(block->part_16800, STATE_BLOCK_PLAYERS, sizeof(block->part_16800[0]), func_0203a68c);
     Constellations_DestructList((ConstellationStore *) block->constellations);
     MailPostOffice_Destruct((MailPostOffice *) block->post_office);

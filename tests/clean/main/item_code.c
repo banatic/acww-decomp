@@ -126,38 +126,38 @@ static uint32_t is_f031(const uint32_t args[4])
 
 static uint32_t is_f031_or_variant(const uint32_t args[4])
 {
-    return (uint32_t) ItemCode_IsF031OrVariant(CODE_ARG(0));
+    return (uint32_t) ItemCode_IsF031OrFurniture(CODE_ARG(0));
 }
 
 static uint32_t has_variant(const uint32_t args[4])
 {
-    return (uint32_t) ItemCode_HasVariant(CODE_ARG(0));
+    return (uint32_t) ItemCode_IsFurniture(CODE_ARG(0));
 }
 
 static uint32_t test_has_variant(const uint32_t args[4])
 {
-    ItemCode_TestHasVariant(CODE_ARG(0));
+    ItemCode_TestIsFurniture(CODE_ARG(0));
     return 0;
 }
 
 static uint32_t variant_item(const uint32_t args[4])
 {
-    return (uint32_t) ItemCode_VariantItem(CODE_ARG(0));
+    return (uint32_t) ItemCode_FurnitureNumber(CODE_ARG(0));
 }
 
 static uint32_t variant(const uint32_t args[4])
 {
-    return (uint32_t) ItemCode_Variant(CODE_ARG(0));
+    return (uint32_t) ItemCode_Side(CODE_ARG(0));
 }
 
 static uint32_t make_variant(const uint32_t args[4])
 {
-    return ItemCode_MakeVariant((int) args[0], (int) args[1]);
+    return ItemCode_MakeFurniture((int) args[0], (int) args[1]);
 }
 
 static uint32_t set_variant(const uint32_t args[4])
 {
-    ItemCode_SetVariant(CODE_ARG(0), (int) args[1]);
+    ItemCode_SetSide(CODE_ARG(0), (int) args[1]);
     return 0;
 }
 

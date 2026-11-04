@@ -412,7 +412,7 @@ void BarberTalk_Line(BarberTalk *talk, BarberTalkStart *out)
         case BARBER_TOPIC_NOT_SEATED:
         case BARBER_TOPIC_LEAVING:
         case BARBER_TOPIC_HAT_BACK:
-        case BARBER_TOPIC_CLAIMED:
+        case BARBER_TOPIC_FAREWELL:
             break;
         default:
             if (Barber_IsPaid((int) (uintptr_t) talk->owner)) {

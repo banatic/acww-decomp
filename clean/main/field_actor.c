@@ -352,9 +352,9 @@ int FieldActor_Shutdown(struct FieldActor *actor)
     }
     if (FieldActor_TestFlag(actor, 0xa)) {
         if (FieldActor_TestFlag(actor, 0x19)) {
-            SoundEmitter_Vfunc10B((SoundEmitter *) at(actor, FIELD_ACTOR_EMITTER_B));
+            SoundEmitter_FinishB((SoundEmitter *) at(actor, FIELD_ACTOR_EMITTER_B));
         } else {
-            SoundEmitter_Vfunc10B((SoundEmitter *) at(actor, FIELD_ACTOR_EMITTER));
+            SoundEmitter_FinishB((SoundEmitter *) at(actor, FIELD_ACTOR_EMITTER));
         }
         FieldActor_ClearFlag(actor, 0xa);
     }

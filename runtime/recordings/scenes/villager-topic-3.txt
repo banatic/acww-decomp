@@ -2,7 +2,7 @@
 # not in this repository). As villager-talk.txt to 4088, then the player walks to
 # the tile west of villager 3 (personality bo), faces it and waits 45 frames. Save: mode-3
 # (villager 3's pastime 3, its score the highest). A every 20 frames: after the greeting the
-# topic drawn is the pastime's (VillagerTalkSubjects_SayHoldingNamed), then the talk read on.
+# topic drawn is the pastime's (VillagerTalkSubjects_SayHoldingStyle), then the talk read on.
 0 - -
 900 START -
 906 - -

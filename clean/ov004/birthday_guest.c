@@ -746,7 +746,7 @@ extern const MemberPointer data_ov004_02253798;
 #define BIRTHDAY_GUEST_ROOM_TILES 16
 
 /* func_ov004_0221e080: every tile of the room whose code (layer 0) is furniture or a cell a piece
- * of furniture covers (ItemCode_IsF031OrVariant) loses its path directions, and its neighbours
+ * of furniture covers (ItemCode_IsF031OrFurniture) loses its path directions, and its neighbours
  * their way to it. With no acre in the map (no width, no height or no records) the tiles are
  * asked of a null acre. The guest is not read. */
 void BirthdayGuest_UnlinkFurnitureTiles(BirthdayGuest *guest)
@@ -760,7 +760,7 @@ void BirthdayGuest_UnlinkFurnitureTiles(BirthdayGuest *guest)
     for (int z = 0; z < BIRTHDAY_GUEST_ROOM_TILES; z++) {
         for (int x = 0; x < BIRTHDAY_GUEST_ROOM_TILES; x++) {
             u16 *code = AcreRecord_Tile(acre, (unsigned int) x, (unsigned int) z, 0);
-            if (code != NULL && ItemCode_IsF031OrVariant(code)) {
+            if (code != NULL && ItemCode_IsF031OrFurniture(code)) {
                 CollisionMap_UnlinkPathUnit(x, z);
             }
         }

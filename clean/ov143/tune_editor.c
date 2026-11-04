@@ -130,7 +130,7 @@ CLEAN_AS(func_ov143_02299650, TuneEditor_TestFlags)
 void TuneEditor_Undim(TuneEditor *self)
 {
     DisplayShadow_EndSubObjWindowBrightness();
-    ButtonPanel_ClearFlag2(&self->panel);
+    ButtonPanel_ClearObjWindow(&self->panel);
 }
 CLEAN_AS(func_ov143_02299664, TuneEditor_Undim)
 
@@ -140,7 +140,7 @@ void TuneEditor_Dim(TuneEditor *self)
 {
     DisplayShadow_BeginSubObjWindowBrightness();
     DisplayShadow_SetSubBrightness((u8) -6);
-    ButtonPanel_SetFlag2(&self->panel);
+    ButtonPanel_SetObjWindow(&self->panel);
 }
 CLEAN_AS(func_ov143_02299680, TuneEditor_Dim)
 
@@ -547,15 +547,15 @@ int TuneEditor_TouchedPlace(TuneEditor *self, int x, int y)
 }
 CLEAN_AS(func_ov143_02299ed8, TuneEditor_TouchedPlace)
 
-/* func_ov143_02299f48: the cursor sprite pressed (the third of its set) until its animation
+/* func_ov143_02299f48: the cursor sprite's release animation (the third of its set) until it
  * ends (sub state 6), then back to the sub state it was in. */
-void TuneEditor_PressCursor(TuneEditor *self)
+void TuneEditor_ReleaseCursor(TuneEditor *self)
 {
     Glider_ShowThirdOfSet(&self->cursor_sprite);
     self->return_sub_state = self->base.sub_state;
-    MenuScene_SetSubState(tune_scene(self), TUNE_EDITOR_SUB_PRESS);
+    MenuScene_SetSubState(tune_scene(self), TUNE_EDITOR_SUB_RELEASE);
 }
-CLEAN_AS(func_ov143_02299f48, TuneEditor_PressCursor)
+CLEAN_AS(func_ov143_02299f48, TuneEditor_ReleaseCursor)
 
 /* func_ov143_02299f6c: A pressed: the cursor sprite shows the second of its set and the place
  * under the cursor acts once its animation ends (sub state 5). */

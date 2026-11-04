@@ -28,8 +28,8 @@ typedef struct HeldItemLink {
     u8 follows_hand; /* 0x3c: whether HeldItemLink_FollowHand updates it */
 } HeldItemLink;
 
-void HeldItemLink_SetRecordValue(HeldItemLink *link, int value);
-int HeldItemLink_Record(HeldItemLink *link);
+void HeldItemLink_SetAnimSpeed(HeldItemLink *link, int speed);
+int HeldItemLink_Model(HeldItemLink *link);
 HeldItem *HeldItemLink_SetScale(HeldItemLink *link, fx32 scale);
 fx32 HeldItemLink_Scale(HeldItemLink *link);
 void HeldItemLink_FollowHand(HeldItemLink *link, void *owner);

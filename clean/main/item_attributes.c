@@ -34,7 +34,7 @@ static u16 item_attributes_kind_item(u32 index)
 int ItemAttributes_Match(u16 *item, int attribute, int value)
 {
     int score = 0;
-    if (ItemCode_HasVariant(item) == 0) {
+    if (ItemCode_IsFurniture(item) == 0) {
         return score;
     }
     switch (attribute) {
@@ -44,7 +44,7 @@ int ItemAttributes_Match(u16 *item, int attribute, int value)
             }
             break;
         case ITEM_ATTRIBUTE_COLOR: {
-            int base = ItemCode_VariantItem(item);
+            int base = ItemCode_FurnitureNumber(item);
             if (value == FurnitureInfo_ColorA(base)) {
                 score = ITEM_ATTRIBUTES_HALF;
             }

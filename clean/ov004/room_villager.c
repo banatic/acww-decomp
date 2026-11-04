@@ -627,9 +627,9 @@ int RoomVillager_RunState(RoomVillager *villager)
         u16 *wanted = TownVillager_Clothes(rv_record(villager));
         u16 *worn = (u16 *) (uintptr_t) VillagerClothes_ItemOf((int) (uintptr_t) rv_part(villager, ROOM_VILLAGER_CLOTHES));
         int same;
-        if (ItemCode_HasVariant(worn)) {
-            int item = ItemCode_VariantItem(worn);
-            same = item == ItemCode_VariantItem(wanted);
+        if (ItemCode_IsFurniture(worn)) {
+            int item = ItemCode_FurnitureNumber(worn);
+            same = item == ItemCode_FurnitureNumber(wanted);
         } else {
             same = *worn == *wanted;
         }

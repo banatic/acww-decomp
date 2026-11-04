@@ -309,9 +309,9 @@ int VillagerPart_NameFor(VillagerPart *part, void *text, u16 *item)
     }
     u16 *held = ItemObject_Item((ItemObject *) (void *) object);
     int same;
-    if (ItemCode_HasVariant(held)) {
-        int held_item = ItemCode_VariantItem(held);
-        same = held_item == ItemCode_VariantItem(item);
+    if (ItemCode_IsFurniture(held)) {
+        int held_item = ItemCode_FurnitureNumber(held);
+        same = held_item == ItemCode_FurnitureNumber(item);
     } else {
         same = *held == *item;
     }

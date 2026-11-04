@@ -52,11 +52,11 @@ enum TitleMenuMessage {
     TITLE_MESSAGE_NEW_PLAYER = 0x27,       /* START_KIND_NEW_PLAYER */
     TITLE_MESSAGE_MENU_FIRST = 0x2d,       /* the first menu, by the part of the day: 0x2d-0x2f */
     TITLE_MESSAGE_MENU_LAST = 0x2f,
-    TITLE_MESSAGE_ASK_JOB_1C = 0x30, /* yes: TITLE_STATE_EXIT_JOB_1C */
-    TITLE_MESSAGE_MENU = 0x31,       /* the first menu again */
-    TITLE_MESSAGE_WFC_FAILED = 0x32, /* the talk ends: back to the title */
-    TITLE_MESSAGE_ASK_BOTTLE = 0x35, /* yes: TITLE_STATE_EXIT_SCENE_30 */
-    TITLE_MESSAGE_BACK = 0x37        /* back to the title */
+    TITLE_MESSAGE_ASK_FIND_MOVER = 0x30, /* yes: TITLE_STATE_EXIT_FIND_MOVER */
+    TITLE_MESSAGE_MENU = 0x31,           /* the first menu again */
+    TITLE_MESSAGE_WFC_FAILED = 0x32,     /* the talk ends: back to the title */
+    TITLE_MESSAGE_ASK_BOTTLE = 0x35,     /* yes: TITLE_STATE_EXIT_SCENE_30 */
+    TITLE_MESSAGE_BACK = 0x37            /* back to the title */
 };
 
 #define TITLE_MESSAGE_LIST_CANCEL 0x10 /* the last answer of the players' list */
@@ -225,7 +225,7 @@ CLEAN_AS(func_ov147_02299414, TitleMenu_NewTown)
 /* func_ov147_0229942c (slot 0x18): the player's answer to the receiver's message:
  * - the first menu: the member function of the town's table for the answer, if any;
  * - messages 0 and 0x30: yes ends the talk and leaves by TITLE_STATE_EXIT_WIFI_SETUP or
- *   TITLE_STATE_EXIT_JOB_1C; message 0x35: yes ends the receiver's talk and leaves by
+ *   TITLE_STATE_EXIT_FIND_MOVER; message 0x35: yes ends the receiver's talk and leaves by
  *   TITLE_STATE_EXIT_SCENE_30;
  * - message 3: the player picked (TitleMenu_PickTownPlayer).
  * The four tables are filled first, once each.
@@ -268,10 +268,10 @@ void TitleMenu_OnAnswer(TitleReceiver *self)
             }
             break;
         }
-        case TITLE_MESSAGE_ASK_JOB_1C:
+        case TITLE_MESSAGE_ASK_FIND_MOVER:
             if (picked == 0) {
                 TalkObject_SetMessage(talk, &data_021f43e8, NULL);
-                TitleScene_SetState(self->scene, TITLE_STATE_EXIT_JOB_1C);
+                TitleScene_SetState(self->scene, TITLE_STATE_EXIT_FIND_MOVER);
             }
             break;
         case TITLE_MESSAGE_ASK_BOTTLE:
@@ -433,7 +433,7 @@ void TitleMenu_AfterMessage(TitleReceiver *self)
             TitleScene_SetState(self->scene, TITLE_STATE_END_TALK);
             break;
         case TITLE_MESSAGE_ASK_WIFI_SETUP:
-        case TITLE_MESSAGE_ASK_JOB_1C:
+        case TITLE_MESSAGE_ASK_FIND_MOVER:
         case TITLE_MESSAGE_ASK_BOTTLE:
             TitleMenu_OfferChoices(self, &data_ov147_0229aad0);
             break;

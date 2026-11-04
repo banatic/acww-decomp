@@ -52,7 +52,7 @@
 static_assert(sizeof(SceneBase) == 0x80, "scene base");
 static_assert(offsetof(FoxTentTalk, sequence) == 0xb0 && offsetof(FoxTentTalk, owner) == 0xb4, "FoxTentTalk");
 static_assert(offsetof(FoxTentTalk, price) == 0xb8 && offsetof(FoxTentTalk, vase_slot) == 0xbc, "FoxTentTalk");
-static_assert(offsetof(FoxTentTalk, declined) == 0xc0 && sizeof(FoxTentTalk) == 0xc4, "FoxTentTalk");
+static_assert(offsetof(FoxTentTalk, fee_quoted) == 0xc0 && sizeof(FoxTentTalk) == 0xc4, "FoxTentTalk");
 static_assert(offsetof(FoxTent, state) == 0x654 && offsetof(FoxTent, talk) == 0x658, "FoxTent");
 static_assert(offsetof(FoxTent, stand_word) == 0x71c && offsetof(FoxTent, item) == 0x71e, "FoxTent");
 static_assert(offsetof(FoxTent, told) == 0x720 && offsetof(FoxTent, item_x) == 0x728, "FoxTent");
@@ -236,10 +236,10 @@ static int fox_tent_yaw_to_player(FoxTent *fox)
  * code's item. */
 static int fox_tent_no_item(u16 *item)
 {
-    if (ItemCode_HasVariant(item)) {
+    if (ItemCode_IsFurniture(item)) {
         u16 none = ITEM_CODE_NONE;
-        int own = ItemCode_VariantItem(item);
-        return own == ItemCode_VariantItem(&none);
+        int own = ItemCode_FurnitureNumber(item);
+        return own == ItemCode_FurnitureNumber(&none);
     }
     return *item == ITEM_CODE_NONE;
 }

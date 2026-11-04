@@ -310,9 +310,9 @@ static void mabel_walk_toward(Mabel *mabel, int distance, const Vec3 *step)
 /* Whether the item code at `item` is empty (0xfff1, or a variant of the empty item). */
 static int mabel_is_empty(u16 *item)
 {
-    if (ItemCode_HasVariant(item)) {
+    if (ItemCode_IsFurniture(item)) {
         u16 none = ITEM_CODE_NONE;
-        return ItemCode_VariantItem(item) == ItemCode_VariantItem(&none);
+        return ItemCode_FurnitureNumber(item) == ItemCode_FurnitureNumber(&none);
     }
     return *item == ITEM_CODE_NONE;
 }
@@ -341,24 +341,25 @@ void *Mabel_DestructDelete(Mabel *mabel)
 }
 CLEAN_AS(func_ov049_02260454, Mabel_DestructDelete)
 
-/* func_ov049_0226048c: unlinked (and without the game variable 0x4a), when the player's start
- * point is claimed on the collision map, her talk takes mode 3, an event of kind 6 is asked
+/* func_ov049_0226048c: unlinked (and without the game variable 0x4a), when the player stands at
+ * the shop's exit (the start point claimed on the collision map), her talk takes mode 3 (her
+ * farewell), an event of kind 6 is asked
  * for and she turns to ask (state 15). Whether she did. */
-int Mabel_CheckSpotTaken(Mabel *mabel)
+int Mabel_CheckAtExit(Mabel *mabel)
 {
     if (mabel_linked_or_variable(data_020ccf94)) {
         return 0;
     }
     Vec3 start = *PlayerActorOps_StartPosition(MABEL_PLAYER_ACTOR);
     if (CollisionMap_IsClaimedAtPoint(&start)) {
-        MabelTalk_SetMode(&mabel->talk, MABEL_TALK_MODE_SPOT_TAKEN);
+        MabelTalk_SetMode(&mabel->talk, MABEL_TALK_MODE_FAREWELL);
         EventQueue_RequestKind6(mabel, 0);
         Mabel_SetState(mabel, MABEL_STATE_TURN_ASK);
         return 1;
     }
     return 0;
 }
-CLEAN_AS(func_ov049_0226048c, Mabel_CheckSpotTaken)
+CLEAN_AS(func_ov049_0226048c, Mabel_CheckAtExit)
 
 /* func_ov049_02260500: when the player faces an item on display (Mabel_FindShown), an event
  * of kind 6 is asked for. Whether it was. */
@@ -490,7 +491,7 @@ void Mabel_OnEvent(Mabel *mabel, int code, int participant)
                     MabelTalk_Mode(&mabel->talk) == MABEL_TALK_MODE_FIRST) {
                     mabel_reset_talk(mabel);
                     Mabel_SetState(mabel, MABEL_STATE_TALK);
-                } else if (MabelTalk_Mode(&mabel->talk) == MABEL_TALK_MODE_SPOT_TAKEN) {
+                } else if (MabelTalk_Mode(&mabel->talk) == MABEL_TALK_MODE_FAREWELL) {
                     mabel_reset_talk(mabel);
                     Mabel_SetState(mabel, MABEL_STATE_TALK_LEAVE);
                 } else if (mabel_linked_or_variable(session)) {
@@ -523,7 +524,7 @@ void Mabel_OnEvent(Mabel *mabel, int code, int participant)
                 mabel_set_slots(mabel, session->local_slot, SCENE_SHARE_NO_SLOT);
                 if (mabel_linked_or_variable(session)) {
                     Mabel_SetState(mabel, MABEL_STATE_LINKED_STAND);
-                } else if (MabelTalk_Mode(&mabel->talk) != MABEL_TALK_MODE_SPOT_TAKEN) {
+                } else if (MabelTalk_Mode(&mabel->talk) != MABEL_TALK_MODE_FAREWELL) {
                     Mabel_SetState(mabel, MABEL_STATE_STAND);
                 }
             } else {
@@ -781,7 +782,7 @@ CLEAN_AS(func_ov049_02262568, Mabel_EnterAwait)
  * she stands. 1. */
 int Mabel_UpdateAct(Mabel *mabel)
 {
-    if (Mabel_CheckSpotTaken(mabel) || Mabel_OfferShown(mabel)) {
+    if (Mabel_CheckAtExit(mabel) || Mabel_OfferShown(mabel)) {
         return 1;
     }
     if (mabel_motion_done(mabel, MABEL_MOTION_ACT)) {
@@ -877,7 +878,7 @@ CLEAN_AS(func_ov049_022626ac, Mabel_EnterTalk)
  * 1. */
 int Mabel_UpdateWalk(Mabel *mabel)
 {
-    if (Mabel_CheckSpotTaken(mabel) || Mabel_OfferShown(mabel)) {
+    if (Mabel_CheckAtExit(mabel) || Mabel_OfferShown(mabel)) {
         return 1;
     }
     Vec3 step;
@@ -904,7 +905,7 @@ CLEAN_AS(func_ov049_022627e4, Mabel_EnterWalk)
  * The difference of her angle and the yaw is computed and not used. 1. */
 int Mabel_UpdateTurn(Mabel *mabel)
 {
-    if (Mabel_CheckSpotTaken(mabel) || Mabel_OfferShown(mabel)) {
+    if (Mabel_CheckAtExit(mabel) || Mabel_OfferShown(mabel)) {
         return 1;
     }
     Vec3 start = *PlayerActorOps_StartPosition(MABEL_PLAYER_ACTOR);
@@ -952,7 +953,7 @@ int Mabel_UpdateStand(Mabel *mabel)
     } else if (off > MABEL_TURN_ANGLE) {
         Mabel_SetState(mabel, MABEL_STATE_TURN);
     }
-    if (Mabel_CheckSpotTaken(mabel) || Mabel_OfferShown(mabel)) {
+    if (Mabel_CheckAtExit(mabel) || Mabel_OfferShown(mabel)) {
         return 1;
     }
     if (mabel->has_event != 0 && Countdown_Tick16(&mabel->act_countdown) == 0) {

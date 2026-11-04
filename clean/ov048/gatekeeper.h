@@ -51,7 +51,7 @@ typedef struct Gatekeeper {
     s16 home_angle;      /* 0xe6c: the angle it faced when it started */
     u16 countdown;       /* 0xe6e: the frames a wait of the talk or of a state has left */
     u8 anim_countdown;   /* 0xe70: the frames before the other gatekeeper's animation 0x81 */
-    u8 setup_step;       /* 0xe71: the step of its setup sequence */
+    u8 state_step;       /* 0xe71: the step of its setup sequence */
     u8 unk_e72[2];       /* 0xe72 */
 } Gatekeeper;
 

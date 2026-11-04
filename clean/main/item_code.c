@@ -60,58 +60,58 @@ BOOL ItemCode_IsF031(const ItemCode *item)
 CLEAN_AS(func_0204bcb4, ItemCode_IsF031)
 
 /* func_0204bc90 */
-BOOL ItemCode_IsF031OrVariant(const ItemCode *item)
+BOOL ItemCode_IsF031OrFurniture(const ItemCode *item)
 {
-    return ItemCode_IsF031(item) || ItemCode_HasVariant(item);
+    return ItemCode_IsF031(item) || ItemCode_IsFurniture(item);
 }
-CLEAN_AS(func_0204bc90, ItemCode_IsF031OrVariant)
+CLEAN_AS(func_0204bc90, ItemCode_IsF031OrFurniture)
 
 /* func_0204bcdc: kinds 3 and 4. */
-BOOL ItemCode_HasVariant(const ItemCode *item)
+BOOL ItemCode_IsFurniture(const ItemCode *item)
 {
     int kind = ItemCode_Kind(item);
     return kind == 3 || kind == 4;
 }
-CLEAN_AS(func_0204bcdc, ItemCode_HasVariant)
+CLEAN_AS(func_0204bcdc, ItemCode_IsFurniture)
 
 /* func_0204bcd4. QUIRK: tests the code and drops the answer. */
-void ItemCode_TestHasVariant(const ItemCode *item)
+void ItemCode_TestIsFurniture(const ItemCode *item)
 {
-    (void) ItemCode_HasVariant(item);
+    (void) ItemCode_IsFurniture(item);
 }
-CLEAN_AS(func_0204bcd4, ItemCode_TestHasVariant)
+CLEAN_AS(func_0204bcd4, ItemCode_TestIsFurniture)
 
-/* func_0204bc64: the item without its variant, numbered from 0x3000 (0-0x7ff for kinds 3 and 4).
+/* func_0204bc64: the furniture item without its side, numbered from 0x3000 (0-0x7ff for kinds 3 and 4).
  * REQUIRES: a code of kind 3 or 4; the callers test that first. Lower codes give a negative
  * number, rounded down as the ARM's shift does. */
-int ItemCode_VariantItem(const ItemCode *item)
+int ItemCode_FurnitureNumber(const ItemCode *item)
 {
-    return shift_right(ItemCode_Get(item) - ITEM_CODE_VARIANT_BASE, 2);
+    return shift_right(ItemCode_Get(item) - ITEM_CODE_FURNITURE_BASE, 2);
 }
-CLEAN_AS(func_0204bc64, ItemCode_VariantItem)
+CLEAN_AS(func_0204bc64, ItemCode_FurnitureNumber)
 
 /* func_0204bc7c: the low two bits, whatever the kind. */
-int ItemCode_Variant(const ItemCode *item)
+int ItemCode_Side(const ItemCode *item)
 {
     return ItemCode_Get(item) & 3;
 }
-CLEAN_AS(func_0204bc7c, ItemCode_Variant)
+CLEAN_AS(func_0204bc7c, ItemCode_Side)
 
-/* func_0204bc50. QUIRK: neither number is checked; a variant past 3 runs into the next item. */
-u16 ItemCode_MakeVariant(int item, int variant)
+/* func_0204bc50. QUIRK: neither number is checked; a side past 3 runs into the next item. */
+u16 ItemCode_MakeFurniture(int item, int side)
 {
-    return (u16) ((u32) item * 4 + ITEM_CODE_VARIANT_BASE + (u32) variant);
+    return (u16) ((u32) item * 4 + ITEM_CODE_FURNITURE_BASE + (u32) side);
 }
-CLEAN_AS(func_0204bc50, ItemCode_MakeVariant)
+CLEAN_AS(func_0204bc50, ItemCode_MakeFurniture)
 
 /* func_0204bc28: codes of other kinds are left as they are. */
-void ItemCode_SetVariant(ItemCode *item, int variant)
+void ItemCode_SetSide(ItemCode *item, int side)
 {
-    if (ItemCode_HasVariant(item)) {
-        *item = ItemCode_MakeVariant(ItemCode_VariantItem(item), variant);
+    if (ItemCode_IsFurniture(item)) {
+        *item = ItemCode_MakeFurniture(ItemCode_FurnitureNumber(item), side);
     }
 }
-CLEAN_AS(func_0204bc28, ItemCode_SetVariant)
+CLEAN_AS(func_0204bc28, ItemCode_SetSide)
 
 /* func_0204b268 */
 BOOL ItemCode_IsPile(const ItemCode *item)

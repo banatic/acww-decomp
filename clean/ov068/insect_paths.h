@@ -51,7 +51,7 @@ void InsectPath_Chase(TownInsect *insect);
  * - kind 0x32, action 0: it follows the player (InsectPath_FollowPlayer);
  * - kind 0x35: it sways in place (action 0x12, InsectPath_Sway) and is knocked aside by the
  *   player striking its tile (action 0x13, InsectPath_KnockedAside);
- * - kind 0x23: it circles a loose snowball (action 4, InsectPath_CircleSnowball) and rests on
+ * - kind 0x23: it circles a loose snowball (action 4, InsectPath_RollSnowball) and rests on
  *   the ground (action 5, InsectPath_Rest);
  * - kinds 0xa and 0x33, action 0: it roams and goes to its spot (InsectPath_Roam);
  * - kind 8: it hovers about (action 0, InsectPath_Hover) and makes for a building's tile
@@ -76,7 +76,7 @@ void InsectPath_StartGrow(TownInsect *insect);
 void InsectPath_FollowPlayer(TownInsect *insect, s16 *phase);
 int InsectPath_Sway(TownInsect *insect);
 int InsectPath_KnockedAside(TownInsect *insect);
-void InsectPath_CircleSnowball(TownInsect *insect);
+void InsectPath_RollSnowball(TownInsect *insect);
 void InsectPath_Rest(TownInsect *insect);
 void InsectPath_Roam(TownInsect *insect);
 int InsectPath_NearestBuildingTile(TownInsect *insect, Vec3 *tile);

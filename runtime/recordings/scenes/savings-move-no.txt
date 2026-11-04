@@ -1,7 +1,7 @@
 # savings-move-no (format: runtime/input.h), played from a town save by tools/scenes.py (the save is
 # not in this repository). As town-hall.txt to 7700 (100 bells given at 7660).
 # Save: rank-19. A every 60 frames from 7760: line 0x38 asks about a move to another town; DOWN
-# at 8240 and A: the second answer ends the linked game (PostClerkTalk_EndLinkedGame, line 0x3a);
+# at 8240 and A: the second answer ends the linked game (PostClerkTalk_EndMove, line 0x3a);
 # her menu again, UP (8866) to its last choice and A (8892): the talk ends.
 0 - -
 900 START -

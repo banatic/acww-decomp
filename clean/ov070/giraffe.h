@@ -7,7 +7,7 @@
  * She is a scene object of class 0x020da088 (main's special_scene_object.h) with vtable
  * 0x02279e4c, 0x73c bytes, made by Giraffe_Create, with her talk scene (GiraffeTalk,
  * giraffe_talk.h) at 0x658. In her talks she scores what the player wears (the player record's
- * count 0x0e, PlayerField2416), gives lines of advice, and for the bells the player chooses to
+ * count 0x0e, PlayerField2416), asks questions, and for the bells the player chooses to
  * pay dresses the player: a hat or an accessory, and clothes, from a tier of what was paid;
  * what the player wore goes back into the pockets.
  *
@@ -27,8 +27,8 @@
 
 struct Giraffe;
 
-/* The lines of advice her talk picks from (Giraffe.advice_said). */
-#define GIRAFFE_ADVICE_LINES 20
+/* The questions her talk picks from (Giraffe.questions_asked). */
+#define GIRAFFE_QUESTIONS 20
 
 /* The items the player wore when last scored (GiraffeTalk.worn). */
 enum GiraffeWorn { GIRAFFE_WORN_HEAD = 0, GIRAFFE_WORN_ACCESSORY = 1, GIRAFFE_WORN_CLOTHES = 2, GIRAFFE_WORN_COUNT = 3 };
@@ -50,12 +50,12 @@ typedef struct GiraffeTalk {
 #define GIRAFFE_BASE_SIZE 0x654
 
 typedef struct Giraffe {
-    u8 base[GIRAFFE_BASE_SIZE];           /* 0x000: the special character's scene object */
-    s32 state;                            /* 0x654: GIRAFFE_* */
-    GiraffeTalk talk;                     /* 0x658 */
-    u8 advice_said[GIRAFFE_ADVICE_LINES]; /* 0x724: 1 for each line of advice said */
-    u8 advice_count;                      /* 0x738: lines of advice said in a row */
-    u8 unk_739[3];                        /* 0x739 */
+    u8 base[GIRAFFE_BASE_SIZE];            /* 0x000: the special character's scene object */
+    s32 state;                             /* 0x654: GIRAFFE_* */
+    GiraffeTalk talk;                      /* 0x658 */
+    u8 questions_asked[GIRAFFE_QUESTIONS]; /* 0x724: 1 for each question asked */
+    u8 talk_count;                         /* 0x738: questions asked in a row */
+    u8 unk_739[3];                         /* 0x739 */
 } Giraffe;
 
 enum GiraffeState { GIRAFFE_STAND = 0, GIRAFFE_TALKING = 1, GIRAFFE_TALKED = 2, GIRAFFE_STATES = 3 };

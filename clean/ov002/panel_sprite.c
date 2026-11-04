@@ -23,8 +23,8 @@ extern void func_02088df8(int a0, const PanelCell *cell, int x, int y, int palet
 #define CENTER_Y 0x60
 /* How far the shadow lies under the button. */
 #define SHADOW_OFFSET 3
-/* The style of the text box. */
-#define TEXT_STYLE 8
+/* The text box's layer (TextLabel_OpenStyledBox2). */
+#define PANEL_TEXT_LAYER 8
 
 static TextLabel *label_of(PanelSprite *sprite)
 {
@@ -53,18 +53,18 @@ void PanelSprite_SetFlag4(PanelSprite *sprite)
 CLEAN_AS(func_ov002_0220b144, PanelSprite_SetFlag4)
 
 /* func_ov002_0220b150 */
-void PanelSprite_ClearFlag2(PanelSprite *sprite)
+void PanelSprite_ClearObjWindow(PanelSprite *sprite)
 {
-    PanelSprite_ClearFlags(sprite, PANEL_SPRITE_FLAG2);
+    PanelSprite_ClearFlags(sprite, PANEL_SPRITE_OBJ_WINDOW);
 }
-CLEAN_AS(func_ov002_0220b150, PanelSprite_ClearFlag2)
+CLEAN_AS(func_ov002_0220b150, PanelSprite_ClearObjWindow)
 
 /* func_ov002_0220b15c */
-void PanelSprite_SetFlag2(PanelSprite *sprite)
+void PanelSprite_SetObjWindow(PanelSprite *sprite)
 {
-    PanelSprite_SetFlags(sprite, PANEL_SPRITE_FLAG2);
+    PanelSprite_SetFlags(sprite, PANEL_SPRITE_OBJ_WINDOW);
 }
-CLEAN_AS(func_ov002_0220b15c, PanelSprite_SetFlag2)
+CLEAN_AS(func_ov002_0220b15c, PanelSprite_SetObjWindow)
 
 /* func_ov002_0220b168: one step of a press: the first turns the text to its pressed colour;
  * each moves the button one step down. Returns 1 while it moved, 0 once it is down. */
@@ -82,8 +82,8 @@ int PanelSprite_StepPress(PanelSprite *sprite)
 CLEAN_AS(func_ov002_0220b168, PanelSprite_StepPress)
 
 /* func_ov002_0220b1a4: draws the button at (x, y) from the screen's centre, sunk as deep as the
- * press has gone: the cells (in palette 2 with PANEL_SPRITE_PALETTE2), once more with
- * PANEL_SPRITE_FLAG2, then the shadow unless the sprite is flat or the button is down. */
+ * press has gone: the cells (in palette 2 with PANEL_SPRITE_PALETTE2), once more into the OBJ
+ * window with PANEL_SPRITE_OBJ_WINDOW, then the shadow unless the sprite is flat or the button is down. */
 void PanelSprite_Draw(PanelSprite *sprite, int x, int y, int priority)
 {
     int depth = PanelSprite_PressDepth(sprite);
@@ -96,7 +96,7 @@ void PanelSprite_Draw(PanelSprite *sprite, int x, int y, int priority)
 
     OamBuffer_DrawCell(1, (const OamEntry *) (void *) sprite->cells, button_x, button_y, palette, priority, FX32_ONE, FX32_ONE,
                        0, -1, 0, 0);
-    if (PanelSprite_HasFlags(sprite, PANEL_SPRITE_FLAG2)) {
+    if (PanelSprite_HasFlags(sprite, PANEL_SPRITE_OBJ_WINDOW)) {
         OamBuffer_DrawCell(1, (const OamEntry *) (void *) sprite->cells, button_x, button_y, -1, priority, FX32_ONE, FX32_ONE,
                            0, 2, 0, 0);
     }
@@ -149,8 +149,8 @@ CLEAN_AS(func_ov002_0220b2bc, PanelSprite_HasFlags)
 void PanelSprite_ShowText(PanelSprite *sprite, int color_38, int color_39)
 {
     TextLabel_LoadMenuMessage(label_of(sprite), (char) sprite->message);
-    TextLabel_OpenStyledBox2(label_of(sprite), TEXT_STYLE, sprite->cells[0].attr2 & 0x3ff, sprite->text_cells, (u8) color_38,
-                             (u8) color_39, 0);
+    TextLabel_OpenStyledBox2(label_of(sprite), PANEL_TEXT_LAYER, sprite->cells[0].attr2 & 0x3ff, sprite->text_cells,
+                             (u8) color_38, (u8) color_39, 0);
     TextLabel_Show(label_of(sprite), 1, 0);
 }
 CLEAN_AS(func_ov002_0220b2d0, PanelSprite_ShowText)

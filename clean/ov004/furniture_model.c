@@ -100,9 +100,9 @@ static u32 address(const void *p)
  * them. */
 static int same_item(const ItemCode *a, const ItemCode *b)
 {
-    if (ItemCode_HasVariant(a)) {
-        int item = ItemCode_VariantItem(a);
-        return item == ItemCode_VariantItem(b);
+    if (ItemCode_IsFurniture(a)) {
+        int item = ItemCode_FurnitureNumber(a);
+        return item == ItemCode_FurnitureNumber(b);
     }
     return *a == *b;
 }
@@ -148,10 +148,10 @@ int FurnitureModel_LoadStep(FurnitureModel *files, void *slot, int number, int k
     }
     ItemCode none = ITEM_CODE_NONE;
     if (same_item(&files->item, &none)) {
-        files->item = ItemCode_MakeVariant(number, 0);
+        files->item = ItemCode_MakeFurniture(number, 0);
         files->keep_texture_copy = (u8) keep_texture_copy;
     } else {
-        ItemCode item = ItemCode_MakeVariant(number, 0);
+        ItemCode item = ItemCode_MakeFurniture(number, 0);
         if (!same_item(&item, &files->item)) {
             return 0;
         }
@@ -179,7 +179,7 @@ int FurnitureModel_Load(FurnitureModel *files, void *slot, int number, int keep_
     if (FurnitureModel_IsLoaded(files)) {
         return 1;
     }
-    files->item = ItemCode_MakeVariant(number, 0);
+    files->item = ItemCode_MakeFurniture(number, 0);
     FurnitureModel_LoadFiles(files, slot, number);
     void *texture = func_021077e8(files->texture_file);
     VramRegion_LoadTexture(texture, (VramRegion *) (uintptr_t) ModelPoolEntry_Vram(slot));

@@ -308,15 +308,15 @@ int TownList_MoveCursor(TownList *self, int keys)
 }
 CLEAN_AS(func_ov141_0229a2c4, TownList_MoveCursor)
 
-/* func_ov141_0229a358: the cursor sprite pressed (the third of its set) until its animation
+/* func_ov141_0229a358: the cursor sprite's release animation (the third of its set) until it
  * ends (sub state 4), then back to the sub state it was in. */
-void TownList_PressCursor(TownList *self)
+void TownList_ReleaseCursor(TownList *self)
 {
     Glider_ShowThirdOfSet(&self->cursor_sprite);
     self->return_sub_state = self->base.sub_state;
-    MenuScene_SetSubState(town_list_scene(self), TOWN_LIST_SUB_PRESS);
+    MenuScene_SetSubState(town_list_scene(self), TOWN_LIST_SUB_RELEASE);
 }
-CLEAN_AS(func_ov141_0229a358, TownList_PressCursor)
+CLEAN_AS(func_ov141_0229a358, TownList_ReleaseCursor)
 
 /* func_ov141_0229a384: A pressed: the cursor sprite shows the second of its set and the place
  * under the cursor acts once its animation ends (sub state 3). */
@@ -473,10 +473,10 @@ void TownList_CountDownToClose(TownList *self)
 }
 CLEAN_AS(func_ov141_0229a5b4, TownList_CountDownToClose)
 
-/* func_ov141_0229a5e0 (sub state 4): once the press's animation ends the sprite is shown again
+/* func_ov141_0229a5e0 (sub state 4): once the release animation ends the sprite is shown again
  * and the sub state it was in comes back; after a row was picked the cursor then goes to the OK
  * button. */
-void TownList_WaitPress(TownList *self)
+void TownList_WaitRelease(TownList *self)
 {
     if (CellLayerSprite_IsDone((CellLayerSprite *) (void *) &self->cursor_sprite) == 0) {
         return;
@@ -489,7 +489,7 @@ void TownList_WaitPress(TownList *self)
         TownList_GlideToCursor(self);
     }
 }
-CLEAN_AS(func_ov141_0229a5e0, TownList_WaitPress)
+CLEAN_AS(func_ov141_0229a5e0, TownList_WaitRelease)
 
 /* func_ov141_0229a634 (sub state 3): once the A press's animation ends the place under the
  * cursor acts: the OK button confirms (when a row is picked), the quit button quits, a row
@@ -517,7 +517,7 @@ void TownList_ActOnPress(TownList *self)
         TownList_SetFlags(self, TOWN_LIST_FLAG_EASE_NO_CUE);
     }
     MenuScene_SetSubState(town_list_scene(self), TOWN_LIST_SUB_KEYS);
-    TownList_PressCursor(self);
+    TownList_ReleaseCursor(self);
 }
 CLEAN_AS(func_ov141_0229a634, TownList_ActOnPress)
 

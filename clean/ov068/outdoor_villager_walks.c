@@ -119,7 +119,6 @@ void OutdoorVillagerRecords_RedrawActivity(u8 *villager);
 #define WALKS_PAUSE_AGAIN 0xde /* s16: frames before it may stop to watch again */
 #define WALKS_RAISE 0xf8       /* s32: frames to the next raise of the record's byte 0x1e */
 
-#define WALKS_FLAG_1_PLAYER 1 /* the current player's flag that keeps villagers out late */
 #define WALKS_PRIORITY 1
 #define WALKS_MOTION_STAND 0
 #define WALKS_MOTION_WALK 1
@@ -286,11 +285,12 @@ static int walks_flag_1(u8 *record)
     return (VillagerStatus_StateEntry(record)->flags & VILLAGER_STATE_FLAG_1) != 0;
 }
 
-/* The current player's flag 1 (0 without a current player). */
-static int walks_player_flag_1(void)
+/* Whether the current player still works for Nook (PLAYER_FLAG_NOOK_JOB; 0 without a current
+ * player): it keeps villagers out late. */
+static int walks_player_in_nook_job(void)
 {
     u8 *current = PlayerRecords_Current();
-    return current != NULL ? PlayerRecord_TestFlag(current, WALKS_FLAG_1_PLAYER) : 0;
+    return current != NULL ? PlayerRecord_TestFlag(current, PLAYER_FLAG_NOOK_JOB) : 0;
 }
 
 /* The activity of the moment of a record's state entry (byte 0x1c), 7 without a valid record. */
@@ -305,9 +305,9 @@ static int walks_kind(u8 *record, int kind)
 /* Two item codes the same, by their variant item when the first has variants. */
 static int walks_same_item(const u16 *a, const u16 *b)
 {
-    if (ItemCode_HasVariant(a)) {
-        int variant = ItemCode_VariantItem(a);
-        return variant == ItemCode_VariantItem(b);
+    if (ItemCode_IsFurniture(a)) {
+        int variant = ItemCode_FurnitureNumber(a);
+        return variant == ItemCode_FurnitureNumber(b);
     }
     return *a == *b;
 }
@@ -1060,17 +1060,17 @@ int OutdoorVillagerWalks_AtHome(OutdoorVillagerBehaviour *self, u8 *villager)
 CLEAN_AS(func_ov068_0226c8b0, OutdoorVillagerWalks_AtHome)
 
 /* func_ov068_0226c910: whether it is time to go home: its state entry's flag 1, or its sleep
- * time (VillagerEntry_IsSleepTime) unless the current player has flag 1.
+ * time (VillagerEntry_IsSleepTime) unless the current player still works for Nook (flag 1).
  * REQUIRES: its record has a state entry. */
 int OutdoorVillagerWalks_TimeToGoHome(OutdoorVillagerBehaviour *self, u8 *villager)
 {
     (void) self;
-    int flag_1 = walks_player_flag_1();
+    int nook_job = walks_player_in_nook_job();
     u8 *record = walks_record(villager);
     if (walks_flag_1(record)) {
         return 1;
     }
-    if (flag_1 != 0 || VillagerEntry_IsSleepTime(record, NULL) == 0) {
+    if (nook_job != 0 || VillagerEntry_IsSleepTime(record, NULL) == 0) {
         return 0;
     }
     return 1;
@@ -1079,7 +1079,7 @@ CLEAN_AS(func_ov068_0226c910, OutdoorVillagerWalks_TimeToGoHome)
 
 /* func_ov068_0226c964: the walker started from the villager's position in `state`, of the kind
  * the villager wants: home (3) with its state entry's flag 1 or at night for its personality
- * (NpcLookup_IsInNightWindow) unless the current player has flag 1; 6 for the kind of the
+ * (NpcLookup_IsInNightWindow) unless the current player still works for Nook (flag 1); 6 for the kind of the
  * moment 6; else drawn (DrawWalkKind).
  * REQUIRES: a villager with a record has a state entry. */
 void OutdoorVillagerWalks_StartWalker(OutdoorVillagerBehaviour *self, int state, u8 *villager)
@@ -1090,10 +1090,10 @@ void OutdoorVillagerWalks_StartWalker(OutdoorVillagerBehaviour *self, int state,
         if (walks_flag_1(record)) {
             kind = WALKS_WALKER_HOME;
         } else {
-            int flag_1 = walks_player_flag_1();
+            int nook_job = walks_player_in_nook_job();
             DateTime now = {0};
             DateTime_Now(&now);
-            if (flag_1 == 0 && NpcLookup_IsInNightWindow(NpcId_Personality(TownVillager_NpcId(record)), &now) != 0) {
+            if (nook_job == 0 && NpcLookup_IsInNightWindow(NpcId_Personality(TownVillager_NpcId(record)), &now) != 0) {
                 kind = WALKS_WALKER_HOME;
             } else if (walks_kind(record, WALKS_ACTIVITY_NONE) == WALKS_KIND_6) {
                 kind = WALKS_WALKER_KIND_6;

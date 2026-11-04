@@ -126,7 +126,7 @@ int FurnitureMover_LoadModel(FurnitureMover *mover)
     }
     char path[0x2a];
     ItemCode item = MOVER_ITEM;
-    int number = ItemCode_VariantItem(&item);
+    int number = ItemCode_FurnitureNumber(&item);
     CLib_SPrintf(path, data_ov004_022560fc, shift_right(number, 8), (number & 0xff) >> 4, number);
     mover->model_archive = RomFile_Load(path, mover->heap, FILE_ALIGN, NULL);
     FurnitureMoverArchive archive;

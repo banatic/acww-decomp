@@ -37,7 +37,7 @@
 #define VILLAGER_TALK_SUBJECTS_KINDS 8
 /* The talk's slots VillagerTalkSubjects_SayLast fills. */
 #define VILLAGER_TALK_SUBJECTS_SLOTS 6
-/* The groups VillagerTalkSubjects_SayStateFlags draws among. */
+/* The groups VillagerTalkSubjects_SayRoomScore draws among. */
 #define VILLAGER_TALK_SUBJECTS_FLAG_GROUPS 7
 /* The flag of an acre VillagerTalkSubjects_SayHoldingOnAcre asks for (AcreTile_AcreHasFlags). */
 #define VILLAGER_TALK_SUBJECTS_ACRE_FLAG 8
@@ -89,7 +89,7 @@ typedef struct VillagerTalkSubjectsCatchA {
     s32 value;     /* 0x14 */
 } VillagerTalkSubjectsCatchA;
 
-/* The four halfwords VillagerTalkSubjects_SayFishWithRod and _SayInsectWith1376 keep: the
+/* The four halfwords VillagerTalkSubjects_SayFishWithRod and _SayInsectWithNet keep: the
  * item drawn (filled by func_0202cac4 or func_0202cfa8 from the first) and the held item. */
 typedef struct VillagerTalkSubjectsDrawn {
     u16 item;   /* 0x00 */
@@ -219,7 +219,7 @@ static int subjects_same_head(const NpcIdHead *a, const NpcIdHead *b)
  * one choice and bits 5-10 as one each; a choice drawn among those set (VillagerRoster_PickBit,
  * 7 when none) is the group of a line of the set at 0x020c8cb0, its count the lines per group,
  * and the word 0x20 goes into the talk's slot 0 (format 6). */
-int VillagerTalkSubjects_SayStateFlags(VillagerTalk *talk)
+int VillagerTalkSubjects_SayRoomScore(VillagerTalk *talk)
 {
     VillagerState *entry = NULL;
     if (subjects_record(talk) != NULL) {
@@ -250,7 +250,7 @@ int VillagerTalkSubjects_SayStateFlags(VillagerTalk *talk)
     SceneBase_PutValue(subjects_base(talk), value, 0, 6, 0, 0);
     return 1;
 }
-CLEAN_AS(func_020222dc, VillagerTalkSubjects_SayStateFlags)
+CLEAN_AS(func_020222dc, VillagerTalkSubjects_SayRoomScore)
 
 /* func_02022454: the topic drawn once no other applies: a line of the set at 0x020c8cc0 (its
  * count the lines per group, group 0), then the talk's slots 0 to 5 filled from
@@ -403,9 +403,9 @@ int VillagerTalkSubjects_SayHolding8a68(VillagerTalk *talk)
 }
 CLEAN_AS(func_020228e4, VillagerTalkSubjects_SayHolding8a68)
 
-/* func_02022938: while the villager holds nothing or one of the items 0x1380-0x139f, the line
- * of the set at 0x020c8d28 for mode 3, and the villager put into the talk's slot 5. */
-int VillagerTalkSubjects_SayHoldingNamed(VillagerTalk *talk)
+/* func_02022938: while the villager holds nothing or an umbrella (0x1380-0x139f), the line
+ * of the set at 0x020c8d28 for mode 3, and the villager's favourite style in slot 5. */
+int VillagerTalkSubjects_SayHoldingStyle(VillagerTalk *talk)
 {
     if (!subjects_holds_none_or_umbrella(subjects_held(talk))) {
         return 0;
@@ -414,11 +414,11 @@ int VillagerTalkSubjects_SayHoldingNamed(VillagerTalk *talk)
     VillagerTalkGreeting_PutStyle(talk, 5, subjects_record(talk));
     return 1;
 }
-CLEAN_AS(func_02022938, VillagerTalkSubjects_SayHoldingNamed)
+CLEAN_AS(func_02022938, VillagerTalkSubjects_SayHoldingStyle)
 
 /* func_020229a0: while the villager holds the item 0x1369, the line of the set at 0x020c8d30
  * for mode 2. */
-int VillagerTalkSubjects_SayHolding1369(VillagerTalk *talk)
+int VillagerTalkSubjects_SayHoldingShovel(VillagerTalk *talk)
 {
     if (subjects_held(talk) != 0x1369) {
         return 0;
@@ -426,7 +426,7 @@ int VillagerTalkSubjects_SayHolding1369(VillagerTalk *talk)
     VillagerTalkSubjects_SayForMode(talk, 2, &data_020c8d30);
     return 1;
 }
-CLEAN_AS(func_020229a0, VillagerTalkSubjects_SayHolding1369)
+CLEAN_AS(func_020229a0, VillagerTalkSubjects_SayHoldingShovel)
 
 /* A fish or an insect drawn for the date while the villager holds `held`: none unless it holds
  * `tool`; then the item drawn by `draw` and, when it is in [first, last], its name put into the

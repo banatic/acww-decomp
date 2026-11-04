@@ -77,7 +77,7 @@ CLEAN_AS(func_ov004_0222c2dc, RmoSound_Play)
 /* func_ov004_0222c2f0: the emitter's vtable slot 0x10 (its answer dropped). */
 void RmoSound_Vfunc10(SoundEmitter *emitter)
 {
-    SoundEmitter_Vfunc10B(emitter);
+    SoundEmitter_FinishB(emitter);
 }
 CLEAN_AS(func_ov004_0222c2f0, RmoSound_Vfunc10)
 
@@ -95,7 +95,7 @@ CLEAN_AS(func_ov004_0222c2f8, RmoSound_UpdateAt)
 /* func_ov004_0222c314: the emitter's sounds stopped. */
 void RmoSound_Stop(SoundEmitter *emitter)
 {
-    SoundEmitter_StopB(emitter);
+    SoundEmitter_ResetB(emitter);
 }
 CLEAN_AS(func_ov004_0222c314, RmoSound_Stop)
 

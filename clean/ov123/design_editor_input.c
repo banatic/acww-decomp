@@ -569,7 +569,7 @@ static void de_answer_yes(DesignEditor *self)
             DesignEditor_SavePlayerDesign(self);
             break;
         case 3:
-            DesignEditor_SaveTownDesign(self);
+            DesignEditor_SaveCatFace(self);
             break;
     }
     GroupParams_SetC4C(1);

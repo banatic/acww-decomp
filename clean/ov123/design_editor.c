@@ -27,7 +27,7 @@
 #include "main/screen_map.h"
 #include "main/sound.h"
 #include "main/state_flags.h"
-#include "main/wfc_stats.h"
+#include "main/mystery_cat_record.h"
 #include "ov004/member_pointer.h"
 #include "ov092/menu_dispatch.h"
 
@@ -70,7 +70,7 @@ extern const char data_ov123_0229d28c[]; /* "menu/edit/c.bsc" */
 extern const char data_ov123_0229d29c[]; /* "menu/edit/bg1.bch" */
 extern const char data_ov123_0229d2b0[]; /* "menu/edit/bg0.bch" */
 
-/* The town's statistics record, whose first bytes are a design (main/wfc_stats.h). */
+/* The town's mystery cat record, whose first bytes are a design (main/mystery_cat_record.h). */
 extern u8 data_021f3278[];
 
 /* The places of the screen map lit or not (DesignEditor_SetPlacePalette): their left, right and
@@ -213,7 +213,7 @@ CLEAN_AS(func_ov123_02299650, DesignEditor_TestFlags)
 void DesignEditor_Undim(DesignEditor *self)
 {
     DisplayShadow_EndSubObjWindowBrightness();
-    ButtonPanel_ClearFlag2(&self->panel);
+    ButtonPanel_ClearObjWindow(&self->panel);
     DisplayShadow_DisableSubWindows(2);
 }
 CLEAN_AS(func_ov123_02299664, DesignEditor_Undim)
@@ -230,7 +230,7 @@ void DesignEditor_Dim(DesignEditor *self)
     }
     DisplayShadow_BeginSubObjWindowBrightness();
     DisplayShadow_SetSubBrightness((u8) -6);
-    ButtonPanel_SetFlag2(&self->panel);
+    ButtonPanel_SetObjWindow(&self->panel);
     DisplayShadow_SetSubWindow1Planes(0x1f, 0);
     DisplayShadow_EnableSubWindows(2);
     DisplayShadow_SetSubWindow1(0x40, 0x18, 0xc0, 0x98);
@@ -629,27 +629,27 @@ int DesignEditor_LoadChars(DesignEditor *self)
 }
 CLEAN_AS(func_ov123_0229b33c, DesignEditor_LoadChars)
 
-/* func_ov123_0229b384: the pixels saved to the town record's design, made locally and with
+/* func_ov123_0229b384: the pixels saved to Blanca's face (the town's mystery cat record's design), made locally and with
  * the palette. */
-void DesignEditor_SaveTownDesign(DesignEditor *self)
+void DesignEditor_SaveCatFace(DesignEditor *self)
 {
-    Design *design = WfcStats_Design((WfcStats *) (void *) data_021f3278);
+    Design *design = MysteryCatRecord_Design((MysteryCatRecord *) (void *) data_021f3278);
     Design_SetPixels(design, DesignEditor_Pixels(self));
     DesignInfo_SetCreatorLocal((DesignInfo *) (uintptr_t) Design_Info((unsigned int) (uintptr_t) design));
     DesignInfo_SetPalette((DesignInfo *) (uintptr_t) Design_Info((unsigned int) (uintptr_t) design), self->palette);
 }
-CLEAN_AS(func_ov123_0229b384, DesignEditor_SaveTownDesign)
+CLEAN_AS(func_ov123_0229b384, DesignEditor_SaveCatFace)
 
-/* func_ov123_0229b3c4: the town record's design taken into both copies, with its palette. */
-void DesignEditor_LoadTownDesign(DesignEditor *self)
+/* func_ov123_0229b3c4: Blanca's face (the town's mystery cat record's design) taken into both copies, with its palette. */
+void DesignEditor_LoadCatFace(DesignEditor *self)
 {
-    Design *design = WfcStats_Design((WfcStats *) (void *) data_021f3278);
+    Design *design = MysteryCatRecord_Design((MysteryCatRecord *) (void *) data_021f3278);
     MIi_CpuCopy32(Design_Pixels(design), self->pixels[0], sizeof self->pixels[0]);
     MIi_CpuCopy32(Design_Pixels(design), self->pixels[1], sizeof self->pixels[1]);
     DesignEditor_SetPalette(self,
                             DesignInfo_Palette((DesignInfo *) (uintptr_t) Design_Info((unsigned int) (uintptr_t) design)));
 }
-CLEAN_AS(func_ov123_0229b3c4, DesignEditor_LoadTownDesign)
+CLEAN_AS(func_ov123_0229b3c4, DesignEditor_LoadCatFace)
 
 /* The item codes of the player's designs worn: clothes and hats, one for each design slot. */
 #define DESIGN_EDITOR_CLOTHES_FIRST 0x12a8
@@ -1053,7 +1053,7 @@ void DesignEditor_StartSetup(DesignEditor *self)
             DesignEditor_LoadPlayerDesign(self);
             break;
         case 3:
-            DesignEditor_LoadTownDesign(self);
+            DesignEditor_LoadCatFace(self);
             break;
     }
     DesignEditor_MakeChars(self);

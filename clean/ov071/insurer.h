@@ -35,8 +35,8 @@
 
 struct Insurer;
 
-/* The lines of explanation his talk picks from (Insurer.explained). */
-#define INSURER_EXPLANATIONS 5
+/* The survey questions his talk picks from (Insurer.questions_asked). */
+#define INSURER_SURVEY_QUESTIONS 5
 
 /* His talk scene (0xcc bytes, a scene of main's class 0x020d9ff8, vtable 0x0227a1e8). Its
  * receiver's message (byte 0x1e of the scene) is the line shown. */
@@ -45,7 +45,7 @@ typedef struct InsurerTalk {
     u8 unk_80[0x30];             /* 0x80 */
     s32 first;                   /* 0xb0: INSURER_TALK_FIRST_*, what the talk started with */
     struct Insurer *owner;       /* 0xb4 */
-    u8 explained_count;          /* 0xb8: lines of explanation said in a row */
+    u8 question_count;           /* 0xb8: survey questions asked in a row */
     u8 unk_b9[3];                /* 0xb9 */
     MemberPointer sequence;      /* 0xbc: void (talk), run when a command of the scene ends */
     MemberPointer next_sequence; /* 0xc4: the one that follows it */
@@ -55,16 +55,16 @@ typedef struct InsurerTalk {
 #define INSURER_BASE_SIZE 0x654
 
 typedef struct Insurer {
-    u8 base[INSURER_BASE_SIZE];         /* 0x000: the special character's scene object */
-    s32 state;                          /* 0x654: INSURER_* */
-    InsurerTalk talk;                   /* 0x658 */
-    u8 explained[INSURER_EXPLANATIONS]; /* 0x724: 1 for each line of explanation said */
-    u8 chase_step;                      /* 0x729: INSURER_CHASE_* */
-    u8 unk_72a[2];                      /* 0x72a */
-    int timer;                          /* 0x72c: frames left of a move or a wait */
-    int rest;                           /* 0x730: frames before he chases again */
-    u32 player;                         /* 0x734: the object of this console's player, or 0 */
-    Vec3 start;                         /* 0x738: where the chase started */
+    u8 base[INSURER_BASE_SIZE];                   /* 0x000: the special character's scene object */
+    s32 state;                                    /* 0x654: INSURER_* */
+    InsurerTalk talk;                             /* 0x658 */
+    u8 questions_asked[INSURER_SURVEY_QUESTIONS]; /* 0x724: 1 for each survey question asked */
+    u8 chase_step;                                /* 0x729: INSURER_CHASE_* */
+    u8 unk_72a[2];                                /* 0x72a */
+    int timer;                                    /* 0x72c: frames left of a move or a wait */
+    int rest;                                     /* 0x730: frames before he chases again */
+    u32 player;                                   /* 0x734: the object of this console's player, or 0 */
+    Vec3 start;                                   /* 0x738: where the chase started */
 } Insurer;
 
 enum InsurerState {

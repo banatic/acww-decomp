@@ -86,9 +86,9 @@ static_assert(offsetof(NookStore, sold) == 0x5c, "sold");
 #define NOOK_DECEMBER_LOT_B 0x2c
 #define NOOK_NO_LOT 0x2e
 
-/* The shop kinds in which NookStore_Refresh does nothing unless the scene is one of Nook's. */
-#define NOOK_SKIP_KIND_A 0x2c
-#define NOOK_SKIP_KIND_B 0x3f
+/* The scenes in which NookStore_Refresh does nothing unless the next scene is one of Nook's. */
+#define NOOK_SKIP_SCENE_2C 0x2c
+#define NOOK_SKIP_SCENE_3F 0x3f
 
 /* The range the sections drawn by func_020b00fc pick a code from (see func_020637d0). */
 #define NOOK_SECTION_SIZE 0x25
@@ -158,9 +158,9 @@ extern void func_02063cc8(NookItemLot *lot);
  * else by code. */
 static int nook_same_item(u16 *item, u16 *other)
 {
-    if (ItemCode_HasVariant(item) != 0) {
-        int a = ItemCode_VariantItem(item);
-        int b = ItemCode_VariantItem(other);
+    if (ItemCode_IsFurniture(item) != 0) {
+        int a = ItemCode_FurnitureNumber(item);
+        int b = ItemCode_FurnitureNumber(other);
         return a == b;
     }
     return *item == *other;
@@ -593,7 +593,7 @@ static void nook_plan_extras(NookStore *store, const DateTime *now, int after_si
     }
     for (u32 i = 0; i < NOOK_STORE_PLACES; i++) {
         u16 *item = &store->items[i];
-        if (ItemCode_HasVariant(item) != 0) {
+        if (ItemCode_IsFurniture(item) != 0) {
             nook_draw(item, &data_021f4a0c);
             if (after_six) {
                 NookStore_PostSwapNotice(item);
@@ -621,7 +621,7 @@ static void nook_december(NookStore *store, const DateTime *now)
     }
     int seen = 0;
     for (u32 i = 0; i < NOOK_STORE_PLACES; i++) {
-        if (ItemCode_HasVariant(&store->items[i]) != 0) {
+        if (ItemCode_IsFurniture(&store->items[i]) != 0) {
             if (seen == 1) {
                 NookItemLot lot;
                 ItemList_Construct((ItemList *) &lot, 0, group);
@@ -634,8 +634,9 @@ static void nook_december(NookStore *store, const DateTime *now)
     }
 }
 
-/* func_020af3a0: the morning update: Shop list A's first, then (unless a pending state of 1
- * becomes 2, or the player is in a shop of kind 0x2c or 0x3f outside Nook's scenes) a new stock
+/* func_020af3a0: the morning update: the tailor's stock first (TailorStock_Refresh), then
+ * (unless a pending state of 1 becomes 2, or the player is in scene 0x2c or 0x3f and not going
+ * on to one of Nook's) a new stock
  * when the day (from 6:00) is not the stock's or `force` is set, with the day's extras unless
  * every player has flag 1 (Nook's job) or an upgrade is planned, and December's item. Nothing changes but
  * the hour's clearing while linked.
@@ -648,8 +649,8 @@ void NookStore_Refresh(NookStore *store, int force)
         return;
     }
     if (SceneQuery_InNook((u32) SceneExit_NextScene()) == 0) {
-        u32 kind = (u32) SceneQuery_Current();
-        if (kind == NOOK_SKIP_KIND_A || kind == NOOK_SKIP_KIND_B) {
+        u32 scene = (u32) SceneQuery_Current();
+        if (scene == NOOK_SKIP_SCENE_2C || scene == NOOK_SKIP_SCENE_3F) {
             return;
         }
     }
@@ -1024,7 +1025,7 @@ int NookStore_HasKind4Item(NookStore *store)
     for (u32 place = 0; place < NOOK_STORE_PLACES; place++) {
         u16 code = ITEM_CODE_NONE;
         u16 *item = NookStore_Item(store, place, &code);
-        if (ItemCode_HasVariant(item) != 0 && ItemLists_GroupOf(item, 0) == NOOK_ITEM_KIND_4) {
+        if (ItemCode_IsFurniture(item) != 0 && ItemLists_GroupOf(item, 0) == NOOK_ITEM_KIND_4) {
             return 1;
         }
     }

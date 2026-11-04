@@ -160,7 +160,7 @@ CLEAN_AS(func_ov004_0220f484, RoomObject_BindModel)
  * units from data_021c67b8 towards data_021c67d0, at a quarter of its size, and the angles it
  * is turned by are set to face along that line. An object on the floor stands at height 0,
  * except in area 10; one on top of another is mounted on it.
- * QUIRK: the item code of the number is made (ItemCode_MakeVariant) and not used. */
+ * QUIRK: the item code of the number is made (ItemCode_MakeFurniture) and not used. */
 void RoomObject_SetUp(RoomObject *object)
 {
     if (object->is_set_up) {
@@ -194,7 +194,7 @@ void RoomObject_SetUp(RoomObject *object)
     if (object->unk_284 > LAST_NUMBER) {
         object->unk_284 = LAST_NUMBER;
     }
-    (void) ItemCode_MakeVariant(object->unk_284, 0);
+    (void) ItemCode_MakeFurniture(object->unk_284, 0);
     object->unk_288 = (u8) PLACE_ON_TOP(word);
     if (!RoomObject_Unk76CIs2(object) && object->unk_288 == LAYER_FLOOR) {
         object->position.y = 0;

@@ -32,9 +32,9 @@ static int clothes_reloads(u16 item)
 /* Whether `*item` is the item shown: by variant item when `*item` has variants, else by code. */
 static int clothes_same(VillagerClothes *clothes, u16 *item)
 {
-    if (ItemCode_HasVariant(item)) {
-        int variant = ItemCode_VariantItem(item);
-        return variant == ItemCode_VariantItem(&clothes->item);
+    if (ItemCode_IsFurniture(item)) {
+        int variant = ItemCode_FurnitureNumber(item);
+        return variant == ItemCode_FurnitureNumber(&clothes->item);
     }
     return *item == clothes->item;
 }

@@ -2,8 +2,8 @@
 # save is not in this repository). As museum-fossil-refused.txt up to 5480: Blathers' donation
 # pockets open. Save: museum-room (the room item 0x38e4 in pocket 0, 0x3934, a fake painting, in
 # pocket 1). A at 5490 and 5532 give the first: OwlTalk_TakeOffered writes its replacement 0x3934
-# back to its pocket (line 0x42, OwlTalk_EndOther: the motion of kind 17) and he refuses it as a
-# fake. A at 7314 and 7356 give pocket 0 again, now 0x3934 (line 0x43, OwlTalk_EndOther again).
+# back to its pocket (line 0x42, OwlTalk_EndFakePainting: the motion of kind 17) and he refuses it as a
+# fake. A at 7314 and 7356 give pocket 0 again, now 0x3934 (line 0x43, OwlTalk_EndFakePainting again).
 # His menu, the donation pockets again closed by B at 8730, and his farewell to 9252.
 900 START -
 906 - -

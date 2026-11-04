@@ -1,5 +1,5 @@
 /* The town map of the menu (overlay 118; overlay group 7, which overlay 90's bar of tabs opens
- * for its tab 5, MENU_TAB_5 in ov090/menu_tabs.h, with overlay 117 that draws the map; vtable
+ * for its tab 5, MENU_TAB_MAP in ov090/menu_tabs.h, with overlay 117 that draws the map; vtable
  * 0x0229cc08, include/cpp/ov118/Obj_ov118_0229cc08.h; constructor MapMenu_New, 0x47d8 bytes).
  * A menu scene (ov002/menu_scene.h) on the sub screen, from the files "menu/map/b_map_*":
  *

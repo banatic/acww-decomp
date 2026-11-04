@@ -87,8 +87,8 @@ CLEAN_AS(func_02082ba0, ActorTable_Init)
  * one of kind 3 or 4 whatever its kind. */
 static BOOL entry_is_under(const ActorEntry *entry, const ItemCode *code)
 {
-    if (ItemCode_HasVariant(&entry->code)) {
-        return ItemCode_VariantItem(&entry->code) == ItemCode_VariantItem(code);
+    if (ItemCode_IsFurniture(&entry->code)) {
+        return ItemCode_FurnitureNumber(&entry->code) == ItemCode_FurnitureNumber(code);
     }
     return entry->code == *code;
 }

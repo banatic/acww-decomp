@@ -59,9 +59,9 @@ static int RoomSurface_in(ItemCode code, ItemCode first, ItemCode last)
 /* Whether `item` is the part's item: by the item of its variant for a code with a variant. */
 static int RoomSurface_same_item(const ItemCode *shown, const ItemCode *item)
 {
-    if (ItemCode_HasVariant(shown)) {
-        int mine = ItemCode_VariantItem(shown);
-        return mine == ItemCode_VariantItem(item);
+    if (ItemCode_IsFurniture(shown)) {
+        int mine = ItemCode_FurnitureNumber(shown);
+        return mine == ItemCode_FurnitureNumber(item);
     }
     return *shown == *item;
 }

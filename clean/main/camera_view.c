@@ -181,7 +181,7 @@ void CameraControl_PlaceAt(CameraControl *camera, const Vec3 *target, const Vec3
 }
 CLEAN_AS(func_0203bcc4, CameraControl_PlaceAt)
 
-/* func_0203bd84: the eye (`point`) placed `distance` behind `target`, turned up by `pitch` and
+/* func_0203bd84: the eye placed `distance` behind `target`, turned up by `pitch` and
  * round by `yaw`; both bent onto the curved ground, the up vector leaning by the ground's angle
  * under the target and turned by the roll. */
 void CameraControl_Place(CameraControl *camera, const Vec3 *target, int pitch, int yaw, int distance)
@@ -191,7 +191,7 @@ void CameraControl_Place(CameraControl *camera, const Vec3 *target, int pitch, i
     Vec_RotateY(&behind, yaw);
     Vec3 eye;
     Vec_Add(&eye, target, &behind);
-    camera->point = eye;
+    camera->eye = eye;
     int angle = Globe_Bend(&camera->drawn_target, target);
     Globe_Bend(&camera->drawn_eye, CameraControl_Eye(camera));
     camera->up.x = 0;
@@ -281,7 +281,7 @@ int CameraControl_SetMode(CameraControl *camera, int mode)
         camera->previous_mode = camera->mode;
         if (mode != camera->initial_mode) {
             camera->saved = camera->goal;
-            camera->saved_point = camera->point;
+            camera->saved_eye = camera->eye;
         }
     }
     camera->view_saved = 0;
@@ -514,10 +514,10 @@ s16 CameraControl_GroundAngle(CameraControl *camera)
 }
 CLEAN_AS(func_0203c590, CameraControl_GroundAngle)
 
-/* func_0203c59c: the eye (`point`). */
+/* func_0203c59c: the eye. */
 Vec3 *CameraControl_Eye(CameraControl *camera)
 {
-    return &camera->point;
+    return &camera->eye;
 }
 CLEAN_AS(func_0203c59c, CameraControl_Eye)
 

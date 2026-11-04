@@ -1033,7 +1033,7 @@ static int birthday_villager_item_in(const u16 *item, u16 first, u16 last)
 
 /* func_ov004_0221cf00: whether `item` goes with the mode of the villager's record: mode 0 an
  * insect (0x12b0-0x12e7), 1 a fish (0x12e8-0x131f), 2 an item 0x450c-0x45db, 3 an item
- * 0x11a8-0x12a7, 4 an item with a variant (ItemCode_HasVariant) outside 0x450c-0x45db; other
+ * 0x11a8-0x12a7, 4 an item with a variant (ItemCode_IsFurniture) outside 0x450c-0x45db; other
  * modes, a villager without a record or a talk scene without a villager, none. */
 int BirthdayVillagerTalk_LikesItem(BirthdayVillagerTalk *talk, u16 *item)
 {
@@ -1052,7 +1052,7 @@ int BirthdayVillagerTalk_LikesItem(BirthdayVillagerTalk *talk, u16 *item)
         case 3:
             return birthday_villager_item_in(item, BIRTHDAY_VILLAGER_MODE3_FIRST, BIRTHDAY_VILLAGER_MODE3_LAST);
         case 4:
-            return ItemCode_HasVariant(item) &&
+            return ItemCode_IsFurniture(item) &&
                    !birthday_villager_item_in(item, BIRTHDAY_VILLAGER_MODE2_FIRST, BIRTHDAY_VILLAGER_MODE2_LAST);
         default:
             return 0;
@@ -1372,10 +1372,10 @@ int BirthdayVillager_CanOffer(u16 *item, int state)
         return 0;
     }
     int empty;
-    if (ItemCode_HasVariant(item)) {
+    if (ItemCode_IsFurniture(item)) {
         ItemCode none = ITEM_CODE_NONE;
-        int variant = ItemCode_VariantItem(item);
-        empty = variant == ItemCode_VariantItem(&none);
+        int variant = ItemCode_FurnitureNumber(item);
+        empty = variant == ItemCode_FurnitureNumber(&none);
     } else {
         empty = *item == ITEM_CODE_NONE;
     }

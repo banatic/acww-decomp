@@ -227,7 +227,7 @@ void MyDesigns_RunChoiceAction(MyDesigns *self)
             MyDesigns_WearPicked(self, MY_DESIGNS_WEAR_CLOTHES);
             break;
         case MY_DESIGNS_ACTION_FURNITURE:
-            MyDesigns_PlaceFurniture(self);
+            MyDesigns_PlaceEasel(self);
             break;
         case MY_DESIGNS_ACTION_HEAD:
             MyDesigns_WearPicked(self, MY_DESIGNS_WEAR_HEAD);
@@ -258,11 +258,11 @@ void MyDesigns_DropOnGround(MyDesigns *self)
 CLEAN_AS(func_ov121_0229a63c, MyDesigns_DropOnGround)
 
 /* func_ov121_0229a6b4: the picked design made a piece of furniture of the series of the target's
- * button (9: 0x3f24, 12: 0x4224, 13: 0x3d84, 14: 0x3ea4) and put down near the player; then the
+ * button (9: 0x3f24 the easel, 12: 0x4224, 13: 0x3d84, 14: 0x3ea4) and put down near the player; then the
  * camera's view back, the button blinks and the scene goes back to idle. Refused with more than
  * one player here, when the furniture cannot be made or the room is full, or when there is no
  * space for it; another target goes back to idle at once. */
-void MyDesigns_PlaceFurniture(MyDesigns *self)
+void MyDesigns_PlaceEasel(MyDesigns *self)
 {
     u32 placement;
     int result;
@@ -278,7 +278,7 @@ void MyDesigns_PlaceFurniture(MyDesigns *self)
         case MY_DESIGNS_BUTTON_HEAD:
             result = RoomPlacement_PlaceSeries4224(&placement, (u8) MyDesigns_DesignAt(self, self->picked), 1);
             break;
-        case MY_DESIGNS_BUTTON_FURNITURE:
+        case MY_DESIGNS_BUTTON_EASEL:
             result = RoomPlacement_PlaceSeries3F24(&placement, (u8) MyDesigns_DesignAt(self, self->picked), 1);
             break;
         case MY_DESIGNS_BUTTON_HELD:
@@ -304,7 +304,7 @@ void MyDesigns_PlaceFurniture(MyDesigns *self)
             break;
     }
 }
-CLEAN_AS(func_ov121_0229a6b4, MyDesigns_PlaceFurniture)
+CLEAN_AS(func_ov121_0229a6b4, MyDesigns_PlaceEasel)
 
 /* The design item that `kind` is worn as, for the picked design. */
 static u16 worn_design_item(MyDesigns *self, int kind)
@@ -543,13 +543,13 @@ int MyDesigns_UseOnTarget(MyDesigns *self)
                     MyDesigns_WearPicked(self, MY_DESIGNS_WEAR_HELD);
                     return 1;
                 case MY_DESIGNS_OWN_ROOM:
-                    MyDesigns_PlaceFurniture(self);
+                    MyDesigns_PlaceEasel(self);
                     return 1;
                 default:
                     return 0;
             }
-        case MY_DESIGNS_BUTTON_FURNITURE:
-            MyDesigns_PlaceFurniture(self);
+        case MY_DESIGNS_BUTTON_EASEL:
+            MyDesigns_PlaceEasel(self);
             return 1;
         case MY_DESIGNS_BUTTON_GROUND:
             MyDesigns_DropOnGround(self);

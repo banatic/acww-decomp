@@ -17,7 +17,7 @@
 #include "villager_roster.h"
 #include "villager_status.h"
 #include "villager_town.h"
-#include "wfc_stats.h"
+#include "mystery_cat_record.h"
 
 static_assert(sizeof(EventRule) == 0xc, "EventRule");
 static_assert(sizeof(EventCalendarEntry) == 0x1c, "EventCalendarEntry");
@@ -31,7 +31,7 @@ extern Date data_021c74d0;                                          /* the date 
 extern EventCalendarEvent data_021c74d4[EVENT_CALENDAR_DAY_EVENTS]; /* today's list */
 extern EventSchedule data_021f39c0;
 extern VillagerTown data_021e5a2c;
-extern u8 data_021f3278[]; /* the town's statistics record (WfcStats) */
+extern u8 data_021f3278[]; /* the town's mystery cat record (MysteryCatRecord) */
 
 /* The event number of villager 0's birthday; villager n's is this plus n. */
 #define EVENT_CALENDAR_VILLAGER_EVENT_FIRST 0x4b
@@ -343,7 +343,7 @@ CLEAN_AS(func_02040010, EventCalendar_SetDayHours)
  *   `today_only`), or neither that day nor the one before do; or for the paired town;
  * - else when it overlaps (hours and dates, weekdays left out) a listed event of its kind or a
  *   lower one, other than kind 5; for kind 2 and above when the paired town has a visit in
- *   the last week, for kind 3 and above when the statistics record is in use; for event 0x3c
+ *   the last week, for kind 3 and above when the mystery cat record is in use; for event 0x3c
  *   and the fox, in the 7 days the schedule bars them. */
 int EventCalendar_IsBlocked(const EventCalendarEntry *entry, EventKey date, const EventCalendarEvent *event,
                             const EventCalendarEvent *listed, int count, int include_taken, int today_only)
@@ -384,7 +384,7 @@ int EventCalendar_IsBlocked(const EventCalendarEntry *entry, EventKey date, cons
     if (kind >= 2 && (PairedTown_ChildDueThisWeek() || PairedTown_MotherDueThisWeek())) {
         return 1;
     }
-    if (kind >= 3 && WfcStats_IsInUse((const WfcStats *) data_021f3278)) {
+    if (kind >= 3 && MysteryCatRecord_IsInUse((const MysteryCatRecord *) data_021f3278)) {
         return 1;
     }
     switch (event->id) {

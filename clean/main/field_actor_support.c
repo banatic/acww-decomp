@@ -116,9 +116,9 @@ static u32 field_actor_support_flag_mask(int bit)
  * func_0204bc64 of it with that of 0xfff1. */
 static BOOL field_actor_support_item_is_nothing(const u16 *item)
 {
-    if (ItemCode_HasVariant(item)) {
+    if (ItemCode_IsFurniture(item)) {
         u16 nothing = ITEM_CODE_NONE;
-        return ItemCode_VariantItem(item) == ItemCode_VariantItem(&nothing);
+        return ItemCode_FurnitureNumber(item) == ItemCode_FurnitureNumber(&nothing);
     }
     return *item == ITEM_CODE_NONE;
 }

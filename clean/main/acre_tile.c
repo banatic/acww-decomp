@@ -78,7 +78,7 @@ int AcreTile_StampBuildingNoting(AcreMap *map, u16 *building, int x, int z, u8 t
     if (AcreTile_StampBuilding(map, building, x, z) == 0) {
         return 0;
     }
-    if (ItemCode_IsKind1(&replaced) || ItemCode_HasVariant(&replaced)) {
+    if (ItemCode_IsKind1(&replaced) || ItemCode_IsFurniture(&replaced)) {
         TownItemLists_PushLostAndFound(replaced);
     }
     return 1;
@@ -233,10 +233,10 @@ static int acre_tile_grows(u32 code)
 /* Whether a code is ACRE_TILE_ITEM_OCCUPIED; for a code with a variant, whether its item is. */
 static int acre_tile_is_occupied(u16 *code)
 {
-    if (ItemCode_HasVariant(code)) {
+    if (ItemCode_IsFurniture(code)) {
         u16 occupied = ACRE_TILE_ITEM_OCCUPIED;
-        int item = ItemCode_VariantItem(code);
-        return item == ItemCode_VariantItem(&occupied);
+        int item = ItemCode_FurnitureNumber(code);
+        return item == ItemCode_FurnitureNumber(&occupied);
     }
     return *code == ACRE_TILE_ITEM_OCCUPIED;
 }
@@ -258,7 +258,7 @@ int AcreTile_PutBuilding(AcreMap *map, u16 *code, u16 *building, u16 *fill, int 
 
     if (tile != NULL) {
         u16 replaced = *tile;
-        if (ItemCode_IsKind1(&replaced) || ItemCode_HasVariant(&replaced)) {
+        if (ItemCode_IsKind1(&replaced) || ItemCode_IsFurniture(&replaced)) {
             TownItemLists_PushLostAndFound(replaced);
         }
     }
@@ -280,7 +280,7 @@ int AcreTile_PutBuilding(AcreMap *map, u16 *code, u16 *building, u16 *fill, int 
         int tile_z = z + offset_z;
         u16 *other = acre_tile_item(map, tile_x, tile_z);
         if (other != NULL) {
-            if (ItemCode_HasVariant(other) || ItemCode_IsKind1(other)) {
+            if (ItemCode_IsFurniture(other) || ItemCode_IsKind1(other)) {
                 if (!Session_IsLinked(data_020ccf94)) {
                     TownItemLists_PushLostAndFound(*other);
                 }

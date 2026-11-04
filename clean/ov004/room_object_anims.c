@@ -70,7 +70,7 @@ int RoomObject_MoveSound(RoomObject *object)
     }
     ItemCode *item = RoomShell_CarpetCode2();
     if (*item >= FLOOR_SOUND_FIRST && *item <= FLOOR_SOUND_LAST) {
-        int sound = UnitTypeInfo_Word02(ItemInfo_IndoorUnk01(item));
+        int sound = UnitTypeInfo_Word02(ItemInfo_IndoorGroundSound(item));
         if (sound != NO_SOUND) {
             return sound;
         }

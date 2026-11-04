@@ -276,19 +276,19 @@ int Barber_WearsHat(void *unused)
 }
 CLEAN_AS(func_ov053_02260488, Barber_WearsHat)
 
-/* func_ov053_022604bc: when this console's player stands on the map's claimed object (claimed
- * at its start), the topic claimed and an event of kind 6 asked for. Whether it was. */
-int Barber_CheckClaimed(Barber *barber)
+/* func_ov053_022604bc: when this console's player stands at the shop's exit (the map's object
+ * claimed at its start), the farewell topic and an event of kind 6 asked for. Whether it was. */
+int Barber_CheckAtExit(Barber *barber)
 {
     Vec3 player = *PlayerActorOps_StartPosition(BARBER_PLAYER_ACTOR);
     if (!CollisionMap_IsClaimedAtPoint(&player)) {
         return 0;
     }
-    BarberTalk_SetTopic(&barber->talk, BARBER_TOPIC_CLAIMED);
+    BarberTalk_SetTopic(&barber->talk, BARBER_TOPIC_FAREWELL);
     EventQueue_RequestKind6(barber, 0);
     return 1;
 }
-CLEAN_AS(func_ov053_022604bc, Barber_CheckClaimed)
+CLEAN_AS(func_ov053_022604bc, Barber_CheckAtExit)
 
 /* func_ov053_02260504: with the cut paid for, when this console's player walks past z 29.0 to
  * the door, the topic leaving and an event of kind 6 asked for. Whether it was. */
@@ -382,7 +382,7 @@ void Barber_OnEvent(Barber *barber, unsigned int code, u8 participant)
             if (barber->talk.topic == BARBER_TOPIC_HAT_BACK) {
                 BarberTalk_SetTopic(&barber->talk, BARBER_TOPIC_NONE);
                 Barber_SetState(barber, BARBER_STATE_WALK_A);
-            } else if (barber->talk.topic != BARBER_TOPIC_CLAIMED) {
+            } else if (barber->talk.topic != BARBER_TOPIC_FAREWELL) {
                 BarberTalk_SetTopic(&barber->talk, BARBER_TOPIC_NONE);
                 Barber_SetState(barber, BARBER_STATE_TURN_BACK);
             }
@@ -659,7 +659,7 @@ CLEAN_AS(func_ov053_022612a0, Barber_EnterTalked)
  *   nothing more;
  * - else while this console's player sits on a spot: the player asked to step off it, and when
  *   that answers nonzero the event ends and state 3;
- * - claimed: main's entry record takes the scene's exit 0 (the player is put out), state 3;
+ * - farewell: main's entry record takes the scene's exit 0 (the player is put out), state 3;
  * - else the event ends, state 3.
  * When its state changed with the topic cut, the camera's mode is reset. 1.
  * QUIRK: the request clear gets 0x654 (an offset left in the register); the step off answers 0
@@ -685,7 +685,7 @@ int Barber_UpdateTalk(Barber *barber)
             EventQueue_FinishObjectEvent(barber);
             Barber_SetState(barber, BARBER_STATE_TALKED);
         }
-    } else if (barber->talk.topic == BARBER_TOPIC_CLAIMED) {
+    } else if (barber->talk.topic == BARBER_TOPIC_FAREWELL) {
         if (!SceneAction_IsBusy(barber_action(barber))) {
             SceneExit_Take((SceneExit *) (uintptr_t) (u32) SceneTables_EntryRecord(), 0);
             Barber_SetState(barber, BARBER_STATE_TALKED);
@@ -704,7 +704,7 @@ CLEAN_AS(func_ov053_022612a4, Barber_UpdateTalk)
 /* func_ov053_022613b0 (state 2's entry): it looks at the player; the yaw to its talk's partner
  * (0 without one). With the topic cut the room's camera goes between the player and a point 2.0
  * above it, and the music's countdown starts at 31 frames. Its action turns it by that yaw and
- * talks, keeping the camera with the topics cut, leaving and claimed. 1. */
+ * talks, keeping the camera with the topics cut, leaving and farewell. 1. */
 int Barber_EnterTalk(Barber *barber)
 {
     barber_look(barber, BARBER_LOOK_PLAYER);
@@ -720,14 +720,14 @@ int Barber_EnterTalk(Barber *barber)
         barber->music_countdown = BARBER_MUSIC_FRAMES;
     }
     u32 topic = barber->talk.topic;
-    int keep_camera = topic == BARBER_TOPIC_CUT || topic == BARBER_TOPIC_LEAVING || topic == BARBER_TOPIC_CLAIMED;
+    int keep_camera = topic == BARBER_TOPIC_CUT || topic == BARBER_TOPIC_LEAVING || topic == BARBER_TOPIC_FAREWELL;
     SceneAction_RequestTurnAndTalk(barber_action(barber), 0, yaw, keep_camera);
     return 1;
 }
 CLEAN_AS(func_ov053_022613b0, Barber_EnterTalk)
 
 /* func_ov053_02261484 (state 1's update): it watches the player: seated (Barber_CheckSeated),
- * else leaving (Barber_CheckLeaving), else on the claimed object (Barber_CheckClaimed). 1. */
+ * else leaving (Barber_CheckLeaving), else at the exit (Barber_CheckAtExit). 1. */
 int Barber_UpdateStand(Barber *barber)
 {
     if (Barber_CheckSeated(barber)) {
@@ -736,7 +736,7 @@ int Barber_UpdateStand(Barber *barber)
     if (Barber_CheckLeaving(barber)) {
         return 1;
     }
-    Barber_CheckClaimed(barber);
+    Barber_CheckAtExit(barber);
     return 1;
 }
 CLEAN_AS(func_ov053_02261484, Barber_UpdateStand)
@@ -810,7 +810,7 @@ int Barber_TextureName(void)
 CLEAN_AS(func_ov053_022615bc, Barber_TextureName)
 
 /* func_ov053_022615c4 (vtable slot 0x00, its start): unless the special character refuses to
- * start: unlinked, the current map's object 0 is claimed (Barber_CheckClaimed watches it); its
+ * start: unlinked, the current map's object 0 is claimed (Barber_CheckAtExit watches it); its
  * home angle is 0, it is held (flag 2 at 0x4e8) and at route's first point. Linked it stands;
  * unlinked it calls the player when the previous scene was 29, else stands. Whether it
  * started. */

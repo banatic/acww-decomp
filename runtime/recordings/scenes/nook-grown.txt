@@ -6,7 +6,7 @@
 # into the store.
 # Save: house-ordered (loan-paid with the next extension ordered: the word at 0x15a0 of the house
 # record as nook-loan leaves it). Tom Nook greets the player with the house grown (line 0x49,
-# NookClerkTalk_PayLoanLine: the extension's loan taken, HouseRecord_TakeNextLoan); A every 40
+# NookClerkTalk_TakeNextLoan: the extension's loan taken, HouseRecord_TakeNextLoan); A every 40
 # frames reads on, to 7159.
 0 - -
 900 START -

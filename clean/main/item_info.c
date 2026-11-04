@@ -95,9 +95,9 @@ static int item_info_flag(const u16 *item, int bit)
  * has one), else by the codes. `a`'s number is asked for first. */
 static int item_info_same(const u16 *a, const u16 *b)
 {
-    if (ItemCode_HasVariant(a)) {
-        int number = ItemCode_VariantItem(a);
-        return number == ItemCode_VariantItem(b);
+    if (ItemCode_IsFurniture(a)) {
+        int number = ItemCode_FurnitureNumber(a);
+        return number == ItemCode_FurnitureNumber(b);
     }
     return *a == *b;
 }
@@ -131,7 +131,7 @@ int ItemInfo_CountFirstOfPair(void)
 CLEAN_AS(func_0206213c, ItemInfo_CountFirstOfPair)
 
 /* func_02062148: the item's number among the items with a held model (from 0, in code order),
- * compared as ItemCode_HasVariant says; 0xffffffff when it has none or none was found. */
+ * compared as ItemCode_IsFurniture says; 0xffffffff when it has none or none was found. */
 u32 ItemInfo_HeldModelNumber(const u16 *item)
 {
     if (data_021cb5c0 == 0) {
@@ -239,12 +239,12 @@ u8 ItemInfo_IndoorStyle(const u16 *item)
 CLEAN_AS(func_020622c4, ItemInfo_IndoorStyle)
 
 /* func_02062300: ItemInfoIndoor.ground_sound. */
-u8 ItemInfo_IndoorUnk01(const u16 *item)
+u8 ItemInfo_IndoorGroundSound(const u16 *item)
 {
     const ItemInfoIndoor *record = item_info_indoor(item_info_number(*item));
     return record != NULL ? record->ground_sound : 0;
 }
-CLEAN_AS(func_02062300, ItemInfo_IndoorUnk01)
+CLEAN_AS(func_02062300, ItemInfo_IndoorGroundSound)
 
 /* func_0206233c: bit 4 of the flags (of the full pile). */
 int ItemInfo_FlagBit4(const u16 *item)
@@ -449,9 +449,9 @@ void ItemInfo_CountSharedPairs(void)
         u16 pair[2];
         pair[0] = (u16) (ITEM_INFO_PAIR_FIRST_A + i);
         pair[1] = (u16) (ITEM_INFO_PAIR_FIRST_B + i);
-        if (ItemTraits_IsPairHeadItem(&pair[0])) {
+        if (ItemTraits_IsPairFlower(&pair[0])) {
             data_021cb5b4++;
-        } else if (ItemTraits_IsPairFaceItem(&pair[1])) {
+        } else if (ItemTraits_IsPairWiltedFlower(&pair[1])) {
             data_021cb5b8++;
         }
     }
@@ -459,7 +459,7 @@ void ItemInfo_CountSharedPairs(void)
 CLEAN_AS(func_02062b98, ItemInfo_CountSharedPairs)
 
 /* func_02062c0c: the codes 0x1000-0x156d with a held model counted, and the first of them kept
- * unless one is kept already (compared with ITEM_CODE_NONE as ItemCode_HasVariant says).
+ * unless one is kept already (compared with ITEM_CODE_NONE as ItemCode_IsFurniture says).
  * QUIRK: the count is added to; ItemInfo_Open starts it at 0 first. */
 void ItemInfo_FindHeldModels(void)
 {
@@ -470,10 +470,10 @@ void ItemInfo_FindHeldModels(void)
             continue;
         }
         int none;
-        if (ItemCode_HasVariant(&data_021cb5b0)) {
+        if (ItemCode_IsFurniture(&data_021cb5b0)) {
             candidate[1] = ITEM_CODE_NONE;
-            int number = ItemCode_VariantItem(&data_021cb5b0);
-            none = number == ItemCode_VariantItem(&candidate[1]);
+            int number = ItemCode_FurnitureNumber(&data_021cb5b0);
+            none = number == ItemCode_FurnitureNumber(&candidate[1]);
         } else {
             none = data_021cb5b0 == ITEM_CODE_NONE;
         }

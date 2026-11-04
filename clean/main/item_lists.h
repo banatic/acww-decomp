@@ -1,7 +1,7 @@
 /* The game's item lists: what shops, letters and villagers draw items from at random.
  *
- * The items are in nine kinds (the table at data_020ccab0, ItemListsKind): kind 0 the items
- * with a variant (furniture, 0x6e9 of them, read by furniture_info.h), kinds 1-8 items whose
+ * The items are in nine kinds (the table at data_020ccab0, ItemListsKind): kind 0 the
+ * furniture (0x6e9 of them, read by furniture_info.h), kinds 1-8 items whose
  * season and group item_info.h reads (kind 1 the 64 piles, each drawn full; the others give
  * their codes by functions of main). Each kind gives the code of its item number n, the
  * season an item is drawn in (-1 or 4 for every season; the furniture's is always -1), the
@@ -52,7 +52,7 @@ enum ItemListsSeason {
     ITEM_LISTS_WINTER = 3,
 };
 
-int ItemLists_IsVariantGroup4(u16 *item);
+int ItemLists_IsFurnitureGroup4(u16 *item);
 int ItemLists_GroupOf(u16 *item, int raw);
 int ItemLists_KindOf(u16 *item);
 void ItemLists_DrawByGroup(u16 *out, int record, DateRandom *source);
@@ -72,7 +72,7 @@ int ItemLists_InSeason(int item_season, int season);
 int ItemLists_IndexOf(u16 *item, u16 *items, unsigned int count);
 int ItemLists_AnySeason(void);
 void ItemLists_PileCode(int number, int unused1, int unused2);
-void ItemLists_VariantCode(int number);
+void ItemLists_FurnitureCode(int number);
 int ItemList_Group(ItemList *list);
 int ItemList_Kind(ItemList *list);
 void ItemList_Destruct(void *list);

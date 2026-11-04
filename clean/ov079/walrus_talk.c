@@ -173,9 +173,9 @@ static int walrus_talk_in(u16 item, u16 first, u16 last)
 /* Whether `item` is `other`: an item with variants is compared without its variant. */
 static int walrus_talk_is(const u16 *item, u16 other)
 {
-    if (ItemCode_HasVariant(item)) {
-        int number = ItemCode_VariantItem(item);
-        return number == ItemCode_VariantItem(&other);
+    if (ItemCode_IsFurniture(item)) {
+        int number = ItemCode_FurnitureNumber(item);
+        return number == ItemCode_FurnitureNumber(&other);
     }
     return *item == other;
 }

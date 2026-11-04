@@ -7,7 +7,7 @@
 #include "main/animated_model.h"    /* AnimatedModel_Start, AnimatedModel_StepFrames */
 #include "main/event_queue.h"       /* EventQueue_RequestKind6, EventQueue_TestFlag8 */
 #include "main/frame_ctrl.h"        /* FrameCtrl_IsDone, FrameCtrl_Passed */
-#include "main/item_code.h"         /* ItemCode_HasVariant, ItemCode_VariantItem */
+#include "main/item_code.h"         /* ItemCode_IsFurniture, ItemCode_FurnitureNumber */
 #include "main/map_code.h"          /* MapCode_IsStore */
 #include "main/player_actor_ops.h"  /* PlayerActorOps_TestFlag */
 #include "main/scene_object_base.h" /* SceneObjectBase_ClearApproach */
@@ -102,13 +102,13 @@ static AnimatedModel *mode_model(SceneActor *actor)
     return (AnimatedModel *) (void *) actor->model_object;
 }
 
-/* Whether `*code` is `value`, through ItemCode_VariantItem when the code has variants. */
+/* Whether `*code` is `value`, through ItemCode_FurnitureNumber when the code has variants. */
 static int mode_code_is(u16 *code, u16 value)
 {
-    if (ItemCode_HasVariant(code)) {
+    if (ItemCode_IsFurniture(code)) {
         u16 other = value;
-        int converted = ItemCode_VariantItem(code);
-        return converted == ItemCode_VariantItem(&other);
+        int converted = ItemCode_FurnitureNumber(code);
+        return converted == ItemCode_FurnitureNumber(&other);
     }
     return *code == value;
 }

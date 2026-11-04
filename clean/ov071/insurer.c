@@ -45,7 +45,7 @@
 static_assert(sizeof(InsurerStep) == 0x10, "a state's functions");
 static_assert(offsetof(Insurer, state) == 0x654, "state");
 static_assert(offsetof(Insurer, talk) == 0x658, "talk scene");
-static_assert(offsetof(Insurer, explained) == 0x724, "explained");
+static_assert(offsetof(Insurer, questions_asked) == 0x724, "questions_asked");
 static_assert(offsetof(Insurer, chase_step) == 0x729, "chase step");
 static_assert(offsetof(Insurer, timer) == 0x72c, "timer");
 static_assert(offsetof(Insurer, rest) == 0x730, "rest");
@@ -831,7 +831,7 @@ CLEAN_AS(func_ov071_02279dd8, Insurer_Start)
 
 /* func_ov071_02279e30 (vtable slot 0x04, his set-up): unless the special character refuses,
  * his talk scene becomes his scene and gets him as its owner, his mover's pace 2 set (speed
- * 0.125, speeding up and slowing down by 0.0625) and no explanation marked said. Whether he
+ * 0.125, speeding up and slowing down by 0.0625) and no survey question marked asked. Whether he
  * was set up. */
 int Insurer_Init(Insurer *insurer)
 {
@@ -841,7 +841,7 @@ int Insurer_Init(Insurer *insurer)
     SceneObject_SetScene(insurer->base, &insurer->talk.base);
     InsurerTalk_Begin(&insurer->talk, insurer);
     SceneMover_SetPace(ins_mover(insurer), 2, 0x200, 0x100, 0x100);
-    MI_CpuFill8(insurer->explained, 0, INSURER_EXPLANATIONS);
+    MI_CpuFill8(insurer->questions_asked, 0, INSURER_SURVEY_QUESTIONS);
     return 1;
 }
 CLEAN_AS(func_ov071_02279e30, Insurer_Init)

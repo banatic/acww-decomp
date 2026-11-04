@@ -35,7 +35,7 @@
 #define OWN_BLOCK 4     /* func_02090040(4): this system's 0x950-byte block */
 #define SLOT_BLOCK_SIZE 0x950
 #define PLAYER_RECORD_SIZE 0x249c   /* a player record (func_0209847c) */
-#define RECORD_BLOCK_SIZE 0x3200    /* the block func_020989e0 gives for a player record */
+#define KEPT_LETTERS_SIZE 0x3200    /* the block func_020989e0 gives for a player record */
 #define SHARED_RECORDS_SIZE 0x6a0   /* the session's shared records (Session_GetRecordTable) */
 #define ACTIVITY_BUFFER_MAX 0x17400 /* the activity buffer's size while its first word is 0 */
 
@@ -45,11 +45,11 @@ enum {
     SYSTEM_WRITE_ACTIVITY_BUFFER = 1,
     SYSTEM_WRITE_SLOT_BLOCK = 2,
     SYSTEM_SET_OWN_BLOCK = 3,
-    SYSTEM_WRITE_SENDER_BLOCK = 4,
+    SYSTEM_WRITE_SENDER_RECORD = 4,
     SYSTEM_SET_LINK_FLAG_C4 = 7,
     SYSTEM_REQUEST_MODE = 8,
     SYSTEM_SET_ACTIVITY_FLAG_D9 = 9,
-    SYSTEM_SET_ACTIVITY_DATA_DC = 10,
+    SYSTEM_SET_DATE_TIME = 10,
     SYSTEM_SET_ACTIVITY_FLAG_E4 = 11,
     SYSTEM_WRITE_SHARED_RECORDS = 12,
     SYSTEM_SET_ACTIVITY_PLAYER_EF = 14,
@@ -60,7 +60,7 @@ enum {
     SYSTEM_SET_ACTIVITY_PLAYER_F4 = 19,
     SYSTEM_SET_ACTIVITY_PLAYER_100 = 20,
     SYSTEM_WRITE_OWN_RECORD = 21,
-    SYSTEM_WRITE_RECORD_BLOCK = 22,
+    SYSTEM_WRITE_KEPT_LETTERS = 22,
     SYSTEM_SET_ACTIVITY_FLAG_101 = 23
 };
 
@@ -104,7 +104,7 @@ CLEAN_AS(func_02075254, SystemPacket_SetActivityFlag101)
 
 /* func_02075278: the payload's offset (4 bytes) and data, written into the block of this
  * system's player record that func_020989e0 gives. */
-void SystemPacket_WriteRecordBlock(u8 *payload, u32 length, int sender)
+void SystemPacket_WriteKeptLetters(u8 *payload, u32 length, int sender)
 {
     (void) sender;
     u32 offset;
@@ -112,7 +112,7 @@ void SystemPacket_WriteRecordBlock(u8 *payload, u32 length, int sender)
     u8 *block = (u8 *) PlayerRecord_KeptLetters(PlayerRecords_Current());
     MI_CpuCopy8(payload + 4, block + offset, length - 4);
 }
-CLEAN_AS(func_02075278, SystemPacket_WriteRecordBlock)
+CLEAN_AS(func_02075278, SystemPacket_WriteKeptLetters)
 
 /* func_020752a8: in scene 46 with an activity: the payload's offset (4 bytes) and data,
  * written into this system's player record, after func_020962a4 is given player 0 and the
@@ -339,7 +339,7 @@ CLEAN_AS(func_0207556c, SystemPacket_SetSenderStatus)
 
 /* func_0207557c: the payload's offset (4 bytes) and data, written into the block
  * func_0209847c gives for sender + 3; then func_020962a4 is told the sender and that number. */
-void SystemPacket_WriteSenderBlock(u8 *payload, u32 length, int sender)
+void SystemPacket_WriteSenderRecord(u8 *payload, u32 length, int sender)
 {
     int offset;
     MI_CpuCopy8(payload, &offset, 4);
@@ -348,7 +348,7 @@ void SystemPacket_WriteSenderBlock(u8 *payload, u32 length, int sender)
     MI_CpuCopy8(payload + 4, record + offset, length - 4);
     SessionPlayers_SetRecordNumber(sender, which);
 }
-CLEAN_AS(func_0207557c, SystemPacket_WriteSenderBlock)
+CLEAN_AS(func_0207557c, SystemPacket_WriteSenderRecord)
 
 /* func_020755b4: from the host (SystemPacket_SendSlotBlocks): this system's 0x950-byte block,
  * cleared when the payload is the single byte 1 and left as it is for the byte 0; then in
@@ -486,13 +486,13 @@ CLEAN_AS(func_0207570c, SystemPacket_SendActivityFlag101)
 
 /* func_02075774: the next chunk of the block func_020989e0 gives for this system's player
  * record, to the host. */
-int SystemPacket_SendRecordBlock(u8 *chunks_sent)
+int SystemPacket_SendKeptLetters(u8 *chunks_sent)
 {
     u8 *record = PlayerRecords_Get(SessionPlayers_RecordNumber(data_020ccf94->local_player));
     u8 *block = (u8 *) PlayerRecord_KeptLetters(record);
-    return SystemPacket_SendInChunks(chunks_sent, block, RECORD_BLOCK_SIZE, SYSTEM_WRITE_RECORD_BLOCK, TO_HOST);
+    return SystemPacket_SendInChunks(chunks_sent, block, KEPT_LETTERS_SIZE, SYSTEM_WRITE_KEPT_LETTERS, TO_HOST);
 }
-CLEAN_AS(func_02075774, SystemPacket_SendRecordBlock)
+CLEAN_AS(func_02075774, SystemPacket_SendKeptLetters)
 
 /* func_020757ac: the next chunk of this system's player record, to the host. */
 int SystemPacket_SendOwnRecord(u8 *chunks_sent)
@@ -600,7 +600,7 @@ int SystemPacket_SendDateTime(int to)
     NetSession *session = data_020ccf94;
     Session_IsLocalSlot(session, 0); /* QUIRK: the answer is not used */
     u8 *packet = Session_GetSendBlock(session, SHARE_BLOCK);
-    SessionNet_WriteSystemHeader(packet, 0, SYSTEM_SET_ACTIVITY_DATA_DC);
+    SessionNet_WriteSystemHeader(packet, 0, SYSTEM_SET_DATE_TIME);
     DateTime now = {0};
     DateTime_Now(&now);
     MI_CpuCopy8(&now, packet + 1, sizeof(now));
@@ -671,13 +671,13 @@ int SystemPacket_SendSharedRecords(u8 *chunks_sent, int to)
 }
 CLEAN_AS(func_02075d9c, SystemPacket_SendSharedRecords)
 
-/* func_02075dcc: the next chunk of this system's player record (SystemPacket_WriteSenderBlock). */
-int SystemPacket_SendSenderBlock(u8 *chunks_sent, u32 to)
+/* func_02075dcc: the next chunk of this system's player record (SystemPacket_WriteSenderRecord). */
+int SystemPacket_SendOwnRecordTo(u8 *chunks_sent, u32 to)
 {
     u8 *record = PlayerRecords_Get(SessionPlayers_RecordNumber(data_020ccf94->local_player));
-    return SystemPacket_SendInChunks(chunks_sent, record, PLAYER_RECORD_SIZE, SYSTEM_WRITE_SENDER_BLOCK, (u16) to);
+    return SystemPacket_SendInChunks(chunks_sent, record, PLAYER_RECORD_SIZE, SYSTEM_WRITE_SENDER_RECORD, (u16) to);
 }
-CLEAN_AS(func_02075dcc, SystemPacket_SendSenderBlock)
+CLEAN_AS(func_02075dcc, SystemPacket_SendOwnRecordTo)
 
 /* func_02075e00: from the host, one packet to each of the systems in slots 1-3 (AIDs 1-3),
  * whose content (SLOT_BLOCK_*) and 0x950-byte block (func_02090040) the arguments give in

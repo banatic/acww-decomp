@@ -123,9 +123,9 @@ static SceneExit *gatekeeper_states_exit(void)
 /* A step of a sequence through `table`; the next step once it agrees. */
 static void gatekeeper_states_step(Gatekeeper *self, const MemberPointer *table)
 {
-    if (self->setup_step < GATEKEEPER_STATES_STEPS) {
-        if (MemberPointer_CallInt(&table[self->setup_step], self)) {
-            self->setup_step++;
+    if (self->state_step < GATEKEEPER_STATES_STEPS) {
+        if (MemberPointer_CallInt(&table[self->state_step], self)) {
+            self->state_step++;
         }
     }
 }
@@ -327,7 +327,7 @@ CLEAN_AS(func_ov048_022629e4, Gatekeeper_EnterStateC)
 
 /* ---- State 0xb: the served player sent off */
 
-/* func_ov048_022629e8 (state 0xb's run): its step (Gatekeeper.setup_step, 0-3) run until it
+/* func_ov048_022629e8 (state 0xb's run): its step (Gatekeeper.state_step, 0-3) run until it
  * agrees: Gatekeeper_StateBSayName, Gatekeeper_StateBMovePlayer, Gatekeeper_StateBClearRecord,
  * Gatekeeper_StateBTakeExit; at step 4 nothing. Agrees always. */
 int Gatekeeper_RunStateB(Gatekeeper *self)
@@ -347,7 +347,7 @@ CLEAN_AS(func_ov048_022629e8, Gatekeeper_RunStateB)
 /* func_ov048_02262a84 (state 0xb's entry): its steps from the first; agrees. */
 int Gatekeeper_EnterStateB(Gatekeeper *self)
 {
-    self->setup_step = 0;
+    self->state_step = 0;
     return 1;
 }
 CLEAN_AS(func_ov048_02262a84, Gatekeeper_EnterStateB)
@@ -435,7 +435,7 @@ void Gatekeeper_EnterStateA(Gatekeeper *self)
 }
 CLEAN_AS(func_ov048_02262bc0, Gatekeeper_EnterStateA)
 
-/* func_ov048_02262bc8 (state 9's run): its step (Gatekeeper.setup_step, 0-3) run until it
+/* func_ov048_02262bc8 (state 9's run): its step (Gatekeeper.state_step, 0-3) run until it
  * agrees: Gatekeeper_State9WalkIn, Gatekeeper_State9SayName, Gatekeeper_State9CloseTalk,
  * Gatekeeper_State9TakeExit; at step 4 nothing. Agrees always. */
 int Gatekeeper_RunState9(Gatekeeper *self)
@@ -464,7 +464,7 @@ extern const Vec3 data_ov048_02263998;
 /* func_ov048_02262c64 (state 9's entry): its steps from the first; agrees. */
 int Gatekeeper_EnterState9(Gatekeeper *self)
 {
-    self->setup_step = 0;
+    self->state_step = 0;
     return 1;
 }
 CLEAN_AS(func_ov048_02262c64, Gatekeeper_EnterState9)
@@ -629,7 +629,7 @@ static u8 *gatekeeper_states_other(void)
 }
 
 /* _ZN18Obj_ov048_0226429819func_ov048_02262db0Ev (state 8's run, and 0xa's): its step
- * (Gatekeeper.setup_step, 0-5) run until it agrees: Gatekeeper_PassWalkToGate,
+ * (Gatekeeper.state_step, 0-5) run until it agrees: Gatekeeper_PassWalkToGate,
  * Gatekeeper_PassTurn, Gatekeeper_PassOtherTurns, Gatekeeper_PassWalkThrough,
  * Gatekeeper_PassAnimate, Gatekeeper_PassLeave; at step 6 nothing. Agrees always. */
 int Gatekeeper_RunState8(Gatekeeper *self)
@@ -643,9 +643,9 @@ int Gatekeeper_RunState8(Gatekeeper *self)
         &data_ov048_02263f74, /* Gatekeeper_PassLeave */
     };
     MemberTable_InitOnce(&data_ov048_02264720, data_ov048_02264778, steps, GATEKEEPER_STATES_PASS_STEPS);
-    if (self->setup_step < GATEKEEPER_STATES_PASS_STEPS) {
-        if (MemberPointer_CallInt(&data_ov048_02264778[self->setup_step], self)) {
-            self->setup_step++;
+    if (self->state_step < GATEKEEPER_STATES_PASS_STEPS) {
+        if (MemberPointer_CallInt(&data_ov048_02264778[self->state_step], self)) {
+            self->state_step++;
         }
     }
     return 1;
@@ -656,7 +656,7 @@ CLEAN_AS(_ZN18Obj_ov048_0226429819func_ov048_02262db0Ev, Gatekeeper_RunState8)
  * turned to the angle it started with; agrees. */
 int Gatekeeper_EnterState8(Gatekeeper *self)
 {
-    self->setup_step = 0;
+    self->state_step = 0;
     SceneMover_SetAngle((SceneMover *) (void *) gatekeeper_states_at(self, GATEKEEPER_STATES_MOVER), self->home_angle);
     return 1;
 }
@@ -799,7 +799,7 @@ CLEAN_AS(func_ov048_02263238, Gatekeeper_PassWalkToGate)
 
 /* ---- States 7 and 6: the town closed and opened to visitors */
 
-/* The steps of states 5, 6 and 7 (Gatekeeper.setup_step). */
+/* The steps of states 5, 6 and 7 (Gatekeeper.state_step). */
 #define GATEKEEPER_STATES_STEP_ACTION 0 /* until no action of its runs */
 #define GATEKEEPER_STATES_STEP_CAMERA 1 /* until the camera stands still (state 5: at once) */
 #define GATEKEEPER_STATES_STEP_WAIT 2   /* until the wait is over */
@@ -839,17 +839,17 @@ static u8 gatekeeper_states_line(Gatekeeper *self)
  * always. */
 int Gatekeeper_RunState7(Gatekeeper *self)
 {
-    switch (self->setup_step) {
+    switch (self->state_step) {
         case GATEKEEPER_STATES_STEP_ACTION:
             if (!SceneAction_IsBusy(gatekeeper_states_action(self))) {
-                self->setup_step = GATEKEEPER_STATES_STEP_CAMERA;
+                self->state_step = GATEKEEPER_STATES_STEP_CAMERA;
             }
             break;
         case GATEKEEPER_STATES_STEP_CAMERA:
             if (!CameraControl_IsMoving()) {
                 CheckInGate_Close();
                 self->countdown = GATEKEEPER_STATES_WAIT_GATE;
-                self->setup_step = GATEKEEPER_STATES_STEP_WAIT;
+                self->state_step = GATEKEEPER_STATES_STEP_WAIT;
             }
             break;
         case GATEKEEPER_STATES_STEP_WAIT:
@@ -867,7 +867,7 @@ CLEAN_AS(func_ov048_02263284, Gatekeeper_RunState7)
 /* func_ov048_022632f0 (state 7's entry): its steps from the first; agrees. */
 int Gatekeeper_EnterState7(Gatekeeper *self)
 {
-    self->setup_step = 0;
+    self->state_step = 0;
     return 1;
 }
 CLEAN_AS(func_ov048_022632f0, Gatekeeper_EnterState7)
@@ -902,17 +902,17 @@ static void gatekeeper_states_host_local(Gatekeeper *self)
  * other console receives it). */
 int Gatekeeper_RunState6(Gatekeeper *self)
 {
-    switch (self->setup_step) {
+    switch (self->state_step) {
         case GATEKEEPER_STATES_STEP_ACTION:
             if (!SceneAction_IsBusy(gatekeeper_states_action(self))) {
-                self->setup_step = GATEKEEPER_STATES_STEP_CAMERA;
+                self->state_step = GATEKEEPER_STATES_STEP_CAMERA;
             }
             break;
         case GATEKEEPER_STATES_STEP_CAMERA:
             if (!CameraControl_IsMoving()) {
                 CheckInGate_Open();
                 self->countdown = GATEKEEPER_STATES_WAIT_GATE;
-                self->setup_step = GATEKEEPER_STATES_STEP_WAIT;
+                self->state_step = GATEKEEPER_STATES_STEP_WAIT;
                 if (Net_GetMode() == GATEKEEPER_STATES_MODE_JOINING) {
                     LibraryOverlay_Require65();
                     Wfc_HostGame();
@@ -953,7 +953,7 @@ CLEAN_AS(func_ov048_02263300, Gatekeeper_RunState6)
 /* func_ov048_02263420 (state 6's entry): its steps from the first; agrees. */
 int Gatekeeper_EnterState6(Gatekeeper *self)
 {
-    self->setup_step = 0;
+    self->state_step = 0;
     return 1;
 }
 CLEAN_AS(func_ov048_02263420, Gatekeeper_EnterState6)
@@ -974,16 +974,16 @@ int Gatekeeper_RunState5(Gatekeeper *self)
     PlayerRecords_Current();
     PlayerActorOps_StartPosition(GATEKEEPER_STATES_PLAYER);
 
-    switch (self->setup_step) {
+    switch (self->state_step) {
         case GATEKEEPER_STATES_STEP_ACTION:
             if (!SceneAction_IsBusy(gatekeeper_states_action(self))) {
-                self->setup_step = GATEKEEPER_STATES_STEP_CAMERA;
+                self->state_step = GATEKEEPER_STATES_STEP_CAMERA;
             }
             break;
         case GATEKEEPER_STATES_STEP_CAMERA: {
             Vec3 point = data_ov048_02263974;
             PlayerActorOps_MoveTo(&point, GATEKEEPER_STATES_WALK_BACK, GATEKEEPER_STATES_PLAYER);
-            self->setup_step = GATEKEEPER_STATES_STEP_WALKED;
+            self->state_step = GATEKEEPER_STATES_STEP_WALKED;
             break;
         }
         case GATEKEEPER_STATES_STEP_WALKED:
@@ -1001,7 +1001,7 @@ CLEAN_AS(func_ov048_02263430, Gatekeeper_RunState5)
 /* func_ov048_022634bc (state 5's entry): its steps from the first; agrees. */
 int Gatekeeper_EnterState5(Gatekeeper *self)
 {
-    self->setup_step = 0;
+    self->state_step = 0;
     return 1;
 }
 CLEAN_AS(func_ov048_022634bc, Gatekeeper_EnterState5)

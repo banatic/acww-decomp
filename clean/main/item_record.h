@@ -1,7 +1,7 @@
 /* The record of items a player has had (the catalog), kept in the player's record at 0x1c18
  * (PlayerRecord_ItemRecord): one bit per item, in five parts by kind of item code.
  *
- *   0x000-0x0ff  the items with variants (codes 0x3000-0x4fff), by ItemCode_VariantItem
+ *   0x000-0x0ff  the furniture (codes 0x3000-0x4fff), by ItemCode_FurnitureNumber
  *   0x100-0x108  the items 0x1100-0x1143 (wallpaper; 68 bits)
  *   0x109-0x111  the carpets 0x1144-0x1187 (68 bits)
  *   0x112-0x11a  the songs 0x1323-0x1368 (70 bits)
@@ -21,14 +21,14 @@
 #define ITEM_RECORD_CREATURE_KINDS 56
 
 typedef struct ItemRecord {
-    u8 variant_items[0x100]; /* 0x000 */
-    u8 wallpaper[9];         /* 0x100 */
-    u8 carpets[9];           /* 0x109 */
-    u8 songs[9];             /* 0x112 */
-    u8 pile_items[8];        /* 0x11b */
+    u8 furniture_items[0x100]; /* 0x000 */
+    u8 wallpaper[9];           /* 0x100 */
+    u8 carpets[9];             /* 0x109 */
+    u8 songs[9];               /* 0x112 */
+    u8 pile_items[8];          /* 0x11b */
 } ItemRecord;
 
-/* How an item is marked: checked (the insects, the fish and the variant items 0x42a4-0x4463
+/* How an item is marked: checked (the insects, the fish and the furniture 0x42a4-0x4463
  * are refused) or any item. */
 enum ItemRecordMarkMode { ITEM_RECORD_MARK_CHECKED = 0, ITEM_RECORD_MARK_ANY = 1 };
 

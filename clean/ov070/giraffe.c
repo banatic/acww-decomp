@@ -33,8 +33,8 @@
 static_assert(sizeof(GiraffeStep) == 0x10, "a state's functions");
 static_assert(offsetof(Giraffe, state) == 0x654, "state");
 static_assert(offsetof(Giraffe, talk) == 0x658, "talk scene");
-static_assert(offsetof(Giraffe, advice_said) == 0x724, "advice said");
-static_assert(offsetof(Giraffe, advice_count) == 0x738, "advice count");
+static_assert(offsetof(Giraffe, questions_asked) == 0x724, "questions asked");
+static_assert(offsetof(Giraffe, talk_count) == 0x738, "talk count");
 static_assert(sizeof(Giraffe) == 0x73c, "the size Giraffe_Create allocates");
 
 /* The parts of the special character's scene object used here, by place (main's
@@ -250,7 +250,7 @@ int Giraffe_TextureName(void)
 CLEAN_AS(func_ov070_02279a0c, Giraffe_TextureName)
 
 /* func_ov070_02279a14 (vtable slot 0x00, her start): unless the special character refuses to
- * start, she stands (state 0) and is held (flag 2 at 0x4e8), with no advice said in a row.
+ * start, she stands (state 0) and is held (flag 2 at 0x4e8), with no question asked in a row.
  * Whether she started. */
 int Giraffe_Start(Giraffe *giraffe)
 {
@@ -259,13 +259,13 @@ int Giraffe_Start(Giraffe *giraffe)
     }
     Giraffe_SetState(giraffe, GIRAFFE_STAND);
     *(u32 *) (void *) gr_part(giraffe, GR_HELD_FLAGS) |= GR_HELD;
-    giraffe->advice_count = 0;
+    giraffe->talk_count = 0;
     return 1;
 }
 CLEAN_AS(func_ov070_02279a14, Giraffe_Start)
 
 /* func_ov070_02279a50 (vtable slot 0x04, her set-up): unless the special character refuses,
- * her talk scene becomes her scene and gets her as its owner, and no advice is marked said.
+ * her talk scene becomes her scene and gets her as its owner, and no question is marked asked.
  * Whether she was set up. */
 int Giraffe_Init(Giraffe *giraffe)
 {
@@ -274,7 +274,7 @@ int Giraffe_Init(Giraffe *giraffe)
     }
     SceneObject_SetScene(giraffe->base, &giraffe->talk.base);
     GiraffeTalk_Begin(&giraffe->talk, giraffe);
-    MI_CpuFill8(giraffe->advice_said, 0, GIRAFFE_ADVICE_LINES);
+    MI_CpuFill8(giraffe->questions_asked, 0, GIRAFFE_QUESTIONS);
     return 1;
 }
 CLEAN_AS(func_ov070_02279a50, Giraffe_Init)

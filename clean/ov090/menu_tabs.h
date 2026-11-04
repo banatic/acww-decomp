@@ -27,12 +27,12 @@
  * group given (MenuTabs_RequestTabGroup); 8-14 are scenes the bar does not show. */
 enum MenuTab {
     MENU_TAB_POCKETS = 0,      /* group 1 in a room (data_020e54a8 set), else group 2 */
-    MENU_TAB_1 = 1,            /* group 3 (overlay 121) */
-    MENU_TAB_2 = 2,            /* group 4 (overlays 115, 114) */
-    MENU_TAB_3 = 3,            /* group 5 (overlays 116, 114) */
-    MENU_TAB_4 = 4,            /* group 6 (overlays 111, 95) */
-    MENU_TAB_5 = 5,            /* group 7 (overlays 118, 117) */
-    MENU_TAB_6 = 6,            /* group 36 (overlay 119) */
+    MENU_TAB_DESIGNS = 1,      /* group 3 (overlay 121) */
+    MENU_TAB_FISH = 2,         /* group 4 (overlays 115, 114) */
+    MENU_TAB_INSECTS = 3,      /* group 5 (overlays 116, 114) */
+    MENU_TAB_CHAT = 4,         /* group 6 (overlays 111, 95) */
+    MENU_TAB_MAP = 5,          /* group 7 (overlays 118, 117) */
+    MENU_TAB_FRIENDS = 6,      /* group 36 (overlay 119) */
     MENU_TAB_CLOSE = 7,        /* the menu closes */
     MENU_TAB_LETTER_WRITE = 8, /* group 8 (overlays 122, 95) */
     MENU_TAB_9 = 9,            /* 9-12: group 15 (overlays 124, 126) in GroupParams mode tab + 15 */
@@ -42,7 +42,7 @@ enum MenuTab {
     MENU_TAB_NONE = 0xff /* `loaded_tab` before any */
 };
 
-#define MENU_TABS_LAST_BAR_TAB MENU_TAB_6
+#define MENU_TABS_LAST_BAR_TAB MENU_TAB_FRIENDS
 #define MENU_TABS_PLACES 8 /* the tab under an x: the bar's seven tabs and the close place */
 
 /* The base's bytes 0x91-0x93 (MenuScene.unk_91) are the bar's. */

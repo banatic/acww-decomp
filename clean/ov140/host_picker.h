@@ -134,7 +134,7 @@ void HostPicker_Select(HostPicker *self, int row);
 void HostPicker_MarkRows(HostPicker *self);
 void HostPicker_QueueScreen(HostPicker *self);
 int HostPicker_MoveCursor(HostPicker *self, int keys);
-void HostPicker_PressAndReturn(HostPicker *self);
+void HostPicker_ReleaseAndReturn(HostPicker *self);
 void HostPicker_PressToAct(HostPicker *self);
 void HostPicker_ShowCursorSprite(HostPicker *self);
 u8 *HostPicker_GlideTo(HostPicker *self, int x, int y);

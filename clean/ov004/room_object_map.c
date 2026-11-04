@@ -355,7 +355,7 @@ void RoomObject_TakeOffMap(RoomObject *object, u8 flag, int with_top)
         int x = CellList_At(&cells, (int) i)->x;
         int y = CellList_At(&cells, (int) i)->y;
         ItemCode *item = map_item(map, x, y, object->unk_288);
-        if (item != NULL && ItemCode_HasVariant(item)) {
+        if (item != NULL && ItemCode_IsFurniture(item)) {
             int town = SceneQuery_Current();
             RoomSync_TakeFurniture(town, x, y, object->unk_288, Switch_Value(&object->light_switch), item, with_top, flag);
         }
@@ -374,7 +374,7 @@ CLEAN_AS(func_ov004_0220f100, RoomObject_TakeOffMap)
 int RoomObject_FacingItemCode(ItemCode *code, RoomObject *object, int angle)
 {
     int side = Angle_Side(angle);
-    u16 value = ItemCode_MakeVariant(object->unk_284, side);
+    u16 value = ItemCode_MakeFurniture(object->unk_284, side);
     *code = value;
     return value;
 }

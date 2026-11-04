@@ -64,7 +64,7 @@ enum FriendRosterPlace {
     FRIEND_ROSTER_PLACE_TAB = 8,      /* 8-13: the page tabs, 8 + page */
     FRIEND_ROSTER_PLACE_TAB_LAST = 13,
     FRIEND_ROSTER_PLACE_BAR = 14,      /* 14-21: the menu's tab bar, 14 + MenuTab */
-    FRIEND_ROSTER_PLACE_BAR_SELF = 20, /* the bar's place of this tab (MENU_TAB_6) */
+    FRIEND_ROSTER_PLACE_BAR_SELF = 20, /* the bar's place of this tab (MENU_TAB_FRIENDS) */
     FRIEND_ROSTER_PLACE_BAR_LAST = 21,
     FRIEND_ROSTER_PLACE_BUTTON = 22, /* the button below the list */
     FRIEND_ROSTER_PLACE_NONE = 23    /* the pen is on nothing */

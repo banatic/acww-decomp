@@ -87,8 +87,8 @@ CLEAN_AS(func_0203cc38, ItemRecord_HasAllFish)
 
 /* func_0203cc54: how many of the `count` items from `first` the current player has had,
  * counting only the listed ones (func_0204c2b4). `first` is either a code of kind 1
- * (0x1000-0x1fff; then each code from it is taken as its room code) or an item with variants (then the items that
- * follow it, each in variant 0); for any other code, and when there is no current player, 0.
+ * (0x1000-0x1fff; then each code from it is taken as its room code) or furniture (then the items that
+ * follow it, each in side 0); for any other code, and when there is no current player, 0.
  * QUIRK: the count is compared unsigned, so a negative `count` runs past every item. */
 int ItemRecord_CountHad(int first, int count)
 {
@@ -109,11 +109,11 @@ int ItemRecord_CountHad(int first, int count)
                 had++;
             }
         }
-    } else if (ItemCode_HasVariant(&first_code)) {
+    } else if (ItemCode_IsFurniture(&first_code)) {
         ItemCode start = (ItemCode) first;
-        int item = ItemCode_VariantItem(&start);
+        int item = ItemCode_FurnitureNumber(&start);
         for (u32 i = 0; i < (u32) count; i++) {
-            ItemCode code = ItemCode_MakeVariant(item + (int) i, 0);
+            ItemCode code = ItemCode_MakeFurniture(item + (int) i, 0);
             if (ItemTraits_FlagBit3(&code) && ItemRecord_Has((ItemRecord *) PlayerRecord_ItemRecord(player), &code)) {
                 had++;
             }
@@ -132,7 +132,7 @@ int ItemRecord_Mark(ItemRecord *record, const ItemCode *item, int mode)
 CLEAN_AS(func_0203cd1c, ItemRecord_Mark)
 
 /* func_0203cd2c: the bit of `*item` set (`set`) or cleared; 1 when the
- * item has a bit. With ITEM_RECORD_MARK_CHECKED the insects, the fish and the variant items
+ * item has a bit. With ITEM_RECORD_MARK_CHECKED the insects, the fish and the furniture
  * 0x42a4-0x4463 are refused (0, nothing written), by their code as given. */
 int ItemRecord_SetBit(ItemRecord *record, const ItemCode *item, int mode, int set)
 {
@@ -180,9 +180,9 @@ u8 *ItemRecord_BitOf(ItemRecord *record, u8 *mask, const ItemCode *item)
     int index;
 
     ItemForm_ToPlaced(&code, (u16 *) item, 1);
-    if (ItemCode_HasVariant(&code)) {
-        part = record->variant_items;
-        index = ItemCode_VariantItem(&code);
+    if (ItemCode_IsFurniture(&code)) {
+        part = record->furniture_items;
+        index = ItemCode_FurnitureNumber(&code);
     } else if (in_range(code, WALLPAPER_FIRST, WALLPAPER_LAST)) {
         part = record->wallpaper;
         index = code - WALLPAPER_FIRST;
@@ -214,7 +214,7 @@ CLEAN_AS(func_0203cf38, ItemRecord_Reset)
 /* func_0203cf40 */
 void ItemRecord_Clear(ItemRecord *record)
 {
-    memset(record->variant_items, 0, sizeof(record->variant_items));
+    memset(record->furniture_items, 0, sizeof(record->furniture_items));
     memset(record->wallpaper, 0, sizeof(record->wallpaper));
     memset(record->carpets, 0, sizeof(record->carpets));
     memset(record->songs, 0, sizeof(record->songs));

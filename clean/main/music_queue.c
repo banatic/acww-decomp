@@ -961,11 +961,11 @@ void Music2d0_Tick(Music2d0 *self)
                 u16 item[2];
                 int empty;
                 PlayerActorOps_HeldItem(&item[0], PLAYER_ACTOR);
-                if (ItemCode_HasVariant(item) != 0) {
+                if (ItemCode_IsFurniture(item) != 0) {
                     int held;
                     item[1] = ITEM_CODE_NONE;
-                    held = ItemCode_VariantItem(&item[0]);
-                    empty = held == ItemCode_VariantItem(&item[1]);
+                    held = ItemCode_FurnitureNumber(&item[0]);
+                    empty = held == ItemCode_FurnitureNumber(&item[1]);
                 } else {
                     empty = item[0] == ITEM_CODE_NONE;
                 }

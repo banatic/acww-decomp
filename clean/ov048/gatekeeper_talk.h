@@ -15,7 +15,7 @@
  * Over the local wireless library of overlay 66 (modes 1 and 2 of autoload_2/network.h), as a
  * child: the parents found are looked through for one that takes visitors (state 1) and the
  * player's chosen one is joined (states 4-9), the local status exchanged with it
- * (session_link.h) and this system's block sent (SystemPacket_SendSenderBlock). Over the
+ * (session_link.h) and this system's block sent (SystemPacket_SendOwnRecordTo). Over the
  * Nintendo Wi-Fi Connection (overlay 65, modes 3 and 4): the friend list is awaited (state 10),
  * the downloads and the upload of wfc_session.h made one after the other (states 11-18), a
  * friend's game joined or the session's result told (state 19), and the connection ended and
@@ -46,10 +46,10 @@ struct Gatekeeper;
 #define GATEKEEPER_TALK_SEND_STATUS_1 8
 #define GATEKEEPER_TALK_WAIT_STATUS_1 9
 #define GATEKEEPER_TALK_WAIT_FRIENDS 10
-#define GATEKEEPER_TALK_START_STATS_UPLOAD 11
-#define GATEKEEPER_TALK_FINISH_STATS_UPLOAD 12
-#define GATEKEEPER_TALK_START_STATS_GET 13
-#define GATEKEEPER_TALK_FINISH_STATS_GET 14
+#define GATEKEEPER_TALK_START_CAT_RECORD_UPLOAD 11
+#define GATEKEEPER_TALK_FINISH_CAT_RECORD_UPLOAD 12
+#define GATEKEEPER_TALK_START_CAT_RECORD_GET 13
+#define GATEKEEPER_TALK_FINISH_CAT_RECORD_GET 14
 #define GATEKEEPER_TALK_START_LETTER_GET 15
 #define GATEKEEPER_TALK_FINISH_LETTER_GET 16
 #define GATEKEEPER_TALK_START_NOTICE_GET 17
@@ -87,7 +87,7 @@ typedef struct GatekeeperTalk {
     u8 unk_3f0[0x420];        /* 0x3f0 */
     u8 unk_810;               /* 0x810: cleared by GatekeeperTalk_StartLine */
     u8 job_idle_seen;         /* 0x811: set once the activity was seen with no job */
-    u8 chunks_sent;           /* 0x812: SystemPacket_SendSenderBlock's count */
+    u8 chunks_sent;           /* 0x812: SystemPacket_SendOwnRecordTo's count */
     u8 choice;                /* 0x813: 0, 1 or 2, from the answers to lines 0x23, 0x28, 0x2f, 0x52 */
 } GatekeeperTalk;
 
@@ -119,10 +119,10 @@ void GatekeeperTalk_WaitStatus0(GatekeeperTalk *talk);
 void GatekeeperTalk_SendStatus1(GatekeeperTalk *talk);
 void GatekeeperTalk_WaitStatus1(GatekeeperTalk *talk);
 void GatekeeperTalk_WaitFriends(GatekeeperTalk *talk);
-void GatekeeperTalk_StartStatsUpload(GatekeeperTalk *talk);
-void GatekeeperTalk_FinishStatsUpload(GatekeeperTalk *talk);
-void GatekeeperTalk_StartStatsGet(GatekeeperTalk *talk);
-void GatekeeperTalk_FinishStatsGet(GatekeeperTalk *talk);
+void GatekeeperTalk_StartCatRecordUpload(GatekeeperTalk *talk);
+void GatekeeperTalk_FinishCatRecordUpload(GatekeeperTalk *talk);
+void GatekeeperTalk_StartCatRecordGet(GatekeeperTalk *talk);
+void GatekeeperTalk_FinishCatRecordGet(GatekeeperTalk *talk);
 void GatekeeperTalk_StartLetterGet(GatekeeperTalk *talk);
 void GatekeeperTalk_FinishLetterGet(GatekeeperTalk *talk);
 void GatekeeperTalk_StartNoticeGet(GatekeeperTalk *talk);

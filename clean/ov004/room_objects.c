@@ -280,7 +280,7 @@ int RoomObjects_TakeWithItem(unsigned int index, ItemCode *item, ItemCode *item_
         *item = code;
     }
     if (item_copy != NULL) {
-        *item_copy = ItemCode_MakeVariant(RoomObject_Number(object), 0);
+        *item_copy = ItemCode_MakeFurniture(RoomObject_Number(object), 0);
     }
     return 1;
 }
@@ -364,7 +364,7 @@ int RoomObjects_FindAhead(int *x, int *z, const Vec3 *position, int angle, ItemC
                     *item = code;
                 }
                 if (item_copy != NULL) {
-                    *item_copy = ItemCode_MakeVariant(RoomObject_Number(object), 0);
+                    *item_copy = ItemCode_MakeFurniture(RoomObject_Number(object), 0);
                 }
                 return RoomObjects_IndexOf(RoomObjects_Table(), object);
             }

@@ -886,12 +886,12 @@ CLEAN_AS(_ZN12Obj_020d8bd413func_0201793cEi, SceneMotion_RunKind14)
  * says so of it. */
 static int scene_motion_item_is(u16 *item, u16 code)
 {
-    if (ItemCode_HasVariant(item) == 0) {
+    if (ItemCode_IsFurniture(item) == 0) {
         return *item == code;
     }
     u16 other = code;
-    int value = ItemCode_VariantItem(item);
-    return value == ItemCode_VariantItem(&other);
+    int value = ItemCode_FurnitureNumber(item);
+    return value == ItemCode_FurnitureNumber(&other);
 }
 
 /* Step 2 of kind 14: animation 0x25 once (the held item takes action 0). */

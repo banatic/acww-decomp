@@ -55,11 +55,11 @@
 /* The talk object's types of group 0 (villager_object.h). */
 #define VILLAGER_TALK_OFFER_TYPE_INSECT 0
 #define VILLAGER_TALK_OFFER_TYPE_FISH 1
-#define VILLAGER_TALK_OFFER_TYPE_KIND 2
+#define VILLAGER_TALK_OFFER_TYPE_FOSSIL 2
 #define VILLAGER_TALK_OFFER_TYPE_CLOTHES 3
-#define VILLAGER_TALK_OFFER_TYPE_VARIANT 4
+#define VILLAGER_TALK_OFFER_TYPE_FURNITURE 4
 /* The type of the record VillagerPartHandover keeps, and the first-pick types of block 0
- * (villager_part.h) VillagerTalkOffer_FirstPick answers. */
+ * (villager_part.h) VillagerTalkOffer_DeliveryRecipient answers. */
 #define VILLAGER_TALK_OFFER_TYPE_HANDOVER 0x15
 /* The groups and classes of types (item_object.h). */
 #define VILLAGER_TALK_OFFER_GROUP_0 0
@@ -79,12 +79,13 @@
 #define VILLAGER_TALK_OFFER_CLOTHES_LAST 0x12a7
 #define VILLAGER_TALK_OFFER_FOSSIL_FIRST 0x450c
 #define VILLAGER_TALK_OFFER_FOSSIL_LAST 0x45db
-/* The items the villager must hold, outdoors, for an errand of each type. */
+/* The items the villager must hold, outdoors, for an errand of each type: the net, the rod,
+ * the shovel and the umbrellas 0x1380-0x139f. */
 #define VILLAGER_TALK_OFFER_HELD_INSECT 0x1376
 #define VILLAGER_TALK_OFFER_HELD_FISH 0x1374
-#define VILLAGER_TALK_OFFER_HELD_KIND 0x1369
-#define VILLAGER_TALK_OFFER_HELD_OTHER_FIRST 0x1380
-#define VILLAGER_TALK_OFFER_HELD_OTHER_LAST 0x139f
+#define VILLAGER_TALK_OFFER_HELD_SHOVEL 0x1369
+#define VILLAGER_TALK_OFFER_HELD_UMBRELLA_FIRST 0x1380
+#define VILLAGER_TALK_OFFER_HELD_UMBRELLA_LAST 0x139f
 /* The step of the villager object at which the errand's item is no longer drawn. */
 #define VILLAGER_TALK_OFFER_STEP_DONE 2
 /* The classes func_0202cef4 and func_0202c9e8 look through. */
@@ -135,7 +136,7 @@ extern u8 data_021c307c[];
 /* The five offers tried (a function-local table filled once from constants, and its guard). */
 extern MemberPointer data_021c1dc4[VILLAGER_TALK_OFFER_TRIES];
 extern u32 data_021c1cf4;
-extern const MemberPointer data_020d9108; /* VillagerTalkOffer_FirstPick */
+extern const MemberPointer data_020d9108; /* VillagerTalkOffer_DeliveryRecipient */
 extern const MemberPointer data_020d94c0; /* VillagerTalkOffer_AfterSickness */
 extern const MemberPointer data_020d9198; /* VillagerTalkOffer_PartBlock */
 extern const MemberPointer data_020d91b0; /* VillagerTalkOffer_ByKnown */
@@ -457,9 +458,9 @@ static int offer_holds(VillagerTalk *talk, u16 first, u16 last)
     return held >= first && held <= last;
 }
 
-/* Outdoors, whether the villager holds nothing or an item of 0x1380-0x139f (asked twice); in a
+/* Outdoors, whether the villager holds nothing or an umbrella (0x1380-0x139f, asked twice); in a
  * room, always. */
-static int offer_holds_other(VillagerTalk *talk)
+static int offer_holds_none_or_umbrella(VillagerTalk *talk)
 {
     if (data_020e54a8 != 0) {
         return 1;
@@ -469,13 +470,13 @@ static int offer_holds_other(VillagerTalk *talk)
     if (held == VILLAGER_TALK_OFFER_NO_ITEM) {
         return 1;
     }
-    return offer_holds(talk, VILLAGER_TALK_OFFER_HELD_OTHER_FIRST, VILLAGER_TALK_OFFER_HELD_OTHER_LAST);
+    return offer_holds(talk, VILLAGER_TALK_OFFER_HELD_UMBRELLA_FIRST, VILLAGER_TALK_OFFER_HELD_UMBRELLA_LAST);
 }
 
 /* func_02028d04: an errand of group 0 from the state object, when there is no town event: an
  * insect (type 0) or a fish (type 1) drawn for step 0 when the villager holds the net 0x1376 or
- * rod 0x1374 outdoors, kept at 0x124 when it is one; type 2 when it holds 0x1369 outdoors; the
- * others when it holds nothing or 0x1380-0x139f outdoors. Then two choices (data_021c2c8c,
+ * rod 0x1374 outdoors, kept at 0x124 when it is one; type 2 when it holds the shovel 0x1369 outdoors;
+ * the others when it holds nothing or an umbrella (0x1380-0x139f) outdoors. Then two choices (data_021c2c8c,
  * data_021c1d6c) with the reply data_020d8db8, the state object made the talk's. The villager
  * object of the record is kept at 0x164 first. Whether it offered. */
 int VillagerTalkOffer_StateGroup0(VillagerTalk *talk, u8 *record, int unused)
@@ -505,11 +506,11 @@ int VillagerTalkOffer_StateGroup0(VillagerTalk *talk, u8 *record, int unused)
                     }
                 }
                 break;
-            case VILLAGER_TALK_OFFER_TYPE_KIND:
-                offers = offer_holds(talk, VILLAGER_TALK_OFFER_HELD_KIND, VILLAGER_TALK_OFFER_HELD_KIND);
+            case VILLAGER_TALK_OFFER_TYPE_FOSSIL:
+                offers = offer_holds(talk, VILLAGER_TALK_OFFER_HELD_SHOVEL, VILLAGER_TALK_OFFER_HELD_SHOVEL);
                 break;
             default:
-                offers = offer_holds_other(talk);
+                offers = offer_holds_none_or_umbrella(talk);
                 break;
         }
     }
@@ -683,13 +684,13 @@ static int offer_known_errand(VillagerTalk *talk)
                 talk->item = drawn;
             }
             return offer_is_fish(talk->item);
-        case VILLAGER_TALK_OFFER_TYPE_KIND:
-            if (!offer_holds(talk, VILLAGER_TALK_OFFER_HELD_KIND, VILLAGER_TALK_OFFER_HELD_KIND)) {
+        case VILLAGER_TALK_OFFER_TYPE_FOSSIL:
+            if (!offer_holds(talk, VILLAGER_TALK_OFFER_HELD_SHOVEL, VILLAGER_TALK_OFFER_HELD_SHOVEL)) {
                 return 0;
             }
             break;
         default:
-            if (!offer_holds_other(talk)) {
+            if (!offer_holds_none_or_umbrella(talk)) {
                 return 0;
             }
             break;
@@ -714,14 +715,14 @@ static int offer_known_named(VillagerTalk *talk, int type)
         case VILLAGER_TALK_OFFER_TYPE_FISH:
             offered = VillagerTalkOffer_ChoicesByPredicate(talk, func_0202a15c, 0x29, 0x18);
             break;
-        case VILLAGER_TALK_OFFER_TYPE_KIND:
+        case VILLAGER_TALK_OFFER_TYPE_FOSSIL:
             offered = VillagerTalkOffer_ChoicesFossil(talk);
             break;
         case VILLAGER_TALK_OFFER_TYPE_CLOTHES:
             offered = VillagerTalkOffer_ChoicesClothes(talk);
             break;
-        case VILLAGER_TALK_OFFER_TYPE_VARIANT:
-            offered = VillagerTalkOffer_ChoicesVariant(talk);
+        case VILLAGER_TALK_OFFER_TYPE_FURNITURE:
+            offered = VillagerTalkOffer_ChoicesFurniture(talk);
             if (offered == 1) {
                 u8 *record = offer_record(talk);
                 u8 bytes[2];
@@ -873,12 +874,12 @@ int VillagerTalkOffer_ChoicesFossil(VillagerTalk *talk)
 }
 CLEAN_AS(func_020296f8, VillagerTalkOffer_ChoicesFossil)
 
-/* Whether the pocket item `item` is `wanted`, by the item a variant stands for when it has one. */
+/* Whether the pocket item `item` is `wanted`, by its furniture number when it is furniture. */
 static int offer_same_item(u16 *item, u16 *wanted)
 {
-    if (ItemCode_HasVariant(item) != 0) {
-        int variant = ItemCode_VariantItem(item);
-        return variant == ItemCode_VariantItem(wanted);
+    if (ItemCode_IsFurniture(item) != 0) {
+        int number = ItemCode_FurnitureNumber(item);
+        return number == ItemCode_FurnitureNumber(wanted);
     }
     return *item == *wanted;
 }
@@ -918,7 +919,7 @@ u16 VillagerTalkOffer_PocketsOfFossilKind(VillagerObject *object)
 CLEAN_AS(func_02029910, VillagerTalkOffer_PocketsOfFossilKind)
 
 /* func_02029a18: the current player's pockets (a bit each) in state 0 holding `item` (by the item
- * a variant stands for, when the pocket's has one). */
+ * its furniture number, when the pocket's is furniture). */
 u16 VillagerTalkOffer_PocketsLike(u16 *item)
 {
     PlayerPockets *pockets = PlayerRecord_Pockets(PlayerRecords_Current());
@@ -993,11 +994,11 @@ int VillagerTalkOffer_ChoicesClothes(VillagerTalk *talk)
 }
 CLEAN_AS(func_02029a98, VillagerTalkOffer_ChoicesClothes)
 
-/* func_02029ca4: the choices of an errand of type 4 (an item with a variant) for the player the
+/* func_02029ca4: the choices of an errand of type 4 (a furniture item) for the player the
  * villager object names. Low bits 0, when the named player is the current one: choice 0x1c
- * running data_021c2df4 when the pockets hold such an item (VillagerTalkOffer_IsVariant), else
+ * running data_021c2df4 when the pockets hold such an item (VillagerTalkOffer_IsFurniture), else
  * 0x14 running data_021c2cd4. Then the end with the reply data_020d8e98. Whether it offered. */
-int VillagerTalkOffer_ChoicesVariant(VillagerTalk *talk)
+int VillagerTalkOffer_ChoicesFurniture(VillagerTalk *talk)
 {
     int plain = 1;
     u8 index = 0;
@@ -1033,7 +1034,7 @@ int VillagerTalkOffer_ChoicesVariant(VillagerTalk *talk)
     }
     return offered;
 }
-CLEAN_AS(func_02029ca4, VillagerTalkOffer_ChoicesVariant)
+CLEAN_AS(func_02029ca4, VillagerTalkOffer_ChoicesFurniture)
 
 /* func_02029e18: a pocket predicate: a fossil (0x450c-0x45db) in state 0. */
 int VillagerTalkOffer_IsFreeFossil(u16 *item, int state)
@@ -1063,19 +1064,19 @@ int VillagerTalkOffer_IsClothes(u16 *item)
 }
 CLEAN_AS(func_02029e78, VillagerTalkOffer_IsClothes)
 
-/* func_02029ea0: a pocket predicate: an item with a variant, not a fossil, in state 0. */
-int VillagerTalkOffer_IsVariantFree(u16 *item, int state)
+/* func_02029ea0: a pocket predicate: a furniture item, not a fossil, in state 0. */
+int VillagerTalkOffer_IsFurnitureFree(u16 *item, int state)
 {
-    return VillagerTalkOffer_IsVariant(item) != 0 && state == 0;
+    return VillagerTalkOffer_IsFurniture(item) != 0 && state == 0;
 }
-CLEAN_AS(func_02029ea0, VillagerTalkOffer_IsVariantFree)
+CLEAN_AS(func_02029ea0, VillagerTalkOffer_IsFurnitureFree)
 
-/* func_02029ebc: whether the item has a variant and is not a fossil (0x450c-0x45db). */
-int VillagerTalkOffer_IsVariant(u16 *item)
+/* func_02029ebc: whether the item is furniture and not a fossil (0x450c-0x45db). */
+int VillagerTalkOffer_IsFurniture(u16 *item)
 {
-    return ItemCode_HasVariant(item) != 0 && !offer_is_fossil(*item);
+    return ItemCode_IsFurniture(item) != 0 && !offer_is_fossil(*item);
 }
-CLEAN_AS(func_02029ebc, VillagerTalkOffer_IsVariant)
+CLEAN_AS(func_02029ebc, VillagerTalkOffer_IsFurniture)
 
 /* func_02029ef8: the choices of an errand of an insect or a fish (`test`, the game's predicate)
  * for the player the villager object names. Low bits 0, when the named player is the current
@@ -1265,7 +1266,7 @@ CLEAN_AS(func_0202a2ec, VillagerTalkOffer_PartBlock)
  * limit, for the types 14, 16 and 17 (the first pick, the third, the second again): the block
  * kept at 0x160, its object made the talk's, three choices (0x1d running data_021c2ee4, then the
  * plain two) with the reply data_020d8f48. Whether it offered. */
-int VillagerTalkOffer_FirstPick(VillagerTalk *talk, u8 *record, VillagerPart *part)
+int VillagerTalkOffer_DeliveryRecipient(VillagerTalk *talk, u8 *record, VillagerPart *part)
 {
     VillagerPartBlock *block = VillagerPart_Block(part, 0);
     ItemObject *object = (ItemObject *) (void *) VillagerPartBlock_Object(block);
@@ -1295,4 +1296,4 @@ int VillagerTalkOffer_FirstPick(VillagerTalk *talk, u8 *record, VillagerPart *pa
     }
     return 0;
 }
-CLEAN_AS(func_0202a4d8, VillagerTalkOffer_FirstPick)
+CLEAN_AS(func_0202a4d8, VillagerTalkOffer_DeliveryRecipient)

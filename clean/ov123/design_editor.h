@@ -6,8 +6,8 @@
  * - overlay 92's dispatcher opens it (as overlay group 0x0d) for its modes 2 and 3
  *   (ov092/menu_dispatch.c), and GroupParams_Mode says which design it edits: mode 2 the current
  *   player's design at GroupParams_Arg's place in their order (DesignEditor_LoadPlayerDesign,
- *   DesignEditor_SavePlayerDesign), mode 3 the design of the town's statistics record
- *   (main/wfc_stats.h; DesignEditor_LoadTownDesign, DesignEditor_SaveTownDesign);
+ *   DesignEditor_SavePlayerDesign), mode 3 Blanca's face, the design of the town's mystery cat record
+ *   (main/mystery_cat_record.h; DesignEditor_LoadCatFace, DesignEditor_SaveCatFace);
  * - its look is "menu/edit/...": bg.bpl, bg0.bch, bg1.bch, a.bsc, b.bsc, c.bsc, obj.bpl,
  *   obj0.bch and obj1.bch;
  * - the canvas is the design shown four times bigger at (0x40, 8) of the touch screen
@@ -222,8 +222,8 @@ void DesignEditor_QueueZoomedChars(DesignEditor *self);
 void DesignEditor_LoadZoomedChars(DesignEditor *self);
 void DesignEditor_QueueChars(DesignEditor *self);
 int DesignEditor_LoadChars(DesignEditor *self);
-void DesignEditor_SaveTownDesign(DesignEditor *self);
-void DesignEditor_LoadTownDesign(DesignEditor *self);
+void DesignEditor_SaveCatFace(DesignEditor *self);
+void DesignEditor_LoadCatFace(DesignEditor *self);
 void DesignEditor_SavePlayerDesign(DesignEditor *self);
 void DesignEditor_LoadPlayerDesign(DesignEditor *self);
 void DesignEditor_LoadObjects(DesignEditor *self);

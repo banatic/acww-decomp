@@ -651,7 +651,7 @@ void PocketsGrid_SetPopupText(PocketsGrid *grid, Popup *popup, u16 *item, int st
             TextString_CopyBytes((TextObject *) (void *) &texts.line, (TextObject *) (void *) &texts.label);
             break;
         case 2:
-            if (PocketsItem_IsDayItem(*item)) {
+            if (PocketsItem_IsDeliveredCarpetOrWall(*item)) {
                 NameText_SetItem(&texts.name, item);
                 TextString_CopyBytes((TextObject *) (void *) &texts.line, (TextObject *) (void *) &texts.name);
             } else {

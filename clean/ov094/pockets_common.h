@@ -13,8 +13,8 @@ void PocketsSound_Play0d(void);
 void PocketsSound_Play0c(void);
 void PocketsSound_Play0e(void);
 int PocketsItem_CanDrop(unsigned int item);
-int PocketsItem_Is155d(u16 item);
-int PocketsItem_IsDayItem(u16 item);
+int PocketsItem_IsLostItem(u16 item);
+int PocketsItem_IsDeliveredCarpetOrWall(u16 item);
 int PocketsItem_IsDelivery(u16 item);
 int PocketsItem_InLetterRefusedRanges(unsigned int item);
 

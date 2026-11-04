@@ -38,7 +38,7 @@ void AstroInit_Tables(void)
     static const MemberPointer *const states[2 * ASTRO_STATES] = {
         &data_ov046_02261ea8, &data_ov046_02261fe0, /* ASTRO_IDLE: Astro_EnterIdle, Astro_UpdateIdle */
         &data_ov046_02261fd8, &data_ov046_02261fd0, /* ASTRO_TURN_BACK */
-        &data_ov046_02261fc8, &data_ov046_02261fc0, /* ASTRO_ANIMATE */
+        &data_ov046_02261fc8, &data_ov046_02261fc0, /* ASTRO_ASLEEP */
         &data_ov046_02261fb8, &data_ov046_02261fb0, /* ASTRO_TALK */
         &__ptmf_null,         &data_ov046_02261fa8, /* ASTRO_TALKED: no entry, Astro_UpdateTalked */
     };

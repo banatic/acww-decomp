@@ -262,7 +262,7 @@ int SceneObject_Leave(u8 *object)
     SceneObject_ReleaseModel(object);
     SceneFace_Release((SceneFace *) scene_object_at(object, SCENE_OBJECT_FACE));
     SpeakerAnim_Release((SpeakerAnim *) scene_object_at(object, SCENE_OBJECT_ANIM));
-    SoundEmitter_Vfunc10((SoundEmitter *) scene_object_at(object, SCENE_OBJECT_EMITTER));
+    SoundEmitter_Finish((SoundEmitter *) scene_object_at(object, SCENE_OBJECT_EMITTER));
     if (object[SCENE_OBJECT_LOCAL] == 0) {
         SceneShare_Publish(object, 1);
     }
@@ -540,7 +540,7 @@ int SceneObject_Init(u8 *object)
     SceneMover_Reset((SceneMover *) scene_object_at(object, SCENE_OBJECT_MOVER));
     object[SCENE_OBJECT_HELD_BY_SHARE] = 0;
     MI_CpuFill8(scene_object_at(object, SCENE_OBJECT_EXTRA), 0, SCENE_SHARE_EXTRA_SIZE);
-    SoundEmitter_Stop((SoundEmitter *) scene_object_at(object, SCENE_OBJECT_EMITTER));
+    SoundEmitter_Reset((SoundEmitter *) scene_object_at(object, SCENE_OBJECT_EMITTER));
     *(u8 **) scene_object_at(object, SCENE_OBJECT_EMITTER_LINK) = object + SCENE_OBJECT_EMITTER;
     Footsteps_Init((Footsteps *) scene_object_at(object, SCENE_OBJECT_FOOTSTEPS));
     object[SCENE_OBJECT_SOLID] = 1;

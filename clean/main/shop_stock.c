@@ -26,9 +26,9 @@ typedef struct ShopStockLot {
  * `item`, else by code. */
 static int shop_stock_same(u16 *item, u16 *other)
 {
-    if (ItemCode_HasVariant(item) != 0) {
-        int a = ItemCode_VariantItem(item);
-        int b = ItemCode_VariantItem(other);
+    if (ItemCode_IsFurniture(item) != 0) {
+        int a = ItemCode_FurnitureNumber(item);
+        int b = ItemCode_FurnitureNumber(other);
         return a == b;
     }
     return *item == *other;

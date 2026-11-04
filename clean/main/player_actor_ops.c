@@ -650,10 +650,10 @@ int PlayerActorOps_FinishState(void)
         u16 items[2];
         int empty;
         FieldActor_RecordHeldItem(&items[0], actor);
-        if (ItemCode_HasVariant(&items[0])) {
+        if (ItemCode_IsFurniture(&items[0])) {
             items[1] = ITEM_CODE_NONE;
-            int held = ItemCode_VariantItem(&items[0]);
-            empty = held == ItemCode_VariantItem(&items[1]);
+            int held = ItemCode_FurnitureNumber(&items[0]);
+            empty = held == ItemCode_FurnitureNumber(&items[1]);
         } else {
             empty = items[0] == ITEM_CODE_NONE;
         }

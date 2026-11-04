@@ -33,8 +33,8 @@ extern const u16 data_020cabc4[12];
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
 #define TOWN_SPAWN_RANGE_PERCENT 100
-#define TOWN_SPAWN_ITEM_1369 0x1369
-#define TOWN_SPAWN_ITEM_136A 0x136a
+#define TOWN_SPAWN_SHOVEL 0x1369
+#define TOWN_SPAWN_GOLDEN_SHOVEL 0x136a
 #define TOWN_SPAWN_WET_ITEMS 3
 #define TOWN_SPAWN_WET_FIRST 0x45dc
 #define TOWN_SPAWN_WET_COUNT 0x7f
@@ -61,26 +61,27 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 #define TOWN_SPAWN_MODE_5 5
 #define TOWN_SPAWN_RING 17
 
-/* func_02047e54: each marked item 0x1369 on the inner acres becomes a marked 0x136a. */
-void TownSpawn_AdvanceMarked1369(TownDay *town, AcreMap *map, int wide, int high)
+/* func_02047e54: each shovel 0x1369 buried (marked) on the inner acres becomes a buried golden
+ * shovel 0x136a. */
+void TownSpawn_GildBuriedShovels(TownDay *town, AcreMap *map, int wide, int high)
 {
     for (int acre_z = 1; acre_z < high + 1; acre_z++) {
         for (int acre_x = 1; acre_x < wide + 1; acre_x++) {
             for (int z = 0; z < 16; z++) {
                 for (int x = 0; x < 16; x++) {
                     const u16 *code = AcreTile_ItemInAcre(map, (u32) acre_x, (u32) acre_z, x, z, 0);
-                    if (code == NULL || *code != TOWN_SPAWN_ITEM_1369) {
+                    if (code == NULL || *code != TOWN_SPAWN_SHOVEL) {
                         continue;
                     }
                     if (AcreTile_IsMarkedInAcre(map, (u32) acre_x, (u32) acre_z, (u32) x, (u32) z) != 0) {
-                        TownTilePut_InAcre(town, map, acre_x, acre_z, x, z, TOWN_SPAWN_ITEM_136A, 1);
+                        TownTilePut_InAcre(town, map, acre_x, acre_z, x, z, TOWN_SPAWN_GOLDEN_SHOVEL, 1);
                     }
                 }
             }
         }
     }
 }
-CLEAN_AS(func_02047e54, TownSpawn_AdvanceMarked1369)
+CLEAN_AS(func_02047e54, TownSpawn_GildBuriedShovels)
 
 /* func_02047ee8: after a wet day, unless rain or snow falls now (weather 3 or 4), three items
  * drawn from 0x45dc on, each marked on a free tile of an acre drawn after the last.

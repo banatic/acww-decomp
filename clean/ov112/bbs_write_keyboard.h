@@ -8,7 +8,7 @@
 
 /* The keys the scene enables and disables, and those L and R show pressed. */
 #define BBS_WRITE_KEY_NEWLINE 0
-#define BBS_WRITE_KEY_6 6
+#define BBS_WRITE_KEY_BACKSPACE 6
 #define BBS_WRITE_KEY_COPY 11
 #define BBS_WRITE_KEY_PASTE 12
 #define BBS_WRITE_KEY_L 0x109

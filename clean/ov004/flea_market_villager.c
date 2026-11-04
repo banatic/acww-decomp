@@ -161,10 +161,10 @@ static void fm_talk_slot_08(FleaMarketTalk *talk)
 /* Whether `item` is `code`: for an item with a variant, the same item of any variant. */
 static int fm_item_is(const u16 *item, u16 code)
 {
-    if (ItemCode_HasVariant(item)) {
+    if (ItemCode_IsFurniture(item)) {
         u16 other = code;
-        int same = ItemCode_VariantItem(item);
-        return same == ItemCode_VariantItem(&other);
+        int same = ItemCode_FurnitureNumber(item);
+        return same == ItemCode_FurnitureNumber(&other);
     }
     return *item == code;
 }
@@ -278,7 +278,7 @@ int FleaMarketVillager_PickItemAhead(FleaMarketVillager *villager)
     if (object == NULL) {
         return 0;
     }
-    u16 item = ItemCode_MakeVariant(RoomObject_Number(object), 0);
+    u16 item = ItemCode_MakeFurniture(RoomObject_Number(object), 0);
     int cell_x = x;
     int cell_z = z;
     RoomObject_FindVariantCell(object, &cell_x, &cell_z, NULL, 0);

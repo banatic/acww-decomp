@@ -31,9 +31,9 @@ extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(v
  * else by code. */
 static int tailor_stock_same_item(u16 *item, u16 *other)
 {
-    if (ItemCode_HasVariant(item) != 0) {
-        int a = ItemCode_VariantItem(item);
-        int b = ItemCode_VariantItem(other);
+    if (ItemCode_IsFurniture(item) != 0) {
+        int a = ItemCode_FurnitureNumber(item);
+        int b = ItemCode_FurnitureNumber(other);
         return a == b;
     }
     return *item == *other;

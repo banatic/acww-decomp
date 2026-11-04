@@ -19,7 +19,7 @@
  *                    end walks the player back, the barber's state 9);
  *   9  hat back:     after the cut, with a hat or accessory in the player's record (line 0x41,
  *                    whose end puts it back on);
- *   10 claimed:      the player stands on the map's claimed object (line 0x46; then the scene's
+ *   10 farewell:     the player stands at the exit, the map's claimed object (line 0x46; then the scene's
  *                    exit 0 is taken);
  *   11-13 cut today: lines 5 to 7, at random, once a cut was had today;
  *   14 none:         picked afresh by the talk's line (1, 2, 6 or 11 to 13).
@@ -48,7 +48,7 @@ enum BarberTopic {
     BARBER_TOPIC_NOT_SEATED = 7,
     BARBER_TOPIC_LEAVING = 8,
     BARBER_TOPIC_HAT_BACK = 9,
-    BARBER_TOPIC_CLAIMED = 10,
+    BARBER_TOPIC_FAREWELL = 10,
     BARBER_TOPIC_CUT_TODAY = 11, /* to 13 */
     BARBER_TOPIC_NONE = 14,
     BARBER_TOPICS = 14 /* the lines of the table (BARBER_TOPIC_NONE has none) */

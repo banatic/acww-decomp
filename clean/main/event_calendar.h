@@ -58,7 +58,7 @@
 
 /* Event kinds (EventCalendarEntry.kind). An event of kind 5 is listed whatever else is; a
  * listed event blocks those of its kind or higher that overlap it. Kind 2 and above wait for
- * the paired town (paired_town.h), kind 3 also for the statistics record (wfc_stats.h); kind 4
+ * the paired town (paired_town.h), kind 3 also for the mystery cat record (mystery_cat_record.h); kind 4
  * is held only on a day of the schedule that has it. */
 #define EVENT_CALENDAR_KIND_4 4
 #define EVENT_CALENDAR_KIND_FREE 5

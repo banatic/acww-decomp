@@ -6,7 +6,7 @@
 # villager-home.txt to its house's door, then south and round to villager 0 by the river (about
 # 5530); A every 40 frames: a talk ends in its offer (VillagerTalkOffer_StateGroup0), the first
 # choice: it tells of the furniture it likes. A second talk asks for it (the variants offered,
-# VillagerTalkOffer_ChoicesVariant) and opens the pockets on the furniture
+# VillagerTalkOffer_ChoicesFurniture) and opens the pockets on the furniture
 # (VillagerTalkObject_AskPocketByType); A and A offer the first piece
 # (VillagerTalkObject_TakePocket9200), which is not of its kind; to the end (8029).
 900 START -

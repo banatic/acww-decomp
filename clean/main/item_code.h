@@ -16,9 +16,9 @@
 #define ITEM_CODE_PILE_LAST 0x10ff
 #define ITEM_CODE_PILE_ITEMS 64
 
-/* Kind 3 and 4 codes 0x3000-0x4fff: one numbering in steps of four, the low two bits a variant
- * of the item (func_0204bc28 changes it in place). */
-#define ITEM_CODE_VARIANT_BASE 0x3000
+/* Kind 3 and 4 codes 0x3000-0x4fff: the furniture, one numbering in steps of four, the low two
+ * bits its side, the way it faces (func_0204bc28 changes it in place). */
+#define ITEM_CODE_FURNITURE_BASE 0x3000
 
 /* func_0204b42c */
 int ItemCode_Get(const ItemCode *item);
@@ -35,20 +35,20 @@ BOOL ItemCode_IsKind1(const ItemCode *item);
 /* func_0204bcb4 */
 BOOL ItemCode_IsF031(const ItemCode *item);
 /* func_0204bc90 */
-BOOL ItemCode_IsF031OrVariant(const ItemCode *item);
+BOOL ItemCode_IsF031OrFurniture(const ItemCode *item);
 
 /* func_0204bcdc */
-BOOL ItemCode_HasVariant(const ItemCode *item);
+BOOL ItemCode_IsFurniture(const ItemCode *item);
 /* func_0204bcd4 */
-void ItemCode_TestHasVariant(const ItemCode *item);
+void ItemCode_TestIsFurniture(const ItemCode *item);
 /* func_0204bc64 */
-int ItemCode_VariantItem(const ItemCode *item);
+int ItemCode_FurnitureNumber(const ItemCode *item);
 /* func_0204bc7c */
-int ItemCode_Variant(const ItemCode *item);
+int ItemCode_Side(const ItemCode *item);
 /* func_0204bc50 */
-u16 ItemCode_MakeVariant(int item, int variant);
+u16 ItemCode_MakeFurniture(int item, int side);
 /* func_0204bc28 */
-void ItemCode_SetVariant(ItemCode *item, int variant);
+void ItemCode_SetSide(ItemCode *item, int side);
 
 /* func_0204b268 */
 BOOL ItemCode_IsPile(const ItemCode *item);

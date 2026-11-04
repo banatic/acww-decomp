@@ -55,10 +55,10 @@ static u8 *acre_map_acre_at(const AcreMap *map, int x, int z)
  * code's item. */
 static int acre_map_item_is_none(u16 *item)
 {
-    if (ItemCode_HasVariant(item)) {
+    if (ItemCode_IsFurniture(item)) {
         u16 none = ACRE_MAP_ITEM_NONE;
-        int own = ItemCode_VariantItem(item);
-        return own == ItemCode_VariantItem(&none);
+        int own = ItemCode_FurnitureNumber(item);
+        return own == ItemCode_FurnitureNumber(&none);
     }
     return *item == ACRE_MAP_ITEM_NONE;
 }

@@ -488,14 +488,14 @@ CLEAN_AS(func_ov003_0221a35c, Snowman_SetState)
 int Snowman_KeepDisplacedItem(u16 *item)
 {
     int nothing;
-    if (ItemCode_HasVariant(item)) {
+    if (ItemCode_IsFurniture(item)) {
         u16 none = ITEM_CODE_NONE;
-        int code = ItemCode_VariantItem(item);
-        nothing = code == ItemCode_VariantItem(&none);
+        int code = ItemCode_FurnitureNumber(item);
+        nothing = code == ItemCode_FurnitureNumber(&none);
     } else {
         nothing = *item == ITEM_CODE_NONE;
     }
-    if (!nothing && (ItemCode_IsKind1(item) || ItemCode_HasVariant(item))) {
+    if (!nothing && (ItemCode_IsKind1(item) || ItemCode_IsFurniture(item))) {
         TownItemLists_PushLostAndFound(*item);
         return 1;
     }
@@ -1039,7 +1039,7 @@ void Snowman_Leave(Snowman *snowman)
         saved = (SnowmanSaved *) Snowmen_LooseBalls();
         saved[snowman->index & 1].size = size;
     }
-    SoundEmitter_Vfunc10B(snowman_sound(snowman));
+    SoundEmitter_FinishB(snowman_sound(snowman));
     Snowman_Unregister(snowman);
 }
 CLEAN_AS(func_ov003_0221b174, Snowman_Leave)
@@ -1130,7 +1130,7 @@ void Snowman_Init(Snowman *snowman)
     snowman->last_collisions = snowman->collisions;
 
     Snowman_UpdateModels(snowman, 0, 0);
-    SoundEmitter_StopB(snowman_sound(snowman));
+    SoundEmitter_ResetB(snowman_sound(snowman));
     SceneObjectBase_ClearApproach((SceneObjectBase *) snowman);
     Snowman_Register(snowman);
 }

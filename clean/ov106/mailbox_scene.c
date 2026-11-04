@@ -1370,7 +1370,7 @@ void MailboxScene_CloseMessage(MailboxScene *self)
     if ((closed & wiped) == 0) {
         return;
     }
-    ButtonPanel_ClearFlag2(&self->panel);
+    ButtonPanel_ClearObjWindow(&self->panel);
     if (self->panel_button == 0) {
         MenuScene_StartWipeCovered(mbx_scene(self), 0, 0);
         ButtonPanel_SetLayout5(&self->panel, 0x88);
@@ -1518,7 +1518,7 @@ void MailboxScene_WaitMessageUp(MailboxScene *self)
         MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_MESSAGE_WIPE_BACK);
         MenuScene_StartWipeCovered(mbx_scene(self), 0, 0);
         ButtonPanel_SetLayout10(&self->panel);
-        ButtonPanel_SetFlag2(&self->panel);
+        ButtonPanel_SetObjWindow(&self->panel);
     }
 }
 CLEAN_AS(func_ov106_0229dcb0, MailboxScene_WaitMessageUp)
@@ -2283,8 +2283,8 @@ void MailboxScene_ScrollLetterLayers(MailboxScene *self)
 CLEAN_AS(func_ov106_0229eb28, MailboxScene_ScrollLetterLayers)
 
 /* func_ov106_0229eb48 (state 0x0a): the letter wipes out; when done, its layers hidden and the
- * label button no longer drawn: when the scene was asked to close, the run phase begins and the
- * scene is no longer drawn, else it is set up again (MailboxScene_StartSetup). Else its layers
+ * label button no longer drawn: when the scene was asked to close, it asks to be deleted (phase 5)
+ * and is no longer drawn, else it is set up again (MailboxScene_StartSetup). Else its layers
  * follow the wipe. */
 void MailboxScene_LetterWipeOut(MailboxScene *self)
 {
@@ -2353,8 +2353,8 @@ void MailboxScene_ShowLetter(MailboxScene *self)
 CLEAN_AS(func_ov106_0229ec0c, MailboxScene_ShowLetter)
 
 /* func_ov106_0229ec8c (state 6): the scene wipes out; when done, its layer hidden and its
- * objects no longer drawn: with FLAG_100 the letter is shown (state 7, run at once), else the
- * scene is no longer drawn and the run phase begins. Else the scene layer follows the wipe. */
+ * objects no longer drawn: with MAILBOX_SCENE_FLAG_READ the letter is shown (state 7, run at
+ * once), else the scene is no longer drawn and asks to be deleted (phase 5). Else the scene layer follows the wipe. */
 void MailboxScene_SceneWipeOut(MailboxScene *self)
 {
     if (MenuScene_StepWipe(mbx_scene(self), 0) != 0) {
@@ -2392,7 +2392,7 @@ CLEAN_AS(func_ov106_0229ece8, MailboxScene_MailboxWipeOut)
 
 /* func_ov106_0229ed38 (state 4, panel button 9 or action 1): the popup hidden (its queue
  * dropped) and the cursor sprite hidden; the parent told the scene ends (code 0x44) unless a
- * letter is to be shown (FLAG_100); the mailbox's letters start to wipe out on window 2 over
+ * letter is to be shown (MAILBOX_SCENE_FLAG_READ); the mailbox's letters start to wipe out on window 2 over
  * 0xc0 pixels (state 5). */
 void MailboxScene_StartWipeOut(MailboxScene *self)
 {

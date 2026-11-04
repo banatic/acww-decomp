@@ -79,25 +79,27 @@ int ButtonPanel_SpriteOf(ButtonPanel *panel, int button)
 }
 CLEAN_AS(func_ov002_0220a674, ButtonPanel_SpriteOf)
 
-/* func_ov002_0220a690: clears the window's byte 0x58 and flag 2 of both sprites. */
-void ButtonPanel_ClearFlag2(ButtonPanel *panel)
+/* func_ov002_0220a690: the window and both sprites no longer drawn into the OBJ window (the
+ * window's byte 0x58, the sprites' PANEL_SPRITE_OBJ_WINDOW). */
+void ButtonPanel_ClearObjWindow(ButtonPanel *panel)
 {
     SlidingWindow_ClearObjWindow((SlidingWindow *) (void *) &panel->window);
     for (int i = 0; i < BUTTON_PANEL_SPRITES; i++) {
-        PanelSprite_ClearFlag2(&panel->sprites[i]);
+        PanelSprite_ClearObjWindow(&panel->sprites[i]);
     }
 }
-CLEAN_AS(func_ov002_0220a690, ButtonPanel_ClearFlag2)
+CLEAN_AS(func_ov002_0220a690, ButtonPanel_ClearObjWindow)
 
-/* func_ov002_0220a6b8: sets the window's byte 0x58 and flag 2 of both sprites. */
-void ButtonPanel_SetFlag2(ButtonPanel *panel)
+/* func_ov002_0220a6b8: the window and both sprites drawn into the OBJ window as well (the
+ * window's byte 0x58, the sprites' PANEL_SPRITE_OBJ_WINDOW). */
+void ButtonPanel_SetObjWindow(ButtonPanel *panel)
 {
     SlidingWindow_SetObjWindow((SlidingWindow *) (void *) &panel->window);
     for (int i = 0; i < BUTTON_PANEL_SPRITES; i++) {
-        PanelSprite_SetFlag2(&panel->sprites[i]);
+        PanelSprite_SetObjWindow(&panel->sprites[i]);
     }
 }
-CLEAN_AS(func_ov002_0220a6b8, ButtonPanel_SetFlag2)
+CLEAN_AS(func_ov002_0220a6b8, ButtonPanel_SetObjWindow)
 
 /* func_ov002_0220a6e0: the frame of the press of the selected button's sprite. */
 int ButtonPanel_SelectedPressFrame(ButtonPanel *panel)

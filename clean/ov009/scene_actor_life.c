@@ -11,7 +11,7 @@
 #include "main/calendar.h"          /* Calendar_Now */
 #include "main/camera_control.h"    /* CameraControl_IsPastGoalZ */
 #include "main/globe.h"             /* Globe_Bend, Globe_BendFar */
-#include "main/item_code.h"         /* ItemCode_HasVariant, ItemCode_VariantItem */
+#include "main/item_code.h"         /* ItemCode_IsFurniture, ItemCode_FurnitureNumber */
 #include "main/map_code.h"          /* MapCode_IsStore */
 #include "main/model_object.h"      /* ModelObject_ReleaseRender, ModelObject_SetInitHook */
 #include "main/model_pool.h"        /* ModelPoolSlot_Construct, ModelPoolSlot_Destruct */
@@ -134,7 +134,7 @@ static AnimatedModel *life_model(SceneActor *actor)
 
 static BuildingLights *life_lights(SceneActor *actor)
 {
-    return (BuildingLights *) (void *) actor->member_1f4;
+    return (BuildingLights *) (void *) actor->lights;
 }
 
 /* The character's record: the code's, or the first for a code out of range. */
@@ -147,13 +147,13 @@ static const SceneActorRecord *life_record(const SceneActor *actor)
     return &data_020d1f24[0];
 }
 
-/* Whether `*code` is `value`, through ItemCode_VariantItem when the code has variants. */
+/* Whether `*code` is `value`, through ItemCode_FurnitureNumber when the code has variants. */
 static int life_code_is(u16 *code, u16 value)
 {
-    if (ItemCode_HasVariant(code)) {
+    if (ItemCode_IsFurniture(code)) {
         u16 other = value;
-        int converted = ItemCode_VariantItem(code);
-        return converted == ItemCode_VariantItem(&other);
+        int converted = ItemCode_FurnitureNumber(code);
+        return converted == ItemCode_FurnitureNumber(&other);
     }
     return *code == value;
 }

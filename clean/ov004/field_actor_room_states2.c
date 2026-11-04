@@ -206,10 +206,10 @@ static BOOL fars2_talk_closed(const FieldActor *actor)
 /* Whether `item` is the item for none, comparing variants when it has them. */
 static int fars2_is_no_item(const ItemCode *item)
 {
-    if (ItemCode_HasVariant(item)) {
+    if (ItemCode_IsFurniture(item)) {
         ItemCode none = ITEM_CODE_NONE;
-        int variant = ItemCode_VariantItem(item);
-        return variant == ItemCode_VariantItem(&none);
+        int variant = ItemCode_FurnitureNumber(item);
+        return variant == ItemCode_FurnitureNumber(&none);
     }
     return *item == ITEM_CODE_NONE;
 }

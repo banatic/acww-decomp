@@ -41,7 +41,7 @@
 enum PocketsScreenFlag {
     POCKETS_FLAG_DRAWN = 0x01,         /* the scene is drawn (PocketsScreen_Draw) */
     POCKETS_FLAG_OBJECTS_DRAWN = 0x02, /* the grid, the letters and the wallet are drawn */
-    POCKETS_FLAG_04 = 0x04,            /* the place touched holds nothing (PocketsScreen_TouchPlace) */
+    POCKETS_FLAG_TOUCHED_FREE = 0x04,  /* the place touched holds nothing (PocketsScreen_TouchPlace) */
     POCKETS_FLAG_08 = 0x08,            /* cleared and tested by PocketsScreen_AddLetterEntries */
     POCKETS_FLAG_WRAPPED_LEFT = 0x10,  /* this move wrapped the cursor over the left edge */
     POCKETS_FLAG_WRAPPED_RIGHT = 0x20, /* this move wrapped it over the right edge */
@@ -134,8 +134,8 @@ typedef struct PocketsScreen {
     s32 tile_request;       /* 0xc4: a request of TileRequests_Ask*, -1 for none */
     u8 unk_c8[0x20];        /* 0xc8 */
     u8 unk_e8[0x200];       /* 0xe8 */
-    u8 unk_2e8[0x38];       /* 0x2e8: an object of main's class (PocketsScreen_UpdateObjects2e8) */
-    u8 unk_320[0x38];       /* 0x320: one more (PocketsScreen_UpdateObjects2e8) */
+    u8 unk_2e8[0x38];       /* 0x2e8: an object of main's class (PocketsScreen_EndLayerTasks) */
+    u8 unk_320[0x38];       /* 0x320: one more (PocketsScreen_EndLayerTasks) */
     u8 grid[0xa60];         /* 0x358: an object of ov094's (destructor func_ov094_0229afe0) */
     PocketsLetters letters; /* 0xdb8: ov094's letters object */
     u8 unk_de0[0x1638];     /* 0xde0: an object of ov094's (destructor func_ov094_0229a2d0) */
@@ -275,7 +275,7 @@ int PocketsScreen_PlaceLetter(PocketsScreen *self, int place);
 int PocketsScreen_PlaceItemState(PocketsScreen *self, int place);
 u16 PocketsScreen_PlaceItem(PocketsScreen *self, int place);
 int PocketsScreen_PlaceIsEmpty(PocketsScreen *self, int place);
-int PocketsScreen_PlaceIsTaken(PocketsScreen *self, int place);
+int PocketsScreen_PlaceIsDimmed(PocketsScreen *self, int place);
 int PocketsScreen_PlaceY(PocketsScreen *self, int place);
 int PocketsScreen_PlaceX(PocketsScreen *self, int place);
 int PocketsScreen_BellAmountAtTouch(PocketsScreen *self, int x, int y);
@@ -301,7 +301,7 @@ int PocketsScreen_IsTopPlace(PocketsScreen *self, unsigned int place);
 int PocketsScreen_IsRowPlace(PocketsScreen *self, unsigned int place);
 int PocketsScreen_IsLetterPlace(PocketsScreen *self, unsigned int place);
 int PocketsScreen_IsGridPlace(PocketsScreen *self, unsigned int place);
-void PocketsScreen_UpdateObjects2e8(PocketsScreen *self);
+void PocketsScreen_EndLayerTasks(PocketsScreen *self);
 u8 *PocketsScreen_StartBlinkSlot(PocketsScreen *self);
 void PocketsScreen_ShowError(PocketsScreen *self, int message, int return_state, unsigned int flag);
 u8 *PocketsScreen_HoldAndGlide(PocketsScreen *self, int from, int to, int item, u8 state);

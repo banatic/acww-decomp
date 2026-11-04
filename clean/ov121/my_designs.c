@@ -281,7 +281,7 @@ void MyDesigns_MoveCursorVertically(MyDesigns *self, int keys, int carrying)
             return;
         }
         place = self->cursor;
-        if (place >= MY_DESIGNS_BUTTON_FURNITURE && place <= MY_DESIGNS_BUTTON_WALLPAPER) {
+        if (place >= MY_DESIGNS_BUTTON_EASEL && place <= MY_DESIGNS_BUTTON_WALLPAPER) {
             if (carrying == 0) {
                 MyDesigns_UpToTabs(self);
             }
@@ -315,7 +315,7 @@ void MyDesigns_MoveCursorVertically(MyDesigns *self, int keys, int carrying)
         return;
     }
     u8 place = self->cursor;
-    if (place < MY_DESIGNS_BUTTON_FURNITURE || place > MY_DESIGNS_BUTTON_WALLPAPER) {
+    if (place < MY_DESIGNS_BUTTON_EASEL || place > MY_DESIGNS_BUTTON_WALLPAPER) {
         return;
     }
     if (KeyRepeat_HasLeft(keys) != 0) {
@@ -358,7 +358,7 @@ int MyDesigns_MoveCursorAcross(MyDesigns *self, int keys, int carrying)
             self->cursor = MY_DESIGNS_BUTTON_BACKDROP;
         } else if (MyDesigns_StepCursorLeft(self, 0, 3) == 0 &&
                    MyDesigns_StepCursorLeft(self, 4, MY_DESIGNS_DESIGN_LAST) == 0 &&
-                   MyDesigns_StepCursorLeft(self, MY_DESIGNS_BUTTON_FURNITURE, MY_DESIGNS_BUTTON_WALLPAPER) == 0 &&
+                   MyDesigns_StepCursorLeft(self, MY_DESIGNS_BUTTON_EASEL, MY_DESIGNS_BUTTON_WALLPAPER) == 0 &&
                    MyDesigns_StepCursorLeft(self, MY_DESIGNS_BUTTON_HEAD, MY_DESIGNS_BUTTON_GROUND) == 0) {
             u8 place = self->cursor;
             if (place > MY_DESIGNS_TAB_FIRST && place <= MY_DESIGNS_TAB_LAST) {
@@ -376,7 +376,7 @@ int MyDesigns_MoveCursorAcross(MyDesigns *self, int keys, int carrying)
             return 1;
         } else if (MyDesigns_StepCursorRight(self, 0, 3) == 0 &&
                    MyDesigns_StepCursorRight(self, 4, MY_DESIGNS_DESIGN_LAST) == 0 &&
-                   MyDesigns_StepCursorRight(self, MY_DESIGNS_BUTTON_FURNITURE, MY_DESIGNS_BUTTON_WALLPAPER) == 0 &&
+                   MyDesigns_StepCursorRight(self, MY_DESIGNS_BUTTON_EASEL, MY_DESIGNS_BUTTON_WALLPAPER) == 0 &&
                    MyDesigns_StepCursorRight(self, MY_DESIGNS_BUTTON_HEAD, MY_DESIGNS_BUTTON_GROUND) == 0) {
             u8 place = self->cursor;
             if (place >= MY_DESIGNS_TAB_FIRST && place < MY_DESIGNS_TAB_LAST) {
@@ -820,7 +820,7 @@ CLEAN_AS(func_ov121_0229aec4, MyDesigns_Highlight)
  * REQUIRES: `button` is 9-15 (the tables have seven). */
 void MyDesigns_SetButtonPalette(MyDesigns *self, int button, int palette)
 {
-    int index = button - MY_DESIGNS_BUTTON_FURNITURE;
+    int index = button - MY_DESIGNS_BUTTON_EASEL;
     int column = data_ov121_0229c218[index];
     int row = data_ov121_0229c228[index];
     ScreenMap_SetPalette(self->screen, column, row, column + 3, row + 3, (u32) palette);
@@ -1219,7 +1219,7 @@ void MyDesigns_RunDrag(MyDesigns *self)
         return;
     }
     self->target = (u8) MyDesigns_PlaceUnderHeld(self);
-    if (self->target >= MY_DESIGNS_BUTTON_FURNITURE && self->target <= MY_DESIGNS_BUTTON_GROUND) {
+    if (self->target >= MY_DESIGNS_BUTTON_EASEL && self->target <= MY_DESIGNS_BUTTON_GROUND) {
         MyDesigns_Highlight(self, self->target);
         MyDesigns_SetFlags(self, MY_DESIGNS_FLAG_TARGET_SHOWN);
     } else {
@@ -1321,7 +1321,7 @@ void MyDesigns_LoadButtons(MyDesigns *self)
     DisplayLayer_LoadPalettesFromFile(data_ov121_0229c438, heap, MY_DESIGNS_LAYER, 1, 1, 7);
     DisplayLayer_LoadCharsFromFile(data_ov121_0229c450, heap, MY_DESIGNS_LAYER, 0x10, 0x10, 0xc5);
     RomFile_Read(data_ov121_0229c468, self->screen, sizeof(self->screen));
-    for (u8 button = MY_DESIGNS_BUTTON_FURNITURE; button <= MY_DESIGNS_BUTTON_GROUND; button++) {
+    for (u8 button = MY_DESIGNS_BUTTON_EASEL; button <= MY_DESIGNS_BUTTON_GROUND; button++) {
         if (MyDesigns_IsDisabled(self, button) != 0) {
             MyDesigns_SetButtonPalette(self, button, MY_DESIGNS_PALETTE_DISABLED);
         }
@@ -1401,7 +1401,7 @@ void MyDesigns_Setup(MyDesigns *self)
     self->disabled = 0;
     if (data_020e54a8 == 0) {
         self->where = MY_DESIGNS_OUTSIDE;
-        MyDesigns_Disable(self, MY_DESIGNS_BUTTON_FURNITURE);
+        MyDesigns_Disable(self, MY_DESIGNS_BUTTON_EASEL);
         MyDesigns_Disable(self, MY_DESIGNS_BUTTON_CARPET);
         MyDesigns_Disable(self, MY_DESIGNS_BUTTON_WALLPAPER);
         NetSession *session = data_020ccf94;
@@ -1413,7 +1413,7 @@ void MyDesigns_Setup(MyDesigns *self)
         MyDesigns_Disable(self, MY_DESIGNS_BUTTON_GROUND);
     } else {
         self->where = MY_DESIGNS_ROOM;
-        MyDesigns_Disable(self, MY_DESIGNS_BUTTON_FURNITURE);
+        MyDesigns_Disable(self, MY_DESIGNS_BUTTON_EASEL);
         MyDesigns_Disable(self, MY_DESIGNS_BUTTON_CARPET);
         MyDesigns_Disable(self, MY_DESIGNS_BUTTON_WALLPAPER);
         MyDesigns_Disable(self, MY_DESIGNS_BUTTON_HELD);

@@ -53,10 +53,10 @@ extern const u8 data_ov112_022a20d0[];
 extern NetSession *data_020ccf94;
 extern Heap *data_021c9b28;
 
-/* The message the post is sent to the other players with: handler 0x16, kind 4, a 0 and then
+/* The message the post is sent to the other players with: category 0x16, sent to all (4), a 0 and then
  * the post's characters. */
-#define BBS_WRITE_POST_HANDLER 0x16
-#define BBS_WRITE_POST_KIND 4
+#define BBS_WRITE_POST_CATEGORY 0x16
+#define BBS_WRITE_POST_TO_ALL 4
 #define BBS_WRITE_POST_MESSAGE_SIZE (1 + (int) sizeof(((BbsWriteScene *) 0)->text))
 
 /* The labels' destructor is handed to __cxa_vec_cleanup, so it is the game's symbol. */
@@ -174,7 +174,7 @@ void BbsWrite_SendPost(BbsWriteScene *self)
     NetSession *session = data_020ccf94;
     Session_BeginMessage(session);
     Session_AppendMessage(session, message, BBS_WRITE_POST_MESSAGE_SIZE);
-    Session_EndMessage(session, BBS_WRITE_POST_HANDLER, BBS_WRITE_POST_KIND);
+    Session_EndMessage(session, BBS_WRITE_POST_CATEGORY, BBS_WRITE_POST_TO_ALL);
     self->post_sequence = Session_GetFrameSequence(session);
     Heap_Free(heap, message);
 }
@@ -186,7 +186,7 @@ CLEAN_AS(func_ov112_0229efe8, BbsWrite_SendPost)
 void BbsWrite_EndDim(BbsWriteScene *self)
 {
     DisplayShadow_EndSubObjWindowBrightness();
-    ButtonPanel_ClearFlag2(&self->panel);
+    ButtonPanel_ClearObjWindow(&self->panel);
     DisplayShadow_DisableSubWindows(2);
 }
 CLEAN_AS(func_ov112_0229f058, BbsWrite_EndDim)
@@ -197,7 +197,7 @@ void BbsWrite_BeginDim(BbsWriteScene *self)
 {
     DisplayShadow_BeginSubObjWindowBrightness();
     DisplayShadow_SetSubBrightness((u8) ~5);
-    ButtonPanel_SetFlag2(&self->panel);
+    ButtonPanel_SetObjWindow(&self->panel);
     DisplayShadow_SetSubWindow1Planes(0x1f, 0);
     DisplayShadow_EnableSubWindows(2);
     DisplayShadow_SetSubWindow1(0x2c, 0x20, 0xd4, 0x80);
@@ -396,7 +396,7 @@ void BbsWrite_UpdateKeys(BbsWriteScene *self)
     }
     if (BbsWrite_HasMark(self) != 0) {
         SoftKeyboard_DisableEditKeys(keyboard);
-        SoftKeyboard_EnableSpecial(keyboard, BBS_WRITE_KEY_6);
+        SoftKeyboard_EnableSpecial(keyboard, BBS_WRITE_KEY_BACKSPACE);
     } else if (self->position <= self->first_position) {
         SoftKeyboard_DisableEditKeys(keyboard);
     } else {

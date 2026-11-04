@@ -107,7 +107,7 @@ int TownTile_IsClear(int x, int z, void *map)
         return 0;
     }
     open = *object == 0xfff1 || ItemCode_IsKind1(object) != 0 || (*object >= 0xa7 && *object <= 0xc6) ||
-           (data_020e54a8 == 0 && ItemCode_HasVariant(object) != 0) || MapItem_IsStage0(object) != 0 || is_open_code(*object);
+           (data_020e54a8 == 0 && ItemCode_IsFurniture(object) != 0) || MapItem_IsStage0(object) != 0 || is_open_code(*object);
     if (!open) {
         return 0;
     }

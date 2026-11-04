@@ -69,18 +69,18 @@ enum WfcHostListState {
 /* The scene's sub states (MenuScene.sub_state), each run by its handler of the table of
  * WfcHostList_RunSubState. */
 enum WfcHostListSubState {
-    WFC_HOST_LIST_SUB_TOUCH = 0,         /* WfcHostList_RunTouch: the pen on the rows, buttons and bar */
-    WFC_HOST_LIST_SUB_KNOB_DRAG = 1,     /* WfcHostList_RunKnobDrag: the pen drags the knob */
-    WFC_HOST_LIST_SUB_BAR_TOUCH = 2,     /* WfcHostList_RunBarTouch: the knob moves toward the pen */
-    WFC_HOST_LIST_SUB_KEYS = 3,          /* WfcHostList_RunKeys: the cursor, by the buttons */
-    WFC_HOST_LIST_SUB_KNOB_KEYS = 4,     /* WfcHostList_RunKnobKeys: up and down move the knob while A is held */
-    WFC_HOST_LIST_SUB_KNOB_RELEASE = 5,  /* WfcHostList_RunKnobRelease: the knob's release plays */
-    WFC_HOST_LIST_SUB_POINTER_GLIDE = 6, /* WfcHostList_RunPointerGlide: until the pointer stops, then
+    WFC_HOST_LIST_SUB_TOUCH = 0,           /* WfcHostList_RunTouch: the pen on the rows, buttons and bar */
+    WFC_HOST_LIST_SUB_KNOB_DRAG = 1,       /* WfcHostList_RunKnobDrag: the pen drags the knob */
+    WFC_HOST_LIST_SUB_BAR_TOUCH = 2,       /* WfcHostList_RunBarTouch: the knob moves toward the pen */
+    WFC_HOST_LIST_SUB_KEYS = 3,            /* WfcHostList_RunKeys: the cursor, by the buttons */
+    WFC_HOST_LIST_SUB_KNOB_KEYS = 4,       /* WfcHostList_RunKnobKeys: up and down move the knob while A is held */
+    WFC_HOST_LIST_SUB_KNOB_RELEASE = 5,    /* WfcHostList_RunKnobRelease: the knob's release plays */
+    WFC_HOST_LIST_SUB_POINTER_GLIDE = 6,   /* WfcHostList_RunPointerGlide: until the pointer stops, then
                                           * `return_sub_state` */
-    WFC_HOST_LIST_SUB_ACTIVATE = 7,      /* WfcHostList_RunActivate: the pointer's press plays, then A acts */
-    WFC_HOST_LIST_SUB_POINTER_PRESS = 8, /* WfcHostList_RunPointerPress: the pointer's press plays, then
+    WFC_HOST_LIST_SUB_ACTIVATE = 7,        /* WfcHostList_RunActivate: the pointer's press plays, then A acts */
+    WFC_HOST_LIST_SUB_POINTER_RELEASE = 8, /* WfcHostList_RunPointerRelease: the pointer's release plays, then
                                           * `return_sub_state` */
-    WFC_HOST_LIST_SUB_CLOSE_DELAY = 9,   /* WfcHostList_RunCloseDelay: a few frames, then the states */
+    WFC_HOST_LIST_SUB_CLOSE_DELAY = 9,     /* WfcHostList_RunCloseDelay: a few frames, then the states */
     WFC_HOST_LIST_SUB_STATES = 10
 };
 
@@ -167,7 +167,7 @@ void WfcHostList_EndFrame(WfcHostList *self);
 void WfcHostList_BeginInteractiveFrame(WfcHostList *self);
 void WfcHostList_Release(WfcHostList *self);
 void WfcHostList_Setup(WfcHostList *self);
-void WfcHostList_PlaceSprites(WfcHostList *self);
+void WfcHostList_ScrollWithWipe(WfcHostList *self);
 void WfcHostList_WipeOut(WfcHostList *self);
 void WfcHostList_StartWipeOut(WfcHostList *self);
 void WfcHostList_WipeIn(WfcHostList *self);
@@ -214,11 +214,11 @@ void WfcHostList_CursorFromPointer(WfcHostList *self);
 void WfcHostList_CursorToLastRow(WfcHostList *self);
 int WfcHostList_MoveCursorByKeys(WfcHostList *self, u32 keys);
 int WfcHostList_Activate(WfcHostList *self, unsigned int cursor);
-void WfcHostList_PressPointer(WfcHostList *self);
+void WfcHostList_ReleasePointer(WfcHostList *self);
 void WfcHostList_PressA(WfcHostList *self);
 int WfcHostList_ShowPointerFirst(WfcHostList *self);
 void WfcHostList_GlidePointerTo(WfcHostList *self, int x, int y);
-void WfcHostList_MoveCursor(WfcHostList *self);
+void WfcHostList_GlideToCursor(WfcHostList *self);
 void WfcHostList_HidePointer(WfcHostList *self);
 unsigned int WfcHostList_PointerY(WfcHostList *self);
 int WfcHostList_PointerX(WfcHostList *self);
@@ -229,7 +229,7 @@ void WfcHostList_BeginInput(WfcHostList *self);
 void WfcHostList_BeginKeys(WfcHostList *self);
 void WfcHostList_BeginTouch(WfcHostList *self);
 void WfcHostList_RunCloseDelay(WfcHostList *self);
-void WfcHostList_RunPointerPress(WfcHostList *self);
+void WfcHostList_RunPointerRelease(WfcHostList *self);
 void WfcHostList_RunActivate(WfcHostList *self);
 void WfcHostList_RunPointerGlide(WfcHostList *self);
 void WfcHostList_RunKnobRelease(WfcHostList *self);

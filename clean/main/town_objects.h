@@ -28,7 +28,7 @@
 /* The answers to a request to visit. */
 #define TOWN_OBJECTS_ANSWER_LET_IN 1 /* the visitor's bit is set */
 #define TOWN_OBJECTS_ANSWER_FULL 2   /* more visitors than byte 9 of the object's record */
-#define TOWN_OBJECTS_ANSWER_HOUSE 3  /* a villager's house (TownObjects_HouseState2) with nobody in */
+#define TOWN_OBJECTS_ANSWER_ASLEEP 3 /* a villager's house whose villager is asleep (TownObjects_HouseAsleep), nobody in yet */
 
 void TownObjects_ClearMisplacedFootprints(void);
 int TownObjects_VisitorsHere(void);
@@ -44,8 +44,8 @@ void TownObjects_ResetVisits(void);
 void TownObjects_OnLeftMessage(const u8 *index, u32 slot);
 void TownObjects_OnVisitMessage(u8 *payload, int slot);
 void TownObjects_OnModeMessage(const u16 *payload);
-int TownObjects_HouseState2(int code);
-int TownObjects_VillagerState2(int villager);
+int TownObjects_HouseAsleep(int code);
+int TownObjects_VillagerAsleep(int villager);
 int TownObjects_SetActorMode(SceneActor *actor, unsigned int mode);
 int TownObjects_AtKeptTile(void);
 void TownObjects_KeepAtKeptTile(void);

@@ -144,12 +144,12 @@ void FriendCodeEntry_FollowButtonPress(FriendCodeEntry *self)
 CLEAN_AS(func_ov133_0229bc64, FriendCodeEntry_FollowButtonPress)
 
 /* func_ov133_0229bcd4 (sub state 9): with A held at the code's row, the d-pad moves the mark's
- * end; once A is let go, back to the keys (sub state 3) with the pointer pressed (sub state 6). */
+ * end; once A is let go, back to the keys (sub state 3) with the pointer's release animation (sub state 6). */
 void FriendCodeEntry_MarkByKeys(FriendCodeEntry *self)
 {
     if ((data_021fbe40.held & FRIEND_CODE_PAD_A) == 0) {
         MenuScene_SetSubState(friend_code_scene_of(self), FRIEND_CODE_SUB_KEYS);
-        FriendCodeEntry_PressPointer(self);
+        FriendCodeEntry_ReleasePointer(self);
     } else if (FriendCodeEntry_MoveCursor(self, (int) MenuScene_LatchRepeatedKeys(friend_code_scene_of(self)))) {
         FriendCodeEntry_MarkTo(self, self->position);
     }
@@ -172,39 +172,39 @@ void FriendCodeEntry_DeleteHeld(FriendCodeEntry *self)
 CLEAN_AS(func_ov133_0229bd18, FriendCodeEntry_DeleteHeld)
 
 /* func_ov133_0229bd80 (sub state 7): while A is held, the key's action repeats; once A is let
- * go, back to the keys (sub state 3) with the pointer pressed (sub state 6). */
+ * go, back to the keys (sub state 3) with the pointer's release animation (sub state 6). */
 void FriendCodeEntry_KeyHeld(FriendCodeEntry *self)
 {
     if ((data_021fbe40.held & FRIEND_CODE_PAD_A) == 0) {
         FriendCodeEntry_StopRepeat(self);
         MenuScene_SetSubState(friend_code_scene_of(self), FRIEND_CODE_SUB_KEYS);
-        FriendCodeEntry_PressPointer(self);
+        FriendCodeEntry_ReleasePointer(self);
     } else if (FriendCodeEntry_RepeatDue(self)) {
         FriendCodeEntry_UseKey(self, 0);
     }
 }
 CLEAN_AS(func_ov133_0229bd80, FriendCodeEntry_KeyHeld)
 
-/* func_ov133_0229bdc0 (sub state 6): once the pointer's press is over, it is shown again (sub
+/* func_ov133_0229bdc0 (sub state 6): once the pointer's release animation is over, it is shown again (sub
  * state 3). */
-void FriendCodeEntry_WaitPointerPress(FriendCodeEntry *self)
+void FriendCodeEntry_WaitPointerRelease(FriendCodeEntry *self)
 {
     if (CellLayerSprite_IsDone(friend_code_pointer_cells(self)) != 0) {
         FriendCodeEntry_ShowPointer(self);
         MenuScene_SetSubState(friend_code_scene_of(self), FRIEND_CODE_SUB_KEYS);
     }
 }
-CLEAN_AS(func_ov133_0229bdc0, FriendCodeEntry_WaitPointerPress)
+CLEAN_AS(func_ov133_0229bdc0, FriendCodeEntry_WaitPointerRelease)
 
 /* func_ov133_0229bde8 (sub state 5): once the pointer's press is over, the key pressed; unless
- * that went on elsewhere (answer 1) the pointer is pressed again (sub state 6). */
+ * that went on elsewhere (answer 1) the pointer's release animation (sub state 6). */
 void FriendCodeEntry_PressWhenDone(FriendCodeEntry *self)
 {
     if (CellLayerSprite_IsDone(friend_code_pointer_cells(self)) != 0) {
         if (FriendCodeEntry_PressSelected(self) == 1) {
             return;
         }
-        FriendCodeEntry_PressPointer(self);
+        FriendCodeEntry_ReleasePointer(self);
     }
 }
 CLEAN_AS(func_ov133_0229bde8, FriendCodeEntry_PressWhenDone)

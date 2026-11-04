@@ -152,8 +152,8 @@ int NameText_SetItem(NameText *text, u16 *item)
         text->attr_08 = (u8) ItemInfo_NoneA(&carried);
         return 1;
     }
-    if (ItemCode_HasVariant(&carried)) {
-        int number = ItemCode_VariantItem(&carried);
+    if (ItemCode_IsFurniture(&carried)) {
+        int number = ItemCode_FurnitureNumber(&carried);
         NameText_SetChars((int) (uintptr_t) text, (int) (uintptr_t) FurnitureInfo_Dma(number));
         text->attr_04 = FurnitureInfo_NoneC(number);
         text->attr_09 = (u8) FurnitureInfo_NoneB(number);

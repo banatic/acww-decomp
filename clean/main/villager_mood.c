@@ -495,7 +495,7 @@ CLEAN_AS(func_0201cd2c, VillagerMood_IsOn)
 int VillagerMood_Stop(VillagerMood *mood)
 {
     if (VillagerMood_IsOn(mood) != 0) {
-        SoundEmitter_Vfunc10B(villager_mood_emitter(mood));
+        SoundEmitter_FinishB(villager_mood_emitter(mood));
     }
     mood->on = 0;
     return 0;
@@ -507,7 +507,7 @@ CLEAN_AS(func_0201cd3c, VillagerMood_Stop)
 void VillagerMood_Start(VillagerMood *mood)
 {
     VillagerMood_Reset(mood);
-    SoundEmitter_StopB(villager_mood_emitter(mood));
+    SoundEmitter_ResetB(villager_mood_emitter(mood));
     mood->sounds_on = 1;
     mood->on = 1;
 }

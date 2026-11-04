@@ -50,18 +50,18 @@ int PocketsItem_CanDrop(unsigned int item)
 CLEAN_AS(func_ov094_022999e4, PocketsItem_CanDrop)
 
 /* func_ov094_02299a54: whether `item` is 0x155d (a letter refuses it, PocketsScreen_CheckDrop). */
-int PocketsItem_Is155d(u16 item)
+int PocketsItem_IsLostItem(u16 item)
 {
     return item == 0x155d;
 }
-CLEAN_AS(func_ov094_02299a54, PocketsItem_Is155d)
+CLEAN_AS(func_ov094_02299a54, PocketsItem_IsLostItem)
 
 /* func_ov094_02299a70: whether `item` is 0x155f or 0x1560. */
-int PocketsItem_IsDayItem(u16 item)
+int PocketsItem_IsDeliveredCarpetOrWall(u16 item)
 {
     return in_range(item, 0x155f, 0x1560);
 }
-CLEAN_AS(func_ov094_02299a70, PocketsItem_IsDayItem)
+CLEAN_AS(func_ov094_02299a70, PocketsItem_IsDeliveredCarpetOrWall)
 
 /* func_ov094_02299a90: whether `item` is one of the deliveries 0x155f-0x1564 (item_info: the
  * delivered carpet, wallpaper, furniture and watering can). */

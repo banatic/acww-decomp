@@ -43,9 +43,11 @@ enum LetterStorageFlag {
     LETTER_STORAGE_FLAG_WRAPPED_RIGHT = 0x20, /* this move wrapped it from the carried letters' right
                                                * column to the page */
     LETTER_STORAGE_FLAG_HELD_HIDDEN = 0x40,   /* the held letter is not drawn (LetterStorage_ShowPage) */
-    LETTER_STORAGE_FLAG_80 = 0x80,
-    LETTER_STORAGE_FLAG_READ = 0x100,            /* set by action 1 (LetterStorage_RunActionRead) */
-    LETTER_STORAGE_FLAG_PAGE_WIPE = 0x200,       /* a page's wipe in is running (LetterStorage_StartPageWipeIn) */
+    LETTER_STORAGE_FLAG_LETTER_SHOWN =
+        0x80, /* a letter is shown, from LetterStorage_ShowLetter to its wipe out; its button is drawn */
+    LETTER_STORAGE_FLAG_READ = 0x100, /* set by action 1 (LetterStorage_RunActionRead) */
+    LETTER_STORAGE_FLAG_PAGE_SHOWN =
+        0x200, /* a page is shown, from its wipe in (LetterStorage_StartPageWipeIn) to its wipe out; it is drawn */
     LETTER_STORAGE_FLAG_DISCARD_CONFIRM = 0x800, /* the choice is LetterStorage_OpenDiscardConfirm's: its first
                                                * row is set apart */
     LETTER_STORAGE_FLAG_CHANGED = 0x1000         /* the stored letters are written back at the end
@@ -238,8 +240,8 @@ enum LetterStorageSubState {
 
 void LetterStorage_ClearSelection(LetterStorage *self);
 int LetterStorage_PlaceIsEmpty(LetterStorage *self, int place);
-int LetterStorage_PlaceIsMarked(LetterStorage *self, int place);
-void LetterStorage_MarkCarriedLetters(LetterStorage *self);
+int LetterStorage_PlaceIsDimmed(LetterStorage *self, int place);
+void LetterStorage_DimCarriedLetters(LetterStorage *self);
 int LetterStorage_PlaceY(LetterStorage *self, int place);
 int LetterStorage_PlaceX(LetterStorage *self, int place);
 Letter *LetterStorage_PlaceLetter(LetterStorage *self, int place);

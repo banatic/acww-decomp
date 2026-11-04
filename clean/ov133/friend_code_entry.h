@@ -86,19 +86,19 @@ enum FriendCodeEntryState {
 
 /* The sub states (MenuScene.sub_state), run by FriendCodeEntry_RunSubState. */
 enum FriendCodeEntrySubState {
-    FRIEND_CODE_SUB_TOUCH = 0,          /* FriendCodeEntry_BrowseByTouch */
-    FRIEND_CODE_SUB_TOUCH_KEY_HELD = 1, /* FriendCodeEntry_TouchKeyHeld */
-    FRIEND_CODE_SUB_TOUCH_MARK = 2,     /* FriendCodeEntry_TouchMark */
-    FRIEND_CODE_SUB_KEYS = 3,           /* FriendCodeEntry_BrowseByKeys */
-    FRIEND_CODE_SUB_POINTER_GLIDE = 4,  /* FriendCodeEntry_WaitPointerGlide */
-    FRIEND_CODE_SUB_KEY_PRESS = 5,      /* FriendCodeEntry_PressWhenDone */
-    FRIEND_CODE_SUB_POINTER_PRESS = 6,  /* FriendCodeEntry_WaitPointerPress */
-    FRIEND_CODE_SUB_KEY_HELD = 7,       /* FriendCodeEntry_KeyHeld */
-    FRIEND_CODE_SUB_DELETE_HELD = 8,    /* FriendCodeEntry_DeleteHeld */
-    FRIEND_CODE_SUB_MARK_KEYS = 9,      /* FriendCodeEntry_MarkByKeys */
-    FRIEND_CODE_SUB_BUTTON_PRESS = 10,  /* FriendCodeEntry_FollowButtonPress */
-    FRIEND_CODE_SUB_ERROR = 11,         /* FriendCodeEntry_WaitError */
-    FRIEND_CODE_SUB_SET_FRIEND = 12,    /* FriendCodeEntry_RetrySetFriend */
+    FRIEND_CODE_SUB_TOUCH = 0,           /* FriendCodeEntry_BrowseByTouch */
+    FRIEND_CODE_SUB_TOUCH_KEY_HELD = 1,  /* FriendCodeEntry_TouchKeyHeld */
+    FRIEND_CODE_SUB_TOUCH_MARK = 2,      /* FriendCodeEntry_TouchMark */
+    FRIEND_CODE_SUB_KEYS = 3,            /* FriendCodeEntry_BrowseByKeys */
+    FRIEND_CODE_SUB_POINTER_GLIDE = 4,   /* FriendCodeEntry_WaitPointerGlide */
+    FRIEND_CODE_SUB_KEY_PRESS = 5,       /* FriendCodeEntry_PressWhenDone */
+    FRIEND_CODE_SUB_POINTER_RELEASE = 6, /* FriendCodeEntry_WaitPointerRelease */
+    FRIEND_CODE_SUB_KEY_HELD = 7,        /* FriendCodeEntry_KeyHeld */
+    FRIEND_CODE_SUB_DELETE_HELD = 8,     /* FriendCodeEntry_DeleteHeld */
+    FRIEND_CODE_SUB_MARK_KEYS = 9,       /* FriendCodeEntry_MarkByKeys */
+    FRIEND_CODE_SUB_BUTTON_PRESS = 10,   /* FriendCodeEntry_FollowButtonPress */
+    FRIEND_CODE_SUB_ERROR = 11,          /* FriendCodeEntry_WaitError */
+    FRIEND_CODE_SUB_SET_FRIEND = 12,     /* FriendCodeEntry_RetrySetFriend */
     FRIEND_CODE_SUB_STATES = 13
 };
 
@@ -168,7 +168,7 @@ WifiFriend *FriendCodeEntry_Friend(FriendCodeEntry *self);
 int FriendCodeEntry_KeyAtTouch(FriendCodeEntry *self, int x, int y);
 int FriendCodeEntry_MoveKey(FriendCodeEntry *self, int keys);
 void FriendCodeEntry_ShowPointer(FriendCodeEntry *self);
-int FriendCodeEntry_PressPointer(FriendCodeEntry *self);
+int FriendCodeEntry_ReleasePointer(FriendCodeEntry *self);
 void FriendCodeEntry_PressAtKey(FriendCodeEntry *self);
 void FriendCodeEntry_GlidePointer(FriendCodeEntry *self);
 void FriendCodeEntry_HidePointer(FriendCodeEntry *self);
@@ -188,7 +188,7 @@ void FriendCodeEntry_FollowButtonPress(FriendCodeEntry *self);
 void FriendCodeEntry_MarkByKeys(FriendCodeEntry *self);
 void FriendCodeEntry_DeleteHeld(FriendCodeEntry *self);
 void FriendCodeEntry_KeyHeld(FriendCodeEntry *self);
-void FriendCodeEntry_WaitPointerPress(FriendCodeEntry *self);
+void FriendCodeEntry_WaitPointerRelease(FriendCodeEntry *self);
 void FriendCodeEntry_PressWhenDone(FriendCodeEntry *self);
 void FriendCodeEntry_WaitPointerGlide(FriendCodeEntry *self);
 void FriendCodeEntry_BrowseByKeys(FriendCodeEntry *self);

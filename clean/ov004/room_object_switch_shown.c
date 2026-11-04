@@ -160,7 +160,7 @@ CLEAN_AS(_ZN18Obj_ov004_02250ad819func_ov004_022125a0Ev, SwitchShown_Update)
 int SwitchShown_Start(SwitchShownObject *object)
 {
     RoomObject *base = &object->base;
-    u16 code = ItemCode_MakeVariant(RoomObject_Number(base), 0);
+    u16 code = ItemCode_MakeFurniture(RoomObject_Number(base), 0);
     if (code >= ALWAYS_DRAWN_FIRST && code <= ALWAYS_DRAWN_LAST) {
         object->always_drawn = 1;
     }

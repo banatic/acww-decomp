@@ -22,7 +22,7 @@ static_assert(offsetof(CatalogScene, return_sub_state) == 0x142c, "return sub st
 static_assert(sizeof(CatalogScene) == 0x1430, "size (func_ov115_0229e7e0)");
 
 /* The tab of the menu's bar this scene is, and the list it shows. */
-#define FISH_CATALOG_TAB MENU_TAB_2
+#define FISH_CATALOG_TAB MENU_TAB_FISH
 #define FISH_CATALOG_KIND CATALOG_KIND_FISH
 
 /* The scene's vtable. */
@@ -610,9 +610,9 @@ int FishCatalog_CheckTabKeys(CatalogScene *self)
         } else if (pressed & FISH_CATALOG_PAD_Y) {
             tab = MENU_TAB_POCKETS;
         } else if (pressed & FISH_CATALOG_PAD_X) {
-            tab = MENU_TAB_5;
+            tab = MENU_TAB_MAP;
         } else if (pressed & FISH_CATALOG_PAD_SELECT) {
-            tab = MENU_TAB_4;
+            tab = MENU_TAB_CHAT;
         }
     }
     return FishCatalog_SelectTab(self, tab);

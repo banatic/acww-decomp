@@ -1,6 +1,6 @@
 /* A class of overlay 4's room objects (vtable 0x02250ad8, receiver part 0x02250b84, 0x848
  * bytes, class number 0x27 in RoomObject.unk_780) that is drawn only while on, unless its
- * furniture's item code (ItemCode_MakeVariant of its number) is one of 0x4124 to 0x4223, which
+ * furniture's item code (ItemCode_MakeFurniture of its number) is one of 0x4124 to 0x4223, which
  * are always drawn. Its state (SwitchShownObject.state, off or on) runs through tables of
  * member pointers (member_pointer.h); each frame it sets its switch, shown at once, and the
  * value of its node set (RoomObject.node_set) to the state.

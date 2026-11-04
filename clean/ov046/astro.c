@@ -93,19 +93,19 @@ static_assert(sizeof(Astro) == 0x744, "Astro");
 #define ASTRO_CALL_ANGLE_MAX 0xa000
 #define ASTRO_CALL_PICK_KIND 0x16
 
-/* Its motions: standing, turning (scene_motion_request.h), and the animation of ASTRO_ANIMATE. */
+/* Its motions: standing, turning (scene_motion_request.h), and the animation of ASTRO_ASLEEP. */
 #define ASTRO_MOTION_STAND 0
 #define ASTRO_MOTION_TURN 3
 #define ASTRO_MOTION_PRIORITY 1
 #define ASTRO_ANIMATION 0xf0
 #define ASTRO_ANIM_WORD 0x18
 
-/* ASTRO_IDLE's frames, and the effect of ASTRO_ANIMATE. */
+/* ASTRO_IDLE's frames, and the effect of ASTRO_ASLEEP. */
 #define ASTRO_IDLE_FRAMES 0x78
 #define ASTRO_EFFECT 0x3c
 #define ASTRO_NO_EFFECT (-1)
 
-/* Its look's requests (scene_look.h): kind 1 while it stands or talks, 0 while it animates. */
+/* Its look's requests (scene_look.h): kind 1 while it stands or talks, 0 while it sleeps. */
 #define ASTRO_LOOK_AT 1
 #define ASTRO_LOOK_AWAY 0
 
@@ -314,7 +314,7 @@ CLEAN_AS(func_ov046_02261a6c, Astro_Leave)
 
 /* func_ov046_02261aa0 (slot 0x00): unless the base class refuses to start, it keeps its angle
  * as the one it started with, its animation's word 0, is held, its talk's topic PENDING, and
- * it plays its animation (ASTRO_ANIMATE) in the morning or afternoon while the session is not
+ * it sleeps (ASTRO_ASLEEP) in the morning or afternoon while the session is not
  * linked and game variable 0x4a is 0; else it stands (ASTRO_IDLE). Whether it started. */
 int Astro_Start(Astro *self)
 {
@@ -329,7 +329,7 @@ int Astro_Start(Astro *self)
         Session_IsLinked(data_020ccf94) || *GameVariables_Slot(0, ASTRO_VARIABLE) != 0) {
         Astro_SetState(self, ASTRO_IDLE);
     } else {
-        Astro_SetState(self, ASTRO_ANIMATE);
+        Astro_SetState(self, ASTRO_ASLEEP);
     }
     return 1;
 }
@@ -397,12 +397,12 @@ int Astro_UpdateTalked(void)
 }
 CLEAN_AS(func_ov046_02261708, Astro_UpdateTalked)
 
-/* func_ov046_0226170c (ASTRO_TALK's run): once no action of its runs, its animation is
+/* func_ov046_0226170c (ASTRO_TALK's run): once no action of its runs, its sleep is
  * forgotten, its talk's topic PENDING, its event finished, and ASTRO_TALKED. Agrees always. */
 int Astro_UpdateTalk(Astro *self)
 {
     if (SceneAction_IsBusy(astro_action(self)) == 0) {
-        self->was_animating = 0;
+        self->was_asleep = 0;
         AstroTalk_SetTopic(&self->talk, ASTRO_TALK_TOPIC_PENDING);
         EventQueue_FinishObjectEvent(self);
         Astro_SetState(self, ASTRO_TALKED);
@@ -428,9 +428,9 @@ int Astro_EnterTalk(Astro *self)
 }
 CLEAN_AS(func_ov046_02261750, Astro_EnterTalk)
 
-/* func_ov046_022617d4 (ASTRO_ANIMATE's run): unless the player calls it over, effect 0x3c at its
+/* func_ov046_022617d4 (ASTRO_ASLEEP's run): unless the player calls it over, effect 0x3c at its
  * joint 16 with its angle: started when it has none, else moved there. Agrees always. */
-int Astro_UpdateAnimate(Astro *self)
+int Astro_UpdateAsleep(Astro *self)
 {
     if (Astro_TakeCall(self)) {
         return 1;
@@ -442,18 +442,18 @@ int Astro_UpdateAnimate(Astro *self)
     }
     return 1;
 }
-CLEAN_AS(func_ov046_022617d4, Astro_UpdateAnimate)
+CLEAN_AS(func_ov046_022617d4, Astro_UpdateAsleep)
 
-/* func_ov046_02261820 (ASTRO_ANIMATE's entry): animation 0xf0 asked for with its word, its look
- * asked away, and the animation noted. Agrees. */
-int Astro_EnterAnimate(Astro *self)
+/* func_ov046_02261820 (ASTRO_ASLEEP's entry): animation 0xf0 asked for with its word, its look
+ * asked away, and the sleep noted. Agrees. */
+int Astro_EnterAsleep(Astro *self)
 {
     SceneMotion_RequestAnimation(astro_motion(self), ASTRO_MOTION_PRIORITY, ASTRO_ANIMATION, 0, self->anim_word, 0);
     astro_look_request(self, ASTRO_LOOK_AWAY);
-    self->was_animating = 1;
+    self->was_asleep = 1;
     return 1;
 }
-CLEAN_AS(func_ov046_02261820, Astro_EnterAnimate)
+CLEAN_AS(func_ov046_02261820, Astro_EnterAsleep)
 
 /* func_ov046_02261884 (ASTRO_TURN_BACK's run): once its turn is done, ASTRO_IDLE. Agrees
  * always. */
@@ -477,7 +477,7 @@ CLEAN_AS(func_ov046_022618b4, Astro_EnterTurnBack)
 
 /* func_ov046_022618f0 (ASTRO_IDLE's run): unless the player calls it over, the session is
  * linked, game variable 0x4a is set or it is evening or night, its frames count down; at 0 its
- * animation's word 0x18 and ASTRO_ANIMATE. Agrees always. */
+ * animation's word 0x18 and ASTRO_ASLEEP. Agrees always. */
 int Astro_UpdateIdle(Astro *self)
 {
     if (Astro_TakeCall(self)) {
@@ -489,7 +489,7 @@ int Astro_UpdateIdle(Astro *self)
     }
     if (Countdown_Tick16(&self->countdown) == 0) {
         self->anim_word = ASTRO_ANIM_WORD;
-        Astro_SetState(self, ASTRO_ANIMATE);
+        Astro_SetState(self, ASTRO_ASLEEP);
     }
     return 1;
 }

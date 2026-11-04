@@ -433,10 +433,10 @@ int Obj020dd33c_Begin(Obj020dd33c *obj, u16 *item, int look, u8 stage, int kind,
     obj->actors[1] = second;
 
     int is_1565;
-    if (ItemCode_HasVariant(&obj->item)) {
+    if (ItemCode_IsFurniture(&obj->item)) {
         ItemCode other = 0x1565;
-        int variant = ItemCode_VariantItem(&obj->item);
-        is_1565 = variant == ItemCode_VariantItem(&other);
+        int variant = ItemCode_FurnitureNumber(&obj->item);
+        is_1565 = variant == ItemCode_FurnitureNumber(&other);
     } else {
         is_1565 = obj->item == 0x1565;
     }
@@ -540,7 +540,7 @@ CLEAN_AS(func_02059b6c, Obj020dd33c_ExecuteStep)
  * REQUIRES: there is an instance (it is the object being deleted). */
 int Obj020dd33c_DeleteStep(void)
 {
-    SoundEmitter_Vfunc10B((SoundEmitter *) (void *) data_021c9350->emitter);
+    SoundEmitter_FinishB((SoundEmitter *) (void *) data_021c9350->emitter);
     data_021c9350 = NULL;
     return 1;
 }
@@ -551,7 +551,7 @@ CLEAN_AS(func_02059c40, Obj020dd33c_DeleteStep)
 int Obj020dd33c_CreateStep(Obj020dd33c *obj)
 {
     Obj020dd33c_Reset(obj);
-    SoundEmitter_StopB((SoundEmitter *) (void *) obj->emitter);
+    SoundEmitter_ResetB((SoundEmitter *) (void *) obj->emitter);
     data_021c9350 = obj;
     return 1;
 }

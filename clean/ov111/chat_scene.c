@@ -123,7 +123,7 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
 /* The keyboard's keys and modes the scene names. */
 #define CHAT_SCENE_KEY_NEWLINE 0
-#define CHAT_SCENE_KEY_CONVERT 6
+#define CHAT_SCENE_KEY_BACKSPACE 6
 #define CHAT_SCENE_KEY_COPY 0x0b
 #define CHAT_SCENE_KEY_PASTE 0x0c
 #define CHAT_SCENE_KEY_COPY_FACE 0x109  /* shown pressed by L */
@@ -133,7 +133,7 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
 /* The menu's tabs (ov090/menu_tabs.h). */
 #define CHAT_SCENE_TAB_NONE (-1)
-#define CHAT_SCENE_TAB_OWN MENU_TAB_4
+#define CHAT_SCENE_TAB_OWN MENU_TAB_CHAT
 
 /* The sounds the scene plays. */
 #define CHAT_SCENE_SE_CURSOR 0x0b
@@ -308,9 +308,9 @@ CLEAN_AS(func_ov111_0229efd8, ChatScene_TestFlags)
 /* --- The keyboard's keys and the pointer --- */
 
 /* func_ov111_0229efec: the keys that depend on the line: the newline key always disabled; the
- * copy key while a range is marked; the paste key while text was copied; the conversion keys
- * disabled while a range is marked (key 6 then enabled again) or at the line's start, else
- * key 6 enabled for the character before the cursor. */
+ * copy key while a range is marked; the paste key while text was copied; the edit keys
+ * disabled while a range is marked (the backspace key then enabled again) or at the line's
+ * start, else the backspace key enabled for the character before the cursor. */
 void ChatScene_UpdateKeys(ChatScene *self)
 {
     SoftKeyboard *keyboard = chat_keyboard(self);
@@ -328,7 +328,7 @@ void ChatScene_UpdateKeys(ChatScene *self)
     }
     if (ChatScene_IsMarking(self)) {
         SoftKeyboard_DisableEditKeys(keyboard);
-        SoftKeyboard_EnableSpecial(keyboard, CHAT_SCENE_KEY_CONVERT);
+        SoftKeyboard_EnableSpecial(keyboard, CHAT_SCENE_KEY_BACKSPACE);
     } else if (self->cursor == 0) {
         SoftKeyboard_DisableEditKeys(keyboard);
     } else {
@@ -1735,7 +1735,7 @@ int ChatScene_CheckLeave(ChatScene *self)
         } else if (pressed & CHAT_SCENE_PAD_Y) {
             tab = MENU_TAB_POCKETS;
         } else if (pressed & CHAT_SCENE_PAD_X) {
-            tab = MENU_TAB_5;
+            tab = MENU_TAB_MAP;
         }
     }
     return ChatScene_SwitchTab(self, tab, 0);

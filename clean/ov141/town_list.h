@@ -46,7 +46,7 @@ enum TownListFlag {
     TOWN_LIST_FLAG_QUIT = 0x02,         /* the scene was quit (TownList_Quit) */
     TOWN_LIST_FLAG_SCREEN_DIRTY = 0x04, /* `screen` is queued for layer 6 at the frame's end */
     TOWN_LIST_FLAG_TO_OK = 0x08,        /* a row was picked: once the press ends the cursor goes to
-                                         * the OK button (TownList_WaitPress) */
+                                         * the OK button (TownList_WaitRelease) */
     TOWN_LIST_FLAG_EASE_NO_CUE = 0x10   /* the next ease of the cursor sprite has no cue, once
                                          * (TownList_EaseTo) */
 };
@@ -83,7 +83,7 @@ enum TownListSubState {
     TOWN_LIST_SUB_KEYS = 1,        /* TownList_BrowseByKeys */
     TOWN_LIST_SUB_SPRITE_MOVE = 2, /* TownList_WaitCursorSprite */
     TOWN_LIST_SUB_A_PRESS = 3,     /* TownList_ActOnPress */
-    TOWN_LIST_SUB_PRESS = 4,       /* TownList_WaitPress */
+    TOWN_LIST_SUB_RELEASE = 4,     /* TownList_WaitRelease */
     TOWN_LIST_SUB_CLOSING = 5,     /* TownList_CountDownToClose */
     TOWN_LIST_SUB_STATES = 6
 };
@@ -138,7 +138,7 @@ void TownList_StepFades(TownList *self);
 void TownList_Scan(TownList *self);
 void TownList_QueueScreen(TownList *self);
 int TownList_MoveCursor(TownList *self, int keys);
-void TownList_PressCursor(TownList *self);
+void TownList_ReleaseCursor(TownList *self);
 void TownList_PressA(TownList *self);
 void TownList_ShowCursorSprite(TownList *self);
 void TownList_EaseTo(TownList *self, int x, int y);
@@ -153,7 +153,7 @@ void TownList_Resume(TownList *self);
 void TownList_ResumeByKeys(TownList *self);
 void TownList_ResumeByTouch(TownList *self);
 void TownList_CountDownToClose(TownList *self);
-void TownList_WaitPress(TownList *self);
+void TownList_WaitRelease(TownList *self);
 void TownList_ActOnPress(TownList *self);
 void TownList_WaitCursorSprite(TownList *self);
 void TownList_BrowseByKeys(TownList *self);

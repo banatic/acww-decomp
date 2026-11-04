@@ -83,9 +83,9 @@ static const ItemFormRun item_form_carried_runs[] = {
  * has one), else by the codes. `a`'s number is asked for first. */
 static int item_form_same(u16 *a, u16 *b)
 {
-    if (ItemCode_HasVariant(a)) {
-        int number = ItemCode_VariantItem(a);
-        return number == ItemCode_VariantItem(b);
+    if (ItemCode_IsFurniture(a)) {
+        int number = ItemCode_FurnitureNumber(a);
+        return number == ItemCode_FurnitureNumber(b);
     }
     return *a == *b;
 }
@@ -248,12 +248,12 @@ void ItemForm_ToCarried(u16 *out, u16 *item)
     }
     if (index != -1) {
         u16 first = (u16) (ITEM_FORM_SHARED_FIRST_A + index);
-        if (ItemTraits_IsPairHeadItem(&first)) {
+        if (ItemTraits_IsPairFlower(&first)) {
             *out = first;
             return;
         }
         u16 second = (u16) (ITEM_FORM_SHARED_FIRST_B + index);
-        if (ItemTraits_IsPairFaceItem(&second)) {
+        if (ItemTraits_IsPairWiltedFlower(&second)) {
             *out = second;
             return;
         }

@@ -4,7 +4,7 @@
 # stands in front of the house from about 2950.
 # Save: turtle: every fish and insect had (the item record's first bytes, as "catalog-full")
 # and item 0x37e0 in pocket 0: the turtle of overlay 80 stands east of the house
-# (Spawner_CheckProfile56, Spawner_PlaceBelowBuilding). East to him (3200) and A every 40
+# (Spawner_CheckProfile56, Spawner_PlaceBelowPlayerHouse). East to him (3200) and A every 40
 # frames: he asks for item 0x37e0, the first answer gives it for item 0x1559
 # (TurtleTalk_OnAnswer); talked to again (RIGHT and A at 5611 and 6284) he gives the golden
 # rod for the fish (sp_npc_turtle7 line 0) and then the golden net for the insects, each held

@@ -608,9 +608,9 @@ int OutdoorVillagerChat_DefaultClothes(OutdoorVillagerBehaviour *self, u8 *villa
 
     const u16 *clothes = TownVillager_Clothes(first);
     int same;
-    if (ItemCode_HasVariant(clothes)) {
-        int worn = ItemCode_VariantItem(clothes);
-        same = worn == ItemCode_VariantItem(&wanted);
+    if (ItemCode_IsFurniture(clothes)) {
+        int worn = ItemCode_FurnitureNumber(clothes);
+        same = worn == ItemCode_FurnitureNumber(&wanted);
     } else {
         same = *clothes == wanted;
     }

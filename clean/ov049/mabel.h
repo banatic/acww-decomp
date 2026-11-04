@@ -71,7 +71,7 @@ typedef struct MabelStep {
 #define MABEL_TALK_MODE_FIRST 0       /* the first greeting today */
 #define MABEL_TALK_MODE_AGAIN 1       /* greeted already today (daily bit 15) */
 #define MABEL_TALK_MODE_TALKED 2      /* the player talked to her */
-#define MABEL_TALK_MODE_SPOT_TAKEN 3  /* the player's start point is claimed */
+#define MABEL_TALK_MODE_FAREWELL 3    /* the player at the shop's exit (the start point claimed) */
 #define MABEL_TALK_MODE_ITEM 4        /* an item on display: its price */
 #define MABEL_TALK_MODE_SHOP_DESIGN 5 /* one of the shop's designs */
 
@@ -116,7 +116,7 @@ typedef struct Mabel {
 /* Her vtable slots and questions (mabel.c). */
 Mabel *Mabel_Destruct(Mabel *mabel);
 void *Mabel_DestructDelete(Mabel *mabel);
-int Mabel_CheckSpotTaken(Mabel *mabel);
+int Mabel_CheckAtExit(Mabel *mabel);
 int Mabel_OfferShown(Mabel *mabel);
 int Mabel_FindShown(Mabel *mabel);
 void Mabel_OnEvent(Mabel *mabel, int code, int participant);

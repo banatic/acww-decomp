@@ -21,7 +21,7 @@
 #include "main/talk_checks.h"
 #include "main/talk_object.h"
 #include "main/villager_impression.h"
-#include "main/wfc_stats.h"
+#include "main/mystery_cat_record.h"
 
 static_assert(sizeof(MysteryCatLine) == 8, "a line");
 static_assert(sizeof(MessageReceiver) == 0x20 && offsetof(MessageReceiver, message) == 0x1e, "the line shown");
@@ -41,8 +41,8 @@ extern MemberPointer data_ov074_02279d74[2];
 extern u32 data_ov074_02279d4c;
 /* The null member pointer (the C++ runtime's). */
 extern const MemberPointer __ptmf_null;
-/* The town's statistics record, which keeps her face and the impression she takes. */
-extern WfcStats data_021f3278;
+/* The town's mystery cat record, which keeps her face and the impression she takes. */
+extern MysteryCatRecord data_021f3278;
 
 /* The daily bit of the current player (TalkChecks_TestSetDailyBit) set once she took an
  * impression of the player today. */
@@ -85,7 +85,7 @@ static void mcat_talk_say(TalkObject *object, u8 message)
 /* The information of her face, the design of the town's record. */
 static DesignInfo *mcat_talk_face_info(void)
 {
-    return (DesignInfo *) (uintptr_t) Design_Info((unsigned int) (uintptr_t) WfcStats_Design(&data_021f3278));
+    return (DesignInfo *) (uintptr_t) Design_Info((unsigned int) (uintptr_t) MysteryCatRecord_Design(&data_021f3278));
 }
 
 /* Whether her face's maker `maker` is set and is the current player: the same town (number and
@@ -199,7 +199,7 @@ void MysteryCatTalk_Line(MysteryCatTalk *talk, MysteryCatLine *out)
     if (PlayerId_IsSet(&maker)) {
         SceneBase_PutNameAt10(&talk->base, &maker, 1);
         SceneBase_PutNameAt2(&talk->base, (unsigned int) (uintptr_t) PlayerId_Town(&maker), 0);
-        u8 impression = WfcStats_Byte237(&data_021f3278);
+        u8 impression = MysteryCatRecord_Impression(&data_021f3278);
         TalkObject_LoadPart(mcat_talk_object(talk), 2, &impression, (unsigned int) (uintptr_t) data_ov074_02279d28);
         DesignInfo_TitleToText(&info, &title);
         TalkObject_SetPart(mcat_talk_object(talk), 3, (TextBase *) (void *) &title);
@@ -258,8 +258,8 @@ void MysteryCatTalk_TakeImpression(MysteryCatTalk *talk)
         return;
     }
     TalkObject *object = mcat_talk_object(talk);
-    WfcStats_SetByte237(&data_021f3278, (u8) VillagerImpression_Pick(PlayerRecords_Current(), 0, 0));
-    WfcStats_SetStatus(&data_021f3278, WFC_STATS_STATUS_TO_SEND);
+    MysteryCatRecord_SetImpression(&data_021f3278, (u8) VillagerImpression_Pick(PlayerRecords_Current(), 0, 0));
+    MysteryCatRecord_SetStatus(&data_021f3278, MYSTERY_CAT_RECORD_TO_SEND);
     u8 message = (u8) (MainRandom_Below(3) + MYSTERY_CAT_LINE_THANKS);
     TalkChecks_TestSetDailyBit(MCAT_TALK_DAILY_IMPRESSION, 1);
     mcat_talk_say(object, message);

@@ -183,7 +183,7 @@ int FishShadow_Create(FishShadowProcess *self)
         fish->acre_z = 0;
         fish->index = (u8) i;
         fish->respawn = (s16) (i * 400 + 2400);
-        SoundEmitter_StopB((SoundEmitter *) fish->emitter);
+        SoundEmitter_ResetB((SoundEmitter *) fish->emitter);
         SoundSource_Init(&fish->source);
     }
     NetSession *session = data_020ccf94;
@@ -191,7 +191,7 @@ int FishShadow_Create(FishShadowProcess *self)
         if (Session_IsLinked(session) && !Session_IsLocalSlot(session, i) && FishDisp_PlayerState((u8) i) == 3) {
             FishDisp_SetPlayerState((u8) i, 6, -1, 0, 0);
         }
-        SoundEmitter_StopB((SoundEmitter *) data_ov003_0225f4dc[i].emitter);
+        SoundEmitter_ResetB((SoundEmitter *) data_ov003_0225f4dc[i].emitter);
     }
     return 1;
 }

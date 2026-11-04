@@ -655,10 +655,10 @@ void PlayerRecord_OpenDeliveries(u8 *record)
         }
 
         int is_a;
-        if (ItemCode_HasVariant(slot) != 0) {
+        if (ItemCode_IsFurniture(slot) != 0) {
             u16 a = DELIVERY_WALLPAPER;
-            int number = ItemCode_VariantItem(slot);
-            is_a = number == ItemCode_VariantItem(&a);
+            int number = ItemCode_FurnitureNumber(slot);
+            is_a = number == ItemCode_FurnitureNumber(&a);
         } else {
             is_a = *slot == DELIVERY_WALLPAPER;
         }

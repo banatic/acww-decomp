@@ -387,16 +387,16 @@ CLEAN_INSECT_ROOM_SHA = '07356b2f5b1b211ddcf8f2b66fc9dd67318de0852c921b9512e40b2
 CLEAN_CUE_SHA = {
     'clean/autoload_2/music_cue.c': '5e0d82994301bbde71bb4747d619c4a7ebf8558c757f9285fc36420a0c6a9dd1',
     'clean/main/sound.c': '8280215d6c64e5c4fbfb3e934a615bd1ee3c5836ffd652a343f9c40a6720a38a',
-    'clean/ov004/room_object_body.c': '94e6ba4761fa21f5b8433e2057eb6912cb0a70a268d9dd6e7ec9fadc4edb112c',
+    'clean/ov004/room_object_body.c': '3667d353e0cda71554d05188b3f9f0c1fa413c7ce85b44104a10e43d35ccf6dd',
     'clean/main/talk_object.c': 'd0aae1a9c2e9852a24919b9ba16ce2f1d22c887397e814dc94e0560112c875b7',
-    'clean/main/villager_talk_offers.c': 'd072ec6db73516c609eaf065edb540a99a9b2cbffa0289792cd5ffaffde4d8ca',
+    'clean/main/villager_talk_offers.c': '489999704240fb306baff12a6efde1b81115dd74429840926e6417213bb89b0b',
     'clean/autoload_2/matrix.c': '6e4e1fe2d50a238897e20e224004b63f073337a296a08fa10158644c8527cf18',
     'clean/main/field_collision.c': 'c1efa49efed565e2a051e4edf64d29ba420d6051bfaceae83c5eebf0b36650bf',
     'clean/main/collision_query.c': '64b4370e713ddc57343b34d5e4aca0b4c2ef0dcd7384f66a554d2a3df3fe7a6a',
     'clean/main/collision_segment.c': '5519edaa81cb8a78eaa0b1177fce67f278e5b5695f8533c34b87ade7a3e8027d',
     'clean/main/villager_talk.c': 'ba844325677b85c53ec2a3a7d8d9312f4c0d70b86e1e41595aa60ff75706967d',
     'clean/main/villager_talk_replies.c': '749a0f10f5ce9019ae9efe7f2c96469982d6c2907cce9a89a99824a67a465996',
-    'clean/ov094/pockets_grid.c': 'cc91b554a76ed97e9eefd67d458462ebf96e06bd6b3b893fcfd8ff94e0f9f95e',
+    'clean/ov094/pockets_grid.c': 'da2d6aef2b91512999d0730fa0022d6e328f3e2ff62cf49b88ff5a7395efa549',
     'clean/ov004/push_box.c': '7a3464385bff4588f7aad11452e78ed5283edd2ff6d409d3e7a3188a519b8d52',
 }
 CLEAN_CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {

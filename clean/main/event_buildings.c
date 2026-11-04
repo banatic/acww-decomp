@@ -319,10 +319,10 @@ int EventBuildings_RemoveAtSpot(int code)
         return 0;
     }
     int same;
-    if (ItemCode_HasVariant(spot)) {
+    if (ItemCode_IsFurniture(spot)) {
         u16 wanted = (u16) code;
-        int own = ItemCode_VariantItem(spot);
-        same = own == ItemCode_VariantItem(&wanted);
+        int own = ItemCode_FurnitureNumber(spot);
+        same = own == ItemCode_FurnitureNumber(&wanted);
     } else {
         same = *spot == code;
     }
@@ -413,10 +413,10 @@ CLEAN_AS(func_020b3038, EventBuildings_FindSpot)
  * (asked again for each tile). */
 static int event_buildings_is_spaceship_part(const u16 *code)
 {
-    if (ItemCode_HasVariant(code)) {
+    if (ItemCode_IsFurniture(code)) {
         u16 item = EVENT_BUILDINGS_SPACESHIP_PART;
-        int variant = ItemCode_VariantItem(code);
-        return variant == ItemCode_VariantItem(&item);
+        int variant = ItemCode_FurnitureNumber(code);
+        return variant == ItemCode_FurnitureNumber(&item);
     }
     return *code == EVENT_BUILDINGS_SPACESHIP_PART;
 }

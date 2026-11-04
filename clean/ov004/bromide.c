@@ -85,7 +85,7 @@ int Bromide_EnterTalk(Bromide *bromide)
 {
     SceneObjectBase_TakeReceiver(&bromide->base.scene, Bromide_receiver(bromide));
     bromide->base.link->next_state = 1;
-    u16 item = ItemCode_MakeVariant(RoomObject_Number(&bromide->base), 0);
+    u16 item = ItemCode_MakeFurniture(RoomObject_Number(&bromide->base), 0);
     int photo = BROMIDE_NO_PHOTO;
     if (item >= BROMIDE_ITEM_FIRST && item <= BROMIDE_ITEM_LAST) {
         photo = (item - BROMIDE_ITEM_FIRST) >> 2;
