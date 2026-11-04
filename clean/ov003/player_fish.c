@@ -913,7 +913,7 @@ int PlayerFish_EndForShadow(FishShadow *shadow)
 CLEAN_AS(func_ov003_0222aae8, PlayerFish_EndForShadow)
 
 /* func_ov003_0222ab14: whether the fish of the player shadow `shadow` is hooked by has reached
- * the hand (the float's FishingFloat_FishFlag80); 0 without a shadow or player.
+ * the hand (the float's FishingFloat_FishArrived); 0 without a shadow or player.
  * QUIRK: the player number is not checked. */
 int PlayerFish_ArrivedForShadow(FishShadow *shadow)
 {

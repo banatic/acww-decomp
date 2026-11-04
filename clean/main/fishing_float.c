@@ -49,7 +49,7 @@ static_assert(offsetof(FishingFloatPool, owner) == 0x750, "FishingFloatPool.owne
 #define FISHING_FLOAT_EFFECT_UNDER 16
 #define FISHING_FLOAT_EFFECT_RIPPLE 17
 
-/* The flight (FishingFloat_Fly): across, at least 0.1 and at most 3.2 a frame by 1/5 or 1/10
+/* The flight (FishingFloat_Fly): across, at least 0.1 and at most 0.8 a frame by 1/5 or 1/10
  * of the way; eased down at least 0.02 a frame. */
 #define FISHING_FLOAT_FLY_MAX_STEP 0xccd
 #define FISHING_FLOAT_FLY_MIN_STEP 0x19a
@@ -577,13 +577,14 @@ void FishingFloat_SetTarget(FishingFloat *self, const Vec3 *target)
 }
 CLEAN_AS(func_02060438, FishingFloat_SetTarget)
 
-/* func_02060448: the fish told of the player (func_ov003_0222a960 with 0), then forgotten. */
-void FishingFloat_TellPlayerFish(FishingFloat *self)
+/* func_02060448: the player's fish thrown back (PlayerFish_ThrowBack, not started), then
+ * forgotten. */
+void FishingFloat_ThrowBackFish(FishingFloat *self)
 {
     PlayerFish_ThrowBack(self->player, 0);
     self->fish = NULL;
 }
-CLEAN_AS(func_02060448, FishingFloat_TellPlayerFish)
+CLEAN_AS(func_02060448, FishingFloat_ThrowBackFish)
 
 /* func_02060460: the fish let go (func_ov003_0222aae8), then forgotten. */
 void FishingFloat_LetFishGo(FishingFloat *self)
@@ -593,12 +594,12 @@ void FishingFloat_LetFishGo(FishingFloat *self)
 }
 CLEAN_AS(func_02060460, FishingFloat_LetFishGo)
 
-/* func_02060474: the fish's flag (func_ov003_0222ab14). */
-int FishingFloat_FishFlag80(FishingFloat *self)
+/* func_02060474: whether the hooked fish has reached the hand (PlayerFish_ArrivedForShadow). */
+int FishingFloat_FishArrived(FishingFloat *self)
 {
     return PlayerFish_ArrivedForShadow((FishShadow *) (void *) self->fish);
 }
-CLEAN_AS(func_02060474, FishingFloat_FishFlag80)
+CLEAN_AS(func_02060474, FishingFloat_FishArrived)
 
 /* func_02060480: on water, the float put 0.05 over the surface. */
 void FishingFloat_ToSurface(FishingFloat *self)
@@ -613,19 +614,20 @@ void FishingFloat_ToSurface(FishingFloat *self)
 }
 CLEAN_AS(func_02060480, FishingFloat_ToSurface)
 
-/* func_020604b0: what the fish says (func_ov003_0222ab4c: 0, 1 or 2), 1 without a fish. */
-int FishingFloat_FishBite(FishingFloat *self)
+/* func_020604b0: the pulling fish landed (FishShadowHook_TryLand: 2 landed, 1 fled, 0 still
+ * pulling), 1 without a fish. */
+int FishingFloat_TryLandFish(FishingFloat *self)
 {
     if (self->fish == NULL) {
         return 1;
     }
     return FishShadowHook_TryLand((FishShadow *) (void *) self->fish);
 }
-CLEAN_AS(func_020604b0, FishingFloat_FishBite)
+CLEAN_AS(func_020604b0, FishingFloat_TryLandFish)
 
-/* func_020604c8: what the fish says (func_ov003_0222aba4); without a fish the float is reeled
- * in and 0. */
-int FishingFloat_FishPull(FishingFloat *self)
+/* func_020604c8: the player strikes (FishShadowHook_Strike); without a fish the float is
+ * reeled in and 0. */
+int FishingFloat_Strike(FishingFloat *self)
 {
     u8 *fish = self->fish;
     if (fish == NULL) {
@@ -634,7 +636,7 @@ int FishingFloat_FishPull(FishingFloat *self)
     }
     return FishShadowHook_Strike((FishShadow *) (void *) fish);
 }
-CLEAN_AS(func_020604c8, FishingFloat_FishPull)
+CLEAN_AS(func_020604c8, FishingFloat_Strike)
 
 /* func_020604e8: whether it is floating or sinking. */
 int FishingFloat_IsInWater(FishingFloat *self)

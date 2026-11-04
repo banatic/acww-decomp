@@ -6837,7 +6837,7 @@ void FieldActor_RunState55(FieldActor *actor)
                     FieldActor_RequestLook(actor, &data_ov003_02238108, 0, 6, -1);
                     State55Saved_SetStep(&actor->saved.step55, 2);
                 }
-                FishingFloat_TellPlayerFish(held_line(actor));
+                FishingFloat_ThrowBackFish(held_line(actor));
                 release_receiver(actor);
                 EventQueue_FinishKind9();
                 break;
@@ -6847,7 +6847,7 @@ void FieldActor_RunState55(FieldActor *actor)
                 if (fish != NULL) {
                     place_fish_default(fish, &hand, &scale);
                 }
-                FishingFloat_TellPlayerFish(held_line(actor));
+                FishingFloat_ThrowBackFish(held_line(actor));
                 *step = 2;
                 FieldActor_PlayAnimationLoop(actor, 0, 6, 6);
             }
@@ -7074,7 +7074,7 @@ void FieldActor_RunState54(FieldActor *actor)
             if (!link_closed(actor)) {
                 break;
             }
-            FishingFloat_TellPlayerFish(held_line(actor));
+            FishingFloat_ThrowBackFish(held_line(actor));
             close_receiver(actor);
             EventQueue_FinishKind9();
             actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
@@ -7192,7 +7192,7 @@ CLEAN_AS(func_ov003_0221527c, FieldActor_UpdateState53)
  * held item, state 0x54 is asked for (mode 0). */
 void FieldActor_EndState53(FieldActor *actor)
 {
-    if (anim_done(actor) && FishingFloat_FishFlag80(held_line(actor))) {
+    if (anim_done(actor) && FishingFloat_FishArrived(held_line(actor))) {
         FieldActor_RequestState54(actor, 0, 6, -1);
     }
 }
@@ -7416,7 +7416,7 @@ void FieldActor_EndState50(FieldActor *actor)
         FieldActor_PlaySoundAt(actor, 0x7f6, &actor->unk_5D0);
         return;
     }
-    switch (FishingFloat_FishBite(held_line(actor))) {
+    switch (FishingFloat_TryLandFish(held_line(actor))) {
         case 0:
             FieldActor_PlaySoundAt(actor, 0x7f6, &actor->unk_5D0);
             break;
@@ -7504,7 +7504,7 @@ void FieldActor_RunState4F(FieldActor *actor)
     if (actor->unk_140 == 0 && TouchPick_GetGround((TouchPick *) (uintptr_t) SceneQuery_FieldObject(), NULL) == 0) {
         return;
     }
-    if (FishingFloat_FishPull(held_line(actor))) {
+    if (FishingFloat_Strike(held_line(actor))) {
         FieldActor_RequestState50(actor, 6, -1);
     } else {
         FieldActor_RequestState51(actor, 0, 6, -1);

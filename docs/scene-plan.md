@@ -1830,7 +1830,7 @@ What reading the Clean code found about the groups above; counts are of function
   hit by the pen.
 - The plan before (310 lists): seed 1,058, date 248, unknown 761, unreachable 2,958; after (322): seed
   998, date 247, unknown 758, unreachable 2,958.
-- fish-let-go also lets the catch go from the line (PlayerFish_ThrowBack, FishingFloat_TellPlayerFish,
+- fish-let-go also lets the catch go from the line (PlayerFish_ThrowBack, FishingFloat_ThrowBackFish,
   EffectKinds_StartKind1d and _PlaceScaled06: the splash of a fish thrown back).
 - Drive's `did` and `new` match addresses, so a function of another overlay at the same address
   looks entered: in the star view the free pointer (StarView_SubFree, _SubPress, _SubRelease,

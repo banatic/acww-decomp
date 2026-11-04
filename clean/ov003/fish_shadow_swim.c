@@ -203,7 +203,7 @@ int FishShadowHook_TryLand(FishShadow *fish)
 }
 CLEAN_AS(func_ov003_0222ab4c, FishShadowHook_TryLand)
 
-/* func_ov003_0222aba4: the player strikes (the float's FishingFloat_FishPull). Biting
+/* func_ov003_0222aba4: the player strikes (the float's FishingFloat_Strike). Biting
  * (FISH_HOOK_BITE) with a rod in hand and in time (unless the pen is down), the fish is hooked:
  * it pulls (FISH_HOOK_PULL) to a random side for its size's frames from where the float is,
  * the float rippling and the fish turned a quarter that way; 1. Biting out of time or without
