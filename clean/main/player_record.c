@@ -18,7 +18,7 @@
 #include "main_random.h"
 #include "message_reader.h"
 #include "message_receiver.h"
-#include "motion_slots.h"
+#include "reaction_slots.h"
 #include "npc_letters.h"
 #include "paired_town.h"
 #include "player_field_2416.h"
@@ -41,7 +41,7 @@ static_assert(sizeof(PlayerStorage) == 0xb4, "PlayerStorage layout");
 /* Offsets in the record. */
 #define RECORD_MOM_LETTERS 0x243e
 #define RECORD_DATED_LETTER 0x1d3c
-#define RECORD_BYTES_23E8 0x23e8
+#define RECORD_REACTION_SLOTS 0x23e8
 #define RECORD_FLAGS 0x23f8
 #define RECORD_BIRTHDAY 0x2414
 #define RECORD_COUNT 0x2451
@@ -396,11 +396,11 @@ u8 *PlayerRecord_Birthday(u8 *record)
 CLEAN_AS(func_020992e4, PlayerRecord_Birthday)
 
 /* func_020992f0 */
-u8 *PlayerRecord_Bytes23e8(u8 *record)
+u8 *PlayerRecord_ReactionSlots(u8 *record)
 {
-    return record + RECORD_BYTES_23E8;
+    return record + RECORD_REACTION_SLOTS;
 }
-CLEAN_AS(func_020992f0, PlayerRecord_Bytes23e8)
+CLEAN_AS(func_020992f0, PlayerRecord_ReactionSlots)
 
 /* ---- The rest of the record's fields */
 
@@ -989,7 +989,7 @@ void PlayerRecord_NewPlayer(u8 *record, const void *name, int player_id, int byt
     *player_record_u16(record, RECORD_ITEM_2410) = NEW_PLAYER_ITEM_2410;
     DayEvents_ClearMark((DayEventMark *) (void *) (record + RECORD_FIELD_2427));
     Savings_InitAccount((SavingsAccount *) (void *) (record + RECORD_SAVINGS));
-    MotionSlots_Clear(record + RECORD_BYTES_23E8);
+    ReactionSlots_Clear(record + RECORD_REACTION_SLOTS);
     Calendar_Today(PlayerRecord_LastPlayDate(record));
     MI_CpuFill8(record + RECORD_VILLAGER_BYTES, 0xff, PLAYER_RECORD_VILLAGER_BYTES);
 }

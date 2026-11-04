@@ -10,7 +10,7 @@
 #include "main/main_random.h"
 #include "main/message_reader.h"
 #include "main/message_receiver.h"
-#include "main/motion_slots.h"
+#include "main/reaction_slots.h"
 #include "main/obj_020d8c64.h"
 #include "main/obj_020d9ff8.h"
 #include "main/player_id.h"
@@ -106,7 +106,7 @@ static void rt_call_slot(ReactionNpcTalk *talk, u32 offset, int argument)
 /* func_ov088_02278afc (slot 0x18, the player's answer), by the line shown:
  * - 0x17, 0x18: the reaction offered as that answer is chosen, and its line shown (0x1c plus
  *   it);
- * - 0x1a: the fifth answer, line 0x1b; another, the name of the reaction in that motion slot
+ * - 0x1a: the fifth answer, line 0x1b; another, the name of the reaction in that reaction slot
  *   in part 1, the reaction chosen put in its place, its name in part 0, line 0x1c.
  * The line, when one was picked, is shown. */
 void ReactionNpcTalk_OnAnswer(ReactionNpcTalk *talk)
@@ -127,7 +127,7 @@ void ReactionNpcTalk_OnAnswer(ReactionNpcTalk *talk)
                 next = REACTION_NPC_LINE_KEPT;
                 break;
             }
-            rt_put_name(rt_talk_object(talk), 1, (u8) MotionSlots_Get((int) answer));
+            rt_put_name(rt_talk_object(talk), 1, (u8) ReactionSlots_Get((int) answer));
             ReactionNpc_PutReaction(talk->owner, (int) answer, talk->chosen);
             rt_put_name(rt_talk_object(talk), 0, talk->chosen);
             next = REACTION_NPC_LINE_REPLACED;
@@ -145,8 +145,8 @@ CLEAN_AS(func_ov088_02278afc, ReactionNpcTalk_OnAnswer)
  * - a reaction's line (0x1d-0x39): the talk object's mode 0 and step 3 (the reaction watched);
  * - 0x0b: the talk object's mode 0 and step 1 (the first lesson);
  * - 0x17, 0x18: the line kept (as `chosen`) and step 2 (the answers offered);
- * - 0x19: the reaction chosen put in the first empty motion slot, when there is one;
- * - 0x1a: the player's motion slots offered as answers (slot 0x88, way 2). */
+ * - 0x19: the reaction chosen put in the first empty reaction slot, when there is one;
+ * - 0x1a: the player's reaction slots offered as answers (slot 0x88, way 2). */
 void ReactionNpcTalk_OnLineEnded(ReactionNpcTalk *talk)
 {
     u8 line = rt_line_shown(talk);
@@ -165,7 +165,7 @@ void ReactionNpcTalk_OnLineEnded(ReactionNpcTalk *talk)
             ReactionNpcTalk_SetStep(talk, REACTION_NPC_STEP_OFFER);
             break;
         case REACTION_NPC_LINE_LEARNT: {
-            int slot = MotionSlots_FindEmpty();
+            int slot = ReactionSlots_FindEmpty();
             if (slot != -1) {
                 ReactionNpc_PutReaction(talk->owner, slot, talk->chosen);
             }
@@ -182,7 +182,7 @@ CLEAN_AS(func_ov088_02278ba4, ReactionNpcTalk_OnLineEnded)
 
 /* func_ov088_02278c38 (slot 0x78, the line the talk starts with), of "sp_npc_reaction": line 1
  * until the player record's flag 0x10 is set (taught once); then one of 0x13-0x14 when not
- * taught today (daily bit 0x0e), else one of 0x0d-0x0f with one motion slot filled, or of
+ * taught today (daily bit 0x0e), else one of 0x0d-0x0f with one reaction slot filled, or of
  * 0x10-0x12 with more. */
 void ReactionNpcTalk_FirstLine(ReactionNpcTalk *talk, ReactionNpcLine *out)
 {
@@ -194,7 +194,7 @@ void ReactionNpcTalk_FirstLine(ReactionNpcTalk *talk, ReactionNpcLine *out)
     }
     if (TalkChecks_TestSetDailyBit(RT_DAILY_TAUGHT, 0) == 0) {
         out->message = (u8) (MainRandom_Below(2) + REACTION_NPC_LINE_NOT_TODAY);
-    } else if (MotionSlots_Count() == 1) {
+    } else if (ReactionSlots_Count() == 1) {
         out->message = (u8) (MainRandom_Below(3) + REACTION_NPC_LINE_ONE_KNOWN);
     } else {
         out->message = (u8) (MainRandom_Below(3) + REACTION_NPC_LINE_MORE_KNOWN);
@@ -258,7 +258,7 @@ CLEAN_AS(func_ov088_02278d28, ReactionNpcTalk_StepPause)
 /* func_ov088_02278d54 (step 3, each frame): once the talk object's state is 5, the reaction
  * chosen is watched: the owner's watch starts at 0x34 frames and, until a number of its motion
  * was taken, counts down while above 2. Then line 0x19 when it was taken in time (above 2:
- * daily bit 0x0e set; line 0x1a without an empty motion slot), else 0x18; the reaction's name
+ * daily bit 0x0e set; line 0x1a without an empty reaction slot), else 0x18; the reaction's name
  * in part 0; the watch over, a pause of 0x14 frames, the line shown, step 4. */
 void ReactionNpcTalk_StepWatch(ReactionNpcTalk *talk)
 {
@@ -278,7 +278,7 @@ void ReactionNpcTalk_StepWatch(ReactionNpcTalk *talk)
     if (owner->watch > RT_WATCH_IN_TIME) {
         next = REACTION_NPC_LINE_LEARNT;
         TalkChecks_TestSetDailyBit(RT_DAILY_TAUGHT, 1);
-        if (MotionSlots_FindEmpty() == -1) {
+        if (ReactionSlots_FindEmpty() == -1) {
             next = REACTION_NPC_LINE_NO_SLOT;
         }
     } else {
@@ -309,7 +309,7 @@ CLEAN_AS(func_ov088_02278e28, ReactionNpcTalk_StepOffer)
 /* func_ov088_02278e64 (step 1, each frame): once the talk object's state is 5, the owner is
  * watched (0x14 frames, set again each frame); once a number of its motion was taken: the
  * name of reaction 0x17 in part 0, the watch over and a pause of 0x14 frames, the player
- * record's flag 0x10 set, reaction 0x17 put in motion slot 0, line 0x0c shown, daily bit 0x0e
+ * record's flag 0x10 set, reaction 0x17 put in reaction slot 0, line 0x0c shown, daily bit 0x0e
  * set, step 4. */
 void ReactionNpcTalk_StepFirstLesson(ReactionNpcTalk *talk)
 {
@@ -368,15 +368,15 @@ void ReactionNpcTalk_WhileTalkOpen(ReactionNpcTalk *talk)
 CLEAN_AS(func_ov088_02278f6c, ReactionNpcTalk_WhileTalkOpen)
 
 /* func_ov088_02278fb0 (slot 0x88): the talk's answers set and opened (later). Reaction 0 and
- * those in the player's motion slots are marked known; then the four answers, each the text of
+ * those in the player's reaction slots are marked known; then the four answers, each the text of
  * a message of "st_learn_talk" (of "st_learn" for way 2):
  * - way 0: a reaction not marked known drawn at random (ReactionNpcTalk_PickUnknown), marked
  *   and kept as offered; reaction 1 when there is none;
  * - way 1: the reactions offered last;
- * - way 2: the reactions of the four motion slots, then a fifth answer, message 5 of answer
+ * - way 2: the reactions of the four reaction slots, then a fifth answer, message 5 of answer
  *   style 1's file, which is also the cancel.
  * The current player's record is asked for first, its answer unused.
- * QUIRK: the slots are marked through the first MotionSlots_Count of them, whatever they hold:
+ * QUIRK: the slots are marked through the first ReactionSlots_Count of them, whatever they hold:
  * an empty slot (0xff) before a filled one marks the byte 0xff places on. */
 void ReactionNpcTalk_SetAnswers(ReactionNpcTalk *talk, int way)
 {
@@ -389,8 +389,8 @@ void ReactionNpcTalk_SetAnswers(ReactionNpcTalk *talk, int way)
     TalkAnswers_Clear(answers);
 
     talk->known[0] = 1;
-    for (int i = 0; i < MotionSlots_Count(); i++) {
-        *rt_byte(talk->known, (unsigned int) MotionSlots_Get(i)) = 1;
+    for (int i = 0; i < ReactionSlots_Count(); i++) {
+        *rt_byte(talk->known, (unsigned int) ReactionSlots_Get(i)) = 1;
     }
 
     int i;
@@ -409,7 +409,7 @@ void ReactionNpcTalk_SetAnswers(ReactionNpcTalk *talk, int way)
         } else if (way == REACTION_NPC_ANSWERS_SAME) {
             reaction = talk->offered[i];
         } else {
-            reaction = MotionSlots_Get(i);
+            reaction = ReactionSlots_Get(i);
         }
         TalkAnswer *answer = TalkAnswers_Answer(answers, i);
         u8 message = (u8) reaction;

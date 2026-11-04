@@ -7,7 +7,7 @@
  *   0x11a8  the pockets (player_pockets.h)
  *   0x1d3c  a letter kept for a date (mail.h)
  *   0x23e0  the savings account (savings.h)
- *   0x23e8  four bytes (0xff for none), read by func_0203fa98
+ *   0x23e8  the four reactions the player knows (reaction_slots.h; 0xff for none)
  *   0x23f8  64 flags
  *   0x2400  the date of the last play
  *   0x2414  the birthday: day, month
@@ -69,7 +69,7 @@ u8 *PlayerRecord_SetBirthdayYear(u8 *record, u8 year);
 void PlayerRecord_ClearBirthday(u8 *record);
 void PlayerRecord_SetBirthday(u8 *record, u8 month, u8 day);
 u8 *PlayerRecord_Birthday(u8 *record);
-u8 *PlayerRecord_Bytes23e8(u8 *record);
+u8 *PlayerRecord_ReactionSlots(u8 *record);
 
 /* More of the record, by offset:
  *   0x0000  the player's designs (PlayerDesigns, design_sets.h)

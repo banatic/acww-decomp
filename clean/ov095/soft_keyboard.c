@@ -11,7 +11,7 @@
 #include "main/display_layers.h"
 #include "main/group_params.h"
 #include "main/layer_load_task.h"
-#include "main/motion_slots.h"
+#include "main/reaction_slots.h"
 #include "main/oam_buffer.h"
 #include "main/player_id.h"
 #include "main/player_record.h"
@@ -340,7 +340,7 @@ int SoftKeyboard_LoadObjGraphics(SoftKeyboard *kb)
 }
 CLEAN_AS(func_ov095_0229b324, SoftKeyboard_LoadObjGraphics)
 
-/* func_ov095_0229b280: the current player's motion slots taken as the emotion tabs, and each
+/* func_ov095_0229b280: the current player's reaction slots taken as the emotion tabs, and each
  * one's icon loaded into the sub OBJ characters (two upper and two lower ones).
  * QUIRK: the first `count` slots are taken, filled or not (the count is of the filled ones),
  * and an empty slot's icon (0xff) is read from far past "ten0.bch"'s 0x1000 bytes. */
@@ -348,9 +348,9 @@ void SoftKeyboard_LoadEmotions(SoftKeyboard *kb)
 {
     int i;
 
-    kb->emotion_count = (u8) MotionSlots_Count();
+    kb->emotion_count = (u8) ReactionSlots_Count();
     for (i = 0; i < kb->emotion_count; i++) {
-        kb->emotion_numbers[i] = (u8) MotionSlots_Get(i);
+        kb->emotion_numbers[i] = (u8) ReactionSlots_Get(i);
     }
     RomFile_Read(data_ov095_0229edf4, kb->emotion_chars, SOFT_KEYBOARD_EMOTION_CHARS_SIZE);
     for (i = 0; i < kb->emotion_count; i++) {

@@ -1216,7 +1216,7 @@ SAVES["house-beds"] = SAVES["house-big"] + [room_item(6, 9, 0), room_item(6, 7, 
 DAY_PLAN = 0xF52B
 SAVES["cafe-plan"] = SAVES["museum"] + [(DAY_PLAN, "<B", 0xC7)]
 # as "visitor-43" taught by the reaction teacher on an earlier day: the player record's flag 0x10
-# (bit 16 of the flags at 0x23f8, the seed's 0x6608) and reaction 0x17 in motion slot 0 (the
+# (bit 16 of the flags at 0x23f8, the seed's 0x6608) and reaction 0x17 in reaction slot 0 (the
 # record's four slots at 0x23e8, the seed's all 0xff), as his first lesson leaves them
 # (ov088/reaction_npc_talk.c)
 SAVES["pupil"] = SAVES["visitor-43"] + [(0x14 + 0x23F8, "<I", 0x16608), (0x14 + 0x23E8, "<B", 0x17)]

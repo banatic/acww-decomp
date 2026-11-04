@@ -2895,7 +2895,7 @@ What reading the Clean code found about the groups above; counts are of function
 
 ### The reaction teacher's second lesson, a fish let go or scared off, the contests' notices (2026-10-30, dates3, second batch)
 - The reaction teacher with a player he taught on an earlier day (save pupil: the player
-  record's flag 0x10, reaction 0x17 in motion slot 0) asks about the player's training (line
+  record's flag 0x10, reaction 0x17 in reaction slot 0) asks about the player's training (line
   0x13 or 0x14); "in a slump" makes him offer reactions not known yet (ReactionNpcTalk_SetAnswers
   way 0, _PickUnknown, _CountUnknown, _StepOffer) and watch for the one picked (_StepWatch):
   scene reaction-pupil. "Of course" gets only his "?" and the question again.

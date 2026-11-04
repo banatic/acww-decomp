@@ -23,7 +23,7 @@
 #include "main/footsteps.h"
 #include "main/layered_model.h"
 #include "main/main_random.h"
-#include "main/motion_slots.h"
+#include "main/reaction_slots.h"
 #include "main/obj_020d8c64.h"
 #include "main/pool_link.h"
 #include "main/scene_action.h"
@@ -253,12 +253,12 @@ ReactionNpc *ReactionNpc_Delete(ReactionNpc *npc)
 }
 CLEAN_AS(func_ov088_02278a28, ReactionNpc_Delete)
 
-/* func_ov088_02278a54: reaction `reaction` taught: put in the current player's motion slot
+/* func_ov088_02278a54: reaction `reaction` taught: put in the current player's reaction slot
  * `slot`, and event 0x43 marked taken part in. */
 void ReactionNpc_PutReaction(ReactionNpc *npc, int slot, int reaction)
 {
     (void) npc;
-    MotionSlots_Set(slot, reaction);
+    ReactionSlots_Set(slot, reaction);
     EventSchedule_MarkTakenPart(RNPC_EVENT);
 }
 CLEAN_AS(func_ov088_02278a54, ReactionNpc_PutReaction)

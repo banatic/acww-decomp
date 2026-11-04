@@ -10,7 +10,7 @@
 #include "field_collision.h"
 #include "footsteps.h"
 #include "layered_model.h"
-#include "motion_slots.h"
+#include "reaction_slots.h"
 #include "scene_base.h"
 #include "scene_face.h"
 #include "scene_look.h"
@@ -121,7 +121,7 @@ int Obj020d8c64_TakeNewMotionNumber(void *object)
     }
     int number = SceneMotion_ActNumber(motion);
     if (number > 0 && number <= OBJ_020D8C64_NUMBER_LAST && number != Obj020d8c64_LastMotionNumber((s16 *) object) &&
-        MotionSlots_Find((u8) number) == -1) {
+        ReactionSlots_Find((u8) number) == -1) {
         Obj020d8c64_SetLastMotionNumber(object, (u8) number);
         return number;
     }

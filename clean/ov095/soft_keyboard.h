@@ -109,7 +109,7 @@ enum SoftKeyboardKey {
     SOFT_KEYBOARD_KEY_BUTTON_108 = 0x108,
     SOFT_KEYBOARD_KEY_SIDE_LEFT = 0x109, /* the buttons at the two ends of the tab row */
     SOFT_KEYBOARD_KEY_SIDE_RIGHT = 0x10a,
-    SOFT_KEYBOARD_KEY_EMOTION_FIRST = 0x10c, /* kind 0: one tab per motion slot filled */
+    SOFT_KEYBOARD_KEY_EMOTION_FIRST = 0x10c, /* kind 0: one tab per reaction slot filled */
     SOFT_KEYBOARD_KEY_EMOTION_LAST = 0x10f
 };
 
@@ -182,7 +182,7 @@ enum SoftKeyboardCompose {
 };
 
 #define SOFT_KEYBOARD_COMPOSITION 6 /* the jamo kept of the syllable being typed */
-#define SOFT_KEYBOARD_EMOTIONS 4    /* main/motion_slots.h: MOTION_SLOTS */
+#define SOFT_KEYBOARD_EMOTIONS 4    /* main/reaction_slots.h: REACTION_SLOTS */
 #define SOFT_KEYBOARD_NO_EMOTION 0xff
 #define SOFT_KEYBOARD_KEY_CHARS_SIZE 0x22c0
 #define SOFT_KEYBOARD_SCREEN_SIZE 0x800
@@ -196,7 +196,7 @@ typedef struct SoftKeyboard {
     u16 flags;                                  /* 0x14: SoftKeyboardFlag */
     u8 page;                                    /* 0x16: SoftKeyboardPage */
     u8 emotion;                                 /* 0x17: the emotion tab picked, SOFT_KEYBOARD_NO_EMOTION */
-    u8 emotion_count;                           /* 0x18: the motion slots filled */
+    u8 emotion_count;                           /* 0x18: the reaction slots filled */
     u8 side_palette[2];                         /* 0x19: of the side buttons */
     u8 layout;                                  /* 0x1b: SoftKeyboardLayout */
     u8 pressed_timer;                           /* 0x1c: frames the pressed key is still shown */

@@ -1,6 +1,6 @@
 /* Overlay 88: the special character of the message file "sp_npc_reaction" with the model
  * npc_sp/model/upa (person code 0xd021), who teaches the player reactions: the numbers of the
- * motions a player's record keeps in its four motion slots (main's motion_slots.h), named by
+ * motions a player's record keeps in its four reaction slots (main's reaction_slots.h), named by
  * the messages of "st_learn". Main's spawner (spawner.h) asks for it while event 0x43 is on
  * (Spawner_CheckEvents3e); its spawn table (data_020e1d8c) gives its object profile 0x62 the
  * code 0xd021 and overlay 88, loaded with it; the profile's record is at 0x02279be0, which

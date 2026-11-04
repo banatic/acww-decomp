@@ -11,7 +11,7 @@
  * What it does, by the lines of "sp_npc_reaction" (REACTION_NPC_LINE_*): it shows a reaction
  * (line 0x1c plus the reaction's number) and watches for the number its motion shows to be
  * taken (ReactionNpc.watch, ReactionNpc_MotionNumber); taken in time, the reaction is put in
- * an empty motion slot of the player, or in one the player gives up. The first lesson teaches
+ * an empty reaction slot of the player, or in one the player gives up. The first lesson teaches
  * reaction 0x17 into slot 0; later ones offer four reactions not known yet, drawn at random.
  *
  * Its daily bit (TalkChecks_TestSetDailyBit) 0x0e: taught today. Flag 0x10 of the player
@@ -52,7 +52,7 @@ typedef struct ReactionNpcTalkStep {
 enum ReactionNpcAnswers {
     REACTION_NPC_ANSWERS_NEW = 0,   /* four not known yet, drawn at random */
     REACTION_NPC_ANSWERS_SAME = 1,  /* the four offered last */
-    REACTION_NPC_ANSWERS_SLOTS = 2, /* the player's four motion slots, and a fifth answer */
+    REACTION_NPC_ANSWERS_SLOTS = 2, /* the player's four reaction slots, and a fifth answer */
 };
 
 /* No line (the lines are bytes). */
@@ -62,7 +62,7 @@ enum ReactionNpcAnswers {
 #define REACTION_NPC_LINE_FIRST 0x01        /* the talk's line until taught once */
 #define REACTION_NPC_LINE_LESSON 0x0b       /* ends with the first lesson */
 #define REACTION_NPC_LINE_LEARNT_FIRST 0x0c /* the first reaction taken */
-#define REACTION_NPC_LINE_ONE_KNOWN 0x0d    /* 0x0d-0x0f: one motion slot filled */
+#define REACTION_NPC_LINE_ONE_KNOWN 0x0d    /* 0x0d-0x0f: one reaction slot filled */
 #define REACTION_NPC_LINE_MORE_KNOWN 0x10   /* 0x10-0x12: more */
 #define REACTION_NPC_LINE_NOT_TODAY 0x13    /* 0x13-0x14: not taught today yet */
 #define REACTION_NPC_LINE_OFFER 0x17        /* ends with new reactions offered */

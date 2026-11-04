@@ -1,6 +1,6 @@
 # reaction-pupil (format: runtime/input.h), played from a town save by tools/scenes.py (the save is
 # not in this repository). Boot and walk: as reaction-teacher.txt to 4400 (talking to him).
-# Save: pupil (visitor-43 with the player record's flag 0x10 set and reaction 0x17 in motion slot
+# Save: pupil (visitor-43 with the player record's flag 0x10 set and reaction 0x17 in reaction slot
 # 0: taught once on an earlier day). A every 40 frames through his jokes and his question about
 # the player's training (line 0x13 or 0x14, ReactionNpcTalk_FirstLine); DOWN at 5400 answers that
 # it is in a slump: he offers new reactions (ReactionNpcTalk_SetAnswers, way 0: _PickUnknown and

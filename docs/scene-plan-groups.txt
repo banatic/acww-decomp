@@ -2251,7 +2251,7 @@ group: villagers out in the town
 scene: watch the villagers walk for a long time: their 24 behaviours (go home, chat in pairs, sit, run, look at the player, umbrella in rain), their memories, moods, impressions and bonds changing
 reach: long walks near villagers on the seed's day and at night; the moods and bonds over several days need dates
 needs: seed
-match: ov068/outdoor_villager* ov003/villager_house main/villager_* main/npc_id main/motion_slots
+match: ov068/outdoor_villager* ov003/villager_house main/villager_* main/npc_id main/reaction_slots
   main/path_walker
 
 area: New player and title (the seed's save)
