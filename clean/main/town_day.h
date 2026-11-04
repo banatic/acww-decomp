@@ -116,7 +116,7 @@ void TownDay_SetPeriod(void);
 void TownDay_Move(const DateTime *from, const DateTime *to, int days, int wet, int loaded);
 void TownDay_Pass(TownDay *town, const DateTime *from, const DateTime *to, int days, u8 wet, int loaded);
 void TownDay_ChangeFamilyB(TownDay *town, AcreMap *map, int wide, int high);
-u16 TownDay_FamilyCCode(int unused, const u16 *code, int keep_86);
+u16 TownDay_FamilyCCode(int unused, const u16 *code, int golden_can);
 void TownDay_StartNow(void);
 void TownDay_Start(TownDay *town, int loaded);
 void TownDay_UpdateEvents(TownDay *town, AcreMap *map, int wide, int high, const DateTime *today, int loaded);

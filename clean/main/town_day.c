@@ -616,14 +616,15 @@ void TownDay_ChangeFamilyB(TownDay *town, AcreMap *map, int wide, int high)
 CLEAN_AS(func_02047500, TownDay_ChangeFamilyB)
 
 /* func_020475b0: the code a tile's code changes to, or 0xfff1 for none: family B's codes
- * (0x6e-0x87) the family C code of the same place (+0x1c), except 0x86 which becomes 0xa5 when
- * `keep_86`; 0x88 becomes 0xa4 and 0xd4-0xda become 0xdb-0xe1. */
-u16 TownDay_FamilyCCode(int unused, const u16 *code, int keep_86)
+ * (0x6e-0x87) the family C code of the same place (+0x1c), except 0x86 which becomes the golden
+ * rose 0xa5 when `golden_can` (the player holds the golden watering can); 0x88 becomes 0xa4 and
+ * 0xd4-0xda become 0xdb-0xe1. */
+u16 TownDay_FamilyCCode(int unused, const u16 *code, int golden_can)
 {
     (void) unused;
     unsigned int value = *code;
     if (value >= 0x6e && value <= 0x87) {
-        if (value == 0x86 && keep_86 != 0) {
+        if (value == 0x86 && golden_can != 0) {
             return 0xa5;
         }
         return (u16) (value + 0x1c);

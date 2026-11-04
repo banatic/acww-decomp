@@ -63,7 +63,7 @@ extern int CurrentPockets_FreeSlot(void);
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 
 #define TILE_REQUESTS_BOTTLE 0x1520 /* the bottle with a letter: it needs a letter's place */
-#define TILE_REQUESTS_ITEM_1379 0x1379
+#define TILE_REQUESTS_GOLDEN_WATERING_CAN 0x1379
 #define TILE_REQUESTS_MARKED_ITEM 0x1566
 #define TILE_REQUESTS_ROCK_HITS 8
 #define TILE_REQUESTS_ROCK_TIME 150
@@ -448,10 +448,10 @@ void TileRequests_ClearSpawnTile(const Vec3 *position)
 CLEAN_AS(func_02042fd4, TileRequests_ClearSpawnTile)
 
 /* func_02042ff8: on the five tiles of a cross around `tile` where no one stands, each code that
- * func_020475b0 changes (0x86 the other way when `player` holds item 0x1379) takes its new code
- * (func_0205f9d4). When one did, or a tile holds a code of families A-C (map_item.h, with 0x1c
- * and 0xa5), 0x1a, 0x1d, 0x1e, 0x88 or 0xa4, and this system is not linked, the
- * villagers hear of it at the tile (VillagerEvent_Report5). */
+ * func_020475b0 changes (0x86 the golden rose 0xa5 when `player` holds the golden watering can)
+ * takes its new code (func_0205f9d4). When one did, or a tile holds a code of families A-C
+ * (map_item.h, with 0x1c and 0xa5), 0x1a, 0x1d, 0x1e, 0x88 or 0xa4, and this system is not
+ * linked, the villagers hear of it at the tile (VillagerEvent_Report5). */
 void TileRequests_ChangeCodesAround(int player, const TileRequestTile *tile)
 {
     AcreMap *town = (AcreMap *) (uintptr_t) AcreMap_Town();
@@ -459,7 +459,7 @@ void TileRequests_ChangeCodesAround(int player, const TileRequestTile *tile)
     if (town == NULL || self == NULL) {
         return;
     }
-    int holds_1379 = TileRequests_HeldItem(player) == TILE_REQUESTS_ITEM_1379;
+    int holds_golden_can = TileRequests_HeldItem(player) == TILE_REQUESTS_GOLDEN_WATERING_CAN;
     int found = 0;
     for (int i = 0; i < 5; i++) {
         int x = tile->x + data_020ca584[i];
@@ -472,7 +472,7 @@ void TileRequests_ChangeCodesAround(int player, const TileRequestTile *tile)
         if (code == NULL) {
             continue;
         }
-        u16 changed = TownDay_FamilyCCode((int) (uintptr_t) data_021c779c, code, holds_1379);
+        u16 changed = TownDay_FamilyCCode((int) (uintptr_t) data_021c779c, code, holds_golden_can);
         if (changed != ITEM_CODE_NONE) {
             found = 1;
             LinkedMapItems_Set((u8) x, (u8) z, SceneQuery_Current(), changed, 0);
@@ -979,7 +979,7 @@ extern const int data_020caaf8[];
 extern const u16 data_020ca64c[];
 
 #define TILE_REQUESTS_TOWN_DROP_BLOCK 0x1c /* data_021c779c's byte: no item may drop */
-#define TILE_REQUESTS_BAG_SHOVEL 0x136a    /* the item to hold for a bag of bells to grow */
+#define TILE_REQUESTS_GOLDEN_SHOVEL 0x136a /* the golden shovel: held, a bag of bells grows */
 #define TILE_REQUESTS_BAG_FIRST 0x1492     /* the bags of bells */
 #define TILE_REQUESTS_BAG_LAST 0x14fd
 #define TILE_REQUESTS_BAG_CODE 0x26       /* the code a bag of bells becomes */
@@ -1350,13 +1350,13 @@ int TileRequests_SplitItem(u16 *item, u16 *tile_item, u16 code)
 }
 CLEAN_AS(func_020445c0, TileRequests_SplitItem)
 
-/* func_02044750: a bag of bells put in a hole while this system's player holds item 0x136a
- * becomes code 0x26 (`unchanged` 0). Once a day for the current player (func_0204cafc) it
+/* func_02044750: a bag of bells put in a hole while this system's player holds the golden
+ * shovel becomes code 0x26 (`unchanged` 0). Once a day for the current player (func_0204cafc) it
  * becomes 0x57 instead, with a chance in 100 of the bag's bells / 1000 + the byte
  * RoomScore_HouseYellowWest gives / 25 (100 at most); that uses the day's turn up. */
 void TileRequests_BagCodes(u16 *item, u8 *unchanged, u16 put)
 {
-    if (TileRequests_HeldItem(data_020ccf94->local_player) != TILE_REQUESTS_BAG_SHOVEL) {
+    if (TileRequests_HeldItem(data_020ccf94->local_player) != TILE_REQUESTS_GOLDEN_SHOVEL) {
         return;
     }
     u16 bag = put;
