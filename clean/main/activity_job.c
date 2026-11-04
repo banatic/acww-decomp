@@ -165,19 +165,19 @@ void ActivityJob_Ask3(void)
 }
 CLEAN_AS(func_020a1918, ActivityJob_Ask3)
 
-/* func_020a1924 */
-void ActivityJob_Ask5(void)
+/* func_020a1924: job 5 asked for, the town deleted (the title's menu, TitleScene_ExitToDeleteTown). */
+void ActivityJob_AskDeleteTown(void)
 {
     data_021f3c38 = 5;
 }
-CLEAN_AS(func_020a1924, ActivityJob_Ask5)
+CLEAN_AS(func_020a1924, ActivityJob_AskDeleteTown)
 
-/* func_020a1930 */
-void ActivityJob_Ask6(void)
+/* func_020a1930: job 6 asked for, the town player picked removed (TitleScene_ExitToRemovePlayer). */
+void ActivityJob_AskRemovePlayer(void)
 {
     data_021f3c38 = 6;
 }
-CLEAN_AS(func_020a1930, ActivityJob_Ask6)
+CLEAN_AS(func_020a1930, ActivityJob_AskRemovePlayer)
 
 /* func_020a193c */
 void ActivityJob_Ask2(void)

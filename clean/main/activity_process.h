@@ -27,8 +27,8 @@
 #include "activity.h"
 #include "types.h"
 
-void ActivityProcess_StepJob5(Activity *activity);
-void ActivityProcess_StartJob5(Activity *activity);
+void ActivityProcess_StepDeleteTown(Activity *activity);
+void ActivityProcess_StartDeleteTown(Activity *activity);
 void ActivityProcess_StepJob4(Activity *activity);
 void ActivityProcess_StartJob4(Activity *activity);
 void ActivityProcess_StepJob3(Activity *activity);

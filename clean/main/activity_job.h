@@ -32,8 +32,8 @@ void ActivityJob_Ask14(void);
 void ActivityJob_Ask13(void);
 void ActivityJob_Ask12(void);
 void ActivityJob_Ask3(void);
-void ActivityJob_Ask5(void);
-void ActivityJob_Ask6(void);
+void ActivityJob_AskDeleteTown(void);
+void ActivityJob_AskRemovePlayer(void);
 void ActivityJob_Ask2(void);
 void ActivityJob_Ask1(void);
 

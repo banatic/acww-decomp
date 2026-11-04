@@ -237,7 +237,7 @@ void TitleScene_ExitToDeleteTown(TitleScene *self)
     if (talk->state == TALK_OBJECT_CLOSED) {
         TalkObject_DetachReceiver(talk);
         SceneExit_SetToScene(title_entry_record(), TITLE_SCENE_2E, TITLE_CHANGE_ARG, 3);
-        ActivityJob_Ask5();
+        ActivityJob_AskDeleteTown();
         TitleScene_StopMusic(self);
     }
 }
@@ -262,7 +262,7 @@ void TitleScene_ExitToRemovePlayer(TitleScene *self)
     if (talk->state == TALK_OBJECT_CLOSED) {
         TalkObject_DetachReceiver(talk);
         SceneExit_SetToScene(title_entry_record(), TITLE_SCENE_2E, TITLE_CHANGE_ARG, 3);
-        ActivityJob_Ask6();
+        ActivityJob_AskRemovePlayer();
         TitleScene_StopMusic(self);
     }
 }

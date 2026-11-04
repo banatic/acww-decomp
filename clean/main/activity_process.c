@@ -161,9 +161,9 @@ static int scene_has_card_buffers(int scene)
     return scene == SCENE_2E || scene == SCENE_06 || scene == SCENE_09 || scene == SCENE_0B;
 }
 
-/* func_020a48cc: job 5's steps: once talk 0 waits, the save's marks cleared, then its parts 0,
+/* func_020a48cc: job 5's steps (the town deleted): once talk 0 waits, the save's marks cleared, then its parts 0,
  * 1 and 2 erased; talk 0 closed and job 0xc started. */
-void ActivityProcess_StepJob5(Activity *activity)
+void ActivityProcess_StepDeleteTown(Activity *activity)
 {
     int result;
     switch (activity->state) {
@@ -216,15 +216,15 @@ void ActivityProcess_StepJob5(Activity *activity)
             break;
     }
 }
-CLEAN_AS(func_020a48cc, ActivityProcess_StepJob5)
+CLEAN_AS(func_020a48cc, ActivityProcess_StepDeleteTown)
 
-/* func_020a49a0: job 5 starts: message 12 of "sp_etc_sequence1" shown. */
-void ActivityProcess_StartJob5(Activity *activity)
+/* func_020a49a0: job 5 (the town deleted) starts: message 12 of "sp_etc_sequence1" shown. */
+void ActivityProcess_StartDeleteTown(Activity *activity)
 {
     ActivityTalk_Show(activity, data_020e3c54, SEQUENCE1_JOB5);
     activity->state = 0;
 }
-CLEAN_AS(func_020a49a0, ActivityProcess_StartJob5)
+CLEAN_AS(func_020a49a0, ActivityProcess_StartDeleteTown)
 
 /* func_020a49bc: job 4's steps: once the object at data_021c779c + 0x20 is done (when
  * func_02042324 says it was not, until func_020422f8 says so), the card checked, then the copy

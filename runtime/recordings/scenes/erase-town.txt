@@ -3,7 +3,7 @@
 # else" and its first choice, a new town, the warnings read with A every 64 frames.
 # Save: the seed town. At the last question (about 1836) DOWN and A answer "make it anyway": the
 # title's exit for the activity's job 5 (ov147/title_scene.c TitleScene_ExitToDeleteTown), the save's
-# marks cleared and its three parts erased (main/activity_process.c ActivityProcess_StepJob5);
+# marks cleared and its three parts erased (main/activity_process.c ActivityProcess_StepDeleteTown);
 # then the title of an erased card, its camera touring the town (about 3000 on).
 900 START -
 906 - -
