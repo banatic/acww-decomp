@@ -2,7 +2,7 @@
 # not in this repository). As acorn-ask.txt to 8150 (the pockets open on the
 # five acorns), one frame of nothing, then acorn-ask.txt's presses from 8150 one frame later:
 # the fifth acorn (0x1546) given; the random draw by the villager's fondness now says the row of
-# its thanks, VillagerTalk_SayIfFond: it gives an item for the acorn (VillagerTalk_GiveItemFor1546,
+# its thanks, VillagerTalk_SayIfFond: it gives an item for the acorn (VillagerTalk_GiveForAcorn,
 # VillagerTalk_Line8ba0Group19). A every 40 frames to 9657.
 900 START -
 906 - -

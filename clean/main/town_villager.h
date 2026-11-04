@@ -38,7 +38,7 @@
 #define TOWN_VILLAGER_HOUSE_TILE 0x7ce
 #define TOWN_VILLAGER_CLOTHES 0x7d2
 #define TOWN_VILLAGER_NUMBER_7D8 0x7d8
-#define TOWN_VILLAGER_ITEM_1380 0x7da
+#define TOWN_VILLAGER_UMBRELLA 0x7da
 #define TOWN_VILLAGER_LETTER_TOWN 0x7dc
 #define TOWN_VILLAGER_NONE (-1)
 
@@ -46,8 +46,8 @@ int TownVillager_IsMemoryIndex(u8 *villager, u32 index);
 int TownVillager_IsFreeCompanion(u8 *villager);
 int TownVillager_BirthdayYearWithin(u8 *villager, int days, const DateTime *from);
 int TownVillager_FirstEmpty(u8 *villagers, int count);
-void TownVillager_SetItem1380(u8 *villager, const u16 *item);
-void TownVillager_Item1380(u16 *out, u8 *villager);
+void TownVillager_SetUmbrella(u8 *villager, const u16 *item);
+void TownVillager_Umbrella(u16 *out, u8 *villager);
 void TownVillager_SetClothes(u8 *villager, const u16 *clothes);
 u16 *TownVillager_Clothes(u8 *villager);
 Letter *TownVillager_Letter(u8 *villager);

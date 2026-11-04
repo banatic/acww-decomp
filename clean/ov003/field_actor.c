@@ -253,7 +253,7 @@ static BOOL is_short_line_object(u16 code)
 }
 
 /* Whether a held item code is one of 0x1376 and 0x1377. */
-static BOOL is_item_1376(u16 item)
+static BOOL is_net(u16 item)
 {
     return item == 0x1376 || item == 0x1377;
 }
@@ -501,7 +501,7 @@ CLEAN_AS(func_ov003_0220c57c, FieldActor_TryTool)
  * other_id) and records the verdict in other_result: 0 none met, 1 met but not found, 2 found
  * in main's tables (kinds 2 and 3), 3 found among overlay 3's eight (kinds 0x11 and 0x12),
  * 4 a kind 2 or 3 object accepted the held item 0x1376 or 0x1377 (its vtable slot 24 said 1).
- * A found object is kept in `other` unless the held item is 0x1376 or 0x1377. Whether one was
+ * A found object is kept in `other` unless the held item is a net, 0x1376 or 0x1377. Whether one was
  * met. */
 int FieldActor_CheckOther(FieldActor *actor)
 {
@@ -521,7 +521,7 @@ int FieldActor_CheckOther(FieldActor *actor)
         case 3: {
             GameObject *object = Actors_GetByIndex(kind, id);
             if (object != NULL) {
-                if (is_item_1376(item)) {
+                if (is_net(item)) {
                     ItemQuery query = (ItemQuery) (uintptr_t) object->vtable[24];
                     if (query(object, &item) == 1) {
                         actor->other_result = 4;
@@ -538,7 +538,7 @@ int FieldActor_CheckOther(FieldActor *actor)
         case 0x12: {
             GameObject *object = (GameObject *) Snowman_Find(id);
             if (object != NULL) {
-                if (!is_item_1376(item)) {
+                if (!is_net(item)) {
                     actor->other = object;
                 }
                 actor->other_result = 3;
@@ -692,7 +692,7 @@ void FieldActor_FindTileTarget(FieldActor *actor)
     }
 
     int tile[2] = {x, z};
-    actor->target = TileRequests_AskMarked1566For(actor->player, (const TileRequestTile *) tile, mode);
+    actor->target = TileRequests_AskMarkedPitfallFor(actor->player, (const TileRequestTile *) tile, mode);
     if (actor->target == -1) {
         return;
     }
@@ -5774,7 +5774,7 @@ static void close_receiver(FieldActor *actor)
 }
 
 /* The items 0x1320 to 0x1322: kinds 0x38 to 0x3a past the fish of 0x12e8 to 0x131f. */
-static BOOL is_item_1320(u16 item)
+static BOOL is_trash(u16 item)
 {
     return item >= 0x1320 && item <= 0x1322;
 }
@@ -6822,7 +6822,7 @@ void FieldActor_RunState55(FieldActor *actor)
                 } else if (actor->progress < 0xf) {
                     break;
                 }
-                if (is_item_1320(item)) {
+                if (is_trash(item)) {
                     *step = 3;
                     if (actor->unk_810 == -1) {
                         actor->unk_810 = TileRequests_AskDropFor(actor->player, item);
@@ -7032,7 +7032,7 @@ void FieldActor_RunState54(FieldActor *actor)
                 int point[2] = {0, 0};
                 if (TileRequests_FindDropTile(0x10, (TileRequestTile *) point, NULL)) {
                     work->step = 3;
-                    actor->progress = is_item_1320(actor->item) ? 4 : 0;
+                    actor->progress = is_trash(actor->item) ? 4 : 0;
                     break;
                 }
                 work->step = 4;
@@ -7049,7 +7049,7 @@ void FieldActor_RunState54(FieldActor *actor)
             break;
         case 3:
             if (actor->progress >= 0xf) {
-                if (!is_item_1320(actor->item)) {
+                if (!is_trash(actor->item)) {
                     work->step = 4;
                     break;
                 }
@@ -9209,7 +9209,7 @@ static void set_held_weight(FieldActor *actor, fx32 weight)
 }
 
 /* Whether a held item code is in 0x1380-0x13a7. */
-static BOOL is_item_1380(u16 item)
+static BOOL is_umbrella(u16 item)
 {
     return item >= 0x1380 && item <= 0x13a7;
 }
@@ -9414,7 +9414,7 @@ int FieldActor_RequestState3D(FieldActor *actor, int next, int flags, fx32 x, fx
     u16 item;
 
     FieldActor_RecordHeldItem(&item, actor);
-    if (is_item_1380(item)) {
+    if (is_umbrella(item)) {
         return FieldActor_RequestState3E(actor, next, flags, x, z, yaw, priority, arg);
     }
     open_request(&request, 0x3d, priority, arg);
@@ -9532,7 +9532,7 @@ void FieldActor_EndState3B(FieldActor *actor)
     actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
     u8 kind = actor->work.s3b.kind;
     FieldActor_RecordHeldItem(&item, actor);
-    if (kind <= 1 && is_item_1380(item)) {
+    if (kind <= 1 && is_umbrella(item)) {
         FieldActor_ClearFlag(actor, 0x1d);
     }
 
@@ -10749,15 +10749,15 @@ CLEAN_AS(func_ov003_022195c8, FieldActor_RequestState6)
 
 #define THIS_PLAYER 4
 
-/* func_ov003_02219604: whether the player at this console holds item 0x1376 or 0x1377
+/* func_ov003_02219604: whether the player at this console holds a net (0x1376 or 0x1377)
  * (func_02095764 gives ITEM_CODE_NONE without an actor). */
-int FieldActor_PlayerHolds1376(void)
+int FieldActor_PlayerHoldsNet(void)
 {
     u16 item;
     PlayerActorOps_HeldItem(&item, THIS_PLAYER);
-    return is_item_1376(item);
+    return is_net(item);
 }
-CLEAN_AS(func_ov003_02219604, FieldActor_PlayerHolds1376)
+CLEAN_AS(func_ov003_02219604, FieldActor_PlayerHoldsNet)
 
 /* func_ov003_02219648: the actor of this console starts animation 0x99. */
 void FieldActor_PlayerAnimation99(void)

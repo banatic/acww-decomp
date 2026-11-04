@@ -15,7 +15,7 @@ extern TownDay data_021c779c;
 #define TOWN_ACRE_FEWEST_LINES 12
 #define TOWN_ACRE_MOST_LINES 15
 #define TOWN_ACRE_FREE_COUNT 2 /* codes 0x21-0x24, other items and family codes: two pass free */
-#define TOWN_ACRE_1320_COST 10
+#define TOWN_ACRE_TRASH_COST 10
 #define TOWN_ACRE_SPOT_COST 50
 #define TOWN_ACRE_NO_LOW_SCORE 10000
 
@@ -56,7 +56,7 @@ static void clear_count(TownAcreCount *acre)
     }
     acre->codes_21 = 0;
     acre->others = 0;
-    acre->items_1320 = 0;
+    acre->trash = 0;
     acre->family_codes = 0;
     acre->flags = 0;
     acre->spot_x = -1;
@@ -64,7 +64,7 @@ static void clear_count(TownAcreCount *acre)
     acre->rocks = 0;
     acre->code_6d = 0;
     acre->beach_items = 0;
-    acre->marked_1549 = 0;
+    acre->marked_fossils = 0;
 }
 
 /* A growth line's code at tile `index` (row by row) of the acre: counted in its quarter, with the
@@ -134,16 +134,16 @@ static void count_item(TownAcreCount *acre, AcreMap *map, int acre_x, int acre_z
         if (code >= 0x1554 && code <= 0x155c) {
             acre->beach_items++;
         } else if (code >= 0x154a && code <= 0x1553) {
-            acre->flags |= TOWN_ACRE_HAS_154A;
+            acre->flags |= TOWN_ACRE_HAS_SPOILED_TURNIP;
         } else if ((code >= 0x1518 && code <= 0x151c) || (code >= 0x1542 && code <= 0x1546)) {
             /* not counted */
         } else {
             acre->others++;
         }
     } else if (code == 0x1549) {
-        acre->marked_1549++;
+        acre->marked_fossils++;
     } else if (code == 0x1566) {
-        acre->flags |= TOWN_ACRE_HAS_MARKED_1566;
+        acre->flags |= TOWN_ACRE_HAS_MARKED_PITFALL;
     }
 }
 
@@ -180,7 +180,7 @@ void TownAcreCount_Count(TownAcreCount *acre, AcreMap *map, int acre_x, int acre
             }
         } else if (kind == 1) {
             if (*code >= 0x1320 && *code <= 0x1322) {
-                acre->items_1320++;
+                acre->trash++;
             } else {
                 count_item(acre, map, acre_x, acre_z, *code, index);
             }
@@ -224,9 +224,9 @@ void TownAcreCount_CountDay(TownAcreCount *acre, AcreMap *map, int acre_x, int a
         } else if (kind == 1) {
             u16 now = *code;
             if (now == 0x1548) {
-                acre->flags |= TOWN_ACRE_HAS_1548;
+                acre->flags |= TOWN_ACRE_HAS_COCONUT;
             } else if (now >= 0x1320 && now <= 0x1322) {
-                acre->items_1320++;
+                acre->trash++;
             } else if (now == 0x1568) {
                 TownAcreCount_ClearTile(acre, map, acre_x, acre_z, index);
             } else {
@@ -280,7 +280,7 @@ void TownAcreCount_Score(TownAcreCount *acre)
     if (acre->others > TOWN_ACRE_FREE_COUNT) {
         score -= acre->others - TOWN_ACRE_FREE_COUNT;
     }
-    score -= TOWN_ACRE_1320_COST * acre->items_1320;
+    score -= TOWN_ACRE_TRASH_COST * acre->trash;
 #ifdef BUGFIX
     if (acre->flags & TOWN_ACRE_HAS_SPOT) {
         score -= TOWN_ACRE_SPOT_COST;
@@ -316,7 +316,7 @@ void TownAcreCount_FindWorst(TownAcreWorst *worst, const TownDayTile *acre_of, c
     if (acre->others > TOWN_ACRE_FREE_COUNT) {
         cost[TOWN_ACRE_WORST_OTHERS] = acre->others - TOWN_ACRE_FREE_COUNT;
     }
-    cost[TOWN_ACRE_WORST_1320] = acre->items_1320 * TOWN_ACRE_1320_COST;
+    cost[TOWN_ACRE_WORST_TRASH] = acre->trash * TOWN_ACRE_TRASH_COST;
     if (acre->flags & TOWN_ACRE_HAS_SPOT) {
         cost[TOWN_ACRE_WORST_SPOT] = TOWN_ACRE_SPOT_COST;
     }
@@ -384,7 +384,7 @@ static void clear_totals(TownDayAcres *acres)
     totals->unk_28 = 0;
     totals->unk_2a = 0;
     totals->acres_66 = 0;
-    totals->marked_1549 = 0;
+    totals->marked_fossils = 0;
     acres->spot_acre_x = -1;
     acres->spot_acre_z = -1;
     acres->spot_x = -1;
@@ -411,27 +411,27 @@ static void add_acre(TownDayAcres *acres, const TownAcreCount *acre, int acre_x,
     if (acre->flags & TOWN_ACRE_HAS_66) {
         totals->acres_66++;
     }
-    if (acre->marked_1549 != 0) {
-        totals->marked_1549 += acre->marked_1549;
+    if (acre->marked_fossils != 0) {
+        totals->marked_fossils += acre->marked_fossils;
     }
     if (day) {
         totals->rocks += (u8) acre->rocks;
         totals->flags |= (u8) ((acre->flags >> TOWN_ACRE_MONEY_ROCKS_SHIFT) & TOWN_TOTALS_MONEY_ROCKS);
-        if (acre->flags & TOWN_ACRE_HAS_1548) {
-            totals->flags |= TOWN_TOTALS_HAS_1548;
+        if (acre->flags & TOWN_ACRE_HAS_COCONUT) {
+            totals->flags |= TOWN_TOTALS_HAS_COCONUT;
         }
     }
-    if (acre->flags & TOWN_ACRE_HAS_MARKED_1566) {
-        totals->flags |= TOWN_TOTALS_HAS_MARKED_1566;
+    if (acre->flags & TOWN_ACRE_HAS_MARKED_PITFALL) {
+        totals->flags |= TOWN_TOTALS_HAS_MARKED_PITFALL;
     }
     totals->unk_2a += acre->lines[1][1] + acre->lines[0][1] + acre->lines[0][0] + acre->lines[1][0];
     totals->unk_26 += acre->family_codes;
     totals->unk_28 += acre->codes_21;
-    if (acre->items_1320 > 0) {
-        totals->flags |= TOWN_TOTALS_HAS_1320;
+    if (acre->trash > 0) {
+        totals->flags |= TOWN_TOTALS_HAS_TRASH;
     }
-    if (acre->flags & TOWN_ACRE_HAS_154A) {
-        totals->flags |= TOWN_TOTALS_HAS_154A;
+    if (acre->flags & TOWN_ACRE_HAS_SPOILED_TURNIP) {
+        totals->flags |= TOWN_TOTALS_HAS_SPOILED_TURNIP;
     }
     town_bands()[TownAcreCount_ScoreBand(acres, acre->score)]++;
     if (acre->flags & TOWN_ACRE_HAS_SPOT) {

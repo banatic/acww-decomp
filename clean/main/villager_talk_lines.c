@@ -119,7 +119,7 @@ extern u8 data_021c1e84[];
 extern u8 data_021f3aa4[];
 /* The state block (state_block.h). */
 extern u32 data_021dc7a8[];
-/* The item list kinds VillagerTalk_GiveItemFor1546 draws from. */
+/* The item list kinds VillagerTalk_GiveForAcorn draws from. */
 extern const u32 data_020c8e98[3];
 
 /* The predicates this file hands to the game (the game's own functions; the first returns a
@@ -387,12 +387,12 @@ void VillagerTalk_Line8ba0Group15(VillagerTalk *talk, VillagerTalkLine *out)
 }
 CLEAN_AS(func_0201ed68, VillagerTalk_Line8ba0Group15)
 
-/* func_0201edcc: the villager gives an item for the player's item at 0x124: 0x1566 for 0x1546
- * (compared by item without its variant when it has one), else one drawn from the list of a
+/* func_0201edcc: the villager gives an item for the player's item at 0x124: the pitfall seed 0x1566
+ * for the worm-eaten acorn 0x1546 (compared by item without its variant when it has one), else one drawn from the list of a
  * kind of data_020c8e98 picked at random. It becomes the gift at 0x19c, is put into the
  * player's first free pocket and marked as had, and is shown (motion 13) with its name in slot
  * 0. QUIRK: without a free pocket the gift replaces the first pocket. */
-void VillagerTalk_GiveItemFor1546(VillagerTalk *talk)
+void VillagerTalk_GiveForAcorn(VillagerTalk *talk)
 {
     u8 *player = PlayerRecords_Current();
     PlayerPockets *pockets = PlayerRecord_Pockets(player);
@@ -429,7 +429,7 @@ void VillagerTalk_GiveItemFor1546(VillagerTalk *talk)
         SceneBase_PutItemName(lines_base(talk), (int) (uintptr_t) &talk->gift, 0, 7);
     }
 }
-CLEAN_AS(func_0201edcc, VillagerTalk_GiveItemFor1546)
+CLEAN_AS(func_0201edcc, VillagerTalk_GiveForAcorn)
 
 /* func_0201eed8: group 19 of the set at 0x020c8ba0, the random part below 2. */
 void VillagerTalk_Line8ba0Group19(VillagerTalk *talk, VillagerTalkLine *out)
@@ -491,15 +491,15 @@ void VillagerTalk_TakePocketOrSay(VillagerTalk *talk)
 }
 CLEAN_AS(func_0201f094, VillagerTalk_TakePocketOrSay)
 
-/* func_0201f150: the pockets screen opened on the items 0x1542-0x1546 (the game's
+/* func_0201f150: the pockets screen opened on the acorns (0x1542-0x1546) (the game's
  * func_0201f520, with 13, staying on the line), then data_020d8e28 at the command's end. */
-void VillagerTalk_AskPocket1542(VillagerTalk *talk)
+void VillagerTalk_AskPocketAcorn(VillagerTalk *talk)
 {
     SceneCommand_SetPocketPredicate(&talk->scene, (PocketPredicate) (void (*)(void)) func_0201f520, 13, 1);
     SceneCommand_RequestScreen(&talk->scene, SCENE_COMMAND_SCREEN_POCKETS);
     VillagerTalkScene_SetCommandEnd(talk, data_020d8e28);
 }
-CLEAN_AS(func_0201f150, VillagerTalk_AskPocket1542)
+CLEAN_AS(func_0201f150, VillagerTalk_AskPocketAcorn)
 
 /* func_0201f180: two choices offered with cancel choice 1: messages 0x5b-0x5d running
  * data_021c25a4 and 0x5e-0x60 running data_021c25ec; the reply data_020d9070; the talk's byte
@@ -622,19 +622,19 @@ void VillagerTalk_LineRandom252c(VillagerTalk *talk, VillagerTalkLine *out)
 }
 CLEAN_AS(func_0201f40c, VillagerTalk_LineRandom252c)
 
-/* func_0201f520 (a pocket predicate): 1 for an item 0x1542-0x1546 in state 0. */
-u16 VillagerTalk_Pick1542Item(u16 *item, int state)
+/* func_0201f520 (a pocket predicate): 1 for an acorn (0x1542-0x1546) in state 0. */
+u16 VillagerTalk_PickAcorn(u16 *item, int state)
 {
     return *item >= 0x1542 && *item <= 0x1546 && state == 0;
 }
-CLEAN_AS(func_0201f520, VillagerTalk_Pick1542Item)
+CLEAN_AS(func_0201f520, VillagerTalk_PickAcorn)
 
-/* func_0201f550 (a pocket test): whether the item is one of 0x1542-0x1546. */
-int VillagerTalk_Is1542Item(u16 *item)
+/* func_0201f550 (a pocket test): whether the item is an acorn (0x1542-0x1546). */
+int VillagerTalk_IsAcorn(u16 *item)
 {
     return *item >= 0x1542 && *item <= 0x1546;
 }
-CLEAN_AS(func_0201f550, VillagerTalk_Is1542Item)
+CLEAN_AS(func_0201f550, VillagerTalk_IsAcorn)
 
 /* func_0201f570 */
 void VillagerTalk_OfferChoices1e14C(VillagerTalk *talk)
@@ -792,13 +792,13 @@ static void lines_put_decimal_size(VillagerTalk *talk, int size)
     SceneBase_PutDecimal(lines_base(talk), size, 0, 1, 3);
 }
 
-/* func_0201f858: lines_item_line for the items 0x12b0-0x12e7 and the set at 0x020c8bf0, the
+/* func_0201f858: lines_item_line for the insects 0x12b0-0x12e7 and the set at 0x020c8bf0, the
  * size in whole units; data_020d90c8 at the last message. */
-void VillagerTalk_LineItem12b0(VillagerTalk *talk, VillagerTalkLine *out)
+void VillagerTalk_LineInsect(VillagerTalk *talk, VillagerTalkLine *out)
 {
     lines_item_line(talk, out, 0x12b0, 0x12e7, &data_020c8bf0, lines_put_whole_size, &data_020d90c8);
 }
-CLEAN_AS(func_0201f858, VillagerTalk_LineItem12b0)
+CLEAN_AS(func_0201f858, VillagerTalk_LineInsect)
 
 /* func_0201fa14: as VillagerTalk_NoteAndMarkMemory. */
 void VillagerTalk_NoteAndMarkMemoryAgain(VillagerTalk *talk)

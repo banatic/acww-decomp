@@ -31,15 +31,15 @@ typedef struct TownSpawnAcre {
 
 void TownSpawn_AdvanceMarked1369(TownDay *town, AcreMap *map, int wide, int high);
 void TownSpawn_AfterWetDay(TownDay *town, AcreMap *map, int wide, int high, u8 wet);
-void TownSpawn_Put1548OnBeach(TownDay *town, AcreMap *map, int wide);
+void TownSpawn_PutCoconutOnBeach(TownDay *town, AcreMap *map, int wide);
 void TownSpawn_AdvanceCodesD4(TownDay *town, AcreMap *map, int days);
 void TownSpawn_ClearTileAt(TownDay *town, const Position *position);
 void TownSpawn_ClearCodesFc(TownDay *town);
 void TownSpawn_MakeMoneyRocks(TownDay *town, AcreMap *map, int wide, int high);
 int TownSpawn_MakeMoneyRock(TownDay *town, AcreMap *map, int wide, int high, int kind, int rocks);
 int TownSpawn_MakeMoneyRockIn(TownDay *town, AcreMap *map, TownAcreCount *acre, int kind, int acre_x, int acre_z);
-void TownSpawn_PutMarked1566(TownDay *town, AcreMap *map, int wide, int high);
-void TownSpawn_PutMarked1549(TownDay *town, AcreMap *map, int wide, int high);
+void TownSpawn_PutMarkedPitfall(TownDay *town, AcreMap *map, int wide, int high);
+void TownSpawn_PutMarkedFossils(TownDay *town, AcreMap *map, int wide, int high);
 void TownSpawn_UpdateSpot(TownDay *town, AcreMap *map, int wide, int high);
 void TownSpawn_SpotTo89(TownDay *town, AcreMap *map);
 int TownSpawn_PutSpot(TownDay *town, AcreMap *map, int wide, int high);

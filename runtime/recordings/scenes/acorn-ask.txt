@@ -4,7 +4,7 @@
 # Save: acorns (30,000 bells; the five acorns, items 0x1542-0x1546, in pockets 0-4). Up to
 # villager 3 near the house (it walks about there) and talks, A every 40 frames: the fifth talk
 # (about 8100) is the festival's: the villager asks for an acorn and the pockets open on them
-# (VillagerTalk_AskPocket1542, VillagerTalk_Pick1542Item); RIGHT five times and A give the
+# (VillagerTalk_AskPocketAcorn, VillagerTalk_PickAcorn); RIGHT five times and A give the
 # fifth (0x1546, VillagerTalk_TakePocketOrSay); A every 40 frames to the end (9656).
 900 START -
 906 - -

@@ -14,7 +14,7 @@
  * 0x20 and 0x08, func_0206f798 and func_0206f7a4) forces the falling one.
  *
  * A second date (`bought`) goes with flag 4 of the state block, which overlay 73 sets when it
- * sells item 0x1567 for 1000 Bells: a week after that date the flag is cleared. */
+ * sells the red turnip seed (item 0x1567) for 1000 Bells: a week after that date the flag is cleared. */
 #ifndef CLEAN_MAIN_TURNIP_PRICES_H
 #define CLEAN_MAIN_TURNIP_PRICES_H
 

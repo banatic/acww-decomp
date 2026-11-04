@@ -4,7 +4,7 @@
 # Save: wallet (30,000 bells). A villager comes up to the player to wish a happy new year
 # (behaviour 14, OutdoorVillagerMoves_Start14, its event music); talks with villager 3, A every
 # 40 frames: the new year's talks (VillagerTalk_Line8d18Group0 to Group7, the choices
-# VillagerTalk_OfferChoices32 and the gift VillagerTalk_GiveItem3818), to 9703.
+# VillagerTalk_OfferChoices32 and the gift VillagerTalk_GiveBirthdayCake), to 9703.
 900 START -
 906 - -
 1000 A -

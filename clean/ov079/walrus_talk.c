@@ -96,9 +96,9 @@ extern int func_ov079_022794fc(u16 *item, int state);
 #define WALRUS_TALK_SPOILING_LAST 0x153a
 #define WALRUS_TALK_FRUIT_FIRST 0x1518
 #define WALRUS_TALK_FRUIT_LAST 0x151c
-#define WALRUS_TALK_1542_FIRST 0x1542
-#define WALRUS_TALK_1542_LAST 0x1546
-#define WALRUS_TALK_1548 0x1548
+#define WALRUS_TALK_ACORN_FIRST 0x1542
+#define WALRUS_TALK_ACORN_LAST 0x1546
+#define WALRUS_TALK_COCONUT 0x1548
 #define WALRUS_TALK_153B_FIRST 0x153b
 #define WALRUS_TALK_153B_LAST 0x1541
 
@@ -187,10 +187,10 @@ static int walrus_talk_sample(const u16 *item)
             return walrus_talk_fish_designs[i].sample;
         }
     }
-    if (*item == WALRUS_TALK_1548) {
+    if (*item == WALRUS_TALK_COCONUT) {
         return WALRUS_TALK_SAMPLE_1548;
     }
-    if (walrus_talk_in(*item, WALRUS_TALK_1542_FIRST, WALRUS_TALK_1542_LAST)) {
+    if (walrus_talk_in(*item, WALRUS_TALK_ACORN_FIRST, WALRUS_TALK_ACORN_LAST)) {
         return WALRUS_TALK_SAMPLE_1542;
     }
     if (walrus_talk_in(*item, WALRUS_TALK_SPOILING_FIRST, WALRUS_TALK_SPOILING_LAST)) {
@@ -508,7 +508,7 @@ void WalrusTalk_TakeOffering(WalrusTalk *talk)
         if (walrus_talk_in(item, WALRUS_TALK_FISH_FIRST, WALRUS_TALK_FISH_LAST) ||
             walrus_talk_in(item, WALRUS_TALK_SPOILING_FIRST, WALRUS_TALK_SPOILING_LAST) ||
             walrus_talk_in(item, WALRUS_TALK_FRUIT_FIRST, WALRUS_TALK_FRUIT_LAST) ||
-            walrus_talk_in(item, WALRUS_TALK_1542_FIRST, WALRUS_TALK_1542_LAST) || item == WALRUS_TALK_1548 ||
+            walrus_talk_in(item, WALRUS_TALK_ACORN_FIRST, WALRUS_TALK_ACORN_LAST) || item == WALRUS_TALK_COCONUT ||
             walrus_talk_in(item, WALRUS_TALK_153B_FIRST, WALRUS_TALK_153B_LAST)) {
             message = WALRUS_TALK_LINE_SPECIAL;
         }

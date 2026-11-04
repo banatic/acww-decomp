@@ -39,13 +39,13 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 #define TOWN_SPAWN_WET_FIRST 0x45dc
 #define TOWN_SPAWN_WET_COUNT 0x7f
 #define TOWN_SPAWN_BEACH_ROW 4
-#define TOWN_SPAWN_ITEM_1548 0x1548
+#define TOWN_SPAWN_COCONUT 0x1548
 #define TOWN_SPAWN_ROCK 0xe3 /* the rocks 0xe3-0xe7 */
 #define TOWN_SPAWN_ROCK_CODES 5
 #define TOWN_SPAWN_MONEY_ROCK_KINDS 4
 #define TOWN_SPAWN_MARKED_1549 3 /* marked items 0x1549 the town keeps */
 #define TOWN_SPAWN_ITEM_1549 0x1549
-#define TOWN_SPAWN_ITEM_1566 0x1566
+#define TOWN_SPAWN_PITFALL_SEED 0x1566
 #define TOWN_SPAWN_CODE_SPOT 0x1b
 #define TOWN_SPAWN_CODE_89 0x89
 #define TOWN_SPAWN_STATE_1A 4 /* the summary's state that may bring code 0x1a */
@@ -108,20 +108,20 @@ void TownSpawn_AfterWetDay(TownDay *town, AcreMap *map, int wide, int high, u8 w
 }
 CLEAN_AS(func_02047ee8, TownSpawn_AfterWetDay)
 
-/* func_02047fac: unless the town has an item 0x1548, one chance in ten of one on a beach acre
+/* func_02047fac: unless the town has a coconut (item 0x1548), one chance in ten of one on a beach acre
  * drawn at random. */
-void TownSpawn_Put1548OnBeach(TownDay *town, AcreMap *map, int wide)
+void TownSpawn_PutCoconutOnBeach(TownDay *town, AcreMap *map, int wide)
 {
-    if (TownAcreCount_Totals(&data_021c779c)->flags & TOWN_TOTALS_HAS_1548) {
+    if (TownAcreCount_Totals(&data_021c779c)->flags & TOWN_TOTALS_HAS_COCONUT) {
         return;
     }
     if (MainRandom_Below(TOWN_SPAWN_RANGE_PERCENT) >= 10) {
         return;
     }
     int acre_x = (int) MainRandom_Below(wide) + 1;
-    TownPlace_PutInAcre(town, map, acre_x, TOWN_SPAWN_BEACH_ROW, TOWN_SPAWN_ITEM_1548, func_02048e4c, 0);
+    TownPlace_PutInAcre(town, map, acre_x, TOWN_SPAWN_BEACH_ROW, TOWN_SPAWN_COCONUT, func_02048e4c, 0);
 }
-CLEAN_AS(func_02047fac, TownSpawn_Put1548OnBeach)
+CLEAN_AS(func_02047fac, TownSpawn_PutCoconutOnBeach)
 
 /* func_02048000: every tile of the map (borders included) moved on by a day, unmarked: codes
  * 0xd4-0xda become 0xe2; 0xdb-0xe1 become 0xe2 after more than a day, else go back to
@@ -288,27 +288,27 @@ int TownSpawn_MakeMoneyRockIn(TownDay *town, AcreMap *map, TownAcreCount *acre, 
 }
 CLEAN_AS(func_0204830c, TownSpawn_MakeMoneyRockIn)
 
-/* func_020483c4: unless the town has a marked item 0x1566, one marked on an acre drawn at
+/* func_020483c4: unless the town has a marked pitfall seed (item 0x1566), one marked on an acre drawn at
  * random.
  *
  * QUIRK: the acre is drawn below wide - 1 and high - 1: the last column and row of inner acres
  * never get it. */
-void TownSpawn_PutMarked1566(TownDay *town, AcreMap *map, int wide, int high)
+void TownSpawn_PutMarkedPitfall(TownDay *town, AcreMap *map, int wide, int high)
 {
-    if (TownAcreCount_Totals(&data_021c779c)->flags & TOWN_TOTALS_HAS_MARKED_1566) {
+    if (TownAcreCount_Totals(&data_021c779c)->flags & TOWN_TOTALS_HAS_MARKED_PITFALL) {
         return;
     }
     int acre_x = (int) MainRandom_Below(wide - 1);
     int acre_z = (int) MainRandom_Below(high - 1);
-    TownPlace_PutInAcre(town, map, acre_x + 1, acre_z + 1, TOWN_SPAWN_ITEM_1566, func_02048ee4, 1);
+    TownPlace_PutInAcre(town, map, acre_x + 1, acre_z + 1, TOWN_SPAWN_PITFALL_SEED, func_02048ee4, 1);
 }
-CLEAN_AS(func_020483c4, TownSpawn_PutMarked1566)
+CLEAN_AS(func_020483c4, TownSpawn_PutMarkedPitfall)
 
-/* func_02048418: the marked items 0x1549 made up to three, each on an acre drawn after the
+/* func_02048418: the marked fossils (item 0x1549) made up to three, each on an acre drawn after the
  * last (see TownSpawn_AfterWetDay's QUIRK). */
-void TownSpawn_PutMarked1549(TownDay *town, AcreMap *map, int wide, int high)
+void TownSpawn_PutMarkedFossils(TownDay *town, AcreMap *map, int wide, int high)
 {
-    int missing = TOWN_SPAWN_MARKED_1549 - TownAcreCount_Totals(&data_021c779c)->marked_1549;
+    int missing = TOWN_SPAWN_MARKED_1549 - TownAcreCount_Totals(&data_021c779c)->marked_fossils;
     int acre_x = (int) MainRandom_Below(wide - 1);
     int acre_z = (int) MainRandom_Below(high - 1);
     for (; missing > 0; missing--) {
@@ -317,7 +317,7 @@ void TownSpawn_PutMarked1549(TownDay *town, AcreMap *map, int wide, int high)
         TownPlace_PutInAcre(town, map, acre_x + 1, acre_z + 1, TOWN_SPAWN_ITEM_1549, func_02048e54, 1);
     }
 }
-CLEAN_AS(func_02048418, TownSpawn_PutMarked1549)
+CLEAN_AS(func_02048418, TownSpawn_PutMarkedFossils)
 
 /* func_02048498: the summary's spot (code 0x1b): made code 0x89 while the summary's state is
  * not 0; else put on an acre drawn at random when the town has none. */

@@ -470,7 +470,7 @@ What reading the Clean code found about the groups above; counts are of function
 - The villagers' talks of the town's events and seasons (main/villager_talk_lines.c,
   main/villager_talk.c's Line8d18 groups) come from the topic of the day's event, so a scene
   per event date talking to one villager again and again: acorn-ask (the acorn festival's
-  week, 6 October: the villager asks for an acorn, VillagerTalk_AskPocket1542; save acorns),
+  week, 6 October: the villager asks for an acorn, VillagerTalk_AskPocketAcorn; save acorns),
   snow-talks (8 February 2027, one ending on the slider window), gardens-talks (8 April 2027),
   new-year-talks (1 January 2027: a villager comes up to wish a happy new year, behaviour 14)
   and winter-talks (24 December). Other dates and hours tried (25 and 31 October, 26 November,
@@ -1271,7 +1271,7 @@ What reading the Clean code found about the groups above; counts are of function
   0x0c, the second Saturday: VillagerTalkReplies_LineFirstOfDay), 4 (event 2, 0x0f, Saturdays
   19:00-24:00: VillagerTalk_LineByCalendar), 6 (event 3, 0x09, the third Sunday of
   January-May and October-December: VillagerTalk_LineItem12e8) and 7 (event 4, 0x0a, the third
-  Sunday of June-September: VillagerTalk_LineItem12b0). On 12 September the insurance seller
+  Sunday of June-September: VillagerTalk_LineInsect). On 12 September the insurance seller
   keeps the player in his talk (A alone does not end it) and at 19:30 the event board's talk
   comes first; on 20 September and 18 October the walk to a villager from villager-talk's start
   failed (the player held, or no villager found out): w20/daytalk.py.
@@ -1320,7 +1320,7 @@ What reading the Clean code found about the groups above; counts are of function
   answer NookClerkTalk_OnAnswerPaint belong to the row of a guest of a linked session
   (ov050/nook_clerk.c, TalkChecks_IsHostOrAlone), so they need a second system.
 - Event line tables: on Saturday 19 September at 19:30 (event index 2) villager 0's talks drew
-  the subject of the item it holds in the evening (VillagerTalkSubjects_SayHolding1378):
+  the subject of the item it holds in the evening (VillagerTalkSubjects_SayHoldingWateringCan):
   villager-saturday-night; its table's VillagerTalk_LineByCalendar was not drawn there. On 10
   and 25 October the walk from villager-talk's start met the event board or was held.
 
@@ -2366,7 +2366,7 @@ What reading the Clean code found about the groups above; counts are of function
   and kind 0x30 is never drawn (TownInsect_DrawKind refuses it). Booted at the seconds of
   20 July 2027 23:00 (w31/sweep2.py), :07 and :24 held a kind 0x37 (none a 0x36). Such an insect
   goes for the player only while the player holds the net (its byte 0x247 follows
-  FieldActor_PlayerHolds1376): without it the player stood on it and it walked off. New scene
+  FieldActor_PlayerHoldsNet): without it the player stood on it and it walked off. New scene
   scorpion: save pester (the net in pocket 0: the same draw as the seed), at :07 the museum's
   way to the insect behind the museum, the net dragged from the pockets onto the player, then at
   the insect: InsectPath_GoForPlayer, the sting (states 0x6d and 0x6e, effect 0x34) and the
@@ -2665,7 +2665,7 @@ What reading the Clean code found about the groups above; counts are of function
   pockets close with nothing given (acorn-refuse: acorn-ask with B on the pockets), row 7 the one
   SayIfFond says when fondness + 0x100 is above a random number below 0x200 (acorn-thanks:
   acorn-ask's presses one frame later from the pockets; the villager gives an item for the acorn,
-  VillagerTalk_GiveItemFor1546).
+  VillagerTalk_GiveForAcorn).
 - Gained little: event 0 (fourth Sunday, 0x0d, table 5's rows 2-7): villager 0 (ko) said only
   ev_admire messages 0 and 1 over 13 waits, villager 1 stands by the bulletin board (the walk
   faced the board, whose functions ran: EtcBoard_*, not made a scene here) and villagers 2 and 3

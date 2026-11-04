@@ -474,7 +474,7 @@ SAVES["first-talks"] = [(0x14 + 0x2414, "<H", 0), (0x14 + 0x2451, "<B", 0)]
 # pockets 0-4: the bug net (0x1376, the item a villager reacts to being swung at,
 # ov068/outdoor_villager_object.c OutdoorVillagerObject_OnItemSwung), an insect (0x12b0) and a
 # fish (0x12e8) to show (ov098/pockets_town.c), a pitfall seed (0x1566) and the shovel (0x1369)
-# 30,000 bells; pockets 0-4: acorns of each kind (items 0x1542-0x1546, VillagerTalk_AskPocket1542)
+# 30,000 bells; pockets 0-4: acorns of each kind (items 0x1542-0x1546, VillagerTalk_AskPocketAcorn)
 SAVES["acorns"] = [(MONEY, "<I", 30000)] + [(POCKETS + 2 * i, "<H", 0x1542 + i) for i in range(5)]
 SAVES["pester"] = [(POCKETS + 2 * i, "<H", item) for i, item in enumerate((0x1376, 0x12B0, 0x12E8, 0x1566, 0x1369))]
 # the later errands of the part-time job, each as a run of job-deliver and the errands after it

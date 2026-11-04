@@ -394,7 +394,7 @@ CLEAN_CUE_SHA = {
     'clean/main/field_collision.c': '55d958e6a9bddd45451ede27c07df805222887622bb83e1b24cfe30aa1545f1f',
     'clean/main/collision_query.c': '64b4370e713ddc57343b34d5e4aca0b4c2ef0dcd7384f66a554d2a3df3fe7a6a',
     'clean/main/collision_segment.c': '5519edaa81cb8a78eaa0b1177fce67f278e5b5695f8533c34b87ade7a3e8027d',
-    'clean/main/villager_talk.c': '9c5578f69547303dea24f484c0d06278a1343661f3cc3e75e89f82c351275099',
+    'clean/main/villager_talk.c': '0d97414139d93a10d82086436e25f5be2312aaf738c7a57dbf2d589d6df9a17c',
     'clean/main/villager_talk_replies.c': '72ef64053c5bbe0f4c8fc7881378dd5255c8fa78756de8383cca9b0220fe2507',
     'clean/ov094/pockets_grid.c': '87926d988fdd840217cda1a73ea8d9bdcc3aa7d7ddb93d2a0c2f87420ee98a53',
     'clean/ov004/push_box.c': '7a3464385bff4588f7aad11452e78ed5283edd2ff6d409d3e7a3188a519b8d52',

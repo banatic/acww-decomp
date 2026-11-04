@@ -499,7 +499,7 @@ void TileChanges_Finish(TileChange *change)
             case 10:
                 result = change->state & TILE_CHANGE_RESULT_MASK;
                 break;
-            case TILE_REQUEST_MARKED_1566:
+            case TILE_REQUEST_MARKED_PITFALL:
                 /* bit 5 of `flags` is the number's sign */
                 if ((change->flags & 0x20) == 0) {
                     change->item = ITEM_CODE_NONE;

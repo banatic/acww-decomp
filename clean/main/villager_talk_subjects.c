@@ -45,8 +45,8 @@
 #define VILLAGER_TALK_SUBJECTS_ACRE_SHIFT 17
 
 /* The items. */
-#define VILLAGER_TALK_SUBJECTS_ITEM_1380_FIRST 0x1380
-#define VILLAGER_TALK_SUBJECTS_ITEM_1380_LAST 0x139f
+#define VILLAGER_TALK_SUBJECTS_UMBRELLA_FIRST 0x1380
+#define VILLAGER_TALK_SUBJECTS_UMBRELLA_LAST 0x139f
 #define VILLAGER_TALK_SUBJECTS_DESIGN_FIRST 0x12a8 /* clothes made from a design */
 #define VILLAGER_TALK_SUBJECTS_DESIGN_LAST 0x12af
 #define VILLAGER_TALK_SUBJECTS_FISH_FIRST 0x12e8
@@ -89,7 +89,7 @@ typedef struct VillagerTalkSubjectsCatchA {
     s32 value;     /* 0x14 */
 } VillagerTalkSubjectsCatchA;
 
-/* The four halfwords VillagerTalkSubjects_SayFishWith1374 and _SayInsectWith1376 keep: the
+/* The four halfwords VillagerTalkSubjects_SayFishWithRod and _SayInsectWith1376 keep: the
  * item drawn (filled by func_0202cac4 or func_0202cfa8 from the first) and the held item. */
 typedef struct VillagerTalkSubjectsDrawn {
     u16 item;   /* 0x00 */
@@ -202,10 +202,10 @@ static u16 subjects_held(VillagerTalk *talk)
 }
 
 /* Whether the villager holds nothing or one of the items 0x1380-0x139f. */
-static int subjects_holds_none_or_1380(u16 item)
+static int subjects_holds_none_or_umbrella(u16 item)
 {
     return item == ITEM_CODE_NONE ||
-           (item >= VILLAGER_TALK_SUBJECTS_ITEM_1380_FIRST && item <= VILLAGER_TALK_SUBJECTS_ITEM_1380_LAST);
+           (item >= VILLAGER_TALK_SUBJECTS_UMBRELLA_FIRST && item <= VILLAGER_TALK_SUBJECTS_UMBRELLA_LAST);
 }
 
 /* Whether two town heads are the same: the halfword and the 12 bytes after it. */
@@ -347,7 +347,7 @@ CLEAN_AS(func_02022674, VillagerTalkSubjects_SayByStateKind)
  * of the set at 0x020c8af8 for mode 7. */
 int VillagerTalkSubjects_SayHolding8af8(VillagerTalk *talk)
 {
-    if (!subjects_holds_none_or_1380(subjects_held(talk))) {
+    if (!subjects_holds_none_or_umbrella(subjects_held(talk))) {
         return 0;
     }
     VillagerTalkSubjects_SayForMode(talk, 7, &data_020c8af8);
@@ -371,7 +371,7 @@ int VillagerTalkSubjects_SayHoldingOnAcre(VillagerTalk *talk)
     if (AcreTile_AcreHasFlags(map, (u32) acre_x, (u32) acre_z, VILLAGER_TALK_SUBJECTS_ACRE_FLAG) == NULL) {
         return 0;
     }
-    if (!subjects_holds_none_or_1380(item)) {
+    if (!subjects_holds_none_or_umbrella(item)) {
         return 0;
     }
     VillagerTalkSubjects_SayForMode(talk, 6, &data_020c8d00);
@@ -379,9 +379,9 @@ int VillagerTalkSubjects_SayHoldingOnAcre(VillagerTalk *talk)
 }
 CLEAN_AS(func_020227bc, VillagerTalkSubjects_SayHoldingOnAcre)
 
-/* func_02022840: while the villager holds the item 0x1378, a line of the set at 0x020c8b08 (its
+/* func_02022840: while the villager holds the watering can 0x1378, a line of the set at 0x020c8b08 (its
  * count the lines per group): group 0 in mode 5, else 2. */
-int VillagerTalkSubjects_SayHolding1378(VillagerTalk *talk)
+int VillagerTalkSubjects_SayHoldingWateringCan(VillagerTalk *talk)
 {
     if (subjects_held(talk) != 0x1378) {
         return 0;
@@ -389,13 +389,13 @@ int VillagerTalkSubjects_SayHolding1378(VillagerTalk *talk)
     int group = subjects_mode(subjects_record(talk)) != VILLAGER_TALK_SUBJECTS_MODE_5 ? 2 : 0;
     return subjects_say(talk, &data_020c8b08, group);
 }
-CLEAN_AS(func_02022840, VillagerTalkSubjects_SayHolding1378)
+CLEAN_AS(func_02022840, VillagerTalkSubjects_SayHoldingWateringCan)
 
 /* func_020228e4: while the villager holds nothing or one of the items 0x1380-0x139f, the line
  * of the set at 0x020c8a68 for mode 4. */
 int VillagerTalkSubjects_SayHolding8a68(VillagerTalk *talk)
 {
-    if (!subjects_holds_none_or_1380(subjects_held(talk))) {
+    if (!subjects_holds_none_or_umbrella(subjects_held(talk))) {
         return 0;
     }
     VillagerTalkSubjects_SayForMode(talk, 4, &data_020c8a68);
@@ -407,7 +407,7 @@ CLEAN_AS(func_020228e4, VillagerTalkSubjects_SayHolding8a68)
  * of the set at 0x020c8d28 for mode 3, and the villager put into the talk's slot 5. */
 int VillagerTalkSubjects_SayHoldingNamed(VillagerTalk *talk)
 {
-    if (!subjects_holds_none_or_1380(subjects_held(talk))) {
+    if (!subjects_holds_none_or_umbrella(subjects_held(talk))) {
         return 0;
     }
     VillagerTalkSubjects_SayForMode(talk, 3, &data_020c8d28);
@@ -450,25 +450,25 @@ static int subjects_say_drawn(VillagerTalk *talk, u16 tool, int mode, int other,
     return subjects_say(talk, texts, group);
 }
 
-/* func_020229ec: while the villager holds the item 0x1374, a fish for the date (func_0202cac4)
+/* func_020229ec: while the villager holds the rod 0x1374, a fish for the date (func_0202cac4)
  * named in the talk's slot 0 and a line of the set at 0x020c8d40: group 0 when the villager is
  * in the mode of a fish caught, else 1. None when no fish was drawn. */
-int VillagerTalkSubjects_SayFishWith1374(VillagerTalk *talk)
+int VillagerTalkSubjects_SayFishWithRod(VillagerTalk *talk)
 {
     return subjects_say_drawn(talk, 0x1374, VILLAGER_TALK_SUBJECTS_MODE_FISH, 1, func_0202cac4,
                               VILLAGER_TALK_SUBJECTS_FISH_FIRST, VILLAGER_TALK_SUBJECTS_FISH_LAST, &data_020c8d40);
 }
-CLEAN_AS(func_020229ec, VillagerTalkSubjects_SayFishWith1374)
+CLEAN_AS(func_020229ec, VillagerTalkSubjects_SayFishWithRod)
 
-/* func_02022ad4: while the villager holds the item 0x1376, an insect for the date
+/* func_02022ad4: while the villager holds the net 0x1376, an insect for the date
  * (func_0202cfa8) named in the talk's slot 0 and a line of the set at 0x020c8b48: group 0 when
  * the villager is in the mode of an insect caught, else 2. None when no insect was drawn. */
-int VillagerTalkSubjects_SayInsectWith1376(VillagerTalk *talk)
+int VillagerTalkSubjects_SayInsectWithNet(VillagerTalk *talk)
 {
     return subjects_say_drawn(talk, 0x1376, VILLAGER_TALK_SUBJECTS_MODE_INSECT, 2, func_0202cfa8,
                               VILLAGER_TALK_SUBJECTS_INSECT_FIRST, VILLAGER_TALK_SUBJECTS_INSECT_LAST, &data_020c8b48);
 }
-CLEAN_AS(func_02022ad4, VillagerTalkSubjects_SayInsectWith1376)
+CLEAN_AS(func_02022ad4, VillagerTalkSubjects_SayInsectWithNet)
 
 /* func_02022bbc: a line of `texts` (its count the lines per group): group 0 when the villager
  * is in mode `mode`, else 1. */

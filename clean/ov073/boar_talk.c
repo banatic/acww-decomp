@@ -20,7 +20,7 @@
 #include "main/turnip_prices.h"
 
 static_assert(offsetof(BoarTalk, topic) == 0xb0 && offsetof(BoarTalk, after_screen) == 0xb8, "BoarTalk");
-static_assert(offsetof(BoarTalk, price) == 0xc0 && offsetof(BoarTalk, sold_1567) == 0xc8, "BoarTalk");
+static_assert(offsetof(BoarTalk, price) == 0xc0 && offsetof(BoarTalk, sold_red_turnip_seed) == 0xc8, "BoarTalk");
 static_assert(sizeof(BoarTalk) == 0xcc, "BoarTalk");
 static_assert(sizeof(BoarTalkLine) == 8, "BoarTalkLine");
 
@@ -49,9 +49,9 @@ extern int func_ov073_02278e44(u16 *item);
 #define BOAR_TALK_TEN_FULL 0x153a
 #define BOAR_TALK_TENS_FULL 10
 /* The item sold once a week for 1000 Bells, and flag 4 of the state block that marks it sold. */
-#define BOAR_TALK_ITEM_1567 0x1567
-#define BOAR_TALK_ITEM_1567_PRICE 1000
-#define BOAR_TALK_FLAG_1567 4
+#define BOAR_TALK_RED_TURNIP_SEED 0x1567
+#define BOAR_TALK_RED_TURNIP_SEED_PRICE 1000
+#define BOAR_TALK_FLAG_RED_TURNIP_SEED 4
 /* What an empty slot of the pockets holds. */
 #define BOAR_TALK_EMPTY 0xfff1
 
@@ -173,14 +173,14 @@ void BoarTalk_OnAnswer(BoarTalk *talk)
                 } else {
                     SceneBells_Take(boar_talk_owner_word(talk), talk->price);
                     boar_talk_hand(talk, BOAR_TALK_TEN_FIRST);
-                    talk->sold_1567 = 0;
+                    talk->sold_red_turnip_seed = 0;
                     line = 0x15;
                 }
             }
             break;
         case 0x17:
             if (answer == 0) {
-                if (StateBlock_TestFlag((u32 *) (void *) &data_021dc7a8, BOAR_TALK_FLAG_1567) != 0) {
+                if (StateBlock_TestFlag((u32 *) (void *) &data_021dc7a8, BOAR_TALK_FLAG_RED_TURNIP_SEED) != 0) {
                     line = 0x18;
                 } else {
                     ScreenPanels_Request();
@@ -190,16 +190,16 @@ void BoarTalk_OnAnswer(BoarTalk *talk)
             break;
         case 0x19:
             if (answer == 0) {
-                if (SceneBells_CanPay(boar_talk_owner_word(talk), BOAR_TALK_ITEM_1567_PRICE) == 0) {
+                if (SceneBells_CanPay(boar_talk_owner_word(talk), BOAR_TALK_RED_TURNIP_SEED_PRICE) == 0) {
                     line = 0x1b;
                 } else {
-                    u16 item = BOAR_TALK_ITEM_1567;
+                    u16 item = BOAR_TALK_RED_TURNIP_SEED;
                     if (CurrentPockets_Give(&item, 0) != 0) {
                         line = 0x15;
-                        SceneBells_Take(boar_talk_owner_word(talk), BOAR_TALK_ITEM_1567_PRICE);
-                        StateBlock_SetFlag((u32 *) (void *) &data_021dc7a8, BOAR_TALK_FLAG_1567);
-                        talk->sold_1567 = 1;
-                        boar_talk_hand(talk, BOAR_TALK_ITEM_1567);
+                        SceneBells_Take(boar_talk_owner_word(talk), BOAR_TALK_RED_TURNIP_SEED_PRICE);
+                        StateBlock_SetFlag((u32 *) (void *) &data_021dc7a8, BOAR_TALK_FLAG_RED_TURNIP_SEED);
+                        talk->sold_red_turnip_seed = 1;
+                        boar_talk_hand(talk, BOAR_TALK_RED_TURNIP_SEED);
                     } else {
                         line = 0x1c;
                     }
@@ -230,7 +230,7 @@ void BoarTalk_OnLineShown(BoarTalk *talk)
             BoarTalk_SetAfterScreen(talk, BOAR_TALK_AFTER_COUNT_PICKED);
             break;
         case 0x15:
-            line = talk->sold_1567 != 0 ? 0x1a : 0x16;
+            line = talk->sold_red_turnip_seed != 0 ? 0x1a : 0x16;
             break;
         default:
             break;
@@ -265,7 +265,7 @@ void BoarTalk_Begin(BoarTalk *talk, struct Boar *owner)
     talk->topic = BOAR_TALK_TOPIC_FIRST;
     talk->price = 0;
     talk->tens = 0;
-    talk->sold_1567 = 0;
+    talk->sold_red_turnip_seed = 0;
 }
 CLEAN_AS(func_ov073_02278d60, BoarTalk_Begin)
 

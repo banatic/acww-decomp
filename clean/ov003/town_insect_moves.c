@@ -1082,7 +1082,7 @@ void TownInsectMove_Update23(TownInsect *insect)
 }
 CLEAN_AS(func_ov003_022325d4, TownInsectMove_Update23)
 
-/* func_ov003_02232640 (kinds 0x36 and 0x37): its byte 0x247 follows FieldActor_PlayerHolds1376
+/* func_ov003_02232640 (kinds 0x36 and 0x37): its byte 0x247 follows FieldActor_PlayerHoldsNet
  * (when func_02070070 says 0). On the ground (byte 0x24c clear), unless fleeing or let go, it
  * listens (func_ov068_02270680 with its word 0x236): out of action 5, a 1 stops it for the frame,
  * and kind 0x37 hearing nothing closes up (animation 3). Actions 4, 5 and 7 walk (overlay 68);
@@ -1098,7 +1098,7 @@ void TownInsectMove_Update36(TownInsect *insect)
     Vec3 *position = &insect->position;
     s16 *fall = &insect->unk_23e;
     if (OverlayGroups_HasOwner() == 0) {
-        insect->unk_247 = FieldActor_PlayerHolds1376() != 0 ? 1 : 0;
+        insect->unk_247 = FieldActor_PlayerHoldsNet() != 0 ? 1 : 0;
     }
     if (insect->unk_24c == 0 && action != TOWN_INSECT_ACTION_LET_GO && action != 9) {
         heard = InsectPath_WatchPlayer(insect, &insect->out_of_view);

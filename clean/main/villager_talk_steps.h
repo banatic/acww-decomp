@@ -45,8 +45,8 @@ void VillagerTalkSteps_Say2f14(VillagerTalk *talk);
 void VillagerTalkSteps_GiveByObjectType(VillagerTalk *talk);
 void VillagerTalkSteps_LineGiveByObjectType(VillagerTalk *talk, VillagerTalkLine *out);
 void VillagerTalkSteps_TakePocketAndSay(VillagerTalk *talk);
-void VillagerTalkSteps_AskPocket1561(VillagerTalk *talk, void *unused);
-int VillagerTalkSteps_Is1561Item(u16 *item, int state);
+void VillagerTalkSteps_AskPocketDelivery(VillagerTalk *talk, void *unused);
+int VillagerTalkSteps_IsDelivery(u16 *item, int state);
 void VillagerTalkSteps_NextStep(VillagerTalk *talk);
 
 #endif

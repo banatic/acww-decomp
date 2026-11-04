@@ -367,17 +367,17 @@ int VillagerImpression_CollectedHalfFish(u8 *record, int fondness, int mood)
 CLEAN_AS(func_0207e5dc, VillagerImpression_CollectedHalfFish)
 
 /* func_0207e604: the current player has collected all the items from 0x12b0. */
-int VillagerImpression_CollectedAll12B0(void)
+int VillagerImpression_CollectedAllInsects(void)
 {
     return ItemRecord_HasAllInsects();
 }
-CLEAN_AS(func_0207e604, VillagerImpression_CollectedAll12B0)
+CLEAN_AS(func_0207e604, VillagerImpression_CollectedAllInsects)
 
 /* func_0207e60c: not all the items from 0x12b0, but at least half of them.
  * QUIRK: also not when all the fish are collected. */
-int VillagerImpression_CollectedHalf12B0(u8 *record, int fondness, int mood)
+int VillagerImpression_CollectedHalfInsects(u8 *record, int fondness, int mood)
 {
-    if (VillagerImpression_CollectedAll12B0() != 0) {
+    if (VillagerImpression_CollectedAllInsects() != 0) {
         return 0;
     }
     if (VillagerImpression_CollectedAllFish(record, fondness, mood) != 0) {
@@ -386,7 +386,7 @@ int VillagerImpression_CollectedHalf12B0(u8 *record, int fondness, int mood)
     int half = (int) (ItemRecord_InsectKinds() >> 1);
     return ItemRecord_CountInsects() >= half;
 }
-CLEAN_AS(func_0207e60c, VillagerImpression_CollectedHalf12B0)
+CLEAN_AS(func_0207e60c, VillagerImpression_CollectedHalfInsects)
 
 /* func_0207e648: the villager is very fond of the player (110 or more). */
 int VillagerImpression_VeryFond(u8 *record, int fondness)

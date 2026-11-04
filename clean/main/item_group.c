@@ -44,11 +44,11 @@ u16 ItemGroup_Wallpaper(u16 index)
 CLEAN_AS(func_0204b1a0, ItemGroup_Wallpaper)
 
 /* func_0204b1b8 */
-u16 ItemGroup_Item1380(u32 index)
+u16 ItemGroup_Umbrella(u32 index)
 {
     return code_of(index, ITEM_GROUP_1380, ITEM_GROUP_1380S);
 }
-CLEAN_AS(func_0204b1b8, ItemGroup_Item1380)
+CLEAN_AS(func_0204b1b8, ItemGroup_Umbrella)
 
 /* func_0204b350 */
 u16 ItemGroup_PartC(u32 index)
@@ -93,18 +93,18 @@ void ItemGroup_TestIsWallpaper(const u16 *code)
 CLEAN_AS(func_0204b200, ItemGroup_TestIsWallpaper)
 
 /* func_0204b238 */
-int ItemGroup_Is1380(const u16 *code)
+int ItemGroup_IsUmbrella(const u16 *code)
 {
     return in_group(code, ITEM_GROUP_1380, ITEM_GROUP_1380S);
 }
-CLEAN_AS(func_0204b238, ItemGroup_Is1380)
+CLEAN_AS(func_0204b238, ItemGroup_IsUmbrella)
 
 /* func_0204b230 */
-void ItemGroup_TestIs1380(const u16 *code)
+void ItemGroup_TestIsUmbrella(const u16 *code)
 {
-    ItemGroup_Is1380(code);
+    ItemGroup_IsUmbrella(code);
 }
-CLEAN_AS(func_0204b230, ItemGroup_TestIs1380)
+CLEAN_AS(func_0204b230, ItemGroup_TestIsUmbrella)
 
 /* func_0204b298 */
 u16 ItemGroup_IsPartC(const u16 *code)

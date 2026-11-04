@@ -1,7 +1,7 @@
 /* The talk scene of overlay 73's character (class vtable 0x02279a70, at 0x658 of the character,
  * boar.h): a scene of class 0x020d9ff8 (obj_020d9ff8.h) that shows the lines of the archive
- * "sp_npc_boar" and sells the counted items 0x1531-0x153a (town_spoil.h) by tens at the
- * week's turnip price (turnip_prices.h), and item 0x1567 for 1000 Bells once a week (flag 4 of
+ * "sp_npc_boar" and sells the turnips, the counted items 0x1531-0x153a (town_spoil.h), by tens at the
+ * week's turnip price (turnip_prices.h), and the red turnip seed (item 0x1567) for 1000 Bells once a week (flag 4 of
  * the state block, which turnip_prices.h clears a week after).
  *
  * Its vtable slots:
@@ -40,7 +40,7 @@ typedef struct BoarTalk {
     MemberPointer after_screen; /* 0xb8: run once the screen's command ends; null for none */
     s32 price;                  /* 0xc0: the Bells the tens picked cost */
     s32 tens;                   /* 0xc4: how many tens were picked */
-    u8 sold_1567;               /* 0xc8: the sale was item 0x1567 */
+    u8 sold_red_turnip_seed;    /* 0xc8: the sale was the red turnip seed */
     u8 unk_c9[3];               /* 0xc9 */
 } BoarTalk;
 

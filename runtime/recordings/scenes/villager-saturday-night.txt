@@ -4,7 +4,7 @@
 # every 60 frames to 3020, then south-east to villager 0 (personality ko), out at 51.5, 61.5, a
 # tile west of it and facing it.
 # Save: the seed town. A every 40 frames: its talks' topics include the subject of the item the
-# villager holds in the evening (VillagerTalkSubjects_SayHolding1378, ko/tsu/fl_act_), to 6556.
+# villager holds in the evening (VillagerTalkSubjects_SayHoldingWateringCan, ko/tsu/fl_act_), to 6556.
 0 - -
 900 START -
 906 - -

@@ -5,8 +5,8 @@
  *
  * A field actor keeps a pointer to one at 0x628 (func_0201b910, func_02019144, func_02017258);
  * the actors of overlay 68 have one in them at 0x9b4. The functions here pass on to the held
- * item, many of them only for some item codes: 0x1376 and 0x1377, 0x1374 and 0x1375, and
- * 0x1380 to 0x139f. */
+ * item, many of them only for some item codes: the nets 0x1376 and 0x1377, the rods 0x1374
+ * and 0x1375, and the umbrellas 0x1380 to 0x139f. */
 #ifndef CLEAN_MAIN_HELD_ITEM_LINK_H
 #define CLEAN_MAIN_HELD_ITEM_LINK_H
 

@@ -124,7 +124,7 @@ extern u8 data_021c2a1c[];
 extern VillagerTown data_021e5a2c; /* the town's villagers */
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-/* The pocket predicate VillagerTalkSteps_AskPocket1561 hands the scene (the game's). */
+/* The pocket predicate VillagerTalkSteps_AskPocketDelivery hands the scene (the game's). */
 extern int func_020240a8(u16 *item, int state);
 
 static u8 *steps_talk(const VillagerTalk *talk)
@@ -607,24 +607,24 @@ void VillagerTalkSteps_TakePocketAndSay(VillagerTalk *talk)
 }
 CLEAN_AS(func_02023fc8, VillagerTalkSteps_TakePocketAndSay)
 
-/* func_02024078: the pockets screen opened on the items 0x1561-0x1564 (the game's
+/* func_02024078: the pockets screen opened on the delivery items 0x1561-0x1564 (the game's
  * func_020240a8, with 13, then the next line), then data_020d9118 at the command's end. */
-void VillagerTalkSteps_AskPocket1561(VillagerTalk *talk, void *unused)
+void VillagerTalkSteps_AskPocketDelivery(VillagerTalk *talk, void *unused)
 {
     (void) unused;
     SceneCommand_SetPocketPredicate(&talk->scene, func_020240a8, 13, 0);
     SceneCommand_RequestScreen(&talk->scene, SCENE_COMMAND_SCREEN_POCKETS);
     VillagerTalkScene_SetCommandEnd(talk, data_020d9118);
 }
-CLEAN_AS(func_02024078, VillagerTalkSteps_AskPocket1561)
+CLEAN_AS(func_02024078, VillagerTalkSteps_AskPocketDelivery)
 
-/* func_020240a8 (a pocket predicate): 1 for an item 0x1561-0x1564, in any state. */
-int VillagerTalkSteps_Is1561Item(u16 *item, int state)
+/* func_020240a8 (a pocket predicate): 1 for a delivery item 0x1561-0x1564, in any state. */
+int VillagerTalkSteps_IsDelivery(u16 *item, int state)
 {
     (void) state;
     return *item >= 0x1561 && *item <= 0x1564;
 }
-CLEAN_AS(func_020240a8, VillagerTalkSteps_Is1561Item)
+CLEAN_AS(func_020240a8, VillagerTalkSteps_IsDelivery)
 
 /* func_020240c8: the talk's villager object (0x164) taken to its next step, then the villager
  * sent to the others in the session (SessionVillager_SendObjectOp2). */

@@ -36,7 +36,7 @@
  * The held item (OutdoorVillagerWalks_ChangeHeldItem), checked while it stands: every 12000
  * frames (the halfword at 0x34) the kind of the moment is redrawn (OutdoorVillagerRecords_RedrawKind), and
  * the item it should hold is the kind's (VillagerModeRecord_KindItem), its umbrella (items
- * 0x1380 to 0x139f, TownVillager_Item1380) when rain falls and the kind has none or item
+ * 0x1380 to 0x139f, TownVillager_Umbrella) when rain falls and the kind has none or item
  * 0x1378; behaviour 15 brings an item out, 16 puts one away. The halfword at 0x36 (300 after
  * a change, -1 for none) lets only the weather be looked at while both run. */
 #ifndef CLEAN_OV068_OUTDOOR_VILLAGER_WALKS_H

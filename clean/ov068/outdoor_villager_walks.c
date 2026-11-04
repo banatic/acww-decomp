@@ -143,7 +143,7 @@ void OutdoorVillagerRecords_RedrawKind(u8 *villager);
 #define WALKS_ITEM_FIRST_FRAMES 6000
 #define WALKS_UMBRELLA_FIRST 0x1380
 #define WALKS_UMBRELLA_LAST 0x139f
-#define WALKS_ITEM_1378 0x1378
+#define WALKS_WATERING_CAN 0x1378
 #define WALKS_KIND_NONE 7 /* no kind of the moment (VillagerState_GetActivity) */
 #define WALKS_KIND_6 6
 #define WALKS_ITEM_MARKED 0x1566
@@ -683,7 +683,7 @@ int OutdoorVillagerWalks_HasByteA05(OutdoorVillagerBehaviour *self, u8 *villager
 CLEAN_AS(func_ov068_0226c0e0, OutdoorVillagerWalks_HasByteA05)
 
 /* func_ov068_0226c0f4: whether the villager stands on a marked item 0x1566 (TileMarked),
- * within 0xb00 of its tile's centre, and a request of the tile (TileRequests_AskMarked1566,
+ * within 0xb00 of its tile's centre, and a request of the tile (TileRequests_AskMarkedPitfall,
  * with its person index) answers 1 at once (the request then released). */
 int OutdoorVillagerWalks_OnMarkedTile(OutdoorVillagerBehaviour *self, u8 *villager)
 {
@@ -700,7 +700,7 @@ int OutdoorVillagerWalks_OnMarkedTile(OutdoorVillagerBehaviour *self, u8 *villag
         return 0;
     }
     TileRequestTile asked = tile;
-    int request = TileRequests_AskMarked1566((s8) (u8) SceneObject_PersonIndex(villager), &asked);
+    int request = TileRequests_AskMarkedPitfall((s8) (u8) SceneObject_PersonIndex(villager), &asked);
     if (request >= 0) {
         if (TileRequests_Answer((u32) request) == 1) {
             result = 1;
@@ -768,9 +768,9 @@ int OutdoorVillagerWalks_ChangeHeldItem(OutdoorVillagerBehaviour *self, u8 *vill
                 VillagerModeRecord_KindItem(&kind_item, kind);
                 want = kind_item;
             }
-            if ((want == ITEM_CODE_NONE || want == WALKS_ITEM_1378) && raining) {
+            if ((want == ITEM_CODE_NONE || want == WALKS_WATERING_CAN) && raining) {
                 u16 umbrella;
-                TownVillager_Item1380(&umbrella, record);
+                TownVillager_Umbrella(&umbrella, record);
                 want = umbrella;
             }
             *hold = -1;
@@ -809,7 +809,7 @@ int OutdoorVillagerWalks_ChangeHeldItem(OutdoorVillagerBehaviour *self, u8 *vill
             return 0;
         }
         u16 umbrella;
-        TownVillager_Item1380(&umbrella, record);
+        TownVillager_Umbrella(&umbrella, record);
         VillagerSceneHeld_SetItem(villager, &umbrella);
         walks_start_then(self, villager, WALKS_DO_ITEM_OUT, WALKS_DO_WALK);
         *hold = -1;
@@ -825,7 +825,7 @@ int OutdoorVillagerWalks_ChangeHeldItem(OutdoorVillagerBehaviour *self, u8 *vill
         return 1;
     }
     VillagerSceneHeld_Item(&held, villager);
-    if (held == WALKS_ITEM_1378 && raining) {
+    if (held == WALKS_WATERING_CAN && raining) {
         walks_start_then(self, villager, WALKS_DO_ITEM_AWAY, WALKS_DO_WALK);
         *hold = WALKS_ITEM_CHANGE_FRAMES;
         return 1;

@@ -1258,7 +1258,7 @@ void FieldActor_SetState6SavedItem(State6Saved *saved, int item);
 int FieldActor_RequestState6(FieldActor *actor, u16 item, int priority, int arg);
 
 /* A player's actor (player 4: the one at this console), for other code. */
-int FieldActor_PlayerHolds1376(void);
+int FieldActor_PlayerHoldsNet(void);
 void FieldActor_PlayerAnimation99(void);
 void FieldActor_OffsetMatrix(FieldActorBlock48 *matrix, const Vec3 *offset);
 Vec3 *FieldActor_PlayerFocus(int player);

@@ -70,7 +70,7 @@ static_assert(offsetof(VillagerTalk, bells) == 0x1a0, "VillagerTalk layout");
 #define VILLAGER_TALK_TALK_MESSAGE 0x1e77
 
 #define VILLAGER_TALK_NO_ITEM 0xfff1
-#define VILLAGER_TALK_ITEM_3818 0x3818
+#define VILLAGER_TALK_BIRTHDAY_CAKE 0x3818
 
 /* A text set of the talk lines: its texts and how many lines a group has. */
 typedef struct VillagerTalkTexts {
@@ -105,8 +105,8 @@ extern const MemberPointer data_020d9110; /* VillagerTalk_NoteMemory */
 extern const MemberPointer data_020d8e50; /* VillagerTalk_NoteMemoryAgain */
 extern const MemberPointer data_020d91c8; /* func_020288bc */
 extern const MemberPointer data_020d9358; /* func_020288bc */
-extern const MemberPointer data_020d91d0; /* VillagerTalk_GiveItem3818 */
-extern const MemberPointer data_020d9138; /* VillagerTalk_GiveItem3818 */
+extern const MemberPointer data_020d91d0; /* VillagerTalk_GiveBirthdayCake */
+extern const MemberPointer data_020d9138; /* VillagerTalk_GiveBirthdayCake */
 extern const MemberPointer data_020d9228; /* VillagerTalk_DropMusic */
 extern const MemberPointer data_020d92b0; /* VillagerTalk_PlayMusic */
 extern const MemberPointer data_020d8f58; /* VillagerTalk_WalkSay */
@@ -699,15 +699,15 @@ void VillagerTalk_Line8d18Group2(VillagerTalk *talk, VillagerTalkLine *out)
 }
 CLEAN_AS(func_0201dc58, VillagerTalk_Line8d18Group2)
 
-/* func_0201dcbc: the item 0x3818 shown (motion 13, a copy on the stack), then
- * VillagerTalk_GiveItem3818. */
-void VillagerTalk_ShowItem3818(VillagerTalk *talk)
+/* func_0201dcbc: the birthday cake (0x3818) shown (motion 13, a copy on the stack), then
+ * VillagerTalk_GiveBirthdayCake. */
+void VillagerTalk_ShowBirthdayCake(VillagerTalk *talk)
 {
-    u16 item = VILLAGER_TALK_ITEM_3818;
+    u16 item = VILLAGER_TALK_BIRTHDAY_CAKE;
     SceneCommand_RequestMotion13(villager_talk_scene(talk), &item, 0, 5, 0);
     VillagerTalkScene_SetCommandEnd(talk, data_020d91d0);
 }
-CLEAN_AS(func_0201dcbc, VillagerTalk_ShowItem3818)
+CLEAN_AS(func_0201dcbc, VillagerTalk_ShowBirthdayCake)
 
 /* func_0201dcf0: group 7 of the set at 0x020c8d18. */
 void VillagerTalk_Line8d18Group7(VillagerTalk *talk, VillagerTalkLine *out)
@@ -739,22 +739,22 @@ void VillagerTalk_Line8d18Group5(VillagerTalk *talk, VillagerTalkLine *out)
 }
 CLEAN_AS(func_0201de64, VillagerTalk_Line8d18Group5)
 
-/* func_0201df20: the item 0x3818 given to the player (CurrentPockets_Give, a copy on the
+/* func_0201df20: the birthday cake (0x3818) given to the player (CurrentPockets_Give, a copy on the
  * stack), the player's birthday year set to the clock's year, and the line of the table at
  * data_021c228c said. */
-void VillagerTalk_GiveItem3818(VillagerTalk *talk)
+void VillagerTalk_GiveBirthdayCake(VillagerTalk *talk)
 {
-    u16 item = VILLAGER_TALK_ITEM_3818;
+    u16 item = VILLAGER_TALK_BIRTHDAY_CAKE;
     CurrentPockets_Give(&item, 0);
     u8 *record = PlayerRecords_Current();
     PlayerRecord_SetBirthdayYear(record, (u8) Clock_Year());
     villager_talk_say(talk, data_021c228c);
 }
-CLEAN_AS(func_0201df20, VillagerTalk_GiveItem3818)
+CLEAN_AS(func_0201df20, VillagerTalk_GiveBirthdayCake)
 
 /* func_0201dfa0: by the count at 0x198: two or more, the line of the table at data_021c2244;
- * one, that of data_021c225c; none, the item 0x3818 shown (motion 13, a copy on the stack)
- * and then VillagerTalk_GiveItem3818. */
+ * one, that of data_021c225c; none, the birthday cake (0x3818) shown (motion 13, a copy on the stack)
+ * and then VillagerTalk_GiveBirthdayCake. */
 void VillagerTalk_SayByVillagerCount(VillagerTalk *talk)
 {
     int count = talk->villager_count;
@@ -763,7 +763,7 @@ void VillagerTalk_SayByVillagerCount(VillagerTalk *talk)
     } else if (count == 1) {
         villager_talk_say(talk, data_021c225c);
     } else {
-        u16 item = VILLAGER_TALK_ITEM_3818;
+        u16 item = VILLAGER_TALK_BIRTHDAY_CAKE;
         SceneCommand_RequestMotion13(villager_talk_scene(talk), &item, 0, 5, 0);
         VillagerTalkScene_SetCommandEnd(talk, data_020d9138);
     }

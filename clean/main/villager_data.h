@@ -32,8 +32,8 @@
 /* The items the villager's indexes at 0x2c and 0x2e count from, and how many each has. */
 #define VILLAGER_DATA_CLOTHES_FIRST 0x11a8
 #define VILLAGER_DATA_CLOTHES_COUNT 0x100
-#define VILLAGER_DATA_ITEM_1380_FIRST 0x1380
-#define VILLAGER_DATA_ITEM_1380_COUNT 0x20
+#define VILLAGER_DATA_UMBRELLA_FIRST 0x1380
+#define VILLAGER_DATA_UMBRELLAS 0x20
 
 /* An attribute of items and a value of it. */
 typedef struct VillagerDataLike {
@@ -50,7 +50,7 @@ typedef struct VillagerData {
     u8 byte_29;                                  /* 0x29 */
     u8 unknown_2a[2];
     u16 clothes;                                /* 0x2c */
-    u8 item_1380;                               /* 0x2e */
+    u8 umbrella;                                /* 0x2e */
     u8 byte_2f;                                 /* 0x2f */
     u8 wallpaper;                               /* 0x30 */
     u8 carpet;                                  /* 0x31 */
@@ -79,7 +79,7 @@ int VillagerData_Species(u8 *villager);
 int VillagerData_StarSign(u8 *villager);
 const MonthDay *VillagerData_Birthday(u8 *villager);
 const u8 *VillagerData_Room(u8 *villager);
-void VillagerData_DefaultItem1380(u16 *out, u8 *villager);
+void VillagerData_DefaultUmbrella(u16 *out, u8 *villager);
 void VillagerData_DefaultClothes(u16 *out, u8 *villager);
 
 #endif

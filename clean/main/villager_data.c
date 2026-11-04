@@ -115,22 +115,21 @@ const u8 *VillagerData_Room(u8 *villager)
 }
 CLEAN_AS(func_02080b64, VillagerData_Room)
 
-/* func_02080bd4: the item 0x1380-0x139f the villager's data names (the first of them for an
+/* func_02080bd4: the umbrella 0x1380-0x139f the villager's data names (the first of them for an
  * index past the range, and without a valid NpcId or data). */
-void VillagerData_DefaultItem1380(u16 *out, u8 *villager)
+void VillagerData_DefaultUmbrella(u16 *out, u8 *villager)
 {
-    *out = VILLAGER_DATA_ITEM_1380_FIRST;
+    *out = VILLAGER_DATA_UMBRELLA_FIRST;
     if (!NpcId_IsValid(TownVillager_NpcId(villager))) {
         return;
     }
     const VillagerData *data = villager_data_of(villager);
     if (data != NULL) {
-        u8 index = data->item_1380;
-        *out = index < VILLAGER_DATA_ITEM_1380_COUNT ? (u16) (VILLAGER_DATA_ITEM_1380_FIRST + index)
-                                                     : VILLAGER_DATA_ITEM_1380_FIRST;
+        u8 index = data->umbrella;
+        *out = index < VILLAGER_DATA_UMBRELLAS ? (u16) (VILLAGER_DATA_UMBRELLA_FIRST + index) : VILLAGER_DATA_UMBRELLA_FIRST;
     }
 }
-CLEAN_AS(func_02080bd4, VillagerData_DefaultItem1380)
+CLEAN_AS(func_02080bd4, VillagerData_DefaultUmbrella)
 
 /* func_02080c84: the clothes the villager's data names (the first clothes for an index past
  * the range, and without a valid NpcId or data). */

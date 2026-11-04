@@ -255,7 +255,7 @@ CLEAN_AS(func_ov068_0226d20c, OutdoorVillagerRecords_InContest)
  * (0x1380 to 0x139f) put away unless rain falls; then, holding no umbrella, the item of its
  * kind of the moment (VillagerModeRecord_KindItem) unless it already holds it (for an item
  * with variants, any variant of it); then while rain falls item 0x1378 is changed for its
- * umbrella (TownVillager_Item1380). Only for a town record of a villager. */
+ * umbrella (TownVillager_Umbrella). Only for a town record of a villager. */
 void OutdoorVillagerRecords_RefreshItem(u8 *villager)
 {
     u8 *record = records_record(villager);
@@ -285,7 +285,7 @@ void OutdoorVillagerRecords_RefreshItem(u8 *villager)
     }
     if (*VillagerState_HeldItem(state) == RECORDS_ITEM_1378 && sky == RECORDS_RAIN) {
         u16 umbrella;
-        TownVillager_Item1380(&umbrella, record);
+        TownVillager_Umbrella(&umbrella, record);
         VillagerState_SetHeldItem(state, &umbrella);
     }
 }

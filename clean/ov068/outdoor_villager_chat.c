@@ -576,8 +576,8 @@ int OutdoorVillagerChat_DefaultCatchphrase(OutdoorVillagerBehaviour *self, u8 *v
 }
 CLEAN_AS(func_ov068_0226a3e0, OutdoorVillagerChat_DefaultCatchphrase)
 
-/* func_ov068_0226a49c: the first of the pair (the speaker) back to its own defaults: its item
- * of 0x1380 to 0x139f, unless it has one, and its clothes. When the clothes it wears differ
+/* func_ov068_0226a49c: the first of the pair (the speaker) back to its own defaults: its umbrella
+ * (0x1380 to 0x139f), unless it has one, and its clothes. When the clothes it wears differ
  * from its default (by their variant's item when they have variants), both moods asked for
  * (data_ov068_02276730, not applied), its clothes set and the speaker shows them (kind 20),
  * step 2; else both moods asked for and applied, step 3. */
@@ -598,9 +598,9 @@ int OutdoorVillagerChat_DefaultClothes(OutdoorVillagerBehaviour *self, u8 *villa
     u16 wanted;
     if (item < CHAT_ITEM_1380_FIRST || item > CHAT_ITEM_1380_LAST) {
         u16 default_item;
-        VillagerData_DefaultItem1380(&default_item, first);
+        VillagerData_DefaultUmbrella(&default_item, first);
         wanted = default_item;
-        TownVillager_SetItem1380(first, &wanted);
+        TownVillager_SetUmbrella(first, &wanted);
     }
     u16 default_clothes;
     VillagerData_DefaultClothes(&default_clothes, first);

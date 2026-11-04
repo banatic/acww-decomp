@@ -3,7 +3,7 @@
 # on the ground; the player stands in front of the house from about 4000).
 # Save: wallet (30,000 bells). Seven talks with villager 3, A every 40 frames: subjects of the
 # villager's mode and what it holds (VillagerTalkSubjects_SayDesignClothes, the fish of the
-# month with the rod held, VillagerTalkSubjects_SayFishWith1374, the catches it tells of,
+# month with the rod held, VillagerTalkSubjects_SayFishWithRod, the catches it tells of,
 # VillagerTalkSubjects_SayCatchA), to the end (about 12360).
 900 START -
 906 - -

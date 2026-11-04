@@ -43,7 +43,7 @@ enum TileRequestKind {
     TILE_REQUEST_FC_FD = 0x14,      /* on a tile of code 0xfc or 0xfd */
     TILE_REQUEST_KIND_15 = 0x15,    /* the code 0x20 (0x16: no room in the pockets) */
     TILE_REQUEST_SPLIT_DROP = 0x18, /* an item put down as two codes (func_020445c0) */
-    TILE_REQUEST_MARKED_1566 = 0x19,
+    TILE_REQUEST_MARKED_PITFALL = 0x19,
     TILE_REQUEST_DROP_A7 = 0x1a /* an item of 0xa7-0xc6 put down */
 };
 
@@ -143,8 +143,8 @@ int TileRequests_AskAtActorTile(int slot, int item);
 int TileRequests_AskDrop(int slot, u16 item);
 int TileRequests_AskPut(int slot, int kind, u16 item);
 int TileRequests_Answer(u32 index);
-int TileRequests_AskMarked1566(int unk_1e, const TileRequestTile *tile);
-int TileRequests_AskMarked1566For(int player, const TileRequestTile *tile, int unused);
+int TileRequests_AskMarkedPitfall(int unk_1e, const TileRequestTile *tile);
+int TileRequests_AskMarkedPitfallFor(int player, const TileRequestTile *tile, int unused);
 int TileRequests_AskFcFdFor(u32 player, const TileRequestTile *tile, u32 mode);
 int TileRequests_AskFcFd(int slot, const TileRequestTile *tile, int mode);
 int TileRequests_AskForTool0For(int player, const TileRequestTile *tile, int unused);

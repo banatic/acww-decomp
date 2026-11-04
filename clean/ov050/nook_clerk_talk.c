@@ -1241,19 +1241,19 @@ CLEAN_AS(func_ov050_02262734, NookClerkTalk_JobGive1564)
 
 /* func_ov050_02262798 (the job's end of line 0x29): when the item 0x1561 goes into the pockets
  * (state 2) it is shown. */
-void NookClerkTalk_JobShowItem1561(NookClerkTalk *talk, int unused)
+void NookClerkTalk_JobShowDelivery(NookClerkTalk *talk, int unused)
 {
     (void) unused;
     if (ntalk_give(0x1561, 2) != 0) {
         ntalk_show_item(talk, 0x1561, 0);
     }
 }
-CLEAN_AS(func_ov050_02262798, NookClerkTalk_JobShowItem1561)
+CLEAN_AS(func_ov050_02262798, NookClerkTalk_JobShowDelivery)
 
 /* func_ov050_022627d4 (the job's end of line 0x28): the errand's object at step 2 and the job's
  * talk back at its start; with a free pocket slot the block set to type 16, the villager the
  * item 0x1561 is for named in part 1 and line 0x29, else line 0x17. */
-void NookClerkTalk_JobGive1561(NookClerkTalk *talk, VillagerPart *part)
+void NookClerkTalk_JobGiveDelivery(NookClerkTalk *talk, VillagerPart *part)
 {
     ItemObject *errand = ntalk_errand(part);
     PlayerIdText name;
@@ -1271,7 +1271,7 @@ void NookClerkTalk_JobGive1561(NookClerkTalk *talk, VillagerPart *part)
     }
     PlayerIdText_Destruct(&name);
 }
-CLEAN_AS(func_ov050_022627d4, NookClerkTalk_JobGive1561)
+CLEAN_AS(func_ov050_022627d4, NookClerkTalk_JobGiveDelivery)
 
 /* func_ov050_02262850 (the job's end of line 0x27): the errand's object at step 0; with a free
  * pocket slot line 0x25, else the talk's message is the empty one. */
@@ -1478,8 +1478,8 @@ void NookClerkTalk_OnJobLineEnded(NookClerkTalk *talk, int unused)
         &data_ov050_02265690, /* 0x21: NookClerkTalk_JobAskAgain */
         &data_ov050_02265688, /* 0x25: NookClerkTalk_JobStep0Again */
         &data_ov050_02265680, /* 0x27: NookClerkTalk_JobStep0 */
-        &data_ov050_02265678, /* 0x28: NookClerkTalk_JobGive1561 */
-        &data_ov050_02265670, /* 0x29: NookClerkTalk_JobShowItem1561 */
+        &data_ov050_02265678, /* 0x28: NookClerkTalk_JobGiveDelivery */
+        &data_ov050_02265670, /* 0x29: NookClerkTalk_JobShowDelivery */
         &data_ov050_02265498, /* 0x2c: NookClerkTalk_JobGive1564 */
         &data_ov050_02265610, /* 0x2e: NookClerkTalk_JobShowItem1564 */
         &data_ov050_02265658, /* 0x31: NookClerkTalk_JobErrand18 */

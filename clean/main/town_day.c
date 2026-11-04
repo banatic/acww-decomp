@@ -272,8 +272,8 @@ void TownDay_Refresh(void)
     int wide = map->acres_wide - 2;
     int high = map->acres_high - 2;
     TownAcreCount_SummarizeDay(&data_021c779c.acres, map, wide, high);
-    TownSpawn_PutMarked1549(&data_021c779c, map, wide, high);
-    TownSpawn_PutMarked1566(&data_021c779c, map, wide, high);
+    TownSpawn_PutMarkedFossils(&data_021c779c, map, wide, high);
+    TownSpawn_PutMarkedPitfall(&data_021c779c, map, wide, high);
     TownGrowth_ChangeLastStages(&data_021c779c, map, wide, high);
     TownSpawn_MakeMoneyRocks(&data_021c779c, map, wide, high);
     TownDay_ResetMarks();
@@ -546,11 +546,11 @@ void TownDay_Pass(TownDay *town, const DateTime *from, const DateTime *to, int d
         TownGrowth_ChangeLastStages(town, map, wide, high);
         TownSpawn_Maybe1a(town, map, wide, high);
         TownSpawn_UpdateSpot(town, map, wide, high);
-        TownSpawn_PutMarked1549(town, map, wide, high);
-        TownSpawn_PutMarked1566(town, map, wide, high);
+        TownSpawn_PutMarkedFossils(town, map, wide, high);
+        TownSpawn_PutMarkedPitfall(town, map, wide, high);
         TownSpawn_MakeMoneyRocks(town, map, wide, high);
         TownSpawn_AdvanceCodesD4(town, map, days);
-        TownSpawn_Put1548OnBeach(town, map, wide);
+        TownSpawn_PutCoconutOnBeach(town, map, wide);
         TownSpawn_AfterWetDay(town, map, wide, high, wet);
         TownSpawn_AdvanceMarked1369(town, map, wide, high);
         EventWinner_SendLetters(&data_021f3aa4);
@@ -807,7 +807,7 @@ void TownDay_StartEvents(TownDay *town, AcreMap *map, int wide, int high, const 
         }
         switch (id) {
             case 0x10:
-                TownDay_StartEvent10(town, map, event, wide, high, today, loaded, started, block);
+                TownDay_StartAcornFestival(town, map, event, wide, high, today, loaded, started, block);
                 break;
             case 0x11:
             case 0x61:
@@ -839,9 +839,9 @@ CLEAN_AS(func_020479e0, TownDay_MarkEvent)
 #define TOWN_DAY_LINE_5D_FIRST 0x5d
 #define TOWN_DAY_LINE_5D_LAST 0x61
 #define TOWN_DAY_EVENT_0E 0x0e
-#define TOWN_DAY_EVENT_10 0x10
-#define TOWN_DAY_ITEM_1542 0x1542 /* the items TownDay_DrawItem1542 draws, 0x1542-0x1546 */
-#define TOWN_DAY_ITEM_1542_KINDS 5
+#define TOWN_DAY_EVENT_ACORN_FESTIVAL 0x10 /* acorns dropped around the trees each day */
+#define TOWN_DAY_ACORN_FIRST 0x1542        /* the acorns TownDay_DrawAcorn draws, 0x1542-0x1546 */
+#define TOWN_DAY_ACORN_KINDS 5
 #define TOWN_DAY_AROUND_LINE 3
 /* Where in the record of data_021f39fc (the state block's 0x17254) data_021f3a50's day is. */
 #define TOWN_DAY_EVENTS_STAMP_OFFSET (0x172a8 - 0x17254)
@@ -949,13 +949,13 @@ void TownDay_StartEvent0e(TownDay *town, AcreMap *map, EventCalendarEvent *event
 }
 CLEAN_AS(func_02047bc8, TownDay_StartEvent0e)
 
-/* func_02047bf8: when event 0x10 starts, TownDay_DropAroundLines. */
-void TownDay_StartEvent10(TownDay *town, AcreMap *map, EventCalendarEvent *event, int wide, int high, const DateTime *today,
-                          int loaded, int started, StateBlock *block)
+/* func_02047bf8: when the acorn festival (event 0x10) starts, TownDay_DropAroundLines. */
+void TownDay_StartAcornFestival(TownDay *town, AcreMap *map, EventCalendarEvent *event, int wide, int high,
+                                const DateTime *today, int loaded, int started, StateBlock *block)
 {
     TownDay_DropAroundLines(town, map, event, wide, high, today, loaded, started, block);
 }
-CLEAN_AS(func_02047bf8, TownDay_StartEvent10)
+CLEAN_AS(func_02047bf8, TownDay_StartAcornFestival)
 
 /* func_02047c1c: for each of event 0x10's days, items dropped around a growth line's code in
  * every inner acre with codes of 0x26-0x2a or 0x66-0x68 (TownDay_DropAroundLine), row by row.
@@ -965,7 +965,7 @@ CLEAN_AS(func_02047bf8, TownDay_StartEvent10)
 void TownDay_DropAroundLines(TownDay *town, AcreMap *map, EventCalendarEvent *event, int wide, int high, const DateTime *today,
                              int loaded, int started, StateBlock *block)
 {
-    int days = TownDay_EventDays(town, TOWN_DAY_EVENT_10, event, today, loaded, started, block);
+    int days = TownDay_EventDays(town, TOWN_DAY_EVENT_ACORN_FESTIVAL, event, today, loaded, started, block);
     for (u32 round = (u32) days; round != 0; round--) {
         for (int acre_z = 0; acre_z < high; acre_z++) {
             for (int acre_x = 0; acre_x < wide; acre_x++) {
@@ -980,7 +980,7 @@ CLEAN_AS(func_02047c1c, TownDay_DropAroundLines)
 
 /* func_02047c98: one grown code (MapItem_IsGrown) of 0x26-0x2a or 0x66-0x68 of inner acre
  * (acre_x, acre_z) drawn at random; on each free tile below, left of and right of it
- * (data_020ca57c) an item 0x1542-0x1546 drawn at random, unmarked. */
+ * (data_020ca57c) an acorn (0x1542-0x1546) drawn at random, unmarked. */
 void TownDay_DropAroundLine(TownDay *town, AcreMap *map, int acre_x, int acre_z)
 {
     TownDayTile lines[TOWN_DAY_ACRE_TILES];
@@ -1008,19 +1008,19 @@ void TownDay_DropAroundLine(TownDay *town, AcreMap *map, int acre_x, int acre_z)
         int z = line->z + ((offset & 0xf) - 8);
         const u16 *code = TownAcreCount_CodeAt(map, x, z);
         if (code != NULL && *code == ACRE_MAP_ITEM_NONE) {
-            TownTilePut_At(map, x, z, TownDay_DrawItem1542(town), 0);
+            TownTilePut_At(map, x, z, TownDay_DrawAcorn(town), 0);
         }
     }
 }
 CLEAN_AS(func_02047c98, TownDay_DropAroundLine)
 
-/* func_02047db8: one of the items 0x1542-0x1546, drawn at random. */
-u16 TownDay_DrawItem1542(TownDay *town)
+/* func_02047db8: one of the acorns (0x1542-0x1546), drawn at random. */
+u16 TownDay_DrawAcorn(TownDay *town)
 {
     (void) town;
-    return (u16) (TOWN_DAY_ITEM_1542 + MainRandom_Below(TOWN_DAY_ITEM_1542_KINDS));
+    return (u16) (TOWN_DAY_ACORN_FIRST + MainRandom_Below(TOWN_DAY_ACORN_KINDS));
 }
-CLEAN_AS(func_02047db8, TownDay_DrawItem1542)
+CLEAN_AS(func_02047db8, TownDay_DrawAcorn)
 
 /* func_02047dd4: the days an event that starts now covers: 1 unless loaded; when the record of
  * data_021f39fc already has the event, the days from the day the calendar's buildings were

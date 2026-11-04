@@ -4,7 +4,7 @@
  *   0x1100-0x1143  wallpaper (68)              ItemGroup_Wallpaper, ItemGroup_IsWallpaper
  *   0x1144-0x1187  carpets (68)                ItemGroup_IsCarpet
  *   0x11a8-0x12a7  clothes (256, "/cloth/")    ItemGroup_Cloth, ItemGroup_IsCloth
- *   0x1380-0x139f  (32)                        ItemGroup_Item1380, ItemGroup_Is1380
+ *   0x1380-0x139f  umbrellas (32)              ItemGroup_Umbrella, ItemGroup_IsUmbrella
  *   0x13a8-0x13c7  worn on the head, the first model (32; head_look.h)
  *                                              ItemGroup_HeadA, ItemGroup_IsHeadA
  *   0x13c8-0x1407  worn on the head, the second model (64)
@@ -20,15 +20,15 @@
 
 u16 ItemGroup_HeadA(u32 index);
 u16 ItemGroup_Wallpaper(u16 index);
-u16 ItemGroup_Item1380(u32 index);
+u16 ItemGroup_Umbrella(u32 index);
 u16 ItemGroup_PartC(u32 index);
 u16 ItemGroup_Cloth(u16 index);
 int ItemGroup_IsHeadA(const u16 *code);
 void ItemGroup_TestIsHeadA(const u16 *code);
 int ItemGroup_IsWallpaper(const u16 *code);
 void ItemGroup_TestIsWallpaper(const u16 *code);
-int ItemGroup_Is1380(const u16 *code);
-void ItemGroup_TestIs1380(const u16 *code);
+int ItemGroup_IsUmbrella(const u16 *code);
+void ItemGroup_TestIsUmbrella(const u16 *code);
 u16 ItemGroup_IsPartC(const u16 *code);
 void ItemGroup_TestIsPartC(const u16 *code);
 int ItemGroup_IsCloth(const u16 *code);

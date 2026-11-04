@@ -4,7 +4,7 @@
 # tile (54.4, 51.5), RIGHT and A dig a hole east of the player; the pockets by the pen (as
 # pitfall.txt) bury the pitfall seed in it (about 4800, the item 0x1566 marked on the tile).
 # South to (54.4, 56) to wait: villager 3 walks about and steps onto the tile (about 10560;
-# OutdoorVillagerWalks_OnMarkedTile, TileRequests_AskMarked1566): it falls in and climbs out
+# OutdoorVillagerWalks_OnMarkedTile, TileRequests_AskMarkedPitfall): it falls in and climbs out
 # (behaviours 17 and 18, OutdoorVillagerActs_Start17, the held item's link), and another
 # villager walks up and the two talk of it (behaviour 9, OutdoorVillagerChat, their bonds), to
 # 11516.

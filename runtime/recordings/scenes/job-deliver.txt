@@ -8,7 +8,7 @@
 # 6350), south and east along the path to villager 0's house (tile 51.5, 62), in (about 8160);
 # round the table to stand east of it, LEFT and A (8729): its talk asks what the player came
 # for, the first answer opens the pockets' pick (main/villager_talk_steps.c
-# VillagerTalkSteps_AskPocket1561 and VillagerTalkSteps_Is1561Item), A takes the item from
+# VillagerTalkSteps_AskPocketDelivery and VillagerTalkSteps_IsDelivery), A takes the item from
 # pocket 0 (9447), it thanks the player and gives a piece of furniture
 # (VillagerTalkSteps_LineGiveByObjectType); A every 46 frames to the end (11931). Out (12561),
 # back along the path into the store and up to Nook (about 15300): A every 46 frames, the

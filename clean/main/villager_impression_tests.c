@@ -93,13 +93,13 @@ static int VillagerImpression_HeadIs(u8 *record, u16 wanted)
     return *head == wanted;
 }
 
-/* func_0207e738: the held item is one of 0x1380-0x13a7 (two ranges in the original,
+/* func_0207e738: the held item is an umbrella, one of 0x1380-0x13a7 (two ranges in the original,
  * 0x1380-0x139f and 0x13a0-0x13a7). */
-int VillagerImpression_Held1380(u8 *record)
+int VillagerImpression_HeldUmbrella(u8 *record)
 {
     return VillagerImpression_InRange(*PlayerRecord_HeldItem(record), 0x1380, 0x13a7);
 }
-CLEAN_AS(func_0207e738, VillagerImpression_Held1380)
+CLEAN_AS(func_0207e738, VillagerImpression_HeldUmbrella)
 
 /* func_0207e780: the held item is 0x137c, else the head's item is one of 0x1408-0x1428, else
  * part C's item is one of 0x1471-0x1491 (each looked up only when the one before fails). */
@@ -188,33 +188,33 @@ int VillagerImpression_HeadIs13C1(u8 *record)
 }
 CLEAN_AS(func_0207eaf4, VillagerImpression_HeadIs13C1)
 
-/* func_0207eb40: the held item is 0x1378 or 0x1379. */
-int VillagerImpression_Held1378(u8 *record)
+/* func_0207eb40: the held item is a watering can, 0x1378 or 0x1379. */
+int VillagerImpression_HeldWateringCan(u8 *record)
 {
     return VillagerImpression_InRange(*PlayerRecord_HeldItem(record), 0x1378, 0x1379);
 }
-CLEAN_AS(func_0207eb40, VillagerImpression_Held1378)
+CLEAN_AS(func_0207eb40, VillagerImpression_HeldWateringCan)
 
-/* func_0207eb7c: the held item is 0x1374 or 0x1375. */
-int VillagerImpression_Held1374(u8 *record)
+/* func_0207eb7c: the held item is a rod, 0x1374 or 0x1375. */
+int VillagerImpression_HeldRod(u8 *record)
 {
     return VillagerImpression_InRange(*PlayerRecord_HeldItem(record), 0x1374, 0x1375);
 }
-CLEAN_AS(func_0207eb7c, VillagerImpression_Held1374)
+CLEAN_AS(func_0207eb7c, VillagerImpression_HeldRod)
 
-/* func_0207ebb8: the held item is one of 0x136b-0x1373. */
-int VillagerImpression_Held136B(u8 *record)
+/* func_0207ebb8: the held item is an axe, one of 0x136b-0x1373. */
+int VillagerImpression_HeldAxe(u8 *record)
 {
     return VillagerImpression_InRange(*PlayerRecord_HeldItem(record), 0x136b, 0x1373);
 }
-CLEAN_AS(func_0207ebb8, VillagerImpression_Held136B)
+CLEAN_AS(func_0207ebb8, VillagerImpression_HeldAxe)
 
-/* func_0207ebf8: the held item is 0x1376 or 0x1377. */
-int VillagerImpression_Held1376(u8 *record)
+/* func_0207ebf8: the held item is a net, 0x1376 or 0x1377. */
+int VillagerImpression_HeldNet(u8 *record)
 {
     return VillagerImpression_InRange(*PlayerRecord_HeldItem(record), 0x1376, 0x1377);
 }
-CLEAN_AS(func_0207ebf8, VillagerImpression_Held1376)
+CLEAN_AS(func_0207ebf8, VillagerImpression_HeldNet)
 
 /* ---- The villager and the town */
 

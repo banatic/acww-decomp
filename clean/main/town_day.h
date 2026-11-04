@@ -133,12 +133,12 @@ void TownDay_PutCode6d(TownDay *town, AcreMap *map, int wide);
 void TownDay_PutCode6dIn(TownDay *town, AcreMap *map, int acre_x, int acre_z);
 void TownDay_StartEvent0e(TownDay *town, AcreMap *map, EventCalendarEvent *event, const DateTime *today, int loaded,
                           int started, StateBlock *block);
-void TownDay_StartEvent10(TownDay *town, AcreMap *map, EventCalendarEvent *event, int wide, int high, const DateTime *today,
-                          int loaded, int started, StateBlock *block);
+void TownDay_StartAcornFestival(TownDay *town, AcreMap *map, EventCalendarEvent *event, int wide, int high,
+                                const DateTime *today, int loaded, int started, StateBlock *block);
 void TownDay_DropAroundLines(TownDay *town, AcreMap *map, EventCalendarEvent *event, int wide, int high, const DateTime *today,
                              int loaded, int started, StateBlock *block);
 void TownDay_DropAroundLine(TownDay *town, AcreMap *map, int acre_x, int acre_z);
-u16 TownDay_DrawItem1542(TownDay *town);
+u16 TownDay_DrawAcorn(TownDay *town);
 int TownDay_EventDays(TownDay *town, int event, const EventCalendarEvent *entry, const DateTime *today, int loaded,
                       int started, StateBlock *block);
 

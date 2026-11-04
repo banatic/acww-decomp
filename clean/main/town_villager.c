@@ -151,28 +151,28 @@ int TownVillager_FirstEmpty(u8 *villagers, int count)
 }
 CLEAN_AS(func_02080b98, TownVillager_FirstEmpty)
 
-/* func_02080c24: the villager's byte 0x7da set to the index of an item 0x1380-0x139f; other
+/* func_02080c24: the villager's byte 0x7da set to the index of an umbrella 0x1380-0x139f; other
  * items leave it. */
-void TownVillager_SetItem1380(u8 *villager, const u16 *item)
+void TownVillager_SetUmbrella(u8 *villager, const u16 *item)
 {
     u32 code = *item;
-    if (code >= VILLAGER_DATA_ITEM_1380_FIRST && code < VILLAGER_DATA_ITEM_1380_FIRST + VILLAGER_DATA_ITEM_1380_COUNT) {
-        villager[TOWN_VILLAGER_ITEM_1380] = (u8) (code - VILLAGER_DATA_ITEM_1380_FIRST);
+    if (code >= VILLAGER_DATA_UMBRELLA_FIRST && code < VILLAGER_DATA_UMBRELLA_FIRST + VILLAGER_DATA_UMBRELLAS) {
+        villager[TOWN_VILLAGER_UMBRELLA] = (u8) (code - VILLAGER_DATA_UMBRELLA_FIRST);
     }
 }
-CLEAN_AS(func_02080c24, TownVillager_SetItem1380)
+CLEAN_AS(func_02080c24, TownVillager_SetUmbrella)
 
-/* func_02080c60: the item 0x1380-0x139f the villager's byte 0x7da names (the first for an index
+/* func_02080c60: the umbrella 0x1380-0x139f the villager's byte 0x7da names (the first for an index
  * past the range). */
-void TownVillager_Item1380(u16 *out, u8 *villager)
+void TownVillager_Umbrella(u16 *out, u8 *villager)
 {
-    *out = VILLAGER_DATA_ITEM_1380_FIRST;
-    u8 index = villager[TOWN_VILLAGER_ITEM_1380];
-    if (index < VILLAGER_DATA_ITEM_1380_COUNT) {
-        *out = (u16) (VILLAGER_DATA_ITEM_1380_FIRST + index);
+    *out = VILLAGER_DATA_UMBRELLA_FIRST;
+    u8 index = villager[TOWN_VILLAGER_UMBRELLA];
+    if (index < VILLAGER_DATA_UMBRELLAS) {
+        *out = (u16) (VILLAGER_DATA_UMBRELLA_FIRST + index);
     }
 }
-CLEAN_AS(func_02080c60, TownVillager_Item1380)
+CLEAN_AS(func_02080c60, TownVillager_Umbrella)
 
 /* func_02080cd8 */
 void TownVillager_SetClothes(u8 *villager, const u16 *clothes)
@@ -245,7 +245,7 @@ void TownVillager_Setup(u8 *villager, u32 number, int came, const NpcIdHead *tow
             villager[TOWN_VILLAGER_NUMBER_7D8] = (u8) (villager[TOWN_VILLAGER_NUMBER_7D8] % TOWN_VILLAGER_MODE_2_NUMBERS);
         }
         VillagerEntry_MarkItems(villager);
-        villager[TOWN_VILLAGER_ITEM_1380] = data->item_1380;
+        villager[TOWN_VILLAGER_UMBRELLA] = data->umbrella;
     }
     VillagerStatus_SetCame(villager, (u8) came);
     CatchphraseWide_Destruct((CatchphraseWide *) &text);

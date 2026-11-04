@@ -32,7 +32,7 @@ static HeldItem *held_item_link_item(HeldItemLink *link)
 }
 
 /* The item codes the actions 0 and 15 to 18 are for. */
-static int held_item_link_is_1376(u16 item)
+static int held_item_link_is_net(u16 item)
 {
     return item == 0x1376 || item == 0x1377;
 }
@@ -123,7 +123,7 @@ CLEAN_AS(func_02012280, HeldItemLink_Release)
 /* func_020122ac: action 18 when `item` is 0x1376 or 0x1377. */
 void HeldItemLink_Action18ByItem(HeldItemLink *link, const u16 *item, int a, int b)
 {
-    if (held_item_link_is_1376(*item)) {
+    if (held_item_link_is_net(*item)) {
         HeldItemLink_Act(link, 18, a, b);
     }
 }
@@ -141,7 +141,7 @@ CLEAN_AS(func_0201228c, HeldItemLink_Action18)
 /* func_02012304: action 17 when `item` is 0x1376 or 0x1377. */
 void HeldItemLink_Action17ByItem(HeldItemLink *link, const u16 *item, int a, int b)
 {
-    if (held_item_link_is_1376(*item)) {
+    if (held_item_link_is_net(*item)) {
         HeldItemLink_Act(link, 17, a, b);
     }
 }
@@ -159,7 +159,7 @@ CLEAN_AS(func_020122e4, HeldItemLink_Action17)
 /* func_0201235c: action 16 when `item` is 0x1376 or 0x1377. */
 void HeldItemLink_Action16ByItem(HeldItemLink *link, const u16 *item, int a, int b)
 {
-    if (held_item_link_is_1376(*item)) {
+    if (held_item_link_is_net(*item)) {
         HeldItemLink_Act(link, 16, a, b);
     }
 }
@@ -177,7 +177,7 @@ CLEAN_AS(func_0201233c, HeldItemLink_Action16)
 /* func_020123b4: action 15 when `item` is 0x1376 or 0x1377. */
 void HeldItemLink_Action15ByItem(HeldItemLink *link, const u16 *item, int a, int b)
 {
-    if (held_item_link_is_1376(*item)) {
+    if (held_item_link_is_net(*item)) {
         HeldItemLink_Act(link, 15, a, b);
     }
 }
@@ -195,7 +195,7 @@ CLEAN_AS(func_02012394, HeldItemLink_Action15)
 /* func_0201240c: action 1 when `item` is 0x1376 or 0x1377. */
 void HeldItemLink_Action1ByItem(HeldItemLink *link, const u16 *item, int a, int b)
 {
-    if (held_item_link_is_1376(*item)) {
+    if (held_item_link_is_net(*item)) {
         HeldItemLink_Act(link, 1, a, b);
     }
 }
@@ -215,7 +215,7 @@ CLEAN_AS(func_020123ec, HeldItemLink_Action1)
 void HeldItemLink_Action0ByItem(HeldItemLink *link, const u16 *item, int a, int b)
 {
     u16 code = *item;
-    if (held_item_link_is_1376(code)) {
+    if (held_item_link_is_net(code)) {
         HeldItemLink_Act(link, 0, a, b);
     } else if (code == 0x1374 || code == 0x1375) {
         HeldItemLink_Act(link, 0x13, 0, 0);

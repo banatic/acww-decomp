@@ -1,6 +1,6 @@
-/* The counted items 0x1531-0x153a going bad: each becomes the item of the same place in
- * 0x154a-0x1553. They go bad when the week changes or the clock goes back (town_day.c), as the
- * turnips the game sells do; the prices kept with them are turnip_prices.h's.
+/* The turnips going bad: the counted items 0x1531-0x153a (10 to 100 turnips) each become the
+ * spoiled turnips of the same place in 0x154a-0x1553. They go bad when the week changes or the
+ * clock goes back (town_day.c); the prices kept with them are turnip_prices.h's.
  *
  * TownSpoil_All looks everywhere they can be: the players' pockets, the town's map, the five
  * rooms' maps and the town's two item lists. */

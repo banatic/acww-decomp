@@ -789,24 +789,24 @@ static int TileRequests_AskMarked(int player, int for_player, const TileRequestT
     int slot = for_player ? TileRequests_SlotOf(player) : 0;
     u16 made = AcreTile_UnitByte09(town, tile->x, tile->z) != 0 ? 0xfd : 0xfc;
     TileRequestTile at = *tile;
-    return TileRequests_Add(data_021c7c48.requests, slot, TILE_REQUEST_MARKED_1566, &at, made, ITEM_CODE_NONE, 0, 0, 0,
+    return TileRequests_Add(data_021c7c48.requests, slot, TILE_REQUEST_MARKED_PITFALL, &at, made, ITEM_CODE_NONE, 0, 0, 0,
                             unk_1e);
 }
 
 /* func_02043830: TileRequests_AskMarked for slot 0, `unk_1e` kept in the request. */
-int TileRequests_AskMarked1566(int unk_1e, const TileRequestTile *tile)
+int TileRequests_AskMarkedPitfall(int unk_1e, const TileRequestTile *tile)
 {
     return TileRequests_AskMarked(0, 0, tile, (s8) unk_1e);
 }
-CLEAN_AS(func_02043830, TileRequests_AskMarked1566)
+CLEAN_AS(func_02043830, TileRequests_AskMarkedPitfall)
 
 /* func_020438dc: TileRequests_AskMarked for `player`'s slot. */
-int TileRequests_AskMarked1566For(int player, const TileRequestTile *tile, int unused)
+int TileRequests_AskMarkedPitfallFor(int player, const TileRequestTile *tile, int unused)
 {
     (void) unused;
     return TileRequests_AskMarked(player, 1, tile, -1);
 }
-CLEAN_AS(func_020438dc, TileRequests_AskMarked1566For)
+CLEAN_AS(func_020438dc, TileRequests_AskMarkedPitfallFor)
 
 /* func_02043990: TileRequests_AskFcFd for `player`'s slot. */
 int TileRequests_AskFcFdFor(u32 player, const TileRequestTile *tile, u32 mode)

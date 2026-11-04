@@ -3,7 +3,7 @@
 # event 4, calendar event 0x0a, 12:00-18:00): as villager-talk.txt to 2600, then nothing; the event's
 # announcement is read on by the prefix's presses (about 3600-3900). From 4600 the player walks
 # to the villager at about (56, 47.7), faces it and presses A every 30 frames: line table 7 (the
-# event's lines, VillagerTalk_LineItem12b0 by the hour).
+# event's lines, VillagerTalk_LineInsect by the hour).
 0 - -
 900 START -
 906 - -
