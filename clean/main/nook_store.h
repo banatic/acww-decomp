@@ -18,8 +18,9 @@
  * posts a notice in the three days before it (flag 6 says it did). Shop points count five times on it (shop_points.h).
  *
  * Bits 0-4 of `bits` hold an hour (17 to 20) set on one day in fourteen at random: from it until
- * 23:00 func_020afb90 answers 1; 0 for none. Bits 5-8 count on through the items 0x1521 to
- * 0x1530, one of which each restock may sell. */
+ * 23:00 func_020afb90 answers 1; 0 for none. Bits 5-8 count on through the 16 roof paints
+ * 0x1521-0x1530 (item_info names them by their colours; ov050 sells them with "st_roof_paint"),
+ * the next of which each restock at level 3 may sell. */
 #ifndef CLEAN_MAIN_NOOK_STORE_H
 #define CLEAN_MAIN_NOOK_STORE_H
 
@@ -43,13 +44,13 @@ typedef struct NookStore {
     Date stocked;                          /* 0x4e: the day of the stock; `unused` 1 asks for a restock */
     Date bonus_day;                        /* 0x52 */
     NookUpgrade upgrade;                   /* 0x56 */
-    u16 bits;                              /* 0x5a: the hour (bits 0-4), the next 0x1521 item (5-8), the level (9-10) */
+    u16 bits;                              /* 0x5a: the hour (bits 0-4), the next roof paint (5-8), the level (9-10) */
     u8 sold[(NOOK_STORE_PLACES >> 3) + 1]; /* 0x5c: a bit for each place */
 } NookStore;
 
 void NookStore_StockFixed155e(NookStore *store, u32 *next);
 void NookStore_Stock151f(NookStore *store, u32 *next);
-void NookStore_StockSeries(NookStore *store, u32 *next);
+void NookStore_StockRoofPaints(NookStore *store, u32 *next);
 void NookStore_StockKind1(NookStore *store, u32 *next);
 void NookStore_StockKind3(NookStore *store, u32 *next);
 void NookStore_StockKind4(NookStore *store, u32 *next);
@@ -59,7 +60,7 @@ void NookStore_StockKind0(NookStore *store, u32 *next);
 void NookStore_StockSeven(NookStore *store, u32 *next);
 int NookStore_Count155e(void);
 int NookStore_Count151f(NookStore *store);
-int NookStore_CountSeries(NookStore *store);
+int NookStore_CountRoofPaints(NookStore *store);
 int NookStore_CountKind1(NookStore *store);
 u8 NookStore_CountKind3(NookStore *store);
 u8 NookStore_CountKind4(NookStore *store);

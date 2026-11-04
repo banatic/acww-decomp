@@ -38,14 +38,14 @@ static_assert(offsetof(NookStore, sold) == 0x5c, "sold");
 
 /* The fields of `bits`. */
 #define NOOK_HOUR_MASK 0x1fu
-#define NOOK_SERIES_SHIFT 5
-#define NOOK_SERIES_MASK 0xfu
+#define NOOK_ROOF_PAINT_SHIFT 5
+#define NOOK_ROOF_PAINT_MASK 0xfu
 #define NOOK_LEVEL_SHIFT 9
 #define NOOK_LEVEL_MASK 3u
 
-/* The items of NookStore_StockSeries: 0x1521 plus the count in bits 5-8. */
-#define NOOK_SERIES_FIRST 0x1521
-#define NOOK_SERIES_COUNT 16
+/* The 16 roof paints of NookStore_StockRoofPaints: 0x1521 plus the count in bits 5-8. */
+#define NOOK_ROOF_PAINT_FIRST 0x1521
+#define NOOK_ROOF_PAINT_COUNT 16
 /* The item that marks the first section at level 0 (an index into the seven). */
 #define NOOK_SEVEN_MARK 3
 /* Items that a sale leaves on sale. */
@@ -199,17 +199,18 @@ void NookStore_Stock151f(NookStore *store, u32 *next)
 }
 CLEAN_AS(func_020aeb9c, NookStore_Stock151f)
 
-/* func_020aebcc: the next items of 0x1521 to 0x1530 (at level 3 only), the count going round. */
-void NookStore_StockSeries(NookStore *store, u32 *next)
+/* func_020aebcc: the next roof paints of 0x1521 to 0x1530 (at level 3 only), the count going round. */
+void NookStore_StockRoofPaints(NookStore *store, u32 *next)
 {
-    for (u32 i = 0; i < (u32) NookStore_CountSeries(store); i++) {
-        u32 series = (store->bits >> NOOK_SERIES_SHIFT) & NOOK_SERIES_MASK;
-        store->items[(*next)++] = (u16) (NOOK_SERIES_FIRST + series);
-        series = (series + 1) % NOOK_SERIES_COUNT;
-        store->bits = (u16) ((store->bits & ~(NOOK_SERIES_MASK << NOOK_SERIES_SHIFT)) | series << NOOK_SERIES_SHIFT);
+    for (u32 i = 0; i < (u32) NookStore_CountRoofPaints(store); i++) {
+        u32 paint = (store->bits >> NOOK_ROOF_PAINT_SHIFT) & NOOK_ROOF_PAINT_MASK;
+        store->items[(*next)++] = (u16) (NOOK_ROOF_PAINT_FIRST + paint);
+        paint = (paint + 1) % NOOK_ROOF_PAINT_COUNT;
+        store->bits =
+            (u16) ((store->bits & ~(NOOK_ROOF_PAINT_MASK << NOOK_ROOF_PAINT_SHIFT)) | paint << NOOK_ROOF_PAINT_SHIFT);
     }
 }
-CLEAN_AS(func_020aebcc, NookStore_StockSeries)
+CLEAN_AS(func_020aebcc, NookStore_StockRoofPaints)
 
 /* func_020aec40: items of the lot (1, 0). */
 void NookStore_StockKind1(NookStore *store, u32 *next)
@@ -311,12 +312,12 @@ int NookStore_Count151f(NookStore *store)
 }
 CLEAN_AS(func_020aef2c, NookStore_Count151f)
 
-/* func_020aef44 */
-int NookStore_CountSeries(NookStore *store)
+/* func_020aef44: how many roof paints a restock sells at the store's level. */
+int NookStore_CountRoofPaints(NookStore *store)
 {
     return data_020d1e14[NookStore_Level(store)];
 }
-CLEAN_AS(func_020aef44, NookStore_CountSeries)
+CLEAN_AS(func_020aef44, NookStore_CountRoofPaints)
 
 /* func_020aef5c */
 int NookStore_CountKind1(NookStore *store)
@@ -533,7 +534,7 @@ void NookStore_Restock(NookStore *store, u8 year, u8 month, u8 day)
     NookStore_StockKind4(store, &next);
     NookStore_StockKind3(store, &next);
     NookStore_StockKind1(store, &next);
-    NookStore_StockSeries(store, &next);
+    NookStore_StockRoofPaints(store, &next);
     NookStore_Stock151f(store, &next);
     NookStore_StockFixed155e(store, &next);
     NookStore_StockDone(store);
