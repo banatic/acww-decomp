@@ -296,7 +296,7 @@ void GrowthModel_DropKind7(int slot, const TileChangesTile *tile)
     if (Session_IsLinked(data_020ccf94)) {
         return;
     }
-    if (PlayerRecord_TestFlag(PlayerRecords_Current(), 1) != 0) {
+    if (PlayerRecord_TestFlag(PlayerRecords_Current(), PLAYER_FLAG_NOOK_JOB) != 0) {
         return;
     }
     Vec3 centre;

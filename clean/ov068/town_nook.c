@@ -87,7 +87,6 @@ extern u8 data_021dc7bc[];
 #define NOOK_MUSIC 0x47
 #define NOOK_MUSIC_0C 0x7f
 #define NOOK_PLAYER 4
-#define NOOK_PLAYER_FLAG_RECORD 0x23 /* the current player's record flag cleared as the talk starts */
 
 /* The messages. */
 #define NOOK_MESSAGE_FIRST 0x22
@@ -310,7 +309,7 @@ void TownNookScene_OnMessageEnded(TownNookScene *scene)
 }
 CLEAN_AS(func_ov068_0226e44c, TownNookScene_OnMessageEnded)
 
-/* func_ov068_0226e570 (slot 0x78, the talk starting): the current player's record flag 0x23
+/* func_ov068_0226e570 (slot 0x78, the talk starting): the current player's record flag 0x23 (new resident)
  * cleared (when there is a current record), and the talk starts with message 0x22 of
  * "sp_etc_sequence4". */
 void TownNookScene_StartTalk(TownNookScene *scene, TownNookTalkStart *start)
@@ -318,7 +317,7 @@ void TownNookScene_StartTalk(TownNookScene *scene, TownNookTalkStart *start)
     (void) scene;
     u8 *record = PlayerRecords_Current();
     if (record != NULL) {
-        PlayerRecord_ClearFlag(record, NOOK_PLAYER_FLAG_RECORD);
+        PlayerRecord_ClearFlag(record, PLAYER_FLAG_NEW_RESIDENT);
     }
     start->name = data_ov068_0227733c;
     start->message = NOOK_MESSAGE_FIRST;
@@ -414,9 +413,6 @@ CLEAN_AS(func_ov068_0226e5ec, TownNookScene_Construct)
 #define NOOK_MUSIC_END_PRIORITY 0x12
 #define NOOK_MUSIC_END_VALUE 5
 #define NOOK_MUSIC_END_FRAMES 5
-
-/* The player's record flag cleared at the start for an old player in an old town. */
-#define NOOK_PLAYER_FLAG_START 1
 
 /* Its walking pace 2 (scene_mover.h). */
 #define NOOK_PACE 2
@@ -671,7 +667,7 @@ int TownNook_TextureName(void)
 CLEAN_AS(func_ov068_0226e928, TownNook_TextureName)
 
 /* func_ov068_0226e948 (slot 0x00): unless the base class refuses to start, TOWN_NOOK_WAIT; it
- * notes where it faces, is held (flag 2 at 0x4e8), clears the current player's record flag 1
+ * notes where it faces, is held (flag 2 at 0x4e8), clears the current player's record flag 1 (Nook's job)
  * for an old player in an old town, and adds value 0xf to the music of priority 0x13. Whether
  * it started. */
 int TownNook_Start(u8 *object)
@@ -684,7 +680,7 @@ int TownNook_Start(u8 *object)
     *(u32 *) (void *) nook_at(object, NOOK_HELD_FLAGS) |= NOOK_HELD;
     u8 *record = PlayerRecords_Current();
     if (record != NULL && StartKind_IsNewPlayer() == 0 && StartKind_IsNewTown() == 0) {
-        PlayerRecord_ClearFlag(record, NOOK_PLAYER_FLAG_START);
+        PlayerRecord_ClearFlag(record, PLAYER_FLAG_NOOK_JOB);
     }
     Music_AddValue(NOOK_MUSIC_DROPPED, NOOK_MUSIC_START_VALUE, 0);
     return 1;

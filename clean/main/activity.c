@@ -24,7 +24,6 @@ extern NetSession *data_020ccf94;
 extern const char data_020e3c40[]; /* "sp_etc_sequence2" */
 extern const char data_020e3c2c[]; /* "sp_npc_gatekeeper" */
 
-#define PLAYER_FLAG_2 2
 #define SEQUENCE2_MESSAGE 7
 #define GATEKEEPER_MESSAGE 105
 #define SESSION_MODE_1 1
@@ -52,16 +51,16 @@ Activity *Activity_DestructFree(Activity *activity)
 }
 CLEAN_AS(func_0209fba0, Activity_DestructFree)
 
-/* func_020a0244: message 7 of "sp_etc_sequence2" shown and the current player's flag 2
+/* func_020a0244: message 7 of "sp_etc_sequence2" shown and the current player's flag 2 (PLAYER_FLAG_UNSAVED)
  * cleared; when the start menu's leave choice (StartMenu_LeaveChoice) is set, func_0208d0bc
  * is called and the flag set again. */
 void Activity_TalkSequence2(Activity *activity)
 {
     ActivityTalk_Show(activity, data_020e3c40, SEQUENCE2_MESSAGE);
-    PlayerRecord_ClearFlag(PlayerRecords_Current(), PLAYER_FLAG_2);
+    PlayerRecord_ClearFlag(PlayerRecords_Current(), PLAYER_FLAG_UNSAVED);
     if (StartMenu_LeaveChoice() != 0) {
         CatchPanel_Start((CatchPanel *) (uintptr_t) ScreenPanels_SecondPanel(), 0, 1);
-        PlayerRecord_SetFlag(PlayerRecords_Current(), PLAYER_FLAG_2);
+        PlayerRecord_SetFlag(PlayerRecords_Current(), PLAYER_FLAG_UNSAVED);
     }
 }
 CLEAN_AS(func_020a0244, Activity_TalkSequence2)
@@ -73,7 +72,7 @@ void Activity_TalkGatekeeper(Activity *activity, int quiet)
     if (quiet == 0) {
         ActivityTalk_Show(activity, data_020e3c2c, GATEKEEPER_MESSAGE);
     }
-    PlayerRecord_ClearFlag(PlayerRecords_Current(), PLAYER_FLAG_2);
+    PlayerRecord_ClearFlag(PlayerRecords_Current(), PLAYER_FLAG_UNSAVED);
     CatchPanel_Start((CatchPanel *) (uintptr_t) ScreenPanels_SecondPanel(), 0, 1);
 }
 CLEAN_AS(func_020a0284, Activity_TalkGatekeeper)

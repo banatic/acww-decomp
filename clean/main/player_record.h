@@ -8,7 +8,7 @@
  *   0x1d3c  a letter kept for a date (mail.h)
  *   0x23e0  the savings account (savings.h)
  *   0x23e8  the four reactions the player knows (reaction_slots.h; 0xff for none)
- *   0x23f8  64 flags
+ *   0x23f8  64 flags (PLAYER_FLAG_* below names the ones known)
  *   0x2400  the date of the last play
  *   0x2414  the birthday: day, month
  *   0x243e  the mother's letters' state (mom_letters.h)
@@ -27,6 +27,22 @@
 #include "types.h"
 
 #define PLAYER_RECORD_FLAG_WORDS 2
+
+/* Flags of the record (PlayerRecord_TestFlag), by their writers:
+ *   0     stung by bees (PlayerRecord_IsStung)
+ *   1     set on moving in (state_block.c), cleared when Nook's part-time job ends (ov003
+ *         field_actor.c, ov068 town_nook.c)
+ *   2     set as play starts (StateBlock_StartMode2), cleared on saving to quit; a start in
+ *         scene 6 with it still set is one after a reset
+ *   0x21  the golden rod 0x1375 was given (ov080 turtle_talk.c)
+ *   0x22  the golden net 0x1377 was given
+ *   0x23  set on moving in, cleared as Nook's first talk starts (ov068 town_nook.c) */
+#define PLAYER_FLAG_NOOK_JOB 1
+#define PLAYER_FLAG_UNSAVED 2
+#define PLAYER_FLAG_GOLDEN_ROD 0x21
+#define PLAYER_FLAG_GOLDEN_NET 0x22
+#define PLAYER_FLAG_NEW_RESIDENT 0x23
+
 #define PLAYER_RECORD_BIRTHDAY_NOTICE_YEARS 8
 #define PLAYER_RECORD_NO_YEAR 0xff
 
@@ -89,7 +105,7 @@ u8 *PlayerRecord_ReactionSlots(u8 *record);
  *   0x243c  the face (bits 0-3) and the head's kind (bits 4-7)
  *   0x243d  the hair colour (bits 0-2), the sun level (bits 3-5) and a two-bit state cleared
  *           on each new day (bits 6-7)
- * Flag 0 of the record adds 0x10 to the face (FieldActor_RecordFace). */
+ * Flag 0 of the record (stung by bees) adds 0x10 to the face (FieldActor_RecordFace). */
 
 #include "calendar.h"
 #include "design_sets.h"
@@ -140,8 +156,8 @@ u16 *PlayerRecord_Clothes(u8 *record);
 void PlayerRecord_SetHeldItem(u8 *record, const u16 *item);
 u16 *PlayerRecord_HeldItem(u8 *record);
 PlayerPockets *PlayerRecord_Pockets(u8 *record);
-void PlayerRecord_SetFlag0(u8 *record, int set);
-int PlayerRecord_Flag0(u8 *record);
+void PlayerRecord_SetStung(u8 *record, int set);
+int PlayerRecord_IsStung(u8 *record);
 void PlayerRecord_SetDayState(u8 *record, int state);
 u32 PlayerRecord_DayState(u8 *record);
 void PlayerRecord_SetSunDate(u8 *record, PlayerRecordSunDate date);

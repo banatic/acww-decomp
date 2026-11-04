@@ -52,6 +52,6 @@ int VillagerImpression_EventToday(void);
 int VillagerImpression_FewVillagers(void);
 int VillagerImpression_NearFamilyAC(void);
 int VillagerImpression_NearCodes21To24(void);
-void VillagerImpression_HasFlag0(u8 *record);
+void VillagerImpression_IsStung(u8 *record);
 
 #endif

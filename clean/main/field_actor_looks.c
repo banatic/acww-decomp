@@ -324,7 +324,7 @@ void FieldActor_SetPalettes(FieldActor *actor, int hair_color, int sun_level)
     } else {
         base = 1;
     }
-    if (FieldActor_RecordFlag0(actor) != 0) {
+    if (FieldActor_RecordStung(actor) != 0) {
         base -= 0x10;
     }
     int skin = sun_level + base * 8;
@@ -360,7 +360,7 @@ int FieldActor_RecordFace(FieldActor *actor)
     int face = 0x20;
     if (record != NULL) {
         face = (int) PlayerRecord_Face(record);
-        if (PlayerRecord_Flag0(record) != 0) {
+        if (PlayerRecord_IsStung(record) != 0) {
             face += 0x10;
         }
     }
@@ -369,15 +369,15 @@ int FieldActor_RecordFace(FieldActor *actor)
 CLEAN_AS(func_020110e8, FieldActor_RecordFace)
 
 /* func_0201111c: the record's flag 0 (bit 0 of its words at 0x23f8); 0 without a record. */
-int FieldActor_RecordFlag0(FieldActor *actor)
+int FieldActor_RecordStung(FieldActor *actor)
 {
     u8 *record = FieldActor_Record(actor);
     if (record == NULL) {
         return 0;
     }
-    return PlayerRecord_Flag0(record);
+    return PlayerRecord_IsStung(record);
 }
-CLEAN_AS(func_0201111c, FieldActor_RecordFlag0)
+CLEAN_AS(func_0201111c, FieldActor_RecordStung)
 
 /* func_02011138: part C's item (slot 3).
  * REQUIRES: the actor's player has a record (without one, the halfword at 0x240c is read). */

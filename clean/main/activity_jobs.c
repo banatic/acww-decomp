@@ -468,10 +468,10 @@ void ActivityJobs_Step12(Activity *activity)
 }
 CLEAN_AS(func_020a42d4, ActivityJobs_Step12)
 
-/* func_020a42b8: job 0x13 starts at step 0, the current player's flag 2 cleared. */
+/* func_020a42b8: job 0x13 starts at step 0, the current player's flag 2 (PLAYER_FLAG_UNSAVED) cleared. */
 void ActivityJobs_Start13(Activity *activity)
 {
-    PlayerRecord_ClearFlag(PlayerRecords_Current(), 2);
+    PlayerRecord_ClearFlag(PlayerRecords_Current(), PLAYER_FLAG_UNSAVED);
     activity->state = 0;
 }
 CLEAN_AS(func_020a42b8, ActivityJobs_Start13)

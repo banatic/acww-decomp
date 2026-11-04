@@ -588,7 +588,7 @@ void VillagerTalkGreeting_Line(VillagerTalk *talk, VillagerTalkLine *out)
         SceneBase_PutValue(greeting_base(talk), weeks, 2, 1, 0, 0);
         SceneBase_PutValue(greeting_base(talk), months, 3, 2, 0, 0);
     }
-    entry->flags |= VILLAGER_STATE_FLAG_2;
+    entry->flags |= VILLAGER_STATE_FLAG_GREETED;
     greeting_name(talk, out);
 }
 CLEAN_AS(func_0202bdb4, VillagerTalkGreeting_Line)
@@ -623,21 +623,21 @@ const VillagerTalkGreetingTexts *VillagerTalkGreeting_BeeTexts(VillagerTalk *tal
 {
     (void) talk;
     *group = Calendar_PartOfDay();
-    entry->flags |= VILLAGER_STATE_FLAG_0;
+    entry->flags |= VILLAGER_STATE_FLAG_STING_SAID;
     return &data_020c89f0;
 }
 CLEAN_AS(func_0202c254, VillagerTalkGreeting_BeeTexts)
 
-/* func_0202c27c: whether the current player was stung by bees (PlayerRecord_Flag0) and the
+/* func_0202c27c: whether the current player was stung by bees (PlayerRecord_IsStung) and the
  * villager has not said so yet (flag 0 of its state entry). */
 int VillagerTalkGreeting_IsStung(VillagerTalk *talk, VillagerState *entry)
 {
     (void) talk;
     u8 *player = PlayerRecords_Current();
-    if ((entry->flags & VILLAGER_STATE_FLAG_0) != 0 || player == NULL) {
+    if ((entry->flags & VILLAGER_STATE_FLAG_STING_SAID) != 0 || player == NULL) {
         return 0;
     }
-    return PlayerRecord_Flag0(player) != 0;
+    return PlayerRecord_IsStung(player) != 0;
 }
 CLEAN_AS(func_0202c27c, VillagerTalkGreeting_IsStung)
 
@@ -779,7 +779,7 @@ int VillagerTalkGreeting_SinceLastTalk(VillagerTalk *talk, int *days)
     u8 *own = (u8 *) (uintptr_t) greeting_virtual(talk, VILLAGER_TALK_GREETING_SLOT_RECORD);
     int greeted = 0;
     if (own != NULL && NpcId_IsValid(TownVillager_NpcId(own)) != 0 && VillagerStatus_StateEntry(own) != NULL &&
-        (VillagerStatus_StateEntry(own)->flags & VILLAGER_STATE_FLAG_2) != 0) {
+        (VillagerStatus_StateEntry(own)->flags & VILLAGER_STATE_FLAG_GREETED) != 0) {
         greeted = 1;
     }
     *days = DateTime_DaysBetween(when, &now);

@@ -25,11 +25,7 @@ extern Block021d27ac data_021d27ac;
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 
-/* The player record's flags Block021d27ac_NoteGoldenToolDue reads (PlayerRecord_TestFlag). */
-#define BLOCK_021D27AC_PLAYER_FLAG_NOOK_JOB 1      /* working for Nook (ov050 NOOK_CLERK_TALK_JOB_FLAG) */
-#define BLOCK_021D27AC_PLAYER_FLAG_GOLDEN_ROD 0x21 /* the golden rod 0x1375 had (ov080) */
-#define BLOCK_021D27AC_PLAYER_FLAG_GOLDEN_NET 0x22 /* the golden net 0x1377 had (ov080) */
-#define BLOCK_021D27AC_EVENT_8 8                   /* func_0203fc78's event */
+#define BLOCK_021D27AC_EVENT_8 8 /* func_0203fc78's event */
 
 /* The part at `offset`, computed from the address only. */
 static u8 *block_021d27ac_part(Block021d27ac *self, size_t offset)
@@ -57,11 +53,11 @@ void Block021d27ac_NoteGoldenToolDue(Block021d27ac *self)
     if (PlayerId_IsSet(PlayerRecord_Player(record)) == 0) {
         return;
     }
-    if (PlayerRecord_TestFlag(record, BLOCK_021D27AC_PLAYER_FLAG_NOOK_JOB) != 0) {
+    if (PlayerRecord_TestFlag(record, PLAYER_FLAG_NOOK_JOB) != 0) {
         return;
     }
-    if (PlayerRecord_TestFlag(record, BLOCK_021D27AC_PLAYER_FLAG_GOLDEN_ROD) != 0 || ItemRecord_HasAllFish() == 0) {
-        if (PlayerRecord_TestFlag(record, BLOCK_021D27AC_PLAYER_FLAG_GOLDEN_NET) != 0 || ItemRecord_HasAllInsects() == 0) {
+    if (PlayerRecord_TestFlag(record, PLAYER_FLAG_GOLDEN_ROD) != 0 || ItemRecord_HasAllFish() == 0) {
+        if (PlayerRecord_TestFlag(record, PLAYER_FLAG_GOLDEN_NET) != 0 || ItemRecord_HasAllInsects() == 0) {
             return;
         }
     }

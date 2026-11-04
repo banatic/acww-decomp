@@ -950,7 +950,7 @@ match: main/bells_panel:BellsPanel_Freeze main/bells_panel:BellsPanel_Unfreeze
   main/event_queue:EventQueue_FinishKind13 main/house_record:HouseRecord_StopSong
   main/mail:MailBox_Mark main/mail:MailBox_SetMark main/place_claim:PlaceClaim_ReceiveAnswer
   main/place_claim:PlaceClaim_ReceiveRelease main/place_claim:PlaceClaim_ReceiveRequest
-  main/player_actor_ops:PlayerActorOps_SetFlag0 main/player_actor_ops:PlayerActorOps_SetSunLevel
+  main/player_actor_ops:PlayerActorOps_SetStung main/player_actor_ops:PlayerActorOps_SetSunLevel
   main/player_actor_ops:PlayerActorOps_SetWorn main/room_interior:RoomInterior_ReceiveChange
   main/room_interior:RoomInterior_Set main/room_object_state:RoomObjectState_Receive
   main/room_sync:RoomSync_ApplyState main/room_sync:RoomSync_ReceiveLit

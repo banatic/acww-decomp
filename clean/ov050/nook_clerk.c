@@ -128,8 +128,6 @@ static_assert(sizeof(NookClerkStep) == 0x10, "a state's functions");
 
 /* The game variable (bank 0) that, when set, makes the clerks act as when linked. */
 #define NOOK_CLERK_VARIABLE 0x4a
-/* The player record's flag set while the player works for Tom Nook (the part-time job). */
-#define NOOK_CLERK_JOB_FLAG 1
 
 /* The motion kinds asked for (scene_motion_request.h): a walk, a faster one, a turn and the
  * act; the faster walk's rate. */
@@ -302,7 +300,7 @@ static int nclerk_at_work(void)
 {
     u8 *record = PlayerRecords_Current();
     PlayerRecord_VillagerPart(record);
-    return PlayerRecord_TestFlag(record, NOOK_CLERK_JOB_FLAG);
+    return PlayerRecord_TestFlag(record, PLAYER_FLAG_NOOK_JOB);
 }
 
 /* The talk scene reset through its vtable slot 0x08, the talk's partner this console's
@@ -474,7 +472,7 @@ int NookClerk_CheckDatePassed(NookClerk *clerk)
     if (nclerk_linked_or_variable(data_020ccf94)) {
         return 0;
     }
-    if (PlayerRecord_TestFlag(PlayerRecords_Current(), NOOK_CLERK_JOB_FLAG) != 0) {
+    if (PlayerRecord_TestFlag(PlayerRecords_Current(), PLAYER_FLAG_NOOK_JOB) != 0) {
         return 0;
     }
     if (Block021d27acPart18_HasPassed(nclerk_part18()) == 0) {
@@ -1499,7 +1497,7 @@ int NookClerk_Start(NookClerk *clerk)
     DateTime *date = nclerk_part18();
     u8 *record = PlayerRecords_Current();
     VillagerPart *part = (VillagerPart *) PlayerRecord_VillagerPart(record);
-    if (PlayerRecord_TestFlag(record, NOOK_CLERK_JOB_FLAG) != 0) {
+    if (PlayerRecord_TestFlag(record, PLAYER_FLAG_NOOK_JOB) != 0) {
         ItemObject *errand = (ItemObject *) VillagerPartBlock_Object(VillagerPart_Block(part, 0));
         CollisionMap_Claim(1);
         NookClerkTalk_SetMode(&clerk->talk, NOOK_CLERK_MODE_NOOK_TALKED);

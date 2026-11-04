@@ -28,9 +28,9 @@
 #define VILLAGER_STATE_NONE (-1) /* the town bytes that hold no index */
 
 /* The flags at 0x1d of an entry. */
-#define VILLAGER_STATE_FLAG_0 0x01
+#define VILLAGER_STATE_FLAG_STING_SAID 0x01
 #define VILLAGER_STATE_FLAG_1 0x02 /* set by VillagerState_SetFlag1UnlessScene */
-#define VILLAGER_STATE_FLAG_2 0x04
+#define VILLAGER_STATE_FLAG_GREETED 0x04
 
 #define VILLAGER_TALLY_DELAY 40
 #define VILLAGER_TALLY_TIMER 1200
@@ -84,8 +84,8 @@ void VillagerState_CallNoOp(void);
 VillagerState *VillagerState_At(VillagerStates *table, int index);
 int VillagerState_IsIndex(int index);
 void VillagerState_ClearAllTallies(void);
-void VillagerState_ClearAllFlag2(void);
-void VillagerState_ClearAllFlag0(void);
+void VillagerState_ClearAllGreeted(void);
+void VillagerState_ClearAllStingSaid(void);
 void VillagerState_ClearIdleFrames(void);
 int VillagerState_GetFleaMarketVisitor(void);
 void VillagerState_SetFleaMarketVisitor(unsigned char index);

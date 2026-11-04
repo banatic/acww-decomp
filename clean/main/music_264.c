@@ -587,7 +587,7 @@ CLEAN_AS(func_02036fd4, Music27c_OnSceneEnd)
  * - with data_021f4b18 set, a request of priority 3 running out after 5 frames and music 0x45
  *   at priority 4 (byte 0x10 set);
  * - else with data_021f4b1c set, music 0x4a at priority 0x0d;
- * - else with a player's record: music 0x46 at priority 0x1c when the record has flag 0x23, or
+ * - else with a player's record: music 0x46 at priority 0x1c when the record has flag 0x23 (new resident), or
  *   flag 1 with a villager part that func_0209ac04 refuses; else music 0x48 at priority 0x1d
  *   when it has flag 1.
  * QUIRK: flag 1 is tested again before music 0x48. */
@@ -613,10 +613,10 @@ void Music27c_OnSceneStart(Music27c *self)
     if (record == NULL) {
         return;
     }
-    if (PlayerRecord_TestFlag(record, 0x23) == 0) {
-        if (PlayerRecord_TestFlag(record, 1) == 0 ||
+    if (PlayerRecord_TestFlag(record, PLAYER_FLAG_NEW_RESIDENT) == 0) {
+        if (PlayerRecord_TestFlag(record, PLAYER_FLAG_NOOK_JOB) == 0 ||
             VillagerPart_HasStep((VillagerPart *) (uintptr_t) ((int) (uintptr_t) PlayerRecord_VillagerPart(record))) != 0) {
-            if (PlayerRecord_TestFlag(record, 1) != 0) {
+            if (PlayerRecord_TestFlag(record, PLAYER_FLAG_NOOK_JOB) != 0) {
                 Music27c_Start(self, 0x1d, 0x48, 0);
             }
             return;

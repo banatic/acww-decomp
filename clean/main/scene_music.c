@@ -32,7 +32,7 @@ typedef struct SceneMusicEntry {
 extern Obj021c526c *data_021c526c;
 extern const SceneMusicEntry data_020c9f58[SCENE_MUSIC_ENTRIES];
 
-/* func_02036584: in scenes 0x1a to 0x1f, unless the player's record has flag 0x23 or flag 1:
+/* func_02036584: in scenes 0x1a to 0x1f, unless the player's record has flag 0x23 (new resident) or 1 (Nook's job):
  * from 22:49:50 to 22:50:00 a request of priority 0x10 with word 0xc8 added (once), and from
  * 22:50:00 to midnight, or at once when it is forced, music 0x51 asked for (once). */
 void SceneMusic_CheckLateHour(SceneMusic *self)
@@ -42,7 +42,8 @@ void SceneMusic_CheckLateHour(SceneMusic *self)
     u8 scene;
     void *clock;
 
-    if (record != NULL && (PlayerRecord_TestFlag(record, 0x23) != 0 || PlayerRecord_TestFlag(record, 1) != 0)) {
+    if (record != NULL && (PlayerRecord_TestFlag(record, PLAYER_FLAG_NEW_RESIDENT) != 0 ||
+                           PlayerRecord_TestFlag(record, PLAYER_FLAG_NOOK_JOB) != 0)) {
         flagged = 1;
     }
     scene = SceneQuery_Current();

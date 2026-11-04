@@ -1211,7 +1211,7 @@ void GatekeeperTalk_OnAnswerSession(GatekeeperTalk *talk, int answer)
     switch (answer) {
         case 0: {
             NetSession *session;
-            if (PlayerRecord_TestFlag(record, 1)) {
+            if (PlayerRecord_TestFlag(record, PLAYER_FLAG_NOOK_JOB)) {
                 line = 8;
                 break;
             }
@@ -1224,7 +1224,7 @@ void GatekeeperTalk_OnAnswerSession(GatekeeperTalk *talk, int answer)
             break;
         }
         case 1:
-            if (PlayerRecord_TestFlag(record, 1)) {
+            if (PlayerRecord_TestFlag(record, PLAYER_FLAG_NOOK_JOB)) {
                 line = 0xe;
             } else {
                 line = GatekeeperTalk_LineOfSession(talk);

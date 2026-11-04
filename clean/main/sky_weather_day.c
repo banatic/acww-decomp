@@ -15,7 +15,6 @@
 #define SKY_WEATHER_DAY_HOURS 24
 #define SKY_WEATHER_DAY_MINUTES (24 * 60)
 #define SKY_WEATHER_DAY_SCENE 0x3f     /* the scene that keeps the patterns as they are */
-#define SKY_WEATHER_DAY_PLAYER_FLAG 1  /* a player flag that forces the pattern */
 #define SKY_WEATHER_DAY_TODAY_EVENTS 7 /* the events listed for today */
 #define SKY_WEATHER_DAY_EVENT_9 9      /* events that force the pattern */
 #define SKY_WEATHER_DAY_EVENT_10 10
@@ -109,7 +108,7 @@ int SkyWeatherDay_Update(SkyWeatherDay *day, const DateTime *now)
         return changed;
     }
     u8 *record = PlayerRecords_Current();
-    if (record != NULL && PlayerRecord_TestFlag(record, SKY_WEATHER_DAY_PLAYER_FLAG)) {
+    if (record != NULL && PlayerRecord_TestFlag(record, PLAYER_FLAG_NOOK_JOB)) {
         day->pattern = SKY_WEATHER_DAY_FORCED;
         return changed;
     }

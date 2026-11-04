@@ -96,7 +96,6 @@ extern const MemberPointer data_ov068_02277120, data_ov068_02277150, data_ov068_
 #define HOME_WAIT_SPREAD 40
 #define HOME_RAISE_FRAMES 900
 #define HOME_PLAYER_NEAR 0x6000
-#define HOME_PLAYER_FLAG_1 1
 #define HOME_ASLEEP 2 /* the state entry's byte 0x01, VillagerStatus_Get's 2 */
 #define HOME_STATE_IN 0
 #define HOME_STATE_OUT 1
@@ -446,14 +445,14 @@ CLEAN_AS(func_ov068_0226b640, OutdoorVillagerHome_Begin3)
 
 /* func_ov068_0226b648: behaviour 3's start: a running act's effects reset, the watch held on
  * nothing, it stands; its state entry's state 0 and flag 1 cleared, asleep (byte 0x01 2) at
- * its sleep time unless the current player has flag 1, else awake (0); its furniture's items
+ * its sleep time unless the current player is in Nook's job (flag 1), else awake (0); its furniture's items
  * stored, the byte at 0x838 set; the wait 600 to 639 frames, unposed, the raise timer 900, its
  * mood's sounds off and the held item not shown.
  * REQUIRES: its record has a state entry. */
 int OutdoorVillagerHome_Start3(OutdoorVillagerBehaviour *self, u8 *villager)
 {
     u8 *current = PlayerRecords_Current();
-    int flag_1 = current != NULL ? PlayerRecord_TestFlag(current, HOME_PLAYER_FLAG_1) : 0;
+    int flag_1 = current != NULL ? PlayerRecord_TestFlag(current, PLAYER_FLAG_NOOK_JOB) : 0;
     u8 *record = home_record(villager);
     VillagerState *entry = VillagerStatus_StateEntry(record);
     OutdoorVillagerObject_ResetActEffects(villager);

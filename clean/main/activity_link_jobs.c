@@ -71,7 +71,6 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 extern void DC_FlushAll(void);
 
 #define TALK_INDEX 0
-#define PLAYER_FLAG_2 2
 #define STATE_BLOCK_FLAG_12 0x12
 #define GUEST_RECORD_FIRST 3 /* a session slot's record number, less this */
 #define CARD_PART_LETTERS 2
@@ -502,12 +501,12 @@ void ActivityLinkJobs_Step16(Activity *activity)
 }
 CLEAN_AS(func_020a3abc, ActivityLinkJobs_Step16)
 
-/* func_020a3a94: job 0x17 starts: the gatekeeper's message 105, the current player's flag 2
+/* func_020a3a94: job 0x17 starts: the gatekeeper's message 105, the current player's flag 2 (PLAYER_FLAG_UNSAVED)
  * set, and the link state's slot made this system's. */
 void ActivityLinkJobs_Start17(Activity *activity)
 {
     Activity_TalkGatekeeper(activity, 0);
-    PlayerRecord_SetFlag(PlayerRecords_Current(), PLAYER_FLAG_2);
+    PlayerRecord_SetFlag(PlayerRecords_Current(), PLAYER_FLAG_UNSAVED);
     LinkGlobal_SetServedSlot(data_020ccf94->local_slot);
 }
 CLEAN_AS(func_020a3a94, ActivityLinkJobs_Start17)
@@ -1372,11 +1371,11 @@ void ActivityLinkJobs_Step1E(Activity *activity)
 }
 CLEAN_AS(func_020a2948, ActivityLinkJobs_Step1E)
 
-/* func_020a2924: job 0x1f starts at step 0: the current player's flag 2 cleared and the
+/* func_020a2924: job 0x1f starts at step 0: the current player's flag 2 (PLAYER_FLAG_UNSAVED) cleared and the
  * transfer of this system's AID stopped. */
 void ActivityLinkJobs_Start1F(Activity *activity)
 {
-    PlayerRecord_ClearFlag(PlayerRecords_Current(), PLAYER_FLAG_2);
+    PlayerRecord_ClearFlag(PlayerRecords_Current(), PLAYER_FLAG_UNSAVED);
     Session_StopTransfer((u32) Net_GetMyAid());
     activity->state = 0;
 }

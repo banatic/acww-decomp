@@ -217,13 +217,13 @@ CLEAN_AS(func_02095558, PlayerActorOps_SetSunLevel)
 /* func_02095578: sets or clears flag 0 in player `player`'s record and loads the face that goes
  * with it into the actor (the record's face, 0x10 further with the flag); whether both exist and
  * the actor's looks were not fixed by its animation. */
-int PlayerActorOps_SetFlag0(int set, int player)
+int PlayerActorOps_SetStung(int set, int player)
 {
     u8 *record = PlayerRecords_OfPlayer(player);
     if (record == NULL) {
         return 0;
     }
-    PlayerRecord_SetFlag0(record, set);
+    PlayerRecord_SetStung(record, set);
     FieldActor *actor = SessionPlayers_FieldActor(player);
     if (actor == NULL || actor->animation >= PLAYER_ACTOR_OPS_FIXED_LOOKS_ANIMATION) {
         return 0;
@@ -235,7 +235,7 @@ int PlayerActorOps_SetFlag0(int set, int player)
     FaceTexture_Load(&actor->unk_70D[0], (int) face);
     return 1;
 }
-CLEAN_AS(func_02095578, PlayerActorOps_SetFlag0)
+CLEAN_AS(func_02095578, PlayerActorOps_SetStung)
 
 /* func_020955e0: puts on `item` as player `player`'s clothes (part 0), part C (1) or head item
  * (2): in the record, then on the actor (the cloth set and bound, or the part asked for, the

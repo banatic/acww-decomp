@@ -80,7 +80,6 @@ static_assert(sizeof(Turtle) == 0x710, "the size Turtle_Create allocates");
 #define TURTLE_START_SLOT 1
 #define TURTLE_NODES_FIRST 0xc
 #define TURTLE_NODES_LAST 0xe
-#define TURTLE_PLAYER_FLAG_1 1
 
 /* The vtables: the class's and those of the classes it derives from. */
 extern const u8 data_ov080_022792ec[];
@@ -262,7 +261,7 @@ CLEAN_AS(func_ov080_02278fa0, Turtle_Leave)
 /* func_ov080_02278fb8 (vtable slot 0x00, his start): unless the special character refuses to
  * start, he stands (TURTLE_STAND), plays animation 0x140 (speed 1.0, slot 1), the nodes 0xc-0xe
  * of his model are moved to its first set, he is held (flag 2 at 0x4e8), and unless the
- * current player's record has flag 1 the event queue's flag 0x20 is set. Whether he started. */
+ * current player's record has flag 1 (Nook's job) the event queue's flag 0x20 is set. Whether he started. */
 int Turtle_Start(Turtle *turtle)
 {
     if (SpecialSceneObject_Start(turtle) == 0) {
@@ -274,7 +273,7 @@ int Turtle_Start(Turtle *turtle)
     LayeredModel_MoveNodesToA((LayeredModel *) (void *) turtle_part(turtle, TURTLE_MODEL), TURTLE_NODES_FIRST,
                               TURTLE_NODES_LAST);
     *(u32 *) (void *) turtle_part(turtle, TURTLE_HELD_FLAGS) |= TURTLE_HELD;
-    if (PlayerRecord_TestFlag(PlayerRecords_Current(), TURTLE_PLAYER_FLAG_1) == 0) {
+    if (PlayerRecord_TestFlag(PlayerRecords_Current(), PLAYER_FLAG_NOOK_JOB) == 0) {
         EventQueue_SetFlag20();
     }
     return 1;

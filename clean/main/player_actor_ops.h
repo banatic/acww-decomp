@@ -25,7 +25,7 @@ void PlayerActorOps_CopyBlock698(struct FieldActorBlock48 *out, int player);
 int PlayerActorOps_HeadPoint(Vec3 *out, int player);
 int PlayerActorOps_SetLook(int pitch, int yaw, int player);
 int PlayerActorOps_SetSunLevel(int level, int player);
-int PlayerActorOps_SetFlag0(int set, int player);
+int PlayerActorOps_SetStung(int set, int player);
 int PlayerActorOps_SetWorn(u16 *item, int part, int player);
 int PlayerActorOps_SetHeldModel(unsigned int number, int player);
 void PlayerActorOps_HeldItem(u16 *item, int player);

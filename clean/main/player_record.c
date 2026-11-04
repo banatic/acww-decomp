@@ -442,8 +442,8 @@ CLEAN_AS(func_020992f0, PlayerRecord_ReactionSlots)
 #define LOOKS_DAY_STATE_SHIFT 6
 #define LOOKS_DAY_STATE_MASK 0xc0
 
-/* The record's flag that picks the second set of faces. */
-#define RECORD_FLAG_0 0
+/* The record's flag set while the player is stung by bees; it picks the second set of faces. */
+#define RECORD_FLAG_STUNG 0
 
 /* What a new player starts with: item 0x3884 at 0x240e, the first clothes (0x11a8), item
  * 0x11fa at 0x2410 and a sun date of 1 January 2000. */
@@ -832,22 +832,22 @@ PlayerPockets *PlayerRecord_Pockets(u8 *record)
 CLEAN_AS(func_02099734, PlayerRecord_Pockets)
 
 /* func_02099740: set or clear flag 0. */
-void PlayerRecord_SetFlag0(u8 *record, int set)
+void PlayerRecord_SetStung(u8 *record, int set)
 {
     if (set != 0) {
-        PlayerRecord_SetFlag(record, RECORD_FLAG_0);
+        PlayerRecord_SetFlag(record, RECORD_FLAG_STUNG);
     } else {
-        PlayerRecord_ClearFlag(record, RECORD_FLAG_0);
+        PlayerRecord_ClearFlag(record, RECORD_FLAG_STUNG);
     }
 }
-CLEAN_AS(func_02099740, PlayerRecord_SetFlag0)
+CLEAN_AS(func_02099740, PlayerRecord_SetStung)
 
 /* func_0209975c */
-int PlayerRecord_Flag0(u8 *record)
+int PlayerRecord_IsStung(u8 *record)
 {
-    return PlayerRecord_TestFlag(record, RECORD_FLAG_0);
+    return PlayerRecord_TestFlag(record, RECORD_FLAG_STUNG);
 }
-CLEAN_AS(func_0209975c, PlayerRecord_Flag0)
+CLEAN_AS(func_0209975c, PlayerRecord_IsStung)
 
 /* func_02099768: the two-bit state cleared on each new day (bits 6-7 of byte 0x243d). */
 void PlayerRecord_SetDayState(u8 *record, int state)
@@ -967,7 +967,7 @@ void PlayerRecord_NewPlayer(u8 *record, const void *name, int player_id, int byt
     PlayerRecord_SetHairColor(record, hair_color);
     PlayerRecord_SetSunLevel(record, sun_level);
     PlayerRecord_SetDayState(record, 0);
-    PlayerRecord_SetFlag0(record, flag0);
+    PlayerRecord_SetStung(record, flag0);
     PlayerPockets_Init(player_record_pockets_at(record));
     PlayerPockets_SetBells(player_record_pockets_at(record), bells, PLAYER_POCKETS_USE_BAGS);
     *player_record_u16(record, RECORD_HELD_ITEM) = *held_item;

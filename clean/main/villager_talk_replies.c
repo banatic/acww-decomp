@@ -376,7 +376,7 @@ int VillagerTalkReplies_LineForSituation(VillagerTalk *talk, VillagerTalkLine *o
     }
     out->text = (u32) (uintptr_t) talk->text;
     out->message = talk->message;
-    entry->flags |= VILLAGER_STATE_FLAG_2;
+    entry->flags |= VILLAGER_STATE_FLAG_GREETED;
     return said;
 }
 CLEAN_AS(func_02020a5c, VillagerTalkReplies_LineForSituation)

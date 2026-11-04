@@ -112,7 +112,6 @@ enum ActivityProcessScene {
 #define ACTIVITY_SIZE 0x110
 
 #define CARD_PART_LETTERS 2
-#define PLAYER_FLAG_2 2
 #define STATE_BLOCK_MODE_NEW 2
 
 enum {
@@ -410,7 +409,7 @@ static void start_end_and_save(Activity *activity, const char *name, int message
     u8 *player = PlayerRecords_Current();
     ActivityTalk_Show(activity, name, (char) message);
     StateFlags_Clear8And20And40();
-    PlayerRecord_ClearFlag(player, PLAYER_FLAG_2);
+    PlayerRecord_ClearFlag(player, PLAYER_FLAG_UNSAVED);
     TownRecord_PullBackDay((Date *) (void *) data_021f39fc);
     activity->state = 0;
 }

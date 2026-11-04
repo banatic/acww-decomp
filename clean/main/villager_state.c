@@ -118,26 +118,26 @@ void VillagerState_ClearAllTallies(void)
 CLEAN_AS(func_02079238, VillagerState_ClearAllTallies)
 
 /* func_02079260 */
-void VillagerState_ClearAllFlag2(void)
+void VillagerState_ClearAllGreeted(void)
 {
     VillagerState *entry = VillagerState_Table()->entries;
 
     for (int i = 0; i < VILLAGER_STATE_ENTRIES; i++) {
-        entry[i].flags &= (u8) ~VILLAGER_STATE_FLAG_2;
+        entry[i].flags &= (u8) ~VILLAGER_STATE_FLAG_GREETED;
     }
 }
-CLEAN_AS(func_02079260, VillagerState_ClearAllFlag2)
+CLEAN_AS(func_02079260, VillagerState_ClearAllGreeted)
 
 /* func_02079280 */
-void VillagerState_ClearAllFlag0(void)
+void VillagerState_ClearAllStingSaid(void)
 {
     VillagerState *entry = VillagerState_Table()->entries;
 
     for (int i = 0; i < VILLAGER_STATE_ENTRIES; i++) {
-        entry[i].flags &= (u8) ~VILLAGER_STATE_FLAG_0;
+        entry[i].flags &= (u8) ~VILLAGER_STATE_FLAG_STING_SAID;
     }
 }
-CLEAN_AS(func_02079280, VillagerState_ClearAllFlag0)
+CLEAN_AS(func_02079280, VillagerState_ClearAllStingSaid)
 
 /* func_020792a0 */
 void VillagerState_Clear(void)
@@ -168,10 +168,10 @@ void VillagerState_ClearTable(VillagerStates *table)
         VillagerState *entry = &table->entries[i];
 
         VillagerState_SetState(entry, 0);
-        entry->flags &= (u8) ~VILLAGER_STATE_FLAG_0;
+        entry->flags &= (u8) ~VILLAGER_STATE_FLAG_STING_SAID;
         VillagerState_SetMood(entry, 0);
         VillagerState_SetMoodFrames(entry, 0);
-        entry->flags &= (u8) ~VILLAGER_STATE_FLAG_2;
+        entry->flags &= (u8) ~VILLAGER_STATE_FLAG_GREETED;
         VillagerTally_Clear(VillagerState_Tally(entry));
     }
 }

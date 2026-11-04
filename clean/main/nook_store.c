@@ -551,14 +551,14 @@ static int nook_players_have_flag1(void)
     }
     if (count == 1) {
         void *player = PlayerRecords_Current();
-        return player != NULL && PlayerRecord_TestFlag(player, 1) != 0;
+        return player != NULL && PlayerRecord_TestFlag(player, PLAYER_FLAG_NOOK_JOB) != 0;
     }
     for (int i = 0; i < 4; i++) {
         void *player = PlayerRecords_TownRecord(data_021dc7bc, i);
         if (player == NULL || PlayerRecord_HasPlayer(player) == 0) {
             continue;
         }
-        if (PlayerRecord_TestFlag(player, 1) == 0) {
+        if (PlayerRecord_TestFlag(player, PLAYER_FLAG_NOOK_JOB) == 0) {
             return 0;
         }
     }
@@ -634,7 +634,7 @@ static void nook_december(NookStore *store, const DateTime *now)
 /* func_020af3a0: the morning update: Shop list A's first, then (unless a pending state of 1
  * becomes 2, or the player is in a shop of kind 0x2c or 0x3f outside Nook's scenes) a new stock
  * when the day (from 6:00) is not the stock's or `force` is set, with the day's extras unless
- * every player has flag 1 or an upgrade is planned, and December's item. Nothing changes but
+ * every player has flag 1 (Nook's job) or an upgrade is planned, and December's item. Nothing changes but
  * the hour's clearing while linked.
  * QUIRK: the hour is cleared before the link is looked at. */
 void NookStore_Refresh(NookStore *store, int force)

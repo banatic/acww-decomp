@@ -586,7 +586,7 @@ CLEAN_AS(func_ov098_022a30a4, PocketsTown_AddItemRows)
 int PocketsTown_CanUseItem(PocketsScreen *self, unsigned int item)
 {
     (void) self;
-    if (PlayerRecord_TestFlag(PlayerRecords_Current(), 1) != 0) {
+    if (PlayerRecord_TestFlag(PlayerRecords_Current(), PLAYER_FLAG_NOOK_JOB) != 0) {
         if ((item >= 0x14fe && item <= 0x1517) || (item >= 0x151d && item <= 0x151e)) {
             return 0;
         }

@@ -247,7 +247,7 @@ void VillagerTown_PickBirthdayVisitor(VillagerTown *town, void *record)
     if (record == NULL) {
         return;
     }
-    if (PlayerRecord_TestFlag(record, 1) != 0) {
+    if (PlayerRecord_TestFlag(record, PLAYER_FLAG_NOOK_JOB) != 0) {
         return;
     }
     if (PlayerPockets_FreeSlot(PlayerRecord_Pockets(record)) == VILLAGER_TOWN_POCKETS_FULL) {
@@ -413,7 +413,7 @@ CLEAN_AS(func_0207a964, VillagerTown_UpdateBirthdayVillager)
 int VillagerTown_FindBirthdayVillager(const VillagerTown *town, const DateTime *when)
 {
     void *record = PlayerRecords_Current();
-    if (record == NULL || PlayerRecord_TestFlag(record, 1) != 0 || when->hour < VILLAGER_TOWN_EVENT_HOUR) {
+    if (record == NULL || PlayerRecord_TestFlag(record, PLAYER_FLAG_NOOK_JOB) != 0 || when->hour < VILLAGER_TOWN_EVENT_HOUR) {
         return VILLAGER_TOWN_NONE;
     }
     DateTime copy;
@@ -480,7 +480,8 @@ void VillagerTown_SendBirthdayNotices(VillagerTown *town)
                 continue;
             }
             u8 *player = (u8 *) PlayerRecord_Player(record);
-            if (!PlayerId_IsSet((DesignCreator *) (void *) player) || PlayerRecord_TestFlag(record, 1) != 0) {
+            if (!PlayerId_IsSet((DesignCreator *) (void *) player) ||
+                PlayerRecord_TestFlag(record, PLAYER_FLAG_NOOK_JOB) != 0) {
                 continue;
             }
             int value = TownVillager_BirthdayYearWithin((u8 *) villager, 7, &now);

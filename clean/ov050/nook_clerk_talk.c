@@ -154,7 +154,6 @@ extern int func_ov050_022634b4(unsigned short *p);
 /* The game variable (bank 0) that, when set, makes the clerks act as when linked; the player
  * record's flag set while the player works for Tom Nook. */
 #define NOOK_CLERK_TALK_VARIABLE 0x4a
-#define NOOK_CLERK_TALK_JOB_FLAG 1
 
 /* The vtable slot of the scene that resets it, the first of the job's lines by type (0xb), and
  * the job's line ends. */
@@ -740,7 +739,7 @@ void NookClerkTalk_OnAnswer(NookClerkTalk *talk, int arg)
     int kind = NOOK_CLERK_ANSWERS_PLAIN;
     u8 *record = PlayerRecords_Current();
     PlayerRecord_VillagerPart(record);
-    if (PlayerRecord_TestFlag(record, NOOK_CLERK_TALK_JOB_FLAG) != 0) {
+    if (PlayerRecord_TestFlag(record, PLAYER_FLAG_NOOK_JOB) != 0) {
         kind = NOOK_CLERK_ANSWERS_JOB;
     } else if (talk->mode == NOOK_CLERK_MODE_DRAMA) {
         kind = NOOK_CLERK_ANSWERS_DATED;
@@ -899,7 +898,7 @@ void NookClerkTalk_OnLineEnded(NookClerkTalk *talk)
     };
     u8 *record = PlayerRecords_Current();
     PlayerRecord_VillagerPart(record);
-    if (PlayerRecord_TestFlag(record, NOOK_CLERK_TALK_JOB_FLAG) != 0) {
+    if (PlayerRecord_TestFlag(record, PLAYER_FLAG_NOOK_JOB) != 0) {
         u32 vtable = *(const u32 *) (const void *) talk;
         u32 code = *(const u32 *) (uintptr_t) (vtable + NOOK_CLERK_TALK_SLOT_JOB_ENDED);
         ((void (*)(NookClerkTalk *))(uintptr_t) code)(talk);
@@ -1065,7 +1064,7 @@ void NookClerkTalk_Line(NookClerkTalk *talk, NookClerkLine *out)
         (VillagerPartEntry *) (void *) VillagerPart_Object94((VillagerPart *) (void *) PlayerRecord_VillagerPart(record));
     VillagerPart *part = (VillagerPart *) (void *) PlayerRecord_VillagerPart(record);
 
-    if (PlayerRecord_TestFlag(record, NOOK_CLERK_TALK_JOB_FLAG) != 0) {
+    if (PlayerRecord_TestFlag(record, PLAYER_FLAG_NOOK_JOB) != 0) {
         ntalk_job_line(talk, out, part);
         return;
     }
@@ -1178,7 +1177,7 @@ void NookClerkTalk_JobEnd(int unused, int part)
     (void) unused;
     VillagerPart_EndStep((VillagerPart *) (uintptr_t) (u32) part);
     u8 *record = PlayerRecords_Current();
-    PlayerRecord_ClearFlag(record, NOOK_CLERK_TALK_JOB_FLAG);
+    PlayerRecord_ClearFlag(record, PLAYER_FLAG_NOOK_JOB);
     PlayerField2416 *field = (PlayerField2416 *) (void *) PlayerRecord_Field2416(record);
     Block021d27ac_SetFlag((u32 *) (void *) Block021d27ac_Get(), BLOCK_021D27AC_FLAG_NOOK_JOB_DONE);
     PlayerField2416_SetJobEndToday(field);

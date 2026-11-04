@@ -36,7 +36,7 @@ Process *Process020dabc0_DestructFree(Process *process)
 CLEAN_AS(func_0203fabc, Process020dabc0_DestructFree)
 
 /* func_0203fae4 (asked before the date checks; 1 skips them): 1 while the game is being started
- * (a start kind is set), without a current player, or when the current player's flag 1 is
+ * (a start kind is set), without a current player, or when the current player's flag 1 (Nook's job) is
  * set. */
 int Process020dabc0_IsHeldBack(void)
 {
@@ -44,7 +44,7 @@ int Process020dabc0_IsHeldBack(void)
         return 1;
     }
     u8 *record = PlayerRecords_Current();
-    if (record == NULL || PlayerRecord_TestFlag(record, 1)) {
+    if (record == NULL || PlayerRecord_TestFlag(record, PLAYER_FLAG_NOOK_JOB)) {
         return 1;
     }
     return 0;

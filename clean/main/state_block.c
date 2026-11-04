@@ -179,9 +179,9 @@ void StateBlock_FinishStart(StateBlock *block)
     TownObjects_ClearExtraVisitors();
     VillagerTown_SetByte1E(villagers_of(block), PlayerRecords_Current());
     VillagerState_ClearIdleFrames();
-    VillagerState_ClearAllFlag2();
+    VillagerState_ClearAllGreeted();
     VillagerState_ClearAllTallies();
-    VillagerState_ClearAllFlag0();
+    VillagerState_ClearAllStingSaid();
 }
 CLEAN_AS(func_0209e604, StateBlock_FinishStart)
 
@@ -344,8 +344,8 @@ static void finish_villagers(StateBlock *block)
  * a resident does. */
 static void mark_resident(u8 *record)
 {
-    PlayerRecord_SetFlag(record, 1);
-    PlayerRecord_SetFlag(record, 0x23);
+    PlayerRecord_SetFlag(record, PLAYER_FLAG_NOOK_JOB);
+    PlayerRecord_SetFlag(record, PLAYER_FLAG_NEW_RESIDENT);
     PlayerRecord_ClearFlag(record, 9);
 }
 
@@ -399,7 +399,7 @@ void StateBlock_StartMode4(StateBlock *block)
     for (int i = 0; i < STATE_BLOCK_PLAYERS; i++) {
         u8 *record = PlayerRecords_TownRecord(data_021dc7a8.players, i);
         if (record != NULL) {
-            PlayerRecord_SetFlag0(record, 0);
+            PlayerRecord_SetStung(record, 0);
         }
     }
 }
@@ -427,7 +427,7 @@ CLEAN_AS(func_0209ebec, StateBlock_StartMode3)
 /* func_0209ec74 (mode 2): the town loaded (in scene 6 its map, rooms, clock and the
  * villagers' update are left out), then the day's mail, the sound effect for func_0203d470's
  * value and the town's other systems brought up to date. In scene 6, with villager index
- * 0x16c at -1, a player record with flag 2 and without flag 0x23 gets func_02088b68 and
+ * 0x16c at -1, a player record with flag 2 (unsaved) and without flag 0x23 (new resident) gets func_02088b68 and
  * func_02087e9c. Flag 2 is then set and the villager letter sent; outside scene 6 the
  * villagers are searched. */
 void StateBlock_StartMode2(StateBlock *block)
@@ -455,11 +455,12 @@ void StateBlock_StartMode2(StateBlock *block)
     VillagerTown_PickBirthdayVisitor(villagers_of(block), NULL);
     VillagerRoster_UpdateOutdoors(villagers_of(block), 1);
     if (SceneQuery_Current() == SCENE_6 && VillagerState_GetBirthdayGreeter() == -1 &&
-        PlayerRecord_TestFlag(record, 0x23) == 0 && PlayerRecord_TestFlag(record, 2) != 0) {
+        PlayerRecord_TestFlag(record, PLAYER_FLAG_NEW_RESIDENT) == 0 &&
+        PlayerRecord_TestFlag(record, PLAYER_FLAG_UNSAVED) != 0) {
         PlayerField2416_RaiseResets((PlayerField2416 *) (void *) PlayerRecord_Field2416(record));
         Block021d27acPart30_Set(Block021d27ac_Part30(Block021d27ac_Get()), 1);
     }
-    PlayerRecord_SetFlag(record, 2);
+    PlayerRecord_SetFlag(record, PLAYER_FLAG_UNSAVED);
     PlayerRecord_SendVillagerLetter(record);
     if (SceneQuery_Current() != SCENE_6) {
         VillagerTown_ScoreAllRooms(villagers_of(block));

@@ -323,11 +323,11 @@ CLEAN_AS(func_0207edcc, VillagerImpression_NearCodes21To24)
 
 /* ---- The player's flag */
 
-/* func_0207ee70: flag 0 of the player's record (PlayerRecord_Flag0).
+/* func_0207ee70: whether the player is stung by bees (PlayerRecord_IsStung).
  * QUIRK: the source defines it as void, yet it stands in the table of tests: the ROM's code
  * hands the flag back in r0 as the result of its last call, and the table's caller reads it. */
-void VillagerImpression_HasFlag0(u8 *record)
+void VillagerImpression_IsStung(u8 *record)
 {
-    (void) PlayerRecord_Flag0(record);
+    (void) PlayerRecord_IsStung(record);
 }
-CLEAN_AS(func_0207ee70, VillagerImpression_HasFlag0)
+CLEAN_AS(func_0207ee70, VillagerImpression_IsStung)

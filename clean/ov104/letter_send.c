@@ -2558,7 +2558,7 @@ CLEAN_AS(func_ov104_0229eee4, LetterSend_Update)
  *   ones and `result` kept as the letter screen's result flags.
  * - Else the letters are posted here: main told the letters changed; the ten letters to post
  *   compacted (none: LETTER_SEND_RESULT_NOTHING), handed to the villagers when the current
- *   player's record has flag 1, then the one to the player themself taken and the rest posted.
+ *   player's record has flag 1 (Nook's job), then the one to the player themself taken and the rest posted.
  *   With nothing to post main is told nothing changed; when the post office was full, its held
  *   letters are delivered (Mail_DeliverHeld) and the letters tried once more, then delivered
  *   directly when still full. The letters not posted go back to the carried ones and the result
@@ -2588,7 +2588,7 @@ int LetterSend_End(LetterSendScene *self)
         if (Mail_Compact(lsend_mail(self->outbox), LETTER_SEND_LETTERS) <= 0) {
             result = LETTER_SEND_RESULT_NOTHING;
         }
-        if (PlayerRecord_TestFlag(PlayerRecords_Current(), 1) != 0) {
+        if (PlayerRecord_TestFlag(PlayerRecords_Current(), PLAYER_FLAG_NOOK_JOB) != 0) {
             result |= LetterSend_GiveToVillagers(self, self->outbox);
         }
         result |= LetterSend_TakeLetterToSelf(self, self->outbox);

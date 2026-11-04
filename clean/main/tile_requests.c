@@ -1277,14 +1277,14 @@ void TileRequests_ForbidItemDrop(void)
 CLEAN_AS(func_02044534, TileRequests_ForbidItemDrop)
 
 /* func_02044540: whether an item may drop from 0x67 and 0x6b: when this system's slot is not
- * taken (Session_IsSlotTaken), the current player's flag 1 is clear and none is forbidden. */
+ * taken (Session_IsSlotTaken), the current player's flag 1 (Nook's job) is clear and none is forbidden. */
 int TileRequests_ItemDropAllowed(void)
 {
     NetSession *session = data_020ccf94;
     if (Session_IsSlotTaken(session, session->local_slot) != 0) {
         return 0;
     }
-    if (PlayerRecord_TestFlag(PlayerRecords_Current(), 1) != 0) {
+    if (PlayerRecord_TestFlag(PlayerRecords_Current(), PLAYER_FLAG_NOOK_JOB) != 0) {
         return 0;
     }
     return data_021c779c[TILE_REQUESTS_TOWN_DROP_BLOCK] == 0;

@@ -1503,7 +1503,7 @@ void FieldActor_RunState78(FieldActor *actor)
                 FieldActor_PlayAnimationOnce(actor, 0x74, 0, 0);
                 void *record = PlayerRecords_Current();
                 if (record != NULL) {
-                    PlayerRecord_SetFlag0(record, 1);
+                    PlayerRecord_SetStung(record, 1);
                     FaceTexture_Load(actor->unk_70D, (int) (PlayerRecord_Face(record) + 0x10));
                     if (PlayerRecord_TestFlag(record, 0x17)) {
                         PlayerRecord_SetFlag(record, 0x19);
@@ -9581,7 +9581,7 @@ void FieldActor_EndState3B(FieldActor *actor)
         case 3:
             if (is_local_player(actor)) {
                 Block021d27ac_ClearFlag((u32 *) Block021d27ac_Get(), BLOCK_021D27AC_FLAG_NOOK_JOB_DONE);
-                PlayerRecord_ClearFlag(PlayerRecords_Current(), 1);
+                PlayerRecord_ClearFlag(PlayerRecords_Current(), PLAYER_FLAG_NOOK_JOB);
                 BoardNotices_Update();
             }
             FieldActor_RequestState76(actor, 3, 0, 0, 6, -1);
@@ -9678,7 +9678,7 @@ void FieldActor_EnterState3B(FieldActor *actor, const StateRequest *request, int
 
     if (Session_IsLocalPlayer(session, actor->player)) {
         void *record = PlayerRecords_Current();
-        if (!SceneQuery_Current() && record != NULL && PlayerRecord_TestFlag(record, 0x23) &&
+        if (!SceneQuery_Current() && record != NULL && PlayerRecord_TestFlag(record, PLAYER_FLAG_NEW_RESIDENT) &&
             (SceneKinds_IsHouseRoom(SceneQuery_Previous()) || SceneQuery_Previous() == 6)) {
             kind = 1;
         } else if (Block021d27ac_TestFlag((u32 *) Block021d27ac_Get(), BLOCK_021D27AC_FLAG_LOAN_PAID_OFF)) {

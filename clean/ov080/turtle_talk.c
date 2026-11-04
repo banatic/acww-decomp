@@ -37,11 +37,8 @@ extern u8 data_021dc7bc[];
 #define TURTLE_TALK_NO_LINE 0xff
 
 /* The flags of the player's record (player_record.h) the talk reads and sets. */
-#define TURTLE_TALK_FLAG_1 1
 #define TURTLE_TALK_FLAG_SEQUENCE_TALKED 0xa
 #define TURTLE_TALK_FLAG_SEQUENCE_MET 0xd
-#define TURTLE_TALK_FLAG_FISH_GIFT 0x21
-#define TURTLE_TALK_FLAG_INSECT_GIFT 0x22
 
 /* The item he asks for and the one he gives for it; the gifts for all the fish and all the
  * insects recorded. */
@@ -140,7 +137,7 @@ void TurtleTalk_OnAnswer(TurtleTalk *talk)
     int slot = talk->slot;
 
     if (slot < 0) {
-        PlayerRecord_TestFlag(player, TURTLE_TALK_FLAG_1);
+        PlayerRecord_TestFlag(player, PLAYER_FLAG_NOOK_JOB);
         return;
     }
     if (turtle_talk_shown(talk) == TURTLE_TALK_LINE_ASK && answer == 0) {
@@ -155,7 +152,7 @@ CLEAN_AS(func_ov080_02278ab8, TurtleTalk_OnAnswer)
 /* func_ov080_02278b30 (slot 0x14): what follows the line shown.
  * With item 0x37e0 found in the pockets: after line 1 or 4 the trade is done for this visit;
  * after line 2 item 0x1559 is shown in his hand and given, and line 4 of "sp_npc_turtle".
- * Else, unless the player record has flag 1: after line 0 or 2 of "sp_npc_turtle7" item
+ * Else, unless the player record has flag 1 (Nook's job): after line 0 or 2 of "sp_npc_turtle7" item
  * 0x1375 is given (flag 0x21, line 1), after line 3 or 5 item 0x1377 (flag 0x22, line 4); when
  * it does not fit, nothing follows. */
 void TurtleTalk_OnLineShown(TurtleTalk *talk)
@@ -178,19 +175,19 @@ void TurtleTalk_OnLineShown(TurtleTalk *talk)
     }
 
     u8 *player = PlayerRecords_Current();
-    if (PlayerRecord_TestFlag(player, TURTLE_TALK_FLAG_1) != 0) {
+    if (PlayerRecord_TestFlag(player, PLAYER_FLAG_NOOK_JOB) != 0) {
         return;
     }
     switch (turtle_talk_shown(talk)) {
         case TURTLE_TALK_LINE_FISH:
         case TURTLE_TALK_LINE_FISH_OTHER:
-            if (turtle_talk_give(talk, player, TURTLE_TALK_FISH_GIFT, TURTLE_TALK_FLAG_FISH_GIFT)) {
+            if (turtle_talk_give(talk, player, TURTLE_TALK_FISH_GIFT, PLAYER_FLAG_GOLDEN_ROD)) {
                 line = TURTLE_TALK_LINE_FISH_GIVEN;
             }
             break;
         case TURTLE_TALK_LINE_INSECTS:
         case TURTLE_TALK_LINE_INSECTS_OTHER:
-            if (turtle_talk_give(talk, player, TURTLE_TALK_INSECT_GIFT, TURTLE_TALK_FLAG_INSECT_GIFT)) {
+            if (turtle_talk_give(talk, player, TURTLE_TALK_INSECT_GIFT, PLAYER_FLAG_GOLDEN_NET)) {
                 line = TURTLE_TALK_LINE_INSECTS_GIVEN;
             }
             break;
@@ -216,7 +213,7 @@ void TurtleTalk_Line(TurtleTalk *talk, TurtleTalkLine *line)
 {
     u8 *player = PlayerRecords_Current();
 
-    if (PlayerRecord_TestFlag(player, TURTLE_TALK_FLAG_1) != 0) {
+    if (PlayerRecord_TestFlag(player, PLAYER_FLAG_NOOK_JOB) != 0) {
         line->name = data_ov080_022793a8;
         if (PlayerRecord_TestFlag(player, TURTLE_TALK_FLAG_SEQUENCE_MET) == 0) {
             line->message = TURTLE_TALK_SEQUENCE_FIRST;
@@ -239,20 +236,20 @@ void TurtleTalk_Line(TurtleTalk *talk, TurtleTalkLine *line)
     }
 
     line->name = data_ov080_022793bc;
-    if (PlayerRecord_TestFlag(player, TURTLE_TALK_FLAG_FISH_GIFT) == 0 && ItemRecord_HasAllFish() != 0) {
+    if (PlayerRecord_TestFlag(player, PLAYER_FLAG_GOLDEN_ROD) == 0 && ItemRecord_HasAllFish() != 0) {
         line->message = TURTLE_TALK_LINE_FISH;
         if (CurrentPockets_FreeSlot() < 0) {
             line->message = TURTLE_TALK_LINE_FISH_NO_ROOM;
-        } else if (turtle_talk_other_has(player, TURTLE_TALK_FLAG_FISH_GIFT)) {
+        } else if (turtle_talk_other_has(player, PLAYER_FLAG_GOLDEN_ROD)) {
             line->message = TURTLE_TALK_LINE_FISH_OTHER;
         }
         return;
     }
-    if (PlayerRecord_TestFlag(player, TURTLE_TALK_FLAG_INSECT_GIFT) == 0 && ItemRecord_HasAllInsects() != 0) {
+    if (PlayerRecord_TestFlag(player, PLAYER_FLAG_GOLDEN_NET) == 0 && ItemRecord_HasAllInsects() != 0) {
         line->message = TURTLE_TALK_LINE_INSECTS;
         if (CurrentPockets_FreeSlot() < 0) {
             line->message = TURTLE_TALK_LINE_INSECTS_NO_ROOM;
-        } else if (turtle_talk_other_has(player, TURTLE_TALK_FLAG_INSECT_GIFT)) {
+        } else if (turtle_talk_other_has(player, PLAYER_FLAG_GOLDEN_NET)) {
             line->message = TURTLE_TALK_LINE_INSECTS_OTHER;
         }
         return;

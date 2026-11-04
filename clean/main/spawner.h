@@ -115,7 +115,7 @@ int Spawner_CheckD019(void);
 int Spawner_PlaceInFrontOfBuilding(Spawner *self, Vec3 *position);
 int Spawner_CheckD011(void);
 int Spawner_SoundFlagSet(void);
-int Spawner_PlayerHasFlag1(void);
+int Spawner_PlayerInNookJob(void);
 int Spawner_FirstEventOn(const SpawnerEvent *events, int count);
 void Spawner_ReleaseOverlay(Spawner *self);
 const SpawnerEntry *Spawner_Serve(Spawner *self, const SpawnerEntry *table, int count);

@@ -4672,7 +4672,7 @@ static void *state7_take_record(FieldActor *actor)
     if (record == NULL) {
         return NULL;
     }
-    PlayerRecord_SetFlag0(record, 0);
+    PlayerRecord_SetStung(record, 0);
     FaceTexture_Load(actor->unk_70D, PlayerRecord_Face(record));
     return record;
 }
@@ -4756,7 +4756,7 @@ void FieldActor_RunState7(FieldActor *actor)
             FieldActor_MatchFaceAnimA(actor, data_020d72fc, &flags);
             u8 flags_again = actor->anim.flags;
             FieldActor_MatchFaceAnimB(actor, data_020d7304, &flags_again);
-            VillagerState_ClearAllFlag0();
+            VillagerState_ClearAllStingSaid();
             break;
         }
         default:
@@ -4857,7 +4857,7 @@ void FieldActor_ExitState7(FieldActor *actor)
             case 3:
                 if (state7_take_record(actor) != NULL) {
                     FieldActor_RestartAnimation(actor);
-                    VillagerState_ClearAllFlag0();
+                    VillagerState_ClearAllStingSaid();
                 }
                 break;
             default:

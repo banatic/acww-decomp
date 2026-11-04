@@ -1075,7 +1075,7 @@ void SessionMessage_Handle45(int size, int kind, u8 scene, u32 slot)
     (void) scene;
     u8 payload[8];
     Session_ReadMessage(data_020ccf94, payload, size);
-    PlayerActorOps_SetFlag0(payload[0], (int) slot);
+    PlayerActorOps_SetStung(payload[0], (int) slot);
 }
 CLEAN_AS(func_02076c14, SessionMessage_Handle45)
 

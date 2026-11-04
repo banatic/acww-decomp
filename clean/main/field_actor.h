@@ -462,7 +462,7 @@ void FieldActor_SetCloth(struct FieldActor *actor, u16 *item);
 void FieldActor_SetPalettes(struct FieldActor *actor, int hair_color, int sun_level);
 void FieldActor_RecordHeldItem(u16 *item, struct FieldActor *actor);
 int FieldActor_RecordFace(struct FieldActor *actor);
-int FieldActor_RecordFlag0(struct FieldActor *actor);
+int FieldActor_RecordStung(struct FieldActor *actor);
 void FieldActor_RecordPartCItem(u16 *item, struct FieldActor *actor);
 u8 FieldActor_SunLevel(struct FieldActor *actor, int store);
 unsigned int FieldActor_RecordSunLevel(struct FieldActor *actor);
