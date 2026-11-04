@@ -431,7 +431,7 @@ void FortuneTellerTalk_OnLineEnded(FortuneTellerTalk *talk)
             if (SceneBells_CanPay((int) (u32) (uintptr_t) talk->owner, FT_CLEARING_PRICE) != 0) {
                 SceneBells_Take((int) (u32) (uintptr_t) talk->owner, FT_CLEARING_PRICE);
             }
-            PlayerRecord_SetDayState(record, FORTUNE_TELLER_LUCK_NONE);
+            PlayerRecord_SetLuck(record, FORTUNE_TELLER_LUCK_NONE);
             TalkChecks_TestSetDailyBit(FT_DAILY_CLEARING, 1);
             next = FORTUNE_TELLER_LINE_PAID;
             break;
@@ -447,7 +447,7 @@ void FortuneTellerTalk_OnLineEnded(FortuneTellerTalk *talk)
             DesignCreator *player = PlayerRecord_Player(PlayerRecords_Current());
             switch (talk->owner->reading) {
                 case FORTUNE_TELLER_READING_LUCK:
-                    PlayerRecord_SetDayState(record, luck);
+                    PlayerRecord_SetLuck(record, luck);
                     if (luck == FORTUNE_TELLER_LUCK_GOOD) {
                         VillagerTown_UpdateAlone(ftt_town(), player);
                     } else if (luck == FORTUNE_TELLER_LUCK_BAD) {

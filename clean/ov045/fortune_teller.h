@@ -92,7 +92,7 @@ typedef struct FortuneTellerCard {
 } FortuneTellerCard;
 
 /* What a card drawn tells (FortuneTeller_CardLuck); the luck of the day it sets
- * (PlayerRecord_SetDayState). */
+ * (PlayerRecord_SetLuck). */
 #define FORTUNE_TELLER_LUCK_NONE 0
 #define FORTUNE_TELLER_LUCK_GOOD 1
 #define FORTUNE_TELLER_LUCK_BAD 2

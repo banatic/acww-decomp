@@ -10,7 +10,7 @@
  *
  * Its lines, of "sp_npc_panther" (FORTUNE_TELLER_LINE_*): the first line offers a reading for
  * 100 bells, or, both readings given today, the clearing of the day's luck for 10,000 bells.
- * A reading of the day's luck sets it from the card drawn (PlayerRecord_SetDayState); a
+ * A reading of the day's luck sets it from the card drawn (PlayerRecord_SetLuck); a
  * reading of a villager's friendship asks for the villager's name on the name screen (screen 2 in mode 0x13) and
  * changes the villager's fondness for the player (+10 good, -3 bad).
  *

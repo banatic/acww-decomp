@@ -103,8 +103,8 @@ u8 *PlayerRecord_ReactionSlots(u8 *record);
  *           0x240e and 0x2410 two more items (0xfff1: none)
  *   0x2412  the date the sun level was last stored, packed (PlayerRecordSunDate)
  *   0x243c  the face (bits 0-3) and the head's kind (bits 4-7)
- *   0x243d  the hair colour (bits 0-2), the sun level (bits 3-5) and a two-bit state cleared
- *           on each new day (bits 6-7)
+ *   0x243d  the hair colour (bits 0-2), the sun level (bits 3-5) and the day's luck the
+ *           fortune teller read (bits 6-7: ov045 FORTUNE_TELLER_LUCK_*, cleared each new day)
  * Flag 0 of the record (stung by bees) adds 0x10 to the face (FieldActor_RecordFace). */
 
 #include "calendar.h"
@@ -158,8 +158,8 @@ u16 *PlayerRecord_HeldItem(u8 *record);
 PlayerPockets *PlayerRecord_Pockets(u8 *record);
 void PlayerRecord_SetStung(u8 *record, int set);
 int PlayerRecord_IsStung(u8 *record);
-void PlayerRecord_SetDayState(u8 *record, int state);
-u32 PlayerRecord_DayState(u8 *record);
+void PlayerRecord_SetLuck(u8 *record, int state);
+u32 PlayerRecord_Luck(u8 *record);
 void PlayerRecord_SetSunDate(u8 *record, PlayerRecordSunDate date);
 s16 PlayerRecord_SunDate(u8 *record);
 void PlayerRecord_SetSunLevel(u8 *record, int level);

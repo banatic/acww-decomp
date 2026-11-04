@@ -346,7 +346,7 @@ void PlayerRecord_UpdateSinceLastPlay(void)
     }
     if (days != 0) {
         DailyBits_ClearAll((DailyBits *) (void *) PlayerRecord_Field23EC(self));
-        PlayerRecord_SetDayState(self, 0);
+        PlayerRecord_SetLuck(self, 0);
         PlayerField2416_ClearFireworksGifts((PlayerField2416 *) (void *) PlayerRecord_Field2416(self));
         StateBlock_ClearFlag(data_021dc7a8, STATE_FLAG_CLEARED_ON_NEW_DAY);
     }
@@ -439,8 +439,8 @@ CLEAN_AS(func_020992f0, PlayerRecord_ReactionSlots)
 #define LOOKS_HAIR_COLOR_MASK 0x07
 #define LOOKS_SUN_LEVEL_SHIFT 3
 #define LOOKS_SUN_LEVEL_MASK 0x38
-#define LOOKS_DAY_STATE_SHIFT 6
-#define LOOKS_DAY_STATE_MASK 0xc0
+#define LOOKS_LUCK_SHIFT 6
+#define LOOKS_LUCK_MASK 0xc0
 
 /* The record's flag set while the player is stung by bees; it picks the second set of faces. */
 #define RECORD_FLAG_STUNG 0
@@ -849,20 +849,21 @@ int PlayerRecord_IsStung(u8 *record)
 }
 CLEAN_AS(func_0209975c, PlayerRecord_IsStung)
 
-/* func_02099768: the two-bit state cleared on each new day (bits 6-7 of byte 0x243d). */
-void PlayerRecord_SetDayState(u8 *record, int state)
+/* func_02099768: the day's luck the fortune teller read (bits 6-7 of byte 0x243d: 0 none, 1
+ * good, 2 bad; cleared on each new day). */
+void PlayerRecord_SetLuck(u8 *record, int state)
 {
     u8 *looks = &record[RECORD_LOOKS_2];
-    *looks = (u8) ((*looks & ~LOOKS_DAY_STATE_MASK) | ((state & 3) << LOOKS_DAY_STATE_SHIFT));
+    *looks = (u8) ((*looks & ~LOOKS_LUCK_MASK) | ((state & 3) << LOOKS_LUCK_SHIFT));
 }
-CLEAN_AS(func_02099768, PlayerRecord_SetDayState)
+CLEAN_AS(func_02099768, PlayerRecord_SetLuck)
 
 /* func_02099784 */
-u32 PlayerRecord_DayState(u8 *record)
+u32 PlayerRecord_Luck(u8 *record)
 {
-    return (u32) record[RECORD_LOOKS_2] >> LOOKS_DAY_STATE_SHIFT;
+    return (u32) record[RECORD_LOOKS_2] >> LOOKS_LUCK_SHIFT;
 }
-CLEAN_AS(func_02099784, PlayerRecord_DayState)
+CLEAN_AS(func_02099784, PlayerRecord_Luck)
 
 /* func_02099794 */
 void PlayerRecord_SetSunDate(u8 *record, PlayerRecordSunDate date)
@@ -966,7 +967,7 @@ void PlayerRecord_NewPlayer(u8 *record, const void *name, int player_id, int byt
     PlayerRecord_SetHeadKind(record, head_kind);
     PlayerRecord_SetHairColor(record, hair_color);
     PlayerRecord_SetSunLevel(record, sun_level);
-    PlayerRecord_SetDayState(record, 0);
+    PlayerRecord_SetLuck(record, 0);
     PlayerRecord_SetStung(record, flag0);
     PlayerPockets_Init(player_record_pockets_at(record));
     PlayerPockets_SetBells(player_record_pockets_at(record), bells, PLAYER_POCKETS_USE_BAGS);

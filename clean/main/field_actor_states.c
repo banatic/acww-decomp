@@ -5254,7 +5254,8 @@ CLEAN_AS(func_0200cccc, FieldActor_EndState3)
 /* func_0200cce8: what follows for this console's actor; FieldActor_TryAct's answer.
  * Outdoors, at full speed with the counter at 0x8e8 run out, state 0x71 is asked for
  * (priority 6; its result is the answer) unless func_020644cc(0x17a) is set or, when
- * func_02099784 of the player's record is not 2, the item FieldActor_RecordHeadItem gives is not 0x13c3.
+ * the player's luck (PlayerRecord_Luck) is not bad (2), the item FieldActor_RecordHeadItem
+ * gives is not 0x13c3.
  * Otherwise: with no speed left state 2 is asked for (3 frames, priority 1); while running with
  * a push whose yaw is more than 0x3a4c from the heading at the frame's start, state 4 with that
  * yaw (priority 3). */
@@ -5262,7 +5263,7 @@ int FieldActor_RunState3(FieldActor *actor, const s16 *heading)
 {
     if (data_020e54a8 == 0 && actor->unk_8E8 == 0 && FieldActor_Base(actor)->speed == SPEED_MAX) {
         BOOL may_dash = 1;
-        if (PlayerRecord_DayState(PlayerRecords_Current()) != 2) {
+        if (PlayerRecord_Luck(PlayerRecords_Current()) != 2) {
             u16 item;
             FieldActor_RecordHeadItem(&item, actor);
             if (item != 0x13c3) {
