@@ -20,7 +20,7 @@
 #include "main/session_players.h"
 #include "main/shadow.h"
 
-static_assert(offsetof(HouseRoach, walk_speed) == 0x0d4, "roach walk speed");
+static_assert(offsetof(HouseRoach, run_speed) == 0x0d4, "roach run speed");
 static_assert(offsetof(HouseRoach, contacts) == 0x0dc, "roach contacts");
 static_assert(offsetof(HouseRoach, state) == 0x10c, "roach state");
 static_assert(offsetof(HouseRoach, sound) == 0x114, "roach sound");
@@ -206,7 +206,7 @@ int HouseRoach_Run(HouseRoach *roach)
                 roach->jump_frame = (s16) (roach->jump_frame + 1);
                 roach->jumping = 1;
                 found = 1;
-                roach->actor.speed = roach->run_speed;
+                roach->actor.speed = roach->jump_speed;
                 HouseRoach_PlaySound(roach, HOUSE_ROACH_SOUND_JUMP);
             }
         }
@@ -554,11 +554,11 @@ int HouseRoach_Update(HouseRoach *roach)
 }
 CLEAN_AS(func_ov004_0223de70, HouseRoach_Update)
 
-/* func_ov004_0223df48: a frame while it fades in: it moves at its walk speed but keeps its
+/* func_ov004_0223df48: a frame while it fades in: it moves at its run speed but keeps its
  * height of the frame before; its sound follows it. */
 void HouseRoach_StepAppearing(HouseRoach *roach)
 {
-    roach->actor.speed = roach->walk_speed;
+    roach->actor.speed = roach->run_speed;
     HouseRoach_Move(roach);
     roach->actor.position.y = roach->actor.last_position.y;
     Vec3 at = roach->actor.position;
@@ -650,7 +650,7 @@ void HouseRoach_Move(HouseRoach *roach)
 CLEAN_AS(func_ov004_0223df88, HouseRoach_Move)
 
 /* func_ov004_0223e1f0: its acts at full alpha: it moves unless vanishing, then by its state:
- * standing (HouseRoach_Stand); running at its walk speed until its time is up and it is not
+ * standing (HouseRoach_Stand); running at its run speed until its time is up and it is not
  * jumping, then standing for 3 to 12 times 20 frames; vanishing (an effect at it, its alpha
  * starts down, it is leaving and plays its sound); or, just made, standing (3 to 12) or running
  * (3 to 6 times 20 frames) at even odds. Its sound follows it. */
@@ -664,7 +664,7 @@ void HouseRoach_Act(HouseRoach *roach)
             HouseRoach_Stand(roach);
             break;
         case HOUSE_ROACH_RUN: {
-            roach->actor.speed = roach->walk_speed;
+            roach->actor.speed = roach->run_speed;
             int left = roach->timer;
             roach->timer = (s16) (left - 1);
             if (left <= 0 && roach->jumping == 0) {
@@ -696,7 +696,7 @@ CLEAN_AS(func_ov004_0223e1f0, HouseRoach_Act)
 
 /* func_ov004_0223e2f0: its model (shared as "GOKI"), a frame heap of 0x5000 bytes for its
  * files, its visibility animation started and attached, its sound; its heading kept, its
- * gravity, its walk speed, not jumping, quiet; 1. */
+ * gravity, its run speed, not jumping, quiet; 1. */
 int HouseRoach_Load(HouseRoach *roach)
 {
     AnimatedModel *model = roach_model(roach);
@@ -713,7 +713,7 @@ int HouseRoach_Load(HouseRoach *roach)
     roach->actor.move_angle[1] = roach->actor.angle[1];
     roach->start_angle = roach->actor.move_angle[1];
     roach->actor.gravity = HOUSE_ROACH_GRAVITY;
-    roach->actor.speed = roach->walk_speed;
+    roach->actor.speed = roach->run_speed;
     roach->jumping = 0;
     roach->sound_asked = 0;
     roach->sound_state = HOUSE_ROACH_QUIET;
@@ -788,8 +788,8 @@ HouseRoach *HouseRoach_Construct(HouseRoach *roach)
 {
     Actor_Construct(&roach->actor);
     roach->actor.vtable = data_ov004_0225622c;
-    roach->walk_speed = 0x614;
-    roach->run_speed = 0x6b8;
+    roach->run_speed = 0x614;
+    roach->jump_speed = 0x6b8;
     CollisionContacts_Construct(&roach->contacts);
     roach->sound.vtable = (const SoundSourceVtable *) (const void *) data_0213efe8;
     roach->sound.vtable = (const SoundSourceVtable *) (const void *) data_0213f020;

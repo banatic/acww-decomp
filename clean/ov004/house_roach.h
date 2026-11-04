@@ -65,8 +65,8 @@ typedef struct HouseRoach {
     /* 0x000: the process's param is its alpha; it becomes 0xffff once the cockroach is made
      * away with (house_roaches.h) */
     Actor actor;
-    fx32 walk_speed;                        /* 0x0d4 */
-    fx32 run_speed;                         /* 0x0d8: while it jumps */
+    fx32 run_speed;                         /* 0x0d4 */
+    fx32 jump_speed;                        /* 0x0d8: while it jumps */
     CollisionContacts contacts;             /* 0x0dc */
     int state;                              /* 0x10c: HOUSE_ROACH_STAND... */
     int life;                               /* 0x110: HOUSE_ROACH_OUT... */

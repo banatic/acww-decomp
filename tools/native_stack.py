@@ -376,7 +376,7 @@ ARG_PUSHES = {('main', 0x020853b0): 0x10, ('main', 0x02085278): 0x10}
 # as the stack held them. The mixed Native/Clean build compiles a copy that keeps the four
 # centres at the same guest slot as the Native consumer, so they read the same residue.
 CLEAN_SOURCE = 'clean/ov004/house_roach.c'
-CLEAN_SHA = '8f67dcec77f544092fa1997e53c1d0ef1ce4384d3bf9d8b9ddd002e7ef8da5b6'
+CLEAN_SHA = '005b4f8131ad73a2db28c2a2e30f647067dae759a6b71cc4ca23d674c0541dc3'
 # The Clean insect room (InsectRoom_Update) sets the cases' centres' y to 0 (its BUG: note); the
 # copy keeps the centres at the Native one's guest slot instead.
 CLEAN_INSECT_ROOM = 'clean/ov004/museum_insects.c'
