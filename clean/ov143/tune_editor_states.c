@@ -70,7 +70,7 @@ extern const char data_ov143_0229b274[]; /* "bg.bpl" */
 extern const char data_ov143_0229b288[]; /* "a_bg.bsc" */
 extern const char data_ov143_0229b2a0[]; /* "b_bg.bsc" */
 
-/* The title's OBJs, and the OBJ lists of note 15 and of the playing notes 6-13 and 15: the
+/* The "erase all" caption's OBJs, and the OBJ lists of note 15 and of the playing notes 6-13 and 15: the
  * latter's third OBJ shows the tile 4 past the former's. */
 extern const OamEntry data_ov143_0229afc0[];
 extern const OamEntry data_ov143_0229b028[];
@@ -795,7 +795,7 @@ int TuneEditor_RunState(TuneEditor *self)
 CLEAN_AS(_ZN18Obj_ov143_0229b1c019func_ov143_0229acf8Ev, TuneEditor_RunState)
 
 /* func_ov143_0229adc4 (vtable slot 0x24): the scene's draw: the cursor sprite (with the keys in
- * use), then, while the scene is drawn (else answers 0), the panel with the wipe, the title and
+ * use), then, while the scene is drawn (else answers 0), the panel with the wipe, the "erase all" caption and
  * the steps at the wipe's y kept plus 0x60. Answers 1. */
 int TuneEditor_Draw(TuneEditor *self)
 {

@@ -46,19 +46,22 @@ enum OrderCatalogTask {
 /* The item code of no item (main/item_code.h). */
 #define ORDER_CATALOG_NO_ITEM 0xfff1
 
-/* The categories (`category`) and the item codes each list takes. */
+/* The categories (`category`) and the item codes each list takes. The names follow the item
+ * names at the ranges' starts: 0x3984 work clothes, 0x3e24 an umbrella, 0x3fa4 a cap, 0x40a4 a
+ * hat, 0x4124 glasses, 0x45dc a gyroid and 0x450c amber, the first fossil. */
 enum OrderCatalogCategory {
-    ORDER_CATALOG_CATEGORY_0 = 0, /* 0x3000-0x4ba3, every fourth, but the ranges of 3-5, 7, 8 and
-                                   * 0x42a4-0x4463 */
-    ORDER_CATALOG_CATEGORY_1 = 1, /* the wallpaper, 0x1100-0x1143 */
-    ORDER_CATALOG_CATEGORY_2 = 2, /* the carpets, 0x1144-0x1187 */
-    ORDER_CATALOG_CATEGORY_3 = 3, /* 0x3984-0x3d83, every fourth */
-    ORDER_CATALOG_CATEGORY_4 = 4, /* 0x3e24-0x3ea3, every fourth */
-    ORDER_CATALOG_CATEGORY_5 = 5, /* 0x3fa4-0x40a3, 0x40a4-0x4123 and 0x4124-0x4223, every fourth */
-    ORDER_CATALOG_CATEGORY_6 = 6, /* the items in piles, 0x1003-0x10ff, every fourth */
-    ORDER_CATALOG_CATEGORY_7 = 7, /* 0x45dc-0x47d7, every fourth */
-    ORDER_CATALOG_CATEGORY_8 = 8, /* 0x450c-0x45db, every fourth */
-    ORDER_CATALOG_NO_CATEGORY = 9 /* `category` and `picked_category` at the setup */
+    ORDER_CATALOG_CATEGORY_FURNITURE = 0,  /* 0x3000-0x4ba3, every fourth, but the clothes, umbrella,
+                                            * headwear, gyroid and fossil ranges and the bugs and fish
+                                           * (0x42a4-0x4463) */
+    ORDER_CATALOG_CATEGORY_WALLPAPER = 1,  /* the wallpaper, 0x1100-0x1143 */
+    ORDER_CATALOG_CATEGORY_CARPETS = 2,    /* the carpets, 0x1144-0x1187 */
+    ORDER_CATALOG_CATEGORY_CLOTHES = 3,    /* 0x3984-0x3d83, every fourth */
+    ORDER_CATALOG_CATEGORY_UMBRELLAS = 4,  /* 0x3e24-0x3ea3, every fourth */
+    ORDER_CATALOG_CATEGORY_HEADWEAR = 5,   /* 0x3fa4-0x40a3, 0x40a4-0x4123 and 0x4124-0x4223, every fourth */
+    ORDER_CATALOG_CATEGORY_STATIONERY = 6, /* the stationery, 0x1003-0x10ff, every fourth */
+    ORDER_CATALOG_CATEGORY_GYROIDS = 7,    /* 0x45dc-0x47d7, every fourth */
+    ORDER_CATALOG_CATEGORY_FOSSILS = 8,    /* 0x450c-0x45db, every fourth */
+    ORDER_CATALOG_NO_CATEGORY = 9          /* `category` and `picked_category` at the setup */
 };
 
 /* In `flags`. */
@@ -166,15 +169,15 @@ typedef struct OrderCatalog {
     TextLabel labels[ORDER_CATALOG_LABELS]; /* 0x0360 */
     LayerTask tasks[ORDER_CATALOG_TASKS];   /* 0x0948: the list's screen, the frame's screen and
                                                 * the two faded palettes (ORDER_CATALOG_TASK_*) */
-    u16 list0[0x400];                       /* 0x09d8: the lists of item codes */
-    u16 list1[0x44];                        /* 0x11d8 */
-    u16 list2[0x44];                        /* 0x1260 */
-    u16 list3[0x100];                       /* 0x12e8 */
-    u16 list4[0x20];                        /* 0x14e8 */
-    u16 list5[0xa0];                        /* 0x1528 */
-    u16 list6[0x40];                        /* 0x1668 */
-    u16 list7[0x7f];                        /* 0x16e8 */
-    u16 list8[0x34];                        /* 0x17e6 */
+    u16 furniture_list[0x400];              /* 0x09d8: the lists of item codes */
+    u16 wallpaper_list[0x44];               /* 0x11d8 */
+    u16 carpet_list[0x44];                  /* 0x1260 */
+    u16 clothes_list[0x100];                /* 0x12e8 */
+    u16 umbrella_list[0x20];                /* 0x14e8 */
+    u16 headwear_list[0xa0];                /* 0x1528 */
+    u16 stationery_list[0x40];              /* 0x1668 */
+    u16 gyroid_list[0x7f];                  /* 0x16e8 */
+    u16 fossil_list[0x34];                  /* 0x17e6 */
     u16 shown[ORDER_CATALOG_ROWS];          /* 0x184e: the item each row's label shows, by the
                                                 * row's place in the screen's ring */
     u16 rows_screen[0x400];                 /* 0x1860: "b_bg.bsc", the list's rows */

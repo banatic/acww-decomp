@@ -44,17 +44,17 @@ extern const OamEntry data_ov143_0229af08[];
 extern const OamEntry data_ov143_0229b038[];
 extern OamEntry data_ov143_0229b050[]; /* written by TuneEditor_Setup, through data_ov143_0229b040 */
 
-/* The title's OBJs (its label's characters start at the first one's tile). */
+/* The "erase all" caption's OBJs (its label's characters start at the first one's tile). */
 extern const OamEntry data_ov143_0229afc0[];
 
 /* The labels' messages: seven note names (0xc3-0xc9) in turn for the notes 0-12, starting
- * from 0xc7 for note 0, then notes 13 and 14 and the title. */
+ * from 0xc7 for note 0, then notes 13 and 14 and the "erase all" caption. */
 #define TUNE_EDITOR_MESSAGE_NAME_FIRST 0xc3
 #define TUNE_EDITOR_MESSAGE_NAME_LAST 0xc9
 #define TUNE_EDITOR_MESSAGE_NOTE_0 0xc7
 #define TUNE_EDITOR_MESSAGE_NOTE_13 0xca
 #define TUNE_EDITOR_MESSAGE_NOTE_14 0xcb
-#define TUNE_EDITOR_MESSAGE_TITLE 0x8d
+#define TUNE_EDITOR_MESSAGE_ERASE_ALL 0x8d
 #define TUNE_EDITOR_PITCHED_NOTES 13
 
 /* The sounds: the erase button and its "no", the play delay passed to TownTune_Play. */
@@ -165,7 +165,7 @@ void TuneEditor_StepPlace(TuneEditor *self, int *place, int step)
 CLEAN_AS(func_ov143_022996a4, TuneEditor_StepPlace)
 
 /* func_ov143_022996ec: the labels opened: notes 0-12 with the note names in turn, notes 13 and
- * 14, then the title's (message 0x8d, style 8 at the title's OBJ tile, colour 8). */
+ * 14, then the "erase all" caption's (message 0x8d, style 8 at its OBJ tile, colour 8). */
 void TuneEditor_OpenLabels(TuneEditor *self)
 {
     u8 message = TUNE_EDITOR_MESSAGE_NOTE_0;
@@ -180,7 +180,7 @@ void TuneEditor_OpenLabels(TuneEditor *self)
     TuneEditor_OpenNoteLabel(self, TUNE_EDITOR_MESSAGE_NOTE_14, 14);
 
     TextLabel *label = TuneEditor_NextLabel(self);
-    TextLabel_LoadMenuMessage(label, (char) TUNE_EDITOR_MESSAGE_TITLE);
+    TextLabel_LoadMenuMessage(label, (char) TUNE_EDITOR_MESSAGE_ERASE_ALL);
     TextLabel_OpenStyledBox2(label, 8, data_ov143_0229afc0[0].attr2 & 0x3ff, 8, 15, 0, 0);
     TextLabel_Show(label, 1, 0);
 }

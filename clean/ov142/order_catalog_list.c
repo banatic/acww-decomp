@@ -28,11 +28,12 @@ static_assert(offsetof(OrderCatalog, cursor_sprite) == 0xe8 && sizeof(Glider) ==
 static_assert(offsetof(OrderCatalog, thumb_button) == 0x14c && sizeof(PushButton) == 0x48, "thumb");
 static_assert(offsetof(OrderCatalog, panel) == 0x194 && offsetof(OrderCatalog, labels) == 0x360, "panel");
 static_assert(sizeof(TextLabel) == 0x6c && offsetof(OrderCatalog, tasks) == 0x948, "labels");
-static_assert(sizeof(LayerTask) == 0x24 && offsetof(OrderCatalog, list0) == 0x9d8, "tasks");
-static_assert(offsetof(OrderCatalog, list1) == 0x11d8 && offsetof(OrderCatalog, list2) == 0x1260, "lists 1-2");
-static_assert(offsetof(OrderCatalog, list3) == 0x12e8 && offsetof(OrderCatalog, list4) == 0x14e8, "lists 3-4");
-static_assert(offsetof(OrderCatalog, list5) == 0x1528 && offsetof(OrderCatalog, list6) == 0x1668, "lists 5-6");
-static_assert(offsetof(OrderCatalog, list7) == 0x16e8 && offsetof(OrderCatalog, list8) == 0x17e6, "lists 7-8");
+static_assert(sizeof(LayerTask) == 0x24 && offsetof(OrderCatalog, furniture_list) == 0x9d8, "tasks");
+static_assert(offsetof(OrderCatalog, wallpaper_list) == 0x11d8 && offsetof(OrderCatalog, carpet_list) == 0x1260, "lists 1-2");
+static_assert(offsetof(OrderCatalog, clothes_list) == 0x12e8 && offsetof(OrderCatalog, umbrella_list) == 0x14e8, "lists 3-4");
+static_assert(offsetof(OrderCatalog, headwear_list) == 0x1528 && offsetof(OrderCatalog, stationery_list) == 0x1668,
+              "lists 5-6");
+static_assert(offsetof(OrderCatalog, gyroid_list) == 0x16e8 && offsetof(OrderCatalog, fossil_list) == 0x17e6, "lists 7-8");
 static_assert(offsetof(OrderCatalog, shown) == 0x184e && offsetof(OrderCatalog, rows_screen) == 0x1860, "shown");
 static_assert(offsetof(OrderCatalog, list_screen) == 0x2060 && offsetof(OrderCatalog, frame_screen) == 0x2860, "screens");
 static_assert(offsetof(OrderCatalog, row_palette) == 0x3060 && offsetof(OrderCatalog, picked_palette) == 0x30a0, "palettes");
@@ -571,9 +572,9 @@ CLEAN_AS(func_ov142_0229a5cc, OrderCatalog_BuildListScreen)
 u16 *OrderCatalog_ItemAt(OrderCatalog *self, int row)
 {
     static const u16 list_offsets[ORDER_CATALOG_CATEGORIES] = {
-        offsetof(OrderCatalog, list0), offsetof(OrderCatalog, list1), offsetof(OrderCatalog, list2),
-        offsetof(OrderCatalog, list3), offsetof(OrderCatalog, list4), offsetof(OrderCatalog, list5),
-        offsetof(OrderCatalog, list6), offsetof(OrderCatalog, list7), offsetof(OrderCatalog, list8),
+        offsetof(OrderCatalog, furniture_list),  offsetof(OrderCatalog, wallpaper_list), offsetof(OrderCatalog, carpet_list),
+        offsetof(OrderCatalog, clothes_list),    offsetof(OrderCatalog, umbrella_list),  offsetof(OrderCatalog, headwear_list),
+        offsetof(OrderCatalog, stationery_list), offsetof(OrderCatalog, gyroid_list),    offsetof(OrderCatalog, fossil_list),
     };
     if ((data_ov142_0229c5e4 & 1) == 0) {
         for (int i = 0; i < ORDER_CATALOG_CATEGORIES; i++) {
@@ -650,78 +651,79 @@ int OrderCatalog_CollectEveryFourth(OrderCatalog *self, u16 *out, u16 first, int
 CLEAN_AS(func_ov142_0229a76c, OrderCatalog_CollectEveryFourth)
 
 /* func_ov142_0229a7e0: list 5, from its three ranges in turn. */
-void OrderCatalog_ListCategory5(OrderCatalog *self)
+void OrderCatalog_ListHeadwear(OrderCatalog *self)
 {
-    self->listed[ORDER_CATALOG_CATEGORY_5] = 0;
-    u32 total = (u32) OrderCatalog_CollectEveryFourth(self, self->list5, 0x3fa4, 0x40, ORDER_CATALOG_CATEGORY_5);
-    total += (u32) OrderCatalog_CollectEveryFourth(self, catalog_at(self->list5, (int) (total * 2)), 0x40a4, 0x20,
-                                                   ORDER_CATALOG_CATEGORY_5);
-    total += (u32) OrderCatalog_CollectEveryFourth(self, catalog_at(self->list5, (int) (total * 2)), 0x4124, 0x40,
-                                                   ORDER_CATALOG_CATEGORY_5);
-    self->counts[ORDER_CATALOG_CATEGORY_5] = (u16) total;
+    self->listed[ORDER_CATALOG_CATEGORY_HEADWEAR] = 0;
+    u32 total =
+        (u32) OrderCatalog_CollectEveryFourth(self, self->headwear_list, 0x3fa4, 0x40, ORDER_CATALOG_CATEGORY_HEADWEAR);
+    total += (u32) OrderCatalog_CollectEveryFourth(self, catalog_at(self->headwear_list, (int) (total * 2)), 0x40a4, 0x20,
+                                                   ORDER_CATALOG_CATEGORY_HEADWEAR);
+    total += (u32) OrderCatalog_CollectEveryFourth(self, catalog_at(self->headwear_list, (int) (total * 2)), 0x4124, 0x40,
+                                                   ORDER_CATALOG_CATEGORY_HEADWEAR);
+    self->counts[ORDER_CATALOG_CATEGORY_HEADWEAR] = (u16) total;
 }
-CLEAN_AS(func_ov142_0229a7e0, OrderCatalog_ListCategory5)
+CLEAN_AS(func_ov142_0229a7e0, OrderCatalog_ListHeadwear)
 
 /* func_ov142_0229a84c */
-void OrderCatalog_ListCategory8(OrderCatalog *self)
+void OrderCatalog_ListFossils(OrderCatalog *self)
 {
-    self->listed[ORDER_CATALOG_CATEGORY_8] = 0;
-    self->counts[ORDER_CATALOG_CATEGORY_8] =
-        (u16) OrderCatalog_CollectEveryFourth(self, self->list8, 0x450c, 0x34, ORDER_CATALOG_CATEGORY_8);
+    self->listed[ORDER_CATALOG_CATEGORY_FOSSILS] = 0;
+    self->counts[ORDER_CATALOG_CATEGORY_FOSSILS] =
+        (u16) OrderCatalog_CollectEveryFourth(self, self->fossil_list, 0x450c, 0x34, ORDER_CATALOG_CATEGORY_FOSSILS);
 }
-CLEAN_AS(func_ov142_0229a84c, OrderCatalog_ListCategory8)
+CLEAN_AS(func_ov142_0229a84c, OrderCatalog_ListFossils)
 
 /* func_ov142_0229a880 */
-void OrderCatalog_ListCategory7(OrderCatalog *self)
+void OrderCatalog_ListGyroids(OrderCatalog *self)
 {
-    self->listed[ORDER_CATALOG_CATEGORY_7] = 0;
-    self->counts[ORDER_CATALOG_CATEGORY_7] =
-        (u16) OrderCatalog_CollectEveryFourth(self, self->list7, 0x45dc, 0x7f, ORDER_CATALOG_CATEGORY_7);
+    self->listed[ORDER_CATALOG_CATEGORY_GYROIDS] = 0;
+    self->counts[ORDER_CATALOG_CATEGORY_GYROIDS] =
+        (u16) OrderCatalog_CollectEveryFourth(self, self->gyroid_list, 0x45dc, 0x7f, ORDER_CATALOG_CATEGORY_GYROIDS);
 }
-CLEAN_AS(func_ov142_0229a880, OrderCatalog_ListCategory7)
+CLEAN_AS(func_ov142_0229a880, OrderCatalog_ListGyroids)
 
 /* func_ov142_0229a8b4 */
-void OrderCatalog_ListCategory6(OrderCatalog *self)
+void OrderCatalog_ListStationery(OrderCatalog *self)
 {
-    self->listed[ORDER_CATALOG_CATEGORY_6] = 0;
-    self->counts[ORDER_CATALOG_CATEGORY_6] =
-        (u16) OrderCatalog_CollectEveryFourth(self, self->list6, 0x1003, 0x40, ORDER_CATALOG_CATEGORY_6);
+    self->listed[ORDER_CATALOG_CATEGORY_STATIONERY] = 0;
+    self->counts[ORDER_CATALOG_CATEGORY_STATIONERY] =
+        (u16) OrderCatalog_CollectEveryFourth(self, self->stationery_list, 0x1003, 0x40, ORDER_CATALOG_CATEGORY_STATIONERY);
 }
-CLEAN_AS(func_ov142_0229a8b4, OrderCatalog_ListCategory6)
+CLEAN_AS(func_ov142_0229a8b4, OrderCatalog_ListStationery)
 
 /* func_ov142_0229a8e8 */
-void OrderCatalog_ListCategory4(OrderCatalog *self)
+void OrderCatalog_ListUmbrellas(OrderCatalog *self)
 {
-    self->listed[ORDER_CATALOG_CATEGORY_4] = 0;
-    self->counts[ORDER_CATALOG_CATEGORY_4] =
-        (u16) OrderCatalog_CollectEveryFourth(self, self->list4, 0x3e24, 0x20, ORDER_CATALOG_CATEGORY_4);
+    self->listed[ORDER_CATALOG_CATEGORY_UMBRELLAS] = 0;
+    self->counts[ORDER_CATALOG_CATEGORY_UMBRELLAS] =
+        (u16) OrderCatalog_CollectEveryFourth(self, self->umbrella_list, 0x3e24, 0x20, ORDER_CATALOG_CATEGORY_UMBRELLAS);
 }
-CLEAN_AS(func_ov142_0229a8e8, OrderCatalog_ListCategory4)
+CLEAN_AS(func_ov142_0229a8e8, OrderCatalog_ListUmbrellas)
 
 /* func_ov142_0229a91c */
-void OrderCatalog_ListCategory3(OrderCatalog *self)
+void OrderCatalog_ListClothes(OrderCatalog *self)
 {
-    self->listed[ORDER_CATALOG_CATEGORY_3] = 0;
-    self->counts[ORDER_CATALOG_CATEGORY_3] =
-        (u16) OrderCatalog_CollectEveryFourth(self, self->list3, 0x3984, 0x100, ORDER_CATALOG_CATEGORY_3);
+    self->listed[ORDER_CATALOG_CATEGORY_CLOTHES] = 0;
+    self->counts[ORDER_CATALOG_CATEGORY_CLOTHES] =
+        (u16) OrderCatalog_CollectEveryFourth(self, self->clothes_list, 0x3984, 0x100, ORDER_CATALOG_CATEGORY_CLOTHES);
 }
-CLEAN_AS(func_ov142_0229a91c, OrderCatalog_ListCategory3)
+CLEAN_AS(func_ov142_0229a91c, OrderCatalog_ListClothes)
 
 /* func_ov142_0229a954 */
 void OrderCatalog_ListCarpets(OrderCatalog *self)
 {
-    self->listed[ORDER_CATALOG_CATEGORY_2] = 0;
-    self->counts[ORDER_CATALOG_CATEGORY_2] =
-        (u16) OrderCatalog_CollectItems(self, self->list2, 0x1144, 0x44, ORDER_CATALOG_CATEGORY_2);
+    self->listed[ORDER_CATALOG_CATEGORY_CARPETS] = 0;
+    self->counts[ORDER_CATALOG_CATEGORY_CARPETS] =
+        (u16) OrderCatalog_CollectItems(self, self->carpet_list, 0x1144, 0x44, ORDER_CATALOG_CATEGORY_CARPETS);
 }
 CLEAN_AS(func_ov142_0229a954, OrderCatalog_ListCarpets)
 
 /* func_ov142_0229a988 */
 void OrderCatalog_ListWallpaper(OrderCatalog *self)
 {
-    self->listed[ORDER_CATALOG_CATEGORY_1] = 0;
-    self->counts[ORDER_CATALOG_CATEGORY_1] =
-        (u16) OrderCatalog_CollectItems(self, self->list1, 0x1100, 0x44, ORDER_CATALOG_CATEGORY_1);
+    self->listed[ORDER_CATALOG_CATEGORY_WALLPAPER] = 0;
+    self->counts[ORDER_CATALOG_CATEGORY_WALLPAPER] =
+        (u16) OrderCatalog_CollectItems(self, self->wallpaper_list, 0x1100, 0x44, ORDER_CATALOG_CATEGORY_WALLPAPER);
 }
 CLEAN_AS(func_ov142_0229a988, OrderCatalog_ListWallpaper)
 
@@ -744,27 +746,27 @@ static int catalog_left_out_of_list0(u16 code)
  * lists take and 0x42a4-0x4463, as OrderCatalog_CollectEveryFourth counts and collects them.
  * QUIRK: the list is not bounded: 0x436 codes pass the ranges for its 0x400 entries, so a record
  * with more of them listed would write on into list 1. */
-void OrderCatalog_ListCategory0(OrderCatalog *self)
+void OrderCatalog_ListFurniture(OrderCatalog *self)
 {
     int found = 0;
-    self->counts[ORDER_CATALOG_CATEGORY_0] = 0;
-    self->listed[ORDER_CATALOG_CATEGORY_0] = 0;
+    self->counts[ORDER_CATALOG_CATEGORY_FURNITURE] = 0;
+    self->listed[ORDER_CATALOG_CATEGORY_FURNITURE] = 0;
     u16 code = 0x3000;
     u8 *record = PlayerRecords_Current();
     for (int i = 0; i < 0x6e9; i++) {
         ItemCode item = code;
         if (!catalog_left_out_of_list0(code) && ItemTraits_FlagBit3(&item) != 0) {
-            self->listed[ORDER_CATALOG_CATEGORY_0] = (u16) (self->listed[ORDER_CATALOG_CATEGORY_0] + 1);
+            self->listed[ORDER_CATALOG_CATEGORY_FURNITURE] = (u16) (self->listed[ORDER_CATALOG_CATEGORY_FURNITURE] + 1);
             if (ItemRecord_Has((ItemRecord *) (void *) PlayerRecord_ItemRecord(record), &item) != 0) {
-                *(u16 *) catalog_at(self->list0, 2 * found) = code;
+                *(u16 *) catalog_at(self->furniture_list, 2 * found) = code;
                 found++;
             }
         }
         code = (u16) (code + 4);
     }
-    self->counts[ORDER_CATALOG_CATEGORY_0] = (u16) found;
+    self->counts[ORDER_CATALOG_CATEGORY_FURNITURE] = (u16) found;
 }
-CLEAN_AS(func_ov142_0229a9bc, OrderCatalog_ListCategory0)
+CLEAN_AS(func_ov142_0229a9bc, OrderCatalog_ListFurniture)
 
 /* func_ov142_0229ab68: tab `tab` highlighted, and the rows fade out to show its category; nothing
  * when it is highlighted already. */

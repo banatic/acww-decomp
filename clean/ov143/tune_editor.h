@@ -109,7 +109,7 @@ typedef struct TuneEditor {
     s32 drag_y;                           /* 0x0a8: the pen's y when the drag started */
     Glider cursor_sprite;                 /* 0x0ac: a Glider0 */
     ButtonPanel panel;                    /* 0x110 */
-    TextLabel labels[TUNE_EDITOR_LABELS]; /* 0x2dc: the notes' labels and the title's */
+    TextLabel labels[TUNE_EDITOR_LABELS]; /* 0x2dc: the notes' labels and the "erase all" caption's */
     u16 screen[0x400];                    /* 0x99c: layer 4's screen */
     LayerTask screen_task;                /* 0x119c: `screen` to layer 4 */
 } TuneEditor;

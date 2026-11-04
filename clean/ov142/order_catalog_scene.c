@@ -55,9 +55,9 @@ extern void func_02070be8(void *label);
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
 
-/* The title (message 0xb8) and the panel's messages: the catalog's (layout 5) and the
+/* The price unit "Bells" (message 0xb8) and the panel's messages: the catalog's (layout 5) and the
  * confirmation's (layout 12). */
-#define ORDER_CATALOG_MESSAGE_TITLE 0xb8
+#define ORDER_CATALOG_MESSAGE_BELLS 0xb8
 #define ORDER_CATALOG_MESSAGE_PANEL 0x65
 #define ORDER_CATALOG_MESSAGE_CONFIRM 0x22
 
@@ -215,15 +215,15 @@ void OrderCatalog_Setup(OrderCatalog *self)
     self->fade_step = 3;
     self->fade_state = ORDER_CATALOG_FADE_NONE;
     OrderCatalog_PickItem(self, ORDER_CATALOG_NO_CATEGORY, -1);
-    OrderCatalog_ListCategory0(self);
+    OrderCatalog_ListFurniture(self);
     OrderCatalog_ListWallpaper(self);
     OrderCatalog_ListCarpets(self);
-    OrderCatalog_ListCategory3(self);
-    OrderCatalog_ListCategory4(self);
-    OrderCatalog_ListCategory6(self);
-    OrderCatalog_ListCategory5(self);
-    OrderCatalog_ListCategory7(self);
-    OrderCatalog_ListCategory8(self);
+    OrderCatalog_ListClothes(self);
+    OrderCatalog_ListUmbrellas(self);
+    OrderCatalog_ListStationery(self);
+    OrderCatalog_ListHeadwear(self);
+    OrderCatalog_ListGyroids(self);
+    OrderCatalog_ListFossils(self);
     PushButton_ShowUp(&self->thumb_button);
 }
 CLEAN_AS(func_ov142_0229ba64, OrderCatalog_Setup)
@@ -316,14 +316,14 @@ void OrderCatalog_StartWipeOut(OrderCatalog *self)
 }
 CLEAN_AS(func_ov142_0229bc64, OrderCatalog_StartWipeOut)
 
-/* func_ov142_0229bc9c (state 1): the first time, the scene drawn, the title (message 0xb8 at
+/* func_ov142_0229bc9c (state 1): the first time, the scene drawn, the "Bells" unit (message 0xb8 at
  * (0x16d, 4), colour 15) and the price's place shown; the wipe in stepped, and at its end the
  * catalog (phase 2). The layers follow the wipe. */
 void OrderCatalog_WipeIn(OrderCatalog *self)
 {
     if (OrderCatalog_TestFlags(self, ORDER_CATALOG_FLAG_DRAWN) == 0) {
         OrderCatalog_SetFlags(self, ORDER_CATALOG_FLAG_DRAWN);
-        OrderCatalog_ShowMessage(self, ORDER_CATALOG_MESSAGE_TITLE, 0x16d, 4, 0xf, 0);
+        OrderCatalog_ShowMessage(self, ORDER_CATALOG_MESSAGE_BELLS, 0x16d, 4, 0xf, 0);
         OrderCatalog_ClearPriceLabel(self);
     }
     if (MenuScene_StepWipeBack(catalog_base(self), 0) != 0) {
@@ -341,7 +341,7 @@ void OrderCatalog_StartWipeIn(OrderCatalog *self)
 {
     OrderCatalog_SetUpLayers();
     OrderCatalog_LoadBgGraphics(self);
-    OrderCatalog_ShowCategory(self, ORDER_CATALOG_CATEGORY_0);
+    OrderCatalog_ShowCategory(self, ORDER_CATALOG_CATEGORY_FURNITURE);
     OrderCatalog_LoadObjGraphics(self);
     MenuScene_StartWipeCoveredOnWindow2(catalog_base(self), 0xa, 4, 0, 0x18);
     DisplayLayer_Show(6);
