@@ -1,8 +1,77 @@
-/* func_ov009_02265024 @ 0x02265024, 0xac bytes, Thumb, module ov009
+/* scene_actor_life_6: 2 functions, module ov009
  * mwccarm 1.2/base -O4,s
+ * func_ov009_022650d0 @ 0x022650d0, 0x74 bytes, Thumb
+ * func_ov009_02265024 @ 0x02265024, 0xac bytes, Thumb
  */
 
 #include "types.h"
+
+struct Vec {
+    int a;
+    int b;
+};
+
+struct UnkStruct_022650d0 {
+    u8 pad[4];
+};
+
+class UnkStruct_022650d0_2 {
+  public:
+    virtual void v0();
+    virtual void v1();
+    virtual void v2();
+    virtual void v3();
+    virtual void v4();
+    virtual void v5();
+    virtual void v6();
+    virtual void v7();
+    virtual void v8();
+    virtual void v9();
+    virtual void v10();
+    virtual void v11();
+    virtual void v12();
+    virtual void v13();
+    virtual void v14();
+    virtual void v15();
+    virtual void v16();
+    virtual void v17();
+    virtual void v18();
+    virtual void v19();
+    virtual void v20();
+    virtual void v21();
+    virtual void v22();
+    virtual void v23();
+    virtual void v24();
+    virtual void v25();
+    virtual void v26();
+    virtual void v27();
+    virtual void v28();
+    virtual void v29();
+    virtual void v30();
+    virtual void v31();
+    virtual void v32();
+    virtual void v33();
+    virtual void v34();
+    virtual void v35();
+    virtual void v36();
+    virtual void v37();
+    virtual void v38();
+    virtual void v39();
+    virtual void v40();
+    virtual void v41();
+    virtual void v42();
+    virtual void v43();
+    virtual void v44();
+    virtual Vec v45();
+    u8 pad[0x235 - 4];
+    u8 flags;
+    u8 pad_236[2];
+    UnkStruct_022650d0 sub;
+};
+
+extern "C" u16 *func_ov009_02262fcc(UnkStruct_022650d0_2 *self);
+extern "C" void func_ov009_02262f2c(UnkStruct_022650d0 *dst, const Vec *v, u16 x);
+extern "C" void func_02003420(UnkStruct_022650d0_2 *self, void *p);
 
 struct UnkStruct_02265024 {
     virtual int v0();
@@ -60,11 +129,24 @@ struct UnkStruct_02265024 {
 };
 
 extern "C" int func_020033ec(void *unused0);
-extern "C" u16 *func_ov009_02262fcc(UnkStruct_02265024 *self);
 extern "C" int func_0204bcdc(u16 *p);
 extern "C" int func_0204bc64(u16 *p);
 extern "C" int func_0203adc4(int *a, int b, int c);
 extern "C" void func_ov009_022632c8(UnkStruct_02265024 *self);
+
+extern "C" void func_ov009_022650d0(UnkStruct_022650d0_2 *self, void *arg)
+{
+    const Vec &v = self->v45();
+    func_ov009_02262f2c(&self->sub, &v, *func_ov009_02262fcc(self));
+    if (self->flags & 2) {
+        self->flags |= 8;
+    } else {
+        self->flags &= ~8;
+    }
+    self->flags &= ~2;
+    self->flags &= ~4;
+    func_02003420(self, arg);
+}
 
 extern "C" int func_ov009_02265024(UnkStruct_02265024 *self)
 {
@@ -76,7 +158,7 @@ extern "C" int func_ov009_02265024(UnkStruct_02265024 *self)
         return 0;
     }
     if ((self->unk_235 & 1) == 0) {
-        p = func_ov009_02262fcc(self);
+        p = func_ov009_02262fcc((UnkStruct_022650d0_2 *) self);
         if (func_0204bcdc(p) != 0) {
             tmp = 0x500b;
             r = func_0204bc64(p);

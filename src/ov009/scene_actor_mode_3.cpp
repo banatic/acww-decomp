@@ -1,6 +1,11 @@
-/* func_ov009_02263c84 @ 0x02263c84, 0x164 bytes, Thumb, module ov009
+/* scene_actor_mode_3: 3 functions, module ov009
  * mwccarm 1.2/base -O4,s
+ * func_ov009_02263c84 @ 0x02263c84, 0x164 bytes, Thumb
+ * func_ov009_02263c14 @ 0x02263c14, 0x70 bytes, Thumb, emits _ZN18Obj_ov009_022658dc19func_ov009_02263c14Ev
+ * func_ov009_02263ba8 @ 0x02263ba8, 0x6c bytes, Thumb
  */
+
+#include "cpp/ov009/Obj_ov009_022658dc.h"
 
 struct Buf {
     int data[4];
@@ -66,6 +71,40 @@ extern "C" void func_ov009_02262ef0(void *self, int arg);
 extern "C" int func_0204bcdc(void *);
 extern "C" int func_0204bc64(void *);
 extern "C" void func_0206e9ec(void *dst, const void *src);
+extern "C" void func_02055124(Obj_020dd05c *p);
+extern "C" int func_02056f94(Obj_020dd184 *p);
+extern "C" int func_02056f28(Obj_020dd184 *p, int n);
+extern "C" int func_0204bba8(void *a);
+
+class Vtbl {
+  public:
+    virtual void f0();
+    virtual void f1();
+    virtual void f2();
+    virtual void f3();
+    virtual void f4();
+    virtual void f5();
+    virtual void f6();
+    virtual void f7();
+    virtual void f8();
+    virtual void f9();
+    virtual void f10();
+    virtual void f11();
+    virtual void f12();
+    virtual void f13();
+    virtual void f14();
+    virtual void f15();
+    virtual void f16();
+    virtual void f17();
+    virtual void f18();
+    virtual void f19();
+    virtual void f20();
+    virtual void f21();
+    virtual void f22();
+    virtual void f23();
+    virtual void f24();
+    virtual int f25();
+};
 
 extern "C" int func_ov009_02263c84(UnkStruct_02263c84 *self)
 {
@@ -135,5 +174,34 @@ final: {
 ret1:
     return 1;
 ret0:
+    return 0;
+}
+
+void Obj_ov009_022658dc::func_ov009_02263c14()
+{
+    func_02055124(&unk_13c);
+    if (func_02056f94(static_cast<Obj_020dd184 *>(&unk_13c)) != 0) {
+        vfunc_6c(0);
+    } else {
+        if (func_02056f28(static_cast<Obj_020dd184 *>(&unk_13c), 0x12) != 0) {
+            func_ov009_02262ef0((void *) (&unk_238), 0x7d3);
+        } else if (func_02056f28(static_cast<Obj_020dd184 *>(&unk_13c), 0x18) != 0) {
+            func_ov009_02262ef0((void *) (&unk_238), 0x7d4);
+        }
+    }
+}
+
+extern "C" int func_ov009_02263ba8(Vtbl *obj)
+{
+    int ret = obj->f25();
+    if (ret != 0) {
+        func_02055060((char *) obj + 0x13c, ret, 1, 0x1000, 0, 0);
+        if (func_0204bba8((char *) obj + 0x136) != 0) {
+            func_ov009_02262ef0((char *) obj + 0x238, 0x806);
+        } else {
+            func_ov009_02262ef0((char *) obj + 0x238, 0x808);
+        }
+        return 1;
+    }
     return 0;
 }
