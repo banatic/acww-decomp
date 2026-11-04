@@ -437,13 +437,13 @@ void TownDay_Check(int loaded)
 }
 CLEAN_AS(func_02046a74, TownDay_Check)
 
-/* func_02046bc8: the period of the town's day (Calendar_PeriodBOf) noted. */
+/* func_02046bc8: the foliage period of the town's day of the year (Calendar_FoliagePeriodOf) noted. */
 void TownDay_SetPeriod(void)
 {
     DateTime now = {0};
     DateTime_Now(&now);
     DateTime_SubtractHours(&now, TOWN_DAY_START_HOUR);
-    TownRecord_SetPeriod((u8) Calendar_PeriodBOf(&now));
+    TownRecord_SetPeriod((u8) Calendar_FoliagePeriodOf(&now));
 }
 CLEAN_AS(func_02046bc8, TownDay_SetPeriod)
 
@@ -464,7 +464,7 @@ static int TownDay_AtMost(int value, int most)
     return value > most ? most : value;
 }
 
-/* Whether the period of the day (Calendar_PeriodBOf) is one of 0, 1, 2 and 0x16. */
+/* Whether the foliage period of the year (Calendar_FoliagePeriodOf) is one of 0, 1, 2 and 0x16. */
 static int TownDay_QuietPeriod(int period)
 {
     return period == 0 || period == 1 || period == 2 || period == 0x16;
@@ -510,7 +510,7 @@ void TownDay_Pass(TownDay *town, const DateTime *from, const DateTime *to, int d
         int year_days = TownDay_AtMost(days, 365);
         DateTime_SubtractDays(&day, year_days);
         for (int i = 0; i < year_days; i++) {
-            int quiet = TownDay_QuietPeriod(Calendar_PeriodBOf(&day));
+            int quiet = TownDay_QuietPeriod(Calendar_FoliagePeriodOf(&day));
             TownSpawn_Put21(town, map);
             if (!quiet && MainRandom_Below(100) < 50) {
                 TownSpawn_Put1f(town, map, wide, high);
@@ -523,7 +523,7 @@ void TownDay_Pass(TownDay *town, const DateTime *from, const DateTime *to, int d
         int month_days = TownDay_AtMost(days, 30);
         DateTime_SubtractDays(&month_day, month_days);
         for (int i = 0; i < month_days; i++) {
-            if (!TownDay_QuietPeriod(Calendar_PeriodBOf(&month_day)) && MainRandom_Below(100) < 20) {
+            if (!TownDay_QuietPeriod(Calendar_FoliagePeriodOf(&month_day)) && MainRandom_Below(100) < 20) {
                 TownSpawn_Put1d(town, map, wide, high);
             }
             DateTime_AddDays(&month_day, 1);

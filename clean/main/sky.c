@@ -1152,7 +1152,7 @@ void Sky_SetWeathers(Sky *sky, int weather, int next_weather)
 CLEAN_AS(func_020bb7e0, Sky_SetWeathers)
 
 /* func_020bb830: what falls at level `weather` today: snow at levels 3 and 4 in periods 0 to 2
- * and 14 to 18 of the year (Calendar_PeriodAOf), rain at them otherwise, else nothing. */
+ * and 14 to 18 of the year (Calendar_WeatherPeriodOf), rain at them otherwise, else nothing. */
 int Sky_FallingKindOf(Sky *sky, int weather)
 {
     (void) sky;
@@ -1161,7 +1161,7 @@ int Sky_FallingKindOf(Sky *sky, int weather)
     if (weather != SKY_WEATHER_RAIN && weather != SKY_WEATHER_HEAVY_RAIN) {
         return SKY_FALLING_NONE;
     }
-    switch (Calendar_PeriodAOf(&now)) {
+    switch (Calendar_WeatherPeriodOf(&now)) {
         case 0:
         case 1:
         case 2:

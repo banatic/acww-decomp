@@ -108,7 +108,7 @@ body, names and types are free.
 - Group functions by subsystem, one file per subsystem: `clean/<module>/<subsystem>.c` with a
   header beside it. Say above each function which game function it is (`/* func_0209dcdc */`).
 - Name things by what the code shows they do. When the purpose is not known, keep the name
-  neutral (`Calendar_PeriodA`) rather than guessing.
+  neutral (`SKY_OBJECT_KIND_12`) rather than guessing.
 - Keep the game's odd behaviour and mark it: `QUIRK:` for something unusual but intended,
   `BUG:` for a defect kept as it is, `HW:` for an order the hardware needs, `REQUIRES:` for a
   precondition the game always meets.

@@ -169,13 +169,13 @@ int TvBroadcast_ForecastNow(TvBroadcast *tv)
 CLEAN_AS(func_ov004_0223a87c, TvBroadcast_ForecastNow)
 
 /* func_ov004_0223a8f0: whether today falls in periods 0-2 or 14-18 of the year
- * (Calendar_PeriodA), where the forecasts show snow. */
+ * (Calendar_WeatherPeriod), where the forecasts show snow. */
 int TvBroadcast_IsSnowSeason(void)
 {
     DateTime now = {0};
     DateTime_Now(&now);
     Date today = {now.day, now.month, now.year, 0};
-    switch (Calendar_PeriodA(&today)) {
+    switch (Calendar_WeatherPeriod(&today)) {
         case 0:
         case 1:
         case 2:

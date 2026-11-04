@@ -38,7 +38,7 @@ CLEAN_AS(func_020c15bc, SkyWeatherDay_LastWet)
 int SkyWeatherDay_DrawPattern(SkyWeatherDay *day, const DateTime *date)
 {
     (void) day;
-    int period = Calendar_PeriodAOf(date);
+    int period = Calendar_WeatherPeriodOf(date);
     int draw = (int) MainRandom_Below(100);
     for (int i = 0; i < SKY_WEATHER_DAY_PATTERNS; i++) {
         draw -= data_020d2ef0[period][i];

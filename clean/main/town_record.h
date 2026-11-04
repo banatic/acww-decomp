@@ -1,7 +1,7 @@
 /* The town's record in the state block (StateBlock.part_17254, data_021f39fc, 0x6c bytes): the
  * day the town was last brought up to (town_day.h), the town's own fruit, the bulletin board's
- * state (board_notices.h), the period of the day, the four events the town takes part in, and
- * a day for each player.
+ * state (board_notices.h), the foliage period of the year, the four events the town takes part
+ * in, and a day for each player.
  *
  * The town's fruit is one of the five items 0x1518-0x151c (planted, each becomes a tree code of
  * the five lines of eight at 0x2f-0x56; map_item.h), drawn when the town is started: its trees
@@ -18,7 +18,7 @@
 #define TOWN_RECORD_PLAYERS 4
 #define TOWN_RECORD_PELICAN_BYTES 10
 #define TOWN_RECORD_SLOGAN_BYTES 11
-/* The last period of the day (Calendar_PeriodBOf). */
+/* The last foliage period of the year (Calendar_FoliagePeriodOf). */
 #define TOWN_RECORD_LAST_PERIOD 0x16
 /* The town's best grade (TownAcreCount_Grade), a perfect town, whose days in a row are
  * counted, and the count TownRecord_PerfectLong asks for (the town hall's clerk then hands

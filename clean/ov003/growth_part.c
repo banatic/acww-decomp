@@ -28,10 +28,10 @@ extern const GrowthPartSetups data_ov003_0223a188; /* the second start's */
 /* The motion by mode of a first start. */
 extern const int data_ov003_0223ac00[];
 /* Whether group 0 starts set 0x24 instead of 0x22, by the tile's parity (rows of 23) and the
- * period of the day. */
+ * foliage period of the year. */
 extern const u8 data_ov003_02236b88[];
 #define GROWTH_PART_PERIODS 23
-/* Whether the second start happens, by the period of the day. */
+/* Whether the second start happens, by the foliage period of the year. */
 extern const u8 data_ov003_02236b1c[];
 /* The second start's set by group. */
 extern const int data_ov003_022368ec[];
@@ -133,7 +133,7 @@ CLEAN_AS(func_ov003_02223d14, GrowthPart_StartSecond)
 
 /* func_ov003_02223dc8: the group, variant and first set of the code `item`: the lines
  * 0x26-0x2e and code 0x67 group 0 with the tile's parity, set 0x22 (0x24 when
- * data_ov003_02236b88 marks the parity and the period of the day); the lines 0x5d-0x65 and codes
+ * data_ov003_02236b88 marks the parity and the foliage period of the year); the lines 0x5d-0x65 and codes
  * 0x6b and 0x6d group 1, variant 3, set 0x25; the lines 0xc8-0xd3 group 2, variant 3, set
  * 0x27; any other code group 0, variant 2, set 0x22. `position` becomes the tile's centre. */
 void GrowthPart_Choose(GrowthParts *parts, GrowthPart *part, int *group, int *set, Vec3 *position, const u16 *item,

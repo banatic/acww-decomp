@@ -64,9 +64,9 @@ int Calendar_PartOfDay(void);
 void Calendar_Today(Date *today);
 int Calendar_TodayWeekday(void);
 void Calendar_Now(Time *now);
-int Calendar_PeriodA(const Date *date);
-int Calendar_PeriodB(const Date *date);
-int Calendar_PeriodAOf(const DateTime *when);
-int Calendar_PeriodBOf(const DateTime *when);
+int Calendar_WeatherPeriod(const Date *date);
+int Calendar_FoliagePeriod(const Date *date);
+int Calendar_WeatherPeriodOf(const DateTime *when);
+int Calendar_FoliagePeriodOf(const DateTime *when);
 
 #endif

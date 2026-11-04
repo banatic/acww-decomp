@@ -34,7 +34,7 @@ extern const Vec3 *data_021d52d4;
 extern const EffectSystemSet data_020d0f88[];
 /* The particle file, "/spl/spl.spa". */
 extern const char data_020e276c[];
-/* The tints by the period of the day (TownRecord_Period): one for the emitters that take the
+/* The tints by the foliage period of the year (TownRecord_Period): one for the emitters that take the
  * period's tint, and four, chosen by the emitter's user byte, for those that take their own. */
 extern const s16 data_020e26bc[];
 extern const s16 *const data_020e2488[];
@@ -508,14 +508,14 @@ void EffectSystem_TintEmitter(ParticleEmitter *emitter)
 }
 CLEAN_AS(func_02090db0, EffectSystem_TintEmitter)
 
-/* func_02090ebc: the tint of the period of the day. */
+/* func_02090ebc: the tint of the foliage period of the year. */
 int EffectSystem_PeriodColor(void)
 {
     return data_020e26bc[TownRecord_Period()];
 }
 CLEAN_AS(func_02090ebc, EffectSystem_PeriodColor)
 
-/* func_02090ed4: the tint of the period of the day from the emitter's own table (its user
+/* func_02090ed4: the tint of the foliage period of the year from the emitter's own table (its user
  * byte, 0-3). */
 short EffectSystem_PeriodColorOf(ParticleEmitter *emitter)
 {

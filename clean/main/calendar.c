@@ -7,8 +7,9 @@
 
 #include "clean.h"
 
-/* The last day of each period of the year, as (month << 8) | day, in the game's own tables.
- * What the game uses the two sets of periods for is not known yet. */
+/* The last day of each period of the year, as (month << 8) | day, in the game's own tables:
+ * the 19 weather periods (the odds of each sky pattern, snow) and the 23 foliage periods (the
+ * town's grass palette, its tree looks and its effects' tints, kept in the town record). */
 extern const u16 data_020d1b04[19];
 extern const u16 data_020d1b2c[23];
 
@@ -170,34 +171,34 @@ static int period(const u16 *ends, int count, const Date *date)
 }
 
 /* func_0209dc10 */
-int Calendar_PeriodA(const Date *date)
+int Calendar_WeatherPeriod(const Date *date)
 {
     return period(data_020d1b04, 19, date);
 }
-CLEAN_AS(func_0209dc10, Calendar_PeriodA)
+CLEAN_AS(func_0209dc10, Calendar_WeatherPeriod)
 
 /* func_0209dc74 */
-int Calendar_PeriodB(const Date *date)
+int Calendar_FoliagePeriod(const Date *date)
 {
     return period(data_020d1b2c, 23, date);
 }
-CLEAN_AS(func_0209dc74, Calendar_PeriodB)
+CLEAN_AS(func_0209dc74, Calendar_FoliagePeriod)
 
 /* func_0209dbe4 */
-int Calendar_PeriodAOf(const DateTime *when)
+int Calendar_WeatherPeriodOf(const DateTime *when)
 {
     Date date = {when->day, when->month, when->year, 0};
-    return Calendar_PeriodA(&date);
+    return Calendar_WeatherPeriod(&date);
 }
-CLEAN_AS(func_0209dbe4, Calendar_PeriodAOf)
+CLEAN_AS(func_0209dbe4, Calendar_WeatherPeriodOf)
 
 /* func_0209dc48 */
-int Calendar_PeriodBOf(const DateTime *when)
+int Calendar_FoliagePeriodOf(const DateTime *when)
 {
     Date date = {when->day, when->month, when->year, 0};
-    return Calendar_PeriodB(&date);
+    return Calendar_FoliagePeriod(&date);
 }
-CLEAN_AS(func_0209dc48, Calendar_PeriodBOf)
+CLEAN_AS(func_0209dc48, Calendar_FoliagePeriodOf)
 
 static_assert(sizeof(Date) == 4 && offsetof(Date, year) == 2, "Date layout");
 static_assert(sizeof(RtcDate) == 16 && offsetof(RtcTime, minute) == 4, "clock layout");

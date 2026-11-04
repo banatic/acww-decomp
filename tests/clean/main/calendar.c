@@ -162,12 +162,12 @@ static void a_day(DiffRng *rng, uint32_t args[4])
 
 static uint32_t period_a(const uint32_t args[4])
 {
-    return (uint32_t) Calendar_PeriodA(date_at(args[0]));
+    return (uint32_t) Calendar_WeatherPeriod(date_at(args[0]));
 }
 
 static uint32_t period_b(const uint32_t args[4])
 {
-    return (uint32_t) Calendar_PeriodB(date_at(args[0]));
+    return (uint32_t) Calendar_FoliagePeriod(date_at(args[0]));
 }
 
 static void a_date_time(DiffRng *rng, uint32_t args[4])
@@ -185,12 +185,12 @@ static void a_date_time(DiffRng *rng, uint32_t args[4])
 
 static uint32_t period_a_of(const uint32_t args[4])
 {
-    return (uint32_t) Calendar_PeriodAOf((const DateTime *) (uintptr_t) args[0]);
+    return (uint32_t) Calendar_WeatherPeriodOf((const DateTime *) (uintptr_t) args[0]);
 }
 
 static uint32_t period_b_of(const uint32_t args[4])
 {
-    return (uint32_t) Calendar_PeriodBOf((const DateTime *) (uintptr_t) args[0]);
+    return (uint32_t) Calendar_FoliagePeriodOf((const DateTime *) (uintptr_t) args[0]);
 }
 
 DIFF_CHECK(func_0209dd9c, "main", 0x0209dd9c | 1, 32, 0, two_dates, is_on_or_after)
