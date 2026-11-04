@@ -334,7 +334,7 @@ void OrderCatalog_WipeIn(OrderCatalog *self)
 }
 CLEAN_AS(func_ov142_0229bc9c, OrderCatalog_WipeIn)
 
-/* func_ov142_0229bcfc (state 0): the layers set up, the graphics loaded, list 0 shown, the wipe
+/* func_ov142_0229bcfc (state 0): the layers set up, the graphics loaded, the furniture list shown, the wipe
  * in started covered on window 2 (layers 2 and 8, 4 frames, margin 0x18), layers 6 and 4 shown
  * and following it, the panel in layout 5 (message 0x65); state 1. */
 void OrderCatalog_StartWipeIn(OrderCatalog *self)

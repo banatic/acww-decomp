@@ -650,7 +650,7 @@ int OrderCatalog_CollectEveryFourth(OrderCatalog *self, u16 *out, u16 first, int
 }
 CLEAN_AS(func_ov142_0229a76c, OrderCatalog_CollectEveryFourth)
 
-/* func_ov142_0229a7e0: list 5, from its three ranges in turn. */
+/* func_ov142_0229a7e0: the headwear list, from its three ranges in turn. */
 void OrderCatalog_ListHeadwear(OrderCatalog *self)
 {
     self->listed[ORDER_CATALOG_CATEGORY_HEADWEAR] = 0;
@@ -727,8 +727,8 @@ void OrderCatalog_ListWallpaper(OrderCatalog *self)
 }
 CLEAN_AS(func_ov142_0229a988, OrderCatalog_ListWallpaper)
 
-/* Whether `code` is in a range another list (or no list) takes, which list 0 leaves out. */
-static int catalog_left_out_of_list0(u16 code)
+/* Whether `code` is in a range another list (or no list) takes, which the furniture list leaves out. */
+static int catalog_left_out_of_furniture_list(u16 code)
 {
     static const u16 ranges[][2] = {
         {0x45dc, 0x47d7}, {0x4384, 0x4463}, {0x42a4, 0x4383}, {0x3e24, 0x3ea3}, {0x3984, 0x3d83},
@@ -742,10 +742,10 @@ static int catalog_left_out_of_list0(u16 code)
     return 0;
 }
 
-/* func_ov142_0229a9bc: list 0: every fourth code of the 0x6e9 from 0x3000 but those the other
+/* func_ov142_0229a9bc: the furniture list: every fourth code of the 0x6e9 from 0x3000 but those the other
  * lists take and 0x42a4-0x4463, as OrderCatalog_CollectEveryFourth counts and collects them.
  * QUIRK: the list is not bounded: 0x436 codes pass the ranges for its 0x400 entries, so a record
- * with more of them listed would write on into list 1. */
+ * with more of them listed would write on into the wallpaper list. */
 void OrderCatalog_ListFurniture(OrderCatalog *self)
 {
     int found = 0;
@@ -755,7 +755,7 @@ void OrderCatalog_ListFurniture(OrderCatalog *self)
     u8 *record = PlayerRecords_Current();
     for (int i = 0; i < 0x6e9; i++) {
         ItemCode item = code;
-        if (!catalog_left_out_of_list0(code) && ItemTraits_FlagBit3(&item) != 0) {
+        if (!catalog_left_out_of_furniture_list(code) && ItemTraits_FlagBit3(&item) != 0) {
             self->listed[ORDER_CATALOG_CATEGORY_FURNITURE] = (u16) (self->listed[ORDER_CATALOG_CATEGORY_FURNITURE] + 1);
             if (ItemRecord_Has((ItemRecord *) (void *) PlayerRecord_ItemRecord(record), &item) != 0) {
                 *(u16 *) catalog_at(self->furniture_list, 2 * found) = code;
