@@ -587,24 +587,25 @@ void Letter_MarkDelivered(Letter *letter)
 }
 CLEAN_AS(func_02066478, Letter_MarkDelivered)
 
-/* func_020664a8: a received letter's state moved on: 2 to 3, 5 to 6, 7 to 8; others kept. */
-void Letter_AdvanceReceived(Letter *letter)
+/* func_020664a8: a received letter marked read as it is shown: 2 to 3, 5 to 6, 7 to 8; others
+ * kept. */
+void Letter_MarkRead(Letter *letter)
 {
     switch (Letter_State(letter)) {
         case LETTER_STATE_RECEIVED:
-            Letter_SetState(letter, LETTER_STATE_RECEIVED_NEXT);
+            Letter_SetState(letter, LETTER_STATE_RECEIVED_READ);
             break;
         case LETTER_STATE_BOTTLE:
-            Letter_SetState(letter, LETTER_STATE_BOTTLE_NEXT);
+            Letter_SetState(letter, LETTER_STATE_BOTTLE_READ);
             break;
         case LETTER_STATE_BETWEEN_VILLAGERS:
-            Letter_SetState(letter, LETTER_STATE_BETWEEN_VILLAGERS_NEXT);
+            Letter_SetState(letter, LETTER_STATE_BETWEEN_VILLAGERS_READ);
             break;
         default:
             break;
     }
 }
-CLEAN_AS(func_020664a8, Letter_AdvanceReceived)
+CLEAN_AS(func_020664a8, Letter_MarkRead)
 
 /* func_020664e0: a written letter's state moved on (1 to 2, 4 to 5), and marked 1; others are
  * not touched. */

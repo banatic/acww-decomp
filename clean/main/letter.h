@@ -52,12 +52,12 @@ enum LetterState {
     LETTER_STATE_NONE = 0, /* no letter: an empty place */
     LETTER_STATE_WRITTEN = 1,
     LETTER_STATE_RECEIVED = 2,
-    LETTER_STATE_RECEIVED_NEXT = 3,
+    LETTER_STATE_RECEIVED_READ = 3,
     LETTER_STATE_BOTTLE_WRITTEN = 4,
     LETTER_STATE_BOTTLE = 5,
-    LETTER_STATE_BOTTLE_NEXT = 6,
+    LETTER_STATE_BOTTLE_READ = 6,
     LETTER_STATE_BETWEEN_VILLAGERS = 7,
-    LETTER_STATE_BETWEEN_VILLAGERS_NEXT = 8,
+    LETTER_STATE_BETWEEN_VILLAGERS_READ = 8,
 };
 
 /* Who a letter is to or from (0x20 bytes). */
@@ -150,7 +150,7 @@ void Letter_SetVillagerToPlayer(Letter *letter, void *header, void *body, void *
                                 const NpcId *sender, const DesignCreator *player);
 void Letter_SetTexts(Letter *letter, const int *first_line, void *header, void *body, void *footer);
 void Letter_MarkDelivered(Letter *letter);
-void Letter_AdvanceReceived(Letter *letter);
+void Letter_MarkRead(Letter *letter);
 void Letter_AdvanceWritten(Letter *letter);
 void Letter_AddressToSelf(Letter *letter);
 void Letter_AddressToPlayer(Letter *letter, int index);

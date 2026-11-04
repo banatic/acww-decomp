@@ -2333,14 +2333,14 @@ void MailboxScene_LetterWipeIn(MailboxScene *self)
 CLEAN_AS(func_ov106_0229ebcc, MailboxScene_LetterWipeIn)
 
 /* func_ov106_0229ec0c (state 7): the letter of the place whose choice was open is shown: its
- * paper recorded (MailboxScene_RecordPaper), Letter_AdvanceReceived moves its state on, the
+ * paper recorded (MailboxScene_RecordPaper), Letter_MarkRead moves its state on, the
  * letter view shows it (layers 3 and 4, priority 1), the two layers shown and wiping in on window
  * 2 (state 8), and the label button is shown with message 0x88 and drawn. */
 void MailboxScene_ShowLetter(MailboxScene *self)
 {
     Letter *letter = MailboxScene_PlaceLetter(self, self->slot);
     MailboxScene_RecordPaper(self, letter);
-    Letter_AdvanceReceived(letter);
+    Letter_MarkRead(letter);
     LetterView_Show(&self->view, letter, MAILBOX_SCENE_TEXT_LAYER, MAILBOX_SCENE_MAILBOX_LAYER, 1);
     MenuScene_StartWipeCoveredOnWindow2(mbx_scene(self), 3, 0, 0, MAILBOX_SCENE_WIPE_MARGIN);
     DisplayLayer_Show(MAILBOX_SCENE_TEXT_LAYER);

@@ -500,15 +500,15 @@ void PocketsLetters_DimByState(PocketsLetters *letters, unsigned int states)
                 }
                 break;
             case LETTER_STATE_RECEIVED:
-            case LETTER_STATE_RECEIVED_NEXT:
+            case LETTER_STATE_RECEIVED_READ:
             case LETTER_STATE_BOTTLE:
-            case LETTER_STATE_BOTTLE_NEXT:
+            case LETTER_STATE_BOTTLE_READ:
                 if (received) {
                     PocketsLetters_DimPlace(letters, place);
                 }
                 break;
             case LETTER_STATE_BETWEEN_VILLAGERS:
-            case LETTER_STATE_BETWEEN_VILLAGERS_NEXT:
+            case LETTER_STATE_BETWEEN_VILLAGERS_READ:
                 if (villagers) {
                     PocketsLetters_DimPlace(letters, place);
                 }
@@ -688,7 +688,7 @@ TextLabel *PocketsLetters_SetPopupText(PocketsLetters *letters, Popup *popup, Le
         case LETTER_STATE_WRITTEN:
         case LETTER_STATE_BOTTLE_WRITTEN:
         case LETTER_STATE_BETWEEN_VILLAGERS:
-        case LETTER_STATE_BETWEEN_VILLAGERS_NEXT:
+        case LETTER_STATE_BETWEEN_VILLAGERS_READ:
             SlidingWindow_SetText((SlidingWindow *) (void *) popup, (struct TextObject *) (void *) &texts.to);
             break;
         default:

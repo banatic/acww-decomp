@@ -1468,13 +1468,13 @@ void CarriedLetters_LetterWipeIn(CarriedLetters *self)
 CLEAN_AS(func_ov103_0229daa4, CarriedLetters_LetterWipeIn)
 
 /* func_ov103_0229daf4 (state 5): the letter of the place whose choice was open is shown:
- * Letter_AdvanceReceived moves its state on, the letter view shows it (layers 3 and 4, priority
+ * Letter_MarkRead moves its state on, the letter view shows it (layers 3 and 4, priority
  * 1), the two layers shown and wiping in on window 2 (state 6), and the label button is shown with
  * message 0x88 and drawn. */
 void CarriedLetters_ShowLetter(CarriedLetters *self)
 {
     Letter *letter = CarriedLetters_PlaceLetter(self, self->slot);
-    Letter_AdvanceReceived(letter);
+    Letter_MarkRead(letter);
     LetterView_Show(&self->view, letter, CARRIED_LETTERS_TEXT_LAYER, CARRIED_LETTERS_PAPER_LAYER, 1);
     MenuScene_StartWipeCoveredOnWindow2(carried_scene(self), 3, 0, 0, CARRIED_LETTERS_WIPE_MARGIN);
     DisplayLayer_Show(CARRIED_LETTERS_TEXT_LAYER);

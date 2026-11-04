@@ -4315,7 +4315,7 @@ CLEAN_AS(func_ov096_022a1610, PocketsScreen_WipeInReader)
 void PocketsScreen_OpenReader(PocketsScreen *self)
 {
     Letter *letter = (Letter *) (uintptr_t) PocketsScreen_SlotLetter(self);
-    Letter_AdvanceReceived(letter);
+    Letter_MarkRead(letter);
     LetterView_Show((LetterView *) (void *) self->unk_2a74, letter, READER_LAYER, READER_UNDER_LAYER, 1);
     MenuScene_StartWipeCoveredOnWindow2(scene_of(self), READER_LAYER, 0, 0, POCKETS_WIPE_MARGIN);
     DisplayLayer_Show(READER_LAYER);

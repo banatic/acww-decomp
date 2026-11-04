@@ -2404,13 +2404,13 @@ void LetterSend_LetterWipeIn(LetterSendScene *self)
 CLEAN_AS(func_ov104_0229ec0c, LetterSend_LetterWipeIn)
 
 /* func_ov104_0229ec4c (state 7): the letter of the place whose choice was open is shown:
- * Letter_AdvanceReceived moves its state on, the letter view shows it (layers 3 and 4, priority
+ * Letter_MarkRead moves its state on, the letter view shows it (layers 3 and 4, priority
  * 1), the two layers shown and wiping in on window 2 (state 8), and the label button is shown
  * with message 0x88 and drawn. */
 void LetterSend_ShowLetter(LetterSendScene *self)
 {
     Letter *letter = LetterSend_PlaceLetter(self, self->slot);
-    Letter_AdvanceReceived(letter);
+    Letter_MarkRead(letter);
     LetterView_Show(&self->view, letter, LETTER_SEND_TEXT_LAYER, LETTER_SEND_PAGE_LAYER, 1);
     MenuScene_StartWipeCoveredOnWindow2(lsend_scene(self), 3, 0, 0, LETTER_SEND_WIPE_MARGIN);
     DisplayLayer_Show(LETTER_SEND_TEXT_LAYER);
