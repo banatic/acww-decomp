@@ -263,8 +263,8 @@ void PocketsBox_Confirm(PocketsBox *self)
     int count = PocketsBox_Compact(self, self->box);
 
     switch (GroupParams_Mode()) {
-        case POCKETS_BOX_MODE_1D:
-        case POCKETS_BOX_MODE_1E:
+        case POCKETS_BOX_MODE_SELL_NOOK:
+        case POCKETS_BOX_MODE_SELL_TAILOR:
             if (count == 0) {
                 GroupParams_SetC4C(0);
                 break;
@@ -272,7 +272,7 @@ void PocketsBox_Confirm(PocketsBox *self)
             GroupParams_SetC4C(1);
             Pockets_SetList(self->box);
             break;
-        case POCKETS_BOX_MODE_1F:
+        case POCKETS_BOX_MODE_LOST_AND_FOUND:
             for (int i = 0; i < POCKETS_BOX_SLOTS; i++) {
                 if (self->box[i] == ITEM_CODE_NONE) {
                     continue;
@@ -295,7 +295,7 @@ void PocketsBox_Confirm(PocketsBox *self)
             MI_CpuCopy8(self->box, data_021f3a68, sizeof self->box);
             PocketsBox_SendBox(self, PLAYER_MESSAGE_BYTES_A);
             break;
-        case POCKETS_BOX_MODE_20:
+        case POCKETS_BOX_MODE_RECYCLE_BIN:
             MI_CpuCopy8(self->box, data_021f3a86, sizeof self->box);
             PocketsBox_SendBox(self, PLAYER_MESSAGE_BYTES_B);
             GroupParams_SetC4C(1);
@@ -964,7 +964,7 @@ int PocketsBox_SlotMustLock(PocketsBox *self, int place)
     u16 code = (u16) item;
 
     switch (GroupParams_Mode()) {
-        case POCKETS_BOX_MODE_1E:
+        case POCKETS_BOX_MODE_SELL_TAILOR:
             if (in_range(code, 0x1492, 0x14fd)) {
                 return 1;
             }
@@ -974,7 +974,7 @@ int PocketsBox_SlotMustLock(PocketsBox *self, int place)
                 return 0;
             }
             return 1;
-        case POCKETS_BOX_MODE_1D:
+        case POCKETS_BOX_MODE_SELL_NOOK:
             if (in_range(code, 0x1492, 0x14fd)) {
                 return 1;
             }
@@ -982,9 +982,9 @@ int PocketsBox_SlotMustLock(PocketsBox *self, int place)
                 return 1;
             }
             return 0;
-        case POCKETS_BOX_MODE_1F:
+        case POCKETS_BOX_MODE_LOST_AND_FOUND:
             return 1;
-        case POCKETS_BOX_MODE_20:
+        case POCKETS_BOX_MODE_RECYCLE_BIN:
             if (PocketsItem_InLetterRefusedRanges((unsigned int) item) == 0) {
                 return 0;
             }

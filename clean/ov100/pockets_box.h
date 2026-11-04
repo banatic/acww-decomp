@@ -2,8 +2,11 @@
  * scene (ov002/menu_scene.h) built on the same three objects of ov094's as the pockets scenes
  * of overlays 096 and 099 (ov096/pockets_screen.h, ov099/pockets_view.h). Its grid object holds
  * 30 slots here: slots 0-14 are the current player's 15 pocket slots, slots 15-29 a list of 15
- * item codes the scene keeps at `box` (put in the grid by func_ov094_0229ace4). "Box" is only a
- * name for that list: what it stands for in the game is not known.
+ * item codes the scene keeps at `box` (put in the grid by func_ov094_0229ace4). The box is what
+ * the mode says (PocketsBoxMode, by the art it loads: "menu/inventory/b_itm_sell.bch" with
+ * "tanu.bch" or "kinu.bch", "lost.bch", "garb.bch"): the items put up for sale to Nook or to the
+ * Able Sisters, the town hall's lost and found or its recycle bin. Overlay 92's dispatcher opens
+ * this scene for the two sales; overlay 110 (ov110/public_box.h) is its twin for the other two.
  *
  * The cursor walks the pockets (3 rows of 5), the box above them (3 rows of 5) and two places
  * to the right of both, which end the scene: PocketsBox_Confirm and PocketsBox_Cancel. Items are
@@ -68,11 +71,15 @@ enum PocketsBoxHeldKind {
 
 /* GroupParams_Mode's values this scene is opened in (func_ov100_0229e400 sets the box up). */
 enum PocketsBoxMode {
-    POCKETS_BOX_MODE_1D = 0x1d, /* the box starts empty; given to Pockets_SetList at the end */
-    POCKETS_BOX_MODE_1E = 0x1e, /* the same, with another rule for locked slots */
-    POCKETS_BOX_MODE_1F = 0x1f, /* the box starts as list A; every pocket slot is locked, and
-                                 * the items taken out go to Pockets_SetList at the end */
-    POCKETS_BOX_MODE_20 = 0x20  /* the box starts as list B */
+    /* Items to sell at Nook's ("tanu.bch"): the box starts empty; given to Pockets_SetList at the end. */
+    POCKETS_BOX_MODE_SELL_NOOK = 0x1d,
+    /* Items to sell at the Able Sisters' ("kinu.bch"): the same, with another rule for locked slots. */
+    POCKETS_BOX_MODE_SELL_TAILOR = 0x1e,
+    /* The lost and found ("lost.bch"): the box starts as list A; every pocket slot is locked, and the
+     * items taken out go to Pockets_SetList at the end. */
+    POCKETS_BOX_MODE_LOST_AND_FOUND = 0x1f,
+    /* The recycle bin ("garb.bch"): the box starts as list B. */
+    POCKETS_BOX_MODE_RECYCLE_BIN = 0x20
 };
 
 /* The scene's states (MenuScene.state), run by PocketsBox_RunState in phase 1. */

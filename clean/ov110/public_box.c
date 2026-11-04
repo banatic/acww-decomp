@@ -262,8 +262,8 @@ void PublicBox_Finish(PublicBox *self, int with_delay)
     int count = PublicBox_Compact(self, self->box);
 
     switch (mode) {
-        case PUBLIC_BOX_MODE_1D:
-        case PUBLIC_BOX_MODE_1E:
+        case PUBLIC_BOX_MODE_SELL_NOOK:
+        case PUBLIC_BOX_MODE_SELL_TAILOR:
             if (count == 0) {
                 GroupParams_SetC4C(0);
                 break;
@@ -939,7 +939,7 @@ int PublicBox_SlotMustLock(PublicBox *self, int place)
     u16 code = (u16) item;
 
     switch (GroupParams_Mode()) {
-        case PUBLIC_BOX_MODE_1E:
+        case PUBLIC_BOX_MODE_SELL_TAILOR:
             if (pbox_in_range(code, 0x1492, 0x14fd)) {
                 return 1;
             }
@@ -950,7 +950,7 @@ int PublicBox_SlotMustLock(PublicBox *self, int place)
                 return 0;
             }
             return 1;
-        case PUBLIC_BOX_MODE_1D:
+        case PUBLIC_BOX_MODE_SELL_NOOK:
             if (pbox_in_range(code, 0x1492, 0x14fd)) {
                 return 1;
             }

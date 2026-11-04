@@ -622,11 +622,11 @@ void PublicBox_LoadBoxLayer(PublicBox *self)
     const char *palettes = NULL;
     const char *chars = NULL;
     switch (GroupParams_Mode()) {
-        case PUBLIC_BOX_MODE_1D:
+        case PUBLIC_BOX_MODE_SELL_NOOK:
             palettes = data_ov110_0229ed5c;
             chars = data_ov110_0229ed74;
             break;
-        case PUBLIC_BOX_MODE_1E:
+        case PUBLIC_BOX_MODE_SELL_TAILOR:
             palettes = data_ov110_0229ed8c;
             chars = data_ov110_0229eda4;
             break;
@@ -736,8 +736,8 @@ void PublicBox_Setup(PublicBox *self)
     PagedChoice_Init(pbox_choice(self), PUBLIC_BOX_TEXT_LAYER, 1, NULL);
     self->label_count = 0;
     switch (GroupParams_Mode()) {
-        case PUBLIC_BOX_MODE_1D:
-        case PUBLIC_BOX_MODE_1E:
+        case PUBLIC_BOX_MODE_SELL_NOOK:
+        case PUBLIC_BOX_MODE_SELL_TAILOR:
             for (int i = 0; i < PUBLIC_BOX_SLOTS; i++) {
                 self->box[i] = ITEM_CODE_NONE;
             }

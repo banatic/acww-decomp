@@ -75,10 +75,10 @@ enum PublicBoxHeldKind {
 
 /* GroupParams_Mode's values the scene knows (PublicBox_Setup, PublicBox_Finish). */
 enum PublicBoxMode {
-    PUBLIC_BOX_MODE_1D = 0x1d,     /* the box starts empty (overlay 100's) */
-    PUBLIC_BOX_MODE_1E = 0x1e,     /* the same, with another rule for locked slots */
-    PUBLIC_BOX_MODE_LOST = 0x1f,   /* the box is list A, the lost and found */
-    PUBLIC_BOX_MODE_RECYCLE = 0x20 /* the box is list B, the recycle bin */
+    PUBLIC_BOX_MODE_SELL_NOOK = 0x1d,   /* items to sell at Nook's: the box starts empty (overlay 100's) */
+    PUBLIC_BOX_MODE_SELL_TAILOR = 0x1e, /* the Able Sisters': the same, with another rule for locked slots */
+    PUBLIC_BOX_MODE_LOST = 0x1f,        /* the box is list A, the lost and found */
+    PUBLIC_BOX_MODE_RECYCLE = 0x20      /* the box is list B, the recycle bin */
 };
 
 /* The values of the choice rows (`action`), run by PublicBox_RunAction. */

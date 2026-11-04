@@ -785,19 +785,19 @@ void PocketsBox_LoadLayers(PocketsBox *self)
     const char *palette = NULL;
     const char *chars = NULL;
     switch (GroupParams_Mode()) {
-        case POCKETS_BOX_MODE_1D:
+        case POCKETS_BOX_MODE_SELL_NOOK:
             palette = data_ov100_0229ed5c;
             chars = data_ov100_0229ed74;
             break;
-        case POCKETS_BOX_MODE_1E:
+        case POCKETS_BOX_MODE_SELL_TAILOR:
             palette = data_ov100_0229ed8c;
             chars = data_ov100_0229eda4;
             break;
-        case POCKETS_BOX_MODE_1F:
+        case POCKETS_BOX_MODE_LOST_AND_FOUND:
             palette = data_ov100_0229edbc;
             chars = data_ov100_0229edd4;
             break;
-        case POCKETS_BOX_MODE_20:
+        case POCKETS_BOX_MODE_RECYCLE_BIN:
             palette = data_ov100_0229edec;
             chars = data_ov100_0229ee04;
             break;
@@ -901,17 +901,17 @@ void PocketsBox_Setup(PocketsBox *self)
     self->label_count = 0;
 
     switch (GroupParams_Mode()) {
-        case POCKETS_BOX_MODE_1D:
-        case POCKETS_BOX_MODE_1E:
+        case POCKETS_BOX_MODE_SELL_NOOK:
+        case POCKETS_BOX_MODE_SELL_TAILOR:
             for (int i = 0; i < POCKETS_BOX_SLOTS; i++) {
                 self->box[i] = ITEM_CODE_NONE;
             }
             PocketsBox_SetFlags(self, POCKETS_BOX_FLAG_STARTED_EMPTY);
             break;
-        case POCKETS_BOX_MODE_1F:
+        case POCKETS_BOX_MODE_LOST_AND_FOUND:
             MI_CpuCopy8(data_021f3a68, self->box, sizeof self->box);
             break;
-        case POCKETS_BOX_MODE_20:
+        case POCKETS_BOX_MODE_RECYCLE_BIN:
             MI_CpuCopy8(data_021f3a86, self->box, sizeof self->box);
             break;
     }
