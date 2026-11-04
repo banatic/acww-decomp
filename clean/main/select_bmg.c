@@ -26,7 +26,7 @@ typedef int (*SelectBmgTextCapacity)(SelectBmgText *text);
  * read (BmgFile_LoadMessage).
  * QUIRK: whether the file opened, and whether the message was read, is not looked at: the
  * message is looked for and the entry (as it is then) copied either way. */
-int SelectBmg_LoadText(SelectBmgText *text, const char *path, const u8 *index, Block020a8248 *record)
+int SelectBmg_LoadText(SelectBmgText *text, const char *path, const u8 *index, MessageEntry *record)
 {
     char *chars = ((SelectBmgTextChars) (uintptr_t) text->vtable->buffer)(text);
     int capacity = ((SelectBmgTextCapacity) (uintptr_t) text->vtable->capacity)(text);
@@ -34,7 +34,7 @@ int SelectBmg_LoadText(SelectBmgText *text, const char *path, const u8 *index, B
     BmgFile_Open(&data_021f4670.file, path);
     int loaded = BmgFile_LoadMessage(&data_021f4670.file, index);
     void *entry = BmgFile_Entry(&data_021f4670.file);
-    Block020a8248_Copy(record, entry);
+    MessageEntry_Copy(record, entry);
     BmgFile_Close(&data_021f4670.file);
     SelectBmg_ClearBuffer(&data_021f4670);
     return loaded;

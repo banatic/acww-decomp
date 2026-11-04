@@ -639,7 +639,7 @@ TalkObject *TalkObject_Destruct(TalkObject *talk)
     TalkVoice_Destruct(&talk->voice);
     __cxa_vec_cleanup(talk->values, TALK_OBJECT_VALUES, sizeof(MessagePart), (void (*)(void *))(uintptr_t) func_020a8210);
     __cxa_vec_cleanup(talk->parts, TALK_OBJECT_PARTS, sizeof(MessagePart), (void (*)(void *))(uintptr_t) func_020a8210);
-    Block020a8248_Destruct(&talk->unk_14ac);
+    MessageEntry_Destruct(&talk->entry);
     MessageWalkRun_Destruct(&talk->run);
     TalkTags_Destruct(&talk->walker);
     TalkMessageFile_Destruct((TalkMessageFile *) (void *) talk->unk_b14);
@@ -678,7 +678,7 @@ TalkObject *TalkObject_Construct(TalkObject *talk)
     TalkTags_Construct(&talk->walker, (u8 *) talk, &talk->page);
     MessageWalkRun_Construct(&talk->run, &talk->walker.base);
     talk->receiver = NULL;
-    Block020a8248_Construct(&talk->unk_14ac);
+    MessageEntry_Construct(&talk->entry);
     __cxa_vec_ctor(talk->parts, TALK_OBJECT_PARTS, sizeof(MessagePart), (void (*)(void *))(uintptr_t) func_020a8228,
                    (void (*)(void *))(uintptr_t) func_020a8210);
     __cxa_vec_ctor(talk->values, TALK_OBJECT_VALUES, sizeof(MessagePart), (void (*)(void *))(uintptr_t) func_020a8228,
@@ -851,7 +851,7 @@ void TalkObject_LoadMessage(TalkObject *talk)
     if (BmgFile_Open(file, path)) {
         BmgFile_LoadMessage(file, &talk->receiver->base.message);
     }
-    Block020a8248_Copy(&talk->unk_14ac, BmgFile_Entry(file));
+    MessageEntry_Copy(&talk->entry, BmgFile_Entry(file));
     BmgFile_Close(file);
 }
 CLEAN_AS(func_0206726c, TalkObject_LoadMessage)
@@ -942,13 +942,13 @@ void TalkObject_BeginMessage(TalkObject *talk)
     talk->unk_1e95 = 1;
     talk->unk_1e94 = 1;
     talk->unk_1e96 = 0;
-    TalkPage_SetCentred(&talk->page, Block020a8248_FlagOfKind(&talk->unk_14ac) == 1);
-    int speed = (int) (uintptr_t) Block020a8248_ValueOfKind(&talk->unk_14ac);
+    TalkPage_SetCentred(&talk->page, MessageEntry_CentredOfKind(&talk->entry) == 1);
+    int speed = (int) (uintptr_t) MessageEntry_SpeedOfKind(&talk->entry);
     TalkTags_SetSpeed(&talk->walker, speed);
     talk->voice.unk_1c = speed == 1;
 
     u8 next = 0;
-    Block020a8248_GetByte08(&next, &talk->unk_14ac);
+    MessageEntry_GetNext(&next, &talk->entry);
     TalkObject_SetMessage(talk, &next, NULL);
     TalkObject_TellMessageBegun(talk);
     TalkObject_PlayMessageSound(talk);
@@ -964,7 +964,7 @@ CLEAN_AS(func_0206741c, TalkObject_BeginMessage)
 /* func_020674d8: the sound of the message (its entry's byte 9), when it has one. */
 void TalkObject_PlayMessageSound(TalkObject *talk)
 {
-    int sound = Block020a8248_Byte09(&talk->unk_14ac);
+    int sound = MessageEntry_Sound(&talk->entry);
     if (sound < TALK_OBJECT_MESSAGE_SOUNDS && data_020cce84[sound] != 0) {
         SoundSys_PlaySe(data_020cce84[sound]);
     }
@@ -978,7 +978,7 @@ void TalkObject_TellAnswer(TalkObject *talk)
     if (talk->unk_1e96 == 0) {
         return;
     }
-    int answer = Block020a8248_Byte07(TalkAnswers_PickedRecord(&talk->answers));
+    int answer = MessageEntry_EndValue(TalkAnswers_PickedEntry(&talk->answers));
     talk_object_tell(talk, TALK_OBJECT_SLOT_ANSWER, answer);
     talk->unk_1e96 = 0;
 }
@@ -991,8 +991,8 @@ void TalkObject_TellMessageEnded(TalkObject *talk)
     if (talk->unk_1e95 == 0) {
         return;
     }
-    TalkObject_ChangeFondness(talk, Block020a8248_Byte05(&talk->unk_14ac));
-    talk_object_tell(talk, TALK_OBJECT_SLOT_ENDED, Block020a8248_Byte07(&talk->unk_14ac));
+    TalkObject_ChangeFondness(talk, MessageEntry_Fondness(&talk->entry));
+    talk_object_tell(talk, TALK_OBJECT_SLOT_ENDED, MessageEntry_EndValue(&talk->entry));
     talk->unk_1e95 = 0;
 }
 CLEAN_AS(func_02067540, TalkObject_TellMessageEnded)
@@ -1004,7 +1004,7 @@ void TalkObject_TellMessageBegun(TalkObject *talk)
     if (talk->unk_1e94 == 0) {
         return;
     }
-    talk_object_tell(talk, TALK_OBJECT_SLOT_BEGUN, Block020a8248_Byte06(&talk->unk_14ac));
+    talk_object_tell(talk, TALK_OBJECT_SLOT_BEGUN, MessageEntry_BeginValue(&talk->entry));
     talk->unk_1e94 = 0;
 }
 CLEAN_AS(func_02067588, TalkObject_TellMessageBegun)

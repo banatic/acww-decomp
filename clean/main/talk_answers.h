@@ -9,7 +9,7 @@
 #ifndef CLEAN_MAIN_TALK_ANSWERS_H
 #define CLEAN_MAIN_TALK_ANSWERS_H
 
-#include "block_020a8248.h"
+#include "message_entry.h"
 #include "types.h"
 
 #define TALK_ANSWERS_MAX 5
@@ -27,7 +27,7 @@ typedef struct TalkAnswer {
     u8 pad_01[3];                      /* 0x01 */
     u32 file_name;                     /* 0x04: the address of its select file's name (TalkAnswers_SelectFileName) */
     u8 text[TALK_ANSWERS_TEXT_SIZE];   /* 0x08: its text (an 8-bit text, text_base.h) */
-    Block020a8248 record;              /* 0x64 */
+    MessageEntry entry;                /* 0x64 */
     u8 unk_70;                         /* 0x70: data_021f43ec's byte when cleared */
     char name[TALK_ANSWERS_NAME_SIZE]; /* 0x71: up to 0x19 characters */
     u8 weight;                         /* 0x8b: its share of the slider's 16 steps */
@@ -44,7 +44,7 @@ typedef struct TalkAnswers {
     char picked_name[TALK_ANSWERS_NAME_SIZE]; /* 0x2dd */
     u8 pad_2f7;                               /* 0x2f7 */
     u8 picked_text[TALK_ANSWERS_TEXT_SIZE];   /* 0x2f8 */
-    Block020a8248 picked_record;              /* 0x354 */
+    MessageEntry picked_entry;                /* 0x354 */
     u32 picked_step;                          /* 0x360: the slider's step (0 to 15) it was picked at */
 } TalkAnswers;
 
@@ -53,7 +53,7 @@ void TalkAnswers_PickByLevel(TalkAnswers *answers, int level);
 void TalkAnswers_Pick(TalkAnswers *answers, int index);
 void TalkAnswers_SetCancelToLast(TalkAnswers *answers);
 void TalkAnswers_SetCount(TalkAnswers *answers, int count);
-Block020a8248 *TalkAnswers_PickedRecord(TalkAnswers *answers);
+MessageEntry *TalkAnswers_PickedEntry(TalkAnswers *answers);
 u8 *TalkAnswers_PickedText(TalkAnswers *answers);
 char *TalkAnswers_PickedName(TalkAnswers *answers);
 u8 *TalkAnswers_Picked70(TalkAnswers *answers);
@@ -81,7 +81,7 @@ void TalkAnswers_SetFile(TalkAnswer *answer, int file);
 void TalkAnswers_SetMessage(TalkAnswer *answer, const u8 *message);
 u32 TalkAnswers_SoundKind(TalkAnswer *answer);
 u8 *TalkAnswers_Weight(TalkAnswer *answer);
-Block020a8248 *TalkAnswers_Record(TalkAnswer *answer);
+MessageEntry *TalkAnswers_Entry(TalkAnswer *answer);
 char *TalkAnswers_Name(TalkAnswer *answer);
 u8 *TalkAnswers_Answer70(TalkAnswer *answer);
 struct TextBase *TalkAnswers_Text(TalkAnswer *answer);

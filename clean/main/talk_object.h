@@ -23,7 +23,7 @@
 #ifndef CLEAN_MAIN_TALK_OBJECT_H
 #define CLEAN_MAIN_TALK_OBJECT_H
 
-#include "block_020a8248.h"
+#include "message_entry.h"
 #include "label_box.h"
 #include "mail_text.h"
 #include "message_receiver.h"
@@ -85,7 +85,7 @@ typedef struct TalkObject {
     TalkTagsWalker walker;                  /* 0x13b8 */
     MessageWalkRun run;                     /* 0x149c */
     TalkReceiver *receiver;                 /* 0x14a8: the receiver shown, or NULL */
-    Block020a8248 unk_14ac;                 /* 0x14ac */
+    MessageEntry entry;                     /* 0x14ac */
     MessagePart parts[TALK_OBJECT_PARTS];   /* 0x14b8 */
     MessagePart values[TALK_OBJECT_VALUES]; /* 0x18ac */
     s32 value_kinds[TALK_OBJECT_VALUES];    /* 0x1a1c */

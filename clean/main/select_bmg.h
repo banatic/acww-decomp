@@ -15,7 +15,7 @@
 #ifndef CLEAN_MAIN_SELECT_BMG_H
 #define CLEAN_MAIN_SELECT_BMG_H
 
-#include "block_020a8248.h"
+#include "message_entry.h"
 #include "bmg_file.h"
 #include "text_label.h" /* TextVtable */
 #include "types.h"
@@ -36,7 +36,7 @@ typedef struct SelectBmgText {
     u8 pad_5a[2];
 } SelectBmgText;
 
-int SelectBmg_LoadText(SelectBmgText *text, const char *path, const u8 *index, Block020a8248 *record);
+int SelectBmg_LoadText(SelectBmgText *text, const char *path, const u8 *index, MessageEntry *record);
 char *SelectBmgText_Chars(SelectBmgText *text);
 int SelectBmgText_Capacity(void);
 SelectBmgText *SelectBmgText_Delete(SelectBmgText *text);

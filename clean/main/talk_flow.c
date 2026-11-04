@@ -256,7 +256,7 @@ extern NetSession *data_020ccf94;
  * clears it). */
 #define TALK_FLOW_TEXT_GOING 1
 
-/* The window's kind (Block020a8248_GroupOfKind of the message) for a speaker without a name. */
+/* The window's kind (MessageEntry_WindowOfKind of the message) for a speaker without a name. */
 #define TALK_FLOW_KIND_NO_SPEAKER 5
 
 /* The talk's sound effects: the window opens, the player goes on, the choices follow. */
@@ -400,7 +400,7 @@ void TalkFlow_EnterOpening(TalkObject *talk)
         TalkObject_StartMessage(talk);
     }
 
-    int kind = Block020a8248_GroupOfKind(&talk->unk_14ac);
+    int kind = MessageEntry_WindowOfKind(&talk->entry);
     TalkReceiverName *speaker = TalkReceiver_SpeakerName(talk->receiver);
     const char *name = ((TalkFlowChars *) (uintptr_t) speaker->vtable->buffer)(speaker);
     int style = TalkReceiver_SpeakerStyle(talk->receiver);
