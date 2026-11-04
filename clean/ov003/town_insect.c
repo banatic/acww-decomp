@@ -497,7 +497,7 @@ int TownInsect_PickTile(TownInsect *insect, TownInsectMask *mask, int kind, int 
     if (map == NULL) {
         return 0;
     }
-    if (kind == TOWN_INSECT_KIND_3B) {
+    if (kind == TOWN_INSECT_KIND_ANTS) {
         int left = (int) MainRandom_Below(0x10 - data_ov003_02260548);
         u32 tried = data_ov003_02260550;
         unsigned int acre = 0;
@@ -743,8 +743,8 @@ int TownInsect_KindAllowed(int kind)
         case 0x35:
         case 0x36:
         case 0x37:
-        case TOWN_INSECT_KIND_3A:
-        case TOWN_INSECT_KIND_3B:
+        case TOWN_INSECT_KIND_WASPS:
+        case TOWN_INSECT_KIND_ANTS:
             return 0;
         default:
             return 1;
@@ -778,7 +778,7 @@ int TownInsect_SpecialKind(u8 *kind, u8 *place, int town)
         TownInsect *event = &data_ov003_02260994[1];
         if (data_ov003_02260538 != 0 && event->state == TOWN_INSECT_STATE_ACTIVE &&
             event->action == TOWN_INSECT_ACTION_SHOWN) {
-            *kind = TOWN_INSECT_KIND_3B;
+            *kind = TOWN_INSECT_KIND_ANTS;
             *place = 7;
             return 1;
         }
@@ -1357,8 +1357,8 @@ int TownInsect_HasShadow(int unused, TownInsect *insect)
         case 0x30:
         case 0x32:
         case 0x33:
-        case TOWN_INSECT_KIND_3A:
-        case TOWN_INSECT_KIND_3B:
+        case TOWN_INSECT_KIND_WASPS:
+        case TOWN_INSECT_KIND_ANTS:
             return 0;
         default:
             return 1;
@@ -1424,7 +1424,7 @@ int TownInsect_Catch(u8 id)
     if (kind == 0x35 && action == TOWN_INSECT_ACTION_SHOWN) {
         return 0;
     }
-    if (insect->kind != TOWN_INSECT_KIND_3A && insect->kind != TOWN_INSECT_KIND_3B) {
+    if (insect->kind != TOWN_INSECT_KIND_WASPS && insect->kind != TOWN_INSECT_KIND_ANTS) {
         NNS_G3dMdlSetMdlAlpha(town_insect_model(insect), 0, 0);
         insect->action = TOWN_INSECT_ACTION_HIDDEN;
     }
@@ -1488,11 +1488,11 @@ int TownInsect_Caught(u8 id)
     }
     int kind = insect->kind;
     switch (kind) {
-        case TOWN_INSECT_KIND_3A:
+        case TOWN_INSECT_KIND_WASPS:
             insect->action = 8;
             insect->state = TOWN_INSECT_STATE_ACTIVE;
             return 0xb;
-        case TOWN_INSECT_KIND_3B:
+        case TOWN_INSECT_KIND_ANTS:
             insect->action = 8;
             insect->state = TOWN_INSECT_STATE_ACTIVE;
             return 0x18;
@@ -1598,10 +1598,10 @@ void TownInsect_TakeHeld(int kind, int player)
         case 0x25:
             insect->kind = TOWN_INSECT_KIND_GLOWING;
             break;
-        case TOWN_INSECT_KIND_3A:
+        case TOWN_INSECT_KIND_WASPS:
             insect->kind = 0xb;
             break;
-        case TOWN_INSECT_KIND_3B:
+        case TOWN_INSECT_KIND_ANTS:
             insect->kind = 0x18;
             break;
         default:
@@ -1742,7 +1742,7 @@ int TownInsect_CanBeCaught(int unused, TownInsect *insect)
     if (action == 9 || action == TOWN_INSECT_ACTION_LET_GO) {
         return 1;
     }
-    if (kind == TOWN_INSECT_KIND_3A || kind == TOWN_INSECT_KIND_3B ||
+    if (kind == TOWN_INSECT_KIND_WASPS || kind == TOWN_INSECT_KIND_ANTS ||
         (town_insect_in_session() && LinkGlobal_HoldsScene() == 0)) {
         return 0;
     }
@@ -2374,7 +2374,7 @@ void TownInsect_Run(TownInsectProcess *process, TownInsect *insect, int index, i
         }
         if (town_insect_kind_visibility(kind) == 0) {
             AnimatedModel_StepFrames(town_insect_animated(insect));
-            if (kind == TOWN_INSECT_KIND_3A || kind == TOWN_INSECT_KIND_3B) {
+            if (kind == TOWN_INSECT_KIND_WASPS || kind == TOWN_INSECT_KIND_ANTS) {
                 FrameCtrl_Step(&insect->anim.ctrl);
                 insect->anim.anim->frame = insect->anim.ctrl.frame;
             }
@@ -2492,7 +2492,7 @@ void TownInsect_Load(TownInsectProcess *process, TownInsect *insect, int pool)
     Heap *heap = (Heap *) (uintptr_t) ModelPoolEntry_Heap(entry);
     u8 *file;
     if (pool == 1) {
-        int block = kind == TOWN_INSECT_KIND_3A ? 0 : 1;
+        int block = kind == TOWN_INSECT_KIND_WASPS ? 0 : 1;
         process->blocks[block] = RomFile_Load(path, data_021fbe94, 4, NULL);
         file = process->blocks[block];
     } else {
@@ -2517,7 +2517,7 @@ void TownInsect_Load(TownInsectProcess *process, TownInsect *insect, int pool)
     if (kind == 9) {
         FrameCtrl_Init(&insect->model.frames, 9, FRAME_CTRL_ONCE, 0, 9);
     }
-    if (kind == TOWN_INSECT_KIND_3A || kind == TOWN_INSECT_KIND_3B) {
+    if (kind == TOWN_INSECT_KIND_WASPS || kind == TOWN_INSECT_KIND_ANTS) {
         CLib_SPrintf(path, data_ov003_0223c528, kind);
         loaded = 0;
         if (RomFile_Exists(path) != 0) {
@@ -2560,8 +2560,8 @@ int TownInsect_ProcessSetUp(TownInsectProcess *process)
     ModelPool_Create(&process->pools[1], TOWN_INSECT_EVENT_COUNT, 0x400, 0x40, 0x6e8, func_0205ca30, func_0205ca14, NULL);
     ModelPool_Create(&process->pools[2], TOWN_INSECT_HELD_COUNT, 0x400, 0x40, 0x9c4, func_0205c9fc, func_0205c9e0, NULL);
     if (town_insect_in_session() == 0) {
-        TownInsect_StartEvent(process, TOWN_INSECT_KIND_3A, 0);
-        TownInsect_StartEvent(process, TOWN_INSECT_KIND_3B, 1);
+        TownInsect_StartEvent(process, TOWN_INSECT_KIND_WASPS, 0);
+        TownInsect_StartEvent(process, TOWN_INSECT_KIND_ANTS, 1);
     }
     TownTileMask_Build();
     return 1;

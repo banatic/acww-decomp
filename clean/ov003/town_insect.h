@@ -18,14 +18,14 @@
  * event insect, and its index in the low four bits.
  *
  * A record's kind is the insect's (the item 0x12b0 + kind, 0-0x37), or one of the stand-ins
- * 0x39 (what kind 0x25 is let go as; it carries effect 0x3a), 0x3a and 0x3b (caught as kinds 0xb
- * and 0x18). Its state (TOWN_INSECT_STATE_*) picks what the process's update does with it; its
+ * 0x39 (a firefly, kind 0x25, let go; it carries effect 0x3a), 0x3a the wasps (caught as a wasp,
+ * kind 0xb) and 0x3b the ants (caught as an ant, kind 0x18). Its state (TOWN_INSECT_STATE_*) picks what the process's update does with it; its
  * action (TOWN_INSECT_ACTION_*) is the step of its own behaviour, run by functions of the kind
  * from the table data_ov003_0223c2ac.
  *
  * The town insects are placed from a frame counter of the process (TownInsect_UpdateTown): every
- * 60th frame a new one of the month's lists, every 40th (without a session) one of kind 0x33,
- * every 20th (without a session) the event insect of kind 0x3b. A place is a free tile of a
+ * 60th frame a new one of the month's lists, every 40th (without a session) a fly (kind 0x33),
+ * every 20th (without a session) the event insect of kind 0x3b, the ants. A place is a free tile of a
  * random inner acre of the town (town_tile_mask.h) that suits the kind's place
  * (TownInsect_CountTiles). While this system is in a session, the town insects follow what the
  * session's messages say of them (TownInsect_UpdateLinked). */
@@ -61,9 +61,9 @@
 /* TownInsect.kind */
 #define TOWN_INSECT_NO_KIND (-1)
 #define TOWN_INSECT_KIND_FAILED (-10) /* a town record kept from use after a failed placing */
-#define TOWN_INSECT_KIND_GLOWING 0x39 /* kind 0x25 let go; carries effect 0x3a */
-#define TOWN_INSECT_KIND_3A 0x3a      /* caught as kind 0xb */
-#define TOWN_INSECT_KIND_3B 0x3b      /* caught as kind 0x18 */
+#define TOWN_INSECT_KIND_GLOWING 0x39 /* a firefly (kind 0x25) let go; carries effect 0x3a */
+#define TOWN_INSECT_KIND_WASPS 0x3a   /* caught as a wasp, kind 0xb */
+#define TOWN_INSECT_KIND_ANTS 0x3b    /* caught as an ant, kind 0x18 */
 #define TOWN_INSECT_KINDS 0x3c        /* the kinds the tables of data_ov003_0223c144 cover */
 
 /* TownInsect.state */

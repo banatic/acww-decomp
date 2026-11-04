@@ -34,10 +34,10 @@ static_assert(offsetof(TownInsect, unk_257) == 0x257, "byte 0x257");
 #define INSECT_PATH_TURN_LIMIT 0x38e /* the most a spot turns it in a frame (5 degrees) */
 
 /* The kinds named here. */
-#define INSECT_PATH_KIND_0A 0x0a
-#define INSECT_PATH_KIND_33 0x33
-#define INSECT_PATH_KIND_HOPS 0x36   /* hops after going for the player */
-#define INSECT_PATH_KIND_FRAMES 0x37 /* plays frames 0xb-0xe while going for the player */
+#define INSECT_PATH_KIND_HONEYBEE 0x0a
+#define INSECT_PATH_KIND_FLY 0x33
+#define INSECT_PATH_KIND_TARANTULA 0x36 /* hops after going for the player */
+#define INSECT_PATH_KIND_SCORPION 0x37  /* plays frames 0xb-0xe while going for the player */
 
 /* The sounds of the kinds (func_ov003_022353a4's second argument). */
 #define INSECT_PATH_SOUND_IDLE 0
@@ -132,7 +132,7 @@ void InsectPath_Wander(TownInsect *insect, s16 *heading, int step, int period, u
     insect->angle_y = *heading;
     if (insect->unk_24a != 0) {
         fx32 factor = 0x1400;
-        if (insect->kind == INSECT_PATH_KIND_0A || insect->kind == INSECT_PATH_KIND_33) {
+        if (insect->kind == INSECT_PATH_KIND_HONEYBEE || insect->kind == INSECT_PATH_KIND_FLY) {
             factor = 0x1800;
         }
         insect->position.x += FX_MulFunc(FX_MulFunc(factor, scale), way.x);
@@ -170,7 +170,7 @@ int InsectPath_FindSpot(TownInsect *insect, s16 *turn, int *distance, Vec3 *spot
     Vec3 *position = &insect->position;
     u8 kind = (u8) insect->kind;
     int found;
-    if (kind == INSECT_PATH_KIND_33) {
+    if (kind == INSECT_PATH_KIND_FLY) {
         found = WalkTarget_DaySpot(spot, position) != 0;
     } else {
         found = WalkTarget_NearFamily(spot, position, TownInsectMove_TestFlags((s8) kind)) != 0;
@@ -188,7 +188,7 @@ int InsectPath_FindSpot(TownInsect *insect, s16 *turn, int *distance, Vec3 *spot
             return 0;
         }
     }
-    if (kind != INSECT_PATH_KIND_33) {
+    if (kind != INSECT_PATH_KIND_FLY) {
         InsectPath_SpotOffset((s8) TownFamily_Line(code), spot);
     } else {
         spot->x += 0x1000;
@@ -235,7 +235,7 @@ int InsectPath_GoToSpot(TownInsect *insect, s16 *heading)
         insect->action = INSECT_PATH_SETTLED;
         insect->unk_244 = (s16) (0x14 * (MainRandom_Below(5) + 0x10));
         insect->frames_left = 0;
-        if (insect->kind == INSECT_PATH_KIND_33) {
+        if (insect->kind == INSECT_PATH_KIND_FLY) {
             if (insect->unk_21c != 1) {
                 insect->action = 0;
             } else {
@@ -286,13 +286,13 @@ int InsectPath_GoForPlayer(TownInsect *insect, int mode, const Vec3 *player, s16
         if (mode == 3 || mode == 1) {
             if (Vec_DistanceXZ(player, position) < 0x1000) {
                 s16 *hop = &insect->unk_23e;
-                if (FieldActor_PlayerRequestState6D(insect->kind == INSECT_PATH_KIND_FRAMES) != 0) {
+                if (FieldActor_PlayerRequestState6D(insect->kind == INSECT_PATH_KIND_SCORPION) != 0) {
                     insect->action = INSECT_PATH_CALM;
                     insect->unk_24c = 1;
                     FrameCtrl_Init(&insect->model.frames, 0, 2, 0x1000, frame_number(insect->model.frames.frame));
                 } else {
                     int t = *hop;
-                    if (t > 0 && insect->kind == INSECT_PATH_KIND_HOPS) {
+                    if (t > 0 && insect->kind == INSECT_PATH_KIND_TARANTULA) {
                         position->y += hop_rise(t);
                         *hop = (s16) (*hop + 3);
                         if (position->y <= 0) {
@@ -348,7 +348,7 @@ int InsectPath_TurnToPlayer(TownInsect *insect, int mode, const Vec3 *player)
     int timer = insect->timer;
     s16 angle = insect->angle_y;
     s16 *seen = &insect->unk_23e;
-    if ((*seen == 0 || insect->kind == INSECT_PATH_KIND_FRAMES) && insect_opaque(insect)) {
+    if ((*seen == 0 || insect->kind == INSECT_PATH_KIND_SCORPION) && insect_opaque(insect)) {
         if (mode == 1) {
             if (*seen == 0) {
                 TownInsectMove_PlaySound(insect, INSECT_PATH_SOUND_ACTIVE, 0);
@@ -360,7 +360,7 @@ int InsectPath_TurnToPlayer(TownInsect *insect, int mode, const Vec3 *player)
             insect->timer = (s16) (timer - 1);
         } else if (mode == 0) {
             insect->timer = 0x3c;
-            if (insect->kind == INSECT_PATH_KIND_FRAMES && frame_number(frames->frame) < 4 &&
+            if (insect->kind == INSECT_PATH_KIND_SCORPION && frame_number(frames->frame) < 4 &&
                 frame_number(frames->end) < 0xb) {
                 TownInsectMove_PlaySound(insect, INSECT_PATH_SOUND_ACTIVE, 0);
             }
@@ -374,7 +374,7 @@ int InsectPath_TurnToPlayer(TownInsect *insect, int mode, const Vec3 *player)
             insect->angle_y = angle;
         }
     }
-    if (insect->kind != INSECT_PATH_KIND_FRAMES) {
+    if (insect->kind != INSECT_PATH_KIND_SCORPION) {
         return 1;
     }
     u16 end = frame_number(frames->end);
@@ -448,7 +448,7 @@ void InsectPath_CalmDown(TownInsect *insect, s16 *hop, int result)
             insect->unk_244 = (s16) (0x14 * (MainRandom_Below(9) + 2));
         }
     } else if (insect->action == INSECT_PATH_MISSED) {
-        if (insect->kind == INSECT_PATH_KIND_HOPS &&
+        if (insect->kind == INSECT_PATH_KIND_TARANTULA &&
             (*hop > 0 || (insect->counter % 10 == 0 && (int) MainRandom_Below(100) > 75))) {
             insect->position.y += hop_rise(*hop);
             if (*hop == 0) {
@@ -465,7 +465,7 @@ void InsectPath_CalmDown(TownInsect *insect, s16 *hop, int result)
         } else {
             TownInsectMove_PlaySound(insect, INSECT_PATH_SOUND_IDLE, 1);
         }
-        if ((insect->kind == INSECT_PATH_KIND_FRAMES || *hop == 0) && result != 2) {
+        if ((insect->kind == INSECT_PATH_KIND_SCORPION || *hop == 0) && result != 2) {
             insect->action = INSECT_PATH_CALM;
             *hop = 0;
         }
@@ -1018,13 +1018,13 @@ void InsectPath_Roam(TownInsect *insect)
         insect->unk_24a = 0;
     }
     TownInsectMove_PlaySound(insect, INSECT_PATH_SOUND_IDLE, 1);
-    if (insect->unk_24a == 0 && InsectPath_GoToSpot(insect, &heading) == 0 && insect->kind == INSECT_PATH_KIND_0A) {
+    if (insect->unk_24a == 0 && InsectPath_GoToSpot(insect, &heading) == 0 && insect->kind == INSECT_PATH_KIND_HONEYBEE) {
         insect->frames_left = 0;
         insect->action = INSECT_PATH_LEAVE;
         return;
     }
     InsectPath_Wander(insect, &heading, 0xaaa, 0x1e, 0x46, insect->unk_257 << 12);
-    if (insect->kind == INSECT_PATH_KIND_0A) {
+    if (insect->kind == INSECT_PATH_KIND_HONEYBEE) {
         fx32 limit = FX_Div(0x12000, 0x10000);
         int divisor = (int) MainRandom_Below(8) + 0xa;
         TownInsectMove_Bob(insect, phase, limit, shift_12(divisor));

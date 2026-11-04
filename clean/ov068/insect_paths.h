@@ -3,14 +3,14 @@
  *
  * - wandering and fleeing (InsectPath_Wander, InsectPath_FleeFrom) and going to a spot
  *   to settle on (InsectPath_FindSpot, InsectPath_GoToSpot): a flower of the town's
- *   map near it whose line suits the kind (kinds 2 and 3 ask more of it), or for kind 0x33 a
- *   point of its own;
- * - kinds 0x36 and 0x37 (both run by func_ov003_02232640), which go for the player once
+ *   map near it whose line suits the kind (kinds 2 and 3 ask more of it), or for kind 0x33 (the
+ *   fly) a point of its own;
+ * - kinds 0x36 and 0x37, the tarantula and the scorpion (both run by func_ov003_02232640), which go for the player once
  *   alarmed (InsectPath_WatchPlayer): they turn to the player and, close enough while the
  *   player is in a state that allows it, make the player react (FieldActor_PlayerRequestState6D,
  *   with 1 for kind 0x37); kind 0x36 hops, and kind 0x37 plays frames 0xb to 0xe of its
  *   animation; out of reach they flee, stop, and calm down (InsectPath_CalmDown);
- * - kinds 0xb and 0x3a (run by func_ov003_02233674), which chase the player
+ * - kinds 0xb and 0x3a, the wasp and the wasps (run by func_ov003_02233674), which chase the player
  *   (InsectPath_Chase), circle the player once within 1.0 (action 3) while the player is
  *   asked for state 0x78 (FieldActor_PlayerRequestState78), then fly off and fade away
  *   (InsectPath_CircleOrLeave). */
