@@ -591,7 +591,7 @@ CLEAN_AS(func_02023010, VillagerTalkSubjects_CatchGroupA)
  * data_020d9f74 in the place of the size), or 3 when the item is a fish, `choice` is at most 1
  * and none of the period's three time slots has lists. For such a fish, the two lists of the
  * first time slot that has them are looked through for the fish's place with a weight in band
- * 0 or 1 (CreatureWeight_BandA).
+ * 0 or 1 (CreatureWeight_FishBand).
  * BUG: what the look finds is never used: its test (more entries looked at than the list has)
  * cannot hold, so only lists that are all missing give 3. */
 void VillagerTalkSubjects_PutCatchKind(VillagerTalk *talk, int value, u16 *item, int choice, CreatureTablePeriod lists,
@@ -614,7 +614,7 @@ void VillagerTalkSubjects_PutCatchKind(VillagerTalk *talk, int value, u16 *item,
                     continue;
                 }
                 for (int i = 0; i < places[at].count; i++, entry += 3) {
-                    if (entry[0] == place && CreatureWeight_BandA(entry[2]) <= 1) {
+                    if (entry[0] == place && CreatureWeight_FishBand(entry[2]) <= 1) {
                         break;
                     }
                 }

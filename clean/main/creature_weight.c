@@ -7,18 +7,18 @@ extern const u8 data_020d1a24[CREATURE_WEIGHT_BANDS]; /* 17, 11, 6, 3 */
 extern const u8 data_020d1a2c[CREATURE_WEIGHT_BANDS]; /* 15, 10, 6, 3 */
 
 /* func_0209a478: the band of the weight's low byte against 17, 11, 6, 3. */
-int CreatureWeight_BandA(u32 weight)
+int CreatureWeight_FishBand(u32 weight)
 {
     return CreatureWeight_Band((u8) weight, data_020d1a24, CREATURE_WEIGHT_BANDS);
 }
-CLEAN_AS(func_0209a478, CreatureWeight_BandA)
+CLEAN_AS(func_0209a478, CreatureWeight_FishBand)
 
 /* func_0209a488: the band of the weight's low byte against 15, 10, 6, 3. */
-int CreatureWeight_BandB(u32 weight)
+int CreatureWeight_InsectBand(u32 weight)
 {
     return CreatureWeight_Band((u8) weight, data_020d1a2c, CREATURE_WEIGHT_BANDS);
 }
-CLEAN_AS(func_0209a488, CreatureWeight_BandB)
+CLEAN_AS(func_0209a488, CreatureWeight_InsectBand)
 
 /* func_0209a498: the index of the first of `count` thresholds that `weight` reaches, else
  * `count`. */

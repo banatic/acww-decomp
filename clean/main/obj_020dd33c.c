@@ -576,9 +576,9 @@ CLEAN_AS(func_02059c80, Obj020dd33c_New)
 
 /* ---- Where a held fish goes */
 
-/* The offsets of a held fish by holder shape, each an array by offset class. */
+/* The offsets of a held fish by holder shape, each an array by size class. */
 extern Obj020dd33cFishOffsets *const data_020dd31c[];
-/* The size factor (20.12) of a held fish by offset class. */
+/* The size factor (20.12) of a held fish by size class. */
 extern const u32 data_020cbb44[];
 
 /* The actor class (Actor.profile) whose holders always take the default shape. */
@@ -592,17 +592,17 @@ static int holder_shape(Actor *holder)
     return Obj020dd33c_HolderShape(holder);
 }
 
-/* func_02059cc4: the second offset of offset class `offset_class` for `holder`'s shape. */
-Vec3 *Obj020dd33c_FishSecondOffset(Actor *holder, int offset_class)
+/* func_02059cc4: the second offset of size class `size_class` for `holder`'s shape. */
+Vec3 *Obj020dd33c_FishSecondOffset(Actor *holder, int size_class)
 {
-    return &data_020dd31c[holder_shape(holder)][offset_class].second;
+    return &data_020dd31c[holder_shape(holder)][size_class].second;
 }
 CLEAN_AS(func_02059cc4, Obj020dd33c_FishSecondOffset)
 
-/* func_02059cf8: the first offset of offset class `offset_class` for `holder`'s shape. */
-Vec3 *Obj020dd33c_FishFirstOffset(Actor *holder, int offset_class)
+/* func_02059cf8: the first offset of size class `size_class` for `holder`'s shape. */
+Vec3 *Obj020dd33c_FishFirstOffset(Actor *holder, int size_class)
 {
-    return &data_020dd31c[holder_shape(holder)][offset_class].first;
+    return &data_020dd31c[holder_shape(holder)][size_class].first;
 }
 CLEAN_AS(func_02059cf8, Obj020dd33c_FishFirstOffset)
 
@@ -681,10 +681,10 @@ int Obj020dd33c_HolderShape(Actor *holder)
 }
 CLEAN_AS(func_02059d28, Obj020dd33c_HolderShape)
 
-/* func_02059e10: the size factor of a held fish of offset class `offset_class`.
- * REQUIRES: offset_class is one of the creature table's (0-6). */
-u32 Obj020dd33c_FishScale(u32 offset_class)
+/* func_02059e10: the size factor of a held fish of size class `size_class`.
+ * REQUIRES: size_class is one of the creature table's (0-6). */
+u32 Obj020dd33c_FishScale(u32 size_class)
 {
-    return data_020cbb44[offset_class];
+    return data_020cbb44[size_class];
 }
 CLEAN_AS(func_02059e10, Obj020dd33c_FishScale)

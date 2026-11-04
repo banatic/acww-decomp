@@ -257,7 +257,7 @@ int EventWinner_ItemKind(u32 *kind, const u16 *item)
 }
 CLEAN_AS(func_020864f4, EventWinner_ItemKind)
 
-/* func_02086564: the item's value (func_0204c380 for creatures 0x12e8-0x131f, func_0204c308
+/* func_02086564: the item's size (ItemTraits_FishSize for creatures 0x12e8-0x131f, func_0204c308
  * for items 0x12b0-0x12e7) as fx32 times a random 0.8 to 1.2; 0 for other items. The random
  * number is drawn for any item. */
 fx32 EventWinner_RandomSize(u16 *item)
@@ -265,7 +265,7 @@ fx32 EventWinner_RandomSize(u16 *item)
     fx32 scale = (fx32) MainRandom_BelowB(EVENT_WINNER_SCALE_RANGE) + EVENT_WINNER_SCALE_MIN;
     u16 code = *item;
     if (code >= EVENT_WINNER_CREATURES_FIRST && code <= EVENT_WINNER_CREATURES_LAST) {
-        return FX_MulFunc((fx32) ((u32) ItemTraits_FishValue(item) << 12), scale);
+        return FX_MulFunc((fx32) ((u32) ItemTraits_FishSize(item) << 12), scale);
     }
     if (code >= EVENT_WINNER_OTHERS_FIRST && code <= EVENT_WINNER_OTHERS_LAST) {
         return FX_MulFunc((fx32) ((u32) ItemTraits_InsectSize(item) << 12), scale);

@@ -131,7 +131,7 @@ typedef struct FishShadow {
     u8 group_state;              /* 0x1fc: FISH_SHADOW_IN_GROUP0 ... */
     u8 alpha;                    /* 0x1fd: the model's alpha, 1-0x1f */
     u8 ground;                   /* 0x1fe: the kind of water it lives in */
-    u8 size;                     /* 0x1ff: the kind's size class (CreatureTableInfo.offset_class) */
+    u8 size;                     /* 0x1ff: the kind's size class (CreatureTableInfo.size_class) */
     u8 behaviour;                /* 0x200: FISH_SHADOW_STARTLED, FISH_SHADOW_FLEEING */
     u8 unk_201;                  /* 0x201 */
     u8 pad_202[2];               /* 0x202 */

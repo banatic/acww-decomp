@@ -855,9 +855,9 @@ CLEAN_AS(func_02058f54, Obj020dd33c_UpdateMode4Kind0)
 static void place_goal(Obj020dd33c *obj, Vec3 *base, int second)
 {
     if (holds_fish(obj)) {
-        int offset_class = CreatureTable_OffsetClass((unsigned int) (obj->item - OBJ_020DD33C_FISH_FIRST));
-        const Vec3 *fish_offset = second ? Obj020dd33c_FishSecondOffset(obj->actors[0], offset_class)
-                                         : Obj020dd33c_FishFirstOffset(obj->actors[0], offset_class);
+        int size_class = CreatureTable_SizeClass((unsigned int) (obj->item - OBJ_020DD33C_FISH_FIRST));
+        const Vec3 *fish_offset = second ? Obj020dd33c_FishSecondOffset(obj->actors[0], size_class)
+                                         : Obj020dd33c_FishFirstOffset(obj->actors[0], size_class);
         VEC_Add(base, fish_offset, base);
     }
     Vec3 hold_offset;
@@ -979,7 +979,7 @@ void Obj020dd33c_Mode1Kind0Rise(Obj020dd33c *obj)
     fx32 step = data_021c9400[obj->phase];
     if (holds_fish(obj)) {
         fx32 factor = Obj020dd33c_FishScale(
-            (unsigned int) CreatureTable_OffsetClass((unsigned int) (obj->item - OBJ_020DD33C_FISH_FIRST)));
+            (unsigned int) CreatureTable_SizeClass((unsigned int) (obj->item - OBJ_020DD33C_FISH_FIRST)));
         size = FX_MulFunc(size, factor);
         step = FX_MulFunc(step, factor);
     }

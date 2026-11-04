@@ -33,14 +33,14 @@ void *CreatureTable_Lists(unsigned int month, unsigned int second_half);
 /* Each kind's details (data_020cb784), for the 56 kinds and the three models after them
  * (0x38-0x3a, see fish_disp.h). */
 typedef struct CreatureTableInfo {
-    u8 offset_class; /* 0-6: picks the offset a held creature is moved by (func_02059cf8) */
+    u8 size_class; /* 0-6: the creature's size: its shadow, held scale and offsets (func_02059cf8) */
     u8 unk_01;
     u8 unk_02;
     u8 unk_03;
-    u16 base_value; /* scaled by a random 0.8 to 1.2 by func_02086564 */
+    u16 base_size; /* scaled by a random 0.8 to 1.2 for a caught one (EventWinner_RandomSize) */
 } CreatureTableInfo;
 
-int CreatureTable_OffsetClass(unsigned int kind);
-unsigned short CreatureTable_BaseValue(unsigned int kind);
+int CreatureTable_SizeClass(unsigned int kind);
+unsigned short CreatureTable_BaseSize(unsigned int kind);
 
 #endif

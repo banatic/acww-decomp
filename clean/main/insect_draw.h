@@ -3,7 +3,7 @@
  * 16, 17-18, 19-22). A list's entries are two bytes: the insect's kind (the item 0x12b0 + kind,
  * kinds below 0x38) and a running total of the weights, so an entry's own weight is the step
  * from the entry before it. An entry's weight falls into one of five bands
- * (CreatureWeight_BandB: 0 for the heaviest, the commonest, to 4), and its kind has a place
+ * (CreatureWeight_InsectBand: 0 for the heaviest, the commonest, to 4), and its kind has a place
  * (func_02061550: where in the town the insect lives).
  *
  * A draw for a band counts the entries of the band whose place is not on a list of places to

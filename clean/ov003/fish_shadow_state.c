@@ -588,7 +588,7 @@ int FishShadow_Place(FishShadowProcess *self, FishShadow *fish, int group)
     fish->kind = (s8) kind;
     fish->has_fin = kind >= FISH_STATE_FIN_FIRST && kind <= FISH_STATE_FIN_LAST;
     fish->ground = (u8) ground;
-    fish->size = data_020cb784[kind].offset_class;
+    fish->size = data_020cb784[kind].size_class;
     fish->yaw = -0x8000;
     fish->placed_at = at;
     fish->group_state = (u8) group;

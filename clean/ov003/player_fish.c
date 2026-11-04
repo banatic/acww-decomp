@@ -384,7 +384,7 @@ void PlayerFish_Splash(PlayerFish *self, int player)
     self->state = PLAYER_FISH_TAKE;
     self->splash = 0;
     const CreatureTableInfo *info = player_fish_creature(self->kind);
-    int size = info->offset_class;
+    int size = info->size_class;
     self->scale.x = (data_ov003_0223c014[size].scale_x << 12) / 100;
     self->scale.y = 0x1000;
     self->scale.z = (data_ov003_0223c014[size].scale_z << 12) / 100;
@@ -890,7 +890,7 @@ void PlayerFish_KindScale(Vec3 *out, int kind)
         out->z = 0x1000;
         return;
     }
-    u32 size = player_fish_creature(kind)->offset_class;
+    u32 size = player_fish_creature(kind)->size_class;
     int percent = *(const u8 *) (uintptr_t) ((u32) (uintptr_t) data_ov003_0223c026 + size * 0x14);
     fx32 scale = (percent << 12) / 100;
     out->x = scale;

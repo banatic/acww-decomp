@@ -324,7 +324,7 @@ int CreatureDraw_FishOfList(u16 *item, int *second, int band, const CreatureTabl
     }
     int pick = MainRandom_Below(count);
     for (int i = 0; i < list->count; i++, entry += CREATURE_DRAW_ENTRY_SIZE) {
-        if (entry[2] == 0 || entry[0] >= CREATURE_DRAW_KINDS || band != CreatureWeight_BandA(entry[2])) {
+        if (entry[2] == 0 || entry[0] >= CREATURE_DRAW_KINDS || band != CreatureWeight_FishBand(entry[2])) {
             continue;
         }
         if (pick == 0) {
@@ -347,7 +347,7 @@ int CreatureDraw_CountInList(int band, const CreatureTableList *list)
         return 0;
     }
     for (int i = 0; i < list->count; i++, entry += CREATURE_DRAW_ENTRY_SIZE) {
-        if (creature_entry_counts(entry) && CreatureWeight_BandA(entry[2]) == band) {
+        if (creature_entry_counts(entry) && CreatureWeight_FishBand(entry[2]) == band) {
             count++;
         }
     }

@@ -154,22 +154,22 @@ static_assert(sizeof(CreatureTableInfo) == 6, "CreatureTableInfo size");
 
 extern const CreatureTableInfo data_020cb784[0x3b];
 
-/* func_0204fd3c: a kind's offset class (0-6); 3 for a number past the table's 0x3b entries. */
-int CreatureTable_OffsetClass(unsigned int kind)
+/* func_0204fd3c: a kind's size class (0-6); 3 for a number past the table's 0x3b entries. */
+int CreatureTable_SizeClass(unsigned int kind)
 {
     if (kind >= 0x3b) {
         return 3;
     }
-    return data_020cb784[kind].offset_class;
+    return data_020cb784[kind].size_class;
 }
-CLEAN_AS(func_0204fd3c, CreatureTable_OffsetClass)
+CLEAN_AS(func_0204fd3c, CreatureTable_SizeClass)
 
 /* func_0204fd54: a kind's base value; 10 for a number that is no kind. */
-unsigned short CreatureTable_BaseValue(unsigned int kind)
+unsigned short CreatureTable_BaseSize(unsigned int kind)
 {
     if (kind >= CREATURE_TABLE_KINDS) {
         return 10;
     }
-    return data_020cb784[kind].base_value;
+    return data_020cb784[kind].base_size;
 }
-CLEAN_AS(func_0204fd54, CreatureTable_BaseValue)
+CLEAN_AS(func_0204fd54, CreatureTable_BaseSize)

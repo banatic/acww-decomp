@@ -38,7 +38,7 @@ int ItemTraits_IsHeadAWithHatLook(const ItemCode *item);
 int ItemTraits_CarriedNonCreature(const ItemCode *item, ItemCode *out);
 
 u16 ItemTraits_InsectSize(const ItemCode *item);
-int ItemTraits_FishValue(const ItemCode *item);
+int ItemTraits_FishSize(const ItemCode *item);
 int ItemTraits_FishGroupOrder(const ItemCode *item);
 
 int ItemTraits_StateBlockAddress(void);

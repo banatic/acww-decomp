@@ -2,7 +2,7 @@
  * time of day (CreatureTable_TimeSlot) and place (two), whose entries are a kind (the fish
  * 0x12e8 + kind for kinds below 0x38), a second number (the kind of water, which
  * CreatureDraw_PlaceGroup sorts) and a weight. A weight falls into one of five bands
- * (CreatureWeight_BandA: 0 for the heaviest, the commonest, to 4).
+ * (CreatureWeight_FishBand: 0 for the heaviest, the commonest, to 4).
  *
  * A draw for a band picks a time of day among those of the given hours whose lists hold fish of
  * the band, then a place among those that do, then a fish of the band in that list, each at

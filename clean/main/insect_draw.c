@@ -272,7 +272,7 @@ int InsectDraw_OfList(u16 *item, int *place, int band, const u8 *entries, int co
     int before = 0;
     for (int i = 0; i < count; i++, entries += INSECT_DRAW_ENTRY_SIZE) {
         int weight = entries[1] - before;
-        if (weight > 0 && band == CreatureWeight_BandB((u8) weight)) {
+        if (weight > 0 && band == CreatureWeight_InsectBand((u8) weight)) {
             int where = InsectTables_Place(entries[0]);
             if (InsectDraw_IsListed(where, missing, missing_count) == 0) {
                 if (pick == 0) {
@@ -304,7 +304,7 @@ int InsectDraw_CountInList(int band, const u8 *entries, int count, const int *mi
         if (weight <= 0) {
             return 0;
         }
-        if (band == CreatureWeight_BandB((u8) weight) &&
+        if (band == CreatureWeight_InsectBand((u8) weight) &&
             InsectDraw_IsListed(InsectTables_Place(entries[0]), missing, missing_count) == 0) {
             matches++;
         }

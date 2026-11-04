@@ -36,7 +36,7 @@
 #define ITEM_TRAITS_CLASS_ROOM_OTHER 0x3b
 /* ItemTraits_Icon of the room codes 0x450c-0x45db. */
 #define ITEM_TRAITS_UNK02_ROOM_450C 0xa7
-/* ItemTraits_FishValue and ItemTraits_FishGroupOrder of an item that is no fish. */
+/* ItemTraits_FishSize and ItemTraits_FishGroupOrder of an item that is no fish. */
 #define ITEM_TRAITS_NO_FISH_VALUE 10
 #define ITEM_TRAITS_NO_FISH_ORDER 4
 #define ITEM_TRAITS_HAT_LOOK 8
@@ -266,15 +266,15 @@ u16 ItemTraits_InsectSize(const ItemCode *item)
 }
 CLEAN_AS(func_0204c308, ItemTraits_InsectSize)
 
-/* func_0204c380: a fish's base value (CreatureTable_BaseValue), 10 for another item. */
-int ItemTraits_FishValue(const ItemCode *item)
+/* func_0204c380: a fish's base size (CreatureTable_BaseSize), 10 for another item. */
+int ItemTraits_FishSize(const ItemCode *item)
 {
     if (!ItemGroup_IsFish(item)) {
         return ITEM_TRAITS_NO_FISH_VALUE;
     }
-    return CreatureTable_BaseValue((u32) ItemGroup_FishIndex(item));
+    return CreatureTable_BaseSize((u32) ItemGroup_FishIndex(item));
 }
-CLEAN_AS(func_0204c380, ItemTraits_FishValue)
+CLEAN_AS(func_0204c380, ItemTraits_FishSize)
 
 /* func_0204c3f0: a fish's group (CreatureTable_Group) reordered: groups 1, 3, 2 and 0 give
  * 0 to 3; 4 for another group or another item. */
