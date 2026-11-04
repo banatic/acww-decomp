@@ -162,18 +162,18 @@ static_assert(sizeof(NookClerkStep) == 0x10, "a state's functions");
 #define NOOK_CLERK_AHEAD 0x2000
 
 /* The items on display by class (their codes), as data_ov050_022650e4's rows: wallpaper and
- * carpets, the items 0x1000-0x10ff, the paint for the house's roof (row 2 with this system the
+ * carpets, the stationery (0x1000-0x10ff), the paint for the house's roof (row 2 with this system the
  * host or alone, else row 3), the items of the item lists' variant group 4, anything else. */
 #define NOOK_CLERK_WALLPAPER_FIRST 0x1100
 #define NOOK_CLERK_WALLPAPER_LAST 0x1143
 #define NOOK_CLERK_CARPET_FIRST 0x1144
 #define NOOK_CLERK_CARPET_LAST 0x1187
-#define NOOK_CLERK_ITEMS_10_FIRST 0x1000
-#define NOOK_CLERK_ITEMS_10_LAST 0x10ff
+#define NOOK_CLERK_STATIONERY_FIRST 0x1000
+#define NOOK_CLERK_STATIONERY_LAST 0x10ff
 #define NOOK_CLERK_PAINT_FIRST 0x1521
 #define NOOK_CLERK_PAINT_LAST 0x1530
 #define NOOK_CLERK_ROW_INTERIOR 0
-#define NOOK_CLERK_ROW_ITEMS_10 1
+#define NOOK_CLERK_ROW_STATIONERY 1
 #define NOOK_CLERK_ROW_PAINT 2
 #define NOOK_CLERK_ROW_PAINT_GUEST 3
 #define NOOK_CLERK_ROW_GROUP_4 4
@@ -621,8 +621,8 @@ int NookClerk_FindShown(NookClerk *clerk)
     if (nclerk_in(item, NOOK_CLERK_WALLPAPER_FIRST, NOOK_CLERK_WALLPAPER_LAST) ||
         nclerk_in(item, NOOK_CLERK_CARPET_FIRST, NOOK_CLERK_CARPET_LAST)) {
         row = NOOK_CLERK_ROW_INTERIOR;
-    } else if (nclerk_in(item, NOOK_CLERK_ITEMS_10_FIRST, NOOK_CLERK_ITEMS_10_LAST)) {
-        row = NOOK_CLERK_ROW_ITEMS_10;
+    } else if (nclerk_in(item, NOOK_CLERK_STATIONERY_FIRST, NOOK_CLERK_STATIONERY_LAST)) {
+        row = NOOK_CLERK_ROW_STATIONERY;
     } else if (nclerk_in(item, NOOK_CLERK_PAINT_FIRST, NOOK_CLERK_PAINT_LAST)) {
         PlayerRecords_Current();
         row = TalkChecks_IsHostOrAlone() ? NOOK_CLERK_ROW_PAINT : NOOK_CLERK_ROW_PAINT_GUEST;
