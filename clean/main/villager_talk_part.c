@@ -68,7 +68,7 @@
 /* The state func_02065ec0 gives a letter that picks the first table. */
 #define VILLAGER_TALK_PART_LETTER_STATE_7 7
 
-/* A bells reward: 500 plus four times RoomScore_HouseLowX, rounded. */
+/* A bells reward: 500 plus four times RoomScore_HouseYellowWest, rounded. */
 #define VILLAGER_TALK_PART_BELLS_BASE 500
 /* The chances of type 19's start, out of 100: below 20 an item of the villager, below 40 bells. */
 #define VILLAGER_TALK_PART_ITEM_CHANCE 20
@@ -321,12 +321,12 @@ static void part_bond(const NpcId *first, const NpcId *second, int amount)
     VillagerPair_AddBond(&data_021e5a2c, first, second, amount);
 }
 
-/* A bag of 500 bells plus four times RoomScore_HouseLowX, rounded to tens, as the item at 0x124
+/* A bag of 500 bells plus four times RoomScore_HouseYellowWest, rounded to tens, as the item at 0x124
  * (the bells kept at 0x1a0). */
 static void part_bells_item(VillagerTalk *talk)
 {
     u16 bag;
-    talk->bells = RoomScore_HouseLowX() * 4 + VILLAGER_TALK_PART_BELLS_BASE;
+    talk->bells = RoomScore_HouseYellowWest() * 4 + VILLAGER_TALK_PART_BELLS_BASE;
     talk->bells = VillagerTalkApproach_RoundBells(talk->bells);
     VillagerTalkPart_BellBag(&bag, talk->bells);
     talk->item = bag;

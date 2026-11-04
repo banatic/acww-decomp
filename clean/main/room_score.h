@@ -14,12 +14,13 @@
  *     piece (RoomScore_Kind2Sets). The best of each group is kept in data_021c9854;
  *   - the share of the pieces with one value of FurnitureInfo_ItemEra or _ItemFeel
  *     (RoomScore_EraFeelBonus), with one of the values of FurnitureInfo_ColorA and _ColorB
- *     (RoomScore_ColorBonus), 8 or more of one value of FurnitureInfo_ItemTheme
- *     (RoomScore_ThemeBonus), all four categories 1-4 of FurnitureInfo_Category
+ *     (RoomScore_ColorBonus), a collection of 8 or more
+ *     instruments, paintings, models or plants (FurnitureInfo_ItemTheme, RoomScore_CollectionBonus), all four categories 1-4 of FurnitureInfo_Category
  *     (RoomScore_MarkCategories), each piece of a kind marked in the indoor data counted once
  *     at 7777 (RoomScore_MarkSpecialItems);
- *   - the pieces along the low-x columns, the high-z rows and the high-x columns of the room
- *     whose Unk01 or Unk02 is 1, 4 and 2 there (RoomScoreEdges, 100 each);
+ *   - the feng shui: the pieces along the low-x (west) columns, the high-z (south) rows and
+ *     the high-x (east) columns of the room whose FurnitureInfo_ColorA or _ColorB is yellow,
+ *     green and red there (RoomScoreFengShui, 100 each);
  *   - less 100 for each piece at an edge that faces it, 1 for each item of kind 1 on the floor
  *     (RoomScore_WallPenalty).
  *
@@ -49,12 +50,13 @@ typedef struct RoomScoreSource {
     const u32 *vtable;
 } RoomScoreSource;
 
-/* The pieces counted along three edges of a room (RoomScore_CountEdges). */
-typedef struct RoomScoreEdges {
-    u8 low_x;  /* with value 1, in the two columns of the least x */
-    u8 high_z; /* with value 4, in the two rows of the greatest z */
-    u8 high_x; /* with value 2, in the two columns of the greatest x */
-} RoomScoreEdges;
+/* A room's feng shui: the pieces of a colour counted along three of its sides
+ * (RoomScore_CountFengShui). */
+typedef struct RoomScoreFengShui {
+    u8 yellow_west; /* colour 1 (yellow), in the two columns of the least x */
+    u8 green_south; /* colour 4 (green), in the two rows of the greatest z */
+    u8 red_east;    /* colour 2 (red), in the two columns of the greatest x */
+} RoomScoreFengShui;
 
 /* The bonuses RoomScore_Total reports (its `bonuses`, and RoomScore_SetBonusFlags). */
 #define ROOM_SCORE_KIND0_FULL 0x1         /* a group of kind 0 at 30000 */
@@ -63,10 +65,10 @@ typedef struct RoomScoreEdges {
 #define ROOM_SCORE_KIND1 0x8              /* a group of kind 1 over 3000 */
 #define ROOM_SCORE_KIND2 0x10             /* groups of kind 2 for 3000 (5000 for the letter) */
 #define ROOM_SCORE_CATEGORIES 0x20        /* all four categories */
-#define ROOM_SCORE_EDGES 0x40             /* 500 (2000) from the edges */
+#define ROOM_SCORE_FENG_SHUI 0x40         /* 500 (2000) from the feng shui */
 #define ROOM_SCORE_COLORS 0x80            /* 2000 (6000) from RoomScore_ColorBonus */
 #define ROOM_SCORE_FLAG_BITS 0x100        /* 2000 (6000) from RoomScore_EraFeelBonus */
-#define ROOM_SCORE_THEME 0x200            /* 3000 (3200) from RoomScore_ThemeBonus */
+#define ROOM_SCORE_COLLECTION 0x200       /* 3000 (3200) from a collection (RoomScore_CollectionBonus) */
 #define ROOM_SCORE_SPECIAL 0x400          /* 7000 from the special items */
 #define ROOM_SCORE_LOOSE_ITEMS 0x800      /* the letter's only: items of kind 1 on the floor */
 #define ROOM_SCORE_FACING_WALL 0x1000     /* the letter's only: furniture facing an edge */
@@ -78,10 +80,10 @@ typedef struct RoomScoreEdges {
 int RoomScore_Bounds(int *left, int *right, int *top, int *bottom, AcreMap *map);
 void RoomScore_MarkSpecialItems(RoomScoreRoom *room, AcreMap *map);
 int RoomScore_WallPenalty(RoomScoreRoom *room, AcreMap *map, u8 *facing, u8 *loose);
-int RoomScore_ThemeBonus(RoomScoreRoom *room, AcreMap *map, int *theme);
+int RoomScore_CollectionBonus(RoomScoreRoom *room, AcreMap *map, int *theme);
 int RoomScore_EraFeelBonus(RoomScoreRoom *room, AcreMap *map, int *first, int *second);
 int RoomScore_ColorBonus(RoomScoreRoom *room, AcreMap *map);
-int RoomScore_EdgeBonus(RoomScoreRoom *room, RoomScoreEdges *edges);
+int RoomScore_FengShuiBonus(RoomScoreRoom *room, RoomScoreFengShui *edges);
 int RoomScore_ItemPoints(RoomScoreRoom *room, AcreMap *map);
 void RoomScore_MarkCategories(RoomScoreRoom *room, AcreMap *map);
 int RoomScore_Kind2Sets(RoomScoreRoom *room, AcreMap *map);
@@ -109,19 +111,19 @@ RoomScoreSource *RoomScore_ConstructHouseSource(RoomScoreSource *source);
 void RoomScore_DestructSource(RoomScoreSource *source);
 void RoomScore_ConstructSource(RoomScoreSource *source);
 
-void RoomScore_CountEdges(RoomScoreEdges *edges, AcreMap *map);
+void RoomScore_CountFengShui(RoomScoreFengShui *edges, AcreMap *map);
 int RoomScore_CountInside(int unused, AcreMap *map, u32 left, u32 right, u32 top, u32 bottom, int value);
-int RoomScoreEdges_HighX(const RoomScoreEdges *edges);
-int RoomScoreEdges_HighZ(const RoomScoreEdges *edges);
-int RoomScoreEdges_LowX(const RoomScoreEdges *edges);
-void RoomScoreEdges_Destruct(RoomScoreEdges *edges);
-int RoomScoreEdges_Construct(RoomScoreEdges *edges);
-void RoomScoreEdges_Clear(RoomScoreEdges *edges);
-void RoomScore_CountHouseEdges(void);
-u8 RoomScore_HouseHighX(void);
-u8 RoomScore_HouseHighZ(void);
-u8 RoomScore_HouseLowX(void);
-int RoomScore_HouseEdges(void);
+int RoomScoreFengShui_RedEast(const RoomScoreFengShui *edges);
+int RoomScoreFengShui_GreenSouth(const RoomScoreFengShui *edges);
+int RoomScoreFengShui_YellowWest(const RoomScoreFengShui *edges);
+void RoomScoreFengShui_Destruct(RoomScoreFengShui *edges);
+int RoomScoreFengShui_Construct(RoomScoreFengShui *edges);
+void RoomScoreFengShui_Clear(RoomScoreFengShui *edges);
+void RoomScore_CountHouseFengShui(void);
+u8 RoomScore_HouseRedEast(void);
+u8 RoomScore_HouseGreenSouth(void);
+u8 RoomScore_HouseYellowWest(void);
+int RoomScore_HouseFengShui(void);
 
 /* room_score_mail.c */
 int RoomScoreMail_SendWelcome(void);

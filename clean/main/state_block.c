@@ -266,7 +266,7 @@ void StateBlock_SetUpTown(StateBlock *block)
     AcreMap_SetRoomsModels();
     AcreMap_LoadRoomsData();
     ShopDesigns_Reset((ShopDesigns *) block->shop_designs);
-    RoomScore_CountHouseEdges();
+    RoomScore_CountHouseFengShui();
     ItemGroupOrder_InitAll(block->part_173d4);
     Bbs_Init((Bbs *) block->bbs);
     NookStore_Reset((NookStore *) block->nook_store);

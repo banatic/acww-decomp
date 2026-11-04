@@ -318,14 +318,14 @@ void TileRequests_DropBag(TileRequestsRock *rock, const TileRequestTile *tile)
 CLEAN_AS(func_02042d94, TileRequests_DropBag)
 
 /* func_02042e10: the rock on `tile` hit: the first hit notes the tile and starts the timer
- * (150 frames and up to 59 more: the byte RoomScore_HouseLowX gives, times 960 / 4096), each
+ * (150 frames and up to 59 more: the byte RoomScore_HouseYellowWest gives, times 960 / 4096), each
  * hit counts (8 at most) and drops a bag. */
 void TileRequests_HitRock(TileRequestsRock *rock, const TileRequestTile *tile)
 {
     if (rock->timer < 0) {
         rock->x = (u8) tile->x;
         rock->z = (u8) tile->z;
-        rock->timer = (s16) (((int) RoomScore_HouseLowX() * 960 >> 12) + TILE_REQUESTS_ROCK_TIME);
+        rock->timer = (s16) (((int) RoomScore_HouseYellowWest() * 960 >> 12) + TILE_REQUESTS_ROCK_TIME);
     }
     rock->hits++;
     if (rock->hits >= TILE_REQUESTS_ROCK_HITS) {
@@ -1353,7 +1353,7 @@ CLEAN_AS(func_020445c0, TileRequests_SplitItem)
 /* func_02044750: a bag of bells put in a hole while this system's player holds item 0x136a
  * becomes code 0x26 (`unchanged` 0). Once a day for the current player (func_0204cafc) it
  * becomes 0x57 instead, with a chance in 100 of the bag's bells / 1000 + the byte
- * RoomScore_HouseLowX gives / 25 (100 at most); that uses the day's turn up. */
+ * RoomScore_HouseYellowWest gives / 25 (100 at most); that uses the day's turn up. */
 void TileRequests_BagCodes(u16 *item, u8 *unchanged, u16 put)
 {
     if (TileRequests_HeldItem(data_020ccf94->local_player) != TILE_REQUESTS_BAG_SHOVEL) {
@@ -1370,7 +1370,7 @@ void TileRequests_BagCodes(u16 *item, u8 *unchanged, u16 put)
         return;
     }
     int chance = ItemTraits_Price(&bag) / 1000;
-    chance += (int) RoomScore_HouseLowX() / 25;
+    chance += (int) RoomScore_HouseYellowWest() / 25;
     if (chance > TILE_REQUESTS_BAG_CHANCE_MAX) {
         chance = TILE_REQUESTS_BAG_CHANCE_MAX;
     }

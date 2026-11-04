@@ -213,7 +213,7 @@ CLEAN_AS(func_0202afdc, VillagerTalkApproach_Line)
 
 /* func_0202b220 ("ap_sell"): the villager sells the player a gift. The villager's mode is read
  * (and not used). With a free pocket, the gift is one of the villager's items or a random one;
- * its price is the worth times the random factor, less three times RoomScore_HouseLowX when the
+ * its price is the worth times the random factor, less three times RoomScore_HouseYellowWest when the
  * price is above that, rounded and at most 3000, and must be within the player's bells. The
  * price is kept at 0x1a0 and shown in the talk's slot 2. */
 int VillagerTalkApproach_Sell(VillagerTalk *talk)
@@ -230,7 +230,7 @@ int VillagerTalkApproach_Sell(VillagerTalk *talk)
 
     int factor = MainRandom_BelowB(VILLAGER_TALK_APPROACH_FACTOR_BASE) + VILLAGER_TALK_APPROACH_FACTOR_BASE;
     int price = (factor * ItemTraits_Price(&talk->gift)) >> 12;
-    int discount = 3 * RoomScore_HouseLowX();
+    int discount = 3 * RoomScore_HouseYellowWest();
     talk->bells = VillagerTalkApproach_RoundBells(price - (price > discount ? discount : 0));
     if (talk->bells > VILLAGER_TALK_APPROACH_SELL_MAX) {
         talk->bells = VILLAGER_TALK_APPROACH_SELL_MAX;
@@ -264,7 +264,7 @@ CLEAN_AS(func_0202b354, VillagerTalkApproach_Trade)
 
 /* func_0202b420 ("ap_buy"): when the player has an item the villager's mode asks for (into
  * 0x124), the villager offers to buy it: the worth times the random factor in 16384ths, plus
- * three times RoomScore_HouseLowX, rounded; kept at 0x1a0 and shown in the talk's slot 1.
+ * three times RoomScore_HouseYellowWest, rounded; kept at 0x1a0 and shown in the talk's slot 1.
  * QUIRK: the offer is dropped when it is more than the player's own bells. */
 int VillagerTalkApproach_Buy(VillagerTalk *talk)
 {
@@ -279,7 +279,7 @@ int VillagerTalkApproach_Buy(VillagerTalk *talk)
     int factor = MainRandom_BelowB(VILLAGER_TALK_APPROACH_FACTOR_BASE) + VILLAGER_TALK_APPROACH_FACTOR_BASE;
     int worth = ItemTraits_Price(&talk->item);
     int scaled = worth * factor;
-    int extra = 3 * RoomScore_HouseLowX();
+    int extra = 3 * RoomScore_HouseYellowWest();
     talk->bells = (scaled >> 14) + extra;
     talk->bells = VillagerTalkApproach_RoundBells(talk->bells);
     if (talk->bells > approach_player_bells()) {

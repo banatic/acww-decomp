@@ -142,20 +142,22 @@ static void fox_draw(u16 *out, int group)
 }
 
 /* func_020ae03c: new items, none sold. The first is of group 0x26 with a chance of 50% plus a
- * tenth of the edges of the house's five rooms summed over its three sides (RoomScore_HouseEdges),
- * else of group 0x27; each other one of group 5 with a chance of 50% plus a tenth of two of those
- * sums, else of group 0. Then they are put in one of six orders at random.
- * QUIRK: the second chance leaves out the low-x sum (RoomScore_HouseLowX) the first one adds.
+ * tenth of the feng shui of the house's five rooms summed over its three colours
+ * (RoomScore_HouseFengShui), else of group 0x27; each other one of group 5 with a chance of
+ * 50% plus a tenth of two of those sums, else of group 0. Then they are put in one of six
+ * orders at random.
+ * QUIRK: the second chance leaves out the yellow sum (RoomScore_HouseYellowWest) the first one
+ * adds.
  * REQUIRES: `items` is a shop (data_021f3b30): the sold bits after it are cleared too. */
 void FoxShop_Stock(u16 *items)
 {
     FoxShop_ClearItems((FoxShop *) items);
 
-    unsigned chance = (unsigned) RoomScore_HouseEdges() / 10 + 50;
+    unsigned chance = (unsigned) RoomScore_HouseFengShui() / 10 + 50;
     fox_draw(&items[0], MainRandom_Below(100) < chance ? 0x26 : 0x27);
 
-    int first = RoomScore_HouseHighX();
-    int second = RoomScore_HouseHighZ();
+    int first = RoomScore_HouseRedEast();
+    int second = RoomScore_HouseGreenSouth();
     chance = (unsigned) ((first + second) / 10 + 50);
     for (unsigned i = 1; i < FOX_SHOP_ITEMS; i++) {
         fox_draw(&items[i], MainRandom_Below(100) < chance ? 5 : 0);

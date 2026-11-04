@@ -74,7 +74,7 @@
 #define VILLAGER_TALK_OBJECT_SOUND_5F 0x5f
 
 /* A reward given in bells: in a step before 2 a chance of 30 in 100 for bells from 500, in a
- * later step for bells from 700, each plus four times RoomScore_HouseLowX. */
+ * later step for bells from 700, each plus four times RoomScore_HouseYellowWest. */
 #define VILLAGER_TALK_OBJECT_BELLS_CHANCE 30
 #define VILLAGER_TALK_OBJECT_BELLS_EARLY 500
 #define VILLAGER_TALK_OBJECT_BELLS_LATE 700
@@ -444,12 +444,12 @@ void VillagerTalkObject_LineTakeItemType3(VillagerTalk *talk, VillagerTalkLine *
 }
 CLEAN_AS(func_0202448c, VillagerTalkObject_LineTakeItemType3)
 
-/* A bag of bells as the gift: `base` plus four times RoomScore_HouseLowX, rounded to tens, kept
+/* A bag of bells as the gift: `base` plus four times RoomScore_HouseYellowWest, rounded to tens, kept
  * at 0x1a0. */
 static void object_bells_gift(VillagerTalk *talk, int base)
 {
     u16 bag;
-    talk->bells = RoomScore_HouseLowX() * 4 + base;
+    talk->bells = RoomScore_HouseYellowWest() * 4 + base;
     talk->bells = VillagerTalkApproach_RoundBells(talk->bells);
     VillagerTalkPart_BellBag(&bag, talk->bells);
     talk->gift = bag;

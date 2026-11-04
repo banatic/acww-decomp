@@ -91,14 +91,14 @@ int SceneMap_DeleteMain(SceneMap *self)
 }
 CLEAN_AS(func_0204cf64, SceneMap_DeleteMain)
 
-/* func_0204cfa4 (vtable slot 0): the map built from the current heap, then the house's edges
- * counted (RoomScore_CountHouseEdges). */
+/* func_0204cfa4 (vtable slot 0): the map built from the current heap, then the house's feng
+ * shui counted (RoomScore_CountHouseFengShui). */
 int SceneMap_CreateMain(SceneMap *self)
 {
     if (!SceneMap_Build(self, data_021fbe94)) {
         return 0;
     }
-    RoomScore_CountHouseEdges();
+    RoomScore_CountHouseFengShui();
     return 1;
 }
 CLEAN_AS(func_0204cfa4, SceneMap_CreateMain)

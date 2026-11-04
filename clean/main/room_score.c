@@ -71,7 +71,7 @@ extern const u32 data_020dd3b8[];
 /* The bits a group's wallpaper (0x400) and carpet (0x800) stand for among its pieces. */
 extern const u16 data_020cbff0;
 extern const u16 data_020cbff4;
-/* The town's counts of RoomScore_CountHouseEdges. */
+/* The town's counts of RoomScore_CountHouseFengShui. */
 extern u8 data_021c95e0, data_021c95e4, data_021c95e8;
 
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
@@ -301,7 +301,7 @@ static void count_theme(void *context, u16 *item, u32 x, u32 z)
  * more pieces of the room have (value 4 counts for nothing); *theme is set to the last such
  * value.
  * REQUIRES: FurnitureInfo_ItemTheme is below 5. */
-int RoomScore_ThemeBonus(RoomScoreRoom *room, AcreMap *map, int *theme)
+int RoomScore_CollectionBonus(RoomScoreRoom *room, AcreMap *map, int *theme)
 {
     u8 counts[ROOM_SCORE_THEMES];
     MI_CpuFill8(counts, 0, sizeof(counts));
@@ -315,7 +315,7 @@ int RoomScore_ThemeBonus(RoomScoreRoom *room, AcreMap *map, int *theme)
     }
     return total;
 }
-CLEAN_AS(func_0205a7d4, RoomScore_ThemeBonus)
+CLEAN_AS(func_0205a7d4, RoomScore_CollectionBonus)
 
 typedef struct ShareCount {
     u16 *ids;
@@ -440,15 +440,16 @@ int RoomScore_ColorBonus(RoomScoreRoom *room, AcreMap *map)
 }
 CLEAN_AS(func_0205ab10, RoomScore_ColorBonus)
 
-/* func_0205ac5c: 100 for each piece counted along the edges. `room` is not used. */
-int RoomScore_EdgeBonus(RoomScoreRoom *room, RoomScoreEdges *edges)
+/* func_0205ac5c: the feng shui: 100 for each piece counted along the three sides. `room` is
+ * not used. */
+int RoomScore_FengShuiBonus(RoomScoreRoom *room, RoomScoreFengShui *edges)
 {
     (void) room;
-    int high_x = RoomScoreEdges_HighX(edges);
-    int low_x = RoomScoreEdges_LowX(edges);
-    return 100 * (high_x + (low_x + RoomScoreEdges_HighZ(edges)));
+    int red = RoomScoreFengShui_RedEast(edges);
+    int yellow = RoomScoreFengShui_YellowWest(edges);
+    return 100 * (red + (yellow + RoomScoreFengShui_GreenSouth(edges)));
 }
-CLEAN_AS(func_0205ac5c, RoomScore_EdgeBonus)
+CLEAN_AS(func_0205ac5c, RoomScore_FengShuiBonus)
 
 static void add_points(void *context, u16 *item, u32 x, u32 z)
 {
@@ -720,8 +721,8 @@ static u16 kind0_flag(u32 score)
 
 /* func_0205b270: the score of rooms `first_index` to `first_index + count - 1` of `source`,
  * each measured into `room` (its bounds, wallpaper and carpet): the furniture's points, the
- * edges, the colours, the eras' and feels' shares (*first, *second), the themes (*theme), less the
- * penalty, plus each group's best (data_021c9854), 5000 when one group has all four
+ * feng shui, the colours, the eras' and feels' shares (*first, *second), the collections
+ * (*theme), less the penalty, plus each group's best (data_021c9854), 5000 when one group has all four
  * categories (1000 when the rooms have them only together), and 7777 for each special item;
  * never below 0. `*bonuses` gets the bonuses found (ROOM_SCORE_*), and a random group of kind
  * 0 with a best is kept, as one of kind 1 over 3000.
@@ -767,19 +768,19 @@ int RoomScore_Total(RoomScoreRoom *room, u16 *bonuses, int *theme, int *first, i
         room->carpet = design;
         RoomScore_Bounds(&room->left, &room->right, &room->top, &room->bottom, map);
 
-        RoomScoreEdges edges;
-        RoomScoreEdges_Construct(&edges);
-        RoomScore_CountEdges(&edges, map);
+        RoomScoreFengShui edges;
+        RoomScoreFengShui_Construct(&edges);
+        RoomScore_CountFengShui(&edges, map);
         RoomScore_Kind0Sets(room, map, NULL);
         RoomScore_Kind1Sets(room, map);
         RoomScore_Kind2Sets(room, map);
         RoomScore_MarkSpecialItems(room, map);
         RoomScore_MarkCategories(room, map);
         points += RoomScore_ItemPoints(room, map);
-        edges_score += RoomScore_EdgeBonus(room, &edges);
+        edges_score += RoomScore_FengShuiBonus(room, &edges);
         colors += RoomScore_ColorBonus(room, map);
         flag_bits += RoomScore_EraFeelBonus(room, map, first, second);
-        themes += RoomScore_ThemeBonus(room, map, theme);
+        themes += RoomScore_CollectionBonus(room, map, theme);
         u8 faces = 0;
         u8 loose_items = 0;
         penalty += RoomScore_WallPenalty(room, map, &faces, &loose_items);
@@ -789,7 +790,7 @@ int RoomScore_Total(RoomScoreRoom *room, u16 *bonuses, int *theme, int *first, i
         if (loose_items != 0) {
             loose = 1;
         }
-        RoomScoreEdges_Destruct(&edges);
+        RoomScoreFengShui_Destruct(&edges);
     }
     int total = points + edges_score + colors + flag_bits + themes - penalty;
 
@@ -858,7 +859,7 @@ int RoomScore_Total(RoomScoreRoom *room, u16 *bonuses, int *theme, int *first, i
             *bonuses |= ROOM_SCORE_CATEGORIES;
         }
         if (edges_score >= 500) {
-            *bonuses |= ROOM_SCORE_EDGES;
+            *bonuses |= ROOM_SCORE_FENG_SHUI;
         }
         if (colors >= 2000) {
             *bonuses |= ROOM_SCORE_COLORS;
@@ -867,7 +868,7 @@ int RoomScore_Total(RoomScoreRoom *room, u16 *bonuses, int *theme, int *first, i
             *bonuses |= ROOM_SCORE_FLAG_BITS;
         }
         if (themes >= 3000) {
-            *bonuses |= ROOM_SCORE_THEME;
+            *bonuses |= ROOM_SCORE_COLLECTION;
         }
         if ((u32) special >= 7000) {
             *bonuses |= ROOM_SCORE_SPECIAL;
@@ -896,7 +897,7 @@ int RoomScore_Total(RoomScoreRoom *room, u16 *bonuses, int *theme, int *first, i
         found |= ROOM_SCORE_CATEGORIES;
     }
     if (edges_score >= 2000) {
-        found |= ROOM_SCORE_EDGES;
+        found |= ROOM_SCORE_FENG_SHUI;
     }
     if (colors >= 6000) {
         found |= ROOM_SCORE_COLORS;
@@ -905,7 +906,7 @@ int RoomScore_Total(RoomScoreRoom *room, u16 *bonuses, int *theme, int *first, i
         found |= ROOM_SCORE_FLAG_BITS;
     }
     if (themes >= 3200) {
-        found |= ROOM_SCORE_THEME;
+        found |= ROOM_SCORE_COLLECTION;
     }
     if ((u32) special >= 7000) {
         found |= ROOM_SCORE_SPECIAL;
@@ -1211,25 +1212,26 @@ void RoomScore_ConstructSource(RoomScoreSource *source)
 }
 CLEAN_AS(func_0205bbe8, RoomScore_ConstructSource)
 
-/* ---- The edges */
+/* ---- The feng shui */
 
-/* func_0205bbf4: the edges of the room of `map` counted: its two columns of the least x for
- * value 1, its two rows of the greatest z for 4, its two columns of the greatest x for 2. */
-void RoomScore_CountEdges(RoomScoreEdges *edges, AcreMap *map)
+/* func_0205bbf4: the feng shui of the room of `map` counted: in its two columns of the least x
+ * (west) the yellow pieces (colour 1), in its two rows of the greatest z (south) the green ones
+ * (4), in its two columns of the greatest x (east) the red ones (2). */
+void RoomScore_CountFengShui(RoomScoreFengShui *edges, AcreMap *map)
 {
     int left;
     int right;
     int top;
     int bottom;
     RoomScore_Bounds(&left, &right, &top, &bottom, map);
-    edges->low_x =
+    edges->yellow_west =
         (u8) RoomScore_CountInside((int) (uintptr_t) edges, map, (u32) left, (u32) (left + 1), (u32) top, (u32) bottom, 1);
-    edges->high_z =
+    edges->green_south =
         (u8) RoomScore_CountInside((int) (uintptr_t) edges, map, (u32) left, (u32) right, (u32) (bottom - 1), (u32) bottom, 4);
-    edges->high_x =
+    edges->red_east =
         (u8) RoomScore_CountInside((int) (uintptr_t) edges, map, (u32) (right - 1), (u32) right, (u32) top, (u32) bottom, 2);
 }
-CLEAN_AS(func_0205bbf4, RoomScore_CountEdges)
+CLEAN_AS(func_0205bbf4, RoomScore_CountFengShui)
 
 typedef struct InsideCount {
     int left;
@@ -1271,7 +1273,7 @@ static void count_inside(void *context, u16 *item, u32 x, u32 z)
 }
 
 /* func_0205bc60: the furniture wholly inside the square (all the cells of its footprint) with
- * Unk01 or Unk02 at `value`, once for each; at most 255. `unused` is not used. */
+ * FurnitureInfo_ColorA or _ColorB at `value`, once for each; at most 255. `unused` is not used. */
 int RoomScore_CountInside(int unused, AcreMap *map, u32 left, u32 right, u32 top, u32 bottom, int value)
 {
     (void) unused;
@@ -1282,99 +1284,99 @@ int RoomScore_CountInside(int unused, AcreMap *map, u32 left, u32 right, u32 top
 CLEAN_AS(func_0205bc60, RoomScore_CountInside)
 
 /* func_0205bd80 */
-int RoomScoreEdges_HighX(const RoomScoreEdges *edges)
+int RoomScoreFengShui_RedEast(const RoomScoreFengShui *edges)
 {
-    return edges->high_x;
+    return edges->red_east;
 }
-CLEAN_AS(func_0205bd80, RoomScoreEdges_HighX)
+CLEAN_AS(func_0205bd80, RoomScoreFengShui_RedEast)
 
 /* func_0205bd84 */
-int RoomScoreEdges_HighZ(const RoomScoreEdges *edges)
+int RoomScoreFengShui_GreenSouth(const RoomScoreFengShui *edges)
 {
-    return edges->high_z;
+    return edges->green_south;
 }
-CLEAN_AS(func_0205bd84, RoomScoreEdges_HighZ)
+CLEAN_AS(func_0205bd84, RoomScoreFengShui_GreenSouth)
 
 /* func_0205bd88 */
-int RoomScoreEdges_LowX(const RoomScoreEdges *edges)
+int RoomScoreFengShui_YellowWest(const RoomScoreFengShui *edges)
 {
-    return edges->low_x;
+    return edges->yellow_west;
 }
-CLEAN_AS(func_0205bd88, RoomScoreEdges_LowX)
+CLEAN_AS(func_0205bd88, RoomScoreFengShui_YellowWest)
 
 /* func_0205bd8c: the destructor; nothing to do. */
-void RoomScoreEdges_Destruct(RoomScoreEdges *edges)
+void RoomScoreFengShui_Destruct(RoomScoreFengShui *edges)
 {
     (void) edges;
 }
-CLEAN_AS(func_0205bd8c, RoomScoreEdges_Destruct)
+CLEAN_AS(func_0205bd8c, RoomScoreFengShui_Destruct)
 
 /* func_0205bd90: the constructor: the counts cleared; the address back (as an int). */
-int RoomScoreEdges_Construct(RoomScoreEdges *edges)
+int RoomScoreFengShui_Construct(RoomScoreFengShui *edges)
 {
-    RoomScoreEdges_Clear(edges);
+    RoomScoreFengShui_Clear(edges);
     return (int) (uintptr_t) edges;
 }
-CLEAN_AS(func_0205bd90, RoomScoreEdges_Construct)
+CLEAN_AS(func_0205bd90, RoomScoreFengShui_Construct)
 
 /* func_0205bda0 */
-void RoomScoreEdges_Clear(RoomScoreEdges *edges)
+void RoomScoreFengShui_Clear(RoomScoreFengShui *edges)
 {
-    edges->high_x = 0;
-    edges->high_z = 0;
-    edges->low_x = 0;
+    edges->red_east = 0;
+    edges->green_south = 0;
+    edges->yellow_west = 0;
 }
-CLEAN_AS(func_0205bda0, RoomScoreEdges_Clear)
+CLEAN_AS(func_0205bda0, RoomScoreFengShui_Clear)
 
-/* func_0205bdb0: the edges of the house's five rooms counted, summed into data_021c95e4 (low
- * x), data_021c95e8 (high z) and data_021c95e0 (high x); a room without a map adds nothing.
+/* func_0205bdb0: the feng shui of the house's five rooms counted, summed into data_021c95e4
+ * (yellow, west), data_021c95e8 (green, south) and data_021c95e0 (red, east); a room without a map adds nothing.
  * QUIRK: the sums are bytes, and wrap. */
-void RoomScore_CountHouseEdges(void)
+void RoomScore_CountHouseFengShui(void)
 {
     data_021c95e0 = 0;
     data_021c95e8 = 0;
     data_021c95e4 = 0;
     for (u32 i = 0; i < ROOM_SCORE_HOUSE_ROOMS; i++) {
-        RoomScoreEdges edges;
-        RoomScoreEdges_Construct(&edges);
+        RoomScoreFengShui edges;
+        RoomScoreFengShui_Construct(&edges);
         AcreMap *map = (AcreMap *) (uintptr_t) AcreMap_Room((int) i);
         if (map != NULL) {
-            RoomScore_CountEdges(&edges, map);
-            data_021c95e4 += (u8) RoomScoreEdges_LowX(&edges);
-            data_021c95e8 += (u8) RoomScoreEdges_HighZ(&edges);
-            data_021c95e0 += (u8) RoomScoreEdges_HighX(&edges);
+            RoomScore_CountFengShui(&edges, map);
+            data_021c95e4 += (u8) RoomScoreFengShui_YellowWest(&edges);
+            data_021c95e8 += (u8) RoomScoreFengShui_GreenSouth(&edges);
+            data_021c95e0 += (u8) RoomScoreFengShui_RedEast(&edges);
         }
-        RoomScoreEdges_Destruct(&edges);
+        RoomScoreFengShui_Destruct(&edges);
     }
 }
-CLEAN_AS(func_0205bdb0, RoomScore_CountHouseEdges)
+CLEAN_AS(func_0205bdb0, RoomScore_CountHouseFengShui)
 
 /* func_0205be20 */
-u8 RoomScore_HouseHighX(void)
+u8 RoomScore_HouseRedEast(void)
 {
     return data_021c95e0;
 }
-CLEAN_AS(func_0205be20, RoomScore_HouseHighX)
+CLEAN_AS(func_0205be20, RoomScore_HouseRedEast)
 
 /* func_0205be2c */
-u8 RoomScore_HouseHighZ(void)
+u8 RoomScore_HouseGreenSouth(void)
 {
     return data_021c95e8;
 }
-CLEAN_AS(func_0205be2c, RoomScore_HouseHighZ)
+CLEAN_AS(func_0205be2c, RoomScore_HouseGreenSouth)
 
 /* func_0205be38 */
-u8 RoomScore_HouseLowX(void)
+u8 RoomScore_HouseYellowWest(void)
 {
     return data_021c95e4;
 }
-CLEAN_AS(func_0205be38, RoomScore_HouseLowX)
+CLEAN_AS(func_0205be38, RoomScore_HouseYellowWest)
 
 /* func_0205be44: the three sums together. */
-int RoomScore_HouseEdges(void)
+int RoomScore_HouseFengShui(void)
 {
-    int high_x = RoomScore_HouseHighX();
-    int low_x = RoomScore_HouseLowX();
-    return high_x + (low_x + RoomScore_HouseHighZ());
+    int red = RoomScore_HouseRedEast();
+    int yellow = RoomScore_HouseYellowWest();
+    return red + (yellow + RoomScore_HouseGreenSouth());
 }
-CLEAN_AS(func_0205be44, RoomScore_HouseEdges)
+CLEAN_AS(func_0205be44, RoomScore_HouseFengShui)

@@ -19,7 +19,7 @@ extern void func_0206411c(void *order);
 extern void func_02064120(void *order);
 
 /* The town's first value is 60 less, and its third 10 more than this, a tenth of two of the
- * house's edge sums (FX_Div of the plain sum by 10.0), cut to a byte. */
+ * house's feng shui sums (red and green) (FX_Div of the plain sum by 10.0), cut to a byte. */
 #define ITEM_GROUP_ORDER_TEN 0xa000 /* 10.0 */
 #define ITEM_GROUP_ORDER_FIRST_BASE 60
 #define ITEM_GROUP_ORDER_THIRD_BASE 10
@@ -32,7 +32,7 @@ typedef u32 ItemGroupOrderBelow(DateRandom *source, u32 bound);
 
 static u8 house_tenth(void)
 {
-    int sum = RoomScore_HouseHighX() + RoomScore_HouseHighZ();
+    int sum = RoomScore_HouseRedEast() + RoomScore_HouseGreenSouth();
     return (u8) FX_Div(sum, ITEM_GROUP_ORDER_TEN);
 }
 

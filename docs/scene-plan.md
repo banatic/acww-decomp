@@ -844,7 +844,7 @@ What reading the Clean code found about the groups above; counts are of function
 - A fruit's price is the town's fruit's (TownRecord_OwnFruit) or another's (ItemTraits_Price):
   bag-sell with a pear in place of the furniture (sell-fruit). A bag buried while holding the
   golden shovel (0x136a) becomes code 0x26, or once a day the money tree's 0x57 at odds of the
-  bag's bells / 1000 + RoomScore_HouseLowX / 25 in 100 (main/tile_requests.c
+  bag's bells / 1000 + RoomScore_HouseYellowWest / 25 in 100 (main/tile_requests.c
   TileRequests_BagCodes); the biggest bag drew it at once (bag-bury).
 - A snowman can be written in a save: the town's record of three (main/snowmen.h, 0x173ae of
   the state block: the day built, the year from 2000 in bits 0-6, the month in bits 7-10, the day
