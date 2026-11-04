@@ -339,7 +339,7 @@ void PlayerRecord_UpdateSinceLastPlay(void)
     NpcLetters_SendMissing();
 
     if (days != 0) {
-        PlayerRecord_NewDayPocketItems(self);
+        PlayerRecord_OpenDeliveries(self);
     }
     if (today.year != PlayerRecord_BirthdayYear(self)) {
         PlayerRecord_SetBirthdayYear(self, PLAYER_RECORD_NO_YEAR);
@@ -419,7 +419,7 @@ CLEAN_AS(func_020992f0, PlayerRecord_ReactionSlots)
 #define RECORD_CLOTHES 0x2408
 #define RECORD_HEAD_ITEM 0x240a
 #define RECORD_PART_C_ITEM 0x240c
-#define RECORD_ITEM_240E 0x240e
+#define RECORD_BED 0x240e
 #define RECORD_ITEM_2410 0x2410
 #define RECORD_SUN_DATE 0x2412
 #define RECORD_FIELD_2416 0x2416
@@ -445,9 +445,9 @@ CLEAN_AS(func_020992f0, PlayerRecord_ReactionSlots)
 /* The record's flag set while the player is stung by bees; it picks the second set of faces. */
 #define RECORD_FLAG_STUNG 0
 
-/* What a new player starts with: item 0x3884 at 0x240e, the first clothes (0x11a8), item
+/* What a new player starts with: the bed 0x3884 (plain red bed) at 0x240e, the first clothes (0x11a8), item
  * 0x11fa at 0x2410 and a sun date of 1 January 2000. */
-#define NEW_PLAYER_ITEM_240E 0x3884
+#define NEW_PLAYER_BED 0x3884
 #define NEW_PLAYER_CLOTHES 0x11a8
 #define NEW_PLAYER_ITEM_2410 0x11fa
 #define SUN_DATE_PACK(year, month, day) ((u16) (((year) & 0x7f) | ((month) & 0xf) << 7 | ((day) & 0x1f) << 11))
@@ -462,18 +462,19 @@ CLEAN_AS(func_020992f0, PlayerRecord_ReactionSlots)
 /* The clothes: items 0x11a8-0x12a7. */
 #define CLOTHES_FIRST 0x11a8
 #define CLOTHES_LAST 0x12a7
-/* The pocket items that turn into another overnight (PlayerRecord_NewDayPocketItems), and the
- * items drawn for each: 0x1560 gives one of 0x1100-0x1143 (or one of item list 4), 0x155f one
- * of 0x1144-0x1187 (or one of item list 3). */
-#define DAY_ITEM_B 0x155f
-#define DAY_ITEM_A 0x1560
-#define DAY_DRAW_A_FIRST 0x1100
-#define DAY_DRAW_B_FIRST 0x1144
-#define DAY_DRAW_COUNT 0x44
-#define DAY_LIST_A 4
-#define DAY_LIST_B 3
+/* The delivery wallpaper (0x1560) and carpet (0x155f) that open overnight
+ * (PlayerRecord_OpenDeliveries), and the items drawn for each: the wallpaper gives one of the
+ * wallpapers 0x1100-0x1143 (or one of item list 4), the carpet one of the carpets 0x1144-0x1187
+ * (or one of item list 3). */
+#define DELIVERY_CARPET 0x155f
+#define DELIVERY_WALLPAPER 0x1560
+#define DELIVERY_WALLPAPER_FIRST 0x1100
+#define DELIVERY_CARPET_FIRST 0x1144
+#define DELIVERY_DRAW_COUNT 0x44
+#define DELIVERY_WALLPAPER_LIST 4
+#define DELIVERY_CARPET_LIST 3
 /* Pocket slot states: the state of the clothes PlayerRecord_ResetForNewTown changes and of the
- * items PlayerRecord_NewDayPocketItems replaces, and the states they get. */
+ * items PlayerRecord_OpenDeliveries replaces, and the states they get. */
 #define SLOT_STATE_0 0
 #define SLOT_STATE_1 1
 #define SLOT_STATE_2 2
@@ -613,12 +614,12 @@ void PlayerRecord_ResetForNewTown(u8 *record)
 }
 CLEAN_AS(func_020993b4, PlayerRecord_ResetForNewTown)
 
-/* The item a pocket's 0x155f or 0x1560 turns into: one of DAY_DRAW_COUNT items from `first`,
- * else, when none is drawn, one of item list `list_kind`. */
-static u16 player_record_draw_day_item(u8 *record, int first, int list_kind)
+/* The item a pocket's delivery carpet (0x155f) or wallpaper (0x1560) turns into: one of
+ * DELIVERY_DRAW_COUNT items from `first`, else, when none is drawn, one of item list `list_kind`. */
+static u16 player_record_draw_delivery(u8 *record, int first, int list_kind)
 {
     u16 item;
-    ItemLists_DrawRange(&item, first, DAY_DRAW_COUNT, 0, 0, record, 1, 10, 0, 1);
+    ItemLists_DrawRange(&item, first, DELIVERY_DRAW_COUNT, 0, 0, record, 1, 10, 0, 1);
     if (item == PLAYER_RECORD_NO_ITEM) {
         PlayerRecordItemList list;
         u16 drawn;
@@ -631,11 +632,11 @@ static u16 player_record_draw_day_item(u8 *record, int first, int list_kind)
 }
 
 /* func_0209948c: on a new day (PlayerRecord_UpdateSinceLastPlay): the object at 0x94 of the
- * villagers' part is reset, and each pocket item 0x155f or 0x1560 in slot state 2 turns into
- * an item drawn for it, in state 0, marked in the record of items. Which of the two it is goes
+ * villagers' part is reset, and each delivery carpet (0x155f) or wallpaper (0x1560) in the pockets
+ * in slot state 2 turns into an item drawn for it, in state 0, marked in the record of items. Which of the two it is goes
  * by func_0204bc64's number for the kinds compared by number. Nothing when the record has no
  * player. */
-void PlayerRecord_NewDayPocketItems(u8 *record)
+void PlayerRecord_OpenDeliveries(u8 *record)
 {
     if (PlayerRecord_HasPlayer(record) == 0) {
         return;
@@ -646,7 +647,7 @@ void PlayerRecord_NewDayPocketItems(u8 *record)
     u16 *slot = PlayerPockets_Slot(pockets, 0);
 
     for (int i = 0; i < PLAYER_POCKETS_SLOTS; i++, slot++) {
-        if (*slot < DAY_ITEM_B || *slot > DAY_ITEM_A) {
+        if (*slot < DELIVERY_CARPET || *slot > DELIVERY_WALLPAPER) {
             continue;
         }
         if (PlayerPockets_SlotState(pockets, i) != SLOT_STATE_2) {
@@ -655,18 +656,18 @@ void PlayerRecord_NewDayPocketItems(u8 *record)
 
         int is_a;
         if (ItemCode_HasVariant(slot) != 0) {
-            u16 a = DAY_ITEM_A;
+            u16 a = DELIVERY_WALLPAPER;
             int number = ItemCode_VariantItem(slot);
             is_a = number == ItemCode_VariantItem(&a);
         } else {
-            is_a = *slot == DAY_ITEM_A;
+            is_a = *slot == DELIVERY_WALLPAPER;
         }
 
         u16 item;
         if (is_a) {
-            item = player_record_draw_day_item(record, DAY_DRAW_A_FIRST, DAY_LIST_A);
+            item = player_record_draw_delivery(record, DELIVERY_WALLPAPER_FIRST, DELIVERY_WALLPAPER_LIST);
         } else {
-            item = player_record_draw_day_item(record, DAY_DRAW_B_FIRST, DAY_LIST_B);
+            item = player_record_draw_delivery(record, DELIVERY_CARPET_FIRST, DELIVERY_CARPET_LIST);
         }
 
         PlayerPockets_SetSlot(pockets, &item, i, SLOT_STATE_0);
@@ -675,7 +676,7 @@ void PlayerRecord_NewDayPocketItems(u8 *record)
         }
     }
 }
-CLEAN_AS(func_0209948c, PlayerRecord_NewDayPocketItems)
+CLEAN_AS(func_0209948c, PlayerRecord_OpenDeliveries)
 
 /* func_02099640 */
 u8 *PlayerRecord_VillagerPart(u8 *record)
@@ -755,18 +756,18 @@ PlayerDesigns *PlayerRecord_Designs(u8 *record)
 CLEAN_AS(func_020996b8, PlayerRecord_Designs)
 
 /* func_020996bc */
-void PlayerRecord_SetItem240E(u8 *record, const u16 *item)
+void PlayerRecord_SetBed(u8 *record, const u16 *item)
 {
-    *player_record_u16(record, RECORD_ITEM_240E) = *item;
+    *player_record_u16(record, RECORD_BED) = *item;
 }
-CLEAN_AS(func_020996bc, PlayerRecord_SetItem240E)
+CLEAN_AS(func_020996bc, PlayerRecord_SetBed)
 
 /* func_020996c8 */
-u16 *PlayerRecord_Item240E(u8 *record)
+u16 *PlayerRecord_Bed(u8 *record)
 {
-    return player_record_u16(record, RECORD_ITEM_240E);
+    return player_record_u16(record, RECORD_BED);
 }
-CLEAN_AS(func_020996c8, PlayerRecord_Item240E)
+CLEAN_AS(func_020996c8, PlayerRecord_Bed)
 
 /* func_020996d4 */
 void PlayerRecord_SetPartCItem(u8 *record, const u16 *item)
@@ -956,7 +957,7 @@ CLEAN_AS(func_02099870, PlayerRecord_Player)
 /* func_0209987c: make a new player in the record: its name, id, byte 0x1c and town (this
  * town for NULL), its looks, flag 0, its bells and held item. Its pockets, designs, shop
  * points, record of items, dated letter, mother's letters and Wi-Fi data are reset; it gets
- * item 0x3884 at 0x240e, the first clothes, nothing on its head nor as part C, item 0x11fa at
+ * the bed 0x3884 at 0x240e, the first clothes, nothing on its head nor as part C, item 0x11fa at
  * 0x2410, a sun date of 1 January 2000, no birthday, a fresh savings account and date of last
  * play, and no byte for any villager. */
 void PlayerRecord_NewPlayer(u8 *record, const void *name, int player_id, int byte_1c, const NpcIdHead *town, u8 face,
@@ -979,7 +980,7 @@ void PlayerRecord_NewPlayer(u8 *record, const void *name, int player_id, int byt
     MomLetterState_Init((MomLetterState *) (void *) (record + RECORD_MOM_LETTERS));
     WifiAccount_Init((WifiAccount *) (void *) (record + RECORD_WIFI_ACCOUNT));
     WifiFriendList_ClearAll((WifiFriendList *) (void *) (record + RECORD_WIFI_FRIENDS));
-    *player_record_u16(record, RECORD_ITEM_240E) = NEW_PLAYER_ITEM_240E;
+    *player_record_u16(record, RECORD_BED) = NEW_PLAYER_BED;
 
     PlayerRecordSunDate sun_date = {SUN_DATE_PACK(0, 1, 1)};
     PlayerRecord_SetSunDate(record, sun_date);
@@ -1005,7 +1006,7 @@ int PlayerRecord_HasPlayer(u8 *record)
 CLEAN_AS(func_02099a28, PlayerRecord_HasPlayer)
 
 /* func_02099a38: empty the record: all zeros, then no player, empty pockets, record of items
- * and villagers' part, no held item, shop points reset, no item at 0x240e, no birthday
+ * and villagers' part, no held item, shop points reset, no bed at 0x240e, no birthday
  * celebrated, no byte for any villager and no villager at 0x245c. */
 void PlayerRecord_Clear(u8 *record)
 {
@@ -1016,7 +1017,7 @@ void PlayerRecord_Clear(u8 *record)
     VillagerPart_ClearAll((VillagerPart *) (void *) (record + RECORD_VILLAGER_PART));
     *player_record_u16(record, RECORD_HELD_ITEM) = PLAYER_RECORD_NO_ITEM;
     ShopPoints_ResetB(record + RECORD_SHOP_POINTS);
-    *player_record_u16(record, RECORD_ITEM_240E) = PLAYER_RECORD_NO_ITEM;
+    *player_record_u16(record, RECORD_BED) = PLAYER_RECORD_NO_ITEM;
     record[RECORD_BIRTHDAY_YEAR] = PLAYER_RECORD_NO_YEAR;
     MI_CpuFill8(record + RECORD_BIRTHDAY_NOTICE_YEARS, 0xff, PLAYER_RECORD_BIRTHDAY_NOTICE_YEARS);
     PlayerRecordVillager_Clear((PlayerRecordVillager *) (void *) (record + RECORD_VILLAGER));

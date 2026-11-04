@@ -13,8 +13,8 @@ extern NetSession *data_020ccf94; /* the session */
 extern u8 data_021dc7bc[];        /* the town's four records */
 extern u8 data_021d5738[];        /* the three guest records */
 
-/* The item each town record number gets at 0x240e when a new player is made there (items
- * 0x3884, 0x3888, 0x388c and 0x3890), built once, with the guard bit 0 of data_021d56f0, and
+/* The bed each town record number gets at 0x240e when a new player is made there (the plain
+ * red, blue, yellow and green beds 0x3884, 0x3888, 0x388c and 0x3890), built once, with the guard bit 0 of data_021d56f0, and
  * registered for destruction with the blocks below. */
 extern int data_021d56f0;
 extern u16 data_021d56f4[PLAYER_RECORDS_TOWN];
@@ -180,7 +180,7 @@ u8 *PlayerRecords_NewPlayer(u8 *players, const void *name, int arg, int number)
     PlayerRecord_Clear(self);
     u16 no_item = ITEM_CODE_NONE;
     PlayerRecord_NewPlayer(self, name, PlayerId_NewNumberNotIn(taken, count), arg, 0, 0, 0, 0, 0, 0, 0, &no_item);
-    PlayerRecord_SetItem240E(self, &data_021d56f4[number & 3]);
+    PlayerRecord_SetBed(self, &data_021d56f4[number & 3]);
     return self;
 }
 CLEAN_AS(func_020985cc, PlayerRecords_NewPlayer)

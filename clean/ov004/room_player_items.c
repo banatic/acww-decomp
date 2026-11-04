@@ -77,7 +77,7 @@ void RoomPlayerItems_Place(void)
         }
         int x = data_ov004_022589cc[player].x;
         int z = data_ov004_022589cc[player].z;
-        ItemCode item = *PlayerRecord_Item240E(record);
+        ItemCode item = *PlayerRecord_Bed(record);
         if (RoomPlayerItems_is_empty(&item)) {
             continue;
         }

@@ -100,7 +100,7 @@ u8 *PlayerRecord_ReactionSlots(u8 *record);
  *           func_02088764, func_02088460 construct them)
  *   0x2404  the shop points (shop_points.h)
  *   0x2406  the held item, 0x2408 the clothes, 0x240a the head's item, 0x240c part C's item,
- *           0x240e and 0x2410 two more items (0xfff1: none)
+ *           0x240e the player's bed in the attic, 0x2410 one more item (0xfff1: none)
  *   0x2412  the date the sun level was last stored, packed (PlayerRecordSunDate)
  *   0x243c  the face (bits 0-3) and the head's kind (bits 4-7)
  *   0x243d  the hair colour (bits 0-2), the sun level (bits 3-5) and the day's luck the
@@ -133,7 +133,7 @@ u8 *PlayerRecord_RandomOther(u8 *record);
 void PlayerRecord_SetItem2410(u8 *record, const u16 *item);
 u16 *PlayerRecord_Item2410(u8 *record);
 void PlayerRecord_ResetForNewTown(u8 *record);
-void PlayerRecord_NewDayPocketItems(u8 *record);
+void PlayerRecord_OpenDeliveries(u8 *record);
 u8 *PlayerRecord_VillagerPart(u8 *record);
 u8 *PlayerRecord_Field1D3B(u8 *record);
 WifiFriendList *PlayerRecord_WifiFriends(u8 *record);
@@ -145,8 +145,8 @@ u8 *PlayerRecord_Field2427(u8 *record);
 u16 *PlayerRecord_ShopPoints(u8 *record);
 u8 *PlayerRecord_ItemRecord(u8 *record);
 PlayerDesigns *PlayerRecord_Designs(u8 *record);
-void PlayerRecord_SetItem240E(u8 *record, const u16 *item);
-u16 *PlayerRecord_Item240E(u8 *record);
+void PlayerRecord_SetBed(u8 *record, const u16 *item);
+u16 *PlayerRecord_Bed(u8 *record);
 void PlayerRecord_SetPartCItem(u8 *record, const u16 *item);
 u16 *PlayerRecord_PartCItem(u8 *record);
 void PlayerRecord_SetHeadItem(u8 *record, const u16 *item);

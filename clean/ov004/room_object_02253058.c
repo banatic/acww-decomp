@@ -343,7 +343,7 @@ void RoomObject02253058_UpdateSwap(RoomObject02253058 *object)
     object->item = CurrentPockets_Item((unsigned int) slot);
     void *record = PlayerRecords_Current();
     if (record != NULL) {
-        PlayerRecord_SetItem240E(record, &object->item);
+        PlayerRecord_SetBed(record, &object->item);
     }
     u16 code = ItemCode_MakeVariant(RoomObject_Number(&object->base), 0);
     CurrentPockets_Set(&code, 0, slot);
