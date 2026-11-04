@@ -27,7 +27,7 @@ void VillagerEntry_HalveByte1E(u8 *villager);
 void VillagerEntry_ClearByte1E(u8 *villager);
 int VillagerEntry_IsByte1EFull(u8 *villager, void *record);
 void VillagerEntry_RaiseByte1E(u8 *villager, void *record);
-int VillagerEntry_IsMoodLow(u8 *villager);
+int VillagerEntry_IsNotUpset(u8 *villager);
 void VillagerEntry_SetByte1E(u8 *villager, void *record);
 int VillagerEntry_NoteVisitor(u8 *villager, void *record);
 void VillagerEntry_MarkFleaMarketDone(u8 *villager, const void *player);

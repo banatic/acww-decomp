@@ -126,7 +126,7 @@ int VillagerEntry_IsByte1EFull(u8 *villager, void *record)
         VillagerStatus_StateEntry(villager)->byte_1e == VILLAGER_ENTRY_BYTE_1E_MAX) {
         full = 1;
     }
-    return full && VillagerEntry_IsMoodLow(villager) != 0;
+    return full && VillagerEntry_IsNotUpset(villager) != 0;
 }
 CLEAN_AS(func_0207d18c, VillagerEntry_IsByte1EFull)
 
@@ -140,7 +140,7 @@ void VillagerEntry_RaiseByte1E(u8 *villager, void *record)
     }
     int amount = 0;
     record = usable_record(record);
-    if (record != NULL && VillagerEntry_IsMoodLow(villager)) {
+    if (record != NULL && VillagerEntry_IsNotUpset(villager)) {
         const s8 *memory = (const s8 *) VillagerMemory_Of(villager, PlayerRecord_Player(record));
         if (memory != NULL) {
             int factor = fondness_factor(memory);
@@ -151,8 +151,9 @@ void VillagerEntry_RaiseByte1E(u8 *villager, void *record)
 }
 CLEAN_AS(func_0207d1f8, VillagerEntry_RaiseByte1E)
 
-/* func_0207d278: whether the mood (byte 0x18) of the villager's state entry is 0 or 1. */
-int VillagerEntry_IsMoodLow(u8 *villager)
+/* func_0207d278: whether the mood (byte 0x18) of the villager's state entry is 0 (none) or 1
+ * (happy), not angry (2), sad (3) or 4 (by personality). */
+int VillagerEntry_IsNotUpset(u8 *villager)
 {
     if (!has_villager(villager)) {
         return 0;
@@ -163,7 +164,7 @@ int VillagerEntry_IsMoodLow(u8 *villager)
     }
     return VillagerState_GetMood(state) == 0 || VillagerState_GetMood(state) == 1;
 }
-CLEAN_AS(func_0207d278, VillagerEntry_IsMoodLow)
+CLEAN_AS(func_0207d278, VillagerEntry_IsNotUpset)
 
 /* func_0207d2b4: byte 0x1e cleared, then, when the player's record is usable and the villager
  * knows the player, set to how fond the villager is (a factor of 1 or 2) times a draw of 1-10,
