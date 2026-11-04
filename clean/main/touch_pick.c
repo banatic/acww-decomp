@@ -3,7 +3,7 @@
 
 #include "clean.h"
 #include "main/actor_table.h"
-#include "ov003/etc_board.h"
+#include "ov003/villager_nameplate.h"
 #include "ov004/atm.h"
 #include "ov003/object_actors.h"
 #include "ov003/snowman.h"
@@ -94,14 +94,14 @@ int TouchPick_Atm(void)
 CLEAN_AS(func_020b7424, TouchPick_Atm)
 
 /* func_020b744c (kind 9): outdoors, the board of index `index`. */
-int TouchPick_EtcBoard(int index)
+int TouchPick_VillagerNameplate(int index)
 {
     if (data_020e54a8 == TOUCH_PICK_MODE_OUTDOORS) {
-        return (int) (uintptr_t) EtcBoard_Get(index);
+        return (int) (uintptr_t) VillagerNameplate_Get(index);
     }
     return 0;
 }
-CLEAN_AS(func_020b744c, TouchPick_EtcBoard)
+CLEAN_AS(func_020b744c, TouchPick_VillagerNameplate)
 
 /* func_020b7474 (kinds 8 and 15): in a room, overlay 4's room object of index `index`. */
 int TouchPick_RoomObject(int index)

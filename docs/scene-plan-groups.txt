@@ -539,7 +539,7 @@ match: autoload_2/process:Process_DestructFree main/game_process:GameProcess_Des
 area: Unreachable for one player
 group: the other classes' destructors of vtable slot 16
 scene: none: the destructor without the free (vtable slot 0x40) of the scene objects, room objects, special characters and processes of main and the overlays outside 90-146 whose Clean comments say so
-reach: as for the menu scenes: these objects are deleted through slot 17 (0x44), whose versions destroy the members and the base themselves; no slot-16 destructor runs in any of the scenes; besides (findings 2026-10-29, town8), SceneMap_Destroy, TownGround_Destroy, ObjectActors_Destroy, MysteryCat_Destroy and TownPelican_Destroy, whose only relocations are their vtables' words at 0x40, before the slot-17 destructor the scenes run; besides (findings 2026-10-29, unknown2), gate slot16: the module images make seven indirect calls through a word loaded from offset 0x40 (w15/vcalls.py's census of every BLX and MOV LR,PC with BX or MOV PC): TalkTags_FocusFirst through the talk's receiver (TalkObject's receiver, stored only by TalkObject_AttachReceiver, whose ten callers pass talk receivers, and NULL), and NNSi_G3dFuncSbc_PRJMAP (three), CARDi_TaskThread, func_02129100 and ghiCallCompletedCallback through a callback field of the C structure itself, not a vtable; register-offset calls are member-function pointers, which cannot name a destructor; so a destructor named only by vtable words at 0x40 never runs: the music process's, the camera's, the fish display's, the lights', the spawner's, the screen indicators', the transition mark's, the resident and scene processes', the activity's, the quick message's and text draw's processes, the player spawn and report processes, the special characters' and visitors' (Astro, NookClerk, Barber, Gull, Boar, Otter, Camel, Walrus, Taxi, the turtle's, ReactionNpc), the museum's, aquarium's, shop's and room manager's, the title scene's and others (62, w28/s16.py, each relocation checked to be a load at +0x40 of a data object whose word at +0x44 is the class's deleting destructor); besides (findings 2026-10-31, rows21), RoomObject022510b4_Destroy, which besides its vtable word only FieldActor_ActOnTarget's call of FieldActor_RequestState16 (overlay 3) reaches, at the same address with overlay 4 in memory: that call is made for a tile request of kind 5, which only TileRequests_AskInTown makes, in scene 0 (the town, overlay 3; TileRequests_Add alone stores a request's kind, and its kind++ makes only 4, 0xa and 0x16), and a field actor's target is its own request, made again with each scene (w61-wt5/cls/classify.py, gate tilekind); besides (findings 2026-10-31, rows26), Fox_Destroy, EtcBoard_Destroy and Snowman_Destroy (ov003), each named by its vtable's word at 0x40 and by its talk receiver's destructor thunk (Fox_ReceiverDestroy and the others, slot 0 of the receiver's vtable, in "the destructors of vtable slot 0 of those classes"), as Mailbox_Destroy, and TurtleGardens_Destruct (ov083), named by the word at 0x40 of its vtable 0x0227928c only (the other overlays' words at 0x02278a00, ov070-ov088, name their own functions there; w66-wt6/refs.py, vtdump.py; w66-wt6/cls/classify.py, gate value)
+reach: as for the menu scenes: these objects are deleted through slot 17 (0x44), whose versions destroy the members and the base themselves; no slot-16 destructor runs in any of the scenes; besides (findings 2026-10-29, town8), SceneMap_Destroy, TownGround_Destroy, ObjectActors_Destroy, MysteryCat_Destroy and TownPelican_Destroy, whose only relocations are their vtables' words at 0x40, before the slot-17 destructor the scenes run; besides (findings 2026-10-29, unknown2), gate slot16: the module images make seven indirect calls through a word loaded from offset 0x40 (w15/vcalls.py's census of every BLX and MOV LR,PC with BX or MOV PC): TalkTags_FocusFirst through the talk's receiver (TalkObject's receiver, stored only by TalkObject_AttachReceiver, whose ten callers pass talk receivers, and NULL), and NNSi_G3dFuncSbc_PRJMAP (three), CARDi_TaskThread, func_02129100 and ghiCallCompletedCallback through a callback field of the C structure itself, not a vtable; register-offset calls are member-function pointers, which cannot name a destructor; so a destructor named only by vtable words at 0x40 never runs: the music process's, the camera's, the fish display's, the lights', the spawner's, the screen indicators', the transition mark's, the resident and scene processes', the activity's, the quick message's and text draw's processes, the player spawn and report processes, the special characters' and visitors' (Astro, NookClerk, Barber, Gull, Boar, Otter, Camel, Walrus, Taxi, the turtle's, ReactionNpc), the museum's, aquarium's, shop's and room manager's, the title scene's and others (62, w28/s16.py, each relocation checked to be a load at +0x40 of a data object whose word at +0x44 is the class's deleting destructor); besides (findings 2026-10-31, rows21), RoomObject022510b4_Destroy, which besides its vtable word only FieldActor_ActOnTarget's call of FieldActor_RequestState16 (overlay 3) reaches, at the same address with overlay 4 in memory: that call is made for a tile request of kind 5, which only TileRequests_AskInTown makes, in scene 0 (the town, overlay 3; TileRequests_Add alone stores a request's kind, and its kind++ makes only 4, 0xa and 0x16), and a field actor's target is its own request, made again with each scene (w61-wt5/cls/classify.py, gate tilekind); besides (findings 2026-10-31, rows26), Fox_Destroy, VillagerNameplate_Destroy and Snowman_Destroy (ov003), each named by its vtable's word at 0x40 and by its talk receiver's destructor thunk (Fox_ReceiverDestroy and the others, slot 0 of the receiver's vtable, in "the destructors of vtable slot 0 of those classes"), as Mailbox_Destroy, and TurtleGardens_Destruct (ov083), named by the word at 0x40 of its vtable 0x0227928c only (the other overlays' words at 0x02278a00, ov070-ov088, name their own functions there; w66-wt6/refs.py, vtdump.py; w66-wt6/cls/classify.py, gate value)
 needs: unreachable
 match: main/event_announce:EventAnnounceProcess_Destruct main/missing_npc1:MissingNpc1_Destruct
   main/scene_map:SceneMap_Destroy ov003/town_ground:TownGround_Destroy
@@ -633,7 +633,7 @@ match: main/event_announce:EventAnnounceProcess_Destruct main/missing_npc1:Missi
   ov081/turtle_fishing:TurtleFishing_Destruct ov082/turtle_insects:TurtleInsects_Destruct
   ov088/reaction_npc:ReactionNpc_Destroy ov147/title_scene:TitleScene_Destruct
   ov004/room_object_022510b4:RoomObject022510b4_Destroy
-  ov003/fox:Fox_Destroy ov003/etc_board:EtcBoard_Destroy ov003/snowman:Snowman_Destroy
+  ov003/fox:Fox_Destroy ov003/villager_nameplate:VillagerNameplate_Destroy ov003/snowman:Snowman_Destroy
   ov083/turtle_gardens:TurtleGardens_Destruct
 
 area: Unreachable for one player
@@ -1236,7 +1236,7 @@ match: autoload_2/sound_emitter_class:SoundEmitterClass_Destruct2Delete
   ov003/checkpoint:Checkpoint_ReceiverDestroyAndFree
   ov003/countdown:CountdownBoard_ReceiverDestroyAndFree
   ov003/countdown:CountdownDigit_ReceiverDestroyAndFree
-  ov003/etc_board:EtcBoard_ReceiverDestroyAndFree ov003/fish_shadow:FishFinAnim_DestructDelete
+  ov003/villager_nameplate:VillagerNameplate_ReceiverDestroyAndFree ov003/fish_shadow:FishFinAnim_DestructDelete
   ov003/fox:Fox_ReceiverDestroyAndFree ov003/mailbox:Mailbox_ReceiverDestroyAndFree
   ov003/outdoor_clock:OutdoorClock_ReceiverDestroyAndFree
   ov003/panther:Panther_ReceiverDestroyAndFree ov003/player_house:PlayerHouse_ReceiverDestroyAndFree
@@ -1342,7 +1342,7 @@ match: autoload_2/sound_emitter_class:SoundEmitterClass_Destruct2
   ov002/glide:Glider_DestroyVirtual ov002/label_button:LabelButtonBase_Destroy
   ov002/wipe:Progress_DestroyBase ov003/checkpoint:Checkpoint_ReceiverDestroy
   ov003/countdown:CountdownBoard_ReceiverDestroy ov003/countdown:CountdownDigit_ReceiverDestroy
-  ov003/etc_board:EtcBoard_ReceiverDestroy ov003/fish_shadow:FishFinAnim_Destruct
+  ov003/villager_nameplate:VillagerNameplate_ReceiverDestroy ov003/fish_shadow:FishFinAnim_Destruct
   ov003/fox:Fox_ReceiverDestroy ov003/mailbox:Mailbox_ReceiverDestroy
   ov003/outdoor_clock:OutdoorClock_ReceiverDestroy ov003/panther:Panther_ReceiverDestroy
   ov003/player_house:PlayerHouse_ReceiverDestroy ov003/bulletin_board:BulletinBoard_ReceiverDestroy
@@ -2367,7 +2367,7 @@ reach: boot on the event's date and hour (main/event_calendar.h), find the turtl
 needs: date
 match: ov080/* ov081/* ov082/* ov083/* ov084/* ov085/* ov086/* main/event_* main/sky_fireworks* main/sky_events
   main/event_winner main/day_events main/board_notices main/spaceship_parts ov003/countdown ov004/indoor_countdown
-  ov003/etc_board
+  ov003/villager_nameplate
 
 area: Other dates, times and visitors (for the boot on another day)
 group: villagers' birthdays, sickness and visits

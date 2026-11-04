@@ -1,5 +1,6 @@
 /* The "obj_etc_board" scene object of overlay 4 (class vtable 0x0225328c, receiver part
- * 0x022532f4, 0x15c bytes): the rooms' counterpart of overlay 3's board (ov003/etc_board.h).
+ * 0x022532f4, 0x15c bytes): the rooms' counterpart of overlay 3's boards (ov003/villager_nameplate.h,
+ * ov003/sign_board.h).
  *
  * RoomShell_SpawnBoards makes one for each entry of a list of the room (RoomEtcBoard_Spawn):
  * where it stands, how far it can be talked to from and which message it shows. Up to 64 exist

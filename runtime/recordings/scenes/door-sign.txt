@@ -2,7 +2,7 @@
 # not in this repository). As villager-home.txt to 3290: at a villager's door, UP held.
 # Save: the seed town. At the door its scene actor (ov009/scene_actor_mode.c, mode 0) looks at
 # what the pen comes down on: the house's sign at 3300 (a board's pick, kind 9:
-# main/touch_pick.c, ov003/etc_board.c); DOWN at 3334 walks away.
+# main/touch_pick.c, ov003/villager_nameplate.c); DOWN at 3334 walks away.
 900 START -
 906 - -
 1000 A -
