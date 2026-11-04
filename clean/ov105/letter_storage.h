@@ -44,11 +44,11 @@ enum LetterStorageFlag {
                                                * column to the page */
     LETTER_STORAGE_FLAG_HELD_HIDDEN = 0x40,   /* the held letter is not drawn (LetterStorage_ShowPage) */
     LETTER_STORAGE_FLAG_80 = 0x80,
-    LETTER_STORAGE_FLAG_100 = 0x100,        /* set by action 1 (LetterStorage_RunAction1) */
-    LETTER_STORAGE_FLAG_PAGE_WIPE = 0x200,  /* a page's wipe in is running (LetterStorage_StartPageWipeIn) */
-    LETTER_STORAGE_FLAG_FIXED_MENU = 0x800, /* the choice is LetterStorage_OpenFixedMenu's: its first
+    LETTER_STORAGE_FLAG_READ = 0x100,            /* set by action 1 (LetterStorage_RunActionRead) */
+    LETTER_STORAGE_FLAG_PAGE_WIPE = 0x200,       /* a page's wipe in is running (LetterStorage_StartPageWipeIn) */
+    LETTER_STORAGE_FLAG_DISCARD_CONFIRM = 0x800, /* the choice is LetterStorage_OpenDiscardConfirm's: its first
                                                * row is set apart */
-    LETTER_STORAGE_FLAG_CHANGED = 0x1000    /* the stored letters are written back at the end
+    LETTER_STORAGE_FLAG_CHANGED = 0x1000         /* the stored letters are written back at the end
                                                * (LetterStorage_End) */
 };
 
@@ -80,11 +80,11 @@ enum LetterStorageHeldKind {
 
 /* The values of the choice rows (`action`), run by LetterStorage_RunAction. */
 enum LetterStorageAction {
-    LETTER_STORAGE_ACTION_0 = 0,       /* LetterStorage_RunAction0 */
-    LETTER_STORAGE_ACTION_1 = 1,       /* LetterStorage_RunAction1 */
-    LETTER_STORAGE_ACTION_PICK_UP = 2, /* LetterStorage_PickUpSlotLetter */
-    LETTER_STORAGE_ACTION_MENU = 3,    /* LetterStorage_OpenFixedMenu */
-    LETTER_STORAGE_ACTION_CANCEL = 4   /* func_ov105_0229db14 */
+    LETTER_STORAGE_ACTION_HOLD = 0,            /* LetterStorage_RunActionHold */
+    LETTER_STORAGE_ACTION_READ = 1,            /* LetterStorage_RunActionRead */
+    LETTER_STORAGE_ACTION_DISCARD = 2,         /* LetterStorage_DiscardSlotLetter */
+    LETTER_STORAGE_ACTION_DISCARD_CONFIRM = 3, /* LetterStorage_OpenDiscardConfirm */
+    LETTER_STORAGE_ACTION_CANCEL = 4           /* func_ov105_0229db14 */
 };
 
 typedef struct LetterStorage {
@@ -150,23 +150,23 @@ void LetterStorage_PressPanelButton4(LetterStorage *self);
 void LetterStorage_PressPanelButton3(LetterStorage *self);
 void LetterStorage_PressPanelButton9(LetterStorage *self);
 void LetterStorage_DoNothing(LetterStorage *self);
-void LetterStorage_RunActionMenu(LetterStorage *self);
-void LetterStorage_PickUpSlotLetter(LetterStorage *self);
+void LetterStorage_RunDiscardConfirm(LetterStorage *self);
+void LetterStorage_DiscardSlotLetter(LetterStorage *self);
 void LetterStorage_PressLabelButton(LetterStorage *self);
-void LetterStorage_RunAction1(LetterStorage *self);
+void LetterStorage_RunActionRead(LetterStorage *self);
 int LetterStorage_MoveCursor(LetterStorage *self, int keys, int mode);
 void LetterStorage_MoveCursorInTabs(LetterStorage *self, int keys);
 void LetterStorage_MoveCursorBelow(LetterStorage *self, int keys);
 void LetterStorage_MoveCursorInPage(LetterStorage *self, int keys, int mode);
 void LetterStorage_MoveCursorInCarried(LetterStorage *self, int keys, int mode);
-void LetterStorage_OpenFixedMenu(LetterStorage *self);
+void LetterStorage_OpenDiscardConfirm(LetterStorage *self);
 void LetterStorage_OpenLetterMenu(LetterStorage *self, int place, int above_popup);
 void LetterStorage_CancelChoice(LetterStorage *self);
 void LetterStorage_ShowChoice(LetterStorage *self, int above_popup);
 void LetterStorage_RunAction(LetterStorage *self);
 void LetterStorage_BeginSubState13(LetterStorage *self, u8 target);
 void LetterStorage_BeginSubState12(LetterStorage *self, char target);
-void LetterStorage_RunAction0(LetterStorage *self);
+void LetterStorage_RunActionHold(LetterStorage *self);
 void LetterStorage_BeginSubState0f(LetterStorage *self);
 void LetterStorage_BeginSubState0e(LetterStorage *self);
 void LetterStorage_ShowCursorFirstOfSet(LetterStorage *self);
@@ -230,7 +230,7 @@ enum LetterStorageSubState {
     LETTER_STORAGE_SUB_ERROR = 0x19,           /* LetterStorage_WaitError */
     LETTER_STORAGE_SUB_LABEL_PRESSED = 0x1a,   /* LetterStorage_FollowLabelPress */
     LETTER_STORAGE_SUB_PANEL_PRESSED = 0x1b,   /* LetterStorage_FollowPanelPress */
-    LETTER_STORAGE_SUB_LET_GO = 0x1c,          /* LetterStorage_WaitLetGo */
+    LETTER_STORAGE_SUB_DISCARD = 0x1c,         /* LetterStorage_WaitDiscarded */
     LETTER_STORAGE_SUB_PANEL_BY_TOUCH = 0x1d,  /* LetterStorage_ChoosePanelButtonByTouch */
     LETTER_STORAGE_SUB_PANEL_BY_KEYS = 0x1e,   /* LetterStorage_ChoosePanelButtonByKeys */
     LETTER_STORAGE_SUB_PANEL_PRESS = 0x1f      /* LetterStorage_PressChosenPanelButton */
@@ -270,7 +270,7 @@ void LetterStorage_EndActionHidden(LetterStorage *self);
 void LetterStorage_PressChosenPanelButton(LetterStorage *self);
 void LetterStorage_ChoosePanelButtonByKeys(LetterStorage *self);
 void LetterStorage_ChoosePanelButtonByTouch(LetterStorage *self);
-void LetterStorage_WaitLetGo(LetterStorage *self);
+void LetterStorage_WaitDiscarded(LetterStorage *self);
 void LetterStorage_FollowPanelPress(LetterStorage *self);
 void LetterStorage_FollowLabelPress(LetterStorage *self);
 void LetterStorage_WaitError(LetterStorage *self);

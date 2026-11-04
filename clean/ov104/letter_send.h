@@ -48,13 +48,13 @@ enum LetterSendFlag {
     LETTER_SEND_FLAG_WRAPPED_LEFT = 0x10,     /* the cursor sprite's x is a screen width (256) less */
     LETTER_SEND_FLAG_WRAPPED_RIGHT = 0x20,    /* the cursor sprite's x is a screen width more */
     LETTER_SEND_FLAG_HELD_HIDDEN = 0x40,      /* the held letter is not drawn (LetterSend_DrawHeld) */
-    LETTER_SEND_FLAG_ACTION_1 = 0x100,        /* set by action 1, cleared by posting and cancelling */
+    LETTER_SEND_FLAG_READ = 0x100,            /* set by action 1, cleared by posting and cancelling */
     LETTER_SEND_FLAG_CANCELLED = 0x400,       /* the scene ends without posting (LetterSend_Cancel) */
     LETTER_SEND_FLAG_LINKED = 0x800,          /* posting with consoles linked (LetterSend_BeginLinkedPost) */
     LETTER_SEND_FLAG_SENDING = 0x1000,        /* letters are being sent to the host, one a frame at most */
     LETTER_SEND_FLAG_AWAITING_REPLY = 0x2000, /* a letter was sent; the host's reply is awaited */
     LETTER_SEND_FLAG_HOST = 0x4000,           /* this console is the host: the letters were posted here */
-    LETTER_SEND_FLAG_FIXED_MENU = 0x8000      /* the choice is LetterSend_OpenFixedMenu's: its first row is
+    LETTER_SEND_FLAG_DISCARD_CONFIRM = 0x8000 /* the choice is LetterSend_OpenDiscardConfirm's: its first row is
                                                * set apart */
 };
 
@@ -103,11 +103,11 @@ enum LetterSendHeldKind {
 
 /* The values of the choice rows (`action`), run by LetterSend_RunAction. */
 enum LetterSendAction {
-    LETTER_SEND_ACTION_0 = 0,       /* LetterSend_RunAction0 */
-    LETTER_SEND_ACTION_1 = 1,       /* LetterSend_RunAction1 */
-    LETTER_SEND_ACTION_PICK_UP = 2, /* LetterSend_PickUpSlotLetter */
-    LETTER_SEND_ACTION_MENU = 3,    /* LetterSend_RunActionMenu */
-    LETTER_SEND_ACTION_CANCEL = 4   /* LetterSend_EndAction */
+    LETTER_SEND_ACTION_HOLD = 0,            /* LetterSend_RunActionHold */
+    LETTER_SEND_ACTION_READ = 1,            /* LetterSend_RunActionRead */
+    LETTER_SEND_ACTION_DISCARD = 2,         /* LetterSend_DiscardSlotLetter */
+    LETTER_SEND_ACTION_DISCARD_CONFIRM = 3, /* LetterSend_RunDiscardConfirm */
+    LETTER_SEND_ACTION_CANCEL = 4           /* LetterSend_EndAction */
 };
 
 typedef struct LetterSendScene {
@@ -173,22 +173,22 @@ void LetterSend_Post(LetterSendScene *self);
 void LetterSend_ReturnUnsent(LetterSendScene *self, int drop_posted);
 void LetterSend_RestoreCarried(LetterSendScene *self);
 void LetterSend_SaveCarried(LetterSendScene *self);
-void LetterSend_RunActionMenu(LetterSendScene *self);
-void LetterSend_PickUpSlotLetter(LetterSendScene *self);
+void LetterSend_RunDiscardConfirm(LetterSendScene *self);
+void LetterSend_DiscardSlotLetter(LetterSendScene *self);
 void LetterSend_PressLabelButton(LetterSendScene *self);
-void LetterSend_RunAction1(LetterSendScene *self);
+void LetterSend_RunActionRead(LetterSendScene *self);
 int LetterSend_MoveCursor(LetterSendScene *self, int keys, int mode);
 void LetterSend_MoveCursorBelow(LetterSendScene *self, int keys);
 void LetterSend_MoveCursorInOutbox(LetterSendScene *self, int keys, int mode);
 void LetterSend_MoveCursorInCarried(LetterSendScene *self, int keys, int mode);
-void LetterSend_OpenFixedMenu(LetterSendScene *self);
+void LetterSend_OpenDiscardConfirm(LetterSendScene *self);
 void LetterSend_OpenLetterMenu(LetterSendScene *self, int place, int above_popup);
 void LetterSend_CancelChoice(LetterSendScene *self);
 void LetterSend_ShowChoice(LetterSendScene *self, int above_popup);
 void LetterSend_RunAction(LetterSendScene *self);
 void LetterSend_BeginSubState13(LetterSendScene *self, u8 target);
 void LetterSend_BeginSubState12(LetterSendScene *self, u8 target);
-void LetterSend_RunAction0(LetterSendScene *self);
+void LetterSend_RunActionHold(LetterSendScene *self);
 void LetterSend_BeginSubState0e(LetterSendScene *self);
 void LetterSend_ShowCursorFirstOfSet(LetterSendScene *self);
 void LetterSend_PlaceCursorSprite(LetterSendScene *self);
@@ -253,7 +253,7 @@ enum LetterSendSubState {
     LETTER_SEND_SUB_ERROR = 0x19,           /* LetterSend_WaitError */
     LETTER_SEND_SUB_LABEL_PRESSED = 0x1a,   /* LetterSend_FollowLabelPress */
     LETTER_SEND_SUB_PANEL_PRESSED = 0x1b,   /* LetterSend_FollowPanelPress */
-    LETTER_SEND_SUB_LET_GO = 0x1c           /* LetterSend_WaitLetGo */
+    LETTER_SEND_SUB_DISCARD = 0x1c          /* LetterSend_WaitDiscarded */
 };
 
 void LetterSend_ClearSelection(LetterSendScene *self);
@@ -283,7 +283,7 @@ void LetterSend_TouchPlace(LetterSendScene *self, int place);
 void LetterSend_EndAction(LetterSendScene *self);
 void LetterSend_EndActionAtCursor(LetterSendScene *self);
 void LetterSend_EndActionHidden(LetterSendScene *self);
-void LetterSend_WaitLetGo(LetterSendScene *self);
+void LetterSend_WaitDiscarded(LetterSendScene *self);
 void LetterSend_FollowPanelPress(LetterSendScene *self);
 void LetterSend_FollowLabelPress(LetterSendScene *self);
 void LetterSend_WaitError(LetterSendScene *self);

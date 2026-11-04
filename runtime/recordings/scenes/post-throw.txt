@@ -5,7 +5,7 @@
 # and A open a letter's choice, B points at its last row and closes it; A opens it again and a pen
 # tap (5160) cancels it. DOWN, A on a letter the player wrote: its choice has "throw away"; DOWN
 # twice and A (5334) open the fixed question and A throws the letter away
-# (LetterSend_PickUpSlotLetter). Letters taken up and put down by the keys, the cancel button
+# (LetterSend_DiscardSlotLetter). Letters taken up and put down by the keys, the cancel button
 # touched; A to the end.
 900 START -
 906 - -

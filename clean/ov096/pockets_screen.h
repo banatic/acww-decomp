@@ -55,10 +55,10 @@ enum PocketsScreenFlag {
     POCKETS_FLAG_2000 = 0x2000, /* the held thing glides on to `unk_b9` (PocketsScreen_SettleHeld) */
     POCKETS_FLAG_4000 = 0x4000, /* a touch on the bells' place finds no place (PocketsScreen_PlaceAtTouch) */
     POCKETS_FLAG_8000 = 0x8000,
-    POCKETS_FLAG_NO_ENTRIES = 0x10000,    /* the touched place of the grid offers no choice row */
-    POCKETS_FLAG_EXITING = 0x20000,       /* set by PocketsScreen_ExitToParent */
-    POCKETS_FLAG_FIXED_MENU = 0x40000,    /* the choice is PocketsScreen_OpenFixedMenu's */
-    POCKETS_FLAG_STEPWISE_SETUP = 0x80000 /* states 0-2 of the setup take a frame each (the
+    POCKETS_FLAG_NO_ENTRIES = 0x10000,      /* the touched place of the grid offers no choice row */
+    POCKETS_FLAG_EXITING = 0x20000,         /* set by PocketsScreen_ExitToParent */
+    POCKETS_FLAG_DISCARD_CONFIRM = 0x40000, /* the choice is PocketsScreen_OpenDiscardConfirm's */
+    POCKETS_FLAG_STEPWISE_SETUP = 0x80000   /* states 0-2 of the setup take a frame each (the
                                            * parent's byte 0x98 was set, PocketsScreen_Setup) */
 };
 
@@ -177,7 +177,7 @@ void PocketsScreen_MoveCursorInGrid(PocketsScreen *self, int keys, unsigned int 
 u8 PocketsScreen_LocalSlotIfTaken(PocketsScreen *self);
 u8 *PocketsScreen_OpenChoicePage(PocketsScreen *self, int wipe);
 int PocketsScreen_OpenFirstChoicePage(PocketsScreen *self);
-void PocketsScreen_OpenFixedMenu(PocketsScreen *self);
+void PocketsScreen_OpenDiscardConfirm(PocketsScreen *self);
 void PocketsScreen_OpenSlotMenu(PocketsScreen *self, int place, int above_popup);
 void PocketsScreen_AddPlayerEntries(PocketsScreen *self);
 void PocketsScreen_AddBellEntries(PocketsScreen *self);
@@ -193,8 +193,8 @@ void PocketsScreen_ActionSendMessage0(PocketsScreen *self);
 void PocketsScreen_SendMessage(PocketsScreen *self, int message);
 void PocketsScreen_ActionMessageMenu(PocketsScreen *self);
 int PocketsScreen_ActionSubState31(PocketsScreen *self);
-void PocketsScreen_ActionFixedMenu(PocketsScreen *self);
-void PocketsScreen_ActionLetterSubState2a(PocketsScreen *self);
+void PocketsScreen_ActionDiscardConfirm(PocketsScreen *self);
+void PocketsScreen_ActionDiscardLetter(PocketsScreen *self);
 void PocketsScreen_ActionGridSubState2b(PocketsScreen *self);
 void PocketsScreen_ActionTakeRecordItem(PocketsScreen *self);
 void PocketsScreen_ActionTakeBells(PocketsScreen *self);
@@ -320,7 +320,7 @@ void PocketsScreen_BlinkSlot(PocketsScreen *self);
 u8 *PocketsScreen_HandSlotItemToActor(PocketsScreen *self);
 void PocketsScreen_WaitActorState(PocketsScreen *self);
 void PocketsScreen_WaitGridObject(PocketsScreen *self);
-void PocketsScreen_WaitLettersObject(PocketsScreen *self);
+void PocketsScreen_WaitLetterDiscarded(PocketsScreen *self);
 void PocketsScreen_WaitActorForRecord(PocketsScreen *self);
 void PocketsScreen_WaitRecordBlink(PocketsScreen *self);
 void PocketsScreen_GiveToRecordSlot(PocketsScreen *self);

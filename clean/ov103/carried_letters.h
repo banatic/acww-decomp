@@ -73,10 +73,10 @@ enum CarriedLettersHeldKind {
 
 /* The values of the choice rows (`action`), run by CarriedLetters_RunAction. */
 enum CarriedLettersAction {
-    CARRIED_LETTERS_ACTION_HOLD = 0,  /* text 0: the letter picked up with the cursor */
-    CARRIED_LETTERS_ACTION_READ = 1,  /* text 0x14 or 0x17: the letter read */
-    CARRIED_LETTERS_ACTION_2 = 2,     /* text 0x15: runs as the cancel does */
-    CARRIED_LETTERS_ACTION_CANCEL = 3 /* text 2 */
+    CARRIED_LETTERS_ACTION_HOLD = 0,    /* text 0: the letter picked up with the cursor */
+    CARRIED_LETTERS_ACTION_READ = 1,    /* text 0x14 or 0x17: the letter read */
+    CARRIED_LETTERS_ACTION_DISCARD = 2, /* text 0x15, "discard": runs as the cancel does */
+    CARRIED_LETTERS_ACTION_CANCEL = 3   /* text 2 */
 };
 
 /* The phases set (MenuScene.phase; MenuScene_Update runs phase 0 by the vtable's slot 0x48, 1 by

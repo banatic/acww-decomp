@@ -303,7 +303,7 @@ void CarriedLetters_OpenLetterMenu(CarriedLetters *self, int place)
     }
     int has_item = Letter_Item(letter) != ITEM_CODE_NONE;
     if ((has_item && state == 3) || state == 6 || state == 1) {
-        ChoiceEntries_Add(&self->entries, 0x15, CARRIED_LETTERS_ACTION_2);
+        ChoiceEntries_Add(&self->entries, 0x15, CARRIED_LETTERS_ACTION_DISCARD);
     }
     ChoiceEntries_Add(&self->entries, 2, CARRIED_LETTERS_ACTION_CANCEL);
     CarriedLetters_HideCursorSprite(self);
@@ -336,7 +336,7 @@ void CarriedLetters_ShowChoice(CarriedLetters *self)
 }
 CLEAN_AS(func_ov103_0229c52c, CarriedLetters_ShowChoice)
 
-/* func_ov103_0229c588: the action picked (`action`). QUIRK: action 2 (text 0x15) and any value
+/* func_ov103_0229c588: the action picked (`action`). QUIRK: the discard (text 0x15) and any value
  * above 1 end the action as the cancel does. */
 void CarriedLetters_RunAction(CarriedLetters *self)
 {

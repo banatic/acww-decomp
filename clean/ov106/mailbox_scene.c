@@ -161,15 +161,15 @@ void MailboxScene_PressPanelButton9(MailboxScene *self)
 CLEAN_AS(func_ov106_0229c378, MailboxScene_PressPanelButton9)
 
 /* func_ov106_0229c3a0 (action 3) */
-void MailboxScene_RunActionMenu(MailboxScene *self)
+void MailboxScene_RunDiscardConfirm(MailboxScene *self)
 {
-    MailboxScene_OpenFixedMenu(self);
+    MailboxScene_OpenDiscardConfirm(self);
 }
-CLEAN_AS(func_ov106_0229c3a0, MailboxScene_RunActionMenu)
+CLEAN_AS(func_ov106_0229c3a0, MailboxScene_RunDiscardConfirm)
 
-/* func_ov106_0229c3a8 (action 2): the letter of the place whose choice is open picked up and
+/* func_ov106_0229c3a8 (action 2, the discard): the letter of the place whose choice is open picked up and
  * held where that place is (2 pixels up and left when state flag 2 is set), sub state 0x26. */
-void MailboxScene_PickUpSlotLetter(MailboxScene *self)
+void MailboxScene_DiscardSlotLetter(MailboxScene *self)
 {
     u8 place = self->slot;
     MailboxScene_PickUpLetter(self, place);
@@ -180,9 +180,9 @@ void MailboxScene_PickUpSlotLetter(MailboxScene *self)
         self->held_y -= 2;
     }
     MenuScene_SetSubState(mbx_scene(self), 0x26);
-    PocketsLetters_StartPickUp(&self->letters);
+    PocketsLetters_StartDiscard(&self->letters);
 }
-CLEAN_AS(func_ov106_0229c3a8, MailboxScene_PickUpSlotLetter)
+CLEAN_AS(func_ov106_0229c3a8, MailboxScene_DiscardSlotLetter)
 
 /* func_ov106_0229c418 (when the menu is asked to close, StateFlags_MenuCloseAsked): the label
  * button pressed, MAILBOX_SCENE_FLAG_CLOSING, the cursor sprite hidden, state 9 in phase 1, and
@@ -209,13 +209,13 @@ void MailboxScene_PressLabelButton(MailboxScene *self)
 CLEAN_AS(func_ov106_0229c458, MailboxScene_PressLabelButton)
 
 /* func_ov106_0229c47c (action 1): state 4, phase 1, flag 0x100. */
-void MailboxScene_RunAction1(MailboxScene *self)
+void MailboxScene_RunActionRead(MailboxScene *self)
 {
     MenuScene_SetState(mbx_scene(self), 4);
     MenuScene_SetPhase(mbx_scene(self), 1);
-    MailboxScene_SetFlags(self, MAILBOX_SCENE_FLAG_100);
+    MailboxScene_SetFlags(self, MAILBOX_SCENE_FLAG_READ);
 }
-CLEAN_AS(func_ov106_0229c47c, MailboxScene_RunAction1)
+CLEAN_AS(func_ov106_0229c47c, MailboxScene_RunActionRead)
 
 /* func_ov106_0229c4a0: the cursor moved by `keys` (KeyRepeat_Has*) in the part of the scene it
  * is in; `mode` 0 lets it go down to MAILBOX_SCENE_BELOW, `mode` 1 (a letter held) keeps a
@@ -347,42 +347,42 @@ void MailboxScene_MoveCursorInCarried(MailboxScene *self, int keys, int mode)
 }
 CLEAN_AS(func_ov106_0229c638, MailboxScene_MoveCursorInCarried)
 
-/* func_ov106_0229c748: the fixed choice (its first row set apart): texts 0x1a and 0x19 cancel,
- * text 0x15 picks the letter up. */
-void MailboxScene_OpenFixedMenu(MailboxScene *self)
+/* func_ov106_0229c748: the discard confirmation (its first row set apart): texts 0x1a and 0x19 cancel,
+ * text 0x15 discards the letter. */
+void MailboxScene_OpenDiscardConfirm(MailboxScene *self)
 {
-    MailboxScene_SetFlags(self, MAILBOX_SCENE_FLAG_FIXED_MENU);
+    MailboxScene_SetFlags(self, MAILBOX_SCENE_FLAG_DISCARD_CONFIRM);
     ChoiceEntries_Clear(&self->entries, MAILBOX_SCENE_ACTION_CANCEL);
     ChoiceEntries_Add(&self->entries, 0x1a, MAILBOX_SCENE_ACTION_CANCEL);
-    ChoiceEntries_Add(&self->entries, 0x15, MAILBOX_SCENE_ACTION_PICK_UP);
+    ChoiceEntries_Add(&self->entries, 0x15, MAILBOX_SCENE_ACTION_DISCARD);
     ChoiceEntries_Add(&self->entries, 0x19, MAILBOX_SCENE_ACTION_CANCEL);
     MailboxScene_ShowChoice(self, 0);
 }
-CLEAN_AS(func_ov106_0229c748, MailboxScene_OpenFixedMenu)
+CLEAN_AS(func_ov106_0229c748, MailboxScene_OpenDiscardConfirm)
 
 /* func_ov106_0229c798: the choice of the letter at `place`: text 0 (action 0) when state flag 2
  * is set; text 0x17 (state 7) or 0x14 (another state but 0) for action 1; text 0x15 for the
- * fixed menu when the letter has no item and its state is 1, 3, 4 or 6; text 2 to cancel. The
+ * discard confirmation when the letter has no item and its state is 1, 3, 4 or 6; text 2 to cancel. The
  * cursor sprite is hidden, the popup too unless the choice goes above it. */
 void MailboxScene_OpenLetterMenu(MailboxScene *self, int place, int above_popup)
 {
-    MailboxScene_ClearFlags(self, MAILBOX_SCENE_FLAG_FIXED_MENU);
+    MailboxScene_ClearFlags(self, MAILBOX_SCENE_FLAG_DISCARD_CONFIRM);
     self->slot = (u8) place;
     ChoiceEntries_Clear(&self->entries, MAILBOX_SCENE_ACTION_CANCEL);
     Letter *letter = MailboxScene_PlaceLetter(self, place);
     if (StateFlags_Test2() != 0) {
-        ChoiceEntries_Add(&self->entries, 0, MAILBOX_SCENE_ACTION_0);
+        ChoiceEntries_Add(&self->entries, 0, MAILBOX_SCENE_ACTION_HOLD);
     }
     int state = Letter_State(letter);
     if (state != 0) {
         if (state == 7) {
-            ChoiceEntries_Add(&self->entries, 0x17, MAILBOX_SCENE_ACTION_1);
+            ChoiceEntries_Add(&self->entries, 0x17, MAILBOX_SCENE_ACTION_READ);
         } else {
-            ChoiceEntries_Add(&self->entries, 0x14, MAILBOX_SCENE_ACTION_1);
+            ChoiceEntries_Add(&self->entries, 0x14, MAILBOX_SCENE_ACTION_READ);
         }
     }
     if (Letter_Item(letter) == ITEM_CODE_NONE && (state == 3 || state == 6 || state == 1 || state == 4)) {
-        ChoiceEntries_Add(&self->entries, 0x15, MAILBOX_SCENE_ACTION_MENU);
+        ChoiceEntries_Add(&self->entries, 0x15, MAILBOX_SCENE_ACTION_DISCARD_CONFIRM);
     }
     ChoiceEntries_Add(&self->entries, 2, MAILBOX_SCENE_ACTION_CANCEL);
     MailboxScene_HideCursorSprite(self);
@@ -404,11 +404,11 @@ void MailboxScene_CancelChoice(MailboxScene *self)
 }
 CLEAN_AS(func_ov106_0229c868, MailboxScene_CancelChoice)
 
-/* func_ov106_0229c894: the entries shown in the choice (the first row set apart for the fixed
- * menu), placed above the popup or beside the open place, asked to open; sub state 0x16. */
+/* func_ov106_0229c894: the entries shown in the choice (the first row set apart for the discard
+ * confirmation), placed above the popup or beside the open place, asked to open; sub state 0x16. */
 void MailboxScene_ShowChoice(MailboxScene *self, int above_popup)
 {
-    int fixed = MailboxScene_TestFlags(self, MAILBOX_SCENE_FLAG_FIXED_MENU);
+    int fixed = MailboxScene_TestFlags(self, MAILBOX_SCENE_FLAG_DISCARD_CONFIRM);
     PagedChoice_ShowEntries(mbx_choice(self), &self->entries, fixed);
     int x = MailboxScene_PlaceX(self, self->slot);
     int y = MailboxScene_PlaceY(self, self->slot);
@@ -426,17 +426,17 @@ CLEAN_AS(func_ov106_0229c894, MailboxScene_ShowChoice)
 void MailboxScene_RunAction(MailboxScene *self)
 {
     switch (self->action) {
-        case MAILBOX_SCENE_ACTION_0:
-            MailboxScene_RunAction0(self);
+        case MAILBOX_SCENE_ACTION_HOLD:
+            MailboxScene_RunActionHold(self);
             break;
-        case MAILBOX_SCENE_ACTION_1:
-            MailboxScene_RunAction1(self);
+        case MAILBOX_SCENE_ACTION_READ:
+            MailboxScene_RunActionRead(self);
             break;
-        case MAILBOX_SCENE_ACTION_PICK_UP:
-            MailboxScene_PickUpSlotLetter(self);
+        case MAILBOX_SCENE_ACTION_DISCARD:
+            MailboxScene_DiscardSlotLetter(self);
             break;
-        case MAILBOX_SCENE_ACTION_MENU:
-            MailboxScene_RunActionMenu(self);
+        case MAILBOX_SCENE_ACTION_DISCARD_CONFIRM:
+            MailboxScene_RunDiscardConfirm(self);
             break;
         default:
             MailboxScene_EndAction(self);
@@ -469,12 +469,12 @@ void MailboxScene_BeginSubState12(MailboxScene *self, u8 target)
 CLEAN_AS(func_ov106_0229c9a0, MailboxScene_BeginSubState12)
 
 /* func_ov106_0229c9dc (action 0): the cursor sprite's animation 4, sub state 0x10. */
-void MailboxScene_RunAction0(MailboxScene *self)
+void MailboxScene_RunActionHold(MailboxScene *self)
 {
     Glider_SetAnim(&self->cursor_sprite, 4);
     MenuScene_SetSubState(mbx_scene(self), 0x10);
 }
-CLEAN_AS(func_ov106_0229c9dc, MailboxScene_RunAction0)
+CLEAN_AS(func_ov106_0229c9dc, MailboxScene_RunActionHold)
 
 /* func_ov106_0229c9fc */
 void MailboxScene_BeginSubState0f(MailboxScene *self)
@@ -510,11 +510,11 @@ void MailboxScene_PlaceCursorSprite(MailboxScene *self)
 }
 CLEAN_AS(func_ov106_0229ca5c, MailboxScene_PlaceCursorSprite)
 
-/* func_ov106_0229ca90: the cursor sprite put at the choice's row 1 for the fixed menu (its
+/* func_ov106_0229ca90: the cursor sprite put at the choice's row 1 for the discard confirmation (its
  * first row set apart), else at row 0; animation 7. */
 void MailboxScene_PointAtDefaultRow(MailboxScene *self)
 {
-    self->choice_row = MailboxScene_TestFlags(self, MAILBOX_SCENE_FLAG_FIXED_MENU) != 0 ? 1 : 0;
+    self->choice_row = MailboxScene_TestFlags(self, MAILBOX_SCENE_FLAG_DISCARD_CONFIRM) != 0 ? 1 : 0;
     int x = PagedChoice_TextX(mbx_choice(self));
     int y = PagedChoice_RowY(mbx_choice(self), self->choice_row);
     Glider_PlaceAt(&self->cursor_sprite, x, y);
@@ -1021,7 +1021,7 @@ static void mbx_pick_choice_row(MailboxScene *self, int row)
 {
     self->action = mbx_entry_value(self, row);
     int with_sound = 1;
-    if (self->action == MAILBOX_SCENE_ACTION_PICK_UP) {
+    if (self->action == MAILBOX_SCENE_ACTION_DISCARD) {
         with_sound = 0;
         SoundSys_PlaySe(0x24);
     }
@@ -1253,16 +1253,16 @@ void MailboxScene_EndActionHidden(MailboxScene *self)
 }
 CLEAN_AS(func_ov106_0229d790, MailboxScene_EndActionHidden)
 
-/* func_ov106_0229d7ac (sub state 0x26, after MailboxScene_PickUpSlotLetter): once the letters
- * object's pick-up is over, the held letter is let go (nothing held) and the action ends. */
-void MailboxScene_WaitLetGo(MailboxScene *self)
+/* func_ov106_0229d7ac (sub state 0x26, after MailboxScene_DiscardSlotLetter): once the letters
+ * object's discard (the letter shrinking away) is over, the held letter is let go (nothing held) and the action ends. */
+void MailboxScene_WaitDiscarded(MailboxScene *self)
 {
-    if (PocketsLetters_StepPickUp(&self->letters)) {
+    if (PocketsLetters_StepDiscard(&self->letters)) {
         self->held_kind = MAILBOX_SCENE_HELD_NONE;
         MailboxScene_EndAction(self);
     }
 }
-CLEAN_AS(func_ov106_0229d7ac, MailboxScene_WaitLetGo)
+CLEAN_AS(func_ov106_0229d7ac, MailboxScene_WaitDiscarded)
 
 /* func_ov106_0229d7d4 (sub state 0x25): the letter taken from the mailbox follows its glide;
  * when it is over, the letter is put at its place (`held_from`) and the next one is taken (sub
@@ -1314,7 +1314,7 @@ static void mbx_follow_selected_press(MailboxScene *self)
 
 /* func_ov106_0229d860 (sub state 0x23, after MailboxScene_PressPanelButton9): while the selected
  * panel button's press plays, the cursor sprite (when shown) follows it; after, the sprite is
- * hidden, state 4 (written directly), MAILBOX_SCENE_FLAG_100 cleared and phase 1. */
+ * hidden, state 4 (written directly), MAILBOX_SCENE_FLAG_READ cleared and phase 1. */
 void MailboxScene_FollowPanelPress(MailboxScene *self)
 {
     if (ButtonPanel_StepSelectedPress(&self->panel) != 0) {
@@ -1322,7 +1322,7 @@ void MailboxScene_FollowPanelPress(MailboxScene *self)
     } else {
         MailboxScene_HideCursorSprite(self);
         self->base.state = 4;
-        MailboxScene_ClearFlags(self, MAILBOX_SCENE_FLAG_100);
+        MailboxScene_ClearFlags(self, MAILBOX_SCENE_FLAG_READ);
         MenuScene_SetPhase(mbx_scene(self), 1);
     }
 }
@@ -1720,7 +1720,7 @@ void MailboxScene_PickChoiceRow(MailboxScene *self)
 CLEAN_AS(func_ov106_0229e014, MailboxScene_PickChoiceRow)
 
 /* func_ov106_0229e078 (sub state 0x0b): the choice by the keys. A close of the menu or a touch
- * cancels it; the keys move the row (from row 1 round for the fixed menu), the cursor sprite
+ * cancels it; the keys move the row (from row 1 round for the discard confirmation), the cursor sprite
  * gliding to it; A plays the sprite's second animation of its set and picks the row (sub state
  * 0x0c), B points at the last row. */
 void MailboxScene_ChooseByKeys(MailboxScene *self)
@@ -1734,7 +1734,7 @@ void MailboxScene_ChooseByKeys(MailboxScene *self)
         return;
     }
     int keys = (int) MenuScene_LatchRepeatedKeys(mbx_scene(self));
-    u8 first = (u8) MailboxScene_TestFlags(self, MAILBOX_SCENE_FLAG_FIXED_MENU);
+    u8 first = (u8) MailboxScene_TestFlags(self, MAILBOX_SCENE_FLAG_DISCARD_CONFIRM);
     if (PagedChoice_MoveCursor(mbx_choice(self), keys, &self->choice_row, first)) {
         MailboxScene_GlideToRow(self);
         return;
@@ -1882,7 +1882,7 @@ CLEAN_AS(func_ov106_0229e2dc, MailboxScene_BrowseByKeys)
 
 /* func_ov106_0229e430 (sub state 6): the choice by the touch, once shown. A close of the menu or a
  * button cancels it; the pen going down picks the row under it (the last one outside the
- * window), but not the set apart first row of the fixed menu. */
+ * window), but not the set apart first row of the discard confirmation. */
 void MailboxScene_ChooseByTouch(MailboxScene *self)
 {
     if (PagedChoice_IsShown(mbx_choice(self)) == 0) {
@@ -1903,7 +1903,7 @@ void MailboxScene_ChooseByTouch(MailboxScene *self)
     if (row < 0) {
         return;
     }
-    if (MailboxScene_TestFlags(self, MAILBOX_SCENE_FLAG_FIXED_MENU) != 0 && row == 0) {
+    if (MailboxScene_TestFlags(self, MAILBOX_SCENE_FLAG_DISCARD_CONFIRM) != 0 && row == 0) {
         return;
     }
     mbx_pick_choice_row(self, row);
@@ -2360,7 +2360,7 @@ void MailboxScene_SceneWipeOut(MailboxScene *self)
     if (MenuScene_StepWipe(mbx_scene(self), 0) != 0) {
         DisplayLayer_HideAndResetScroll(MAILBOX_SCENE_SCENE_LAYER);
         MailboxScene_ClearFlags(self, MAILBOX_SCENE_FLAG_OBJECTS_DRAWN);
-        if (MailboxScene_TestFlags(self, MAILBOX_SCENE_FLAG_100) != 0) {
+        if (MailboxScene_TestFlags(self, MAILBOX_SCENE_FLAG_READ) != 0) {
             MenuScene_SetState(mbx_scene(self), MAILBOX_SCENE_STATE_SHOW_LETTER);
             MailboxScene_ShowLetter(self);
         } else {
@@ -2398,7 +2398,7 @@ void MailboxScene_StartWipeOut(MailboxScene *self)
 {
     Popup_Hide(&self->popup, 1);
     MailboxScene_HideCursorSprite(self);
-    if (MailboxScene_TestFlags(self, MAILBOX_SCENE_FLAG_100) == 0) {
+    if (MailboxScene_TestFlags(self, MAILBOX_SCENE_FLAG_READ) == 0) {
         MenuDispatch_SetMode((MenuDispatch *) (void *) mbx_parent(self), MAILBOX_SCENE_PARENT_CODE_END, 1);
     }
     MenuScene_StartWipeOnWindow2(mbx_scene(self), 2, 0, 2, MAILBOX_SCENE_WIPE_MARGIN);

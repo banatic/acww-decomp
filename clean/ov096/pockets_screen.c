@@ -593,18 +593,18 @@ int PocketsScreen_OpenFirstChoicePage(PocketsScreen *self)
 }
 CLEAN_AS(func_ov096_0229cc10, PocketsScreen_OpenFirstChoicePage)
 
-/* func_ov096_0229cc24 (through action 10): a fixed choice of three rows, texts 0x1a, 0x15 and
- * 0x19, the middle one running action 9. */
-void PocketsScreen_OpenFixedMenu(PocketsScreen *self)
+/* func_ov096_0229cc24 (through action 10): the discard confirmation, three rows, texts
+ * 0x1a ("discard?"), 0x15 ("discard", running action 9) and 0x19 ("leave it"). */
+void PocketsScreen_OpenDiscardConfirm(PocketsScreen *self)
 {
-    PocketsScreen_SetFlags(self, POCKETS_FLAG_FIXED_MENU);
+    PocketsScreen_SetFlags(self, POCKETS_FLAG_DISCARD_CONFIRM);
     ChoiceEntries_Clear(&self->entries, POCKETS_ACTION_CANCEL);
     ChoiceEntries_Add(&self->entries, 0x1a, POCKETS_ACTION_CANCEL);
     ChoiceEntries_Add(&self->entries, 0x15, 9);
     ChoiceEntries_Add(&self->entries, 0x19, POCKETS_ACTION_CANCEL);
     PocketsScreen_ShowChoice(self, 0);
 }
-CLEAN_AS(func_ov096_0229cc24, PocketsScreen_OpenFixedMenu)
+CLEAN_AS(func_ov096_0229cc24, PocketsScreen_OpenDiscardConfirm)
 
 /* func_ov096_0229cc74: the choice for `place`: the rows of its part (grid, letters, bells,
  * player; place 0x27 is shown as the bells' place with no rows of its own), else for any other
@@ -613,7 +613,7 @@ CLEAN_AS(func_ov096_0229cc24, PocketsScreen_OpenFixedMenu)
  * popup hidden otherwise. */
 void PocketsScreen_OpenSlotMenu(PocketsScreen *self, int place, int above_popup)
 {
-    PocketsScreen_ClearFlags(self, POCKETS_FLAG_FIXED_MENU);
+    PocketsScreen_ClearFlags(self, POCKETS_FLAG_DISCARD_CONFIRM);
     self->slot = (u8) place;
     ChoiceEntries_Clear(&self->entries, POCKETS_ACTION_CANCEL);
 
@@ -835,12 +835,12 @@ void PocketsScreen_CancelChoice(PocketsScreen *self)
 }
 CLEAN_AS(func_ov096_0229d1a0, PocketsScreen_CancelChoice)
 
-/* func_ov096_0229d1d4: shows the rows (the first set apart for the fixed choice) and opens the
+/* func_ov096_0229d1d4: shows the rows (the first set apart for the discard confirmation) and opens the
  * choice: above (0x68, 0x68) for the bells' place, else above the popup or beside the place. */
 void PocketsScreen_ShowChoice(PocketsScreen *self, int above_popup)
 {
     PagedChoice *choice = choice_of(self);
-    PagedChoice_ShowEntries(choice, &self->entries, PocketsScreen_TestFlags(self, POCKETS_FLAG_FIXED_MENU));
+    PagedChoice_ShowEntries(choice, &self->entries, PocketsScreen_TestFlags(self, POCKETS_FLAG_DISCARD_CONFIRM));
     int x = PocketsScreen_PlaceX(self, self->slot);
     int y = PocketsScreen_PlaceY(self, self->slot);
     if (self->slot == POCKETS_PLACE_BELLS) {
@@ -866,8 +866,8 @@ CLEAN_AS(func_ov096_0229d1d4, PocketsScreen_ShowChoice)
  *   6       PocketsScreen_ActionToFreeSlot      23      func_ov098_022a2a0c
  *   7       PocketsScreen_ActionNewLetterChoice 24      func_ov098_022a2fa8
  *   8       PocketsScreen_ActionNewLetterFromSlot 25    func_ov098_022a29d0
- *   9       PocketsScreen_ActionLetterSubState2a  26    PocketsScreen_ActionSubState31
- *   10      PocketsScreen_ActionFixedMenu       27      PocketsScreen_ActionMessageMenu
+ *   9       PocketsScreen_ActionDiscardLetter  26    PocketsScreen_ActionSubState31
+ *   10      PocketsScreen_ActionDiscardConfirm       27      PocketsScreen_ActionMessageMenu
  *   11-14   PocketsScreen_ActionTakeBells       28      PocketsScreen_ActionSendMessage0
  *   15-17   PocketsScreen_ActionTakeRecordItem  29-32   PocketsScreen_ActionSendMessage
  *                                               33      func_ov098_022a28d0
@@ -960,12 +960,12 @@ int PocketsScreen_ActionSubState31(PocketsScreen *self)
 }
 CLEAN_AS(func_ov096_0229d5d4, PocketsScreen_ActionSubState31)
 
-/* func_ov096_0229d5ec (action 10) */
-void PocketsScreen_ActionFixedMenu(PocketsScreen *self)
+/* func_ov096_0229d5ec (action 10, "discard"): the confirmation asked. */
+void PocketsScreen_ActionDiscardConfirm(PocketsScreen *self)
 {
-    PocketsScreen_OpenFixedMenu(self);
+    PocketsScreen_OpenDiscardConfirm(self);
 }
-CLEAN_AS(func_ov096_0229d5ec, PocketsScreen_ActionFixedMenu)
+CLEAN_AS(func_ov096_0229d5ec, PocketsScreen_ActionDiscardConfirm)
 
 /* The place picked as the menu's place, two less each way when state flag 2 is set. */
 static void set_menu_place(PocketsScreen *self, u8 place)
@@ -978,16 +978,17 @@ static void set_menu_place(PocketsScreen *self, u8 place)
     }
 }
 
-/* func_ov096_0229d5f4 (action 9): sub state 0x2a, with the letters' object. */
-void PocketsScreen_ActionLetterSubState2a(PocketsScreen *self)
+/* func_ov096_0229d5f4 (action 9, "discard"): the picked letter taken up and shrunk away by the
+ * letters' object (sub state 0x2a). */
+void PocketsScreen_ActionDiscardLetter(PocketsScreen *self)
 {
     u8 place = self->slot;
     PocketsScreen_PickUpLetter(self, place);
     set_menu_place(self, place);
     MenuScene_SetSubState(scene_of(self), 0x2a);
-    PocketsLetters_StartPickUp(&self->letters);
+    PocketsLetters_StartDiscard(&self->letters);
 }
-CLEAN_AS(func_ov096_0229d5f4, PocketsScreen_ActionLetterSubState2a)
+CLEAN_AS(func_ov096_0229d5f4, PocketsScreen_ActionDiscardLetter)
 
 /* func_ov096_0229d664 (action 20): sub state 0x2b, with the grid's object, the item and 0xb0. */
 void PocketsScreen_ActionGridSubState2b(PocketsScreen *self)
@@ -1289,11 +1290,11 @@ void PocketsScreen_PlaceCursorSprite(PocketsScreen *self)
 }
 CLEAN_AS(func_ov096_0229dc48, PocketsScreen_PlaceCursorSprite)
 
-/* func_ov096_0229dc7c: the cursor sprite put at the choice's row 1 when the choice is the fixed
- * one (its first row set apart), else at row 0; animation 7. */
+/* func_ov096_0229dc7c: the cursor sprite put at the choice's row 1 when the choice is the discard
+ * confirmation (its first row set apart), else at row 0; animation 7. */
 void PocketsScreen_PointAtDefaultRow(PocketsScreen *self)
 {
-    self->choice_row = (u8) PocketsScreen_TestFlags(self, POCKETS_FLAG_FIXED_MENU);
+    self->choice_row = (u8) PocketsScreen_TestFlags(self, POCKETS_FLAG_DISCARD_CONFIRM);
     int x = PagedChoice_TextX(choice_of(self));
     int y = PagedChoice_RowY(choice_of(self), self->choice_row);
     Glider_PlaceAt(&self->cursor_sprite, x, y);
@@ -3024,16 +3025,16 @@ void PocketsScreen_WaitGridObject(PocketsScreen *self)
 }
 CLEAN_AS(func_ov096_0229fe10, PocketsScreen_WaitGridObject)
 
-/* func_ov096_0229fe74 (sub state 0x2a): once the letters' object is done, the scene lets go and
- * the action ends. */
-void PocketsScreen_WaitLettersObject(PocketsScreen *self)
+/* func_ov096_0229fe74 (sub state 0x2a): once the letters' object has shrunk the letter away, the scene
+ * lets go and the action ends. */
+void PocketsScreen_WaitLetterDiscarded(PocketsScreen *self)
 {
-    if (PocketsLetters_StepPickUp(&self->letters)) {
+    if (PocketsLetters_StepDiscard(&self->letters)) {
         PocketsScreen_DropHeld(self);
         PocketsScreen_EndAction(self);
     }
 }
-CLEAN_AS(func_ov096_0229fe74, PocketsScreen_WaitLettersObject)
+CLEAN_AS(func_ov096_0229fe74, PocketsScreen_WaitLetterDiscarded)
 
 /* func_ov096_0229fe9c (sub state 0x27): once PocketsScreen_ActorReadyForSlot answers 0 for the
  * record slot, the scene lets go, the wallet's display stops blinking and the action ends. */
@@ -3565,7 +3566,7 @@ CLEAN_AS(func_ov096_022a06d8, PocketsScreen_PickActionRow)
 
 /* func_ov096_022a072c (sub state 0x0d): the choice of actions by the keys. A close request or a
  * touch cancels it; the d-pad moves the cursor sprite over the rows (not to the first one set
- * apart in the fixed choice); A presses on the row (sub state 0x0e); B points at the cancel
+ * apart in the discard confirmation); A presses on the row (sub state 0x0e); B points at the cancel
  * row. */
 void PocketsScreen_ActionChoiceByKeys(PocketsScreen *self)
 {
@@ -3578,7 +3579,7 @@ void PocketsScreen_ActionChoiceByKeys(PocketsScreen *self)
         return;
     }
     u32 keys = MenuScene_LatchRepeatedKeys(scene_of(self));
-    u8 first = (u8) PocketsScreen_TestFlags(self, POCKETS_FLAG_FIXED_MENU);
+    u8 first = (u8) PocketsScreen_TestFlags(self, POCKETS_FLAG_DISCARD_CONFIRM);
     if (PagedChoice_MoveCursor(choice_of(self), (int) keys, &self->choice_row, first)) {
         PocketsScreen_GlideToRow(self);
         return;
@@ -3983,7 +3984,7 @@ CLEAN_AS(func_ov096_022a0e48, PocketsScreen_DragHeldItem)
 
 /* func_ov096_022a1058 (sub state 4): the choice of actions by touch, once it is shown. A close
  * request or a button cancels it; a touch on a row (or below the rows: the last one; not the
- * first one set apart in the fixed choice) keeps its action, picks it with the action's
+ * first one set apart in the discard confirmation) keeps its action, picks it with the action's
  * command and goes to sub state 0x1e.
  * REQUIRES: the row is below PAGED_CHOICE_ROWS, as PocketsScreen_PickActionRow. */
 void PocketsScreen_ActionChoiceByTouch(PocketsScreen *self)
@@ -4006,7 +4007,7 @@ void PocketsScreen_ActionChoiceByTouch(PocketsScreen *self)
     if (row < 0) {
         return;
     }
-    if (PocketsScreen_TestFlags(self, POCKETS_FLAG_FIXED_MENU) != 0 && row == 0) {
+    if (PocketsScreen_TestFlags(self, POCKETS_FLAG_DISCARD_CONFIRM) != 0 && row == 0) {
         return;
     }
     self->action = self->entries.values[row];
@@ -4524,7 +4525,7 @@ CLEAN_AS(_ZN18Obj_ov096_022a23e819func_ov096_022a19e0Ev, PocketsScreen_RunIntera
  *   0x0a  PocketsScreen_IdleByKeys             0x27  PocketsScreen_WaitActorForRecord
  *   0x0b  PocketsScreen_MoveHeldItemByKeys     0x28  PocketsScreen_WaitUseRequest28
  *   0x0c  PocketsScreen_MoveHeldLetterByKeys   0x29  PocketsScreen_WaitUseRequest29
- *   0x0d  PocketsScreen_ActionChoiceByKeys     0x2a  PocketsScreen_WaitLettersObject
+ *   0x0d  PocketsScreen_ActionChoiceByKeys     0x2a  PocketsScreen_WaitLetterDiscarded
  *   0x0e  PocketsScreen_PickActionRow          0x2b  PocketsScreen_WaitGridObject
  *   0x0f  PocketsScreen_WaitCursorGlide        0x2c  func_ov098_022a2df4
  *   0x10  PocketsScreen_SwitchToCursorTab      0x2d  func_ov098_022a2b1c

@@ -5,7 +5,7 @@
 # to the carried letters, a received letter's choice (3464) closed by B; RIGHT onto a letter the
 # player wrote, whose choice has "throw away" (MailboxScene_OpenLetterMenu: a written letter
 # with no item): DOWN twice and A (3680) open the fixed question and A throws the letter away
-# (MailboxScene_PickUpSlotLetter). DOWN, A takes the next letter up and A on the one below
+# (MailboxScene_DiscardSlotLetter). DOWN, A takes the next letter up and A on the one below
 # swaps them (3866-3982); a letter's choice, a pen tap (4090) closes it; B and B close the page.
 0 - -
 900 START -

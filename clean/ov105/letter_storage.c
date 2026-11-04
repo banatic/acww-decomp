@@ -293,7 +293,7 @@ void LetterStorage_PressPanelButton3(LetterStorage *self)
     SoundSys_PlaySe(0x27);
     ButtonPanel_Select(&self->panel, 3);
     self->base.state = 4;
-    LetterStorage_ClearFlags(self, LETTER_STORAGE_FLAG_100);
+    LetterStorage_ClearFlags(self, LETTER_STORAGE_FLAG_READ);
     MenuScene_SetSubState(scene_of(self), 0x1b);
 }
 CLEAN_AS(func_ov105_0229c62c, LetterStorage_PressPanelButton3)
@@ -317,15 +317,15 @@ void LetterStorage_DoNothing(LetterStorage *self)
 CLEAN_AS(func_ov105_0229c694, LetterStorage_DoNothing)
 
 /* func_ov105_0229c698 (action 3) */
-void LetterStorage_RunActionMenu(LetterStorage *self)
+void LetterStorage_RunDiscardConfirm(LetterStorage *self)
 {
-    LetterStorage_OpenFixedMenu(self);
+    LetterStorage_OpenDiscardConfirm(self);
 }
-CLEAN_AS(func_ov105_0229c698, LetterStorage_RunActionMenu)
+CLEAN_AS(func_ov105_0229c698, LetterStorage_RunDiscardConfirm)
 
-/* func_ov105_0229c6a0 (action 2): the letter of the place whose choice is open picked up and
+/* func_ov105_0229c6a0 (action 2, the discard): the letter of the place whose choice is open picked up and
  * held where that place is (2 pixels up and left when state flag 2 is set), sub state 0x1c. */
-void LetterStorage_PickUpSlotLetter(LetterStorage *self)
+void LetterStorage_DiscardSlotLetter(LetterStorage *self)
 {
     u8 place = self->slot;
     LetterStorage_PickUpLetter(self, place);
@@ -336,9 +336,9 @@ void LetterStorage_PickUpSlotLetter(LetterStorage *self)
         self->held_y -= 2;
     }
     MenuScene_SetSubState(scene_of(self), 0x1c);
-    PocketsLetters_StartPickUp(&self->letters);
+    PocketsLetters_StartDiscard(&self->letters);
 }
-CLEAN_AS(func_ov105_0229c6a0, LetterStorage_PickUpSlotLetter)
+CLEAN_AS(func_ov105_0229c6a0, LetterStorage_DiscardSlotLetter)
 
 /* func_ov105_0229c710: sub state 0x1a, the label button's state 2, sound 0x29. */
 void LetterStorage_PressLabelButton(LetterStorage *self)
@@ -351,13 +351,13 @@ void LetterStorage_PressLabelButton(LetterStorage *self)
 CLEAN_AS(func_ov105_0229c710, LetterStorage_PressLabelButton)
 
 /* func_ov105_0229c734 (action 1): state 4, phase 1, flag 0x100. */
-void LetterStorage_RunAction1(LetterStorage *self)
+void LetterStorage_RunActionRead(LetterStorage *self)
 {
     MenuScene_SetState(scene_of(self), 4);
     MenuScene_SetPhase(scene_of(self), 1);
-    LetterStorage_SetFlags(self, LETTER_STORAGE_FLAG_100);
+    LetterStorage_SetFlags(self, LETTER_STORAGE_FLAG_READ);
 }
-CLEAN_AS(func_ov105_0229c734, LetterStorage_RunAction1)
+CLEAN_AS(func_ov105_0229c734, LetterStorage_RunActionRead)
 
 /* func_ov105_0229c758: the cursor moved by `keys` (KeyRepeat_Has*) in the part of the scene it
  * is in; `mode` 0 lets it go down to LETTER_STORAGE_BELOW. The wrap flags are cleared first.
@@ -521,42 +521,42 @@ void LetterStorage_MoveCursorInCarried(LetterStorage *self, int keys, int mode)
 }
 CLEAN_AS(func_ov105_0229c9ac, LetterStorage_MoveCursorInCarried)
 
-/* func_ov105_0229ca8c: the fixed choice (its first row set apart): texts 0x1a and 0x19 cancel,
- * text 0x15 picks the letter up. */
-void LetterStorage_OpenFixedMenu(LetterStorage *self)
+/* func_ov105_0229ca8c: the discard confirmation (its first row set apart): texts 0x1a and 0x19 cancel,
+ * text 0x15 discards the letter. */
+void LetterStorage_OpenDiscardConfirm(LetterStorage *self)
 {
-    LetterStorage_SetFlags(self, LETTER_STORAGE_FLAG_FIXED_MENU);
+    LetterStorage_SetFlags(self, LETTER_STORAGE_FLAG_DISCARD_CONFIRM);
     ChoiceEntries_Clear(&self->entries, LETTER_STORAGE_ACTION_CANCEL);
     ChoiceEntries_Add(&self->entries, 0x1a, LETTER_STORAGE_ACTION_CANCEL);
-    ChoiceEntries_Add(&self->entries, 0x15, LETTER_STORAGE_ACTION_PICK_UP);
+    ChoiceEntries_Add(&self->entries, 0x15, LETTER_STORAGE_ACTION_DISCARD);
     ChoiceEntries_Add(&self->entries, 0x19, LETTER_STORAGE_ACTION_CANCEL);
     LetterStorage_ShowChoice(self, 0);
 }
-CLEAN_AS(func_ov105_0229ca8c, LetterStorage_OpenFixedMenu)
+CLEAN_AS(func_ov105_0229ca8c, LetterStorage_OpenDiscardConfirm)
 
 /* func_ov105_0229cadc: the choice of the letter at `place`: text 0 (action 0) when state flag 2
  * is set; text 0x17 (state 7) or 0x14 (another state but 0) for action 1; text 0x15 for the
- * fixed menu when the letter has no item and its state is 1, 3, 4 or 6; text 2 to cancel. The
+ * discard confirmation when the letter has no item and its state is 1, 3, 4 or 6; text 2 to cancel. The
  * cursor sprite is hidden, the popup too unless the choice goes above it. */
 void LetterStorage_OpenLetterMenu(LetterStorage *self, int place, int above_popup)
 {
-    LetterStorage_ClearFlags(self, LETTER_STORAGE_FLAG_FIXED_MENU);
+    LetterStorage_ClearFlags(self, LETTER_STORAGE_FLAG_DISCARD_CONFIRM);
     self->slot = (u8) place;
     ChoiceEntries_Clear(&self->entries, LETTER_STORAGE_ACTION_CANCEL);
     Letter *letter = LetterStorage_PlaceLetter(self, place);
     if (StateFlags_Test2() != 0) {
-        ChoiceEntries_Add(&self->entries, 0, LETTER_STORAGE_ACTION_0);
+        ChoiceEntries_Add(&self->entries, 0, LETTER_STORAGE_ACTION_HOLD);
     }
     int state = Letter_State(letter);
     if (state != 0) {
         if (state == 7) {
-            ChoiceEntries_Add(&self->entries, 0x17, LETTER_STORAGE_ACTION_1);
+            ChoiceEntries_Add(&self->entries, 0x17, LETTER_STORAGE_ACTION_READ);
         } else {
-            ChoiceEntries_Add(&self->entries, 0x14, LETTER_STORAGE_ACTION_1);
+            ChoiceEntries_Add(&self->entries, 0x14, LETTER_STORAGE_ACTION_READ);
         }
     }
     if (Letter_Item(letter) == ITEM_CODE_NONE && (state == 3 || state == 6 || state == 1 || state == 4)) {
-        ChoiceEntries_Add(&self->entries, 0x15, LETTER_STORAGE_ACTION_MENU);
+        ChoiceEntries_Add(&self->entries, 0x15, LETTER_STORAGE_ACTION_DISCARD_CONFIRM);
     }
     ChoiceEntries_Add(&self->entries, 2, LETTER_STORAGE_ACTION_CANCEL);
     LetterStorage_HideCursorSprite(self);
@@ -578,11 +578,11 @@ void LetterStorage_CancelChoice(LetterStorage *self)
 }
 CLEAN_AS(func_ov105_0229cbb0, LetterStorage_CancelChoice)
 
-/* func_ov105_0229cbe0: the entries shown in the choice (the first row set apart for the fixed
- * menu), placed above the popup or beside the open place, asked to open; sub state 0x16. */
+/* func_ov105_0229cbe0: the entries shown in the choice (the first row set apart for the discard
+ * confirmation), placed above the popup or beside the open place, asked to open; sub state 0x16. */
 void LetterStorage_ShowChoice(LetterStorage *self, int above_popup)
 {
-    int fixed = LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_FIXED_MENU);
+    int fixed = LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_DISCARD_CONFIRM);
     PagedChoice_ShowEntries(choice_of(self), &self->entries, fixed);
     int x = LetterStorage_PlaceX(self, self->slot);
     int y = LetterStorage_PlaceY(self, self->slot);
@@ -600,17 +600,17 @@ CLEAN_AS(func_ov105_0229cbe0, LetterStorage_ShowChoice)
 void LetterStorage_RunAction(LetterStorage *self)
 {
     switch (self->action) {
-        case LETTER_STORAGE_ACTION_0:
-            LetterStorage_RunAction0(self);
+        case LETTER_STORAGE_ACTION_HOLD:
+            LetterStorage_RunActionHold(self);
             break;
-        case LETTER_STORAGE_ACTION_1:
-            LetterStorage_RunAction1(self);
+        case LETTER_STORAGE_ACTION_READ:
+            LetterStorage_RunActionRead(self);
             break;
-        case LETTER_STORAGE_ACTION_PICK_UP:
-            LetterStorage_PickUpSlotLetter(self);
+        case LETTER_STORAGE_ACTION_DISCARD:
+            LetterStorage_DiscardSlotLetter(self);
             break;
-        case LETTER_STORAGE_ACTION_MENU:
-            LetterStorage_RunActionMenu(self);
+        case LETTER_STORAGE_ACTION_DISCARD_CONFIRM:
+            LetterStorage_RunDiscardConfirm(self);
             break;
         default:
             LetterStorage_EndAction(self);
@@ -644,13 +644,13 @@ CLEAN_AS(func_ov105_0229ccf4, LetterStorage_BeginSubState12)
 
 /* func_ov105_0229cd30 (action 0): the cursor sprite's animation 4, sub state 0x10, the stored
  * letters marked to be written back. */
-void LetterStorage_RunAction0(LetterStorage *self)
+void LetterStorage_RunActionHold(LetterStorage *self)
 {
     Glider_SetAnim(&self->cursor_sprite, 4);
     MenuScene_SetSubState(scene_of(self), 0x10);
     LetterStorage_SetFlags(self, LETTER_STORAGE_FLAG_CHANGED);
 }
-CLEAN_AS(func_ov105_0229cd30, LetterStorage_RunAction0)
+CLEAN_AS(func_ov105_0229cd30, LetterStorage_RunActionHold)
 
 /* func_ov105_0229cd5c */
 void LetterStorage_BeginSubState0f(LetterStorage *self)
@@ -686,11 +686,11 @@ void LetterStorage_PlaceCursorSprite(LetterStorage *self)
 }
 CLEAN_AS(func_ov105_0229cdbc, LetterStorage_PlaceCursorSprite)
 
-/* func_ov105_0229cdf0: the cursor sprite put at the choice's row 1 for the fixed menu (its
+/* func_ov105_0229cdf0: the cursor sprite put at the choice's row 1 for the discard confirmation (its
  * first row set apart), else at row 0; animation 7. */
 void LetterStorage_PointAtDefaultRow(LetterStorage *self)
 {
-    self->choice_row = LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_FIXED_MENU) != 0 ? 1 : 0;
+    self->choice_row = LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_DISCARD_CONFIRM) != 0 ? 1 : 0;
     int x = PagedChoice_TextX(choice_of(self));
     int y = PagedChoice_RowY(choice_of(self), self->choice_row);
     Glider_PlaceAt(&self->cursor_sprite, x, y);
@@ -1004,7 +1004,7 @@ static void pick_choice_row(LetterStorage *self, int row)
 {
     self->action = entry_value(self, row);
     int with_sound = 1;
-    if (self->action == LETTER_STORAGE_ACTION_PICK_UP) {
+    if (self->action == LETTER_STORAGE_ACTION_DISCARD) {
         with_sound = 0;
         SoundSys_PlaySe(0x24);
     }
@@ -1502,18 +1502,18 @@ void LetterStorage_ChoosePanelButtonByTouch(LetterStorage *self)
 }
 CLEAN_AS(func_ov105_0229dcc4, LetterStorage_ChoosePanelButtonByTouch)
 
-/* func_ov105_0229dd30 (sub state 0x1c, after LetterStorage_PickUpSlotLetter): once the
- * letters object's count down ends, the held letter is let go (nothing held, the stored letters
+/* func_ov105_0229dd30 (sub state 0x1c, after LetterStorage_DiscardSlotLetter): once the
+ * letters object's discard (the letter shrinking away) ends, the held letter is let go (nothing held, the stored letters
  * marked changed) and the action ends. */
-void LetterStorage_WaitLetGo(LetterStorage *self)
+void LetterStorage_WaitDiscarded(LetterStorage *self)
 {
-    if (PocketsLetters_StepPickUp(&self->letters)) {
+    if (PocketsLetters_StepDiscard(&self->letters)) {
         LetterStorage_SetFlags(self, LETTER_STORAGE_FLAG_CHANGED);
         self->held_kind = LETTER_STORAGE_HELD_NONE;
         LetterStorage_EndAction(self);
     }
 }
-CLEAN_AS(func_ov105_0229dd30, LetterStorage_WaitLetGo)
+CLEAN_AS(func_ov105_0229dd30, LetterStorage_WaitDiscarded)
 
 /* func_ov105_0229dd68 (sub state 0x1b): while the selected panel button's press plays, the
  * cursor sprite (when shown) follows it, offset by the press's frame; after, the sprite is
@@ -1769,7 +1769,7 @@ void LetterStorage_PickChoiceRow(LetterStorage *self)
 CLEAN_AS(func_ov105_0229e1cc, LetterStorage_PickChoiceRow)
 
 /* func_ov105_0229e230 (sub state 0x0b): the choice by the keys. A touch cancels it; the keys
- * move the row (from row 1 round for the fixed menu), the cursor sprite gliding to it; A plays
+ * move the row (from row 1 round for the discard confirmation), the cursor sprite gliding to it; A plays
  * the sprite's second animation of its set and picks the row (sub state 0x0c), B points at the
  * last row. */
 void LetterStorage_ChooseByKeys(LetterStorage *self)
@@ -1779,7 +1779,7 @@ void LetterStorage_ChooseByKeys(LetterStorage *self)
         return;
     }
     int keys = (int) MenuScene_LatchRepeatedKeys(scene_of(self));
-    u8 first = (u8) LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_FIXED_MENU);
+    u8 first = (u8) LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_DISCARD_CONFIRM);
     if (PagedChoice_MoveCursor(choice_of(self), keys, &self->choice_row, first)) {
         LetterStorage_GlideToRow(self);
         return;
@@ -1938,7 +1938,7 @@ CLEAN_AS(func_ov105_0229e4a8, LetterStorage_BrowseByKeys)
 
 /* func_ov105_0229e638 (sub state 6): the choice by the touch, once shown. A button cancels it;
  * the pen going down picks the row under it (the last one outside the window), but not the set
- * apart first row of the fixed menu. */
+ * apart first row of the discard confirmation. */
 void LetterStorage_ChooseByTouch(LetterStorage *self)
 {
     if (PagedChoice_IsShown(choice_of(self)) == 0) {
@@ -1955,7 +1955,7 @@ void LetterStorage_ChooseByTouch(LetterStorage *self)
     if (row < 0) {
         return;
     }
-    if (LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_FIXED_MENU) != 0 && row == 0) {
+    if (LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_DISCARD_CONFIRM) != 0 && row == 0) {
         return;
     }
     pick_choice_row(self, row);
@@ -2523,7 +2523,7 @@ void LetterStorage_SceneWipeOut(LetterStorage *self)
     if (MenuScene_StepWipe(scene_of(self), 0) != 0) {
         DisplayLayer_HideAndResetScroll(LETTER_STORAGE_SCENE_LAYER);
         LetterStorage_ClearFlags(self, LETTER_STORAGE_FLAG_OBJECTS_DRAWN);
-        if (LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_100) != 0) {
+        if (LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_READ) != 0) {
             MenuScene_SetState(scene_of(self), LETTER_STORAGE_STATE_SHOW_LETTER);
             LetterStorage_ShowLetter(self);
         } else {
@@ -2563,7 +2563,7 @@ CLEAN_AS(func_ov105_0229effc, LetterStorage_PageWipeOut)
 void LetterStorage_StartWipeOut(LetterStorage *self)
 {
     LetterStorage_EndPanelDim(self);
-    if (LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_100) == 0) {
+    if (LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_READ) == 0) {
         MenuDispatch_SetMode((MenuDispatch *) (void *) parent_of(self), LETTER_STORAGE_PARENT_CODE_END, 1);
     }
     LetterStorage_StartPageWipeOut(self);

@@ -38,19 +38,19 @@
 
 /* In `flags`. */
 enum MailboxSceneFlag {
-    MAILBOX_SCENE_FLAG_08 = 0x08,             /* the cursor sprite jumps to the cursor instead of easing
+    MAILBOX_SCENE_FLAG_08 = 0x08,                /* the cursor sprite jumps to the cursor instead of easing
                                                * (MailboxScene_GlideToCursor), once */
-    MAILBOX_SCENE_FLAG_WRAPPED_LEFT = 0x10,   /* this move wrapped the cursor from the mailbox's left
+    MAILBOX_SCENE_FLAG_WRAPPED_LEFT = 0x10,      /* this move wrapped the cursor from the mailbox's left
                                                * column to the carried letters */
-    MAILBOX_SCENE_FLAG_WRAPPED_RIGHT = 0x20,  /* this move wrapped it from the carried letters' right
+    MAILBOX_SCENE_FLAG_WRAPPED_RIGHT = 0x20,     /* this move wrapped it from the carried letters' right
                                                * column to the mailbox */
-    MAILBOX_SCENE_FLAG_HELD_HIDDEN = 0x40,    /* the held letter is not drawn (MailboxScene_DrawHeld) */
-    MAILBOX_SCENE_FLAG_100 = 0x100,           /* set by action 1 (MailboxScene_RunAction1): the letter is
+    MAILBOX_SCENE_FLAG_HELD_HIDDEN = 0x40,       /* the held letter is not drawn (MailboxScene_DrawHeld) */
+    MAILBOX_SCENE_FLAG_READ = 0x100,             /* set by action 1 (MailboxScene_RunActionRead): the letter is
                                                * shown once the scene has wiped out */
-    MAILBOX_SCENE_FLAG_TAKE_LETTERS = 0x4000, /* set by the setup: once the scene has wiped in, the
+    MAILBOX_SCENE_FLAG_TAKE_LETTERS = 0x4000,    /* set by the setup: once the scene has wiped in, the
                                                * mailbox's letters are taken (MailboxScene_MailboxWipeIn) */
-    MAILBOX_SCENE_FLAG_CLOSING = 0x8000,      /* the scene was asked to close (MailboxScene_CloseOnRequest) */
-    MAILBOX_SCENE_FLAG_FIXED_MENU = 0x10000   /* the choice is MailboxScene_OpenFixedMenu's: its first
+    MAILBOX_SCENE_FLAG_CLOSING = 0x8000,         /* the scene was asked to close (MailboxScene_CloseOnRequest) */
+    MAILBOX_SCENE_FLAG_DISCARD_CONFIRM = 0x10000 /* the choice is MailboxScene_OpenDiscardConfirm's: its first
                                                * row is set apart */
 };
 
@@ -80,11 +80,11 @@ enum MailboxSceneHeldKind {
 
 /* The values of the choice rows (`action`), run by MailboxScene_RunAction. */
 enum MailboxSceneAction {
-    MAILBOX_SCENE_ACTION_0 = 0,       /* MailboxScene_RunAction0 */
-    MAILBOX_SCENE_ACTION_1 = 1,       /* MailboxScene_RunAction1 */
-    MAILBOX_SCENE_ACTION_PICK_UP = 2, /* MailboxScene_PickUpSlotLetter */
-    MAILBOX_SCENE_ACTION_MENU = 3,    /* MailboxScene_OpenFixedMenu */
-    MAILBOX_SCENE_ACTION_CANCEL = 4   /* MailboxScene_EndAction */
+    MAILBOX_SCENE_ACTION_HOLD = 0,            /* MailboxScene_RunActionHold */
+    MAILBOX_SCENE_ACTION_READ = 1,            /* MailboxScene_RunActionRead */
+    MAILBOX_SCENE_ACTION_DISCARD = 2,         /* MailboxScene_DiscardSlotLetter */
+    MAILBOX_SCENE_ACTION_DISCARD_CONFIRM = 3, /* MailboxScene_OpenDiscardConfirm */
+    MAILBOX_SCENE_ACTION_CANCEL = 4           /* MailboxScene_EndAction */
 };
 
 typedef struct MailboxScene {
@@ -136,23 +136,23 @@ void MailboxScene_ClearFlags(MailboxScene *self, unsigned int flags);
 void MailboxScene_SetFlags(MailboxScene *self, unsigned int flags);
 int MailboxScene_TestFlags(MailboxScene *self, int flags);
 void MailboxScene_PressPanelButton9(MailboxScene *self);
-void MailboxScene_RunActionMenu(MailboxScene *self);
-void MailboxScene_PickUpSlotLetter(MailboxScene *self);
+void MailboxScene_RunDiscardConfirm(MailboxScene *self);
+void MailboxScene_DiscardSlotLetter(MailboxScene *self);
 void MailboxScene_CloseOnRequest(MailboxScene *self);
 void MailboxScene_PressLabelButton(MailboxScene *self);
-void MailboxScene_RunAction1(MailboxScene *self);
+void MailboxScene_RunActionRead(MailboxScene *self);
 int MailboxScene_MoveCursor(MailboxScene *self, int keys, int mode);
 void MailboxScene_MoveCursorBelow(MailboxScene *self, int keys);
 void MailboxScene_MoveCursorInMailbox(MailboxScene *self, int keys, int mode);
 void MailboxScene_MoveCursorInCarried(MailboxScene *self, int keys, int mode);
-void MailboxScene_OpenFixedMenu(MailboxScene *self);
+void MailboxScene_OpenDiscardConfirm(MailboxScene *self);
 void MailboxScene_OpenLetterMenu(MailboxScene *self, int place, int above_popup);
 void MailboxScene_CancelChoice(MailboxScene *self);
 void MailboxScene_ShowChoice(MailboxScene *self, int above_popup);
 void MailboxScene_RunAction(MailboxScene *self);
 void MailboxScene_BeginSubState13(MailboxScene *self, u8 target);
 void MailboxScene_BeginSubState12(MailboxScene *self, u8 target);
-void MailboxScene_RunAction0(MailboxScene *self);
+void MailboxScene_RunActionHold(MailboxScene *self);
 void MailboxScene_BeginSubState0f(MailboxScene *self);
 void MailboxScene_BeginSubState0e(MailboxScene *self);
 void MailboxScene_ShowCursorFirstOfSet(MailboxScene *self);
@@ -236,7 +236,7 @@ enum MailboxSceneSubState {
     MAILBOX_SCENE_SUB_BELOW_PRESSED = 0x23,     /* MailboxScene_FollowPanelPress */
     MAILBOX_SCENE_SUB_TAKE_NEXT = 0x24,         /* MailboxScene_TakeNextLetter */
     MAILBOX_SCENE_SUB_TAKE_GLIDE = 0x25,        /* MailboxScene_StepTakenLetterGlide */
-    MAILBOX_SCENE_SUB_LET_GO = 0x26,            /* MailboxScene_WaitLetGo */
+    MAILBOX_SCENE_SUB_DISCARD = 0x26,           /* MailboxScene_WaitDiscarded */
     MAILBOX_SCENE_SUB_STATES = 0x27
 };
 
@@ -263,7 +263,7 @@ void MailboxScene_OfferPanelButtonsByTouch(MailboxScene *self);
 void MailboxScene_EndAction(MailboxScene *self);
 void MailboxScene_EndActionAtCursor(MailboxScene *self);
 void MailboxScene_EndActionHidden(MailboxScene *self);
-void MailboxScene_WaitLetGo(MailboxScene *self);
+void MailboxScene_WaitDiscarded(MailboxScene *self);
 void MailboxScene_StepTakenLetterGlide(MailboxScene *self);
 void MailboxScene_TakeNextLetter(MailboxScene *self);
 void MailboxScene_FollowPanelPress(MailboxScene *self);

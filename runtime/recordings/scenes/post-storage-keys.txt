@@ -2,8 +2,8 @@
 # save is not in this repository). As post-keys.txt up to 4760: the letter storage page of the
 # post office (ov105/letter_storage.c).
 # Save: mail-post (carried letters 1-3 blank letters the player wrote, no item). The keys from
-# 4760: carried letter 1's choice, "throw away" (its fixed menu, LetterStorage_OpenFixedMenu) and
-# yes (LetterStorage_PickUpSlotLetter, WaitLetGo); carried letter 3 sent to the page by Y and
+# 4760: carried letter 1's choice, "throw away" (its discard confirmation, LetterStorage_OpenDiscardConfirm) and
+# yes (LetterStorage_DiscardSlotLetter, WaitLetGo); carried letter 3 sent to the page by Y and
 # back to the carried letters by Y (LetterStorage_FreeCarriedPlace); A on the shown page's tab
 # (sub states 0x0e and 0x0f); B asks to close, A on no, then yes: Pelly keeps the storage.
 0 - -

@@ -530,7 +530,7 @@ void LetterSend_Cancel(LetterSendScene *self)
     ButtonPanel_Select(&self->panel, LETTER_SEND_BUTTON_CANCEL);
     MenuScene_SetSubState(lsend_scene(self), 0x1b);
     self->base.state = LETTER_SEND_STATE_END;
-    LetterSend_ClearFlags(self, LETTER_SEND_FLAG_ACTION_1);
+    LetterSend_ClearFlags(self, LETTER_SEND_FLAG_READ);
 }
 CLEAN_AS(func_ov104_0229c9fc, LetterSend_Cancel)
 
@@ -544,7 +544,7 @@ void LetterSend_Post(LetterSendScene *self)
     ButtonPanel_Select(&self->panel, LETTER_SEND_BUTTON_POST);
     MenuScene_SetSubState(lsend_scene(self), 0x1b);
     self->base.state = LETTER_SEND_STATE_END;
-    LetterSend_ClearFlags(self, LETTER_SEND_FLAG_ACTION_1);
+    LetterSend_ClearFlags(self, LETTER_SEND_FLAG_READ);
     if (Session_IsLinked(data_020ccf94) != 0) {
         LetterSend_BeginLinkedPost(self);
     }
@@ -590,15 +590,15 @@ void LetterSend_SaveCarried(LetterSendScene *self)
 CLEAN_AS(func_ov104_0229cb38, LetterSend_SaveCarried)
 
 /* func_ov104_0229cb70 (action 3) */
-void LetterSend_RunActionMenu(LetterSendScene *self)
+void LetterSend_RunDiscardConfirm(LetterSendScene *self)
 {
-    LetterSend_OpenFixedMenu(self);
+    LetterSend_OpenDiscardConfirm(self);
 }
-CLEAN_AS(func_ov104_0229cb70, LetterSend_RunActionMenu)
+CLEAN_AS(func_ov104_0229cb70, LetterSend_RunDiscardConfirm)
 
-/* func_ov104_0229cb78 (action 2): the letter of the place whose choice is open picked up and
+/* func_ov104_0229cb78 (action 2, the discard): the letter of the place whose choice is open picked up and
  * held where that place is (2 pixels up and left when state flag 2 is set), sub state 0x1c. */
-void LetterSend_PickUpSlotLetter(LetterSendScene *self)
+void LetterSend_DiscardSlotLetter(LetterSendScene *self)
 {
     u8 place = self->slot;
     LetterSend_PickUpLetter(self, place);
@@ -609,9 +609,9 @@ void LetterSend_PickUpSlotLetter(LetterSendScene *self)
         self->held_y -= 2;
     }
     MenuScene_SetSubState(lsend_scene(self), 0x1c);
-    PocketsLetters_StartPickUp(&self->letters);
+    PocketsLetters_StartDiscard(&self->letters);
 }
-CLEAN_AS(func_ov104_0229cb78, LetterSend_PickUpSlotLetter)
+CLEAN_AS(func_ov104_0229cb78, LetterSend_DiscardSlotLetter)
 
 /* func_ov104_0229cbe8: sub state 0x1a, the label button's state 2, sound 0x29. */
 void LetterSend_PressLabelButton(LetterSendScene *self)
@@ -623,14 +623,14 @@ void LetterSend_PressLabelButton(LetterSendScene *self)
 }
 CLEAN_AS(func_ov104_0229cbe8, LetterSend_PressLabelButton)
 
-/* func_ov104_0229cc0c (action 1): state 4, phase 1, LETTER_SEND_FLAG_ACTION_1. */
-void LetterSend_RunAction1(LetterSendScene *self)
+/* func_ov104_0229cc0c (action 1): state 4, phase 1, LETTER_SEND_FLAG_READ. */
+void LetterSend_RunActionRead(LetterSendScene *self)
 {
     MenuScene_SetState(lsend_scene(self), 4);
     MenuScene_SetPhase(lsend_scene(self), 1);
-    LetterSend_SetFlags(self, LETTER_SEND_FLAG_ACTION_1);
+    LetterSend_SetFlags(self, LETTER_SEND_FLAG_READ);
 }
-CLEAN_AS(func_ov104_0229cc0c, LetterSend_RunAction1)
+CLEAN_AS(func_ov104_0229cc0c, LetterSend_RunActionRead)
 
 /* func_ov104_0229cc30: the cursor moved by `keys` (KeyRepeat_Has*) in the part of the scene it
  * is in; `mode` 0 lets it go down to the places below the letters. The wrap flags are cleared
@@ -753,42 +753,42 @@ void LetterSend_MoveCursorInCarried(LetterSendScene *self, int keys, int mode)
 }
 CLEAN_AS(func_ov104_0229cdf0, LetterSend_MoveCursorInCarried)
 
-/* func_ov104_0229cec4: the fixed choice (its first row set apart): texts 0x1a and 0x19 cancel,
- * text 0x15 picks the letter up. */
-void LetterSend_OpenFixedMenu(LetterSendScene *self)
+/* func_ov104_0229cec4: the discard confirmation (its first row set apart): texts 0x1a and 0x19 cancel,
+ * text 0x15 discards the letter. */
+void LetterSend_OpenDiscardConfirm(LetterSendScene *self)
 {
-    LetterSend_SetFlags(self, LETTER_SEND_FLAG_FIXED_MENU);
+    LetterSend_SetFlags(self, LETTER_SEND_FLAG_DISCARD_CONFIRM);
     ChoiceEntries_Clear(&self->entries, LETTER_SEND_ACTION_CANCEL);
     ChoiceEntries_Add(&self->entries, 0x1a, LETTER_SEND_ACTION_CANCEL);
-    ChoiceEntries_Add(&self->entries, 0x15, LETTER_SEND_ACTION_PICK_UP);
+    ChoiceEntries_Add(&self->entries, 0x15, LETTER_SEND_ACTION_DISCARD);
     ChoiceEntries_Add(&self->entries, 0x19, LETTER_SEND_ACTION_CANCEL);
     LetterSend_ShowChoice(self, 0);
 }
-CLEAN_AS(func_ov104_0229cec4, LetterSend_OpenFixedMenu)
+CLEAN_AS(func_ov104_0229cec4, LetterSend_OpenDiscardConfirm)
 
 /* func_ov104_0229cf14: the choice of the letter at `place`: text 0 (action 0) when state flag 2
  * is set; text 0x17 (state 7) or 0x14 (another state but 0) for action 1; text 0x15 for the
- * fixed menu when the letter has no item and its state is 1, 3, 4 or 6; text 2 to cancel. The
+ * discard confirmation when the letter has no item and its state is 1, 3, 4 or 6; text 2 to cancel. The
  * cursor sprite is hidden, the popup too unless the choice goes above it. */
 void LetterSend_OpenLetterMenu(LetterSendScene *self, int place, int above_popup)
 {
-    LetterSend_ClearFlags(self, LETTER_SEND_FLAG_FIXED_MENU);
+    LetterSend_ClearFlags(self, LETTER_SEND_FLAG_DISCARD_CONFIRM);
     self->slot = (u8) place;
     ChoiceEntries_Clear(&self->entries, LETTER_SEND_ACTION_CANCEL);
     Letter *letter = LetterSend_PlaceLetter(self, place);
     if (StateFlags_Test2() != 0) {
-        ChoiceEntries_Add(&self->entries, 0, LETTER_SEND_ACTION_0);
+        ChoiceEntries_Add(&self->entries, 0, LETTER_SEND_ACTION_HOLD);
     }
     int state = Letter_State(letter);
     if (state != LETTER_STATE_NONE) {
         if (state == LETTER_STATE_BETWEEN_VILLAGERS) {
-            ChoiceEntries_Add(&self->entries, 0x17, LETTER_SEND_ACTION_1);
+            ChoiceEntries_Add(&self->entries, 0x17, LETTER_SEND_ACTION_READ);
         } else {
-            ChoiceEntries_Add(&self->entries, 0x14, LETTER_SEND_ACTION_1);
+            ChoiceEntries_Add(&self->entries, 0x14, LETTER_SEND_ACTION_READ);
         }
     }
     if (Letter_Item(letter) == LETTER_NO_ITEM && (state == 3 || state == 6 || state == 1 || state == 4)) {
-        ChoiceEntries_Add(&self->entries, 0x15, LETTER_SEND_ACTION_MENU);
+        ChoiceEntries_Add(&self->entries, 0x15, LETTER_SEND_ACTION_DISCARD_CONFIRM);
     }
     ChoiceEntries_Add(&self->entries, 2, LETTER_SEND_ACTION_CANCEL);
     LetterSend_HideCursorSprite(self);
@@ -810,11 +810,11 @@ void LetterSend_CancelChoice(LetterSendScene *self)
 }
 CLEAN_AS(func_ov104_0229cfe4, LetterSend_CancelChoice)
 
-/* func_ov104_0229d010: the entries shown in the choice (the first row set apart for the fixed
- * menu), placed above the popup or beside the open place, asked to open; sub state 0x16. */
+/* func_ov104_0229d010: the entries shown in the choice (the first row set apart for the discard
+ * confirmation), placed above the popup or beside the open place, asked to open; sub state 0x16. */
 void LetterSend_ShowChoice(LetterSendScene *self, int above_popup)
 {
-    int fixed = LetterSend_TestFlags(self, LETTER_SEND_FLAG_FIXED_MENU);
+    int fixed = LetterSend_TestFlags(self, LETTER_SEND_FLAG_DISCARD_CONFIRM);
     PagedChoice_ShowEntries(lsend_choice(self), &self->entries, fixed);
     int x = LetterSend_PlaceX(self, self->slot);
     int y = LetterSend_PlaceY(self, self->slot);
@@ -832,17 +832,17 @@ CLEAN_AS(func_ov104_0229d010, LetterSend_ShowChoice)
 void LetterSend_RunAction(LetterSendScene *self)
 {
     switch (self->action) {
-        case LETTER_SEND_ACTION_0:
-            LetterSend_RunAction0(self);
+        case LETTER_SEND_ACTION_HOLD:
+            LetterSend_RunActionHold(self);
             break;
-        case LETTER_SEND_ACTION_1:
-            LetterSend_RunAction1(self);
+        case LETTER_SEND_ACTION_READ:
+            LetterSend_RunActionRead(self);
             break;
-        case LETTER_SEND_ACTION_PICK_UP:
-            LetterSend_PickUpSlotLetter(self);
+        case LETTER_SEND_ACTION_DISCARD:
+            LetterSend_DiscardSlotLetter(self);
             break;
-        case LETTER_SEND_ACTION_MENU:
-            LetterSend_RunActionMenu(self);
+        case LETTER_SEND_ACTION_DISCARD_CONFIRM:
+            LetterSend_RunDiscardConfirm(self);
             break;
         default:
             LetterSend_EndAction(self);
@@ -875,12 +875,12 @@ void LetterSend_BeginSubState12(LetterSendScene *self, u8 target)
 CLEAN_AS(func_ov104_0229d11c, LetterSend_BeginSubState12)
 
 /* func_ov104_0229d158 (action 0): the cursor sprite's animation 4, sub state 0x10. */
-void LetterSend_RunAction0(LetterSendScene *self)
+void LetterSend_RunActionHold(LetterSendScene *self)
 {
     Glider_SetAnim(&self->cursor_sprite, 4);
     MenuScene_SetSubState(lsend_scene(self), 0x10);
 }
-CLEAN_AS(func_ov104_0229d158, LetterSend_RunAction0)
+CLEAN_AS(func_ov104_0229d158, LetterSend_RunActionHold)
 
 /* func_ov104_0229d178 */
 void LetterSend_BeginSubState0e(LetterSendScene *self)
@@ -908,11 +908,11 @@ void LetterSend_PlaceCursorSprite(LetterSendScene *self)
 }
 CLEAN_AS(func_ov104_0229d1b8, LetterSend_PlaceCursorSprite)
 
-/* func_ov104_0229d1ec: the cursor sprite put at the choice's row 1 for the fixed menu (its
+/* func_ov104_0229d1ec: the cursor sprite put at the choice's row 1 for the discard confirmation (its
  * first row set apart), else at row 0; animation 7. */
 void LetterSend_PointAtDefaultRow(LetterSendScene *self)
 {
-    self->choice_row = LetterSend_TestFlags(self, LETTER_SEND_FLAG_FIXED_MENU) != 0 ? 1 : 0;
+    self->choice_row = LetterSend_TestFlags(self, LETTER_SEND_FLAG_DISCARD_CONFIRM) != 0 ? 1 : 0;
     int x = PagedChoice_TextX(lsend_choice(self));
     int y = PagedChoice_RowY(lsend_choice(self), self->choice_row);
     Glider_PlaceAt(&self->cursor_sprite, x, y);
@@ -1532,16 +1532,16 @@ void LetterSend_EndActionHidden(LetterSendScene *self)
 }
 CLEAN_AS(func_ov104_0229dd54, LetterSend_EndActionHidden)
 
-/* func_ov104_0229dd70 (sub state 0x1c, after LetterSend_PickUpSlotLetter): once the letters
- * object's pick-up is over, the held letter is let go (nothing held) and the action ends. */
-void LetterSend_WaitLetGo(LetterSendScene *self)
+/* func_ov104_0229dd70 (sub state 0x1c, after LetterSend_DiscardSlotLetter): once the letters
+ * object's discard (the letter shrinking away) is over, the held letter is let go (nothing held) and the action ends. */
+void LetterSend_WaitDiscarded(LetterSendScene *self)
 {
-    if (PocketsLetters_StepPickUp(&self->letters)) {
+    if (PocketsLetters_StepDiscard(&self->letters)) {
         self->held_kind = LETTER_SEND_HELD_NONE;
         LetterSend_EndAction(self);
     }
 }
-CLEAN_AS(func_ov104_0229dd70, LetterSend_WaitLetGo)
+CLEAN_AS(func_ov104_0229dd70, LetterSend_WaitDiscarded)
 
 /* The panel's selected button, for its place. */
 #define LETTER_SEND_PANEL_SELECTED (-1)
@@ -1780,13 +1780,13 @@ static u8 lsend_entry_value(LetterSendScene *self, int row)
     return bytes[offsetof(LetterSendScene, entries) + offsetof(ChoiceEntries, values) + (size_t) row];
 }
 
-/* A choice row picked with the sound of a pick, except for the row of the pick-up action (sound
+/* A choice row picked with the sound of a pick, except for the row of the discard action (sound
  * 0x24 instead); its action kept; sub state 0x17. */
 static void lsend_pick_choice_row(LetterSendScene *self, int row)
 {
     self->action = lsend_entry_value(self, row);
     int with_sound = 1;
-    if (self->action == LETTER_SEND_ACTION_PICK_UP) {
+    if (self->action == LETTER_SEND_ACTION_DISCARD) {
         with_sound = 0;
         SoundSys_PlaySe(0x24);
     }
@@ -1823,7 +1823,7 @@ static int lsend_pen_pressed(void)
 }
 
 /* func_ov104_0229e1d4 (sub state 0x0b): the choice by the keys. A touch cancels it; the keys
- * move the row (from row 1 round for the fixed menu), the cursor sprite gliding to it; A plays
+ * move the row (from row 1 round for the discard confirmation), the cursor sprite gliding to it; A plays
  * the sprite's second animation of its set and picks the row (sub state 0x0c), B points at the
  * last row. */
 void LetterSend_ChooseByKeys(LetterSendScene *self)
@@ -1833,7 +1833,7 @@ void LetterSend_ChooseByKeys(LetterSendScene *self)
         return;
     }
     int keys = (int) MenuScene_LatchRepeatedKeys(lsend_scene(self));
-    u8 first = (u8) LetterSend_TestFlags(self, LETTER_SEND_FLAG_FIXED_MENU);
+    u8 first = (u8) LetterSend_TestFlags(self, LETTER_SEND_FLAG_DISCARD_CONFIRM);
     if (PagedChoice_MoveCursor(lsend_choice(self), keys, &self->choice_row, first)) {
         LetterSend_GlideToRow(self);
         return;
@@ -1978,7 +1978,7 @@ CLEAN_AS(func_ov104_0229e3b8, LetterSend_BrowseByKeys)
 
 /* func_ov104_0229e54c (sub state 6): the choice by the touch, once shown. A button cancels it;
  * the pen going down picks the row under it (the last one outside the window), but not the set
- * apart first row of the fixed menu. */
+ * apart first row of the discard confirmation. */
 void LetterSend_ChooseByTouch(LetterSendScene *self)
 {
     if (PagedChoice_IsShown(lsend_choice(self)) == 0) {
@@ -1995,7 +1995,7 @@ void LetterSend_ChooseByTouch(LetterSendScene *self)
     if (row < 0) {
         return;
     }
-    if (LetterSend_TestFlags(self, LETTER_SEND_FLAG_FIXED_MENU) != 0 && row == 0) {
+    if (LetterSend_TestFlags(self, LETTER_SEND_FLAG_DISCARD_CONFIRM) != 0 && row == 0) {
         return;
     }
     lsend_pick_choice_row(self, row);
@@ -2423,7 +2423,7 @@ void LetterSend_ShowLetter(LetterSendScene *self)
 CLEAN_AS(func_ov104_0229ec4c, LetterSend_ShowLetter)
 
 /* func_ov104_0229ecc0 (state 6): the scene wipes out; when done, its layer hidden and its
- * objects no longer drawn: with LETTER_SEND_FLAG_ACTION_1 the letter is shown (state 7, run at
+ * objects no longer drawn: with LETTER_SEND_FLAG_READ the letter is shown (state 7, run at
  * once), else the scene is no longer drawn and the run phase begins. Else the scene layer follows
  * the wipe. */
 void LetterSend_SceneWipeOut(LetterSendScene *self)
@@ -2431,7 +2431,7 @@ void LetterSend_SceneWipeOut(LetterSendScene *self)
     if (MenuScene_StepWipe(lsend_scene(self), 0) != 0) {
         DisplayLayer_HideAndResetScroll(LETTER_SEND_SCENE_LAYER);
         LetterSend_ClearFlags(self, LETTER_SEND_FLAG_SCROLLED);
-        if (LetterSend_TestFlags(self, LETTER_SEND_FLAG_ACTION_1) != 0) {
+        if (LetterSend_TestFlags(self, LETTER_SEND_FLAG_READ) != 0) {
             MenuScene_SetState(lsend_scene(self), LETTER_SEND_STATE_SHOW_LETTER);
             LetterSend_ShowLetter(self);
         } else {
@@ -2463,13 +2463,13 @@ CLEAN_AS(func_ov104_0229ed1c, LetterSend_OutboxWipeOut)
 
 /* func_ov104_0229ed6c (state 4, set by LetterSend_Post and LetterSend_Cancel): the popup hidden
  * (its queue dropped) and the cursor sprite hidden; the parent told the scene ends (code 0x44)
- * unless a letter is to be shown (LETTER_SEND_FLAG_ACTION_1); the letters to post start to wipe
+ * unless a letter is to be shown (LETTER_SEND_FLAG_READ); the letters to post start to wipe
  * out on window 2 over 0xc0 pixels (state 5). */
 void LetterSend_StartWipeOut(LetterSendScene *self)
 {
     Popup_Hide(&self->popup, 1);
     LetterSend_HideCursorSprite(self);
-    if (LetterSend_TestFlags(self, LETTER_SEND_FLAG_ACTION_1) == 0) {
+    if (LetterSend_TestFlags(self, LETTER_SEND_FLAG_READ) == 0) {
         MenuDispatch_SetMode((MenuDispatch *) (void *) lsend_parent(self), LETTER_SEND_PARENT_CODE_END, 1);
     }
     MenuScene_StartWipeOnWindow2(lsend_scene(self), 2, 0, 2, LETTER_SEND_WIPE_MARGIN);

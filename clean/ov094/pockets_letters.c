@@ -1,4 +1,4 @@
-/* Overlay 094's letters object (pockets_letters.h): its sets of bits, the held letter's pick-up,
+/* Overlay 094's letters object (pockets_letters.h): its sets of bits, the held letter's discard,
  * the places' letters and positions, their drawing, the touch and the popup's text. */
 #include "pockets_letters.h"
 
@@ -19,7 +19,7 @@ static_assert(offsetof(PocketsLetters, priority) == 0x20 && offsetof(PocketsLett
 static_assert(offsetof(PocketsLetters, held_size) == 0x27 && sizeof(PocketsLetters) == 0x28, "letters size");
 static_assert(sizeof(Letter) == 0x100, "letter");
 
-/* The held letter's sizes at pick-up steps 0 to 3 (2, 4, 6, 8 tenths). */
+/* The held letter's sizes at discard steps 0 to 3 (2, 4, 6, 8 tenths). */
 extern const u8 data_ov094_0229bddc[];
 
 /* The first places of the ten letters PocketsLetters_SetTenAt23 is given. */
@@ -56,47 +56,47 @@ void PocketsLetterBits_ClearAll(PocketsBits *bits)
 }
 CLEAN_AS(func_ov094_0229b174, PocketsLetterBits_ClearAll)
 
-/* func_ov094_0229b184: the held letter's size at this step of the pick-up; full size once the
+/* func_ov094_0229b184: the held letter's size at this step of the discard; full size once the
  * steps are over. */
-int PocketsLetters_PickUpSize(PocketsLetters *letters)
+int PocketsLetters_DiscardSize(PocketsLetters *letters)
 {
-    u8 step = letters->pickup_step;
+    u8 step = letters->discard_step;
 
-    if (step >= POCKETS_LETTERS_PICKUP_STEPS) {
+    if (step >= POCKETS_LETTERS_DISCARD_STEPS) {
         return POCKETS_LETTERS_FULL_SIZE;
     }
     return data_ov094_0229bddc[step];
 }
-CLEAN_AS(func_ov094_0229b184, PocketsLetters_PickUpSize)
+CLEAN_AS(func_ov094_0229b184, PocketsLetters_DiscardSize)
 
-/* func_ov094_0229b19c: a step of the pick-up (the held letter shrinks to 8, 6, 4 and 2 tenths);
+/* func_ov094_0229b19c: a step of the discard (the held letter shrinks to 8, 6, 4 and 2 tenths);
  * 1 once it is over, the letter back at full size. */
-int PocketsLetters_StepPickUp(PocketsLetters *letters)
+int PocketsLetters_StepDiscard(PocketsLetters *letters)
 {
-    if (letters->pickup_step != 0) {
-        letters->pickup_step--;
-        letters->held_size = (u8) PocketsLetters_PickUpSize(letters);
+    if (letters->discard_step != 0) {
+        letters->discard_step--;
+        letters->held_size = (u8) PocketsLetters_DiscardSize(letters);
         return 0;
     }
-    PocketsLetters_EndPickUp(letters);
+    PocketsLetters_EndDiscard(letters);
     return 1;
 }
-CLEAN_AS(func_ov094_0229b19c, PocketsLetters_StepPickUp)
+CLEAN_AS(func_ov094_0229b19c, PocketsLetters_StepDiscard)
 
 /* func_ov094_0229b1d0: the held letter at full size. */
-void PocketsLetters_EndPickUp(PocketsLetters *letters)
+void PocketsLetters_EndDiscard(PocketsLetters *letters)
 {
     letters->held_size = POCKETS_LETTERS_FULL_SIZE;
 }
-CLEAN_AS(func_ov094_0229b1d0, PocketsLetters_EndPickUp)
+CLEAN_AS(func_ov094_0229b1d0, PocketsLetters_EndDiscard)
 
-/* func_ov094_0229b1d8: a pick-up of four steps started, the letter at full size. */
-void PocketsLetters_StartPickUp(PocketsLetters *letters)
+/* func_ov094_0229b1d8: a discard of four steps started (the letter shrinks away), the letter at full size. */
+void PocketsLetters_StartDiscard(PocketsLetters *letters)
 {
-    letters->pickup_step = POCKETS_LETTERS_PICKUP_STEPS;
+    letters->discard_step = POCKETS_LETTERS_DISCARD_STEPS;
     letters->held_size = POCKETS_LETTERS_FULL_SIZE;
 }
-CLEAN_AS(func_ov094_0229b1d8, PocketsLetters_StartPickUp)
+CLEAN_AS(func_ov094_0229b1d8, PocketsLetters_StartDiscard)
 
 /* func_ov094_0229b1e8: the icon of `letter`: POCKETS_LETTERS_NO_ICON when its state is 0 (no
  * letter), else two by state from state 1, the second of the two when it carries an item. */

@@ -514,7 +514,7 @@ What reading the Clean code found about the groups above; counts are of function
   slot 16 (0x40): processes are deleted through slot 17, and no slot-16 destructor of any class
   (main's process classes included) runs in the scenes.
 - A written letter of the player's in the mailbox page has "throw away", a fixed question
-  (MailboxScene_OpenFixedMenu): scene mailbox-throw (save mail-items); the posting page's the
+  (MailboxScene_OpenDiscardConfirm): scene mailbox-throw (save mail-items); the posting page's the
   same (post-throw).
 - Erasing the town's only resident from the continue menu works and leaves a town with no
   player (erase-player). The title's idle restart (TitleScene_RestartTitle) was not reached in
@@ -1800,8 +1800,8 @@ What reading the Clean code found about the groups above; counts are of function
   _FreePocketPlace); mailbox-cancel (a letter's choice cancelled by the pen, the place below the
   letters pressed, then "leave them" by B: MailboxScene_CancelChoice, _BeginSubState0e,
   _PressPlace, _PressPanelButton4); post-storage-keys (save mail-post: a letter the player wrote
-  thrown away by its fixed menu, Y to the page and back, A on the shown page's tab:
-  LetterStorage_RunActionMenu, _OpenFixedMenu, _PickUpSlotLetter, _WaitLetGo, _FreeCarriedPlace,
+  thrown away by its discard confirmation, Y to the page and back, A on the shown page's tab:
+  LetterStorage_RunDiscardConfirm, _OpenDiscardConfirm, _DiscardSlotLetter, _WaitDiscarded, _FreeCarriedPlace,
   _HoldAndGlide, _BeginSubState0f, _FinishPlacePress); post-swap (two carried letters swapped by the
   keys, one dragged off any place, one read with the letter's label button by the pen:
   LetterSend_BeginSubState13, _Swap, _SwapHeldWith, _FinishSwap, _DropHeldAtTouch,
