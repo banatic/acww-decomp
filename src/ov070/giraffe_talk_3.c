@@ -1,5 +1,7 @@
-/* func_ov070_02278b64 @ 0x02278b64, 0x2cc bytes, Thumb, module ov070
+/* giraffe_talk_3: 2 functions, module ov070
  * mwccarm 1.2/base -O4,s
+ * func_ov070_02278b64 @ 0x02278b64, 0x2cc bytes, Thumb
+ * func_ov070_02278ab8 @ 0x02278ab8, 0xac bytes, Thumb
  */
 
 #include "types.h"
@@ -25,6 +27,15 @@ typedef struct Loc {
     u16 c;
     u16 d;
 } Loc;
+
+typedef struct {
+    unsigned char pad_00[0x1e];
+    unsigned char unk_1E;
+    unsigned char pad_1F[0x21];
+    void *unk_40;
+    unsigned char pad_44[0x70];
+    unsigned char *unk_B4;
+} UnkStruct_02278ab8;
 
 extern void *func_020984e8(void);
 extern int func_0209a1e8(void);
@@ -58,8 +69,12 @@ extern void func_0206844c(void *, u8 *, void *);
 extern int func_02099710(void *);
 extern int func_0206300c(int, int);
 extern int func_020950c0(int);
-
-extern int data_ov070_02279d24, data_ov070_02279d58, data_ov070_02279d20;
+extern int data_ov070_02279d24;
+extern int data_ov070_02279d20;
+extern int func_020160b4(void *p);
+extern int func_020ab504(int x);
+extern void MI_CpuFill8(void *dest, int val, int size);
+extern unsigned char data_ov070_02279d58[];
 
 void func_ov070_02278b64(UnkStruct_02278b64 *self)
 {
@@ -112,7 +127,7 @@ void func_ov070_02278b64(UnkStruct_02278b64 *self)
                 func_020154b4(self, &loc.c, 0, 5, 0);
                 func_020b45d0(buf, func_02088b64(txt), 10, 0, 0, 0);
                 func_0203d7c4(0, buf);
-                func_02066024(sub, &loc, &data_ov070_02279d58, &data_ov070_02279d20, &data_ov070_02279d24, func_02099870(ent));
+                func_02066024(sub, &loc, ((int *) data_ov070_02279d58), &data_ov070_02279d20, &data_ov070_02279d24, func_02099870(ent));
                 if (ent != 0) {
                     loc.d = func_0204bd20(0x10, 4);
                     func_0203cd1c(func_020996ac(ent), &loc.d, 0);
@@ -183,6 +198,40 @@ void func_ov070_02278b64(UnkStruct_02278b64 *self)
 
     if (v != 0xff) {
         loc.b = v;
-        func_0206844c(self->unk_40, &loc.b, &data_ov070_02279d58);
+        func_0206844c(self->unk_40, &loc.b, ((int *) data_ov070_02279d58));
+    }
+}
+
+void func_ov070_02278ab8(UnkStruct_02278ab8 *p)
+{
+    int r4 = func_020ab504(func_020160b4(p));
+    unsigned char *data = data_ov070_02279d58;
+    unsigned char result = 0xff;
+    if (((int) p->unk_1E >= 15) && ((int) p->unk_1E < 35)) {
+        if (p->unk_B4[0x738] < 5) {
+            unsigned long ret = func_ov070_02279724((Big *) p->unk_B4, (u8 *) (p->unk_B4 + 0x724), 20);
+            if (p->unk_B4[0x724 + ret] == 0) {
+                p->unk_B4[0x724 + ret] = 1;
+            }
+            result = (unsigned char) (ret + 15);
+        } else {
+            MI_CpuFill8(p->unk_B4 + 0x724, 0, 20);
+            func_0202ea80(8, 1);
+            result = 0x23;
+        }
+    }
+    if (p->unk_1E == 9) {
+        if (r4 == 0) {
+            int v = func_0209a1e8();
+            if (v != (-1)) {
+                result = 11;
+            } else {
+                result = 12;
+            }
+        }
+    }
+    if (result != 0xff) {
+        unsigned char b = result;
+        func_0206844c(p->unk_40, (u8 *) (&b), data);
     }
 }
