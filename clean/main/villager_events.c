@@ -67,10 +67,10 @@ void VillagerEvent_CountIdleFrame(void)
     if (Session_IsLinked(data_020ccf94)) {
         return;
     }
-    if (VillagerState_Table()->word_168 > VILLAGER_EVENT_IDLE_FRAMES) {
+    if (VillagerState_Table()->idle_frames > VILLAGER_EVENT_IDLE_FRAMES) {
         VillagerEvent_Idle();
     }
-    VillagerState_Table()->word_168++;
+    VillagerState_Table()->idle_frames++;
 }
 CLEAN_AS(func_020795f4, VillagerEvent_CountIdleFrame)
 
@@ -207,7 +207,7 @@ void VillagerEvent_Spread(int kind, const Vec3 *position)
         }
         VillagerMode_AddCount(villager, kind, amount);
     }
-    VillagerState_Table()->word_168 = 0;
+    VillagerState_Table()->idle_frames = 0;
 }
 CLEAN_AS(func_020797bc, VillagerEvent_Spread)
 

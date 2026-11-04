@@ -39,8 +39,8 @@ void VillagerDay_Begin(u8 *villagers, const DateTime *today)
                     VillagerMemoryBits_ClearBit11((VillagerMemory *) memory);
                     VillagerMemoryBits_ClearBirthdayLetter((VillagerMemory *) memory);
                     VillagerMemoryBits_ClearNewYearLetter((VillagerMemory *) memory);
-                    VillagerMemoryBits_ClearBit14((VillagerMemory *) memory);
-                    VillagerMemoryBits_ClearBit5((VillagerMemory *) memory);
+                    VillagerMemoryBits_ClearFleaMarketDone((VillagerMemory *) memory);
+                    VillagerMemoryBits_ClearFortuneDue((VillagerMemory *) memory);
                 }
             }
             VillagerMail_SendBirthdayLetters((u8 *) (uintptr_t) villager, (const DateTime *) (uintptr_t) today);

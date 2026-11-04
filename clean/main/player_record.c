@@ -47,7 +47,7 @@ static_assert(sizeof(PlayerStorage) == 0xb4, "PlayerStorage layout");
 #define RECORD_COUNT 0x2451
 #define RECORD_BYTE_2452 0x2452
 #define RECORD_BIRTHDAY_YEAR 0x2453
-#define RECORD_VILLAGER_BYTES 0x2454
+#define RECORD_BIRTHDAY_NOTICE_YEARS 0x2454
 #define RECORD_VILLAGER 0x245c
 
 /* PlayerRecord_RaiseCount's range above 0. */
@@ -257,24 +257,25 @@ PlayerRecordVillager *PlayerRecord_Villager(u8 *record)
 }
 CLEAN_AS(func_02099158, PlayerRecord_Villager)
 
-/* func_02099164: the record's byte for the town's villager `villager` (0-7; nothing past). */
-void PlayerRecord_SetVillagerByte(u8 *record, u32 villager, u8 value)
+/* func_02099164: the year of villager `villager`'s (0-7; nothing past) birthday the player
+ * was last sent its notice for. */
+void PlayerRecord_SetBirthdayNoticeYear(u8 *record, u32 villager, u8 value)
 {
-    if (villager < PLAYER_RECORD_VILLAGER_BYTES) {
-        record[RECORD_VILLAGER_BYTES + villager] = value;
+    if (villager < PLAYER_RECORD_BIRTHDAY_NOTICE_YEARS) {
+        record[RECORD_BIRTHDAY_NOTICE_YEARS + villager] = value;
     }
 }
-CLEAN_AS(func_02099164, PlayerRecord_SetVillagerByte)
+CLEAN_AS(func_02099164, PlayerRecord_SetBirthdayNoticeYear)
 
 /* func_02099174: 0xff past 7. */
-u8 PlayerRecord_VillagerByte(u8 *record, u32 villager)
+u8 PlayerRecord_BirthdayNoticeYear(u8 *record, u32 villager)
 {
-    if (villager < PLAYER_RECORD_VILLAGER_BYTES) {
-        return record[RECORD_VILLAGER_BYTES + villager];
+    if (villager < PLAYER_RECORD_BIRTHDAY_NOTICE_YEARS) {
+        return record[RECORD_BIRTHDAY_NOTICE_YEARS + villager];
     }
     return 0xff;
 }
-CLEAN_AS(func_02099174, PlayerRecord_VillagerByte)
+CLEAN_AS(func_02099174, PlayerRecord_BirthdayNoticeYear)
 
 /* func_02099188 */
 void PlayerRecord_SetByte2452(u8 *record, u8 value)
@@ -991,7 +992,7 @@ void PlayerRecord_NewPlayer(u8 *record, const void *name, int player_id, int byt
     Savings_InitAccount((SavingsAccount *) (void *) (record + RECORD_SAVINGS));
     ReactionSlots_Clear(record + RECORD_REACTION_SLOTS);
     Calendar_Today(PlayerRecord_LastPlayDate(record));
-    MI_CpuFill8(record + RECORD_VILLAGER_BYTES, 0xff, PLAYER_RECORD_VILLAGER_BYTES);
+    MI_CpuFill8(record + RECORD_BIRTHDAY_NOTICE_YEARS, 0xff, PLAYER_RECORD_BIRTHDAY_NOTICE_YEARS);
 }
 CLEAN_AS(func_0209987c, PlayerRecord_NewPlayer)
 
@@ -1016,7 +1017,7 @@ void PlayerRecord_Clear(u8 *record)
     ShopPoints_ResetB(record + RECORD_SHOP_POINTS);
     *player_record_u16(record, RECORD_ITEM_240E) = PLAYER_RECORD_NO_ITEM;
     record[RECORD_BIRTHDAY_YEAR] = PLAYER_RECORD_NO_YEAR;
-    MI_CpuFill8(record + RECORD_VILLAGER_BYTES, 0xff, PLAYER_RECORD_VILLAGER_BYTES);
+    MI_CpuFill8(record + RECORD_BIRTHDAY_NOTICE_YEARS, 0xff, PLAYER_RECORD_BIRTHDAY_NOTICE_YEARS);
     PlayerRecordVillager_Clear((PlayerRecordVillager *) (void *) (record + RECORD_VILLAGER));
 }
 CLEAN_AS(func_02099a38, PlayerRecord_Clear)

@@ -285,7 +285,7 @@ int OutdoorVillagerObject_OnItemSwung(u8 *villager, u16 *item)
         VillagerEntry_HalveByte1E(object_record(villager));
     }
     u8 *town_record = *(u8 **) (void *) object_at(villager, OUTDOOR_VILLAGER_RECORD);
-    if (VillagerCheck_IsIndex160(town_record) != 0) {
+    if (VillagerCheck_HasFleas(town_record) != 0) {
         OutdoorVillagerEffect_Stop(object_effect(villager), villager);
         OutdoorVillagerEffect_SetCountdown(object_effect(villager), data_ov068_0227672c);
         return 1;
@@ -360,11 +360,11 @@ int OutdoorVillagerObject_Start(u8 *villager)
     OutdoorVillagerBehaviour *behaviour = object_behaviour(villager);
     *(MemberPointer *) (void *) object_at(villager, OBJECT_DRAW_HOOK) = data_ov068_02276eb0;
     OutdoorVillagerWatch_HoldOnPlayer((OutdoorVillagerWatch *) (void *) object_at(villager, OUTDOOR_VILLAGER_WATCH), villager);
-    int named = VillagerState_GetIndex16C();
+    int named = VillagerState_GetBirthdayGreeter();
     OutdoorVillagerWalks_InitItemCheck(behaviour);
     if (named == VillagerStatus_Index(record)) {
         OutdoorVillagerBehaviour_Start(behaviour, villager, OBJECT_DO_13);
-    } else if (VillagerState_GetIndex162() == VillagerStatus_Index(record)) {
+    } else if (VillagerState_GetBirthdayVillager() == VillagerStatus_Index(record)) {
         OutdoorVillagerBehaviour_Start(behaviour, villager, OBJECT_DO_12);
     } else {
         int status = VillagerStatus_Get(record);

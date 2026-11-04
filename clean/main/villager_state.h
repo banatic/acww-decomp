@@ -8,8 +8,17 @@
  * delay down and then the timer, and the count is dropped when the timer is out. Its level is 1
  * from a count of 7 and 2 from 10, while data_020e54a8 is 0.
  *
- * The entry's byte 0x18 stays set while the counter at 0x1a runs: func_0208541c counts the
- * counter down each time and clears the byte when it reaches 0. */
+ * The entry's mood (byte 0x18, villager_mood.h) stays set while its frames at 0x1a run:
+ * func_0208541c counts them down each time and clears the mood when they reach 0. The byte at
+ * 0x1c is the villager's activity of the moment (one of its hobbies' kinds, read by overlay 68
+ * to pick the tool it carries, held at 0x26), and 0x20 and 0x24 its room's score and flags
+ * (VillagerTown_ScoreRoom, RoomScore_ScoreVillager).
+ *
+ * The town bytes after the entries name villagers of the day: the one with fleas (0x160), the
+ * one that tells the fox's password (0x161), the birthday villager and its companion (0x162,
+ * 0x163), the visitor of the player's flea market (0x164), and the villager that greets the
+ * player first on the player's birthday (0x16c); 0x168 counts the frames since the last
+ * villager event (villager_events.h). */
 #ifndef CLEAN_MAIN_VILLAGER_STATE_H
 #define CLEAN_MAIN_VILLAGER_STATE_H
 
@@ -33,34 +42,34 @@ typedef struct VillagerTally {
 } VillagerTally;
 
 typedef struct VillagerState {
-    u8 state;            /* 0x00: 0-7 */
-    u8 byte_01;          /* 0x01: 3 when set up */
-    u8 unused_02[2];     /* 0x02 */
-    u8 object[12];       /* 0x04: set up by func_0209bd5c (no item, 0xfff1, at its 0x08) */
-    u8 bytes_10[8];      /* 0x10: cleared by func_0209c52c */
-    u8 byte_18;          /* 0x18: 5 when set up; cleared when the counter runs out */
-    u8 unused_19;        /* 0x19 */
-    u16 counter;         /* 0x1a */
-    u8 byte_1c;          /* 0x1c: 12 when set up */
-    u8 flags;            /* 0x1d: VILLAGER_STATE_FLAG_* */
-    u8 byte_1e;          /* 0x1e: doubled up to 32 by VillagerState_DoubleByte1E */
-    u8 unused_1f;        /* 0x1f */
-    u32 word_20;         /* 0x20 */
-    u16 half_24;         /* 0x24 */
-    u16 item;            /* 0x26: an item code; 0xfff1 is none */
-    VillagerTally tally; /* 0x28 */
+    u8 state;             /* 0x00: 0-7 */
+    u8 byte_01;           /* 0x01: 3 when set up */
+    u8 unused_02[2];      /* 0x02 */
+    u8 object[12];        /* 0x04: set up by func_0209bd5c (no item, 0xfff1, at its 0x08) */
+    u8 bytes_10[8];       /* 0x10: cleared by func_0209c52c */
+    u8 mood;              /* 0x18: villager_mood.h; 5 when set up; cleared when its frames run out */
+    u8 unused_19;         /* 0x19 */
+    u16 mood_frames;      /* 0x1a */
+    u8 activity;          /* 0x1c: 12 when set up */
+    u8 flags;             /* 0x1d: VILLAGER_STATE_FLAG_* */
+    u8 byte_1e;           /* 0x1e: doubled up to 32 by VillagerState_DoubleByte1E */
+    u8 unused_1f;         /* 0x1f */
+    u32 room_score;       /* 0x20: VillagerTown_ScoreRoom */
+    u16 room_score_flags; /* 0x24 */
+    u16 held_item;        /* 0x26: an item code; 0xfff1 is none */
+    VillagerTally tally;  /* 0x28 */
 } VillagerState;
 
 typedef struct VillagerStates {
     VillagerState entries[VILLAGER_STATE_ENTRIES]; /* 0x000 */
-    s8 index_160;                                  /* 0x160 */
-    u8 byte_161;                                   /* 0x161 */
-    s8 index_162;                                  /* 0x162: a villager index (func_0207a8ac gives its entry state 0), or -1 */
-    s8 index_163;                                  /* 0x163: a villager index (func_0207a8ac gives its entry state 3), or -1 */
-    s8 index_164;                                  /* 0x164 */
+    s8 flea_villager;                              /* 0x160 */
+    u8 fox_password_villager;                      /* 0x161 */
+    s8 birthday_villager;                          /* 0x162: a villager index (func_0207a8ac gives its entry state 0), or -1 */
+    s8 birthday_companion;                         /* 0x163: a villager index (func_0207a8ac gives its entry state 3), or -1 */
+    s8 flea_market_visitor;                        /* 0x164 */
     u8 unused_165[3];
-    u32 word_168; /* 0x168 */
-    s8 index_16c; /* 0x16c */
+    u32 idle_frames;     /* 0x168 */
+    s8 birthday_greeter; /* 0x16c */
     u8 unused_16d[3];
 } VillagerStates;
 
@@ -77,16 +86,16 @@ int VillagerState_IsIndex(int index);
 void VillagerState_ClearAllTallies(void);
 void VillagerState_ClearAllFlag2(void);
 void VillagerState_ClearAllFlag0(void);
-void VillagerState_ClearWord168(void);
-int VillagerState_GetIndex164(void);
-void VillagerState_SetIndex164(unsigned char index);
-int VillagerState_GetIndex16C(void);
-void VillagerState_SetIndex16C(char index);
-signed char VillagerState_GetIndex163(void);
-void VillagerState_SetIndex163(unsigned char index);
-int VillagerState_GetIndex162(void);
-void VillagerState_SetIndex162(unsigned char index);
-void VillagerState_ClearIndex160(void);
+void VillagerState_ClearIdleFrames(void);
+int VillagerState_GetFleaMarketVisitor(void);
+void VillagerState_SetFleaMarketVisitor(unsigned char index);
+int VillagerState_GetBirthdayGreeter(void);
+void VillagerState_SetBirthdayGreeter(char index);
+signed char VillagerState_GetBirthdayCompanion(void);
+void VillagerState_SetBirthdayCompanion(unsigned char index);
+int VillagerState_GetBirthdayVillager(void);
+void VillagerState_SetBirthdayVillager(unsigned char index);
+void VillagerState_ClearFleaVillager(void);
 
 /* The tally */
 int VillagerTally_Level(const VillagerTally *tally);
@@ -100,19 +109,19 @@ void VillagerTally_Construct(VillagerTally *tally);
 /* An entry */
 void VillagerState_Init(VillagerState *entry);
 VillagerTally *VillagerState_Tally(VillagerState *entry);
-void VillagerState_ClearItem(VillagerState *entry);
-void VillagerState_SetItem(VillagerState *entry, const u16 *item);
-u16 *VillagerState_Item(VillagerState *entry);
+void VillagerState_ClearHeldItem(VillagerState *entry);
+void VillagerState_SetHeldItem(VillagerState *entry, const u16 *item);
+u16 *VillagerState_HeldItem(VillagerState *entry);
 void VillagerState_DoubleByte1E(VillagerState *entry);
 void VillagerState_SetFlag1UnlessScene(VillagerState *entry);
-void VillagerState_CountDown(VillagerState *entry);
-int VillagerState_GetCounter(const VillagerState *entry);
-void VillagerState_SetCounter(VillagerState *entry, int counter);
-void VillagerState_AddCounter(VillagerState *entry, int amount);
-void VillagerState_SetByte18(VillagerState *entry, int value);
-int VillagerState_GetByte18(const VillagerState *entry);
-void VillagerState_SetByte1C(VillagerState *entry, int value);
-int VillagerState_GetByte1C(const VillagerState *entry);
+void VillagerState_CountDownMood(VillagerState *entry);
+int VillagerState_GetMoodFrames(const VillagerState *entry);
+void VillagerState_SetMoodFrames(VillagerState *entry, int counter);
+void VillagerState_AddMoodFrames(VillagerState *entry, int amount);
+void VillagerState_SetMood(VillagerState *entry, int value);
+int VillagerState_GetMood(const VillagerState *entry);
+void VillagerState_SetActivity(VillagerState *entry, int value);
+int VillagerState_GetActivity(const VillagerState *entry);
 u8 *VillagerState_Object(VillagerState *entry);
 void VillagerState_SetByte01(VillagerState *entry, int value);
 int VillagerState_LinkedByte01(const VillagerState *entry);

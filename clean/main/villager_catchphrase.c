@@ -59,14 +59,14 @@ void VillagerCatchphrase_ToText(u8 *villager, VillagerCatchphraseText *text)
 CLEAN_AS(func_02080ac8, VillagerCatchphrase_ToText)
 
 /* func_02080af0: the 8-bit text emptied and set to what the villager says as its catchphrase:
- * with `itchy` and the villager the state table names at 0x160 (VillagerCheck_IsIndex160), a
+ * with `itchy` and the villager the state table names at 0x160 (VillagerCheck_HasFleas), a
  * random one of the lines of "st_itchy"; else its catchphrase. */
 void VillagerCatchphrase_ToLabel(u8 *villager, void *label, int itchy)
 {
     VillagerCatchphraseText text;
     CatchphraseWide_Construct((CatchphraseWide *) &text);
     TextBase_Clear(label);
-    if (itchy != 0 && VillagerCheck_IsIndex160(villager)) {
+    if (itchy != 0 && VillagerCheck_HasFleas(villager)) {
         u8 line = (u8) MainRandom_Below(VILLAGER_CATCHPHRASE_ITCHY_LINES);
         MessageReader_LoadMessage(label, &line, data_020e1968);
     } else {

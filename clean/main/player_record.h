@@ -15,7 +15,8 @@
  *   0x2451  a count, 0 or 2-10, raised by PlayerRecord_RaiseCount
  *   0x2452  a byte (func_020be9dc tests it against 16)
  *   0x2453  the year of the last birthday celebrated, 0xff for none this year
- *   0x2454  one byte for each of the town's 8 villagers (villager_town.h)
+ *   0x2454  for each of the town's 8 villagers, the year of the birthday the player was last
+ *           sent its notice for (VillagerTown_SendBirthdayNotices), 0xff for none
  *   0x245c  a villager to write a letter (PlayerRecordVillager)
  *   0x247e  the player's id: town and player (player_records.h) */
 #ifndef CLEAN_MAIN_PLAYER_RECORD_H
@@ -26,7 +27,7 @@
 #include "types.h"
 
 #define PLAYER_RECORD_FLAG_WORDS 2
-#define PLAYER_RECORD_VILLAGER_BYTES 8
+#define PLAYER_RECORD_BIRTHDAY_NOTICE_YEARS 8
 #define PLAYER_RECORD_NO_YEAR 0xff
 
 /* The town's 90-item storage of one player (0xb4 bytes, data_021f2fa8). */
@@ -57,8 +58,8 @@ void PlayerRecord_SetFlag(u8 *record, u32 flag);
 int PlayerRecord_TestFlag(u8 *record, u32 flag);
 void PlayerRecord_SendVillagerLetter(u8 *record);
 PlayerRecordVillager *PlayerRecord_Villager(u8 *record);
-void PlayerRecord_SetVillagerByte(u8 *record, u32 villager, u8 value);
-u8 PlayerRecord_VillagerByte(u8 *record, u32 villager);
+void PlayerRecord_SetBirthdayNoticeYear(u8 *record, u32 villager, u8 value);
+u8 PlayerRecord_BirthdayNoticeYear(u8 *record, u32 villager);
 void PlayerRecord_SetByte2452(u8 *record, u8 value);
 u8 PlayerRecord_Byte2452(const u8 *record);
 void PlayerRecord_RaiseCount(u8 *record);

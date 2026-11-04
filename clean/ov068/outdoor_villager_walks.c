@@ -144,7 +144,7 @@ void OutdoorVillagerRecords_RedrawKind(u8 *villager);
 #define WALKS_UMBRELLA_FIRST 0x1380
 #define WALKS_UMBRELLA_LAST 0x139f
 #define WALKS_ITEM_1378 0x1378
-#define WALKS_KIND_NONE 7 /* no kind of the moment (VillagerState_GetByte1C) */
+#define WALKS_KIND_NONE 7 /* no kind of the moment (VillagerState_GetActivity) */
 #define WALKS_KIND_6 6
 #define WALKS_ITEM_MARKED 0x1566
 #define WALKS_MARKED_NEAR 0xb00
@@ -297,7 +297,7 @@ static int walks_player_flag_1(void)
 static int walks_kind(u8 *record, int kind)
 {
     if (record != NULL && NpcId_IsValid(TownVillager_NpcId(record)) != 0 && VillagerStatus_StateEntry(record) != NULL) {
-        kind = VillagerState_GetByte1C(VillagerStatus_StateEntry(record));
+        kind = VillagerState_GetActivity(VillagerStatus_StateEntry(record));
     }
     return kind;
 }
@@ -515,7 +515,7 @@ static void walks_after_motion(OutdoorVillagerBehaviour *self, u8 *villager)
     s16 yaw = Vec_YawTo(position, &point);
     if (SceneObject_IsWithinQuarterTurn((s16) (yaw - *walks_half(villager, WALKS_ANGLE))) != 0) {
         int kind = WALKS_MOTION_WALK;
-        if (MainRandom_Below(4) == 0 && OutdoorVillagerRecords_Byte18(villager) == 0) {
+        if (MainRandom_Below(4) == 0 && OutdoorVillagerRecords_Mood(villager) == 0) {
             kind = WALKS_MOTION_WALK_2;
         }
         SceneMotion_Request(motion, kind, WALKS_PRIORITY, point.x, point.z, 0, 0, 0, 0, data_020c80f8, 0);
@@ -644,7 +644,7 @@ CLEAN_AS(func_ov068_0226befc, OutdoorVillagerWalks_Choose)
  * fish, its look on the player, the player within 0x6000, seen and looked at. */
 int OutdoorVillagerWalks_WatchShown(OutdoorVillagerBehaviour *self, u8 *villager)
 {
-    u8 status = OutdoorVillagerRecords_Byte18(villager);
+    u8 status = OutdoorVillagerRecords_Mood(villager);
     if (self->shown != 0 || status > WALKS_SHOWN_STATUS_MAX) {
         return 0;
     }

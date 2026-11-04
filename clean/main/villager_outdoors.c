@@ -32,8 +32,9 @@
 #define VILLAGER_OUTDOORS_DRAW_MINUTES 60
 /* The bit of the current player's record that keeps the villagers awake. */
 #define VILLAGER_OUTDOORS_PLAYER_NO_SLEEP 1
-/* The entry of the month's table VillagerOutdoors_MonthChance looks for. */
-#define VILLAGER_OUTDOORS_MONTH_ENTRY 0x30
+/* The flea's entry of the month's insect table (item 0x12e0), which VillagerOutdoors_FleaMonthChance
+ * looks for. */
+#define VILLAGER_OUTDOORS_FLEA_INSECT 0x30
 
 static_assert(offsetof(VillagerOutdoors, outside) == 0x08, "outside");
 static_assert(offsetof(VillagerOutdoors, drawn_at) == 0x0c, "drawn at");
@@ -138,7 +139,7 @@ void VillagerOutdoors_Draw(VillagerOutdoors *outdoors, u8 *villagers)
         limit = (residents * 3) >> 2;
     }
     VillagerOutdoors_ClearOutside(outdoors);
-    VillagerOutdoors_TakeIndex16C(outdoors, chosen, &chosen_count, list, villagers);
+    VillagerOutdoors_TakeBirthdayGreeter(outdoors, chosen, &chosen_count, list, villagers);
     VillagerOutdoors_DrawRandom(outdoors, (u8 *) chosen, &chosen_count, list, villagers, limit);
     VillagerOutdoors_KeepHome(outdoors, list, &placed, (u8 *) table);
     VillagerOutdoors_SendOut(outdoors, chosen, &placed, (u8 *) table, chosen_count);
@@ -171,10 +172,10 @@ CLEAN_AS(func_02079e64, VillagerOutdoors_PutToSleep)
 
 /* func_02079ef0: the villager the state table names at 0x16c, when it is in `list`, leaves the
  * list and, with a valid NpcId, is chosen. */
-void VillagerOutdoors_TakeIndex16C(VillagerOutdoors *outdoors, s8 *chosen, int *count, s8 *list, u8 *villagers)
+void VillagerOutdoors_TakeBirthdayGreeter(VillagerOutdoors *outdoors, s8 *chosen, int *count, s8 *list, u8 *villagers)
 {
     (void) outdoors;
-    int wanted = VillagerState_GetIndex16C();
+    int wanted = VillagerState_GetBirthdayGreeter();
 
     if (!ActorTable_IsKindESlot((u32) wanted)) {
         return;
@@ -190,7 +191,7 @@ void VillagerOutdoors_TakeIndex16C(VillagerOutdoors *outdoors, s8 *chosen, int *
         }
     }
 }
-CLEAN_AS(func_02079ef0, VillagerOutdoors_TakeIndex16C)
+CLEAN_AS(func_02079ef0, VillagerOutdoors_TakeBirthdayGreeter)
 
 /* func_02079f60: the first `chosen_count` chosen villagers go out: each is put next in the order
  * (while there is room), marked out and put in the outside slot of its place in the choice. */
@@ -239,7 +240,7 @@ void VillagerOutdoors_DrawRandom(VillagerOutdoors *outdoors, u8 *chosen, int *co
         if (!ActorTable_IsKindESlot((u32) villager) || villager == excluded) {
             continue;
         }
-        if (VillagerCheck_IsStayingResident((u8 *) villager_at(villagers, villager))) {
+        if (VillagerCheck_IsWellResident((u8 *) villager_at(villagers, villager))) {
             candidates = (u8) (candidates | (1 << i));
             left++;
             if (left >= VILLAGER_OUTDOORS_CANDIDATES) {
@@ -466,17 +467,17 @@ CLEAN_AS(func_0207a338, VillagerOutdoors_Construct)
 
 /* ---- A villager out for the player */
 
-/* func_0207a340: the state table's index 0x160 is set to none, then, for a player whose name
- * is set, to a villager drawn from the ones that remember the player and are out walking: they
- * are drawn one by one in random order, and each is taken with this month's chance in 100
- * (VillagerOutdoors_MonthChance) until one is. */
-void VillagerOutdoors_DrawIndex160(const u8 *villagers, const void *player)
+/* func_0207a340: the villager with fleas today (the state table's index 0x160) is set to
+ * none, then, for a player whose name is set, to a villager drawn from the ones that remember
+ * the player and are out walking: they are drawn one by one in random order, and each is taken
+ * with the flea's chance in 100 this month (VillagerOutdoors_FleaMonthChance) until one is. */
+void VillagerOutdoors_DrawFleaVillager(const u8 *villagers, const void *player)
 {
-    VillagerState_Table()->index_160 = VILLAGER_STATE_NONE;
+    VillagerState_Table()->flea_villager = VILLAGER_STATE_NONE;
     if (player == NULL || PlayerId_IsSet((DesignCreator *) player) == 0) {
         return;
     }
-    int chance = VillagerOutdoors_MonthChance();
+    int chance = VillagerOutdoors_FleaMonthChance();
 
     u8 candidates = 0;
     int left = 0;
@@ -495,7 +496,7 @@ void VillagerOutdoors_DrawIndex160(const u8 *villagers, const void *player)
             if ((candidates >> i) & 1) {
                 if (pick == 0) {
                     if ((int) MainRandom_Below(100) < chance) {
-                        VillagerState_Table()->index_160 = (s8) i;
+                        VillagerState_Table()->flea_villager = (s8) i;
                         left = 0;
                     }
                     candidates = (u8) (candidates & ~(1 << i));
@@ -506,11 +507,11 @@ void VillagerOutdoors_DrawIndex160(const u8 *villagers, const void *player)
         }
     }
 }
-CLEAN_AS(func_0207a340, VillagerOutdoors_DrawIndex160)
+CLEAN_AS(func_0207a340, VillagerOutdoors_DrawFleaVillager)
 
 /* func_0207a404: the share of entry 0x30 in this month's table: its running total less the one
  * before it; 0 when the month has no table or no such entry. */
-int VillagerOutdoors_MonthChance(void)
+int VillagerOutdoors_FleaMonthChance(void)
 {
     DateTime now = {0};
 
@@ -522,11 +523,11 @@ int VillagerOutdoors_MonthChance(void)
     const u8 *pair = month->pairs;
     int before = 0;
     for (int i = 0; i < month->count; i++, pair += 2) {
-        if (pair[0] == VILLAGER_OUTDOORS_MONTH_ENTRY) {
+        if (pair[0] == VILLAGER_OUTDOORS_FLEA_INSECT) {
             return pair[1] - before;
         }
         before = pair[1];
     }
     return 0;
 }
-CLEAN_AS(func_0207a404, VillagerOutdoors_MonthChance)
+CLEAN_AS(func_0207a404, VillagerOutdoors_FleaMonthChance)

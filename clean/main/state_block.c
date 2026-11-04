@@ -156,7 +156,7 @@ void StateBlock_FinishStart(StateBlock *block)
     TownStartDay_Expire((TownStartDay *) (void *) block->part_173dd);
     SceneShareTable_Reset();
     SceneShareTable_PlaceVillagersAtHome();
-    VillagerTown_ClearByte18AndCounters(villagers_of(block));
+    VillagerTown_ClearMoods(villagers_of(block));
     Block021d27ac_Reset(Block021d27ac_Get());
     RoomCells_ResetAll();
     RoomObjectState_Clear();
@@ -174,11 +174,11 @@ void StateBlock_FinishStart(StateBlock *block)
     TownSpot_PickRandom((TownSpot *) (void *) Block021d27ac_Part04(Block021d27ac_Get()));
     CatchPanel_Start((CatchPanel *) (uintptr_t) ScreenPanels_SecondPanel(), 0, 1);
     BatteryWarning_Reset();
-    VillagerTown_PickIndex161(villagers_of(block));
+    VillagerTown_PickFoxPasswordVillager(villagers_of(block));
     GroupParams_ResetC90();
     TownObjects_ClearExtraVisitors();
     VillagerTown_SetByte1E(villagers_of(block), PlayerRecords_Current());
-    VillagerState_ClearWord168();
+    VillagerState_ClearIdleFrames();
     VillagerState_ClearAllFlag2();
     VillagerState_ClearAllTallies();
     VillagerState_ClearAllFlag0();
@@ -334,10 +334,10 @@ static void settle_town(StateBlock *block)
  * updated keeping their time, func_02087eb0, and the villagers searched. */
 static void finish_villagers(StateBlock *block)
 {
-    VillagerState_SetIndex16C(-1);
+    VillagerState_SetBirthdayGreeter(-1);
     VillagerRoster_UpdateOutdoors(villagers_of(block), 1);
     Block021d27acPart30_Clear(Block021d27ac_Part30(Block021d27ac_Get()));
-    VillagerTown_SearchAll(villagers_of(block));
+    VillagerTown_ScoreAllRooms(villagers_of(block));
 }
 
 /* Flags 1 and 0x23 set and 9 cleared in a player's record, as a start that makes the player
@@ -392,7 +392,7 @@ void StateBlock_StartMode4(StateBlock *block)
     load_town(block);
     VillagerTown_Update(villagers_of(block), 1);
     VillagerPlot_GiveHouses(villagers_of(block));
-    VillagerState_SetIndex16C(-1);
+    VillagerState_SetBirthdayGreeter(-1);
     VillagerRoster_UpdateOutdoors(villagers_of(block), 1);
     Sky_ReseedForMode4();
     Block021d27acPart30_Clear(Block021d27ac_Part30(Block021d27ac_Get()));
@@ -416,7 +416,7 @@ void StateBlock_StartMode3(StateBlock *block)
     TownName_Make((TownName *) &block->town, (const u16 *) &data_020e368c);
     StateBlock_SetUpTown(block);
     settle_town(block);
-    VillagerState_SetIndex16C(-1);
+    VillagerState_SetBirthdayGreeter(-1);
     VillagerRoster_UpdateOutdoors(villagers_of(block), 0);
     SaveStamp_Clear((SaveStamp *) (void *) block->part_173f8);
     Sky_ReseedForMode3();
@@ -454,15 +454,15 @@ void StateBlock_StartMode2(StateBlock *block)
     TurnipPrices_RedrawIfClockMoved((TurnipPrices *) (void *) block->part_17364);
     VillagerTown_PickBirthdayVisitor(villagers_of(block), NULL);
     VillagerRoster_UpdateOutdoors(villagers_of(block), 1);
-    if (SceneQuery_Current() == SCENE_6 && VillagerState_GetIndex16C() == -1 && PlayerRecord_TestFlag(record, 0x23) == 0 &&
-        PlayerRecord_TestFlag(record, 2) != 0) {
+    if (SceneQuery_Current() == SCENE_6 && VillagerState_GetBirthdayGreeter() == -1 &&
+        PlayerRecord_TestFlag(record, 0x23) == 0 && PlayerRecord_TestFlag(record, 2) != 0) {
         PlayerField2416_RaiseCount0D((PlayerField2416 *) (void *) PlayerRecord_Field2416(record));
         Block021d27acPart30_Set(Block021d27ac_Part30(Block021d27ac_Get()), 1);
     }
     PlayerRecord_SetFlag(record, 2);
     PlayerRecord_SendVillagerLetter(record);
     if (SceneQuery_Current() != SCENE_6) {
-        VillagerTown_SearchAll(villagers_of(block));
+        VillagerTown_ScoreAllRooms(villagers_of(block));
     }
 }
 CLEAN_AS(func_0209ec74, StateBlock_StartMode2)

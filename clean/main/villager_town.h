@@ -7,9 +7,14 @@
  *   0x3f7c  who is out walking (villager_outdoors.h)
  *   0x3f90  one villager sick in bed (villager_sickness.h)
  *   0x404c  a date and whether it is set (VillagerTown_SetDate404C)
- *   0x4050  the latest clock time seen, kept from going back (VillagerTown_Update)
- *   0x4058  a second time, moved back with it when it is set
- *   0x4075  a villager index, or -1 (left out by func_0207bfdc)
+ *   0x4050  when a villager last moved in (or the town started); kept from being after the
+ *           clock (VillagerTown_Update); a villager is due to leave a set number of days after
+ *   0x4058  when a villager last left, unset until one has; moved with the time above while set;
+ *           the next villager is due to move in a set number of days after
+ *   0x4060  the numbers of the villagers that have lived in the town (a bit each), then at
+ *           0x4074 the number of the villager that last left
+ *   0x4075  the villager that moved in last (VillagerResidents_SetNewcomer), or -1; it is never
+ *           the next to leave
  *   0x4076  the villager index last picked to fall sick (VillagerSickness_PickVillager)
  *   0x4078  a marked villager: bit 1 set, its index in bits 2-4 (VillagerTown_Mark)
  *   0x407a  the day the per-day update last ran (VillagerTown_StartDay)
@@ -46,12 +51,12 @@ typedef struct VillagerTown {
     s8 bonds[VILLAGER_TOWN_PAIRS];                                      /* 0x3f60 */
     VillagerOutdoors outdoors;                                          /* 0x3f7c */
     VillagerSickness sickness;                                          /* 0x3f90 */
-    Date date_404c;     /* 0x404c: its last byte (0x404f) set once the date is */
-    DateTime latest;    /* 0x4050 */
-    DateTime time_4058; /* 0x4058 */
-    u8 unknown_4060[0x15];
-    s8 index_4075; /* 0x4075 */
-    s8 last_sick;  /* 0x4076 */
+    Date date_404c;          /* 0x404c: its last byte (0x404f) set once the date is */
+    DateTime last_arrival;   /* 0x4050 */
+    DateTime last_departure; /* 0x4058 */
+    u8 numbers_met[0x15];    /* 0x4060: a bit for each NpcId number met (five words), then the number gone */
+    s8 newcomer_index;       /* 0x4075 */
+    s8 last_sick;            /* 0x4076 */
     u8 unknown_4077;
     u16 mark;      /* 0x4078: VILLAGER_TOWN_MARK* */
     Date last_day; /* 0x407a */
@@ -77,24 +82,24 @@ void VillagerTown_SetDate404C(VillagerTown *town, const Date *date);
 int VillagerTown_IsFarFromDate404C(VillagerTown *town, const Date *date);
 void VillagerTown_PickBirthdayVisitor(VillagerTown *town, void *record);
 int VillagerTown_FondestOf(VillagerTown *town, const void *player);
-void VillagerTown_PickIndex164(VillagerTown *town);
+void VillagerTown_PickFleaMarketVisitor(VillagerTown *town);
 int VillagerTown_PickOutsideAcquaintance(VillagerTown *town);
-void VillagerTown_ApplyEventStates(VillagerTown *town);
-void VillagerTown_UpdateEventVillager(VillagerTown *town);
-int VillagerTown_FindEventVillager(const VillagerTown *town, const DateTime *when);
+void VillagerTown_ApplyBirthdayStates(VillagerTown *town);
+void VillagerTown_UpdateBirthdayVillager(VillagerTown *town);
+int VillagerTown_FindBirthdayVillager(const VillagerTown *town, const DateTime *when);
 int VillagerTown_ClosestCompanion(VillagerTown *town, int villager);
-void VillagerTown_UpdatePlayersVillagerBytes(VillagerTown *town);
-void VillagerTown_ClearByte18AndCounters(VillagerTown *town);
-void VillagerTown_SearchAll(VillagerTown *town);
-void VillagerTown_Search(VillagerTown *town, int villager);
+void VillagerTown_SendBirthdayNotices(VillagerTown *town);
+void VillagerTown_ClearMoods(VillagerTown *town);
+void VillagerTown_ScoreAllRooms(VillagerTown *town);
+void VillagerTown_ScoreRoom(VillagerTown *town, int villager);
 void VillagerTown_UpdateAlone(VillagerTown *town, const void *player);
-void VillagerTown_FlagAcquaintance(VillagerTown *town, const void *player);
+void VillagerTown_PickFortuneGiver(VillagerTown *town, const void *player);
 void VillagerTown_HalveByte1E(VillagerTown *town);
 void VillagerTown_DoubleByte1E(VillagerTown *town);
 void VillagerTown_SetByte1E(VillagerTown *town, void *record);
 int VillagerTown_NextEvent(unsigned int days, const DateTime *from);
 int VillagerTown_CurrentEvent(void);
-void VillagerTown_PickIndex161(VillagerTown *town);
+void VillagerTown_PickFoxPasswordVillager(VillagerTown *town);
 void VillagerTown_UpdateVillagers(VillagerTown *town, int skip_designs);
 void VillagerTown_ExpirePlayerObjects(VillagerTown *town, const DateTime *now);
 VillagerState *VillagerTown_StateAt(int index);
@@ -103,6 +108,6 @@ void VillagerTown_Update(VillagerTown *town, int skip_designs);
 void VillagerTown_UpdateWithClock(VillagerTown *town);
 void VillagerTown_CheckObjects(VillagerTown *town);
 void VillagerTown_UpdateObjects(VillagerTown *town, const DateTime *now);
-void VillagerTown_GiveObject9(VillagerTown *town, const DateTime *now);
+void VillagerTown_StartLeaving(VillagerTown *town, const DateTime *now);
 
 #endif

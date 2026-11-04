@@ -104,9 +104,9 @@ int TownVillager_IsFreeCompanion(u8 *villager)
 CLEAN_AS(func_02080928, TownVillager_IsFreeCompanion)
 
 /* func_02080998: the first of the `days` + 1 days from `from` (from the clock when NULL) on
- * which the calendar has an event whose id is the villager's index; the year (byte 5) of that
+ * which the calendar has the villager's birthday (an event whose id is its index); the year (byte 5) of that
  * day, or -1 when none has, or the villager's NpcId is not valid or it has no index. */
-int TownVillager_EventYearWithin(u8 *villager, int days, const DateTime *from)
+int TownVillager_BirthdayYearWithin(u8 *villager, int days, const DateTime *from)
 {
     if (!NpcId_IsValid(TownVillager_NpcId(villager))) {
         return -1;
@@ -135,7 +135,7 @@ int TownVillager_EventYearWithin(u8 *villager, int days, const DateTime *from)
     }
     return -1;
 }
-CLEAN_AS(func_02080998, TownVillager_EventYearWithin)
+CLEAN_AS(func_02080998, TownVillager_BirthdayYearWithin)
 
 /* func_02080b98: the first of `count` villagers whose NpcId is not valid (an empty place), or
  * -1. */

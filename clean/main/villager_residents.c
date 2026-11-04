@@ -68,13 +68,13 @@ static int is_set(const DateTime *when)
 /* The numbers of the villagers that have lived in the town, at 0x4060. */
 static u32 *met_numbers(VillagerTown *town)
 {
-    return (u32 *) (void *) town->unknown_4060;
+    return (u32 *) (void *) town->numbers_met;
 }
 
 /* The number of the villager that last left, at 0x4074. */
 static s8 *gone_number(VillagerTown *town)
 {
-    return (s8 *) &town->unknown_4060[0x14];
+    return (s8 *) &town->numbers_met[0x14];
 }
 
 static int same_town(const NpcIdHead *a, const NpcIdHead *b)
@@ -293,7 +293,7 @@ int VillagerResidents_FindLeaving(VillagerTown *town)
 CLEAN_AS(func_0207c160, VillagerResidents_FindLeaving)
 
 /* func_0207c048: whether a villager is to be picked to leave: the town has all eight, none is
- * leaving or in mode 11, and `now` is a day or more after the latest time seen; always from
+ * leaving or in mode 11, and `now` is a day or more after the last arrival; always from
  * the fourth day, else by a draw of one in (4 - days). */
 int VillagerResidents_IsLeaveDue(VillagerTown *town, const DateTime *now)
 {
@@ -305,10 +305,10 @@ int VillagerResidents_IsLeaveDue(VillagerTown *town, const DateTime *now)
     if (leaving != VILLAGER_RESIDENTS_NONE || mode11 != VILLAGER_RESIDENTS_NONE) {
         return 0;
     }
-    if (DateTime_Compare(now, &town->latest, VILLAGER_RESIDENTS_ALL_FIELDS) != 1) {
+    if (DateTime_Compare(now, &town->last_arrival, VILLAGER_RESIDENTS_ALL_FIELDS) != 1) {
         return 0;
     }
-    int days = DateTime_DaysBetween(&town->latest, now);
+    int days = DateTime_DaysBetween(&town->last_arrival, now);
     if (days <= 0) {
         return 0;
     }
@@ -329,7 +329,7 @@ int VillagerResidents_PickLeaver(VillagerTown *town)
     int count = 0;
     for (int i = 0; i < VILLAGER_TOWN_VILLAGERS; i++) {
         u8 *villager = town->villagers[i];
-        if (i == town->index_4075 || i == sick) {
+        if (i == town->newcomer_index || i == sick) {
             continue;
         }
         if (!NpcId_IsValid(TownVillager_NpcId(villager)) || VillagerCheck_NoPlayerHolds(villager) == 0) {
@@ -385,15 +385,15 @@ void VillagerResidents_MoveOut(VillagerTown *town, u8 *hold, u8 *villager, int i
         TownVillager_Copy(hold, villager);
     }
     TownVillager_Reset(villager);
-    MI_CpuCopy8(now, &town->time_4058, sizeof(DateTime));
+    MI_CpuCopy8(now, &town->last_departure, sizeof(DateTime));
 }
 CLEAN_AS(func_0207c330, VillagerResidents_MoveOut)
 
 /* func_0207c3b0: `newcomer` moves into place `index` (`place`): the villagers' objects checked
  * first (VillagerTown_CheckObjects); it is copied there, its object put in mode 10 with `now`,
  * no house tile yet, `came` kept at its 0x7d6 and its items marked; it joins the walkers'
- * order with no bonds, and its number is met. `now` becomes the latest time seen (and the time
- * a villager left, when one has), and the place the newcomer's. */
+ * order with no bonds, and its number is met. `now` becomes the last arrival (and the last
+ * departure, when a villager has left), and the place the newcomer's. */
 void VillagerResidents_MoveIn(VillagerTown *town, u8 *place, int index, const u8 *newcomer, unsigned char came,
                               const DateTime *now)
 {
@@ -406,9 +406,9 @@ void VillagerResidents_MoveIn(VillagerTown *town, u8 *place, int index, const u8
     VillagerOutdoors_AddToOrder(&town->outdoors, index);
     VillagerBond_ForgetVillager(town->bonds, index);
     VillagerResidents_AddNumber(met_numbers(town), NpcId_Number(TownVillager_NpcId(place)));
-    MI_CpuCopy8(now, &town->latest, sizeof(DateTime));
-    if (is_set(&town->time_4058)) {
-        MI_CpuCopy8(now, &town->time_4058, sizeof(DateTime));
+    MI_CpuCopy8(now, &town->last_arrival, sizeof(DateTime));
+    if (is_set(&town->last_departure)) {
+        MI_CpuCopy8(now, &town->last_departure, sizeof(DateTime));
     }
     VillagerResidents_SetNewcomer(town, (u8) index);
 }
@@ -475,7 +475,7 @@ CLEAN_AS(func_0207c190, VillagerResidents_Exchange)
 /* ---- Arriving */
 
 /* func_0207c5e4: whether a new villager is to come: the town has a free place, and either no
- * villager has left yet and the latest time seen is unset, not valid, or a day or more before
+ * villager has left yet and the last arrival is unset, not valid, or a day or more before
  * `now`; or one has, and `now` is a day or more after: always from the eighth day, else by a
  * draw of one in (8 - days). */
 int VillagerResidents_IsArrivalDue(VillagerTown *town, const DateTime *now)
@@ -483,17 +483,17 @@ int VillagerResidents_IsArrivalDue(VillagerTown *town, const DateTime *now)
     if (VillagerRoster_Count(town) >= VILLAGER_TOWN_VILLAGERS) {
         return 0;
     }
-    if (!is_set(&town->time_4058)) {
-        if (!is_set(&town->latest) || DateTime_IsInvalid(&town->latest) != 0) {
+    if (!is_set(&town->last_departure)) {
+        if (!is_set(&town->last_arrival) || DateTime_IsInvalid(&town->last_arrival) != 0) {
             return 1;
         }
-        return DateTime_Compare(now, &town->latest, VILLAGER_RESIDENTS_ALL_FIELDS) == 1 &&
-               DateTime_DaysBetween(&town->latest, now) >= 1;
+        return DateTime_Compare(now, &town->last_arrival, VILLAGER_RESIDENTS_ALL_FIELDS) == 1 &&
+               DateTime_DaysBetween(&town->last_arrival, now) >= 1;
     }
-    if (DateTime_Compare(now, &town->time_4058, VILLAGER_RESIDENTS_ALL_FIELDS) != 1) {
+    if (DateTime_Compare(now, &town->last_departure, VILLAGER_RESIDENTS_ALL_FIELDS) != 1) {
         return 0;
     }
-    int days = DateTime_DaysBetween(&town->time_4058, now);
+    int days = DateTime_DaysBetween(&town->last_departure, now);
     if (days <= 0) {
         return 0;
     }
@@ -506,8 +506,8 @@ CLEAN_AS(func_0207c5e4, VillagerResidents_IsArrivalDue)
 
 /* func_0207c4e8: when a new villager is due, the first free place is emptied and a villager
  * drawn for it (VillagerResidents_PickNumber, after the villagers met start again if all have
- * been) moves in; `now` then becomes the latest time seen, and the time a villager left when one
- * has. */
+ * been) moves in; `now` then becomes the last arrival, and the last departure when a
+ * villager has left. */
 void VillagerResidents_MoveInNew(VillagerTown *town, const DateTime *now)
 {
     if (!VillagerResidents_IsArrivalDue(town, now)) {
@@ -525,9 +525,9 @@ void VillagerResidents_MoveInNew(VillagerTown *town, const DateTime *now)
             VillagerResidents_MoveIn(town, place, index, data_021d1554, VILLAGER_RESIDENTS_CAME_NEW, now);
         }
     }
-    MI_CpuCopy8(now, &town->latest, sizeof(DateTime));
-    if (is_set(&town->time_4058)) {
-        MI_CpuCopy8(now, &town->time_4058, sizeof(DateTime));
+    MI_CpuCopy8(now, &town->last_arrival, sizeof(DateTime));
+    if (is_set(&town->last_departure)) {
+        MI_CpuCopy8(now, &town->last_departure, sizeof(DateTime));
     }
 }
 CLEAN_AS(func_0207c4e8, VillagerResidents_MoveInNew)
@@ -548,14 +548,14 @@ CLEAN_AS(func_0207c460, VillagerResidents_SetNewcomerNpc)
 /* func_0207c498: the place of the last villager to move in set. */
 VillagerTown *VillagerResidents_SetNewcomer(VillagerTown *town, unsigned char index)
 {
-    town->index_4075 = (s8) index;
+    town->newcomer_index = (s8) index;
     return town;
 }
 CLEAN_AS(func_0207c498, VillagerResidents_SetNewcomer)
 
 /* func_0207c76c: a new town: the block reset, then three villagers drawn for places 0-2, each
  * of the personality fewest have among those not given yet, and among the villagers whose
- * byte 0x4b is 0; a place whose draw finds none stays empty. The clock's time becomes the latest seen, the walkers' order is made, today is the
+ * byte 0x4b is 0; a place whose draw finds none stays empty. The clock's time becomes the last arrival, the walkers' order is made, today is the
  * day the per-day update last ran, and no villager was the last picked to fall sick. */
 void VillagerResidents_StartTown(VillagerTown *town)
 {
@@ -574,7 +574,7 @@ void VillagerResidents_StartTown(VillagerTown *town)
         VillagerResidents_AddNumber(met_numbers(town), (u8) number);
         excluded = (u8) (excluded | (1u << personality));
     }
-    DateTime_Now(&town->latest);
+    DateTime_Now(&town->last_arrival);
     VillagerOutdoors_ListResidents(&town->outdoors, town->villagers[0]);
     Calendar_Today(&town->last_day);
     town->last_sick = VILLAGER_TOWN_NONE;

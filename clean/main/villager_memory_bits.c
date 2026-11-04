@@ -9,46 +9,46 @@ static int villager_memory_bits_test(const VillagerMemory *memory, u16 bit)
 }
 
 /* func_02081864 */
-int VillagerMemoryBits_Bit5(VillagerMemory *memory)
+int VillagerMemoryBits_FortuneDue(VillagerMemory *memory)
 {
-    return villager_memory_bits_test(memory, VILLAGER_MEMORY_BIT_5);
+    return villager_memory_bits_test(memory, VILLAGER_MEMORY_FORTUNE_DUE);
 }
-CLEAN_AS(func_02081864, VillagerMemoryBits_Bit5)
+CLEAN_AS(func_02081864, VillagerMemoryBits_FortuneDue)
 
 /* func_02081878 */
-void VillagerMemoryBits_ClearBit5(VillagerMemory *memory)
+void VillagerMemoryBits_ClearFortuneDue(VillagerMemory *memory)
 {
-    memory->flags &= (u16) ~VILLAGER_MEMORY_BIT_5;
+    memory->flags &= (u16) ~VILLAGER_MEMORY_FORTUNE_DUE;
 }
-CLEAN_AS(func_02081878, VillagerMemoryBits_ClearBit5)
+CLEAN_AS(func_02081878, VillagerMemoryBits_ClearFortuneDue)
 
 /* func_02081888 */
-void VillagerMemoryBits_SetBit5(VillagerMemory *memory)
+void VillagerMemoryBits_SetFortuneDue(VillagerMemory *memory)
 {
-    memory->flags |= VILLAGER_MEMORY_BIT_5;
+    memory->flags |= VILLAGER_MEMORY_FORTUNE_DUE;
 }
-CLEAN_AS(func_02081888, VillagerMemoryBits_SetBit5)
+CLEAN_AS(func_02081888, VillagerMemoryBits_SetFortuneDue)
 
 /* func_02081898 */
-int VillagerMemoryBits_Bit14(VillagerMemory *memory)
+int VillagerMemoryBits_FleaMarketDone(VillagerMemory *memory)
 {
-    return villager_memory_bits_test(memory, VILLAGER_MEMORY_BIT_14);
+    return villager_memory_bits_test(memory, VILLAGER_MEMORY_FLEA_MARKET_DONE);
 }
-CLEAN_AS(func_02081898, VillagerMemoryBits_Bit14)
+CLEAN_AS(func_02081898, VillagerMemoryBits_FleaMarketDone)
 
 /* func_020818ac */
-void VillagerMemoryBits_ClearBit14(VillagerMemory *memory)
+void VillagerMemoryBits_ClearFleaMarketDone(VillagerMemory *memory)
 {
-    memory->flags &= (u16) ~VILLAGER_MEMORY_BIT_14;
+    memory->flags &= (u16) ~VILLAGER_MEMORY_FLEA_MARKET_DONE;
 }
-CLEAN_AS(func_020818ac, VillagerMemoryBits_ClearBit14)
+CLEAN_AS(func_020818ac, VillagerMemoryBits_ClearFleaMarketDone)
 
 /* func_020818c0 */
-void VillagerMemoryBits_SetBit14(VillagerMemory *memory)
+void VillagerMemoryBits_SetFleaMarketDone(VillagerMemory *memory)
 {
-    memory->flags |= VILLAGER_MEMORY_BIT_14;
+    memory->flags |= VILLAGER_MEMORY_FLEA_MARKET_DONE;
 }
-CLEAN_AS(func_020818c0, VillagerMemoryBits_SetBit14)
+CLEAN_AS(func_020818c0, VillagerMemoryBits_SetFleaMarketDone)
 
 /* func_020818d4 */
 u32 VillagerMemoryBits_NewYearLetterSent(VillagerMemory *memory)

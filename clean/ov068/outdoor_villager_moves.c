@@ -575,7 +575,7 @@ int OutdoorVillagerMoves_Start13(OutdoorVillagerBehaviour *self, u8 *villager)
     SceneMotion_RequestStand(moves_motion(villager), MOVES_PRIORITY, data_020c80f8);
     moves_hold(villager, 1);
     Music_AddValue(MOVES_MUSIC_13, MOVES_MUSIC_13_VALUE, 0);
-    VillagerState_SetIndex16C(-1);
+    VillagerState_SetBirthdayGreeter(-1);
     VillagerMood_SoundsOff(moves_mood(villager));
     EventQueue_SetFlag20();
     return 1;

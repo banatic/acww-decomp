@@ -44,7 +44,7 @@
 
 int TownVillager_IsMemoryIndex(u8 *villager, u32 index);
 int TownVillager_IsFreeCompanion(u8 *villager);
-int TownVillager_EventYearWithin(u8 *villager, int days, const DateTime *from);
+int TownVillager_BirthdayYearWithin(u8 *villager, int days, const DateTime *from);
 int TownVillager_FirstEmpty(u8 *villagers, int count);
 void TownVillager_SetItem1380(u8 *villager, const u16 *item);
 void TownVillager_Item1380(u16 *out, u8 *villager);

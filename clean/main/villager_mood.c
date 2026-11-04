@@ -120,7 +120,7 @@ void VillagerMood_Update(VillagerMood *mood, u8 *villager)
 {
     VillagerState *entry =
         VillagerStatus_StateEntry(*(u8 **) (void *) villager_mood_at(villager, VILLAGER_MOOD_TOWN_VILLAGER));
-    int shown = VillagerState_GetByte18(entry);
+    int shown = VillagerState_GetMood(entry);
 
     if (VillagerMood_IsOn(mood) == 0) {
         return;
@@ -136,20 +136,20 @@ void VillagerMood_Update(VillagerMood *mood, u8 *villager)
         if (mood->apply != 0) {
             if (mood->asked < VILLAGER_MOOD_COUNT) {
                 if (shown != VILLAGER_MOOD_NONE && shown == mood->asked) {
-                    VillagerState_AddCounter(entry, mood->asked_frames);
+                    VillagerState_AddMoodFrames(entry, mood->asked_frames);
                 } else {
-                    VillagerState_SetCounter(entry, mood->asked_frames);
+                    VillagerState_SetMoodFrames(entry, mood->asked_frames);
                 }
-                VillagerState_SetByte18(entry, mood->asked);
+                VillagerState_SetMood(entry, mood->asked);
                 shown = mood->asked;
             }
             mood->apply = 0;
             VillagerMood_ClearAsked(mood);
         }
-        VillagerState_CountDown(entry);
-        if (shown != VILLAGER_MOOD_NONE && VillagerState_GetCounter(entry) == 0) {
+        VillagerState_CountDownMood(entry);
+        if (shown != VILLAGER_MOOD_NONE && VillagerState_GetMoodFrames(entry) == 0) {
             shown = VILLAGER_MOOD_NONE;
-            VillagerState_SetByte18(entry, shown);
+            VillagerState_SetMood(entry, shown);
         }
         VillagerMood_ShowAnimations(mood, villager, shown);
     }

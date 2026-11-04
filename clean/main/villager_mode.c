@@ -78,11 +78,11 @@ void VillagerMode_FinishObject(u8 *villager)
 CLEAN_AS(func_0207d71c, VillagerMode_FinishObject)
 
 /* func_0207d788: the record's update with the time `now`. Mode 11 takes a new mode once the day
- * changed, and then `now` becomes the town's latest time, and the time a villager last left too
+ * changed, and then `now` becomes the town's last arrival, and its last departure too
  * when that is set (not all zero). Mode 10 takes one a day after the villager moved in. Any
  * other mode goes through VillagerMode_UpdateDaily. A new mode redraws the villager's byte
  * 0x7d8 (func_0207f414). Gives the new mode, or 12. */
-int VillagerMode_Update(u8 *villager, DateTime *latest, DateTime *last_left, const DateTime *now)
+int VillagerMode_Update(u8 *villager, DateTime *last_arrival, DateTime *last_departure, const DateTime *now)
 {
     NpcId *npc = TownVillager_NpcId(villager);
     VillagerModeRecord *record = VillagerObject_RecordMode((VillagerRecord *) VillagerStatus_ModeRecord(villager));
@@ -96,14 +96,14 @@ int VillagerMode_Update(u8 *villager, DateTime *latest, DateTime *last_left, con
             result = VillagerModeRecord_LeaveMode11(record, now);
             if (result != VILLAGER_MODE_UNCHANGED) {
                 VillagerFurniture_ResetForMode(villager, result, from_2);
-                MI_CpuCopy8(now, latest, sizeof(DateTime));
-                const u8 *left = (const u8 *) last_left;
+                MI_CpuCopy8(now, last_arrival, sizeof(DateTime));
+                const u8 *left = (const u8 *) last_departure;
                 int set = 0;
                 for (u32 i = 0; i < sizeof(DateTime); i++) {
                     set |= left[i];
                 }
                 if (set) {
-                    MI_CpuCopy8(now, last_left, sizeof(DateTime));
+                    MI_CpuCopy8(now, last_departure, sizeof(DateTime));
                 }
             }
             break;

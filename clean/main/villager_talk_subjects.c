@@ -225,11 +225,11 @@ int VillagerTalkSubjects_SayStateFlags(VillagerTalk *talk)
     if (subjects_record(talk) != NULL) {
         entry = VillagerStatus_StateEntry(subjects_record(talk));
     }
-    if (entry == NULL || (s32) entry->word_20 < 0) {
+    if (entry == NULL || (s32) entry->room_score < 0) {
         return 0;
     }
-    int value = (s32) entry->word_20;
-    unsigned int flags = entry->half_24;
+    int value = (s32) entry->room_score;
+    unsigned int flags = entry->room_score_flags;
     unsigned int mask = 0;
     int count = 0;
     if ((flags & 0x1f) != 0) {
@@ -335,7 +335,7 @@ int VillagerTalkSubjects_SayByStateKind(VillagerTalk *talk)
     if (data_020e54a8 != 0) {
         return 0;
     }
-    int kind = VillagerState_GetByte1C(VillagerStatus_StateEntry(subjects_record(talk)));
+    int kind = VillagerState_GetActivity(VillagerStatus_StateEntry(subjects_record(talk)));
     if (VillagerModeRecord_IsKindMode((unsigned int) kind) == 0) {
         return 0;
     }

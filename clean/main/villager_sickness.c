@@ -219,7 +219,7 @@ int VillagerSickness_PickVillager(VillagerTown *town, unsigned int month)
     for (int i = 0; i < VILLAGER_TOWN_VILLAGERS; i++) {
         const u8 *villager = town->villagers[i];
         if (i != town->last_sick && has_villager(villager) && VillagerStatus_Stay((u8 *) villager) == 3 &&
-            VillagerCheck_NoPlayerHolds((u8 *) villager) && TownVillager_EventYearWithin((u8 *) villager, 15, &now) == -1) {
+            VillagerCheck_NoPlayerHolds((u8 *) villager) && TownVillager_BirthdayYearWithin((u8 *) villager, 15, &now) == -1) {
             candidates |= (u8) (1u << i);
             count++;
         }

@@ -344,12 +344,12 @@ static void ftt_mark_villager(VillagerState *entry, int counter, int state)
     if (Session_IsSlotTaken(data_020ccf94, data_020ccf94->local_slot) != 0 || entry == NULL) {
         return;
     }
-    if (VillagerState_GetByte18(entry) == state) {
-        VillagerState_AddCounter(entry, counter);
+    if (VillagerState_GetMood(entry) == state) {
+        VillagerState_AddMoodFrames(entry, counter);
     } else {
-        VillagerState_SetCounter(entry, counter);
+        VillagerState_SetMoodFrames(entry, counter);
     }
-    VillagerState_SetByte18(entry, state);
+    VillagerState_SetMood(entry, state);
 }
 
 /* The friendship reading of `luck` taken on the villager named: found by name in the town (by

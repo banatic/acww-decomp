@@ -122,7 +122,7 @@ CLEAN_AS(func_ov068_0226cf58, OutdoorVillagerRecords_Tally)
 
 /* func_ov068_0226cf8c: byte 0x18 of the state entry of its town record, 0 without one. The
  * town record is asked for again for each step. */
-u8 OutdoorVillagerRecords_Byte18(u8 *villager)
+u8 OutdoorVillagerRecords_Mood(u8 *villager)
 {
     VillagerState *state = NULL;
     if (records_record(villager) != NULL && records_valid(records_record(villager))) {
@@ -131,9 +131,9 @@ u8 OutdoorVillagerRecords_Byte18(u8 *villager)
     if (state == NULL) {
         return 0;
     }
-    return (u8) VillagerState_GetByte18(state);
+    return (u8) VillagerState_GetMood(state);
 }
-CLEAN_AS(func_ov068_0226cf8c, OutdoorVillagerRecords_Byte18)
+CLEAN_AS(func_ov068_0226cf8c, OutdoorVillagerRecords_Mood)
 
 /* func_ov068_0226d01c: once a minute of the clock (the minute kept at 0xa08), unless an object
  * event runs: a villager in a contest where it may take part (OutdoorVillagerRecords_InContest)
@@ -263,16 +263,16 @@ void OutdoorVillagerRecords_RefreshItem(u8 *villager)
         return;
     }
     VillagerState *state = VillagerStatus_StateEntry(record);
-    int kind = VillagerState_GetByte1C(state);
+    int kind = VillagerState_GetActivity(state);
     int sky = Sky_Falling();
-    if (sky != RECORDS_RAIN && records_is_umbrella(*VillagerState_Item(state))) {
+    if (sky != RECORDS_RAIN && records_is_umbrella(*VillagerState_HeldItem(state))) {
         u16 none = ITEM_CODE_NONE;
-        VillagerState_SetItem(state, &none);
+        VillagerState_SetHeldItem(state, &none);
     }
-    if (!records_is_umbrella(*VillagerState_Item(state))) {
+    if (!records_is_umbrella(*VillagerState_HeldItem(state))) {
         u16 wanted;
         VillagerModeRecord_KindItem(&wanted, kind);
-        u16 *held = VillagerState_Item(state);
+        u16 *held = VillagerState_HeldItem(state);
         int same;
         if (ItemCode_HasVariant(held)) {
             same = ItemCode_VariantItem(held) == ItemCode_VariantItem(&wanted);
@@ -280,13 +280,13 @@ void OutdoorVillagerRecords_RefreshItem(u8 *villager)
             same = *held == wanted;
         }
         if (!same) {
-            VillagerState_SetItem(state, &wanted);
+            VillagerState_SetHeldItem(state, &wanted);
         }
     }
-    if (*VillagerState_Item(state) == RECORDS_ITEM_1378 && sky == RECORDS_RAIN) {
+    if (*VillagerState_HeldItem(state) == RECORDS_ITEM_1378 && sky == RECORDS_RAIN) {
         u16 umbrella;
         TownVillager_Item1380(&umbrella, record);
-        VillagerState_SetItem(state, &umbrella);
+        VillagerState_SetHeldItem(state, &umbrella);
     }
 }
 CLEAN_AS(func_ov068_0226d264, OutdoorVillagerRecords_RefreshItem)
@@ -301,7 +301,7 @@ void OutdoorVillagerRecords_CheckKind(u8 *villager)
     if (record == NULL || !records_valid(record)) {
         return;
     }
-    int kind = VillagerState_GetByte1C(VillagerStatus_StateEntry(record));
+    int kind = VillagerState_GetActivity(VillagerStatus_StateEntry(record));
     VillagerModeRecord *mode = records_mode_record(record);
     DateTime now = {0};
     DateTime_Now(&now);
@@ -350,7 +350,7 @@ void OutdoorVillagerRecords_RedrawKind(u8 *villager)
         default:
             break;
     }
-    VillagerState_SetByte1C(VillagerStatus_StateEntry(record), kind);
+    VillagerState_SetActivity(VillagerStatus_StateEntry(record), kind);
 }
 CLEAN_AS(func_ov068_0226d408, OutdoorVillagerRecords_RedrawKind)
 

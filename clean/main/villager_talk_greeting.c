@@ -464,7 +464,7 @@ void VillagerTalkGreeting_Line(VillagerTalk *talk, VillagerTalkLine *out)
     int personality = greeting_personality(record);
     int days = 0;
     int since = VillagerTalkGreeting_SinceLastTalk(talk, &days);
-    int mood = VillagerState_GetByte18(entry);
+    int mood = VillagerState_GetMood(entry);
     int falling = Sky_Falling();
     int group = 0;
     (void) PlayerRecords_Current();
@@ -514,7 +514,8 @@ void VillagerTalkGreeting_Line(VillagerTalk *talk, VillagerTalkLine *out)
         texts = &data_020c8970;
     } else if (VillagerTalkGreeting_IsTired(talk, mood) != 0) {
         texts = &data_020c8c88;
-    } else if (VillagerCheck_IsIndex161(record) != 0 && FoxShop_Has5012AfterSix() != 0 && FoxShop_CurrentPlayerMarked() == 0) {
+    } else if (VillagerCheck_TellsFoxPassword(record) != 0 && FoxShop_Has5012AfterSix() != 0 &&
+               FoxShop_CurrentPlayerMarked() == 0) {
         FoxShopText password;
         FoxShopText_Construct(&password);
         FoxPassword_LoadLetterText(FoxShop_Password((FoxShop *) (void *) data_021f3b30), &password);
@@ -522,7 +523,7 @@ void VillagerTalkGreeting_Line(VillagerTalk *talk, VillagerTalkLine *out)
         TalkObject_SetPart((TalkObject *) (void *) greeting_talk(talk), 4, (TextBase *) &password);
         FoxShopText_Destruct(&password);
     } else if (Session_IsLinked(data_020ccf94) == 0 && greeting_memory(talk) != NULL &&
-               VillagerMemoryBits_Bit5(greeting_memory(talk)) != 0 && CurrentPockets_FreeSlot() != -1) {
+               VillagerMemoryBits_FortuneDue(greeting_memory(talk)) != 0 && CurrentPockets_FreeSlot() != -1) {
         VillagerTalkGreetingItemList list;
         u16 item;
         texts = &data_020c8c70;
@@ -533,7 +534,7 @@ void VillagerTalkGreeting_Line(VillagerTalk *talk, VillagerTalkLine *out)
         talk->gift_from_items = 0;
         SceneBase_PutItemName(greeting_base(talk), (int) (uintptr_t) &talk->gift, 0, VILLAGER_TALK_GREETING_ITEM_KIND);
         if (greeting_memory(talk) != NULL) {
-            VillagerMemoryBits_ClearBit5(greeting_memory(talk));
+            VillagerMemoryBits_ClearFortuneDue(greeting_memory(talk));
         }
     } else if (SceneQuery_CurrentInNook() != 0) {
         texts = &data_020c8c38;

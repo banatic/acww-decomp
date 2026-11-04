@@ -1054,15 +1054,15 @@ extern const int data_020d0648; /* the number of events of data_020d0684 */
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
 /* The profiles of the villager actors made here. */
-#define SPAWNER_PROFILE_EVENT_VILLAGER 0x80 /* the villager VillagerState_GetIndex162 names */
-#define SPAWNER_PROFILE_COMPANION 0x81      /* the one VillagerState_GetIndex163 names, with it */
-#define SPAWNER_PROFILE_GUEST 0x82          /* a villager who said it would come */
-#define SPAWNER_PROFILE_SICK 0x83           /* the sick villager, while it is sick */
-#define SPAWNER_PROFILE_OUTDOORS 0x84       /* a villager out in the town */
-#define SPAWNER_PROFILE_VILLAGER 0x85       /* a villager at home */
-#define SPAWNER_PROFILE_STAYING 0x86        /* a villager at home in event 10, status 3 */
-#define SPAWNER_PROFILE_EVENT_GUEST 0x87    /* the visitor of event 10 */
-#define SPAWNER_PROFILE_NONE 0xd8           /* no companion */
+#define SPAWNER_PROFILE_EVENT_VILLAGER 0x80    /* the villager VillagerState_GetBirthdayVillager names */
+#define SPAWNER_PROFILE_COMPANION 0x81         /* the one VillagerState_GetBirthdayCompanion names, with it */
+#define SPAWNER_PROFILE_GUEST 0x82             /* a villager who said it would come */
+#define SPAWNER_PROFILE_SICK 0x83              /* the sick villager, while it is sick */
+#define SPAWNER_PROFILE_OUTDOORS 0x84          /* a villager out in the town */
+#define SPAWNER_PROFILE_VILLAGER 0x85          /* a villager at home */
+#define SPAWNER_PROFILE_STAYING 0x86           /* a villager at home in the flea market (event 10), status 3 */
+#define SPAWNER_PROFILE_FLEA_MARKET_GUEST 0x87 /* the flea market's visitor in the player's house */
+#define SPAWNER_PROFILE_NONE 0xd8              /* no companion */
 
 #define SPAWNER_PERSON_E 0xe000 /* a villager's person code (scene_share_table.h) */
 #define SPAWNER_PERSON_INDEX 0x0fff
@@ -1070,7 +1070,7 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
 #define SPAWNER_VILLAGERS 8
 #define SPAWNER_NO_VILLAGER (-1)
-#define SPAWNER_EVENT_10 10                   /* VillagerTown_CurrentEvent's event 10 */
+#define SPAWNER_EVENT_FLEA_MARKET 10          /* VillagerTown_CurrentEvent's event 10, the flea market */
 #define SPAWNER_NO_EVENT VILLAGER_TOWN_EVENTS /* VillagerTown_CurrentEvent: none on */
 #define SPAWNER_CODE_D008 0xd008              /* the entry Spawner_Create treats apart */
 #define SPAWNER_SCENE_2C 0x2c
@@ -1145,12 +1145,12 @@ int Spawner_Execute(void)
             continue;
         }
         ItemCode person = spawner_villager_person(i);
-        if (Actors_GetE(&person) != NULL || VillagerState_GetByte18(state) == 0) {
+        if (Actors_GetE(&person) != NULL || VillagerState_GetMood(state) == 0) {
             continue;
         }
-        VillagerState_CountDown(state);
-        if (VillagerState_GetCounter(state) == 0) {
-            VillagerState_SetByte18(state, 0);
+        VillagerState_CountDownMood(state);
+        if (VillagerState_GetMoodFrames(state) == 0) {
+            VillagerState_SetMood(state, 0);
         }
         VillagerTally_Tick(VillagerState_Tally(state), 0);
     }
@@ -1167,7 +1167,7 @@ int Spawner_Delete(Spawner *self)
     VillagerTown *town = &data_021e5a2c;
     Spawner_ReleaseOverlay(self);
     Spawner_ClearRequest(&data_020e1ca8);
-    VillagerState_ClearIndex160();
+    VillagerState_ClearFleaVillager();
     if (SceneQuery_CurrentIs0() == 0) {
         return 1;
     }
@@ -1202,17 +1202,17 @@ int Spawner_Create(Spawner *self)
     NearSpot_ClearServed((NearSpot *) (void *) Block021d27ac_Part24(Block021d27ac_Get()));
     BesideSpot_ClearServed(Block021d27ac_Part31(Block021d27ac_Get()));
     if (SceneQuery_CurrentIs0() != 0) {
-        VillagerTown_UpdateEventVillager(town);
-        VillagerTown_ApplyEventStates(town);
-        VillagerState_SetIndex164((unsigned char) SPAWNER_NO_VILLAGER);
+        VillagerTown_UpdateBirthdayVillager(town);
+        VillagerTown_ApplyBirthdayStates(town);
+        VillagerState_SetFleaMarketVisitor((unsigned char) SPAWNER_NO_VILLAGER);
     } else if (SceneQuery_Is0(SceneQuery_Previous()) != 0) {
         DateTime now = {0};
-        int index = VillagerState_GetIndex162();
+        int index = VillagerState_GetBirthdayVillager();
         DateTime_Now(&now);
-        if (index != SPAWNER_NO_VILLAGER && index != VillagerTown_FindEventVillager(town, &now)) {
-            VillagerState_SetIndex162((unsigned char) SPAWNER_NO_VILLAGER);
-            VillagerState_SetIndex163((unsigned char) SPAWNER_NO_VILLAGER);
-            VillagerTown_ApplyEventStates(town);
+        if (index != SPAWNER_NO_VILLAGER && index != VillagerTown_FindBirthdayVillager(town, &now)) {
+            VillagerState_SetBirthdayVillager((unsigned char) SPAWNER_NO_VILLAGER);
+            VillagerState_SetBirthdayCompanion((unsigned char) SPAWNER_NO_VILLAGER);
+            VillagerTown_ApplyBirthdayStates(town);
         }
     }
 
@@ -1223,15 +1223,16 @@ int Spawner_Create(Spawner *self)
                 if (PlayerRecords_Current() != NULL) {
                     player = PlayerRecord_Player(PlayerRecords_Current());
                 }
-                VillagerOutdoors_DrawIndex160((const u8 *) town, player);
+                VillagerOutdoors_DrawFleaVillager((const u8 *) town, player);
             }
             Spawner_PlaceTownVillagers(self);
         }
     } else if (SceneQuery_CurrentIn11() != 0) {
         Spawner_SpawnHouseOwner(self);
     } else if (SceneKinds_CurrentIsHouseRoom() != 0) {
-        if (VillagerTown_CurrentEvent() != SPAWNER_EVENT_10 && VillagerState_GetIndex164() != SPAWNER_NO_VILLAGER) {
-            VillagerState_SetIndex164((unsigned char) SPAWNER_NO_VILLAGER);
+        if (VillagerTown_CurrentEvent() != SPAWNER_EVENT_FLEA_MARKET &&
+            VillagerState_GetFleaMarketVisitor() != SPAWNER_NO_VILLAGER) {
+            VillagerState_SetFleaMarketVisitor((unsigned char) SPAWNER_NO_VILLAGER);
             TownObjects_ClearExtraVisitors();
         }
         if (SceneKinds_CurrentHouseRoomIndex() == 0) {
@@ -1311,14 +1312,14 @@ void Spawner_SpawnHouseGuest(Spawner *self)
             profile = SPAWNER_PROFILE_GUEST;
             spawn = 1;
         }
-    } else if (event == SPAWNER_EVENT_10) {
+    } else if (event == SPAWNER_EVENT_FLEA_MARKET) {
         if (SceneQuery_Is0(SceneQuery_Previous()) != 0) {
-            VillagerTown_PickIndex164(town);
+            VillagerTown_PickFleaMarketVisitor(town);
         }
-        int index = VillagerState_GetIndex164();
+        int index = VillagerState_GetFleaMarketVisitor();
         if (ActorTable_IsKindESlot((u32) index)) {
             person = spawner_villager_person(index);
-            profile = SPAWNER_PROFILE_EVENT_GUEST;
+            profile = SPAWNER_PROFILE_FLEA_MARKET_GUEST;
             if (SceneQuery_Is0(SceneQuery_Previous()) == 0 && data_021d213c[index].in_use != 0) {
                 spawner_entry_place(&data_021d213c[index], &position);
                 MI_CpuCopy8(data_021d213c[index].angle, angle_unused, sizeof(angle_unused));
@@ -1335,7 +1336,7 @@ CLEAN_AS(func_020856fc, Spawner_SpawnHouseGuest)
 /* func_020858ac: in the house of villager n (scenes 0x11-0x18), that villager, when valid: at
  * its shared record's place and angle when the record is in use and func_020a7278 answers 0,
  * else on a free tile (Spawner_PlaceOnFreeTile) facing a random quarter turn; nothing when
- * there is none. Outside the session it is the event villager (index 0x162, profile 0x80) with
+ * there is none. Outside the session it is the birthday villager (index 0x162, profile 0x80) with
  * its companion (index 0x163, profile 0x81, made after it on another free tile), the villager
  * sick in bed while it is (0x83), or in event 10 a villager with status 3 (0x86); else
  * profile 0x85. */
@@ -1370,17 +1371,17 @@ void Spawner_SpawnHouseOwner(Spawner *self)
     int profile = SPAWNER_PROFILE_VILLAGER;
     int companion_profile = SPAWNER_PROFILE_NONE;
     if (!in_session()) {
-        if (index == VillagerState_GetIndex162()) {
+        if (index == VillagerState_GetBirthdayVillager()) {
             profile = SPAWNER_PROFILE_EVENT_VILLAGER;
-            if (ActorTable_IsKindESlot((u32) VillagerState_GetIndex163())) {
-                companion = spawner_villager_person(VillagerState_GetIndex163());
+            if (ActorTable_IsKindESlot((u32) VillagerState_GetBirthdayCompanion())) {
+                companion = spawner_villager_person(VillagerState_GetBirthdayCompanion());
                 companion_profile = SPAWNER_PROFILE_COMPANION;
             }
         } else if (index == VillagerSickness_VillagerIndex(town)) {
             if (VillagerSicknessRecord_IsWell(VillagerSickness_Record(town)) == 0) {
                 profile = SPAWNER_PROFILE_SICK;
             }
-        } else if (VillagerTown_CurrentEvent() == SPAWNER_EVENT_10 &&
+        } else if (VillagerTown_CurrentEvent() == SPAWNER_EVENT_FLEA_MARKET &&
                    VillagerStatus_Stay(villager) == SPAWNER_STATUS_STAYING) {
             profile = SPAWNER_PROFILE_STAYING;
         }

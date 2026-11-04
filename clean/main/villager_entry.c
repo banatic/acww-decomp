@@ -126,7 +126,7 @@ int VillagerEntry_IsByte1EFull(u8 *villager, void *record)
         VillagerStatus_StateEntry(villager)->byte_1e == VILLAGER_ENTRY_BYTE_1E_MAX) {
         full = 1;
     }
-    return full && VillagerEntry_IsByte18Low(villager) != 0;
+    return full && VillagerEntry_IsMoodLow(villager) != 0;
 }
 CLEAN_AS(func_0207d18c, VillagerEntry_IsByte1EFull)
 
@@ -140,7 +140,7 @@ void VillagerEntry_RaiseByte1E(u8 *villager, void *record)
     }
     int amount = 0;
     record = usable_record(record);
-    if (record != NULL && VillagerEntry_IsByte18Low(villager)) {
+    if (record != NULL && VillagerEntry_IsMoodLow(villager)) {
         const s8 *memory = (const s8 *) VillagerMemory_Of(villager, PlayerRecord_Player(record));
         if (memory != NULL) {
             int factor = fondness_factor(memory);
@@ -152,7 +152,7 @@ void VillagerEntry_RaiseByte1E(u8 *villager, void *record)
 CLEAN_AS(func_0207d1f8, VillagerEntry_RaiseByte1E)
 
 /* func_0207d278: whether byte 0x18 of the villager's state entry is 0 or 1. */
-int VillagerEntry_IsByte18Low(u8 *villager)
+int VillagerEntry_IsMoodLow(u8 *villager)
 {
     if (!has_villager(villager)) {
         return 0;
@@ -161,9 +161,9 @@ int VillagerEntry_IsByte18Low(u8 *villager)
     if (state == NULL) {
         return 0;
     }
-    return VillagerState_GetByte18(state) == 0 || VillagerState_GetByte18(state) == 1;
+    return VillagerState_GetMood(state) == 0 || VillagerState_GetMood(state) == 1;
 }
-CLEAN_AS(func_0207d278, VillagerEntry_IsByte18Low)
+CLEAN_AS(func_0207d278, VillagerEntry_IsMoodLow)
 
 /* func_0207d2b4: byte 0x1e cleared, then, when the player's record is usable and the villager
  * knows the player, set to how fond the villager is (a factor of 1 or 2) times a draw of 1-10,
@@ -226,19 +226,19 @@ int VillagerEntry_NoteVisitor(u8 *villager, void *record)
 }
 CLEAN_AS(func_0207d4bc, VillagerEntry_NoteVisitor)
 
-/* func_0207d540: bit 14 of the flags of the villager's memory of `player` set, when it knows
- * the player. */
-void VillagerEntry_FlagMemory(u8 *villager, const void *player)
+/* func_0207d540: the villager's memory of `player` marked as having been to the player's flea
+ * market today (VILLAGER_MEMORY_FLEA_MARKET_DONE), when it knows the player. */
+void VillagerEntry_MarkFleaMarketDone(u8 *villager, const void *player)
 {
     if (!has_villager(villager) || PlayerId_IsSet((DesignCreator *) player) == 0) {
         return;
     }
     s8 *memory = (s8 *) VillagerMemory_Of(villager, player);
     if (memory != NULL) {
-        VillagerMemoryBits_SetBit14((VillagerMemory *) (void *) memory);
+        VillagerMemoryBits_SetFleaMarketDone((VillagerMemory *) (void *) memory);
     }
 }
-CLEAN_AS(func_0207d540, VillagerEntry_FlagMemory)
+CLEAN_AS(func_0207d540, VillagerEntry_MarkFleaMarketDone)
 
 /* func_0207d5bc: bit 6 of the flags of all eight memories cleared. */
 void VillagerEntry_ClearMemoryFlag6(u8 *villager)

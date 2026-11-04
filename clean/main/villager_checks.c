@@ -34,7 +34,7 @@ static int same_npc(const NpcId *a, const NpcId *b)
 
 /* func_0207d6c4: whether the villager lives in the town as usual and is not the one the town's
  * sickness record names (the personality is not compared). */
-int VillagerCheck_IsStayingResident(u8 *villager)
+int VillagerCheck_IsWellResident(u8 *villager)
 {
     NpcId *npc = TownVillager_NpcId(villager);
     if (!NpcId_IsValid(npc) || VillagerStatus_Stay(villager) != VILLAGER_CHECK_RESIDENT) {
@@ -43,7 +43,7 @@ int VillagerCheck_IsStayingResident(u8 *villager)
     NpcId *sick = VillagerSicknessRecord_Npc(VillagerSickness_Record(town()));
     return !same_npc(npc, sick);
 }
-CLEAN_AS(func_0207d6c4, VillagerCheck_IsStayingResident)
+CLEAN_AS(func_0207d6c4, VillagerCheck_IsWellResident)
 
 /* func_0207dca8: 1 unless the record of one of the town's four players (one whose id is set)
  * holds an object for the villager. */
@@ -62,30 +62,32 @@ int VillagerCheck_NoPlayerHolds(u8 *villager)
 }
 CLEAN_AS(func_0207dca8, VillagerCheck_NoPlayerHolds)
 
-/* func_0207dd1c: whether the villager is the one the state table names at 0x161. */
-int VillagerCheck_IsIndex161(u8 *villager)
+/* func_0207dd1c: whether the villager is the one that tells today's fox password (the state
+ * table's 0x161). */
+int VillagerCheck_TellsFoxPassword(u8 *villager)
 {
-    int named = (s8) VillagerState_Table()->byte_161;
+    int named = (s8) VillagerState_Table()->fox_password_villager;
     int index = VillagerRoster_IndexOf(town(), TownVillager_NpcId(villager));
     return NpcId_IsValid(TownVillager_NpcId(villager)) && index == named;
 }
-CLEAN_AS(func_0207dd1c, VillagerCheck_IsIndex161)
+CLEAN_AS(func_0207dd1c, VillagerCheck_TellsFoxPassword)
 
-/* func_0207dd60: the state table's index 0x160 cleared (-1) when it names the villager. */
-void VillagerCheck_ClearIndex160IfSelf(u8 *villager)
+/* func_0207dd60: the villager with fleas (the state table's index 0x160) cleared (-1) when it
+ * is this villager. */
+void VillagerCheck_ClearFleasIfSelf(u8 *villager)
 {
-    if (VillagerCheck_IsIndex160(villager)) {
-        VillagerState_Table()->index_160 = VILLAGER_STATE_NONE;
+    if (VillagerCheck_HasFleas(villager)) {
+        VillagerState_Table()->flea_villager = VILLAGER_STATE_NONE;
     }
 }
-CLEAN_AS(func_0207dd60, VillagerCheck_ClearIndex160IfSelf)
+CLEAN_AS(func_0207dd60, VillagerCheck_ClearFleasIfSelf)
 
-/* func_0207dd84: whether the villager is the one the state table names at 0x160 (-1 names
- * none). */
-int VillagerCheck_IsIndex160(u8 *villager)
+/* func_0207dd84: whether the villager is the one with fleas, as the state table names it at
+ * 0x160 (-1 names none). */
+int VillagerCheck_HasFleas(u8 *villager)
 {
-    int named = VillagerState_Table()->index_160;
+    int named = VillagerState_Table()->flea_villager;
     int index = VillagerRoster_IndexOf(town(), TownVillager_NpcId(villager));
     return NpcId_IsValid(TownVillager_NpcId(villager)) && named != VILLAGER_STATE_NONE && index == named;
 }
-CLEAN_AS(func_0207dd84, VillagerCheck_IsIndex160)
+CLEAN_AS(func_0207dd84, VillagerCheck_HasFleas)

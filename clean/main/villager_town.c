@@ -41,9 +41,9 @@ static_assert(offsetof(VillagerTown, bonds) == 0x3f60, "bonds");
 static_assert(offsetof(VillagerTown, outdoors) == 0x3f7c, "outdoors");
 static_assert(offsetof(VillagerTown, sickness) == 0x3f90, "sickness");
 static_assert(offsetof(VillagerTown, date_404c) == 0x404c, "date 0x404c");
-static_assert(offsetof(VillagerTown, latest) == 0x4050, "latest");
-static_assert(offsetof(VillagerTown, time_4058) == 0x4058, "time 0x4058");
-static_assert(offsetof(VillagerTown, index_4075) == 0x4075, "index 0x4075");
+static_assert(offsetof(VillagerTown, last_arrival) == 0x4050, "last arrival");
+static_assert(offsetof(VillagerTown, last_departure) == 0x4058, "last departure");
+static_assert(offsetof(VillagerTown, newcomer_index) == 0x4075, "newcomer");
 static_assert(offsetof(VillagerTown, last_sick) == 0x4076, "last sick");
 static_assert(offsetof(VillagerTown, mark) == 0x4078, "mark");
 static_assert(offsetof(VillagerTown, last_day) == 0x407a, "last day");
@@ -228,7 +228,7 @@ int VillagerTown_IsFarFromDate404C(VillagerTown *town, const Date *date)
 }
 CLEAN_AS(func_0207a650, VillagerTown_IsFarFromDate404C)
 
-/* func_0207a6a0: the villager that goes out first (the state table's index 0x16c) cleared;
+/* func_0207a6a0: the villager that goes out first (the state table's birthday greeter, 0x16c) cleared;
  * then, in scene 6, on the date at 0x2414 of the player's record (read as the player's
  * birthday) from 6:00, when the record has not marked this year (its byte 0x2453), its flag 1
  * is clear and its pockets have room: the villager fondest of the player (VillagerTown_FondestOf)
@@ -236,7 +236,7 @@ CLEAN_AS(func_0207a650, VillagerTown_IsFarFromDate404C)
  * NULL. */
 void VillagerTown_PickBirthdayVisitor(VillagerTown *town, void *record)
 {
-    VillagerState_SetIndex16C((char) VILLAGER_TOWN_NONE);
+    VillagerState_SetBirthdayGreeter((char) VILLAGER_TOWN_NONE);
     if (SceneQuery_Current() != 6) {
         return;
     }
@@ -272,7 +272,7 @@ void VillagerTown_PickBirthdayVisitor(VillagerTown *town, void *record)
     if (ActorTable_IsKindESlot((u32) villager)) {
         VillagerOutdoors_ClearTime(&town->outdoors);
     }
-    VillagerState_SetIndex16C((char) villager);
+    VillagerState_SetBirthdayGreeter((char) villager);
 }
 CLEAN_AS(func_0207a6a0, VillagerTown_PickBirthdayVisitor)
 
@@ -309,16 +309,17 @@ int VillagerTown_FondestOf(VillagerTown *town, const void *player)
 }
 CLEAN_AS(func_0207a764, VillagerTown_FondestOf)
 
-/* func_0207a7f8: the state table's index 0x164 set to VillagerTown_PickOutsideAcquaintance. */
-void VillagerTown_PickIndex164(VillagerTown *town)
+/* func_0207a7f8: the visitor of the player's flea market (the state table's 0x164) picked:
+ * VillagerTown_PickOutsideAcquaintance. */
+void VillagerTown_PickFleaMarketVisitor(VillagerTown *town)
 {
-    VillagerState_SetIndex164((unsigned char) VillagerTown_PickOutsideAcquaintance(town));
+    VillagerState_SetFleaMarketVisitor((unsigned char) VillagerTown_PickOutsideAcquaintance(town));
 }
-CLEAN_AS(func_0207a7f8, VillagerTown_PickIndex164)
+CLEAN_AS(func_0207a7f8, VillagerTown_PickFleaMarketVisitor)
 
 /* func_0207a810: a random one of the villagers out walking that know the current player and
- * whose memory of the player has bit 14 of its flags clear; -1 for none, or when there is no
- * current player or its id is not set. */
+ * have not been to the player's flea market today (VILLAGER_MEMORY_FLEA_MARKET_DONE clear); -1
+ * for none, or when there is no current player or its id is not set. */
 int VillagerTown_PickOutsideAcquaintance(VillagerTown *town)
 {
     void *record = PlayerRecords_Current();
@@ -331,7 +332,8 @@ int VillagerTown_PickOutsideAcquaintance(VillagerTown *town)
     for (int i = 0; i < VILLAGER_TOWN_VILLAGERS; i++) {
         const u8 *villager = town->villagers[i];
         if (has_villager(villager) && VillagerMemory_Of((u8 *) villager, (const DesignCreator *) (void *) player) != NULL &&
-            VillagerMemoryBits_Bit14(VillagerMemory_Of((u8 *) villager, (const DesignCreator *) (void *) player)) == 0 &&
+            VillagerMemoryBits_FleaMarketDone(VillagerMemory_Of((u8 *) villager, (const DesignCreator *) (void *) player)) ==
+                0 &&
             VillagerState_LinkedByte01(VillagerStatus_StateEntry((u8 *) villager)) == VILLAGER_PLACE_OUTSIDE) {
             candidates |= bit_of(i);
             count++;
@@ -341,16 +343,16 @@ int VillagerTown_PickOutsideAcquaintance(VillagerTown *town)
 }
 CLEAN_AS(func_0207a810, VillagerTown_PickOutsideAcquaintance)
 
-/* ---- The villager of the day's event and its companion */
+/* ---- The birthday villager and its companion */
 
 /* func_0207a8ac: every villager whose state is 3 settles; then, when the state table names a
- * villager of the day's event (index 0x162), that one gets state 0 and its companion (index
+ * birthday villager (index 0x162), that one gets state 0 and its companion (index
  * 0x163), when it is a villager, state 3. When the one at 0x162 is no villager, both indexes
  * are cleared. */
-void VillagerTown_ApplyEventStates(VillagerTown *town)
+void VillagerTown_ApplyBirthdayStates(VillagerTown *town)
 {
-    int event_villager = VillagerState_GetIndex162();
-    int companion = VillagerState_GetIndex163();
+    int event_villager = VillagerState_GetBirthdayVillager();
+    int companion = VillagerState_GetBirthdayCompanion();
     for (int i = 0; i < VILLAGER_TOWN_VILLAGERS; i++) {
         const u8 *villager = town->villagers[i];
         if (has_villager(villager) && VillagerState_LinkedState(VillagerStatus_StateEntry((u8 *) villager)) == 3) {
@@ -368,46 +370,46 @@ void VillagerTown_ApplyEventStates(VillagerTown *town)
             VillagerState_SetState(VillagerStatus_StateEntry(villager), 3);
         }
     } else {
-        VillagerState_SetIndex162((unsigned char) VILLAGER_TOWN_NONE);
-        VillagerState_SetIndex163((unsigned char) VILLAGER_TOWN_NONE);
+        VillagerState_SetBirthdayVillager((unsigned char) VILLAGER_TOWN_NONE);
+        VillagerState_SetBirthdayCompanion((unsigned char) VILLAGER_TOWN_NONE);
     }
 }
-CLEAN_AS(func_0207a8ac, VillagerTown_ApplyEventStates)
+CLEAN_AS(func_0207a8ac, VillagerTown_ApplyBirthdayStates)
 
-/* func_0207a964: the state table's indexes 0x162 and 0x163 brought up to date: the villager of
- * today's event (VillagerTown_FindEventVillager) and the one closest to it. A villager of the
- * event that is new takes a new companion, and when it is the sick one, the
+/* func_0207a964: the state table's indexes 0x162 and 0x163 brought up to date: the villager
+ * whose birthday is today (VillagerTown_FindBirthdayVillager) and the one closest to it. A new
+ * birthday villager takes a new companion, and when it is the sick one, the
  * sickness record is cleared. For the same one, its companion is kept while func_02080928 accepts it. */
-void VillagerTown_UpdateEventVillager(VillagerTown *town)
+void VillagerTown_UpdateBirthdayVillager(VillagerTown *town)
 {
     DateTime now = {0};
-    int previous = VillagerState_GetIndex162();
+    int previous = VillagerState_GetBirthdayVillager();
     DateTime_Now(&now);
-    int event_villager = VillagerTown_FindEventVillager(town, &now);
+    int event_villager = VillagerTown_FindBirthdayVillager(town, &now);
     if (event_villager == VILLAGER_TOWN_NONE) {
-        VillagerState_SetIndex162((unsigned char) VILLAGER_TOWN_NONE);
-        VillagerState_SetIndex163((unsigned char) VILLAGER_TOWN_NONE);
+        VillagerState_SetBirthdayVillager((unsigned char) VILLAGER_TOWN_NONE);
+        VillagerState_SetBirthdayCompanion((unsigned char) VILLAGER_TOWN_NONE);
     } else if (event_villager == previous) {
-        u8 *companion = VillagerRoster_At(town, VillagerState_GetIndex163());
+        u8 *companion = VillagerRoster_At(town, VillagerState_GetBirthdayCompanion());
         if (companion != NULL && TownVillager_IsFreeCompanion(companion)) {
             return;
         }
-        VillagerState_SetIndex163((unsigned char) VillagerTown_ClosestCompanion(town, previous));
+        VillagerState_SetBirthdayCompanion((unsigned char) VillagerTown_ClosestCompanion(town, previous));
     } else {
         int companion = VillagerTown_ClosestCompanion(town, event_villager);
-        VillagerState_SetIndex162((unsigned char) event_villager);
-        VillagerState_SetIndex163((unsigned char) companion);
+        VillagerState_SetBirthdayVillager((unsigned char) event_villager);
+        VillagerState_SetBirthdayCompanion((unsigned char) companion);
         if (event_villager == VillagerSickness_VillagerIndex(town)) {
             VillagerSicknessRecord_Clear(&town->sickness);
         }
     }
 }
-CLEAN_AS(func_0207a964, VillagerTown_UpdateEventVillager)
+CLEAN_AS(func_0207a964, VillagerTown_UpdateBirthdayVillager)
 
-/* func_0207aa08: the first resident villager whose index is the id of one of the events of
- * `when`'s date; -1 for none, before 6:00, or when there is no current player or its flag 1 is
+/* func_0207aa08: the first resident villager whose birthday is `when`'s date (an event of the
+ * calendar whose id is the villager's index); -1 for none, before 6:00, or when there is no current player or its flag 1 is
  * set. */
-int VillagerTown_FindEventVillager(const VillagerTown *town, const DateTime *when)
+int VillagerTown_FindBirthdayVillager(const VillagerTown *town, const DateTime *when)
 {
     void *record = PlayerRecords_Current();
     if (record == NULL || PlayerRecord_TestFlag(record, 1) != 0 || when->hour < VILLAGER_TOWN_EVENT_HOUR) {
@@ -430,7 +432,7 @@ int VillagerTown_FindEventVillager(const VillagerTown *town, const DateTime *whe
     }
     return VILLAGER_TOWN_NONE;
 }
-CLEAN_AS(func_0207aa08, VillagerTown_FindEventVillager)
+CLEAN_AS(func_0207aa08, VillagerTown_FindBirthdayVillager)
 
 /* func_0207aa8c: a random one of the villagers func_02080928 accepts, other than `villager`,
  * that get on best with it (VillagerBond_Compatibility); -1 for none. */
@@ -458,9 +460,10 @@ int VillagerTown_ClosestCompanion(VillagerTown *town, int villager)
 CLEAN_AS(func_0207aa8c, VillagerTown_ClosestCompanion)
 
 /* func_0207ab0c: for each resident villager and each player of the town (id set, flag 1
- * clear), the player's byte for the villager (0x2454 + index): func_02080998's value for the
- * villager, written when it changed and func_0205a1dc agrees, or 0xff when it gives -1. */
-void VillagerTown_UpdatePlayersVillagerBytes(VillagerTown *town)
+ * clear), the villager's birthday notice: when its birthday is within seven days and the
+ * player's byte for the villager (0x2454 + index) is not that birthday's year, the notice is
+ * sent (VillagerPost_SendBirthdayNotice) and the year kept; 0xff when no birthday is near. */
+void VillagerTown_SendBirthdayNotices(VillagerTown *town)
 {
     DateTime now = {0};
     DateTime_Now(&now);
@@ -479,52 +482,53 @@ void VillagerTown_UpdatePlayersVillagerBytes(VillagerTown *town)
             if (!PlayerId_IsSet((DesignCreator *) (void *) player) || PlayerRecord_TestFlag(record, 1) != 0) {
                 continue;
             }
-            int value = TownVillager_EventYearWithin((u8 *) villager, 7, &now);
+            int value = TownVillager_BirthdayYearWithin((u8 *) villager, 7, &now);
             if (value == -1) {
-                PlayerRecord_SetVillagerByte(record, (u32) i, 0xff);
-            } else if (PlayerRecord_VillagerByte(record, (u32) i) != value &&
+                PlayerRecord_SetBirthdayNoticeYear(record, (u32) i, 0xff);
+            } else if (PlayerRecord_BirthdayNoticeYear(record, (u32) i) != value &&
                        VillagerPost_SendBirthdayNotice((const DesignCreator *) (void *) player, npc)) {
-                PlayerRecord_SetVillagerByte(record, (u32) i, (u8) value);
+                PlayerRecord_SetBirthdayNoticeYear(record, (u32) i, (u8) value);
             }
         }
     }
 }
-CLEAN_AS(func_0207ab0c, VillagerTown_UpdatePlayersVillagerBytes)
+CLEAN_AS(func_0207ab0c, VillagerTown_SendBirthdayNotices)
 
 /* ---- Each villager's state entry */
 
-/* func_0207abd4: byte 0x18 and the counter of every villager's state entry cleared. */
-void VillagerTown_ClearByte18AndCounters(VillagerTown *town)
+/* func_0207abd4: the mood and its frames of every villager's state entry cleared. */
+void VillagerTown_ClearMoods(VillagerTown *town)
 {
     for (int i = 0; i < VILLAGER_TOWN_VILLAGERS; i++) {
         const u8 *villager = town->villagers[i];
         if (has_villager(villager)) {
-            VillagerState_SetByte18(VillagerStatus_StateEntry((u8 *) villager), 0);
-            VillagerState_SetCounter(VillagerStatus_StateEntry((u8 *) villager), 0);
+            VillagerState_SetMood(VillagerStatus_StateEntry((u8 *) villager), 0);
+            VillagerState_SetMoodFrames(VillagerStatus_StateEntry((u8 *) villager), 0);
         }
     }
 }
-CLEAN_AS(func_0207abd4, VillagerTown_ClearByte18AndCounters)
+CLEAN_AS(func_0207abd4, VillagerTown_ClearMoods)
 
-/* func_0207ac20: VillagerTown_Search for each villager index. */
-void VillagerTown_SearchAll(VillagerTown *town)
+/* func_0207ac20: VillagerTown_ScoreRoom for each villager index. */
+void VillagerTown_ScoreAllRooms(VillagerTown *town)
 {
     for (int i = 0; i < VILLAGER_TOWN_VILLAGERS; i++) {
-        VillagerTown_Search(town, i);
+        VillagerTown_ScoreRoom(town, i);
     }
 }
-CLEAN_AS(func_0207ac20, VillagerTown_SearchAll)
+CLEAN_AS(func_0207ac20, VillagerTown_ScoreAllRooms)
 
-/* What func_0205ba64 sets up for func_0205b868 (0x14 bytes, no item in its two halfwords). */
-typedef struct VillagerTownSearch {
+/* The room RoomScore_InitRoom sets up for RoomScore_ScoreVillager (0x14 bytes, no item in its
+ * two halfwords). */
+typedef struct VillagerTownRoom {
     u8 bytes[0x10];
     u16 item_10;
     u16 item_12;
-} VillagerTownSearch;
+} VillagerTownRoom;
 
-/* func_0207ac40: for villager `villager`, the word 0x20 and halfword 0x24 of its state entry
- * set from func_0205b868. */
-void VillagerTown_Search(VillagerTown *town, int villager)
+/* func_0207ac40: for villager `villager`, its state entry's room score and flags set from
+ * RoomScore_ScoreVillager (its room scored as the player's would be). */
+void VillagerTown_ScoreRoom(VillagerTown *town, int villager)
 {
     u8 *found = VillagerRoster_At(town, villager);
     if (found == NULL || !has_villager(found)) {
@@ -541,20 +545,20 @@ void VillagerTown_Search(VillagerTown *town, int villager)
     if (entry == NULL) {
         return;
     }
-    VillagerTownSearch search;
+    VillagerTownRoom search;
     RoomScore_InitRoom((RoomScoreRoom *) &search);
-    entry->word_20 = RoomScore_ScoreVillager((RoomScoreRoom *) &search, villager, &result, &a, &b, &c);
-    entry->half_24 = result;
+    entry->room_score = RoomScore_ScoreVillager((RoomScoreRoom *) &search, villager, &result, &a, &b, &c);
+    entry->room_score_flags = result;
     RoomScore_DestructRoom((RoomScoreRoom *) &search);
 }
-CLEAN_AS(func_0207ac40, VillagerTown_Search)
+CLEAN_AS(func_0207ac40, VillagerTown_ScoreRoom)
 
-/* func_0207acbc: unless this system is linked with others, VillagerTown_FlagAcquaintance; and
+/* func_0207acbc: unless this system is linked with others, VillagerTown_PickFortuneGiver; and
  * unless it holds its slot of the session, VillagerTown_DoubleByte1E. */
 void VillagerTown_UpdateAlone(VillagerTown *town, const void *player)
 {
     if (!Session_IsLinked(data_020ccf94)) {
-        VillagerTown_FlagAcquaintance(town, player);
+        VillagerTown_PickFortuneGiver(town, player);
     }
     if (!Session_IsSlotTaken(data_020ccf94, data_020ccf94->local_slot)) {
         VillagerTown_DoubleByte1E(town);
@@ -562,10 +566,11 @@ void VillagerTown_UpdateAlone(VillagerTown *town, const void *player)
 }
 CLEAN_AS(func_0207acbc, VillagerTown_UpdateAlone)
 
-/* func_0207acf8: bit 5 of the flags of one villager's memory of the player set: a random one
- * of the villagers out walking that know the player, else of the resident villagers that know
- * it, other than the sick one. Nothing when the player id is not set. */
-void VillagerTown_FlagAcquaintance(VillagerTown *town, const void *player)
+/* func_0207acf8: today's fortune giver picked: one villager's memory of the player is marked
+ * (VILLAGER_MEMORY_FORTUNE_DUE), so that its next greeting hands the player a lucky item; a
+ * random one of the villagers out walking that know the player, else of the resident villagers
+ * that know it, other than the sick one. Nothing when the player id is not set. */
+void VillagerTown_PickFortuneGiver(VillagerTown *town, const void *player)
 {
     if (!PlayerId_IsSet((DesignCreator *) player)) {
         return;
@@ -599,11 +604,11 @@ void VillagerTown_FlagAcquaintance(VillagerTown *town, const void *player)
     if (villager != NULL && has_villager(villager)) {
         u8 *memory = (u8 *) VillagerMemory_Of(villager, player);
         if (memory != NULL) {
-            VillagerMemoryBits_SetBit5((VillagerMemory *) (void *) memory);
+            VillagerMemoryBits_SetFortuneDue((VillagerMemory *) (void *) memory);
         }
     }
 }
-CLEAN_AS(func_0207acf8, VillagerTown_FlagAcquaintance)
+CLEAN_AS(func_0207acf8, VillagerTown_PickFortuneGiver)
 
 /* func_0207adf4: unless this system holds its slot of the session, byte 0x1e of every
  * villager's state entry halved. */
@@ -696,10 +701,11 @@ int VillagerTown_CurrentEvent(void)
 }
 CLEAN_AS(func_0207af30, VillagerTown_CurrentEvent)
 
-/* func_0207af90: the state table's byte 0x161 set to a random one of the villagers out
+/* func_0207af90: the villager that tells today's password for the fox's shop (the state
+ * table's byte 0x161, villager_talk_greeting.c) set to a random one of the villagers out
  * walking, else of the resident villagers other than the sick one; 0 for
  * none. */
-void VillagerTown_PickIndex161(VillagerTown *town)
+void VillagerTown_PickFoxPasswordVillager(VillagerTown *town)
 {
     u8 candidates = 0;
     int count = 0;
@@ -730,9 +736,9 @@ void VillagerTown_PickIndex161(VillagerTown *town)
             chosen = (u8) pick;
         }
     }
-    VillagerState_Table()->byte_161 = chosen;
+    VillagerState_Table()->fox_password_villager = chosen;
 }
-CLEAN_AS(func_0207af90, VillagerTown_PickIndex161)
+CLEAN_AS(func_0207af90, VillagerTown_PickFoxPasswordVillager)
 
 /* ---- The updates */
 
@@ -840,32 +846,32 @@ static int is_set(const DateTime *when)
 }
 
 /* func_0207bddc: the town's villagers brought up to date. When the clock is earlier than the
- * latest time seen, that time is moved back to it, and the time at 0x4058 too when it is set.
+ * last arrival, that time is moved back to it, and the last departure too when it is set.
  * Then each part in turn; the players' bytes for the villagers only without `skip_designs`. */
 void VillagerTown_Update(VillagerTown *town, int skip_designs)
 {
     DateTime now = {0};
     DateTime_Now(&now);
-    if (DateTime_Compare(&now, &town->latest,
+    if (DateTime_Compare(&now, &town->last_arrival,
                          DATE_TIME_YEAR | DATE_TIME_MONTH | DATE_TIME_DAY | DATE_TIME_HOUR | DATE_TIME_MINUTE |
                              DATE_TIME_SECOND) == -1) {
-        MI_CpuCopy8(&now, &town->latest, sizeof(DateTime));
-        if (is_set(&town->time_4058)) {
-            MI_CpuCopy8(&now, &town->time_4058, sizeof(DateTime));
+        MI_CpuCopy8(&now, &town->last_arrival, sizeof(DateTime));
+        if (is_set(&town->last_departure)) {
+            MI_CpuCopy8(&now, &town->last_departure, sizeof(DateTime));
         }
     }
     VillagerTown_ExpirePlayerObjects(town, &now);
     VillagerTown_UpdateObjects(town, &now);
     VillagerResidents_Exchange(town, &now);
-    VillagerTown_GiveObject9(town, &now);
+    VillagerTown_StartLeaving(town, &now);
     VillagerResidents_MoveInNew(town, &now);
     VillagerTown_StartDay(town);
     VillagerTown_UpdateVillagers(town, skip_designs);
     VillagerSickness_Update(town);
     if (skip_designs == 0) {
-        VillagerTown_UpdatePlayersVillagerBytes(town);
+        VillagerTown_SendBirthdayNotices(town);
     }
-    VillagerTown_UpdateEventVillager(town);
+    VillagerTown_UpdateBirthdayVillager(town);
 }
 CLEAN_AS(func_0207bddc, VillagerTown_Update)
 
@@ -917,16 +923,16 @@ void VillagerTown_UpdateObjects(VillagerTown *town, const DateTime *now)
         }
         VillagerMode_KeepSinceDate(villager, now);
         VillagerMode_KeepCountedDate(villager, now);
-        if (VillagerMode_Update(villager, &town->latest, &town->time_4058, now) != VILLAGER_TOWN_OBJECT_NONE) {
+        if (VillagerMode_Update(villager, &town->last_arrival, &town->last_departure, now) != VILLAGER_TOWN_OBJECT_NONE) {
             VillagerObject_Clear(VillagerObject_OfRecord((VillagerRecord *) VillagerStatus_ModeRecord(villager)));
         }
     }
 }
 CLEAN_AS(func_0207bf38, VillagerTown_UpdateObjects)
 
-/* func_0207bfa4: when func_0207c048 agrees, a villager picked by func_0207bfdc, if any, gets
- * func_0207dc30 (which gives its record's object type 9). */
-void VillagerTown_GiveObject9(VillagerTown *town, const DateTime *now)
+/* func_0207bfa4: when a villager is due to leave (VillagerResidents_IsLeaveDue), the one
+ * VillagerResidents_PickLeaver picks, if any, starts leaving (mode 9, VillagerMode_SetLeaving). */
+void VillagerTown_StartLeaving(VillagerTown *town, const DateTime *now)
 {
     if (VillagerResidents_IsLeaveDue(town, now) == 0) {
         return;
@@ -936,4 +942,4 @@ void VillagerTown_GiveObject9(VillagerTown *town, const DateTime *now)
         VillagerMode_SetLeaving(town->villagers[villager], now);
     }
 }
-CLEAN_AS(func_0207bfa4, VillagerTown_GiveObject9)
+CLEAN_AS(func_0207bfa4, VillagerTown_StartLeaving)

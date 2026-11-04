@@ -38,7 +38,7 @@ void VillagerSceneHeld_SetItem(void *object, const u16 *item)
     if (held_entry(object) == NULL) {
         return;
     }
-    VillagerState_SetItem(VillagerStatus_StateEntry(held_record(object)), item);
+    VillagerState_SetHeldItem(VillagerStatus_StateEntry(held_record(object)), item);
 }
 CLEAN_AS(func_0202e0c8, VillagerSceneHeld_SetItem)
 
@@ -49,6 +49,6 @@ void VillagerSceneHeld_Item(u16 *item, void *object)
     if (held_entry(object) == NULL) {
         return;
     }
-    *item = *VillagerState_Item(VillagerStatus_StateEntry(held_record(object)));
+    *item = *VillagerState_HeldItem(VillagerStatus_StateEntry(held_record(object)));
 }
 CLEAN_AS(func_0202e118, VillagerSceneHeld_Item)

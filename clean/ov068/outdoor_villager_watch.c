@@ -63,7 +63,7 @@ void OutdoorVillagerWatch_Update(OutdoorVillagerWatch *watch, u8 *villager)
     }
     switch (look_kind) {
         case SCENE_LOOK_PLAYER:
-            if (OutdoorVillagerRecords_Byte18(villager) > 1) {
+            if (OutdoorVillagerRecords_Mood(villager) > 1) {
                 return;
             }
             if (SceneLook_CanSee(watch_look(villager), villager) != 0) {

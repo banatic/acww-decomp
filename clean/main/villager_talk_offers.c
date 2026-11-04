@@ -431,7 +431,7 @@ int VillagerTalkOffer_StateHandover(VillagerTalk *talk, u8 *record, VillagerPart
         ItemObject_IsInUse((ItemObject *) (void *) handover->object) != 0 ||
         VillagerStatus_PlayerHolds(record, (u8 *) part) != 0 || VillagerStatus_Stay(record) != 3 ||
         VillagerSceneObject_Event(talk->villager) != VILLAGER_SCENE_OBJECT_NO_EVENT ||
-        TownVillager_EventYearWithin(record, 1, &now) != VILLAGER_TALK_OFFER_NOT_FOUND ||
+        TownVillager_BirthdayYearWithin(record, 1, &now) != VILLAGER_TALK_OFFER_NOT_FOUND ||
         VillagerTown_NextEvent(1, &now) != VILLAGER_SCENE_OBJECT_NO_EVENT) {
         return 0;
     }
@@ -544,7 +544,7 @@ int VillagerTalkOffer_StateClass1(VillagerTalk *talk, u8 *record, VillagerPart *
     int type = ItemObject_Type(object);
     if (VillagerPartBlock_TypeFitsMode(type, VillagerModeRecord_Mode(mode)) == 0 ||
         VillagerSceneObject_Event(talk->villager) != VILLAGER_SCENE_OBJECT_NO_EVENT ||
-        VillagerTown_FindEventVillager(&data_021e5a2c, &now) != VILLAGER_TALK_OFFER_NOT_FOUND ||
+        VillagerTown_FindBirthdayVillager(&data_021e5a2c, &now) != VILLAGER_TALK_OFFER_NOT_FOUND ||
         VillagerTalkOffer_HasOtherResident(talk) == 0) {
         return 0;
     }

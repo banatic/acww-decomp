@@ -514,7 +514,7 @@ int ActivityProcess_Delete(Activity *activity)
     int scene = SceneQuery_Current();
 
     if (scene == SCENE_06) {
-        VillagerTown_SearchAll(&data_021e5a2c);
+        VillagerTown_ScoreAllRooms(&data_021e5a2c);
     }
     if (Session_IsLinked(data_020ccf94) && (scene == SCENE_0B || scene == SCENE_09)) {
         return 1;

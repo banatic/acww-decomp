@@ -246,7 +246,7 @@ static void ov_start_talk(u8 *object, u32 lines)
 }
 
 /* After an event that kept it at reaction 0: it stands at the middle of its home's tile,
- * then behaviour 12 (for the villager VillagerState_GetIndex162 names or a status of 3 to
+ * then behaviour 12 (for the villager VillagerState_GetBirthdayVillager names or a status of 3 to
  * 7) or 3. */
 static void ov_ended_reaction_0(u8 *object)
 {
@@ -259,7 +259,7 @@ static void ov_ended_reaction_0(u8 *object)
     last->x = position->x;
     last->y = position->y;
     last->z = position->z;
-    int named = VillagerState_GetIndex162();
+    int named = VillagerState_GetBirthdayVillager();
     if (named == VillagerStatus_Index(ov_record(object)) || (unsigned int) (status - 3) <= 4) {
         OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_12);
     } else {
@@ -400,7 +400,7 @@ CLEAN_AS(func_ov068_02266f44, OutdoorVillager_OnEvent)
 int OutdoorVillager_Ask54(u8 *object, u8 *other)
 {
     s16 half_angle = data_ov068_02278260;
-    unsigned int level = OutdoorVillagerRecords_Byte18(object);
+    unsigned int level = OutdoorVillagerRecords_Mood(object);
     if (((int (*)(u8 *, u8 *)) ov_slot(object, OUTDOOR_VILLAGER_SLOT_MAY_ACT))(object, other) == 0) {
         return 0;
     }
@@ -468,11 +468,11 @@ int OutdoorVillagerEffect_Countdown(OutdoorVillagerEffect *effect)
 CLEAN_AS(func_ov068_02266e7c, OutdoorVillagerEffect_Countdown)
 
 /* func_ov068_02266e80: no more effects, and the state table's index 0x160 cleared when it
- * names the villager (VillagerCheck_ClearIndex160IfSelf). */
+ * names the villager (VillagerCheck_ClearFleasIfSelf). */
 void OutdoorVillagerEffect_Stop(OutdoorVillagerEffect *effect, u8 *villager)
 {
     effect->wait = OUTDOOR_VILLAGER_EFFECT_OFF;
-    VillagerCheck_ClearIndex160IfSelf(ov_town_record(villager));
+    VillagerCheck_ClearFleasIfSelf(ov_town_record(villager));
 }
 CLEAN_AS(func_ov068_02266e80, OutdoorVillagerEffect_Stop)
 
@@ -491,13 +491,13 @@ void OutdoorVillagerEffect_Tick(OutdoorVillagerEffect *effect, u8 *villager)
     if (effect->wait == 0) {
         Vec3 at = *(const Vec3 *) (const void *) ov_at(villager, OUTDOOR_VILLAGER_JOINT_16_POINT);
         EffectSystem_StartOneShotSetNumberCopy(OUTDOOR_VILLAGER_EFFECT_SET, &at, NULL, NULL);
-        if (VillagerCheck_IsIndex160(ov_town_record(villager)) != 0) {
+        if (VillagerCheck_HasFleas(ov_town_record(villager)) != 0) {
             effect->wait = (s8) (MainRandom_Below(OUTDOOR_VILLAGER_EFFECT_FIRST_DRAW) + OUTDOOR_VILLAGER_EFFECT_LEAST);
         } else {
             effect->wait = OUTDOOR_VILLAGER_EFFECT_OFF;
         }
     } else if (effect->wait == OUTDOOR_VILLAGER_EFFECT_OFF) {
-        if (VillagerCheck_IsIndex160(ov_town_record(villager)) != 0) {
+        if (VillagerCheck_HasFleas(ov_town_record(villager)) != 0) {
             effect->wait = (s8) (MainRandom_Below(OUTDOOR_VILLAGER_EFFECT_DRAW) + OUTDOOR_VILLAGER_EFFECT_LEAST);
         }
     }

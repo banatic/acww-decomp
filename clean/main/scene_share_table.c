@@ -284,8 +284,8 @@ void SceneShareTable_FillRecordE(u8 *record, int id)
     SceneShareTable_WriteRecordE(record, id);
     VillagerState *state = VillagerTown_StateAt(id - SCENE_SHARE_TABLE_RECORDS_E);
     if (state != NULL) {
-        VillagerState_SetByte18(state, 0);
-        VillagerState_SetCounter(state, 0);
+        VillagerState_SetMood(state, 0);
+        VillagerState_SetMoodFrames(state, 0);
     }
 }
 CLEAN_AS(func_02085350, SceneShareTable_FillRecordE)

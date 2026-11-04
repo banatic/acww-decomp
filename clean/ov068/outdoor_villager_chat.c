@@ -594,7 +594,7 @@ int OutdoorVillagerChat_DefaultClothes(OutdoorVillagerBehaviour *self, u8 *villa
     *chat_speaker(self) = swapped == 0 ? villager : partner;
     OutdoorVillagerBonds_ChangeOthers(self, villager, (const s8 *) data_ov068_02276744);
 
-    u16 item = *VillagerState_Item(VillagerStatus_StateEntry(first));
+    u16 item = *VillagerState_HeldItem(VillagerStatus_StateEntry(first));
     u16 wanted;
     if (item < CHAT_ITEM_1380_FIRST || item > CHAT_ITEM_1380_LAST) {
         u16 default_item;

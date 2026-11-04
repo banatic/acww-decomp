@@ -13,8 +13,9 @@
  *   - no villager: place 3, state 7.
  *
  * At most three quarters of the villagers go out, and four; none while this system holds a
- * slot of a session (func_02082240). The villager the town's table names at 0x16c (the state
- * table's index 0x16c) goes out first, and the one the record at 0x3f90 names never does. */
+ * slot of a session (func_02082240). On the player's birthday the villager that greets the player
+ * (the state table's birthday greeter, 0x16c) goes out first, and the sick one (the record at
+ * 0x3f90) never does. */
 #ifndef CLEAN_MAIN_VILLAGER_OUTDOORS_H
 #define CLEAN_MAIN_VILLAGER_OUTDOORS_H
 
@@ -38,7 +39,7 @@ void VillagerOutdoors_Update(VillagerOutdoors *outdoors, u8 *villagers, int keep
 void VillagerOutdoors_Restore(VillagerOutdoors *outdoors, u8 *villagers);
 void VillagerOutdoors_Draw(VillagerOutdoors *outdoors, u8 *villagers);
 void VillagerOutdoors_PutToSleep(VillagerOutdoors *outdoors, u8 *villagers, const DateTime *now);
-void VillagerOutdoors_TakeIndex16C(VillagerOutdoors *outdoors, s8 *chosen, int *count, s8 *list, u8 *villagers);
+void VillagerOutdoors_TakeBirthdayGreeter(VillagerOutdoors *outdoors, s8 *chosen, int *count, s8 *list, u8 *villagers);
 void VillagerOutdoors_SendOut(VillagerOutdoors *outdoors, s8 *chosen, int *count, u8 *states, int chosen_count);
 void VillagerOutdoors_KeepHome(VillagerOutdoors *outdoors, s8 *list, int *count, u8 *states);
 void VillagerOutdoors_DrawRandom(VillagerOutdoors *outdoors, u8 *chosen, int *count, s8 *list, u8 *villagers, int limit);
@@ -59,7 +60,7 @@ void VillagerOutdoors_ClearList(VillagerOutdoors *outdoors, s8 *list);
 void VillagerOutdoors_Init(VillagerOutdoors *outdoors);
 void VillagerOutdoors_Destruct(VillagerOutdoors *outdoors);
 void VillagerOutdoors_Construct(VillagerOutdoors *outdoors);
-void VillagerOutdoors_DrawIndex160(const u8 *villagers, const void *player);
-int VillagerOutdoors_MonthChance(void);
+void VillagerOutdoors_DrawFleaVillager(const u8 *villagers, const void *player);
+int VillagerOutdoors_FleaMonthChance(void);
 
 #endif

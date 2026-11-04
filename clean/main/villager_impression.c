@@ -84,7 +84,7 @@ int VillagerImpression_Choose(u8 *villager, s8 *memory, u8 *record)
     }
     if (memory != NULL) {
         int fondness = VillagerMemoryEntry_Fondness((VillagerMemory *) (void *) memory);
-        impression = VillagerImpression_Pick(record, fondness, VillagerState_GetByte18(VillagerStatus_StateEntry(villager)));
+        impression = VillagerImpression_Pick(record, fondness, VillagerState_GetMood(VillagerStatus_StateEntry(villager)));
         VillagerMemoryEntry_SetImpression((VillagerMemory *) (void *) memory, (u8) impression);
     }
     return impression;
@@ -92,7 +92,7 @@ int VillagerImpression_Choose(u8 *villager, s8 *memory, u8 *record)
 CLEAN_AS(func_0207e054, VillagerImpression_Choose)
 
 /* func_0207e0c4: the first rule for the player's kind whose test passes, or 0x58. */
-int VillagerImpression_Pick(u8 *record, int fondness, int byte_18)
+int VillagerImpression_Pick(u8 *record, int fondness, int mood)
 {
     int kind = PlayerId_Byte1c((const s8 *) PlayerRecord_Player(record));
     for (int i = 0; i < VILLAGER_IMPRESSION_COUNT; i++) {
@@ -100,7 +100,7 @@ int VillagerImpression_Pick(u8 *record, int fondness, int byte_18)
         if (rule->kind != VILLAGER_IMPRESSION_ANY_KIND && rule->kind != kind) {
             continue;
         }
-        if (rule->test(record, fondness, byte_18) != 0) {
+        if (rule->test(record, fondness, mood) != 0) {
             return i;
         }
     }
@@ -171,73 +171,73 @@ static int head_kind_is(u8 *record, u32 kind)
 }
 
 /* func_0207e1f0 */
-int VillagerImpression_HeadKind7(u8 *record, int fondness, int byte_18)
+int VillagerImpression_HeadKind7(u8 *record, int fondness, int mood)
 {
     (void) fondness;
-    (void) byte_18;
+    (void) mood;
     return head_kind_is(record, 7);
 }
 CLEAN_AS(func_0207e1f0, VillagerImpression_HeadKind7)
 
 /* func_0207e214 */
-int VillagerImpression_HeadKind6(u8 *record, int fondness, int byte_18)
+int VillagerImpression_HeadKind6(u8 *record, int fondness, int mood)
 {
     (void) fondness;
-    (void) byte_18;
+    (void) mood;
     return head_kind_is(record, 6);
 }
 CLEAN_AS(func_0207e214, VillagerImpression_HeadKind6)
 
 /* func_0207e238 */
-int VillagerImpression_HeadKind5(u8 *record, int fondness, int byte_18)
+int VillagerImpression_HeadKind5(u8 *record, int fondness, int mood)
 {
     (void) fondness;
-    (void) byte_18;
+    (void) mood;
     return head_kind_is(record, 5);
 }
 CLEAN_AS(func_0207e238, VillagerImpression_HeadKind5)
 
 /* func_0207e25c */
-int VillagerImpression_HeadKind4(u8 *record, int fondness, int byte_18)
+int VillagerImpression_HeadKind4(u8 *record, int fondness, int mood)
 {
     (void) fondness;
-    (void) byte_18;
+    (void) mood;
     return head_kind_is(record, 4);
 }
 CLEAN_AS(func_0207e25c, VillagerImpression_HeadKind4)
 
 /* func_0207e280 */
-int VillagerImpression_HeadKind3(u8 *record, int fondness, int byte_18)
+int VillagerImpression_HeadKind3(u8 *record, int fondness, int mood)
 {
     (void) fondness;
-    (void) byte_18;
+    (void) mood;
     return head_kind_is(record, 3);
 }
 CLEAN_AS(func_0207e280, VillagerImpression_HeadKind3)
 
 /* func_0207e2a4 */
-int VillagerImpression_HeadKind2(u8 *record, int fondness, int byte_18)
+int VillagerImpression_HeadKind2(u8 *record, int fondness, int mood)
 {
     (void) fondness;
-    (void) byte_18;
+    (void) mood;
     return head_kind_is(record, 2);
 }
 CLEAN_AS(func_0207e2a4, VillagerImpression_HeadKind2)
 
 /* func_0207e2c8 */
-int VillagerImpression_HeadKind1(u8 *record, int fondness, int byte_18)
+int VillagerImpression_HeadKind1(u8 *record, int fondness, int mood)
 {
     (void) fondness;
-    (void) byte_18;
+    (void) mood;
     return head_kind_is(record, 1);
 }
 CLEAN_AS(func_0207e2c8, VillagerImpression_HeadKind1)
 
 /* func_0207e2ec */
-int VillagerImpression_HeadKind0(u8 *record, int fondness, int byte_18)
+int VillagerImpression_HeadKind0(u8 *record, int fondness, int mood)
 {
     (void) fondness;
-    (void) byte_18;
+    (void) mood;
     return head_kind_is(record, 0);
 }
 CLEAN_AS(func_0207e2ec, VillagerImpression_HeadKind0)
@@ -249,50 +249,48 @@ static int part_c_in_range(u8 *record)
 }
 
 /* func_0207e310: part C's item is one of 0x1431-0x1470 and the head's kind 0, 1, 3, 5 or 7. */
-int VillagerImpression_PartCWithHeadKind01357(u8 *record, int fondness, int byte_18)
+int VillagerImpression_PartCWithHeadKind01357(u8 *record, int fondness, int mood)
 {
     if (!part_c_in_range(record)) {
         return 0;
     }
-    return VillagerImpression_HeadKind0(record, fondness, byte_18) ||
-           VillagerImpression_HeadKind1(record, fondness, byte_18) ||
-           VillagerImpression_HeadKind3(record, fondness, byte_18) ||
-           VillagerImpression_HeadKind5(record, fondness, byte_18) || VillagerImpression_HeadKind7(record, fondness, byte_18);
+    return VillagerImpression_HeadKind0(record, fondness, mood) || VillagerImpression_HeadKind1(record, fondness, mood) ||
+           VillagerImpression_HeadKind3(record, fondness, mood) || VillagerImpression_HeadKind5(record, fondness, mood) ||
+           VillagerImpression_HeadKind7(record, fondness, mood);
 }
 CLEAN_AS(func_0207e310, VillagerImpression_PartCWithHeadKind01357)
 
 /* func_0207e390: the same with head kind 2, 4 or 6. */
-int VillagerImpression_PartCWithHeadKind246(u8 *record, int fondness, int byte_18)
+int VillagerImpression_PartCWithHeadKind246(u8 *record, int fondness, int mood)
 {
     if (!part_c_in_range(record)) {
         return 0;
     }
-    return VillagerImpression_HeadKind2(record, fondness, byte_18) ||
-           VillagerImpression_HeadKind4(record, fondness, byte_18) || VillagerImpression_HeadKind6(record, fondness, byte_18);
+    return VillagerImpression_HeadKind2(record, fondness, mood) || VillagerImpression_HeadKind4(record, fondness, mood) ||
+           VillagerImpression_HeadKind6(record, fondness, mood);
 }
 CLEAN_AS(func_0207e390, VillagerImpression_PartCWithHeadKind246)
 
 /* func_0207e3f4: the same with head kind 2, 3 or 6. */
-int VillagerImpression_PartCWithHeadKind236(u8 *record, int fondness, int byte_18)
+int VillagerImpression_PartCWithHeadKind236(u8 *record, int fondness, int mood)
 {
     if (!part_c_in_range(record)) {
         return 0;
     }
-    return VillagerImpression_HeadKind2(record, fondness, byte_18) ||
-           VillagerImpression_HeadKind3(record, fondness, byte_18) || VillagerImpression_HeadKind6(record, fondness, byte_18);
+    return VillagerImpression_HeadKind2(record, fondness, mood) || VillagerImpression_HeadKind3(record, fondness, mood) ||
+           VillagerImpression_HeadKind6(record, fondness, mood);
 }
 CLEAN_AS(func_0207e3f4, VillagerImpression_PartCWithHeadKind236)
 
 /* func_0207e458: the same with head kind 0, 1, 4, 5 or 7. */
-int VillagerImpression_PartCWithHeadKind01457(u8 *record, int fondness, int byte_18)
+int VillagerImpression_PartCWithHeadKind01457(u8 *record, int fondness, int mood)
 {
     if (!part_c_in_range(record)) {
         return 0;
     }
-    return VillagerImpression_HeadKind0(record, fondness, byte_18) ||
-           VillagerImpression_HeadKind1(record, fondness, byte_18) ||
-           VillagerImpression_HeadKind4(record, fondness, byte_18) ||
-           VillagerImpression_HeadKind5(record, fondness, byte_18) || VillagerImpression_HeadKind7(record, fondness, byte_18);
+    return VillagerImpression_HeadKind0(record, fondness, mood) || VillagerImpression_HeadKind1(record, fondness, mood) ||
+           VillagerImpression_HeadKind4(record, fondness, mood) || VillagerImpression_HeadKind5(record, fondness, mood) ||
+           VillagerImpression_HeadKind7(record, fondness, mood);
 }
 CLEAN_AS(func_0207e458, VillagerImpression_PartCWithHeadKind01457)
 
@@ -348,19 +346,19 @@ int VillagerImpression_BellsAtMost300(u8 *record)
 CLEAN_AS(func_0207e5b0, VillagerImpression_BellsAtMost300)
 
 /* func_0207e5d4: the current player has collected all the fish. */
-int VillagerImpression_CollectedAllFish(u8 *record, int fondness, int byte_18)
+int VillagerImpression_CollectedAllFish(u8 *record, int fondness, int mood)
 {
     (void) record;
     (void) fondness;
-    (void) byte_18;
+    (void) mood;
     return ItemRecord_HasAllFish();
 }
 CLEAN_AS(func_0207e5d4, VillagerImpression_CollectedAllFish)
 
 /* func_0207e5dc: not all the fish, but at least half of them. */
-int VillagerImpression_CollectedHalfFish(u8 *record, int fondness, int byte_18)
+int VillagerImpression_CollectedHalfFish(u8 *record, int fondness, int mood)
 {
-    if (VillagerImpression_CollectedAllFish(record, fondness, byte_18) != 0) {
+    if (VillagerImpression_CollectedAllFish(record, fondness, mood) != 0) {
         return 0;
     }
     int half = (int) (ItemRecord_FishKinds() >> 1);
@@ -377,12 +375,12 @@ CLEAN_AS(func_0207e604, VillagerImpression_CollectedAll12B0)
 
 /* func_0207e60c: not all the items from 0x12b0, but at least half of them.
  * QUIRK: also not when all the fish are collected. */
-int VillagerImpression_CollectedHalf12B0(u8 *record, int fondness, int byte_18)
+int VillagerImpression_CollectedHalf12B0(u8 *record, int fondness, int mood)
 {
     if (VillagerImpression_CollectedAll12B0() != 0) {
         return 0;
     }
-    if (VillagerImpression_CollectedAllFish(record, fondness, byte_18) != 0) {
+    if (VillagerImpression_CollectedAllFish(record, fondness, mood) != 0) {
         return 0;
     }
     int half = (int) (ItemRecord_InsectKinds() >> 1);

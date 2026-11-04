@@ -16,17 +16,17 @@ extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 static_assert(sizeof(VillagerTally) == 4, "tally size");
 static_assert(offsetof(VillagerState, object) == 0x04, "object");
 static_assert(offsetof(VillagerState, bytes_10) == 0x10, "bytes 0x10");
-static_assert(offsetof(VillagerState, byte_18) == 0x18, "byte 0x18");
-static_assert(offsetof(VillagerState, counter) == 0x1a, "counter");
+static_assert(offsetof(VillagerState, mood) == 0x18, "mood");
+static_assert(offsetof(VillagerState, mood_frames) == 0x1a, "mood frames");
 static_assert(offsetof(VillagerState, flags) == 0x1d, "flags");
-static_assert(offsetof(VillagerState, word_20) == 0x20, "word 0x20");
-static_assert(offsetof(VillagerState, item) == 0x26, "item");
+static_assert(offsetof(VillagerState, room_score) == 0x20, "room score");
+static_assert(offsetof(VillagerState, held_item) == 0x26, "held item");
 static_assert(offsetof(VillagerState, tally) == 0x28, "tally");
 static_assert(sizeof(VillagerState) == 0x2c, "entry size");
-static_assert(offsetof(VillagerStates, index_160) == 0x160, "index 0x160");
-static_assert(offsetof(VillagerStates, index_164) == 0x164, "index 0x164");
-static_assert(offsetof(VillagerStates, word_168) == 0x168, "word 0x168");
-static_assert(offsetof(VillagerStates, index_16c) == 0x16c, "index 0x16c");
+static_assert(offsetof(VillagerStates, flea_villager) == 0x160, "flea_villager");
+static_assert(offsetof(VillagerStates, flea_market_visitor) == 0x164, "flea_market_visitor");
+static_assert(offsetof(VillagerStates, idle_frames) == 0x168, "idle_frames");
+static_assert(offsetof(VillagerStates, birthday_greeter) == 0x16c, "birthday_greeter");
 
 /* Whether this system holds its slot of the session (Session_IsSlotTaken). */
 static int has_session_slot(void)
@@ -37,74 +37,74 @@ static int has_session_slot(void)
 /* ---- The table */
 
 /* func_02079144 */
-void VillagerState_ClearWord168(void)
+void VillagerState_ClearIdleFrames(void)
 {
-    VillagerState_Table()->word_168 = 0;
+    VillagerState_Table()->idle_frames = 0;
 }
-CLEAN_AS(func_02079144, VillagerState_ClearWord168)
+CLEAN_AS(func_02079144, VillagerState_ClearIdleFrames)
 
 /* func_0207915c */
-int VillagerState_GetIndex164(void)
+int VillagerState_GetFleaMarketVisitor(void)
 {
-    return VillagerState_Table()->index_164;
+    return VillagerState_Table()->flea_market_visitor;
 }
-CLEAN_AS(func_0207915c, VillagerState_GetIndex164)
+CLEAN_AS(func_0207915c, VillagerState_GetFleaMarketVisitor)
 
 /* func_02079174 */
-void VillagerState_SetIndex164(unsigned char index)
+void VillagerState_SetFleaMarketVisitor(unsigned char index)
 {
-    VillagerState_Table()->index_164 = (s8) index;
+    VillagerState_Table()->flea_market_visitor = (s8) index;
 }
-CLEAN_AS(func_02079174, VillagerState_SetIndex164)
+CLEAN_AS(func_02079174, VillagerState_SetFleaMarketVisitor)
 
 /* func_0207918c */
-int VillagerState_GetIndex16C(void)
+int VillagerState_GetBirthdayGreeter(void)
 {
-    return VillagerState_Table()->index_16c;
+    return VillagerState_Table()->birthday_greeter;
 }
-CLEAN_AS(func_0207918c, VillagerState_GetIndex16C)
+CLEAN_AS(func_0207918c, VillagerState_GetBirthdayGreeter)
 
 /* func_020791a4 */
-void VillagerState_SetIndex16C(char index)
+void VillagerState_SetBirthdayGreeter(char index)
 {
-    VillagerState_Table()->index_16c = (s8) index;
+    VillagerState_Table()->birthday_greeter = (s8) index;
 }
-CLEAN_AS(func_020791a4, VillagerState_SetIndex16C)
+CLEAN_AS(func_020791a4, VillagerState_SetBirthdayGreeter)
 
 /* func_020791bc */
-signed char VillagerState_GetIndex163(void)
+signed char VillagerState_GetBirthdayCompanion(void)
 {
-    return VillagerState_Table()->index_163;
+    return VillagerState_Table()->birthday_companion;
 }
-CLEAN_AS(func_020791bc, VillagerState_GetIndex163)
+CLEAN_AS(func_020791bc, VillagerState_GetBirthdayCompanion)
 
 /* func_020791d4 */
-void VillagerState_SetIndex163(unsigned char index)
+void VillagerState_SetBirthdayCompanion(unsigned char index)
 {
-    VillagerState_Table()->index_163 = (s8) index;
+    VillagerState_Table()->birthday_companion = (s8) index;
 }
-CLEAN_AS(func_020791d4, VillagerState_SetIndex163)
+CLEAN_AS(func_020791d4, VillagerState_SetBirthdayCompanion)
 
 /* func_020791ec */
-int VillagerState_GetIndex162(void)
+int VillagerState_GetBirthdayVillager(void)
 {
-    return VillagerState_Table()->index_162;
+    return VillagerState_Table()->birthday_villager;
 }
-CLEAN_AS(func_020791ec, VillagerState_GetIndex162)
+CLEAN_AS(func_020791ec, VillagerState_GetBirthdayVillager)
 
 /* func_02079204 */
-void VillagerState_SetIndex162(unsigned char index)
+void VillagerState_SetBirthdayVillager(unsigned char index)
 {
-    VillagerState_Table()->index_162 = (s8) index;
+    VillagerState_Table()->birthday_villager = (s8) index;
 }
-CLEAN_AS(func_02079204, VillagerState_SetIndex162)
+CLEAN_AS(func_02079204, VillagerState_SetBirthdayVillager)
 
 /* func_0207921c */
-void VillagerState_ClearIndex160(void)
+void VillagerState_ClearFleaVillager(void)
 {
-    VillagerState_Table()->index_160 = VILLAGER_STATE_NONE;
+    VillagerState_Table()->flea_villager = VILLAGER_STATE_NONE;
 }
-CLEAN_AS(func_0207921c, VillagerState_ClearIndex160)
+CLEAN_AS(func_0207921c, VillagerState_ClearFleaVillager)
 
 /* func_02079238: every entry's tally cleared. */
 void VillagerState_ClearAllTallies(void)
@@ -169,8 +169,8 @@ void VillagerState_ClearTable(VillagerStates *table)
 
         VillagerState_SetState(entry, 0);
         entry->flags &= (u8) ~VILLAGER_STATE_FLAG_0;
-        VillagerState_SetByte18(entry, 0);
-        VillagerState_SetCounter(entry, 0);
+        VillagerState_SetMood(entry, 0);
+        VillagerState_SetMoodFrames(entry, 0);
         entry->flags &= (u8) ~VILLAGER_STATE_FLAG_2;
         VillagerTally_Clear(VillagerState_Tally(entry));
     }
@@ -204,13 +204,13 @@ void VillagerState_ResetTable(VillagerStates *table)
     for (int i = 0; i < VILLAGER_STATE_ENTRIES; i++) {
         VillagerState_Init(&table->entries[i]);
     }
-    table->index_160 = VILLAGER_STATE_NONE;
-    table->byte_161 = 0;
-    table->index_162 = VILLAGER_STATE_NONE;
-    table->index_163 = VILLAGER_STATE_NONE;
-    table->index_164 = VILLAGER_STATE_NONE;
-    table->word_168 = 0;
-    table->index_16c = VILLAGER_STATE_NONE;
+    table->flea_villager = VILLAGER_STATE_NONE;
+    table->fox_password_villager = 0;
+    table->birthday_villager = VILLAGER_STATE_NONE;
+    table->birthday_companion = VILLAGER_STATE_NONE;
+    table->flea_market_visitor = VILLAGER_STATE_NONE;
+    table->idle_frames = 0;
+    table->birthday_greeter = VILLAGER_STATE_NONE;
 }
 CLEAN_AS(func_02079358, VillagerState_ResetTable)
 
@@ -308,25 +308,25 @@ VillagerTally *VillagerState_Tally(VillagerState *entry)
 CLEAN_AS(func_0207944c, VillagerState_Tally)
 
 /* func_02079450 */
-void VillagerState_ClearItem(VillagerState *entry)
+void VillagerState_ClearHeldItem(VillagerState *entry)
 {
-    entry->item = 0xfff1;
+    entry->held_item = 0xfff1;
 }
-CLEAN_AS(func_02079450, VillagerState_ClearItem)
+CLEAN_AS(func_02079450, VillagerState_ClearHeldItem)
 
 /* func_0207945c */
-void VillagerState_SetItem(VillagerState *entry, const u16 *item)
+void VillagerState_SetHeldItem(VillagerState *entry, const u16 *item)
 {
-    entry->item = *item;
+    entry->held_item = *item;
 }
-CLEAN_AS(func_0207945c, VillagerState_SetItem)
+CLEAN_AS(func_0207945c, VillagerState_SetHeldItem)
 
 /* func_02079464 */
-u16 *VillagerState_Item(VillagerState *entry)
+u16 *VillagerState_HeldItem(VillagerState *entry)
 {
-    return &entry->item;
+    return &entry->held_item;
 }
-CLEAN_AS(func_02079464, VillagerState_Item)
+CLEAN_AS(func_02079464, VillagerState_HeldItem)
 
 /* func_02079468: byte 0x1e doubled, at most 32. */
 void VillagerState_DoubleByte1E(VillagerState *entry)
@@ -347,66 +347,66 @@ void VillagerState_SetFlag1UnlessScene(VillagerState *entry)
 CLEAN_AS(func_02079478, VillagerState_SetFlag1UnlessScene)
 
 /* func_02079494: one off the counter, which stops at 0. */
-void VillagerState_CountDown(VillagerState *entry)
+void VillagerState_CountDownMood(VillagerState *entry)
 {
-    if (entry->counter != 0) {
-        entry->counter--;
+    if (entry->mood_frames != 0) {
+        entry->mood_frames--;
     }
 }
-CLEAN_AS(func_02079494, VillagerState_CountDown)
+CLEAN_AS(func_02079494, VillagerState_CountDownMood)
 
 /* func_020794a0 */
-int VillagerState_GetCounter(const VillagerState *entry)
+int VillagerState_GetMoodFrames(const VillagerState *entry)
 {
-    return entry->counter;
+    return entry->mood_frames;
 }
-CLEAN_AS(func_020794a0, VillagerState_GetCounter)
+CLEAN_AS(func_020794a0, VillagerState_GetMoodFrames)
 
 /* func_020794a4: QUIRK: keeps the low 16 bits. */
-void VillagerState_SetCounter(VillagerState *entry, int counter)
+void VillagerState_SetMoodFrames(VillagerState *entry, int counter)
 {
-    entry->counter = (u16) counter;
+    entry->mood_frames = (u16) counter;
 }
-CLEAN_AS(func_020794a4, VillagerState_SetCounter)
+CLEAN_AS(func_020794a4, VillagerState_SetMoodFrames)
 
 /* func_020794a8: `amount` added, up to 0xffff.
  * QUIRK: only the top is held: a sum below 0 keeps its low 16 bits (5 - 10 gives 0xfffb), and
  * the sum wraps as the ARM's 32-bit addition does. */
-void VillagerState_AddCounter(VillagerState *entry, int amount)
+void VillagerState_AddMoodFrames(VillagerState *entry, int amount)
 {
-    int32_t sum = (int32_t) ((uint32_t) entry->counter + (uint32_t) amount);
+    int32_t sum = (int32_t) ((uint32_t) entry->mood_frames + (uint32_t) amount);
 
-    entry->counter = sum >= 0xffff ? 0xffff : (u16) sum;
+    entry->mood_frames = sum >= 0xffff ? 0xffff : (u16) sum;
 }
-CLEAN_AS(func_020794a8, VillagerState_AddCounter)
+CLEAN_AS(func_020794a8, VillagerState_AddMoodFrames)
 
 /* func_020794c0: QUIRK: keeps the low 8 bits. */
-void VillagerState_SetByte18(VillagerState *entry, int value)
+void VillagerState_SetMood(VillagerState *entry, int value)
 {
-    entry->byte_18 = (u8) value;
+    entry->mood = (u8) value;
 }
-CLEAN_AS(func_020794c0, VillagerState_SetByte18)
+CLEAN_AS(func_020794c0, VillagerState_SetMood)
 
 /* func_020794c4 */
-int VillagerState_GetByte18(const VillagerState *entry)
+int VillagerState_GetMood(const VillagerState *entry)
 {
-    return entry->byte_18;
+    return entry->mood;
 }
-CLEAN_AS(func_020794c4, VillagerState_GetByte18)
+CLEAN_AS(func_020794c4, VillagerState_GetMood)
 
 /* func_020794c8: QUIRK: keeps the low 8 bits. */
-void VillagerState_SetByte1C(VillagerState *entry, int value)
+void VillagerState_SetActivity(VillagerState *entry, int value)
 {
-    entry->byte_1c = (u8) value;
+    entry->activity = (u8) value;
 }
-CLEAN_AS(func_020794c8, VillagerState_SetByte1C)
+CLEAN_AS(func_020794c8, VillagerState_SetActivity)
 
 /* func_020794cc */
-int VillagerState_GetByte1C(const VillagerState *entry)
+int VillagerState_GetActivity(const VillagerState *entry)
 {
-    return entry->byte_1c;
+    return entry->activity;
 }
-CLEAN_AS(func_020794cc, VillagerState_GetByte1C)
+CLEAN_AS(func_020794cc, VillagerState_GetActivity)
 
 /* func_020794d0 */
 u8 *VillagerState_Object(VillagerState *entry)
@@ -468,11 +468,11 @@ void VillagerState_Init(VillagerState *entry)
     entry->byte_01 = 3;
     ItemObject_Clear((ItemObject *) (void *) entry->object);
     VillagerModeRecord_ClearKindBytes(entry->bytes_10);
-    entry->byte_18 = 5;
-    entry->byte_1c = 12;
-    entry->word_20 = 0;
-    entry->half_24 = 0;
-    VillagerState_ClearItem(entry);
+    entry->mood = 5;
+    entry->activity = 12;
+    entry->room_score = 0;
+    entry->room_score_flags = 0;
+    VillagerState_ClearHeldItem(entry);
 }
 CLEAN_AS(func_0207956c, VillagerState_Init)
 
@@ -493,7 +493,7 @@ VillagerState *VillagerState_Construct(VillagerState *entry)
 {
     ItemObject_Construct((ItemObject *) (void *) entry->object);
     VillagerModeRecord_ConstructKindBytes(entry->bytes_10);
-    entry->item = 0xfff1;
+    entry->held_item = 0xfff1;
     VillagerTally_Construct(&entry->tally);
     return entry;
 }

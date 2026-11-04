@@ -89,7 +89,7 @@ u8 TalkVoice_VillagerKind(TalkVoice *voice)
     if (villager != NULL) {
         VillagerState *state = VillagerStatus_StateEntry(villager);
         if (state != NULL) {
-            index = VillagerState_GetByte18(state);
+            index = VillagerState_GetMood(state);
         }
     }
     return data_020cce88[index];

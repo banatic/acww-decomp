@@ -45,7 +45,7 @@ typedef struct VillagerModeRecord {
 } VillagerModeRecord;               /* the object follows at 0x24 */
 
 void VillagerMode_FinishObject(u8 *villager);
-int VillagerMode_Update(u8 *villager, DateTime *latest, DateTime *left, const DateTime *now);
+int VillagerMode_Update(u8 *villager, DateTime *last_arrival, DateTime *last_departure, const DateTime *now);
 int VillagerMode_UpdateDaily(u8 *villager, const DateTime *now);
 void VillagerMode_KeepCountedDate(u8 *villager, const DateTime *now);
 void VillagerMode_KeepSinceDate(u8 *villager, const DateTime *now);

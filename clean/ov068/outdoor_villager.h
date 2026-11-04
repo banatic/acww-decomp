@@ -77,7 +77,7 @@
 #define OUTDOOR_VILLAGER_DO_STARTS 8   /* told an event starts (3) */
 #define OUTDOOR_VILLAGER_DO_PAIRED 9   /* paired with another villager (slot 0xb8) */
 #define OUTDOOR_VILLAGER_DO_SPEAKER 10 /* joined a talk as a speaker (slot 0x8c) */
-/* As 3, for the villager VillagerState_GetIndex162 names or with a status of 3 to 7. */
+/* As 3, for the villager VillagerState_GetBirthdayVillager names or with a status of 3 to 7. */
 #define OUTDOOR_VILLAGER_DO_12 12
 #define OUTDOOR_VILLAGER_DO_14 14 /* told of event 1 after reaction 0 */
 #define OUTDOOR_VILLAGER_DO_18 18 /* after an event while the byte at 0xa04 is set */
@@ -109,7 +109,7 @@
 #define OUTDOOR_VILLAGER_LINES_REACTION_2 0x10
 
 /* Its effect (0x9f4): while it is the villager the state table names at 0x160
- * (VillagerCheck_IsIndex160), effect 0x81 at its joint 16 every 15 to 29 frames. The countdown
+ * (VillagerCheck_HasFleas), effect 0x81 at its joint 16 every 15 to 29 frames. The countdown
  * runs down with the wait (OutdoorVillagerEffect_Tick); while it is not 0, the overlay's choice
  * of a behaviour (func_ov068_0226befc) may start behaviour 11. */
 typedef struct OutdoorVillagerEffect {
@@ -155,8 +155,8 @@ int OutdoorVillagerBehaviour_IsIdle(OutdoorVillagerBehaviour *self);
 OutdoorVillagerBehaviour *OutdoorVillagerBehaviour_Destruct(OutdoorVillagerBehaviour *self);
 /* With an act of kind 8 running whose number is not 0, act 0's first part on its act effects. */
 void OutdoorVillagerObject_ResetActEffects(u8 *villager);
-/* Byte 0x18 of the state entry of its town record (VillagerState_GetByte18), 0 without one. */
-u8 OutdoorVillagerRecords_Byte18(u8 *villager);
+/* Byte 0x18 of the state entry of its town record (VillagerState_GetMood), 0 without one. */
+u8 OutdoorVillagerRecords_Mood(u8 *villager);
 /* The tally of the state entry of its town record (VillagerState_Tally), or null. */
 VillagerTally *OutdoorVillagerRecords_Tally(u8 *villager);
 /* Its memory of this console's player (VillagerMemory_Of), or null. */

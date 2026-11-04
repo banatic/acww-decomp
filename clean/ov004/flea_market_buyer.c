@@ -665,7 +665,7 @@ void FleaMarketBuyerTalk_OnMessageEnded(FleaMarketBuyerTalk *talk)
                     player = PlayerRecord_Player(PlayerRecords_Current());
                 }
                 if (fmb_record(talk->buyer) != NULL && player != NULL) {
-                    VillagerEntry_FlagMemory(fmb_record(talk->buyer), player);
+                    VillagerEntry_MarkFleaMarketDone(fmb_record(talk->buyer), player);
                 }
                 talk->buyer->stage = FMB_STAGE_GREETED;
                 talk->buyer->step_wait = FMB_GREETED_WAIT;
@@ -1198,7 +1198,7 @@ CLEAN_AS(func_ov004_0222136c, FleaMarketBuyer_EnterStepIn)
 #define FMB_DOOR_X 0x10000
 #define FMB_DOOR_Z 0x23000
 /* The state of the villager's state entry set when it starts (VillagerState_SetState), and
- * the index VillagerState_SetIndex164 is given when it leaves in stage 4 or 6 (none). */
+ * the index VillagerState_SetFleaMarketVisitor is given when it leaves in stage 4 or 6 (none). */
 #define FMB_VILLAGER_STATE_VISITING 2
 #define FMB_NO_INDEX 0xff
 /* Its states 0 and 2 (FleaMarketBuyer_SetState). */
@@ -1365,7 +1365,7 @@ CLEAN_AS(func_ov004_022215ec, FleaMarketBuyer_Draw)
 
 /* func_ov004_02221608 (vtable slot 0x0c): the town villager's leaving; when it agrees: leaving
  * after its goodbye (stage 4 or 6) the town's extra visitors are cleared and the index of
- * VillagerState_SetIndex164 set to none; with a town record (asked twice), its state entry is
+ * VillagerState_SetFleaMarketVisitor set to none; with a town record (asked twice), its state entry is
  * settled. Whether it agreed. */
 int FleaMarketBuyer_Leave(FleaMarketBuyer *buyer)
 {
@@ -1374,7 +1374,7 @@ int FleaMarketBuyer_Leave(FleaMarketBuyer *buyer)
     }
     if (buyer->stage == FMB_STAGE_PLAYER_AT_EXIT_BYE || buyer->stage == FMB_STAGE_TIME_UP_BYE) {
         TownObjects_ClearExtraVisitors();
-        VillagerState_SetIndex164(FMB_NO_INDEX);
+        VillagerState_SetFleaMarketVisitor(FMB_NO_INDEX);
     }
     if (fmb_record_virtual(buyer) != NULL) {
         VillagerState_SettleState(VillagerStatus_StateEntry(fmb_record_virtual(buyer)));
@@ -1393,7 +1393,7 @@ static int fmb_player_known(FleaMarketBuyer *buyer, DesignCreator *player)
     if (VillagerMemory_Of(fmb_record_virtual(buyer), player) == NULL) {
         return 0;
     }
-    return VillagerMemoryBits_Bit14(VillagerMemory_Of(fmb_record_virtual(buyer), player)) != 0;
+    return VillagerMemoryBits_FleaMarketDone(VillagerMemory_Of(fmb_record_virtual(buyer), player)) != 0;
 }
 
 /* func_ov004_02221658 (vtable slot 0x00, its start): the town villager's start; then no item is

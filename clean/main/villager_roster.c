@@ -430,13 +430,13 @@ void VillagerRoster_Init(VillagerTown *town)
     town->date_404c.month = 1;
     town->date_404c.year = 0;
     town->date_404c.unused = 0;
-    memset(&town->latest, 0, sizeof(town->latest));
-    memset(&town->time_4058, 0, sizeof(town->time_4058));
-    town->index_4075 = VILLAGER_TOWN_NONE;
-    town->unknown_4060[0x14] = (u8) VILLAGER_TOWN_NONE; /* 0x4074: the number of the villager gone */
+    memset(&town->last_arrival, 0, sizeof(town->last_arrival));
+    memset(&town->last_departure, 0, sizeof(town->last_departure));
+    town->newcomer_index = VILLAGER_TOWN_NONE;
+    town->numbers_met[0x14] = (u8) VILLAGER_TOWN_NONE; /* 0x4074: the number of the villager gone */
 
     MI_CpuFill8(&town->mark, 0, sizeof(town->mark));
-    MI_CpuFill8(town->unknown_4060, 0, 0x14); /* 0x4060: the numbers met */
+    MI_CpuFill8(town->numbers_met, 0, 0x14); /* the numbers met */
 }
 CLEAN_AS(func_0207cf80, VillagerRoster_Init)
 
@@ -462,8 +462,8 @@ VillagerTown *VillagerRoster_Construct(VillagerTown *town)
     VillagerBond_Construct(town->bonds);
     VillagerOutdoors_Construct(&town->outdoors);
     VillagerSicknessRecord_Construct(&town->sickness);
-    memset(&town->latest, 0, sizeof(town->latest));
-    memset(&town->time_4058, 0, sizeof(town->time_4058));
+    memset(&town->last_arrival, 0, sizeof(town->last_arrival));
+    memset(&town->last_departure, 0, sizeof(town->last_departure));
     return town;
 }
 CLEAN_AS(func_0207d080, VillagerRoster_Construct)

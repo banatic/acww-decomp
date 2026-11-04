@@ -14,7 +14,7 @@
 #include "types.h"
 
 VillagerTally *OutdoorVillagerRecords_Tally(u8 *villager);
-u8 OutdoorVillagerRecords_Byte18(u8 *villager);
+u8 OutdoorVillagerRecords_Mood(u8 *villager);
 void OutdoorVillagerRecords_EachMinute(u8 *villager);
 void OutdoorVillagerRecords_CatchFish(u8 *villager, u8 *now);
 void OutdoorVillagerRecords_CatchInsect(u8 *villager, u8 *now);
