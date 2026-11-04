@@ -51,7 +51,7 @@
 
 static_assert(sizeof(SceneBase) == 0x80, "scene base");
 static_assert(offsetof(FoxTentTalk, sequence) == 0xb0 && offsetof(FoxTentTalk, owner) == 0xb4, "FoxTentTalk");
-static_assert(offsetof(FoxTentTalk, price) == 0xb8 && offsetof(FoxTentTalk, card_slot) == 0xbc, "FoxTentTalk");
+static_assert(offsetof(FoxTentTalk, price) == 0xb8 && offsetof(FoxTentTalk, vase_slot) == 0xbc, "FoxTentTalk");
 static_assert(offsetof(FoxTentTalk, declined) == 0xc0 && sizeof(FoxTentTalk) == 0xc4, "FoxTentTalk");
 static_assert(offsetof(FoxTent, state) == 0x654 && offsetof(FoxTent, talk) == 0x658, "FoxTent");
 static_assert(offsetof(FoxTent, stand_word) == 0x71c && offsetof(FoxTent, item) == 0x71e, "FoxTent");

@@ -781,7 +781,7 @@ What reading the Clean code found about the groups above; counts are of function
   the player carries the item 0x3530 (message 0xe): save kk-trade, scene kk-trade. Tom Nook asks
   for the item 0x36fc when the player brings it into the store (line 0x35 of
   ov050/nook_clerk_talk.c) and gives 0x4a30 for it: save nook-package, scene nook-package
-  (refused, NookClerkTalk_PackageDone runs instead and he does not ask again).
+  (refused, NookClerkTalk_SafeDone runs instead and he does not ask again).
 - The second screen panel's countdown (main/catch_panel.h, with the fish and insects caught while
   it runs) is the timer's: the item 0x156c in the pockets has a row that starts it (3, 5, 10 or 15
   minutes, PocketsScreen_ActionTimerMenu; alone, PocketsScreen_SetTimer applies it at once,
@@ -4194,7 +4194,7 @@ What reading the Clean code found about the groups above; counts are of function
   ItemLists_DrawPlain (kind 5 with no item drawn) stays open.
 - nook-package-no (save nook-package): nook-package with DOWN at 4500, the second answer to line
   0x35: Tom Nook does not take the item and says line 0x36, whose end stops his looking for it
-  (NookClerkTalk_PackageDone).
+  (NookClerkTalk_SafeDone).
 - Left, with their conditions: the junk catch (FishDisp_LoadExtra, kinds 0x38-0x3a) needs a
   shadow of such a kind, which only a spawn's CreatureTable_Pick gives (by MainRandom, from the
   period's list); no save field sets a shadow's kind, so it needs a boot whose draws place one

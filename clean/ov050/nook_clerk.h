@@ -111,7 +111,7 @@ typedef struct NookClerkTalk {
     s32 extra_bags;          /* 0xc0: what SceneBells_Fit is asked with */
     s32 price;               /* 0xc4: the bells of the deal talked about */
     u8 unk_c8[4];            /* 0xc8 */
-    s32 package_slot;        /* 0xcc: the pocket of the item 0x36fc; -1 not looked for, -2 done */
+    s32 safe_slot;           /* 0xcc: the pocket of the safe 0x36fc; -1 not looked for, -2 done */
     s32 line;                /* 0xd0: the line an answer or a line's end asks for, 0xff none */
 } NookClerkTalk;
 

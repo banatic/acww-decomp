@@ -123,7 +123,7 @@ SAVES = {
     "rich": [(HELD, "<H", 0x1374), (MONEY, "<I", 30000)],  # ... and 30,000 bells
     "wallet": [(MONEY, "<I", 30000)],  # 30,000 bells, the seed's held item kept
     # as "rich" with the item 0x36fc in pocket 0: Tom Nook takes it for 0x4a30 when the player brings
-    # it to his counter (ov050/nook_clerk_talk.c, line 0x35, NookClerkTalk_OnAnswerPackage)
+    # it to his counter (ov050/nook_clerk_talk.c, line 0x35, NookClerkTalk_OnAnswerSafe)
     "nook-package": [(HELD, "<H", 0x1374), (MONEY, "<I", 30000), (POCKETS, "<H", 0x36FC)],
     # the player played last time without saving: record 0's flag 2 (flags at 0x23f8 of the
     # record, player_record.c), the mole's first lecture (the record's count at 0x2423 at 0)

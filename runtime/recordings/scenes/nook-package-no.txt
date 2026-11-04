@@ -1,7 +1,7 @@
 # nook-package-no (format: runtime/input.h), played from a town save by tools/scenes.py (the
 # save is not in this repository). As nook-package.txt, but DOWN at 4500 moves the choice of
 # line 0x35 to its second answer, which A at 4530 picks: he does not take the item and says line
-# 0x36 (NookClerkTalk_PackageDone at its end); A to the end of his talk and his menu, B out of it.
+# 0x36 (NookClerkTalk_SafeDone at its end); A to the end of his talk and his menu, B out of it.
 0 - -
 900 START -
 906 - -

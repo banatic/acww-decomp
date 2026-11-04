@@ -67,7 +67,7 @@
 static_assert(sizeof(SceneBase) == 0x80, "scene base");
 static_assert(offsetof(NookClerkTalk, mode) == 0xb0 && offsetof(NookClerkTalk, owner) == 0xb4, "NookClerkTalk");
 static_assert(offsetof(NookClerkTalk, sequence) == 0xb8 && offsetof(NookClerkTalk, extra_bags) == 0xc0, "NookClerkTalk");
-static_assert(offsetof(NookClerkTalk, price) == 0xc4 && offsetof(NookClerkTalk, package_slot) == 0xcc, "NookClerkTalk");
+static_assert(offsetof(NookClerkTalk, price) == 0xc4 && offsetof(NookClerkTalk, safe_slot) == 0xcc, "NookClerkTalk");
 static_assert(offsetof(NookClerkTalk, line) == 0xd0 && sizeof(NookClerkTalk) == 0xd4, "NookClerkTalk");
 static_assert(offsetof(NookClerk, state) == 0x654 && offsetof(NookClerk, talk) == 0x658, "NookClerk");
 static_assert(offsetof(NookClerk, has_event) == 0x72c && offsetof(NookClerk, act_countdown) == 0x72e, "NookClerk");

@@ -46,9 +46,9 @@ extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 
 #define FOX_TENT_TALK_NO_LINE 0xff
 
-/* FoxTentTalk.card_slot: not looked for yet, and done with. */
-#define FOX_TENT_TALK_CARD_UNKNOWN (-1)
-#define FOX_TENT_TALK_CARD_DONE (-2)
+/* FoxTentTalk.vase_slot (the red vase's pocket): not looked for yet, and done with. */
+#define FOX_TENT_TALK_VASE_UNKNOWN (-1)
+#define FOX_TENT_TALK_VASE_DONE (-2)
 
 /* The vtable slot of the scene that resets it (FoxTentTalk_Reset). */
 #define FOX_TENT_TALK_SLOT_RESET 0x08
@@ -233,7 +233,7 @@ void FoxTentTalk_Begin(FoxTentTalk *talk, FoxTent *owner)
     u32 code = *(const u32 *) (uintptr_t) (vtable + FOX_TENT_TALK_SLOT_RESET);
     ((void (*)(FoxTentTalk *))(uintptr_t) code)(talk);
     talk->owner = owner;
-    talk->card_slot = FOX_TENT_TALK_CARD_UNKNOWN;
+    talk->vase_slot = FOX_TENT_TALK_VASE_UNKNOWN;
     talk->declined = 0;
 }
 CLEAN_AS(func_ov052_022610d4, FoxTentTalk_Begin)
@@ -367,11 +367,11 @@ void FoxTentTalk_Line(FoxTentTalk *talk, FoxTentTalkStart *out)
         talk->sequence != FOX_TENT_TALK_EXIT_AFTER_SALE) {
         fox = talk->owner;
         if (fox_tent_talk_no_item(&fox->item) && PlayerRecord_TestFlag(record, FOX_TENT_TALK_MEMBER_FLAG)) {
-            if (!Session_IsLinked(data_020ccf94) && talk->card_slot == FOX_TENT_TALK_CARD_UNKNOWN) {
+            if (!Session_IsLinked(data_020ccf94) && talk->vase_slot == FOX_TENT_TALK_VASE_UNKNOWN) {
                 u16 asked = FOX_TENT_TALK_RED_VASE;
-                talk->card_slot = CurrentPockets_FindItem(&asked);
+                talk->vase_slot = CurrentPockets_FindItem(&asked);
             }
-            if (talk->card_slot >= 0) {
+            if (talk->vase_slot >= 0) {
                 talk->sequence = FOX_TENT_TALK_ASK_ITEM;
             } else if (FoxTentTalk_ShopSoldOut(talk)) {
                 talk->sequence = FOX_TENT_TALK_SOLD_OUT;
@@ -441,8 +441,8 @@ void FoxTentTalk_OnAnswer(FoxTentTalk *talk)
     switch (fox_tent_talk_shown(talk)) {
         case FOX_TENT_TALK_LINE_ASK_ITEM:
             if (answer == 0) {
-                if (talk->card_slot >= 0) {
-                    CurrentPockets_Empty(talk->card_slot);
+                if (talk->vase_slot >= 0) {
+                    CurrentPockets_Empty(talk->vase_slot);
                     u16 asked = FOX_TENT_TALK_RED_VASE;
                     SceneCommand_RequestMotion14(fox_tent_talk_scene(talk), &asked, 0, FOX_TENT_TALK_MOTION_B, 0);
                 }
@@ -543,11 +543,11 @@ void FoxTentTalk_OnLineEnd(FoxTentTalk *talk)
             u16 given = FOX_TENT_TALK_SAFE;
             CurrentPockets_Give(&given, 0);
             line = FOX_TENT_TALK_LINE_ITEM_GIVEN;
-            talk->card_slot = FOX_TENT_TALK_CARD_DONE;
+            talk->vase_slot = FOX_TENT_TALK_VASE_DONE;
             break;
         }
         case FOX_TENT_TALK_LINE_ITEM_KEPT:
-            talk->card_slot = FOX_TENT_TALK_CARD_DONE;
+            talk->vase_slot = FOX_TENT_TALK_VASE_DONE;
             break;
         case FOX_TENT_TALK_LINE_GREETING:
             if (PlayerRecord_TestFlag(record, FOX_TENT_TALK_MEMBER_FLAG) == 0) {

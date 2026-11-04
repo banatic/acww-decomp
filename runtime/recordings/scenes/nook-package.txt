@@ -2,7 +2,7 @@
 # is not in this repository). Boot and walk: as shop-talk.txt to 3950 (Nook's greeting in the
 # store). Save: as rich with the item 0x36fc in pocket 0. A every 40 frames: Tom Nook sees the
 # item and asks for it (line 0x35 of ov050/nook_clerk_talk.c); A at 4510 agrees: he takes it and
-# gives 0x4a30 (NookClerkTalk_GivePackage); A to the end of his talk and his menu, B out of it.
+# gives 0x4a30 (NookClerkTalk_GiveNookPicture); A to the end of his talk and his menu, B out of it.
 0 - -
 900 START -
 906 - -

@@ -50,7 +50,7 @@ typedef struct FoxTentTalk {
     u32 sequence;          /* 0xb0: FOX_TENT_TALK_* , what the next talk starts with */
     struct FoxTent *owner; /* 0xb4 */
     s32 price;             /* 0xb8: the price of the item the player faces */
-    s32 card_slot;         /* 0xbc: the pocket of the item 0x34a8, -1 not looked for yet, -2 done */
+    s32 vase_slot;         /* 0xbc: the pocket of the red vase 0x34a8, -1 not looked for yet, -2 done */
     u8 declined;           /* 0xc0: the player said no to the membership once */
     u8 unk_c1[3];          /* 0xc1 */
 } FoxTentTalk;

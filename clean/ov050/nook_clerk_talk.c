@@ -183,7 +183,7 @@ extern int func_ov050_022634b4(unsigned short *p);
 #define NOOK_CLERK_ERRAND_LAST 0x1560
 #define NOOK_CLERK_ERRAND_STATE 2
 /* The uniform of the part-time job, the safe 0x36fc the player brings back from the fox (its
- * pocket in NookClerkTalk.package_slot), and Nook's picture 0x4a30 given for it. */
+ * pocket in NookClerkTalk.safe_slot), and Nook's picture 0x4a30 given for it. */
 #define NOOK_CLERK_UNIFORM 0x11a8
 #define NOOK_CLERK_SAFE 0x36fc
 #define NOOK_CLERK_NOOK_PICTURE 0x4a30
@@ -513,12 +513,12 @@ CLEAN_AS(func_ov050_022610b0, NookClerkTalk_OnAnswerSale)
 
 /* func_ov050_02261138 (the answer at line 0x35): agreed, the item 0x36fc (when its pocket was
  * found) is taken out of the pockets and shown (scene command 4); line 0x37. */
-void NookClerkTalk_OnAnswerPackage(NookClerkTalk *talk, int answer)
+void NookClerkTalk_OnAnswerSafe(NookClerkTalk *talk, int answer)
 {
     if (answer != 0) {
         return;
     }
-    int slot = talk->package_slot;
+    int slot = talk->safe_slot;
     if (slot >= 0) {
         CurrentPockets_Empty(slot);
         u16 item = NOOK_CLERK_SAFE;
@@ -526,7 +526,7 @@ void NookClerkTalk_OnAnswerPackage(NookClerkTalk *talk, int answer)
     }
     talk->line = 0x37;
 }
-CLEAN_AS(func_ov050_02261138, NookClerkTalk_OnAnswerPackage)
+CLEAN_AS(func_ov050_02261138, NookClerkTalk_OnAnswerSafe)
 
 /* func_ov050_02261174 (the answer at line 0x2e, a roof paint's price): agreed, without the
  * bells line 0x21; else line 0x22, the paint noted as bought, its price taken, the player's
@@ -699,7 +699,7 @@ void NookClerkTalk_OnPlainAnswer(NookClerkTalk *talk, int arg)
         &data_ov050_02265728, /* 0x2c: NookClerkTalk_OnAnswerEndTryOn */
         &data_ov050_02265568, /* 0x2e: NookClerkTalk_OnAnswerPaint */
         &data_ov050_02265558, /* 0x31: NookClerkTalk_OnAnswerBuy */
-        &data_ov050_02265478, /* 0x35: NookClerkTalk_OnAnswerPackage */
+        &data_ov050_02265478, /* 0x35: NookClerkTalk_OnAnswerSafe */
         &data_ov050_02265480, /* 0x40: NookClerkTalk_OnAnswerSale */
         &data_ov050_022654d0, /* 0x42: NookClerkTalk_OnAnswerPaintRow0 */
         &data_ov050_02265518, /* 0x43: NookClerkTalk_OnAnswerPaintRow0 */
@@ -858,22 +858,22 @@ void NookClerkTalk_OpenSell(NookClerkTalk *talk)
 CLEAN_AS(func_ov050_02261cb4, NookClerkTalk_OpenSell)
 
 /* func_ov050_02261cd8 (the end of line 0x36): the item 0x36fc no longer looked for. */
-void NookClerkTalk_PackageDone(NookClerkTalk *talk)
+void NookClerkTalk_SafeDone(NookClerkTalk *talk)
 {
-    talk->package_slot = -2;
+    talk->safe_slot = -2;
 }
-CLEAN_AS(func_ov050_02261cd8, NookClerkTalk_PackageDone)
+CLEAN_AS(func_ov050_02261cd8, NookClerkTalk_SafeDone)
 
 /* func_ov050_02261ce4 (the end of line 0x37): the item 0x4a30 shown (scene command 3) and given
  * to the pockets (state 0); the item 0x36fc to be looked for again; line 0x38. */
-void NookClerkTalk_GivePackage(NookClerkTalk *talk)
+void NookClerkTalk_GiveNookPicture(NookClerkTalk *talk)
 {
     ntalk_show_item(talk, NOOK_CLERK_NOOK_PICTURE, 0);
     ntalk_give(NOOK_CLERK_NOOK_PICTURE, 0);
-    talk->package_slot = -1;
+    talk->safe_slot = -1;
     talk->line = 0x38;
 }
-CLEAN_AS(func_ov050_02261ce4, NookClerkTalk_GivePackage)
+CLEAN_AS(func_ov050_02261ce4, NookClerkTalk_GiveNookPicture)
 
 /* func_ov050_02261d28 (vtable slot 0x14, a line ended): while the player is at work, to the
  * job's line ends (vtable slot 0xa8). Tom Nook's talk only takes the ends of the lines of
@@ -882,8 +882,8 @@ CLEAN_AS(func_ov050_02261ce4, NookClerkTalk_GivePackage)
 void NookClerkTalk_OnLineEnded(NookClerkTalk *talk)
 {
     static const MemberPointer *const handlers[NOOK_CLERK_LINE_ENDS] = {
-        &data_ov050_02265650, /* 0x37: NookClerkTalk_GivePackage */
-        &data_ov050_02265668, /* 0x36: NookClerkTalk_PackageDone */
+        &data_ov050_02265650, /* 0x37: NookClerkTalk_GiveNookPicture */
+        &data_ov050_02265668, /* 0x36: NookClerkTalk_SafeDone */
         &data_ov050_022656d0, /* 0x07: NookClerkTalk_OpenSell */
         &data_ov050_02265730, /* 0x13: NookClerkTalk_PaySale */
         &data_ov050_02265770, /* 0x18: NookClerkTalk_OpenOrder */
@@ -1072,11 +1072,11 @@ void NookClerkTalk_Line(NookClerkTalk *talk, NookClerkLine *out)
     int skip = 0;
     if (NookClerk_IsNook(talk->owner) != 0 && talk->mode == NOOK_CLERK_MODE_NOOK_TALKED &&
         Session_IsLinked(data_020ccf94) == 0 && *GameVariables_Slot(0, NOOK_CLERK_TALK_VARIABLE) == 0) {
-        if (talk->package_slot == -1) {
-            u16 package = NOOK_CLERK_SAFE;
-            talk->package_slot = CurrentPockets_FindItem(&package);
+        if (talk->safe_slot == -1) {
+            u16 safe = NOOK_CLERK_SAFE;
+            talk->safe_slot = CurrentPockets_FindItem(&safe);
         }
-        if (talk->package_slot >= 0) {
+        if (talk->safe_slot >= 0) {
             talk->mode = 0xe;
             skip = 1;
         }
@@ -1829,7 +1829,7 @@ void NookClerkTalk_Begin(NookClerkTalk *talk, NookClerk *owner)
     u32 code = *(const u32 *) (uintptr_t) (vtable + NOOK_CLERK_TALK_SLOT_RESET);
     ((void (*)(NookClerkTalk *))(uintptr_t) code)(talk);
     talk->owner = owner;
-    talk->package_slot = -1;
+    talk->safe_slot = -1;
 }
 CLEAN_AS(func_ov050_02263648, NookClerkTalk_Begin)
 
