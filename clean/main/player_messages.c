@@ -34,9 +34,9 @@
 /* Type 1's angle byte is in degrees plus this. */
 #define TURN_BIAS 30
 
-/* Type 2's ids: 0x12e8 and the 0x38 after it; a larger byte gives 0x12e8. */
-#define PLACE_ID_FIRST 0x12e8
-#define PLACE_IDS 0x38
+/* Type 2's fish: 0x12e8 and the 0x38 after it; a larger byte gives 0x12e8. */
+#define FISH_ITEM_FIRST 0x12e8
+#define FISH_ITEMS 0x38
 
 /* What func_020961a8 gives for a player; only the angle is read here. */
 typedef struct PlayerObject {
@@ -214,7 +214,8 @@ void PlayerMessages_Bytes(const u8 *message, int player)
 CLEAN_AS(func_02070614, PlayerMessages_Bytes)
 
 /* func_02070658: types 2 and 5, a position packed in five bytes (from the payload's second
- * byte), at the height data_020c904c. Type 2 also carries an id in its first payload byte. */
+ * byte), at the height data_020c904c: type 2 a fish put down there from the sender's pockets
+ * (its number in the first payload byte), type 5 the sender's bottle thrown at it. */
 void PlayerMessages_Place(const u8 *message, int player)
 {
     if (data_020e54a8 != 0) {
@@ -226,8 +227,8 @@ void PlayerMessages_Place(const u8 *message, int player)
     MI_CpuCopy8(message + 2, packed, PACKED_POSITION_SIZE);
     PackedBytes_UnpackPoint(packed, (u32 *) &position.x, (u32 *) &position.z);
     position.y = data_020c904c;
-    if (message[0] == PLAYER_MESSAGE_PLACE_ID) {
-        int id = message[1] < PLACE_IDS ? PLACE_ID_FIRST + message[1] : PLACE_ID_FIRST;
+    if (message[0] == PLAYER_MESSAGE_PLACE_FISH) {
+        int id = message[1] < FISH_ITEMS ? FISH_ITEM_FIRST + message[1] : FISH_ITEM_FIRST;
         PlayerFish_PlaceFromPockets(sender, id, &position);
     } else {
         ThrownBottle_SetTarget(&position, sender);

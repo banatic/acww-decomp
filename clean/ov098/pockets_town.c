@@ -203,7 +203,7 @@ CLEAN_AS(func_ov098_022a28d0, PocketsTown_ActionShowItem)
  * checked). */
 void PocketsTown_HandBottleToExchange(PocketsScreen *self)
 {
-    PocketsTown_SendPoint(self, 0, PLAYER_MESSAGE_PLACE);
+    PocketsTown_SendPoint(self, 0, PLAYER_MESSAGE_THROW_BOTTLE);
     const void *letter = (const void *) (uintptr_t) PocketsScreen_PlaceLetter(self, self->slot);
     NetSession *session = data_020ccf94;
     if (Session_IsLinked(session) == 0 || session->local_slot == 0) {
@@ -447,7 +447,7 @@ CLEAN_AS(func_ov098_022a2e9c, PocketsTown_ActionInsect)
 /* func_ov098_022a2eb4: message 2 with the point ahead and `id`. */
 void PocketsTown_SendPlaceId(PocketsScreen *self, int id)
 {
-    PocketsTown_SendPoint(self, (char) id, PLAYER_MESSAGE_PLACE_ID);
+    PocketsTown_SendPoint(self, (char) id, PLAYER_MESSAGE_PLACE_FISH);
 }
 CLEAN_AS(func_ov098_022a2eb4, PocketsTown_SendPlaceId)
 

@@ -11,10 +11,10 @@
 enum PlayerMessageType {
     PLAYER_MESSAGE_LOG_ENTRY = 0,    /* an entry for the log at data_021eed68 */
     PLAYER_MESSAGE_TURN = 1,         /* an angle for the sender's object (PlayerMessages_Turn) */
-    PLAYER_MESSAGE_PLACE_ID = 2,     /* an id at a position (PlayerMessages_Place) */
+    PLAYER_MESSAGE_PLACE_FISH = 2,   /* a fish put down from the pockets (PlayerMessages_Place) */
     PLAYER_MESSAGE_BYTES_A = 3,      /* 30 bytes for data_021f3a68 */
     PLAYER_MESSAGE_BYTES_B = 4,      /* 30 bytes for data_021f3a86 */
-    PLAYER_MESSAGE_PLACE = 5,        /* func_ov003_0222c3a8 at a position */
+    PLAYER_MESSAGE_THROW_BOTTLE = 5, /* a bottle thrown at a position (ThrownBottle_SetTarget) */
     PLAYER_MESSAGE_RECORD = 6,       /* a 0x100-byte record for data_021ee418 */
     PLAYER_MESSAGE_CLEAR_RECORD = 7, /* empty the record at data_021f36ec */
     PLAYER_MESSAGE_STORE_RECORD = 8, /* a 0x100-byte record to store; answered with 9-11 */
