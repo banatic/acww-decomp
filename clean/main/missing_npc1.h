@@ -1,4 +1,5 @@
-/* The special character of the message archive "sp_npc_missing1" (model npc_sp/model/los): a
+/* The lost child, the special character of the message archive "sp_npc_missing1" (model
+ * npc_sp/model/los): a
  * scene object of class 0x020da088 (special_scene_object.h) with vtable 0x020e7c60, 0x72c
  * bytes, made by MissingNpc1_Create (its record at data_020e7b94). While it exists,
  * data_021fbbe0 points at it.
@@ -12,7 +13,7 @@
  * town's gate (building 0x500b) or, when the middle spot of the town (middle_spot.h) is marked,
  * following the player; in scenes 0xb and 0xc following the player; in scene 0x2f it plays the
  * scripted walk of state MISSING_NPC1_SCENE_2F, at whose end the player leaves through a scene
- * exit. Each frame in scene 0 (and in scene 0xb while the player's paired town has flag 5,
+ * exit. Each frame in scene 0 (and in scene 0xb while the player escorts it to the paired town,
  * paired_town.h) its position is kept in the middle spot.
  *
  * It talks through its own scene (MissingNpc1Talk, class vtable 0x020e7bd0, at 0x658): the

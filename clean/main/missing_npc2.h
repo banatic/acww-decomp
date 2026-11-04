@@ -1,4 +1,5 @@
-/* The special character of the message archive "sp_npc_missing2" (model npc_sp/model/mum): a
+/* The lost child's mother, the special character of the message archive "sp_npc_missing2"
+ * (model npc_sp/model/mum): a
  * scene object of class 0x020da088 (special_scene_object.h) with vtable 0x020e7ea4, 0x714
  * bytes, whose talk scene (vtable 0x020e7e14) is at 0x658. While it exists, data_021fbca0
  * points at it; "sp_npc_missing1" (missing_npc1.h) sets it to its states 4 and 6 during the

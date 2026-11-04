@@ -409,7 +409,7 @@ CLEAN_AS(func_0208417c, Spawner_CheckD023)
  * console is in the session. */
 int Spawner_CheckD023In(int check_mode)
 {
-    if (PairedTown_CurrentFlaggedInLastWeek() == 0 || Spawner_PlayerInNookJob() || Spawner_ArrivalPending() ||
+    if (PairedTown_MotherDueThisWeek() == 0 || Spawner_PlayerInNookJob() || Spawner_ArrivalPending() ||
         !mode_allows(check_mode) || in_session() || Spawner_EventOn(EVENT_3D, NULL) != 0) {
         return 0;
     }
@@ -423,7 +423,7 @@ CLEAN_AS(func_02084188, Spawner_CheckD023In)
 void Spawner_UpdatePartCInSession(Spawner *self)
 {
     (void) self;
-    if (!in_session() || Spawner_PlayerInNookJob() || PairedTown_CurrentUnflaggedInLastWeek() == 0) {
+    if (!in_session() || Spawner_PlayerInNookJob() || PairedTown_ChildDueThisWeek() == 0) {
         return;
     }
     if (outdoors()) {
@@ -466,7 +466,7 @@ int Spawner_CheckD022In(int check_mode)
     if (Spawner_PlayerInNookJob() || Spawner_ArrivalPending()) {
         return 0;
     }
-    if (PairedTown_CurrentUnflaggedInLastWeek() != 0 && mode_allows(check_mode) && !in_session() &&
+    if (PairedTown_ChildDueThisWeek() != 0 && mode_allows(check_mode) && !in_session() &&
         Spawner_EventOn(EVENT_3D, NULL) == 0) {
         return code_result(0xd022);
     }

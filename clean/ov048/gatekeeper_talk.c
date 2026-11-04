@@ -628,9 +628,9 @@ CLEAN_AS(func_ov048_02260c88, GatekeeperTalk_SendStatus0)
 
 /* func_ov048_02260b64 (GATEKEEPER_TALK_WAIT_STATUS_0): the connection updated.
  * - An error (or its loss) ends the state and the local status; and when the middle spot is
- *   marked, the current player's paired town loses its flag 5.
- * - Accepted (local status 5): when the middle spot is marked, the paired town gets flag 5;
- *   then this system's block is sent to the link's members, chunk by chunk; once it all is,
+ *   marked, the current player's paired town loses its child-escorted flag.
+ * - Accepted (local status 5): when the middle spot is marked (the lost child following), the
+ *   paired town gets its child-escorted flag; then this system's block is sent to the link's members, chunk by chunk; once it all is,
  *   the session's connect mode 0, the link's kinds 0, the activity's slot this system's AID,
  *   the local status finished, the talk's mode cleared, the talk released, the state 0 and
  *   the gatekeeper's state 0xc.
@@ -646,8 +646,8 @@ void GatekeeperTalk_WaitStatus0(GatekeeperTalk *talk)
     if (GatekeeperTalk_CheckError(talk, lost)) {
         Session_FinishLocalStatus();
         if (MiddleSpot_HasMark((const MiddleSpot *) (const void *) Block021d27ac_Part0C(Block021d27ac_Get()))) {
-            if (PairedTown_Flag5(PlayerRecord_Field242C(PlayerRecords_Current()))) {
-                PairedTown_ClearFlag5(PlayerRecord_Field242C(PlayerRecords_Current()));
+            if (PairedTown_ChildEscorted(PlayerRecord_Field242C(PlayerRecords_Current()))) {
+                PairedTown_ClearChildEscorted(PlayerRecord_Field242C(PlayerRecords_Current()));
             }
         }
         return;
@@ -657,8 +657,8 @@ void GatekeeperTalk_WaitStatus0(GatekeeperTalk *talk)
     if (status == GATEKEEPER_STATUS_ACCEPTED) {
         u16 members;
         if (MiddleSpot_HasMark((const MiddleSpot *) (const void *) Block021d27ac_Part0C(Block021d27ac_Get()))) {
-            if (!PairedTown_Flag5(PlayerRecord_Field242C(PlayerRecords_Current()))) {
-                PairedTown_SetFlag5(PlayerRecord_Field242C(PlayerRecords_Current()));
+            if (!PairedTown_ChildEscorted(PlayerRecord_Field242C(PlayerRecords_Current()))) {
+                PairedTown_SetChildEscorted(PlayerRecord_Field242C(PlayerRecords_Current()));
             }
         }
         members = LinkGlobal_MemberMask();

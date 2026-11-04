@@ -19,12 +19,12 @@
  * by overlay 3's field actor when stung) and a fall (0x1a), each paid with
  * NPC_LETTERS_INSURANCE_ITEM, and the cover for forged paintings (0x18; the flag stays set),
  * which pays for those claimed in PlayerField2416.forgery_claims. Flag 0x36 asks for the
- * "sp_npc_missing" letter. */
+ * "sp_npc_missing" letter, the lost child's and its mother's thanks. */
 #define NPC_LETTERS_FLAG_INSURED 0x17
 #define NPC_LETTERS_FLAG_FORGERY_COVER 0x18
 #define NPC_LETTERS_FLAG_STING_CLAIM 0x19
 #define NPC_LETTERS_FLAG_FALL_CLAIM 0x1a
-#define NPC_LETTERS_FLAG_MISSING 0x36
+#define NPC_LETTERS_FLAG_LOST_CHILD_THANKS 0x36
 
 /* The item a sting or a fall pays; n forged paintings claimed pay item
  * NPC_LETTERS_FORGERY_ITEM_BASE + n, with n * 100 written into the letter, n at most 10. */
@@ -155,7 +155,7 @@ void NpcLetters_SendMissing(void)
     if (record == NULL) {
         return;
     }
-    if (PlayerRecord_TestFlag(record, NPC_LETTERS_FLAG_MISSING) == 0) {
+    if (PlayerRecord_TestFlag(record, NPC_LETTERS_FLAG_LOST_CHILD_THANKS) == 0) {
         return;
     }
 
@@ -175,7 +175,7 @@ void NpcLetters_SendMissing(void)
     ItemList_Destruct(&list);
 
     if (Mail_HoldAtPostOffice(&letter, 0) != 0) {
-        PlayerRecord_ClearFlag(record, NPC_LETTERS_FLAG_MISSING);
+        PlayerRecord_ClearFlag(record, NPC_LETTERS_FLAG_LOST_CHILD_THANKS);
     }
     Letter_Destruct(&letter);
 }

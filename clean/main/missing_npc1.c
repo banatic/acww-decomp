@@ -495,7 +495,7 @@ CLEAN_AS(func_020c1b84, MissingNpc1Talk_Construct)
  * 9: once there: unless the player is this system's, the message 10 of the field label until
  *    the activity's byte 0xd6 is set; then
  * 10: the scene exits: when the session's slot 0 is this system's, the current player's paired
- *    town reset when it has flag 4, flag 0x39 set, the player's paired town reset, the middle
+ *    town reset when it hosts the mother, flag 0x39 set, the player's paired town reset, the middle
  *    spot cleared and exit 1 taken; then this system's player resets its own paired town,
  *    clears the spot, sets flag 0x31 and takes exit 0, any other takes exit 1.
  * Always 1. */
@@ -602,7 +602,7 @@ int MissingNpc1_UpdateScene2F(MissingNpc1 *self)
         case 10:
             if (Session_IsLocalSlot(session, 0)) {
                 u8 *pairing = missing_npc1_pairing();
-                if (PairedTown_Flag4(pairing) == 1) {
+                if (PairedTown_HostsMother(pairing) == 1) {
                     PairedTown_Reset(pairing);
                 }
                 PlayerRecord_SetFlag(PlayerRecords_Current(), MISSING_NPC1_FLAG_39);
@@ -681,8 +681,8 @@ CLEAN_AS(func_020c2098, MissingNpc1_EnterLost)
 /* func_020c2104: following the player. With a current player:
  * - it becomes solid once in front of the gate (in the town: its tile's centre further along
  *   z than the gate's point) or, in scene 0xb, once before the centre of tile (6, 15);
- * - with the player's actor present: in the town (or in scene 0xc while the paired town lacks
- *   flag 5), while walking (motion kind 2): farther than 0x6000 from the player it is lost
+ * - with the player's actor present: in the town (or in scene 0xc while the child was not
+ *   escorted to the paired town), while walking (motion kind 2): farther than 0x6000 from the player it is lost
  *   (MISSING_NPC1_LOST); moving no more than 0x29 a frame or blocked ahead for 40 frames, it
  *   stops (MISSING_NPC1_ANIM_53); else the count starts again;
  * - farther than 0x2800 from the player it walks after it (kind 2, to the player's point),
@@ -718,8 +718,9 @@ int MissingNpc1_UpdateFollow(MissingNpc1 *self)
     }
     int distance = SceneObject_DistanceToActor((u8 *) self, MISSING_NPC1_PLAYER_ACTOR);
 
-    int checks = SceneQuery_Current() == MISSING_NPC1_SCENE_TOWN ||
-                 (SceneQuery_Current() == MISSING_NPC1_SCENE_C && PairedTown_Flag5(PlayerRecord_Field242C(record)) == 0);
+    int checks =
+        SceneQuery_Current() == MISSING_NPC1_SCENE_TOWN ||
+        (SceneQuery_Current() == MISSING_NPC1_SCENE_C && PairedTown_ChildEscorted(PlayerRecord_Field242C(record)) == 0);
     if (checks && SceneMotion_Kind(missing_npc1_motion(self)) == MISSING_NPC1_WALK_2) {
         if (distance > MISSING_NPC1_LOSE_DISTANCE) {
             MissingNpc1_SetState(self, MISSING_NPC1_LOST);
@@ -965,7 +966,7 @@ CLEAN_AS(func_020c27a8, MissingNpc1_MayAct)
 
 /* func_020c27c8 (slot 0x68): the state's update run (when it has one; its answer is the
  * result, else 0); then its position kept in the middle spot in the town, and in scene 0xb
- * while the current player's paired town has flag 5. */
+ * while the current player escorted the child to the paired town. */
 int MissingNpc1_Update(MissingNpc1 *self)
 {
     const MemberFn *update = &data_021fbbfc[self->state].update;
@@ -976,7 +977,7 @@ int MissingNpc1_Update(MissingNpc1 *self)
     if (SceneQuery_Current() == MISSING_NPC1_SCENE_TOWN) {
         MiddleSpot_SetFromPosition(missing_npc1_spot(), &self->position);
     }
-    if (SceneQuery_Current() == MISSING_NPC1_SCENE_B && PairedTown_Flag5(missing_npc1_pairing()) != 0) {
+    if (SceneQuery_Current() == MISSING_NPC1_SCENE_B && PairedTown_ChildEscorted(missing_npc1_pairing()) != 0) {
         MiddleSpot_SetFromPosition(missing_npc1_spot(), &self->position);
     }
     return result;

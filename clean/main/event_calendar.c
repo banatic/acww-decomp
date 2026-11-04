@@ -364,7 +364,7 @@ int EventCalendar_IsBlocked(const EventCalendarEntry *entry, EventKey date, cons
         } else if (EventSchedule_IsExcluded(event->id, weekday) && EventSchedule_IsExcluded(event->id, (u8) (weekday - 1))) {
             return 1;
         }
-        return PairedTown_CurrentUnflaggedInLastWeek() || PairedTown_CurrentFlaggedInLastWeek();
+        return PairedTown_ChildDueThisWeek() || PairedTown_MotherDueThisWeek();
     }
 
     /* The game tests the overlap both ways round; the two tests are the same. */
@@ -381,7 +381,7 @@ int EventCalendar_IsBlocked(const EventCalendarEntry *entry, EventKey date, cons
             return 1;
         }
     }
-    if (kind >= 2 && (PairedTown_CurrentUnflaggedInLastWeek() || PairedTown_CurrentFlaggedInLastWeek())) {
+    if (kind >= 2 && (PairedTown_ChildDueThisWeek() || PairedTown_MotherDueThisWeek())) {
         return 1;
     }
     if (kind >= 3 && WfcStats_IsInUse((const WfcStats *) data_021f3278)) {

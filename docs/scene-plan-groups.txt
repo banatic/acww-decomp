@@ -915,8 +915,8 @@ match: autoload_2/network:Wfc_FinishPost autoload_2/network:Wfc_FriendIndexOf
   main/link_scene:LinkScene_GlobalSetStateAsker main/link_scene:LinkScene_TakeLeftState
   main/middle_spot:MiddleSpot_Clear main/music_264:Music264_Reset main/music_264:MusicClock_Reset
   main/music_queue:Music_Reset main/music_volume:MusicVolume_Reset
-  main/paired_town:PairedTown_ClearFlag5 main/paired_town:PairedTown_SaveCurrent
-  main/paired_town:PairedTown_SetFlag5 main/paired_town:PairedTown_TakeOwn
+  main/paired_town:PairedTown_ClearChildEscorted main/paired_town:PairedTown_SaveCurrent
+  main/paired_town:PairedTown_SetChildEscorted main/paired_town:PairedTown_TakeOwn
   main/player_messages:PlayerMessages_Dispatch main/player_record:PlayerRecord_MailMark
   main/player_record:PlayerRecord_SetMailMark main/quick_message:QuickMessage_ResetCurrent
   main/quick_message:QuickMessage_ViewDestructDelete
@@ -1680,7 +1680,7 @@ match: autoload_2/network:Net_ClearSendQueue autoload_2/network:Wfc_CanSendToAll
   main/object_claim:ObjectClaim_HandleObjectMessage main/paired_town:PairedTown_AreFriends
   main/paired_town:PairedTown_Note main/paired_town:PairedTown_Pair
   main/paired_town:PairedTown_PairAll main/paired_town:PairedTown_PairOwn
-  main/paired_town:PairedTown_SetFlag4 main/paired_town:PairedTown_SetTown
+  main/paired_town:PairedTown_SetHostsMother main/paired_town:PairedTown_SetTown
   main/player_messages:PlayerMessages_Bytes main/player_messages:PlayerMessages_ClearRecord
   main/player_messages:PlayerMessages_Key main/player_messages:PlayerMessages_LogEntry
   main/player_messages:PlayerMessages_ModeSet main/player_messages:PlayerMessages_Nibbles

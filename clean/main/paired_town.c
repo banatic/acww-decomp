@@ -62,7 +62,7 @@ CLEAN_AS(func_020a0c18, PairedTown_AreFriends)
  * paired town (which is then noted). The partner is the first other player of the session in
  * slot order without a paired town (over the Wi-Fi Connection, a friend both ways). While game
  * variable 0x49 is 0 the pairing is made one time in 16. Each record gets the other's town and
- * PAIRED_TOWN_DAYS days, the partner's the flag when a draw of 0 or 1 gives 0 and the player's
+ * PAIRED_TOWN_DAYS days, the partner's the mother's visit when a draw of 0 or 1 gives 0 and the player's
  * when it gives 1; both pairings are noted and each goes into the exchange block its player is
  * given. */
 void PairedTown_Pair(Activity *activity, int player)
@@ -117,10 +117,10 @@ void PairedTown_Pair(Activity *activity, int player)
     }
 
     u32 draw = MainRandom_Below(2);
-    PairedTown_SetFlag4(partner_pairing, draw == 0);
+    PairedTown_SetHostsMother(partner_pairing, draw == 0);
     PairedTown_SetTown(partner_pairing, record_town(record));
     PairedTown_SetDays(partner_pairing, PAIRED_TOWN_DAYS);
-    PairedTown_SetFlag4(pairing, draw == 1);
+    PairedTown_SetHostsMother(pairing, draw == 1);
     PairedTown_SetTown(pairing, record_town(partner_record));
     PairedTown_SetDays(pairing, PAIRED_TOWN_DAYS);
     PairedTown_Note(activity, pairing);
@@ -215,7 +215,7 @@ void PairedTown_TakeOwn(void *unused)
     TownName_ToText((TownName *) (void *) PairedTown_Town(arrived), (TextBase *) &arrived_text);
     if (PairedTown_Days(arrived) != 0) {
         MI_CpuCopy8(arrived, own_pairing, PAIRED_TOWN_SIZE);
-        PairedTown_Flag4(arrived);
+        PairedTown_HostsMother(arrived);
     }
     PairedTown_Reset((u8 *) (uintptr_t) ExchangeBlock_PairedTown((ExchangeBlock *) (void *) block));
     TownNameText_Destruct((TownNameText *) &arrived_text);
@@ -240,40 +240,40 @@ static u8 *paired_town_of_state_block(void)
 }
 
 /* func_02088284 */
-void PairedTown_ClearFlag5(u8 *pairing)
+void PairedTown_ClearChildEscorted(u8 *pairing)
 {
-    pairing[PAIRED_TOWN_STATE] &= (u8) ~PAIRED_TOWN_FLAG_5;
+    pairing[PAIRED_TOWN_STATE] &= (u8) ~PAIRED_TOWN_CHILD_ESCORTED;
 }
-CLEAN_AS(func_02088284, PairedTown_ClearFlag5)
+CLEAN_AS(func_02088284, PairedTown_ClearChildEscorted)
 
 /* func_02088290 */
-void PairedTown_SetFlag5(u8 *pairing)
+void PairedTown_SetChildEscorted(u8 *pairing)
 {
-    pairing[PAIRED_TOWN_STATE] |= PAIRED_TOWN_FLAG_5;
+    pairing[PAIRED_TOWN_STATE] |= PAIRED_TOWN_CHILD_ESCORTED;
 }
-CLEAN_AS(func_02088290, PairedTown_SetFlag5)
+CLEAN_AS(func_02088290, PairedTown_SetChildEscorted)
 
 /* func_0208829c */
-int PairedTown_Flag5(u8 *pairing)
+int PairedTown_ChildEscorted(u8 *pairing)
 {
-    return (pairing[PAIRED_TOWN_STATE] & PAIRED_TOWN_FLAG_5) != 0;
+    return (pairing[PAIRED_TOWN_STATE] & PAIRED_TOWN_CHILD_ESCORTED) != 0;
 }
-CLEAN_AS(func_0208829c, PairedTown_Flag5)
+CLEAN_AS(func_0208829c, PairedTown_ChildEscorted)
 
-/* func_020882b0: the flag set from bit 0 of `flag`. */
-void PairedTown_SetFlag4(u8 *pairing, u32 flag)
+/* func_020882b0: whether the mother comes to this town, from bit 0 of `flag`. */
+void PairedTown_SetHostsMother(u8 *pairing, u32 flag)
 {
-    u8 state = pairing[PAIRED_TOWN_STATE] & (u8) ~PAIRED_TOWN_FLAG_4;
+    u8 state = pairing[PAIRED_TOWN_STATE] & (u8) ~PAIRED_TOWN_HOSTS_MOTHER;
     pairing[PAIRED_TOWN_STATE] = (u8) (state | ((flag & 1) << 4));
 }
-CLEAN_AS(func_020882b0, PairedTown_SetFlag4)
+CLEAN_AS(func_020882b0, PairedTown_SetHostsMother)
 
 /* func_020882c4 */
-int PairedTown_Flag4(u8 *pairing)
+int PairedTown_HostsMother(u8 *pairing)
 {
-    return (pairing[PAIRED_TOWN_STATE] & PAIRED_TOWN_FLAG_4) != 0;
+    return (pairing[PAIRED_TOWN_STATE] & PAIRED_TOWN_HOSTS_MOTHER) != 0;
 }
-CLEAN_AS(func_020882c4, PairedTown_Flag4)
+CLEAN_AS(func_020882c4, PairedTown_HostsMother)
 
 /* func_020882cc: the days set to the low four bits of `days`. */
 void PairedTown_SetDays(u8 *pairing, u8 days)
@@ -308,7 +308,7 @@ CLEAN_AS(func_020882ec, PairedTown_Town)
 void PairedTown_Reset(u8 *pairing)
 {
     TownName_Clear((TownName *) (void *) pairing);
-    pairing[PAIRED_TOWN_STATE] &= (u8) ~(PAIRED_TOWN_DAYS_MASK | PAIRED_TOWN_FLAG_4 | PAIRED_TOWN_FLAG_5);
+    pairing[PAIRED_TOWN_STATE] &= (u8) ~(PAIRED_TOWN_DAYS_MASK | PAIRED_TOWN_HOSTS_MOTHER | PAIRED_TOWN_CHILD_ESCORTED);
 }
 CLEAN_AS(func_020882f0, PairedTown_Reset)
 
@@ -338,31 +338,33 @@ void PairedTown_SaveCurrent(void)
 }
 CLEAN_AS(func_02088368, PairedTown_SaveCurrent)
 
-/* func_02088394: whether the current player's pairing has the flag and 1-7 days left. */
-int PairedTown_CurrentFlaggedInLastWeek(void)
+/* func_02088394: whether the lost child's mother (0xd023) is due: the current player's
+ * pairing hosts her and has 1-7 days left. */
+int PairedTown_MotherDueThisWeek(void)
 {
     u8 *record = PlayerRecords_Current();
     if (record == NULL) {
         return 0;
     }
     u8 *pairing = PlayerRecord_Field242C(record);
-    return PairedTown_Flag4(pairing) == 1 &&
+    return PairedTown_HostsMother(pairing) == 1 &&
            Math_IsBetween(PairedTown_Days(pairing), PAIRED_TOWN_WEEK_FIRST, PAIRED_TOWN_WEEK_LAST) != 0;
 }
-CLEAN_AS(func_02088394, PairedTown_CurrentFlaggedInLastWeek)
+CLEAN_AS(func_02088394, PairedTown_MotherDueThisWeek)
 
-/* func_020883cc: whether the current player's pairing lacks the flag and has 1-7 days left. */
-int PairedTown_CurrentUnflaggedInLastWeek(void)
+/* func_020883cc: whether the lost child (0xd022) is due: the current player's pairing does
+ * not host the mother and has 1-7 days left. */
+int PairedTown_ChildDueThisWeek(void)
 {
     u8 *record = PlayerRecords_Current();
     if (record == NULL) {
         return 0;
     }
     u8 *pairing = PlayerRecord_Field242C(record);
-    return PairedTown_Flag4(pairing) == 0 &&
+    return PairedTown_HostsMother(pairing) == 0 &&
            Math_IsBetween(PairedTown_Days(pairing), PAIRED_TOWN_WEEK_FIRST, PAIRED_TOWN_WEEK_LAST) != 0;
 }
-CLEAN_AS(func_020883cc, PairedTown_CurrentUnflaggedInLastWeek)
+CLEAN_AS(func_020883cc, PairedTown_ChildDueThisWeek)
 
 /* func_02088404: `days` days (1 or more) taken off the state block's pairing, which is reset
  * when none are left; then it goes back into the current player's record. */

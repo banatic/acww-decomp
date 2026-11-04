@@ -302,19 +302,20 @@ CLEAN_AS(func_ov048_02260750, Gatekeeper_MayAct)
 
 /* This town (number and name, town_name.h). */
 extern const u16 data_021dc7aa[];
-/* The current player's flag set when its paired town has the pairing's flag 5. */
-#define GATEKEEPER_FLAG_PAIRED_VISIT 0x36
+/* The current player's flag set when the lost child was escorted to its paired town: the
+ * thank-you letter (main's npc_letters.c, "sp_npc_missing") is due. */
+#define GATEKEEPER_FLAG_LOST_CHILD_THANKS 0x36
 
 /* func_ov048_02262ee8 (asked by main's activity_link_jobs.c before the scene's exit is taken):
- * when PairedTown_CurrentUnflaggedInLastWeek agrees, the current player's pairing
- * (paired_town.h) loses its flag 5 unless its town is set and is this town; then, when the
- * pairing has the flag 5, the current player's flag 0x36 is set. Whether it was. */
+ * when PairedTown_ChildDueThisWeek agrees, the current player's pairing
+ * (paired_town.h) loses its child-escorted flag unless its town is set and is this town;
+ * then, when the child was escorted, the current player's flag 0x36 is set. Whether it was. */
 int Gatekeeper_CheckPairedTown(void)
 {
     u8 *record = PlayerRecords_Current();
     u8 *pairing;
 
-    if (!PairedTown_CurrentUnflaggedInLastWeek()) {
+    if (!PairedTown_ChildDueThisWeek()) {
         return 0;
     }
     pairing = PlayerRecord_Field242C(record);
@@ -324,12 +325,12 @@ int Gatekeeper_CheckPairedTown(void)
         here = town[0] == data_021dc7aa[0] && memcmp(town + 1, data_021dc7aa + 1, 2 * TOWN_NAME_LENGTH) == 0;
     }
     if (!here) {
-        PairedTown_ClearFlag5(PlayerRecord_Field242C(PlayerRecords_Current()));
+        PairedTown_ClearChildEscorted(PlayerRecord_Field242C(PlayerRecords_Current()));
     }
-    if (!PairedTown_Flag5(pairing)) {
+    if (!PairedTown_ChildEscorted(pairing)) {
         return 0;
     }
-    PlayerRecord_SetFlag(record, GATEKEEPER_FLAG_PAIRED_VISIT);
+    PlayerRecord_SetFlag(record, GATEKEEPER_FLAG_LOST_CHILD_THANKS);
     return 1;
 }
 CLEAN_AS(func_ov048_02262ee8, Gatekeeper_CheckPairedTown)
