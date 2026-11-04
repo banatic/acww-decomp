@@ -49,7 +49,7 @@ typedef struct TownDayAcre {
 
 /* data_021c79c4: the summary of the town's inner acres (func_0204a3cc). */
 typedef struct TownDayAcres {
-    int unk_00; /* 0x00: handed to func_0204cac0 by the day's change */
+    int grade; /* 0x00: the town's grade, 0-4 (TownAcreCount_Grade; 4 a perfect town) */
     u8 unk_04[0x18 - 0x04];
     u8 unk_18[0x34 - 0x18]; /* 0x18: data_021c79dc */
     int spot_acre_x;        /* 0x34: a tile func_0204a3cc picks: its inner acre (from 0), -1 for none */

@@ -20,10 +20,11 @@
 #define TOWN_RECORD_SLOGAN_BYTES 11
 /* The last period of the day (Calendar_PeriodBOf). */
 #define TOWN_RECORD_LAST_PERIOD 0x16
-/* The town summary's answer (func_0204a3cc) whose days in a row are counted, and the count
- * TownRecord_Summary4Long asks for. */
-#define TOWN_RECORD_SUMMARY_COUNTED 4
-#define TOWN_RECORD_SUMMARY_LONG_DAYS 15
+/* The town's best grade (TownAcreCount_Grade), a perfect town, whose days in a row are
+ * counted, and the count TownRecord_PerfectLong asks for (the town hall's clerk then hands
+ * over the golden watering can, ov054 post_clerk_talk.c). */
+#define TOWN_RECORD_GRADE_PERFECT 4
+#define TOWN_RECORD_PERFECT_DAYS 15
 
 typedef struct TownRecord {
     Date today;                                 /* 0x00: the day the town was brought up to */
@@ -31,7 +32,7 @@ typedef struct TownRecord {
     Date pelican_day;                           /* 0x08: BoardNoticesState.pelican_day */
     u8 pelican_used[TOWN_RECORD_PELICAN_BYTES]; /* 0x0c: BoardNoticesState.pelican_used */
     u8 slogan_used[TOWN_RECORD_SLOGAN_BYTES];   /* 0x16: BoardNoticesState.slogan_used */
-    s8 summary_days;                            /* 0x21: days in a row the summary was 4, -1 */
+    s8 perfect_days;                            /* 0x21: days in a row the town was perfect, -1 */
     u8 events_posted;                           /* 0x22: BoardNoticesState.events_posted */
     u8 period;                                  /* 0x23: the period of the town's day */
     TownDayEvent events[TOWN_DAY_EVENTS];       /* 0x24: data_021f3a20 */
@@ -44,8 +45,8 @@ typedef struct TownRecord {
 int TownRecord_OwnFruit(const TownRecord *record);
 void TownRecord_SetPeriod(u32 period);
 u8 TownRecord_Period(void);
-void TownRecord_CountSummaryDays(TownRecord *record, int summary, int days);
-int TownRecord_Summary4Long(void);
+void TownRecord_CountPerfectDays(TownRecord *record, int summary, int days);
+int TownRecord_PerfectLong(void);
 int TownRecord_PlayerTurnLeft(TownRecord *record);
 void TownRecord_UsePlayerTurn(int record);
 int TownRecord_PlayerDay(int record, int player);

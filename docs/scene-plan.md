@@ -3140,7 +3140,7 @@ What reading the Clean code found about the groups above; counts are of function
   switched in only by the gatekeeper's talks (back to 68 in the same function or by
   GatekeeperTalk_EndSession), line 0x36 and job 0x1d's start (gate wireless), the Wi-Fi set-up
   (ended in the same function) and ov055's exchange (gate link).
-- savings-gift (0x1f): line 0x3e, whose end asks TownRecord_Summary4Long for the gift (the seed's
+- savings-gift (0x1f): line 0x3e, whose end asks TownRecord_PerfectLong for the gift (the seed's
   town is not the best, so line 0x4c and the town's environment talk follow).
 - The classifier (w45-wt5/cls/classify.py --raw): the post clerk's steps 14 and 15 are no longer
   cut as halt steps; job 0x1f's step is (premise above), and so is Session_SetReceiveBuffers'
@@ -3152,7 +3152,7 @@ What reading the Clean code found about the groups above; counts are of function
   line of her file can be shown. Of ov054 no scene now enters only steps 12, 13 and 15, her
   Other and Await states and the destructors; line 0x36 (steps 12 and 13) calls Session_Start(2,
   ...) first, which halts in the WM set-up, and of the line ends' callees only
-  TownRecord_Summary4Long was not entered before (savings-gift). No other line opens more.
+  TownRecord_PerfectLong was not entered before (savings-gift). No other line opens more.
 - Not proved: Mabel's and Nook's LinkedStand (the refused-event branch once SceneShare_IsHeld
   and SceneShare_IsOurs). SceneShare_IsHeld reads the session's record table
   (SceneShareTable_SharedRecord, Session_GetRecord), not the local entries the

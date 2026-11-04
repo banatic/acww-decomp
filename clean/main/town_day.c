@@ -498,7 +498,7 @@ void TownDay_Pass(TownDay *town, const DateTime *from, const DateTime *to, int d
             TownDay_ChangeFamilyB(town, map, wide, high);
         }
         TownAcreCount_SummarizeDay(&data_021c779c.acres, map, wide, high);
-        TownRecord_CountSummaryDays((TownRecord *) (void *) &data_021f39fc, data_021c779c.acres.unk_00, days);
+        TownRecord_CountPerfectDays((TownRecord *) (void *) &data_021f39fc, data_021c779c.acres.grade, days);
 
         int grow_days = TownDay_AtMost(days, 5);
         for (int i = 0; i < grow_days; i++) {

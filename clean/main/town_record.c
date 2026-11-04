@@ -15,7 +15,7 @@
 #include "state_block.h"
 
 static_assert(sizeof(TownRecord) == sizeof(((StateBlock *) NULL)->part_17254), "TownRecord");
-static_assert(offsetof(TownRecord, summary_days) == 0x21, "TownRecord.summary_days");
+static_assert(offsetof(TownRecord, perfect_days) == 0x21, "TownRecord.perfect_days");
 static_assert(offsetof(TownRecord, events) == 0x24, "TownRecord.events");
 static_assert(offsetof(TownRecord, player_days) == 0x58, "TownRecord.player_days");
 static_assert(offsetof(TownRecord, unk_6b) == 0x6b, "TownRecord.unk_6b");
@@ -74,27 +74,28 @@ u8 TownRecord_Period(void)
 }
 CLEAN_AS(func_0204cab4, TownRecord_Period)
 
-/* func_0204cac0: the days in a row the town's summary answered 4: after `days` more days with
- * the answer `summary` (1 when the count starts), -1 for another answer.
+/* func_0204cac0: the days in a row the town's grade (TownAcreCount_Grade) was 4, the best: a
+ * perfect town. After `days` more days with the grade `grade` (1 when the count starts), -1 for
+ * another grade.
  * QUIRK: the count is kept in a signed byte and wraps. */
-void TownRecord_CountSummaryDays(TownRecord *record, int summary, int days)
+void TownRecord_CountPerfectDays(TownRecord *record, int grade, int days)
 {
-    if (summary != TOWN_RECORD_SUMMARY_COUNTED) {
-        record->summary_days = -1;
-    } else if (record->summary_days < 0) {
-        record->summary_days = 1;
+    if (grade != TOWN_RECORD_GRADE_PERFECT) {
+        record->perfect_days = -1;
+    } else if (record->perfect_days < 0) {
+        record->perfect_days = 1;
     } else {
-        record->summary_days = (s8) (record->summary_days + days);
+        record->perfect_days = (s8) (record->perfect_days + days);
     }
 }
-CLEAN_AS(func_0204cac0, TownRecord_CountSummaryDays)
+CLEAN_AS(func_0204cac0, TownRecord_CountPerfectDays)
 
-/* func_0204cae8: whether the town's summary answered 4 for 15 days in a row or more. */
-int TownRecord_Summary4Long(void)
+/* func_0204cae8: whether the town has been perfect (grade 4) for 15 days in a row or more. */
+int TownRecord_PerfectLong(void)
 {
-    return data_021f39fc.summary_days >= TOWN_RECORD_SUMMARY_LONG_DAYS;
+    return data_021f39fc.perfect_days >= TOWN_RECORD_PERFECT_DAYS;
 }
-CLEAN_AS(func_0204cae8, TownRecord_Summary4Long)
+CLEAN_AS(func_0204cae8, TownRecord_PerfectLong)
 
 /* func_0204cafc: whether the current player's day in the record is not today (the player has
  * a turn left today; TownRecord_UsePlayerTurn uses it up). */
@@ -311,13 +312,13 @@ static void town_record_first_day(Date *day)
 }
 
 /* What TownRecord_Init and TownRecord_Start both do after the pelican day: the messages and
- * events free, the players' days and unk_54 at the first day, the summary not counted. */
+ * events free, the players' days and unk_54 at the first day, the perfect days not counted. */
 static void town_record_reset_days(TownRecord *record)
 {
     for (int i = 0; i < TOWN_RECORD_PLAYERS; i++) {
         town_record_first_day(&record->player_days[i]);
     }
-    record->summary_days = -1;
+    record->perfect_days = -1;
     town_record_first_day(&record->unk_54);
 }
 

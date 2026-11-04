@@ -117,8 +117,9 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 /* The items the scene's motions hold up: the letters taken (0x1565) and the bells (0x149b). */
 #define POST_CLERK_TALK_LETTERS_ITEM 0x1565
 #define POST_CLERK_TALK_BELLS_ITEM 0x149b
-/* The item handed over once (flag 0x20), and its motion's second value. */
-#define POST_CLERK_TALK_GIFT_ITEM 0x1379
+/* The item handed over once (flag 0x20) for a town perfect 15 days in a row: the golden
+ * watering can. And its motion's second value. */
+#define POST_CLERK_TALK_GOLDEN_CAN 0x1379
 #define POST_CLERK_TALK_MOTION_B 5
 
 /* The errand's items (PostClerkTalk_IsErrandItem) and the pockets' test argument. */
@@ -1060,8 +1061,8 @@ void PostClerkTalk_OnOwnLineEnd(PostClerkTalk *talk, int arg)
                 line = 0x4b;
                 break;
             }
-            if (TownRecord_Summary4Long() != 0 && TalkChecks_IsHostOrAlone() != 0) {
-                u16 gift = POST_CLERK_TALK_GIFT_ITEM;
+            if (TownRecord_PerfectLong() != 0 && TalkChecks_IsHostOrAlone() != 0) {
+                u16 gift = POST_CLERK_TALK_GOLDEN_CAN;
                 if (CurrentPockets_Give(&gift, 0) != 0) {
                     line = 0x4d;
                     break;
@@ -1077,7 +1078,7 @@ void PostClerkTalk_OnOwnLineEnd(PostClerkTalk *talk, int arg)
             break;
         }
         case 0x4e:
-            pct_hold_up(talk, POST_CLERK_TALK_GIFT_ITEM, 0);
+            pct_hold_up(talk, POST_CLERK_TALK_GOLDEN_CAN, 0);
             PlayerRecord_SetFlag(record, POST_CLERK_TALK_FLAG_GIFT);
             break;
         case 0x3b:

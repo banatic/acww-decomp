@@ -1,7 +1,7 @@
 # savings-gift (format: runtime/input.h), played from a town save by tools/scenes.py (the save is
 # not in this repository). As town-hall.txt to 7700 (100 bells given at 7660).
 # Save: rank-1f. A every 60 frames from 7760: line 0x3e, whose end asks the town's summary for
-# the gift (TownRecord_Summary4Long, at about 8470); the town's environment talk follows.
+# the gift (TownRecord_PerfectLong, at about 8470); the town's environment talk follows.
 0 - -
 900 START -
 906 - -

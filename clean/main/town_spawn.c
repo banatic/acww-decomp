@@ -48,7 +48,7 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 #define TOWN_SPAWN_PITFALL_SEED 0x1566
 #define TOWN_SPAWN_CODE_SPOT 0x1b
 #define TOWN_SPAWN_CODE_89 0x89
-#define TOWN_SPAWN_STATE_1A 4 /* the summary's state that may bring code 0x1a */
+#define TOWN_SPAWN_GRADE_PERFECT 4 /* the perfect town's grade, which may bring code 0x1a */
 #define TOWN_SPAWN_CODE_1A 0x1a
 #define TOWN_SPAWN_CODE_1D 0x1d
 #define TOWN_SPAWN_CODE_1F 0x1f
@@ -319,12 +319,12 @@ void TownSpawn_PutMarkedFossils(TownDay *town, AcreMap *map, int wide, int high)
 }
 CLEAN_AS(func_02048418, TownSpawn_PutMarkedFossils)
 
-/* func_02048498: the summary's spot (code 0x1b): made code 0x89 while the summary's state is
+/* func_02048498: the summary's spot (code 0x1b): made code 0x89 while the town's grade is
  * not 0; else put on an acre drawn at random when the town has none. */
 void TownSpawn_UpdateSpot(TownDay *town, AcreMap *map, int wide, int high)
 {
     const TownDayAcres *acres = &data_021c779c.acres;
-    if (acres->unk_00 != 0) {
+    if (acres->grade != 0) {
         TownSpawn_SpotTo89(town, map);
         return;
     }
@@ -355,10 +355,10 @@ int TownSpawn_PutSpot(TownDay *town, AcreMap *map, int wide, int high)
 }
 CLEAN_AS(func_0204851c, TownSpawn_PutSpot)
 
-/* func_0204855c: in the summary's state 4, one chance in two of code 0x1a. */
+/* func_0204855c: in a perfect town (grade 4), one chance in two of code 0x1a. */
 void TownSpawn_Maybe1a(TownDay *town, AcreMap *map, int wide, int high)
 {
-    if (data_021c779c.acres.unk_00 != TOWN_SPAWN_STATE_1A) {
+    if (data_021c779c.acres.grade != TOWN_SPAWN_GRADE_PERFECT) {
         return;
     }
     if (MainRandom_Below(TOWN_SPAWN_RANGE_PERCENT) < 50) {

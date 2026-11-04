@@ -470,7 +470,7 @@ int TownAcreCount_Summarize(TownDayAcres *acres, AcreMap *map)
     }
     TownAcreCount_FindWorst(worst_of(acres), &lowest, acre_record(acres, lowest.x, lowest.z));
     int grade = TownAcreCount_Grade(acres, town_bands(), wide, high);
-    acres->unk_00 = grade;
+    acres->grade = grade;
     return grade;
 }
 CLEAN_AS(func_0204a3cc, TownAcreCount_Summarize)
@@ -500,7 +500,7 @@ void TownAcreCount_SummarizeDay(TownDayAcres *acres, AcreMap *map, int wide, int
         }
     }
     TownAcreCount_FindWorst(worst_of(acres), &lowest, acre_record(acres, lowest.x, lowest.z));
-    acres->unk_00 = TownAcreCount_Grade(acres, town_bands(), wide, high);
+    acres->grade = TownAcreCount_Grade(acres, town_bands(), wide, high);
 }
 CLEAN_AS(func_0204a5d4, TownAcreCount_SummarizeDay)
 
