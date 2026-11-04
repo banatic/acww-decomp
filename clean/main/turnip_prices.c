@@ -26,10 +26,10 @@ static_assert(offsetof(TurnipPrices, pattern) == 0x18 && sizeof(TurnipPrices) ==
 
 /* The shares of the Sunday price, in 4.12 fixed point: the lowest share and the spread drawn
  * on top of it. */
-#define TURNIP_HIGH_SHARE 0x0ccd /* 0.8-1.4 */
+#define TURNIP_NORMAL_SHARE 0x0ccd /* 0.8-1.4 */
+#define TURNIP_NORMAL_SPREAD 0x09c3
+#define TURNIP_HIGH_SHARE 0x1666 /* 1.4-2.0 */
 #define TURNIP_HIGH_SPREAD 0x09c3
-#define TURNIP_MID_SHARE 0x1666 /* 1.4-2.0 */
-#define TURNIP_MID_SPREAD 0x09c3
 #define TURNIP_LOW_SHARE 0x0666 /* 0.4-0.8 */
 #define TURNIP_LOW_SPREAD 0x068f
 #define TURNIP_PEAK_SHARE 0x2000 /* 2.0-6.1 */
@@ -245,27 +245,27 @@ void TurnipPrices_Draw(TurnipPrices *prices, int falling)
     u8 *p = prices->prices;
     switch (prices->pattern) {
         case TURNIP_PATTERN_RANDOM:
-            p[2] = (u8) TurnipPrices_DrawHigh(prices);
+            p[2] = (u8) TurnipPrices_DrawNormal(prices);
             p[3] = (u8) TurnipPrices_DrawLow(prices);
             p[4] = (u8) TurnipPrices_DrawLow(prices);
             p[5] = (u8) TurnipPrices_DrawLow(prices);
-            p[6] = (u8) TurnipPrices_DrawHigh(prices);
-            p[7] = (u8) TurnipPrices_DrawHigh(prices);
-            p[8] = (u8) TurnipPrices_DrawHigh(prices);
+            p[6] = (u8) TurnipPrices_DrawNormal(prices);
+            p[7] = (u8) TurnipPrices_DrawNormal(prices);
+            p[8] = (u8) TurnipPrices_DrawNormal(prices);
             p[9] = (u8) TurnipPrices_DrawLow(prices);
             p[10] = (u8) TurnipPrices_DrawLow(prices);
-            p[11] = (u8) TurnipPrices_DrawHigh(prices);
-            p[12] = (u8) TurnipPrices_DrawHigh(prices);
-            p[13] = (u8) TurnipPrices_DrawHigh(prices);
+            p[11] = (u8) TurnipPrices_DrawNormal(prices);
+            p[12] = (u8) TurnipPrices_DrawNormal(prices);
+            p[13] = (u8) TurnipPrices_DrawNormal(prices);
             break;
         case TURNIP_PATTERN_BIG_SPIKE: {
             int peak = (int) MainRandom_Below(TURNIP_BIG_PEAK_CHOICES) + TURNIP_BIG_PEAK_FIRST;
             p[peak] = (u8) TurnipPrices_DrawPeak(prices);
             TurnipPrices_DrawFalling(prices, TURNIP_FIRST_SALE, peak - 2);
-            p[peak - 1] = (u8) TurnipPrices_DrawMid(prices);
-            p[peak + 1] = (u8) TurnipPrices_DrawMid(prices);
-            p[peak - 2] = (u8) TurnipPrices_DrawHigh(prices);
-            p[peak + 2] = (u8) TurnipPrices_DrawHigh(prices);
+            p[peak - 1] = (u8) TurnipPrices_DrawHigh(prices);
+            p[peak + 1] = (u8) TurnipPrices_DrawHigh(prices);
+            p[peak - 2] = (u8) TurnipPrices_DrawNormal(prices);
+            p[peak + 2] = (u8) TurnipPrices_DrawNormal(prices);
             TurnipPrices_DrawFalling(prices, peak + 3, TURNIP_PRICES_HALF_DAYS);
             break;
         }
@@ -299,8 +299,8 @@ void TurnipPrices_DrawSmallSpike(TurnipPrices *prices)
     u8 *p = prices->prices;
     int peak = (int) MainRandom_Below(TURNIP_SMALL_PEAK_CHOICES) + TURNIP_SMALL_PEAK_FIRST;
     TurnipPrices_DrawFalling(prices, TURNIP_FIRST_SALE, peak - 3);
-    p[peak - 3] = (u8) TurnipPrices_DrawHigh(prices);
-    p[peak - 2] = (u8) TurnipPrices_DrawHigh(prices);
+    p[peak - 3] = (u8) TurnipPrices_DrawNormal(prices);
+    p[peak - 2] = (u8) TurnipPrices_DrawNormal(prices);
     p[peak] = (u8) TurnipPrices_DrawShare(prices, TURNIP_SMALL_PEAK_SHARE, TURNIP_SMALL_PEAK_SPREAD);
     p[peak - 1] = (u8) TurnipPrices_DrawShare(prices, TURNIP_SMALL_SIDE_SHARE, TURNIP_SMALL_SIDE_SPREAD);
     p[peak + 1] = (u8) TurnipPrices_DrawShare(prices, TURNIP_SMALL_SIDE_SHARE, TURNIP_SMALL_SIDE_SPREAD);
@@ -309,18 +309,18 @@ void TurnipPrices_DrawSmallSpike(TurnipPrices *prices)
 CLEAN_AS(func_020876f0, TurnipPrices_DrawSmallSpike)
 
 /* func_02087770: 1.4-2.0 times the Sunday price. */
-int TurnipPrices_DrawMid(TurnipPrices *prices)
-{
-    return TurnipPrices_DrawShare(prices, TURNIP_MID_SHARE, TURNIP_MID_SPREAD);
-}
-CLEAN_AS(func_02087770, TurnipPrices_DrawMid)
-
-/* func_02087784: 0.8-1.4 times the Sunday price. */
 int TurnipPrices_DrawHigh(TurnipPrices *prices)
 {
     return TurnipPrices_DrawShare(prices, TURNIP_HIGH_SHARE, TURNIP_HIGH_SPREAD);
 }
-CLEAN_AS(func_02087784, TurnipPrices_DrawHigh)
+CLEAN_AS(func_02087770, TurnipPrices_DrawHigh)
+
+/* func_02087784: 0.8-1.4 times the Sunday price. */
+int TurnipPrices_DrawNormal(TurnipPrices *prices)
+{
+    return TurnipPrices_DrawShare(prices, TURNIP_NORMAL_SHARE, TURNIP_NORMAL_SPREAD);
+}
+CLEAN_AS(func_02087784, TurnipPrices_DrawNormal)
 
 /* func_02087798: 0.4-0.8 times the Sunday price. */
 int TurnipPrices_DrawLow(TurnipPrices *prices)
