@@ -65,7 +65,7 @@ enum LocalRequest {
 #define LOCAL_FLAG_MATCH_KIND_5 0x80 /* only parents whose header's kind is 5 */
 #define LOCAL_FLAG_RESETTING 0x400   /* a WM_Reset is under way */
 #define LOCAL_FLAG_BUSY 0x800        /* a request is being carried out */
-#define LOCAL_FLAG_1000 0x1000       /* cleared by LocalWireless_ResetControl */
+#define LOCAL_FLAG_MP_STARTED 0x1000 /* set when the MP communication starts; cleared by LocalWireless_ResetControl */
 
 /* The events handed to the event handler (LocalWireless_PostEvent): a kind and an AID. */
 enum LocalEventKind {
@@ -144,9 +144,9 @@ typedef struct LocalSession {
     u8 unk_97;
     u16 greeted; /* by AID: the children whose hello the parent received */
     u8 unk_9a[2];
-    u32 (*on_mp_start)(void); /* called when the MP communication starts or ends */
-    void (*on_mp_end)(void);  /* on WM's MP end indication */
-    void (*on_mp_ack)(void);  /* on WM's MP acknowledgement indication */
+    u32 (*reset_data)(void); /* called when the MP communication starts or ends */
+    void (*on_mp_end)(void); /* on WM's MP end indication */
+    void (*on_mp_ack)(void); /* on WM's MP acknowledgement indication */
     void (*unk_a8)(void);
     /* sends one of the library's messages to the AIDs of `to` (a bitmap); `on_sent` follows */
     void (*send_message)(void *buffer, u32 size, u32 to, void (*on_sent)(void *));
@@ -179,7 +179,6 @@ typedef struct LocalSession {
 #define LOCAL_FLAG_SINGLE_PACKET 0x2
 #define LOCAL_FLAG_IGNORE_FATAL 0x4
 #define LOCAL_FLAG_FORGET_PARENT 0x100
-#define LOCAL_FLAG_MP_STARTED LOCAL_FLAG_1000 /* set when the MP communication starts */
 
 /* What WM hands its callbacks first (WMCallback). */
 typedef struct LocalWmResult {

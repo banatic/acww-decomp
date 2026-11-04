@@ -686,7 +686,7 @@ int LocalRelay_Start(LocalRelayParams *params)
     }
     LocalRelay_Configure(params);
     LocalSession_Create();
-    data_ov066_0226bdf4->on_mp_start = func_ov066_0226a960;
+    data_ov066_0226bdf4->reset_data = func_ov066_0226a960;
     data_ov066_0226bdf4->on_mp_end = func_ov066_0226af3c;
     data_ov066_0226bdf4->on_mp_ack = func_ov066_0226af04;
     data_ov066_0226bdf4->send_message = func_ov066_0226ae1c;

@@ -86,7 +86,7 @@ struct LocalParentList {
     u8 unk_03;
     LocalParent *parents;
     void *alarms; /* one OSAlarm (0x2c bytes) each: the parent's expiry */
-    void (*on_added)(LocalParent *parent);
+    void (*on_changed)(LocalParent *parent);
 };
 
 /* An OSAlarm. */

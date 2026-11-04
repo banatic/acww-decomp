@@ -26,7 +26,7 @@ static_assert(offsetof(LocalSession, player_count) == 0x8c, "player count");
 static_assert(offsetof(LocalSession, allowed_channels) == 0x90, "allowed channels");
 static_assert(offsetof(LocalSession, search_turn) == 0x93, "search turn");
 static_assert(offsetof(LocalSession, greeted) == 0x98, "greeted");
-static_assert(offsetof(LocalSession, on_mp_start) == 0x9c, "MP start handler");
+static_assert(offsetof(LocalSession, reset_data) == 0x9c, "MP start handler");
 static_assert(offsetof(LocalSession, send_message) == 0xac, "message sender");
 static_assert(offsetof(LocalSession, send) == 0xb0, "data sender");
 static_assert(offsetof(LocalSession, can_send) == 0xb4, "can send");
@@ -155,7 +155,7 @@ void LocalMp_OnMp(LocalMpResult *result)
         case LOCAL_WM_STATE_MP_START:
             data_ov066_0226bdf4->flags &= ~LOCAL_SESSION_START_MP;
             data_ov066_0226bdec->flags |= LOCAL_FLAG_MP_STARTED;
-            data_ov066_0226bdf4->on_mp_start();
+            data_ov066_0226bdf4->reset_data();
             data_ov066_0226bdf4->flags &= ~LOCAL_SESSION_SEND_BUSY;
             data_ov066_0226bdf4->flags &= ~LOCAL_SESSION_SEND_AGAIN;
             if (data_ov066_0226bdf4->aid != 0) {

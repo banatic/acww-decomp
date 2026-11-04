@@ -488,7 +488,7 @@ u8 LocalSearch_ListCount(LocalParentList *list)
 CLEAN_AS(func_ov066_0226a434, LocalSearch_ListCount)
 
 /* func_ov066_0226a43c: a parent's expiry alarm: a parent still listed leaves its list, whose
- * handler (LocalParentList.on_added, also called when a parent is added) is told. */
+ * handler (LocalParentList.on_changed, also called when a parent is added) is told. */
 void LocalSearch_OnParentExpired(LocalParent *parent)
 {
     LocalParentList *list = parent->owner;
@@ -497,8 +497,8 @@ void LocalSearch_OnParentExpired(LocalParent *parent)
     }
     list->count--;
     parent->state = 0;
-    if (list->on_added != NULL) {
-        list->on_added(parent);
+    if (list->on_changed != NULL) {
+        list->on_changed(parent);
     }
 }
 CLEAN_AS(func_ov066_0226a43c, LocalSearch_OnParentExpired)
@@ -564,8 +564,8 @@ int LocalSearch_ListParent(LocalParentList *list, int lifetime, const u8 *mac, u
         OS_CancelAlarm(list_alarm(list, i));
         OS_SetAlarm(list_alarm(list, i), ms_to_ticks(lifetime), func_ov066_0226a43c, &list->parents[i]);
         OS_SetAlarmTag(list_alarm(list, i), list->tag + LOCAL_LIST_ALARM_TAG);
-        if (list->on_added != NULL) {
-            list->on_added(&list->parents[i]);
+        if (list->on_changed != NULL) {
+            list->on_changed(&list->parents[i]);
         }
         return TRUE;
     }
@@ -595,7 +595,7 @@ void LocalSearch_InitList(LocalParentList *list, u8 tag, int capacity)
     list->tag = tag;
     list->count = 0;
     list->capacity = (u8) capacity;
-    list->on_added = NULL;
+    list->on_changed = NULL;
     list->parents = LocalWireless_Alloc((int) size, 0x20);
     list->alarms = LocalWireless_Alloc(capacity * (int) sizeof(LocalAlarm), 0x20);
     MIi_CpuClearFast(0, list->parents, size);

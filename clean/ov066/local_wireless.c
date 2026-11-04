@@ -649,7 +649,7 @@ void LocalWireless_ResetControl(u8 wm_dma)
     control->on_done = NULL;
     control->on_done_argument = NULL;
     control->on_event = NULL;
-    control->flags &= ~(LOCAL_FLAG_BUSY | LOCAL_FLAG_RESETTING | LOCAL_FLAG_1000);
+    control->flags &= ~(LOCAL_FLAG_BUSY | LOCAL_FLAG_RESETTING | LOCAL_FLAG_MP_STARTED);
 }
 CLEAN_AS(func_ov066_02267530, LocalWireless_ResetControl)
 

@@ -249,7 +249,7 @@ void LocalHost_OnChildLeft(LocalParentResult *result)
     if (data_ov066_0226bdf4->flags & LOCAL_SESSION_END_MP) {
         return;
     }
-    data_ov066_0226bdf4->on_mp_start();
+    data_ov066_0226bdf4->reset_data();
     data_ov066_0226bdf4->flags &= ~LOCAL_SESSION_SEND_BUSY;
     data_ov066_0226bdf4->flags &= ~LOCAL_SESSION_SEND_AGAIN;
 }

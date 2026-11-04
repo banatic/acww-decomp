@@ -260,7 +260,7 @@ void LocalJoin_OnDisconnected(LocalConnectResult *result)
 {
     (void) result;
     data_ov066_0226bdec->state = LOCAL_STATE_WM_IDLE;
-    data_ov066_0226bdf4->on_mp_start();
+    data_ov066_0226bdf4->reset_data();
     if (data_ov066_0226bdec->flags & LOCAL_FLAG_FORGET_PARENT) {
         LocalMp_SetMember(0, NULL);
     }

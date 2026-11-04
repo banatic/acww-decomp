@@ -51,7 +51,7 @@ void LocalSession_OnRadioOn(void)
 {
     LocalSearch_SetFilter(0);
     data_ov066_0226bdf4->flags &= ~LOCAL_SESSION_END_MP;
-    data_ov066_0226bdf4->on_mp_start();
+    data_ov066_0226bdf4->reset_data();
     data_ov066_0226bdf4->flags &= ~LOCAL_SESSION_SEND_BUSY;
     data_ov066_0226bdf4->flags &= ~LOCAL_SESSION_SEND_AGAIN;
     data_ov066_0226bdf4->search_turn = 0;

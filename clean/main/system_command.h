@@ -8,8 +8,8 @@
  *
  * Two opcodes exist. Opcode 0 has an empty writer and handler (SystemCommand_WriteNothing,
  * SystemCommand_ReadNothing). Opcode 1 carries the eight entries of data_021d13e4
- * (func_0207b9d0), 19 bytes each: written by SystemCommand_WriteEntries and read back by
- * SystemCommand_ReadEntries. */
+ * (func_0207b9d0), 19 bytes each: written by SystemCommand_WriteVillagerStates and read back by
+ * SystemCommand_ReadVillagerStates. */
 #ifndef CLEAN_MAIN_SYSTEM_COMMAND_H
 #define CLEAN_MAIN_SYSTEM_COMMAND_H
 
@@ -25,9 +25,9 @@ typedef void SystemCommandWriter(int slot);
 
 void SystemCommand_RunList(u8 *list, u32 length);
 int SystemCommand_BuildList(int slot);
-void SystemCommand_ReadEntries(u8 *data, u16 length);
+void SystemCommand_ReadVillagerStates(u8 *data, u16 length);
 void SystemCommand_ReadNothing(u8 *data, u16 length);
-void SystemCommand_WriteEntries(int slot);
+void SystemCommand_WriteVillagerStates(int slot);
 void SystemCommand_WriteNothing(int slot);
 
 #endif

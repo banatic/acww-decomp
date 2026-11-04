@@ -13,24 +13,10 @@
 #define SHARE_BLOCK 4          /* Session_GetSendBlock(session, 4): where system packets are built */
 #define SYSTEM_RUN_COMMANDS 13 /* the system packet kind of a command list */
 
-#define COMMAND_ENTRIES 8     /* the entries of data_021d13e4 opcode 1 carries */
-#define COMMAND_ENTRY_SIZE 19 /* status (1), object (12), word 0x20 (4) and halfword 0x24 (2) */
-
-/* An entry of data_021d13e4 (0x2c bytes, func_0207b9d0). */
-typedef struct SystemCommandEntry {
-    u8 unk_00;
-    u8 status; /* 0x01: func_020794d4 sets it, func_020794d8 reads it */
-    u8 unk_02[2];
-    u8 object[12]; /* 0x04: an item object, func_020794d0 */
-    u8 unk_10[0x10];
-    u32 unk_20; /* 0x20 */
-    u16 unk_24; /* 0x24 */
-    u8 unk_26[6];
-} SystemCommandEntry;
-static_assert(offsetof(SystemCommandEntry, object) == 0x04, "object");
-static_assert(offsetof(SystemCommandEntry, unk_20) == 0x20, "unk_20");
-static_assert(offsetof(SystemCommandEntry, unk_24) == 0x24, "unk_24");
-static_assert(sizeof(SystemCommandEntry) == 0x2c, "size");
+/* The villagers' states (villager_state.h, the entries of data_021d13e4) opcode 1 carries, and
+ * what it carries of each: the place (1), the object (12), the room score (4) and its flags (2). */
+#define COMMAND_ENTRIES 8
+#define COMMAND_ENTRY_SIZE 19
 
 /* An item object (12 bytes): made empty by func_0209bd80 (no item 0xfff1, type 0x16 = none),
  * its item at 8 (func_0209bb70) and type at 0xa (func_0209bc40). */
@@ -112,41 +98,41 @@ int SystemCommand_BuildList(int slot)
 }
 CLEAN_AS(func_02077690, SystemCommand_BuildList)
 
-/* func_02077744: the handler of opcode 1: the eight entries of data_021d13e4 from `data`, 19
- * bytes each (written by SystemCommand_WriteEntries): the status byte, the object (of which only its type
- * and item are taken, the low bits of byte 0xb cleared), the word 0x20 and the halfword 0x24.
+/* func_02077744: the handler of opcode 1: the eight villagers' states from `data`, 19 bytes
+ * each (written by SystemCommand_WriteVillagerStates): the place, the object (of which only its
+ * type and item are taken, the low bits of byte 0xb cleared), the room score and its flags.
  * `length` is not read. */
-void SystemCommand_ReadEntries(u8 *data, u16 length)
+void SystemCommand_ReadVillagerStates(u8 *data, u16 length)
 {
     (void) length;
     SystemCommandObject object;
 
     ItemObject_Construct((ItemObject *) &object);
     for (int i = 0; i < COMMAND_ENTRIES; i++) {
-        SystemCommandEntry *entry = (SystemCommandEntry *) VillagerTown_StateAt(i);
+        VillagerState *entry = VillagerTown_StateAt(i);
         u8 status;
         u32 word;
         u16 half;
 
         MI_CpuCopy8(data, &status, 1);
-        VillagerState_SetPlace((VillagerState *) entry, status);
+        VillagerState_SetPlace(entry, status);
 
         MI_CpuCopy8(data + 1, &object, sizeof(object));
-        u8 *dst = VillagerState_Object((VillagerState *) entry);
+        u8 *dst = VillagerState_Object(entry);
         u8 type = (u8) ItemObject_Type((ItemObject *) &object);
         u16 *item = ItemObject_Item((ItemObject *) &object);
         ItemObject_Set((ItemObject *) (void *) dst, type, item, 0);
 
         MI_CpuCopy8(data + 13, &word, 4);
-        entry->unk_20 = word;
+        entry->room_score = word;
         MI_CpuCopy8(data + 17, &half, 2);
-        entry->unk_24 = half;
+        entry->room_score_flags = half;
 
         data += COMMAND_ENTRY_SIZE;
     }
     ItemObject_Destruct((ItemObject *) &object);
 }
-CLEAN_AS(func_02077744, SystemCommand_ReadEntries)
+CLEAN_AS(func_02077744, SystemCommand_ReadVillagerStates)
 
 /* func_020777ec: the handler of opcode 0; it does nothing. */
 void SystemCommand_ReadNothing(u8 *data, u16 length)
@@ -156,28 +142,28 @@ void SystemCommand_ReadNothing(u8 *data, u16 length)
 }
 CLEAN_AS(func_020777ec, SystemCommand_ReadNothing)
 
-/* func_020777f0: the writer of opcode 1: appends the eight entries of data_021d13e4 to the
- * share block, 19 bytes each: the status byte, the object, the word 0x20 and the halfword
- * 0x24. `slot` is not read.
+/* func_020777f0: the writer of opcode 1: appends the eight villagers' states to the share
+ * block, 19 bytes each: the place (3 for a missing state), the object, the room score and its
+ * flags. `slot` is not read.
  * REQUIRES: func_0207b9d0 gives an entry for every index below 8, as it does. For a missing
  * one the ROM writes status 3 and still reads the other fields through the null pointer. */
-void SystemCommand_WriteEntries(int slot)
+void SystemCommand_WriteVillagerStates(int slot)
 {
     (void) slot;
     NetSession *session = data_020ccf94;
 
     for (int i = 0; i < COMMAND_ENTRIES; i++) {
-        SystemCommandEntry *entry = (SystemCommandEntry *) VillagerTown_StateAt(i);
-        u8 status = entry != NULL ? VillagerState_LinkedPlace((const VillagerState *) entry) : 3;
+        VillagerState *entry = VillagerTown_StateAt(i);
+        u8 status = entry != NULL ? VillagerState_LinkedPlace(entry) : 3;
         Session_AppendShareData(session, &status, 1);
-        Session_AppendShareData(session, VillagerState_Object((VillagerState *) entry), sizeof(SystemCommandObject));
-        u32 word = entry->unk_20;
+        Session_AppendShareData(session, VillagerState_Object(entry), sizeof(SystemCommandObject));
+        u32 word = entry->room_score;
         Session_AppendShareData(session, &word, 4);
-        u16 half = entry->unk_24;
+        u16 half = entry->room_score_flags;
         Session_AppendShareData(session, &half, 2);
     }
 }
-CLEAN_AS(func_020777f0, SystemCommand_WriteEntries)
+CLEAN_AS(func_020777f0, SystemCommand_WriteVillagerStates)
 
 /* func_02077864: the writer of opcode 0; it appends nothing, so the list has no section 0. */
 void SystemCommand_WriteNothing(int slot)
