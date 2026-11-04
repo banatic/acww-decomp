@@ -25,9 +25,9 @@ enum BankPadKind {
     BANK_PAD_KIND_DEPOSIT = 1,      /* from the pockets to the savings */
     BANK_PAD_KIND_WITHDRAW = 2,     /* from the savings to the pockets */
     BANK_PAD_KIND_PAY = 3,          /* from the pockets */
-    BANK_PAD_KIND_NUMBER = 4,       /* a number up to 9,999,999 */
+    BANK_PAD_KIND_ASKING_PRICE = 4, /* a number up to 9,999,999: "asking price", "how much to sell for?" */
     BANK_PAD_KIND_POCKET_BELLS = 5, /* a number up to the pockets' bells */
-    BANK_PAD_KIND_SMALL_NUMBER = 6, /* a number up to 99 */
+    BANK_PAD_KIND_TURNIP_COUNT = 6, /* a number up to 99: "turnips to buy", counted in turnips */
     BANK_PAD_KINDS = 7
 };
 

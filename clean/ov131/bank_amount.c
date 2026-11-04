@@ -149,9 +149,9 @@ void BankAmount_Apply(BankAmount *self)
         case BANK_AMOUNT_MODE_WITHDRAW:
             Savings_SetBalance(savings, limit - amount);
             break;
-        case BANK_AMOUNT_MODE_NUMBER:
+        case BANK_AMOUNT_MODE_ASKING_PRICE:
         case BANK_AMOUNT_MODE_POCKET_BELLS:
-        case BANK_AMOUNT_MODE_SMALL_NUMBER:
+        case BANK_AMOUNT_MODE_TURNIP_COUNT:
             break;
         default:
             PlayerPockets_AddBells(PlayerRecord_Pockets(record), -amount, 1);
@@ -183,10 +183,10 @@ void BankAmount_SetUpRange(BankAmount *self)
     SavingsAccount *savings = PlayerRecord_Savings(record);
     int limit;
     switch (mode) {
-        case BANK_AMOUNT_MODE_NUMBER:
+        case BANK_AMOUNT_MODE_ASKING_PRICE:
             limit = 9999999;
             break;
-        case BANK_AMOUNT_MODE_SMALL_NUMBER:
+        case BANK_AMOUNT_MODE_TURNIP_COUNT:
             limit = 99;
             break;
         case BANK_AMOUNT_MODE_WITHDRAW:

@@ -28,9 +28,9 @@ enum BankAmountMode {
     BANK_AMOUNT_MODE_DEPOSIT = 0x35,      /* up to the pockets' bells and the room in the savings */
     BANK_AMOUNT_MODE_WITHDRAW = 0x36,     /* up to the savings and the room in the pockets */
     BANK_AMOUNT_MODE_PAY = 0x37,          /* up to the pockets' bells, taken from them */
-    BANK_AMOUNT_MODE_NUMBER = 0x38,       /* up to 9,999,999; nothing moved */
+    BANK_AMOUNT_MODE_ASKING_PRICE = 0x38, /* an asking price up to 9,999,999; nothing moved */
     BANK_AMOUNT_MODE_POCKET_BELLS = 0x39, /* up to the pockets' bells; nothing moved */
-    BANK_AMOUNT_MODE_SMALL_NUMBER = 0x3a  /* up to 99; nothing moved */
+    BANK_AMOUNT_MODE_TURNIP_COUNT = 0x3a  /* turnips to buy, up to 99; nothing moved */
 };
 
 /* The most bells the savings hold. */

@@ -757,13 +757,13 @@ void BankPad_Load(BankPad *pad)
     RomFile_Read(data_ov130_0229aa78[pad->layout], pad->keys_screen, sizeof(pad->keys_screen));
     DisplayLayer_LoadScreen(pad->keys_screen, pad->keys_layer, sizeof(pad->keys_screen), 0);
 
-    show_caption(pad, pad->kind == BANK_PAD_KIND_SMALL_NUMBER ? 0x51 : 0xb8, 0xec, 4);
+    show_caption(pad, pad->kind == BANK_PAD_KIND_TURNIP_COUNT ? 0x51 : 0xb8, 0xec, 4);
     int limit_message;
     switch (pad->kind) {
         case BANK_PAD_KIND_WITHDRAW:
             limit_message = 0x59;
             break;
-        case BANK_PAD_KIND_NUMBER:
+        case BANK_PAD_KIND_ASKING_PRICE:
             limit_message = 0x50;
             break;
         default:
@@ -818,7 +818,7 @@ void BankPad_Setup(BankPad *pad, u8 kind, u8 digits_layer, u8 keys_layer)
             pad->layout = BANK_PAD_LAYOUT_PAY;
             pad->picture = 2;
             break;
-        case BANK_PAD_KIND_NUMBER:
+        case BANK_PAD_KIND_ASKING_PRICE:
             pad->layout = BANK_PAD_LAYOUT_NUMBER;
             pad->picture = 3;
             break;
@@ -826,7 +826,7 @@ void BankPad_Setup(BankPad *pad, u8 kind, u8 digits_layer, u8 keys_layer)
             pad->layout = BANK_PAD_LAYOUT_PAY;
             pad->picture = 4;
             break;
-        case BANK_PAD_KIND_SMALL_NUMBER:
+        case BANK_PAD_KIND_TURNIP_COUNT:
             pad->layout = BANK_PAD_LAYOUT_SMALL;
             pad->picture = 6;
             break;
