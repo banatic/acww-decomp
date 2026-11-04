@@ -28,7 +28,7 @@ static_assert(offsetof(FieldActor, anim) == 0x2d0, "animation control");
 static_assert(offsetof(FieldActor, animation) == 0x704, "animation");
 static_assert(offsetof(FieldActor, work) == 0x7d4, "work");
 static_assert(offsetof(FieldActor, state) == 0x7f0, "state");
-static_assert(offsetof(FieldActor, next_state) == 0x7fc, "next state");
+static_assert(offsetof(FieldActor, request_priority) == 0x7fc, "request priority");
 static_assert(offsetof(FieldActor, player) == 0x800, "player");
 static_assert(offsetof(FieldActor, saved) == 0x8f0, "saved");
 static_assert(offsetof(FieldActor, unk_C84) == 0xc84, "the kept argument");
@@ -581,7 +581,7 @@ void FieldActorPlaceStates_EndOff(FieldActor *actor)
     if (!FrameCtrl_IsDone(&actor->anim)) {
         return;
     }
-    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+    actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
     if (faps_off_of(actor)->store_sun == 0) {
         FieldActor_RequestState2(actor, 0, FAPS_OFF_STATE2_PRIORITY, FAPS_NO_ARG);
         return;
@@ -744,10 +744,10 @@ void FieldActorPlaceStates_WaitProbe(FieldActor *actor)
         case PLACE_CLAIM_WAITING:
             return;
         case PLACE_CLAIM_GIVEN:
-            actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+            actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
             break;
         case PLACE_CLAIM_REFUSED:
-            actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+            actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
             FieldActorPlaceStates_RequestStay(actor, 0, FAPS_PRIORITY, FAPS_NO_ARG);
             return;
         default:
@@ -833,12 +833,12 @@ CLEAN_AS(func_ov004_0222bc24, FieldActorPlaceStates_PutProbeArgs)
 /* ---- State 8: at the place */
 
 /* func_ov004_0222bc28 (state 8's update): another console's actor follows what is reported;
- * the body; the shadow; this console's actor reads the stick. */
+ * the body; the touch pick; this console's actor reads the stick. */
 void FieldActorPlaceStates_UpdateStay(FieldActor *actor)
 {
     FieldActor_FollowReported(actor);
     FieldActor_UpdateBody(actor);
-    FieldActor_PlaceShadow(actor);
+    FieldActor_AddTouchPick(actor);
     if (faps_is_local(actor)) {
         FieldActorPlaceStates_PushStay(actor);
     }
@@ -885,11 +885,11 @@ void FieldActorPlaceStates_PushStay(FieldActor *actor)
 CLEAN_AS(func_ov004_0222bc60, FieldActorPlaceStates_PushStay)
 
 /* func_ov004_0222bcf4 (state 8's exit): in the scenes 6 to 8, leaving for state 0x0a with kind
- * 0, sound 0x4cd with the record's flag 0x249a, else 0x4cc. */
+ * 0, sound 0x4cd for a girl (FieldActor_RecordIsFemale), else 0x4cc. */
 void FieldActorPlaceStates_LeaveStay(FieldActor *actor, int next)
 {
     if (SceneKinds_CurrentIn6To8() && next == FAPS_OFF && *faps_stay_of(actor) == 0) {
-        if (FieldActor_RecordFlag249A(actor)) {
+        if (FieldActor_RecordIsFemale(actor)) {
             FieldActor_PlaySound(actor, FAPS_SOUND_LEAVE_STAY_FLAG);
         } else {
             FieldActor_PlaySound(actor, FAPS_SOUND_LEAVE_STAY);

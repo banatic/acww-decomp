@@ -594,7 +594,7 @@ typedef struct FieldActor {
     int state;
     int unk_7F4;
     int unk_7F8;
-    int next_state; /* func_02008258's entry for the state, stored before leaving it */
+    int request_priority; /* the priority a request must beat (FieldActor_StatePriority, StateEndPriority) */
     int player;
     u8 unk_804[0x80c - 0x804];
     int target;  /* a handle func_0200ff28 and func_020438dc find, -1 for none */

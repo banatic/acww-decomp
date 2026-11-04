@@ -7,7 +7,7 @@
  * exit function. Each table is a function-local static filled from constants the first time its
  * function runs (ov004/member_pointer.h).
  *
- * The word at 0x7fc (FieldActor.next_state in the overlay's header) is the priority a queued
+ * The word at 0x7fc (FieldActor.request_priority in the overlay's header) is the priority a queued
  * request must exceed to be taken: func_02008264's value for the state on entering it, and
  * func_02008258's once the state's work is done. */
 #ifndef CLEAN_MAIN_FIELD_ACTOR_PARTS_H
@@ -117,7 +117,8 @@ static inline Actor *FieldActor_Base(FieldActor *actor)
 #define FIELD_ACTOR_HEAD_WITH_FACE(actor) FIELD_ACTOR_FIELD(actor, u8, 0xc9c)
 
 /* Unnamed words. */
-#define FIELD_ACTOR_MARK(actor) FIELD_ACTOR_FIELD(actor, int, 0x6f0) /* handed with joint 1's point to func_020acbc8 */
+#define FIELD_ACTOR_SHADOW_SIZE(actor)                                                                                        \
+    FIELD_ACTOR_FIELD(actor, int, 0x6f0) /* the shadow's size under joint 1 (CharaShadow_DrawUnder) */
 #define FIELD_ACTOR_SOUND_POINT(actor)                                                                                        \
     FIELD_ACTOR_FIELD(actor, Vec3, 0x8c4)                               /* where the sound emitters play; 0 for none yet */
 #define FIELD_ACTOR_BODY_ARG(actor) FIELD_ACTOR_FIELD(actor, u8, 0x8e9) /* handed to func_02055d38 with each model */

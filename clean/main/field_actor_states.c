@@ -95,7 +95,7 @@ extern const u8 data_020c76a8[];  /* FieldActor_StopForState */
 extern const u8 data_020c773c[];  /* FieldActor_ClearPitchForState */
 extern const u8 data_020c77d0[];  /* FieldActor_ResetPitchForState */
 extern const u8 data_020c7864[];  /* FieldActor_SyncAimMode */
-extern const u8 data_020c78f8[];  /* FieldActor_SetMarkForState */
+extern const u8 data_020c78f8[];  /* FieldActor_SetShadowForState */
 extern const u8 data_020c7b48[];  /* FieldActor_StateFlagB48 */
 extern const u8 data_020c7bdc[];  /* FieldActor_StatePriority */
 extern const u8 data_020c7c70[];  /* FieldActor_StateEndPriority */
@@ -424,12 +424,13 @@ void FieldActor_RunFrame(FieldActor *actor)
 }
 CLEAN_AS(func_020058e4, FieldActor_RunFrame)
 
-/* func_020064cc: the mark (FIELD_ACTOR_MARK) for a state: 0xb33 where its byte is set, else 0. */
-void FieldActor_SetMarkForState(FieldActor *actor, u32 state)
+/* func_020064cc: the shadow's size (FIELD_ACTOR_SHADOW_SIZE) for a state: 0xb33 where its byte is set,
+ * else 0 (no shadow). */
+void FieldActor_SetShadowForState(FieldActor *actor, u32 state)
 {
-    FIELD_ACTOR_MARK(actor) = data_020c78f8[state] != 0 ? 0xb33 : 0;
+    FIELD_ACTOR_SHADOW_SIZE(actor) = data_020c78f8[state] != 0 ? 0xb33 : 0;
 }
-CLEAN_AS(func_020064cc, FieldActor_SetMarkForState)
+CLEAN_AS(func_020064cc, FieldActor_SetShadowForState)
 
 /* func_020064f0: in a state whose byte is set the aim mode is handed out (the word at
  * data_021d369c + 0xc becomes 1 for mode 1, 2 for mode 2, else 0); in the others it is taken
@@ -476,7 +477,7 @@ void FieldActor_TakeRequests(FieldActor *actor)
         if (request == NULL) {
             break;
         }
-        if (request->priority > actor->next_state) {
+        if (request->priority > actor->request_priority) {
             FieldActor_EnterState(actor, request);
         }
     }
@@ -755,7 +756,7 @@ void FieldActor_EnterState(FieldActor *actor, const StateRequest *request)
     FieldActor_StatesFlaggedB48(actor, state, previous);
     FieldActor_ClearPitchForState(actor, state);
     FieldActor_SetContact(actor, &state);
-    FieldActor_SetMarkForState(actor, (u32) state);
+    FieldActor_SetShadowForState(actor, (u32) state);
 
     NetSession *session = data_020ccf94;
     if (Session_IsSlotTaken((const NetSession *) (void *) session->slot_taken, session->local_slot)) {
@@ -769,7 +770,7 @@ void FieldActor_EnterState(FieldActor *actor, const StateRequest *request)
         }
     }
     FieldActor_CallEntry(&entry, actor, request, previous);
-    actor->next_state = FieldActor_StatePriority(actor, state);
+    actor->request_priority = FieldActor_StatePriority(actor, state);
     if (!Session_IsLocalPlayer(session, actor->player) && data_020c7e48[state] != 0) {
         FieldActor_SetFlag(actor, 0x12);
     } else {
@@ -922,7 +923,7 @@ void FieldActor_UpdateState90(FieldActor *actor)
     FieldActor_MoveWithCollision(actor);
     FieldActor_UpdateBody(actor);
     FieldActor_EnterContact(actor);
-    FieldActor_PlaceShadow(actor);
+    FieldActor_AddTouchPick(actor);
     FieldActor_EndState90(actor);
 }
 CLEAN_AS(func_02008304, FieldActor_UpdateState90)
@@ -980,7 +981,7 @@ CLEAN_AS(func_020083bc, FieldActor_UpdateState86)
 void FieldActor_EndState86(FieldActor *actor)
 {
     if (FrameCtrl_IsDone(&actor->anim)) {
-        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+        actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
         FieldActor_RequestState5(actor, 3, 5, -1);
     }
 }
@@ -1028,7 +1029,7 @@ void FieldActor_UpdateState85(FieldActor *actor)
 }
 CLEAN_AS(func_02008490, FieldActor_UpdateState85)
 
-/* func_020084ac: once the actor faces yaw 0x800 and the animation is over: after animation
+/* func_020084ac: once the actor faces yaw 0 (turning 0x800 a frame) and the animation is over: after animation
  * 0x7e comes 0x7f with sound 0x6e; after that state 0x86 is asked for and the item is no longer
  * shown (flag 0xd). */
 void FieldActor_EndState85(FieldActor *actor)
@@ -1193,7 +1194,7 @@ CLEAN_AS(func_020087a0, FieldActor_UpdateState84)
 void FieldActor_RunState84(FieldActor *actor)
 {
     if (!is_local_player(actor)) {
-        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+        actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
         return;
     }
     u8 *step = &actor->work.bytes[1];
@@ -1209,7 +1210,7 @@ void FieldActor_RunState84(FieldActor *actor)
                 actor->link->requested = 1;
                 BatteryWarning_Disable();
             } else {
-                actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+                actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
                 FieldActor_RequestState2(actor, 3, 1, -1);
             }
             break;
@@ -1224,7 +1225,7 @@ void FieldActor_RunState84(FieldActor *actor)
                                                 (TalkReceiver *) (void *) (actor != NULL ? actor->receiver : NULL));
                 FieldActor_ClearFlag(actor, 0x11);
                 EventQueue_FinishKind9();
-                actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+                actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
                 FieldActor_RequestState2(actor, 3, 1, -1);
             }
             break;
@@ -1292,7 +1293,7 @@ static void close_receiver(FieldActor *actor)
 /* The bar drops to the state's end priority. */
 static void drop_priority(FieldActor *actor)
 {
-    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+    actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
 }
 
 /* a - b and a + b, wrapping as the ARM does. */
@@ -2006,13 +2007,13 @@ CLEAN_AS(func_020095f0, FieldActor_SetArgs70)
 typedef struct State6FWork {
     Vec3 point;
     fx32 speed;
-    fx32 accel;
+    fx32 max_speed;
     int previous; /* the state the actor came from */
 } State6FWork;
 
 typedef struct State6FArgs {
     Vec3 point;
-    fx32 accel;
+    fx32 max_speed;
 } State6FArgs;
 
 static_assert(sizeof(State6FWork) <= sizeof(FieldActorWork), "state 0x6f work");
@@ -2129,15 +2130,15 @@ CLEAN_AS(func_02009728, FieldActor_AnimateState6F)
  * 4 x speed (at least 1.0) of the point, at a speed of 0x333 or less, the actor is moved
  * towards it (FieldActor_EaseValue on X and Z): when it gets there the speed is 0 and the result 1;
  * else the speed becomes the distance moved and the actor goes back to where it was. Nearer at
- * a higher speed the speed falls (FieldActor_Slow, 819); farther it rises (FieldActor_SpeedUp, the
- * acceleration). While the speed is not 0 the body turns towards the point (FieldActor_TurnAngleStep);
+ * a higher speed the speed falls (FieldActor_Slow, 819); farther it rises (FieldActor_SpeedUp: 0x93 a
+ * frame, up to the top speed). While the speed is not 0 the body turns towards the point (FieldActor_TurnAngleStep);
  * the step taken (FieldActor_SetSpeed) is the speed times the cosine of the angle between the body
  * and the point, made positive. */
 int FieldActor_MoveState6F(FieldActor *actor)
 {
     State6FWork *work = state6f_work(actor);
     fx32 *speed = &work->speed;
-    fx32 accel = work->accel;
+    fx32 max_speed = work->max_speed;
     int arrived = 0;
     Vec3 start = actor->position;
 
@@ -2167,7 +2168,7 @@ int FieldActor_MoveState6F(FieldActor *actor)
             *speed = FieldActor_Slow(*speed, 819);
         }
     } else {
-        *speed = FieldActor_SpeedUp(*speed, accel);
+        *speed = FieldActor_SpeedUp(*speed, max_speed);
     }
 
     s16 toward = Math_Atan2(to.x, to.z);
@@ -2194,21 +2195,22 @@ void FieldActor_State6FMessage(FieldActor *actor, int arg)
 }
 CLEAN_AS(func_02009914, FieldActor_State6FMessage)
 
-/* func_02009918: state 0x6f's entry: animation 1, the request's point and acceleration into the
+/* func_02009918: state 0x6f's entry: animation 1, the request's point and top speed into the
  * work with speed 0 and the state before, flag 5, and the word at 0x808 cleared. In scene 0xc,
- * for this console's actor with FieldActor_LinkedNotPlayer0 and an acceleration of 0x666, flags 1 and 2 of
+ * for this console's actor with FieldActor_LinkedNotPlayer0 and a top speed of 0x666, flags 1 and 2 of
  * func_0209626c are cleared and today's date (yesterday's unless flag 0 is set) goes into the
  * player's record (func_02099794) packed as year (7 bits), month (4 bits) and day (5 bits). */
 void FieldActor_EnterState6F(FieldActor *actor, const StateRequest *request, int previous)
 {
     const State6FArgs *args = (const State6FArgs *) request->payload;
     FieldActor_PlayAnimationLoop(actor, 1, 3, 0);
-    fx32 accel = args->accel;
-    FieldActor_SetWork6F(state6f_work(actor), args->point, accel, previous);
+    fx32 max_speed = args->max_speed;
+    FieldActor_SetWork6F(state6f_work(actor), args->point, max_speed, previous);
     FieldActor_SetFlag(actor, 5);
     FIELD_ACTOR_FIELD(actor, int, 0x808) = 0;
 
-    if (FieldActor_LinkedNotPlayer0(actor) != 0 && is_local_player(actor) && SceneQuery_Current() == 0xc && accel == 0x666) {
+    if (FieldActor_LinkedNotPlayer0(actor) != 0 && is_local_player(actor) && SceneQuery_Current() == 0xc &&
+        max_speed == 0x666) {
         DateTime now = {0};
         DateTime_Now(&now);
         *SessionPlayers_SunFlags() &= 0xf9;
@@ -2221,20 +2223,20 @@ void FieldActor_EnterState6F(FieldActor *actor, const StateRequest *request, int
 }
 CLEAN_AS(func_02009918, FieldActor_EnterState6F)
 
-/* func_02009a24: state 0x6f's work from a point, an acceleration and the state before. */
-void FieldActor_SetWork6F(State6FWork *work, Vec3 point, int accel, int previous)
+/* func_02009a24: state 0x6f's work from a point, a top speed and the state before. */
+void FieldActor_SetWork6F(State6FWork *work, Vec3 point, int max_speed, int previous)
 {
     work->point = point;
     work->speed = 0;
-    work->accel = accel;
+    work->max_speed = max_speed;
     work->previous = previous;
 }
 CLEAN_AS(func_02009a24, FieldActor_SetWork6F)
 
-/* func_02009a44: asks for state 0x6f with a point and an acceleration, unless the actor is
+/* func_02009a44: asks for state 0x6f with a point and a top speed, unless the actor is
  * already in it; whether it was queued.
  * BUG: as in request_state, the request's unset bytes are the stack's. */
-int FieldActor_RequestState6F(FieldActor *actor, const Vec3 *point, int accel, int priority, s16 arg)
+int FieldActor_RequestState6F(FieldActor *actor, const Vec3 *point, int max_speed, int priority, s16 arg)
 {
     if (actor->state == 0x6f) {
         return 0;
@@ -2245,18 +2247,18 @@ int FieldActor_RequestState6F(FieldActor *actor, const Vec3 *point, int accel, i
 #endif
     StateRequest_Construct(&request);
     StateRequest_Set(&request, 0x6f, priority, arg);
-    FieldActor_SetArgs6F((State6FArgs *) request.payload, *point, accel);
+    FieldActor_SetArgs6F((State6FArgs *) request.payload, *point, max_speed);
     int queued = FieldActor_QueueRequest(actor, &request);
     StateRequest_Destruct(&request);
     return queued;
 }
 CLEAN_AS(func_02009a44, FieldActor_RequestState6F)
 
-/* func_02009a9c: state 0x6f's point and acceleration into a request's payload. */
-void FieldActor_SetArgs6F(State6FArgs *args, Vec3 point, int accel)
+/* func_02009a9c: state 0x6f's point and top speed into a request's payload. */
+void FieldActor_SetArgs6F(State6FArgs *args, Vec3 point, int max_speed)
 {
     args->point = point;
-    args->accel = accel;
+    args->max_speed = max_speed;
 }
 CLEAN_AS(func_02009a9c, FieldActor_SetArgs6F)
 
@@ -2621,7 +2623,7 @@ void FieldActor_EndState32(FieldActor *actor)
             FieldActor_RequestState33(actor, 6, -1);
         }
     } else {
-        actor->next_state = 0;
+        actor->request_priority = 0;
         if (actor->unk_098 == 0) {
             FieldActor_RequestState10(actor, 3, 5, -1);
         }
@@ -3396,7 +3398,7 @@ void FieldActor_UpdateState19(FieldActor *actor)
     FieldActor_SoundState19(actor);
     if (is_local_player(actor)) {
         FieldActor_EnterContact(actor);
-        FieldActor_PlaceShadow(actor);
+        FieldActor_AddTouchPick(actor);
         FieldActor_ScaleState19(actor);
         FieldActor_RunState19(actor, &work->step, work->flag);
     } else {
@@ -5068,7 +5070,7 @@ void FieldActor_UpdateState4(FieldActor *actor)
     FieldActor_UpdateBody(actor);
     FieldActor_MoveWithCollision(actor);
     FieldActor_EnterContact(actor);
-    FieldActor_PlaceShadow(actor);
+    FieldActor_AddTouchPick(actor);
     FieldActor_EndState4(actor);
 }
 CLEAN_AS(func_0200c9ec, FieldActor_UpdateState4)
@@ -5083,7 +5085,7 @@ void FieldActor_EndState4(FieldActor *actor)
     if (FieldActor_Base(actor)->speed > 0) {
         return;
     }
-    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+    actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
     FieldActor_RequestState2(actor, 3, 1, -1);
 }
 CLEAN_AS(func_0200ca18, FieldActor_EndState4)
@@ -5228,7 +5230,7 @@ void FieldActor_UpdateState3(FieldActor *actor)
         FieldActor_LeanState3(actor);
         FieldActor_MoveWithCollision(actor);
         FieldActor_EnterContact(actor);
-        FieldActor_PlaceShadow(actor);
+        FieldActor_AddTouchPick(actor);
         FieldActor_RunState3(actor, &heading);
     } else {
         u8 stopped = (u8) FieldActor_FollowState3(actor);
@@ -5252,25 +5254,24 @@ void FieldActor_EndState3(FieldActor *actor, const u8 *stopped)
 CLEAN_AS(func_0200cccc, FieldActor_EndState3)
 
 /* func_0200cce8: what follows for this console's actor; FieldActor_TryAct's answer.
- * Outdoors, at full speed with the counter at 0x8e8 run out, state 0x71 is asked for
- * (priority 6; its result is the answer) unless func_020644cc(0x17a) is set or, when
- * the player's luck (PlayerRecord_Luck) is not bad (2), the item FieldActor_RecordHeadItem
- * gives is not 0x13c3.
+ * Outdoors, at full speed with the counter at 0x8e8 run out, the actor may trip and fall: state
+ * 0x71 is asked for (priority 6; its result is the answer) one time in 0x17a, but only with bad
+ * luck (PlayerRecord_Luck 2) or the head item FieldActor_RecordHeadItem gives 0x13c3.
  * Otherwise: with no speed left state 2 is asked for (3 frames, priority 1); while running with
  * a push whose yaw is more than 0x3a4c from the heading at the frame's start, state 4 with that
  * yaw (priority 3). */
 int FieldActor_RunState3(FieldActor *actor, const s16 *heading)
 {
     if (data_020e54a8 == 0 && actor->unk_8E8 == 0 && FieldActor_Base(actor)->speed == SPEED_MAX) {
-        BOOL may_dash = 1;
+        BOOL may_trip = 1;
         if (PlayerRecord_Luck(PlayerRecords_Current()) != 2) {
             u16 item;
             FieldActor_RecordHeadItem(&item, actor);
             if (item != 0x13c3) {
-                may_dash = 0;
+                may_trip = 0;
             }
         }
-        if (may_dash && MainRandom_Below(0x17a) == 0) {
+        if (may_trip && MainRandom_Below(0x17a) == 0) {
             return FieldActor_RequestState71(actor, 6, -1);
         }
     }
@@ -5530,13 +5531,13 @@ void FieldActor_UpdateState2(FieldActor *actor)
         FieldActor_MoveWithCollision(actor);
         FieldActor_UpdateBody(actor);
         FieldActor_EnterContact(actor);
-        FieldActor_PlaceShadow(actor);
+        FieldActor_AddTouchPick(actor);
         FieldActor_RunState2(actor);
     } else {
         u8 moved = (u8) FieldActor_FollowState2(actor);
         FieldActor_UpdateBody(actor);
         FieldActor_RunChecksAside(actor);
-        FieldActor_PlaceShadow(actor);
+        FieldActor_AddTouchPick(actor);
         FieldActor_EndState2(actor, &moved);
     }
     state2_work(actor)->after_turn = 0;
@@ -5813,7 +5814,7 @@ void FieldActor_StartState0(FieldActor *actor, const int *prepared)
     if (*prepared == 0) {
         return;
     }
-    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+    actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
     int start = state0_work(actor)->start_state;
     if (data_020e54a8 == 0 && start != 1 && is_local_player(actor) &&
         CollisionQuery_GroundY(&actor->position, NULL, 0x19) >= 0x800) {
@@ -6086,7 +6087,7 @@ int FieldActor_QueuePriorityAbove(FieldActor *actor)
     if (index >= 0) {
         best = FieldActor_QueueEntry(actor, index)->priority;
     }
-    int own = actor->next_state + 1;
+    int own = actor->request_priority + 1;
     return own > best ? own : best;
 }
 CLEAN_AS(func_0200e7f8, FieldActor_QueuePriorityAbove)
@@ -6101,7 +6102,7 @@ int FieldActor_QueuePriority(FieldActor *actor)
     if (index >= 0) {
         best = FieldActor_QueueEntry(actor, index)->priority;
     }
-    int own = actor->next_state;
+    int own = actor->request_priority;
     return own > best ? own : best;
 }
 CLEAN_AS(func_0200e828, FieldActor_QueuePriority)

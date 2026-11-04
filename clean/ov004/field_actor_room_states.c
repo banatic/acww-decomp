@@ -44,7 +44,7 @@ static_assert(offsetof(FieldActor, anim.end) == 0x2d4, "animation length");
 static_assert(offsetof(FieldActor, anim.frame) == 0x2d8, "animation frame");
 static_assert(offsetof(FieldActor, effect_point) == 0x6e0, "effect point");
 static_assert(offsetof(FieldActor, state) == 0x7f0, "state");
-static_assert(offsetof(FieldActor, next_state) == 0x7fc, "next state");
+static_assert(offsetof(FieldActor, request_priority) == 0x7fc, "request priority");
 static_assert(sizeof(FieldActorHairWork) <= sizeof(FieldActorWork), "the hair states' work");
 static_assert(sizeof(Vec3) <= sizeof(FieldActorWork), "state 0x7d's work");
 
@@ -186,7 +186,7 @@ int FieldActorRoomStates_EndFadeIn(FieldActor *actor)
         return 0;
     }
     FieldActor_NudgeOne(actor);
-    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+    actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
     FieldActor_RequestState2(actor, FARS_END_STATE2_ARG, FARS_END_PRIORITY, FARS_NO_ARG);
     if (!fars_is_local(actor)) {
         return 0;
@@ -537,7 +537,7 @@ CLEAN_AS(func_ov004_02226d4c, FieldActorRoomStates_UpdateHangUp)
 void FieldActorRoomStates_EndHangUp(FieldActor *actor)
 {
     if (FrameCtrl_IsDone(&actor->anim)) {
-        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+        actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
         FieldActor_RequestState2(actor, FARS_END_STATE2_ARG, FARS_END_PRIORITY, FARS_NO_ARG);
     }
 }
@@ -706,7 +706,7 @@ static_assert(offsetof(FieldActorItemOutArgs, second) == 0x0c, "second");
 /* The refusal's talk: the receiver's byte 0x1e, and the walk back (state 0x6f) at 0x333,
  * priority 5. */
 #define FARS_TALK_KIND 0x15
-#define FARS_WALK_BACK_ACCEL 0x333
+#define FARS_WALK_BACK_SPEED 0x333
 #define FARS_WALK_BACK_PRIORITY 5
 
 /* States 0x36 and 0x37: the scene with their sounds, the sounds, the frame of 0x63; state 0x10
@@ -800,7 +800,7 @@ static void fars_play_backwards(FieldActor *actor)
 /* The state's bar for requests at its end value, and state 0x10 asked for (3, priority 5). */
 static void fars_end_item(FieldActor *actor)
 {
-    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+    actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
     FieldActor_RequestState10(actor, FARS_ITEM_END_FRAMES, FARS_ITEM_END_PRIORITY, FARS_NO_ARG);
 }
 
@@ -854,7 +854,7 @@ int FieldActorRoomStates_EndFadeIn43(FieldActor *actor)
         return 0;
     }
     FieldActor_NudgeOne(actor);
-    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+    actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
     FieldActor_RequestState2(actor, FARS_END_STATE2_ARG, FARS_END_PRIORITY, FARS_NO_ARG);
     if (!fars_is_local(actor)) {
         return 0;
@@ -1147,8 +1147,8 @@ void FieldActorRoomStates_RunExitWalk(FieldActor *actor)
                 Vec3 tile = *(const Vec3 *) (uintptr_t) SceneClaimExit_NextTile(claim);
                 SceneObjectBase_ReleaseReceiver((SceneObjectBase *) (void *) actor, (TalkReceiver *) (void *) actor->receiver);
                 FieldActor_ClearFlag(actor, FARS_FLAG_TALK);
-                actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
-                FieldActor_RequestState6F(actor, &tile, FARS_WALK_BACK_ACCEL, FARS_WALK_BACK_PRIORITY, FARS_NO_ARG);
+                actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
+                FieldActor_RequestState6F(actor, &tile, FARS_WALK_BACK_SPEED, FARS_WALK_BACK_PRIORITY, FARS_NO_ARG);
             }
             break;
         default:
@@ -1501,7 +1501,7 @@ void FieldActorRoomStates_EndChestClose(FieldActor *actor)
     if (fars_is_local(actor)) {
         return;
     }
-    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+    actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
 }
 CLEAN_AS(func_ov004_0222818c, FieldActorRoomStates_EndChestClose)
 
@@ -1908,7 +1908,7 @@ CLEAN_AS(func_ov004_02228690, FieldActorRoomStates_UpdateSpotStepOff)
 void FieldActorRoomStates_EndSpotStepOff(FieldActor *actor)
 {
     if (FrameCtrl_IsDone(&actor->anim)) {
-        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+        actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
         FieldActor_RequestState2(actor, FARS_STEP_OFF_STATE2_ARG, FARS_END_PRIORITY, FARS_NO_ARG);
     }
 }
@@ -2029,10 +2029,10 @@ void FieldActorRoomStates_RunSpotClaim(FieldActor *actor)
         case PLACE_CLAIM_WAITING:
             return;
         case PLACE_CLAIM_GIVEN:
-            actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+            actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
             break;
         case PLACE_CLAIM_REFUSED:
-            actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+            actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
             FieldActorRoomStates_RequestSpotStay(actor, FARS_SPOT_STAY_REFUSED, FARS_PRIORITY, FARS_NO_ARG);
             return;
         default:
@@ -2250,7 +2250,7 @@ CLEAN_AS(func_ov004_02228be0, FieldActorRoomStates_RequestSpotTurnMinus)
 /* ---- State 0x28, at the spot */
 
 /* func_ov004_02228c18 (state 0x28's update): in a room the object at the actor's position plays
- * its sound 0; the body (on the music's beat), the shadow; this console's actor may leave the
+ * its sound 0; the body (on the music's beat), the touch pick; this console's actor may leave the
  * spot, another console's has the state's bar for requests at its end value. */
 void FieldActorRoomStates_UpdateSpotStay(FieldActor *actor)
 {
@@ -2258,11 +2258,11 @@ void FieldActorRoomStates_UpdateSpotStay(FieldActor *actor)
         RoomPointSound_Play0(&actor->position);
     }
     FieldActorRoomStates_BeatSpotStay(actor);
-    FieldActor_PlaceShadow(actor);
+    FieldActor_AddTouchPick(actor);
     if (fars_is_local(actor)) {
         FieldActorRoomStates_TryLeaveSpotStay(actor);
     } else {
-        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+        actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
     }
 }
 CLEAN_AS(func_ov004_02228c18, FieldActorRoomStates_UpdateSpotStay)
@@ -2833,14 +2833,14 @@ CLEAN_AS(func_ov004_02229510, FieldActorRoomStates_UpdateSpotApproach)
 void FieldActorRoomStates_RunSpotApproach(FieldActor *actor)
 {
     if (!fars_is_local(actor)) {
-        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+        actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
         return;
     }
     switch (PlaceClaim_Answer()) {
         case PLACE_CLAIM_WAITING:
             return;
         case PLACE_CLAIM_REFUSED:
-            actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+            actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
             FieldActor_RequestState2(actor, FARS_END_STATE2_ARG, FARS_END_PRIORITY, FARS_NO_ARG);
             return;
         default:
@@ -3022,7 +3022,7 @@ static void fars_end_object_step(FieldActor *actor)
     if (!FrameCtrl_IsDone(&actor->anim)) {
         return;
     }
-    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+    actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
     if (FIELD_ACTOR_HOLD(actor) != 0) {
         FieldActorRoomStates2_RequestFurnitureHold(actor, 1, 0, FARS_HOLD_PRIORITY, FARS_NO_ARG);
     } else {
@@ -3042,7 +3042,7 @@ static void fars_run_object_move(FieldActor *actor, int pull)
         return;
     }
     if (!fars_is_local(actor)) {
-        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+        actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
         return;
     }
     u8 refused = 0;
@@ -3074,18 +3074,18 @@ static void fars_run_object_move(FieldActor *actor, int pull)
     if ((int) FieldActor_Push(actor) > 0 && pushed_to == (pull ? FARS_PULL_BACK : FARS_PUSH_AHEAD)) {
         return;
     }
-    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+    actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
     FieldActorRoomStates2_RequestFurnitureHold(actor, 0, 1, FARS_HOLD_PRIORITY, FARS_NO_ARG);
 }
 
-/* func_ov004_022297d8 (state 0x23's update): the body, the move, the contact bodies, the shadow
+/* func_ov004_022297d8 (state 0x23's update): the body, the move, the contact bodies, the touch pick
  * and the end of the animation. */
 void FieldActorRoomStates_UpdatePullStep(FieldActor *actor)
 {
     FieldActor_UpdateBody(actor);
     FieldActorRoomStates_MovePullStep(actor);
     FieldActor_EnterContact(actor);
-    FieldActor_PlaceShadow(actor);
+    FieldActor_AddTouchPick(actor);
     FieldActorRoomStates_EndPullStep(actor);
 }
 CLEAN_AS(func_ov004_022297d8, FieldActorRoomStates_UpdatePullStep)
@@ -3164,13 +3164,13 @@ int FieldActorRoomStates_RequestPullStep(FieldActor *actor, int priority, int ar
 }
 CLEAN_AS(func_ov004_02229928, FieldActorRoomStates_RequestPullStep)
 
-/* func_ov004_02229960 (state 0x22's update): the body, the contact bodies, the shadow and the
+/* func_ov004_02229960 (state 0x22's update): the body, the contact bodies, the touch pick and the
  * end of the animation. */
 void FieldActorRoomStates_UpdatePushStep(FieldActor *actor)
 {
     FieldActor_UpdateBody(actor);
     FieldActor_EnterContact(actor);
-    FieldActor_PlaceShadow(actor);
+    FieldActor_AddTouchPick(actor);
     FieldActorRoomStates_EndPushStep(actor);
 }
 CLEAN_AS(func_ov004_02229960, FieldActorRoomStates_UpdatePushStep)
@@ -3228,13 +3228,13 @@ int FieldActorRoomStates_RequestPushStep(FieldActor *actor, int priority, int ar
 CLEAN_AS(func_ov004_02229a44, FieldActorRoomStates_RequestPushStep)
 
 /* func_ov004_02229a7c (state 0x21's update): the body, the move with the walls, the contact
- * bodies, the shadow and the pull. */
+ * bodies, the touch pick and the pull. */
 void FieldActorRoomStates_UpdatePull(FieldActor *actor)
 {
     FieldActor_UpdateBody(actor);
     FieldActor_MoveWithCollision(actor);
     FieldActor_EnterContact(actor);
-    FieldActor_PlaceShadow(actor);
+    FieldActor_AddTouchPick(actor);
     FieldActorRoomStates_RunPull(actor);
 }
 CLEAN_AS(func_ov004_02229a7c, FieldActorRoomStates_UpdatePull)
@@ -3274,13 +3274,13 @@ int FieldActorRoomStates_RequestPull(FieldActor *actor, int priority, int arg)
 CLEAN_AS(func_ov004_02229bb4, FieldActorRoomStates_RequestPull)
 
 /* func_ov004_02229bec (state 0x20's update): the body, the move with the walls, the contact
- * bodies, the shadow and the push. */
+ * bodies, the touch pick and the push. */
 void FieldActorRoomStates_UpdatePush(FieldActor *actor)
 {
     FieldActor_UpdateBody(actor);
     FieldActor_MoveWithCollision(actor);
     FieldActor_EnterContact(actor);
-    FieldActor_PlaceShadow(actor);
+    FieldActor_AddTouchPick(actor);
     FieldActorRoomStates_RunPush(actor);
 }
 CLEAN_AS(func_ov004_02229bec, FieldActorRoomStates_UpdatePush)

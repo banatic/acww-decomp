@@ -115,7 +115,7 @@ CLEAN_AS(func_0200545c, FieldActor_ModelY)
  * body is updated; the matrices of joints 0xf, 0xe and 0xb are kept, and the points of joints 7,
  * 4 and 0x10 on the curved ground. The models at 0x38c, 0x464 and 0x500 take joint 0xf's matrix
  * (the second unless the part at 0x428 gives 0x9e or more, the third unless the part at 0x59c
- * gives 0x4b). With a mark (FieldActor_SetMarkForState) joint 1's point goes to func_020acbc8.
+ * gives 0x4b). With a shadow size (FieldActor_SetShadowForState) a shadow is drawn under joint 1's point.
  * With flag 0 the held item is placed in the hand (joint 0xe) and its matrices are kept: one
  * for the tool's mode (2 for tools 4 and 10, 1 for 1, 5 and 9, else 0), and for tool 4 also
  * the one of mode 3. */
@@ -155,12 +155,12 @@ void FieldActor_PlaceModel(FieldActor *actor)
         ModelObject_Draw((ModelObject *) (void *) at(actor, FIELD_ACTOR_MODEL_C), NULL);
     }
 
-    if (FIELD_ACTOR_MARK(actor) > 0) {
+    if (FIELD_ACTOR_SHADOW_SIZE(actor) > 0) {
         Vec3 ground;
         ModelObject_JointMatrix((ModelObject *) (void *) body, &joint, 1);
         point = translation_of(&joint);
         Globe_Unbend(&ground, &point);
-        CharaShadow_DrawUnder(&ground, FIELD_ACTOR_MARK(actor));
+        CharaShadow_DrawUnder(&ground, FIELD_ACTOR_SHADOW_SIZE(actor));
     }
 
     if (FieldActor_TestFlag(actor, 0)) {

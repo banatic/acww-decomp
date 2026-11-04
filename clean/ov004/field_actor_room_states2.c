@@ -42,7 +42,7 @@ static_assert(offsetof(FieldActor, held) == 0x5a0, "held item");
 static_assert(offsetof(FieldActor, animation) == 0x704, "animation");
 static_assert(offsetof(FieldActor, work) == 0x7d4, "work");
 static_assert(offsetof(FieldActor, state) == 0x7f0, "state");
-static_assert(offsetof(FieldActor, next_state) == 0x7fc, "next state");
+static_assert(offsetof(FieldActor, request_priority) == 0x7fc, "request priority");
 static_assert(offsetof(FieldActor, player) == 0x800, "player");
 static_assert(offsetof(FieldActor, unk_810) == 0x810, "tile request");
 static_assert(offsetof(FieldActor, unk_818) == 0x818, "verdict");
@@ -72,7 +72,7 @@ static_assert(sizeof(FieldActorFurnitureReachWork) <= sizeof(((StateRequest *) 0
 #define FARS2_FURNITURE_REACH 0x1d
 #define FARS2_FURNITURE_HOLD 0x1e
 #define FARS2_FURNITURE_TURN 0x1f
-#define FARS2_STATE_20 0x20
+#define FARS2_FURNITURE_PUSH 0x20
 
 #define FARS2_PRIORITY 6
 #define FARS2_FURNITURE_PRIORITY 5
@@ -90,7 +90,7 @@ static_assert(sizeof(FieldActorFurnitureReachWork) <= sizeof(((StateRequest *) 0
 #define FARS2_ANIM_FURNITURE 0x1a
 #define FARS2_ANIM_TURN_PLUS 0x1b
 #define FARS2_ANIM_TURN_MINUS 0x1c
-#define FARS2_ANIM_STATE_20 0x1d
+#define FARS2_ANIM_FURNITURE_PUSH 0x1d
 #define FARS2_ANIM_POCKETS_FULL 0x6c
 #define FARS2_ANIM_FIXED_POINT 0x9b
 /* The standing animation after a talk, blended over 6 frames (held item too). */
@@ -144,7 +144,7 @@ static unsigned int fars2_whole_frames(fx32 frames)
 /* The state's bar for requests drops to its end value. */
 static void fars2_drop_priority(FieldActor *actor)
 {
-    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+    actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
 }
 
 /* The state's end: the bar at its end value and state 2 asked for. */
@@ -834,14 +834,14 @@ static FieldActorFurnitureReachWork *fars2_reach_of(FieldActor *actor)
 }
 
 /* func_ov004_0222a28c (state 0x1d's update): the pose, the body, the move, the contact bodies
- * and the shadow; then this console's actor goes on, another's drops the state's bar. */
+ * and the touch pick; then this console's actor goes on, another's drops the state's bar. */
 void FieldActorRoomStates2_UpdateFurnitureReach(FieldActor *actor)
 {
     FieldActorRoomStates2_FurnitureReachPose(actor);
     FieldActor_UpdateBody(actor);
     FieldActor_MoveWithCollision(actor);
     FieldActor_EnterContact(actor);
-    FieldActor_PlaceShadow(actor);
+    FieldActor_AddTouchPick(actor);
     if (fars2_is_local(actor)) {
         FieldActorRoomStates2_RunFurnitureReach(actor);
     } else {
@@ -978,13 +978,13 @@ static FieldActorFurnitureHoldWork *fars2_hold_of(FieldActor *actor)
 }
 
 /* func_ov004_02229f60 (state 0x1e's update): the body, the move, the contact bodies and the
- * shadow; then this console's actor goes on, another's drops the state's bar. */
+ * touch pick; then this console's actor goes on, another's drops the state's bar. */
 void FieldActorRoomStates2_UpdateFurnitureHold(FieldActor *actor)
 {
     FieldActor_UpdateBody(actor);
     FieldActor_MoveWithCollision(actor);
     FieldActor_EnterContact(actor);
-    FieldActor_PlaceShadow(actor);
+    FieldActor_AddTouchPick(actor);
     if (fars2_is_local(actor)) {
         FieldActorRoomStates2_RunFurnitureHold(actor);
     } else {
@@ -1023,7 +1023,7 @@ void FieldActorRoomStates2_RunFurnitureHold(FieldActor *actor)
                         FieldActorRoomStates_RequestPull(actor, FARS2_PRIORITY, FARS2_NO_ARG);
                         break;
                     case 0:
-                        FieldActorRoomStates2_RequestState20(actor, FARS2_PRIORITY, FARS2_NO_ARG);
+                        FieldActorRoomStates2_RequestPush(actor, FARS2_PRIORITY, FARS2_NO_ARG);
                         break;
                     case 3:
                         if (work->released &&
@@ -1151,7 +1151,7 @@ void FieldActorRoomStates2_UpdateFurnitureTurn(FieldActor *actor)
 {
     FieldActor_UpdateBody(actor);
     FieldActor_EnterContact(actor);
-    FieldActor_PlaceShadow(actor);
+    FieldActor_AddTouchPick(actor);
     FieldActorRoomStates2_RunFurnitureTurn(actor);
 }
 CLEAN_AS(func_ov004_02229d5c, FieldActorRoomStates2_UpdateFurnitureTurn)
@@ -1255,30 +1255,30 @@ void FieldActorRoomStates2_SetFurnitureTurnArgs(u8 *plus, u8 value)
 }
 CLEAN_AS(func_ov004_02229f5c, FieldActorRoomStates2_SetFurnitureTurnArgs)
 
-/* ---- State 0x20 (its update is elsewhere) */
+/* ---- State 0x20: pushing furniture (its update is FieldActorRoomStates_UpdatePush) */
 
 /* func_ov004_02229cf8 (state 0x20's message handler): state 0x20 asked for again (priority
  * 6). */
-void FieldActorRoomStates2_State20Message(FieldActor *actor, int arg)
+void FieldActorRoomStates2_PushMessage(FieldActor *actor, int arg)
 {
-    FieldActorRoomStates2_RequestState20(actor, FARS2_PRIORITY, arg);
+    FieldActorRoomStates2_RequestPush(actor, FARS2_PRIORITY, arg);
 }
-CLEAN_AS(func_ov004_02229cf8, FieldActorRoomStates2_State20Message)
+CLEAN_AS(func_ov004_02229cf8, FieldActorRoomStates2_PushMessage)
 
 /* func_ov004_02229d04 (state 0x20's entry): animation 0x1d once; the work's first byte
  * cleared. */
-void FieldActorRoomStates2_EnterState20(FieldActor *actor, const StateRequest *request, int previous)
+void FieldActorRoomStates2_EnterPush(FieldActor *actor, const StateRequest *request, int previous)
 {
     (void) request;
     (void) previous;
-    FieldActor_PlayAnimationOnce(actor, FARS2_ANIM_STATE_20, FARS2_BLEND, 0);
+    FieldActor_PlayAnimationOnce(actor, FARS2_ANIM_FURNITURE_PUSH, FARS2_BLEND, 0);
     actor->work.bytes[0] = 0;
 }
-CLEAN_AS(func_ov004_02229d04, FieldActorRoomStates2_EnterState20)
+CLEAN_AS(func_ov004_02229d04, FieldActorRoomStates2_EnterPush)
 
 /* func_ov004_02229d24: state 0x20 asked for; whether it was queued. */
-int FieldActorRoomStates2_RequestState20(FieldActor *actor, int priority, int arg)
+int FieldActorRoomStates2_RequestPush(FieldActor *actor, int priority, int arg)
 {
-    return fars2_request(actor, FARS2_STATE_20, priority, arg);
+    return fars2_request(actor, FARS2_FURNITURE_PUSH, priority, arg);
 }
-CLEAN_AS(func_ov004_02229d24, FieldActorRoomStates2_RequestState20)
+CLEAN_AS(func_ov004_02229d24, FieldActorRoomStates2_RequestPush)

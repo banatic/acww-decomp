@@ -39,7 +39,7 @@ int PlayerActorOps_RequestState79(void);
 int PlayerActorOps_RequestState32(void);
 int PlayerActorOps_RequestState30(u16 *item, int *a, unsigned char *b, int *c, int d);
 int PlayerActorOps_Turn(int yaw, int player);
-int PlayerActorOps_MoveTo(Vec3 *point, int accel, int player);
+int PlayerActorOps_MoveTo(Vec3 *point, int max_speed, int player);
 int PlayerActorOps_RequestState85(unsigned short *item);
 int PlayerActorOps_RequestState3F(unsigned short *item);
 int PlayerActorOps_RequestState7Kind2Next10(u16 *item);

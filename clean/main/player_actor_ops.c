@@ -82,7 +82,7 @@ static_assert(offsetof(FieldActor, start_position) == 0x6f4, "start_position");
 static_assert(offsetof(FieldActor, animation) == 0x704, "animation");
 static_assert(offsetof(FieldActor, unk_70D) == 0x70d, "unk_70D");
 static_assert(offsetof(FieldActor, state) == 0x7f0, "state");
-static_assert(offsetof(FieldActor, next_state) == 0x7fc, "next_state");
+static_assert(offsetof(FieldActor, request_priority) == 0x7fc, "request_priority");
 
 /* The start state in the actor's argument: bits 22 to 29 (the player is bits 30 and 31). */
 static int player_actor_ops_start_state(u32 made_with)
@@ -93,7 +93,7 @@ static int player_actor_ops_start_state(u32 made_with)
 /* The actor may be interrupted by a request of its state's end priority from now on. */
 static void player_actor_ops_open_queue(FieldActor *actor)
 {
-    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+    actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
 }
 
 /* func_020953a0: does nothing. */
@@ -522,16 +522,16 @@ int PlayerActorOps_Turn(int yaw, int player)
 }
 CLEAN_AS(func_02095a8c, PlayerActorOps_Turn)
 
-/* func_02095ab0: player `player`'s actor is asked to move to a copy of `point` with `accel`
+/* func_02095ab0: player `player`'s actor is asked to move to a copy of `point` with `max_speed`
  * (state 0x6f); whether it was queued. */
-int PlayerActorOps_MoveTo(Vec3 *point, int accel, int player)
+int PlayerActorOps_MoveTo(Vec3 *point, int max_speed, int player)
 {
     FieldActor *actor = SessionPlayers_FieldActor(player);
     if (actor == NULL) {
         return 0;
     }
     Vec3 copy = *point;
-    return FieldActor_RequestState6F(actor, &copy, accel, PLAYER_ACTOR_OPS_PRIORITY_5, PLAYER_ACTOR_OPS_ARG);
+    return FieldActor_RequestState6F(actor, &copy, max_speed, PLAYER_ACTOR_OPS_PRIORITY_5, PLAYER_ACTOR_OPS_ARG);
 }
 CLEAN_AS(func_02095ab0, PlayerActorOps_MoveTo)
 
@@ -640,7 +640,7 @@ int PlayerActorOps_FinishState(void)
     if (state == 0x2c || state == 0x29 || state == 0x2a) {
         return 1;
     }
-    actor->next_state = FieldActor_StateEndPriority(actor, state);
+    actor->request_priority = FieldActor_StateEndPriority(actor, state);
     if (pending > 0) {
         return (int) (intptr_t) FieldActor_RequestState76(actor, (u8) (pending + 3), 0, 0, PLAYER_ACTOR_OPS_PRIORITY_6,
                                                           PLAYER_ACTOR_OPS_ARG);

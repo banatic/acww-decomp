@@ -54,7 +54,7 @@ extern const fx32 data_020d72f8;
 /* The collider's and the contact body's size and height. */
 #define COLLIDER_SIZE 0xfd7
 #define CONTACT_HEIGHT 0x2800
-#define SHADOW_LIFT 0xb33
+#define PICK_LIFT 0xb33
 
 extern int FX_MulFunc(int a, int b);
 
@@ -297,11 +297,11 @@ int FieldActor_MoveWithCollision(FieldActor *actor)
 }
 CLEAN_AS(func_0201100c, FieldActor_MoveWithCollision)
 
-/* func_02010ca4: the actor's shadow (func_020b7d3c at 0x214, of size 0xa00, at the position
- * lifted by SHADOW_LIFT); its answer. For another console's actor only while func_020b67ac is
- * set and in state 8.
+/* func_02010ca4: the actor's touch pick (TouchPick_SetCylinderAndAdd: the cylinder at 0x214, of
+ * radius 0xa00 and height 0x15cf, kind 1, at the position lifted by PICK_LIFT); its answer.
+ * For another console's actor only while func_020b67ac is set and in state 8.
  * QUIRK: otherwise the answer is 0 or the state the actor is in. */
-int FieldActor_PlaceShadow(FieldActor *actor)
+int FieldActor_AddTouchPick(FieldActor *actor)
 {
     if (!Session_IsLocalPlayer(data_020ccf94, actor->player)) {
         if (SceneKinds_CurrentIn6To8() == 0) {
@@ -312,13 +312,13 @@ int FieldActor_PlaceShadow(FieldActor *actor)
         }
     }
     Vec3 point = actor->position;
-    point.y = field_actor_motion_add32(point.y, SHADOW_LIFT);
+    point.y = field_actor_motion_add32(point.y, PICK_LIFT);
     void *shadows = (void *) (uintptr_t) SceneQuery_FieldObject();
     return (int) (uintptr_t) TouchPick_SetCylinderAndAdd(shadows,
                                                          (TouchPickCylinder *) (void *) field_actor_motion_at(actor, 0x214),
                                                          &point, 0xa00, 0x15cf, 1, (u8) actor->player);
 }
-CLEAN_AS(func_02010ca4, FieldActor_PlaceShadow)
+CLEAN_AS(func_02010ca4, FieldActor_AddTouchPick)
 
 /* ---- The contact bodies */
 

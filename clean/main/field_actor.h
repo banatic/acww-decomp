@@ -51,7 +51,7 @@ void FieldActor_UpdateModelMatrix(struct FieldActor *actor);
 /* field_actor_states.c: the state machine. */
 struct StateRequest;
 void FieldActor_RunFrame(struct FieldActor *actor);
-void FieldActor_SetMarkForState(struct FieldActor *actor, u32 state);
+void FieldActor_SetShadowForState(struct FieldActor *actor, u32 state);
 void FieldActor_SyncAimMode(struct FieldActor *actor, int state);
 void FieldActor_ResetPitchForState(struct FieldActor *actor, int state, int force);
 void FieldActor_TakeRequests(struct FieldActor *actor);
@@ -144,9 +144,9 @@ void FieldActor_AnimateState6F(struct FieldActor *actor);
 int FieldActor_MoveState6F(struct FieldActor *actor);
 void FieldActor_State6FMessage(struct FieldActor *actor, int arg);
 void FieldActor_EnterState6F(struct FieldActor *actor, const struct StateRequest *request, int previous);
-void FieldActor_SetWork6F(struct State6FWork *work, Vec3 point, int accel, int previous);
-int FieldActor_RequestState6F(struct FieldActor *actor, const Vec3 *point, int accel, int priority, s16 arg);
-void FieldActor_SetArgs6F(struct State6FArgs *args, Vec3 point, int accel);
+void FieldActor_SetWork6F(struct State6FWork *work, Vec3 point, int max_speed, int previous);
+int FieldActor_RequestState6F(struct FieldActor *actor, const Vec3 *point, int max_speed, int priority, s16 arg);
+void FieldActor_SetArgs6F(struct State6FArgs *args, Vec3 point, int max_speed);
 void FieldActor_UpdateState3F(struct FieldActor *actor);
 void FieldActor_RunState3F(struct FieldActor *actor);
 void FieldActor_ExitState3F(struct FieldActor *actor);
@@ -470,12 +470,12 @@ unsigned int FieldActor_RecordHairColor(struct FieldActor *actor);
 unsigned int FieldActor_RecordHeadKind(struct FieldActor *actor);
 void FieldActor_RecordHeadItem(u16 *item, struct FieldActor *actor);
 void FieldActor_RecordCloth(u16 *item, struct FieldActor *actor);
-int FieldActor_RecordFlag249A(struct FieldActor *actor);
+int FieldActor_RecordIsFemale(struct FieldActor *actor);
 u8 *FieldActor_Record(struct FieldActor *actor);
 
 /* field_actor_anim.c: the body's animations, the held item's and the face's. */
-void FieldActor_PlayHeldAnimation(struct FieldActor *actor, u16 *item, int animation, int frames);
-void FieldActor_AnimateHeldItem(struct FieldActor *actor, int animation, int frames);
+void FieldActor_PlayHeldAnimation(struct FieldActor *actor, u16 *item, int body_resource, int frames);
+void FieldActor_AnimateHeldItem(struct FieldActor *actor, int body_resource, int frames);
 void FieldActor_RestartAnimation(struct FieldActor *actor);
 void FieldActor_PlayAnimationOnce(struct FieldActor *actor, int animation, int blend, u16 held_blend);
 void FieldActor_SwitchAnimation(struct FieldActor *actor, int animation, int blend, int held_blend);
@@ -486,14 +486,14 @@ unsigned short FieldActor_AnimationResource(struct FieldActor *actor, const unsi
 void FieldActor_UpdateBody(struct FieldActor *actor);
 void FieldActor_PlayFaceAnimB(struct FieldActor *actor, const int *number, const u8 *flags);
 void FieldActor_PlayFaceAnimA(struct FieldActor *actor, const int *number, const u8 *flags);
-void FieldActor_MatchFaceAnimB(struct FieldActor *actor, const int *animation, const u8 *flags);
-void FieldActor_MatchFaceAnimA(struct FieldActor *actor, const int *animation, const u8 *flags);
+void FieldActor_MatchFaceAnimB(struct FieldActor *actor, const int *body_resource, const u8 *flags);
+void FieldActor_MatchFaceAnimA(struct FieldActor *actor, const int *body_resource, const u8 *flags);
 void FieldActor_BindFaceAnims(struct FieldActor *actor);
 void FieldActor_StepFaceAnimB(struct FieldActor *actor);
 void FieldActor_StepFaceAnimA(struct FieldActor *actor);
 void FieldActor_StepFaceAnims(struct FieldActor *actor);
 
-/* field_actor_motion.c: acting with the tool, speed, lean and yaw, moving, the shadow and the
+/* field_actor_motion.c: acting with the tool, speed, lean and yaw, moving, the touch pick and the
  * contact bodies. */
 int FieldActor_TryTargetInScene(struct FieldActor *actor, int tool);
 int FieldActor_TryToolInScene(struct FieldActor *actor);
@@ -507,7 +507,7 @@ void FieldActor_SetYaw(struct FieldActor *actor, const s16 *yaw);
 int FieldActor_StepTowardReported(struct FieldActor *actor);
 int FieldActor_MoveFree(struct FieldActor *actor);
 int FieldActor_MoveWithCollision(struct FieldActor *actor);
-int FieldActor_PlaceShadow(struct FieldActor *actor);
+int FieldActor_AddTouchPick(struct FieldActor *actor);
 int FieldActor_ContactFlags(struct FieldActor *actor, const int *state);
 void FieldActor_SetContactAt(struct FieldActor *actor, const Vec3 *point, const int *state);
 void FieldActor_SetContact(struct FieldActor *actor, const int *state);

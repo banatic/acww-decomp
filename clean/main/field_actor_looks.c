@@ -153,7 +153,7 @@ void FieldActor_ApplyHead(FieldActor *actor)
     u16 item = FieldActor_TestFlag(actor, 0xc) ? ITEM_CODE_NONE : FIELD_ACTOR_HEAD_ITEM(actor);
     int model_kind;
     int second;
-    HeadLook_ChooseModels(FieldActor_RecordFlag249A(actor), FIELD_ACTOR_HEAD_KIND(actor), &item, &model_kind, &second);
+    HeadLook_ChooseModels(FieldActor_RecordIsFemale(actor), FIELD_ACTOR_HEAD_KIND(actor), &item, &model_kind, &second);
     u16 loaded = FIELD_ACTOR_HEAD_ITEM(actor);
     HeadLook_Load(head, model_kind, second, &loaded, (u8 *) (uintptr_t) ((int) (uintptr_t) FieldActor_Record(actor)));
     FieldActor_SetPalettes(actor, FIELD_ACTOR_HEAD_HAIR_COLOR(actor), FieldActor_SunLevel(actor, 0));
@@ -505,9 +505,9 @@ void FieldActor_RecordCloth(u16 *item, FieldActor *actor)
 }
 CLEAN_AS(func_0201131c, FieldActor_RecordCloth)
 
-/* func_02011340: whether the signed byte 28 of the record's name and town (0x247e) is not 0;
- * 0 without a record. */
-int FieldActor_RecordFlag249A(FieldActor *actor)
+/* func_02011340: whether the record's player is a girl (PlayerId_Gender of its id at 0x247e is
+ * not 0); 0 without a record. */
+int FieldActor_RecordIsFemale(FieldActor *actor)
 {
     u8 *record = FieldActor_Record(actor);
     if (record == NULL) {
@@ -515,7 +515,7 @@ int FieldActor_RecordFlag249A(FieldActor *actor)
     }
     return PlayerId_Gender((const s8 *) PlayerRecord_Player(record)) != 0;
 }
-CLEAN_AS(func_02011340, FieldActor_RecordFlag249A)
+CLEAN_AS(func_02011340, FieldActor_RecordIsFemale)
 
 /* func_02011368: the record of the actor's player (func_0209847c with the player's record
  * number, func_02096284), NULL for a number of 7 or more. */

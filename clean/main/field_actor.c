@@ -474,7 +474,7 @@ void FieldActor_SetupPartB(struct FieldActor *actor)
 }
 CLEAN_AS(func_0200e6a4, FieldActor_SetupPartB)
 
-/* func_0200e704: the looks at 0x389 (from data_020c75d8, then FieldActor_RecordFlag249A's flag) and 0x774
+/* func_0200e704: the looks at 0x389 (from data_020c75d8, then whether FieldActor_RecordIsFemale) and 0x774
  * (from data_020c75d0), the record's item at FieldActor_RecordCloth to FieldActor_SetCloth, and the pairs of
  * func_021077e8 of the looks handed to FieldActor_CopyTexture and FieldActor_CopyPalette (0x774 with 0x389, with
  * data_020d83e8) and to FieldActor_CopyPalette (0x7a0 with 0x389, with data_020d83f0); then
@@ -483,7 +483,7 @@ void FieldActor_SetupLooks(struct FieldActor *actor)
 {
     u16 item;
     BodyLook_SetLook(at(actor, 0x389), data_020c75d8[SessionPlayers_LookIndex(actor->player)]);
-    BodyLook_LoadModel(at(actor, 0x389), FieldActor_RecordFlag249A(actor) != 0);
+    BodyLook_LoadModel(at(actor, 0x389), FieldActor_RecordIsFemale(actor) != 0);
     ClothSlots_Assign(at(actor, 0x774), data_020c75d0[SessionPlayers_LookIndex(actor->player)]);
     FieldActor_RecordCloth(&item, actor);
     FieldActor_SetCloth(actor, &item);

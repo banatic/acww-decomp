@@ -159,8 +159,8 @@ void FieldActorRoomStates2_SetFurnitureTurnReleased(u8 *released, u8 value);
 int FieldActorRoomStates2_RequestFurnitureTurn(struct FieldActor *actor, int plus, int priority, s16 arg);
 void FieldActorRoomStates2_SetFurnitureTurnArgs(u8 *plus, u8 value);
 
-void FieldActorRoomStates2_State20Message(struct FieldActor *actor, int arg);
-void FieldActorRoomStates2_EnterState20(struct FieldActor *actor, const struct StateRequest *request, int previous);
-int FieldActorRoomStates2_RequestState20(struct FieldActor *actor, int priority, int arg);
+void FieldActorRoomStates2_PushMessage(struct FieldActor *actor, int arg);
+void FieldActorRoomStates2_EnterPush(struct FieldActor *actor, const struct StateRequest *request, int previous);
+int FieldActorRoomStates2_RequestPush(struct FieldActor *actor, int priority, int arg);
 
 #endif

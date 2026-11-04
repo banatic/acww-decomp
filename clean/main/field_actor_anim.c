@@ -2,8 +2,8 @@
  * playing at FieldActor.animation), the held item's that go with them, and the face's two
  * animations at 0x710 and 0x73c (field_actor_parts.h).
  *
- * An animation number picks the body's animation through data_020c7d04 and, through tables of
- * its own, the held item's and each face animation's. */
+ * An animation number picks the body's animation resource through data_020c7d04; the held
+ * item's and each face animation's tables are indexed by that body resource. */
 #include "field_actor.h"
 
 #include <assert.h>
@@ -64,18 +64,18 @@ static u16 field_actor_anim_whole_frame(fx32 frame)
 
 /* ---- The held item's animation */
 
-/* func_0201079c: the held item `item` with the body's `animation`, blended over `frames`. The
+/* func_0201079c: the held item `item` with the body resource `body_resource`, blended over `frames`. The
  * item's animation (func_0205f670) plays (func_020547b0) with its joints (func_0205cebc's group
  * below 4: func_0205cf10's count of func_0205ceec and func_0205cec8 pairs, with group 1's first
  * one more for the animation's mode 2), unless the animation's mode (func_0205ceb0) is 3, the
  * item has no animation, or the mode is 1 and the item is outside 0x1380 to 0x13a7: then (or
  * with a group of 4 or more) the held item is left without one (func_02054768). The item's
  * animation is kept at 0x708 either way. */
-void FieldActor_PlayHeldAnimation(FieldActor *actor, u16 *item, int animation, int frames)
+void FieldActor_PlayHeldAnimation(FieldActor *actor, u16 *item, int body_resource, int frames)
 {
     u8 *body = field_actor_anim_at(actor, FIELD_ACTOR_BODY);
     u32 held = HeldItemPool_ItemAnim(item);
-    int mode = AnimTables_HeldMode(animation);
+    int mode = AnimTables_HeldMode(body_resource);
     int play = mode != 3 && held != HELD_ANIM_NONE;
     if (play && mode == 1 && (*item < 0x1380 || *item > 0x13a7)) {
         play = 0;
@@ -109,7 +109,7 @@ CLEAN_AS(func_0201079c, FieldActor_PlayHeldAnimation)
 
 /* func_020108cc: FieldActor_PlayHeldAnimation with the held item of the record outdoors with
  * flag 0 (FieldActor_RecordHeldItem), else with none. */
-void FieldActor_AnimateHeldItem(FieldActor *actor, int animation, int frames)
+void FieldActor_AnimateHeldItem(FieldActor *actor, int body_resource, int frames)
 {
     u16 item = ITEM_CODE_NONE;
     if (data_020e54a8 == 0 && FieldActor_TestFlag(actor, 0) != 0) {
@@ -117,7 +117,7 @@ void FieldActor_AnimateHeldItem(FieldActor *actor, int animation, int frames)
         FieldActor_RecordHeldItem(&held, actor);
         item = held;
     }
-    FieldActor_PlayHeldAnimation(actor, &item, animation, frames);
+    FieldActor_PlayHeldAnimation(actor, &item, body_resource, frames);
 }
 CLEAN_AS(func_020108cc, FieldActor_AnimateHeldItem)
 
@@ -243,13 +243,13 @@ void FieldActor_PlayFaceAnimA(FieldActor *actor, const int *number, const u8 *fl
 }
 CLEAN_AS(func_02010b50, FieldActor_PlayFaceAnimA)
 
-/* func_02010bac: the face's second animation for the body's `animation` (func_0205cf1c): when
+/* func_02010bac: the face's second animation for the body resource `body_resource` (func_0205cf1c): when
  * it has none, FACE_ANIM_B_DEFAULT unless that already plays; nothing more when it is none
  * then. */
-void FieldActor_MatchFaceAnimB(FieldActor *actor, const int *animation, const u8 *flags)
+void FieldActor_MatchFaceAnimB(FieldActor *actor, const int *body_resource, const u8 *flags)
 {
     int playing = FIELD_ACTOR_FACE_ANIM_B_NUMBER(actor);
-    int number = AnimTables_FaceAnimB((u32) *animation);
+    int number = AnimTables_FaceAnimB((u32) *body_resource);
     if (number == FACE_ANIM_NONE && playing != FACE_ANIM_B_DEFAULT) {
         number = FACE_ANIM_B_DEFAULT;
     }
@@ -260,10 +260,10 @@ void FieldActor_MatchFaceAnimB(FieldActor *actor, const int *animation, const u8
 CLEAN_AS(func_02010bac, FieldActor_MatchFaceAnimB)
 
 /* func_02010bf0: the same for the face's first animation (func_0205cf28, FACE_ANIM_A_DEFAULT). */
-void FieldActor_MatchFaceAnimA(FieldActor *actor, const int *animation, const u8 *flags)
+void FieldActor_MatchFaceAnimA(FieldActor *actor, const int *body_resource, const u8 *flags)
 {
     int playing = FIELD_ACTOR_FACE_ANIM_A_NUMBER(actor);
-    int number = AnimTables_FaceAnimA((u32) *animation);
+    int number = AnimTables_FaceAnimA((u32) *body_resource);
     if (number == FACE_ANIM_NONE && playing != FACE_ANIM_A_DEFAULT) {
         number = FACE_ANIM_A_DEFAULT;
     }

@@ -18,7 +18,7 @@
 
 static_assert(offsetof(FieldActor, position) == 0x5c, "position");
 static_assert(offsetof(FieldActor, state) == 0x7f0, "state");
-static_assert(offsetof(FieldActor, next_state) == 0x7fc, "next state");
+static_assert(offsetof(FieldActor, request_priority) == 0x7fc, "request priority");
 
 /* This console's player. */
 #define RPA_OWN SESSION_PLAYERS_OWN
@@ -93,7 +93,7 @@ int RoomPlayerActor_RequestFixedPoint(void)
     if (actor == NULL) {
         return 0;
     }
-    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+    actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
     return FieldActorRoomStates2_RequestFixedPoint(actor, RPA_FIXED_POINT_PRIORITY, RPA_NO_ARG);
 }
 CLEAN_AS(func_ov004_0222be7c, RoomPlayerActor_RequestFixedPoint)

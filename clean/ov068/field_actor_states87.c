@@ -12,7 +12,7 @@ static_assert(offsetof(FieldActor, position) == 0x5c, "position");
 static_assert(offsetof(FieldActor, yaw) == 0x8e, "yaw");
 static_assert(offsetof(FieldActor, anim) == 0x2d0, "anim");
 static_assert(offsetof(FieldActor, state) == 0x7f0, "state");
-static_assert(offsetof(FieldActor, next_state) == 0x7fc, "next_state");
+static_assert(offsetof(FieldActor, request_priority) == 0x7fc, "request_priority");
 
 #define FIELD_ACTOR_87_STATE_87 0x87
 #define FIELD_ACTOR_87_STATE_88 0x88
@@ -44,7 +44,7 @@ CLEAN_AS(func_ov068_02271e24, FieldActor_StepState88)
 void FieldActor_EndState88(FieldActor *actor)
 {
     if (FrameCtrl_IsDone(&actor->anim) != 0) {
-        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+        actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
         FieldActor_RequestState1(actor, 9, FIELD_ACTOR_87_NO_ARG);
     }
 }
@@ -121,7 +121,7 @@ CLEAN_AS(func_ov068_02271f28, FieldActor_StepState87)
 void FieldActor_EndState87(FieldActor *actor)
 {
     if (FrameCtrl_IsDone(&actor->anim) != 0) {
-        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+        actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
         FieldActor_RequestState10(actor, 0, 5, FIELD_ACTOR_87_NO_ARG);
         *SessionPlayers_SunFlags() = 0;
     }
@@ -202,7 +202,7 @@ int FieldActor_PlayerRequestState88(void)
     if (actor == NULL) {
         return 0;
     }
-    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+    actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
     return (int) FieldActor_RequestState88(actor, FIELD_ACTOR_87_PRIORITY, (unsigned int) FIELD_ACTOR_87_NO_ARG);
 }
 CLEAN_AS(func_ov068_02272044, FieldActor_PlayerRequestState88)
@@ -214,7 +214,7 @@ void *FieldActor_PlayerRequestState87(void)
     if (actor == NULL) {
         return NULL;
     }
-    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+    actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
     return FieldActor_RequestState87(actor, FIELD_ACTOR_87_PRIORITY, FIELD_ACTOR_87_NO_ARG);
 }
 CLEAN_AS(func_ov068_0227207c, FieldActor_PlayerRequestState87)
