@@ -1,5 +1,5 @@
-/* The objects of kinds 3 and 2 (sky_kind3.h). */
-#include "sky_kind3.h"
+/* The shooting star (kind 3) and the objects of kind 2 (sky_shooting_star.h). */
+#include "sky_shooting_star.h"
 
 #include "autoload_2/fx_math.h"
 #include "cell_anim.h"
@@ -8,12 +8,12 @@
 
 static_assert(sizeof(SkyKind2Vars) == 0x14, "the words at 0x60");
 
-#define SKY_KIND3_ANIMATION 0x11
-#define SKY_KIND3_PRIORITY 3
-#define SKY_KIND3_SPEED 0x7800 /* 7.5 pixels a frame */
-#define SKY_KIND3_BACK 0x23    /* it starts 35 pixels back along its way */
-#define SKY_KIND3_SOUND_SOURCE 6
-#define SKY_KIND3_SOUND 0x801
+#define SKY_SHOOTING_STAR_ANIMATION 0x11
+#define SKY_SHOOTING_STAR_PRIORITY 3
+#define SKY_SHOOTING_STAR_SPEED 0x7800 /* 7.5 pixels a frame */
+#define SKY_SHOOTING_STAR_BACK 0x23    /* it starts 35 pixels back along its way */
+#define SKY_SHOOTING_STAR_SOUND_SOURCE 6
+#define SKY_SHOOTING_STAR_SOUND 0x801
 #define SKY_KIND2_DRAG 0xe66
 #define SKY_KIND2_FOLLOW_FRAMES 23
 #define SKY_KIND2_TURN 0xe39
@@ -36,17 +36,17 @@ static SkyKind2Vars *sky_kind2_vars(SkyObject *object)
 }
 
 /* func_020c0f04: kind 3 taken down: the byte that says it is seen cleared. */
-void SkyKind3_TakeDown(SkyObject *object)
+void SkyShootingStar_TakeDown(SkyObject *object)
 {
-    data_021f8b48.kind3_seen = 0;
+    data_021f8b48.shooting_star_seen = 0;
     SkyObjectKinds_Remove(object);
 }
-CLEAN_AS(func_020c0f04, SkyKind3_TakeDown)
+CLEAN_AS(func_020c0f04, SkyShootingStar_TakeDown)
 
 /* func_020c0f18: a frame of kind 3: moved; done once more than 35 pixels off the screen's
- * left, top or right or below line 202; seen (SkyObjects.kind3_seen) while unmarked and inside
+ * left, top or right or below line 202; seen (SkyObjects.shooting_star_seen) while unmarked and inside
  * the screen. */
-void SkyKind3_Run(SkyObject *object)
+void SkyShootingStar_Run(SkyObject *object)
 {
     SkyObjectBody *body = SkyObject_Body(object);
     VEC_Add(&body->position, &body->velocity, &body->position);
@@ -54,17 +54,17 @@ void SkyKind3_Run(SkyObject *object)
     int y = body->position.y >> 12;
     int gone = y < -35 || y > 202 || x < -35 || x > 291;
     int seen = sky_kind2_vars(object)->param == 0 && !gone && y > 0 && y < 192 && x > 0 && x < 256;
-    data_021f8b48.kind3_seen = (u8) seen;
+    data_021f8b48.shooting_star_seen = (u8) seen;
     if (gone) {
         body->state = SKY_OBJECT_DONE;
     }
 }
-CLEAN_AS(func_020c0f18, SkyKind3_Run)
+CLEAN_AS(func_020c0f18, SkyShootingStar_Run)
 
 /* func_020c0f8c: kind 3 set up: from a random point of the screen's top edge (x 196 to 255)
  * or of its right edge (y 0 to 47), 35 pixels back, towards a random point of the left edge
  * at y 128 to 150; half as tall as wide and turned along its way; sound 0x801 from source 6. */
-void SkyKind3_SetUp(SkyObject *object)
+void SkyShootingStar_SetUp(SkyObject *object)
 {
     SkyObjectBody *body = SkyObject_Body(object);
     body->scale_x = 0x1000;
@@ -83,21 +83,21 @@ void SkyKind3_SetUp(SkyObject *object)
     int index = ((u16) angle >> 4) * 2;
     int sin = FX_SinCosTable_[index];
     int cos = FX_SinCosTable_[index + 1];
-    x -= SKY_KIND3_BACK * cos;
-    y -= SKY_KIND3_BACK * sin;
+    x -= SKY_SHOOTING_STAR_BACK * cos;
+    y -= SKY_SHOOTING_STAR_BACK * sin;
     body->position.x = x;
     body->position.y = y;
     body->position.z = 0;
-    body->velocity.x = FX_MulFunc(cos, SKY_KIND3_SPEED);
-    body->velocity.y = FX_MulFunc(sin, SKY_KIND3_SPEED);
+    body->velocity.x = FX_MulFunc(cos, SKY_SHOOTING_STAR_SPEED);
+    body->velocity.y = FX_MulFunc(sin, SKY_SHOOTING_STAR_SPEED);
     body->velocity.z = 0;
     body->rotation = (u16) (angle - 0x4000);
-    body->animation = SKY_KIND3_ANIMATION;
-    body->priority = SKY_KIND3_PRIORITY;
-    data_021f8b48.kind3_seen = 0;
-    SkyObjectKinds_PlayHeldAt(object, SKY_KIND3_SOUND_SOURCE, SKY_KIND3_SOUND);
+    body->animation = SKY_SHOOTING_STAR_ANIMATION;
+    body->priority = SKY_SHOOTING_STAR_PRIORITY;
+    data_021f8b48.shooting_star_seen = 0;
+    SkyObjectKinds_PlayHeldAt(object, SKY_SHOOTING_STAR_SOUND_SOURCE, SKY_SHOOTING_STAR_SOUND);
 }
-CLEAN_AS(func_020c0f8c, SkyKind3_SetUp)
+CLEAN_AS(func_020c0f8c, SkyShootingStar_SetUp)
 
 /* func_020c105c: kind 2 taken down. */
 void SkyKind2_TakeDown(SkyObject *object)
@@ -106,7 +106,7 @@ void SkyKind2_TakeDown(SkyObject *object)
 }
 CLEAN_AS(func_020c105c, SkyKind2_TakeDown)
 
-/* func_020c1064: a frame of kind 2, counted, by its mode (sky_kind3.h). */
+/* func_020c1064: a frame of kind 2, counted, by its mode (sky_shooting_star.h). */
 void SkyKind2_Run(SkyObject *object)
 {
     SkyObjectBody *body = SkyObject_Body(object);
@@ -165,7 +165,7 @@ CLEAN_AS(func_020c10f4, SkyKind2_SetUp)
  * QUIRK: with no object of kind 3 the entry looked at is the one past the last (the slots). */
 int SkyKind2_Follow(SkyObject *object)
 {
-    int index = SkyObjects_FindKind(&data_021f8b48, SKY_OBJECT_KIND_3);
+    int index = SkyObjects_FindKind(&data_021f8b48, SKY_OBJECT_SHOOTING_STAR);
     const SkyObjectBody *led =
         (const SkyObjectBody *) ((uintptr_t) data_021f8b48.entries + (u32) index * (u32) sizeof(SkyObject));
     if (led->state != SKY_OBJECT_RUNNING) {

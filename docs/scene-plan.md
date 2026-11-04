@@ -298,7 +298,7 @@ What reading the Clean code found about the groups above; counts are of function
   in the town when the player has flag 0x23 and the previous scene is a house room (or scene
   6): after the registration the new resident goes into the house (the town's players share
   it) and comes out; then his store's part-time job (ov050) gives the uniform and the first
-  errand: scene nook-job. It found a Clean difference: SkyKind5_Run (the balloon crossing the
+  errand: scene nook-job. It found a Clean difference: SkyBalloon_Run (the balloon crossing the
   sky, clean/main/sky_visitors.c) moved along its path with the set-up's sway (1000) where the
   ROM's run passes 0x5000; fixed.
 - A villager comes up to the player (behaviour 7, VillagerTalkApproach_Line and the nine
@@ -598,7 +598,7 @@ What reading the Clean code found about the groups above; counts are of function
   event 3 from the fourth Thursday of November, scene post-drama; the town hall's door opens
   with A, not with UP alone). The later parts need the part before marked (DayEvents_SetMark)
   on its day, so a scene each would need a save with the mark.
-- The sky show (main/sky_show.h) runs its programs one after another as long as the night's
+- The sky show (main/sky_fireworks.h) runs its programs one after another as long as the night's
   event lasts: fireworks-late watches the August fireworks 12,000 frames past fireworks.txt (the
   later programs by threes, pairs and large launches); new-year-midnight boots at 23:57 and
   stands by the countdown's clock as the year turns (CountdownBoard_EnterOver, the new year's
@@ -2808,11 +2808,11 @@ What reading the Clean code found about the groups above; counts are of function
 - Also: the point machine tapped with the pen (TouchPick_Atm, the touch pick's kind 11:
   shop-points-pen); the telephone of the continue menu's room picked by the keys
   (RmoTelephone_EnterState10Current: phone-keys); the fireworks booted 1 and 2 seconds later
-  (fireworks-other, fireworks-third) draw other programs (SkyShow_WaitThenAny, _ThreesDelay40,
+  (fireworks-other, fireworks-third) draw other programs (SkyFireworks_WaitThenAny, _ThreesDelay40,
   _PairsDelay100, _LargeDelay100).
-- Gained little: the show's first program is 14 (SkyShow_EachThen15, then 15, LargeThen4) or 16 by
-  MainRandom_Below(2) when it starts (SkyShow_Run), but boots at 20:00:01-10 and 19:58:40 all
-  started 16; SkyShow_EachDelay160 (program 5, 6 in 100 of the draws) did not come in those runs.
+- Gained little: the show's first program is 14 (SkyFireworks_EachThen15, then 15, LargeThen4) or 16 by
+  MainRandom_Below(2) when it starts (SkyFireworks_Run), but boots at 20:00:01-10 and 19:58:40 all
+  started 16; SkyFireworks_EachDelay160 (program 5, 6 in 100 of the draws) did not come in those runs.
   The "talked" states of the special characters (Owl_UpdateTalked, Giraffe_UpdateTalked and 23
   more): state 2's update runs only in a frame where the event's end waits, and
   EventKind_EndObjectEvent waits only while PlayerActorOps_FinishState's request is refused;

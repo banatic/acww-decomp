@@ -1,10 +1,11 @@
-/* The objects of kind 3 (entry 30, added at night by SkyEvents_AddKind3) and of kind 2.
+/* The shooting star, kind 3 (entry 30, added at night by SkyEvents_AddShootingStar), and the
+ * objects of kind 2.
  *
  * Kind 3 starts off the screen's right or top edge and crosses fast (7.5 pixels a frame)
  * towards a point on the left edge at y 128 to 150, turned along its way. While it is on the
  * screen and not marked (its parameter 0) the byte at 0x2f50 of the objects is set
- * (SkyObjects.kind3_seen); SkyObjects_Add2Mark3 marks it and adds a kind-2 object that follows
- * it.
+ * (SkyObjects.shooting_star_seen); SkyObjects_MarkShootingStar (the player wishing on it)
+ * marks it and adds a kind-2 object that follows it.
  *
  * Kind 2 does one of three things by the low four bits of its parameter: 0, a short-lived
  * object that drifts, slowed by drag, until its animation is done (SkyKind7_AddSparkle gives
@@ -12,8 +13,8 @@
  * height scale: 32 pixels),
  * turning and sized from a table for 23 frames, done once there is no running kind 3; others
  * (SkySpaceship_Sparkle gives 2 and 3), done after 6 frames. */
-#ifndef CLEAN_MAIN_SKY_KIND3_H
-#define CLEAN_MAIN_SKY_KIND3_H
+#ifndef CLEAN_MAIN_SKY_SHOOTING_STAR_H
+#define CLEAN_MAIN_SKY_SHOOTING_STAR_H
 
 #include "sky_object_kinds.h"
 #include "sky_objects.h"
@@ -34,9 +35,9 @@ typedef struct SkyKind2Vars {
     u32 unk_70; /* 0x70 */
 } SkyKind2Vars;
 
-void SkyKind3_TakeDown(SkyObject *object);
-void SkyKind3_Run(SkyObject *object);
-void SkyKind3_SetUp(SkyObject *object);
+void SkyShootingStar_TakeDown(SkyObject *object);
+void SkyShootingStar_Run(SkyObject *object);
+void SkyShootingStar_SetUp(SkyObject *object);
 void SkyKind2_TakeDown(SkyObject *object);
 void SkyKind2_Run(SkyObject *object);
 void SkyKind2_SetUp(SkyObject *object, int param);

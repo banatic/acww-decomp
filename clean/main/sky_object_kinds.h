@@ -111,12 +111,12 @@ void SkyKind12_SetUp(SkyObject *object, int param);
 void SkyKind10_TakeDown(SkyObject *object);
 
 /* Kind 10 (entry 32, kept by SkyEvents_UpdateKind10): animation 0x15 at (176, 103), which
- * does nothing more each frame. Kind 8 (entry 59, with the thunder of heavy rain): one of eight animations at a
- * random place of the screen's upper half, done once it has played. */
+ * does nothing more each frame. Kind 8, the lightning (entry 59, with the thunder of heavy
+ * rain): one of eight animations at a random place of the screen's upper half, done once it has played. */
 void SkyKind10_Run(void);
 void SkyKind10_SetUp(SkyObject *object);
-void SkyKind8_TakeDown(SkyObject *object);
-void SkyKind8_Run(SkyObject *object);
-void SkyKind8_SetUp(SkyObject *object);
+void SkyLightning_TakeDown(SkyObject *object);
+void SkyLightning_Run(SkyObject *object);
+void SkyLightning_SetUp(SkyObject *object);
 
 #endif

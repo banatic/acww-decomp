@@ -417,7 +417,7 @@ CLEAN_AS(func_020bfcb0, SkyKind10_TakeDown)
 #define SKY_KIND10_Y 0x67000 /* y 103 */
 #define SKY_KIND10_ANIMATION 0x15
 #define SKY_KIND10_PRIORITY 3
-#define SKY_KIND8_PRIORITY 2
+#define SKY_LIGHTNING_PRIORITY 2
 
 extern int CellAnim_IsDone(CellAnim *anim);
 
@@ -437,24 +437,24 @@ void SkyKind10_SetUp(SkyObject *object)
 CLEAN_AS(func_020bfcbc, SkyKind10_SetUp)
 
 /* func_020c0420: kind 8 taken down. */
-void SkyKind8_TakeDown(SkyObject *object)
+void SkyLightning_TakeDown(SkyObject *object)
 {
     SkyObjectKinds_Remove(object);
 }
-CLEAN_AS(func_020c0420, SkyKind8_TakeDown)
+CLEAN_AS(func_020c0420, SkyLightning_TakeDown)
 
 /* func_020c0428: a frame of kind 8: done once its animation is. */
-void SkyKind8_Run(SkyObject *object)
+void SkyLightning_Run(SkyObject *object)
 {
     if (CellAnim_IsDone(&object->anim)) {
         object->state = SKY_OBJECT_DONE;
     }
 }
-CLEAN_AS(func_020c0428, SkyKind8_Run)
+CLEAN_AS(func_020c0428, SkyLightning_Run)
 
 /* func_020c0440: kind 8 set up at x 128 plus or less up to 127 and y 80 to 159, with one of
  * animations 8 to 15. */
-void SkyKind8_SetUp(SkyObject *object)
+void SkyLightning_SetUp(SkyObject *object)
 {
     SkyObjectBody *body = SkyObject_Body(object);
     int across = (int) MainRandom_Below(0x80);
@@ -464,6 +464,6 @@ void SkyKind8_SetUp(SkyObject *object)
     body->position.y = y;
     body->position.z = 0;
     body->animation = (s32) MainRandom_Below(8) + 8;
-    body->priority = SKY_KIND8_PRIORITY;
+    body->priority = SKY_LIGHTNING_PRIORITY;
 }
-CLEAN_AS(func_020c0440, SkyKind8_SetUp)
+CLEAN_AS(func_020c0440, SkyLightning_SetUp)

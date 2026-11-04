@@ -1,12 +1,12 @@
-/* The objects of kinds 5, 6 and 7 that cross the sky in entry 45 (sky_events.h adds them):
+/* The objects of kinds 5 (the present balloon), 6 (the spaceship) and 7 that cross the sky in entry 45 (sky_events.h adds them):
  * each goes along the path across the town's six acres (SkyObjectKinds_StartPath), bobbing,
  * until it passes the end or a shot of this system's player hits it (SkyShots_HitsBox). On
  * the hit it changes its resource, the player looks at it (SkyShots_StartLook2, 4 or 7, with
  * the point the look follows given each frame, SkyShots_SetHitPoint) and it falls off the
  * bottom of the screen, which ends the look (SkyShots_StartDrop3, StartFall5 or StartFall8).
  *
- * - Kind 5 (resource kept, parameter 1: the variant handed to SkyShots_StartLook2): falls
- *   straight down, slowed by drag.
+ * - Kind 5, the present balloon (resource kept, parameter 1: the variant handed to
+ *   SkyShots_StartLook2): its present falls straight down, slowed by drag.
  * - Kind 6, the spaceship (it sets flag 9 of the state block when set up): plays two animations as it is
  *   thrown up and sideways, then falls with a drift, giving off small objects of kind 2 every
  *   two or three frames (SkySpaceship_Sparkle); off the screen it marks calendar event 0x44 for
@@ -49,8 +49,8 @@ void SkySpaceship_TakeDown(SkyObject *object);
 void SkySpaceship_Run(SkyObject *object);
 void SkySpaceship_SetUp(SkyObject *object);
 void SkySpaceship_Sparkle(SkyObject *object);
-void SkyKind5_TakeDown(SkyObject *object);
-void SkyKind5_Run(SkyObject *object);
-void SkyKind5_SetUp(SkyObject *object, int param);
+void SkyBalloon_TakeDown(SkyObject *object);
+void SkyBalloon_Run(SkyObject *object);
+void SkyBalloon_SetUp(SkyObject *object, int param);
 
 #endif

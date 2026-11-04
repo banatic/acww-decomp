@@ -1,4 +1,4 @@
-/* The objects of kinds 5, 6 and 7 (sky_visitors.h). */
+/* The objects of kinds 5 (the present balloon), 6 and 7 (sky_visitors.h). */
 #include "sky_visitors.h"
 
 #include "cell_anim.h"
@@ -37,14 +37,14 @@ static_assert(sizeof(SkyVisitorVars) == 12, "the words at 0x60");
 #define SKY_SPACESHIP_HIT_SOUND 0x7fc
 #define SKY_SPACESHIP_EVENT 0x44
 #define SKY_SPACESHIP_STATE_FLAG 9
-#define SKY_KIND5_SWAY 0x5000
-#define SKY_KIND5_START_SWAY 1000 /* what its set-up hands its path (not the sway of its run) */
-#define SKY_KIND5_STEP 0x1ec
-#define SKY_KIND5_PHASE_STEP 0x3e8
-#define SKY_KIND5_ANIMATION 1
-#define SKY_KIND5_HIT_ANIMATION 0
-#define SKY_KIND5_SOUND 0x7f7
-#define SKY_KIND5_HIT_SOUND 0x7f8
+#define SKY_BALLOON_SWAY 0x5000
+#define SKY_BALLOON_START_SWAY 1000 /* what its set-up hands its path (not the sway of its run) */
+#define SKY_BALLOON_STEP 0x1ec
+#define SKY_BALLOON_PHASE_STEP 0x3e8
+#define SKY_BALLOON_ANIMATION 1
+#define SKY_BALLOON_HIT_ANIMATION 0
+#define SKY_BALLOON_SOUND 0x7f7
+#define SKY_BALLOON_HIT_SOUND 0x7f8
 
 extern SkyObjects data_021f8b48;
 extern SkyObjectSlot data_021fa678[]; /* the objects' slots */
@@ -316,35 +316,35 @@ void SkySpaceship_Sparkle(SkyObject *object)
 CLEAN_AS(func_020c08fc, SkySpaceship_Sparkle)
 
 /* func_020c09a8: kind 5 taken down. */
-void SkyKind5_TakeDown(SkyObject *object)
+void SkyBalloon_TakeDown(SkyObject *object)
 {
     SkyObjectKinds_Remove(object);
 }
-CLEAN_AS(func_020c09a8, SkyKind5_TakeDown)
+CLEAN_AS(func_020c09a8, SkyBalloon_TakeDown)
 
 /* func_020c09b0: a frame of kind 5. Crossing it plays sound 0x7f7; when hit its resource moves
  * on by one, the look is started (2, with its variant) and sound 0x7f8 plays. Then it takes
  * animation 0 and falls straight down, slowed by drag; below the screen the look drops (3) and
  * it is done. */
-void SkyKind5_Run(SkyObject *object)
+void SkyBalloon_Run(SkyObject *object)
 {
     SkyObjectBody *body = SkyObject_Body(object);
     SkyVisitorVars *vars = sky_visitor_vars(object);
     if (vars->state == SKY_VISITOR_CROSSING) {
-        if (SkyObjectKinds_Advance(object, SKY_KIND5_STEP, SKY_KIND5_SWAY, SKY_KIND5_PHASE_STEP)) {
+        if (SkyObjectKinds_Advance(object, SKY_BALLOON_STEP, SKY_BALLOON_SWAY, SKY_BALLOON_PHASE_STEP)) {
             body->state = SKY_OBJECT_DONE;
         } else if (SkyShots_HitsBox(object, 0xe000, 0x1a000, -0x3000)) {
             int resource = body->resource + 1;
             SkySlot_SetResource(sky_visitor_slot(object), (unsigned int) resource);
             body->resource = resource;
             SkyShots_StartLook2(&data_021fbaf0, vars->count != 0 ? 1 : 0);
-            SkyObjectKinds_PlayHeld(object, SKY_KIND5_HIT_SOUND);
+            SkyObjectKinds_PlayHeld(object, SKY_BALLOON_HIT_SOUND);
             vars->state = SKY_VISITOR_HIT;
         } else {
-            SkyObjectKinds_Play(object, SKY_KIND5_SOUND);
+            SkyObjectKinds_Play(object, SKY_BALLOON_SOUND);
         }
     } else if (vars->state == SKY_VISITOR_HIT) {
-        body->animation = SKY_KIND5_HIT_ANIMATION;
+        body->animation = SKY_BALLOON_HIT_ANIMATION;
         SkyObjectKinds_StartAnimation(object);
         body->velocity.x = 0;
         body->velocity.y = -0x800;
@@ -365,19 +365,19 @@ void SkyKind5_Run(SkyObject *object)
                              sky_visitor_side(body));
     }
 }
-CLEAN_AS(func_020c09b0, SkyKind5_Run)
+CLEAN_AS(func_020c09b0, SkyBalloon_Run)
 
 /* func_020c0ad4: kind 5 set up: on its path, west to east or back at random; its variant is
  * bit 0 of the parameter. */
-void SkyKind5_SetUp(SkyObject *object, int param)
+void SkyBalloon_SetUp(SkyObject *object, int param)
 {
     SkyObjectBody *body = SkyObject_Body(object);
     SkyVisitorVars *vars = sky_visitor_vars(object);
-    SkyObjectKinds_StartPath(object, MainRandom_Below(2) == 0 ? 1 : 0, SKY_KIND5_START_SWAY);
-    body->animation = SKY_KIND5_ANIMATION;
+    SkyObjectKinds_StartPath(object, MainRandom_Below(2) == 0 ? 1 : 0, SKY_BALLOON_START_SWAY);
+    body->animation = SKY_BALLOON_ANIMATION;
     body->priority = SKY_VISITOR_PRIORITY;
     vars->state = SKY_VISITOR_CROSSING;
     vars->count = (param & 1) != 0 ? 1 : 0;
     vars->unk_68 = 0;
 }
-CLEAN_AS(func_020c0ad4, SkyKind5_SetUp)
+CLEAN_AS(func_020c0ad4, SkyBalloon_SetUp)

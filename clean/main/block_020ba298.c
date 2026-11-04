@@ -53,7 +53,7 @@ void Block020ba298_SetPlayerFlag32(void)
     u8 *record = PlayerRecords_Current();
     if (record != NULL) {
         PlayerRecord_SetFlag(record, BLOCK_020BA298_PLAYER_FLAG);
-        SkyObjects_Add2Mark3((SkyObjects *) (void *) data_021f8b48);
+        SkyObjects_MarkShootingStar((SkyObjects *) (void *) data_021f8b48);
     }
 }
 CLEAN_AS(func_020ba2ec, Block020ba298_SetPlayerFlag32)

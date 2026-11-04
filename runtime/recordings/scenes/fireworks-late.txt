@@ -1,7 +1,7 @@
 # fireworks-late (format: runtime/input.h), played from a town save by tools/scenes.py (the save
 # is not in this repository). As fireworks.txt to 7060 (20:00 on Saturday 7 August 2027, the
 # talk with the turtle by the town hall), then nothing more to 19060 while the show goes on:
-# its programs follow one another (main/sky_show.h, SkyShow_SetProgram draws the next), and the
+# its programs follow one another (main/sky_fireworks.h, SkyFireworks_SetProgram draws the next), and the
 # later ones launch by threes, by pairs and large ones with their own delays.
 900 START -
 906 - -

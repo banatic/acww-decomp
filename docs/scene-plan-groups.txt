@@ -2365,7 +2365,7 @@ group: Tortimer's events and holidays
 scene: one scene per event day: fishing tourney, bug-off, gardens judge, the events of overlays 84-86 (new year and February), fireworks, festivals, the countdown
 reach: boot on the event's date and hour (main/event_calendar.h), find the turtle and talk, enter the contest with the rod or the net; the gardens are judged on the second Saturday of April (gardens-judge); overlay 80's turtle comes to a player with every fish and insect (turtle)
 needs: date
-match: ov080/* ov081/* ov082/* ov083/* ov084/* ov085/* ov086/* main/event_* main/sky_show* main/sky_events
+match: ov080/* ov081/* ov082/* ov083/* ov084/* ov085/* ov086/* main/event_* main/sky_fireworks* main/sky_events
   main/event_winner main/day_events main/board_notices main/spaceship_parts ov003/countdown ov004/indoor_countdown
   ov003/etc_board
 

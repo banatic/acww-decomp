@@ -32,8 +32,8 @@
 #define SKY_EVENTS_THUNDER_SOUND 0 /* func_02065268's number */
 #define SKY_EVENTS_NIGHT_END 4     /* hours 19:00 to 3:59 are the night */
 #define SKY_EVENTS_NIGHT_START 19
-#define SKY_EVENTS_KIND_3_SECOND 30
-#define SKY_EVENTS_KIND_3_DELAY 600
+#define SKY_EVENTS_SHOOTING_STAR_SECOND 30
+#define SKY_EVENTS_SHOOTING_STAR_DELAY 600
 #define SKY_EVENTS_KIND_10_FIRST_PATTERN 0x13
 #define SKY_EVENTS_KIND_10_LAST_PATTERN 0x17
 #define SKY_EVENTS_BLEND_RISE 15    /* minutes of the blending's rise, then its fall */
@@ -247,7 +247,7 @@ CLEAN_AS(func_020bd1c4, SkyEvents_AddSpaceship)
  * the variant (parameter 1) one time in four when this system's player has not found the golden
  * slingshot (flag 0x30) and has counted 16 slingshot hits (SkyShots_HitCountFull); otherwise the palettes' part at 0x2eb8 is given a
  * new random pick (func_020bece0). */
-void SkyEvents_AddKind5(SkyObjects *objects)
+void SkyEvents_AddBalloon(SkyObjects *objects)
 {
     if (sky_events_in_session()) {
         return;
@@ -255,22 +255,22 @@ void SkyEvents_AddKind5(SkyObjects *objects)
     int hour = objects->time.hour;
     int minute = objects->time.minute;
     if (hour < 10 || hour >= 16 || objects->last_time.minute == minute || minute % 10 != 4 ||
-        objects->entries[SKY_ENTRY_VISITOR].kind == SKY_OBJECT_KIND_5) {
+        objects->entries[SKY_ENTRY_VISITOR].kind == SKY_OBJECT_BALLOON) {
         return;
     }
-    if (!sky_events_try_odds(&objects->events[SKY_EVENT_ODDS_5])) {
+    if (!sky_events_try_odds(&objects->events[SKY_EVENT_ODDS_BALLOON])) {
         return;
     }
     if (!PlayerRecord_TestFlag(PlayerRecords_Current(), SKY_EVENTS_FLAG_GOLDEN_SLINGSHOT) && SkyShots_HitCountFull() &&
         MainRandom_Below(4) == 0) {
-        SkyObjects_Add(objects, SKY_OBJECT_KIND_5, SKY_ENTRY_VISITOR, NULL, 1);
+        SkyObjects_Add(objects, SKY_OBJECT_BALLOON, SKY_ENTRY_VISITOR, NULL, 1);
     } else {
-        SkyObjects_Add(objects, SKY_OBJECT_KIND_5, SKY_ENTRY_VISITOR, NULL, 0);
+        SkyObjects_Add(objects, SKY_OBJECT_BALLOON, SKY_ENTRY_VISITOR, NULL, 0);
         SkyPalettes_PickVariant((SkyPalettes *) (void *) objects->palettes);
     }
-    objects->events[SKY_EVENT_ODDS_5] = 1;
+    objects->events[SKY_EVENT_ODDS_BALLOON] = 1;
 }
-CLEAN_AS(func_020bd2d0, SkyEvents_AddKind5)
+CLEAN_AS(func_020bd2d0, SkyEvents_AddBalloon)
 
 /* func_020bd688: the moon kept in entry 31 at night, taken down by day. */
 void SkyEvents_UpdateMoon(SkyObjects *objects)
@@ -291,29 +291,29 @@ CLEAN_AS(func_020bd688, SkyEvents_UpdateMoon)
  * object of the show): as the second turns 30, one chance (1 in 4 on days of weather pattern
  * 0, else 1 in 256) to start a delay below 600 frames, at whose end an object of kind 3 is
  * added in entry 30. Otherwise the delay is dropped. */
-void SkyEvents_AddKind3(SkyObjects *objects)
+void SkyEvents_AddShootingStar(SkyObjects *objects)
 {
     int hour = objects->time.hour;
     int night = !(hour < SKY_EVENTS_NIGHT_START && hour >= SKY_EVENTS_NIGHT_END);
     s32 weather = data_021f75b0.weather;
     int clear = weather != SKY_WEATHER_RAIN && weather != SKY_WEATHER_HEAVY_RAIN;
-    int idle = objects->program == 0 && SkyObjects_FindKind(objects, SKY_OBJECT_SHOW) == SKY_OBJECT_COUNT;
+    int idle = objects->program == 0 && SkyObjects_FindKind(objects, SKY_OBJECT_FIREWORK) == SKY_OBJECT_COUNT;
     if (!(night && clear && idle)) {
-        objects->kind3_delay = 0;
+        objects->shooting_star_delay = 0;
         return;
     }
-    if (objects->kind3_delay > 0) {
-        objects->kind3_delay--;
-        if (objects->kind3_delay == 0) {
-            SkyObjects_Add(objects, SKY_OBJECT_KIND_3, SKY_ENTRY_KIND_3, NULL, 0);
+    if (objects->shooting_star_delay > 0) {
+        objects->shooting_star_delay--;
+        if (objects->shooting_star_delay == 0) {
+            SkyObjects_Add(objects, SKY_OBJECT_SHOOTING_STAR, SKY_ENTRY_SHOOTING_STAR, NULL, 0);
         }
-    } else if (objects->second == SKY_EVENTS_KIND_3_SECOND && objects->second != objects->last_second) {
+    } else if (objects->second == SKY_EVENTS_SHOOTING_STAR_SECOND && objects->second != objects->last_second) {
         if (MainRandom_Below(sky_events_pattern() == 0 ? 4 : 0x100) == 0) {
-            objects->kind3_delay = (s32) MainRandom_Below(SKY_EVENTS_KIND_3_DELAY);
+            objects->shooting_star_delay = (s32) MainRandom_Below(SKY_EVENTS_SHOOTING_STAR_DELAY);
         }
     }
 }
-CLEAN_AS(func_020bd6d0, SkyEvents_AddKind3)
+CLEAN_AS(func_020bd6d0, SkyEvents_AddShootingStar)
 
 /* The level of the rain or snow (1 to 4, 0: none) from the weather and the level it changes
  * to: 4 staying at heavy, 2 staying at level 3; changing down to 3: 3, to below it: 1;
@@ -470,7 +470,7 @@ void SkyEvents_HeavyThunder(SkyObjects *objects)
         return;
     }
     if (MainRandom_Below(SKY_EVENTS_ODDS) == 0) {
-        SkyObjects_Add(objects, SKY_OBJECT_KIND_8, SKY_ENTRY_KIND_8, NULL, 0);
+        SkyObjects_Add(objects, SKY_OBJECT_LIGHTNING, SKY_ENTRY_LIGHTNING, NULL, 0);
     }
     SceneLights_StartFlash(SKY_EVENTS_THUNDER_SOUND);
     objects->thunder_timer = (s32) MainRandom_Below(SKY_EVENTS_THUNDER_SPREAD) + SKY_EVENTS_THUNDER_MIN;
@@ -556,12 +556,12 @@ void SkyEvents_Refresh(SkyObjects *objects, int refresh)
 CLEAN_AS(func_020bdfd8, SkyEvents_Refresh)
 
 /* func_020be000: which of today's open events are on now: 0x44 (SKY_EVENT_44), 0x45
- * (SKY_EVENT_45), 0x13 or 0xf (SKY_EVENT_SHOW). */
+ * (SKY_EVENT_45), 0x13 or 0xf (SKY_EVENT_FIREWORKS). */
 void SkyEvents_ReadCalendar(SkyObjects *objects)
 {
     objects->events[SKY_EVENT_44] = 0;
     objects->events[SKY_EVENT_45] = 0;
-    objects->events[SKY_EVENT_SHOW] = 0;
+    objects->events[SKY_EVENT_FIREWORKS] = 0;
     DateTime now = {0};
     DateTime when;
     EventCalendarEvent events[EVENT_CALENDAR_DAY_EVENTS];
@@ -579,7 +579,7 @@ void SkyEvents_ReadCalendar(SkyObjects *objects)
         } else if (id == EVENT_CALENDAR_EVENT_45) {
             objects->events[SKY_EVENT_45] = 1;
         } else if (id == 0x13 || id == 0xf) {
-            objects->events[SKY_EVENT_SHOW] = 1;
+            objects->events[SKY_EVENT_FIREWORKS] = 1;
         }
     }
 }

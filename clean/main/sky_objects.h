@@ -2,10 +2,10 @@
  * process, block_020ba298.h): 60 entries of sprites drawn over the sky by their cell animations
  * (SkyObject), the five slots of resources they share (SkyObjectSlot, sky.h), and the state of
  * what puts them there: the rain and snow (by Sky.precipitation), the thunder of heavy rain, the
- * time of day and the show of kind-9 objects launched from four places (sky_show.h).
+ * time of day and the fireworks show of kind-9 objects launched from four places (sky_fireworks.h).
  *
  * Without the sky drawn (Sky's data_021f6cd8 0) only the thunder and the show run, and the show
- * is then heard rather than seen (SkyShow_Launch). */
+ * is then heard rather than seen (SkyFireworks_Launch). */
 #ifndef CLEAN_MAIN_SKY_OBJECTS_H
 #define CLEAN_MAIN_SKY_OBJECTS_H
 
@@ -29,9 +29,9 @@ enum SkyObjectState {
 /* SkyObject.kind (func_020bdc50's second argument): the ones these functions know. */
 enum SkyObjectKind {
     SKY_OBJECT_KIND_2 = 2,
-    SKY_OBJECT_KIND_3 = 3,
-    SKY_OBJECT_SHOW = 9,     /* sky_show.h */
-    SKY_OBJECT_UNDRAWN = 0xd /* never drawn by SkyObjects_Draw */
+    SKY_OBJECT_SHOOTING_STAR = 3, /* sky_shooting_star.h */
+    SKY_OBJECT_FIREWORK = 9,      /* sky_fireworks.h */
+    SKY_OBJECT_UNDRAWN = 0xd      /* never drawn by SkyObjects_Draw */
 };
 
 /* An object (0x74 bytes). */
@@ -77,13 +77,13 @@ typedef struct SkyObjects {
     u32 second;                          /* 0x2f1c: the clock's second at this frame */
     u32 last_second;                     /* 0x2f20: and at the one before */
     u8 events[8];                        /* 0x2f24: SkyObjectsEventByte */
-    s32 program;                         /* 0x2f2c: the show's program, 0: none (sky_show.h) */
+    s32 program;                         /* 0x2f2c: the show's program, 0: none (sky_fireworks.h) */
     s32 program_timer;                   /* 0x2f30 */
     s32 countdown;                       /* 0x2f34 */
     s32 launch_timers[4];                /* 0x2f38: per launch place */
     s32 launch_delay;                    /* 0x2f48 */
-    s32 kind3_delay;                     /* 0x2f4c: frames until a kind-3 object is added, 0: none due */
-    u8 kind3_seen;                       /* 0x2f50: the kind-3 object is on the screen (sky_kind3.h) */
+    s32 shooting_star_delay;             /* 0x2f4c: frames until a kind-3 object is added, 0: none due */
+    u8 shooting_star_seen;               /* 0x2f50: the kind-3 object is on the screen (sky_shooting_star.h) */
     u8 blend_alpha;                      /* 0x2f51: the clouds' blending (SkyObjects_SetBlend) */
     u8 unk_2f52[2];                      /* 0x2f52 */
     s32 wind;                            /* 0x2f54: the drops' spread of angles, 1.0 in heavy rain, else 0.5 (sky_falling.h) */
@@ -100,7 +100,7 @@ void SkyObjects_RunEvents(SkyObjects *objects);
 void SkyObjects_RunWeather(SkyObjects *objects);
 void SkyObjects_Delete(SkyObjects *objects);
 void SkyObjects_Start(SkyObjects *objects);
-void SkyObjects_Add2Mark3(SkyObjects *objects);
+void SkyObjects_MarkShootingStar(SkyObjects *objects);
 void SkyObjects_SetBlend(SkyObjects *objects);
 
 /* ---- The entries, the resource slots and the clock (SkyObjects_Add and the others).
@@ -121,10 +121,10 @@ enum SkyObjectKindAdded {
     SKY_OBJECT_RAIN = 0,      /* SkyEvents_Rain */
     SKY_OBJECT_SNOW = 1,      /* SkyEvents_Snow */
     SKY_OBJECT_MOON = 4,      /* shown at night; its picture follows a cycle of 29.53 days */
-    SKY_OBJECT_KIND_5 = 5,    /* SkyEvents_AddKind5 */
+    SKY_OBJECT_BALLOON = 5,   /* the present balloon, SkyEvents_AddBalloon */
     SKY_OBJECT_SPACESHIP = 6, /* SkyEvents_AddSpaceship */
     SKY_OBJECT_KIND_7 = 7,    /* SkyEvents_AddKind7 */
-    SKY_OBJECT_KIND_8 = 8,    /* sometimes, with the thunder of heavy rain */
+    SKY_OBJECT_LIGHTNING = 8, /* sometimes, with the thunder of heavy rain */
     SKY_OBJECT_KIND_10 = 10,  /* with the clouds' blending, SkyEvents_UpdateKind10 */
     SKY_OBJECT_SHOT = 11,     /* sky_shots.h */
     SKY_OBJECT_KIND_12 = 12,  /* SkyEvents_AddKind12 */
@@ -132,14 +132,14 @@ enum SkyObjectKindAdded {
 
 /* SkyObjects_Add's entry: SKY_ENTRY_ANY, or the one entry an object of a kind always takes. */
 #define SKY_ENTRY_ANY SKY_OBJECT_COUNT
-#define SKY_ENTRY_KIND_3 30
+#define SKY_ENTRY_SHOOTING_STAR 30
 #define SKY_ENTRY_MOON 31
 #define SKY_ENTRY_KIND_10 32
 #define SKY_ENTRY_SHOTS 33   /* three for each of the four players */
 #define SKY_ENTRY_VISITOR 45 /* kinds 5, 6 and 7 */
-#define SKY_ENTRY_SHOW_FIRST 46
-#define SKY_ENTRY_SHOW_LAST 58
-#define SKY_ENTRY_KIND_8 59
+#define SKY_ENTRY_FIREWORKS_FIRST 46
+#define SKY_ENTRY_FIREWORKS_LAST 58
+#define SKY_ENTRY_LIGHTNING 59
 #define SKY_ENTRY_OTHERS 30 /* the entries any other object takes, while fewer are in use */
 
 #define SKY_SLOTS 5
@@ -147,12 +147,12 @@ enum SkyObjectKindAdded {
 
 /* SkyObjects.events: bytes of the events that add objects (sky_events.h). */
 enum SkyObjectsEventByte {
-    SKY_EVENT_ODDS_5 = 0,      /* 0x2f24: SkyEvents_AddKind5's odds, 0: not drawn yet */
-    SKY_EVENT_ODDS_6 = 1,      /* 0x2f25: SkyEvents_AddSpaceship's */
-    SKY_EVENT_44 = 2,          /* 0x2f26: calendar event 0x44 is on (SkyEvents_ReadCalendar) */
-    SKY_EVENT_45 = 3,          /* 0x2f27: event 0x45 is */
-    SKY_EVENT_SHOW = 4,        /* 0x2f28: event 0x13 or 0xf is */
-    SKY_EVENT_KIND_12_DUE = 5, /* 0x2f29: SkyEvents_AddKind12 is to run once */
+    SKY_EVENT_ODDS_BALLOON = 0, /* 0x2f24: SkyEvents_AddBalloon's odds, 0: not drawn yet */
+    SKY_EVENT_ODDS_6 = 1,       /* 0x2f25: SkyEvents_AddSpaceship's */
+    SKY_EVENT_44 = 2,           /* 0x2f26: calendar event 0x44 is on (SkyEvents_ReadCalendar) */
+    SKY_EVENT_45 = 3,           /* 0x2f27: event 0x45 is */
+    SKY_EVENT_FIREWORKS = 4,    /* 0x2f28: event 0x13 or 0xf is */
+    SKY_EVENT_KIND_12_DUE = 5,  /* 0x2f29: SkyEvents_AddKind12 is to run once */
 };
 
 /* An entry of data_020d2bb4: a resource of the objects. */

@@ -10,7 +10,7 @@
 #include "sky_object_kinds.h"
 #include "sky_resources.h"
 #include "sky_shots.h"
-#include "sky_show.h"
+#include "sky_fireworks.h"
 #include "sky_events.h"
 #include "sky_object_sounds.h"
 
@@ -150,7 +150,7 @@ void SkyObjects_RunEvents(SkyObjects *objects)
     if (data_021f75b0.precipitation == SKY_FALLING_RAIN && data_021f75b0.weather == SKY_WEATHER_HEAVY_RAIN) {
         SkyEvents_Thunder(objects);
     }
-    SkyShow_Run(objects);
+    SkyFireworks_Run(objects);
 }
 CLEAN_AS(func_020bc42c, SkyObjects_RunEvents)
 
@@ -173,10 +173,10 @@ void SkyObjects_RunWeather(SkyObjects *objects)
     SkyEvents_AddKind12(objects);
     SkyEvents_UpdateMoon(objects);
     SkyEvents_UpdateKind10(objects);
-    SkyEvents_AddKind3(objects);
-    SkyShow_Run(objects);
+    SkyEvents_AddShootingStar(objects);
+    SkyFireworks_Run(objects);
     if (SceneQuery_Current() != SKY_OBJECTS_SCENE_2C) {
-        SkyEvents_AddKind5(objects);
+        SkyEvents_AddBalloon(objects);
         SkyEvents_AddSpaceship(objects);
         SkyEvents_AddKind7(objects);
         SkyShots_Launch(objects);
@@ -204,16 +204,16 @@ CLEAN_AS(func_020bc4f8, SkyObjects_Start)
  * marked (its parameter 1).
  * QUIRK: with no object of kind 3 the mark lands 0x60 bytes past the entries (in the slots and
  * the part after them); the game also checks that address, which is never null. */
-void SkyObjects_Add2Mark3(SkyObjects *objects)
+void SkyObjects_MarkShootingStar(SkyObjects *objects)
 {
-    int index = SkyObjects_FindKind(objects, SKY_OBJECT_KIND_3);
+    int index = SkyObjects_FindKind(objects, SKY_OBJECT_SHOOTING_STAR);
     uintptr_t marked = (uintptr_t) objects + (u32) index * (u32) sizeof(SkyObject);
     if (marked != 0) {
         SkyObjects_Add(objects, SKY_OBJECT_KIND_2, SKY_OBJECT_COUNT, NULL, 1);
         ((SkyObject *) marked)->param = 1;
     }
 }
-CLEAN_AS(func_020bc514, SkyObjects_Add2Mark3)
+CLEAN_AS(func_020bc514, SkyObjects_MarkShootingStar)
 
 /* func_020bc548: the clouds' blending of the set of lines shown: `blend_alpha` down to line
  * 0x76, then fading out over 32 lines (rounded); the lines below are left as they were.
@@ -244,7 +244,7 @@ static_assert(sizeof(SkyObjectSlot) == 12, "a slot");
 static_assert(sizeof(SkyResource) == 16, "a resource");
 static_assert(offsetof(SkyObjects, files) == 0x1b6c, "the files");
 static_assert(offsetof(SkyObjects, events) == 0x2f24, "the events' bytes");
-static_assert(offsetof(SkyObjects, kind3_seen) == 0x2f50, "0x2f50");
+static_assert(offsetof(SkyObjects, shooting_star_seen) == 0x2f50, "0x2f50");
 static_assert(offsetof(SkyObjects, wind) == 0x2f54, "0x2f54");
 static_assert(offsetof(SkyObjects, unk_2f58) == 0x2f58, "the shots' requests");
 
@@ -362,9 +362,9 @@ int SkyObjects_ResourceFor(SkyObjects *objects, int kind, int param)
                 return 40;
             }
             return data_020d266c[kind];
-        case SKY_OBJECT_KIND_5:
+        case SKY_OBJECT_BALLOON:
             return (param & 1) != 0 ? 33 : data_020d266c[kind];
-        case SKY_OBJECT_SHOW:
+        case SKY_OBJECT_FIREWORK:
             if (look <= 1) {
                 return 45;
             }
@@ -442,7 +442,7 @@ void SkyObjects_StartObjects(SkyObjects *objects)
     SkyEvents_StartFalling(objects);
     SkyEvents_UpdateMoon(objects);
     SkyEvents_UpdateKind10(objects);
-    objects->events[SKY_EVENT_ODDS_5] = 0;
+    objects->events[SKY_EVENT_ODDS_BALLOON] = 0;
 }
 CLEAN_AS(func_020be0a8, SkyObjects_StartObjects)
 
@@ -467,8 +467,8 @@ int SkyObjects_FreeEntry(SkyObjects *objects, int kind, int entry)
     if (entry != SKY_ENTRY_ANY) {
         return sky_objects_entry_at(objects, entry)->kind == SKY_OBJECT_UNDRAWN ? entry : SKY_OBJECT_COUNT;
     }
-    if (kind == SKY_OBJECT_SHOW) {
-        for (int i = SKY_ENTRY_SHOW_FIRST; i <= SKY_ENTRY_SHOW_LAST; i++) {
+    if (kind == SKY_OBJECT_FIREWORK) {
+        for (int i = SKY_ENTRY_FIREWORKS_FIRST; i <= SKY_ENTRY_FIREWORKS_LAST; i++) {
             if (objects->entries[i].kind == SKY_OBJECT_UNDRAWN) {
                 return i;
             }
@@ -558,7 +558,7 @@ CLEAN_AS(func_020be1c4, SkyObjects_SlotFor)
 /* A slot's resource shown: with `read_files` its files read first; its cells loaded unless
  * they are (then marked loaded, and with `read_files` no longer changed), its palette loaded
  * unless it is. */
-static void sky_objects_show_slot(SkyObjects *objects, SkyObjectSlot *slot, int read_files)
+static void sky_objects_fireworks_slot(SkyObjects *objects, SkyObjectSlot *slot, int read_files)
 {
     int resource = slot->kind;
     int loaded = slot->loaded;
@@ -588,7 +588,7 @@ void SkyObjects_ReloadChangedSlots(SkyObjects *objects, void *unused)
             continue;
         }
         if (slot->kind != SKY_OBJECT_NO_RESOURCE) {
-            sky_objects_show_slot(objects, slot, 0);
+            sky_objects_fireworks_slot(objects, slot, 0);
         }
         slot->changed = 0;
     }
@@ -618,7 +618,7 @@ void SkyObjects_LoadSlots(SkyObjects *objects)
 {
     for (SkyObjectSlot *slot = objects->slots; slot < objects->slots + SKY_SLOTS; slot++) {
         if (slot->kind != SKY_OBJECT_NO_RESOURCE) {
-            sky_objects_show_slot(objects, slot, 1);
+            sky_objects_fireworks_slot(objects, slot, 1);
         }
     }
 }
@@ -654,8 +654,8 @@ SkyObjects *SkyObjects_Construct(SkyObjects *objects)
         objects->launch_timers[i] = 0;
     }
     objects->launch_delay = 0;
-    objects->kind3_delay = 0;
-    objects->kind3_seen = 0;
+    objects->shooting_star_delay = 0;
+    objects->shooting_star_seen = 0;
     objects->blend_alpha = 0;
     objects->wind = 0;
 

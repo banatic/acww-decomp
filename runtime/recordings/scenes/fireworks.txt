@@ -1,6 +1,6 @@
 # fireworks (format: runtime/input.h), played from a town save by tools/scenes.py (the save is
 # not in this repository). Boot: as kk-request.txt, the clock at 20:00 on Saturday 7 August
-# 2027 (events 0x0f and 0x17 of event_calendar.h: the fireworks show, main/sky_show.h; the
+# 2027 (events 0x0f and 0x17 of event_calendar.h: the fireworks show, main/sky_fireworks.h; the
 # player stands in front of the house from about 4000 and, as in kk-request.txt, runs east to 4400).
 # Save: the seed town. South, west, north, east and north from there to the town hall (5360),
 # where the turtle (ov084/turtle_fireworks.h) stands; LEFT faces him and A every 40 frames talks to him:
