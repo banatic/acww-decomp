@@ -39,8 +39,8 @@ CLEAN_AS(func_020b3750, HouseLooks_Looks)
 
 /* func_020b3754: the record reset for a new town: new looks, a new style and the default
  * design; then every building (codes 0x5000-0x5021) on layer 0 of the town's acres (1, 1) to
- * (4, 4) is taken off its tile (AcreMap_ClearBuildingAt), acre by acre and tile by tile, x
- * first. Acres outside the map are skipped.
+ * (4, 4) is put down again on its tile, its shape's tiles marked (AcreMap_StampBuildingAt),
+ * acre by acre and tile by tile, x first. Acres outside the map are skipped.
  * REQUIRES: the town's map exists (AcreMap_Town is not 0); the original reads it regardless. */
 void HouseLooks_Reset(HouseLooksRecord *record)
 {
@@ -63,7 +63,7 @@ void HouseLooks_Reset(HouseLooksRecord *record)
                     int tile_x;
                     int tile_z;
                     AcreTile_TileOfAcre(&tile_x, &tile_z, (int) acre_x, (int) acre_z, x, z);
-                    AcreMap_ClearBuildingAt((int) (uintptr_t) town, (int) (uintptr_t) item, tile_x, tile_z);
+                    AcreMap_StampBuildingAt((int) (uintptr_t) town, (int) (uintptr_t) item, tile_x, tile_z);
                 }
             }
         }

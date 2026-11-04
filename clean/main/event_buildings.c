@@ -358,7 +358,7 @@ void EventBuildings_PutAtSpot(int code)
     if (event_buildings_in_range(*spot)) {
         AcreMap_SetBuildingAt((int) town, tile_x, tile_z, 0);
     }
-    AcreMap_ClearBuildingAt((int) town, (int) (uintptr_t) &building, tile_x, tile_z);
+    AcreMap_StampBuildingAt((int) town, (int) (uintptr_t) &building, tile_x, tile_z);
 }
 CLEAN_AS(func_020b2fc4, EventBuildings_PutAtSpot)
 

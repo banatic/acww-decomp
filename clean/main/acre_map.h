@@ -93,7 +93,7 @@ void AcreMap_FindBuildingPoint(u16 *out, void *map, int *position, int *tile_x, 
 void AcreMap_FindItem(u16 *out, void *map, u32 position, int *tile_x, int *tile_z, u16 first, u16 last, u32 flags);
 int AcreMap_SetBuildingInAcre(int map, int acre_x, int acre_z, int x, int z, int item);
 int AcreMap_SetBuildingAt(int map, int tile_x, int tile_z, int item);
-int AcreMap_ClearBuildingAt(int map, int item, int tile_x, int tile_z);
+int AcreMap_StampBuildingAt(int map, int item, int tile_x, int tile_z);
 
 unsigned int AcreMap_Town(void);
 void AcreMap_ReleaseTownSlot(AcreMap *map);

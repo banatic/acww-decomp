@@ -36,7 +36,7 @@ extern void func_0207bd28(void);
 
 /* func_0207bbb8: every villager without a house tile gets a random free plot of the town's
  * map, in villager order, while plots are left: the villager's house is put there
- * (AcreMap_ClearBuildingAt with its code) and, when that succeeds, the plot becomes the
+ * (AcreMap_StampBuildingAt with its code) and, when that succeeds, the plot becomes the
  * villager's house tile. The plot is used up either way. Nothing without the town's map.
  * REQUIRES: the map has at most 30 free plots, as the town's layouts do. */
 void VillagerPlot_GiveHouses(VillagerTown *town)
@@ -78,7 +78,7 @@ void VillagerPlot_GiveHouses(VillagerTown *town)
         int nth = (int) MainRandom_Below(count);
         VillagerPlot *plot = &data_021d13a8[VillagerPlot_Nth(data_021d13a8, VILLAGER_PLOT_LIST, nth)];
         u16 house = MapCode_VillagerHouse((u32) j);
-        if (AcreMap_ClearBuildingAt((int) (uintptr_t) map, (int) (uintptr_t) &house, plot->x, plot->z) != 0) {
+        if (AcreMap_StampBuildingAt((int) (uintptr_t) map, (int) (uintptr_t) &house, plot->x, plot->z) != 0) {
             VillagerHome_SetTile(villager, plot);
         }
         VillagerPlotTile_Clear(plot);

@@ -603,13 +603,13 @@ int AcreMap_SetBuildingAt(int map, int tile_x, int tile_z, int item)
 }
 CLEAN_AS(func_0204e3f4, AcreMap_SetBuildingAt)
 
-/* func_0204e404: func_0204ef24, which replaces building `item` (a code's address) at the tile
- * with code 0xf030. */
-int AcreMap_ClearBuildingAt(int map, int item, int tile_x, int tile_z)
+/* func_0204e404: building `item` (a code's address) put down with its tile at the tile
+ * (AcreTile_StampBuilding): the other tiles of its shape become ACRE_TILE_ITEM_OCCUPIED. */
+int AcreMap_StampBuildingAt(int map, int item, int tile_x, int tile_z)
 {
     return AcreTile_StampBuilding((AcreMap *) (uintptr_t) map, (u16 *) (uintptr_t) item, tile_x, tile_z);
 }
-CLEAN_AS(func_0204e404, AcreMap_ClearBuildingAt)
+CLEAN_AS(func_0204e404, AcreMap_StampBuildingAt)
 
 /* ---- the town ---- */
 
