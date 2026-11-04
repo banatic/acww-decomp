@@ -48,26 +48,26 @@ typedef struct NookStore {
     u8 sold[(NOOK_STORE_PLACES >> 3) + 1]; /* 0x5c: a bit for each place */
 } NookStore;
 
-void NookStore_StockFixed155e(NookStore *store, u32 *next);
-void NookStore_Stock151f(NookStore *store, u32 *next);
+void NookStore_StockMedicine(NookStore *store, u32 *next);
+void NookStore_StockBottleLetter(NookStore *store, u32 *next);
 void NookStore_StockRoofPaints(NookStore *store, u32 *next);
 void NookStore_StockKind1(NookStore *store, u32 *next);
 void NookStore_StockKind3(NookStore *store, u32 *next);
 void NookStore_StockKind4(NookStore *store, u32 *next);
-void NookStore_StockPair(NookStore *store, u32 *next);
+void NookStore_StockSaplings(NookStore *store, u32 *next);
 void NookStore_StockTwelve(NookStore *store, u32 *next);
 void NookStore_StockKind0(NookStore *store, u32 *next);
-void NookStore_StockSeven(NookStore *store, u32 *next);
-int NookStore_Count155e(void);
-int NookStore_Count151f(NookStore *store);
+void NookStore_StockTools(NookStore *store, u32 *next);
+int NookStore_CountMedicine(void);
+int NookStore_CountBottleLetter(NookStore *store);
 int NookStore_CountRoofPaints(NookStore *store);
 int NookStore_CountKind1(NookStore *store);
 u8 NookStore_CountKind3(NookStore *store);
 u8 NookStore_CountKind4(NookStore *store);
-int NookStore_CountPair(NookStore *store);
+int NookStore_CountSaplings(NookStore *store);
 u8 NookStore_CountTwelve(NookStore *store);
 int NookStore_CountKind0(NookStore *store);
-int NookStore_CountSeven(NookStore *store);
+int NookStore_CountTools(NookStore *store);
 void NookStore_SetLevel(NookStore *store, u16 level);
 u32 NookStore_Level(NookStore *store);
 void NookStore_StockDone(NookStore *store);

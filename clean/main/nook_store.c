@@ -46,12 +46,12 @@ static_assert(offsetof(NookStore, sold) == 0x5c, "sold");
 /* The 16 roof paints of NookStore_StockRoofPaints: 0x1521 plus the count in bits 5-8. */
 #define NOOK_ROOF_PAINT_FIRST 0x1521
 #define NOOK_ROOF_PAINT_COUNT 16
-/* The item that marks the first section at level 0 (an index into the seven). */
-#define NOOK_SEVEN_MARK 3
-/* Items that a sale leaves on sale. */
-#define NOOK_KEEP_FIRST 0x1000
-#define NOOK_KEEP_LAST 0x10ff
-#define NOOK_KEEP_ITEM 0x151f
+/* The tool the first section has at level 0: the fishing rod (an index into the seven tools). */
+#define NOOK_TOOLS_ROD 3
+/* Items that a sale leaves on sale: the stationery and the bottle letter. */
+#define NOOK_STATIONERY_FIRST 0x1000
+#define NOOK_STATIONERY_LAST 0x10ff
+#define NOOK_BOTTLE_LETTER 0x151f
 
 /* Flags of the state block. */
 #define NOOK_FLAG_BONUS_DAY 5    /* a bonus day is planned */
@@ -127,8 +127,9 @@ extern const u8 data_020d1e2c[4];
 extern const u8 data_020d1e30[4];
 /* The twelve items NookStore_StockTwelve sells (shops.c picks from them too). */
 extern const u16 data_020d1e5c[12];
-/* The seven items NookStore_StockSeven sells, a static array built on its first call: its
- * guard (bit 0) and a destruction record for each. */
+/* The seven tools NookStore_StockTools sells (shovel, watering can, net, rod, timer, axe and
+ * slingshot), a static array built on its first call: its guard (bit 0) and a destruction
+ * record for each. */
 extern u32 data_021f4a00;
 extern u16 data_021f4abc[7];
 extern u8 data_021f4a20[];
@@ -185,19 +186,20 @@ static void nook_draw(u16 *item, const NookItemLot *lot)
     ItemList_Destruct(&copy);
 }
 
-/* func_020aeb6c: the item 0x155e. */
-void NookStore_StockFixed155e(NookStore *store, u32 *next)
+/* func_020aeb6c: the medicine (0x155e). */
+void NookStore_StockMedicine(NookStore *store, u32 *next)
 {
-    ShopStock_DrawCodes(store->items, next, 0x155e, 1, (u32) NookStore_Count155e(), NOOK_SECTION_SIZE, 0);
+    ShopStock_DrawCodes(store->items, next, 0x155e, 1, (u32) NookStore_CountMedicine(), NOOK_SECTION_SIZE, 0);
 }
-CLEAN_AS(func_020aeb6c, NookStore_StockFixed155e)
+CLEAN_AS(func_020aeb6c, NookStore_StockMedicine)
 
-/* func_020aeb9c: the item 0x151f, from level 1 on. */
-void NookStore_Stock151f(NookStore *store, u32 *next)
+/* func_020aeb9c: the bottle letter (0x151f), from level 1 on. */
+void NookStore_StockBottleLetter(NookStore *store, u32 *next)
 {
-    ShopStock_DrawCodes(store->items, next, NOOK_KEEP_ITEM, 1, (u32) NookStore_Count151f(store), NOOK_SECTION_SIZE, 0);
+    ShopStock_DrawCodes(store->items, next, NOOK_BOTTLE_LETTER, 1, (u32) NookStore_CountBottleLetter(store), NOOK_SECTION_SIZE,
+                        0);
 }
-CLEAN_AS(func_020aeb9c, NookStore_Stock151f)
+CLEAN_AS(func_020aeb9c, NookStore_StockBottleLetter)
 
 /* func_020aebcc: the next roof paints of 0x1521 to 0x1530 (at level 3 only), the count going round. */
 void NookStore_StockRoofPaints(NookStore *store, u32 *next)
@@ -233,12 +235,13 @@ void NookStore_StockKind4(NookStore *store, u32 *next)
 }
 CLEAN_AS(func_020aec90, NookStore_StockKind4)
 
-/* func_020aecb8: the items 0x151d and 0x151e (shops.c treats them as a pair). */
-void NookStore_StockPair(NookStore *store, u32 *next)
+/* func_020aecb8: the saplings 0x151d and 0x151e (tree and cedar; shops.c treats them as a
+ * pair). */
+void NookStore_StockSaplings(NookStore *store, u32 *next)
 {
-    ShopStock_DrawCodes(store->items, next, 0x151d, 2, (u32) NookStore_CountPair(store), NOOK_SECTION_SIZE, 0);
+    ShopStock_DrawCodes(store->items, next, 0x151d, 2, (u32) NookStore_CountSaplings(store), NOOK_SECTION_SIZE, 0);
 }
-CLEAN_AS(func_020aecb8, NookStore_StockPair)
+CLEAN_AS(func_020aecb8, NookStore_StockSaplings)
 
 /* func_020aece8: items of the twelve of data_020d1e5c (drawn as their indices). */
 void NookStore_StockTwelve(NookStore *store, u32 *next)
@@ -258,10 +261,10 @@ void NookStore_StockKind0(NookStore *store, u32 *next)
 }
 CLEAN_AS(func_020aed38, NookStore_StockKind0)
 
-/* func_020aed60: items of the seven of data_021f4abc (drawn as their indices; at level 0 of the
- * first four only, one of them the fourth: when none drawn is, one of the first two places of
+/* func_020aed60: tools of the seven of data_021f4abc (drawn as their indices; at level 0 of the
+ * first four only, one of them the rod: when none drawn is, one of the first two places of
  * the section becomes it). The seven are built on the first call. */
-void NookStore_StockSeven(NookStore *store, u32 *next)
+void NookStore_StockTools(NookStore *store, u32 *next)
 {
     static const u16 codes[7] = {0x1369, 0x1378, 0x1376, 0x1374, 0x156c, 0x136b, 0x137a};
 
@@ -277,40 +280,40 @@ void NookStore_StockSeven(NookStore *store, u32 *next)
 
     int range = NookStore_Level(store) == 0 ? 4 : 7;
     u32 start = *next;
-    ShopStock_DrawCodes(store->items, next, 0, range, (u32) NookStore_CountSeven(store), NOOK_SECTION_SIZE, 0);
+    ShopStock_DrawCodes(store->items, next, 0, range, (u32) NookStore_CountTools(store), NOOK_SECTION_SIZE, 0);
 
     if (NookStore_Level(store) == 0) {
         int marks = 0;
-        for (u32 i = 0; i < (u32) NookStore_CountSeven(store); i++) {
-            u16 mark = NOOK_SEVEN_MARK;
+        for (u32 i = 0; i < (u32) NookStore_CountTools(store); i++) {
+            u16 mark = NOOK_TOOLS_ROD;
             if (nook_same_item(&store->items[start + i], &mark)) {
                 marks++;
             }
         }
         if (marks == 0) {
-            store->items[start + MainRandom_Below(2)] = NOOK_SEVEN_MARK;
+            store->items[start + MainRandom_Below(2)] = NOOK_TOOLS_ROD;
         }
     }
 
-    for (u32 i = 0; i < (u32) NookStore_CountSeven(store); i++) {
+    for (u32 i = 0; i < (u32) NookStore_CountTools(store); i++) {
         store->items[start + i] = data_021f4abc[store->items[start + i]];
     }
 }
-CLEAN_AS(func_020aed60, NookStore_StockSeven)
+CLEAN_AS(func_020aed60, NookStore_StockTools)
 
 /* func_020aef28 */
-int NookStore_Count155e(void)
+int NookStore_CountMedicine(void)
 {
     return 1;
 }
-CLEAN_AS(func_020aef28, NookStore_Count155e)
+CLEAN_AS(func_020aef28, NookStore_CountMedicine)
 
 /* func_020aef2c */
-int NookStore_Count151f(NookStore *store)
+int NookStore_CountBottleLetter(NookStore *store)
 {
     return data_020d1e30[NookStore_Level(store)];
 }
-CLEAN_AS(func_020aef2c, NookStore_Count151f)
+CLEAN_AS(func_020aef2c, NookStore_CountBottleLetter)
 
 /* func_020aef44: how many roof paints a restock sells at the store's level. */
 int NookStore_CountRoofPaints(NookStore *store)
@@ -341,11 +344,11 @@ u8 NookStore_CountKind4(NookStore *store)
 CLEAN_AS(func_020aef8c, NookStore_CountKind4)
 
 /* func_020aefa4 */
-int NookStore_CountPair(NookStore *store)
+int NookStore_CountSaplings(NookStore *store)
 {
     return data_020d1e2c[NookStore_Level(store)];
 }
-CLEAN_AS(func_020aefa4, NookStore_CountPair)
+CLEAN_AS(func_020aefa4, NookStore_CountSaplings)
 
 /* func_020aefbc */
 u8 NookStore_CountTwelve(NookStore *store)
@@ -362,11 +365,11 @@ int NookStore_CountKind0(NookStore *store)
 CLEAN_AS(func_020aefd4, NookStore_CountKind0)
 
 /* func_020aefec */
-int NookStore_CountSeven(NookStore *store)
+int NookStore_CountTools(NookStore *store)
 {
     return data_020d1e20[NookStore_Level(store)];
 }
-CLEAN_AS(func_020aefec, NookStore_CountSeven)
+CLEAN_AS(func_020aefec, NookStore_CountTools)
 
 /* func_020af004 */
 void NookStore_SetLevel(NookStore *store, u16 level)
@@ -527,16 +530,16 @@ void NookStore_Restock(NookStore *store, u8 year, u8 month, u8 day)
     NookStore_ClearStock(store);
     u32 next = 0;
     DatedRandom_SetDate((DatedRandom *) (void *) data_021f4a80, year, month, day);
-    NookStore_StockSeven(store, &next);
+    NookStore_StockTools(store, &next);
     NookStore_StockKind0(store, &next);
     NookStore_StockTwelve(store, &next);
-    NookStore_StockPair(store, &next);
+    NookStore_StockSaplings(store, &next);
     NookStore_StockKind4(store, &next);
     NookStore_StockKind3(store, &next);
     NookStore_StockKind1(store, &next);
     NookStore_StockRoofPaints(store, &next);
-    NookStore_Stock151f(store, &next);
-    NookStore_StockFixed155e(store, &next);
+    NookStore_StockBottleLetter(store, &next);
+    NookStore_StockMedicine(store, &next);
     NookStore_StockDone(store);
 }
 CLEAN_AS(func_020af31c, NookStore_Restock)
@@ -713,9 +716,9 @@ int NookStore_Sell(NookStore *store, u32 place, u32 amount, int local)
         nook_add_spent(store, amount);
         if (NookStore_IsSold(store, (int) place) == 0) {
             u16 item = *NookStore_Item(store, place, NULL);
-            if (!(item >= NOOK_KEEP_FIRST && item <= NOOK_KEEP_LAST)) {
+            if (!(item >= NOOK_STATIONERY_FIRST && item <= NOOK_STATIONERY_LAST)) {
                 item = *NookStore_Item(store, place, NULL);
-                if (item != NOOK_KEEP_ITEM) {
+                if (item != NOOK_BOTTLE_LETTER) {
                     store->sold[place >> 3] |= (u8) (1u << (place & 7));
                 }
             }
