@@ -48,13 +48,14 @@
 /* The scene (func_020b65c4) the activity handlers act in. */
 #define SCENE_2E 46
 
-/* The item ids SessionMessage_SetVillagerClothes and SessionMessage_SetVillagerObjectItem take. */
+/* The item ids SessionMessage_SetVillagerClothes (the clothes) and
+ * SessionMessage_SetVillagerObjectItem take. */
 #define VILLAGER_ITEM_FIRST 0x11a8
 #define VILLAGER_ITEM_LAST 0x12a7
-#define OBJECT0_ITEM_FIRST 0x12b0 /* for an object of type 0 */
-#define OBJECT0_ITEM_LAST 0x12e7
-#define OBJECT1_ITEM_FIRST 0x12e8 /* for an object of type 1 */
-#define OBJECT1_ITEM_LAST 0x131f
+#define OBJECT_INSECT_FIRST 0x12b0 /* the insects, for an object of type 0 */
+#define OBJECT_INSECT_LAST 0x12e7
+#define OBJECT_FISH_FIRST 0x12e8 /* the fish, for an object of type 1 */
+#define OBJECT_FISH_LAST 0x131f
 
 typedef void SessionMessageHandler(int size, int kind, u8 scene, u32 slot);
 
@@ -369,8 +370,9 @@ void SessionMessage_RelayTownItems(u32 size, int kind, u8 scene, u32 slot)
 }
 CLEAN_AS(func_02076198, SessionMessage_RelayTownItems)
 
-/* func_02076aa0: the answer (a byte) to message 53. */
-void SessionMessage_ReceiveAnswer(int size, int kind, u8 scene, u32 slot)
+/* func_02076aa0: the answer (a byte) to a scene claim's request, message 51
+ * (SceneClaim_ReceiveAnswer). */
+void SessionMessage_ReceiveSceneAnswer(int size, int kind, u8 scene, u32 slot)
 {
     (void) size;
     (void) kind;
@@ -380,10 +382,11 @@ void SessionMessage_ReceiveAnswer(int size, int kind, u8 scene, u32 slot)
     Session_ReadMessage(data_020ccf94, &answer, 1);
     SceneClaim_ReceiveAnswer(&answer);
 }
-CLEAN_AS(func_02076aa0, SessionMessage_ReceiveAnswer)
+CLEAN_AS(func_02076aa0, SessionMessage_ReceiveSceneAnswer)
 
-/* func_02076a78: the request (a byte) of message 53, with the sender's slot. */
-void SessionMessage_ReceiveRequest(int size, int kind, u8 scene, u32 slot)
+/* func_02076a78: a scene claim released (a byte, SceneClaim_ReceiveRelease), with the sender's
+ * slot. */
+void SessionMessage_ReceiveSceneRelease(int size, int kind, u8 scene, u32 slot)
 {
     (void) size;
     (void) kind;
@@ -392,7 +395,7 @@ void SessionMessage_ReceiveRequest(int size, int kind, u8 scene, u32 slot)
     Session_ReadMessage(data_020ccf94, &request, 1);
     SceneClaim_ReceiveRelease(&request, (int) slot);
 }
-CLEAN_AS(func_02076a78, SessionMessage_ReceiveRequest)
+CLEAN_AS(func_02076a78, SessionMessage_ReceiveSceneRelease)
 
 /* The entry of a villager that a payload byte names, or NULL. */
 static u8 *session_message_villager_entry(const u8 *byte)
@@ -648,7 +651,7 @@ CLEAN_AS(func_0207689c, SessionMessage_SetVillagerMemoryItem)
 
 /* func_02076638: an item (bytes 0-1) and a villager (byte 2; byte 3 is read and not used):
  * the item of the villager's object in use (0x2c) becomes it when it fits the object's type:
- * 0x12b0-0x12e7 for type 0, 0x12e8-0x131f for type 1. */
+ * the insects 0x12b0-0x12e7 for type 0, the fish 0x12e8-0x131f for type 1. */
 void SessionMessage_SetVillagerObjectItem(int size, int kind, u8 scene, u32 slot)
 {
     (void) size;
@@ -669,12 +672,13 @@ void SessionMessage_SetVillagerObjectItem(int size, int kind, u8 scene, u32 slot
     if (ItemObject_IsInUse((ItemObject *) (void *) in_use) == 0) {
         return;
     }
-    int fits = ItemObject_Type((ItemObject *) (void *) in_use) == 0 && item >= OBJECT0_ITEM_FIRST && item <= OBJECT0_ITEM_LAST;
+    int fits =
+        ItemObject_Type((ItemObject *) (void *) in_use) == 0 && item >= OBJECT_INSECT_FIRST && item <= OBJECT_INSECT_LAST;
     if (!fits) {
         if (ItemObject_Type((ItemObject *) (void *) in_use) != 1) {
             return;
         }
-        if (item < OBJECT1_ITEM_FIRST || item > OBJECT1_ITEM_LAST) {
+        if (item < OBJECT_FISH_FIRST || item > OBJECT_FISH_LAST) {
             return;
         }
     }
@@ -1185,9 +1189,9 @@ void SessionMessage_Handle50(int size, int kind, int scene, u32 slot)
 }
 CLEAN_AS(func_02076ae8, SessionMessage_Handle50)
 
-/* func_02076ac0: a request (a byte) for func_0209d4c0 with the sender's slot; it answers with
- * message 52. */
-void SessionMessage_Handle51(int size, int kind, int scene, int slot)
+/* func_02076ac0: a scene claim's request (a byte, SceneClaim_ReceiveRequest) with the sender's
+ * slot; it answers with message 52. */
+void SessionMessage_ReceiveSceneRequest(int size, int kind, int scene, int slot)
 {
     (void) size;
     (void) kind;
@@ -1196,4 +1200,4 @@ void SessionMessage_Handle51(int size, int kind, int scene, int slot)
     Session_ReadMessage(data_020ccf94, request, 1);
     SceneClaim_ReceiveRequest(request, slot);
 }
-CLEAN_AS(func_02076ac0, SessionMessage_Handle51)
+CLEAN_AS(func_02076ac0, SessionMessage_ReceiveSceneRequest)

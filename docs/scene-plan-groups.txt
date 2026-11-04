@@ -39,13 +39,13 @@ match: autoload_2/network:Wfc_CountFriends main/activity_link_jobs:ActivityLinkJ
   main/session_message:SessionMessage_Handle45 main/session_message:SessionMessage_Handle46
   main/session_message:SessionMessage_Handle47 main/session_message:SessionMessage_Handle48
   main/session_message:SessionMessage_Handle49 main/session_message:SessionMessage_Handle50
-  main/session_message:SessionMessage_Handle51 main/session_message:SessionMessage_PlaceTownItems
-  main/session_message:SessionMessage_ReceiveAnswer
+  main/session_message:SessionMessage_ReceiveSceneRequest main/session_message:SessionMessage_PlaceTownItems
+  main/session_message:SessionMessage_ReceiveSceneAnswer
   main/session_message:SessionMessage_ReceiveBundle15
   main/session_message:SessionMessage_ReceiveBundle16
   main/session_message:SessionMessage_ReceiveDesign
   main/session_message:SessionMessage_ReceivePlayerMessage
-  main/session_message:SessionMessage_ReceiveRequest
+  main/session_message:SessionMessage_ReceiveSceneRelease
   main/session_message:SessionMessage_RelayTownItems
   main/session_message:SessionMessage_RemovePlayer
   main/session_message:SessionMessage_SetActivityFlagE6

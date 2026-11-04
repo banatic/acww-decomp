@@ -4,15 +4,16 @@
  * payload; a handler reads the payload with Session_ReadMessage.
  *
  * Handlers 0-19 act on the link state (data_021f4320, next to the session), on the current
- * activity object (func_020a132c), or on items on the town map; handlers 52-63 change one of
- * the villagers (data_021e5a2c, eight entries of 0x7ec bytes, func_0207cec0) or an entry of
- * one (func_020807c0), their payload naming the villager in its high nibble.
+ * activity object (func_020a132c), or on items on the town map; handlers 52 and 53 are a
+ * scene claim's answer and release (scene_claim.h); handlers 54-63 change one of the villagers
+ * (data_021e5a2c, eight entries of 0x7ec bytes, func_0207cec0) or an entry of one
+ * (func_020807c0), their payload naming the villager in its high nibble.
  *
  * Handlers 20-51 read their payload and hand it on: to Design_Receive (21), to
  * PlayerMessages_Dispatch (22), to the sender's player record (func_020984fc; 43, 44, 46), to
  * overlay 3's objects (40, 41, 47, 48), and to other code of the game, some of which answers
- * with a message of its own: 30 with 31 or 32, 38 with 39, 40 with 41, 49 with 50 and 51 with
- * 52. */
+ * with a message of its own: 30 with 31 or 32, 38 with 39, 40 with 41, 49 with 50 and 51 (a
+ * scene claim's request) with 52. */
 #ifndef CLEAN_MAIN_SESSION_MESSAGE_H
 #define CLEAN_MAIN_SESSION_MESSAGE_H
 
@@ -71,9 +72,9 @@ void SessionMessage_Handle47(int size, int kind, u8 scene, u32 slot);           
 void SessionMessage_Handle48(int size, int kind, u8 scene, u32 slot);                    /* 48 */
 void SessionMessage_Handle49(int size, int kind, int scene, int slot);                   /* 49 */
 void SessionMessage_Handle50(int size, int kind, int scene, u32 slot);                   /* 50 */
-void SessionMessage_Handle51(int size, int kind, int scene, int slot);                   /* 51 */
-void SessionMessage_ReceiveAnswer(int size, int kind, u8 scene, u32 slot);               /* 52 */
-void SessionMessage_ReceiveRequest(int size, int kind, u8 scene, u32 slot);              /* 53 */
+void SessionMessage_ReceiveSceneRequest(int size, int kind, int scene, int slot);        /* 51 */
+void SessionMessage_ReceiveSceneAnswer(int size, int kind, u8 scene, u32 slot);          /* 52 */
+void SessionMessage_ReceiveSceneRelease(int size, int kind, u8 scene, u32 slot);         /* 53 */
 void SessionMessage_SetVillagerMemorySender(int size, int kind, int scene, int slot);    /* 54 */
 void SessionMessage_FillVillagerMemory(int size, int kind, int scene, int slot);         /* 55 */
 void SessionMessage_SetVillagerMemoryImpression(int size, int kind, u8 scene, u32 slot); /* 56 */
