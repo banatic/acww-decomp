@@ -53,7 +53,7 @@ static_assert(offsetof(SceneAction, released) == 0x0e, "SceneAction layout");
 /* The kinds of motion the actions set or wait for, and the priorities they set them with. */
 #define SCENE_ACTION_MOTION_STAND 0
 #define SCENE_ACTION_MOTION_TURN 3
-#define SCENE_ACTION_MOTION_TIMED 7
+#define SCENE_ACTION_MOTION_GESTURE 7
 #define SCENE_ACTION_MOTION_TALK 8
 #define SCENE_ACTION_PRIORITY 2
 #define SCENE_ACTION_PRIORITY_LOW 1
@@ -221,7 +221,7 @@ static void scene_action_aim_camera(void *object, Vec3 *at)
     }
 }
 
-/* ---- Action 4: a timed motion */
+/* ---- Action 4: a gesture */
 
 /* _ZN12Obj_020d8bd413func_02013c34EPv: the phase of action 4, through its table.
  * REQUIRES: phase 0, the only one in the table (the action ends as it leaves it); for 1 and 2
@@ -238,11 +238,11 @@ void SceneAction_RunPhase4(SceneAction *self, void *object)
 }
 CLEAN_AS(_ZN12Obj_020d8bd413func_02013c34EPv, SceneAction_RunPhase4)
 
-/* func_02013c98: once the timed motion (kind 7) is done, kind 0 with the low priority; the
+/* func_02013c98: once the gesture (kind 7) is done, kind 0 with the low priority; the
  * object is let go and the action ends. */
 void SceneAction_WaitMotion7(SceneAction *self, void *object)
 {
-    if (scene_action_motion_done(object, SCENE_ACTION_MOTION_TIMED)) {
+    if (scene_action_motion_done(object, SCENE_ACTION_MOTION_GESTURE)) {
         scene_action_set_motion(object, SCENE_ACTION_MOTION_STAND, SCENE_ACTION_PRIORITY_LOW, 0, 0);
         scene_action_release(self, object);
         self->phase = 1;
@@ -251,7 +251,7 @@ void SceneAction_WaitMotion7(SceneAction *self, void *object)
 }
 CLEAN_AS(func_02013c98, SceneAction_WaitMotion7)
 
-/* func_02013d08: the timed motion (func_02019cc8, kind 7) with `motion_b`, `motion_c` and
+/* func_02013d08: the gesture (func_02019cc8, kind 7) with `motion_b`, `motion_c` and
  * `motion_arg`; the object is held. */
 void SceneAction_Start4(SceneAction *self, void *object)
 {
@@ -619,12 +619,12 @@ int SceneAction_Request(SceneAction *self, u8 action, s32 motion_arg, u16 motion
 }
 CLEAN_AS(func_02014788, SceneAction_Request)
 
-/* func_020147b8: action 4 (the timed motion). */
-int SceneAction_RequestMotion7(SceneAction *self, int motion_arg, int motion_b, int motion_c, u8 keep_camera)
+/* func_020147b8: action 4 (a gesture). */
+int SceneAction_RequestGesture(SceneAction *self, int motion_arg, int motion_b, int motion_c, u8 keep_camera)
 {
     return SceneAction_Request(self, 4, motion_arg, (u16) motion_b, (s16) motion_c, 1, keep_camera);
 }
-CLEAN_AS(func_020147b8, SceneAction_RequestMotion7)
+CLEAN_AS(func_020147b8, SceneAction_RequestGesture)
 
 /* func_020147e0: action 1 (a talk). */
 int SceneAction_RequestTalk(SceneAction *self, int reset_motion, int keep_camera)

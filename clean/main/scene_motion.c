@@ -41,7 +41,7 @@ static_assert(offsetof(SceneMotion, effect) == 0xac, "SceneMotion layout");
 #define SCENE_MOTION_OBJECT_ANGLE 0x8e    /* s16 */
 #define SCENE_MOTION_OBJECT_ANGLE_94 0x94 /* s16: given the object's angle as kind 21 turns */
 #define SCENE_MOTION_OBJECT_MODEL 0xec
-#define SCENE_MOTION_OBJECT_ITEM 0xea        /* u16: an item code */
+#define SCENE_MOTION_OBJECT_PERSON 0xea      /* u16: the person (0xd00c and the like) */
 #define SCENE_MOTION_OBJECT_BODY_FRAME 0x190 /* fx32: the frame of the body animation */
 #define SCENE_MOTION_OBJECT_ANIM 0x334       /* SpeakerAnim */
 #define SCENE_MOTION_OBJECT_MOVER 0x350
@@ -901,7 +901,7 @@ static void scene_motion_kind14_to_step2(SceneMotion *self, u8 *object)
     self->step = 2;
 }
 
-/* func_020183cc: kind 14's step 0, while func_02057bf0 (2) says so: with the object's item
+/* func_020183cc: kind 14's step 0, while func_02057bf0 (2) says so: with the object's person
  * 0xd00c, or near the object at data_021c9350 (func_02057c68), step 2. Else, with the motion's
  * item 0x1565, its word at 0x24 zero and func_020b65c4 9 or 0x10, step 2 when func_02057c20
  * says so of the object (else nothing). Else the object walks (mover mode 1) to the point
@@ -913,7 +913,7 @@ void SceneMotion_Kind14Step0(SceneMotion *self, u8 *object)
     }
     SceneMotionArgs *args = SceneMotion_Args(self);
 
-    if (scene_motion_item_is((u16 *) (void *) scene_motion_part(object, SCENE_MOTION_OBJECT_ITEM), 0xd00c) ||
+    if (scene_motion_item_is((u16 *) (void *) scene_motion_part(object, SCENE_MOTION_OBJECT_PERSON), 0xd00c) ||
         Obj020dd33c_IsNear((const Actor *) (void *) object)) {
         scene_motion_kind14_to_step2(self, object);
         return;

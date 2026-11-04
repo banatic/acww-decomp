@@ -55,7 +55,7 @@ void Ov032Init_SceneTables(void)
     data_ov032_022602e4.y = 0;
     data_ov032_022602e4.z = 0x1d000;
     __register_global_object(&data_ov032_022602e4, (void *) (uintptr_t) func_020012dc, &data_ov032_022602cc);
-    ov032_init_exit(&data_ov032_0226032c, SCENE_EXIT_TO_BUILDINGS_5014, &(Vec3){0, 0, 0}, 0x800000, 0, 2, 2, 0, 4,
+    ov032_init_exit(&data_ov032_0226032c, SCENE_EXIT_TO_PLAYER_HOUSE, &(Vec3){0, 0, 0}, 0x800000, 0, 2, 2, 0, 4,
                     &data_ov032_022602f0);
     ov032_init_exit(&data_ov032_02260348, 0x07, &(Vec3){0xf000, 0, 0x1d000}, 0x10c00000, 0x4000, 2, 2, -0x4000, 1,
                     &data_ov032_02260308);

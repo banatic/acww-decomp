@@ -374,8 +374,8 @@ CLEAN_AS(func_020c19ec, MissingNpc1Talk_OnMessage)
 int MissingNpc1Talk_PutTownNames(MissingNpc1Talk *talk)
 {
     u8 *pairing = missing_npc1_pairing();
-    SceneBase_PutNameAt2(&talk->scene, (unsigned int) (uintptr_t) PairedTown_Town(pairing), 0);
-    return (int) (uintptr_t) SceneBase_PutNameAt2(&talk->scene, (unsigned int) (uintptr_t) PairedTown_Town(pairing), 1);
+    SceneBase_PutTownName(&talk->scene, (unsigned int) (uintptr_t) PairedTown_Town(pairing), 0);
+    return (int) (uintptr_t) SceneBase_PutTownName(&talk->scene, (unsigned int) (uintptr_t) PairedTown_Town(pairing), 1);
 }
 CLEAN_AS(func_020c19fc, MissingNpc1Talk_PutTownNames)
 

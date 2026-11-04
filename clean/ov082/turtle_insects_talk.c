@@ -357,7 +357,7 @@ int TurtleInsectsTalk_ShowRecord(TurtleInsectsTalk *talk)
     SceneBase_PutValue(&talk->base, turtle_insects_talk_whole(EventWinner_Size(record)), TURTLE_INSECTS_TALK_SLOT_SIZE,
                        TURTLE_INSECTS_TALK_SIZE_FORMAT, 0, 0);
     if (PlayerId_IsSet(player) != 0) {
-        SceneBase_PutNameAt10(&talk->base, EventWinner_Player(record), TURTLE_INSECTS_TALK_SLOT_NAME);
+        SceneBase_PutPlayerName(&talk->base, EventWinner_Player(record), TURTLE_INSECTS_TALK_SLOT_NAME);
         DesignCreator *mine = PlayerRecord_Player(PlayerRecords_Current());
         DesignCreator *holder = EventWinner_Player(record);
         if (holder->town_id != mine->town_id || memcmp(holder->town_name, mine->town_name, sizeof holder->town_name) != 0 ||

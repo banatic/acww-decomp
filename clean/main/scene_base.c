@@ -81,7 +81,7 @@ extern const u8 data_020d8bd4[];
 /* What SceneBase_SpeakingKind answers without a speaker. */
 #define SCENE_BASE_NO_KIND 5
 
-/* The command the scene starts with (scene_command.h), and the item code for none. */
+/* The command the scene starts with (scene_command.h). */
 #define SCENE_BASE_NO_COMMAND 12
 
 /* The message of "st_general" PutCount appends, and the kinds of value func_020683b4 takes. */
@@ -424,9 +424,9 @@ void SceneBase_PutNpcName(SceneBase *scene, const void *npc, int slot)
 }
 CLEAN_AS(func_02015e10, SceneBase_PutNpcName)
 
-/* func_02015e40: puts the six characters at 0x10 of `from` (func_02095074) into the talk's
- * slot `slot`. */
-void SceneBase_PutNameAt10(SceneBase *scene, void *from, int slot)
+/* func_02015e40: puts the player's name (the six characters at 0x10 of `from`, func_02095074)
+ * into the talk's slot `slot`. */
+void SceneBase_PutPlayerName(SceneBase *scene, void *from, int slot)
 {
     SceneBaseText text;
     PlayerIdText_Construct((PlayerIdText *) &text);
@@ -434,12 +434,12 @@ void SceneBase_PutNameAt10(SceneBase *scene, void *from, int slot)
     TalkObject_SetPart((TalkObject *) (void *) scene->talk, slot, (TextBase *) &text);
     PlayerIdText_Destruct((PlayerIdText *) &text);
 }
-CLEAN_AS(func_02015e40, SceneBase_PutNameAt10)
+CLEAN_AS(func_02015e40, SceneBase_PutPlayerName)
 
-/* func_02015e70: puts the six characters at 2 of `from` (func_02064210) into the talk's slot
- * `slot`. QUIRK: the answer is that of the text's destructor, the address of the text on
+/* func_02015e70: puts the town's name (the six characters at 2 of `from`, func_02064210) into
+ * the talk's slot `slot`. QUIRK: the answer is that of the text's destructor, the address of the text on
  * this function's own stack, which no caller uses. */
-void *SceneBase_PutNameAt2(SceneBase *scene, unsigned int from, unsigned int slot)
+void *SceneBase_PutTownName(SceneBase *scene, unsigned int from, unsigned int slot)
 {
     SceneBaseText text;
     TownNameText_Construct((TownNameText *) &text);
@@ -447,7 +447,7 @@ void *SceneBase_PutNameAt2(SceneBase *scene, unsigned int from, unsigned int slo
     TalkObject_SetPart((TalkObject *) (void *) scene->talk, (int) slot, (TextBase *) &text);
     return TownNameText_Destruct((TownNameText *) &text);
 }
-CLEAN_AS(func_02015e70, SceneBase_PutNameAt2)
+CLEAN_AS(func_02015e70, SceneBase_PutTownName)
 
 /* func_02015ea0: puts the number `value` (func_020b44a4) into the talk's slot `slot`. */
 void SceneBase_PutNumber(SceneBase *scene, int value, int slot)
@@ -529,7 +529,9 @@ void SceneBase_PutValue(SceneBase *scene, int value, int slot, int format, int a
 }
 CLEAN_AS(func_02015fb0, SceneBase_PutValue)
 
-/* func_02015ff4: whether command 3 or 4 holds the first speaker's motion (byte 0x60 is 1). */
+/* func_02015ff4: whether the first speaker's motion is held (byte 0x60 is 1): set by commands 4,
+ * 6 and 7 (SceneCommand_StartMotion14, 16 and 17); cleared when commands 4 (unless motion_b is
+ * 4), 5, 6, 7 and 9 are waited out. */
 int SceneBase_IsHolding(const SceneBase *scene)
 {
     return scene->holding == 1;

@@ -27,8 +27,8 @@ static_assert(offsetof(SceneExitScene, exits) == 0x0c, "exits");
 #define SCENE_EXIT_NO_INDEX (-1)
 /* An exit in the table with no height is given this one when taken. */
 #define SCENE_EXIT_DEFAULT_HEIGHT 0x200
-/* A door of this kind is taken as the next kind in a session. */
-#define SCENE_EXIT_SESSION_KIND 7
+/* In a session an exit to this scene leads to the next one. */
+#define SCENE_EXIT_SESSION_SCENE 7
 /* What the exits to a building of the town map lead to: scene 0 (where the town map is), 1.0
  * further on z than the building's front, with this parameter and angle 0. */
 #define SCENE_EXIT_BUILDING_SCENE 0
@@ -247,7 +247,7 @@ CLEAN_AS(func_020b6098, SceneExit_Take)
  * the exits to places, else the table's record), and which (enum SceneExitSource); 0 without
  * such an exit. The tile is only given for the places.
  * QUIRK: an exit of the table with height 0 is given SCENE_EXIT_DEFAULT_HEIGHT in the table
- * itself; in a session a door of kind 7 leads as kind 8.
+ * itself; in a session an exit to scene 7 leads to scene 8.
  * BUG: for an exit of the table the ROM writes what was on the stack to `tile_x` and `tile_z`
  * (when not NULL); here 0 (no caller reads them then). */
 int SceneExit_Resolve(const SceneExit *entry, int index, u8 *scene, Vec3 *position, int *player_param, s16 *angle,
@@ -277,8 +277,8 @@ int SceneExit_Resolve(const SceneExit *entry, int index, u8 *scene, Vec3 *positi
         exit->position.y = SCENE_EXIT_DEFAULT_HEIGHT;
     }
     NetSession *session = data_020ccf94;
-    if (Session_IsSlotTaken(session, session->local_slot) != 0 && to == SCENE_EXIT_SESSION_KIND) {
-        to = SCENE_EXIT_SESSION_KIND + 1;
+    if (Session_IsSlotTaken(session, session->local_slot) != 0 && to == SCENE_EXIT_SESSION_SCENE) {
+        to = SCENE_EXIT_SESSION_SCENE + 1;
     }
     *scene = to;
     scene_exit_copy_point(position, &exit->position);
@@ -342,14 +342,14 @@ int SceneExit_ResolveSpecial(const SceneExit *entry, int index, u8 *scene, Vec3 
     int front_tile_z = 0;
 
     switch (exit->scene) {
-        case SCENE_EXIT_TO_BUILDINGS_5014: {
+        case SCENE_EXIT_TO_PLAYER_HOUSE: {
             int found = AcreMap_HasPlayerHouse(town, (int) (uintptr_t) &front, (int) (uintptr_t) &front_tile_x,
                                                (int) (uintptr_t) &front_tile_z);
             scene_exit_to_building(exit, found, &front, front_tile_x, front_tile_z, scene, position, player_param, angle,
                                    tile_x, tile_z, change_arg, next_arg);
             return SCENE_EXIT_FROM_MARKED;
         }
-        case SCENE_EXIT_TO_BUILDING_500B: {
+        case SCENE_EXIT_TO_GATE: {
             int found = AcreMap_HasGate(town, (int) (uintptr_t) &front, (int) (uintptr_t) &front_tile_x,
                                         (int) (uintptr_t) &front_tile_z);
             scene_exit_to_building(exit, found, &front, front_tile_x, front_tile_z, scene, position, player_param, angle,

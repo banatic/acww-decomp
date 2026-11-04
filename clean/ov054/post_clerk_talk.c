@@ -492,7 +492,8 @@ void PostClerkTalk_OnLineBegin(PostClerkTalk *talk)
             int slot = 2;
             for (int i = 0; i < PLAYER_RECORDS_TOWN; i++) {
                 if (PlayerRecords_TownExists(data_021dc7bc, i) != 0 && i != PlayerRecords_CurrentNumber()) {
-                    SceneBase_PutNameAt10(&talk->base, PlayerRecord_Player(PlayerRecords_TownRecord(data_021dc7bc, i)), slot);
+                    SceneBase_PutPlayerName(&talk->base, PlayerRecord_Player(PlayerRecords_TownRecord(data_021dc7bc, i)),
+                                            slot);
                     slot++;
                 }
             }

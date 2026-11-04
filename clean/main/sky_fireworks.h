@@ -14,7 +14,7 @@
  *
  * A place launches only when no object it launched is still in the last 13 entries, nor a large
  * one whose bit 29 is clear. Without the sky drawn, a launch only hands its number to
- * func_02065268. */
+ * SceneLights_StartFlash. */
 #ifndef CLEAN_MAIN_SKY_FIREWORKS_H
 #define CLEAN_MAIN_SKY_FIREWORKS_H
 

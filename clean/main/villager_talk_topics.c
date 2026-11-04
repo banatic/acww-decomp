@@ -123,7 +123,7 @@ extern const MemberPointer data_020d9250; /* VillagerTalkTopics_PickFond */
 extern const MemberPointer data_020d92a8; /* VillagerTalkTopics_PickUnfond */
 extern const MemberPointer data_020d9190; /* VillagerTalkTopics_PickLetterOfTown */
 extern const MemberPointer data_020d9300; /* VillagerTalkTopics_PickWithText2A */
-extern const MemberPointer data_020d9318; /* VillagerTalkTopics_PickWithValues */
+extern const MemberPointer data_020d9318; /* VillagerTalkTopics_PickWithTownTune */
 extern const MemberPointer data_020d9330; /* VillagerTalkTopics_PickAny */
 extern const MemberPointer data_020d92c8; /* VillagerTalkTopics_PickWithText2A */
 extern const MemberPointer data_020d9418; /* VillagerTalkTopics_PickLetterOfResident */
@@ -348,8 +348,8 @@ int VillagerTalkTopics_SayConstellation(VillagerTalk *talk)
     ConstellationsLabel_Destruct(&label);
     ConstellationsWideName_Destruct(&wide);
 
-    SceneBase_PutNameAt10(topics_base(talk), &constellation->creator, 1);
-    SceneBase_PutNameAt2(topics_base(talk), (unsigned int) (uintptr_t) PlayerId_Town(&constellation->creator), 2);
+    SceneBase_PutPlayerName(topics_base(talk), &constellation->creator, 1);
+    SceneBase_PutTownName(topics_base(talk), (unsigned int) (uintptr_t) PlayerId_Town(&constellation->creator), 2);
     return 1;
 }
 CLEAN_AS(func_02021284, VillagerTalkTopics_SayConstellation)
@@ -589,7 +589,7 @@ int VillagerTalkTopics_SayOtherPlayer(VillagerTalk *talk)
         u8 impression = VillagerMemoryEntry_Impression(memory);
         u8 end = 0;
         SceneBase_PutBytes(topics_base(talk), 2, &impression, (int) (uintptr_t) data_020d9f68, &end);
-        SceneBase_PutNameAt10(topics_base(talk), VillagerMemoryEntry_Player(memory), 10);
+        SceneBase_PutPlayerName(topics_base(talk), VillagerMemoryEntry_Player(memory), 10);
         PlayerIdText_Destruct((PlayerIdText *) &text);
     }
     talk->record_138 = chosen;
@@ -607,7 +607,7 @@ u32 VillagerTalkTopics_PickWithItem(VillagerTalk *talk, VillagerMemory **list, u
     u32 memory = (u32) VillagerTalkTopics_PickRandom(topics_record(talk), list, (int) count, func_02021ae4);
     if (memory != 0) {
         VillagerMemory *picked = (VillagerMemory *) (uintptr_t) memory;
-        SceneBase_PutNameAt2(topics_base(talk), (unsigned int) VillagerMemoryEntry_Town(picked), 9);
+        SceneBase_PutTownName(topics_base(talk), (unsigned int) VillagerMemoryEntry_Town(picked), 9);
         SceneBase_PutItemName(topics_base(talk), VillagerMemoryEntry_Item(picked), 1, 7);
     }
     return memory;
@@ -628,8 +628,8 @@ static int topics_pick_town(VillagerTalk *talk, VillagerMemory **list, int count
 {
     int memory = VillagerTalkTopics_PickRandom(topics_record(talk), list, count, test);
     if (memory != 0) {
-        SceneBase_PutNameAt2(topics_base(talk),
-                             (unsigned int) VillagerMemoryEntry_Town((VillagerMemory *) (uintptr_t) (u32) memory), 9);
+        SceneBase_PutTownName(topics_base(talk),
+                              (unsigned int) VillagerMemoryEntry_Town((VillagerMemory *) (uintptr_t) (u32) memory), 9);
     }
     return memory;
 }
@@ -649,19 +649,19 @@ int VillagerTalkTopics_Any(void)
 CLEAN_AS(func_02021b48, VillagerTalkTopics_Any)
 
 /* func_02021b4c: a memory with its values set; its town into the talk's slot 9. */
-int VillagerTalkTopics_PickWithValues(VillagerTalk *talk, VillagerMemory **list, int count)
+int VillagerTalkTopics_PickWithTownTune(VillagerTalk *talk, VillagerMemory **list, int count)
 {
     return topics_pick_town(talk, list, count, func_02021b8c);
 }
-CLEAN_AS(func_02021b4c, VillagerTalkTopics_PickWithValues)
+CLEAN_AS(func_02021b4c, VillagerTalkTopics_PickWithTownTune)
 
 /* func_02021b8c */
-int VillagerTalkTopics_HasValues(u8 *villager, VillagerMemory *memory)
+int VillagerTalkTopics_HasTownTune(u8 *villager, VillagerMemory *memory)
 {
     (void) villager;
-    return VillagerMemoryEntry_ValuesSet(memory) == 1;
+    return VillagerMemoryEntry_TownTuneSet(memory) == 1;
 }
-CLEAN_AS(func_02021b8c, VillagerTalkTopics_HasValues)
+CLEAN_AS(func_02021b8c, VillagerTalkTopics_HasTownTune)
 
 /* func_02021ba8: a memory of a player of this town whose letter the villager holds; the
  * town of the sender of the villager's letter into the talk's slot 9. */
@@ -674,7 +674,7 @@ int VillagerTalkTopics_PickLetterOfResident(VillagerTalk *talk, VillagerMemory *
         NpcIdHead town;
         TownName_Construct(&town);
         TownName_Assign((TownName *) &town, (const TownName *) sender);
-        SceneBase_PutNameAt2(topics_base(talk), (unsigned int) (uintptr_t) &town, 9);
+        SceneBase_PutTownName(topics_base(talk), (unsigned int) (uintptr_t) &town, 9);
         TownName_Destruct(&town);
     }
     return memory;
@@ -704,7 +704,7 @@ void *VillagerTalkTopics_PickWithText2A(VillagerTalk *talk, VillagerMemory **lis
         Label22Text_Construct(&label);
         VillagerMemoryEntry_Text2AToLabel(picked, &label);
         TalkObject_SetPart((TalkObject *) talk->scene.talk, 1, (TextBase *) &label);
-        SceneBase_PutNameAt2(topics_base(talk), (unsigned int) VillagerMemoryEntry_Town(picked), 9);
+        SceneBase_PutTownName(topics_base(talk), (unsigned int) VillagerMemoryEntry_Town(picked), 9);
         Label22Text_Destruct(&label);
     }
     return (void *) (uintptr_t) (u32) memory;
@@ -725,8 +725,8 @@ void *VillagerTalkTopics_PickLetterOfTown(VillagerTalk *talk, VillagerMemory **l
 {
     int memory = VillagerTalkTopics_PickRandom(topics_record(talk), list, count, func_02021d10);
     if (memory != 0) {
-        SceneBase_PutNameAt2(topics_base(talk), (unsigned int) (uintptr_t) (topics_record(talk) + TOWN_VILLAGER_LETTER_TOWN),
-                             9);
+        SceneBase_PutTownName(topics_base(talk), (unsigned int) (uintptr_t) (topics_record(talk) + TOWN_VILLAGER_LETTER_TOWN),
+                              9);
     }
     return (void *) (uintptr_t) (u32) memory;
 }

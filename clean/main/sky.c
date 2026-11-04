@@ -149,47 +149,47 @@ void Sky_SwapLineShift(void)
 }
 CLEAN_AS(func_020ba340, Sky_SwapLineShift)
 
-/* func_020ba35c */
-void Sky_Objects020bdf68(int player)
+/* func_020ba35c: the player's fireworks shots fired (SkyShots_Fire). */
+void Sky_FireShots(int player)
 {
     SkyShots_Fire((SkyObjects *) (void *) data_021f8b48, player);
 }
-CLEAN_AS(func_020ba35c, Sky_Objects020bdf68)
+CLEAN_AS(func_020ba35c, Sky_FireShots)
 
-/* func_020ba36c */
-void Sky_Objects020bdfd8(int arg)
+/* func_020ba36c: the sky's events refreshed (SkyEvents_Refresh). */
+void Sky_RefreshEvents(int arg)
 {
     SkyEvents_Refresh((SkyObjects *) (void *) data_021f8b48, arg);
 }
-CLEAN_AS(func_020ba36c, Sky_Objects020bdfd8)
+CLEAN_AS(func_020ba36c, Sky_RefreshEvents)
 
-/* func_020ba37c: func_020bbc90 run on the sky (by ActivityLinkJobs). */
-void Sky_ReseedForLink(void)
+/* func_020ba37c: the sky's day angle redrawn (Sky_DrawDayAngle, by ActivityLinkJobs). */
+void Sky_RedrawDayAngleForLink(void)
 {
     Sky_DrawDayAngle(&data_021f75b0);
 }
-CLEAN_AS(func_020ba37c, Sky_ReseedForLink)
+CLEAN_AS(func_020ba37c, Sky_RedrawDayAngleForLink)
 
 /* func_020ba38c: the same, by StateBlock_StartMode3. */
-void Sky_ReseedForMode3(void)
+void Sky_RedrawDayAngleForMode3(void)
 {
     Sky_DrawDayAngle(&data_021f75b0);
 }
-CLEAN_AS(func_020ba38c, Sky_ReseedForMode3)
+CLEAN_AS(func_020ba38c, Sky_RedrawDayAngleForMode3)
 
 /* func_020ba39c: the same, by StateBlock_StartMode4. */
-void Sky_ReseedForMode4(void)
+void Sky_RedrawDayAngleForMode4(void)
 {
     Sky_DrawDayAngle(&data_021f75b0);
 }
-CLEAN_AS(func_020ba39c, Sky_ReseedForMode4)
+CLEAN_AS(func_020ba39c, Sky_RedrawDayAngleForMode4)
 
 /* func_020ba3ac: the same, by StateBlock_StartMode2. */
-void Sky_ReseedForMode2(void)
+void Sky_RedrawDayAngleForMode2(void)
 {
     Sky_DrawDayAngle(&data_021f75b0);
 }
-CLEAN_AS(func_020ba3ac, Sky_ReseedForMode2)
+CLEAN_AS(func_020ba3ac, Sky_RedrawDayAngleForMode2)
 
 /* func_020ba3bc: the next time at which the stars are scrolled by (scroll_x, scroll_y) from
  * where they are now: as many days ahead as columns of 8 pixels to the right (the 0x200 pixels

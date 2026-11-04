@@ -1,4 +1,4 @@
-/* Slingshot shots into the sky from a player's position (Sky_Objects020bdf68, run as the field
+/* Slingshot shots into the sky from a player's position (Sky_FireShots, run as the field
  * actor enters state 0x64): objects of kind SKY_OBJECT_SHOT, and what the player of this system
  * does while one of its shots is up.
  *

@@ -70,7 +70,7 @@ void SceneAction_StartPending(SceneAction *self, void *object);
 void SceneAction_OpenTalk(SceneAction *self, void *object);
 int SceneAction_Request(SceneAction *self, u8 action, s32 motion_arg, u16 motion_b, s16 motion_c, u8 reset_motion,
                         u8 keep_camera);
-int SceneAction_RequestMotion7(SceneAction *self, int motion_arg, int motion_b, int motion_c, u8 keep_camera);
+int SceneAction_RequestGesture(SceneAction *self, int motion_arg, int motion_b, int motion_c, u8 keep_camera);
 int SceneAction_RequestTalk(SceneAction *self, int reset_motion, int keep_camera);
 int SceneAction_RequestTurnAndTalk(SceneAction *self, int motion_b, int angle, int keep_camera);
 void SceneAction_ShowTalking(void *unused, void *object);

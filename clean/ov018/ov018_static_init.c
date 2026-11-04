@@ -37,11 +37,10 @@ static void ov018_init_exit(SceneExit *exit, u8 scene, const Vec3 *at, int playe
 /* __sinit_ov018_02260020: the scene's tables filled in, in this order. */
 void Ov018Init_SceneTables(void)
 {
-    ov018_init_exit(&data_ov018_02260164, SCENE_EXIT_TO_BUILDINGS_5014, &(Vec3){0, 0, 0}, 0x800000, 0, 3, 2, 0, 0,
+    ov018_init_exit(&data_ov018_02260164, SCENE_EXIT_TO_PLAYER_HOUSE, &(Vec3){0, 0, 0}, 0x800000, 0, 3, 2, 0, 0,
                     &data_ov018_02260140);
     ov018_init_exit(&data_ov018_02260180, SCENE_EXIT_TO_SAVED_PLACE, &(Vec3){0, 0, 0}, 0x800000, 0, 3, 2, 0, 0,
                     &data_ov018_0226014c);
-    ov018_init_exit(&data_ov018_0226019c, SCENE_EXIT_TO_BUILDING_500B, &(Vec3){0, 0, 0}, 0x800000, 0, 2, 2, 0, 0,
-                    &data_ov018_02260158);
+    ov018_init_exit(&data_ov018_0226019c, SCENE_EXIT_TO_GATE, &(Vec3){0, 0, 0}, 0x800000, 0, 2, 2, 0, 0, &data_ov018_02260158);
 }
 CLEAN_AS(__sinit_ov018_02260020, Ov018Init_SceneTables)

@@ -38,7 +38,7 @@ typedef struct SceneBase {
     u8 speaking;     /* 0x55: the speaker whose turn it is */
     u8 unk_56[6];
     s32 talk_style; /* 0x5c: the style of the talking motion last set through this scene */
-    u8 holding;     /* 0x60: set while command 3 or 4 holds the first speaker's motion */
+    u8 holding;     /* 0x60: the first speaker's motion held (SceneBase_IsHolding) */
     u8 unk_61[3];
     s32 command; /* 0x64: SCENE_COMMAND_* */
     u8 params[0x16];
@@ -66,8 +66,8 @@ void SceneBase_Nothing34(void);
 int SceneBase_PutBytes(SceneBase *scene, int slot, const void *bytes, int size, const void *unused);
 void SceneBase_PutItemName(SceneBase *scene, int item, int slot, int kind);
 void SceneBase_PutNpcName(SceneBase *scene, const void *npc, int slot);
-void SceneBase_PutNameAt10(SceneBase *scene, void *from, int slot);
-void *SceneBase_PutNameAt2(SceneBase *scene, unsigned int from, unsigned int slot);
+void SceneBase_PutPlayerName(SceneBase *scene, void *from, int slot);
+void *SceneBase_PutTownName(SceneBase *scene, unsigned int from, unsigned int slot);
 void SceneBase_PutNumber(SceneBase *scene, int value, int slot);
 void SceneBase_PutNumberAlt(SceneBase *scene, void *value, int slot);
 void SceneBase_PutDecimal(SceneBase *scene, int value, int slot, int format, int unused);

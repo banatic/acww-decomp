@@ -769,7 +769,7 @@ void Ov004Init_RoomExits(void)
     SceneExit_Init(&data_ov004_0225ff98, 5, &second, 0x11000000, -0x4000, 2, 2, 0x4000, 2);
     ov004_init_register(&data_ov004_0225ff98, func_020b649c, &data_ov004_0225ff64);
     Vec3 origin = {0, 0, 0};
-    SceneExit_Init(&data_ov004_0225ffb4, SCENE_EXIT_TO_BUILDINGS_5014, &origin, 0x800000, 0, 2, 2, 0, 0);
+    SceneExit_Init(&data_ov004_0225ffb4, SCENE_EXIT_TO_PLAYER_HOUSE, &origin, 0x800000, 0, 2, 2, 0, 0);
     ov004_init_register(&data_ov004_0225ffb4, func_020b649c, &data_ov004_0225ff58);
 }
 CLEAN_AS(__sinit_ov004_0224f970, Ov004Init_RoomExits)

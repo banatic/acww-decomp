@@ -19,7 +19,7 @@
 #define SKY_FIREWORKS_COUNTDOWN_PROGRAMS 0x4c007u
 
 extern const u8 data_020d2315[SKY_FIREWORKS_PICKS];   /* the programs' shares out of 100, summed */
-extern const u8 data_020d2378[];                 /* per program: the range of its first launches */
+extern const u8 data_020d2378[];                      /* per program: the range of its first launches */
 extern const s32 data_020d2354[SKY_FIREWORKS_PLACES]; /* per place: its objects' look, plus 0x1d */
 
 /* The program's timer: below 0 the program is started (its delay, and a length of `length`
@@ -350,13 +350,13 @@ CLEAN_AS(func_020bcd7c, SkyFireworks_NextLaunchTime)
 
 /* func_020bcda0: a launch from `place`: with the sky drawn an object of kind SKY_OBJECT_FIREWORK
  * added (its look from the place, the place, `large` and `marked` in its parameter); else
- * func_02065268 given place + 5 for a large one, place + 1 for another.
+ * SceneLights_StartFlash given place + 5 for a large one, place + 1 for another.
  * REQUIRES: place is 0 to 3. */
 void SkyFireworks_Launch(SkyObjects *objects, int place, int large, int marked)
 {
     if (data_021f6cd8 != 0) {
-        u32 param = ((u32) (data_020d2354[place] - SKY_FIREWORKS_LOOK_BASE) & SKY_FIREWORKS_PARAM_LOOK) | (((u32) place & 3) << 8) |
-                    ((u32) large << 31) | ((u32) marked << 28);
+        u32 param = ((u32) (data_020d2354[place] - SKY_FIREWORKS_LOOK_BASE) & SKY_FIREWORKS_PARAM_LOOK) |
+                    (((u32) place & 3) << 8) | ((u32) large << 31) | ((u32) marked << 28);
         SkyObjects_Add(objects, SKY_OBJECT_FIREWORK, SKY_OBJECT_COUNT, NULL, param);
     } else if (large != 0) {
         SceneLights_StartFlash(place + 5);

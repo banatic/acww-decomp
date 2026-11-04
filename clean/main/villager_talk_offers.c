@@ -380,7 +380,7 @@ int VillagerTalkOffer_AfterSickness(VillagerTalk *talk, u8 *record)
     offer_set_from(talk, &list, 0, data_020c8928, first);
     offer_set_from(talk, &list, 1, data_020c8924, data_021c1d6c);
     offer_list(talk, &list, 2, 1, data_020d8e78);
-    SceneBase_PutNameAt10(offer_base(talk), named, 1);
+    SceneBase_PutPlayerName(offer_base(talk), named, 1);
     return 1;
 }
 CLEAN_AS(func_02028a40, VillagerTalkOffer_AfterSickness)

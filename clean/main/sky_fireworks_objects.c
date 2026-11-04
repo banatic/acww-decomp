@@ -12,13 +12,13 @@ static_assert(sizeof(SkyFireworksObjectVars) == 0x14, "the words at 0x60");
 static_assert(sizeof(SkyFireworksColors) == 4, "a place's colours");
 
 #define SKY_FIREWORKS_OBJECT_PRIORITY 2
-#define SKY_FIREWORKS_OBJECT_TOP 0xc0000       /* y 192: the bottom of the screen */
-#define SKY_FIREWORKS_OBJECT_START_Y 0xbf000   /* y 191: where a shell starts */
-#define SKY_FIREWORKS_OBJECT_STRETCH 0x20000   /* a shell is stretched for its first 8 pixels */
-#define SKY_FIREWORKS_OBJECT_GROW 0x14cd       /* its height grows by this each frame at the top */
-#define SKY_FIREWORKS_OBJECT_GROWN 0xa000      /* until 10.0, when it is hidden */
-#define SKY_FIREWORKS_OBJECT_BURST_WAIT 6      /* frames hidden, plus one, before it bursts */
-#define SKY_FIREWORKS_OBJECT_BURST_DROP 0x2000 /* the burst is 2 pixels above the shell's height */
+#define SKY_FIREWORKS_OBJECT_SCREEN_BOTTOM 0xc0000 /* y 192: the bottom of the screen */
+#define SKY_FIREWORKS_OBJECT_START_Y 0xbf000       /* y 191: where a shell starts */
+#define SKY_FIREWORKS_OBJECT_STRETCH 0x20000       /* a shell is stretched for its first 8 pixels */
+#define SKY_FIREWORKS_OBJECT_GROW 0x14cd           /* its height grows by this each frame at the top */
+#define SKY_FIREWORKS_OBJECT_GROWN 0xa000          /* until 10.0, when it is hidden */
+#define SKY_FIREWORKS_OBJECT_BURST_WAIT 6          /* frames hidden, plus one, before it bursts */
+#define SKY_FIREWORKS_OBJECT_BURST_DROP 0x2000     /* the burst is 2 pixels above the shell's height */
 #define SKY_FIREWORKS_OBJECT_SHELL_SOUND 0x802
 #define SKY_FIREWORKS_OBJECT_BURST_SOUND 0x803
 #define SKY_FIREWORKS_OBJECT_LARGE_SOUND 0x804
@@ -28,7 +28,7 @@ static_assert(sizeof(SkyFireworksColors) == 4, "a place's colours");
 #define SKY_FIREWORKS_OBJECT_FADE_START 0x10 /* a burst's colours fade over frames 16 to 26 */
 #define SKY_FIREWORKS_OBJECT_FADE_END 0x1b
 #define SKY_FIREWORKS_OBJECT_FLICKER 0xb        /* and flicker from frame 11 */
-#define SKY_FIREWORKS_OBJECT_SMALL_FRAMES 0x24  /* the last entry of the tables of a burst's sizes */
+#define SKY_FIREWORKS_OBJECT_FIRST_FRAMES 0x24  /* the last entry of the first table of a burst's sizes */
 #define SKY_FIREWORKS_OBJECT_SECOND_FRAMES 0xb0 /* and of the second's */
 
 extern SkyObjects data_021f8b48;
@@ -98,11 +98,11 @@ void SkyFireworksObject_ShellRun(SkyObject *object)
             burst = 1;
         }
     } else {
-        fx32 top = SKY_FIREWORKS_OBJECT_TOP - body->position.z;
+        fx32 top = SKY_FIREWORKS_OBJECT_SCREEN_BOTTOM - body->position.z;
         fx32 risen = SkyFireworksObject_RiseDistance(top, vars->timer);
         if (risen <= SKY_FIREWORKS_OBJECT_STRETCH) {
             body->scale_y = FX_Div(SKY_FIREWORKS_OBJECT_STRETCH, risen);
-            vars->base_y = SKY_FIREWORKS_OBJECT_TOP - risen / 2;
+            vars->base_y = SKY_FIREWORKS_OBJECT_SCREEN_BOTTOM - risen / 2;
         } else {
             if (risen < top) {
                 body->scale_y = 0x1000;
@@ -114,7 +114,7 @@ void SkyFireworksObject_ShellRun(SkyObject *object)
                 }
                 risen = top;
             }
-            vars->base_y = SKY_FIREWORKS_OBJECT_TOP - (risen - FX_Div(0x10000, body->scale_y));
+            vars->base_y = SKY_FIREWORKS_OBJECT_SCREEN_BOTTOM - (risen - FX_Div(0x10000, body->scale_y));
         }
         SkyFireworksObject_PlaceShifted(&body->position, vars->base_x, vars->base_y, large);
     }
@@ -131,8 +131,8 @@ void SkyFireworksObject_ShellRun(SkyObject *object)
     } else {
         s32 animation = body->animation;
         first = place | ((u32) (animation - 2 - SKY_FIREWORKS_OBJECT_ANIMATION_FIRST) & SKY_FIREWORKS_PARAM_LOOK);
-        second =
-            place | ((u32) (animation - 1 - SKY_FIREWORKS_OBJECT_ANIMATION_FIRST) & SKY_FIREWORKS_PARAM_LOOK) | SKY_FIREWORKS_PARAM_SECOND;
+        second = place | ((u32) (animation - 1 - SKY_FIREWORKS_OBJECT_ANIMATION_FIRST) & SKY_FIREWORKS_PARAM_LOOK) |
+                 SKY_FIREWORKS_PARAM_SECOND;
     }
     Vec3 at = {vars->base_x, body->position.z - SKY_FIREWORKS_OBJECT_BURST_DROP, 0};
     SkyObjects_Add(&data_021f8b48, SKY_OBJECT_FIREWORK, SKY_ENTRY_ANY, &at, (int) first);
@@ -210,7 +210,7 @@ void SkyFireworksObject_ShellSetUp(SkyObject *object, u32 param)
 CLEAN_AS(func_020bff20, SkyFireworksObject_ShellSetUp)
 
 /* func_020bffc4: a burst set up where it was added: sized for frame 0, placed, its sound
- * played (0x803, a large one's 0x804) and its number handed to func_02065268 (a place's 1 to
+ * played (0x803, a large one's 0x804) and its number handed to SceneLights_StartFlash (a place's 1 to
  * 4, a large one's 5 to 8); a large one gets a radius of 4. */
 void SkyFireworksObject_BurstSetUp(SkyObject *object, u32 param)
 {
@@ -264,10 +264,10 @@ void SkyFireworksObject_SetScale(SkyObject *object, int frame)
     int last;
     if (sky_fireworks_object_large(param)) {
         sizes = second ? data_020d274c : data_020d2444;
-        last = second ? SKY_FIREWORKS_OBJECT_SECOND_FRAMES : SKY_FIREWORKS_OBJECT_SMALL_FRAMES;
+        last = second ? SKY_FIREWORKS_OBJECT_SECOND_FRAMES : SKY_FIREWORKS_OBJECT_FIRST_FRAMES;
     } else {
         sizes = second ? data_020d27fc : data_020d2468;
-        last = second ? SKY_FIREWORKS_OBJECT_SECOND_FRAMES : SKY_FIREWORKS_OBJECT_SMALL_FRAMES;
+        last = second ? SKY_FIREWORKS_OBJECT_SECOND_FRAMES : SKY_FIREWORKS_OBJECT_FIRST_FRAMES;
     }
     if (frame < 0) {
         frame = CellAnim_Frame(&body->anim);
@@ -335,7 +335,8 @@ void SkyFireworksObject_SetColors(SkyObject *object)
     if (frames < SKY_FIREWORKS_OBJECT_FADE_START) {
         t = 0;
     } else if (frames < SKY_FIREWORKS_OBJECT_FADE_END) {
-        t = ((frames - SKY_FIREWORKS_OBJECT_FADE_START) << 12) / (SKY_FIREWORKS_OBJECT_FADE_END - SKY_FIREWORKS_OBJECT_FADE_START);
+        t = ((frames - SKY_FIREWORKS_OBJECT_FADE_START) << 12) /
+            (SKY_FIREWORKS_OBJECT_FADE_END - SKY_FIREWORKS_OBJECT_FADE_START);
     } else {
         t = 0x1000;
     }

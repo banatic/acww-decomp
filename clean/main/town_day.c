@@ -565,7 +565,7 @@ void TownDay_Pass(TownDay *town, const DateTime *from, const DateTime *to, int d
         RoomScore_InitRoom(&house);
         RoomScore_JudgeHouse(&house);
         TownLayout_SetUpperSettings((unsigned int) (uintptr_t) data_021e9aac);
-        Sky_Objects020bdfd8(days);
+        Sky_RefreshEvents(days);
         BottleMail_DailyCheck(days);
         MomLetters_DailyCheck(&mom_date, days);
         CafeGuests_Draw(data_021ebcd3);

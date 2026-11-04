@@ -370,7 +370,7 @@ void SessionMessage_RelayTownItems(u32 size, int kind, u8 scene, u32 slot)
 }
 CLEAN_AS(func_02076198, SessionMessage_RelayTownItems)
 
-/* func_02076aa0: the answer (a byte) to a scene claim's request, message 51
+/* func_02076aa0: the answer (a byte) to a scene claim's request, message 52
  * (SceneClaim_ReceiveAnswer). */
 void SessionMessage_ReceiveSceneAnswer(int size, int kind, u8 scene, u32 slot)
 {

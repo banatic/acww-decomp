@@ -53,7 +53,8 @@ CLEAN_AS(func_0201ae44, SceneProbe_Update)
 
 /* func_0201ae8c: whether `point` is blocked: in a room, by furniture (func_02030890) or the
  * room's other test (func_ov004_0223c5a4); outdoors, when the ground there has something on it
- * (its word 0x30), rises above the walking level (func_020341c8) or fails func_0203104c. */
+ * (its word 0x30), rises above the walking level (func_020341c8) or has a post there
+ * (CollisionQuery_HasPostAtPoint). */
 int SceneProbe_IsBlocked(Vec3 *point)
 {
     if (data_020e54a8 == 1) {

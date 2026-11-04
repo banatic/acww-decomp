@@ -296,11 +296,11 @@ int VillagerTalkSubjects_SayDesignClothes(VillagerTalk *talk)
                 group = subjects_same_head((const NpcIdHead *) PlayerId_Town(creator), &data_021dc7aa) ? 2 : 3;
             }
             if (group != -1) {
-                SceneBase_PutNameAt10(subjects_base(talk), DesignInfo_Creator((DesignInfo *) (uintptr_t) Design_Info(design)),
-                                      0);
+                SceneBase_PutPlayerName(subjects_base(talk),
+                                        DesignInfo_Creator((DesignInfo *) (uintptr_t) Design_Info(design)), 0);
                 const NpcIdHead *town =
                     (const NpcIdHead *) (PlayerId_Town(DesignInfo_Creator((DesignInfo *) (uintptr_t) Design_Info(design))));
-                SceneBase_PutNameAt2(subjects_base(talk), (unsigned int) (uintptr_t) town, 1);
+                SceneBase_PutTownName(subjects_base(talk), (unsigned int) (uintptr_t) town, 1);
             }
         } else {
             group = 0;

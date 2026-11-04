@@ -1071,12 +1071,12 @@ void MabelTalk_Line(MabelTalk *talk, MabelTalkLine *out)
         out->text = data_ov049_02263298[MABEL_TALK_FILE_SEQUENCE];
         out->message = 0x1d;
     } else if (maker_town.number != player_town.number || memcmp(maker_town.name, player_town.name, 12) != 0) {
-        SceneBase_PutNameAt10(&talk->base, &maker, 2);
-        SceneBase_PutNameAt2(&talk->base, (unsigned int) (uintptr_t) &maker_town, 3);
+        SceneBase_PutPlayerName(&talk->base, &maker, 2);
+        SceneBase_PutTownName(&talk->base, (unsigned int) (uintptr_t) &maker_town, 3);
         out->message = MABEL_LINE_DESIGN_ELSEWHERE;
     } else if (maker.town_id != player.town_id || memcmp(maker.town_name, player.town_name, 12) != 0 ||
                PlayerId_SamePlayer(&maker, &player) == 0) {
-        SceneBase_PutNameAt10(&talk->base, &maker, 2);
+        SceneBase_PutPlayerName(&talk->base, &maker, 2);
         out->message = MABEL_LINE_DESIGN_TOWN;
     }
 

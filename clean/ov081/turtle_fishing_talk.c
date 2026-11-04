@@ -355,7 +355,7 @@ int TurtleFishingTalk_ShowRecord(TurtleFishingTalk *talk)
     SceneBase_PutDecimal(&talk->base, EventWinner_Size(record), TURTLE_FISHING_TALK_SLOT_SIZE, TURTLE_FISHING_TALK_SIZE_FORMAT,
                          3);
     if (PlayerId_IsSet(player) != 0) {
-        SceneBase_PutNameAt10(&talk->base, EventWinner_Player(record), TURTLE_FISHING_TALK_SLOT_NAME);
+        SceneBase_PutPlayerName(&talk->base, EventWinner_Player(record), TURTLE_FISHING_TALK_SLOT_NAME);
         DesignCreator *mine = PlayerRecord_Player(PlayerRecords_Current());
         DesignCreator *holder = EventWinner_Player(record);
         if (holder->town_id != mine->town_id || memcmp(holder->town_name, mine->town_name, sizeof holder->town_name) != 0 ||

@@ -314,7 +314,7 @@ void ActivityLinkJobs_Step14(Activity *activity)
             AcreMap_LoadRoomsData();
             Session_OnPlayersChanged(4);
             TownTune_Load((const TownTunePacked *) (void *) data_021dc7a8.part_173c0);
-            Sky_ReseedForLink();
+            Sky_RedrawDayAngleForLink();
             activity->byte_d6 = 1;
             Session_SetMode(session, SESSION_MODE_1);
             activity->state = 7;
@@ -573,7 +573,7 @@ void ActivityLinkJobs_Step17(Activity *activity)
             ActivitySave_LeaveSession(activity, data_020e37f8, 0);
             data_020e37f8 = 7;
             LibraryOverlay_Switch68();
-            Sky_ReseedForLink();
+            Sky_RedrawDayAngleForLink();
             activity->state = 0x19;
             return;
         case 14:
@@ -709,7 +709,7 @@ void ActivityLinkJobs_Step18(Activity *activity)
             if (!all_peers_set(session, activity->slot_ack)) {
                 return;
             }
-            Sky_ReseedForLink();
+            Sky_RedrawDayAngleForLink();
             session = data_020ccf94;
             Session_BeginMessage(session);
             Session_EndMessage(session, 7, 5);
@@ -819,7 +819,7 @@ void ActivityLinkJobs_Step19(Activity *activity)
             if (link_lost(AIDS_HOST) || !activity->flag_e6) {
                 return;
             }
-            Sky_ReseedForLink();
+            Sky_RedrawDayAngleForLink();
             activity->state = 0x1a;
             return;
         case 15:

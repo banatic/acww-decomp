@@ -27,9 +27,9 @@
 
 /* The scenes of the exits that lead to a place worked out when taken. */
 #define SCENE_EXIT_TO_MARKED_PLACE 0x3c /* the marked place (data_021f69b8, scene_place.h) */
-#define SCENE_EXIT_TO_BUILDING_500B 0x3d
-#define SCENE_EXIT_TO_BUILDINGS_5014 0x3e /* buildings 0x5014-0x501a */
-#define SCENE_EXIT_TO_SAVED_PLACE 0x3f    /* the player's saved place (data_021f69a0) */
+#define SCENE_EXIT_TO_GATE 0x3d         /* the gate (AcreMap_HasGate) */
+#define SCENE_EXIT_TO_PLAYER_HOUSE 0x3e /* a player's house, buildings 0x5014-0x501a (AcreMap_HasPlayerHouse) */
+#define SCENE_EXIT_TO_SAVED_PLACE 0x3f  /* the player's saved place (data_021f69a0) */
 
 /* What SceneExit_ResolveSpecial answers: the exit is read from the table, or it leads to the
  * saved or the marked place (which SceneExit_Take writes back). */

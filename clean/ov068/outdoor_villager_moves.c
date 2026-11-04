@@ -1007,7 +1007,7 @@ int OutdoorVillagerMoves_Start6(OutdoorVillagerBehaviour *self, u8 *villager)
     }
     OutdoorVillagerObject_ResetActEffects(villager);
     FieldActor_PlayerRequestState11();
-    SceneAction_RequestMotion7(moves_action(villager), gesture, 0, angle, 0);
+    SceneAction_RequestGesture(moves_action(villager), gesture, 0, angle, 0);
     moves_hold(villager, 1);
     return 1;
 }

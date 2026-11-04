@@ -331,10 +331,10 @@ static int fox_tent_talk_tell_last_sale(FoxTentTalk *talk, u8 *record)
     const DesignCreator *own = PlayerRecord_Player(PlayerRecords_Current());
     const DesignCreator *buyer = LastSale_Buyer(sale);
     if (!fox_tent_talk_same_player(buyer, own)) {
-        SceneBase_PutNameAt10(&talk->base, LastSale_Buyer(sale), FOX_TENT_TALK_SLOT_BUYER);
+        SceneBase_PutPlayerName(&talk->base, LastSale_Buyer(sale), FOX_TENT_TALK_SLOT_BUYER);
         talk->sequence = FOX_TENT_TALK_LAST_SALE_OTHER;
     } else {
-        SceneBase_PutNameAt10(&talk->base, PlayerRecord_Player(record), FOX_TENT_TALK_SLOT_BUYER);
+        SceneBase_PutPlayerName(&talk->base, PlayerRecord_Player(record), FOX_TENT_TALK_SLOT_BUYER);
         talk->sequence = FOX_TENT_TALK_LAST_SALE_OWN;
     }
     return 1;

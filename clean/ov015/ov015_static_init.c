@@ -45,8 +45,7 @@ static void ov015_init_exit(SceneExit *exit, u8 scene, const Vec3 *at, int playe
 void Ov015Init_SceneTables(void)
 {
     data_ov015_02260150.count = data_ov004_02256914;
-    ov015_init_exit(&data_ov015_022601e4, SCENE_EXIT_TO_BUILDING_500B, &(Vec3){0, 0, 0}, 0x800000, 0, 2, 2, 0, 4,
-                    &data_ov015_022601d8);
+    ov015_init_exit(&data_ov015_022601e4, SCENE_EXIT_TO_GATE, &(Vec3){0, 0, 0}, 0x800000, 0, 2, 2, 0, 4, &data_ov015_022601d8);
     ov015_init_exit(&data_ov015_02260200, SCENE_EXIT_TO_SAVED_PLACE, &(Vec3){0, 0, 0}, 0x800000, 0, 2, 2, 0, 0,
                     &data_ov015_022601c0);
     ov015_init_exit(&data_ov015_0226021c, 0x2f, &(Vec3){0, 0, 0}, 0x800000, 0, 2, 2, 0, 0, &data_ov015_022601cc);

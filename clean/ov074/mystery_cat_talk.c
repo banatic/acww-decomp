@@ -197,9 +197,9 @@ void MysteryCatTalk_Line(MysteryCatTalk *talk, MysteryCatLine *out)
     NameText title;
     NameText_Construct(&title);
     if (PlayerId_IsSet(&maker)) {
-        SceneBase_PutNameAt10(&talk->base, &maker, 1);
-        SceneBase_PutNameAt2(&talk->base, (unsigned int) (uintptr_t) PlayerId_Town(&maker), 0);
-        u8 impression = MysteryCatRecord_Impression(&data_021f3278);
+        SceneBase_PutPlayerName(&talk->base, &maker, 1);
+        SceneBase_PutTownName(&talk->base, (unsigned int) (uintptr_t) PlayerId_Town(&maker), 0);
+        u8 impression = WfcStats_Byte237(&data_021f3278);
         TalkObject_LoadPart(mcat_talk_object(talk), 2, &impression, (unsigned int) (uintptr_t) data_ov074_02279d28);
         DesignInfo_TitleToText(&info, &title);
         TalkObject_SetPart(mcat_talk_object(talk), 3, (TextBase *) (void *) &title);

@@ -394,7 +394,7 @@ void StateBlock_StartMode4(StateBlock *block)
     VillagerPlot_GiveHouses(villagers_of(block));
     VillagerState_SetBirthdayGreeter(-1);
     VillagerRoster_UpdateOutdoors(villagers_of(block), 1);
-    Sky_ReseedForMode4();
+    Sky_RedrawDayAngleForMode4();
     Block021d27acPart30_Clear(Block021d27ac_Part30(Block021d27ac_Get()));
     for (int i = 0; i < STATE_BLOCK_PLAYERS; i++) {
         u8 *record = PlayerRecords_TownRecord(data_021dc7a8.players, i);
@@ -419,7 +419,7 @@ void StateBlock_StartMode3(StateBlock *block)
     VillagerState_SetBirthdayGreeter(-1);
     VillagerRoster_UpdateOutdoors(villagers_of(block), 0);
     SaveStamp_Clear((SaveStamp *) (void *) block->part_173f8);
-    Sky_ReseedForMode3();
+    Sky_RedrawDayAngleForMode3();
     Block021d27acPart30_Clear(Block021d27ac_Part30(Block021d27ac_Get()));
 }
 CLEAN_AS(func_0209ebec, StateBlock_StartMode3)
@@ -449,7 +449,7 @@ void StateBlock_StartMode2(StateBlock *block)
     Constellations_AcceptExchanged();
     Mail_DeliverWaiting();
     StartKind_Clear();
-    Sky_ReseedForMode2();
+    Sky_RedrawDayAngleForMode2();
     Block020ba298_SetByte9();
     TurnipPrices_RedrawIfClockMoved((TurnipPrices *) (void *) block->part_17364);
     VillagerTown_PickBirthdayGreeter(villagers_of(block), NULL);

@@ -497,8 +497,8 @@ CLEAN_AS(func_020c3240, MissingNpc2Talk_OnMessage)
 void MissingNpc2Talk_PutTownNames(MissingNpc2Talk *talk)
 {
     u8 *pairing = PlayerRecord_Field242C(PlayerRecords_Current());
-    SceneBase_PutNameAt2(&talk->scene, (unsigned int) (uintptr_t) PairedTown_Town(pairing), 0);
-    SceneBase_PutNameAt2(&talk->scene, (unsigned int) (uintptr_t) PairedTown_Town(pairing), 1);
+    SceneBase_PutTownName(&talk->scene, (unsigned int) (uintptr_t) PairedTown_Town(pairing), 0);
+    SceneBase_PutTownName(&talk->scene, (unsigned int) (uintptr_t) PairedTown_Town(pairing), 1);
 }
 CLEAN_AS(func_020c3244, MissingNpc2Talk_PutTownNames)
 

@@ -89,8 +89,8 @@
 /* Bit 2 of the flags: the object is held (scene_action.h). */
 #define SCENE_OBJECT_HELD 2
 
-/* The mode SceneObject_ChangeState starts with. */
-#define SCENE_OBJECT_STATE_START 2
+/* The outcome SceneObject_AfterCreate is given once the object is made (a start). */
+#define SCENE_OBJECT_OUTCOME_DONE 2
 
 /* The person's kinds of motion and their priority while it follows the shared record. */
 #define SCENE_OBJECT_FOLLOW_PRIORITY 3
@@ -481,12 +481,12 @@ int SceneObject_Update(u8 *object)
 }
 CLEAN_AS(func_0201b910, SceneObject_Update)
 
-/* func_0201bcec (slot 0x08): with mode 2 (a start) the object is held unless func_020a7278
+/* func_0201bcec (slot 0x08, after the object is made): with outcome 2 (done) the object is held unless func_020a7278
  * agrees or it already was (then marked as held by the record), and its state is published
- * unless not shared; then the scene object's slot (func_0203f004) with the mode. */
-void SceneObject_ChangeState(u8 *object, int mode)
+ * unless not shared; then the scene object's slot (func_0203f004) with the outcome. */
+void SceneObject_AfterCreate(u8 *object, int outcome)
 {
-    if (mode == SCENE_OBJECT_STATE_START) {
+    if (outcome == SCENE_OBJECT_OUTCOME_DONE) {
         u32 *flags = scene_object_flags(object);
         if (LinkGlobal_HoldsScene() == 0 && (*flags & SCENE_OBJECT_HELD) == 0) {
             *flags |= SCENE_OBJECT_HELD;
@@ -496,9 +496,9 @@ void SceneObject_ChangeState(u8 *object, int mode)
             SceneShare_Publish(object, 1);
         }
     }
-    SceneObjectBase_AfterCreate((SceneObjectBase *) (void *) object, mode);
+    SceneObjectBase_AfterCreate((SceneObjectBase *) (void *) object, outcome);
 }
-CLEAN_AS(func_0201bcec, SceneObject_ChangeState)
+CLEAN_AS(func_0201bcec, SceneObject_AfterCreate)
 
 /* func_0201bd48 (slot 0x00): starting. When func_020a7278 agrees, this system becomes the
  * record's owner (no holder). Then the model is loaded (0 when that fails); the object falls

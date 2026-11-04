@@ -37,7 +37,7 @@ void SceneObject_Vfunc30(void);
 int SceneObject_Draw(u8 *object);
 int SceneObject_Update(u8 *object);
 int SceneObject_Vfunc68(void *object);
-void SceneObject_ChangeState(u8 *object, int mode);
+void SceneObject_AfterCreate(u8 *object, int outcome);
 int SceneObject_Start(u8 *object);
 int SceneObject_Init(u8 *object);
 u8 SceneObject_IsEnabled(const u8 *object);

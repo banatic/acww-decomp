@@ -29,7 +29,7 @@
 #define SKY_EVENTS_THUNDER_START 50
 #define SKY_EVENTS_THUNDER_SPREAD 200
 #define SKY_EVENTS_THUNDER_MIN 10
-#define SKY_EVENTS_THUNDER_SOUND 0 /* func_02065268's number */
+#define SKY_EVENTS_THUNDER_SOUND 0 /* SceneLights_StartFlash's kind */
 #define SKY_EVENTS_NIGHT_END 4     /* hours 19:00 to 3:59 are the night */
 #define SKY_EVENTS_NIGHT_START 19
 #define SKY_EVENTS_SHOOTING_STAR_SECOND 30
@@ -451,7 +451,7 @@ static int sky_events_thunder_due(SkyObjects *objects)
     return objects->thunder_timer <= 0;
 }
 
-/* func_020bda88: the thunder: heard (func_02065268) when its timer runs out, then again 10 to
+/* func_020bda88: the thunder: heard (SceneLights_StartFlash) when its timer runs out, then again 10 to
  * 209 frames later. */
 void SkyEvents_Thunder(SkyObjects *objects)
 {

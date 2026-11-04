@@ -132,7 +132,7 @@ typedef struct SkyWeatherDay {
 /* A slot of the object at data_021f8b48 that the sky process runs (func_020be400 constructs
  * it: 60 entries of 0x74 bytes, then these five slots). */
 typedef struct SkyObjectSlot {
-    s32 kind; /* 0x34: none */
+    s32 resource; /* SKY_OBJECT_NO_RESOURCE (0x34): none */
     u8 unk_04[4];
     u8 loaded;  /* 0x08 */
     u8 changed; /* 0x09 */
@@ -145,12 +145,12 @@ extern LineHandler data_021f6d2c; /* the sky's line handler */
 extern int data_021f6cd8;         /* the sky is drawn */
 
 void Sky_SwapLineShift(void);
-void Sky_Objects020bdf68(int player);
-void Sky_Objects020bdfd8(int arg);
-void Sky_ReseedForLink(void);
-void Sky_ReseedForMode3(void);
-void Sky_ReseedForMode4(void);
-void Sky_ReseedForMode2(void);
+void Sky_FireShots(int player);
+void Sky_RefreshEvents(int arg);
+void Sky_RedrawDayAngleForLink(void);
+void Sky_RedrawDayAngleForMode3(void);
+void Sky_RedrawDayAngleForMode4(void);
+void Sky_RedrawDayAngleForMode2(void);
 void Sky_TimeForStarScroll(DateTime *when, int scroll_x, int scroll_y);
 unsigned short Sky_StarsY(void);
 unsigned short Sky_StarsX(void);
