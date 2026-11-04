@@ -1,5 +1,8 @@
-/* func_ov123_0229a654 @ 0x0229a654, 0x180 bytes, Thumb, module ov123
+/* design_editor_canvas_2: 3 functions, module ov123
  * mwccarm 1.2/base -O4,s
+ * func_ov123_0229a654 @ 0x0229a654, 0x180 bytes, Thumb
+ * func_ov123_0229a63c @ 0x0229a63c, 0x16 bytes, Thumb
+ * func_ov123_0229a5cc @ 0x0229a5cc, 0x70 bytes, Thumb
  */
 
 #include "types.h"
@@ -14,10 +17,10 @@ extern int func_ov123_0229a82c(int, int, int, int);
 extern int func_ov123_0229a7d4(int, int, int, int);
 extern int func_ov123_0229adc8(int, u8, u8, int);
 extern int func_ov123_0229a884(int, int, int, int, int);
-
 extern unsigned int data_ov123_0229d2e4;
 extern QE data_ov123_0229d3b4[];
 extern int data_ov123_0229ce2c;
+extern unsigned short *data_ov123_0229cf8c[];
 
 void func_ov123_0229a654(int board, u8 x, u8 y, int newval)
 {
@@ -108,4 +111,40 @@ void func_ov123_0229a654(int board, u8 x, u8 y, int newval)
             } while (cur2 <= rx);
         }
     } while (head != tail);
+}
+
+unsigned int func_ov123_0229a63c(unsigned int p0, unsigned int a, unsigned int b, unsigned int c)
+{
+    return (a & ~(b * 15)) | (b * c);
+}
+
+void func_ov123_0229a5cc(int a, int b, int c, int d, int e)
+{
+    int row;
+    int col;
+    unsigned short *ptr;
+    int y;
+    unsigned int mask;
+    int x;
+    int base;
+    row = c - 8;
+    ptr = data_ov123_0229cf8c[e];
+    y = 0;
+    base = b - 7;
+    do {
+        mask = 0x8000;
+        col = base;
+        x = 0;
+        do {
+            if (mask & (*ptr)) {
+                func_ov123_0229adc8(a, (unsigned char) ((unsigned char) col), (unsigned char) ((unsigned char) row), d);
+            }
+            mask = (mask << 15) >> 16;
+            col++;
+            x++;
+        } while (x < 16);
+        ptr++;
+        row++;
+        y++;
+    } while (y < 16);
 }
