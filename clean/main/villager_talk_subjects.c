@@ -411,7 +411,7 @@ int VillagerTalkSubjects_SayHoldingNamed(VillagerTalk *talk)
         return 0;
     }
     VillagerTalkSubjects_SayForMode(talk, 3, &data_020c8d28);
-    VillagerTalkGreeting_PutByte29(talk, 5, subjects_record(talk));
+    VillagerTalkGreeting_PutStyle(talk, 5, subjects_record(talk));
     return 1;
 }
 CLEAN_AS(func_02022938, VillagerTalkSubjects_SayHoldingNamed)

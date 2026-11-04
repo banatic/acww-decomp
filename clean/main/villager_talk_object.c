@@ -770,7 +770,7 @@ void VillagerTalkObject_SayJudgeItem(VillagerTalk *talk)
             if (VillagerObject_Step(object_villager_object(talk)) >= 2) {
                 VillagerTalkScene_SetLines(talk, data_021c2e3c);
             } else {
-                const u8 *data = VillagerData_Byte29(record);
+                const u8 *data = VillagerData_Styles(record);
                 u16 *clothes = TownVillager_Clothes(record);
                 if (object_same_item(&talk->item, clothes)) {
                     VillagerTalkScene_SetLines(talk, data_021c2e24);
@@ -1480,7 +1480,7 @@ void VillagerTalkObject_PickClothesByStep(u16 *out, VillagerTalk *talk, unsigned
     u32 function;
     if (step < 7 && (function = data_020c8f7c[step]) != 0) {
         u8 *record = object_record(talk);
-        const u8 *data = VillagerData_Byte29(record);
+        const u8 *data = VillagerData_Styles(record);
         u16 clothes = *TownVillager_Clothes(record);
         ((void (*)(u16 *, const u8 *, u16 *))(uintptr_t) function)(out, data, &clothes);
     } else {

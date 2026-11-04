@@ -33,9 +33,9 @@
 #define VILLAGER_PART_TYPE_18 0x12
 
 typedef struct VillagerPartBlock {
-    u8 object[12]; /* 0x00 */
-    NpcId npcs[2]; /* 0x0c: the second (0x1c) is the villager the type names */
-    u8 byte_2c;    /* 0x2c: cleared with the block (func_0209b56c) */
+    u8 object[12];       /* 0x00 */
+    NpcId npcs[2];       /* 0x0c: the second (0x1c) is the villager the type names */
+    u8 clothes_reaction; /* 0x2c: how the villager took the clothes shown (VILLAGER_TALK_PART_REACT_*) */
     u8 unused_2d[3];
 } VillagerPartBlock;
 

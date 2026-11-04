@@ -480,7 +480,7 @@ int Design_VillagerTakeShopDesign(int villager, int announce_it)
     if (NpcId_IsValid((void *) (uintptr_t) TownVillager_NpcId((u8 *) (uintptr_t) address)) == 0) {
         return 0;
     }
-    int wanted = *(u8 *) (uintptr_t) VillagerData_Byte29((u8 *) (uintptr_t) address);
+    int wanted = *(u8 *) (uintptr_t) VillagerData_Styles((u8 *) (uintptr_t) address);
     int mode = VillagerModeRecord_Mode(
         VillagerObject_RecordMode((void *) (uintptr_t) VillagerStatus_ModeRecord((u8 *) (uintptr_t) address)));
     unsigned int draw = MainRandom_Below(TAKE_DRAW);

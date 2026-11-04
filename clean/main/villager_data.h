@@ -6,7 +6,8 @@
  *         the villager's numbers at 0x7d7 (VillagerMode_Counter7D7): the items it likes
  *   0x26  its birthday (month, then day)
  *   0x28  a byte whose bits 2-4 pick its house's room (VillagerHouseItems_RoomModel)
- *   0x29  a byte Design compares
+ *   0x29  the two clothing styles the villager likes (ItemTraits_ClothStyle values; the first
+ *         is also the one Design compares)
  *   0x2c  its first clothes, an index of the items 0x11a8-0x12a7
  *   0x2e  an index of the items 0x1380-0x139f (the villager's byte 0x7da)
  *   0x2f  the villager's byte 0x7d8 at first
@@ -47,8 +48,8 @@ typedef struct VillagerData {
     VillagerDataLike likes[VILLAGER_DATA_LIKES]; /* 0x1a */
     MonthDay birthday;                           /* 0x26 */
     u8 room;                                     /* 0x28 */
-    u8 byte_29;                                  /* 0x29 */
-    u8 unknown_2a[2];
+    u8 styles[2];                                /* 0x29: the two clothing styles it likes */
+    u8 unknown_2b;
     u16 clothes;                                /* 0x2c */
     u8 umbrella;                                /* 0x2e */
     u8 byte_2f;                                 /* 0x2f */
@@ -73,7 +74,7 @@ const s16 *VillagerData_ModeWeights(u8 *villager);
 int VillagerData_ItemLiking(u8 *villager, u16 *item);
 const VillagerDataLike *VillagerData_Like(u8 *villager, u32 index);
 const VillagerData *VillagerData_Of(u8 *villager);
-const u8 *VillagerData_Byte29(u8 *villager);
+const u8 *VillagerData_Styles(u8 *villager);
 u8 VillagerData_SpeciesByte(u8 *villager);
 int VillagerData_Species(u8 *villager);
 int VillagerData_StarSign(u8 *villager);

@@ -11,8 +11,9 @@
  *   type 14  item 0x1563;  type 16  item 0x1561;  type 17  item 0x1564;  type 19  item 0x1565
  *
  * For type 19 a letter is written from the block's two villagers (VillagerPartBlock_WriteLetter).
- * Byte 0x2c of a block is set by its users (func_02027914) and read through
- * VillagerPartBlock_Byte2C. */
+ * Byte 0x2c of a block is how the villager took the clothes the player showed it (set by
+ * VillagerTalkPart_ReactToClothes, VILLAGER_TALK_PART_REACT_*), read through
+ * VillagerPartBlock_ClothesReaction. */
 #ifndef CLEAN_MAIN_VILLAGER_PART_BLOCK_H
 #define CLEAN_MAIN_VILLAGER_PART_BLOCK_H
 
@@ -34,8 +35,8 @@ typedef struct VillagerPartTypeEntry {
     u8 unused_11[3];
 } VillagerPartTypeEntry;
 
-u8 *VillagerPartBlock_Byte2C(VillagerPartBlock *block);
-void VillagerPartBlock_SetByte2C(VillagerPartBlock *block, u8 value);
+u8 *VillagerPartBlock_ClothesReaction(VillagerPartBlock *block);
+void VillagerPartBlock_SetClothesReaction(VillagerPartBlock *block, u8 value);
 int VillagerPartBlock_IsOwnTypePastLimit(VillagerPartBlock *block);
 int VillagerPartBlock_IsPastLimit(VillagerPartBlock *block, int type);
 int VillagerPartBlock_TypeFitsMode(int type, int mode);

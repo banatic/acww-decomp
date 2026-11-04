@@ -2,8 +2,8 @@
  * clothes of any style but one the villager names, and insects or fish of today's date.
  *
  * Clothes (0x11a8-0x12a7) go through func_02063414 with a style number 0-9 drawn from a mask
- * (VillagerRoster_PickBit). The two style bytes are the villager data's 0x29 and 0x2a
- * (VillagerData_Byte29); VillagerTalkPart_ReactToClothes (villager_talk_part.h) tells them
+ * (VillagerRoster_PickBit). The two styles the villager likes are its data's 0x29 and 0x2a
+ * (VillagerData_Styles); VillagerTalkPart_ReactToClothes (villager_talk_part.h) tells them
  * apart.
  *
  * Insects (func_0202d190, by month) and fish (func_0202cbdc, by month and day) are drawn from

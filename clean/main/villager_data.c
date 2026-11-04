@@ -56,13 +56,14 @@ const VillagerData *VillagerData_Of(u8 *villager)
 }
 CLEAN_AS(func_02080890, VillagerData_Of)
 
-/* func_020808b0: the byte 0x29 of the villager's data, NULL without data. */
-const u8 *VillagerData_Byte29(u8 *villager)
+/* func_020808b0: the two clothing styles the villager likes (its data's bytes 0x29 and 0x2a),
+ * NULL without data. */
+const u8 *VillagerData_Styles(u8 *villager)
 {
     const VillagerData *data = villager_data_of(villager);
-    return data != NULL ? &data->byte_29 : NULL;
+    return data != NULL ? data->styles : NULL;
 }
-CLEAN_AS(func_020808b0, VillagerData_Byte29)
+CLEAN_AS(func_020808b0, VillagerData_Styles)
 
 /* func_020808d0: data_020cd4dc's byte for the villager's species; species 0's without data. */
 u8 VillagerData_SpeciesByte(u8 *villager)

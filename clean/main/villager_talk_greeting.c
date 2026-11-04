@@ -384,7 +384,7 @@ void VillagerTalkGreeting_FillSlots(VillagerTalk *talk)
         sign[0] = (char) Lookups_StarSignOf(VillagerData_Birthday(record));
         sign[1] = 0;
         SceneBase_PutBytes(greeting_base(talk), 0, sign, (int) (uintptr_t) data_020d9f48, &sign[1]);
-        VillagerTalkGreeting_PutByte29(talk, 6, record);
+        VillagerTalkGreeting_PutStyle(talk, 6, record);
     }
     for (int i = 0; i < 4; i++) {
         VillagerTalkGreeting_PutRandomWord(talk, i + 7, data_020c8938[i]);
@@ -392,10 +392,11 @@ void VillagerTalkGreeting_FillSlots(VillagerTalk *talk)
 }
 CLEAN_AS(func_0202bcd4, VillagerTalkGreeting_FillSlots)
 
-/* func_0202bd40: the villager data's byte 0x29 (when there is one) put into the talk's slot. */
-void VillagerTalkGreeting_PutByte29(VillagerTalk *talk, int slot, u8 *villager)
+/* func_0202bd40: the first clothing style the villager likes (its data's byte 0x29, when there
+ * is one) put into the talk's slot. */
+void VillagerTalkGreeting_PutStyle(VillagerTalk *talk, int slot, u8 *villager)
 {
-    const u8 *byte = VillagerData_Byte29(villager);
+    const u8 *byte = VillagerData_Styles(villager);
     if (byte != NULL) {
         char bytes[2];
         bytes[0] = (char) *byte;
@@ -403,7 +404,7 @@ void VillagerTalkGreeting_PutByte29(VillagerTalk *talk, int slot, u8 *villager)
         SceneBase_PutBytes(greeting_base(talk), slot, bytes, (int) (uintptr_t) data_020d9fb4, &bytes[1]);
     }
 }
-CLEAN_AS(func_0202bd40, VillagerTalkGreeting_PutByte29)
+CLEAN_AS(func_0202bd40, VillagerTalkGreeting_PutStyle)
 
 /* func_0202bd7c: a word drawn at random from the archive put into the talk's slot (its
  * message as a byte, the archive's name in the place of the size). */

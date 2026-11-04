@@ -20,7 +20,7 @@
 
 static_assert(sizeof(VillagerPartTypeEntry) == 20, "type entry");
 static_assert(offsetof(VillagerPartTypeEntry, limit) == 0x10, "limit");
-static_assert(offsetof(VillagerPartBlock, byte_2c) == 0x2c, "byte 2c");
+static_assert(offsetof(VillagerPartBlock, clothes_reaction) == 0x2c, "clothes reaction");
 static_assert(sizeof(VillagerPartEntry) == sizeof(((VillagerPart *) 0)->object_94), "entry");
 static_assert(sizeof(VillagerPartHandover) == sizeof(((VillagerPart *) 0)->rest_a4), "handover");
 
@@ -70,18 +70,18 @@ extern void func_0209b594(void *block);
 extern void func_0209b5b8(void *block);
 
 /* func_0209b408 */
-u8 *VillagerPartBlock_Byte2C(VillagerPartBlock *block)
+u8 *VillagerPartBlock_ClothesReaction(VillagerPartBlock *block)
 {
-    return &block->byte_2c;
+    return &block->clothes_reaction;
 }
-CLEAN_AS(func_0209b408, VillagerPartBlock_Byte2C)
+CLEAN_AS(func_0209b408, VillagerPartBlock_ClothesReaction)
 
 /* func_0209b40c */
-void VillagerPartBlock_SetByte2C(VillagerPartBlock *block, u8 value)
+void VillagerPartBlock_SetClothesReaction(VillagerPartBlock *block, u8 value)
 {
-    block->byte_2c = value;
+    block->clothes_reaction = value;
 }
-CLEAN_AS(func_0209b40c, VillagerPartBlock_SetByte2C)
+CLEAN_AS(func_0209b40c, VillagerPartBlock_SetClothesReaction)
 
 /* func_0209b414: VillagerPartBlock_IsPastLimit for the type the block's object holds. */
 int VillagerPartBlock_IsOwnTypePastLimit(VillagerPartBlock *block)
@@ -174,7 +174,7 @@ void VillagerPartBlock_Clear(VillagerPartBlock *block)
     for (int i = 0; i < 2; i++) {
         NpcId_Clear(&block->npcs[i]);
     }
-    block->byte_2c = 0;
+    block->clothes_reaction = 0;
 }
 CLEAN_AS(func_0209b56c, VillagerPartBlock_Clear)
 

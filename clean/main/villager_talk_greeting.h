@@ -39,7 +39,7 @@ void VillagerTalkGreeting_LineThree(VillagerTalk *talk, VillagerTalkLine *out);
 void VillagerTalkGreeting_SayByKnownObject(VillagerTalk *talk);
 void VillagerTalkGreeting_NoteMemory(VillagerTalk *talk, void *unused);
 void VillagerTalkGreeting_FillSlots(VillagerTalk *talk);
-void VillagerTalkGreeting_PutByte29(VillagerTalk *talk, int slot, u8 *villager);
+void VillagerTalkGreeting_PutStyle(VillagerTalk *talk, int slot, u8 *villager);
 int VillagerTalkGreeting_PutRandomWord(VillagerTalk *talk, int slot, int archive);
 void VillagerTalkGreeting_Line(VillagerTalk *talk, VillagerTalkLine *out);
 int VillagerTalkGreeting_IsTired(VillagerTalk *talk, int mood);

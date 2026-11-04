@@ -478,7 +478,7 @@ CLEAN_AS(func_02026c1c, VillagerTalkPart_SayByPocketRoom)
 
 static u8 part_reaction(VillagerTalk *talk)
 {
-    return *VillagerPartBlock_Byte2C(part_block(talk));
+    return *VillagerPartBlock_ClothesReaction(part_block(talk));
 }
 
 /* func_02026c9c: the reward at 0x124: for the reaction 2 an item drawn (func_0202d5e4); when
@@ -828,7 +828,7 @@ CLEAN_AS(func_020278b0, VillagerTalkPart_Line8ba8)
 void VillagerTalkPart_ReactToClothes(VillagerTalk *talk)
 {
     u8 reaction = VILLAGER_TALK_PART_REACT_OTHER;
-    const u8 *styles = VillagerData_Byte29(part_record(talk));
+    const u8 *styles = VillagerData_Styles(part_record(talk));
     if (part_is_clothes(talk->item)) {
         int style = ItemTraits_ClothStyle(&talk->item);
         if (style == styles[0]) {
@@ -837,7 +837,7 @@ void VillagerTalkPart_ReactToClothes(VillagerTalk *talk)
             reaction = VILLAGER_TALK_PART_REACT_STYLE1;
         }
     }
-    VillagerPartBlock_SetByte2C(part_block(talk), reaction);
+    VillagerPartBlock_SetClothesReaction(part_block(talk), reaction);
     switch (reaction) {
         case VILLAGER_TALK_PART_REACT_STYLE0:
             VillagerTalkScene_SetLines(talk, data_021c2b24);

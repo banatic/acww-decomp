@@ -243,7 +243,7 @@ CLEAN_AS(func_02020f9c, VillagerTalkTopics_Line)
 int VillagerTalkTopics_FillSlots(VillagerTalk *talk)
 {
     VillagerTalkGreeting_PutRandomWord(talk, 4, 3);
-    VillagerTalkGreeting_PutByte29(talk, 5, topics_record(talk));
+    VillagerTalkGreeting_PutStyle(talk, 5, topics_record(talk));
     return VillagerTalkGreeting_PutRandomWord(talk, 6, 4);
 }
 CLEAN_AS(func_02021118, VillagerTalkTopics_FillSlots)
