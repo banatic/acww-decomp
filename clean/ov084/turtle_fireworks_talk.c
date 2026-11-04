@@ -241,8 +241,8 @@ void TurtleFireworksTalk_OnLineEnded(TurtleFireworksTalk *talk)
             u16 gift = t4t_pick_gift();
             if (free_slot >= 0) {
                 PlayerField2416 *field = (PlayerField2416 *) (void *) PlayerRecord_Field2416(PlayerRecords_Current());
-                if ((u32) PlayerField2416_Tally(field) < T4T_GIFTS_MAX) {
-                    PlayerField2416_RaiseTally(field);
+                if ((u32) PlayerField2416_FireworksGifts(field) < T4T_GIFTS_MAX) {
+                    PlayerField2416_RaiseFireworksGifts(field);
                     int other = PlayerId_Byte1c((const s8 *) (const void *) PlayerRecord_Player(PlayerRecords_Current()));
                     SceneCommand_RequestMotion13(t4t_scene(talk), &gift, 0, T4T_MOTION_B, 0);
                     CurrentPockets_Give(&gift, 0);

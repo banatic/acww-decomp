@@ -318,7 +318,7 @@ void EventWinner_ExpireForEvent(EventWinner *record, int event)
                     continue;
                 }
                 if (event == 2) {
-                    PlayerField2416_ClearBytes0B((PlayerField2416 *) (void *) PlayerRecord_Field2416(player));
+                    PlayerField2416_ClearAcorns((PlayerField2416 *) (void *) PlayerRecord_Field2416(player));
                     PlayerRecord_ClearFlag(player, EVENT_WINNER_PLAYER_FLAG);
                 } else {
                     PlayerField2416_ClearGardening((PlayerField2416 *) (void *) PlayerRecord_Field2416(player));

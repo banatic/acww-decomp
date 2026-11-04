@@ -196,7 +196,7 @@ int BarberTalk_ChairLine(void *unused)
 {
     (void) unused;
     u8 *record = PlayerRecords_Current();
-    if ((unsigned int) PlayerField2416_Count0A((PlayerField2416 *) (void *) PlayerRecord_Field2416(record)) >=
+    if ((unsigned int) PlayerField2416_Haircuts((PlayerField2416 *) (void *) PlayerRecord_Field2416(record)) >=
         BARBER_TALK_MANY_CUTS) {
         if (PlayerId_Byte1c((const s8 *) (void *) PlayerRecord_Player(record)) == 0) {
             return BARBER_LINE_CHAIR_MANY_0;
@@ -371,7 +371,7 @@ void BarberTalk_OnGoOn(BarberTalk *talk)
     }
     if ((shown == BARBER_LINE_NEW_HAIR && talk->pages == 1) || (shown == BARBER_LINE_SAME_HAIR && talk->pages == 2)) {
         RoomPlayerActor_RequestSpotStay();
-        PlayerField2416_AddCount0A((PlayerField2416 *) (void *) PlayerRecord_Field2416(PlayerRecords_Current()), 1);
+        PlayerField2416_AddHaircuts((PlayerField2416 *) (void *) PlayerRecord_Field2416(PlayerRecords_Current()), 1);
     }
     talk->pages++;
 }

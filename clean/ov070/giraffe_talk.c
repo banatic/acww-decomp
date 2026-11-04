@@ -223,15 +223,15 @@ static void gt_write_letter(GiraffeTalk *talk, u8 *record)
     MessageText46_Construct(&text);
     u8 message = 0;
     GiraffeTalk_Score(talk);
-    if ((u32) PlayerField2416_Count0E(field) > GT_LETTER_SCORE_FROM) {
-        message = (u8) ((u8) (PlayerField2416_Count0E(field) - GT_LETTER_SCORE_FROM) / 10);
+    if ((u32) PlayerField2416_FashionScore(field) > GT_LETTER_SCORE_FROM) {
+        message = (u8) ((u8) (PlayerField2416_FashionScore(field) - GT_LETTER_SCORE_FROM) / 10);
     }
     if (message > GT_LETTER_MESSAGES) {
         message = GT_LETTER_MESSAGES;
     }
     u16 motion_item = GT_LETTER_MOTION_ITEM;
     SceneCommand_RequestMotion13(gt_scene(talk), &motion_item, 0, 5, 0);
-    NumberText_Format(&text, PlayerField2416_Count0E(field), 10, 0, 0, 0);
+    NumberText_Format(&text, PlayerField2416_FashionScore(field), 10, 0, 0, 0);
     MailText_SetPartText(0, &text);
     Letter_WriteSpecialToPlayer(letter, &message, data_ov070_02279d58, data_ov070_02279d20, data_ov070_02279d24,
                                 PlayerRecord_Player(record));
@@ -467,19 +467,19 @@ CLEAN_AS(func_ov070_02279224, GiraffeTalk_IsEmptyPocket)
 static void gt_score_item(PlayerField2416 *field, GiraffeTalk *talk, u16 *item, int place)
 {
     unsigned char grade = GiraffeTalk_Grade((int) (u32) (uintptr_t) talk, ItemTraits_Price(item), place);
-    PlayerField2416_AddCount0E(field, (u8) (grade * 2));
+    PlayerField2416_AddFashionScore(field, (u8) (grade * 2));
 }
 
 /* An item of the kept codes adds twice a number 1 to 10; an empty place twice 1 to 3. */
 static void gt_score_kept(PlayerField2416 *field)
 {
-    PlayerField2416_AddCount0E(field, (u8) ((MainRandom_Below(10) + 1) * 2));
+    PlayerField2416_AddFashionScore(field, (u8) ((MainRandom_Below(10) + 1) * 2));
 }
 
 static void gt_score_empty(PlayerField2416 *field)
 {
     unsigned int number = MainRandom_Below(3);
-    PlayerField2416_AddCount0E(field, (u8) ((u8) (number + 1) * 2));
+    PlayerField2416_AddFashionScore(field, (u8) ((u8) (number + 1) * 2));
 }
 
 /* func_ov070_02279238: what the current player wears noted (the hat, the accessory and the
@@ -572,11 +572,11 @@ unsigned char GiraffeTalk_Grade(int unused, int price, int place)
 CLEAN_AS(func_ov070_0227944c, GiraffeTalk_Grade)
 
 /* func_ov070_02279538 (slot 0x64): `value` added to the current player's score (count 0x0e,
- * PlayerField2416_AddCount0E keeps it at most 100). */
+ * PlayerField2416_AddFashionScore keeps it at most 100). */
 void GiraffeTalk_AddScore(void *talk, unsigned char value)
 {
     (void) talk;
-    PlayerField2416_AddCount0E(gt_field(PlayerRecords_Current()), value);
+    PlayerField2416_AddFashionScore(gt_field(PlayerRecords_Current()), value);
 }
 CLEAN_AS(func_ov070_02279538, GiraffeTalk_AddScore)
 
@@ -602,7 +602,7 @@ void GiraffeTalk_FirstLine(GiraffeTalk *talk, GiraffeLine *out)
         talk->first = GIRAFFE_TALK_FIRST_DRESSED;
     } else if (talk->owner->advice_count < GT_ADVICE_COUNTING) {
         talk->first = GIRAFFE_TALK_FIRST_COUNTING;
-    } else if ((u32) PlayerField2416_Count0E(field) >= GT_HIGH_SCORE) {
+    } else if ((u32) PlayerField2416_FashionScore(field) >= GT_HIGH_SCORE) {
         talk->first = GIRAFFE_TALK_FIRST_HIGH;
     } else {
         talk->first = GIRAFFE_TALK_FIRST_LOW;

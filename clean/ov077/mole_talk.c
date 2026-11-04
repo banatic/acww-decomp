@@ -209,13 +209,13 @@ void MoleTalk_OnLineBegins(MoleTalk *talk)
 CLEAN_AS(func_ov077_02278ba0, MoleTalk_OnLineBegins)
 
 /* func_ov077_02278bfc (slot 0x78, the line the talk starts with), of "sp_npc_reset": by the
- * current player's count 0x0d less one, kept to 0-5; at 5 a number 1-4 drawn instead; the line
- * of data_ov077_02279600 at that index. */
+ * current player's visits after a reset (PlayerField2416_Resets) less one, kept to 0-5; at 5 a
+ * number 1-4 drawn instead; the line of data_ov077_02279600 at that index. */
 void MoleTalk_FirstLine(MoleTalk *talk, MoleTalkLine *out)
 {
     (void) talk;
     PlayerField2416 *field = (PlayerField2416 *) (void *) PlayerRecord_Field2416(PlayerRecords_Current());
-    int index = PlayerField2416_Count0D(field) - 1;
+    int index = PlayerField2416_Resets(field) - 1;
     if (index < 0) {
         index = 0;
     } else if (index > MOLE_FIRST_COUNT_RANDOM) {

@@ -85,7 +85,7 @@ int DayEvents_PlayerHas(int year, int month, int day, u8 *event)
         case 1:
             return PlayerRecord_TestFlag(record, DAY_EVENTS_FLAG_KIND_1) != 0 || MuseumRecord_Complete(&data_021f38f8) != 0;
         case 2:
-            return PlayerField2416_Byte08((PlayerField2416 *) (void *) PlayerRecord_Field2416(record)) ==
+            return PlayerField2416_TailorTalkDays((PlayerField2416 *) (void *) PlayerRecord_Field2416(record)) ==
                    DAY_EVENTS_KIND_2_VALUE;
         default:
             return NookStore_Level(&data_021f395c) == DAY_EVENTS_KIND_3_LEVEL;

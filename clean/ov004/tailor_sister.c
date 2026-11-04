@@ -273,7 +273,7 @@ CLEAN_AS(func_ov004_02222af8, TailorSister_Delete)
 void TailorSister_SetTalkDays(TailorSister *sister, int days)
 {
     (void) sister;
-    PlayerField2416_SetByte08(ts_current_field(), days);
+    PlayerField2416_SetTailorTalkDays(ts_current_field(), days);
 }
 CLEAN_AS(func_ov004_02222b24, TailorSister_SetTalkDays)
 
@@ -282,7 +282,7 @@ CLEAN_AS(func_ov004_02222b24, TailorSister_SetTalkDays)
 int TailorSister_TalkDays(TailorSister *sister)
 {
     (void) sister;
-    return PlayerField2416_Byte08(ts_current_field());
+    return PlayerField2416_TailorTalkDays(ts_current_field());
 }
 CLEAN_AS(func_ov004_02222b3c, TailorSister_TalkDays)
 

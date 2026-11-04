@@ -139,7 +139,7 @@ static int act_take_items(AcornNpcTalk *talk, u8 *record)
     if (spoilers == 0) {
         line = (u8) (MainRandom_Below(3) + ACORN_NPC_LINE_TAKEN);
         for (; others > 0; others--) {
-            PlayerField2416_AddPoints(field, 1);
+            PlayerField2416_AddAcornPoints(field, 1);
         }
     } else if (others != 0) {
         shown = ACORN_NPC_ITEM_SPOILER;
@@ -235,21 +235,21 @@ static int act_count_items(void)
 /* The points the level's reward still needs, at the player's level. */
 static int act_points_needed(PlayerField2416 *field)
 {
-    int level = PlayerField2416_Level(field);
-    return data_ov087_02279324[level].points - PlayerField2416_Points(field);
+    int level = PlayerField2416_AcornLevel(field);
+    return data_ov087_02279324[level].points - PlayerField2416_AcornPoints(field);
 }
 
 /* Whether the points reach the bound of the level's reward (the points asked for first). */
 static int act_reward_due(PlayerField2416 *field)
 {
-    int points = PlayerField2416_Points(field);
-    return points >= data_ov087_02279324[PlayerField2416_Level(field)].points;
+    int points = PlayerField2416_AcornPoints(field);
+    return points >= data_ov087_02279324[PlayerField2416_AcornLevel(field)].points;
 }
 
 /* The level's reward's name put in part 0, at the player's level. */
 static void act_put_reward(AcornNpcTalk *talk, PlayerField2416 *field)
 {
-    u16 reward = data_ov087_02279324[PlayerField2416_Level(field)].item;
+    u16 reward = data_ov087_02279324[PlayerField2416_AcornLevel(field)].item;
     SceneBase_PutItemName(&talk->base, (int) (u32) (uintptr_t) &reward, 0, ACT_ITEM_NAME_KIND);
 }
 
@@ -279,7 +279,7 @@ void AcornNpcTalk_OnLineEnded(AcornNpcTalk *talk)
             if (Pockets_Select(func_ov087_02278f04) != 0) {
                 SceneBase_PutValue(&talk->base, act_count_items(), 2, ACT_VALUE_FORMAT, 0, 0);
                 next = ACORN_NPC_LINE_BROUGHT;
-            } else if (PlayerField2416_Level(field) >= ACORN_NPC_LEVELS) {
+            } else if (PlayerField2416_AcornLevel(field) >= ACORN_NPC_LEVELS) {
                 next = ACORN_NPC_LINE_ALL_GIVEN;
             } else {
                 int needed = act_points_needed(field);
@@ -294,8 +294,8 @@ void AcornNpcTalk_OnLineEnded(AcornNpcTalk *talk)
         case ACORN_NPC_LINE_TAKEN:
         case ACORN_NPC_LINE_TAKEN + 1:
         case ACORN_NPC_LINE_TAKEN + 2:
-            SceneBase_PutValue(&talk->base, PlayerField2416_Points(field), 0, ACT_VALUE_FORMAT, 0, 0);
-            next = PlayerField2416_Level(field) >= ACORN_NPC_LEVELS ? ACORN_NPC_LINE_16 : ACORN_NPC_LINE_POINTS;
+            SceneBase_PutValue(&talk->base, PlayerField2416_AcornPoints(field), 0, ACT_VALUE_FORMAT, 0, 0);
+            next = PlayerField2416_AcornLevel(field) >= ACORN_NPC_LEVELS ? ACORN_NPC_LINE_16 : ACORN_NPC_LINE_POINTS;
             break;
         case ACORN_NPC_LINE_POINTS:
             if (act_reward_due(field)) {
@@ -308,15 +308,15 @@ void AcornNpcTalk_OnLineEnded(AcornNpcTalk *talk)
             break;
         case ACORN_NPC_LINE_REWARD:
         case ACORN_NPC_LINE_NEXT_REWARD: {
-            u16 reward = data_ov087_02279324[PlayerField2416_Level(field)].item;
+            u16 reward = data_ov087_02279324[PlayerField2416_AcornLevel(field)].item;
             if (CurrentPockets_Give(&reward, 0) == 0) {
                 next = ACORN_NPC_LINE_NO_ROOM;
                 break;
             }
-            PlayerField2416_RaiseLevel(field);
-            u16 shown = data_ov087_02279324[PlayerField2416_Level(field)].item;
+            PlayerField2416_RaiseAcornLevel(field);
+            u16 shown = data_ov087_02279324[PlayerField2416_AcornLevel(field)].item;
             SceneCommand_RequestMotion13(act_scene(talk), &shown, 0, 5, 0);
-            if (PlayerField2416_Level(field) < ACORN_NPC_LEVELS && act_reward_due(field)) {
+            if (PlayerField2416_AcornLevel(field) < ACORN_NPC_LEVELS && act_reward_due(field)) {
                 act_put_reward(talk, field);
                 next = ACORN_NPC_LINE_NEXT_REWARD;
             } else {

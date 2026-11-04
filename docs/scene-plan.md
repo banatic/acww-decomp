@@ -4231,7 +4231,7 @@ What reading the Clean code found about the groups above; counts are of function
   kinds 0x38-0x3a).
 - shop-field-date (save field-date: the player record's flag 3 cleared, bit 3 of its flags at
   0x23f8): shop-talk's recording; Tom Nook's greeting reads the second date of the record's field
-  at 0x2416 (PlayerField2416_Date04; the seed's 15 June 2005, not today: line 0x3b).
+  at 0x2416 (PlayerField2416_JobEndDate; the seed's 15 June 2005, not today: line 0x3b).
 - Left: line 0x12 (NookClerkTalk_JobType13, VillagerPart_SetType13): NookClerkTalk_JobLine0C says
   line 0xf plus the job talk's step, which only JobGive1020 raises to 2 (line 0x11), and the job's
   line ends are dispatched by the line shown, not by line 0x11's INF continuation; not shown that

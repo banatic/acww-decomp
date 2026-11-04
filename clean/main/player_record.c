@@ -347,7 +347,7 @@ void PlayerRecord_UpdateSinceLastPlay(void)
     if (days != 0) {
         DailyBits_ClearAll((DailyBits *) (void *) PlayerRecord_Field23EC(self));
         PlayerRecord_SetDayState(self, 0);
-        PlayerField2416_ClearTally((PlayerField2416 *) (void *) PlayerRecord_Field2416(self));
+        PlayerField2416_ClearFireworksGifts((PlayerField2416 *) (void *) PlayerRecord_Field2416(self));
         StateBlock_ClearFlag(data_021dc7a8, STATE_FLAG_CLEARED_ON_NEW_DAY);
     }
     if (days < 0) {

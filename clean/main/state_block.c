@@ -304,7 +304,7 @@ void StateBlock_MovePlayerHere(StateBlock *block)
     PlayerRecord_ClearFlag(record, 0x24);
     PlayerRecord_ClearFlag(record, 0x25);
     PlayerRecord_ClearFlag(record, 0x26);
-    PlayerField2416_ClearBytes0B((PlayerField2416 *) (void *) PlayerRecord_Field2416(record));
+    PlayerField2416_ClearAcorns((PlayerField2416 *) (void *) PlayerRecord_Field2416(record));
     PlayerRecord_ClearFlag(record, 0xf);
     PlayerField2416_ClearGardening((PlayerField2416 *) (void *) PlayerRecord_Field2416(record));
     PairedTown_Reset(PlayerRecord_Field242C(record));
@@ -456,7 +456,7 @@ void StateBlock_StartMode2(StateBlock *block)
     VillagerRoster_UpdateOutdoors(villagers_of(block), 1);
     if (SceneQuery_Current() == SCENE_6 && VillagerState_GetBirthdayGreeter() == -1 &&
         PlayerRecord_TestFlag(record, 0x23) == 0 && PlayerRecord_TestFlag(record, 2) != 0) {
-        PlayerField2416_RaiseCount0D((PlayerField2416 *) (void *) PlayerRecord_Field2416(record));
+        PlayerField2416_RaiseResets((PlayerField2416 *) (void *) PlayerRecord_Field2416(record));
         Block021d27acPart30_Set(Block021d27ac_Part30(Block021d27ac_Get()), 1);
     }
     PlayerRecord_SetFlag(record, 2);

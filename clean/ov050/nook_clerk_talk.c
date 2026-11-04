@@ -1012,7 +1012,7 @@ static int ntalk_news(NookClerkTalk *talk, NookClerkLine *out, u8 *record, int *
         }
     }
     if (PlayerRecord_TestFlag(record, NOOK_CLERK_FLAG_FIELD_DATE) == 0) {
-        const Date *date = (const Date *) (uintptr_t) (u32) PlayerField2416_Date04(
+        const Date *date = (const Date *) (uintptr_t) (u32) PlayerField2416_JobEndDate(
             (PlayerField2416 *) (void *) PlayerRecord_Field2416(record));
         if (date->year != 0 || date->month != 0) {
             Date today;
@@ -1179,7 +1179,7 @@ void NookClerkTalk_JobEnd(int unused, int part)
     PlayerRecord_ClearFlag(record, NOOK_CLERK_TALK_JOB_FLAG);
     PlayerField2416 *field = (PlayerField2416 *) (void *) PlayerRecord_Field2416(record);
     Block021d27ac_SetFlag((u32 *) (void *) Block021d27ac_Get(), 5);
-    PlayerField2416_SetDate04Today(field);
+    PlayerField2416_SetJobEndToday(field);
 }
 CLEAN_AS(func_ov050_02262628, NookClerkTalk_JobEnd)
 

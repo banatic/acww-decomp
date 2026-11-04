@@ -513,7 +513,7 @@ SAVES["job-0f-shirt"] = SAVES["job-0f"] + [(0x14 + 0x2408, "<H", 0x11AC), (POCKE
 # start point is past (13.0, 8.0) of the store and Tom Nook stops the player at work (line 0xc)
 SAVES["job-0f-store3"] = SAVES["job-0f"] + SAVES["barber"]
 # the player record's flag 3 cleared (bit 3 of its flags at 0x23f8, set in the seed): Tom Nook's
-# greeting reads the second date of the record's field at 0x2416 (PlayerField2416_Date04, the 15th
+# greeting reads the second date of the record's field at 0x2416 (PlayerField2416_JobEndDate, the 15th
 # of June 2005 in the seed), not today, and says line 0x3b
 SAVES["field-date"] = [(0x14 + 0x23F8, "<B", 0x00)]
 SAVES["mail-items"] = SAVES["mail-post"] + [(POCKETS + 2 * i, "<H", item) for i, item in enumerate((0x3508, 0x1518, 0x1492))] + [

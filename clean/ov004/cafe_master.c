@@ -398,7 +398,7 @@ static PlayerField2416 *cm_current_field(void)
 /* A quarter of the coffees the player of `field` has had (0 to 3). */
 static int cm_level(PlayerField2416 *field)
 {
-    return PlayerField2416_Count09(field) >> 2;
+    return PlayerField2416_Coffees(field) >> 2;
 }
 
 /* The talk of the scene. */
@@ -709,7 +709,7 @@ void CafeMasterTalk_Drink(CafeMasterTalk *talk)
     TalkChecks_TestSetDailyBit(CAFE_MASTER_DAILY_COFFEE, 1);
     PlayerField2416 *field = cm_current_field();
     if (MainRandom_Below(10) < 5) {
-        PlayerField2416_SetCount09(field, (u8) (PlayerField2416_Count09(field) + 1));
+        PlayerField2416_SetCoffees(field, (u8) (PlayerField2416_Coffees(field) + 1));
     }
     CafeMasterTalk_SetSequence(talk, CAFE_MASTER_TALK_NONE);
 }
@@ -949,7 +949,7 @@ void CafeMasterTalk_OnMessageEnded(CafeMasterTalk *talk)
     }
     u8 shown = cm_shown(talk);
     if (shown >= CAFE_MASTER_LINE_SERVED && shown <= CAFE_MASTER_LINE_SERVED_LAST) {
-        if ((unsigned int) PlayerField2416_Count09(field) >= CAFE_MASTER_REGULAR_COFFEES && MainRandom_Below(3) == 0) {
+        if ((unsigned int) PlayerField2416_Coffees(field) >= CAFE_MASTER_REGULAR_COFFEES && MainRandom_Below(3) == 0) {
             message = CAFE_MASTER_LINE_REGULAR;
         } else {
             object->mode = 0;
@@ -1014,7 +1014,7 @@ void CafeMasterTalk_Line(CafeMasterTalk *talk, CafeMasterLine *out)
     }
     if (!PlayerActorOps_InState(CAFE_MASTER_PLAYER_SEATED, CAFE_MASTER_PLAYER_ACTOR)) {
         if (!TalkChecks_TestSetDailyBit(CAFE_MASTER_DAILY_FIRST_TALK, 1)) {
-            out->message = (u8) (PlayerField2416_Count09(field) >> 1);
+            out->message = (u8) (PlayerField2416_Coffees(field) >> 1);
             return;
         }
         if (cm_musician_in(guest)) {

@@ -3,7 +3,7 @@
  *
  * Its vtable slots, beyond those of the scene class:
  * - 0x78 (MoleTalk_FirstLine): the line the talk starts with, by the count 0x0d of the current
- *   player's record (PlayerField2416_Count0D): line 0x00 for a count up to 1, 0x04, 0x09, 0x13
+ *   player's record (PlayerField2416_Resets): line 0x00 for a count up to 1, 0x04, 0x09, 0x13
  *   and 0x1b for the counts 2 to 5; above 5 one of the last four at random;
  * - 0x10 (MoleTalk_OnLineBegins): at line 0x17 a phrase is picked, one of the 16 messages of
  *   "st_general" (not the one picked before), and put in the talk's part 0;
