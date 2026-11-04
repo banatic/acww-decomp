@@ -47,14 +47,14 @@ enum KeyboardEntryMode {
     KEYBOARD_ENTRY_MODE_RECORD_DESIGN_TITLE = 0x14, /* the title of the town record's design */
     KEYBOARD_ENTRY_MODE_15 = 0x15,                  /* 0x15-0x17: main's text */
     KEYBOARD_ENTRY_MODE_17 = 0x17,
-    KEYBOARD_ENTRY_MODE_FRIEND_TEXT_18 = 0x18,     /* text 0x18 of friend `arg` (main/wifi_friends.h) */
-    KEYBOARD_ENTRY_MODE_NEW_FRIEND_TEXT_18 = 0x19, /* the same for a friend being added */
-    KEYBOARD_ENTRY_MODE_FRIEND_TEXT_0C = 0x1a,     /* text 0x0c of friend `arg` */
-    KEYBOARD_ENTRY_MODE_NEW_FRIEND_TEXT_0C = 0x1b  /* the same for a friend being added */
+    KEYBOARD_ENTRY_MODE_FRIEND_TOWN = 0x18,     /* the town of friend `arg` (main/wifi_friends.h) */
+    KEYBOARD_ENTRY_MODE_NEW_FRIEND_TOWN = 0x19, /* the same for a friend being added */
+    KEYBOARD_ENTRY_MODE_FRIEND_NAME = 0x1a,     /* the name of friend `arg` */
+    KEYBOARD_ENTRY_MODE_NEW_FRIEND_NAME = 0x1b  /* the same for a friend being added */
 };
 
-#define KEYBOARD_ENTRY_FIRST_FRIEND_MODE KEYBOARD_ENTRY_MODE_FRIEND_TEXT_18
-#define KEYBOARD_ENTRY_LAST_FRIEND_MODE KEYBOARD_ENTRY_MODE_NEW_FRIEND_TEXT_0C
+#define KEYBOARD_ENTRY_FIRST_FRIEND_MODE KEYBOARD_ENTRY_MODE_FRIEND_TOWN
+#define KEYBOARD_ENTRY_LAST_FRIEND_MODE KEYBOARD_ENTRY_MODE_NEW_FRIEND_NAME
 
 /* What main is told of the input (GroupParams_SetC4C). */
 enum KeyboardEntryOutcome {
@@ -191,8 +191,8 @@ void KeyboardEntry_SetFlags(KeyboardEntry *self, unsigned short mask);
 int KeyboardEntry_TestFlags(KeyboardEntry *self, unsigned int mask);
 void KeyboardEntry_FilterTaboo(KeyboardEntry *self);
 void KeyboardEntry_Commit(KeyboardEntry *self);
-void KeyboardEntry_CommitFriendText0C(KeyboardEntry *self);
-void KeyboardEntry_CommitFriendText18(KeyboardEntry *self);
+void KeyboardEntry_CommitFriendName(KeyboardEntry *self);
+void KeyboardEntry_CommitFriendTown(KeyboardEntry *self);
 void KeyboardEntry_CommitRecordDesignTitle(KeyboardEntry *self);
 void KeyboardEntry_CommitConstellation(KeyboardEntry *self);
 void KeyboardEntry_CommitTownName(KeyboardEntry *self);
@@ -202,8 +202,8 @@ void KeyboardEntry_FindSong(KeyboardEntry *self);
 void KeyboardEntry_CheckGeneralWord(KeyboardEntry *self);
 void KeyboardEntry_CommitDesignTitle(KeyboardEntry *self);
 void KeyboardEntry_LoadText(KeyboardEntry *self);
-void KeyboardEntry_LoadFriendText0C(KeyboardEntry *self);
-void KeyboardEntry_LoadFriendText18(KeyboardEntry *self);
+void KeyboardEntry_LoadFriendName(KeyboardEntry *self);
+void KeyboardEntry_LoadFriendTown(KeyboardEntry *self);
 WifiFriend *KeyboardEntry_Friend(void);
 void KeyboardEntry_LoadConstellation(KeyboardEntry *self);
 void KeyboardEntry_LoadDesignTitle(KeyboardEntry *self);

@@ -197,12 +197,12 @@ void KeyboardEntry_Setup(KeyboardEntry *self)
         case KEYBOARD_ENTRY_MODE_15:
         case 0x16:
         case KEYBOARD_ENTRY_MODE_17:
-        case KEYBOARD_ENTRY_MODE_FRIEND_TEXT_18:
-        case KEYBOARD_ENTRY_MODE_FRIEND_TEXT_0C:
+        case KEYBOARD_ENTRY_MODE_FRIEND_TOWN:
+        case KEYBOARD_ENTRY_MODE_FRIEND_NAME:
             self->panel_kind = KEYBOARD_ENTRY_PANEL_OK;
             break;
-        case KEYBOARD_ENTRY_MODE_NEW_FRIEND_TEXT_18:
-        case KEYBOARD_ENTRY_MODE_NEW_FRIEND_TEXT_0C:
+        case KEYBOARD_ENTRY_MODE_NEW_FRIEND_TOWN:
+        case KEYBOARD_ENTRY_MODE_NEW_FRIEND_NAME:
             KeyboardEntry_SetFlags(self, KEYBOARD_ENTRY_FLAG_NEW_FRIEND);
             self->panel_kind = KEYBOARD_ENTRY_PANEL_OK_CANCEL;
             break;
@@ -257,8 +257,8 @@ void KeyboardEntry_Setup(KeyboardEntry *self)
     if (TextString_TrimmedLength(self->text, self->max_chars) == 0) {
         TextString_ClearChars(self->text, KEYBOARD_ENTRY_TEXT_CHARS);
     }
-    if (mode == KEYBOARD_ENTRY_MODE_TOWN_NAME || mode == KEYBOARD_ENTRY_MODE_FRIEND_TEXT_18 ||
-        mode == KEYBOARD_ENTRY_MODE_NEW_FRIEND_TEXT_18 || mode == KEYBOARD_ENTRY_MODE_CONSTELLATION) {
+    if (mode == KEYBOARD_ENTRY_MODE_TOWN_NAME || mode == KEYBOARD_ENTRY_MODE_FRIEND_TOWN ||
+        mode == KEYBOARD_ENTRY_MODE_NEW_FRIEND_TOWN || mode == KEYBOARD_ENTRY_MODE_CONSTELLATION) {
         KeyboardEntry_SetFlags(self, KEYBOARD_ENTRY_FLAG_HINT);
     }
 }
@@ -364,8 +364,8 @@ void KeyboardEntry_WipeOut(KeyboardEntry *self)
     KeyboardEntry_Commit(self);
     GroupParams_SetText(self->text, self->max_chars);
     int mode = GroupParams_Mode();
-    if (mode == KEYBOARD_ENTRY_MODE_FRIEND_TEXT_18 || mode == KEYBOARD_ENTRY_MODE_NEW_FRIEND_TEXT_18 ||
-        mode == KEYBOARD_ENTRY_MODE_FRIEND_TEXT_0C) {
+    if (mode == KEYBOARD_ENTRY_MODE_FRIEND_TOWN || mode == KEYBOARD_ENTRY_MODE_NEW_FRIEND_TOWN ||
+        mode == KEYBOARD_ENTRY_MODE_FRIEND_NAME) {
         MenuTabs_MarkRosterChanged((MenuTabs *) (void *) keyboard_entry_parent(self));
     }
 }
@@ -399,14 +399,14 @@ void KeyboardEntry_Finish(KeyboardEntry *self)
     if (keyboard_entry_is_friend_mode(mode)) {
         MenuTabs *menu = (MenuTabs *) (void *) keyboard_entry_parent(self);
         switch (mode) {
-            case KEYBOARD_ENTRY_MODE_FRIEND_TEXT_18:
-            case KEYBOARD_ENTRY_MODE_FRIEND_TEXT_0C:
+            case KEYBOARD_ENTRY_MODE_FRIEND_TOWN:
+            case KEYBOARD_ENTRY_MODE_FRIEND_NAME:
                 MenuTabs_SelectTab(menu, KEYBOARD_ENTRY_TAB_6);
                 if (KeyboardEntry_TestFlags(self, KEYBOARD_ENTRY_FLAG_CANCELLED) == 0) {
                     StateFlags_Set200();
                 }
                 break;
-            case KEYBOARD_ENTRY_MODE_NEW_FRIEND_TEXT_18:
+            case KEYBOARD_ENTRY_MODE_NEW_FRIEND_TOWN:
                 if (KeyboardEntry_TestFlags(self, KEYBOARD_ENTRY_FLAG_CANCELLED) != 0) {
                     MenuTabs_SelectTab(menu, KEYBOARD_ENTRY_TAB_12);
                     break;
@@ -422,7 +422,7 @@ void KeyboardEntry_Finish(KeyboardEntry *self)
                     }
                 }
                 break;
-            case KEYBOARD_ENTRY_MODE_NEW_FRIEND_TEXT_0C:
+            case KEYBOARD_ENTRY_MODE_NEW_FRIEND_NAME:
                 if (KeyboardEntry_TestFlags(self, KEYBOARD_ENTRY_FLAG_CANCELLED) != 0) {
                     MenuTabs_SelectTab(menu, KEYBOARD_ENTRY_TAB_14);
                 } else {
@@ -537,7 +537,7 @@ int KeyboardEntry_RunInput(KeyboardEntry *self)
                     KeyboardEntry_ScrollWipe(self);
                     MenuScene_SetState(keyboard_entry_scene(self), KEYBOARD_ENTRY_STATE_WIPE_OUT);
                     MenuScene_SetPhase(keyboard_entry_scene(self), KEYBOARD_ENTRY_PHASE_STATES);
-                    if (mode == KEYBOARD_ENTRY_MODE_NEW_FRIEND_TEXT_18 || mode == KEYBOARD_ENTRY_MODE_NEW_FRIEND_TEXT_0C) {
+                    if (mode == KEYBOARD_ENTRY_MODE_NEW_FRIEND_TOWN || mode == KEYBOARD_ENTRY_MODE_NEW_FRIEND_NAME) {
                         WifiFriend_Clear(KeyboardEntry_Friend());
                     }
                     break;

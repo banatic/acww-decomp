@@ -5,8 +5,8 @@
 #include "clean.h"
 #include "text_string.h"
 
-static_assert(offsetof(WifiFriend, text_0c) == 0x0c, "text 0c");
-static_assert(offsetof(WifiFriend, text_18) == 0x18, "text 18");
+static_assert(offsetof(WifiFriend, name) == 0x0c, "name");
+static_assert(offsetof(WifiFriend, town) == 0x18, "town");
 static_assert(sizeof(WifiFriend) == 0x24, "friend size");
 static_assert(offsetof(WifiFriendList, checksum) == 0x480, "list checksum");
 static_assert(sizeof(WifiFriendList) == 0x484, "list size");
@@ -105,19 +105,19 @@ CLEAN_AS(func_02077c20, WifiAccount_Construct)
 
 /* ---- A friend ---- */
 
-/* func_02077c34 */
-u16 *WifiFriend_GetText18(WifiFriend *entry)
+/* func_02077c34: the friend's town's name. */
+u16 *WifiFriend_GetTown(WifiFriend *entry)
 {
-    return entry->text_18;
+    return entry->town;
 }
-CLEAN_AS(func_02077c34, WifiFriend_GetText18)
+CLEAN_AS(func_02077c34, WifiFriend_GetTown)
 
-/* func_02077c38 */
-u16 *WifiFriend_GetText0C(WifiFriend *entry)
+/* func_02077c38: the friend's name. */
+u16 *WifiFriend_GetName(WifiFriend *entry)
 {
-    return entry->text_0c;
+    return entry->name;
 }
-CLEAN_AS(func_02077c38, WifiFriend_GetText0C)
+CLEAN_AS(func_02077c38, WifiFriend_GetName)
 
 /* func_02077c3c: the friend data, at the entry's start. */
 WifiFriendData *WifiFriend_GetFriendData(WifiFriend *entry)
@@ -130,8 +130,8 @@ CLEAN_AS(func_02077c3c, WifiFriend_GetFriendData)
 void WifiFriend_Clear(WifiFriend *entry)
 {
     WifiFriendData_Clear(&entry->friend_data);
-    TextString_ClearChars(entry->text_0c, WIFI_FRIEND_TEXT_LENGTH);
-    TextString_ClearChars(entry->text_18, WIFI_FRIEND_TEXT_LENGTH);
+    TextString_ClearChars(entry->name, WIFI_FRIEND_TEXT_LENGTH);
+    TextString_ClearChars(entry->town, WIFI_FRIEND_TEXT_LENGTH);
 }
 CLEAN_AS(func_02077c40, WifiFriend_Clear)
 

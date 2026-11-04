@@ -300,9 +300,9 @@ void FriendRoster_AddPlayer(FriendRoster *self)
     WifiFriendData *data = WifiFriend_GetFriendData(entry);
     WifiFriendData_Copy(data, WifiAccount_GetFriendData(PlayerRecord_WifiAccount(record)));
     const u16 *name = (const u16 *) (uintptr_t) PlayerId_Name((int) (uintptr_t) player);
-    TextString_CopyChars(name, WifiFriend_GetText0C(entry), WIFI_FRIEND_TEXT_LENGTH);
+    TextString_CopyChars(name, WifiFriend_GetName(entry), WIFI_FRIEND_TEXT_LENGTH);
     const u16 *town = (const u16 *) (uintptr_t) TownName_Name((int) (uintptr_t) PlayerId_Town(player));
-    TextString_CopyChars(town, WifiFriend_GetText18(entry), WIFI_FRIEND_TEXT_LENGTH);
+    TextString_CopyChars(town, WifiFriend_GetTown(entry), WIFI_FRIEND_TEXT_LENGTH);
     MenuTabs_MarkRosterChanged(fr_menu(self));
     self->friend_index = (u8) index;
     if (FriendRoster_IsOnline(self)) {

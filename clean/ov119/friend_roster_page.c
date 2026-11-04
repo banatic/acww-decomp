@@ -245,11 +245,11 @@ void FriendRoster_DrawFriendRows(FriendRoster *self)
         int index = bytes[offsetof(FriendRoster, slots) + slot];
         WifiFriend *entry = index < WIFI_FRIENDS ? &friends[index] : NULL;
         if (entry != NULL && WifiFriendData_IsSet(WifiFriend_GetFriendData(entry))) {
-            TextBase_SetWide(&wide, WifiFriend_GetText18(entry), WIFI_FRIEND_TEXT_LENGTH);
+            TextBase_SetWide(&wide, WifiFriend_GetTown(entry), WIFI_FRIEND_TEXT_LENGTH);
             TextBase_WideToBytes((TextBase *) (void *) &town, (WideTextBase *) (void *) &wide, 0, 0);
             MessageReader_SetPart(0, (int) (uintptr_t) &town);
             TextLabel_LoadMenuMessage(town_label, FRIEND_ROSTER_MESSAGE_TOWN);
-            TextLabel_SetFromWide(name_label, WifiFriend_GetText0C(entry), (void *) (uintptr_t) WIFI_FRIEND_TEXT_LENGTH);
+            TextLabel_SetFromWide(name_label, WifiFriend_GetName(entry), (void *) (uintptr_t) WIFI_FRIEND_TEXT_LENGTH);
             self->rows_shown++;
             if (WifiFriendData_IsNotFriendKey(WifiFriend_GetFriendData(entry))) {
                 FriendRoster_SetRowIcon((int) (uintptr_t) self, &self->list_map[icon], FRIEND_ROSTER_ICON_FRIEND);

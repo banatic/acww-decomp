@@ -24,9 +24,9 @@ typedef struct WifiFriendData {
 } WifiFriendData;
 
 typedef struct WifiFriend {
-    WifiFriendData friend_data;           /* 0x00 */
-    u16 text_0c[WIFI_FRIEND_TEXT_LENGTH]; /* 0x0c */
-    u16 text_18[WIFI_FRIEND_TEXT_LENGTH]; /* 0x18 */
+    WifiFriendData friend_data;        /* 0x00 */
+    u16 name[WIFI_FRIEND_TEXT_LENGTH]; /* 0x0c: the friend's name */
+    u16 town[WIFI_FRIEND_TEXT_LENGTH]; /* 0x18: the friend's town's name */
 } WifiFriend;
 
 typedef struct WifiFriendList {
@@ -53,8 +53,8 @@ void WifiAccount_Init(WifiAccount *account);
 WifiAccount *WifiAccount_Destruct(WifiAccount *account);
 WifiAccount *WifiAccount_Construct(WifiAccount *account);
 
-u16 *WifiFriend_GetText18(WifiFriend *entry);
-u16 *WifiFriend_GetText0C(WifiFriend *entry);
+u16 *WifiFriend_GetTown(WifiFriend *entry);
+u16 *WifiFriend_GetName(WifiFriend *entry);
 WifiFriendData *WifiFriend_GetFriendData(WifiFriend *entry);
 void WifiFriend_Clear(WifiFriend *entry);
 WifiFriend *WifiFriend_Copy(WifiFriend *dst, WifiFriend *src);

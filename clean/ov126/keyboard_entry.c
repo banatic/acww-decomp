@@ -159,13 +159,13 @@ void KeyboardEntry_Commit(KeyboardEntry *self)
         case KEYBOARD_ENTRY_MODE_RECORD_DESIGN_TITLE:
             KeyboardEntry_CommitRecordDesignTitle(self);
             break;
-        case KEYBOARD_ENTRY_MODE_FRIEND_TEXT_18:
-        case KEYBOARD_ENTRY_MODE_NEW_FRIEND_TEXT_18:
-            KeyboardEntry_CommitFriendText18(self);
+        case KEYBOARD_ENTRY_MODE_FRIEND_TOWN:
+        case KEYBOARD_ENTRY_MODE_NEW_FRIEND_TOWN:
+            KeyboardEntry_CommitFriendTown(self);
             break;
-        case KEYBOARD_ENTRY_MODE_FRIEND_TEXT_0C:
-        case KEYBOARD_ENTRY_MODE_NEW_FRIEND_TEXT_0C:
-            KeyboardEntry_CommitFriendText0C(self);
+        case KEYBOARD_ENTRY_MODE_FRIEND_NAME:
+        case KEYBOARD_ENTRY_MODE_NEW_FRIEND_NAME:
+            KeyboardEntry_CommitFriendName(self);
             break;
         default:
             break;
@@ -173,19 +173,19 @@ void KeyboardEntry_Commit(KeyboardEntry *self)
 }
 CLEAN_AS(func_ov126_0229f83c, KeyboardEntry_Commit)
 
-/* func_ov126_0229f8e8: the text's first six characters into the friend's text 0x0c. */
-void KeyboardEntry_CommitFriendText0C(KeyboardEntry *self)
+/* func_ov126_0229f8e8: the text's first six characters into the friend's name. */
+void KeyboardEntry_CommitFriendName(KeyboardEntry *self)
 {
-    TextString_CopyChars(self->text, WifiFriend_GetText0C(KeyboardEntry_Friend()), WIFI_FRIEND_TEXT_LENGTH);
+    TextString_CopyChars(self->text, WifiFriend_GetName(KeyboardEntry_Friend()), WIFI_FRIEND_TEXT_LENGTH);
 }
-CLEAN_AS(func_ov126_0229f8e8, KeyboardEntry_CommitFriendText0C)
+CLEAN_AS(func_ov126_0229f8e8, KeyboardEntry_CommitFriendName)
 
-/* func_ov126_0229f90c: the text's first six characters into the friend's text 0x18. */
-void KeyboardEntry_CommitFriendText18(KeyboardEntry *self)
+/* func_ov126_0229f90c: the text's first six characters into the friend's town. */
+void KeyboardEntry_CommitFriendTown(KeyboardEntry *self)
 {
-    TextString_CopyChars(self->text, WifiFriend_GetText18(KeyboardEntry_Friend()), WIFI_FRIEND_TEXT_LENGTH);
+    TextString_CopyChars(self->text, WifiFriend_GetTown(KeyboardEntry_Friend()), WIFI_FRIEND_TEXT_LENGTH);
 }
-CLEAN_AS(func_ov126_0229f90c, KeyboardEntry_CommitFriendText18)
+CLEAN_AS(func_ov126_0229f90c, KeyboardEntry_CommitFriendTown)
 
 /* func_ov126_0229f930: the text's first ten characters as the title of the town record's
  * design. */
@@ -339,13 +339,13 @@ void KeyboardEntry_LoadText(KeyboardEntry *self)
         case KEYBOARD_ENTRY_MODE_CONSTELLATION:
             KeyboardEntry_LoadConstellation(self);
             break;
-        case KEYBOARD_ENTRY_MODE_FRIEND_TEXT_18:
-        case KEYBOARD_ENTRY_MODE_NEW_FRIEND_TEXT_18:
-            KeyboardEntry_LoadFriendText18(self);
+        case KEYBOARD_ENTRY_MODE_FRIEND_TOWN:
+        case KEYBOARD_ENTRY_MODE_NEW_FRIEND_TOWN:
+            KeyboardEntry_LoadFriendTown(self);
             break;
-        case KEYBOARD_ENTRY_MODE_FRIEND_TEXT_0C:
-        case KEYBOARD_ENTRY_MODE_NEW_FRIEND_TEXT_0C:
-            KeyboardEntry_LoadFriendText0C(self);
+        case KEYBOARD_ENTRY_MODE_FRIEND_NAME:
+        case KEYBOARD_ENTRY_MODE_NEW_FRIEND_NAME:
+            KeyboardEntry_LoadFriendName(self);
             break;
         default:
             break;
@@ -353,19 +353,19 @@ void KeyboardEntry_LoadText(KeyboardEntry *self)
 }
 CLEAN_AS(func_ov126_0229fb9c, KeyboardEntry_LoadText)
 
-/* func_ov126_0229fc14: the friend's text 0x0c as the text. */
-void KeyboardEntry_LoadFriendText0C(KeyboardEntry *self)
+/* func_ov126_0229fc14: the friend's name as the text. */
+void KeyboardEntry_LoadFriendName(KeyboardEntry *self)
 {
-    TextString_CopyChars(WifiFriend_GetText0C(KeyboardEntry_Friend()), self->text, WIFI_FRIEND_TEXT_LENGTH);
+    TextString_CopyChars(WifiFriend_GetName(KeyboardEntry_Friend()), self->text, WIFI_FRIEND_TEXT_LENGTH);
 }
-CLEAN_AS(func_ov126_0229fc14, KeyboardEntry_LoadFriendText0C)
+CLEAN_AS(func_ov126_0229fc14, KeyboardEntry_LoadFriendName)
 
-/* func_ov126_0229fc34: the friend's text 0x18 as the text. */
-void KeyboardEntry_LoadFriendText18(KeyboardEntry *self)
+/* func_ov126_0229fc34: the friend's town as the text. */
+void KeyboardEntry_LoadFriendTown(KeyboardEntry *self)
 {
-    TextString_CopyChars(WifiFriend_GetText18(KeyboardEntry_Friend()), self->text, WIFI_FRIEND_TEXT_LENGTH);
+    TextString_CopyChars(WifiFriend_GetTown(KeyboardEntry_Friend()), self->text, WIFI_FRIEND_TEXT_LENGTH);
 }
-CLEAN_AS(func_ov126_0229fc34, KeyboardEntry_LoadFriendText18)
+CLEAN_AS(func_ov126_0229fc34, KeyboardEntry_LoadFriendTown)
 
 /* func_ov126_0229fc54: friend `arg` of the current player's roster. */
 WifiFriend *KeyboardEntry_Friend(void)

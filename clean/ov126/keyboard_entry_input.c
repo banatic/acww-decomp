@@ -778,7 +778,7 @@ void KeyboardEntry_PressButton(KeyboardEntry *self, int cancel)
     if (KeyboardEntry_TestFlags(self, KEYBOARD_ENTRY_FLAG_NEW_FRIEND) != 0) {
         if (KeyboardEntry_TestFlags(self, KEYBOARD_ENTRY_FLAG_CANCELLED) != 0) {
             SoundSys_PlaySe(KEYBOARD_ENTRY_SE_CANCEL_FRIEND);
-        } else if (GroupParams_Mode() == KEYBOARD_ENTRY_MODE_NEW_FRIEND_TEXT_18) {
+        } else if (GroupParams_Mode() == KEYBOARD_ENTRY_MODE_NEW_FRIEND_TOWN) {
             SoundSys_PlaySe(KEYBOARD_ENTRY_SE_OK);
         } else {
             SoundSys_PlaySe(KEYBOARD_ENTRY_SE_OK_FRIEND);
