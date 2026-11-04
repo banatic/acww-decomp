@@ -5,7 +5,7 @@
 # facing south. UP at 4200 walks into the south bed: the player lies down (state 8). UP at 4390
 # rolls to its head; UP at 4496 asks the side check again (RoomObjects_CheckStepXPlus): the cell
 # ahead holds the other bed, facing the same way, with a cell next to this one's
-# (RoomObject02253058_CheckStep: _ListCells of both, joined), and the player rolls over into it.
+# (BedObject_CheckStep: _ListCells of both, joined), and the player rolls over into it.
 0 - -
 900 START -
 906 - -

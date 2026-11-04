@@ -5,7 +5,7 @@
  * GroupParams_OpenWithMask opens group 9 in (main/group_params.h). Its callers ask for an item and
  * pass a mask of the pocket slots that may be given (Pockets_Select): a sick villager asking for
  * medicine (ov004/sick_villager.c), a birthday villager's present (ov004/birthday_villager.c), a
- * room object that takes an item (ov004/room_object_02253058.c) and the scene commands
+ * room object that takes an item (ov004/bed_object.c) and the scene commands
  * (main/scene_command.c). As the evidence says:
  *
  * - the slots whose bit is clear in the mask (GroupParams_Mask) are dimmed and cannot be picked

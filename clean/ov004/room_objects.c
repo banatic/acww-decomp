@@ -17,7 +17,7 @@
 #include "main/scene_tables.h"
 #include "main/session_players.h"
 #include "room_object_02252374.h"
-#include "room_object_02253058.h"
+#include "bed_object.h"
 #include "room_object_body.h"
 #include "room_object_map.h"
 #include "room_object_methods.h"
@@ -43,8 +43,8 @@ static_assert(offsetof(MapActor, angle) == 0x8e, "actor angle");
 #define KIND_780_ROOM_FLOOR 0x26
 #define KIND_780_SWITCH_SHOWN 0x27
 
-/* The RoomObject.unk_00C of the objects RoomObjects_CheckStep asks (room_object_02253058.h). */
-#define KIND_00C_STEP 0x37
+/* The RoomObject.unk_00C of the objects RoomObjects_CheckStep asks (bed_object.h). */
+#define KIND_00C_BED 0x37
 
 /* How far ahead RoomObjects_FindAhead looks for an item on the floor (1.05 cells), and the
  * reach of the RoomObjects_IsFree tests (one cell). */
@@ -623,12 +623,12 @@ int RoomObjects_CheckStepXPlus(Vec3 *point, int angle)
 CLEAN_AS(func_ov004_0223c510, RoomObjects_CheckStepXPlus)
 
 /* func_ov004_0223c568: what the object on the floor under `point` says of a step from it along
- * `angle` with `offset` (RoomObject02253058_CheckStep), when it is of kind 0x37; else 0. */
+ * `angle` with `offset` (BedObject_CheckStep), when it is of kind 0x37; else 0. */
 int RoomObjects_CheckStep(Vec3 *point, int angle, Vec3 *offset)
 {
     RoomObject *object = RoomObjects_GridObjectAtPoint(RoomObjects_Grid(), point, ROOM_OBJECTS_LAYER_FLOOR);
-    if (object != NULL && object->unk_00C == KIND_00C_STEP) {
-        return RoomObject02253058_CheckStep((RoomObject02253058 *) (void *) object, point, angle, offset);
+    if (object != NULL && object->unk_00C == KIND_00C_BED) {
+        return BedObject_CheckStep((BedObject *) (void *) object, point, angle, offset);
     }
     return 0;
 }

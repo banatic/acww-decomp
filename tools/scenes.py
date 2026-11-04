@@ -225,7 +225,7 @@ SAVES = {
     # bits 0-2 of the house record's word at 0x15a0 (main/house_record.h) 6, and its building on
     # the town map (the seed's 0x5014 at 0xe5da) 0x501a, the code of that size
     "house-big": [(HELD, "<H", 0x1374), (ROACHES, "<B", 0), (0xF52C + 0x15A0, "<B", 0x06), (0xE5DA, "<H", 0x501A)],
-    # as "house-big" with the Asian bed (furniture number 0, kind 0xa: ov004/room_object_02253058.h)
+    # as "house-big" with the Asian bed (furniture number 0, kind 0xa: ov004/bed_object.h)
     # in pocket 2
     "house-big-bed": [(HELD, "<H", 0x1374), (ROACHES, "<B", 0), (0xF52C + 0x15A0, "<B", 0x06), (0xE5DA, "<H", 0x501A),
                       (POCKETS + 4, "<H", 0x3000)],

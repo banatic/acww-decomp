@@ -72,7 +72,7 @@ From 552 scene lists: 25,251 Clean game functions, run 21,811, function check on
 | the mailbox's press of a place other than the one below the letters | 2 (0 / 2) | ov106/mailbox_scene 2 | none: sub state 0x0f of the mailbox (ov106), which a place's press would go to when the cursor were not on the place below the letters (MailboxScene_BeginSubState0f and its update MailboxScene_FinishPlacePress) | sub state 0x0e (MailboxScene_PressPlace) is set only by MailboxScene_BeginSubState0e, which only MailboxScene_BrowseByKeys calls, when A is pressed with the cursor (+0xb8) on the place below the letters (MAILBOX_SCENE_BELOW, 0x1f), or by a return to the kept sub state (+0xbb), which holds the sub state its setters (BeginSubState13, GlideToRow, EaseCursorSpriteTo, GlideToCursor) ran in, and none runs in 0x0e; the cursor is stored only by MailboxScene_MoveCursor's parts (called only by BrowseByKeys and MoveHeldByKeys) and MailboxScene_TakeNextLetter (0x1f). So in 0x0e the cursor is 0x1f and PressPlace presses panel button 9 (sub state 0x23); BeginSubState0f, the only setter of 0x0f, never runs (findings 2026-10-31, rows19, w59-wt5/cls/classify.py, gate cursor) | unreachable |
 | the screens' windows the caution window gives back: it never hid them | 2 (2 / 0) | main/display_shadow 2 | none: DisplayShadow_SetMainWindows and _SetSubWindows, which only the caution window calls, to hide the screens' windows (CautionWindow_HidePlanes, in the caution window's states) and to give them back (CautionWindow_RestorePlanes, which every scene runs, but only once the planes were hidden) | the caution window's flag of hidden planes (+0xca) is set only by CautionWindow_HidePlanes (its constructor, its reset and RestorePlanes clear it), whose two callers are the caution window's states, which the caution gate cuts off (group "the caution window's states: the session's error flags stay 0") (findings 2026-10-31, rows21, w61-wt5/cls/classify.py, gate planes) | unreachable |
 | the town insects' kind 0x38, which no code gives an insect | 2 (0 / 2) | ov003/town_insect_kinds 2 | none: TownInsectKind_Start38 and _Update38, kind 0x38's entry of the insects' kinds table (data_ov003_0223c2ac, read by TownInsect_Load for the insect's kind) | an insect's kind is written only with the draw lists' kinds (data_020dded8: twelve months of six lists, no entry of kind 0x38; TownInsect_DrawKind), 0x33 and 0x3b (TownInsect_SpecialKind), 0x3a and 0x3b (TownInsect_StartEvent's two calls), a held insect's (TownInsect_TakeHeld: an item's kind, 0x12b0-0x12e7 as 0-0x37 or 0xff, or a caught insect's, with 0x25, 0x3a and 0x3b given as 0x39, 0xb and 0x18), the session's records (TownInsectTables_ReadRecord, a linked session) and the empty and failed marks (-1, -10); so no insect is of kind 0x38 and its entry, named by that one table word each, never runs (findings 2026-10-31, rows26; w66-wt6/cls/classify.py, gate value) | unreachable |
-| the room objects' state entries no code asks for | 1 (1 / 0) | ov004/room_object_02253058 1 | none: the entry of state 0 (PUSHED) of the room objects of profile 0x37 (ov004/room_object_02253058.c) | (findings 2026-10-30, resident9) RoomObject02253058_EnterPushed is named only by the entries' table of RoomObject02253058_EnterState (vtable slot 0x70), and state 0 is the one the constructor leaves without entering it. The class's own changes (switch_to) ask only for states 1-13. Every other call through slot 0x70 in clean/ is a class's own on itself, or RoomSync_SetStateAt's and RoomSync_ApplyState's on the object at a cell. RoomSync_SetStateAt is reached from RoomSync_RequestStateAt and RoomSync_SetState, which each class asks for on itself, except RoomObjects_SyncKind3AOn (objects of profile 0x3a) and RoomSync_ToggleAt's other lamp (RoomObject_TestUnk780Is18: furniture kind 0x18). RoomSync_ToggleAt toggles the object at the cell of a point that RoomSync_ToggleSwitchAtPoint gets, from RoomObjects_Spawn (a kind 0x18 lamp's point) and RoomObject02252ba8 (its own point), or of a message 29. RoomSync_ApplyState is called only by RoomSync_ReceiveState (message 24). Both messages come only through the session's receive callback (gate recv). Furniture kinds 10 and 0x2a are the only ones with profile 0x37 (data_ov004_02247f54), so these objects are neither of profile 0x3a nor of kind 0x18 (w49-wt5/cls/classify.py, gate value) | unreachable |
+| the room objects' state entries no code asks for | 1 (1 / 0) | ov004/bed_object 1 | none: the entry of state 0 (PUSHED) of the room objects of profile 0x37 (ov004/bed_object.c) | (findings 2026-10-30, resident9) BedObject_EnterPushed is named only by the entries' table of BedObject_EnterState (vtable slot 0x70), and state 0 is the one the constructor leaves without entering it. The class's own changes (switch_to) ask only for states 1-13. Every other call through slot 0x70 in clean/ is a class's own on itself, or RoomSync_SetStateAt's and RoomSync_ApplyState's on the object at a cell. RoomSync_SetStateAt is reached from RoomSync_RequestStateAt and RoomSync_SetState, which each class asks for on itself, except RoomObjects_SyncKind3AOn (objects of profile 0x3a) and RoomSync_ToggleAt's other lamp (RoomObject_TestUnk780Is18: furniture kind 0x18). RoomSync_ToggleAt toggles the object at the cell of a point that RoomSync_ToggleSwitchAtPoint gets, from RoomObjects_Spawn (a kind 0x18 lamp's point) and RoomObject02252ba8 (its own point), or of a message 29. RoomSync_ApplyState is called only by RoomSync_ReceiveState (message 24). Both messages come only through the session's receive callback (gate recv). Furniture kinds 10 and 0x2a are the only ones with profile 0x37 (data_ov004_02247f54), so these objects are neither of profile 0x3a nor of kind 0x18 (w49-wt5/cls/classify.py, gate value) | unreachable |
 | the fox's wait for the shops' answers, whose flag nothing sets | 1 (0 / 1) | main/shops 1 | none: Shops_AllAnsweredTailor, which the fox in his tent asks at the end of his talk only while his talk waits for the shops' answers | (findings 2026-10-31, rows25) FoxTent_UpdateTalk, its only caller, asks it only with the tent's byte +0x730 (FoxTent.awaiting_answers) set; the byte is stored only by FoxTent_FindFacedItem, with 0 (in src/ov052 the only store of +0x730 is func_ov052_02260574's; the tent is made zeroed), so the call is never made (w65-wt5/cls/classify.py, gate foxwait) | unreachable |
 | job 0x1f's step: its start halts | 1 (0 / 1) | main/activity_link_jobs 1 | none: ActivityLinkJobs_Step1F, the steps of the job that moves the player to another console's town | (findings 2026-10-30, clerk6) the job's step is named only by the job table's member pointer (data_020e3850) and runs only after its start, ActivityLinkJobs_Start1F, whose Session_StopTransfer(Net_GetMyAid()) calls Session_SetReceiveBuffers(0), whose LibraryOverlay_RequireAny for AID 3 halts (GameHalt_Terminate) unless overlay 65, 66 or 67 is in the library slot; in the town the slot holds 68 (startup.c), 65 and 66 are switched in only by the gatekeeper's talks (back to 68 in the same function, or by GatekeeperTalk_EndSession once the session ended), by line 0x36 and job 0x1d's start (both before Session_Start(1 or 2): gate wireless) and by the Wi-Fi set-up (ended in the same function), and 67 only by ov055's exchange (gate link); the drive's run of savings-move's save halted in the start's first frame (w45-wt5/cls/classify.py, gate halt; calibrated with EXTRA='*' and the drive's 14 functions as run: 0 cut off) | unreachable |
 | destructors only a thrown exception calls | 1 (1 / 0) | ov117/town_map_image 1 | none: the destructors of the elements of arrays built by __cxa_vec_ctor, named nowhere else | __cxa_vec_ctor (0x02138d6c) calls its destructor argument only in its landing pad (0x02138dd8: __cxa_vec_cleanup, then the rethrow func_02137174), which runs only after a constructor threw; no code throws: the unwinder func_021375c0 is entered only from func_02137174, which only the three array helpers' landing pads call. A destructor named only as that argument, and what only it calls, never runs (w24/vecdtor.py; w24/classify.py, gate nothrow; findings 2026-10-29, town7) | unreachable |
@@ -863,7 +863,7 @@ What reading the Clean code found about the groups above; counts are of function
   player's house a chest talks instead of opening its menu (ov004/chest.h): with every item place
   of the villagers given a chest of drawers (main/villager_house_items.h, 0x78c of each town
   villager), villager-chest touches one in villager-home's house.
-- The room object of kind 0x37 (ov004/room_object_02253058.h, 33 functions left) is the bed of
+- The room object of kind 0x37 (ov004/bed_object.h, 33 functions left) is the bed of
   the continue menu's room (scene 6), one per player's quarter of the room; it is a bed class
   (unk_780 0xa). It leaves PUSHED only in scenes 6-8 (SceneKinds_CurrentIn6To8), and in scene 6
   the session's players are placed with this system's player as player 4 (scene_process.c): the
@@ -2230,7 +2230,7 @@ What reading the Clean code found about the groups above; counts are of function
   villager house's sign, kind 9: EtcBoard_Get) and aquarium-sign (a tank's sign, kind 14:
   EtcMuseum_Get); house-phone's bed gives kind 8. The town hall's counter, Pelly's window and
   the ATM were not hit from the hall's mat.
-- Not reached: RoomObject02253058 (furniture kinds 0xa and 0x2a, profile 0x37) leaves its watch
+- Not reached: BedObject (furniture kinds 0xa and 0x2a, profile 0x37) leaves its watch
   for the push, the sequence and the item swap only in the quarter of the room that matches this
   console's player number (0: the left and front quarter) with its push entry moved; no scene's
   piece of those kinds was there.
@@ -2254,8 +2254,8 @@ What reading the Clean code found about the groups above; counts are of function
   states waiting and open; the stand is faced from its south side, within 0x1300 of its angle).
 - house-kinds3-exit: the fortune telephone (ov004/telephone.c) deleted as the house is left
   (Telephone_Vfunc0C, Telephone_Delete).
-- Not reached: the bed class (RoomObject02253058, kinds 0xa and 0x2a) watches only in scenes 6-8
-  (RoomObject02253058_Start), the continue menu's room, where player 0's bed is in quarter 0; the
+- Not reached: the bed class (BedObject, kinds 0xa and 0x2a) watches only in scenes 6-8
+  (BedObject_Start), the continue menu's room, where player 0's bed is in quarter 0; the
   player lies in it, the pen on the telephone or A (which gets up and starts the town at once)
   are the only inputs, so no push against its side is recorded and its sequence and item swap
   do not start.
@@ -2817,7 +2817,7 @@ What reading the Clean code found about the groups above; counts are of function
   more): state 2's update runs only in a frame where the event's end waits, and
   EventKind_EndObjectEvent waits only while PlayerActorOps_FinishState's request is refused;
   holding A or a direction as gracie's talk ended did not leave such a frame. The bed class
-  (RoomObject02253058, 34 functions) leaves PUSHED only in scenes 6-8, which are the session's
+  (BedObject, 34 functions) leaves PUSHED only in scenes 6-8, which are the session's
   scenes (main/scene_kinds.h): it stays with the link.
 - The plan before (403 lists, main 35d053f8): seed 658, date 208, unknown 465, unreachable 3,242;
   after (405): seed 620, date 204, unknown 463, unreachable 3,242. Checked in a run: 20,682
@@ -3165,8 +3165,8 @@ What reading the Clean code found about the groups above; counts are of function
   zero-fills the villagers' entries (holder 0). So the census closes only if no special
   character's scene runs while a Wi-Fi session is open (the gatekeeper's talk ends it through
   GatekeeperTalk_EndSession); that was not shown.
-- Not proved: the bed class (RoomObject02253058, 33 functions in "furniture of each room-object
-  class"): it leaves PUSHED only in scenes 6-8 (RoomObject02253058_Start), and its WATCH needs a
+- Not proved: the bed class (BedObject, 33 functions in "furniture of each room-object
+  class"): it leaves PUSHED only in scenes 6-8 (BedObject_Start), and its WATCH needs a
   push record of the room (RoomPushes_FindObject) in the current player's quarter; in scene 6 the
   player lies in the bed and only the telephone or A (up and out) follow. Scene 7 is named by
   the rooms' exit tables (the resident root's group); which exit gives it was not traced.
@@ -3234,7 +3234,7 @@ What reading the Clean code found about the groups above; counts are of function
   (scene 0x2c). Both ways agree. 35 functions: 28 of the bed class, the shrink, the basement's
   static initialiser (Ov035Init_SceneTables), FurnitureInfo_ItemCategory and the pockets'
   choosing (PocketsView_Delete, CarriedLetters_*).
-- Left of the bed class (4): RoomObject02253058_EnterPushed (no code switches to PUSHED, the
+- Left of the bed class (4): BedObject_EnterPushed (no code switches to PUSHED, the
   state the constructor leaves), and _CellsConstruct, _CellsDestruct and _ListCells, which
   CheckStep runs only when the cell one step ahead holds another kind-0x37 object at the same
   angle (two beds side by side, pushed in a room outside scenes 6-8).
@@ -3321,8 +3321,8 @@ What reading the Clean code found about the groups above; counts are of function
   foot, half a cell ahead of the player), so a second bed beside it is never asked about; with
   two beds head to foot, the player in the south one rolls to its head (UP) and UP again asks the
   cell ahead, which holds the other bed at the same angle with a cell next to this one's:
-  RoomObject02253058_ListCells, _CellsConstruct and _CellsDestruct (joined), and the player rolls
-  into it. Left of the bed class: RoomObject02253058_EnterPushed (named only by the entries'
+  BedObject_ListCells, _CellsConstruct and _CellsDestruct (joined), and the player rolls
+  into it. Left of the bed class: BedObject_EnterPushed (named only by the entries'
   table of _EnterState, vtable slot 0x70; the state the constructor leaves): the calls through
   that slot were not counted.
 - Gained nothing: a second player in the save (record 1 from new-player's run, from 0x1196: the
@@ -3466,7 +3466,7 @@ What reading the Clean code found about the groups above; counts are of function
   after.
 
 ### The state that no code asks of profile 0x37's room objects (2026-10-30, resident9, second batch)
-- RoomObject02253058_EnterPushed moved to "the room objects' state entries no code asks for".
+- BedObject_EnterPushed moved to "the room objects' state entries no code asks for".
   Its class enters states only through vtable slot 0x70, and its own switch_to asks only for
   states 1-13. The constructor leaves state 0 without entering it. A census of every call
   through slot 0x70 in clean/: each class's on itself; RoomSync_SetStateAt (from

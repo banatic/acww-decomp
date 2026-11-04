@@ -580,13 +580,13 @@ match: main/event_announce:EventAnnounceProcess_Destruct main/missing_npc1:Missi
   ov004/room_object_02252cd4:RoomObject02252cd4_Destroy
   ov004/room_object_02252e00:RoomObject02252e00_Destroy
   ov004/room_object_02252f2c:RoomObject02252f2c_Destroy
-  ov004/room_object_02253058:RoomObject02253058_Destroy
+  ov004/bed_object:BedObject_Destroy
   ov004/room_object_animated:AnimatedRoomObject_Destroy
   ov004/room_object_glowing:GlowingRoomObject_Destroy ov004/room_object_life:RoomObject_Destroy
   ov004/room_object_periodic:PeriodicRoomObject_Destroy
   ov004/room_object_player_design:PlayerDesignObject_Destroy
   ov004/room_object_shop_design:ShopDesignObject_Destroy
-  ov004/room_object_switch_shown:SwitchShown_Destroy ov004/room_player_items:RoomPlayerItems_Destruct
+  ov004/room_object_switch_shown:SwitchShown_Destroy ov004/room_player_beds:RoomPlayerBeds_Destruct
   ov004/room_shell:RoomShell_Destruct ov004/room_villager:RoomVillager_Destroy
   ov004/shop3_villager:Shop3Villager_Destroy ov004/sick_villager:SickVillager_Destroy
   ov004/tailor_object:TailorObject_Destruct ov004/tailor_sister:TailorSister_Destroy
@@ -998,10 +998,10 @@ match: main/field_actor_states:FieldActor_EnterState91
 
 area: Unreachable for one player
 group: the room objects' state entries no code asks for
-scene: none: the entry of state 0 (PUSHED) of the room objects of profile 0x37 (ov004/room_object_02253058.c)
-reach: (findings 2026-10-30, resident9) RoomObject02253058_EnterPushed is named only by the entries' table of RoomObject02253058_EnterState (vtable slot 0x70), and state 0 is the one the constructor leaves without entering it. The class's own changes (switch_to) ask only for states 1-13. Every other call through slot 0x70 in clean/ is a class's own on itself, or RoomSync_SetStateAt's and RoomSync_ApplyState's on the object at a cell. RoomSync_SetStateAt is reached from RoomSync_RequestStateAt and RoomSync_SetState, which each class asks for on itself, except RoomObjects_SyncKind3AOn (objects of profile 0x3a) and RoomSync_ToggleAt's other lamp (RoomObject_TestUnk780Is18: furniture kind 0x18). RoomSync_ToggleAt toggles the object at the cell of a point that RoomSync_ToggleSwitchAtPoint gets, from RoomObjects_Spawn (a kind 0x18 lamp's point) and RoomObject02252ba8 (its own point), or of a message 29. RoomSync_ApplyState is called only by RoomSync_ReceiveState (message 24). Both messages come only through the session's receive callback (gate recv). Furniture kinds 10 and 0x2a are the only ones with profile 0x37 (data_ov004_02247f54), so these objects are neither of profile 0x3a nor of kind 0x18 (w49-wt5/cls/classify.py, gate value)
+scene: none: the entry of state 0 (PUSHED) of the room objects of profile 0x37 (ov004/bed_object.c)
+reach: (findings 2026-10-30, resident9) BedObject_EnterPushed is named only by the entries' table of BedObject_EnterState (vtable slot 0x70), and state 0 is the one the constructor leaves without entering it. The class's own changes (switch_to) ask only for states 1-13. Every other call through slot 0x70 in clean/ is a class's own on itself, or RoomSync_SetStateAt's and RoomSync_ApplyState's on the object at a cell. RoomSync_SetStateAt is reached from RoomSync_RequestStateAt and RoomSync_SetState, which each class asks for on itself, except RoomObjects_SyncKind3AOn (objects of profile 0x3a) and RoomSync_ToggleAt's other lamp (RoomObject_TestUnk780Is18: furniture kind 0x18). RoomSync_ToggleAt toggles the object at the cell of a point that RoomSync_ToggleSwitchAtPoint gets, from RoomObjects_Spawn (a kind 0x18 lamp's point) and RoomObject02252ba8 (its own point), or of a message 29. RoomSync_ApplyState is called only by RoomSync_ReceiveState (message 24). Both messages come only through the session's receive callback (gate recv). Furniture kinds 10 and 0x2a are the only ones with profile 0x37 (data_ov004_02247f54), so these objects are neither of profile 0x3a nor of kind 0x18 (w49-wt5/cls/classify.py, gate value)
 needs: unreachable
-match: ov004/room_object_02253058:RoomObject02253058_EnterPushed
+match: ov004/bed_object:BedObject_EnterPushed
 
 area: Unreachable for one player
 group: the fox's tent's state 4, which no code asks for
@@ -1275,7 +1275,7 @@ match: autoload_2/sound_emitter_class:SoundEmitterClass_Destruct2Delete
   ov004/room_object_02252cd4:RoomObject02252cd4Receiver_Delete
   ov004/room_object_02252e00:RoomObject02252e00Receiver_Delete
   ov004/room_object_02252f2c:RoomObject02252f2cReceiver_Delete
-  ov004/room_object_02253058:RoomObject02253058Receiver_Delete
+  ov004/bed_object:BedObjectReceiver_Delete
   ov004/room_object_animated:AnimatedRoomObjectReceiver_Delete
   ov004/room_object_glowing:GlowingRoomObjectReceiver_Delete
   ov004/room_object_life:RoomObjectReceiver_Delete
@@ -1374,7 +1374,7 @@ match: autoload_2/sound_emitter_class:SoundEmitterClass_Destruct2
   ov004/room_object_02252cd4:RoomObject02252cd4Receiver_Destroy
   ov004/room_object_02252e00:RoomObject02252e00Receiver_Destroy
   ov004/room_object_02252f2c:RoomObject02252f2cReceiver_Destroy
-  ov004/room_object_02253058:RoomObject02253058Receiver_Destroy
+  ov004/bed_object:BedObjectReceiver_Destroy
   ov004/room_object_animated:AnimatedRoomObjectReceiver_Destroy
   ov004/room_object_glowing:GlowingRoomObjectReceiver_Destroy
   ov004/room_object_life:RoomObjectReceiver_Destroy
@@ -2026,7 +2026,7 @@ reach: the house-furni save with one item per class of ov004/room_object_*.h (ft
 needs: seed
 match: ov004/room_object* ov004/tv* ov004/clock ov004/compass ov004/chest ov004/music_player ov004/trash_box
   ov004/room_objects ov004/room_manager ov004/room_shell* ov004/room_surface ov004/room_preview ov004/icon_models
-  ov004/carried_items ov004/room_villager ov004/rmo_object* ov004/player_pick ov004/room_player_items
+  ov004/carried_items ov004/room_villager ov004/rmo_object* ov004/player_pick ov004/room_player_beds
   ov004/room_sound main/room_cells main/room_interior main/room_sync main/room_object_state main/furniture_info
   autoload_2/sound_object_kinds:SoundObject0_Play
   autoload_2/sound_object_kinds:SoundObject10_Play
