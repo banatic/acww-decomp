@@ -8,8 +8,8 @@
  * data_ov003_0223ce54 while it places the town's objects (func_ov003_02220520). Before a talk
  * (slot 0x78) it shows message 1 + (number % 14) of "obj_etc_board", with the name of the
  * town's own fruit (town_record.h) as part 1 of the talk. Its drawing (slot 0x24) draws a
- * narrow shadow at its position. Whether the boards are the town's notice signs is not read
- * from this code. */
+ * narrow shadow at its position. The messages are the town's notice signs: fishing tips
+ * (messages 1 and 2), the fruit Nook buys (5, with the town's fruit) and other hints. */
 #ifndef CLEAN_OV003_SIGN_BOARD_H
 #define CLEAN_OV003_SIGN_BOARD_H
 
