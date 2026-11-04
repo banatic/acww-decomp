@@ -92,14 +92,14 @@ CLEAN_AS(func_020a6f34, LinkGlobal_SetChosen)
 /* func_020a6f44: the session's member mask (the link state's halfword 0x98). */
 u16 LinkGlobal_MemberMask(void)
 {
-    return LinkState_Half98(&data_021f4320);
+    return LinkState_MemberMask(&data_021f4320);
 }
 CLEAN_AS(func_020a6f44, LinkGlobal_MemberMask)
 
 /* func_020a6f54: the member mask set (its low halfword kept). */
 void LinkGlobal_SetMemberMask(u32 members)
 {
-    LinkState_SetHalf98(&data_021f4320, (u16) members);
+    LinkState_SetMemberMask(&data_021f4320, (u16) members);
 }
 CLEAN_AS(func_020a6f54, LinkGlobal_SetMemberMask)
 

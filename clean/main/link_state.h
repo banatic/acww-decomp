@@ -56,16 +56,16 @@ typedef struct LinkState {
     s32 scene_phase;            /* 0x60: LinkScenePhase (link_scene.h) */
     s32 successor;              /* 0x64: the slot handed the scene's state on leaving it */
     u8 acked[LINK_STATE_SLOTS]; /* 0x68: the slots that saw this system leave as holder */
-    s32 leaving_holder;         /* 0x6c: the moving holder this system last acknowledged */
+    s32 leaving_holder;         /* 0x6c: the moving slot last seen; LinkScene_AckLeavingHolder acts once per new one */
     s32 next_holder;            /* 0x70: the holder of the scene this system enters */
     s32 state_asker;            /* 0x74: the slot that asked this system for its scene's state */
     s32 state_sent_to;          /* 0x78: the slot this system sent its scene's state to */
     u8 released;                /* 0x7c: the scene's holder let this system leave */
     u8 unk_7d[3];
-    u32 leaving_guest;            /* 0x80: the moving slot this system last released */
+    u32 leaving_guest;            /* 0x80: the moving slot last seen; LinkScene_ReleaseLeavingGuest acts once per new one */
     s32 status[LINK_STATE_SLOTS]; /* 0x84: each slot's link status (func_020a6170) */
     u32 served_slot;              /* 0x94: the slot of the last change carried out */
-    u16 half_98;                  /* 0x98 */
+    u16 member_mask;              /* 0x98: the members of the session as last told (LinkGlobal_MemberMask) */
     u8 unk_9a[2];
     u32 host_phase;                /* 0x9c: LinkStateHostPhase */
     s32 chosen;                    /* 0xa0: the slot whose request is served */
@@ -122,8 +122,8 @@ void LinkState_SetChosen(LinkState *state, int slot);
 void LinkState_ResetHostPhase(LinkState *state);
 u32 LinkState_HostPhase(LinkState *state);
 void LinkState_SetHostPhase(LinkState *state, u32 phase);
-u16 LinkState_Half98(LinkState *state);
-void LinkState_SetHalf98(LinkState *state, u16 value);
+u16 LinkState_MemberMask(LinkState *state);
+void LinkState_SetMemberMask(LinkState *state, u16 value);
 u32 LinkState_ServedSlot(LinkState *state);
 void LinkState_SetServedSlot(LinkState *state, u32 slot);
 void LinkState_HostStep(LinkState *state);

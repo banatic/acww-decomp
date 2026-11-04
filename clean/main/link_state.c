@@ -24,7 +24,7 @@
 #include "paired_town.h"
 #include "state_flags.h"
 
-static_assert(offsetof(LinkState, status) == 0x84 && offsetof(LinkState, half_98) == 0x98, "link state");
+static_assert(offsetof(LinkState, status) == 0x84 && offsetof(LinkState, member_mask) == 0x98, "link state");
 static_assert(offsetof(LinkState, host_phase) == 0x9c && offsetof(LinkState, answers) == 0xa8, "link state");
 static_assert(offsetof(LinkState, wait_frames) == 0xb8 && offsetof(LinkState, hold_frames) == 0xbc, "link state");
 static_assert(offsetof(LinkState, done_kind) == 0xc0 && offsetof(LinkState, byte_c4) == 0xc4, "link state");
@@ -58,8 +58,8 @@ extern void __register_global_object(void *object, void *destruct, void *record)
 enum {
     STATUS_REQUEST_LAST = 3,
     STATUS_SERVED = 4,
-    STATUS_GO = 5,
-    STATUS_DONE = 6,
+    STATUS_ACCEPTED = 5,
+    STATUS_REFUSED = 6,
     STATUS_TOLD = 7,
 };
 
@@ -425,18 +425,18 @@ void LinkState_SetHostPhase(LinkState *state, u32 phase)
 CLEAN_AS(func_020a5c10, LinkState_SetHostPhase)
 
 /* func_020a5c18 */
-u16 LinkState_Half98(LinkState *state)
+u16 LinkState_MemberMask(LinkState *state)
 {
-    return state->half_98;
+    return state->member_mask;
 }
-CLEAN_AS(func_020a5c18, LinkState_Half98)
+CLEAN_AS(func_020a5c18, LinkState_MemberMask)
 
 /* func_020a5c20 */
-void LinkState_SetHalf98(LinkState *state, u16 value)
+void LinkState_SetMemberMask(LinkState *state, u16 value)
 {
-    state->half_98 = value;
+    state->member_mask = value;
 }
-CLEAN_AS(func_020a5c20, LinkState_SetHalf98)
+CLEAN_AS(func_020a5c20, LinkState_SetMemberMask)
 
 /* func_020a5c28 */
 u32 LinkState_ServedSlot(LinkState *state)
@@ -594,7 +594,7 @@ void LinkState_HostStep(LinkState *state)
                         give_answer(state, session, slot, LINK_STATE_ANSWER_GO);
                     }
                 }
-                tell_served(state, served, STATUS_GO);
+                tell_served(state, served, STATUS_ACCEPTED);
                 if (LinkState_Kind(state) == KIND_JOIN) {
                     LinkState_GlobalSetByteC4(0);
                 }
@@ -626,7 +626,7 @@ void LinkState_HostStep(LinkState *state)
     if (LinkState_HostPhase(state) == LINK_STATE_HOST_CANCEL) {
         served = LinkState_Chosen(state);
         if (others_answered(state, data_020ccf94, served, LINK_STATE_ANSWER_DONE)) {
-            tell_served(state, served, STATUS_DONE);
+            tell_served(state, served, STATUS_REFUSED);
             if (LinkState_Kind(state) == KIND_JOIN) {
                 Wfc_ClearHostTime();
             }
@@ -640,7 +640,7 @@ CLEAN_AS(func_020a5c38, LinkState_HostStep)
 
 #include "link_scene.h"
 
-/* The parts' own helpers (link_scene.h): a place reset (no scene), a move reset (no slot, no
+/* The parts' own helpers (link_parts.c, LinkPart_Make* and LinkPart_End*): a place reset (no scene), a move reset (no slot, no
  * scene), an arrived word cleared and a pending change cleared; and the parts' constructors
  * and destructors handed to the C++ runtime (only their addresses are taken here; each
  * constructor returns its object). */
@@ -660,11 +660,11 @@ extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(v
 void LinkState_RefuseRequest(LinkState *state, int slot, int direct)
 {
     if (direct) {
-        LinkState_SetStatus(state, slot, STATUS_DONE);
+        LinkState_SetStatus(state, slot, STATUS_REFUSED);
     } else if (slot == HOST_SLOT) {
-        LinkState_SetStatus(state, HOST_SLOT, STATUS_DONE);
+        LinkState_SetStatus(state, HOST_SLOT, STATUS_REFUSED);
     } else {
-        send_link_status(data_020ccf94, STATUS_DONE, slot);
+        send_link_status(data_020ccf94, STATUS_REFUSED, slot);
         LinkState_SetStatus(state, slot, STATUS_TOLD);
     }
 }
