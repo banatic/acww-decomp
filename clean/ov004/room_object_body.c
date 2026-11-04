@@ -44,7 +44,7 @@
 #define PREVIEW_SCALE 0x400     /* a preview is shown at a quarter of its size... */
 #define PREVIEW_DISTANCE 0x4000 /* ...4 units along the camera's line */
 #define STATE_CHANGE_EXIT 2     /* the value of vtable slot 0x14's argument handled here */
-#define LEFT_BEHIND 0x1547      /* the item put where a vanishing object stood */
+#define SOLD_OUT_SIGN 0x1547    /* the sold-out sign, put where a vanishing object stood */
 #define SHADOW_SHRINK 0xc00     /* the shadow is 3/4 of the object */
 #define BOX_HEIGHT 0x4000
 #define SHADOW_PLAIN 8      /* the shadow's flags... */
@@ -581,7 +581,7 @@ CLEAN_AS(func_ov004_022108cc, RoomObject_Vfunc8C)
  * room's lighting follows (RoomObject_ExitLight), its box goes, its switch is saved unless it
  * is going away (vanishing or shrunk), its model's loading ends and its slot is freed. One that
  * vanishes leaves the map, with an effect towards the player: where RoomManager_ShopMode says so
- * outside areas 17 to 24 and 1 to 5, it leaves item LEFT_BEHIND on the floor at the cell
+ * outside areas 17 to 24 and 1 to 5, it leaves the sold-out sign on the floor at the cell
  * RoomObject_FindVariantCell finds. Then it leaves the room's objects. The base class's slot
  * (Actor_Vfunc14) runs for every value.
  * BUG: when RoomObject_FindVariantCell finds no cell, the item goes to a cell left from
@@ -606,7 +606,7 @@ void RoomObject_Vfunc14(RoomObject *object, int mode)
                 void *map = data_021c80bc;
                 RoomObject_TakeOffMap(object, 0, 0);
                 if (map != NULL) {
-                    ItemCode item = LEFT_BEHIND;
+                    ItemCode item = SOLD_OUT_SIGN;
                     AcreTile_SetItem(map, &item, x, y, LAYER_FLOOR);
                 }
             } else {

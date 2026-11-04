@@ -387,7 +387,7 @@ CLEAN_INSECT_ROOM_SHA = '07356b2f5b1b211ddcf8f2b66fc9dd67318de0852c921b9512e40b2
 CLEAN_CUE_SHA = {
     'clean/autoload_2/music_cue.c': '5e0d82994301bbde71bb4747d619c4a7ebf8558c757f9285fc36420a0c6a9dd1',
     'clean/main/sound.c': '8280215d6c64e5c4fbfb3e934a615bd1ee3c5836ffd652a343f9c40a6720a38a',
-    'clean/ov004/room_object_body.c': 'a8dae3121e9837aefcd8467e13832ada53352158ae2968f214e8f338c9625857',
+    'clean/ov004/room_object_body.c': '94e6ba4761fa21f5b8433e2057eb6912cb0a70a268d9dd6e7ec9fadc4edb112c',
     'clean/main/talk_object.c': 'd0aae1a9c2e9852a24919b9ba16ce2f1d22c887397e814dc94e0560112c875b7',
     'clean/main/villager_talk_offers.c': 'd072ec6db73516c609eaf065edb540a99a9b2cbffa0289792cd5ffaffde4d8ca',
     'clean/autoload_2/matrix.c': '6e4e1fe2d50a238897e20e224004b63f073337a296a08fa10158644c8527cf18',

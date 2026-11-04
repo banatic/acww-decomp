@@ -37,14 +37,14 @@ static_assert(sizeof(ShopDisplay) == 0x58, "the process");
 /* Spot kinds that are not an item's class. */
 #define SHOP_DISPLAY_SPOT_VARIANTS 0x19
 #define SHOP_DISPLAY_SPOT_HELD 0x42
-#define SHOP_DISPLAY_SPOT_13A8 9
+#define SHOP_DISPLAY_SPOT_HATS 9
 #define SHOP_DISPLAY_SPOT_PAIRED 0x22 /* the pair of shops.c's scene 0x1d */
-#define SHOP_DISPLAY_HELD_ITEM 0x156c
-#define SHOP_DISPLAY_13A8_FIRST 0x13a8
-#define SHOP_DISPLAY_13A8_LAST 0x13c7
+#define SHOP_DISPLAY_TIMER 0x156c     /* the timer */
+#define SHOP_DISPLAY_HAT_FIRST 0x13a8 /* the hats */
+#define SHOP_DISPLAY_HAT_LAST 0x13c7
 
-/* An item of kind 1 that is never on sale in the room. */
-#define SHOP_DISPLAY_NOT_SHOWN 0x1547
+/* The sold-out sign: an item of kind 1 that is never on sale in the room. */
+#define SHOP_DISPLAY_SOLD_OUT_SIGN 0x1547
 
 /* The layer the stock is put on. */
 #define SHOP_DISPLAY_LAYER 0
@@ -292,7 +292,7 @@ u16 *ShopDisplay_ItemAt(int x, int z)
             return &data_ov004_0225ff08;
         }
     } else if (ItemCode_IsKind1(item)) {
-        if (!ShopDisplay_is_code(item, SHOP_DISPLAY_NOT_SHOWN) && ShopDisplay_IsOnSale(item)) {
+        if (!ShopDisplay_is_code(item, SHOP_DISPLAY_SOLD_OUT_SIGN) && ShopDisplay_IsOnSale(item)) {
             return item;
         }
     }
@@ -440,8 +440,8 @@ ShopDisplay *ShopDisplay_Construct(ShopDisplay *self)
 CLEAN_AS(func_ov004_02246828, ShopDisplay_Construct)
 
 /* func_ov004_02246848: the spot kind of `item` (in its carried form): 0x19 for an item with
- * variants, 0x42 for one held with a model and for 0x156c, 9 for 0x13a8-0x13c7, else the
- * item's class. */
+ * variants, 0x42 for one held with a model and for the timer 0x156c, 9 for the hats
+ * 0x13a8-0x13c7, else the item's class. */
 int ShopDisplay_SpotKind(u16 *item)
 {
     u16 carried[2];
@@ -449,11 +449,11 @@ int ShopDisplay_SpotKind(u16 *item)
     if (ItemCode_HasVariant(carried)) {
         return SHOP_DISPLAY_SPOT_VARIANTS;
     }
-    if (ItemTraits_HasHeldModel(carried) || carried[0] == SHOP_DISPLAY_HELD_ITEM) {
+    if (ItemTraits_HasHeldModel(carried) || carried[0] == SHOP_DISPLAY_TIMER) {
         return SHOP_DISPLAY_SPOT_HELD;
     }
-    if (carried[0] >= SHOP_DISPLAY_13A8_FIRST && carried[0] <= SHOP_DISPLAY_13A8_LAST) {
-        return SHOP_DISPLAY_SPOT_13A8;
+    if (carried[0] >= SHOP_DISPLAY_HAT_FIRST && carried[0] <= SHOP_DISPLAY_HAT_LAST) {
+        return SHOP_DISPLAY_SPOT_HATS;
     }
     return ItemTraits_Class(carried);
 }
