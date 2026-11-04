@@ -77,8 +77,8 @@
 #define VILLAGER_TALK_OFFER_FISH_LAST 0x131f
 #define VILLAGER_TALK_OFFER_CLOTHES_FIRST 0x11a8
 #define VILLAGER_TALK_OFFER_CLOTHES_LAST 0x12a7
-#define VILLAGER_TALK_OFFER_KIND_FIRST 0x450c
-#define VILLAGER_TALK_OFFER_KIND_LAST 0x45db
+#define VILLAGER_TALK_OFFER_FOSSIL_FIRST 0x450c
+#define VILLAGER_TALK_OFFER_FOSSIL_LAST 0x45db
 /* The items the villager must hold, outdoors, for an errand of each type. */
 #define VILLAGER_TALK_OFFER_HELD_INSECT 0x1376
 #define VILLAGER_TALK_OFFER_HELD_FISH 0x1374
@@ -95,8 +95,8 @@
 /* The chance, out of 100, that the offers of the villager's state are looked at. */
 #define VILLAGER_TALK_OFFER_ERRAND_CHANCE 30
 #define VILLAGER_TALK_OFFER_ERRAND_ROLL 100
-/* The kinds of items (item_attributes.h) VillagerTalkOffer_PocketsOfKind looks for. */
-#define VILLAGER_TALK_OFFER_KIND_ITEMS 3
+/* The kinds of items (item_attributes.h) VillagerTalkOffer_PocketsOfFossilKind looks for. */
+#define VILLAGER_TALK_OFFER_FOSSIL_PARTS 3
 /* The time the clock compares with (all of the date and time). */
 #define VILLAGER_TALK_OFFER_COMPARE_ALL 0x3f
 /* The player record flag that stops the offers of the villager's state. */
@@ -226,9 +226,9 @@ static int offer_is_clothes(u16 item)
     return item >= VILLAGER_TALK_OFFER_CLOTHES_FIRST && item <= VILLAGER_TALK_OFFER_CLOTHES_LAST;
 }
 
-static int offer_is_kind_item(u16 item)
+static int offer_is_fossil(u16 item)
 {
-    return item >= VILLAGER_TALK_OFFER_KIND_FIRST && item <= VILLAGER_TALK_OFFER_KIND_LAST;
+    return item >= VILLAGER_TALK_OFFER_FOSSIL_FIRST && item <= VILLAGER_TALK_OFFER_FOSSIL_LAST;
 }
 
 /* Choice `index` of `list`: the messages of `range`, running `function`. */
@@ -715,7 +715,7 @@ static int offer_known_named(VillagerTalk *talk, int type)
             offered = VillagerTalkOffer_ChoicesByPredicate(talk, func_0202a15c, 0x29, 0x18);
             break;
         case VILLAGER_TALK_OFFER_TYPE_KIND:
-            offered = VillagerTalkOffer_ChoicesKind(talk);
+            offered = VillagerTalkOffer_ChoicesFossil(talk);
             break;
         case VILLAGER_TALK_OFFER_TYPE_CLOTHES:
             offered = VillagerTalkOffer_ChoicesClothes(talk);
@@ -808,14 +808,14 @@ static int offer_names_current(VillagerTalk *talk)
     return offer_same_player(current, named);
 }
 
-/* func_020296f8: the choices of an errand of type 2 (an item of a kind) for the player the
+/* func_020296f8: the choices of an errand of type 2 (a fossil of a kind) for the player the
  * villager object names, by the talk object's low bits. Low bits 0, when the named player is the
  * current one: choice 0x1a running data_021c2df4 when the pockets hold such an item (steps 0-1:
- * any of the kind items, VillagerTalkOffer_IsKindItem; later steps: one of the villager object's
- * kind, VillagerTalkOffer_PocketsOfKind), else 0x14 running data_021c2cd4; from step 2 the
+ * any fossil, VillagerTalkOffer_IsFossil; later steps: one of the villager object's
+ * kind, VillagerTalkOffer_PocketsOfFossilKind), else 0x14 running data_021c2cd4; from step 2 the
  * kind's index goes into slot 0 as a byte. Then the end (offer_named_end) with the reply
  * data_020d8e20. Whether it offered. */
-int VillagerTalkOffer_ChoicesKind(VillagerTalk *talk)
+int VillagerTalkOffer_ChoicesFossil(VillagerTalk *talk)
 {
     int plain = 1;
     u8 index = 0;
@@ -836,7 +836,7 @@ int VillagerTalkOffer_ChoicesKind(VillagerTalk *talk)
                     offer_set(talk, &list, index, 0x14, data_021c2cd4);
                 }
             } else if (VillagerObject_Step(*offer_villager_object(talk)) >= 2) {
-                if (VillagerTalkOffer_PocketsOfKind(*offer_villager_object(talk)) != 0) {
+                if (VillagerTalkOffer_PocketsOfFossilKind(*offer_villager_object(talk)) != 0) {
                     offer_set(talk, &list, index, 0x1a, data_021c2df4);
                 } else {
                     offer_set(talk, &list, index, 0x14, data_021c2cd4);
@@ -871,7 +871,7 @@ int VillagerTalkOffer_ChoicesKind(VillagerTalk *talk)
     }
     return offered;
 }
-CLEAN_AS(func_020296f8, VillagerTalkOffer_ChoicesKind)
+CLEAN_AS(func_020296f8, VillagerTalkOffer_ChoicesFossil)
 
 /* Whether the pocket item `item` is `wanted`, by the item a variant stands for when it has one. */
 static int offer_same_item(u16 *item, u16 *wanted)
@@ -884,16 +884,16 @@ static int offer_same_item(u16 *item, u16 *wanted)
 }
 
 /* func_02029910: the current player's pockets (a bit each) in state 0 holding an item of the
- * villager object's kind (0x450c-0x45db) that is one of the kind's three items whose flag is
+ * villager object's fossil kind (0x450c-0x45db) that is one of the kind's three parts whose flag is
  * clear. */
-u16 VillagerTalkOffer_PocketsOfKind(VillagerObject *object)
+u16 VillagerTalkOffer_PocketsOfFossilKind(VillagerObject *object)
 {
     PlayerPockets *pockets = PlayerRecord_Pockets(PlayerRecords_Current());
     u16 *slot = PlayerPockets_Slot(pockets, 0);
-    u16 wanted[VILLAGER_TALK_OFFER_KIND_ITEMS] = {VILLAGER_TALK_OFFER_NO_ITEM, VILLAGER_TALK_OFFER_NO_ITEM,
-                                                  VILLAGER_TALK_OFFER_NO_ITEM};
+    u16 wanted[VILLAGER_TALK_OFFER_FOSSIL_PARTS] = {VILLAGER_TALK_OFFER_NO_ITEM, VILLAGER_TALK_OFFER_NO_ITEM,
+                                                    VILLAGER_TALK_OFFER_NO_ITEM};
     u16 mask = 0;
-    for (int i = 0; i < VILLAGER_TALK_OFFER_KIND_ITEMS; i++) {
+    for (int i = 0; i < VILLAGER_TALK_OFFER_FOSSIL_PARTS; i++) {
         if (VillagerObject_TestFlag(object, (u32) i) == 0) {
             u16 item;
             ItemAttributes_FossilOfKind(&item, VillagerObject_Kind(object), (u32) i);
@@ -903,10 +903,10 @@ u16 VillagerTalkOffer_PocketsOfKind(VillagerObject *object)
         }
     }
     for (int i = 0; i < PLAYER_POCKETS_SLOTS; i++, slot++) {
-        if (PlayerPockets_SlotState(pockets, i) != 0 || !offer_is_kind_item(*slot)) {
+        if (PlayerPockets_SlotState(pockets, i) != 0 || !offer_is_fossil(*slot)) {
             continue;
         }
-        for (int j = 0; j < VILLAGER_TALK_OFFER_KIND_ITEMS; j++) {
+        for (int j = 0; j < VILLAGER_TALK_OFFER_FOSSIL_PARTS; j++) {
             if (offer_same_item(slot, &wanted[j])) {
                 mask = (u16) (mask | (1u << i));
                 break;
@@ -915,7 +915,7 @@ u16 VillagerTalkOffer_PocketsOfKind(VillagerObject *object)
     }
     return mask;
 }
-CLEAN_AS(func_02029910, VillagerTalkOffer_PocketsOfKind)
+CLEAN_AS(func_02029910, VillagerTalkOffer_PocketsOfFossilKind)
 
 /* func_02029a18: the current player's pockets (a bit each) in state 0 holding `item` (by the item
  * a variant stands for, when the pocket's has one). */
@@ -1035,19 +1035,19 @@ int VillagerTalkOffer_ChoicesVariant(VillagerTalk *talk)
 }
 CLEAN_AS(func_02029ca4, VillagerTalkOffer_ChoicesVariant)
 
-/* func_02029e18: a pocket predicate: an item of a kind (0x450c-0x45db) in state 0. */
-int VillagerTalkOffer_IsKindItemFree(u16 *item, int state)
+/* func_02029e18: a pocket predicate: a fossil (0x450c-0x45db) in state 0. */
+int VillagerTalkOffer_IsFreeFossil(u16 *item, int state)
 {
-    return VillagerTalkOffer_IsKindItem(item) != 0 && state == 0;
+    return VillagerTalkOffer_IsFossil(item) != 0 && state == 0;
 }
-CLEAN_AS(func_02029e18, VillagerTalkOffer_IsKindItemFree)
+CLEAN_AS(func_02029e18, VillagerTalkOffer_IsFreeFossil)
 
-/* func_02029e34: whether the item is of a kind (0x450c-0x45db). */
-int VillagerTalkOffer_IsKindItem(u16 *item)
+/* func_02029e34: whether the item is a fossil (0x450c-0x45db). */
+int VillagerTalkOffer_IsFossil(u16 *item)
 {
-    return offer_is_kind_item(*item);
+    return offer_is_fossil(*item);
 }
-CLEAN_AS(func_02029e34, VillagerTalkOffer_IsKindItem)
+CLEAN_AS(func_02029e34, VillagerTalkOffer_IsFossil)
 
 /* func_02029e5c: a pocket predicate: clothes in state 0. */
 int VillagerTalkOffer_IsClothesFree(u16 *item, int state)
@@ -1063,17 +1063,17 @@ int VillagerTalkOffer_IsClothes(u16 *item)
 }
 CLEAN_AS(func_02029e78, VillagerTalkOffer_IsClothes)
 
-/* func_02029ea0: a pocket predicate: an item with a variant, not of a kind, in state 0. */
+/* func_02029ea0: a pocket predicate: an item with a variant, not a fossil, in state 0. */
 int VillagerTalkOffer_IsVariantFree(u16 *item, int state)
 {
     return VillagerTalkOffer_IsVariant(item) != 0 && state == 0;
 }
 CLEAN_AS(func_02029ea0, VillagerTalkOffer_IsVariantFree)
 
-/* func_02029ebc: whether the item has a variant and is not of a kind (0x450c-0x45db). */
+/* func_02029ebc: whether the item has a variant and is not a fossil (0x450c-0x45db). */
 int VillagerTalkOffer_IsVariant(u16 *item)
 {
-    return ItemCode_HasVariant(item) != 0 && !offer_is_kind_item(*item);
+    return ItemCode_HasVariant(item) != 0 && !offer_is_fossil(*item);
 }
 CLEAN_AS(func_02029ebc, VillagerTalkOffer_IsVariant)
 

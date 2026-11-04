@@ -24,7 +24,7 @@
 #include "villager_mode.h"
 
 #define VILLAGER_OBJECT_COUNT_MAX 14
-#define VILLAGER_OBJECT_KIND_NONE 0x18
+#define VILLAGER_OBJECT_NO_FOSSIL_KIND 0x18
 #define VILLAGER_OBJECT_FLAGS 3
 
 typedef struct VillagerObject {

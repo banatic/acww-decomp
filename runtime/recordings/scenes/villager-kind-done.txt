@@ -3,8 +3,8 @@
 # villager 0 (personality ko) in its house, facing it. Save: errand-done-2-1 (villager 0's errand
 # of an item of a kind, type 2, at step 1 for the seed's player, done). From 4140 A every 40
 # frames: it goes on to step 2, where the villager picks a kind its house misses
-# (VillagerTalkObject_KindItem, ItemAttributes_PickMissingFossilKind, VillagerObject_SetKind); a later
-# talk asks for it (VillagerTalkOffer_ChoicesKind), to the end (6547).
+# (VillagerTalkObject_FossilOfKind, ItemAttributes_PickMissingFossilKind, VillagerObject_SetKind); a later
+# talk asks for it (VillagerTalkOffer_ChoicesFossil), to the end (6547).
 900 START -
 906 - -
 1000 A -

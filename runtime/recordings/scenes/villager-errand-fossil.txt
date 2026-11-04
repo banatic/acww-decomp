@@ -4,8 +4,8 @@
 # at the boot, so its state entry is dealt errand type 2, an item of a kind, VillagerKind_Deal;
 # six fossils 0x450c-0x4520 in pockets 0-5). From 4100 A every 30 frames: a first talk's topic; a
 # second ends in the errand of type 2 (VillagerTalkOffer_StateGroup0, the item drawn by
-# VillagerTalkObject_DrawKindItem), taken up; a third offers the fossils
-# (VillagerTalkOffer_ChoicesKind), the pockets open on them and the first is given and judged
+# VillagerTalkObject_DrawFossil), taken up; a third offers the fossils
+# (VillagerTalkOffer_ChoicesFossil), the pockets open on them and the first is given and judged
 # (VillagerTalkObject_LineTakeItemType3, the errand done), to the end (9509).
 0 - -
 900 START -

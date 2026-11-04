@@ -735,7 +735,7 @@ static int object_same_item(u16 *a, u16 *b)
 /* func_02024d38: the table of the player's item at 0x124 for the talk object's type, then the
  * talk told to show its next line and the line said:
  *   type 2: data_021c2e3c, the item's name in slot 0; in the villager object's steps 2-4 the
- *     item's place in its kind (VillagerTalkObject_ItemPart) set as a flag of the villager
+ *     item's place in its kind (VillagerTalkObject_FossilPartOf) set as a flag of the villager
  *     object and sent to the others in the session;
  *   type 3: data_021c2e3c from step 2; before, data_021c2e24 when the item is the villager's
  *     clothes, data_021c2e3c when its value (func_0204c228) is not the villager data's byte
@@ -761,7 +761,7 @@ void VillagerTalkObject_SayJudgeItem(VillagerTalk *talk)
                 break;
             }
             {
-                u8 part = (u8) VillagerTalkObject_ItemPart(&talk->item);
+                u8 part = (u8) VillagerTalkObject_FossilPartOf(&talk->item);
                 VillagerObject_SetFlag(object_villager_object(talk), part);
                 SessionVillager_SendObjectFlag(record, part);
             }
@@ -873,7 +873,7 @@ void VillagerTalkObject_AskPocketByType(VillagerTalk *talk)
             if (VillagerObject_Step(object_villager_object(talk)) <= 1) {
                 object_ask_predicate(talk, func_02029e18);
             } else {
-                object_ask_mask(talk, VillagerTalkOffer_PocketsOfKind(object_villager_object(talk)));
+                object_ask_mask(talk, VillagerTalkOffer_PocketsOfFossilKind(object_villager_object(talk)));
             }
             object_open_pockets(talk, data_020d8f10);
             break;
@@ -1351,11 +1351,11 @@ void VillagerTalkObject_PutItemNames(VillagerTalk *talk)
                 break;
             }
             int kind = VillagerObject_Kind(object_villager_object(talk));
-            if (kind >= VILLAGER_OBJECT_KIND_NONE && talk->item >= ITEM_ATTRIBUTES_FOSSIL_FIRST &&
+            if (kind >= VILLAGER_OBJECT_NO_FOSSIL_KIND && talk->item >= ITEM_ATTRIBUTES_FOSSIL_FIRST &&
                 talk->item <= ITEM_ATTRIBUTES_FOSSIL_LAST) {
                 kind = FurnitureInfo_FossilKind(&talk->item);
             }
-            if (kind < VILLAGER_OBJECT_KIND_NONE) {
+            if (kind < VILLAGER_OBJECT_NO_FOSSIL_KIND) {
                 int index = ItemAttributes_FossilKindIndex(kind);
                 if (index != -1) {
                     u8 bytes[2] = {(u8) index, 0};
@@ -1396,37 +1396,37 @@ void VillagerTalkObject_PickByStep(u16 *out, VillagerTalk *talk, unsigned int st
 }
 CLEAN_AS(func_020261b0, VillagerTalkObject_PickByStep)
 
-/* func_020261f8: the item of the villager object's kind (offset 0), or 0xfff1 when it has none.
+/* func_020261f8: the first fossil of the villager object's fossil kind (offset 0), or 0xfff1 when it has none.
  * Without a kind, one the villager's house items miss is picked
  * (ItemAttributes_PickMissingFossilKind), set and sent to the others in the session. */
-void VillagerTalkObject_KindItem(u16 *out, VillagerObject *object, u8 *villager)
+void VillagerTalkObject_FossilOfKind(u16 *out, VillagerObject *object, u8 *villager)
 {
     unsigned int kind = VillagerObject_Kind(object);
-    if (kind == VILLAGER_OBJECT_KIND_NONE) {
+    if (kind == VILLAGER_OBJECT_NO_FOSSIL_KIND) {
         kind = ItemAttributes_PickMissingFossilKind(VillagerHouseItems_Items(villager), VILLAGER_HOUSE_ITEMS);
         VillagerObject_SetKind(object, (u8) kind);
         SessionVillager_SendObjectKind(villager, (int) kind);
     }
-    if (kind < VILLAGER_OBJECT_KIND_NONE) {
+    if (kind < VILLAGER_OBJECT_NO_FOSSIL_KIND) {
         ItemAttributes_FossilOfKind(out, kind, 0);
     } else {
         *out = ITEM_CODE_NONE;
     }
 }
-CLEAN_AS(func_020261f8, VillagerTalkObject_KindItem)
+CLEAN_AS(func_020261f8, VillagerTalkObject_FossilOfKind)
 
 /* func_02026250: the place of the item among the items of its kind
- * (VillagerTalkObject_KindPart with FurnitureInfo_FossilKind). */
-int VillagerTalkObject_ItemPart(u16 *item)
+ * (VillagerTalkObject_FossilPart with FurnitureInfo_FossilKind). */
+int VillagerTalkObject_FossilPartOf(u16 *item)
 {
-    return VillagerTalkObject_KindPart(item, FurnitureInfo_FossilKind(item));
+    return VillagerTalkObject_FossilPart(item, FurnitureInfo_FossilKind(item));
 }
-CLEAN_AS(func_02026250, VillagerTalkObject_ItemPart)
+CLEAN_AS(func_02026250, VillagerTalkObject_FossilPartOf)
 
 /* func_02026268: for an item of 0x450c-0x45db, its place (0-2) after the first of the 52 items
  * (four codes apart) whose kind (FurnitureInfo_FossilKind) is `kind`; -1 for other items, when
  * no item is of the kind, or when the item is not within the three from that first one. */
-int VillagerTalkObject_KindPart(u16 *item, int kind)
+int VillagerTalkObject_FossilPart(u16 *item, int kind)
 {
     if (*item < ITEM_ATTRIBUTES_FOSSIL_FIRST || *item > ITEM_ATTRIBUTES_FOSSIL_LAST) {
         return -1;
@@ -1445,12 +1445,12 @@ int VillagerTalkObject_KindPart(u16 *item, int kind)
     }
     return -1;
 }
-CLEAN_AS(func_02026268, VillagerTalkObject_KindPart)
+CLEAN_AS(func_02026268, VillagerTalkObject_FossilPart)
 
 /* func_020262fc: an item of 0x450c-0x45db drawn twice (func_02063414: once for no player, once
  * for the current player); the first when the second is not of the range, or half of the time
  * (a random number below 10 is even) when both are; the second when the first is not. */
-void VillagerTalkObject_DrawKindItem(u16 *out, int unused_object, int unused_villager)
+void VillagerTalkObject_DrawFossil(u16 *out, int unused_object, int unused_villager)
 {
     (void) unused_object;
     (void) unused_villager;
@@ -1470,7 +1470,7 @@ void VillagerTalkObject_DrawKindItem(u16 *out, int unused_object, int unused_vil
         *out = drawn[1];
     }
 }
-CLEAN_AS(func_020262fc, VillagerTalkObject_DrawKindItem)
+CLEAN_AS(func_020262fc, VillagerTalkObject_DrawFossil)
 
 /* func_020263b0: an item picked by the game's function for `step` (data_020c8f7c, steps 0-6)
  * with the villager data's byte 0x29 and a copy of the villager's clothes, or 0xfff1 when there

@@ -326,7 +326,7 @@ void VillagerObject_Clear(VillagerObject *object)
     object->step = VILLAGER_OBJECT_STEP_CLEARED;
     object->item = ITEM_CODE_NONE;
     object->count = 0;
-    object->kind = VILLAGER_OBJECT_KIND_NONE;
+    object->kind = VILLAGER_OBJECT_NO_FOSSIL_KIND;
     object->flags = 0;
 }
 CLEAN_AS(func_0209baf4, VillagerObject_Clear)

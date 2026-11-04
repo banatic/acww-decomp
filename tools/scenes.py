@@ -1080,7 +1080,7 @@ SAVES["errand-insect-three"] = villager_errand(0, 0, 2, player=True, item=0x12B0
 SAVES["errand-insect-less"] = villager_errand(0, 0, 2, player=True, item=0x12B0) + [(POCKETS, "<H", 0x12B8)]
 # villager 0's errand of an item of a kind at step 2 asking for the fossil 0x450c, the player named, with
 # six fossils in pockets 0-5 (as "mode-2-fossils"): the item shown is judged, and in steps 2-4 its
-# place in its kind set as a flag of the villager object (VillagerTalkObject_ItemPart)
+# place in its kind set as a flag of the villager object (VillagerTalkObject_FossilPartOf)
 SAVES["errand-kind-due"] = villager_errand(0, 2, 2, player=True, item=0x450C) + [(POCKETS + 2 * i, "<H", 0x450C + 4 * i)
                                                                                 for i in range(6)]
 # villager 0's fish errand at step 2 asking for 0x12e8, the player named, with three fish in the pockets:
