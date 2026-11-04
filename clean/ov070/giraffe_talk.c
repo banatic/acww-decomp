@@ -94,8 +94,8 @@ extern void MI_CpuFill8(void *dst, u8 value, u32 size);
  * marked in the player's item record. */
 #define GT_LETTER_SCORE_FROM 0x15
 #define GT_LETTER_MESSAGES 7
-#define GT_LETTER_ITEM_LOW 0x12a7
-#define GT_LETTER_ITEM_MIDDLE 0x1248
+#define GT_LETTER_MOULDY_CLOTHES 0x12a7
+#define GT_LETTER_RAGGED_CLOTHES 0x1248
 #define GT_LETTER_MOTION_ITEM 0x1565
 #define GT_LETTER_PILE_ITEM 0x10
 #define GT_LETTER_PILE_COUNT 4
@@ -240,9 +240,9 @@ static void gt_write_letter(GiraffeTalk *talk, u8 *record)
         ItemRecord_Mark((ItemRecord *) (void *) PlayerRecord_ItemRecord(record), &pile, 0);
     }
     if (message <= 2) {
-        Letter_SetItem(letter, GT_LETTER_ITEM_LOW, 1);
+        Letter_SetItem(letter, GT_LETTER_MOULDY_CLOTHES, 1);
     } else if (message <= 4) {
-        Letter_SetItem(letter, GT_LETTER_ITEM_MIDDLE, 1);
+        Letter_SetItem(letter, GT_LETTER_RAGGED_CLOTHES, 1);
     }
     MessageText46_Destruct(&text);
 }

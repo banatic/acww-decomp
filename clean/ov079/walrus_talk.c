@@ -102,12 +102,13 @@ extern int func_ov079_022794fc(u16 *item, int state);
 #define WALRUS_TALK_153B_FIRST 0x153b
 #define WALRUS_TALK_153B_LAST 0x1541
 
-/* For one of 0x153b-0x1541 he gives item 0x13ac, or 0x3530 one time in two. */
-#define WALRUS_TALK_GIFT 0x13ac
-#define WALRUS_TALK_GIFT_OTHER 0x3530
+/* For a red turnip (one of 0x153b-0x1541) he gives the turban 0x13ac, or the acoustic guitar
+ * 0x3530 one time in two. */
+#define WALRUS_TALK_TURBAN 0x13ac
+#define WALRUS_TALK_GUITAR 0x3530
 #define WALRUS_TALK_GIFT_ODDS 2
-/* The item shown in his hand when he gives a design. */
-#define WALRUS_TALK_DESIGN_ITEM 0x3530
+/* The item shown in his hand when he gives a design: the guitar again. */
+#define WALRUS_TALK_HELD_GUITAR 0x3530
 
 /* The event his talk takes part in. */
 #define WALRUS_TALK_EVENT 0x41
@@ -276,9 +277,9 @@ void WalrusTalk_OnLineShown(WalrusTalk *talk)
         case WALRUS_TALK_LINE_MOTION_19:
             line = WALRUS_TALK_LINE_OFFER;
             if (walrus_talk_in(talk->item, WALRUS_TALK_153B_FIRST, WALRUS_TALK_153B_LAST)) {
-                talk->item = WALRUS_TALK_GIFT;
+                talk->item = WALRUS_TALK_TURBAN;
                 if (MainRandom_Below(WALRUS_TALK_GIFT_ODDS) != 0) {
-                    talk->item = WALRUS_TALK_GIFT_OTHER;
+                    talk->item = WALRUS_TALK_GUITAR;
                 }
                 line = WALRUS_TALK_LINE_GIFT;
                 SceneBase_PutItemName(&talk->scene, (int) (u32) (uintptr_t) &talk->item, 0, WALRUS_TALK_ITEM_NAME_KIND);
@@ -442,7 +443,7 @@ void WalrusTalk_GiveDesign(WalrusTalk *talk)
 
         Design_Copy(DESIGN_KIND_SAMPLE, walrus_talk_sample(&talk->item), DESIGN_KIND_LOCAL, (int) slot, 1);
         message = WALRUS_TALK_LINE_GIVEN;
-        u16 shown = WALRUS_TALK_DESIGN_ITEM;
+        u16 shown = WALRUS_TALK_HELD_GUITAR;
         SceneCommand_RequestMotion13(walrus_talk_command(talk), &shown, 0, WALRUS_TALK_SHOW_MOTION, 0);
 
         u16 clothes = walrus_talk_design_item(slot, WALRUS_TALK_CLOTHES_FIRST);

@@ -61,10 +61,11 @@ extern void func_02107524(u8 *model, u16 colour);
 /* A tile, in world units. */
 #define TOWN_ITEM_MODELS_TILE 0x2000
 
-/* The fruit items. */
-#define TOWN_ITEM_MODELS_FRUIT_57 0x14b8
-#define TOWN_ITEM_MODELS_FRUIT_69 0x1542
-#define TOWN_ITEM_MODELS_FRUIT_C8 0x1548
+/* What the trees bear besides fruit: the money tree (line 0x57-0x5b) bags of 30,000 Bells,
+ * code 0x69 acorns, the palms (0xc8-0xcf) coconuts. */
+#define TOWN_ITEM_MODELS_MONEY_BAG 0x14b8
+#define TOWN_ITEM_MODELS_ACORN 0x1542
+#define TOWN_ITEM_MODELS_COCONUT 0x1548
 
 /* The holder `index` holders on from `first` (the index may run on into the arrays after, as
  * the ROM computes it). */
@@ -549,7 +550,7 @@ ModelObject *TownItemModels_DrawGrowth(TileEventProcess *process, const u16 *cod
         }
         model = town_item_model(process->models_0174, parity_set + stage);
     } else if (id == 0x69) {
-        town_item_draw_items(process, TOWN_ITEM_MODELS_FRUIT_69, point, data_ov003_02236b64, 3);
+        town_item_draw_items(process, TOWN_ITEM_MODELS_ACORN, point, data_ov003_02236b64, 3);
         model = town_item_model(process->models_0174, 12 + stage);
     } else if (id >= 0x6a && id <= 0x6c) {
         model = town_item_model(process->models_0c6c, stage);
@@ -561,7 +562,7 @@ ModelObject *TownItemModels_DrawGrowth(TileEventProcess *process, const u16 *cod
         model = town_item_model(process->models_0c6c, stage);
     } else if (id >= 0xc8 && id <= 0xcf) {
         if (MapItem_IsGrown(code)) {
-            town_item_draw_items(process, TOWN_ITEM_MODELS_FRUIT_C8, point, data_ov003_02236b4c, 2);
+            town_item_draw_items(process, TOWN_ITEM_MODELS_COCONUT, point, data_ov003_02236b4c, 2);
         }
         model = town_item_model(process->models_11e8, stage);
     } else {
@@ -593,7 +594,7 @@ CLEAN_AS(func_ov003_022259e8, TownItemModels_DrawCode6dFrame)
 void TownItemModels_DrawFruit(TileEventProcess *process, const u16 *code, const Vec3 *point)
 {
     u16 id = *code;
-    int item = id >= 0x57 && id <= 0x5b ? TOWN_ITEM_MODELS_FRUIT_57 : data_ov003_0223667c[MapItem_EightLine(code)];
+    int item = id >= 0x57 && id <= 0x5b ? TOWN_ITEM_MODELS_MONEY_BAG : data_ov003_0223667c[MapItem_EightLine(code)];
     town_item_draw_items(process, item, point, data_ov003_02236b64, 3);
 }
 CLEAN_AS(func_ov003_02225a90, TownItemModels_DrawFruit)

@@ -50,13 +50,13 @@ extern const u8 data_ov084_02279384[];
 extern const u8 data_ov084_02279380[];
 extern const TurtleFireworksFortunePart data_ov084_022792fc[TURTLE_FIREWORKS_FORTUNE_PARTS];
 
-/* The items exchanged while the pockets hold the item 0x37e0. */
-#define T4T_ASKED_ITEM 0x37e0
-#define T4T_EXCHANGE_ITEM 0x1559
+/* The items exchanged while the pockets hold the massage chair 0x37e0: the scallop 0x1559 given. */
+#define T4T_MASSAGE_CHAIR 0x37e0
+#define T4T_SCALLOP 0x1559
 
-/* The two items he hands out, and the most of them one player gets (the tally's cap). */
-#define T4T_GIFT_A 0x137e
-#define T4T_GIFT_B 0x137f
+/* The two items he hands out (the quiet and the showy fireworks), and the most of them one player gets (the tally's cap). */
+#define T4T_QUIET_FIREWORKS 0x137e
+#define T4T_SHOWY_FIREWORKS 0x137f
 #define T4T_GIFTS_MAX 10
 
 /* The item the scene's motion holds up after the fortune letter (the letters). */
@@ -167,7 +167,7 @@ void TurtleFireworksTalk_OnAnswer(TurtleFireworksTalk *talk)
     if (slot >= 0) {
         if (t4t_line_shown(talk) == TURTLE_FIREWORKS_COMMON_LINE_ASK && answer == 0) {
             CurrentPockets_Empty(slot);
-            u16 item = T4T_ASKED_ITEM;
+            u16 item = T4T_MASSAGE_CHAIR;
             SceneCommand_RequestMotion14(t4t_scene(talk), &item, 0, T4T_MOTION_B, 0);
             next = TURTLE_FIREWORKS_COMMON_LINE_TAKEN;
         }
@@ -197,10 +197,10 @@ CLEAN_AS(func_ov084_02278ab8, TurtleFireworksTalk_OnAnswer)
  * both, one of the two at random when they have neither). */
 static u16 t4t_pick_gift(void)
 {
-    if (t4t_lacks(T4T_GIFT_A) && t4t_lacks(T4T_GIFT_B)) {
-        return MainRandom_Below(2) == 0 ? T4T_GIFT_B : T4T_GIFT_A;
+    if (t4t_lacks(T4T_QUIET_FIREWORKS) && t4t_lacks(T4T_SHOWY_FIREWORKS)) {
+        return MainRandom_Below(2) == 0 ? T4T_SHOWY_FIREWORKS : T4T_QUIET_FIREWORKS;
     }
-    return t4t_lacks(T4T_GIFT_A) ? T4T_GIFT_A : T4T_GIFT_B;
+    return t4t_lacks(T4T_QUIET_FIREWORKS) ? T4T_QUIET_FIREWORKS : T4T_SHOWY_FIREWORKS;
 }
 
 /* func_ov084_02278c18 (slot 0x14, a line ended):
@@ -224,9 +224,9 @@ void TurtleFireworksTalk_OnLineEnded(TurtleFireworksTalk *talk)
         if (t4t_line_shown(talk) != TURTLE_FIREWORKS_COMMON_LINE_TAKEN) {
             return;
         }
-        u16 shown = T4T_EXCHANGE_ITEM;
+        u16 shown = T4T_SCALLOP;
         SceneCommand_RequestMotion13(t4t_scene(talk), &shown, 0, T4T_MOTION_B, 0);
-        u16 given = T4T_EXCHANGE_ITEM;
+        u16 given = T4T_SCALLOP;
         CurrentPockets_Give(&given, 0);
         t4t_say(t4t_talk_object(talk), TURTLE_FIREWORKS_COMMON_LINE_GIVEN, data_ov084_02279568);
         return;
@@ -289,7 +289,7 @@ void TurtleFireworksTalk_FirstLine(TurtleFireworksTalk *talk, TurtleFireworksLin
     out->text = (u32) (uintptr_t) data_ov084_02279558;
 
     if (talk->item_slot == TURTLE_FIREWORKS_TALK_SLOT_UNKNOWN) {
-        u16 asked = T4T_ASKED_ITEM;
+        u16 asked = T4T_MASSAGE_CHAIR;
         talk->item_slot = CurrentPockets_FindItem(&asked);
         if (talk->item_slot >= 0) {
             out->text = (u32) (uintptr_t) data_ov084_02279568;
@@ -301,8 +301,8 @@ void TurtleFireworksTalk_FirstLine(TurtleFireworksTalk *talk, TurtleFireworksLin
     if (TalkChecks_TestSetDailyBit(T4T_DAILY_TALKED, 1) != 0) {
         u16 held;
         PlayerActorOps_HeldItem(&held, ActivityVars_Slot3C1C());
-        int ready = !t4t_lacks(T4T_GIFT_A) && !t4t_lacks(T4T_GIFT_B);
-        if (!ready && !(held >= T4T_GIFT_A && held <= T4T_GIFT_B)) {
+        int ready = !t4t_lacks(T4T_QUIET_FIREWORKS) && !t4t_lacks(T4T_SHOWY_FIREWORKS);
+        if (!ready && !(held >= T4T_QUIET_FIREWORKS && held <= T4T_SHOWY_FIREWORKS)) {
             out->message = TURTLE_FIREWORKS_LINE_NOT_BOTH;
             return;
         }

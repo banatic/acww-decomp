@@ -138,9 +138,9 @@ static_assert(sizeof(FleaMarketBuyer) == 0xaec, "the size func_ov004_022217fc al
 #define FMB_DESIGNS_C_LAST 0x42a3
 #define FMB_DESIGNS_D_FIRST 0x3f24
 #define FMB_DESIGNS_D_LAST 0x3fa3
-#define FMB_KEPT_ITEM_A 0x409c
-#define FMB_KEPT_ITEM_B 0x40a0
-#define FMB_KEPT_ITEM_C 0x3820
+#define FMB_KEPT_CROWN 0x409c
+#define FMB_KEPT_ROYAL_CROWN 0x40a0
+#define FMB_KEPT_THRONE 0x3820
 /* The items it buys in a visit at most. */
 #define FMB_MAX_BOUGHT 3
 /* A cleared entry of its recent objects. */
@@ -388,8 +388,8 @@ int FleaMarketBuyer_MayBuy(FleaMarketBuyer *buyer, int number)
     if ((item >= FMB_DESIGNS_A_FIRST && item <= FMB_DESIGNS_A_LAST) ||
         (item >= FMB_DESIGNS_B_FIRST && item <= FMB_DESIGNS_B_LAST) ||
         (item >= FMB_DESIGNS_C_FIRST && item <= FMB_DESIGNS_C_LAST) ||
-        (item >= FMB_DESIGNS_D_FIRST && item <= FMB_DESIGNS_D_LAST) || fmb_item_is(&item, FMB_KEPT_ITEM_A) ||
-        fmb_item_is(&item, FMB_KEPT_ITEM_B) || fmb_item_is(&item, FMB_KEPT_ITEM_C)) {
+        (item >= FMB_DESIGNS_D_FIRST && item <= FMB_DESIGNS_D_LAST) || fmb_item_is(&item, FMB_KEPT_CROWN) ||
+        fmb_item_is(&item, FMB_KEPT_ROYAL_CROWN) || fmb_item_is(&item, FMB_KEPT_THRONE)) {
         return 0;
     }
     for (int i = 0; i < FLEA_MARKET_BUYER_RECENT; i++) {

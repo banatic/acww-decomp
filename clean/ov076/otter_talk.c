@@ -51,10 +51,11 @@ extern int func_ov076_02278f0c(u16 *item, int state);
 /* The vtable slot of the scene that resets it (OtterTalk_Reset). */
 #define OTTER_TALK_SLOT_RESET 0x08
 
-/* The item he asks for, and those he gives at lines 10 and 11. */
-#define OTTER_TALK_ASKED_ITEM 0x1559
-#define OTTER_TALK_GIFT_10 0x4a38
-#define OTTER_TALK_GIFT_11 0x1373
+/* The item he asks for (the scallop), and those he gives at lines 10 and 11: his picture and
+ * the golden axe. */
+#define OTTER_TALK_SCALLOP 0x1559
+#define OTTER_TALK_PICTURE 0x4a38
+#define OTTER_TALK_GOLDEN_AXE 0x1373
 
 /* The current player's daily bit of a talk with him. */
 #define OTTER_TALK_DAILY_BIT 0x18
@@ -218,7 +219,7 @@ int OtterTalk_IsAskedItem(u16 *item, int state)
     if (state != 0) {
         return 0;
     }
-    return otter_talk_is_item(item, OTTER_TALK_ASKED_ITEM);
+    return otter_talk_is_item(item, OTTER_TALK_SCALLOP);
 }
 CLEAN_AS(func_ov076_02278f0c, OtterTalk_IsAskedItem)
 
@@ -300,14 +301,14 @@ void OtterTalk_OnLineEnd(OtterTalk *talk)
             break;
         case OTTER_TALK_LINE_GIFT_10:
         case OTTER_TALK_LINE_GIFT_11:
-            talk->item = shown == OTTER_TALK_LINE_GIFT_10 ? OTTER_TALK_GIFT_10 : OTTER_TALK_GIFT_11;
+            talk->item = shown == OTTER_TALK_LINE_GIFT_10 ? OTTER_TALK_PICTURE : OTTER_TALK_GOLDEN_AXE;
             otter_talk_hand_over(talk);
             talk->owner->gave = 1;
             TalkChecks_TestSetDailyBit(OTTER_TALK_DAILY_BIT, 1);
             line = OTTER_TALK_LINE_GIFTED;
             break;
         case OTTER_TALK_LINE_GIFT_CHECK:
-            line = otter_talk_is_item(&talk->item, OTTER_TALK_GIFT_10) ? OTTER_TALK_LINE_GIFT_KNOWN : OTTER_TALK_LINE_FD;
+            line = otter_talk_is_item(&talk->item, OTTER_TALK_PICTURE) ? OTTER_TALK_LINE_GIFT_KNOWN : OTTER_TALK_LINE_FD;
             break;
         case OTTER_TALK_LINE_DRAW_13:
         case OTTER_TALK_LINE_DRAW_14:
@@ -347,7 +348,7 @@ void OtterTalk_AfterPockets(OtterTalk *talk)
         if (slot >= 0) {
             CurrentPockets_Empty(slot);
         }
-        u16 asked = OTTER_TALK_ASKED_ITEM;
+        u16 asked = OTTER_TALK_SCALLOP;
         SceneCommand_RequestMotion14(otter_talk_scene(talk), &asked, 0, OTTER_TALK_MOTION_B, 0);
         line = OTTER_TALK_LINE_GIVEN;
     }

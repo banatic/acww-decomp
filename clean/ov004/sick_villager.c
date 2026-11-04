@@ -697,8 +697,8 @@ CLEAN_AS(func_ov004_0222251c, SickVillagerTalk_OnMessageBegun)
 #define SICK_VILLAGER_HANDED_FIRST 0x10
 /* The value the scene's command 4 hands the item over with. */
 #define SICK_VILLAGER_HAND_MOTION_ARG 6
-/* The item it asks for. */
-#define SICK_VILLAGER_ASKED_ITEM 0x155e
+/* The item it asks for: the medicine. */
+#define SICK_VILLAGER_MEDICINE 0x155e
 
 /* Above stage 1: its first and second standard animations and its walking pace (index 1:
  * speed, speed-up, slow-down); else the pace of a well villager. */
@@ -775,7 +775,7 @@ void SickVillagerTalk_TakeItem(SickVillagerTalk *talk)
         CurrentPockets_Empty(GroupParams_Arg());
         message = (u8) (MainRandom_Below(3) + SICK_VILLAGER_HANDED_FIRST);
         TalkObject_SetMessage(window, &message, NULL);
-        u16 item = SICK_VILLAGER_ASKED_ITEM;
+        u16 item = SICK_VILLAGER_MEDICINE;
         SceneCommand_RequestMotion14(&talk->base.scene, &item, 0, SICK_VILLAGER_HAND_MOTION_ARG, 0);
         SickVillager_SetState(talk->villager, SICK_VILLAGER_BACK);
     }
@@ -1006,11 +1006,11 @@ int SickVillager_IsAskedItem(u16 *item, int state)
         return 0;
     }
     if (ItemCode_HasVariant(item)) {
-        u16 asked = SICK_VILLAGER_ASKED_ITEM;
+        u16 asked = SICK_VILLAGER_MEDICINE;
         int variant = ItemCode_VariantItem(item);
         return variant == ItemCode_VariantItem(&asked);
     }
-    return *item == SICK_VILLAGER_ASKED_ITEM;
+    return *item == SICK_VILLAGER_MEDICINE;
 }
 CLEAN_AS(func_ov004_02222a30, SickVillager_IsAskedItem)
 

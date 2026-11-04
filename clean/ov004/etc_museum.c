@@ -38,8 +38,8 @@ static_assert(sizeof(EtcMuseum) == 0x170, "the size its constructor's caller all
 #define ETC_MUSEUM_PROFILE 0x19
 /* How far away it can be talked to from, and the angle 0 of facing it. */
 #define ETC_MUSEUM_TALK_DISTANCE 0x2333
-/* The item the lone one tells the giver of. */
-#define ETC_MUSEUM_LONE_ITEM 0x12e4
+/* The item the lone one tells the giver of: the cockroach. */
+#define ETC_MUSEUM_COCKROACH 0x12e4
 
 /* The messages of "obj_etc_museum" (the receiver's message). */
 #define ETC_MUSEUM_MESSAGE_NONE_GIVEN 0      /* none of the exhibits given */
@@ -178,7 +178,7 @@ int EtcMuseum_EnterLoneTalk(EtcMuseum *museum)
 
     SceneObjectBase_TakeReceiver(&museum->base, receiver_of(museum));
     MessageReceiver_SetName(&museum->receiver.base, data_ov004_022534cc);
-    item = ETC_MUSEUM_LONE_ITEM;
+    item = ETC_MUSEUM_COCKROACH;
     /* The ROM compares the answer unsigned. */
     if ((unsigned int) MuseumRecord_Giver(&data_021f38f8, &item) <= MUSEUM_BY_OTHER_PLAYER) {
         PlayerIdText name;

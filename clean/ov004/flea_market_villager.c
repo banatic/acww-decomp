@@ -87,10 +87,10 @@ static_assert(sizeof(FleaMarketVillager) == 0xa60, "the size func_ov004_0221ff70
 
 /* The value kind of an item's name (SceneBase_PutItemName). */
 #define FLEA_MARKET_ITEM_NAME_KIND 7
-/* The items it does not sell. */
-#define FLEA_MARKET_KEPT_ITEM_A 0x409c
-#define FLEA_MARKET_KEPT_ITEM_B 0x40a0
-#define FLEA_MARKET_KEPT_ITEM_C 0x3820
+/* The items it does not sell: the crown, the royal crown and the throne. */
+#define FLEA_MARKET_KEPT_CROWN 0x409c
+#define FLEA_MARKET_KEPT_ROYAL_CROWN 0x40a0
+#define FLEA_MARKET_KEPT_THRONE 0x3820
 
 /* The size of the texts the message file names are written in. */
 #define FLEA_MARKET_FILE_NAME_SIZE 0x28
@@ -286,8 +286,8 @@ int FleaMarketVillager_PickItemAhead(FleaMarketVillager *villager)
     villager->item = item;
     if (fm_record(villager) != NULL &&
         VillagerFurniture_IsMarkedAt(fm_record(villager), &tile, villager->spots, villager->spot_count) != 0 &&
-        !fm_item_is(&villager->item, FLEA_MARKET_KEPT_ITEM_A) && !fm_item_is(&villager->item, FLEA_MARKET_KEPT_ITEM_B) &&
-        !fm_item_is(&villager->item, FLEA_MARKET_KEPT_ITEM_C)) {
+        !fm_item_is(&villager->item, FLEA_MARKET_KEPT_CROWN) && !fm_item_is(&villager->item, FLEA_MARKET_KEPT_ROYAL_CROWN) &&
+        !fm_item_is(&villager->item, FLEA_MARKET_KEPT_THRONE)) {
         villager->tile = tile;
     } else {
         villager->tile.x = -1;

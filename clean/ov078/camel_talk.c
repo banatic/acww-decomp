@@ -70,10 +70,11 @@ extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(v
 #define CAMEL_REWARD_KIND_SECOND 3
 #define CAMEL_NAME_KIND_ITEM 7
 
-/* The trade: item 0x13ac taken, item 0x37e0 or (one time in two) 0x34a8 given. */
-#define CAMEL_TRADE_TAKEN 0x13ac
-#define CAMEL_TRADE_GIVEN 0x37e0
-#define CAMEL_TRADE_GIVEN_2 0x34a8
+/* The trade: the turban 0x13ac taken, the massage chair 0x37e0 or (one time in two) the red
+ * vase 0x34a8 given. */
+#define CAMEL_TRADE_TURBAN 0x13ac
+#define CAMEL_TRADE_MASSAGE_CHAIR 0x37e0
+#define CAMEL_TRADE_RED_VASE 0x34a8
 
 /* The scene command's motion of the item in hand (scene_command.h). */
 #define CAMEL_HAND_MOTION 5
@@ -155,7 +156,7 @@ void CamelTalk_OnAnswer(CamelTalk *talk)
         case CAMEL_LINE_TRADE_ASK:
             if (answer == 0) {
                 if (talk->pocket >= 0) {
-                    u16 taken = CAMEL_TRADE_TAKEN;
+                    u16 taken = CAMEL_TRADE_TURBAN;
                     CurrentPockets_Empty(talk->pocket);
                     SceneCommand_RequestMotion14(camel_command(talk), &taken, 0, CAMEL_HAND_MOTION, 0);
                 }
@@ -262,10 +263,10 @@ void CamelTalk_OnLineEnded(CamelTalk *talk)
             talk->pocket = CAMEL_TALK_POCKET_DONE;
             break;
         case CAMEL_LINE_TRADE:
-            given = CAMEL_TRADE_GIVEN;
+            given = CAMEL_TRADE_MASSAGE_CHAIR;
             line = CAMEL_LINE_TRADE_37E0;
             if (MainRandom_Below(2) == 0) {
-                given = CAMEL_TRADE_GIVEN_2;
+                given = CAMEL_TRADE_RED_VASE;
                 line = CAMEL_LINE_TRADE_34A8;
             }
             talk->pocket = CAMEL_TALK_POCKET_DONE;
@@ -303,7 +304,7 @@ void CamelTalk_FirstLine(CamelTalk *talk, CamelTalkLine *out)
     PlayerIdText_Construct(&name);
     out->text = (u32) (uintptr_t) data_ov078_02279bd8;
     if (talk->pocket == CAMEL_TALK_POCKET_UNKNOWN) {
-        u16 wanted = CAMEL_TRADE_TAKEN;
+        u16 wanted = CAMEL_TRADE_TURBAN;
         talk->pocket = CurrentPockets_FindItem(&wanted);
     }
     if (talk->pocket >= 0) {

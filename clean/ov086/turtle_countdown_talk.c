@@ -44,12 +44,12 @@ extern const u8 data_ov086_02279260[];
 extern const u8 data_ov086_02279264[];
 extern const TurtleCountdownFortunePart data_ov086_022791d0[TURTLE_COUNTDOWN_FORTUNE_PARTS];
 
-/* The items exchanged while the pockets hold the item 0x37e0. */
-#define T6T_ASKED_ITEM 0x37e0
-#define T6T_EXCHANGE_ITEM 0x1559
+/* The items exchanged while the pockets hold the massage chair 0x37e0: the scallop 0x1559 given. */
+#define T6T_MASSAGE_CHAIR 0x37e0
+#define T6T_SCALLOP 0x1559
 
-/* The item he gives at lines 0x19-0x1b. */
-#define T6T_GIFT 0x137d
+/* The item he gives at lines 0x19-0x1b: the party popper. */
+#define T6T_PARTY_POPPER 0x137d
 
 /* The item the scene's motion holds up after the fortune letter (the letters). */
 #define T6T_LETTERS_ITEM 0x1565
@@ -115,7 +115,7 @@ void TurtleCountdownTalk_OnAnswer(TurtleCountdownTalk *talk)
     }
     if (t6t_line_shown(talk) == TURTLE_COUNTDOWN_COMMON_LINE_ASK && answer == 0) {
         CurrentPockets_Empty(slot);
-        u16 item = T6T_ASKED_ITEM;
+        u16 item = T6T_MASSAGE_CHAIR;
         SceneCommand_RequestMotion14(t6t_scene(talk), &item, 0, T6T_MOTION_B, 0);
         t6t_say(t6t_talk_object(talk), TURTLE_COUNTDOWN_COMMON_LINE_TAKEN, data_ov086_02279438);
     }
@@ -170,9 +170,9 @@ void TurtleCountdownTalk_OnLineEnded(TurtleCountdownTalk *talk)
             talk->item_slot = TURTLE_COUNTDOWN_TALK_SLOT_DONE;
         }
         if (t6t_line_shown(talk) == TURTLE_COUNTDOWN_COMMON_LINE_TAKEN) {
-            u16 shown = T6T_EXCHANGE_ITEM;
+            u16 shown = T6T_SCALLOP;
             SceneCommand_RequestMotion13(t6t_scene(talk), &shown, 0, T6T_MOTION_B, 0);
-            u16 given = T6T_EXCHANGE_ITEM;
+            u16 given = T6T_SCALLOP;
             CurrentPockets_Give(&given, 0);
             t6t_say(t6t_talk_object(talk), TURTLE_COUNTDOWN_COMMON_LINE_GIVEN, data_ov086_02279438);
         }
@@ -197,9 +197,9 @@ void TurtleCountdownTalk_OnLineEnded(TurtleCountdownTalk *talk)
         case TURTLE_COUNTDOWN_LINE_GIFT:
         case TURTLE_COUNTDOWN_LINE_GIFT + 1:
         case TURTLE_COUNTDOWN_LINE_GIFT + 2: {
-            u16 shown = T6T_GIFT;
+            u16 shown = T6T_PARTY_POPPER;
             SceneCommand_RequestMotion13(t6t_scene(talk), &shown, 0, T6T_MOTION_B, 0);
-            u16 given = T6T_GIFT;
+            u16 given = T6T_PARTY_POPPER;
             CurrentPockets_Give(&given, 0);
             next = (u8) (MainRandom_Below(3) + TURTLE_COUNTDOWN_LINE_GIVEN);
             break;
@@ -240,7 +240,7 @@ void TurtleCountdownTalk_FirstLine(TurtleCountdownTalk *talk, TurtleCountdownLin
     out->text = (u32) (uintptr_t) data_ov086_02279448;
 
     if (talk->item_slot == TURTLE_COUNTDOWN_TALK_SLOT_UNKNOWN) {
-        u16 asked = T6T_ASKED_ITEM;
+        u16 asked = T6T_MASSAGE_CHAIR;
         talk->item_slot = CurrentPockets_FindItem(&asked);
         if (talk->item_slot >= 0) {
             out->text = (u32) (uintptr_t) data_ov086_02279438;

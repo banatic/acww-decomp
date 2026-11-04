@@ -57,10 +57,11 @@ extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 #define FOX_TENT_TALK_MEMBER_FLAG 0xc
 #define FOX_TENT_TALK_DAILY_BIT 1
 
-/* The items it asks for and hands over, the membership card and the shop's sold marker. */
-#define FOX_TENT_TALK_ASKED_ITEM 0x34a8
-#define FOX_TENT_TALK_GIVEN_ITEM 0x36fc
-#define FOX_TENT_TALK_CARD 0x149d
+/* The items it asks for and hands over (the red vase and the safe), the 3,000-Bell bag shown
+ * as the membership fee is paid, and the shop's sold marker. */
+#define FOX_TENT_TALK_RED_VASE 0x34a8
+#define FOX_TENT_TALK_SAFE 0x36fc
+#define FOX_TENT_TALK_FEE_BAG 0x149d
 #define FOX_TENT_TALK_SOLD_MARKER 0x1547
 
 /* The membership's price, in bells. */
@@ -367,7 +368,7 @@ void FoxTentTalk_Line(FoxTentTalk *talk, FoxTentTalkStart *out)
         fox = talk->owner;
         if (fox_tent_talk_no_item(&fox->item) && PlayerRecord_TestFlag(record, FOX_TENT_TALK_MEMBER_FLAG)) {
             if (!Session_IsLinked(data_020ccf94) && talk->card_slot == FOX_TENT_TALK_CARD_UNKNOWN) {
-                u16 asked = FOX_TENT_TALK_ASKED_ITEM;
+                u16 asked = FOX_TENT_TALK_RED_VASE;
                 talk->card_slot = CurrentPockets_FindItem(&asked);
             }
             if (talk->card_slot >= 0) {
@@ -442,7 +443,7 @@ void FoxTentTalk_OnAnswer(FoxTentTalk *talk)
             if (answer == 0) {
                 if (talk->card_slot >= 0) {
                     CurrentPockets_Empty(talk->card_slot);
-                    u16 asked = FOX_TENT_TALK_ASKED_ITEM;
+                    u16 asked = FOX_TENT_TALK_RED_VASE;
                     SceneCommand_RequestMotion14(fox_tent_talk_scene(talk), &asked, 0, FOX_TENT_TALK_MOTION_B, 0);
                 }
                 line = FOX_TENT_TALK_LINE_ITEM_TAKEN;
@@ -537,9 +538,9 @@ void FoxTentTalk_OnLineEnd(FoxTentTalk *talk)
 
     switch (fox_tent_talk_shown(talk)) {
         case FOX_TENT_TALK_LINE_ITEM_TAKEN: {
-            u16 shown_item = FOX_TENT_TALK_GIVEN_ITEM;
+            u16 shown_item = FOX_TENT_TALK_SAFE;
             SceneCommand_RequestMotion13(fox_tent_talk_scene(talk), &shown_item, 0, FOX_TENT_TALK_MOTION_B, 0);
-            u16 given = FOX_TENT_TALK_GIVEN_ITEM;
+            u16 given = FOX_TENT_TALK_SAFE;
             CurrentPockets_Give(&given, 0);
             line = FOX_TENT_TALK_LINE_ITEM_GIVEN;
             talk->card_slot = FOX_TENT_TALK_CARD_DONE;
@@ -559,7 +560,7 @@ void FoxTentTalk_OnLineEnd(FoxTentTalk *talk)
             FoxTentTalk_SetSequence(talk, FOX_TENT_TALK_OFFER_AGAIN);
             break;
         case FOX_TENT_TALK_LINE_JOINED: {
-            u16 card = FOX_TENT_TALK_CARD;
+            u16 card = FOX_TENT_TALK_FEE_BAG;
             SceneCommand_RequestMotion14(fox_tent_talk_scene(talk), &card, 0, FOX_TENT_TALK_MOTION_B, 0);
             talk->owner->item = ITEM_CODE_NONE;
             line = FOX_TENT_TALK_LINE_CARD;

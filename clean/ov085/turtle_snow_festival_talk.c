@@ -49,9 +49,9 @@ extern EventWinner data_021f3aa4;
 extern VillagerTown data_021e5a2c;
 extern StateBlock data_021dc7a8;
 
-/* The items exchanged while the pockets hold the item 0x37e0. */
-#define T5T_ASKED_ITEM 0x37e0
-#define T5T_EXCHANGE_ITEM 0x1559
+/* The items exchanged while the pockets hold the massage chair 0x37e0: the scallop 0x1559 given. */
+#define T5T_MASSAGE_CHAIR 0x37e0
+#define T5T_SCALLOP 0x1559
 
 /* The values the item motions (SceneCommand_RequestMotion13 and 14) are asked with. */
 #define T5T_MOTION_B 5
@@ -128,7 +128,7 @@ static void t5t_exchange_answer(TurtleSnowFestivalTalk *talk, unsigned int answe
 {
     if (t5t_line_shown(talk) == TURTLE_SNOW_FESTIVAL_COMMON_LINE_ASK && answer == 0) {
         CurrentPockets_Empty(talk->item_slot);
-        u16 item = T5T_ASKED_ITEM;
+        u16 item = T5T_MASSAGE_CHAIR;
         SceneCommand_RequestMotion14(t5t_scene(talk), &item, 0, T5T_MOTION_B, 0);
         t5t_say(t5t_talk_object(talk), TURTLE_SNOW_FESTIVAL_COMMON_LINE_TAKEN, data_ov085_022795ac);
     }
@@ -205,9 +205,9 @@ static void t5t_exchange_line_ended(TurtleSnowFestivalTalk *talk)
     if (t5t_line_shown(talk) != TURTLE_SNOW_FESTIVAL_COMMON_LINE_TAKEN) {
         return;
     }
-    u16 shown = T5T_EXCHANGE_ITEM;
+    u16 shown = T5T_SCALLOP;
     SceneCommand_RequestMotion13(t5t_scene(talk), &shown, 0, T5T_MOTION_B, 0);
-    u16 given = T5T_EXCHANGE_ITEM;
+    u16 given = T5T_SCALLOP;
     CurrentPockets_Give(&given, 0);
     t5t_say(t5t_talk_object(talk), TURTLE_SNOW_FESTIVAL_COMMON_LINE_GIVEN, data_ov085_022795ac);
 }
@@ -296,7 +296,7 @@ void TurtleSnowFestivalTalk_FirstLine(TurtleSnowFestivalTalk *talk, TurtleSnowFe
     out->text = (u32) (uintptr_t) data_ov085_0227959c;
 
     if (talk->item_slot == TURTLE_SNOW_FESTIVAL_TALK_SLOT_UNKNOWN) {
-        u16 asked = T5T_ASKED_ITEM;
+        u16 asked = T5T_MASSAGE_CHAIR;
         talk->item_slot = CurrentPockets_FindItem(&asked);
         if (talk->item_slot >= 0) {
             out->text = (u32) (uintptr_t) data_ov085_022795ac;

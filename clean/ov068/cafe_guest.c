@@ -179,9 +179,10 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 #define CAFE_GUEST_OTHER_MUSIC_VARIABLE 0x4e
 #define CAFE_GUEST_OTHER_MUSICS 4
 
-/* The items of the trade after message 0xe (and the hour's talk). */
-#define CAFE_GUEST_ITEM_TAKEN 0x3530
-#define CAFE_GUEST_ITEM_GIVEN 0x4a34
+/* The items of the trade after message 0xe (and the hour's talk): the acoustic guitar taken,
+ * K.K.'s picture given. */
+#define CAFE_GUEST_GUITAR 0x3530
+#define CAFE_GUEST_KK_PICTURE 0x4a34
 
 /* The messages of kind 7. */
 #define CAFE_GUEST_MESSAGE_AGREED 0
@@ -353,10 +354,10 @@ static void put_song_name(CafeGuestScene *scene, int slot)
     SceneBase_PutItemName(scene_base(scene), (int) (uintptr_t) &song, slot, CAFE_GUEST_VALUE_KIND);
 }
 
-/* Whether the player carries the item CAFE_GUEST_ITEM_TAKEN. */
+/* Whether the player carries the item CAFE_GUEST_GUITAR. */
 static int player_has_trade_item(void)
 {
-    u16 item = CAFE_GUEST_ITEM_TAKEN;
+    u16 item = CAFE_GUEST_GUITAR;
     return CurrentPockets_FindItem(&item) != -1;
 }
 
@@ -738,13 +739,13 @@ void CafeGuestScene_OnTradeAnswer(int unused, int answer)
     if (answer != 0) {
         return;
     }
-    u16 taken = CAFE_GUEST_ITEM_TAKEN;
+    u16 taken = CAFE_GUEST_GUITAR;
     int slot = CurrentPockets_FindItem(&taken);
     if (slot == -1) {
         return;
     }
     CurrentPockets_Empty(slot);
-    u16 given = CAFE_GUEST_ITEM_GIVEN;
+    u16 given = CAFE_GUEST_KK_PICTURE;
     CurrentPockets_Give(&given, 0);
 }
 CLEAN_AS(func_ov068_022741e4, CafeGuestScene_OnTradeAnswer)

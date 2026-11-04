@@ -182,11 +182,11 @@ extern int func_ov050_022634b4(unsigned short *p);
 #define NOOK_CLERK_ERRAND_FIRST 0x155f
 #define NOOK_CLERK_ERRAND_LAST 0x1560
 #define NOOK_CLERK_ERRAND_STATE 2
-/* The uniform of the part-time job, the item 0x36fc the player brings back (its pocket in
- * NookClerkTalk.package_slot), and the item 0x4a30 given for it. */
+/* The uniform of the part-time job, the safe 0x36fc the player brings back from the fox (its
+ * pocket in NookClerkTalk.package_slot), and Nook's picture 0x4a30 given for it. */
 #define NOOK_CLERK_UNIFORM 0x11a8
-#define NOOK_CLERK_PACKAGE 0x36fc
-#define NOOK_CLERK_PACKAGE_GIFT 0x4a30
+#define NOOK_CLERK_SAFE 0x36fc
+#define NOOK_CLERK_NOOK_PICTURE 0x4a30
 
 /* The dated events of kind 3 and Tom Nook's person codes (an errand for him names any). */
 #define NOOK_CLERK_TALK_EVENT_KIND 3
@@ -521,7 +521,7 @@ void NookClerkTalk_OnAnswerPackage(NookClerkTalk *talk, int answer)
     int slot = talk->package_slot;
     if (slot >= 0) {
         CurrentPockets_Empty(slot);
-        u16 item = NOOK_CLERK_PACKAGE;
+        u16 item = NOOK_CLERK_SAFE;
         SceneCommand_RequestMotion14(ntalk_scene(talk), &item, 0, 5, 0);
     }
     talk->line = 0x37;
@@ -868,8 +868,8 @@ CLEAN_AS(func_ov050_02261cd8, NookClerkTalk_PackageDone)
  * to the pockets (state 0); the item 0x36fc to be looked for again; line 0x38. */
 void NookClerkTalk_GivePackage(NookClerkTalk *talk)
 {
-    ntalk_show_item(talk, NOOK_CLERK_PACKAGE_GIFT, 0);
-    ntalk_give(NOOK_CLERK_PACKAGE_GIFT, 0);
+    ntalk_show_item(talk, NOOK_CLERK_NOOK_PICTURE, 0);
+    ntalk_give(NOOK_CLERK_NOOK_PICTURE, 0);
     talk->package_slot = -1;
     talk->line = 0x38;
 }
@@ -1073,7 +1073,7 @@ void NookClerkTalk_Line(NookClerkTalk *talk, NookClerkLine *out)
     if (NookClerk_IsNook(talk->owner) != 0 && talk->mode == NOOK_CLERK_MODE_NOOK_TALKED &&
         Session_IsLinked(data_020ccf94) == 0 && *GameVariables_Slot(0, NOOK_CLERK_TALK_VARIABLE) == 0) {
         if (talk->package_slot == -1) {
-            u16 package = NOOK_CLERK_PACKAGE;
+            u16 package = NOOK_CLERK_SAFE;
             talk->package_slot = CurrentPockets_FindItem(&package);
         }
         if (talk->package_slot >= 0) {
