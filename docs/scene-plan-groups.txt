@@ -1240,7 +1240,7 @@ match: autoload_2/sound_emitter_class:SoundEmitterClass_Destruct2Delete
   ov003/fox:Fox_ReceiverDestroyAndFree ov003/mailbox:Mailbox_ReceiverDestroyAndFree
   ov003/outdoor_clock:OutdoorClock_ReceiverDestroyAndFree
   ov003/panther:Panther_ReceiverDestroyAndFree ov003/player_house:PlayerHouse_ReceiverDestroyAndFree
-  ov003/screen_object:ScreenObject_ReceiverDestroyAndFree
+  ov003/bulletin_board:BulletinBoard_ReceiverDestroyAndFree
   ov003/sign_board:SignBoard_ReceiverDestroyAndFree ov003/snowman:Snowman_ReceiverDestroyAndFree
   ov003/spawn_spot:SpawnSpot_ReceiverDestroyAndFree
   ov003/store_front:StoreFront_ReceiverDestroyAndFree ov003/town_insect:TownInsectAnim_DestructDelete
@@ -1345,7 +1345,7 @@ match: autoload_2/sound_emitter_class:SoundEmitterClass_Destruct2
   ov003/etc_board:EtcBoard_ReceiverDestroy ov003/fish_shadow:FishFinAnim_Destruct
   ov003/fox:Fox_ReceiverDestroy ov003/mailbox:Mailbox_ReceiverDestroy
   ov003/outdoor_clock:OutdoorClock_ReceiverDestroy ov003/panther:Panther_ReceiverDestroy
-  ov003/player_house:PlayerHouse_ReceiverDestroy ov003/screen_object:ScreenObject_ReceiverDestroy
+  ov003/player_house:PlayerHouse_ReceiverDestroy ov003/bulletin_board:BulletinBoard_ReceiverDestroy
   ov003/sign_board:SignBoard_ReceiverDestroy ov003/snowman:Snowman_ReceiverDestroy
   ov003/spawn_spot:SpawnSpot_ReceiverDestroy ov003/store_front:StoreFront_ReceiverDestroy
   ov003/villager_house:VillagerHouse_ReceiverDestroy ov003/giraffe_spot:GiraffeSpot_ReceiverDestroy
