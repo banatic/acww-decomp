@@ -67,8 +67,8 @@ enum SceneActorState {
 #define SCENE_ACTOR_FLAG_TALKABLE 0x08    /* actors of a nonzero kind can be talked to (AT_DOOR last frame) */
 
 /* Bits of SceneActor.flags. */
-#define SCENE_ACTOR_FLAG_GONE 0x01    /* set at the end of SCENE_ACTOR_GONE */
-#define SCENE_ACTOR_FLAG_VISIT_2 0x02 /* the visit record said 2 */
+#define SCENE_ACTOR_FLAG_GONE 0x01 /* set at the end of SCENE_ACTOR_GONE */
+#define SCENE_ACTOR_FLAG_FULL 0x02 /* the visit record said 2: too many visitors inside */
 
 /* The sound emitter it keeps (kind 2 of autoload_2/sound_emitter_class.h, vtable 0x0213f090).
  * That class leaves the byte at 0x40 (the base class's volume) alone, and overlay 9 uses it as
@@ -145,7 +145,7 @@ typedef struct SceneActor {
     u8 exit_step; /* set to 1 by scene event 6, counts to 3 (SceneActor_UpdateExit) */
     u8 flags_235;
     u8 flags;
-    u8 visit_3; /* the visit record said 3 */
+    u8 nobody_home; /* the visit record said 3: a villager's house with nobody in */
     SceneActorSound sound;
     int state;     /* enum SceneActorState */
     u8 skip_visit; /* the talk starts without asking for the visit record */

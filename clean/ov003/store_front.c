@@ -129,7 +129,7 @@ void StoreFront_PrepareTalk(StoreFront *store)
     MessageReceiver_SetName(receiver, data_ov003_02239890);
 
     if (store->level == STORE_FRONT_NO_LEVEL) {
-        if (store->actor.flags & SCENE_ACTOR_FLAG_VISIT_2) {
+        if (store->actor.flags & SCENE_ACTOR_FLAG_FULL) {
             MessageReceiver_SetName(receiver, data_ov003_022398a0);
             store->actor.message = STORE_FRONT_MESSAGE_ERROR;
         } else {
@@ -148,7 +148,7 @@ void StoreFront_PrepareTalk(StoreFront *store)
         store->actor.message = STORE_FRONT_MESSAGE_CLOSED;
         return;
     }
-    if (store->actor.flags & SCENE_ACTOR_FLAG_VISIT_2) {
+    if (store->actor.flags & SCENE_ACTOR_FLAG_FULL) {
         MessageReceiver_SetName(receiver, data_ov003_022398a0);
         store->actor.message = STORE_FRONT_MESSAGE_ERROR;
         return;

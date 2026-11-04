@@ -18,7 +18,7 @@
  * "obj_etc_closed": its message is the store's level (0 to 3), or 7 when it is closed (on the
  * day of the upgrade, once it is due, or after 12:59 on the day before), or 4 with no level.
  * "sp_etc_sequence4" message 0x15 and "obj_etc_error" message 0 (the visit record said 2,
- * SCENE_ACTOR_FLAG_VISIT_2: more visitors than the store takes) are the other two
+ * SCENE_ACTOR_FLAG_FULL: more visitors than the store takes) are the other two
  * (StoreFront_PrepareTalk). */
 #ifndef CLEAN_OV003_STORE_FRONT_H
 #define CLEAN_OV003_STORE_FRONT_H

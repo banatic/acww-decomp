@@ -51,12 +51,12 @@ static_assert(offsetof(FoxLink, unk_14) == 0x14, "link word 0x14");
 
 /* The messages it gives, and the ones whose end its receiver hears. */
 #define FOX_MESSAGE_FIRST 0
-#define FOX_MESSAGE_SCREEN 2     /* its end opens the screen */
-#define FOX_MESSAGE_SCREEN_C4C 3 /* after the screen, when main's byte 0xc4c is 1; its end leaves */
-#define FOX_MESSAGE_SCREEN_OTHER 4
-#define FOX_MESSAGE_VISIT_2 0x31
-#define FOX_MESSAGE_AGAIN 0x32 /* when func_020ae2c4 agrees; its end leaves */
-#define FOX_MESSAGE_EARLY 0x34 /* before six */
+#define FOX_MESSAGE_SCREEN 2          /* its end opens the screen */
+#define FOX_MESSAGE_PASSWORD_RIGHT 3  /* the password was right (main's byte 0xc4c is 1); its end leaves */
+#define FOX_MESSAGE_PASSWORD_WRONG 4  /* the password was wrong */
+#define FOX_MESSAGE_FULL 0x31         /* another customer is inside: come back later */
+#define FOX_MESSAGE_MEMBER_AGAIN 0x32 /* a member back again (FoxShop_CurrentPlayerMarked); its end leaves */
+#define FOX_MESSAGE_EARLY 0x34        /* before six */
 
 #define FOX_LINK_SCREEN 5   /* the link's status FOX_SCREEN_ASK waits for */
 #define FOX_SCREEN_MODE 0xe /* the mode of group 9 it opens */
@@ -224,12 +224,12 @@ void Fox_UpdateScreen(Fox *fox)
     u8 message;
     if (GroupParams_C4CIs1()) {
         FoxShop_MarkCurrentPlayer();
-        message = FOX_MESSAGE_SCREEN_C4C;
+        message = FOX_MESSAGE_PASSWORD_RIGHT;
         TalkObject_SetMessage((TalkObject *) fox->link, &message, data_ov003_02238778);
         fox->link->requested = 1;
         Fox_SetState(fox, FOX_TALK_END);
     } else {
-        message = FOX_MESSAGE_SCREEN_OTHER;
+        message = FOX_MESSAGE_PASSWORD_WRONG;
         TalkObject_SetMessage((TalkObject *) fox->link, &message, data_ov003_02238778);
         fox->link->requested = 1;
         Fox_SetState(fox, FOX_TALK_END);
@@ -299,7 +299,7 @@ CLEAN_AS(_ZN18Obj_ov003_0223863019func_ov003_0221bd6cEv, Fox_UpdateTalk)
 /* _ZN18Obj_ov003_0223863019func_ov003_0221bd90Ev (entry of FOX_TALK): takes the receiver,
  * names it "sp_npc_fox" and picks its message: FOX_MESSAGE_EARLY when vtable slot 0x8c
  * (Fox_IsAfterSix) says no, clearing bit 0 of the character's flags unless the visit record
- * said 2; else FOX_MESSAGE_VISIT_2 when it did, FOX_MESSAGE_AGAIN when func_020ae2c4 agrees,
+ * said 2; else FOX_MESSAGE_FULL when it did, FOX_MESSAGE_MEMBER_AGAIN when func_020ae2c4 agrees,
  * else FOX_MESSAGE_FIRST. The link's request is raised and func_02066914 runs on the receiver.
  * REQUIRES: the receiver has a link once SceneObjectBase_TakeReceiver has taken it. */
 int Fox_EnterTalk(Fox *fox)
@@ -311,13 +311,13 @@ int Fox_EnterTalk(Fox *fox)
     FoxSlot after_six = (FoxSlot) (uintptr_t) *(const u32 *) ((const u8 *) fox->vtable + 0x8c);
     if (after_six(fox) == 0) {
         fox->message = FOX_MESSAGE_EARLY;
-        if (!(fox->flags & FOX_FLAG_VISIT_2)) {
+        if (!(fox->flags & FOX_FLAG_FULL)) {
             TownObjects_Leave(fox->code, 0);
         }
-    } else if (fox->flags & FOX_FLAG_VISIT_2) {
-        fox->message = FOX_MESSAGE_VISIT_2;
+    } else if (fox->flags & FOX_FLAG_FULL) {
+        fox->message = FOX_MESSAGE_FULL;
     } else if (FoxShop_CurrentPlayerMarked()) {
-        fox->message = FOX_MESSAGE_AGAIN;
+        fox->message = FOX_MESSAGE_MEMBER_AGAIN;
     } else {
         fox->message = FOX_MESSAGE_FIRST;
     }
@@ -328,13 +328,13 @@ int Fox_EnterTalk(Fox *fox)
 CLEAN_AS(_ZN18Obj_ov003_0223863019func_ov003_0221bd90Ev, Fox_EnterTalk)
 
 /* _ZN18Obj_ov003_0223863019func_ov003_0221be34Ev (update of FOX_VISIT): once main has
- * answered (func_020b2470 nonzero), keeps whether the answer is 2 in FOX_FLAG_VISIT_2 and
+ * answered (func_020b2470 nonzero), keeps whether the answer is 2 in FOX_FLAG_FULL and
  * starts the talk. */
 void Fox_UpdateVisit(Fox *fox)
 {
     int answer = TownObjects_VisitAnswer(fox->code);
     if (answer != 0) {
-        fox->flags = (u8) ((fox->flags & ~FOX_FLAG_VISIT_2) | (answer == 2 ? FOX_FLAG_VISIT_2 : 0));
+        fox->flags = (u8) ((fox->flags & ~FOX_FLAG_FULL) | (answer == 2 ? FOX_FLAG_FULL : 0));
         Fox_SetState(fox, FOX_TALK);
     }
 }
@@ -344,7 +344,7 @@ CLEAN_AS(_ZN18Obj_ov003_0223863019func_ov003_0221be34Ev, Fox_UpdateVisit)
 int Fox_EnterVisit(Fox *fox)
 {
     TownObjects_RequestVisit(fox->code);
-    fox->flags &= (u8) ~FOX_FLAG_VISIT_2;
+    fox->flags &= (u8) ~FOX_FLAG_FULL;
     return 1;
 }
 CLEAN_AS(func_ov003_0221be7c, Fox_EnterVisit)
@@ -442,8 +442,8 @@ void Fox_OnMessageEnd(Fox *fox)
             fox->link->unk_14 = 1;
             Fox_SetState(fox, FOX_SCREEN_ASK);
             break;
-        case FOX_MESSAGE_SCREEN_C4C:
-        case FOX_MESSAGE_AGAIN:
+        case FOX_MESSAGE_PASSWORD_RIGHT:
+        case FOX_MESSAGE_MEMBER_AGAIN:
             Fox_SetState(fox, FOX_TALK_CLOSE);
             break;
         default:

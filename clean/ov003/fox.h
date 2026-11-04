@@ -8,17 +8,20 @@
  *                  byte at 0x235 is set, func_0203e0a8 runs on it each frame.
  *   1 visit:       entering it asks main for the character's visit record (func_020b248c on its
  *                  code at 0x136); once main has an answer (func_020b2470, nonzero), whether it
- *                  is 2 is kept in bit 1 of the flags and the talk starts (state 2).
+ *                  is 2 (too many inside) is kept in bit 1 of the flags and the talk starts
+ *                  (state 2).
  *   2 talk:        entering it takes the receiver and gives it a message: 0x34 when
  *                  Fox_IsAfterSix says no (then clearing bit 0 of the character's flags when
- *                  bit 1 is clear), else 0x31 when bit 1 is set, 0x32 when func_020ae2c4
- *                  agrees, else 0. Once the link opens it moves to state 3.
+ *                  bit 1 is clear), else 0x31 (come back later) when bit 1 is set, 0x32 (a
+ *                  member again) when FoxShop_CurrentPlayerMarked agrees, else 0 (asking for the
+ *                  password). Once the link opens it moves to state 3.
  *   3 talk end:    once the link closes it hands the receiver back and lets the scene go on.
  *   4 screen ask:  (message 2 ended) once the link's status is 5, opens group 9 in mode 0xe
- *                  with an argument from the town's data (state 5).
- *   5 screen:      once the screen has closed it says message 3 (after func_020ae270) when
- *                  main's byte 0xc4c is 1, else message 4 (and clears bit 0 of the character's
- *                  flags), and ends the talk (state 3).
+ *                  (the password's entry) with an argument from the town's data (state 5).
+ *   5 screen:      once the screen has closed it says message 3 (the password right, after
+ *                  FoxShop_MarkCurrentPlayer) when main's byte 0xc4c is 1, else message 4 (the
+ *                  password wrong; it leaves the character, TownObjects_Leave), and ends the
+ *                  talk (state 3).
  *   6 talk close:  (message 3 or 0x32 ended) once the link closes, state 7.
  *   7 leave:       entering it calls func_02095944(0); once func_02096174 agrees it moves to
  *                  state 8 and hands the receiver back.
@@ -57,8 +60,8 @@ typedef struct FoxLink {
 } FoxLink;
 
 /* Bits of Fox.flags. */
-#define FOX_FLAG_GONE 0x01    /* set at the end of FOX_GONE */
-#define FOX_FLAG_VISIT_2 0x02 /* the visit record said 2 */
+#define FOX_FLAG_GONE 0x01 /* set at the end of FOX_GONE */
+#define FOX_FLAG_FULL 0x02 /* the visit record said 2: too many visitors inside */
 
 typedef struct Fox {
     const void *vtable; /* data_ov003_02238630 */

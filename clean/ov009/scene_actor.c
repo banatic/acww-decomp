@@ -53,7 +53,7 @@ static_assert(offsetof(SceneActor, tile_z) == 0x230, "tile z");
 static_assert(offsetof(SceneActor, exit_step) == 0x234, "exit step");
 static_assert(offsetof(SceneActor, flags_235) == 0x235, "flags 0x235");
 static_assert(offsetof(SceneActor, flags) == 0x236, "flags");
-static_assert(offsetof(SceneActor, visit_3) == 0x237, "visit 3");
+static_assert(offsetof(SceneActor, nobody_home) == 0x237, "nobody home");
 static_assert(offsetof(SceneActor, sound) == 0x238, "sound");
 static_assert(offsetof(SceneActor, state) == 0x27c, "state");
 static_assert(offsetof(SceneActor, skip_visit) == 0x280, "skip visit");
@@ -832,7 +832,8 @@ CLEAN_AS(_ZN18Obj_ov009_022658dc19func_ov009_022637bcEv, SceneActor_EnterTalk)
 
 /* _ZN18Obj_ov009_022658dc19func_ov009_022637ecEv (update of SCENE_ACTOR_VISIT): when the talk
  * skips the visit record, on to SCENE_ACTOR_TALK. Else, once main has an answer (nonzero), it
- * keeps whether it is 2 (SCENE_ACTOR_FLAG_VISIT_2) and whether it is 3 (visit_3); either starts
+ * keeps whether it is 2 (SCENE_ACTOR_FLAG_FULL, too many inside) and whether it is 3
+ * (nobody_home); either starts
  * the talk, else kind 1 moves to SCENE_ACTOR_LEAVE_AGAIN and others to SCENE_ACTOR_LEAVE. */
 void SceneActor_UpdateVisit(SceneActor *actor)
 {
@@ -844,9 +845,9 @@ void SceneActor_UpdateVisit(SceneActor *actor)
     if (answer == 0) {
         return;
     }
-    actor->flags = (u8) ((actor->flags & ~SCENE_ACTOR_FLAG_VISIT_2) | (answer == 2 ? SCENE_ACTOR_FLAG_VISIT_2 : 0));
-    actor->visit_3 = answer == 3;
-    if ((actor->flags & SCENE_ACTOR_FLAG_VISIT_2) || actor->visit_3) {
+    actor->flags = (u8) ((actor->flags & ~SCENE_ACTOR_FLAG_FULL) | (answer == 2 ? SCENE_ACTOR_FLAG_FULL : 0));
+    actor->nobody_home = answer == 3;
+    if ((actor->flags & SCENE_ACTOR_FLAG_FULL) || actor->nobody_home) {
         SceneActor_SetState(actor, SCENE_ACTOR_TALK);
     } else if (SceneActor_Kind(actor) == 1) {
         SceneActor_SetState(actor, SCENE_ACTOR_LEAVE_AGAIN);
@@ -863,8 +864,8 @@ int SceneActor_EnterVisit(SceneActor *actor)
     if (!actor->skip_visit) {
         TownObjects_RequestVisit(actor->code);
     }
-    actor->flags &= ~SCENE_ACTOR_FLAG_VISIT_2;
-    actor->visit_3 = 0;
+    actor->flags &= ~SCENE_ACTOR_FLAG_FULL;
+    actor->nobody_home = 0;
     return 1;
 }
 CLEAN_AS(func_ov009_02263888, SceneActor_EnterVisit)
