@@ -437,8 +437,9 @@ CLEAN_AS(func_02081398, VillagerMail_HoldsLetterFrom)
 
 /* func_02081418: a player's letter given to the villager, when the villager knows its set
  * sender: the memory's bit 0 set, the letter kept with this town as the town it came in, and its
- * item added to the house's items (VillagerItems_Add) when the item it stands for is one
- * func_0204bcdc accepts, a wallpaper or a carpet. Whether the villager took it. */
+ * item added to the four items the villager keeps at 0x7b0 (VillagerItems_Add; they go into its
+ * house later, VillagerFurniture_StoreItems) when the item it stands for is one func_0204bcdc
+ * accepts, a wallpaper or a carpet. Whether the villager took it. */
 int VillagerMail_Receive(u8 *villager, Letter *letter)
 {
     VillagerMemory *memory = NULL;

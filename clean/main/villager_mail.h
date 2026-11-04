@@ -2,9 +2,10 @@
  *
  * A villager keeps the last letter a player sent it (0x634, town_villager.h) and the town it
  * got it in (0x7dc); its memory of the sender gets bit 0 of its flags (villager_memories.h),
- * and an item that came with it can join the items of its house. It answers the letter with
- * "re_bad" (and likes the player 3 less) or "re_normal" (and likes the player 3 more, 5 for a
- * letter with an item, which brings a present in return), by how func_0206d7ac grades it.
+ * and an item that came with it can join the four items it keeps (villager_items.h), which
+ * later go into its house. It answers the letter with "re_bad" (and likes the player 3 less) or
+ * "re_normal" (and likes the player 3 more, 5 for a letter with an item, which brings a present
+ * in return), by how func_0206d7ac grades it.
  *
  * Without being written to it sends the town's players it likes enough (fondness 0x40 and
  * more) a letter on new year's day ("ev_newyear") and on their birthday ("ev_birth", with a
