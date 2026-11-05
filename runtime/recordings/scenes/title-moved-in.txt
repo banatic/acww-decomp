@@ -2,7 +2,7 @@
 # is not in this repository). Boot: START at 900 on the title, A every 60 frames from 999.
 # Save: flag-12 (flag 0x12 of the state block set, as the linked session's move-in writes it,
 # main/activity_link_jobs.c). The title's first talk is message 0x24 (TitleScene_StartTalk): the
-# start kind of player 0 (StartKind_SetPlayer0) and the exit for a new start. The taxi ride
+# start kind of player 0 (StartKind_SetMovedIn) and the exit for a new start. The taxi ride
 # follows (A held 4 frames every 30 from 3399 answers its questions, line 0x2b,
 # TaxiDriverTalk_End2b); the A presses type on the town name's keyboard and two taps on its
 # decide key (7899, 7933) end it; the town's state is set up anew for player 0

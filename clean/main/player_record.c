@@ -420,7 +420,7 @@ CLEAN_AS(func_020992f0, PlayerRecord_ReactionSlots)
 #define RECORD_HEAD_ITEM 0x240a
 #define RECORD_PART_C_ITEM 0x240c
 #define RECORD_BED 0x240e
-#define RECORD_ITEM_2410 0x2410
+#define RECORD_BACKDROP_CLOTHES 0x2410
 #define RECORD_SUN_DATE 0x2412
 #define RECORD_FIELD_2416 0x2416
 #define RECORD_FIELD_2427 0x2427
@@ -445,11 +445,11 @@ CLEAN_AS(func_020992f0, PlayerRecord_ReactionSlots)
 /* The record's flag set while the player is stung by bees; it picks the second set of faces. */
 #define RECORD_FLAG_STUNG 0
 
-/* What a new player starts with: the bed 0x3884 (plain red bed) at 0x240e, the first clothes (0x11a8), item
- * 0x11fa at 0x2410 and a sun date of 1 January 2000. */
+/* What a new player starts with: the bed 0x3884 (plain red bed) at 0x240e, the first clothes
+ * (0x11a8), the shirt 0x11fa behind the menus at 0x2410 and a sun date of 1 January 2000. */
 #define NEW_PLAYER_BED 0x3884
 #define NEW_PLAYER_CLOTHES 0x11a8
-#define NEW_PLAYER_ITEM_2410 0x11fa
+#define NEW_PLAYER_BACKDROP_CLOTHES 0x11fa
 #define SUN_DATE_PACK(year, month, day) ((u16) (((year) & 0x7f) | ((month) & 0xf) << 7 | ((day) & 0x1f) << 11))
 
 /* The villager's fondness when none is noted. */
@@ -563,19 +563,19 @@ u8 *PlayerRecord_RandomOther(u8 *record)
 }
 CLEAN_AS(func_02099380, PlayerRecord_RandomOther)
 
-/* func_0209939c */
-void PlayerRecord_SetItem2410(u8 *record, const u16 *item)
+/* func_0209939c: the clothes shown behind the menus (menu_backdrop.h). */
+void PlayerRecord_SetBackdropClothes(u8 *record, const u16 *item)
 {
-    *player_record_u16(record, RECORD_ITEM_2410) = *item;
+    *player_record_u16(record, RECORD_BACKDROP_CLOTHES) = *item;
 }
-CLEAN_AS(func_0209939c, PlayerRecord_SetItem2410)
+CLEAN_AS(func_0209939c, PlayerRecord_SetBackdropClothes)
 
-/* func_020993a8 */
-u16 *PlayerRecord_Item2410(u8 *record)
+/* func_020993a8: the clothes shown behind the menus. */
+u16 *PlayerRecord_BackdropClothes(u8 *record)
 {
-    return player_record_u16(record, RECORD_ITEM_2410);
+    return player_record_u16(record, RECORD_BACKDROP_CLOTHES);
 }
-CLEAN_AS(func_020993a8, PlayerRecord_Item2410)
+CLEAN_AS(func_020993a8, PlayerRecord_BackdropClothes)
 
 /* func_020993b4: the player moved to another town (func_0209e974): the villagers' part is
  * emptied (both blocks and the NpcId and object at 0xa4); clothes in a pocket slot of state 2
@@ -954,13 +954,13 @@ DesignCreator *PlayerRecord_Player(u8 *record)
 }
 CLEAN_AS(func_02099870, PlayerRecord_Player)
 
-/* func_0209987c: make a new player in the record: its name, id, byte 0x1c and town (this
- * town for NULL), its looks, flag 0, its bells and held item. Its pockets, designs, shop
- * points, record of items, dated letter, mother's letters and Wi-Fi data are reset; it gets
- * the bed 0x3884 at 0x240e, the first clothes, nothing on its head nor as part C, item 0x11fa at
- * 0x2410, a sun date of 1 January 2000, no birthday, a fresh savings account and date of last
- * play, and no byte for any villager. */
-void PlayerRecord_NewPlayer(u8 *record, const void *name, int player_id, int byte_1c, const NpcIdHead *town, u8 face,
+/* func_0209987c: make a new player in the record: its name, id, byte 0x1c and town (this town
+ * for NULL), its looks, flag 0, its bells and held item. Its pockets, designs, shop points,
+ * record of items, dated letter, mother's letters and Wi-Fi data are reset; it gets the bed
+ * 0x3884 at 0x240e, the first clothes, nothing on its head nor as part C, the shirt 0x11fa
+ * behind the menus (0x2410), a sun date of 1 January 2000, no birthday, a fresh savings account
+ * and date of last play, and no byte for any villager. */
+void PlayerRecord_NewPlayer(u8 *record, const void *name, int player_id, int byte_1c, const TownName *town, u8 face,
                             u8 head_kind, u8 hair_color, u8 sun_level, u8 flag0, int bells, const u16 *held_item)
 {
     PlayerId_Make(PlayerRecord_Player(record), name, (u16) player_id, (u8) byte_1c, (const TownName *) town);
@@ -989,7 +989,7 @@ void PlayerRecord_NewPlayer(u8 *record, const void *name, int player_id, int byt
     PlayerField2416_Reset((PlayerField2416 *) (void *) (record + RECORD_FIELD_2416));
     *player_record_u16(record, RECORD_PART_C_ITEM) = PLAYER_RECORD_NO_ITEM;
     *player_record_u16(record, RECORD_HEAD_ITEM) = PLAYER_RECORD_NO_ITEM;
-    *player_record_u16(record, RECORD_ITEM_2410) = NEW_PLAYER_ITEM_2410;
+    *player_record_u16(record, RECORD_BACKDROP_CLOTHES) = NEW_PLAYER_BACKDROP_CLOTHES;
     DayEvents_ClearMark((DayEventMark *) (void *) (record + RECORD_FIELD_2427));
     Savings_InitAccount((SavingsAccount *) (void *) (record + RECORD_SAVINGS));
     ReactionSlots_Clear(record + RECORD_REACTION_SLOTS);
@@ -1076,7 +1076,7 @@ u8 *PlayerRecord_Construct(u8 *record)
     Savings_ConstructAccount((SavingsAccount *) (void *) (record + RECORD_SAVINGS));
     DailyBits_Construct((DailyBits *) (void *) (record + RECORD_FIELD_23EC));
     ShopPoints_ConstructAndReset((int) (uintptr_t) (record + RECORD_SHOP_POINTS));
-    for (u32 offset = RECORD_HELD_ITEM; offset <= RECORD_ITEM_2410; offset += sizeof(u16)) {
+    for (u32 offset = RECORD_HELD_ITEM; offset <= RECORD_BACKDROP_CLOTHES; offset += sizeof(u16)) {
         *player_record_u16(record, offset) = PLAYER_RECORD_NO_ITEM;
     }
     PlayerField2416_Construct((PlayerField2416 *) (void *) (record + RECORD_FIELD_2416));
@@ -1102,7 +1102,7 @@ static NpcId *player_record_villager_npc(PlayerRecordVillager *villager)
  * has a present for the player, an item drawn from one of three item lists. Whether it was
  * noted; 0 for an invalid villager or a town that is not set. QUIRK: the present is drawn
  * also when the villager is then not noted. */
-int PlayerRecordVillager_Note(PlayerRecordVillager *villager, const NpcId *npc, int fondness, const NpcIdHead *town)
+int PlayerRecordVillager_Note(PlayerRecordVillager *villager, const NpcId *npc, int fondness, const TownName *town)
 {
     if (NpcId_IsValid(npc) == 0 || TownName_IsSet((const u16 *) town) == 0) {
         return 0;
@@ -1131,7 +1131,7 @@ int PlayerRecordVillager_Note(PlayerRecordVillager *villager, const NpcId *npc, 
 CLEAN_AS(func_02099d08, PlayerRecordVillager_Note)
 
 /* func_02099dcc */
-void PlayerRecordVillager_Set(PlayerRecordVillager *villager, const NpcId *npc, s8 fondness, const NpcIdHead *town,
+void PlayerRecordVillager_Set(PlayerRecordVillager *villager, const NpcId *npc, s8 fondness, const TownName *town,
                               const u16 *item)
 {
     TownName_Copy((TownName *) (void *) villager->town, (const TownName *) town);

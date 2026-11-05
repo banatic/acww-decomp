@@ -424,7 +424,7 @@ void MyDesigns_UseAsBackdrop(MyDesigns *self)
 {
     u8 *record = PlayerRecords_Current();
     int free_slot = CurrentPockets_FreeSlot();
-    u16 there = *PlayerRecord_Item2410(record);
+    u16 there = *PlayerRecord_BackdropClothes(record);
     int a_shirt = in_range(there, MY_DESIGNS_SHIRT_FIRST, MY_DESIGNS_SHIRT_LAST);
     if (a_shirt && free_slot == -1) {
         MyDesigns_ShowError(self, MY_DESIGNS_ERROR_POCKETS_FULL, 1);

@@ -21,7 +21,7 @@
 #include "villager_sickness_record.h"
 #include "villager_status.h"
 
-static_assert(sizeof(NpcIdHead) == 14, "NpcId head");
+static_assert(sizeof(TownName) == 14, "TownName layout");
 static_assert(offsetof(NpcId, number) == 0x0f, "NpcId number");
 
 /* What a draw gives for no candidate. */
@@ -62,7 +62,8 @@ static int has_villager(const u8 *villager)
 /* Whether two NpcIds name the same villager: the head and the number, not the personality. */
 static int same_villager(const NpcId *a, const NpcId *b)
 {
-    return a->head.id == b->head.id && memcmp(a->head.data, b->head.data, sizeof(a->head.data)) == 0 && a->number == b->number;
+    return a->town.number == b->town.number && memcmp(a->town.name, b->town.name, sizeof(a->town.name)) == 0 &&
+           a->number == b->number;
 }
 
 /* ---- Finding a villager */

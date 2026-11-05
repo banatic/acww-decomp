@@ -3,12 +3,18 @@
  *
  *   START_KIND_NEW_TOWN    the state block is set up anew and a player is made in it;
  *   START_KIND_NEW_PLAYER  a player is made in the town as it is;
- *   START_KIND_PLAYER_0    session player 0 gets record 0 and func_0203d394 runs;
+ *   START_KIND_MOVED_IN    a player moved in from another system: session player 0 gets
+ *                          record 0 and func_0203d394 runs;
  *   START_KIND_UNCHANGED   nothing is done.
  *
- * The activity's process (func_020a4454) picks START_KIND_PLAYER_0 when flag 0x12 of the state
- * block is set and START_KIND_UNCHANGED otherwise. Overlays 4, 51, 54 and 68 and the start menu
- * ask for the first two (a talk of "sp_etc_sequence4" in place of "sp_etc_sequence2"). */
+ * The activity's process (func_020a4454) picks START_KIND_MOVED_IN when flag 0x12 of the state
+ * block is set and START_KIND_UNCHANGED otherwise, and the title's menu picks it with that flag
+ * (its message 0x24, a player moving in). The flag is set by the activity's job 0x1e
+ * (activity_link_jobs.h), the end that receives the player job 0x1f sends from another system,
+ * when this system's town is set up. Overlay 51's taxi brings such a player in as for a new
+ * town (the clock kept, the state block started in mode 6). Overlays 4, 51, 54 and 68 and the
+ * start menu ask for the first two (a talk of "sp_etc_sequence4" in place of
+ * "sp_etc_sequence2"). */
 #ifndef CLEAN_MAIN_START_KIND_H
 #define CLEAN_MAIN_START_KIND_H
 
@@ -18,18 +24,18 @@ enum StartKind {
     START_KIND_NONE = 0,
     START_KIND_NEW_TOWN = 1,
     START_KIND_NEW_PLAYER = 2,
-    START_KIND_PLAYER_0 = 3,
+    START_KIND_MOVED_IN = 3,
     START_KIND_UNCHANGED = 4,
 };
 
 void StartKind_Clear(void);
 int StartKind_IsUnchanged(void);
-int StartKind_IsPlayer0(void);
+int StartKind_IsMovedIn(void);
 int StartKind_IsNewPlayer(void);
 int StartKind_IsNewTown(void);
 int StartKind_IsSet(void);
 void StartKind_SetUnchanged(void);
-void StartKind_SetPlayer0(void);
+void StartKind_SetMovedIn(void);
 void StartKind_SetNewPlayer(void);
 void StartKind_SetNewTown(void);
 void StartKind_Apply(void);

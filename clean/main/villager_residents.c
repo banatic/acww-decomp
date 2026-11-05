@@ -44,8 +44,8 @@
     (DATE_TIME_YEAR | DATE_TIME_MONTH | DATE_TIME_DAY | DATE_TIME_HOUR | DATE_TIME_MINUTE | DATE_TIME_SECOND)
 #define VILLAGER_RESIDENTS_NONE (-1)
 
-extern u8 data_021ee418[];            /* the record exchanged with other consoles */
-extern const NpcIdHead data_021dc7aa; /* this town (number and name) */
+extern u8 data_021ee418[];           /* the record exchanged with other consoles */
+extern const TownName data_021dc7aa; /* this town (number and name) */
 /* A villager (0x7ec bytes) in which a newcomer is put together before it moves in. */
 extern u8 data_021d1554[VILLAGER_TOWN_VILLAGER_SIZE];
 /* The candidates of VillagerResidents_PickOfPersonality, a set of villager numbers. */
@@ -77,9 +77,9 @@ static s8 *gone_number(VillagerTown *town)
     return (s8 *) &town->numbers_met[0x14];
 }
 
-static int same_town(const NpcIdHead *a, const NpcIdHead *b)
+static int same_town(const TownName *a, const TownName *b)
 {
-    return a->id == b->id && memcmp(a->data, b->data, sizeof(a->data)) == 0;
+    return a->number == b->number && memcmp(a->name, b->name, sizeof(a->name)) == 0;
 }
 
 static int bit_set(unsigned int mask, int bit)

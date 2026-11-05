@@ -100,7 +100,8 @@ u8 *PlayerRecord_ReactionSlots(u8 *record);
  *           func_02088764, func_02088460 construct them)
  *   0x2404  the shop points (shop_points.h)
  *   0x2406  the held item, 0x2408 the clothes, 0x240a the head's item, 0x240c part C's item,
- *           0x240e the player's bed in the attic, 0x2410 one more item (0xfff1: none)
+ *           0x240e the player's bed in the attic, 0x2410 the clothes
+ *           shown behind the menus (menu_backdrop.h; 0xfff1: none)
  *   0x2412  the date the sun level was last stored, packed (PlayerRecordSunDate)
  *   0x243c  the face (bits 0-3) and the head's kind (bits 4-7)
  *   0x243d  the hair colour (bits 0-2), the sun level (bits 3-5) and the day's luck the
@@ -130,8 +131,8 @@ Date *PlayerRecord_LastPlayDate(u8 *record);
 int PlayerRecord_FindFree(u8 *records, int count);
 int PlayerRecord_OtherPlayerName(u8 *record, struct PlayerRecordName *name);
 u8 *PlayerRecord_RandomOther(u8 *record);
-void PlayerRecord_SetItem2410(u8 *record, const u16 *item);
-u16 *PlayerRecord_Item2410(u8 *record);
+void PlayerRecord_SetBackdropClothes(u8 *record, const u16 *item);
+u16 *PlayerRecord_BackdropClothes(u8 *record);
 void PlayerRecord_ResetForNewTown(u8 *record);
 void PlayerRecord_OpenDeliveries(u8 *record);
 u8 *PlayerRecord_VillagerPart(u8 *record);
@@ -172,7 +173,7 @@ void PlayerRecord_SetFace(u8 *record, u32 face);
 u32 PlayerRecord_Face(u8 *record);
 int PlayerRecord_Number(u8 *record);
 DesignCreator *PlayerRecord_Player(u8 *record);
-void PlayerRecord_NewPlayer(u8 *record, const void *name, int player_id, int byte_1c, const NpcIdHead *town, u8 face,
+void PlayerRecord_NewPlayer(u8 *record, const void *name, int player_id, int byte_1c, const TownName *town, u8 face,
                             u8 head_kind, u8 hair_color, u8 sun_level, u8 flag0, int bells, const u16 *held_item);
 int PlayerRecord_HasPlayer(u8 *record);
 void PlayerRecord_Clear(u8 *record);
@@ -180,8 +181,8 @@ void PlayerRecord_Zero(u8 *record);
 u8 *PlayerRecord_Destruct(u8 *record);
 u8 *PlayerRecord_Construct(u8 *record);
 
-int PlayerRecordVillager_Note(PlayerRecordVillager *villager, const NpcId *npc, int fondness, const NpcIdHead *town);
-void PlayerRecordVillager_Set(PlayerRecordVillager *villager, const NpcId *npc, s8 fondness, const NpcIdHead *town,
+int PlayerRecordVillager_Note(PlayerRecordVillager *villager, const NpcId *npc, int fondness, const TownName *town);
+void PlayerRecordVillager_Set(PlayerRecordVillager *villager, const NpcId *npc, s8 fondness, const TownName *town,
                               const u16 *item);
 int PlayerRecordVillager_IsSet(PlayerRecordVillager *villager);
 void PlayerRecordVillager_Clear(PlayerRecordVillager *villager);

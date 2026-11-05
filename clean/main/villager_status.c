@@ -38,7 +38,8 @@ static VillagerTown *VillagerStatus_Town(void)
  * personality is not compared). */
 static int VillagerStatus_SameNpc(const NpcId *a, const NpcId *b)
 {
-    return a->head.id == b->head.id && memcmp(a->head.data, b->head.data, sizeof(a->head.data)) == 0 && a->number == b->number;
+    return a->town.number == b->town.number && memcmp(a->town.name, b->town.name, sizeof(a->town.name)) == 0 &&
+           a->number == b->number;
 }
 
 /* The mode of the villager's record, for a villager with a valid NpcId; -1 without one. */

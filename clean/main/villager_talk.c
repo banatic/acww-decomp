@@ -799,7 +799,7 @@ void VillagerTalk_Line8d18Group1(VillagerTalk *talk, VillagerTalkLine *out)
                 continue;
             }
             const NpcId *npc = TownVillager_NpcId(other);
-            if (npc->head.id == self->head.id && memcmp(npc->head.data, self->head.data, sizeof npc->head.data) == 0 &&
+            if (npc->town.number == self->town.number && memcmp(npc->town.name, self->town.name, sizeof npc->town.name) == 0 &&
                 npc->number == self->number) {
                 continue;
             }

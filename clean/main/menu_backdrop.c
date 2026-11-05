@@ -437,7 +437,7 @@ int MenuBackdrop_LoadLayer(int layer)
     }
     Heap *heap = data_021fbe94;
     u8 *player = PlayerRecords_Current();
-    ItemCode clothing = *PlayerRecord_Item2410(player);
+    ItemCode clothing = *PlayerRecord_BackdropClothes(player);
 
     u8 *chars = Heap_AllocBack(heap, CLOTHING_CHARS_SIZE);
     if (chars == NULL) {
@@ -524,7 +524,7 @@ void MenuBackdrop_QueueDesign(u16 *item, LayerTaskPair *task, u8 *chars, u16 *pa
     TileConvert_BitmapToCharsBytes(ClothTexture_Image(model), chars, 4, 4);
     Heap_Free(heap, model);
     if (LayerTask_QueueCharsAndPalette(task, (int) (uintptr_t) chars, LAYER_SUB, 0, 0, 0xf, (int) (uintptr_t) palette, 0)) {
-        PlayerRecord_SetItem2410(player, item);
+        PlayerRecord_SetBackdropClothes(player, item);
     }
 }
 CLEAN_AS(func_0206f190, MenuBackdrop_QueueDesign)

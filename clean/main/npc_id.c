@@ -10,7 +10,7 @@
 #include "npc_lookup.h"
 #include "town_name.h"
 
-static_assert(sizeof(NpcIdHead) == 14, "NpcIdHead layout");
+static_assert(sizeof(TownName) == 14, "TownName layout");
 static_assert(offsetof(NpcId, personality) == 0x0e, "NpcId layout");
 static_assert(offsetof(NpcId, number) == 0x0f, "NpcId layout");
 static_assert(sizeof(NpcId) == 16, "NpcId layout");
@@ -20,8 +20,8 @@ extern const int data_020c7570[PERSONALITY_COUNT];
 /* For each personality, the prefix of its resource names. */
 extern const char *const data_020d72a4[PERSONALITY_COUNT];
 extern const char data_020d72bc[]; /* "%s%s" */
-/* The head a villager gets when none is given (NpcId_Set). */
-extern const NpcIdHead data_021dc7aa;
+/* This town (the state block's), which a villager gets when no town is given (NpcId_Set). */
+extern const TownName data_021dc7aa;
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
@@ -112,23 +112,23 @@ int NpcId_Personality(const NpcId *npc)
 }
 CLEAN_AS(func_020036e8, NpcId_Personality)
 
-/* func_020036ec: the villager, and its head copied from `head` or, without one, from the
- * game's default head. */
-void NpcId_Set(NpcId *npc, u8 number, u8 personality, const NpcIdHead *head)
+/* func_020036ec: the villager, and its home town copied from `town` or, without one, this
+ * town. */
+void NpcId_Set(NpcId *npc, u8 number, u8 personality, const TownName *town)
 {
     npc->number = number;
     npc->personality = personality;
-    if (head == NULL) {
-        head = &data_021dc7aa;
+    if (town == NULL) {
+        town = &data_021dc7aa;
     }
-    TownName_Copy((TownName *) &npc->head, (const TownName *) head);
+    TownName_Copy(&npc->town, town);
 }
 CLEAN_AS(func_020036ec, NpcId_Set)
 
-/* func_02003704: a set head and a villager number in range. */
+/* func_02003704: a set town and a villager number in range. */
 int NpcId_IsValid(const NpcId *npc)
 {
-    return TownName_IsSet((const u16 *) &npc->head) == 1 && Npc_IsValidNumber(npc->number) == 1;
+    return TownName_IsSet((const u16 *) &npc->town) == 1 && Npc_IsValidNumber(npc->number) == 1;
 }
 CLEAN_AS(func_02003704, NpcId_IsValid)
 
@@ -142,7 +142,7 @@ CLEAN_AS(func_02003728, NpcId_Copy)
 /* func_02003738: no villager. */
 void NpcId_Clear(NpcId *npc)
 {
-    TownName_Clear((TownName *) &npc->head);
+    TownName_Clear(&npc->town);
     npc->number = NPC_NONE;
     npc->personality = PERSONALITY_NONE;
 }
@@ -151,7 +151,7 @@ CLEAN_AS(func_02003738, NpcId_Clear)
 /* func_02003750: the destructor; returns the reference's address. */
 int NpcId_Destruct(NpcId *npc)
 {
-    TownName_Destruct(&npc->head);
+    TownName_Destruct(&npc->town);
     return (int) (intptr_t) npc;
 }
 CLEAN_AS(func_02003750, NpcId_Destruct)
@@ -159,7 +159,7 @@ CLEAN_AS(func_02003750, NpcId_Destruct)
 /* func_02003760: the copy constructor. */
 NpcId *NpcId_ConstructCopy(NpcId *npc, const NpcId *src)
 {
-    TownName_Construct(&npc->head);
+    TownName_Construct(&npc->town);
     NpcId_Assign(npc, src);
     return npc;
 }
@@ -168,7 +168,7 @@ CLEAN_AS(func_02003760, NpcId_ConstructCopy)
 /* func_02003780: the constructor; returns the reference's address. */
 int NpcId_Construct(NpcId *npc)
 {
-    TownName_Construct(&npc->head);
+    TownName_Construct(&npc->town);
     return (int) (intptr_t) npc;
 }
 CLEAN_AS(func_02003780, NpcId_Construct)
@@ -176,7 +176,7 @@ CLEAN_AS(func_02003780, NpcId_Construct)
 /* func_02003790 */
 void NpcId_CopyTo(const NpcId *src, NpcId *dst)
 {
-    TownName_CopyTo((const u16 *) &src->head, (u16 *) &dst->head);
+    TownName_CopyTo((const u16 *) &src->town, (u16 *) &dst->town);
     dst->number = src->number;
     dst->personality = src->personality;
 }
@@ -185,7 +185,7 @@ CLEAN_AS(func_02003790, NpcId_CopyTo)
 /* func_020037ac: the assignment operator. */
 void NpcId_Assign(NpcId *npc, const NpcId *src)
 {
-    TownName_Assign((TownName *) &npc->head, (const TownName *) &src->head);
+    TownName_Assign(&npc->town, &src->town);
     npc->number = src->number;
     npc->personality = src->personality;
 }

@@ -1276,7 +1276,7 @@ int VillagerTalkOffer_DeliveryRecipient(VillagerTalk *talk, u8 *record, Villager
     }
     NpcId *named = VillagerPartBlock_Npc(block, 1);
     NpcId *own = TownVillager_NpcId(record);
-    if (own->head.id != named->head.id || memcmp(own->head.data, named->head.data, sizeof own->head.data) != 0 ||
+    if (own->town.number != named->town.number || memcmp(own->town.name, named->town.name, sizeof own->town.name) != 0 ||
         own->number != named->number || VillagerPartBlock_IsOwnTypePastLimit(block) != 0) {
         return 0;
     }

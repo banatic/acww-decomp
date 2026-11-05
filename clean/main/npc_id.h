@@ -1,14 +1,16 @@
-/* A reference to one of the game's villagers (16 bytes): a 14-byte head, the villager's
- * personality and its number.
+/* A reference to one of the game's villagers (16 bytes): the villager's home town (a TownName
+ * of town_name.h, 14 bytes), its personality and its number.
  *
  * The number picks the villager's name ("st_npc_name", 150 villagers); 0xff is none. The
  * personality is one of six, 6 for none; resource names start with its prefix ("bo_", "ha_",
  * "ko_", "fu_", "ge_", "ta_"), and the first three and the last three form two groups
- * (Personality_Group). The head is copied, cleared and tested by its own functions
- * (func_020642a8 to func_020642fc); a nonzero first halfword marks it as set. */
+ * (Personality_Group). The town is copied, cleared and tested by the town name's functions
+ * (func_020642a8 to func_020642fc); a nonzero town number marks the reference as set. Without a
+ * town given, NpcId_Set gives the villager this town (data_021dc7aa, the state block's). */
 #ifndef CLEAN_MAIN_NPC_ID_H
 #define CLEAN_MAIN_NPC_ID_H
 
+#include "town_name.h"
 #include "types.h"
 
 #define NPC_COUNT 150
@@ -16,13 +18,8 @@
 #define PERSONALITY_COUNT 6
 #define PERSONALITY_NONE 6
 
-typedef struct NpcIdHead {
-    u16 id; /* zero: not set */
-    u8 data[12];
-} NpcIdHead;
-
 typedef struct NpcId {
-    NpcIdHead head;
+    TownName town;  /* 0x00: the villager's home town; number zero: not set */
     u8 personality; /* 0x0e */
     u8 number;      /* 0x0f */
 } NpcId;
@@ -37,7 +34,7 @@ int Personality_FormatResourceName(char *dst, int size, const char *name, int pe
 u32 NpcId_PersonalityGroup(const NpcId *npc);
 u32 Personality_Group(u32 personality);
 int NpcId_Personality(const NpcId *npc);
-void NpcId_Set(NpcId *npc, u8 number, u8 personality, const NpcIdHead *head);
+void NpcId_Set(NpcId *npc, u8 number, u8 personality, const TownName *town);
 int NpcId_IsValid(const NpcId *npc);
 void NpcId_Copy(NpcId *dst, const NpcId *src);
 void NpcId_Clear(NpcId *npc);

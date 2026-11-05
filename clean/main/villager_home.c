@@ -55,8 +55,8 @@ void VillagerHome_ClearTile(u8 *villager)
 CLEAN_AS(func_020800ec, VillagerHome_ClearTile)
 
 /* func_020800fc: the town the villager last lived in. */
-NpcIdHead *VillagerHome_LastTown(u8 *villager)
+TownName *VillagerHome_LastTown(u8 *villager)
 {
-    return (NpcIdHead *) (void *) (villager + VILLAGER_HOME_LAST_TOWN);
+    return (TownName *) (void *) (villager + VILLAGER_HOME_LAST_TOWN);
 }
 CLEAN_AS(func_020800fc, VillagerHome_LastTown)

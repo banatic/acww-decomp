@@ -214,7 +214,8 @@ static int lines_talked_today(VillagerTalk *talk)
  * number. */
 static int lines_same_npc(const NpcId *a, const NpcId *b)
 {
-    return a->head.id == b->head.id && memcmp(a->head.data, b->head.data, sizeof a->head.data) == 0 && a->number == b->number;
+    return a->town.number == b->town.number && memcmp(a->town.name, b->town.name, sizeof a->town.name) == 0 &&
+           a->number == b->number;
 }
 
 /* func_0201e890 */

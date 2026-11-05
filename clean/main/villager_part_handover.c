@@ -34,8 +34,8 @@ int VillagerPartHandover_IsFrom(VillagerPartHandover *handover, const NpcId *npc
     if (VillagerErrand_IsInUse((VillagerErrand *) (void *) handover->object) == 0 || NpcId_IsValid(npc) == 0) {
         return 0;
     }
-    return npc->head.id == handover->npc.head.id &&
-           memcmp(npc->head.data, handover->npc.head.data, sizeof(npc->head.data)) == 0 && npc->number == handover->npc.number;
+    return npc->town.number == handover->npc.town.number &&
+           memcmp(npc->town.name, handover->npc.town.name, sizeof(npc->town.name)) == 0 && npc->number == handover->npc.number;
 }
 CLEAN_AS(func_0209aebc, VillagerPartHandover_IsFrom)
 

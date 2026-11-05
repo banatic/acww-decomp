@@ -224,13 +224,13 @@ void TaxiDriverTalk_OnAnswerPoints2(TaxiDriverTalk *talk, int answer)
 }
 CLEAN_AS(func_ov051_02260680, TaxiDriverTalk_OnAnswerPoints2)
 
-/* func_ov051_022606c8 (the lines 0x03, 0x05 and 0x28): starting as player 0, the line of
- * data_ov051_022614c8 for the answer and the gender; else the line of data_ov051_022614c4 for
- * the answer. The second answer is worth 4 points. */
+/* func_ov051_022606c8 (the lines 0x03, 0x05 and 0x28): starting as a player moved in, the line
+ * of data_ov051_022614c8 for the answer and the gender; else the line of data_ov051_022614c4
+ * for the answer. The second answer is worth 4 points. */
 void TaxiDriverTalk_OnAnswerPoints4(TaxiDriverTalk *talk, int answer)
 {
     u8 line;
-    if (StartKind_IsPlayer0()) {
+    if (StartKind_IsMovedIn()) {
         line = data_ov051_022614c8[2 * answer + tdt_gender()];
     } else {
         line = data_ov051_022614c4[answer];
@@ -314,13 +314,13 @@ void TaxiDriverTalk_OnAnswerBoysName(TaxiDriverTalk *talk, int answer)
 }
 CLEAN_AS(func_ov051_02260828, TaxiDriverTalk_OnAnswerBoysName)
 
-/* func_ov051_022608b4 (the lines 0x11 and 0x12): the first answer 0x15 (starting as player 0)
- * or 0x19, the second 0x13, plus the gender. */
+/* func_ov051_022608b4 (the lines 0x11 and 0x12): the first answer 0x15 (starting as a player
+ * moved in) or 0x19, the second 0x13, plus the gender. */
 void TaxiDriverTalk_OnAnswer11(TaxiDriverTalk *talk, int answer)
 {
     switch (answer) {
         case 0:
-            if (StartKind_IsPlayer0()) {
+            if (StartKind_IsMovedIn()) {
                 tdt_say(talk, TaxiDriverTalk_GenderLine(talk, 0x15));
             } else {
                 tdt_say(talk, TaxiDriverTalk_GenderLine(talk, 0x19));
@@ -418,11 +418,11 @@ void TaxiDriverTalk_EndLooksLine(TaxiDriverTalk *talk)
 }
 CLEAN_AS(func_ov051_02260c1c, TaxiDriverTalk_EndLooksLine)
 
-/* func_ov051_02260c44 (the lines 0x17 and 0x18): 0x25 (starting as player 0) or 0x1f, plus
- * the gender. */
+/* func_ov051_02260c44 (the lines 0x17 and 0x18): 0x25 (starting as a player moved in) or 0x1f,
+ * plus the gender. */
 void TaxiDriverTalk_End17(TaxiDriverTalk *talk)
 {
-    if (StartKind_IsPlayer0()) {
+    if (StartKind_IsMovedIn()) {
         tdt_say(talk, TaxiDriverTalk_GenderLine(talk, 0x25));
     } else {
         tdt_say(talk, TaxiDriverTalk_GenderLine(talk, 0x1f));
@@ -586,12 +586,12 @@ void TaxiDriverTalk_RunAfter(TaxiDriverTalk *talk)
 CLEAN_AS(func_ov051_02260f94, TaxiDriverTalk_RunAfter)
 
 /* func_ov051_02260fd8 (vtable slot 0x78, the line the talk starts with), of
- * "sp_etc_sequence3": 0 starting a new town or as player 0, else 0x28. */
+ * "sp_etc_sequence3": 0 starting a new town or as a player moved in, else 0x28. */
 void TaxiDriverTalk_Line(int talk, TaxiDriverTalkStart *out)
 {
     (void) talk;
     out->text = data_ov051_022615c0;
-    if (StartKind_IsNewTown() || StartKind_IsPlayer0()) {
+    if (StartKind_IsNewTown() || StartKind_IsMovedIn()) {
         out->message = TDT_LINE_GREETING_0;
     } else {
         out->message = TDT_LINE_FIRST_OTHER;

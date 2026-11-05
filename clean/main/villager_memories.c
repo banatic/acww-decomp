@@ -28,8 +28,8 @@ typedef struct VillagerMemoryWideText {
     u32 words[9];
 } VillagerMemoryWideText;
 
-extern const NpcIdHead data_021dc7aa; /* this town (number and name) */
-extern u8 data_021dc7bc[];            /* the town's four players' records */
+extern const TownName data_021dc7aa; /* this town (number and name) */
+extern u8 data_021dc7bc[];           /* the town's four players' records */
 /* An empty player, constructed the first time VillagerMemory_FreeIndex runs (bit 0 of its
  * guard) and destroyed with the program through its node. */
 extern u32 data_021d1240;
@@ -48,9 +48,9 @@ static VillagerMemory *memory_at(u8 *villager, int index)
     return (VillagerMemory *) (void *) (villager + index * (int) sizeof(VillagerMemory));
 }
 
-static int same_town(const NpcIdHead *a, const NpcIdHead *b)
+static int same_town(const TownName *a, const TownName *b)
 {
-    return a->id == b->id && memcmp(a->data, b->data, sizeof(a->data)) == 0;
+    return a->number == b->number && memcmp(a->name, b->name, sizeof(a->name)) == 0;
 }
 
 /* func_02080108: the text at 0x3e of the villager's memory of the player set from `length`
@@ -246,7 +246,7 @@ CLEAN_AS(func_020803e0, VillagerMemory_CountKnown)
 /* func_02080404: the memories in use of players other than `player` listed in `out`: with
  * `which` 0 those whose town (0x5c) is this town, with 1 those whose town is another, else
  * all; how many. None when `player` is not set.
- * QUIRK: the game also tests that this town's head is not at address 0, which always holds. */
+ * QUIRK: the game also tests that this town's name is not at address 0, which always holds. */
 int VillagerMemory_ListOthers(u8 *villager, VillagerMemory **out, const DesignCreator *player, int which)
 {
     int count = 0;
@@ -260,9 +260,9 @@ int VillagerMemory_ListOthers(u8 *villager, VillagerMemory **out, const DesignCr
         }
         int listed;
         if (which == VILLAGER_MEMORY_LIST_THIS_TOWN) {
-            listed = same_town((const NpcIdHead *) (uintptr_t) VillagerMemoryEntry_Town(memory), &data_021dc7aa);
+            listed = same_town((const TownName *) (uintptr_t) VillagerMemoryEntry_Town(memory), &data_021dc7aa);
         } else if (which == VILLAGER_MEMORY_LIST_OTHER_TOWNS) {
-            listed = !same_town((const NpcIdHead *) (uintptr_t) VillagerMemoryEntry_Town(memory), &data_021dc7aa);
+            listed = !same_town((const TownName *) (uintptr_t) VillagerMemoryEntry_Town(memory), &data_021dc7aa);
         } else {
             listed = 1;
         }
@@ -325,7 +325,7 @@ CLEAN_AS(func_0208052c, VillagerMemory_OtherTownIndex)
 int VillagerMemory_IsOtherTown(void *player, void *town, void *players)
 {
     (void) players;
-    return !same_town((const NpcIdHead *) town, (const NpcIdHead *) PlayerId_Town(player));
+    return !same_town((const TownName *) town, (const TownName *) PlayerId_Town(player));
 }
 CLEAN_AS(func_0208053c, VillagerMemory_IsOtherTown)
 
@@ -339,8 +339,8 @@ CLEAN_AS(func_02080568, VillagerMemory_FormerPlayerIndex)
 /* func_02080578: whether the player is of `town` but not among its players. */
 int VillagerMemory_IsFormerPlayer(u16 *player, u16 *town, void *players)
 {
-    const NpcIdHead *own = (const NpcIdHead *) PlayerId_Town((DesignCreator *) player);
-    if (!same_town((const NpcIdHead *) (void *) town, own)) {
+    const TownName *own = (const TownName *) PlayerId_Town((DesignCreator *) player);
+    if (!same_town((const TownName *) (void *) town, own)) {
         return 0;
     }
     return PlayerRecords_FindIndex(players, (const PlayerRecordsId *) player) == -1;

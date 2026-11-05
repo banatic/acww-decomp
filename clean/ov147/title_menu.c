@@ -48,7 +48,7 @@ enum TitleMenuMessage {
     TITLE_MESSAGE_DELETE_TOWN = 0x0b,      /* "I will delete the town"; the talk ends: TITLE_STATE_EXIT_DELETE_TOWN */
     TITLE_MESSAGE_ANSWER_YES = 0x12,       /* the answers' messages with sound kind 1 (and 0, 1) */
     TITLE_MESSAGE_PLAYER_MOVING_IN = 0x24, /* "a player is moving, the game starts"; with flag 0x12 of the
-                                            * state block: START_KIND_PLAYER_0 */
+                                            * state block: START_KIND_MOVED_IN */
     TITLE_MESSAGE_NEW_PLAYER = 0x27,       /* START_KIND_NEW_PLAYER */
     TITLE_MESSAGE_MENU_FIRST = 0x2d,       /* the first menu, by the part of the day: 0x2d-0x2f */
     TITLE_MESSAGE_MENU_LAST = 0x2f,
@@ -369,7 +369,7 @@ CLEAN_AS(func_ov147_0229977c, TitleMenu_OfferChoices)
  * held. Else, by the message:
  * - the first menu and message 1: their answers by the town (TitleTownCase);
  * - 0x27: a new player (START_KIND_NEW_PLAYER), the talk quiet, TITLE_STATE_EXIT_NEW;
- * - 0x24: the talk quiet and ended, START_KIND_PLAYER_0, TITLE_STATE_EXIT_NEW;
+ * - 0x24: the talk quiet and ended, START_KIND_MOVED_IN, TITLE_STATE_EXIT_NEW;
  * - 3: the players listed; 0, 0x30, 0x35: yes or no;
  * - 6 and 0x0b: the talk ended, TITLE_STATE_EXIT_REMOVE_PLAYER or TITLE_STATE_EXIT_DELETE_TOWN;
  * - 5 and 0x0a: message 0x31 next; 0x37: back to the title; 0x32: the talk ended, back to the
@@ -440,7 +440,7 @@ void TitleMenu_AfterMessage(TitleReceiver *self)
         case TITLE_MESSAGE_PLAYER_MOVING_IN:
             TalkObject_SetQuiet(talk);
             TalkObject_SetMessage(talk, &data_021f43e8, NULL);
-            StartKind_SetPlayer0();
+            StartKind_SetMovedIn();
             TitleScene_SetState(self->scene, TITLE_STATE_EXIT_NEW);
             break;
         case TITLE_MESSAGE_WFC_FAILED:

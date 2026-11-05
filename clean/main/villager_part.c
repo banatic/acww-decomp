@@ -36,7 +36,8 @@ extern void *func_02137550(void *dst, u32 size); /* clears size bytes */
 
 static int same_npc(const NpcId *a, const NpcId *b)
 {
-    return a->head.id == b->head.id && memcmp(a->head.data, b->head.data, sizeof(a->head.data)) == 0 && a->number == b->number;
+    return a->town.number == b->town.number && memcmp(a->town.name, b->town.name, sizeof(a->town.name)) == 0 &&
+           a->number == b->number;
 }
 
 /* A resident picked at random, leaving out the `count` villagers of `excluded`. */

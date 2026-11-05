@@ -83,9 +83,9 @@ int VillagerMemoryEntry_Town(VillagerMemory *memory);
 int VillagerMemoryEntry_RaiseFondness(VillagerMemory *memory);
 int VillagerMemoryEntry_CountDays(VillagerMemory *memory, const DateTime *now);
 int VillagerMemoryEntry_When(VillagerMemory *memory);
-void VillagerMemoryEntry_Update(VillagerMemory *memory, const DesignCreator *player, const NpcIdHead *town,
+void VillagerMemoryEntry_Update(VillagerMemory *memory, const DesignCreator *player, const TownName *town,
                                 const DateTime *now);
-int VillagerMemoryEntry_Take(VillagerMemory *memory, const DesignCreator *player, const NpcIdHead *town, const DateTime *now);
+int VillagerMemoryEntry_Take(VillagerMemory *memory, const DesignCreator *player, const TownName *town, const DateTime *now);
 int VillagerMemoryEntry_InUse(VillagerMemory *memory);
 void VillagerMemoryEntry_Clear(VillagerMemory *memory);
 VillagerMemory *VillagerMemoryEntry_Destruct(VillagerMemory *memory);

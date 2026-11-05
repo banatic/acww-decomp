@@ -34,11 +34,11 @@ int StartKind_IsUnchanged(void)
 CLEAN_AS(func_020a1298, StartKind_IsUnchanged)
 
 /* func_020a12ac */
-int StartKind_IsPlayer0(void)
+int StartKind_IsMovedIn(void)
 {
-    return data_021f3c30 == START_KIND_PLAYER_0;
+    return data_021f3c30 == START_KIND_MOVED_IN;
 }
-CLEAN_AS(func_020a12ac, StartKind_IsPlayer0)
+CLEAN_AS(func_020a12ac, StartKind_IsMovedIn)
 
 /* func_020a12c0 */
 int StartKind_IsNewPlayer(void)
@@ -69,11 +69,11 @@ void StartKind_SetUnchanged(void)
 CLEAN_AS(func_020a12fc, StartKind_SetUnchanged)
 
 /* func_020a1308 */
-void StartKind_SetPlayer0(void)
+void StartKind_SetMovedIn(void)
 {
-    data_021f3c30 = START_KIND_PLAYER_0;
+    data_021f3c30 = START_KIND_MOVED_IN;
 }
-CLEAN_AS(func_020a1308, StartKind_SetPlayer0)
+CLEAN_AS(func_020a1308, StartKind_SetMovedIn)
 
 /* func_020a1314 */
 void StartKind_SetNewPlayer(void)
@@ -90,7 +90,7 @@ void StartKind_SetNewTown(void)
 CLEAN_AS(func_020a1320, StartKind_SetNewTown)
 
 /* func_020a13e8: the start kind applied. For a new town the state block is set up first; then
- * this system's session player becomes player 0 with record 0 (START_KIND_PLAYER_0) or with the
+ * this system's session player becomes player 0 with record 0 (START_KIND_MOVED_IN) or with the
  * first free town record, which gets a new player named "ABCDEF". */
 void StartKind_Apply(void)
 {
@@ -100,7 +100,7 @@ void StartKind_Apply(void)
     if (StartKind_IsNewTown() != 0) {
         StateBlock_Init(&data_021dc7a8);
     }
-    if (StartKind_IsPlayer0() != 0) {
+    if (StartKind_IsMovedIn() != 0) {
         NetSession *session = data_020ccf94;
         session->local_player = 0;
         SessionPlayers_SetRecordNumber(session->local_player, FIRST_RECORD);

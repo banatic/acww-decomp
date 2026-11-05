@@ -4,8 +4,9 @@
  *
  * The picture is "menu/inventory/b_itm_back.bsc" with the characters and palette either of
  * "menu/bas/b_bas_<n>.bch"/".bpl" (style n, 0 to 3) or, in style 4, of the piece of clothing
- * the player put there (items 0x11a8-0x12af; the item at 0x2410 of the player's record, set
- * by MenuBackdrop_QueueDesign), its palette lightened halfway to white.
+ * the player put there (items 0x11a8-0x12af; PlayerRecord_BackdropClothes, the item at 0x2410
+ * of the player's record, set by MenuBackdrop_QueueDesign), its palette lightened halfway to
+ * white.
  *
  * Opening (MenuBackdrop_Open, style 4 unless the menu sets another): the picture is loaded on
  * the main engine and swept in from the right by window 1, whose left edge, one per line in a

@@ -152,9 +152,9 @@ extern const MemberPointer data_020d93c8;
 extern const MemberPointer data_020d93b8;
 extern const MemberPointer data_020d93b0;
 
-extern u8 data_020e54a8;              /* 0 or 1 */
-extern AcreMap *data_021c80bc;        /* the town's map; null while there is none */
-extern const NpcIdHead data_021dc7aa; /* the head at 2 of the state block data_021dc7a8 */
+extern u8 data_020e54a8;             /* 0 or 1 */
+extern AcreMap *data_021c80bc;       /* the town's map; null while there is none */
+extern const TownName data_021dc7aa; /* this town, at 2 of the state block data_021dc7a8 */
 
 /* A fish or an insect for the date drawn into the halfword at `item` (0xfff1 or out of range
  * when none was found). */
@@ -208,10 +208,10 @@ static int subjects_holds_none_or_umbrella(u16 item)
            (item >= VILLAGER_TALK_SUBJECTS_UMBRELLA_FIRST && item <= VILLAGER_TALK_SUBJECTS_UMBRELLA_LAST);
 }
 
-/* Whether two town heads are the same: the halfword and the 12 bytes after it. */
-static int subjects_same_head(const NpcIdHead *a, const NpcIdHead *b)
+/* Whether two towns are the same: the number and the name. */
+static int subjects_same_town(const TownName *a, const TownName *b)
 {
-    return a->id == b->id && memcmp(a->data, b->data, sizeof a->data) == 0;
+    return a->number == b->number && memcmp(a->name, b->name, sizeof a->name) == 0;
 }
 
 /* func_020222dc: about the flags of the villager's state entry (none without a record or an
@@ -293,13 +293,13 @@ int VillagerTalkSubjects_SayDesignClothes(VillagerTalk *talk)
                 PlayerId_SamePlayer(player, creator) != 0) {
                 group = 1;
             } else if (PlayerId_SamePlayer(player, creator) == 0) {
-                group = subjects_same_head((const NpcIdHead *) PlayerId_Town(creator), &data_021dc7aa) ? 2 : 3;
+                group = subjects_same_town((const TownName *) PlayerId_Town(creator), &data_021dc7aa) ? 2 : 3;
             }
             if (group != -1) {
                 SceneBase_PutPlayerName(subjects_base(talk),
                                         DesignInfo_Creator((DesignInfo *) (uintptr_t) Design_Info(design)), 0);
-                const NpcIdHead *town =
-                    (const NpcIdHead *) (PlayerId_Town(DesignInfo_Creator((DesignInfo *) (uintptr_t) Design_Info(design))));
+                const TownName *town =
+                    (const TownName *) (PlayerId_Town(DesignInfo_Creator((DesignInfo *) (uintptr_t) Design_Info(design))));
                 SceneBase_PutTownName(subjects_base(talk), (unsigned int) (uintptr_t) town, 1);
             }
         } else {

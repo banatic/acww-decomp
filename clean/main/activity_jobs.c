@@ -337,7 +337,7 @@ void ActivityJobs_Start0E(void) {}
 CLEAN_AS(func_020a44b8, ActivityJobs_Start0E)
 
 /* func_020a4454: job 0xe's step: with data_021c75b8 2 and talk 0 closed, the start kind set to
- * START_KIND_PLAYER_0 when flag 0x12 of the state block is set, else START_KIND_UNCHANGED, and
+ * START_KIND_MOVED_IN when flag 0x12 of the state block is set, else START_KIND_UNCHANGED, and
  * applied; then the scene 0x2d entered (arguments 3 and 0); job 0. */
 void ActivityJobs_Step0E(Activity *activity)
 {
@@ -347,7 +347,7 @@ void ActivityJobs_Step0E(Activity *activity)
     }
     TalkObject_DetachReceiver((TalkObject *) talk);
     if (StateBlock_TestFlag((u32 *) (void *) &data_021dc7a8, STATE_BLOCK_FLAG_12)) {
-        StartKind_SetPlayer0();
+        StartKind_SetMovedIn();
     } else {
         StartKind_SetUnchanged();
     }

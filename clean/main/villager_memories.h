@@ -37,7 +37,7 @@ typedef struct VillagerMemory {
     u16 greeting[10];     /* 0x3e */
     u8 unknown_52[2];
     DateTime when;     /* 0x54 */
-    NpcIdHead town;    /* 0x5c */
+    TownName town;     /* 0x5c */
     u16 item;          /* 0x6a */
     s8 fondness;       /* 0x6c */
     u8 impression;     /* 0x6d */

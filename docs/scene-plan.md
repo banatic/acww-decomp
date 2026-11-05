@@ -874,7 +874,7 @@ What reading the Clean code found about the groups above; counts are of function
 - Tried and not added: the barber with a hat worn takes it off (RoomPlayerActor_SwitchHeadwear,
   one function); with 100 bells nothing new. A balloon (the sky's kind 5, at minutes ending in 4
   from 10:00 to 15:59) did not come at 11:34 after a boot at 11:33:10 with the slingshot. A rainy
-  seed's day booted on 13 September did not run TownDay_ChangeFamilyB. The fruit tree of code 0x53
+  seed's day booted on 13 September did not run TownDay_WaterWiltedFlowers. The fruit tree of code 0x53
   at (35, 50) and the tree of code 0x67 at (29, 59) shaken gave nothing new. A painting in pocket 0
   before a pear is sold instead of it (no ItemGroup_IsRoom3894 or fruit price). Stereos in every
   item place of the villagers kept the walk of villager-home out of the house. At the Able
@@ -1232,7 +1232,7 @@ What reading the Clean code found about the groups above; counts are of function
   not cancel it.
 - Flag 0x12 of the state block (0x173f4), set by the linked session's move-in
   (ActivityLinkJobs, main/activity_link_jobs.c), makes the title's first talk message 0x24:
-  StartKind_SetPlayer0 and the exit for a new start; the taxi ride then asks for a town name and
+  StartKind_SetMovedIn and the exit for a new start; the taxi ride then asks for a town name and
   the town is set up anew for player 0 (StateBlock_StartMode6, _MovePlayerHere,
   PlayerRecord_ResetForNewTown, PlayerDesigns_UpdateTown, TaxiDriverTalk_End2b), on to Pelly's
   counter: title-moved-in (save flag-12). A save holding that flag is a state the move-in
@@ -1455,7 +1455,7 @@ What reading the Clean code found about the groups above; counts are of function
   WaitFriends, TimeOutOrError, PutErrorCode and EndWfc), bottle-came and star-came (what the
   passing exchange brings: BottleMail_ReceiveDrifting's arrival, ExchangeBlock_ArrivesAtOnce,
   BottleMail_Open, Constellations_AcceptExchanged and _Add) title-moved-in (flag 0x12 of the state
-  block: StartKind_SetPlayer0), gate-wfc-code and gate-wfc-invite (the friend-code choice starts
+  block: StartKind_SetMovedIn), gate-wfc-code and gate-wfc-invite (the friend-code choice starts
   the same Wi-Fi set-up with no friend registered) and villager-came (a villager of another town
   in the received exchange block moves in at load: VillagerHome_LastTown,
   VillagerRoster_FindNumber). With their lists every fixed-point group was made again from the
@@ -2348,7 +2348,7 @@ What reading the Clean code found about the groups above; counts are of function
   4-27 by 172-195), not the portrait: clothes (0x11a8-0x12a7) let go there become the page's
   backdrop, the player record's item at 0x2410. New scene pockets-backdrop (5): pockets' work
   clothes carried there by the pen (PocketsScreen_CanReachBackdrop, _SetBackdropClothes,
-  MenuBackdrop_QueueDesign, PlayerRecord_SetItem2410, LayerTask_QueueCharsAndPalette).
+  MenuBackdrop_QueueDesign, PlayerRecord_SetBackdropClothes, LayerTask_QueueCharsAndPalette).
 - New scene designs-full (2): design-wear's first design dragged onto the shirt with every pocket
   taken (save full-rod): the clothes worn have no pocket to go to, so the error message shows
   (MyDesigns_ShowError, _WaitError).
@@ -3296,7 +3296,7 @@ What reading the Clean code found about the groups above; counts are of function
   the tools' slides on sand (effects 0x2a-0x2c, EffectKinds_SetUpMark*): the shovel, the net and the
   axe used while walking or running on the beach of shovel-beach started none. A villager pushed
   for 100 frames (the count at 0xa06) starts behaviour 21, but its talk (bo_etc_push) takes over
-  before the behaviour's update runs (OutdoorVillagerActs_Turn21, _Wait21). A drive run with the
+  before the behaviour's update runs (OutdoorVillagerActs_TurnPushed, _WaitPushed). A drive run with the
   ARM7's sequencer (RUN_SEQUENCER=1) plays a recording made without it differently from the boot,
   so the karaoke song's branch (line table 3) needs a recording of its own.
 
@@ -4406,6 +4406,6 @@ What reading the Clean code found about the groups above; counts are of function
   current for the catch's message) would give it; not tried. The special characters' talked
   states are another case: their update needs EventKind_EndObjectEvent refused
   (PlayerActorOps_FinishState), not a refused take; unchanged. RmoTelephone_UpdateState6 and
-  OutdoorVillagerActs_Idle20 and _Idle22 are of that kind too (the event finished, then the state).
+  OutdoorVillagerActs_IdleNettedTalk and _IdlePushedTalk are of that kind too (the event finished, then the state).
 - The plan before (main 750ed7c1): seed 335, date 78, unknown 349, unreachable 3,302; after: seed
   334, date 76, unknown 348, unreachable 3,302. Checked in a run: 21,187 before, 21,191 after.

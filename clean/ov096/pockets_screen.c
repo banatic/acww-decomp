@@ -194,7 +194,7 @@ CLEAN_AS(func_ov096_0229c310, PocketsScreen_CanReachBackdrop)
  * before, they become the held item. Then command 0x6b. */
 void PocketsScreen_SetBackdropClothes(PocketsScreen *self)
 {
-    u16 old = *PlayerRecord_Item2410((u8 *) PlayerRecords_Current());
+    u16 old = *PlayerRecord_BackdropClothes((u8 *) PlayerRecords_Current());
     u16 given = self->item;
     MenuBackdrop_QueueDesign(&given, (LayerTaskPair *) (void *) self->unk_320, self->unk_e8, (u16 *) (void *) self->unk_c8);
     if (old >= ITEM_CLOTHES_FIRST && old <= ITEM_CLOTHES_LAST) {

@@ -26,8 +26,8 @@ typedef struct VillagerMemoryNicknameText {
     u32 words[7];
 } VillagerMemoryNicknameText;
 
-extern const NpcIdHead data_021dc7aa; /* this town (number and name) */
-extern const u8 data_021f3b68[];      /* type 12's values, packed (player_messages.h) */
+extern const TownName data_021dc7aa; /* this town (number and name) */
+extern const u8 data_021f3b68[];     /* type 12's values, packed (player_messages.h) */
 
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
@@ -448,8 +448,7 @@ CLEAN_AS(func_02081e10, VillagerMemoryEntry_When)
 /* func_02081e14: the memory updated for a meeting: the player copied in when given and set;
  * the days in a row counted, and on a new day the villager grows fonder; then the town (this
  * town when NULL) and the date (the clock's when NULL) kept, and type 12's values. */
-void VillagerMemoryEntry_Update(VillagerMemory *memory, const DesignCreator *player, const NpcIdHead *town,
-                                const DateTime *now)
+void VillagerMemoryEntry_Update(VillagerMemory *memory, const DesignCreator *player, const TownName *town, const DateTime *now)
 {
     DateTime clock = {0};
 
@@ -466,7 +465,7 @@ void VillagerMemoryEntry_Update(VillagerMemory *memory, const DesignCreator *pla
     if (VillagerMemoryEntry_CountDays(memory, now)) {
         VillagerMemoryEntry_RaiseFondness(memory);
     }
-    TownName_Copy((TownName *) ((NpcIdHead *) (uintptr_t) VillagerMemoryEntry_Town(memory)), (const TownName *) town);
+    TownName_Copy((TownName *) ((TownName *) (uintptr_t) VillagerMemoryEntry_Town(memory)), (const TownName *) town);
     MI_CpuCopy8(now, (void *) (uintptr_t) VillagerMemoryEntry_When(memory), sizeof(DateTime));
     VillagerMemoryEntry_SetTownTune(memory, data_021f3b68);
 }
@@ -474,7 +473,7 @@ CLEAN_AS(func_02081e14, VillagerMemoryEntry_Update)
 
 /* func_02081e94: the memory taken for the player, when it is set: emptied, updated for a
  * meeting, and the villager calls the player by its name. Gives whether it was taken. */
-int VillagerMemoryEntry_Take(VillagerMemory *memory, const DesignCreator *player, const NpcIdHead *town, const DateTime *now)
+int VillagerMemoryEntry_Take(VillagerMemory *memory, const DesignCreator *player, const TownName *town, const DateTime *now)
 {
     if (!PlayerId_IsSet((DesignCreator *) player)) {
         return 0;

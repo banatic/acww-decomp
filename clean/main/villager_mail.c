@@ -106,8 +106,8 @@ extern const char data_020e199c[]; /* "re_normal" */
 /* The item lists of a birthday present and of a present for a long letter, three each. */
 extern const int data_020cd448[VILLAGER_MAIL_LETTER_TEXTS];
 extern const int data_020cd43c[VILLAGER_MAIL_LETTER_TEXTS];
-extern const NpcIdHead data_021dc7aa; /* this town */
-extern u8 data_021dc7bc[];            /* the town's four players' records */
+extern const TownName data_021dc7aa; /* this town */
+extern u8 data_021dc7bc[];           /* the town's four players' records */
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
@@ -178,7 +178,7 @@ CLEAN_AS(func_02080d70, VillagerMail_SendFarewells)
 
 /* func_02080dc0: the villager's farewell ("byebye", with this town's name in slot 2 when it is
  * set) to the player of `record`, when the player is set, of this town and known to it.
- * QUIRK: the game also tests that this town's head is not at address 0. */
+ * QUIRK: the game also tests that this town's name is not at address 0. */
 void VillagerMail_SendFarewell(u8 *villager, u8 *record)
 {
     NpcId *npc = TownVillager_NpcId(villager);
@@ -455,7 +455,7 @@ int VillagerMail_Receive(u8 *villager, Letter *letter)
     }
     VillagerMemoryEntry_SetLetterHeld(memory);
     Letter_Assign(villager_mail_held(villager), letter);
-    TownName_Copy((TownName *) ((NpcIdHead *) (void *) (villager + TOWN_VILLAGER_LETTER_TOWN)),
+    TownName_Copy((TownName *) ((TownName *) (void *) (villager + TOWN_VILLAGER_LETTER_TOWN)),
                   (const TownName *) &data_021dc7aa);
     u16 item = Letter_Item(letter);
     if (item != ITEM_CODE_NONE) {

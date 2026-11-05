@@ -669,9 +669,9 @@ int VillagerTalkTopics_PickLetterOfResident(VillagerTalk *talk, VillagerMemory *
 {
     int memory = VillagerTalkTopics_PickRandom(topics_record(talk), list, count, func_02021c08);
     if (memory != 0) {
-        const NpcIdHead *sender =
-            (const NpcIdHead *) (uintptr_t) (Letter_PlayerSender((Letter *) TownVillager_Letter(topics_record(talk))));
-        NpcIdHead town;
+        const TownName *sender =
+            (const TownName *) (uintptr_t) (Letter_PlayerSender((Letter *) TownVillager_Letter(topics_record(talk))));
+        TownName town;
         TownName_Construct(&town);
         TownName_Assign((TownName *) &town, (const TownName *) sender);
         SceneBase_PutTownName(topics_base(talk), (unsigned int) (uintptr_t) &town, 9);
@@ -737,12 +737,12 @@ CLEAN_AS(func_02021cc8, VillagerTalkTopics_PickLetterOfTown)
  * after it). */
 int VillagerTalkTopics_HoldsLetterOfTown(u8 *villager, VillagerMemory *memory)
 {
-    const NpcIdHead *letter_town = (const NpcIdHead *) (const void *) (villager + TOWN_VILLAGER_LETTER_TOWN);
+    const TownName *letter_town = (const TownName *) (const void *) (villager + TOWN_VILLAGER_LETTER_TOWN);
     if (VillagerMail_HoldsLetterFrom(villager, VillagerMemoryEntry_Player(memory)) == 0) {
         return 0;
     }
-    const NpcIdHead *town = (const NpcIdHead *) PlayerId_Town(VillagerMemoryEntry_Player(memory));
-    return town->id == letter_town->id && memcmp(town->data, letter_town->data, sizeof town->data) == 0;
+    const TownName *town = (const TownName *) PlayerId_Town(VillagerMemoryEntry_Player(memory));
+    return town->number == letter_town->number && memcmp(town->name, letter_town->name, sizeof town->name) == 0;
 }
 CLEAN_AS(func_02021d10, VillagerTalkTopics_HoldsLetterOfTown)
 

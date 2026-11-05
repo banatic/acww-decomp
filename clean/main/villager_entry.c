@@ -30,7 +30,7 @@
 /* What a player's town gives in func_02094ffc for a town other than this one. */
 #define VILLAGER_ENTRY_OTHER_TOWN 1
 
-extern const NpcIdHead data_021dc7aa; /* this town (number and name) */
+extern const TownName data_021dc7aa; /* this town (number and name) */
 
 static int has_villager(const u8 *villager)
 {

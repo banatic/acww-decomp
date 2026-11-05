@@ -2,7 +2,7 @@
 # save is not in this repository). As pockets.txt to 3096: the work clothes held by the pen.
 # Save: the seed town. The pen carries them down to the round place at the lower left
 # (place 0x21, 4-27 by 172-195) and lets go at 3148: the clothes become the pockets' backdrop
-# (PocketsScreen_SetBackdropClothes, MenuBackdrop_QueueDesign, PlayerRecord_SetItem2410), the page
+# (PocketsScreen_SetBackdropClothes, MenuBackdrop_QueueDesign, PlayerRecord_SetBackdropClothes), the page
 # drawn with their design.
 0 - -
 900 START -

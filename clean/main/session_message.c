@@ -423,7 +423,7 @@ void SessionMessage_SetVillagerMemorySender(int size, int kind, int scene, int s
     if (entry != NULL) {
         u8 *name = (u8 *) PlayerRecord_Player(PlayerRecords_OfPlayer(slot));
         VillagerMemoryEntry_Take((VillagerMemory *) (void *) entry, (const DesignCreator *) (void *) name,
-                                 (const NpcIdHead *) (void *) data_021dc7aa, NULL);
+                                 (const TownName *) (void *) data_021dc7aa, NULL);
     }
 }
 CLEAN_AS(func_02076a18, SessionMessage_SetVillagerMemorySender)
@@ -442,7 +442,7 @@ void SessionMessage_FillVillagerMemory(int size, int kind, int scene, int slot)
     if (entry != NULL) {
         u8 *name = (u8 *) PlayerRecord_Player(PlayerRecords_OfPlayer(slot));
         VillagerMemoryEntry_Update((VillagerMemory *) (void *) entry, (const DesignCreator *) (void *) name,
-                                   (const NpcIdHead *) (void *) data_021dc7aa, NULL);
+                                   (const TownName *) (void *) data_021dc7aa, NULL);
     }
 }
 CLEAN_AS(func_020769b8, SessionMessage_FillVillagerMemory)

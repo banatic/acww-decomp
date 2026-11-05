@@ -91,7 +91,7 @@ static_assert(sizeof(TaxiDriver) == 0x71c, "the size TaxiDriver_Create allocates
  * the start's state block flag cleared, and the scene entered: scene 0 in front of the town's
  * building 0x5000 (player parameter 0x400000, angle 0x8000, arguments 3 and 2). */
 #define TD_STATE_BLOCK_NEW_TOWN 0
-#define TD_STATE_BLOCK_PLAYER_0 6
+#define TD_STATE_BLOCK_MOVED_IN 6
 #define TD_STATE_BLOCK_NEW_PLAYER 1
 #define TD_START_FLAG 0x12
 #define TD_EXIT_SCENE 0
@@ -197,11 +197,12 @@ int TaxiDriver_EnterLeave(void)
 CLEAN_AS(func_ov051_022610d0, TaxiDriver_EnterLeave)
 
 /* func_ov051_022610d4 (state 3's update): once the screen is closed: it is shown at once
- * (keeping the music) and the arrived-by-taxi flag set (Block020b220c_SetArrivedByTaxi); starting as player 0 or a
- * new town, the clock's date and time are kept (Global021cfc98_CopyIn); the state block is
- * started in mode 0 (a new town), 6 (as player 0) or 1 (a new player) and finished, with any
- * other start not at all; its flag 0x12 is cleared; main's entry record enters scene 0 in
- * front of the town's building 0x5000; state 2. 1.
+ * (keeping the music) and the arrived-by-taxi flag set (Block020b220c_SetArrivedByTaxi);
+ * starting as a player moved in or a new town, the clock's date and time are kept
+ * (Global021cfc98_CopyIn); the state block is started in mode 0 (a new town), 6 (a player moved
+ * in) or 1 (a new player) and finished, with any other start not at all; its flag 0x12 is
+ * cleared; main's entry record enters scene 0 in front of the town's building 0x5000; state 2.
+ * 1.
  * REQUIRES: the town has building 0x5000. Without it the original enters the scene at whatever
  * its stack held; here at the point (0, 0, 0). */
 int TaxiDriver_UpdateArrive(TaxiDriver *driver)
@@ -212,7 +213,7 @@ int TaxiDriver_UpdateArrive(TaxiDriver *driver)
     ScreenTransition_Open(SCREEN_TRANSITION_NONE, 0, 1);
     Block020b220c_SetArrivedByTaxi();
 
-    if (StartKind_IsPlayer0() || StartKind_IsNewTown()) {
+    if (StartKind_IsMovedIn() || StartKind_IsNewTown()) {
         DateTime now = {0};
         DateTime_Now(&now);
         Global021cfc98_CopyIn(&now);
@@ -221,8 +222,8 @@ int TaxiDriver_UpdateArrive(TaxiDriver *driver)
     if (StartKind_IsNewTown()) {
         StateBlock_Start(&data_021dc7a8, TD_STATE_BLOCK_NEW_TOWN);
         StateBlock_FinishStart(&data_021dc7a8);
-    } else if (StartKind_IsPlayer0()) {
-        StateBlock_Start(&data_021dc7a8, TD_STATE_BLOCK_PLAYER_0);
+    } else if (StartKind_IsMovedIn()) {
+        StateBlock_Start(&data_021dc7a8, TD_STATE_BLOCK_MOVED_IN);
         StateBlock_FinishStart(&data_021dc7a8);
     } else if (StartKind_IsNewPlayer()) {
         StateBlock_Start(&data_021dc7a8, TD_STATE_BLOCK_NEW_PLAYER);
