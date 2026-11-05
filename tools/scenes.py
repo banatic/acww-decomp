@@ -1162,6 +1162,24 @@ SAVES["face-pair"] = [(0x14 + 0x240C, "<H", 0x1483)]
 # pockets full, it is swapped in as an item drawn for it (main/current_pockets.c)
 SAVES["gift-full"] = [(HELD, "<H", 0x1375)] + [(POCKETS + 2 * i, "<H", 0x3508) for i in range(15)] + [
     town_item(41, 56, 0x156B)]
+# the town's buried marks (main/town_layout.h): one row of 16 bits per tile row of an inner acre
+TOWN_MARKS = 0xD304 + 0x2024
+
+
+def town_buried(xs: range, z: int, code: int) -> list[tuple[int, str, int]]:
+    """SAVES entries burying map code `code` on the tiles xs (one acre's) of row z: the row's
+    other marks are cleared."""
+    acre = (xs[0] // 16 - 1) + 4 * (z // 16 - 1)
+    bits = sum(1 << (x % 16) for x in xs)
+    return [town_item(x, z, code) for x in xs] + [(TOWN_MARKS + 0x20 * acre + 2 * (z % 16), "<H", bits)]
+
+
+# the shovel held and every pocket holding the item 0x3508, which is buried on the tiles 40-42 x
+# 61-64 south of the house's door: one dug up with the pockets full (ov003/field_actor.c state
+# 0x5f), "swap it?" opens the swap page in mode 0x2a (GroupParams_OpenWithItem2a), whose first
+# row puts a pocket's item into the hole (ov107/pockets_swap.c, PocketsSwap_RunActionTileOp)
+SAVES["dig-full"] = [(HELD, "<H", 0x1369)] + _FULL_POCKETS + [
+    e for z in range(61, 65) for e in town_buried(range(40, 43), z, 0x3508)]
 # "able-shop" with 99,990 bells: what Mabel pays for clothes sold does not fit in the wallet and
 # goes into bags (ov049/mabel_talk.c, line 0x1e)
 SAVES["able-shop-rich"] = SAVES["able-shop"] + [(MONEY, "<I", 99990)]
@@ -1371,6 +1389,8 @@ scene("insect-catch", "net", 3800, [2600, 3250, 3420, 3799], frames(3200, 3800, 
       "run east to the river bend, walk up to a mantis and catch it with the net")
 scene("dig-bury", "shovel-fruit", 6000, [2600, 3700, 4400, 5500, 5999], frames(2900, 6000, 50),
       "dig a hole, bury a piece of furniture in it and dig it up, then plant a fruit in the hole")
+scene("dig-full", "dig-full", 6200, [2600, 3400, 3700, 4600, 4950, 5800, 6199], frames(2900, 6200, 50),
+      "with the pockets full, dig up buried items: one swapped into the hole, one swapped and put down, one buried again")
 scene("villager-chat", "museum", 8000, [2600, 4500, 5300, 6400, 7300, 7999], frames(4100, 8000, 50),
       "talk to a villager again and again: a second talk takes up a catching contest, a third asks of it")
 scene("observatory", "museum", 11200, [2600, 4000, 6300, 7600, 8900, 9900, 11199], frames(5600, 11200, 100),

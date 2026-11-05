@@ -1,0 +1,122 @@
+# dig-full (format: runtime/input.h), played from a town save by tools/scenes.py (the save is
+# not in this repository). Boot: as in tools.txt; the player stands in front of the house from
+# about 2550.
+# Save: dig-full (the shovel held, every pocket holding the item 0x3508, which is buried on the
+# tiles 40-42 x 61-64). As dig-bury to 2918: south from 2760, A digs the tile south of the
+# player and finds the item, but the pockets are full (ov003/field_actor.c state 0x5f); A at
+# 3150, 3236 and 3322 read on to "swap it?", A at 3388 swaps: the swap page opens in mode 0x2a
+# (about 3600). A at 3634 on pocket 0 and A at 3678 on its first row put that item into the hole
+# (PocketsSwap_RunActionTileOp; the player buries it, field actor state 0x90). LEFT at 3982 and
+# DOWN from 4020 face the tile west of the first; A at 4095 digs it up, the same questions, and at
+# 4831-4899 pocket 0's second row puts the item down instead (the hole stays open). RIGHT at
+# 5203 and DOWN at 5259 face a third tile; dug up at 5289, "bury it again" (DOWN, A at 5803)
+# puts it back. UP at 6117 walks on.
+900 START -
+906 - -
+1000 A -
+1006 - -
+1060 A -
+1066 - -
+1120 A -
+1126 - -
+1180 A -
+1186 - -
+1240 A -
+1246 - -
+1300 A -
+1306 - -
+1360 A -
+1366 - -
+1420 A -
+1426 - -
+1480 A -
+1486 - -
+1540 A -
+1546 - -
+1600 A -
+1606 - -
+1660 A -
+1666 - -
+1720 A -
+1726 - -
+1780 A -
+1786 - -
+1840 A -
+1846 - -
+1900 A -
+1906 - -
+1960 A -
+1966 - -
+2020 A -
+2026 - -
+2080 A -
+2086 - -
+2140 A -
+2146 - -
+2200 A -
+2206 - -
+2260 A -
+2266 - -
+2320 A -
+2326 - -
+2380 A -
+2386 - -
+2760 DOWN -
+2890 - -
+2918 A -
+2920 - -
+3150 A -
+3156 - -
+3236 A -
+3242 - -
+3322 A -
+3328 - -
+3388 A -
+3394 - -
+3634 A -
+3638 - -
+3678 A -
+3682 - -
+3982 LEFT -
+4000 - -
+4020 DOWN -
+4023 - -
+4043 DOWN -
+4045 - -
+4065 DOWN -
+4075 - -
+4095 A -
+4097 - -
+4327 A -
+4333 - -
+4413 A -
+4419 - -
+4499 A -
+4505 - -
+4585 A -
+4591 - -
+4831 A -
+4835 - -
+4875 DOWN -
+4879 - -
+4899 A -
+4903 - -
+5203 RIGHT -
+5239 - -
+5259 DOWN -
+5269 - -
+5289 A -
+5291 - -
+5521 A -
+5527 - -
+5607 A -
+5613 - -
+5693 A -
+5699 - -
+5779 DOWN -
+5783 - -
+5803 A -
+5807 - -
+6057 - -
+6117 UP -
+6157 - -
