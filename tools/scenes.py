@@ -1180,6 +1180,13 @@ def town_buried(xs: range, z: int, code: int) -> list[tuple[int, str, int]]:
 # row puts a pocket's item into the hole (ov107/pockets_swap.c, PocketsSwap_RunActionTileOp)
 SAVES["dig-full"] = [(HELD, "<H", 0x1369)] + _FULL_POCKETS + [
     e for z in range(61, 65) for e in town_buried(range(40, 43), z, 0x3508)]
+# as "dig-full" with fossils not assessed (0x1549) buried instead: a fossil dug up tells the
+# villagers (VillagerEvent_FossilDug, from state 0x5f's entry)
+SAVES["dig-full-fossil"] = [(HELD, "<H", 0x1369)] + _FULL_POCKETS + [
+    e for z in range(61, 65) for e in town_buried(range(40, 43), z, 0x1549)]
+# "toys" with flowers of code 0x70 on the tiles 40-42 x 61-63, where its watering can waters:
+# watered flowers tell the villagers (TileRequests_ChangeCodesAround, VillagerEvent_Watered)
+SAVES["toys-flowers"] = SAVES["toys"] + [town_item(x, z, 0x70) for x in range(40, 43) for z in range(61, 64)]
 # "able-shop" with 99,990 bells: what Mabel pays for clothes sold does not fit in the wallet and
 # goes into bags (ov049/mabel_talk.c, line 0x1e)
 SAVES["able-shop-rich"] = SAVES["able-shop"] + [(MONEY, "<I", 99990)]
@@ -1389,6 +1396,10 @@ scene("insect-catch", "net", 3800, [2600, 3250, 3420, 3799], frames(3200, 3800, 
       "run east to the river bend, walk up to a mantis and catch it with the net")
 scene("dig-bury", "shovel-fruit", 6000, [2600, 3700, 4400, 5500, 5999], frames(2900, 6000, 50),
       "dig a hole, bury a piece of furniture in it and dig it up, then plant a fruit in the hole")
+scene("dig-full-fossil", "dig-full-fossil", 6200, [2600, 3400, 3700, 4600, 4950, 5800, 6199], frames(2900, 6200, 50),
+      "dig-full with fossils buried: a fossil dug up with the pockets full, the villagers told", recording="dig-full")
+scene("toys-flowers", "toys-flowers", 7600, [2600, 3700, 4700, 5600, 6500, 7599], frames(2700, 7600, 50),
+      "toys with flowers where the watering can waters: the villagers told of the watering", recording="toys")
 scene("lid-battery", "seed", 3900, [2600, 2760, 2900, 3500, 3899], frames(2650, 3900, 25),
       "the console's lid closed and opened (recording state LID), then the battery low (LOWBAT): the player warns")
 scene("dig-full", "dig-full", 6200, [2600, 3400, 3700, 4600, 4950, 5800, 6199], frames(2900, 6200, 50),
