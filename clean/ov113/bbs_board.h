@@ -126,7 +126,7 @@ BbsBoard *BbsBoard_Destroy(BbsBoard *self);
 BbsBoard *BbsBoard_Delete(BbsBoard *self);
 int BbsBoard_MoveCursor(BbsBoard *self, u32 keys);
 void BbsBoard_ShowCursorFirstOfSet(BbsBoard *self);
-void BbsBoard_CancelPress(BbsBoard *self);
+void BbsBoard_ReleaseCursor(BbsBoard *self);
 void BbsBoard_Press(BbsBoard *self);
 void BbsBoard_CursorMoved(BbsBoard *self);
 void BbsBoard_HideCursor(BbsBoard *self);

@@ -307,13 +307,13 @@ void DesignEditor_GlideToPlace(DesignEditor *self)
 }
 CLEAN_AS(func_ov123_02299c04, DesignEditor_GlideToPlace)
 
-/* func_ov123_02299ca0: the cursor sprite's press shown (the third of its set), sub state 0x0b. */
-void DesignEditor_PressCursorSprite(DesignEditor *self)
+/* func_ov123_02299ca0: the cursor sprite's release shown (the third of its set), sub state 0x0b. */
+void DesignEditor_ReleaseCursorSprite(DesignEditor *self)
 {
     Glider_ShowThirdOfSet(&self->cursor_sprite);
     MenuScene_SetSubState(de_scene(self), DESIGN_EDITOR_SUB_PRESS_END);
 }
-CLEAN_AS(func_ov123_02299ca0, DesignEditor_PressCursorSprite)
+CLEAN_AS(func_ov123_02299ca0, DesignEditor_ReleaseCursorSprite)
 
 /* func_ov123_02299cc0: a press at the key cursor starts (the second of the sprite's set), sub
  * state 0x0a. */
@@ -807,7 +807,7 @@ void DesignEditor_WaitPanelPress(DesignEditor *self)
 }
 CLEAN_AS(func_ov123_0229b6e8, DesignEditor_WaitPanelPress)
 
-/* func_ov123_0229b754 (sub state 0x0b): once the press's animation ends, the cursor sprite at
+/* func_ov123_0229b754 (sub state 0x0b): once the release's animation ends, the cursor sprite at
  * rest and the places again (sub state 3). */
 void DesignEditor_FinishPress(DesignEditor *self)
 {
@@ -819,14 +819,14 @@ void DesignEditor_FinishPress(DesignEditor *self)
 CLEAN_AS(func_ov123_0229b754, DesignEditor_FinishPress)
 
 /* func_ov123_0229b77c (sub state 0x0a): once the press's first animation ends, the key cursor's
- * place pressed, and the press shown when the command left the sub state as it was. */
+ * place pressed, and the release shown when the command left the sub state as it was. */
 void DesignEditor_PressAtCursor(DesignEditor *self)
 {
     if (CellLayerSprite_IsDone((CellLayerSprite *) (void *) &self->cursor_sprite) != 0) {
         self->command = self->key_place;
         DesignEditor_RunCommand(self);
         if (self->base.sub_state == DESIGN_EDITOR_SUB_PRESS) {
-            DesignEditor_PressCursorSprite(self);
+            DesignEditor_ReleaseCursorSprite(self);
         }
     }
 }

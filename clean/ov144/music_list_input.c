@@ -316,17 +316,17 @@ int MusicList_Command(MusicList *self, unsigned int command)
 }
 CLEAN_AS(func_ov144_02299ac4, MusicList_Command)
 
-/* func_ov144_0229a0a4: the third animation of the pointer's set, the sub state kept and sub
+/* func_ov144_0229a0a4: the pointer's release (the third of its set), the sub state kept and sub
  * state 8 waiting for it to end. */
-void MusicList_StartPointerAnim(MusicList *self)
+void MusicList_StartPointerRelease(MusicList *self)
 {
     Glider_ShowThirdOfSet(&self->pointer);
     self->return_sub_state = self->base.sub_state;
-    MenuScene_SetSubState(music_list_scene(self), MUSIC_LIST_SUB_POINTER_ANIM);
+    MenuScene_SetSubState(music_list_scene(self), MUSIC_LIST_SUB_POINTER_RELEASE);
 }
-CLEAN_AS(func_ov144_0229a0a4, MusicList_StartPointerAnim)
+CLEAN_AS(func_ov144_0229a0a4, MusicList_StartPointerRelease)
 
-/* func_ov144_0229a0c8: the second animation of the pointer's set (a press), sub state 7. */
+/* func_ov144_0229a0c8: the pointer's press (the second of its set), sub state 7. */
 void MusicList_StartPointerPress(MusicList *self)
 {
     Glider_ShowSecondOfSet(&self->pointer);

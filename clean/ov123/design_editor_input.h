@@ -13,7 +13,7 @@ int DesignEditor_ColourByShoulders(DesignEditor *self);
 int DesignEditor_MoveCanvasCursor(DesignEditor *self, int keys, int quiet);
 int DesignEditor_MovePlaceCursor(DesignEditor *self, int keys);
 void DesignEditor_GlideToPlace(DesignEditor *self);
-void DesignEditor_PressCursorSprite(DesignEditor *self);
+void DesignEditor_ReleaseCursorSprite(DesignEditor *self);
 void DesignEditor_BeginPress(DesignEditor *self);
 void DesignEditor_ShowCursorIdle(DesignEditor *self);
 void DesignEditor_HideCursor(DesignEditor *self);

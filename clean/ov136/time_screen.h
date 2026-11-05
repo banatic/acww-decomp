@@ -50,22 +50,22 @@ enum TimeScreenState {
 
 /* The sub states, run from the table of TimeScreen_RunSubState (MenuScene_SetSubState). */
 enum TimeScreenSubState {
-    TIME_SCREEN_SUB_TOUCH_FIELDS = 0, /* TimeScreen_FieldsByTouch */
-    TIME_SCREEN_SUB_DRAG_HANDS = 1,   /* TimeScreen_DragHands */
-    TIME_SCREEN_SUB_SETTLE_HANDS = 2, /* TimeScreen_SettleHands */
-    TIME_SCREEN_SUB_TOUCH_LIST = 3,   /* TimeScreen_ListByTouch */
-    TIME_SCREEN_SUB_DRAG_THUMB = 4,   /* TimeScreen_DragThumb */
-    TIME_SCREEN_SUB_THUMB_TO_PEN = 5, /* TimeScreen_ThumbTowardPen */
-    TIME_SCREEN_SUB_FIELDS = 6,       /* TimeScreen_FieldsByKeys */
-    TIME_SCREEN_SUB_LIST = 7,         /* TimeScreen_ListByKeys */
-    TIME_SCREEN_SUB_BAR = 8,          /* TimeScreen_ListBarByKeys */
-    TIME_SCREEN_SUB_BAR_RETURN = 9,   /* TimeScreen_ReturnFromBar */
-    TIME_SCREEN_SUB_SPRITE_MOVE = 10, /* TimeScreen_WaitCursorSprite */
-    TIME_SCREEN_SUB_PRESSED = 11,     /* TimeScreen_AfterPress */
-    TIME_SCREEN_SUB_SPRITE_ANIM = 12, /* TimeScreen_WaitSpriteAnim */
-    TIME_SCREEN_SUB_OK_PRESSED = 13,  /* TimeScreen_FollowOkPress */
-    TIME_SCREEN_SUB_LIST_OPEN = 14,   /* TimeScreen_WaitListOpen */
-    TIME_SCREEN_SUB_LIST_CLOSE = 15,  /* TimeScreen_WaitListClosed */
+    TIME_SCREEN_SUB_TOUCH_FIELDS = 0,  /* TimeScreen_FieldsByTouch */
+    TIME_SCREEN_SUB_DRAG_HANDS = 1,    /* TimeScreen_DragHands */
+    TIME_SCREEN_SUB_SETTLE_HANDS = 2,  /* TimeScreen_SettleHands */
+    TIME_SCREEN_SUB_TOUCH_LIST = 3,    /* TimeScreen_ListByTouch */
+    TIME_SCREEN_SUB_DRAG_THUMB = 4,    /* TimeScreen_DragThumb */
+    TIME_SCREEN_SUB_THUMB_TO_PEN = 5,  /* TimeScreen_ThumbTowardPen */
+    TIME_SCREEN_SUB_FIELDS = 6,        /* TimeScreen_FieldsByKeys */
+    TIME_SCREEN_SUB_LIST = 7,          /* TimeScreen_ListByKeys */
+    TIME_SCREEN_SUB_BAR = 8,           /* TimeScreen_ListBarByKeys */
+    TIME_SCREEN_SUB_BAR_RETURN = 9,    /* TimeScreen_ReturnFromBar */
+    TIME_SCREEN_SUB_SPRITE_MOVE = 10,  /* TimeScreen_WaitCursorSprite */
+    TIME_SCREEN_SUB_PRESSED = 11,      /* TimeScreen_AfterPress */
+    TIME_SCREEN_SUB_RELEASE_ANIM = 12, /* TimeScreen_WaitReleaseAnim */
+    TIME_SCREEN_SUB_OK_PRESSED = 13,   /* TimeScreen_FollowOkPress */
+    TIME_SCREEN_SUB_LIST_OPEN = 14,    /* TimeScreen_WaitListOpen */
+    TIME_SCREEN_SUB_LIST_CLOSE = 15,   /* TimeScreen_WaitListClosed */
     TIME_SCREEN_SUB_STATES = 16
 };
 
@@ -107,7 +107,7 @@ void TimeScreen_ResumeFieldsByTouch(TimeScreen *self);
 void TimeScreen_WaitListClosed(TimeScreen *self);
 void TimeScreen_WaitListOpen(TimeScreen *self);
 void TimeScreen_FollowOkPress(TimeScreen *self);
-void TimeScreen_WaitSpriteAnim(TimeScreen *self);
+void TimeScreen_WaitReleaseAnim(TimeScreen *self);
 void TimeScreen_AfterPress(TimeScreen *self);
 void TimeScreen_WaitCursorSprite(TimeScreen *self);
 void TimeScreen_ReturnFromBar(TimeScreen *self);

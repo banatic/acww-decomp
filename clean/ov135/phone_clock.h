@@ -61,7 +61,7 @@ enum PhoneClockSubState {
     PHONE_CLOCK_SUB_EDIT_WAIT = 9,      /* PhoneClock_WaitEditor */
     PHONE_CLOCK_SUB_SPRITE_MOVE = 10,   /* PhoneClock_WaitCursorSprite */
     PHONE_CLOCK_SUB_PRESS = 11,         /* PhoneClock_PickWhenPressed */
-    PHONE_CLOCK_SUB_SHOW_SPRITE = 12,   /* PhoneClock_ShowSpriteWhenDone */
+    PHONE_CLOCK_SUB_RELEASE = 12,       /* PhoneClock_WaitRelease */
     PHONE_CLOCK_SUB_PANEL_PRESSED = 13, /* PhoneClock_FollowPanelPress */
     PHONE_CLOCK_SUB_FIELD_OPEN = 14,    /* PhoneClock_WaitFieldOpen */
     PHONE_CLOCK_SUB_FIELD_CLOSE = 15,   /* PhoneClock_WaitFieldClosed */
@@ -84,7 +84,7 @@ void PhoneClock_ClearFlags(PhoneClock *self, u16 flags);
 void PhoneClock_SetFlags(PhoneClock *self, u16 flags);
 int PhoneClock_TestFlags(PhoneClock *self, unsigned int flags);
 int PhoneClock_MoveCursor(PhoneClock *self, u32 keys);
-void PhoneClock_ShowSpriteThird(PhoneClock *self);
+void PhoneClock_ReleaseCursorSprite(PhoneClock *self);
 void PhoneClock_PressCursorSprite(PhoneClock *self);
 void PhoneClock_ShowCursorSprite(PhoneClock *self);
 void PhoneClock_GlideTo(PhoneClock *self, int x, int y);
@@ -107,7 +107,7 @@ void PhoneClock_ResumeByTouch(PhoneClock *self);
 void PhoneClock_WaitFieldClosed(PhoneClock *self);
 void PhoneClock_WaitFieldOpen(PhoneClock *self);
 void PhoneClock_FollowPanelPress(PhoneClock *self);
-void PhoneClock_ShowSpriteWhenDone(PhoneClock *self);
+void PhoneClock_WaitRelease(PhoneClock *self);
 void PhoneClock_PickWhenPressed(PhoneClock *self);
 void PhoneClock_WaitCursorSprite(PhoneClock *self);
 void PhoneClock_WaitEditor(PhoneClock *self);

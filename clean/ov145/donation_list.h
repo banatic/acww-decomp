@@ -99,7 +99,7 @@ enum DonationListSubState {
     DONATION_SUB_HANDLE_RELEASE = 5, /* DonationList_WaitHandleRelease */
     DONATION_SUB_CURSOR_GLIDE = 6,   /* DonationList_WaitCursorGlide */
     DONATION_SUB_PRESS = 7,          /* DonationList_FinishPress */
-    DONATION_SUB_CURSOR_ANIM = 8,    /* DonationList_FinishCursorAnim */
+    DONATION_SUB_RELEASE = 8,        /* DonationList_FinishRelease */
     DONATION_SUB_CLOSE_PRESS = 9,    /* DonationList_FinishClosePress */
     DONATION_SUB_STATES = 10
 };
@@ -177,7 +177,7 @@ void DonationList_UploadPending(DonationList *self);
 void DonationList_RefreshRows(DonationList *self);
 void DonationList_CloseLabels(DonationList *self);
 TextLabel *DonationList_NextLabel(DonationList *self);
-void DonationList_StartCursorAnim(DonationList *self);
+void DonationList_StartRelease(DonationList *self);
 void DonationList_StartPress(DonationList *self);
 void DonationList_ShowCursorFirstOfSet(DonationList *self);
 void DonationList_GlideCursorTo(DonationList *self, int x, int y);
@@ -206,7 +206,7 @@ void DonationList_StartInteractive(DonationList *self);
 void DonationList_UseKeys(DonationList *self);
 void DonationList_UseTouch(DonationList *self);
 void DonationList_FinishClosePress(DonationList *self);
-void DonationList_FinishCursorAnim(DonationList *self);
+void DonationList_FinishRelease(DonationList *self);
 void DonationList_FinishPress(DonationList *self);
 void DonationList_WaitCursorGlide(DonationList *self);
 void DonationList_WaitHandleRelease(DonationList *self);

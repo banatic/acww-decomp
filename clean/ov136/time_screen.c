@@ -160,7 +160,7 @@ void TimeScreen_PlayReleaseAnim(TimeScreen *self)
 {
     Glider_ShowThirdOfSet(&self->cursor_sprite);
     self->return_sub_state = self->base.sub_state;
-    MenuScene_SetSubState(time_scene(self), TIME_SCREEN_SUB_SPRITE_ANIM);
+    MenuScene_SetSubState(time_scene(self), TIME_SCREEN_SUB_RELEASE_ANIM);
 }
 CLEAN_AS(func_ov136_0229c628, TimeScreen_PlayReleaseAnim)
 
@@ -423,14 +423,14 @@ CLEAN_AS(func_ov136_0229ca28, TimeScreen_FollowOkPress)
 
 /* func_ov136_0229ca8c (sub state 12): once the cursor sprite's animation is over, it is shown
  * again and the sub state kept is next. */
-void TimeScreen_WaitSpriteAnim(TimeScreen *self)
+void TimeScreen_WaitReleaseAnim(TimeScreen *self)
 {
     if (CellLayerSprite_IsDone(time_sprite_cells(self))) {
         TimeScreen_ShowCursorSprite(self);
         MenuScene_SetSubState(time_scene(self), self->return_sub_state);
     }
 }
-CLEAN_AS(func_ov136_0229ca8c, TimeScreen_WaitSpriteAnim)
+CLEAN_AS(func_ov136_0229ca8c, TimeScreen_WaitReleaseAnim)
 
 /* func_ov136_0229cab4 (sub state 11): once the cursor sprite's press is over. In a list: on its
  * scroll bar, the bar by the keys (sub state 8); else the value under the cursor taken when it

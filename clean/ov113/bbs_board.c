@@ -270,14 +270,14 @@ void BbsBoard_ShowCursorFirstOfSet(BbsBoard *self)
 }
 CLEAN_AS(func_ov113_022998ac, BbsBoard_ShowCursorFirstOfSet)
 
-/* func_ov113_022998cc: a press that did nothing: the cursor sprite shows the third of its set
- * and the scene waits for it (sub state 4). */
-void BbsBoard_CancelPress(BbsBoard *self)
+/* func_ov113_022998cc: the cursor sprite's release (the third of its set), the scene waiting for
+ * it (sub state 4); after a press that did nothing. */
+void BbsBoard_ReleaseCursor(BbsBoard *self)
 {
     Glider_ShowThirdOfSet(&self->cursor_sprite);
     MenuScene_SetSubState(bbs_scene(self), BBS_BOARD_SUB_RELEASE);
 }
-CLEAN_AS(func_ov113_022998cc, BbsBoard_CancelPress)
+CLEAN_AS(func_ov113_022998cc, BbsBoard_ReleaseCursor)
 
 /* func_ov113_022998ec: A pressed: the cursor sprite shows the second of its set and the scene
  * waits for it (sub state 3). */
@@ -712,8 +712,8 @@ void BbsBoard_WaitRelease(BbsBoard *self)
 CLEAN_AS(func_ov113_0229a120, BbsBoard_WaitRelease)
 
 /* func_ov113_0229a148 (sub state 3): once the cursor sprite's animation is done, the action of
- * its place: done, the cursor is hidden for WRITE and QUIT, else shows the third of its set (the
- * page turns); not done, the press is cancelled. */
+ * its place: done, the cursor is hidden for WRITE and QUIT, else its release (the third of its
+ * set) as the page turns; not done, the press is cancelled. */
 void BbsBoard_WaitPress(BbsBoard *self)
 {
     if (CellLayerSprite_IsDone(bbs_cursor_cells(self)) == 0) {
@@ -726,7 +726,7 @@ void BbsBoard_WaitPress(BbsBoard *self)
             Glider_ShowThirdOfSet(&self->cursor_sprite);
         }
     } else {
-        BbsBoard_CancelPress(self);
+        BbsBoard_ReleaseCursor(self);
     }
 }
 CLEAN_AS(func_ov113_0229a148, BbsBoard_WaitPress)

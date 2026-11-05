@@ -160,7 +160,7 @@ void BirthdayScreen_PlayReleaseAnim(BirthdayScreen *self)
 {
     Glider_ShowThirdOfSet(&self->cursor_sprite);
     self->return_sub_state = self->base.sub_state;
-    MenuScene_SetSubState(birthday_scene(self), BIRTHDAY_SCREEN_SUB_SPRITE_ANIM);
+    MenuScene_SetSubState(birthday_scene(self), BIRTHDAY_SCREEN_SUB_RELEASE_ANIM);
 }
 CLEAN_AS(func_ov137_0229c628, BirthdayScreen_PlayReleaseAnim)
 
@@ -423,14 +423,14 @@ CLEAN_AS(func_ov137_0229ca2c, BirthdayScreen_FollowOkPress)
 
 /* func_ov137_0229ca90 (sub state 10): once the cursor sprite's animation is over, it is shown
  * again and the sub state kept is next. */
-void BirthdayScreen_WaitSpriteAnim(BirthdayScreen *self)
+void BirthdayScreen_WaitReleaseAnim(BirthdayScreen *self)
 {
     if (CellLayerSprite_IsDone(birthday_sprite_cells(self))) {
         BirthdayScreen_ShowCursorSprite(self);
         MenuScene_SetSubState(birthday_scene(self), self->return_sub_state);
     }
 }
-CLEAN_AS(func_ov137_0229ca90, BirthdayScreen_WaitSpriteAnim)
+CLEAN_AS(func_ov137_0229ca90, BirthdayScreen_WaitReleaseAnim)
 
 /* func_ov137_0229cab8 (sub state 9): once the cursor sprite's press is over. In a list: on its
  * scroll bar, the bar by the keys (sub state 6); else the value under the cursor taken and the

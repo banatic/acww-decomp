@@ -115,7 +115,7 @@ enum StorageSceneSubState {
     STORAGE_SCENE_SUB_HOLD_BY_KEYS = 0x04,  /* StorageScene_MoveHeldByKeys */
     STORAGE_SCENE_SUB_SPRITE_MOVE = 0x05,   /* StorageScene_WaitCursorSprite */
     STORAGE_SCENE_SUB_BUTTON_PRESS = 0x06,  /* StorageScene_FinishButtonPress */
-    STORAGE_SCENE_SUB_PRESS_END = 0x07,     /* StorageScene_FinishPressAnim */
+    STORAGE_SCENE_SUB_PRESS_END = 0x07,     /* StorageScene_FinishReleaseAnim */
     STORAGE_SCENE_SUB_PICK_UP = 0x08,       /* StorageScene_PickUpOnTurn */
     STORAGE_SCENE_SUB_PICK_UP_END = 0x09,   /* StorageScene_FinishPickUp */
     STORAGE_SCENE_SUB_PUT_DOWN = 0x0a,      /* StorageScene_PutDownWithCursor */
@@ -184,7 +184,7 @@ void StorageScene_MoveCursorInPockets(StorageScene *self, int keys, int holding)
 void StorageScene_StartSwap(StorageScene *self, int place);
 void StorageScene_StartPutDown(StorageScene *self, u8 place);
 void StorageScene_StartPickUp(StorageScene *self);
-void StorageScene_StartPressAnim(StorageScene *self);
+void StorageScene_StartReleaseAnim(StorageScene *self);
 void StorageScene_StartButtonPress(StorageScene *self);
 void StorageScene_ShowCursorFirstOfSet(StorageScene *self);
 void StorageScene_GlideToCursor(StorageScene *self);
@@ -246,7 +246,7 @@ void StorageScene_SwapWithCursor(StorageScene *self);
 void StorageScene_PutDownWithCursor(StorageScene *self);
 void StorageScene_FinishPickUp(StorageScene *self);
 void StorageScene_PickUpOnTurn(StorageScene *self);
-void StorageScene_FinishPressAnim(StorageScene *self);
+void StorageScene_FinishReleaseAnim(StorageScene *self);
 void StorageScene_FinishButtonPress(StorageScene *self);
 void StorageScene_WaitCursorSprite(StorageScene *self);
 void StorageScene_MoveHeldByKeys(StorageScene *self);

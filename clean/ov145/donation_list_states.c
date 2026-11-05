@@ -56,7 +56,7 @@ extern MemberPointer data_ov145_0229afbc[DONATION_STATES];
 extern MemberPointer data_ov145_0229afdc[DONATION_SUB_STATES];
 extern const MemberPointer data_ov145_0229ad80; /* DonationList_WipeIn */
 extern const MemberPointer data_ov145_0229ad88; /* DonationList_FinishClosePress */
-extern const MemberPointer data_ov145_0229ad90; /* DonationList_FinishCursorAnim */
+extern const MemberPointer data_ov145_0229ad90; /* DonationList_FinishRelease */
 extern const MemberPointer data_ov145_0229ada0; /* DonationList_WaitCursorGlide */
 extern const MemberPointer data_ov145_0229ada8; /* DonationList_WaitHandleRelease */
 extern const MemberPointer data_ov145_0229adb0; /* DonationList_HandleByKeys */
@@ -187,14 +187,14 @@ CLEAN_AS(func_ov145_0229a370, DonationList_FinishClosePress)
 
 /* func_ov145_0229a3d8 (sub state 8): once the cursor sprite's animation ends, its first of the
  * set and back to the sub state it was started in. */
-void DonationList_FinishCursorAnim(DonationList *self)
+void DonationList_FinishRelease(DonationList *self)
 {
     if (CellLayerSprite_IsDone(donation_cursor_cells(self))) {
         DonationList_ShowCursorFirstOfSet(self);
         MenuScene_SetSubState(donation_base(self), self->return_sub_state);
     }
 }
-CLEAN_AS(func_ov145_0229a3d8, DonationList_FinishCursorAnim)
+CLEAN_AS(func_ov145_0229a3d8, DonationList_FinishRelease)
 
 /* func_ov145_0229a3fc (sub state 7): once the cursor sprite's press animation ends, the place
  * under the cursor is chosen; a tab (or nothing) goes back to the keys (sub state 3) by the
@@ -208,7 +208,7 @@ void DonationList_FinishPress(DonationList *self)
         return;
     }
     MenuScene_SetSubState(donation_base(self), DONATION_SUB_IDLE_BY_KEYS);
-    DonationList_StartCursorAnim(self);
+    DonationList_StartRelease(self);
 }
 CLEAN_AS(func_ov145_0229a3fc, DonationList_FinishPress)
 
@@ -230,7 +230,7 @@ void DonationList_WaitHandleRelease(DonationList *self)
 {
     if (DonationList_HandleReleased(self)) {
         MenuScene_SetSubState(donation_base(self), DONATION_SUB_IDLE_BY_KEYS);
-        DonationList_StartCursorAnim(self);
+        DonationList_StartRelease(self);
     }
     int x = DonationList_CursorX(self);
     int y = DonationList_CursorY(self);

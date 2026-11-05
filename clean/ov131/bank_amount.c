@@ -236,24 +236,24 @@ CLEAN_AS(func_ov131_0229ae0c, BankAmount_SetUpRange)
 
 /* --- The cursor --- */
 
-/* func_ov131_0229aee4: the cursor's third animation of its set, waited for (sub state 5) before
+/* func_ov131_0229aee4: the cursor's release (the third of its set), waited for (sub state 5) before
  * going back to the sub state it was in. */
-void BankAmount_ShowCursorThird(BankAmount *self)
+void BankAmount_ReleaseCursor(BankAmount *self)
 {
     Glider_ShowThirdOfSet(&self->cursor);
     self->return_sub_state = self->base.sub_state;
-    MenuScene_SetSubState(scene_of(self), BANK_AMOUNT_SUB_CURSOR_ANIM);
+    MenuScene_SetSubState(scene_of(self), BANK_AMOUNT_SUB_CURSOR_RELEASE);
 }
-CLEAN_AS(func_ov131_0229aee4, BankAmount_ShowCursorThird)
+CLEAN_AS(func_ov131_0229aee4, BankAmount_ReleaseCursor)
 
-/* func_ov131_0229af0c: the cursor's second animation of its set, then the key under it pressed
+/* func_ov131_0229af0c: the cursor's press (the second of its set), then the key under it pressed
  * (sub state 4). */
-void BankAmount_ShowCursorSecond(BankAmount *self)
+void BankAmount_PressCursor(BankAmount *self)
 {
     Glider_ShowSecondOfSet(&self->cursor);
     MenuScene_SetSubState(scene_of(self), BANK_AMOUNT_SUB_KEY_PRESS);
 }
-CLEAN_AS(func_ov131_0229af0c, BankAmount_ShowCursorSecond)
+CLEAN_AS(func_ov131_0229af0c, BankAmount_PressCursor)
 
 /* func_ov131_0229af24: the cursor's first animation of its set, and its update. */
 void BankAmount_ShowCursorFirst(BankAmount *self)
@@ -416,7 +416,7 @@ void BankAmount_KeyHeld(BankAmount *self)
     if ((data_021fbe40.held & BANK_AMOUNT_PAD_A) == 0) {
         BankPad_StopRepeat(&self->pad);
         MenuScene_SetSubState(scene_of(self), BANK_AMOUNT_SUB_KEYS);
-        BankAmount_ShowCursorThird(self);
+        BankAmount_ReleaseCursor(self);
     } else {
         BankPad_StepRepeat(&self->pad);
     }
@@ -425,14 +425,14 @@ CLEAN_AS(func_ov131_0229b188, BankAmount_KeyHeld)
 
 /* func_ov131_0229b1c8 (sub state 5): when the cursor's animation is over, its first one again
  * and back to `return_sub_state`. */
-void BankAmount_WaitCursorAnim(BankAmount *self)
+void BankAmount_WaitCursorRelease(BankAmount *self)
 {
     if (CellLayerSprite_IsDone(cursor_cells(self))) {
         BankAmount_ShowCursorFirst(self);
         MenuScene_SetSubState(scene_of(self), self->return_sub_state);
     }
 }
-CLEAN_AS(func_ov131_0229b1c8, BankAmount_WaitCursorAnim)
+CLEAN_AS(func_ov131_0229b1c8, BankAmount_WaitCursorRelease)
 
 /* func_ov131_0229b1f0 (sub state 4): when the cursor's animation is over, the key under it acts:
  * a key of the keypad is pressed and repeats while A is held (sub state 6); OK confirms (when
@@ -450,7 +450,7 @@ void BankAmount_KeyPress(BankAmount *self)
             return;
         }
         MenuScene_SetSubState(scene_of(self), BANK_AMOUNT_SUB_KEYS);
-        BankAmount_ShowCursorThird(self);
+        BankAmount_ReleaseCursor(self);
     } else {
         BankAmount_Cancel(self);
     }
@@ -490,7 +490,7 @@ void BankAmount_Keys(BankAmount *self)
         return;
     }
     if (pressed & BANK_AMOUNT_PAD_A) {
-        BankAmount_ShowCursorSecond(self);
+        BankAmount_PressCursor(self);
         return;
     }
     if (pressed & BANK_AMOUNT_PAD_B) {

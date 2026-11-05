@@ -54,14 +54,14 @@ enum BankAmountState {
 };
 
 enum BankAmountSubState {
-    BANK_AMOUNT_SUB_TOUCH = 0,       /* BankAmount_Touch: the pen on the keys and the panel */
-    BANK_AMOUNT_SUB_TOUCH_HELD = 1,  /* BankAmount_TouchHeld: a key held by the pen repeats */
-    BANK_AMOUNT_SUB_KEYS = 2,        /* BankAmount_Keys: the cursor, by the buttons */
-    BANK_AMOUNT_SUB_GLIDE = 3,       /* BankAmount_Glide: the cursor glides, then `return_sub_state` */
-    BANK_AMOUNT_SUB_KEY_PRESS = 4,   /* BankAmount_KeyPress: A pressed on the key under the cursor */
-    BANK_AMOUNT_SUB_CURSOR_ANIM = 5, /* BankAmount_WaitCursorAnim: then `return_sub_state` */
-    BANK_AMOUNT_SUB_KEY_HELD = 6,    /* BankAmount_KeyHeld: a key held by A repeats */
-    BANK_AMOUNT_SUB_PANEL_PRESS = 7, /* BankAmount_PanelPress: a button's press plays, then phase 1 */
+    BANK_AMOUNT_SUB_TOUCH = 0,          /* BankAmount_Touch: the pen on the keys and the panel */
+    BANK_AMOUNT_SUB_TOUCH_HELD = 1,     /* BankAmount_TouchHeld: a key held by the pen repeats */
+    BANK_AMOUNT_SUB_KEYS = 2,           /* BankAmount_Keys: the cursor, by the buttons */
+    BANK_AMOUNT_SUB_GLIDE = 3,          /* BankAmount_Glide: the cursor glides, then `return_sub_state` */
+    BANK_AMOUNT_SUB_KEY_PRESS = 4,      /* BankAmount_KeyPress: A pressed on the key under the cursor */
+    BANK_AMOUNT_SUB_CURSOR_RELEASE = 5, /* BankAmount_WaitCursorRelease: then `return_sub_state` */
+    BANK_AMOUNT_SUB_KEY_HELD = 6,       /* BankAmount_KeyHeld: a key held by A repeats */
+    BANK_AMOUNT_SUB_PANEL_PRESS = 7,    /* BankAmount_PanelPress: a button's press plays, then phase 1 */
     BANK_AMOUNT_SUB_STATES = 8
 };
 
@@ -95,8 +95,8 @@ void BankAmount_SetFlags(BankAmount *self, int flags);
 int BankAmount_TestFlags(BankAmount *self, u16 mask);
 void BankAmount_Apply(BankAmount *self);
 void BankAmount_SetUpRange(BankAmount *self);
-void BankAmount_ShowCursorThird(BankAmount *self);
-void BankAmount_ShowCursorSecond(BankAmount *self);
+void BankAmount_ReleaseCursor(BankAmount *self);
+void BankAmount_PressCursor(BankAmount *self);
 void BankAmount_ShowCursorFirst(BankAmount *self);
 void BankAmount_GlideCursorTo(BankAmount *self, int x, int y);
 void BankAmount_MoveCursor(BankAmount *self);
@@ -111,7 +111,7 @@ void BankAmount_StartKeys(BankAmount *self);
 void BankAmount_StartTouch(BankAmount *self);
 void BankAmount_PanelPress(BankAmount *self);
 void BankAmount_KeyHeld(BankAmount *self);
-void BankAmount_WaitCursorAnim(BankAmount *self);
+void BankAmount_WaitCursorRelease(BankAmount *self);
 void BankAmount_KeyPress(BankAmount *self);
 void BankAmount_Glide(BankAmount *self);
 void BankAmount_Keys(BankAmount *self);

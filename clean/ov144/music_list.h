@@ -80,19 +80,19 @@ enum MusicListState {
 
 /* The sub states (MenuScene.sub_state), run by MusicList_RunSubState. */
 enum MusicListSubState {
-    MUSIC_LIST_SUB_TOUCH = 0,         /* MusicList_TouchInput */
-    MUSIC_LIST_SUB_KNOB_DRAG = 1,     /* MusicList_DragKnob */
-    MUSIC_LIST_SUB_BAR_DRAG = 2,      /* MusicList_DragBar */
-    MUSIC_LIST_SUB_KEYS = 3,          /* MusicList_KeyInput */
-    MUSIC_LIST_SUB_KNOB_KEYS = 4,     /* MusicList_KnobKeys */
-    MUSIC_LIST_SUB_KNOB_RELEASE = 5,  /* MusicList_KnobRelease */
-    MUSIC_LIST_SUB_POINTER_MOVE = 6,  /* MusicList_PointerMove */
-    MUSIC_LIST_SUB_POINTER_PRESS = 7, /* MusicList_PointerPress */
-    MUSIC_LIST_SUB_POINTER_ANIM = 8,  /* MusicList_PointerAnim */
-    MUSIC_LIST_SUB_PANEL_PRESS = 9,   /* MusicList_PanelPress */
-    MUSIC_LIST_SUB_TAKE_OUT = 10,     /* MusicList_FinishTakeOut */
-    MUSIC_LIST_SUB_CLOSE_DELAY = 11,  /* MusicList_CloseDelay */
-    MUSIC_LIST_SUB_ERROR = 12,        /* MusicList_ErrorWait */
+    MUSIC_LIST_SUB_TOUCH = 0,           /* MusicList_TouchInput */
+    MUSIC_LIST_SUB_KNOB_DRAG = 1,       /* MusicList_DragKnob */
+    MUSIC_LIST_SUB_BAR_DRAG = 2,        /* MusicList_DragBar */
+    MUSIC_LIST_SUB_KEYS = 3,            /* MusicList_KeyInput */
+    MUSIC_LIST_SUB_KNOB_KEYS = 4,       /* MusicList_KnobKeys */
+    MUSIC_LIST_SUB_KNOB_RELEASE = 5,    /* MusicList_KnobRelease */
+    MUSIC_LIST_SUB_POINTER_MOVE = 6,    /* MusicList_PointerMove */
+    MUSIC_LIST_SUB_POINTER_PRESS = 7,   /* MusicList_PointerPress */
+    MUSIC_LIST_SUB_POINTER_RELEASE = 8, /* MusicList_WaitPointerRelease */
+    MUSIC_LIST_SUB_PANEL_PRESS = 9,     /* MusicList_PanelPress */
+    MUSIC_LIST_SUB_TAKE_OUT = 10,       /* MusicList_FinishTakeOut */
+    MUSIC_LIST_SUB_CLOSE_DELAY = 11,    /* MusicList_CloseDelay */
+    MUSIC_LIST_SUB_ERROR = 12,          /* MusicList_ErrorWait */
     MUSIC_LIST_SUB_STATES = 13
 };
 
@@ -170,7 +170,7 @@ int MusicList_RowAtPointer(MusicList *self);
 void MusicList_ButtonAtPointer(MusicList *self);
 int MusicList_HitTest(MusicList *self, int x, int y);
 int MusicList_Command(MusicList *self, unsigned int command);
-void MusicList_StartPointerAnim(MusicList *self);
+void MusicList_StartPointerRelease(MusicList *self);
 void MusicList_StartPointerPress(MusicList *self);
 void MusicList_ShowPointer(MusicList *self);
 void MusicList_GlidePointerTo(MusicList *self, int x, int y);
@@ -194,7 +194,7 @@ void MusicList_ErrorWait(MusicList *self);
 void MusicList_CloseDelay(MusicList *self);
 void MusicList_FinishTakeOut(MusicList *self);
 void MusicList_PanelPress(MusicList *self);
-void MusicList_PointerAnim(MusicList *self);
+void MusicList_WaitPointerRelease(MusicList *self);
 void MusicList_PointerPress(MusicList *self);
 void MusicList_PointerMove(MusicList *self);
 void MusicList_KnobRelease(MusicList *self);

@@ -171,15 +171,15 @@ int PhoneClock_MoveCursor(PhoneClock *self, u32 keys)
 }
 CLEAN_AS(func_ov135_0229c588, PhoneClock_MoveCursor)
 
-/* func_ov135_0229c630: the cursor sprite shows the third of its set, the sub state kept to come
+/* func_ov135_0229c630: the cursor sprite's release (the third of its set), the sub state kept to come
  * back to once it is over (sub state 12). */
-void PhoneClock_ShowSpriteThird(PhoneClock *self)
+void PhoneClock_ReleaseCursorSprite(PhoneClock *self)
 {
     Glider_ShowThirdOfSet(&self->cursor_sprite);
     self->return_sub_state = self->base.sub_state;
-    MenuScene_SetSubState(clock_scene(self), PHONE_CLOCK_SUB_SHOW_SPRITE);
+    MenuScene_SetSubState(clock_scene(self), PHONE_CLOCK_SUB_RELEASE);
 }
-CLEAN_AS(func_ov135_0229c630, PhoneClock_ShowSpriteThird)
+CLEAN_AS(func_ov135_0229c630, PhoneClock_ReleaseCursorSprite)
 
 /* func_ov135_0229c654: the cursor sprite pressed (the second of its set), the pick waited for
  * (sub state 11). */
@@ -478,14 +478,14 @@ CLEAN_AS(func_ov135_0229cacc, PhoneClock_FollowPanelPress)
 
 /* func_ov135_0229cb30 (sub state 12): once the cursor sprite's animation is over, the sprite
  * shown again and the sub state kept run from the next frame. */
-void PhoneClock_ShowSpriteWhenDone(PhoneClock *self)
+void PhoneClock_WaitRelease(PhoneClock *self)
 {
     if (CellLayerSprite_IsDone(clock_sprite_cells(self)) != 0) {
         PhoneClock_ShowCursorSprite(self);
         MenuScene_SetSubState(clock_scene(self), self->return_sub_state);
     }
 }
-CLEAN_AS(func_ov135_0229cb30, PhoneClock_ShowSpriteWhenDone)
+CLEAN_AS(func_ov135_0229cb30, PhoneClock_WaitRelease)
 
 /* func_ov135_0229cb54 (sub state 11): once the cursor sprite's press is over: while a field is
  * edited, A held is followed (sub state 8) when ClockSetter_PressThumbByKey says so, else the field is
@@ -504,7 +504,7 @@ void PhoneClock_PickWhenPressed(PhoneClock *self)
             PhoneClock_ConfirmField(self);
         } else {
             MenuScene_SetSubState(clock_scene(self), PHONE_CLOCK_SUB_EDIT);
-            PhoneClock_ShowSpriteThird(self);
+            PhoneClock_ReleaseCursorSprite(self);
         }
         return;
     }
@@ -537,7 +537,7 @@ void PhoneClock_WaitEditor(PhoneClock *self)
 {
     if (ClockSetter_SettleThumb(&self->editor) != 0) {
         MenuScene_SetSubState(clock_scene(self), PHONE_CLOCK_SUB_EDIT);
-        PhoneClock_ShowSpriteThird(self);
+        PhoneClock_ReleaseCursorSprite(self);
     }
     int x = PhoneClock_CursorX(self);
     int y = PhoneClock_CursorY(self);

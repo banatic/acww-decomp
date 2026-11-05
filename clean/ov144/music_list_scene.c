@@ -189,14 +189,14 @@ CLEAN_AS(func_ov144_0229a948, MusicList_PanelPress)
 
 /* func_ov144_0229a9b0 (sub state 8): once the pointer's animation ends, the first of its set and
  * back to the sub state kept. */
-void MusicList_PointerAnim(MusicList *self)
+void MusicList_WaitPointerRelease(MusicList *self)
 {
     if (CellLayerSprite_IsDone(music_list_pointer_cells(self)) != 0) {
         MusicList_ShowPointer(self);
         MenuScene_SetSubState(music_list_scene(self), self->return_sub_state);
     }
 }
-CLEAN_AS(func_ov144_0229a9b0, MusicList_PointerAnim)
+CLEAN_AS(func_ov144_0229a9b0, MusicList_WaitPointerRelease)
 
 /* func_ov144_0229a9d4 (sub state 7): once the pointer's press ends, the cursor's command; when
  * it answers 0, the buttons' input again (sub state 3) with the pointer's third animation. */
@@ -205,7 +205,7 @@ void MusicList_PointerPress(MusicList *self)
     if (CellLayerSprite_IsDone(music_list_pointer_cells(self)) != 0) {
         if (MusicList_Command(self, self->cursor) == 0) {
             MenuScene_SetSubState(music_list_scene(self), MUSIC_LIST_SUB_KEYS);
-            MusicList_StartPointerAnim(self);
+            MusicList_StartPointerRelease(self);
         }
     }
 }
@@ -228,7 +228,7 @@ void MusicList_KnobRelease(MusicList *self)
 {
     if (MusicList_KnobSettled(self) != 0) {
         MenuScene_SetSubState(music_list_scene(self), MUSIC_LIST_SUB_KEYS);
-        MusicList_StartPointerAnim(self);
+        MusicList_StartPointerRelease(self);
     }
     int x = MusicList_PointerX(self);
     int y = MusicList_PointerY(self);

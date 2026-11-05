@@ -361,21 +361,21 @@ void ChatScene_PointerFirstOfSet(ChatScene *self)
 }
 CLEAN_AS(func_ov111_0229f0a4, ChatScene_PointerFirstOfSet)
 
-/* func_ov111_0229f0cc: the pointer shows its third set (a key let go; sub state 7). */
-void ChatScene_PointerThirdOfSet(ChatScene *self)
+/* func_ov111_0229f0cc: the pointer's release (the third of its set; a key let go; sub state 7). */
+void ChatScene_ReleasePointer(ChatScene *self)
 {
     Glider_ShowThirdOfSet(&self->pointer);
     MenuScene_SetSubState(chat_scene(self), CHAT_SCENE_SUB_KEY_RELEASE);
 }
-CLEAN_AS(func_ov111_0229f0cc, ChatScene_PointerThirdOfSet)
+CLEAN_AS(func_ov111_0229f0cc, ChatScene_ReleasePointer)
 
-/* func_ov111_0229f0ec: the pointer shows its second set (a key pressed by A; sub state 5). */
-void ChatScene_PointerSecondOfSet(ChatScene *self)
+/* func_ov111_0229f0ec: the pointer's press (the second of its set; a key pressed by A; sub state 5). */
+void ChatScene_PressPointer(ChatScene *self)
 {
     Glider_ShowSecondOfSet(&self->pointer);
     MenuScene_SetSubState(chat_scene(self), CHAT_SCENE_SUB_KEY_PRESS);
 }
-CLEAN_AS(func_ov111_0229f0ec, ChatScene_PointerSecondOfSet)
+CLEAN_AS(func_ov111_0229f0ec, ChatScene_PressPointer)
 
 /* func_ov111_0229f10c: the pointer put at once at the text cursor (CHAT_SCENE_FLAG_POINTER_ON_TEXT)
  * or at the keyboard's key, and updated. */
@@ -525,7 +525,7 @@ int ChatScene_PressOnA(ChatScene *self)
         return 1;
     }
     SoftKeyboard_ShowKeyPressed(chat_keyboard(self), key);
-    ChatScene_PointerSecondOfSet(self);
+    ChatScene_PressPointer(self);
     return 1;
 }
 CLEAN_AS(func_ov111_0229f3ac, ChatScene_PressOnA)
@@ -748,7 +748,7 @@ int ChatScene_RunCode(ChatScene *self, int code)
         }
         SoftKeyboard_PickEmotionByCode(chat_keyboard(self), code);
         ChatScene_Express(self);
-        ChatScene_PointerThirdOfSet(self);
+        ChatScene_ReleasePointer(self);
         return CHAT_SCENE_CODE_EXPRESSED;
     }
     switch (code) {
@@ -1411,7 +1411,7 @@ void ChatScene_RepeatKey(ChatScene *self)
 {
     if ((data_021fbe40.held & CHAT_SCENE_PAD_A) == 0) {
         SoftKeyboard_ReleasePressed(chat_keyboard(self));
-        ChatScene_PointerThirdOfSet(self);
+        ChatScene_ReleasePointer(self);
     } else if (SoftKeyboard_StepRepeat(chat_keyboard(self)) != 0) {
         int key = SoftKeyboard_PressedKey(chat_keyboard(self));
         ChatScene_RunCode(self, SoftKeyboard_KeyCode(chat_keyboard(self), key, CHAT_SCENE_KEY_MODE));
@@ -1442,7 +1442,7 @@ void ChatScene_PressKey(ChatScene *self)
     }
     SoftKeyboard_ReleasePressed(chat_keyboard(self));
     if (result != 4) {
-        ChatScene_PointerThirdOfSet(self);
+        ChatScene_ReleasePointer(self);
     }
 }
 CLEAN_AS(func_ov111_022a0530, ChatScene_PressKey)

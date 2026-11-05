@@ -49,20 +49,20 @@ enum BirthdayScreenState {
 
 /* The sub states, run from the table of BirthdayScreen_RunSubState (MenuScene_SetSubState). */
 enum BirthdayScreenSubState {
-    BIRTHDAY_SCREEN_SUB_TOUCH_FIELDS = 0, /* BirthdayScreen_FieldsByTouch */
-    BIRTHDAY_SCREEN_SUB_TOUCH_LIST = 1,   /* BirthdayScreen_ListByTouch */
-    BIRTHDAY_SCREEN_SUB_DRAG_THUMB = 2,   /* BirthdayScreen_DragThumb */
-    BIRTHDAY_SCREEN_SUB_THUMB_TO_PEN = 3, /* BirthdayScreen_ThumbTowardPen */
-    BIRTHDAY_SCREEN_SUB_FIELDS = 4,       /* BirthdayScreen_FieldsByKeys */
-    BIRTHDAY_SCREEN_SUB_LIST = 5,         /* BirthdayScreen_ListByKeys */
-    BIRTHDAY_SCREEN_SUB_BAR = 6,          /* BirthdayScreen_ListBarByKeys */
-    BIRTHDAY_SCREEN_SUB_BAR_RETURN = 7,   /* BirthdayScreen_ReturnFromBar */
-    BIRTHDAY_SCREEN_SUB_SPRITE_MOVE = 8,  /* BirthdayScreen_WaitCursorSprite */
-    BIRTHDAY_SCREEN_SUB_PRESSED = 9,      /* BirthdayScreen_AfterPress */
-    BIRTHDAY_SCREEN_SUB_SPRITE_ANIM = 10, /* BirthdayScreen_WaitSpriteAnim */
-    BIRTHDAY_SCREEN_SUB_OK_PRESSED = 11,  /* BirthdayScreen_FollowOkPress */
-    BIRTHDAY_SCREEN_SUB_LIST_OPEN = 12,   /* BirthdayScreen_WaitListOpen */
-    BIRTHDAY_SCREEN_SUB_LIST_CLOSE = 13,  /* BirthdayScreen_WaitListClosed */
+    BIRTHDAY_SCREEN_SUB_TOUCH_FIELDS = 0,  /* BirthdayScreen_FieldsByTouch */
+    BIRTHDAY_SCREEN_SUB_TOUCH_LIST = 1,    /* BirthdayScreen_ListByTouch */
+    BIRTHDAY_SCREEN_SUB_DRAG_THUMB = 2,    /* BirthdayScreen_DragThumb */
+    BIRTHDAY_SCREEN_SUB_THUMB_TO_PEN = 3,  /* BirthdayScreen_ThumbTowardPen */
+    BIRTHDAY_SCREEN_SUB_FIELDS = 4,        /* BirthdayScreen_FieldsByKeys */
+    BIRTHDAY_SCREEN_SUB_LIST = 5,          /* BirthdayScreen_ListByKeys */
+    BIRTHDAY_SCREEN_SUB_BAR = 6,           /* BirthdayScreen_ListBarByKeys */
+    BIRTHDAY_SCREEN_SUB_BAR_RETURN = 7,    /* BirthdayScreen_ReturnFromBar */
+    BIRTHDAY_SCREEN_SUB_SPRITE_MOVE = 8,   /* BirthdayScreen_WaitCursorSprite */
+    BIRTHDAY_SCREEN_SUB_PRESSED = 9,       /* BirthdayScreen_AfterPress */
+    BIRTHDAY_SCREEN_SUB_RELEASE_ANIM = 10, /* BirthdayScreen_WaitReleaseAnim */
+    BIRTHDAY_SCREEN_SUB_OK_PRESSED = 11,   /* BirthdayScreen_FollowOkPress */
+    BIRTHDAY_SCREEN_SUB_LIST_OPEN = 12,    /* BirthdayScreen_WaitListOpen */
+    BIRTHDAY_SCREEN_SUB_LIST_CLOSE = 13,   /* BirthdayScreen_WaitListClosed */
     BIRTHDAY_SCREEN_SUB_STATES = 14
 };
 
@@ -104,7 +104,7 @@ void BirthdayScreen_ResumeFieldsByTouch(BirthdayScreen *self);
 void BirthdayScreen_WaitListClosed(BirthdayScreen *self);
 void BirthdayScreen_WaitListOpen(BirthdayScreen *self);
 void BirthdayScreen_FollowOkPress(BirthdayScreen *self);
-void BirthdayScreen_WaitSpriteAnim(BirthdayScreen *self);
+void BirthdayScreen_WaitReleaseAnim(BirthdayScreen *self);
 void BirthdayScreen_AfterPress(BirthdayScreen *self);
 void BirthdayScreen_WaitCursorSprite(BirthdayScreen *self);
 void BirthdayScreen_ReturnFromBar(BirthdayScreen *self);

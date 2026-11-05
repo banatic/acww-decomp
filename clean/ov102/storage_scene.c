@@ -608,13 +608,13 @@ void StorageScene_StartPickUp(StorageScene *self)
 }
 CLEAN_AS(func_ov102_0229ca38, StorageScene_StartPickUp)
 
-/* func_ov102_0229ca58: the third animation of the cursor sprite's set, sub state 7. */
-void StorageScene_StartPressAnim(StorageScene *self)
+/* func_ov102_0229ca58: the cursor sprite's release (the third of its set), sub state 7. */
+void StorageScene_StartReleaseAnim(StorageScene *self)
 {
     Glider_ShowThirdOfSet(&self->cursor_sprite);
     MenuScene_SetSubState(storage_base(self), STORAGE_SCENE_SUB_PRESS_END);
 }
-CLEAN_AS(func_ov102_0229ca58, StorageScene_StartPressAnim)
+CLEAN_AS(func_ov102_0229ca58, StorageScene_StartReleaseAnim)
 
 /* func_ov102_0229ca78: the second animation of the cursor sprite's set (a press on a tab or the
  * close button), sub state 6. */
@@ -1433,7 +1433,7 @@ CLEAN_AS(func_ov102_0229d9b0, StorageScene_PickUpOnTurn)
 
 /* func_ov102_0229d9e0 (sub state 7): once the cursor sprite's animation ends, the first of its
  * set and back to the keys: sub state 4 with an item held, else 3. */
-void StorageScene_FinishPressAnim(StorageScene *self)
+void StorageScene_FinishReleaseAnim(StorageScene *self)
 {
     if (CellLayerSprite_IsDone(storage_cursor_cells(self))) {
         StorageScene_ShowCursorFirstOfSet(self);
@@ -1444,7 +1444,7 @@ void StorageScene_FinishPressAnim(StorageScene *self)
         }
     }
 }
-CLEAN_AS(func_ov102_0229d9e0, StorageScene_FinishPressAnim)
+CLEAN_AS(func_ov102_0229d9e0, StorageScene_FinishReleaseAnim)
 
 /* func_ov102_0229da20 (sub state 6): once the cursor sprite's press animation ends: on a tab, its
  * page shown (just the press's end for the page already shown); on the close button the scene
@@ -1457,7 +1457,7 @@ void StorageScene_FinishButtonPress(StorageScene *self)
     if (StorageScene_IsTabPlace(self, self->cursor)) {
         u8 page = (u8) (self->cursor - STORAGE_SCENE_TAB_FIRST);
         if (page == self->page) {
-            StorageScene_StartPressAnim(self);
+            StorageScene_StartReleaseAnim(self);
         } else {
             self->page = page;
             StorageScene_ShowPage(self);
@@ -1465,7 +1465,7 @@ void StorageScene_FinishButtonPress(StorageScene *self)
     } else if (self->cursor == STORAGE_SCENE_CLOSE) {
         StorageScene_SaveAndClose(self, 1);
     } else {
-        StorageScene_StartPressAnim(self);
+        StorageScene_StartReleaseAnim(self);
     }
 }
 CLEAN_AS(func_ov102_0229da20, StorageScene_FinishButtonPress)

@@ -587,17 +587,17 @@ TextLabel *DonationList_NextLabel(DonationList *self)
 }
 CLEAN_AS(func_ov145_02299dd0, DonationList_NextLabel)
 
-/* func_ov145_02299e08: the cursor sprite's third animation of its set; once it ends, back to
+/* func_ov145_02299e08: the cursor sprite's release (the third of its set); once it ends, back to
  * the sub state this was called in (sub state 8). */
-void DonationList_StartCursorAnim(DonationList *self)
+void DonationList_StartRelease(DonationList *self)
 {
     Glider_ShowThirdOfSet(&self->cursor_sprite);
     self->return_sub_state = self->base.sub_state;
-    MenuScene_SetSubState(donation_base(self), DONATION_SUB_CURSOR_ANIM);
+    MenuScene_SetSubState(donation_base(self), DONATION_SUB_RELEASE);
 }
-CLEAN_AS(func_ov145_02299e08, DonationList_StartCursorAnim)
+CLEAN_AS(func_ov145_02299e08, DonationList_StartRelease)
 
-/* func_ov145_02299e2c: the cursor sprite's second animation of its set: the place under the
+/* func_ov145_02299e2c: the cursor sprite's press (the second of its set): the place under the
  * cursor is chosen once it ends (sub state 7). */
 void DonationList_StartPress(DonationList *self)
 {
