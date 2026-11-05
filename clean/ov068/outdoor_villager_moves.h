@@ -19,17 +19,18 @@
  *   0xa04 is clear, it turns to the participant (priority 2) and stands.
  * - 10, it joined a talk as a speaker: it stands (priority 2), the byte at 0x838 set; its
  *   update does nothing.
- * - 11 (while its effect's countdown runs, outdoor_villager.h): it turns to this console's
- *   player and stands until the countdown is out (behaviour 0), or behaviours 21 or 19 take
- *   over (the countdown then cleared).
- * - 13: it is put a little away from the first of the items 0x5014 to 0x501a on the town's
- *   map, facing it; music value 0x12, the state table's index at 0x16c cleared (-1), the event
- *   queue's flag 0x20 set; its update asks for event kind 6 and sets flag 0x1d of the player
- *   actor 4 each frame.
- * - 14, told of event 1 after reaction 0: it turns to the object of its talk and talks; once
- *   the action ends the camera's mode is reset, it turns to angle 0 and walks to its place
- *   moved by (-0x2000, +0x8000); when there (or after 200 frames) its event is finished, it
- *   stands and the event queue's flag 0x20 is cleared.
+ * - 11, its fleas netted off (while its effect's countdown runs, outdoor_villager.h): it turns
+ *   to this console's player and stands until the countdown is out (behaviour 0), or behaviours
+ *   21 or 19 take over (the countdown then cleared).
+ * - 13, the birthday greeter (VillagerState_GetBirthdayGreeter names it,
+ *   VillagerTown_PickBirthdayGreeter): it is put a little away from the player's house (the
+ *   first of the buildings 0x5014 to 0x501a on the town's map), facing it, reaction 0; music
+ *   value 0x12, the state table's index at 0x16c cleared (-1), the event queue's flag 0x20 set;
+ *   its update asks for event kind 6 and sets flag 0x1d of the player actor 4 each frame.
+ * - 14, told of event 1 after reaction 0 (the birthday greeter's talk): it turns to the object
+ *   of its talk and talks; once the action ends the camera's mode is reset, it turns to angle 0
+ *   and walks to its place moved by (-0x2000, +0x8000); when there (or after 200 frames) its
+ *   event is finished, it stands and the event queue's flag 0x20 is cleared.
  * - 15 and 16: the item it holds is brought out or put away. With an item of 0x1380 to 0x139f
  *   (the held item link's action 0x25 group, held_item_link.c) animation 0xcd plays with the
  *   item's own animation (16 runs the item's frames backwards, from the last); without one,
@@ -51,17 +52,17 @@ int OutdoorVillagerMoves_Update15(OutdoorVillagerBehaviour *self, u8 *villager);
 void OutdoorVillagerMoves_Open15(OutdoorVillagerBehaviour *self, u8 *villager);
 void OutdoorVillagerMoves_Grow15(OutdoorVillagerBehaviour *self, u8 *villager);
 int OutdoorVillagerMoves_Start15(OutdoorVillagerBehaviour *self, u8 *villager);
-int OutdoorVillagerMoves_Update14(OutdoorVillagerBehaviour *self, u8 *villager);
-void OutdoorVillagerMoves_Arrive14(OutdoorVillagerBehaviour *self, u8 *villager);
-void OutdoorVillagerMoves_Walk14(OutdoorVillagerBehaviour *self, u8 *villager);
-void OutdoorVillagerMoves_Talk14(OutdoorVillagerBehaviour *self, u8 *villager);
-int OutdoorVillagerMoves_Start14(OutdoorVillagerBehaviour *self, u8 *villager);
-int OutdoorVillagerMoves_Update13(OutdoorVillagerBehaviour *self, u8 *villager);
-int OutdoorVillagerMoves_Start13(OutdoorVillagerBehaviour *self, u8 *villager);
-int OutdoorVillagerMoves_Update11(OutdoorVillagerBehaviour *self, u8 *villager);
-void OutdoorVillagerMoves_Watch11(OutdoorVillagerBehaviour *self, u8 *villager);
-void OutdoorVillagerMoves_Turn11(OutdoorVillagerBehaviour *self, u8 *villager);
-int OutdoorVillagerMoves_Start11(OutdoorVillagerBehaviour *self, u8 *villager);
+int OutdoorVillagerMoves_UpdateGreeted(OutdoorVillagerBehaviour *self, u8 *villager);
+void OutdoorVillagerMoves_ArriveGreeted(OutdoorVillagerBehaviour *self, u8 *villager);
+void OutdoorVillagerMoves_WalkGreeted(OutdoorVillagerBehaviour *self, u8 *villager);
+void OutdoorVillagerMoves_TalkGreeted(OutdoorVillagerBehaviour *self, u8 *villager);
+int OutdoorVillagerMoves_StartGreeted(OutdoorVillagerBehaviour *self, u8 *villager);
+int OutdoorVillagerMoves_UpdateGreeter(OutdoorVillagerBehaviour *self, u8 *villager);
+int OutdoorVillagerMoves_StartGreeter(OutdoorVillagerBehaviour *self, u8 *villager);
+int OutdoorVillagerMoves_UpdateFleasGone(OutdoorVillagerBehaviour *self, u8 *villager);
+void OutdoorVillagerMoves_WatchFleasGone(OutdoorVillagerBehaviour *self, u8 *villager);
+void OutdoorVillagerMoves_TurnFleasGone(OutdoorVillagerBehaviour *self, u8 *villager);
+int OutdoorVillagerMoves_StartFleasGone(OutdoorVillagerBehaviour *self, u8 *villager);
 int OutdoorVillagerMoves_Update10(void);
 int OutdoorVillagerMoves_Start10(OutdoorVillagerBehaviour *self, u8 *villager);
 int OutdoorVillagerMoves_Update8(OutdoorVillagerBehaviour *self, u8 *villager);

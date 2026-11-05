@@ -189,7 +189,8 @@ static void chat_copy_design(u8 *dst, const u8 *src)
  * the number (the personality is not compared). */
 static int chat_same_npc(const NpcId *a, const NpcId *b)
 {
-    return a->head.id == b->head.id && memcmp(a->head.data, b->head.data, sizeof(a->head.data)) == 0 && a->number == b->number;
+    return a->town.number == b->town.number && memcmp(a->town.name, b->town.name, sizeof(a->town.name)) == 0 &&
+           a->number == b->number;
 }
 
 /* While an act (kind 8) other than 0 plays: with the body animation's flags set, once the
@@ -326,7 +327,7 @@ CLEAN_AS(_ZN18Obj_ov068_022771c019func_ov068_02269b88Ei, OutdoorVillagerChat_Exc
 void OutdoorVillagerChat_Talk9(OutdoorVillagerBehaviour *self, u8 *villager)
 {
     u8 *partner = chat_partner(villager);
-    if (OutdoorVillagerWalks_HasByteA05(self, villager) != 0 && VillagerSceneObject_HasByte838(villager) == 0 &&
+    if (OutdoorVillagerWalks_WasNetted(self, villager) != 0 && VillagerSceneObject_HasByte838(villager) == 0 &&
         partner != NULL && chat_unpair(partner) != 0) {
         chat_part_for_19(self, villager);
         return;
@@ -480,7 +481,7 @@ void OutdoorVillagerChat_Turn9(OutdoorVillagerBehaviour *self, u8 *villager)
         self->wait = tier < CHAT_TIERS ? data_ov068_022767b8[tier] : CHAT_WAIT_PAST_TABLE;
         return;
     }
-    if (OutdoorVillagerWalks_HasByteA05(self, villager) != 0) {
+    if (OutdoorVillagerWalks_WasNetted(self, villager) != 0) {
         u8 *partner = chat_partner(villager);
         if (partner != NULL && chat_unpair(partner) != 0) {
             chat_part_for_19(self, villager);

@@ -4,8 +4,8 @@
 # Save: seed. From 4089 the player walks into the villager, the pad's direction turned towards
 # it every 4 frames (it is pushed north and gives way); the frames it is pushed count up
 # (OutdoorVillagerObject_CountPushed) and at 100 it turns to the player and complains
-# (behaviour 21, OutdoorVillagerActs_Start21, under event kind 6, about 4600); A closes its
-# words (4791) and it talks (behaviour 22, OutdoorVillagerActs_Talk22), to 4951.
+# (behaviour 21, OutdoorVillagerActs_StartPushed, under event kind 6, about 4600); A closes its
+# words (4791) and it talks (behaviour 22, OutdoorVillagerActs_TalkPushedTalk), to 4951.
 0 - -
 900 START -
 906 - -

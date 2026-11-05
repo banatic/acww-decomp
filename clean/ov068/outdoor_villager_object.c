@@ -51,16 +51,16 @@ extern Mtx43 data_021cfe68;
 #define OBJECT_ACT_EFFECTS 0x420  /* ActEffects */
 #define OBJECT_JOINT_7_POINT 0x484
 #define OBJECT_JOINT_4_POINT 0x490
-#define OBJECT_BODY 0x4cc       /* FieldBody */
-#define OBJECT_ENABLED 0x561    /* u8 */
-#define OBJECT_POSED 0x562      /* u8 */
-#define OBJECT_HELD_LINK 0x628  /* HeldItemLink *: the link the object's held item uses */
-#define OBJECT_DRAW_HOOK 0x8b0  /* MemberPointer: called to draw in place of the plain joints */
-#define OBJECT_ITEM_SHOWN 0x9f0 /* u8 */
-#define OBJECT_BYTE_A05 0xa05   /* u8 */
-#define OBJECT_COUNT_A06 0xa06  /* u16 */
-#define OBJECT_MINUTE 0xa08     /* u8 */
-#define OBJECT_BYTE_A09 0xa09   /* u8 */
+#define OBJECT_BODY 0x4cc          /* FieldBody */
+#define OBJECT_ENABLED 0x561       /* u8 */
+#define OBJECT_POSED 0x562         /* u8 */
+#define OBJECT_HELD_LINK 0x628     /* HeldItemLink *: the link the object's held item uses */
+#define OBJECT_DRAW_HOOK 0x8b0     /* MemberPointer: called to draw in place of the plain joints */
+#define OBJECT_ITEM_SHOWN 0x9f0    /* u8 */
+#define OBJECT_NETTED 0xa05        /* u8 */
+#define OBJECT_PUSHED_FRAMES 0xa06 /* u16 */
+#define OBJECT_MINUTE 0xa08        /* u8 */
+#define OBJECT_BYTE_A09 0xa09      /* u8 */
 /* The player's object: its walking direction and speed. */
 #define OBJECT_WALK_ANGLE 0x94 /* s16 */
 #define OBJECT_SPEED 0x98      /* fx32 */
@@ -92,7 +92,7 @@ extern Mtx43 data_021cfe68;
 #define OBJECT_DO_WALK 0
 #define OBJECT_DO_IN 3
 #define OBJECT_DO_12 12
-#define OBJECT_DO_13 13
+#define OBJECT_DO_GREETER 13
 #define OBJECT_STATUS_WALK 0
 #define OBJECT_STATUS_12_FIRST 3
 #define OBJECT_STATUS_12_LAST 7
@@ -164,7 +164,7 @@ int OutdoorVillagerObject_Frame(u8 *villager)
     OutdoorVillagerEffect_Tick(object_effect(villager), villager);
     VillagerMood_Update((VillagerMood *) (void *) object_at(villager, OUTDOOR_VILLAGER_MOOD), villager);
     OutdoorVillagerWatch_Update((OutdoorVillagerWatch *) (void *) object_at(villager, OUTDOOR_VILLAGER_WATCH), villager);
-    *object_at(villager, OBJECT_BYTE_A05) = 0;
+    *object_at(villager, OBJECT_NETTED) = 0;
     return 1;
 }
 CLEAN_AS(func_ov068_0226cee0, OutdoorVillagerObject_Frame)
@@ -194,7 +194,7 @@ CLEAN_AS(func_ov068_0226cfd4, OutdoorVillagerObject_ResetActEffects)
  * player pushes against it (OutdoorVillagerObject_PushedByPlayer); else back to 0. */
 void OutdoorVillagerObject_CountPushed(u8 *villager)
 {
-    u16 *count = (u16 *) (void *) object_at(villager, OBJECT_COUNT_A06);
+    u16 *count = (u16 *) (void *) object_at(villager, OBJECT_PUSHED_FRAMES);
     const MemberPointer *hook = (const MemberPointer *) (const void *) object_at(villager, OBJECT_DRAW_HOOK);
     if (*object_at(villager, OBJECT_POSED) == 0 || *object_at(villager, OBJECT_ENABLED) == 0 || hook->function == 0 ||
         SceneAction_IsBusy(object_action(villager)) != 0 || OutdoorVillagerRecords_MemoryOfPlayer(villager) == NULL ||
@@ -291,7 +291,7 @@ int OutdoorVillagerObject_OnItemSwung(u8 *villager, u16 *item)
         return 1;
     }
     if (OutdoorVillagerRecords_MemoryOfPlayer(villager) != NULL) {
-        *object_at(villager, OBJECT_BYTE_A05) = 1;
+        *object_at(villager, OBJECT_NETTED) = 1;
     }
     return 0;
 }
@@ -363,7 +363,7 @@ int OutdoorVillagerObject_Start(u8 *villager)
     int named = VillagerState_GetBirthdayGreeter();
     OutdoorVillagerWalks_InitItemCheck(behaviour);
     if (named == VillagerStatus_Index(record)) {
-        OutdoorVillagerBehaviour_Start(behaviour, villager, OBJECT_DO_13);
+        OutdoorVillagerBehaviour_Start(behaviour, villager, OBJECT_DO_GREETER);
     } else if (VillagerState_GetBirthdayVillager() == VillagerStatus_Index(record)) {
         OutdoorVillagerBehaviour_Start(behaviour, villager, OBJECT_DO_12);
     } else {
@@ -409,9 +409,9 @@ int OutdoorVillagerObject_Init(u8 *villager)
     }
     *object_word(villager, OBJECT_HELD_LINK) = (u32) (uintptr_t) object_link(villager);
     *(s32 *) (void *) object_at(villager, OUTDOOR_VILLAGER_EFFECT_HANDLE) = OBJECT_NO_HANDLE;
-    *object_at(villager, OUTDOOR_VILLAGER_BYTE_A04) = 0;
-    *object_at(villager, OBJECT_BYTE_A05) = 0;
-    *(u16 *) (void *) object_at(villager, OBJECT_COUNT_A06) = 0;
+    *object_at(villager, OUTDOOR_VILLAGER_IN_PITFALL) = 0;
+    *object_at(villager, OBJECT_NETTED) = 0;
+    *(u16 *) (void *) object_at(villager, OBJECT_PUSHED_FRAMES) = 0;
     *object_at(villager, OBJECT_MINUTE) = OBJECT_NO_MINUTE;
     *object_at(villager, OBJECT_BYTE_A09) = 0;
     OutdoorVillagerRecords_CheckActivity(villager);

@@ -248,7 +248,7 @@ static void ov_start_talk(u8 *object, u32 lines)
 /* After an event that kept it at reaction 0: it stands at the middle of its home's tile,
  * then behaviour 12 (for the villager VillagerState_GetBirthdayVillager names or a status of 3 to
  * 7) or 3. */
-static void ov_ended_reaction_0(u8 *object)
+static void ov_ended_greeting(u8 *object)
 {
     OutdoorVillagerBehaviour *behaviour = ov_behaviour(object);
     int status = VillagerStatus_Get(ov_record(object));
@@ -279,7 +279,7 @@ static void ov_ended_reaction_0(u8 *object)
  *   speaker), behaviour 5; after lines 2 the record's byte 0x1e is cleared; partner and lines
  *   forgotten;
  * - 5: the participant kept, the behaviour running saved to resume, behaviour 6;
- * - 8, the event ended: by the reaction: 0, home (ov_ended_reaction_0); 2, behaviour 0;
+ * - 8, the event ended: by the reaction: 0, home (ov_ended_greeting); 2, behaviour 0;
  *   either then reaction none; otherwise behaviour 18 with the byte at 0xa04 set, else the
  *   saved behaviour (or 0) and the record's tally started; then the object's approach set
  *   back (SceneObjectBase_DefaultApproach) and the record's byte 0x1e lowered by 3;
@@ -290,7 +290,7 @@ void OutdoorVillager_OnEvent(u8 *object, int code, int participant)
     u32 *lines = ov_word(object, OUTDOOR_VILLAGER_LINES);
     u32 *partner = ov_word(object, OUTDOOR_VILLAGER_PARTNER);
     u32 *reaction = ov_word(object, OUTDOOR_VILLAGER_REACTION);
-    u8 *byte_a04 = ov_at(object, OUTDOOR_VILLAGER_BYTE_A04);
+    u8 *in_pitfall = ov_at(object, OUTDOOR_VILLAGER_IN_PITFALL);
 
     switch (code) {
         case OUTDOOR_VILLAGER_EVENT_STARTS:
@@ -302,8 +302,8 @@ void OutdoorVillager_OnEvent(u8 *object, int code, int participant)
                 ((void (*)(u8 *)) ov_slot(other, OUTDOOR_VILLAGER_SLOT_SPEAKER_JOINED))(other);
             } else if (OutdoorVillagerWalks_IsDoing(behaviour, OUTDOOR_VILLAGER_DO_7) != 0) {
                 *lines = OUTDOOR_VILLAGER_LINES_DOING_7;
-            } else if (*byte_a04 != 0) {
-                *lines = OUTDOOR_VILLAGER_LINES_BYTE_A04;
+            } else if (*in_pitfall != 0) {
+                *lines = OUTDOOR_VILLAGER_LINES_IN_PITFALL;
             } else {
                 *lines = ov_lines_for_event(object);
             }
@@ -318,17 +318,17 @@ void OutdoorVillager_OnEvent(u8 *object, int code, int participant)
         case OUTDOOR_VILLAGER_EVENT_1: {
             int next = OUTDOOR_VILLAGER_DO_TALK;
             switch (*reaction) {
-                case OUTDOOR_VILLAGER_REACTION_0:
-                    next = OUTDOOR_VILLAGER_DO_14;
-                    *lines = OUTDOOR_VILLAGER_LINES_REACTION_0;
+                case OUTDOOR_VILLAGER_REACTION_GREETER:
+                    next = OUTDOOR_VILLAGER_DO_GREETED;
+                    *lines = OUTDOOR_VILLAGER_LINES_GREETER;
                     break;
-                case OUTDOOR_VILLAGER_REACTION_1:
-                    next = OUTDOOR_VILLAGER_DO_20;
-                    *lines = OUTDOOR_VILLAGER_LINES_REACTION_1;
+                case OUTDOOR_VILLAGER_REACTION_NETTED:
+                    next = OUTDOOR_VILLAGER_DO_NETTED_TALK;
+                    *lines = OUTDOOR_VILLAGER_LINES_NETTED;
                     break;
-                case OUTDOOR_VILLAGER_REACTION_2:
-                    next = OUTDOOR_VILLAGER_DO_22;
-                    *lines = OUTDOOR_VILLAGER_LINES_REACTION_2;
+                case OUTDOOR_VILLAGER_REACTION_PUSHED:
+                    next = OUTDOOR_VILLAGER_DO_PUSHED_TALK;
+                    *lines = OUTDOOR_VILLAGER_LINES_PUSHED;
                     break;
                 default:
                     break;
@@ -356,14 +356,14 @@ void OutdoorVillager_OnEvent(u8 *object, int code, int participant)
             OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_6);
             break;
         case OUTDOOR_VILLAGER_EVENT_ENDED:
-            if (*reaction == OUTDOOR_VILLAGER_REACTION_0) {
-                ov_ended_reaction_0(object);
+            if (*reaction == OUTDOOR_VILLAGER_REACTION_GREETER) {
+                ov_ended_greeting(object);
                 *reaction = OUTDOOR_VILLAGER_REACTION_NONE;
-            } else if (*reaction == OUTDOOR_VILLAGER_REACTION_2) {
+            } else if (*reaction == OUTDOOR_VILLAGER_REACTION_PUSHED) {
                 OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_DEFAULT);
                 *reaction = OUTDOOR_VILLAGER_REACTION_NONE;
-            } else if (*byte_a04 != 0) {
-                OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_18);
+            } else if (*in_pitfall != 0) {
+                OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_CLIMB_OUT);
             } else {
                 if (OutdoorVillagerBehaviour_Resume(behaviour, object) == 0) {
                     OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_DEFAULT);
@@ -379,8 +379,8 @@ void OutdoorVillager_OnEvent(u8 *object, int code, int participant)
             }
             break;
         case OUTDOOR_VILLAGER_EVENT_REFUSED:
-            if (*byte_a04 != 0) {
-                OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_18);
+            if (*in_pitfall != 0) {
+                OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_CLIMB_OUT);
             } else if (OutdoorVillagerBehaviour_Resume(behaviour, object) == 0) {
                 OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_DEFAULT);
             }
@@ -435,7 +435,7 @@ int OutdoorVillager_MayAct(u8 *object)
         VillagerSceneObject_HasByte838(object) != 0) {
         return 0;
     }
-    if (*ov_at(object, OUTDOOR_VILLAGER_BYTE_A04) != 0) {
+    if (*ov_at(object, OUTDOOR_VILLAGER_IN_PITFALL) != 0) {
         int player = SessionPlayers_ActorHandle(OUTDOOR_VILLAGER_PLAYER_ACTOR);
         if (player != 0) {
             int angle = SceneObject_AngleTo(object, (u8 *) (uintptr_t) (u32) player);

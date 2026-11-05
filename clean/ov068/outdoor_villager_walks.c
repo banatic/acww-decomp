@@ -106,8 +106,8 @@ void OutdoorVillagerRecords_RedrawActivity(u8 *villager);
 #define WALKS_POSED 0x562     /* u8 */
 #define WALKS_DRAW_HOOK 0x8b0 /* MemberPointer: called to draw in place of the plain joints */
 #define WALKS_ITEM_SHOWN 0x9f0
-#define WALKS_BYTE_A04 0xa04
-#define WALKS_BYTE_A05 0xa05
+#define WALKS_IN_PITFALL 0xa04
+#define WALKS_NETTED 0xa05
 #define WALKS_TOWN_RECORD 0x830 /* u8 *: its town record */
 /* The parts of the behaviour member read here besides outdoor_villager.h's. */
 #define WALKS_ITEM_CHECK 0x34  /* s16: frames to the next redraw of the activity of the moment */
@@ -164,12 +164,12 @@ void OutdoorVillagerRecords_RedrawActivity(u8 *villager);
 #define WALKS_DO_GO_IN 2
 #define WALKS_DO_IN 3
 #define WALKS_DO_PAIRED 9
-#define WALKS_DO_EFFECT 11
+#define WALKS_DO_FLEAS_GONE 11
 #define WALKS_DO_ITEM_OUT 15
 #define WALKS_DO_ITEM_AWAY 16
-#define WALKS_DO_MARKED 17
-#define WALKS_DO_BYTE_A05 19
-#define WALKS_DO_COUNT_A06 21
+#define WALKS_DO_PITFALL 17
+#define WALKS_DO_NETTED 19
+#define WALKS_DO_PUSHED 21
 #define WALKS_DO_SHOWN 23
 #define WALKS_DO_CALL 7
 
@@ -379,7 +379,7 @@ int OutdoorVillagerWalks_Start5(OutdoorVillagerBehaviour *self, u8 *villager)
         SceneAction_RequestTalk(walks_action(villager), 1, 0);
         return 1;
     }
-    if (*walks_at(villager, WALKS_BYTE_A04) != 0) {
+    if (*walks_at(villager, WALKS_IN_PITFALL) != 0) {
         SceneAction_RequestTalk(walks_action(villager), 0, 0);
         walks_hold(villager, 1);
         return 1;
@@ -602,16 +602,16 @@ int OutdoorVillagerWalks_Choose(OutdoorVillagerBehaviour *self, u8 *villager)
         }
         return 1;
     }
-    if (OutdoorVillagerWalks_OnMarkedTile(self, villager) != 0) {
-        OutdoorVillagerBehaviour_Start(self, villager, WALKS_DO_MARKED);
+    if (OutdoorVillagerWalks_OnPitfall(self, villager) != 0) {
+        OutdoorVillagerBehaviour_Start(self, villager, WALKS_DO_PITFALL);
         return 1;
     }
-    if (*(const u16 *) (const void *) walks_at(villager, OUTDOOR_VILLAGER_COUNT_A06) >= data_ov068_02276724[0]) {
-        OutdoorVillagerBehaviour_Start(self, villager, WALKS_DO_COUNT_A06);
+    if (*(const u16 *) (const void *) walks_at(villager, OUTDOOR_VILLAGER_PUSHED_FRAMES) >= data_ov068_02276724[0]) {
+        OutdoorVillagerBehaviour_Start(self, villager, WALKS_DO_PUSHED);
         return 1;
     }
-    if (OutdoorVillagerWalks_HasByteA05(self, villager) != 0) {
-        OutdoorVillagerBehaviour_Start(self, villager, WALKS_DO_BYTE_A05);
+    if (OutdoorVillagerWalks_WasNetted(self, villager) != 0) {
+        OutdoorVillagerBehaviour_Start(self, villager, WALKS_DO_NETTED);
         return 1;
     }
     if (OutdoorVillagerBehaviour_CallsPlayer(self, villager) != 0) {
@@ -622,7 +622,7 @@ int OutdoorVillagerWalks_Choose(OutdoorVillagerBehaviour *self, u8 *villager)
         return 1;
     }
     if (OutdoorVillagerEffect_Countdown((OutdoorVillagerEffect *) (void *) walks_at(villager, OUTDOOR_VILLAGER_EFFECT)) != 0) {
-        OutdoorVillagerBehaviour_Start(self, villager, WALKS_DO_EFFECT);
+        OutdoorVillagerBehaviour_Start(self, villager, WALKS_DO_FLEAS_GONE);
         return 1;
     }
     if (OutdoorVillagerWalks_ChangeHeldItem(self, villager) != 0) {
@@ -675,17 +675,17 @@ int OutdoorVillagerWalks_PlayerShowsCatch(OutdoorVillagerBehaviour *self)
 CLEAN_AS(func_ov068_0226c0a4, OutdoorVillagerWalks_PlayerShowsCatch)
 
 /* func_ov068_0226c0e0: whether the byte at 0xa05 is set (behaviour 19). */
-int OutdoorVillagerWalks_HasByteA05(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerWalks_WasNetted(OutdoorVillagerBehaviour *self, u8 *villager)
 {
     (void) self;
-    return villager[WALKS_BYTE_A05] != 0;
+    return villager[WALKS_NETTED] != 0;
 }
-CLEAN_AS(func_ov068_0226c0e0, OutdoorVillagerWalks_HasByteA05)
+CLEAN_AS(func_ov068_0226c0e0, OutdoorVillagerWalks_WasNetted)
 
 /* func_ov068_0226c0f4: whether the villager stands on a marked item 0x1566 (TileMarked),
  * within 0xb00 of its tile's centre, and a request of the tile (TileRequests_AskMarkedPitfall,
  * with its person index) answers 1 at once (the request then released). */
-int OutdoorVillagerWalks_OnMarkedTile(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerWalks_OnPitfall(OutdoorVillagerBehaviour *self, u8 *villager)
 {
     Vec3 *position = walks_position(villager);
     int result = 0;
@@ -709,7 +709,7 @@ int OutdoorVillagerWalks_OnMarkedTile(OutdoorVillagerBehaviour *self, u8 *villag
     }
     return result;
 }
-CLEAN_AS(func_ov068_0226c0f4, OutdoorVillagerWalks_OnMarkedTile)
+CLEAN_AS(func_ov068_0226c0f4, OutdoorVillagerWalks_OnPitfall)
 
 /* func_ov068_0226c170: whether the town's tile holds item 0x1566, marked (AcreTile_IsMarked);
  * 0 without the town's map or the tile. */
@@ -889,8 +889,8 @@ u8 *OutdoorVillagerWalks_FindPartner(OutdoorVillagerBehaviour *self, u8 *village
         }
         const NpcId *mine = TownVillager_NpcId(*(u8 **) (void *) walks_at(villager, WALKS_TOWN_RECORD));
         const NpcId *theirs = TownVillager_NpcId(other_record);
-        if (theirs->head.id == mine->head.id && memcmp(theirs->head.data, mine->head.data, sizeof(mine->head.data)) == 0 &&
-            theirs->number == mine->number) {
+        if (theirs->town.number == mine->town.number &&
+            memcmp(theirs->town.name, mine->town.name, sizeof(mine->town.name)) == 0 && theirs->number == mine->number) {
             continue;
         }
         Vec3 *other_position = walks_position(other);

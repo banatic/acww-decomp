@@ -14,10 +14,13 @@
  *   (0x628) names once it starts;
  * - 0x9f4 its effect (OutdoorVillagerEffect below);
  * - 0x9f8 the villager it is paired with while their talk starts, 0x9fc the lines its next talk
- *   says (OUTDOOR_VILLAGER_LINES_*), 0xa00 an effect handle (-1 for none), 0xa04 a byte that
- *   sends it to behaviour 18 once an event ends, 0xa05 a byte that sends it to behaviour 19,
- *   0xa06 a frame count (to 100) that sends it to behaviour 21 at 100, 0xa0c how its last
- *   behaviour wants the next talk to go (OUTDOOR_VILLAGER_REACTION_*).
+ *   says (OUTDOOR_VILLAGER_LINES_*), 0xa00 an effect handle (-1 for none), 0xa04 a byte set
+ *   while it is stuck in a pitfall (behaviour 17), which sends it to behaviour 18 (climbing
+ *   out) once an event ends, 0xa05 a byte set in the frame this console's player hits it with a
+ *   net (OutdoorVillagerObject_OnItemSwung), which sends it to behaviour 19, 0xa06 the frames
+ *   (to 100) the player has pushed against it (OutdoorVillagerObject_CountPushed), which send
+ *   it to behaviour 21 at 100, 0xa0c how its last behaviour wants the next talk to go
+ *   (OUTDOOR_VILLAGER_REACTION_*).
  *
  * Its own vtable slots: 0x40 and 0x44 the destructors, 0x48 whether the player may act on it,
  * 0x4c told of an event, 0x54 the other question of an event (main's event_kinds.h), 0x8c told
@@ -55,8 +58,8 @@
 #define OUTDOOR_VILLAGER_PARTNER 0x9f8        /* u8 *: the villager paired with, or null */
 #define OUTDOOR_VILLAGER_LINES 0x9fc          /* u32: OUTDOOR_VILLAGER_LINES_* */
 #define OUTDOOR_VILLAGER_EFFECT_HANDLE 0xa00  /* s32: -1 for none */
-#define OUTDOOR_VILLAGER_BYTE_A04 0xa04       /* u8 */
-#define OUTDOOR_VILLAGER_COUNT_A06 0xa06      /* u16 */
+#define OUTDOOR_VILLAGER_IN_PITFALL 0xa04     /* u8 */
+#define OUTDOOR_VILLAGER_PUSHED_FRAMES 0xa06  /* u16 */
 #define OUTDOOR_VILLAGER_REACTION 0xa0c       /* u32: OUTDOOR_VILLAGER_REACTION_* */
 
 /* The vtable slots called here. */
@@ -79,10 +82,10 @@
 #define OUTDOOR_VILLAGER_DO_SPEAKER 10 /* joined a talk as a speaker (slot 0x8c) */
 /* As 3, for the villager VillagerState_GetBirthdayVillager names or with a status of 3 to 7. */
 #define OUTDOOR_VILLAGER_DO_12 12
-#define OUTDOOR_VILLAGER_DO_14 14 /* told of event 1 after reaction 0 */
-#define OUTDOOR_VILLAGER_DO_18 18 /* after an event while the byte at 0xa04 is set */
-#define OUTDOOR_VILLAGER_DO_20 20 /* told of event 1 after reaction 1 */
-#define OUTDOOR_VILLAGER_DO_22 22 /* told of event 1 after reaction 2 */
+#define OUTDOOR_VILLAGER_DO_GREETED 14     /* told of event 1 after the birthday greeter's reaction */
+#define OUTDOOR_VILLAGER_DO_CLIMB_OUT 18   /* after an event while it is stuck in a pitfall */
+#define OUTDOOR_VILLAGER_DO_NETTED_TALK 20 /* told of event 1 after the third net hit */
+#define OUTDOOR_VILLAGER_DO_PUSHED_TALK 22 /* told of event 1 after being pushed */
 
 /* The codes of its vtable slot 0x4c (main's event_kinds.h). */
 #define OUTDOOR_VILLAGER_EVENT_0 0
@@ -93,25 +96,27 @@
 #define OUTDOOR_VILLAGER_EVENT_ENDED 8
 
 /* What the last behaviour wants of the next talk (0xa0c): the lines and the behaviour event 1
- * gives. Behaviour 19 sets 1, behaviour 21 sets 2, the talks they lead to set 3. */
-#define OUTDOOR_VILLAGER_REACTION_0 0
-#define OUTDOOR_VILLAGER_REACTION_1 1
-#define OUTDOOR_VILLAGER_REACTION_2 2
+ * gives. Behaviour 13 (the birthday greeter) sets 0, behaviour 19 (netted) 1, behaviour 21
+ * (pushed) 2, the talks they lead to 3. */
+#define OUTDOOR_VILLAGER_REACTION_GREETER 0
+#define OUTDOOR_VILLAGER_REACTION_NETTED 1
+#define OUTDOOR_VILLAGER_REACTION_PUSHED 2
 #define OUTDOOR_VILLAGER_REACTION_NONE 3
 
 /* The lines its talk says (VillagerTalkScene_Start's `lines`, 0x9fc). */
 #define OUTDOOR_VILLAGER_LINES_DEFAULT 0
-#define OUTDOOR_VILLAGER_LINES_PAIRED 1     /* paired with another villager */
-#define OUTDOOR_VILLAGER_LINES_DOING_7 2    /* while behaviour 7 runs */
-#define OUTDOOR_VILLAGER_LINES_BYTE_A04 0xe /* while the byte at 0xa04 is set */
-#define OUTDOOR_VILLAGER_LINES_REACTION_0 0xd
-#define OUTDOOR_VILLAGER_LINES_REACTION_1 0xf
-#define OUTDOOR_VILLAGER_LINES_REACTION_2 0x10
+#define OUTDOOR_VILLAGER_LINES_PAIRED 1       /* paired with another villager */
+#define OUTDOOR_VILLAGER_LINES_DOING_7 2      /* while behaviour 7 runs */
+#define OUTDOOR_VILLAGER_LINES_IN_PITFALL 0xe /* while stuck in a pitfall (0xa04) */
+#define OUTDOOR_VILLAGER_LINES_GREETER 0xd
+#define OUTDOOR_VILLAGER_LINES_NETTED 0xf
+#define OUTDOOR_VILLAGER_LINES_PUSHED 0x10
 
-/* Its effect (0x9f4): while it is the villager the state table names at 0x160
- * (VillagerCheck_HasFleas), effect 0x81 at its joint 16 every 15 to 29 frames. The countdown
- * runs down with the wait (OutdoorVillagerEffect_Tick); while it is not 0, the overlay's choice
- * of a behaviour (func_ov068_0226befc) may start behaviour 11. */
+/* Its effect (0x9f4): while it is the villager with fleas, the one the state table names at
+ * 0x160 (VillagerCheck_HasFleas), effect 0x81 at its joint 16 every 15 to 29 frames. Hit with a
+ * net, that villager loses its fleas (OutdoorVillagerObject_OnItemSwung) and the countdown is
+ * set; it runs down with the wait (OutdoorVillagerEffect_Tick), and while it is not 0 the
+ * overlay's choice of a behaviour (func_ov068_0226befc) may start behaviour 11. */
 typedef struct OutdoorVillagerEffect {
     s8 wait;       /* 0x00: frames to the next effect; -1 while it is not that villager */
     u8 unk_01;     /* 0x01 */
