@@ -1850,7 +1850,7 @@ scene("gardens-talks", "wallet", 7720, [2800, 4200, 5000, 5900, 6800, 7719], fra
       "in the gardening event's days, talk to a villager again and again: the event's talks",
       rtc="2027-04-08 10:00:00")
 scene("new-year-talks", "wallet", 9710, [2800, 4200, 5000, 6000, 7800, 9709], frames(4200, 9710, 100),
-      "on New Year's Day, a villager comes up to wish a happy new year; talks with another, its gift",
+      "on New Year's Day, the seed player's birthday: the birthday greeter by the house, its talk and cake",
       rtc="2027-01-01 13:00:00")
 scene("winter-talks", "wallet", 12400, [2800, 4200, 6000, 8000, 10000, 12399], frames(4200, 12400, 200),
       "on 24 December, talk to a villager again and again: what it holds and the catches it tells of",

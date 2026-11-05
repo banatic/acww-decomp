@@ -472,7 +472,8 @@ What reading the Clean code found about the groups above; counts are of function
   per event date talking to one villager again and again: acorn-ask (the acorn festival's
   week, 6 October: the villager asks for an acorn, VillagerTalk_AskPocketAcorn; save acorns),
   snow-talks (8 February 2027, one ending on the slider window), gardens-talks (8 April 2027),
-  new-year-talks (1 January 2027: a villager comes up to wish a happy new year, behaviour 14)
+  new-year-talks (1 January 2027, the seed player's birthday: the birthday greeter, behaviours 13
+  and 14, and its cake)
   and winter-talks (24 December). Other dates and hours tried (25 and 31 October, 26 November,
   3 November, 12 January, 2 and 14 February, 14 and 20 March, 1 April, 5 May, 21 June, 4 July,
   11 August at night, 6:30 and 23:30 on the seed's day) gave only one or two talk tags each.
