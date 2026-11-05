@@ -88,7 +88,7 @@ MUSEUM_A, MUSEUM_B, MUSEUM_C, MUSEUM_D = 0x17150, 0x17150 + 0x1B, 0x17150 + 0x1B
 ROACHES = 0xF52C + 0x15A0 + 3
 NOOK_STORE = 0x171B4  # Nook's store (main/nook_store.h)
 VILLAGER_PART = 0x14 + 0x1E40  # the player's villager part (main/villager_part.h)
-HANDOVER = VILLAGER_PART + 0xA4  # its handed-over record
+HOUSE_VISIT = VILLAGER_PART + 0xA4  # its house visit record
 VILLAGER_SICKNESS = 0x9284 + 0x3F90  # the town's villager sickness record (main/villager_sickness.h)
 
 
@@ -151,16 +151,16 @@ SAVES = {
     "store-2": [(HELD, "<H", 0x1374), (MONEY, "<I", 30000), (NOOK_STORE + 0x5A, "<H", 2 << 9),
                 (NOOK_STORE + 0x51, "<B", 1), (0xE3B4, "<H", 0x500F)],
     # a visit to the player's house agreed with villager 1 for 11:30 on the seed's day: the
-    # handed-over record of the player's villager part (main/villager_part_handover.h, at 0xa4
+    # house visit record of the player's villager part (main/villager_house_visit.h, at 0xa4
     # of the part at 0x1e40 of the player's record) holds the villager's NpcId (copied from its
     # town record, villager_town.h: eight of 0x7ec bytes at 0x9284, the NpcId at 0x7a0), an
     # object of type 21 not yet started (low bits 0, ov068/house_visitor.h) and the time; the
     # rod held and no cockroaches (as for "songs")
     "house-visitor": [(HELD, "<H", 0x1374), (ROACHES, "<B", 0)] +
-                     raw(HANDOVER, bytes.fromhex("6ec64331433143314331433143310310")) +  # the NpcId
-                     raw(HANDOVER + 0x10, bytes((0, 0, 11, 11, 9, 26, 0, 0))) +  # the object's date, 11:00
-                     [(HANDOVER + 0x18, "<H", 0xFFF1), (HANDOVER + 0x1A, "<B", 21), (HANDOVER + 0x1B, "<B", 0)] +
-                     raw(HANDOVER + 0x1C, bytes((0, 30, 11, 11, 9, 26, 0, 0))),  # the time agreed, 11:30
+                     raw(HOUSE_VISIT, bytes.fromhex("6ec64331433143314331433143310310")) +  # the NpcId
+                     raw(HOUSE_VISIT + 0x10, bytes((0, 0, 11, 11, 9, 26, 0, 0))) +  # the object's date, 11:00
+                     [(HOUSE_VISIT + 0x18, "<H", 0xFFF1), (HOUSE_VISIT + 0x1A, "<B", 21), (HOUSE_VISIT + 0x1B, "<B", 0)] +
+                     raw(HOUSE_VISIT + 0x1C, bytes((0, 30, 11, 11, 9, 26, 0, 0))),  # the time agreed, 11:30
     # villager 1 sick in its house: the town's villager sickness record (main/villager_sickness.h, at
     # 0x3f90 of the villagers at 0x9284) given its object, dated 14:00 on 23 September, with the
     # medicine (item 0x155e, object type 9), the villager's NpcId (as for "house-visitor"), the
@@ -610,7 +610,7 @@ SAVES["sable-7"] = [(HELD, "<H", 0x1374), (0x14 + 0x2416 + 8, "<B", 7)]
 # 5,000 bells in the wallet (between the amounts of the impression tests, main/villager_impression.c)
 # and the weeds (item codes 0x21-0x24) of the inner acres 9 and 10 (tiles 32-63, 48-63: the house's
 # acre and the one east of it) pulled: a talk ending there is past the impression test of weeds
-# about the player (VillagerImpression_NearCodes21To24). The bits (lowest first) mark the acre's
+# about the player (VillagerImpression_NearWeeds). The bits (lowest first) mark the acre's
 # tiles that hold a weed in the seed (main/town_layout.h, the items at 0x24 of the layout at 0xd304).
 TOWN_ITEMS = 0xD304 + 0x24
 WEEDS_PULLED = {9: 0x022E06189E094015A002200BA00BA01100002009800B88889040200082402956,
@@ -820,11 +820,11 @@ SAVES["deliver-cloth"] = (delivery(10, (0, 0, 12, 12, 9, 26), 0x11FE, 1, 0) + [(
                           [(POCKET_STATES, "<I", 2)])
 SAVES["deliver-cloth-style1"] = (delivery(10, (0, 0, 12, 12, 9, 26), 0x11E5, 1, 0) + [(POCKETS, "<H", 0x11E5)] +
                                  [(POCKET_STATES, "<I", 2)])
-# villager 0's visit to the player's house (the handed-over record, as for "house-visitor") agreed
+# villager 0's visit to the player's house (the house visit record, as for "house-visitor") agreed
 # for 11:30 on the 10th, the day before the boot: its greeting says the visit was missed
-SAVES["visit-missed"] = (raw(HANDOVER, SEED_NPC[0]) + raw(HANDOVER + 0x10, bytes((0, 0, 11, 10, 9, 26, 0, 0))) +
-                         [(HANDOVER + 0x18, "<H", 0xFFF1), (HANDOVER + 0x1A, "<B", 21), (HANDOVER + 0x1B, "<B", 0)] +
-                         raw(HANDOVER + 0x1C, bytes((0, 30, 11, 10, 9, 26, 0, 0))))
+SAVES["visit-missed"] = (raw(HOUSE_VISIT, SEED_NPC[0]) + raw(HOUSE_VISIT + 0x10, bytes((0, 0, 11, 10, 9, 26, 0, 0))) +
+                         [(HOUSE_VISIT + 0x18, "<H", 0xFFF1), (HOUSE_VISIT + 0x1A, "<B", 21), (HOUSE_VISIT + 0x1B, "<B", 0)] +
+                         raw(HOUSE_VISIT + 0x1C, bytes((0, 30, 11, 10, 9, 26, 0, 0))))
 # villager 0's sickness (the town's villager sickness record, as for "sick") cured the day
 # before the boot and so kept for three days (VillagerSicknessRecord_IsRecentlyCured): stage 5, the object
 # of type 9 still in use with its low bits `low`, the sickness started on the 1st and last stepped on
@@ -1106,7 +1106,7 @@ SAVES["villager-items"] = [(TOWN_VILLAGERS + 0x7EC * villager + 0x7B0 + 2 * i, "
                            for i, item in enumerate(items)] + villager_errand(2, 4, 0, low=3, player=True)
 # block 1 of the player's villager part (0xa4: the seed's villager 0's NpcId, its object at 0xb4 of
 # type 0x15, low bits 1, dated the 10th, the date at 0xc0 the 10th and the present kind 5 in the
-# low bits of 0xc8): the load's VillagerTown_ExpirePlayerObjects marks it done and, its date not
+# low bits of 0xc8): the load's VillagerTown_ExpireHouseVisits marks it done and, its date not
 # today's, sends the villager's "re_q10" letter with a present (VillagerPost_SendQ10Reply)
 SAVES["q10-reply"] = raw(VILLAGER_PART + 0xA4, SEED_NPC[0]) + raw(VILLAGER_PART + 0xB4, bytes((0, 0, 12, 10, 9, 26, 0, 0))) + [
     (VILLAGER_PART + 0xBE, "<B", 0x15), (VILLAGER_PART + 0xBF, "<B", 1)] + raw(
@@ -2683,7 +2683,7 @@ scene("job-errand-18", "job-11-step1", 5224, [2600, 3800, 4600, 5223], frames(38
 scene("job-no-uniform", "job-0f-shirt", 5224, [2600, 3800, 4600, 5223], frames(3800, 5224, 50),
       "job-ask-again out of uniform: Tom Nook's line for it clears the job's flag", recording="job-ask-again")
 scene("villager-q10-reply", "q10-reply", 4800, [2600, 3700, 4400, 4799], frames(3100, 4800, 50),
-      "menus with a villager's handover of kind 0x15 dated the day before: the load sends its reply "
+      "menus with a villager's house visit (kind 0x15) dated the day before: the load sends its reply "
       "letter with a present", recording="menus")
 scene("nook-package-no", "nook-package", 5910, [2600, 3800, 4500, 5000, 5909], frames(3900, 5910, 50),
       "nook-package with the second answer to his asking for the item: he does not take it and stops "

@@ -3,7 +3,7 @@
 # 00:05:03: at this second too villager 4 is dealt the object type 21 at the load (VillagerErrands_Deal:
 # the visit to the player's house), and she is out at night (by the trees west of the houses,
 # tile 20.5, 37.5). North-west to her (about 3820); talks with A every 40 frames until one ends in
-# her offer (VillagerTalkOffer_StateHandover, about 5800): the visit asked for and the time screen
+# her offer (VillagerTalkOffer_StateHouseVisit, about 5800): the visit asked for and the time screen
 # opened (ov136, mode 0x31, about 6200). The minute list by the keys, 49 picked, START and A on OK:
 # 0:49 is more than 30 minutes after now, before 6:00 and before her night window
 # (VillagerTalkSteps_SayByKeptTime, the table at 0x021c3034: VillagerTalkSteps_Line8bc0), and the

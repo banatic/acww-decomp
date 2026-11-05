@@ -30,7 +30,7 @@
 #include "villager_part.h"
 #include "villager_part_block.h"
 #include "villager_part_entry.h"
-#include "villager_part_handover.h"
+#include "villager_house_visit.h"
 #include "word_archives.h"
 
 static_assert(offsetof(PlayerRecordVillager, villager) == 0xe, "PlayerRecordVillager layout");
@@ -430,7 +430,7 @@ CLEAN_AS(func_020992f0, PlayerRecord_ReactionSlots)
 #define RECORD_PLAYER 0x247e
 
 /* The object at 0xa4 of the villagers' part (an NpcId, then an object). */
-#define VILLAGER_PART_OBJECT_A4 0xa4
+#define VILLAGER_PART_HOUSE_VISIT 0xa4
 
 /* Byte 0x243c: the face and the head's kind. */
 #define LOOKS_FACE_MASK 0x0f
@@ -591,8 +591,7 @@ void PlayerRecord_ResetForNewTown(u8 *record)
 
     VillagerPartBlock_Clear(VillagerPart_Block((VillagerPart *) (void *) PlayerRecord_VillagerPart(record), 0));
     VillagerPartBlock_Clear(VillagerPart_Block((VillagerPart *) (void *) PlayerRecord_VillagerPart(record), 1));
-    VillagerPartHandover_Clear(
-        (VillagerPartHandover *) (void *) (PlayerRecord_VillagerPart(record) + VILLAGER_PART_OBJECT_A4));
+    VillagerHouseVisit_Clear((VillagerHouseVisit *) (void *) (PlayerRecord_VillagerPart(record) + VILLAGER_PART_HOUSE_VISIT));
 
     for (int i = 0; i < PLAYER_POCKETS_SLOTS; i++, slot++) {
         if (PlayerPockets_SlotState(pockets, i) != SLOT_STATE_2) {

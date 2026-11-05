@@ -31,7 +31,7 @@
 #include "villager_sickness_record.h"
 #include "villager_object.h"
 #include "villager_part.h"
-#include "villager_part_handover.h"
+#include "villager_house_visit.h"
 #include "villager_post.h"
 #include "villager_residents.h"
 #include "villager_roster.h"
@@ -63,9 +63,10 @@ static_assert(sizeof(VillagerTownEvent) == 12, "event");
 /* The mode VillagerModeRecord_LeaveArrived and VillagerMode_Update give for no change
  * (VILLAGER_MODE_UNCHANGED). */
 #define VILLAGER_TOWN_MODE_UNCHANGED 12
-/* The type of object VillagerTown_ExpirePlayerObjects looks at, and the type it sets. */
-#define VILLAGER_TOWN_PLAYER_OBJECT 0x15
-#define VILLAGER_TOWN_PLAYER_OBJECT_DONE 4
+/* The errand type of the house visit (villager_house_visit.h), and the progress it is set to
+ * when it is over (HOUSE_VISITOR_VISIT_OVER of ov068). */
+#define VILLAGER_TOWN_HOUSE_VISIT 0x15
+#define VILLAGER_TOWN_HOUSE_VISIT_OVER 4
 /* The lowest score VillagerTown_ClosestCompanion starts from. */
 #define VILLAGER_TOWN_NO_SCORE (-100000)
 
@@ -772,16 +773,16 @@ void VillagerTown_UpdateVillagers(VillagerTown *town, int skip_designs)
 }
 CLEAN_AS(func_0207b41c, VillagerTown_UpdateVillagers)
 
-/* func_0207b4a8: for each player of the town whose id is set, the object at 0xb4 of its
- * record's part at 0x1e40 (with the NpcId at 0xa4 before it), when it holds type 0x15 for a
- * valid NpcId:
+/* func_0207b4a8: for each player of the town whose id is set, its house visit
+ * (villager_house_visit.h): the object at 0xb4 of its record's part at 0x1e40 (with the NpcId
+ * at 0xa4 before it), when it holds type 0x15 for a valid NpcId:
  *   - with the low bits of its byte 0x0b clear: emptied (func_0209af04) when `now` is a day
  *     before its date (its bytes 3-5);
  *   - else, with no kind in the low three bits of byte 0xc8: emptied;
  *   - else: the low bits of byte 0x0b set to 4, and when the date at 0xc0 is not `now`'s day,
  *     emptied when func_02059e1c agrees.
  * `town` is not used. */
-void VillagerTown_ExpirePlayerObjects(VillagerTown *town, const DateTime *now)
+void VillagerTown_ExpireHouseVisits(VillagerTown *town, const DateTime *now)
 {
     (void) town;
     for (int i = 0; i < 4; i++) {
@@ -792,27 +793,27 @@ void VillagerTown_ExpirePlayerObjects(VillagerTown *town, const DateTime *now)
         u8 *part = PlayerRecord_VillagerPart(record) + 0xa4;
         u8 *object = part + 0x10;
         if (!VillagerErrand_IsInUse((VillagerErrand *) (void *) object) ||
-            VillagerErrand_Type((VillagerErrand *) (void *) object) != VILLAGER_TOWN_PLAYER_OBJECT ||
+            VillagerErrand_Type((VillagerErrand *) (void *) object) != VILLAGER_TOWN_HOUSE_VISIT ||
             !NpcId_IsValid((const NpcId *) part)) {
             continue;
         }
         if (VillagerErrand_Progress((VillagerErrand *) (void *) object) == 0) {
             if (DateTime_DaysBetween(VillagerErrand_Date((VillagerErrand *) (void *) object), now) < 0) {
-                VillagerPartHandover_Clear((VillagerPartHandover *) (void *) part);
+                VillagerHouseVisit_Clear((VillagerHouseVisit *) (void *) part);
             }
         } else if ((part[0x24] & 7) != 0) {
             int days = DateTime_DaysBetween((const DateTime *) (void *) (part + 0x1c), now);
-            VillagerErrand_SetProgress((VillagerErrand *) (void *) object, VILLAGER_TOWN_PLAYER_OBJECT_DONE);
+            VillagerErrand_SetProgress((VillagerErrand *) (void *) object, VILLAGER_TOWN_HOUSE_VISIT_OVER);
             if (days != 0 &&
                 VillagerPost_SendQ10Reply(part[0x24] & 7, PlayerRecord_Player(record), (const NpcId *) (void *) part) != 0) {
-                VillagerPartHandover_Clear((VillagerPartHandover *) (void *) part);
+                VillagerHouseVisit_Clear((VillagerHouseVisit *) (void *) part);
             }
         } else {
-            VillagerPartHandover_Clear((VillagerPartHandover *) (void *) part);
+            VillagerHouseVisit_Clear((VillagerHouseVisit *) (void *) part);
         }
     }
 }
-CLEAN_AS(func_0207b4a8, VillagerTown_ExpirePlayerObjects)
+CLEAN_AS(func_0207b4a8, VillagerTown_ExpireHouseVisits)
 
 /* func_0207b9d0: the state table's entry for villager index `index`, or NULL outside 0-7. */
 VillagerState *VillagerTown_StateAt(int index)
@@ -864,7 +865,7 @@ void VillagerTown_Update(VillagerTown *town, int skip_designs)
             MI_CpuCopy8(&now, &town->last_departure, sizeof(DateTime));
         }
     }
-    VillagerTown_ExpirePlayerObjects(town, &now);
+    VillagerTown_ExpireHouseVisits(town, &now);
     VillagerTown_UpdateModes(town, &now);
     VillagerResidents_Exchange(town, &now);
     VillagerTown_StartLeaving(town, &now);

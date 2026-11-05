@@ -102,7 +102,7 @@ int VillagerTown_NextEvent(unsigned int days, const DateTime *from);
 int VillagerTown_CurrentEvent(void);
 void VillagerTown_PickFoxPasswordVillager(VillagerTown *town);
 void VillagerTown_UpdateVillagers(VillagerTown *town, int skip_designs);
-void VillagerTown_ExpirePlayerObjects(VillagerTown *town, const DateTime *now);
+void VillagerTown_ExpireHouseVisits(VillagerTown *town, const DateTime *now);
 VillagerState *VillagerTown_StateAt(int index);
 void VillagerTown_StartDay(VillagerTown *town);
 void VillagerTown_Update(VillagerTown *town, int skip_designs);

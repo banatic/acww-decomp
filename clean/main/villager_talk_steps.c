@@ -24,7 +24,7 @@
 #include "villager_sickness.h"
 #include "villager_sickness_record.h"
 #include "villager_object.h"
-#include "villager_part_handover.h"
+#include "villager_house_visit.h"
 #include "villager_state.h"
 #include "villager_status.h"
 #include "villager_town.h"
@@ -39,9 +39,9 @@
 #define VILLAGER_TALK_STEPS_OBJECT_RECORD 0x830
 /* The talk's villager object (villager_object.h), at 0x164. */
 #define VILLAGER_TALK_STEPS_VILLAGER_OBJECT 0x164
-/* The record VillagerPartHandover at 0xa4 of a player's villager part, and its date. */
-#define VILLAGER_TALK_STEPS_HANDOVER 0xa4
-#define VILLAGER_TALK_STEPS_HANDOVER_DATE 0xc0
+/* The record VillagerHouseVisit at 0xa4 of a player's villager part, and its date. */
+#define VILLAGER_TALK_STEPS_HOUSE_VISIT 0xa4
+#define VILLAGER_TALK_STEPS_HOUSE_VISIT_DATE 0xc0
 
 /* Kept time within this many minutes of now. */
 #define VILLAGER_TALK_STEPS_RECENT_MINUTES 30
@@ -212,39 +212,40 @@ void VillagerTalkSteps_Line8a28(VillagerTalk *talk, VillagerTalkLine *out)
 }
 CLEAN_AS(func_020231fc, VillagerTalkSteps_Line8a28)
 
-/* func_02023260: a line of the set at 0x020c8e08, then what a villager handed over to the
- * current player emptied (the record is found first). */
-void VillagerTalkSteps_LineClearHandover(VillagerTalk *talk, VillagerTalkLine *out)
+/* func_02023260: a line of the set at 0x020c8e08, then the current player's house visit
+ * emptied (the record is found first). */
+void VillagerTalkSteps_LineClearHouseVisit(VillagerTalk *talk, VillagerTalkLine *out)
 {
-    VillagerPartHandover *handover = (VillagerPartHandover *) (void *) steps_part(VILLAGER_TALK_STEPS_HANDOVER);
+    VillagerHouseVisit *visit = (VillagerHouseVisit *) (void *) steps_part(VILLAGER_TALK_STEPS_HOUSE_VISIT);
     steps_line(talk, out, &data_020c8e08);
-    VillagerPartHandover_Clear(handover);
+    VillagerHouseVisit_Clear(visit);
 }
-CLEAN_AS(func_02023260, VillagerTalkSteps_LineClearHandover)
+CLEAN_AS(func_02023260, VillagerTalkSteps_LineClearHouseVisit)
 
-/* func_020232d4: the date of what a villager handed over to the current player put into the
- * talk's slots (func_02029264), then a line of the set at 0x020c8e18. */
-void VillagerTalkSteps_LineHandoverTime(VillagerTalk *talk, VillagerTalkLine *out)
+/* func_020232d4: the time agreed for the current player's house visit put into the talk's slots
+ * (func_02029264), then a line of the set at 0x020c8e18. */
+void VillagerTalkSteps_LineHouseVisitTime(VillagerTalk *talk, VillagerTalkLine *out)
 {
-    VillagerTalkOffer_PutTime(talk, (const DateTime *) (void *) steps_part(VILLAGER_TALK_STEPS_HANDOVER_DATE));
+    VillagerTalkOffer_PutTime(talk, (const DateTime *) (void *) steps_part(VILLAGER_TALK_STEPS_HOUSE_VISIT_DATE));
     steps_line(talk, out, &data_020c8e18);
 }
-CLEAN_AS(func_020232d4, VillagerTalkSteps_LineHandoverTime)
+CLEAN_AS(func_020232d4, VillagerTalkSteps_LineHouseVisitTime)
 
-/* func_02023348: the talk's villager hands over to the current player: its NpcId and the kept
- * date (func_0206f80c) set in the player's record (VillagerPartHandover_Set), the object of
+/* func_02023348: the talk's villager agrees to visit the current player's house: its NpcId and
+ * the kept date (func_0206f80c, the time agreed) set in the player's record
+ * (VillagerHouseVisit_Set), the object of
  * the villager's state entry emptied, then the town's villager kinds dealt when needed. */
-void VillagerTalkSteps_HandOver(VillagerTalk *talk)
+void VillagerTalkSteps_SetHouseVisit(VillagerTalk *talk)
 {
     u8 *part = PlayerRecord_VillagerPart(PlayerRecords_Current());
     DateTime kept = {0};
     Global021cfc98_CopyOut(&kept);
     const NpcId *npc = TownVillager_NpcId(steps_record(talk));
-    VillagerPartHandover_Set((VillagerPartHandover *) (void *) (part + VILLAGER_TALK_STEPS_HANDOVER), npc, &kept);
+    VillagerHouseVisit_Set((VillagerHouseVisit *) (void *) (part + VILLAGER_TALK_STEPS_HOUSE_VISIT), npc, &kept);
     VillagerErrand_Clear((VillagerErrand *) (void *) VillagerState_Errand(VillagerStatus_StateEntry(steps_record(talk))));
     VillagerErrands_DealIfNeeded(&data_021e5a2c);
 }
-CLEAN_AS(func_02023348, VillagerTalkSteps_HandOver)
+CLEAN_AS(func_02023348, VillagerTalkSteps_SetHouseVisit)
 
 /* func_020233ac: the kept time (func_0206f80c) put into the talk's slots, a line of the set at
  * 0x020c8e30, the sound 0x5e and data_020d8e90 set at 0xe8. */

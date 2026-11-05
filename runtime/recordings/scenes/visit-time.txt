@@ -5,7 +5,7 @@
 # load (VillagerErrands_Deal: the visit to the player's house, class 3).
 # Save: seed. From the house south, west past Nook's store and north round its west side to
 # villager 4 (about 6280); talks with A every 40 frames until a talk ends in its offer
-# (VillagerTalkOffer_ByState, VillagerTalkOffer_StateHandover, about 12900): "play with me"
+# (VillagerTalkOffer_ByState, VillagerTalkOffer_StateHouseVisit, about 12900): "play with me"
 # taken, the villager asks to visit (VillagerTalkSteps_OfferChoices1f) and opens the time screen
 # (ov136, mode 0x31, about 13060). The hour list by the keys (A, DOWN held, UP, A: 13), the
 # minute list by the pen (a first tap switches to the pen; the bar tapped, the thumb dragged, 26
@@ -14,7 +14,7 @@
 # DOWN, 50 picked, A on OK: 11:50 is within 30 minutes (VillagerTalkSteps_SayByKeptTime) and the
 # screen opens again (about 14730); 23 by the keys, START, the minute picked again and A on OK:
 # she agrees (the handover set for 23:34). A talk again (about 15600): the visit's choice
-# (VillagerTalkOffer_KnownHandover with its time), to the end (16270).
+# (VillagerTalkOffer_KnownHouseVisit with its time), to the end (16270).
 0 - -
 900 START -
 906 - -

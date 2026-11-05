@@ -3,7 +3,7 @@
  * personality into the talk's text at 0x104 and message at 0x122 and name them in a
  * VillagerTalkLine), steps that say the line of a table of three members (func_0202da88),
  * offer choices, ask the scene's command for a screen or a motion, and hand the player an
- * item or what a villager handed over (VillagerPartHandover, villager_part_handover.h).
+ * item or what a villager handed over (VillagerHouseVisit, villager_house_visit.h).
  *
  * Several look at the errand at 0x154 of the talk (a VillagerErrand, villager_errand.h, by its type:
  * 14, 16 or 17): its type picks the message and what the villager gives. */
@@ -14,9 +14,9 @@
 #include "villager_talk.h"
 
 void VillagerTalkSteps_Line8a28(VillagerTalk *talk, VillagerTalkLine *out);
-void VillagerTalkSteps_LineClearHandover(VillagerTalk *talk, VillagerTalkLine *out);
-void VillagerTalkSteps_LineHandoverTime(VillagerTalk *talk, VillagerTalkLine *out);
-void VillagerTalkSteps_HandOver(VillagerTalk *talk);
+void VillagerTalkSteps_LineClearHouseVisit(VillagerTalk *talk, VillagerTalkLine *out);
+void VillagerTalkSteps_LineHouseVisitTime(VillagerTalk *talk, VillagerTalkLine *out);
+void VillagerTalkSteps_SetHouseVisit(VillagerTalk *talk);
 void VillagerTalkSteps_LineKeptTime(VillagerTalk *talk, VillagerTalkLine *out);
 void VillagerTalkSteps_Line8bb0(VillagerTalk *talk, VillagerTalkLine *out);
 void VillagerTalkSteps_Line8bc0(VillagerTalk *talk, VillagerTalkLine *out);

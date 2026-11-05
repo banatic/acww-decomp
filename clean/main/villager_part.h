@@ -5,8 +5,8 @@
  * item at 8, its type at 0x0a, its progress in byte 0x0b) and two NpcIds; three NpcIds of
  * villagers picked in turn; a flag (0x90); the entry at 0x94 (VillagerPart_Entry,
  * villager_part_entry.h: an errand, then the index at 0x0c of an entry of data_020d1a54 whose
- * name func_0209b0c4 writes); and at 0xa4 an NpcId with an errand of its own
- * (villager_part_handover.h, villager_town.c).
+ * name func_0209b0c4 writes); and at 0xa4 a villager's visit to the player's house
+ * (villager_house_visit.h, villager_town.c).
  *
  * Overlay 50 takes block 0 through a sequence of types, which VillagerPart_HasStep tests for
  * (types 11-18): 11 resets it (VillagerPart_Reset), 12 and 13 name no villager, 14 names a
@@ -47,7 +47,7 @@ typedef struct VillagerPart {
     u8 flag;                                        /* 0x90 */
     u8 unused_91[3];
     u8 object_94[16]; /* 0x94 */
-    u8 rest_a4[0x28]; /* 0xa4: an NpcId and an object at 0xb4 */
+    u8 rest_a4[0x28]; /* 0xa4: the house visit (VillagerHouseVisit) */
 } VillagerPart;
 
 void VillagerPart_CurrentNameFor(void *text, u16 *item);

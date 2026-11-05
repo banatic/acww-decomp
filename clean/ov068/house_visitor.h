@@ -6,7 +6,7 @@
  * "q10_back", "q10_wait", then "q_bye").
  *
  * The visit is the record at 0xa4 of the villagers' part of this console's player's record
- * (main's villager_part_handover.h): its date (0x1c) is the time agreed, and the visit may
+ * (main's villager_house_visit.h): its date (0x1c) is the time agreed, and the visit may
  * start from that minute to 30 minutes after it (HouseVisitor_IsDue). The low five bits of its
  * object (0x10) say how far it went (HOUSE_VISITOR_VISIT_*), and the low three bits of its
  * byte 0x24 take the rating the villager gave the room.

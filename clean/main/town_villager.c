@@ -15,7 +15,7 @@
 #include "villager_memories.h"
 #include "villager_sickness.h"
 #include "villager_object.h"
-#include "villager_part_handover.h"
+#include "villager_house_visit.h"
 #include "villager_status.h"
 #include "villager_town.h"
 #include "date_time.h"
@@ -40,7 +40,7 @@
 /* The offset of the town's villagers (data_021e5a2c) from data_021dc7a8. */
 #define TOWN_VILLAGER_TOWN_OFFSET 0x9284
 /* Where a player record's part keeps the villager that handed it an object. */
-#define TOWN_VILLAGER_PART_HANDOVER 0xa4
+#define TOWN_VILLAGER_PART_HOUSE_VISIT 0xa4
 
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
@@ -79,7 +79,7 @@ CLEAN_AS(func_02080808, TownVillager_IsMemoryIndex)
 
 /* func_02080928: whether the villager can be picked as a companion: its NpcId valid, not the
  * villager sick in bed (VillagerSickness_VillagerIndex), its stay VILLAGER_STAY_RESIDENT,
- * and with a current player whose record's part does not hold an object handed over by it. */
+ * and with a current player whose record's part does not hold a house visit by it. */
 int TownVillager_IsFreeCompanion(u8 *villager)
 {
     if (!NpcId_IsValid(TownVillager_NpcId(villager))) {
@@ -97,9 +97,9 @@ int TownVillager_IsFreeCompanion(u8 *villager)
     if (record == NULL) {
         return 0;
     }
-    VillagerPartHandover *handover =
-        (VillagerPartHandover *) (void *) (PlayerRecord_VillagerPart(record) + TOWN_VILLAGER_PART_HANDOVER);
-    return !VillagerPartHandover_IsFrom(handover, TownVillager_NpcId(villager));
+    VillagerHouseVisit *visit =
+        (VillagerHouseVisit *) (void *) (PlayerRecord_VillagerPart(record) + TOWN_VILLAGER_PART_HOUSE_VISIT);
+    return !VillagerHouseVisit_IsFrom(visit, TownVillager_NpcId(villager));
 }
 CLEAN_AS(func_02080928, TownVillager_IsFreeCompanion)
 

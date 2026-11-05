@@ -29,7 +29,7 @@
 #include "villager_object.h"
 #include "villager_part.h"
 #include "villager_part_block.h"
-#include "villager_part_handover.h"
+#include "villager_house_visit.h"
 #include "villager_scene_object.h"
 #include "villager_status.h"
 #include "villager_town.h"
@@ -99,7 +99,7 @@
 #define VILLAGER_TALK_GREETING_CAME_1 1
 #define VILLAGER_TALK_GREETING_CAME_FROM_TOWN 2
 
-/* A request's object types (villager_talk_request.h) and the handover's. */
+/* A request's object types (villager_talk_request.h) and the visit's. */
 #define VILLAGER_TALK_GREETING_TYPE_ITEM 10
 #define VILLAGER_TALK_GREETING_TYPE_LETTER 19
 #define VILLAGER_TALK_GREETING_LETTER_STATE 8
@@ -285,8 +285,8 @@ CLEAN_AS(func_0202b94c, VillagerTalkGreeting_LineThree)
  * data_021c2a64 when the object's date is past (and the object kept at 0x154), else for type
  * 10 the table data_021c2aac when the pockets hold no item like the object's, and for type 19
  * the same when the pockets' first letter of state 7 or 8 has state 8 (that letter then
- * emptied). For class 3, the table data_021c3094 (and the handover's object kept at 0x154) when
- * the part's handover holds an object of type 21 with low bits 0 from this villager whose date
+ * emptied). For class 3, the table data_021c3094 (and the visit's object kept at 0x154) when
+ * the part's visit holds an object of type 21 with low bits 0 from this villager whose date
  * is behind now. Without an object at 0x154, the table data_021c1d54. Then the line of the line
  * function said while the talk is on its message.
  * REQUIRES: a line function set (the original then hands on an unset line). */
@@ -336,12 +336,12 @@ void VillagerTalkGreeting_SayByKnownObject(VillagerTalk *talk)
                 break;
             }
             case 3: {
-                VillagerPartHandover *handover = (VillagerPartHandover *) (void *) part->rest_a4;
-                VillagerErrand *object = (VillagerErrand *) (void *) handover->object;
-                if (VillagerErrand_IsInUse(object) != 0 && VillagerErrand_Type(object) == VILLAGER_PART_HANDOVER_TYPE &&
+                VillagerHouseVisit *visit = (VillagerHouseVisit *) (void *) part->rest_a4;
+                VillagerErrand *object = (VillagerErrand *) (void *) visit->object;
+                if (VillagerErrand_IsInUse(object) != 0 && VillagerErrand_Type(object) == VILLAGER_HOUSE_VISIT_TYPE &&
                     VillagerErrand_Progress(object) == 0 &&
-                    VillagerPartHandover_IsFrom(handover, TownVillager_NpcId(record)) != 0 &&
-                    DateTime_Compare(&now, &handover->date, VILLAGER_TALK_GREETING_ALL_FIELDS) == 1) {
+                    VillagerHouseVisit_IsFrom(visit, TownVillager_NpcId(record)) != 0 &&
+                    DateTime_Compare(&now, &visit->date, VILLAGER_TALK_GREETING_ALL_FIELDS) == 1) {
                     VillagerTalkScene_SetLines(talk, data_021c3094);
                     VillagerTalkScene_SetErrand(talk, (u32) (uintptr_t) object);
                 }

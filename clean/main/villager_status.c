@@ -17,14 +17,14 @@
 #include "villager_object.h"
 #include "villager_part.h"
 #include "villager_part_block.h"
-#include "villager_part_handover.h"
+#include "villager_house_visit.h"
 
 #define VILLAGER_STATUS_MODE_RECORD 0x734
 #define VILLAGER_STATUS_CAME 0x7d6
 /* The byte of a villager's data that holds its song. */
 #define VILLAGER_STATUS_SONG 0x4d
 /* Where a player's part (PlayerRecord_VillagerPart) keeps an NpcId with an object. */
-#define VILLAGER_STATUS_PART_A4 0xa4
+#define VILLAGER_STATUS_PART_HOUSE_VISIT 0xa4
 
 extern u8 data_021e5a2c[];        /* the town's villagers (VillagerTown) */
 extern NetSession *data_020ccf94; /* the session */
@@ -88,7 +88,7 @@ int VillagerStatus_PlayerHolds(u8 *villager, u8 *part)
     u8 *second = (u8 *) (VillagerPart_Block((VillagerPart *) (void *) part, 1));
     return VillagerStatus_BlockNames(first, npc) || VillagerStatus_BlockNames(second, npc) ||
            VillagerPart_IsSecondPick((VillagerPart *) (void *) part, npc) ||
-           VillagerPartHandover_IsFrom((VillagerPartHandover *) (void *) (part + VILLAGER_STATUS_PART_A4), npc);
+           VillagerHouseVisit_IsFrom((VillagerHouseVisit *) (void *) (part + VILLAGER_STATUS_PART_HOUSE_VISIT), npc);
 }
 CLEAN_AS(func_0207ef54, VillagerStatus_PlayerHolds)
 

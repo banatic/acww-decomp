@@ -5,7 +5,7 @@
 #include "clean.h"
 #include "session.h"
 #include "villager_part_entry.h"
-#include "villager_part_handover.h"
+#include "villager_house_visit.h"
 #include "item_lists.h"
 #include "villager_errand.h"
 #include "letter.h"
@@ -22,7 +22,7 @@ static_assert(sizeof(VillagerPartTypeEntry) == 20, "type entry");
 static_assert(offsetof(VillagerPartTypeEntry, limit) == 0x10, "limit");
 static_assert(offsetof(VillagerPartBlock, clothes_reaction) == 0x2c, "clothes reaction");
 static_assert(sizeof(VillagerPartEntry) == sizeof(((VillagerPart *) 0)->object_94), "entry");
-static_assert(sizeof(VillagerPartHandover) == sizeof(((VillagerPart *) 0)->rest_a4), "handover");
+static_assert(sizeof(VillagerHouseVisit) == sizeof(((VillagerPart *) 0)->rest_a4), "house visit");
 
 /* The items the step types' setups give the block's object. */
 #define VILLAGER_PART_BLOCK_ITEM_17 0x1564
@@ -295,14 +295,14 @@ void VillagerPart_ClearAll(VillagerPart *part)
     }
     VillagerPart_ClearPicks(part);
     VillagerPartEntry_Clear((VillagerPartEntry *) part->object_94);
-    VillagerPartHandover_Clear((VillagerPartHandover *) part->rest_a4);
+    VillagerHouseVisit_Clear((VillagerHouseVisit *) part->rest_a4);
 }
 CLEAN_AS(func_0209adb0, VillagerPart_ClearAll)
 
 /* func_0209ade4: the destructor. */
 VillagerPart *VillagerPart_Destruct(VillagerPart *part)
 {
-    VillagerPartHandover_Destruct((VillagerPartHandover *) part->rest_a4);
+    VillagerHouseVisit_Destruct((VillagerHouseVisit *) part->rest_a4);
     VillagerErrand_Destruct((VillagerErrand *) (void *) part->object_94);
     __cxa_vec_cleanup(part->picks, VILLAGER_PART_PICKS, sizeof(NpcId), func_02003750);
     __cxa_vec_cleanup(part->blocks, VILLAGER_PART_BLOCKS, sizeof(VillagerPartBlock), func_0209b594);
@@ -316,7 +316,7 @@ VillagerPart *VillagerPart_Construct(VillagerPart *part)
     __cxa_vec_ctor(part->blocks, VILLAGER_PART_BLOCKS, sizeof(VillagerPartBlock), func_0209b5b8, func_0209b594);
     __cxa_vec_ctor(part->picks, VILLAGER_PART_PICKS, sizeof(NpcId), func_02003780, func_02003750);
     VillagerErrand_Construct((VillagerErrand *) (void *) part->object_94);
-    VillagerPartHandover_Construct((VillagerPartHandover *) part->rest_a4);
+    VillagerHouseVisit_Construct((VillagerHouseVisit *) part->rest_a4);
     return part;
 }
 CLEAN_AS(func_0209ae20, VillagerPart_Construct)

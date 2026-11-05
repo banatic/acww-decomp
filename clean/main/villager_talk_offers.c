@@ -27,7 +27,7 @@
 #include "villager_sickness.h"
 #include "villager_sickness_record.h"
 #include "villager_part_block.h"
-#include "villager_part_handover.h"
+#include "villager_house_visit.h"
 #include "villager_roster.h"
 #include "villager_scene_object.h"
 #include "villager_state.h"
@@ -58,14 +58,14 @@
 #define VILLAGER_TALK_OFFER_TYPE_FOSSIL 2
 #define VILLAGER_TALK_OFFER_TYPE_CLOTHES 3
 #define VILLAGER_TALK_OFFER_TYPE_FURNITURE 4
-/* The type of the record VillagerPartHandover keeps, and the first-pick types of block 0
+/* The type of the record VillagerHouseVisit keeps, and the first-pick types of block 0
  * (villager_part.h) VillagerTalkOffer_DeliveryRecipient answers. */
-#define VILLAGER_TALK_OFFER_TYPE_HANDOVER 0x15
+#define VILLAGER_TALK_OFFER_TYPE_HOUSE_VISIT 0x15
 /* The groups and classes of types (villager_errand.h). */
 #define VILLAGER_TALK_OFFER_GROUP_0 0
 #define VILLAGER_TALK_OFFER_GROUP_1 1
 #define VILLAGER_TALK_OFFER_CLASS_1 1
-#define VILLAGER_TALK_OFFER_CLASS_HANDOVER 3
+#define VILLAGER_TALK_OFFER_CLASS_HOUSE_VISIT 3
 /* The band of steps of a part block's object (VillagerErrand_StepBand); 4 when there is none. */
 #define VILLAGER_TALK_OFFER_NO_BAND 4
 #define VILLAGER_TALK_OFFER_TYPES 0x16
@@ -388,7 +388,7 @@ CLEAN_AS(func_02028a40, VillagerTalkOffer_AfterSickness)
 /* func_02028b74: by the object of the villager's entry in the running state table, when it is
  * in use, the current player's flag 1 is clear and a roll below 100 is under 30: group 0 goes to
  * VillagerTalkOffer_StateGroup0, class 1 to VillagerTalkOffer_StateClass1 and class 3 (the
- * handover) to VillagerTalkOffer_StateHandover. Whether it offered. */
+ * visit) to VillagerTalkOffer_StateHouseVisit. Whether it offered. */
 int VillagerTalkOffer_ByState(VillagerTalk *talk, u8 *record, VillagerPart *part)
 {
     VillagerErrand *object = offer_state_object(record);
@@ -408,8 +408,8 @@ int VillagerTalkOffer_ByState(VillagerTalk *talk, u8 *record, VillagerPart *part
             switch (VillagerErrand_Class(object)) {
                 case VILLAGER_TALK_OFFER_CLASS_1:
                     return VillagerTalkOffer_StateClass1(talk, record, part);
-                case VILLAGER_TALK_OFFER_CLASS_HANDOVER:
-                    return VillagerTalkOffer_StateHandover(talk, record, part);
+                case VILLAGER_TALK_OFFER_CLASS_HOUSE_VISIT:
+                    return VillagerTalkOffer_StateHouseVisit(talk, record, part);
             }
             break;
     }
@@ -417,19 +417,19 @@ int VillagerTalkOffer_ByState(VillagerTalk *talk, u8 *record, VillagerPart *part
 }
 CLEAN_AS(func_02028b74, VillagerTalkOffer_ByState)
 
-/* func_02028c04: when this system holds no slot of the session, the part's handover object is
+/* func_02028c04: when this system holds no slot of the session, the part's visit object is
  * not in use, the player holds nothing of the villager's, the villager's stay is 3, there is no
  * town event, no villager's event within a day and the next town event is none: two choices
  * (data_021c2fec, data_021c1d6c) with the reply data_020d8eb8, the state object made the talk's.
  * Whether it offered. */
-int VillagerTalkOffer_StateHandover(VillagerTalk *talk, u8 *record, VillagerPart *part)
+int VillagerTalkOffer_StateHouseVisit(VillagerTalk *talk, u8 *record, VillagerPart *part)
 {
     VillagerErrand *object = offer_state_object(record);
-    VillagerPartHandover *handover = (VillagerPartHandover *) (void *) part->rest_a4;
+    VillagerHouseVisit *visit = (VillagerHouseVisit *) (void *) part->rest_a4;
     DateTime now = {0};
     DateTime_Now(&now);
     if (Session_IsSlotTaken(data_020ccf94, data_020ccf94->local_slot) != 0 ||
-        VillagerErrand_IsInUse((VillagerErrand *) (void *) handover->object) != 0 ||
+        VillagerErrand_IsInUse((VillagerErrand *) (void *) visit->object) != 0 ||
         VillagerStatus_PlayerHolds(record, (u8 *) part) != 0 || VillagerStatus_Stay(record) != 3 ||
         VillagerSceneObject_Event(talk->villager) != VILLAGER_SCENE_OBJECT_NO_EVENT ||
         TownVillager_BirthdayYearWithin(record, 1, &now) != VILLAGER_TALK_OFFER_NOT_FOUND ||
@@ -444,7 +444,7 @@ int VillagerTalkOffer_StateHandover(VillagerTalk *talk, u8 *record, VillagerPart
     offer_list(talk, &list, 2, 1, data_020d8eb8);
     return 1;
 }
-CLEAN_AS(func_02028c04, VillagerTalkOffer_StateHandover)
+CLEAN_AS(func_02028c04, VillagerTalkOffer_StateHouseVisit)
 
 /* Outdoors (data_020e54a8 0), whether the item the villager holds is `first` to `last`; in a
  * room, always. */
@@ -572,8 +572,8 @@ CLEAN_AS(func_02029074, VillagerTalkOffer_HasOtherResident)
 
 /* func_020290b0: when the current player's flag 1 is clear, by the type of the object something
  * holds for the villager (VillagerErrands_KnownType): group 0 goes to VillagerTalkOffer_KnownGroup0,
- * class 1 to VillagerTalkOffer_KnownBlock and class 3 (the handover) to
- * VillagerTalkOffer_KnownHandover. Whether it offered. */
+ * class 1 to VillagerTalkOffer_KnownBlock and class 3 (the visit) to
+ * VillagerTalkOffer_KnownHouseVisit. Whether it offered. */
 int VillagerTalkOffer_ByKnown(VillagerTalk *talk, u8 *record, VillagerPart *part)
 {
     u8 *player = PlayerRecords_Current();
@@ -591,8 +591,8 @@ int VillagerTalkOffer_ByKnown(VillagerTalk *talk, u8 *record, VillagerPart *part
             switch (VillagerErrand_ClassOfType(type)) {
                 case VILLAGER_TALK_OFFER_CLASS_1:
                     return VillagerTalkOffer_KnownBlock(talk, (int) (uintptr_t) record, part, (int) type);
-                case VILLAGER_TALK_OFFER_CLASS_HANDOVER:
-                    return VillagerTalkOffer_KnownHandover(talk, record, part, type);
+                case VILLAGER_TALK_OFFER_CLASS_HOUSE_VISIT:
+                    return VillagerTalkOffer_KnownHouseVisit(talk, record, part, type);
             }
             break;
     }
@@ -600,30 +600,30 @@ int VillagerTalkOffer_ByKnown(VillagerTalk *talk, u8 *record, VillagerPart *part
 }
 CLEAN_AS(func_020290b0, VillagerTalkOffer_ByKnown)
 
-/* func_0202913c: when there is no town event and the part's handover object is in use, of type
+/* func_0202913c: when there is no town event and the part's visit object is in use, of type
  * 21, from this villager and its low bits 0: the choice 0x30 running data_021c307c and
- * data_021c1d6c with the reply data_020d8df8, the handover's date put into the talk's slots;
+ * data_021c1d6c with the reply data_020d8df8, the visit's date put into the talk's slots;
  * otherwise the plain two choices with the reply data_020d8de8. Always offers. */
-int VillagerTalkOffer_KnownHandover(VillagerTalk *talk, u8 *record, VillagerPart *part, unsigned int type)
+int VillagerTalkOffer_KnownHouseVisit(VillagerTalk *talk, u8 *record, VillagerPart *part, unsigned int type)
 {
     (void) type;
-    VillagerPartHandover *handover = (VillagerPartHandover *) (void *) part->rest_a4;
-    VillagerErrand *object = (VillagerErrand *) (void *) handover->object;
+    VillagerHouseVisit *visit = (VillagerHouseVisit *) (void *) part->rest_a4;
+    VillagerErrand *object = (VillagerErrand *) (void *) visit->object;
     if (VillagerSceneObject_Event(talk->villager) == VILLAGER_SCENE_OBJECT_NO_EVENT && VillagerErrand_IsInUse(object) != 0 &&
-        VillagerErrand_Type(object) == VILLAGER_TALK_OFFER_TYPE_HANDOVER &&
-        VillagerPartHandover_IsFrom(handover, TownVillager_NpcId(record)) != 0 && VillagerErrand_Progress(object) == 0) {
+        VillagerErrand_Type(object) == VILLAGER_TALK_OFFER_TYPE_HOUSE_VISIT &&
+        VillagerHouseVisit_IsFrom(visit, TownVillager_NpcId(record)) != 0 && VillagerErrand_Progress(object) == 0) {
         TalkChoiceList list;
         TalkChoices_Clear(talk, &list);
         offer_set(talk, &list, 0, 0x30, data_021c307c);
         offer_set_from(talk, &list, 1, data_020c8924, data_021c1d6c);
         offer_list(talk, &list, 2, 1, data_020d8df8);
-        VillagerTalkOffer_PutTime(talk, &handover->date);
+        VillagerTalkOffer_PutTime(talk, &visit->date);
         return 1;
     }
     offer_plain(talk, data_020d8de8);
     return 1;
 }
-CLEAN_AS(func_0202913c, VillagerTalkOffer_KnownHandover)
+CLEAN_AS(func_0202913c, VillagerTalkOffer_KnownHouseVisit)
 
 /* func_02029264: a time put into the talk's slots: its day (slot 0), its hour on a 12-hour
  * clock (slot 1, 12 for 0, two digits) and its minute (slot 2, two digits). */

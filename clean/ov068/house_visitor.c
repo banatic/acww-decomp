@@ -43,7 +43,7 @@
 #include "main/town_villager.h"
 #include "main/villager_memories.h"
 #include "main/villager_memory_entry.h"
-#include "main/villager_part_handover.h"
+#include "main/villager_house_visit.h"
 #include "main/villager_scene_slots.h"
 #include "main/villager_state.h"
 #include "main/villager_status.h"
@@ -72,7 +72,7 @@ static_assert(offsetof(HouseVisitor, turn_yaw) == 0xa62, "turn yaw");
 static_assert(offsetof(HouseVisitor, walk_point) == 0xa64, "walk point");
 static_assert(offsetof(HouseVisitor, goal) == 0xa70, "goal");
 static_assert(sizeof(HouseVisitor) == 0xa7c, "the size func_ov068_022766e8 allocates");
-static_assert(sizeof(VillagerPartHandover) == 0x28, "the visit's record");
+static_assert(sizeof(VillagerHouseVisit) == 0x28, "the visit's record");
 
 /* The parts of the town villager scene object used here, by place (main's scene_object.h). */
 #define HOUSE_VISITOR_POSITION 0x5c     /* Vec3 */
@@ -216,10 +216,10 @@ static TalkObject *hv_talk(HouseVisitor *visitor)
     return (TalkObject *) (void *) visitor->talk.base.scene.talk;
 }
 
-/* The visit's record in this console's player's record (villager_part_handover.h). */
-static VillagerPartHandover *hv_visit(void)
+/* The visit's record in this console's player's record (villager_house_visit.h). */
+static VillagerHouseVisit *hv_visit(void)
 {
-    return (VillagerPartHandover *) (void *) (PlayerRecord_VillagerPart(PlayerRecords_Current()) + 0xa4);
+    return (VillagerHouseVisit *) (void *) (PlayerRecord_VillagerPart(PlayerRecords_Current()) + 0xa4);
 }
 
 /* The object of the visit's record whose low five bits say how far it went. */
@@ -995,8 +995,8 @@ void HouseVisitorTalk_Line(HouseVisitorTalk *talk, VillagerTalkLine *out)
         hv_say(talk, HOUSE_VISITOR_SAYS_LAYOUT, data_ov068_02278254);
         out->text = (u32) (uintptr_t) data_ov068_02278920;
         out->message = hv_layout_message(talk->visitor->advice);
-        VillagerPartHandover *visit = hv_visit();
-        visit->byte_24 = (u8) ((visit->byte_24 & ~HOUSE_VISITOR_RATING_MASK) | (rating & HOUSE_VISITOR_RATING_MASK));
+        VillagerHouseVisit *visit = hv_visit();
+        visit->rating = (u8) ((visit->rating & ~HOUSE_VISITOR_RATING_MASK) | (rating & HOUSE_VISITOR_RATING_MASK));
     } else if (chance < HOUSE_VISITOR_CHAT_A_BELOW) {
         talk->visitor->talk_kind = HOUSE_VISITOR_SAYS_CHAT;
         VillagerTalkScene_SetLines(&talk->base, data_021c1f04);

@@ -205,8 +205,8 @@ What reading the Clean code found about the groups above; counts are of function
   load (StateBlock_StartMode2), so a save's count N gives lecture N + 1 (index N); the save's
   count 3 (the fourth lecture) asks for a phrase typed on the keyboard (line 0x17) and repeats
   until it is right (done: scene resetti-3, see the talks findings below); count 4 gives the
-  slider window (scene resetti-4). A house visit: the handed-over record at 0xa4 of the player's villager part
-  (main/villager_part_handover.h) with the villager's NpcId, type 21 low bits 0 and the time.
+  slider window (scene resetti-4). A house visit: the house visit record at 0xa4 of the player's villager part
+  (main/villager_house_visit.h) with the villager's NpcId, type 21 low bits 0 and the time.
 - The letter errand (type 19): the day's group-1 types not reserved by data_020cd454 are 7, 10,
   19 and 21 (VillagerErrands_Deal), dealt at random at the load; on the seed's day the villagers
   got 7, 10 and 21 (state table data_021d13e4, entries of 0x2c, the object's type at +0x0e).
@@ -424,7 +424,7 @@ What reading the Clean code found about the groups above; counts are of function
   tools/coverage.py's frontier. Following the words of the module images, the BL calls and
   ov069's tables mapped to main's leads from VillagerTalkSteps_OpenScreen31 (the time screen,
   ov136, mode 0x31) to VillagerTalkSteps_OfferChoices1f, the first choice of
-  VillagerTalkOffer_StateHandover: a villager dealt the object type 21 at the load
+  VillagerTalkOffer_StateHouseVisit: a villager dealt the object type 21 at the load
   (VillagerErrands_Deal) offers to visit at the end of a talk, in about one talk of three
   (VillagerTalkOffer_ByState's roll of 30 in 100), unless a town event is within a day
   (VillagerTown_NextEvent; on the seed's Friday the second Saturday's event 0x0c is). The deal
@@ -3276,9 +3276,9 @@ What reading the Clean code found about the groups above; counts are of function
   item (type 10), held in pocket 0 or not, nothing more. In both the talk stays on its line with A
   pressed: the lines of rows 7 and 8 (VillagerTalkPart_LineByType8e38, _LineByType8990) are not
   reached. villager-giver-late.
-- A visit to the player's house agreed for the day before (the handed-over record, as for
+- A visit to the player's house agreed for the day before (the house visit record, as for
   "house-visitor", from villager 0): its greeting says it was missed and empties the record
-  (VillagerTalkSteps_LineClearHandover): visit-missed.
+  (VillagerTalkSteps_LineClearHouseVisit): visit-missed.
 - villager-errand's branches: at its request (VillagerTalkRequest_OfferAccept, 8660) DOWN declines
   (VillagerTalkRequest_LineNo, _Drop): villager-errand-decline; at the giver's three choices after
   the delivery (VillagerTalkPart_StartByType, 15360) the second and third answers give
@@ -4190,7 +4190,7 @@ What reading the Clean code found about the groups above; counts are of function
 - villager-q10-reply (save q10-reply: block 1 of the player's villager part, at 0xa4, naming the
   seed's villager 0, its object of type 0x15 with low bits 1, its date at 0xc0 the day before
   the boot's and the present kind 5 at 0xc8): menus' recording; the load's
-  VillagerTown_ExpirePlayerObjects marks it done and sends the "re_q10" letter with a present
+  VillagerTown_ExpireHouseVisits marks it done and sends the "re_q10" letter with a present
   (VillagerPost_SendQ10Reply). Kinds 4 and 5 were tried; both drew an item, so
   ItemLists_DrawPlain (kind 5 with no item drawn) stays open.
 - nook-package-no (save nook-package): nook-package with DOWN at 4500, the second answer to line

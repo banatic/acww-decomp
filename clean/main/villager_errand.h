@@ -1,7 +1,7 @@
 /* A villager's errand, a record of 12 bytes: what a villager asks of a player or a player was
  * asked to do for a villager or a shop (the "q.." text sets of the talks name them). The
  * villagers' records keep them (the villager's own errand at 0x24 of the record at 0x734,
- * villager_object.h; the two blocks, the entry and the handover of a player's villager part,
+ * villager_object.h; the two blocks, the entry and the house visit of a player's villager part,
  * villager_part.h; the state table's entries, villager_errands.h; the sickness record; system
  * commands, system_command.c):
  *

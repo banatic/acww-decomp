@@ -871,7 +871,7 @@ match: main/a_mes_obj:AMesObj_Destruct main/ab_all_obj:AbAllObj_Destruct
   main/villager_bonds:VillagerBond_Destruct main/villager_sickness_record:VillagerSicknessRecord_Destruct
   main/villager_outdoors:VillagerOutdoors_Destruct
   main/villager_part_block:VillagerPartBlock_Destruct main/villager_part_block:VillagerPart_Destruct
-  main/villager_part_handover:VillagerPartHandover_Destruct
+  main/villager_house_visit:VillagerHouseVisit_Destruct
   main/villager_roster:VillagerRoster_Destruct main/villager_state:VillagerState_Destruct
   main/villager_state:VillagerState_DestructTable main/villager_state:VillagerTally_Destruct
   main/wifi_friends:WifiAccount_Destruct main/wifi_friends:WifiFriendList_Destruct

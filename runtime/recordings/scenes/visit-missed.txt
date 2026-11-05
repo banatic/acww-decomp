@@ -2,7 +2,7 @@
 # not in this repository). As villager-deliver-late.txt to 4331 (east of villager 0 in its house, facing it).
 # Save: visit-missed: the player's handed-over record holds villager 0's visit to the player's house
 # agreed for 11:30 on the 10th, the day before the boot. A every 40 frames: the greeting says the visit
-# was missed and the record is emptied (VillagerTalkSteps_LineClearHandover); a second talk begins (to 5331).
+# was missed and the record is emptied (VillagerTalkSteps_LineClearHouseVisit); a second talk begins (to 5331).
 900 START -
 906 - -
 1000 A -

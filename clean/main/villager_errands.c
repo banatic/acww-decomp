@@ -17,7 +17,7 @@
 #include "villager_object.h"
 #include "villager_part.h"
 #include "villager_part_block.h"
-#include "villager_part_handover.h"
+#include "villager_house_visit.h"
 #include "villager_roster.h"
 #include "villager_status.h"
 
@@ -245,7 +245,7 @@ int VillagerErrands_KnownType(VillagerTown *town, u8 *villager, void *record)
         same_npc(VillagerSicknessRecord_Npc(&town->sickness), npc)) {
         return VillagerErrand_Type((VillagerErrand *) (void *) VillagerSicknessRecord_Errand(&town->sickness));
     }
-    if (VillagerPartHandover_IsFrom((VillagerPartHandover *) (void *) part, npc)) {
+    if (VillagerHouseVisit_IsFrom((VillagerHouseVisit *) (void *) part, npc)) {
         return VillagerErrand_Type((VillagerErrand *) (void *) (part + 0x10));
     }
     if (VillagerErrand_IsInUse((VillagerErrand *) (void *) (VillagerObject_Errand(
