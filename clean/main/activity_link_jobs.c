@@ -71,8 +71,8 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 extern void DC_FlushAll(void);
 
 #define TALK_INDEX 0
-#define STATE_BLOCK_FLAG_12 0x12
-#define GUEST_RECORD_FIRST 3 /* a session slot's record number, less this */
+#define STATE_BLOCK_FLAG_MOVED_IN 0x12 /* a player moved in from another system (start_kind.h) */
+#define GUEST_RECORD_FIRST 3           /* a session slot's record number, less this */
 #define CARD_PART_LETTERS 2
 #define NO_SLOT 4
 
@@ -1259,7 +1259,7 @@ void ActivityLinkJobs_Step1E(Activity *activity)
                 StateBlock_Start(&data_021dc7a8, STATE_BLOCK_MODE_5);
                 StateBlock_FinishStart(&data_021dc7a8);
             } else {
-                StateBlock_SetFlag((u32 *) (void *) &data_021dc7a8, STATE_BLOCK_FLAG_12);
+                StateBlock_SetFlag((u32 *) (void *) &data_021dc7a8, STATE_BLOCK_FLAG_MOVED_IN);
             }
             PlayerOptions_Store();
             activity->state = 3;

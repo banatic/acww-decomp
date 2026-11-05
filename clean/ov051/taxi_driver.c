@@ -88,12 +88,12 @@ static_assert(sizeof(TaxiDriver) == 0x71c, "the size TaxiDriver_Create allocates
 #define TD_WAIT_FRAMES 0x29
 
 /* State 3's start of the game: the screen shown at once (no transition) keeping the music,
- * the start's state block flag cleared, and the scene entered: scene 0 in front of the town's
+ * the state block's moved-in flag cleared, and the scene entered: scene 0 in front of the town's
  * building 0x5000 (player parameter 0x400000, angle 0x8000, arguments 3 and 2). */
 #define TD_STATE_BLOCK_NEW_TOWN 0
 #define TD_STATE_BLOCK_MOVED_IN 6
 #define TD_STATE_BLOCK_NEW_PLAYER 1
-#define TD_START_FLAG 0x12
+#define STATE_BLOCK_FLAG_MOVED_IN 0x12
 #define TD_EXIT_SCENE 0
 #define TD_EXIT_PLAYER_PARAM 0x400000
 #define TD_EXIT_ANGLE (-0x8000)
@@ -230,7 +230,7 @@ int TaxiDriver_UpdateArrive(TaxiDriver *driver)
         StateBlock_FinishStart(&data_021dc7a8);
     }
 
-    StateBlock_ClearFlag((u32 *) (void *) &data_021dc7a8, TD_START_FLAG);
+    StateBlock_ClearFlag((u32 *) (void *) &data_021dc7a8, STATE_BLOCK_FLAG_MOVED_IN);
     int front[3] = {0, 0, 0};
     AcreMap_FindTownHallFront((int) AcreMap_Town(), front, NULL, NULL);
     SceneExit_SetTo((SceneExit *) (uintptr_t) (u32) SceneTables_EntryRecord(), TD_EXIT_SCENE,

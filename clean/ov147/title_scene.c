@@ -46,7 +46,7 @@ static_assert(sizeof(TitleScene) == 0xf8, "TitleScene");
 #define TITLE_IDLE_FRAMES 0xe10
 #define TITLE_PRESS_DELAY 12 /* frames after a press during the logo's wipe in */
 #define TITLE_WFC_INIT_FAILED 3
-#define TITLE_STATE_FLAG_12 0x12
+#define STATE_BLOCK_FLAG_MOVED_IN 0x12
 
 /* The messages the talk starts with (title_menu.c). */
 #define TITLE_MESSAGE_WFC_FAILED 0x32
@@ -328,7 +328,7 @@ void TitleScene_StartTalk(TitleScene *self)
     } else if (self->card_unreadable != 0) {
         MessageReceiver_SetName(message, data_ov147_0229abe0);
         message->message = TITLE_MESSAGE_CARD_UNREADABLE;
-    } else if (StateBlock_TestFlag(data_021dc7a8, TITLE_STATE_FLAG_12) != 0) {
+    } else if (StateBlock_TestFlag(data_021dc7a8, STATE_BLOCK_FLAG_MOVED_IN) != 0) {
         MessageReceiver_SetName(message, data_ov147_0229a8b0);
         message->message = TITLE_MESSAGE_PLAYER_MOVING_IN;
     } else {

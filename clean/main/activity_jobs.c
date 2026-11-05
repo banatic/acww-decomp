@@ -43,7 +43,7 @@ typedef struct ActivityJobsText {
 #define TALK_INDEX 0
 #define TALK_CLOSED 0
 
-#define STATE_BLOCK_FLAG_12 0x12
+#define STATE_BLOCK_FLAG_MOVED_IN 0x12        /* a player moved in from another system (start_kind.h) */
 #define STATE_BLOCK_17276 (0x17276 - 0x17254) /* a byte of part_17254 cleared with the last player */
 
 enum ActivityJobsStateBlockMode {
@@ -346,7 +346,7 @@ void ActivityJobs_Step0E(Activity *activity)
         return;
     }
     TalkObject_DetachReceiver((TalkObject *) talk);
-    if (StateBlock_TestFlag((u32 *) (void *) &data_021dc7a8, STATE_BLOCK_FLAG_12)) {
+    if (StateBlock_TestFlag((u32 *) (void *) &data_021dc7a8, STATE_BLOCK_FLAG_MOVED_IN)) {
         StartKind_SetMovedIn();
     } else {
         StartKind_SetUnchanged();

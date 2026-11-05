@@ -62,7 +62,7 @@ enum TitleMenuMessage {
 #define TITLE_MESSAGE_LIST_CANCEL 0x10 /* the last answer of the players' list */
 #define TITLE_PLAYER_ANSWER_70 4       /* the players' answers' next_message */
 #define TITLE_SE_CLOSE 0x3a            /* the sound when the talk of 0x24 or 0x27 closes */
-#define TITLE_STATE_FLAG_12 0x12       /* the flag of the state block job 0xe reads */
+#define STATE_BLOCK_FLAG_MOVED_IN 0x12 /* the flag of the state block job 0xe reads */
 
 /* The answers' tables, by the town (TitleMenu_TownCase). */
 enum TitleTownCase {
