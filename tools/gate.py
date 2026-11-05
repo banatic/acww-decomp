@@ -7,7 +7,8 @@
 A change that only adds or changes scenes (recordings, expected frames, tools/scenes.py's
 tables) runs those scenes both ways (all Clean, and Native alone) and the lint. A change to
 sources in src/, include/ or clean/ also runs the function-level check and the two recordings
-both ways, and the scenes whose functions it touches. Anything else (runtime/, tools/, config/)
+both ways, the scenes whose functions it touches and the driven checks (tools/driven.py); a
+change that adds or changes driven checks runs those. Anything else (runtime/, tools/, config/)
 runs every check. The seed save comes from ACWW_SCENE_SEED, as for tools/scenes.py. Each step's
 output goes to build/adm-kr/gate/<step>.log; the exit status is 1 when a step failed.
 
@@ -68,10 +69,13 @@ def plan(base: str | None) -> list[list[list[Step]]]:
     lint = ("lint", [PY, "tools/lint.py"])
     checks = [("diffcheck", [PY, "tools/diffcheck.py", "--native", "--clean"]), *recording_steps()]
     units = [(f"unit-{t.stem}", [PY, str(t.relative_to(C.ROOT))]) for t in sorted((C.ROOT / "tools").glob("test_*.py"))]
-    full = [native, [checks, *scene_steps([])], [[lint, *units]]]
+    def driven(names: list[str]) -> list[Step]:
+        return [("driven", [PY, "tools/driven.py", "-j", JOBS, *names])]
+    full = [native, [checks, *scene_steps([])], [[lint, *units], driven([])]]
     if base is None:
         return full
-    funcs, own = affected.functions_of(affected.changed_paths(base), base)
+    paths = affected.changed_paths(base)
+    funcs, own = affected.functions_of(paths, base)
     if funcs is affected.EVERYTHING:
         print(f"gate: every check (a change since {base} outside src/, include/, clean/ and the scenes)")
         return full
@@ -80,6 +84,11 @@ def plan(base: str | None) -> list[list[list[Step]]]:
     names = affected.select(list(scenes.SCENES), base, scenes.OUT) if funcs else sorted(own & set(scenes.SCENES))
     print(f"gate: {len(names)} scenes: {' '.join(names)}")
     together = ([checks] if funcs else []) + (scene_steps(names) if names else [])
+    # the driven checks (tools/driven.py): every one when a function changed, else those changed
+    changed = sorted(pathlib.PurePosixPath(p).stem for p in paths
+                     if p.startswith("runtime/recordings/driven/") and (C.ROOT / p).exists())
+    if funcs or changed:
+        together.append(driven([] if funcs else changed))
     return [native, *([together] if together else []), [[lint]]]
 
 

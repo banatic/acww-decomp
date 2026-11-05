@@ -1468,6 +1468,23 @@ void native_frame_ended(uint32_t frame)
     }
 }
 
+void native_snapshot_now(uint32_t tag)
+{
+    for (int i = 0; recording && i < stream_count; i++) {
+        Stream *s = &streams[i];
+        if (s->depth > 0 && s->frames[s->depth - 1].native) {
+            printf("native: no memory image %u: a thread is inside code that would be Native\n", tag);
+            return;
+        }
+    }
+    char hex[41];
+    hash_memory(tag, hex);
+    print_hash(tag, hex);
+    if (running && dump_dir != NULL) {
+        compare_with_reference(tag);
+    }
+}
+
 /* In a recorded Reference run: a snapshot is due and no stream is inside code that would be
  * Native (where the Native run is ahead of the Reference, its effects already made). */
 static int snapshot_due(void)

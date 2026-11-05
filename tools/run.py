@@ -70,6 +70,8 @@ Native functions (docs/runtime.md, M4; the design is in runtime/native_run.h):
                      JSON to FILE: [{"module", "address", "ran"}]. The program is the usual one
                      with runtime/clean_ran.c linked in, which marks each Clean function's entry
                      with a breakpoint until it first runs; the Clean code is the usual build's
+    --driven FILE    calls of game functions the run makes at chosen frames, in both runs
+                     (runtime/driven.h; tools/driven.py writes FILE and checks what they did)
     --reuse-build TOKEN  with --native: the program and the policy that an earlier run with the
                      same TOKEN and options made in this directory, as they are (tools/scenes.py
                      gives one TOKEN to the scenes of one invocation, which the tree does not change
@@ -137,7 +139,7 @@ CLEAN_AS = re.compile(r"^CLEAN_AS(?:\((\w+)|_SYMBOL\(\"([^\"]+)\"),\s*(\w+)\)", 
 CLEAN_CHECK = re.compile(r"^DIFF_CHECK\((\w+), \"(\w+)\", (0x[0-9a-fA-F]+(?: \| 1)?), (\d+),", re.M)
 SOURCES = ("arm.c", "memory.c", "io.c", "bios.c", "arm7.c", "boot.c", "gpu2d.c", "gpu3d.c", "frame.c", "input.c",
            "run.c", "native_run.c", "native_aggregate.c", "native_os.c", "host.c", "native_tramp.S", "render.c", "drive.c",
-           "sequencer.c", "wm.c", "wifi.c")
+           "sequencer.c", "wm.c", "wifi.c", "driven.c")
 
 # The ROM's compiler helpers that Native code does inline (runtime/native_run.c, status H):
 # the libs/Runtime package, and the C library functions the PC's own versions replace
@@ -1438,6 +1440,8 @@ def main() -> None:
     ap.add_argument("--clean", nargs="?", const="all", metavar="FILE",
                     help="with --native: Clean functions (all, or those FILE lists) in place of their Native ones")
     ap.add_argument("--clean-ran", metavar="FILE", help="with --clean: which Clean functions ran, as JSON to FILE")
+    ap.add_argument("--driven", metavar="FILE", help="calls the run makes at chosen frames (runtime/driven.h, "
+                    "tools/driven.py)")
     ap.add_argument("--reuse-build", metavar="TOKEN", help="with --native: use the program and policy an earlier "
                     "run with this TOKEN and the same options made in this directory (tools/scenes.py)")
     args = ap.parse_args()
@@ -1476,6 +1480,9 @@ def main() -> None:
         env["RUN_WIRELESS"] = "1"
     if args.wifi:
         env["RUN_WIFI"] = args.wifi
+    env.pop("RUN_DRIVEN", None)
+    if args.driven:
+        env["RUN_DRIVEN"] = str(pathlib.Path(args.driven).resolve())
     if args.save:
         if not pathlib.Path(args.save).is_file():
             raise SystemExit(f"no save at {args.save}")

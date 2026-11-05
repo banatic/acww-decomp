@@ -92,6 +92,12 @@ ArmHook native_thread_changed(uint32_t previous, uint32_t thread);
 /* A frame has ended (memory hashes are taken at the next quiet crossing after it). */
 void native_frame_ended(uint32_t frame);
 
+/* Now, between instructions (the end of driven calls, driven.h): memory hashed as after a
+ * frame, under `tag` in place of a frame number, and in the Native run compared with the
+ * Reference's image of the same moment. In the Reference nothing is hashed while a thread is
+ * inside code that would be Native (the Native run's effects are then not the Reference's). */
+void native_snapshot_now(uint32_t tag);
+
 /* The counts for the run's report. */
 void native_report(FILE *out);
 

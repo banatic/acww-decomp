@@ -175,8 +175,9 @@ def write_plan(groups: list[dict], clean: dict, state, counts: dict, lists: int)
     out = []
     total = sum(len(g["functions"]) for g in groups)
     out.append(f"From {lists} scene lists: {len(clean):,} Clean game functions, run {counts['run']:,}, "
-               f"function check only {counts['function']:,}, read only {counts['read']:,}; "
-               f"the groups below hold {total:,} (function check only + read only).\n")
+               f"function check only {counts['function']:,}, checked by a driven call {counts['driven']:,}, "
+               f"read only {counts['read']:,}; the groups below hold {total:,} (function check only + driven "
+               f"+ read only).\n")
     by_needs = collections.Counter()
     for g in groups:
         by_needs[g["needs"]] += len(g["functions"])
@@ -191,15 +192,17 @@ def write_plan(groups: list[dict], clean: dict, state, counts: dict, lists: int)
             continue
         n = sum(len(g["functions"]) for g in rows)
         out.append(f"## {area} ({n:,})\n")
-        out.append("| group | functions (check only / read only) | Clean files | scene | how to reach it | needs |")
+        out.append("| group | functions (check only / driven / read only) | Clean files | scene | how to reach it "
+                   "| needs |")
         out.append("|---|---|---|---|---|---|")
         for g in rows:
             files = collections.Counter(clean[k][0] for k, _ in g["functions"])
             fc = sum(1 for _, s in g["functions"] if s == "function")
+            dc = sum(1 for _, s in g["functions"] if s == "driven")
             listed = ", ".join(f"{f} {c}" for f, c in files.most_common(8))
             if len(files) > 8:
                 listed += f", {len(files) - 8} more files ({sum(c for _, c in files.most_common()[8:])})"
-            out.append(f"| {g['group']} | {len(g['functions'])} ({fc} / {len(g['functions']) - fc}) | {listed} | "
+            out.append(f"| {g['group']} | {len(g['functions'])} ({fc} / {dc} / {len(g['functions']) - fc - dc}) | {listed} | "
                        f"{g['scene']} | {g['reach']} | {g['needs']} |")
         out.append("")
     sys.stdout.write("\n".join(out) + "\n")
@@ -230,8 +233,14 @@ def main() -> None:
     if path.exists():
         checked = {(r["module"], int(r["address"], 16) & ~1) for r in json.loads(path.read_text())}
 
+    # checked by a driven call (tools/driven.py --record): below a run, above reading
+    driven_list = C.ROOT / "runtime" / "recordings" / "scenes" / "clean-driven.txt"
+    driven = {(m, int(a, 16)) for m, a in (line.split()[:2] for line in
+                                            (driven_list.read_text().splitlines() if driven_list.exists() else [])
+                                            if line.strip() and not line.startswith("#"))}
+
     def state(k: Key) -> str:
-        return "run" if k in ran_by else "function" if k in checked else "read"
+        return "run" if k in ran_by else "function" if k in checked else "driven" if k in driven else "read"
 
     names = {(s.module, s.address & ~1): s.name for s in syms.functions() if s.size} \
         if hasattr(syms, "functions") else {}
@@ -262,7 +271,8 @@ def main() -> None:
     total = len(clean)
     count = collections.Counter(state(k) for k in clean)
     print(f"{len(lists)} lists; {total:,} Clean game functions: run {count['run']:,}, "
-          f"function check only {count['function']:,}, read only {count['read']:,}")
+          f"function check only {count['function']:,}, checked by a driven call {count['driven']:,}, "
+          f"read only {count['read']:,}")
 
     per_file = collections.Counter(clean[k][0] for k in clean if state(k) == "read")
     sizes = collections.Counter(f for f, _ in clean.values())

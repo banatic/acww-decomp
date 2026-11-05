@@ -15,6 +15,10 @@ docs/progress-clean.svg, how each function's Clean version is checked:
     run        Checked in a run: it ran in a recording run (`tools/run.py ... --clean
                --clean-ran`) whose frames and memory match the Reference
                (build/adm-kr/clean-ran.json, merged from the runs by --merge-ran)
+    driven     Checked by a driven call: no game path calls it, and a driven call
+               (`tools/driven.py`, docs/verification.md) ran it on a live object in a scene's
+               run, whose memory after the call and frames match the Reference
+               (runtime/recordings/scenes/clean-driven.txt)
     read       Read only: checked only by reading it against its matching source
     none       No Clean version (left out of the legend when there is none)
 
@@ -52,10 +56,11 @@ class Map:
 DECOMP = Map("Decompilation", ("linked", "native", "reference"),
              {"linked": "#2bb673", "native": "#3a86d4", "reference": "#323b46"},
              {"linked": "Linked", "native": "Matching", "reference": "Reference only"}, {"reference"})
-CLEAN = Map("Clean code", ("function", "run", "read", "none"),
-            {"function": "#f0b429", "run": "#a371f7", "read": "#323b46", "none": "#1f252c"},
-            {"function": "Checked by function", "run": "Checked in a run", "read": "Read only",
-             "none": "No Clean version"}, {"none"})
+CLEAN = Map("Clean code", ("function", "run", "driven", "read", "none"),
+            {"function": "#f0b429", "run": "#a371f7", "driven": "#5e7bd6", "read": "#323b46", "none": "#1f252c"},
+            {"function": "Checked by function", "run": "Checked in a run", "driven": "Checked by a driven call",
+             "read": "Read only", "none": "No Clean version"}, {"none", "driven"})
+DRIVEN = C.ROOT / "runtime" / "recordings" / "scenes" / "clean-driven.txt"
 BG, CARD, FG, MUTED = "#0d1117", "#161b22", "#e6edf3", "#8b949e"
 
 W = 960
@@ -312,6 +317,9 @@ def main() -> None:
     draw(DECOMP, decomp_level, DECOMP_OUT, "")
     checked = keys(load_list("clean-checked.json"))
     ran = keys(load_list("clean-ran.json"))
+    driven = {(m, int(a, 16)) for m, a in (line.split()[:2] for line in
+                                            (DRIVEN.read_text().splitlines() if DRIVEN.exists() else [])
+                                            if line.strip() and not line.startswith("#"))}
     versions = clean_versions()
 
     def clean_level(mod: str, f: dict) -> str:
@@ -320,6 +328,8 @@ def main() -> None:
             return "function"
         if key in ran:
             return "run"
+        if key in driven:
+            return "driven"
         return "read" if key in versions else "none"
 
     kept = kept_reference()

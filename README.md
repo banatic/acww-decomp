@@ -119,7 +119,7 @@ from the ROM.
 
 ![Clean code progress](https://raw.githubusercontent.com/banatic/acww-decomp/progress/progress-clean.svg)
 
-*Clean code: gold is checked by function, purple is checked in a run, grey is read only.*
+*Clean code: gold is checked by function, purple is checked in a run, blue is checked by a driven call, grey is read only.*
 
 Each of the 25,251 functions also has a Clean version: a readable rewrite, built for the PC
 with the runtime that plays the game on Windows. The Clean versions are checked against the
@@ -130,6 +130,12 @@ reached:
   this covers the functions that call nothing.
 - **Checked in a run**: the Clean version ran in a recorded play run whose frames and memory
   match the ROM's code.
+- **Checked by a driven call**: no path of the game calls it (a destructor of objects the game
+  never deletes that way, a vtable slot no code calls), so no run can enter it; instead a
+  recorded run calls it itself, on a live object at a chosen frame, and its memory right after
+  matches the ROM's code ([docs/verification.md](docs/verification.md), "Driven calls"). This
+  is weaker than a run: it shows the Clean version does what the ROM's code does on a real
+  state, not that the game ever gets there.
 - **Read only**: the Clean version has been checked only by reading it against its matching
   source. Most of these cannot run with one console (wireless, Wi-Fi Connection, another
   console's states); [docs/scene-plan.md](docs/scene-plan.md) lists them with the reason.

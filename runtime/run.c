@@ -21,6 +21,7 @@
 #include "bios.h"
 #include "boot.h"
 #include "drive.h"
+#include "driven.h"
 #include "frame.h"
 #include "gpu2d.h"
 #include "input.h"
@@ -282,6 +283,17 @@ static ArmHook hook_at(void *user, uint32_t address, void **hook_user)
     if (address == SDK_AUTOLOAD_DONE && verified < 0) {
         verified = boot_verify(manifest_path, stdout);
         native_resident_ready();
+    }
+    if (driven_enabled()) {
+        if (address == DRIVEN_RETURN_ADDRESS) {
+            void *ignored = NULL;
+            (void) native_hook_at(address, &ignored); /* the Reference's record sees the return */
+            return driven_returned;
+        }
+        ArmHook driven = driven_hook_at(&cpu, address, thread);
+        if (driven != NULL) {
+            return driven;
+        }
     }
     ArmHook shim = arm7_wifi() ? wifi_hook_at(address, hook_user) : NULL;
     if (shim != NULL) {
