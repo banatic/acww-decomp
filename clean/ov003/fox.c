@@ -24,8 +24,8 @@
 #include "main/talk_object.h"
 #include "main/talk_receiver.h"
 #include "main/town_objects.h"
-#include "ov009/scene_actor.h"
-#include "ov009/scene_actor_life.h"
+#include "ov009/town_object_actor.h"
+#include "ov009/town_object_actor_life.h"
 
 static_assert(offsetof(Fox, receiver_vtable) == 0xec, "receiver");
 static_assert(offsetof(Fox, message) == 0x10a, "receiver byte 0x1e");
@@ -111,17 +111,17 @@ void Fox_UpdateGone(Fox *fox)
     if (PlayerActorOps_TestOwnFlag1()) {
         fox->frames++;
     }
-    unsigned int wait = SceneActor_Kind((SceneActor *) fox) == 2 ? 20 : 15;
-    if (SceneActor_Kind((SceneActor *) fox) == 1) {
+    unsigned int wait = TownObjectActor_Kind((TownObjectActor *) fox) == 2 ? 20 : 15;
+    if (TownObjectActor_Kind((TownObjectActor *) fox) == 1) {
         wait += 12;
     }
     if (fox->frames < wait) {
         return;
     }
-    int id = SceneActor_RecordId((SceneActor *) fox);
+    int id = TownObjectActor_RecordId((TownObjectActor *) fox);
     Vec3 point;
     s16 angle;
-    if (!SceneActor_GetStandPoint((SceneActor *) fox, &point, &angle)) {
+    if (!TownObjectActor_GetStandPoint((TownObjectActor *) fox, &point, &angle)) {
         return;
     }
     if (!SceneExit_Take((SceneExit *) (uintptr_t) SceneTables_EntryRecord(), id)) {
@@ -159,7 +159,7 @@ void Fox_UpdateWalk(Fox *fox)
     }
     Vec3 point;
     s16 angle;
-    if (SceneActor_GetStandPoint((SceneActor *) fox, &point, &angle) &&
+    if (TownObjectActor_GetStandPoint((TownObjectActor *) fox, &point, &angle) &&
         FieldActor_PlayerRequestState39(FOX_PLAYER_KIND, (int *) &point.x, (int *) &point.z, angle)) {
         fox->asked = 1;
     }
@@ -213,7 +213,7 @@ CLEAN_AS(func_ov003_0221bc74, Fox_EnterTalkClose)
 
 /* _ZN18Obj_ov003_0223863019func_ov003_0221bc78Ev (update of FOX_SCREEN): once the screen has
  * closed (GroupParams_CanOpen), gives the link message 3 after func_020ae270 when main's byte
- * 0xc4c is 1, else message 4, and ends the talk; after message 4 bit 0 of the character's
+ * 0xc4c is 1, else message 4, and ends the talk; after message 4 bit 0 of the tent's
  * flags is cleared.
  * REQUIRES: the receiver has a link. */
 void Fox_UpdateScreen(Fox *fox)
@@ -298,7 +298,7 @@ CLEAN_AS(_ZN18Obj_ov003_0223863019func_ov003_0221bd6cEv, Fox_UpdateTalk)
 
 /* _ZN18Obj_ov003_0223863019func_ov003_0221bd90Ev (entry of FOX_TALK): takes the receiver,
  * names it "sp_npc_fox" and picks its message: FOX_MESSAGE_EARLY when vtable slot 0x8c
- * (Fox_IsAfterSix) says no, clearing bit 0 of the character's flags unless the visit record
+ * (Fox_IsAfterSix) says no, clearing bit 0 of the tent's flags unless the visit record
  * said 2; else FOX_MESSAGE_FULL when it did, FOX_MESSAGE_MEMBER_AGAIN when func_020ae2c4 agrees,
  * else FOX_MESSAGE_FIRST. The link's request is raised and func_02066914 runs on the receiver.
  * REQUIRES: the receiver has a link once SceneObjectBase_TakeReceiver has taken it. */
@@ -340,7 +340,7 @@ void Fox_UpdateVisit(Fox *fox)
 }
 CLEAN_AS(_ZN18Obj_ov003_0223863019func_ov003_0221be34Ev, Fox_UpdateVisit)
 
-/* func_ov003_0221be7c (entry of FOX_VISIT): asks main for the character's visit record. */
+/* func_ov003_0221be7c (entry of FOX_VISIT): asks main for the tent's visit record. */
 int Fox_EnterVisit(Fox *fox)
 {
     TownObjects_RequestVisit(fox->code);
@@ -476,7 +476,7 @@ void Fox_OnSceneEvent(Fox *fox, unsigned int event, int arg)
 {
     switch (event) {
         case FOX_EVENT_BASE:
-            SceneActor_OnSceneEvent((SceneActor *) fox, event, arg);
+            TownObjectActor_OnSceneEvent((TownObjectActor *) fox, event, arg);
             break;
         case FOX_EVENT_TALK:
         case FOX_EVENT_TALK_AGAIN:
@@ -524,7 +524,7 @@ static void fox_destroy_parts(Fox *fox)
 {
     fox->vtable = data_ov003_02238630;
     fox->receiver_vtable = data_ov003_022386f4;
-    SceneActor_Destruct((SceneActor *) fox);
+    TownObjectActor_Destruct((TownObjectActor *) fox);
 }
 
 /* func_ov003_0221c1dc (the deleting destructor): the destructor's work, then the memory
@@ -548,7 +548,7 @@ CLEAN_AS(func_ov003_0221c208, Fox_Destroy)
 /* func_ov003_0221c22c: the constructor: overlay 9's, then the vtables. */
 Fox *Fox_Construct(Fox *fox)
 {
-    SceneActor_ConstructBase((SceneActor *) fox);
+    TownObjectActor_ConstructBase((TownObjectActor *) fox);
     fox->vtable = data_ov003_02238630;
     fox->receiver_vtable = data_ov003_022386f4;
     return fox;

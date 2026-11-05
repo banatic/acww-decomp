@@ -4,7 +4,7 @@
  *
  *   - data_ov003_0223ce58 (HousePalette): the palettes "/str/house_pl/house_pl_<letter>.nsbtx"
  *     (the letter overlay 3 picks, func_ov003_022203dc), loaded into VRAM and kept as a copy in
- *     main's heap; overlay 9's scene actors bind their models' palettes to it;
+ *     main's heap; overlay 9's town object actors bind their models' palettes to it;
  *   - data_ov003_0223ce80 (HouseXFiles, villager_house.h's X files): from "/str/npcHsX.arc",
  *     loaded only while the town takes part in event 0x11, five models "obj_x_house<kind>",
  *     their texture "obj_x_house0" and the texture pattern animation "obj_x_deco". */

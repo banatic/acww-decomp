@@ -5,10 +5,10 @@
 #include "clean.h"
 #include "main/scene_query.h"
 #include "main/spawner.h"
-#include "ov009/scene_actor_life.h"
+#include "ov009/town_object_actor_life.h"
 
-static_assert(offsetof(SceneActor, position) == 0x5c, "position");
-static_assert(offsetof(SceneActor, receiver_vtable) == 0xec, "receiver");
+static_assert(offsetof(TownObjectActor, position) == 0x5c, "position");
+static_assert(offsetof(TownObjectActor, receiver_vtable) == 0xec, "receiver");
 static_assert(sizeof(GullSpot) == 0x2b4, "the size GullSpot_New allocates");
 
 #define SPAWN_SPOT_RECEIVER_OFFSET 0xec
@@ -54,7 +54,7 @@ static void spawn_spot_destroy_parts(GullSpot *spot)
 {
     spot->actor.vtable = data_ov003_022398e8;
     spot->actor.receiver_vtable = data_ov003_022399ac;
-    SceneActor_Destruct((SceneActor *) spot);
+    TownObjectActor_Destruct((TownObjectActor *) spot);
 }
 
 /* func_ov003_0221ee74 (vtable slot 0x44, the deleting destructor): the destructor's work, then
@@ -78,7 +78,7 @@ CLEAN_AS(func_ov003_0221eea0, GullSpot_Destroy)
 /* func_ov003_0221eec4: the constructor: overlay 9's, then the vtables. */
 GullSpot *GullSpot_Construct(GullSpot *spot)
 {
-    SceneActor_ConstructBase((SceneActor *) spot);
+    TownObjectActor_ConstructBase((TownObjectActor *) spot);
     spot->actor.vtable = data_ov003_022398e8;
     spot->actor.receiver_vtable = data_ov003_022399ac;
     return spot;

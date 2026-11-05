@@ -1,7 +1,7 @@
 # museum-stand (format: runtime/input.h), played from a town save by tools/scenes.py (the save
 # is not in this repository). As museum-halls.txt to 4420: just inside the museum, on the door's
 # mat.
-# Save: museum-full. On the mat the door's scene actor (ov009/scene_actor_mode.c, mode 0) looks
+# Save: museum-full. On the mat the door's town object actor (ov009/town_object_actor_mode.c, mode 0) looks
 # at what the pen comes down on: the sign stand west of Blathers at 4420 (a room board's sphere,
 # kind 16: main/touch_pick.c, ov004/room_etc_board.c); UP at 4454 walks in.
 900 START -

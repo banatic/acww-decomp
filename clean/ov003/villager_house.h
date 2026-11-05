@@ -1,6 +1,6 @@
 /* A scene object of overlay 3 that stands for one of the town's eight villagers at their house
  * (class Obj_ov003_02238f28, vtable 0x02238f28, receiver part 0x02238fec, 0x38c bytes). Its
- * special character code (the halfword at 0x136, 0x5001 to 0x5008) is the villager's index
+ * town object code (the halfword at 0x136, 0x5001 to 0x5008) is the villager's index
  * plus 0x5001 in main's list of villagers at 0x021e5a2c. It is derived from overlay 9's scene
  * actor (Obj_ov009_022658dc), which runs the rest.
  *
@@ -68,7 +68,7 @@ typedef struct VillagerHouse {
     u8 unk_10B[0x12c - 0x10b];
     void *link; /* Base_02066994's word at 0x40 */
     u8 unk_130[0x136 - 0x130];
-    u16 code; /* the special character's code: 0x5001 + the villager's index */
+    u16 code; /* the town object's code: 0x5001 + the villager's index */
     u8 unk_138[0x13c - 0x138];
     u8 model_object[0x198 - 0x13c]; /* overlay 9's model object (Obj_020dd05c) */
     void *model;                    /* that model object's model */

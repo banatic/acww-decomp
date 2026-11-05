@@ -12,7 +12,7 @@
 #include "main/npc_lookup.h"
 #include "main/player_id.h"
 #include "main/talk_receiver.h"
-#include "ov009/scene_actor_life.h"
+#include "ov009/town_object_actor_life.h"
 
 static_assert(offsetof(Panther, receiver_vtable) == 0xec, "receiver");
 static_assert(offsetof(Panther, message) == 0x10a, "receiver byte 0x1e");
@@ -98,7 +98,7 @@ static void panther_destroy_parts(Panther *panther)
 {
     panther->vtable = data_ov003_02238dbc;
     panther->receiver_vtable = data_ov003_02238e80;
-    SceneActor_Destruct((SceneActor *) panther);
+    TownObjectActor_Destruct((TownObjectActor *) panther);
 }
 
 /* func_ov003_0221d1e0 (vtable slot 0x44, the deleting destructor): the destructor's work, then
@@ -122,7 +122,7 @@ CLEAN_AS(func_ov003_0221d20c, Panther_Destroy)
 /* func_ov003_0221d230: the constructor: overlay 9's, then the vtables. */
 Panther *Panther_Construct(Panther *panther)
 {
-    SceneActor_ConstructBase((SceneActor *) panther);
+    TownObjectActor_ConstructBase((TownObjectActor *) panther);
     panther->vtable = data_ov003_02238dbc;
     panther->receiver_vtable = data_ov003_02238e80;
     return panther;

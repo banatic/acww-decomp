@@ -10,7 +10,7 @@
  *   2 open:    once main can open a screen again (GroupParams_CanOpen) it lets the scene go on
  *              (func_0203e020).
  *
- * Scene event 8 and vtable slot 0x70 make it idle. It is derived from overlay 9's scene actor
+ * Scene event 8 and vtable slot 0x70 make it idle. It is derived from overlay 9's town object actor
  * (Obj_ov009_022658dc), which runs the rest. */
 #ifndef CLEAN_OV003_BULLETIN_BOARD_H
 #define CLEAN_OV003_BULLETIN_BOARD_H

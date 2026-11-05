@@ -18,7 +18,7 @@
  * change of the last place plays a sound: 0x60 for the last ten seconds, else 0x62. Digits come
  * from main's heap at data_021c9b1c and are never freed (their operator delete is empty).
  *
- * Both are derived from overlay 9's scene actor (Obj_ov009_022658dc), which runs the rest. */
+ * Both are derived from overlay 9's town object actor (Obj_ov009_022658dc), which runs the rest. */
 #ifndef CLEAN_OV003_COUNTDOWN_H
 #define CLEAN_OV003_COUNTDOWN_H
 
@@ -78,7 +78,7 @@ typedef struct CountdownBoard {
     u8 unk_F0[0x134 - 0xf0];
     u8 mode; /* enum CountdownMode */
     u8 unk_135;
-    u16 code; /* the special character's code main keeps the mode under */
+    u16 code; /* the town object's code main keeps the mode under */
     u8 unk_138[0x13c - 0x138];
     u8 model_object[0x198 - 0x13c]; /* main's model object (Obj_020dd05c) */
     void *model;                    /* the model object's */

@@ -1,4 +1,4 @@
-/* The lights of a model: overlay 9's scene actors (ov009/scene_actor.h, the town's buildings
+/* The lights of a model: overlay 9's town object actors (ov009/town_object_actor.h, the town's buildings
  * and special characters) keep one at 0x1f4 (0x38 bytes) and turn it on and off with a fader
  * (fader.h). As the fader's level rises from 0 to 1.0:
  *

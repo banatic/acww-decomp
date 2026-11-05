@@ -18,9 +18,9 @@
 #include "main/scene_object_base.h"
 #include "main/scene_query.h"
 #include "main/town_objects.h"
-#include "ov009/scene_actor.h"
-#include "ov009/scene_actor_files.h"
-#include "ov009/scene_actor_life.h"
+#include "ov009/town_object_actor.h"
+#include "ov009/town_object_actor_files.h"
+#include "ov009/town_object_actor_life.h"
 
 static_assert(offsetof(CountdownAnim, frame) == 0x08, "anim frame");
 static_assert(offsetof(CountdownAnim, target) == 0x18, "anim target");
@@ -194,7 +194,7 @@ int CountdownDigit_Update(CountdownDigit *digit)
 {
     CountdownDigit_Tick(digit);
     void *render_object = ModelObject_RenderObject((ModelObject *) digit->model_object);
-    void *file = (void *) (uintptr_t) SceneActor_SrtAnim((SceneActor *) digit, 0);
+    void *file = (void *) (uintptr_t) TownObjectActor_SrtAnim((TownObjectActor *) digit, 0);
     ModelAnim_Restart((ModelAnim *) &digit->anim, render_object, file, COUNTDOWN_ANIM_ONCE, FX32_ONE, digit->value);
     return 1;
 }
@@ -211,8 +211,9 @@ int CountdownDigit_Init(CountdownDigit *digit)
     digit->value = 0;
     SceneObjectBase_SetId((SceneObjectBase *) digit, digit->place);
     if (ModelAnim_AllocMaterialAnim((ModelAnim *) &digit->anim, digit->model, data_021c9b1c) != 0) {
-        ModelAnim_Start((ModelAnim *) &digit->anim, (const u8 *) (uintptr_t) SceneActor_SrtAnim((SceneActor *) digit, 0),
-                        COUNTDOWN_ANIM_ONCE, FX32_ONE, 0);
+        ModelAnim_Start((ModelAnim *) &digit->anim,
+                        (const u8 *) (uintptr_t) TownObjectActor_SrtAnim((TownObjectActor *) digit, 0), COUNTDOWN_ANIM_ONCE,
+                        FX32_ONE, 0);
         ModelAnim_Attach((ModelAnim *) &digit->anim, ModelObject_RenderObject((ModelObject *) digit->model_object));
     }
     digit->running = 1;
@@ -261,7 +262,7 @@ static void countdown_digit_destroy_parts(CountdownDigit *digit)
     digit->vtable = data_ov003_02238b10;
     digit->receiver_vtable = data_ov003_02238bd4;
     ModelAnim_DestructComplete((ModelAnim *) &digit->anim);
-    SceneActor_Destruct((SceneActor *) digit);
+    TownObjectActor_Destruct((TownObjectActor *) digit);
 }
 
 /* func_ov003_0221cac4 (digit vtable slot 0x44, the deleting destructor): the destructor's work,
@@ -286,7 +287,7 @@ CLEAN_AS(func_ov003_0221cafc, CountdownDigit_Destroy)
  * animation's. */
 CountdownDigit *CountdownDigit_Construct(CountdownDigit *digit)
 {
-    SceneActor_ConstructBase((SceneActor *) digit);
+    TownObjectActor_ConstructBase((TownObjectActor *) digit);
     digit->vtable = data_ov003_02238b10;
     digit->receiver_vtable = data_ov003_02238bd4;
     ModelAnim_Construct((ModelAnim *) &digit->anim);
@@ -320,7 +321,7 @@ CLEAN_AS(func_ov003_0221cb60, CountdownBoard_RunOver)
  * "m_cbs_Adt"; always 1. */
 int CountdownBoard_EnterOver(CountdownBoard *board)
 {
-    ModelAnim_Start((ModelAnim *) &board->anim, (const u8 *) (uintptr_t) SceneActor_SrtAnim((SceneActor *) board, 1),
+    ModelAnim_Start((ModelAnim *) &board->anim, (const u8 *) (uintptr_t) TownObjectActor_SrtAnim((TownObjectActor *) board, 1),
                     COUNTDOWN_ANIM_BOARD, FX32_ONE, 0);
     board->alpha = COUNTDOWN_ALPHA_FADED;
     return 1;
@@ -346,7 +347,7 @@ CLEAN_AS(_ZN18Obj_ov003_02238c5419func_ov003_0221cbc0Ev, CountdownBoard_RunCount
  * "m_cbs_Adt" opaque; always 1. */
 int CountdownBoard_EnterCounting(CountdownBoard *board)
 {
-    ModelAnim_Start((ModelAnim *) &board->anim, (const u8 *) (uintptr_t) SceneActor_SrtAnim((SceneActor *) board, 0),
+    ModelAnim_Start((ModelAnim *) &board->anim, (const u8 *) (uintptr_t) TownObjectActor_SrtAnim((TownObjectActor *) board, 0),
                     COUNTDOWN_ANIM_BOARD, FX32_ONE, 0);
     board->alpha = COUNTDOWN_ALPHA_OPAQUE;
     return 1;
@@ -371,7 +372,7 @@ void CountdownBoard_RunMode(CountdownBoard *board)
 CLEAN_AS(func_ov003_0221cc48, CountdownBoard_RunMode)
 
 /* _ZN18Obj_ov003_02238c5419func_ov003_0221ccb4Ej (vtable slot 0x6c): enters `mode` if its entry
- * (through a table) agrees and main takes it as the special character's mode; whether it did.
+ * (through a table) agrees and main takes it as the town object's mode; whether it did.
  * BUG: as in CountdownBoard_RunMode, mode 2 would call through the zero third entry.
  * BUGFIX: let modes below 2 through. */
 int CountdownBoard_SetMode(CountdownBoard *board, unsigned int mode)
@@ -400,21 +401,21 @@ CLEAN_AS(_ZN18Obj_ov003_02238c5419func_ov003_0221ccb4Ej, CountdownBoard_SetMode)
  * overlay 9's. The same holds for the two slots below. */
 void CountdownBoard_LtTexturePath(CountdownBoard *board)
 {
-    SceneActor_LitTexturePath((SceneActor *) board);
+    TownObjectActor_LitTexturePath((TownObjectActor *) board);
 }
 CLEAN_AS(func_ov003_0221cd44, CountdownBoard_LtTexturePath)
 
 /* func_ov003_0221cd4c (vtable slot 0xa8): overlay 9's. */
 void CountdownBoard_TexturePath(CountdownBoard *board)
 {
-    SceneActor_TexturePath((SceneActor *) board);
+    TownObjectActor_TexturePath((TownObjectActor *) board);
 }
 CLEAN_AS(func_ov003_0221cd4c, CountdownBoard_TexturePath)
 
 /* func_ov003_0221cd54 (vtable slot 0xa4): overlay 9's. */
 void CountdownBoard_ArchivePath(CountdownBoard *board)
 {
-    SceneActor_ArchivePath((SceneActor *) board);
+    TownObjectActor_ArchivePath((TownObjectActor *) board);
 }
 CLEAN_AS(func_ov003_0221cd54, CountdownBoard_ArchivePath)
 
@@ -437,7 +438,7 @@ void CountdownBoard_Draw(CountdownBoard *board, int status)
         for (int i = 0; i < COUNTDOWN_PLACES; i++) {
             CountdownDigit *digit = board->digits[i];
             if (digit != NULL && digit->running) {
-                SceneActor_DrawModel((SceneActor *) digit);
+                TownObjectActor_DrawModel((TownObjectActor *) digit);
             }
         }
     }
@@ -472,7 +473,7 @@ int CountdownBoard_Init(CountdownBoard *board)
 {
     typedef int (*CountdownUpdateSlot)(CountdownBoard *board);
 
-    SceneActorFiles_Of((SceneActor *) board);
+    TownObjectActorFiles_Of((TownObjectActor *) board);
     u32 update = *(const u32 *) ((const u8 *) board->vtable + 0x18);
     ((CountdownUpdateSlot) (uintptr_t) update)(board);
 
@@ -489,8 +490,9 @@ int CountdownBoard_Init(CountdownBoard *board)
     ModelObject_SetInitHook((ModelObject *) board->model_object, (void *) func_ov003_0221d038, board);
     board->material = (s8) G3dRes_MaterialIndex(board->model, data_ov003_02238d90);
     if (ModelAnim_AllocMaterialAnim((ModelAnim *) &board->anim, board->model, data_021c9b1c) != 0) {
-        ModelAnim_Start((ModelAnim *) &board->anim, (const u8 *) (uintptr_t) SceneActor_SrtAnim((SceneActor *) board, 0),
-                        COUNTDOWN_ANIM_BOARD, FX32_ONE, 0);
+        ModelAnim_Start((ModelAnim *) &board->anim,
+                        (const u8 *) (uintptr_t) TownObjectActor_SrtAnim((TownObjectActor *) board, 0), COUNTDOWN_ANIM_BOARD,
+                        FX32_ONE, 0);
         ModelAnim_Attach((ModelAnim *) &board->anim, ModelObject_RenderObject((ModelObject *) board->model_object));
     }
 
@@ -511,7 +513,7 @@ static void countdown_board_destroy_parts(CountdownBoard *board)
     board->vtable = data_ov003_02238c54;
     board->receiver_vtable = data_ov003_02238d18;
     ModelAnim_DestructComplete((ModelAnim *) &board->anim);
-    SceneActor_Destruct((SceneActor *) board);
+    TownObjectActor_Destruct((TownObjectActor *) board);
 }
 
 /* func_ov003_0221cf54 (vtable slot 0x44, the deleting destructor): the destructor's work, then
@@ -536,7 +538,7 @@ CLEAN_AS(func_ov003_0221cf8c, CountdownBoard_Destroy)
  * material yet. */
 CountdownBoard *CountdownBoard_Construct(CountdownBoard *board)
 {
-    SceneActor_ConstructBase((SceneActor *) board);
+    TownObjectActor_ConstructBase((TownObjectActor *) board);
     board->vtable = data_ov003_02238c54;
     board->receiver_vtable = data_ov003_02238d18;
     ModelAnim_Construct((ModelAnim *) &board->anim);

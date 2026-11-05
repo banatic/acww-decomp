@@ -7,7 +7,7 @@
 # (7821-7873) pick "my mistake" and it is hung up (state 5, HangUp). The pen again at 8151: the
 # sound settings (A from 8335); DOWN and A at 9449-9485 the downloads, received (10087); DOWN
 # twice and A (10471-10543) "my mistake" again; DOWN and RIGHT from 10775 walk away. LEFT and
-# DOWN from 10899 to the door's mat, where the door's scene actor looks at the pen: the pen on
+# DOWN from 10899 to the door's mat, where the door's town object actor looks at the pen: the pen on
 # the bed at 11019 (a room object's pick, main/touch_pick.c); UP at 11053.
 0 - -
 900 START -

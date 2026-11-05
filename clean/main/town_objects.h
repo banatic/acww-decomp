@@ -1,8 +1,8 @@
-/* The town's objects of codes 0x5000-0x5021: the buildings and special characters that
- * overlay 9's scene actors stand for (ov009/scene_actor.h), each with a record of ten bytes in
- * main's table data_020d1f24 (SceneActorRecord) and an index 0-0x21 (func_020b3f58: the code's
- * low bits, the four variants 0x500d-0x5010 and the seven 0x5014-0x501a each counted as their
- * first).
+/* The town's objects of codes 0x5000-0x5021: the buildings, the visitors' tents and the other
+ * structures that overlay 9's town object actors stand for (ov009/town_object_actor.h), each
+ * with a record of ten bytes in main's table data_020d1f24 (TownObjectActorRecord) and an index
+ * 0-0x21 (func_020b3f58: the code's low bits, the store's four levels 0x500d-0x5010 and the
+ * player's house's seven sizes 0x5014-0x501a each counted as their first; map_code.h).
  *
  * Main keeps a visit record per object (data_021f4bac, a byte each): in the low four bits the
  * session slots of the players visiting it, in the high four the answer to the last request
@@ -10,7 +10,7 @@
  * playing alone, decides: a request of its own is answered at once (TownObjects_RequestVisit),
  * another system's comes as message 0x23 and is answered with the same message
  * (TownObjects_OnVisitMessage); a player leaving clears its bit, through message 0x24 from the
- * others (TownObjects_Leave). Message 0x22 carries a scene actor's new mode to the other
+ * others (TownObjects_Leave). Message 0x22 carries a town object actor's new mode to the other
  * systems (TownObjects_SetActorMode, TownObjects_OnModeMessage).
  *
  * The scenes inside the objects are numbered too: the table data_020d1ebc gives each scene's
@@ -18,7 +18,7 @@
 #ifndef CLEAN_MAIN_TOWN_OBJECTS_H
 #define CLEAN_MAIN_TOWN_OBJECTS_H
 
-#include "ov009/scene_actor.h"
+#include "ov009/town_object_actor.h"
 #include "types.h"
 
 #define TOWN_OBJECTS_FIRST 0x5000
@@ -46,7 +46,7 @@ void TownObjects_OnVisitMessage(u8 *payload, int slot);
 void TownObjects_OnModeMessage(const u16 *payload);
 int TownObjects_HouseAsleep(int code);
 int TownObjects_VillagerAsleep(int villager);
-int TownObjects_SetActorMode(SceneActor *actor, unsigned int mode);
+int TownObjects_SetActorMode(TownObjectActor *actor, unsigned int mode);
 int TownObjects_AtKeptTile(void);
 void TownObjects_KeepAtKeptTile(void);
 
@@ -54,18 +54,18 @@ void TownObjects_KeepAtKeptTile(void);
 int TownObjects_HasKeptObject(void);
 int TownObjects_NearbyActorValue(const Vec3 *position);
 u32 TownObjects_PackTile(u32 code, u32 x, u32 z);
-u32 TownObjects_PackRecordTile(const SceneActorRecord *record, int x, int z);
-int TownObjects_RecordMaxVisitors(const SceneActorRecord *record);
-int TownObjects_RecordLength8(const SceneActorRecord *record);
-int TownObjects_RecordLength7(const SceneActorRecord *record);
-int TownObjects_RecordLength6(const SceneActorRecord *record);
-int TownObjects_RecordByte5(const SceneActorRecord *record);
-int TownObjects_RecordId(const SceneActorRecord *record);
-int TownObjects_RecordByte3(const SceneActorRecord *record);
-int TownObjects_RecordByte2(const SceneActorRecord *record);
-int TownObjects_RecordCode(const SceneActorRecord *record);
-void TownObjects_DestroyRecord(SceneActorRecord *record);
-void TownObjects_CopyRecord(SceneActorRecord *dst, const SceneActorRecord *src);
+u32 TownObjects_PackRecordTile(const TownObjectActorRecord *record, int x, int z);
+int TownObjects_RecordMaxVisitors(const TownObjectActorRecord *record);
+int TownObjects_RecordLength8(const TownObjectActorRecord *record);
+int TownObjects_RecordLength7(const TownObjectActorRecord *record);
+int TownObjects_RecordLength6(const TownObjectActorRecord *record);
+int TownObjects_RecordByte5(const TownObjectActorRecord *record);
+int TownObjects_RecordId(const TownObjectActorRecord *record);
+int TownObjects_RecordByte3(const TownObjectActorRecord *record);
+int TownObjects_RecordByte2(const TownObjectActorRecord *record);
+int TownObjects_RecordCode(const TownObjectActorRecord *record);
+void TownObjects_DestroyRecord(TownObjectActorRecord *record);
+void TownObjects_CopyRecord(TownObjectActorRecord *dst, const TownObjectActorRecord *src);
 
 /* The mode recorded for each object (data_021f4bd0). */
 int TownObjects_SetRecordedMode(u32 code, u8 mode);

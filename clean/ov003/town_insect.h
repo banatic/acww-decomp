@@ -174,7 +174,7 @@ typedef struct TownInsectMask {
 } TownInsectMask;
 
 int TownInsect_CountTiles(u16 *mask, int kind, int *acre_x, int *acre_z, AcreMap *map, int place);
-void TownInsect_UnmarkSceneActors(TownInsectMask *mask);
+void TownInsect_UnmarkTownObjectActors(TownInsectMask *mask);
 void TownInsect_FillMask(TownInsectMask *mask);
 int TownInsect_PickTile(TownInsect *insect, TownInsectMask *mask, int kind, int place);
 void TownInsect_CopyMask(void *dst, int place);

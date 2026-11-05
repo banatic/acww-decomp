@@ -9,12 +9,12 @@
 #include "main/talk_object.h"
 #include "main/town_record.h"
 #include "object_actors.h"
-#include "ov009/scene_actor_life.h"
+#include "ov009/town_object_actor_life.h"
 
-static_assert(offsetof(SceneActor, position) == 0x5c, "position");
-static_assert(offsetof(SceneActor, receiver_vtable) == 0xec, "receiver");
-static_assert(offsetof(SceneActor, message) == 0x10a, "receiver byte 0x1e");
-static_assert(offsetof(SceneActor, link) == 0x12c, "receiver word 0x40");
+static_assert(offsetof(TownObjectActor, position) == 0x5c, "position");
+static_assert(offsetof(TownObjectActor, receiver_vtable) == 0xec, "receiver");
+static_assert(offsetof(TownObjectActor, message) == 0x10a, "receiver byte 0x1e");
+static_assert(offsetof(TownObjectActor, link) == 0x12c, "receiver word 0x40");
 static_assert(offsetof(SignBoard, number) == 0x2b4, "number");
 static_assert(sizeof(SignBoard) == 0x2b8, "the size SignBoard_New allocates");
 
@@ -85,7 +85,7 @@ static void sign_board_destroy_parts(SignBoard *board)
 {
     board->actor.vtable = data_ov003_022395e8;
     board->actor.receiver_vtable = data_ov003_022396ac;
-    SceneActor_Destruct((SceneActor *) board);
+    TownObjectActor_Destruct((TownObjectActor *) board);
 }
 
 /* func_ov003_0221ea7c (vtable slot 0x44, the deleting destructor): the destructor's work, then
@@ -109,7 +109,7 @@ CLEAN_AS(func_ov003_0221eaa8, SignBoard_Destroy)
 /* func_ov003_0221eacc: the constructor: overlay 9's, then the vtables. */
 SignBoard *SignBoard_Construct(SignBoard *board)
 {
-    SceneActor_ConstructBase((SceneActor *) board);
+    TownObjectActor_ConstructBase((TownObjectActor *) board);
     board->actor.vtable = data_ov003_022395e8;
     board->actor.receiver_vtable = data_ov003_022396ac;
     return board;

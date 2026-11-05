@@ -11,7 +11,7 @@
  *
  * When it is set up (vtable slot 0x70) it puts the design on and makes the five tiles of the
  * row before it (x - 2 to x + 2 at z - 1) solid; leaving the scene (slot 0x0c) takes the design
- * off again. It is derived from overlay 9's scene actor (Obj_ov009_022658dc), which runs the
+ * off again. It is derived from overlay 9's town object actor (Obj_ov009_022658dc), which runs the
  * rest. */
 #ifndef CLEAN_OV003_CHECKPOINT_H
 #define CLEAN_OV003_CHECKPOINT_H

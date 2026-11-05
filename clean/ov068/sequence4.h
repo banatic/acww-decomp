@@ -1,5 +1,5 @@
-/* The scene actor of overlay 68 whose talk is the message file "sp_etc_sequence4" (class
- * Obj_ov068_02277750, include/cpp/ov068/Obj_ov068_02277750.h; a SceneActor of overlay 9). It
+/* The town object actor of overlay 68 whose talk is the message file "sp_etc_sequence4" (class
+ * Obj_ov068_02277750, include/cpp/ov068/Obj_ov068_02277750.h; a TownObjectActor of overlay 9). It
  * leads this console's player through one of two sequences with the building 0x5000 (its scene
  * actor, ObjectActors_FindByCode), by seventeen states, each an entry (whose answer says whether
  * the state is taken) and an update run each frame (data_ov068_02278774), changed by its member
@@ -18,13 +18,13 @@
  *     stand point;
  *   7 waits until the player is no longer busy;
  *   8 asks the player to stand at that point facing 0x8000 (player state 0x39) and sets the
- *     building's mode by kind (SceneActor_SetModeByKindB);
+ *     building's mode by kind (TownObjectActor_SetModeByKindB);
  *   9 20 frames later the player goes into the building: the entry record's exit 9 is taken
  *     and the marked place set 1.0 beyond the stand point, turned half round from it.
  *
  * The second sequence (states 10-16):
  *   10 event flag 1 and object actors' pose flag set;
- *   11 the building's mode set by kind (SceneActor_SetModeByKindA); once it is back in mode 0
+ *   11 the building's mode set by kind (TownObjectActor_SetModeByKindA); once it is back in mode 0
  *      and 16 frames have passed, the player walks to 4.0 along z from where it stands;
  *   12 plays the animation of slot 0x64 (sound 0x888 each frame) while the player looks at it;
  *   13 plays that of slot 0x68 (sound 0x88a);
@@ -39,22 +39,22 @@
 #include "main/g3d_render.h"
 #include "autoload_2/vector.h"
 #include "main/animated_model.h" /* G3dRenderState */
-#include "ov009/scene_actor.h"
+#include "ov009/town_object_actor.h"
 #include "types.h"
 
 typedef struct Sequence4 {
-    SceneActor base;   /* vtable data_ov068_02277750 */
-    s32 state;         /* 0x2b4: 0-16 */
-    int tile_x;        /* 0x2b8: building 0x5000's tile (state 8) */
-    int tile_z;        /* 0x2bc */
-    Vec3 stand;        /* 0x2c0: where the player stands (states 6 and 8) */
-    Vec3 effect_point; /* 0x2cc: where its effects are moved to */
-    u16 timer;         /* 0x2d8: state 9 */
-    u8 look_frames;    /* 0x2da: state 14 */
-    u8 wait;           /* 0x2db: state 11 */
-    u8 frames;         /* 0x2dc: state 6, counted up to 200 */
-    u8 frames_2dd;     /* 0x2dd: state 3 */
-    u8 flag_2de;       /* 0x2de: set when a sequence starts */
+    TownObjectActor base; /* vtable data_ov068_02277750 */
+    s32 state;            /* 0x2b4: 0-16 */
+    int tile_x;           /* 0x2b8: building 0x5000's tile (state 8) */
+    int tile_z;           /* 0x2bc */
+    Vec3 stand;           /* 0x2c0: where the player stands (states 6 and 8) */
+    Vec3 effect_point;    /* 0x2cc: where its effects are moved to */
+    u16 timer;            /* 0x2d8: state 9 */
+    u8 look_frames;       /* 0x2da: state 14 */
+    u8 wait;              /* 0x2db: state 11 */
+    u8 frames;            /* 0x2dc: state 6, counted up to 200 */
+    u8 frames_2dd;        /* 0x2dd: state 3 */
+    u8 flag_2de;          /* 0x2de: set when a sequence starts */
     u8 pad_2df;
     int effect_b; /* 0x2e0: the handle of effect 0x41 (EffectSystem_StartKind) */
     int effect_a; /* 0x2e4: the handle of effect 0x42 */

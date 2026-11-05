@@ -21,13 +21,13 @@
 #include "main/town_objects.h"
 
 static_assert(sizeof(ObjectActors) == 0x50, "the size ObjectActors_New allocates");
-static_assert(sizeof(SceneActorRecord) == 10, "a record of data_020d1f24");
-static_assert(offsetof(SceneActor, tile_x) == 0x22c, "tile_x");
-static_assert(offsetof(SceneActor, tile_z) == 0x230, "tile_z");
+static_assert(sizeof(TownObjectActorRecord) == 10, "a record of data_020d1f24");
+static_assert(offsetof(TownObjectActor, tile_x) == 0x22c, "tile_x");
+static_assert(offsetof(TownObjectActor, tile_z) == 0x230, "tile_z");
 
 /* The list. */
-extern SceneActor *data_ov003_0223cef0[OBJECT_ACTORS_MAX];
-/* The byte ObjectActors_PoseFlag gives: overlay 9's scene actors and overlay 68 set it, and the
+extern TownObjectActor *data_ov003_0223cef0[OBJECT_ACTORS_MAX];
+/* The byte ObjectActors_PoseFlag gives: overlay 9's town object actors and overlay 68 set it, and the
  * player entering state 0x3c takes animation 0x34 while it is set, else 0x35. */
 extern u8 data_ov003_0223ce50;
 /* How many objects whose record's byte 3 is 1 ObjectActors_PlaceAll placed; each sign board
@@ -45,7 +45,7 @@ extern AcreMap *data_021c80bc;
 /* The session. */
 extern NetSession *data_020ccf94;
 /* The objects' records, by index (a code's low twelve bits). */
-extern const SceneActorRecord data_020d1f24[TOWN_OBJECTS_COUNT];
+extern const TownObjectActorRecord data_020d1f24[TOWN_OBJECTS_COUNT];
 /* The parent of the process ObjectActors_SetUp spawns. */
 extern int data_021f42f4;
 
@@ -74,7 +74,7 @@ static int object_actors_is_object(u16 code)
 }
 
 /* An object code's record: the one of its index, the first for any other code. */
-static const SceneActorRecord *object_actors_record(u16 code)
+static const TownObjectActorRecord *object_actors_record(u16 code)
 {
     unsigned int index = object_actors_is_object(code) ? (code & 0xfffu) : 0xffffffffu;
     if (index < TOWN_OBJECTS_COUNT) {
@@ -83,7 +83,7 @@ static const SceneActorRecord *object_actors_record(u16 code)
     return &data_020d1f24[0];
 }
 
-/* Whether `item` is `code`: compared by their variants' item when `item` has variants. */
+/* Whether `item` is `code`: compared by furniture number when `item` is furniture. */
 static int object_actors_is_code(const u16 *item, u16 code)
 {
     if (ItemCode_IsFurniture(item)) {
@@ -112,7 +112,7 @@ void ObjectActors_ClearList(void)
 CLEAN_AS(func_ov003_02220138, ObjectActors_ClearList)
 
 /* func_ov003_02220150: the actor's place in the list, -1 when it is not in it. */
-int ObjectActors_IndexOf(SceneActor *actor)
+int ObjectActors_IndexOf(TownObjectActor *actor)
 {
     for (unsigned int i = 0; i < OBJECT_ACTORS_MAX; i++) {
         if (data_ov003_0223cef0[i] == actor) {
@@ -123,14 +123,14 @@ int ObjectActors_IndexOf(SceneActor *actor)
 }
 CLEAN_AS(func_ov003_02220150, ObjectActors_IndexOf)
 
-/* func_ov003_02220174: the first actor in the list of object `code` (compared by the variants'
- * item when the actor's code has variants), or NULL. */
-SceneActor *ObjectActors_FindByCode(u16 code)
+/* func_ov003_02220174: the first actor in the list of object `code` (compared by furniture
+ * number when the actor's code is furniture), or NULL. */
+TownObjectActor *ObjectActors_FindByCode(u16 code)
 {
     for (unsigned int i = 0; i < OBJECT_ACTORS_MAX; i++) {
-        SceneActor *actor = data_ov003_0223cef0[i];
+        TownObjectActor *actor = data_ov003_0223cef0[i];
         if (actor != NULL) {
-            const u16 *actor_code = (const u16 *) (uintptr_t) SceneActor_CodeAddress(actor);
+            const u16 *actor_code = (const u16 *) (uintptr_t) TownObjectActor_CodeAddress(actor);
             if (object_actors_is_code(actor_code, code)) {
                 return actor;
             }
@@ -141,7 +141,7 @@ SceneActor *ObjectActors_FindByCode(u16 code)
 CLEAN_AS(func_ov003_02220174, ObjectActors_FindByCode)
 
 /* func_ov003_022201e4: the list's entry `index`, NULL outside 0-31. */
-SceneActor *ObjectActors_At(int index)
+TownObjectActor *ObjectActors_At(int index)
 {
     if (index >= 0 && index < OBJECT_ACTORS_MAX) {
         return data_ov003_0223cef0[index];
@@ -151,10 +151,10 @@ SceneActor *ObjectActors_At(int index)
 CLEAN_AS(func_ov003_022201e4, ObjectActors_At)
 
 /* func_ov003_022201fc: the first actor in the list standing on tile (x, z), or NULL. */
-SceneActor *ObjectActors_FindAtTile(u32 x, u32 z)
+TownObjectActor *ObjectActors_FindAtTile(u32 x, u32 z)
 {
     for (unsigned int i = 0; i < OBJECT_ACTORS_MAX; i++) {
-        SceneActor *actor = data_ov003_0223cef0[i];
+        TownObjectActor *actor = data_ov003_0223cef0[i];
         if (actor != NULL && (u32) actor->tile_x == x && (u32) actor->tile_z == z) {
             return actor;
         }
@@ -164,7 +164,7 @@ SceneActor *ObjectActors_FindAtTile(u32 x, u32 z)
 CLEAN_AS(func_ov003_022201fc, ObjectActors_FindAtTile)
 
 /* func_ov003_02220240: takes the actor off the list; 1 when it was in it, else 0. */
-int ObjectActors_Remove(SceneActor *actor)
+int ObjectActors_Remove(TownObjectActor *actor)
 {
     int index = ObjectActors_IndexOf(actor);
     if (index != -1) {
@@ -176,7 +176,7 @@ int ObjectActors_Remove(SceneActor *actor)
 CLEAN_AS(func_ov003_02220240, ObjectActors_Remove)
 
 /* func_ov003_02220268: puts the actor in the list's first empty entry; 0 when it is full. */
-int ObjectActors_Add(SceneActor *actor)
+int ObjectActors_Add(TownObjectActor *actor)
 {
     for (unsigned int i = 0; i < OBJECT_ACTORS_MAX; i++) {
         if (data_ov003_0223cef0[i] == NULL) {
@@ -191,7 +191,7 @@ CLEAN_AS(func_ov003_02220268, ObjectActors_Add)
 /* func_ov003_02220294: the actor of the first object found on the scene's map near `position`:
  * the tiles from the position's own along z back to 5 tiles behind it, each row from 3 tiles
  * left to 3 tiles right of it; NULL when there is none or no map. */
-SceneActor *ObjectActors_FindNear(const Vec3 *position)
+TownObjectActor *ObjectActors_FindNear(const Vec3 *position)
 {
     AcreMap *map = data_021c80bc;
     if (map == NULL) {
@@ -206,7 +206,7 @@ SceneActor *ObjectActors_FindNear(const Vec3 *position)
             int acre_z = tile_z >> 4;
             u16 *item = AcreTile_ItemInAcre(map, (u32) acre_x, (u32) acre_z, tile_x & 0xf, tile_z & 0xf, 0);
             if (item != NULL && object_actors_is_object(*item)) {
-                SceneActor *actor = ObjectActors_FindByCode(*item);
+                TownObjectActor *actor = ObjectActors_FindByCode(*item);
                 if (actor != NULL) {
                     return actor;
                 }
@@ -218,42 +218,42 @@ SceneActor *ObjectActors_FindNear(const Vec3 *position)
 CLEAN_AS(func_ov003_02220294, ObjectActors_FindNear)
 
 /* func_ov003_02220318: the actor of villager `villager`'s house (object 0x5001 + villager), if
- * there is one, gets SceneActor_IdleSetModeByKindA and its answer is returned; else 0. */
+ * there is one, gets TownObjectActor_IdleSetModeByKindA and its answer is returned; else 0. */
 int ObjectActors_IdleSetHouseModeA(int villager)
 {
-    SceneActor *actor = ObjectActors_FindByCode((u16) (villager + 0x5001));
+    TownObjectActor *actor = ObjectActors_FindByCode((u16) (villager + 0x5001));
     if (actor != NULL) {
-        return SceneActor_IdleSetModeByKindA(actor);
+        return TownObjectActor_IdleSetModeByKindA(actor);
     }
     return 0;
 }
 CLEAN_AS(func_ov003_02220318, ObjectActors_IdleSetHouseModeA)
 
-/* func_ov003_02220340: as ObjectActors_IdleSetHouseModeA with SceneActor_IdleSetModeByKindB. */
+/* func_ov003_02220340: as ObjectActors_IdleSetHouseModeA with TownObjectActor_IdleSetModeByKindB. */
 int ObjectActors_IdleSetHouseModeB(int villager)
 {
-    SceneActor *actor = ObjectActors_FindByCode((u16) (villager + 0x5001));
+    TownObjectActor *actor = ObjectActors_FindByCode((u16) (villager + 0x5001));
     if (actor != NULL) {
-        return SceneActor_IdleSetModeByKindB(actor);
+        return TownObjectActor_IdleSetModeByKindB(actor);
     }
     return 0;
 }
 CLEAN_AS(func_ov003_02220340, ObjectActors_IdleSetHouseModeB)
 
 /* func_ov003_02220368: the actor near `position` (ObjectActors_FindNear), if there is one, gets
- * SceneActor_SetModeByKindA and its answer is returned; else 0. */
+ * TownObjectActor_SetModeByKindA and its answer is returned; else 0. */
 int ObjectActors_SetNearModeA(const Vec3 *position)
 {
-    SceneActor *actor = ObjectActors_FindNear(position);
-    return actor != NULL ? SceneActor_SetModeByKindA(actor) : 0;
+    TownObjectActor *actor = ObjectActors_FindNear(position);
+    return actor != NULL ? TownObjectActor_SetModeByKindA(actor) : 0;
 }
 CLEAN_AS(func_ov003_02220368, ObjectActors_SetNearModeA)
 
-/* func_ov003_02220384: as ObjectActors_SetNearModeA with SceneActor_SetModeByKindB. */
+/* func_ov003_02220384: as ObjectActors_SetNearModeA with TownObjectActor_SetModeByKindB. */
 int ObjectActors_SetNearModeB(const Vec3 *position)
 {
-    SceneActor *actor = ObjectActors_FindNear(position);
-    return actor != NULL ? SceneActor_SetModeByKindB(actor) : 0;
+    TownObjectActor *actor = ObjectActors_FindNear(position);
+    return actor != NULL ? TownObjectActor_SetModeByKindB(actor) : 0;
 }
 CLEAN_AS(func_ov003_02220384, ObjectActors_SetNearModeB)
 
@@ -316,7 +316,7 @@ int ObjectActors_RetypeShape(ObjectActors *self, u16 *code, int x, int z)
 }
 CLEAN_AS(func_ov003_0222040c, ObjectActors_RetypeShape)
 
-/* func_ov003_02220460: spawns the scene actor of object `*code` at the centre of tile (x, z):
+/* func_ov003_02220460: spawns the town object actor of object `*code` at the centre of tile (x, z):
  * actor profile from the object's record (TownObjects_RecordCode), the code as its parameter.
  * When it spawned and `stamp` is set, the object is also put down on the scene's map at the
  * tile (AcreTile_StampBuildingNoting, not handed back here) and its shape's tiles retyped in
@@ -324,7 +324,7 @@ CLEAN_AS(func_ov003_0222040c, ObjectActors_RetypeShape)
 int ObjectActors_Place(ObjectActors *self, u16 *code, int x, int z, u8 stamp)
 {
     Vec3 centre = {0, 0, 0};
-    SceneActorRecord record;
+    TownObjectActorRecord record;
 
     AcreTile_TileCentre(&centre, (u32) x, (u32) z);
     TownObjects_CopyRecord(&record, object_actors_record(*code));
@@ -345,7 +345,7 @@ CLEAN_AS(func_ov003_02220460, ObjectActors_Place)
  * too), acre by acre and in each acre tile by tile (layer 0), counting those whose record's
  * byte 3 is 1 in data_ov003_0223ce54 (cleared first). Before an acre of model 0x1a-0x1c is
  * searched, object 0x500b is put on its tile (7, 0). Not placed: an object whose byte 3 is 2
- * while either of Block020b220c's arrival flags is set, and object 0x501e (or a variant of it)
+ * while either of Block020b220c's arrival flags is set, and object 0x501e (by furniture number if it were furniture)
  * outside the snow season. Then, when SceneQuery_CurrentIs0 says so, this system's session slot
  * is not taken, one of those flags is set and the town's map has object 0x5000, object 0x501b
  * is placed (not put down) one tile further along z than the tile AcreMap_FindTownHallFront
@@ -379,7 +379,7 @@ int ObjectActors_PlaceAll(ObjectActors *self)
                     int x;
                     int z;
                     AcreTile_TileOfAcre(&x, &z, (int) acre_x, (int) acre_z, (int) tile_x, (int) tile_z);
-                    SceneActorRecord record;
+                    TownObjectActorRecord record;
                     TownObjects_CopyRecord(&record, object_actors_record(*item));
                     int mode = TownObjects_RecordByte3(&record);
                     int wanted = !flagged || mode != OBJECT_ACTORS_MODE_FLAGGED;

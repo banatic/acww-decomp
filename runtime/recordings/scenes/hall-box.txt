@@ -1,6 +1,6 @@
 # hall-box (format: runtime/input.h), played from a town save by tools/scenes.py (the save is
 # not in this repository). As town-hall.txt to 3700: just inside the town hall, on the door's mat.
-# Save: the seed town. On the mat the door's scene actor (ov009/scene_actor_mode.c, mode 0) looks
+# Save: the seed town. On the mat the door's town object actor (ov009/town_object_actor_mode.c, mode 0) looks
 # at what the pen comes down on: the recycle box at 3740 (its pick, kind 12: main/touch_pick.c);
 # UP at 3774 walks in.
 0 - -

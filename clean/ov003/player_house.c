@@ -13,8 +13,8 @@
 #include "main/vram_region.h"
 #include "house_files.h"
 #include "object_actors.h"
-#include "ov009/scene_actor.h"
-#include "ov009/scene_actor_life.h"
+#include "ov009/town_object_actor.h"
+#include "ov009/town_object_actor_life.h"
 
 static_assert(offsetof(PlayerHouse, receiver_vtable) == 0xec, "receiver");
 static_assert(offsetof(PlayerHouse, model) == 0x198, "model");
@@ -131,7 +131,7 @@ int PlayerHouse_Draw(void)
 {
     void *mailbox = ObjectActors_FindByCode(PLAYER_HOUSE_MAILBOX_CODE);
     if (mailbox != NULL) {
-        SceneActor_DrawModel(mailbox);
+        TownObjectActor_DrawModel(mailbox);
     }
     return 1;
 }
@@ -146,7 +146,7 @@ int PlayerHouse_Init(PlayerHouse *house)
     PlayerHouse_BindTextures(house);
     Vec3 point;
     s16 angle;
-    if (SceneActor_GetStandPoint((SceneActor *) house, &point, &angle)) {
+    if (TownObjectActor_GetStandPoint((TownObjectActor *) house, &point, &angle)) {
         point.x -= 0x2000;
         point.z += 0x1000;
         Actor_Spawn(PLAYER_HOUSE_MAILBOX_PROFILE, PLAYER_HOUSE_MAILBOX_CODE, &point, NULL, NULL);
@@ -160,7 +160,7 @@ static void player_house_destroy_parts(PlayerHouse *house)
 {
     house->vtable = data_ov003_02239254;
     house->receiver_vtable = data_ov003_02239318;
-    SceneActor_Destruct((SceneActor *) house);
+    TownObjectActor_Destruct((TownObjectActor *) house);
 }
 
 /* func_ov003_0221dd90 (vtable slot 0x44, the deleting destructor): the destructor's work, then
@@ -184,7 +184,7 @@ CLEAN_AS(func_ov003_0221ddbc, PlayerHouse_Destroy)
 /* func_ov003_0221dde0: the constructor: overlay 9's, then the vtables. */
 PlayerHouse *PlayerHouse_Construct(PlayerHouse *house)
 {
-    SceneActor_ConstructBase((SceneActor *) house);
+    TownObjectActor_ConstructBase((TownObjectActor *) house);
     house->vtable = data_ov003_02239254;
     house->receiver_vtable = data_ov003_02239318;
     return house;

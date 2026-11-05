@@ -1,7 +1,6 @@
-/* The panther of overlay 3 (class Obj_ov003_02238dbc, vtable 0x02238dbc, receiver part
- * 0x02238e80, 0x2b8 bytes), a special character whose message receiver is named
- * "sp_npc_panther"; Katrina the fortune teller is the game's panther, but nothing here names
- * her. It is derived from overlay 9's scene actor (Obj_ov009_022658dc), which runs the rest.
+/* The panther's tent of overlay 3 (class Obj_ov003_02238dbc, vtable 0x02238dbc, receiver part
+ * 0x02238e80, 0x2b8 bytes), a town object whose message receiver is named "sp_npc_panther"
+ * (Katrina the fortune teller is the game's panther, but nothing here names her). It is derived from overlay 9's town object actor (Obj_ov009_022658dc), which runs the rest.
  *
  * Set up (vtable slot 0x70), it keeps the clock's hour. Before a talk (slot 0x78) it names the
  * receiver, picks message 0x12 when both that hour and the hour now are 6 or later (slot 0x8c),

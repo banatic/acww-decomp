@@ -11,7 +11,7 @@
 #include "main/item_texture.h"
 #include "main/vram_copy_task.h"
 #include "house_files.h"
-#include "ov009/scene_actor_life.h"
+#include "ov009/town_object_actor_life.h"
 
 static_assert(offsetof(Checkpoint, model) == 0x198, "model");
 static_assert(offsetof(Checkpoint, design) == 0x2b4, "design");
@@ -201,7 +201,7 @@ static void checkpoint_destroy_parts(Checkpoint *checkpoint)
     checkpoint->vtable = data_ov003_02238934;
     checkpoint->receiver_vtable = data_ov003_022389f8;
     Checkpoint_DestroyDesign(&checkpoint->design);
-    SceneActor_Destruct((SceneActor *) checkpoint);
+    TownObjectActor_Destruct((TownObjectActor *) checkpoint);
 }
 
 /* func_ov003_0221c630 (vtable slot 0x44, the deleting destructor): the destructor's work, then
@@ -225,7 +225,7 @@ CLEAN_AS(func_ov003_0221c668, Checkpoint_Destroy)
 /* func_ov003_0221c69c: the constructor: overlay 9's, the vtables, then the design part's. */
 Checkpoint *Checkpoint_Construct(Checkpoint *checkpoint)
 {
-    SceneActor_ConstructBase((SceneActor *) checkpoint);
+    TownObjectActor_ConstructBase((TownObjectActor *) checkpoint);
     checkpoint->vtable = data_ov003_02238934;
     checkpoint->receiver_vtable = data_ov003_022389f8;
     Checkpoint_ConstructDesign(&checkpoint->design);

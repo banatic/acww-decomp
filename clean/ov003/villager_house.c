@@ -26,7 +26,7 @@
 #include "main/villager_data.h"
 #include "main/villager_roster.h"
 #include "main/villager_status.h"
-#include "ov009/scene_actor_life.h"
+#include "ov009/town_object_actor_life.h"
 
 static_assert(offsetof(VillagerHouse, position) == 0x5c, "position");
 static_assert(offsetof(VillagerHouse, receiver_vtable) == 0xec, "receiver");
@@ -109,7 +109,7 @@ typedef struct VillagerHouseText {
     u8 bytes[0x24];
 } VillagerHouseText;
 
-/* The villager's index from the special character's code, -1 when it is not a villager's. */
+/* The villager's index from the town object's code, -1 when it is not a villager's. */
 static int villager_house_index(const VillagerHouse *house)
 {
     unsigned int code = house->code;
@@ -148,7 +148,7 @@ CLEAN_AS(func_ov003_0221d2ac, VillagerHouse_Slot90)
 int VillagerHouse_Slot9C(VillagerHouse *house)
 {
     int index = villager_house_index(house);
-    if (SceneActor_IsNight((SceneActor *) house) == 0) {
+    if (TownObjectActor_IsNight((TownObjectActor *) house) == 0) {
         return 0;
     }
     void *villager = VillagerRoster_At((VillagerTown *) data_021e5a2c, index);
@@ -419,7 +419,7 @@ static void villager_house_destroy_parts(VillagerHouse *house)
     house->receiver_vtable = data_ov003_02238fec;
     ModelAnim_DestructComplete((ModelAnim *) &house->x_anim);
     AnimatedModel_DestructComplete((AnimatedModel *) &house->x_model);
-    SceneActor_Destruct((SceneActor *) house);
+    TownObjectActor_Destruct((TownObjectActor *) house);
 }
 
 /* func_ov003_0221d93c (vtable slot 0x44, the deleting destructor): the destructor's work, then
@@ -446,7 +446,7 @@ CLEAN_AS(func_ov003_0221d980, VillagerHouse_Destroy)
  * made before it are kept again only by their set-up (VillagerHouse_Init). */
 VillagerHouse *VillagerHouse_Construct(VillagerHouse *house)
 {
-    SceneActor_ConstructBase((SceneActor *) house);
+    TownObjectActor_ConstructBase((TownObjectActor *) house);
     house->vtable = data_ov003_02238f28;
     house->receiver_vtable = data_ov003_02238fec;
     AnimatedModel_Construct((AnimatedModel *) &house->x_model);

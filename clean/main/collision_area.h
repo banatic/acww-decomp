@@ -1,5 +1,5 @@
 /* Collision areas: triangles that want to be told when an actor moves near them (the areas of
- * overlay 9's scene actors). An area is a C++ object (0x4c bytes, class vtable 0x020da234,
+ * overlay 9's town object actors). An area is a C++ object (0x4c bytes, class vtable 0x020da234,
  * derived from CollisionTriangle of field_collision.h, whose four methods it keeps) kept in the
  * list at data_021c30e0. Each move of the field's collision (CollisionQuery_Move) tells every
  * area whose reach covers the actor's position through the area's fifth virtual method, which

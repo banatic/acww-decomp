@@ -8,7 +8,7 @@
 #include "main/clock_hands.h"
 #include "main/g3d_resource.h"
 #include "main/model_object.h"
-#include "ov009/scene_actor_life.h"
+#include "ov009/town_object_actor_life.h"
 
 static_assert(offsetof(OutdoorClock, receiver_vtable) == 0xec, "receiver");
 static_assert(offsetof(OutdoorClock, model_object) == 0x13c, "model object");
@@ -71,7 +71,7 @@ static void outdoor_clock_destroy_parts(OutdoorClock *clock)
 {
     clock->vtable = data_ov003_022390e8;
     clock->receiver_vtable = data_ov003_022391ac;
-    SceneActor_Destruct((SceneActor *) clock);
+    TownObjectActor_Destruct((TownObjectActor *) clock);
 }
 
 /* func_ov003_0221db04 (vtable slot 0x44, the deleting destructor): the destructor's work, then
@@ -95,7 +95,7 @@ CLEAN_AS(func_ov003_0221db30, OutdoorClock_Destroy)
 /* func_ov003_0221db54: the constructor: overlay 9's, the vtables; no joints yet. */
 OutdoorClock *OutdoorClock_Construct(OutdoorClock *clock)
 {
-    SceneActor_ConstructBase((SceneActor *) clock);
+    TownObjectActor_ConstructBase((TownObjectActor *) clock);
     clock->vtable = data_ov003_022390e8;
     clock->receiver_vtable = data_ov003_022391ac;
     clock->minute_node = OUTDOOR_CLOCK_NO_NODE;

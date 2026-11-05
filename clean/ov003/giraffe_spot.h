@@ -4,7 +4,7 @@
  * (func_0203fc78), it asks main's spawner for an actor of profile 0x6c (the halfword at
  * data_ov003_02238784; the spawn table's code 0xd00b, in overlay 70) in the current scene,
  * where it stands (Spawner_RequestAt), as gull_spot.h does for the gull. It moves no player.
- * It is derived from overlay 9's scene actor (Obj_ov009_022658dc), which runs the rest.
+ * It is derived from overlay 9's town object actor (Obj_ov009_022658dc), which runs the rest.
  *
  * Its receiver keeps overlay 9's slot 0x14, entered through a thunk this overlay also gives
  * the checkpoint (GiraffeSpot_ReceiverSlot14). */

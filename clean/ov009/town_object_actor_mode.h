@@ -1,5 +1,5 @@
-/* The scene actor's modes (scene_actor.h): the byte at 0x134, set through vtable slot 0x6c
- * (SceneActor_SetMode) and run each frame through slot 0x74 (SceneActor_RunMode). Each mode has
+/* The town object actor's modes (town_object_actor.h): the byte at 0x134, set through vtable slot 0x6c
+ * (TownObjectActor_SetMode) and run each frame through slot 0x74 (TownObjectActor_RunMode). Each mode has
  * an entry, which may refuse it, and a run; both are member pointers in tables
  * (ov004/member_pointer.h). Main is told each new mode (TownObjects_SetRecordedMode), which
  * passes it on to the other systems of a session.
@@ -18,25 +18,25 @@
  *             0x808); then mode 4.
  *   4 close:  26 frames later the door's closing sound (0x807 or 0x809), then the second
  *             animation once; then mode 0.
- *   5, 6:     back to mode 0 at once (scene_actor.c). */
-#ifndef CLEAN_OV009_SCENE_ACTOR_MODE_H
-#define CLEAN_OV009_SCENE_ACTOR_MODE_H
+ *   5, 6:     back to mode 0 at once (town_object_actor.c). */
+#ifndef CLEAN_OV009_TOWN_OBJECT_ACTOR_MODE_H
+#define CLEAN_OV009_TOWN_OBJECT_ACTOR_MODE_H
 
-#include "scene_actor.h"
+#include "town_object_actor.h"
 
-#define SCENE_ACTOR_MODES 7
+#define TOWN_OBJECT_ACTOR_MODES 7
 
-void SceneActor_RunMode4(SceneActor *actor);
-int SceneActor_EnterMode4(SceneActor *actor);
-void SceneActor_RunMode3(SceneActor *actor);
-int SceneActor_EnterMode3(SceneActor *actor);
-void SceneActor_RunMode2(SceneActor *actor);
-int SceneActor_EnterMode2(SceneActor *actor);
-void SceneActor_RunMode1(SceneActor *actor);
-int SceneActor_EnterMode1(SceneActor *actor);
-void SceneActor_RunMode0(SceneActor *actor);
-int SceneActor_EnterMode0(SceneActor *actor);
-void SceneActor_RunMode(SceneActor *actor);
-int SceneActor_SetMode(SceneActor *actor, unsigned int mode);
+void TownObjectActor_RunMode4(TownObjectActor *actor);
+int TownObjectActor_EnterMode4(TownObjectActor *actor);
+void TownObjectActor_RunMode3(TownObjectActor *actor);
+int TownObjectActor_EnterMode3(TownObjectActor *actor);
+void TownObjectActor_RunMode2(TownObjectActor *actor);
+int TownObjectActor_EnterMode2(TownObjectActor *actor);
+void TownObjectActor_RunMode1(TownObjectActor *actor);
+int TownObjectActor_EnterMode1(TownObjectActor *actor);
+void TownObjectActor_RunMode0(TownObjectActor *actor);
+int TownObjectActor_EnterMode0(TownObjectActor *actor);
+void TownObjectActor_RunMode(TownObjectActor *actor);
+int TownObjectActor_SetMode(TownObjectActor *actor, unsigned int mode);
 
 #endif

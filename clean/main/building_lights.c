@@ -11,7 +11,7 @@ static_assert(sizeof(BuildingLightsLamps) == 0x1c, "lamps");
 static_assert(offsetof(BuildingLights, door) == 0x14, "door");
 static_assert(offsetof(BuildingLights, lamps) == 0x18, "lamps");
 static_assert(offsetof(BuildingLights, window) == 0x34, "window");
-static_assert(sizeof(BuildingLights) == 0x38, "the member at 0x1f4 of a scene actor");
+static_assert(sizeof(BuildingLights) == 0x38, "the member at 0x1f4 of a town object actor");
 static_assert(offsetof(BuildingLightsModel, material_count) == 0x18, "material count");
 
 /* NitroSDK's material flag for the emission colour (NNS_G3D_MATFLAG_EMISSION). */

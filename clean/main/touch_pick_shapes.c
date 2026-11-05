@@ -429,7 +429,7 @@ static void touch_pick_posts(TouchPick *pick, Vec3 *from, Vec3 *to)
                     int tile_z;
                     pick->kind = TOUCH_PICK_KIND_OUTDOOR_ENTRY;
                     Position_Tile(&tile_x, &tile_z, (const Position *) &pick->point);
-                    pick->index = (u8) ObjectActors_IndexOf((SceneActor *) (uintptr_t) ((
+                    pick->index = (u8) ObjectActors_IndexOf((TownObjectActor *) (uintptr_t) ((
                         int) (uintptr_t) ObjectActors_FindAtTile((unsigned int) tile_x, (unsigned int) tile_z)));
                 } else {
                     pick->kind = TOUCH_PICK_KIND_POST;

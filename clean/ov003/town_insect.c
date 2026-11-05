@@ -36,7 +36,7 @@
 #include "ov003/town_insect_moves.h"
 #include "ov003/town_insect_tables.h"
 #include "ov003/town_tile_mask.h"
-#include "ov009/scene_actor.h"
+#include "ov009/town_object_actor.h"
 #include "object_actors.h"
 #include "ov068/insect_paths.h"
 
@@ -409,11 +409,11 @@ int TownInsect_CountTiles(u16 *mask, int kind, int *acre_x, int *acre_z, AcreMap
 CLEAN_AS(func_ov003_0222c888, TownInsect_CountTiles)
 
 /* func_ov003_0222ce50: in `mask`, the tiles around each building (its shape's 'M' tiles) whose
- * scene actor has the member at 0x1f4 set made free again (their bits cleared), for the 0x22
+ * town object actor has the member at 0x1f4 set made free again (their bits cleared), for the 0x22
  * buildings that have a shape and an actor.
  * QUIRK: the tile's place in the mask is found by C's division and remainder by 16 from tile 16
  * on, as the original does; a bit of 16 or more (or a negative remainder) clears nothing. */
-void TownInsect_UnmarkSceneActors(TownInsectMask *mask)
+void TownInsect_UnmarkTownObjectActors(TownInsectMask *mask)
 {
     for (u32 i = 0; i < BUILDING_SHAPES_COUNT; i++) {
         u16 code = MapCode_Building(i);
@@ -425,7 +425,7 @@ void TownInsect_UnmarkSceneActors(TownInsectMask *mask)
         if (tiles == 0) {
             continue;
         }
-        SceneActor *actor = ObjectActors_FindByCode(code);
+        TownObjectActor *actor = ObjectActors_FindByCode(code);
         if (actor == NULL) {
             continue;
         }
@@ -436,11 +436,11 @@ void TownInsect_UnmarkSceneActors(TownInsectMask *mask)
                                      (unsigned int) (uintptr_t) &z, j) == 0) {
                 continue;
             }
-            if (SceneActor_LightsLit(actor) != 1) {
+            if (TownObjectActor_LightsLit(actor) != 1) {
                 continue;
             }
-            int tile_x = x + SceneActor_TileX(actor);
-            int tile_z = (int) ((u32) z + SceneActor_TileZ(actor));
+            int tile_x = x + TownObjectActor_TileX(actor);
+            int tile_z = (int) ((u32) z + TownObjectActor_TileZ(actor));
             int acre_x = (tile_x - 0x10) / 0x10;
             int acre_z = (tile_z - 0x10) / 0x10;
             int row = tile_z % 0x10;
@@ -450,16 +450,16 @@ void TownInsect_UnmarkSceneActors(TownInsectMask *mask)
         }
     }
 }
-CLEAN_AS(func_ov003_0222ce50, TownInsect_UnmarkSceneActors)
+CLEAN_AS(func_ov003_0222ce50, TownInsect_UnmarkTownObjectActors)
 
-/* func_ov003_0222cf1c: `mask` with every tile marked, then the tiles around the scene actors'
- * buildings freed (TownInsect_UnmarkSceneActors). */
+/* func_ov003_0222cf1c: `mask` with every tile marked, then the tiles around the town object actors'
+ * buildings freed (TownInsect_UnmarkTownObjectActors). */
 void TownInsect_FillMask(TownInsectMask *mask)
 {
     for (int i = 0; i < 0x100; i++) {
         mask->rows[i] = 0xffff;
     }
-    TownInsect_UnmarkSceneActors(mask);
+    TownInsect_UnmarkTownObjectActors(mask);
 }
 CLEAN_AS(func_ov003_0222cf1c, TownInsect_FillMask)
 
@@ -1053,7 +1053,7 @@ CLEAN_AS(func_ov003_0222da9c, TownInsect_PlaceNew)
  * in a free town record, TOWN_INSECT_MODE_EVENT: in the second event record); 1 when placed.
  *
  * The tiles start from a copy of the place's mask (kind 8: every tile marked but those around
- * the buildings with scene actors). For the town, the tiles around the other town insects are
+ * the buildings with town object actors). For the town, the tiles around the other town insects are
  * marked (none for kind 0x33 or 8) and, but for kind 0x33, those around the players: each
  * player in the town in a session, else this console's player. A second insect of kind 0x23
  * is not placed. Outside a session kind 0x23 is placed beside a loose snowball farther than 12.0

@@ -8,8 +8,8 @@
 #include "main/event_calendar.h"
 #include "main/scene_query.h"
 #include "main/spawner.h"
-#include "ov009/scene_actor.h"
-#include "ov009/scene_actor_life.h"
+#include "ov009/town_object_actor.h"
+#include "ov009/town_object_actor_life.h"
 
 static_assert(offsetof(GiraffeSpot, position) == 0x5c, "position");
 static_assert(offsetof(GiraffeSpot, receiver_vtable) == 0xec, "receiver");
@@ -31,7 +31,7 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
  * checkpoint's receivers use it. */
 void GiraffeSpot_ReceiverSlot14(void *receiver)
 {
-    SceneActor_OnMessageEnd((SceneActor *) ((u8 *) receiver - GIRAFFE_SPOT_RECEIVER_OFFSET));
+    TownObjectActor_OnMessageEnd((TownObjectActor *) ((u8 *) receiver - GIRAFFE_SPOT_RECEIVER_OFFSET));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov009_022658dc17vfunc_02066994_14Ev, GiraffeSpot_ReceiverSlot14)
 
@@ -55,7 +55,7 @@ static void giraffe_spot_destroy_parts(GiraffeSpot *object)
 {
     object->vtable = data_ov003_022387a8;
     object->receiver_vtable = data_ov003_0223886c;
-    SceneActor_Destruct((SceneActor *) object);
+    TownObjectActor_Destruct((TownObjectActor *) object);
 }
 
 /* func_ov003_0221c368 (the deleting destructor): the destructor's work, then the memory
@@ -79,7 +79,7 @@ CLEAN_AS(func_ov003_0221c394, GiraffeSpot_Destroy)
 /* func_ov003_0221c3b8: the constructor: overlay 9's, then the vtables. */
 GiraffeSpot *GiraffeSpot_Construct(GiraffeSpot *object)
 {
-    SceneActor_ConstructBase((SceneActor *) object);
+    TownObjectActor_ConstructBase((TownObjectActor *) object);
     object->vtable = data_ov003_022387a8;
     object->receiver_vtable = data_ov003_0223886c;
     return object;

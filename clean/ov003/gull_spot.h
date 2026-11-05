@@ -2,16 +2,16 @@
  * 0x022399ac, 0x2b4 bytes; profile 0x27) that only marks a spot: set up (vtable slot 0x70), it
  * asks main's spawner (main/spawner.h) for an actor of profile 0x60 (the spawn table's code
  * 0xd015, in overlay 72: the gull, ov072/gull.h) in the current scene, where it stands. Its
- * update, its drawing and its slot 0x0c do nothing. It is derived from overlay 9's scene actor
- * (ov009/scene_actor.h) and adds nothing to it. giraffe_spot.h does the same for the giraffe. */
+ * update, its drawing and its slot 0x0c do nothing. It is derived from overlay 9's town object actor
+ * (ov009/town_object_actor.h) and adds nothing to it. giraffe_spot.h does the same for the giraffe. */
 #ifndef CLEAN_OV003_GULL_SPOT_H
 #define CLEAN_OV003_GULL_SPOT_H
 
-#include "ov009/scene_actor.h"
+#include "ov009/town_object_actor.h"
 #include "types.h"
 
 typedef struct GullSpot {
-    SceneActor actor;
+    TownObjectActor actor;
 } GullSpot;
 
 int GullSpot_Slot0C(void);

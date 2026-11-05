@@ -1,7 +1,7 @@
 # aquarium-sign (format: runtime/input.h), played from a town save by tools/scenes.py (the save
 # is not in this repository). As museum-halls.txt to 7000: in the museum's aquarium, on the door's
 # mat.
-# Save: museum-full. On the mat the door's scene actor (ov009/scene_actor_mode.c, mode 0) looks at
+# Save: museum-full. On the mat the door's town object actor (ov009/town_object_actor_mode.c, mode 0) looks at
 # what the pen comes down on: the first tank's sign at 7000 (a museum entry's pick, kind 14:
 # main/touch_pick.c, ov004/etc_museum.c); RIGHT at 7034 walks in.
 900 START -

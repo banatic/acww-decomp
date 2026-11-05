@@ -1,6 +1,6 @@
 /* The player's house seen from outside, a scene object of overlay 3 (class Obj_ov003_02239254,
  * vtable 0x02239254, receiver part 0x02239318, 0x2bc bytes). It is derived from overlay 9's
- * scene actor (Obj_ov009_022658dc), which runs the rest.
+ * town object actor (Obj_ov009_022658dc), which runs the rest.
  *
  * Its texture is "/str/plHsTex/home<look><letter>.nsbtx": the look is bits 6 to 9 of the word
  * that follows the five 0x450-byte room records of the house at data_021ebcd4, written as one

@@ -1,4 +1,4 @@
-/* The states of the scene actor of "sp_etc_sequence4" held here (sequence4.h). */
+/* The states of the town object actor of "sp_etc_sequence4" held here (sequence4.h). */
 #include "sequence4.h"
 
 #include "autoload_2/approach.h" /* Math_AbsDiff16 */
@@ -21,11 +21,11 @@
 #include "main/talk_object.h"
 #include "ov003/field_actor.h" /* FieldActor_PlayerRequestState39 */
 #include "ov003/object_actors.h"
-#include "ov009/scene_actor_files.h"
-#include "ov009/scene_actor_life.h"
+#include "ov009/town_object_actor_files.h"
+#include "ov009/town_object_actor_life.h"
 
-static_assert(offsetof(SceneActor, model_object) == 0x13c, "model");
-static_assert(offsetof(SceneActor, sound) == 0x238, "sound");
+static_assert(offsetof(TownObjectActor, model_object) == 0x13c, "model");
+static_assert(offsetof(TownObjectActor, sound) == 0x238, "sound");
 static_assert(offsetof(Sequence4, state) == 0x2b4, "state");
 static_assert(offsetof(Sequence4, stand) == 0x2c0, "stand");
 static_assert(offsetof(Sequence4, effect_point) == 0x2cc, "effect point");
@@ -42,7 +42,7 @@ static_assert(offsetof(AnimatedModel, frames) == 0x9c, "model frames");
 #define SEQUENCE4_ANIM_FLAGS 1
 #define SEQUENCE4_ANIM_SPEED 0x1000
 
-/* Its sounds (SceneActorSound_Play once, SceneActorSound_PlayEx each frame). */
+/* Its sounds (TownObjectActorSound_Play once, TownObjectActorSound_PlayEx each frame). */
 #define SEQUENCE4_SOUND_A 0x888
 #define SEQUENCE4_SOUND_LOOP 0x889
 #define SEQUENCE4_SOUND_B 0x88a
@@ -149,7 +149,7 @@ CLEAN_AS(func_ov068_02272104, Sequence4_EnterState16)
  * effects follow (func_ov068_02272be4) and the animation steps. */
 void Sequence4_UpdateState15(Sequence4 *actor)
 {
-    SceneActorSound_PlayEx(&actor->base.sound, SEQUENCE4_SOUND_LOOP);
+    TownObjectActorSound_PlayEx(&actor->base.sound, SEQUENCE4_SOUND_LOOP);
     if (animation_done(actor)) {
         set_state(actor, 16);
     }
@@ -162,7 +162,7 @@ CLEAN_AS(_ZN18Obj_ov068_0227775019func_ov068_02272114Ev, Sequence4_UpdateState15
 int Sequence4_EnterState15(Sequence4 *actor)
 {
     start_animation(actor, Sequence4_ThirdAnimation(actor));
-    SceneActorSound_Play(&actor->base.sound, SEQUENCE4_SOUND_C);
+    TownObjectActorSound_Play(&actor->base.sound, SEQUENCE4_SOUND_C);
     return 1;
 }
 CLEAN_AS(func_ov068_0227215c, Sequence4_EnterState15)
@@ -206,7 +206,7 @@ CLEAN_AS(_ZN18Obj_ov068_0227775019func_ov068_02272208Ev, Sequence4_UpdateState13
 int Sequence4_EnterState13(Sequence4 *actor)
 {
     start_animation(actor, call_slot(actor, SEQUENCE4_SLOT_ANIM_B));
-    SceneActorSound_Play(&actor->base.sound, SEQUENCE4_SOUND_B);
+    TownObjectActorSound_Play(&actor->base.sound, SEQUENCE4_SOUND_B);
     return 1;
 }
 CLEAN_AS(_ZN18Obj_ov068_0227775019func_ov068_02272238Ev, Sequence4_EnterState13)
@@ -216,7 +216,7 @@ CLEAN_AS(_ZN18Obj_ov068_0227775019func_ov068_02272238Ev, Sequence4_EnterState13)
  * one) looks at it. */
 void Sequence4_UpdateState12(Sequence4 *actor)
 {
-    SceneActorSound_PlayEx(&actor->base.sound, SEQUENCE4_SOUND_A);
+    TownObjectActorSound_PlayEx(&actor->base.sound, SEQUENCE4_SOUND_A);
     if (animation_done(actor)) {
         set_state(actor, 13);
     }
@@ -242,8 +242,8 @@ CLEAN_AS(_ZN18Obj_ov068_0227775019func_ov068_02272304Ev, Sequence4_EnterState12)
  * walk is taken, state 12. The wait counts down while the building is in mode 0. */
 void Sequence4_UpdateState11(Sequence4 *actor)
 {
-    SceneActor *building = ObjectActors_FindByCode(SEQUENCE4_BUILDING);
-    if (building == NULL || SceneActor_IsInMode0(building) == 0) {
+    TownObjectActor *building = ObjectActors_FindByCode(SEQUENCE4_BUILDING);
+    if (building == NULL || TownObjectActor_IsInMode0(building) == 0) {
         return;
     }
     const Actor *player = (const Actor *) SessionPlayers_ActorOf(SEQUENCE4_PLAYER);
@@ -261,14 +261,14 @@ void Sequence4_UpdateState11(Sequence4 *actor)
 CLEAN_AS(_ZN18Obj_ov068_0227775019func_ov068_02272338Ev, Sequence4_UpdateState11)
 
 /* func_ov068_022723b4 (entry of state 11): with building 0x5000, a wait of 16 frames and the
- * building's mode set by its kind (SceneActor_SetModeByKindA), whose answer it gives; 1
+ * building's mode set by its kind (TownObjectActor_SetModeByKindA), whose answer it gives; 1
  * without the building. */
 int Sequence4_EnterState11(Sequence4 *actor)
 {
-    SceneActor *building = ObjectActors_FindByCode(SEQUENCE4_BUILDING);
+    TownObjectActor *building = ObjectActors_FindByCode(SEQUENCE4_BUILDING);
     if (building != NULL) {
         actor->wait = SEQUENCE4_CALL_WAIT;
-        return SceneActor_SetModeByKindA(building);
+        return TownObjectActor_SetModeByKindA(building);
     }
     return 1;
 }
@@ -303,13 +303,13 @@ void Sequence4_UpdateState9(Sequence4 *actor)
     if (actor->timer != 0) {
         return;
     }
-    SceneActor *building = ObjectActors_FindByCode(SEQUENCE4_BUILDING);
+    TownObjectActor *building = ObjectActors_FindByCode(SEQUENCE4_BUILDING);
     if (building == NULL) {
         return;
     }
     Vec3 point;
     s16 angle;
-    if (SceneActor_GetStandPoint(building, &point, &angle) == 0) {
+    if (TownObjectActor_GetStandPoint(building, &point, &angle) == 0) {
         return;
     }
     SceneExit_Take((SceneExit *) (uintptr_t) SceneTables_EntryRecord(), SEQUENCE4_ENTER_EXIT);
@@ -331,16 +331,16 @@ int Sequence4_EnterState9(Sequence4 *actor)
 CLEAN_AS(func_ov068_022724a4, Sequence4_EnterState9)
 
 /* func_ov068_022724b4 (update of state 8): with building 0x5000, its mode is set by its kind
- * (SceneActor_SetModeByKindB), its tile kept, and state 9 follows. */
+ * (TownObjectActor_SetModeByKindB), its tile kept, and state 9 follows. */
 void Sequence4_UpdateState8(Sequence4 *actor)
 {
-    SceneActor *building = ObjectActors_FindByCode(SEQUENCE4_BUILDING);
+    TownObjectActor *building = ObjectActors_FindByCode(SEQUENCE4_BUILDING);
     if (building == NULL) {
         return;
     }
-    SceneActor_SetModeByKindB(building);
-    actor->tile_x = SceneActor_TileX(building);
-    actor->tile_z = (int) SceneActor_TileZ(building);
+    TownObjectActor_SetModeByKindB(building);
+    actor->tile_x = TownObjectActor_TileX(building);
+    actor->tile_z = (int) TownObjectActor_TileZ(building);
     set_state(actor, 9);
 }
 CLEAN_AS(_ZN18Obj_ov068_0227775019func_ov068_022724b4Ev, Sequence4_UpdateState8)
@@ -378,7 +378,7 @@ CLEAN_AS(func_ov068_0227254c, Sequence4_EnterState7)
  * along z beyond the stand point (kept in `stand`). */
 void Sequence4_UpdateState6(Sequence4 *actor)
 {
-    SceneActorSound_PlayEx(&actor->base.sound, SEQUENCE4_SOUND_LOOP);
+    TownObjectActorSound_PlayEx(&actor->base.sound, SEQUENCE4_SOUND_LOOP);
     Sequence4_FollowEffectA(actor);
     if (animation_done(actor)) {
         set_state(actor, 7);
@@ -395,13 +395,13 @@ void Sequence4_UpdateState6(Sequence4 *actor)
     if (actor->frames != SEQUENCE4_WALK_FRAME) {
         return;
     }
-    SceneActor *building = ObjectActors_FindByCode(SEQUENCE4_BUILDING);
+    TownObjectActor *building = ObjectActors_FindByCode(SEQUENCE4_BUILDING);
     if (building == NULL) {
         return;
     }
     Vec3 point;
     s16 angle;
-    if (SceneActor_GetStandPoint(building, &point, &angle) != 0) {
+    if (TownObjectActor_GetStandPoint(building, &point, &angle) != 0) {
         actor->stand = point;
         actor->stand.z += SEQUENCE4_STAND_STEP;
         PlayerActorOps_SetLook(0, 0, SEQUENCE4_PLAYER);
@@ -415,7 +415,7 @@ CLEAN_AS(_ZN18Obj_ov068_0227775019func_ov068_02272550Ev, Sequence4_UpdateState6)
 int Sequence4_EnterState6(Sequence4 *actor)
 {
     start_animation(actor, Sequence4_ThirdAnimation(actor));
-    SceneActorSound_Play(&actor->base.sound, SEQUENCE4_SOUND_C);
+    TownObjectActorSound_Play(&actor->base.sound, SEQUENCE4_SOUND_C);
     actor->frames = 0;
     return 1;
 }
@@ -472,8 +472,8 @@ static_assert(offsetof(Sequence4, flag_2de) == 0x2de, "flag 2de");
 static_assert(offsetof(Sequence4, effect_b) == 0x2e0, "effect b");
 static_assert(offsetof(Sequence4, effect_a) == 0x2e4, "effect a");
 static_assert(sizeof(Sequence4) == 0x2e8, "the size Sequence4_New allocates");
-static_assert(offsetof(SceneActor, receiver_vtable) == 0xec, "receiver");
-static_assert(offsetof(SceneActor, message) == 0x10a, "message");
+static_assert(offsetof(TownObjectActor, receiver_vtable) == 0xec, "receiver");
+static_assert(offsetof(TownObjectActor, message) == 0x10a, "message");
 
 #define SEQUENCE4_STATES 17
 #define SEQUENCE4_RECEIVER_OFFSET 0xec
@@ -592,7 +592,7 @@ int Sequence4_EnterState3(Sequence4 *actor)
         return 0;
     }
     start_animation(actor, call_slot(actor, SEQUENCE4_SLOT_ANIM_B));
-    SceneActorSound_Play(&actor->base.sound, SEQUENCE4_SOUND_B);
+    TownObjectActorSound_Play(&actor->base.sound, SEQUENCE4_SOUND_B);
     return 1;
 }
 CLEAN_AS(_ZN18Obj_ov068_0227775019func_ov068_022727d0Ev, Sequence4_EnterState3)
@@ -601,7 +601,7 @@ CLEAN_AS(_ZN18Obj_ov068_0227775019func_ov068_022727d0Ev, Sequence4_EnterState3)
  * 0x41 follows (Sequence4_FollowEffectB) and the animation steps. */
 void Sequence4_UpdateState2(Sequence4 *actor)
 {
-    SceneActorSound_PlayEx(&actor->base.sound, SEQUENCE4_SOUND_A);
+    TownObjectActorSound_PlayEx(&actor->base.sound, SEQUENCE4_SOUND_A);
     if (animation_done(actor)) {
         set_state(actor, 3);
     }
@@ -847,7 +847,7 @@ CLEAN_AS(func_ov068_02272db4, Sequence4_DrawsModel)
 /* func_ov068_02272dc8: its third animation (overlay 9's func_ov009_02264d18). */
 int Sequence4_ThirdAnimation(Sequence4 *actor)
 {
-    return SceneActor_JointAnim2((SceneActor *) actor);
+    return TownObjectActor_JointAnim2((TownObjectActor *) actor);
 }
 CLEAN_AS(func_ov068_02272dc8, Sequence4_ThirdAnimation)
 
@@ -933,7 +933,7 @@ Sequence4 *Sequence4_DestroyAndFree(Sequence4 *actor)
 {
     actor->base.vtable = data_ov068_02277750;
     actor->base.receiver_vtable = data_ov068_02277814;
-    SceneActor_Destruct((SceneActor *) actor);
+    TownObjectActor_Destruct((TownObjectActor *) actor);
     Heap_FreeAux(actor);
     return actor;
 }
@@ -944,7 +944,7 @@ Sequence4 *Sequence4_Destroy(Sequence4 *actor)
 {
     actor->base.vtable = data_ov068_02277750;
     actor->base.receiver_vtable = data_ov068_02277814;
-    SceneActor_Destruct((SceneActor *) actor);
+    TownObjectActor_Destruct((TownObjectActor *) actor);
     return actor;
 }
 CLEAN_AS(func_ov068_02272f14, Sequence4_Destroy)
@@ -952,7 +952,7 @@ CLEAN_AS(func_ov068_02272f14, Sequence4_Destroy)
 /* func_ov068_02272f38: the constructor: overlay 9's, then its vtables. */
 Sequence4 *Sequence4_Construct(Sequence4 *actor)
 {
-    SceneActor_ConstructBase((SceneActor *) actor);
+    TownObjectActor_ConstructBase((TownObjectActor *) actor);
     actor->base.vtable = data_ov068_02277750;
     actor->base.receiver_vtable = data_ov068_02277814;
     return actor;

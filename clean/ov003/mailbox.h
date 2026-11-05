@@ -3,7 +3,7 @@
  * code 0x501d, made by the house: player_house.h). It counts the player's filled entries of the
  * ten 0x100-byte entries of the player's block at data_021ef8ec (func_ov003_0221e6ac), and opens
  * group 9 in mode 0x27; that it holds the player's letters is read from this. It is derived
- * from overlay 9's scene actor (Obj_ov009_022658dc), which runs the rest.
+ * from overlay 9's town object actor (Obj_ov009_022658dc), which runs the rest.
  *
  * Its model plays two joint animations, A (overlay 9's first animation file, vtable slot 0x64)
  * and B (the second, slot 0x68), and a texture pattern animation (overlay 9's animation file 0)
@@ -65,7 +65,7 @@ typedef struct Mailbox {
     u8 unk_F0[0x134 - 0xf0];
     u8 mode; /* enum MailboxMode */
     u8 unk_135;
-    u16 code; /* the special character's code main keeps the mode under */
+    u16 code; /* the town object's code main keeps the mode under */
     u8 unk_138[0x13c - 0x138];
     /* Overlay 9's model object (Obj_020dd05c), and the frame control of its joint animation,
      * its part at 0x9c. */

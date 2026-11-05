@@ -1,6 +1,6 @@
 /* A sign board of overlay 3 (class Obj_ov003_022395e8, vtable 0x022395e8, receiver part
  * 0x022396ac, 0x2b8 bytes; profile 0x20): a scene object whose message receiver is named
- * "obj_etc_board". It is derived from overlay 9's scene actor (ov009/scene_actor.h), which runs
+ * "obj_etc_board". It is derived from overlay 9's town object actor (ov009/town_object_actor.h), which runs
  * the rest; talking to it starts at once, without asking main for a visit record (vtable slot
  * 0x8c says no).
  *
@@ -13,11 +13,11 @@
 #ifndef CLEAN_OV003_SIGN_BOARD_H
 #define CLEAN_OV003_SIGN_BOARD_H
 
-#include "ov009/scene_actor.h"
+#include "ov009/town_object_actor.h"
 #include "types.h"
 
 typedef struct SignBoard {
-    SceneActor actor;
+    TownObjectActor actor;
     u16 number; /* 0x2b4: picks its message */
     u8 unk_2B6[2];
 } SignBoard;

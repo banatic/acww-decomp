@@ -10,7 +10,7 @@
 #include "ov004/member_pointer.h"
 #include "main/event_queue.h"
 #include "main/scene_object_base.h"
-#include "ov009/scene_actor_life.h"
+#include "ov009/town_object_actor_life.h"
 
 static_assert(offsetof(BulletinBoard, yaw) == 0x8e, "yaw");
 static_assert(offsetof(BulletinBoard, receiver_vtable) == 0xec, "receiver");
@@ -187,7 +187,7 @@ static void destroy_parts(BulletinBoard *object)
 {
     object->vtable = data_ov003_02238434;
     object->receiver_vtable = data_ov003_022384f8;
-    SceneActor_Destruct((SceneActor *) object);
+    TownObjectActor_Destruct((TownObjectActor *) object);
 }
 
 /* func_ov003_0221b9e4 (the deleting destructor): the destructor's work, then the memory freed. */
@@ -210,7 +210,7 @@ CLEAN_AS(func_ov003_0221ba10, BulletinBoard_Destroy)
 /* func_ov003_0221ba34: the constructor: overlay 9's, then the vtables. */
 BulletinBoard *BulletinBoard_Construct(BulletinBoard *object)
 {
-    SceneActor_ConstructBase((SceneActor *) object);
+    TownObjectActor_ConstructBase((TownObjectActor *) object);
     object->vtable = data_ov003_02238434;
     object->receiver_vtable = data_ov003_022384f8;
     return object;

@@ -61,7 +61,7 @@ int Block020b220c_GoneKind(void)
 }
 CLEAN_AS(func_020b22a0, Block020b220c_GoneKind)
 
-/* func_020b22ac: overlay 9's scene actor going away (SceneActor_UpdateGone) gives its kind. */
+/* func_020b22ac: overlay 9's town object actor going away (TownObjectActor_UpdateGone) gives its kind. */
 void Block020b220c_SetGoneKind(unsigned int kind)
 {
     data_021f4b48 = (int) kind;

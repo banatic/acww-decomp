@@ -663,7 +663,7 @@ CLEAN_AS(func_ov068_02270b00, InsectPath_Chase)
 #include "main/unit_type_info.h"
 #include "ov003/object_actors.h"
 #include "ov003/snowman.h"
-#include "ov009/scene_actor.h"
+#include "ov009/town_object_actor.h"
 
 static_assert(offsetof(TownInsect, unk_1b0) == 0x1b0, "box");
 static_assert(offsetof(TownInsect, unk_1e0) == 0x1e0, "perch");
@@ -1038,8 +1038,8 @@ void InsectPath_Roam(TownInsect *insect)
 CLEAN_AS(func_ov068_02271398, InsectPath_Roam)
 
 /* func_ov068_02271494: the tile of a town building nearest to the insect's tile: of the 'M'
- * tiles of each building's shape (BuildingShapes_MTile) whose scene actor stands
- * (SceneActor_LightsLit gives 1), at the actor's tile. Gives its distance in tiles, or -1
+ * tiles of each building's shape (BuildingShapes_MTile) whose town object actor stands
+ * (TownObjectActor_LightsLit gives 1), at the actor's tile. Gives its distance in tiles, or -1
  * for none; with one, *tile's x and z are its tile numbers.
  * QUIRK: the first tile found is taken only when it lies no farther north than the insect;
  * after that any nearer one.
@@ -1068,7 +1068,7 @@ int InsectPath_NearestBuildingTile(TownInsect *insect, Vec3 *tile)
         if (count == 0) {
             continue;
         }
-        SceneActor *building = ObjectActors_FindByCode(code);
+        TownObjectActor *building = ObjectActors_FindByCode(code);
         if (building == NULL) {
             continue;
         }
@@ -1077,11 +1077,11 @@ int InsectPath_NearestBuildingTile(TownInsect *insect, Vec3 *tile)
                                      (unsigned int) (uintptr_t) &shape_z, j) == 0) {
                 continue;
             }
-            if (SceneActor_LightsLit(building) != 1) {
+            if (TownObjectActor_LightsLit(building) != 1) {
                 continue;
             }
-            int tile_x = shape_x + SceneActor_TileX(building);
-            int tile_z = shape_z + (int) SceneActor_TileZ(building);
+            int tile_x = shape_x + TownObjectActor_TileX(building);
+            int tile_z = shape_z + (int) TownObjectActor_TileZ(building);
             Vec3 there = {tile_x, 0, tile_z};
             int distance = Vec_DistanceXZ(&here, &there);
             if ((here.z <= tile_z && best < 0) || distance < best) {

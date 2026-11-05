@@ -12,13 +12,13 @@
 #include "main/player_record.h"
 #include "main/player_records.h"
 #include "main/start_kind.h"
-#include "ov009/scene_actor_files.h"
-#include "ov009/scene_actor_life.h"
+#include "ov009/town_object_actor_files.h"
+#include "ov009/town_object_actor_life.h"
 
-static_assert(offsetof(SceneActor, receiver_vtable) == 0xec, "receiver");
-static_assert(offsetof(SceneActor, message) == 0x10a, "receiver byte 0x1e");
-static_assert(offsetof(SceneActor, code) == 0x136, "code");
-static_assert(offsetof(SceneActor, flags) == 0x236, "flags");
+static_assert(offsetof(TownObjectActor, receiver_vtable) == 0xec, "receiver");
+static_assert(offsetof(TownObjectActor, message) == 0x10a, "receiver byte 0x1e");
+static_assert(offsetof(TownObjectActor, code) == 0x136, "code");
+static_assert(offsetof(TownObjectActor, flags) == 0x236, "flags");
 static_assert(offsetof(StoreFront, level) == 0x2b4, "level");
 static_assert(sizeof(StoreFront) == 0x2b8, "the size StoreFront_New allocates");
 
@@ -129,7 +129,7 @@ void StoreFront_PrepareTalk(StoreFront *store)
     MessageReceiver_SetName(receiver, data_ov003_02239890);
 
     if (store->level == STORE_FRONT_NO_LEVEL) {
-        if (store->actor.flags & SCENE_ACTOR_FLAG_FULL) {
+        if (store->actor.flags & TOWN_OBJECT_ACTOR_FLAG_FULL) {
             MessageReceiver_SetName(receiver, data_ov003_022398a0);
             store->actor.message = STORE_FRONT_MESSAGE_ERROR;
         } else {
@@ -148,7 +148,7 @@ void StoreFront_PrepareTalk(StoreFront *store)
         store->actor.message = STORE_FRONT_MESSAGE_CLOSED;
         return;
     }
-    if (store->actor.flags & SCENE_ACTOR_FLAG_FULL) {
+    if (store->actor.flags & TOWN_OBJECT_ACTOR_FLAG_FULL) {
         MessageReceiver_SetName(receiver, data_ov003_022398a0);
         store->actor.message = STORE_FRONT_MESSAGE_ERROR;
         return;
@@ -177,7 +177,7 @@ CLEAN_AS(func_ov003_0221ec24, StoreFront_PrepareTalk)
  * path; its callers read it although this is declared void. */
 void StoreFront_LightTexturePath(StoreFront *store)
 {
-    SceneActor_LitTexturePath((SceneActor *) store);
+    TownObjectActor_LitTexturePath((TownObjectActor *) store);
 }
 CLEAN_AS(func_ov003_0221ed48, StoreFront_LightTexturePath)
 
@@ -185,7 +185,7 @@ CLEAN_AS(func_ov003_0221ed48, StoreFront_LightTexturePath)
  * QUIRK: hands back what overlay 9's function returns, as StoreFront_LightTexturePath. */
 void StoreFront_TexturePath(StoreFront *store)
 {
-    SceneActor_TexturePath((SceneActor *) store);
+    TownObjectActor_TexturePath((TownObjectActor *) store);
 }
 CLEAN_AS(func_ov003_0221ed50, StoreFront_TexturePath)
 
@@ -193,7 +193,7 @@ CLEAN_AS(func_ov003_0221ed50, StoreFront_TexturePath)
  * QUIRK: hands back what overlay 9's function returns, as StoreFront_LightTexturePath. */
 void StoreFront_ArchivePath(StoreFront *store)
 {
-    SceneActor_ArchivePath((SceneActor *) store);
+    TownObjectActor_ArchivePath((TownObjectActor *) store);
 }
 CLEAN_AS(func_ov003_0221ed58, StoreFront_ArchivePath)
 
@@ -211,7 +211,7 @@ static void store_front_destroy_parts(StoreFront *store)
 {
     store->actor.vtable = data_ov003_02239754;
     store->actor.receiver_vtable = data_ov003_02239818;
-    SceneActor_Destruct((SceneActor *) store);
+    TownObjectActor_Destruct((TownObjectActor *) store);
 }
 
 /* func_ov003_0221ed80 (vtable slot 0x44, the deleting destructor): the destructor's work, then
@@ -235,7 +235,7 @@ CLEAN_AS(func_ov003_0221edac, StoreFront_Destroy)
 /* func_ov003_0221edd0: the constructor: overlay 9's, then the vtables. */
 StoreFront *StoreFront_Construct(StoreFront *store)
 {
-    SceneActor_ConstructBase((SceneActor *) store);
+    TownObjectActor_ConstructBase((TownObjectActor *) store);
     store->actor.vtable = data_ov003_02239754;
     store->actor.receiver_vtable = data_ov003_02239818;
     return store;

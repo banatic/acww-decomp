@@ -1,17 +1,18 @@
-/* The fox of overlay 3 (class Obj_ov003_02238630, vtable 0x02238630, receiver part 0x022386f4,
- * 0x2bc bytes), a special character whose message receiver is named "sp_npc_fox"; Crazy Redd
- * is the game's fox, but nothing here names him. It is derived from overlay 9's scene actor
+/* The fox's tent of overlay 3 (class Obj_ov003_02238630, vtable 0x02238630, receiver part
+ * 0x022386f4, 0x2bc bytes), a town object whose message receiver is named "sp_npc_fox": the
+ * door of the fox's shop, which asks for the password and lets the player in (Crazy Redd is the
+ * game's fox, but nothing here names him). It is derived from overlay 9's town object actor
  * (Obj_ov009_022658dc), which runs the rest; its own machine (the word at 0x2b4, ten states)
  * runs through tables of member pointers (ov004/member_pointer.h):
  *
  *   0 idle:        scene event 0 or 1 moves to state 1, event 8 back here. While bit 2 of the
  *                  byte at 0x235 is set, func_0203e0a8 runs on it each frame.
- *   1 visit:       entering it asks main for the character's visit record (func_020b248c on its
+ *   1 visit:       entering it asks main for the tent's visit record (func_020b248c on its
  *                  code at 0x136); once main has an answer (func_020b2470, nonzero), whether it
  *                  is 2 (too many inside) is kept in bit 1 of the flags and the talk starts
  *                  (state 2).
  *   2 talk:        entering it takes the receiver and gives it a message: 0x34 when
- *                  Fox_IsAfterSix says no (then clearing bit 0 of the character's flags when
+ *                  Fox_IsAfterSix says no (then clearing bit 0 of the tent's flags when
  *                  bit 1 is clear), else 0x31 (come back later) when bit 1 is set, 0x32 (a
  *                  member again) when FoxShop_CurrentPlayerMarked agrees, else 0 (asking for the
  *                  password). Once the link opens it moves to state 3.
@@ -20,7 +21,7 @@
  *                  (the password's entry) with an argument from the town's data (state 5).
  *   5 screen:      once the screen has closed it says message 3 (the password right, after
  *                  FoxShop_MarkCurrentPlayer) when main's byte 0xc4c is 1, else message 4 (the
- *                  password wrong; it leaves the character, TownObjects_Leave), and ends the
+ *                  password wrong; it leaves the tent, TownObjects_Leave), and ends the
  *                  talk (state 3).
  *   6 talk close:  (message 3 or 0x32 ended) once the link closes, state 7.
  *   7 leave:       entering it calls func_02095944(0); once func_02096174 agrees it moves to
@@ -74,7 +75,7 @@ typedef struct Fox {
     u8 unk_10B[0x12c - 0x10b];
     FoxLink *link; /* Base_02066994's word at 0x40 */
     u8 unk_130[0x136 - 0x130];
-    u16 code; /* the special character's code (0x5000 to 0x5021) */
+    u16 code; /* the town object's code (0x5000 to 0x5021) */
     u8 unk_138[0x22c - 0x138];
     int unk_22c;
     int unk_230;
