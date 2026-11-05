@@ -877,8 +877,8 @@ int TileRequests_AskPile(int slot, const TileRequestTile *tile)
 }
 CLEAN_AS(func_02043a70, TileRequests_AskPile)
 
-/* func_02043b40: in the town, what the tile holds decides the request: kind 5 for 0x1f,
- * 0x21-0x24, the wilted and watered flowers, 0x88 and 0xa4; kind 3 (take it) for a pile or an
+/* func_02043b40: in the town, what the tile holds decides the request: kind 5 (pulled up) for
+ * the clover 0x1f, the weeds 0x21-0x24, the wilted and watered flowers, 0x88 and 0xa4; kind 3 (take it) for a pile or an
  * item of kinds 3 and 4 not on a marked tile (AcreTile_IsMarked), a flower, 0x1a, 0x1d, 0x1e
  * and 0xa7-0xc6; kind 0x15 for the four-leaf clover 0x20. The tile's code goes with it; -1 when
  * none is made (an empty tile, a marked pile). */
@@ -898,7 +898,7 @@ int TileRequests_AskInTown(int slot, const TileRequestTile *tile)
     if (code == ITEM_CODE_NONE) {
         kind = 0;
     } else if (TileRequests_InRange(code, 0x21, 0x24) || code == 0x1f) {
-        kind = TILE_REQUEST_KIND_5;
+        kind = TILE_REQUEST_PULL;
     } else if (high == 1) {
         if (AcreTile_IsMarked(map, tile->x, tile->z) == 0) {
             kind = TILE_REQUEST_TAKE;
@@ -910,7 +910,7 @@ int TileRequests_AskInTown(int slot, const TileRequestTile *tile)
     } else if (TileRequests_InRange(code, 0xa7, 0xc6)) {
         kind = TILE_REQUEST_TAKE;
     } else if (TileRequests_IsWiltedFlower(code) || TileRequests_IsWateredFlower(code) || code == 0x88 || code == 0xa4) {
-        kind = TILE_REQUEST_KIND_5;
+        kind = TILE_REQUEST_PULL;
     } else if (code == 0x20) {
         kind = TILE_REQUEST_TAKE_CLOVER;
     }

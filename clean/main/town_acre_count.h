@@ -5,7 +5,7 @@
  * The acre records are counted by func_0204a848 (the town loaded) and func_0204abc8 (the day's
  * change); the totals after them by func_0204a3cc and func_0204a5d4. The score of an acre
  * (func_0204b038) starts from 100 and goes down when the growth lines' codes are fewer than 12
- * or more than 15, with codes 0x21-0x24, with other items and with the trash items 0x1320-0x1322 (an empty can,
+ * or more than 15, with the weeds 0x21-0x24, with other items and with the trash items 0x1320-0x1322 (an empty can,
  * a boot, a tire). */
 #ifndef CLEAN_MAIN_TOWN_ACRE_COUNT_H
 #define CLEAN_MAIN_TOWN_ACRE_COUNT_H
@@ -20,7 +20,7 @@
 typedef struct TownAcreCount {
     int score;         /* 0x00 */
     u8 lines[2][2];    /* 0x04: the growth lines' codes in each quarter, [x / 8][z / 8] */
-    u16 codes_21;      /* 0x08: codes 0x21-0x24 */
+    u16 weeds;         /* 0x08: the weeds, codes 0x21-0x24 */
     u16 others;        /* 0x0a: other items */
     u16 trash;         /* 0x0c: items 0x1320-0x1322 */
     u16 flower_codes;  /* 0x0e: codes 0x00-0x1d and the flower codes */
@@ -112,7 +112,7 @@ typedef struct TownAcreWorst {
 /* TownAcreWorst.reason: the largest of the score's deductions (the first of equal ones). */
 #define TOWN_ACRE_WORST_MANY_LINES 0 /* more than 15 of the growth lines' codes (also: no deduction) */
 #define TOWN_ACRE_WORST_FEW_LINES 1  /* fewer than 12 */
-#define TOWN_ACRE_WORST_CODES_21 2   /* codes 0x21-0x24 */
+#define TOWN_ACRE_WORST_WEEDS 2      /* the weeds, codes 0x21-0x24 */
 #define TOWN_ACRE_WORST_OTHERS 3     /* other items */
 #define TOWN_ACRE_WORST_TRASH 4      /* items 0x1320-0x1322 */
 #define TOWN_ACRE_WORST_SPOT 5       /* code 0x1b */

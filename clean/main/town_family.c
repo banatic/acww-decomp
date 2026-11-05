@@ -22,9 +22,9 @@ extern const TownFamilyCrosses *const data_020db7c4[][TOWN_FAMILY_COLOURS];
 #define TOWN_FAMILY_LAST_MOVED 0x1a
 #define TOWN_FAMILY_FLOWER_LAST 0x19
 #define TOWN_FAMILY_DANDELION 0x1d
-#define TOWN_FAMILY_1E 0x1e
+#define TOWN_FAMILY_DANDELION_PUFF 0x1e
 #define TOWN_FAMILY_DANDELION_PERCENT 30
-#define TOWN_FAMILY_1E_PERCENT 30
+#define TOWN_FAMILY_DANDELION_PUFF_PERCENT 30
 #define TOWN_FAMILY_WATERED_LAST 0xa4
 #define TOWN_FAMILY_WATERED_GOLD_ROSE 0xa5
 #define TOWN_FAMILY_GOLD_ROSE 0x1c
@@ -63,8 +63,8 @@ void TownFamily_Day(TownDay *town, AcreMap *map, u32 day)
                 if (week_day == 0) {
                     next = ACRE_MAP_ITEM_NONE;
                 }
-            } else if (now == TOWN_FAMILY_1E) {
-                if (week_day == 0 && chance(TOWN_FAMILY_1E_PERCENT)) {
+            } else if (now == TOWN_FAMILY_DANDELION_PUFF) {
+                if (week_day == 0 && chance(TOWN_FAMILY_DANDELION_PUFF_PERCENT)) {
                     next = ACRE_MAP_ITEM_NONE;
                 }
             } else if (now <= TOWN_FAMILY_LAST_MOVED) {
@@ -73,7 +73,7 @@ void TownFamily_Day(TownDay *town, AcreMap *map, u32 day)
                 }
             } else if (now == TOWN_FAMILY_DANDELION) {
                 if (chance(TOWN_FAMILY_DANDELION_PERCENT)) {
-                    next = TOWN_FAMILY_1E;
+                    next = TOWN_FAMILY_DANDELION_PUFF;
                 }
             }
             if (next != TOWN_FAMILY_NO_CHANGE) {
@@ -106,7 +106,7 @@ void TownFamily_FirstDay(TownDay *town, AcreMap *map)
                 }
             } else if (now == TOWN_FAMILY_DANDELION) {
                 if (chance(TOWN_FAMILY_DANDELION_PERCENT)) {
-                    next = TOWN_FAMILY_1E;
+                    next = TOWN_FAMILY_DANDELION_PUFF;
                 }
             } else if (now >= TOWN_FAMILY_WATERED && now <= TOWN_FAMILY_WATERED_LAST) {
                 next = (u16) (now - TOWN_FAMILY_WATERED);
@@ -281,7 +281,7 @@ CLEAN_AS(func_02049d78, TownFamily_Colour)
 /* func_02049ec4: the kind of flower of the code (0-3, the tulips, pansies, cosmos and roses:
  * 0x00 / 0x6e / 0x8a, 0x06 / 0x74 / 0x90, 0x0c / 0x7a / 0x96, 0x12 / 0x80 / 0x9c and 0x1c,
  * 0xa5); 4 for the lily of the valley 0x1a, 0x88 and 0xa4, 5 for the dandelion 0x1d, 6 for
- * 0x1e, 7 for any other. */
+ * the dandelion puff 0x1e, 7 for any other. */
 int TownFamily_Kind(const u16 *code)
 {
     u16 now = *code;
@@ -305,7 +305,7 @@ int TownFamily_Kind(const u16 *code)
             return 4;
         case TOWN_FAMILY_DANDELION:
             return 5;
-        case TOWN_FAMILY_1E:
+        case TOWN_FAMILY_DANDELION_PUFF:
             return 6;
         default:
             return TOWN_FAMILY_KIND_OTHER;

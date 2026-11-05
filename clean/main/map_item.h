@@ -10,9 +10,13 @@
  * The four lines are the tulips, pansies, cosmos and roses, one code per colour: family A's
  * codes are the outdoor forms of the flower items 0x1408-0x1419 and 0x1483-0x148a
  * (item_form.h). After the lines: 0x1a the lily of the valley, 0x1c the gold rose (in the rose
- * line), 0x1d the dandelion, 0x1e what a dandelion turns into; 0x88 and 0xa4 are the lily
- * wilted and watered, 0xa5 the gold rose watered (0x20, outside the families, is the four-leaf
- * clover). A flower wilts (+0x6e, TownFamily_FirstDay, town_family.h); watering or a wet day
+ * line), 0x1d the dandelion, 0x1e the dandelion puff it turns into (the outdoor form of item
+ * 0x137c, item_form.h, held as tool kind 7 of FieldActor_HeldTool: its use starts effect 0x32
+ * and leaves the hand empty); 0x88 and 0xa4 are the lily wilted and watered, 0xa5 the gold rose
+ * watered. Outside the families: 0x1f the clover and 0x20 the four-leaf clover (drawn with
+ * '/fg/grass/clover'), 0x21-0x24 the weeds (drawn with '/fg/grass/grassA' to 'grassD').
+ *
+ * A flower wilts (+0x6e, TownFamily_FirstDay, town_family.h); watering or a wet day
  * turns a wilted flower into the watered one (+0x1c, TownDay_WateredCode), which is a flower
  * again the next day (-0x8a). The wilted black rose (0x86) watered with the golden watering can
  * becomes the watered gold rose.

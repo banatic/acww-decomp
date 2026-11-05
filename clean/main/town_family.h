@@ -3,13 +3,13 @@
  *
  * Each flower code has a kind (TownFamily_Kind: 0-3 the tulips, pansies, cosmos and roses, the
  * same in each family; 4 for the lily of the valley 0x1a, 0x88 and 0xa4, 5 for the dandelion
- * 0x1d, 6 for 0x1e, 7 for the rest) and a colour in it (TownFamily_Colour: 1-6 or 1-8, in the
+ * 0x1d, 6 for the dandelion puff 0x1e, 7 for the rest) and a colour in it (TownFamily_Colour: 1-6 or 1-8, in the
  * order of the flower items; the gold rose 0x1c is colour 9 of the roses and the watered gold
  * rose 0xa5 colour 7, the black rose's).
  *
  * The first day passed (TownFamily_FirstDay) takes the wilted flowers (and 0x88, 0x89) off,
  * wilts the flowers (and 0x1a: code + 0x6e) by the chance data_020cb4e8 gives each, turns the
- * dandelion 0x1d into 0x1e three times in ten, and makes the watered flowers flowers again
+ * dandelion 0x1d into the puff 0x1e three times in ten, and makes the watered flowers flowers again
  * (0xa5 the gold rose 0x1c). Each further day (TownFamily_Day) does the same with the chances
  * of data_020cb554, except that the watered flowers stay, and that the wilted flowers and 0x1e
  * (three times in ten) only go every seventh day.

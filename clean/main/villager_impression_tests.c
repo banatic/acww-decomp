@@ -267,7 +267,7 @@ static int VillagerImpression_IsBloomingFlower(u16 code)
     return code <= 0x1a || code == 0x1c || code == 0x1d || (code >= 0x8a && code <= 0xa5);
 }
 
-static int VillagerImpression_IsCode21To24(u16 code)
+static int VillagerImpression_IsWeed(u16 code)
 {
     return code >= 0x21 && code <= 0x24;
 }
@@ -314,13 +314,13 @@ int VillagerImpression_NearFlowers(void)
 }
 CLEAN_AS(func_0207ec84, VillagerImpression_NearFlowers)
 
-/* func_0207edcc: at least three of the nine tiles around the player hold one of codes
- * 0x21-0x24. */
-int VillagerImpression_NearCodes21To24(void)
+/* func_0207edcc: at least three of the nine tiles around the player hold a weed (codes
+ * 0x21-0x24). */
+int VillagerImpression_NearWeeds(void)
 {
-    return VillagerImpression_CountNear(VillagerImpression_IsCode21To24, VILLAGER_IMPRESSION_NEAR_CODES_21);
+    return VillagerImpression_CountNear(VillagerImpression_IsWeed, VILLAGER_IMPRESSION_NEAR_WEEDS);
 }
-CLEAN_AS(func_0207edcc, VillagerImpression_NearCodes21To24)
+CLEAN_AS(func_0207edcc, VillagerImpression_NearWeeds)
 
 /* ---- The player's flag */
 

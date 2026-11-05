@@ -124,9 +124,9 @@ void TileEffects_StartE2(const TileEffectsTile *tile)
 }
 CLEAN_AS(func_020449ac, TileEffects_StartE2)
 
-/* func_020449d4: the effect of codes 0x1f-0x24 at the tile's centre: 0x77 for 0x1f, 0x78 for
- * 0x20, else 0x76. */
-void TileEffects_Start1f(const u16 *code, const TileEffectsTile *tile)
+/* func_020449d4: the effect of the codes drawn as grass, 0x1f-0x24, at the tile's centre: 0x77
+ * for the clover 0x1f, 0x78 for the four-leaf clover 0x20, else (the weeds) 0x76. */
+void TileEffects_StartGrass(const u16 *code, const TileEffectsTile *tile)
 {
     int id;
     switch (*code) {
@@ -144,7 +144,7 @@ void TileEffects_Start1f(const u16 *code, const TileEffectsTile *tile)
     AcreTile_TileCentre(&centre, (u32) tile->x, (u32) tile->z);
     EffectSystem_StartSet(id, &centre, NULL, &data_020e25d4);
 }
-CLEAN_AS(func_020449d4, TileEffects_Start1f)
+CLEAN_AS(func_020449d4, TileEffects_StartGrass)
 
 /* func_02044a14: TileEffects_Start with a copy of the tile. */
 void TileEffects_StartTurned(u16 *code, const TileEffectsTile *tile, int angle, int mode)

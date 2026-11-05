@@ -45,7 +45,7 @@ void TileEffects_Brush(const TileEffectsTile *tile);
 void TileEffects_StartAt(const TileEffectsTile *tile, int mode);
 void TileEffects_StartFor(u16 *code, const TileEffectsTile *tile, int mode);
 void TileEffects_StartE2(const TileEffectsTile *tile);
-void TileEffects_Start1f(const u16 *code, const TileEffectsTile *tile);
+void TileEffects_StartGrass(const u16 *code, const TileEffectsTile *tile);
 void TileEffects_StartTurned(u16 *code, const TileEffectsTile *tile, int angle, int mode);
 void TileEffects_Start(u16 *code, const TileEffectsTile *tile, int angle, int mode);
 void TileEffects_SetUpSecond(ParticleEmitter *emitter);

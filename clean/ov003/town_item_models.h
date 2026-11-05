@@ -38,7 +38,7 @@ void TownItemModels_DrawCodeA6(TileEventProcess *process, const u16 *code, Mtx43
 ModelObject *TownItemModels_DrawCodeFc(TileEventProcess *process, const u16 *code, Mtx43 matrix);
 void TownItemModels_DrawCodeE3WithShadow(TileEventProcess *process, const u16 *code, const Vec3 *point, Mtx43 matrix);
 ModelObject *TownItemModels_DrawCodeE3(TileEventProcess *process, const u16 *code, Mtx43 matrix);
-ModelObject *TownItemModels_DrawCode1f(TileEventProcess *process, const u16 *code, Mtx43 matrix);
+ModelObject *TownItemModels_DrawGrass(TileEventProcess *process, const u16 *code, Mtx43 matrix);
 ModelObject *TownItemModels_DrawCode1a(TileEventProcess *process, const u16 *code, Mtx43 matrix);
 ModelObject *TownItemModels_DrawWiltedFlower(TileEventProcess *process, const u16 *code, Mtx43 matrix);
 ModelObject *TownItemModels_DrawFlower(TileEventProcess *process, const u16 *code, Mtx43 matrix);

@@ -51,9 +51,9 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 #define TOWN_SPAWN_GRADE_PERFECT 4 /* the perfect town's grade, which may bring code 0x1a */
 #define TOWN_SPAWN_LILY_OF_THE_VALLEY 0x1a
 #define TOWN_SPAWN_DANDELION 0x1d
-#define TOWN_SPAWN_CODE_1F 0x1f
+#define TOWN_SPAWN_CLOVER 0x1f
 #define TOWN_SPAWN_FOUR_LEAF_CLOVER 0x20
-#define TOWN_SPAWN_CODE_21 0x21 /* codes 0x21-0x24 */
+#define TOWN_SPAWN_WEED_FIRST 0x21 /* the weeds, codes 0x21-0x24 */
 #define TOWN_SPAWN_FLOWER_CODES 12
 #define TOWN_SPAWN_EVENT_0E 14
 #define TOWN_SPAWN_HOUSE_DAYS 7
@@ -407,15 +407,16 @@ void TownSpawn_PickAcreWithoutLily(TownSpawnAcre *out, TownDay *town, int wide, 
 }
 CLEAN_AS(func_020485d4, TownSpawn_PickAcreWithoutLily)
 
-/* func_0204864c: code 0x1f (0x20 two times in a hundred) put on an acre drawn at random. */
-void TownSpawn_Put1f(TownDay *town, AcreMap *map, int wide, int high)
+/* func_0204864c: the clover 0x1f (the four-leaf clover 0x20 two times in a hundred) put on an
+ * acre drawn at random. */
+void TownSpawn_PutClover(TownDay *town, AcreMap *map, int wide, int high)
 {
     int acre_x = (int) MainRandom_Below(wide);
     int acre_z = (int) MainRandom_Below(high);
-    u16 code = MainRandom_Below(TOWN_SPAWN_RANGE_PERCENT) < 2 ? TOWN_SPAWN_FOUR_LEAF_CLOVER : TOWN_SPAWN_CODE_1F;
+    u16 code = MainRandom_Below(TOWN_SPAWN_RANGE_PERCENT) < 2 ? TOWN_SPAWN_FOUR_LEAF_CLOVER : TOWN_SPAWN_CLOVER;
     TownPlace_PutInAcre(town, map, acre_x + 1, acre_z + 1, code, func_02048f6c, 0);
 }
-CLEAN_AS(func_0204864c, TownSpawn_Put1f)
+CLEAN_AS(func_0204864c, TownSpawn_PutClover)
 
 /* func_02048698: code 0x1d put on an acre drawn at random. */
 void TownSpawn_PutDandelion(TownDay *town, AcreMap *map, int wide, int high)
@@ -515,11 +516,11 @@ void TownSpawn_AroundHouse(TownDay *town, AcreMap *map, const TownPlaceTile *hou
 }
 CLEAN_AS(func_020488e4, TownSpawn_AroundHouse)
 
-/* func_020489c4: codes 0x21-0x24 (drawn) put on three different acres of a 4 x 4 grid drawn
+/* func_020489c4: weeds, codes 0x21-0x24 (drawn), put on three different acres of a 4 x 4 grid drawn
  * at random.
  *
  * QUIRK: the acres are drawn from 4 x 4 whatever the map's size. */
-void TownSpawn_Put21(TownDay *town, AcreMap *map)
+void TownSpawn_PutWeeds(TownDay *town, AcreMap *map)
 {
     TownSpawnAcre used[3];
     int count = 0;
@@ -530,13 +531,13 @@ void TownSpawn_Put21(TownDay *town, AcreMap *map)
             acre.x = value % 4;
             acre.z = value / 4;
         } while (TownSpawn_IsListed(town, &acre, used, count) != 0);
-        u16 code = (u16) (MainRandom_Below(4) + TOWN_SPAWN_CODE_21);
+        u16 code = (u16) (MainRandom_Below(4) + TOWN_SPAWN_WEED_FIRST);
         TownPlace_PutInAcre(town, map, acre.x + 1, acre.z + 1, code, func_02048ee4, 0);
         used[count] = acre;
         count++;
     }
 }
-CLEAN_AS(func_020489c4, TownSpawn_Put21)
+CLEAN_AS(func_020489c4, TownSpawn_PutWeeds)
 
 /* func_02048a54: whether `acre` is among the first `count` of `list`.
  *

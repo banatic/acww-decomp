@@ -7,7 +7,7 @@
  * - the rocks 0xe3-0xe7: for each money rock kind (data_020ca59c: 0xe8, 0xed, 0xf2, 0xf7)
  *   the town lacks, one rock drawn by the acres' counts of rocks becomes a money rock of that
  *   kind (keeping its place in the five codes), then the day's money rock is set up;
- * - codes 0x1b, 0x1a, 0x1d, 0x1f / 0x20 and 0x21-0x24 drawn by the summary's state and chance;
+ * - codes 0x1b, 0x1a, 0x1d, the clovers 0x1f / 0x20 and the weeds 0x21-0x24 drawn by the summary's state and chance;
  * - around each villager's house, flower codes (data_020cabc4) on the free tiles of a ring
  *   (data_020cab28), two for each day;
  * - after a wet day without rain now, three items drawn from 0x45dc on, marked;
@@ -46,13 +46,13 @@ int TownSpawn_PutSpot(TownDay *town, AcreMap *map, int wide, int high);
 void TownSpawn_MaybeLilyOfTheValley(TownDay *town, AcreMap *map, int wide, int high);
 void TownSpawn_PutLilyOfTheValley(TownDay *town, AcreMap *map, int wide, int high);
 void TownSpawn_PickAcreWithoutLily(TownSpawnAcre *out, TownDay *town, int wide, int high);
-void TownSpawn_Put1f(TownDay *town, AcreMap *map, int wide, int high);
+void TownSpawn_PutClover(TownDay *town, AcreMap *map, int wide, int high);
 void TownSpawn_PutDandelion(TownDay *town, AcreMap *map, int wide, int high);
 void TownSpawn_PutFlower(TownDay *town, AcreMap *map, int wide, int high);
 void TownSpawn_HousesForDays(TownDay *town, AcreMap *map, const DateTime *today, int days);
 void TownSpawn_AroundHouses(TownDay *town, AcreMap *map, int all, int days);
 void TownSpawn_AroundHouse(TownDay *town, AcreMap *map, const TownPlaceTile *house, int days);
-void TownSpawn_Put21(TownDay *town, AcreMap *map);
+void TownSpawn_PutWeeds(TownDay *town, AcreMap *map);
 int TownSpawn_IsListed(TownDay *town, const TownSpawnAcre *acre, const TownSpawnAcre *list, int count);
 
 #endif

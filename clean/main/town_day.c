@@ -511,9 +511,9 @@ void TownDay_Pass(TownDay *town, const DateTime *from, const DateTime *to, int d
         DateTime_SubtractDays(&day, year_days);
         for (int i = 0; i < year_days; i++) {
             int quiet = TownDay_QuietPeriod(Calendar_FoliagePeriodOf(&day));
-            TownSpawn_Put21(town, map);
+            TownSpawn_PutWeeds(town, map);
             if (!quiet && MainRandom_Below(100) < 50) {
-                TownSpawn_Put1f(town, map, wide, high);
+                TownSpawn_PutClover(town, map, wide, high);
             }
             DateTime_AddDays(&day, 1);
         }

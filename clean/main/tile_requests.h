@@ -33,7 +33,8 @@ enum TileRequestState {
 /* Some of the kinds of request, as the code here asks for them. */
 enum TileRequestKind {
     TILE_REQUEST_TAKE = 3,   /* what lies on the tile into the pockets (4: no room for it) */
-    TILE_REQUEST_KIND_5 = 5, /* the codes 0x1f, 0x21-0x24 and the wilted and watered flowers */
+    TILE_REQUEST_PULL = 5,   /* pulled up, the tile emptied (states 0x16 and 0x17): the clover 0x1f, the weeds
+                                0x21-0x24 and the wilted and watered flowers */
     TILE_REQUEST_KIND_9 = 9, /* 0xa with no room in the pockets */
     TILE_REQUEST_CHANGE_AROUND = 0xf,
     TILE_REQUEST_DROP = 0x10,       /* an item put down in front of the player */

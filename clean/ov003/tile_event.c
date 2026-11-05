@@ -633,7 +633,7 @@ static void tile_event_draw(TileEventEntry *entry, TileEventDraw *draw)
 
     u16 code = draw->id;
     if (code >= 0x1f && code <= 0x24) {
-        TownItemModels_DrawCode1f(data_ov003_0223cf70, (const u16 *) draw, data_021fbe48);
+        TownItemModels_DrawGrass(data_ov003_0223cf70, (const u16 *) draw, data_021fbe48);
     } else if (tile_event_drawn_as_flower(code)) {
         TownItemModels_DrawFlower(data_ov003_0223cf70, (const u16 *) draw, data_021fbe48);
     } else if (code >= 0x6e && code <= 0x87) {
@@ -1231,7 +1231,7 @@ CLEAN_AS(func_ov003_02222598, TileEvent_StepKind1)
 
 /* func_ov003_022225c4: kind 1's start: as kind 2's for position and scale; then, with an item
  * at the tile on `map`: flowers (MapItem_IsAnyFlower) start tile effects
- * (TileEffects_Start), codes 0x1f-0x24 TileEffects_Start1f, 0xe2 TileEffects_StartE2; for
+ * (TileEffects_Start), codes 0x1f-0x24 TileEffects_StartGrass, 0xe2 TileEffects_StartE2; for
  * other codes on a marked tile (AcreTile_IsMarked) or of 0xd4-0xe1, with `extra` set the tile
  * change will be released rather than finished. A marked tile is then emptied on the map. */
 void TileEvent_InitKind1(TileEventEntry *entry, const TileChangesTile *tile, struct AcreMap *map, int extra)
@@ -1251,7 +1251,7 @@ void TileEvent_InitKind1(TileEventEntry *entry, const TileChangesTile *tile, str
     } else {
         u16 code = *item;
         if (code >= 0x1f && code <= 0x24) {
-            TileEffects_Start1f(item, &at);
+            TileEffects_StartGrass(item, &at);
         } else if (code == 0xe2) {
             TileEffects_StartE2(&at);
         } else if (marked != 0 || (code >= 0xd4 && code <= 0xe1)) {

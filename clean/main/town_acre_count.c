@@ -54,7 +54,7 @@ static void clear_count(TownAcreCount *acre)
             acre->lines[x][z] = 0;
         }
     }
-    acre->codes_21 = 0;
+    acre->weeds = 0;
     acre->others = 0;
     acre->trash = 0;
     acre->flower_codes = 0;
@@ -171,7 +171,7 @@ void TownAcreCount_Count(TownAcreCount *acre, AcreMap *map, int acre_x, int acre
             if (TownAcreCount_IsLineCode(*code)) {
                 count_line_code(acre, code, index, 0);
             } else if (*code >= 0x21 && *code <= 0x24) {
-                acre->codes_21++;
+                acre->weeds++;
             } else if (*code <= 0x1d) {
                 count_low_code(acre, *code, index);
             } else if (TownAcreCount_IsWateredFlower(*code) || TownAcreCount_IsWiltedFlower(*code)) {
@@ -210,7 +210,7 @@ void TownAcreCount_CountDay(TownAcreCount *acre, AcreMap *map, int acre_x, int a
             } else if (now == 0x25 || now == 0x5c || now == 0xc7 || TownAcreCount_IsWiltedFlower(now) || now == 0x89) {
                 TownAcreCount_ClearTile(acre, map, acre_x, acre_z, index);
             } else if (now >= 0x21 && now <= 0x24) {
-                acre->codes_21++;
+                acre->weeds++;
             } else if (now <= 0x1d) {
                 count_low_code(acre, now, index);
             } else if (TownAcreCount_IsWateredFlower(now)) {
@@ -274,8 +274,8 @@ void TownAcreCount_Score(TownAcreCount *acre)
     } else if (lines < TOWN_ACRE_FEWEST_LINES) {
         score -= 2 * (TOWN_ACRE_FEWEST_LINES - lines);
     }
-    if (acre->codes_21 > TOWN_ACRE_FREE_COUNT) {
-        score -= acre->codes_21 - TOWN_ACRE_FREE_COUNT;
+    if (acre->weeds > TOWN_ACRE_FREE_COUNT) {
+        score -= acre->weeds - TOWN_ACRE_FREE_COUNT;
     }
     if (acre->others > TOWN_ACRE_FREE_COUNT) {
         score -= acre->others - TOWN_ACRE_FREE_COUNT;
@@ -310,8 +310,8 @@ void TownAcreCount_FindWorst(TownAcreWorst *worst, const TownDayTile *acre_of, c
     } else if (lines < TOWN_ACRE_FEWEST_LINES) {
         cost[TOWN_ACRE_WORST_FEW_LINES] = 2 * (TOWN_ACRE_FEWEST_LINES - lines);
     }
-    if (acre->codes_21 > TOWN_ACRE_FREE_COUNT) {
-        cost[TOWN_ACRE_WORST_CODES_21] = acre->codes_21 - TOWN_ACRE_FREE_COUNT;
+    if (acre->weeds > TOWN_ACRE_FREE_COUNT) {
+        cost[TOWN_ACRE_WORST_WEEDS] = acre->weeds - TOWN_ACRE_FREE_COUNT;
     }
     if (acre->others > TOWN_ACRE_FREE_COUNT) {
         cost[TOWN_ACRE_WORST_OTHERS] = acre->others - TOWN_ACRE_FREE_COUNT;
@@ -426,7 +426,7 @@ static void add_acre(TownDayAcres *acres, const TownAcreCount *acre, int acre_x,
     }
     totals->unk_2a += acre->lines[1][1] + acre->lines[0][1] + acre->lines[0][0] + acre->lines[1][0];
     totals->unk_26 += acre->flower_codes;
-    totals->unk_28 += acre->codes_21;
+    totals->unk_28 += acre->weeds;
     if (acre->trash > 0) {
         totals->flags |= TOWN_TOTALS_HAS_TRASH;
     }

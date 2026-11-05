@@ -232,7 +232,7 @@ static void town_item_draw_map_code(TileEventProcess *process, AcreMap *map, con
         Vec3 at = *point;
         TownItemModels_DrawGrowthWithShadow(process, tile, x, z, &at, matrix);
     } else if (code >= 0x1f && code <= 0x24) {
-        TownItemModels_DrawCode1f(process, tile, matrix);
+        TownItemModels_DrawGrass(process, tile, matrix);
     } else if (code <= 0x19 || code == 0x1c) {
         TownItemModels_DrawFlower(process, tile, matrix);
     } else if ((code >= 0x6e && code <= 0x87) || (code >= 0x8a && code <= 0xa3) || code == 0xa5) {
@@ -396,9 +396,9 @@ ModelObject *TownItemModels_DrawCodeE3(TileEventProcess *process, const u16 *cod
 }
 CLEAN_AS(func_ov003_022253a8, TownItemModels_DrawCodeE3)
 
-/* func_ov003_02225404: codes 0x1f-0x24: holder 4 at 0x43e8 for 0x1f and 0x20, else the code less
- * 0x21. */
-ModelObject *TownItemModels_DrawCode1f(TileEventProcess *process, const u16 *code, Mtx43 matrix)
+/* func_ov003_02225404: the grass, codes 0x1f-0x24: holder 4 at 0x43e8 (the clover model) for 0x1f
+ * and 0x20, else the code less 0x21 (the weeds' models grass A-D). */
+ModelObject *TownItemModels_DrawGrass(TileEventProcess *process, const u16 *code, Mtx43 matrix)
 {
     u16 id = *code;
     int index = id >= 0x1f && id <= 0x20 ? 4 : id - 0x21;
@@ -406,7 +406,7 @@ ModelObject *TownItemModels_DrawCode1f(TileEventProcess *process, const u16 *cod
     TownItemModels_Draw(process, model, matrix);
     return model;
 }
-CLEAN_AS(func_ov003_02225404, TownItemModels_DrawCode1f)
+CLEAN_AS(func_ov003_02225404, TownItemModels_DrawGrass)
 
 /* func_ov003_02225474: codes 0x1a (the holder at 0x2df0), 0x1b (0x2f28), 0x1d and 0x1e (the
  * pointers at 0x3060 and 0x3064), 0x88 and 0xa4 (0x2e8c), 0x89 (0x2fc4).
