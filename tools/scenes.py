@@ -594,6 +594,10 @@ SAVES["museum-fossils-a"] = SAVES["museum-fossils"] + [(MUSEUM_A + i, "<B", 0x11
 # the room item 0x38e4 and 0x3934, its replacement (a fake painting), in pockets 0 and 1: Blathers
 # swaps the first for the second and refuses both (ov047/owl_donation.c, lines 0x42 and 0x43)
 SAVES["museum-room"] = [(POCKETS, "<H", 0x38E4), (POCKETS + 2, "<H", 0x3934)]
+# one of the fox's forged paintings (0x38e4) in pocket 0, the hat of "furni" in pocket 1: Tom Nook
+# prices it at line 0x40, and declined there the listed forgeries become the fake paintings
+# they are (ov050/nook_clerk_talk.c, NookClerkTalk_PriceSale and _OnAnswerSale)
+SAVES["sell-forgery"] = [(POCKETS, "<H", 0x38E4), (POCKETS + 2, "<H", 0x4000)]
 # as "wallet" with the player's design 0x1188 worn as the shirt (the player record's clothes at
 # 0x2408): no kind of the item lists (main/item_lists.h) accepts a design, so the giraffe's
 # ItemLists_GroupOf on the clothes tries every kind's test
@@ -2722,6 +2726,22 @@ scene("mabel-menu", "sable-7", 8919, [2600, 4700, 7500, 7990, 8300, 8918], frame
 scene("fox-menu", "wallet", 13098, [2600, 5500, 11000, 12300, 12588, 13097], frames(12200, 13098, 25),
       "fox-tent with START pressed as the player steps on the tent's way out: the fox's call waits while "
       "the START menu's event runs, then he calls the player; then leave the tent")
+scene("observatory-day", "museum", 9470, [2600, 6400, 7260, 8700, 9469], frames(6400, 9470, 50),
+      "the observatory in the morning: Celeste asleep, called over, a constellation made and erased "
+      "instead of registered")
+scene("museum-drama-act", "museum-complete", 6438, [2600, 5300, 5838, 6437], frames(5300, 6438, 25),
+      "museum-drama without the talk: Blathers acts for the day's event, then stands",
+      rtc="2026-10-02 11:30:00")
+scene("pockets-tool", "rod", 3335, [2600, 3000, 3200, 3334], frames(2900, 3335, 25),
+      "the pockets holding the rod: the player's menu by the keys, the tool put away into a pocket")
+scene("sell-forgery", "sell-forgery", 7052, [2600, 3800, 4800, 5640, 6300, 7051], frames(4650, 7052, 50),
+      "shop-sell with a forged painting: Tom Nook prices the fake, the sale declined")
+scene("design-backdrop", "seed", 3800, [2600, 3400, 3600, 3799], frames(3300, 3800, 25),
+      "design-wear's first design dragged onto the page's lower left corner: the menus' backdrop")
+scene("editor-line", "rod", 6882, [2600, 6100, 6440, 6560, 6881], frames(6400, 6882, 25),
+      "design-draw with the line tool picked and a line dragged out, then the editor quit")
+scene("name-mark", "rod", 8606, [2600, 6100, 7000, 8200, 8605], frames(8100, 8606, 25),
+      "design-draw with the pen dragged along the name's text in the name keyboard: a range marked")
 
 # ------------------------------------------------------------------------------ saves
 

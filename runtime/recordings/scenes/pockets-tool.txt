@@ -1,0 +1,77 @@
+# pockets-tool (format: runtime/input.h), played from a town save by tools/scenes.py (the save is
+# not in this repository). Save: rod (the fishing rod held). Boot and Y at 2760: as pockets.txt
+# (the pockets page up at about 2900; the pen taps at 2895 and 2951 come before the page takes a
+# touch and do nothing). The pen taps the work clothes at 3007 (their menu), B closes it. UP
+# moves the keys' cursor to the bells, RIGHT to the player, and A opens the player's menu; A
+# picks putting the tool down (ov096/pockets_screen.c, PocketsScreen_ActionTakeRecordItem):
+# the rod goes to a free pocket (to 3335).
+0 - -
+900 START -
+906 - -
+1000 A -
+1006 - -
+1060 A -
+1066 - -
+1120 A -
+1126 - -
+1180 A -
+1186 - -
+1240 A -
+1246 - -
+1300 A -
+1306 - -
+1360 A -
+1366 - -
+1420 A -
+1426 - -
+1480 A -
+1486 - -
+1540 A -
+1546 - -
+1600 A -
+1606 - -
+1660 A -
+1666 - -
+1720 A -
+1726 - -
+1780 A -
+1786 - -
+1840 A -
+1846 - -
+1900 A -
+1906 - -
+1960 A -
+1966 - -
+2020 A -
+2026 - -
+2080 A -
+2086 - -
+2140 A -
+2146 - -
+2200 A -
+2206 - -
+2260 A -
+2266 - -
+2320 A -
+2326 - -
+2380 A -
+2386 - -
+2760 Y -
+2768 - -
+2895 - 83,171
+2911 - -
+2951 - 136,42
+2967 - -
+3007 - 83,171
+3023 - -
+3083 B -
+3089 - -
+3129 UP -
+3133 - -
+3153 RIGHT -
+3157 - -
+3177 A -
+3181 - -
+3211 A -
+3215 - -
+3275 - -
