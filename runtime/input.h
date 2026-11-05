@@ -10,7 +10,9 @@
  * by `+` (A B SELECT START RIGHT LEFT UP DOWN R L X Y); `touch` is `-` for the pen up or
  * `x,y` in screen pixels of the lower screen. Lines starting with `#` are comments. The
  * state holds until the next line, so a press is two lines: one holding the key, one
- * releasing it.
+ * releasing it. Three more names are the console's, not buttons: LID while the lid is closed,
+ * LOWBAT while the battery is low, NORADIO while the wireless hears and sends nothing (out of
+ * range of the other console; input_hardware).
  */
 #ifndef RUNTIME_INPUT_H
 #define RUNTIME_INPUT_H
@@ -29,6 +31,11 @@ void input_frame(uint32_t frame);
  * and Y as the ARM7's KEYXY bits 0-1 (1 = held). */
 uint32_t input_keys(void);
 uint32_t input_keys_xy(void);
+
+/* The console's state the recording holds: bit 0 the lid closed (LID), bit 1 the battery low
+ * (LOWBAT), bit 2 the radio out of range (NORADIO). Only a recording sets them (not
+ * input_live). */
+uint32_t input_hardware(void);
 
 /* The pen: nonzero when touching, with the screen position. */
 int input_touch(int *x, int *y);

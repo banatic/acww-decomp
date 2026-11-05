@@ -97,8 +97,8 @@ match: autoload_2/network:Wfc_CountFriends main/activity_link_jobs:ActivityLinkJ
   ov066/local_relay:LocalRelay_OnPeerDisconnected ov066/local_search:LocalSearch_ClearList
   ov066/local_search:LocalSearch_OnParentExpired ov066/local_search:LocalSearch_OnStopAlarm
   ov066/local_search:LocalSearch_OnTimeout ov066/local_search:LocalSearch_StopNow
-  ov066/local_wireless:LocalWireless_StepChild ov066/local_wireless:LocalWireless_StepConnecting
-  ov066/local_wireless:LocalWireless_StepMeasuring ov066/local_wireless:LocalWireless_StepParent
+  ov066/local_wireless:LocalWireless_StepConnecting
+  ov066/local_wireless:LocalWireless_StepMeasuring
   ov139/res_rows:ResRows_Cells ov139/res_rows:ResRows_ClearFlags ov139/res_rows:ResRows_ClearRow
   ov139/res_rows:ResRows_ClearRows ov139/res_rows:ResRows_Construct ov139/res_rows:ResRows_Destroy
   ov139/res_rows:ResRows_DrawAt ov139/res_rows:ResRows_End ov139/res_rows:ResRows_FadeRow
@@ -710,13 +710,11 @@ match: ov068/snowball:Snowball_EnterShakeBody ov068/snowball:Snowball_EnterShake
 area: Unreachable for one player
 group: hardware and failure paths
 scene: none: the debug screen after an exception, a halt, a pulled card, the lid closed, a low battery, a failed card access
-reach: a recording cannot pull the card, close the lid or lower the battery, and a good run never faults. By whole file only the debug screen, its text and the halt; of the other files only: the lid's flags, wake and backlights (LidSleep_Update on the lid's bit), the pulled card's callback, GameStop_Release (the stop latch rises on data_021fbe38, which only Pad_Update writes, with 0) and SaveStamp_SetLostFlag (both card copies bad although this run's stamp says a write began, which needs the card to fail); the card's checks, reads and writes, the save stamp and the backup card run in every scene (findings 2026-10-28, town6); besides (findings 2026-10-29, town7, third batch), the game-stop latch data_021dc6c4 is set (to 1) only by GameStop_Update when data_021fbe38 is not 0, and data_021fbe38's only store is Pad_Update's 0 (BSS; the relocations name it only there and in GameStop_Update), so what only `if (data_021dc6c4 != 0)` reaches never runs (GameStop_Release and the resets it calls); and the Wi-Fi session's received notice, letter and mystery cat record flags (data_021f3c18, _3c04, _3c14) are set only by WfcSession_FinishNoticeGet, _FinishLetterGet and _FinishCatRecordGet, which are not reached with that cut left open, so WfcSession_ApplyNotice, _ApplyLetter and _ApplyCatRecord return at once (w24/guard2.py --zero; w24/classify.py, gate latch); besides (findings 2026-10-30, clerk6), a good run halts: job 0x1f's start, which the post clerk asks for after line 0x3b (a savings rank of 0x1c), halts in LibraryOverlay_RequireAny (GameHalt_Terminate, the debug screen), so the halt, the debug screen's frame and drawing and its text moved to "job 0x1f's start and the halt it ends in" (now "the debug screen shown after job 0x1f's halt", halt7)
+reach: a recording cannot pull the card, close the lid or lower the battery, and a good run never faults. By whole file only the debug screen, its text and the halt; of the other files only: the lid's flags, wake and backlights (LidSleep_Update on the lid's bit), the pulled card's callback, GameStop_Release (the stop latch rises on data_021fbe38, which only Pad_Update writes, with 0) and SaveStamp_SetLostFlag (both card copies bad although this run's stamp says a write began, which needs the card to fail); the card's checks, reads and writes, the save stamp and the backup card run in every scene (findings 2026-10-28, town6); besides (findings 2026-10-29, town7, third batch), the game-stop latch data_021dc6c4 is set (to 1) only by GameStop_Update when data_021fbe38 is not 0, and data_021fbe38's only store is Pad_Update's 0 (BSS; the relocations name it only there and in GameStop_Update), so what only `if (data_021dc6c4 != 0)` reaches never runs (GameStop_Release and the resets it calls); and the Wi-Fi session's received notice, letter and mystery cat record flags (data_021f3c18, _3c04, _3c14) are set only by WfcSession_FinishNoticeGet, _FinishLetterGet and _FinishCatRecordGet, which are not reached with that cut left open, so WfcSession_ApplyNotice, _ApplyLetter and _ApplyCatRecord return at once (w24/guard2.py --zero; w24/classify.py, gate latch); besides (findings 2026-10-30, clerk6), a good run halts: job 0x1f's start, which the post clerk asks for after line 0x3b (a savings rank of 0x1c), halts in LibraryOverlay_RequireAny (GameHalt_Terminate, the debug screen), so the halt, the debug screen's frame and drawing and its text moved to "job 0x1f's start and the halt it ends in" (now "the debug screen shown after job 0x1f's halt", halt7); besides (findings 2026-11-05, solo2), a recording now closes the lid (LID) and lowers the battery (LOWBAT; runtime/input.h): lid-battery runs the lid's flags, wake and backlights (LidSleep_ClearFlags, _HasFlags, _Wake, _RestoreBacklights, _BacklightsOff), which left this group
 needs: unreachable
 match: main/card_pulled:CardPulled_OnPulledOut
   main/debug_screen:Fatal_Printf main/debug_screen:Fatal_Report
-  main/game_stop:GameStop_Release main/lid_sleep:LidSleep_BacklightsOff
-  main/lid_sleep:LidSleep_ClearFlags main/lid_sleep:LidSleep_HasFlags
-  main/lid_sleep:LidSleep_RestoreBacklights main/lid_sleep:LidSleep_Wake
+  main/game_stop:GameStop_Release
 
 area: Unreachable for one player
 group: the gatekeeper's visits and connections
@@ -905,7 +903,7 @@ match: autoload_2/network:Wfc_FinishPost autoload_2/network:Wfc_FriendIndexOf
   main/activity_job:ActivityJob_Ask18 main/activity_job:ActivityJob_Ask19
   main/activity_job:ActivityJob_Ask1B main/activity_link_jobs:ActivityLinkJobs_Start17
   main/activity_link_jobs:ActivityLinkJobs_Step17 main/activity_talk:ActivityTalk_QueueMessage11
-  main/battery_warning:BatteryWarning_Disable main/bbs:Bbs_GetLastNotice main/bbs:Bbs_SetLastNotice
+  main/bbs:Bbs_GetLastNotice main/bbs:Bbs_SetLastNotice
   main/camera_control:CameraControl_SetMode19 main/design:Design_Receive
   main/field_label:FieldLabel_ChooseMessage main/field_label:FieldLabel_ShowMessage9
   main/fish_disp:FishDisp_HandleMessage main/fox_shop:FoxPassword_ClearVisitor
@@ -1052,13 +1050,9 @@ match: main/shops:Shops_AllAnsweredFox
 area: Unreachable for one player
 group: the field actor's closed lid and low battery
 scene: none: states 0x83 (the lid closed) and 0x84 (a low battery) of the field actor, and their requests
-reach: FieldActor_CheckBatteryAndLid asks for them on BatteryWarning_IsLow and on bit 15 of the ARM7's word at 0x027fffa8 (the lid), which a recording cannot make; the states' messages ask for them for another console's actor; besides (findings 2026-10-29, proofs1), the forward pass had counted each C++ name of size 0 at a function's address (2,355) as a function of unknown size running into the next symbol; without those edges these are reached only through the words the reason closes (w22/forward.py)
+reach: FieldActor_CheckBatteryAndLid asks for them on BatteryWarning_IsLow and on bit 15 of the ARM7's word at 0x027fffa8 (the lid), which a recording cannot make; the states' messages ask for them for another console's actor; besides (findings 2026-10-29, proofs1), the forward pass had counted each C++ name of size 0 at a function's address (2,355) as a function of unknown size running into the next symbol; without those edges these are reached only through the words the reason closes (w22/forward.py); besides (findings 2026-11-05, solo2), a recording now closes the lid (LID) and lowers the battery (LOWBAT; runtime/input.h): lid-battery runs states 0x83 and 0x84 and their requests, which left this group
 needs: unreachable
-match: main/field_actor_states:FieldActor_EndState83 main/field_actor_states:FieldActor_EnterState83
-  main/field_actor_states:FieldActor_EnterState84 main/field_actor_states:FieldActor_RequestState83
-  main/field_actor_states:FieldActor_RequestState84 main/field_actor_states:FieldActor_RunState83
-  main/field_actor_states:FieldActor_RunState84 main/field_actor_states:FieldActor_UpdateState83
-  main/field_actor_states:FieldActor_UpdateState84
+match:
 
 area: Unreachable for one player
 group: camera modes only unreachable code sets
@@ -1757,27 +1751,10 @@ match: autoload_2/network:Net_ClearSendQueue autoload_2/network:Wfc_CanSendToAll
 area: Unreachable for one player
 group: the caution window's states: the session's error flags stay 0
 scene: none: the caution window's states 2-7 (delay, open, countdown, shutdown, last message, end) and what only they call: the window's line, seconds and error code drawn, the sound stopped, the planes hidden, the card and the session shut down
-reach: the main loop hands CautionWindow_UpdateGlobal trouble only when the session's shown error flags are not 0, and they are its error flags (NetSession.error_flags, +0x120 of the global session data_021d0a44, named only by data_020ccf94 and its static initialiser; no other store at +0x120 is the session's and no block copy writes it), which only Session_SetErrorFlags writes: Session_ResetPlayer 0, Session_Update past Session_IsSlotTaken (the link guard), Session_RaiseSendTimeout and LinkState_SystemStep (the link jobs and the linked session), CautionWindow_RaiseEndFailure only when Net_End fails (the local library, or no library while the session is active, which Session_Start's Wfc_Setup and Session_StartExchange's Exchange_Init never leave), and CautionWindow_CheckNetError only in network modes 1-4 with connect mode 0 or 1 (mode 5, the exchange, gives error 0): modes 1 and 2 are the local wireless library's (Local_Setup), 3 and 4 are set by Wfc_Setup, whose only reached Session_Start is GatekeeperTalk_StartWfc's with connect mode 2, and by Wfc_HostGame and _JoinFriendGame; connect mode 0 or 1 is set by Session_Reset only at boot and after Net_End's MODE_ENDED, and otherwise only by the gatekeeper's visits and the link jobs. So CautionWindow_IdleUpdate never leaves state 1, and states 2-7 are set only by their Enter functions (findings 2026-10-29, unknown3; the scratchpad's w29/classify.py, gate caution)
+reach: the main loop hands CautionWindow_UpdateGlobal trouble only when the session's shown error flags are not 0, and they are its error flags (NetSession.error_flags, +0x120 of the global session data_021d0a44, named only by data_020ccf94 and its static initialiser; no other store at +0x120 is the session's and no block copy writes it), which only Session_SetErrorFlags writes: Session_ResetPlayer 0, Session_Update past Session_IsSlotTaken (the link guard), Session_RaiseSendTimeout and LinkState_SystemStep (the link jobs and the linked session), CautionWindow_RaiseEndFailure only when Net_End fails (the local library, or no library while the session is active, which Session_Start's Wfc_Setup and Session_StartExchange's Exchange_Init never leave), and CautionWindow_CheckNetError only in network modes 1-4 with connect mode 0 or 1 (mode 5, the exchange, gives error 0): modes 1 and 2 are the local wireless library's (Local_Setup), 3 and 4 are set by Wfc_Setup, whose only reached Session_Start is GatekeeperTalk_StartWfc's with connect mode 2, and by Wfc_HostGame and _JoinFriendGame; connect mode 0 or 1 is set by Session_Reset only at boot and after Net_End's MODE_ENDED, and otherwise only by the gatekeeper's visits and the link jobs. So CautionWindow_IdleUpdate never leaves state 1, and states 2-7 are set only by their Enter functions (findings 2026-10-29, unknown3; the scratchpad's w29/classify.py, gate caution); besides (findings 2026-11-05, solo2), a recording now puts a console's wireless out of range (NORADIO; runtime/input.h, runtime/wm.c): gate-visit-lost loses the link once the visitor is in the town, the session's error flags rise and the caution window runs states 2-7 to the reset, which left this group but for the error code's text (CautionWindow_ErrorCodeText, _WidenText: only with data_021c5934 set)
 needs: unreachable
-match: 
-  main/lid_sleep:LidSleep_SetFlags main/backup_card:BackupCard_Shutdown
-  main/caution_window:CautionWindow_EndUpdate main/caution_window:CautionWindow_EnterEnd
-  main/caution_window:CautionWindow_LastMessageUpdate
-  main/caution_window:CautionWindow_EnterLastMessage
-  main/caution_window:CautionWindow_ShutdownUpdate
-  main/caution_window:CautionWindow_EnterShutdown
-  main/caution_window:CautionWindow_CountdownUpdate
-  main/caution_window:CautionWindow_EnterCountdown main/caution_window:CautionWindow_OpenUpdate
-  main/caution_window:CautionWindow_EnterOpen main/caution_window:CautionWindow_DelayUpdate
-  main/caution_window:CautionWindow_EnterDelay main/caution_window:CautionWindow_StopSound
-  main/caution_window:CautionWindow_HidePlanes main/caution_window:CautionWindow_ComposeLine
-  main/caution_window:CautionWindow_DrawSeconds main/caution_window:CautionWindow_DrawLine
-  main/caution_window:CautionWindow_ClearTexture main/caution_window:CautionWindow_UploadLine
+match:
   main/caution_window:CautionWindow_ErrorCodeText main/caution_window:CautionWindow_WidenText
-  main/caution_window:CautionWindow_RecordNetError main/display_shadow:DisplayShadow_GetSubPlanes
-  main/display_shadow:DisplayShadow_GetSubWindows main/label_box:LabelBox_TextWidth
-  main/lid_sleep:LidSleep_KeepSoundOff main/link_state:LinkState_GlobalReset
-  main/session_link:Session_Close main/session_link:Session_ResetLinkStatus
 
 area: Unreachable for one player
 group: the resident root's deletion: scenes 0x2a and 0x2b, which nothing enters
@@ -1881,7 +1858,7 @@ group: the screens' windows the caution window gives back: it never hid them
 scene: none: DisplayShadow_SetMainWindows and _SetSubWindows, which only the caution window calls, to hide the screens' windows (CautionWindow_HidePlanes, in the caution window's states) and to give them back (CautionWindow_RestorePlanes, which every scene runs, but only once the planes were hidden)
 reach: the caution window's flag of hidden planes (+0xca) is set only by CautionWindow_HidePlanes (its constructor, its reset and RestorePlanes clear it), whose two callers are the caution window's states, which the caution gate cuts off (group "the caution window's states: the session's error flags stay 0") (findings 2026-10-31, rows21, w61-wt5/cls/classify.py, gate planes)
 needs: unreachable
-match: main/display_shadow:DisplayShadow_SetMainWindows main/display_shadow:DisplayShadow_SetSubWindows
+match:
 
 area: Unreachable for one player
 group: the building taker asked by a stamp no caller asks for

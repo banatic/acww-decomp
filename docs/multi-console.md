@@ -177,6 +177,12 @@ Done (phase 2): the access point, the network and the servers above; the scenes
 list of towns to visit, empty as no friend is online), `gate-wfc-no-ap`, `gate-wfc-no-dns`,
 `gate-wfc-conntest` and `gate-wfc-nas-error` (the error paths).
 
+Out of range: a recording's NORADIO (runtime/input.h) holds a console's wireless out of range.
+The consoles still exchange a message each frame, so they stay in step, but the one out of
+range sends nothing and takes in nothing, and the other hears nothing from it. The scene
+`gate-visit-lost` holds the visitor's NORADIO once the visitor is in the town: both sessions
+time out, and the caution window counts down to the reset.
+
 Later: more than two consoles (the star above); the beacon lost when a parent stops beaconing
 without a disconnection; the MP frequency (one turn a frame here); for Wi-Fi Connection, the QR2
 master server and the matchmaking that would show a friend's town, and two consoles meeting

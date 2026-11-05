@@ -1,0 +1,65 @@
+# lid-battery (format: runtime/input.h), played from a town save by tools/scenes.py (the save is
+# not in this repository). Boot: as in tools.txt; the player stands in front of the house from
+# about 2550.
+# Save: seed. LID from 2700 to 2820 closes the console's lid: the screens and the sound go off
+# (main/lid_sleep.c) and the player stands in field actor state 0x83; open again, the screens
+# come back. LOWBAT from 3000 to 3600: the battery's next check (main/battery_warning.c) finds it
+# low, and the player warns in state 0x84 ("save soon?"); A at 3600 closes the message and DOWN
+# from 3706 walks south.
+900 START -
+906 - -
+1000 A -
+1006 - -
+1060 A -
+1066 - -
+1120 A -
+1126 - -
+1180 A -
+1186 - -
+1240 A -
+1246 - -
+1300 A -
+1306 - -
+1360 A -
+1366 - -
+1420 A -
+1426 - -
+1480 A -
+1486 - -
+1540 A -
+1546 - -
+1600 A -
+1606 - -
+1660 A -
+1666 - -
+1720 A -
+1726 - -
+1780 A -
+1786 - -
+1840 A -
+1846 - -
+1900 A -
+1906 - -
+1960 A -
+1966 - -
+2020 A -
+2026 - -
+2080 A -
+2086 - -
+2140 A -
+2146 - -
+2200 A -
+2206 - -
+2260 A -
+2266 - -
+2320 A -
+2326 - -
+2380 A -
+2386 - -
+2700 LID -
+2820 - -
+3000 LOWBAT -
+3600 A -
+3606 - -
+3706 DOWN -
+3766 - -

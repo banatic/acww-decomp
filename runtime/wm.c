@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "input.h"
 #include "io.h"
 #include "memory.h"
 #include "wifi.h"
@@ -1320,6 +1321,12 @@ static void exchange(uint32_t frame)
     } else if (wm.mp && wm.connected) {
         mp_taken = mp_outgoing(MSG_MP_CHILD);
     }
+    /* out of range (the recording's NORADIO): the consoles stay in step, but nothing goes out
+       and nothing comes in */
+    int out_of_range = (input_hardware() & 4u) != 0;
+    if (out_of_range) {
+        wm.out_length = 0;
+    }
     uint8_t head[8];
     put32(head, frame);
     put32(head + 4, wm.out_length);
@@ -1341,6 +1348,9 @@ static void exchange(uint32_t frame)
         }
     }
     wm.out_length = 0;
+    if (out_of_range) {
+        in_length = 0;
+    }
     if (!ok) {
         fprintf(stderr, "wm: the other console left the link at frame %u\n", frame);
         wm.linked = 0;

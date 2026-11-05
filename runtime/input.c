@@ -39,8 +39,9 @@ static const struct {
     const char *name;
     uint32_t bit;
 } key_names[] = {
-    {"A", 1u << 0},  {"B", 1u << 1},    {"SELECT", 1u << 2}, {"START", 1u << 3}, {"RIGHT", 1u << 4}, {"LEFT", 1u << 5},
-    {"UP", 1u << 6}, {"DOWN", 1u << 7}, {"R", 1u << 8},      {"L", 1u << 9},     {"X", 1u << 10},    {"Y", 1u << 11},
+    {"A", 1u << 0},    {"B", 1u << 1},  {"SELECT", 1u << 2}, {"START", 1u << 3},   {"RIGHT", 1u << 4},
+    {"LEFT", 1u << 5}, {"UP", 1u << 6}, {"DOWN", 1u << 7},   {"R", 1u << 8},       {"L", 1u << 9},
+    {"X", 1u << 10},   {"Y", 1u << 11}, {"LID", 1u << 12},   {"LOWBAT", 1u << 13}, {"NORADIO", 1u << 14},
 };
 
 static int parse_keys(const char *text, uint32_t *keys)
@@ -185,6 +186,12 @@ uint32_t input_keys(void)
 {
     input_frame(io_frame());
     return (state.keys | live.keys) & 0x3ffu;
+}
+
+uint32_t input_hardware(void)
+{
+    input_frame(io_frame());
+    return (state.keys >> 12) & 7u;
 }
 
 uint32_t input_keys_xy(void)

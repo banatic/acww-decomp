@@ -221,11 +221,12 @@ static void touch_sample(void)
  * ((KEYINPUT | shared) ^ 0x2fff) & 0x2fff and reads nothing while bit 15 is set. So KEYXY
  * bits 0-1 (X, Y) and 3 (debug) sit at 10-11 and 13, and bits 6-7 (pen up, hinge closed)
  * at 14-15; a held button and the pen down read 0, as in KEYXY. The debug button is never
- * pressed and the hinge is open. */
+ * pressed; the hinge is open unless the recording closes the lid (input_hardware). */
 static void buttons_update(void)
 {
     int x, y;
-    uint32_t keyxy = 0x0008u | (~input_keys_xy() & 3u) | (input_touch(&x, &y) ? 0 : 0x40u);
+    uint32_t keyxy =
+        0x0008u | (~input_keys_xy() & 3u) | (input_touch(&x, &y) ? 0 : 0x40u) | ((input_hardware() & 1u) ? 0x80u : 0);
     wr16(SHARED_BUTTON_XY, (keyxy & 0x0bu) << 10 | (keyxy & 0xc0u) << 8);
 }
 
@@ -355,7 +356,8 @@ static void tp_frame(void)
  * 0x65 with the register number in the low byte; PM_GetBattery (0x0211dbcc) reads register 1
  * and takes bit 0 as "battery low". The power management chip's registers as a console that
  * has just been switched on has them: 0 control (both backlights on), 1 battery status (not
- * low), 2 microphone amplifier (off), 3 amplifier gain (lowest). */
+ * low, unless the recording lowers it: input_hardware), 2 microphone amplifier (off), 3
+ * amplifier gain (lowest). */
 #define PM_READ_REGISTER 0x65u
 
 static uint32_t pm_register(uint32_t reg)
@@ -363,6 +365,8 @@ static uint32_t pm_register(uint32_t reg)
     switch (reg) {
         case 0:
             return 0x0c;
+        case 1:
+            return (input_hardware() >> 1) & 1u;
         default:
             return 0;
     }

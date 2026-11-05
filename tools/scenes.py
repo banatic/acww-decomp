@@ -1389,6 +1389,8 @@ scene("insect-catch", "net", 3800, [2600, 3250, 3420, 3799], frames(3200, 3800, 
       "run east to the river bend, walk up to a mantis and catch it with the net")
 scene("dig-bury", "shovel-fruit", 6000, [2600, 3700, 4400, 5500, 5999], frames(2900, 6000, 50),
       "dig a hole, bury a piece of furniture in it and dig it up, then plant a fruit in the hole")
+scene("lid-battery", "seed", 3900, [2600, 2760, 2900, 3500, 3899], frames(2650, 3900, 25),
+      "the console's lid closed and opened (recording state LID), then the battery low (LOWBAT): the player warns")
 scene("dig-full", "dig-full", 6200, [2600, 3400, 3700, 4600, 4950, 5800, 6199], frames(2900, 6200, 50),
       "with the pockets full, dig up buried items: one swapped into the hole, one swapped and put down, one buried again")
 scene("villager-chat", "museum", 8000, [2600, 4500, 5300, 6400, 7300, 7999], frames(4100, 8000, 50),
@@ -2667,6 +2669,9 @@ scene("gate-visit-link", "seed", 12500, [2600, 7900, 9600, 10400, 11200], frames
       "other town's player asks to visit (gate-visit-guest): the search finds the seed town, the visitor "
       "connects, the town's data goes over MP, and the visitor walks through the gate into the seed town",
       recording="gate-visit-host", peer=("other-town", "gate-visit-guest"))
+scene("gate-visit-lost", "seed", 17000, [2600, 7900, 9600, 11200, 12500, 14000, 14399], frames(12000, 17000, 100),
+      "gate-visit-link, then the visitor's wireless out of range (gate-visit-lost-guest): the link is lost",
+      recording="gate-visit-lost-host", peer=("other-town", "gate-visit-lost-guest"))
 scene("fish-release-class4", "rod-fish-19", 6484, [2600, 3700, 5100, 5900, 6100, 6483], frames(5800, 6484, 25),
       "fish-release-pocket with a fish of size class 4 in the pockets: put back into the water, its splash "
       "and wake are those of its size", recording="fish-release-pocket")

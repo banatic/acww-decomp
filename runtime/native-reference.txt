@@ -67,3 +67,4 @@ _ZN18Obj_ov003_0223863019func_ov003_0221bbacEv hands func_ov003_02219a64 the sta
 func_020012ec touches the hardware at 04000208
 func_02001324 touches the hardware at 04000130
 func_0200149c touches the hardware at 04000006
+func_020386fc touches the hardware at 04000050
