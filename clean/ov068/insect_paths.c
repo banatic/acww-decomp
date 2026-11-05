@@ -173,7 +173,7 @@ int InsectPath_FindSpot(TownInsect *insect, s16 *turn, int *distance, Vec3 *spot
     if (kind == INSECT_PATH_KIND_FLY) {
         found = WalkTarget_DaySpot(spot, position) != 0;
     } else {
-        found = WalkTarget_NearFamily(spot, position, TownInsectMove_TestFlags((s8) kind)) != 0;
+        found = WalkTarget_NearFlower(spot, position, TownInsectMove_TestFlags((s8) kind)) != 0;
     }
     if (!found) {
         return 0;
@@ -189,7 +189,7 @@ int InsectPath_FindSpot(TownInsect *insect, s16 *turn, int *distance, Vec3 *spot
         }
     }
     if (kind != INSECT_PATH_KIND_FLY) {
-        InsectPath_SpotOffset((s8) TownFamily_Line(code), spot);
+        InsectPath_SpotOffset((s8) TownFamily_Kind(code), spot);
     } else {
         spot->x += 0x1000;
         spot->y = FX_Div(0xb000, 0x10000);

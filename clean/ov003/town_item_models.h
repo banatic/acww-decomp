@@ -9,10 +9,11 @@
  * built from its tile's centre bent over the globe (Globe_BendFar), with the scene's emission
  * colour.
  *
- * The holders: families A and C (by line and stage) at 0x1590; family B by line; the growth
- * lines at 0x174 (by the tile's parity, or the eight-code lines), 0xc6c and 0x11e8, by stage,
- * with the fruit the grown ones carry drawn as items; the code 0x6d's three frames at 0x1014;
- * others one or two each, or through pointers at 0x3060, 0x46f4 and 0x4978. */
+ * The holders: the flowers and watered flowers (by kind and colour) at 0x1590; the wilted
+ * flowers by kind; the growth lines at 0x174 (by the tile's parity, or the eight-code lines),
+ * 0xc6c and 0x11e8, by stage, with the fruit the grown ones carry drawn as items; the code
+ * 0x6d's three frames at 0x1014; others one or two each, or through pointers at 0x3060, 0x46f4
+ * and 0x4978. */
 #ifndef CLEAN_OV003_TOWN_ITEM_MODELS_H
 #define CLEAN_OV003_TOWN_ITEM_MODELS_H
 
@@ -39,8 +40,8 @@ void TownItemModels_DrawCodeE3WithShadow(TileEventProcess *process, const u16 *c
 ModelObject *TownItemModels_DrawCodeE3(TileEventProcess *process, const u16 *code, Mtx43 matrix);
 ModelObject *TownItemModels_DrawCode1f(TileEventProcess *process, const u16 *code, Mtx43 matrix);
 ModelObject *TownItemModels_DrawCode1a(TileEventProcess *process, const u16 *code, Mtx43 matrix);
-ModelObject *TownItemModels_DrawFamilyB(TileEventProcess *process, const u16 *code, Mtx43 matrix);
-ModelObject *TownItemModels_DrawFamily(TileEventProcess *process, const u16 *code, Mtx43 matrix);
+ModelObject *TownItemModels_DrawWiltedFlower(TileEventProcess *process, const u16 *code, Mtx43 matrix);
+ModelObject *TownItemModels_DrawFlower(TileEventProcess *process, const u16 *code, Mtx43 matrix);
 ModelObject *TownItemModels_DrawStump(TileEventProcess *process, const u16 *code, Mtx43 matrix);
 ModelObject *TownItemModels_DrawCode25(TileEventProcess *process, const u16 *code, int x, int z, Mtx43 matrix);
 void TownItemModels_DrawGrowthWithShadow(TileEventProcess *process, const u16 *code, int x, int z, Vec3 *point, Mtx43 matrix);

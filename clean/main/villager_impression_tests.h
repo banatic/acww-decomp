@@ -15,9 +15,9 @@
 #define VILLAGER_IMPRESSION_HATED (-80)
 /* What PlayerPockets_FreeSlot gives for pockets with no free slot. */
 #define VILLAGER_IMPRESSION_NO_FREE_SLOT (-1)
-/* VillagerImpression_NearFamilyAC and VillagerImpression_NearCodes21To24: how many of the nine
+/* VillagerImpression_NearFlowers and VillagerImpression_NearCodes21To24: how many of the nine
  * tiles around the player must hold one of the codes. */
-#define VILLAGER_IMPRESSION_NEAR_FAMILY_AC 2
+#define VILLAGER_IMPRESSION_NEAR_FLOWERS 2
 #define VILLAGER_IMPRESSION_NEAR_CODES_21 3
 /* VillagerImpression_FewVillagers: the most villagers the town may have. */
 #define VILLAGER_IMPRESSION_FEW_VILLAGERS 4
@@ -50,7 +50,7 @@ int VillagerImpression_MoodIs2Or4(u8 *record, int fondness, int mood);
 int VillagerImpression_MoodIs1(u8 *record, int fondness, int mood);
 int VillagerImpression_EventToday(void);
 int VillagerImpression_FewVillagers(void);
-int VillagerImpression_NearFamilyAC(void);
+int VillagerImpression_NearFlowers(void);
 int VillagerImpression_NearCodes21To24(void);
 void VillagerImpression_IsStung(u8 *record);
 

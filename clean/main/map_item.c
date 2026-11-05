@@ -2,11 +2,12 @@
 #include "map_item.h"
 #include "clean.h"
 
-/* func_0204b3d0: a code of the three families, or one of 0x1a, 0x1d, 0x1e, 0x88 and 0xa4.
- * 0x1a, 0x88 and 0xa4 are the code after the last line of families A, B and C. */
-BOOL MapItem_InFamilies(const ItemCode *item)
+/* func_0204b3d0: a flower, wilted or watered (the three families), or one of 0x1a, 0x1d, 0x1e,
+ * 0x88 and 0xa4: the lily of the valley (0x1a) as a flower, wilted (0x88) and watered (0xa4),
+ * the dandelion (0x1d) and what it turns into (0x1e). */
+BOOL MapItem_IsAnyFlower(const ItemCode *item)
 {
-    if (MapItem_InFamilyB(item) || MapItem_InFamilyA(item) || MapItem_InFamilyC(item)) {
+    if (MapItem_IsWiltedFlower(item) || MapItem_IsFlower(item) || MapItem_IsWateredFlower(item)) {
         return TRUE;
     }
     switch (ItemCode_Get(item)) {
@@ -20,113 +21,117 @@ BOOL MapItem_InFamilies(const ItemCode *item)
             return FALSE;
     }
 }
-CLEAN_AS(func_0204b3d0, MapItem_InFamilies)
+CLEAN_AS(func_0204b3d0, MapItem_IsAnyFlower)
 
 /* func_0204b430 */
-BOOL MapItem_InFamilyC(const ItemCode *item)
+BOOL MapItem_IsWateredFlower(const ItemCode *item)
 {
-    return MapItem_IsFamilyC0(item) || MapItem_IsFamilyC1(item) || MapItem_IsFamilyC2(item) || MapItem_IsFamilyC3(item);
+    return MapItem_IsWateredTulip(item) || MapItem_IsWateredPansy(item) || MapItem_IsWateredCosmos(item) ||
+           MapItem_IsWateredRose(item);
 }
-CLEAN_AS(func_0204b430, MapItem_InFamilyC)
+CLEAN_AS(func_0204b430, MapItem_IsWateredFlower)
 
-/* func_0204b468. QUIRK: the line takes in 0xa5, two past its end, but not 0xa4 between. */
-BOOL MapItem_IsFamilyC3(const ItemCode *item)
+/* func_0204b468: a watered rose. The line takes in 0xa5 (the watered gold rose), two past its
+ * end, but not 0xa4 (the watered lily) between. */
+BOOL MapItem_IsWateredRose(const ItemCode *item)
 {
     return ItemCode_InRange(item, 0x9c, 0xa3) || *item == 0xa5;
 }
-CLEAN_AS(func_0204b468, MapItem_IsFamilyC3)
+CLEAN_AS(func_0204b468, MapItem_IsWateredRose)
 
 /* func_0204b4a0 */
-BOOL MapItem_IsFamilyC2(const ItemCode *item)
+BOOL MapItem_IsWateredCosmos(const ItemCode *item)
 {
     return ItemCode_InRange(item, 0x96, 0x9b);
 }
-CLEAN_AS(func_0204b4a0, MapItem_IsFamilyC2)
+CLEAN_AS(func_0204b4a0, MapItem_IsWateredCosmos)
 
 /* func_0204b4ac */
-BOOL MapItem_IsFamilyC1(const ItemCode *item)
+BOOL MapItem_IsWateredPansy(const ItemCode *item)
 {
     return ItemCode_InRange(item, 0x90, 0x95);
 }
-CLEAN_AS(func_0204b4ac, MapItem_IsFamilyC1)
+CLEAN_AS(func_0204b4ac, MapItem_IsWateredPansy)
 
 /* func_0204b4b8 */
-BOOL MapItem_IsFamilyC0(const ItemCode *item)
+BOOL MapItem_IsWateredTulip(const ItemCode *item)
 {
     return ItemCode_InRange(item, 0x8a, 0x8f);
 }
-CLEAN_AS(func_0204b4b8, MapItem_IsFamilyC0)
+CLEAN_AS(func_0204b4b8, MapItem_IsWateredTulip)
 
 /* func_0204b4c4 */
-BOOL MapItem_InFamilyA(const ItemCode *item)
+BOOL MapItem_IsFlower(const ItemCode *item)
 {
-    return MapItem_IsFamilyA0(item) || MapItem_IsFamilyA1(item) || MapItem_IsFamilyA2(item) || MapItem_IsFamilyA3(item);
+    return MapItem_IsTulip(item) || MapItem_IsPansy(item) || MapItem_IsCosmos(item) || MapItem_IsRose(item);
 }
-CLEAN_AS(func_0204b4c4, MapItem_InFamilyA)
+CLEAN_AS(func_0204b4c4, MapItem_IsFlower)
 
-/* func_0204b4fc. QUIRK: the line takes in 0x1c, three past its end; 0x1a and 0x1b between are
- * not in it. */
-BOOL MapItem_IsFamilyA3(const ItemCode *item)
+/* func_0204b4fc: a rose. The line takes in 0x1c (the gold rose), three past its end; 0x1a (the
+ * lily of the valley) and 0x1b between are not in it. */
+BOOL MapItem_IsRose(const ItemCode *item)
 {
     return ItemCode_InRange(item, 0x12, 0x19) || *item == 0x1c;
 }
-CLEAN_AS(func_0204b4fc, MapItem_IsFamilyA3)
+CLEAN_AS(func_0204b4fc, MapItem_IsRose)
 
 /* func_0204b520 */
-BOOL MapItem_IsFamilyA2(const ItemCode *item)
+BOOL MapItem_IsCosmos(const ItemCode *item)
 {
     return ItemCode_InRange(item, 0x0c, 0x11);
 }
-CLEAN_AS(func_0204b520, MapItem_IsFamilyA2)
+CLEAN_AS(func_0204b520, MapItem_IsCosmos)
 
 /* func_0204b52c */
-BOOL MapItem_IsFamilyA1(const ItemCode *item)
+BOOL MapItem_IsPansy(const ItemCode *item)
 {
     return ItemCode_InRange(item, 0x06, 0x0b);
 }
-CLEAN_AS(func_0204b52c, MapItem_IsFamilyA1)
+CLEAN_AS(func_0204b52c, MapItem_IsPansy)
 
 /* func_0204b538 */
-BOOL MapItem_IsFamilyA0(const ItemCode *item)
+BOOL MapItem_IsTulip(const ItemCode *item)
 {
     return ItemCode_InRange(item, 0x00, 0x05);
 }
-CLEAN_AS(func_0204b538, MapItem_IsFamilyA0)
+CLEAN_AS(func_0204b538, MapItem_IsTulip)
 
-/* func_0204b544. Unlike families A and C, no code past the last line belongs to it. */
-BOOL MapItem_InFamilyB(const ItemCode *item)
+/* func_0204b544. Unlike the flowers and the watered flowers, no code past the last line belongs
+ * to it. */
+BOOL MapItem_IsWiltedFlower(const ItemCode *item)
 {
-    return MapItem_IsFamilyB0(item) || MapItem_IsFamilyB1(item) || MapItem_IsFamilyB2(item) || MapItem_IsFamilyB3(item);
+    return MapItem_IsWiltedTulip(item) || MapItem_IsWiltedPansy(item) || MapItem_IsWiltedCosmos(item) ||
+           MapItem_IsWiltedRose(item);
 }
-CLEAN_AS(func_0204b544, MapItem_InFamilyB)
+CLEAN_AS(func_0204b544, MapItem_IsWiltedFlower)
 
 /* func_0204b57c */
-BOOL MapItem_IsFamilyB3(const ItemCode *item)
+BOOL MapItem_IsWiltedRose(const ItemCode *item)
 {
     return ItemCode_InRange(item, 0x80, 0x87);
 }
-CLEAN_AS(func_0204b57c, MapItem_IsFamilyB3)
+CLEAN_AS(func_0204b57c, MapItem_IsWiltedRose)
 
 /* func_0204b588 */
-BOOL MapItem_IsFamilyB2(const ItemCode *item)
+BOOL MapItem_IsWiltedCosmos(const ItemCode *item)
 {
     return ItemCode_InRange(item, 0x7a, 0x7f);
 }
-CLEAN_AS(func_0204b588, MapItem_IsFamilyB2)
+CLEAN_AS(func_0204b588, MapItem_IsWiltedCosmos)
 
 /* func_0204b594 */
-BOOL MapItem_IsFamilyB1(const ItemCode *item)
+BOOL MapItem_IsWiltedPansy(const ItemCode *item)
 {
     return ItemCode_InRange(item, 0x74, 0x79);
 }
-CLEAN_AS(func_0204b594, MapItem_IsFamilyB1)
+CLEAN_AS(func_0204b594, MapItem_IsWiltedPansy)
 
 /* func_0204b5a0 */
-BOOL MapItem_IsFamilyB0(const ItemCode *item)
+BOOL MapItem_IsWiltedTulip(const ItemCode *item)
 {
     return ItemCode_InRange(item, 0x6e, 0x73);
 }
-CLEAN_AS(func_0204b5a0, MapItem_IsFamilyB0)
+CLEAN_AS(func_0204b5a0, MapItem_IsWiltedTulip)
 
 /* func_0204b5ac: the stage of a short line's code, 1-4, or -1 for other codes.
  * QUIRK: numbered from 1, where MapItem_GrowthStage numbers from 0. */

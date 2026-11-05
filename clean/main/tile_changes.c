@@ -437,8 +437,8 @@ static int TileChanges_InRange(unsigned int code, unsigned int first, unsigned i
     return code >= first && code <= last;
 }
 
-/* Whether a put item does not stay on a tile of this code: family A (and 0x1a, 0x1c, 0x1d),
- * family C (and 0xa4, 0xa5), and the growth lines (map_item.h). */
+/* Whether a put item does not stay on a tile of this code: the flowers (and 0x1a, 0x1c, 0x1d),
+ * the watered flowers (and 0xa4, 0xa5), and the growth lines (map_item.h). */
 static int TileChanges_CodeTakesNoItem(unsigned int code)
 {
     return code <= 0x19 || code == 0x1c || TileChanges_InRange(code, 0x8a, 0xa3) || code == 0xa5 || code == 0x1a ||

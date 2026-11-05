@@ -12,10 +12,10 @@ static_assert(sizeof(TownGrowthQuarter) == 0x288, "TownGrowthQuarter");
 
 extern TownDay data_021c779c;
 
-/* What func_02049944 is handed by TownGrowth_SpreadFamilyA. */
+/* What func_02049944 is handed by TownGrowth_BreedFlowers. */
 extern int func_02049bc4(AcreMap *map, TownGrowthTiles *near, TownGrowthTiles *tile, TownGrowthTiles *size);
 
-#define TOWN_GROWTH_FAMILY_A_LAST 0x19
+#define TOWN_GROWTH_FLOWER_LAST 0x19
 #define TOWN_GROWTH_SPREAD_PERCENT 20
 #define TOWN_GROWTH_LAST_26 0x2a /* the last stage of line 0x26 */
 #define TOWN_GROWTH_LAST_5D 0x61 /* the last stage of line 0x5d */
@@ -32,9 +32,9 @@ static TownGrowthTiles TownGrowth_MapTiles(const AcreMap *map)
     return size;
 }
 
-/* func_020486d8: in each inner acre, one chance in five that one of its family A codes, drawn
+/* func_020486d8: in each inner acre, one chance in five that one of its flower codes, drawn
  * at random, is handed to func_02049944 with its neighbours (func_02049bc4). */
-void TownGrowth_SpreadFamilyA(TownDay *town, AcreMap *map, int wide, int high)
+void TownGrowth_BreedFlowers(TownDay *town, AcreMap *map, int wide, int high)
 {
     (void) town;
     for (int acre_z = 0; acre_z < high; acre_z++) {
@@ -47,7 +47,7 @@ void TownGrowth_SpreadFamilyA(TownDay *town, AcreMap *map, int wide, int high)
             for (int z = 0; z < 16; z++) {
                 for (int x = 0; x < 16; x++) {
                     const u16 *code = AcreTile_ItemInAcre(map, (u32) (acre_x + 1), (u32) (acre_z + 1), x, z, 0);
-                    if (code == NULL || *code > TOWN_GROWTH_FAMILY_A_LAST) {
+                    if (code == NULL || *code > TOWN_GROWTH_FLOWER_LAST) {
                         continue;
                     }
                     AcreTile_TileOfAcre(&tiles[count].x, &tiles[count].z, acre_x + 1, acre_z + 1, x, z);
@@ -63,7 +63,7 @@ void TownGrowth_SpreadFamilyA(TownDay *town, AcreMap *map, int wide, int high)
         }
     }
 }
-CLEAN_AS(func_020486d8, TownGrowth_SpreadFamilyA)
+CLEAN_AS(func_020486d8, TownGrowth_BreedFlowers)
 
 /* func_02048a80: the lines' last stages changed: 0x67 / 0x6b, 0x66 / 0x6a, then 0x68 / 0x6c. */
 void TownGrowth_ChangeLastStages(TownDay *town, AcreMap *map, int wide, int high)

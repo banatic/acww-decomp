@@ -27,7 +27,7 @@ extern void *data_020db76c;
 extern void *data_020db768;
 /* The set-up function of effects 0x76-0x78 and 0x94. */
 extern void *data_020e25d4;
-/* The colour of the second effect for each category: of families B and C, else. */
+/* The colour of the second effect for each category: of the wilted and watered flowers, else. */
 extern const u16 *const data_020db770[];
 extern const u16 *const data_020db7a8[];
 /* The colour of the first effect for each category and stage. */
@@ -100,11 +100,11 @@ void TileEffects_StartAt(const TileEffectsTile *tile, int mode)
 }
 CLEAN_AS(func_02044910, TileEffects_StartAt)
 
-/* func_02044958: the effects of a code of the families on its tile; in mode 0 the tile is also
+/* func_02044958: the effects of a flower code on its tile; in mode 0 the tile is also
  * sent on to the other systems with no item (LinkedMapItems_Set in the current scene). */
 void TileEffects_StartFor(u16 *code, const TileEffectsTile *tile, int mode)
 {
-    if (!MapItem_InFamilies(code)) {
+    if (!MapItem_IsAnyFlower(code)) {
         return;
     }
     TileEffectsTile at = *tile;
@@ -158,13 +158,13 @@ CLEAN_AS(func_02044a14, TileEffects_StartTurned)
  * 0x6a (category 0), 0x42 and 0x68 (1), 0x3e and 0x64 (2), 0x40 and 0x66 for 0x1c and 0xa5
  * else 0x43 and 0x69 (3), 0x41 and 0x67 (4), 0x3f and 0x65 (5), 0x63 and 0x65 (6). The source
  * is set first (data_021c77a0), the second effect left out in mode 1.
- * REQUIRES: a code of categories 0-6 (MapItem_InFamilies).
+ * REQUIRES: a code of categories 0-6 (MapItem_IsAnyFlower).
  * BUG: for another code (0x89 among the codes 0x6e-0xa5 FieldActor_ActState17 hands on) the
  * original starts the effects whose numbers two of the caller's registers hold; Clean sets the
  * source and starts none. */
 void TileEffects_Start(u16 *code, const TileEffectsTile *tile, int angle, int mode)
 {
-    int category = (u8) TownFamily_Line(code);
+    int category = (u8) TownFamily_Kind(code);
     int first;
     int second;
     switch (category) {
@@ -213,10 +213,10 @@ void TileEffects_Start(u16 *code, const TileEffectsTile *tile, int angle, int mo
     int families = 0;
     int stage = 0;
     if (TileEffects_InRange(now, 0x6e, 0xa5)) {
-        /* Families B and C, the codes after them (0x88, 0xa4, 0xa5) and 0x89. */
+        /* The wilted and watered flowers, the codes after them (0x88, 0xa4, 0xa5) and 0x89. */
         families = 1;
     } else {
-        stage = (u8) TownFamily_Stage(code);
+        stage = (u8) TownFamily_Colour(code);
     }
     Vec3 place = centre;
     TileEffects_SetSource(&data_021c77a0, mode, (u8) category, (u8) stage, (u8) families, &place, (s16) angle);

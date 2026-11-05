@@ -39,17 +39,17 @@ int WalkTarget_DaySpot(Vec3 *target, const Vec3 *from)
 }
 CLEAN_AS(func_ov003_02224718, WalkTarget_DaySpot)
 
-/* Codes of the families' lines and the codes after them (main/map_item.h). */
-static int walk_target_family_code(u16 code)
+/* Codes of the flower lines and the codes after them (main/map_item.h). */
+static int walk_target_flower_code(u16 code)
 {
     return code <= 0x1a || code == 0x1c || code == 0x1d || (code >= 0x8a && code <= 0xa5);
 }
 
 /* func_ov003_02224768: on the town's map (else 0), of the 9 x 9 tiles around the tile of `from`
- * (nearest first, data_ov003_02236ca0) the first holding a code of the families whose line
- * (TownFamily_Line) has its bit set in `lines`: `target` becomes that tile's centre and the
+ * (nearest first, data_ov003_02236ca0) the first holding a flower code whose kind
+ * (TownFamily_Kind) has its bit set in `lines`: `target` becomes that tile's centre and the
  * answer is 1; 0 when there is none. */
-int WalkTarget_NearFamily(Vec3 *target, const Vec3 *from, int lines)
+int WalkTarget_NearFlower(Vec3 *target, const Vec3 *from, int lines)
 {
     AcreMap *map = data_021c80bc;
     if (map == NULL) {
@@ -65,14 +65,14 @@ int WalkTarget_NearFamily(Vec3 *target, const Vec3 *from, int lines)
         int acre_x = tile_x >> 4;
         int acre_z = tile_z >> 4;
         u16 *item = AcreTile_ItemInAcre(map, (u32) acre_x, (u32) acre_z, tile_x & 0xf, tile_z & 0xf, 0);
-        if (item == NULL || !walk_target_family_code(*item)) {
+        if (item == NULL || !walk_target_flower_code(*item)) {
             continue;
         }
-        if (((lines >> TownFamily_Line(item)) & 1) != 0) {
+        if (((lines >> TownFamily_Kind(item)) & 1) != 0) {
             AcreTile_TileCentre(target, (u32) tile_x, (u32) tile_z);
             return 1;
         }
     }
     return 0;
 }
-CLEAN_AS(func_ov003_02224768, WalkTarget_NearFamily)
+CLEAN_AS(func_ov003_02224768, WalkTarget_NearFlower)

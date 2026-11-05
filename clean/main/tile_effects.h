@@ -2,7 +2,7 @@
  * (func_02090c2c starts an effect by number at a place, with a word holding the function that
  * sets each new emitter up).
  *
- * A code of the families (MapItem_InFamilies) starts two effects at the tile's centre, chosen
+ * A flower code (MapItem_IsAnyFlower) starts two effects at the tile's centre, chosen
  * by the code's category (func_02049ec4), unless the mode is 1 (only the first then). Their
  * set-up functions read what the effects are for from TileEffectsSource (data_021c77a0): the
  * place, the code's category and stage, and the mode; they tint the emitter's colour by the
@@ -28,7 +28,7 @@ typedef struct TileEffectsSource {
     u32 mode;      /* 0x00: TILE_EFFECTS_MODE_* */
     u8 category;   /* 0x04: func_02049ec4's category of the code, 0-6 */
     u8 stage;      /* 0x05: the code's place in its line (func_02049d78), 0 for 0x6e-0xa5 */
-    u8 families;   /* 0x06: the code is one of 0x6e-0xa5 (families B and C and after) */
+    u8 families;   /* 0x06: the code is one of 0x6e-0xa5 (the wilted and watered flowers and after) */
     u8 unk_07;     /* 0x07 */
     Vec3 position; /* 0x08: the tile's centre */
     s16 angle;     /* 0x14: what the axis turns by in mode 2 */

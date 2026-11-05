@@ -91,22 +91,22 @@ static int TileRequests_InRange(u32 code, u32 first, u32 last)
     return code >= first && code <= last;
 }
 
-/* The codes of family A of map_item.h, with 0x1c. */
-static int TileRequests_IsFamilyA(u32 code)
+/* The flowers of map_item.h, with 0x1c. */
+static int TileRequests_IsFlower(u32 code)
 {
     return code <= 0x05 || TileRequests_InRange(code, 0x06, 0x0b) || TileRequests_InRange(code, 0x0c, 0x11) ||
            TileRequests_InRange(code, 0x12, 0x19) || code == 0x1c;
 }
 
-/* The codes of family B. */
-static int TileRequests_IsFamilyB(u32 code)
+/* The wilted flowers. */
+static int TileRequests_IsWiltedFlower(u32 code)
 {
     return TileRequests_InRange(code, 0x6e, 0x73) || TileRequests_InRange(code, 0x74, 0x79) ||
            TileRequests_InRange(code, 0x7a, 0x7f) || TileRequests_InRange(code, 0x80, 0x87);
 }
 
-/* The codes of family C, with 0xa5. */
-static int TileRequests_IsFamilyC(u32 code)
+/* The watered flowers, with 0xa5. */
+static int TileRequests_IsWateredFlower(u32 code)
 {
     return TileRequests_InRange(code, 0x8a, 0x8f) || TileRequests_InRange(code, 0x90, 0x95) ||
            TileRequests_InRange(code, 0x96, 0x9b) || TileRequests_InRange(code, 0x9c, 0xa3) || code == 0xa5;
@@ -404,7 +404,7 @@ int TileRequests_Add(TileRequest *requests, int player, int kind, const TileRequ
         if (request->state != TILE_REQUEST_FREE || request->kind != 0) {
             continue;
         }
-        if (kind == TILE_REQUEST_TAKE || kind == TILE_REQUEST_KIND_9 || kind == TILE_REQUEST_KIND_15) {
+        if (kind == TILE_REQUEST_TAKE || kind == TILE_REQUEST_KIND_9 || kind == TILE_REQUEST_TAKE_CLOVER) {
             if (tile_item == TILE_REQUESTS_BOTTLE) {
                 if (CurrentPockets_FreeLetter() == NULL) {
                     kind++;
@@ -449,7 +449,7 @@ CLEAN_AS(func_02042fd4, TileRequests_ClearSpawnTile)
 
 /* func_02042ff8: on the five tiles of a cross around `tile` where no one stands, each code that
  * func_020475b0 changes (0x86 the golden rose 0xa5 when `player` holds the golden watering can)
- * takes its new code (func_0205f9d4). When one did, or a tile holds a code of families A-C
+ * takes its new code (func_0205f9d4). When one did, or a tile holds a flower, wilted or watered
  * (map_item.h, with 0x1c and 0xa5), 0x1a, 0x1d, 0x1e, 0x88 or 0xa4, and this system is not
  * linked, the villagers hear of it at the tile (VillagerEvent_Watered). */
 void TileRequests_ChangeCodesAround(int player, const TileRequestTile *tile)
@@ -472,14 +472,14 @@ void TileRequests_ChangeCodesAround(int player, const TileRequestTile *tile)
         if (code == NULL) {
             continue;
         }
-        u16 changed = TownDay_FamilyCCode((int) (uintptr_t) data_021c779c, code, holds_golden_can);
+        u16 changed = TownDay_WateredCode((int) (uintptr_t) data_021c779c, code, holds_golden_can);
         if (changed != ITEM_CODE_NONE) {
             found = 1;
             LinkedMapItems_Set((u8) x, (u8) z, SceneQuery_Current(), changed, 0);
         }
         u32 now = *code;
-        if (TileRequests_IsFamilyA(now) || TileRequests_IsFamilyC(now) || TileRequests_IsFamilyB(now) || now == 0x1a ||
-            now == 0x88 || now == 0xa4 || now == 0x1d || now == 0x1e) {
+        if (TileRequests_IsFlower(now) || TileRequests_IsWateredFlower(now) || TileRequests_IsWiltedFlower(now) ||
+            now == 0x1a || now == 0x88 || now == 0xa4 || now == 0x1d || now == 0x1e) {
             found = 1;
         }
     }
@@ -500,7 +500,7 @@ CLEAN_AS(func_020431b8, TileRequests_Release)
 
 /* func_020431c8: a granted request carried out by the overlays, given the position of this
  * system's player: 1 when that worked, 0 when not (or not granted yet), 2 when refused.
- * Outdoors, a code of families A and C, 0x1a, 0x1d, 0x1e, 0xa4 or 0xa7-0xc6 goes
+ * Outdoors, a code of the flowers and watered flowers, 0x1a, 0x1d, 0x1e, 0xa4 or 0xa7-0xc6 goes
  * to func_ov003_02221118, other items to func_ov003_02221304; in a room,
  * func_ov004_022335b8. */
 int TileRequests_Carry(int index)
@@ -523,8 +523,8 @@ int TileRequests_Carry(int index)
                                                request->layer) != 0;
             }
             u32 item = request->item;
-            if (TileRequests_IsFamilyA(item) || TileRequests_IsFamilyC(item) || item == 0x1a || item == 0xa4 || item == 0x1d ||
-                TileRequests_InRange(item, 0xa7, 0xc6) || item == 0x1e) {
+            if (TileRequests_IsFlower(item) || TileRequests_IsWateredFlower(item) || item == 0x1a || item == 0xa4 ||
+                item == 0x1d || TileRequests_InRange(item, 0xa7, 0xc6) || item == 0x1e) {
                 return TileEvent_StartKind4(request->player, request->item, (const TileChangesTile *) &tile) != 0;
             }
             position = self->position;
@@ -742,7 +742,7 @@ int TileRequests_Answer(u32 index)
                     }
                     return 1;
                 case TILE_REQUEST_TAKE:
-                case TILE_REQUEST_KIND_15:
+                case TILE_REQUEST_TAKE_CLOVER:
                     if (*code == ITEM_CODE_NONE) {
                         TileRequestTile tile = request->tile;
                         TileChanges_FinishAtTile((const TileChangesTile *) &tile, request->layer);
@@ -878,10 +878,10 @@ int TileRequests_AskPile(int slot, const TileRequestTile *tile)
 CLEAN_AS(func_02043a70, TileRequests_AskPile)
 
 /* func_02043b40: in the town, what the tile holds decides the request: kind 5 for 0x1f,
- * 0x21-0x24, the codes of families B and C, 0x88 and 0xa4; kind 3 (take it) for a pile or an
- * item of kinds 3 and 4 not on a marked tile (AcreTile_IsMarked), a code of family A, 0x1a,
- * 0x1d, 0x1e and 0xa7-0xc6; kind 0x15 for 0x20. The tile's code goes with it; -1 when none is
- * made (an empty tile, a marked pile). */
+ * 0x21-0x24, the wilted and watered flowers, 0x88 and 0xa4; kind 3 (take it) for a pile or an
+ * item of kinds 3 and 4 not on a marked tile (AcreTile_IsMarked), a flower, 0x1a, 0x1d, 0x1e
+ * and 0xa7-0xc6; kind 0x15 for the four-leaf clover 0x20. The tile's code goes with it; -1 when
+ * none is made (an empty tile, a marked pile). */
 int TileRequests_AskInTown(int slot, const TileRequestTile *tile)
 {
     AcreMap *map = data_021c80bc;
@@ -903,16 +903,16 @@ int TileRequests_AskInTown(int slot, const TileRequestTile *tile)
         if (AcreTile_IsMarked(map, tile->x, tile->z) == 0) {
             kind = TILE_REQUEST_TAKE;
         }
-    } else if (TileRequests_IsFamilyA(code) || code == 0x1a || code == 0x1d || code == 0x1e) {
+    } else if (TileRequests_IsFlower(code) || code == 0x1a || code == 0x1d || code == 0x1e) {
         kind = TILE_REQUEST_TAKE;
     } else if ((high == 3 || high == 4) && AcreTile_IsMarked(map, tile->x, tile->z) == 0) {
         kind = TILE_REQUEST_TAKE;
     } else if (TileRequests_InRange(code, 0xa7, 0xc6)) {
         kind = TILE_REQUEST_TAKE;
-    } else if (TileRequests_IsFamilyB(code) || TileRequests_IsFamilyC(code) || code == 0x88 || code == 0xa4) {
+    } else if (TileRequests_IsWiltedFlower(code) || TileRequests_IsWateredFlower(code) || code == 0x88 || code == 0xa4) {
         kind = TILE_REQUEST_KIND_5;
     } else if (code == 0x20) {
-        kind = TILE_REQUEST_KIND_15;
+        kind = TILE_REQUEST_TAKE_CLOVER;
     }
     if (kind == 0) {
         return TILE_REQUESTS_NONE;
@@ -1072,7 +1072,7 @@ CLEAN_AS(func_02043e88, TileRequests_AskAround)
  *     unless it is 0xfff1);
  *   - a short line code, 0x25, 0x5c, 0xc7 or a growth line code at stage 0: kind 0xb;
  *   - what func_0204a034 accepts, 0x1b and 0x89: kind 0xc with the code as the item;
- *   - a code of the families (MapItem_InFamilies), 0x1f-0x24 and 0xe2: kind 8;
+ *   - a flower code (MapItem_IsAnyFlower), 0x1f-0x24 and 0xe2: kind 8;
  *   - on a marked tile (AcreTile_IsMarked) or for 0xd4-0xe1: kind 9, the second code the
  *     code + 0x1467 for 0xd4-0xda, else + 0x1460;
  *   - an item of kinds 1, 3 and 4: kind 0xc with the code as the item; else kind 0x17. */
@@ -1124,7 +1124,7 @@ int TileRequests_AskHole(int slot, AcreMap *town, const u16 *code, const TileReq
         ask_item = (u16) now;
     } else if (now == 0x25 || now == 0x5c || now == 0xc7 || (TileRequests_IsGrowthCode(now) && MapItem_IsStage0(code))) {
         kind = 0xb;
-    } else if (MapItem_InFamilies(code) || TileRequests_InRange(now, 0x21, 0x24) || TileRequests_InRange(now, 0x1f, 0x20) ||
+    } else if (MapItem_IsAnyFlower(code) || TileRequests_InRange(now, 0x21, 0x24) || TileRequests_InRange(now, 0x1f, 0x20) ||
                now == 0xe2) {
         kind = 8;
     } else if (AcreTile_IsMarked(town, tile->x, tile->z) != 0 || TileRequests_InRange(now, 0xd4, 0xe1)) {

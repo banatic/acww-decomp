@@ -12,7 +12,7 @@
  * 0x6a + n. The day makes n = 1 in a random acre of each column without one, n = 0 in random
  * acres while fewer than two acres hold 0x66 or 0x6a, and n = 2 in each acre without one.
  *
- * Over up to 60 days, each inner acre has one chance in five a day of a family A code (0x00-
+ * Over up to 60 days, each inner acre has one chance in five a day of a flower code (0x00-
  * 0x19) drawn at random being handed to func_02049944 with func_02049bc4 (its neighbours). */
 #ifndef CLEAN_MAIN_TOWN_GROWTH_H
 #define CLEAN_MAIN_TOWN_GROWTH_H
@@ -39,7 +39,7 @@ typedef struct TownGrowthQuarter {
     u16 codes[TOWN_GROWTH_QUARTER_TILES];             /* 0x208 */
 } TownGrowthQuarter;
 
-void TownGrowth_SpreadFamilyA(TownDay *town, AcreMap *map, int wide, int high);
+void TownGrowth_BreedFlowers(TownDay *town, AcreMap *map, int wide, int high);
 void TownGrowth_ChangeLastStages(TownDay *town, AcreMap *map, int wide, int high);
 void TownGrowth_ChangeLastStagesTo68(TownDay *town, AcreMap *map, int wide, int high);
 void TownGrowth_ChangeLastStagesTo66(TownDay *town, AcreMap *map, int wide, int high);

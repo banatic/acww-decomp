@@ -23,7 +23,7 @@ typedef struct TownAcreCount {
     u16 codes_21;      /* 0x08: codes 0x21-0x24 */
     u16 others;        /* 0x0a: other items */
     u16 trash;         /* 0x0c: items 0x1320-0x1322 */
-    u16 family_codes;  /* 0x0e: codes 0x00-0x1d and the families' codes */
+    u16 flower_codes;  /* 0x0e: codes 0x00-0x1d and the flower codes */
     int spot_x;        /* 0x10: the tile of code 0x1b in the acre, -1 for none */
     int spot_z;        /* 0x14 */
     u16 rocks;         /* 0x18: codes 0xe3-0xe7 */
@@ -38,7 +38,7 @@ static_assert(sizeof(TownAcreCount) == sizeof(TownDayAcre), "TownAcreCount");
 
 /* TownAcreCount.flags */
 #define TOWN_ACRE_HAS_SPOT 0x0001    /* code 0x1b */
-#define TOWN_ACRE_HAS_1A 0x0002      /* code 0x1a */
+#define TOWN_ACRE_HAS_LILY 0x0002    /* code 0x1a */
 #define TOWN_ACRE_HAS_67 0x0008      /* code 0x67 or 0x6b */
 #define TOWN_ACRE_HAS_66 0x0010      /* code 0x66 or 0x6a */
 #define TOWN_ACRE_HAS_68 0x0020      /* code 0x68 or 0x6c */
@@ -46,7 +46,7 @@ static_assert(sizeof(TownAcreCount) == sizeof(TownDayAcre), "TownAcreCount");
 
 /* The totals of the summary from byte 0x24 on (inside TownDayAcres.unk_18). */
 typedef struct TownAcreTotals {
-    u8 acres_1a;       /* 0x24: acres with code 0x1a */
+    u8 acres_lily;     /* 0x24: acres with code 0x1a */
     u8 unk_25;         /* 0x25 */
     u16 unk_26;        /* 0x26 */
     u16 unk_28;        /* 0x28 */
@@ -84,7 +84,7 @@ static inline u16 *TownAcreCount_CodeAt(AcreMap *map, int x, int z)
 }
 
 /* More of TownAcreCount.flags */
-#define TOWN_ACRE_HAS_FAMILY 0x0004         /* a code of the families' lines (map_item.h) */
+#define TOWN_ACRE_HAS_FLOWER 0x0004         /* a code of the flower lines (map_item.h) */
 #define TOWN_ACRE_MONEY_ROCKS_SHIFT 6       /* 4 bits: bit n for a money rock of kind n (the day's count) */
 #define TOWN_ACRE_HAS_COCONUT 0x0400        /* a coconut, item 0x1548 (the day's count) */
 #define TOWN_ACRE_LINE_5D_GROWN 0x1000      /* a code of line 0x5d at its last stage */
@@ -126,14 +126,14 @@ static inline int TownAcreCount_IsLineCode(u16 code)
            (code >= 0x66 && code <= 0x6d) || (code >= 0xc8 && code <= 0xcf);
 }
 
-/* Family B's codes (map_item.h). */
-static inline int TownAcreCount_IsFamilyBCode(u16 code)
+/* The wilted flowers' codes (map_item.h). */
+static inline int TownAcreCount_IsWiltedFlower(u16 code)
 {
     return code >= 0x6e && code <= 0x87;
 }
 
-/* Family C's codes and 0xa5. */
-static inline int TownAcreCount_IsFamilyCCode(u16 code)
+/* The watered flowers' codes and 0xa5. */
+static inline int TownAcreCount_IsWateredFlower(u16 code)
 {
     return (code >= 0x8a && code <= 0xa3) || code == 0xa5;
 }

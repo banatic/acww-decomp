@@ -234,9 +234,9 @@ static void town_item_draw_map_code(TileEventProcess *process, AcreMap *map, con
     } else if (code >= 0x1f && code <= 0x24) {
         TownItemModels_DrawCode1f(process, tile, matrix);
     } else if (code <= 0x19 || code == 0x1c) {
-        TownItemModels_DrawFamily(process, tile, matrix);
+        TownItemModels_DrawFlower(process, tile, matrix);
     } else if ((code >= 0x6e && code <= 0x87) || (code >= 0x8a && code <= 0xa3) || code == 0xa5) {
-        TownItemModels_DrawFamilyB(process, tile, matrix);
+        TownItemModels_DrawWiltedFlower(process, tile, matrix);
     } else if (town_item_code_e3(code)) {
         Vec3 at = *point;
         TownItemModels_DrawCodeE3WithShadow(process, tile, &at, matrix);
@@ -441,28 +441,28 @@ ModelObject *TownItemModels_DrawCode1a(TileEventProcess *process, const u16 *cod
 }
 CLEAN_AS(func_ov003_02225474, TownItemModels_DrawCode1a)
 
-/* func_ov003_02225538: family B: the first holder of the code's line (TownFamily_Line) at
- * 0x1590. */
-ModelObject *TownItemModels_DrawFamilyB(TileEventProcess *process, const u16 *code, Mtx43 matrix)
+/* func_ov003_02225538: the wilted flowers: the first holder of the code's kind
+ * (TownFamily_Kind) at 0x1590. */
+ModelObject *TownItemModels_DrawWiltedFlower(TileEventProcess *process, const u16 *code, Mtx43 matrix)
 {
-    ModelObject *model = town_item_model(process->models_1590, TOWN_ITEM_MODELS_PER_LINE * TownFamily_Line(code));
+    ModelObject *model = town_item_model(process->models_1590, TOWN_ITEM_MODELS_PER_LINE * TownFamily_Kind(code));
     TownItemModels_Draw(process, model, matrix);
     return model;
 }
-CLEAN_AS(func_ov003_02225538, TownItemModels_DrawFamilyB)
+CLEAN_AS(func_ov003_02225538, TownItemModels_DrawWiltedFlower)
 
-/* func_ov003_02225598: families A and C: the holder of the code's line and stage
- * (TownFamily_Line, TownFamily_Stage) at 0x1590 (lines 4 and 5 run on into the holders at
+/* func_ov003_02225598: the flowers and watered flowers: the holder of the code's kind and colour
+ * (TownFamily_Kind, TownFamily_Colour) at 0x1590 (lines 4 and 5 run on into the holders at
  * 0x2df0). */
-ModelObject *TownItemModels_DrawFamily(TileEventProcess *process, const u16 *code, Mtx43 matrix)
+ModelObject *TownItemModels_DrawFlower(TileEventProcess *process, const u16 *code, Mtx43 matrix)
 {
-    int line = TownFamily_Line(code);
-    int stage = TownFamily_Stage(code);
+    int line = TownFamily_Kind(code);
+    int stage = TownFamily_Colour(code);
     ModelObject *model = town_item_model(process->models_1590, line * TOWN_ITEM_MODELS_PER_LINE + stage);
     TownItemModels_Draw(process, model, matrix);
     return model;
 }
-CLEAN_AS(func_ov003_02225598, TownItemModels_DrawFamily)
+CLEAN_AS(func_ov003_02225598, TownItemModels_DrawFlower)
 
 /* func_ov003_02225608: the stumps (the models of '/fg/tree/stamp/'): of the twelve pointers at
  * 0x4978, 0-3 for 0x2b-0x2e and for 0xff-0x102, 4-7 for 0x62-0x65, 8-11 for 0xd0-0xd3 (any
@@ -601,9 +601,9 @@ void TownItemModels_DrawFruit(TileEventProcess *process, const u16 *code, const 
 }
 CLEAN_AS(func_ov003_02225a90, TownItemModels_DrawFruit)
 
-/* Codes TownItemModels_DrawCode hands TownItemModels_DrawFamily (the families A and C with the
- * codes after them). */
-static int town_item_family_code(u16 code)
+/* Codes TownItemModels_DrawCode hands TownItemModels_DrawFlower (the flowers and watered
+ * flowers with the codes after them). */
+static int town_item_flower_code(u16 code)
 {
     return code <= 0x1a || code == 0x1c || code == 0x1d || (code >= 0x8a && code <= 0xa5);
 }
@@ -611,9 +611,9 @@ static int town_item_family_code(u16 code)
 /* func_ov003_02225b24: `code` drawn at `point` bent over the globe, turned by the bend about X
  * and by the three angles, scaled by `scale`: codes 0xd4-0xda as items 0x153b-0x1541, 0xdb-0xe1
  * as item 0x153b, 0x20 as item 0x156a; items (kinds 1, 3 and 4) by their holder; codes of kind
- * 0 by TownItemModels_DrawCode1a (0x1a, 0x1b, 0x1d, 0x1e, 0x88, 0x89), TownItemModels_DrawFamily
- * (families A and C, 0x1a, 0x1c, 0x1d and 0xa4) or TownItemModels_DrawCodeA7 (0xa7-0xc6);
- * others are not drawn. */
+ * 0 by TownItemModels_DrawCode1a (0x1a, 0x1b, 0x1d, 0x1e, 0x88, 0x89),
+ * TownItemModels_DrawFlower (the flowers and watered flowers, 0x1a, 0x1c, 0x1d and 0xa4) or
+ * TownItemModels_DrawCodeA7 (0xa7-0xc6); others are not drawn. */
 void TownItemModels_DrawCode(TileEventProcess *process, u16 code, const Vec3 *point, const Vec3 *scale, short angle_x,
                              short angle_y, short angle_z)
 {
@@ -633,8 +633,8 @@ void TownItemModels_DrawCode(TileEventProcess *process, u16 code, const Vec3 *po
         case 0:
             if (town_item_code_1a(drawn)) {
                 TownItemModels_DrawCode1a(process, &drawn, data_021fbe48);
-            } else if (town_item_family_code(drawn)) {
-                TownItemModels_DrawFamily(process, &drawn, data_021fbe48);
+            } else if (town_item_flower_code(drawn)) {
+                TownItemModels_DrawFlower(process, &drawn, data_021fbe48);
             } else if (drawn >= 0xa7 && drawn <= 0xc6) {
                 TownItemModels_DrawCodeA7(process, &drawn, data_021fbe48);
             }

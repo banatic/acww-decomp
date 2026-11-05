@@ -1,6 +1,6 @@
 /* Overlay 3's search for where a villager walks to in town (called by overlay 68's walks): the
- * day's spot (WalkTarget_DaySpot), or the nearest code of the families' lines a mask names
- * (WalkTarget_NearFamily). */
+ * day's spot (WalkTarget_DaySpot), or the nearest code of the flower lines a mask names
+ * (WalkTarget_NearFlower). */
 #ifndef CLEAN_OV003_WALK_TARGET_H
 #define CLEAN_OV003_WALK_TARGET_H
 
@@ -8,6 +8,6 @@
 #include "types.h"
 
 int WalkTarget_DaySpot(Vec3 *target, const Vec3 *from);
-int WalkTarget_NearFamily(Vec3 *target, const Vec3 *from, int lines);
+int WalkTarget_NearFlower(Vec3 *target, const Vec3 *from, int lines);
 
 #endif

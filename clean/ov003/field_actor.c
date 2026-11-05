@@ -231,9 +231,9 @@ static BOOL in_range(u16 code, u16 first, u16 last)
     return code >= first && code <= last;
 }
 
-/* The map objects of families A, B and C and the codes after them (main/map_item.h), except
+/* The flowers, wilted or watered, and the codes after them (main/map_item.h), except
  * 0x1b: 0x00-0x1a, 0x1c-0x1d and 0x6e-0xa5. */
-static BOOL is_family_object(u16 code)
+static BOOL is_flower_object(u16 code)
 {
     return in_range(code, 0x00, 0x1a) || in_range(code, 0x1c, 0x1d) || in_range(code, 0x6e, 0xa5);
 }
@@ -435,7 +435,7 @@ int FieldActor_TryTool(FieldActor *actor)
         int z;
         Position_Tile(&x, &z, (const Position *) &actor->aim_point);
         u16 *object = map_object_at(x, z);
-        if (object != NULL && is_family_object(*object)) {
+        if (object != NULL && is_flower_object(*object)) {
             point = ORIGIN;
             if (FieldActor_UseTool(actor, tool, &point)) {
                 return 1;
@@ -10147,10 +10147,10 @@ CLEAN_AS(func_ov003_02218960, FieldActor_EndState17)
 /* func_ov003_022189d8: acts on the map object at the work's point, whose code was noted on
  * entering (FieldActor.item): 0x1f and 0x20 start effects 0x2e and 0x2f there, 0x21 to 0x24
  * effect 0x2d a little off it (STATE17_OFFSETS), all turned by the actor's yaw; the codes of
- * families B and C and those after them (0x6e-0xa5) start effect 0x54 (func_02091230) and go to
- * func_02044a14 with the tile, the yaw and 2, with sound 0x7d8. Sound 0x7d8 also follows 0x1f
- * and 0x20, 0x7ec the codes 0x21 to 0x24; then func_02045f08 runs on the tile and flag 0x1c is
- * cleared. */
+ * the wilted and watered flowers and those after them (0x6e-0xa5) start effect 0x54
+ * (func_02091230) and go to func_02044a14 with the tile, the yaw and 2, with sound 0x7d8. Sound
+ * 0x7d8 also follows 0x1f and 0x20, 0x7ec the codes 0x21 to 0x24; then func_02045f08 runs on
+ * the tile and flag 0x1c is cleared. */
 void FieldActor_ActState17(FieldActor *actor)
 {
     Vec3 at;

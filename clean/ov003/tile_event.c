@@ -212,9 +212,9 @@ int TileEvent_StartKindA(int player, const Vec3 *position)
 }
 CLEAN_AS(func_ov003_02220db4, TileEvent_StartKindA)
 
-/* Whether kind 9 shows item `code` (its low 16 bits) as item 0x1408: the map item families A
- * and C (main/map_item.h, with 0x1a, 0x1c and 0x1d after family A and 0xa4 and 0xa5 after C)
- * and items 0x14fe-0x1517. */
+/* Whether kind 9 shows item `code` (its low 16 bits) as item 0x1408: the flowers and watered
+ * flowers (main/map_item.h, with 0x1a, 0x1c and 0x1d after the flowers and 0xa4 and 0xa5 after
+ * the watered ones) and items 0x14fe-0x1517. */
 static int tile_event_shown_as_1408(u16 code)
 {
     return code <= 0x1a || code == 0x1c || code == 0x1d || (code >= 0x8a && code <= 0xa5) ||
@@ -583,9 +583,9 @@ void TileEvent_ReleaseAll(TileEventEntry *entries)
 }
 CLEAN_AS(func_ov003_02221488, TileEvent_ReleaseAll)
 
-/* Codes drawn by func_ov003_02225598: the map item families A and C (main/map_item.h), with
+/* Codes drawn by func_ov003_02225598: the flowers and watered flowers (main/map_item.h), with
  * 0x1c and 0xa5. */
-static int tile_event_drawn_as_family(u16 code)
+static int tile_event_drawn_as_flower(u16 code)
 {
     return code <= 0x19 || code == 0x1c || (code >= 0x8a && code <= 0xa3) || code == 0xa5;
 }
@@ -634,11 +634,11 @@ static void tile_event_draw(TileEventEntry *entry, TileEventDraw *draw)
     u16 code = draw->id;
     if (code >= 0x1f && code <= 0x24) {
         TownItemModels_DrawCode1f(data_ov003_0223cf70, (const u16 *) draw, data_021fbe48);
-    } else if (tile_event_drawn_as_family(code)) {
-        TownItemModels_DrawFamily(data_ov003_0223cf70, (const u16 *) draw, data_021fbe48);
+    } else if (tile_event_drawn_as_flower(code)) {
+        TownItemModels_DrawFlower(data_ov003_0223cf70, (const u16 *) draw, data_021fbe48);
     } else if (code >= 0x6e && code <= 0x87) {
-        /* Family B. */
-        TownItemModels_DrawFamilyB(data_ov003_0223cf70, (const u16 *) draw, data_021fbe48);
+        /* The wilted flowers. */
+        TownItemModels_DrawWiltedFlower(data_ov003_0223cf70, (const u16 *) draw, data_021fbe48);
     } else if (code == 0x1a || code == 0x1b || code == 0x1d || code == 0x1e || code == 0x88 || code == 0x89) {
         TownItemModels_DrawCode1a(data_ov003_0223cf70, (const u16 *) draw, data_021fbe48);
     } else if (code == TILE_EVENT_ID_UNIT_0 || code == TILE_EVENT_ID_UNIT_SET) {
@@ -1160,8 +1160,8 @@ void TileEvent_InitKind4(TileEventEntry *entry, const TileChangesTile *tile)
 }
 CLEAN_AS(func_ov003_02222360, TileEvent_InitKind4)
 
-/* Codes that kinds 3 and 0xe hand on to kind 4 when they end: families A and C (with 0x1a,
- * 0x1c, 0x1d, 0xa4 and 0xa5), the growth lines with 0x66-0x6d, and 0xd4-0xda. */
+/* Codes that kinds 3 and 0xe hand on to kind 4 when they end: the flowers and watered flowers
+ * (with 0x1a, 0x1c, 0x1d, 0xa4 and 0xa5), the growth lines with 0x66-0x6d, and 0xd4-0xda. */
 static int tile_event_regrows(u16 code)
 {
     return code <= 0x1a || code == 0x1c || code == 0x1d || (code >= 0x8a && code <= 0xa5) || (code >= 0x26 && code <= 0x2a) ||
@@ -1230,7 +1230,7 @@ void TileEvent_StepKind1(TileEventEntry *entry)
 CLEAN_AS(func_ov003_02222598, TileEvent_StepKind1)
 
 /* func_ov003_022225c4: kind 1's start: as kind 2's for position and scale; then, with an item
- * at the tile on `map`: map item families (MapItem_InFamilies) start tile effects
+ * at the tile on `map`: flowers (MapItem_IsAnyFlower) start tile effects
  * (TileEffects_Start), codes 0x1f-0x24 TileEffects_Start1f, 0xe2 TileEffects_StartE2; for
  * other codes on a marked tile (AcreTile_IsMarked) or of 0xd4-0xe1, with `extra` set the tile
  * change will be released rather than finished. A marked tile is then emptied on the map. */
@@ -1246,7 +1246,7 @@ void TileEvent_InitKind1(TileEventEntry *entry, const TileChangesTile *tile, str
     }
     int marked = AcreTile_IsMarked(map, tile->x, tile->z);
     TileEffectsTile at = {tile->x, tile->z};
-    if (MapItem_InFamilies(item)) {
+    if (MapItem_IsAnyFlower(item)) {
         TileEffects_Start(item, &at, 0, 0);
     } else {
         u16 code = *item;

@@ -23,10 +23,10 @@ extern TownDay data_021c779c;
 extern VillagerTown data_021e5a2c;
 /* The first code of each money rock kind: 0xe8, 0xed, 0xf2, 0xf7 (five codes each). */
 extern const u16 data_020ca59c[4];
-/* The 17 tiles around a villager's house a family A code may go on: x + 8 in the high nibble,
+/* The 17 tiles around a villager's house a flower code may go on: x + 8 in the high nibble,
  * z + 8 in the low one. */
 extern const u8 data_020cab28[17];
-/* The family A codes put around the houses and by TownSpawn_PutFamilyA: the first three of
+/* The flower codes put around the houses and by TownSpawn_PutFlower: the first three of
  * each line (0x00-0x02, 0x06-0x08, 0x0c-0x0e, 0x12-0x14). */
 extern const u16 data_020cabc4[12];
 
@@ -49,12 +49,12 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 #define TOWN_SPAWN_CODE_SPOT 0x1b
 #define TOWN_SPAWN_CODE_89 0x89
 #define TOWN_SPAWN_GRADE_PERFECT 4 /* the perfect town's grade, which may bring code 0x1a */
-#define TOWN_SPAWN_CODE_1A 0x1a
-#define TOWN_SPAWN_CODE_1D 0x1d
+#define TOWN_SPAWN_LILY_OF_THE_VALLEY 0x1a
+#define TOWN_SPAWN_DANDELION 0x1d
 #define TOWN_SPAWN_CODE_1F 0x1f
-#define TOWN_SPAWN_CODE_20 0x20
+#define TOWN_SPAWN_FOUR_LEAF_CLOVER 0x20
 #define TOWN_SPAWN_CODE_21 0x21 /* codes 0x21-0x24 */
-#define TOWN_SPAWN_FAMILY_A_CODES 12
+#define TOWN_SPAWN_FLOWER_CODES 12
 #define TOWN_SPAWN_EVENT_0E 14
 #define TOWN_SPAWN_HOUSE_DAYS 7
 #define TOWN_SPAWN_VILLAGERS 8
@@ -357,40 +357,40 @@ int TownSpawn_PutSpot(TownDay *town, AcreMap *map, int wide, int high)
 CLEAN_AS(func_0204851c, TownSpawn_PutSpot)
 
 /* func_0204855c: in a perfect town (grade 4), one chance in two of code 0x1a. */
-void TownSpawn_Maybe1a(TownDay *town, AcreMap *map, int wide, int high)
+void TownSpawn_MaybeLilyOfTheValley(TownDay *town, AcreMap *map, int wide, int high)
 {
     if (data_021c779c.acres.grade != TOWN_SPAWN_GRADE_PERFECT) {
         return;
     }
     if (MainRandom_Below(TOWN_SPAWN_RANGE_PERCENT) < 50) {
-        TownSpawn_Put1a(town, map, wide, high);
+        TownSpawn_PutLilyOfTheValley(town, map, wide, high);
     }
 }
-CLEAN_AS(func_0204855c, TownSpawn_Maybe1a)
+CLEAN_AS(func_0204855c, TownSpawn_MaybeLilyOfTheValley)
 
 /* func_02048594: code 0x1a put on an acre drawn among those without one. */
-void TownSpawn_Put1a(TownDay *town, AcreMap *map, int wide, int high)
+void TownSpawn_PutLilyOfTheValley(TownDay *town, AcreMap *map, int wide, int high)
 {
     TownSpawnAcre acre;
-    TownSpawn_PickAcreWithout1a(&acre, town, wide, high);
+    TownSpawn_PickAcreWithoutLily(&acre, town, wide, high);
     if (acre.x == -1) {
         return;
     }
-    TownPlace_PutInAcre(town, map, acre.x + 1, acre.z + 1, TOWN_SPAWN_CODE_1A, func_02048ee4, 0);
+    TownPlace_PutInAcre(town, map, acre.x + 1, acre.z + 1, TOWN_SPAWN_LILY_OF_THE_VALLEY, func_02048ee4, 0);
 }
-CLEAN_AS(func_02048594, TownSpawn_Put1a)
+CLEAN_AS(func_02048594, TownSpawn_PutLilyOfTheValley)
 
 /* func_020485d4: an inner acre without code 0x1a drawn at random, row by row, or -1, -1 when
  * the summary counts none. */
-void TownSpawn_PickAcreWithout1a(TownSpawnAcre *out, TownDay *town, int wide, int high)
+void TownSpawn_PickAcreWithoutLily(TownSpawnAcre *out, TownDay *town, int wide, int high)
 {
     (void) town;
-    int count = wide * high - TownAcreCount_Totals(&data_021c779c)->acres_1a;
+    int count = wide * high - TownAcreCount_Totals(&data_021c779c)->acres_lily;
     if (count > 0) {
         int left = (int) MainRandom_Below(count);
         for (int acre_z = 0; acre_z < high; acre_z++) {
             for (int acre_x = 0; acre_x < wide; acre_x++) {
-                if (TownAcreCount_Of(&data_021c779c, acre_x, acre_z)->flags & TOWN_ACRE_HAS_1A) {
+                if (TownAcreCount_Of(&data_021c779c, acre_x, acre_z)->flags & TOWN_ACRE_HAS_LILY) {
                     continue;
                 }
                 if (left == 0) {
@@ -405,38 +405,38 @@ void TownSpawn_PickAcreWithout1a(TownSpawnAcre *out, TownDay *town, int wide, in
     out->x = -1;
     out->z = -1;
 }
-CLEAN_AS(func_020485d4, TownSpawn_PickAcreWithout1a)
+CLEAN_AS(func_020485d4, TownSpawn_PickAcreWithoutLily)
 
 /* func_0204864c: code 0x1f (0x20 two times in a hundred) put on an acre drawn at random. */
 void TownSpawn_Put1f(TownDay *town, AcreMap *map, int wide, int high)
 {
     int acre_x = (int) MainRandom_Below(wide);
     int acre_z = (int) MainRandom_Below(high);
-    u16 code = MainRandom_Below(TOWN_SPAWN_RANGE_PERCENT) < 2 ? TOWN_SPAWN_CODE_20 : TOWN_SPAWN_CODE_1F;
+    u16 code = MainRandom_Below(TOWN_SPAWN_RANGE_PERCENT) < 2 ? TOWN_SPAWN_FOUR_LEAF_CLOVER : TOWN_SPAWN_CODE_1F;
     TownPlace_PutInAcre(town, map, acre_x + 1, acre_z + 1, code, func_02048f6c, 0);
 }
 CLEAN_AS(func_0204864c, TownSpawn_Put1f)
 
 /* func_02048698: code 0x1d put on an acre drawn at random. */
-void TownSpawn_Put1d(TownDay *town, AcreMap *map, int wide, int high)
+void TownSpawn_PutDandelion(TownDay *town, AcreMap *map, int wide, int high)
 {
     int acre_x = (int) MainRandom_Below(wide);
     int acre_z = (int) MainRandom_Below(high);
-    TownPlace_PutInAcre(town, map, acre_x + 1, acre_z + 1, TOWN_SPAWN_CODE_1D, func_02048f54, 0);
+    TownPlace_PutInAcre(town, map, acre_x + 1, acre_z + 1, TOWN_SPAWN_DANDELION, func_02048f54, 0);
 }
-CLEAN_AS(func_02048698, TownSpawn_Put1d)
+CLEAN_AS(func_02048698, TownSpawn_PutDandelion)
 
-/* func_020487d8: one of data_020cabc4's family A codes put on an acre drawn at random. */
-void TownSpawn_PutFamilyA(TownDay *town, AcreMap *map, int wide, int high)
+/* func_020487d8: one of data_020cabc4's flower codes put on an acre drawn at random. */
+void TownSpawn_PutFlower(TownDay *town, AcreMap *map, int wide, int high)
 {
     int acre_x = (int) MainRandom_Below(wide);
     int acre_z = (int) MainRandom_Below(high);
-    int index = (int) MainRandom_Below(TOWN_SPAWN_FAMILY_A_CODES);
+    int index = (int) MainRandom_Below(TOWN_SPAWN_FLOWER_CODES);
     TownPlace_PutInAcre(town, map, acre_x + 1, acre_z + 1, data_020cabc4[index], func_02048ec8, 0);
 }
-CLEAN_AS(func_020487d8, TownSpawn_PutFamilyA)
+CLEAN_AS(func_020487d8, TownSpawn_PutFlower)
 
-/* func_02048824: unless event 0xe is on at `today` (by the calendar's rules), family A codes
+/* func_02048824: unless event 0xe is on at `today` (by the calendar's rules), flower codes
  * around the houses of the villagers in mode 5, for the days that passed (at most 7). */
 void TownSpawn_HousesForDays(TownDay *town, AcreMap *map, const DateTime *today, int days)
 {
@@ -452,7 +452,7 @@ void TownSpawn_HousesForDays(TownDay *town, AcreMap *map, const DateTime *today,
 }
 CLEAN_AS(func_02048824, TownSpawn_HousesForDays)
 
-/* func_0204886c: family A codes around the house of each villager that counts for the calendar
+/* func_0204886c: flower codes around the house of each villager that counts for the calendar
  * (EventCalendar_VillagerCounts, the sick one left out) and has a house; unless `all`,
  * only the villagers whose record is in mode 5. */
 void TownSpawn_AroundHouses(TownDay *town, AcreMap *map, int all, int days)
@@ -479,7 +479,7 @@ void TownSpawn_AroundHouses(TownDay *town, AcreMap *map, int all, int days)
 }
 CLEAN_AS(func_0204886c, TownSpawn_AroundHouses)
 
-/* func_020488e4: up to two family A codes for each day (data_020cabc4, drawn) put on the free
+/* func_020488e4: up to two flower codes for each day (data_020cabc4, drawn) put on the free
  * tiles of the ring around the house (data_020cab28) that TownPlace_TestWord06NotNegative accepts, each
  * tile drawn among those left.
  *
@@ -501,7 +501,7 @@ void TownSpawn_AroundHouse(TownDay *town, AcreMap *map, const TownPlaceTile *hou
     }
     int left = days * 2;
     while (count > 0) {
-        u16 code = data_020cabc4[MainRandom_Below(TOWN_SPAWN_FAMILY_A_CODES)];
+        u16 code = data_020cabc4[MainRandom_Below(TOWN_SPAWN_FLOWER_CODES)];
         int used = TownPlace_PutOneOf(town, map, count, free_tiles, code, 0);
         left--;
         if (left <= 0) {

@@ -260,9 +260,9 @@ static int VillagerImpression_AcreOf(int tile)
     return tile >= 0 ? tile / VILLAGER_IMPRESSION_ACRE_TILES : -1 - (-1 - tile) / VILLAGER_IMPRESSION_ACRE_TILES;
 }
 
-/* Family A and the codes after it (0x00-0x1a, 0x1c, 0x1d), family C and the codes after it
- * (0x8a-0xa5) (map_item.h). */
-static int VillagerImpression_IsFamilyAC(u16 code)
+/* The flowers and the codes after them (0x00-0x1a, 0x1c, 0x1d), the watered flowers and the
+ * codes after them (0x8a-0xa5) (map_item.h). */
+static int VillagerImpression_IsBloomingFlower(u16 code)
 {
     return code <= 0x1a || code == 0x1c || code == 0x1d || (code >= 0x8a && code <= 0xa5);
 }
@@ -306,13 +306,13 @@ static int VillagerImpression_CountNear(int (*wanted)(u16 code), int needed)
     return 0;
 }
 
-/* func_0207ec84: at least two of the nine tiles around the player hold a code of family A or
- * C or one after them. */
-int VillagerImpression_NearFamilyAC(void)
+/* func_0207ec84: at least two of the nine tiles around the player hold a code of the flowers or
+ * watered flowers or one after them. */
+int VillagerImpression_NearFlowers(void)
 {
-    return VillagerImpression_CountNear(VillagerImpression_IsFamilyAC, VILLAGER_IMPRESSION_NEAR_FAMILY_AC);
+    return VillagerImpression_CountNear(VillagerImpression_IsBloomingFlower, VILLAGER_IMPRESSION_NEAR_FLOWERS);
 }
-CLEAN_AS(func_0207ec84, VillagerImpression_NearFamilyAC)
+CLEAN_AS(func_0207ec84, VillagerImpression_NearFlowers)
 
 /* func_0207edcc: at least three of the nine tiles around the player hold one of codes
  * 0x21-0x24. */

@@ -14,7 +14,7 @@ extern TownDay data_021c779c;
 #define TOWN_ACRE_START_SCORE 100
 #define TOWN_ACRE_FEWEST_LINES 12
 #define TOWN_ACRE_MOST_LINES 15
-#define TOWN_ACRE_FREE_COUNT 2 /* codes 0x21-0x24, other items and family codes: two pass free */
+#define TOWN_ACRE_FREE_COUNT 2 /* codes 0x21-0x24, other items and flower codes: two pass free */
 #define TOWN_ACRE_TRASH_COST 10
 #define TOWN_ACRE_SPOT_COST 50
 #define TOWN_ACRE_NO_LOW_SCORE 10000
@@ -57,7 +57,7 @@ static void clear_count(TownAcreCount *acre)
     acre->codes_21 = 0;
     acre->others = 0;
     acre->trash = 0;
-    acre->family_codes = 0;
+    acre->flower_codes = 0;
     acre->flags = 0;
     acre->spot_x = -1;
     acre->spot_z = -1;
@@ -103,7 +103,7 @@ static void count_line_code(TownAcreCount *acre, u16 *code, int index, int day)
     }
 }
 
-/* Codes 0x00-0x1d: the tile of code 0x1b, and the families' codes. */
+/* Codes 0x00-0x1d: the tile of code 0x1b, and the flower codes. */
 static void count_low_code(TownAcreCount *acre, u16 code, int index)
 {
     switch (code) {
@@ -113,16 +113,16 @@ static void count_low_code(TownAcreCount *acre, u16 code, int index)
             acre->flags |= TOWN_ACRE_HAS_SPOT;
             break;
         case 0x1a:
-            acre->flags |= TOWN_ACRE_HAS_1A;
-            acre->family_codes++;
+            acre->flags |= TOWN_ACRE_HAS_LILY;
+            acre->flower_codes++;
             break;
         case 0x1c:
         case 0x1d:
-            acre->family_codes++;
+            acre->flower_codes++;
             break;
         default:
-            acre->flags |= TOWN_ACRE_HAS_FAMILY;
-            acre->family_codes++;
+            acre->flags |= TOWN_ACRE_HAS_FLOWER;
+            acre->flower_codes++;
             break;
     }
 }
@@ -174,9 +174,9 @@ void TownAcreCount_Count(TownAcreCount *acre, AcreMap *map, int acre_x, int acre
                 acre->codes_21++;
             } else if (*code <= 0x1d) {
                 count_low_code(acre, *code, index);
-            } else if (TownAcreCount_IsFamilyCCode(*code) || TownAcreCount_IsFamilyBCode(*code)) {
-                acre->flags |= TOWN_ACRE_HAS_FAMILY;
-                acre->family_codes++;
+            } else if (TownAcreCount_IsWateredFlower(*code) || TownAcreCount_IsWiltedFlower(*code)) {
+                acre->flags |= TOWN_ACRE_HAS_FLOWER;
+                acre->flower_codes++;
             }
         } else if (kind == 1) {
             if (*code >= 0x1320 && *code <= 0x1322) {
@@ -194,7 +194,7 @@ CLEAN_AS(func_0204a848, TownAcreCount_Count)
 
 /* func_0204abc8: acre (acre_x, acre_z) of the map counted into its record by the day's change,
  * then scored. Unlike TownAcreCount_Count it takes off the map codes 0x25, 0x5c, 0xc7 (the
- * lines' codes before their first stage), family B's codes, 0x89 and item 0x1568
+ * lines' codes before their first stage), the wilted flowers' codes, 0x89 and item 0x1568
  * (TownAcreCount_ClearTile), counts the rocks 0xe3-0xe7 and the kinds of money rock
  * (0xe8-0xfb, five codes a kind), notes item 0x1548, and takes stage 3 of line 0x5d as grown. */
 void TownAcreCount_CountDay(TownAcreCount *acre, AcreMap *map, int acre_x, int acre_z)
@@ -207,15 +207,15 @@ void TownAcreCount_CountDay(TownAcreCount *acre, AcreMap *map, int acre_x, int a
             u16 now = *code;
             if (TownAcreCount_IsLineCode(now)) {
                 count_line_code(acre, code, index, 1);
-            } else if (now == 0x25 || now == 0x5c || now == 0xc7 || TownAcreCount_IsFamilyBCode(now) || now == 0x89) {
+            } else if (now == 0x25 || now == 0x5c || now == 0xc7 || TownAcreCount_IsWiltedFlower(now) || now == 0x89) {
                 TownAcreCount_ClearTile(acre, map, acre_x, acre_z, index);
             } else if (now >= 0x21 && now <= 0x24) {
                 acre->codes_21++;
             } else if (now <= 0x1d) {
                 count_low_code(acre, now, index);
-            } else if (TownAcreCount_IsFamilyCCode(now)) {
-                acre->flags |= TOWN_ACRE_HAS_FAMILY;
-                acre->family_codes++;
+            } else if (TownAcreCount_IsWateredFlower(now)) {
+                acre->flags |= TOWN_ACRE_HAS_FLOWER;
+                acre->flower_codes++;
             } else if (now >= 0xe3 && now <= 0xe7) {
                 acre->rocks++;
             } else if (now >= 0xe8 && now <= 0xfb) {
@@ -261,7 +261,7 @@ CLEAN_AS(func_0204aff0, TownAcreCount_ClearTile)
 
 /* func_0204b038: the acre's score: 100, less two for each growth line's code above 15 or below
  * 12, less one for each code 0x21-0x24 and each other item past two, less ten for each item
- * 0x1320-0x1322, and one more for each family code past two.
+ * 0x1320-0x1322, and one more for each flower code past two.
  *
  * QUIRK: the 50 meant to be taken off for a code 0x1b never is: the flag is read as a one-bit
  * signed field (0 or -1) and compared with 1. TownAcreCount_FindWorst does count it. */
@@ -286,8 +286,8 @@ void TownAcreCount_Score(TownAcreCount *acre)
         score -= TOWN_ACRE_SPOT_COST;
     }
 #endif
-    if (acre->family_codes > TOWN_ACRE_FREE_COUNT) {
-        score += acre->family_codes - TOWN_ACRE_FREE_COUNT;
+    if (acre->flower_codes > TOWN_ACRE_FREE_COUNT) {
+        score += acre->flower_codes - TOWN_ACRE_FREE_COUNT;
     }
     acre->score = score;
 }
@@ -378,7 +378,7 @@ CLEAN_AS(func_0204a398, TownAcreCount_Grade)
 static void clear_totals(TownDayAcres *acres)
 {
     TownAcreTotals *totals = totals_of(acres);
-    totals->acres_1a = 0;
+    totals->acres_lily = 0;
     totals->unk_26 = 0;
     totals->unk_25 = 0;
     totals->unk_28 = 0;
@@ -402,10 +402,10 @@ static void clear_totals(TownDayAcres *acres)
 static void add_acre(TownDayAcres *acres, const TownAcreCount *acre, int acre_x, int acre_z, int day)
 {
     TownAcreTotals *totals = totals_of(acres);
-    if (acre->flags & TOWN_ACRE_HAS_1A) {
-        totals->acres_1a++;
+    if (acre->flags & TOWN_ACRE_HAS_LILY) {
+        totals->acres_lily++;
     }
-    if (acre->flags & TOWN_ACRE_HAS_FAMILY) {
+    if (acre->flags & TOWN_ACRE_HAS_FLOWER) {
         totals->unk_25++;
     }
     if (acre->flags & TOWN_ACRE_HAS_66) {
@@ -425,7 +425,7 @@ static void add_acre(TownDayAcres *acres, const TownAcreCount *acre, int acre_x,
         totals->flags |= TOWN_TOTALS_HAS_MARKED_PITFALL;
     }
     totals->unk_2a += acre->lines[1][1] + acre->lines[0][1] + acre->lines[0][0] + acre->lines[1][0];
-    totals->unk_26 += acre->family_codes;
+    totals->unk_26 += acre->flower_codes;
     totals->unk_28 += acre->codes_21;
     if (acre->trash > 0) {
         totals->flags |= TOWN_TOTALS_HAS_TRASH;

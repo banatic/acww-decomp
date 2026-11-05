@@ -23,84 +23,84 @@ static void a_code(DiffRng *rng, uint32_t args[4])
     args[0] = CODE;
 }
 
-static uint32_t in_families(const uint32_t args[4])
+static uint32_t is_any_flower(const uint32_t args[4])
 {
-    return (uint32_t) MapItem_InFamilies((const ItemCode *) (uintptr_t) args[0]);
+    return (uint32_t) MapItem_IsAnyFlower((const ItemCode *) (uintptr_t) args[0]);
 }
 
-static uint32_t in_family_c(const uint32_t args[4])
+static uint32_t is_watered_flower(const uint32_t args[4])
 {
-    return (uint32_t) MapItem_InFamilyC((const ItemCode *) (uintptr_t) args[0]);
+    return (uint32_t) MapItem_IsWateredFlower((const ItemCode *) (uintptr_t) args[0]);
 }
 
-static uint32_t is_family_c3(const uint32_t args[4])
+static uint32_t is_watered_rose(const uint32_t args[4])
 {
-    return (uint32_t) MapItem_IsFamilyC3((const ItemCode *) (uintptr_t) args[0]);
+    return (uint32_t) MapItem_IsWateredRose((const ItemCode *) (uintptr_t) args[0]);
 }
 
-static uint32_t is_family_c2(const uint32_t args[4])
+static uint32_t is_watered_cosmos(const uint32_t args[4])
 {
-    return (uint32_t) MapItem_IsFamilyC2((const ItemCode *) (uintptr_t) args[0]);
+    return (uint32_t) MapItem_IsWateredCosmos((const ItemCode *) (uintptr_t) args[0]);
 }
 
-static uint32_t is_family_c1(const uint32_t args[4])
+static uint32_t is_watered_pansy(const uint32_t args[4])
 {
-    return (uint32_t) MapItem_IsFamilyC1((const ItemCode *) (uintptr_t) args[0]);
+    return (uint32_t) MapItem_IsWateredPansy((const ItemCode *) (uintptr_t) args[0]);
 }
 
-static uint32_t is_family_c0(const uint32_t args[4])
+static uint32_t is_watered_tulip(const uint32_t args[4])
 {
-    return (uint32_t) MapItem_IsFamilyC0((const ItemCode *) (uintptr_t) args[0]);
+    return (uint32_t) MapItem_IsWateredTulip((const ItemCode *) (uintptr_t) args[0]);
 }
 
-static uint32_t in_family_a(const uint32_t args[4])
+static uint32_t is_flower(const uint32_t args[4])
 {
-    return (uint32_t) MapItem_InFamilyA((const ItemCode *) (uintptr_t) args[0]);
+    return (uint32_t) MapItem_IsFlower((const ItemCode *) (uintptr_t) args[0]);
 }
 
-static uint32_t is_family_a3(const uint32_t args[4])
+static uint32_t is_rose(const uint32_t args[4])
 {
-    return (uint32_t) MapItem_IsFamilyA3((const ItemCode *) (uintptr_t) args[0]);
+    return (uint32_t) MapItem_IsRose((const ItemCode *) (uintptr_t) args[0]);
 }
 
-static uint32_t is_family_a2(const uint32_t args[4])
+static uint32_t is_cosmos(const uint32_t args[4])
 {
-    return (uint32_t) MapItem_IsFamilyA2((const ItemCode *) (uintptr_t) args[0]);
+    return (uint32_t) MapItem_IsCosmos((const ItemCode *) (uintptr_t) args[0]);
 }
 
-static uint32_t is_family_a1(const uint32_t args[4])
+static uint32_t is_pansy(const uint32_t args[4])
 {
-    return (uint32_t) MapItem_IsFamilyA1((const ItemCode *) (uintptr_t) args[0]);
+    return (uint32_t) MapItem_IsPansy((const ItemCode *) (uintptr_t) args[0]);
 }
 
-static uint32_t is_family_a0(const uint32_t args[4])
+static uint32_t is_tulip(const uint32_t args[4])
 {
-    return (uint32_t) MapItem_IsFamilyA0((const ItemCode *) (uintptr_t) args[0]);
+    return (uint32_t) MapItem_IsTulip((const ItemCode *) (uintptr_t) args[0]);
 }
 
-static uint32_t in_family_b(const uint32_t args[4])
+static uint32_t is_wilted_flower(const uint32_t args[4])
 {
-    return (uint32_t) MapItem_InFamilyB((const ItemCode *) (uintptr_t) args[0]);
+    return (uint32_t) MapItem_IsWiltedFlower((const ItemCode *) (uintptr_t) args[0]);
 }
 
-static uint32_t is_family_b3(const uint32_t args[4])
+static uint32_t is_wilted_rose(const uint32_t args[4])
 {
-    return (uint32_t) MapItem_IsFamilyB3((const ItemCode *) (uintptr_t) args[0]);
+    return (uint32_t) MapItem_IsWiltedRose((const ItemCode *) (uintptr_t) args[0]);
 }
 
-static uint32_t is_family_b2(const uint32_t args[4])
+static uint32_t is_wilted_cosmos(const uint32_t args[4])
 {
-    return (uint32_t) MapItem_IsFamilyB2((const ItemCode *) (uintptr_t) args[0]);
+    return (uint32_t) MapItem_IsWiltedCosmos((const ItemCode *) (uintptr_t) args[0]);
 }
 
-static uint32_t is_family_b1(const uint32_t args[4])
+static uint32_t is_wilted_pansy(const uint32_t args[4])
 {
-    return (uint32_t) MapItem_IsFamilyB1((const ItemCode *) (uintptr_t) args[0]);
+    return (uint32_t) MapItem_IsWiltedPansy((const ItemCode *) (uintptr_t) args[0]);
 }
 
-static uint32_t is_family_b0(const uint32_t args[4])
+static uint32_t is_wilted_tulip(const uint32_t args[4])
 {
-    return (uint32_t) MapItem_IsFamilyB0((const ItemCode *) (uintptr_t) args[0]);
+    return (uint32_t) MapItem_IsWiltedTulip((const ItemCode *) (uintptr_t) args[0]);
 }
 
 static uint32_t short_stage(const uint32_t args[4])
@@ -268,22 +268,22 @@ static uint32_t is_stage0(const uint32_t args[4])
     return (uint32_t) MapItem_IsStage0((const ItemCode *) (uintptr_t) args[0]);
 }
 
-DIFF_CHECK(func_0204b3d0, "main", 0x0204b3d0 | 1, 32, 1, a_code, in_families)
-DIFF_CHECK(func_0204b430, "main", 0x0204b430 | 1, 32, 1, a_code, in_family_c)
-DIFF_CHECK(func_0204b468, "main", 0x0204b468 | 1, 32, 1, a_code, is_family_c3)
-DIFF_CHECK(func_0204b4a0, "main", 0x0204b4a0 | 1, 32, 1, a_code, is_family_c2)
-DIFF_CHECK(func_0204b4ac, "main", 0x0204b4ac | 1, 32, 1, a_code, is_family_c1)
-DIFF_CHECK(func_0204b4b8, "main", 0x0204b4b8 | 1, 32, 1, a_code, is_family_c0)
-DIFF_CHECK(func_0204b4c4, "main", 0x0204b4c4 | 1, 32, 1, a_code, in_family_a)
-DIFF_CHECK(func_0204b4fc, "main", 0x0204b4fc | 1, 32, 1, a_code, is_family_a3)
-DIFF_CHECK(func_0204b520, "main", 0x0204b520 | 1, 32, 1, a_code, is_family_a2)
-DIFF_CHECK(func_0204b52c, "main", 0x0204b52c | 1, 32, 1, a_code, is_family_a1)
-DIFF_CHECK(func_0204b538, "main", 0x0204b538 | 1, 32, 1, a_code, is_family_a0)
-DIFF_CHECK(func_0204b544, "main", 0x0204b544 | 1, 32, 1, a_code, in_family_b)
-DIFF_CHECK(func_0204b57c, "main", 0x0204b57c | 1, 32, 1, a_code, is_family_b3)
-DIFF_CHECK(func_0204b588, "main", 0x0204b588 | 1, 32, 1, a_code, is_family_b2)
-DIFF_CHECK(func_0204b594, "main", 0x0204b594 | 1, 32, 1, a_code, is_family_b1)
-DIFF_CHECK(func_0204b5a0, "main", 0x0204b5a0 | 1, 32, 1, a_code, is_family_b0)
+DIFF_CHECK(func_0204b3d0, "main", 0x0204b3d0 | 1, 32, 1, a_code, is_any_flower)
+DIFF_CHECK(func_0204b430, "main", 0x0204b430 | 1, 32, 1, a_code, is_watered_flower)
+DIFF_CHECK(func_0204b468, "main", 0x0204b468 | 1, 32, 1, a_code, is_watered_rose)
+DIFF_CHECK(func_0204b4a0, "main", 0x0204b4a0 | 1, 32, 1, a_code, is_watered_cosmos)
+DIFF_CHECK(func_0204b4ac, "main", 0x0204b4ac | 1, 32, 1, a_code, is_watered_pansy)
+DIFF_CHECK(func_0204b4b8, "main", 0x0204b4b8 | 1, 32, 1, a_code, is_watered_tulip)
+DIFF_CHECK(func_0204b4c4, "main", 0x0204b4c4 | 1, 32, 1, a_code, is_flower)
+DIFF_CHECK(func_0204b4fc, "main", 0x0204b4fc | 1, 32, 1, a_code, is_rose)
+DIFF_CHECK(func_0204b520, "main", 0x0204b520 | 1, 32, 1, a_code, is_cosmos)
+DIFF_CHECK(func_0204b52c, "main", 0x0204b52c | 1, 32, 1, a_code, is_pansy)
+DIFF_CHECK(func_0204b538, "main", 0x0204b538 | 1, 32, 1, a_code, is_tulip)
+DIFF_CHECK(func_0204b544, "main", 0x0204b544 | 1, 32, 1, a_code, is_wilted_flower)
+DIFF_CHECK(func_0204b57c, "main", 0x0204b57c | 1, 32, 1, a_code, is_wilted_rose)
+DIFF_CHECK(func_0204b588, "main", 0x0204b588 | 1, 32, 1, a_code, is_wilted_cosmos)
+DIFF_CHECK(func_0204b594, "main", 0x0204b594 | 1, 32, 1, a_code, is_wilted_pansy)
+DIFF_CHECK(func_0204b5a0, "main", 0x0204b5a0 | 1, 32, 1, a_code, is_wilted_tulip)
 DIFF_CHECK(func_0204b5ac, "main", 0x0204b5ac | 1, 32, 1, a_code, short_stage)
 DIFF_CHECK(func_0204b5f4, "main", 0x0204b5f4 | 1, 32, 1, a_code, in_short_lines)
 DIFF_CHECK(func_0204b620, "main", 0x0204b620 | 1, 32, 1, a_code, is_short_line_d0)

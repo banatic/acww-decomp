@@ -1,4 +1,4 @@
-/* What the town's day does to the families' codes, and how two family A codes make a third
+/* What the town's day does to the flower codes, and how two flower codes make a third
  * (town_family.h). */
 #include "town_family.h"
 
@@ -9,30 +9,31 @@
 #include "main_random.h"
 
 extern const u8 data_020ca5d4[8]; /* the eight tiles around one: 0x10 * (8 - dx) + (8 - dz) */
-/* The chance in 100, by code 0x00-0x1a, that the first day passed moves it to family B. */
+/* The chance in 100, by code 0x00-0x1a, that the first day passed moves it to the wilted
+ * flowers. */
 extern const int data_020cb4e8[0x1b];
 /* The same for the further days. */
 extern const int data_020cb554[0x1b];
-/* The codes two family A codes make, by their line and lower stage, then by the higher. */
-extern const TownFamilyCrosses *const data_020db7c4[][TOWN_FAMILY_STAGES];
+/* The codes two flowers make, by their kind and lower colour, then by the higher. */
+extern const TownFamilyCrosses *const data_020db7c4[][TOWN_FAMILY_COLOURS];
 
-#define TOWN_FAMILY_A_TO_B 0x6e /* added to a code of family A (or 0x1a) to make family B's */
-#define TOWN_FAMILY_C_TO_A 0x8a /* taken off a code of family C to make family A's */
+#define TOWN_FAMILY_WILT 0x6e    /* added to a flower (or 0x1a) to make it wilted */
+#define TOWN_FAMILY_WATERED 0x8a /* taken off a watered flower to make it a flower again */
 #define TOWN_FAMILY_LAST_MOVED 0x1a
-#define TOWN_FAMILY_A_LAST 0x19
-#define TOWN_FAMILY_1D 0x1d
+#define TOWN_FAMILY_FLOWER_LAST 0x19
+#define TOWN_FAMILY_DANDELION 0x1d
 #define TOWN_FAMILY_1E 0x1e
-#define TOWN_FAMILY_1D_PERCENT 30
+#define TOWN_FAMILY_DANDELION_PERCENT 30
 #define TOWN_FAMILY_1E_PERCENT 30
-#define TOWN_FAMILY_C_LAST 0xa4
-#define TOWN_FAMILY_A5 0xa5
-#define TOWN_FAMILY_A5_TO 0x1c
+#define TOWN_FAMILY_WATERED_LAST 0xa4
+#define TOWN_FAMILY_WATERED_GOLD_ROSE 0xa5
+#define TOWN_FAMILY_GOLD_ROSE 0x1c
 #define TOWN_FAMILY_WEEK 7
 #define TOWN_FAMILY_NO_CHANGE 0xffff
 #define TOWN_FAMILY_AROUND 8
 
-/* Family B's codes and 0x88, 0x89. */
-static int is_family_b_or_after(u16 code)
+/* The wilted flowers' codes and 0x88, 0x89. */
+static int is_wilted_or_after(u16 code)
 {
     return code >= 0x6e && code <= 0x89;
 }
@@ -42,8 +43,8 @@ static int chance(int percent)
     return (int) MainRandom_Below(100) < percent;
 }
 
-/* func_020499cc: the families' codes of the map after a further day (`day` from the first,
- * every seventh one also taking family B's codes off). */
+/* func_020499cc: the flower codes of the map after a further day (`day` from the first,
+ * every seventh one also taking the wilted flowers' codes off). */
 void TownFamily_Day(TownDay *town, AcreMap *map, u32 day)
 {
     (void) town;
@@ -58,7 +59,7 @@ void TownFamily_Day(TownDay *town, AcreMap *map, u32 day)
             }
             int next = TOWN_FAMILY_NO_CHANGE;
             u16 now = *code;
-            if (is_family_b_or_after(now)) {
+            if (is_wilted_or_after(now)) {
                 if (week_day == 0) {
                     next = ACRE_MAP_ITEM_NONE;
                 }
@@ -68,10 +69,10 @@ void TownFamily_Day(TownDay *town, AcreMap *map, u32 day)
                 }
             } else if (now <= TOWN_FAMILY_LAST_MOVED) {
                 if (chance(data_020cb554[now])) {
-                    next = now + TOWN_FAMILY_A_TO_B;
+                    next = now + TOWN_FAMILY_WILT;
                 }
-            } else if (now == TOWN_FAMILY_1D) {
-                if (chance(TOWN_FAMILY_1D_PERCENT)) {
+            } else if (now == TOWN_FAMILY_DANDELION) {
+                if (chance(TOWN_FAMILY_DANDELION_PERCENT)) {
                     next = TOWN_FAMILY_1E;
                 }
             }
@@ -83,7 +84,7 @@ void TownFamily_Day(TownDay *town, AcreMap *map, u32 day)
 }
 CLEAN_AS(func_020499cc, TownFamily_Day)
 
-/* func_02049ad0: the families' codes of the map after the first day passed. */
+/* func_02049ad0: the flower codes of the map after the first day passed. */
 void TownFamily_FirstDay(TownDay *town, AcreMap *map)
 {
     (void) town;
@@ -97,20 +98,20 @@ void TownFamily_FirstDay(TownDay *town, AcreMap *map)
             }
             u16 next = TOWN_FAMILY_NO_CHANGE;
             u16 now = *code;
-            if (is_family_b_or_after(now)) {
+            if (is_wilted_or_after(now)) {
                 next = ACRE_MAP_ITEM_NONE;
             } else if (now <= TOWN_FAMILY_LAST_MOVED) {
                 if (chance(data_020cb4e8[now])) {
-                    next = (u16) (now + TOWN_FAMILY_A_TO_B);
+                    next = (u16) (now + TOWN_FAMILY_WILT);
                 }
-            } else if (now == TOWN_FAMILY_1D) {
-                if (chance(TOWN_FAMILY_1D_PERCENT)) {
+            } else if (now == TOWN_FAMILY_DANDELION) {
+                if (chance(TOWN_FAMILY_DANDELION_PERCENT)) {
                     next = TOWN_FAMILY_1E;
                 }
-            } else if (now >= TOWN_FAMILY_C_TO_A && now <= TOWN_FAMILY_C_LAST) {
-                next = (u16) (now - TOWN_FAMILY_C_TO_A);
-            } else if (now == TOWN_FAMILY_A5) {
-                next = TOWN_FAMILY_A5_TO;
+            } else if (now >= TOWN_FAMILY_WATERED && now <= TOWN_FAMILY_WATERED_LAST) {
+                next = (u16) (now - TOWN_FAMILY_WATERED);
+            } else if (now == TOWN_FAMILY_WATERED_GOLD_ROSE) {
+                next = TOWN_FAMILY_GOLD_ROSE;
             }
             if (next != TOWN_FAMILY_NO_CHANGE) {
                 TownTilePut_At(map, (u32) x, (u32) z, next, 0);
@@ -120,20 +121,20 @@ void TownFamily_FirstDay(TownDay *town, AcreMap *map)
 }
 CLEAN_AS(func_02049ad0, TownFamily_FirstDay)
 
-/* func_02049bc4: the visit of TownGrowth_SpreadFamilyA: when `near` holds a family A code of
- * the line of the code at `tile`, the code they make (TownFamily_DrawCross) put on a free tile
+/* func_02049bc4: the visit of TownGrowth_BreedFlowers: when `near` holds a flower of the
+ * kind of the code at `tile`, the code they make (TownFamily_DrawCross) put on a free tile
  * around `tile`, or else around `near`; whether it was put.
  * REQUIRES: `tile` is on the map (its code is read without a check; the day lists it from the
  * map). */
 int TownFamily_Cross(AcreMap *map, TownGrowthTiles *near, TownGrowthTiles *tile, TownGrowthTiles *size)
 {
     const u16 *mate = TownAcreCount_CodeAt(map, near->x, near->z);
-    if (mate == NULL || *mate > TOWN_FAMILY_A_LAST) {
+    if (mate == NULL || *mate > TOWN_FAMILY_FLOWER_LAST) {
         return 0;
     }
     const u16 *code = TownAcreCount_CodeAt(map, tile->x, tile->z);
-    int line = TownFamily_Line(code);
-    if (line != TownFamily_Line(mate)) {
+    int line = TownFamily_Kind(code);
+    if (line != TownFamily_Kind(mate)) {
         return 0;
     }
     int made = TownFamily_DrawCross(code, mate);
@@ -198,9 +199,9 @@ int TownFamily_DrawCross(const u16 *code, const u16 *mate)
 {
     int left = (int) MainRandom_Below(100);
     int made = ACRE_MAP_ITEM_NONE;
-    int line = TownFamily_Line(code);
-    int low = TownFamily_Stage(code);
-    int high = TownFamily_Stage(mate);
+    int line = TownFamily_Kind(code);
+    int low = TownFamily_Colour(code);
+    int high = TownFamily_Colour(mate);
     if (low > high) {
         int stage = low;
         low = high;
@@ -221,14 +222,14 @@ int TownFamily_DrawCross(const u16 *code, const u16 *mate)
 }
 CLEAN_AS(func_02049d04, TownFamily_DrawCross)
 
-/* func_02049d78: the code's stage in its line (TownFamily_Line), from 1; 1 for a code of no
- * family's lines. */
-int TownFamily_Stage(const u16 *code)
+/* func_02049d78: the code's colour in its kind (TownFamily_Kind), from 1; 1 for a code that is
+ * not a tulip, pansy, cosmos or rose. */
+int TownFamily_Colour(const u16 *code)
 {
     u16 now = *code;
     int stage = 1;
     if (now <= 0x19 || now == 0x1c) {
-        switch (TownFamily_Line(code)) {
+        switch (TownFamily_Kind(code)) {
             case 0:
                 stage = *code + 1;
                 break;
@@ -242,8 +243,8 @@ int TownFamily_Stage(const u16 *code)
                 stage = *code == 0x1c ? 9 : *code - 0x11;
                 break;
         }
-    } else if (TownAcreCount_IsFamilyCCode(now)) {
-        switch (TownFamily_Line(code)) {
+    } else if (TownAcreCount_IsWateredFlower(now)) {
+        switch (TownFamily_Kind(code)) {
             case 0:
                 stage = *code - 0x89;
                 break;
@@ -254,11 +255,11 @@ int TownFamily_Stage(const u16 *code)
                 stage = *code - 0x95;
                 break;
             case 3:
-                stage = *code == TOWN_FAMILY_A5 ? 7 : *code - 0x9b;
+                stage = *code == TOWN_FAMILY_WATERED_GOLD_ROSE ? 7 : *code - 0x9b;
                 break;
         }
-    } else if (TownAcreCount_IsFamilyBCode(now)) {
-        switch (TownFamily_Line(code)) {
+    } else if (TownAcreCount_IsWiltedFlower(now)) {
+        switch (TownFamily_Kind(code)) {
             case 0:
                 stage = *code - 0x6d;
                 break;
@@ -275,12 +276,13 @@ int TownFamily_Stage(const u16 *code)
     }
     return stage;
 }
-CLEAN_AS(func_02049d78, TownFamily_Stage)
+CLEAN_AS(func_02049d78, TownFamily_Colour)
 
-/* func_02049ec4: the line of the code in its family (0-3: 0x00 / 0x6e / 0x8a, 0x06 / 0x74 /
- * 0x90, 0x0c / 0x7a / 0x96, 0x12 / 0x80 / 0x9c and 0x1c, 0xa5); 4 for 0x1a, 0x88 and 0xa4, 5
- * for 0x1d, 6 for 0x1e, 7 for any other. */
-int TownFamily_Line(const u16 *code)
+/* func_02049ec4: the kind of flower of the code (0-3, the tulips, pansies, cosmos and roses:
+ * 0x00 / 0x6e / 0x8a, 0x06 / 0x74 / 0x90, 0x0c / 0x7a / 0x96, 0x12 / 0x80 / 0x9c and 0x1c,
+ * 0xa5); 4 for the lily of the valley 0x1a, 0x88 and 0xa4, 5 for the dandelion 0x1d, 6 for
+ * 0x1e, 7 for any other. */
+int TownFamily_Kind(const u16 *code)
 {
     u16 now = *code;
     if (now <= 0x05 || (now >= 0x8a && now <= 0x8f) || (now >= 0x6e && now <= 0x73)) {
@@ -292,7 +294,7 @@ int TownFamily_Line(const u16 *code)
     if ((now >= 0x0c && now <= 0x11) || (now >= 0x96 && now <= 0x9b) || (now >= 0x7a && now <= 0x7f)) {
         return 2;
     }
-    if ((now >= 0x12 && now <= 0x19) || now == 0x1c || (now >= 0x9c && now <= 0xa3) || now == TOWN_FAMILY_A5 ||
+    if ((now >= 0x12 && now <= 0x19) || now == 0x1c || (now >= 0x9c && now <= 0xa3) || now == TOWN_FAMILY_WATERED_GOLD_ROSE ||
         (now >= 0x80 && now <= 0x87)) {
         return 3;
     }
@@ -301,12 +303,12 @@ int TownFamily_Line(const u16 *code)
         case 0x88:
         case 0xa4:
             return 4;
-        case TOWN_FAMILY_1D:
+        case TOWN_FAMILY_DANDELION:
             return 5;
         case TOWN_FAMILY_1E:
             return 6;
         default:
-            return TOWN_FAMILY_LINE_OTHER;
+            return TOWN_FAMILY_KIND_OTHER;
     }
 }
-CLEAN_AS(func_02049ec4, TownFamily_Line)
+CLEAN_AS(func_02049ec4, TownFamily_Kind)

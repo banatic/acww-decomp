@@ -75,9 +75,9 @@ int TownTile_IsClearAt(const Vec3 *position, void *map)
 }
 CLEAN_AS(func_02078e98, TownTile_IsClearAt)
 
-/* The plain object codes TownTile_IsClear also lets through (map_item.h): family A and the codes
- * after it (0x00-0x1a, 0x1c, 0x1d), family C and the codes after it (0x8a-0xa5), and 0x25,
- * 0x5c and 0xc7. */
+/* The plain object codes TownTile_IsClear also lets through (map_item.h): the flowers and the
+ * codes after them (0x00-0x1a, 0x1c, 0x1d), the watered flowers and the codes after them
+ * (0x8a-0xa5), and 0x25, 0x5c and 0xc7. */
 static int is_open_code(u16 code)
 {
     return code <= 0x1a || code == 0x1c || code == 0x1d || (code >= 0x8a && code <= 0xa5) || code == 0x25 || code == 0x5c ||

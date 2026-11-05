@@ -3242,12 +3242,12 @@ int TownInsectMove_Splash(TownInsect *insect)
 }
 CLEAN_AS(func_ov003_02235454, TownInsectMove_Splash)
 
-/* func_ov003_02235518: whether the code on a tile (main/town_family.h: its line and its stage)
+/* func_ov003_02235518: whether the code on a tile (main/town_family.h: its kind and its colour)
  * suits kind 0xf, 3 or 2; 0 for other kinds. */
 int TownInsectMove_SuitsCode(int kind, const u16 *code)
 {
-    int stage = TownFamily_Stage(code);
-    int line = TownFamily_Line(code);
+    int stage = TownFamily_Colour(code);
+    int line = TownFamily_Kind(code);
     switch (kind) {
         case 0xf:
             if (line == 0 || line == 3) {

@@ -472,8 +472,8 @@ static int TownDay_QuietPeriod(int period)
 
 /* func_0204714c: the town moved on by `days` days, from `from` to `to` (the days start at
  * 6:00), with the town's map:
- * - the acres: family B codes turned to family C when the last day was wet
- *   (TownDay_ChangeFamilyB), the summary updated, then up to 5 days of func_02048fdc;
+ * - the acres: wilted flower codes turned to the watered flowers when the last day was wet
+ *   (TownDay_WaterWiltedFlowers), the summary updated, then up to 5 days of func_02048fdc;
  * - each of the last 365 days (at most) func_020489c4, and outside the periods 0, 1, 2 and
  *   0x16 one chance in two of func_0204864c; each of the last 30, outside them, one chance in
  *   five of func_02048698;
@@ -495,7 +495,7 @@ void TownDay_Pass(TownDay *town, const DateTime *from, const DateTime *to, int d
         int high = map->acres_high - 2;
         SceneMap_ClearRimGrowth(map);
         if (wet != 0) {
-            TownDay_ChangeFamilyB(town, map, wide, high);
+            TownDay_WaterWiltedFlowers(town, map, wide, high);
         }
         TownAcreCount_SummarizeDay(&data_021c779c.acres, map, wide, high);
         TownRecord_CountPerfectDays((TownRecord *) (void *) &data_021f39fc, data_021c779c.acres.grade, days);
@@ -524,19 +524,19 @@ void TownDay_Pass(TownDay *town, const DateTime *from, const DateTime *to, int d
         DateTime_SubtractDays(&month_day, month_days);
         for (int i = 0; i < month_days; i++) {
             if (!TownDay_QuietPeriod(Calendar_FoliagePeriodOf(&month_day)) && MainRandom_Below(100) < 20) {
-                TownSpawn_Put1d(town, map, wide, high);
+                TownSpawn_PutDandelion(town, map, wide, high);
             }
             DateTime_AddDays(&month_day, 1);
         }
 
         int long_days = TownDay_AtMost(days, 60);
         TownFamily_FirstDay(town, map);
-        TownGrowth_SpreadFamilyA(town, map, wide, high);
-        TownSpawn_PutFamilyA(town, map, wide, high);
+        TownGrowth_BreedFlowers(town, map, wide, high);
+        TownSpawn_PutFlower(town, map, wide, high);
         for (int i = 1; i < long_days; i++) {
             TownFamily_Day(town, map, i);
-            TownGrowth_SpreadFamilyA(town, map, wide, high);
-            TownSpawn_PutFamilyA(town, map, wide, high);
+            TownGrowth_BreedFlowers(town, map, wide, high);
+            TownSpawn_PutFlower(town, map, wide, high);
         }
 
         TownSpawn_HousesForDays(town, map, to, days);
@@ -544,7 +544,7 @@ void TownDay_Pass(TownDay *town, const DateTime *from, const DateTime *to, int d
         TownObjects_ClearMisplacedFootprints();
         TownDay_UpdateEvents(town, map, wide, high, to, loaded);
         TownGrowth_ChangeLastStages(town, map, wide, high);
-        TownSpawn_Maybe1a(town, map, wide, high);
+        TownSpawn_MaybeLilyOfTheValley(town, map, wide, high);
         TownSpawn_UpdateSpot(town, map, wide, high);
         TownSpawn_PutMarkedFossils(town, map, wide, high);
         TownSpawn_PutMarkedPitfall(town, map, wide, high);
@@ -588,12 +588,12 @@ void TownDay_Pass(TownDay *town, const DateTime *from, const DateTime *to, int d
 }
 CLEAN_AS(func_0204714c, TownDay_Pass)
 
-/* func_02047500: every family B code (and 0x88, 0xd4-0xda) on the town's inner acres changed
- * as TownDay_FamilyCCode says.
+/* func_02047500: every wilted flower code (and 0x88, 0xd4-0xda) on the town's inner acres changed
+ * as TownDay_WateredCode says.
  *
  * REQUIRES: every inner acre has its codes (AcreTile_ItemInAcre is not NULL); the ROM would
  * step on from address 0 otherwise. */
-void TownDay_ChangeFamilyB(TownDay *town, AcreMap *map, int wide, int high)
+void TownDay_WaterWiltedFlowers(TownDay *town, AcreMap *map, int wide, int high)
 {
     for (int acre_z = 0; acre_z < high; acre_z++) {
         for (int acre_x = 0; acre_x < wide; acre_x++) {
@@ -602,7 +602,7 @@ void TownDay_ChangeFamilyB(TownDay *town, AcreMap *map, int wide, int high)
                 if (codes[k] == ITEM_CODE_NONE) {
                     continue;
                 }
-                u16 code = TownDay_FamilyCCode((int) (uintptr_t) town, &codes[k], 0);
+                u16 code = TownDay_WateredCode((int) (uintptr_t) town, &codes[k], 0);
                 if (code != ITEM_CODE_NONE) {
                     int x;
                     int z;
@@ -613,13 +613,13 @@ void TownDay_ChangeFamilyB(TownDay *town, AcreMap *map, int wide, int high)
         }
     }
 }
-CLEAN_AS(func_02047500, TownDay_ChangeFamilyB)
+CLEAN_AS(func_02047500, TownDay_WaterWiltedFlowers)
 
-/* func_020475b0: the code a tile's code changes to, or 0xfff1 for none: family B's codes
- * (0x6e-0x87) the family C code of the same place (+0x1c), except 0x86 which becomes the golden
- * rose 0xa5 when `golden_can` (the player holds the golden watering can); 0x88 becomes 0xa4 and
- * 0xd4-0xda become 0xdb-0xe1. */
-u16 TownDay_FamilyCCode(int unused, const u16 *code, int golden_can)
+/* func_020475b0: the code a tile's code changes to, or 0xfff1 for none: the wilted flowers'
+ * codes (0x6e-0x87) the watered flower code of the same place (+0x1c), except 0x86 which
+ * becomes the golden rose 0xa5 when `golden_can` (the player holds the golden watering can);
+ * 0x88 becomes 0xa4 and 0xd4-0xda become 0xdb-0xe1. */
+u16 TownDay_WateredCode(int unused, const u16 *code, int golden_can)
 {
     (void) unused;
     unsigned int value = *code;
@@ -637,7 +637,7 @@ u16 TownDay_FamilyCCode(int unused, const u16 *code, int golden_can)
     }
     return ITEM_CODE_NONE;
 }
-CLEAN_AS(func_020475b0, TownDay_FamilyCCode)
+CLEAN_AS(func_020475b0, TownDay_WateredCode)
 
 /* func_0204762c: the town started now, not as loaded. */
 void TownDay_StartNow(void)
@@ -940,7 +940,7 @@ void TownDay_PutCode6dIn(TownDay *town, AcreMap *map, int acre_x, int acre_z)
 }
 CLEAN_AS(func_02047ac0, TownDay_PutCode6dIn)
 
-/* func_02047bc8: when event 0xe starts, family A codes around the house of every villager that
+/* func_02047bc8: when event 0xe starts, flower codes around the house of every villager that
  * counts (TownSpawn_AroundHouses), for the event's days. */
 void TownDay_StartEvent0e(TownDay *town, AcreMap *map, EventCalendarEvent *event, const DateTime *today, int loaded,
                           int started, StateBlock *block)
