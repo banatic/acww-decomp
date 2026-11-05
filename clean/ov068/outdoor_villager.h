@@ -134,13 +134,15 @@ typedef struct OutdoorVillagerBehaviour {
     s32 wait;     /* 0x20: frames a step waits */
     s32 cooldown; /* 0x24: frames before it may be paired again */
     u8 unk_28[0x10];
-    u8 count_38; /* 0x38: the times behaviour 19 started while `hold_3a` ran */
+    u8 net_hits; /* 0x38: the net hits, behaviour 19's starts while `net_hits_timer` ran */
     u8 unk_39;
-    u16 hold_3a; /* 0x3a: 1200 when behaviour 19 ends without reaction 1 */
+    u16 net_hits_timer; /* 0x3a: 1200 when behaviour 19 ends without reaction 1 */
     u8 unk_3c[0xa4];
     u8 shown; /* 0xe0: behaviour 23 ran */
     u8 unk_e1[0x13];
-    s32 unk_f4; /* 0xf4: 1200 when a reaction's talk ends */
+    /* 0xf4: frames before behaviour 7 may call the player; 1200 when a reaction's talk ends or
+     * behaviour 7 gives up */
+    s32 call_cooldown;
     u8 unk_f8[4];
 } OutdoorVillagerBehaviour;
 

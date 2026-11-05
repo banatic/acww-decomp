@@ -87,7 +87,7 @@ int OutdoorVillagerBonds_Learn(OutdoorVillagerBehaviour *self, u8 *villager)
 CLEAN_AS(func_ov068_0226aad4, OutdoorVillagerBonds_Learn)
 
 /* func_ov068_0226ab58: the exchange where the pair talks about how it gets on. The pair sorted,
- * the second learns from the first, their own bond raised; then by their tier (taken from the
+ * the second learns from the first, gossip changes the bond of two others; then by their tier (taken from the
  * records read first): 0 or 1 both moods asked for (1, 2) and applied, 3 or 4 one of the moods
  * 2 and 3 for each (2 units, applied), 2 nothing. The chat ends (step 3). Always 1. */
 int OutdoorVillagerBonds_TalkOfBond(OutdoorVillagerBehaviour *self, u8 *villager)

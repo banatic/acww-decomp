@@ -629,7 +629,8 @@ int OrderCatalog_CollectItems(OrderCatalog *self, u16 *out, u16 first, int count
 }
 CLEAN_AS(func_ov142_0229a6f8, OrderCatalog_CollectItems)
 
-/* func_ov142_0229a76c: the same with every fourth code (an item with variants, or a pile). */
+/* func_ov142_0229a76c: the same with every fourth code (furniture, whose low two bits are its side, or
+ * a pile, whose low two bits are its count). */
 int OrderCatalog_CollectEveryFourth(OrderCatalog *self, u16 *out, u16 first, int count, int category)
 {
     u8 *record = PlayerRecords_Current();

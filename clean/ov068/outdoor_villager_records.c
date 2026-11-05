@@ -71,7 +71,7 @@ extern const u8 data_ov068_02276774[];
 /* The held items. */
 #define RECORDS_UMBRELLA_FIRST 0x1380
 #define RECORDS_UMBRELLA_LAST 0x139f
-#define RECORDS_ITEM_1378 0x1378
+#define RECORDS_WATERING_CAN 0x1378
 #define RECORDS_RAIN 1 /* Sky_Falling while rain falls */
 
 static u8 *records_at(void *object, u32 offset)
@@ -253,8 +253,8 @@ CLEAN_AS(func_ov068_0226d20c, OutdoorVillagerRecords_InContest)
 
 /* func_ov068_0226d264: the item its state entry says it holds, brought up to date: an umbrella
  * (0x1380 to 0x139f) put away unless rain falls; then, holding no umbrella, the item of its
- * activity of the moment (VillagerModeRecord_KindItem) unless it already holds it (for an item
- * with variants, any variant of it); then while rain falls item 0x1378 is changed for its
+ * activity of the moment (VillagerModeRecord_KindItem) unless it already holds it (for a
+ * furniture code, facing any side); then while rain falls the watering can (0x1378) is changed for its
  * umbrella (TownVillager_Umbrella). Only for a town record of a villager. */
 void OutdoorVillagerRecords_RefreshItem(u8 *villager)
 {
@@ -283,7 +283,7 @@ void OutdoorVillagerRecords_RefreshItem(u8 *villager)
             VillagerState_SetHeldItem(state, &wanted);
         }
     }
-    if (*VillagerState_HeldItem(state) == RECORDS_ITEM_1378 && sky == RECORDS_RAIN) {
+    if (*VillagerState_HeldItem(state) == RECORDS_WATERING_CAN && sky == RECORDS_RAIN) {
         u16 umbrella;
         TownVillager_Umbrella(&umbrella, record);
         VillagerState_SetHeldItem(state, &umbrella);

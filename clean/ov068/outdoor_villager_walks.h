@@ -27,7 +27,7 @@
  * (data_ov068_022767ac), not the one it had. Walking home, behaviour 2 (or 16 first, to put
  * its held item away) starts within 0x800 of its door.
  *
- * The choice (OutdoorVillagerWalks_Choose), in order: home (2 or 16), a marked item 0x1566
+ * The choice (OutdoorVillagerWalks_Choose), in order: home (2 or 16), a marked pitfall seed (0x1566)
  * under it (17), the count at 0xa06 at its limit (21), the byte at 0xa05 (19), behaviour 7's
  * call (OutdoorVillagerBehaviour_CallsPlayer), a pairing with a villager near and in view (9, one time in five),
  * its effect's countdown (11), a change of its held item (15 or 16), this console's player

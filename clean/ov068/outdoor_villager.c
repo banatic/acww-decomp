@@ -36,10 +36,10 @@ static_assert(offsetof(OutdoorVillagerBehaviour, resume) == 0x18, "resume");
 static_assert(offsetof(OutdoorVillagerBehaviour, step) == 0x1c, "step");
 static_assert(offsetof(OutdoorVillagerBehaviour, wait) == 0x20, "wait");
 static_assert(offsetof(OutdoorVillagerBehaviour, cooldown) == 0x24, "cooldown");
-static_assert(offsetof(OutdoorVillagerBehaviour, count_38) == 0x38, "count 0x38");
-static_assert(offsetof(OutdoorVillagerBehaviour, hold_3a) == 0x3a, "hold 0x3a");
+static_assert(offsetof(OutdoorVillagerBehaviour, net_hits) == 0x38, "net hits 0x38");
+static_assert(offsetof(OutdoorVillagerBehaviour, net_hits_timer) == 0x3a, "net hits timer 0x3a");
 static_assert(offsetof(OutdoorVillagerBehaviour, shown) == 0xe0, "shown");
-static_assert(offsetof(OutdoorVillagerBehaviour, unk_f4) == 0xf4, "0xf4");
+static_assert(offsetof(OutdoorVillagerBehaviour, call_cooldown) == 0xf4, "0xf4");
 static_assert(sizeof(OutdoorVillagerBehaviour) == 0xfc, "behaviour size");
 
 /* The class's vtable. */

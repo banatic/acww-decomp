@@ -82,10 +82,10 @@ extern u8 data_021dc7bc[];
 #define NOOK_MOTION_STAND 0
 #define NOOK_MOTION_WALK 2
 #define NOOK_MOTION_PRIORITY 2
-#define NOOK_MUSIC_DROPPED 0x13
+#define NOOK_MUSIC_VALUE_PRIORITY 0x13
 #define NOOK_MUSIC_PRIORITY 0x15
 #define NOOK_MUSIC 0x47
-#define NOOK_MUSIC_0C 0x7f
+#define NOOK_MUSIC_VOLUME 0x7f
 #define NOOK_PLAYER 4
 
 /* The messages. */
@@ -178,8 +178,8 @@ void TownNookScene_WalkAndTalk(TownNookScene *scene)
             if (nook_talk(scene)->state != TALK_OBJECT_GONE) {
                 break;
             }
-            Music_DropPriority(NOOK_MUSIC_DROPPED);
-            Music_Add(NOOK_MUSIC_PRIORITY, NOOK_MUSIC, NOOK_MUSIC_0C, 1);
+            Music_DropPriority(NOOK_MUSIC_VALUE_PRIORITY);
+            Music_Add(NOOK_MUSIC_PRIORITY, NOOK_MUSIC, NOOK_MUSIC_VOLUME, 1);
             PlayerActorOps_SwitchFlag0e(0, NOOK_PLAYER);
             {
                 Vec3 *to = (Vec3 *) (void *) nook_at(owner, NOOK_WALK_TO);
@@ -482,7 +482,7 @@ static void nook_reset_scene(TownNookScene *scene)
 int TownNook_UpdateEnd(u8 *object)
 {
     if (Countdown_Tick8(nook_timer(object)) == 0) {
-        Music_DropPriority(NOOK_MUSIC_DROPPED);
+        Music_DropPriority(NOOK_MUSIC_VALUE_PRIORITY);
         Music_AddValue(NOOK_MUSIC_END_PRIORITY, NOOK_MUSIC_END_VALUE, NOOK_MUSIC_END_FRAMES);
         Process_RequestDelete((Process *) (void *) object);
     }
@@ -581,7 +581,7 @@ int TownNook_UpdateTalk(u8 *object)
 {
     if (SceneAction_IsBusy(nook_action(object)) == 0) {
         CameraControl_ResetMode();
-        Music_AddValue(NOOK_MUSIC_DROPPED, NOOK_MUSIC_TALKED_VALUE, 0);
+        Music_AddValue(NOOK_MUSIC_VALUE_PRIORITY, NOOK_MUSIC_TALKED_VALUE, 0);
         Music_DropMusic(NOOK_MUSIC);
         TownNook_SetState(object, TOWN_NOOK_TURN);
     }
@@ -682,7 +682,7 @@ int TownNook_Start(u8 *object)
     if (record != NULL && StartKind_IsNewPlayer() == 0 && StartKind_IsNewTown() == 0) {
         PlayerRecord_ClearFlag(record, PLAYER_FLAG_NOOK_JOB);
     }
-    Music_AddValue(NOOK_MUSIC_DROPPED, NOOK_MUSIC_START_VALUE, 0);
+    Music_AddValue(NOOK_MUSIC_VALUE_PRIORITY, NOOK_MUSIC_START_VALUE, 0);
     return 1;
 }
 CLEAN_AS(func_ov068_0226e948, TownNook_Start)

@@ -145,7 +145,7 @@ void OutdoorVillagerRecords_RedrawActivity(u8 *villager);
 #define WALKS_WATERING_CAN 0x1378
 #define WALKS_ACTIVITY_NONE 7 /* no activity of the moment (VillagerState_GetActivity) */
 #define WALKS_KIND_6 6
-#define WALKS_ITEM_MARKED 0x1566
+#define WALKS_PITFALL_SEED 0x1566
 #define WALKS_MARKED_NEAR 0xb00
 #define WALKS_HOME_NEAR 0x800
 #define WALKS_PARTNER_NEAR 0x3000
@@ -302,12 +302,12 @@ static int walks_kind(u8 *record, int kind)
     return kind;
 }
 
-/* Two item codes the same, by their variant item when the first has variants. */
+/* Two item codes the same, by furniture number when the first is furniture. */
 static int walks_same_item(const u16 *a, const u16 *b)
 {
     if (ItemCode_IsFurniture(a)) {
-        int variant = ItemCode_FurnitureNumber(a);
-        return variant == ItemCode_FurnitureNumber(b);
+        int number = ItemCode_FurnitureNumber(a);
+        return number == ItemCode_FurnitureNumber(b);
     }
     return *a == *b;
 }
@@ -398,7 +398,7 @@ CLEAN_AS(func_ov068_0226afb8, OutdoorVillagerWalks_Start5)
 /* ---- Behaviour 1: off screen */
 
 /* func_ov068_0226ba10: behaviour 1's update. Back on screen: behaviour 0. Else it may catch
- * (VillagerErrandCatch_Update), its talk lines' records kept (OutdoorVillagerRecords_EachMinute), and every
+ * (VillagerErrandCatch_Update), in a contest a catch drawn once a minute (OutdoorVillagerRecords_EachMinute), and every
  * 900 frames its record's byte 0x1e rises. A walker that stopped or ran out of time starts
  * afresh (state 1). While it walks: at its door, behaviour 3; unless going home, it turns home
  * when it is time (TimeToGoHome); every 40 frames a step of the walker. Always 1. */
@@ -585,7 +585,7 @@ int OutdoorVillagerWalks_Update0(OutdoorVillagerBehaviour *self, u8 *villager)
 CLEAN_AS(func_ov068_0226bc1c, OutdoorVillagerWalks_Update0)
 
 /* func_ov068_0226befc: what the villager does next, the first that applies: at its door going
- * home, behaviour 2 (16 first, 2 to resume, with a held item); on a marked item 0x1566, 17; the
+ * home, behaviour 2 (16 first, 2 to resume, with a held item); on a marked pitfall seed (0x1566), 17; the
  * count at 0xa06 at its limit, 21; the byte at 0xa05, 19; behaviour 7's call, 7; a pairing
  * (TryPair starts 9); its effect's countdown, 11; a change of its held item (ChangeHeldItem
  * starts 15 or 16); the player showing an insect or a fish, 23; moving, a step aside
@@ -682,7 +682,7 @@ int OutdoorVillagerWalks_WasNetted(OutdoorVillagerBehaviour *self, u8 *villager)
 }
 CLEAN_AS(func_ov068_0226c0e0, OutdoorVillagerWalks_WasNetted)
 
-/* func_ov068_0226c0f4: whether the villager stands on a marked item 0x1566 (TileMarked),
+/* func_ov068_0226c0f4: whether the villager stands on a marked pitfall seed, 0x1566 (TileMarked),
  * within 0xb00 of its tile's centre, and a request of the tile (TileRequests_AskMarkedPitfall,
  * with its person index) answers 1 at once (the request then released). */
 int OutdoorVillagerWalks_OnPitfall(OutdoorVillagerBehaviour *self, u8 *villager)
@@ -711,7 +711,7 @@ int OutdoorVillagerWalks_OnPitfall(OutdoorVillagerBehaviour *self, u8 *villager)
 }
 CLEAN_AS(func_ov068_0226c0f4, OutdoorVillagerWalks_OnPitfall)
 
-/* func_ov068_0226c170: whether the town's tile holds item 0x1566, marked (AcreTile_IsMarked);
+/* func_ov068_0226c170: whether the town's tile holds a pitfall seed (0x1566), marked (AcreTile_IsMarked);
  * 0 without the town's map or the tile. */
 int OutdoorVillagerWalks_TileMarked(OutdoorVillagerBehaviour *self, TileRequestTile *tile)
 {
@@ -726,7 +726,7 @@ int OutdoorVillagerWalks_TileMarked(OutdoorVillagerBehaviour *self, TileRequestT
     if (item == NULL) {
         return 0;
     }
-    return *item == WALKS_ITEM_MARKED && AcreTile_IsMarked(map, tile->x, tile->z) != 0;
+    return *item == WALKS_PITFALL_SEED && AcreTile_IsMarked(map, tile->x, tile->z) != 0;
 }
 CLEAN_AS(func_ov068_0226c170, OutdoorVillagerWalks_TileMarked)
 

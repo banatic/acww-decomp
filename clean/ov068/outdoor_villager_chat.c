@@ -579,7 +579,7 @@ CLEAN_AS(func_ov068_0226a3e0, OutdoorVillagerChat_DefaultCatchphrase)
 
 /* func_ov068_0226a49c: the first of the pair (the speaker) back to its own defaults: its umbrella
  * (0x1380 to 0x139f), unless it has one, and its clothes. When the clothes it wears differ
- * from its default (by their variant's item when they have variants), both moods asked for
+ * from its default (by furniture number when they are furniture), both moods asked for
  * (data_ov068_02276730, not applied), its clothes set and the speaker shows them (kind 20),
  * step 2; else both moods asked for and applied, step 3. */
 int OutdoorVillagerChat_DefaultClothes(OutdoorVillagerBehaviour *self, u8 *villager)

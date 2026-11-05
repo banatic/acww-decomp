@@ -16,16 +16,16 @@
  *   its first frame; then it stands and behaviour 0 starts.
  * - 22 and 20: after reaction 2 or 1, told of event 1: it turns to the object of its talk's
  *   motion argument and talks (SceneAction_RequestTurnAndTalk); once the action ends its mood
- *   is asked for (4, 1, applied), its event finished, it is unpaired, reaction none, and the
- *   word at 0xf4 set to 1200. Behaviour 20 first waits while animation 0xec plays.
+ *   is asked for (4, 1, applied), its event finished, it is unpaired, reaction none, and
+ *   `call_cooldown` set to 1200. Behaviour 20 first waits while animation 0xec plays.
  * - 21: started when the player has pushed against it for 100 frames (the count at 0xa06,
  *   OutdoorVillagerObject_CountPushed): the villager turns to this console's player under event
  *   kind 6 (EventQueue_RequestKind6), reaction 2, its record's byte 0x1e halved; it stands,
  *   waits 40 frames, then behaviour 0.
  * - 19: started when the byte at 0xa05 is set (this console's player hit it with the net or the
  *   golden net, items 0x1376 and 0x1377): animation 0xeb, or 0xec when facing the player or the
- *   third time while `hold_3a` runs (then reaction 1, under event kind 6, turning to the player
- *   and waiting 40 frames); else behaviour 0 with `hold_3a` 1200.
+ *   third time while `net_hits_timer` runs (then reaction 1, under event kind 6, turning to the player
+ *   and waiting 40 frames); else behaviour 0 with `net_hits_timer` 1200.
  * - 18, climbing out of the pitfall: started after an event while the byte at 0xa04 (stuck in
  *   the pitfall) is set: the byte cleared, the effect at 0xa00 ended, animation 0x12a (0x12b
  *   with items 0x1374 to 0x1377 or 0x1380 to 0x139f held, whose link gets action 18), effect

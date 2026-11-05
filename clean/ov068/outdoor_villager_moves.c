@@ -107,7 +107,7 @@ extern const MemberPointer data_ov068_02277090, data_ov068_022770a0;
 #define MOVES_SOUND_VOLUME 0x7f
 #define MOVES_SCALE_STEP 0x249
 #define MOVES_FRAMES_200 200
-#define MOVES_GIVE_UP_FRAMES 1200 /* the word at 0xf4 when behaviour 7 gives up */
+#define MOVES_GIVE_UP_FRAMES 1200 /* `call_cooldown` when behaviour 7 gives up */
 
 /* Behaviours 15 and 16. */
 #define MOVES_ITEM_FIRST 0x1380
@@ -454,8 +454,8 @@ CLEAN_AS(func_ov068_02268a84, OutdoorVillagerMoves_Start15)
 
 /* ---- Behaviour 14: the birthday greeter's talk, then off */
 
-/* _ZN18Obj_ov068_022771c019func_ov068_02268bb4Ei: behaviour 14's update: Talk14, Walk14,
- * Arrive14. */
+/* _ZN18Obj_ov068_022771c019func_ov068_02268bb4Ei: behaviour 14's update: TalkGreeted,
+ * WalkGreeted, ArriveGreeted. */
 int OutdoorVillagerMoves_UpdateGreeted(OutdoorVillagerBehaviour *self, u8 *villager)
 {
     static const MemberPointer *const steps[3] = {
@@ -584,7 +584,8 @@ CLEAN_AS(func_ov068_02268df8, OutdoorVillagerMoves_StartGreeter)
 
 /* ---- Behaviour 11: its fleas netted off */
 
-/* _ZN18Obj_ov068_022771c019func_ov068_02268f40Ei: behaviour 11's update: Turn11, Watch11. */
+/* _ZN18Obj_ov068_022771c019func_ov068_02268f40Ei: behaviour 11's update: TurnFleasGone,
+ * WatchFleasGone. */
 int OutdoorVillagerMoves_UpdateFleasGone(OutdoorVillagerBehaviour *self, u8 *villager)
 {
     static const MemberPointer *const steps[2] = {
@@ -715,12 +716,12 @@ static u8 *moves_target(OutdoorVillagerBehaviour *self)
     return *(u8 **) (void *) moves_at(self, MOVES_TARGET);
 }
 
-/* Gives up: behaviour 0, the word at 0xf4 1200, and its record's byte 0x1e lowered by 1
+/* Gives up: behaviour 0, `call_cooldown` 1200, and its record's byte 0x1e lowered by 1
  * (`halve` 0) or halved. Its record is asked for twice. */
 static void moves_give_up(OutdoorVillagerBehaviour *self, u8 *villager, int halve)
 {
     OutdoorVillagerBehaviour_Start(self, villager, OUTDOOR_VILLAGER_DO_DEFAULT);
-    self->unk_f4 = MOVES_GIVE_UP_FRAMES;
+    self->call_cooldown = MOVES_GIVE_UP_FRAMES;
     if (moves_record(villager) != NULL) {
         if (halve) {
             VillagerEntry_HalveByte1E(moves_record(villager));

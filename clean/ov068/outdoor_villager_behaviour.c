@@ -97,7 +97,7 @@ CLEAN_AS(func_ov068_0226cc00, OutdoorVillagerBehaviour_IsIdle)
 
 /* func_ov068_0226cc20: whether behaviour 7 calls this console's player over: there is a
  * player's object, the villager has a town record whose byte 0x1e is full
- * (VillagerEntry_IsByte1EFull), the current scene is not 31, the word at 0xf4 has run out, and
+ * (VillagerEntry_IsByte1EFull), the current scene is not 31, `call_cooldown` has run out, and
  * the player is within 7.0 of it and no further than data_ov068_02278264 either way of where it
  * faces. The town record is asked for twice. */
 int OutdoorVillagerBehaviour_CallsPlayer(OutdoorVillagerBehaviour *self, u8 *villager)
@@ -110,7 +110,7 @@ int OutdoorVillagerBehaviour_CallsPlayer(OutdoorVillagerBehaviour *self, u8 *vil
     if (SceneQuery_CurrentIs31() != 0) {
         return 0;
     }
-    if (self->unk_f4 > 0 || !full || player == 0) {
+    if (self->call_cooldown > 0 || !full || player == 0) {
         return 0;
     }
     u8 *object = (u8 *) (uintptr_t) (u32) player;
@@ -176,8 +176,8 @@ CLEAN_AS(func_ov068_0226cce8, OutdoorVillagerBehaviour_Start)
 
 /* func_ov068_0226cd34: a frame. `shown` is cleared once this console's player no longer shows
  * an insect or a fish; the running behaviour's update is called; then the countdowns run down:
- * the wait, the walks' four, the pairing's cooldown and the hold at 0x3a, and (only while the
- * villager's action is idle) the word at 0xf4, or once it is out the raise timer, and the held
+ * the wait, the walks' four, the pairing's cooldown and `net_hits_timer`, and (only while the
+ * villager's action is idle) `call_cooldown`, or once it is out the raise timer, and the held
  * item's check and hold; last behaviour 17's countdown.
  * REQUIRES: the running behaviour's row has an update. */
 void OutdoorVillagerBehaviour_Tick(OutdoorVillagerBehaviour *self, u8 *villager)
@@ -198,13 +198,13 @@ void OutdoorVillagerBehaviour_Tick(OutdoorVillagerBehaviour *self, u8 *villager)
     if (self->cooldown > 0) {
         self->cooldown--;
     }
-    if (self->hold_3a != 0) {
-        self->hold_3a--;
+    if (self->net_hits_timer != 0) {
+        self->net_hits_timer--;
     }
     if (SceneAction_IsBusy((const SceneAction *) (void *) ovb_at(villager, OUTDOOR_VILLAGER_ACTION)) == 0) {
         s32 *raise = ovb_word(self, BEHAVIOUR_RAISE);
-        if (self->unk_f4 > 0) {
-            self->unk_f4--;
+        if (self->call_cooldown > 0) {
+            self->call_cooldown--;
         } else if (*raise > 0) {
             (*raise)--;
         }
@@ -241,14 +241,14 @@ OutdoorVillagerBehaviour *OutdoorVillagerBehaviour_Construct(OutdoorVillagerBeha
     self->wait = 0;
     *ovb_half(self, BEHAVIOUR_WALK_TIME) = -1;
     *ovb_half(self, BEHAVIOUR_STEP_TIME) = 0;
-    self->unk_f4 = 0;
+    self->call_cooldown = 0;
     *ovb_word(self, BEHAVIOUR_RAISE) = 0;
     *ovb_word(self, BEHAVIOUR_WORD_28) = 0;
     *ovb_half(self, BEHAVIOUR_ITEM_CHECK) = 0;
     *ovb_half(self, BEHAVIOUR_ITEM_HOLD) = -1;
     *ovb_half(self, BEHAVIOUR_COUNT_2C) = 0;
-    self->count_38 = 0;
-    self->hold_3a = 0;
+    self->net_hits = 0;
+    self->net_hits_timer = 0;
     *ovb_half(self, BEHAVIOUR_PAUSE) = 0;
     *ovb_half(self, BEHAVIOUR_PAUSE_AGAIN) = 0;
     self->shown = 0;
