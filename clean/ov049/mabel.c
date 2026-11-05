@@ -307,7 +307,7 @@ static void mabel_walk_toward(Mabel *mabel, int distance, const Vec3 *step)
     SceneMover_SetStart(mabel_mover(mabel), step);
 }
 
-/* Whether the item code at `item` is empty (0xfff1, or a variant of the empty item). */
+/* Whether the item code at `item` is empty (0xfff1, or furniture of the empty item's number). */
 static int mabel_is_empty(u16 *item)
 {
     if (ItemCode_IsFurniture(item)) {

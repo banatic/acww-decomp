@@ -232,8 +232,8 @@ static int fox_tent_yaw_to_player(FoxTent *fox)
     return (int) (uintptr_t) SceneObject_YawToActor(fox->base, FOX_TENT_PLAYER_ACTOR);
 }
 
-/* Whether a code is the empty one: for a code with a variant, whether its item is the empty
- * code's item. */
+/* Whether a code is the empty one: for a furniture code, whether its furniture number is the
+ * empty code's. */
 static int fox_tent_no_item(u16 *item)
 {
     if (ItemCode_IsFurniture(item)) {

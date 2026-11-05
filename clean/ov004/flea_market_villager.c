@@ -158,7 +158,7 @@ static void fm_talk_slot_08(FleaMarketTalk *talk)
     ((void (*)(FleaMarketTalk *))(uintptr_t) code)(talk);
 }
 
-/* Whether `item` is `code`: for an item with a variant, the same item of any variant. */
+/* Whether `item` is `code`: for a furniture code, the same furniture facing any side. */
 static int fm_item_is(const u16 *item, u16 code)
 {
     if (ItemCode_IsFurniture(item)) {
@@ -227,8 +227,8 @@ CLEAN_AS(func_ov004_0221ef70, FleaMarketVillager_RequestItemTalk)
  * going on, its action idle, and button A pressed or the field tapped: the room object on the
  * tile 0x2000 ahead of the player (layer 0; when tapped, there must be an object at that tile
  * and it must be the one tapped, or with no object the tapped ground must be that tile) is
- * the item asked about (its number, variant 0); its tile is moved to the cell of the object
- * holding a variant code (RoomObject_FindVariantCell). That tile is kept when the villager has
+ * the item asked about (its number, facing side 0); its tile is moved to the cell of the object
+ * holding a furniture code (RoomObject_FindFurnitureCell). That tile is kept when the villager has
  * a record marking it among its house's spots and the item is none of 0x409c, 0x40a0 and 0x3820,
  * else (-1, -1). Whether an item was taken (1 also when it is not for sale). */
 int FleaMarketVillager_PickItemAhead(FleaMarketVillager *villager)
@@ -281,7 +281,7 @@ int FleaMarketVillager_PickItemAhead(FleaMarketVillager *villager)
     u16 item = ItemCode_MakeFurniture(RoomObject_Number(object), 0);
     int cell_x = x;
     int cell_z = z;
-    RoomObject_FindVariantCell(object, &cell_x, &cell_z, NULL, 0);
+    RoomObject_FindFurnitureCell(object, &cell_x, &cell_z, NULL, 0);
     VillagerFurnitureTile tile = {cell_x, cell_z};
     villager->item = item;
     if (fm_record(villager) != NULL &&

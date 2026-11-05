@@ -274,7 +274,7 @@ static void fmb_talk_slot_08(FleaMarketBuyerTalk *talk)
     ((void (*)(FleaMarketBuyerTalk *))(uintptr_t) code)(talk);
 }
 
-/* Whether `item` is `code`: for an item with a variant, the same item of any variant. */
+/* Whether `item` is `code`: for a furniture code, the same furniture facing any side. */
 static int fmb_item_is(const u16 *item, u16 code)
 {
     if (ItemCode_IsFurniture(item)) {
@@ -309,7 +309,7 @@ static void fmb_turn_and_talk(FleaMarketBuyer *buyer, int keep_camera)
     SceneAction_RequestTurnAndTalk(fmb_action_of(buyer), 0, angle, keep_camera);
 }
 
-/* The room's object of `number` becomes the item it wants: its item (variant 0), its centre and
+/* The room's object of `number` becomes the item it wants: its item (facing side 0), its centre and
  * the reach of its shape; the number is remembered among its last chosen. */
 static void fmb_choose(FleaMarketBuyer *buyer, int number)
 {
@@ -373,8 +373,8 @@ void FleaMarketBuyer_Remember(FleaMarketBuyer *buyer, u8 number)
 CLEAN_AS(func_ov004_0222005c, FleaMarketBuyer_Remember)
 
 /* func_ov004_02220084: whether it may want the room's object of `number`: there is one, it may
- * be taken (RoomObjects_IsIdleAt), its item (variant 0) is none of the player's designs nor
- * 0x409c, 0x40a0 or 0x3820 (by the variant's item), and it is not among its last chosen. */
+ * be taken (RoomObjects_IsIdleAt), its item (facing side 0) is none of the player's designs nor
+ * 0x409c, 0x40a0 or 0x3820 (by furniture number), and it is not among its last chosen. */
 int FleaMarketBuyer_MayBuy(FleaMarketBuyer *buyer, int number)
 {
     RoomObject *object = RoomObjects_At(RoomObjects_Table(), number);

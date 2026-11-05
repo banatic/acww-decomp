@@ -203,13 +203,13 @@ static BOOL fars2_talk_closed(const FieldActor *actor)
     return actor->link != NULL && actor->link->open == 0;
 }
 
-/* Whether `item` is the item for none, comparing variants when it has them. */
+/* Whether `item` is the item for none, by furniture number for a furniture code. */
 static int fars2_is_no_item(const ItemCode *item)
 {
     if (ItemCode_IsFurniture(item)) {
         ItemCode none = ITEM_CODE_NONE;
-        int variant = ItemCode_FurnitureNumber(item);
-        return variant == ItemCode_FurnitureNumber(&none);
+        int number = ItemCode_FurnitureNumber(item);
+        return number == ItemCode_FurnitureNumber(&none);
     }
     return *item == ITEM_CODE_NONE;
 }

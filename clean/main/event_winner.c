@@ -446,8 +446,8 @@ static int event_winner_has_kind(const EventWinner *record)
     return event_winner_is_contest(record) || record->date.unused == EVENT_WINNER_KIND_GARDENS;
 }
 
-/* Whether an item code is the empty one: for a code with a variant, whether its item is the
- * empty code's item. */
+/* Whether an item code is the empty one: for a furniture code, whether its furniture number is
+ * the empty code's. */
 static int event_winner_item_is_none(u16 *item)
 {
     if (ItemCode_IsFurniture(item)) {

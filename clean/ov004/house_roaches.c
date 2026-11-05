@@ -71,7 +71,7 @@ int HouseRoaches_ReadCount(Process *self)
 CLEAN_AS(func_ov004_0223e5f0, HouseRoaches_ReadCount)
 
 /* Whether the floor cell (x, z) of the room's map is empty: a cell whose unit allows it, with
- * no item (its variant's item compared, for an item with variants). */
+ * no item (by furniture number, for a furniture code). */
 static int floor_cell_empty(AcreMap *map, int x, int z)
 {
     if (AcreTile_UnitByte04(map, x, z) == 0) {
@@ -85,8 +85,8 @@ static int floor_cell_empty(AcreMap *map, int x, int z)
     }
     if (ItemCode_IsFurniture(item)) {
         u16 none = ITEM_CODE_NONE;
-        int variant = ItemCode_FurnitureNumber(item);
-        return variant == ItemCode_FurnitureNumber(&none);
+        int number = ItemCode_FurnitureNumber(item);
+        return number == ItemCode_FurnitureNumber(&none);
     }
     return *item == ITEM_CODE_NONE;
 }

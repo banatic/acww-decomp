@@ -1,5 +1,5 @@
 /* The forms an item takes. An item carried (in pockets, kind 1 codes 0x11a8-0x155c) is put in
- * a room as a code of kind 3 or 4 (four codes per item, the low two bits a variant), and a few
+ * a room as a code of kind 3 or 4 (four codes per item, the low two bits the side it faces), and a few
  * of them outdoors as a code of kind 0; ItemForm_ToPlaced and ItemForm_ToCarried convert
  * between them by these ranges:
  *
@@ -21,7 +21,7 @@
  * is the first of the two the item tests accept (func_0204be38, func_0204bd84), else 0x137c.
  *
  * Also here: the fox's 20 forged paintings 0x38e4-0x3933 (named as the genuine paintings
- * 0x3894-0x38e3 are) are revealed as the 20 fake paintings after them (0x3934-0x3983, variant
+ * 0x3894-0x38e3 are) are revealed as the 20 fake paintings after them (0x3934-0x3983, side
  * 0) everywhere items are kept (ItemForm_RevealForgeries), each time the town moves on by days
  * (TownDay_Pass). */
 #ifndef CLEAN_MAIN_ITEM_FORM_H

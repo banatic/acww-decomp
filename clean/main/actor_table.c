@@ -82,8 +82,8 @@ void ActorTable_Init(ActorTable *table)
 }
 CLEAN_AS(func_02082ba0, ActorTable_Init)
 
-/* Whether an entry is under `code`. QUIRK: an entry under a code of kind 3 or 4 is under every
- * variant of its item: only the codes' items are compared, and the code looked for is taken as
+/* Whether an entry is under `code`. QUIRK: an entry under a code of kind 3 or 4 is under its
+ * furniture facing any side: only the codes' furniture numbers are compared, and the code looked for is taken as
  * one of kind 3 or 4 whatever its kind. */
 static BOOL entry_is_under(const ActorEntry *entry, const ItemCode *code)
 {

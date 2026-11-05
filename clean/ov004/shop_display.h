@@ -9,7 +9,7 @@
  *
  * Each shop has a layout (ShopDisplay_Layout): a spot kind for each tile of the room, 16 rows of
  * 16. An item goes on the first empty tile, row by row, whose kind is the item's
- * (ShopDisplay_SpotKind): 0x19 for an item with variants, 0x42 for one held with a model (and
+ * (ShopDisplay_SpotKind): 0x19 for a piece of furniture, 0x42 for one held with a model (and
  * item 0x156c), 9 for 0x13a8-0x13c7, else the item's class. Two items of one kind take that
  * kind's tiles in their order. */
 #ifndef CLEAN_OV004_SHOP_DISPLAY_H

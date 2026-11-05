@@ -642,7 +642,7 @@ void PlayerRecord_OpenDeliveries(u8 *record)
         return;
     }
     VillagerPartEntry_Clear(
-        (VillagerPartEntry *) (void *) VillagerPart_Object94((VillagerPart *) (void *) PlayerRecord_VillagerPart(record)));
+        (VillagerPartEntry *) (void *) VillagerPart_Entry((VillagerPart *) (void *) PlayerRecord_VillagerPart(record)));
     PlayerPockets *pockets = PlayerRecord_Pockets(record);
     u16 *slot = PlayerPockets_Slot(pockets, 0);
 

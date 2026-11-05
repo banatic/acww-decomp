@@ -25,7 +25,7 @@ static_assert(sizeof(ShopDisplay) == 0x58, "the process");
 #define SHOP_DISPLAY_SCENE_NOOK_UNSTOCKED 0x1f /* the last of Nook's: nothing put out */
 
 /* The eight fixed items of scene 0xa, four codes apart, put on the tiles (6-9, 10-11); with
- * their variants they are 0x3e04-0x3e23. */
+ * their four sides they are 0x3e04-0x3e23. */
 #define SHOP_DISPLAY_FIXED_FIRST 0x3e04
 #define SHOP_DISPLAY_FIXED_LAST 0x3e23
 #define SHOP_DISPLAY_FIXED_STEP 4
@@ -85,8 +85,8 @@ extern void __register_global_object(void *object, void *destruct, void *record)
 /* The destructor of an item code (TrivialObject_DestructItemCode), as the game registers it. */
 extern void func_020051b0(void *item);
 
-/* Whether `item` is the code `code`: for an item with variants, the same item (the item's
- * variant item read first). */
+/* Whether `item` is the code `code`: for a furniture code, the same furniture number (the
+ * item's read first). */
 static int ShopDisplay_is_code(u16 *item, u16 code)
 {
     if (ItemCode_IsFurniture(item)) {
@@ -439,8 +439,8 @@ ShopDisplay *ShopDisplay_Construct(ShopDisplay *self)
 }
 CLEAN_AS(func_ov004_02246828, ShopDisplay_Construct)
 
-/* func_ov004_02246848: the spot kind of `item` (in its carried form): 0x19 for an item with
- * variants, 0x42 for one held with a model and for the timer 0x156c, 9 for the hats
+/* func_ov004_02246848: the spot kind of `item` (in its carried form): 0x19 for a piece of
+ * furniture, 0x42 for one held with a model and for the timer 0x156c, 9 for the hats
  * 0x13a8-0x13c7, else the item's class. */
 int ShopDisplay_SpotKind(u16 *item)
 {

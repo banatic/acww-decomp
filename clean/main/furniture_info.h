@@ -1,5 +1,5 @@
-/* What the game knows of each piece of furniture, by its number (the item code's item without
- * its variant, ItemCode_FurnitureNumber: 0-0x6e8), from three files of fixed-size records held at
+/* What the game knows of each piece of furniture, by its number (the item code without the
+ * side it faces, ItemCode_FurnitureNumber: 0-0x6e8), from three files of fixed-size records held at
  * data_021c8c48 (func_02053ea4 opens them, each a record file of 0x1c bytes):
  *   - /ftr_info/always.bin, 8-byte records, all kept in memory (func_0206e6ec gives it);
  *   - /ftr_info/indoor.bin, 4-byte records, read eight at a time (func_0206e6e8, at 0x1c);
@@ -7,7 +7,7 @@
  * A number past the last is read as the last; a record that cannot be had reads as 0.
  *
  * The functions named FurnitureInfo_Item* take an item code and answer 0 for a code of a kind
- * without a variant (not furniture). Fields whose meaning is not known keep their offset in
+ * that is not furniture. Fields whose meaning is not known keep their offset in
  * their name. */
 #ifndef CLEAN_MAIN_FURNITURE_INFO_H
 #define CLEAN_MAIN_FURNITURE_INFO_H

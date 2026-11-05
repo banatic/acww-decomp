@@ -20,7 +20,7 @@ static_assert(sizeof(PlayerDesignObject) == 0x848, "the size PlayerDesignObject_
 #define PLAYER_DESIGN_OBJECT_SIZE 0x848
 #define PLAYER_DESIGN_NO_NODE (-1)
 #define PLAYER_DESIGN_RANGES 4
-#define PLAYER_DESIGN_RANGE_CODES 0x80 /* 4 players by 8 designs by 4 variants */
+#define PLAYER_DESIGN_RANGE_CODES 0x80 /* 4 players by 8 designs by 4 sides */
 #define PLAYER_DESIGNS_PER_PLAYER 8
 
 /* The first codes of the four ranges, in the order they are tried (any: they do not overlap). */

@@ -151,7 +151,7 @@ static PlayerField2416 *gt_field(u8 *record)
     return (PlayerField2416 *) (void *) PlayerRecord_Field2416(record);
 }
 
-/* Whether `item` is "nothing": an item with variants is compared without its variant. */
+/* Whether `item` is "nothing": a furniture code is compared by its furniture number. */
 static int gt_is_none(const u16 *item)
 {
     if (ItemCode_IsFurniture(item)) {

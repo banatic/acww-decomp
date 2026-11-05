@@ -303,8 +303,8 @@ void EventBuildings_PutFoxTent(void)
 }
 CLEAN_AS(func_020b2f28, EventBuildings_PutFoxTent)
 
-/* func_020b2f38: the building at the event spot removed when it is building `code` (for a code
- * with a variant, when their items are the same); what removing it answered, or 0.
+/* func_020b2f38: the building at the event spot removed when it is building `code` (for a
+ * furniture code, when their furniture numbers are the same); what removing it answered, or 0.
  * QUIRK: the range is checked on the code cut to 16 bits, the plain comparison on the whole
  * int, so a code with high bits matches only through its item. */
 int EventBuildings_RemoveAtSpot(int code)
@@ -409,14 +409,14 @@ CLEAN_AS(func_020b3038, EventBuildings_FindSpot)
 
 #define EVENT_BUILDINGS_SPACESHIP_PART 0x1568
 
-/* Whether the code is spaceship part 0x1568: for a code with a variant, whether its item is 0x1568's
+/* Whether the code is spaceship part 0x1568: for a furniture code, whether its number is 0x1568's
  * (asked again for each tile). */
 static int event_buildings_is_spaceship_part(const u16 *code)
 {
     if (ItemCode_IsFurniture(code)) {
         u16 item = EVENT_BUILDINGS_SPACESHIP_PART;
-        int variant = ItemCode_FurnitureNumber(code);
-        return variant == ItemCode_FurnitureNumber(&item);
+        int number = ItemCode_FurnitureNumber(code);
+        return number == ItemCode_FurnitureNumber(&item);
     }
     return *code == EVENT_BUILDINGS_SPACESHIP_PART;
 }

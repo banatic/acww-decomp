@@ -73,12 +73,12 @@ void RoomPreview_Clear(RoomPreview *preview)
 }
 CLEAN_AS(func_ov004_0223d064, RoomPreview_Clear)
 
-/* Whether two items are the same: by their variants' item for an item with variants. */
+/* Whether two items are the same: by furniture number for a furniture code. */
 static int same_item(ItemCode *item, ItemCode *other)
 {
     if (ItemCode_IsFurniture(item) != 0) {
-        int variant = ItemCode_FurnitureNumber(item);
-        return variant == ItemCode_FurnitureNumber(other);
+        int number = ItemCode_FurnitureNumber(item);
+        return number == ItemCode_FurnitureNumber(other);
     }
     return *item == *other;
 }

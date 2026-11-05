@@ -4,7 +4,7 @@
  * Items are kept packed to the front (VillagerItems_Pack); a new one goes into the first empty
  * place, or when all four are taken pushes the oldest (the first) out. Every change is sent to
  * the other systems of a linked session (SessionVillager_SendItems, session_villager.h). An
- * item of kind 3 or 4 matches whatever its variant (func_0204bc64). */
+ * item of kind 3 or 4 matches whatever side it faces (ItemCode_FurnitureNumber). */
 #ifndef CLEAN_MAIN_VILLAGER_ITEMS_H
 #define CLEAN_MAIN_VILLAGER_ITEMS_H
 

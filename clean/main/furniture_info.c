@@ -55,7 +55,7 @@ static int always_flag(const FurnitureAlways *record, int bit)
 }
 
 /* func_020534ec: how many numbers are in series `group`.
- * QUIRK: each number's code with variant 0 is made and dropped. The count is kept in 8 bits. */
+ * QUIRK: each number's code facing side 0 is made and dropped. The count is kept in 8 bits. */
 u8 FurnitureInfo_CountInSeries(u32 group)
 {
     u8 count = 0;
@@ -70,8 +70,8 @@ u8 FurnitureInfo_CountInSeries(u32 group)
 CLEAN_AS(func_020534ec, FurnitureInfo_CountInSeries)
 
 /* func_0205352c: how many numbers below the item's are in the item's series (its place in its
- * series); 0 when no number matches the item. Each number is made into a code with variant 0 and
- * compared with the item by number (or by code, for a code without a variant, which never
+ * series); 0 when no number matches the item. Each number is made into a code facing side 0 and
+ * compared with the item by number (or by code, for a code that is not furniture, which never
  * happens). The count is cut to 8 bits. */
 u8 FurnitureInfo_IndexInSeries(const ItemCode *item)
 {

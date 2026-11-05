@@ -137,8 +137,8 @@ int NameText_SetSeries(int text, int series)
 CLEAN_AS(func_02062e80, NameText_SetSeries)
 
 /* func_02062ea4: the text set to the name of the item `item` stands for when carried
- * (ItemForm_ToCarried), from its dma.bin record: an item of kind 1 by item_info.h, one with a
- * variant by furniture_info.h; the attributes' fields 0x04, 0x09 and 0x08 set from the three
+ * (ItemForm_ToCarried), from its dma.bin record: an item of kind 1 by item_info.h, a piece of
+ * furniture by furniture_info.h; the attributes' fields 0x04, 0x09 and 0x08 set from the three
  * values their files give for it (all -1). 1 then, 0 for an item of another kind (nothing
  * set). */
 int NameText_SetItem(NameText *text, u16 *item)

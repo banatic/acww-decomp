@@ -317,11 +317,11 @@ void BedObject_UpdatePlace(BedObject *object)
 }
 CLEAN_AS(func_ov004_02217a38, BedObject_UpdatePlace)
 
-/* func_ov004_02217ac4 (entry of PLACE): the cell for the item (RoomObject_FindVariantCell, its
+/* func_ov004_02217ac4 (entry of PLACE): the cell for the item (RoomObject_FindFurnitureCell, its
  * answer dropped), then it shrinks away. */
 int BedObject_EnterPlace(BedObject *object)
 {
-    RoomObject_FindVariantCell(&object->base, &object->cell_x, &object->cell_y, NULL, 0);
+    RoomObject_FindFurnitureCell(&object->base, &object->cell_x, &object->cell_y, NULL, 0);
     RoomObject_Shrink(&object->base);
     return 1;
 }

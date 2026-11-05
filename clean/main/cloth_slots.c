@@ -48,8 +48,8 @@ static int cloth_slots_in(ItemCode item, ItemCode first, ItemCode last)
     return item >= first && item <= last;
 }
 
-/* Whether the slot holding `held` already holds `item`: the same item for an item with
- * variants (ItemCode_FurnitureNumber), else the same code. */
+/* Whether the slot holding `held` already holds `item`: the same furniture number for a
+ * furniture code (ItemCode_FurnitureNumber), else the same code. */
 static int cloth_slots_same(ItemCode *item, ItemCode *held)
 {
     if (ItemCode_IsFurniture(item)) {
@@ -201,8 +201,8 @@ void ClothSlots_ConstructSlot(unsigned char *slot)
 }
 CLEAN_AS(func_0205d520, ClothSlots_ConstructSlot)
 
-/* func_0205d528: the first slot that holds `*item` (for an item with variants, the same item
- * in any variant); CLOTH_SLOTS_COUNT when none does. */
+/* func_0205d528: the first slot that holds `*item` (for a furniture code, the same furniture
+ * facing any side); CLOTH_SLOTS_COUNT when none does. */
 int ClothSlots_Find(ClothSlots *slots, ItemCode *item)
 {
     for (int i = 0; i < CLOTH_SLOTS_COUNT; i++) {

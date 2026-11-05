@@ -1,4 +1,4 @@
-/* Putting a piece of furniture down in the room (an item code with a variant, ItemCode_IsFurniture):
+/* Putting a piece of furniture down in the room (a furniture code, ItemCode_IsFurniture):
  * finding cells near an actor where its footprint (item_footprint.h) is free, on the floor or
  * on top of other furniture, and making the placement value (Placement_Make, room_object_body.h)
  * that RoomObjects_Spawn turns into the room object.
@@ -13,7 +13,7 @@
 #include "main/lookups.h" /* ItemCode */
 
 enum RoomPlacementResult {
-    ROOM_PLACEMENT_NOT_FURNITURE = 0, /* not an item with a variant, not in a house's room, or no player */
+    ROOM_PLACEMENT_NOT_FURNITURE = 0, /* not furniture, not in a house's room, or no player */
     ROOM_PLACEMENT_ROOM_FULL = 1,     /* no free entry in the table of the room's objects */
     ROOM_PLACEMENT_NO_SPACE = 2,
     ROOM_PLACEMENT_PLACED = 3

@@ -311,7 +311,7 @@ int RoomSync_RequestStateAt(int x, int y, int layer, int state, u8 value, u8 fla
 }
 CLEAN_AS(func_020525a4, RoomSync_RequestStateAt)
 
-/* func_0205265c: RoomSync_RequestStateAt at the object's cell (RoomObject_FindVariantCell) and
+/* func_0205265c: RoomSync_RequestStateAt at the object's cell (RoomObject_FindFurnitureCell) and
  * layer, sent; 0 outside the room shown or without a cell. */
 int RoomSync_RequestState(RoomObject *object, int state, int value, int flag)
 {
@@ -320,7 +320,7 @@ int RoomSync_RequestState(RoomObject *object, int state, int value, int flag)
     }
     int x;
     int y;
-    if (!RoomObject_FindVariantCell(object, &x, &y, NULL, 0)) {
+    if (!RoomObject_FindFurnitureCell(object, &x, &y, NULL, 0)) {
         return 0;
     }
     return RoomSync_RequestStateAt(x, y, RoomObject_Layer(object), state, (u8) value, (u8) flag, 1);
@@ -357,7 +357,7 @@ int RoomSync_SetState(RoomObject *object, int state, int value, int flag)
     }
     int x;
     int y;
-    if (!RoomObject_FindVariantCell(object, &x, &y, NULL, 0)) {
+    if (!RoomObject_FindFurnitureCell(object, &x, &y, NULL, 0)) {
         return 0;
     }
     return RoomSync_SetStateAt(x, y, RoomObject_Layer(object), state, (u8) value, (u8) flag, 1);

@@ -4,7 +4,7 @@
  *
  * A room is a map of acres of one acre (acre_map.h) whose tiles hold item codes on two
  * layers; RoomScore_Bounds finds the square the room's floor covers. Its furniture (the codes
- * with a variant, item_code.h) is scored by what furniture_info.h tells of each piece:
+ * 0x3000-0x4fff, item_code.h) is scored by what furniture_info.h tells of each piece:
  *   - its points (func_0206226c of FurnitureInfo_ListGroup);
  *   - the groups it belongs to (FurnitureInfo_ItemSeries and _IndexInSeries): a group of kind
  *     0 complete with all 12 pieces scores 30000, with its first 10 and a wallpaper or carpet

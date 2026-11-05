@@ -82,7 +82,7 @@ static int VillagerImpression_InRange(u16 code, u16 first, u16 last)
     return code >= first && code <= last;
 }
 
-/* Whether the head's item is `wanted`, whatever its variant for a code of kind 3 or 4. */
+/* Whether the head's item is `wanted`, whatever side it faces for a code of kind 3 or 4. */
 static int VillagerImpression_HeadIs(u8 *record, u16 wanted)
 {
     u16 *head = PlayerRecord_HeadItem(record);

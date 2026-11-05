@@ -58,7 +58,7 @@ static ItemCode *item_on_cell(void *map, s32 x, s32 y)
     return AcreTile_ItemInAcre(map, shift_right(x, 4), shift_right(y, 4), x & (BLOCK_CELLS - 1), y & (BLOCK_CELLS - 1), 1);
 }
 
-/* Whether `item` is "nothing": an item with variants is compared without its variant. */
+/* Whether `item` is "nothing": a furniture code is compared by its furniture number. */
 static int is_none(const ItemCode *item)
 {
     if (ItemCode_IsFurniture(item)) {

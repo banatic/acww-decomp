@@ -76,8 +76,8 @@ typedef struct ItemMap {
 #define ROOMS 5
 
 /* The item codes that stand for one of a player's eight designs, eight per player in player
- * order. On the town map one code each; in the rooms four codes each (the low two bits are a
- * variant, ITEM_CODE_FURNITURE_BASE) in four ranges; and the two codes at 0x448 and 0x44a of the
+ * order. On the town map one code each; in the rooms four codes each (the low two bits are the
+ * side it faces, ITEM_CODE_FURNITURE_BASE) in four ranges; and the two codes at 0x448 and 0x44a of the
  * records at data_021ebcd4, which get 0x113e and 0x1182 back. */
 #define TOWN_DESIGN_FIRST 0xa7
 #define TOWN_DESIGN_LAST 0xc6

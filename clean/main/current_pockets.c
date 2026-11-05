@@ -30,8 +30,8 @@ typedef struct CurrentPocketsItemList {
     int group;
 } CurrentPocketsItemList;
 
-/* Whether the slot's item is `*item`: for codes with a variant (ItemCode_IsFurniture), the item
- * without its variant is compared. */
+/* Whether the slot's item is `*item`: for furniture codes (ItemCode_IsFurniture), their
+ * furniture numbers are compared. */
 static int current_pockets_same_item(const u16 *slot, const u16 *item)
 {
     if (ItemCode_IsFurniture(slot)) {

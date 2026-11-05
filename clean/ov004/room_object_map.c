@@ -271,7 +271,7 @@ void RoomObject_MoveOnMap(RoomObject *object, Vec3 *offset, int turn)
 CLEAN_AS(func_ov004_0220ee90, RoomObject_MoveOnMap)
 
 /* func_ov004_0220ef14: puts the object on the map as it would be moved by `offset` and turned
- * by `turn`: its item code, with the side it faces as variant, goes into the map's record at
+ * by `turn`: its item code, with the side it faces in its low two bits, goes into the map's record at
  * its first cell (RoomSync_PutFurniture), and the object into the room's grid at each of its cells.
  * With `update_reference`, its reference (RoomObject_Reference) is kept when it changed. An
  * object on top of another faces the way the matrix RoomObject_ListCells left says. Nothing
@@ -337,8 +337,8 @@ void RoomObject_PutOnMap(RoomObject *object, int unused, Vec3 *offset, int turn,
 CLEAN_AS(func_ov004_0220ef14, RoomObject_PutOnMap)
 
 /* func_ov004_0220f100: takes the object off the map: its item code out of the map's record
- * (RoomSync_TakeFurniture, with `with_top` and `flag`) at each cell where the map holds an item with a
- * variant, and the object out of the room's grid at each cell. With `with_top`, an object on
+ * (RoomSync_TakeFurniture, with `with_top` and `flag`) at each cell where the map holds a furniture
+ * code, and the object out of the room's grid at each cell. With `with_top`, an object on
  * the floor also leaves the grid's layer 1 where that holds one. Nothing for a preview. */
 void RoomObject_TakeOffMap(RoomObject *object, u8 flag, int with_top)
 {
@@ -369,7 +369,7 @@ void RoomObject_TakeOffMap(RoomObject *object, u8 flag, int with_top)
 }
 CLEAN_AS(func_ov004_0220f100, RoomObject_TakeOffMap)
 
-/* func_ov004_0220f218: the object's item code with the side `angle` faces as its variant, into
+/* func_ov004_0220f218: the object's item code with the side `angle` faces in its low two bits, into
  * `code` and as the result. */
 int RoomObject_FacingItemCode(ItemCode *code, RoomObject *object, int angle)
 {

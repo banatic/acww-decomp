@@ -95,8 +95,8 @@ static u32 address(const void *p)
     return (u32) (uintptr_t) p;
 }
 
-/* Whether two item codes are the same furniture; codes with variants are compared without
- * them. */
+/* Whether two item codes are the same furniture; furniture codes are compared by
+ * furniture number. */
 static int same_item(const ItemCode *a, const ItemCode *b)
 {
     if (ItemCode_IsFurniture(a)) {

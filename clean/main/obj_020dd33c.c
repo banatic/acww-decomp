@@ -411,8 +411,8 @@ int Obj020dd33c_IsActor(Obj020dd33c *obj, void *actor, unsigned int index)
 }
 CLEAN_AS(func_0205996c, Obj020dd33c_IsActor)
 
-/* The reach of the actors' nearness: 0x4000 in scenes 9 and 0x10 for the item 0x1565 (or a
- * variant of it) looked as itself and for the items 0x1492-0x14fd looked as model 0x27; 0x1500
+/* The reach of the actors' nearness: 0x4000 in scenes 9 and 0x10 for the item 0x1565 (by furniture
+ * number for a furniture code) looked as itself and for the items 0x1492-0x14fd looked as model 0x27; 0x1500
  * otherwise. */
 extern const fx32 data_020cbaf8;
 extern const fx32 data_020cbafc;
@@ -435,8 +435,8 @@ int Obj020dd33c_Begin(Obj020dd33c *obj, u16 *item, int look, u8 stage, int kind,
     int is_1565;
     if (ItemCode_IsFurniture(&obj->item)) {
         ItemCode other = 0x1565;
-        int variant = ItemCode_FurnitureNumber(&obj->item);
-        is_1565 = variant == ItemCode_FurnitureNumber(&other);
+        int number = ItemCode_FurnitureNumber(&obj->item);
+        is_1565 = number == ItemCode_FurnitureNumber(&other);
     } else {
         is_1565 = obj->item == 0x1565;
     }

@@ -91,8 +91,8 @@ static int item_info_flag(const u16 *item, int bit)
     return record != NULL ? (record->flags >> bit) & 1 : 0;
 }
 
-/* Whether two codes are the same item: by their numbers for codes with a variant (as `a`
- * has one), else by the codes. `a`'s number is asked for first. */
+/* Whether two codes are the same item: by their furniture numbers when `a` is a
+ * furniture code, else by the codes. `a`'s number is asked for first. */
 static int item_info_same(const u16 *a, const u16 *b)
 {
     if (ItemCode_IsFurniture(a)) {

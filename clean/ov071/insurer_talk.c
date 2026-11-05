@@ -117,7 +117,7 @@ static PocketPredicate it_claim_test(void)
     return (PocketPredicate) (void (*)(void)) func_ov071_022790f0;
 }
 
-/* Whether `item` is "nothing": an item with variants is compared without its variant. */
+/* Whether `item` is "nothing": a furniture code is compared by its furniture number. */
 static int it_is_none(const u16 *item)
 {
     if (ItemCode_IsFurniture(item)) {

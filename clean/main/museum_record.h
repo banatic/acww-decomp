@@ -11,8 +11,8 @@
 
 #include "types.h"
 
-/* The four groups' item codes. The fossils come in four variants (the low two bits), which
- * share one entry; the others have one entry each. */
+/* The four groups' item codes. The fossils are furniture codes facing four sides (the low two bits),
+ * which share one entry; the others have one entry each. */
 #define MUSEUM_FOSSIL_FIRST 0x450c /* 52 items, 4 codes apart */
 #define MUSEUM_FOSSIL_LAST 0x45db
 #define MUSEUM_FOSSILS 52

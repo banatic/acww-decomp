@@ -20,7 +20,7 @@ static_assert(sizeof(ShopDesignObject) == 0x88c, "the size ShopDesignObject_Crea
 static_assert(offsetof(RoomObject, sound) == 0x798, "the object's centre is at 0x7b8");
 
 #define SHOP_DESIGN_OBJECT_SIZE 0x88c
-#define SHOP_DESIGN_ITEM_FIRST 0x3e04 /* four codes (variants) a design */
+#define SHOP_DESIGN_ITEM_FIRST 0x3e04 /* four codes (sides) a design */
 #define SHOP_DESIGN_ITEM_LAST 0x3e23
 #define SHOP_DESIGNS_MASK 7
 #define SHOP_DESIGN_SOUND 0x50 /* played when the shop's design changes */

@@ -615,7 +615,7 @@ CLEAN_AS(func_ov004_0221ebf8, RoomVillagerMachine_Construct)
 
 /* func_ov004_0221ec04 (vtable slot 0x68, its update): the machine updated. In a linked session,
  * unless its speaker animation is number 6, a villager with a record wearing other clothes
- * than the record's (compared by the variant's item for clothes with a variant) changes into the
+ * than the record's (compared by furniture number for a furniture code) changes into the
  * record's when those are clothes (0x11a8-0x12a7). Then its mood is updated; 1. */
 int RoomVillager_RunState(RoomVillager *villager)
 {

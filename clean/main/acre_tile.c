@@ -60,7 +60,7 @@ static int acre_tile_is_building(u16 code)
 }
 
 /* func_0204eb1c: puts building `building` down at (x, z) (AcreTile_StampBuilding) and adds
- * the code the tile held to the list of replaced items when it is of kind 1 or has a variant;
+ * the code the tile held to the list of replaced items when it is of kind 1 or furniture;
  * 1 when the building went down. With `to_handler` set and the object of overlay 3 present,
  * the building goes to that object instead (func_ov003_02220460) and its answer is returned.
  * QUIRK: AcreTile_PutBuilding has added that code to the list already, so it goes in twice. */
@@ -230,7 +230,7 @@ static int acre_tile_grows(u32 code)
            (code >= 0x66 && code <= 0x6d) || (code >= 0xc8 && code <= 0xcf);
 }
 
-/* Whether a code is ACRE_TILE_ITEM_OCCUPIED; for a code with a variant, whether its item is. */
+/* Whether a code is ACRE_TILE_ITEM_OCCUPIED; for a furniture code, whether its furniture number is. */
 static int acre_tile_is_occupied(u16 *code)
 {
     if (ItemCode_IsFurniture(code)) {
@@ -245,7 +245,7 @@ static int acre_tile_is_occupied(u16 *code)
  * (a building's code) covers; 1 when *building has a shape, else 0 and nothing changes.
  *
  * First the code tile (x, z) holds goes to the list of replaced items when it is of kind 1 or
- * has a variant (whatever the outcome). For each covered tile: its code goes to that list in
+ * is furniture (whatever the outcome). For each covered tile: its code goes to that list in
  * the same case unless the session is linked; a snowman's object there removes the snowman's
  * record; the tile gets *fill and loses its bit. When *fill is ACRE_TILE_ITEM_OCCUPIED (the
  * building is being put down), the tiles of the shape's second list are emptied, except those

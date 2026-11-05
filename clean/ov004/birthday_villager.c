@@ -1016,7 +1016,7 @@ int BirthdayVillagerTalk_ChangeFondness(BirthdayVillagerTalk *talk, int delta)
 CLEAN_AS(func_ov004_0221cee4, BirthdayVillagerTalk_ChangeFondness)
 
 /* The items that go with the villager's modes 0 to 3 (insects and fish for 0 and 1, see
- * ov098/pockets_town.c); mode 4 takes items with a variant outside mode 2's range. */
+ * ov098/pockets_town.c); mode 4 takes furniture outside mode 2's range. */
 #define BIRTHDAY_VILLAGER_INSECT_FIRST 0x12b0
 #define BIRTHDAY_VILLAGER_INSECT_LAST 0x12e7
 #define BIRTHDAY_VILLAGER_FISH_FIRST 0x12e8
@@ -1033,7 +1033,7 @@ static int birthday_villager_item_in(const u16 *item, u16 first, u16 last)
 
 /* func_ov004_0221cf00: whether `item` goes with the mode of the villager's record: mode 0 an
  * insect (0x12b0-0x12e7), 1 a fish (0x12e8-0x131f), 2 an item 0x450c-0x45db, 3 an item
- * 0x11a8-0x12a7, 4 an item with a variant (ItemCode_IsFurniture) outside 0x450c-0x45db; other
+ * 0x11a8-0x12a7, 4 a piece of furniture (ItemCode_IsFurniture) outside 0x450c-0x45db; other
  * modes, a villager without a record or a talk scene without a villager, none. */
 int BirthdayVillagerTalk_LikesItem(BirthdayVillagerTalk *talk, u16 *item)
 {
@@ -1364,7 +1364,7 @@ int BirthdayVillager_Init(BirthdayVillager *villager)
 CLEAN_AS(func_ov004_0221d2d0, BirthdayVillager_Init)
 
 /* func_ov004_0221d468 (the pockets screen's predicate, given to Pockets_Select): a slot in state
- * 0 holding an item (for an item with a variant, one whose variant item is not that of "no
+ * 0 holding an item (for a furniture code, one whose furniture number is not that of "no
  * item"); no slot in another state. */
 int BirthdayVillager_CanOffer(u16 *item, int state)
 {
@@ -1374,8 +1374,8 @@ int BirthdayVillager_CanOffer(u16 *item, int state)
     int empty;
     if (ItemCode_IsFurniture(item)) {
         ItemCode none = ITEM_CODE_NONE;
-        int variant = ItemCode_FurnitureNumber(item);
-        empty = variant == ItemCode_FurnitureNumber(&none);
+        int number = ItemCode_FurnitureNumber(item);
+        empty = number == ItemCode_FurnitureNumber(&none);
     } else {
         empty = *item == ITEM_CODE_NONE;
     }

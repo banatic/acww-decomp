@@ -1,6 +1,6 @@
 /* The cells an item covers (its footprint), from its item code: the shape its furniture data
- * gives (byte 5 of its entry, func_02053be0) and the side it faces (the code's variant,
- * func_0204bc7c). The game's table data_020dcfe0 has three shapes: one cell, two cells (in a
+ * gives (byte 5 of its entry, func_02053be0) and the side it faces (the code's low two bits,
+ * ItemCode_Side). The game's table data_020dcfe0 has three shapes: one cell, two cells (in a
  * row that turns with the side) and two by two. Each lists, for each side, the cells as
  * offsets from the item's own cell. */
 #ifndef CLEAN_MAIN_ITEM_FOOTPRINT_H

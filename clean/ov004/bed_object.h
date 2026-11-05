@@ -30,7 +30,7 @@
  *   BedObject_CanTakeItem accepts; SWAP (11): once group 9 can open again, with an item
  *   chosen (GroupParams_C4CIs1) that item is kept (BedObject.item) and the pockets'
  *   slot gets this object's item instead, else the scene goes on;
- * - PLACE (12) shrinks it away at the cell RoomObject_FindVariantCell finds and then places the
+ * - PLACE (12) shrinks it away at the cell RoomObject_FindFurnitureCell finds and then places the
  *   kept item there (RoomObjects_Spawn); VANISH (13) waits 22 frames, lets the scene go on and
  *   deletes the object.
  *
@@ -55,7 +55,7 @@ typedef struct BedObject {
     u16 wait;      /* frames waited in WAIT */
     u16 wait_gone; /* frames waited in VANISH */
     u8 unk_84e[2];
-    int cell_x; /* where the kept item is placed (RoomObject_FindVariantCell) */
+    int cell_x; /* where the kept item is placed (RoomObject_FindFurnitureCell) */
     int cell_y;
     s32 mode; /* BedObjectMode */
     u16 item; /* the item taken from the pockets, 0xfff1 for none */

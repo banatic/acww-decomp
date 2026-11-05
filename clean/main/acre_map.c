@@ -51,8 +51,8 @@ static u8 *acre_map_acre_at(const AcreMap *map, int x, int z)
     return NULL;
 }
 
-/* Whether a code is the empty one: for a code with a variant, whether its item is the empty
- * code's item. */
+/* Whether a code is the empty one: for a furniture code, whether its furniture number is the
+ * empty code's. */
 static int acre_map_item_is_none(u16 *item)
 {
     if (ItemCode_IsFurniture(item)) {

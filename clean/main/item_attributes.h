@@ -1,6 +1,6 @@
 /* Items by their attributes in the item table (func_020535f0 and its neighbours).
  *
- * The items 0x450c-0x45db are the 52 fossils in steps of four (the low two bits a variant);
+ * The items 0x450c-0x45db are the 52 fossils in steps of four (the low two bits the side, as for any furniture);
  * each has a kind (func_020535f0, 0 for other codes), the creature it is of, which the parts of
  * one dinosaur share. Ten of the kinds, all of fossils in several parts, are listed in
  * data_020d1a60 (22, 23, 10, 11, 12, 13, 15, 16, 21, 20); a villager's object keeps one of them

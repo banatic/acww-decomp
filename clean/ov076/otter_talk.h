@@ -16,7 +16,7 @@
  *                else line 5 (OtterTalk_AfterPockets);
  *   lines 10/11: he gives the item 0x4a38 (line 10) or 0x1373 (line 11) into the pockets, the
  *                current player's daily bit 0x18 is set, line 0xc;
- *   line 12:     line 0x33 when the item he gave is 0x4a38 (as its variant's item), else 0xfd;
+ *   line 12:     line 0x33 when the item he gave is 0x4a38 (by furniture number), else 0xfd;
  *   lines 13/14: unless he gave something already, with a free pocket he gives an item drawn
  *                from the item lists (kind 0 in 7 of 9 draws, kind 4 or kind 3 in one each, all
  *                of group 0x15) and the daily bit 0x18 is set; he gave. The current player

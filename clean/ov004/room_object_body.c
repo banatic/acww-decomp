@@ -582,9 +582,9 @@ CLEAN_AS(func_ov004_022108cc, RoomObject_Vfunc8C)
  * is going away (vanishing or shrunk), its model's loading ends and its slot is freed. One that
  * vanishes leaves the map, with an effect towards the player: where RoomManager_ShopMode says so
  * outside areas 17 to 24 and 1 to 5, it leaves the sold-out sign on the floor at the cell
- * RoomObject_FindVariantCell finds. Then it leaves the room's objects. The base class's slot
+ * RoomObject_FindFurnitureCell finds. Then it leaves the room's objects. The base class's slot
  * (Actor_Vfunc14) runs for every value.
- * BUG: when RoomObject_FindVariantCell finds no cell, the item goes to a cell left from
+ * BUG: when RoomObject_FindFurnitureCell finds no cell, the item goes to a cell left from
  * whatever the stack held; here cell (0, 0). */
 void RoomObject_Vfunc14(RoomObject *object, int mode)
 {
@@ -600,7 +600,7 @@ void RoomObject_Vfunc14(RoomObject *object, int mode)
         if (RoomObject_IsVanishing(object)) {
             int x = 0;
             int y = 0;
-            RoomObject_FindVariantCell(object, &x, &y, NULL, 0);
+            RoomObject_FindFurnitureCell(object, &x, &y, NULL, 0);
             int area = SceneQuery_Current();
             if (RoomManager_ShopMode() != 0 && SceneQuery_IsVillagerHouse(area) == 0 && SceneKinds_IsHouseRoom(area) == 0) {
                 void *map = data_021c80bc;

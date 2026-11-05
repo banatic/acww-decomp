@@ -51,7 +51,7 @@ static void scene_object_nodes_hand_on(G3dRenderState *state, void (*next)(void 
     state->hook_timings[G3D_COMMAND_NODE_DESC] = timing;
 }
 
-/* Whether the object is person `code`, the variant of a code with one left out. */
+/* Whether the object is person `code`, by furniture number for a furniture code. */
 static int scene_object_nodes_is_person(u8 *object, u16 code)
 {
     u16 *person = (u16 *) (void *) (object + SCENE_OBJECT_NODES_PERSON);

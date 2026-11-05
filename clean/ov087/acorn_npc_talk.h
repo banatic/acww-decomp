@@ -6,7 +6,7 @@
  *
  * What it does, by the lines of "sp_npc_acorn" (ACORN_NPC_LINE_*):
  * - the items 0x1542-0x1546 (ACORN_NPC_ITEM_FIRST to _LAST) the player brings are taken out of
- *   the pockets; unless one of them is 0x1546 (compared without its variant), each is a point
+ *   the pockets; unless one of them is 0x1546 (compared by furniture number), each is a point
  *   of the player record's object at 0x2416 (PlayerField2416_AcornPoints);
  * - the points reach the rewards of a table of twelve levels (data_ov087_02279324): at each
  *   level, an item given once the points reach the level's bound (PlayerField2416_AcornLevel, raised

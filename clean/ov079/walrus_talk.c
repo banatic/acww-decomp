@@ -170,7 +170,7 @@ static int walrus_talk_in(u16 item, u16 first, u16 last)
     return item >= first && item <= last;
 }
 
-/* Whether `item` is `other`: an item with variants is compared without its variant. */
+/* Whether `item` is `other`: a furniture code is compared by its furniture number. */
 static int walrus_talk_is(const u16 *item, u16 other)
 {
     if (ItemCode_IsFurniture(item)) {

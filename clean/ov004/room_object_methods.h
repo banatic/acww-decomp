@@ -25,7 +25,7 @@ int RoomObject_Effect3dAt(RoomObject *object, const Vec3 *point);
 int RoomObject_RoachFromCentre(RoomObject *object);
 void RoomObject_RoachFromCell(RoomObject *object, int farthest);
 int RoomEffect_SpawnRoach(Vec3 *point, int angle);
-int RoomObject_FindVariantCell(RoomObject *object, int *x, int *y, Vec3 *offset, s16 turn);
+int RoomObject_FindFurnitureCell(RoomObject *object, int *x, int *y, Vec3 *offset, s16 turn);
 u16 RoomObject_Reference(RoomObject *object, Vec3 *offset, int turn);
 int RoomObject_Check022111f0(RoomObject *object);
 int RoomObject_SettledUnk780Is10(RoomObject *object);

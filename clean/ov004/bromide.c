@@ -17,7 +17,7 @@ static_assert(sizeof(Bromide) == 0x848, "the size of a bromide");
 #define BROMIDE_RECEIVER_OFFSET 0xec
 #define BROMIDE_SIZE 0x848
 
-/* The item codes of the photos: four codes (variants) each, from the first. */
+/* The item codes of the photos: four codes (sides) each, from the first. */
 #define BROMIDE_ITEM_FIRST 0x47d8
 #define BROMIDE_ITEM_LAST 0x4a47
 #define BROMIDE_NO_PHOTO (-1)

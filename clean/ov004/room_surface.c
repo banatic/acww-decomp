@@ -56,7 +56,7 @@ static int RoomSurface_in(ItemCode code, ItemCode first, ItemCode last)
     return code >= first && code <= last;
 }
 
-/* Whether `item` is the part's item: by the item of its variant for a code with a variant. */
+/* Whether `item` is the part's item: by furniture number for a furniture code. */
 static int RoomSurface_same_item(const ItemCode *shown, const ItemCode *item)
 {
     if (ItemCode_IsFurniture(shown)) {

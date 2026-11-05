@@ -75,7 +75,7 @@ CLEAN_AS(func_ov004_0220e570, RoomObject_IgnoreHook68)
 void RoomObject_IgnoreHook60(void) {}
 CLEAN_AS(func_ov004_0220e574, RoomObject_IgnoreHook60)
 
-/* func_ov004_0220e578: the object's item code: its furniture number without a variant, or
+/* func_ov004_0220e578: the object's item code: its furniture number facing side 0, or
  * nothing for the kind that is no item. */
 void RoomObject_ItemCode(ItemCode *code, RoomObject *object)
 {
@@ -216,9 +216,9 @@ int RoomEffect_SpawnRoach(Vec3 *point, int angle)
 CLEAN_AS(func_ov004_0220e73c, RoomEffect_SpawnRoach)
 
 /* func_ov004_0220e758: the first of the cells the object would cover (moved by `offset` and
- * turned by `turn`, RoomObject_ListCells) where the town's map holds, on the object's layer, an
- * item code with a variant; whether there is one. */
-int RoomObject_FindVariantCell(RoomObject *object, int *x, int *y, Vec3 *offset, s16 turn)
+ * turned by `turn`, RoomObject_ListCells) where the town's map holds, on the object's layer, a
+ * furniture code; whether there is one. */
+int RoomObject_FindFurnitureCell(RoomObject *object, int *x, int *y, Vec3 *offset, s16 turn)
 {
     CellList cells;
     CellList_Construct(&cells);
@@ -240,11 +240,11 @@ int RoomObject_FindVariantCell(RoomObject *object, int *x, int *y, Vec3 *offset,
     CellList_Destruct(&cells);
     return 0;
 }
-CLEAN_AS(func_ov004_0220e758, RoomObject_FindVariantCell)
+CLEAN_AS(func_ov004_0220e758, RoomObject_FindFurnitureCell)
 
 /* func_ov004_0220e808: the object's reference. When SceneKinds_CurrentIn6To8 says so or placement_mode is 2: its
  * index among the room's objects (bits 0-8) and the scene (SceneQuery_Current, bits 9-15). Else, by
- * the cell RoomObject_FindVariantCell finds: x and y within their block (bits 0-3 and 4-7),
+ * the cell RoomObject_FindFurnitureCell finds: x and y within their block (bits 0-3 and 4-7),
  * the object's layer (bit 8) and the scene (bits 9-14); 0 when there is none.
  * BUG: bit 15 of a reference by cell is left from whatever the stack held; here it is 0. */
 u16 RoomObject_Reference(RoomObject *object, Vec3 *offset, int turn)
@@ -257,7 +257,7 @@ u16 RoomObject_Reference(RoomObject *object, Vec3 *offset, int turn)
     }
     int x;
     int y;
-    if (RoomObject_FindVariantCell(object, &x, &y, offset, (s16) turn) != 0) {
+    if (RoomObject_FindFurnitureCell(object, &x, &y, offset, (s16) turn) != 0) {
         u16 reference = (u16) (x & (BLOCK_CELLS - 1));
         reference |= (u16) ((y & (BLOCK_CELLS - 1)) << 4);
         reference |= (u16) ((object->layer & 1) << 8);

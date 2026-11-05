@@ -114,7 +114,7 @@ static u8 otter_talk_shown(const OtterTalk *talk)
     return ((const MessageReceiver *) (const void *) talk)->message;
 }
 
-/* Whether an item is `code`: by its variant's item for an item with a variant, else by code. */
+/* Whether an item is `code`: by furniture number for a furniture code, else by code. */
 static int otter_talk_is_item(const u16 *item, u16 code)
 {
     if (ItemCode_IsFurniture(item)) {

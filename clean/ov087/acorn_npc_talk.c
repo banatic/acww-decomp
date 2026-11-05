@@ -101,7 +101,7 @@ static int act_is_taken(u16 item)
     return item >= ACORN_NPC_ITEM_FIRST && item <= ACORN_NPC_ITEM_LAST;
 }
 
-/* Whether `item` is 0x1546: an item with variants is compared without its variant. */
+/* Whether `item` is 0x1546: a furniture code is compared by its furniture number. */
 static int act_is_spoiler(const u16 *item)
 {
     if (ItemCode_IsFurniture(item)) {

@@ -79,8 +79,8 @@ static const ItemFormRun item_form_carried_runs[] = {
 
 #define ITEM_FORM_COUNT(a) ((int) (sizeof(a) / sizeof((a)[0])))
 
-/* Whether two codes are the same item: by their numbers for codes with a variant (as `a`
- * has one), else by the codes. `a`'s number is asked for first. */
+/* Whether two codes are the same item: by their furniture numbers when `a` is a
+ * furniture code, else by the codes. `a`'s number is asked for first. */
 static int item_form_same(u16 *a, u16 *b)
 {
     if (ItemCode_IsFurniture(a)) {
@@ -182,8 +182,8 @@ void ItemForm_RevealForgeriesOnMap(AcreMap *map)
 }
 CLEAN_AS(func_02061a14, ItemForm_RevealForgeriesOnMap)
 
-/* func_02061ac4: the item that stands for `*item`: for the 20 replaced items (any variant) the
- * matching one of the 20 after them, with variant 0; any other code is itself. */
+/* func_02061ac4: the item that stands for `*item`: for the 20 replaced items (facing any side) the
+ * matching one of the 20 after them, facing side 0; any other code is itself. */
 void ItemForm_RevealedForgery(u16 *out, const u16 *item)
 {
     u16 code = *item;
@@ -199,7 +199,7 @@ void ItemForm_RevealedForgery(u16 *out, const u16 *item)
 CLEAN_AS(func_02061ac4, ItemForm_RevealedForgery)
 
 /* func_02061b1c: the code `*item` is placed as. In a room (data_020e54a8 is 1) or with
- * `in_room` set, a carried item's room code (variant 0); outdoors, the outdoor code of the few
+ * `in_room` set, a carried item's room code (facing side 0); outdoors, the outdoor code of the few
  * that have one. Any other code is itself. */
 void ItemForm_ToPlaced(u16 *out, u16 *item, int in_room)
 {
@@ -225,7 +225,7 @@ void ItemForm_ToPlaced(u16 *out, u16 *item, int in_room)
 }
 CLEAN_AS(func_02061b1c, ItemForm_ToPlaced)
 
-/* func_02061e2c: the item a placed code stands for when carried (any variant). A code shared
+/* func_02061e2c: the item a placed code stands for when carried (facing any side). A code shared
  * by the items 0x1408-0x1428 and 0x1471-0x1491 (in a room or outdoors) is the first of the two
  * its test accepts (func_0204be38, then func_0204bd84), else 0x137c. Any other code is itself. */
 void ItemForm_ToCarried(u16 *out, u16 *item)

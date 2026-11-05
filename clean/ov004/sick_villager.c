@@ -151,7 +151,7 @@ extern VillagerTown data_021e5a2c;
 extern const char data_ov004_02254298[], data_ov004_022542a4[];
 extern char data_ov004_02257fc4[SICK_VILLAGER_FILE_NAME_SIZE];
 
-/* Whether a pocket's item is the one it asks for (the item 0x155e, any variant), the state 0. */
+/* Whether a pocket's item is the one it asks for (the item 0x155e, by furniture number for furniture), the state 0. */
 extern int func_ov004_02222a30(u16 *item, int state);
 
 static u8 *sk_part(SickVillager *villager, u32 offset)
@@ -889,7 +889,7 @@ void SickVillager_MeetPlayer(SickVillager *villager)
 CLEAN_AS(func_ov004_022227e8, SickVillager_MeetPlayer)
 
 /* func_ov004_02222820: in the first acre of the scene's map (none when the map is empty), every
- * tile whose item code is 0xf031 or of a kind with variants (ItemCode_IsF031OrFurniture) has its
+ * tile whose item code is 0xf031 or furniture (ItemCode_IsF031OrFurniture) has its
  * path unit unlinked, row by row. The villager is not used. */
 void SickVillager_UnlinkItemTiles(SickVillager *villager)
 {
@@ -999,7 +999,7 @@ int SickVillager_Init(SickVillager *villager)
 CLEAN_AS(func_ov004_02222950, SickVillager_Init)
 
 /* func_ov004_02222a30 (the pockets' predicate, handed to Pockets_Select by its symbol): whether a
- * slot in the state 0 holds the item 0x155e, of any variant when the code has variants. */
+ * slot in the state 0 holds the item 0x155e, by furniture number when the code is furniture. */
 int SickVillager_IsAskedItem(u16 *item, int state)
 {
     if (state != 0) {
@@ -1007,8 +1007,8 @@ int SickVillager_IsAskedItem(u16 *item, int state)
     }
     if (ItemCode_IsFurniture(item)) {
         u16 asked = SICK_VILLAGER_MEDICINE;
-        int variant = ItemCode_FurnitureNumber(item);
-        return variant == ItemCode_FurnitureNumber(&asked);
+        int number = ItemCode_FurnitureNumber(item);
+        return number == ItemCode_FurnitureNumber(&asked);
     }
     return *item == SICK_VILLAGER_MEDICINE;
 }

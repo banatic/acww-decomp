@@ -29,12 +29,12 @@ static int clothes_reloads(u16 item)
     return item >= VILLAGER_CLOTHES_RELOAD_FIRST && item <= VILLAGER_CLOTHES_RELOAD_LAST;
 }
 
-/* Whether `*item` is the item shown: by variant item when `*item` has variants, else by code. */
+/* Whether `*item` is the item shown: by furniture number when `*item` is furniture, else by code. */
 static int clothes_same(VillagerClothes *clothes, u16 *item)
 {
     if (ItemCode_IsFurniture(item)) {
-        int variant = ItemCode_FurnitureNumber(item);
-        return variant == ItemCode_FurnitureNumber(&clothes->item);
+        int number = ItemCode_FurnitureNumber(item);
+        return number == ItemCode_FurnitureNumber(&clothes->item);
     }
     return *item == clothes->item;
 }

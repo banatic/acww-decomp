@@ -387,9 +387,9 @@ CLEAN_INSECT_ROOM_SHA = '07356b2f5b1b211ddcf8f2b66fc9dd67318de0852c921b9512e40b2
 CLEAN_CUE_SHA = {
     'clean/autoload_2/music_cue.c': '5e0d82994301bbde71bb4747d619c4a7ebf8558c757f9285fc36420a0c6a9dd1',
     'clean/main/sound.c': '8280215d6c64e5c4fbfb3e934a615bd1ee3c5836ffd652a343f9c40a6720a38a',
-    'clean/ov004/room_object_body.c': '655fb45014e3998a4b46f3601c07d81f81161f5c5c30129d20b25ffdff95de6b',
+    'clean/ov004/room_object_body.c': 'c318ca069d92ac2122ab5f6de4c8ece9bc143fa80fa33ad665af5f6ba63eb3b5',
     'clean/main/talk_object.c': 'a3ce05a0bff434a6fc7cd08f9a5466e7a66389947af3131955f102cc08abe2c9',
-    'clean/main/villager_talk_offers.c': '094a4aa84ac0680093e539ea7dbf1189370d2a3399357d7ba2928fa2eb401035',
+    'clean/main/villager_talk_offers.c': '6ec32a8cb1d752ca787d1d81828760b45546d81e7e8f5156e39a38ce7ed756a5',
     'clean/autoload_2/matrix.c': '6e4e1fe2d50a238897e20e224004b63f073337a296a08fa10158644c8527cf18',
     'clean/main/field_collision.c': 'c1efa49efed565e2a051e4edf64d29ba420d6051bfaceae83c5eebf0b36650bf',
     'clean/main/collision_query.c': '64b4370e713ddc57343b34d5e4aca0b4c2ef0dcd7384f66a554d2a3df3fe7a6a',

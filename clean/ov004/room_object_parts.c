@@ -79,7 +79,7 @@ void Switch_Save(const Switch *sw, RoomObject *object)
     if (RoomObject_IsUnplaced(object) == 0) {
         int x;
         int y;
-        if (RoomObject_FindVariantCell(object, &x, &y, 0, 0) != 0) {
+        if (RoomObject_FindFurnitureCell(object, &x, &y, 0, 0) != 0) {
             RoomCells_SetSwitch(x, y, object->layer, sw->wanted, SceneQuery_Current());
         }
     }
@@ -110,7 +110,7 @@ void Switch_Load(Switch *sw, RoomObject *object)
     } else {
         int x;
         int y;
-        if (RoomObject_FindVariantCell(object, &x, &y, 0, 0) != 0) {
+        if (RoomObject_FindFurnitureCell(object, &x, &y, 0, 0) != 0) {
             value = RoomCells_GetSwitch(x, y, object->layer, SceneQuery_Current());
         }
     }

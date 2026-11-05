@@ -9,7 +9,7 @@
 /* The attributes ItemAttributes_Match compares. */
 enum {
     ITEM_ATTRIBUTE_FEEL = 0,  /* func_020539e4 */
-    ITEM_ATTRIBUTE_COLOR = 1, /* func_02053cf0 and func_02053cbc of the item without its variant */
+    ITEM_ATTRIBUTE_COLOR = 1, /* func_02053cf0 and func_02053cbc of the furniture number */
     ITEM_ATTRIBUTE_ERA = 2,   /* func_02053a88 */
     ITEM_ATTRIBUTE_THEME = 3, /* func_02053b6c */
     ITEM_ATTRIBUTE_SERIES = 4 /* func_02053c68 */
@@ -28,7 +28,7 @@ static u16 item_attributes_kind_item(u32 index)
     return index < ITEM_ATTRIBUTES_FOSSILS ? (u16) (ITEM_ATTRIBUTES_FOSSIL_FIRST + index * 4) : ITEM_ATTRIBUTES_FOSSIL_FIRST;
 }
 
-/* func_0209b6c0: how well an item with a variant matches `value` of attribute `attribute`: 2 for
+/* func_0209b6c0: how well a furniture code matches `value` of attribute `attribute`: 2 for
  * a match, or for attribute 1 one for each of its two halves that matches; 0 for other codes and
  * attributes. */
 int ItemAttributes_Match(u16 *item, int attribute, int value)

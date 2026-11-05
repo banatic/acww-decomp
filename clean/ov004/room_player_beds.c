@@ -12,7 +12,7 @@
 
 static_assert(sizeof(Process) == 0x50, "the size RoomPlayerBeds_New allocates");
 
-/* The players whose items are placed, and the variant they are turned to. */
+/* The players whose items are placed, and the side they are turned to. */
 #define ROOM_PLAYER_BEDS_PLAYERS 4
 #define ROOM_PLAYER_BEDS_SIDE 3
 /* Items of this shape (FurnitureInfo_ItemShape) are two tiles wide, and the half of the room
@@ -49,7 +49,7 @@ static void RoomPlayerBeds_init_tiles(void)
     }
 }
 
-/* Whether `item` is empty: for a code with a variant, whether its item is that of 0xfff1. */
+/* Whether `item` is empty: for a furniture code, whether its furniture number is that of 0xfff1. */
 static int RoomPlayerBeds_is_empty(const ItemCode *item)
 {
     if (ItemCode_IsFurniture(item)) {
@@ -61,7 +61,7 @@ static int RoomPlayerBeds_is_empty(const ItemCode *item)
 }
 
 /* func_ov004_022319ac: with a map shown, each of players 0 to 3 that has a record and a
- * non-empty item 0x240e has it put on the map, turned to variant 3, at the player's tile (one
+ * non-empty item 0x240e has it put on the map, turned to side 3, at the player's tile (one
  * tile left for a wide item on the left half). */
 void RoomPlayerBeds_Place(void)
 {

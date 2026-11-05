@@ -625,8 +625,8 @@ CLEAN_AS(func_02095ba8, PlayerActorOps_RequestState7)
 /* func_02095bdc: this console's actor ends what it does. The byte at 0x8eb is taken (and
  * cleared); in states 0x2c, 0x29 and 0x2a the answer is 1 at once. Otherwise the actor may be
  * interrupted from now on and is asked for state 0x76 with mode (the byte + 3) when the byte was
- * positive; else, outdoors, holding an item (its variant's base item not that of ITEM_NONE for
- * an item with variants) and no tool, outside state 0x39, for state 0x3d (2, 2, at 0, 0, yaw 0);
+ * positive; else, outdoors, holding an item (its furniture number not that of ITEM_NONE for
+ * a furniture code) and no tool, outside state 0x39, for state 0x3d (2, 2, at 0, 0, yaw 0);
  * else for state 2 for 3 frames. The request's answer. */
 int PlayerActorOps_FinishState(void)
 {

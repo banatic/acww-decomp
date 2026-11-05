@@ -276,7 +276,7 @@ void RoomManager_MarkNearestStriker(RoomManager *room)
 CLEAN_AS(func_ov004_0223bfe0, RoomManager_MarkNearestStriker)
 
 /* func_ov004_0223c080: at the room's start, an object for every piece of furniture on the
- * room's acre of the map (an item code with a variant), layer 0 then 1, row by row
+ * room's acre of the map (a furniture code, ItemCode_IsFurniture), layer 0 then 1, row by row
  * (RoomObjects_Place, mode 0). */
 void RoomManager_PlaceMapFurniture(RoomManager *room)
 {

@@ -9,8 +9,8 @@
 #include "player_record.h"
 #include "player_records.h"
 
-/* An item of 0x38e4-0x3933 (20 items of 4 variants each) converts to the item 0x50 codes
- * further on, in its first variant. */
+/* An item of 0x38e4-0x3933 (20 pieces of furniture of 4 sides each) converts to the item 0x50
+ * codes further on, facing side 0. */
 #define CONVERT_FIRST 0x38e4
 #define CONVERT_LAST 0x3933
 #define CONVERTED_FIRST 0x3934

@@ -822,8 +822,8 @@ int PostClerk_Start(PostClerk *clerk)
 }
 CLEAN_AS(func_ov054_02262620, PostClerk_Start)
 
-/* Whether her person is the clerk of the day's (0xd006): for a code with a variant, whether
- * its item is that code's item. */
+/* Whether her person is the clerk of the day's (0xd006): for a furniture code, whether
+ * its furniture number is that code's. */
 static int clerk_is_day_person(PostClerk *clerk)
 {
     u16 *person = (u16 *) (void *) clerk_part(clerk, POST_CLERK_PERSON);
