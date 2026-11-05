@@ -6,7 +6,7 @@
 #include "clean.h"
 #include "creature_draw.h"
 #include "date_time.h"
-#include "item_object.h"
+#include "villager_errand.h"
 #include "session_villager.h"
 #include "villager_status.h"
 #include "insect_draw.h"
@@ -87,8 +87,8 @@ static int errand_chance(const u8 *chances, int step)
 /* func_0202c5dc: the fish errand's catch (villager_errand_catch.h). */
 void VillagerErrandCatch_Fish(void *scene, VillagerObject *object, u8 *chances, void *weights, u8 check_time, DateTime *now)
 {
-    ItemObject *base = (ItemObject *) (void *) VillagerObject_Base(object);
-    if (ItemObject_Type(base) != VILLAGER_ERRAND_CATCH_TYPE_FISH) {
+    VillagerErrand *base = (VillagerErrand *) (void *) VillagerObject_Errand(object);
+    if (VillagerErrand_Type(base) != VILLAGER_ERRAND_CATCH_TYPE_FISH) {
         return;
     }
     int step = VillagerObject_Step(object);
@@ -97,7 +97,7 @@ void VillagerErrandCatch_Fish(void *scene, VillagerObject *object, u8 *chances, 
     }
     int chance = errand_chance(chances, step);
     int roll = MainRandom_Below(100);
-    u16 item = *ItemObject_Item(base);
+    u16 item = *VillagerErrand_Item(base);
     switch (step) {
         case 1:
         case 3:
@@ -124,8 +124,8 @@ CLEAN_AS(func_0202c5dc, VillagerErrandCatch_Fish)
 /* func_0202c704: the insect errand's catch (villager_errand_catch.h). */
 void VillagerErrandCatch_Insect(void *scene, VillagerObject *object, u8 *chances, void *weights, u8 check_time, DateTime *now)
 {
-    ItemObject *base = (ItemObject *) (void *) VillagerObject_Base(object);
-    if (ItemObject_Type(base) != VILLAGER_ERRAND_CATCH_TYPE_INSECT) {
+    VillagerErrand *base = (VillagerErrand *) (void *) VillagerObject_Errand(object);
+    if (VillagerErrand_Type(base) != VILLAGER_ERRAND_CATCH_TYPE_INSECT) {
         return;
     }
     int step = VillagerObject_Step(object);
@@ -134,7 +134,7 @@ void VillagerErrandCatch_Insect(void *scene, VillagerObject *object, u8 *chances
     }
     int chance = errand_chance(chances, step);
     int roll = MainRandom_Below(100);
-    u16 item = *ItemObject_Item(base);
+    u16 item = *VillagerErrand_Item(base);
     switch (step) {
         case 1:
         case 3:
@@ -166,15 +166,16 @@ CLEAN_AS(func_0202c704, VillagerErrandCatch_Insect)
 int VillagerErrandCatch_CanCatch(void *scene, VillagerObject *object, DateTime *now, u8 check_time)
 {
     (void) scene;
-    ItemObject *base = (ItemObject *) (void *) VillagerObject_Base(object);
+    VillagerErrand *base = (VillagerErrand *) (void *) VillagerObject_Errand(object);
     int step = VillagerObject_Step(object);
-    if (ItemObject_IsInUse(base) == 0 || ItemObject_Low5(base) != 0 || ItemObject_Group(base) != 0 || step == 0) {
+    if (VillagerErrand_IsInUse(base) == 0 || VillagerErrand_Progress(base) != 0 || VillagerErrand_Group(base) != 0 ||
+        step == 0) {
         return 0;
     }
     if (PlayerId_IsSet(VillagerObject_Player(object)) == 0) {
         return 0;
     }
-    int type = ItemObject_Type(base);
+    int type = VillagerErrand_Type(base);
     if (step >= VillagerObject_StepsForType(type)) {
         return 0;
     }

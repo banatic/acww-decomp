@@ -37,8 +37,8 @@ void VillagerTalkScene_AskMood0(VillagerTalk *talk);
 int VillagerTalkScene_RequestTalk(VillagerTalk *talk);
 void VillagerTalkScene_NoteMemory(VillagerTalk *talk, u8 **memory, s32 *index, u8 *villager, int player);
 void VillagerTalkScene_RunLine(VillagerTalk *talk, VillagerTalkLine *line);
-u32 VillagerTalkScene_Object(VillagerTalk *talk);
-void VillagerTalkScene_SetObject(VillagerTalk *talk, u32 object);
+u32 VillagerTalkScene_Errand(VillagerTalk *talk);
+void VillagerTalkScene_SetErrand(VillagerTalk *talk, u32 object);
 void *VillagerTalkScene_SpeakerRecord(VillagerTalk *talk);
 int VillagerTalkScene_SpeakerOf(VillagerTalk *talk, int speaker);
 int VillagerTalkScene_DrawLine(VillagerTalk *talk, char *text, u8 *message, int size, int personality, int texts,

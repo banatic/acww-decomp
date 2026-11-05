@@ -10,7 +10,7 @@
 #include "calendar.h"
 #include "event_announce.h"
 #include "event_calendar.h"
-#include "item_object.h"
+#include "villager_errand.h"
 #include "letter.h"
 #include "player_id.h"
 #include "player_pockets.h"
@@ -762,8 +762,9 @@ void VillagerTown_UpdateVillagers(VillagerTown *town, int skip_designs)
         }
         VillagerMode_FinishObject(villager);
         u8 *object = (u8 *) (VillagerObject_OfRecord((VillagerRecord *) VillagerStatus_ModeRecord(villager)));
-        u8 *held = VillagerObject_Base((VillagerObject *) (void *) object);
-        if (ItemObject_IsInUse((ItemObject *) (void *) held) && ItemObject_Low5((ItemObject *) (void *) held) == 0) {
+        u8 *held = VillagerObject_Errand((VillagerObject *) (void *) object);
+        if (VillagerErrand_IsInUse((VillagerErrand *) (void *) held) &&
+            VillagerErrand_Progress((VillagerErrand *) (void *) held) == 0) {
             PlayerId_Clear(VillagerObject_Player((VillagerObject *) (void *) object));
         }
         VillagerFurniture_StoreItems(villager);
@@ -790,18 +791,18 @@ void VillagerTown_ExpirePlayerObjects(VillagerTown *town, const DateTime *now)
         }
         u8 *part = PlayerRecord_VillagerPart(record) + 0xa4;
         u8 *object = part + 0x10;
-        if (!ItemObject_IsInUse((ItemObject *) (void *) object) ||
-            ItemObject_Type((ItemObject *) (void *) object) != VILLAGER_TOWN_PLAYER_OBJECT ||
+        if (!VillagerErrand_IsInUse((VillagerErrand *) (void *) object) ||
+            VillagerErrand_Type((VillagerErrand *) (void *) object) != VILLAGER_TOWN_PLAYER_OBJECT ||
             !NpcId_IsValid((const NpcId *) part)) {
             continue;
         }
-        if (ItemObject_Low5((ItemObject *) (void *) object) == 0) {
-            if (DateTime_DaysBetween(ItemObject_Date((ItemObject *) (void *) object), now) < 0) {
+        if (VillagerErrand_Progress((VillagerErrand *) (void *) object) == 0) {
+            if (DateTime_DaysBetween(VillagerErrand_Date((VillagerErrand *) (void *) object), now) < 0) {
                 VillagerPartHandover_Clear((VillagerPartHandover *) (void *) part);
             }
         } else if ((part[0x24] & 7) != 0) {
             int days = DateTime_DaysBetween((const DateTime *) (void *) (part + 0x1c), now);
-            ItemObject_SetLow5((ItemObject *) (void *) object, VILLAGER_TOWN_PLAYER_OBJECT_DONE);
+            VillagerErrand_SetProgress((VillagerErrand *) (void *) object, VILLAGER_TOWN_PLAYER_OBJECT_DONE);
             if (days != 0 &&
                 VillagerPost_SendQ10Reply(part[0x24] & 7, PlayerRecord_Player(record), (const NpcId *) (void *) part) != 0) {
                 VillagerPartHandover_Clear((VillagerPartHandover *) (void *) part);

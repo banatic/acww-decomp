@@ -10,7 +10,7 @@
 #include "design.h"
 #include "item_attributes.h"
 #include "item_code.h"
-#include "item_object.h"
+#include "villager_errand.h"
 #include "lookups.h"
 #include "npc_id.h"
 #include "player_pockets.h"
@@ -21,7 +21,7 @@
 #include "talk_choices.h"
 #include "town_villager.h"
 #include "villager_data.h"
-#include "villager_kinds.h"
+#include "villager_errands.h"
 #include "villager_mode.h"
 #include "villager_mode_record.h"
 #include "villager_sickness.h"
@@ -61,12 +61,12 @@
 /* The type of the record VillagerPartHandover keeps, and the first-pick types of block 0
  * (villager_part.h) VillagerTalkOffer_DeliveryRecipient answers. */
 #define VILLAGER_TALK_OFFER_TYPE_HANDOVER 0x15
-/* The groups and classes of types (item_object.h). */
+/* The groups and classes of types (villager_errand.h). */
 #define VILLAGER_TALK_OFFER_GROUP_0 0
 #define VILLAGER_TALK_OFFER_GROUP_1 1
 #define VILLAGER_TALK_OFFER_CLASS_1 1
 #define VILLAGER_TALK_OFFER_CLASS_HANDOVER 3
-/* The band of steps of a part block's object (ItemObject_StepBand); 4 when there is none. */
+/* The band of steps of a part block's object (VillagerErrand_StepBand); 4 when there is none. */
 #define VILLAGER_TALK_OFFER_NO_BAND 4
 #define VILLAGER_TALK_OFFER_TYPES 0x16
 
@@ -202,9 +202,9 @@ static VillagerObject **offer_villager_object(VillagerTalk *talk)
     return (VillagerObject **) (void *) ((u8 *) talk + VILLAGER_TALK_OFFER_VILLAGER_OBJECT);
 }
 
-static ItemObject *offer_state_object(u8 *record)
+static VillagerErrand *offer_state_object(u8 *record)
 {
-    return (ItemObject *) (void *) VillagerState_Object(VillagerStatus_StateEntry(record));
+    return (VillagerErrand *) (void *) VillagerState_Errand(VillagerStatus_StateEntry(record));
 }
 
 static VillagerObject *offer_villager_object_of(u8 *record)
@@ -360,8 +360,8 @@ int VillagerTalkOffer_AfterSickness(VillagerTalk *talk, u8 *record)
         return 0;
     }
     VillagerSickness *sickness = VillagerSickness_Record(town);
-    ItemObject *object = (ItemObject *) (void *) VillagerSicknessRecord_Object(sickness);
-    if (ItemObject_IsInUse(object) == 0 || VillagerSicknessRecord_IsRecentlyCured(sickness, NULL) == 0) {
+    VillagerErrand *object = (VillagerErrand *) (void *) VillagerSicknessRecord_Errand(sickness);
+    if (VillagerErrand_IsInUse(object) == 0 || VillagerSicknessRecord_IsRecentlyCured(sickness, NULL) == 0) {
         return 0;
     }
     DesignCreator *named = VillagerSicknessRecord_MostNamedPlayer(sickness);
@@ -373,7 +373,7 @@ int VillagerTalkOffer_AfterSickness(VillagerTalk *talk, u8 *record)
     TalkChoices_Clear(talk, &list);
     const u8 *first;
     if (offer_same_player(current, named)) {
-        first = ItemObject_Low5(object) == 1 ? data_021c2fbc : data_021c2f5c;
+        first = VillagerErrand_Progress(object) == 1 ? data_021c2fbc : data_021c2f5c;
     } else {
         first = VillagerSicknessRecord_NamesPlayer(sickness, current) != 0 ? data_021c2f44 : data_021c2f2c;
     }
@@ -391,8 +391,8 @@ CLEAN_AS(func_02028a40, VillagerTalkOffer_AfterSickness)
  * handover) to VillagerTalkOffer_StateHandover. Whether it offered. */
 int VillagerTalkOffer_ByState(VillagerTalk *talk, u8 *record, VillagerPart *part)
 {
-    ItemObject *object = offer_state_object(record);
-    if (ItemObject_IsInUse(object) == 0) {
+    VillagerErrand *object = offer_state_object(record);
+    if (VillagerErrand_IsInUse(object) == 0) {
         return 0;
     }
     if (PlayerRecord_TestFlag(PlayerRecords_Current(), VILLAGER_TALK_OFFER_PLAYER_FLAG) != 0) {
@@ -401,11 +401,11 @@ int VillagerTalkOffer_ByState(VillagerTalk *talk, u8 *record, VillagerPart *part
     if (MainRandom_Below(VILLAGER_TALK_OFFER_ERRAND_ROLL) >= VILLAGER_TALK_OFFER_ERRAND_CHANCE) {
         return 0;
     }
-    switch (ItemObject_Group(object)) {
+    switch (VillagerErrand_Group(object)) {
         case VILLAGER_TALK_OFFER_GROUP_0:
             return VillagerTalkOffer_StateGroup0(talk, record, (int) (uintptr_t) part);
         case VILLAGER_TALK_OFFER_GROUP_1:
-            switch (ItemObject_Class(object)) {
+            switch (VillagerErrand_Class(object)) {
                 case VILLAGER_TALK_OFFER_CLASS_1:
                     return VillagerTalkOffer_StateClass1(talk, record, part);
                 case VILLAGER_TALK_OFFER_CLASS_HANDOVER:
@@ -424,12 +424,12 @@ CLEAN_AS(func_02028b74, VillagerTalkOffer_ByState)
  * Whether it offered. */
 int VillagerTalkOffer_StateHandover(VillagerTalk *talk, u8 *record, VillagerPart *part)
 {
-    ItemObject *object = offer_state_object(record);
+    VillagerErrand *object = offer_state_object(record);
     VillagerPartHandover *handover = (VillagerPartHandover *) (void *) part->rest_a4;
     DateTime now = {0};
     DateTime_Now(&now);
     if (Session_IsSlotTaken(data_020ccf94, data_020ccf94->local_slot) != 0 ||
-        ItemObject_IsInUse((ItemObject *) (void *) handover->object) != 0 ||
+        VillagerErrand_IsInUse((VillagerErrand *) (void *) handover->object) != 0 ||
         VillagerStatus_PlayerHolds(record, (u8 *) part) != 0 || VillagerStatus_Stay(record) != 3 ||
         VillagerSceneObject_Event(talk->villager) != VILLAGER_SCENE_OBJECT_NO_EVENT ||
         TownVillager_BirthdayYearWithin(record, 1, &now) != VILLAGER_TALK_OFFER_NOT_FOUND ||
@@ -440,7 +440,7 @@ int VillagerTalkOffer_StateHandover(VillagerTalk *talk, u8 *record, VillagerPart
     TalkChoices_Clear(talk, &list);
     offer_set_from(talk, &list, 0, data_020c8928, data_021c2fec);
     offer_set_from(talk, &list, 1, data_020c8924, data_021c1d6c);
-    VillagerTalkScene_SetObject(talk, (u32) (uintptr_t) object);
+    VillagerTalkScene_SetErrand(talk, (u32) (uintptr_t) object);
     offer_list(talk, &list, 2, 1, data_020d8eb8);
     return 1;
 }
@@ -482,12 +482,12 @@ static int offer_holds_none_or_umbrella(VillagerTalk *talk)
 int VillagerTalkOffer_StateGroup0(VillagerTalk *talk, u8 *record, int unused)
 {
     (void) unused;
-    ItemObject *object = offer_state_object(record);
+    VillagerErrand *object = offer_state_object(record);
     int offers = 0;
     *offer_villager_object(talk) = offer_villager_object_of(record);
     if (VillagerSceneObject_Event(talk->villager) == VILLAGER_SCENE_OBJECT_NO_EVENT) {
         u16 drawn;
-        switch (ItemObject_Type(object)) {
+        switch (VillagerErrand_Type(object)) {
             case VILLAGER_TALK_OFFER_TYPE_INSECT:
                 if (offer_holds(talk, VILLAGER_TALK_OFFER_HELD_INSECT, VILLAGER_TALK_OFFER_HELD_INSECT)) {
                     VillagerTalkPick_Insect(&drawn, (int) (uintptr_t) talk, 0);
@@ -520,7 +520,7 @@ int VillagerTalkOffer_StateGroup0(VillagerTalk *talk, u8 *record, int unused)
     TalkChoiceList list;
     TalkChoices_Clear(talk, &list);
     offer_set_from(talk, &list, 0, data_020c8928, data_021c2c8c);
-    VillagerTalkScene_SetObject(talk, (u32) (uintptr_t) object);
+    VillagerTalkScene_SetErrand(talk, (u32) (uintptr_t) object);
     offer_set_from(talk, &list, 1, data_020c8924, data_021c1d6c);
     offer_list(talk, &list, 2, 1, data_020d8db8);
     return 1;
@@ -528,21 +528,21 @@ int VillagerTalkOffer_StateGroup0(VillagerTalk *talk, u8 *record, int unused)
 CLEAN_AS(func_02028d04, VillagerTalkOffer_StateGroup0)
 
 /* func_02028f5c: a request of class 1 from the state object: when the part's block for it (by
- * ItemObject_Class1Split) is free, the type fits the villager's mode, there is no town event,
+ * VillagerErrand_Class1Split) is free, the type fits the villager's mode, there is no town event,
  * no villager has an event now and another resident can be named: two choices (data_021c29ec,
  * data_021c1d6c) with the reply data_020d8db0, the block kept at 0x160 and the state object
  * made the talk's. Whether it offered. */
 int VillagerTalkOffer_StateClass1(VillagerTalk *talk, u8 *record, VillagerPart *part)
 {
-    ItemObject *object = offer_state_object(record);
-    VillagerPartBlock *block = VillagerPart_Block(part, ItemObject_Class1Split(object));
+    VillagerErrand *object = offer_state_object(record);
+    VillagerPartBlock *block = VillagerPart_Block(part, VillagerErrand_Class1Split(object));
     VillagerModeRecord *mode = VillagerObject_RecordMode((VillagerRecord *) (void *) VillagerStatus_ModeRecord(record));
     DateTime now = {0};
     DateTime_Now(&now);
-    if (block == NULL || ItemObject_IsInUse((ItemObject *) (void *) VillagerPartBlock_Object(block)) != 0) {
+    if (block == NULL || VillagerErrand_IsInUse((VillagerErrand *) (void *) VillagerPartBlock_Errand(block)) != 0) {
         return 0;
     }
-    int type = ItemObject_Type(object);
+    int type = VillagerErrand_Type(object);
     if (VillagerPartBlock_TypeFitsMode(type, VillagerModeRecord_Mode(mode)) == 0 ||
         VillagerSceneObject_Event(talk->villager) != VILLAGER_SCENE_OBJECT_NO_EVENT ||
         VillagerTown_FindBirthdayVillager(&data_021e5a2c, &now) != VILLAGER_TALK_OFFER_NOT_FOUND ||
@@ -554,7 +554,7 @@ int VillagerTalkOffer_StateClass1(VillagerTalk *talk, u8 *record, VillagerPart *
     *offer_block(talk) = block;
     offer_set_from(talk, &list, 0, data_020c8928, data_021c29ec);
     offer_set_from(talk, &list, 1, data_020c8924, data_021c1d6c);
-    VillagerTalkScene_SetObject(talk, (u32) (uintptr_t) object);
+    VillagerTalkScene_SetErrand(talk, (u32) (uintptr_t) object);
     offer_list(talk, &list, 2, 1, data_020d8db0);
     return 1;
 }
@@ -571,7 +571,7 @@ int VillagerTalkOffer_HasOtherResident(VillagerTalk *talk)
 CLEAN_AS(func_02029074, VillagerTalkOffer_HasOtherResident)
 
 /* func_020290b0: when the current player's flag 1 is clear, by the type of the object something
- * holds for the villager (VillagerKind_Known): group 0 goes to VillagerTalkOffer_KnownGroup0,
+ * holds for the villager (VillagerErrands_KnownType): group 0 goes to VillagerTalkOffer_KnownGroup0,
  * class 1 to VillagerTalkOffer_KnownBlock and class 3 (the handover) to
  * VillagerTalkOffer_KnownHandover. Whether it offered. */
 int VillagerTalkOffer_ByKnown(VillagerTalk *talk, u8 *record, VillagerPart *part)
@@ -580,15 +580,15 @@ int VillagerTalkOffer_ByKnown(VillagerTalk *talk, u8 *record, VillagerPart *part
     if (PlayerRecord_TestFlag(player, VILLAGER_TALK_OFFER_PLAYER_FLAG) != 0) {
         return 0;
     }
-    unsigned int type = (unsigned int) VillagerKind_Known(&data_021e5a2c, record, player);
+    unsigned int type = (unsigned int) VillagerErrands_KnownType(&data_021e5a2c, record, player);
     if (type >= VILLAGER_TALK_OFFER_TYPES) {
         return 0;
     }
-    switch (ItemObject_GroupOfType(type)) {
+    switch (VillagerErrand_GroupOfType(type)) {
         case VILLAGER_TALK_OFFER_GROUP_0:
             return VillagerTalkOffer_KnownGroup0(talk, record, (int) (uintptr_t) part, type);
         case VILLAGER_TALK_OFFER_GROUP_1:
-            switch (ItemObject_ClassOfType(type)) {
+            switch (VillagerErrand_ClassOfType(type)) {
                 case VILLAGER_TALK_OFFER_CLASS_1:
                     return VillagerTalkOffer_KnownBlock(talk, (int) (uintptr_t) record, part, (int) type);
                 case VILLAGER_TALK_OFFER_CLASS_HANDOVER:
@@ -608,10 +608,10 @@ int VillagerTalkOffer_KnownHandover(VillagerTalk *talk, u8 *record, VillagerPart
 {
     (void) type;
     VillagerPartHandover *handover = (VillagerPartHandover *) (void *) part->rest_a4;
-    ItemObject *object = (ItemObject *) (void *) handover->object;
-    if (VillagerSceneObject_Event(talk->villager) == VILLAGER_SCENE_OBJECT_NO_EVENT && ItemObject_IsInUse(object) != 0 &&
-        ItemObject_Type(object) == VILLAGER_TALK_OFFER_TYPE_HANDOVER &&
-        VillagerPartHandover_IsFrom(handover, TownVillager_NpcId(record)) != 0 && ItemObject_Low5(object) == 0) {
+    VillagerErrand *object = (VillagerErrand *) (void *) handover->object;
+    if (VillagerSceneObject_Event(talk->villager) == VILLAGER_SCENE_OBJECT_NO_EVENT && VillagerErrand_IsInUse(object) != 0 &&
+        VillagerErrand_Type(object) == VILLAGER_TALK_OFFER_TYPE_HANDOVER &&
+        VillagerPartHandover_IsFrom(handover, TownVillager_NpcId(record)) != 0 && VillagerErrand_Progress(object) == 0) {
         TalkChoiceList list;
         TalkChoices_Clear(talk, &list);
         offer_set(talk, &list, 0, 0x30, data_021c307c);
@@ -650,11 +650,11 @@ CLEAN_AS(func_02029264, VillagerTalkOffer_PutTime)
 static int offer_known_errand(VillagerTalk *talk)
 {
     u8 step = VillagerObject_Step(*offer_villager_object(talk));
-    u16 item = *ItemObject_Item((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk));
+    u16 item = *VillagerErrand_Item((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk));
     DateTime now = {0};
     DateTime_Now(&now);
     u16 drawn;
-    switch (ItemObject_Type((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk))) {
+    switch (VillagerErrand_Type((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk))) {
         case VILLAGER_TALK_OFFER_TYPE_INSECT:
             if (!offer_holds(talk, VILLAGER_TALK_OFFER_HELD_INSECT, VILLAGER_TALK_OFFER_HELD_INSECT)) {
                 return 0;
@@ -747,9 +747,9 @@ int VillagerTalkOffer_KnownGroup0(VillagerTalk *talk, u8 *record, int unused, un
     (void) type;
     int offered = 0;
     *offer_villager_object(talk) = offer_villager_object_of(record);
-    VillagerTalkScene_SetObject(talk,
-                                (u32) (uintptr_t) ((ItemObject *) (void *) VillagerObject_Base(*offer_villager_object(talk))));
-    int key = ItemObject_Type((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk));
+    VillagerTalkScene_SetErrand(
+        talk, (u32) (uintptr_t) ((VillagerErrand *) (void *) VillagerObject_Errand(*offer_villager_object(talk))));
+    int key = VillagerErrand_Type((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk));
     if (VillagerSceneObject_Event(talk->villager) == VILLAGER_SCENE_OBJECT_NO_EVENT) {
         if (PlayerId_IsSet(VillagerObject_Player(*offer_villager_object(talk))) != 0) {
             offered = offer_known_named(talk, key);
@@ -823,7 +823,7 @@ int VillagerTalkOffer_ChoicesFossil(VillagerTalk *talk)
     int offered = 0;
     TalkChoiceList list;
     TalkChoices_Clear(talk, &list);
-    switch (ItemObject_Low5((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk))) {
+    switch (VillagerErrand_Progress((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk))) {
         case 0: {
             if (!offer_names_current(talk)) {
                 break;
@@ -947,7 +947,7 @@ int VillagerTalkOffer_ChoicesClothes(VillagerTalk *talk)
     int offered = 0;
     TalkChoiceList list;
     TalkChoices_Clear(talk, &list);
-    switch (ItemObject_Low5((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk))) {
+    switch (VillagerErrand_Progress((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk))) {
         case 0: {
             if (!offer_names_current(talk)) {
                 break;
@@ -959,9 +959,9 @@ int VillagerTalkOffer_ChoicesClothes(VillagerTalk *talk)
                 } else {
                     offer_set(talk, &list, index, 0x14, data_021c2cd4);
                 }
-            } else if (offer_is_clothes(*ItemObject_Item((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk)))) {
-                if (CurrentPockets_FindItem(ItemObject_Item((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk))) !=
-                    VILLAGER_TALK_OFFER_NOT_FOUND) {
+            } else if (offer_is_clothes(*VillagerErrand_Item((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk)))) {
+                if (CurrentPockets_FindItem(VillagerErrand_Item(
+                        (VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk))) != VILLAGER_TALK_OFFER_NOT_FOUND) {
                     offer_set(talk, &list, index, 0x1b, data_021c2df4);
                 } else {
                     offer_set(talk, &list, index, 0x14, data_021c2cd4);
@@ -969,10 +969,10 @@ int VillagerTalkOffer_ChoicesClothes(VillagerTalk *talk)
             } else {
                 offer_set(talk, &list, 0, 0x14, data_021c2cd4);
             }
-            if (offer_is_clothes(*ItemObject_Item((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk)))) {
+            if (offer_is_clothes(*VillagerErrand_Item((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk)))) {
                 SceneBase_PutItemName(
                     offer_base(talk),
-                    (int) (uintptr_t) ItemObject_Item((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk)), 0,
+                    (int) (uintptr_t) VillagerErrand_Item((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk)), 0,
                     VILLAGER_TALK_OFFER_ITEM_KIND);
             }
             index++;
@@ -1005,7 +1005,7 @@ int VillagerTalkOffer_ChoicesFurniture(VillagerTalk *talk)
     int offered = 0;
     TalkChoiceList list;
     TalkChoices_Clear(talk, &list);
-    switch (ItemObject_Low5((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk))) {
+    switch (VillagerErrand_Progress((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk))) {
         case 0: {
             if (!offer_names_current(talk)) {
                 break;
@@ -1092,7 +1092,7 @@ int VillagerTalkOffer_ChoicesByPredicate(VillagerTalk *talk, int (*test)(u16 *it
     int offered = 0;
     TalkChoiceList list;
     TalkChoices_Clear(talk, &list);
-    switch (ItemObject_Low5((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk))) {
+    switch (VillagerErrand_Progress((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk))) {
         case 0: {
             if (!offer_names_current(talk)) {
                 break;
@@ -1104,9 +1104,9 @@ int VillagerTalkOffer_ChoicesByPredicate(VillagerTalk *talk, int (*test)(u16 *it
                 } else {
                     offer_set(talk, &list, 0, 0x14, data_021c2cd4);
                 }
-            } else if (test(ItemObject_Item((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk))) != 0) {
-                if (CurrentPockets_FindItem(ItemObject_Item((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk))) !=
-                    VILLAGER_TALK_OFFER_NOT_FOUND) {
+            } else if (test(VillagerErrand_Item((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk))) != 0) {
+                if (CurrentPockets_FindItem(VillagerErrand_Item(
+                        (VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk))) != VILLAGER_TALK_OFFER_NOT_FOUND) {
                     offer_set(talk, &list, index, message_have, data_021c2d7c);
                 } else {
                     offer_set(talk, &list, index, 0x14, data_021c2cd4);
@@ -1114,10 +1114,11 @@ int VillagerTalkOffer_ChoicesByPredicate(VillagerTalk *talk, int (*test)(u16 *it
             } else {
                 offer_set(talk, &list, index, 0x14, data_021c2cd4);
             }
-            if (*ItemObject_Item((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk)) != VILLAGER_TALK_OFFER_NO_ITEM) {
+            if (*VillagerErrand_Item((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk)) !=
+                VILLAGER_TALK_OFFER_NO_ITEM) {
                 SceneBase_PutItemName(
                     offer_base(talk),
-                    (int) (uintptr_t) ItemObject_Item((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk)), 0,
+                    (int) (uintptr_t) VillagerErrand_Item((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk)), 0,
                     VILLAGER_TALK_OFFER_ITEM_KIND);
             }
             index++;
@@ -1168,7 +1169,7 @@ int VillagerTalkOffer_IsInsect(u16 *item)
 }
 CLEAN_AS(func_0202a1ac, VillagerTalkOffer_IsInsect)
 
-/* func_0202a1cc: the part's block for a request of class 1 (by ItemObject_Class1SplitOfType of
+/* func_0202a1cc: the part's block for a request of class 1 (by VillagerErrand_Class1SplitOfType of
  * `type`), kept at 0x160; when there is one: its object made the talk's, its two villagers put
  * into slots 0 and 1 and its item into slot 0, and three choices offered: 0x23 running
  * data_021c2be4 when the block's own type is past its limit, else 0x1e running data_021c2bcc;
@@ -1176,19 +1177,19 @@ CLEAN_AS(func_0202a1ac, VillagerTalkOffer_IsInsect)
 int VillagerTalkOffer_KnownBlock(VillagerTalk *talk, int unused, VillagerPart *part, int type)
 {
     (void) unused;
-    *offer_block(talk) = VillagerPart_Block(part, ItemObject_Class1SplitOfType((u32) type));
+    *offer_block(talk) = VillagerPart_Block(part, VillagerErrand_Class1SplitOfType((u32) type));
     if (*offer_block(talk) == NULL) {
         return 0;
     }
     TalkChoiceList list;
     TalkChoices_Clear(talk, &list);
-    VillagerTalkScene_SetObject(talk,
-                                (u32) (uintptr_t) ((ItemObject *) (void *) VillagerPartBlock_Object(*offer_block(talk))));
+    VillagerTalkScene_SetErrand(talk,
+                                (u32) (uintptr_t) ((VillagerErrand *) (void *) VillagerPartBlock_Errand(*offer_block(talk))));
     SceneBase_PutNpcName(offer_base(talk), VillagerPartBlock_Npc(*offer_block(talk), 0), 0);
     SceneBase_PutNpcName(offer_base(talk), VillagerPartBlock_Npc(*offer_block(talk), 1), 1);
     SceneBase_PutItemName(offer_base(talk),
-                          (int) (uintptr_t) ItemObject_Item((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk)), 0,
-                          VILLAGER_TALK_OFFER_ITEM_KIND);
+                          (int) (uintptr_t) VillagerErrand_Item((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk)),
+                          0, VILLAGER_TALK_OFFER_ITEM_KIND);
     if (VillagerPartBlock_IsOwnTypePastLimit(*offer_block(talk)) != 0) {
         offer_set(talk, &list, 0, 0x23, data_021c2be4);
     } else {
@@ -1211,8 +1212,8 @@ CLEAN_AS(func_0202a1cc, VillagerTalkOffer_KnownBlock)
 int VillagerTalkOffer_PartBlock(VillagerTalk *talk, u8 *record, VillagerPart *part)
 {
     VillagerPartBlock *block = VillagerPart_FindBlock(part, TownVillager_NpcId(record), 1);
-    ItemObject *object = block != NULL ? (ItemObject *) (void *) VillagerPartBlock_Object(block) : NULL;
-    int band = object != NULL ? ItemObject_StepBand(object) : VILLAGER_TALK_OFFER_NO_BAND;
+    VillagerErrand *object = block != NULL ? (VillagerErrand *) (void *) VillagerPartBlock_Errand(block) : NULL;
+    int band = object != NULL ? VillagerErrand_StepBand(object) : VILLAGER_TALK_OFFER_NO_BAND;
     int offered = 0;
     if (band != 0 && band != 2) {
         return 0;
@@ -1227,13 +1228,13 @@ int VillagerTalkOffer_PartBlock(VillagerTalk *talk, u8 *record, VillagerPart *pa
     TalkChoiceList list;
     TalkChoices_Clear(talk, &list);
     *offer_block(talk) = block;
-    VillagerTalkScene_SetObject(talk, (u32) (uintptr_t) object);
+    VillagerTalkScene_SetErrand(talk, (u32) (uintptr_t) object);
     SceneBase_PutNpcName(offer_base(talk), VillagerPartBlock_Npc(*offer_block(talk), index), index);
     SceneBase_PutNpcName(offer_base(talk), VillagerPartBlock_Npc(*offer_block(talk), 1), 1);
     SceneBase_PutItemName(offer_base(talk),
-                          (int) (uintptr_t) ItemObject_Item((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk)), index,
-                          VILLAGER_TALK_OFFER_ITEM_KIND);
-    if (DateTime_Compare(ItemObject_Date((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk)), &now,
+                          (int) (uintptr_t) VillagerErrand_Item((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk)),
+                          index, VILLAGER_TALK_OFFER_ITEM_KIND);
+    if (DateTime_Compare(VillagerErrand_Date((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk)), &now,
                          VILLAGER_TALK_OFFER_COMPARE_ALL) == -1) {
         offer_set(talk, &list, index, band == 2 ? 0x2b : 0x27, data_021c2ac4);
         index++;
@@ -1244,7 +1245,7 @@ int VillagerTalkOffer_PartBlock(VillagerTalk *talk, u8 *record, VillagerPart *pa
         offered = 1;
     } else {
         PlayerPockets *pockets = PlayerRecord_Pockets(player);
-        if (VillagerTalkScene_PocketOfItem(pockets, ItemObject_Item((ItemObject *) (void *) VillagerPartBlock_Object(
+        if (VillagerTalkScene_PocketOfItem(pockets, VillagerErrand_Item((VillagerErrand *) (void *) VillagerPartBlock_Errand(
                                                         *offer_block(talk)))) != VILLAGER_TALK_OFFER_NOT_FOUND) {
             offer_set_from(talk, &list, index, data_020c8930, data_021c2b0c);
             index++;
@@ -1269,8 +1270,8 @@ CLEAN_AS(func_0202a2ec, VillagerTalkOffer_PartBlock)
 int VillagerTalkOffer_DeliveryRecipient(VillagerTalk *talk, u8 *record, VillagerPart *part)
 {
     VillagerPartBlock *block = VillagerPart_Block(part, 0);
-    ItemObject *object = (ItemObject *) (void *) VillagerPartBlock_Object(block);
-    if (ItemObject_IsInUse(object) == 0 || ItemObject_StepBand(object) != 1) {
+    VillagerErrand *object = (VillagerErrand *) (void *) VillagerPartBlock_Errand(block);
+    if (VillagerErrand_IsInUse(object) == 0 || VillagerErrand_StepBand(object) != 1) {
         return 0;
     }
     NpcId *named = VillagerPartBlock_Npc(block, 1);
@@ -1279,14 +1280,14 @@ int VillagerTalkOffer_DeliveryRecipient(VillagerTalk *talk, u8 *record, Villager
         own->number != named->number || VillagerPartBlock_IsOwnTypePastLimit(block) != 0) {
         return 0;
     }
-    switch (ItemObject_Type(object)) {
+    switch (VillagerErrand_Type(object)) {
         case VILLAGER_PART_TYPE_FIRST_PICK:
         case VILLAGER_PART_TYPE_THIRD_PICK:
         case VILLAGER_PART_TYPE_SECOND_AGAIN: {
             TalkChoiceList list;
             TalkChoices_Clear(talk, &list);
             *offer_block(talk) = block;
-            VillagerTalkScene_SetObject(talk, (u32) (uintptr_t) object);
+            VillagerTalkScene_SetErrand(talk, (u32) (uintptr_t) object);
             offer_set(talk, &list, 0, 0x1d, data_021c2ee4);
             offer_set_from(talk, &list, 1, data_020c8928, data_021c1e14);
             offer_set_from(talk, &list, 2, data_020c8924, data_021c1d6c);

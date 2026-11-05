@@ -1,11 +1,12 @@
 /* The villagers' part of a player's record (0xcc bytes at 0x1e40, PlayerRecord_VillagerPart):
  * the progress of the player's part-time job at Nook's and its errands to villagers.
  *
- * It holds two blocks of 48 bytes (VillagerPart_Block), each an object (12 bytes: its item at
- * 8, its type at 0x0a, a five-bit value in byte 0x0b) and two NpcIds; three NpcIds of villagers
- * picked in turn; a flag (0x90); an object at 0x94 (12 bytes, then the index at 0x0c of an
- * entry of data_020d1a54 whose name func_0209b0c4 writes); and an NpcId with an object of its
- * own at 0xa4 (villager_town.c).
+ * It holds two blocks of 48 bytes (VillagerPart_Block), each an errand (villager_errand.h: its
+ * item at 8, its type at 0x0a, its progress in byte 0x0b) and two NpcIds; three NpcIds of
+ * villagers picked in turn; a flag (0x90); the entry at 0x94 (VillagerPart_Entry,
+ * villager_part_entry.h: an errand, then the index at 0x0c of an entry of data_020d1a54 whose
+ * name func_0209b0c4 writes); and at 0xa4 an NpcId with an errand of its own
+ * (villager_part_handover.h, villager_town.c).
  *
  * Overlay 50 takes block 0 through a sequence of types, which VillagerPart_HasStep tests for
  * (types 11-18): 11 resets it (VillagerPart_Reset), 12 and 13 name no villager, 14 names a
@@ -23,7 +24,7 @@
 #define VILLAGER_PART_BLOCKS 2
 #define VILLAGER_PART_PICKS 3
 
-/* The types of block 0's object. */
+/* The errand types of block 0. */
 #define VILLAGER_PART_TYPE_RESET 0x0b
 #define VILLAGER_PART_TYPE_12 0x0c
 #define VILLAGER_PART_TYPE_13 0x0d
@@ -50,7 +51,7 @@ typedef struct VillagerPart {
 } VillagerPart;
 
 void VillagerPart_CurrentNameFor(void *text, u16 *item);
-u8 *VillagerPart_Object94(VillagerPart *part);
+u8 *VillagerPart_Entry(VillagerPart *part);
 int VillagerPart_IsSecondPick(VillagerPart *part, const NpcId *npc);
 void VillagerPart_EndStep(VillagerPart *part);
 void VillagerPart_MarkType18(VillagerPart *part);

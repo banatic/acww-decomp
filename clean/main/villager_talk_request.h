@@ -2,7 +2,7 @@
  * for something through a block of the player's villager part (villager_part_block.h) whose
  * object takes type 10 (the text sets "q06_*") or 19 ("q07_*"). The talk keeps:
  *
- *   0x154  its object (func_0202d9c4, item_object.h)
+ *   0x154  its errand (VillagerTalkScene_Errand, villager_errand.h)
  *   0x158  a wait in minutes drawn from data_020d8d28 (10, 30 or 60)
  *   0x159  the place of that wait in data_020d8d28, kept as the object's three high bits
  *   0x15c  the NpcId of another resident the request names

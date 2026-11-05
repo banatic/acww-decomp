@@ -5,7 +5,7 @@
  * offer choices, ask the scene's command for a screen or a motion, and hand the player an
  * item or what a villager handed over (VillagerPartHandover, villager_part_handover.h).
  *
- * Several look at the object at 0x154 of the talk (an ItemObject, item_object.h, by its type:
+ * Several look at the errand at 0x154 of the talk (a VillagerErrand, villager_errand.h, by its type:
  * 14, 16 or 17): its type picks the message and what the villager gives. */
 #ifndef CLEAN_MAIN_VILLAGER_TALK_STEPS_H
 #define CLEAN_MAIN_VILLAGER_TALK_STEPS_H

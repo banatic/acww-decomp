@@ -10,7 +10,7 @@
 #include "furniture_info.h"
 #include "item_code.h"
 #include "item_form.h"
-#include "item_object.h"
+#include "villager_errand.h"
 #include "item_traits.h"
 #include "main_random.h"
 #include "npc_lookup.h"
@@ -64,7 +64,7 @@ static int is_fossil(u16 code)
     return code >= MUSEUM_FOSSIL_FIRST && code <= MUSEUM_FOSSIL_LAST;
 }
 
-/* The fossil code's index among the 52 (its variant left out). */
+/* The fossil code's index among the 52 (the side it faces left out). */
 static int fossil_index(u16 code)
 {
     return (code - MUSEUM_FOSSIL_FIRST) >> 2;
@@ -174,7 +174,7 @@ int VillagerHouseItems_Count(const u8 *villager)
 CLEAN_AS(func_0207f6dc, VillagerHouseItems_Count)
 
 /* func_0207f708: how many of the ten places hold `item`: for a place holding an item of kind 3
- * or 4, the same item of any variant (func_0204bc64), else the same code. */
+ * or 4, the same furniture facing any side (ItemCode_FurnitureNumber), else the same code. */
 int VillagerHouseItems_CountSame(const u8 *villager, const u16 *item)
 {
     const u16 *items = (const u16 *) (const void *) (villager + VILLAGER_HOUSE_ITEMS_OFFSET);
@@ -271,13 +271,13 @@ int VillagerHouseItems_StoreFossil(u8 *villager, u16 *item, int size_class, int 
     int old_fits = VillagerHouseItems_FitsMode(villager, there, (u32) mode);
     if (fits) {
         u8 *object = (u8 *) (VillagerObject_OfRecord((VillagerRecord *) VillagerStatus_ModeRecord(villager)));
-        u8 *same = VillagerObject_Base((VillagerObject *) (void *) object);
+        u8 *same = VillagerObject_Errand((VillagerObject *) (void *) object);
         ItemTraits_Price(item);
         ItemTraits_Price(there);
         if (mode == 2) {
             u32 wanted = VILLAGER_HOUSE_FOSSIL_KINDS;
-            if (ItemObject_IsInUse((ItemObject *) (void *) same) &&
-                ItemObject_Type((ItemObject *) (void *) same) == VILLAGER_HOUSE_OBJECT_TYPE_2 &&
+            if (VillagerErrand_IsInUse((VillagerErrand *) (void *) same) &&
+                VillagerErrand_Type((VillagerErrand *) (void *) same) == VILLAGER_HOUSE_OBJECT_TYPE_2 &&
                 VillagerObject_Step((VillagerObject *) (void *) object) >= 2 &&
                 VillagerObject_Kind((VillagerObject *) (void *) object) < VILLAGER_HOUSE_FOSSIL_KINDS) {
                 wanted = VillagerObject_Kind((VillagerObject *) (void *) object);

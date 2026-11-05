@@ -15,7 +15,7 @@
 #include "main/event_queue.h"
 #include "main/footsteps.h"
 #include "main/item_code.h"
-#include "main/item_object.h"
+#include "main/villager_errand.h"
 #include "main/main_random.h"
 #include "main/message_receiver.h"
 #include "main/name_texts.h"
@@ -223,9 +223,9 @@ static VillagerPartHandover *hv_visit(void)
 }
 
 /* The object of the visit's record whose low five bits say how far it went. */
-static ItemObject *hv_progress(void)
+static VillagerErrand *hv_progress(void)
 {
-    return (ItemObject *) (void *) hv_visit()->object;
+    return (VillagerErrand *) (void *) hv_visit()->object;
 }
 
 static void hv_set_vtables(HouseVisitor *visitor)
@@ -1029,7 +1029,7 @@ CLEAN_AS(func_ov068_022761d0, HouseVisitorTalk_Start)
 void HouseVisitor_MarkGreeted(void *unused)
 {
     (void) unused;
-    ItemObject_SetLow5(hv_progress(), HOUSE_VISITOR_VISIT_GREETED);
+    VillagerErrand_SetProgress(hv_progress(), HOUSE_VISITOR_VISIT_GREETED);
 }
 CLEAN_AS(func_ov068_022761f0, HouseVisitor_MarkGreeted)
 
@@ -1037,7 +1037,7 @@ CLEAN_AS(func_ov068_022761f0, HouseVisitor_MarkGreeted)
 int HouseVisitor_IsLetIn(void *unused)
 {
     (void) unused;
-    return ItemObject_Low5(hv_progress()) == HOUSE_VISITOR_VISIT_IN;
+    return VillagerErrand_Progress(hv_progress()) == HOUSE_VISITOR_VISIT_IN;
 }
 CLEAN_AS(func_ov068_0227620c, HouseVisitor_IsLetIn)
 
@@ -1047,7 +1047,7 @@ void HouseVisitor_MarkLetIn(void *unused)
     if (HouseVisitor_IsPastRing(unused) != 0) {
         return;
     }
-    ItemObject_SetLow5(hv_progress(), HOUSE_VISITOR_VISIT_IN);
+    VillagerErrand_SetProgress(hv_progress(), HOUSE_VISITOR_VISIT_IN);
 }
 CLEAN_AS(func_ov068_02276230, HouseVisitor_MarkLetIn)
 
@@ -1055,7 +1055,7 @@ CLEAN_AS(func_ov068_02276230, HouseVisitor_MarkLetIn)
 int HouseVisitor_IsPastRing(void *unused)
 {
     (void) unused;
-    return ItemObject_Low5(hv_progress()) > HOUSE_VISITOR_VISIT_RANG;
+    return VillagerErrand_Progress(hv_progress()) > HOUSE_VISITOR_VISIT_RANG;
 }
 CLEAN_AS(func_ov068_02276254, HouseVisitor_IsPastRing)
 
@@ -1063,7 +1063,7 @@ CLEAN_AS(func_ov068_02276254, HouseVisitor_IsPastRing)
 void HouseVisitor_MarkRang(void *unused)
 {
     if (HouseVisitor_HasStarted(unused) == 0) {
-        ItemObject_SetLow5(hv_progress(), HOUSE_VISITOR_VISIT_RANG);
+        VillagerErrand_SetProgress(hv_progress(), HOUSE_VISITOR_VISIT_RANG);
     }
 }
 CLEAN_AS(func_ov068_02276278, HouseVisitor_MarkRang)
@@ -1072,7 +1072,7 @@ CLEAN_AS(func_ov068_02276278, HouseVisitor_MarkRang)
 int HouseVisitor_HasStarted(void *unused)
 {
     (void) unused;
-    return ItemObject_Low5(hv_progress()) != HOUSE_VISITOR_VISIT_AGREED;
+    return VillagerErrand_Progress(hv_progress()) != HOUSE_VISITOR_VISIT_AGREED;
 }
 CLEAN_AS(func_ov068_0227629c, HouseVisitor_HasStarted)
 
@@ -1160,7 +1160,7 @@ CLEAN_AS(func_ov068_02276394, HouseVisitor_MayAct)
 /* func_ov068_022763c8: the visit is over. */
 void HouseVisitor_MarkOver(void)
 {
-    ItemObject_SetLow5(hv_progress(), HOUSE_VISITOR_VISIT_OVER);
+    VillagerErrand_SetProgress(hv_progress(), HOUSE_VISITOR_VISIT_OVER);
 }
 CLEAN_AS(func_ov068_022763c8, HouseVisitor_MarkOver)
 
@@ -1253,9 +1253,9 @@ int HouseVisitor_CanDelete(HouseVisitor *visitor)
     if (VillagerSceneObject_CanDelete(visitor->base) == 0) {
         return 0;
     }
-    ItemObject *progress = hv_progress();
-    if (ItemObject_Low5(progress) == HOUSE_VISITOR_VISIT_RANG) {
-        ItemObject_SetLow5(progress, HOUSE_VISITOR_VISIT_IN);
+    VillagerErrand *progress = hv_progress();
+    if (VillagerErrand_Progress(progress) == HOUSE_VISITOR_VISIT_RANG) {
+        VillagerErrand_SetProgress(progress, HOUSE_VISITOR_VISIT_IN);
     }
     data_ov068_022788ec = NULL;
     return 1;

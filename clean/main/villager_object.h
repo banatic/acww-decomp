@@ -1,10 +1,12 @@
 /* The record each of the town's villagers keeps at 0x734 (func_0207f1c8): its mode record
- * (VillagerModeRecord, villager_mode.h) and, at 0x24, the villager's object.
+ * (VillagerModeRecord, villager_mode.h) and, at 0x24, the villager's object: the villager's own
+ * errand and what it keeps about it.
  *
  * The villager's object (0x34 bytes):
  *
- *   0x00  an object (12 bytes: a date at 0, its item at 8, its type at 0x0a, five low bits of
- *         byte 0x0b); types 0-4 (group 0) go through steps, 5 or 7 of them
+ *   0x00  the errand (VillagerErrand, villager_errand.h: a date at 0, its item at 8, its type at
+ *         0x0a, its progress in the five low bits of byte 0x0b); types 0-4 (group 0) go through
+ *         steps, 5 or 7 of them
  *         (VillagerObject_StepsForType)
  *   0x0c  a player's id (DesignCreator)
  *   0x2a  the step reached (7 when emptied)
@@ -64,13 +66,13 @@ int VillagerObject_StepsForType(int type);
 DesignCreator *VillagerObject_Player(VillagerObject *object);
 void VillagerObject_SetStep(VillagerObject *object, u8 step);
 u8 VillagerObject_Step(VillagerObject *object);
-u8 *VillagerObject_Base(VillagerObject *object);
+u8 *VillagerObject_Errand(VillagerObject *object);
 void VillagerObject_NextStep(VillagerObject *object);
-void VillagerObject_SetLow5From1To2(VillagerObject *object);
+void VillagerObject_SetProgress1To2(VillagerObject *object);
 void VillagerObject_Set(VillagerObject *object, u32 type, const u16 *item, const DesignCreator *player, u8 fresh);
 void VillagerObject_ClearItem(VillagerObject *object);
 int VillagerObject_Start(VillagerObject *object, int type, const u16 *item);
-void VillagerObject_SetObject(VillagerObject *object, int type, const u16 *item);
+void VillagerObject_SetErrand(VillagerObject *object, int type, const u16 *item);
 void VillagerObject_Clear(VillagerObject *object);
 VillagerObject *VillagerObject_Destruct(VillagerObject *object);
 VillagerObject *VillagerObject_Construct(VillagerObject *object);

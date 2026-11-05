@@ -1,7 +1,7 @@
 # villager-furniture (format: runtime/input.h), played from a town save by tools/scenes.py (the
 # save is not in this repository). Boot: as villager-home.txt, the clock at 11:30:08 on Tuesday
 # 15 September: at this second villager 0 is dealt the object type 4 at the load (a piece of
-# furniture of the kind it likes, VillagerKind_Deal).
+# furniture of the kind it likes, VillagerErrands_Deal).
 # Save: box-items (two pieces of furniture, an apple, a hat and a shirt in pockets 0-4). As
 # villager-home.txt to its house's door, then south and round to villager 0 by the river (about
 # 5530); A every 40 frames: a talk ends in its offer (VillagerTalkOffer_StateGroup0), the first

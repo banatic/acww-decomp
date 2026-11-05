@@ -4,7 +4,7 @@
 #include <string.h>
 
 #include "clean.h"
-#include "item_object.h"
+#include "villager_errand.h"
 
 static_assert(offsetof(VillagerPartHandover, object) == 0x10, "object");
 static_assert(offsetof(VillagerPartHandover, date) == 0x1c, "date");
@@ -20,8 +20,8 @@ void VillagerPartHandover_Set(VillagerPartHandover *handover, const NpcId *npc, 
 {
     VillagerPartHandover_Clear(handover);
     u16 item = 0xfff1;
-    ItemObject_Set((ItemObject *) (void *) handover->object, VILLAGER_PART_HANDOVER_TYPE, &item, 0);
-    ItemObject_StampNow((ItemObject *) (void *) handover->object, 0);
+    VillagerErrand_Set((VillagerErrand *) (void *) handover->object, VILLAGER_PART_HANDOVER_TYPE, &item, 0);
+    VillagerErrand_StampNow((VillagerErrand *) (void *) handover->object, 0);
     NpcId_Copy(&handover->npc, npc);
     MI_CpuCopy8(date, &handover->date, sizeof(DateTime));
 }
@@ -31,7 +31,7 @@ CLEAN_AS(func_0209ae70, VillagerPartHandover_Set)
  * the same head and number). */
 int VillagerPartHandover_IsFrom(VillagerPartHandover *handover, const NpcId *npc)
 {
-    if (ItemObject_IsInUse((ItemObject *) (void *) handover->object) == 0 || NpcId_IsValid(npc) == 0) {
+    if (VillagerErrand_IsInUse((VillagerErrand *) (void *) handover->object) == 0 || NpcId_IsValid(npc) == 0) {
         return 0;
     }
     return npc->head.id == handover->npc.head.id &&
@@ -42,7 +42,7 @@ CLEAN_AS(func_0209aebc, VillagerPartHandover_IsFrom)
 /* func_0209af04: the record emptied. */
 void VillagerPartHandover_Clear(VillagerPartHandover *handover)
 {
-    ItemObject_Clear((ItemObject *) (void *) handover->object);
+    VillagerErrand_Clear((VillagerErrand *) (void *) handover->object);
     NpcId_Clear(&handover->npc);
     handover->date = (DateTime){0};
     MI_CpuFill8(&handover->byte_24, 0, 1);
@@ -52,7 +52,7 @@ CLEAN_AS(func_0209af04, VillagerPartHandover_Clear)
 /* func_0209af2c: the destructor. */
 VillagerPartHandover *VillagerPartHandover_Destruct(VillagerPartHandover *handover)
 {
-    ItemObject_Destruct((ItemObject *) (void *) handover->object);
+    VillagerErrand_Destruct((VillagerErrand *) (void *) handover->object);
     NpcId_Destruct(&handover->npc);
     return handover;
 }
@@ -63,10 +63,10 @@ CLEAN_AS(func_0209af2c, VillagerPartHandover_Destruct)
 VillagerPartHandover *VillagerPartHandover_Construct(VillagerPartHandover *handover)
 {
     NpcId_Construct(&handover->npc);
-    ItemObject_Construct((ItemObject *) (void *) handover->object);
+    VillagerErrand_Construct((VillagerErrand *) (void *) handover->object);
     handover->date = (DateTime){0};
     NpcId_Clear(&handover->npc);
-    ItemObject_Clear((ItemObject *) (void *) handover->object);
+    VillagerErrand_Clear((VillagerErrand *) (void *) handover->object);
     handover->date = (DateTime){0};
     MI_CpuFill8(&handover->byte_24, 0, 1);
     return handover;

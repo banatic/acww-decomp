@@ -7,7 +7,7 @@
 #include "lookups.h"
 #include "npc_id.h"
 #include "villager_state.h"
-#include "item_object.h"
+#include "villager_errand.h"
 #include "town_villager.h"
 #include "villager_data.h"
 #include "villager_furniture.h"
@@ -63,13 +63,13 @@ void VillagerMode_FinishObject(u8 *villager)
     }
     VillagerModeRecord *record = VillagerStatus_ModeRecord(villager);
     u8 *object = (u8 *) VillagerObject_OfRecord((VillagerRecord *) record);
-    u8 *held = VillagerObject_Base((VillagerObject *) (void *) object);
-    if (ItemObject_IsInUse((ItemObject *) (void *) held) == 0 ||
-        ItemObject_Group((ItemObject *) (void *) held) != VILLAGER_MODE_OBJECT_GROUP ||
-        ItemObject_Low5((ItemObject *) (void *) held) != VILLAGER_MODE_OBJECT_DONE) {
+    u8 *held = VillagerObject_Errand((VillagerObject *) (void *) object);
+    if (VillagerErrand_IsInUse((VillagerErrand *) (void *) held) == 0 ||
+        VillagerErrand_Group((VillagerErrand *) (void *) held) != VILLAGER_MODE_OBJECT_GROUP ||
+        VillagerErrand_Progress((VillagerErrand *) (void *) held) != VILLAGER_MODE_OBJECT_DONE) {
         return;
     }
-    if (ItemObject_Type((ItemObject *) (void *) held) == VILLAGER_MODE_OBJECT_TYPE_4) {
+    if (VillagerErrand_Type((VillagerErrand *) (void *) held) == VILLAGER_MODE_OBJECT_TYPE_4) {
         VillagerMode_StepCounter7D7(villager);
     }
     VillagerObject_Clear((VillagerObject *) (void *) object);
@@ -152,11 +152,11 @@ int VillagerMode_UpdateDaily(u8 *villager, const DateTime *now)
         return result;
     }
     VillagerObject_Clear(VillagerObject_OfRecord((VillagerRecord *) VillagerStatus_ModeRecord(villager)));
-    u8 *object = VillagerState_Object(VillagerStatus_StateEntry(villager));
-    ItemObject_Clear((ItemObject *) (void *) object);
+    u8 *object = VillagerState_Errand(VillagerStatus_StateEntry(villager));
+    VillagerErrand_Clear((VillagerErrand *) (void *) object);
     if (VillagerModeRecord_GroupOfMode((u32) result) == 0) {
         u16 item = ITEM_CODE_NONE;
-        ItemObject_Set((ItemObject *) (void *) object, (u8) result, &item, 0);
+        VillagerErrand_Set((VillagerErrand *) (void *) object, (u8) result, &item, 0);
     }
     if (VillagerModeRecord_IsKindMode((u32) result)) {
         VillagerFurniture_ResetForMode(villager, result, from_2);

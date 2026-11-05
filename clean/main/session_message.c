@@ -15,7 +15,7 @@
 #include "fish_disp.h"
 #include "item_code.h"
 #include "item_info.h"
-#include "item_object.h"
+#include "villager_errand.h"
 #include "link_global.h"
 #include "link_parts.h"
 #include "link_scene.h"
@@ -555,30 +555,36 @@ void SessionMessage_ChangeVillagerObject(int size, int kind, u8 scene, u32 slot)
     u8 *object = (u8 *) VillagerObject_OfRecord((VillagerRecord *) VillagerStatus_ModeRecord(villager));
     switch (operation) {
         case 0:
-            if (ItemObject_IsInUse((ItemObject *) (void *) VillagerObject_Base((VillagerObject *) (void *) object)) != 0) {
-                ItemObject_SetLow5((ItemObject *) (void *) VillagerObject_Base((VillagerObject *) (void *) object), value);
+            if (VillagerErrand_IsInUse(
+                    (VillagerErrand *) (void *) VillagerObject_Errand((VillagerObject *) (void *) object)) != 0) {
+                VillagerErrand_SetProgress(
+                    (VillagerErrand *) (void *) VillagerObject_Errand((VillagerObject *) (void *) object), value);
             }
             break;
         case 1:
             VillagerObject_ClearItem((VillagerObject *) (void *) object);
             break;
         case 2:
-            if (ItemObject_IsInUse((ItemObject *) (void *) VillagerObject_Base((VillagerObject *) (void *) object)) != 0) {
+            if (VillagerErrand_IsInUse(
+                    (VillagerErrand *) (void *) VillagerObject_Errand((VillagerObject *) (void *) object)) != 0) {
                 VillagerObject_NextStep((VillagerObject *) (void *) object);
             }
             break;
         case 3:
-            if (ItemObject_IsInUse((ItemObject *) (void *) VillagerObject_Base((VillagerObject *) (void *) object)) != 0) {
+            if (VillagerErrand_IsInUse(
+                    (VillagerErrand *) (void *) VillagerObject_Errand((VillagerObject *) (void *) object)) != 0) {
                 VillagerObject_SetKind((VillagerObject *) (void *) object, value);
             }
             break;
         case 4:
-            if (ItemObject_IsInUse((ItemObject *) (void *) VillagerObject_Base((VillagerObject *) (void *) object)) != 0) {
+            if (VillagerErrand_IsInUse(
+                    (VillagerErrand *) (void *) VillagerObject_Errand((VillagerObject *) (void *) object)) != 0) {
                 VillagerObject_SetFlag((VillagerObject *) (void *) object, value);
             }
             /* fall through */
         case 5:
-            if (ItemObject_IsInUse((ItemObject *) (void *) VillagerObject_Base((VillagerObject *) (void *) object)) != 0) {
+            if (VillagerErrand_IsInUse(
+                    (VillagerErrand *) (void *) VillagerObject_Errand((VillagerObject *) (void *) object)) != 0) {
                 object[0x2e] = value;
             }
             break;
@@ -612,7 +618,7 @@ void SessionMessage_SetVillagerObject(int size, int kind, u8 scene, u32 slot)
     }
     u8 *object = (u8 *) VillagerObject_OfRecord((VillagerRecord *) VillagerStatus_ModeRecord(villager));
     int flagged = flag != 0;
-    ItemObject_Clear((ItemObject *) (void *) VillagerState_Object(VillagerStatus_StateEntry(villager)));
+    VillagerErrand_Clear((VillagerErrand *) (void *) VillagerState_Errand(VillagerStatus_StateEntry(villager)));
     u8 *name = NULL;
     if (player_slot < 4) {
         u8 *record = PlayerRecords_OfPlayer(player_slot);
@@ -668,14 +674,14 @@ void SessionMessage_SetVillagerObjectItem(int size, int kind, u8 scene, u32 slot
         return;
     }
     u8 *object = (u8 *) VillagerObject_OfRecord((VillagerRecord *) VillagerStatus_ModeRecord(villager));
-    u8 *in_use = VillagerObject_Base((VillagerObject *) (void *) object);
-    if (ItemObject_IsInUse((ItemObject *) (void *) in_use) == 0) {
+    u8 *in_use = VillagerObject_Errand((VillagerObject *) (void *) object);
+    if (VillagerErrand_IsInUse((VillagerErrand *) (void *) in_use) == 0) {
         return;
     }
-    int fits =
-        ItemObject_Type((ItemObject *) (void *) in_use) == 0 && item >= OBJECT_INSECT_FIRST && item <= OBJECT_INSECT_LAST;
+    int fits = VillagerErrand_Type((VillagerErrand *) (void *) in_use) == 0 && item >= OBJECT_INSECT_FIRST &&
+               item <= OBJECT_INSECT_LAST;
     if (!fits) {
-        if (ItemObject_Type((ItemObject *) (void *) in_use) != 1) {
+        if (VillagerErrand_Type((VillagerErrand *) (void *) in_use) != 1) {
             return;
         }
         if (item < OBJECT_FISH_FIRST || item > OBJECT_FISH_LAST) {

@@ -5,7 +5,7 @@
 #include "clean.h"
 #include "group_params.h"
 #include "item_code.h"
-#include "item_object.h"
+#include "villager_errand.h"
 #include "item_record.h"
 #include "lookups.h"
 #include "mail.h"
@@ -196,9 +196,9 @@ static VillagerPartBlock *part_block(const VillagerTalk *talk)
     return *(VillagerPartBlock **) (void *) ((u8 *) talk + VILLAGER_TALK_PART_BLOCK);
 }
 
-static ItemObject *part_block_object(const VillagerTalk *talk)
+static VillagerErrand *part_block_object(const VillagerTalk *talk)
 {
-    return (ItemObject *) (void *) VillagerPartBlock_Object(part_block(talk));
+    return (VillagerErrand *) (void *) VillagerPartBlock_Errand(part_block(talk));
 }
 
 static VillagerObject *part_villager_object(const VillagerTalk *talk)
@@ -208,7 +208,7 @@ static VillagerObject *part_villager_object(const VillagerTalk *talk)
 
 static int part_type(VillagerTalk *talk)
 {
-    return ItemObject_Type((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk));
+    return VillagerErrand_Type((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk));
 }
 
 static int part_is_clothes(u16 item)
@@ -368,11 +368,11 @@ void VillagerTalkPart_LineByPlaceStep9cc0(VillagerTalk *talk, VillagerTalkLine *
     int step = 0;
     int type = part_type(talk);
     int place = 0;
-    if (ItemObject_IsInUse((ItemObject *) (void *) VillagerObject_Base(object)) != 0) {
+    if (VillagerErrand_IsInUse((VillagerErrand *) (void *) VillagerObject_Errand(object)) != 0) {
         step = VillagerObject_Step(part_villager_object(talk));
-        type = ItemObject_Type((ItemObject *) (void *) VillagerObject_Base(part_villager_object(talk)));
+        type = VillagerErrand_Type((VillagerErrand *) (void *) VillagerObject_Errand(part_villager_object(talk)));
     }
-    ItemObject_PlaceInGroup((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk), &place);
+    VillagerErrand_PlaceInGroup((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk), &place);
     if (step < VillagerObject_StepsForType(type) && place < VILLAGER_TALK_PART_GROUP_PLACES) {
         texts.texts = ((const u32 *) (uintptr_t) data_020d9cc0[place])[step];
         if (type == VILLAGER_TALK_PART_TYPE_FURNITURE) {
@@ -653,14 +653,14 @@ void VillagerTalkPart_LineTakeByType(VillagerTalk *talk, VillagerTalkLine *out)
     const VillagerTalkPartTexts *texts = &data_020c8df0;
     switch (part_type(talk)) {
         case VILLAGER_TALK_PART_TYPE_ITEM:
-            ItemObject_SetLow5(part_block_object(talk), 1);
+            VillagerErrand_SetProgress(part_block_object(talk), 1);
             if (part_is_clothes(talk->item)) {
                 VillagerItems_Add(part_record(talk), &talk->item);
             }
             break;
         case VILLAGER_TALK_PART_TYPE_LETTER: {
             Letter *letter = VillagerTalkScene_LetterToSend(part_pockets());
-            ItemObject_SetLow5(part_block_object(talk), 1);
+            VillagerErrand_SetProgress(part_block_object(talk), 1);
             texts = &data_020c8de8;
             if (letter != NULL) {
                 Letter_Clear(letter);
@@ -741,7 +741,7 @@ CLEAN_AS(func_02027540, VillagerTalkPart_Line8e00)
  * command's end. */
 void VillagerTalkPart_LowerBondMotion16(VillagerTalk *talk)
 {
-    ItemObject_SetLow5(part_block_object(talk), 1);
+    VillagerErrand_SetProgress(part_block_object(talk), 1);
     NpcId *first = VillagerPartBlock_Npc(part_block(talk), 0);
     part_bond(first, TownVillager_NpcId(part_record(talk)), VILLAGER_TALK_PART_BOND_DOWN);
     SceneCommand_RequestMotion16(&talk->scene);
@@ -791,7 +791,7 @@ CLEAN_AS(func_02027740, VillagerTalkPart_Motion16KeepItem)
  * data_020c8e28, then data_020d9080 run at the last message. */
 void VillagerTalkPart_LineStep1(VillagerTalk *talk, VillagerTalkLine *out)
 {
-    ItemObject_SetLow5(part_block_object(talk), 1);
+    VillagerErrand_SetProgress(part_block_object(talk), 1);
     part_line(talk, out, &data_020c8e28);
     talk->on_last_message = data_020d9080;
 }
@@ -988,8 +988,8 @@ CLEAN_AS(func_02027d68, VillagerTalkPart_Line8978)
 void VillagerTalkPart_ShowObjectItemLowerBond(VillagerTalk *talk)
 {
     if (part_type(talk) == VILLAGER_TALK_PART_TYPE_LETTER) {
-        SceneCommand_RequestMotion14(&talk->scene, ItemObject_Item((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk)),
-                                     0, 5, 0);
+        SceneCommand_RequestMotion14(
+            &talk->scene, VillagerErrand_Item((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk)), 0, 5, 0);
         VillagerTalkScene_SetCommandEnd(talk, data_020d8e00);
     }
     NpcId *own = TownVillager_NpcId(part_record(talk));
@@ -1009,9 +1009,9 @@ void VillagerTalkPart_LinePutNames(VillagerTalk *talk, VillagerTalkLine *out)
         if (part_block(talk) != NULL) {
             SceneBase_PutNpcName(part_base(talk), VillagerPartBlock_Npc(part_block(talk), 0), 0);
             SceneBase_PutNpcName(part_base(talk), VillagerPartBlock_Npc(part_block(talk), 1), 1);
-            SceneBase_PutItemName(part_base(talk),
-                                  (int) (uintptr_t) ItemObject_Item((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk)),
-                                  0, 7);
+            SceneBase_PutItemName(
+                part_base(talk),
+                (int) (uintptr_t) VillagerErrand_Item((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk)), 0, 7);
         }
     }
     part_name(talk, out);
@@ -1066,10 +1066,10 @@ void VillagerTalkPart_TakeMatchingItem(VillagerTalk *talk)
     switch (part_type(talk)) {
         case VILLAGER_TALK_PART_TYPE_ITEM: {
             int slot = VillagerTalkScene_PocketOfItem(
-                pockets, ItemObject_Item((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk)));
+                pockets, VillagerErrand_Item((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk)));
             if (slot != VILLAGER_TALK_PART_NO_SLOT) {
                 u16 none = ITEM_CODE_NONE;
-                talk->item = *ItemObject_Item((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk));
+                talk->item = *VillagerErrand_Item((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk));
                 PlayerPockets_SetSlot(pockets, &none, slot, 0);
                 VillagerTalkScene_SetLines(talk, data_021c2a7c);
             } else {

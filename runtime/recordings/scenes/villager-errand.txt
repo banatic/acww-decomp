@@ -1,7 +1,7 @@
 # villager-errand (format: runtime/input.h), played from a town save by tools/scenes.py (the
 # save is not in this repository). As visit-time.txt to 6200, with the clock started at
 # 11:30:05: at this second villager 4 is dealt the object type 10 at the load
-# (VillagerKind_Deal: an item to take to another villager, class 1).
+# (VillagerErrands_Deal: an item to take to another villager, class 1).
 # Save: seed. Round the west side of villager 4's house to her (about 6560); talks with A every
 # 40 frames until one ends in her offer (VillagerTalkOffer_StateClass1, about 8400): she hands
 # over a shirt (0x11c2) for villager 3 (VillagerPartBlock_SetupType10, block 0 of the player's

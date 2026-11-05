@@ -7,7 +7,7 @@
  * - block 0 of the part naming the villager in its first-pick types (VillagerTalkOffer_DeliveryRecipient);
  * - the villager's sickness, cured in the last days (VillagerTalkOffer_AfterSickness);
  * - a block of the part whose first villager is this one (VillagerTalkOffer_PartBlock);
- * - the object something holds for the villager (VillagerKind_Known, VillagerTalkOffer_ByKnown);
+ * - the object something holds for the villager (VillagerErrands_KnownType, VillagerTalkOffer_ByKnown);
  * - the object of the villager's entry in the running state table (VillagerTalkOffer_ByState).
  *
  * Each offer ends with the reply func_020288bc (VillagerTalkOffer_Reply), which sets the talk's

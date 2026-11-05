@@ -2,7 +2,7 @@
 # not in this repository). Boot as villager-talk.txt, on Tuesday 15 September at 11:30:03: the
 # day and the next have no town event (VillagerTown_NextEvent; the seed's Friday has the second
 # Saturday's event 0x0c next), and at this second villager 4 is dealt the object type 21 at the
-# load (VillagerKind_Deal: the visit to the player's house, class 3).
+# load (VillagerErrands_Deal: the visit to the player's house, class 3).
 # Save: seed. From the house south, west past Nook's store and north round its west side to
 # villager 4 (about 6280); talks with A every 40 frames until a talk ends in its offer
 # (VillagerTalkOffer_ByState, VillagerTalkOffer_StateHandover, about 12900): "play with me"

@@ -1035,7 +1035,7 @@ def villager_mode(villager: int, mode: int) -> list[tuple[int, str, int]]:
     main/villager_mode.h) set to `mode` with the scores of the eight kinds below their most and the
     mode's own the highest, so the boot keeps it (VillagerModeRecord_KeepKind); dated the seed's
     day. The talks' topics of the mode (VillagerTalkSubjects_SayByMode, _SayByStateKind) and, for
-    modes 0-4, the errand of its type (VillagerKind_Deal) follow it."""
+    modes 0-4, the errand of its type (VillagerErrands_Deal) follow it."""
     base = TOWN_VILLAGERS + 0x7EC * villager + 0x734
     scores = bytes(0x30 if kind == mode else 0x10 for kind in range(8))
     return raw(base, bytes((0, 30, 11, 11, 9, 26, 0, 0)) * 2 + bytes((mode,)) + scores + bytes(8))

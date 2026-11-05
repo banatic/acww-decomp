@@ -9,7 +9,7 @@
 #include "block_020b220c.h"
 #include "clean.h"
 #include "date_time.h"
-#include "item_object.h"
+#include "villager_errand.h"
 #include "overlay_slots.h"
 #include "player_record.h"
 #include "player_records.h"
@@ -684,8 +684,8 @@ int Spawner_PlayerBlock0Ready(void)
     if (record != NULL) {
         block = VillagerPart_Block((VillagerPart *) PlayerRecord_VillagerPart(record), 0);
     }
-    if (block == NULL || ItemObject_IsInUse((ItemObject *) VillagerPartBlock_Object(block)) == 0 ||
-        ItemObject_StepBand((ItemObject *) VillagerPartBlock_Object(block)) != 1 || Spawner_ArrivalPending()) {
+    if (block == NULL || VillagerErrand_IsInUse((VillagerErrand *) VillagerPartBlock_Errand(block)) == 0 ||
+        VillagerErrand_StepBand((VillagerErrand *) VillagerPartBlock_Errand(block)) != 1 || Spawner_ArrivalPending()) {
         return 0;
     }
     return 1;
@@ -1277,19 +1277,19 @@ void Spawner_SpawnHouseGuest(Spawner *self)
     int event = VillagerTown_CurrentEvent();
     if (event == SPAWNER_NO_EVENT) {
         u8 *appointment = PlayerRecord_VillagerPart(PlayerRecords_Current()) + SPAWNER_APPOINTMENT;
-        ItemObject *object = (ItemObject *) (void *) (appointment + SPAWNER_APPOINTMENT_OBJECT);
+        VillagerErrand *object = (VillagerErrand *) (void *) (appointment + SPAWNER_APPOINTMENT_OBJECT);
         const NpcId *npc = (const NpcId *) (const void *) appointment;
         int index = SPAWNER_NO_VILLAGER;
-        if (ItemObject_IsInUse(object) != 0 && ItemObject_Type(object) == SPAWNER_APPOINTMENT_TYPE) {
+        if (VillagerErrand_IsInUse(object) != 0 && VillagerErrand_Type(object) == SPAWNER_APPOINTMENT_TYPE) {
             DateTime now = {0};
             DateTime_Now(&now);
             const DateTime *when = (const DateTime *) (const void *) (appointment + SPAWNER_APPOINTMENT_TIME);
             int minutes = DateTime_MinutesBetween(when, &now);
-            if (ItemObject_Low5(object) == 0) {
+            if (VillagerErrand_Progress(object) == 0) {
                 if (minutes <= SPAWNER_APPOINTMENT_MINUTES) {
                     index = VillagerRoster_IndexOf(town, npc);
                 }
-            } else if ((u32) ItemObject_Low5(object) < SPAWNER_APPOINTMENT_STEPS) {
+            } else if ((u32) VillagerErrand_Progress(object) < SPAWNER_APPOINTMENT_STEPS) {
                 if (minutes <= SPAWNER_APPOINTMENT_LATE_MINUTES) {
                     index = VillagerRoster_IndexOf(town, npc);
                     if (ActorTable_IsKindESlot((u32) index) && data_021d213c[index].in_use != 0) {

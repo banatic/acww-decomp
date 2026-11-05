@@ -15,7 +15,7 @@
 #include "main/group_params.h"
 #include "main/house_record.h"
 #include "main/item_code.h"
-#include "main/item_object.h"
+#include "main/villager_errand.h"
 #include "main/library_overlay.h"
 #include "main/mail.h"
 #include "main/message_receiver.h"
@@ -426,7 +426,7 @@ void PostClerkTalk_Line(PostClerkTalk *talk, PostClerkTalkLine *out)
     int file = POST_CLERK_TALK_FILE_OWN;
     int usual = 0;
     VillagerPartEntry *errand =
-        (VillagerPartEntry *) (void *) VillagerPart_Object94((VillagerPart *) (void *) PlayerRecord_VillagerPart(record));
+        (VillagerPartEntry *) (void *) VillagerPart_Entry((VillagerPart *) (void *) PlayerRecord_VillagerPart(record));
 
     if (PostClerk_IsLinked(clerk)) {
         usual = 1;
@@ -1327,14 +1327,14 @@ CLEAN_AS(func_ov054_022616ac, PostClerkTalk_NextLine)
  * picked an item and this system is the host (or alone), the item of the slot picked is taken
  * from the pockets; unless it is empty she takes it (motion 14), the line is 0x50 when the
  * errand was for her person, else 0x57, and the current player's errand is marked done
- * (ItemObject_SetLow5 1). Else the line is 0x51. No step.
+ * (VillagerErrand_SetProgress 1). Else the line is 0x51. No step.
  * QUIRK: the slot is a byte, so the test that it is not negative before emptying it always
  * passes. */
 void PostClerkTalk_AfterErrand(PostClerkTalk *talk)
 {
     u8 line = POST_CLERK_LINE_ERRAND_NONE;
     if (GroupParams_C4CIs1()) {
-        VillagerPartEntry *errand = (VillagerPartEntry *) (void *) VillagerPart_Object94(
+        VillagerPartEntry *errand = (VillagerPartEntry *) (void *) VillagerPart_Entry(
             (VillagerPart *) (void *) PlayerRecord_VillagerPart(PlayerRecords_Current()));
         if (TalkChecks_IsHostOrAlone()) {
             int slot = GroupParams_Arg();
@@ -1355,7 +1355,7 @@ void PostClerkTalk_AfterErrand(PostClerkTalk *talk)
                 u16 *person = (u16 *) (void *) (talk->owner->base + 0xea);
                 line = VillagerPartEntry_Accepts(errand, person) != 0 ? POST_CLERK_LINE_ERRAND_TAKEN
                                                                       : POST_CLERK_LINE_ERRAND_OTHER;
-                ItemObject_SetLow5((ItemObject *) (void *) VillagerPartEntry_Self(errand), 1);
+                VillagerErrand_SetProgress((VillagerErrand *) (void *) VillagerPartEntry_Self(errand), 1);
             }
         }
     }

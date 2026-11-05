@@ -6,7 +6,7 @@
 #include "date_time.h"
 #include "group_params.h"
 #include "item_code.h"
-#include "item_object.h"
+#include "villager_errand.h"
 #include "item_record.h"
 #include "npc_id.h"
 #include "player_pockets.h"
@@ -18,7 +18,7 @@
 #include "talk_choices.h"
 #include "town_villager.h"
 #include "villager_entry.h"
-#include "villager_kinds.h"
+#include "villager_errands.h"
 #include "villager_memory_entry.h"
 #include "villager_mail.h"
 #include "villager_sickness.h"
@@ -47,7 +47,7 @@
 #define VILLAGER_TALK_STEPS_RECENT_MINUTES 30
 /* Before this hour of the kept time. */
 #define VILLAGER_TALK_STEPS_EARLY_HOUR 6
-/* The types of the talk's object at 0x154 (item_object.h). */
+/* The types of the talk's object at 0x154 (villager_errand.h). */
 #define VILLAGER_TALK_STEPS_TYPE_14 0xe
 #define VILLAGER_TALK_STEPS_TYPE_16 0x10
 #define VILLAGER_TALK_STEPS_TYPE_17 0x11
@@ -241,8 +241,8 @@ void VillagerTalkSteps_HandOver(VillagerTalk *talk)
     Global021cfc98_CopyOut(&kept);
     const NpcId *npc = TownVillager_NpcId(steps_record(talk));
     VillagerPartHandover_Set((VillagerPartHandover *) (void *) (part + VILLAGER_TALK_STEPS_HANDOVER), npc, &kept);
-    ItemObject_Clear((ItemObject *) (void *) VillagerState_Object(VillagerStatus_StateEntry(steps_record(talk))));
-    VillagerKind_DealIfNeeded(&data_021e5a2c);
+    VillagerErrand_Clear((VillagerErrand *) (void *) VillagerState_Errand(VillagerStatus_StateEntry(steps_record(talk))));
+    VillagerErrands_DealIfNeeded(&data_021e5a2c);
 }
 CLEAN_AS(func_02023348, VillagerTalkSteps_HandOver)
 
@@ -374,9 +374,10 @@ CLEAN_AS(func_02023864, VillagerTalkSteps_Line8aa8Group1)
  * bits, when it is in use. */
 void VillagerTalkSteps_MarkSicknessObject(void)
 {
-    ItemObject *object = (ItemObject *) (void *) VillagerSicknessRecord_Object(VillagerSickness_Record(&data_021e5a2c));
-    if (ItemObject_IsInUse(object) != 0) {
-        ItemObject_SetLow5(object, 1);
+    VillagerErrand *object =
+        (VillagerErrand *) (void *) VillagerSicknessRecord_Errand(VillagerSickness_Record(&data_021e5a2c));
+    if (VillagerErrand_IsInUse(object) != 0) {
+        VillagerErrand_SetProgress(object, 1);
     }
 }
 CLEAN_AS(func_020238c8, VillagerTalkSteps_MarkSicknessObject)
@@ -486,7 +487,7 @@ CLEAN_AS(func_02023ca8, VillagerTalkSteps_Line8cd8)
 void VillagerTalkSteps_LineByObjectType(VillagerTalk *talk, VillagerTalkLine *out)
 {
     steps_format(talk);
-    switch (ItemObject_Type((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk))) {
+    switch (VillagerErrand_Type((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk))) {
         case VILLAGER_TALK_STEPS_TYPE_14:
             talk->message = 0xb;
             break;
@@ -514,7 +515,7 @@ CLEAN_AS(func_02023d88, VillagerTalkSteps_Say2f14)
  * 0xb0 are cleared. Nothing for others. */
 void VillagerTalkSteps_GiveByObjectType(VillagerTalk *talk)
 {
-    switch (ItemObject_Type((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk))) {
+    switch (VillagerErrand_Type((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk))) {
         case VILLAGER_TALK_STEPS_TYPE_14:
         case VILLAGER_TALK_STEPS_TYPE_16: {
             int slot = CurrentPockets_FreeSlot();
@@ -546,7 +547,7 @@ static void steps_draw_gift(VillagerTalk *talk, int kind)
     talk->gift = item;
     ItemList_Destruct(&list);
     SceneBase_PutItemName(steps_base(talk), (int) (uintptr_t) &talk->gift, 0, 7);
-    ItemObject_SetLow5((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk), 1);
+    VillagerErrand_SetProgress((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk), 1);
 }
 
 /* func_02023e54: the text named by the resource name data_020c8c20 for the villager's
@@ -558,7 +559,7 @@ static void steps_draw_gift(VillagerTalk *talk, int kind)
 void VillagerTalkSteps_LineGiveByObjectType(VillagerTalk *talk, VillagerTalkLine *out)
 {
     steps_format(talk);
-    switch (ItemObject_Type((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk))) {
+    switch (VillagerErrand_Type((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk))) {
         case VILLAGER_TALK_STEPS_TYPE_14:
             talk->message = 0xa;
             steps_draw_gift(talk, 0);
@@ -577,7 +578,7 @@ void VillagerTalkSteps_LineGiveByObjectType(VillagerTalk *talk, VillagerTalkLine
             } else {
                 talk->message = 0x16;
             }
-            ItemObject_SetLow5((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk), 1);
+            VillagerErrand_SetProgress((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk), 1);
             break;
         default:
             talk->message = 0xa;

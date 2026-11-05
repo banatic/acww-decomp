@@ -8,7 +8,7 @@
 #include "current_pockets.h"
 #include "date_time.h"
 #include "fox_shop.h"
-#include "item_object.h"
+#include "villager_errand.h"
 #include "lookups.h"
 #include "mail.h"
 #include "npc_id.h"
@@ -22,7 +22,7 @@
 #include "villager_checks.h"
 #include "villager_data.h"
 #include "villager_home.h"
-#include "villager_kinds.h"
+#include "villager_errands.h"
 #include "villager_memory_bits.h"
 #include "villager_memory_entry.h"
 #include "villager_mode_record.h"
@@ -235,9 +235,9 @@ static VillagerPartBlock *greeting_block(const VillagerTalk *talk)
     return *(VillagerPartBlock **) (void *) ((u8 *) talk + VILLAGER_TALK_GREETING_BLOCK);
 }
 
-static ItemObject *greeting_block_object(const VillagerTalk *talk)
+static VillagerErrand *greeting_block_object(const VillagerTalk *talk)
 {
-    return (ItemObject *) (void *) VillagerPartBlock_Object(greeting_block(talk));
+    return (VillagerErrand *) (void *) VillagerPartBlock_Errand(greeting_block(talk));
 }
 
 /* func_0202b94c: the line of a talk of two villagers with the player. The player is noted in
@@ -280,7 +280,7 @@ void VillagerTalkGreeting_LineThree(VillagerTalk *talk, VillagerTalkLine *out)
 CLEAN_AS(func_0202b94c, VillagerTalkGreeting_LineThree)
 
 /* func_0202ba94: the line said for what the villager knows of the current player
- * (VillagerKind_Known, a type below 22). For class 1, the request block of the player's
+ * (VillagerErrands_KnownType, a type below 22). For class 1, the request block of the player's
  * villager part it names is kept at 0x160; while its object's five low bits are 0, the table
  * data_021c2a64 when the object's date is past (and the object kept at 0x154), else for type
  * 10 the table data_021c2aac when the pockets hold no item like the object's, and for type 19
@@ -295,29 +295,29 @@ void VillagerTalkGreeting_SayByKnownObject(VillagerTalk *talk)
     u8 *player = PlayerRecords_Current();
     u8 *record = greeting_record(talk);
     VillagerPart *part = (VillagerPart *) (void *) PlayerRecord_VillagerPart(player);
-    unsigned int type = (unsigned int) VillagerKind_Known(&data_021e5a2c, record, player);
+    unsigned int type = (unsigned int) VillagerErrands_KnownType(&data_021e5a2c, record, player);
     if (type < VILLAGER_TALK_GREETING_KNOWN_TYPES) {
         DateTime now = {0};
         DateTime_Now(&now);
-        switch (ItemObject_ClassOfType(type)) {
+        switch (VillagerErrand_ClassOfType(type)) {
             case 1: {
-                VillagerPartBlock *block = VillagerPart_Block(part, ItemObject_Class1SplitOfType(type));
+                VillagerPartBlock *block = VillagerPart_Block(part, VillagerErrand_Class1SplitOfType(type));
                 *(VillagerPartBlock **) (void *) ((u8 *) talk + VILLAGER_TALK_GREETING_BLOCK) = block;
-                if (greeting_block(talk) == NULL || ItemObject_Low5(greeting_block_object(talk)) != 0) {
+                if (greeting_block(talk) == NULL || VillagerErrand_Progress(greeting_block_object(talk)) != 0) {
                     break;
                 }
-                if (DateTime_Compare(ItemObject_Date(greeting_block_object(talk)), &now, VILLAGER_TALK_GREETING_ALL_FIELDS) ==
-                    -1) {
+                if (DateTime_Compare(VillagerErrand_Date(greeting_block_object(talk)), &now,
+                                     VILLAGER_TALK_GREETING_ALL_FIELDS) == -1) {
                     VillagerTalkScene_SetLines(talk, data_021c2a64);
-                    VillagerTalkScene_SetObject(talk, (u32) (uintptr_t) greeting_block_object(talk));
+                    VillagerTalkScene_SetErrand(talk, (u32) (uintptr_t) greeting_block_object(talk));
                     break;
                 }
-                switch (ItemObject_Type(greeting_block_object(talk))) {
+                switch (VillagerErrand_Type(greeting_block_object(talk))) {
                     case VILLAGER_TALK_GREETING_TYPE_ITEM: {
                         PlayerPockets *pockets = PlayerRecord_Pockets(player);
-                        if (VillagerTalkScene_PocketOfItem(pockets, ItemObject_Item(greeting_block_object(talk))) == -1) {
+                        if (VillagerTalkScene_PocketOfItem(pockets, VillagerErrand_Item(greeting_block_object(talk))) == -1) {
                             VillagerTalkScene_SetLines(talk, data_021c2aac);
-                            VillagerTalkScene_SetObject(talk, (u32) (uintptr_t) greeting_block_object(talk));
+                            VillagerTalkScene_SetErrand(talk, (u32) (uintptr_t) greeting_block_object(talk));
                         }
                         break;
                     }
@@ -326,7 +326,7 @@ void VillagerTalkGreeting_SayByKnownObject(VillagerTalk *talk)
                         if (letter != NULL && Letter_State(letter) == VILLAGER_TALK_GREETING_LETTER_STATE) {
                             Letter_Clear(letter);
                             VillagerTalkScene_SetLines(talk, data_021c2aac);
-                            VillagerTalkScene_SetObject(talk, (u32) (uintptr_t) greeting_block_object(talk));
+                            VillagerTalkScene_SetErrand(talk, (u32) (uintptr_t) greeting_block_object(talk));
                         }
                         break;
                     }
@@ -337,12 +337,13 @@ void VillagerTalkGreeting_SayByKnownObject(VillagerTalk *talk)
             }
             case 3: {
                 VillagerPartHandover *handover = (VillagerPartHandover *) (void *) part->rest_a4;
-                ItemObject *object = (ItemObject *) (void *) handover->object;
-                if (ItemObject_IsInUse(object) != 0 && ItemObject_Type(object) == VILLAGER_PART_HANDOVER_TYPE &&
-                    ItemObject_Low5(object) == 0 && VillagerPartHandover_IsFrom(handover, TownVillager_NpcId(record)) != 0 &&
+                VillagerErrand *object = (VillagerErrand *) (void *) handover->object;
+                if (VillagerErrand_IsInUse(object) != 0 && VillagerErrand_Type(object) == VILLAGER_PART_HANDOVER_TYPE &&
+                    VillagerErrand_Progress(object) == 0 &&
+                    VillagerPartHandover_IsFrom(handover, TownVillager_NpcId(record)) != 0 &&
                     DateTime_Compare(&now, &handover->date, VILLAGER_TALK_GREETING_ALL_FIELDS) == 1) {
                     VillagerTalkScene_SetLines(talk, data_021c3094);
-                    VillagerTalkScene_SetObject(talk, (u32) (uintptr_t) object);
+                    VillagerTalkScene_SetErrand(talk, (u32) (uintptr_t) object);
                 }
                 break;
             }
@@ -350,7 +351,7 @@ void VillagerTalkGreeting_SayByKnownObject(VillagerTalk *talk)
                 break;
         }
     }
-    if (VillagerTalkScene_Object(talk) == 0) {
+    if (VillagerTalkScene_Errand(talk) == 0) {
         VillagerTalkScene_SetLines(talk, data_021c1d54);
     }
 

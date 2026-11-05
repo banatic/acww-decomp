@@ -1,6 +1,6 @@
 /* Members of the town villagers' talk scenes (VillagerTalk, villager_talk.h) about the object
  * a villager keeps (its record's object at 0x24, villager_object.h, which the talk holds at
- * 0x164, and the talk's object at 0x154, func_0202d9c4, both item_object.h) of the types of
+ * 0x164, and the talk's errand at 0x154, VillagerTalkScene_Errand, villager_errand.h) of the types of
  * group 0, the ones that go through steps. Their type matches the villager's mode
  * (villager_house_items.h): 0 an insect (items 0x12b0-0x12e7), 1 a fish (0x12e8-0x131f), 2 an
  * item of 0x450c-0x45db (item_attributes.h), 3 clothes (0x11a8-0x12a7) and 4 furniture.

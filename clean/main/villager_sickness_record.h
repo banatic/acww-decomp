@@ -30,7 +30,7 @@ DesignCreator *VillagerSicknessRecord_StagePlayer(VillagerSickness *sickness);
 DesignCreator *VillagerSicknessRecord_Player(VillagerSickness *sickness, u32 stage);
 void VillagerSicknessRecord_Start(VillagerSickness *sickness, const NpcId *npc, const Date *today);
 NpcId *VillagerSicknessRecord_Npc(VillagerSickness *sickness);
-u8 *VillagerSicknessRecord_Object(VillagerSickness *sickness);
+u8 *VillagerSicknessRecord_Errand(VillagerSickness *sickness);
 void VillagerSicknessRecord_Clear(VillagerSickness *sickness);
 VillagerSickness *VillagerSicknessRecord_Destruct(VillagerSickness *sickness);
 VillagerSickness *VillagerSicknessRecord_Construct(VillagerSickness *sickness);

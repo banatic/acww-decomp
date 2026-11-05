@@ -7,7 +7,7 @@
 #include "player_records.h"
 #include "shops.h"
 #include "item_code.h"
-#include "item_object.h"
+#include "villager_errand.h"
 #include "main_random.h"
 #include "npc_lookup.h"
 #include "player_id.h"
@@ -41,8 +41,8 @@ static u8 villager_part_entry_bit(int bit)
 
 /* func_0209af80: whether `code` is the one the entry names, for the current player of this
  * town while the entry holds something with the low bits of its byte 0x0b clear. Index 0 takes
- * any of the codes 0xd019-0xd01c; the others their code, compared without the variant when
- * `code` has one. */
+ * any of the codes 0xd019-0xd01c; the others their code, compared by furniture number when
+ * `code` is furniture. */
 int VillagerPartEntry_Accepts(VillagerPartEntry *entry, const u16 *code)
 {
     if (entry->index >= VILLAGER_PART_ENTRY_CHOICES) {
@@ -57,8 +57,8 @@ int VillagerPartEntry_Accepts(VillagerPartEntry *entry, const u16 *code)
     if ((*code >> 12) != VILLAGER_PART_ENTRY_CODE_KIND) {
         return 0;
     }
-    if (ItemObject_IsInUse((ItemObject *) (void *) entry->object) == 0 ||
-        ItemObject_Low5((ItemObject *) (void *) entry->object) != 0) {
+    if (VillagerErrand_IsInUse((VillagerErrand *) (void *) entry->object) == 0 ||
+        VillagerErrand_Progress((VillagerErrand *) (void *) entry->object) != 0) {
         return 0;
     }
     if (*code >= VILLAGER_PART_ENTRY_INDEX0_FIRST && *code <= VILLAGER_PART_ENTRY_INDEX0_LAST) {
@@ -91,9 +91,9 @@ int VillagerPartEntry_Advance(VillagerPartEntry *entry)
 
     VillagerPartEntry_CloseChoice(entry, (int) choice);
     entry->index = (u8) choice;
-    ItemObject_SetLow5((ItemObject *) (void *) entry->object, 0);
+    VillagerErrand_SetProgress((VillagerErrand *) (void *) entry->object, 0);
     u16 item = data_020d1a28[MainRandom_Below(10) & 1];
-    ItemObject_SetItem((ItemObject *) (void *) entry->object, &item);
+    VillagerErrand_SetItem((VillagerErrand *) (void *) entry->object, &item);
 
     u8 left = VillagerPartEntry_CountLeft(entry, entry->choices);
     if (left == 1 || (left == 2 && (MainRandom_Below(10) & 1) != 0)) {
@@ -129,7 +129,7 @@ void VillagerPartEntry_Start(VillagerPartEntry *entry)
     int which = MainRandom_Below(10) & 1;
     VillagerPartEntry_Clear(entry);
     u16 item = data_020d1a28[which];
-    ItemObject_Set((ItemObject *) (void *) entry->object, VILLAGER_PART_ENTRY_TYPE, &item, 0);
+    VillagerErrand_Set((VillagerErrand *) (void *) entry->object, VILLAGER_PART_ENTRY_TYPE, &item, 0);
     entry->choices |= VILLAGER_PART_ENTRY_ALL_CHOICES;
 
     u32 choice = (u32) VillagerPartEntry_PickChoice(entry, entry->choices);
@@ -208,7 +208,7 @@ CLEAN_AS(func_0209b218, VillagerPartEntry_CountChoices)
 /* func_0209b23c: no entry: the object emptied, no index, no choice open. */
 void VillagerPartEntry_Clear(VillagerPartEntry *entry)
 {
-    ItemObject_Clear((ItemObject *) (void *) entry->object);
+    VillagerErrand_Clear((VillagerErrand *) (void *) entry->object);
     entry->index = VILLAGER_PART_ENTRY_NONE;
     entry->choices = 0;
 }

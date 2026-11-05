@@ -22,7 +22,7 @@
 #include "types.h"
 #include "villager_part.h"
 
-/* The class of the step types (ItemObject_ClassOfType: types 10-19), and its first type. */
+/* The class of the step types (VillagerErrand_ClassOfType: types 10-19), and its first type. */
 #define VILLAGER_PART_BLOCK_CLASS 1
 #define VILLAGER_PART_BLOCK_FIRST_STEP 10
 #define VILLAGER_PART_BLOCK_STEPS 10
@@ -41,7 +41,7 @@ int VillagerPartBlock_IsOwnTypePastLimit(VillagerPartBlock *block);
 int VillagerPartBlock_IsPastLimit(VillagerPartBlock *block, int type);
 int VillagerPartBlock_TypeFitsMode(int type, int mode);
 NpcId *VillagerPartBlock_Npc(VillagerPartBlock *block, int index);
-u8 *VillagerPartBlock_Object(VillagerPartBlock *block);
+u8 *VillagerPartBlock_Errand(VillagerPartBlock *block);
 int VillagerPartBlock_SetType(VillagerPartBlock *block, int type, const NpcId *first, const NpcId *second);
 void VillagerPartBlock_Clear(VillagerPartBlock *block);
 VillagerPartBlock *VillagerPartBlock_Destruct(VillagerPartBlock *block);

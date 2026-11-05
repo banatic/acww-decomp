@@ -1,5 +1,5 @@
-/* A villager's errand of catching an insect or a fish (types 0 and 1 of its object,
- * villager_object.h): while the errand runs, the villager catches now and then, and what it
+/* A villager's errand of catching an insect or a fish (types 0 and 1 of its errand,
+ * villager_errand.h, villager_object.h): while the errand runs, the villager catches now and then, and what it
  * caught becomes the object's item (an insect 0x12b0-0x12e7, a fish 0x12e8-0x131f). Overlays 4
  * and 68 update the villager of a scene object through VillagerErrandCatch_Update.
  *

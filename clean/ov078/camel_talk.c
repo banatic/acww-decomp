@@ -11,7 +11,7 @@
 #include "main/event_schedule.h"
 #include "main/item_code.h"
 #include "main/item_lists.h"
-#include "main/item_object.h"
+#include "main/villager_errand.h"
 #include "main/main_random.h"
 #include "main/message_receiver.h"
 #include "main/obj_020d9ff8.h"
@@ -50,7 +50,7 @@ extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(v
 /* The current player's daily bit of her first talk of the day. */
 #define CAMEL_TALK_DAILY_TALKED 0x0b
 
-/* The errand's steps (bits 0-4 of the entry's object, ItemObject_Low5). */
+/* The errand's steps (bits 0-4 of the entry's object, VillagerErrand_Progress). */
 #define CAMEL_ERRAND_HANDED 0
 #define CAMEL_ERRAND_DONE 1
 #define CAMEL_ERRAND_OFFERED 2
@@ -82,7 +82,7 @@ extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(v
 /* No line to say. */
 #define CAMEL_NO_LINE 0
 
-static_assert(sizeof(ItemObject) == 12, "the errand's object");
+static_assert(sizeof(VillagerErrand) == 12, "the errand's object");
 
 static u8 camel_line_shown(const CamelTalk *talk)
 {
@@ -109,13 +109,13 @@ static void camel_say(const CamelTalk *talk, u8 line)
 static VillagerPartEntry *camel_errand(void)
 {
     u8 *part = PlayerRecord_VillagerPart(PlayerRecords_Current());
-    return (VillagerPartEntry *) (void *) VillagerPart_Object94((VillagerPart *) (void *) part);
+    return (VillagerPartEntry *) (void *) VillagerPart_Entry((VillagerPart *) (void *) part);
 }
 
 /* The errand's object (one call of VillagerPartEntry_Self each). */
-static ItemObject *camel_object(VillagerPartEntry *errand)
+static VillagerErrand *camel_object(VillagerPartEntry *errand)
 {
-    return (ItemObject *) (void *) VillagerPartEntry_Self(errand);
+    return (VillagerErrand *) (void *) VillagerPartEntry_Self(errand);
 }
 
 /* The name of the errand's villager, when it writes one, put in the talk's part 0. */
@@ -186,7 +186,7 @@ static void camel_draw_reward(CamelTalk *talk, int kind, int slot, int part)
     SceneBase_PutItemName(&talk->scene, (int) (u32) (uintptr_t) &talk->rewards[slot], part, CAMEL_NAME_KIND_ITEM);
 }
 
-/* Whether the errand's item is 0x155f (an item with variants compared without its variant). */
+/* Whether the errand's item is 0x155f (a furniture code compared by its furniture number). */
 static int camel_is_errand_item(const u16 *item)
 {
     if (ItemCode_IsFurniture(item)) {
@@ -201,8 +201,8 @@ static int camel_is_errand_item(const u16 *item)
  * 13), its villager's name put in part 0; the next line: 0x08, or 0x0b after line 0x0a. */
 static u8 camel_hand_errand(CamelTalk *talk, VillagerPartEntry *errand, PlayerIdText *name)
 {
-    CurrentPockets_Give(ItemObject_Item(camel_object(errand)), CAMEL_ERRAND_ITEM_STATE);
-    SceneCommand_RequestMotion13(camel_command(talk), ItemObject_Item(camel_object(errand)), 2, CAMEL_HAND_MOTION, 0);
+    CurrentPockets_Give(VillagerErrand_Item(camel_object(errand)), CAMEL_ERRAND_ITEM_STATE);
+    SceneCommand_RequestMotion13(camel_command(talk), VillagerErrand_Item(camel_object(errand)), 2, CAMEL_HAND_MOTION, 0);
     camel_put_villager_name(talk, errand, name);
     return camel_line_shown(talk) != CAMEL_LINE_ERRAND_NEXT ? CAMEL_LINE_ERRAND_GIVEN : CAMEL_LINE_ERRAND_NEXT_GIVEN;
 }
@@ -239,8 +239,8 @@ void CamelTalk_OnLineEnded(CamelTalk *talk)
             if (camel_line_shown(talk) == CAMEL_LINE_ERRAND) {
                 VillagerPartEntry_Start(errand);
             }
-            line =
-                camel_is_errand_item(ItemObject_Item(camel_object(errand))) ? CAMEL_LINE_ERRAND_155F : CAMEL_LINE_ERRAND_OTHER;
+            line = camel_is_errand_item(VillagerErrand_Item(camel_object(errand))) ? CAMEL_LINE_ERRAND_155F
+                                                                                   : CAMEL_LINE_ERRAND_OTHER;
             /* line 0x0a hands the errand's item over at once */
             if (camel_line_shown(talk) == CAMEL_LINE_ERRAND_NEXT) {
                 line = camel_hand_errand(talk, errand, &name);
@@ -256,7 +256,7 @@ void CamelTalk_OnLineEnded(CamelTalk *talk)
             line = CAMEL_LINE_REWARD_CHOICE;
             break;
         case CAMEL_LINE_REWARD_TAKEN:
-            ItemObject_SetLow5(camel_object(errand), CAMEL_ERRAND_REWARDED);
+            VillagerErrand_SetProgress(camel_object(errand), CAMEL_ERRAND_REWARDED);
             EventSchedule_MarkTakenPart(CAMEL_EVENT_REWARDED);
             break;
         case CAMEL_LINE_TRADE_DECLINED:
@@ -309,14 +309,15 @@ void CamelTalk_FirstLine(CamelTalk *talk, CamelTalkLine *out)
     }
     if (talk->pocket >= 0) {
         out->message = CAMEL_LINE_TRADE_ASK;
-    } else if (ItemObject_IsInUse(camel_object(errand)) != 0 &&
-               ItemObject_Low5(camel_object(errand)) == CAMEL_ERRAND_REWARDED) {
+    } else if (VillagerErrand_IsInUse(camel_object(errand)) != 0 &&
+               VillagerErrand_Progress(camel_object(errand)) == CAMEL_ERRAND_REWARDED) {
         out->message = CAMEL_LINE_REWARD_GIVEN;
     } else if (TalkChecks_TestSetDailyBit(CAMEL_TALK_DAILY_TALKED, 1) == 0) {
         out->message = CAMEL_LINE_FIRST_TODAY;
-    } else if (ItemObject_IsInUse(camel_object(errand)) == 0) {
+    } else if (VillagerErrand_IsInUse(camel_object(errand)) == 0) {
         out->message = CAMEL_LINE_NO_ERRAND;
-    } else if (ItemObject_IsInUse(camel_object(errand)) != 0 && ItemObject_Low5(camel_object(errand)) == CAMEL_ERRAND_HANDED) {
+    } else if (VillagerErrand_IsInUse(camel_object(errand)) != 0 &&
+               VillagerErrand_Progress(camel_object(errand)) == CAMEL_ERRAND_HANDED) {
         camel_put_villager_name(talk, errand, &name);
         out->message = CAMEL_LINE_ERRAND_OPEN;
     } else if (CurrentPockets_FreeSlot() < 0) {
@@ -324,8 +325,8 @@ void CamelTalk_FirstLine(CamelTalk *talk, CamelTalkLine *out)
     } else if (VillagerPartEntry_Advance(errand) != 0) {
         camel_put_villager_name(talk, errand, &name);
         out->message = CAMEL_LINE_ERRAND_NEXT;
-    } else if (ItemObject_Low5(camel_object(errand)) == CAMEL_ERRAND_DONE) {
-        ItemObject_SetLow5(camel_object(errand), CAMEL_ERRAND_OFFERED);
+    } else if (VillagerErrand_Progress(camel_object(errand)) == CAMEL_ERRAND_DONE) {
+        VillagerErrand_SetProgress(camel_object(errand), CAMEL_ERRAND_OFFERED);
         out->message = CAMEL_LINE_REWARD_DRAW;
     }
     PlayerIdText_Destruct(&name);

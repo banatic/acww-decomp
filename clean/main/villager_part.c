@@ -8,7 +8,7 @@
 #include "player_record.h"
 #include "player_records.h"
 #include "villager_roster.h"
-#include "item_object.h"
+#include "villager_errand.h"
 #include "letter.h"
 #include "town_villager.h"
 #include "villager_part_block.h"
@@ -54,11 +54,11 @@ void VillagerPart_CurrentNameFor(void *text, u16 *item)
 CLEAN_AS(func_02099e7c, VillagerPart_CurrentNameFor)
 
 /* func_0209a850 */
-u8 *VillagerPart_Object94(VillagerPart *part)
+u8 *VillagerPart_Entry(VillagerPart *part)
 {
     return part->object_94;
 }
-CLEAN_AS(func_0209a850, VillagerPart_Object94)
+CLEAN_AS(func_0209a850, VillagerPart_Entry)
 
 /* func_0209a854: whether `npc` is valid and is the second villager picked, while block 0 holds
  * a step. */
@@ -83,11 +83,11 @@ CLEAN_AS(func_0209a8a4, VillagerPart_EndStep)
 /* func_0209a8c4: block 0's value set to 1 when it holds type 18 with value 0. */
 void VillagerPart_MarkType18(VillagerPart *part)
 {
-    u8 *object = VillagerPartBlock_Object(VillagerPart_Block(part, 0));
-    if (ItemObject_IsInUse((ItemObject *) (void *) object) != 0 &&
-        ItemObject_Type((ItemObject *) (void *) object) == VILLAGER_PART_TYPE_18 &&
-        ItemObject_Low5((ItemObject *) (void *) object) == 0) {
-        ItemObject_SetLow5((ItemObject *) (void *) object, VILLAGER_PART_MARKED);
+    u8 *object = VillagerPartBlock_Errand(VillagerPart_Block(part, 0));
+    if (VillagerErrand_IsInUse((VillagerErrand *) (void *) object) != 0 &&
+        VillagerErrand_Type((VillagerErrand *) (void *) object) == VILLAGER_PART_TYPE_18 &&
+        VillagerErrand_Progress((VillagerErrand *) (void *) object) == 0) {
+        VillagerErrand_SetProgress((VillagerErrand *) (void *) object, VILLAGER_PART_MARKED);
     }
 }
 CLEAN_AS(func_0209a8c4, VillagerPart_MarkType18)
@@ -138,15 +138,15 @@ int VillagerPart_NoteLetter(VillagerPart *part, Letter *letter)
         return 0;
     }
     VillagerPartBlock *block = VillagerPart_Block(part, 0);
-    u8 *object = VillagerPartBlock_Object(block);
-    if (ItemObject_Type((ItemObject *) (void *) object) != VILLAGER_PART_TYPE_SECOND_PICK) {
+    u8 *object = VillagerPartBlock_Errand(block);
+    if (VillagerErrand_Type((VillagerErrand *) (void *) object) != VILLAGER_PART_TYPE_SECOND_PICK) {
         return 0;
     }
 
     const NpcId *addressee = (const NpcId *) Letter_VillagerAddressee(letter);
     if (addressee == NULL) {
-        if (ItemObject_Low5((ItemObject *) (void *) object) == 0) {
-            ItemObject_SetLow5((ItemObject *) (void *) object, VILLAGER_PART_MARKED);
+        if (VillagerErrand_Progress((VillagerErrand *) (void *) object) == 0) {
+            VillagerErrand_SetProgress((VillagerErrand *) (void *) object, VILLAGER_PART_MARKED);
             return 1;
         }
         return 0;
@@ -156,14 +156,14 @@ int VillagerPart_NoteLetter(VillagerPart *part, Letter *letter)
     NpcId npc;
     NpcId_ConstructCopy(&npc, addressee);
     if (NpcId_IsValid(&npc) != 0 && same_npc(VillagerPartBlock_Npc(block, 1), &npc)) {
-        noted = ItemObject_Low5((ItemObject *) (void *) object) < VILLAGER_PART_MARKED_FOR_VILLAGER;
+        noted = VillagerErrand_Progress((VillagerErrand *) (void *) object) < VILLAGER_PART_MARKED_FOR_VILLAGER;
         if (noted) {
-            ItemObject_SetLow5((ItemObject *) (void *) object, VILLAGER_PART_MARKED_FOR_VILLAGER);
+            VillagerErrand_SetProgress((VillagerErrand *) (void *) object, VILLAGER_PART_MARKED_FOR_VILLAGER);
         }
     } else {
-        noted = ItemObject_Low5((ItemObject *) (void *) object) == 0;
+        noted = VillagerErrand_Progress((VillagerErrand *) (void *) object) == 0;
         if (noted) {
-            ItemObject_SetLow5((ItemObject *) (void *) object, VILLAGER_PART_MARKED);
+            VillagerErrand_SetProgress((VillagerErrand *) (void *) object, VILLAGER_PART_MARKED);
         }
     }
     NpcId_Destruct(&npc);
@@ -184,10 +184,10 @@ CLEAN_AS(func_0209aa80, VillagerPart_CurrentMarkSecondPick)
 /* func_0209aa9c: block 0's value set to 1 when it holds type 15 with value 0. */
 void VillagerPart_MarkSecondPick(VillagerPart *part)
 {
-    u8 *object = VillagerPartBlock_Object(VillagerPart_Block(part, 0));
-    if (ItemObject_Type((ItemObject *) (void *) object) == VILLAGER_PART_TYPE_SECOND_PICK &&
-        ItemObject_Low5((ItemObject *) (void *) object) == 0) {
-        ItemObject_SetLow5((ItemObject *) (void *) object, VILLAGER_PART_MARKED);
+    u8 *object = VillagerPartBlock_Errand(VillagerPart_Block(part, 0));
+    if (VillagerErrand_Type((VillagerErrand *) (void *) object) == VILLAGER_PART_TYPE_SECOND_PICK &&
+        VillagerErrand_Progress((VillagerErrand *) (void *) object) == 0) {
+        VillagerErrand_SetProgress((VillagerErrand *) (void *) object, VILLAGER_PART_MARKED);
     }
 }
 CLEAN_AS(func_0209aa9c, VillagerPart_MarkSecondPick)
@@ -197,7 +197,7 @@ CLEAN_AS(func_0209aa9c, VillagerPart_MarkSecondPick)
 void VillagerPart_SetSecondPick(VillagerPart *part)
 {
     VillagerPartBlock *block = VillagerPart_Block(part, 0);
-    VillagerPartBlock_Object(block);
+    VillagerPartBlock_Errand(block);
     const NpcId *excluded;
     func_02137550(&excluded, sizeof(excluded));
     int count = 0;
@@ -271,9 +271,9 @@ CLEAN_AS(func_0209abd0, VillagerPart_Reset)
 /* func_0209ac04: whether block 0 holds one of the step types (11-18). */
 int VillagerPart_HasStep(VillagerPart *part)
 {
-    u8 *object = VillagerPartBlock_Object(VillagerPart_Block(part, 0));
-    return ItemObject_IsInUse((ItemObject *) (void *) object) != 0 &&
-           ItemObject_StepBand((ItemObject *) (void *) object) == VILLAGER_PART_STEP_BAND;
+    u8 *object = VillagerPartBlock_Errand(VillagerPart_Block(part, 0));
+    return VillagerErrand_IsInUse((VillagerErrand *) (void *) object) != 0 &&
+           VillagerErrand_StepBand((VillagerErrand *) (void *) object) == VILLAGER_PART_STEP_BAND;
 }
 CLEAN_AS(func_0209ac04, VillagerPart_HasStep)
 
@@ -287,14 +287,15 @@ void VillagerPart_ClearPicks(VillagerPart *part)
 CLEAN_AS(func_0209ac30, VillagerPart_ClearPicks)
 
 /* func_0209ac50: the name that goes with `*item` written into `text`; whether one was. For
- * items 0x155f and 0x1560, while the object at 0x94 holds something, the name of its entry;
- * else, when block 0 holds an object with the same item (compared without the variant for
- * codes that have one), the name of the villager the block names. QUIRK: the items
+ * items 0x155f and 0x1560, while the entry at 0x94 holds an errand, the name of its entry;
+ * else, when block 0 holds an errand with the same item (compared by furniture number for
+ * furniture codes), the name of the villager the block names. QUIRK: the items
  * 0x1561-0x1564 pick block 0 as any other does. */
 int VillagerPart_NameFor(VillagerPart *part, void *text, u16 *item)
 {
     if (*item >= VILLAGER_PART_ENTRY_ITEM_FIRST && *item <= VILLAGER_PART_ENTRY_ITEM_LAST) {
-        if (ItemObject_IsInUse((ItemObject *) VillagerPartEntry_Self((VillagerPartEntry *) (void *) part->object_94)) != 0) {
+        if (VillagerErrand_IsInUse(
+                (VillagerErrand *) VillagerPartEntry_Self((VillagerPartEntry *) (void *) part->object_94)) != 0) {
             return VillagerPartEntry_WriteName((VillagerPartEntry *) (void *) part->object_94, text);
         }
     }
@@ -303,11 +304,11 @@ int VillagerPart_NameFor(VillagerPart *part, void *text, u16 *item)
     if (block == NULL) {
         return 0;
     }
-    u8 *object = VillagerPartBlock_Object(block);
-    if (ItemObject_IsInUse((ItemObject *) (void *) object) == 0) {
+    u8 *object = VillagerPartBlock_Errand(block);
+    if (VillagerErrand_IsInUse((VillagerErrand *) (void *) object) == 0) {
         return 0;
     }
-    u16 *held = ItemObject_Item((ItemObject *) (void *) object);
+    u16 *held = VillagerErrand_Item((VillagerErrand *) (void *) object);
     int same;
     if (ItemCode_IsFurniture(held)) {
         int held_item = ItemCode_FurnitureNumber(held);
@@ -331,7 +332,7 @@ VillagerPartBlock *VillagerPart_FindBlock(VillagerPart *part, const NpcId *npc, 
     }
     for (int i = 0; i < VILLAGER_PART_BLOCKS; i++) {
         VillagerPartBlock *block = &part->blocks[i];
-        if (ItemObject_IsInUse((ItemObject *) (void *) VillagerPartBlock_Object(block)) == 0) {
+        if (VillagerErrand_IsInUse((VillagerErrand *) (void *) VillagerPartBlock_Errand(block)) == 0) {
             continue;
         }
         if (same_npc(VillagerPartBlock_Npc(block, which), npc)) {

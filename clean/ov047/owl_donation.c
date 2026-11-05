@@ -12,7 +12,7 @@
 #include "main/group_params.h"
 #include "main/item_code.h"
 #include "main/item_lists.h"
-#include "main/item_object.h"
+#include "main/villager_errand.h"
 #include "main/main_random.h"
 #include "main/message_receiver.h"
 #include "main/museum_record.h"
@@ -163,7 +163,7 @@ static int owl_given_flag(void)
     return StateBlock_TestFlag(data_021dc7a8, OWL_DONATION_FLAG_GIVEN);
 }
 
-/* Whether `item` is "nothing": an item with variants is compared without its variant. */
+/* Whether `item` is "nothing": a furniture code is compared by its furniture number. */
 static int owl_is_none(const u16 *item)
 {
     if (ItemCode_IsFurniture(item)) {
@@ -371,7 +371,7 @@ void OwlTalk_EndAssess(OwlTalk *talk)
 }
 CLEAN_AS(func_ov047_02260f24, OwlTalk_EndAssess)
 
-/* func_ov047_0226100c (line 0x15): with an item (a plain test, variants not dropped), the
+/* func_ov047_0226100c (line 0x15): with an item (a plain test, not by furniture number), the
  * motion of kind 17 asked for. */
 void OwlTalk_EndNotGiven(OwlTalk *talk)
 {
@@ -599,8 +599,8 @@ void OwlTalk_TakeErrand(OwlTalk *talk)
             SceneCommand_RequestMotion14(owl_scene(talk), &item, OWL_ERRAND_A, OWL_ERRAND_B, 0);
         }
         VillagerPart *part = (VillagerPart *) (void *) PlayerRecord_VillagerPart(record);
-        VillagerPartEntry *entry = (VillagerPartEntry *) (void *) VillagerPart_Object94(part);
-        ItemObject_SetLow5((ItemObject *) (void *) VillagerPartEntry_Self(entry), 1);
+        VillagerPartEntry *entry = (VillagerPartEntry *) (void *) VillagerPart_Entry(part);
+        VillagerErrand_SetProgress((VillagerErrand *) (void *) VillagerPartEntry_Self(entry), 1);
         line = 0xe7;
     }
     owl_say_on(object, line);

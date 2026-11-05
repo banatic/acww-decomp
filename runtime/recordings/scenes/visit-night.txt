@@ -1,6 +1,6 @@
 # visit-night (format: runtime/input.h), played from a town save by tools/scenes.py (the save is
 # not in this repository). Save: seed. Boot as visit-time.txt to 3000, on Tuesday 15 September at
-# 00:05:03: at this second too villager 4 is dealt the object type 21 at the load (VillagerKind_Deal:
+# 00:05:03: at this second too villager 4 is dealt the object type 21 at the load (VillagerErrands_Deal:
 # the visit to the player's house), and she is out at night (by the trees west of the houses,
 # tile 20.5, 37.5). North-west to her (about 3820); talks with A every 40 frames until one ends in
 # her offer (VillagerTalkOffer_StateHandover, about 5800): the visit asked for and the time screen

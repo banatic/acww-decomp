@@ -4,7 +4,7 @@
 #include <string.h>
 
 #include "clean.h"
-#include "item_object.h"
+#include "villager_errand.h"
 #include "main_random.h"
 #include "player_id.h"
 
@@ -176,7 +176,7 @@ void VillagerSicknessRecord_Start(VillagerSickness *sickness, const NpcId *npc, 
     VillagerSicknessRecord_Clear(sickness);
     NpcId_Copy(&sickness->npc, npc);
     u16 item = VILLAGER_SICKNESS_MEDICINE;
-    ItemObject_Set((ItemObject *) (void *) sickness->object, VILLAGER_SICKNESS_OBJECT_TYPE, &item, 0);
+    VillagerErrand_Set((VillagerErrand *) (void *) sickness->object, VILLAGER_SICKNESS_OBJECT_TYPE, &item, 0);
     MI_CpuCopy8(today, &sickness->started, sizeof(Date));
     MI_CpuCopy8(today, &sickness->last_step, sizeof(Date));
     sickness->last_step.unused = 1;
@@ -192,17 +192,17 @@ NpcId *VillagerSicknessRecord_Npc(VillagerSickness *sickness)
 CLEAN_AS(func_0209a774, VillagerSicknessRecord_Npc)
 
 /* func_0209a778 */
-u8 *VillagerSicknessRecord_Object(VillagerSickness *sickness)
+u8 *VillagerSicknessRecord_Errand(VillagerSickness *sickness)
 {
     return sickness->object;
 }
-CLEAN_AS(func_0209a778, VillagerSicknessRecord_Object)
+CLEAN_AS(func_0209a778, VillagerSicknessRecord_Errand)
 
 /* func_0209a77c: no one sick: the object emptied, no villager, no stage players, both dates
  * 1/1/2000 and stage 5. */
 void VillagerSicknessRecord_Clear(VillagerSickness *sickness)
 {
-    ItemObject_Clear((ItemObject *) (void *) sickness->object);
+    VillagerErrand_Clear((VillagerErrand *) (void *) sickness->object);
     NpcId_Clear(&sickness->npc);
     for (int i = 0; i < VILLAGER_SICKNESS_STAGES; i++) {
         PlayerId_Clear(stage_player(sickness, i));
@@ -224,7 +224,7 @@ VillagerSickness *VillagerSicknessRecord_Destruct(VillagerSickness *sickness)
 {
     __cxa_vec_cleanup(sickness->players, VILLAGER_SICKNESS_STAGES, VILLAGER_SICKNESS_PLAYER_ID_SIZE, func_0209526c);
     NpcId_Destruct(&sickness->npc);
-    ItemObject_Destruct((ItemObject *) (void *) sickness->object);
+    VillagerErrand_Destruct((VillagerErrand *) (void *) sickness->object);
     return sickness;
 }
 CLEAN_AS(func_0209a7e8, VillagerSicknessRecord_Destruct)
@@ -232,7 +232,7 @@ CLEAN_AS(func_0209a7e8, VillagerSicknessRecord_Destruct)
 /* func_0209a814: the constructor: the parts constructed, then the record cleared. */
 VillagerSickness *VillagerSicknessRecord_Construct(VillagerSickness *sickness)
 {
-    ItemObject_Construct((ItemObject *) (void *) sickness->object);
+    VillagerErrand_Construct((VillagerErrand *) (void *) sickness->object);
     NpcId_Construct(&sickness->npc);
     __cxa_vec_ctor(sickness->players, VILLAGER_SICKNESS_STAGES, VILLAGER_SICKNESS_PLAYER_ID_SIZE, func_0209529c,
                    func_0209526c);

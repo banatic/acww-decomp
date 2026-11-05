@@ -12,7 +12,7 @@
  *         highest at random)
  *   0x19  a count for each kind of the events seen (0-10, func_0209bee8)
  *   0x21  bit 0: set when the record leaves mode 2 (or mode 8 reached from mode 2)
- *   0x24  an object (the villager's object, as in villager_kinds.h)
+ *   0x24  an object (the villager's object, as in villager_errands.h)
  *
  * Each villager's data (data_020cd884, at 0x3a, func_02080814) holds eight weights (4.12
  * fixed point) that scale its counts into its scores.

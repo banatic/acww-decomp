@@ -278,19 +278,19 @@ void VillagerTalkScene_RunLine(VillagerTalk *talk, VillagerTalkLine *line)
 }
 CLEAN_AS(func_0202d994, VillagerTalkScene_RunLine)
 
-/* func_0202d9c4: the object the talk is about (the word at 0x154). */
-u32 VillagerTalkScene_Object(VillagerTalk *talk)
+/* func_0202d9c4: the errand the talk is about (the word at 0x154, villager_errand.h). */
+u32 VillagerTalkScene_Errand(VillagerTalk *talk)
 {
     return *talk_scene_object(talk);
 }
-CLEAN_AS(func_0202d9c4, VillagerTalkScene_Object)
+CLEAN_AS(func_0202d9c4, VillagerTalkScene_Errand)
 
 /* func_0202d9d0 */
-void VillagerTalkScene_SetObject(VillagerTalk *talk, u32 object)
+void VillagerTalkScene_SetErrand(VillagerTalk *talk, u32 object)
 {
     *talk_scene_object(talk) = object;
 }
-CLEAN_AS(func_0202d9d0, VillagerTalkScene_SetObject)
+CLEAN_AS(func_0202d9d0, VillagerTalkScene_SetErrand)
 
 /* func_0202d9dc (slot 0x68): the town record (0x830) of the villager whose turn it is, 0 when
  * there is none. */

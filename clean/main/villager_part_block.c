@@ -7,7 +7,7 @@
 #include "villager_part_entry.h"
 #include "villager_part_handover.h"
 #include "item_lists.h"
-#include "item_object.h"
+#include "villager_errand.h"
 #include "letter.h"
 #include "mail_text.h"
 #include "main_random.h"
@@ -86,7 +86,7 @@ CLEAN_AS(func_0209b40c, VillagerPartBlock_SetClothesReaction)
 /* func_0209b414: VillagerPartBlock_IsPastLimit for the type the block's object holds. */
 int VillagerPartBlock_IsOwnTypePastLimit(VillagerPartBlock *block)
 {
-    return VillagerPartBlock_IsPastLimit(block, ItemObject_Type((ItemObject *) (void *) block->object));
+    return VillagerPartBlock_IsPastLimit(block, VillagerErrand_Type((VillagerErrand *) (void *) block->object));
 }
 CLEAN_AS(func_0209b414, VillagerPartBlock_IsOwnTypePastLimit)
 
@@ -94,18 +94,18 @@ CLEAN_AS(func_0209b414, VillagerPartBlock_IsOwnTypePastLimit)
  * byte 0x0b above the type's limit. */
 int VillagerPartBlock_IsPastLimit(VillagerPartBlock *block, int type)
 {
-    if (ItemObject_IsInUse((ItemObject *) (void *) block->object) == 0 ||
-        ItemObject_ClassOfType(type) != VILLAGER_PART_BLOCK_CLASS) {
+    if (VillagerErrand_IsInUse((VillagerErrand *) (void *) block->object) == 0 ||
+        VillagerErrand_ClassOfType(type) != VILLAGER_PART_BLOCK_CLASS) {
         return 0;
     }
-    if (type != ItemObject_Type((ItemObject *) (void *) block->object)) {
+    if (type != VillagerErrand_Type((VillagerErrand *) (void *) block->object)) {
         return 0;
     }
     int place;
-    if (ItemObject_PlaceInClass((ItemObject *) (void *) block->object, &place) == 0) {
+    if (VillagerErrand_PlaceInClass((VillagerErrand *) (void *) block->object, &place) == 0) {
         return 0;
     }
-    return ItemObject_Low5((ItemObject *) (void *) block->object) > data_020e3504[place].limit;
+    return VillagerErrand_Progress((VillagerErrand *) (void *) block->object) > data_020e3504[place].limit;
 }
 CLEAN_AS(func_0209b42c, VillagerPartBlock_IsPastLimit)
 
@@ -131,28 +131,28 @@ NpcId *VillagerPartBlock_Npc(VillagerPartBlock *block, int index)
 }
 CLEAN_AS(func_0209b4cc, VillagerPartBlock_Npc)
 
-/* func_0209b4d4: the block's object (the block itself). */
-u8 *VillagerPartBlock_Object(VillagerPartBlock *block)
+/* func_0209b4d4: the block's errand (the block itself). */
+u8 *VillagerPartBlock_Errand(VillagerPartBlock *block)
 {
     return block->object;
 }
-CLEAN_AS(func_0209b4d4, VillagerPartBlock_Object)
+CLEAN_AS(func_0209b4d4, VillagerPartBlock_Errand)
 
 /* func_0209b4d8: the block set to step type `type` (band 1 only): its object given the type and
  * no item, the type's setup run on it, and the NpcIds given (NULL: left alone) copied into it. 1
  * when it was set. */
 int VillagerPartBlock_SetType(VillagerPartBlock *block, int type, const NpcId *first, const NpcId *second)
 {
-    if (ItemObject_ClassOfType(type) != VILLAGER_PART_BLOCK_CLASS) {
+    if (VillagerErrand_ClassOfType(type) != VILLAGER_PART_BLOCK_CLASS) {
         return 0;
     }
     int place = 0;
-    if (ItemObject_PlaceInClassOfType(&place, type) == 0) {
+    if (VillagerErrand_PlaceInClassOfType(&place, type) == 0) {
         return 0;
     }
 
     u16 item = 0xfff1;
-    ItemObject_Set((ItemObject *) (void *) block->object, (u8) type, &item, 0);
+    VillagerErrand_Set((VillagerErrand *) (void *) block->object, (u8) type, &item, 0);
     const VillagerPartTypeEntry *entry = &data_020e3504[place];
     if (entry->setup.function != 0) {
         MemberPointer_CallVoid(&entry->setup, block);
@@ -170,7 +170,7 @@ CLEAN_AS(func_0209b4d8, VillagerPartBlock_SetType)
 /* func_0209b56c: the block emptied: its object, both NpcIds and byte 0x2c. */
 void VillagerPartBlock_Clear(VillagerPartBlock *block)
 {
-    ItemObject_Clear((ItemObject *) (void *) block->object);
+    VillagerErrand_Clear((VillagerErrand *) (void *) block->object);
     for (int i = 0; i < 2; i++) {
         NpcId_Clear(&block->npcs[i]);
     }
@@ -182,7 +182,7 @@ CLEAN_AS(func_0209b56c, VillagerPartBlock_Clear)
 VillagerPartBlock *VillagerPartBlock_Destruct(VillagerPartBlock *block)
 {
     __cxa_vec_cleanup(block->npcs, 2, sizeof(NpcId), func_02003750);
-    ItemObject_Destruct((ItemObject *) (void *) block->object);
+    VillagerErrand_Destruct((VillagerErrand *) (void *) block->object);
     return block;
 }
 CLEAN_AS(func_0209b594, VillagerPartBlock_Destruct)
@@ -190,7 +190,7 @@ CLEAN_AS(func_0209b594, VillagerPartBlock_Destruct)
 /* func_0209b5b8: the constructor. */
 VillagerPartBlock *VillagerPartBlock_Construct(VillagerPartBlock *block)
 {
-    ItemObject_Construct((ItemObject *) (void *) block->object);
+    VillagerErrand_Construct((VillagerErrand *) (void *) block->object);
     __cxa_vec_ctor(block->npcs, 2, sizeof(NpcId), func_02003780, func_02003750);
     return block;
 }
@@ -199,7 +199,7 @@ CLEAN_AS(func_0209b5b8, VillagerPartBlock_Construct)
 /* The setup of a step type that gives the block's object an item; 1. */
 static int villager_part_block_give(VillagerPartBlock *block, u16 item)
 {
-    ItemObject_SetItem((ItemObject *) (void *) block->object, &item);
+    VillagerErrand_SetItem((VillagerErrand *) (void *) block->object, &item);
     return 1;
 }
 
@@ -281,7 +281,7 @@ int VillagerPartBlock_SetupType10(VillagerPartBlock *block)
     ItemList_Construct((ItemList *) &list, VILLAGER_PART_BLOCK_LIST_KIND, VILLAGER_PART_BLOCK_LIST_GROUP);
     ItemLists_Draw(&item, (ItemList *) &list, 0, 0, 1, 1, 0);
     ItemList_Destruct(&list);
-    ItemObject_SetItem((ItemObject *) (void *) block->object, &item);
+    VillagerErrand_SetItem((VillagerErrand *) (void *) block->object, &item);
     return 1;
 }
 CLEAN_AS(func_0209b3cc, VillagerPartBlock_SetupType10)
@@ -303,7 +303,7 @@ CLEAN_AS(func_0209adb0, VillagerPart_ClearAll)
 VillagerPart *VillagerPart_Destruct(VillagerPart *part)
 {
     VillagerPartHandover_Destruct((VillagerPartHandover *) part->rest_a4);
-    ItemObject_Destruct((ItemObject *) (void *) part->object_94);
+    VillagerErrand_Destruct((VillagerErrand *) (void *) part->object_94);
     __cxa_vec_cleanup(part->picks, VILLAGER_PART_PICKS, sizeof(NpcId), func_02003750);
     __cxa_vec_cleanup(part->blocks, VILLAGER_PART_BLOCKS, sizeof(VillagerPartBlock), func_0209b594);
     return part;
@@ -315,7 +315,7 @@ VillagerPart *VillagerPart_Construct(VillagerPart *part)
 {
     __cxa_vec_ctor(part->blocks, VILLAGER_PART_BLOCKS, sizeof(VillagerPartBlock), func_0209b5b8, func_0209b594);
     __cxa_vec_ctor(part->picks, VILLAGER_PART_PICKS, sizeof(NpcId), func_02003780, func_02003750);
-    ItemObject_Construct((ItemObject *) (void *) part->object_94);
+    VillagerErrand_Construct((VillagerErrand *) (void *) part->object_94);
     VillagerPartHandover_Construct((VillagerPartHandover *) part->rest_a4);
     return part;
 }

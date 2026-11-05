@@ -17,7 +17,7 @@
 #include "main/group_params.h"
 #include "main/house_record.h"
 #include "main/item_code.h"
-#include "main/item_object.h"
+#include "main/villager_errand.h"
 #include "main/item_traits.h"
 #include "main/main_random.h"
 #include "main/message_receiver.h"
@@ -252,7 +252,7 @@ static const char *ntalk_file(NookClerkTalk *talk)
     return NookClerk_IsNook(talk->owner) ? data_ov050_02265824 : data_ov050_02265804;
 }
 
-/* Whether the item code at `item` is empty (0xfff1, or a variant of the empty item). */
+/* Whether the item code at `item` is empty (0xfff1, or furniture of the empty item's number). */
 static int ntalk_is_empty(u16 *item)
 {
     if (ItemCode_IsFurniture(item)) {
@@ -268,9 +268,9 @@ static int ntalk_in(u16 item, u16 first, u16 last)
 }
 
 /* The object of block 0 of a villager part: the job's errand. */
-static ItemObject *ntalk_errand(VillagerPart *part)
+static VillagerErrand *ntalk_errand(VillagerPart *part)
 {
-    return (ItemObject *) (void *) VillagerPartBlock_Object(VillagerPart_Block(part, 0));
+    return (VillagerErrand *) (void *) VillagerPartBlock_Errand(VillagerPart_Block(part, 0));
 }
 
 /* The current player's villager part. */
@@ -927,7 +927,7 @@ CLEAN_AS(func_ov050_02261d28, NookClerkTalk_OnLineEnded)
  * down to 0xb, each type read again after a slot ran). */
 static void ntalk_job_line(NookClerkTalk *talk, NookClerkLine *out, VillagerPart *part)
 {
-    ItemObject *errand = ntalk_errand(part);
+    VillagerErrand *errand = ntalk_errand(part);
     u16 profile = *(const u16 *) (const void *) (talk->owner->base + 0x0c);
     if (profile == NOOK_CLERK_TWIN_B || profile == NOOK_CLERK_TWIN_A) {
         out->text = data_ov050_02265804;
@@ -946,11 +946,11 @@ static void ntalk_job_line(NookClerkTalk *talk, NookClerkLine *out, VillagerPart
         return;
     }
     out->message = 0;
-    if (ItemObject_IsInUse(errand) == 0) {
+    if (VillagerErrand_IsInUse(errand) == 0) {
         return;
     }
     for (int type = NOOK_CLERK_JOB_TYPE_LAST; type >= NOOK_CLERK_JOB_TYPE_FIRST; type--) {
-        if (ItemObject_Type(errand) == type) {
+        if (VillagerErrand_Type(errand) == type) {
             u32 vtable = *(const u32 *) (const void *) talk;
             u32 slot = NOOK_CLERK_TALK_SLOT_JOB_LINE + 4 * (u32) (type - NOOK_CLERK_JOB_TYPE_FIRST);
             u32 code = *(const u32 *) (uintptr_t) (vtable + slot);
@@ -1061,7 +1061,7 @@ void NookClerkTalk_Line(NookClerkTalk *talk, NookClerkLine *out)
 {
     u8 *record = PlayerRecords_Current();
     VillagerPartEntry *errands =
-        (VillagerPartEntry *) (void *) VillagerPart_Object94((VillagerPart *) (void *) PlayerRecord_VillagerPart(record));
+        (VillagerPartEntry *) (void *) VillagerPart_Entry((VillagerPart *) (void *) PlayerRecord_VillagerPart(record));
     VillagerPart *part = (VillagerPart *) (void *) PlayerRecord_VillagerPart(record);
 
     if (PlayerRecord_TestFlag(record, PLAYER_FLAG_NOOK_JOB) != 0) {
@@ -1205,7 +1205,7 @@ CLEAN_AS(func_ov050_0226265c, NookClerkTalk_JobPayLoan)
  * set to type 18, and the job's talk back at its start. */
 void NookClerkTalk_JobErrand18(NookClerkTalk *talk, VillagerPart *part)
 {
-    ItemObject_SetLow5(ntalk_errand(part), 2);
+    VillagerErrand_SetProgress(ntalk_errand(part), 2);
     VillagerPart_SetType18(part);
     talk->owner->job_step = 0;
 }
@@ -1256,10 +1256,10 @@ CLEAN_AS(func_ov050_02262798, NookClerkTalk_JobShowDelivery)
  * item 0x1561 is for named in part 1 and line 0x29, else line 0x17. */
 void NookClerkTalk_JobGiveDelivery(NookClerkTalk *talk, VillagerPart *part)
 {
-    ItemObject *errand = ntalk_errand(part);
+    VillagerErrand *errand = ntalk_errand(part);
     PlayerIdText name;
     PlayerIdText_Construct(&name);
-    ItemObject_SetLow5(errand, 2);
+    VillagerErrand_SetProgress(errand, 2);
     talk->owner->job_step = 0;
     if (CurrentPockets_FreeSlot() >= 0) {
         VillagerPart_SetThirdPick(part);
@@ -1278,7 +1278,7 @@ CLEAN_AS(func_ov050_022627d4, NookClerkTalk_JobGiveDelivery)
  * pocket slot line 0x25, else the talk's message is the empty one. */
 void NookClerkTalk_JobStep0(NookClerkTalk *talk, VillagerPart *part)
 {
-    ItemObject_SetLow5(ntalk_errand(part), 0);
+    VillagerErrand_SetProgress(ntalk_errand(part), 0);
     if (CurrentPockets_FreeSlot() >= 0) {
         talk->line = 0x25;
     } else {
@@ -1291,7 +1291,7 @@ CLEAN_AS(func_ov050_02262850, NookClerkTalk_JobStep0)
  * talk at step 1, then as at line 0x1f (NookClerkTalk_JobGive1020). */
 void NookClerkTalk_JobStep0Again(NookClerkTalk *talk, VillagerPart *part)
 {
-    ItemObject_SetLow5(ntalk_errand(part), 0);
+    VillagerErrand_SetProgress(ntalk_errand(part), 0);
     talk->owner->job_step = 1;
     NookClerkTalk_JobGive1020(talk, (int) (uintptr_t) part);
 }
@@ -1334,7 +1334,7 @@ CLEAN_AS(func_ov050_02262910, NookClerkTalk_JobGive1020)
 void NookClerkTalk_JobSecondPick(NookClerkTalk *talk, VillagerPart *part)
 {
     VillagerPartBlock *block = VillagerPart_Block(part, 0);
-    ItemObject_SetLow5((ItemObject *) (void *) VillagerPartBlock_Object(block), 1);
+    VillagerErrand_SetProgress((VillagerErrand *) (void *) VillagerPartBlock_Errand(block), 1);
     if (CurrentPockets_FreeSlot() < 0) {
         talk->line = 0x17;
         return;
@@ -1370,9 +1370,9 @@ CLEAN_AS(func_ov050_022629ec, NookClerkTalk_JobShowItem1563)
  * is for named in part 1, the job's talk back at its start and line 0x18; else line 0x17. */
 void NookClerkTalk_JobGive1563(NookClerkTalk *talk, VillagerPart *part)
 {
-    ItemObject *errand = ntalk_errand(part);
-    if (ItemObject_IsInUse(errand) != 0 && ItemObject_Type(errand) == 0xd) {
-        ItemObject_SetLow5(errand, 1);
+    VillagerErrand *errand = ntalk_errand(part);
+    if (VillagerErrand_IsInUse(errand) != 0 && VillagerErrand_Type(errand) == 0xd) {
+        VillagerErrand_SetProgress(errand, 1);
     }
     if (CurrentPockets_FreeSlot() < 0) {
         talk->line = 0x17;
@@ -1426,9 +1426,9 @@ void NookClerkTalk_JobCountFree(NookClerkTalk *talk, VillagerPart *part)
     PocketsMarks marks;
     CurrentPockets_Mark(&marks, (int (*)(u16 *)) func_ov050_022634b4);
     talk->line = marks.count >= 7 ? 8 : 9;
-    ItemObject *errand = ntalk_errand(part);
+    VillagerErrand *errand = ntalk_errand(part);
     VillagerPart_SetFlag(part);
-    ItemObject_SetLow5(errand, 2);
+    VillagerErrand_SetProgress(errand, 2);
 }
 CLEAN_AS(func_ov050_02262b08, NookClerkTalk_JobCountFree)
 
@@ -1438,9 +1438,9 @@ void NookClerkTalk_JobShowUniform(NookClerkTalk *talk, VillagerPart *part)
 {
     ntalk_show_item(talk, NOOK_CLERK_UNIFORM, 0);
     talk->line = 6;
-    ItemObject *errand = ntalk_errand(part);
-    if (ItemObject_IsInUse(errand) != 0 && ItemObject_Type(errand) == 0xb) {
-        ItemObject_SetLow5(errand, 1);
+    VillagerErrand *errand = ntalk_errand(part);
+    if (VillagerErrand_IsInUse(errand) != 0 && VillagerErrand_Type(errand) == 0xb) {
+        VillagerErrand_SetProgress(errand, 1);
     }
 }
 CLEAN_AS(func_ov050_02262b58, NookClerkTalk_JobShowUniform)
@@ -1491,7 +1491,7 @@ void NookClerkTalk_OnJobLineEnded(NookClerkTalk *talk, int unused)
     };
     (void) unused;
     VillagerPart *part = ntalk_current_part();
-    VillagerPartBlock_Object(VillagerPart_Block(part, 0));
+    VillagerPartBlock_Errand(VillagerPart_Block(part, 0));
     talk->line = NOOK_CLERK_NO_LINE;
     ntalk_dispatch(talk, &data_ov050_02265ec4, data_ov050_02265bc0, handlers, NOOK_CLERK_JOB_LINE_ENDS,
                    (int) (uintptr_t) part);
@@ -1506,7 +1506,7 @@ CLEAN_AS(_ZN18Obj_ov050_02265b1419func_ov050_02262be8Ei, NookClerkTalk_OnJobLine
 /* The errand step of the current player's villager part's errand object. */
 static int ntalk_errand_step(void)
 {
-    return ItemObject_Low5(ntalk_errand(ntalk_current_part()));
+    return VillagerErrand_Progress(ntalk_errand(ntalk_current_part()));
 }
 
 /* The first line of an errand type whose step 1 gives `at_step_1`, and else the first time
@@ -1560,14 +1560,14 @@ void NookClerkTalk_JobLine0F(NookClerkTalk *talk, NookClerkLine *out)
         return;
     }
     VillagerPartBlock *block = VillagerPart_Block(ntalk_current_part(), 0);
-    ItemObject *errand = (ItemObject *) (void *) VillagerPartBlock_Object(block);
+    VillagerErrand *errand = (VillagerErrand *) (void *) VillagerPartBlock_Errand(block);
     NpcId *npc = VillagerPartBlock_Npc(block, 1);
     PlayerIdText name;
     PlayerIdText_Construct(&name);
 
-    if (ItemObject_Low5(errand) == 2) {
+    if (VillagerErrand_Progress(errand) == 2) {
         out->message = 0x28;
-    } else if (ItemObject_Low5(errand) == 0) {
+    } else if (VillagerErrand_Progress(errand) == 0) {
         if (talk->owner->job_step == 0 || talk->owner->job_step == 2) {
             if (npc != NULL) {
                 NpcId_FormatName(npc, (char *) (void *) &name);
@@ -1580,7 +1580,7 @@ void NookClerkTalk_JobLine0F(NookClerkTalk *talk, NookClerkLine *out)
         } else {
             out->message = 0x10;
         }
-    } else if (ItemObject_Low5(errand) == 1) {
+    } else if (VillagerErrand_Progress(errand) == 1) {
         if (npc != NULL) {
             NpcId_FormatName(npc, (char *) (void *) &name);
             TalkObject_SetPart(ntalk_object(talk), 0, (TextBase *) (void *) &name);
@@ -1613,7 +1613,7 @@ static int ntalk_known_to_all(u8 *record)
 void NookClerkTalk_JobLine0D(NookClerkTalk *talk, NookClerkLine *out)
 {
     u8 *record = PlayerRecords_Current();
-    VillagerPartBlock_Object(VillagerPart_Block((VillagerPart *) (void *) PlayerRecord_VillagerPart(record), 0));
+    VillagerPartBlock_Errand(VillagerPart_Block((VillagerPart *) (void *) PlayerRecord_VillagerPart(record), 0));
     CurrentPockets_FreeSlot();
     if (NookClerkTalk_JobNotInUniform(talk, out) != 0) {
         return;
@@ -1640,7 +1640,7 @@ CLEAN_AS(func_ov050_02263084, NookClerkTalk_JobLine0D)
 void NookClerkTalk_JobLine0C(NookClerkTalk *talk, NookClerkLine *out)
 {
     u8 *record = PlayerRecords_Current();
-    ItemObject *errand = (ItemObject *) (void *) VillagerPartBlock_Object(
+    VillagerErrand *errand = (VillagerErrand *) (void *) VillagerPartBlock_Errand(
         VillagerPart_Block((VillagerPart *) (void *) PlayerRecord_VillagerPart(record), 0));
     CurrentPockets_FreeSlot();
     if (NookClerkTalk_JobNotInUniform(talk, out) != 0) {
@@ -1659,7 +1659,7 @@ void NookClerkTalk_JobLine0C(NookClerkTalk *talk, NookClerkLine *out)
     }
     talk->owner->job_step = 1;
     if (ntalk_known_to_all(record) && *(const u16 *) (const void *) PlayerRecord_Birthday(PlayerRecords_Current()) != 0) {
-        ItemObject_SetLow5(errand, 1);
+        VillagerErrand_SetProgress(errand, 1);
         out->message = 0x1a;
         return;
     }
@@ -1667,7 +1667,7 @@ void NookClerkTalk_JobLine0C(NookClerkTalk *talk, NookClerkLine *out)
 }
 CLEAN_AS(func_ov050_0226310c, NookClerkTalk_JobLine0C)
 
-/* Whether the player record's clothes are the uniform (a variant of it too). */
+/* Whether the player record's clothes are the uniform (by furniture number for a furniture code). */
 static int ntalk_in_uniform(u8 *record)
 {
     u16 *clothes = PlayerRecord_Clothes(record);
@@ -1691,10 +1691,10 @@ void NookClerkTalk_JobLine0B(NookClerkTalk *talk, NookClerkLine *out)
     u8 *record = PlayerRecords_Current();
     VillagerPart *part = (VillagerPart *) (void *) PlayerRecord_VillagerPart(record);
     VillagerPartBlock *block = VillagerPart_Block(part, 0);
-    ItemObject *errand = (ItemObject *) (void *) VillagerPartBlock_Object(block);
+    VillagerErrand *errand = (VillagerErrand *) (void *) VillagerPartBlock_Errand(block);
     CurrentPockets_FreeSlot();
 
-    if (ItemObject_Type(errand) == 0xb && (unsigned int) ItemObject_Low5(errand) >= 1 &&
+    if (VillagerErrand_Type(errand) == 0xb && (unsigned int) VillagerErrand_Progress(errand) >= 1 &&
         VillagerPartBlock_IsOwnTypePastLimit(block) != 0) {
         if (NookClerkTalk_JobNotInUniform(talk, out) == 0) {
             PocketsMarks marks;
@@ -1703,7 +1703,7 @@ void NookClerkTalk_JobLine0B(NookClerkTalk *talk, NookClerkLine *out)
         }
         return;
     }
-    if (ItemObject_Type(errand) == 0xb && (unsigned int) ItemObject_Low5(errand) >= 1) {
+    if (VillagerErrand_Type(errand) == 0xb && (unsigned int) VillagerErrand_Progress(errand) >= 1) {
         if (ntalk_in_uniform(record)) {
             out->message = 7;
             return;
@@ -1891,9 +1891,9 @@ void NookClerkTalk_TakeErrandItem(NookClerkTalk *talk)
                 SceneCommand_RequestMotion14(ntalk_scene(talk), &item, 2, 5, 0);
             }
             line = 3;
-            VillagerPartEntry *entry = VillagerPartEntry_Self((VillagerPartEntry *) (void *) VillagerPart_Object94(
+            VillagerPartEntry *entry = VillagerPartEntry_Self((VillagerPartEntry *) (void *) VillagerPart_Entry(
                 (VillagerPart *) (void *) PlayerRecord_VillagerPart(record)));
-            ItemObject_SetLow5((ItemObject *) (void *) entry, 1);
+            VillagerErrand_SetProgress((VillagerErrand *) (void *) entry, 1);
         }
     }
     TalkObject_SetMessage(object, &line, ntalk_file(talk));

@@ -1,5 +1,5 @@
-/* The kind each villager is given (villager_kinds.h). */
-#include "villager_kinds.h"
+/* The errand each villager is given (villager_errands.h). */
+#include "villager_errands.h"
 
 #include <string.h>
 
@@ -7,7 +7,7 @@
 #include "item_code.h"
 #include "session.h"
 #include "villager_town.h"
-#include "item_object.h"
+#include "villager_errand.h"
 #include "main_random.h"
 #include "player_record.h"
 #include "player_records.h"
@@ -21,14 +21,14 @@
 #include "villager_roster.h"
 #include "villager_status.h"
 
-/* The types of object a player's record holds itself (part 0x1e40), whose group 1 places are
- * not dealt. */
-#define VILLAGER_KIND_RECORD_TYPES 13
+/* The errand types a player's record holds itself (part 0x1e40), whose group 1 places are not
+ * dealt. */
+#define VILLAGER_ERRANDS_RECORD_TYPES 13
 
-extern NetSession *data_020ccf94;                     /* the game's session */
-extern u8 data_021d12b4[VILLAGER_KIND_GROUP_1_COUNT]; /* which group 1 places are taken */
-extern u8 data_021d1248[VILLAGER_TOWN_VILLAGERS];     /* which villagers have been dealt with */
-extern const u8 data_020cd454[VILLAGER_KIND_RECORD_TYPES];
+extern NetSession *data_020ccf94;                        /* the game's session */
+extern u8 data_021d12b4[VILLAGER_ERRANDS_GROUP_1_COUNT]; /* which group 1 places are taken */
+extern u8 data_021d1248[VILLAGER_TOWN_VILLAGERS];        /* which villagers have been dealt with */
+extern const u8 data_020cd454[VILLAGER_ERRANDS_RECORD_TYPES];
 
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 
@@ -42,28 +42,28 @@ static int same_npc(const NpcId *a, const NpcId *b)
     return a->head.id == b->head.id && memcmp(a->head.data, b->head.data, sizeof(a->head.data)) == 0 && a->number == b->number;
 }
 
-/* func_0207b57c: VillagerKind_Deal when VillagerKind_IsDealNeeded. */
-void VillagerKind_DealIfNeeded(VillagerTown *town)
+/* func_0207b57c: VillagerErrands_Deal when VillagerErrands_IsDealNeeded. */
+void VillagerErrands_DealIfNeeded(VillagerTown *town)
 {
-    if (VillagerKind_IsDealNeeded(town)) {
-        VillagerKind_Deal(town);
+    if (VillagerErrands_IsDealNeeded(town)) {
+        VillagerErrands_Deal(town);
     }
 }
-CLEAN_AS(func_0207b57c, VillagerKind_DealIfNeeded)
+CLEAN_AS(func_0207b57c, VillagerErrands_DealIfNeeded)
 
 /* func_0207b594: types dealt to the villagers, each group 1 type to one villager at most.
  * Taken first are the group 1 places of the 13 types of data_020cd454, and of each resident
  * villager (other than the sick one) that already has a group 1 type
- * (VillagerKind_Of with the current player). An empty place, a villager that is not resident
- * and the sick one are left out. A villager whose record's object has a group 0
+ * (VillagerErrands_TypeOf with the current player). An empty place, a villager that is not resident
+ * and the sick one are left out. A villager whose record's mode has a group 0
  * value in its byte 0x10 (below 5) gets that as its type. Then, while villagers and group 1
  * types are left, a random villager left gets a random type left. Nothing without a current
  * player.
- * REQUIRES: the places func_0209bcd4 gives are 0-16, as they are for the types of group 1. */
-void VillagerKind_Deal(VillagerTown *town)
+ * REQUIRES: the places VillagerErrand_PlaceInGroupOfType gives are 0-16, as they are for the types of group 1. */
+void VillagerErrands_Deal(VillagerTown *town)
 {
     void *record = PlayerRecords_Current();
-    int types_left = VILLAGER_KIND_GROUP_1_COUNT;
+    int types_left = VILLAGER_ERRANDS_GROUP_1_COUNT;
     int villagers_left = VILLAGER_TOWN_VILLAGERS;
     if (record == NULL) {
         return;
@@ -73,8 +73,8 @@ void VillagerKind_Deal(VillagerTown *town)
     MI_CpuFill8(data_021d12b4, 0, (u32) types_left);
     MI_CpuFill8(data_021d1248, 0, (u32) villagers_left);
 
-    for (int i = 0; i < VILLAGER_KIND_RECORD_TYPES; i++) {
-        if (ItemObject_PlaceInGroupOfType(&place, data_020cd454[i])) {
+    for (int i = 0; i < VILLAGER_ERRANDS_RECORD_TYPES; i++) {
+        if (VillagerErrand_PlaceInGroupOfType(&place, data_020cd454[i])) {
             data_021d12b4[place] = 1;
             types_left--;
         }
@@ -86,9 +86,10 @@ void VillagerKind_Deal(VillagerTown *town)
             villagers_left--;
             continue;
         }
-        int type = VillagerKind_Of(town, villager, record);
-        if ((unsigned int) type >= VILLAGER_KIND_NONE || ItemObject_GroupOfType((u32) type) != VILLAGER_KIND_GROUP_1 ||
-            !ItemObject_PlaceInGroupOfType(&place, type)) {
+        int type = VillagerErrands_TypeOf(town, villager, record);
+        if ((unsigned int) type >= VILLAGER_ERRANDS_NONE ||
+            VillagerErrand_GroupOfType((u32) type) != VILLAGER_ERRANDS_GROUP_1 ||
+            !VillagerErrand_PlaceInGroupOfType(&place, type)) {
             continue;
         }
         data_021d1248[i] = 1;
@@ -107,9 +108,10 @@ void VillagerKind_Deal(VillagerTown *town)
             VillagerModeRecord_Group((VillagerModeRecord *) (void *) own) != 0) {
             continue;
         }
-        u8 *object = VillagerState_Object(VillagerStatus_StateEntry((u8 *) villager));
+        u8 *object = VillagerState_Errand(VillagerStatus_StateEntry((u8 *) villager));
         u16 item = ITEM_CODE_NONE;
-        ItemObject_Set((ItemObject *) (void *) object, VillagerModeRecord_Mode((VillagerModeRecord *) (void *) own), &item, 0);
+        VillagerErrand_Set((VillagerErrand *) (void *) object, VillagerModeRecord_Mode((VillagerModeRecord *) (void *) own),
+                           &item, 0);
         data_021d1248[i] = 1;
         villagers_left--;
     }
@@ -123,15 +125,16 @@ void VillagerKind_Deal(VillagerTown *town)
                 nth_villager--;
                 continue;
             }
-            u8 *object = VillagerState_Object(VillagerStatus_StateEntry(town->villagers[j]));
+            u8 *object = VillagerState_Errand(VillagerStatus_StateEntry(town->villagers[j]));
             int nth_type = (int) MainRandom_Below(types_left);
-            for (int k = 0; k < VILLAGER_KIND_GROUP_1_COUNT; k++) {
+            for (int k = 0; k < VILLAGER_ERRANDS_GROUP_1_COUNT; k++) {
                 if (data_021d12b4[k] != 0) {
                     continue;
                 }
                 if (nth_type == 0) {
                     u16 item = ITEM_CODE_NONE;
-                    ItemObject_Set((ItemObject *) (void *) object, (u8) (k + VILLAGER_KIND_GROUP_1_FIRST), &item, 0);
+                    VillagerErrand_Set((VillagerErrand *) (void *) object, (u8) (k + VILLAGER_ERRANDS_GROUP_1_FIRST), &item,
+                                       0);
                     data_021d12b4[k] = 1;
                     types_left--;
                     break;
@@ -144,23 +147,23 @@ void VillagerKind_Deal(VillagerTown *town)
         }
     }
 }
-CLEAN_AS(func_0207b594, VillagerKind_Deal)
+CLEAN_AS(func_0207b594, VillagerErrands_Deal)
 
 /* func_0207b764: every entry of the state table back to no type. */
-void VillagerKind_ClearAll(void)
+void VillagerErrands_ClearAll(void)
 {
     VillagerState *entry = VillagerState_Table()->entries;
     for (int i = 0; i < VILLAGER_TOWN_VILLAGERS; i++) {
-        ItemObject_Clear((ItemObject *) (void *) VillagerState_Object(entry));
+        VillagerErrand_Clear((VillagerErrand *) (void *) VillagerState_Errand(entry));
         entry++;
     }
 }
-CLEAN_AS(func_0207b764, VillagerKind_ClearAll)
+CLEAN_AS(func_0207b764, VillagerErrands_ClearAll)
 
 /* func_0207b78c: whether the types need dealing: never while this system is linked with
  * others; else when the villagers with no type outnumber half of the villagers less those with
  * a type outside group 1. */
-int VillagerKind_IsDealNeeded(VillagerTown *town)
+int VillagerErrands_IsDealNeeded(VillagerTown *town)
 {
     if (Session_IsLinked(data_020ccf94)) {
         return 0;
@@ -173,10 +176,10 @@ int VillagerKind_IsDealNeeded(VillagerTown *town)
         if (!has_villager(villager)) {
             continue;
         }
-        int type = VillagerKind_Of(town, villager, NULL);
-        if (type == VILLAGER_KIND_NONE) {
+        int type = VillagerErrands_TypeOf(town, villager, NULL);
+        if (type == VILLAGER_ERRANDS_NONE) {
             without++;
-        } else if (ItemObject_GroupOfType((u32) type) != VILLAGER_KIND_GROUP_1) {
+        } else if (VillagerErrand_GroupOfType((u32) type) != VILLAGER_ERRANDS_GROUP_1) {
             other_group++;
         }
     }
@@ -185,43 +188,43 @@ int VillagerKind_IsDealNeeded(VillagerTown *town)
     }
     return (villagers - other_group) / 2 < without;
 }
-CLEAN_AS(func_0207b78c, VillagerKind_IsDealNeeded)
+CLEAN_AS(func_0207b78c, VillagerErrands_IsDealNeeded)
 
-/* func_0207b810: the villager's type: VillagerKind_Known when that finds one, else the type
- * of its state entry's object when it holds one; 22 for none, also without a state entry or
+/* func_0207b810: the villager's type: VillagerErrands_KnownType when that finds one, else the type
+ * of its state entry's errand when it holds one; 22 for none, also without a state entry or
  * a player's record (the current player's when `record` is NULL). */
-int VillagerKind_Of(VillagerTown *town, u8 *villager, void *record)
+int VillagerErrands_TypeOf(VillagerTown *town, u8 *villager, void *record)
 {
     VillagerState *entry = VillagerStatus_StateEntry(villager);
-    int type = VILLAGER_KIND_NONE;
+    int type = VILLAGER_ERRANDS_NONE;
     if (record == NULL) {
         record = PlayerRecords_Current();
     }
     if (entry != NULL && record != NULL) {
-        unsigned int known = (unsigned int) VillagerKind_Known(town, villager, record);
-        if (known < VILLAGER_KIND_NONE) {
+        unsigned int known = (unsigned int) VillagerErrands_KnownType(town, villager, record);
+        if (known < VILLAGER_ERRANDS_NONE) {
             type = (int) known;
-        } else if (ItemObject_IsInUse((ItemObject *) (void *) VillagerState_Object(entry))) {
-            type = ItemObject_Type((ItemObject *) (void *) VillagerState_Object(entry));
+        } else if (VillagerErrand_IsInUse((VillagerErrand *) (void *) VillagerState_Errand(entry))) {
+            type = VillagerErrand_Type((VillagerErrand *) (void *) VillagerState_Errand(entry));
         }
     }
     return type;
 }
-CLEAN_AS(func_0207b810, VillagerKind_Of)
+CLEAN_AS(func_0207b810, VillagerErrands_TypeOf)
 
-/* func_0207b86c: the type of the object something holds for the villager, looked for in turn
+/* func_0207b86c: the type of the errand something holds for the villager, looked for in turn
  * in: the two blocks of the player's record part (when their first NpcId is the villager's),
- * the sickness record (when it names the villager), the object at 0xb4 of the part
- * (func_0209aebc) and the object of the villager's own record; 22 for none, or without a
+ * the sickness record (when it names the villager), the errand at 0xb4 of the part
+ * (func_0209aebc) and the errand of the villager's own record; 22 for none, or without a
  * player's record (the current player's when `record` is NULL). */
-int VillagerKind_Known(VillagerTown *town, u8 *villager, void *record)
+int VillagerErrands_KnownType(VillagerTown *town, u8 *villager, void *record)
 {
     const NpcId *npc = TownVillager_NpcId(villager);
     if (record == NULL) {
         record = PlayerRecords_Current();
     }
     if (record == NULL) {
-        return VILLAGER_KIND_NONE;
+        return VILLAGER_ERRANDS_NONE;
     }
     u8 *part = PlayerRecord_VillagerPart(record);
     u8 *blocks[2];
@@ -230,23 +233,25 @@ int VillagerKind_Known(VillagerTown *town, u8 *villager, void *record)
     part += 0xa4;
 
     for (int i = 0; i < 2; i++) {
-        if (ItemObject_IsInUse((ItemObject *) (void *) VillagerPartBlock_Object((VillagerPartBlock *) (void *) blocks[i])) &&
+        if (VillagerErrand_IsInUse(
+                (VillagerErrand *) (void *) VillagerPartBlock_Errand((VillagerPartBlock *) (void *) blocks[i])) &&
             same_npc(VillagerPartBlock_Npc((VillagerPartBlock *) (void *) blocks[i], 0), npc)) {
-            return ItemObject_Type((ItemObject *) (void *) VillagerPartBlock_Object((VillagerPartBlock *) (void *) blocks[i]));
+            return VillagerErrand_Type(
+                (VillagerErrand *) (void *) VillagerPartBlock_Errand((VillagerPartBlock *) (void *) blocks[i]));
         }
     }
-    if (ItemObject_IsInUse((ItemObject *) (void *) VillagerSicknessRecord_Object(&town->sickness)) &&
+    if (VillagerErrand_IsInUse((VillagerErrand *) (void *) VillagerSicknessRecord_Errand(&town->sickness)) &&
         same_npc(VillagerSicknessRecord_Npc(&town->sickness), npc)) {
-        return ItemObject_Type((ItemObject *) (void *) VillagerSicknessRecord_Object(&town->sickness));
+        return VillagerErrand_Type((VillagerErrand *) (void *) VillagerSicknessRecord_Errand(&town->sickness));
     }
     if (VillagerPartHandover_IsFrom((VillagerPartHandover *) (void *) part, npc)) {
-        return ItemObject_Type((ItemObject *) (void *) (part + 0x10));
+        return VillagerErrand_Type((VillagerErrand *) (void *) (part + 0x10));
     }
-    if (ItemObject_IsInUse((ItemObject *) (void *) (VillagerObject_Base(
+    if (VillagerErrand_IsInUse((VillagerErrand *) (void *) (VillagerObject_Errand(
             VillagerObject_OfRecord((VillagerRecord *) VillagerStatus_ModeRecord(villager)))))) {
-        return ItemObject_Type((ItemObject *) (void *) (VillagerObject_Base(
+        return VillagerErrand_Type((VillagerErrand *) (void *) (VillagerObject_Errand(
             VillagerObject_OfRecord((VillagerRecord *) VillagerStatus_ModeRecord(villager)))));
     }
-    return VILLAGER_KIND_NONE;
+    return VILLAGER_ERRANDS_NONE;
 }
-CLEAN_AS(func_0207b86c, VillagerKind_Known)
+CLEAN_AS(func_0207b86c, VillagerErrands_KnownType)

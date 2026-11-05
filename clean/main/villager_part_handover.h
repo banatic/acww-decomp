@@ -3,7 +3,7 @@
  * villager's NpcId and empties the villager's own object).
  *
  *   0x00  the villager's NpcId
- *   0x10  an object (12 bytes): type 21, no item, its date set when it was handed over
+ *   0x10  an errand (villager_errand.h): type 21, no item, its date set when it was handed over
  *   0x1c  a date given with it
  *   0x24  a byte whose low three bits are a kind (VillagerTown_ExpirePlayerObjects)
  *
@@ -15,7 +15,7 @@
 #include "npc_id.h"
 #include "types.h"
 
-/* The object's type. */
+/* The errand's type. */
 #define VILLAGER_PART_HANDOVER_TYPE 21
 
 typedef struct VillagerPartHandover {

@@ -5,7 +5,7 @@
 #include "villager_town.h"
 #include "calendar.h"
 #include "date_time.h"
-#include "item_object.h"
+#include "villager_errand.h"
 #include "main_random.h"
 #include "player_id.h"
 #include "town_villager.h"
@@ -239,7 +239,7 @@ CLEAN_AS(func_0207b310, VillagerSickness_PickVillager)
 /* func_0207b3dc: the index of the villager the record names, or -1 when no one is sick. */
 int VillagerSickness_VillagerIndex(VillagerTown *town)
 {
-    if (ItemObject_IsInUse((ItemObject *) (void *) VillagerSicknessRecord_Object(VillagerSickness_Record(town)))) {
+    if (VillagerErrand_IsInUse((VillagerErrand *) (void *) VillagerSicknessRecord_Errand(VillagerSickness_Record(town)))) {
         return VillagerRoster_IndexOf(town, VillagerSicknessRecord_Npc(VillagerSickness_Record(town)));
     }
     return VILLAGER_TOWN_NONE;

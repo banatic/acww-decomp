@@ -2,7 +2,7 @@
 # is not in this repository). Boot: as kk-request.txt, the clock at 11:00 on Monday 14
 # September (the player stands in front of the house from about 3900).
 # Save: the seed town with 30,000 bells. On this day the deal of the villagers' kinds
-# (main/villager_kinds.h) gives villager 4 type 19, the letter to deliver. West and north as
+# (main/villager_errands.h) gives villager 4 type 19, the letter to deliver. West and north as
 # saharah.txt to her house (tile 19, 35), in (about 5300); A every 40 frames: many short talks
 # until she asks the player to take a letter to villager 1 within ten minutes (about 9000) and
 # the first answer agrees; the last talks end (about 10900). Out of the house (11400), east

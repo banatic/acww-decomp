@@ -94,7 +94,7 @@ u8 *PlayerRecord_ReactionSlots(u8 *record);
  *           in it)
  *   0x1d3b  a byte object (func_0203d38c, func_0203d388)
  *   0x1e40  the villagers' part: two 48-byte blocks naming villagers (func_0209ad9c), an
- *           object at 0x94 and an NpcId with an object at 0xa4 (villager_kinds.h)
+ *           object at 0x94 and an NpcId with an object at 0xa4 (villager_errands.h)
  *   0x1f0c  the Wi-Fi account, 0x1f5c the Wi-Fi friends (wifi_friends.h)
  *   0x23ec, 0x2416, 0x2427, 0x242c  objects of their own (func_0208880c, func_02088c10,
  *           func_02088764, func_02088460 construct them)

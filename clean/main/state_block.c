@@ -27,7 +27,7 @@
 #include "sound.h"
 #include "town_layout.h"
 #include "town_objects.h"
-#include "villager_kinds.h"
+#include "villager_errands.h"
 #include "villager_plots.h"
 #include "villager_residents.h"
 #include "villager_roster.h"
@@ -257,9 +257,9 @@ void StateBlock_SetUpTown(StateBlock *block)
     SaveStamp_MarkTownWritten((SaveStamp *) (void *) block->part_173f8);
     VillagerResidents_StartTown(villagers_of(block));
     VillagerPlot_GiveHouses(villagers_of(block));
-    VillagerKind_ClearAll();
+    VillagerErrands_ClearAll();
     if (PlayerRecords_Current() != NULL) {
-        VillagerKind_Deal(villagers_of(block));
+        VillagerErrands_Deal(villagers_of(block));
     }
     HouseLooks_Reset((HouseLooksRecord *) block->house_looks);
     HouseRecord_Reset((HouseRecord *) (void *) block->part_0f52c);
@@ -375,8 +375,8 @@ void StateBlock_StartMode5(StateBlock *block)
     mark_resident(record);
     VillagerTown_Update(villagers_of(block), 0);
     VillagerPlot_GiveHouses(villagers_of(block));
-    VillagerKind_ClearAll();
-    VillagerKind_Deal(villagers_of(block));
+    VillagerErrands_ClearAll();
+    VillagerErrands_Deal(villagers_of(block));
     settle_town(block);
     SceneClaim_Reset();
     PlayerRecord_SetSlingshotHits(record, 0);
@@ -438,8 +438,8 @@ void StateBlock_StartMode2(StateBlock *block)
         VillagerTown_Update(villagers_of(block), 0);
     }
     VillagerPlot_GiveHouses(villagers_of(block));
-    VillagerKind_ClearAll();
-    VillagerKind_Deal(villagers_of(block));
+    VillagerErrands_ClearAll();
+    VillagerErrands_Deal(villagers_of(block));
     settle_town(block);
     SceneClaim_Reset();
     RoomScoreMail_SendWelcome();
@@ -480,8 +480,8 @@ void StateBlock_StartMode1(StateBlock *block)
     mark_resident(record);
     VillagerTown_Update(villagers_of(block), 0);
     VillagerPlot_GiveHouses(villagers_of(block));
-    VillagerKind_ClearAll();
-    VillagerKind_Deal(villagers_of(block));
+    VillagerErrands_ClearAll();
+    VillagerErrands_Deal(villagers_of(block));
     settle_town(block);
     SceneClaim_Reset();
     PlayerRecord_SetSlingshotHits(record, 0);

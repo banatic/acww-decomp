@@ -6,7 +6,7 @@
 #include "main/library_overlay.h"
 #include "main/session.h"
 #include "main/session_net.h"
-#include "item_object.h"
+#include "villager_errand.h"
 #include "villager_state.h"
 #include "villager_town.h"
 
@@ -107,7 +107,7 @@ void SystemCommand_ReadVillagerStates(u8 *data, u16 length)
     (void) length;
     SystemCommandObject object;
 
-    ItemObject_Construct((ItemObject *) &object);
+    VillagerErrand_Construct((VillagerErrand *) &object);
     for (int i = 0; i < COMMAND_ENTRIES; i++) {
         VillagerState *entry = VillagerTown_StateAt(i);
         u8 status;
@@ -118,10 +118,10 @@ void SystemCommand_ReadVillagerStates(u8 *data, u16 length)
         VillagerState_SetPlace(entry, status);
 
         MI_CpuCopy8(data + 1, &object, sizeof(object));
-        u8 *dst = VillagerState_Object(entry);
-        u8 type = (u8) ItemObject_Type((ItemObject *) &object);
-        u16 *item = ItemObject_Item((ItemObject *) &object);
-        ItemObject_Set((ItemObject *) (void *) dst, type, item, 0);
+        u8 *dst = VillagerState_Errand(entry);
+        u8 type = (u8) VillagerErrand_Type((VillagerErrand *) &object);
+        u16 *item = VillagerErrand_Item((VillagerErrand *) &object);
+        VillagerErrand_Set((VillagerErrand *) (void *) dst, type, item, 0);
 
         MI_CpuCopy8(data + 13, &word, 4);
         entry->room_score = word;
@@ -130,7 +130,7 @@ void SystemCommand_ReadVillagerStates(u8 *data, u16 length)
 
         data += COMMAND_ENTRY_SIZE;
     }
-    ItemObject_Destruct((ItemObject *) &object);
+    VillagerErrand_Destruct((VillagerErrand *) &object);
 }
 CLEAN_AS(func_02077744, SystemCommand_ReadVillagerStates)
 
@@ -156,7 +156,7 @@ void SystemCommand_WriteVillagerStates(int slot)
         VillagerState *entry = VillagerTown_StateAt(i);
         u8 status = entry != NULL ? VillagerState_LinkedPlace(entry) : 3;
         Session_AppendShareData(session, &status, 1);
-        Session_AppendShareData(session, VillagerState_Object(entry), sizeof(SystemCommandObject));
+        Session_AppendShareData(session, VillagerState_Errand(entry), sizeof(SystemCommandObject));
         u32 word = entry->room_score;
         Session_AppendShareData(session, &word, 4);
         u16 half = entry->room_score_flags;

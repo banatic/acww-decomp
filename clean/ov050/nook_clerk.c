@@ -26,7 +26,7 @@
 #include "main/game_variables.h"
 #include "main/item_code.h"
 #include "main/item_lists.h"
-#include "main/item_object.h"
+#include "main/villager_errand.h"
 #include "main/layered_model.h"
 #include "main/link_global.h"
 #include "main/main_random.h"
@@ -349,7 +349,7 @@ static void nclerk_walk_toward(NookClerk *clerk, int distance, int hurry, const 
     SceneMover_SetStart(nclerk_mover(clerk), step);
 }
 
-/* Whether the item code at `item` is empty (0xfff1, or a variant of the empty item). */
+/* Whether the item code at `item` is empty (0xfff1, or furniture of the empty item's number). */
 static int nclerk_is_empty(u16 *item)
 {
     if (ItemCode_IsFurniture(item)) {
@@ -1498,12 +1498,13 @@ int NookClerk_Start(NookClerk *clerk)
     u8 *record = PlayerRecords_Current();
     VillagerPart *part = (VillagerPart *) PlayerRecord_VillagerPart(record);
     if (PlayerRecord_TestFlag(record, PLAYER_FLAG_NOOK_JOB) != 0) {
-        ItemObject *errand = (ItemObject *) VillagerPartBlock_Object(VillagerPart_Block(part, 0));
+        VillagerErrand *errand = (VillagerErrand *) VillagerPartBlock_Errand(VillagerPart_Block(part, 0));
         CollisionMap_Claim(1);
         NookClerkTalk_SetMode(&clerk->talk, NOOK_CLERK_MODE_NOOK_TALKED);
         Block021d27acPart18_SetToday(date);
         nclerk_late_music(date);
-        if (ItemObject_IsInUse(errand) != 0 && (ItemObject_Low5(errand) >= 1 || ItemObject_Type(errand) >= 0xc)) {
+        if (VillagerErrand_IsInUse(errand) != 0 &&
+            (VillagerErrand_Progress(errand) >= 1 || VillagerErrand_Type(errand) >= 0xc)) {
             NookClerk_SetState(clerk, NOOK_CLERK_STATE_STAND);
         } else {
             NookClerk_SetState(clerk, NOOK_CLERK_STATE_GREET);

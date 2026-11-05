@@ -45,7 +45,7 @@ typedef struct VillagerState {
     u8 state;             /* 0x00: 0-7 */
     u8 place;             /* 0x01: where it is (enum VillagerPlace of villager_outdoors.h); none (3) when set up */
     u8 unused_02[2];      /* 0x02 */
-    u8 object[12];        /* 0x04: set up by func_0209bd5c (no item, 0xfff1, at its 0x08) */
+    u8 object[12];        /* 0x04: the villager's dealt errand (villager_errands.h), set up by VillagerErrand_Clear */
     u8 bytes_10[8];       /* 0x10: cleared by func_0209c52c */
     u8 mood;              /* 0x18: villager_mood.h; 5 when set up; cleared when its frames run out */
     u8 unused_19;         /* 0x19 */
@@ -122,7 +122,7 @@ void VillagerState_SetMood(VillagerState *entry, int value);
 int VillagerState_GetMood(const VillagerState *entry);
 void VillagerState_SetActivity(VillagerState *entry, int value);
 int VillagerState_GetActivity(const VillagerState *entry);
-u8 *VillagerState_Object(VillagerState *entry);
+u8 *VillagerState_Errand(VillagerState *entry);
 void VillagerState_SetPlace(VillagerState *entry, int value);
 int VillagerState_LinkedPlace(const VillagerState *entry);
 void VillagerState_SettleState(VillagerState *entry);

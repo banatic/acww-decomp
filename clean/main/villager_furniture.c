@@ -147,7 +147,7 @@ void VillagerFurniture_StoreItems(u8 *villager)
     if (stored) {
         RoomCells_ResetByIndex((unsigned char) VillagerStatus_Index(villager));
     }
-    VillagerObject_SetLow5From1To2(VillagerObject_OfRecord((VillagerRecord *) VillagerStatus_ModeRecord(villager)));
+    VillagerObject_SetProgress1To2(VillagerObject_OfRecord((VillagerRecord *) VillagerStatus_ModeRecord(villager)));
 }
 CLEAN_AS(func_0207f454, VillagerFurniture_StoreItems)
 

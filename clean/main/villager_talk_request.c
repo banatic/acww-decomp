@@ -5,7 +5,7 @@
 #include "clean.h"
 #include "current_pockets.h"
 #include "date_time.h"
-#include "item_object.h"
+#include "villager_errand.h"
 #include "npc_id.h"
 #include "player_pockets.h"
 #include "player_record.h"
@@ -14,7 +14,7 @@
 #include "scene_command.h"
 #include "talk_choices.h"
 #include "town_villager.h"
-#include "villager_kinds.h"
+#include "villager_errands.h"
 #include "villager_part_block.h"
 #include "villager_roster.h"
 #include "villager_town.h"
@@ -112,7 +112,7 @@ static VillagerPartBlock *request_block(const VillagerTalk *talk)
 
 static int request_type(VillagerTalk *talk)
 {
-    return ItemObject_Type((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk));
+    return VillagerErrand_Type((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk));
 }
 
 static int request_personality(VillagerTalk *talk)
@@ -168,15 +168,16 @@ void VillagerTalkRequest_LineOver(VillagerTalk *talk, VillagerTalkLine *out)
     const VillagerTalkRequestTexts *texts = request_texts_by_type(talk, &data_020c89d8, &data_020c8a70);
     if (texts != NULL) {
         int personality = request_personality(talk);
-        int group = ItemObject_High3((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk));
+        int group = VillagerErrand_WaitPlace((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk));
         request_draw(talk, personality, texts, group);
         if (request_block(talk) != NULL) {
             SceneBase_PutNpcName(request_base(talk), VillagerPartBlock_Npc(request_block(talk), 0), 0);
             SceneBase_PutNpcName(request_base(talk), VillagerPartBlock_Npc(request_block(talk), 1), 1);
             /* QUIRK: the item goes into slot 0 too, after the first villager's name. */
-            SceneBase_PutItemName(request_base(talk),
-                                  (int) (uintptr_t) ItemObject_Item((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk)),
-                                  0, VILLAGER_TALK_REQUEST_ITEM_KIND);
+            SceneBase_PutItemName(
+                request_base(talk),
+                (int) (uintptr_t) VillagerErrand_Item((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk)), 0,
+                VILLAGER_TALK_REQUEST_ITEM_KIND);
         }
     }
     request_name(talk, out);
@@ -192,7 +193,7 @@ CLEAN_AS(func_02028358, VillagerTalkRequest_ReadType)
 
 /* func_0202836c: the request accepted. With a block: the block set to the talk object's type
  * (naming the talk's villager and the other resident at 0x15c), the talk's object emptied and
- * the town's dealing done (VillagerKind_DealIfNeeded), the block's object made the talk's and
+ * the town's dealing done (VillagerErrands_DealIfNeeded), the block's object made the talk's and
  * its item kept at 0x124; for type 10 the item put into the current player's first free pocket
  * (state 2), for type 19 the block's letter written into the first free letter when there is
  * one. Then the item shown (motion 13, in mode 2 except for type 19's 0), with data_020d8f50 at
@@ -206,11 +207,11 @@ void VillagerTalkRequest_Accept(VillagerTalk *talk)
     if (request_block(talk) != NULL) {
         int type = request_type(talk);
         VillagerPartBlock_SetType(request_block(talk), type, TownVillager_NpcId(record), *request_other(talk));
-        ItemObject_Clear((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk));
-        VillagerKind_DealIfNeeded(&data_021e5a2c);
-        VillagerTalkScene_SetObject(talk,
-                                    (u32) (uintptr_t) ((ItemObject *) (void *) VillagerPartBlock_Object(request_block(talk))));
-        talk->item = *ItemObject_Item((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk));
+        VillagerErrand_Clear((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk));
+        VillagerErrands_DealIfNeeded(&data_021e5a2c);
+        VillagerTalkScene_SetErrand(
+            talk, (u32) (uintptr_t) ((VillagerErrand *) (void *) VillagerPartBlock_Errand(request_block(talk))));
+        talk->item = *VillagerErrand_Item((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk));
         switch (request_type(talk)) {
             case VILLAGER_TALK_REQUEST_TYPE_ITEM: {
                 int slot = PlayerPockets_FreeSlot(PlayerRecord_Pockets(player));
@@ -238,12 +239,12 @@ CLEAN_AS(func_0202836c, VillagerTalkRequest_Accept)
  * three high bits to the wait's place at 0x159. */
 void VillagerTalkRequest_StampWait(VillagerTalk *talk)
 {
-    if (VillagerTalkScene_Object(talk) != 0) {
-        DateTime *date = ItemObject_Date((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk));
+    if (VillagerTalkScene_Errand(talk) != 0) {
+        DateTime *date = VillagerErrand_Date((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk));
         DateTime_Now(date);
         DateTime_AddMinutes(date, *request_byte(talk, VILLAGER_TALK_REQUEST_WAIT));
-        ItemObject_SetHigh3((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk),
-                            *request_byte(talk, VILLAGER_TALK_REQUEST_WAIT_PLACE));
+        VillagerErrand_SetWaitPlace((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk),
+                                    *request_byte(talk, VILLAGER_TALK_REQUEST_WAIT_PLACE));
     }
 }
 CLEAN_AS(func_02028478, VillagerTalkRequest_StampWait)
@@ -270,8 +271,8 @@ CLEAN_AS(func_02028550, VillagerTalkRequest_LineFull)
 /* func_020285b4: the talk's object emptied and the town's dealing done. */
 void VillagerTalkRequest_Drop(VillagerTalk *talk)
 {
-    ItemObject_Clear((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk));
-    VillagerKind_DealIfNeeded(&data_021e5a2c);
+    VillagerErrand_Clear((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk));
+    VillagerErrands_DealIfNeeded(&data_021e5a2c);
 }
 CLEAN_AS(func_020285b4, VillagerTalkRequest_Drop)
 

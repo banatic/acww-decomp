@@ -3,7 +3,7 @@
 
 #include "clean.h"
 #include "session.h"
-#include "item_object.h"
+#include "villager_errand.h"
 #include "scene_query.h"
 #include "villager_mode_record.h"
 
@@ -409,11 +409,11 @@ int VillagerState_GetActivity(const VillagerState *entry)
 CLEAN_AS(func_020794cc, VillagerState_GetActivity)
 
 /* func_020794d0 */
-u8 *VillagerState_Object(VillagerState *entry)
+u8 *VillagerState_Errand(VillagerState *entry)
 {
     return entry->object;
 }
-CLEAN_AS(func_020794d0, VillagerState_Object)
+CLEAN_AS(func_020794d0, VillagerState_Errand)
 
 /* func_020794d4: QUIRK: keeps the low 8 bits. */
 void VillagerState_SetPlace(VillagerState *entry, int value)
@@ -467,7 +467,7 @@ void VillagerState_Init(VillagerState *entry)
     MI_CpuFill8(entry, 0, sizeof *entry);
     entry->state = 0;
     entry->place = 3;
-    ItemObject_Clear((ItemObject *) (void *) entry->object);
+    VillagerErrand_Clear((VillagerErrand *) (void *) entry->object);
     VillagerModeRecord_ClearKindBytes(entry->bytes_10);
     entry->mood = 5;
     entry->activity = 12;
@@ -483,7 +483,7 @@ VillagerState *VillagerState_Destruct(VillagerState *entry)
 {
     VillagerTally_Destruct(&entry->tally);
     VillagerModeRecord_DestructKindBytes(entry->bytes_10);
-    ItemObject_Destruct((ItemObject *) (void *) entry->object);
+    VillagerErrand_Destruct((VillagerErrand *) (void *) entry->object);
     return entry;
 }
 CLEAN_AS(func_020795a8, VillagerState_Destruct)
@@ -492,7 +492,7 @@ CLEAN_AS(func_020795a8, VillagerState_Destruct)
  * is none and the tally is built. The other fields are left as they are. */
 VillagerState *VillagerState_Construct(VillagerState *entry)
 {
-    ItemObject_Construct((ItemObject *) (void *) entry->object);
+    VillagerErrand_Construct((VillagerErrand *) (void *) entry->object);
     VillagerModeRecord_ConstructKindBytes(entry->bytes_10);
     entry->held_item = 0xfff1;
     VillagerTally_Construct(&entry->tally);

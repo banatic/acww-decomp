@@ -1,7 +1,7 @@
 # villager-errand-fossil (format: runtime/input.h), played from a town save by tools/scenes.py
 # (the save is not in this repository). As villager-talk.txt to 4088: the player stands west of
 # villager 3 (personality bo), facing it. Save: mode-2-fossils (villager 3's pastime mode 2, kept
-# at the boot, so its state entry is dealt errand type 2, an item of a kind, VillagerKind_Deal;
+# at the boot, so its state entry is dealt errand type 2, an item of a kind, VillagerErrands_Deal;
 # six fossils 0x450c-0x4520 in pockets 0-5). From 4100 A every 30 frames: a first talk's topic; a
 # second ends in the errand of type 2 (VillagerTalkOffer_StateGroup0, the item drawn by
 # VillagerTalkObject_DrawFossil), taken up; a third offers the fossils

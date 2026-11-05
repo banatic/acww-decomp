@@ -1,7 +1,7 @@
 # letter-full (format: runtime/input.h), played from a town save by tools/scenes.py (the save is
 # not in this repository). Save: mail-full (the player's ten carried letters all taken). Boot as
 # villager-errand.txt to 6600, on Tuesday 15 September at 11:30:01: at this second villager 4 is
-# dealt the object type 19 at the load (VillagerKind_Deal: a letter to take to another villager,
+# dealt the object type 19 at the load (VillagerErrands_Deal: a letter to take to another villager,
 # class 1). Talks with A every 40 frames (START when a choice slider waits) until one ends in her
 # request (VillagerTalkOffer_StateClass1, VillagerTalkRequest_OfferAccept, about 8290); its first
 # answer with no free letter (CurrentPockets_FreeLetterIndex -1) takes the row for full pockets

@@ -10,7 +10,7 @@
 #include "group_params.h"
 #include "item_attributes.h"
 #include "item_code.h"
-#include "item_object.h"
+#include "villager_errand.h"
 #include "item_record.h"
 #include "npc_id.h"
 #include "player_pockets.h"
@@ -221,14 +221,14 @@ static VillagerObject *object_villager_object(const VillagerTalk *talk)
     return *(VillagerObject **) (void *) ((u8 *) talk + VILLAGER_TALK_OBJECT_VILLAGER_OBJECT);
 }
 
-static ItemObject *object_villager_item_object(const VillagerTalk *talk)
+static VillagerErrand *object_villager_errand(const VillagerTalk *talk)
 {
-    return (ItemObject *) (void *) VillagerObject_Base(object_villager_object(talk));
+    return (VillagerErrand *) (void *) VillagerObject_Errand(object_villager_object(talk));
 }
 
 static int object_type(VillagerTalk *talk)
 {
-    return ItemObject_Type((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk));
+    return VillagerErrand_Type((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk));
 }
 
 /* The line drawn for the personality of the talk's villager into the talk's text and
@@ -307,7 +307,7 @@ static int object_line_by_place(VillagerTalk *talk, VillagerTalkLine *out, const
 {
     VillagerTalkObjectTexts texts = *fallback;
     int place = 0;
-    ItemObject_PlaceInGroup((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk), &place);
+    VillagerErrand_PlaceInGroup((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk), &place);
     if (place < VILLAGER_TALK_OBJECT_GROUP_PLACES) {
         texts.texts = by_place[place];
     }
@@ -342,7 +342,7 @@ CLEAN_AS(func_02024194, VillagerTalkObject_LineByPlace9d24)
 void VillagerTalkObject_MarkDone(VillagerTalk *talk)
 {
     u8 *record = object_record(talk);
-    ItemObject_SetLow5(object_villager_item_object(talk), 3);
+    VillagerErrand_SetProgress(object_villager_errand(talk), 3);
     SessionVillager_SendObjectByte0B(object_record(talk), 3);
     if (Session_IsSlotTaken(data_020ccf94, data_020ccf94->local_slot) == 0) {
         VillagerMode_FinishObject(record);
@@ -352,14 +352,14 @@ void VillagerTalkObject_MarkDone(VillagerTalk *talk)
 CLEAN_AS(func_02024228, VillagerTalkObject_MarkDone)
 
 /* func_02024288: a line of the set data_020c8fb8[place] for an object of group 0 whose place
- * the talk's object gives (ItemObject_PlaceInGroup answers nonzero), else of data_020c8fb8[0];
+ * the talk's object gives (VillagerErrand_PlaceInGroup answers nonzero), else of data_020c8fb8[0];
  * then data_020d9270 run at the last message. */
 void VillagerTalkObject_LineByGroupPlace(VillagerTalk *talk, VillagerTalkLine *out)
 {
     const VillagerTalkObjectTexts *texts = &data_020c8fb8[0];
-    if (ItemObject_Group((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk)) == 0) {
+    if (VillagerErrand_Group((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk)) == 0) {
         int place = 0;
-        if (ItemObject_PlaceInGroup((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk), &place) != 0) {
+        if (VillagerErrand_PlaceInGroup((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk), &place) != 0) {
             texts = &data_020c8fb8[place];
         }
     }
@@ -512,10 +512,10 @@ void VillagerTalkObject_GiveReward(VillagerTalk *talk)
     u8 *player = PlayerRecords_Current();
     PlayerPockets *pockets = PlayerRecord_Pockets(player);
     u8 *record = object_record(talk);
-    ItemObject *object = object_villager_item_object(talk);
+    VillagerErrand *object = object_villager_errand(talk);
     int chance = MainRandom_Below(100);
     int step = VillagerObject_Step(object_villager_object(talk));
-    switch (ItemObject_Type(object)) {
+    switch (VillagerErrand_Type(object)) {
         case VILLAGER_TALK_OBJECT_TYPE_INSECT:
         case VILLAGER_TALK_OBJECT_TYPE_FISH:
         case VILLAGER_TALK_OBJECT_TYPE_FOSSIL:
@@ -882,7 +882,7 @@ void VillagerTalkObject_AskPocketByType(VillagerTalk *talk)
                 object_ask_predicate(talk, func_02029e5c);
             } else {
                 object_ask_mask(talk, VillagerTalkOffer_PocketsLike(
-                                          ItemObject_Item((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk))));
+                                          VillagerErrand_Item((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk))));
             }
             object_open_pockets(talk, data_020d8e80);
             break;
@@ -908,7 +908,7 @@ void VillagerTalkObject_CountItem(VillagerTalk *talk)
         u8 count = VillagerObject_AddCount(object_villager_object(talk), liking);
         SessionVillager_SendObjectCount(record, count);
     }
-    ItemObject_SetLow5((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk), 1);
+    VillagerErrand_SetProgress((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk), 1);
     SessionVillager_SendObjectByte0B(record, 1);
     VillagerState_SetFlag1UnlessScene(VillagerStatus_StateEntry(record));
 }
@@ -1039,8 +1039,8 @@ static void object_say_or_ask(VillagerTalk *talk, u16 first, u16 last, MemberPoi
     if (item >= first && item <= last) {
         object_say(talk, data_021c2d94);
     } else {
-        object_ask_mask(
-            talk, VillagerTalkOffer_PocketsLike(ItemObject_Item((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk))));
+        object_ask_mask(talk, VillagerTalkOffer_PocketsLike(
+                                  VillagerErrand_Item((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk))));
         object_open_pockets(talk, next);
     }
 }
@@ -1221,7 +1221,7 @@ void VillagerTalkObject_LineByPlaceStep(VillagerTalk *talk, VillagerTalkLine *ou
     int step = VillagerObject_Step(object_villager_object(talk));
     int type = object_type(talk);
     int place = 0;
-    ItemObject_PlaceInGroup((ItemObject *) (uintptr_t) VillagerTalkScene_Object(talk), &place);
+    VillagerErrand_PlaceInGroup((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk), &place);
     if (step < VillagerObject_StepsForType(type) && place < VILLAGER_TALK_OBJECT_GROUP_PLACES) {
         texts.texts = ((const u32 *) (uintptr_t) data_020d9d10[place])[step];
     }
@@ -1241,11 +1241,11 @@ static void object_start(VillagerTalk *talk, int with_player)
     u8 *record = object_record(talk);
     int type;
     u8 fresh = 0;
-    if (ItemObject_IsInUse(object_villager_item_object(talk)) == 0) {
+    if (VillagerErrand_IsInUse(object_villager_errand(talk)) == 0) {
         type = object_type(talk);
         fresh = 1;
     } else {
-        type = ItemObject_Type(object_villager_item_object(talk));
+        type = VillagerErrand_Type(object_villager_errand(talk));
     }
     if (with_player) {
         const DesignCreator *player = PlayerRecord_Player(PlayerRecords_Current());
@@ -1255,7 +1255,7 @@ static void object_start(VillagerTalk *talk, int with_player)
         VillagerObject_Set(object_villager_object(talk), (u32) type, &talk->item, NULL, fresh);
         SessionVillager_SendObject(record, type, &talk->item, 4, fresh);
     }
-    ItemObject_Clear((ItemObject *) (void *) VillagerState_Object(VillagerStatus_StateEntry(record)));
+    VillagerErrand_Clear((VillagerErrand *) (void *) VillagerState_Errand(VillagerStatus_StateEntry(record)));
 }
 
 /* func_02025de8: the villager object set from the item at 0x124 with no player, sent to the
@@ -1330,7 +1330,7 @@ void VillagerTalkObject_PutItemNames(VillagerTalk *talk)
 {
     DateTime now = {0};
     int step = 0;
-    if (ItemObject_IsInUse(object_villager_item_object(talk)) != 0) {
+    if (VillagerErrand_IsInUse(object_villager_errand(talk)) != 0) {
         step = VillagerObject_Step(object_villager_object(talk));
     }
     DateTime_Now(&now);

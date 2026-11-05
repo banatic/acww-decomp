@@ -10,7 +10,7 @@
 #include "session.h"
 #include "villager_roster.h"
 #include "villager_town.h"
-#include "item_object.h"
+#include "villager_errand.h"
 #include "npc_lookup.h"
 #include "town_villager.h"
 #include "villager_mode_record.h"
@@ -67,7 +67,7 @@ CLEAN_AS(func_0207ef48, VillagerStatus_Came)
 /* Whether one of the two NpcIds of `block` is `npc`, when the block's object holds something. */
 static int VillagerStatus_BlockNames(u8 *block, const NpcId *npc)
 {
-    if (!ItemObject_IsInUse((ItemObject *) (void *) VillagerPartBlock_Object((VillagerPartBlock *) (void *) block))) {
+    if (!VillagerErrand_IsInUse((VillagerErrand *) (void *) VillagerPartBlock_Errand((VillagerPartBlock *) (void *) block))) {
         return 0;
     }
     return VillagerStatus_SameNpc(VillagerPartBlock_Npc((VillagerPartBlock *) (void *) block, 0), npc) ||

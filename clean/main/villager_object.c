@@ -5,7 +5,7 @@
 #include "furniture_info.h"
 #include "item_attributes.h"
 #include "item_code.h"
-#include "item_object.h"
+#include "villager_errand.h"
 #include "date_time.h"
 #include "player_id.h"
 #include "villager_mode_record.h"
@@ -87,9 +87,9 @@ CLEAN_AS(func_0209b634, VillagerObject_ConstructRecord)
  * step's figure. */
 int VillagerObject_IsCountReached(VillagerObject *object)
 {
-    u8 *held = VillagerObject_Base(object);
-    if (ItemObject_IsInUse((ItemObject *) (void *) held) == 0 ||
-        ItemObject_Type((ItemObject *) (void *) held) != VILLAGER_OBJECT_COUNTED_TYPE) {
+    u8 *held = VillagerObject_Errand(object);
+    if (VillagerErrand_IsInUse((VillagerErrand *) (void *) held) == 0 ||
+        VillagerErrand_Type((VillagerErrand *) (void *) held) != VILLAGER_OBJECT_COUNTED_TYPE) {
         return 0;
     }
     int step = VillagerObject_Step(object);
@@ -166,7 +166,7 @@ CLEAN_AS(func_0209b8c4, VillagerObject_Item)
 /* func_0209b8c8: the date of the object (func_0209bc20). */
 DateTime *VillagerObject_Date(VillagerObject *object)
 {
-    return ItemObject_Date((ItemObject *) (void *) object->object);
+    return VillagerErrand_Date((VillagerErrand *) (void *) object->object);
 }
 CLEAN_AS(func_0209b8c8, VillagerObject_Date)
 
@@ -174,9 +174,9 @@ CLEAN_AS(func_0209b8c8, VillagerObject_Date)
  * types 0-4); 0 for the types of the other groups. */
 int VillagerObject_StepsForType(int type)
 {
-    if (ItemObject_GroupOfType(type) == 0) {
+    if (VillagerErrand_GroupOfType(type) == 0) {
         int place = 0;
-        if (ItemObject_PlaceInGroupOfType(&place, type) != 0) {
+        if (VillagerErrand_PlaceInGroupOfType(&place, type) != 0) {
             return data_020d1a7c[place];
         }
     }
@@ -205,12 +205,12 @@ u8 VillagerObject_Step(VillagerObject *object)
 }
 CLEAN_AS(func_0209b914, VillagerObject_Step)
 
-/* func_0209b91c: the object at the start of the villager's object. */
-u8 *VillagerObject_Base(VillagerObject *object)
+/* func_0209b91c: the errand at the start of the villager's object. */
+u8 *VillagerObject_Errand(VillagerObject *object)
 {
     return object->object;
 }
-CLEAN_AS(func_0209b91c, VillagerObject_Base)
+CLEAN_AS(func_0209b91c, VillagerObject_Errand)
 
 /* The type and step at which an item given to the object also sets its kind (an item
  * 0x450c-0x45db), and the step VillagerObject_Clear leaves. */
@@ -218,10 +218,10 @@ CLEAN_AS(func_0209b91c, VillagerObject_Base)
 #define VILLAGER_OBJECT_KIND_STEP 2
 #define VILLAGER_OBJECT_STEP_CLEARED 7
 
-/* The object at the start of the villager's object, as an ItemObject. */
-static ItemObject *villager_object_held(VillagerObject *object)
+/* The object at the start of the villager's object, as an VillagerErrand. */
+static VillagerErrand *villager_object_held(VillagerObject *object)
 {
-    return (ItemObject *) VillagerObject_Base(object);
+    return (VillagerErrand *) VillagerObject_Errand(object);
 }
 
 /* func_0209b920: a group 0 type in the object goes on a step: the item is taken
@@ -230,17 +230,17 @@ static ItemObject *villager_object_held(VillagerObject *object)
  * last step of the type. */
 void VillagerObject_NextStep(VillagerObject *object)
 {
-    ItemObject *held = villager_object_held(object);
-    if (ItemObject_IsInUse(held) == 0 || ItemObject_Group(held) != 0) {
+    VillagerErrand *held = villager_object_held(object);
+    if (VillagerErrand_IsInUse(held) == 0 || VillagerErrand_Group(held) != 0) {
         return;
     }
-    int steps = VillagerObject_StepsForType(ItemObject_Type(held));
+    int steps = VillagerObject_StepsForType(VillagerErrand_Type(held));
     int step = VillagerObject_Step(object);
     if (step >= steps - 1) {
         return;
     }
     int advance = 1;
-    if (ItemObject_Type(held) == VILLAGER_OBJECT_COUNTED_TYPE) {
+    if (VillagerErrand_Type(held) == VILLAGER_OBJECT_COUNTED_TYPE) {
         advance = VillagerObject_IsCountReached(object);
     }
     VillagerObject_ClearItem(object);
@@ -251,14 +251,14 @@ void VillagerObject_NextStep(VillagerObject *object)
 CLEAN_AS(func_0209b920, VillagerObject_NextStep)
 
 /* func_0209b998: a group 0 type whose low five bits of byte 0x0b are 1 gets 2 there. */
-void VillagerObject_SetLow5From1To2(VillagerObject *object)
+void VillagerObject_SetProgress1To2(VillagerObject *object)
 {
-    ItemObject *held = villager_object_held(object);
-    if (ItemObject_IsInUse(held) != 0 && ItemObject_Group(held) == 0 && ItemObject_Low5(held) == 1) {
-        ItemObject_SetLow5(held, 2);
+    VillagerErrand *held = villager_object_held(object);
+    if (VillagerErrand_IsInUse(held) != 0 && VillagerErrand_Group(held) == 0 && VillagerErrand_Progress(held) == 1) {
+        VillagerErrand_SetProgress(held, 2);
     }
 }
-CLEAN_AS(func_0209b998, VillagerObject_SetLow5From1To2)
+CLEAN_AS(func_0209b998, VillagerObject_SetProgress1To2)
 
 /* func_0209b9cc: an item given to the object. With `fresh` set, the object starts over with type
  * `type` and the item (VillagerObject_Start); otherwise the low five bits of byte 0x0b are
@@ -270,9 +270,9 @@ void VillagerObject_Set(VillagerObject *object, u32 type, const u16 *item, const
     if (fresh != 0) {
         VillagerObject_Start(object, (int) type, item);
     } else {
-        ItemObject_SetLow5(villager_object_held(object), 0);
-        ItemObject_SetItem(villager_object_held(object), item);
-        if (ItemObject_Type(villager_object_held(object)) == VILLAGER_OBJECT_KIND_TYPE &&
+        VillagerErrand_SetProgress(villager_object_held(object), 0);
+        VillagerErrand_SetItem(villager_object_held(object), item);
+        if (VillagerErrand_Type(villager_object_held(object)) == VILLAGER_OBJECT_KIND_TYPE &&
             VillagerObject_Step(object) == VILLAGER_OBJECT_KIND_STEP && *item >= ITEM_ATTRIBUTES_FOSSIL_FIRST &&
             *item <= ITEM_ATTRIBUTES_FOSSIL_LAST) {
             VillagerObject_SetKind(object, (u8) FurnitureInfo_FossilKind(item));
@@ -280,8 +280,8 @@ void VillagerObject_Set(VillagerObject *object, u32 type, const u16 *item, const
     }
     if (player != NULL) {
         PlayerId_Copy(VillagerObject_Player(object), player);
-        DateTime_Now(ItemObject_Date(villager_object_held(object)));
-        ItemObject_SetHigh3(villager_object_held(object), 0);
+        DateTime_Now(VillagerErrand_Date(villager_object_held(object)));
+        VillagerErrand_SetWaitPlace(villager_object_held(object), 0);
     } else {
         PlayerId_Clear(VillagerObject_Player(object));
     }
@@ -292,9 +292,9 @@ CLEAN_AS(func_0209b9cc, VillagerObject_Set)
  * the player cleared and no item at 0x2c either. */
 void VillagerObject_ClearItem(VillagerObject *object)
 {
-    ItemObject_SetLow5(villager_object_held(object), 0);
+    VillagerErrand_SetProgress(villager_object_held(object), 0);
     u16 none = ITEM_CODE_NONE;
-    ItemObject_SetItem(villager_object_held(object), &none);
+    VillagerErrand_SetItem(villager_object_held(object), &none);
     PlayerId_Clear(VillagerObject_Player(object));
     *VillagerObject_Item(object) = ITEM_CODE_NONE;
 }
@@ -304,24 +304,24 @@ CLEAN_AS(func_0209ba7c, VillagerObject_ClearItem)
 int VillagerObject_Start(VillagerObject *object, int type, const u16 *item)
 {
     VillagerObject_Clear(object);
-    VillagerObject_SetObject(object, type, item);
+    VillagerObject_SetErrand(object, type, item);
     object->step = 0;
     return 0;
 }
 CLEAN_AS(func_0209bac0, VillagerObject_Start)
 
-/* func_0209bae4: the object's type and item set, the low five bits of byte 0x0b cleared. */
-void VillagerObject_SetObject(VillagerObject *object, int type, const u16 *item)
+/* func_0209bae4: the errand's type and item set, its progress cleared. */
+void VillagerObject_SetErrand(VillagerObject *object, int type, const u16 *item)
 {
-    ItemObject_Set(villager_object_held(object), (u8) type, item, 0);
+    VillagerErrand_Set(villager_object_held(object), (u8) type, item, 0);
 }
-CLEAN_AS(func_0209bae4, VillagerObject_SetObject)
+CLEAN_AS(func_0209bae4, VillagerObject_SetErrand)
 
 /* func_0209baf4: emptied: no type or item, no player, step 7, no item at 0x2c, the count 0, no
  * kind and the flags cleared. */
 void VillagerObject_Clear(VillagerObject *object)
 {
-    ItemObject_Clear(villager_object_held(object));
+    VillagerErrand_Clear(villager_object_held(object));
     PlayerId_Clear(&object->player);
     object->step = VILLAGER_OBJECT_STEP_CLEARED;
     object->item = ITEM_CODE_NONE;
@@ -335,7 +335,7 @@ CLEAN_AS(func_0209baf4, VillagerObject_Clear)
 VillagerObject *VillagerObject_Destruct(VillagerObject *object)
 {
     PlayerId_Destruct(&object->player);
-    ItemObject_Destruct(villager_object_held(object));
+    VillagerErrand_Destruct(villager_object_held(object));
     return object;
 }
 CLEAN_AS(func_0209bb30, VillagerObject_Destruct)
@@ -344,7 +344,7 @@ CLEAN_AS(func_0209bb30, VillagerObject_Destruct)
  * player constructed, and no item at 0x2c. */
 VillagerObject *VillagerObject_Construct(VillagerObject *object)
 {
-    ItemObject_Construct(villager_object_held(object));
+    VillagerErrand_Construct(villager_object_held(object));
     PlayerId_Construct(&object->player);
     object->item = ITEM_CODE_NONE;
     return object;

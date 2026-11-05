@@ -246,7 +246,7 @@ void OwlTalk_Line(OwlTalk *talk, OwlTalkStart *out)
     }
     out->name = data_ov047_02262fc0;
     VillagerPart *part = (VillagerPart *) (void *) PlayerRecord_VillagerPart(PlayerRecords_Current());
-    VillagerPartEntry *errand = (VillagerPartEntry *) (void *) VillagerPart_Object94(part);
+    VillagerPartEntry *errand = (VillagerPartEntry *) (void *) VillagerPart_Entry(part);
     NetSession *session = data_020ccf94;
     owner = talk->owner;
 

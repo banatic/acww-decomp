@@ -16,7 +16,7 @@
 #include "main/game_variables.h"
 #include "main/group_params.h"
 #include "main/item_code.h"
-#include "main/item_object.h"
+#include "main/villager_errand.h"
 #include "main/item_traits.h"
 #include "main/main_random.h"
 #include "main/message_receiver.h"
@@ -375,7 +375,7 @@ CLEAN_AS(func_ov049_02260b20, MabelTalk_OfferChoices)
 /* func_ov049_02260b9c (sequence 9, after the pockets' screen of the errand): when the player
  * picked an item and this console leads (or is alone), the item of the slot picked is taken
  * from the pockets; unless it is empty she takes it (SceneCommand_RequestMotion14), the
- * current player's errand is marked done (ItemObject_SetLow5 1) and the line is 0x2f; else
+ * current player's errand is marked done (VillagerErrand_SetProgress 1) and the line is 0x2f; else
  * 0x30.
  * QUIRK: the slot is a byte, so the test that it is not negative before emptying it always
  * passes. */
@@ -385,7 +385,7 @@ void MabelTalk_TakeErrand(MabelTalk *talk)
     u8 line = MABEL_LINE_NO_ERRAND;
 
     if (GroupParams_C4CIs1()) {
-        u8 *errand = VillagerPart_Object94((VillagerPart *) PlayerRecord_VillagerPart(PlayerRecords_Current()));
+        u8 *errand = VillagerPart_Entry((VillagerPart *) PlayerRecord_VillagerPart(PlayerRecords_Current()));
         if (TalkChecks_IsHostOrAlone()) {
             u8 slot = GroupParams_Arg();
             u16 item = CurrentPockets_Item(slot);
@@ -400,7 +400,8 @@ void MabelTalk_TakeErrand(MabelTalk *talk)
             if (!empty) {
                 SceneCommand_RequestMotion14(mtalk_scene(talk), &item, 2, 5, 0);
                 line = MABEL_LINE_ERRAND_TAKEN;
-                ItemObject_SetLow5((ItemObject *) VillagerPartEntry_Self((VillagerPartEntry *) (void *) errand), 1);
+                VillagerErrand_SetProgress((VillagerErrand *) VillagerPartEntry_Self((VillagerPartEntry *) (void *) errand),
+                                           1);
             }
         }
     }
@@ -1010,7 +1011,7 @@ CLEAN_AS(func_ov049_02261cb0, MabelTalk_OnLineEnded)
 void MabelTalk_Line(MabelTalk *talk, MabelTalkLine *out)
 {
     u8 *record = PlayerRecords_Current();
-    u8 *errand = VillagerPart_Object94((VillagerPart *) PlayerRecord_VillagerPart(record));
+    u8 *errand = VillagerPart_Entry((VillagerPart *) PlayerRecord_VillagerPart(record));
     Mabel *owner;
 
     if (StartKind_IsSet() != 0 && MabelTalk_Mode(talk) == MABEL_TALK_MODE_TALKED) {

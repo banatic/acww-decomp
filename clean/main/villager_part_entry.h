@@ -1,7 +1,7 @@
 /* The entry at 0x94 of the villagers' part of a player's record (VillagerPart, villager_part.h):
- * an object naming one of five kind-0xd codes (data_020d1a54), and the choices still open.
+ * an errand naming one of five kind-0xd codes (data_020d1a54), and the choices still open.
  *
- *   0x00  an object (12 bytes): type 20 while an entry is set, with item 0x155f or 0x1560
+ *   0x00  an errand (villager_errand.h): type 20 while an entry is set, with item 0x155f or 0x1560
  *   0x0c  the index of the code named (0-4; 5: none)
  *   0x0d  the choices still open, bits 0-4
  *
@@ -15,7 +15,7 @@
 
 #define VILLAGER_PART_ENTRY_CHOICES 5
 #define VILLAGER_PART_ENTRY_NONE 5
-/* The object's type while an entry is set. */
+/* The errand's type while an entry is set. */
 #define VILLAGER_PART_ENTRY_TYPE 20
 
 typedef struct VillagerPartEntry {

@@ -2,7 +2,7 @@
  * objects of types 10 and 19 (the step types of a block of the player's villager part,
  * villager_part_block.h: type 10 has an item drawn from item list 2, type 19 the item 0x1565
  * and a letter written from the block's two villagers). The talk holds that block at 0x160 and
- * its own object at 0x154 (func_0202d9c4, item_object.h).
+ * its own errand at 0x154 (VillagerTalkScene_Errand, villager_errand.h).
  *
  * Type 10 goes with clothes (0x11a8-0x12a7): the villager's reaction to them is kept in the
  * block's byte 0x2c (VillagerTalkPart_ReactToClothes: 0 when their style value is the
