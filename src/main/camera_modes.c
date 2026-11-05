@@ -274,11 +274,11 @@ int func_0203b320(void)
 
 void func_0203b2dc(int p)
 {
-    unsigned char buffer[8];
+    Vec3 buffer;
     func_0203ac78();
     func_0203be6c((void *) p);
-    func_01ffcbb0(buffer, (void *) p);
-    func_0203bd84((void *) p, buffer, func_0203c57c((void *) p), func_0203c568((void *) p), func_0203c548((void *) p));
+    func_01ffcbb0(&buffer, (void *) p);
+    func_0203bd84((void *) p, &buffer, func_0203c57c((void *) p), func_0203c568((void *) p), func_0203c548((void *) p));
 }
 
 int func_0203b2b8(void *p)

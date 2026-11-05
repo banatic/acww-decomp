@@ -730,7 +730,9 @@ static void scan_done(void)
  * the time per channel 0xa, the BSSID 0xc, the scan type 0x12, the SSID's length 0x14, the SSID
  * 0x16 and the length to match 0x36 (for scan types 2 and 3). The result comes when the
  * channels' time is over: the access point (runtime/wifi.c) when it is on one of them and
- * matches, else nobody. */
+ * matches; without it, on a console linked to another (local play), the other console's parent
+ * when its beacon came on one of the channels then and its MAC is the BSSID asked for (or that
+ * is ff:ff:ff:ff:ff:ff); else nobody. */
 static void start_scan_ex(uint32_t buffer)
 {
     uint32_t channels = rd16(buffer + 2), n = 0;
@@ -764,22 +766,34 @@ static void scan_ex_done(void)
         match = ssid_length;
     }
     uint8_t d[WIFI_BSS_SIZE];
-    int found = size >= WIFI_BSS_SIZE && wifi_scan(channels, bssid, ssid, ssid_length, match, d);
+    int found = wifi_on() && size >= WIFI_BSS_SIZE && wifi_scan(channels, bssid, ssid, ssid_length, match, d);
+    const Beacon *b = NULL; /* without the access point: the other console's parent */
+    if (!wifi_on() && wm.peer_beacon_valid && wm.peer_beacon.channel >= 1 && wm.peer_beacon.channel <= 16 &&
+        (channels & (1u << (wm.peer_beacon.channel - 1))) && size >= 0xc0) {
+        static const uint8_t any[6] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+        if (memcmp(bssid, any, 6) == 0 || memcmp(bssid, wm.peer_beacon.mac, 6) == 0) {
+            b = &wm.peer_beacon;
+        }
+    }
     uint8_t cb[0x70] = {0};
     put16(cb, API_START_SCAN_EX);
-    put16(cb + 8, found ? CODE_PARENT_FOUND : CODE_PARENT_NOT_FOUND);
+    put16(cb + 8, found || b ? CODE_PARENT_FOUND : CODE_PARENT_NOT_FOUND);
     put16(cb + 0xa, channels);
     if (found) {
         for (uint32_t i = 0; i < WIFI_BSS_SIZE; i++) {
             wr8(scan_buf + i, d[i]);
         }
+    } else if (b != NULL) {
+        write_bss(scan_buf, b);
+    }
+    if (found || b != NULL) {
         put16(cb + 0xe, 1);
         put32(cb + 0x10, scan_buf);
         put16(cb + 0x50, LINK_LEVEL);
     }
     if (wm.trace) {
-        fprintf(stderr, "wm: frame %u scan of channels %04x: %s\n", io_frame(), channels,
-                found ? "the access point" : "nobody");
+        fprintf(stderr, "wm: frame %u console %d scan of channels %04x: %s\n", io_frame(), wm.console, channels,
+                found ? "the access point" : b != NULL ? "a parent" : "nobody");
     }
     reply(buffer, cb, sizeof(cb));
     wm.scan_ex_req = 0; /* the state stays SCAN until WM_EndScan */
@@ -1052,8 +1066,8 @@ void wm_command(uint32_t data)
             return;
         }
         case API_START_SCAN_EX:
-            if (!wifi_on()) {
-                break; /* without the access point: taken, as before */
+            if (!wifi_on() && !wm.linked) {
+                break; /* without the access point or another console: taken, as before */
             }
             start_scan_ex(buffer);
             return;
@@ -1214,16 +1228,17 @@ static void receive(int kind, const uint8_t *m, uint32_t length)
             connect_event(0, ERR_SUCCESS, CODE_CONNECTED, aid);
             return;
         }
-        case MSG_DISCONNECT: { /* the MAC of the console that leaves (or is sent away) and its AID */
+        case MSG_DISCONNECT: { /* the MAC of the console sent away and its AID, or a child's leave:
+                                  its parent's MAC and the child's AID (end_child) */
             if (length < 8) {
                 return;
             }
             uint32_t aid = get16(m + 6);
             if (wm.parent && aid >= 1 && aid <= MAX_CHILDREN && (wm.child_bitmap & (1u << aid)) &&
-                memcmp(wm.children[aid], m, 6) == 0) {
+                (memcmp(wm.children[aid], m, 6) == 0 || memcmp(wm.mac, m, 6) == 0)) {
                 wm.child_bitmap &= (uint16_t) ~(1u << aid);
                 wr16(wm.status + ST_CHILD_BITMAP, wm.child_bitmap);
-                parent_event(CODE_DISCONNECTED, m, aid);
+                parent_event(CODE_DISCONNECTED, wm.children[aid], aid);
             } else if ((wm.connected || wm.connecting) && memcmp(m, wm.mac, 6) == 0) {
                 mp_stop(ERR_FAILED);
                 wm.connected = wm.connecting = 0;

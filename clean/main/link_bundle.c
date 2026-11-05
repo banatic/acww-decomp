@@ -1,7 +1,8 @@
 /* A scene's state as the linked systems hand it over (link_bundle.h).
  *
  * QUIRK: a section's pad byte is written from an uninitialised stack byte in the ROM, so its
- * value there is whatever the stack held; here it is 0. No reader looks at it. */
+ * value there is whatever the stack held; so does this, an uninitialised byte (seen in
+ * visit-tools, where the bundle stays in the session's memory). No reader looks at it. */
 #include "link_bundle.h"
 
 #include "clean.h"
@@ -62,8 +63,7 @@ static void write_section_header(u8 *at, int size, u32 kind)
 {
     LinkBundleSection section;
     section.size = (u16) size;
-    section.kind = (u8) kind;
-    section.pad = 0;
+    section.kind = (u8) kind; /* the pad byte is left unset, as the ROM's (see above) */
     MI_CpuCopy8(&section, at, sizeof(section));
 }
 

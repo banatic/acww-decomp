@@ -66,10 +66,11 @@ The commands and what they do:
 | SetGameInfo, SetEntry | the beacon's game info and its entry flag |
 | MeasureChannel | after the time asked, the channel with nothing busy |
 | StartScan | after the channel's time, PARENT_FOUND with the parent's WMBssDesc written to the scan buffer when a parent's beacon on that channel came in this frame, else PARENT_NOT_FOUND |
+| StartScanEx | (without Wi-Fi Connection, on a linked console) after the channels' time, as StartScan for the channels asked for: the other console's parent when its beacon came on one of them in that frame and its MAC is the BSSID asked for (or broadcast), its WMBssDesc in the scan buffer (the passing exchange's library, ov067, scans this way) |
 | StartConnect | CONNECT_START; the request goes to the parent; its answer gives CONNECTED with the AID (or a failure) |
 | StartMP | MP_START, the receive and send buffers kept |
 | SetMPDataToPort | queued for the next MP turn; PORT_SEND once it went out |
-| EndMP, EndParent, Disconnect, EndScan | SUCCESS, and the other console told where it concerns it |
+| EndMP, EndParent, Disconnect, EndScan | SUCCESS, and the other console told where it concerns it (a child that leaves, by Disconnect or Reset, is DISCONNECTED on its parent's side) |
 | the rest (lifetimes, beacon indication) | SUCCESS |
 
 An MP turn is one a frame, with a fixed latency of one frame each way. At the exchange of
@@ -112,9 +113,10 @@ The check holds both ways, as for one console: with every Clean function (the de
 with Native alone (`--clean none`). A difference in one console changes what it sends, so the
 other console may differ too; the first console to differ is the one to look at.
 
-`tools/drive.py` drives one console; with `RUN_WIRELESS=1` in its environment the console has
-its wireless, which is how the recordings of a scene's consoles are made one at a time and then
-played together.
+`tools/drive.py` drives one console, or two linked as a scene links them (`start` with
+--peer-save and --peer-prefix): each `run` runs both, console 1's input after `@1`, and any
+other command is console 0's or, after a leading `@1`, console 1's. That is how the recordings of
+the scenes below were made (`log` and `@1 log` give the two recordings).
 
 ## Wi-Fi Connection
 
@@ -171,6 +173,13 @@ Done (phase 1): the WM simulation for one console and for two; `--wireless` and 
 in `tools/run.py`; the scenes `title-move-in-alone` and `gate-visit-alone` (one console, the
 search finds nobody) and `gate-visit-link` (the seed town opens its gate, another town's player
 finds it, connects, receives the town over MP and walks through the gate into it).
+
+Done (phase 1, second batch): `visit-tools` (gate-visit-link on: host and visitor use each tool
+side by side, the visitor drops an item and goes into the town hall and out), `visit-leave` (the
+visitor asks the gatekeeper to go home: the host is called to the gatehouse, both save, the
+session ends), `visit-chat` (the host's START question of the linked game, both players' chat
+lines) and `exchange-link` (the passing exchange of two consoles with a letter in a bottle: the
+exchange library, ov067, takes turns as parent and child by its clock; the blocks go over MP).
 
 Done (phase 2): the access point, the network and the servers above; the scenes
 `gate-wfc-online` (the gatekeeper's Wi-Fi visit: connect, NAS and GameSpy logins, up to the

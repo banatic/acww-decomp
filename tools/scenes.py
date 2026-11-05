@@ -1307,6 +1307,20 @@ def other_town(bank: bytes) -> bytes:
 # saves made from the seed's bank by a function rather than by fields
 SAVE_TRANSFORMS = {"other-town": other_town}
 SAVES["other-town"] = []
+# the tools for a visit (both consoles): nothing held (as the seed: the A presses of the way to
+# the gate would use a held tool), 30,000 bells; pockets 0-12: the axe, the net, the rod, the
+# slingshot, an umbrella, the watering can, a pitfall seed, an apple, the items 0x137c and 0x137d
+# (used up), the item 0x137e (it burns), a piece of furniture and the shovel
+VISIT_TOOLS = [(MONEY, "<I", 30000)] + [
+    (POCKETS + 2 * i, "<H", item) for i, item in enumerate(
+        (0x136B, 0x1376, 0x1374, 0x137A, 0x1380, 0x1378, 0x1566, 0x1518, 0x137C, 0x137D, 0x137E, 0x3508, 0x1369))]
+SAVES["host-tools"] = VISIT_TOOLS
+SAVES["guest-tools"] = VISIT_TOOLS
+SAVE_TRANSFORMS["guest-tools"] = other_town
+# bottle-sent's town made another (its letter's parties renamed with it), for the passing exchange
+# of two consoles
+SAVES["other-bottle"] = SAVES["bottle-sent"]
+SAVE_TRANSFORMS["other-bottle"] = other_town
 
 
 def scene(name: str, save: str, frames: int, ram: list[int], look: list[int], intent: str,
@@ -2680,6 +2694,26 @@ scene("gate-visit-link", "seed", 12500, [2600, 7900, 9600, 10400, 11200], frames
       "other town's player asks to visit (gate-visit-guest): the search finds the seed town, the visitor "
       "connects, the town's data goes over MP, and the visitor walks through the gate into the seed town",
       recording="gate-visit-host", peer=("other-town", "gate-visit-guest"))
+scene("visit-tools", "host-tools", 24517, [2600, 9600, 12400, 14400, 17000, 20000, 23000, 24516],
+      frames(12400, 24517, 200),
+      "two consoles: as gate-visit-link, then host and visitor use each tool of their pockets side by side "
+      "(each console sees the other's actor dig, chop, swing, cast, shoot, water, plant, twirl and burn), "
+      "the visitor drops an item and walks into the town hall and out again",
+      recording="visit-tools-host", peer=("guest-tools", "visit-tools-guest"))
+scene("visit-leave", "host-tools", 29792, [2600, 9600, 12400, 17000, 24516, 26000, 27600, 28800, 29791],
+      frames(24400, 29792, 200),
+      "two consoles: visit-tools, then the visitor walks back to the gate and asks the gatekeeper to go "
+      "home: the host is called to the gatehouse, the session ends, both towns save and the visitor "
+      "walks out of its own gate",
+      recording="visit-leave-host", peer=("guest-tools", "visit-leave-guest"))
+scene("visit-chat", "host-tools", 27784, [2600, 12400, 24516, 25800, 26300, 26900, 27783], frames(24400, 27784, 100),
+      "two consoles: visit-tools, then the host's START question of the linked game answered with play on, "
+      "and both players type lines on the chat keyboard and send them: each console shows the other's "
+      "lines over its player", recording="visit-chat-host", peer=("guest-tools", "visit-chat-guest"))
+scene("exchange-link", "bottle-sent", 5352, [1100, 2399, 3000, 3800, 4600, 5351], frames(2400, 5352, 50),
+      "two consoles, each with a letter in a bottle sent: title-bottle's passing exchange on both; their "
+      "exchange libraries meet, the blocks go over MP, each takes the other's block, saves and goes on into "
+      "the town", recording="exchange-link-0", peer=("other-bottle", "exchange-link-1"))
 scene("gate-visit-lost", "seed", 17000, [2600, 7900, 9600, 11200, 12500, 14000, 14399], frames(12000, 17000, 100),
       "gate-visit-link, then the visitor's wireless out of range (gate-visit-lost-guest): the link is lost",
       recording="gate-visit-lost-host", peer=("other-town", "gate-visit-lost-guest"))
