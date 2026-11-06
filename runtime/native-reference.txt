@@ -68,3 +68,4 @@ func_020012ec touches the hardware at 04000208
 func_02001324 touches the hardware at 04000130
 func_0200149c touches the hardware at 04000006
 func_020386fc touches the hardware at 04000050
+func_020523e4 sends message 28 (a piece of furniture put) as a word built in an uninitialized stack slot whose bit 31 it never sets: the ROM's code sends what the slot held, Native code its fill pattern, and the other console keeps the word (scene visit-house)

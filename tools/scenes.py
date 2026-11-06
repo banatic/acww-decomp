@@ -2735,6 +2735,13 @@ scene("host-ends-link", "host-tools", 32300, [2600, 12400, 24516, 26300, 29600, 
       "link: both save, the host ends its parent and walks on alone, the guest loses its parent, walks "
       "back out of its own gate and walks again", recording="host-ends-link-host",
       peer=("guest-tools", "host-ends-link-guest"))
+scene("visit-house", "host-tools", 33000, [2600, 12400, 24516, 26300, 28200, 28900, 29900, 31000, 32000, 32999],
+      frames(27900, 33000, 100),
+      "two consoles: visit-chat to the host's START question answered with play on; the host walks into "
+      "the town hall and the visitor follows (the post clerk waits on the other console's player), both "
+      "walk out and into the host's house, where the host switches the candle off and the visitor sees "
+      "it go off, and the visitor walks out",
+      recording="visit-house-host", peer=("guest-tools", "visit-house-guest"))
 scene("exchange-link", "bottle-sent", 5352, [1100, 2399, 3000, 3800, 4600, 5351], frames(2400, 5352, 50),
       "two consoles, each with a letter in a bottle sent: title-bottle's passing exchange on both; their "
       "exchange libraries meet, the blocks go over MP, each takes the other's block, saves and goes on into "

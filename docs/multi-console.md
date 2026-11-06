@@ -186,6 +186,13 @@ link": both save, the host ends its parent and the guest, which loses it, goes h
 own gate). A parent that goes away hands the guest's queued MP data back unsent but not failed:
 the local wireless library stops the game on a failed send.
 
+Done (phase 1, fourth batch): `visit-house` (visit-chat's question answered with play on; both
+walk into the town hall, where the post clerk waits on the other console's player, then into
+the host's house, where the host switches the candle off and the visitor sees it). Buildings
+open by A at the door with a visitor in town as alone. Left open: the visitor talking to the
+post clerk (her Other state) diverges with Native code at the guest's frame 29241, a received
+packet delivered where the Reference is elsewhere (docs/scene-plan.md, link4).
+
 Done (phase 2): the access point, the network and the servers above; the scenes
 `gate-wfc-online` (the gatekeeper's Wi-Fi visit: connect, NAS and GameSpy logins, up to the
 list of towns to visit, empty as no friend is online), `gate-wfc-no-ap`, `gate-wfc-no-dns`,
