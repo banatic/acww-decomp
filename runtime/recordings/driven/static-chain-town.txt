@@ -1,0 +1,7 @@
+# the C library's exit walk of the static objects' destructors (__destroy_global_chain, func_02138910, which only the exit and terminate path calls): every destructor main, the autoloads, the TCMs and the loaded overlays registered with __register_global_object, in the chain's order, at the end of frame 2990 of town-stage0 (in the town)
+scene town-stage0
+frames 3000
+ram 2000,2600
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue): the frame's work done
+call 2990 02138910 0 0 0 0 0 0  # __destroy_global_chain
+end

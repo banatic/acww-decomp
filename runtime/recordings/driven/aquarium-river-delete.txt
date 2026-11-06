@@ -1,0 +1,15 @@
+# the destructor that frees (slot 3) of each fish class of the aquarium's river room, on one live fish each, at the end of frame 8001 of museum-halls
+scene museum-halls
+frames 8010
+ram 2600,4500,5600,6400,7200
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue): the frame's work done
+call 8001 020e9a08 022a3300 0 0 0 0 0  # Heap_SetCurrent(the heap the fish came from)
+vcall 8001 023a6dac c 023a6dac 0 0 0 02255d3c  # AquariumHomeFish_Delete
+vcall 8001 023a663c c 023a663c 0 0 0 02255e8c  # AquariumKind10_Delete
+vcall 8001 023a69fc c 023a69fc 0 0 0 02255e74  # AquariumKind11_Delete
+vcall 8001 023a7b68 c 023a7b68 0 0 0 02255e44  # AquariumKind15_Delete
+vcall 8001 023b5ee8 c 023b5ee8 0 0 0 02255d9c  # AquariumKind30_Delete
+vcall 8001 023a4ea4 c 023a4ea4 0 0 0 02255d54  # AquariumRisingFish_Delete
+vcall 8001 023a39cc c 023a39cc 0 0 0 02255ea4  # AquariumSwimmer_Delete
+call 8001 020e9a08 r8 0 0 0 0 0  # Heap_SetCurrent(the heap current before)
+end

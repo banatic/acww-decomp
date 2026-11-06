@@ -1,0 +1,16 @@
+# the destructor (slot 2) of each fish class of the aquarium's sea room, on one live fish each, at the end of frame 8801 of museum-halls
+scene museum-halls
+frames 8810
+ram 2600,4500,5600,6400,7200,8100
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue): the frame's work done
+vcall 8801 023a26dc 8 023a26dc 0 0 0 02255d3c  # AquariumHomeFish_Destruct
+vcall 8801 023a198c 8 023a198c 0 0 0 02255dfc  # AquariumKind35_Destruct
+vcall 8801 023a1dec 8 023a1dec 0 0 0 02255e14  # AquariumKind36_Destruct
+vcall 8801 023a2320 8 023a2320 0 0 0 02255de4  # AquariumKind37_Destruct
+vcall 8801 023a2e40 8 023a2e40 0 0 0 02255dcc  # AquariumKind40_Destruct
+vcall 8801 023a57b4 8 023a57b4 0 0 0 02255e5c  # AquariumKind47_Destruct
+vcall 8801 023a5f14 8 023a5f14 0 0 0 02255e2c  # AquariumKind48_Destruct
+vcall 8801 023a8824 8 023a8824 0 0 0 02255d6c  # AquariumLaneFish_Destruct
+vcall 8801 023a7b74 8 023a7b74 0 0 0 02255d84  # AquariumNonstopFish_Destruct
+vcall 8801 023a2aa0 8 023a2aa0 0 0 0 02255ea4  # AquariumSwimmer_Destruct
+end
