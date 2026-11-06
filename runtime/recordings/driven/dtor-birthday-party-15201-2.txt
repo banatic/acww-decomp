@@ -1,0 +1,16 @@
+# 10 functions of the destructors of vtable slot 0 of those classes, the other classes' destructors of vtable slot 16: each on a live object of its class, through the object's vtable, at the end of frame 15201 of birthday-party (tools/driven.py --plan)
+scene birthday-party
+frames 15210
+ram 2600,6100,9859,11400,12400,14600
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 15201 022b6cc8 0 022b6cc8 0 0 0 020da5f8  # main QuickMessage_NameDestruct (slot 0)
+vcall 15201 022a6df4 0 022a6df4 0 0 0 020e3d4c  # main MessageReceiver_Destruct (slot 0)
+vcall 15201 0236e6f8 0 0236e6f8 0 0 0 02252d80  # ov004 RoomObject02252cd4Receiver_Destroy (slot 0)
+vcall 15201 023701bc 0 023701bc 0 0 0 02253104  # ov004 BedObjectReceiver_Destroy (slot 0)
+vcall 15201 0236de0c 0 0236de0c 0 0 0 022521c8  # ov004 ChestReceiver_Destroy (slot 0)
+vcall 15201 0236d520 0 0236d520 0 0 0 02251868  # ov004 MusicPlayerReceiver_Destroy (slot 0)
+vcall 15201 0236cc34 0 0236cc34 0 0 0 02252c54  # ov004 RoomObject02252ba8Receiver_Destroy (slot 0)
+vcall 15201 0236f8d0 0 0236f8d0 0 0 0 0225173c  # ov004 RoomObject02251690Receiver_Destroy (slot 0)
+vcall 15201 022b0dd4 0 022b0dd4 0 0 0 022535e4  # ov004 BirthdayVillagerTalk_Destroy (slot 0)
+vcall 15201 022afab8 40 022afab8 0 0 0 02253868  # ov004 BirthdayGuest_Destroy (slot 16)
+end

@@ -129,7 +129,9 @@ def run_check(name: str, seed: pathlib.Path, clean: str | None, runtime: pathlib
         image.unlink(missing_ok=True)
 
     def made(log: str) -> list[str]:
-        return [ln for ln in log.splitlines() if re.match(r"driven: frame \d+ (call|skip)", ln)]
+        # the step a call starts at is left out: Native code before it takes no steps
+        return [re.sub(r" at step \d+$", "", ln) for ln in log.splitlines()
+                if re.match(r"driven: frame \d+ (call|skip)", ln)]
     ref_calls, nat_calls = made(logs["reference.log"]), made(logs["native.log"])
     moments = sorted({int(m) for m in re.findall(r"driven: frame (\d+) back at", logs["reference.log"])})
     snaps = {int(f) - SNAPSHOT: v for f, v in re.findall(r"ram after frame (\d+): .*: (same[^\n]*|DIFFERENT[^\n]*)", text)
@@ -143,6 +145,13 @@ def run_check(name: str, seed: pathlib.Path, clean: str | None, runtime: pathlib
         problems.append("a call was skipped (its object was not there)")
     if not ref_calls:
         problems.append("no call was made")
+    for log in ("reference.log", "native.log"):
+        made_calls = len(re.findall(r"driven: frame \d+ call ", logs[log]))
+        returned = len(re.findall(r"driven: frame \d+ returned from ", logs[log]))
+        if returned != made_calls:
+            problems.append(f"{log}: {made_calls - returned} of the calls did not return (the run stopped inside one)")
+    if ref_calls and not moments:
+        problems.append("no moment's calls finished")
     for m in moments:
         if not snaps.get(m, "").startswith("same"):
             problems.append(f"memory after the calls of frame {m}: {snaps.get(m)}")
@@ -448,6 +457,7 @@ def plan(groups: list[str], slots: list[int], free_slots: list[int], prefix: str
                         moments.setdefault((path.stem, int(f)), {}).setdefault(key, []).append((o, start, v, slot, heap))
     done: set[tuple[str, int]] = set()
     written = 0
+    names: dict[str, int] = {}
     for old in CHECKS.glob(f"{prefix}-*.txt"):
         old.unlink()
     while True:
@@ -488,9 +498,13 @@ def plan(groups: list[str], slots: list[int], free_slots: list[int], prefix: str
                 f"(tools/driven.py --plan)",
                 f"scene {scene}", f"frames {frame + 10}", *([f"ram {','.join(map(str, ram))}"] if ram else []),
                 f"arm {OS_SLEEP_THREAD:08x} {MAIN_FRAME_QUEUE:08x}  # OS_SleepThread(the main loop's queue)", *lines, "end"]
-        (CHECKS / f"{prefix}-{scene}-{frame + 1}.txt").write_text("\n".join(text) + "\n", newline="\n")
+        name = f"{prefix}-{scene}-{frame + 1}"
+        names[name] = names.get(name, 0) + 1
+        if names[name] > 1:
+            name += f"-{names[name]}"  # a moment picked again for the calls one check had no room for
+        (CHECKS / f"{name}.txt").write_text("\n".join(text) + "\n", newline="\n")
         written += 1
-        print(f"{prefix}-{scene}-{frame + 1}: {count} functions", flush=True)
+        print(f"{name}: {count} functions", flush=True)
     print(f"{written} checks, {len(done)} of {len(targets)} functions")
     return 0
 

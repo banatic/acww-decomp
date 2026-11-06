@@ -1,0 +1,19 @@
+# 14 functions of the deleting destructors of vtable slot 1, the destructors of vtable slot 0 of those classes, the menu scenes' destructors of vtable slot 16, the other classes' destructors of vtable slot 16, the scene sound classes' slot 0 and base slots: each on a live object of its class, through the object's vtable, at the end of frame 8101 of design-draw (tools/driven.py --plan)
+scene design-draw
+frames 8110
+ram 2600,3800,5000,6100,7000
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 8101 0232ae20 0 0232ae20 0 0 0 0213eaa0  # autoload_2 SoundScene21_Destruct (slot 0)
+vcall 8101 022b6c3c 0 022b6c3c 0 0 0 020da5d8  # main QuickMessage_BoardDestruct (slot 0)
+vcall 8101 022a767c 0 022a767c 0 0 0 020e1a2c  # main PoolLink_BaseDestructVirtual (slot 0)
+vcall 8101 0237d2c4 40 0237d2c4 0 0 0 02250ad8  # ov004 SwitchShown_Destroy (slot 16)
+vcall 8101 0237e49c 40 0237e49c 0 0 0 02251ec4  # ov004 ShopDesignObject_Destroy (slot 16)
+vcall 8101 0237b800 40 0237b800 0 0 0 02252374  # ov004 RoomObject02252374_Destroy (slot 16)
+vcall 8101 0237c1d8 0 0237c1d8 0 0 0 02252420  # ov004 RoomObject02252374Receiver_Destroy (slot 0)
+vcall 8101 0237ee74 0 0237ee74 0 0 0 02251f70  # ov004 ShopDesignObjectReceiver_Destroy (slot 0)
+vcall 8101 0237dc9c 0 0237dc9c 0 0 0 02250b84  # ov004 SwitchShownReceiver_Destroy (slot 0)
+vcall 8101 022b06d4 40 022b06d4 0 0 0 0225445c  # ov004 TailorSister_Destroy (slot 16)
+vcall 8101 022af8fc 40 022af8fc 0 0 0 02255538  # ov004 TailorObject_Destruct (slot 16)
+vcall 8101 0237adf8 40 0237adf8 0 0 0 02299508  # ov092 MenuDispatch_Destroy (slot 16)
+vcall 8101 02376b60 40 02376b60 0 0 0 022a20c8  # ov126 KeyboardEntry_Destroy (slot 16)
+end

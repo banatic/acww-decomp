@@ -1,0 +1,9 @@
+# 3 functions of the other classes' destructors of vtable slot 16, the scene sound classes' slot 0 and base slots: each on a live object of its class, through the object's vtable, at the end of frame 7201 of bed-attic (tools/driven.py --plan)
+scene bed-attic
+frames 7210
+ram 2600,4200,5100,5800,6500
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 7201 0232ae20 0 0232ae20 0 0 0 0213ea38  # autoload_2 SoundScene19_Destruct (slot 0)
+vcall 7201 022b0744 40 022b0744 0 0 0 022558f8  # ov004 RmoTelephone_Destruct (slot 16)
+vcall 7201 022b699c 40 022b699c 0 0 0 02255a38  # ov004 RoomPlayerBeds_Destruct (slot 16)
+end

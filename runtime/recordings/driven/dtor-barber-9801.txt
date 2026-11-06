@@ -1,0 +1,9 @@
+# 3 functions of the other classes' destructors of vtable slot 16, the scene sound classes' slot 0 and base slots: each on a live object of its class, through the object's vtable, at the end of frame 9801 of barber (tools/driven.py --plan)
+scene barber
+frames 9810
+ram 3900,4400,5700,7100,9000
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 9801 0232ae20 0 0232ae20 0 0 0 0213ec74  # autoload_2 SoundScene35_Destruct (slot 0)
+vcall 9801 022b0340 40 022b0340 0 0 0 02254c58  # ov004 BarberMachine_Destruct (slot 16)
+vcall 9801 022b06c8 40 022b06c8 0 0 0 02261b98  # ov053 Barber_Destruct (slot 16)
+end

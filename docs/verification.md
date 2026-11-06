@@ -55,7 +55,9 @@ word between the two runs, as at a scene's checkpoint (`native_snapshot_now`); t
 follow are compared as a scene's are, until the run ends. A destructor that frees runs with
 the heap its object came from made current (Heap_SetCurrent), as the game's own deletions do.
 A check passes when both runs, with every Clean function and with Native alone, made the same
-calls (none skipped) and agree. The functions it checks are those the calls entered in the
+calls (none skipped; the step a call starts at is not compared, as Native code takes no steps),
+every call returned (a run that stops inside one, on an object whose state does not allow the
+call, fails even when both runs stop alike), and memory agrees. The functions it checks are those the calls entered in the
 Reference run that ran as Clean code; those no scene enters are listed in
 `runtime/recordings/scenes/clean-driven.txt` (`tools/driven.py --record`), and the Clean
 progress map shows them as "checked by a driven call", below "checked in a run".

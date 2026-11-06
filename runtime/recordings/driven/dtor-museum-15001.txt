@@ -1,0 +1,9 @@
+# 3 functions of the other classes' destructors of vtable slot 16, the scene sound classes' slot 0 and base slots: each on a live object of its class, through the object's vtable, at the end of frame 15001 of museum (tools/driven.py --plan)
+scene museum
+frames 15010
+ram 2600,4600,6900,8700,11000,12400,13800
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 15001 0232ae20 0 0232ae20 0 0 0 0213ecdc  # autoload_2 SoundScene41_Destruct (slot 0)
+vcall 15001 022af714 40 022af714 0 0 0 022546e0  # ov004 CafeMaster_Destroy (slot 16)
+vcall 15001 022afea4 40 022afea4 0 0 0 02254fc8  # ov004 CafeProps_Destruct (slot 16)
+end

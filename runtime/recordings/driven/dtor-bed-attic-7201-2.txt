@@ -1,0 +1,7 @@
+# 1 functions of the destructors of vtable slot 0 of those classes: each on a live object of its class, through the object's vtable, at the end of frame 7201 of bed-attic (tools/driven.py --plan)
+scene bed-attic
+frames 7210
+ram 2600,4200,5100,5800,6500
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 7201 022b09d4 0 022b09d4 0 0 0 02255974  # ov004 RmoTelephoneReceiver_Destruct (slot 0)
+end

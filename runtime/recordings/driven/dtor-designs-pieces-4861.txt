@@ -1,0 +1,10 @@
+# 5 functions of the destructors of vtable slot 0 of those classes, the menu scenes' destructors of vtable slot 16, the other classes' destructors of vtable slot 16: each on a live object of its class, through the object's vtable, at the end of frame 4861 of designs-pieces (tools/driven.py --plan)
+scene designs-pieces
+frames 4870
+ram 2600,3500,4200,4400,4600,4789
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 4861 02364268 40 02364268 0 0 0 02251ff0  # ov004 PlayerDesignObject_Destroy (slot 16)
+vcall 4861 0236397c 40 0236397c 0 0 0 02252824  # ov004 RoomObject02252824_Destroy (slot 16)
+vcall 4861 02364c40 0 02364c40 0 0 0 0225209c  # ov004 PlayerDesignObjectReceiver_Destroy (slot 0)
+vcall 4861 022b25bc 40 022b25bc 0 0 0 0225622c  # ov004 HouseRoach_Destruct (slot 16)
+end

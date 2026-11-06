@@ -1,0 +1,10 @@
+# 4 functions of the destructors of vtable slot 0 of those classes, the other classes' destructors of vtable slot 16, the scene sound classes' slot 0 and base slots: each on a live object of its class, through the object's vtable, at the end of frame 8001 of new-town (tools/driven.py --plan)
+scene new-town
+frames 8010
+ram 1300,2300,5500
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 8001 0232ae20 0 0232ae20 0 0 0 0213eeb0  # autoload_2 SoundScene51_Destruct (slot 0)
+vcall 8001 023876c0 0 023876c0 0 0 0 020da6c4  # main QuickMessage_ViewBaseDestruct (slot 0)
+vcall 8001 022b072c 40 022b072c 0 0 0 0226193c  # ov051 TaxiDriver_Destroy (slot 16)
+vcall 8001 022b0178 40 022b0178 0 0 0 022778f4  # ov068 Taxi_Destruct (slot 16)
+end

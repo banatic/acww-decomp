@@ -1,0 +1,7 @@
+# 1 functions of the destructors of vtable slot 0 of those classes: each on a live object of its class, through the object's vtable, at the end of frame 12401 of villager-approach (tools/driven.py --plan)
+scene villager-approach
+frames 12410
+ram 2600,4000,7200,9100,10400,11400
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 12401 022b4878 0 022b4878 0 0 0 02238e80  # ov003 Panther_ReceiverDestroy (slot 0)
+end

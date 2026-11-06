@@ -1,0 +1,10 @@
+# 4 functions of the destructors of vtable slot 0 of those classes, the menu scenes' destructors of vtable slot 16, the other classes' destructors of vtable slot 16, the scene sound classes' slot 0 and base slots: each on a live object of its class, through the object's vtable, at the end of frame 8201 of shop-buy-letter (tools/driven.py --plan)
+scene shop-buy-letter
+frames 8210
+ram 2600,3800,4800,5500,7200
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 8201 0232ae20 0 0232ae20 0 0 0 0213eb70  # autoload_2 SoundScene30_Destruct (slot 0)
+vcall 8201 022b0304 0 022b0304 0 0 0 0224fcc0  # ov004 AtmReceiver_Destroy (slot 0)
+vcall 8201 022b06a4 40 022b06a4 0 0 0 02265a60  # ov050 NookClerk_Destruct (slot 16)
+vcall 8201 0237227c 40 0237227c 0 0 0 022a2738  # ov122 LetterWrite_Destroy (slot 16)
+end

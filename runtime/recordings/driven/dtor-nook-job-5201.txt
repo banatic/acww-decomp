@@ -1,0 +1,15 @@
+# 10 functions of the deleting destructors of vtable slot 1, the destructors of vtable slot 0 of those classes, the other classes' destructors of vtable slot 16, the scene sound classes' slot 0 and base slots: each on a live object of its class, through the object's vtable, at the end of frame 5201 of nook-job (tools/driven.py --plan)
+scene nook-job
+frames 5210
+ram 1300
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 5201 02322220 0 02322220 0 0 0 0213e99c  # autoload_2 SoundScene2_Destruct (slot 0)
+vcall 5201 022b6c40 0 022b6c40 0 0 0 020da658  # main QuickMessage_BalloonDestruct (slot 0)
+vcall 5201 022a7944 40 022a7944 0 0 0 020e201c  # main CellPairSprite_Delete (slot 16)
+vcall 5201 022b5b5c 0 022b5b5c 0 0 0 022389f8  # ov003 Checkpoint_ReceiverDestroy (slot 0)
+vcall 5201 022b4e08 0 022b4e08 0 0 0 022391ac  # ov003 OutdoorClock_ReceiverDestroy (slot 0)
+vcall 5201 022b361c 0 022b361c 0 0 0 02239318  # ov003 PlayerHouse_ReceiverDestroy (slot 0)
+vcall 5201 022b3314 0 022b3314 0 0 0 02239550  # ov003 Mailbox_ReceiverDestroy (slot 0)
+vcall 5201 022b5898 0 022b5898 0 0 0 022659a0  # ov009 TownObjectActor_ReceiverDestructComplete (slot 0)
+vcall 5201 022b1cd8 40 022b1cd8 0 0 0 02277750  # ov068 Sequence4_Destroy (slot 16)
+end

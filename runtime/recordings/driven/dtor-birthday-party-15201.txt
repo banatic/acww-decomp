@@ -1,0 +1,25 @@
+# 21 functions of the deleting destructors of vtable slot 1, the destructors of vtable slot 0 of those classes, the other classes' destructors of vtable slot 16, the scene sound classes' slot 0 and base slots: each on a live object of its class, through the object's vtable, at the end of frame 15201 of birthday-party (tools/driven.py --plan)
+scene birthday-party
+frames 15210
+ram 2600,6100,9859,11400,12400,14600
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 15201 0232ae20 0 0232ae20 0 0 0 0213ea04  # autoload_2 SoundScene10_Destruct (slot 0)
+vcall 15201 022b6f40 0 022b6f40 0 0 0 020da5c8  # main QuickMessage_ReceiverDestruct (slot 0)
+vcall 15201 0236b908 0 0236b908 0 0 0 020e20c8  # main ScreenSprite_Destruct (slot 0)
+vcall 15201 0235f98c 40 0235f98c 0 0 0 020e404c  # main TalkWindow_Destruct (slot 16)
+vcall 15201 0236f7e4 40 0236f7e4 0 0 0 02251690  # ov004 RoomObject02251690_Destroy (slot 16)
+vcall 15201 0236cb48 40 0236cb48 0 0 0 02252ba8  # ov004 RoomObject02252ba8_Destroy (slot 16)
+vcall 15201 0236d434 40 0236d434 0 0 0 022517bc  # ov004 MusicPlayer_Destroy (slot 16)
+vcall 15201 0236dd20 40 0236dd20 0 0 0 0225211c  # ov004 Chest_Destroy (slot 16)
+vcall 15201 023700d0 40 023700d0 0 0 0 02253058  # ov004 BedObject_Destroy (slot 16)
+vcall 15201 0236e60c 40 0236e60c 0 0 0 02252cd4  # ov004 RoomObject02252cd4_Destroy (slot 16)
+vcall 15201 0236c25c 40 0236c25c 0 0 0 02252f2c  # ov004 RoomObject02252f2c_Destroy (slot 16)
+vcall 15201 0236efe4 0 0236efe4 0 0 0 02252fd8  # ov004 RoomObject02252f2cReceiver_Destroy (slot 0)
+vcall 15201 022b0534 40 022b0534 0 0 0 02253674  # ov004 BirthdayVillager_Destroy (slot 16)
+vcall 15201 022b33e8 40 022b33e8 0 0 0 02255ac8  # ov004 RoomShell_Destruct (slot 16)
+vcall 15201 022b103c 40 022b103c 0 0 0 02255b7c  # ov004 IndoorCountdown_Destruct (slot 16)
+vcall 15201 022b2fa0 40 022b2fa0 0 0 0 02255bd4  # ov004 IconModels_Destruct (slot 16)
+vcall 15201 022b2c30 40 022b2c30 0 0 0 02256018  # ov004 RoomManager_Destruct (slot 16)
+vcall 15201 022b2aac 40 022b2aac 0 0 0 022561dc  # ov004 HouseRoaches_Destruct (slot 16)
+vcall 15201 022b3134 40 022b3134 0 0 0 022568c4  # ov004 ShopDisplay_Destruct (slot 16)
+end

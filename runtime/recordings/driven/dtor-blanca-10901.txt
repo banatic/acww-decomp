@@ -1,0 +1,7 @@
+# 1 functions of the other classes' destructors of vtable slot 16: each on a live object of its class, through the object's vtable, at the end of frame 10901 of blanca (tools/driven.py --plan)
+scene blanca
+frames 10910
+ram 2600,4200,6000,6700,7300,8700
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 10901 022a62f0 40 022a62f0 0 0 0 02279c68  # ov074 MysteryCat_Destroy (slot 16)
+end
