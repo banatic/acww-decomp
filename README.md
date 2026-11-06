@@ -140,6 +140,10 @@ reached:
   source. Most of these cannot run with one console (wireless, Wi-Fi Connection, another
   console's states); [docs/scene-plan.md](docs/scene-plan.md) lists them with the reason.
 
+A function counts as **checked** when a run or a driven call has entered it, at whichever
+level above it counts; the map's legend gives that number after the levels, which keep the
+two kinds apart.
+
 CI draws both maps from each build of `main` (`tools/progress_map.py`).
 [docs/verification.md](docs/verification.md) describes what is checked and what is not yet.
 

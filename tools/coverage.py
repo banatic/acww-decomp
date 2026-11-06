@@ -176,8 +176,8 @@ def write_plan(groups: list[dict], clean: dict, state, counts: dict, lists: int)
     total = sum(len(g["functions"]) for g in groups)
     out.append(f"From {lists} scene lists: {len(clean):,} Clean game functions, run {counts['run']:,}, "
                f"function check only {counts['function']:,}, checked by a driven call {counts['driven']:,}, "
-               f"read only {counts['read']:,}; the groups below hold {total:,} (function check only + driven "
-               f"+ read only).\n")
+               f"read only {counts['read']:,}; checked (run or driven call) {counts['checked']:,}; the groups "
+               f"below hold {total:,} (function check only + driven + read only).\n")
     by_needs = collections.Counter()
     for g in groups:
         by_needs[g["needs"]] += len(g["functions"])
@@ -233,7 +233,8 @@ def main() -> None:
     if path.exists():
         checked = {(r["module"], int(r["address"], 16) & ~1) for r in json.loads(path.read_text())}
 
-    # checked by a driven call (tools/driven.py --record): below a run, above reading
+    # checked by a driven call (tools/driven.py --record): below a run, above reading; with the
+    # runs, the goal's checked set (run or driven call)
     driven_list = C.ROOT / "runtime" / "recordings" / "scenes" / "clean-driven.txt"
     driven = {(m, int(a, 16)) for m, a in (line.split()[:2] for line in
                                             (driven_list.read_text().splitlines() if driven_list.exists() else [])
@@ -259,6 +260,7 @@ def main() -> None:
 
     if args.plan:
         counts = collections.Counter(state(k) for k in clean)
+        counts["checked"] = sum(1 for k in clean if k in ran_by or k in driven)
         write_plan(read_plan(args.plan), clean, state, counts, len(lists))
         return
 
@@ -272,7 +274,8 @@ def main() -> None:
     count = collections.Counter(state(k) for k in clean)
     print(f"{len(lists)} lists; {total:,} Clean game functions: run {count['run']:,}, "
           f"function check only {count['function']:,}, checked by a driven call {count['driven']:,}, "
-          f"read only {count['read']:,}")
+          f"read only {count['read']:,}; checked (run or driven call) "
+          f"{sum(1 for k in clean if k in ran_by or k in driven):,}")
 
     per_file = collections.Counter(clean[k][0] for k in clean if state(k) == "read")
     sizes = collections.Counter(f for f, _ in clean.values())

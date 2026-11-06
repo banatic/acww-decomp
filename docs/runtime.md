@@ -91,7 +91,8 @@ written down as `REQUIRES:`. Clean is never bent just to pass a test.
   recording with different implementation choices and compare frames and memory; for code no
   game path calls, driven calls (`runtime/driven.h`, `tools/driven.py`): at a chosen frame of a
   scene's run the runtime calls the function on a live object, in both runs, and memory is
-  compared right after ([docs/verification.md](verification.md)).
+  compared right after ([docs/verification.md](verification.md)). A function a scene or a
+  driven call enters counts as checked; the two are counted apart as well.
 - **New scenes**: `tools/coverage.py` lists the Clean functions no scene enters, by file, and
   the ones a function some scene runs calls, with that scene. `tools/drive.py` plays the game in
   the interpreter a few frames at a time from the command line (input, screens, memory, the

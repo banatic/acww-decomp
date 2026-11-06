@@ -22,7 +22,9 @@ docs/progress-clean.svg, how each function's Clean version is checked:
     read       Read only: checked only by reading it against its matching source
     none       No Clean version (left out of the legend when there is none)
 
-Each function counts at the highest level it reached.
+Each function counts at the highest level it reached. The Clean map's legend also gives the
+functions checked in a run or by a driven call, whatever their level: the goal's checked set
+(clean-ran.json, which takes runtime/recordings/scenes/clean-entered.txt, and clean-driven.txt).
 
     python tools/verify.py && python tools/progress_map.py
     python tools/progress_map.py --merge-ran title.json new-game.json   # build/adm-kr/clean-ran.json
@@ -66,6 +68,7 @@ BG, CARD, FG, MUTED = "#0d1117", "#161b22", "#e6edf3", "#8b949e"
 W = 960
 PAD = 20
 HEAD = 112          # title, overall bar and legend
+LEGEND_ROW = 20     # each legend row after the first (the legend wraps)
 MAP_H = 440
 LIB_W = 120         # the libraries strip on the right
 FOOT = 26
@@ -197,19 +200,28 @@ def tile(parts: list[str], colors: dict[str, str], key: str, seq: list[tuple[int
                      f'font-weight="600" fill="{FG}">{html.escape(label)}</text>')
 
 
-def draw(spec: Map, level_of, out: pathlib.Path, footer: str) -> dict[str, int]:
+def draw(spec: Map, level_of, out: pathlib.Path, footer: str, extra: str = "") -> dict[str, int]:
     game, counts, libs, order = classify(level_of)
     levels = [lv for lv in spec.levels if lv not in spec.optional or counts.get(lv)]
     total = {lv: sum(m.get(lv, 0) for m in game.values()) for lv in spec.levels}
     all_bytes = sum(total.values()) or 1
     nfuncs = sum(counts.values())
     bottom = spec.levels[-1] if spec.levels[-1] in levels else levels[-1]
+    items = [(spec.colors[lv], f"{spec.labels[lv]}  {100 * total[lv] / all_bytes:.1f}%  ({counts.get(lv, 0):,})")
+             for lv in levels] + ([(None, extra)] if extra else [])
+    rows, x = 0, PAD
+    for color, text in items:
+        width = (18 if color else 0) + 7 * len(text)
+        if x > PAD and x + width > W - PAD:
+            rows, x = rows + 1, PAD
+        x += 16 + width
+    head, height = HEAD + LEGEND_ROW * rows, H + LEGEND_ROW * rows
     p: list[str] = [
-        f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" '
-        f'viewBox="0 0 {W} {H}" font-family="ui-sans-serif,-apple-system,Segoe UI,Helvetica,'
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{height}" '
+        f'viewBox="0 0 {W} {height}" font-family="ui-sans-serif,-apple-system,Segoe UI,Helvetica,'
         f'Arial,sans-serif">',
-        f'<rect width="{W}" height="{H}" rx="12" fill="{BG}"/>',
-        f'<rect x="1" y="1" width="{W - 2}" height="{H - 2}" rx="11" fill="{CARD}" '
+        f'<rect width="{W}" height="{height}" rx="12" fill="{BG}"/>',
+        f'<rect x="1" y="1" width="{W - 2}" height="{height - 2}" rx="11" fill="{CARD}" '
         f'stroke="#30363d"/>',
         f'<text x="{PAD}" y="{PAD + 18}" font-size="18" font-weight="700" fill="{FG}">'
         f"{html.escape(spec.title)}: Animal Crossing: Wild World (ARM9 game code)</text>",
@@ -229,18 +241,20 @@ def draw(spec: Map, level_of, out: pathlib.Path, footer: str) -> dict[str, int]:
                      f'fill="{spec.colors[level]}"/>')
         off += seg
     p.append("</g>")
-    # legend
+    # legend: the levels, then `extra` (bold, no swatch), in rows that wrap
     lx, ly = PAD, by + bh + 30
-    for level in levels:
-        pct = 100 * total[level] / all_bytes
-        text = f"{spec.labels[level]}  {pct:.1f}%  ({counts.get(level, 0):,})"
-        p.append(f'<rect x="{lx}" y="{ly - 10}" width="12" height="12" rx="3" '
-                 f'fill="{spec.colors[level]}"/>')
-        p.append(f'<text x="{lx + 18}" y="{ly}" font-size="12" fill="{FG}">'
+    for color, text in items:
+        width = (18 if color else 0) + 7 * len(text)
+        if lx > PAD and lx + width > W - PAD:
+            lx, ly = PAD, ly + LEGEND_ROW
+        if color:
+            p.append(f'<rect x="{lx}" y="{ly - 10}" width="12" height="12" rx="3" fill="{color}"/>')
+        weight = "" if color else ' font-weight="600"'
+        p.append(f'<text x="{lx + (18 if color else 0)}" y="{ly}" font-size="12"{weight} fill="{FG}">'
                  f"{html.escape(text)}</text>")
-        lx += 34 + 7 * len(text)
+        lx += 16 + width
     # game treemap
-    mx, my, mw = PAD, HEAD, W - 2 * PAD - LIB_W - 10
+    mx, my, mw = PAD, head, W - 2 * PAD - LIB_W - 10
     for mod, x, y, w, h in squarify([(m, sum(v.values())) for m, v in game.items()],
                                     mx, my, mw, MAP_H):
         shares = game[mod]
@@ -251,20 +265,21 @@ def draw(spec: Map, level_of, out: pathlib.Path, footer: str) -> dict[str, int]:
     # libraries strip
     lx0 = W - PAD - LIB_W
     lib_total = sum(libs.values())
-    p.append(f'<text x="{lx0}" y="{HEAD - 6}" font-size="11" fill="{MUTED}">'
+    p.append(f'<text x="{lx0}" y="{head - 6}" font-size="11" fill="{MUTED}">'
              f"Libraries (not included)</text>")
     lib_colors = {"lib": DECOMP.colors["reference"]}
-    for mod, x, y, w, h in squarify(list(libs.items()), lx0, HEAD, LIB_W, MAP_H):
+    for mod, x, y, w, h in squarify(list(libs.items()), lx0, head, LIB_W, MAP_H):
         tile(p, lib_colors, "lib-" + mod, [(libs[mod], "lib")], x, y, w, h, mod,
              f"{mod} (libraries): {libs[mod]:,} bytes")
     foot = (f"Tile area is code size. {footer}" if footer else
             f"Tile area is code size. Libraries: {lib_total / 1024:,.0f} KB (NitroSDK, NitroSystem, "
             f"NitroDWC, NitroWiFi, GameSpy, MSL), see libs/README.md.")
-    p.append(f'<text x="{PAD}" y="{H - PAD + 4}" font-size="11" fill="{MUTED}">{html.escape(foot)}</text>')
+    p.append(f'<text x="{PAD}" y="{height - PAD + 4}" font-size="11" fill="{MUTED}">{html.escape(foot)}</text>')
     p.append("</svg>")
     out.write_text("\n".join(p) + "\n", encoding="utf-8", newline="\n")
     print(f"{out.relative_to(C.ROOT)}: " + ", ".join(
-        f"{spec.labels[lv]} {100 * total[lv] / all_bytes:.1f}% ({counts.get(lv, 0):,})" for lv in levels))
+        f"{spec.labels[lv]} {100 * total[lv] / all_bytes:.1f}% ({counts.get(lv, 0):,})" for lv in levels)
+        + (f"; {extra}" if extra else ""))
     return counts
 
 
@@ -333,9 +348,12 @@ def main() -> None:
         return "read" if key in versions else "none"
 
     kept = kept_reference()
+    # checked: entered in a run or by a driven call, whatever level the function counts at
+    entered = {k for k in versions if k in ran or k in driven}
     draw(CLEAN, clean_level, CLEAN_OUT,
          f"On the PC, {kept:,} functions stay Reference (hardware, the ROM's stack layout), and so do "
-         f"their Clean versions." if kept else "")
+         f"their Clean versions." if kept else "",
+         f"Checked (in a run or by a driven call): {len(entered):,} of {len(versions):,}")
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-From 575 scene lists: 25,251 Clean game functions, run 22,205, function check only 763, checked by a driven call 310, read only 1,973; the groups below hold 3,046 (function check only + driven + read only).
+From 575 scene lists: 25,251 Clean game functions, run 22,205, function check only 763, checked by a driven call 310, read only 1,973; checked (run or driven call) 22,538; the groups below hold 3,046 (function check only + driven + read only).
 
 | needs | functions |
 |---|---|

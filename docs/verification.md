@@ -39,8 +39,10 @@ purpose (a redundant mask, a dead branch) carries a `FAKEMATCH` comment explaini
 Some Clean functions can never run in a recording, because no path of the game calls them: the
 destructors of classes whose objects are never deleted that way (the aquarium's fish go with
 their heap), the destructors of main's static objects (only the C library's exit walks them),
-the vtable slots no code calls. For these, a *driven call* is a weaker check than a scene, and
-is counted apart from it.
+the vtable slots no code calls. For these, a *driven call* is a weaker check than a scene. It
+counts as checked, as a run does (the goal's checked set is what the scenes enter and what
+driven calls check), and is shown apart from a run: its own level on the Clean map and its
+own count in `tools/coverage.py`.
 
 A driven check (`tools/driven.py`, `runtime/recordings/driven/<name>.txt`, `runtime/driven.h`)
 plays an existing scene's recording and, at a chosen frame, has the runtime call the function
@@ -57,10 +59,11 @@ the heap its object came from made current (Heap_SetCurrent), as the game's own 
 A check passes when both runs, with every Clean function and with Native alone, made the same
 calls (none skipped; the step a call starts at is not compared, as Native code takes no steps),
 every call returned (a run that stops inside one, on an object whose state does not allow the
-call, fails even when both runs stop alike), and memory agrees. The functions it checks are those the calls entered in the
-Reference run that ran as Clean code; those no scene enters are listed in
-`runtime/recordings/scenes/clean-driven.txt` (`tools/driven.py --record`), and the Clean
-progress map shows them as "checked by a driven call", below "checked in a run".
+call, fails even when both runs stop alike), and memory agrees. The functions it checks are
+those the calls entered in the Reference run that ran as Clean code; those no scene enters are
+listed in `runtime/recordings/scenes/clean-driven.txt` (`tools/driven.py --record`), and the
+Clean progress map shows them as "checked by a driven call", below "checked in a run"; its
+legend and `tools/coverage.py` also give the two together, "checked (run or driven call)".
 
 What a driven call shows: on a real object, in a real moment of the game, with memory as the
 game left it, the Clean function does to memory what the ROM's code does, and calls what it
