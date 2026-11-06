@@ -2742,6 +2742,12 @@ scene("visit-house", "host-tools", 33000, [2600, 12400, 24516, 26300, 28200, 289
       "walk out and into the host's house, where the host switches the candle off and the visitor sees "
       "it go off, and the visitor walks out",
       recording="visit-house-host", peer=("guest-tools", "visit-house-guest"))
+scene("visit-clerk", "host-tools", 30000, [2600, 12400, 24516, 26300, 28200, 28900, 29300, 29600, 29999],
+      frames(28800, 30000, 100),
+      "two consoles: visit-house to the town hall, where the host waits and the visitor talks to the "
+      "post clerk (on the host she talks with the other console's player), answers that it wants "
+      "nothing, hears her out and walks away from the counter",
+      recording="visit-clerk-host", peer=("guest-tools", "visit-clerk-guest"))
 scene("exchange-link", "bottle-sent", 5352, [1100, 2399, 3000, 3800, 4600, 5351], frames(2400, 5352, 50),
       "two consoles, each with a letter in a bottle sent: title-bottle's passing exchange on both; their "
       "exchange libraries meet, the blocks go over MP, each takes the other's block, saves and goes on into "

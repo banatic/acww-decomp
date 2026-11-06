@@ -117,6 +117,10 @@ other console may differ too; the first console to differ is the one to look at.
 --peer-save and --peer-prefix): each `run` runs both, console 1's input after `@1`, and any
 other command is console 0's or, after a leading `@1`, console 1's. That is how the recordings of
 the scenes below were made (`log` and `@1 log` give the two recordings).
+A driven console stops at the frame asked for at the start of the frame's exchange
+(`runtime/wm.c`), not at its next read of the keys: a console that loads a scene reads no keys
+for frames, and it would go on to wait for the other console's next frame while that one waits
+for its next command.
 
 ## Wi-Fi Connection
 
@@ -192,6 +196,34 @@ the host's house, where the host switches the candle off and the visitor sees it
 open by A at the door with a visitor in town as alone. Left open: the visitor talking to the
 post clerk (her Other state) diverges with Native code at the guest's frame 29241, a received
 packet delivered where the Reference is elsewhere (docs/scene-plan.md, link4).
+
+Done (link5): that divergence was not found by removing Native files. A removal search over the 9,074 Native
+functions the two consoles run, by file, found no part that keeps it: both halves, all four
+quarters and two of the four three-quarter sets run without it (they differ elsewhere). The
+commands both ARM9s give WM are the same, frame by frame, until after it (the host's to 29246,
+the visitor's to 29245). In the frame it starts, the visitor's Session_ProcessReceived finds a
+second packet waiting in its second pass, where the Reference's has returned without one; on
+the host the first difference is in an interrupt stream six frames later (the port's sent
+callback where the Reference has its receive). So it looks like the moment the WM callback
+interrupt falls against the main thread's Native code rather than the data: what the consoles
+send differs only in bytes a Native function leaves uninitialized (0xff, the fill of
+tools/native.py), and such differences go out from frame 9430 on with no effect. The cause is
+Session_ProcessReceived itself (func_020739d0): it reads the receive queue the WM callback
+interrupt fills and turns interrupts on inside its loop. Native code runs late (after the
+Reference's stretch, in which the interrupts are taken), so its later passes see a packet that
+came in after the Reference had read the queue, and hand it on a frame early. It stays
+Reference (runtime/native-reference.txt), and `visit-clerk` records the talk.
+
+Open (link5): the room objects' switch state (vtable slot 0x74, RoomSync_SendState) of the
+other classes needs their pieces switched in the host's house with the visitor there. The class
+of each furniture kind is its actor profile's (ov004's data_ov004_02247f54, then the profile's
+Create): kind 0 and 1 RoomObject02252f2c, 3 02251a14, 4 022525cc, 5 02252248, 6 022518e8, 7
+022510b4, 0x18 02252ba8, 0x19 02252824 (the candle visit-house switches), 0x1b 02252374, 0x22
+0225130c, 0x27 SwitchShown, 0x28 Glowing, 0xb-0xf Chest, 0x12, 0x13 and 0x29 MusicPlayer, 0x14
+Tv, 0x15 TvAnimated, 0x2d Telephone. With one-cell pieces of those kinds added to "host-tools"
+on the eight cells of the first room that a player in its middle columns faces, the visit's
+recordings no longer play: the host's own walk differs between frames 9600 and 17000 (the
+visitor's does not), so such a save needs the whole two-console visit recorded again.
 
 Done (phase 2): the access point, the network and the servers above; the scenes
 `gate-wfc-online` (the gatekeeper's Wi-Fi visit: connect, NAS and GameSpy logins, up to the

@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "drive.h"
 #include "input.h"
 #include "io.h"
 #include "memory.h"
@@ -1452,6 +1453,12 @@ void wm_step(void)
         return;
     }
     if (wm.linked && io_frame() != wm.exchanged_frame) {
+        if (drive_enabled()) {
+            /* tools/drive.py: stop at the frame asked for before the exchange, not at the next
+               read of the keys (a console loading a scene reads none for frames, and would wait
+               for the other console's next frame while that one waits for its command) */
+            input_frame(io_frame());
+        }
         wm.exchanged_frame = io_frame();
         exchange(wm.exchanged_frame);
     }

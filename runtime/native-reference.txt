@@ -69,3 +69,4 @@ func_02001324 touches the hardware at 04000130
 func_0200149c touches the hardware at 04000006
 func_020386fc touches the hardware at 04000050
 func_020523e4 sends message 28 (a piece of furniture put) as a word built in an uninitialized stack slot whose bit 31 it never sets: the ROM's code sends what the slot held, Native code its fill pattern, and the other console keeps the word (scene visit-house)
+func_020739d0 reads the receive queue the session's receive callback (an interrupt) fills, and turns interrupts on in its loop: run late, as Native code runs, its later passes see a packet that came in during the Reference's stretch after the Reference had read the queue, and hand it on a frame early (scene visit-house, the visitor's talk with the post clerk)
