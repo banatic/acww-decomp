@@ -4595,3 +4595,18 @@ What reading the Clean code found about the groups above; counts are of function
   or a new expected file. It would also overlap the run-link work on wm.c, so it was not done here.
 - Checked in a run: 22,118 before, 22,150 after. The plan: seed 269 to 262, unknown 282 to
   278, unreachable 2,508 to 2,487.
+
+### The host ends the link (2026-11-06, link3)
+- host-ends-link: visit-chat to the host's START question of the linked game, answered with "end
+  the link". The host's earlier "hang" was the line "then I'll end the link and save" waiting for
+  A, then its "OK!" choice: with both taken, both consoles save and the host ends its parent
+  (WM_Reset, WM_PowerOff, WM_Disable).
+- The guest then stopped on its save screen: its MSG_DISCONNECT handed back the MP data still
+  queued for the parent as failed sends (runtime/wm.c), and the local wireless library's send
+  callback (LocalRelay_OnPortSent) stops the library and the game (OS_Terminate) on any failed
+  send. A parent lost now hands that data back unsent but not failed, and the guest saves, resets
+  its wireless and walks back out of its own gate; both players walk again.
+- Refuted (the groups' reach notes, link3): the local wireless 6, the link guard 14, code only
+  unreachable code calls 5, the activity's jobs 2 and what only the linked session calls 1.
+- The plan before (main 2a180a43): seed 269, date 74, unknown 282, unreachable 2,508; after: seed
+  269, date 74, unknown 282, unreachable 2,480. Checked in a run: 22,118 before, 22,146 after.

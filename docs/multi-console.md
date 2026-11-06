@@ -181,6 +181,11 @@ session ends), `visit-chat` (the host's START question of the linked game, both 
 lines) and `exchange-link` (the passing exchange of two consoles with a letter in a bottle: the
 exchange library, ov067, takes turns as parent and child by its clock; the blocks go over MP).
 
+Done (phase 1, third batch): `host-ends-link` (visit-chat's question answered with "end the
+link": both save, the host ends its parent and the guest, which loses it, goes home through its
+own gate). A parent that goes away hands the guest's queued MP data back unsent but not failed:
+the local wireless library stops the game on a failed send.
+
 Done (phase 2): the access point, the network and the servers above; the scenes
 `gate-wfc-online` (the gatekeeper's Wi-Fi visit: connect, NAS and GameSpy logins, up to the
 list of towns to visit, empty as no friend is online), `gate-wfc-no-ap`, `gate-wfc-no-dns`,

@@ -1240,13 +1240,16 @@ static void receive(int kind, const uint8_t *m, uint32_t length)
                 wr16(wm.status + ST_CHILD_BITMAP, wm.child_bitmap);
                 parent_event(CODE_DISCONNECTED, wm.children[aid], aid);
             } else if ((wm.connected || wm.connecting) && memcmp(m, wm.mac, 6) == 0) {
-                mp_stop(ERR_FAILED);
+                /* the data still queued for the parent gone is handed back unsent, but not as
+                   failed: the game stops (OS_Terminate) on a failed send, and the host ends a
+                   link while its guests still send (the host's own "end the link") */
+                mp_stop(ERR_SUCCESS);
                 wm.connected = wm.connecting = 0;
                 set_state(STATE_IDLE);
                 connect_event(0, ERR_SUCCESS, CODE_BEACON_LOST, 0);
                 connect_event(0, ERR_SUCCESS, CODE_DISCONNECTED, 0);
             } else if ((wm.connected || wm.connecting) && memcmp(m, wm.parent_mac, 6) == 0 && aid == wm.aid) {
-                mp_stop(ERR_FAILED);
+                mp_stop(ERR_SUCCESS);
                 wm.connected = wm.connecting = 0;
                 set_state(STATE_IDLE);
                 connect_event(0, ERR_SUCCESS, CODE_DISCONNECTED, 0);

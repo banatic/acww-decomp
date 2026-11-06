@@ -2729,6 +2729,12 @@ scene("visit-chat", "host-tools", 27784, [2600, 12400, 24516, 25800, 26300, 2690
       "two consoles: visit-tools, then the host's START question of the linked game answered with play on, "
       "and both players type lines on the chat keyboard and send them: each console shows the other's "
       "lines over its player", recording="visit-chat-host", peer=("guest-tools", "visit-chat-guest"))
+scene("host-ends-link", "host-tools", 32300, [2600, 12400, 24516, 26300, 29600, 30200, 31800, 32299],
+      frames(29400, 32300, 100),
+      "two consoles: visit-chat to the host's START question of the linked game, answered with end the "
+      "link: both save, the host ends its parent and walks on alone, the guest loses its parent, walks "
+      "back out of its own gate and walks again", recording="host-ends-link-host",
+      peer=("guest-tools", "host-ends-link-guest"))
 scene("exchange-link", "bottle-sent", 5352, [1100, 2399, 3000, 3800, 4600, 5351], frames(2400, 5352, 50),
       "two consoles, each with a letter in a bottle sent: title-bottle's passing exchange on both; their "
       "exchange libraries meet, the blocks go over MP, each takes the other's block, saves and goes on into "
