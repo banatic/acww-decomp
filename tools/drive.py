@@ -23,7 +23,8 @@ Two consoles linked by their wireless (docs/multi-console.md): `start` with --pe
 --peer-prefix, a recording for console 1 to play first) runs both, joined as tools/run.py
 --peer-save joins them. Each `run` runs both consoles; its input is console 0's, and `@1 KEYS
 [PEN]` after it gives console 1's (without it, console 1 goes on with its recording or its input
-unchanged). Any other command is console 0's, or console 1's after a leading `@1`:
+unchanged). Any other command is console 0's, or console 1's after a leading `@1`. --peer-save
+and --peer-prefix again add a third console (`@2`), and a fourth:
 
     python tools/drive.py start link --save seed --prefix gate-visit-host --peer-save other-town \
         --peer-prefix gate-visit-guest --until 12000
@@ -45,6 +46,7 @@ import argparse
 import json
 import os
 import pathlib
+import re
 import socket
 import socketserver
 import subprocess
@@ -56,6 +58,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import common as C  # noqa: E402
 
 HOME = C.BUILD / "drive"
+AT = re.compile(r"@[0-9]")  # a console after the first: `@1`, `@2`
 
 
 def port_file(name: str) -> pathlib.Path:
@@ -89,12 +92,8 @@ class Runtime:
             p.kill()
             p.wait()
         self.procs = []
-        linked = len(self.base_envs) == 2
-        ends: list[tuple[int, int]] = []
-        if linked:  # as tools/run.py run_linked: console 0 writes to 1 through one pipe, reads the other
-            r01, w01 = os.pipe()
-            r10, w10 = os.pipe()
-            ends = [(r10, w01), (r01, w10)]
+        linked = len(self.base_envs) >= 2
+        fds, links = self.run.link_pipes(len(self.base_envs)) if linked else ([], [])  # as tools/run.py run_linked
         try:
             for i, base in enumerate(self.base_envs):
                 env = dict(base)
@@ -104,26 +103,14 @@ class Runtime:
                     env.pop("RUN_INPUT", None)
                 kwargs: dict = {}
                 if linked:
-                    fin, fout = ends[i]
-                    if os.name == "nt":
-                        import msvcrt  # noqa: PLC0415
-                        hin, hout = msvcrt.get_osfhandle(fin), msvcrt.get_osfhandle(fout)
-                        for h in (hin, hout):
-                            os.set_handle_inheritable(h, True)
-                        info = subprocess.STARTUPINFO()
-                        info.lpAttributeList = {"handle_list": [hin, hout]}
-                        kwargs["startupinfo"] = info
-                        env["RUN_LINK"] = f"{i},2,{hin},{hout}"
-                    else:
-                        kwargs["pass_fds"] = (fin, fout)
-                        env["RUN_LINK"] = f"{i},2,{fin},{fout}"
+                    env["RUN_LINK"], kwargs = links[i]
                     env["RUN_WIRELESS"] = "1"
                 self.procs.append(subprocess.Popen(
                     [str(self.exe), str(self.run.ROM), str(self.manifest), str(self.table), "0"], cwd=C.ROOT,
                     env=env, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=self.output, text=True,
                     bufsize=1, **kwargs))
         finally:
-            for fd in (fd for pair in ends for fd in pair):  # each process holds its own ends
+            for fd in fds:  # each process holds its own ends
                 os.close(fd)
         answers = [self.read(i) for i in range(len(self.procs))]
         if frame:
@@ -156,23 +143,28 @@ class Runtime:
         return bad[0] if bad else answers[0]
 
     def command(self, line: str) -> str:
-        """A command: `run` goes to every console (console 1's input after `@1`); any other to
-        console 0, or to console 1 after a leading `@1`."""
+        """A command: `run` goes to every console (console k's input after `@k`); any other to
+        console 0, or to console k after a leading `@k`."""
         if not self.forks and any(p.poll() is not None for p in self.procs):
             return "@err the run ended (see run.log)"
         words = line.split()
         target = 0
-        if words and words[0] == "@1":
-            target, words = 1, words[1:]
-        if words and words[0] == "run" and len(self.procs) == 2:
+        if words and AT.fullmatch(words[0]):
+            target, words = int(words[0][1:]), words[1:]
+        if words and words[0] == "run" and len(self.procs) >= 2:
             count = words[1] if len(words) > 1 else "1"
-            mine, other = words, ["run", count]
-            if "@1" in words:
-                at = words.index("@1")
-                mine, other = words[:at], ["run", count, *words[at + 1:]]
-            return self.everyone([" ".join(mine), " ".join(other)])
+            lines = [["run", count] for _ in self.procs]
+            k, part = 0, []
+            for w in words + ["@end"]:
+                if AT.fullmatch(w) or w == "@end":
+                    if k < len(lines):
+                        lines[k] = part if k == 0 else ["run", count, *part]
+                    k, part = (int(w[1:]) if w != "@end" else 0), []
+                else:
+                    part.append(w)
+            return self.everyone([" ".join(line) for line in lines])
         if target >= len(self.procs):
-            return "@err one console only"
+            return f"@err {len(self.procs)} console(s) only"
         self.send(target, " ".join(words))
         return self.read(target)
 
@@ -187,9 +179,9 @@ class Runtime:
                     self.forks = True
                     return answer
             else:
-                for i in range(2):
+                for i in range(len(self.procs)):
                     self.send(i, "snap")
-                answers = [self.read(i) for i in range(2)]
+                answers = [self.read(i) for i in range(len(self.procs))]
                 if all(a.startswith("@ok") for a in answers):
                     self.forks = True
                     sid = str(len(self.copies) + 1)
@@ -199,7 +191,7 @@ class Runtime:
         sid = str(len(self.snaps) + 1)
         logs = [self.workdir / (f"snap-{sid}.txt" if i == 0 else f"snap-{sid}-{i}.txt") for i in range(len(self.procs))]
         for i, log in enumerate(logs):
-            self.command(f"{'@1 ' if i else ''}log {log}")
+            self.command(f"{f'@{i} ' if i else ''}log {log}")
         self.snaps[sid] = (self.frame(), logs)
         return f"@ok {sid}"
 
@@ -253,9 +245,11 @@ def serve(args) -> None:
     env["RUN_DRIVE_STARTS"] = str(starts)
     envs = [env]
     prefixes = [prefix_of(args.prefix, workdir / "prefix.txt")]
-    if args.peer_save:  # a second console, linked to the first
-        envs.append(dict(env, RUN_SAVE=save_of(args.peer_save), RUN_RTC=args.peer_rtc or args.rtc))
-        prefixes.append(prefix_of(args.peer_prefix, workdir / "prefix-1.txt"))
+    for k, peer_save in enumerate(args.peer_save or [], 1):  # consoles linked to the first
+        rtc = args.peer_rtc[k - 1] if args.peer_rtc and k - 1 < len(args.peer_rtc) else args.rtc
+        prefix = args.peer_prefix[k - 1] if args.peer_prefix and k - 1 < len(args.peer_prefix) else None
+        envs.append(dict(env, RUN_SAVE=save_of(peer_save), RUN_RTC=rtc))
+        prefixes.append(prefix_of(prefix, workdir / f"prefix-{k}.txt"))
     rt = Runtime(envs, prefixes, args.until, workdir)
     lock = threading.Lock()
 
@@ -328,8 +322,10 @@ def new_functions(name: str) -> None:
     path = HOME / name / "seen.txt"
     print(send(name, f"seen {path}"))
     entered = resolve(path)
-    peer = HOME / name / "seen-1.txt"
-    if send(name, f"@1 seen {peer}").startswith("@ok"):  # two consoles: what either entered
+    for k in range(1, 4):  # two or more consoles: what any entered
+        peer = HOME / name / f"seen-{k}.txt"
+        if not send(name, f"@{k} seen {peer}").startswith("@ok"):
+            break
         entered |= resolve(peer)
     syms = C.symbol_table(C.modules())
     clean = coverage.clean_functions(syms)
@@ -356,9 +352,12 @@ def main() -> None:
         ap.add_argument("--rtc", default="2026-09-11 11:30:00")
         ap.add_argument("--prefix", help="a recording (or a scene's name) to play first")
         ap.add_argument("--until", type=int, default=0, help="with --prefix: play it up to this frame")
-        ap.add_argument("--peer-save", help="a second console linked to the first: its save (or a derived save)")
-        ap.add_argument("--peer-prefix", help="with --peer-save: a recording for the second console to play first")
-        ap.add_argument("--peer-rtc", help="with --peer-save: the second console's clock (default --rtc)")
+        ap.add_argument("--peer-save", action="append",
+                        help="a second console linked to the first: its save (or a derived save); again for a third")
+        ap.add_argument("--peer-prefix", action="append",
+                        help="with --peer-save: a recording for the second console to play first; again for a third")
+        ap.add_argument("--peer-rtc", action="append",
+                        help="with --peer-save: the second console's clock (default --rtc); again for a third")
         ap.add_argument("--lists", default=str(C.BUILD / "scenes"), help="the scenes' lists, for `new`")
         args = ap.parse_args()
         if args.mode == "_serve":
@@ -395,7 +394,7 @@ def main() -> None:
         print(send(name, f"run {hold} {cmd[1]} -"))
         print(send(name, f"run {wait} - -"))
         return
-    at = 1 if cmd[0] == "@1" else 0
+    at = 1 if AT.fullmatch(cmd[0]) else 0
     if len(cmd) > at + 1 and cmd[at] in ("png", "log", "seen", "redraw", "video", "gx3d"):
         cmd[at + 1] = str(pathlib.Path(cmd[at + 1]).resolve())
     print(send(name, " ".join(cmd)))

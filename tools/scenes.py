@@ -1319,6 +1319,20 @@ VISIT_TOOLS = [(MONEY, "<I", 30000)] + [
 SAVES["host-tools"] = VISIT_TOOLS
 SAVES["guest-tools"] = VISIT_TOOLS
 SAVE_TRANSFORMS["guest-tools"] = other_town
+# a third console's town, for the scenes of three consoles (scene(..., peers=...)): as
+# "other-town", with an id, name and player number of its own
+THIRD_TOWN = bytes.fromhex("5a3c433143310000000000000000")  # its id and 2 characters
+THIRD_TOWN_PLAYER = THIRD_TOWN + struct.pack("<H", 0x6B28)
+
+
+def third_town(bank: bytes) -> bytes:
+    return bank.replace(SEED_PLAYER, THIRD_TOWN_PLAYER).replace(SEED_TOWN, THIRD_TOWN)
+
+
+SAVE_TRANSFORMS["third-town"] = third_town
+SAVES["third-town"] = []
+SAVES["third-tools"] = VISIT_TOOLS
+SAVE_TRANSFORMS["third-tools"] = third_town
 # bottle-sent's town made another (its letter's parties renamed with it), for the passing exchange
 # of two consoles
 SAVES["other-bottle"] = SAVES["bottle-sent"]
@@ -1341,17 +1355,19 @@ SAVES["other-town-child"] = [(ROACHES, "<B", 0)]
 
 def scene(name: str, save: str, frames: int, ram: list[int], look: list[int], intent: str,
           recording: str | None = None, rtc: str = RTC, sequencer: bool = False, wireless: bool = False,
-          peer: tuple[str, str] | None = None, wifi: str | None = None) -> None:
+          peer: tuple[str, str] | None = None, wifi: str | None = None,
+          peers: list[tuple[str, str]] | None = None) -> None:
     """`sequencer`: the ARM7's sound sequences run (tools/run.py --sequencer), for a scene that
     waits on what they report (a melody's steps, the music's variables). `wireless`: the console
     has its wireless (tools/run.py --wireless). `peer`: a second console linked to the first, its
     save and recording (tools/run.py --peer-save, --peer-input; docs/multi-console.md), with the
     first's frame count, checkpoints and clock; it implies `wireless`. `wifi`: Nintendo Wi-Fi
     Connection offline in that mode (tools/run.py --wifi=MODE, runtime/wifi.h); it implies
-    `wireless`."""
+    `wireless`. `peers`: as `peer`, two or three consoles after the first, in console order."""
+    peers = peers or ([peer] if peer else [])
     SCENES[name] = dict(save=save, recording=recording or name, frames=frames, ram=ram, look=look,
                         intent=intent, rtc=rtc, sequencer=sequencer,
-                        wireless=wireless or peer is not None or wifi is not None, peer=peer, wifi=wifi)
+                        wireless=wireless or bool(peers) or wifi is not None, peers=peers, wifi=wifi)
 
 
 def frames(a: int, b: int, step: int) -> list[int]:
@@ -2776,6 +2792,16 @@ scene("gate-visit-beacon-host", "seed", 11500, [2600, 7900, 9600, 10000, 10150],
       "the town's data goes over MP: both connections end; the visitor's later A closes its caution window "
       "and its game resets, so the RAM checkpoints stop at 10150", recording="gate-visit-beacon-host",
       peer=("other-town", "gate-visit-guest"))
+# three consoles (docs/multi-console.md): console 2 a third town (third-town)
+scene("gate-visit-second-leave", "seed", 20700, [2600, 7900, 9600, 12500, 16000, 17500, 18400, 19000, 20699],
+      frames(18300, 20700, 100),
+      "three consoles: gate-visit-link, then while its visitor is in the seed town a third town's player "
+      "asks to visit too (gate-visit-second-guest): the search finds the seed town, the second visitor joins "
+      "(every console waits while the link takes it in) and walks through the gate beside the first; then the "
+      "first goes back into the gatehouse and asks the gatekeeper to go home (gate-visit-second-leave-guest): "
+      "every console saves, the first visitor walks out of its own town's gate, and the second stays",
+      recording="gate-visit-host",
+      peers=[("other-town", "gate-visit-second-leave-guest"), ("third-town", "gate-visit-second-guest")])
 scene("fish-release-class4", "rod-fish-19", 6484, [2600, 3700, 5100, 5900, 6100, 6483], frames(5800, 6484, 25),
       "fish-release-pocket with a fish of size class 4 in the pockets: put back into the water, its splash "
       "and wake are those of its size", recording="fish-release-pocket")
@@ -3022,10 +3048,10 @@ def run_in(name: str, sc: dict, seed: pathlib.Path, work: pathlib.Path, look: bo
     cmd = [sys.executable, str(C.ROOT / "tools" / "run.py"), "0", str(sc["frames"]), "--input", str(recording),
            "--rtc", sc["rtc"], "--save", str(save), *(["--sequencer"] if sc["sequencer"] else []),
            *(["--wireless"] if sc["wireless"] else []), *([f"--wifi={sc['wifi']}"] if sc["wifi"] else [])]
-    if sc["peer"]:
-        peer_save, peer_recording = sc["peer"]
+    for peer_save, peer_recording in sc["peers"]:
         cmd += ["--peer-save", str(derive_save(seed, peer_save)),
                 "--peer-input", str(RECORDINGS / f"{peer_recording}.txt")]
+    peer_dirs = ["peer" if k == 1 else f"peer{k}" for k in range(1, len(sc["peers"]) + 1)]
     if look:
         cmd += ["--png", str(work / "png"), "--frames", ",".join(map(str, sc["look"]))]
     else:
@@ -3064,12 +3090,13 @@ def run_in(name: str, sc: dict, seed: pathlib.Path, work: pathlib.Path, look: bo
         for log in ("reference.log", "native.log", "reference-hashes.txt", "functions-seen.txt"):
             if (run_dir / log).exists():
                 (work / log).write_bytes((run_dir / log).read_bytes())
-            if sc["peer"] and (run_dir / "peer" / log).exists():  # the second console's
-                (work / "peer").mkdir(parents=True, exist_ok=True)
-                (work / "peer" / log).write_bytes((run_dir / "peer" / log).read_bytes())
+            for d in peer_dirs:  # the other consoles'
+                if (run_dir / d / log).exists():
+                    (work / d).mkdir(parents=True, exist_ok=True)
+                    (work / d / log).write_bytes((run_dir / d / log).read_bytes())
         # the run's crossings record and memory images (half a gigabyte a scene) are not kept:
         # the next run makes them again, or takes them from the Reference cache
-        for d in (run_dir, run_dir / "peer"):
+        for d in [run_dir, *sorted(run_dir.glob("peer*"))]:
             (d / "crossings.bin").unlink(missing_ok=True)
             for image in (d / "ram").glob("ram-*.bin"):
                 image.unlink(missing_ok=True)
@@ -3196,7 +3223,7 @@ def main() -> int:
     if not OUT.resolve().is_relative_to(C.ROOT.resolve()):
         print(f"scenes: running in {OUT.as_posix()}, outside this tree (ACWW_RUNTIME_OUT)", file=sys.stderr)
     # written once, before the runs read them
-    for sc in dict.fromkeys([SCENES[n]["save"] for n in names] + [SCENES[n]["peer"][0] for n in names if SCENES[n]["peer"]]):
+    for sc in dict.fromkeys([SCENES[n]["save"] for n in names] + [p[0] for n in names for p in SCENES[n]["peers"]]):
         derive_save(seed, sc)
     # Each job runs in a runtime directory of its own, locked against other processes; the first
     # scene a directory runs builds the program and writes the policy, the others use them again

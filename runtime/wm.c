@@ -1392,6 +1392,101 @@ static int link_read(void *p, uint32_t n)
 }
 #endif
 
+/* ---- three or more consoles (docs/multi-console.md) ---- */
+
+/* RUN_LINK="<console>,<consoles>,<in>,<out>,<in>,<out>,...": with three or more consoles, a
+ * pair of pipe ends for each other console, in the consoles' order. Each pair of consoles has
+ * its own two pipes; each frame a console takes its pairs in the order of the consoles' numbers
+ * (lower pair first), the lower console of a pair writing first, so no two consoles wait on each
+ * other. What a console sends goes to every other one; what comes in is each other console's
+ * messages in turn. Two consoles keep the one pair of wm.link_in and wm.link_out. */
+#define MAX_CONSOLES 4
+
+static struct {
+    int count; /* the other consoles */
+#ifdef _WIN32
+    HANDLE in[MAX_CONSOLES], out[MAX_CONSOLES];
+#else
+    int in[MAX_CONSOLES], out[MAX_CONSOLES];
+#endif
+    int peer[MAX_CONSOLES]; /* their numbers */
+} links;
+
+/* Nonzero when `text` names three or more consoles; the link is then open, or (on a malformed
+ * text) left closed. */
+static int link_open_many(const char *text)
+{
+    int console = 0, consoles = 0, at = 0;
+    if (sscanf(text, "%d,%d%n", &console, &consoles, &at) != 2 || consoles <= 2) {
+        return 0;
+    }
+    if (consoles > MAX_CONSOLES || console < 0 || console >= consoles) {
+        fprintf(stderr, "wm: RUN_LINK names %d consoles (at most %d); no link\n", consoles, MAX_CONSOLES);
+        return 1;
+    }
+    const char *p = text + at;
+    links.count = 0;
+    for (int j = 0; j < consoles; j++) {
+        unsigned long long in = 0, out = 0;
+        int used = 0;
+        if (j == console) {
+            continue;
+        }
+        if (sscanf(p, ",%llu,%llu%n", &in, &out, &used) != 2) {
+            fprintf(stderr, "wm: RUN_LINK needs a pair of pipe ends for each other console; no link\n");
+            return 1;
+        }
+        p += used;
+#ifdef _WIN32
+        links.in[links.count] = (HANDLE) (uintptr_t) in;
+        links.out[links.count] = (HANDLE) (uintptr_t) out;
+#else
+        links.in[links.count] = (int) in;
+        links.out[links.count] = (int) out;
+#endif
+        links.peer[links.count++] = j;
+    }
+    wm.console = console;
+    wm.consoles = consoles;
+    wm.linked = 1;
+    return 1;
+}
+
+/* The exchange with three or more consoles: `head` and wm.out to each other console, theirs
+ * appended to `in` (of LINK_MAX bytes for each). 0 when a console left or is out of step. */
+static int link_swap_many(const uint8_t *head, uint32_t frame, uint8_t *in, uint32_t *in_length)
+{
+    *in_length = 0;
+    for (int k = 0; k < links.count; k++) {
+        wm.link_in = links.in[k];
+        wm.link_out = links.out[k];
+        int first = wm.console < links.peer[k];
+        for (int pass = 0; pass < 2; pass++) {
+            if ((pass == 0) == first) {
+                if (!link_write(head, 8) || !link_write(wm.out, wm.out_length)) {
+                    return 0;
+                }
+                continue;
+            }
+            uint8_t peer[8];
+            if (!link_read(peer, sizeof(peer))) {
+                return 0;
+            }
+            uint32_t length = get32(peer + 4);
+            if (get32(peer) != frame || length > LINK_MAX) {
+                fprintf(stderr, "wm: the link is out of step (frame %u, console %d's %u)\n", frame, links.peer[k],
+                        get32(peer));
+                return 0;
+            }
+            if (!link_read(in + *in_length, length)) {
+                return 0;
+            }
+            *in_length += length;
+        }
+    }
+    return 1;
+}
+
 /* The exchange at the start of frame `frame`: what this console sent during the last frame
  * (and its beacon and MP turn now) goes out, the other console's comes in. Console 0 writes
  * first and reads second, console 1 the other way round, so neither waits on a full pipe. */
@@ -1418,17 +1513,20 @@ static void exchange(uint32_t frame)
     uint8_t head[8];
     put32(head, frame);
     put32(head + 4, wm.out_length);
-    static uint8_t in[LINK_MAX];
+    static uint8_t in[LINK_MAX * (MAX_CONSOLES - 1)];
     uint32_t in_length = 0;
     int ok = 1;
-    for (int pass = 0; pass < 2 && ok; pass++) {
+    if (wm.consoles > 2) {
+        ok = link_swap_many(head, frame, in, &in_length);
+    }
+    for (int pass = 0; pass < 2 && ok && wm.consoles == 2; pass++) {
         if ((pass == 0) == (wm.console == 0)) {
             ok = link_write(head, sizeof(head)) && link_write(wm.out, wm.out_length);
         } else {
             uint8_t peer[8];
             ok = link_read(peer, sizeof(peer));
             in_length = ok ? get32(peer + 4) : 0;
-            if (ok && (get32(peer) != frame || in_length > sizeof(in))) {
+            if (ok && (get32(peer) != frame || in_length > LINK_MAX)) {
                 fprintf(stderr, "wm: the link is out of step (frame %u, the other console's %u)\n", frame, get32(peer));
                 ok = 0;
             }
@@ -1474,6 +1572,9 @@ static void link_open(void)
     unsigned long long in = 0, out = 0;
     int console = 0, consoles = 0;
     if (text == NULL || *text == 0) {
+        return;
+    }
+    if (link_open_many(text)) {
         return;
     }
     if (sscanf(text, "%d,%d,%llu,%llu", &console, &consoles, &in, &out) != 4 || consoles != 2 || console < 0 ||

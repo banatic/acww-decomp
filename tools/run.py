@@ -39,7 +39,8 @@ Options for the screens (docs/runtime.md, M3):
                      wireless linked to the first's (docs/multi-console.md): both run at once,
                      with --native both in each pass; console 1's logs and frames are in a
                      directory `peer` beside console 0's, and the frame sequence printed (and
-                     --expect) is the two consoles' together
+                     --expect) is the two consoles' together; the three options again add a
+                     third (and fourth) console, its logs in `peer2` (`peer3`)
 
 Native functions (docs/runtime.md, M4; the design is in runtime/native_run.h):
     --native=all|leaf|none|FILE
@@ -1236,38 +1237,48 @@ def native_main(args, manifest, table, budget, env) -> int:
 
 # --------------------------------------------------------------------------- two consoles
 
+def link_pipes(n: int) -> tuple[list[int], list[tuple[str, dict]]]:
+    """The pipes joining `n` consoles, two for each pair, and for each console its RUN_LINK and
+    the Popen arguments that pass it its ends: (in from j, out to j) for each other console j in
+    order, "0,2,<in>,<out>" and "1,2,<in>,<out>" for two. The caller closes the fds once all
+    have started."""
+    pipes = {(i, j): os.pipe() for i in range(n) for j in range(n) if i != j}  # (read, write), i to j
+    links = []
+    for i in range(n):
+        fds = [fd for j in range(n) if j != i for fd in (pipes[(j, i)][0], pipes[(i, j)][1])]
+        kwargs: dict = {}
+        if WINDOWS:
+            import msvcrt  # noqa: PLC0415
+            ends = [msvcrt.get_osfhandle(fd) for fd in fds]
+            for h in ends:
+                os.set_handle_inheritable(h, True)
+            info = subprocess.STARTUPINFO()
+            info.lpAttributeList = {"handle_list": ends}
+            kwargs["startupinfo"] = info
+        else:
+            ends = fds
+            kwargs["pass_fds"] = tuple(fds)
+        links.append((",".join(str(x) for x in (i, n, *ends)), kwargs))
+    return [fd for pair in pipes.values() for fd in pair], links
+
+
 def run_linked(exe: pathlib.Path, manifest: pathlib.Path, table: pathlib.Path, budget: list[str], envs: list[dict],
                logs: list[pathlib.Path]) -> list[tuple[int, str]]:
-    """Two consoles at once, each a process of its own, their radios joined by two pipes
-    (runtime/wm.c: RUN_LINK; docs/multi-console.md). Console 0 writes to console 1 through one
-    and reads the other; each process inherits the two ends it uses and no others."""
-    r01, w01 = os.pipe()  # console 0 to console 1
-    r10, w10 = os.pipe()  # console 1 to console 0
-    ends = [(r10, w01), (r01, w10)]
+    """Two or more consoles at once, each a process of its own, their radios joined by two pipes
+    for each pair of them (runtime/wm.c: RUN_LINK; docs/multi-console.md). Console i writes to
+    console j through one and reads the other; each process inherits the ends it uses and no
+    others, listed (in from j, out to j) for each other console j in order."""
+    fds, links = link_pipes(len(envs))
     procs, files = [], []
     try:
-        for i, (env, log) in enumerate(zip(envs, logs)):
-            fin, fout = ends[i]
+        for (env, log), (link, kwargs) in zip(zip(envs, logs), links):
             out = open(log, "w", encoding="utf-8", errors="replace")
             files.append(out)
-            kwargs: dict = {}
-            if WINDOWS:
-                import msvcrt  # noqa: PLC0415
-                hin, hout = msvcrt.get_osfhandle(fin), msvcrt.get_osfhandle(fout)
-                for h in (hin, hout):
-                    os.set_handle_inheritable(h, True)
-                info = subprocess.STARTUPINFO()
-                info.lpAttributeList = {"handle_list": [hin, hout]}
-                kwargs["startupinfo"] = info
-                link = f"{i},2,{hin},{hout}"
-            else:
-                kwargs["pass_fds"] = (fin, fout)
-                link = f"{i},2,{fin},{fout}"
             procs.append(subprocess.Popen([str(exe), str(ROM), str(manifest), str(table), *budget], cwd=C.ROOT,
                                           env=dict(env, RUN_LINK=link, RUN_WIRELESS="1"), stdout=out,
                                           stderr=subprocess.STDOUT, **kwargs))
     finally:
-        for fd in (r01, w01, r10, w10):  # each process holds its own ends: one that ends closes them
+        for fd in fds:  # each process holds its own ends: one that ends closes them
             os.close(fd)
     statuses = [p.wait() for p in procs]
     for f in files:
@@ -1291,13 +1302,25 @@ def combined(sequences: list[str | None]) -> str | None:
     return hashlib.sha1("".join(s for s in sequences if s).encode()).hexdigest()
 
 
-def peer_env(env: dict, args) -> dict:
-    """Console 1's environment: its own save, input recording and clock."""
-    peer = dict(env, RUN_SAVE=str(pathlib.Path(args.peer_save).resolve()),
-                RUN_INPUT=str(pathlib.Path(args.peer_input).resolve()))
-    if args.peer_rtc or args.rtc:
-        peer["RUN_RTC"] = args.peer_rtc or args.rtc
+def peer_dir(k: int) -> str:
+    """Console k's directory beside console 0's: `peer` for console 1, `peer2`, `peer3` after it."""
+    return "peer" if k == 1 else f"peer{k}"
+
+
+def peer_env(env: dict, args, k: int = 1) -> dict:
+    """Console k's environment (k >= 1): its own save, input recording and clock."""
+    rtcs = args.peer_rtc or []
+    rtc = rtcs[k - 1] if k - 1 < len(rtcs) else None
+    peer = dict(env, RUN_SAVE=str(pathlib.Path(args.peer_save[k - 1]).resolve()),
+                RUN_INPUT=str(pathlib.Path(args.peer_input[k - 1]).resolve()))
+    if rtc or args.rtc:
+        peer["RUN_RTC"] = rtc or args.rtc
     return peer
+
+
+def all_envs(env: dict, args) -> list[dict]:
+    """Every console's environment, console 0's first."""
+    return [env] + [peer_env(env, args, k) for k in range(1, len(args.peer_save) + 1)]
 
 
 def linked_main(args, manifest, table, budget, env) -> int:
@@ -1308,14 +1331,15 @@ def linked_main(args, manifest, table, budget, env) -> int:
     env = dict(env)
     if not args.native:
         exe = build(native=False)
-        envs = [env, peer_env(env, args)]
-        for key in ("RUN_PNG", "RUN_DUMP3D"):
-            if key in env:
-                (pathlib.Path(env[key]) / "peer").mkdir(parents=True, exist_ok=True)
-                envs[1][key] = str(pathlib.Path(env[key]) / "peer")
-        if "RUN_HASH" in env and env["RUN_HASH"] != "-":
-            envs[1]["RUN_HASH"] = str(pathlib.Path(env["RUN_HASH"]).with_suffix(".peer.txt"))
-        logs = [OUT / "console-0.log", OUT / "console-1.log"]
+        envs = all_envs(env, args)
+        for k in range(1, len(envs)):
+            for key in ("RUN_PNG", "RUN_DUMP3D"):
+                if key in env:
+                    (pathlib.Path(env[key]) / peer_dir(k)).mkdir(parents=True, exist_ok=True)
+                    envs[k][key] = str(pathlib.Path(env[key]) / peer_dir(k))
+            if "RUN_HASH" in env and env["RUN_HASH"] != "-":
+                envs[k]["RUN_HASH"] = str(pathlib.Path(env["RUN_HASH"]).with_suffix(f".{peer_dir(k)}.txt"))
+        logs = [OUT / f"console-{k}.log" for k in range(len(envs))]
         results = run_linked(exe, manifest, table, budget, envs, logs)
         for i, (status, text) in enumerate(results):
             print(f"console {i}: status {status}, {summary(text)['stop']} (log {logs[i].as_posix()})")
@@ -1329,8 +1353,9 @@ def linked_main(args, manifest, table, budget, env) -> int:
     if args.ram_hash:
         env["RUN_RAM_HASH"] = args.ram_hash
     out0 = OUT / "native-run"
-    outs = [out0, out0 / "peer"]
-    envs = [env, peer_env(env, args)]
+    envs = all_envs(env, args)
+    outs = [out0] + [out0 / peer_dir(k) for k in range(1, len(envs))]
+    consoles = "two consoles" if len(envs) == 2 else f"{len(envs)} consoles"
     traces = []
     for i, out in enumerate(outs):
         out.mkdir(parents=True, exist_ok=True)
@@ -1346,7 +1371,7 @@ def linked_main(args, manifest, table, budget, env) -> int:
             e["RUN_FUNCTIONS_SEEN"] = str(out / "functions-seen.txt")
         ref_envs.append(e)
     # (no Reference cache: a console's run depends on the other's)
-    print("reference run of two consoles" + ("" if args.no_timing else " (recording the crossings)") + "...", flush=True)
+    print(f"reference run of {consoles}" + ("" if args.no_timing else " (recording the crossings)") + "...", flush=True)
     refs = [summary(t) for _, t in run_linked(exe, manifest, table, budget, ref_envs, [o / "reference.log" for o in outs])]
     nat_envs = []
     for i, out in enumerate(outs):
@@ -1357,19 +1382,19 @@ def linked_main(args, manifest, table, budget, env) -> int:
             (out / "clean-ran.txt").unlink(missing_ok=True)
             e["RUN_CLEAN_RAN"] = str(out / "clean-ran.txt")
         nat_envs.append(e)
-    print("native run of two consoles...", flush=True)
+    print(f"native run of {consoles}...", flush=True)
     nats = [summary(t) for _, t in run_linked(exe, manifest, table, budget, nat_envs, [o / "native.log" for o in outs])]
     if not args.no_timing:
         # the functions either console ran, where a run of one console leaves its own
         seen = out0 / "functions-seen.txt"
         (out0 / "functions-seen-0.txt").write_bytes(seen.read_bytes() if seen.exists() else b"")
-        merge_lines([out0 / "functions-seen-0.txt", outs[1] / "functions-seen.txt"], seen)
+        merge_lines([out0 / "functions-seen-0.txt"] + [o / "functions-seen.txt" for o in outs[1:]], seen)
     if args.clean_ran:
         merge_lines([o / "clean-ran.txt" for o in outs], out0 / "clean-ran-both.txt")
         write_ran(out0 / "clean-ran-both.txt", pathlib.Path(args.clean_ran))
     same = True
     wanted = [int(f) for f in args.ram_hash.split(",")] if args.ram_hash else []
-    for i in range(2):
+    for i in range(len(outs)):
         ref, nat = refs[i], nats[i]
         print(f"console {i}: logs {(outs[i] / 'reference.log').as_posix()}, {(outs[i] / 'native.log').as_posix()}")
         for line in nat["native"]:
@@ -1428,9 +1453,12 @@ def main() -> None:
     ap.add_argument("--wifi", nargs="?", const="1", metavar="MODE",
                     choices=("1", "noap", "nodns", "conntest", "nas"),
                     help="Nintendo Wi-Fi Connection offline (runtime/wifi.h); implies --wireless")
-    ap.add_argument("--peer-save", metavar="FILE", help="a second console linked to the first: its save")
-    ap.add_argument("--peer-input", metavar="FILE", help="the second console's input recording")
-    ap.add_argument("--peer-rtc", metavar="TIME", help="the second console's clock (default: --rtc)")
+    ap.add_argument("--peer-save", metavar="FILE", action="append",
+                    help="a second console linked to the first: its save (again for a third console)")
+    ap.add_argument("--peer-input", metavar="FILE", action="append",
+                    help="the second console's input recording (again for a third)")
+    ap.add_argument("--peer-rtc", metavar="TIME", action="append",
+                    help="the second console's clock (default: --rtc; again for a third)")
     ap.add_argument("--native", metavar="POLICY", help="all, leaf, none, or a file of functions (see above)")
     ap.add_argument("--ram-hash", metavar="FRAMES", help="hash memory after these frames (comma-separated)")
     ap.add_argument("--ram-dump", metavar="DIR", help="write the hashed memory images to DIR")
@@ -1489,8 +1517,10 @@ def main() -> None:
         env["RUN_SAVE"] = str(pathlib.Path(args.save).resolve())
     budget = [a for a in (args.max_instructions, args.max_frames) if a is not None]
     if args.peer_save or args.peer_input:
-        if not (args.peer_save and args.peer_input):
-            raise SystemExit("a second console needs --peer-save and --peer-input")
+        if not (args.peer_save and args.peer_input) or len(args.peer_save) != len(args.peer_input):
+            raise SystemExit("each console after the first needs a --peer-save and a --peer-input")
+        if len(args.peer_save) > 3:
+            raise SystemExit("at most four consoles (runtime/wm.c MAX_CONSOLES)")
         sys.exit(linked_main(args, manifest, table, budget, env))
     if args.native:
         sys.exit(native_main(args, manifest, table, budget, env))

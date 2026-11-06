@@ -31,9 +31,22 @@ frame. Wall-clock speed, scheduling and pipe buffering never reach the game.
 
 The order of the exchange is fixed: console 0 writes its message then reads console 1's;
 console 1 reads first, then writes. Neither can wait on a full pipe, whatever the message
-sizes. With more consoles the same order extends to a star with console 0 in the middle
-(console 0 writes to each, then reads from each; it forwards what one child sends to another),
-which phase 1 does not need: two consoles are a parent and one child.
+sizes.
+
+Three or four consoles (a parent and two or three children; opt-in, so a run of one or two
+consoles is exactly as before, its `RUN_LINK` and frames unchanged) are a mesh, not a star:
+every pair of consoles has its own two pipes, and `RUN_LINK` is
+`<console>,<consoles>,<in>,<out>,...` with a pair of ends for each other console in order. Each
+frame a console takes its pairs in the order of the other console's number, and in each pair
+the lower console writes first, as two consoles do. All consoles meet the pairs in one global
+order ((0,1), (0,2), (1,2), ...), so none waits on another that waits on it. What a console
+sends goes to each other console, which handles what concerns it as the air would: a connect
+request and its answer name a MAC, the parent's MP data names its children's AIDs, a child's
+MP data and its disconnection matter to the parent only. `tools/run.py` takes `--peer-save`,
+`--peer-input` (and `--peer-rtc`) once for each console after the first, console k's logs in
+`peer` (k = 1) or `peerk`; a scene names them as `peers=[(save, recording), ...]`;
+`tools/drive.py` addresses console k as `@k`. The frame sequence is a SHA-1 over all the
+consoles' sequences, in order.
 
 A message is the frame number, a length and records (kind, length, bytes): the parent's
 beacon, a child's request to connect, the parent's answer (the AID or a refusal), a
@@ -245,6 +258,11 @@ ends there; the holder's ends when the recording lets go. Recordings without the
 before. `gate-visit-beacon-guest` and `gate-visit-beacon-host` hold it on the visitor and on the
 host while the town's data goes over MP: both consoles say the communication ended.
 
-Later: more than two consoles (the star above); the MP frequency (one turn a frame here); for
+Three consoles: the mesh above (`peers=` in a scene, `@k` in `tools/drive.py`). The scene
+`gate-visit-second-leave` brings a third town's player into gate-visit-link's visit as a second
+visitor, then sends the first home through the gatekeeper while the second stays: every
+console saves, and the host tells the staying visitor that the other left.
+
+Later: the MP frequency (one turn a frame here); for
 Wi-Fi Connection, the QR2 master server and the matchmaking that would show a friend's town, and
 two consoles meeting through it.
