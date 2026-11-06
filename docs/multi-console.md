@@ -236,7 +236,15 @@ range sends nothing and takes in nothing, and the other hears nothing from it. T
 `gate-visit-lost` holds the visitor's NORADIO once the visitor is in the town: both sessions
 time out, and the caution window counts down to the reset.
 
-Later: more than two consoles (the star above); the beacon lost when a parent stops beaconing
-without a disconnection; the MP frequency (one turn a frame here); for Wi-Fi Connection, the QR2
-master server and the matchmaking that would show a friend's town, and two consoles meeting
-through it.
+Beacon loss: a recording's BEACONLOSS holds a console's wireless out of range as NORADIO does,
+and both radios notice it (runtime/wm.c, beacon_loss_out and beacon_loss_count). On the key's
+first frame the console sends one last message (MSG_BEACON_LOSS), after which the other console
+is out of range too. After 60 frames out of range a child's connection ends with BEACON_LOST
+and DISCONNECTED, and a parent's children each end with DISCONNECTED. The told console's loss
+ends there; the holder's ends when the recording lets go. Recordings without the key run as
+before. `gate-visit-beacon-guest` and `gate-visit-beacon-host` hold it on the visitor and on the
+host while the town's data goes over MP: both consoles say the communication ended.
+
+Later: more than two consoles (the star above); the MP frequency (one turn a frame here); for
+Wi-Fi Connection, the QR2 master server and the matchmaking that would show a friend's town, and
+two consoles meeting through it.

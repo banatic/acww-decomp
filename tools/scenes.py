@@ -2767,6 +2767,15 @@ scene("lost-child-home", "seed", 17000, [2600, 6700, 9200, 12400, 14800, 16999],
 scene("gate-visit-lost", "seed", 17000, [2600, 7900, 9600, 11200, 12500, 14000, 14399], frames(12000, 17000, 100),
       "gate-visit-link, then the visitor's wireless out of range (gate-visit-lost-guest): the link is lost",
       recording="gate-visit-lost-host", peer=("other-town", "gate-visit-lost-guest"))
+scene("gate-visit-beacon-guest", "seed", 11500, [2600, 7900, 9600, 10000, 11499], frames(9800, 11500, 100),
+      "gate-visit-link, then while the town's data goes over MP the visitor's wireless out of range with "
+      "the beacon's loss noticed (BEACONLOSS, gate-visit-beacon-guest): both connections end, and both "
+      "consoles say the communication ended", recording="gate-visit-host", peer=("other-town", "gate-visit-beacon-guest"))
+scene("gate-visit-beacon-host", "seed", 11500, [2600, 7900, 9600, 10000, 10150], frames(9800, 11500, 100),
+      "gate-visit-beacon-guest with the beacon's loss on the host's console (gate-visit-beacon-host) while "
+      "the town's data goes over MP: both connections end; the visitor's later A closes its caution window "
+      "and its game resets, so the RAM checkpoints stop at 10150", recording="gate-visit-beacon-host",
+      peer=("other-town", "gate-visit-guest"))
 scene("fish-release-class4", "rod-fish-19", 6484, [2600, 3700, 5100, 5900, 6100, 6483], frames(5800, 6484, 25),
       "fish-release-pocket with a fish of size class 4 in the pockets: put back into the water, its splash "
       "and wake are those of its size", recording="fish-release-pocket")

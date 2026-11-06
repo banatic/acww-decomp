@@ -1165,6 +1165,68 @@ static void beacon_read(const uint8_t *m, uint32_t length)
     wm.peer_beacon_valid = 1;
 }
 
+/* ---- the beacon's loss (the recording's BEACONLOSS) ---- */
+
+/* While a recording holds BEACONLOSS the radio is out of range as with NORADIO, and the
+ * consoles notice it. On its first frame the console tells the other one (MSG_BEACON_LOSS, the
+ * last thing it sends), which from then on is out of range too. Once a console has been out of
+ * range BEACON_LOSS_FRAMES frames its connections end as a radio's do when the beacons stop:
+ * a child's with BEACON_LOST and DISCONNECTED, a parent's children each with DISCONNECTED.
+ * There the told console's loss ends; the holder's ends when the recording lets go. Without
+ * the key nothing here acts, so the recordings without it run as before. */
+#define MSG_BEACON_LOSS 0x20
+#define BEACON_LOSS_FRAMES 60
+
+static struct {
+    int told;        /* this console has told the other one */
+    int heard;       /* the other console told this one */
+    uint32_t frames; /* frames out of range so far */
+} loss;
+
+/* At the exchange: whether the beacon is lost now; if so, nothing goes out but the notice on
+ * the loss's first frame. */
+static int beacon_loss_out(void)
+{
+    static const uint8_t none[1] = {0};
+    int held = (input_hardware() & 8u) != 0;
+    if (!held && !loss.heard) {
+        loss.told = 0;
+        loss.frames = 0;
+        return 0;
+    }
+    wm.out_length = 0;
+    if (held && !loss.told) {
+        loss.told = 1;
+        message(MSG_BEACON_LOSS, none, 0);
+    }
+    return 1;
+}
+
+/* After the exchange: one more frame of a loss; at BEACON_LOSS_FRAMES the connections end. */
+static void beacon_loss_count(int lost)
+{
+    if (!lost || ++loss.frames != BEACON_LOSS_FRAMES) {
+        return;
+    }
+    loss.heard = 0;
+    if (wm.parent) {
+        for (uint32_t aid = 1; aid <= MAX_CHILDREN; aid++) {
+            if (wm.child_bitmap & (1u << aid)) {
+                wm.child_bitmap &= (uint16_t) ~(1u << aid);
+                wr16(wm.status + ST_CHILD_BITMAP, wm.child_bitmap);
+                parent_event(CODE_DISCONNECTED, wm.children[aid], aid);
+            }
+        }
+    }
+    if ((wm.connected || wm.connecting) && !wm.infra) {
+        mp_stop(ERR_FAILED);
+        wm.connected = wm.connecting = 0;
+        set_state(STATE_IDLE);
+        connect_event(0, ERR_SUCCESS, CODE_BEACON_LOST, 0);
+        connect_event(0, ERR_SUCCESS, CODE_DISCONNECTED, 0);
+    }
+}
+
 /* One message from another console. */
 static void receive(int kind, const uint8_t *m, uint32_t length)
 {
@@ -1274,6 +1336,9 @@ static void receive(int kind, const uint8_t *m, uint32_t length)
                 }
             }
             return;
+        case MSG_BEACON_LOSS: /* the other console is out of range (beacon_loss_out) */
+            loss.heard = 1;
+            return;
     }
 }
 
@@ -1348,6 +1413,8 @@ static void exchange(uint32_t frame)
     if (out_of_range) {
         wm.out_length = 0;
     }
+    int lost = beacon_loss_out();
+    out_of_range |= lost;
     uint8_t head[8];
     put32(head, frame);
     put32(head + 4, wm.out_length);
@@ -1395,6 +1462,7 @@ static void exchange(uint32_t frame)
         wm.mp_turns++;
         mp_event(CODE_MPEND_IND, wm.recv_buf);
     }
+    beacon_loss_count(lost);
 }
 
 /* RUN_LINK="<console>,<consoles>,<in>,<out>": this console's number, how many share the air,

@@ -12,7 +12,8 @@
  * state holds until the next line, so a press is two lines: one holding the key, one
  * releasing it. Three more names are the console's, not buttons: LID while the lid is closed,
  * LOWBAT while the battery is low, NORADIO while the wireless hears and sends nothing (out of
- * range of the other console; input_hardware).
+ * range of the other console; input_hardware), and BEACONLOSS as NORADIO, except that both
+ * consoles' radios notice it: a connection held that long ends (runtime/wm.c).
  */
 #ifndef RUNTIME_INPUT_H
 #define RUNTIME_INPUT_H
@@ -33,8 +34,8 @@ uint32_t input_keys(void);
 uint32_t input_keys_xy(void);
 
 /* The console's state the recording holds: bit 0 the lid closed (LID), bit 1 the battery low
- * (LOWBAT), bit 2 the radio out of range (NORADIO). Only a recording sets them (not
- * input_live). */
+ * (LOWBAT), bit 2 the radio out of range (NORADIO), bit 3 out of range with the beacon's loss
+ * noticed (BEACONLOSS). Only a recording sets them (not input_live). */
 uint32_t input_hardware(void);
 
 /* The pen: nonzero when touching, with the screen position. */
