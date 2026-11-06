@@ -6,9 +6,9 @@
   "type": "decomp",
   "original": { "region": "Korea", "serial": "ADMK", "sha1": "1fffd601d3439e37cd934e72d08e487a93fc449b" },
   "project": "acww-decomp",
-  "status": "in-progress",
+  "status": "complete",
   "toolchain": ["ds-decomp", "Objdiff"],
   "approach": "Matching C/C++ for mwccarm, one source per function; readable Clean rewrites checked against the original code",
   "maintainers": [{ "name": "banatic", "link": "https://github.com/banatic" }],
-  "notes": "Every one of the 25,251 game functions of the ARM9 code compiles with the original compiler to the exact original bytes, and the whole program links with the original linker into modules identical to the ROM's. The functions are regrouped into source files of several functions as the original ones held them (2,977 files). Every function also has a readable Clean rewrite with names taken from what the code does, checked against the original code in differential runs, including runs of two consoles over simulated DS wireless. Next: the data sections, which still come from the ROM, and more names. No game assets or code are included."
+  "notes": "Complete: every one of the 25,251 game functions of the ARM9 code compiles with the original compiler to the exact original bytes, and the whole program links with the original linker into modules identical to the ROM's. The data sections are taken from the user's ROM at build time. The functions are regrouped into source files of several functions as the original ones held them (2,977 files). Every function also has a readable Clean rewrite with names taken from what the code does, checked against the original code in differential runs, including runs of two and three consoles over simulated DS wireless. Ongoing: more of the Clean rewrites checked in runs, and more names. No game assets or code are included."
 }
