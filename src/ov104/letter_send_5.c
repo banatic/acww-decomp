@@ -815,7 +815,8 @@ void func_ov104_0229d624(unsigned char *self)
 
 void func_ov104_0229d5c0(GameData *self)
 {
-    if (func_ov104_0229da80((int) self, (unsigned char) self->unk_B8) != 0 || func_ov104_0229da70((int) self, (unsigned char) self->unk_B8) != 0) {
+    if (func_ov104_0229da80((int) self, (unsigned char) self->unk_B8) != 0 ||
+        func_ov104_0229da70((int) self, (unsigned char) self->unk_B8) != 0) {
         if (func_ov104_0229d7bc((int) self, (unsigned char) self->unk_B8) != 0) {
             func_ov002_02207cf0((char *) self + 0x23b8);
         } else {

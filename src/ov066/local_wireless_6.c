@@ -47,22 +47,22 @@ int func_ov066_0226760c(void)
 
 void func_ov066_02267530(unsigned char arg0)
 {
-    (*(Ov66Struct * *) &data_ov066_0226bdec)->unk_00 = 7;
-    (*(Ov66Struct * *) &data_ov066_0226bdec)->unk_04 = 1;
-    (*(Ov66Struct * *) &data_ov066_0226bdec)->unk_08 = 0xfe;
-    (*(Ov66Struct * *) &data_ov066_0226bdec)->unk_09 = 1;
-    (*(Ov66Struct * *) &data_ov066_0226bdec)->unk_0A = 0;
-    (*(Ov66Struct * *) &data_ov066_0226bdec)->unk_0B = 0;
-    (*(Ov66Struct * *) &data_ov066_0226bdec)->unk_0C = 0;
-    (*(Ov66Struct * *) &data_ov066_0226bdec)->unk_0D = arg0;
-    (*(Ov66Struct * *) &data_ov066_0226bdec)->unk_10 = 0;
-    (*(Ov66Struct * *) &data_ov066_0226bdec)->unk_15 = 0;
-    (*(Ov66Struct * *) &data_ov066_0226bdec)->unk_16 = 0;
-    (*(Ov66Struct * *) &data_ov066_0226bdec)->unk_30 = 0;
-    (*(Ov66Struct * *) &data_ov066_0226bdec)->unk_34 = 0;
-    (*(Ov66Struct * *) &data_ov066_0226bdec)->unk_38 = 0;
-    (*(Ov66Struct * *) &data_ov066_0226bdec)->unk_3C &= ~0x800;
-    (*(Ov66Struct * *) &data_ov066_0226bdec)->unk_3C &= ~0x400;
-    (*(Ov66Struct * *) &data_ov066_0226bdec)->unk_3C &= ~0x1000;
-    (*(Ov66Struct * *) &data_ov066_0226bdec)->unk_3C &= ~0x800;
+    (*(Ov66Struct **) &data_ov066_0226bdec)->unk_00 = 7;
+    (*(Ov66Struct **) &data_ov066_0226bdec)->unk_04 = 1;
+    (*(Ov66Struct **) &data_ov066_0226bdec)->unk_08 = 0xfe;
+    (*(Ov66Struct **) &data_ov066_0226bdec)->unk_09 = 1;
+    (*(Ov66Struct **) &data_ov066_0226bdec)->unk_0A = 0;
+    (*(Ov66Struct **) &data_ov066_0226bdec)->unk_0B = 0;
+    (*(Ov66Struct **) &data_ov066_0226bdec)->unk_0C = 0;
+    (*(Ov66Struct **) &data_ov066_0226bdec)->unk_0D = arg0;
+    (*(Ov66Struct **) &data_ov066_0226bdec)->unk_10 = 0;
+    (*(Ov66Struct **) &data_ov066_0226bdec)->unk_15 = 0;
+    (*(Ov66Struct **) &data_ov066_0226bdec)->unk_16 = 0;
+    (*(Ov66Struct **) &data_ov066_0226bdec)->unk_30 = 0;
+    (*(Ov66Struct **) &data_ov066_0226bdec)->unk_34 = 0;
+    (*(Ov66Struct **) &data_ov066_0226bdec)->unk_38 = 0;
+    (*(Ov66Struct **) &data_ov066_0226bdec)->unk_3C &= ~0x800;
+    (*(Ov66Struct **) &data_ov066_0226bdec)->unk_3C &= ~0x400;
+    (*(Ov66Struct **) &data_ov066_0226bdec)->unk_3C &= ~0x1000;
+    (*(Ov66Struct **) &data_ov066_0226bdec)->unk_3C &= ~0x800;
 }

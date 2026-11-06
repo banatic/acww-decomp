@@ -160,7 +160,7 @@ int func_020ec5ac(void)
             data_021fbf00 = 1;
             break;
         case 1:
-            if ((*(void * *) &data_0213e6c4) == 0 || (*(u16 *) &data_021fbefc) == 4 ||
+            if ((*(void **) &data_0213e6c4) == 0 || (*(u16 *) &data_021fbefc) == 4 ||
                 (unsigned int) (OS_TicksToMilliSeconds((u64) OS_GetTick()) - data_021fbf54 > (*(u32 *) &data_0213e6b8)) != 0) {
                 func_020eba18();
                 if (func_ov065_02277cbc() < 0) {
@@ -174,7 +174,8 @@ int func_020ec5ac(void)
         case 2:
             if (func_ov065_02277c28() < 2) {
                 data_021fbf00 = 3;
-            } else if ((unsigned int) (OS_TicksToMilliSeconds((u64) OS_GetTick()) - data_021fbf54 > (*(u32 *) &data_0213e6b8)) != 0) {
+            } else if ((unsigned int) (OS_TicksToMilliSeconds((u64) OS_GetTick()) - data_021fbf54 >
+                                       (*(u32 *) &data_0213e6b8)) != 0) {
                 data_021fbf00 = 3;
             }
             break;

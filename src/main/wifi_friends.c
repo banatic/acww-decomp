@@ -172,13 +172,14 @@ void *func_02077d68(void *object)
 
 void *func_02077d40(void *arg)
 {
-    __cxa_vec_ctor((void *) (arg), 0x20, 0x24, (((void (*)(void *)) func_02077c8c)), (((void (*)(void *)) (int (*)(void *)) func_02077c7c)));
+    __cxa_vec_ctor((void *) (arg), 0x20, 0x24, (((void (*)(void *)) func_02077c8c)),
+                   (((void (*)(void *))(int (*)(void *)) func_02077c7c)));
     return arg;
 }
 
 int func_02077d24(int a)
 {
-    __cxa_vec_cleanup((void *) (a), 0x20, 0x24, (((void (*)(void *)) (int (*)(void *)) func_02077c7c)));
+    __cxa_vec_cleanup((void *) (a), 0x20, 0x24, (((void (*)(void *))(int (*)(void *)) func_02077c7c)));
     return a;
 }
 

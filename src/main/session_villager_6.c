@@ -162,11 +162,11 @@ void func_02078748(int a, int b, int c)
 {
     UnkStruct_02078748 local;
     int *p;
-    if (func_02073d90((void *) ((*(int * *) &data_020ccf94))) == 0) {
+    if (func_02073d90((void *) ((*(int **) &data_020ccf94))) == 0) {
         return;
     }
     func_020787b4((int) (&local), a, b, (unsigned short *) c);
-    p = (*(int * *) &data_020ccf94);
+    p = (*(int **) &data_020ccf94);
     func_02073820((void *) p);
     func_020737f0((void *) p, (void *) (&local), 3);
     func_02073770((void *) p, 0x3e, 4);

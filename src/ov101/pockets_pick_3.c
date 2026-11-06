@@ -248,10 +248,12 @@ void func_ov101_0229d1f0(unsigned char *p)
 {
     if (func_ov002_02209f9c((void *) (p + 0x229C)) == 0) {
         if (p[0xB3] == p[0xB5]) {
-            func_ov101_0229cd80((int) p, (int) (*(
-                       unsigned char *) ((char *) (((unsigned int) (((unsigned int) (((unsigned int) (p) + (0x0))) + (0x0))) +
-                                                    (0xb5))) +
-                                         0)));
+            func_ov101_0229cd80(
+                (int) p,
+                (int) (*(
+                    unsigned char *) ((char *) (((unsigned int) (((unsigned int) (((unsigned int) (p) + (0x0))) + (0x0))) +
+                                                 (0xb5))) +
+                                      0)));
             func_ov101_0229ca58((struct UnkStruct_0229ca58 *) p);
             func_ov002_02208098((void *) p, 6);
         } else {

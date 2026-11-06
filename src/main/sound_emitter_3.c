@@ -95,7 +95,7 @@ void func_020043c4(int a, int b, int *p)
 
 void func_02004384(int r0, int r1, int *r2)
 {
-    if (r2 != 0 && (*(void * *) &data_021c67a4) != 0) {
+    if (r2 != 0 && (*(void **) &data_021c67a4) != 0) {
         int sp[3];
         sp[0] = r2[0] - data_021c67b8[0];
         sp[1] = r2[1] - data_021c67b8[1];

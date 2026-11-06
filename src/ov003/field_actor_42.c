@@ -173,7 +173,7 @@ void func_ov003_02216780(struct UnkStruct_02216780_2 *self)
             }
             break;
         case 3:
-            if (func_02073908((int) ((*(void * *) &data_020ccf94)), self->unk_800) != 0) {
+            if (func_02073908((int) ((*(void **) &data_020ccf94)), self->unk_800) != 0) {
                 if (func_ov003_0221abf8(self->unk_168, 1) == 0) {
                     func_0200f328(self, 0x7df);
                 }

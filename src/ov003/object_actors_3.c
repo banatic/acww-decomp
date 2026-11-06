@@ -328,7 +328,7 @@ int func_ov003_02220460(void *a, unsigned short *b, void *c, void *d, unsigned c
 
     if (func_02003348(func_020b2a60(&obj), *b, local, 0, 0) != 0) {
         if (e != 0) {
-            func_0204eb1c((*(void * *) &data_021c80bc), b, c, d, 0);
+            func_0204eb1c((*(void **) &data_021c80bc), b, c, d, 0);
             func_ov003_0222040c((int) a, (int) b, (int) c, (int) d);
         }
         func_020b2a64(&obj);

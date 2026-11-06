@@ -145,7 +145,8 @@ void func_02017d14(void *p0, void *p1)
 {
     if (func_020164cc((char *) p1 + 0x334, (int) p1)) {
         unsigned short saved = (*(volatile unsigned short *) &data_020c80f8);
-        func_02016764((char *) p1 + 0x334, p1, 0, (unsigned short) ((*(volatile unsigned short *) &data_020c80f8)), 0, 0x1000, 0, 0);
+        func_02016764((char *) p1 + 0x334, p1, 0, (unsigned short) ((*(volatile unsigned short *) &data_020c80f8)), 0, 0x1000,
+                      0, 0);
         if (*(unsigned int *) ((char *) p1 + 0x628) != 0) {
             func_02012444(*(unsigned int *) ((char *) p1 + 0x628), (unsigned short) saved, 0);
         }

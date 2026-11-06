@@ -252,7 +252,7 @@ void func_ov051_02260d44(struct UnkStruct_02260d44 *param)
 void func_ov051_02260d1c(UnkStruct_02260d1c *self)
 {
     char c = func_ov051_022605e8(self, 0xF);
-    func_0206844c((int) self->unk_40, &c, (int) ((*(void * *) &data_ov051_022615c0)));
+    func_0206844c((int) self->unk_40, &c, (int) ((*(void **) &data_ov051_022615c0)));
 }
 
 void func_ov051_02260cd8(UnkStruct_02260cd8 *self)
@@ -272,10 +272,10 @@ void func_ov051_02260c94(struct UnkStruct_02260c94 *self)
     char buf[8];
     if (func_020a12c0()) {
         buf[0] = 0x1a;
-        func_0206844c((int) self->unk_40, (char *) buf, (int) ((*(void * *) &data_ov051_022615c0)));
+        func_0206844c((int) self->unk_40, (char *) buf, (int) ((*(void **) &data_ov051_022615c0)));
     } else {
         buf[1] = 0x10;
-        func_0206844c((int) self->unk_40, (char *) (&buf[1]), (int) ((*(void * *) &data_ov051_022615c0)));
+        func_0206844c((int) self->unk_40, (char *) (&buf[1]), (int) ((*(void **) &data_ov051_022615c0)));
     }
 }
 

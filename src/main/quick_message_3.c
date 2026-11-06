@@ -14,7 +14,7 @@ void func_02039404(unsigned char *base)
 {
     int i;
 
-    (*(unsigned char * *) data_021c6738) = base;
+    (*(unsigned char **) data_021c6738) = base;
     for (i = 0; i < 4; i++) {
         func_02039efc(base + 4 + i * 0xB8, i, data_020ca144[i], data_020ca134[i]);
     }

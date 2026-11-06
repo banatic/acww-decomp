@@ -91,7 +91,7 @@ void func_ov004_0223bac8(char *self)
 {
     // DECLS
     // ENDDECLS
-    *(int *) ((char *) ((void * *) data_ov004_0225967c)) = *(int *) (self);
-    *(int *) ((char *) ((void * *) data_ov004_0225967c) + 0x4) = *(int *) (self + 0x4);
-    *(int *) ((char *) ((void * *) data_ov004_0225967c) + 0x8) = *(int *) (self + 0x8);
+    *(int *) ((char *) ((void **) data_ov004_0225967c)) = *(int *) (self);
+    *(int *) ((char *) ((void **) data_ov004_0225967c) + 0x4) = *(int *) (self + 0x4);
+    *(int *) ((char *) ((void **) data_ov004_0225967c) + 0x8) = *(int *) (self + 0x8);
 }

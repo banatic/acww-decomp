@@ -232,7 +232,7 @@ int func_ov068_0226e008(UnkStruct_0226e008 *self)
         arr[1] = 0x501a;
         if (func_0204f490(g, &v0, &v1, &v2, &v3, arr, arr + 1, 1, 0) == 1) {
             func_0204f7ac(out, v0, v1, v2, v3);
-            p->vec = (*(Vec3_0226e008 * *) data_ov068_022772f0);
+            p->vec = (*(Vec3_0226e008 **) data_ov068_022772f0);
             self->pos[0] = out[0];
             self->pos[1] = out[1];
             self->pos[2] = out[2];
@@ -272,7 +272,7 @@ void func_ov068_0226de04(void *self)
             if (func_020e89dc((char *) s + 2, 7, 1) != 0) {
                 s->unk_02 = 0;
             }
-            ctx = (*(void * *) &data_021c80bc);
+            ctx = (*(void **) &data_021c80bc);
             l18 = 0;
             a2c = 0;
             a30 = 0;
@@ -311,7 +311,8 @@ void func_ov068_0226de04(void *self)
                     }
                     e.a = data_ov068_022772d4[s->unk_02][0];
                     e.b = data_ov068_022772d4[s->unk_02][1];
-                } while (func_0204f490((Vec3_0226e008 *) ctx, (s32 *) (&a2c), (s32 *) (&a30), (s32 *) (&a34), (s32 *) (&a38), (u16 *) (&e.a), (u16 *) (&e.b), data_ov068_022767cc[s->unk_02], f3) == 0);
+                } while (func_0204f490((Vec3_0226e008 *) ctx, (s32 *) (&a2c), (s32 *) (&a30), (s32 *) (&a34), (s32 *) (&a38),
+                                       (u16 *) (&e.a), (u16 *) (&e.b), data_ov068_022767cc[s->unk_02], f3) == 0);
                 func_0204f7ac((s32 *) (&out), a2c, a30, a34, a38);
                 s->unk_04 = out.x;
                 s->unk_08 = out.y;

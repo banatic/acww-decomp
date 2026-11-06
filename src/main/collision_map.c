@@ -545,7 +545,7 @@ int func_020308a4(int argument0, int argument1)
     } else {
         r = -1;
     }
-    if (r < 0 || r == (*(struct UnkStruct_020308a4 * *) &data_020da1a8)->unk_12C) {
+    if (r < 0 || r == (*(struct UnkStruct_020308a4 **) &data_020da1a8)->unk_12C) {
         r = -1;
     }
     return r;
@@ -565,8 +565,8 @@ int func_02030890(int *param)
 
 int func_02030864(int value)
 {
-    if ((*(struct UnkStruct_02030864 * *) &data_020da1a8)->value == -1) {
-        (*(struct UnkStruct_02030864 * *) &data_020da1a8)->value = value;
+    if ((*(struct UnkStruct_02030864 **) &data_020da1a8)->value == -1) {
+        (*(struct UnkStruct_02030864 **) &data_020da1a8)->value = value;
         return 1;
     }
     return 0;
@@ -583,7 +583,7 @@ int func_02030818(int *p)
         x = -1;
     }
     if (x >= 0) {
-        val = *(int *) ((char *) (*(int * *) &data_020da1a8) + 0x12c);
+        val = *(int *) ((char *) (*(int **) &data_020da1a8) + 0x12c);
         if (x == val) {
             return 1;
         } else {
@@ -596,10 +596,10 @@ int func_02030818(int *p)
 
 int func_020307f8(void)
 {
-    if ((*(UnkStruct_020307f8 * *) &data_020da1a8)->unk_12C == -1) {
+    if ((*(UnkStruct_020307f8 **) &data_020da1a8)->unk_12C == -1) {
         return 0;
     }
-    (*(UnkStruct_020307f8 * *) &data_020da1a8)->unk_12C = -1;
+    (*(UnkStruct_020307f8 **) &data_020da1a8)->unk_12C = -1;
     return 1;
 }
 

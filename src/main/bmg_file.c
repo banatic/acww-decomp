@@ -251,7 +251,8 @@ int func_020a982c(void *ptr)
 
     func_02064658((char *) ptr + 0x44, ((struct UnkStruct_020a982c *) data_021f446c), 0x20, 0);
 
-    (*(struct UnkStruct_020a982c *) data_021f446c).unk_00 = (u32) func_020a9ae8((unsigned int *) (((struct UnkStruct_020a982c *) data_021f446c)));
+    (*(struct UnkStruct_020a982c *) data_021f446c).unk_00 =
+        (u32) func_020a9ae8((unsigned int *) (((struct UnkStruct_020a982c *) data_021f446c)));
     (*(struct UnkStruct_020a982c *) data_021f446c).unk_04 = (u32) func_020a9ae8((unsigned int *) (&data_021f4470));
     (*(struct UnkStruct_020a982c *) data_021f446c).unk_08 = (u32) func_020a9ae4((int *) (&data_021f4474));
     (*(struct UnkStruct_020a982c *) data_021f446c).unk_0C = (u32) func_020a9ae4((int *) (&data_021f4478));
@@ -275,7 +276,8 @@ int func_020a9754(unsigned char *p)
 
     func_02064658(p + 0x44, (void *) ((const void *) ((struct GStruct *) data_021f4458)), 0x14, 0x20);
 
-    (*(struct GStruct *) data_021f4458).unk_00 = (int) func_020a9ae8((unsigned int *) ((void *) ((struct GStruct *) data_021f4458)));
+    (*(struct GStruct *) data_021f4458).unk_00 =
+        (int) func_020a9ae8((unsigned int *) ((void *) ((struct GStruct *) data_021f4458)));
     (*(struct GStruct *) data_021f4458).unk_04 = func_020a9ae4((int *) ((void *) &data_021f445c));
     (*(struct GStruct *) data_021f4458).unk_08 = func_020a9ae0((unsigned short *) ((void *) &data_021f4460));
     (*(struct GStruct *) data_021f4458).unk_0A = func_020a9ae0((unsigned short *) ((void *) &data_021f4462));

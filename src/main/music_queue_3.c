@@ -259,7 +259,7 @@ int func_02035e54(void)
 
 void func_02035dcc(UnkStruct_02035dcc *self)
 {
-    if (*(unsigned short *) ((char *) (*(void * *) &data_021f42f4) + 0xc) == 5) {
+    if (*(unsigned short *) ((char *) (*(void **) &data_021f42f4) + 0xc) == 5) {
         return;
     }
 
@@ -773,7 +773,7 @@ void func_02035684(int param0, int param1, int param2)
     if (param2 > 0) {
         buf[6] = param2;
     }
-    func_02035198((unsigned int) ((*(void * *) data_021c526c)), buf);
+    func_02035198((unsigned int) ((*(void **) data_021c526c)), buf);
     func_020374cc(buf);
 }
 

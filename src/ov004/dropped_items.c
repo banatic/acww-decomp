@@ -374,7 +374,8 @@ int func_ov004_0223362c(Elem *base, int b, UnkStruct_0223362c *c, UnkStruct_0223
             ee.c = e->c;
             cc.a = c->a;
             cc.b = c->b;
-            func_ov004_02233a00((char *) p, b, (UnkStruct_02233a00 *) (&cc), (Vec3 *) (&dd), (Vec3 *) (&ee), ff, (unsigned short) g, (int) glob, h, (unsigned char) i);
+            func_ov004_02233a00((char *) p, b, (UnkStruct_02233a00 *) (&cc), (Vec3 *) (&dd), (Vec3 *) (&ee), ff,
+                                (unsigned short) g, (int) glob, h, (unsigned char) i);
             p->unk_04 = 2;
             found = 1;
             break;

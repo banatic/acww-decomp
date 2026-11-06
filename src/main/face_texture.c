@@ -78,7 +78,7 @@ void func_0205dd50(void *object) {}
 
 void func_0205dd10(int *out)
 {
-    int *p = (*(int * *) data_021c9af0);
+    int *p = (*(int **) data_021c9af0);
     unsigned int count = data_020ccf94[0x6c];
     unsigned int i;
 

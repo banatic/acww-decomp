@@ -100,7 +100,7 @@ int func_ov004_0221e1a0(struct UnkStruct_0221e1a0 *self)
     if (!func_0202e364(self)) {
         return 0;
     }
-    (*(struct UnkStruct_0221e1a0 * *) &data_ov004_02257bc4) = self;
+    (*(struct UnkStruct_0221e1a0 **) &data_ov004_02257bc4) = self;
     func_0201c280(self, &self->sub);
     func_ov004_0221defc(&self->sub, self);
     func_ov004_0221dd24(self, 0);

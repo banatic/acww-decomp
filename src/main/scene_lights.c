@@ -226,9 +226,18 @@ void func_02064fb4(UnkStruct_02064fb4_2 *self)
 
     t = func_020b3658(self->unk_1C);
     // Red and green are combined first, then blue.
-    self->unk_34 = (u16) ((((*(UnkStruct_02064fb4 * *) &data_021cd864)->c1.b + ((((*(UnkStruct_02064fb4 * *) &data_021cd864)->c0.b - (*(UnkStruct_02064fb4 * *) &data_021cd864)->c1.b) * t) >> 12)) << 10) |
-                          (((*(UnkStruct_02064fb4 * *) &data_021cd864)->c1.r + ((((*(UnkStruct_02064fb4 * *) &data_021cd864)->c0.r - (*(UnkStruct_02064fb4 * *) &data_021cd864)->c1.r) * t) >> 12)) |
-                           (((*(UnkStruct_02064fb4 * *) &data_021cd864)->c1.g + ((((*(UnkStruct_02064fb4 * *) &data_021cd864)->c0.g - (*(UnkStruct_02064fb4 * *) &data_021cd864)->c1.g) * t) >> 12)) << 5)));
+    self->unk_34 =
+        (u16) ((((*(UnkStruct_02064fb4 **) &data_021cd864)->c1.b +
+                 ((((*(UnkStruct_02064fb4 **) &data_021cd864)->c0.b - (*(UnkStruct_02064fb4 **) &data_021cd864)->c1.b) * t) >>
+                  12))
+                << 10) |
+               (((*(UnkStruct_02064fb4 **) &data_021cd864)->c1.r +
+                 ((((*(UnkStruct_02064fb4 **) &data_021cd864)->c0.r - (*(UnkStruct_02064fb4 **) &data_021cd864)->c1.r) * t) >>
+                  12)) |
+                (((*(UnkStruct_02064fb4 **) &data_021cd864)->c1.g +
+                  ((((*(UnkStruct_02064fb4 **) &data_021cd864)->c0.g - (*(UnkStruct_02064fb4 **) &data_021cd864)->c1.g) * t) >>
+                   12))
+                 << 5)));
 }
 
 void func_02064f84(void *arg)
@@ -284,7 +293,7 @@ void func_02064ef8(UnkStruct_02064ef8 *self)
 
 void func_02064e28(UnkStruct_02064e28 *s)
 {
-    if ((*(UnkStruct_02064e28_2 * *) &data_021cd864)->unk_50 == 0) {
+    if ((*(UnkStruct_02064e28_2 **) &data_021cd864)->unk_50 == 0) {
         func_020650ac((UnkStruct_020650ac *) s);
         return;
     }

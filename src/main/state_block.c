@@ -545,7 +545,7 @@ void func_0209ea24(void *self)
 
     r4 = func_020984e8();
     func_0209e79c((unsigned char *) self);
-    func_0204e728((char *) (((char *) self) + 0xd304), (int) ((*(void * *) &data_021fbe94)));
+    func_0204e728((char *) (((char *) self) + 0xd304), (int) ((*(void **) &data_021fbe94)));
     func_0209e7fc(self);
     func_0209faac((char *) (((char *) self) + 0x173dd), 0);
     func_0209e974(self);

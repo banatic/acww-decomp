@@ -294,7 +294,7 @@ int func_ov050_02264974(UnkStruct_02264974 *p)
     if (func_0202ec58((void *) p) == 0) {
         return 0;
     }
-    if (func_02073d90((int) ((*(void * *) &data_020ccf94))) != 0 || *(short *) func_0209d358(0, 0x4a) != 0) {
+    if (func_02073d90((int) ((*(void **) &data_020ccf94))) != 0 || *(short *) func_0209d358(0, 0x4a) != 0) {
         p->unk_4E8 |= 2;
         if (func_020a7278() != 0) {
             if (func_0209dffc(func_02087f08((void *) func_020860d0(func_0208602c()))) != 0) {

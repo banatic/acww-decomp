@@ -193,9 +193,11 @@ void func_ov002_0220a374(void *self, int v)
 void func_ov002_0220a314(void *self)
 {
     if (func_0208e4bc(self) == 1) {
-        func_ov002_0220a0b4((char *) self, func_ov002_02209f3c((struct UnkStruct_02209f3c *) self) + 0x10, func_ov002_02209f14((struct UnkStruct_02209f14 *) self));
+        func_ov002_0220a0b4((char *) self, func_ov002_02209f3c((struct UnkStruct_02209f3c *) self) + 0x10,
+                            func_ov002_02209f14((struct UnkStruct_02209f14 *) self));
     } else if (func_0208e4bc(self) == 0xd) {
-        func_ov002_0220a0b4((char *) self, func_ov002_02209f3c((struct UnkStruct_02209f3c *) self) + 4, func_ov002_02209f14((struct UnkStruct_02209f14 *) self) + 0x18);
+        func_ov002_0220a0b4((char *) self, func_ov002_02209f3c((struct UnkStruct_02209f3c *) self) + 4,
+                            func_ov002_02209f14((struct UnkStruct_02209f14 *) self) + 0x18);
     }
     func_ov002_0220a374(self, 7);
 }
@@ -203,9 +205,11 @@ void func_ov002_0220a314(void *self)
 void func_ov002_0220a2b4(void *self)
 {
     if (func_0208e4bc(self) == 7) {
-        func_ov002_0220a0b4((char *) self, func_ov002_02209f3c((struct UnkStruct_02209f3c *) self) - 0x10, func_ov002_02209f14((struct UnkStruct_02209f14 *) self));
+        func_ov002_0220a0b4((char *) self, func_ov002_02209f3c((struct UnkStruct_02209f3c *) self) - 0x10,
+                            func_ov002_02209f14((struct UnkStruct_02209f14 *) self));
     } else if (func_0208e4bc(self) == 0xd) {
-        func_ov002_0220a0b4((char *) self, func_ov002_02209f3c((struct UnkStruct_02209f3c *) self) - 0xc, func_ov002_02209f14((struct UnkStruct_02209f14 *) self) + 0x18);
+        func_ov002_0220a0b4((char *) self, func_ov002_02209f3c((struct UnkStruct_02209f3c *) self) - 0xc,
+                            func_ov002_02209f14((struct UnkStruct_02209f14 *) self) + 0x18);
     }
     func_ov002_0220a374(self, 1);
 }
@@ -213,9 +217,11 @@ void func_ov002_0220a2b4(void *self)
 void func_ov002_0220a254(void *self)
 {
     if (func_0208e4bc(self) == 1) {
-        func_ov002_0220a0b4((char *) self, func_ov002_02209f3c((struct UnkStruct_02209f3c *) self) + 0xc, func_ov002_02209f14((struct UnkStruct_02209f14 *) self) - 0x18);
+        func_ov002_0220a0b4((char *) self, func_ov002_02209f3c((struct UnkStruct_02209f3c *) self) + 0xc,
+                            func_ov002_02209f14((struct UnkStruct_02209f14 *) self) - 0x18);
     } else if (func_0208e4bc(self) == 7) {
-        func_ov002_0220a0b4((char *) self, func_ov002_02209f3c((struct UnkStruct_02209f3c *) self) - 4, func_ov002_02209f14((struct UnkStruct_02209f14 *) self) - 0x18);
+        func_ov002_0220a0b4((char *) self, func_ov002_02209f3c((struct UnkStruct_02209f3c *) self) - 4,
+                            func_ov002_02209f14((struct UnkStruct_02209f14 *) self) - 0x18);
     }
     func_ov002_0220a374(self, 0xd);
 }

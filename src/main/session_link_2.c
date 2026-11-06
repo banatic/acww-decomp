@@ -56,7 +56,7 @@ void func_020742b4(void)
     struct UnkStruct_020742b4 *obj;
     int ret;
 
-    obj = (*(struct UnkStruct_020742b4 * *) &data_020ccf94);
+    obj = (*(struct UnkStruct_020742b4 **) &data_020ccf94);
     func_02073d74(obj, 2);
     obj->unk_64 = 0;
     func_02073de0(obj, obj->unk_64, 1);
@@ -105,12 +105,12 @@ int func_0207417c(int param)
     void *p2;
     struct UnkStruct_0207417c *g3;
 
-    self = (*(struct UnkStruct_0207417c * *) &data_020ccf94);
+    self = (*(struct UnkStruct_0207417c **) &data_020ccf94);
     field = self->unk_64;
 
     if (func_02073dd4(self, field) == 0) {
         func_020a6f74(3, 4);
-        g2 = (*(struct UnkStruct_0207417c * *) &data_020ccf94);
+        g2 = (*(struct UnkStruct_0207417c **) &data_020ccf94);
         p1 = func_02073d28(g2, 4);
         func_02077b3c(p1, 0, 5);
         ((char *) p1)[1] = 0;
@@ -122,7 +122,7 @@ int func_0207417c(int param)
         } else {
             func_020a6f74(field, 4);
             byte = (char) param;
-            g3 = (*(struct UnkStruct_0207417c * *) &data_020ccf94);
+            g3 = (*(struct UnkStruct_0207417c **) &data_020ccf94);
             func_02073820(g3);
             func_020737f0(g3, &byte, 1);
             func_02073770(g3, 0, 0);

@@ -158,7 +158,9 @@ void func_0203fe1c(int arg)
     local.words.word0 = 0;
     local.words.word1 = 0;
     func_0209e474(&local);
-    ok = local.bytes.c == (*(UnkStruct_0203fe1c *) data_021c74d0).b && local.bytes.b == (*(UnkStruct_0203fe1c *) data_021c74d0).a && local.bytes.a == (*(UnkStruct_0203fe1c *) data_021c74d0).zero;
+    ok = local.bytes.c == (*(UnkStruct_0203fe1c *) data_021c74d0).b &&
+         local.bytes.b == (*(UnkStruct_0203fe1c *) data_021c74d0).a &&
+         local.bytes.a == (*(UnkStruct_0203fe1c *) data_021c74d0).zero;
     if (ok) {
         return;
     }

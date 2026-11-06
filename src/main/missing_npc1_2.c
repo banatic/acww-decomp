@@ -104,7 +104,7 @@ typedef struct Vec3_020c1fc8 {
 
 typedef struct UnkStruct_020c1fc8 {
     unsigned char pad_00[0x5c];           // 0x00-0x5b
-    Vec3_020c1fc8 vec;                             // 0x5c-0x67
+    Vec3_020c1fc8 vec;                    // 0x5c-0x67
     unsigned char pad_68[0x8e - 0x68];    // 0x68-0x8d
     short unk_8E;                         // 0x8e-0x8f
     unsigned char pad_90[0x190 - 0x90];   // 0x90-0x18f

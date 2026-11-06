@@ -215,7 +215,7 @@ int func_ov054_02260498(int arg0)
 
 unsigned char func_ov054_02260484(void *receiver)
 {
-    return func_02073dd4((*(UnkStruct_02260484 * *) &data_020ccf94), (*(UnkStruct_02260484 * *) &data_020ccf94)->unk_64);
+    return func_02073dd4((*(UnkStruct_02260484 **) &data_020ccf94), (*(UnkStruct_02260484 **) &data_020ccf94)->unk_64);
 }
 
 int func_ov054_02260474(void *self)

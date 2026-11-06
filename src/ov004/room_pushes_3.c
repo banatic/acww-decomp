@@ -216,7 +216,8 @@ int func_ov004_0223ca6c(char *self, int index)
     v1 = (int) func_ov004_0223cadc((char *) (self), (int) (index));
     if (v1 != 0x0) {
         v2 = func_ov004_0223ce84();
-        return func_ov004_0223cd58((int *) (v2), (unsigned int) ((int) func_ov004_0223cb5c((UnkStruct_0223cb5c *) ((void *) (v1)))));
+        return func_ov004_0223cd58((int *) (v2),
+                                   (unsigned int) ((int) func_ov004_0223cb5c((UnkStruct_0223cb5c *) ((void *) (v1)))));
     }
     return 0x0;
 }

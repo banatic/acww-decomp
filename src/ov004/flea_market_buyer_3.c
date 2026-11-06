@@ -266,7 +266,10 @@ int func_ov004_022210fc(unsigned char *self)
 
 int func_ov004_022210c8(int param)
 {
-    func_02019d0c((void *) ((void *) (param + 0x564)), (int) ((int) (1)), (int) ((int) (1)), (int) ((int) (0)), (int) ((int) (0)), (short) ((short) ((short) (0))), (short) ((short) ((short) (0))), (int) ((int) (0)), (int) ((int) (0)), (unsigned short) ((unsigned short) ((unsigned short) (data_020c80f8))), (unsigned short) ((unsigned short) ((unsigned short) (0))));
+    func_02019d0c((void *) ((void *) (param + 0x564)), (int) ((int) (1)), (int) ((int) (1)), (int) ((int) (0)),
+                  (int) ((int) (0)), (short) ((short) ((short) (0))), (short) ((short) ((short) (0))), (int) ((int) (0)),
+                  (int) ((int) (0)), (unsigned short) ((unsigned short) ((unsigned short) (data_020c80f8))),
+                  (unsigned short) ((unsigned short) ((unsigned short) (0))));
     return 1;
 }
 

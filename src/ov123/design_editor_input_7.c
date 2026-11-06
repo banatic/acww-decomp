@@ -132,7 +132,11 @@ void func_ov123_0229bb74(UnkStruct_0229bb74 *self)
         func_ov123_02299c04(self);
         return;
     } else {
-        u16 flags = (*(struct { u8 pad[2]; u16 flags; } *) data_021fbe40).flags;
+        u16 flags = (*(struct {
+                        u8 pad[2];
+                        u16 flags;
+                    } *) data_021fbe40)
+                        .flags;
         if (flags & 1) {
             func_ov123_02299cc0(self);
             return;
@@ -151,7 +155,11 @@ void func_ov123_0229bb74(UnkStruct_0229bb74 *self)
         if (func_ov123_022998c0(self) != 0) {
             return;
         }
-        flags = (*(struct { u8 pad[2]; u16 flags; } *) data_021fbe40).flags;
+        flags = (*(struct {
+                    u8 pad[2];
+                    u16 flags;
+                } *) data_021fbe40)
+                    .flags;
         if (flags & 0x400) {
             func_ov123_02299980(self);
             return;

@@ -146,7 +146,8 @@ void func_ov068_02266aa0(void *r5, void *r4)
 
     r0 = func_ov068_02266b3c((int) r5, *(int *) ((char *) r5 + 0xc), *(int *) ((char *) r5 + 0x10));
     if (r0 != 0) {
-        r0 = func_ov068_02266bac((int) r5, (int) sp, *(int *) ((char *) r5 + 0xc), (int) ((char *) r4 + 0x5c), *(int *) ((char *) r4 + 0x40c));
+        r0 = func_ov068_02266bac((int) r5, (int) sp, *(int *) ((char *) r5 + 0xc), (int) ((char *) r4 + 0x5c),
+                                 *(int *) ((char *) r4 + 0x40c));
         r1 = -1;
         if (r0 != r1) {
             r1 = *(int *) ((char *) r5 + 0x10);

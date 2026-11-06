@@ -191,12 +191,12 @@ int func_02094294(void *a, void *b, void *c, void *d)
     mode = big.unk_34;
     ret = 3;
     if (func_020ba4e4() == 1) {
-        func_02091494(((void * *) data_021d5658), *(unsigned short *) (tp + 0x39c), (int) a, (int) b, (int) c, (int) d, -1);
+        func_02091494(((void **) data_021d5658), *(unsigned short *) (tp + 0x39c), (int) a, (int) b, (int) c, (int) d, -1);
         if (func_02090ac4(0x36, (int) b, (int) c, data_020e289c) != 0) {
             ret = 2;
         }
     } else if (func_020b6598() != 0 && mode == 3) {
-        func_02091494(((void * *) data_021d5658), *(unsigned short *) (tp + 0x39c), (int) a, (int) b, (int) c, 0, -1);
+        func_02091494(((void **) data_021d5658), *(unsigned short *) (tp + 0x39c), (int) a, (int) b, (int) c, 0, -1);
         if (func_02090ac4(0x35, (int) b, (int) c, data_020e28ec) != 0) {
             ret = 2;
         }

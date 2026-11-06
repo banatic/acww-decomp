@@ -127,7 +127,8 @@ void func_ov070_02278b64(UnkStruct_02278b64 *self)
                 func_020154b4(self, &loc.c, 0, 5, 0);
                 func_020b45d0(buf, func_02088b64(txt), 10, 0, 0, 0);
                 func_0203d7c4(0, buf);
-                func_02066024(sub, &loc, ((int *) data_ov070_02279d58), &data_ov070_02279d20, &data_ov070_02279d24, func_02099870(ent));
+                func_02066024(sub, &loc, ((int *) data_ov070_02279d58), &data_ov070_02279d20, &data_ov070_02279d24,
+                              func_02099870(ent));
                 if (ent != 0) {
                     loc.d = func_0204bd20(0x10, 4);
                     func_0203cd1c(func_020996ac(ent), &loc.d, 0);

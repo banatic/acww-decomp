@@ -121,21 +121,21 @@ void func_02072638(void *p)
     func_02072594((char *) p + 4);
     func_020723a0(p);
     heap = data_021fbe94;
-    if ((*(void * *) &data_021d0484) != 0) {
-        func_020e993c(heap, (*(void * *) &data_021d0484));
-        (*(void * *) &data_021d0484) = 0;
+    if ((*(void **) &data_021d0484) != 0) {
+        func_020e993c(heap, (*(void **) &data_021d0484));
+        (*(void **) &data_021d0484) = 0;
     }
-    if ((*(void * *) &data_021d047c) != 0) {
-        func_020e993c(heap, (*(void * *) &data_021d047c));
-        (*(void * *) &data_021d047c) = 0;
+    if ((*(void **) &data_021d047c) != 0) {
+        func_020e993c(heap, (*(void **) &data_021d047c));
+        (*(void **) &data_021d047c) = 0;
     }
-    if ((*(void * *) &data_021d0470) != 0) {
-        func_020e993c(heap, (*(void * *) &data_021d0470));
-        (*(void * *) &data_021d0470) = 0;
+    if ((*(void **) &data_021d0470) != 0) {
+        func_020e993c(heap, (*(void **) &data_021d0470));
+        (*(void **) &data_021d0470) = 0;
     }
-    if ((*(void * *) &data_021d0480) != 0) {
-        func_020e993c(heap, (*(void * *) &data_021d0480));
-        (*(void * *) &data_021d0480) = 0;
+    if ((*(void **) &data_021d0480) != 0) {
+        func_020e993c(heap, (*(void **) &data_021d0480));
+        (*(void **) &data_021d0480) = 0;
     }
 }
 

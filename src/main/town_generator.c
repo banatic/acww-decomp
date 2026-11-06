@@ -266,7 +266,7 @@ void func_0209c574(void *param)
     void *ptr;
 
     func_0209cfe0(sp);
-    ptr = (*(void * *) &data_020e35d4);
+    ptr = (*(void **) &data_020e35d4);
     func_0209cec0(sp, ptr);
     func_0209ce00(sp, param);
     func_0209cfb8(sp);

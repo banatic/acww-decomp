@@ -37,7 +37,7 @@ void *func_0206fcbc(void)
 
 void func_0206fcb0(unsigned int r0)
 {
-    (*(unsigned int * *) &data_021cfc8c) = (unsigned int *) r0;
+    (*(unsigned int **) &data_021cfc8c) = (unsigned int *) r0;
 }
 
 unsigned char func_0206fca4(void)

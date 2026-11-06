@@ -149,7 +149,8 @@ void func_ov126_0229fb9c(unsigned char *arg0)
         case 10:
         case 11:
         case 12:
-            func_02051c08((void *) (func_0206fc44()), (const void *) ((unsigned char *) arg0 + 0x4248), (unsigned char) arg0[0xa6]);
+            func_02051c08((void *) (func_0206fc44()), (const void *) ((unsigned char *) arg0 + 0x4248),
+                          (unsigned char) arg0[0xa6]);
             break;
         case 0:
             func_ov126_0229fc98((UnkStruct_0229fc98 *) arg0);

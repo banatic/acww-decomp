@@ -306,6 +306,6 @@ void func_ov045_02260848(struct UnkStruct_02260848 *self)
 
     if (r4 != 0xff) {
         c = (u8) r4;
-        func_0206844c(self->unk_40, (u8 *) (&c), (int) ((*(void * *) &data_ov045_02261380)));
+        func_0206844c(self->unk_40, (u8 *) (&c), (int) ((*(void **) &data_ov045_02261380)));
     }
 }

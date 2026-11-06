@@ -100,7 +100,7 @@ int func_020984e8(void)
 
 int func_020984d4(void)
 {
-    return (int) func_02096284((void *) ((*(struct UnkStruct_020984d4 * *) &data_020ccf94)->unk_68));
+    return (int) func_02096284((void *) ((*(struct UnkStruct_020984d4 **) &data_020ccf94)->unk_68));
 }
 
 int func_0209847c(void *p)

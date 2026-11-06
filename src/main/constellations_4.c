@@ -91,7 +91,8 @@ void *func_020b1a0c(void *a, void *b)
 
 int func_020b19e4(int arg)
 {
-    __cxa_vec_ctor((void *) (arg), 0x10, 0x4A, (((void (*)(void *)) (int (*)(void *)) func_020b1a64)), (((void (*)(void *)) func_020b1a54)));
+    __cxa_vec_ctor((void *) (arg), 0x10, 0x4A, (((void (*)(void *))(int (*)(void *)) func_020b1a64)),
+                   (((void (*)(void *)) func_020b1a54)));
     return arg;
 }
 

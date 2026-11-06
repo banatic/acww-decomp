@@ -279,7 +279,8 @@ void func_ov003_0222250c(UnkStruct_0222250c *obj, OtherStruct *src, int arg2)
     obj->v0 = 0;
     obj->v1 = 0;
     obj->v2 = 0;
-    func_ov003_02224140((int) ((void *) (src->unk_00)), (int) ((void *) (src->unk_04)), (unsigned short) ((unsigned short) (0xfff1)), 0);
+    func_ov003_02224140((int) ((void *) (src->unk_00)), (int) ((void *) (src->unk_04)),
+                        (unsigned short) ((unsigned short) (0xfff1)), 0);
 }
 
 void func_ov003_022223bc(UnkStruct_022223bc *self)

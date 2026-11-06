@@ -82,7 +82,8 @@ int func_ov047_02262450(UnkStruct_02262450 *self)
     self->flag_736 = 0;
     self->unk_730 = data_020c80f8;
     self->unk_732 = 0x78;
-    func_0201ad18((int) self->sub_3b0, 1, 0, 0, (int) (((char *) data_021fbee8)), 4, (unsigned long) ((*(unsigned long *) &data_020c814c)), 1);
+    func_0201ad18((int) self->sub_3b0, 1, 0, 0, (int) (((char *) data_021fbee8)), 4,
+                  (unsigned long) ((*(unsigned long *) &data_020c814c)), 1);
     return 1;
 }
 

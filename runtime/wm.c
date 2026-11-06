@@ -794,7 +794,9 @@ static void scan_ex_done(void)
     }
     if (wm.trace) {
         fprintf(stderr, "wm: frame %u console %d scan of channels %04x: %s\n", io_frame(), wm.console, channels,
-                found ? "the access point" : b != NULL ? "a parent" : "nobody");
+                found       ? "the access point"
+                : b != NULL ? "a parent"
+                            : "nobody");
     }
     reply(buffer, cb, sizeof(cb));
     wm.scan_ex_req = 0; /* the state stays SCAN until WM_EndScan */

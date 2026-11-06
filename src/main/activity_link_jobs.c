@@ -546,7 +546,8 @@ void func_020a2948(UnkStruct_020a2948 *self)
         case 0x13:
         case 0x14:
         case 0x15:
-            func_020a0848((struct UnkStruct_020a2dec *) self, (unsigned char *) (&self->state), 0xb, 0x11, (u16) ((u16) (1 << func_020a11c4())), 1);
+            func_020a0848((struct UnkStruct_020a2dec *) self, (unsigned char *) (&self->state), 0xb, 0x11,
+                          (u16) ((u16) (1 << func_020a11c4())), 1);
             break;
         default:
             func_020a25cc(self);

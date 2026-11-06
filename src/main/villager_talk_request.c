@@ -139,7 +139,10 @@ extern UnkStruct_02028284 data_020c8a70;
 
 void func_020285d0(UnkStruct_020285d0 *a, UnkStruct_020285d0_2 *b)
 {
-    func_0202da38(a, (void *) a->data_at_104, (void *) (&a->byte_at_122), 0x1e, (unsigned int) func_020036e8((unsigned int) func_0208150c(*(unsigned int *) ((char *) a->ptr_at_100 + 0x830))), data_020c8c40.word, data_020c8c40.byte, 0, 0);
+    func_0202da38(
+        a, (void *) a->data_at_104, (void *) (&a->byte_at_122), 0x1e,
+        (unsigned int) func_020036e8((unsigned int) func_0208150c(*(unsigned int *) ((char *) a->ptr_at_100 + 0x830))),
+        data_020c8c40.word, data_020c8c40.byte, 0, 0);
     b->ptr = a->data_at_104;
     b->byte = a->byte_at_122;
     *(GlobalD9130 *) &a->word_at_c8 = data_020d9130;
@@ -208,7 +211,8 @@ void func_0202836c(UnkStruct_0202836c_2 *p)
     q = p->unk_100->unk_830;
     v = 2;
     if (p->unk_160 != 0) {
-        func_0209b4d8(p->unk_160, func_0209bc40((unsigned char *) ((void *) func_0202d9c4((unsigned int *) p))), func_0208150c((int) q), p->unk_15C);
+        func_0209b4d8(p->unk_160, func_0209bc40((unsigned char *) ((void *) func_0202d9c4((unsigned int *) p))),
+                      func_0208150c((int) q), p->unk_15C);
         func_0209bd5c((void *) func_0202d9c4((unsigned int *) p));
         func_0207b57c((void *) (((int *) data_021e5a2c)));
         func_0202d9d0(p, func_0209b4d4(p->unk_160));

@@ -191,7 +191,8 @@ void func_ov103_0229d450(unsigned char *p)
         func_ov103_0229c7ec((UnkStruct_0229d580 *) p);
         func_ov002_02208098((void *) p, 3);
     } else {
-        if ((((*(UnkStruct_0229d450 *) data_021fbe40).unk_02 & 1) != 0) || (((*(UnkStruct_0229d450 *) data_021fbe40).unk_02 & 2) != 0)) {
+        if ((((*(UnkStruct_0229d450 *) data_021fbe40).unk_02 & 1) != 0) ||
+            (((*(UnkStruct_0229d450 *) data_021fbe40).unk_02 & 2) != 0)) {
             func_ov002_0220a1dc(p + 0x2274);
             func_ov002_02208098((void *) p, 8);
         }

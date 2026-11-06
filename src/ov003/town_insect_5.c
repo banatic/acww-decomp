@@ -210,7 +210,7 @@ void func_ov003_0222efc0(char *a)
     n = 0;
     m = 0;
     i = 0;
-    g = (*(char * *) &data_020ccf94);
+    g = (*(char **) &data_020ccf94);
     neg = -1;
     for (; i < 8; i++) {
         state = *(u8 *) (e + 0x250);

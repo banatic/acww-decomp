@@ -195,7 +195,8 @@ void func_02092748(void *a)
 
 void func_02092720(int param)
 {
-    func_020948b8(param, 31, (int) ((unsigned int *) data_020e29dc), 29, (int) ((unsigned int *) data_020e29dc), 29, (int) ((unsigned int *) data_020e29dc), -1, 0);
+    func_020948b8(param, 31, (int) ((unsigned int *) data_020e29dc), 29, (int) ((unsigned int *) data_020e29dc), 29,
+                  (int) ((unsigned int *) data_020e29dc), -1, 0);
 }
 
 void func_020926f8(int a)

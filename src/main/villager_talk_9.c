@@ -79,7 +79,8 @@ void func_0201e5d0(UnkStruct_0201e5d0_2 *self, UnkStruct_0201e5d0 *out)
 {
     int local0;
     local0 = func_020036e8(func_0208150c(((Field100Type *) self->unk_100)->unk_830));
-    func_0202da38((struct UnkStruct_0201e634_2 *) self, (unsigned char *) self->unk_104, (unsigned char *) (&self->unk_122), 0x1e, local0, (*(GlobalData *) &data_020c8b50).unk_00, 1, 0x10, (*(GlobalData *) &data_020c8b50).unk_04);
+    func_0202da38((struct UnkStruct_0201e634_2 *) self, (unsigned char *) self->unk_104, (unsigned char *) (&self->unk_122),
+                  0x1e, local0, (*(GlobalData *) &data_020c8b50).unk_00, 1, 0x10, (*(GlobalData *) &data_020c8b50).unk_04);
     out->ptr = self->unk_104;
     out->byte = self->unk_122;
 }

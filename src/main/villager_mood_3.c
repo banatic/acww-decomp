@@ -96,7 +96,8 @@ void func_0201cc6c(struct UnkStruct_0201cc6c *unk, unsigned int idx, unsigned in
 
 void func_0201cc48(UnkStruct_0201cc48 *arg)
 {
-    if (func_02073dd4((struct Global *) ((*(GlobStruct_0201cc48 * *) &data_020ccf94)), (*(GlobStruct_0201cc48 * *) &data_020ccf94)->unk_64) == 0) {
+    if (func_02073dd4((struct Global *) ((*(GlobStruct_0201cc48 **) &data_020ccf94)),
+                      (*(GlobStruct_0201cc48 **) &data_020ccf94)->unk_64) == 0) {
         arg->unk_58 = 1;
     }
 }

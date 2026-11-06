@@ -141,7 +141,8 @@ void func_02026804(UnkStruct_02026804 *self, UnkStruct_02026804_2 *out)
 
     if (local_data.unk_00 != 0) {
         a = func_020036e8(func_0208150c(*(int *) ((char *) self->unk_100 + 0x830)));
-        func_0202da38((int) self, (int) self->buffer104, (int) (&self->unk_122), 30, a, local_data.unk_00, (u8) local_data.unk_04, 0, 0);
+        func_0202da38((int) self, (int) self->buffer104, (int) (&self->unk_122), 30, a, local_data.unk_00,
+                      (u8) local_data.unk_04, 0, 0);
     }
 
     out->unk_00 = self->buffer104;

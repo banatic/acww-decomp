@@ -76,8 +76,8 @@ int func_02070150(void)
     if (data_020df328[0] != 3) {
         return 0;
     }
-    if ((*(struct s_02070150 * *) data_021cfca0) != 0) {
-        r4 = (*(struct s_02070150 * *) data_021cfca0)->unk_08;
+    if ((*(struct s_02070150 **) data_021cfca0) != 0) {
+        r4 = (*(struct s_02070150 **) data_021cfca0)->unk_08;
     } else {
         r4 = data_021cfc84;
     }

@@ -140,7 +140,7 @@ void func_ov003_0221648c(UnkStruct_0221648c *self)
     if (flag != 0) {
         return;
     }
-    if (func_02073908((unsigned int) ((*(void * *) &data_020ccf94)), self->unk_800) == 0) {
+    if (func_02073908((unsigned int) ((*(void **) &data_020ccf94)), self->unk_800) == 0) {
         return;
     }
     if (((self->unk_2D8 << 4) >> 16) > 8) {

@@ -50,7 +50,7 @@ void func_ov066_02268878(struct Arg *arg);
 
 void func_ov066_02268a1c(int arg)
 {
-    int status = WM_StartConnectEx((void (*)(void *)) (void (*)(void *)) func_ov066_0226890c, arg, 0, 1, 0);
+    int status = WM_StartConnectEx((void (*)(void *))(void (*)(void *)) func_ov066_0226890c, arg, 0, 1, 0);
     if (status == 2) {
         return;
     }
@@ -105,7 +105,7 @@ void func_ov066_0226890c(UnkStruct_0226890c *self)
 
 int func_ov066_022688cc(int param)
 {
-    int status = WM_Disconnect((void (*)(void *)) (void (*)(void *)) func_ov066_02268878, param);
+    int status = WM_Disconnect((void (*)(void *))(void (*)(void *)) func_ov066_02268878, param);
     if (status == 2) {
         return 1;
     } else {

@@ -96,7 +96,7 @@ void func_0205f950(void *object) {}
 
 void func_0205f910(int *out)
 {
-    int *p = (*(int * *) data_021c9ae0);
+    int *p = (*(int **) data_021c9ae0);
     unsigned int count = data_020ccf94[0x6c];
     unsigned int i;
 
@@ -111,8 +111,8 @@ void func_0205f8e8(int *arr)
     for (i = 0; i < 4; i++) {
         arr[i] = 0;
     }
-    if ((*(void * *) data_021c9ae0)) {
-        func_020e9b9c((*(void * *) data_021c9ae0));
+    if ((*(void **) data_021c9ae0)) {
+        func_020e9b9c((*(void **) data_021c9ae0));
     }
 }
 

@@ -55,7 +55,7 @@ struct UnkStruct_022201fc *func_ov003_022201fc(unsigned int a, unsigned int b)
 {
     unsigned int i = 0;
     while (i < 32) {
-        struct UnkStruct_022201fc *p = ((struct UnkStruct_022201fc * *) data_ov003_0223cef0)[i];
+        struct UnkStruct_022201fc *p = ((struct UnkStruct_022201fc **) data_ov003_0223cef0)[i];
         if (p != 0 && p->unk_22C == a && p->unk_230 == b) {
             return p;
         }
@@ -97,7 +97,7 @@ void *func_ov003_02220174(unsigned short key)
     void *q;
     int v;
     for (i = 0; i < 0x20; i++) {
-        e = ((void * *) data_ov003_0223cef0)[i];
+        e = ((void **) data_ov003_0223cef0)[i];
         if (e != 0) {
             q = func_ov009_02262fcc(e);
             if (func_0204bcdc(q) != 0) {

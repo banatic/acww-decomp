@@ -28,7 +28,7 @@ int func_0204fd6c(int i, UnkStruct_0204fd6c *q)
 {
     int r = 0;
     if (i >= 0 && i < data_020dcd78) {
-        unsigned char *e = (*(unsigned char * *) &data_021c8184) + 0x50 + i * 0x16c;
+        unsigned char *e = (*(unsigned char **) &data_021c8184) + 0x50 + i * 0x16c;
         int k = *(int *) (e + 0x40);
         if (k < 0 || k >= 0x38) {
             return 0;

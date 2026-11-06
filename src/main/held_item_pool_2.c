@@ -382,16 +382,16 @@ void func_0205f2f8(struct UnkStruct_0205f2f8_3 *self)
         }
     }
 
-    if ((*(void * *) &data_021c9acc) != 0) {
-        func_020e9b9c((*(void * *) &data_021c9acc));
+    if ((*(void **) &data_021c9acc) != 0) {
+        func_020e9b9c((*(void **) &data_021c9acc));
     }
 
     for (i = 0; i < 9; i++) {
         self->unk_00[i] = 0;
     }
 
-    if ((*(void * *) &data_021c9ad8) != 0) {
-        func_020e9b9c((*(void * *) &data_021c9ad8));
+    if ((*(void **) &data_021c9ad8) != 0) {
+        func_020e9b9c((*(void **) &data_021c9ad8));
     }
 }
 

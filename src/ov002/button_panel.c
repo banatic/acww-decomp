@@ -74,9 +74,11 @@ void *func_ov002_0220ad0c(char *self)
 
 int func_ov002_0220acc4(char *self)
 {
-    func_ov002_0220b36c((void *) ((char *) (self + 0x4)), (void *) ((int) (&data_ov002_0220bde0)), (unsigned char) ((unsigned char) (0x8)), (unsigned char) ((unsigned char) (0x2)));
+    func_ov002_0220b36c((void *) ((char *) (self + 0x4)), (void *) ((int) (&data_ov002_0220bde0)),
+                        (unsigned char) ((unsigned char) (0x8)), (unsigned char) ((unsigned char) (0x2)));
     func_ov002_0220b338(self + 0x4, 0x2);
-    func_ov002_0220b36c((void *) ((char *) (self + 0x80)), (void *) ((int) (&data_ov002_0220bdc0)), (unsigned char) ((unsigned char) (0x6)), (unsigned char) ((unsigned char) (0x1)));
+    func_ov002_0220b36c((void *) ((char *) (self + 0x80)), (void *) ((int) (&data_ov002_0220bdc0)),
+                        (unsigned char) ((unsigned char) (0x6)), (unsigned char) ((unsigned char) (0x1)));
     func_ov002_0220b338(self + 0x80, 0x21);
     *(u8 *) (self + 0x1c8) = 0x2;
     return 0x1c8;
@@ -84,9 +86,11 @@ int func_ov002_0220acc4(char *self)
 
 int func_ov002_0220ac7c(char *self)
 {
-    func_ov002_0220b36c((void *) ((char *) (self + 0x4)), (void *) ((int) (&data_ov002_0220be68)), (unsigned char) ((unsigned char) (0xc)), (unsigned char) ((unsigned char) (0x3)));
+    func_ov002_0220b36c((void *) ((char *) (self + 0x4)), (void *) ((int) (&data_ov002_0220be68)),
+                        (unsigned char) ((unsigned char) (0xc)), (unsigned char) ((unsigned char) (0x3)));
     func_ov002_0220b338(self + 0x4, 0x20);
-    func_ov002_0220b36c((void *) ((char *) (self + 0x80)), (void *) ((int) (&data_ov002_0220bdc0)), (unsigned char) ((unsigned char) (0x6)), (unsigned char) ((unsigned char) (0x1)));
+    func_ov002_0220b36c((void *) ((char *) (self + 0x80)), (void *) ((int) (&data_ov002_0220bdc0)),
+                        (unsigned char) ((unsigned char) (0x6)), (unsigned char) ((unsigned char) (0x1)));
     func_ov002_0220b338(self + 0x80, 0x21);
     *(u8 *) (self + 0x1c8) = 0x2;
     return 0x1c8;
@@ -153,9 +157,11 @@ int func_ov002_0220aacc(char *self, void *arg)
     func_ov002_0220b04c((void *) (self + 0xfc));
     func_ov002_0220b06c((void *) (self + 0xfc), (int) arg, 0x80, 0x4);
     func_0208aa68(self + 0xfc);
-    func_ov002_0220b36c((void *) ((char *) (self + 0x4)), (void *) ((int) (&data_ov002_0220bd38)), (unsigned char) ((unsigned char) (0x4)), (unsigned char) ((unsigned char) (0x1)));
+    func_ov002_0220b36c((void *) ((char *) (self + 0x4)), (void *) ((int) (&data_ov002_0220bd38)),
+                        (unsigned char) ((unsigned char) (0x4)), (unsigned char) ((unsigned char) (0x1)));
     func_ov002_0220b338(self + 0x4, 0x4);
-    func_ov002_0220b36c((void *) ((char *) (self + 0x80)), (void *) ((int) (&data_ov002_0220bd20)), (unsigned char) ((unsigned char) (0x4)), (unsigned char) ((unsigned char) (0x1)));
+    func_ov002_0220b36c((void *) ((char *) (self + 0x80)), (void *) ((int) (&data_ov002_0220bd20)),
+                        (unsigned char) ((unsigned char) (0x4)), (unsigned char) ((unsigned char) (0x1)));
     func_ov002_0220b338(self + 0x80, 0x13);
     *(u8 *) (self + 0x1c8) = 0x7;
     return 0x1c8;
@@ -166,9 +172,11 @@ int func_ov002_0220aa60(char *self, void *arg)
     func_ov002_0220b04c((void *) (self + 0xfc));
     func_ov002_0220b06c((void *) (self + 0xfc), (int) arg, 0x80, 0x11);
     func_0208aa68(self + 0xfc);
-    func_ov002_0220b36c((void *) ((char *) (self + 0x4)), (void *) ((int) (&data_ov002_0220bd38)), (unsigned char) ((unsigned char) (0x4)), (unsigned char) ((unsigned char) (0x1)));
+    func_ov002_0220b36c((void *) ((char *) (self + 0x4)), (void *) ((int) (&data_ov002_0220bd38)),
+                        (unsigned char) ((unsigned char) (0x4)), (unsigned char) ((unsigned char) (0x1)));
     func_ov002_0220b338(self + 0x4, 0x4);
-    func_ov002_0220b36c((void *) ((char *) (self + 0x80)), (void *) ((int) (&data_ov002_0220bd20)), (unsigned char) ((unsigned char) (0x4)), (unsigned char) ((unsigned char) (0x1)));
+    func_ov002_0220b36c((void *) ((char *) (self + 0x80)), (void *) ((int) (&data_ov002_0220bd20)),
+                        (unsigned char) ((unsigned char) (0x4)), (unsigned char) ((unsigned char) (0x1)));
     func_ov002_0220b338(self + 0x80, 0x13);
     *(u8 *) (self + 0x1c8) = 0x8;
     return 0x1c8;

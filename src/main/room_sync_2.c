@@ -45,7 +45,7 @@ void func_02051f74(unsigned int a0, unsigned int a1, unsigned int a2, unsigned i
     unsigned short flags;
     void *base;
 
-    if (!func_02073d90((int) ((*(void * *) &data_020ccf94))) || func_020a7278()) {
+    if (!func_02073d90((int) ((*(void **) &data_020ccf94))) || func_020a7278()) {
         func_0205298c(a0, a1, a2, a3, 1);
         return;
     }
@@ -60,7 +60,7 @@ void func_02051f74(unsigned int a0, unsigned int a1, unsigned int a2, unsigned i
     flags = (flags & ~0x780) | (((unsigned short) a1 & 0xf) << 7);
     flags = (flags & ~0x7800) | (((unsigned short) a2 & 0xf) << 11);
 
-    base = (*(void * *) &data_020ccf94);
+    base = (*(void **) &data_020ccf94);
     func_02073820(base);
     func_020737f0(base, &flags, 2);
     func_02073770(base, 0x1d, 6);

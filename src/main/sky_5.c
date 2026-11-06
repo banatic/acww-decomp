@@ -221,8 +221,16 @@ void func_020bba14(void)
     x1 = Tl(hr1 * 32, tbl[ix][ap1]);
     x2 = Tl(hr2 * 32, tbl[ix][ap2]);
     func_020bbbc0(g->unk_00, (void *) x1, (void *) x2, (void *) b);
-    if ((*(struct Ab { u8 pad_00[0x28]; int unk_28; } *) &data_021f8ab0).unk_28 != data_021f8ad4) {
-        ix = data_020d2364[(*(struct Ab { u8 pad_00[0x28]; int unk_28; } *) &data_021f8ab0).unk_28];
+    if ((*(struct Ab {
+            u8 pad_00[0x28];
+            int unk_28;
+        } *) &data_021f8ab0)
+            .unk_28 != data_021f8ad4) {
+        ix = data_020d2364[(*(struct Ab {
+                               u8 pad_00[0x28];
+                               int unk_28;
+                           } *) &data_021f8ab0)
+                               .unk_28];
         x1 = Tl(hr1 * 32, tbl[ix][ap1]);
         x2 = Tl(hr2 * 32, tbl[ix][ap2]);
         func_020bbbc0(g->p1, (void *) x1, (void *) x2, (void *) b);

@@ -584,7 +584,8 @@ void func_ov003_02214384(struct UnkStruct_02214384 *self)
         }
     }
 
-    switch ((unsigned int) func_ov003_022140a8((char *) self, (unsigned char *) (&st), (int *) ((Vec_02214384 *) &pr), (int *) (&st.b))) {
+    switch ((unsigned int) func_ov003_022140a8((char *) self, (unsigned char *) (&st), (int *) ((Vec_02214384 *) &pr),
+                                               (int *) (&st.b))) {
         case 1:
             if (func_ov003_0222e3a4(st.c) != 0) {
                 s7->unk_00 = 1;

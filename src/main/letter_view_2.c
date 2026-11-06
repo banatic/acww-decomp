@@ -297,7 +297,7 @@ void func_0206e03c(UnkStruct_0206e03c_2 *s, unsigned short *p1, int flag)
 
     func_0206df1c((int) s, (int) p1, (int) s->unk_308, (int) (&s->unk_31C));
     func_020a88ec(obj);
-    *(void **) obj = ((void * *) data_020df270);
+    *(void **) obj = ((void **) data_020df270);
     buf[0] = 0;
     zero = 0;
     for (i = 0; i < 4; i++) {
@@ -326,7 +326,7 @@ void func_0206e03c(UnkStruct_0206e03c_2 *s, unsigned short *p1, int flag)
             }
         }
     }
-    *(void **) obj = ((void * *) data_020df270);
+    *(void **) obj = ((void **) data_020df270);
     func_020a887c(obj);
 }
 

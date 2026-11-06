@@ -107,7 +107,7 @@ void func_02079774(void *param)
 {
     int result;
 
-    result = func_02073d90((int) ((*(void * *) &data_020ccf94)));
+    result = func_02073d90((int) ((*(void **) &data_020ccf94)));
     if (result == 0) {
         func_020797bc(0, (Box *) param);
     }

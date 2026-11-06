@@ -76,7 +76,8 @@ int func_0202f3e4(void *a0, void *a1, void *a2, int a3)
     if (v2 >= 0) {
         absv1 = v1 < 0 ? -v1 : v1;
         if (absv1 <= a3) {
-            if (func_0202f464((UnkStruct_0202f464 *) a0, (int) a2) != 0 || func_0202f464((UnkStruct_0202f464 *) a0, (int) a1) != 0) {
+            if (func_0202f464((UnkStruct_0202f464 *) a0, (int) a2) != 0 ||
+                func_0202f464((UnkStruct_0202f464 *) a0, (int) a1) != 0) {
                 char *p = (char *) a0 + 0x14;
                 pair[0] = *(int *) p;
                 pair[1] = *(int *) (p + 4);

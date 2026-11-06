@@ -25,7 +25,12 @@ extern int func_ov126_022a0a90(int);
 int func_ov126_0229fe28(void *arg)
 {
     int r4;
-    if (!((*(struct { char pad[2]; unsigned short flag; } *) data_021fbe40).flag & 1)) {
+    if (!((*(struct {
+              char pad[2];
+              unsigned short flag;
+          } *) data_021fbe40)
+              .flag &
+          1)) {
         return 0;
     }
     r4 = func_ov095_02299a00((char *) arg + 0x19c);

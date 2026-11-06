@@ -260,7 +260,8 @@ void *func_ov004_0223cc10(char *base, int x, int y, int layer)
 {
     unsigned char *p = (unsigned char *) base + ((layer & 1) << 8) + ((y & 0xf) << 4) + (x & 0xf);
     unsigned char id = *p;
-    if (id != 0xff && id < (unsigned) func_ov004_0223c130() && (void *) func_ov004_0223cd58((int *) (func_ov004_0223ce84()), id) != 0) {
+    if (id != 0xff && id < (unsigned) func_ov004_0223c130() &&
+        (void *) func_ov004_0223cd58((int *) (func_ov004_0223ce84()), id) != 0) {
         return (void *) func_ov004_0223cd58((int *) (func_ov004_0223ce84()), *p);
     }
     return 0;

@@ -56,7 +56,15 @@ void func_02001d44(int cond)
         mask = 0x100;
     }
 
-    v = (*(struct { char pad[0x12]; unsigned short flags; } *) &data_0213fe74).flags;
+    v = (*(struct {
+            char pad[0x12];
+            unsigned short flags;
+        } *) &data_0213fe74)
+            .flags;
     v |= mask;
-    (*(struct { char pad[0x12]; unsigned short flags; } *) &data_0213fe74).flags = v;
+    (*(struct {
+        char pad[0x12];
+        unsigned short flags;
+    } *) &data_0213fe74)
+        .flags = v;
 }

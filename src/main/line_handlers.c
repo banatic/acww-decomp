@@ -66,7 +66,7 @@ void func_0205c0d4(void)
 
 void func_0205c080(void)
 {
-    struct Node *node = (*(struct Node * *) &data_021c9aa8);
+    struct Node *node = (*(struct Node **) &data_021c9aa8);
     while (node) {
         if (node->state == 0) {
             node->state = 1;
@@ -93,7 +93,7 @@ void func_0205c080(void)
 void func_0205c054(void)
 {
     Node_0205c054 *p;
-    p = (*(Node_0205c054 * *) &data_021c9aa8);
+    p = (*(Node_0205c054 **) &data_021c9aa8);
     while (p) {
         if ((unsigned char) (p->type + 0xFF) <= 1) {
             if (p->func != 0) {
@@ -112,12 +112,12 @@ int func_0205c024(struct Node_0205c024 *node, int a, int b, int c)
     node->unk_04 = c;
     node->unk_18 = 0;
     node->unk_00 = 0;
-    if ((*(struct Node_0205c024 * *) &data_021c9aac)) {
-        (*(struct Node_0205c024 * *) &data_021c9aac)->unk_18 = node;
-        (*(struct Node_0205c024 * *) &data_021c9aac) = node;
+    if ((*(struct Node_0205c024 **) &data_021c9aac)) {
+        (*(struct Node_0205c024 **) &data_021c9aac)->unk_18 = node;
+        (*(struct Node_0205c024 **) &data_021c9aac) = node;
     } else {
-        (*(struct Node_0205c024 * *) &data_021c9aac) = node;
-        (*(struct Node_0205c024 * *) &data_021c9aa8) = node;
+        (*(struct Node_0205c024 **) &data_021c9aac) = node;
+        (*(struct Node_0205c024 **) &data_021c9aa8) = node;
     }
     return 1;
 }
@@ -125,19 +125,19 @@ int func_0205c024(struct Node_0205c024 *node, int a, int b, int c)
 int func_0205bfdc(struct Node_0205bfdc *node)
 {
     struct Node_0205bfdc *prev;
-    if (node == (*(struct Node_0205bfdc * *) &data_021c9aa8)) {
-        (*(struct Node_0205bfdc * *) &data_021c9aa8) = node->next;
-        if ((*(struct Node_0205bfdc * *) &data_021c9aac) == node) {
-            (*(struct Node_0205bfdc * *) &data_021c9aac) = 0;
+    if (node == (*(struct Node_0205bfdc **) &data_021c9aa8)) {
+        (*(struct Node_0205bfdc **) &data_021c9aa8) = node->next;
+        if ((*(struct Node_0205bfdc **) &data_021c9aac) == node) {
+            (*(struct Node_0205bfdc **) &data_021c9aac) = 0;
         }
         return 1;
     }
-    prev = (*(struct Node_0205bfdc * *) &data_021c9aa8);
+    prev = (*(struct Node_0205bfdc **) &data_021c9aa8);
     while (prev) {
         if (prev->next == node) {
             prev->next = prev->next->next;
-            if ((*(struct Node_0205bfdc * *) &data_021c9aac) == node) {
-                (*(struct Node_0205bfdc * *) &data_021c9aac) = prev;
+            if ((*(struct Node_0205bfdc **) &data_021c9aac) == node) {
+                (*(struct Node_0205bfdc **) &data_021c9aac) = prev;
             }
             return 1;
         }

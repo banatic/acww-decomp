@@ -20,8 +20,8 @@ int func_020a17d0(void)
 int func_020a17a8(void)
 {
     unsigned char *p;
-    if ((*(void * *) &data_021f3c3c) && (*(int *) ((char *) (*(void * *) &data_021f3c3c) + 0x50) == 0x1f)) {
-        p = (unsigned char *) (*(void * *) &data_021f3c3c) + 0xa1;
+    if ((*(void **) &data_021f3c3c) && (*(int *) ((char *) (*(void **) &data_021f3c3c) + 0x50) == 0x1f)) {
+        p = (unsigned char *) (*(void **) &data_021f3c3c) + 0xa1;
         if (*p == 0x0f || *p == 0x14) {
             return 1;
         }

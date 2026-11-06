@@ -126,9 +126,9 @@ char *func_02059cf8(UnkStruct_02059cf8 *obj, int size)
 void *func_02059cc4(struct Params *a, int index)
 {
     if (a->unk_0C == 9) {
-        return ((struct Entry * *) data_020dd31c)[3][index].data;
+        return ((struct Entry **) data_020dd31c)[3][index].data;
     } else {
-        return ((struct Entry * *) data_020dd31c)[func_02059d28((void *) a)][index].data;
+        return ((struct Entry **) data_020dd31c)[func_02059d28((void *) a)][index].data;
     }
 }
 
@@ -155,7 +155,7 @@ int func_02059c60(int param)
 
 int func_02059c40(void)
 {
-    func_020044a0((*(char * *) &data_021c9350) + 0xDC);
-    (*(char * *) &data_021c9350) = 0;
+    func_020044a0((*(char **) &data_021c9350) + 0xDC);
+    (*(char **) &data_021c9350) = 0;
     return 1;
 }

@@ -274,7 +274,8 @@ void func_ov106_0229cf0c(unsigned char *self)
 
 void func_ov106_0229cea8(struct UnkStruct_0229cea8 *self)
 {
-    if (func_ov106_0229d3a0((int) self, (unsigned char) self->unk_B8) != 0 || func_ov106_0229d390((char *) self, (char *) self->unk_B8) != 0) {
+    if (func_ov106_0229d3a0((int) self, (unsigned char) self->unk_B8) != 0 ||
+        func_ov106_0229d390((char *) self, (char *) self->unk_B8) != 0) {
         if (func_ov106_0229d090((void *) self, (void *) self->unk_B8) != 0) {
             func_ov002_02207cf0(self->target);
         } else {

@@ -474,7 +474,8 @@ void func_020993b4(void *param)
                 }
                 if (cond) {
                     func_02098f0c((int) p1, (unsigned short *) p2, i, 1);
-                    func_0203cd2c((unsigned int) (unsigned char *) func_020996ac((int) param), (unsigned short *) p2, (unsigned int) val3, 1);
+                    func_0203cd2c((unsigned int) (unsigned char *) func_020996ac((int) param), (unsigned short *) p2,
+                                  (unsigned int) val3, 1);
                 }
             }
             p2 += 2;

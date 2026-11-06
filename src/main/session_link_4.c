@@ -56,7 +56,7 @@ void func_02074d60(int param0)
     UnkStruct_02074d60 *p;
 
     i = 3;
-    loopPtr = (*(UnkStruct_02074d60 * *) &data_020ccf94);
+    loopPtr = (*(UnkStruct_02074d60 **) &data_020ccf94);
 
     do {
         if (func_02073dd4(loopPtr, i) != 0) {
@@ -71,7 +71,7 @@ void func_02074d60(int param0)
 
     func_020a7394(param0, 0x3f, 0, 0, 7);
 
-    p = (*(UnkStruct_02074d60 * *) &data_020ccf94);
+    p = (*(UnkStruct_02074d60 **) &data_020ccf94);
     func_02073de0(p, param0, 0);
     func_020738f4(p, (unsigned char) (p->unk_6C - 1));
     func_02073cb8(p, param0);
@@ -94,6 +94,6 @@ void func_02074d24(int arg)
         i--;
     } while (i >= 0);
 
-    (*(unsigned char * *) &data_020ccf94)[0x6d] = max;
+    (*(unsigned char **) &data_020ccf94)[0x6d] = max;
     (func_0205cb68(0x4b000, arg), func_020ecf20());
 }

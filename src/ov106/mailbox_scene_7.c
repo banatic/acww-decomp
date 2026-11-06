@@ -293,9 +293,14 @@ void func_ov106_0229e2dc(UnkStruct_0229e2dc *s)
         return;
     }
     if (func_ov106_0229d0d0((UnkStruct_0229e544 *) s, (unsigned char) s->unk_B8) == 0) {
-        val = (*(struct { char pad2[2]; unsigned short field; } *) data_021fbe40).field;
+        val = (*(struct {
+                  char pad2[2];
+                  unsigned short field;
+              } *) data_021fbe40)
+                  .field;
         if (val & 1) {
-            if (func_ov106_0229d3a0((UnkStruct_0229e544 *) s, (unsigned char) s->unk_B8) != 0 || func_ov106_0229d390((UnkStruct_0229e544 *) s, (unsigned char) s->unk_B8) != 0) {
+            if (func_ov106_0229d3a0((UnkStruct_0229e544 *) s, (unsigned char) s->unk_B8) != 0 ||
+                func_ov106_0229d390((UnkStruct_0229e544 *) s, (unsigned char) s->unk_B8) != 0) {
                 if (func_ov106_0229d090((UnkStruct_0229e544 *) s, (unsigned char) s->unk_B8) == 0) {
                     func_ov106_0229c798((const unsigned char *) s, s->unk_B8, 0);
                 }
@@ -317,7 +322,11 @@ void func_ov106_0229e2dc(UnkStruct_0229e2dc *s)
             return;
         }
     }
-    val = (*(struct { char pad2[2]; unsigned short field; } *) data_021fbe40).field;
+    val = (*(struct {
+              char pad2[2];
+              unsigned short field;
+          } *) data_021fbe40)
+              .field;
     if ((val & 8) || (val & 2)) {
         func_ov106_0229cc50(s);
         func_ov106_0229c378((UnkStruct_0229e544 *) s);
@@ -345,8 +354,10 @@ void func_ov106_0229e1d8(void *self)
             unsigned short flags = data_021fbe40[1];
             if (flags & 1) {
                 if (func_ov106_0229d3a0((UnkStruct_0229e544 *) self, (unsigned char) (((unsigned char *) self)[0xB8])) != 0) {
-                    if (func_ov106_0229d390((UnkStruct_0229e544 *) self, (unsigned char) (((unsigned char *) self)[0xB7])) != 0) {
-                        if (func_ov106_0229d090((UnkStruct_0229e544 *) self, (unsigned char) (((unsigned char *) self)[0xB8])) == 0) {
+                    if (func_ov106_0229d390((UnkStruct_0229e544 *) self, (unsigned char) (((unsigned char *) self)[0xB7])) !=
+                        0) {
+                        if (func_ov106_0229d090((UnkStruct_0229e544 *) self,
+                                                (unsigned char) (((unsigned char *) self)[0xB8])) == 0) {
                             return;
                         }
                     }

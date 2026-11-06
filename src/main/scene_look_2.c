@@ -412,7 +412,8 @@ int func_0201ab94(int a, void *argument1, void *argument2, int argument3)
     int r1;
 
     r4 = a;
-    r0 = func_0201abe8((int) a, (UnkStruct_0201abe8 *) ((void *) argument1), (UnkStruct_0201abe8 *) ((void *) argument2), (int) argument3);
+    r0 = func_0201abe8((int) a, (UnkStruct_0201abe8 *) ((void *) argument1), (UnkStruct_0201abe8 *) ((void *) argument2),
+                       (int) argument3);
     r1 = r0;
     r0 = r4;
     return func_0201ab70((char *) r0, r1);
@@ -541,5 +542,6 @@ void func_0201a98c(UnkStruct_0201a98c_2 *self, void *param)
     copy.x = local.x;
     copy.y = local.y;
     copy.z = local.z;
-    func_0201aa94((UnkStruct_0201aa94 *) self, (SomeB *) param, (void *) self->unk_04, (int) (&copy), self->unk_5C, self->unk_60);
+    func_0201aa94((UnkStruct_0201aa94 *) self, (SomeB *) param, (void *) self->unk_04, (int) (&copy), self->unk_5C,
+                  self->unk_60);
 }

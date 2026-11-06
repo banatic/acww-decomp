@@ -130,7 +130,8 @@ int func_ov068_0226ca74(unsigned int arg0, char *arg1)
         local[0] = data_021c67d0[0];
         local[1] = data_021c67d0[1];
         local[2] = data_021c67d0[2];
-        ret = func_ov068_0226caac((struct UnkStruct_0226caac *) arg0, (struct UnkStruct_0226caac_2 *) local, (struct UnkStruct_0226caac_3 *) dst);
+        ret = func_ov068_0226caac((struct UnkStruct_0226caac *) arg0, (struct UnkStruct_0226caac_2 *) local,
+                                  (struct UnkStruct_0226caac_3 *) dst);
     }
     return ret;
 }

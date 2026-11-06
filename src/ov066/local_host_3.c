@@ -74,7 +74,7 @@ void func_ov066_02268c18(unsigned short *arg0)
 
 void func_ov066_02268be4(void)
 {
-    int status = WM_StartParent((void (*)(void *)) (void (*)(void *)) func_ov066_02268b04);
+    int status = WM_StartParent((void (*)(void *))(void (*)(void *)) func_ov066_02268b04);
     if (status == 2) {
         return;
     }
@@ -97,7 +97,7 @@ void func_ov066_02268b04(Pkt *p)
                 func_ov066_0226908c(p);
                 break;
             case 9:
-                if ((*(UnkStruct_02268b04 * *) &data_ov066_0226bdf4)->flag) {
+                if ((*(UnkStruct_02268b04 **) &data_ov066_0226bdf4)->flag) {
                     func_ov066_02266e64();
                 } else {
                     func_ov066_02268f98(p);
@@ -111,7 +111,7 @@ void func_ov066_02268b04(Pkt *p)
 
 void func_ov066_02268ad0(void)
 {
-    int status = WM_EndParent((void (*)(void *)) (void (*)(void *)) func_ov066_02268a60);
+    int status = WM_EndParent((void (*)(void *))(void (*)(void *)) func_ov066_02268a60);
     if (status == 2) {
         return;
     }
@@ -125,7 +125,7 @@ void func_ov066_02268a60(UnkStruct_02268a60_2 *self)
     }
     if (self->unk_02 == 0) {
         *(data_ov066_0226bdec + 1) = 4;
-        if ((*(UnkStruct_02268a60 * *) &data_ov066_0226bdf4)->b) {
+        if ((*(UnkStruct_02268a60 **) &data_ov066_0226bdf4)->b) {
             func_ov066_02269dcc();
         }
         func_ov066_02266bf4();

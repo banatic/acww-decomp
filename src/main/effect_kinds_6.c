@@ -241,7 +241,7 @@ int func_020930a0(int a0, int a1, int a2, int a3, int a4)
     int i;
     void **p;
     func_02091494((int *) (&data_021d5658), -1, a0, a1, a2, a3, -1);
-    if (func_02090c2c(a4, a1, a2, (int *) (((void * *) &data_020e27c8))) == 0) {
+    if (func_02090c2c(a4, a1, a2, (int *) (((void **) &data_020e27c8))) == 0) {
         goto ret3;
     }
     i = 0;

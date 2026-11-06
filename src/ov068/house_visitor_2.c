@@ -210,8 +210,16 @@ int func_ov068_02275934(UnkStruct_02275934 *self)
     self->unk_A78 = self->unk_64;
     self->unk_A78 -= 0x2000;
 
-    a = (*(volatile struct { u32 a; u32 b; } *) &__ptmf_null).a;
-    b = (*(volatile struct { u32 a; u32 b; } *) &__ptmf_null).b;
+    a = (*(volatile struct {
+            u32 a;
+            u32 b;
+        } *) &__ptmf_null)
+            .a;
+    b = (*(volatile struct {
+            u32 a;
+            u32 b;
+        } *) &__ptmf_null)
+            .b;
     self->unk_A44 = a;
     self->unk_A48 = b;
 

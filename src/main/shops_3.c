@@ -277,7 +277,8 @@ int func_020ad944(void *arg)
         v1 = func_0204c7f0(&s1.w);
 
         if (func_020979f0(buffer, 0) != 0) {
-            v3 = func_020adf50((void *) func_020996a0((int) ((((void *) (func_020af750(gptr, (int) v1, 1), gptr)), (void *) func_020984e8()))));
+            v3 = func_020adf50((void *) func_020996a0(
+                (int) ((((void *) (func_020af750(gptr, (int) v1, 1), gptr)), (void *) func_020984e8()))));
             func_020ade0c((int) v3, (int) v1);
             func_02066688(buffer);
             func_02062f4c(s2);

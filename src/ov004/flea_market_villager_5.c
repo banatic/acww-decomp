@@ -135,7 +135,10 @@ int func_ov004_0221fbf8(char *s)
 
 int func_ov004_0221fbc4(int param)
 {
-    func_02019d0c((void *) ((void *) (param + 0x564)), (int) ((int) (1)), (int) ((int) (1)), (int) ((int) (0)), (int) ((int) (0)), (short) ((short) ((short) (0))), (short) ((short) ((short) (0))), (int) ((int) (0)), (int) ((int) (0)), (unsigned short) ((unsigned short) ((unsigned short) (data_020c80f8))), (unsigned short) ((unsigned short) ((unsigned short) (0))));
+    func_02019d0c((void *) ((void *) (param + 0x564)), (int) ((int) (1)), (int) ((int) (1)), (int) ((int) (0)),
+                  (int) ((int) (0)), (short) ((short) ((short) (0))), (short) ((short) ((short) (0))), (int) ((int) (0)),
+                  (int) ((int) (0)), (unsigned short) ((unsigned short) ((unsigned short) (data_020c80f8))),
+                  (unsigned short) ((unsigned short) ((unsigned short) (0))));
     return 1;
 }
 
@@ -241,6 +244,6 @@ int func_ov004_0221f990(char *self)
     // DECLS
     // ENDDECLS
     *(u8 *) (self + 0xa55) = 0x32;
-    func_02019d0c(self + 0x564, 0x1, 0x1, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, *(u16 *) ((char *) ((void * *) &data_020c80f8)), 0x0);
+    func_02019d0c(self + 0x564, 0x1, 0x1, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, *(u16 *) ((char *) ((void **) &data_020c80f8)), 0x0);
     return 0x1;
 }

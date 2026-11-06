@@ -136,7 +136,7 @@ int func_ov004_02225794(void *arg0)
     if (func_0202ec14((void *) arg0) == 0) {
         return 0;
     }
-    g = (*(char * *) &data_020ccf94);
+    g = (*(char **) &data_020ccf94);
     if (func_02073dd4(g, *(int *) (g + 0x64)) != 0) {
         if (func_02073d90(g) == 0) {
             q = &data_021e5a2c;

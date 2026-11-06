@@ -83,7 +83,7 @@ extern int func_020ad0c0(void *a, void *b, int c, int d, int e, int f, int g, vo
 extern int FX_Div(int a, int b);     // 0x01ffc5a4
 extern int FX_MulFunc(int a, int b); // 0x01ffcb0c
 
-                                     // 0x021367a8
+// 0x021367a8
 
 extern void func_020e96c8(void *a, int b, int c, int d);
 extern void func_020e9838(void *a, int b, int c, int d);

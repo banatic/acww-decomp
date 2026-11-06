@@ -49,14 +49,15 @@ int func_ov004_0223fa10(char *self, int a1)
     // ENDDECLS
     v1 = func_ov004_0223fa80();
     if (v1 != -0x1) {
-        *(u8 *) ((char *) ((void * *) data_ov004_02259a34) + (0x2d8 * v1) + 0x196) = a1;
-        *(int *) ((char *) ((void * *) data_ov004_02259a34) + (0x2d8 * v1) + 0x198) = 0x1;
-        func_0209d238((void *) ((void *) (self + 0x180)),
-                      (unsigned short *) ((unsigned short *) ((char *) ((void * *) data_ov004_02259a34) + (0x2d8 * v1) + 0x284)));
-        func_0209d0a4((char *) ((void * *) data_ov004_02259a34) + (0x2d8 * v1) + 0x288);
-        func_ov004_0223fad0(self, (char *) ((void * *) data_ov004_02259a34) + (0x2d8 * v1));
-        *(void **) ((char *) ((void * *) data_ov004_02259a34) + (0x2d8 * v1) + 0x18) = 0x0;
-        *(void **) ((char *) ((void * *) data_ov004_02259a34) + (0x2d8 * v1) + 0x1c) = 0x0;
+        *(u8 *) ((char *) ((void **) data_ov004_02259a34) + (0x2d8 * v1) + 0x196) = a1;
+        *(int *) ((char *) ((void **) data_ov004_02259a34) + (0x2d8 * v1) + 0x198) = 0x1;
+        func_0209d238(
+            (void *) ((void *) (self + 0x180)),
+            (unsigned short *) ((unsigned short *) ((char *) ((void **) data_ov004_02259a34) + (0x2d8 * v1) + 0x284)));
+        func_0209d0a4((char *) ((void **) data_ov004_02259a34) + (0x2d8 * v1) + 0x288);
+        func_ov004_0223fad0(self, (char *) ((void **) data_ov004_02259a34) + (0x2d8 * v1));
+        *(void **) ((char *) ((void **) data_ov004_02259a34) + (0x2d8 * v1) + 0x18) = 0x0;
+        *(void **) ((char *) ((void **) data_ov004_02259a34) + (0x2d8 * v1) + 0x1c) = 0x0;
         return 0x1;
     }
     return 0x0;

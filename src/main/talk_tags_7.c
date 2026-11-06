@@ -83,7 +83,7 @@ void func_02069d8c(struct UnkStruct_02069d8c_2 *self)
     }
     func_020a9334((void *) self, func_020a82f8(self->unk_5C));
     func_020a9334((void *) self, ((struct UnkStruct_02069d8c *) ((char *) self->unk_24 + 0x1e24))
-                            ->vtbl->func3((struct UnkStruct_02069d8c *) ((char *) self->unk_24 + 0x1e24)));
+                                     ->vtbl->func3((struct UnkStruct_02069d8c *) ((char *) self->unk_24 + 0x1e24)));
     func_020a9334((void *) self, func_020a82f8(2));
     func_020a7994((char *) self->unk_24 + 0x1a58,
                   ((struct UnkStruct_02069d8c *) ((char *) self->unk_24 + 0x1e24))

@@ -86,9 +86,10 @@ void func_ov066_022684c4(UnkStruct_022684c4 *p);
 
 void func_ov066_022686f0(void)
 {
-    int status = WM_StartMPEx((void (*)(void *)) (void (*)(void *)) func_ov066_02268570, data_ov066_0226bdf4->unk_0C, data_ov066_0226bdf4->unk_1A,
-                              data_ov066_0226bdf4->unk_10, data_ov066_0226bdf4->unk_1C, data_ov066_0226bdec->unk_17, 4,
-                              data_ov066_0226bdec->b0, data_ov066_0226bdec->b1, 1, data_ov066_0226bdec->b2);
+    int status = WM_StartMPEx((void (*)(void *))(void (*)(void *)) func_ov066_02268570, data_ov066_0226bdf4->unk_0C,
+                              data_ov066_0226bdf4->unk_1A, data_ov066_0226bdf4->unk_10, data_ov066_0226bdf4->unk_1C,
+                              data_ov066_0226bdec->unk_17, 4, data_ov066_0226bdec->b0, data_ov066_0226bdec->b1, 1,
+                              data_ov066_0226bdec->b2);
     if (status == 2) {
         return;
     }
@@ -109,15 +110,15 @@ void func_ov066_02268570(struct UnkStruct_02268570_3 *p)
     if (v == 0) {
         switch (p->unk_04) {
             case 0xa:
-                (*(struct UnkStruct_02268570_2 * *) &data_ov066_0226bdf4)->unk_C0 &= ~0x20;
-                (*(struct UnkStruct_02268570 * *) &data_ov066_0226bdec)->unk_3C |= 0x1000;
-                (*(struct UnkStruct_02268570_2 * *) &data_ov066_0226bdf4)->unk_9C();
-                (*(struct UnkStruct_02268570_2 * *) &data_ov066_0226bdf4)->unk_C0 &= ~1;
-                (*(struct UnkStruct_02268570_2 * *) &data_ov066_0226bdf4)->unk_C0 &= ~2;
-                q = (*(struct UnkStruct_02268570_2 * *) &data_ov066_0226bdf4);
+                (*(struct UnkStruct_02268570_2 **) &data_ov066_0226bdf4)->unk_C0 &= ~0x20;
+                (*(struct UnkStruct_02268570 **) &data_ov066_0226bdec)->unk_3C |= 0x1000;
+                (*(struct UnkStruct_02268570_2 **) &data_ov066_0226bdf4)->unk_9C();
+                (*(struct UnkStruct_02268570_2 **) &data_ov066_0226bdf4)->unk_C0 &= ~1;
+                (*(struct UnkStruct_02268570_2 **) &data_ov066_0226bdf4)->unk_C0 &= ~2;
+                q = (*(struct UnkStruct_02268570_2 **) &data_ov066_0226bdf4);
                 if (q->unk_1E == 0) {
                     func_ov066_022695ac(0, &q->unk_22);
-                    a = (*(struct UnkStruct_02268570 * *) &data_ov066_0226bdec);
+                    a = (*(struct UnkStruct_02268570 **) &data_ov066_0226bdec);
                     if (a->unk_04 != 0xa) {
                         a->unk_04 = 0xa;
                     }
@@ -129,16 +130,16 @@ void func_ov066_02268570(struct UnkStruct_02268570_3 *p)
                 return;
             case 0xb:
                 func_ov066_02268c90();
-                if ((*(struct UnkStruct_02268570_2 * *) &data_ov066_0226bdf4)->unk_A0 != 0) {
-                    (*(struct UnkStruct_02268570_2 * *) &data_ov066_0226bdf4)->unk_A0();
+                if ((*(struct UnkStruct_02268570_2 **) &data_ov066_0226bdf4)->unk_A0 != 0) {
+                    (*(struct UnkStruct_02268570_2 **) &data_ov066_0226bdf4)->unk_A0();
                 }
                 return;
             case 0xc:
                 func_ov066_02268c90();
                 return;
             case 0xd:
-                if ((*(struct UnkStruct_02268570_2 * *) &data_ov066_0226bdf4)->unk_A4 != 0) {
-                    (*(struct UnkStruct_02268570_2 * *) &data_ov066_0226bdf4)->unk_A4();
+                if ((*(struct UnkStruct_02268570_2 **) &data_ov066_0226bdf4)->unk_A4 != 0) {
+                    (*(struct UnkStruct_02268570_2 **) &data_ov066_0226bdf4)->unk_A4();
                 }
                 return;
         }
@@ -158,7 +159,7 @@ void func_ov066_02268570(struct UnkStruct_02268570_3 *p)
 
 void func_ov066_0226853c(void)
 {
-    int status = WM_EndMP((void (*)(void *)) (void (*)(void *)) func_ov066_022684c4);
+    int status = WM_EndMP((void (*)(void *))(void (*)(void *)) func_ov066_022684c4);
     if (status == 2) {
         return;
     }
@@ -171,7 +172,7 @@ void func_ov066_022684c4(UnkStruct_022684c4 *p)
         return;
     }
     if (p->unk_02 == 0) {
-        UnkStruct_022684c4_2 *q = (*(UnkStruct_022684c4_2 * *) &data_ov066_0226bdf4);
+        UnkStruct_022684c4_2 *q = (*(UnkStruct_022684c4_2 **) &data_ov066_0226bdf4);
         if (!q->b3) {
             return;
         }

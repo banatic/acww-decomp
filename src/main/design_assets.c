@@ -66,7 +66,8 @@ int func_020714e0(unsigned int a)
         goto fail;
     }
     func_0203cff8((UnkStruct_02071568 *) (&data_021d0470[i]), func_02072a48((void *) data_021ed278, a));
-    func_020577c8((UnkStruct_02071568_2 *) (&data_021d0480[i]), value, 0, 0, func_0203cfc8((UnkStruct_02071568 *) (&data_021d0470[i])), 0, 0);
+    func_020577c8((UnkStruct_02071568_2 *) (&data_021d0480[i]), value, 0, 0,
+                  func_0203cfc8((UnkStruct_02071568 *) (&data_021d0470[i])), 0, 0);
     return 1;
 fail:
     return 0;

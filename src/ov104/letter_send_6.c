@@ -264,9 +264,14 @@ void func_ov104_0229e3b8(UnkStruct_0229e3b8 *s)
         return;
     }
     if (func_ov104_0229d7fc((void *) s, (unsigned char) s->unk_B8) == 0) {
-        val = (*(struct { char pad2[2]; unsigned short field; } *) data_021fbe40).field;
+        val = (*(struct {
+                  char pad2[2];
+                  unsigned short field;
+              } *) data_021fbe40)
+                  .field;
         if (val & 1) {
-            if (func_ov104_0229da80((void *) s, (unsigned char) s->unk_B8) != 0 || func_ov104_0229da70((void *) s, (unsigned char) s->unk_B8) != 0) {
+            if (func_ov104_0229da80((void *) s, (unsigned char) s->unk_B8) != 0 ||
+                func_ov104_0229da70((void *) s, (unsigned char) s->unk_B8) != 0) {
                 if (func_ov104_0229d7bc((void *) s, (unsigned char) s->unk_B8) == 0) {
                     func_ov104_0229cf14((struct UnkStruct_0229e714 *) s, s->unk_B8, 0);
                 }
@@ -276,7 +281,8 @@ void func_ov104_0229e3b8(UnkStruct_0229e3b8 *s)
             return;
         }
         if (val & 0x800) {
-            if (func_ov104_0229da80((void *) s, (unsigned char) s->unk_B8) != 0 || func_ov104_0229da70((void *) s, (unsigned char) s->unk_B8) != 0) {
+            if (func_ov104_0229da80((void *) s, (unsigned char) s->unk_B8) != 0 ||
+                func_ov104_0229da70((void *) s, (unsigned char) s->unk_B8) != 0) {
                 if (func_ov104_0229d7bc((void *) s, (unsigned char) s->unk_B8) == 0) {
                     if (func_ov104_0229da80((void *) s, (unsigned char) s->unk_B8) != 0) {
                         r = func_ov104_0229daa0(s);
@@ -292,7 +298,11 @@ void func_ov104_0229e3b8(UnkStruct_0229e3b8 *s)
             return;
         }
     }
-    val = (*(struct { char pad2[2]; unsigned short field; } *) data_021fbe40).field;
+    val = (*(struct {
+              char pad2[2];
+              unsigned short field;
+          } *) data_021fbe40)
+              .field;
     if (val & 2) {
         func_ov104_0229d378(s);
         func_ov104_0229c9fc(s);
@@ -407,7 +417,8 @@ void func_ov104_0229e170(void *p)
             flag = 0;
             func_0200467c(0x24);
         }
-        func_ov002_02209114((unsigned char *) ((char *) p + 0x2504), (unsigned char) (*(unsigned char *) ((char *) p + 0xbd)), flag);
+        func_ov002_02209114((unsigned char *) ((char *) p + 0x2504), (unsigned char) (*(unsigned char *) ((char *) p + 0xbd)),
+                            flag);
         func_ov002_02208098((void *) (p), 0x17);
     }
 }

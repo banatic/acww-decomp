@@ -48,7 +48,8 @@ int *func_ov009_02264c10(struct UnkStruct_02264c10 *param)
 char *func_ov009_02264be0(UnkStruct_02264be0 *s)
 {
     int val = s->unk_138;
-    func_02064328((int *) data_ov009_02265b74, (int *) data_ov009_02265ad4, (int) val, (int) val, (int) (func_ov003_022203dc()));
+    func_02064328((int *) data_ov009_02265b74, (int *) data_ov009_02265ad4, (int) val, (int) val,
+                  (int) (func_ov003_022203dc()));
     return data_ov009_02265b74;
 }
 

@@ -116,7 +116,9 @@ int func_0202fe00(UnkStruct_0202fe00 *o, Vec *a, Vec *b, int t)
     int ok;
 
     ok = 0;
-    if (func_0202fb28((struct UnkStruct_0202fb28 *) o, (struct UnkStruct_0202fb28_2 *) a) <= 0 && func_0202fb28((struct UnkStruct_0202fb28 *) o, (struct UnkStruct_0202fb28_2 *) b) > 0 && func_0202f9d0((int) o, (int) (&d), (int) a, (int) b)) {
+    if (func_0202fb28((struct UnkStruct_0202fb28 *) o, (struct UnkStruct_0202fb28_2 *) a) <= 0 &&
+        func_0202fb28((struct UnkStruct_0202fb28 *) o, (struct UnkStruct_0202fb28_2 *) b) > 0 &&
+        func_0202f9d0((int) o, (int) (&d), (int) a, (int) b)) {
         a->x = d.x + FX_MulFunc(t, o->unk_28);
         a->y = d.y + FX_MulFunc(t, o->unk_2C);
         a->z = d.z + FX_MulFunc(t, o->unk_30);

@@ -185,7 +185,9 @@ int func_02023124(UnkStruct_02023124_2 *self)
         agg.unk_00 = agg.unk_14;
         agg.unk_01 = 0;
         func_02015dd4(self, 3, &agg, &data_020d9f84, &agg.unk_01);
-        func_0202da38((void *) self, (void *) self->unk_104, (void *) (&self->unk_122), 0x1e, func_020036e8(func_0208150c(self->unk_100->unk_830)), data_020c8b88.unk_00, data_020c8b88.unk_04, ret, 0);
+        func_0202da38((void *) self, (void *) self->unk_104, (void *) (&self->unk_122), 0x1e,
+                      func_020036e8(func_0208150c(self->unk_100->unk_830)), data_020c8b88.unk_00, data_020c8b88.unk_04, ret,
+                      0);
         ret = 1;
     }
     return ret;
@@ -304,7 +306,9 @@ int func_02022f3c(UnkStruct_02022f3c_2 *self)
             ret = (ret * 3) + func_02023010(agg.unk_10);
             func_02015de4((UnkStruct_02023124_2 *) self, (unsigned short *) (&agg), 0, 7);
             func_02023040((void *) self, agg.unk_14, (u16 *) (&agg), agg.unk_0C, (struct Node **) (*h), (void *) 1);
-            func_0202da38((void *) self, (void *) self->unk_104, (void *) (&self->unk_122), 0x1e, func_020036e8(func_0208150c(self->unk_100->unk_830)), data_020c8a20.unk_00, data_020c8a20.unk_04, ret, 0);
+            func_0202da38((void *) self, (void *) self->unk_104, (void *) (&self->unk_122), 0x1e,
+                          func_020036e8(func_0208150c(self->unk_100->unk_830)), data_020c8a20.unk_00, data_020c8a20.unk_04,
+                          ret, 0);
             ret = 1;
         }
     }
@@ -328,7 +332,8 @@ int func_02022e8c(void *arg)
 {
     int v1, v2, v3, v4, v5;
 
-    v1 = func_020036e8((int) ((unsigned char *) (unsigned int) func_0208150c(*(int *) ((char *) *(int *) ((char *) arg + 0x100) + 0x830))));
+    v1 = func_020036e8(
+        (int) ((unsigned char *) (unsigned int) func_0208150c(*(int *) ((char *) *(int *) ((char *) arg + 0x100) + 0x830))));
     v2 = data_020c8db0.unk_00;
     v3 = data_020c8db0.unk_04;
     v4 = 0;
@@ -361,12 +366,15 @@ int func_02022ddc(outer_t *obj)
 
 int func_02022d84(UnkStruct_02022d84 *a)
 {
-    func_0202da38(a, (void *) a->arr1, (void *) (&a->arr2), 0x1e, func_020036e8((int) ((unsigned char *) (unsigned int) func_0208150c(*(int *) ((char *) a->ptr + 0x830)))), data_020c8a08.unk_00, data_020c8a08.unk_04, 0, 0);
+    func_0202da38(a, (void *) a->arr1, (void *) (&a->arr2), 0x1e,
+                  func_020036e8((int) ((unsigned char *) (unsigned int) func_0208150c(*(int *) ((char *) a->ptr + 0x830)))),
+                  data_020c8a08.unk_00, data_020c8a08.unk_04, 0, 0);
     return 1;
 }
 
 int func_02022d2c(UnkStruct_02022d2c_2 *param)
 {
-    func_0202da38((void *) param, (void *) ((char *) param + 0x104), (void *) ((char *) param + 0x122), 0x1e, func_020036e8(func_0208150c(param->inner->value)), data_020c8d70.a, data_020c8d70.b, 0, 0);
+    func_0202da38((void *) param, (void *) ((char *) param + 0x104), (void *) ((char *) param + 0x122), 0x1e,
+                  func_020036e8(func_0208150c(param->inner->value)), data_020c8d70.a, data_020c8d70.b, 0, 0);
     return 1;
 }

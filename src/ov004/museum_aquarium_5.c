@@ -56,7 +56,7 @@ int func_ov004_0223546c(char *self, int i)
 void func_ov004_02235374(unsigned char *self, int index)
 {
     if (index >= (*(unsigned char *) &data_ov004_022593a4) && index < (*(unsigned char *) &data_ov004_02255c30)) {
-        unsigned char **slot = &((unsigned char * *) data_ov004_022594d4)[index];
+        unsigned char **slot = &((unsigned char **) data_ov004_022594d4)[index];
         int i;
         for (i = 0; i < 4; ++i) {
             if (*(void **) (*slot + 0x54 + i * 4)) {

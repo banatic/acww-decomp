@@ -194,9 +194,9 @@ int func_020b6ed4(void)
 
 int func_020b6dcc(void)
 {
-    func_020379bc(func_0203750c(), (*(struct UnkStruct_020b6dcc * *) &data_021f6948)->flag == 1);
-    func_02053e5c((*(struct UnkStruct_020b6dcc * *) &data_021f6948)->flag == 1);
-    func_02062ae4((*(struct UnkStruct_020b6dcc * *) &data_021f6948)->flag == 1);
+    func_020379bc(func_0203750c(), (*(struct UnkStruct_020b6dcc **) &data_021f6948)->flag == 1);
+    func_02053e5c((*(struct UnkStruct_020b6dcc **) &data_021f6948)->flag == 1);
+    func_02062ae4((*(struct UnkStruct_020b6dcc **) &data_021f6948)->flag == 1);
     func_020726b8((void *) func_02072614());
     func_0205cf84(data_021fbe94);
     func_0205d724(data_021fbe94);
@@ -210,7 +210,7 @@ int func_020b6dcc(void)
     func_0205e0f0(data_021fbe94);
     func_0205f6f8(data_021fbe94);
     func_0206094c(data_021fbe94);
-    func_020ad4fc((*(struct UnkStruct_020b6dcc * *) &data_021f6948)->flag == 1);
+    func_020ad4fc((*(struct UnkStruct_020b6dcc **) &data_021f6948)->flag == 1);
     func_020ace54();
     func_02078da4();
     func_02082c54();
@@ -233,7 +233,7 @@ int func_020b6db4(void)
 
 void func_020b6d8c(int unused, u64 start)
 {
-    func_020b0abc((*(UnkStruct_020b0b00_2 ** *) &data_021f6948), &data_021f42dc, &data_021f42e4, start);
+    func_020b0abc((*(UnkStruct_020b0b00_2 ***) &data_021f6948), &data_021f42dc, &data_021f42e4, start);
 }
 
 int func_020b6d20(void *argument0)

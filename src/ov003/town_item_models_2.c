@@ -432,7 +432,8 @@ void func_ov003_022249cc(char *p0, void *p1)
                             s.unk_74.x = s.unk_08.x;
                             s.unk_74.y = s.unk_08.y;
                             s.unk_74.z = s.unk_08.z;
-                            func_ov003_02225714(p0, (void *) tile, (void *) (s.px + ii), s.pz + jj, &s.unk_74, *(UnkStruct_02225714 *) &s.m);
+                            func_ov003_02225714(p0, (void *) tile, (void *) (s.px + ii), s.pz + jj, &s.unk_74,
+                                                *(UnkStruct_02225714 *) &s.m);
                             break;
                         }
                         if ((id >= 0x21 && id <= 0x24) || (id >= 0x1f && id <= 0x20)) {

@@ -64,12 +64,12 @@ int func_020eae80(int idx)
         return 0;
     }
 
-    base = (*(void * *) &data_021fbf3c);
+    base = (*(void **) &data_021fbf3c);
     func_ov065_022797a4((u8 *) base + idx * 0xc);
 
-    MI_CpuFill8((u8 *) (*(void * *) &data_021fbf3c) + idx * 0xc, 0, 0xc);
-    MI_CpuFill8((u8 *) (*(void * *) &data_021fbf3c) + 0x180 + idx * 0x23, 0, 0x23);
-    *((u8 *) (*(void * *) &data_021fbf3c) + idx * 0x23 + 0x1a0) = 0;
+    MI_CpuFill8((u8 *) (*(void **) &data_021fbf3c) + idx * 0xc, 0, 0xc);
+    MI_CpuFill8((u8 *) (*(void **) &data_021fbf3c) + 0x180 + idx * 0x23, 0, 0x23);
+    *((u8 *) (*(void **) &data_021fbf3c) + idx * 0x23 + 0x1a0) = 0;
 
     return 1;
 }

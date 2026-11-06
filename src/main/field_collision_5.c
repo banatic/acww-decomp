@@ -158,7 +158,8 @@ void func_02034850(int *p0)
 
 int func_02034824(int param)
 {
-    __cxa_vec_ctor((void *) (param), 0x24, 8, (void (*)(void *)) (void (*)(void *)) func_02034850, (void (*)(void *)) func_02034820);
+    __cxa_vec_ctor((void *) (param), 0x24, 8, (void (*)(void *))(void (*)(void *)) func_02034850,
+                   (void (*)(void *)) func_02034820);
     func_02034714((struct UnkStruct_02034714 *) param);
     return param;
 }
@@ -356,7 +357,9 @@ void func_02034310(UnkStruct_02034310 *self, int x0, int x1, int y0, int y1, int
         while (row <= self->unk_4A4) {
             col = self->unk_498;
             while (col <= self->unk_49C) {
-                func_02034448((UnkStruct_02034448 *) ((char *) self + (row - self->unk_4A0) * 0xa8 + (col - self->unk_498) * 0x18), col, row, value);
+                func_02034448(
+                    (UnkStruct_02034448 *) ((char *) self + (row - self->unk_4A0) * 0xa8 + (col - self->unk_498) * 0x18), col,
+                    row, value);
                 col++;
             }
             row++;
@@ -370,7 +373,9 @@ void func_02034310(UnkStruct_02034310 *self, int x0, int x1, int y0, int y1, int
         while (row <= self->unk_4A4) {
             col = self->unk_498;
             while (col <= self->unk_49C) {
-                func_02034448((UnkStruct_02034448 *) ((char *) self + (row - self->unk_4A0) * 0xa8 + (col - self->unk_498) * 0x18), col, row, value);
+                func_02034448(
+                    (UnkStruct_02034448 *) ((char *) self + (row - self->unk_4A0) * 0xa8 + (col - self->unk_498) * 0x18), col,
+                    row, value);
                 col++;
             }
             row++;

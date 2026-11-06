@@ -640,7 +640,8 @@ void func_ov054_022614b4(ArgType *arg)
         unsigned char local;
         func_ov054_02261f44((UnkStruct_02261534_3 *) arg);
         local = 0x37;
-        func_0206844c((void *) field_40, (void *) (&local), ((TabEntry12 *) data_ov054_02262fac)[((Inner_808 *) arg->unk_B0)->id].a);
+        func_0206844c((void *) field_40, (void *) (&local),
+                      ((TabEntry12 *) data_ov054_02262fac)[((Inner_808 *) arg->unk_B0)->id].a);
         func_02068358((void *) field_40);
         func_02068434((void *) field_40);
         func_ov054_02261cc4((void *) arg, 0);

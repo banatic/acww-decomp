@@ -74,5 +74,9 @@ unsigned char func_02001b98(void)
 
 void func_02001b8c(unsigned char val)
 {
-    (*(struct _GlobalStruct { unsigned char pad_00[0x19]; unsigned char unk_19; } *) data_0213fe74).unk_19 = val;
+    (*(struct _GlobalStruct {
+        unsigned char pad_00[0x19];
+        unsigned char unk_19;
+    } *) data_0213fe74)
+        .unk_19 = val;
 }

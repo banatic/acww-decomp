@@ -33,7 +33,7 @@ int func_ov004_0222fd94(void)
 
 int func_ov004_0222fd70(void)
 {
-    char *p = (*(char * *) &data_ov004_02258558);
+    char *p = (*(char **) &data_ov004_02258558);
     if (p != 0) {
         int v = *(u8 *) (p + 0x24c);
         if (v == 3 || v == 0) {
@@ -45,7 +45,7 @@ int func_ov004_0222fd70(void)
 
 void func_ov004_0222fd58(int v)
 {
-    char *p = (*(char * *) &data_ov004_02258558);
+    char *p = (*(char **) &data_ov004_02258558);
     if (p != 0) {
         *(int *) (p + 0x334) = v << 12;
     }

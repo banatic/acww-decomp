@@ -419,5 +419,6 @@ void func_020becbc(struct UnkStruct_020becbc *p, int n)
 void func_020beca4(int a, int b)
 {
     register int offset = 13;
-    func_020becbc((struct UnkStruct_020becbc *) a, *(signed char *) ((char *) &((struct UnkStruct_020d2bac *) data_020d2bac)[b] + offset));
+    func_020becbc((struct UnkStruct_020becbc *) a,
+                  *(signed char *) ((char *) &((struct UnkStruct_020d2bac *) data_020d2bac)[b] + offset));
 }

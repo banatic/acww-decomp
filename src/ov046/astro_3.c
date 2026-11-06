@@ -149,7 +149,8 @@ int func_ov046_02261884(void *self)
 int func_ov046_02261820(unsigned char *self)
 {
     func_02019c20((UnkStruct_02261820 *) (self + 0x564), 1, 0xf0, 0, *(unsigned short *) (self + 0x73c), 0);
-    func_0201ad18((unsigned char *) ((struct UnkStruct_02261820_2 *) (self + 0x3b0)), 0, 0, 0, (void *) ((struct Src *) ((int *) data_021fbee8)), 4, data_020c814c, (unsigned char) 1);
+    func_0201ad18((unsigned char *) ((struct UnkStruct_02261820_2 *) (self + 0x3b0)), 0, 0, 0,
+                  (void *) ((struct Src *) ((int *) data_021fbee8)), 4, data_020c814c, (unsigned char) 1);
     *(unsigned char *) (self + 0x73e) = 1;
     return 1;
 }

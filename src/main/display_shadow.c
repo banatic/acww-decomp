@@ -72,8 +72,18 @@ void func_02001a5c(void)
 
 void func_02001a48(void)
 {
-    (*(struct { unsigned char pad[0x12]; unsigned char flag12; unsigned char flag13; } *) data_0213fe94).flag13 = 0x1f;
-    (*(struct { unsigned char pad[0x12]; unsigned char flag12; unsigned char flag13; } *) data_0213fe94).flag12 |= 4;
+    (*(struct {
+        unsigned char pad[0x12];
+        unsigned char flag12;
+        unsigned char flag13;
+    } *) data_0213fe94)
+        .flag13 = 0x1f;
+    (*(struct {
+        unsigned char pad[0x12];
+        unsigned char flag12;
+        unsigned char flag13;
+    } *) data_0213fe94)
+        .flag12 |= 4;
 }
 
 unsigned char func_02001a30(unsigned char mask)

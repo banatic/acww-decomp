@@ -240,7 +240,7 @@ void func_ov004_02227764(char *self, void *message, int previous)
     // DECLS
     int v3;
     // ENDDECLS
-    v3 = func_02073908((int) ((void *) (*(int *) ((char *) ((void * *) &data_020ccf94)))), (int) (*(int *) (self + 0x800)));
+    v3 = func_02073908((int) ((void *) (*(int *) ((char *) ((void **) &data_020ccf94)))), (int) (*(int *) (self + 0x800)));
     if (v3 == 0x0) {
         func_020109fc((void *) ((int) (self)), (int) (0x0), (int) (0x3), (int) (0x3));
     }

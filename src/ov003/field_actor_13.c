@@ -109,7 +109,7 @@ void func_ov003_0220ff14(struct UnkStruct_0220ff14 *self)
 void func_ov003_0220fe4c(UnkStruct_0220fe4c_2 *self)
 {
     UnkStruct_0220fe4c *p = &self->sub;
-    void *g = (*(void * *) &data_020ccf94);
+    void *g = (*(void **) &data_020ccf94);
 
     if (func_02073908((int) g, self->unk_800) != 0) {
         if (p->unk_0F == 0) {

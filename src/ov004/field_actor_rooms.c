@@ -401,7 +401,8 @@ void func_ov004_0222671c(unsigned char *self, unsigned char *p, int previous)
     v.a = q->a;
     v.b = q->b;
     v.c = q->c;
-    func_ov004_02226818((char *) (self + 0x7d4), *(Triple *) &v, *(int *) (self + 0x98), 0x400, (unsigned char) ((unsigned char) r));
+    func_ov004_02226818((char *) (self + 0x7d4), *(Triple *) &v, *(int *) (self + 0x98), 0x400,
+                        (unsigned char) ((unsigned char) r));
     func_ov004_02226810((unsigned char *) (self + 0x8f0), v.a, v.c);
 }
 
@@ -437,7 +438,7 @@ void func_ov004_02226630(char *self)
     q = (unsigned char *) (self + 0x7d4);
     p = q + 0x14;
     m = q[0x15];
-    g = (*(char * *) &data_020ccf94);
+    g = (*(char **) &data_020ccf94);
     if (func_02073908((void *) g, *(int *) (self + 0x800)) == 0 && *p == 0xf && m == 1) {
         func_0200f328(self, 0x4d3);
     }

@@ -14,7 +14,7 @@ extern unsigned char data_027e0438[24];
 extern int func_0205bfdc(char *);
 extern void func_02001ca0(int, int, int, int);
 extern char data_021cfc2c[];
-extern unsigned char data_027e0434;     // 0x027e0434
+extern unsigned char data_027e0434; // 0x027e0434
 extern int func_0205c024(void *a, void *b, void (*c)(void), int d);
 extern void func_01ffccf4(void);
 

@@ -98,10 +98,24 @@ void func_020bbdc8(Param *p)
     int r1;
     int r2;
 
-    v_28 = (*(struct { char pad0[0x28]; int field_0x28; char pad1[8]; int field_0x34; } *) &data_021f8ab0).field_0x28;
+    v_28 = (*(struct {
+               char pad0[0x28];
+               int field_0x28;
+               char pad1[8];
+               int field_0x34;
+           } *) &data_021f8ab0)
+               .field_0x28;
     v_3 = (v_28 == 3) ? 1 : 0;
     v_4 = (v_28 == 4) ? 1 : 0;
-    v_34_is1 = ((*(struct { char pad0[0x28]; int field_0x28; char pad1[8]; int field_0x34; } *) &data_021f8ab0).field_0x34 == 1) ? 1 : 0;
+    v_34_is1 = ((*(struct {
+                    char pad0[0x28];
+                    int field_0x28;
+                    char pad1[8];
+                    int field_0x34;
+                } *) &data_021f8ab0)
+                    .field_0x34 == 1)
+                   ? 1
+                   : 0;
     r1 = 0;
     if (v_34_is1) {
         if (v_3) {

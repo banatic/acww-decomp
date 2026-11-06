@@ -30,8 +30,9 @@ void func_0203e58c(int receiver)
 
 void func_0203e55c(int receiver)
 {
-    if ((*(struct UnkStruct_0203e55c * *) &data_021c72b8)->unk_14 == 4) {
-        if (data_020daaa0[(*(struct UnkStruct_0203e55c * *) &data_021c72b8)->unk_15]((*(struct UnkStruct_0203e55c * *) &data_021c72b8)) != 0) {
+    if ((*(struct UnkStruct_0203e55c **) &data_021c72b8)->unk_14 == 4) {
+        if (data_020daaa0[(*(struct UnkStruct_0203e55c **) &data_021c72b8)->unk_15](
+                (*(struct UnkStruct_0203e55c **) &data_021c72b8)) != 0) {
             func_0203df6c();
         }
     }

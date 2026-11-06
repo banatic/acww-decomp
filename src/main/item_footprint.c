@@ -45,7 +45,7 @@ unsigned char func_02052e20(int *p)
 void *func_02052dc0(UnkStruct_02052dc0 *self, unsigned int param1)
 {
     if (self->unk_00 < 3 && param1 < (unsigned int) func_02052e20((int *) self)) {
-        return &((void **) (((void ** *) data_020dcfe0)[self->unk_00][self->unk_04]))[param1 & 3];
+        return &((void **) (((void ***) data_020dcfe0)[self->unk_00][self->unk_04]))[param1 & 3];
     }
     if ((data_021c8744 & 1) == 0) {
         data_021c8748[0] = 0;

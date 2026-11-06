@@ -106,8 +106,8 @@ void func_020540bc(void) {}
 void func_02054094(void)
 {
     func_020898e8();
-    if ((*(UnkStruct_02054094 * *) data_021c8ca0)) {
-        (*(UnkStruct_02054094 * *) data_021c8ca0)->vtable->method((*(UnkStruct_02054094 * *) data_021c8ca0));
+    if ((*(UnkStruct_02054094 **) data_021c8ca0)) {
+        (*(UnkStruct_02054094 **) data_021c8ca0)->vtable->method((*(UnkStruct_02054094 **) data_021c8ca0));
     }
     func_02002ec0();
     func_02002408();
@@ -118,7 +118,7 @@ void func_02054090(void) {}
 void func_02054070(void)
 {
     UnkStruct_02054070 *obj;
-    obj = (*(UnkStruct_02054070 * *) data_021c8ca0);
+    obj = (*(UnkStruct_02054070 **) data_021c8ca0);
     if (obj) {
         obj->vtbl->unk_04(obj);
     }

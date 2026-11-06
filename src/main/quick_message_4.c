@@ -178,7 +178,7 @@ void func_0203990c(UnkStruct_0203990c *self)
 
 void func_020398e8(int a, int b, int c)
 {
-    func_020396fc((*(void * *) data_021c6738), a, b, c);
+    func_020396fc((*(void **) data_021c6738), a, b, c);
 }
 
 void func_020398d4(unsigned int arg)
@@ -204,7 +204,7 @@ int func_02039860(void)
     UnkStruct_02039860 *e;
     unsigned int flag;
     for (i = 0; i < 4; i++) {
-        e = &(*(UnkStruct_02039860_2 * *) data_021c6738)->arr[i];
+        e = &(*(UnkStruct_02039860_2 **) data_021c6738)->arr[i];
         if (e->unk_0C != 0) {
             if (e->unk_A4 != 0) {
                 goto set;
@@ -231,7 +231,7 @@ int func_02039810(void)
     UnkStruct_02039810 *e;
     unsigned int flag;
     for (i = 0; i < 4; i++) {
-        e = &(*(UnkStruct_02039810_2 * *) data_021c6738)->arr[i];
+        e = &(*(UnkStruct_02039810_2 **) data_021c6738)->arr[i];
         if (e->unk_0C == 0) {
             if (e->unk_A4 != 0) {
                 goto set;

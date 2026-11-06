@@ -37,7 +37,9 @@ void func_ov004_02214c50(char *self)
     v = func_ov004_02215298(self, self + 0x5c);
     if (v >= 0) {
         i = v >> 12;
-        func_02055060(self + 0x538, (int) ((void *) func_ov004_0220da04((int) ((void *) func_ov004_0220e220(self + 0x6cc)), 0)), 0, v - (i << 12), (u16) i, 0);
+        func_02055060(self + 0x538,
+                      (int) ((void *) func_ov004_0220da04((int) ((void *) func_ov004_0220e220(self + 0x6cc)), 0)), 0,
+                      v - (i << 12), (u16) i, 0);
         func_02054cdc(self + 0x538);
     }
     if (func_ov004_0220d2a8(self + 0x740) != 0) {

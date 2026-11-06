@@ -58,7 +58,7 @@ int func_ov045_02260630(void)
 
 unsigned int func_ov045_02260618(void)
 {
-    return ((*(unsigned int * *) &data_ov045_022615a0)[0x64] << 4) >> 16;
+    return ((*(unsigned int **) &data_ov045_022615a0)[0x64] << 4) >> 16;
 }
 
 void func_ov045_022605a4(struct UnkStruct_022605a4 *self)

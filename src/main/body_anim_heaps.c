@@ -86,8 +86,8 @@ void func_0205f784(void **array)
             array[i] = 0;
         }
     }
-    if ((*(void * *) data_021c9ad0) != 0) {
-        func_020e9b9c((*(void * *) data_021c9ad0));
+    if ((*(void **) data_021c9ad0) != 0) {
+        func_020e9b9c((*(void **) data_021c9ad0));
     }
 }
 

@@ -276,8 +276,8 @@ void func_ov126_022a0f40(UnkStruct_022a0f40 *self)
                 }
                 break;
             }
-            if (func_ov126_0229fcfc((void *) self) == 0 && func_ov126_0229fd64((void *) self) == 0 && func_ov126_0229fcd8((void *) self) == 0 &&
-                (data_021fbe40.flag & 1) != 0) {
+            if (func_ov126_0229fcfc((void *) self) == 0 && func_ov126_0229fd64((void *) self) == 0 &&
+                func_ov126_0229fcd8((void *) self) == 0 && (data_021fbe40.flag & 1) != 0) {
                 func_ov002_02208098((void *) (self), 7);
                 func_ov126_022a06b4(self);
             }

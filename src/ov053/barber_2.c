@@ -365,7 +365,8 @@ int func_ov053_02260f94(void *self)
 
 int func_ov053_02260f20(char *param)
 {
-    func_0201ad18((void *) (param + 0x3b0), 0, 0, 0, (void *) ((int) ((char *) data_021fbee8)), 4, (*(unsigned int *) &data_020c814c), 1);
+    func_0201ad18((void *) (param + 0x3b0), 0, 0, 0, (void *) ((int) ((char *) data_021fbee8)), 4,
+                  (*(unsigned int *) &data_020c814c), 1);
     *((unsigned char *) (param + 0x719)) = 0;
     func_02019d0c((void *) (param + 0x564), 3, 1, 0, 0, 0, 0x4000, 0, 0, data_020c80f8, 0);
     return 1;
@@ -387,7 +388,8 @@ int func_ov053_02260dfc(UnkStruct_02260dfc *p)
             p->unk_719++;
             val = (*(volatile unsigned short *) &data_020c80f8);
             func_02019d0c((char *) p + 0x564, 6, 1, ((Entry *) data_ov053_022617fc)[p->unk_719].unk_00,
-                          ((Entry *) data_ov053_02261804)[p->unk_719].unk_00, 0x800, 0, 0, 0, (*(volatile unsigned short *) &data_020c80f8), 0);
+                          ((Entry *) data_ov053_02261804)[p->unk_719].unk_00, 0x800, 0, 0, 0,
+                          (*(volatile unsigned short *) &data_020c80f8), 0);
             if (p->unk_719 >= 2) {
                 func_02019d0c((char *) p + 0x564, 3, 1, 0, 0, 0, 0xffffc000, 0, 0, val, 0);
             }
@@ -400,7 +402,8 @@ int func_ov053_02260dfc(UnkStruct_02260dfc *p)
                 func_ov053_02261524(p, 8);
             } else {
                 func_02019d0c((char *) p + 0x564, 6, 1, ((Entry *) data_ov053_022617fc)[p->unk_719].unk_00,
-                              ((Entry *) data_ov053_02261804)[p->unk_719].unk_00, 0x800, 0, 0, 0, (*(volatile unsigned short *) &data_020c80f8), 0);
+                              ((Entry *) data_ov053_02261804)[p->unk_719].unk_00, 0x800, 0, 0, 0,
+                              (*(volatile unsigned short *) &data_020c80f8), 0);
             }
         }
     }

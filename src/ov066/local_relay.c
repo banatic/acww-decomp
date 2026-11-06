@@ -265,7 +265,7 @@ typedef struct Ctl_0226af3c {
     char pad_05[0x10 - 5];
     UnkStruct_0226af3c *unk_10; // 0x10
     UnkStruct_0226af3c *unk_14; // 0x14
-    Node_0226af3c **list;                // 0x18
+    Node_0226af3c **list;       // 0x18
 } Ctl_0226af3c;
 
 typedef struct Node_0226aeb8 {
@@ -443,13 +443,13 @@ int func_ov066_0226b81c(int a, int b, int c, int d)
     if (func_ov066_0226b8bc() != 0) {
         int zero = flag;
         flag = 1;
-        (*(UnkStruct_0226b81c * *) &data_ov066_0226be08)->unk_04 |= 8;
-        (*(UnkStruct_0226b81c * *) &data_ov066_0226be08)->unk_04 &= ~0x10;
-        (*(UnkStruct_0226b81c * *) &data_ov066_0226be08)->unk_20 = a;
-        (*(UnkStruct_0226b81c * *) &data_ov066_0226be08)->unk_24 = b;
-        (*(UnkStruct_0226b81c * *) &data_ov066_0226be08)->unk_28 = zero;
-        (*(UnkStruct_0226b81c * *) &data_ov066_0226be08)->unk_1E = (unsigned short) c;
-        (*(UnkStruct_0226b81c * *) &data_ov066_0226be08)->unk_2C = d;
+        (*(UnkStruct_0226b81c **) &data_ov066_0226be08)->unk_04 |= 8;
+        (*(UnkStruct_0226b81c **) &data_ov066_0226be08)->unk_04 &= ~0x10;
+        (*(UnkStruct_0226b81c **) &data_ov066_0226be08)->unk_20 = a;
+        (*(UnkStruct_0226b81c **) &data_ov066_0226be08)->unk_24 = b;
+        (*(UnkStruct_0226b81c **) &data_ov066_0226be08)->unk_28 = zero;
+        (*(UnkStruct_0226b81c **) &data_ov066_0226be08)->unk_1E = (unsigned short) c;
+        (*(UnkStruct_0226b81c **) &data_ov066_0226be08)->unk_2C = d;
     }
     OS_RestoreInterrupts(handle);
     return flag;
@@ -459,16 +459,16 @@ void func_ov066_0226b818(void) {}
 
 void func_ov066_0226b7ac(void)
 {
-    unsigned char f4 = (*(UnkStruct_0226b7ac * *) &data_ov066_0226be08)->unk_04;
-    void (*cb)(void *) = (*(UnkStruct_0226b7ac * *) &data_ov066_0226be08)->unk_2C;
-    int arg = (*(UnkStruct_0226b7ac * *) &data_ov066_0226be08)->unk_24;
+    unsigned char f4 = (*(UnkStruct_0226b7ac **) &data_ov066_0226be08)->unk_04;
+    void (*cb)(void *) = (*(UnkStruct_0226b7ac **) &data_ov066_0226be08)->unk_2C;
+    int arg = (*(UnkStruct_0226b7ac **) &data_ov066_0226be08)->unk_24;
     f4 &= ~8;
-    (*(UnkStruct_0226b7ac * *) &data_ov066_0226be08)->unk_04 = f4;
-    (*(UnkStruct_0226b7ac * *) &data_ov066_0226be08)->unk_1E = 0;
-    (*(UnkStruct_0226b7ac * *) &data_ov066_0226be08)->unk_20 = 0;
-    (*(UnkStruct_0226b7ac * *) &data_ov066_0226be08)->unk_24 = 0;
-    (*(UnkStruct_0226b7ac * *) &data_ov066_0226be08)->unk_28 = -1;
-    (*(UnkStruct_0226b7ac * *) &data_ov066_0226be08)->unk_2C = 0;
+    (*(UnkStruct_0226b7ac **) &data_ov066_0226be08)->unk_04 = f4;
+    (*(UnkStruct_0226b7ac **) &data_ov066_0226be08)->unk_1E = 0;
+    (*(UnkStruct_0226b7ac **) &data_ov066_0226be08)->unk_20 = 0;
+    (*(UnkStruct_0226b7ac **) &data_ov066_0226be08)->unk_24 = 0;
+    (*(UnkStruct_0226b7ac **) &data_ov066_0226be08)->unk_28 = -1;
+    (*(UnkStruct_0226b7ac **) &data_ov066_0226be08)->unk_2C = 0;
     if (cb) {
         cb((void *) arg);
     }
@@ -477,7 +477,7 @@ void func_ov066_0226b7ac(void)
 void func_ov066_0226b738(UnkStruct_0226b738 *q)
 {
     UnkStruct_0226b738_2 *it = q->item;
-    (*(Ctl * *) &data_ov066_0226be08)->count--;
+    (*(Ctl **) &data_ov066_0226be08)->count--;
     switch (it->kind) {
         case 0:
         case 1:
@@ -491,7 +491,7 @@ void func_ov066_0226b738(UnkStruct_0226b738 *q)
 
 void func_ov066_0226b71c(void)
 {
-    (*(struct UnkStruct_0226b71c * *) &data_ov066_0226be08)->unk_02--;
+    (*(struct UnkStruct_0226b71c **) &data_ov066_0226be08)->unk_02--;
 }
 
 u16 func_ov066_0226b5c4(Pkt *hdr)
@@ -507,7 +507,7 @@ u16 func_ov066_0226b5c4(Pkt *hdr)
     u8 n;
     u16 ret;
 
-    g = (*(Ctl_0226b5c4 * *) &data_ov066_0226be08);
+    g = (*(Ctl_0226b5c4 **) &data_ov066_0226be08);
     sent = g->unk_28;
     total = g->unk_24;
     rem = total - sent;
@@ -515,11 +515,11 @@ u16 func_ov066_0226b5c4(Pkt *hdr)
     if (sent == 0) {
         hdr->kind = 0;
         dst = (u8 *) hdr + 8;
-        hdr->unk_02 = (*(Ctl_0226b5c4 * *) &data_ov066_0226be08)->unk_1E;
-        hdr->unk_04 = (u16) (*(Ctl_0226b5c4 * *) &data_ov066_0226be08)->unk_24;
-        hdr->unk_06 = (u16) ((*(Ctl_0226b5c4 * *) &data_ov066_0226be08)->unk_24 >> 16);
-        lim = (*(Ctl_0226b5c4 * *) &data_ov066_0226be08)->unk_00 - 8;
-        v = (*(Ctl_0226b5c4 * *) &data_ov066_0226be08)->unk_24;
+        hdr->unk_02 = (*(Ctl_0226b5c4 **) &data_ov066_0226be08)->unk_1E;
+        hdr->unk_04 = (u16) (*(Ctl_0226b5c4 **) &data_ov066_0226be08)->unk_24;
+        hdr->unk_06 = (u16) ((*(Ctl_0226b5c4 **) &data_ov066_0226be08)->unk_24 >> 16);
+        lim = (*(Ctl_0226b5c4 **) &data_ov066_0226be08)->unk_00 - 8;
+        v = (*(Ctl_0226b5c4 **) &data_ov066_0226be08)->unk_24;
         if (v > lim) {
             v = lim;
         }
@@ -528,17 +528,17 @@ u16 func_ov066_0226b5c4(Pkt *hdr)
     } else {
         hdr->kind = 1;
         dst = (u8 *) hdr + 2;
-        lim = (*(Ctl_0226b5c4 * *) &data_ov066_0226be08)->unk_00 - 2;
+        lim = (*(Ctl_0226b5c4 **) &data_ov066_0226be08)->unk_00 - 2;
         if (rem > lim) {
             rem = lim;
         }
         n = (u8) rem;
         ret = (u16) ((n + 3) & ~1);
     }
-    (*(Ctl_0226b5c4 * *) &data_ov066_0226be08)->unk_28 = (*(Ctl_0226b5c4 * *) &data_ov066_0226be08)->unk_28 + n;
+    (*(Ctl_0226b5c4 **) &data_ov066_0226be08)->unk_28 = (*(Ctl_0226b5c4 **) &data_ov066_0226be08)->unk_28 + n;
     hdr->unk_01 = n;
-    hdr->done = ((*(Ctl_0226b5c4 * *) &data_ov066_0226be08)->unk_28 == (*(Ctl_0226b5c4 * *) &data_ov066_0226be08)->unk_24);
-    (*(Ctl_0226b5c4 * *) &data_ov066_0226be08)->v = hdr->done;
+    hdr->done = ((*(Ctl_0226b5c4 **) &data_ov066_0226be08)->unk_28 == (*(Ctl_0226b5c4 **) &data_ov066_0226be08)->unk_24);
+    (*(Ctl_0226b5c4 **) &data_ov066_0226be08)->v = hdr->done;
     MI_CpuCopy8(src, dst, n);
     return ret;
 }
@@ -554,7 +554,7 @@ void func_ov066_0226b594(struct UnkStruct_0226b594 *self)
 
 void func_ov066_0226b3d0(void)
 {
-    UnkStruct_0226b3d0 *p = (*(UnkStruct_0226b3d0 * *) &data_ov066_0226be08);
+    UnkStruct_0226b3d0 *p = (*(UnkStruct_0226b3d0 **) &data_ov066_0226be08);
     Attr *a;
     int r = 0;
 
@@ -563,44 +563,47 @@ void func_ov066_0226b3d0(void)
     if (p->unk_04.x2) {
         a->mode = 3;
         r = 2;
-        a->idx = (*(UnkStruct_0226b3d0 * *) &data_ov066_0226be08)->unk_01.hi;
+        a->idx = (*(UnkStruct_0226b3d0 **) &data_ov066_0226be08)->unk_01.hi;
     } else if (p->unk_04.x3) {
         if (p->unk_03 < 2) {
             if (!p->unk_04.x4) {
                 if (!p->unk_04.x1) {
                     r = (int) func_ov066_0226b5c4((Pkt *) a);
-                    (*(UnkStruct_0226b3d0 * *) &data_ov066_0226be08)->unk_03 = (s8) ((*(UnkStruct_0226b3d0 * *) &data_ov066_0226be08)->unk_03 + 1);
+                    (*(UnkStruct_0226b3d0 **) &data_ov066_0226be08)->unk_03 =
+                        (s8) ((*(UnkStruct_0226b3d0 **) &data_ov066_0226be08)->unk_03 + 1);
                 }
             }
         }
     }
 
-    if ((*(UnkStruct_0226b3d0 * *) &data_ov066_0226be08)->q->head != (*(UnkStruct_0226b3d0 * *) &data_ov066_0226be08)->q->tail) {
+    if ((*(UnkStruct_0226b3d0 **) &data_ov066_0226be08)->q->head != (*(UnkStruct_0226b3d0 **) &data_ov066_0226be08)->q->tail) {
         if (r == 0) {
             a->mode = 2;
             r = 2;
             a->f2 = 0;
         }
         a->f3 = 1;
-        a->idx = (*(UnkStruct_0226b3d0 * *) &data_ov066_0226be08)->q->tail->attr.raw;
-        (*(UnkStruct_0226b3d0 * *) &data_ov066_0226be08)->q->tail = (*(UnkStruct_0226b3d0 * *) &data_ov066_0226be08)->q->tail->next;
+        a->idx = (*(UnkStruct_0226b3d0 **) &data_ov066_0226be08)->q->tail->attr.raw;
+        (*(UnkStruct_0226b3d0 **) &data_ov066_0226be08)->q->tail =
+            (*(UnkStruct_0226b3d0 **) &data_ov066_0226be08)->q->tail->next;
     } else {
         a->f3 = 0;
     }
 
     if (r != 0) {
-        (*(UnkStruct_0226b3d0 * *) &data_ov066_0226be08)->unk_02 = (s8) ((*(UnkStruct_0226b3d0 * *) &data_ov066_0226be08)->unk_02 + 1);
+        (*(UnkStruct_0226b3d0 **) &data_ov066_0226be08)->unk_02 =
+            (s8) ((*(UnkStruct_0226b3d0 **) &data_ov066_0226be08)->unk_02 + 1);
         func_ov066_0226ae50(0xd, (int) a, r, 1, (int) ((void (*)(void *)) func_ov066_0226b738));
-        (*(UnkStruct_0226b3d0 * *) &data_ov066_0226be08)->cur = (*(UnkStruct_0226b3d0 * *) &data_ov066_0226be08)->cur->next;
+        (*(UnkStruct_0226b3d0 **) &data_ov066_0226be08)->cur = (*(UnkStruct_0226b3d0 **) &data_ov066_0226be08)->cur->next;
     }
 
-    (*(UnkStruct_0226b3d0 * *) &data_ov066_0226be08)->unk_04.x1 = 0;
+    (*(UnkStruct_0226b3d0 **) &data_ov066_0226be08)->unk_04.x1 = 0;
 }
 
 void func_ov066_0226b27c(int idx, u8 *src)
 {
     u32 r7 = 0;
-    Entry *entry = &(*(UnkStruct_0226b27c * *) &data_ov066_0226be08)->entries[idx];
+    Entry *entry = &(*(UnkStruct_0226b27c **) &data_ov066_0226be08)->entries[idx];
     Attr *attr = (Attr *) src;
     u8 *r5;
     u32 mask;
@@ -611,14 +614,14 @@ void func_ov066_0226b27c(int idx, u8 *src)
             if (*(u16 *) (src + 2) & (1 << func_ov066_022699cc())) {
                 u16 hi;
                 u16 lo;
-                (*(UnkStruct_0226b27c * *) &data_ov066_0226be08)->flags |= (1 << idx);
+                (*(UnkStruct_0226b27c **) &data_ov066_0226be08)->flags |= (1 << idx);
                 entry->unk_0C = r7;
                 hi = *(u16 *) (src + 6);
                 lo = *(u16 *) (src + 4);
                 entry->unk_08 = ((u32) hi << 16) | lo;
                 r7 = entry->unk_08;
-                if (r7 > (u32) ((*(UnkStruct_0226b27c * *) &data_ov066_0226be08)->unk_00 - 8)) {
-                    r7 = (u32) ((*(UnkStruct_0226b27c * *) &data_ov066_0226be08)->unk_00 - 8);
+                if (r7 > (u32) ((*(UnkStruct_0226b27c **) &data_ov066_0226be08)->unk_00 - 8)) {
+                    r7 = (u32) ((*(UnkStruct_0226b27c **) &data_ov066_0226be08)->unk_00 - 8);
                 }
             }
             break;
@@ -629,7 +632,7 @@ void func_ov066_0226b27c(int idx, u8 *src)
     }
 
     mask = 1 << idx;
-    if (((*(UnkStruct_0226b27c * *) &data_ov066_0226be08)->flags & mask) == 0) {
+    if (((*(UnkStruct_0226b27c **) &data_ov066_0226be08)->flags & mask) == 0) {
         return;
     }
 
@@ -642,7 +645,7 @@ void func_ov066_0226b27c(int idx, u8 *src)
         return;
     }
 
-    (*(UnkStruct_0226b27c * *) &data_ov066_0226be08)->flags ^= mask;
+    (*(UnkStruct_0226b27c **) &data_ov066_0226be08)->flags ^= mask;
     if (data_ov066_0226bdf4->cb != 0) {
         data_ov066_0226bdf4->cb(idx, (char *) entry->unk_00, entry->unk_08);
     }
@@ -653,13 +656,13 @@ void func_ov066_0226b1d0(UnkStruct_0226b1d0_3 *self)
     unsigned short i;
     unsigned char *p = (unsigned char *) self + 4;
 
-    for (i = 0; i < (*(UnkStruct_0226b1d0 * *) &data_ov066_0226bdec)->count; i++) {
+    for (i = 0; i < (*(UnkStruct_0226b1d0 **) &data_ov066_0226bdec)->count; i++) {
         if (self->flags & (1 << i)) {
             if (i == func_ov066_022699cc()) {
-                (*(UnkStruct_0226b1d0_2 * *) &data_ov066_0226be08)->slot3--;
+                (*(UnkStruct_0226b1d0_2 **) &data_ov066_0226be08)->slot3--;
             }
             func_ov066_0226b27c(i, (u8 *) p);
-            p += (*(UnkStruct_0226b1d0_2 * *) &data_ov066_0226be08)->unk_00 & ~1;
+            p += (*(UnkStruct_0226b1d0_2 **) &data_ov066_0226be08)->unk_00 & ~1;
         }
     }
 }
@@ -679,31 +682,31 @@ int func_ov066_0226b088(UnkStruct_0226b088 *e, UnkStruct_0226b088 *n)
     ret = 0;
     mask = n->unk_22;
     if (mask != 0) {
-        g = (*(Ctl_0226b088 * *) &data_ov066_0226be08);
+        g = (*(Ctl_0226b088 **) &data_ov066_0226be08);
         src = (u8 *) n + 0x24;
         total = 4;
         stride = g->unk_00;
         dst = (u8 *) e + 0x24;
         e->unk_22 = mask;
 
-        old = (*(Ctl_0226b088 * *) &data_ov066_0226be08)->lo;
-        (*(Ctl_0226b088 * *) &data_ov066_0226be08)->lo = old + 1;
+        old = (*(Ctl_0226b088 **) &data_ov066_0226be08)->lo;
+        (*(Ctl_0226b088 **) &data_ov066_0226be08)->lo = old + 1;
         e->unk_20 = old;
 
-        for (i = 0; i < (*(Cfg * *) &data_ov066_0226bdec)->cnt; i++) {
+        for (i = 0; i < (*(Cfg **) &data_ov066_0226bdec)->cnt; i++) {
             if (mask & (1 << i)) {
                 MI_CpuCopy8(src + stride * i, dst, stride);
                 dst += stride;
                 total = total + stride;
             }
-            g = (*(Ctl_0226b088 * *) &data_ov066_0226be08);
+            g = (*(Ctl_0226b088 **) &data_ov066_0226be08);
             if (g->list[i] == n) {
                 g->list[i] = n->unk_04;
             }
         }
 
         n->unk_22 = 0;
-        e->unk_0A = (*(Timer * *) &data_ov066_0226bdf4)->unk_98;
+        e->unk_0A = (*(Timer **) &data_ov066_0226bdf4)->unk_98;
         e->unk_0C = 0;
         e->unk_08 = total;
         func_ov066_0226b1d0((UnkStruct_0226b1d0_3 *) ((u8 *) e + 0x20));
@@ -719,7 +722,7 @@ void func_ov066_0226af3c(void)
     Node_0226af3c *nd;
     UnkStruct_0226af3c *e;
 
-    g = (*(Ctl_0226af3c * *) &data_ov066_0226be08);
+    g = (*(Ctl_0226af3c **) &data_ov066_0226be08);
     if (g->count >= 1) {
         return;
     }
@@ -738,11 +741,12 @@ void func_ov066_0226af3c(void)
             if (g->w) {
                 func_ov066_0226b594((struct UnkStruct_0226b594 *) nd);
                 nd->unk_22 |= 1;
-                (*(Ctl_0226af3c * *) &data_ov066_0226be08)->unk_03++;
+                (*(Ctl_0226af3c **) &data_ov066_0226be08)->unk_03++;
             }
-            if (func_ov066_0226b088((UnkStruct_0226b088 *) ((*(Ctl_0226af3c * *) &data_ov066_0226be08)->unk_10), (UnkStruct_0226b088 *) nd) != 0) {
-                cur = (*(Ctl_0226af3c * *) &data_ov066_0226be08)->unk_10;
-                (*(Ctl_0226af3c * *) &data_ov066_0226be08)->unk_10 = cur->unk_04;
+            if (func_ov066_0226b088((UnkStruct_0226b088 *) ((*(Ctl_0226af3c **) &data_ov066_0226be08)->unk_10),
+                                    (UnkStruct_0226b088 *) nd) != 0) {
+                cur = (*(Ctl_0226af3c **) &data_ov066_0226be08)->unk_10;
+                (*(Ctl_0226af3c **) &data_ov066_0226be08)->unk_10 = cur->unk_04;
             }
         }
     }
@@ -752,7 +756,7 @@ void func_ov066_0226af3c(void)
     if (cur->unk_0A == 0) {
         return;
     }
-    (*(Ctl_0226af3c * *) &data_ov066_0226be08)->count++;
+    (*(Ctl_0226af3c **) &data_ov066_0226be08)->count++;
     func_ov066_0226ae50(0xd, (int) ((u8 *) cur + 0x20), cur->unk_08, cur->unk_0A, (int) ((void *) func_ov066_0226b71c));
 }
 
@@ -771,7 +775,7 @@ void func_ov066_0226aeb8(int bit)
     unsigned short mask;
 
     mask = ~(1 << bit);
-    head = (*(ListObj * *) &data_ov066_0226be08)->head;
+    head = (*(ListObj **) &data_ov066_0226be08)->head;
     cur = head;
     do {
         cur->flags1 &= mask;
@@ -831,28 +835,30 @@ void func_ov066_0226ac68(int a, u8 *b, int c)
 
     MI_CpuCopy8(b, &h, 2);
     if (h.b3) {
-        e = (UnkStruct_0226ac68 *) func_ov066_0226ad9c(h.idx, (struct Node_0226ad9c *) ((*(Ctl_0226ac68 * *) &data_ov066_0226be08)->unk_10));
+        e = (UnkStruct_0226ac68 *) func_ov066_0226ad9c(
+            h.idx, (struct Node_0226ad9c *) ((*(Ctl_0226ac68 **) &data_ov066_0226be08)->unk_10));
         if (e != 0) {
             e->unk_0C |= e->unk_0A & (1 << a);
         }
     }
     if (h.k == 3) {
-        if ((*(Ctl_0226ac68 * *) &data_ov066_0226be08)->unk_14 != 0) {
+        if ((*(Ctl_0226ac68 **) &data_ov066_0226be08)->unk_14 != 0) {
             return;
         }
-        e = (UnkStruct_0226ac68 *) func_ov066_0226ad9c(h.idx, (struct Node_0226ad9c *) ((*(Ctl_0226ac68 * *) &data_ov066_0226be08)->unk_10));
+        e = (UnkStruct_0226ac68 *) func_ov066_0226ad9c(
+            h.idx, (struct Node_0226ad9c *) ((*(Ctl_0226ac68 **) &data_ov066_0226be08)->unk_10));
         if (e != 0) {
-            (*(Ctl_0226ac68 * *) &data_ov066_0226be08)->unk_14 = e;
+            (*(Ctl_0226ac68 **) &data_ov066_0226be08)->unk_14 = e;
         }
         return;
     }
     if (h.k == 2) {
         return;
     }
-    nd = (*(Ctl_0226ac68 * *) &data_ov066_0226be08)->list[a];
-    MI_CpuCopy8(b, (u8 *) nd + 0x24 + a * (*(Ctl_0226ac68 * *) &data_ov066_0226be08)->unk_00, c);
+    nd = (*(Ctl_0226ac68 **) &data_ov066_0226be08)->list[a];
+    MI_CpuCopy8(b, (u8 *) nd + 0x24 + a * (*(Ctl_0226ac68 **) &data_ov066_0226be08)->unk_00, c);
     nd->unk_22 |= 1 << a;
-    (*(Ctl_0226ac68 * *) &data_ov066_0226be08)->list[a] = nd->unk_04;
+    (*(Ctl_0226ac68 **) &data_ov066_0226be08)->list[a] = nd->unk_04;
 }
 
 void func_ov066_0226ab28(UnkStruct_0226ab28 *q)
@@ -868,22 +874,22 @@ void func_ov066_0226ab28(UnkStruct_0226ab28 *q)
         return;
     }
     p = q->item;
-    if ((*(Ctl_0226ab28 * *) &data_ov066_0226be08)->x || *p == (((*(Ctl_0226ab28 * *) &data_ov066_0226be08)->lo + 1) & 0xf)) {
-        n = *(*(Ctl_0226ab28 * *) &data_ov066_0226be08)->list;
+    if ((*(Ctl_0226ab28 **) &data_ov066_0226be08)->x || *p == (((*(Ctl_0226ab28 **) &data_ov066_0226be08)->lo + 1) & 0xf)) {
+        n = *(*(Ctl_0226ab28 **) &data_ov066_0226be08)->list;
         n->unk_20 = *p;
-        *(*(Ctl_0226ab28 * *) &data_ov066_0226be08)->list = n->next;
+        *(*(Ctl_0226ab28 **) &data_ov066_0226be08)->list = n->next;
         func_ov066_0226b1d0((UnkStruct_0226b1d0_3 *) p);
-        (*(Ctl_0226ab28 * *) &data_ov066_0226be08)->x = 0;
-        (*(Ctl_0226ab28 * *) &data_ov066_0226be08)->z = 0;
-        (*(Ctl_0226ab28 * *) &data_ov066_0226be08)->lo = *p;
+        (*(Ctl_0226ab28 **) &data_ov066_0226be08)->x = 0;
+        (*(Ctl_0226ab28 **) &data_ov066_0226be08)->z = 0;
+        (*(Ctl_0226ab28 **) &data_ov066_0226be08)->lo = *p;
         return;
     }
-    if (*p != (((*(Ctl_0226ab28 * *) &data_ov066_0226be08)->lo + 2) & 0xf)) {
-        (*(Ctl_0226ab28 * *) &data_ov066_0226be08)->y = 1;
+    if (*p != (((*(Ctl_0226ab28 **) &data_ov066_0226be08)->lo + 2) & 0xf)) {
+        (*(Ctl_0226ab28 **) &data_ov066_0226be08)->y = 1;
         return;
     }
-    (*(Ctl_0226ab28 * *) &data_ov066_0226be08)->z = 1;
-    (*(Ctl_0226ab28 * *) &data_ov066_0226be08)->hi = ((*(Ctl_0226ab28 * *) &data_ov066_0226be08)->lo + 1) & 0xf;
+    (*(Ctl_0226ab28 **) &data_ov066_0226be08)->z = 1;
+    (*(Ctl_0226ab28 **) &data_ov066_0226be08)->hi = ((*(Ctl_0226ab28 **) &data_ov066_0226be08)->lo + 1) & 0xf;
 }
 
 void func_ov066_0226ab24(void *receiver) {}
@@ -916,31 +922,31 @@ unsigned int func_ov066_0226a960(void)
 
     saved = OS_DisableInterrupts();
 
-    (*(UnkStruct_0226a960 * *) &data_ov066_0226be08)->unk_10 = (*(UnkStruct_0226a960 * *) &data_ov066_0226be08)->unk_08;
-    func_ov066_0226bb7c((*(UnkStruct_0226a960 * *) &data_ov066_0226be08)->unk_08, 3);
-    func_ov066_0226bb7c((*(UnkStruct_0226a960 * *) &data_ov066_0226be08)->unk_0C, 3);
+    (*(UnkStruct_0226a960 **) &data_ov066_0226be08)->unk_10 = (*(UnkStruct_0226a960 **) &data_ov066_0226be08)->unk_08;
+    func_ov066_0226bb7c((*(UnkStruct_0226a960 **) &data_ov066_0226be08)->unk_08, 3);
+    func_ov066_0226bb7c((*(UnkStruct_0226a960 **) &data_ov066_0226be08)->unk_0C, 3);
 
     i = 0;
-    while (i < (*(Count * *) &data_ov066_0226bdec)->count) {
-        (*(UnkStruct_0226a960 * *) &data_ov066_0226be08)->unk_18[i] = (*(UnkStruct_0226a960 * *) &data_ov066_0226be08)->unk_0C;
+    while (i < (*(Count **) &data_ov066_0226bdec)->count) {
+        (*(UnkStruct_0226a960 **) &data_ov066_0226be08)->unk_18[i] = (*(UnkStruct_0226a960 **) &data_ov066_0226be08)->unk_0C;
         i++;
     }
 
-    (*(UnkStruct_0226a960 * *) &data_ov066_0226be08)->flag1 &= ~0xf;
-    (*(UnkStruct_0226a960 * *) &data_ov066_0226be08)->flag1 &= ~0xf0;
-    (*(UnkStruct_0226a960 * *) &data_ov066_0226be08)->flag2 = 0;
-    (*(UnkStruct_0226a960 * *) &data_ov066_0226be08)->flag3 = 0;
-    (*(UnkStruct_0226a960 * *) &data_ov066_0226be08)->flag4 = ((*(UnkStruct_0226a960 * *) &data_ov066_0226be08)->flag4 & ~1) | 1;
-    (*(UnkStruct_0226a960 * *) &data_ov066_0226be08)->flag4 &= ~2;
-    (*(UnkStruct_0226a960 * *) &data_ov066_0226be08)->flag4 &= ~4;
-    (*(UnkStruct_0226a960 * *) &data_ov066_0226be08)->flag4 &= ~8;
-    (*(UnkStruct_0226a960 * *) &data_ov066_0226be08)->unk_14 = 0;
-    (*(UnkStruct_0226a960 * *) &data_ov066_0226be08)->unk_1C = 0;
-    (*(UnkStruct_0226a960 * *) &data_ov066_0226be08)->unk_1E = 0;
-    (*(UnkStruct_0226a960 * *) &data_ov066_0226be08)->unk_20 = 0;
-    (*(UnkStruct_0226a960 * *) &data_ov066_0226be08)->unk_24 = 0;
-    (*(UnkStruct_0226a960 * *) &data_ov066_0226be08)->unk_28 = -1;
-    (*(UnkStruct_0226a960 * *) &data_ov066_0226be08)->unk_2C = 0;
+    (*(UnkStruct_0226a960 **) &data_ov066_0226be08)->flag1 &= ~0xf;
+    (*(UnkStruct_0226a960 **) &data_ov066_0226be08)->flag1 &= ~0xf0;
+    (*(UnkStruct_0226a960 **) &data_ov066_0226be08)->flag2 = 0;
+    (*(UnkStruct_0226a960 **) &data_ov066_0226be08)->flag3 = 0;
+    (*(UnkStruct_0226a960 **) &data_ov066_0226be08)->flag4 = ((*(UnkStruct_0226a960 **) &data_ov066_0226be08)->flag4 & ~1) | 1;
+    (*(UnkStruct_0226a960 **) &data_ov066_0226be08)->flag4 &= ~2;
+    (*(UnkStruct_0226a960 **) &data_ov066_0226be08)->flag4 &= ~4;
+    (*(UnkStruct_0226a960 **) &data_ov066_0226be08)->flag4 &= ~8;
+    (*(UnkStruct_0226a960 **) &data_ov066_0226be08)->unk_14 = 0;
+    (*(UnkStruct_0226a960 **) &data_ov066_0226be08)->unk_1C = 0;
+    (*(UnkStruct_0226a960 **) &data_ov066_0226be08)->unk_1E = 0;
+    (*(UnkStruct_0226a960 **) &data_ov066_0226be08)->unk_20 = 0;
+    (*(UnkStruct_0226a960 **) &data_ov066_0226be08)->unk_24 = 0;
+    (*(UnkStruct_0226a960 **) &data_ov066_0226be08)->unk_28 = -1;
+    (*(UnkStruct_0226a960 **) &data_ov066_0226be08)->unk_2C = 0;
 
     return OS_RestoreInterrupts(saved);
 }
@@ -949,10 +955,11 @@ int func_ov066_0226a8c4(int idx, void *a, void *b)
 {
     int ok = 0;
     int e = OS_DisableInterrupts();
-    UnkStruct_0226a8c4 *q = (*(UnkStruct_0226a8c4 * *) &data_ov066_0226be08);
+    UnkStruct_0226a8c4 *q = (*(UnkStruct_0226a8c4 **) &data_ov066_0226be08);
     if (q != 0) {
         UnkStruct_0226a8c4_2 *tbl = q->tbl;
-        if (tbl != 0 && (*(void * *) &data_ov066_0226bdf4) != 0 && idx < (*(Lim * *) &data_ov066_0226bdec)->count && (q->mask & (1 << idx)) == 0) {
+        if (tbl != 0 && (*(void **) &data_ov066_0226bdf4) != 0 && idx < (*(Lim **) &data_ov066_0226bdec)->count &&
+            (q->mask & (1 << idx)) == 0) {
             tbl[idx].a = a;
             tbl[idx].b = b;
             ok = 1;

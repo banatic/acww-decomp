@@ -82,7 +82,7 @@ int func_020749c4(void)
     UnkStruct_020749c4 *p;
 
     ret = 1;
-    if ((*(UnkStruct_020749c4 * *) &data_020ccf94)->unk_74 != 0) {
+    if ((*(UnkStruct_020749c4 **) &data_020ccf94)->unk_74 != 0) {
         h = data_021c9b30;
         old = func_020e9a3c(h, 0x8000);
         ((unsigned int) func_020e9a3c(h, old | 0x2000), func_02073044());
@@ -91,7 +91,7 @@ int func_020749c4(void)
             ret = 0;
         }
         func_020e9a3c(h, old);
-        p = (*(UnkStruct_020749c4 * *) &data_020ccf94);
+        p = (*(UnkStruct_020749c4 **) &data_020ccf94);
         func_02077ae8(func_020733c4(p));
         func_020733b8(p, 0);
         func_02077ae8(func_02073424(p));
@@ -126,7 +126,7 @@ void func_02074958(void)
     int ret;
     int val;
     UnkStruct_02074958 *p;
-    if ((*(UnkStruct_02074958 * *) &data_020ccf94)->flag_0x74 == 0) {
+    if ((*(UnkStruct_02074958 **) &data_020ccf94)->flag_0x74 == 0) {
         return;
     }
     val = (*(int *) &data_021c9b30);
@@ -137,7 +137,7 @@ void func_02074958(void)
         func_020b8d6c();
     }
     func_020e9a3c((void *) val, ret);
-    p = (*(UnkStruct_02074958 * *) &data_020ccf94);
+    p = (*(UnkStruct_02074958 **) &data_020ccf94);
     func_02073f00((UnkStruct_020749c4 *) p);
     p->flag_0x74 = 0;
 }
@@ -154,14 +154,14 @@ void func_02074904(int flag)
     if (flag != 0) {
         return;
     }
-    p = (*(struct Object * *) &data_020ccf94);
+    p = (*(struct Object **) &data_020ccf94);
     if (func_02073dd4(p, p->unk_64) == 0) {
         return;
     }
     if (func_02073d70(p) == 0) {
         return;
     }
-    p = (*(struct Object * *) &data_020ccf94);
+    p = (*(struct Object **) &data_020ccf94);
     func_020734d0(p);
     func_0207342c(p);
     func_020739d0(p);

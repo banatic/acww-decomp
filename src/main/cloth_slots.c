@@ -137,7 +137,7 @@ void *func_0205d690(void *p)
 
 void func_0205d5f0(u32 *p)
 {
-    void *gA = (*(void * *) data_021c9af4);
+    void *gA = (*(void **) data_021c9af4);
     u32 r4 = ((u8 *) data_020ccf94)[0x6c];
     u32 r6;
 
@@ -316,7 +316,8 @@ void func_0205d3d4(unsigned char *a, unsigned short *b, int c, int d, int e)
         }
     }
 
-    if (func_0203cfb8((void *) func_0205d5a8((UnkStruct_0205d5a8 *) (((char *) data_021c9d1c)), (unsigned char) byte), b, c) != 0) {
+    if (func_0203cfb8((void *) func_0205d5a8((UnkStruct_0205d5a8 *) (((char *) data_021c9d1c)), (unsigned char) byte), b, c) !=
+        0) {
         func_0205d58c((UnkStruct_0205d58c *) (((char *) data_021c9d1c)), (unsigned char) byte, b);
     }
 }
@@ -325,7 +326,8 @@ void func_0205d36c(unsigned char *p, void *param1)
 {
     unsigned char b = *p;
 
-    if (func_0203cfb0((void *) func_0205d5a8((UnkStruct_0205d5a8 *) (((char *) data_021c9d1c)), (unsigned char) b), param1) != 0) {
+    if (func_0203cfb0((void *) func_0205d5a8((UnkStruct_0205d5a8 *) (((char *) data_021c9d1c)), (unsigned char) b), param1) !=
+        0) {
         if ((data_021c9d00 & 1) == 0) {
             data_021c9cfc = 0xffff;
             __register_global_object((void *) (&data_021c9cfc), (((void *) func_020051b0)), (void *) (&data_021c9d04));

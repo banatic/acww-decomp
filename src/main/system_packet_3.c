@@ -176,7 +176,9 @@ fail:
 
 int func_02075dcc(unsigned int a, unsigned int b)
 {
-    return func_02075ff8(a, func_0209847c((int) ((void *) func_02096284((*(struct UnkStruct_02075dcc * *) &data_020ccf94)->unk_68))), 0x249c, 4, b);
+    return func_02075ff8(
+        a, func_0209847c((int) ((void *) func_02096284((*(struct UnkStruct_02075dcc **) &data_020ccf94)->unk_68))), 0x249c, 4,
+        b);
 }
 
 int func_02075d9c(int a, int b)
@@ -289,7 +291,7 @@ int func_02075b14(int arg)
     int local[2];
 
     if (((int) func_02073044(), func_020ebf70()) != 0 && func_02077a8c(arg) != 0) {
-        ptr = (*(int * *) &data_020ccf94);
+        ptr = (*(int **) &data_020ccf94);
         func_02073918((void *) ptr, 0);
         val = func_02073d28((void *) ptr, 4);
         func_02077b3c(val, 0, 10);
@@ -318,7 +320,7 @@ int func_02075aa4(int a, void *p1)
     if (func_02077a8c((int) p1) == 0) {
         goto zero;
     }
-    g = (*(unsigned char * *) &data_020ccf94);
+    g = (*(unsigned char **) &data_020ccf94);
     t = (unsigned char *) func_02073d28((void *) g, 4);
     func_02077b3c((int) t, 0, 0xe);
     t[1] = (unsigned char) a;
@@ -471,7 +473,11 @@ exit:
 int func_020757ac(void *param)
 {
     int x;
-    x = func_0209847c((int) func_02096284((*(struct UnkStruct_020757ac { char pad_00[0x68]; void *unk_68; } * *) &data_020ccf94)->unk_68));
+    x = func_0209847c((int) func_02096284((*(struct UnkStruct_020757ac {
+                                              char pad_00[0x68];
+                                              void *unk_68;
+                                          } **) &data_020ccf94)
+                                              ->unk_68));
     return func_02075ff8((int) param, x, 0x249c, 0x15, 1);
 }
 
@@ -479,7 +485,11 @@ int func_02075774(int param1)
 {
     int ret;
 
-    ret = func_020989e0(func_0209847c((int) func_02096284((*(struct UnkStruct_02075774 { char pad_00[0x68]; void *unk_68; } * *) &data_020ccf94)->unk_68)));
+    ret = func_020989e0(func_0209847c((int) func_02096284((*(struct UnkStruct_02075774 {
+                                                              char pad_00[0x68];
+                                                              void *unk_68;
+                                                          } **) &data_020ccf94)
+                                                              ->unk_68)));
     return func_02075ff8(param1, ret, 0x3200, 0x16, 1);
 }
 
@@ -585,7 +595,7 @@ void func_020755b4(unsigned char *payload, unsigned int length, int player)
     if (func_020a132c() == 0) {
         return;
     }
-    func_020a242c(func_020a132c(), (*(unk_struct * *) &data_020ccf94)->unk_64, 1);
+    func_020a242c(func_020a132c(), (*(unk_struct **) &data_020ccf94)->unk_64, 1);
 }
 
 void func_0207557c(unsigned char *payload, unsigned int length, int player)

@@ -130,7 +130,7 @@ int func_0203e3f8(void)
         return 0;
     }
 
-    ptr = (*(unsigned char * *) data_021c72b8);
+    ptr = (*(unsigned char **) data_021c72b8);
     ptr[0x16] = 6;
     return 1;
 }
@@ -258,7 +258,8 @@ int func_0203e280(int a)
 
 int func_0203e258(unsigned char argument0)
 {
-    if (func_0203e4c0((unsigned char) ((unsigned char) argument0)) && (*(struct UnkStruct_0203e258 * *) data_021c72b8)->unk_16 != 6) {
+    if (func_0203e4c0((unsigned char) ((unsigned char) argument0)) &&
+        (*(struct UnkStruct_0203e258 **) data_021c72b8)->unk_16 != 6) {
         return 1;
     } else {
         return 0;
@@ -273,7 +274,7 @@ int func_0203e234(unsigned char argument0)
     if (func_0203e4c0((unsigned char) ((unsigned char) argument0)) == 0) {
         result = 0;
     } else {
-        ptr = (*(unsigned char * *) data_021c72b8);
+        ptr = (*(unsigned char **) data_021c72b8);
         ptr[0x16] = 6;
         result = 1;
     }
@@ -325,7 +326,7 @@ int func_0203e19c(void)
     if (func_0203e4c0(9) == 0) {
         ret = 0;
     } else {
-        (*(unsigned char * *) data_021c72b8)[0x16] = 6;
+        (*(unsigned char **) data_021c72b8)[0x16] = 6;
         ret = 1;
     }
     return ret;
@@ -352,7 +353,7 @@ int func_0203e140(void)
     if (func_0203e4c0(0xe) == 0) {
         result = 0;
     } else {
-        ptr = (*(unsigned char * *) data_021c72b8);
+        ptr = (*(unsigned char **) data_021c72b8);
         ptr[0x16] = 6;
         result = 1;
     }
@@ -424,7 +425,7 @@ int func_0203e020(int param)
     return 0;
 
 outer_success:
-    p = (*(UnkStruct_0203e020 * *) data_021c72b8);
+    p = (*(UnkStruct_0203e020 **) data_021c72b8);
     if (p->unk_10 == func_0203efbc(param)) {
         goto inner_success;
     }
@@ -467,8 +468,8 @@ void func_0203df88(void *self)
 
 void func_0203df6c(void)
 {
-    func_0203f58c((*(void * *) data_021c72b8));
-    (*(void * *) data_021c72b8) = 0;
+    func_0203f58c((*(void **) data_021c72b8));
+    (*(void **) data_021c72b8) = 0;
 }
 
 int func_0203df10(void)
@@ -492,14 +493,14 @@ int func_0203df10(void)
     p->unk_15 = 0xd;
     p->unk_14 = 3;
     p->unk_16 = 5;
-    (*(struct UnkStruct_0203df10 * *) data_021c72b8) = p;
+    (*(struct UnkStruct_0203df10 **) data_021c72b8) = p;
     return 1;
 }
 
 int func_0203dee8(void)
 {
     if (func_0203e4c0(13) != 0) {
-        (*(struct UnkStruct_0203dee8 * *) data_021c72b8)->unk_16 = 6;
+        (*(struct UnkStruct_0203dee8 **) data_021c72b8)->unk_16 = 6;
         return 1;
     } else {
         return 0;

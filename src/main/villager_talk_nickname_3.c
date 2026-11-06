@@ -238,7 +238,9 @@ void func_0202aa04(struct UnkStruct_0202aa04_2 *self)
     func_02094fd4(&mutex2);
     func_02095074(handle, &mutex2);
 
-    if (func_0202aab0(&mutex1, &mutex2, func_020036e8((int) ((unsigned char *) (unsigned int) func_0208150c((int) self->unk_100->unk_830)))) == 0) {
+    if (func_0202aab0(&mutex1, &mutex2,
+                      func_020036e8((int) ((unsigned char *) (unsigned int) func_0208150c((int) self->unk_100->unk_830)))) ==
+        0) {
         func_020a8bb8(&mutex1, &mutex2);
     }
 

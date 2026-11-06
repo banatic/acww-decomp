@@ -97,31 +97,31 @@ void func_ov066_0226978c(u32 arg0)
 {
     Pkt *p;
 
-    p = (*(UnkStruct_0226978c * *) &data_ov066_0226bdf4)->pkt;
-    (*(UnkStruct_0226978c * *) &data_ov066_0226bdf4)->unk_8C = 1;
+    p = (*(UnkStruct_0226978c **) &data_ov066_0226bdf4)->pkt;
+    (*(UnkStruct_0226978c **) &data_ov066_0226bdf4)->unk_8C = 1;
     func_ov066_0226987c(arg0, (u8) 1);
 
-    p->unk_00 = (*(UnkStruct_0226978c * *) &data_ov066_0226bdf4)->dest;
-    p->unk_04 = (*(UnkStruct_0226978c * *) &data_ov066_0226bdf4)->unk_18;
+    p->unk_00 = (*(UnkStruct_0226978c **) &data_ov066_0226bdf4)->dest;
+    p->unk_04 = (*(UnkStruct_0226978c **) &data_ov066_0226bdf4)->unk_18;
     p->unk_08 = data_ov066_0226bdec->unk_28;
     (*(u32 *) &data_ov066_0226bdf8) = (*(u32 *) &data_ov066_0226bdf8) * 0x5eedf715 + 0x1b0cb173;
-    (*(UnkStruct_0226978c * *) &data_ov066_0226bdf4)->unk_20 = (u16) (*(u32 *) &data_ov066_0226bdf8);
-    p->unk_0C = (*(UnkStruct_0226978c * *) &data_ov066_0226bdf4)->unk_20;
+    (*(UnkStruct_0226978c **) &data_ov066_0226bdf4)->unk_20 = (u16) (*(u32 *) &data_ov066_0226bdf8);
+    p->unk_0C = (*(UnkStruct_0226978c **) &data_ov066_0226bdf4)->unk_20;
     p->unk_0E = 1;
     p->unk_12 = 0;
     p->unk_14 = 0;
     p->unk_16 = 0;
     p->unk_10 = data_ov066_0226bdec->unk_0A;
     p->unk_18 = (u16) WM_GetDispersionBeaconPeriod();
-    p->unk_32 = (*(UnkStruct_0226978c * *) &data_ov066_0226bdf4)->unk_8D;
+    p->unk_32 = (*(UnkStruct_0226978c **) &data_ov066_0226bdf4)->unk_8D;
     p->unk_34 = data_ov066_0226bdec->unk_1A;
     p->unk_36 = data_ov066_0226bdec->unk_1E;
 }
 
 void func_ov066_02269748(int a)
 {
-    (*(UnkStruct_02269748 * *) &data_ov066_0226bdec)->unk_04 = 6;
-    (*(UnkStruct_02269748_2 * *) &data_ov066_0226bdf4)->unk_96 = 0;
+    (*(UnkStruct_02269748 **) &data_ov066_0226bdec)->unk_04 = 6;
+    (*(UnkStruct_02269748_2 **) &data_ov066_0226bdf4)->unk_96 = 0;
     func_ov066_0226978c(a);
     func_ov066_02268c4c();
 }

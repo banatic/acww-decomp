@@ -249,7 +249,8 @@ void func_020972b4(int param)
         if (i == param) {
             continue;
         }
-        func_02097204((char *) (func_020972f0((unsigned char) ((unsigned char) i))), (int) func_020972e4((unsigned char) ((unsigned char) i)));
+        func_02097204((char *) (func_020972f0((unsigned char) ((unsigned char) i))),
+                      (int) func_020972e4((unsigned char) ((unsigned char) i)));
     }
 }
 

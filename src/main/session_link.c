@@ -105,7 +105,7 @@ unsigned int func_020740b4(void)
     int field;
 
     result = (unsigned int) func_020740dc();
-    field = (*(struct GameState * *) &data_020ccf94)->flag;
+    field = (*(struct GameState **) &data_020ccf94)->flag;
     if (field < 4) {
         result |= (unsigned short) (1 << field);
     }
@@ -135,13 +135,13 @@ void func_02074078(void)
 
 int func_02073fdc(int a)
 {
-    u16 *p = (*(u16 * *) &data_020ccf94);
+    u16 *p = (*(u16 **) &data_020ccf94);
     u16 n = func_0207315c(p);
     u16 v;
 
     if (n != 0) {
         if (func_02073de4(p) != 0) {
-            p = (*(u16 * *) &data_020ccf94);
+            p = (*(u16 **) &data_020ccf94);
             func_02073180(p, 0);
             func_02073168(p, 0);
         } else {

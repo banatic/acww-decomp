@@ -16,7 +16,7 @@ extern int func_ov004_0222c3c4(void *, int);
 
 int func_ov004_02230d94(void)
 {
-    char *p = (*(char * *) &data_ov004_022588c8);
+    char *p = (*(char **) &data_ov004_022588c8);
     if (p != 0) {
         if (*(u8 *) (p + 0x63c) != 0) {
             return 1;

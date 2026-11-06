@@ -617,16 +617,16 @@ int func_0204dea0(void *self)
     ok = 1;
     func_0205c10c(self);
     for (i = 0; i < 5; i++) {
-        if (((void * *) data_021c80e0)[i] == 0) {
-            ((void * *) data_021c80e0)[i] = func_020e9948(self, 0x20);
+        if (((void **) data_021c80e0)[i] == 0) {
+            ((void **) data_021c80e0)[i] = func_020e9948(self, 0x20);
             // Shared failure block, placed after the f3 test.
-            if (((void * *) data_021c80e0)[i] == 0) {
+            if (((void **) data_021c80e0)[i] == 0) {
                 goto fail;
             }
-            if (((void * *) data_021c80e0)[i] != 0) {
-                func_0204df54((struct UnkStruct_0204df54 *) (((void * *) data_021c80e0)[i]));
+            if (((void **) data_021c80e0)[i] != 0) {
+                func_0204df54((struct UnkStruct_0204df54 *) (((void **) data_021c80e0)[i]));
             }
-            if (func_0204dcb8(((void * *) data_021c80e0)[i], i, self) == 0) {
+            if (func_0204dcb8(((void **) data_021c80e0)[i], i, self) == 0) {
                 ok = 0;
                 break;
             }

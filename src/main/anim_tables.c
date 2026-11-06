@@ -50,7 +50,7 @@ unsigned char func_0205ceec(int r0, int r1)
 unsigned char func_0205cec8(int a, int b)
 {
     func_0205cf10(a);
-    return ((pair_t * *) data_020dd414)[a][b].hi;
+    return ((pair_t **) data_020dd414)[a][b].hi;
 }
 
 unsigned short func_0205cebc(unsigned int r0)

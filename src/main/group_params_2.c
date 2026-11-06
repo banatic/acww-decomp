@@ -19,7 +19,7 @@
  */
 
 extern int func_0206fbf8(int);
-extern int data_021cfc80;   // 0x021cfc80
+extern int data_021cfc80; // 0x021cfc80
 extern unsigned short data_021cfc70;
 extern void func_0206fc1c(int, int);
 extern void func_0206f4e4(void);

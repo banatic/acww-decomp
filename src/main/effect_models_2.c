@@ -197,10 +197,10 @@ void func_020907d8(void *base)
         func_02090710((char *) base + i * 0x530);
     }
 
-    p = (*(void * *) &data_021d52c8);
+    p = (*(void **) &data_021d52c8);
     if (p != 0) {
         func_020e9fd4(p);
-        (*(void * *) &data_021d52c8) = 0;
+        (*(void **) &data_021d52c8) = 0;
     }
 }
 
@@ -276,7 +276,7 @@ void func_02090694(int *out, int *src)
     for (; i < 3; i++) {
         struct Entry *e = &data_020e26ec[index];
         if (e->unk_00[i] != 0) {
-            out[i] = func_02064b2c(e->unk_00[i], (*(void * *) &data_021d52c8), 4, a);
+            out[i] = func_02064b2c(e->unk_00[i], (*(void **) &data_021d52c8), 4, a);
         } else {
             out[i] = b;
         }

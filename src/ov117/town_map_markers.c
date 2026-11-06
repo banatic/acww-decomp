@@ -330,7 +330,8 @@ void func_ov117_02299ee8(void *self)
     }
 
     local_14 = 0x500b;
-    if (!func_0204f3e4((void *) v, (int *) (&local_20), (int *) (&local_24), (int *) (&local_28), (int *) (&local_2c), (u16 *) (&local_14), (u16 *) (&local_14), 0, 0)) {
+    if (!func_0204f3e4((void *) v, (int *) (&local_20), (int *) (&local_24), (int *) (&local_28), (int *) (&local_2c),
+                       (u16 *) (&local_14), (u16 *) (&local_14), 0, 0)) {
         return;
     }
 
@@ -367,7 +368,8 @@ void func_ov117_02299e44(void *self)
     }
 
     v14 = 0x500c;
-    if (func_0204f3e4((void *) ret1, (int *) (&v20), (int *) (&v24), (int *) (&v28), (int *) (&v2c), (u16 *) (&v14), (u16 *) (&v14), 2, 0) == 0) {
+    if (func_0204f3e4((void *) ret1, (int *) (&v20), (int *) (&v24), (int *) (&v28), (int *) (&v2c), (u16 *) (&v14),
+                      (u16 *) (&v14), 2, 0) == 0) {
         return;
     }
 

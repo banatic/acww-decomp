@@ -228,7 +228,8 @@ void func_ov102_0229ce58(unsigned char *self)
 
 void func_ov102_0229cdf4(UnkStruct_0229cdf4 *obj)
 {
-    if (func_ov102_0229d464((void *) obj, (unsigned char) obj->unk_25A5) != 0 || func_ov102_0229d454((void *) obj, (unsigned char) obj->unk_25A5) != 0) {
+    if (func_ov102_0229d464((void *) obj, (unsigned char) obj->unk_25A5) != 0 ||
+        func_ov102_0229d454((void *) obj, (unsigned char) obj->unk_25A5) != 0) {
         if (func_ov102_0229d074((void *) obj, (unsigned char) obj->unk_25A5) != 0) {
             func_ov002_02207cf0(obj->sub);
         } else {

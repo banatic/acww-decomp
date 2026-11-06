@@ -213,7 +213,12 @@ int func_ov112_022a06b8(unsigned char *self)
 
 int func_ov112_022a0620(struct UnkStruct_022a0620 *self)
 {
-    if (((*(struct Global { unsigned char pad_00[2]; unsigned short flag; } *) data_021fbe40).flag & 0x800) == 0) {
+    if (((*(struct Global {
+             unsigned char pad_00[2];
+             unsigned short flag;
+         } *) data_021fbe40)
+             .flag &
+         0x800) == 0) {
         return 0;
     }
 
@@ -508,7 +513,8 @@ void func_ov112_022a00ac(void *p)
     count = func_02051c8c_unk((char *) p + 0x184, 0x60);
 
     for (i = 0, j = i; i < count; i++) {
-        if (func_ov112_022a029c((unsigned char *) p, (unsigned short) (*(unsigned short *) ((char *) p + i * 2 + 0x184)), j) == 0) {
+        if (func_ov112_022a029c((unsigned char *) p, (unsigned short) (*(unsigned short *) ((char *) p + i * 2 + 0x184)), j) ==
+            0) {
             if (i == 0) {
                 func_ov112_0229ff50((void *) p);
             }

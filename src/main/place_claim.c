@@ -95,7 +95,7 @@ void func_02051e38(int param)
     void *ptr2;
 
     data_021c8750 = 0;
-    ptr = (*(void * *) &data_020ccf94);
+    ptr = (*(void **) &data_020ccf94);
     if (func_02073d90((UnkStruct_02051eb8_2 *) ptr) == 0) {
         goto else_branch;
     }
@@ -109,7 +109,7 @@ else_branch:
     func_0205340c(&data_021c87fc, param);
     goto end;
 then_branch:
-    ptr2 = (*(void * *) &data_020ccf94);
+    ptr2 = (*(void **) &data_020ccf94);
     func_02073820((UnkStruct_02051eb8_2 *) ptr2);
     func_02073770((UnkStruct_02051eb8_2 *) ptr2, 0x21, 0);
 end:;

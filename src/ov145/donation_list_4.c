@@ -52,7 +52,8 @@ void func_ov145_0229a034(char *p)
 
 void func_ov145_0229a010(unsigned char *base)
 {
-    *(unsigned short *) (base + 0xb8) = (unsigned short) func_ov145_0229a058((char *) base, (char *) (base + 0x0c8c), 0x3894, 0x14);
+    *(unsigned short *) (base + 0xb8) =
+        (unsigned short) func_ov145_0229a058((char *) base, (char *) (base + 0x0c8c), 0x3894, 0x14);
 }
 
 void func_ov145_02299fec(void *self)

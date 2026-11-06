@@ -194,7 +194,7 @@ void func_ov049_02261080(struct UnkStruct_02261080 *param)
 void func_ov049_02261060(struct UnkStruct_02261060 *self)
 {
     char c = 0x12;
-    func_0206844c((int) self->unk_40, (char *) (&c), (int) ((*(void * *) &data_ov049_02263298)));
+    func_0206844c((int) self->unk_40, (char *) (&c), (int) ((*(void **) &data_ov049_02263298)));
 }
 
 void func_ov049_02260fe4(UnkStruct_02260fe4 *self)
@@ -269,10 +269,10 @@ void func_ov049_02260ec8(struct UnkStruct_02260ec8_2 *self)
             }
         }
         buf[0] = 0x27;
-        func_0206844c(self->unk_40, (char *) buf, (int) ((*(void * *) &data_ov049_02263298)));
+        func_0206844c(self->unk_40, (char *) buf, (int) ((*(void **) &data_ov049_02263298)));
     } else {
         buf[1] = 0x22;
-        func_0206844c(self->unk_40, (char *) (buf + 1), (int) ((*(void * *) &data_ov049_02263298)));
+        func_0206844c(self->unk_40, (char *) (buf + 1), (int) ((*(void **) &data_ov049_02263298)));
     }
 }
 
@@ -377,7 +377,7 @@ void func_ov049_02260c94(UnkStruct_02260c94_2 *arg)
         void *p = arg->p;
         func_02068434(p);
         c = '-';
-        func_0206844c((int) p, &c, (int) ((*(void * *) &data_ov049_02263298)));
+        func_0206844c((int) p, &c, (int) ((*(void **) &data_ov049_02263298)));
         func_ov049_022610c4((UnkStruct_022610c4 *) arg, 0);
     }
 }
@@ -404,7 +404,7 @@ void func_ov049_02260b9c(struct UnkStruct_02260b9c_2 *ctx)
     unsigned int eq;
     struct UnkStruct_02260b9c local;
     void *r6 = ctx->unk_40;
-    void *r7 = (*(void * *) &data_ov049_02263298);
+    void *r7 = (*(void **) &data_ov049_02263298);
     status = 0x30;
     if (func_0206fc6c() == 0) {
         goto end;

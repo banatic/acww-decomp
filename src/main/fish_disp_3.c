@@ -278,7 +278,7 @@ void *func_020507b8(void)
         p->unk_00 = (void *) data_020da13c;
         p->unk_00 = (void *) data_020dce48;
         __cxa_vec_ctor((void *) (&p->unk_50), 4, 0x16c, (((void (*)(void *)) func_0205072c)),
-                       (((void (*)(void *)) (void * (*)(void *)) func_02050704)));
+                       (((void (*)(void *))(void *(*) (void *) ) func_02050704)));
         func_0209d2b8(&p->unk_600);
     }
     return p;
@@ -345,14 +345,14 @@ int func_020506c0(void)
 int func_0205066c(void *p0, int idx)
 {
     int result = 0;
-    if ((*(Elem_0205066c * *) &data_021c8184) == 0) {
+    if ((*(Elem_0205066c **) &data_021c8184) == 0) {
         return result;
     }
     if (idx == -1) {
         goto ret0;
     }
     {
-        char *base = (char *) (*(Elem_0205066c * *) &data_021c8184) + 0x50;
+        char *base = (char *) (*(Elem_0205066c **) &data_021c8184) + 0x50;
         Elem_0205066c *e = (Elem_0205066c *) (base + idx * 0x16c);
         e->unk_44 = 2;
         func_0209d238((char *) p0 + 0x600, (int *) ((char *) e + 0x48));
@@ -376,11 +376,11 @@ void func_020505f4(int arg0, int arg1)
     if (arg1 >= data_020dcd78) {
         return;
     }
-    if ((*(char * *) &data_021c8184) == 0) {
+    if ((*(char **) &data_021c8184) == 0) {
         return;
     }
 
-    base = (*(char * *) &data_021c8184) + 0x50;
+    base = (*(char **) &data_021c8184) + 0x50;
     e = (UnkStruct_020505f4 *) (base + arg1 * 0x16c);
 
     v = e->unk_44;
@@ -405,7 +405,7 @@ int func_02050588(struct Param *param)
         data_020dcd78 = 1;
     }
     func_0209d180((char *) param + 0x600, data_020dcd78, 0x800, 0x80, 0x134c, func_0205c8f8, func_0205c8dc, &data_020dcef0);
-    (*(struct Param * *) &data_021c8184) = param;
+    (*(struct Param **) &data_021c8184) = param;
     return 1;
 }
 
@@ -415,10 +415,10 @@ int func_02050444(void *self)
     int i, a, b, zero;
     int tmp[3], *ptr;
 
-    if ((*(Entry * *) &data_021c8184) == 0) {
+    if ((*(Entry **) &data_021c8184) == 0) {
         return 0;
     }
-    entry = (Entry *) ((char *) (*(Entry * *) &data_021c8184) + 0x50);
+    entry = (Entry *) ((char *) (*(Entry **) &data_021c8184) + 0x50);
     i = 0;
     a = 0;
     b = 0;
@@ -609,7 +609,8 @@ int func_02050140(void *a, void *b, UnkStruct_02050140 *s)
         r4 = &s->unk_98;
         func_02055f2c(r4, (void *) func_0209d088(p), 0);
         v = func_0209d324(h);
-        x = (void *) func_02107b44((int) ((void *) NNS_G3dGetJntAnmSet((int) (func_02064b2c((char *) data_020dcd70, v, 4, 0)))), 0);
+        x = (void *) func_02107b44(
+            (int) ((void *) NNS_G3dGetJntAnmSet((int) (func_02064b2c((char *) data_020dcd70, v, 4, 0)))), 0);
         if (func_02055140(r4, v) != 0) {
             func_02055060(r4, (int) x, 0, 0x1000, 1, 0);
             func_02055050(r4);
@@ -630,11 +631,11 @@ int func_020500d8(void)
     int i;
     int buf[3];
 
-    if ((*(unsigned char * *) &data_021c8184) == 0) {
+    if ((*(unsigned char **) &data_021c8184) == 0) {
         return 0;
     }
 
-    p = (Entry_020500d8 *) ((*(unsigned char * *) &data_021c8184) + 0x50);
+    p = (Entry_020500d8 *) ((*(unsigned char **) &data_021c8184) + 0x50);
     i = 0;
     while (i < data_020dcd78) {
         if (p->type == 3) {

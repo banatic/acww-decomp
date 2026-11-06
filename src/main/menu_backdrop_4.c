@@ -187,7 +187,7 @@ int func_0206efd4(void *param0)
     if ((*(unsigned char *) data_021cfc10) != 4) {
         return func_0206f0d4((int) param0);
     }
-    heap = (*(void * *) &data_021fbe94);
+    heap = (*(void **) &data_021fbe94);
     val5 = func_020984e8();
     p0 = func_020993a8(val5);
     h = *(unsigned short *) p0;

@@ -302,7 +302,9 @@ void func_0201dbec(Param *param)
 
 void func_0201db88(struct UnkStruct_0201db88_2 *self, struct UnkStruct_0201db88_3 *out)
 {
-    func_0202da38((void *) self, (void *) self->buf, (void *) (&self->flag), 0x1e, func_020036e8((int) ((unsigned char *) (unsigned int) func_0208150c(self->inner->value))), (*(struct Global *) &data_020c8d18).word, 1, 3, (*(struct Global *) &data_020c8d18).byte);
+    func_0202da38((void *) self, (void *) self->buf, (void *) (&self->flag), 0x1e,
+                  func_020036e8((int) ((unsigned char *) (unsigned int) func_0208150c(self->inner->value))),
+                  (*(struct Global *) &data_020c8d18).word, 1, 3, (*(struct Global *) &data_020c8d18).byte);
     out->ptr = self->buf;
     out->byte = self->flag;
 }
@@ -310,7 +312,19 @@ void func_0201db88(struct UnkStruct_0201db88_2 *self, struct UnkStruct_0201db88_
 unsigned char func_0201db24(struct UnkStruct_0201db24_2 *s, struct UnkStruct_0201db24_3 *out)
 {
     unsigned char c;
-    func_0202da38((void *) s, (void *) s->unk_104, (void *) (&s->unk_122), 0x1e, func_020036e8(func_0208150c(s->unk_100->unk_830)), (*(struct { unsigned int field0; unsigned char field4; } *) &data_020c8d18).field0, 1, 4, (*(struct { unsigned int field0; unsigned char field4; } *) &data_020c8d18).field4);
+    func_0202da38((void *) s, (void *) s->unk_104, (void *) (&s->unk_122), 0x1e,
+                  func_020036e8(func_0208150c(s->unk_100->unk_830)),
+                  (*(struct {
+                      unsigned int field0;
+                      unsigned char field4;
+                  } *) &data_020c8d18)
+                      .field0,
+                  1, 4,
+                  (*(struct {
+                      unsigned int field0;
+                      unsigned char field4;
+                  } *) &data_020c8d18)
+                      .field4);
     out->field0 = s->unk_104;
     c = s->unk_122;
     out->unk_04 = c;
@@ -341,7 +355,8 @@ void func_0201da64(struct UnkStruct_0201da64_2 *a, void *event)
 
 void func_0201d9ec(UnkStruct_0201d9ec *a, UnkStruct_0201d9ec_3 *out)
 {
-    func_0202da38(a, (void *) a->unk_104, &a->unk_122, 0x1e, func_020036e8(func_0208150c(a->ptr->unk_830)), data_020c8d68.first, data_020c8d68.second, 0, 0);
+    func_0202da38(a, (void *) a->unk_104, &a->unk_122, 0x1e, func_020036e8(func_0208150c(a->ptr->unk_830)),
+                  data_020c8d68.first, data_020c8d68.second, 0, 0);
 
     out->unk_00 = a->unk_104;
     out->unk_04 = a->unk_122;
@@ -351,7 +366,8 @@ void func_0201d9ec(UnkStruct_0201d9ec *a, UnkStruct_0201d9ec_3 *out)
 
 void func_0201d9b8(void *p, void *event)
 {
-    func_0202d8f8((struct UnkStruct_0201da64_2 *) p, (char *) p + 0x12c, (char *) p + 0x128, *(void **) ((char *) *(void **) ((char *) p + 0x100) + 0x830), 0);
+    func_0202d8f8((struct UnkStruct_0201da64_2 *) p, (char *) p + 0x12c, (char *) p + 0x128,
+                  *(void **) ((char *) *(void **) ((char *) p + 0x100) + 0x830), 0);
 }
 
 void func_0201d940(UnkStruct_0201d940 *s, UnkStruct_0201d940_2 *out)

@@ -239,7 +239,7 @@ int func_020c18c4(void)
 void func_020c189c(void)
 {
     struct UnkStruct_020c189c *p;
-    p = (*(struct UnkStruct_020c189c * *) &data_021fbbe0);
+    p = (*(struct UnkStruct_020c189c **) &data_021fbbe0);
     if (p != 0) {
         if (p->unk_654 != 0) {
             func_020c26b4(p, 0);
@@ -249,8 +249,8 @@ void func_020c189c(void)
 
 void func_020c1874(void)
 {
-    if ((*(struct System * *) &data_021fbbe0) != 0 && (*(struct System * *) &data_021fbbe0)->unk_654 != 5) {
-        func_020c26b4((struct UnkStruct_020c189c *) ((*(struct System * *) &data_021fbbe0)), 5);
+    if ((*(struct System **) &data_021fbbe0) != 0 && (*(struct System **) &data_021fbbe0)->unk_654 != 5) {
+        func_020c26b4((struct UnkStruct_020c189c *) ((*(struct System **) &data_021fbbe0)), 5);
     }
 }
 

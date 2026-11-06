@@ -122,7 +122,8 @@ void func_020428e8(void *p0, char *p1, void *p2)
     char tmp[8];
     char buffer[0x54];
 
-    result = (unsigned int) func_02042a08((int) p0, (volatile unsigned char *) buffer, (const unsigned char *) (p1 + 0x1726a), 0x54);
+    result = (unsigned int) func_02042a08((int) p0, (volatile unsigned char *) buffer, (const unsigned char *) (p1 + 0x1726a),
+                                          0x54);
     if (result == 0) {
         result = 0x54;
         MI_CpuFill8(buffer, 0, result);

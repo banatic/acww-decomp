@@ -237,7 +237,7 @@ void func_ov107_0229c488(struct UnkStruct_0229c488 *param0, int param1)
 void func_ov107_0229c414(UnkStruct_0229c414 *self)
 {
     int idx = func_ov107_0229d0f0(self, (unsigned char) self->unk_B9);
-    Global *g = (*(Global * *) &data_020ccf94);
+    Global *g = (*(Global **) &data_020ccf94);
 
     self->unk_AC = func_02043d34(g->unk_64, 2, 0, idx);
 
@@ -294,8 +294,8 @@ void func_ov107_0229c378(struct UnkStruct_0229c378 *p)
 int func_ov107_0229c354(void *receiver)
 {
     int field;
-    field = (*(UnkStruct_0229c354 * *) &data_020ccf94)->unk_64;
-    if (func_02073dd4((*(UnkStruct_0229c354 * *) &data_020ccf94), field) != 0) {
+    field = (*(UnkStruct_0229c354 **) &data_020ccf94)->unk_64;
+    if (func_02073dd4((*(UnkStruct_0229c354 **) &data_020ccf94), field) != 0) {
         return (unsigned char) field;
     } else {
         return 0;

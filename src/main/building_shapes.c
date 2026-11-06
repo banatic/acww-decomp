@@ -329,7 +329,7 @@ void *func_020b3b50(unsigned short *p)
         }
 
         if (v != -1) {
-            return ((void * *) data_021f4bf4)[v];
+            return ((void **) data_021f4bf4)[v];
         }
     }
     return 0;

@@ -97,7 +97,8 @@ unsigned long func_ov003_0221f5d8(UnkStruct_0221f5d8 *p)
 
 int func_ov003_0221f5ac(int arg)
 {
-    if ((int) func_ov003_0221f5e0((UnkStruct_0221f5e0 *) arg) != -1 && (int) func_ov003_0221f5d8((UnkStruct_0221f5d8 *) arg) != -1) {
+    if ((int) func_ov003_0221f5e0((UnkStruct_0221f5e0 *) arg) != -1 &&
+        (int) func_ov003_0221f5d8((UnkStruct_0221f5d8 *) arg) != -1) {
         return 1;
     } else {
         return 0;

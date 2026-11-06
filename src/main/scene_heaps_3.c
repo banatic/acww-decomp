@@ -48,8 +48,8 @@ void func_0205cb68(int size, void *heap)
 
 void func_0205cb4c(void)
 {
-    func_020e9fc8((*(void * *) &data_021c9b30));
-    (*(void * *) &data_021c9b30) = 0;
+    func_020e9fc8((*(void **) &data_021c9b30));
+    (*(void **) &data_021c9b30) = 0;
 }
 
 void func_0205cb34(int size, void *heap)
@@ -59,8 +59,8 @@ void func_0205cb34(int size, void *heap)
 
 void func_0205cb18(void)
 {
-    func_020e9fc8((*(void * *) &data_021c9b2c));
-    (*(void * *) &data_021c9b2c) = 0;
+    func_020e9fc8((*(void **) &data_021c9b2c));
+    (*(void **) &data_021c9b2c) = 0;
 }
 
 void func_0205cb00(int size, void *heap)
@@ -81,8 +81,8 @@ void func_0205cacc(int size, void *heap)
 
 void func_0205cab0(void)
 {
-    func_020e9fc8((*(void * *) &data_021c9b24));
-    (*(void * *) &data_021c9b24) = 0;
+    func_020e9fc8((*(void **) &data_021c9b24));
+    (*(void **) &data_021c9b24) = 0;
 }
 
 int func_0205ca98(int size, int heapword)
@@ -106,8 +106,8 @@ void func_0205ca64(int argument0, void *argument1)
 
 void func_0205ca48(void)
 {
-    func_020e9fc8((*(void * *) &data_021c9b1c));
-    (*(void * *) &data_021c9b1c) = 0;
+    func_020e9fc8((*(void **) &data_021c9b1c));
+    (*(void **) &data_021c9b1c) = 0;
 }
 
 int func_0205ca30(int size, int heapword)
@@ -120,8 +120,8 @@ int func_0205ca30(int size, int heapword)
 
 void func_0205ca14(void)
 {
-    func_020e9fc8((*(void * *) &data_021c9b18));
-    (*(void * *) &data_021c9b18) = (void *) 0;
+    func_020e9fc8((*(void **) &data_021c9b18));
+    (*(void **) &data_021c9b18) = (void *) 0;
 }
 
 int func_0205c9fc(int size, int heapword)
@@ -134,8 +134,8 @@ int func_0205c9fc(int size, int heapword)
 
 void func_0205c9e0(void)
 {
-    func_020e9fc8((*(void * *) &data_021c9b14));
-    (*(void * *) &data_021c9b14) = 0;
+    func_020e9fc8((*(void **) &data_021c9b14));
+    (*(void **) &data_021c9b14) = 0;
 }
 
 int func_0205c9c8(int size, int heapword)
@@ -148,8 +148,8 @@ int func_0205c9c8(int size, int heapword)
 
 void func_0205c9ac(void)
 {
-    func_020e9fc8((*(void * *) &data_021c9b10));
-    (*(void * *) &data_021c9b10) = 0;
+    func_020e9fc8((*(void **) &data_021c9b10));
+    (*(void **) &data_021c9b10) = 0;
 }
 
 int func_0205c994(int size, int heapword)
@@ -162,8 +162,8 @@ int func_0205c994(int size, int heapword)
 
 void func_0205c978(void)
 {
-    func_020e9fc8((*(void * *) &data_021c9b0c));
-    (*(void * *) &data_021c9b0c) = 0;
+    func_020e9fc8((*(void **) &data_021c9b0c));
+    (*(void **) &data_021c9b0c) = 0;
 }
 
 int func_0205c960(int size, int heapword)

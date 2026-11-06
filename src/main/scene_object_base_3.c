@@ -195,7 +195,7 @@ void *func_0203ef5c(void *arg)
     struct Node *node;
     void *key;
 
-    node = (*(struct Node * *) data_021c72cc);
+    node = (*(struct Node **) data_021c72cc);
     while (node) {
         key = node->key;
         if (key != arg && func_0203ee34(key, arg) != 0) {

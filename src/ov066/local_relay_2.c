@@ -158,7 +158,7 @@ Node *func_ov066_0226bbb4(int n)
     u16 i;
     Node *prev;
     int last;
-    stride = ((*(Cfg * *) &data_ov066_0226bdec)->size + 0x43) & ~0x1f;
+    stride = ((*(Cfg **) &data_ov066_0226bdec)->size + 0x43) & ~0x1f;
     total = stride * n;
     cur = (Node *) func_ov066_02266908(total, 0x20);
     MI_CpuFill8(cur, 0, total);
@@ -217,14 +217,14 @@ int func_ov066_0226b9b8(UnkStruct_0226b9b8_4 *p)
 
     data_ov066_0226be08 = (UnkStruct_0226b9b8 *) func_ov066_02266908(0x34, 4);
 
-    n = (u32) (*(UnkStruct_0226b9b8_3 * *) &data_ov066_0226bdec)->count << 4;
+    n = (u32) (*(UnkStruct_0226b9b8_3 **) &data_ov066_0226bdec)->count << 4;
     data_ov066_0226be08->unk_30 = func_ov066_02266908(n, 4);
     MI_CpuFill8(data_ov066_0226be08->unk_30, 0, n);
 
     data_ov066_0226be08->unk_08 = (void *) func_ov066_0226bbb4(3);
     data_ov066_0226be08->unk_0C = (void *) func_ov066_0226bbb4(3);
 
-    n = (u32) (*(UnkStruct_0226b9b8_3 * *) &data_ov066_0226bdec)->count << 2;
+    n = (u32) (*(UnkStruct_0226b9b8_3 **) &data_ov066_0226bdec)->count << 2;
     data_ov066_0226be08->unk_18 = func_ov066_02266908(n, 4);
     MI_CpuFill8(data_ov066_0226be08->unk_18, 0, n);
 

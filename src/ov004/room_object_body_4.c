@@ -24,7 +24,9 @@ void func_ov004_0220ff4c(char *self, int a1, int a2)
 {
     // DECLS
     // ENDDECLS
-    func_ov004_0220ff74((char *) self, (void *) a1, (void *) ((*(int *) ((char *) &data_ov004_0224fe10 + (*(int *) (self + 0x784) << 2)) + (0xc * (a2 & 0x3)))));
+    func_ov004_0220ff74(
+        (char *) self, (void *) a1,
+        (void *) ((*(int *) ((char *) &data_ov004_0224fe10 + (*(int *) (self + 0x784) << 2)) + (0xc * (a2 & 0x3)))));
 }
 
 void func_ov004_0220fefc(char *self, int *out)

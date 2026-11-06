@@ -162,7 +162,7 @@ void *func_020377d8(int p0, void *p1)
     void *r4;
 
     func_02064328(buf, data_020da37c, p0 >> 4, p0);
-    r5 = func_02064b2c(buf, (*(void * *) data_021fbe94), -4, 0);
+    r5 = func_02064b2c(buf, (*(void **) data_021fbe94), -4, 0);
     r4 = 0;
 
     if (NNS_FndMountArchive(buf + 0x20, (const char *) (((unsigned char *) data_020da390)), r5) != 0) {

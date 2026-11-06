@@ -99,7 +99,7 @@ void func_ov004_0222b540(char *self)
 {
     unsigned char *q;
 
-    if (func_02073908((void *) ((*(char * *) &data_020ccf94)), *(int *) (self + 0x800)) != 0) {
+    if (func_02073908((void *) ((*(char **) &data_020ccf94)), *(int *) (self + 0x800)) != 0) {
         q = (unsigned char *) (self + 0x7d4);
         if (q[0] < 3) {
             q[0] = q[0] + 1;

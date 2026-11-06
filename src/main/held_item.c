@@ -126,7 +126,8 @@ void func_0205e954(UnkStruct_0205e954_3 *p, UnkStruct_0205e954 *src)
         v.y = k;
         v.z = k;
         func_0205510c(t, &v);
-        if (inr((u16 *) func_0205f100((GType *) data_021ca16c, id), 0x1374, 0x1374) || inr((u16 *) func_0205f100((GType *) data_021ca16c, id), 0x1375, 0x1375)) {
+        if (inr((u16 *) func_0205f100((GType *) data_021ca16c, id), 0x1374, 0x1374) ||
+            inr((u16 *) func_0205f100((GType *) data_021ca16c, id), 0x1375, 0x1375)) {
             func_0205e8f8((Buf *) (&t1), (const u8 *) p, 2);
             s = t1;
         } else {

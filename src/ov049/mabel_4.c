@@ -253,7 +253,7 @@ int func_ov049_02262818(UnkStruct_02262818 *self)
     r6 = func_0201c378(self, 4);
     r4 = func_0201c2c8(self, 4);
     func_020e8b4c(self->unk_8E, r4);
-    func_0204ed30((int) ((*(void * *) &data_021c80bc)), (char *) self->unk_5C);
+    func_0204ed30((int) ((*(void **) &data_021c80bc)), (char *) self->unk_5C);
 
     if (r6 > 0x5000) {
         if (func_020eaa2c((Vec3 *) buf, (char *) self->unk_5C) != 0) {
@@ -448,7 +448,7 @@ int func_ov049_02262414(void *self)
         if (func_0201c040((UnkStruct_02262470_3 *) self, &a, &b) != 0) {
             if (a == 4) {
                 if (func_020a7278() != 0) {
-                    func_0201c054((UnkStruct_02262470_3 *) self, 1, (*(UnkStruct_02262414 * *) &data_020ccf94)->value, 4);
+                    func_0201c054((UnkStruct_02262470_3 *) self, 1, (*(UnkStruct_02262414 **) &data_020ccf94)->value, 4);
                     func_ov049_02262a94(self, 0xa);
                 }
             }

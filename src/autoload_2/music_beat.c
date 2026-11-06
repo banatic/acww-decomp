@@ -140,7 +140,7 @@ void func_020f92d0(UnkStruct_020f92d0 *self)
     void *pp;
     int i;
 
-    pp = ((void * *) &data_021fd1f8);
+    pp = ((void **) &data_021fd1f8);
     self->unk_15 = -1;
 
     for (i = 2; i <= 13; i++) {

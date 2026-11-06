@@ -101,7 +101,11 @@ void func_0208fdc8(UnkStruct_0208fdc8 *self);
 
 void func_0208ffd8(void)
 {
-    (*(struct { int pad[3]; int val; } *) data_021d369c).val = 0;
+    (*(struct {
+        int pad[3];
+        int val;
+    } *) data_021d369c)
+        .val = 0;
 }
 
 void func_0208ffcc(void)

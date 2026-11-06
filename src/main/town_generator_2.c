@@ -108,7 +108,8 @@ void *func_0209d014(unsigned char *p, int i)
 
 void *func_0209cfe0(void *ptr)
 {
-    __cxa_vec_ctor((void *) (ptr), 0x24, 8, (void (*)(void *)) (void (*)(void *)) func_0209d03c, (void (*)(void *)) func_0209d038);
+    __cxa_vec_ctor((void *) (ptr), 0x24, 8, (void (*)(void *))(void (*)(void *)) func_0209d03c,
+                   (void (*)(void *)) func_0209d038);
     func_0206e8c4((char *) ptr + 0x120);
     return ptr;
 }

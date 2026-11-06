@@ -259,7 +259,7 @@ void func_ov102_0229dff0(int param0)
 
 void func_ov102_0229dfa4(unsigned char *self)
 {
-    void *ptr = (*(void * *) &data_021fbe94);
+    void *ptr = (*(void **) &data_021fbe94);
     unsigned char buf[0x24];
 
     func_02064328(buf, data_ov102_0229eb50, self[0x25aa]);
@@ -442,7 +442,8 @@ void func_ov102_0229dae0(UnkStruct_0229dae0 *s)
     }
     val = data_021fbe40.field;
     if (val & 1) {
-        if (func_ov102_0229d464((UnkStruct_0229dc44 *) s, s->unk_25A5) != 0 || func_ov102_0229d454((UnkStruct_0229dc44 *) s, s->unk_25A5) != 0) {
+        if (func_ov102_0229d464((UnkStruct_0229dc44 *) s, s->unk_25A5) != 0 ||
+            func_ov102_0229d454((UnkStruct_0229dc44 *) s, s->unk_25A5) != 0) {
             if (func_ov102_0229d0b0((void *) s, (unsigned char) s->unk_25A5) == 0) {
                 if (func_ov102_0229d074((UnkStruct_0229dc44 *) s, s->unk_25A5) != 0) {
                     func_ov102_0229c9fc(s, s->unk_25A5);

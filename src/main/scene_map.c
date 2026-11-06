@@ -130,11 +130,11 @@ int func_0204cfa4(int arg)
 int func_0204cf64(int param)
 {
     int v = data_021fbe94;
-    if ((*(void * *) &data_021c80bc)) {
+    if ((*(void **) &data_021c80bc)) {
         func_0204d544(param, v);
-        func_0204ecd4((*(void * *) &data_021c80bc), v);
-        func_020e993c(v, (*(void * *) &data_021c80bc));
-        (*(void * *) &data_021c80bc) = 0;
+        func_0204ecd4((*(void **) &data_021c80bc), v);
+        func_020e993c(v, (*(void **) &data_021c80bc));
+        (*(void **) &data_021c80bc) = 0;
     }
     return 1;
 }

@@ -444,13 +444,15 @@ void func_ov142_0229a954(UnkStruct_0229a954 *self)
 void func_ov142_0229a91c(void *self)
 {
     *(short *) ((char *) self + 0xDC) = 0;
-    *(short *) ((char *) self + 0xCA) = func_ov142_0229a76c((short *) self, (unsigned short *) ((char *) self + 0x12E8), 0x3984, 0x100, 3);
+    *(short *) ((char *) self + 0xCA) =
+        func_ov142_0229a76c((short *) self, (unsigned short *) ((char *) self + 0x12E8), 0x3984, 0x100, 3);
 }
 
 void func_ov142_0229a8e8(char *self)
 {
     *(unsigned short *) (self + 0xde) = 0;
-    *(unsigned short *) (self + 0xcc) = (unsigned short) func_ov142_0229a76c((short *) self, (unsigned short *) (self + 0x14e8), 0x3e24, 0x20, 4);
+    *(unsigned short *) (self + 0xcc) =
+        (unsigned short) func_ov142_0229a76c((short *) self, (unsigned short *) (self + 0x14e8), 0x3e24, 0x20, 4);
 }
 
 void func_ov142_0229a8b4(UnkStruct_0229a8b4 *self)
@@ -470,7 +472,8 @@ void func_ov142_0229a880(UnkStruct_0229a880 *obj)
 void func_ov142_0229a84c(UnkStruct_0229a84c *self)
 {
     self->unk_E6 = 0;
-    self->unk_D4 = (unsigned short) func_ov142_0229a76c((short *) self, (unsigned short *) ((char *) self + 0x17e6), 0x450c, 0x34, 8);
+    self->unk_D4 =
+        (unsigned short) func_ov142_0229a76c((short *) self, (unsigned short *) ((char *) self + 0x17e6), 0x450c, 0x34, 8);
 }
 
 void func_ov142_0229a7e0(char *self)
@@ -480,11 +483,14 @@ void func_ov142_0229a7e0(char *self)
 
     *(unsigned short *) (self + 0xe0) = 0;
 
-    ret = func_ov142_0229a76c((short *) self, (unsigned short *) (self + 0x1528), (unsigned long) 0x3fa4, (unsigned long) 0x40, 5);
+    ret = func_ov142_0229a76c((short *) self, (unsigned short *) (self + 0x1528), (unsigned long) 0x3fa4, (unsigned long) 0x40,
+                              5);
     total = ret;
-    ret = func_ov142_0229a76c((short *) self, (unsigned short *) (self + 0x1528 + total * 2), (unsigned long) 0x40a4, (unsigned long) 0x20, 5);
+    ret = func_ov142_0229a76c((short *) self, (unsigned short *) (self + 0x1528 + total * 2), (unsigned long) 0x40a4,
+                              (unsigned long) 0x20, 5);
     total += ret;
-    ret = func_ov142_0229a76c((short *) self, (unsigned short *) (self + 0x1528 + total * 2), (unsigned long) 0x4124, (unsigned long) 0x40, 5);
+    ret = func_ov142_0229a76c((short *) self, (unsigned short *) (self + 0x1528 + total * 2), (unsigned long) 0x4124,
+                              (unsigned long) 0x40, 5);
     total += ret;
 
     *(unsigned short *) (self + 0xce) = total;

@@ -459,18 +459,19 @@ int func_020682e0(int a0)
 void func_0206829c(void)
 {
     int i;
-    (*(UnkStruct_0206829c * *) data_021cda88) = (UnkStruct_0206829c *) func_02138e38(2, 0x1e9c, 8, (((void (*)(void *)) (void * (*)(void *)) func_02068644)),
-                                                         (((void (*)(void *)) (void * (*)(void *)) func_020684b0)));
+    (*(UnkStruct_0206829c **) data_021cda88) =
+        (UnkStruct_0206829c *) func_02138e38(2, 0x1e9c, 8, (((void (*)(void *))(void *(*) (void *) ) func_02068644)),
+                                             (((void (*)(void *))(void *(*) (void *) ) func_020684b0)));
     for (i = 0; i < 2; i++) {
-        (*(UnkStruct_0206829c * *) data_021cda88)[i].unk_00 = i;
+        (*(UnkStruct_0206829c **) data_021cda88)[i].unk_00 = i;
     }
 }
 
 void func_0206826c(void)
 {
-    if ((*(void * *) data_021cda88) != 0) {
-        func_02138c00((*(void * *) data_021cda88), 0x1e9c, 8, (((void (*)(void *)) (void * (*)(void *)) func_020684b0)));
-        (*(void * *) data_021cda88) = 0;
+    if ((*(void **) data_021cda88) != 0) {
+        func_02138c00((*(void **) data_021cda88), 0x1e9c, 8, (((void (*)(void *))(void *(*) (void *) ) func_020684b0)));
+        (*(void **) data_021cda88) = 0;
     }
 }
 
@@ -494,12 +495,12 @@ void func_0206823c(void)
 void func_0206820c(void)
 {
     int i;
-    if ((*(UnkStruct_0206820c * *) data_021cda88) == 0) {
+    if ((*(UnkStruct_0206820c **) data_021cda88) == 0) {
         return;
     }
     i = 0;
     do {
-        func_0206812c((*(UnkStruct_0206820c * *) data_021cda88) + i);
+        func_0206812c((*(UnkStruct_0206820c **) data_021cda88) + i);
         i++;
     } while (i < 2);
 }

@@ -543,7 +543,8 @@ int func_ov134_0229a44c(struct UnkStruct_0229a44c *p, int n, int m)
 
     shifted = n >> 3;
 
-    if ((int) func_ov134_0229aaa8((UnkStruct_0229a5c8 *) p, p->unk_A5) > shifted || func_ov134_0229aa4c((UnkStruct_0229a4e4 *) p, p->unk_A5) < shifted) {
+    if ((int) func_ov134_0229aaa8((UnkStruct_0229a5c8 *) p, p->unk_A5) > shifted ||
+        func_ov134_0229aa4c((UnkStruct_0229a4e4 *) p, p->unk_A5) < shifted) {
         return 0;
     }
 

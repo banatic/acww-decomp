@@ -306,7 +306,8 @@ void func_0205fff4(UnkStruct_0205fff4 *self)
             B[0] = self->unk_08;
             B[1] = self->unk_0C;
             B[2] = self->unk_10;
-            func_0205fbc4((struct UnkStruct_0205fbc4 *) A, (struct UnkStruct_0205fbc4 *) B, (int *) (&self->unk_14), (int *) (&self->unk_18), zero);
+            func_0205fbc4((struct UnkStruct_0205fbc4 *) A, (struct UnkStruct_0205fbc4 *) B, (int *) (&self->unk_14),
+                          (int *) (&self->unk_18), zero);
         }
         return;
     } else {

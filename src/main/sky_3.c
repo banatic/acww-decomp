@@ -89,9 +89,19 @@ void func_020bad44(void)
 
     r4 = data_021f8ac4[data_021f8ab0.idx];
 
-    tmp.a = (*(struct { char pad[4]; unsigned short f4; unsigned short f6; } *) data_021f7270).f4;
+    tmp.a = (*(struct {
+                char pad[4];
+                unsigned short f4;
+                unsigned short f6;
+            } *) data_021f7270)
+                .f4;
     *(volatile unsigned short *) 0x05000400 = tmp.a;
-    tmp.b = (*(struct { char pad[4]; unsigned short f4; unsigned short f6; } *) data_021f7270).f6;
+    tmp.b = (*(struct {
+                char pad[4];
+                unsigned short f4;
+                unsigned short f6;
+            } *) data_021f7270)
+                .f6;
     *(volatile unsigned short *) 0x05000000 = tmp.b;
 
     e = &data_021f75b8[data_021f75b0.idx];
@@ -142,9 +152,17 @@ void func_020babb4(void)
 
     r4 = data_021f8ac4[data_021f8ab0.idx];
 
-    tmp.a = (*(struct { char pad[4]; unsigned short f4; } *) data_021f7270).f4;
+    tmp.a = (*(struct {
+                char pad[4];
+                unsigned short f4;
+            } *) data_021f7270)
+                .f4;
     *(volatile unsigned short *) 0x05000400 = tmp.a;
-    tmp.b = (*(struct { char pad[4]; unsigned short f4; } *) data_021f7270).f4;
+    tmp.b = (*(struct {
+                char pad[4];
+                unsigned short f4;
+            } *) data_021f7270)
+                .f4;
     *(volatile unsigned short *) 0x05000000 = tmp.b;
 
     e = &data_021f75b8[data_021f75b0.idx];
@@ -230,16 +248,16 @@ void func_020bab04(void)
     func_020bb090();
     if (func_0206fea4() == 0) {
         func_020bae60();
-        func_020bb3a4(((int * *) &data_021f75b0));
+        func_020bb3a4(((int **) &data_021f75b0));
     }
-    func_020bbb20((*(int * *) &data_021f75b0));
+    func_020bbb20((*(int **) &data_021f75b0));
     if (data_021c67a4 != 0) {
         int a = (func_0206fd34() * 0x123) >> 12;
         int b = (func_0203adb0() * 0x1e) >> 12;
         int sum = a + b;
         data_021f8ac4[(*(UnkStruct_020bab04 *) &data_021f8ab0).unk_1C ^ 1] = sum;
     }
-    (*(UnkStruct_020bab04 *) &data_021f8ab0).unk_3E = func_020bb1b0(((int * *) &data_021f75b0));
+    (*(UnkStruct_020bab04 *) &data_021f8ab0).unk_3E = func_020bb1b0(((int **) &data_021f75b0));
 }
 
 void func_020baad8(void)

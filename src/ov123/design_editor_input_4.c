@@ -104,7 +104,8 @@ void func_ov123_0229a4bc(void *self)
         return;
     }
     func_ov123_02299e28(self);
-    func_ov123_0229a538((UnkStruct_0229a538 *) self, (unsigned char) (*(unsigned char *) ((char *) self + 0xa8)), (unsigned char) (*(unsigned char *) ((char *) self + 0xa9)));
+    func_ov123_0229a538((UnkStruct_0229a538 *) self, (unsigned char) (*(unsigned char *) ((char *) self + 0xa8)),
+                        (unsigned char) (*(unsigned char *) ((char *) self + 0xa9)));
     v = *(unsigned char *) ((char *) self + 0xa4);
     if (v <= 2) {
         func_0200467c(0x85f);

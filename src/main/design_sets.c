@@ -146,6 +146,7 @@ int func_0207277c(int a, int bit)
     } else {
         r = 0;
     }
-    (*(volatile unsigned char *) &data_021d0468) = (unsigned char) ((*(volatile unsigned char *) &data_021d0468) & ~(1 << bit));
+    (*(volatile unsigned char *) &data_021d0468) =
+        (unsigned char) ((*(volatile unsigned char *) &data_021d0468) & ~(1 << bit));
     return r;
 }

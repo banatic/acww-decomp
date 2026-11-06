@@ -209,15 +209,15 @@ int func_020658a0(void)
 short func_0206586c(void)
 {
     volatile short result = 0;
-    if ((*(UnkStruct_0206586c * *) &data_021cd864) && (*(UnkStruct_0206586c * *) &data_021cd864)->unk_124 != 9) {
-        result = (*(UnkStruct_0206586c * *) &data_021cd864)->unk_128;
+    if ((*(UnkStruct_0206586c **) &data_021cd864) && (*(UnkStruct_0206586c **) &data_021cd864)->unk_124 != 9) {
+        result = (*(UnkStruct_0206586c **) &data_021cd864)->unk_128;
     }
     return result;
 }
 
 short func_02065858(void)
 {
-    return (*(struct UnkStruct_02065858 * *) &data_021cd864)->unk_168;
+    return (*(struct UnkStruct_02065858 **) &data_021cd864)->unk_168;
 }
 
 void func_020656ac(UnkStruct_020656ac *self)

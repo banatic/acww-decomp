@@ -22,7 +22,7 @@ int func_0206fd04(void);
 
 void func_0206fd54(unsigned int r0)
 {
-    (*(unsigned int * *) data_021cfc7c) = (unsigned int *) r0;
+    (*(unsigned int **) data_021cfc7c) = (unsigned int *) r0;
 }
 
 int func_0206fd34(void)

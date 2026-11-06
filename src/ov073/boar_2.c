@@ -337,7 +337,8 @@ int func_ov073_022790c0(UnkStruct_022790c0 *self)
 
 int func_ov073_02279070(char *r4)
 {
-    func_02019d0c((void *) (r4 + 0x564), 0, 1, 0, 0, 0, 0, 0, 0, (unsigned short) ((*(volatile unsigned short *) &data_020c80f8)), 0);
+    func_02019d0c((void *) (r4 + 0x564), 0, 1, 0, 0, 0, 0, 0, 0,
+                  (unsigned short) ((*(volatile unsigned short *) &data_020c80f8)), 0);
     *(r4 + 0x651) = 0;
     func_02013c04(r4 + 0x558);
     return 1;

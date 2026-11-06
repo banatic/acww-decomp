@@ -85,18 +85,19 @@ void func_ov066_02268d44(void *arg)
 void func_ov066_02268d08(void)
 {
     int old = OS_DisableInterrupts();
-    if ((*(UnkStruct_02268d08 * *) &data_ov066_0226bdf4)->c == 0) {
-        (*(UnkStruct_02268d08 * *) &data_ov066_0226bdf4)->b = 1;
+    if ((*(UnkStruct_02268d08 **) &data_ov066_0226bdf4)->c == 0) {
+        (*(UnkStruct_02268d08 **) &data_ov066_0226bdf4)->b = 1;
     }
     OS_RestoreInterrupts(old);
 }
 
 int func_ov066_02268c90(void)
 {
-    if ((*(UnkStruct_02268c90 * *) &data_ov066_0226bdf4)->flags.bit2 && !(*(UnkStruct_02268c90 * *) &data_ov066_0226bdf4)->flags.bit3) {
+    if ((*(UnkStruct_02268c90 **) &data_ov066_0226bdf4)->flags.bit2 &&
+        !(*(UnkStruct_02268c90 **) &data_ov066_0226bdf4)->flags.bit3) {
         func_ov066_0226853c();
-        (*(UnkStruct_02268c90 * *) &data_ov066_0226bdf4)->flags.bit3 = 1;
-        (*(UnkStruct_02268c90 * *) &data_ov066_0226bdf4)->flags.bit2 = 0;
+        (*(UnkStruct_02268c90 **) &data_ov066_0226bdf4)->flags.bit3 = 1;
+        (*(UnkStruct_02268c90 **) &data_ov066_0226bdf4)->flags.bit2 = 0;
         return 1;
     }
     return 0;

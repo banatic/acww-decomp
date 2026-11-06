@@ -189,7 +189,8 @@ void func_ov105_0229d294(UnkStruct_0229d294 *p)
 
 void func_ov105_0229d230(struct UnkStruct_0229d230 *arg)
 {
-    if (func_ov105_0229d76c((int) arg, (unsigned char) arg->unk_2BA) || func_ov105_0229d75c((int) arg, (unsigned char) arg->unk_2BA)) {
+    if (func_ov105_0229d76c((int) arg, (unsigned char) arg->unk_2BA) ||
+        func_ov105_0229d75c((int) arg, (unsigned char) arg->unk_2BA)) {
         if (func_ov105_0229d428((int) arg, (unsigned char) arg->unk_2BA) != 0) {
             func_ov002_02207cf0(&arg->sub);
         } else {

@@ -64,7 +64,7 @@ void func_ov142_0229b804(int param)
 {
     int *p;
     func_ov002_0220af94((void *) (param + 0x194));
-    p = (*(int * *) &data_021fbe94);
+    p = (*(int **) &data_021fbe94);
     func_02002c6c((const void *) ((unsigned int) data_ov142_0229c4d8), (void *) p, 8, 0xc0, 0xc0, 0x11f);
     func_02002c6c((const void *) ((unsigned int) data_ov142_0229c4f0), (void *) p, 8, 0x120, 0x120, 0x17f);
     func_02002d14((const void *) ((unsigned int) data_ov142_0229c508), (void *) p, 8, 4, 4, 9);

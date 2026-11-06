@@ -176,7 +176,7 @@ void func_020752a8(unsigned char *payload, unsigned int length, int player)
     }
     MI_CpuCopy8(payload, &off, 4);
     t = func_020a245c(func_020a132c());
-    g = (*(UnkStruct_020752a8 * *) &data_020ccf94);
+    g = (*(UnkStruct_020752a8 **) &data_020ccf94);
     g->unk_68 = 0;
     dst = (((void *) (func_020962a4(g->unk_68, t), g->unk_68)), func_020984e8());
     MI_CpuCopy8(payload + 4, dst + off, length - 4);

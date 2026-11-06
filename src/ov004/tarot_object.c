@@ -165,8 +165,8 @@ int func_ov004_022304d8(void)
 
 void func_ov004_022304bc(void)
 {
-    if ((*(char * *) &data_ov004_02258870) != 0) {
-        func_ov004_022308dc((*(char * *) &data_ov004_02258870));
+    if ((*(char **) &data_ov004_02258870) != 0) {
+        func_ov004_022308dc((*(char **) &data_ov004_02258870));
     }
 }
 

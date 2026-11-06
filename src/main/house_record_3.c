@@ -43,7 +43,8 @@ void *func_020614c4(void *buffer)
 
 void *func_02061470(void *ptr)
 {
-    __cxa_vec_ctor((void *) (ptr), 2, 0x200, (((void (*)(void *)) (int (*)(void *)) func_02061504)), (((void (*)(void *)) func_020614e4)));
+    __cxa_vec_ctor((void *) (ptr), 2, 0x200, (((void (*)(void *))(int (*)(void *)) func_02061504)),
+                   (((void (*)(void *)) func_020614e4)));
     func_020530d4((char *) ptr + 0x400);
     *(unsigned short *) ((char *) ptr + 0x448) = 0xfff1;
     *(unsigned short *) ((char *) ptr + 0x44a) = 0xfff1;

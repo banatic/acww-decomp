@@ -62,8 +62,8 @@ unsigned int func_0205c300(int param)
 
 void func_0205c2e4(void)
 {
-    func_020e9fc8((*(void * *) &data_021c9ac0));
-    (*(void * *) &data_021c9ac0) = 0;
+    func_020e9fc8((*(void **) &data_021c9ac0));
+    (*(void **) &data_021c9ac0) = 0;
 }
 
 unsigned int func_0205c2a0(int param)
@@ -81,8 +81,8 @@ unsigned int func_0205c2a0(int param)
 
 void func_0205c284(void)
 {
-    func_020e9fc8((*(void * *) &data_021c9abc));
-    (*(void * *) &data_021c9abc) = 0;
+    func_020e9fc8((*(void **) &data_021c9abc));
+    (*(void **) &data_021c9abc) = 0;
 }
 
 unsigned int func_0205c200(int param)
@@ -146,8 +146,8 @@ void func_0205c1a4(unsigned int arg)
 
 void func_0205c188(void)
 {
-    func_020e9fc8((*(void * *) &data_021c9ab4));
-    (*(void * *) &data_021c9ab4) = 0;
+    func_020e9fc8((*(void **) &data_021c9ab4));
+    (*(void **) &data_021c9ab4) = 0;
 }
 
 void func_0205c158(int param)
@@ -172,6 +172,6 @@ void func_0205c10c(int param)
 
 void func_0205c0f0(void)
 {
-    func_020e9fc8((*(void * *) &data_021c9b34));
-    (*(void * *) &data_021c9b34) = 0;
+    func_020e9fc8((*(void **) &data_021c9b34));
+    (*(void **) &data_021c9b34) = 0;
 }

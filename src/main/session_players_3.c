@@ -24,7 +24,7 @@ int func_02096718(int param)
     int v;
     v = param;
     if (v == 4) {
-        v = (*(struct UnkStruct_02096718 * *) &data_020ccf94)->unk_68;
+        v = (*(struct UnkStruct_02096718 **) &data_020ccf94)->unk_68;
     }
     return func_0209641c((unsigned int) data_021d5684, v);
 }

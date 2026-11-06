@@ -102,51 +102,52 @@ void func_ov066_0226908c(void *a0)
 {
     unsigned char *self = (unsigned char *) a0;
 
-    (*(struct UnkStruct_0226908c * *) &data_ov066_0226bdf4)->unk_C0 |= 0x10;
+    (*(struct UnkStruct_0226908c **) &data_ov066_0226bdf4)->unk_C0 |= 0x10;
 
-    if ((*(struct UnkStruct_0226908c_2 * *) &data_ov066_0226bdec)->unk_04 == 6) {
-        (*(struct UnkStruct_0226908c_2 * *) &data_ov066_0226bdec)->unk_04 = 9;
-        (*(struct UnkStruct_0226908c * *) &data_ov066_0226bdf4)->unk_1E = 0;
+    if ((*(struct UnkStruct_0226908c_2 **) &data_ov066_0226bdec)->unk_04 == 6) {
+        (*(struct UnkStruct_0226908c_2 **) &data_ov066_0226bdec)->unk_04 = 9;
+        (*(struct UnkStruct_0226908c **) &data_ov066_0226bdf4)->unk_1E = 0;
         func_ov066_0226929c();
 
-        (*(struct UnkStruct_0226908c * *) &data_ov066_0226bdf4)->unk_C0 |= 0x20;
-        func_ov066_0226987c(0xbd8a, (*(struct UnkStruct_0226908c * *) &data_ov066_0226bdf4)->unk_8C);
+        (*(struct UnkStruct_0226908c **) &data_ov066_0226bdf4)->unk_C0 |= 0x20;
+        func_ov066_0226987c(0xbd8a, (*(struct UnkStruct_0226908c **) &data_ov066_0226bdf4)->unk_8C);
         func_ov066_022687f4();
     }
 
     func_ov066_022695ac(*(unsigned short *) (self + 0x10), self + 0xa);
     func_ov066_02266800(0, *(unsigned short *) (self + 0x10));
 
-    if ((*(struct UnkStruct_0226908c * *) &data_ov066_0226bdf4)->unk_8C >= (*(struct UnkStruct_0226908c_2 * *) &data_ov066_0226bdec)->unk_0B) {
+    if ((*(struct UnkStruct_0226908c **) &data_ov066_0226bdf4)->unk_8C >=
+        (*(struct UnkStruct_0226908c_2 **) &data_ov066_0226bdec)->unk_0B) {
         func_ov066_0226848c(0);
     }
 }
 
 void func_ov066_02268f98(struct UnkStruct_02268f98 *self)
 {
-    if ((*(struct GWork * *) &data_ov066_0226bdf4)->unk_8C == (*(struct Other * *) &data_ov066_0226bdec)->unk_0B) {
+    if ((*(struct GWork **) &data_ov066_0226bdf4)->unk_8C == (*(struct Other **) &data_ov066_0226bdec)->unk_0B) {
         func_ov066_0226848c(1);
     }
 
-    (*(struct GWork * *) &data_ov066_0226bdf4)->flags &= ~(1 << self->h);
+    (*(struct GWork **) &data_ov066_0226bdf4)->flags &= ~(1 << self->h);
     func_ov066_022695ac((u16) self->h, 0);
     func_ov066_02266800(1, (u16) self->h);
 
-    if ((*(struct GWork * *) &data_ov066_0226bdf4)->unk_8C > 1) {
+    if ((*(struct GWork **) &data_ov066_0226bdf4)->unk_8C > 1) {
         goto high;
     }
 
-    if ((*(struct GWork * *) &data_ov066_0226bdf4)->c0.bits.b2) {
+    if ((*(struct GWork **) &data_ov066_0226bdf4)->c0.bits.b2) {
         return;
     }
 
-    (*(struct GWork * *) &data_ov066_0226bdf4)->fn_ptr();
-    (*(struct GWork * *) &data_ov066_0226bdf4)->c0.word &= ~1;
-    (*(struct GWork * *) &data_ov066_0226bdf4)->c0.word &= ~2;
+    (*(struct GWork **) &data_ov066_0226bdf4)->fn_ptr();
+    (*(struct GWork **) &data_ov066_0226bdf4)->c0.word &= ~1;
+    (*(struct GWork **) &data_ov066_0226bdf4)->c0.word &= ~2;
     return;
 
 high:
     func_ov066_02269204(self->h);
     func_ov066_0226943c();
-    (*(struct GWork * *) &data_ov066_0226bdf4)->c0.word |= 0x10;
+    (*(struct GWork **) &data_ov066_0226bdf4)->c0.word |= 0x10;
 }

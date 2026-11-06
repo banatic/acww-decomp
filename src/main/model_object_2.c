@@ -260,7 +260,8 @@ int func_020555a4(int a1, int a2, int a3, int a4, int a5, int a6, int a7)
     v3 = a7;
     v4 = 0x4e554c4c;
 
-    return func_020555dc((struct UnkStruct_020555dc *) a1, a2, (void *) a3, (void *) a4, (void *) v1, (unsigned int *) v2, v3, v4);
+    return func_020555dc((struct UnkStruct_020555dc *) a1, a2, (void *) a3, (void *) a4, (void *) v1, (unsigned int *) v2, v3,
+                         v4);
 }
 
 int func_0205556c(UnkStruct_0205556c *ptr, int arg2, int arg3)
@@ -277,7 +278,7 @@ int func_0205556c(UnkStruct_0205556c *ptr, int arg2, int arg3)
 
 int func_020554ec(UnkStruct_020554ec *self, void *file, int a2, int a3)
 {
-    void *heap = (*(void * *) &data_021fbe94);
+    void *heap = (*(void **) &data_021fbe94);
     Hdr *res;
     Hdr *h;
     void *tex;

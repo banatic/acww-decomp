@@ -50,17 +50,17 @@ int func_020a1368(void)
 
 int func_020a1350(void)
 {
-    if ((*(UnkStruct_021f3c3c * *) &data_021f3c3c) == 0) {
+    if ((*(UnkStruct_021f3c3c **) &data_021f3c3c) == 0) {
         return 0;
     }
-    return (*(UnkStruct_021f3c3c * *) &data_021f3c3c)->value;
+    return (*(UnkStruct_021f3c3c **) &data_021f3c3c)->value;
 }
 
 void *func_020a1338(void)
 {
     struct UnkStruct_020a1338 *p;
 
-    p = (*(struct UnkStruct_020a1338 * *) &data_021f3c3c);
+    p = (*(struct UnkStruct_020a1338 **) &data_021f3c3c);
     if (p == 0) {
         return 0;
     }

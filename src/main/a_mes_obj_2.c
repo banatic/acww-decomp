@@ -111,7 +111,11 @@ void func_02011f48(unsigned char value)
 
 unsigned char func_02011f3c(void)
 {
-    return (*(struct { unsigned char _pad[0x15]; unsigned char value; } *) data_021c14c4).value;
+    return (*(struct {
+               unsigned char _pad[0x15];
+               unsigned char value;
+           } *) data_021c14c4)
+        .value;
 }
 
 void func_02011f2c(void *param)

@@ -365,7 +365,8 @@ int func_0207e1c4(int argument0)
 
 int func_0207e198(int argument0)
 {
-    if (func_02094ffc((void *) func_02099870((int) argument0)) == 0 && func_02098880((char *) (((char *) data_021dc7bc))) >= 2) {
+    if (func_02094ffc((void *) func_02099870((int) argument0)) == 0 &&
+        func_02098880((char *) (((char *) data_021dc7bc))) >= 2) {
         return 1;
     }
     return 0;

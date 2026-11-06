@@ -159,8 +159,12 @@ void func_ov004_0222e1b8(char *self)
     func_ov004_022236c4();
     v2 = func_ov004_022236a8();
     if (v2 == 0xf7) {
-        func_ov004_0222db14((void *) ((int) (self)), (int) (0x5), (void *) ((int) (self + 0x348)), (void *) ((int) (self + 0x9ac)), (unsigned char) ((unsigned char) (0x0)), (int) (0x1000), (unsigned short) ((unsigned short) (0x0)), (unsigned short) ((unsigned short) (0x0)));
-        func_ov004_0222db14((void *) ((int) (self)), (int) (0x3), (void *) ((int) (self + 0x400)), (void *) ((int) (self + 0xa50)), (unsigned char) ((unsigned char) (0x0)), (int) (0x1000), (unsigned short) ((unsigned short) (0x0)), (unsigned short) ((unsigned short) (0x0)));
+        func_ov004_0222db14((void *) ((int) (self)), (int) (0x5), (void *) ((int) (self + 0x348)),
+                            (void *) ((int) (self + 0x9ac)), (unsigned char) ((unsigned char) (0x0)), (int) (0x1000),
+                            (unsigned short) ((unsigned short) (0x0)), (unsigned short) ((unsigned short) (0x0)));
+        func_ov004_0222db14((void *) ((int) (self)), (int) (0x3), (void *) ((int) (self + 0x400)),
+                            (void *) ((int) (self + 0xa50)), (unsigned char) ((unsigned char) (0x0)), (int) (0x1000),
+                            (unsigned short) ((unsigned short) (0x0)), (unsigned short) ((unsigned short) (0x0)));
     }
 }
 
@@ -195,8 +199,10 @@ void func_ov004_0222e0b8(char *self)
     v1 = func_ov004_022236c4();
     v2 = func_ov004_022236a8();
     if (v2 == 0xf8) {
-        func_ov004_0222db14((void *) ((int) self), 0x7, (void *) ((int) (self + 0x348)), (void *) ((int) (self + 0x9ac)), (unsigned char) 0x3, 0x1000, (unsigned short) v1, (unsigned short) 0x0);
-        func_ov004_0222db14((void *) ((int) self), 0x5, (void *) ((int) (self + 0x400)), (void *) ((int) (self + 0xa50)), (unsigned char) 0x3, 0x1000, (unsigned short) v1, (unsigned short) 0x0);
+        func_ov004_0222db14((void *) ((int) self), 0x7, (void *) ((int) (self + 0x348)), (void *) ((int) (self + 0x9ac)),
+                            (unsigned char) 0x3, 0x1000, (unsigned short) v1, (unsigned short) 0x0);
+        func_ov004_0222db14((void *) ((int) self), 0x5, (void *) ((int) (self + 0x400)), (void *) ((int) (self + 0xa50)),
+                            (unsigned char) 0x3, 0x1000, (unsigned short) v1, (unsigned short) 0x0);
     }
 }
 

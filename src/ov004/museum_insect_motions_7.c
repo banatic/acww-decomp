@@ -849,7 +849,8 @@ void func_ov004_022442b4(char *self)
             B(0x9a) = 0;
             B(0xae) = 0;
             heading = S(0xac);
-            func_ov004_02244f48((UnkStruct_02244f48 *) (V(0x34)), (UnkStruct_02244f48 *) (V(0x2c8)), heading, (B(0xa4) + func_020644cc(3)) << 12);
+            func_ov004_02244f48((UnkStruct_02244f48 *) (V(0x34)), (UnkStruct_02244f48 *) (V(0x2c8)), heading,
+                                (B(0xa4) + func_020644cc(3)) << 12);
             S(0xac) = func_0200322c((Vec3 *) (V(0x2c8)), (Vec3 *) (V(0x34)));
             break;
         }
@@ -946,7 +947,8 @@ void func_ov004_0224412c(unsigned char *self)
             }
             *(short *) (self + 0x172) = 3;
             angle = *(short *) (self + 0xac);
-            func_ov004_02244f48((UnkStruct_02244f48 *) ((Vec *) (self + 0x34)), (UnkStruct_02244f48 *) position, angle, (self[0xa4] + func_020644cc(3)) << 12);
+            func_ov004_02244f48((UnkStruct_02244f48 *) ((Vec *) (self + 0x34)), (UnkStruct_02244f48 *) position, angle,
+                                (self[0xa4] + func_020644cc(3)) << 12);
             *(short *) (self + 0xac) = func_0200322c((Vec3 *) ((Vec *) (self + 0x2c8)), (Vec3 *) ((Vec *) (self + 0x34)));
         }
     } else {
@@ -996,7 +998,8 @@ void func_ov004_02243fec(UnkStruct_02243fec *self)
         self->unk_AC = func_ov004_022447c0(self->ang, m);
         d = self->unk_AC;
         k = func_020644cc(3);
-        func_ov004_02244f48((UnkStruct_02244f48 *) (&self->dst), (UnkStruct_02244f48 *) (&self->pos), d, (self->unk_A4 + k) << 12);
+        func_ov004_02244f48((UnkStruct_02244f48 *) (&self->dst), (UnkStruct_02244f48 *) (&self->pos), d,
+                            (self->unk_A4 + k) << 12);
         self->unk_AC = (short) func_0200322c(&self->pos, &self->dst);
         if (self->unk_9A != 0) {
             self->unk_172 = 0xf;
@@ -1126,7 +1129,8 @@ void func_ov004_02243e04(UnkStruct_02243e04 *self)
                 c = (int) func_ov004_0224105c(0xc);
                 self->unk_AC = (short) (c + a);
                 b = self->unk_AC;
-                func_ov004_02244f48((UnkStruct_02244f48 *) (&self->unk_34), (UnkStruct_02244f48 *) (&self->pos), b, (self->unk_A4 + func_020644cc(3)) << 12);
+                func_ov004_02244f48((UnkStruct_02244f48 *) (&self->unk_34), (UnkStruct_02244f48 *) (&self->pos), b,
+                                    (self->unk_A4 + func_020644cc(3)) << 12);
                 self->unk_AC = (short) func_0200322c(&self->pos, &self->unk_34);
                 self->unk_172 = 3;
                 *p = 0;
@@ -1203,8 +1207,10 @@ void *func_ov004_02243c30(void *self, short *out)
         *(short *) ((char *) self + 0xac) = (short) func_ov004_022447c0(*(short *) ((char *) self + 0x192), (int) p);
         m = *(short *) ((char *) self + 0xac);
         t = func_020644cc(3);
-        func_ov004_02244f48((UnkStruct_02244f48 *) ((char *) self + 0x34), (UnkStruct_02244f48 *) ((char *) self + 0x2c8), m, (*((unsigned char *) self + 0xa4) + t) << 12);
-        *(short *) ((char *) self + 0xac) = (short) func_0200322c((Vec3 *) ((char *) self + 0x2c8), (Vec3 *) ((char *) self + 0x34));
+        func_ov004_02244f48((UnkStruct_02244f48 *) ((char *) self + 0x34), (UnkStruct_02244f48 *) ((char *) self + 0x2c8), m,
+                            (*((unsigned char *) self + 0xa4) + t) << 12);
+        *(short *) ((char *) self + 0xac) =
+            (short) func_0200322c((Vec3 *) ((char *) self + 0x2c8), (Vec3 *) ((char *) self + 0x34));
         *(short *) ((char *) self + 0x172) = 0xf;
         *(int *) ((char *) self + 0x4c) += 1;
         *out = 0;

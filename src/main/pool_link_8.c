@@ -23,7 +23,7 @@ void *func_02082f60(void *ptr)
 
 void *func_02082f48(void *this)
 {
-    *(void **) this = ((void * *) data_020e19f0);
+    *(void **) this = ((void **) data_020e19f0);
     func_020830d0(this);
     return this;
 }

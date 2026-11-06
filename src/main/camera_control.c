@@ -195,8 +195,8 @@ extern unsigned char data_020e58cc[];
 
 void func_0203aeec(unsigned int value)
 {
-    (*(struct UnkStruct_0203aeec * *) data_021c67a4)->unk_21C = value;
-    func_0203c0ac((*(struct UnkStruct_0203aeec * *) data_021c67a4), 0x11);
+    (*(struct UnkStruct_0203aeec **) data_021c67a4)->unk_21C = value;
+    func_0203c0ac((*(struct UnkStruct_0203aeec **) data_021c67a4), 0x11);
 }
 
 void func_0203aed8(void)
@@ -224,7 +224,8 @@ void func_0203aec4(void)
 
 int func_0203aeac(void)
 {
-    return func_0203c0ac((struct UnkStruct_0203aeec *) ((*(UnkStruct_0203aeac * *) data_021c67a4)), (*(UnkStruct_0203aeac * *) data_021c67a4)->unk_1FC);
+    return func_0203c0ac((struct UnkStruct_0203aeec *) ((*(UnkStruct_0203aeac **) data_021c67a4)),
+                         (*(UnkStruct_0203aeac **) data_021c67a4)->unk_1FC);
 }
 
 void func_0203ae98(void)
@@ -245,18 +246,18 @@ void func_0203ae84(void)
 int func_0203ae28(int *v)
 {
     int *d;
-    if ((*(UnkStruct_0203ae28 * *) data_021c67a4)->unk_1F8 == 0x13) {
-        (*(UnkStruct_0203ae28 * *) data_021c67a4)->unk_C8 = 0;
-        (*(UnkStruct_0203ae28 * *) data_021c67a4)->unk_B8 = 0;
-        (*(UnkStruct_0203ae28 * *) data_021c67a4)->unk_BC = 0x15000;
+    if ((*(UnkStruct_0203ae28 **) data_021c67a4)->unk_1F8 == 0x13) {
+        (*(UnkStruct_0203ae28 **) data_021c67a4)->unk_C8 = 0;
+        (*(UnkStruct_0203ae28 **) data_021c67a4)->unk_B8 = 0;
+        (*(UnkStruct_0203ae28 **) data_021c67a4)->unk_BC = 0x15000;
         return 1;
     }
-    d = &(*(UnkStruct_0203ae28 * *) data_021c67a4)->unk_1CC;
+    d = &(*(UnkStruct_0203ae28 **) data_021c67a4)->unk_1CC;
     d[0] = v[0];
     d[1] = v[1];
     d[2] = v[2];
-    (*(UnkStruct_0203ae28 * *) data_021c67a4)->unk_C8 = 0;
-    (*(UnkStruct_0203ae28 * *) data_021c67a4)->unk_1F6 = 3;
+    (*(UnkStruct_0203ae28 **) data_021c67a4)->unk_C8 = 0;
+    (*(UnkStruct_0203ae28 **) data_021c67a4)->unk_1F6 = 3;
     return 1;
 }
 
@@ -265,7 +266,7 @@ int func_0203adc4(UnkStruct_0203adc4 *a0, int unused, int b)
     Global *g;
     int mode;
 
-    g = (*(Global * *) data_021c67a4);
+    g = (*(Global **) data_021c67a4);
     if (g != 0) {
         mode = g->unk_1F8;
         if (mode == 2 || mode == 4) {
@@ -298,7 +299,7 @@ unsigned int func_0203adb0(void)
     unsigned int offset;
     unsigned int result;
 
-    ptr = (*(unsigned int * *) data_021c67a4);
+    ptr = (*(unsigned int **) data_021c67a4);
     offset = 0x1e8;
     result = *(unsigned int *) ((unsigned char *) ptr + offset);
     return result;
@@ -307,8 +308,8 @@ unsigned int func_0203adb0(void)
 int func_0203ad88(void)
 {
     int ret;
-    ret = func_0203c4e4((*(Struct0203ad88 * *) data_021c67a4));
-    if ((*(Struct0203ad88 * *) data_021c67a4)->unk_C8 > ret) {
+    ret = func_0203c4e4((*(Struct0203ad88 **) data_021c67a4));
+    if ((*(Struct0203ad88 **) data_021c67a4)->unk_C8 > ret) {
         return 0;
     } else {
         return 1;
@@ -317,7 +318,8 @@ int func_0203ad88(void)
 
 void func_0203ad68(void)
 {
-    (*(UnkStruct_0203ad68 * *) data_021c67a4)->unk_C8 = func_0203c4e4((Struct0203ad88 *) ((*(UnkStruct_0203ad68 * *) data_021c67a4)));
+    (*(UnkStruct_0203ad68 **) data_021c67a4)->unk_C8 =
+        func_0203c4e4((Struct0203ad88 *) ((*(UnkStruct_0203ad68 **) data_021c67a4)));
 }
 
 void func_0203ad58(void)
@@ -325,21 +327,21 @@ void func_0203ad58(void)
     unsigned int *ptr;
     unsigned int *addr;
 
-    ptr = (*(unsigned int * *) data_021c67a4);
+    ptr = (*(unsigned int **) data_021c67a4);
     addr = (unsigned int *) ((unsigned char *) ptr + 0xc8);
     *addr = 0;
 }
 
 unsigned char func_0203ad30(void)
 {
-    int a = func_0203c4e4((Struct0203ad88 *) ((*(UnkStruct_0203ad30 * *) data_021c67a4)));
-    int b = (*(UnkStruct_0203ad30 * *) data_021c67a4)->unk_C8;
+    int a = func_0203c4e4((Struct0203ad88 *) ((*(UnkStruct_0203ad30 **) data_021c67a4)));
+    int b = (*(UnkStruct_0203ad30 **) data_021c67a4)->unk_C8;
     return (unsigned char) ((a - b) >> 12);
 }
 
 void func_0203acd8(void)
 {
-    char *base = (*(char * *) data_021c67a4);
+    char *base = (*(char **) data_021c67a4);
     SubA *p = (SubA *) (base + 0xfc);
     SubB *q;
     data_021c6800.unk_00 = *(short *) (base + 0xfc);
@@ -359,7 +361,7 @@ void func_0203acd8(void)
 
 void func_0203ac78(void)
 {
-    UnkStruct_0203ac78 *p = (*(UnkStruct_0203ac78 * *) data_021c67a4);
+    UnkStruct_0203ac78 *p = (*(UnkStruct_0203ac78 **) data_021c67a4);
     B32 *d = &p->sub;
     d->a = (*(B32 *) &data_021c6800).a;
     d->b = (*(B32 *) &data_021c6800).b;
@@ -371,7 +373,7 @@ void func_0203ac78(void)
     d->c[5] = (*(B32 *) &data_021c6800).c[5];
     d->c[6] = (*(B32 *) &data_021c6800).c[6];
     {
-        C12 *o = &(*(UnkStruct_0203ac78 * *) data_021c67a4)->other;
+        C12 *o = &(*(UnkStruct_0203ac78 **) data_021c67a4)->other;
         o->x = (*(C12 *) &data_021c67f4).x;
         o->y = (*(C12 *) &data_021c67f4).y;
         o->z = (*(C12 *) &data_021c67f4).z;
@@ -380,7 +382,7 @@ void func_0203ac78(void)
 
 int func_0203ac5c(void)
 {
-    return (*(CARDiWork * *) data_021c67a4)->enabled != 0;
+    return (*(CARDiWork **) data_021c67a4)->enabled != 0;
 }
 
 int func_0203ac44(void)
@@ -402,7 +404,7 @@ void func_0203ac18(void)
 
 void func_0203ac04(void)
 {
-    (*(unsigned char * *) data_021c67a4)[0x1f5] = 1;
+    (*(unsigned char **) data_021c67a4)[0x1f5] = 1;
 }
 
 void func_0203ab78(int arg)
@@ -412,10 +414,11 @@ void func_0203ab78(int arg)
     struct UnkStruct_0203ab78_3 local;
     int v1, v2, v3;
 
-    func_0203c210((*(struct UnkStruct_0203ab78_2 * *) data_021c67a4), &(*(struct UnkStruct_0203ab78_2 * *) data_021c67a4)->unk_FC, arg);
+    func_0203c210((*(struct UnkStruct_0203ab78_2 **) data_021c67a4),
+                  &(*(struct UnkStruct_0203ab78_2 **) data_021c67a4)->unk_FC, arg);
 
-    src = &(*(struct UnkStruct_0203ab78_2 * *) data_021c67a4)->unk_FC;
-    dst = &(*(struct UnkStruct_0203ab78_2 * *) data_021c67a4)->unk_148;
+    src = &(*(struct UnkStruct_0203ab78_2 **) data_021c67a4)->unk_FC;
+    dst = &(*(struct UnkStruct_0203ab78_2 **) data_021c67a4)->unk_148;
     dst->unk_00 = src->unk_00;
     dst->s1 = src->s1;
     dst->i0 = src->i0;
@@ -426,13 +429,13 @@ void func_0203ab78(int arg)
     dst->i5 = src->i5;
     dst->i6 = src->i6;
 
-    func_01ffcbb0(&local, (*(struct UnkStruct_0203ab78_2 * *) data_021c67a4));
+    func_01ffcbb0(&local, (*(struct UnkStruct_0203ab78_2 **) data_021c67a4));
 
-    v1 = func_0203c57c((*(struct UnkStruct_0203ab78_2 * *) data_021c67a4));
-    v2 = func_0203c568((*(struct UnkStruct_0203ab78_2 * *) data_021c67a4));
-    v3 = func_0203c548((*(struct UnkStruct_0203ab78_2 * *) data_021c67a4));
+    v1 = func_0203c57c((*(struct UnkStruct_0203ab78_2 **) data_021c67a4));
+    v2 = func_0203c568((*(struct UnkStruct_0203ab78_2 **) data_021c67a4));
+    v3 = func_0203c548((*(struct UnkStruct_0203ab78_2 **) data_021c67a4));
 
-    func_0203bd84((*(struct UnkStruct_0203ab78_2 * *) data_021c67a4), &local, v1, v2, v3);
+    func_0203bd84((*(struct UnkStruct_0203ab78_2 **) data_021c67a4), &local, v1, v2, v3);
 }
 
 void func_0203ab64(void)
@@ -440,7 +443,7 @@ void func_0203ab64(void)
     unsigned char *r1;
     unsigned int r0;
 
-    r1 = (*(unsigned char * *) data_021c67a4);
+    r1 = (*(unsigned char **) data_021c67a4);
     r0 = 0x1f7;
     r1[r0] = 1;
 }
@@ -451,7 +454,7 @@ void func_0203ab50(void)
     unsigned char value;
 
     value = 0;
-    ptr = (*(unsigned char * *) data_021c67a4);
+    ptr = (*(unsigned char **) data_021c67a4);
     ptr[0x1f7] = value;
 }
 
@@ -472,12 +475,12 @@ unsigned int func_0203ab20(void)
 
 int func_0203aad0(int a, int b)
 {
-    UnkStruct_0203aad0 *p = (*(UnkStruct_0203aad0 * *) data_021c67a4);
+    UnkStruct_0203aad0 *p = (*(UnkStruct_0203aad0 **) data_021c67a4);
     if (p != 0) {
         if (p->unk_1EC != b || p->unk_1F0 != a) {
             func_0203ad58();
-            (*(UnkStruct_0203aad0 * *) data_021c67a4)->unk_1F0 = a;
-            (*(UnkStruct_0203aad0 * *) data_021c67a4)->unk_1EC = b;
+            (*(UnkStruct_0203aad0 **) data_021c67a4)->unk_1F0 = a;
+            (*(UnkStruct_0203aad0 **) data_021c67a4)->unk_1EC = b;
             return 1;
         }
         return 0;
@@ -490,11 +493,11 @@ int func_0203aa48(int *outX, int *outY, Vec3 *v)
     Vec3 t;
     Mtx43 m;
     int k;
-    if ((*(void * *) data_021c67a4) != 0) {
+    if ((*(void **) data_021c67a4) != 0) {
         m = *(Mtx43 *) func_0203ab20();
         data_021fbe48 = m;
         MTX_MultVec43(v, &data_021fbe48, &t);
-        k = -FX_Div(0x60000, func_0203c53c((*(void * *) data_021c67a4)));
+        k = -FX_Div(0x60000, func_0203c53c((*(void **) data_021c67a4)));
         k = FX_Div(k, t.z);
         func_020eabc8(&t, k);
         *outX = t.x >> 12;

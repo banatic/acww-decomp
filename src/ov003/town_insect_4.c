@@ -111,7 +111,10 @@ int func_ov003_0222eb94(int a, char *self)
     s = *(u8 *) (self + 0x251);
     k = *(s8 *) (self + 0x24d);
     if (s != 9 && s != 0xb) {
-        if (k == 0x3a || k == 0x3b || (func_02073dd4((*(UnkStruct_0222eb94 * *) &data_020ccf94), (*(UnkStruct_0222eb94 * *) &data_020ccf94)->unk_64) != 0 && func_020a7278() == 0)) {
+        if (k == 0x3a || k == 0x3b ||
+            (func_02073dd4((*(UnkStruct_0222eb94 **) &data_020ccf94), (*(UnkStruct_0222eb94 **) &data_020ccf94)->unk_64) !=
+                 0 &&
+             func_020a7278() == 0)) {
             return 0;
         }
         if (s != 7) {

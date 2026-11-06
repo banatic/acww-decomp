@@ -104,7 +104,7 @@ int func_ov002_02208ff8(char *self, int arg1)
 {
     // DECLS
     // ENDDECLS
-    return func_ov002_02209018((char *) self, func_02099870(func_02098844(((void * *) data_021dc7bc), arg1)));
+    return func_ov002_02209018((char *) self, func_02099870(func_02098844(((void **) data_021dc7bc), arg1)));
 }
 
 int func_ov002_02208fcc(char *self, int a1)
@@ -122,7 +122,7 @@ int func_ov002_02208fac(char *self, int arg1)
 {
     // DECLS
     // ENDDECLS
-    return func_ov002_02208fcc((char *) self, func_0208150c(func_0207cec0(((void * *) data_021e5a2c), arg1)));
+    return func_ov002_02208fcc((char *) self, func_0208150c(func_0207cec0(((void **) data_021e5a2c), arg1)));
 }
 
 void func_ov002_02208f58(void *self, void *a, unsigned int k)

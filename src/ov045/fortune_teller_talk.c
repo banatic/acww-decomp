@@ -31,7 +31,7 @@ extern char data_ov045_0226142c[];
 void *func_ov045_0226050c(void *obj)
 {
     func_020a8cac(obj);
-    *(void **) obj = ((void * *) data_ov045_02261414);
+    *(void **) obj = ((void **) data_ov045_02261414);
     return obj;
 }
 

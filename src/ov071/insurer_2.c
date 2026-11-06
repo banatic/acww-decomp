@@ -312,7 +312,9 @@ int func_ov071_02279210(UnkStruct_02279210 *p)
             return 1;
         }
     } else {
-        if (func_ov071_02279c18((UnkStruct_022792e0 *) p, 0) != 0 && func_ov071_02279b2c((UnkStruct_022792e0 *) p, 0x3000) == 0 && func_ov071_02279b2c((UnkStruct_022792e0 *) p, 0x8000) != 0) {
+        if (func_ov071_02279c18((UnkStruct_022792e0 *) p, 0) != 0 &&
+            func_ov071_02279b2c((UnkStruct_022792e0 *) p, 0x3000) == 0 &&
+            func_ov071_02279b2c((UnkStruct_022792e0 *) p, 0x8000) != 0) {
             func_ov071_02279d04((UnkStruct_022792e0 *) p, 1);
             return 1;
         }

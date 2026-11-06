@@ -101,7 +101,7 @@ void func_ov127_02299fd4(unsigned char *self, unsigned char val, int mode)
 
 void func_ov127_02299f90(void *receiver)
 {
-    void *p = (*(void * *) &data_021fbe94);
+    void *p = (*(void **) &data_021fbe94);
     func_02002d14((const int *) data_ov127_0229b634, (int) p, (unsigned char) 8, 5, 5, 9);
     func_02002c6c((void *) data_ov127_0229b64c, (int) p, 8, 0xc0, 0xc0, 0x13f);
 }

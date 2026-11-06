@@ -52,7 +52,7 @@ UnkStruct_02236204 *func_ov003_02236204(int id)
 {
     unsigned int i;
     for (i = 0; i < 8; i++) {
-        UnkStruct_02236204 *o = ((UnkStruct_02236204 * *) data_ov003_02262b38)[i];
+        UnkStruct_02236204 *o = ((UnkStruct_02236204 **) data_ov003_02262b38)[i];
         if (o != 0 && id == o->id) {
             return o;
         }

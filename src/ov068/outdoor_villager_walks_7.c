@@ -208,7 +208,8 @@ int func_ov068_0226bb3c(void *self, void *other)
     unsigned long long tmp;
 
     func_ov068_0226cfd4(other);
-    func_ov068_02266c34((char *) other + 0x898, other, zero, zero, zero, (void *) ((unsigned char *) data_021fbee8), 4, data_020c814c, 1);
+    func_ov068_02266c34((char *) other + 0x898, other, zero, zero, zero, (void *) ((unsigned char *) data_021fbee8), 4,
+                        data_020c814c, 1);
     func_02019c6c((char *) ((char *) other + 0x564), 1, (unsigned short) ((*(unsigned short *) &data_020c80f8)));
     *(unsigned int *) ((char *) self + 0x20) = 0;
 

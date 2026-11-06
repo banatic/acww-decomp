@@ -49,7 +49,8 @@ int func_ov096_0229f650(UnkStruct_0229f650 *self, int arg)
         func_ov096_0229defc(self, &self->unk_AC, self->unk_B0, &tmp, func_ov096_0229f088(self, arg));
 
         if (tmp != 0xfff1) {
-            func_ov096_0229f5e0((int) self, (unsigned char) self->unk_B4, (unsigned short) tmp, func_ov096_0229f088(self, arg));
+            func_ov096_0229f5e0((int) self, (unsigned char) self->unk_B4, (unsigned short) tmp,
+                                func_ov096_0229f088(self, arg));
         }
         func_ov096_0229e898(self, arg, 1);
         return 1;

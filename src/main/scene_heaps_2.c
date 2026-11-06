@@ -94,8 +94,8 @@ int func_0205c8c4(int size, int type)
 
 void func_0205c8a8(void)
 {
-    func_020e9fc8((int) ((*(void * *) &data_021c9afc)));
-    (*(void * *) &data_021c9afc) = 0;
+    func_020e9fc8((int) ((*(void **) &data_021c9afc)));
+    (*(void **) &data_021c9afc) = 0;
 }
 
 void func_0205c814(void *arg)
@@ -107,7 +107,7 @@ void func_0205c814(void *arg)
     int e;
     int min;
     int cond;
-    cond = (*(unsigned char * *) &data_020ccf94)[0x6c];
+    cond = (*(unsigned char **) &data_020ccf94)[0x6c];
     min = func_020b5e04((unsigned int) (int) func_020b65c4());
     if (((unsigned) cond) < ((unsigned) min)) {
         min = cond;
@@ -135,8 +135,8 @@ void func_0205c814(void *arg)
 
 void func_0205c7f8(void)
 {
-    func_020e9fc8((int) ((*(void * *) &data_021c9af8)));
-    (*(void * *) &data_021c9af8) = 0;
+    func_020e9fc8((int) ((*(void **) &data_021c9af8)));
+    (*(void **) &data_021c9af8) = 0;
 }
 
 void func_0205c7b4(int param)
@@ -154,8 +154,8 @@ void func_0205c7b4(int param)
 
 void func_0205c798(void)
 {
-    func_020e9fc8((int) ((*(void * *) &data_021c9af4)));
-    (*(void * *) &data_021c9af4) = 0;
+    func_020e9fc8((int) ((*(void **) &data_021c9af4)));
+    (*(void **) &data_021c9af4) = 0;
 }
 
 unsigned int func_0205c760(int param)
@@ -213,8 +213,8 @@ unsigned int func_0205c6b0(int param)
 
 void func_0205c694(void)
 {
-    func_020e9fc8((int) ((*(void * *) &data_021c9ae8)));
-    (*(void * *) &data_021c9ae8) = 0;
+    func_020e9fc8((int) ((*(void **) &data_021c9ae8)));
+    (*(void **) &data_021c9ae8) = 0;
 }
 
 unsigned int func_0205c65c(int param)
@@ -251,8 +251,8 @@ unsigned int func_0205c610(int param)
 
 void func_0205c5f4(void)
 {
-    func_020e9fc8((int) ((*(void * *) &data_021c9ae0)));
-    (*(void * *) &data_021c9ae0) = 0;
+    func_020e9fc8((int) ((*(void **) &data_021c9ae0)));
+    (*(void **) &data_021c9ae0) = 0;
 }
 
 unsigned int func_0205c5bc(int param)
@@ -378,6 +378,6 @@ void func_0205c3e4(int arg)
 
 void func_0205c3c8(void)
 {
-    func_020e9fc8((int) ((*(void * *) &data_021c9ac8)));
-    (*(void * *) &data_021c9ac8) = 0;
+    func_020e9fc8((int) ((*(void **) &data_021c9ac8)));
+    (*(void **) &data_021c9ac8) = 0;
 }

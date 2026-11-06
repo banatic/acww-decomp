@@ -45,8 +45,8 @@ int func_ov004_02213d84(char *self)
     x = func_02057a40(func_ov004_0220d9bc(func_ov004_0220e220(self + 0x6cc)), &data_ov004_022531d4);
     y = func_020579b8(func_ov004_0220d9bc(func_ov004_0220e220(self + 0x6cc)), (const char *) (&data_ov004_022531d4));
     a = *(int *) (self + 0x594);
-    if (func_020b9d3c(self + 0x848, (void *) a, (int) (((int *) &data_ov004_022531c8)), func_ov004_0220d9bc(func_ov004_0220e220(self + 0x6cc)), x, y) !=
-        0) {
+    if (func_020b9d3c(self + 0x848, (void *) a, (int) (((int *) &data_ov004_022531c8)),
+                      func_ov004_0220d9bc(func_ov004_0220e220(self + 0x6cc)), x, y) != 0) {
         *(u8 *) (self + 0x870) = 0;
     }
     return 1;

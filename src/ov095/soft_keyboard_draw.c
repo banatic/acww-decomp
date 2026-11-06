@@ -253,7 +253,8 @@ int func_ov095_0229b058(void *p)
 int func_ov095_0229aff0(struct UnkStruct_0229aff0 *self)
 {
     int result, val;
-    result = func_02088cf4(self->unk_44, 3, (int) (*(unsigned char *) data_021f6c58) - 0x80, (int) (*(unsigned char *) data_021f6c54) - 0x60, 2, 2);
+    result = func_02088cf4(self->unk_44, 3, (int) (*(unsigned char *) data_021f6c58) - 0x80,
+                           (int) (*(unsigned char *) data_021f6c54) - 0x60, 2, 2);
     if (result == -1) {
         return 0;
     }
@@ -279,7 +280,8 @@ int func_ov095_0229aff0(struct UnkStruct_0229aff0 *self)
 
 int func_ov095_0229afac(UnkStruct_0229afac *p)
 {
-    int res = func_02088cf4((int) data_ov095_0229e834, (unsigned char) p->unk_18, (*(unsigned char *) data_021f6c58) - 0x80, (*(unsigned char *) data_021f6c54) - 0x60, 0, 0);
+    int res = func_02088cf4((int) data_ov095_0229e834, (unsigned char) p->unk_18, (*(unsigned char *) data_021f6c58) - 0x80,
+                            (*(unsigned char *) data_021f6c54) - 0x60, 0, 0);
     if (res == -1) {
         return 0;
     }
@@ -320,6 +322,8 @@ void func_ov095_0229aeec(UnkStruct_0229aeec *p1, int p2, int p3)
 
 void func_ov095_0229ae84(void *p1, void *p2, void *p3)
 {
-    func_02088df8(1, (void *) (&data_ov095_0229e714), (int) p2, (int) p3, ((unsigned char *) p1)[0x19], 1, 0x1000, 0x1000, 0, -1, 0, 0);
-    func_02088df8(1, (void *) (&data_ov095_0229e744), (int) p2, (int) p3, ((unsigned char *) p1)[0x1a], 1, 0x1000, 0x1000, 0, -1, 0, 0);
+    func_02088df8(1, (void *) (&data_ov095_0229e714), (int) p2, (int) p3, ((unsigned char *) p1)[0x19], 1, 0x1000, 0x1000, 0,
+                  -1, 0, 0);
+    func_02088df8(1, (void *) (&data_ov095_0229e744), (int) p2, (int) p3, ((unsigned char *) p1)[0x1a], 1, 0x1000, 0x1000, 0,
+                  -1, 0, 0);
 }

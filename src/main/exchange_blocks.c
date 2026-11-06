@@ -64,7 +64,7 @@ void func_020a0f3c(struct UnkStruct_020a0f3c_2 *self)
 
     n = 0;
     i = 3;
-    g = (*(struct UnkStruct_020a0f3c * *) &data_020ccf94);
+    g = (*(struct UnkStruct_020a0f3c **) &data_020ccf94);
     for (; i >= 0; i--) {
         if (func_02073dd4((int *) g, i)) {
             list[n] = i;

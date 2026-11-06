@@ -265,7 +265,11 @@ void func_ov105_0229e4a8(UnkStruct_0229e4a8 *s)
         return;
     }
     if (func_ov105_0229d468((unsigned char *) s, (unsigned char) s->unk_2BA) == 0) {
-        val = (*(struct { char pad2[2]; unsigned short field; } *) data_021fbe40).field;
+        val = (*(struct {
+                  char pad2[2];
+                  unsigned short field;
+              } *) data_021fbe40)
+                  .field;
         if (val & 1) {
             if (func_ov105_0229d76c(s, s->unk_2BA) != 0 || func_ov105_0229d75c(s, s->unk_2BA) != 0) {
                 if (func_ov105_0229d428(s, s->unk_2BA) == 0) {
@@ -294,7 +298,11 @@ void func_ov105_0229e4a8(UnkStruct_0229e4a8 *s)
             return;
         }
     }
-    val = (*(struct { char pad2[2]; unsigned short field; } *) data_021fbe40).field;
+    val = (*(struct {
+              char pad2[2];
+              unsigned short field;
+          } *) data_021fbe40)
+              .field;
     if ((val & 8) || (val & 2)) {
         func_ov105_0229cfc0(s);
         func_ov105_0229c668(s);
@@ -315,9 +323,14 @@ void func_ov105_0229e374(UnkStruct_0229e374 *s)
         func_ov002_02207d24((char *) s + 0x23BC, 0);
         return;
     }
-    val = (*(struct { char pad2[2]; unsigned short field; } *) data_021fbe40).field;
+    val = (*(struct {
+              char pad2[2];
+              unsigned short field;
+          } *) data_021fbe40)
+              .field;
     if (val & 1) {
-        if (func_ov105_0229d76c((UnkStruct_0229e4a8 *) s, s->unk_2BA) != 0 || func_ov105_0229d75c((UnkStruct_0229e4a8 *) s, s->unk_2BA) != 0) {
+        if (func_ov105_0229d76c((UnkStruct_0229e4a8 *) s, s->unk_2BA) != 0 ||
+            func_ov105_0229d75c((UnkStruct_0229e4a8 *) s, s->unk_2BA) != 0) {
             if (func_ov105_0229d468((unsigned char *) s, (unsigned char) s->unk_2BA) == 0) {
                 if (func_ov105_0229d428((UnkStruct_0229e4a8 *) s, s->unk_2BA) != 0) {
                     func_ov105_0229ccf4(s, s->unk_2BA);

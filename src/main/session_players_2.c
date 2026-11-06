@@ -77,9 +77,9 @@ int func_02096518(int *param0, int param1, int param2)
 {
     unsigned char local;
     if (param2 == 4) {
-        param2 = (*(UnkStruct_02096518 * *) &data_020ccf94)->unk_68;
+        param2 = (*(UnkStruct_02096518 **) &data_020ccf94)->unk_68;
     }
-    if (func_02073908((*(UnkStruct_02096518 * *) &data_020ccf94), param2) != 0) {
+    if (func_02073908((*(UnkStruct_02096518 **) &data_020ccf94), param2) != 0) {
         void *ptr = func_02096718(4);
         if (ptr) {
             *param0 = ((UnkStruct_02096518_2 *) ptr)->unk_7F0;

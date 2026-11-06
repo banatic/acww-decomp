@@ -336,14 +336,15 @@ void func_020a5c38(struct UnkStruct_020a5c38_2 *self)
     if ((int) func_020a5c08((UnkStruct_020a5c08 *) self) == 0) {
         me = (unsigned long) func_020a5bf0((int) self);
         j = 3;
-        g = (*(struct UnkStruct_020a5c38 * *) &data_020ccf94);
+        g = (*(struct UnkStruct_020a5c38 **) &data_020ccf94);
         for (; j >= 0; j--) {
             if (j != me && func_02073dd4(g, j)) {
                 if (j == 0) {
                     func_020a5bc4((char *) self, 0, 0);
                 } else {
                     func_020a76cc(&b0);
-                    func_020a76ac(&b0, 0, func_020a5bd8((UnkStruct_020a5bd8 *) self), (unsigned long) func_020a5bf0((int) self));
+                    func_020a76ac(&b0, 0, func_020a5bd8((UnkStruct_020a5bd8 *) self),
+                                  (unsigned long) func_020a5bf0((int) self));
                     func_02073820((void *) g);
                     func_020737f0((void *) g, (char *) (&b0), 1);
                     func_02073770((void *) g, 0xc, j);
@@ -359,7 +360,7 @@ void func_020a5c38(struct UnkStruct_020a5c38_2 *self)
         ok2 = 1;
         me = (unsigned long) func_020a5bf0((int) self);
         j = 3;
-        h = (*(struct UnkStruct_020a5c38 * *) &data_020ccf94);
+        h = (*(struct UnkStruct_020a5c38 **) &data_020ccf94);
         for (; j >= 0; j--) {
             if (j != me && func_02073dd4(h, j)) {
                 st2 = func_020a5bb8((char *) self, j);
@@ -399,7 +400,7 @@ void func_020a5c38(struct UnkStruct_020a5c38_2 *self)
                     func_020a617c((char *) self, me, 5);
                 } else {
                     b2 = 5;
-                    h = (*(struct UnkStruct_020a5c38 * *) &data_020ccf94);
+                    h = (*(struct UnkStruct_020a5c38 **) &data_020ccf94);
                     func_02073820((void *) h);
                     func_020737f0((void *) h, (char *) (&b2), 1);
                     func_02073770((void *) h, 1, me);
@@ -439,7 +440,7 @@ void func_020a5c38(struct UnkStruct_020a5c38_2 *self)
         ok4 = 1;
         me = (unsigned long) func_020a5bf0((int) self);
         j = 3;
-        g = (*(struct UnkStruct_020a5c38 * *) &data_020ccf94);
+        g = (*(struct UnkStruct_020a5c38 **) &data_020ccf94);
         for (; j >= 0; j--) {
             if (j != me && func_02073dd4(g, j)) {
                 if (func_020a5bb8((char *) self, j) != 6) {
@@ -457,7 +458,7 @@ void func_020a5c38(struct UnkStruct_020a5c38_2 *self)
         ok5 = 1;
         me = (unsigned long) func_020a5bf0((int) self);
         j = 3;
-        h = (*(struct UnkStruct_020a5c38 * *) &data_020ccf94);
+        h = (*(struct UnkStruct_020a5c38 **) &data_020ccf94);
         for (; j >= 0; j--) {
             if (j != me && func_02073dd4(h, j)) {
                 if (func_020a5bb8((char *) self, j) != 6) {
@@ -471,7 +472,7 @@ void func_020a5c38(struct UnkStruct_020a5c38_2 *self)
                 func_020a617c((char *) self, me, 6);
             } else {
                 b4 = 6;
-                h = (*(struct UnkStruct_020a5c38 * *) &data_020ccf94);
+                h = (*(struct UnkStruct_020a5c38 **) &data_020ccf94);
                 func_02073820((void *) h);
                 func_020737f0((void *) h, (char *) (&b4), 1);
                 func_02073770((void *) h, 1, me);
@@ -599,7 +600,7 @@ void func_020a5750(struct UnkStruct_020a5750_2 *self)
     unsigned char b2;
     unsigned char b3;
 
-    g = (*(struct UnkStruct_020a5750 * *) &data_020ccf94);
+    g = (*(struct UnkStruct_020a5750 **) &data_020ccf94);
 
     n = g->unk_64;
     if (func_020a5bb8((char *) self, n) == 0) {
@@ -622,7 +623,7 @@ void func_020a5750(struct UnkStruct_020a5750_2 *self)
             if (n != 0) {
                 func_020a76cc(&b0);
                 func_020a76ac(&b0, 2, 4, (unsigned long) func_020a5bf0((int) self));
-                h = (*(struct UnkStruct_020a5750 * *) &data_020ccf94);
+                h = (*(struct UnkStruct_020a5750 **) &data_020ccf94);
                 func_02073820((void *) h);
                 func_020737f0((void *) h, (char *) (&b0), 1);
                 func_02073770((void *) h, 0xc, 0);
@@ -639,7 +640,7 @@ void func_020a5750(struct UnkStruct_020a5750_2 *self)
                 } else {
                     func_020a76cc(&b1);
                     func_020a76ac(&b1, 3, 4, (unsigned long) func_020a5bf0((int) self));
-                    h = (*(struct UnkStruct_020a5750 * *) &data_020ccf94);
+                    h = (*(struct UnkStruct_020a5750 **) &data_020ccf94);
                     func_02073820((void *) h);
                     func_020737f0((void *) h, (char *) (&b1), 1);
                     func_02073770((void *) h, 0xc, 0);
@@ -667,7 +668,7 @@ void func_020a5750(struct UnkStruct_020a5750_2 *self)
         if (m != 0) {
             func_020a76cc(&b2);
             func_020a76ac(&b2, 6, 4, (unsigned long) func_020a5bf0((int) self));
-            h = (*(struct UnkStruct_020a5750 * *) &data_020ccf94);
+            h = (*(struct UnkStruct_020a5750 **) &data_020ccf94);
             func_02073820((void *) h);
             func_020737f0((void *) h, (char *) (&b2), 1);
             func_02073770((void *) h, 0xc, 0);
@@ -753,7 +754,7 @@ void func_020a5750(struct UnkStruct_020a5750_2 *self)
             if (m != 0) {
                 func_020a76cc(&b3);
                 func_020a76ac(&b3, 6, 4, (unsigned long) func_020a5bf0((int) self));
-                h = (*(struct UnkStruct_020a5750 * *) &data_020ccf94);
+                h = (*(struct UnkStruct_020a5750 **) &data_020ccf94);
                 func_02073820((void *) h);
                 func_020737f0((void *) h, (char *) (&b3), 1);
                 func_02073770((void *) h, 0xc, 0);

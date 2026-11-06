@@ -124,7 +124,9 @@ void func_02079500(unsigned char *p)
 
 int func_020794d8(struct UnkStruct_020794d8_2 *param)
 {
-    if (func_02073dd4((void *) ((*(struct UnkStruct_020794d8 * *) &data_020ccf94)), (*(struct UnkStruct_020794d8 * *) &data_020ccf94)->unk_64) != 0 && param->unk_01 == 0) {
+    if (func_02073dd4((void *) ((*(struct UnkStruct_020794d8 **) &data_020ccf94)),
+                      (*(struct UnkStruct_020794d8 **) &data_020ccf94)->unk_64) != 0 &&
+        param->unk_01 == 0) {
         return 1;
     } else {
         return param->unk_01;

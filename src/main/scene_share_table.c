@@ -83,7 +83,7 @@ void func_02084f8c(void)
     v2 = 4;
     d.h = 0xfff1;
     i = 0;
-    g = (*(struct UnkStruct_02084f8c * *) &data_020ccf94);
+    g = (*(struct UnkStruct_02084f8c **) &data_020ccf94);
     idx = i;
 
     do {

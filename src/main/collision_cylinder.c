@@ -162,7 +162,8 @@ int func_0203021c(UnkStruct_0203021c *p0, VecFx32 *p1, const VecFx32 *p2)
             lim = p0->unk_04 + p0->unk_10;
             if (a.y > lim && b.y < lim) {
                 d = (fx32) FX_Div((fx32) (lim - a.y), (fx32) v.y);
-                VEC_Set(&w, a.x + (fx32) FX_MulFunc((fx32) v.x, (fx32) d), a.y + (fx32) FX_MulFunc((fx32) v.y, (fx32) d), a.z + (fx32) FX_MulFunc((fx32) v.z, (fx32) d));
+                VEC_Set(&w, a.x + (fx32) FX_MulFunc((fx32) v.x, (fx32) d), a.y + (fx32) FX_MulFunc((fx32) v.y, (fx32) d),
+                        a.z + (fx32) FX_MulFunc((fx32) v.z, (fx32) d));
                 if (func_020306a4((Cyl *) p0, (Vec3 *) (&w))) {
                     p1->x = w.x;
                     p1->y = w.y;
@@ -171,7 +172,8 @@ int func_0203021c(UnkStruct_0203021c *p0, VecFx32 *p1, const VecFx32 *p2)
                 }
             } else if (a.y < 0 && b.y > 0) {
                 d2 = (fx32) FX_Div((fx32) (-a.y), (fx32) v.y);
-                VEC_Set(&w2, a.x + (fx32) FX_MulFunc((fx32) v.x, (fx32) d2), a.y + (fx32) FX_MulFunc((fx32) v.y, (fx32) d2), a.z + (fx32) FX_MulFunc((fx32) v.z, (fx32) d2));
+                VEC_Set(&w2, a.x + (fx32) FX_MulFunc((fx32) v.x, (fx32) d2), a.y + (fx32) FX_MulFunc((fx32) v.y, (fx32) d2),
+                        a.z + (fx32) FX_MulFunc((fx32) v.z, (fx32) d2));
                 if (func_020306a4((Cyl *) p0, (Vec3 *) (&w2))) {
                     p1->x = w2.x;
                     p1->y = w2.y;

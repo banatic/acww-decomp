@@ -48,13 +48,13 @@ int func_ov066_0226748c(int r0, int (*r1)(int, int), int (*r2)(int), int r3)
 
 int func_ov066_02267404(void)
 {
-    if ((*(struct OverlayState * *) &data_ov066_0226bdec)->state == 1) {
-        (*(struct OverlayState * *) &data_ov066_0226bdec)->state = 0;
-        func_ov066_022668c4((int) ((*(struct OverlayState * *) &data_ov066_0226bdec)));
+    if ((*(struct OverlayState **) &data_ov066_0226bdec)->state == 1) {
+        (*(struct OverlayState **) &data_ov066_0226bdec)->state = 0;
+        func_ov066_022668c4((int) ((*(struct OverlayState **) &data_ov066_0226bdec)));
         data_ov066_0226bde8 = 0;
         data_ov066_0226bde4 = 0;
         data_ov066_0226bde0 = 0;
-        (*(struct OverlayState * *) &data_ov066_0226bdec) = 0;
+        (*(struct OverlayState **) &data_ov066_0226bdec) = 0;
         return 1;
     } else {
         func_ov066_0226686c(0x44);

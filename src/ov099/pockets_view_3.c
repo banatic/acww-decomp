@@ -351,7 +351,8 @@ void func_ov099_0229d698(u8 *self)
 
     func_ov099_0229c95c((unsigned int *) self);
     func_ov099_0229cb70((void *) self);
-    x = func_ov099_0229ceb8((UnkStruct_0229ceb8 *) self, *(unsigned int *) (self + 0x27f8) + 8, *(unsigned int *) (self + 0x27fc) + 8, 0);
+    x = func_ov099_0229ceb8((UnkStruct_0229ceb8 *) self, *(unsigned int *) (self + 0x27f8) + 8,
+                            *(unsigned int *) (self + 0x27fc) + 8, 0);
 
     if (x == 0x1d) {
         goto x_eq;
@@ -434,7 +435,11 @@ void func_ov099_0229d518(unsigned char *self)
         return;
     }
 
-    flag = (*(struct { unsigned char pad[2]; unsigned short flag; } *) data_021fbe40).flag;
+    flag = (*(struct {
+               unsigned char pad[2];
+               unsigned short flag;
+           } *) data_021fbe40)
+               .flag;
 
     if ((flag & 1) != 0) {
         b = self[0x2907];
@@ -779,7 +784,8 @@ int func_ov099_0229ce68(void *a, void *b)
     if (func_ov099_0229cf30((int) (a), (unsigned int) (b))) {
         resultA = func_ov099_0229cc40((char *) a, (int) b);
         if (resultA != 0xfff1) {
-            func_ov099_0229ce28((unsigned char *) a, (unsigned char) (((unsigned char *) a)[0x2906]), resultA, func_ov099_0229cc10(a, b));
+            func_ov099_0229ce28((unsigned char *) a, (unsigned char) (((unsigned char *) a)[0x2906]), resultA,
+                                func_ov099_0229cc10(a, b));
         }
         func_ov099_0229c84c((UnkStruct_0229c84c *) a, (int) b);
         return 1;
@@ -999,7 +1005,8 @@ void func_ov099_0229ca34(u8 *self)
 
 void func_ov099_0229c9d0(UnkStruct_0229c9d0 *obj)
 {
-    if (func_ov099_0229cf30((int) obj, (unsigned char) obj->unk_2907) != 0 || func_ov099_0229cf20((int) obj, (unsigned char) obj->unk_2907) != 0) {
+    if (func_ov099_0229cf30((int) obj, (unsigned char) obj->unk_2907) != 0 ||
+        func_ov099_0229cf20((int) obj, (unsigned char) obj->unk_2907) != 0) {
         if (func_ov099_0229cc74((char *) obj, (unsigned char) obj->unk_2907) != 0) {
             func_ov002_02207cf0(obj->sub);
         } else {

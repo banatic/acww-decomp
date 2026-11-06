@@ -56,7 +56,7 @@ int func_020a02f4(unsigned char *param)
 {
     int result = 1;
     int i = 3;
-    void *st = (*(void * *) &data_020ccf94);
+    void *st = (*(void **) &data_020ccf94);
 
     for (; i >= 0; i--) {
         if (func_02073dd4((int *) st, i) != 0 && func_02073918((int *) st, i) == 0 && *(param + i + 0xf8) == 0) {

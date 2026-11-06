@@ -405,7 +405,8 @@ void func_02056730(UnkStruct_02056730_2 *s)
     int i;
     for (i = 0; i < s->unk_26; i++) {
         if (func_02056958((struct UnkStruct_02056958 *) (s->unk_28 + i)) == 0) {
-            func_020569b0((struct UnkStruct_020569b0 *) (s->unk_28 + i), flag, (unsigned char *) s->unk_20, s->unk_1C, s->unk_18);
+            func_020569b0((struct UnkStruct_020569b0 *) (s->unk_28 + i), flag, (unsigned char *) s->unk_20, s->unk_1C,
+                          s->unk_18);
         }
     }
 }

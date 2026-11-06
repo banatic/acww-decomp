@@ -155,7 +155,8 @@ int func_ov004_0220d0a0(char *self, int a1, int a2)
     *(u8 *) (self + 0x54) = 0;
     flag = (u8 *) (self + 0x54);
     for (i = 0; i < 3; i++) {
-        v = *flag | func_ov004_0220d220((unsigned char *) (self + 0x1c * i), (void *) a1, (void *) data_ov004_0224fdf8[i], (void *) a2);
+        v = *flag | func_ov004_0220d220((unsigned char *) (self + 0x1c * i), (void *) a1, (void *) data_ov004_0224fdf8[i],
+                                        (void *) a2);
         *flag = (u8) ((v != 0) ? 1 : 0);
     }
     return *(u8 *) (self + 0x54);

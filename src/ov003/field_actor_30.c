@@ -328,7 +328,8 @@ int func_ov003_02212c58(UnkStruct_02212c58 *p0, int p1, int p2)
     local.b = 0;
     func_0204f818(&local.a, &local.b, local.arr);
 
-    func_ov003_02212d04((unsigned char *) obj, (unsigned char) ((unsigned char) local.a), (unsigned char) ((unsigned char) local.b), flag);
+    func_ov003_02212d04((unsigned char *) obj, (unsigned char) ((unsigned char) local.a),
+                        (unsigned char) ((unsigned char) local.b), flag);
 
     {
         int ret = func_0200e894(p0, local.buffer);

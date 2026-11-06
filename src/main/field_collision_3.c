@@ -209,14 +209,18 @@ void func_02033118(void *a0, int a1, int a2, int a3, int a4, int a5, int a6)
                 func_0202f8fc(sp_38, sp_30[0], sp_78 + 0x1000u);
 
                 if (r5->unk_0C > sp_24->unk_04) {
-                    func_02033614(a0, (void *) sp_30, (void *) sp_38, (void *) data_021c3128, (void *) r5->unk_0C, (void *) 1, (void *) r5->unk_13, 0);
+                    func_02033614(a0, (void *) sp_30, (void *) sp_38, (void *) data_021c3128, (void *) r5->unk_0C, (void *) 1,
+                                  (void *) r5->unk_13, 0);
                     if (a6 != 0) {
-                        func_02033614(a0, (void *) sp_30, (void *) sp_38, (void *) data_021c3138, (void *) 0x8000, (void *) 2, (void *) 2, 0);
+                        func_02033614(a0, (void *) sp_30, (void *) sp_38, (void *) data_021c3138, (void *) 0x8000, (void *) 2,
+                                      (void *) 2, 0);
                     }
                 } else {
-                    func_02033614(a0, (void *) sp_30, (void *) sp_38, (void *) data_021c3138, (void *) sp_24->unk_00, (void *) 1, (void *) sp_24->unk_10, 0);
+                    func_02033614(a0, (void *) sp_30, (void *) sp_38, (void *) data_021c3138, (void *) sp_24->unk_00,
+                                  (void *) 1, (void *) sp_24->unk_10, 0);
                     if (a6 != 0) {
-                        func_02033614(a0, (void *) sp_30, (void *) sp_38, (void *) data_021c3128, (void *) 0x8000, (void *) 2, (void *) 2, 0);
+                        func_02033614(a0, (void *) sp_30, (void *) sp_38, (void *) data_021c3128, (void *) 0x8000, (void *) 2,
+                                      (void *) 2, 0);
                     }
                 }
             }
@@ -237,14 +241,18 @@ void func_02033118(void *a0, int a1, int a2, int a3, int a4, int a5, int a6)
                 func_0202f8fc(sp_48, sp_70 + 0x1000u, sp_40[1]);
 
                 if (r5->unk_08 > sp_28->unk_00) {
-                    func_02033614(a0, (void *) sp_40, (void *) sp_48, (void *) data_021c3100, (void *) r5->unk_08, (void *) 1, (void *) r5->unk_12, 0);
+                    func_02033614(a0, (void *) sp_40, (void *) sp_48, (void *) data_021c3100, (void *) r5->unk_08, (void *) 1,
+                                  (void *) r5->unk_12, 0);
                     if (a6 != 0) {
-                        func_02033614(a0, (void *) sp_40, (void *) sp_48, (void *) data_021c3110, (void *) 0x8000, (void *) 2, (void *) 2, 0);
+                        func_02033614(a0, (void *) sp_40, (void *) sp_48, (void *) data_021c3110, (void *) 0x8000, (void *) 2,
+                                      (void *) 2, 0);
                     }
                 } else {
-                    func_02033614(a0, (void *) sp_40, (void *) sp_48, (void *) data_021c3110, (void *) sp_28->unk_00, (void *) 1, (void *) sp_28->unk_10, 0);
+                    func_02033614(a0, (void *) sp_40, (void *) sp_48, (void *) data_021c3110, (void *) sp_28->unk_00,
+                                  (void *) 1, (void *) sp_28->unk_10, 0);
                     if (a6 != 0) {
-                        func_02033614(a0, (void *) sp_40, (void *) sp_48, (void *) data_021c3100, (void *) 0x8000, (void *) 2, (void *) 2, 0);
+                        func_02033614(a0, (void *) sp_40, (void *) sp_48, (void *) data_021c3100, (void *) 0x8000, (void *) 2,
+                                      (void *) 2, 0);
                     }
                 }
             }
@@ -267,14 +275,18 @@ void func_02033118(void *a0, int a1, int a2, int a3, int a4, int a5, int a6)
                 func_0202f8fc(sp_58, sp_70 + 0x1000u, sp_78 + 0x1000u);
 
                 if (r5->unk_00 > r5->unk_04) {
-                    func_02033614(a0, (void *) sp_50, (void *) sp_58, (void *) data_021c3120, (void *) r5->unk_00, (void *) 1, (void *) r5->unk_10, 0);
+                    func_02033614(a0, (void *) sp_50, (void *) sp_58, (void *) data_021c3120, (void *) r5->unk_00, (void *) 1,
+                                  (void *) r5->unk_10, 0);
                     if (a6 != 0) {
-                        func_02033614(a0, (void *) sp_50, (void *) sp_58, (void *) data_021c3118, (void *) 0x8000, (void *) 2, (void *) 2, 0);
+                        func_02033614(a0, (void *) sp_50, (void *) sp_58, (void *) data_021c3118, (void *) 0x8000, (void *) 2,
+                                      (void *) 2, 0);
                     }
                 } else {
-                    func_02033614(a0, (void *) sp_50, (void *) sp_58, (void *) data_021c3118, (void *) r5->unk_04, (void *) 1, (void *) r5->unk_11, 0);
+                    func_02033614(a0, (void *) sp_50, (void *) sp_58, (void *) data_021c3118, (void *) r5->unk_04, (void *) 1,
+                                  (void *) r5->unk_11, 0);
                     if (a6 != 0) {
-                        func_02033614(a0, (void *) sp_50, (void *) sp_58, (void *) data_021c3120, (void *) 0x8000, (void *) 2, (void *) 2, 0);
+                        func_02033614(a0, (void *) sp_50, (void *) sp_58, (void *) data_021c3120, (void *) 0x8000, (void *) 2,
+                                      (void *) 2, 0);
                     }
                 }
             } else if (r5->unk_00 != r5->unk_0C) {
@@ -294,14 +306,18 @@ void func_02033118(void *a0, int a1, int a2, int a3, int a4, int a5, int a6)
                 func_0202f8fc(sp_68, sp_70 + 0x1000u, sp_78 - 0x1000u);
 
                 if (r5->unk_00 > r5->unk_0C) {
-                    func_02033614(a0, (void *) sp_60, (void *) sp_68, (void *) data_021c3130, (void *) r5->unk_00, (void *) 1, (void *) r5->unk_10, 0);
+                    func_02033614(a0, (void *) sp_60, (void *) sp_68, (void *) data_021c3130, (void *) r5->unk_00, (void *) 1,
+                                  (void *) r5->unk_10, 0);
                     if (a6 != 0) {
-                        func_02033614(a0, (void *) sp_60, (void *) sp_68, (void *) data_021c3108, (void *) 0x8000, (void *) 2, (void *) 2, 0);
+                        func_02033614(a0, (void *) sp_60, (void *) sp_68, (void *) data_021c3108, (void *) 0x8000, (void *) 2,
+                                      (void *) 2, 0);
                     }
                 } else {
-                    func_02033614(a0, (void *) sp_60, (void *) sp_68, (void *) data_021c3108, (void *) r5->unk_0C, (void *) 1, (void *) r5->unk_13, 0);
+                    func_02033614(a0, (void *) sp_60, (void *) sp_68, (void *) data_021c3108, (void *) r5->unk_0C, (void *) 1,
+                                  (void *) r5->unk_13, 0);
                     if (a6 != 0) {
-                        func_02033614(a0, (void *) sp_60, (void *) sp_68, (void *) data_021c3130, (void *) 0x8000, (void *) 2, (void *) 2, 0);
+                        func_02033614(a0, (void *) sp_60, (void *) sp_68, (void *) data_021c3130, (void *) 0x8000, (void *) 2,
+                                      (void *) 2, 0);
                     }
                 }
             }

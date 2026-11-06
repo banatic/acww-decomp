@@ -115,8 +115,8 @@ void func_020326b0(void *object)
 int func_02032694(UnkStruct_02032694 *p)
 {
     if (p->unk_38 == 0) {
-        p->unk_38 = (*(UnkStruct_02032694 * *) &data_021c30e0);
-        (*(UnkStruct_02032694 * *) &data_021c30e0) = p;
+        p->unk_38 = (*(UnkStruct_02032694 **) &data_021c30e0);
+        (*(UnkStruct_02032694 **) &data_021c30e0) = p;
         return 1;
     } else {
         return 0;
@@ -125,14 +125,14 @@ int func_02032694(UnkStruct_02032694 *p)
 
 int func_02032658(UnkStruct_02032658 *target)
 {
-    UnkStruct_02032658 *cur = (*(UnkStruct_02032658 * *) &data_021c30e0);
+    UnkStruct_02032658 *cur = (*(UnkStruct_02032658 **) &data_021c30e0);
     UnkStruct_02032658 *prev = 0;
     while (cur != 0) {
         if (cur == target) {
             if (prev) {
                 prev->next = cur->next;
             } else {
-                (*(UnkStruct_02032658 * *) &data_021c30e0) = cur->next;
+                (*(UnkStruct_02032658 **) &data_021c30e0) = cur->next;
             }
             func_02032758((void *) target);
             return 1;

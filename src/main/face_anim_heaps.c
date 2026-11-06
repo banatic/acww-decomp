@@ -112,8 +112,8 @@ void func_0205db80(void **arr)
             arr[i] = 0;
         }
     }
-    if ((*(void * *) data_021c9ad4) != 0) {
-        func_020e9b9c((*(void * *) data_021c9ad4));
+    if ((*(void **) data_021c9ad4) != 0) {
+        func_020e9b9c((*(void **) data_021c9ad4));
     }
 }
 

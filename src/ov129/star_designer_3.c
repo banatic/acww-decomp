@@ -79,6 +79,6 @@ void func_ov129_0229d268(void *obj)
     func_ov127_02299e5c((char *) obj + 0x734);
     func_ov002_0220af74((char *) obj + 0x1d4);
     func_02095904();
-    func_02035834((char *) (*(void * *) &data_021c526c) + 0x2f0);
+    func_02035834((char *) (*(void **) &data_021c526c) + 0x2f0);
     func_02002c6c(&data_ov129_0229dc98, data_021fbe94, 3, 0, 0x10, 0x10);
 }

@@ -152,6 +152,6 @@ void func_02089fe4(void *r0)
 void func_02089fc8(UnkStruct_02089fc8 *obj)
 {
     func_02089fe4((void *) obj);
-    obj->unk_38 = (*(UnkStruct_02089fc8 * *) &data_021d3120);
-    (*(UnkStruct_02089fc8 * *) &data_021d3120) = obj;
+    obj->unk_38 = (*(UnkStruct_02089fc8 **) &data_021d3120);
+    (*(UnkStruct_02089fc8 **) &data_021d3120) = obj;
 }

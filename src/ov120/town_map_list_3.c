@@ -408,7 +408,9 @@ int func_ov120_0229b100(void *ptr)
     if ((int) b < 0x50 || (int) b >= 0xb0) {
         return 0;
     }
-    func_ov120_0229adc4((UnkStruct_0229adc4 *) ptr, (unsigned char) ((unsigned char) (((b + (*(unsigned short *) ((char *) ptr + 0x98) - 0x50)) >> 4) + 0xf)));
+    func_ov120_0229adc4(
+        (UnkStruct_0229adc4 *) ptr,
+        (unsigned char) ((unsigned char) (((b + (*(unsigned short *) ((char *) ptr + 0x98) - 0x50)) >> 4) + 0xf)));
     return 1;
 }
 

@@ -151,7 +151,8 @@ int func_02018844(unsigned char *param0, unsigned char *param1)
     func_0201b350((void *) (param1 + 0x3aa), 0xfffffffe);
     saved = data_020c80f8;
 
-    func_02016764((void *) (param1 + 0x334), (void *) param1, data_020c8198[*(unsigned int *) (r4 + 0x30)], data_020c80f8, 1, 0x1000, 0, 0);
+    func_02016764((void *) (param1 + 0x334), (void *) param1, data_020c8198[*(unsigned int *) (r4 + 0x30)], data_020c80f8, 1,
+                  0x1000, 0, 0);
 
     fieldval = *(unsigned int *) (param1 + 0x628);
     if (fieldval != 0) {

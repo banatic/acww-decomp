@@ -265,7 +265,7 @@ L8b8:
 int func_ov003_0222f67c(void *self)
 {
     func_ov003_0222efc0(self);
-    if (func_02073dd4((*(UnkStruct_0222f67c * *) &data_020ccf94), (*(UnkStruct_0222f67c * *) &data_020ccf94)->unk_64) == 0) {
+    if (func_02073dd4((*(UnkStruct_0222f67c **) &data_020ccf94), (*(UnkStruct_0222f67c **) &data_020ccf94)->unk_64) == 0) {
         func_ov003_0222ed90(self);
     }
     func_ov003_0222ec74(self);

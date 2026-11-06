@@ -251,7 +251,9 @@ int func_02021284(UnkStruct_02021284_3 *self)
     if (st == -1) {
         goto done;
     }
-    func_0202da38((UnkStruct_02021410_2 *) self, self->unk_104, (unsigned char *) self->unk_122, 0x1e, func_020036e8((int) ((unsigned char *) (unsigned int) func_0208150c((int) self->unk_100->unk_830))), (int) data_020c8b98.unk_00, data_020c8b98.unk_04, st, 0);
+    func_0202da38((UnkStruct_02021410_2 *) self, self->unk_104, (unsigned char *) self->unk_122, 0x1e,
+                  func_020036e8((int) ((unsigned char *) (unsigned int) func_0208150c((int) self->unk_100->unk_830))),
+                  (int) data_020c8b98.unk_00, data_020c8b98.unk_04, st, 0);
     ret = 1;
     if (pb != 0) {
         func_020b18fc(&o1);
@@ -322,7 +324,8 @@ int func_02021168(struct UnkStruct_02021168_2 *self)
     if (ret != 0) {
         goto fail;
     }
-    func_0202da38((UnkStruct_02021410_2 *) self, (char *) (&self->unk_104), (unsigned char *) (&self->unk_122), 30, func_020036e8(func_0208150c(self->unk_100->unk_830)), data_020c8b80.a, data_020c8b80.b, 0, 0);
+    func_0202da38((UnkStruct_02021410_2 *) self, (char *) (&self->unk_104), (unsigned char *) (&self->unk_122), 30,
+                  func_020036e8(func_0208150c(self->unk_100->unk_830)), data_020c8b80.a, data_020c8b80.b, 0, 0);
     return 1;
 fail:
     return 0;

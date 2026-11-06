@@ -37,8 +37,8 @@ void *func_ov004_022187ec(char *self)
     // DECLS
     // ENDDECLS
     func_ov004_022110e4(self);
-    *(void **) (self) = ((void * *) data_ov004_02253058);
-    *(void **) (self + 0xec) = ((void * *) data_ov004_02253104);
+    *(void **) (self) = ((void **) data_ov004_02253058);
+    *(void **) (self + 0xec) = ((void **) data_ov004_02253104);
     *(u16 *) (self + 0x85c) = 0xfff1;
     func_ov004_0220d110(self + 0x860);
     return self;

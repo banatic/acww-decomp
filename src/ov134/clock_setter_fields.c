@@ -246,8 +246,9 @@ void func_ov134_0229a96c(UnkStruct_0229a96c *self, int a, int b)
         b = 5;
     }
 
-    func_0206fdd4((u8 *) self + 0x870, (int) func_ov134_0229aaa8((FileInfo *) self, a), func_ov134_0229aa78((struct UnkStruct_0229aa78 *) self, a),
-                  func_ov134_0229aa4c((int) self, a), func_ov134_0229aa3c((void *) self, a), b);
+    func_0206fdd4((u8 *) self + 0x870, (int) func_ov134_0229aaa8((FileInfo *) self, a),
+                  func_ov134_0229aa78((struct UnkStruct_0229aa78 *) self, a), func_ov134_0229aa4c((int) self, a),
+                  func_ov134_0229aa3c((void *) self, a), b);
 
     func_ov134_022995b0(self, 2);
 }

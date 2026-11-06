@@ -89,7 +89,7 @@ int func_0203f444(int p0)
 
 int func_0203f400(int p)
 {
-    struct UnkStruct_0203f400 *s = (*(struct UnkStruct_0203f400 * *) &data_020ccf94);
+    struct UnkStruct_0203f400 *s = (*(struct UnkStruct_0203f400 **) &data_020ccf94);
 
     if (func_02073d90(s) == 0) {
         return 2;
@@ -106,7 +106,7 @@ int func_0203f400(int p)
 void func_0203f394(unsigned int arg)
 {
     UnkStruct_0203f394 *p;
-    p = (*(UnkStruct_0203f394 * *) &data_020ccf94);
+    p = (*(UnkStruct_0203f394 **) &data_020ccf94);
     if (func_02073d90(p)) {
         int field;
         unsigned char buf[12];
@@ -121,7 +121,7 @@ void func_0203f394(unsigned int arg)
             buf[2] = arg >> 8;
             buf[3] = arg >> 16;
             buf[4] = arg >> 24;
-            q = (*(UnkStruct_0203f394 * *) &data_020ccf94);
+            q = (*(UnkStruct_0203f394 **) &data_020ccf94);
             func_02073820(q);
             func_020737f0(q, (int *) buf, 5);
             func_02073770(q, 23, 0);

@@ -173,7 +173,7 @@ void func_ov090_022993cc(UnkStruct_022993cc *self, u32 p)
             func_0206efc0();
         }
         func_0200467c(2);
-        func_02036468((*(char * *) data_021c526c) + 0x1c4);
+        func_02036468((*(char **) data_021c526c) + 0x1c4);
     } else if (p <= 6 && v <= 6) {
         func_0200467c(3);
     }

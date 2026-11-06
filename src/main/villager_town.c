@@ -350,7 +350,8 @@ void func_0207adf4(Entry *p)
 {
     int i;
 
-    if (func_02073dd4((struct UnkStruct_0207ae34 *) ((*(GlobalType * *) &data_020ccf94)), (*(GlobalType * *) &data_020ccf94)->unk_64) != 0) {
+    if (func_02073dd4((struct UnkStruct_0207ae34 *) ((*(GlobalType **) &data_020ccf94)),
+                      (*(GlobalType **) &data_020ccf94)->unk_64) != 0) {
         return;
     }
 
@@ -419,10 +420,11 @@ void func_0207acf8(struct UnkStruct_0207acf8 *a, int b)
 
 void func_0207acbc(int a, int b)
 {
-    if (func_02073d90((*(struct UnkStruct_0207acbc * *) &data_020ccf94)) == 0) {
+    if (func_02073d90((*(struct UnkStruct_0207acbc **) &data_020ccf94)) == 0) {
         func_0207acf8((struct UnkStruct_0207acf8 *) a, b);
     }
-    if (func_02073dd4((struct UnkStruct_0207ae34 *) ((*(struct UnkStruct_0207acbc * *) &data_020ccf94)), (*(struct UnkStruct_0207acbc * *) &data_020ccf94)->unk_64) == 0) {
+    if (func_02073dd4((struct UnkStruct_0207ae34 *) ((*(struct UnkStruct_0207acbc **) &data_020ccf94)),
+                      (*(struct UnkStruct_0207acbc **) &data_020ccf94)->unk_64) == 0) {
         func_0207ae34((char *) a);
     }
 }
@@ -640,7 +642,8 @@ void func_0207a964(void *obj)
         func_02079204(-1);
         func_020791d4(-1);
     } else if (a == b) {
-        if ((forwarded_value = (int) (int) func_0207cec0((struct UnkStruct_0207acf8 *) obj, (struct UnkStruct_0207acf8 *) (func_020791bc()))) != 0) {
+        if ((forwarded_value = (int) (int) func_0207cec0((struct UnkStruct_0207acf8 *) obj,
+                                                         (struct UnkStruct_0207acf8 *) (func_020791bc()))) != 0) {
             if (func_02080928((void *) forwarded_value) != 0) {
                 return;
             }

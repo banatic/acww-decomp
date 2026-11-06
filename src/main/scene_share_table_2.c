@@ -176,7 +176,7 @@ int func_020851e0(struct UnkStruct_020851e0 *s)
 {
     unsigned masked = (unsigned) (s->unk_00 & 0xfff);
     if (masked < 0x26) {
-        return func_020738bc((int) ((*(void * *) &data_020ccf94)), masked + 0x20);
+        return func_020738bc((int) ((*(void **) &data_020ccf94)), masked + 0x20);
     } else {
         return 0;
     }

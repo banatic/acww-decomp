@@ -92,7 +92,7 @@ int func_ov004_02224844(char *self)
 int func_ov004_022247b4(char *self)
 {
     if (func_02014868(self + 0x618) == 0) {
-        if (func_02073d90((*(char * *) &data_020ccf94)) == 0) {
+        if (func_02073d90((*(char **) &data_020ccf94)) == 0) {
             if (*func_0209d358(0, 0x4a) == 0) {
                 int value = func_020960f8(0x28, 4);
                 if (value != 0) {
@@ -122,7 +122,8 @@ int func_ov004_02224770(char *self)
 {
     // DECLS
     // ENDDECLS
-    func_02019d0c(self + 0x564, 0x3, 0x2, 0x0, 0x0, 0x0, *(short *) (self + 0x714), 0x0, 0x0, *(u16 *) ((char *) ((void * *) &data_020c80f8)), 0x0);
+    func_02019d0c(self + 0x564, 0x3, 0x2, 0x0, 0x0, 0x0, *(short *) (self + 0x714), 0x0, 0x0,
+                  *(u16 *) ((char *) ((void **) &data_020c80f8)), 0x0);
     return 0x1;
 }
 

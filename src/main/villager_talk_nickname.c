@@ -123,7 +123,7 @@ void func_0202a6fc(int a, void *output)
 
 void func_0202a6a4(struct A_0202a6a4 *a, struct Out_0202a6a4 *out)
 {
-    func_0200368c(a->buffer, 0x1e, (int) ((*(void * *) &data_020c8b20)), func_020036e8(func_0208150c(a->b->unk_830)));
+    func_0200368c(a->buffer, 0x1e, (int) ((*(void **) &data_020c8b20)), func_020036e8(func_0208150c(a->b->unk_830)));
     a->unk_122 = 5;
     out->ptr = a->buffer;
     out->byte = a->unk_122;
@@ -146,7 +146,8 @@ void func_0202a5e8(void *a, struct UnkStruct_0202a5e8 *out)
     unsigned int v4;
     unsigned int v8;
 
-    v0 = (unsigned int) func_020036e8((int) ((unsigned char *) (unsigned int) func_0208150c(*(unsigned int *) ((unsigned char *) (*(void **) ((unsigned char *) a + 0x100)) + 0x830))));
+    v0 = (unsigned int) func_020036e8((int) ((unsigned char *) (unsigned int) func_0208150c(
+        *(unsigned int *) ((unsigned char *) (*(void **) ((unsigned char *) a + 0x100)) + 0x830))));
     v4 = data_020c8af0.unk_00;
     v8 = data_020c8af0.unk_04;
     func_0202da38(a, (unsigned char *) a + 0x104, (unsigned char *) a + 0x122, 0x1e, v0, v4, v8, 0, 0);

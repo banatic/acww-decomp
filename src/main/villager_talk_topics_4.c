@@ -216,6 +216,8 @@ int func_02022034(UnkStruct_02022034_2 *p)
             }
         }
     }
-    func_0202da38((void *) p, (void *) p->unk_104, (void *) (&p->unk_122), 0x1e, (int) func_020036e8((u32) ((unsigned char *) (unsigned int) func_0208150c((u32) p->unk_100->unk_830))), data_020c8c50.a, data_020c8c50.b, mode, 0);
+    func_0202da38((void *) p, (void *) p->unk_104, (void *) (&p->unk_122), 0x1e,
+                  (int) func_020036e8((u32) ((unsigned char *) (unsigned int) func_0208150c((u32) p->unk_100->unk_830))),
+                  data_020c8c50.a, data_020c8c50.b, mode, 0);
     return 1;
 }

@@ -151,7 +151,8 @@ void func_0205a41c(int arg1, int arg2)
         func_02066694((UnkStruct_0205a554_4 *) local1);
         local2[0] = (unsigned char) v5;
         result = func_02099870((void *) temp);
-        func_02066024((UnkStruct_0205a554_4 *) local1, (u8 *) local2, ((int *) data_020dd3d8), &data_020dd38c, &data_020dd394, result);
+        func_02066024((UnkStruct_0205a554_4 *) local1, (u8 *) local2, ((int *) data_020dd3d8), &data_020dd38c, &data_020dd394,
+                      result);
         func_02065ed0(local1, v7, 1);
         if (func_02097a54((UnkStruct_0205a554_4 *) local1) != 0) {
             func_0209f128(&data_021dc7a8, v6);

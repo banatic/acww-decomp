@@ -66,7 +66,7 @@ unsigned short func_ov066_0226997c(void)
         return 0;
     }
 
-    a = (*(UnkStruct_0226997c_3 * *) &data_ov066_0226bdf4);
+    a = (*(UnkStruct_0226997c_3 **) &data_ov066_0226bdf4);
     b = a->unk_04;
     c = b->unk_04;
 
@@ -78,7 +78,7 @@ unsigned short func_ov066_0226997c(void)
 int func_ov066_02269934(void)
 {
     int (*fn)(void);
-    UnkStruct_02269934 *obj = (*(UnkStruct_02269934 * *) &data_ov066_0226bdf4);
+    UnkStruct_02269934 *obj = (*(UnkStruct_02269934 **) &data_ov066_0226bdf4);
 
     if (obj != 0 && (fn = obj->func) != 0) {
         return fn();
@@ -88,7 +88,7 @@ int func_ov066_02269934(void)
 
 int func_ov066_022698ec(int a, int b, int c, int d)
 {
-    UnkStruct_022698ec *p = (*(UnkStruct_022698ec * *) &data_ov066_0226bdf4);
+    UnkStruct_022698ec *p = (*(UnkStruct_022698ec **) &data_ov066_0226bdf4);
     if (p && p->unk_B0) {
         return p->unk_B0(a, b, c, d);
     }

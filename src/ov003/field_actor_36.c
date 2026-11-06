@@ -251,7 +251,7 @@ void func_ov003_02215db8(struct Param0 *param0)
 {
     if (func_02056f94(&param0->unk_2D0)) {
         func_ov003_02215bc0((int) param0, 6, -1);
-        if (func_02073908((int) ((*(void * *) &data_020ccf94)), param0->unk_800)) {
+        if (func_02073908((int) ((*(void **) &data_020ccf94)), param0->unk_800)) {
             func_0203ae84();
         }
     }
@@ -384,7 +384,8 @@ void func_ov003_02215af0(unsigned char *self, void *message, int previous)
     func_0205eae0(self + 0x5a0, 0x17, 3, 0);
 
     if (func_02073908(g, *(unsigned int *) (self + 0x800)) != 0) {
-        func_ov003_02215ba8((int) r4, (int *) (self + 0x5d0), (unsigned char) ((unsigned char) (*(unsigned int *) (self + 0x5cc))));
+        func_ov003_02215ba8((int) r4, (int *) (self + 0x5d0),
+                            (unsigned char) ((unsigned char) (*(unsigned int *) (self + 0x5cc))));
     }
 }
 
@@ -506,10 +507,10 @@ void func_ov003_02215894(struct UnkStruct_02215894 *self)
         self->dest1 = p[1];
         self->dest2 = p[2];
     }
-    if (func_02073908((int) ((*(void * *) &data_020ccf94)), self->unk_800) == 0) {
+    if (func_02073908((int) ((*(void **) &data_020ccf94)), self->unk_800) == 0) {
         return;
     }
-    func_02036460((void *) ((char *) (*(void * *) &data_021c526c) + 0x1c4));
+    func_02036460((void *) ((char *) (*(void **) &data_021c526c) + 0x1c4));
 }
 
 void func_ov003_022157f4(char *p)

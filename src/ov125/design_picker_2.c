@@ -248,7 +248,8 @@ void func_ov125_0229fd3c(void *self)
         r4 -= 0xa;
     }
 
-    func_0208aa60((char *) self + 0x574, (int) func_ov125_0229fe4c((int) self, (unsigned char) (*((unsigned char *) self + 0x87a))) - 0x78, r4);
+    func_0208aa60((char *) self + 0x574,
+                  (int) func_ov125_0229fe4c((int) self, (unsigned char) (*((unsigned char *) self + 0x87a))) - 0x78, r4);
 
     func_02072ea4(func_02072d4c(func_02072bb0(func_020996b8(((void) (func_02062e50(a)), func_020984e8())),
                                               *((unsigned char *) self + 0x87a))),

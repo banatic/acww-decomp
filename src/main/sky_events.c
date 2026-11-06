@@ -163,7 +163,8 @@ void func_020bd1c4(struct UnkStruct_020bd1c4 *p)
         }
     }
     if (p->unk_2F26) {
-        if (func_02073dd4((UnkStruct_020bd2d0 *) ((*(struct UnkStruct_020bd1c4_3 * *) &data_020ccf94)), (*(struct UnkStruct_020bd1c4_3 * *) &data_020ccf94)->unk_64) == 0) {
+        if (func_02073dd4((UnkStruct_020bd2d0 *) ((*(struct UnkStruct_020bd1c4_3 **) &data_020ccf94)),
+                          (*(struct UnkStruct_020bd1c4_3 **) &data_020ccf94)->unk_64) == 0) {
             v = p->unk_2F18;
             rem = (unsigned int) v % 10;
             if (p->unk_2F1A != v) {
@@ -207,7 +208,8 @@ void func_020bd124(UnkStruct_020bd124 *p)
         return;
     }
 
-    if ((u32) func_02073dd4((UnkStruct_020bd2d0 *) ((*(UnkStruct_020bd124_2 * *) &data_020ccf94)), (*(UnkStruct_020bd124_2 * *) &data_020ccf94)->unk_64) != 0) {
+    if ((u32) func_02073dd4((UnkStruct_020bd2d0 *) ((*(UnkStruct_020bd124_2 **) &data_020ccf94)),
+                            (*(UnkStruct_020bd124_2 **) &data_020ccf94)->unk_64) != 0) {
         return;
     }
 

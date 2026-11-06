@@ -936,7 +936,7 @@ void func_0207323c(ArcadeStruct *arr)
     unsigned int x;
 
     i = 3;
-    obj = (*(ArcadeStruct * *) &data_020ccf94);
+    obj = (*(ArcadeStruct **) &data_020ccf94);
     do {
         if (func_02073dd4((struct UnkStruct_02073598 *) obj, i) != 0 && func_02073918((void *) obj, i) == 0) {
             v = func_02077b58(i);

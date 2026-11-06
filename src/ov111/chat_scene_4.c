@@ -300,7 +300,12 @@ void func_ov111_022a02f8(void *self)
                         func_ov111_0229f10c(self);
                         return;
                     }
-                    if (((*(struct { unsigned short f0; unsigned short f2; } *) &data_021fbe40).f2 & 1) != 0) {
+                    if (((*(struct {
+                             unsigned short f0;
+                             unsigned short f2;
+                         } *) &data_021fbe40)
+                             .f2 &
+                         1) != 0) {
                         func_ov002_02208098((void *) (self), 0xa);
                         func_ov111_0229efc8(self, 1);
                         *((unsigned char *) (((char *) self) + 0x9f)) = *((unsigned char *) (((char *) self) + 0x9e));

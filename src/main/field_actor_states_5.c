@@ -139,7 +139,7 @@ void func_02008aa8(struct UnkStruct_02008aa8 *self)
     if (self->unk_704 == 0x76) {
         if (func_02056f94((char *) self + 0x2d0) != 0) {
             func_020109fc(self, 0x77, 0, 0);
-            if (func_02073908((int) ((*(void * *) &data_020ccf94)), self->unk_800) == 0) {
+            if (func_02073908((int) ((*(void **) &data_020ccf94)), self->unk_800) == 0) {
                 *statep = 3;
                 self->unk_7FC = func_02008258(self, self->unk_7F0);
             }

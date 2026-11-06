@@ -145,7 +145,7 @@ void func_02075050(int a, char *p, unsigned int n)
     DC_FlushAll();
     t = func_02077b20(p);
     if (t != 0) {
-        func_02073cf0((*(UnkStruct_02075050 * *) &data_020ccf94), a, t);
+        func_02073cf0((*(UnkStruct_02075050 **) &data_020ccf94), a, t);
     }
     if (func_02077b28(p) != 0) {
         v = func_02077b14(p);
@@ -153,9 +153,9 @@ void func_02075050(int a, char *p, unsigned int n)
             func_02075240(p + 1, n - 1, a, v);
         }
     } else {
-        func_020731a4((void *) ((*(UnkStruct_02075050 * *) &data_020ccf94)), a);
+        func_020731a4((void *) ((*(UnkStruct_02075050 **) &data_020ccf94)), a);
         if (n > 1) {
-            g = (*(UnkStruct_02075050 * *) &data_020ccf94);
+            g = (*(UnkStruct_02075050 **) &data_020ccf94);
             func_02073bac(g, a, func_02073928(g, a), n);
             func_0207399c(g, a);
             q = func_02073c04(g, a, func_02073928(g, a));

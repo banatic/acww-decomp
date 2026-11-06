@@ -121,7 +121,8 @@ void func_ov128_0229c144(void *obj)
         volatile unsigned char *p = (volatile unsigned char *) ((char *) obj + 0x2d6b);
         unsigned char v;
 
-        *p = (unsigned char) func_ov127_02299d20((char *) obj + 0x4a4, (unsigned char) data_021f6c60, (unsigned char) data_021f6c5c);
+        *p = (unsigned char) func_ov127_02299d20((char *) obj + 0x4a4, (unsigned char) data_021f6c60,
+                                                 (unsigned char) data_021f6c5c);
         v = *p;
         if (v == 4) {
             goto short_path;

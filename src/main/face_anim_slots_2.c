@@ -178,8 +178,8 @@ void func_0205d994(UnkStruct_0205d994 *s)
         }
     }
 
-    if ((*(void * *) data_021c9aec)) {
-        func_020e9b9c((*(void * *) data_021c9aec));
+    if ((*(void **) data_021c9aec)) {
+        func_020e9b9c((*(void **) data_021c9aec));
     }
 }
 

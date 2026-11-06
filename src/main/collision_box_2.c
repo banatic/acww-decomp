@@ -379,8 +379,8 @@ int func_020321bc(struct Node *obj, int a2, int a3, int a4, int a5, short a6, in
     result = func_02032444((UnkStruct_02032444 *) obj, a2, a3, a4, (SrcStruct *) a5, (int) a6, (SrcStruct *) local);
 
     if (result != 0) {
-        obj->next = (*(struct Node * *) &data_021c30e4);
-        (*(struct Node * *) &data_021c30e4) = obj;
+        obj->next = (*(struct Node **) &data_021c30e4);
+        (*(struct Node **) &data_021c30e4) = obj;
         return 1;
     }
     return 0;
@@ -388,14 +388,14 @@ int func_020321bc(struct Node *obj, int a2, int a3, int a4, int a5, short a6, in
 
 int func_02032180(UnkStruct_02032180 *target)
 {
-    UnkStruct_02032180 *cur = (*(UnkStruct_02032180 * *) &data_021c30e4);
+    UnkStruct_02032180 *cur = (*(UnkStruct_02032180 **) &data_021c30e4);
     UnkStruct_02032180 *prev = 0;
     while (cur != 0) {
         if (cur == target) {
             if (prev) {
                 prev->next = cur->next;
             } else {
-                (*(UnkStruct_02032180 * *) &data_021c30e4) = cur->next;
+                (*(UnkStruct_02032180 **) &data_021c30e4) = cur->next;
             }
             func_020325b8((UnkStruct_020325b8 *) target);
             return 1;

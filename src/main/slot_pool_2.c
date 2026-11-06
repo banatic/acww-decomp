@@ -285,17 +285,17 @@ void func_02083ba0(int a, int b, int c)
 
 void *func_02083b68(void *self)
 {
-    void (*func)(void *) = (((void (*)(void *)) (int (*)(void *)) func_02083bac));
+    void (*func)(void *) = (((void (*)(void *))(int (*)(void *)) func_02083bac));
     func_02083ca8(self, 5);
     *(void **) self = &data_020e1b54;
-    __cxa_vec_ctor((char *) self + 8, 5, 4, (((void (*)(void *)) (int (*)(void *)) func_02083bd0)), func);
+    __cxa_vec_ctor((char *) self + 8, 5, 4, (((void (*)(void *))(int (*)(void *)) func_02083bd0)), func);
     return self;
 }
 
 UnkStruct_02083b3c *func_02083b3c(UnkStruct_02083b3c *obj)
 {
     obj->unk_00 = ((unsigned int *) &data_020e1b54);
-    __cxa_vec_cleanup((void *) (&obj->unk_08), 5, 4, (((void (*)(void *)) (int (*)(void *)) func_02083bac)));
+    __cxa_vec_cleanup((void *) (&obj->unk_08), 5, 4, (((void (*)(void *))(int (*)(void *)) func_02083bac)));
     func_02083c78(obj);
     return obj;
 }
@@ -303,7 +303,7 @@ UnkStruct_02083b3c *func_02083b3c(UnkStruct_02083b3c *obj)
 void *func_02083b08(void *obj)
 {
     *(void **) obj = (void *) ((int *) &data_020e1b54);
-    __cxa_vec_cleanup((void *) ((char *) obj + 8), 5, 4, (((void (*)(void *)) (int (*)(void *)) func_02083bac)));
+    __cxa_vec_cleanup((void *) ((char *) obj + 8), 5, 4, (((void (*)(void *))(int (*)(void *)) func_02083bac)));
     func_02083c78(obj);
     func_020edb3c(obj);
     return obj;
@@ -379,14 +379,14 @@ void *func_02083a04(void *self)
     func_02083ca8(self, 8);
     ((void **) self)[0] = ((char *) data_020e1aac);
     __cxa_vec_ctor((void *) ((char *) self + 8), 8, 8, (((void (*)(void *)) func_02083a68)),
-                   (((void (*)(void *)) (void * (*)(void *)) func_02083a50)));
+                   (((void (*)(void *))(void *(*) (void *) ) func_02083a50)));
     return self;
 }
 
 void *func_020839d8(void *p)
 {
     *((unsigned int *) p) = (unsigned int) data_020e1aac;
-    __cxa_vec_cleanup((void *) ((char *) p + 8), 8, 8, (((void (*)(void *)) (void * (*)(void *)) func_02083a50)));
+    __cxa_vec_cleanup((void *) ((char *) p + 8), 8, 8, (((void (*)(void *))(void *(*) (void *) ) func_02083a50)));
     func_02083c78(p);
     return p;
 }
@@ -394,7 +394,7 @@ void *func_020839d8(void *p)
 void *func_020839a4(void *self)
 {
     *(void **) self = (void *) ((char *) data_020e1aac);
-    __cxa_vec_cleanup((void *) ((char *) self + 8), 8, 8, (((void (*)(void *)) (void * (*)(void *)) func_02083a50)));
+    __cxa_vec_cleanup((void *) ((char *) self + 8), 8, 8, (((void (*)(void *))(void *(*) (void *) ) func_02083a50)));
     func_02083c78(self);
     func_020edb3c(self);
     return self;
@@ -467,14 +467,14 @@ void *func_020838c4(void *param)
     func_02083ca8(param, 4);
     *(void **) param = (void *) data_020e1b1c;
     __cxa_vec_ctor((void *) ((void *) ((char *) param + 8)), 4, 8, (((void (*)(void *)) func_02083928)),
-                   (((void (*)(void *)) (void * (*)(void *)) func_02083910)));
+                   (((void (*)(void *))(void *(*) (void *) ) func_02083910)));
     return param;
 }
 
 UnkStruct_02083898 *func_02083898(UnkStruct_02083898 *param)
 {
     param->unk_00 = (unsigned int) ((unsigned int *) data_020e1b1c);
-    __cxa_vec_cleanup((void *) (&param->unk_08), 4, 8, (((void (*)(void *)) (void * (*)(void *)) func_02083910)));
+    __cxa_vec_cleanup((void *) (&param->unk_08), 4, 8, (((void (*)(void *))(void *(*) (void *) ) func_02083910)));
     func_02083c78(param);
     return param;
 }
@@ -486,7 +486,7 @@ void *func_02083864(void *obj)
     *(void **) obj = (void *) data_020e1b1c;
     p = obj;
     p = (char *) p + 8;
-    __cxa_vec_cleanup((void *) (p), 4, 8, (((void (*)(void *)) (void * (*)(void *)) func_02083910)));
+    __cxa_vec_cleanup((void *) (p), 4, 8, (((void (*)(void *))(void *(*) (void *) ) func_02083910)));
     func_02083c78(obj);
     func_020edb3c(obj);
     return obj;
@@ -559,8 +559,8 @@ void *func_02083770(void *obj)
 {
     func_02083ca8(obj, 5);
     *(unsigned int *) obj = (unsigned int) ((unsigned char *) &data_020e1ae4);
-    __cxa_vec_ctor((void *) ((char *) obj + 8), 5, 2, (((void (*)(void *)) (int (*)(void *)) func_020837e8)),
-                   (((void (*)(void *)) (int (*)(void *)) func_020837d0)));
+    __cxa_vec_ctor((void *) ((char *) obj + 8), 5, 2, (((void (*)(void *))(int (*)(void *)) func_020837e8)),
+                   (((void (*)(void *))(int (*)(void *)) func_020837d0)));
     return obj;
 }
 
@@ -569,7 +569,7 @@ void *func_02083744(void *param)
     void *p;
     p = param;
     *(int **) p = &data_020e1ae4;
-    __cxa_vec_cleanup((void *) ((char *) p + 8), 5, 2, (((void (*)(void *)) (int (*)(void *)) func_020837d0)));
+    __cxa_vec_cleanup((void *) ((char *) p + 8), 5, 2, (((void (*)(void *))(int (*)(void *)) func_020837d0)));
     func_02083c78(p);
     return p;
 }
@@ -577,7 +577,7 @@ void *func_02083744(void *param)
 UnkStruct_02083710 *func_02083710(UnkStruct_02083710 *this)
 {
     this->unk_00 = &data_020e1ae4;
-    __cxa_vec_cleanup((void *) (&this->unk_08), 5, 2, (((void (*)(void *)) (int (*)(void *)) func_020837d0)));
+    __cxa_vec_cleanup((void *) (&this->unk_08), 5, 2, (((void (*)(void *))(int (*)(void *)) func_020837d0)));
     func_02083c78(this);
     func_020edb3c(this);
     return this;
@@ -748,14 +748,15 @@ struct UnkStruct_020834c8 *func_020834c8(struct UnkStruct_020834c8 *self)
 {
     func_02083ca8(self, 5);
     self->unk_00 = ((char *) data_020e1a90);
-    __cxa_vec_ctor((void *) (&self->unk_08), 5, 2, (((void (*)(void *)) (int (*)(void *)) func_0208352c)), (((void (*)(void *)) (int (*)(void *)) func_02083514)));
+    __cxa_vec_ctor((void *) (&self->unk_08), 5, 2, (((void (*)(void *))(int (*)(void *)) func_0208352c)),
+                   (((void (*)(void *))(int (*)(void *)) func_02083514)));
     return self;
 }
 
 UnkStruct_0208349c *func_0208349c(UnkStruct_0208349c *obj)
 {
     obj->unk_00 = data_020e1a90;
-    __cxa_vec_cleanup((void *) (&obj->unk_08), 5, 2, (((void (*)(void *)) (int (*)(void *)) func_02083514)));
+    __cxa_vec_cleanup((void *) (&obj->unk_08), 5, 2, (((void (*)(void *))(int (*)(void *)) func_02083514)));
     func_02083c78((void *) obj);
     return obj;
 }
@@ -764,7 +765,7 @@ void *func_02083468(void *obj_ptr)
 {
     UnkStruct_02083468 *obj = (UnkStruct_02083468 *) obj_ptr;
     obj->data = ((char *) data_020e1a90);
-    __cxa_vec_cleanup((void *) (&obj->buffer), 5, 2, (((void (*)(void *)) (int (*)(void *)) func_02083514)));
+    __cxa_vec_cleanup((void *) (&obj->buffer), 5, 2, (((void (*)(void *))(int (*)(void *)) func_02083514)));
     func_02083c78(obj);
     func_020edb3c(obj);
     return obj;
@@ -835,15 +836,15 @@ void *func_02083388(void *self)
 
     func_02083ca8(self, 5);
     s->unk_00 = ((int *) &data_020e1b38);
-    cb2 = (((void (*)(void *)) (int (*)(void *)) func_020833d4));
-    __cxa_vec_ctor(s->buffer, 5, 2, (((void (*)(void *)) (void * (*)(void *)) func_020833ec)), cb2);
+    cb2 = (((void (*)(void *))(int (*)(void *)) func_020833d4));
+    __cxa_vec_ctor(s->buffer, 5, 2, (((void (*)(void *))(void *(*) (void *) ) func_020833ec)), cb2);
     return self;
 }
 
 void *func_0208335c(UnkStruct_0208335c *param)
 {
     param->unk_00 = &data_020e1b38;
-    __cxa_vec_cleanup((void *) (&param->unk_08), 5, 2, (((void (*)(void *)) (int (*)(void *)) func_020833d4)));
+    __cxa_vec_cleanup((void *) (&param->unk_08), 5, 2, (((void (*)(void *))(int (*)(void *)) func_020833d4)));
     func_02083c78(param);
     return param;
 }
@@ -851,7 +852,7 @@ void *func_0208335c(UnkStruct_0208335c *param)
 struct UnkStruct_02083328 *func_02083328(struct UnkStruct_02083328 *obj)
 {
     obj->unk_00 = (void *) &data_020e1b38;
-    __cxa_vec_cleanup((void *) (&obj->unk_08), 5, 2, (((void (*)(void *)) (int (*)(void *)) func_020833d4)));
+    __cxa_vec_cleanup((void *) (&obj->unk_08), 5, 2, (((void (*)(void *))(int (*)(void *)) func_020833d4)));
     func_02083c78(obj);
     func_020edb3c(obj);
     return obj;

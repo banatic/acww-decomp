@@ -41,9 +41,10 @@ void func_0203e5f4(int receiver)
 
 void func_0203e5c0(int receiver)
 {
-    if ((*(struct UnkStruct_0203e5c0 * *) &data_021c72b8)->unk_14 == 2) {
-        if (data_020daa64[(*(struct UnkStruct_0203e5c0 * *) &data_021c72b8)->unk_15]((*(struct UnkStruct_0203e5c0 * *) &data_021c72b8)) != 0) {
-            (*(struct UnkStruct_0203e5c0 * *) &data_021c72b8)->unk_14 = 3;
+    if ((*(struct UnkStruct_0203e5c0 **) &data_021c72b8)->unk_14 == 2) {
+        if (data_020daa64[(*(struct UnkStruct_0203e5c0 **) &data_021c72b8)->unk_15](
+                (*(struct UnkStruct_0203e5c0 **) &data_021c72b8)) != 0) {
+            (*(struct UnkStruct_0203e5c0 **) &data_021c72b8)->unk_14 = 3;
         }
     }
 }

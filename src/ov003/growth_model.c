@@ -308,7 +308,7 @@ void func_ov003_022235d8(int a0, struct Vec *v)
     if (obj == 0) {
         return;
     }
-    if (func_02073d90((*(void * *) data_020ccf94)) == 0) {
+    if (func_02073d90((*(void **) data_020ccf94)) == 0) {
         a0 = 0;
     }
     n = func_0204b7a0(obj);
@@ -362,7 +362,7 @@ void func_ov003_02223274(UnkStruct_02223274_4 *self)
             func_ov003_02222c68((UnkStruct_02222c68 *) self);
         } else {
             flag = 0;
-            base = (*(UnkStruct_02223274_3 * *) data_020ccf94)->unk_68;
+            base = (*(UnkStruct_02223274_3 **) data_020ccf94)->unk_68;
             switch (self->unk_D4) {
                 case 4:
                 case 5:

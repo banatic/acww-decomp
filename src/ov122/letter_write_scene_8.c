@@ -192,7 +192,12 @@ void func_ov122_022a0848(struct UnkStruct_022a0848 *self)
         return;
     }
 
-    if (((*(struct { u16 _pad0; u16 flags; } *) &data_021fbe40).flags & 1) != 0) {
+    if (((*(struct {
+             u16 _pad0;
+             u16 flags;
+         } *) &data_021fbe40)
+             .flags &
+         1) != 0) {
         func_ov002_02208098((void *) (self), 0xd);
         func_ov122_0229efd8((void *) self, 8);
         self->unk_AD = self->unk_AC;

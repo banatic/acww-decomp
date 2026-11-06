@@ -90,7 +90,7 @@ int func_ov004_02246900(void)
 {
     // DECLS
     // ENDDECLS
-    if ((*(u8 *) ((char *) ((void * *) &data_ov004_0225ff50)) & 0x1) != 0x0) {
+    if ((*(u8 *) ((char *) ((void **) &data_ov004_0225ff50)) & 0x1) != 0x0) {
         return func_ov093_02299418(*(int *) ((char *) &data_ov004_0225ff54));
     }
     return 0x0;

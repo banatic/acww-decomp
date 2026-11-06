@@ -196,7 +196,7 @@ void func_02078b2c(unsigned int *arr)
     unsigned int *ptr;
     int count;
     int i;
-    ptr = (*(unsigned int * *) data_021c9abc);
+    ptr = (*(unsigned int **) data_021c9abc);
     count = func_02085f08();
     for (i = 0; i < count; i++) {
         arr[i] = (unsigned int) func_020ea0e0(0x7AC, (void *) ptr);

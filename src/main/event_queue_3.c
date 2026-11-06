@@ -58,7 +58,7 @@ void func_0203ecac(void)
     }
     obj->unk_08 = 1;
     obj->unk_17 = 5;
-    (*(UnkStruct_0203ecac * *) &data_021c72b8) = obj;
+    (*(UnkStruct_0203ecac **) &data_021c72b8) = obj;
 }
 
 int func_0203ec98(void)

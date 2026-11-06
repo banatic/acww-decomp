@@ -9,8 +9,8 @@ extern int data_021f4b2c;
 
 int func_020b3b38(void *arg)
 {
-    if ((*(void * *) &data_021f4b2c) == 0) {
-        (*(void * *) &data_021f4b2c) = arg;
+    if ((*(void **) &data_021f4b2c) == 0) {
+        (*(void **) &data_021f4b2c) = arg;
         return 1;
     }
     return 0;

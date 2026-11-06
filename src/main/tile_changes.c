@@ -438,7 +438,7 @@ void *func_02045b5c(int id)
     struct Entry_02045b5c *p;
     int i;
     void *result = 0;
-    if (func_02073d90((int) ((*(void * *) &data_020ccf94))) == 0) {
+    if (func_02073d90((int) ((*(void **) &data_020ccf94))) == 0) {
         id = 0;
     }
     p = ((struct Entry_02045b5c *) data_021c7884);

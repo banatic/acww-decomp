@@ -141,7 +141,7 @@ void func_0203b5bc(unsigned int arg)
 
 int func_0203b584(void *a)
 {
-    if ((*(UnkStruct_0203b584 * *) &data_021f6948)->unk_04 == 0) {
+    if ((*(UnkStruct_0203b584 **) &data_021f6948)->unk_04 == 0) {
         func_0203caa4(a, 0x1c, 0);
     } else {
         func_0203caa4(a, 0x1b, 0);
@@ -179,7 +179,7 @@ void func_0203b4fc(UnkStruct_0203b4fc *self)
 
 int func_0203b4b4(int *p)
 {
-    if ((*(GStruct * *) &data_021f6948)->unk_04 == 0) {
+    if ((*(GStruct **) &data_021f6948)->unk_04 == 0) {
         func_0203caa4((void *) p, 13, 0);
     } else {
         func_0203caa4((void *) p, 12, 0);
@@ -461,7 +461,7 @@ int func_0203affc(int *a, int *b, int *c, int *out, int *extra)
 
 int func_0203af80(struct UnkStruct_0203af80 *param)
 {
-    if ((*(struct GStruct * *) &data_021c67a4)->unk_1F8 == 9) {
+    if ((*(struct GStruct **) &data_021c67a4)->unk_1F8 == 9) {
         return 0;
     }
     if (func_020b65c4() == 0xc) {
@@ -471,12 +471,12 @@ int func_0203af80(struct UnkStruct_0203af80 *param)
         return func_0203b144();
     } else {
         int *p;
-        (*(struct GStruct * *) &data_021c67a4)->unk_1CA = 0;
-        p = (*(struct GStruct * *) &data_021c67a4)->unk_1CC;
+        (*(struct GStruct **) &data_021c67a4)->unk_1CA = 0;
+        p = (*(struct GStruct **) &data_021c67a4)->unk_1CC;
         p[0] = param->a;
         p[1] = param->b;
         p[2] = param->c;
-        return func_0203c0ac((UnkStruct_0203b144 *) ((*(struct GStruct * *) &data_021c67a4)), 2);
+        return func_0203c0ac((UnkStruct_0203b144 *) ((*(struct GStruct **) &data_021c67a4)), 2);
     }
 }
 
@@ -489,15 +489,15 @@ void func_0203af08(int *a, int *b)
         func_0203b144();
     } else {
         int *d;
-        (*(UnkStruct_0203af08 * *) &data_021c67a4)->unk_1CA = 1;
-        d = (*(UnkStruct_0203af08 * *) &data_021c67a4)->unk_1CC;
+        (*(UnkStruct_0203af08 **) &data_021c67a4)->unk_1CA = 1;
+        d = (*(UnkStruct_0203af08 **) &data_021c67a4)->unk_1CC;
         d[0] = a[0];
         d[1] = a[1];
         d[2] = a[2];
-        d = (*(UnkStruct_0203af08 * *) &data_021c67a4)->unk_1D8;
+        d = (*(UnkStruct_0203af08 **) &data_021c67a4)->unk_1D8;
         d[0] = b[0];
         d[1] = b[1];
         d[2] = b[2];
-        func_0203c0ac((UnkStruct_0203b144 *) ((*(UnkStruct_0203af08 * *) &data_021c67a4)), 2);
+        func_0203c0ac((UnkStruct_0203b144 *) ((*(UnkStruct_0203af08 **) &data_021c67a4)), 2);
     }
 }

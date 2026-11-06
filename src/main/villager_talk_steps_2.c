@@ -111,8 +111,8 @@ void func_02023790(struct UnkStruct_02023790 *p, struct Output *out)
 void func_0202372c(UnkStruct_0202372c *p, UnkStruct_0202372c_2 *out)
 {
     func_0202da38(p, (char *) p + 0x104, (char *) p + 0x122, 30,
-                  func_020036e8((unsigned char *) ((int) func_0208150c(*(int *) ((char *) p->unk_100 + 0x830)))), data_020c89b8.a, data_020c89b8.b, 0,
-                  0);
+                  func_020036e8((unsigned char *) ((int) func_0208150c(*(int *) ((char *) p->unk_100 + 0x830)))),
+                  data_020c89b8.a, data_020c89b8.b, 0, 0);
 
     out->ptr = (char *) p + 0x104;
     out->byte = p->unk_122;

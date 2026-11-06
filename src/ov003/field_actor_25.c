@@ -84,7 +84,8 @@ void func_ov003_0221220c(void *self, void *data, int previous)
     loc[0] = b0;
     loc[1] = b1;
     func_ov003_022122a0((unsigned char *) ((char *) self + 0x7d4), (unsigned int *) loc, c);
-    func_ov003_0221228c((unsigned char *) ((char *) self + 0x8f0), c, (unsigned char) b0, (unsigned char) b1, ((unsigned char *) self)[0x16c]);
+    func_ov003_0221228c((unsigned char *) ((char *) self + 0x8f0), c, (unsigned char) b0, (unsigned char) b1,
+                        ((unsigned char *) self)[0x16c]);
     func_020109a0(self, 0x4c, 3, 0);
     if (c != 0) {
         func_0200f27c(self, 0x1c);

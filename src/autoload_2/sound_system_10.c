@@ -83,7 +83,8 @@ void func_020f1fb4(UnkStruct_020f1fb4 *p, int seq)
 
 void func_020f1f24(void *ptr, int n)
 {
-    func_020eedb8((unsigned short) ((unsigned short) (n % 1000)), (unsigned short) ((unsigned short) (n / 1000)), (char *) ptr + 0x38);
+    func_020eedb8((unsigned short) ((unsigned short) (n % 1000)), (unsigned short) ((unsigned short) (n / 1000)),
+                  (char *) ptr + 0x38);
     if (n == 0x862) {
         NNS_SndPlayerSetVolume((char *) ptr + 0x38, 0);
     }

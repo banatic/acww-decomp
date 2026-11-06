@@ -99,7 +99,7 @@ int func_020126b4(void *r0, void *r1)
 
 void func_020125bc(unsigned int *out, unsigned int arg1, int *arg2)
 {
-    Work *wk = (*(Work * *) &data_021c80bc);
+    Work *wk = (*(Work **) &data_021c80bc);
     unsigned char mask = 0;
     int succ, iter, cnt;
     int a, b, r4;
@@ -159,7 +159,8 @@ void func_020125bc(unsigned int *out, unsigned int arg1, int *arg2)
         p2 = (void *) 0;
     }
     if (p2 != (void *) 0) {
-        func_020131dc((UnkStruct_020126d0 *) local, (void *) arg1, (UnkStruct_020126d0 *) (func_02037e8c(p2)), (UnkStruct_020126d0_2 *) wk);
+        func_020131dc((UnkStruct_020126d0 *) local, (void *) arg1, (UnkStruct_020126d0 *) (func_02037e8c(p2)),
+                      (UnkStruct_020126d0_2 *) wk);
         out[0] = local[0];
         out[1] = local[1];
     }

@@ -32,7 +32,7 @@ void func_ov066_0226a224(void)
 
 unsigned short func_ov066_0226a1b0(unsigned short x)
 {
-    unsigned short flags = *(unsigned short *) ((char *) (*(unsigned char * *) &data_ov066_0226bdf4) + 0x90);
+    unsigned short flags = *(unsigned short *) ((char *) (*(unsigned char **) &data_ov066_0226bdf4) + 0x90);
     unsigned short cur = x;
     unsigned short i;
     i = 0;

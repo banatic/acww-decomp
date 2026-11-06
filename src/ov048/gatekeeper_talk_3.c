@@ -200,7 +200,7 @@ void func_ov048_02261a14(UnkStruct_02261a14 *self, int cond)
 {
     if (cond == 0) {
         char local = 0x59;
-        func_0206844c((int) self->unk_40, (u8 *) (&local), (int) ((*(void * *) &data_ov048_02263d20)));
+        func_0206844c((int) self->unk_40, (u8 *) (&local), (int) ((*(void **) &data_ov048_02263d20)));
     }
 }
 

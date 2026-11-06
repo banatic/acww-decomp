@@ -227,7 +227,8 @@ void func_ov070_02279238(UnkStruct_02279238 *self)
             flag = 1;
         }
         if (flag == 0) {
-            func_02088b50((unsigned char *) h, (u8) ((u8) ((int) func_ov070_0227944c((int) self, func_0204c878(&self->unk_C4), 0) * 2)));
+            func_02088b50((unsigned char *) h,
+                          (u8) ((u8) ((int) func_ov070_0227944c((int) self, func_0204c878(&self->unk_C4), 0) * 2)));
         } else {
             func_02088b50((unsigned char *) h, (u8) ((u8) ((func_020644cc(0xa) + 1) * 2)));
         }
@@ -249,7 +250,8 @@ void func_ov070_02279238(UnkStruct_02279238 *self)
         ok = (self->unk_C6 == 0xfff1) ? 1 : 0;
     }
     if (ok == 0) {
-        func_02088b50((unsigned char *) h, (u8) ((u8) ((int) func_ov070_0227944c((int) self, func_0204c878(&self->unk_C6), 1) * 2)));
+        func_02088b50((unsigned char *) h,
+                      (u8) ((u8) ((int) func_ov070_0227944c((int) self, func_0204c878(&self->unk_C6), 1) * 2)));
     } else {
         c = func_020644cc(3);
         func_02088b50((unsigned char *) h, (u8) ((u8) ((u8) (c + 1) * 2)));
@@ -273,7 +275,8 @@ void func_ov070_02279238(UnkStruct_02279238 *self)
             flag = 1;
         }
         if (flag == 0) {
-            func_02088b50((unsigned char *) h, (u8) ((u8) ((int) func_ov070_0227944c((int) self, func_0204c878(&self->unk_C8), 2) * 2)));
+            func_02088b50((unsigned char *) h,
+                          (u8) ((u8) ((int) func_ov070_0227944c((int) self, func_0204c878(&self->unk_C8), 2) * 2)));
         } else {
             func_02088b50((unsigned char *) h, (u8) ((u8) ((func_020644cc(0xa) + 1) * 2)));
         }

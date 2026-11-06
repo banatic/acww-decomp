@@ -318,7 +318,7 @@ int func_0200fdd0(struct UnkStruct_0200fdd0 *s, struct Vec *v, int c, int d)
         z = v->z;
         cx = x >> 4;
         cz = z >> 4;
-        o = func_0204f5e0((*(void * *) &data_021c80bc), cx, cz, x - (cx << 4), z - (cz << 4), 0);
+        o = func_0204f5e0((*(void **) &data_021c80bc), cx, cz, x - (cx << 4), z - (cz << 4), 0);
         if (o == 0) {
             s->unk_822 = 0xfff1;
             s->unk_820 = s->unk_822;
@@ -533,7 +533,8 @@ void func_0200fa8c(void *param, int argument1)
 
 void func_0200fa6c(int a, int b)
 {
-    func_0200fa1c((struct ThreeInts *) a, b, (struct ThreeInts *) (b + 0x5c), (unsigned short *) (b + 0x8e), (int *) ((unsigned int) data_020c8094));
+    func_0200fa1c((struct ThreeInts *) a, b, (struct ThreeInts *) (b + 0x5c), (unsigned short *) (b + 0x8e),
+                  (int *) ((unsigned int) data_020c8094));
 }
 
 void func_0200fa1c(struct ThreeInts *out, int unused, struct ThreeInts *in, unsigned short *p, int *q)

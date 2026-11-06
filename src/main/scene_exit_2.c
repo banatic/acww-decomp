@@ -351,7 +351,8 @@ int func_020b6140(void *p0, int idx, unsigned char *p2, int *p3, int *p4, short 
     int a, b;
     int r;
 
-    r = func_020b6214((int) p0, idx, (u8 *) p2, (u32 *) p3, (u32 *) p4, (u16 *) p5, (u32 *) (&a), (u32 *) (&b), (u8 *) p6, (u8 *) p7);
+    r = func_020b6214((int) p0, idx, (u8 *) p2, (u32 *) p3, (u32 *) p4, (u16 *) p5, (u32 *) (&a), (u32 *) (&b), (u8 *) p6,
+                      (u8 *) p7);
     if (p8 != 0) {
         *p8 = a;
     }
@@ -359,9 +360,11 @@ int func_020b6140(void *p0, int idx, unsigned char *p2, int *p3, int *p4, short 
         *p9 = b;
     }
     if (r == 1) {
-        if (idx != -1 && (*(UnkStruct_020b6140_2 * *) &data_021f6948) != 0 && (*(UnkStruct_020b6140_2 * *) &data_021f6948)->unk_0C != 0 && (*(UnkStruct_020b6140_2 * *) &data_021f6948)->unk_0C->unk_00 != 0) {
-            UnkStruct_020b6140_4 *arr = (*(UnkStruct_020b6140_2 * *) &data_021f6948)->unk_0C->unk_00;
-            int n = (*(UnkStruct_020b6140_2 * *) &data_021f6948)->unk_0C->unk_04;
+        if (idx != -1 && (*(UnkStruct_020b6140_2 **) &data_021f6948) != 0 &&
+            (*(UnkStruct_020b6140_2 **) &data_021f6948)->unk_0C != 0 &&
+            (*(UnkStruct_020b6140_2 **) &data_021f6948)->unk_0C->unk_00 != 0) {
+            UnkStruct_020b6140_4 *arr = (*(UnkStruct_020b6140_2 **) &data_021f6948)->unk_0C->unk_00;
+            int n = (*(UnkStruct_020b6140_2 **) &data_021f6948)->unk_0C->unk_04;
             if (idx >= 0 && idx < n) {
                 UnkStruct_020b6140_4 *e = &arr[idx];
                 unsigned char kind = e->k;
@@ -392,7 +395,9 @@ int func_020b6098(void *self, int arg1)
     UnkStruct_020b6098 data;
     int r;
 
-    r = func_020b6140(self, arg1, (unsigned char *) (&data.unk_00), (int *) (&data.rest), (int *) (&data.unk_08), (short *) (&data.unk_04), (unsigned char *) (&data.unk_01), (unsigned char *) (&data.unk_02), (int *) (&data.unk_0C), (int *) (&data.unk_10));
+    r = func_020b6140(self, arg1, (unsigned char *) (&data.unk_00), (int *) (&data.rest), (int *) (&data.unk_08),
+                      (short *) (&data.unk_04), (unsigned char *) (&data.unk_01), (unsigned char *) (&data.unk_02),
+                      (int *) (&data.unk_0C), (int *) (&data.unk_10));
     if (r == 0) {
         goto fail;
     }
@@ -404,7 +409,8 @@ int func_020b6098(void *self, int arg1)
             func_020b64f0(data_021f69b8, data.unk_00, &data.rest, data.unk_08, (int) data.unk_04, data.unk_0C, data.unk_10);
             break;
     }
-    r = func_020b63f4((Dst *) self, data.unk_00, (const Src *) (&data.rest), data.unk_08, (int) data.unk_04, data.unk_01, data.unk_02);
+    r = func_020b63f4((Dst *) self, data.unk_00, (const Src *) (&data.rest), data.unk_08, (int) data.unk_04, data.unk_01,
+                      data.unk_02);
     if (r == 0) {
         goto fail;
     }
@@ -424,10 +430,10 @@ int func_020b6044(void *unused, int idx, int *outA, short *outB)
     if (idx == -1) {
         goto ret0;
     }
-    if ((*(Root * *) &data_021f6948) == 0) {
+    if ((*(Root **) &data_021f6948) == 0) {
         goto ret0;
     }
-    t = (*(Root * *) &data_021f6948)->t;
+    t = (*(Root **) &data_021f6948)->t;
     if (t == 0) {
         goto ret0;
     }

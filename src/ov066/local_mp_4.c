@@ -103,32 +103,34 @@ void func_ov066_02269528(void)
     m.kind = 2;
     m.len = 8;
     m.val = data_ov066_0226bdf8;
-    MI_CpuCopy8(&m, (*(UnkStruct_02269528 * *) &data_ov066_0226bdf4)->unk_14, 8);
-    (*(UnkStruct_02269528 * *) &data_ov066_0226bdf4)->unk_AC((*(UnkStruct_02269528 * *) &data_ov066_0226bdf4)->unk_14, 8, 1, 0);
+    MI_CpuCopy8(&m, (*(UnkStruct_02269528 **) &data_ov066_0226bdf4)->unk_14, 8);
+    (*(UnkStruct_02269528 **) &data_ov066_0226bdf4)->unk_AC((*(UnkStruct_02269528 **) &data_ov066_0226bdf4)->unk_14, 8, 1, 0);
 }
 
 void func_ov066_0226943c(void)
 {
     Msg m;
-    if ((*(UnkStruct_0226943c * *) &data_ov066_0226bdf4)->busy) {
-        (*(UnkStruct_0226943c * *) &data_ov066_0226bdf4)->pending = 1;
+    if ((*(UnkStruct_0226943c **) &data_ov066_0226bdf4)->busy) {
+        (*(UnkStruct_0226943c **) &data_ov066_0226bdf4)->pending = 1;
         return;
     }
-    (*(UnkStruct_0226943c * *) &data_ov066_0226bdf4)->busy = 1;
-    (*(UnkStruct_0226943c * *) &data_ov066_0226bdf4)->pending = 0;
+    (*(UnkStruct_0226943c **) &data_ov066_0226bdf4)->busy = 1;
+    (*(UnkStruct_0226943c **) &data_ov066_0226bdf4)->pending = 0;
     m.kind = 0;
     m.len = 0x68;
     data_ov066_0226bdf8 = data_ov066_0226bdf8 * 0x5eedf715 + 0x1b0cb173;
     m.val = data_ov066_0226bdf8;
-    MI_CpuCopy8(&m, (*(UnkStruct_0226943c * *) &data_ov066_0226bdf4)->buf, 8);
-    MI_CpuCopy8((*(UnkStruct_0226943c * *) &data_ov066_0226bdf4)->block, (u8 *) (*(UnkStruct_0226943c * *) &data_ov066_0226bdf4)->buf + 8, 0x60);
-    (*(UnkStruct_0226943c * *) &data_ov066_0226bdf4)->send((*(UnkStruct_0226943c * *) &data_ov066_0226bdf4)->buf, 0x68, 0xffff, (void *) func_ov066_022693f0);
+    MI_CpuCopy8(&m, (*(UnkStruct_0226943c **) &data_ov066_0226bdf4)->buf, 8);
+    MI_CpuCopy8((*(UnkStruct_0226943c **) &data_ov066_0226bdf4)->block,
+                (u8 *) (*(UnkStruct_0226943c **) &data_ov066_0226bdf4)->buf + 8, 0x60);
+    (*(UnkStruct_0226943c **) &data_ov066_0226bdf4)
+        ->send((*(UnkStruct_0226943c **) &data_ov066_0226bdf4)->buf, 0x68, 0xffff, (void *) func_ov066_022693f0);
 }
 
 void func_ov066_022693f0(void)
 {
-    (*(UnkStruct_022693f0 * *) &data_ov066_0226bdf4)->bit0 = 0;
-    if ((*(UnkStruct_022693f0 * *) &data_ov066_0226bdf4)->bit1 == 0) {
+    (*(UnkStruct_022693f0 **) &data_ov066_0226bdf4)->bit0 = 0;
+    if ((*(UnkStruct_022693f0 **) &data_ov066_0226bdf4)->bit1 == 0) {
         return;
     }
     func_ov066_0226943c();
@@ -160,16 +162,16 @@ void func_ov066_022692c0(void)
     unsigned char count = 0;
     int off;
     for (i = 0, off = 0; i < 16; i++, off += 6) {
-        if (func_ov066_02268024((const Mac *) ((*(unsigned char * *) &data_ov066_0226bdf4) + 0x28 + off)) != 0) {
+        if (func_ov066_02268024((const Mac *) ((*(unsigned char **) &data_ov066_0226bdf4) + 0x28 + off)) != 0) {
             count++;
         }
     }
-    (*(unsigned char * *) &data_ov066_0226bdf4)[0x8c] = count;
+    (*(unsigned char **) &data_ov066_0226bdf4)[0x8c] = count;
 }
 
 void func_ov066_0226929c(void)
 {
-    MI_CpuFill8((*(char * *) &data_ov066_0226bdf4) + 0x28, 0, 0x60);
+    MI_CpuFill8((*(char **) &data_ov066_0226bdf4) + 0x28, 0, 0x60);
 }
 
 void func_ov066_0226923c(void *arg)
@@ -180,7 +182,7 @@ void func_ov066_0226923c(void *arg)
     if (func_ov066_02268c90()) {
         return;
     }
-    if ((*(struct data_s * *) &data_ov066_0226bdf4)->flag == 0) {
+    if ((*(struct data_s **) &data_ov066_0226bdf4)->flag == 0) {
         func_ov066_02268f1c(arg);
     } else {
         func_ov066_02268da4(arg);
@@ -189,7 +191,7 @@ void func_ov066_0226923c(void *arg)
 
 void func_ov066_02269204(void *arg)
 {
-    if ((*(struct ov066_0226bdf4 * *) &data_ov066_0226bdf4)->handler) {
-        (*(struct ov066_0226bdf4 * *) &data_ov066_0226bdf4)->handler(arg);
+    if ((*(struct ov066_0226bdf4 **) &data_ov066_0226bdf4)->handler) {
+        (*(struct ov066_0226bdf4 **) &data_ov066_0226bdf4)->handler(arg);
     }
 }

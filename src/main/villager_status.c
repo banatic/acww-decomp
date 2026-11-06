@@ -188,7 +188,8 @@ int func_0207f120(int arg0)
 
 int func_0207f0f0(int param)
 {
-    if (func_02003704(func_0208150c(param)) != 0 && func_0209c330((func_0209b5ec((void *) (int) func_0207f1c8(param)))) == 10) {
+    if (func_02003704(func_0208150c(param)) != 0 &&
+        func_0209c330((func_0209b5ec((void *) (int) func_0207f1c8(param)))) == 10) {
         return 1;
     } else {
         return 0;

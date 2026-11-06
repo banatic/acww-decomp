@@ -70,7 +70,7 @@ void func_ov066_02266dbc(void);
 int func_ov066_02267348(void)
 {
     int result = 0;
-    UnkStruct_02267348 *p = (*(UnkStruct_02267348 * *) &data_ov066_0226bdec);
+    UnkStruct_02267348 *p = (*(UnkStruct_02267348 **) &data_ov066_0226bdec);
     switch (p->type) {
         case 0:
             result = (p->val == 2);
@@ -99,17 +99,17 @@ int func_ov066_02267348(void)
 
 int func_ov066_022672b8(int state, int a, int b)
 {
-    if ((*(UnkStruct_022672b8 * *) &data_ov066_0226bdec) == 0) {
+    if ((*(UnkStruct_022672b8 **) &data_ov066_0226bdec) == 0) {
         return 0;
     }
-    if (state >= 7 || state == (*(UnkStruct_022672b8 * *) &data_ov066_0226bdec)->cur) {
+    if (state >= 7 || state == (*(UnkStruct_022672b8 **) &data_ov066_0226bdec)->cur) {
         return 0;
     }
-    (*(UnkStruct_022672b8 * *) &data_ov066_0226bdec)->cur = state;
-    (*(UnkStruct_022672b8 * *) &data_ov066_0226bdec)->unk_30 = a;
-    (*(UnkStruct_022672b8 * *) &data_ov066_0226bdec)->unk_34 = b;
-    if ((*(UnkStruct_022672b8 * *) &data_ov066_0226bdec)->busy == 0) {
-        (*(UnkStruct_022672b8 * *) &data_ov066_0226bdec)->busy = 1;
+    (*(UnkStruct_022672b8 **) &data_ov066_0226bdec)->cur = state;
+    (*(UnkStruct_022672b8 **) &data_ov066_0226bdec)->unk_30 = a;
+    (*(UnkStruct_022672b8 **) &data_ov066_0226bdec)->unk_34 = b;
+    if ((*(UnkStruct_022672b8 **) &data_ov066_0226bdec)->busy == 0) {
+        (*(UnkStruct_022672b8 **) &data_ov066_0226bdec)->busy = 1;
         func_ov066_02266e70();
     }
     return 1;
@@ -136,7 +136,7 @@ void func_ov066_02267224(void)
 
 void func_ov066_02267188(void)
 {
-    switch (*(*(unsigned int * *) &data_ov066_0226bdec)) {
+    switch (*(*(unsigned int **) &data_ov066_0226bdec)) {
         case 0:
         case 1:
             func_ov066_02266b54(3);
@@ -232,7 +232,7 @@ void func_ov066_02267038(void)
 
 void func_ov066_02266fd8(void)
 {
-    unsigned int val = *(*(unsigned int * *) &data_ov066_0226bdec);
+    unsigned int val = *(*(unsigned int **) &data_ov066_0226bdec);
     switch (val) {
         case 0:
         case 1:
@@ -252,7 +252,7 @@ void func_ov066_02266fd8(void)
 
 void func_ov066_02266f78(void)
 {
-    unsigned int val = *(*(unsigned int * *) &data_ov066_0226bdec);
+    unsigned int val = *(*(unsigned int **) &data_ov066_0226bdec);
     switch (val) {
         case 0:
         case 1:
@@ -273,7 +273,11 @@ void func_ov066_02266f78(void)
 void func_ov066_02266e70(void)
 {
     unsigned int cmd;
-    cmd = (*(struct UnkStruct_02266e70 { unsigned int unk_00; unsigned int cmd; } * *) &data_ov066_0226bdec)->cmd;
+    cmd = (*(struct UnkStruct_02266e70 {
+              unsigned int unk_00;
+              unsigned int cmd;
+          } **) &data_ov066_0226bdec)
+              ->cmd;
     switch (cmd) {
         case 2:
             func_ov066_0226727c();
@@ -321,7 +325,7 @@ void func_ov066_02266e64(void)
 int func_ov066_02266e08(void)
 {
     int result = 0;
-    UnkStruct_02266e08 *p = (*(UnkStruct_02266e08 * *) &data_ov066_0226bdec);
+    UnkStruct_02266e08 *p = (*(UnkStruct_02266e08 **) &data_ov066_0226bdec);
     if (p->bit10) {
         result = 1;
     } else if (p->unk_16 == 1) {
@@ -333,7 +337,7 @@ int func_ov066_02266e08(void)
 
 void func_ov066_02266dbc(void)
 {
-    unsigned int x = (*(unsigned int * *) &data_ov066_0226bdec)[1];
+    unsigned int x = (*(unsigned int **) &data_ov066_0226bdec)[1];
     switch (x) {
         case 0:
         case 1:
@@ -348,7 +352,7 @@ void func_ov066_02266dbc(void)
 
 int func_ov066_02266ce8(void)
 {
-    switch ((*(Ctl * *) &data_ov066_0226bdec)->state) {
+    switch ((*(Ctl **) &data_ov066_0226bdec)->state) {
         case 10:
         case 11:
             switch (WM_GetLinkLevel()) {

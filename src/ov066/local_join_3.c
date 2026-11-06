@@ -49,14 +49,14 @@ void func_ov066_02268e9c(void *self) {}
 
 void func_ov066_02268e14(void *self)
 {
-    (*(struct data_a * *) &data_ov066_0226bdec)->unk_04 = 4;
-    (*(struct data_b * *) &data_ov066_0226bdf4)->func_0x9c();
+    (*(struct data_a **) &data_ov066_0226bdec)->unk_04 = 4;
+    (*(struct data_b **) &data_ov066_0226bdf4)->func_0x9c();
 
-    if ((*(struct data_a * *) &data_ov066_0226bdec)->flag) {
+    if ((*(struct data_a **) &data_ov066_0226bdec)->flag) {
         func_ov066_022695ac(0, 0);
     }
 
-    if (!(*(struct data_b * *) &data_ov066_0226bdf4)->flag) {
+    if (!(*(struct data_b **) &data_ov066_0226bdf4)->flag) {
         func_ov066_02266e64();
     }
 

@@ -226,7 +226,8 @@ void func_ov004_02247260(UnkStruct_02247260 *self)
     self->a.z = v[0].z;
     func_0203be6c((void *) self);
     func_01ffcbb0((char *) (&v[1]), (void *) self);
-    func_0203bd84((void *) self, (char *) (&v[1]), func_0203c57c((void *) self), func_0203c568((void *) self), func_0203c548((void *) self));
+    func_0203bd84((void *) self, (char *) (&v[1]), func_0203c57c((void *) self), func_0203c568((void *) self),
+                  func_0203c548((void *) self));
 }
 
 int func_ov004_02247238(char *self)
@@ -249,18 +250,19 @@ void func_ov004_022471d4(UnkStruct_022471d4 *self)
     self->a.z = v[0].z;
     func_0203be6c((void *) self);
     func_01ffcbb0((char *) (&v[1]), (void *) self);
-    func_0203bd84((void *) self, (char *) (&v[1]), func_0203c57c((void *) self), func_0203c568((void *) self), func_0203c548((void *) self));
+    func_0203bd84((void *) self, (char *) (&v[1]), func_0203c57c((void *) self), func_0203c568((void *) self),
+                  func_0203c548((void *) self));
 }
 
 int func_ov004_0224719c(UnkStruct_0224719c *src)
 {
     UnkStruct_0224719c *d;
-    if ((*(unsigned char * *) &data_021c67a4) != 0) {
-        d = (UnkStruct_0224719c *) ((*(unsigned char * *) &data_021c67a4) + 0x1cc);
+    if ((*(unsigned char **) &data_021c67a4) != 0) {
+        d = (UnkStruct_0224719c *) ((*(unsigned char **) &data_021c67a4) + 0x1cc);
         d->a = src->a;
         d->b = src->b;
         d->c = src->c;
-        return func_0203c0ac((*(unsigned char * *) &data_021c67a4), 0x10);
+        return func_0203c0ac((*(unsigned char **) &data_021c67a4), 0x10);
     }
     return 0;
 }
@@ -298,7 +300,8 @@ void func_ov004_022470cc(UnkStruct_022470cc *self)
     *p = *p + (d >> 1);
     func_0203be6c((void *) self);
     func_01ffcbb0((char *) (&v), (void *) self);
-    func_0203bd84((void *) self, (char *) (&v), func_0203c57c((void *) self), func_0203c568((void *) self), func_0203c548((void *) self));
+    func_0203bd84((void *) self, (char *) (&v), func_0203c57c((void *) self), func_0203c568((void *) self),
+                  func_0203c548((void *) self));
 }
 
 int func_ov004_0224708c(char *self)
@@ -321,7 +324,8 @@ void func_ov004_02247028(struct UnkStruct_02247028_2 *self)
     self->pos.z = data_ov004_0224de64.z;
     func_0203be6c((void *) self);
     func_01ffcbb0((char *) (&v), (void *) self);
-    func_0203bd84((void *) self, (char *) (&v), func_0203c57c((void *) self), func_0203c568((void *) self), func_0203c548((void *) self));
+    func_0203bd84((void *) self, (char *) (&v), func_0203c57c((void *) self), func_0203c568((void *) self),
+                  func_0203c548((void *) self));
 }
 
 int func_ov004_02247008(char *self)
@@ -343,7 +347,8 @@ void func_ov004_02246fa4(struct UnkStruct_02246fa4_2 *self)
     self->pos.z = data_ov004_0224de70.z;
     func_0203be6c((void *) self);
     func_01ffcbb0((char *) (&v), (void *) self);
-    func_0203bd84((void *) self, (char *) (&v), func_0203c57c((void *) self), func_0203c568((void *) self), func_0203c548((void *) self));
+    func_0203bd84((void *) self, (char *) (&v), func_0203c57c((void *) self), func_0203c568((void *) self),
+                  func_0203c548((void *) self));
 }
 
 int func_ov004_02246f90(void)
@@ -378,16 +383,17 @@ void func_ov004_02246ef4(UnkStruct_02246ef4 *self)
     self->a.z = self->b.z;
     func_0203be6c((void *) self);
     func_01ffcbb0((char *) (&v), (void *) self);
-    func_0203bd84((void *) self, (char *) (&v), func_0203c57c((void *) self), func_0203c568((void *) self), func_0203c548((void *) self));
+    func_0203bd84((void *) self, (char *) (&v), func_0203c57c((void *) self), func_0203c568((void *) self),
+                  func_0203c548((void *) self));
 }
 
 int func_ov004_02246ecc(Vec3 *src)
 {
-    Vec3 *d = (Vec3 *) ((*(char * *) &data_021c67a4) + 0x1cc);
+    Vec3 *d = (Vec3 *) ((*(char **) &data_021c67a4) + 0x1cc);
     d->x = src->x;
     d->y = src->y;
     d->z = src->z;
-    return func_0203c0ac((void *) ((*(char * *) &data_021c67a4)), 0x14);
+    return func_0203c0ac((void *) ((*(char **) &data_021c67a4)), 0x14);
 }
 
 int func_ov004_02246eb8(void)

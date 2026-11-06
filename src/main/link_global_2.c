@@ -171,7 +171,7 @@ int func_020a7278(void)
     int idx;
     unsigned char local[3];
 
-    idx = (*(UnkStruct_020a7278 * *) &data_020ccf94)->unk_64;
+    idx = (*(UnkStruct_020a7278 **) &data_020ccf94)->unk_64;
     if (idx >= 4) {
         return 1;
     }
@@ -191,8 +191,8 @@ int func_020a7278(void)
 
 int func_020a7258(void)
 {
-    if ((*(Struct020ccf94 * *) &data_020ccf94)->unk_64 < 4) {
-        return func_020a72d0((*(Struct020ccf94 * *) &data_020ccf94)->unk_64);
+    if ((*(Struct020ccf94 **) &data_020ccf94)->unk_64 < 4) {
+        return func_020a72d0((*(Struct020ccf94 **) &data_020ccf94)->unk_64);
     } else {
         return 1;
     }
@@ -226,7 +226,7 @@ int func_020a70ec(int a, int b, int c, u8 *d)
     u8 v0, v1, v2, v3, v4, v5;
     int t;
 
-    lim = (*(struct GB * *) &data_020ccf94)->lim;
+    lim = (*(struct GB **) &data_020ccf94)->lim;
     *d = 0;
     if (b == 0) {
         if (a == 0) {
@@ -263,13 +263,15 @@ int func_020a70ec(int a, int b, int c, u8 *d)
                 return a;
             }
         } else {
-            func_020a7738((const unsigned char *) (&((UnkStruct_020a70ec *) data_021f4320)[a]), (unsigned char *) (&v0), (unsigned char *) (&v1), (unsigned char *) (&v2));
+            func_020a7738((const unsigned char *) (&((UnkStruct_020a70ec *) data_021f4320)[a]), (unsigned char *) (&v0),
+                          (unsigned char *) (&v1), (unsigned char *) (&v2));
             if (v0 == c && v1 != 0 && v2 != 0) {
                 *d = 1;
             }
         }
     } else if (b == 7) {
-        func_020a7738((const unsigned char *) (&((UnkStruct_020a70ec *) data_021f4320)[a]), (unsigned char *) (&v3), (unsigned char *) (&v4), (unsigned char *) (&v5));
+        func_020a7738((const unsigned char *) (&((UnkStruct_020a70ec *) data_021f4320)[a]), (unsigned char *) (&v3),
+                      (unsigned char *) (&v4), (unsigned char *) (&v5));
         if (v3 == c) {
             if (v4 == 0 && v5 == 0 && a != lim) {
                 return a;

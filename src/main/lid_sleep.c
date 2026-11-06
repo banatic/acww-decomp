@@ -80,8 +80,8 @@ void func_020b0300(void)
 void func_020b02c8(void)
 {
     if (func_020b027c(1)) {
-        func_0211dc78(0, (int) ((*(void * *) data_021f4ad8)));
-        func_0211dc78(1, (int) ((*(void * *) data_021f4ad4)));
+        func_0211dc78(0, (int) ((*(void **) data_021f4ad8)));
+        func_0211dc78(1, (int) ((*(void **) data_021f4ad4)));
         func_020b025c(1);
     }
 }

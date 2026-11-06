@@ -232,7 +232,9 @@ void func_ov048_02262444(void *a, void *b)
             if (func_ov004_0222d4d4() == 0) {
                 func_ov004_0222d518();
             }
-        } else if ((int) func_ov048_02262670((UnkStruct_02262670 *) a) == 7 || (int) func_ov048_02262670((UnkStruct_02262670 *) a) == 9 || (int) func_ov048_02262670((UnkStruct_02262670 *) a) == 10) {
+        } else if ((int) func_ov048_02262670((UnkStruct_02262670 *) a) == 7 ||
+                   (int) func_ov048_02262670((UnkStruct_02262670 *) a) == 9 ||
+                   (int) func_ov048_02262670((UnkStruct_02262670 *) a) == 10) {
             // empty
         } else {
             if (func_0202e9fc() == 0) {
@@ -267,7 +269,7 @@ void func_ov048_022623f0(struct UnkStruct_022623f0 *p)
     char buf[8];
 
     buf[0] = func_02073918(data_020ccf94, 0) ? 0x10 : 0xf;
-    func_0206844c(p->unk_40, buf, (*(void * *) &data_ov048_02263d20));
+    func_0206844c(p->unk_40, buf, (*(void **) &data_ov048_02263d20));
 }
 
 void func_ov048_022623b8(UnkStruct_022623b8 *self)

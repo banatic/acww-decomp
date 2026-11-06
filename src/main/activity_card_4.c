@@ -31,5 +31,6 @@ void func_020a2480(unsigned int *arg)
 
 void func_020a2468(int p0)
 {
-    MI_CpuCopy8((void *) (*(int *) ((char *) (((int) (p0) + (192))) + (0))), (const void *) ((int) ((int *) data_021ee418)), 2384);
+    MI_CpuCopy8((void *) (*(int *) ((char *) (((int) (p0) + (192))) + (0))), (const void *) ((int) ((int *) data_021ee418)),
+                2384);
 }

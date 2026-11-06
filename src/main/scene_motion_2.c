@@ -97,7 +97,8 @@ int func_02017258(void *param1, char *param2)
 
     func_02019de4(param1);
     color = (*(volatile unsigned short *) &data_020c80f8);
-    func_02016764((int) (param2 + 0x334), (int) param2, 6, (unsigned short) ((*(volatile unsigned short *) &data_020c80f8)), 1, 0x1000, 0, 0);
+    func_02016764((int) (param2 + 0x334), (int) param2, 6, (unsigned short) ((*(volatile unsigned short *) &data_020c80f8)), 1,
+                  0x1000, 0, 0);
     obj = *(int *) (param2 + 0x628);
     if (obj) {
         func_02012444(obj, color, 0);

@@ -57,7 +57,7 @@ int func_ov066_02269f6c(unsigned int argument0);
 
 int func_ov066_0226a160(int param)
 {
-    int status = WM_MeasureChannel((void (*)(void *)) (void (*)(void *)) func_ov066_0226a074, 3, 17, param, 30);
+    int status = WM_MeasureChannel((void (*)(void *))(void (*)(void *)) func_ov066_0226a074, 3, 17, param, 30);
     if (status == 2) {
         return 1;
     }
@@ -95,11 +95,11 @@ void func_ov066_0226a074(Pkt *p)
 void func_ov066_0226a00c(void)
 {
     struct UnkStruct_0226a00c_2 *p;
-    (*(struct UnkStruct_0226a00c * *) &data_ov066_0226bdec)->unk_04 = 5;
+    (*(struct UnkStruct_0226a00c **) &data_ov066_0226bdec)->unk_04 = 5;
     (*(char *) &data_ov066_0226bdfc) = 0;
     (*(short *) &data_ov066_0226be00) = 0;
     (*(short *) &data_ov066_0226be04) = 0x65;
-    p = (*(struct UnkStruct_0226a00c_2 * *) &data_ov066_0226bdf4);
+    p = (*(struct UnkStruct_0226a00c_2 **) &data_ov066_0226bdf4);
     p->unk_8D = 0;
     func_ov066_02269f6c(0);
 }
@@ -123,7 +123,7 @@ int func_ov066_02269f6c(unsigned int argument0)
             if (rem != 0) {
                 rem = (unsigned char) (rem - 1);
             } else {
-                (*(unsigned char * *) &data_ov066_0226bdf4)[0x8d] = (unsigned char) (i + 1);
+                (*(unsigned char **) &data_ov066_0226bdf4)[0x8d] = (unsigned char) (i + 1);
                 goto ret1;
             }
         }

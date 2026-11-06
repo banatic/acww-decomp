@@ -207,7 +207,8 @@ void func_ov003_02225b24(void *self, u16 id, Vec3 *src, Vec3 *sc, short s1, shor
         case 3:
         case 4:
             idx = func_0204c63c((UnkStruct_02225da0 *) (&d));
-            func_ov003_022251a4((char *) self, (void *) (*(int *) ((char *) self + idx * 4 + 0x50)), *(UnkStruct_02225e00 *) &((*(Mtx *) &data_021fbe48)));
+            func_ov003_022251a4((char *) self, (void *) (*(int *) ((char *) self + idx * 4 + 0x50)),
+                                *(UnkStruct_02225e00 *) &((*(Mtx *) &data_021fbe48)));
             break;
     }
 }

@@ -38,7 +38,7 @@ void func_02012a4c(int *out, int param2)
 
 int func_02012a18(void *unused, UnkStruct_02012a18 *p)
 {
-    void *g = (*(void * *) &data_021c80bc);
+    void *g = (*(void **) &data_021c80bc);
     int result = 0;
     unsigned int x, y;
     if (g == 0) {

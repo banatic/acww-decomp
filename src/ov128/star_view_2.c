@@ -205,7 +205,7 @@ void func_ov128_0229c398(char *obj)
     func_ov002_0220b290(obj + 0x94);
     func_02070b84(obj + 0x2cdc);
     func_02095904();
-    func_02035834((char *) (*(void * *) data_021c526c) + 0x2f0);
+    func_02035834((char *) (*(void **) data_021c526c) + 0x2f0);
     func_02002c6c(&data_ov128_0229cd20, data_021fbe94, 3, 0, 0x10, 0x10);
 }
 

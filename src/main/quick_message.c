@@ -192,7 +192,7 @@ void func_020392a0(int param1, int param2)
 
 void func_020391fc(void)
 {
-    SomeObj *obj = (*(SomeObj * *) &data_020ccf94);
+    SomeObj *obj = (*(SomeObj **) &data_020ccf94);
     int count = obj->count;
     int i, zero;
     struct {
@@ -240,7 +240,7 @@ int func_0203919c(char *p)
     unsigned char c;
     int res;
 
-    result = (char *) func_020738bc((*(void * *) &data_020ccf94), p + 0x14);
+    result = (char *) func_020738bc((*(void **) &data_020ccf94), p + 0x14);
     c = *result;
     if (c) {
         res = func_020b65c4();
@@ -297,7 +297,7 @@ void func_020390b4(void)
     func_02095074(func_02099870(result), local1);
     local3 = 0xEF;
     func_020b4980(local2, &local3, 0);
-    func_020398e8((*(int * *) &data_020ccf94)[0x19], (void *) local1, (void *) local2);
+    func_020398e8((*(int **) &data_020ccf94)[0x19], (void *) local1, (void *) local2);
     func_0200467c(0x32);
     data_021c6730 = 0x1e;
     func_0203a3ec((void *) local2);
@@ -396,7 +396,7 @@ void func_02038eec(int argument)
         vc = 0;
     }
 
-    obj = (*(UnkStruct_02038eec * *) &data_020ccf94);
+    obj = (*(UnkStruct_02038eec **) &data_020ccf94);
     res5 = func_02073d90((void *) obj);
     if (func_0203ec98() == 0) {
         d = 1;

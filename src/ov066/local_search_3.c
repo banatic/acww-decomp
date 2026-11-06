@@ -70,34 +70,34 @@ void func_ov066_02267ef8(void)
 
 void func_ov066_02267e28(void)
 {
-    int i = (*(Obj1 * *) &data_ov066_0226bdec)->unk_09 - 1;
+    int i = (*(Obj1 **) &data_ov066_0226bdec)->unk_09 - 1;
     int off;
 
     if (i >= 0) {
         off = i * 16;
         do {
-            func_ov066_0226a7d8((char *) (*(Work * *) &data_ov066_0226bdf0)->unk_08 + off);
+            func_ov066_0226a7d8((char *) (*(Work **) &data_ov066_0226bdf0)->unk_08 + off);
             off -= 16;
         } while (--i >= 0);
     }
 
-    func_ov066_022668c4((*(Work * *) &data_ov066_0226bdf0)->unk_08);
-    func_ov066_022668c4((*(Work * *) &data_ov066_0226bdf0)->unk_04);
-    func_ov066_022668c4((*(Work * *) &data_ov066_0226bdf0)->unk_00);
+    func_ov066_022668c4((*(Work **) &data_ov066_0226bdf0)->unk_08);
+    func_ov066_022668c4((*(Work **) &data_ov066_0226bdf0)->unk_04);
+    func_ov066_022668c4((*(Work **) &data_ov066_0226bdf0)->unk_00);
 
-    (*(Work * *) &data_ov066_0226bdf0)->unk_6C = 0;
-    (*(Work * *) &data_ov066_0226bdf0)->unk_0C &= ~1;
+    (*(Work **) &data_ov066_0226bdf0)->unk_6C = 0;
+    (*(Work **) &data_ov066_0226bdf0)->unk_0C &= ~1;
 
-    OS_CancelAlarm(&(*(Work * *) &data_ov066_0226bdf0)->sub_3c);
-    OS_CancelAlarm(&(*(Work * *) &data_ov066_0226bdf0)->sub_10);
+    OS_CancelAlarm(&(*(Work **) &data_ov066_0226bdf0)->sub_3c);
+    OS_CancelAlarm(&(*(Work **) &data_ov066_0226bdf0)->sub_10);
 
-    func_ov066_022668c4((*(Work * *) &data_ov066_0226bdf0));
-    (*(Work * *) &data_ov066_0226bdf0) = 0;
+    func_ov066_022668c4((*(Work **) &data_ov066_0226bdf0));
+    (*(Work **) &data_ov066_0226bdf0) = 0;
 }
 
 void func_ov066_02267e00(unsigned int param)
 {
     int ret = OS_DisableInterrupts();
-    (*(struct UnkStruct_02267e00 * *) &data_ov066_0226bdf0)->unk_6C = param;
+    (*(struct UnkStruct_02267e00 **) &data_ov066_0226bdf0)->unk_6C = param;
     OS_RestoreInterrupts(ret);
 }

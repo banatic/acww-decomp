@@ -5,15 +5,20 @@
 Checks the source headers and paths against config/, duplicate addresses, files that must
 not be committed, that every text file is English only (game text is written as byte
 escapes, e.g. "\xb0\xa1"), and that no unreachable group of docs/scene-plan-groups.txt takes a
-Clean function the committed scenes enter (runtime/recordings/scenes/clean-entered.txt).
+Clean function the committed scenes enter (runtime/recordings/scenes/clean-entered.txt), and
+that the C files are as the clang-format lint.yml pins leaves them (skipped, with one line
+saying so, when that version is not installed).
 """
 
 from __future__ import annotations
 
+import os
 import pathlib
 import re
+import shutil
 import subprocess
 import sys
+from concurrent.futures import ThreadPoolExecutor
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import common as C  # noqa: E402
@@ -79,6 +84,62 @@ def macro_shadows() -> list[str]:
                 errors.append(f"{p.relative_to(C.ROOT).as_posix()}:{line}: #define {m.group(1)} replaces the "
                               f"enumerator of {enumerators[m.group(1)].relative_to(C.ROOT).as_posix()}")
     return errors
+
+
+FORMAT_GLOBS = ("src/*.c", "src/*.cpp", "libs/*.c", "libs/*.cpp", "include/*.h", "runtime/*.c",
+                "runtime/*.h", "clean/*.c", "clean/*.h", "tests/*.c")
+
+
+def clang_format() -> tuple[str | None, str]:
+    """The clang-format CI pins (.github/workflows/lint.yml), or None and why not. Looked for in
+    $CLANG_FORMAT, on PATH, then in build/venv-format of this checkout or of the main checkout
+    a worktree belongs to."""
+    m = re.search(r"clang-format==([\d.]+)", (C.ROOT / ".github/workflows/lint.yml").read_text())
+    want = m.group(1) if m else None
+    roots = [C.ROOT]
+    try:
+        common = subprocess.run(["git", "rev-parse", "--path-format=absolute", "--git-common-dir"],
+                                cwd=C.ROOT, capture_output=True, text=True, check=True).stdout.strip()
+        roots.append(pathlib.Path(common).parent)
+    except (OSError, subprocess.CalledProcessError):
+        pass
+    found = [os.environ.get("CLANG_FORMAT"), shutil.which("clang-format")]
+    for r in roots:
+        for sub in ("Scripts/clang-format.exe", "bin/clang-format"):
+            found.append(str(r / "build/venv-format" / sub))
+    for exe in found:
+        if not exe or not pathlib.Path(exe).exists():
+            continue
+        try:
+            out = subprocess.run([exe, "--version"], capture_output=True, text=True).stdout
+        except OSError:
+            continue
+        v = re.search(r"version ([\d.]+)", out)
+        if want is None or (v and v.group(1) == want):
+            return exe, ""
+    return None, f"no clang-format {want} (pip install clang-format=={want}, or set CLANG_FORMAT)"
+
+
+def formatting() -> list[str]:
+    """The Formatting step of lint.yml: every tracked C file as clang-format leaves it."""
+    exe, why = clang_format()
+    if exe is None:
+        print(f"formatting: skipped, {why}")
+        return []
+    files = subprocess.run(["git", "ls-files", *FORMAT_GLOBS], cwd=C.ROOT, capture_output=True,
+                           text=True, check=True).stdout.split()
+
+    def run(chunk: list[str]) -> list[str]:
+        r = subprocess.run([exe, "--dry-run", "--Werror", *chunk], cwd=C.ROOT,
+                           capture_output=True, text=True)
+        bad = sorted(set(re.findall(r"^(\S+?):\d+:\d+: error:", r.stderr, re.M)))
+        if r.returncode and not bad:
+            return [f"clang-format failed on {chunk[0]}..{chunk[-1]}: {r.stderr.strip()[:200]}"]
+        return [f"{f}: not as clang-format leaves it (clang-format -i {f})" for f in bad]
+
+    with ThreadPoolExecutor(8) as pool:
+        chunks = [files[i:i + 100] for i in range(0, len(files), 100)]
+        return [e for found in pool.map(run, chunks) for e in found]
 
 
 def main() -> None:
@@ -191,6 +252,7 @@ def main() -> None:
             defined.setdefault(m.group(1), rel)
 
     errors += macro_shadows()
+    errors += formatting()
 
     # An unreachable group of the scene plan must not take a function a committed scene enters.
     import coverage  # noqa: PLC0415

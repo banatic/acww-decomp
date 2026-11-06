@@ -482,7 +482,7 @@ void func_ov003_02218960(UnkStruct_02218960 *self)
         func_0200d4e8((UnkStruct_02218d44 *) self, 3, 1, -1);
     }
     if (((self->unk_2D8 << 4) >> 16) >= 0xe) {
-        if (func_02073908((unsigned int) ((*(void * *) &data_020ccf94)), self->unk_800)) {
+        if (func_02073908((unsigned int) ((*(void **) &data_020ccf94)), self->unk_800)) {
             func_ov003_0220d268(self);
         } else {
             func_0200f268((struct UnkStruct_022189d8_3 *) self, 0x12);

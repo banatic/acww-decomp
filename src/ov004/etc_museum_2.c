@@ -107,7 +107,7 @@ int func_ov004_0221bc44(void *self)
     p = (unsigned char *) ((char *) self + 0x154);
     *p = (*(unsigned char *) &data_ov004_02257908);
     if (*p < 0x20) {
-        ((void * *) data_ov004_0225797c)[*p] = self;
+        ((void **) data_ov004_0225797c)[*p] = self;
         (*(unsigned char *) &data_ov004_02257908) = (unsigned char) ((*(unsigned char *) &data_ov004_02257908) + 1);
         return 1;
     }

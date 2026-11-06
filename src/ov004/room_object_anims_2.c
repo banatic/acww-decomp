@@ -120,21 +120,24 @@ void func_ov004_0221041c(char *self, int selector, u8 mode, int speed, u16 frame
     if ((void *) func_ov004_0220d9ec(func_ov004_0220e220(self + 0x6cc), slot)) {
         void *resource = *(void **) (self + 0x594);
         if (func_020564d0(self + 0x824, resource, func_0209d324(context))) {
-            func_02056478(self + 0x824, (void *) func_ov004_0220d9ec(func_ov004_0220e220(self + 0x6cc), slot), mode, speed, frame);
+            func_02056478(self + 0x824, (void *) func_ov004_0220d9ec(func_ov004_0220e220(self + 0x6cc), slot), mode, speed,
+                          frame);
             func_020563dc(self + 0x824, func_02055e00(self + 0x538));
         }
     }
     if ((void *) func_ov004_0220d9f8(func_ov004_0220e220(self + 0x6cc), slot)) {
         void *resource = *(void **) (self + 0x594);
         if (func_0205650c(self + 0x7c4, resource, func_0209d324(context))) {
-            func_02056478(self + 0x7c4, (void *) func_ov004_0220d9f8(func_ov004_0220e220(self + 0x6cc), slot), mode, speed, frame);
+            func_02056478(self + 0x7c4, (void *) func_ov004_0220d9f8(func_ov004_0220e220(self + 0x6cc), slot), mode, speed,
+                          frame);
             func_020563dc(self + 0x7c4, func_02055e00(self + 0x538));
         }
     }
     if ((void *) func_ov004_0220d9e0(func_ov004_0220e220(self + 0x6cc), slot)) {
         void *resource = *(void **) (self + 0x594);
         if (func_0205650c(self + 0x7e4, resource, func_0209d324(context))) {
-            func_02056478(self + 0x7e4, (void *) func_ov004_0220d9e0(func_ov004_0220e220(self + 0x6cc), slot), mode, speed, frame);
+            func_02056478(self + 0x7e4, (void *) func_ov004_0220d9e0(func_ov004_0220e220(self + 0x6cc), slot), mode, speed,
+                          frame);
             func_020563dc(self + 0x7e4, func_02055e00(self + 0x538));
         }
     }
@@ -148,7 +151,8 @@ void func_ov004_0221041c(char *self, int selector, u8 mode, int speed, u16 frame
     }
     if ((void *) func_ov004_0220da04(func_ov004_0220e220(self + 0x6cc), slot)) {
         if (func_02055140(self + 0x538, func_0209d324(context))) {
-            func_02055060(self + 0x538, (void *) func_ov004_0220da04(func_ov004_0220e220(self + 0x6cc), slot), mode, speed, frame, 0);
+            func_02055060(self + 0x538, (void *) func_ov004_0220da04(func_ov004_0220e220(self + 0x6cc), slot), mode, speed,
+                          frame, 0);
             func_02055050(self + 0x538);
         }
     }

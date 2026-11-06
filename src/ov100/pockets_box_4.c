@@ -547,7 +547,8 @@ void func_ov100_0229cf30(unsigned char *self)
 
 void func_ov100_0229cecc(Object *self)
 {
-    if (func_ov100_0229d630((int) self, (unsigned char) self->unk_2921) != 0 || func_ov100_0229d620((int) self, (unsigned char) self->unk_2921) != 0) {
+    if (func_ov100_0229d630((int) self, (unsigned char) self->unk_2921) != 0 ||
+        func_ov100_0229d620((int) self, (unsigned char) self->unk_2921) != 0) {
         if (func_ov100_0229d158((int) self, (unsigned char) self->unk_2921) != 0) {
             func_ov002_02207cf0((void *) &self->unk_218C);
         } else {

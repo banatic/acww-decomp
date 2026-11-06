@@ -176,7 +176,7 @@ void func_ov004_022226d4(void)
     // DECLS
     int v1;
     // ENDDECLS
-    v1 = func_0207b410((char *) ((unsigned int) (((void * *) data_021e5a2c))));
+    v1 = func_0207b410((char *) ((unsigned int) (((void **) data_021e5a2c))));
     func_0209a664(v1, func_02099870(func_020984e8()));
 }
 

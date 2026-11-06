@@ -66,8 +66,8 @@ int func_0204fb80(int *outA, int *outB, int k, int n, int m)
         limit = func_020644cc(0x64);
     }
     i = 0;
-    tp = &((struct UnkStruct_0204fb80 ** *) data_020dc8b4)[n - 1];
-    ent = &((struct UnkStruct_0204fb80 ** *) data_020dc8b4)[n - 1][m][k];
+    tp = &((struct UnkStruct_0204fb80 ***) data_020dc8b4)[n - 1];
+    ent = &((struct UnkStruct_0204fb80 ***) data_020dc8b4)[n - 1][m][k];
     count = ent->count - t;
     for (; (int) i < (int) count; i++) {
         data = (*tp)[m][k].data;
@@ -83,7 +83,7 @@ int func_0204fb80(int *outA, int *outB, int k, int n, int m)
         return 0;
     }
     idx = 3 * idx;
-    *outA = (&((struct UnkStruct_0204fb80 ** *) data_020dc8b4)[n - 1][m][k])->data[idx];
+    *outA = (&((struct UnkStruct_0204fb80 ***) data_020dc8b4)[n - 1][m][k])->data[idx];
     *outB = ((*tp)[m][k].data + idx)[1];
     return 1;
 }

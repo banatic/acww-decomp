@@ -158,7 +158,7 @@ void func_0204dd84(UnkStruct_0204dd84 *p)
     }
     if (x != 0) {
         int a = func_02037e84(x);
-        void *g = (*(void * *) &data_021c9b34);
+        void *g = (*(void **) &data_021c9b34);
         func_0203750c();
         func_02037ecc(x, 0, func_020377d8(a, g), p->unk_1C);
     }

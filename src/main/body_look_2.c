@@ -104,7 +104,8 @@ void func_0205d234(int argument0)
 
 void func_0205d21c(void)
 {
-    (((int) (func_0205d0e8((struct UnkStruct_0205d0e8_2 *) (((int *) data_021c9c2c))), ((int *) data_021c9c2c))), func_0205c694());
+    (((int) (func_0205d0e8((struct UnkStruct_0205d0e8_2 *) (((int *) data_021c9c2c))), ((int *) data_021c9c2c))),
+     func_0205c694());
 }
 
 unsigned int func_0205d210(unsigned int r0)
@@ -171,7 +172,7 @@ void func_0205d12c(UnkStruct_0205d12c *obj)
         func_02055c80(&obj->elems[i], v1, v2, v3);
     }
 
-    base = (*(void * *) &data_021c9ae8);
+    base = (*(void **) &data_021c9ae8);
     for (i = 0; i < count; i++) {
         obj->arr[i] = func_020e9968(base, func_0205d208(), 4);
     }

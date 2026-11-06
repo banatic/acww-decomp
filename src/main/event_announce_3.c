@@ -78,7 +78,7 @@ int func_020417d8(void)
         default:
             break;
     }
-    if (func_02073d90((int) ((*(void * *) &data_020ccf94))) == 0) {
+    if (func_02073d90((int) ((*(void **) &data_020ccf94))) == 0) {
         data_021f39c8[9] = data_020db6e0;
     }
     return 1;

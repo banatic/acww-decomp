@@ -209,25 +209,31 @@ void func_02033a5c(void *a0, void *a1, int x0, int x1, int y0, int y1)
                 setv(&v[2], x0a, e->unk_00, z1);
                 setv(&v[3], x1a, e->unk_00, z1);
                 setv(&v[4], x1a, e->unk_00, z0);
-                func_02033a24((Container *) a0, (int) (&v[1]), (int) (&v[2]), (int) (&v[3]), (int) (&data_021c317c), e->unk_10, 0);
-                func_02033a24((Container *) a0, (int) (&v[1]), (int) (&v[3]), (int) (&v[4]), (int) (&data_021c317c), e->unk_10, 0);
+                func_02033a24((Container *) a0, (int) (&v[1]), (int) (&v[2]), (int) (&v[3]), (int) (&data_021c317c), e->unk_10,
+                              0);
+                func_02033a24((Container *) a0, (int) (&v[1]), (int) (&v[3]), (int) (&v[4]), (int) (&data_021c317c), e->unk_10,
+                              0);
             } else {
                 setv(&v[5], v[0].x, e->unk_00, T);
                 setv(&v[6], x1a, e->unk_00, z0);
                 setv(&v[7], x0a, e->unk_00, z0);
-                func_02033a24((Container *) a0, (int) (&v[5]), (int) (&v[6]), (int) (&v[7]), (int) (&data_021c317c), e->unk_10, 0);
+                func_02033a24((Container *) a0, (int) (&v[5]), (int) (&v[6]), (int) (&v[7]), (int) (&data_021c317c), e->unk_10,
+                              0);
                 setv0(&v[8], &v[0], e->unk_04);
                 setv(&v[9], x0a, e->unk_04, z0);
                 setv(&v[10], x0a, e->unk_04, z1);
-                func_02033a24((Container *) a0, (int) (&v[8]), (int) (&v[9]), (int) (&v[10]), (int) (&data_021c317c), e->unk_11, 0);
+                func_02033a24((Container *) a0, (int) (&v[8]), (int) (&v[9]), (int) (&v[10]), (int) (&data_021c317c),
+                              e->unk_11, 0);
                 setv0(&v[11], &v[0], e->unk_08);
                 setv(&v[12], x0a, e->unk_08, z1);
                 setv(&v[13], x1a, e->unk_08, z1);
-                func_02033a24((Container *) a0, (int) (&v[11]), (int) (&v[12]), (int) (&v[13]), (int) (&data_021c317c), e->unk_12, 0);
+                func_02033a24((Container *) a0, (int) (&v[11]), (int) (&v[12]), (int) (&v[13]), (int) (&data_021c317c),
+                              e->unk_12, 0);
                 setv0(&v[14], &v[0], e->unk_0C);
                 setv(&v[15], x1a, e->unk_0C, z1);
                 setv(&v[16], x1a, e->unk_0C, z0);
-                func_02033a24((Container *) a0, (int) (&v[14]), (int) (&v[15]), (int) (&v[16]), (int) (&data_021c317c), e->unk_13, 0);
+                func_02033a24((Container *) a0, (int) (&v[14]), (int) (&v[15]), (int) (&v[16]), (int) (&data_021c317c),
+                              e->unk_13, 0);
             }
         }
     }
@@ -301,13 +307,14 @@ int func_020338c4(UnkStruct_020338c4 *a1, int a2, int a3, int a4, int a5, int a6
 
 void *func_02033894(void *obj)
 {
-    __cxa_vec_ctor((void *) (obj), 0x18, 0x30, (((void (*)(void *)) (void * (*)(void *)) func_020339dc)), (((void (*)(void *)) (void * (*)(void *)) func_020339b8)));
+    __cxa_vec_ctor((void *) (obj), 0x18, 0x30, (((void (*)(void *))(void *(*) (void *) ) func_020339dc)),
+                   (((void (*)(void *))(void *(*) (void *) ) func_020339b8)));
     ((UnkStruct_02033894 *) obj)->unk_480 = 0;
     return obj;
 }
 
 void *func_02033878(void *p)
 {
-    __cxa_vec_cleanup((void *) (p), 0x18, 0x30, (((void (*)(void *)) (void * (*)(void *)) func_020339b8)));
+    __cxa_vec_cleanup((void *) (p), 0x18, 0x30, (((void (*)(void *))(void *(*) (void *) ) func_020339b8)));
     return p;
 }

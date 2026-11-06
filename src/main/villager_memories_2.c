@@ -164,7 +164,8 @@ int func_020805bc(UnkStruct_020805bc *p, int (*cb)(void *, void *, void *))
                         sel = p;
                         best = i;
                     } else if (func_02081d20((char *) sel) == func_02081d20((char *) p)) {
-                        if (func_0209e3ac((int) ((void *) func_02081e10((char *) sel)), (int) ((void *) func_02081e10((char *) p)), 0x3f) == 1) {
+                        if (func_0209e3ac((int) ((void *) func_02081e10((char *) sel)),
+                                          (int) ((void *) func_02081e10((char *) p)), 0x3f) == 1) {
                             sel = p;
                             best = i;
                         }

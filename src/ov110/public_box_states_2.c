@@ -377,9 +377,14 @@ void func_ov110_0229ddb4(UnkStruct_0229ddb4 *s)
         return;
     }
     if (func_ov110_0229d13c((UnkStruct_0229df2c *) s, (unsigned char) s->unk_F5) == 0) {
-        val = (*(struct { char pad2[2]; unsigned short field; } *) data_021fbe40).field;
+        val = (*(struct {
+                  char pad2[2];
+                  unsigned short field;
+              } *) data_021fbe40)
+                  .field;
         if (val & 1) {
-            if (func_ov110_0229d5e4((UnkStruct_0229df2c *) s, (unsigned char) s->unk_F5) != 0 || func_ov110_0229d5d4((UnkStruct_0229df2c *) s, (unsigned char) s->unk_F5) != 0) {
+            if (func_ov110_0229d5e4((UnkStruct_0229df2c *) s, (unsigned char) s->unk_F5) != 0 ||
+                func_ov110_0229d5d4((UnkStruct_0229df2c *) s, (unsigned char) s->unk_F5) != 0) {
                 if (func_ov110_0229d0fc(s, s->unk_F5) == 0) {
                     func_ov110_0229c9c8(s);
                 }
@@ -389,7 +394,8 @@ void func_ov110_0229ddb4(UnkStruct_0229ddb4 *s)
             return;
         }
         if (val & 0x800) {
-            if (func_ov110_0229d5e4((UnkStruct_0229df2c *) s, (unsigned char) s->unk_F5) != 0 || func_ov110_0229d5d4((UnkStruct_0229df2c *) s, (unsigned char) s->unk_F5) != 0) {
+            if (func_ov110_0229d5e4((UnkStruct_0229df2c *) s, (unsigned char) s->unk_F5) != 0 ||
+                func_ov110_0229d5d4((UnkStruct_0229df2c *) s, (unsigned char) s->unk_F5) != 0) {
                 if (func_ov110_0229d0fc(s, s->unk_F5) == 0) {
                     if (func_ov110_0229d5e4((UnkStruct_0229df2c *) s, (unsigned char) s->unk_F5) != 0) {
                         r = func_ov110_0229d600(s);
@@ -405,7 +411,11 @@ void func_ov110_0229ddb4(UnkStruct_0229ddb4 *s)
             return;
         }
     }
-    val = (*(struct { char pad2[2]; unsigned short field; } *) data_021fbe40).field;
+    val = (*(struct {
+              char pad2[2];
+              unsigned short field;
+          } *) data_021fbe40)
+              .field;
     if ((val & 8) || (val & 2)) {
         func_ov110_0229cbe0((UnkStruct_0229df2c *) s);
         func_ov002_02207d24((char *) s + 0x21F8, 0);

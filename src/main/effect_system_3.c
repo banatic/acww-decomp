@@ -398,7 +398,7 @@ int func_02090fd0(UnkStruct_02090fd0_2 *p)
     void *r;
 
     ok = 0;
-    (*(UnkStruct_02090fd0_2 * *) &data_021d52c4) = p;
+    (*(UnkStruct_02090fd0_2 **) &data_021d52c4) = p;
     p->unk_50 = 0;
     data_021d52cc = 0;
     p->unk_54 = 0;
@@ -406,7 +406,7 @@ int func_02090fd0(UnkStruct_02090fd0_2 *p)
     data_021d52d0 = func_020e98b4(0xc000);
     if (data_021d52d0 != 0) {
         data_021d52cc = NNS_FndCreateFrmHeapEx(data_021d52d0, 0xc000, 0);
-        p->unk_50 = func_020fa9f4((void *) (void * (*)(int)) func_02091140, 0x20, 0x64, 0x14, 0x15, 0x32);
+        p->unk_50 = func_020fa9f4((void *) (void *(*) (int) ) func_02091140, 0x20, 0x64, 0x14, 0x15, 0x32);
         p->unk_50->unk_30 = 0x8800;
         if (p->unk_50 != 0) {
             h = func_02091130(p);
@@ -536,8 +536,8 @@ void func_02090db0(UnkStruct_02090db0_4 *a0)
 void func_02090d70(struct UnkStruct_02090d70_3 *self)
 {
     func_02090db0((UnkStruct_02090db0_4 *) self);
-    if ((*(struct UnkStruct_02090d70 * *) &data_021d52d4)) {
-        struct UnkStruct_02090d70 *gp = (*(struct UnkStruct_02090d70 * *) &data_021d52d4);
+    if ((*(struct UnkStruct_02090d70 **) &data_021d52d4)) {
+        struct UnkStruct_02090d70 *gp = (*(struct UnkStruct_02090d70 **) &data_021d52d4);
         self->unk_20 = gp->unk_00 + self->m->p->unk_04;
         self->unk_24 = gp->unk_04 + self->m->p->unk_08;
         self->unk_28 = gp->unk_08 + self->m->p->unk_0C;
@@ -573,7 +573,7 @@ int func_02090c2c(int id, int arg1, s16 *arg2, int *arg3)
         return 0;
     }
 
-    glob = (*(Global * *) &data_021d52c4);
+    glob = (*(Global **) &data_021d52c4);
     entry = &data_020d0f88[id];
     count = entry->count;
     p4 = entry->unk_04;
@@ -597,11 +597,11 @@ int func_02090c2c(int id, int arg1, s16 *arg2, int *arg3)
         while (i < count) {
             obj = func_020902f8(sub_ptr, *p4);
             if (obj == 0) {
-                new_obj = func_020fa0fc((*(Global * *) &data_021d52c4)->unk_50, *p4, *arg3);
+                new_obj = func_020fa0fc((*(Global **) &data_021d52c4)->unk_50, *p4, *arg3);
                 if (new_obj != 0) {
                     if (func_020902d0(sub_ptr, *p4, new_obj) != 0) {
                         new_obj->unk_1C |= 2;
-                        func_020fa090((*(Global * *) &data_021d52c4)->unk_50, new_obj, arg1);
+                        func_020fa090((*(Global **) &data_021d52c4)->unk_50, new_obj, arg1);
                         sub = new_obj->unk_08;
                         if (arg2 != 0) {
                             sub->unk_20 = arg2[s_idx2];
@@ -609,7 +609,7 @@ int func_02090c2c(int id, int arg1, s16 *arg2, int *arg3)
                     }
                 }
             } else {
-                func_020fa090((*(Global * *) &data_021d52c4)->unk_50, obj, arg1);
+                func_020fa090((*(Global **) &data_021d52c4)->unk_50, obj, arg1);
                 sub = obj->unk_08;
                 if (arg2 != 0) {
                     sub->unk_20 = arg2[s_idx1];
@@ -621,7 +621,7 @@ int func_02090c2c(int id, int arg1, s16 *arg2, int *arg3)
         }
     } else {
         for (i = 0; i < count; i++) {
-            func_020fa0fc((*(Global * *) &data_021d52c4)->unk_50, *p4, *arg3);
+            func_020fa0fc((*(Global **) &data_021d52c4)->unk_50, *p4, *arg3);
             p4++;
             arg3++;
         }
@@ -655,7 +655,7 @@ int func_02090ac4(int idx, void *p1, short *p2, u8 *p3)
     if (p1 == 0) {
         return 0;
     }
-    base = (*(UnkStruct_02090ac4_2 * *) &data_021d52c4);
+    base = (*(UnkStruct_02090ac4_2 **) &data_021d52c4);
     base = (u8 *) base + 0x58;
     e = &((UnkStruct_02090ac4_3 *) data_020d0f88)[idx];
     cnt = e->unk_08;
@@ -682,7 +682,7 @@ body:
         bufA.b = bufB.b;
         bufA.c = bufB.c;
         bufA.d = bufB.d;
-        bufA.b = (u8) (*(UnkStruct_02090ac4_2 * *) &data_021d52c4)->unk_54;
+        bufA.b = (u8) (*(UnkStruct_02090ac4_2 **) &data_021d52c4)->unk_54;
         bufA.c = (u8) i;
         bufC = bufA;
         n->unk_04.a = bufC.a;
@@ -694,7 +694,8 @@ body:
             pf[0](n);
         }
     } else {
-        n = (Node *) func_020908a0((struct UnkStruct_020908a0 *) base, (int) (*w), (int) p1, (int) p2, (int) p3, (*(UnkStruct_02090ac4_2 * *) &data_021d52c4)->unk_54, i);
+        n = (Node *) func_020908a0((struct UnkStruct_020908a0 *) base, (int) (*w), (int) p1, (int) p2, (int) p3,
+                                   (*(UnkStruct_02090ac4_2 **) &data_021d52c4)->unk_54, i);
         if (n == 0) {
             ok = zero2;
         }
@@ -721,7 +722,7 @@ test:
     }
 done:
     data_021d52d4 = 0;
-    (*(UnkStruct_02090ac4_2 * *) &data_021d52c4)->unk_54 = (*(UnkStruct_02090ac4_2 * *) &data_021d52c4)->unk_54 + 1;
+    (*(UnkStruct_02090ac4_2 **) &data_021d52c4)->unk_54 = (*(UnkStruct_02090ac4_2 **) &data_021d52c4)->unk_54 + 1;
     return ok;
 }
 
@@ -737,7 +738,7 @@ int func_02090a44(struct UnkStruct_02090a44 *out, int arg1, int arg2, int arg3, 
     u8 d = flags.d;
     int ret = 0;
 
-    out->unk_0C = func_020fa190((*(struct Global * *) &data_021d52c4)->unk_50, arg1, arg2);
+    out->unk_0C = func_020fa190((*(struct Global **) &data_021d52c4)->unk_50, arg1, arg2);
     if (out->unk_0C != 0) {
         out->unk_00 = arg1;
         out->unk_08 = 1;
@@ -869,7 +870,8 @@ int func_020908a0(struct UnkStruct_020908a0 *b, int arg1, int arg2, int arg3, in
         int idx = b->idx;
         if (b->entries[idx].unk_00 == -1) {
             buf[0] = (unsigned char) idx;
-            if (func_02090a44((struct UnkStruct_02090a44 *) (&b->entries[idx]), arg1, arg2, arg3, (struct In *) arg4, *(struct Flags *) &(*(struct Four *) buf)) != 0) {
+            if (func_02090a44((struct UnkStruct_02090a44 *) (&b->entries[idx]), arg1, arg2, arg3, (struct In *) arg4,
+                              *(struct Flags *) &(*(struct Four *) buf)) != 0) {
                 result = (int) &b->entries[b->idx];
                 b->idx = (unsigned char) ((b->idx + 1) % 32);
                 break;

@@ -98,10 +98,10 @@ int func_ov068_02273088(void)
 int func_ov068_02273030(void)
 {
     int temp;
-    if ((*(unsigned char * *) &data_ov068_022787fc)) {
-        (*(unsigned char * *) &data_ov068_022787fc)[0x430] = 1;
-        temp = func_ov004_0222c3c4((char *) (*(unsigned char * *) &data_ov068_022787fc) + 0x388, 0);
-        func_02055060((char *) (*(unsigned char * *) &data_ov068_022787fc) + 0x2d0, temp, 1, 0x1000, 0, 0);
+    if ((*(unsigned char **) &data_ov068_022787fc)) {
+        (*(unsigned char **) &data_ov068_022787fc)[0x430] = 1;
+        temp = func_ov004_0222c3c4((char *) (*(unsigned char **) &data_ov068_022787fc) + 0x388, 0);
+        func_02055060((char *) (*(unsigned char **) &data_ov068_022787fc) + 0x2d0, temp, 1, 0x1000, 0, 0);
         return 1;
     } else {
         return 0;
@@ -113,6 +113,7 @@ void func_ov068_0227302c(void) {}
 void func_ov068_02272fe8(int unused, int p1, int p2, int p3, unsigned char p4, int p5, unsigned short p6, unsigned short p7)
 {
     if (func_02054ecc(p2) != func_ov004_0222c3c4((void *) p3, p1)) {
-        func_02055060((void *) p2, func_ov004_0222c3c4((void *) p3, p1), (unsigned char) p4, p5, (unsigned short) p6, (unsigned short) p7);
+        func_02055060((void *) p2, func_ov004_0222c3c4((void *) p3, p1), (unsigned char) p4, p5, (unsigned short) p6,
+                      (unsigned short) p7);
     }
 }

@@ -429,7 +429,7 @@ void func_020858ac(void *p)
     action = 0x85;
     flag = 0xd8;
 
-    if (func_02073dd4((Gx *) ((*(void * *) &data_020ccf94)), *(int *) ((char *) (*(void * *) &data_020ccf94) + 0x64)) == 0) {
+    if (func_02073dd4((Gx *) ((*(void **) &data_020ccf94)), *(int *) ((char *) (*(void **) &data_020ccf94) + 0x64)) == 0) {
         if (key == func_020791ec()) {
             action = 0x80;
             if (func_0207cf74((unsigned int) func_020791bc()) != 0) {
@@ -674,11 +674,15 @@ int func_0208541c(void)
 
     if (func_020b6660() != 0) {
         func_020795f4();
-        if (func_02073dd4((Gx *) ((*(UnkStruct_0208541c * *) &data_020ccf94)), (*(UnkStruct_0208541c * *) &data_020ccf94)->unk_64) == 0 && o != 0) {
+        if (func_02073dd4((Gx *) ((*(UnkStruct_0208541c **) &data_020ccf94)),
+                          (*(UnkStruct_0208541c **) &data_020ccf94)->unk_64) == 0 &&
+            o != 0) {
             func_0207c6a4(o);
         }
     }
-    if (func_02073dd4((Gx *) ((*(UnkStruct_0208541c * *) &data_020ccf94)), (*(UnkStruct_0208541c * *) &data_020ccf94)->unk_64) == 0 && o != 0) {
+    if (func_02073dd4((Gx *) ((*(UnkStruct_0208541c **) &data_020ccf94)), (*(UnkStruct_0208541c **) &data_020ccf94)->unk_64) ==
+            0 &&
+        o != 0) {
         w = 0xfff1;
         for (i = 0; i < 8; i++) {
             x = func_0207cec0((int *) o, i);

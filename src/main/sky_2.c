@@ -252,7 +252,11 @@ void func_020ba4c4(unsigned int *out0, unsigned int *out1)
 
 int func_020ba4b8(void)
 {
-    return (*(struct UnkStruct_020ba4b8 { char pad_00[0x34]; int value; } *) data_021f8ab0).value;
+    return (*(struct UnkStruct_020ba4b8 {
+               char pad_00[0x34];
+               int value;
+           } *) data_021f8ab0)
+        .value;
 }
 
 unsigned int func_020ba4a0(void)

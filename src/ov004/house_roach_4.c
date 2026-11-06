@@ -148,7 +148,7 @@ int func_ov004_0223dd90(char *self)
             *(int *) (self + 0x10c) = 2;
             return 1;
         }
-        g = (char *) (*(void * *) &data_ov004_02259a14);
+        g = (char *) (*(void **) &data_ov004_02259a14);
         if (g != 0 && *(int *) (g + 0x98) > 0 && func_02089cc0(self + 0x1d8, 8) != 0) {
             *(int *) (self + 0x10c) = 2;
             return 1;

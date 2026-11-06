@@ -114,7 +114,8 @@ void func_02036558(UnkStruct_02036558 *p, int a, int b, int c)
 int *func_0203652c(int *s, int value)
 {
     s[0] = value;
-    __cxa_vec_ctor((void *) (s + 1), 8, 16, (((void (*)(void *)) (int (*)(void *)) func_02036574)), (void (*)(void *)) func_02036570);
+    __cxa_vec_ctor((void *) (s + 1), 8, 16, (((void (*)(void *))(int (*)(void *)) func_02036574)),
+                   (void (*)(void *)) func_02036570);
     return s;
 }
 

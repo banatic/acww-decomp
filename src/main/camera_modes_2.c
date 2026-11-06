@@ -247,7 +247,7 @@ int func_0203b7d0(UnkStruct_0203b7d0 *self)
         self->unk_218 = p->c;
         func_0203ad68();
     } else {
-        if ((*(GlobStruct * *) &data_021f6948)->unk_04 == 0) {
+        if ((*(GlobStruct **) &data_021f6948)->unk_04 == 0) {
             func_0203caa4((void *) self, 0xf, 0);
         } else {
             func_0203caa4((void *) self, 0xe, 0);

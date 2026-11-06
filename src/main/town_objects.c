@@ -174,14 +174,15 @@ void func_020b248c(void *a0)
     UnkStruct_020b248c *e;
 
     idx = (u32) func_020b3f58((int) a0);
-    g = (*(UnkStruct_020b248c_3 * *) &data_020ccf94);
+    g = (*(UnkStruct_020b248c_3 **) &data_020ccf94);
     if (func_02073d90((void *) g) == 0 || func_02073918((void *) g, 0) != 0) {
         e = &((UnkStruct_020b248c *) data_021f4bac)[idx];
         lo = ((UnkStruct_020b248c *) data_021f4bac)[idx].lo;
         x = (u32) func_020b3fc0((u8) lo);
         lo = (u8) (lo | 1);
         y = (u32) func_020b3fc0((u8) lo);
-        func_020b2a68((void *) (&m.sub), (const void *) (idx < 0x22 ? &((UnkStruct_020b248c_4 *) data_020d1f24)[idx] : &((UnkStruct_020b248c_4 *) data_020d1f24)[0]));
+        func_020b2a68((void *) (&m.sub), (const void *) (idx < 0x22 ? &((UnkStruct_020b248c_4 *) data_020d1f24)[idx]
+                                                                    : &((UnkStruct_020b248c_4 *) data_020d1f24)[0]));
         if (y > (u32) func_020b2a3c((void *) (&m.sub))) {
             e->hi = 2;
         } else if (func_020b278c((int) a0) && x == 0) {
@@ -196,7 +197,7 @@ void func_020b248c(void *a0)
         ((UnkStruct_020b248c *) data_021f4bac)[idx].hi = 0;
         m.a = 0;
         m.b = idx;
-        g = (*(UnkStruct_020b248c_3 * *) &data_020ccf94);
+        g = (*(UnkStruct_020b248c_3 **) &data_020ccf94);
         func_02073820((void *) g);
         func_020737f0((void *) g, (void *) (&m), 1);
         func_02073770((void *) g, 0x23, 0);

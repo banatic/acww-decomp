@@ -152,13 +152,14 @@ int func_020900d8(int a)
 
 int func_020900ac(int arg)
 {
-    __cxa_vec_ctor((void *) (arg), 3, 0x950, (((void (*)(void *)) func_020901d8)), (((void (*)(void *)) (void * (*)(void *)) func_020901a0)));
+    __cxa_vec_ctor((void *) (arg), 3, 0x950, (((void (*)(void *)) func_020901d8)),
+                   (((void (*)(void *))(void *(*) (void *) ) func_020901a0)));
     return arg;
 }
 
 int func_0209008c(int arg)
 {
-    __cxa_vec_cleanup((void *) (arg), 3, 0x950, (((void (*)(void *)) (void * (*)(void *)) func_020901a0)));
+    __cxa_vec_cleanup((void *) (arg), 3, 0x950, (((void (*)(void *))(void *(*) (void *) ) func_020901a0)));
     return arg;
 }
 

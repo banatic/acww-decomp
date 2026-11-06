@@ -197,7 +197,8 @@ int func_02044540(void)
 {
     int ret = 0;
 
-    if (func_02073dd4((*(struct UnkStruct_02044540 * *) &data_020ccf94), (*(struct UnkStruct_02044540 * *) &data_020ccf94)->unk_64) != 0) {
+    if (func_02073dd4((*(struct UnkStruct_02044540 **) &data_020ccf94),
+                      (*(struct UnkStruct_02044540 **) &data_020ccf94)->unk_64) != 0) {
         goto end;
     }
     if (func_02099020(func_020984e8(), 1) != 0) {
@@ -509,7 +510,8 @@ int func_02043ed8(void *self, void *node, u16 *t, Pair_02043ed8 *pt, unsigned sh
         if (extra == 0xfff1) {
             goto done;
         }
-        func_0204457c(self, (unsigned short *) (&info.unk_02), (void *) (&info.unk_04), (unsigned char *) (&info.unk_00), extra);
+        func_0204457c(self, (unsigned short *) (&info.unk_02), (void *) (&info.unk_04), (unsigned char *) (&info.unk_00),
+                      extra);
         goto done;
     }
     if ((v >= 0x2b && v <= 0x2e) || (v >= 0xff && v <= 0x102) || (v >= 0x62 && v <= 0x65) || (v >= 0xd0 && v <= 0xd3)) {

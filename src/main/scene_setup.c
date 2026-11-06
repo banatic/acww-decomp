@@ -273,15 +273,17 @@ int func_020b0c4c(self_t *self)
     if (target != 0) {
         if (func_020b65c4() != 0xd && func_020b65c4() != 0xe && func_020b65c4() != 0x2f) {
             if (func_020b6788() != 0) {
-                func_02073dd4((*(UnkStruct_020b0c4c * *) &data_020ccf94), (*(UnkStruct_020b0c4c * *) &data_020ccf94)->unk_64);
+                func_02073dd4((*(UnkStruct_020b0c4c **) &data_020ccf94), (*(UnkStruct_020b0c4c **) &data_020ccf94)->unk_64);
                 for (idx = 0; idx < 4; idx++) {
-                    if (func_020b0d08((UnkStruct_020b0d08 *) target, idx, 1, (Vec *) data.arrC, (Rot *) data.arrA, &data.valA) != 0) {
+                    if (func_020b0d08((UnkStruct_020b0d08 *) target, idx, 1, (Vec *) data.arrC, (Rot *) data.arrA,
+                                      &data.valA) != 0) {
                         func_020952ac(idx, data.arrC, data.arrA, data.valA);
                     }
                 }
             } else {
                 for (idx = 0; idx < 4; idx++) {
-                    if (func_020b0d08((UnkStruct_020b0d08 *) target, idx, 0, (Vec *) data.arrD, (Rot *) data.arrB, &data.valB) != 0) {
+                    if (func_020b0d08((UnkStruct_020b0d08 *) target, idx, 0, (Vec *) data.arrD, (Rot *) data.arrB,
+                                      &data.valB) != 0) {
                         func_020961f0(idx, func_020961c0());
                         func_020952ac(idx, data.arrD, data.arrB, data.valB);
                     }
@@ -382,7 +384,7 @@ int func_020b0b00(UnkStruct_020b0b00_2 *self, u8 *cnt, u8 *flag, u64 start)
 
 void func_020b0ae0(struct UnkParam *param)
 {
-    func_0202f134(0xc, (int) ((*(void * *) &data_021f42f4)), (unsigned short) param->unk_06, 0);
+    func_0202f134(0xc, (int) ((*(void **) &data_021f42f4)), (unsigned short) param->unk_06, 0);
 }
 
 void func_020b0ad4(struct UnkStruct_020b0ad4 *self)

@@ -293,7 +293,8 @@ void func_ov003_02232e88(char *self, short *pn)
     int k;
 
     t = *(short *) (self + 0x232);
-    if (func_02073dd4((UnkStruct_02233178 *) ((*(UnkStruct_02232e88 * *) &data_020ccf94)), (*(UnkStruct_02232e88 * *) &data_020ccf94)->unk_64) != 0) {
+    if (func_02073dd4((UnkStruct_02233178 *) ((*(UnkStruct_02232e88 **) &data_020ccf94)),
+                      (*(UnkStruct_02232e88 **) &data_020ccf94)->unk_64) != 0) {
         if (func_ov003_02232210(self) != 0) {
             return;
         }
@@ -303,7 +304,8 @@ void func_ov003_02232e88(char *self, short *pn)
     *(short *) (self + 0x232) = t - 1;
     if (t == 5) {
         func_0204f818(&x, &y, (int *) (self + 0x204));
-        if (func_02031acc(x, y) == 0 && func_02073dd4((UnkStruct_02233178 *) ((*(UnkStruct_02232e88 * *) &data_020ccf94)), (*(UnkStruct_02232e88 * *) &data_020ccf94)->unk_64) == 0) {
+        if (func_02031acc(x, y) == 0 && func_02073dd4((UnkStruct_02233178 *) ((*(UnkStruct_02232e88 **) &data_020ccf94)),
+                                                      (*(UnkStruct_02232e88 **) &data_020ccf94)->unk_64) == 0) {
             func_02090c2c(0x80, (int *) (self + 0x204), 0, &data_020e25d4);
             return;
         }

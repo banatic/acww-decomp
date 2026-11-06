@@ -236,11 +236,13 @@ void func_ov004_0221f334(char *self)
 
         code = (u8) func_020644cc(3);
         if (have == 0) {
-            func_0200366c((void *) ((int) func_0208150c((*((UnkStruct_0221f334 **) (self + 0x1a4)))->unk_830)), tbl, 0x28, &data_ov004_02253c74);
+            func_0200366c((void *) ((int) func_0208150c((*((UnkStruct_0221f334 **) (self + 0x1a4)))->unk_830)), tbl, 0x28,
+                          &data_ov004_02253c74);
             func_0208b520();
             (*((UnkStruct_0221f334 **) (self + 0x1a4)))->unk_A54 = 2;
         } else {
-            func_0200366c((void *) ((int) func_0208150c((*((UnkStruct_0221f334 **) (self + 0x1a4)))->unk_830)), tbl, 0x28, &data_ov004_02253c80);
+            func_0200366c((void *) ((int) func_0208150c((*((UnkStruct_0221f334 **) (self + 0x1a4)))->unk_830)), tbl, 0x28,
+                          &data_ov004_02253c80);
         }
     } else if ((*((UnkStruct_0221f334 **) (self + 0x1a4)))->unk_A54 == 2) {
         state = *((u8 *) (self + 0x1e));
@@ -256,10 +258,12 @@ void func_ov004_0221f334(char *self)
         goto tail;
     mode2_ok:
         if (have == 0) {
-            func_0200366c((void *) ((int) func_0208150c((*((UnkStruct_0221f334 **) (self + 0x1a4)))->unk_830)), &data_ov004_02257d08, 0x28, &data_ov004_02253c88);
+            func_0200366c((void *) ((int) func_0208150c((*((UnkStruct_0221f334 **) (self + 0x1a4)))->unk_830)),
+                          &data_ov004_02257d08, 0x28, &data_ov004_02253c88);
             func_ov004_0221f71c(self);
         } else {
-            func_0200366c((void *) ((int) func_0208150c((*((UnkStruct_0221f334 **) (self + 0x1a4)))->unk_830)), &data_ov004_02257d08, 0x28, &data_ov004_02253c90);
+            func_0200366c((void *) ((int) func_0208150c((*((UnkStruct_0221f334 **) (self + 0x1a4)))->unk_830)),
+                          &data_ov004_02257d08, 0x28, &data_ov004_02253c90);
         }
 
         tbl = &data_ov004_02257d08;

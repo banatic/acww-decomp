@@ -500,7 +500,7 @@ void func_ov003_0221100c(UnkStruct_0221100c *self)
 void func_ov003_02210fa0(struct Params *param)
 {
     func_ov003_0221138c((UnkStruct_0221138c *) param);
-    if (func_02073908((void *) ((*(int * *) &data_020ccf94)), param->unk_800) != 0) {
+    if (func_02073908((void *) ((*(int **) &data_020ccf94)), param->unk_800) != 0) {
         if (((unsigned int) param->unk_2D8 << 4) >> 16 >= 0x19) {
             func_0201100c(param);
         }

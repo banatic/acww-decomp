@@ -231,10 +231,10 @@ unsigned short func_020355e0(void)
     int index;
     unsigned short result;
 
-    index = func_02034f44((UnkStruct_02034f44 *) ((*(UnkStruct_020355e0 * *) &data_021c526c)));
+    index = func_02034f44((UnkStruct_02034f44 *) ((*(UnkStruct_020355e0 **) &data_021c526c)));
     result = 0xffff;
     if (index >= 0) {
-        result = (*(UnkStruct_020355e0 * *) &data_021c526c)[index].unk_04;
+        result = (*(UnkStruct_020355e0 **) &data_021c526c)[index].unk_04;
     }
     return result;
 }
@@ -289,7 +289,7 @@ void func_02035404(void *self)
     char *end;
     Elem *p;
 
-    (*(void * *) &data_021c526c) = self;
+    (*(void **) &data_021c526c) = self;
     end = (char *) self + 0x1c0;
     p = (Elem *) self;
     while ((char *) p < end) {
@@ -413,10 +413,10 @@ void func_020351ec(void)
 
 UnkStruct_020351c4 *func_020351c4(void)
 {
-    int idx = func_02034f44((UnkStruct_02034f44 *) ((*(UnkStruct_020351c4 * *) &data_021c526c)));
+    int idx = func_02034f44((UnkStruct_02034f44 *) ((*(UnkStruct_020351c4 **) &data_021c526c)));
     UnkStruct_020351c4 *result = 0;
     if (idx >= 0) {
-        result = &(*(UnkStruct_020351c4 * *) &data_021c526c)[idx];
+        result = &(*(UnkStruct_020351c4 **) &data_021c526c)[idx];
     }
     return result;
 }

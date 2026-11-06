@@ -88,7 +88,7 @@ void func_ov046_02260e34(void *self)
 
 void func_ov046_02260ddc(struct UnkStruct_02260ddc *self)
 {
-    if (func_02073d90((int) ((*(void * *) &data_020ccf94))) || *(short *) func_0209d358(0, 0x4A)) {
+    if (func_02073d90((int) ((*(void **) &data_020ccf94))) || *(short *) func_0209d358(0, 0x4A)) {
         if (func_020b1558() < 16) {
             self->unk_DC = 0x13;
         } else {

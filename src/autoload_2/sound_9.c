@@ -29,23 +29,23 @@ unsigned int func_020eef70(void)
 void func_020eeea4(void *heapMem, unsigned int heapSize, const void *arcData, const void *onMemData)
 {
     NNS_SndInit();
-    if ((*(void * *) &data_021fd048) != 0) {
+    if ((*(void **) &data_021fd048) != 0) {
         OS_Terminate();
     }
-    (*(void * *) &data_021fd048) = NNS_SndHeapCreate(heapMem, heapSize);
-    if ((*(void * *) &data_021fd048) == 0) {
+    (*(void **) &data_021fd048) = NNS_SndHeapCreate(heapMem, heapSize);
+    if ((*(void **) &data_021fd048) == 0) {
         OS_Terminate();
     }
     func_020eee08();
     if (arcData != 0) {
-        NNS_SndArcInit(data_021fd10c, arcData, (*(void * *) &data_021fd048), 0);
+        NNS_SndArcInit(data_021fd10c, arcData, (*(void **) &data_021fd048), 0);
     } else {
         if (onMemData == 0) {
             OS_Terminate();
         }
         NNS_SndArcInitOnMemory(data_021fd07c, onMemData);
     }
-    if (NNS_SndArcPlayerSetup((*(void * *) &data_021fd048)) == 0) {
+    if (NNS_SndArcPlayerSetup((*(void **) &data_021fd048)) == 0) {
         OS_Terminate();
     }
     func_0210b7e0(data_021fd04c);

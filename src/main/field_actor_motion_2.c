@@ -55,7 +55,8 @@ int func_02010eb4(int a1, int *a2)
 void func_02010e58(void *self, int param2, int param3)
 {
     int r = func_02010eb4((int) self, (int *) param3);
-    func_02089b80((int) ((char *) self + 0x174), (int) self, param2, 0x0fd7, 0x2800, r | 4, 0x2fc, 0x15, (unsigned char) ((unsigned char) (*(unsigned int *) ((char *) self + 0x800))), 0x1000);
+    func_02089b80((int) ((char *) self + 0x174), (int) self, param2, 0x0fd7, 0x2800, r | 4, 0x2fc, 0x15,
+                  (unsigned char) ((unsigned char) (*(unsigned int *) ((char *) self + 0x800))), 0x1000);
 }
 
 void func_02010e48(int a, int c)

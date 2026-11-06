@@ -233,8 +233,10 @@ int func_02028c04(CTX *a1, void *a2, UnkStruct_02028c04_3 *a3)
         func_0207ef54(a2, a3) == 0 && func_0207f150(a2) == 3 && func_0201cddc(a1->unk_100) == 0xb &&
         func_02080998(a2, 1, &s) == -1 && func_0207aeac(1, &s) == 0xb) {
         func_0201cfb4((UnkStruct_02028d04 *) a1, (UnkStruct_02028d04_2 *) (&st));
-        func_0201cf74((UnkStruct_02028d04 *) a1, (UnkStruct_02028d04_2 *) (&st), 0, (const int *) (&data_020c8928), (const int *) (&data_021c2fec));
-        func_0201cf74((UnkStruct_02028d04 *) a1, (UnkStruct_02028d04_2 *) (&st), 1, (const int *) (&data_020c8924), (const int *) (&data_021c1d6c));
+        func_0201cf74((UnkStruct_02028d04 *) a1, (UnkStruct_02028d04_2 *) (&st), 0, (const int *) (&data_020c8928),
+                      (const int *) (&data_021c2fec));
+        func_0201cf74((UnkStruct_02028d04 *) a1, (UnkStruct_02028d04_2 *) (&st), 1, (const int *) (&data_020c8924),
+                      (const int *) (&data_021c1d6c));
         func_0202d9d0((UnkStruct_02028d04 *) a1, x);
         st.a = 2;
         st.b = st.a - 1;

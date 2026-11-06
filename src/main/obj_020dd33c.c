@@ -91,16 +91,16 @@ int func_02057d34(int param)
 int func_02057d0c(int a, int b)
 {
     int result = 0;
-    if ((*(void * *) &data_021c9350) != 0) {
-        result = func_020598dc((*(void * *) &data_021c9350), a, b);
+    if ((*(void **) &data_021c9350) != 0) {
+        result = func_020598dc((*(void **) &data_021c9350), a, b);
     }
     return result;
 }
 
 unsigned char func_02057cf4(void)
 {
-    if ((*(unsigned char * *) &data_021c9350) != 0) {
-        return (*(unsigned char * *) &data_021c9350)[0x58];
+    if ((*(unsigned char **) &data_021c9350) != 0) {
+        return (*(unsigned char **) &data_021c9350)[0x58];
     }
     return 0xc;
 }
@@ -122,12 +122,12 @@ int func_02057c68(void *param)
 {
     int result = 0;
     if (param != 0) {
-        GStruct *p = (*(GStruct * *) &data_021c9350);
+        GStruct *p = (*(GStruct **) &data_021c9350);
         if (p != 0) {
             if (func_020ea990((char *) param + 0x5c, (char *) p + 0x60) <= p->unk_BC) {
                 result = 1;
             } else {
-                if (func_0205989c(p) != 0 && (*(GStruct * *) &data_021c9350)->unk_D5 == 0) {
+                if (func_0205989c(p) != 0 && (*(GStruct **) &data_021c9350)->unk_D5 == 0) {
                     result = 1;
                 }
             }
@@ -139,9 +139,9 @@ int func_02057c68(void *param)
 int func_02057c44(UnkStruct_02057c44 *out)
 {
     int result = 0;
-    if ((*(UnkStruct_02057c44_2 * *) &data_021c9350)) {
-        UnkStruct_02057c44 *p = &(*(UnkStruct_02057c44_2 * *) &data_021c9350)->sub;
-        out->a = (*(UnkStruct_02057c44_2 * *) &data_021c9350)->sub.a;
+    if ((*(UnkStruct_02057c44_2 **) &data_021c9350)) {
+        UnkStruct_02057c44 *p = &(*(UnkStruct_02057c44_2 **) &data_021c9350)->sub;
+        out->a = (*(UnkStruct_02057c44_2 **) &data_021c9350)->sub.a;
         out->b = p->b;
         out->c = p->c;
         result = 1;
@@ -163,8 +163,10 @@ int func_02057c20(int param)
 int func_02057bf0(int param)
 {
     int result = 0;
-    if ((*(struct UnkStruct_02057bf0 * *) &data_021c9350) != 0) {
-        if (((*(struct UnkStruct_02057bf0 * *) &data_021c9350)->unk_C8 == param && (*(struct UnkStruct_02057bf0 * *) &data_021c9350)->unk_D9 == 1) || (*(struct UnkStruct_02057bf0 * *) &data_021c9350)->unk_DA == param) {
+    if ((*(struct UnkStruct_02057bf0 **) &data_021c9350) != 0) {
+        if (((*(struct UnkStruct_02057bf0 **) &data_021c9350)->unk_C8 == param &&
+             (*(struct UnkStruct_02057bf0 **) &data_021c9350)->unk_D9 == 1) ||
+            (*(struct UnkStruct_02057bf0 **) &data_021c9350)->unk_DA == param) {
             result = 1;
         }
     }
@@ -178,7 +180,7 @@ int func_02057bd4(void)
     unsigned char value;
 
     result = 0;
-    ptr = (*(unsigned char * *) &data_021c9350);
+    ptr = (*(unsigned char **) &data_021c9350);
     if (ptr != 0) {
         value = ptr[0xc8];
         if (value != 0) {
@@ -191,8 +193,8 @@ int func_02057bd4(void)
 void func_02057bb8(unsigned short *dst)
 {
     *dst = 0xfff1;
-    if ((*(UnkStruct_02057bb8 * *) &data_021c9350) != 0) {
-        *dst = (*(UnkStruct_02057bb8 * *) &data_021c9350)->unk_50;
+    if ((*(UnkStruct_02057bb8 **) &data_021c9350) != 0) {
+        *dst = (*(UnkStruct_02057bb8 **) &data_021c9350)->unk_50;
     }
 }
 

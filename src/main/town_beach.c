@@ -63,7 +63,8 @@ int func_02046ebc(int param)
     int r4 = 0;
     int r6 = r4;
     while (r4 < 4) {
-        if (func_02048cb8((void *) param, (void *) local, r5 + 1, 4, (void *) 0x1520, (((int (*)(int, int, int)) func_02048e34)), r6) != 0) {
+        if (func_02048cb8((void *) param, (void *) local, r5 + 1, 4, (void *) 0x1520,
+                          (((int (*)(int, int, int)) func_02048e34)), r6) != 0) {
             return 1;
         }
         r5 = (r5 + 1) & 3;

@@ -227,7 +227,8 @@ int func_020a1e08(struct UnkStruct_020a1e08 *p, int idx)
         if (p->unk_A2 == q) {
             inc = r;
         }
-        res = func_020a199c((int) p, (const unsigned char *) (p->unk_B0 + (s32) p->unk_A2 * 0x200), (const unsigned char *) (p->unk_B4 + (s32) p->unk_A2 * 0x200), inc);
+        res = func_020a199c((int) p, (const unsigned char *) (p->unk_B0 + (s32) p->unk_A2 * 0x200),
+                            (const unsigned char *) (p->unk_B4 + (s32) p->unk_A2 * 0x200), inc);
 
         if (res == 0) {
             if (p->unk_A4 == -1) {
@@ -404,7 +405,7 @@ int func_020a1b68(unsigned int a, int b)
     w = ((int *) data_020d1bf0)[a];
 
     if (b != 0 && a <= 1) {
-        p = (*(struct UnkStruct_020a1b68 * *) &data_021f3c3c);
+        p = (*(struct UnkStruct_020a1b68 **) &data_021f3c3c);
         if (p == 0) {
             return 1;
         }
@@ -433,7 +434,7 @@ int func_020a1acc(UnkStruct_020a1acc *self, int idx)
     }
 
     func_02050948(((int *) data_021c8188));
-    if (func_0209f180((u8 *) ((*(UnkStruct_020a1acc * *) &data_021f3c3c)->unk_B4)) == 0) {
+    if (func_0209f180((u8 *) ((*(UnkStruct_020a1acc **) &data_021f3c3c)->unk_B4)) == 0) {
         return 4;
     }
     if ((int) func_02050920((u8 *) self->unk_B4, ((int *) data_020d1c08)[idx]) != 0) {

@@ -350,9 +350,14 @@ void func_ov096_022a0af0(UnkStruct_022a0af0 *s)
             func_ov096_0229dd94(s);
             func_ov002_02207d24((char *) s + 0x2418, 0);
         } else {
-            unsigned short val = (*(struct { char pad2[2]; unsigned short field; } *) data_021fbe40).field;
+            unsigned short val = (*(struct {
+                                     char pad2[2];
+                                     unsigned short field;
+                                 } *) data_021fbe40)
+                                     .field;
             if (val & 1) {
-                if (func_ov096_0229f830((UnkStruct_022a0e48 *) s, (unsigned char) s->unk_B5) != 0 || func_ov096_0229f820((UnkStruct_022a0e48 *) s, (unsigned char) s->unk_B5) != 0) {
+                if (func_ov096_0229f830((UnkStruct_022a0e48 *) s, (unsigned char) s->unk_B5) != 0 ||
+                    func_ov096_0229f820((UnkStruct_022a0e48 *) s, (unsigned char) s->unk_B5) != 0) {
                     if (func_ov096_0229f150(s, s->unk_B5) == 0) {
                         func_ov096_0229cc74(s, s->unk_B5, 0);
                     }
@@ -396,7 +401,12 @@ void func_ov096_022a0880(UnkStruct_022a0880 *p)
         func_ov002_02207d24(p->unk_2418, 0);
         return;
     }
-    if (((*(struct { u16 h0; u16 h2; } *) data_021fbe40).h2 & 1) != 0) {
+    if (((*(struct {
+             u16 h0;
+             u16 h2;
+         } *) data_021fbe40)
+             .h2 &
+         1) != 0) {
         if (p->unk_B5 == 0x21) {
             if (func_ov096_0229c310((UnkStruct_022a0e48 *) p) == 0) {
                 return;
@@ -450,7 +460,12 @@ void func_ov096_022a0880(UnkStruct_022a0880 *p)
         func_ov096_0229db30(p, p->unk_B5);
         return;
     }
-    if (((*(struct { u16 h0; u16 h2; } *) data_021fbe40).h2 & 2) != 0) {
+    if (((*(struct {
+             u16 h0;
+             u16 h2;
+         } *) data_021fbe40)
+             .h2 &
+         2) != 0) {
         if (func_ov096_0229ee80(p, p->unk_B4) == 0) {
             func_ov096_0229db78(p, p->unk_B4);
         } else if (p->unk_B9 != 0x26) {
@@ -516,10 +531,20 @@ void func_ov096_022a072c(void *self)
             func_ov096_0229dd44(self);
             return;
         }
-        if ((*(struct { unsigned short pad; unsigned short flags; } *) data_021fbe40).flags & 1) {
+        if ((*(struct {
+                unsigned short pad;
+                unsigned short flags;
+            } *) data_021fbe40)
+                .flags &
+            1) {
             func_ov002_0220a1dc((unsigned char *) self + 0x2500);
             func_ov002_02208098((void *) (self), 0xe);
-        } else if ((*(struct { unsigned short pad; unsigned short flags; } *) data_021fbe40).flags & 2) {
+        } else if ((*(struct {
+                       unsigned short pad;
+                       unsigned short flags;
+                   } *) data_021fbe40)
+                       .flags &
+                   2) {
             func_ov096_0229dce0(self);
         }
     }

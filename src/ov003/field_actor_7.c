@@ -759,7 +759,7 @@ void func_ov003_0220ee20(void *self)
     }
     if (*flagp) {
         if (func_0200faf0(self, 0x59a)) {
-            func_02035a70((char *) (*(void * *) &data_021c526c) + 0x2e4);
+            func_02035a70((char *) (*(void **) &data_021c526c) + 0x2e4);
             func_0200f3e8(self);
             func_0203e110();
             s->unk_7FC = func_02008258(self, s->unk_7F0);
@@ -942,7 +942,7 @@ void func_ov003_0220eaa0(u8 *self)
     }
 
     p->flag = 1;
-    if (!func_02073908((int) ((*(void * *) &data_020ccf94)), *(u32 *) (self + 0x800))) {
+    if (!func_02073908((int) ((*(void **) &data_020ccf94)), *(u32 *) (self + 0x800))) {
         return;
     }
 
@@ -1012,7 +1012,7 @@ void func_ov003_0220e960(void *p)
         *(int *) ((char *) p + 0x7fc) = func_02008258(p, *(int *) ((char *) p + 0x7f0));
         func_0200d4e8(p, 3, 1, -1);
     }
-    if (func_02073908((int) ((*(void * *) &data_020ccf94)), *(int *) ((char *) p + 0x800)) != 0) {
+    if (func_02073908((int) ((*(void **) &data_020ccf94)), *(int *) ((char *) p + 0x800)) != 0) {
         if (((*(unsigned int *) ((char *) p + 0x2d8) << 4) >> 16) >= 0x1a) {
             func_ov003_0220d268(p);
         }
@@ -1352,7 +1352,7 @@ void func_ov003_0220e244(struct Actor *self)
     fx32 r;
     int add;
     u16 f;
-    if (func_02073908((int) ((*(void * *) &data_020ccf94)), (fx32) self->unk_800) == 0) {
+    if (func_02073908((int) ((*(void **) &data_020ccf94)), (fx32) self->unk_800) == 0) {
         return;
     }
     p = (struct UnkStruct_0220e244 *) (&self->unk_7D4);
@@ -1804,7 +1804,7 @@ void func_ov003_0220daac(void *a0)
             func_0200f1a4(a0, 3, *(unsigned short *) p);
         }
         func_0203b144();
-        func_02036448((*(char * *) &data_021c526c) + 0x1c4);
+        func_02036448((*(char **) &data_021c526c) + 0x1c4);
     }
 
     {
@@ -2000,7 +2000,7 @@ void func_ov003_0220d6f4(void *arg)
         *(int *) ((char *) arg + 0x7fc) = func_02008258(arg, *(int *) ((char *) arg + 0x7f0));
         func_0200d4e8(arg, 3, 1, -1);
     }
-    if (func_02073908((int) ((*(void * *) &data_020ccf94)), *(int *) ((char *) arg + 0x800)) != 0) {
+    if (func_02073908((int) ((*(void **) &data_020ccf94)), *(int *) ((char *) arg + 0x800)) != 0) {
         if (((*(unsigned int *) ((char *) arg + 0x2d8) << 4) >> 16) >= 0x18) {
             func_ov003_0220d268(arg);
         }

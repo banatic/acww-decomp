@@ -356,7 +356,8 @@ int func_ov003_0222d484(unsigned char *a, unsigned char *b, int c)
 
 int func_ov003_0222d40c(int k)
 {
-    if (!func_02073dd4((void *) ((*(UnkStruct_0222d40c * *) &data_020ccf94)), (*(UnkStruct_0222d40c * *) &data_020ccf94)->unk_64)) {
+    if (!func_02073dd4((void *) ((*(UnkStruct_0222d40c **) &data_020ccf94)),
+                       (*(UnkStruct_0222d40c **) &data_020ccf94)->unk_64)) {
         return 1;
     }
 

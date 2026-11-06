@@ -107,8 +107,8 @@ int func_020848d0(int unused, Vec3i *pos, UnkStruct_020848d0 *out)
 
 int func_02084890(void)
 {
-    if (func_02073dd4((*(UnkStruct_02084890 * *) &data_020ccf94), (*(UnkStruct_02084890 * *) &data_020ccf94)->unk_64) == 0 && func_02086108(func_0208602c(), 8) != 0 &&
-        func_02084ad0() == 0 && func_02084af0() == 0) {
+    if (func_02073dd4((*(UnkStruct_02084890 **) &data_020ccf94), (*(UnkStruct_02084890 **) &data_020ccf94)->unk_64) == 0 &&
+        func_02086108(func_0208602c(), 8) != 0 && func_02084ad0() == 0 && func_02084af0() == 0) {
         return 1;
     } else {
         return 0;
@@ -365,7 +365,7 @@ int func_020844c4(int param0)
 
     {
         unsigned short local = 0xd00d;
-        return func_02084d5c(&local, (unsigned int) (((char *) &data_020e1d8c)), (unsigned int) ((*(void * *) &data_020d0644)));
+        return func_02084d5c(&local, (unsigned int) (((char *) &data_020e1d8c)), (unsigned int) ((*(void **) &data_020d0644)));
     }
 
 fail:

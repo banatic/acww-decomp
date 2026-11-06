@@ -33,7 +33,7 @@ char *func_ov004_022236dc(void)
 
 unsigned short func_ov004_022236c4(void)
 {
-    return (unsigned short) ((*(unsigned int * *) &data_ov004_022580dc)[0x64] >> 12);
+    return (unsigned short) ((*(unsigned int **) &data_ov004_022580dc)[0x64] >> 12);
 }
 
 int func_ov004_022236a8(void)

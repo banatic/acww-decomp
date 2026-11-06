@@ -91,7 +91,7 @@ void *func_ov004_0221bfd4(char *self)
     // DECLS
     // ENDDECLS
     *(void **) (self) = &data_ov004_02253674;
-    *(void **) (self + 0x8a0) = ((void * *) &data_ov004_022535e4);
+    *(void **) (self + 0x8a0) = ((void **) &data_ov004_022535e4);
     func_0202de4c(self + 0x8a0);
     func_0202e5e0(self);
     func_020edf54((unsigned int) (self));

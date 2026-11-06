@@ -201,7 +201,11 @@ void func_020421a8(void)
 
 void func_02042198(void)
 {
-    func_02001aac((*(struct { char pad[12]; int field; } *) data_021c75b8).field);
+    func_02001aac((*(struct {
+                      char pad[12];
+                      int field;
+                  } *) data_021c75b8)
+                      .field);
 }
 
 void func_02042154(void)
@@ -216,7 +220,7 @@ void func_02042154(void)
     if (y >= 0x60) {
         y = 0xbf - y;
     }
-    v = (*(unsigned short * *) &data_021c75b4)[y];
+    v = (*(unsigned short **) &data_021c75b4)[y];
     if ((*(volatile unsigned short *) 0x04000004 & 2) != 0) {
         io->win0h = v;
         io->subWin0h = v;
@@ -225,8 +229,8 @@ void func_02042154(void)
 
 void func_02042120(void)
 {
-    *((volatile unsigned short *) 0x04000040) = *(*(volatile unsigned short * *) &data_021c75b4);
-    *((volatile unsigned short *) 0x04001040) = *(*(volatile unsigned short * *) &data_021c75b4);
+    *((volatile unsigned short *) 0x04000040) = *(*(volatile unsigned short **) &data_021c75b4);
+    *((volatile unsigned short *) 0x04001040) = *(*(volatile unsigned short **) &data_021c75b4);
     *((volatile unsigned short *) 0x04000044) = 0xC0;
     *((volatile unsigned short *) 0x04001044) = 0xC0;
 }
@@ -317,7 +321,10 @@ void func_02041e48(void)
 {
     volatile unsigned short value[2];
     unsigned short *p;
-    struct UnkStruct_02041e48 *p_data = ((struct UnkStruct_02041e48 { int a; int b; } *) data_021c75b8);
+    struct UnkStruct_02041e48 *p_data = ((struct UnkStruct_02041e48 {
+        int a;
+        int b;
+    } *) data_021c75b8);
     int i, r7, r6;
 
     if (data_021c75ac & 2) {
@@ -390,11 +397,46 @@ void func_02041df4(void) {}
 
 void func_02041dc4(void)
 {
-    (*(struct { char f0; char f1; int f4; int f8; int fC; } *) data_021c75b8).f0 = 0;
-    (*(struct { char f0; char f1; int f4; int f8; int fC; } *) data_021c75b8).f1 = 0;
-    (*(struct { char f0; char f1; int f4; int f8; int fC; } *) data_021c75b8).fC = -16;
-    (*(struct { char f0; char f1; int f4; int f8; int fC; } *) data_021c75b8).f4 = 0x1000;
-    (*(struct { char f0; char f1; int f4; int f8; int fC; } *) data_021c75b8).f8 = 0;
+    (*(struct {
+        char f0;
+        char f1;
+        int f4;
+        int f8;
+        int fC;
+    } *) data_021c75b8)
+        .f0 = 0;
+    (*(struct {
+        char f0;
+        char f1;
+        int f4;
+        int f8;
+        int fC;
+    } *) data_021c75b8)
+        .f1 = 0;
+    (*(struct {
+        char f0;
+        char f1;
+        int f4;
+        int f8;
+        int fC;
+    } *) data_021c75b8)
+        .fC = -16;
+    (*(struct {
+        char f0;
+        char f1;
+        int f4;
+        int f8;
+        int fC;
+    } *) data_021c75b8)
+        .f4 = 0x1000;
+    (*(struct {
+        char f0;
+        char f1;
+        int f4;
+        int f8;
+        int fC;
+    } *) data_021c75b8)
+        .f8 = 0;
     (*(int *) &data_021c75b4) = 0;
     (*(char *) &data_021c75ac) = 0;
 }

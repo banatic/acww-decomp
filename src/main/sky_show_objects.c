@@ -145,7 +145,7 @@ extern int FX_Div(int a, int b);
 extern int FX_MulFunc(int a, int b);
 extern int data_020d22d0[];                  // 0x020d22d0
 extern UnkStruct_020c013c_2 data_020d2344[]; // 0x020d2344
-extern E12 data_021fa678[]; // 0x021fa678
+extern E12 data_021fa678[];                  // 0x021fa678
 extern void func_020bec14(void *o, int i, u16 *c);
 extern void func_020bee4c(void *o, int v);
 extern void func_020bec54(char *p, int n);

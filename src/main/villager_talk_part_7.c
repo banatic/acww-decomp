@@ -83,7 +83,9 @@ void func_02027740(unsigned char *p)
 
 void func_020276dc(UnkStruct_020276dc *p1, UnkStruct_020276dc_2 *p2)
 {
-    func_0202da38(p1, (void *) p1->unk_104, (void *) (&p1->unk_122), 30, func_020036e8((unsigned char *) ((int) func_0208150c(*(int *) ((char *) p1->unk_100 + 0x830)))), data_020c8e20.unk_00, data_020c8e20.unk_04, 0, 0);
+    func_0202da38(p1, (void *) p1->unk_104, (void *) (&p1->unk_122), 30,
+                  func_020036e8((unsigned char *) ((int) func_0208150c(*(int *) ((char *) p1->unk_100 + 0x830)))),
+                  data_020c8e20.unk_00, data_020c8e20.unk_04, 0, 0);
     p2->ptr = p1->unk_104;
     p2->c = p1->unk_122;
 }

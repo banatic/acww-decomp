@@ -285,7 +285,8 @@ void func_ov121_0229a9f8(void *obj, void *arg)
         return;
     }
     func_ov121_0229a50c(obj);
-    func_02034adc((void *) func_ov121_0229abac((int) obj, (unsigned char) (*(unsigned char *) ((char *) obj + 0xae))), arg, 1, 1);
+    func_02034adc((void *) func_ov121_0229abac((int) obj, (unsigned char) (*(unsigned char *) ((char *) obj + 0xae))), arg, 1,
+                  1);
     hit = 0;
     v0 = h;
     v1 = h;
@@ -323,7 +324,8 @@ void func_ov121_0229a940(void *obj, void *arg)
         return;
     }
     func_ov121_0229a50c(obj);
-    func_02034b58((void *) func_ov121_0229abac((int) obj, (unsigned char) (*(unsigned char *) ((char *) obj + 0xae))), arg, 1, 1);
+    func_02034b58((void *) func_ov121_0229abac((int) obj, (unsigned char) (*(unsigned char *) ((char *) obj + 0xae))), arg, 1,
+                  1);
     hit = 0;
     v0 = h;
     v1 = h;

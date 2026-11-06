@@ -241,7 +241,11 @@ void func_ov101_0229d398(void *self)
         }
     }
     {
-        unsigned short flags = (*(struct { unsigned short unk0; unsigned short unk2; } *) data_021fbe40).unk2;
+        unsigned short flags = (*(struct {
+                                   unsigned short unk0;
+                                   unsigned short unk2;
+                               } *) data_021fbe40)
+                                   .unk2;
         if (flags & 1) {
             func_ov002_0220a1dc((char *) self + 0x229c);
             func_ov002_02208098(self, 9);

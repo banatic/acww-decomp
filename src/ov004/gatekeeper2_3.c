@@ -171,7 +171,7 @@ int func_ov004_022254e4(int arg)
         if (func_0201c040((void *) arg, &a, &b) != 0) {
             if (a == 4) {
                 if (func_020a7278() != 0) {
-                    func_0201c054((void *) arg, 1, (*(struct UnkStruct_022254e4 * *) &data_020ccf94)->unk_64, 4);
+                    func_0201c054((void *) arg, 1, (*(struct UnkStruct_022254e4 **) &data_020ccf94)->unk_64, 4);
                     func_ov004_022256ec((void *) arg, 3);
                 }
             }

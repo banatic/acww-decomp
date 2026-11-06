@@ -117,7 +117,8 @@ void func_ov004_02221e0c(char *self)
                     }
                 }
             } else {
-                if (func_02019d0c(self + 0x564, 1, 1, W(self, 0xa84), W(self, 0xa8c), 0, 0, 0, 0, (*(u16 *) &data_020c80f8), 0)) {
+                if (func_02019d0c(self + 0x564, 1, 1, W(self, 0xa84), W(self, 0xa8c), 0, 0, 0, 0, (*(u16 *) &data_020c80f8),
+                                  0)) {
                     if (B(self, 0x897) != 0) {
                         H(self, 0xa76) = func_020644cc(70) + 50;
                     } else {

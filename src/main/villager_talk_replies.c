@@ -159,7 +159,9 @@ extern unsigned char data_021e5a2c[];
 
 void func_0202066c(UnkStruct_0202066c *a, Output *b)
 {
-    func_0202da38((void *) a, (void *) a->data, (void *) (&a->byte), 30, func_020036e8((int) ((unsigned char *) (unsigned int) func_0208150c((int) a->ptr->value))), data_020c8ab0, 1, 6, 2);
+    func_0202da38((void *) a, (void *) a->data, (void *) (&a->byte), 30,
+                  func_020036e8((int) ((unsigned char *) (unsigned int) func_0208150c((int) a->ptr->value))), data_020c8ab0, 1,
+                  6, 2);
     b->ptr = a->data;
     b->byte = a->byte;
 }
@@ -233,14 +235,16 @@ void func_0202042c(UnkStruct_0202042c *a, UnkStruct_0202042c_2 *b)
     void *tmp;
 
     tmp = (void *) func_020036e8((int) ((void *) func_0208150c((int) (((InnerA *) a->unk_100)->unk_830))));
-    func_0202da38(a, &a->unk_104, &a->unk_122, 0x1e, (int) tmp, (*(UnkStruct_0202042c_3 *) &data_020c8ab0).word, 1, 0xe, (*(UnkStruct_0202042c_3 *) &data_020c8ab0).byte);
+    func_0202da38(a, &a->unk_104, &a->unk_122, 0x1e, (int) tmp, (*(UnkStruct_0202042c_3 *) &data_020c8ab0).word, 1, 0xe,
+                  (*(UnkStruct_0202042c_3 *) &data_020c8ab0).byte);
     b->ptr = &a->unk_104;
     b->byte = a->unk_122;
 }
 
 void func_020203c8(UnkStruct_020203c8_2 *self, UnkStruct_020203c8_3 *out)
 {
-    func_0202da38(self, self->unk_104, (void *) (&self->unk_122), 0x1E, func_020036e8(func_0208150c(self->unk_100->unk_830)), (*(Global *) &data_020c8ab0).unk_00, 1, 0x11, (*(Global *) &data_020c8ab0).unk_04);
+    func_0202da38(self, self->unk_104, (void *) (&self->unk_122), 0x1E, func_020036e8(func_0208150c(self->unk_100->unk_830)),
+                  (*(Global *) &data_020c8ab0).unk_00, 1, 0x11, (*(Global *) &data_020c8ab0).unk_04);
     out->unk_00 = self->unk_104;
     out->unk_04 = self->unk_122;
 }

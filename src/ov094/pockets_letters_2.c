@@ -518,7 +518,8 @@ void func_ov094_0229b5e8(void *a, void *b, void *c, void *d)
     }
     x = func_ov094_0229a50c((unsigned int) (*(unsigned char *) ((char *) (((unsigned int) (a) + (0x27))) + 0)));
     if (x == 0x1000) {
-        func_ov094_0229b550((struct UnkStruct_0229b550_2 *) a, (int) b, (int) c, func_ov094_0229b5c8((int) a, (int) d), (int) d, 0);
+        func_ov094_0229b550((struct UnkStruct_0229b550_2 *) a, (int) b, (int) c, func_ov094_0229b5c8((int) a, (int) d),
+                            (int) d, 0);
         func_ov094_0229b4f0((UnkStruct_0229b4f0 *) a, (int) b, (int) c, func_ov094_0229b5c8((int) a, (int) d), 0);
         func_ov094_0229b4c0((struct UnkStruct_0229b4c0 *) a, (int) b, (int) c, 0);
     } else {
@@ -527,7 +528,8 @@ void func_ov094_0229b5e8(void *a, void *b, void *c, void *d)
         local[1] = 0;
         local[2] = 0;
         local[3] = x;
-        func_ov094_0229b550((struct UnkStruct_0229b550_2 *) a, (int) b, (int) c, func_ov094_0229b5c8((int) a, (int) d), (int) d, (int) local);
+        func_ov094_0229b550((struct UnkStruct_0229b550_2 *) a, (int) b, (int) c, func_ov094_0229b5c8((int) a, (int) d),
+                            (int) d, (int) local);
         func_ov094_0229b4f0((UnkStruct_0229b4f0 *) a, (int) b, (int) c, func_ov094_0229b5c8((int) a, (int) d), (int) local);
     }
 }

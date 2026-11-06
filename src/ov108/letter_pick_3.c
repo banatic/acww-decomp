@@ -532,7 +532,8 @@ void func_ov108_0229d4b4(struct UnkStruct_0229d4b4 *self)
             func_ov002_02207d24(self->obj, 0);
             return;
         } else {
-            if (func_ov108_0229cb88((char *) self, (unsigned char) self->flag) == 0 && ((*(volatile struct GlobalHW *) data_021fbe40).unk_02 & 1) != 0) {
+            if (func_ov108_0229cb88((char *) self, (unsigned char) self->flag) == 0 &&
+                ((*(volatile struct GlobalHW *) data_021fbe40).unk_02 & 1) != 0) {
                 if (func_ov108_0229cd70((int) self, (unsigned char) self->flag) != 0) {
                     if (func_ov108_0229cb54((void *) self, (unsigned char) self->flag) != 0) {
                         return;
@@ -566,7 +567,11 @@ void func_ov108_0229d418(unsigned char *self)
         func_ov108_0229c72c((struct UnkStruct_0229d4b4 *) self);
         func_ov002_02207d24(self + 0x23b0, 0);
     } else {
-        unsigned short flags = (*(struct { unsigned short field0; unsigned short field2; } *) data_021fbe40).field2;
+        unsigned short flags = (*(struct {
+                                   unsigned short field0;
+                                   unsigned short field2;
+                               } *) data_021fbe40)
+                                   .field2;
         if (flags & 1) {
             if (func_ov108_0229cb54(self, (unsigned char) self[0x2b0]) != 0) {
                 func_ov108_0229c578(self, self[0x2b0]);
@@ -928,7 +933,8 @@ int func_ov108_0229ccc0(void *param1, void *param2)
 {
     if (func_ov108_0229cb54(param1, (int) param2) == 0) {
         func_02066830((char *) param1 + 0x1AC, func_ov108_0229cc5c((int) param1, (int) param2));
-        func_ov108_0229cc90((int) param1, (unsigned char) (((unsigned char *) param1)[0x2AF]), (int) ((char *) param1 + 0x1AC));
+        func_ov108_0229cc90((int) param1, (unsigned char) (((unsigned char *) param1)[0x2AF]),
+                            (int) ((char *) param1 + 0x1AC));
     }
     func_ov108_0229c8a4((UnkStruct_0229c8a4 *) param1, param2);
     return 1;

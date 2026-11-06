@@ -65,7 +65,8 @@ int func_0205a1dc(int a, int b)
     if (p != 0) {
         func_0203d7b0(2, func_02080a2c(p)[0]);
         func_0203d79c(3, func_02080a2c(p)[1]);
-        return func_0205a240(data_020dd3cc, (unsigned char) ((unsigned char) func_020644cc(3)), (void *) a, (void *) b, 0, 0x1a);
+        return func_0205a240(data_020dd3cc, (unsigned char) ((unsigned char) func_020644cc(3)), (void *) a, (void *) b, 0,
+                             0x1a);
     }
     return 0;
 }

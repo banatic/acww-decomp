@@ -446,7 +446,7 @@ int func_ov003_022353e0(char *self, void *ctx)
     signed char i;
     signed char *p = (signed char *) (self + 0x24e);
     if (*p <= 0) {
-        if (func_02073dd4((*(UnkStruct_022353e0 * *) &data_020ccf94), (*(UnkStruct_022353e0 * *) &data_020ccf94)->unk_64)) {
+        if (func_02073dd4((*(UnkStruct_022353e0 **) &data_020ccf94), (*(UnkStruct_022353e0 **) &data_020ccf94)->unk_64)) {
             for (i = 0; i < 4; i++) {
                 *p = (signed char) func_ov003_02219d8c(ctx, i);
                 if (*p > 0) {
@@ -731,7 +731,9 @@ void func_ov003_02234e28(unsigned char *self, short *p, int step, int div, unsig
     if (func_020e908c(v1c8, v1d4, 0x28, func_ov003_0223506c((char *) self) + 0x19a, func_ov003_0223506c((char *) self)) != 0) {
         return;
     }
-    if (func_02073dd4((void *) ((*(UnkStruct_02234e28 * *) &data_020ccf94)), (*(UnkStruct_02234e28 * *) &data_020ccf94)->unk_64) != 0 && func_020a7278() == 0) {
+    if (func_02073dd4((void *) ((*(UnkStruct_02234e28 **) &data_020ccf94)),
+                      (*(UnkStruct_02234e28 **) &data_020ccf94)->unk_64) != 0 &&
+        func_020a7278() == 0) {
         return;
     }
     pb = &self[0x253];
@@ -742,7 +744,8 @@ void func_ov003_02234e28(unsigned char *self, short *p, int step, int div, unsig
         v1c8->y = pos->y;
         v1c8->z = pos->z;
         if (self[0x24a] != 0) {
-            if (func_02073dd4((void *) ((*(UnkStruct_02234e28 * *) &data_020ccf94)), (*(UnkStruct_02234e28 * *) &data_020ccf94)->unk_64) != 0) {
+            if (func_02073dd4((void *) ((*(UnkStruct_02234e28 **) &data_020ccf94)),
+                              (*(UnkStruct_02234e28 **) &data_020ccf94)->unk_64) != 0) {
                 o = (Vec3 *) func_ov003_022356ec((const int *) pos);
             } else {
                 o = (Vec3 *) func_020961a8(4);
@@ -776,7 +779,7 @@ int func_ov003_02234d70(void *self)
 {
     int t[3];
     int r = func_ov003_02233e4c(self, t);
-    if (func_02073dd4((*(UnkStruct_02234d70 * *) &data_020ccf94), (*(UnkStruct_02234d70 * *) &data_020ccf94)->unk_64)) {
+    if (func_02073dd4((*(UnkStruct_02234d70 **) &data_020ccf94), (*(UnkStruct_02234d70 **) &data_020ccf94)->unk_64)) {
         func_ov003_02234cf0((char *) self, (const int *) t);
     } else {
         func_ov068_0226fe28(self, t);
@@ -918,7 +921,8 @@ void func_ov003_022349a0(unsigned char *self)
         if (*(int *) (self + 0x21c) != *(int *) (self + 0xfc)) {
             func_ov003_0222d518(self, *(int *) (self + 0x21c));
         }
-        if (func_02073dd4((void *) ((*(UnkStruct_022349a0 * *) &data_020ccf94)), (*(UnkStruct_022349a0 * *) &data_020ccf94)->unk_64) == 0) {
+        if (func_02073dd4((void *) ((*(UnkStruct_022349a0 **) &data_020ccf94)),
+                          (*(UnkStruct_022349a0 **) &data_020ccf94)->unk_64) == 0) {
             func_ov068_022701b0(self, &ang);
         }
     }

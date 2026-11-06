@@ -93,7 +93,9 @@ void func_020253bc(UnkStruct_020253bc_2 *r5, UnkStruct_020253bc_4 *r6)
         r4 = &data_020c8ac0;
     }
 
-    func_0202da38((void *) r5, (void *) r5->arr, (void *) (&r5->byte), 0x1e, func_020036e8((void *) ((unsigned char *) func_0208150c((void *) r5->ptr->unk_830))), r4->unk_00, r4->unk_04, 0, 0);
+    func_0202da38((void *) r5, (void *) r5->arr, (void *) (&r5->byte), 0x1e,
+                  func_020036e8((void *) ((unsigned char *) func_0208150c((void *) r5->ptr->unk_830))), r4->unk_00, r4->unk_04,
+                  0, 0);
 
     r6->unk_00 = r5->arr;
     r6->unk_04 = r5->byte;

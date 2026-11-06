@@ -37,7 +37,7 @@ int func_ov004_02233f00(char *self)
 {
     // DECLS
     // ENDDECLS
-    func_ov004_022337ac(((void * *) &data_ov004_02258af4));
+    func_ov004_022337ac(((void **) &data_ov004_02258af4));
     return 0x1;
 }
 

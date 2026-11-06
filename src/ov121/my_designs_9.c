@@ -220,7 +220,12 @@ void func_ov121_0229b484(Obj_ov121_0229c3a8 *self)
             return;
         }
 
-        if (((*(struct { unsigned short pad; unsigned short flags; } *) data_021fbe40).flags & 1) != 0) {
+        if (((*(struct {
+                 unsigned short pad;
+                 unsigned short flags;
+             } *) data_021fbe40)
+                 .flags &
+             1) != 0) {
             func_ov002_02207d24(&self->unk_2D8, 1);
             if (func_ov121_02299fc8(self) != (int) -1) {
                 func_ov121_0229a170(self);
@@ -232,7 +237,11 @@ void func_ov121_0229b484(Obj_ov121_0229c3a8 *self)
             }
         }
 
-        flags = (*(struct { unsigned short pad; unsigned short flags; } *) data_021fbe40).flags;
+        flags = (*(struct {
+                    unsigned short pad;
+                    unsigned short flags;
+                } *) data_021fbe40)
+                    .flags;
         if ((flags & 0x100) != 0) {
             func_ov121_0229bc70(self, func_ov090_02299078(1));
             return;

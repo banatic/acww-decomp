@@ -35,7 +35,8 @@ void func_020ede60(int a)
 int func_020edddc(Input *p)
 {
     unsigned short v = p->unk_0C;
-    int result = func_01ffd44c((int) p, *(struct Pair *) &data_0213e784, *(struct Pair *) &data_0213e79c, *(struct Pair *) &data_0213e7a4);
+    int result = func_01ffd44c((int) p, *(struct Pair *) &data_0213e784, *(struct Pair *) &data_0213e79c,
+                               *(struct Pair *) &data_0213e7a4);
     if (result == 1) {
         func_020edbec(v);
     }

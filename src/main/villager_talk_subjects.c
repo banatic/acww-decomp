@@ -108,7 +108,9 @@ int func_020222dc(UnkStruct_020222dc_4 *self)
     if (n >= 7) {
         n = 7;
     }
-    func_0202da38((char *) self, (char *) self->unk_104, (char *) self->unk_122, 0x1e, func_020036e8((int) ((unsigned char *) (unsigned int) func_0208150c((int) self->unk_100->unk_830))), data_020c8cb0.unk_00, data_020c8cb0.unk_04, n, 0);
+    func_0202da38((char *) self, (char *) self->unk_104, (char *) self->unk_122, 0x1e,
+                  func_020036e8((int) ((unsigned char *) (unsigned int) func_0208150c((int) self->unk_100->unk_830))),
+                  data_020c8cb0.unk_00, data_020c8cb0.unk_04, n, 0);
     func_02015fb0(self, v, 0, 6, 0, 0);
     return 1;
 fail:

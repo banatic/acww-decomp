@@ -180,7 +180,7 @@ void func_ov003_02210a64(struct UnkStruct_02210a64 *self)
     u32 args[2];
     u8 f5, f6;
 
-    if (func_02073908((*(void * *) data_020ccf94), self->unk_800) == 0) {
+    if (func_02073908((*(void **) data_020ccf94), self->unk_800) == 0) {
         self->unk_7FC = func_02008258(self, self->unk_7F0);
     } else {
         if (self->unk_818 == 1) {
@@ -335,7 +335,7 @@ void func_ov003_022107ac(UnkStruct_022107ac_2 *self)
                 func_020912d4(9, w0, &s, 0);
                 break;
             case 5:
-                if (func_02073908((*(void * *) data_020ccf94), self->unk_800)) {
+                if (func_02073908((*(void **) data_020ccf94), self->unk_800)) {
                     w1[0] = w0[0];
                     w1[1] = w0[1];
                     w1[2] = w0[2];

@@ -270,10 +270,29 @@ int func_ov066_02267db4(int index)
 
 void func_ov066_02267cb0(int arg0)
 {
-    if ((*(struct UnkStruct_02267cb0 { unsigned char pad_00[0x3c]; struct { unsigned int : 3; signed int flag : 1; unsigned int : 28; } bits; } * *) &data_ov066_0226bdec)->bits.flag != 0) {
-        func_ov066_0226a3b0(data_ov066_0226bdf0->unk_08 + ((int) (*(struct UnkStruct_02267cb0_2 { unsigned char pad_00[0x95]; unsigned char unk_95; } * *) &data_ov066_0226bdf4)->unk_95 << 4));
+    if ((*(struct UnkStruct_02267cb0 {
+            unsigned char pad_00[0x3c];
+            struct {
+                unsigned int : 3;
+                signed int flag : 1;
+                unsigned int : 28;
+            } bits;
+        } **) &data_ov066_0226bdec)
+            ->bits.flag != 0) {
+        func_ov066_0226a3b0(data_ov066_0226bdf0->unk_08 + ((int) (*(struct UnkStruct_02267cb0_2 {
+                                                               unsigned char pad_00[0x95];
+                                                               unsigned char unk_95;
+                                                           } **) &data_ov066_0226bdf4)
+                                                               ->unk_95
+                                                           << 4));
     } else {
-        func_ov066_0226a2e8(data_ov066_0226bdf0->unk_08 + ((int) (*(struct UnkStruct_02267cb0_2 { unsigned char pad_00[0x95]; unsigned char unk_95; } * *) &data_ov066_0226bdf4)->unk_95 << 4), 500);
+        func_ov066_0226a2e8(data_ov066_0226bdf0->unk_08 + ((int) (*(struct UnkStruct_02267cb0_2 {
+                                                               unsigned char pad_00[0x95];
+                                                               unsigned char unk_95;
+                                                           } **) &data_ov066_0226bdf4)
+                                                               ->unk_95
+                                                           << 4),
+                            500);
         func_ov066_02267e00(0);
     }
 
@@ -293,7 +312,7 @@ void func_ov066_02267cb0(int arg0)
 
 void func_ov066_02267c74(void)
 {
-    if ((*(UnkStruct_02267c74 * *) &data_ov066_0226bdf0)->flag) {
+    if ((*(UnkStruct_02267c74 **) &data_ov066_0226bdf0)->flag) {
         return;
     }
     func_ov066_02267be0();
@@ -301,28 +320,31 @@ void func_ov066_02267c74(void)
 
 void func_ov066_02267c0c(void)
 {
-    (*(struct UnkStruct_02267c0c * *) &data_ov066_0226bdec)->unk_04 = 7;
+    (*(struct UnkStruct_02267c0c **) &data_ov066_0226bdec)->unk_04 = 7;
     func_ov066_02267b58();
     func_ov066_02267740();
-    (*(struct UnkStruct_02267c0c_2 * *) &data_ov066_0226bdf4)->unk_95 = (*(struct UnkStruct_02267c0c_2 * *) &data_ov066_0226bdf4)->unk_95 + 1;
-    if ((*(struct UnkStruct_02267c0c_2 * *) &data_ov066_0226bdf4)->unk_95 >= (*(struct UnkStruct_02267c0c * *) &data_ov066_0226bdec)->unk_09) {
-        (*(struct UnkStruct_02267c0c_2 * *) &data_ov066_0226bdf4)->unk_95 = 0;
+    (*(struct UnkStruct_02267c0c_2 **) &data_ov066_0226bdf4)->unk_95 =
+        (*(struct UnkStruct_02267c0c_2 **) &data_ov066_0226bdf4)->unk_95 + 1;
+    if ((*(struct UnkStruct_02267c0c_2 **) &data_ov066_0226bdf4)->unk_95 >=
+        (*(struct UnkStruct_02267c0c **) &data_ov066_0226bdec)->unk_09) {
+        (*(struct UnkStruct_02267c0c_2 **) &data_ov066_0226bdf4)->unk_95 = 0;
     }
 }
 
 void func_ov066_02267be0(void)
 {
-    (*(UnkStruct_02267be0 * *) &data_ov066_0226bdf0)->unk_0C &= ~2;
-    OS_CancelAlarm(&(*(UnkStruct_02267be0 * *) &data_ov066_0226bdf0)->unk_10);
+    (*(UnkStruct_02267be0 **) &data_ov066_0226bdf0)->unk_0C &= ~2;
+    OS_CancelAlarm(&(*(UnkStruct_02267be0 **) &data_ov066_0226bdf0)->unk_10);
 }
 
 void func_ov066_02267b58(void)
 {
-    struct UnkStruct_02267b58_4 *out = (*(struct UnkStruct_02267b58_2 * *) &data_ov066_0226bdf0)->first;
-    (*(struct UnkStruct_02267b58 * *) &data_ov066_0226bdf4)->unk_8E = (unsigned char) func_ov066_02267db4((unsigned char) ((*(struct UnkStruct_02267b58 * *) &data_ov066_0226bdf4)->unk_95));
-    out->unk_00 = (*(struct UnkStruct_02267b58_2 * *) &data_ov066_0226bdf0)->second;
-    out->unk_04 = (*(struct UnkStruct_02267b58 * *) &data_ov066_0226bdf4)->unk_8E;
-    out->unk_06 = (*(struct UnkStruct_02267b58_3 * *) &data_ov066_0226bdec)->unk_22;
+    struct UnkStruct_02267b58_4 *out = (*(struct UnkStruct_02267b58_2 **) &data_ov066_0226bdf0)->first;
+    (*(struct UnkStruct_02267b58 **) &data_ov066_0226bdf4)->unk_8E =
+        (unsigned char) func_ov066_02267db4((unsigned char) ((*(struct UnkStruct_02267b58 **) &data_ov066_0226bdf4)->unk_95));
+    out->unk_00 = (*(struct UnkStruct_02267b58_2 **) &data_ov066_0226bdf0)->second;
+    out->unk_04 = (*(struct UnkStruct_02267b58 **) &data_ov066_0226bdf4)->unk_8E;
+    out->unk_06 = (*(struct UnkStruct_02267b58_3 **) &data_ov066_0226bdec)->unk_22;
     out->unk_08 = 0xff;
     out->unk_09 = 0xff;
     out->unk_0A = 0xff;
@@ -335,32 +357,34 @@ void func_ov066_02267958(Peer *peer)
 {
     Msg msg;
 
-    DC_InvalidateRange((*(UnkStruct_02267958 * *) &data_ov066_0226bdf0)->link, 0xc0);
+    DC_InvalidateRange((*(UnkStruct_02267958 **) &data_ov066_0226bdf0)->link, 0xc0);
 
-    if ((*(UnkStruct_02267958 * *) &data_ov066_0226bdf0)->link->state == 0) {
-        if ((*(Flags * *) &data_ov066_0226bdec)->f4) {
+    if ((*(UnkStruct_02267958 **) &data_ov066_0226bdf0)->link->state == 0) {
+        if ((*(Flags **) &data_ov066_0226bdec)->f4) {
             return;
         }
-        func_ov066_0226a494((char *) (*(UnkStruct_02267958 * *) &data_ov066_0226bdf0)->objs + (*(UnkStruct_02267958_2 * *) &data_ov066_0226bdf4)->index * 16, 0xfa0, peer->name, 0xacce,
-                            peer->tag, (*(UnkStruct_02267958 * *) &data_ov066_0226bdf0)->link);
+        func_ov066_0226a494((char *) (*(UnkStruct_02267958 **) &data_ov066_0226bdf0)->objs +
+                                (*(UnkStruct_02267958_2 **) &data_ov066_0226bdf4)->index * 16,
+                            0xfa0, peer->name, 0xacce, peer->tag, (*(UnkStruct_02267958 **) &data_ov066_0226bdf0)->link);
         return;
     }
 
-    if (((*(UnkStruct_02267958 * *) &data_ov066_0226bdf0)->link->flags & 1) == 0) {
+    if (((*(UnkStruct_02267958 **) &data_ov066_0226bdf0)->link->flags & 1) == 0) {
         return;
     }
 
-    MI_CpuCopy8((*(UnkStruct_02267958 * *) &data_ov066_0226bdf0)->link->data, &msg, 8);
+    MI_CpuCopy8((*(UnkStruct_02267958 **) &data_ov066_0226bdf0)->link->data, &msg, 8);
     DC_StoreRange(&msg, 8);
 
     if (!func_ov066_0226783c((void *) peer, (struct Param *) (&msg))) {
         return;
     }
 
-    func_ov066_0226a494((char *) (*(UnkStruct_02267958 * *) &data_ov066_0226bdf0)->objs + (*(UnkStruct_02267958_2 * *) &data_ov066_0226bdf4)->index * 16, 0xfa0, peer->name, msg.id,
-                        peer->tag, (*(UnkStruct_02267958 * *) &data_ov066_0226bdf0)->link);
+    func_ov066_0226a494((char *) (*(UnkStruct_02267958 **) &data_ov066_0226bdf0)->objs +
+                            (*(UnkStruct_02267958_2 **) &data_ov066_0226bdf4)->index * 16,
+                        0xfa0, peer->name, msg.id, peer->tag, (*(UnkStruct_02267958 **) &data_ov066_0226bdf0)->link);
 
-    if (!(*(Flags * *) &data_ov066_0226bdec)->f3) {
+    if (!(*(Flags **) &data_ov066_0226bdec)->f3) {
         return;
     }
     // msg.id is read again from the stack for each compare.
@@ -371,12 +395,13 @@ void func_ov066_02267958(Peer *peer)
     if (*(volatile u16 *) &msg != 0x2348) {
         return;
     }
-    if ((*(UnkStruct_02267958 * *) &data_ov066_0226bdf0)->f0) {
+    if ((*(UnkStruct_02267958 **) &data_ov066_0226bdf0)->f0) {
         return;
     }
-    OS_CancelAlarm(&(*(UnkStruct_02267958 * *) &data_ov066_0226bdf0)->queue);
-    OS_SetAlarm(&(*(UnkStruct_02267958 * *) &data_ov066_0226bdf0)->queue, (unsigned long long) 0x3d5dULL, (void (*)(void)) func_ov066_0226794c, 0);
-    (*(UnkStruct_02267958 * *) &data_ov066_0226bdf0)->f0 = 1;
+    OS_CancelAlarm(&(*(UnkStruct_02267958 **) &data_ov066_0226bdf0)->queue);
+    OS_SetAlarm(&(*(UnkStruct_02267958 **) &data_ov066_0226bdf0)->queue, (unsigned long long) 0x3d5dULL,
+                (void (*)(void)) func_ov066_0226794c, 0);
+    (*(UnkStruct_02267958 **) &data_ov066_0226bdf0)->f0 = 1;
 }
 
 void func_ov066_0226794c(void *argument)
@@ -386,22 +411,22 @@ void func_ov066_0226794c(void *argument)
 
 void func_ov066_02267908(void)
 {
-    (*(struct UnkStruct_02267908 * *) &data_ov066_0226bdf4)->unk_C0 |= 0x100;
-    OS_CancelAlarm((char *) (*(char * *) &data_ov066_0226bdf0) + 0x3c);
+    (*(struct UnkStruct_02267908 **) &data_ov066_0226bdf4)->unk_C0 |= 0x100;
+    OS_CancelAlarm((char *) (*(char **) &data_ov066_0226bdf0) + 0x3c);
     func_ov066_02267be0();
 }
 
 int func_ov066_0226783c(void *arg0, struct Param *p)
 {
-    struct UnkStruct_0226783c_3 *s = (*(struct UnkStruct_0226783c_3 * *) &data_ov066_0226bdec);
+    struct UnkStruct_0226783c_3 *s = (*(struct UnkStruct_0226783c_3 **) &data_ov066_0226bdec);
 
     if (s->b5) {
-        if ((*(struct UnkStruct_0226783c * *) &data_ov066_0226bdf0)->unk_04->unk_44 != s->unk_28) {
+        if ((*(struct UnkStruct_0226783c **) &data_ov066_0226bdf0)->unk_04->unk_44 != s->unk_28) {
             goto fail;
         }
     }
     if (s->b6) {
-        if (p->unk_04 != (*(struct UnkStruct_0226783c_2 * *) &data_ov066_0226bdf4)->unk_95) {
+        if (p->unk_04 != (*(struct UnkStruct_0226783c_2 **) &data_ov066_0226bdf4)->unk_95) {
             goto fail;
         }
     }
@@ -410,40 +435,40 @@ int func_ov066_0226783c(void *arg0, struct Param *p)
             goto fail;
         }
     }
-    if ((*(struct UnkStruct_0226783c * *) &data_ov066_0226bdf0)->unk_6C != 0) {
+    if ((*(struct UnkStruct_0226783c **) &data_ov066_0226bdf0)->unk_6C != 0) {
         goto call_func;
     }
     return 1;
 call_func:
-    return (*(struct UnkStruct_0226783c * *) &data_ov066_0226bdf0)->unk_6C(arg0);
+    return (*(struct UnkStruct_0226783c **) &data_ov066_0226bdf0)->unk_6C(arg0);
 fail:
     return 0;
 }
 
 void *func_ov066_022677e0(unsigned int arg)
 {
-    if ((*(UnkStruct_022677e0 * *) &data_ov066_0226bdf0) == 0) {
+    if ((*(UnkStruct_022677e0 **) &data_ov066_0226bdf0) == 0) {
         goto fail;
     }
-    if (arg >= (*(UnkStruct_022677e0_2 * *) &data_ov066_0226bdec)->count) {
+    if (arg >= (*(UnkStruct_022677e0_2 **) &data_ov066_0226bdec)->count) {
         goto fail;
     }
-    return func_ov066_0226a434((*(UnkStruct_022677e0 * *) &data_ov066_0226bdf0)->base + (arg << 4));
+    return func_ov066_0226a434((*(UnkStruct_022677e0 **) &data_ov066_0226bdf0)->base + (arg << 4));
 fail:
     return 0;
 }
 
 int func_ov066_02267784(unsigned int idx, int arg)
 {
-    if ((*(struct ListStruct * *) &data_ov066_0226bdf0) != 0 && idx < (*(unsigned char * *) &data_ov066_0226bdec)[9]) {
-        return func_ov066_0226a418((char *) (*(struct ListStruct * *) &data_ov066_0226bdf0)->entries + (idx << 4), arg);
+    if ((*(struct ListStruct **) &data_ov066_0226bdf0) != 0 && idx < (*(unsigned char **) &data_ov066_0226bdec)[9]) {
+        return func_ov066_0226a418((char *) (*(struct ListStruct **) &data_ov066_0226bdf0)->entries + (idx << 4), arg);
     }
     return 0;
 }
 
 void func_ov066_02267740(void)
 {
-    int status = WM_StartScan((void (*)(void *)) func_ov066_022676a0, *(*(int * *) &data_ov066_0226bdf0));
+    int status = WM_StartScan((void (*)(void *)) func_ov066_022676a0, *(*(int **) &data_ov066_0226bdf0));
     if (status == 2) {
         return;
     }
@@ -463,11 +488,12 @@ void func_ov066_022676a0(struct UnkStruct_022676a0_3 *self)
         } else {
             return;
         }
-        if ((*(struct UnkStruct_022676a0 * *) &data_ov066_0226bdf0)->flag) {
+        if ((*(struct UnkStruct_022676a0 **) &data_ov066_0226bdf0)->flag) {
             func_ov066_02267c0c();
             return;
         }
-        func_ov066_0226a404((*(struct UnkStruct_022676a0_2 * *) &data_ov066_0226bdf4)->unk_95 * 16 + (*(struct UnkStruct_022676a0 * *) &data_ov066_0226bdf0)->base);
+        func_ov066_0226a404((*(struct UnkStruct_022676a0_2 **) &data_ov066_0226bdf4)->unk_95 * 16 +
+                            (*(struct UnkStruct_022676a0 **) &data_ov066_0226bdf0)->base);
         func_ov066_0226768c();
     } else {
         func_ov066_0226686c(self->unk_02);
@@ -476,7 +502,7 @@ void func_ov066_022676a0(struct UnkStruct_022676a0_3 *self)
 
 void func_ov066_0226768c(void)
 {
-    WM_EndScan((void (*)(void *)) (void (*)(void *)) func_ov066_0226763c);
+    WM_EndScan((void (*)(void *))(void (*)(void *)) func_ov066_0226763c);
 }
 
 void func_ov066_0226763c(Arg *arg)
@@ -485,7 +511,7 @@ void func_ov066_0226763c(Arg *arg)
         return;
     }
     if (arg->field == 0) {
-        (*(Target * *) &data_ov066_0226bdec)->field = 4;
+        (*(Target **) &data_ov066_0226bdec)->field = 4;
         func_ov066_02266bf4();
         return;
     } else {

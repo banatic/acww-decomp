@@ -218,7 +218,7 @@ void func_0205dfa8(UnkStruct_0205dfa8 *obj)
         func_02055c80(&obj->elems[i], v1, v2, v3);
     }
 
-    base = (*(void * *) data_021c9adc);
+    base = (*(void **) data_021c9adc);
     for (i = 0; i < count; i++) {
         obj->arr[i] = func_020e9968(base, func_0205e0b0(), 4);
     }
@@ -234,8 +234,8 @@ void func_0205df54(UnkStruct_0205df54 *self)
     for (i = 0; i < 4; i++) {
         self->unk_00[i] = 0;
     }
-    if ((*(void * *) data_021c9adc)) {
-        func_020e9b9c((*(void * *) data_021c9adc));
+    if ((*(void **) data_021c9adc)) {
+        func_020e9b9c((*(void **) data_021c9adc));
     }
     for (i = 0; i < 4; i++) {
         self->unk_D0[i] = 0x4b;

@@ -212,7 +212,7 @@ void func_020a67d8(UnkStruct_020a67d8_2 *self)
     UnkStruct_020a67d8 **ptr4;
     void **ptr5;
     void **p;
-    idx = (*(UnkStruct_020a67d8 * *) &data_020ccf94)->idx;
+    idx = (*(UnkStruct_020a67d8 **) &data_020ccf94)->idx;
     if ((!ptr3) && (!ptr3)) {
     }
     ptr5 = (void **) ((((char *) self) + 0x2c) + (idx * 4));
@@ -222,7 +222,7 @@ void func_020a67d8(UnkStruct_020a67d8_2 *self)
     func_020a76d8(ptr3, ptr2);
     if (val != 0) {
         ch = (u8) val;
-        ptr4 = ((UnkStruct_020a67d8 * *) &data_020ccf94);
+        ptr4 = ((UnkStruct_020a67d8 **) &data_020ccf94);
         obj = *ptr4;
         func_02073820((void *) obj);
         ptr = obj;
@@ -342,7 +342,7 @@ void func_020a636c(struct UnkStruct_020a636c_2 *self)
     struct UnkStruct_020a636c *g;
     struct UnkStruct_020a636c *h;
 
-    g = (*(struct UnkStruct_020a636c * *) &data_020ccf94);
+    g = (*(struct UnkStruct_020a636c **) &data_020ccf94);
     n = g->unk_64;
 
     switch (func_020a6684((int *) self)) {
@@ -474,7 +474,7 @@ void func_020a636c(struct UnkStruct_020a636c_2 *self)
                 func_020a6694((UnkStruct_020a6694 *) self, 0);
                 func_020733ac(g);
                 if (!func_020a6c98(func_020b5e70())) {
-                    h = (*(struct UnkStruct_020a636c * *) &data_020ccf94);
+                    h = (*(struct UnkStruct_020a636c **) &data_020ccf94);
                     func_02073820((void *) h);
                     func_02073770((void *) h, 0xe, func_020a628c((int *) self));
                 }
@@ -659,7 +659,7 @@ void func_020a6188(int arg0)
     UnkStruct_020a6188 *p2;
 
     best = 4;
-    obj = (*(UnkStruct_020a6188 * *) &data_020ccf94);
+    obj = (*(UnkStruct_020a6188 **) &data_020ccf94);
     saved = obj->v;
     i = 3;
 
@@ -680,7 +680,7 @@ void func_020a6188(int arg0)
             i = func_020a7330(best);
             if (i == func_020b65c4()) {
                 if (func_020a6c98((int) func_020b65c4()) == 0) {
-                    p2 = (*(UnkStruct_020a6188 * *) &data_020ccf94);
+                    p2 = (*(UnkStruct_020a6188 **) &data_020ccf94);
                     func_02073820((void *) p2);
                     func_02073770((void *) p2, 0x11, best);
                 }

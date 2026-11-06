@@ -230,7 +230,12 @@ int func_ov122_022a0204(UnkStruct_022a0204 *self)
 
 int func_ov122_022a0168(struct SomeUnk *self)
 {
-    if (((*(struct { unsigned short pad; unsigned short flag; } *) data_021fbe40).flag & 0x800) == 0) {
+    if (((*(struct {
+             unsigned short pad;
+             unsigned short flag;
+         } *) data_021fbe40)
+             .flag &
+         0x800) == 0) {
         return 0;
     }
 
@@ -455,7 +460,9 @@ unsigned char func_ov122_0229fd34(void *p, int n, int *v)
 {
     int x = func_0206de7c((char *) p + 0x3ce8)[n];
     unsigned char temp;
-    int r = (int) func_ov095_0229bb34((char *) ((char *) p + 0xc0), (char *) ((char *) (*(void **) ((char *) p + 0xbc)) + 0x58 + x * 2), 0x28, 0xa0, (unsigned char) ((unsigned char) (*v - 0x30)), (u8 *) (&temp));
+    int r = (int) func_ov095_0229bb34((char *) ((char *) p + 0xc0),
+                                      (char *) ((char *) (*(void **) ((char *) p + 0xbc)) + 0x58 + x * 2), 0x28, 0xa0,
+                                      (unsigned char) ((unsigned char) (*v - 0x30)), (u8 *) (&temp));
     *v = r + 0x30;
     return (unsigned char) (temp + x);
 }
@@ -485,7 +492,8 @@ int func_ov122_0229fc9c(char *p, int *out)
         *out = c + 0x30;
     } else {
         unsigned char d = (unsigned char) (a - c);
-        int e = (int) func_ov095_0229bb34((char *) (p + 0xc0), (char *) (*(char **) (p + 0xbc) + 0xd8), 0x10, 0xa0, d, (u8 *) (&local));
+        int e = (int) func_ov095_0229bb34((char *) (p + 0xc0), (char *) (*(char **) (p + 0xbc) + 0xd8), 0x10, 0xa0, d,
+                                          (u8 *) (&local));
         *out = c + (e + 0x30);
     }
     return local;

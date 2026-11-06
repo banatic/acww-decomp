@@ -437,7 +437,7 @@ void func_02076de4(int a, int sequence, unsigned char category, unsigned int pla
 
     cond = (data_020e54a8 == 0) ? 1 : 0;
     if (cond != 0) {
-        p = (*(struct UnkStruct_02076de4 * *) &data_020ccf94);
+        p = (*(struct UnkStruct_02076de4 **) &data_020ccf94);
         func_020736bc((void *) p, &local, a);
 
         hi = ((unsigned int) local << 20) >> 24;
@@ -678,7 +678,7 @@ void func_020769b8(int a, int b, int c, int d)
     int cond;
     void *ptr;
 
-    func_020736bc((void *) ((*(int * *) &data_020ccf94)), (void *) (&loc0), a);
+    func_020736bc((void *) ((*(int **) &data_020ccf94)), (void *) (&loc0), a);
     func_020789f4(&loc1, &loc2, &loc0);
     cond = func_0207cec0(((int *) data_021e5a2c), loc1);
     if (cond != 0) {
@@ -980,7 +980,7 @@ void func_02076540(unsigned int param0, unsigned int param1, unsigned int param2
 void func_02076518(int length, int sequence, unsigned char category, unsigned int player)
 {
     unsigned char flag;
-    int *ptr = (*(int * *) &data_020ccf94);
+    int *ptr = (*(int **) &data_020ccf94);
     func_020736bc((void *) ptr, (void *) (&flag), 1);
     func_020a6f74(ptr[25], flag);
 }
@@ -1093,7 +1093,7 @@ void func_020762b8(int a, int b, int c, int param)
     UnkStruct_020762b8 *s;
 
     func_020a76cc(local);
-    s = (*(UnkStruct_020762b8 * *) &data_020ccf94);
+    s = (*(UnkStruct_020762b8 **) &data_020ccf94);
     func_020736bc(s, local, 1);
     func_020a7684(local, &local[1], &local[2], &local[3]);
 

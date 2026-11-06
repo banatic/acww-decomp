@@ -161,7 +161,7 @@ void func_02037928(void *arg)
     c = (int) func_02064b2c((int) buf, (int) data_021fbe94, -4, 0);
     *(void **) ((char *) arg + 0x630) = func_021077e8(c);
     func_02056064(*(void **) ((char *) arg + 0x630), 0);
-    *(void **) ((char *) arg + 0x630) = func_020561cc(*(void **) ((char *) arg + 0x630), (*(void * *) &data_021c9b24));
+    *(void **) ((char *) arg + 0x630) = func_020561cc(*(void **) ((char *) arg + 0x630), (*(void **) &data_021c9b24));
     if (c) {
         func_020e9898(c);
     }

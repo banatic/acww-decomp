@@ -226,7 +226,8 @@ int func_02021df0(struct UnkStruct_02021df0_2 *param0, int param1, int param2)
 {
     int result;
     int temp;
-    result = func_02021ea8((void *) (param0->inner->unk_830), (int *) (param1), (int) (param2), (Pred) ((((void *) func_02021e44))));
+    result = func_02021ea8((void *) (param0->inner->unk_830), (int *) (param1), (int) (param2),
+                           (Pred) ((((void *) func_02021e44))));
     if (result != 0) {
         temp = func_02081d64(result);
         func_02015e70(param0, temp, 9);
@@ -247,7 +248,8 @@ int func_02021dcc(int unused, const void *arg)
 int func_02021d78(int a, int b, int c)
 {
     int r5;
-    r5 = func_02021ea8((void *) (*(int *) ((char *) *(int **) ((char *) a + 0x100) + 0x830)), (int *) (b), (int) (c), (Pred) ((((void *) func_02021dcc))));
+    r5 = func_02021ea8((void *) (*(int *) ((char *) *(int **) ((char *) a + 0x100) + 0x830)), (int *) (b), (int) (c),
+                       (Pred) ((((void *) func_02021dcc))));
     if (r5 != 0) {
         int t1;
         int t2;
@@ -282,8 +284,8 @@ int func_02021d10(int a, int b)
 void *func_02021cc8(Arg *arg, int a, int b)
 {
     void *result;
-    result =
-        (void *) func_02021ea8((void *) ((void *) arg->sub->field_0x830), (int *) (a), (int) (b), (Pred) ((((void *) func_02021d10))));
+    result = (void *) func_02021ea8((void *) ((void *) arg->sub->field_0x830), (int *) (a), (int) (b),
+                                    (Pred) ((((void *) func_02021d10))));
     if (result != 0) {
         func_02015e70(arg, (int) ((char *) arg->sub->field_0x830 + 0x7dc), 9);
     }

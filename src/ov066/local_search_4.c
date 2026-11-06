@@ -202,7 +202,8 @@ BOOL func_ov066_0226a494(Mgr *m, int interval, const u8 *mac, u16 chan, u16 leve
                 MIi_CpuCopyFast(payload, m->entries[i].payload, 0xc0);
                 DC_StoreRange(m->entries[i].payload, 0xc0);
                 OS_RestoreInterrupts(en);
-                OS_SetAlarm(&m->alarms[i], (s64) ((s32) (interval * 33514) / 64), (void (*)(void *)) func_ov066_0226a43c, &m->entries[i]);
+                OS_SetAlarm(&m->alarms[i], (s64) ((s32) (interval * 33514) / 64), (void (*)(void *)) func_ov066_0226a43c,
+                            &m->entries[i]);
                 OS_SetAlarmTag(&m->alarms[i], (u32) (m->tag + 0x80));
                 return 1;
             }
@@ -232,7 +233,8 @@ BOOL func_ov066_0226a494(Mgr *m, int interval, const u8 *mac, u16 chan, u16 leve
             DC_StoreRange(e->payload, 0xc0);
             OS_RestoreInterrupts(en);
             OS_CancelAlarm(&m->alarms[i]);
-            OS_SetAlarm(&m->alarms[i], (s64) ((s32) (interval * 33514) / 64), (void (*)(void *)) func_ov066_0226a43c, &m->entries[i]);
+            OS_SetAlarm(&m->alarms[i], (s64) ((s32) (interval * 33514) / 64), (void (*)(void *)) func_ov066_0226a43c,
+                        &m->entries[i]);
             OS_SetAlarmTag(&m->alarms[i], (u32) (m->tag + 0x80));
             if (m->cb != 0) {
                 m->cb(&m->entries[i]);
@@ -300,7 +302,8 @@ void func_ov066_0226a2e8(UnkStruct_0226a2e8 *self, int msec)
     for (i = 0; i < self->count; i++) {
         if (self->slots[i].state == 1) {
             OS_CancelAlarm((OSAlarm *) (&self->alarms[i]));
-            OS_SetAlarm((OSAlarm *) (&self->alarms[i]), (u64) ((long long) (msec * 0x82ea / 64)), (OSAlarmHandler) ((void *) (void (*)(void *)) func_ov066_0226a43c), &self->slots[i]);
+            OS_SetAlarm((OSAlarm *) (&self->alarms[i]), (u64) ((long long) (msec * 0x82ea / 64)),
+                        (OSAlarmHandler) ((void *) (void (*)(void *)) func_ov066_0226a43c), &self->slots[i]);
             OS_SetAlarmTag((OSAlarm *) (&self->alarms[i]), self->unk_00 + 0x80);
         }
     }

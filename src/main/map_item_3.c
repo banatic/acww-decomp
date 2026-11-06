@@ -216,8 +216,9 @@ int func_0204b860(int a)
 
 int func_0204b7f8(void *p)
 {
-    if (func_0204b8c8((int) p) || func_0204b8bc((int) p) || func_0204b8b0((int) p) || func_0204b8a4((int) p) || func_0204b898((int) p) || func_0204b888((unsigned short *) p) ||
-        func_0204b87c((int) p) || func_0204b86c((unsigned short *) p) || func_0204b860((int) p)) {
+    if (func_0204b8c8((int) p) || func_0204b8bc((int) p) || func_0204b8b0((int) p) || func_0204b8a4((int) p) ||
+        func_0204b898((int) p) || func_0204b888((unsigned short *) p) || func_0204b87c((int) p) ||
+        func_0204b86c((unsigned short *) p) || func_0204b860((int) p)) {
         return 1;
     }
     return 0;

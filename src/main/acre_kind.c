@@ -35,7 +35,7 @@ int func_02037c28(void)
 unsigned char func_02037c0c(unsigned int index)
 {
     if (index < (*(unsigned int *) data_021c5910)) {
-        return (*(unsigned char * *) &data_021c590c)[index];
+        return (*(unsigned char **) &data_021c590c)[index];
     }
     return 0;
 }

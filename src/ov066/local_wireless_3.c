@@ -23,7 +23,7 @@ void func_ov066_02266ad4(unsigned short *p)
 {
     unsigned short x = p[1];
     if (x == 0) {
-        (*(int * *) &data_ov066_0226bdec)[1] = 2;
+        (*(int **) &data_ov066_0226bdec)[1] = 2;
         return;
     }
     func_ov066_0226686c((unsigned short) x);
@@ -32,7 +32,7 @@ void func_ov066_02266ad4(unsigned short *p)
 void func_ov066_02266a8c(unsigned short *param)
 {
     if (param[1] == 0) {
-        (*(unsigned int * *) &data_ov066_0226bdec)[1] = 4;
+        (*(unsigned int **) &data_ov066_0226bdec)[1] = 4;
         func_ov066_02269a14();
     } else {
         func_ov066_0226686c(param[1]);

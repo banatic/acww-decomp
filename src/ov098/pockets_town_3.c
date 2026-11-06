@@ -196,14 +196,14 @@ void func_ov098_022a2f2c(UnkStruct_022a2f2c *self)
 
 void func_ov098_022a2ec0(struct BigStruct *obj, char a, char b)
 {
-    if (func_02073d90((int) ((*(void * *) &data_020ccf94)))) {
+    if (func_02073d90((int) ((*(void **) &data_020ccf94)))) {
         char buffer[16];
         void *ptr;
         buffer[0] = b;
         buffer[1] = a;
         func_020779b8(buffer + 7, obj->unk_2E14, obj->unk_2E1C);
         MI_CpuCopy8(buffer + 7, buffer + 2, 5);
-        ptr = (*(void * *) &data_020ccf94);
+        ptr = (*(void **) &data_020ccf94);
         func_02073820(ptr);
         func_020737f0(ptr, buffer, 7);
         func_02073770(ptr, 22, 4);

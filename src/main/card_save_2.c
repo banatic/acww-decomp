@@ -78,20 +78,26 @@ int func_020a145c(void)
     unsigned int a, b, d1, d2;
     d1 = (unsigned int) &data_021ee418 - (unsigned int) ((int *) data_021dc7a8);
     d2 = (unsigned int) &data_021f37f4 - (unsigned int) ((int *) data_021dc7a8);
-    func_02090168((int) &data_021ee418, func_020508fc((void *) ((int) &data_021ee418), 0x950, func_0209015c((int) &data_021ee418)));
-    func_0208fff4((int) &data_021f37f4, func_020508fc((void *) ((int) &data_021f37f4), 0x104, func_0208ffe8((int) &data_021f37f4)));
+    func_02090168((int) &data_021ee418,
+                  func_020508fc((void *) ((int) &data_021ee418), 0x950, func_0209015c((int) &data_021ee418)));
+    func_0208fff4((int) &data_021f37f4,
+                  func_020508fc((void *) ((int) &data_021f37f4), 0x104, func_0208ffe8((int) &data_021f37f4)));
     a = ((int *) data_020d1c20)[0];
-    if (func_02050af8((char *) ((int) ((int *) data_021c8188)), (char *) (a + d1), (void *) ((int) &data_021ee418), 0x950) == 1) {
+    if (func_02050af8((char *) ((int) ((int *) data_021c8188)), (char *) (a + d1), (void *) ((int) &data_021ee418), 0x950) ==
+        1) {
         return 1;
     }
     b = ((int *) data_020d1c20)[1];
-    if (func_02050af8((char *) ((int) ((int *) data_021c8188)), (char *) (b + d1), (void *) ((int) &data_021ee418), 0x950) == 1) {
+    if (func_02050af8((char *) ((int) ((int *) data_021c8188)), (char *) (b + d1), (void *) ((int) &data_021ee418), 0x950) ==
+        1) {
         return 1;
     }
-    if (func_02050af8((char *) ((int) ((int *) data_021c8188)), (char *) (a + d2), (void *) ((int) &data_021f37f4), 0x104) == 1) {
+    if (func_02050af8((char *) ((int) ((int *) data_021c8188)), (char *) (a + d2), (void *) ((int) &data_021f37f4), 0x104) ==
+        1) {
         return 1;
     }
-    if (func_02050af8((char *) ((int) ((int *) data_021c8188)), (char *) (b + d2), (void *) ((int) &data_021f37f4), 0x104) == 1) {
+    if (func_02050af8((char *) ((int) ((int *) data_021c8188)), (char *) (b + d2), (void *) ((int) &data_021f37f4), 0x104) ==
+        1) {
         return 1;
     }
     return 0;

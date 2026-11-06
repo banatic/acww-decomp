@@ -229,7 +229,8 @@ void func_020665b8(void *arg)
     func_020666b4((char *) arg + 4);
     c = 0x23;
     p = &c;
-    func_02065d0c((const char *) p, (const unsigned short *) ((char *) arg + 0x44), (unsigned char *) ((char *) arg + 0xf8), 0);
+    func_02065d0c((const char *) p, (const unsigned short *) ((char *) arg + 0x44), (unsigned char *) ((char *) arg + 0xf8),
+                  0);
 }
 
 void func_0206658c(UnkStruct_0206658c *ptr, int index)
@@ -388,7 +389,8 @@ void func_020662bc(int p1, int p2, int p3, int p4, int p5, int p6, int p7)
     func_02094fbc((void *) (&local2));
 
     func_0203d930(((char *) data_021cd8c4), ((char *) data_021cd9b0), ((char *) data_021cd8ec), &local3, p2, p3);
-    func_02066344((char *) p1, (int) (((char *) data_021cd8c4)), (int) (((char *) data_021cd9b0)), (int) (((char *) data_021cd8ec)), local3, (unsigned char *) p4, p5, p6);
+    func_02066344((char *) p1, (int) (((char *) data_021cd8c4)), (int) (((char *) data_021cd9b0)),
+                  (int) (((char *) data_021cd8ec)), local3, (unsigned char *) p4, p5, p6);
 }
 
 void func_02066228(int a0, int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9)
@@ -411,7 +413,8 @@ void func_02066228(int a0, int a1, int a2, int a3, int a4, int a5, int a6, int a
 
     func_0203d834((unsigned int) data_021cd8c4, (unsigned int) data_021cd9b0, (unsigned int) data_021cd8ec, &tmp, a1, a2, a3,
                   a4, a5);
-    func_02066344((char *) a0, (unsigned int) data_021cd8c4, (unsigned int) data_021cd9b0, (unsigned int) data_021cd8ec, tmp, (unsigned char *) a6, a7, a8);
+    func_02066344((char *) a0, (unsigned int) data_021cd8c4, (unsigned int) data_021cd9b0, (unsigned int) data_021cd8ec, tmp,
+                  (unsigned char *) a6, a7, a8);
 }
 
 void func_02066198(void *self, int a2, int a3, int a4, int a5, const unsigned char *a6, int a7, int a8)
@@ -464,9 +467,11 @@ void func_02066104(int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a
     func_0203d73c(&local38);
     func_02094fbc(&local38);
 
-    func_0203d834((int) (((char *) data_021cd8c4)), (int) (((char *) data_021cd9b0)), (int) (((char *) data_021cd8ec)), (void *) (&local14), a2, a3, a4, a5, a6);
+    func_0203d834((int) (((char *) data_021cd8c4)), (int) (((char *) data_021cd9b0)), (int) (((char *) data_021cd8ec)),
+                  (void *) (&local14), a2, a3, a4, a5, a6);
 
-    func_02066198((void *) a1, (int) (((char *) data_021cd8c4)), (int) (((char *) data_021cd9b0)), (int) (((char *) data_021cd8ec)), local14, (const unsigned char *) a7, a8, a9);
+    func_02066198((void *) a1, (int) (((char *) data_021cd8c4)), (int) (((char *) data_021cd9b0)),
+                  (int) (((char *) data_021cd8ec)), local14, (const unsigned char *) a7, a8, a9);
 
     return;
 }
@@ -501,8 +506,10 @@ void func_02066024(int p1, int p2, int p3, int p4, int p5, int p6)
     func_02095074(p6, &local);
     func_0203d73c(&local);
     func_02094fbc(&local);
-    func_0203d930((void *) ((unsigned int) data_021cd8c4), (void *) ((unsigned int) data_021cd9b0), (void *) ((unsigned int) data_021cd8ec), &tmp, p2, p3);
-    func_02066088((char *) p1, (unsigned int) data_021cd8c4, (unsigned int) data_021cd9b0, (unsigned int) data_021cd8ec, tmp, (unsigned char *) p4, (unsigned char *) p5, p6);
+    func_0203d930((void *) ((unsigned int) data_021cd8c4), (void *) ((unsigned int) data_021cd9b0),
+                  (void *) ((unsigned int) data_021cd8ec), &tmp, p2, p3);
+    func_02066088((char *) p1, (unsigned int) data_021cd8c4, (unsigned int) data_021cd9b0, (unsigned int) data_021cd8ec, tmp,
+                  (unsigned char *) p4, (unsigned char *) p5, p6);
 }
 
 void func_02065fc4(UnkStruct_02065fc4 *self, int a, int b, int c, int d)
@@ -523,8 +530,10 @@ void func_02065fc4(UnkStruct_02065fc4 *self, int a, int b, int c, int d)
 void func_02065f88(int a, int b, int c)
 {
     int result;
-    func_0203d930(((char *) data_021cd8c4), ((char *) data_021cd9b0), ((char *) data_021cd8ec), &result, (int) ((const unsigned char *) b), c);
-    func_02065fc4((UnkStruct_02065fc4 *) a, (int) (((char *) data_021cd8c4)), (int) (((char *) data_021cd9b0)), (int) (((char *) data_021cd8ec)), result);
+    func_0203d930(((char *) data_021cd8c4), ((char *) data_021cd9b0), ((char *) data_021cd8ec), &result,
+                  (int) ((const unsigned char *) b), c);
+    func_02065fc4((UnkStruct_02065fc4 *) a, (int) (((char *) data_021cd8c4)), (int) (((char *) data_021cd9b0)),
+                  (int) (((char *) data_021cd8ec)), result);
 }
 
 int func_02065f7c(void *a)
@@ -630,7 +639,8 @@ void func_02065e60(struct UnkStruct_02065e60 *p)
         return;
     }
 
-    result = (unsigned char *) func_02098ddc((void *) ((unsigned int) (int) func_02099734((void *) ((int) (int) func_020984e8()))));
+    result =
+        (unsigned char *) func_02098ddc((void *) ((unsigned int) (int) func_02099734((void *) ((int) (int) func_020984e8()))));
     func_02051c08(result, p->unk_44, 0xa);
     p->unk_F8 = result[0x48];
 }
@@ -645,7 +655,8 @@ void func_02065e10(void *obj, const unsigned short *p)
         func_02051bf8(&local[2], 6);
         func_02065f58((int) obj, &local[2]);
         local[0] = 0x24;
-        func_02065d0c((const char *) local, (const unsigned short *) ((unsigned char *) obj + 0xd8), (unsigned char *) (&local[1]), &local[2]);
+        func_02065d0c((const char *) local, (const unsigned short *) ((unsigned char *) obj + 0xd8),
+                      (unsigned char *) (&local[1]), &local[2]);
     }
 }
 
@@ -712,7 +723,8 @@ void func_02065cc8(void *p)
     buf[0] = 0x23;
     func_02065d0c((const char *) buf, (const unsigned short *) p, (unsigned char *) ((char *) p + 0x48), 0);
     buf[1] = 0x26;
-    func_02065d0c((const char *) (buf + 1), (const unsigned short *) ((char *) p + 0x14), (unsigned char *) ((char *) p + 0x49), 0);
+    func_02065d0c((const char *) (buf + 1), (const unsigned short *) ((char *) p + 0x14),
+                  (unsigned char *) ((char *) p + 0x49), 0);
 }
 
 void *func_02065cb0(void *self)

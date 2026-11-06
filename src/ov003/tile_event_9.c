@@ -201,7 +201,8 @@ void func_ov003_022210d4(int self, int arg1, int *p2, int *p3, short arg4, int a
     local2[0] = p2[0];
     local2[1] = p2[1];
 
-    func_ov003_022213f8((u32 *) (((int *) data_ov003_0223cfe4)), self, (u32 *) local2, (u32 *) local3, 5, arg1, (short) arg4, arg5);
+    func_ov003_022213f8((u32 *) (((int *) data_ov003_0223cfe4)), self, (u32 *) local2, (u32 *) local3, 5, arg1, (short) arg4,
+                        arg5);
 }
 
 void func_ov003_02221094(int a0, int a1, struct UnkStruct_02221094 *p2, struct UnkStruct_02221094_2 *p3, int a4)
@@ -227,5 +228,6 @@ void func_ov003_02221054(void *arg1, unsigned int arg2, UnkStruct_02221054 *arg3
     local3.c = arg4->c;
     local2.a = arg3->a;
     local2.b = arg3->b;
-    func_ov003_022213f8((u32 *) (((char *) data_ov003_0223cfe4)), (u32) arg1, (u32 *) (&local2), (u32 *) (&local3), 7, arg2, 0, 0);
+    func_ov003_022213f8((u32 *) (((char *) data_ov003_0223cfe4)), (u32) arg1, (u32 *) (&local2), (u32 *) (&local3), 7, arg2, 0,
+                        0);
 }

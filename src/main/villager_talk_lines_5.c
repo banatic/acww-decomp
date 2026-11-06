@@ -80,14 +80,36 @@ void func_0201f380(char *a, struct UnkStruct_0201f380 *b)
 void func_0201f31c(UnkStruct_0201f31c *self, UnkStruct_0201f31c_2 *out)
 {
     int val = func_020036e8(func_0208150c(self->p->unk_830));
-    func_0202da38((void *) self, (void *) self->unk_104, (void *) (&self->unk_122), 0x1e, val, (*(struct { int field0; unsigned char field4; } *) &data_020c8ba0).field0, 1, 10, (*(struct { int field0; unsigned char field4; } *) &data_020c8ba0).field4);
+    func_0202da38((void *) self, (void *) self->unk_104, (void *) (&self->unk_122), 0x1e, val,
+                  (*(struct {
+                      int field0;
+                      unsigned char field4;
+                  } *) &data_020c8ba0)
+                      .field0,
+                  1, 10,
+                  (*(struct {
+                      int field0;
+                      unsigned char field4;
+                  } *) &data_020c8ba0)
+                      .field4);
     out->ptr = self->unk_104;
     out->flag = self->unk_122;
 }
 
 void func_0201f2b8(UnkStruct_0201f2b8 *s, UnkStruct_0201f2b8_2 *out)
 {
-    func_0202da38((void *) s, (void *) s->buf, (void *) (&s->buf[0x1e]), 30, func_020036e8(func_0208150c(s->inner->unk_830)), (*(struct { int word; unsigned char byte; } *) &data_020c8ba0).word, 1, 7, (*(struct { int word; unsigned char byte; } *) &data_020c8ba0).byte);
+    func_0202da38((void *) s, (void *) s->buf, (void *) (&s->buf[0x1e]), 30, func_020036e8(func_0208150c(s->inner->unk_830)),
+                  (*(struct {
+                      int word;
+                      unsigned char byte;
+                  } *) &data_020c8ba0)
+                      .word,
+                  1, 7,
+                  (*(struct {
+                      int word;
+                      unsigned char byte;
+                  } *) &data_020c8ba0)
+                      .byte);
     out->ptr = s->buf;
     out->byte = s->buf[0x1e];
 }

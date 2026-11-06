@@ -155,7 +155,8 @@ void func_0201eaa8(Main *self, UnkStruct_0201eaa8_2 *out)
 
     e = func_020036e8(func_0208150c(self->sub->ptr));
 
-    func_0202da38((UnkStruct_0201eb5c_2 *) self, (char *) self + 0x104, (char *) self + 0x122, 0x1e, e, (void *) ((*(DataAtC8D60 *) &data_020c8d60).unk_00), 1, h, (*(DataAtC8D60 *) &data_020c8d60).unk_04);
+    func_0202da38((UnkStruct_0201eb5c_2 *) self, (char *) self + 0x104, (char *) self + 0x122, 0x1e, e,
+                  (void *) ((*(DataAtC8D60 *) &data_020c8d60).unk_00), 1, h, (*(DataAtC8D60 *) &data_020c8d60).unk_04);
 
     out->p = (char *) self + 0x104;
     out->b = self->b;
@@ -167,7 +168,9 @@ void func_0201ea44(struct UnkStruct_0201ea44 *a, struct UnkStruct_0201ea44_4 *b)
     int x;
     v = a->ptr->val;
     x = func_020036e8((void *) ((int) func_0208150c((void *) v)));
-    func_0202da38((UnkStruct_0201eb5c_2 *) a, (char *) a->arr, (char *) (&a->byte), 30, x, (void *) ((*(struct UnkStruct_0201ea44_3 *) &data_020c8d60).word), 1, 0, (*(struct UnkStruct_0201ea44_3 *) &data_020c8d60).byte);
+    func_0202da38((UnkStruct_0201eb5c_2 *) a, (char *) a->arr, (char *) (&a->byte), 30, x,
+                  (void *) ((*(struct UnkStruct_0201ea44_3 *) &data_020c8d60).word), 1, 0,
+                  (*(struct UnkStruct_0201ea44_3 *) &data_020c8d60).byte);
     b->ptr = a->arr;
     b->byte = a->byte;
 }

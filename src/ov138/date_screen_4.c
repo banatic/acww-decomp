@@ -260,7 +260,8 @@ void func_ov138_0229cbec(void *self)
 {
     if ((*(unsigned short *) data_021fbe40) & 1) {
         func_ov134_02299a90((char *) self + 0x2c8);
-        func_ov002_0220a0b4((char *) self + 0x98, (int) ((void *) func_ov138_0229c7a8(self)), (int) ((void *) func_ov138_0229c754(self)));
+        func_ov002_0220a0b4((char *) self + 0x98, (int) ((void *) func_ov138_0229c7a8(self)),
+                            (int) ((void *) func_ov138_0229c754(self)));
     } else {
         func_ov134_02299a84((char *) self + 0x2c8);
         func_ov002_02208098((void *) (self), 7);

@@ -110,11 +110,12 @@ void func_020afdc8(UnkStruct_020afdc8 *self, int p1, int p2)
     if (func_020b65c4() != p1) {
         return;
     }
-    if ((*(UnkStruct_020afdc8_2 * *) &data_021c80bc) == 0) {
+    if ((*(UnkStruct_020afdc8_2 **) &data_021c80bc) == 0) {
         return;
     }
-    if ((*(UnkStruct_020afdc8_2 * *) &data_021c80bc)->unk_04 > z && (*(UnkStruct_020afdc8_2 * *) &data_021c80bc)->unk_08 > z && (*(UnkStruct_020afdc8_2 * *) &data_021c80bc)->unk_00 != 0) {
-        obj = (*(UnkStruct_020afdc8_2 * *) &data_021c80bc)->unk_00;
+    if ((*(UnkStruct_020afdc8_2 **) &data_021c80bc)->unk_04 > z && (*(UnkStruct_020afdc8_2 **) &data_021c80bc)->unk_08 > z &&
+        (*(UnkStruct_020afdc8_2 **) &data_021c80bc)->unk_00 != 0) {
+        obj = (*(UnkStruct_020afdc8_2 **) &data_021c80bc)->unk_00;
     } else {
         obj = 0;
     }

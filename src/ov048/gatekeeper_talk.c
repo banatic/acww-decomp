@@ -296,7 +296,7 @@ int func_ov048_02260a60(void *obj)
     int n, i, ret;
     long long v;
 
-    base = func_02073144((*(void * *) &data_020ccf94));
+    base = func_02073144((*(void **) &data_020ccf94));
     n = 0;
     for (i = 0; i < 0x20; i++) {
         if (*(unsigned char *) (base + i * 0x23 + 0x1a0) == 6) {

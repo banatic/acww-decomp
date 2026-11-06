@@ -283,7 +283,7 @@ int func_02046730(int param)
 int func_020466e0(int a, int b)
 {
     int idx = -1;
-    if (func_02073d90((unsigned int) ((*(void * *) &data_020ccf94))) == 0) {
+    if (func_02073d90((unsigned int) ((*(void **) &data_020ccf94))) == 0) {
         Pair_020466e0 *p = (Pair_020466e0 *) func_020466d8();
         int i = 0;
         while (i < 24) {

@@ -91,7 +91,7 @@ void func_0205f9d4(unsigned char p0, unsigned char p1, int p2, int p3, int p4)
     if (func_020a7278()) {
         func_0205fa40((int) buf);
     } else {
-        void *base = (*(void * *) &data_020ccf94);
+        void *base = (*(void **) &data_020ccf94);
         func_02073820(base);
         func_020737f0(base, (int) buf, 5);
         func_02073770(base, 0x13, 6);

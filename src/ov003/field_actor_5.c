@@ -355,14 +355,16 @@ int func_ov003_0220ced4(void *p1, void *p2, void *p3)
                                             *(int *) ((char *) p3 + 8) - *(int *) ((char *) p1 + 0x64));
     }
 
-    func_0200fa1c((int *) buf1, p1, (const u8 *) ((char *) p1 + 0x5c), (const u8 *) (&local_short), (const u8 *) data_ov003_02238124);
+    func_0200fa1c((int *) buf1, p1, (const u8 *) ((char *) p1 + 0x5c), (const u8 *) (&local_short),
+                  (const u8 *) data_ov003_02238124);
     ((int *) p2)[0] = buf1[0];
     ((int *) p2)[1] = buf1[1];
     ((int *) p2)[2] = buf1[2];
 
     ret = func_02031614(p2);
 
-    func_0200fa1c((int *) buf2, p1, (const u8 *) ((char *) p1 + 0x5c), (const u8 *) (&local_short), (const u8 *) data_ov003_0223810c);
+    func_0200fa1c((int *) buf2, p1, (const u8 *) ((char *) p1 + 0x5c), (const u8 *) (&local_short),
+                  (const u8 *) data_ov003_0223810c);
 
     if (ret != 0) {
         if (func_02031614(buf2) != 0) {

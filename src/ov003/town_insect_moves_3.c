@@ -158,7 +158,8 @@ void func_ov003_02232b68(unsigned char *self)
 
     p = (Vec3 *) (self + 0x204);
     w = *(short *) (self + 0x232);
-    if (func_02073dd4((void *) ((*(UnkStruct_02232b68 * *) &data_020ccf94)), (*(UnkStruct_02232b68 * *) &data_020ccf94)->unk_64) != 0) {
+    if (func_02073dd4((void *) ((*(UnkStruct_02232b68 **) &data_020ccf94)),
+                      (*(UnkStruct_02232b68 **) &data_020ccf94)->unk_64) != 0) {
         if (func_ov003_02232210(self) != 0) {
             return;
         }
@@ -169,11 +170,15 @@ void func_ov003_02232b68(unsigned char *self)
     }
     func_ov003_02233e4c((void *) self, (int *) (&v));
     if (self[0x254] >= self[0x255] &&
-        (func_02073dd4((void *) ((*(UnkStruct_02232b68 * *) &data_020ccf94)), (*(UnkStruct_02232b68 * *) &data_020ccf94)->unk_64) == 0 || func_020a7278() != 0 ||
+        (func_02073dd4((void *) ((*(UnkStruct_02232b68 **) &data_020ccf94)),
+                       (*(UnkStruct_02232b68 **) &data_020ccf94)->unk_64) == 0 ||
+         func_020a7278() != 0 ||
          (*(int *) (self + 0x1d4) == *(int *) (self + 0x204) && *(int *) (self + 0x1dc) == *(int *) (self + 0x20c)))) {
         self[0x251] = 7;
         func_020550e4((void *) (self + 0x50), 0);
-        if (func_02073dd4((void *) ((*(UnkStruct_02232b68 * *) &data_020ccf94)), (*(UnkStruct_02232b68 * *) &data_020ccf94)->unk_64) != 0 && func_020a7278() != 0) {
+        if (func_02073dd4((void *) ((*(UnkStruct_02232b68 **) &data_020ccf94)),
+                          (*(UnkStruct_02232b68 **) &data_020ccf94)->unk_64) != 0 &&
+            func_020a7278() != 0) {
             Vec3 *s = (Vec3 *) (self + 0x204);
             Vec3 *d = (Vec3 *) (self + 0x1d4);
             d->x = s->x;
@@ -203,7 +208,7 @@ int func_ov003_02232aa0(char *self, short *out)
     st = (s8 *) (self + 0x24e);
     p = (int *) (self + 0x204);
     if (*st <= 0) {
-        if (func_02073dd4((*(UnkStruct_02232aa0 * *) &data_020ccf94), (*(UnkStruct_02232aa0 * *) &data_020ccf94)->unk_64) != 0) {
+        if (func_02073dd4((*(UnkStruct_02232aa0 **) &data_020ccf94), (*(UnkStruct_02232aa0 **) &data_020ccf94)->unk_64) != 0) {
             for (i = 0; i < 4; i++) {
                 *st = (s8) func_ov003_02219d04(p, i);
                 if (*st > 0) {

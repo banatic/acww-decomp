@@ -39,8 +39,8 @@ void func_ov066_02266800(unsigned char a, unsigned char b)
 
 int func_ov066_022667e0(int value)
 {
-    if ((*(UnkStruct_022667e0 * *) &data_ov066_0226bdec) != 0) {
-        (*(UnkStruct_022667e0 * *) &data_ov066_0226bdec)->unk_38 = value;
+    if ((*(UnkStruct_022667e0 **) &data_ov066_0226bdec) != 0) {
+        (*(UnkStruct_022667e0 **) &data_ov066_0226bdec)->unk_38 = value;
         return 1;
     } else {
         return 0;

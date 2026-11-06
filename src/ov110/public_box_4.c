@@ -450,7 +450,8 @@ void func_ov110_0229d054(void *self)
 
 void func_ov110_0229cff8(void *self, void *param2)
 {
-    if (func_ov110_0229d5e4((int) self, (unsigned int) param2) != 0 || func_ov110_0229d5d4((int) self, (unsigned int) param2) != 0) {
+    if (func_ov110_0229d5e4((int) self, (unsigned int) param2) != 0 ||
+        func_ov110_0229d5d4((int) self, (unsigned int) param2) != 0) {
         int r = func_ov110_0229d590((int) self, (int) param2);
         func_ov094_0229ab1c((char *) self + 0x138, r);
         func_ov094_0229b98c((char *) self + 0xb98);
@@ -528,7 +529,8 @@ void func_ov110_0229cea8(char *self)
 
 void func_ov110_0229ce44(UnkStruct_0229ce44 *s)
 {
-    if (func_ov110_0229d5e4((int) s, (unsigned char) s->unk_F5) != 0 || func_ov110_0229d5d4((int) s, (unsigned char) s->unk_F5) != 0) {
+    if (func_ov110_0229d5e4((int) s, (unsigned char) s->unk_F5) != 0 ||
+        func_ov110_0229d5d4((int) s, (unsigned char) s->unk_F5) != 0) {
         if (func_ov110_0229d0fc((int) s, (unsigned char) s->unk_F5) != 0) {
             func_ov002_02207cf0(&s->unk_21F8);
         } else {

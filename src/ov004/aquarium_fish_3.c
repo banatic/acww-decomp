@@ -357,7 +357,7 @@ void func_ov004_02235b28(unsigned char *self)
     unsigned char *other;
     int angle;
     int theirs;
-    slot = &((unsigned char * *) data_ov004_022594d4)[self[0x1e8]];
+    slot = &((unsigned char **) data_ov004_022594d4)[self[0x1e8]];
     other = *slot;
     if (other) {
         position = (Vec *) (other + 0x1a8);
@@ -404,7 +404,7 @@ void func_ov004_02235ac4(char *self)
     *(s16 *) (self + 0x1ec) = *(s16 *) (self + 0x1c0);
     i = *(u8 *) (self + 0x1e8);
     if (i != *(volatile int *) (self + 0x15c)) {
-        char *e = ((char * *) data_ov004_022594d4)[i];
+        char *e = ((char **) data_ov004_022594d4)[i];
         if (e != 0) {
             *(u8 *) (e + 0x1c9) = 0;
         }

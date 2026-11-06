@@ -145,7 +145,8 @@ void func_020272c0(UnkStruct_020272c0 *self, UnkStruct_020272c0_4 *out)
             break;
     }
 
-    v = func_020036e8((int) ((unsigned char *) (unsigned int) func_0208150c((void *) (((UnkStruct_020272c0_2 *) self->unk_100)->unk_830))));
+    v = func_020036e8(
+        (int) ((unsigned char *) (unsigned int) func_0208150c((void *) (((UnkStruct_020272c0_2 *) self->unk_100)->unk_830))));
     func_0202da38((void *) self, (void *) self->unk_104, (void *) (&self->unk_122), 30, v, data->a, data->b, 0, 0);
 
     out->ptr = self->unk_104;

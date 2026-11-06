@@ -246,7 +246,8 @@ void func_ov140_0229a280(UnkStruct_0229a280 *self)
     for (i = 0; i < 6; i++) {
         if (j < 0x20) {
             v = self->tbl[j];
-            if (v == 0xff || (k = v, k = 0x23 * k, ent = (char *) h + 0x180 + k, func_ov140_0229a1a4((int) self, (const unsigned char *) ent)) == 0) {
+            if (v == 0xff || (k = v, k = 0x23 * k, ent = (char *) h + 0x180 + k,
+                              func_ov140_0229a1a4((int) self, (const unsigned char *) ent)) == 0) {
                 self->b[i] = 0;
                 self->c[i] = 0;
                 func_ov139_02299798(&self->unk_8E8, i);

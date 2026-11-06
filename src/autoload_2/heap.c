@@ -22,7 +22,7 @@ int func_020e98d4(unsigned int param)
 
 int func_020e98b4(void *param)
 {
-    return func_020e9ed4((int) ((*(void * *) &data_021fbe94)), (int) param, 4);
+    return func_020e9ed4((int) ((*(void **) &data_021fbe94)), (int) param, 4);
 }
 
 void func_020e9898(int arg)

@@ -275,7 +275,8 @@ void func_ov100_0229e098(unsigned char *self)
     } else {
         unsigned int cond = (data_021fbdd8 != 0 && (*(unsigned char *) &data_021fbddc) != 0);
         if (cond > 0) {
-            int ret = func_ov002_02208b00(self + 0x22d8, (*(unsigned char *) &data_021f6c58), (*(unsigned char *) &data_021f6c54));
+            int ret =
+                func_ov002_02208b00(self + 0x22d8, (*(unsigned char *) &data_021f6c58), (*(unsigned char *) &data_021f6c54));
             if (ret >= 0) {
                 func_ov002_02209114(self + 0x22d8, ret, 1);
                 *(self + 0x2925) = *(self + ret + 0x26c5);
@@ -362,9 +363,14 @@ void func_ov100_0229de18(UnkStruct_0229de18 *s)
         return;
     }
     if (func_ov100_0229d194((void *) s, (unsigned char) s->unk_2921) == 0) {
-        val = (*(struct { char pad2[2]; unsigned short field; } *) data_021fbe40).field;
+        val = (*(struct {
+                  char pad2[2];
+                  unsigned short field;
+              } *) data_021fbe40)
+                  .field;
         if (val & 1) {
-            if (func_ov100_0229d630((void *) s, (unsigned char) s->unk_2921) != 0 || func_ov100_0229d620((void *) s, (unsigned char) s->unk_2921) != 0) {
+            if (func_ov100_0229d630((void *) s, (unsigned char) s->unk_2921) != 0 ||
+                func_ov100_0229d620((void *) s, (unsigned char) s->unk_2921) != 0) {
                 if (func_ov100_0229d158(s, s->unk_2921) == 0) {
                     func_ov100_0229ca1c(s);
                 }
@@ -374,7 +380,8 @@ void func_ov100_0229de18(UnkStruct_0229de18 *s)
             return;
         }
         if (val & 0x800) {
-            if (func_ov100_0229d630((void *) s, (unsigned char) s->unk_2921) != 0 || func_ov100_0229d620((void *) s, (unsigned char) s->unk_2921) != 0) {
+            if (func_ov100_0229d630((void *) s, (unsigned char) s->unk_2921) != 0 ||
+                func_ov100_0229d620((void *) s, (unsigned char) s->unk_2921) != 0) {
                 if (func_ov100_0229d158(s, s->unk_2921) == 0) {
                     if (func_ov100_0229d630((void *) s, (unsigned char) s->unk_2921) != 0) {
                         r = func_ov100_0229d648(s);
@@ -390,7 +397,11 @@ void func_ov100_0229de18(UnkStruct_0229de18 *s)
             return;
         }
     }
-    val = (*(struct { char pad2[2]; unsigned short field; } *) data_021fbe40).field;
+    val = (*(struct {
+              char pad2[2];
+              unsigned short field;
+          } *) data_021fbe40)
+              .field;
     if (val & 2) {
         func_ov100_0229cc3c(s);
         func_ov100_0229c4ec((void *) s);
@@ -416,7 +427,8 @@ void func_ov100_0229dd54(Object *self)
     } else {
         unsigned short t = (*(Globals *) data_021fbe40).unk_02;
         if ((t & 1) != 0) {
-            if (func_ov100_0229d630(self, (unsigned char) self->unk_2921) != 0 || func_ov100_0229d620(self, (unsigned char) self->unk_2921) != 0) {
+            if (func_ov100_0229d630(self, (unsigned char) self->unk_2921) != 0 ||
+                func_ov100_0229d620(self, (unsigned char) self->unk_2921) != 0) {
                 if (func_ov100_0229d194(self, (unsigned char) self->unk_2921) == 0) {
                     if (func_ov100_0229d158((UnkStruct_0229de18 *) self, self->unk_2921) != 0) {
                         func_ov100_0229c9e0(self, self->unk_2921);

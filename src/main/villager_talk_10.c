@@ -86,7 +86,8 @@ void func_0201e698(u8 *self, UnkStruct_0201e698_2 *out)
 
     tmp = func_020036e8((unsigned char *) ((int) func_0208150c(*(u32 *) ((char *) (*(u32 **) (self + 0x100)) + 0x830))));
 
-    func_0202da38(self, self + 0x104, self + 0x122, 0x1e, tmp, (void *) ((*(UnkStruct_0201e698 *) &data_020c8b50).word), 1, ret, (*(UnkStruct_0201e698 *) &data_020c8b50).byte);
+    func_0202da38(self, self + 0x104, self + 0x122, 0x1e, tmp, (void *) ((*(UnkStruct_0201e698 *) &data_020c8b50).word), 1,
+                  ret, (*(UnkStruct_0201e698 *) &data_020c8b50).byte);
 
     out->ptr = self + 0x104;
     out->byte = self[0x122];

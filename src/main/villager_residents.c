@@ -92,7 +92,8 @@ void func_0207c190(int self, int param2)
     if (func_0207c4a4(self, func_02003648((int) ((unsigned char *) (unsigned int) func_0208150c(r7)))) != 0) {
         goto L2;
     }
-    if ((*((signed char *) (((char *) self) + 0x4074))) == func_02003648((int) ((unsigned char *) (unsigned int) func_0208150c(r7)))) {
+    if ((*((signed char *) (((char *) self) + 0x4074))) ==
+        func_02003648((int) ((unsigned char *) (unsigned int) func_0208150c(r7)))) {
         goto L2;
     }
     if (r4 != 0) {

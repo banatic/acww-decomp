@@ -192,7 +192,8 @@ void func_ov003_022344c8(char *self, short *pn)
 
     p = (int *) (self + 0x204);
     r = func_020644cc(0x64);
-    if (func_02073dd4((*(UnkStruct_022344c8 * *) &data_020ccf94), (*(UnkStruct_022344c8 * *) &data_020ccf94)->unk_64) != 0 && func_020a7278() == 0) {
+    if (func_02073dd4((*(UnkStruct_022344c8 **) &data_020ccf94), (*(UnkStruct_022344c8 **) &data_020ccf94)->unk_64) != 0 &&
+        func_020a7278() == 0) {
         d2 = (int *) (self + 0x1d4);
         if (d2[0] != p[0] || d2[2] != p[2]) {
             *(u8 *) (self + 0x251) = 4;
@@ -264,7 +265,8 @@ void func_ov003_022343a8(char *self)
         *(u8 *) (self + 0x251) = 0x13;
     } else {
         *(short *) (self + 0x23a) = func_0200322c(p, d);
-        if (func_02073dd4((*(UnkStruct_022343a8 * *) &data_020ccf94), (*(UnkStruct_022343a8 * *) &data_020ccf94)->unk_64) != 0 && func_020a7278() == 0) {
+        if (func_02073dd4((*(UnkStruct_022343a8 **) &data_020ccf94), (*(UnkStruct_022343a8 **) &data_020ccf94)->unk_64) != 0 &&
+            func_020a7278() == 0) {
             func_0204f818(&x, &y, p);
             if (x < 0x10 || x > 0x4f || y < 0x10) {
                 *(u8 *) (self + 0x251) = 0x13;
@@ -373,7 +375,8 @@ int func_ov003_02234030(unsigned char *self, int b)
     ret = 0;
     ang = *(short *) (self + 0x23a);
     if (self[0x251] != 0xb) {
-        if (func_020a7278() == 0 && func_02073dd4((void *) ((*(UnkStruct_02234030 * *) &data_020ccf94)), (*(UnkStruct_02234030 * *) &data_020ccf94)->unk_64) != 0) {
+        if (func_020a7278() == 0 && func_02073dd4((void *) ((*(UnkStruct_02234030 **) &data_020ccf94)),
+                                                  (*(UnkStruct_02234030 **) &data_020ccf94)->unk_64) != 0) {
             if (*(int *) (self + 0x204) != *(int *) (self + 0x1d4) && *(int *) (self + 0x20c) != *(int *) (self + 0x1dc)) {
                 self[0x251] = 4;
                 self[0x24c] = (unsigned char) b;

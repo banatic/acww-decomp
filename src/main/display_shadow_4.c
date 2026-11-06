@@ -39,12 +39,33 @@ void func_02001c58(unsigned char a, unsigned char b, unsigned char c, unsigned c
 
 void func_02001c30(unsigned char param)
 {
-    (*(struct { char pad0[16]; unsigned char field_10; char pad1[5]; unsigned char field_16; } *) &data_0213fe74).field_16 = param;
-    (*(struct { char pad0[16]; unsigned char field_10; char pad1[5]; unsigned char field_16; } *) &data_0213fe74).field_10 = ((*(struct { char pad0[16]; unsigned char field_10; char pad1[5]; unsigned char field_16; } *) &data_0213fe74).field_10 & ~3) | ((0xf78u >> (param * 2)) & 3);
+    (*(struct {
+        char pad0[16];
+        unsigned char field_10;
+        char pad1[5];
+        unsigned char field_16;
+    } *) &data_0213fe74)
+        .field_16 = param;
+    (*(struct {
+        char pad0[16];
+        unsigned char field_10;
+        char pad1[5];
+        unsigned char field_16;
+    } *) &data_0213fe74)
+        .field_10 = ((*(struct {
+                         char pad0[16];
+                         unsigned char field_10;
+                         char pad1[5];
+                         unsigned char field_16;
+                     } *) &data_0213fe74)
+                         .field_10 &
+                     ~3) |
+                    ((0xf78u >> (param * 2)) & 3);
 }
 
 void func_02001c08(unsigned char param)
 {
     (*(struct UnkStruct_02001c08 *) &data_0213fe74).unk_17 = param;
-    (*(struct UnkStruct_02001c08 *) &data_0213fe74).unk_10 = ((*(struct UnkStruct_02001c08 *) &data_0213fe74).unk_10 & ~0x0C) | ((0x3de0u >> (param << 1)) & 0x0C);
+    (*(struct UnkStruct_02001c08 *) &data_0213fe74).unk_10 =
+        ((*(struct UnkStruct_02001c08 *) &data_0213fe74).unk_10 & ~0x0C) | ((0x3de0u >> (param << 1)) & 0x0C);
 }

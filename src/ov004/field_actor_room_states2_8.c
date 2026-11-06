@@ -80,7 +80,8 @@ void func_ov004_0222ac9c(char *self)
     // DECLS
     // ENDDECLS
     func_0200faa8(self, 0x400);
-    func_0200fb58(self, *(int *) ((char *) ((void * *) &data_ov004_02247774)), *(int *) ((char *) ((void * *) &data_ov004_02247774) + 0x8));
+    func_0200fb58(self, *(int *) ((char *) ((void **) &data_ov004_02247774)),
+                  *(int *) ((char *) ((void **) &data_ov004_02247774) + 0x8));
 }
 
 void func_ov004_0222ac80(void *self)

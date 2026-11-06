@@ -201,5 +201,6 @@ void func_020487d8(int p0, int p1, int p2, int p3)
     int v2 = func_020644cc(p3);
     int idx = func_020644cc(0xc);
 
-    func_02048cb8((void *) p0, (void *) p1, v1 + 1, v2 + 1, ((unsigned short *) data_020cabc4)[idx], (((int (*)(int, int, int)) (int (*)(void *, int, int)) func_02048ec8)), 0);
+    func_02048cb8((void *) p0, (void *) p1, v1 + 1, v2 + 1, ((unsigned short *) data_020cabc4)[idx],
+                  (((int (*)(int, int, int))(int (*)(void *, int, int)) func_02048ec8)), 0);
 }

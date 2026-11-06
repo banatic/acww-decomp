@@ -226,7 +226,8 @@ int func_02053108(UnkStruct_02053108_2 *t, int a, int b, unsigned int value)
 
 char *func_020530d4(char *arg)
 {
-    __cxa_vec_ctor((void *) (arg), 2, 32, (((void (*)(void *)) (int (*)(void *)) func_02053370)), (void (*)(void *)) func_0205336c);
+    __cxa_vec_ctor((void *) (arg), 2, 32, (((void (*)(void *))(int (*)(void *)) func_02053370)),
+                   (void (*)(void *)) func_0205336c);
     func_02053304((int) (arg + 0x40));
     func_02053088(arg);
     return arg;

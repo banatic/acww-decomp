@@ -129,7 +129,7 @@ int func_ov003_0221ffec(UnkStruct_0221ffec *self)
     s8 letter;
     void *t;
 
-    g1 = (*(void * *) &data_021c9b1c);
+    g1 = (*(void **) &data_021c9b1c);
     i = 0;
     neg4 = -4;
     z2 = 0;
@@ -142,7 +142,7 @@ int func_ov003_0221ffec(UnkStruct_0221ffec *self)
         m = func_02064960(t, neg4, data_ov003_02239bf8, letter, letter, rem, func_ov003_022203dc());
         self->a[i] = func_021077e8(m);
         if (func_020560e0(self->a[i], z1) != 0) {
-            self->a[i] = func_020561cc(self->a[i], (*(void * *) &data_021c9b1c));
+            self->a[i] = func_020561cc(self->a[i], (*(void **) &data_021c9b1c));
         }
         func_020e9898(m);
         m = func_02064960(data_021fbe94, neg4, data_ov003_02239c1c, letter, letter, rem);

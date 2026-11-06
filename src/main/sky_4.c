@@ -311,7 +311,11 @@ void func_020bb8e0(struct Big *self)
     switch (ret) {
         case 3:
         case 4:
-            (*(struct Global8 { unsigned char pad0[5]; unsigned char flag; } *) data_021f3b28).flag = 1;
+            (*(struct Global8 {
+                unsigned char pad0[5];
+                unsigned char flag;
+            } *) data_021f3b28)
+                .flag = 1;
             break;
         default:
             break;
@@ -504,7 +508,7 @@ int func_020bb608(UnkStruct_020bb608 *param0, int *param1, int *param2, int para
     }
     val = data_020e5e0c[param3][idx];
     if (*param1 == 0) {
-        *param1 = func_02064b2c(val, (*(void * *) &data_021fbe94), -4, param2);
+        *param1 = func_02064b2c(val, (*(void **) &data_021fbe94), -4, param2);
         if (*param1 != 0) {
             result = 1;
         }

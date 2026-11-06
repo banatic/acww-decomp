@@ -237,7 +237,7 @@ int func_02045a80(UnkStruct_02045a80_2 *param)
     void *arg2;
     UnkStruct_02045a80_3 local;
 
-    arg2 = (*(UnkStruct_02045a80 * *) &data_020ccf94)->unk_68;
+    arg2 = (*(UnkStruct_02045a80 **) &data_020ccf94)->unk_68;
     local.unk_00 = param->unk_00;
     local.unk_04 = param->unk_04;
     return func_02045ac4((Pair *) (&local), (int) arg2);
@@ -383,13 +383,13 @@ void func_02045770(u8 idx, int p1)
     w.unk_06 = s->unk_10;
     w.b5 = p1;
     w.b7 = s->unk_1C;
-    obj = (*(UnkStruct_02045770_5 * *) &data_020ccf94);
+    obj = (*(UnkStruct_02045770_5 **) &data_020ccf94);
     if (func_02073d90((int) obj) != 0) {
         if (func_020a7278() != 0) {
             func_0204510c(&w, 1, obj->unk_64);
             return;
         }
-        obj = (*(UnkStruct_02045770_5 * *) &data_020ccf94);
+        obj = (*(UnkStruct_02045770_5 **) &data_020ccf94);
         func_02073820(obj);
         func_020737f0(obj, &w, 8);
         func_02073770(obj, 0x31, 6);

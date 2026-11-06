@@ -159,7 +159,7 @@ void func_ov051_0226076c(struct func_ov051_0226076c_A *a, void *b)
 {
     unsigned char byte;
     byte = func_ov051_022605e8((int) a, 0x17);
-    func_0206844c((unsigned int) a->unk_40, (unsigned char *) (&byte), (int) ((*(void * *) &data_ov051_022615c0)));
+    func_0206844c((unsigned int) a->unk_40, (unsigned char *) (&byte), (int) ((*(void **) &data_ov051_022615c0)));
     func_0209c5a4(b);
 }
 
@@ -169,11 +169,11 @@ void func_ov051_0226072c(struct UnkStruct_0226072c *ptr, int val)
     switch (val) {
         case 0:
             buf[0] = 0x31;
-            func_0206844c(ptr->unk_40, (unsigned char *) buf, (int) ((*(void * *) &data_ov051_022615c0)));
+            func_0206844c(ptr->unk_40, (unsigned char *) buf, (int) ((*(void **) &data_ov051_022615c0)));
             break;
         case 1:
             buf[1] = 0x32;
-            func_0206844c(ptr->unk_40, (unsigned char *) (&buf[1]), (int) ((*(void * *) &data_ov051_022615c0)));
+            func_0206844c(ptr->unk_40, (unsigned char *) (&buf[1]), (int) ((*(void **) &data_ov051_022615c0)));
             break;
     }
 }

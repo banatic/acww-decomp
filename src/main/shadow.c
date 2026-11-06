@@ -144,13 +144,13 @@ extern const char data_021f48d0[];
 extern UnkStruct_020ad0c0 data_021f49a0[];
 extern void *data_021fbe94;
 extern void *func_020e9948(void *, int);
-extern void NNS_G3dGeFlushBuffer(void);                    // 0x01ff8ccc
-extern void G3_LoadMtx43(const void *m);                   // 0x02112134
-extern int func_020310c8(int a);                           // 0x020310c8
-extern int func_0203f844(void *a, void *b);                // 0x0203f844
-extern int func_02065604(void);                            // 0x02065604
-extern int data_020d1e0c; // data_020d1e0c
-extern int data_021f47d0; // data_021f47d0
+extern void NNS_G3dGeFlushBuffer(void);     // 0x01ff8ccc
+extern void G3_LoadMtx43(const void *m);    // 0x02112134
+extern int func_020310c8(int a);            // 0x020310c8
+extern int func_0203f844(void *a, void *b); // 0x0203f844
+extern int func_02065604(void);             // 0x02065604
+extern int data_020d1e0c;                   // data_020d1e0c
+extern int data_021f47d0;                   // data_021f47d0
 extern unsigned char data_021f486c[];
 extern void func_020e993c(void *a, void *b);
 extern struct UnkStruct_020ace54 data_021f472c;

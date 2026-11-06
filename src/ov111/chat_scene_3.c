@@ -246,7 +246,7 @@ void func_ov111_0229fcb0(unsigned char *self)
 
 void func_ov111_0229fc9c(void *receiver)
 {
-    func_020398d4((*(struct UnkStruct_0229fc9c * *) &data_020ccf94)->unk_64);
+    func_020398d4((*(struct UnkStruct_0229fc9c **) &data_020ccf94)->unk_64);
 }
 
 int func_ov111_0229fc38(UnkStruct_0229fc38 *self, int param)
@@ -470,7 +470,8 @@ void func_ov111_0229f860(UnkStruct_0229f860 *s)
     z = i;
 
     while (i < n) {
-        if (func_ov095_0229bcec((char *) s + 0xac, (char *) s + 0x3d16, (u16) s->arr_3eb8[i], &s->unk_9E, 0x10, 0xa0, z, z) == 0) {
+        if (func_ov095_0229bcec((char *) s + 0xac, (char *) s + 0x3d16, (u16) s->arr_3eb8[i], &s->unk_9E, 0x10, 0xa0, z, z) ==
+            0) {
             if (i == 0) {
                 func_ov111_0229f854((void *) s);
             }

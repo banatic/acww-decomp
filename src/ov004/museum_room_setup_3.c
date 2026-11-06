@@ -122,7 +122,8 @@ void *func_ov004_02245558(void *self, char *p)
     t.a = z;
     t.b = y;
     t.c = x;
-    func_ov004_02245590((UnkStruct_02245590 *) self, (Vec3 *) (&t), *(u8 *) (p + 0xc), *(u8 *) (p + 0xd), *(short *) (p + 0xe), *(int *) (p + 0x10), *(u8 *) (p + 0x14));
+    func_ov004_02245590((UnkStruct_02245590 *) self, (Vec3 *) (&t), *(u8 *) (p + 0xc), *(u8 *) (p + 0xd), *(short *) (p + 0xe),
+                        *(int *) (p + 0x10), *(u8 *) (p + 0x14));
     return self;
 }
 

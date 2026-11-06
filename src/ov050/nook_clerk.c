@@ -217,22 +217,22 @@ void func_ov050_02260a68(struct UnkStruct_02260a68_3 *self, int sel, int v)
         case 3:
             self->unk_560 = (u8) v;
             if (v != 4) {
-                func_0201c054(self, 1, (*(struct UnkStruct_02260a68 * *) &data_020ccf94)->unk_64, v);
+                func_0201c054(self, 1, (*(struct UnkStruct_02260a68 **) &data_020ccf94)->unk_64, v);
                 func_ov050_02264834(self, 0xf);
             } else if (func_0201c0e0(self) != 0) {
-                int k = (*(struct UnkStruct_02260a68 * *) &data_020ccf94)->unk_64;
+                int k = (*(struct UnkStruct_02260a68 **) &data_020ccf94)->unk_64;
                 func_0201c054(self, 1, k, k);
                 func_ov050_02264834(self, 0xf);
             }
             break;
         case 1:
             self->unk_560 = (u8) v;
-            if (v != 4 && v != (*(struct UnkStruct_02260a68 * *) &data_020ccf94)->unk_64) {
+            if (v != 4 && v != (*(struct UnkStruct_02260a68 **) &data_020ccf94)->unk_64) {
                 func_0201c054(self, 1, v, v);
                 func_ov050_02264834(self, 9);
             } else {
                 if (func_0201c0e0(self) != 0) {
-                    struct UnkStruct_02260a68 *g = (*(struct UnkStruct_02260a68 * *) &data_020ccf94);
+                    struct UnkStruct_02260a68 *g = (*(struct UnkStruct_02260a68 **) &data_020ccf94);
                     int k = g->unk_64;
                     func_0201c054(self, 1, k, k);
                     self->unk_658.vt->fn[2](&self->unk_658);
@@ -254,12 +254,12 @@ void func_ov050_02260a68(struct UnkStruct_02260a68_3 *self, int sel, int v)
             break;
         case 0:
             self->unk_560 = (u8) v;
-            if (v != 4 && v != (*(struct UnkStruct_02260a68 * *) &data_020ccf94)->unk_64) {
+            if (v != 4 && v != (*(struct UnkStruct_02260a68 **) &data_020ccf94)->unk_64) {
                 func_0201c054(self, 1, v, v);
                 func_ov050_02264834(self, 9);
             } else {
                 if (func_0201c0e0(self) != 0) {
-                    int k = (*(struct UnkStruct_02260a68 * *) &data_020ccf94)->unk_64;
+                    int k = (*(struct UnkStruct_02260a68 **) &data_020ccf94)->unk_64;
                     func_0201c054(self, 1, k, k);
                     self->unk_658.vt->fn[2](&self->unk_658);
                     func_02016108(&self->unk_658, func_0201c2a4(self, 4));
@@ -275,7 +275,7 @@ void func_ov050_02260a68(struct UnkStruct_02260a68_3 *self, int sel, int v)
         case 8:
             if (v == 4) {
                 if (func_020a7278() != 0) {
-                    struct UnkStruct_02260a68 *g = (*(struct UnkStruct_02260a68 * *) &data_020ccf94);
+                    struct UnkStruct_02260a68 *g = (*(struct UnkStruct_02260a68 **) &data_020ccf94);
                     func_0201c054(self, 1, g->unk_64, 4);
                     if (func_ov050_02263638(&self->unk_658) != 1 && func_ov050_02263638(&self->unk_658) != 0x12 &&
                         func_ov050_02263638(&self->unk_658) != 6 && func_ov050_02263638(&self->unk_658) != 0x1d) {
@@ -287,7 +287,7 @@ void func_ov050_02260a68(struct UnkStruct_02260a68_3 *self, int sel, int v)
                     }
                     self->unk_740 = 0;
                 } else {
-                    func_0201c054(self, 1, 4, (*(struct UnkStruct_02260a68 * *) &data_020ccf94)->unk_64);
+                    func_0201c054(self, 1, 4, (*(struct UnkStruct_02260a68 **) &data_020ccf94)->unk_64);
                     func_ov050_02264834(self, 8);
                 }
             }
@@ -315,7 +315,7 @@ void func_ov050_02260a68(struct UnkStruct_02260a68_3 *self, int sel, int v)
                 break;
             }
         ok:
-            func_0201c054(self, 1, (*(struct UnkStruct_02260a68 * *) &data_020ccf94)->unk_64, 4);
+            func_0201c054(self, 1, (*(struct UnkStruct_02260a68 **) &data_020ccf94)->unk_64, 4);
             func_ov050_02264834(self, 0xd);
             break;
         }
@@ -557,7 +557,8 @@ int func_ov050_022605c0(void *obj)
     v.a = s->a;
     v.b = s->b;
     v.c = s->c;
-    if (func_ov050_02263638((struct UnkStruct_02260a68_2 *) ((char *) obj + 0x658)) != 1 && func_ov050_02263638((struct UnkStruct_02260a68_2 *) ((char *) obj + 0x658)) != 0x12) {
+    if (func_ov050_02263638((struct UnkStruct_02260a68_2 *) ((char *) obj + 0x658)) != 1 &&
+        func_ov050_02263638((struct UnkStruct_02260a68_2 *) ((char *) obj + 0x658)) != 0x12) {
         if (func_ov050_022604bc((int) obj) != 0 && func_ov050_022609f0((unsigned char *) obj) == 0) {
             if (func_02030818(&v) != 0) {
                 func_0201aff4((char *) obj + 0x350, func_0201c2c8(obj, 4));

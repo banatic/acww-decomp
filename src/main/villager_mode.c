@@ -143,7 +143,8 @@ void func_0207daf4(int arg0, int arg1)
     int tmp;
 
     if (func_02003704((int) func_0208150c(arg0)) && func_02003704((int) func_0208150c(arg1)) && (tmp = func_02080814(arg0))) {
-        func_0209beb0((int) func_0209b5ec((void *) ((int) func_0207f1c8((void *) arg0))), (int) func_0209b5ec((void *) ((int) func_0207f1c8((void *) arg1))), tmp);
+        func_0209beb0((int) func_0209b5ec((void *) ((int) func_0207f1c8((void *) arg0))),
+                      (int) func_0209b5ec((void *) ((int) func_0207f1c8((void *) arg1))), tmp);
     }
 }
 

@@ -36,12 +36,12 @@ void func_020785a4(int *out0, unsigned char *out1, unsigned short *out2, int *ou
 
 void func_02078540(void *p0, void *p1, void *p2, void *p3, u8 flag)
 {
-    if (func_02073d90((*(void * *) data_020ccf94))) {
+    if (func_02073d90((*(void **) data_020ccf94))) {
         int local;
         void *g;
 
         func_020785dc(&local, p0, p1, p2, p3, (u8) (flag != 0));
-        g = (*(void * *) data_020ccf94);
+        g = (*(void **) data_020ccf94);
         func_02073820(g);
         func_020737f0(g, &local, 4);
         func_02073770(g, 0x3d, 4);

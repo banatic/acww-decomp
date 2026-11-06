@@ -196,7 +196,7 @@ int func_ov048_022604c8(void *obj)
     volatile Tri t;
     Tri *p;
 
-    g = (*(void * *) &data_020ccf94);
+    g = (*(void **) &data_020ccf94);
     if (func_02073d90(g) != 0) {
         return 0;
     }
@@ -207,7 +207,7 @@ int func_ov048_022604c8(void *obj)
     if (func_0203ec98() != 0) {
         return 0;
     }
-    if (func_02073dd4((*(void * *) &data_020ccf94), *(int *) ((char *) (*(void * *) &data_020ccf94) + 0x64)) == 0) {
+    if (func_02073dd4((*(void **) &data_020ccf94), *(int *) ((char *) (*(void **) &data_020ccf94) + 0x64)) == 0) {
         return 0;
     }
     p = func_02095794(4);

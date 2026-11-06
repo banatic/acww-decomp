@@ -75,7 +75,7 @@ int func_ov066_0226818c(void)
     UnkStruct_0226818c *best;
     best = 0;
     for (i = 0; i < data_ov066_0226bdec->count; i = (u8) (i + 1)) {
-        UnkStruct_0226818c *e = func_ov066_02267784((*(Cfg * *) &data_ov066_0226bdf4)->unk_95, i);
+        UnkStruct_0226818c *e = func_ov066_02267784((*(Cfg **) &data_ov066_0226bdf4)->unk_95, i);
         if (e->unk_00 != 0) {
             if (e->kind == 0xbd8a) {
                 best = e;
@@ -102,27 +102,27 @@ int func_ov066_0226818c(void)
 void func_ov066_02268098(void)
 {
     int done = 0;
-    if ((*(UnkStruct_02268098 * *) &data_ov066_0226bdf4)->scanning) {
-        if (func_ov066_022677e0((*(UnkStruct_02268098 * *) &data_ov066_0226bdf4)->unk_95) > 0) {
+    if ((*(UnkStruct_02268098 **) &data_ov066_0226bdf4)->scanning) {
+        if (func_ov066_022677e0((*(UnkStruct_02268098 **) &data_ov066_0226bdf4)->unk_95) > 0) {
             done = func_ov066_0226818c();
         }
     }
     if (done != 0) {
         return;
     }
-    if ((*(UnkStruct_02268098 * *) &data_ov066_0226bdf4)->unk_94 == (*(UnkStruct_02268098 * *) &data_ov066_0226bdf4)->unk_93) {
-        switch ((*(Ctl_02268098 * *) &data_ov066_0226bdec)->state) {
+    if ((*(UnkStruct_02268098 **) &data_ov066_0226bdf4)->unk_94 == (*(UnkStruct_02268098 **) &data_ov066_0226bdf4)->unk_93) {
+        switch ((*(Ctl_02268098 **) &data_ov066_0226bdec)->state) {
             case 6:
                 func_ov066_02268ad0();
                 break;
             case 4:
             case 7:
                 func_ov066_02268268();
-                func_ov066_02267cb0((*(Ctl_02268098 * *) &data_ov066_0226bdec)->unk_20);
+                func_ov066_02267cb0((*(Ctl_02268098 **) &data_ov066_0226bdec)->unk_20);
                 break;
         }
     } else {
-        switch ((*(Ctl_02268098 * *) &data_ov066_0226bdec)->state) {
+        switch ((*(Ctl_02268098 **) &data_ov066_0226bdec)->state) {
             case 4:
                 func_ov066_02268370(0x2348);
             case 6:

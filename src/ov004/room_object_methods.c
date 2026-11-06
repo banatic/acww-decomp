@@ -138,7 +138,9 @@ void func_ov004_0220e674(char *self, int flag)
         mind = data_020ca0ec;
         for (i = 0; i < func_ov004_0220db68((struct UnkStruct_0220e758 *) (&l)); i++) {
             e = (struct UnkStruct_0220e674_2 *) func_ov004_0220db5c((struct UnkStruct_0220e758 *) (&l), i);
-            func_0204f794(&a, e->unk_00, ((struct UnkStruct_0220e674_2 *) func_ov004_0220db5c((struct UnkStruct_0220e758 *) (&l), i))->unk_04);
+            func_0204f794(
+                &a, e->unk_00,
+                ((struct UnkStruct_0220e674_2 *) func_ov004_0220db5c((struct UnkStruct_0220e758 *) (&l), i))->unk_04);
             d = func_020ea990(o, &a);
             if (d > bestd) {
                 best = i;
@@ -154,7 +156,9 @@ void func_ov004_0220e674(char *self, int flag)
         }
         if (best != -1) {
             e = (struct UnkStruct_0220e674_2 *) func_ov004_0220db5c((struct UnkStruct_0220e758 *) (&l), best);
-            func_0204f794(&b, e->unk_00, ((struct UnkStruct_0220e674_2 *) func_ov004_0220db5c((struct UnkStruct_0220e758 *) (&l), best))->unk_04);
+            func_0204f794(
+                &b, e->unk_00,
+                ((struct UnkStruct_0220e674_2 *) func_ov004_0220db5c((struct UnkStruct_0220e758 *) (&l), best))->unk_04);
             func_ov004_0220e73c((char *) (&b), func_0200322c(&b, o));
         }
         func_ov004_0220db90((struct UnkStruct_0220e758 *) (&l));

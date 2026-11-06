@@ -433,7 +433,7 @@ void func_020a3ea4(struct UnkStruct_020a3ea4_3 *self)
 void func_020a3e74(int param)
 {
     func_020a0284(param, 1);
-    if ((*(unsigned char * *) &data_020ccf94)[0x6c] == 1) {
+    if ((*(unsigned char **) &data_020ccf94)[0x6c] == 1) {
         func_02097b24();
         func_02097b24();
         func_020b1130();
@@ -468,7 +468,7 @@ void func_020a3bc0(struct UnkStruct_020a3bc0_2 *self)
                 return;
             }
             func_020a7394(data_021f3c1c, 0xc, 1, 0, 7);
-            g = (*(struct UnkStruct_020a3bc0 * *) &data_020ccf94);
+            g = (*(struct UnkStruct_020a3bc0 **) &data_020ccf94);
             func_020738f4((struct UnkStruct_020a3ea4 *) g, (unsigned char) ((unsigned char) (g->unk_6C + 1)));
             func_02073de0((struct UnkStruct_020a3ea4 *) g, data_021f3c1c, 1);
             func_02075104(data_021f3c1c);
@@ -572,7 +572,7 @@ void func_020a3bc0(struct UnkStruct_020a3bc0_2 *self)
             if (!self->unk_E4) {
                 return;
             }
-            func_02073d74((struct UnkStruct_020a3ea4 *) ((*(struct UnkStruct_020a3bc0 * *) &data_020ccf94)), 2);
+            func_02073d74((struct UnkStruct_020a3ea4 *) ((*(struct UnkStruct_020a3bc0 **) &data_020ccf94)), 2);
             self->unk_D6 = 1;
             func_0209fc40(data_021f3c1c);
             self->state = 0xb;
@@ -593,10 +593,10 @@ void func_020a3abc(UnkStruct_020a3abc *self)
                 func_02074078();
                 return;
             }
-            if (func_02073d70((*(PtrData * *) &data_020ccf94)) == 1) {
+            if (func_02073d70((*(PtrData **) &data_020ccf94)) == 1) {
                 PtrData *p;
                 func_020a7394((*(u8 *) &data_021f3c1c), 0xc, 1, 0, 7);
-                p = (*(PtrData * *) &data_020ccf94);
+                p = (*(PtrData **) &data_020ccf94);
                 func_020738f4((struct UnkStruct_020a3ea4 *) p, (u8) ((u8) (p->unk_6C + 1)));
                 func_02073de0((struct UnkStruct_020a3ea4 *) p, (u8) ((*(u8 *) &data_021f3c1c)), 1);
                 func_02075104((u8) ((*(u8 *) &data_021f3c1c)));
@@ -618,7 +618,7 @@ void func_020a3abc(UnkStruct_020a3abc *self)
                 return;
             }
             if ((func_02073044(), func_020ebf70()) && self->flag_e4) {
-                func_02073d74((struct UnkStruct_020a3ea4 *) ((*(PtrData * *) &data_020ccf94)), 2);
+                func_02073d74((struct UnkStruct_020a3ea4 *) ((*(PtrData **) &data_020ccf94)), 2);
                 self->flag_d6 = 1;
                 self->state = 3;
             }
@@ -633,7 +633,7 @@ void func_020a3a94(int arg0)
     a = ((int) (func_020a0284(arg0, 0), arg0));
     b = func_020984e8();
     func_02098ff8(b, 2);
-    func_020a6ec0((*(UnkStruct_020a3a94 * *) &data_020ccf94)->unk_64);
+    func_020a6ec0((*(UnkStruct_020a3a94 **) &data_020ccf94)->unk_64);
 }
 
 void func_020a38e0(struct UnkStruct_020a38e0_2 *self)
@@ -665,7 +665,7 @@ void func_020a38e0(struct UnkStruct_020a38e0_2 *self)
                 func_02074078();
                 return;
             }
-            if (!func_020a2438(self, (*(struct UnkStruct_020a38e0 * *) &data_020ccf94)->unk_64)) {
+            if (!func_020a2438(self, (*(struct UnkStruct_020a38e0 **) &data_020ccf94)->unk_64)) {
                 return;
             }
             func_020a2480(self);
@@ -693,7 +693,7 @@ void func_020a38e0(struct UnkStruct_020a38e0_2 *self)
             }
             ok = 1;
             i = 3;
-            p = (*(struct UnkStruct_020a38e0 * *) &data_020ccf94);
+            p = (*(struct UnkStruct_020a38e0 **) &data_020ccf94);
             for (; i >= 0; i--) {
                 if (func_02073dd4(p, i) && !func_02073918(p, i) && func_02073c90(p, i)) {
                     ok = 0;
@@ -831,7 +831,7 @@ void func_020a35bc(struct UnkStruct_020a35bc_2 *self)
             }
             ok = 1;
             i = 3;
-            g = (*(struct UnkStruct_020a35bc * *) &data_020ccf94);
+            g = (*(struct UnkStruct_020a35bc **) &data_020ccf94);
             for (; i >= 0; i--) {
                 if (func_02073dd4(g, i) && !func_02073918(g, i) && !self->arr_fc[i]) {
                     ok = 0;
@@ -861,11 +861,11 @@ void func_020a35bc(struct UnkStruct_020a35bc_2 *self)
                 return;
             }
             func_02074d60(func_020a6ed0());
-            g = (*(struct UnkStruct_020a35bc * *) &data_020ccf94);
+            g = (*(struct UnkStruct_020a35bc **) &data_020ccf94);
             func_02073d74((struct UnkStruct_020a3ea4 *) g, 2);
             if (func_02073d90(g)) {
                 tmp = (unsigned char) func_020a6ed0();
-                g = (*(struct UnkStruct_020a35bc * *) &data_020ccf94);
+                g = (*(struct UnkStruct_020a35bc **) &data_020ccf94);
                 func_02073820(g);
                 func_020737f0(g, &tmp, 1);
                 func_02073770(g, 5, 5);
@@ -880,7 +880,7 @@ void func_020a35bc(struct UnkStruct_020a35bc_2 *self)
             }
             ok = 1;
             i = 3;
-            g = (*(struct UnkStruct_020a35bc * *) &data_020ccf94);
+            g = (*(struct UnkStruct_020a35bc **) &data_020ccf94);
             for (; i >= 0; i--) {
                 if (func_02073dd4(g, i) && !func_02073918(g, i) && !self->arr_f4[i]) {
                     ok = 0;
@@ -891,7 +891,7 @@ void func_020a35bc(struct UnkStruct_020a35bc_2 *self)
                 return;
             }
             func_020ba37c();
-            g = (*(struct UnkStruct_020a35bc * *) &data_020ccf94);
+            g = (*(struct UnkStruct_020a35bc **) &data_020ccf94);
             func_02073820(g);
             func_02073770(g, 7, 5);
             if (g->unk_6C == 1) {
@@ -956,7 +956,7 @@ void func_020a33e0(UnkStruct_020a33e0 *p)
                 func_02074078();
                 break;
             }
-            if (func_020a2438((struct UnkStruct_020a38e0_2 *) p, (*(UnkStruct_020a33e0_2 * *) &data_020ccf94)->unk_64) == 0) {
+            if (func_020a2438((struct UnkStruct_020a38e0_2 *) p, (*(UnkStruct_020a33e0_2 **) &data_020ccf94)->unk_64) == 0) {
                 break;
             }
             func_020a2480((struct UnkStruct_020a38e0_2 *) p);
@@ -978,7 +978,7 @@ void func_020a33e0(UnkStruct_020a33e0 *p)
                 break;
             }
             ok = 1;
-            if (func_02073c90((void *) ((*(UnkStruct_020a33e0_2 * *) &data_020ccf94)), func_020a6ed0()) != 0) {
+            if (func_02073c90((void *) ((*(UnkStruct_020a33e0_2 **) &data_020ccf94)), func_020a6ed0()) != 0) {
                 ok = 0;
             }
             if (ok == 0) {
@@ -1001,7 +1001,7 @@ void func_020a33e0(UnkStruct_020a33e0 *p)
                 break;
             }
             func_020a6c6c(func_020a6ed0());
-            g = (*(UnkStruct_020a33e0_2 * *) &data_020ccf94);
+            g = (*(UnkStruct_020a33e0_2 **) &data_020ccf94);
             func_02073d74((struct UnkStruct_020a3ea4 *) g, 2);
             func_02073820((struct UnkStruct_020a35bc *) g);
             func_02073770((struct UnkStruct_020a35bc *) g, 6, 0);

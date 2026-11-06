@@ -99,7 +99,7 @@ int func_ov004_02228748(char *self)
 
 void func_ov004_022286e8(char *self)
 {
-    if (func_02073908((int) ((*(char * *) &data_020ccf94)), *(int *) (self + 0x800)) != 0) {
+    if (func_02073908((int) ((*(char **) &data_020ccf94)), *(int *) (self + 0x800)) != 0) {
         func_02010d64(self);
     } else {
         int t[3];

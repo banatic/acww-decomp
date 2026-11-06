@@ -108,13 +108,17 @@ void func_0208f97c(int param0)
     f = data_021f42f4->unk_0C;
     r = func_02073d90(data_020ccf94);
     if (f != 5 && r != 0) {
-        (*(struct UnkStruct_0208f97c_2 { char pad_00[0x24]; int unk_24; } *) data_021d3654).unk_24 = data_020d0ba4[param0];
+        (*(struct UnkStruct_0208f97c_2 {
+            char pad_00[0x24];
+            int unk_24;
+        } *) data_021d3654)
+            .unk_24 = data_020d0ba4[param0];
     }
 }
 
 void func_0208f95c(int param)
 {
-    if ((*(UnkStruct_0208f95c * *) &data_021f42f4)->unk_0C == 5) {
+    if ((*(UnkStruct_0208f95c **) &data_021f42f4)->unk_0C == 5) {
         return;
     }
     (*(UnkStruct_0208f95c_2 *) data_021d3654).unk_28 = data_020d0ba8[param];
@@ -151,7 +155,11 @@ void func_0208f8fc(void)
 
 void func_0208f8f0(void)
 {
-    (*(struct { unsigned char pad[0x19]; unsigned char value; } *) data_021d3674).value = 1;
+    (*(struct {
+        unsigned char pad[0x19];
+        unsigned char value;
+    } *) data_021d3674)
+        .value = 1;
 }
 
 void func_0208f8e0(void)

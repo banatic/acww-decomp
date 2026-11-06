@@ -181,7 +181,7 @@ int func_02071d8c(int a0, int a1, int a2, int a3, u8 flag)
 
 int func_02071d60(int param)
 {
-    struct UnkStruct_02071d60 *p = (*(struct UnkStruct_02071d60 * *) &data_020ccf94);
+    struct UnkStruct_02071d60 *p = (*(struct UnkStruct_02071d60 **) &data_020ccf94);
     if (func_02073d90((void *) p) && param == 9) {
         return p->unk_64;
     }

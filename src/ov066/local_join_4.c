@@ -40,7 +40,7 @@ void func_ov066_022696b4(int a, int b)
         return;
     }
     ip->unk_04 = 8;
-    q = (*(UnkStruct_022696b4 * *) &data_ov066_0226bdf4);
+    q = (*(UnkStruct_022696b4 **) &data_ov066_0226bdf4);
     q->unk_C0 = (q->unk_C0 & ~0x40) | ((b & 1) << 6);
     func_ov066_02268a1c(a + 0x20);
 }

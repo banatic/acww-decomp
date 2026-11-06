@@ -128,7 +128,7 @@ int func_020842b8(int p)
                 goto L30e;
             }
         }
-        h = (*(UnkStruct_020842b8 * *) &data_020ccf94);
+        h = (*(UnkStruct_020842b8 **) &data_020ccf94);
         if (func_02073dd4((void *) h, h->unk_64) != 0) {
             goto L30e;
         }
@@ -139,7 +139,7 @@ int func_020842b8(int p)
 L30e:
     if (func_02087f30((void *) func_020860c4((int) func_0208602c())) != 0) {
         if (func_020b65c4() == 0xb) {
-            if (func_02073d90((*(UnkStruct_020842b8 * *) &data_020ccf94)) == 0) {
+            if (func_02073d90((*(UnkStruct_020842b8 **) &data_020ccf94)) == 0) {
                 goto act;
             }
         }
@@ -181,7 +181,7 @@ void func_02084210(void *receiver)
 {
     unsigned int flag;
 
-    if (func_02073dd4((void *) ((*(Object * *) &data_020ccf94)), (*(Object * *) &data_020ccf94)->unk_64) == 0) {
+    if (func_02073dd4((void *) ((*(Object **) &data_020ccf94)), (*(Object **) &data_020ccf94)->unk_64) == 0) {
         return;
     }
     if (func_02084af0() != 0) {
@@ -222,7 +222,7 @@ int func_02084188(void *arg0)
         }
     }
 
-    if (func_02073dd4((*(UnkStruct_02084188 * *) &data_020ccf94), (*(UnkStruct_02084188 * *) &data_020ccf94)->unk_64) != 0) {
+    if (func_02073dd4((*(UnkStruct_02084188 **) &data_020ccf94), (*(UnkStruct_02084188 **) &data_020ccf94)->unk_64) != 0) {
         goto fail;
     }
     if (func_02085d2c(0x3d, 0) != 0) {

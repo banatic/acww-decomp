@@ -73,7 +73,8 @@ int func_ov004_02223324(char *self)
 {
     // DECLS
     // ENDDECLS
-    func_0201ad18((int) (self + 0x3b0), 0x0, 0x0, 0x0, (int) (((void * *) data_021fbee8)), 0x4, *(int *) ((char *) ((void * *) data_020c814c)), 0x1);
+    func_0201ad18((int) (self + 0x3b0), 0x0, 0x0, 0x0, (int) (((void **) data_021fbee8)), 0x4,
+                  *(int *) ((char *) ((void **) data_020c814c)), 0x1);
     func_02019c20(self + 0x564, 0x1, 0xe4, 0x0, *(u16 *) ((char *) &data_020c80f8), *(u16 *) (self + 0x710));
     return 0x1;
 }
@@ -237,7 +238,7 @@ int func_ov004_02222f8c(int arg)
         if (func_0201c040((char *) arg, &a, &b) != 0) {
             if (a == 4) {
                 if (func_020a7278() != 0) {
-                    func_0201c054((char *) arg, 1, (*(struct UnkStruct_02222f8c * *) &data_020ccf94)->unk_64, 4);
+                    func_0201c054((char *) arg, 1, (*(struct UnkStruct_02222f8c **) &data_020ccf94)->unk_64, 4);
                     func_ov004_02223388((void *) arg, 0);
                 }
             }
@@ -264,7 +265,8 @@ void func_ov004_02222f2c(char *self)
 {
     // DECLS
     // ENDDECLS
-    func_0201ad18((int) (self + 0x3b0), (unsigned char) 0x0, 0x0, 0x0, (int) (((void * *) data_021fbee8)), 0x4, *(int *) ((char *) ((void * *) data_020c814c)), (unsigned char) 0x1);
+    func_0201ad18((int) (self + 0x3b0), (unsigned char) 0x0, 0x0, 0x0, (int) (((void **) data_021fbee8)), 0x4,
+                  *(int *) ((char *) ((void **) data_020c814c)), (unsigned char) 0x1);
 }
 
 void *func_ov004_02222f14(void *arg)

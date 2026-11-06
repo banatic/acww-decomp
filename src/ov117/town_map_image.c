@@ -234,7 +234,8 @@ void func_ov117_022999a0(int p0, int p1)
     if ((*(int *) &data_ov117_0229a320) != 0) {
         func_ov117_02299a94((*(int *) &data_ov117_0229a320), p0);
         if (p1 != 0) {
-            func_ov117_02299ca4((struct UnkStruct_02299ca4 *) (func_ov117_02299a88((*(int *) &data_ov117_0229a320))), (struct UnkStruct_02299ca4 *) p1);
+            func_ov117_02299ca4((struct UnkStruct_02299ca4 *) (func_ov117_02299a88((*(int *) &data_ov117_0229a320))),
+                                (struct UnkStruct_02299ca4 *) p1);
         }
         func_020e9898((*(int *) &data_ov117_0229a320));
         (*(int *) &data_ov117_0229a320) = 0;

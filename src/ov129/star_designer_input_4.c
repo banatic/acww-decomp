@@ -124,18 +124,33 @@ void func_ov129_0229cd54(UnkStruct_0229cd54 *p)
         func_ov129_0229c874((void *) p);
         return;
     }
-    if (((*(struct { u16 h0; u16 h2; } *) data_021fbe40).h2 & 1) != 0) {
+    if (((*(struct {
+             u16 h0;
+             u16 h2;
+         } *) data_021fbe40)
+             .h2 &
+         1) != 0) {
         func_ov129_0229c328(p);
         return;
     }
-    if (((*(struct { u16 h0; u16 h2; } *) data_021fbe40).h2 & 0x800) != 0) {
+    if (((*(struct {
+             u16 h0;
+             u16 h2;
+         } *) data_021fbe40)
+             .h2 &
+         0x800) != 0) {
         func_ov129_0229b7cc((void *) p, 2);
         func_ov002_02208098((void *) (p), 4);
         func_ov129_0229c39c(p);
         func_ov129_0229c2d8(p);
         return;
     }
-    if (((*(struct { u16 h0; u16 h2; } *) data_021fbe40).h2 & 8) != 0) {
+    if (((*(struct {
+             u16 h0;
+             u16 h2;
+         } *) data_021fbe40)
+             .h2 &
+         8) != 0) {
         if (func_ov002_0220a620(p->unk_1D4, 6) != 0) {
             return;
         }
@@ -146,7 +161,12 @@ void func_ov129_0229cd54(UnkStruct_0229cd54 *p)
         func_ov129_0229c79c((unsigned char *) p);
         return;
     }
-    if (((*(struct { u16 h0; u16 h2; } *) data_021fbe40).h2 & 2) != 0) {
+    if (((*(struct {
+             u16 h0;
+             u16 h2;
+         } *) data_021fbe40)
+             .h2 &
+         2) != 0) {
         func_ov129_0229b7cc((void *) p, 2);
         p->unk_AE = 5;
         func_ov129_0229c2d8(p);
@@ -157,14 +177,34 @@ void func_ov129_0229cd54(UnkStruct_0229cd54 *p)
 
     x0 = p->unk_94;
     y0 = p->unk_98;
-    if (((*(struct { u16 h0; u16 h2; } *) data_021fbe40).h0 & 0x20) != 0) {
+    if (((*(struct {
+             u16 h0;
+             u16 h2;
+         } *) data_021fbe40)
+             .h0 &
+         0x20) != 0) {
         p->unk_94 = p->unk_94 - 4;
-    } else if (((*(struct { u16 h0; u16 h2; } *) data_021fbe40).h0 & 0x10) != 0) {
+    } else if (((*(struct {
+                    u16 h0;
+                    u16 h2;
+                } *) data_021fbe40)
+                    .h0 &
+                0x10) != 0) {
         p->unk_94 = p->unk_94 + 4;
     }
-    if (((*(struct { u16 h0; u16 h2; } *) data_021fbe40).h0 & 0x40) != 0) {
+    if (((*(struct {
+             u16 h0;
+             u16 h2;
+         } *) data_021fbe40)
+             .h0 &
+         0x40) != 0) {
         p->unk_98 = p->unk_98 - 4;
-    } else if (((*(struct { u16 h0; u16 h2; } *) data_021fbe40).h0 & 0x80) != 0) {
+    } else if (((*(struct {
+                    u16 h0;
+                    u16 h2;
+                } *) data_021fbe40)
+                    .h0 &
+                0x80) != 0) {
         p->unk_98 = p->unk_98 + 4;
     }
     if (x0 == p->unk_94 && y0 == p->unk_98) {

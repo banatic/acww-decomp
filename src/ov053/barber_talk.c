@@ -146,8 +146,12 @@ void func_ov053_02260a68(UnkStruct_02260a68 *self, UnkStruct_02260a68_2 *out)
         out->ptr = data_ov053_02261a90[self->idx].ptr;
         out->flag = (unsigned char) func_ov053_0226075c(self);
     } else {
-        if ((int) func_ov053_02260ba8((UnkStruct_02260ba8 *) self) != 0 && (int) func_ov053_02260ba8((UnkStruct_02260ba8 *) self) != 3 && (int) func_ov053_02260ba8((UnkStruct_02260ba8 *) self) != 5 &&
-            (int) func_ov053_02260ba8((UnkStruct_02260ba8 *) self) != 7 && (int) func_ov053_02260ba8((UnkStruct_02260ba8 *) self) != 8 && (int) func_ov053_02260ba8((UnkStruct_02260ba8 *) self) != 9 &&
+        if ((int) func_ov053_02260ba8((UnkStruct_02260ba8 *) self) != 0 &&
+            (int) func_ov053_02260ba8((UnkStruct_02260ba8 *) self) != 3 &&
+            (int) func_ov053_02260ba8((UnkStruct_02260ba8 *) self) != 5 &&
+            (int) func_ov053_02260ba8((UnkStruct_02260ba8 *) self) != 7 &&
+            (int) func_ov053_02260ba8((UnkStruct_02260ba8 *) self) != 8 &&
+            (int) func_ov053_02260ba8((UnkStruct_02260ba8 *) self) != 9 &&
             (int) func_ov053_02260ba8((UnkStruct_02260ba8 *) self) != 0xa) {
             if (func_ov053_02260474(self->kind) == 0) {
                 if (func_0202ea80(0x13, 0) == 0) {

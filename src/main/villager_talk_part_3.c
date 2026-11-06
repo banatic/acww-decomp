@@ -137,7 +137,9 @@ void func_02026c9c(UnkStruct_02026c9c_2 *p, UnkStruct_02026c9c_5 *out)
         func_02027170(&l.b, p->unk_1A0);
         p->unk_124 = l.b;
     }
-    func_0202da38((struct This *) p, p->unk_104, &p->unk_122, 0x1e, (int) ((void *) func_020036e8((unsigned char *) func_0208150c(p->unk_100->unk_830))), (void *) data_020c8d98.text, data_020c8d98.unk_04, 0, 0);
+    func_0202da38((struct This *) p, p->unk_104, &p->unk_122, 0x1e,
+                  (int) ((void *) func_020036e8((unsigned char *) func_0208150c(p->unk_100->unk_830))),
+                  (void *) data_020c8d98.text, data_020c8d98.unk_04, 0, 0);
     out->ptr = p->unk_104;
     out->unk_04 = p->unk_122;
 }

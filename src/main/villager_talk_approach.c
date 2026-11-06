@@ -220,7 +220,8 @@ int func_0202b8dc(UnkStruct_0202b8dc_2 *this)
     local3 = sub->unk_824 & 1;
     local4 = g->unk_04;
 
-    func_0202da38((void *) this, (void *) ((char *) this + 0x104), (void *) ((char *) this + 0x122), 0x1e, ret0, local1, local2, local3, local4);
+    func_0202da38((void *) this, (void *) ((char *) this + 0x104), (void *) ((char *) this + 0x122), 0x1e, ret0, local1,
+                  local2, local3, local4);
     func_0202da88(this, data_021c2704);
     return 1;
 }
@@ -249,8 +250,9 @@ int func_0202b800(UnkStruct_0202b800_2 *self)
         }
     }
 
-    func_0202da38(self, self->unk_104, &self->unk_122, 0x1e, func_020036e8((unsigned char *) ((int) func_0208150c(self->unk_100->unk_830))),
-                  data_020c8b38.unk_00, data_020c8b38.unk_04, status, 0);
+    func_0202da38(self, self->unk_104, &self->unk_122, 0x1e,
+                  func_020036e8((unsigned char *) ((int) func_0208150c(self->unk_100->unk_830))), data_020c8b38.unk_00,
+                  data_020c8b38.unk_04, status, 0);
 
     if (func_02003704((int) func_0208150c(self->unk_100->unk_830)) != 0) {
         v = func_02003648((int) func_0208150c(self->unk_100->unk_830));
@@ -335,8 +337,9 @@ int func_0202b61c(struct UnkStruct_0202b61c *self)
             self->unk_19E = 0;
         }
 
-        func_0202da38(self, self->unk_104, self->unk_122, 0x1e, (u32) func_020036e8((unsigned char *) func_0208150c((int) field)),
-                      data_020c89e8.w, data_020c89e8.b, 0, 0);
+        func_0202da38(self, self->unk_104, self->unk_122, 0x1e,
+                      (u32) func_020036e8((unsigned char *) func_0208150c((int) field)), data_020c89e8.w, data_020c89e8.b, 0,
+                      0);
         return 1;
     }
     return 0;
@@ -356,7 +359,9 @@ int func_0202b598(UnkStruct_0202b598 *self)
     self->unk_19C = val;
     self->unk_19E = 0;
 
-    func_0202da38((void *) self, (void *) ((char *) self + 0x104), (void *) ((char *) self + 0x122), 0x1e, (u32) func_020036e8((unsigned char *) func_0208150c(*(u32 *) ((char *) self->unk_100 + 0x830))), data_020c8ca8.a, data_020c8ca8.b, 0, 0);
+    func_0202da38((void *) self, (void *) ((char *) self + 0x104), (void *) ((char *) self + 0x122), 0x1e,
+                  (u32) func_020036e8((unsigned char *) func_0208150c(*(u32 *) ((char *) self->unk_100 + 0x830))),
+                  data_020c8ca8.a, data_020c8ca8.b, 0, 0);
 
     return 1;
 
@@ -442,7 +447,8 @@ int func_0202b420(unsigned char *param0)
 
     r0 = (unsigned int) func_020036e8((unsigned char *) (int) func_0208150c((int) r6));
 
-    func_0202da38((void *) param0, (void *) (param0 + 0x104), (void *) (param0 + 0x122), 0x1e, r0, data_020c89a0.field0, data_020c89a0.field4, 0, 0);
+    func_0202da38((void *) param0, (void *) (param0 + 0x104), (void *) (param0 + 0x122), 0x1e, r0, data_020c89a0.field0,
+                  data_020c89a0.field4, 0, 0);
 
     func_02015fb0(param0, *(int *) (param0 + 0x1a0), 1, 0xa, 0, 0);
 
@@ -460,7 +466,9 @@ int func_0202b354(UnkStruct_0202b354_3 *self)
     // ENDDECLS
 
     inner = self->unk_100->unk_830;
-    func_0202b52c((unsigned short *) (&tmp), (int) func_0209c330((unsigned char *) (((int) func_0209b5ec((void *) (int) func_0207f1c8((void *) inner))))));
+    func_0202b52c(
+        (unsigned short *) (&tmp),
+        (int) func_0209c330((unsigned char *) (((int) func_0209b5ec((void *) (int) func_0207f1c8((void *) inner))))));
     self->unk_124 = tmp.unk_00;
     if (self->unk_124 == 0xfff1) {
         goto fail;
@@ -474,7 +482,9 @@ int func_0202b354(UnkStruct_0202b354_3 *self)
         self->unk_19C = tmp.unk_04;
         self->unk_19E = 0;
     }
-    func_0202da38((void *) self, (void *) self->unk_104, (void *) (&self->unk_122), 0x1e, func_020036e8((unsigned char *) ((int) func_0208150c(inner))), data_020c8a30.unk_00, data_020c8a30.unk_04, 0, 0);
+    func_0202da38((void *) self, (void *) self->unk_104, (void *) (&self->unk_122), 0x1e,
+                  func_020036e8((unsigned char *) ((int) func_0208150c(inner))), data_020c8a30.unk_00, data_020c8a30.unk_04, 0,
+                  0);
     return 1;
 fail:
     return 0;

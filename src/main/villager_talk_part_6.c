@@ -118,7 +118,8 @@ void func_02027540(void *self, UnkStruct_02027540 *out)
     local3 = 0;
     local4 = 0;
 
-    func_0202da38((UnkStruct_0202760c_2 *) ((int) self), (char *) ((int) ((char *) self + 0x104)), (unsigned char *) self + 0x122, 30, local0, local1, local2, local3, local4);
+    func_0202da38((UnkStruct_0202760c_2 *) ((int) self), (char *) ((int) ((char *) self + 0x104)),
+                  (unsigned char *) self + 0x122, 30, local0, local1, local2, local3, local4);
 
     out->ptr = (char *) self + 0x104;
     out->byte = *(unsigned char *) ((unsigned char *) self + 0x122);

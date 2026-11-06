@@ -78,7 +78,8 @@ void func_0201fd78(struct In *self, struct UnkStruct_0201fd78_2 *out)
 void func_0201fd14(InputStruct *p, OutputStruct *out)
 {
     int v = func_020036e8(func_0208150c(*(int *) ((char *) p->unk_100 + 0x830)));
-    func_0202da38((struct In *) p, (char *) ((char *) p + 0x104), (unsigned char *) ((char *) p + 0x122), 0x1e, v, (*(UnkStruct_0201fd14 *) &data_020c8ce8).unk_00, 1, 0xa, (*(UnkStruct_0201fd14 *) &data_020c8ce8).unk_04);
+    func_0202da38((struct In *) p, (char *) ((char *) p + 0x104), (unsigned char *) ((char *) p + 0x122), 0x1e, v,
+                  (*(UnkStruct_0201fd14 *) &data_020c8ce8).unk_00, 1, 0xa, (*(UnkStruct_0201fd14 *) &data_020c8ce8).unk_04);
     out->unk_00 = (char *) p + 0x104;
     out->unk_04 = p->unk_122;
 }

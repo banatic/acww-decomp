@@ -172,7 +172,8 @@ int func_020a186c(void)
 
 int func_020a1848(void)
 {
-    if ((*(UnkStruct_020a1848 * *) &data_021f3c3c) != 0 && (*(UnkStruct_020a1848 * *) &data_021f3c3c)->unk_50 == 0x12 && (*(UnkStruct_020a1848 * *) &data_021f3c3c)->unk_A1 == 3) {
+    if ((*(UnkStruct_020a1848 **) &data_021f3c3c) != 0 && (*(UnkStruct_020a1848 **) &data_021f3c3c)->unk_50 == 0x12 &&
+        (*(UnkStruct_020a1848 **) &data_021f3c3c)->unk_A1 == 3) {
         return 1;
     }
     return 0;
@@ -180,7 +181,8 @@ int func_020a1848(void)
 
 int func_020a182c(void)
 {
-    if ((*(struct UnkStruct_020a182c * *) &data_021f3c3c) != 0 && (*(struct UnkStruct_020a182c * *) &data_021f3c3c)->unk_50 == 0) {
+    if ((*(struct UnkStruct_020a182c **) &data_021f3c3c) != 0 &&
+        (*(struct UnkStruct_020a182c **) &data_021f3c3c)->unk_50 == 0) {
         return 1;
     }
     return 0;
@@ -200,7 +202,9 @@ int func_020a1810(void)
 
 int func_020a17ec(void)
 {
-    if ((*(struct UnkStruct_020a17ec * *) &data_021f3c3c) != 0 && (*(struct UnkStruct_020a17ec * *) &data_021f3c3c)->unk_50 == 0x13 && (*(struct UnkStruct_020a17ec * *) &data_021f3c3c)->unk_A1 == 3) {
+    if ((*(struct UnkStruct_020a17ec **) &data_021f3c3c) != 0 &&
+        (*(struct UnkStruct_020a17ec **) &data_021f3c3c)->unk_50 == 0x13 &&
+        (*(struct UnkStruct_020a17ec **) &data_021f3c3c)->unk_A1 == 3) {
         return 1;
     } else {
         return 0;

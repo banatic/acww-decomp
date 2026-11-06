@@ -135,7 +135,8 @@ void func_02024328(UnkStruct_02024328_2 *self, UnkStruct_02024328_3 *out)
             cfg.unk_00 = &data_020c8e8c;
             break;
     }
-    func_0202da38((void *) self, (void *) self->unk_104, (void *) (&self->unk_122), 0x1e, func_020036e8(func_0208150c(self->unk_100->unk_830)), (int) cfg.unk_00, cfg.unk_04, 0, 0);
+    func_0202da38((void *) self, (void *) self->unk_104, (void *) (&self->unk_122), 0x1e,
+                  func_020036e8(func_0208150c(self->unk_100->unk_830)), (int) cfg.unk_00, cfg.unk_04, 0, 0);
     out->p = self->unk_104;
     out->b = self->unk_122;
     self->unk_C8 = data_020d8e30;
@@ -153,7 +154,8 @@ void func_02024288(UnkStruct_02024288_2 *self, UnkStruct_02024288_3 *out)
             cfg = &data_020c8fb8[idx];
         }
     }
-    func_0202da38((void *) self, (void *) self->unk_104, (void *) (&self->unk_122), 0x1e, func_020036e8(func_0208150c(self->unk_100->unk_830)), cfg->unk_00, cfg->unk_04, 0, 0);
+    func_0202da38((void *) self, (void *) self->unk_104, (void *) (&self->unk_122), 0x1e,
+                  func_020036e8(func_0208150c(self->unk_100->unk_830)), cfg->unk_00, cfg->unk_04, 0, 0);
     out->p = self->unk_104;
     out->b = self->unk_122;
     self->unk_C8 = data_020d9270;
@@ -224,7 +226,8 @@ void func_020240f4(void *self, UnkStruct_020240f4 *out)
     }
     if (cfg.a != 0) {
         func_0202da38(self, (char *) self + 0x104, (char *) self + 0x122, 0x1e,
-                      func_020036e8((int) ((unsigned char *) (unsigned int) func_0208150c(*(int *) (*(char **) ((char *) self + 0x100) + 0x830)))),
+                      func_020036e8((int) ((unsigned char *) (unsigned int) func_0208150c(
+                          *(int *) (*(char **) ((char *) self + 0x100) + 0x830)))),
                       cfg.a, cfg.b, 0, 0);
         out->p = (char *) self + 0x104;
         out->b = *((unsigned char *) self + 0x122);

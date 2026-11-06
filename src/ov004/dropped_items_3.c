@@ -55,5 +55,6 @@ int func_ov004_0223356c(void *self, void *p2, Vec3 *a, Vec3 *b, u8 p5)
     v2.z = b->z;
     p.a = 0;
     p.b = 0;
-    return func_ov004_0223362c(((char *) &data_ov004_02258af4), self, (int *) (&p), (UnkStruct_022335b8 *) (&v1), (UnkStruct_022335b8 *) (&v2), 0, (int) p2, 0, (u8) p5);
+    return func_ov004_0223362c(((char *) &data_ov004_02258af4), self, (int *) (&p), (UnkStruct_022335b8 *) (&v1),
+                               (UnkStruct_022335b8 *) (&v2), 0, (int) p2, 0, (u8) p5);
 }

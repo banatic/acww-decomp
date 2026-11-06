@@ -285,7 +285,8 @@ int func_ov003_0222ae2c(UnkStruct_0222ae2c_3 *self)
     func_ov003_0222be78((UnkStruct_0222af74 *) (&self->unk_120), r, ang);
     o = func_02095794(4);
     if (o != 0) {
-        func_ov003_0222be78((UnkStruct_0222af74 *) (&self->unk_120), 0xa00, (int) func_0200322c((UnkStruct_0222af74 *) o, (UnkStruct_0222af74 *) (&t)));
+        func_ov003_0222be78((UnkStruct_0222af74 *) (&self->unk_120), 0xa00,
+                            (int) func_0200322c((UnkStruct_0222af74 *) o, (UnkStruct_0222af74 *) (&t)));
     }
     return 1;
 }
@@ -378,7 +379,7 @@ int func_ov003_0222aba4(UnkStruct_0222aba4_4 *self)
                 return 0;
             }
             if (data_021fbdd8 == 0) {
-                if (self->unk_13C > ((u8 * *) data_ov003_0223bf04)[idx * 2][data_020cb786[6 * self->unk_7E]] - 1) {
+                if (self->unk_13C > ((u8 **) data_ov003_0223bf04)[idx * 2][data_020cb786[6 * self->unk_7E]] - 1) {
                     func_ov003_0222a784((void *) self);
                     return 0;
                 }

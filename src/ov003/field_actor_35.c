@@ -144,7 +144,7 @@ void func_ov003_02215570(UnkStruct_02215570 *self, const unsigned char *param, i
     self->dest2 = src[1];
     self->dest3 = src[2];
 
-    if (func_02073908((*(unsigned int * *) &data_020ccf94), self->unk_800) != 0) {
+    if (func_02073908((*(unsigned int **) &data_020ccf94), self->unk_800) != 0) {
         func_0203b144();
     }
 }

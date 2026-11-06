@@ -85,7 +85,7 @@ int func_020899a8(int a, int b, s32 c, u8 *d, int e)
     Vec arr[6];
 
     ret = 0;
-    node = (*(struct Node * *) &data_021d3124);
+    node = (*(struct Node **) &data_021d3124);
     func_0203f844(&va, a);
     func_0203f844(&vb, b);
     func_020eaca0(&dv, &vb, &va);

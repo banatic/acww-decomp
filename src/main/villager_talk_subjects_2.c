@@ -131,7 +131,9 @@ void func_02022bbc(struct Outer_02022bbc *a0, int arg1, struct Arg2_02022bbc *ar
     int flag;
     int ret;
 
-    flag = (arg1 != func_0209c330((unsigned char *) func_0209b5ec((void *) (unsigned int) func_0207f1c8(a0->inner->unk_830)))) ? 1 : 0;
+    flag = (arg1 != func_0209c330((unsigned char *) func_0209b5ec((void *) (unsigned int) func_0207f1c8(a0->inner->unk_830))))
+               ? 1
+               : 0;
 
     ret = func_020036e8((unsigned char *) (unsigned int) func_0208150c(a0->inner->unk_830));
 
@@ -177,7 +179,9 @@ int func_02022ad4(UnkStruct_02022ad4_3 *self)
             }
             if (ok2 > 0) {
                 func_02015de4(self, &info, 0, 7);
-                func_0202da38((void *) self, (char *) self->unk_104, (char *) (&self->unk_122), 0x1e, func_020036e8((unsigned char *) (func_0208150c(self->unk_100->unk_830))), data_020c8b48.unk_00, data_020c8b48.unk_04, state, 0);
+                func_0202da38((void *) self, (char *) self->unk_104, (char *) (&self->unk_122), 0x1e,
+                              func_020036e8((unsigned char *) (func_0208150c(self->unk_100->unk_830))), data_020c8b48.unk_00,
+                              data_020c8b48.unk_04, state, 0);
                 return 1;
             }
         }
@@ -224,7 +228,9 @@ int func_020229ec(UnkStruct_020229ec_3 *self)
             }
             if (ok2 > 0) {
                 func_02015de4((UnkStruct_02022ad4_3 *) self, (UnkStruct_02022ad4 *) (&info), 0, 7);
-                func_0202da38((void *) self, (char *) self->unk_104, (char *) (&self->unk_122), 0x1e, func_020036e8((unsigned char *) (func_0208150c(self->unk_100->unk_830))), data_020c8d40.unk_00, data_020c8d40.unk_04, state, 0);
+                func_0202da38((void *) self, (char *) self->unk_104, (char *) (&self->unk_122), 0x1e,
+                              func_020036e8((unsigned char *) (func_0208150c(self->unk_100->unk_830))), data_020c8d40.unk_00,
+                              data_020c8d40.unk_04, state, 0);
                 return 1;
             }
         }
@@ -322,7 +328,9 @@ int func_02022840(UnkStruct_02022840_3 *self)
         }
     }
     if (state != -1) {
-        func_0202da38((void *) self, (char *) ((u8 *) self + 0x104), (char *) ((u8 *) self + 0x122), 0x1e, func_020036e8((unsigned char *) func_0208150c(self->unk_100->unk_830)), data_020c8b08.unk_00, data_020c8b08.unk_04, state, 0);
+        func_0202da38((void *) self, (char *) ((u8 *) self + 0x104), (char *) ((u8 *) self + 0x122), 0x1e,
+                      func_020036e8((unsigned char *) func_0208150c(self->unk_100->unk_830)), data_020c8b08.unk_00,
+                      data_020c8b08.unk_04, state, 0);
         return 1;
     }
     return 0;

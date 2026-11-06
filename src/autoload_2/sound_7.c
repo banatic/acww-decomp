@@ -28,5 +28,5 @@ void func_020eec60(int param)
 
 int func_020eec48(void)
 {
-    return NNS_SndHeapGetCurrentLevel((*(void * *) &data_021fd048));
+    return NNS_SndHeapGetCurrentLevel((*(void **) &data_021fd048));
 }

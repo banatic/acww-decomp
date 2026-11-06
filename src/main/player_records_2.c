@@ -101,7 +101,8 @@ int func_02098880(int param)
 
 void *func_02098868(void *arg, void *argument1)
 {
-    return (void *) func_02098844((int) arg, (int) ((void *) func_0209871c((Slot *) arg, (TaggedData *) ((void *) argument1))));
+    return (void *) func_02098844((int) arg,
+                                  (int) ((void *) func_0209871c((Slot *) arg, (TaggedData *) ((void *) argument1))));
 }
 
 int func_02098844(int r0, int r1)
