@@ -1202,6 +1202,8 @@ SAVES["visitor-fish"] = SAVES["visitor-41"] + [(POCKETS + 22, "<H", 0x12E8)]
 SAVES["insured"] = [(MONEY, "<I", 30000), (0x14 + 0x23F8, "<I", 0x1806608), (POCKETS, "<H", 0x3934)]
 # "wallet" with the scallop 0x1559 the otter asks for in pocket 0 (ov076/otter_talk.h)
 SAVES["scallop"] = [(MONEY, "<I", 30000), (POCKETS, "<H", 0x1559)]
+# the scallop 0x1559 on the tile two south of the house's door, where gift-swap's present lies
+SAVES["shell-pick"] = [town_item(41, 56, 0x1559)]
 
 
 def room_item(x: int, y: int, number: int, room: int = 0, side: int = 0) -> tuple[int, str, int]:
@@ -1321,6 +1323,20 @@ SAVE_TRANSFORMS["guest-tools"] = other_town
 # of two consoles
 SAVES["other-bottle"] = SAVES["bottle-sent"]
 SAVE_TRANSFORMS["other-bottle"] = other_town
+
+
+def other_town_child(bank: bytes) -> bytes:
+    """"other-town" paired with the seed's town 7 days ago (as "lost-child", the pairing's town
+    the seed's): its lost child is due, and escorted through the seed town's gate it meets its
+    mother there (main/link_state.c, scene 0x2f)."""
+    data = bytearray(other_town(bank))
+    for offset in (0x14 + 0x242C, 0x173E2):
+        data[offset:offset + len(SEED_TOWN) + 2] = SEED_TOWN + bytes((7, 0))
+    return bytes(data)
+
+
+SAVE_TRANSFORMS["other-town-child"] = other_town_child
+SAVES["other-town-child"] = [(ROACHES, "<B", 0)]
 
 
 def scene(name: str, save: str, frames: int, ram: list[int], look: list[int], intent: str,
@@ -1548,6 +1564,9 @@ scene("face-pair", "face-pair", 2700, [1300, 2300, 2600, 2699], frames(2300, 270
 scene("gift-swap", "gift-full", 3360, [2600, 2700, 2900, 3150, 3359], frames(2600, 3360, 20),
       "with the pockets full, take up a present lying in front of the house and swap it in for a pocket's "
       "item: the present becomes an item drawn for it")
+scene("shell-pick", "shell-pick", 2900, [2600, 2700, 2899], frames(2640, 2900, 20),
+      "take up a scallop lying in front of the house: the field actor's state 0x19 asks whether the villagers "
+      "hear of a shell picked up (VillagerEvent_ShellPicked, _IsMarkedTile)")
 scene("acorn-festival", "wallet", 8540, [4100, 4600, 6400, 7400, 8539], frames(4500, 8540, 100),
       "in the week of the acorn festival, hear its character tell of it and read the player's fortune",
       rtc="2026-10-06 10:00:00")
@@ -2714,6 +2733,18 @@ scene("exchange-link", "bottle-sent", 5352, [1100, 2399, 3000, 3800, 4600, 5351]
       "two consoles, each with a letter in a bottle sent: title-bottle's passing exchange on both; their "
       "exchange libraries meet, the blocks go over MP, each takes the other's block, saves and goes on into "
       "the town", recording="exchange-link-0", peer=("other-bottle", "exchange-link-1"))
+scene("gate-visit-gone", "seed", 12500, [2600, 7900, 9600, 10400, 12499], frames(9500, 12500, 100),
+      "gate-visit-link, then the visitor's wireless out of range (gate-visit-gone-guest) while the gatekeeper "
+      "asks whether to visit the town found: the town is no longer heard, and the visit is refused",
+      recording="gate-visit-host", peer=("other-town", "gate-visit-gone-guest"))
+scene("gate-visit-unjoined", "seed", 12500, [2600, 7900, 9600, 10400, 10800], frames(9700, 12500, 100),
+      "gate-visit-link, then the visitor's wireless out of range (gate-visit-unjoined-guest) as it asks to "
+      "connect to the town selected: the connection never comes, and the caution window resets the game",
+      recording="gate-visit-host", peer=("other-town", "gate-visit-unjoined-guest"))
+scene("lost-child-home", "seed", 17000, [2600, 6700, 9200, 12400, 14800, 16999], frames(11000, 17000, 100),
+      "two consoles on 14 September: the other town's lost child escorted through the seed town's gate "
+      "(lost-child-home-guest) by DS wireless to the host's town (lost-child-home-host), where it finds its mother",
+      recording="lost-child-home-host", rtc="2026-09-14 11:30:00", peer=("other-town-child", "lost-child-home-guest"))
 scene("gate-visit-lost", "seed", 17000, [2600, 7900, 9600, 11200, 12500, 14000, 14399], frames(12000, 17000, 100),
       "gate-visit-link, then the visitor's wireless out of range (gate-visit-lost-guest): the link is lost",
       recording="gate-visit-lost-host", peer=("other-town", "gate-visit-lost-guest"))
