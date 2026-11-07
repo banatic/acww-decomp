@@ -1,0 +1,9 @@
+# 1 functions of the deleting destructors of vtable slot 1: each on a live object of its class, through the object's vtable, at the end of frame 5101 of tune-played (tools/driven.py --plan)
+scene tune-played
+frames 5110
+ram 2600,4700
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 5101 020e9a08 022a3378 0 0 0 0 0  # Heap_SetCurrent(its heap)
+vcall 5101 022afa1c 4 022afa1c 0 0 0 02255454  # ov004 RecycleBinReceiver_Delete (slot 1)
+call 5101 020e9a08 r2 0 0 0 0 0  # Heap_SetCurrent(as before)
+end

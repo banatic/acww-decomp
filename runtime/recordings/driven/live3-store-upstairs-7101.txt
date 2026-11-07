@@ -1,0 +1,12 @@
+# 2 functions of the deleting destructors of vtable slot 1: each on a live object of its class, through the object's vtable, at the end of frame 7101 of store-upstairs (tools/driven.py --plan)
+scene store-upstairs
+frames 7110
+ram 2600,3950,4600,5400,6300
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 7101 020e9a08 02377e9c 0 0 0 0 0  # Heap_SetCurrent(its heap)
+vcall 7101 0237a3b0 4 0237a3b0 0 0 0 02251994  # ov004 RoomObject022518e8Receiver_Delete (slot 1)
+call 7101 020e9a08 r2 0 0 0 0 0  # Heap_SetCurrent(as before)
+call 7101 020e9a08 022a3378 0 0 0 0 0  # Heap_SetCurrent(its heap)
+vcall 7101 022b3368 4 022b3368 0 0 0 022532f4  # ov004 RoomEtcBoardReceiver_Delete (slot 1)
+call 7101 020e9a08 r2 0 0 0 0 0  # Heap_SetCurrent(as before)
+end

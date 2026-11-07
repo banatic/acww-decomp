@@ -1,0 +1,9 @@
+# 1 functions of the deleting destructors of vtable slot 1: each on a live object of its class, through the object's vtable, at the end of frame 10001 of title-moved-in (tools/driven.py --plan)
+scene title-moved-in
+frames 10010
+ram 1100,1500,3400,7900
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 10001 020e9a08 022a3378 0 0 0 0 0  # Heap_SetCurrent(its heap)
+vcall 10001 022b24fc 4 022b24fc 0 0 0 02277814  # ov068 Sequence4_ReceiverDestroyAndFree (slot 1)
+call 10001 020e9a08 r2 0 0 0 0 0  # Heap_SetCurrent(as before)
+end

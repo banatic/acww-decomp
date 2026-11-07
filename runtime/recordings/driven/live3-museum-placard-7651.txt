@@ -1,0 +1,9 @@
+# 1 functions of the deleting destructors of vtable slot 1: each on a live object of its class, through the object's vtable, at the end of frame 7651 of museum-placard (tools/driven.py --plan)
+scene museum-placard
+frames 7660
+ram 2600,4500,7200,7400
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 7651 020e9a08 022a3378 0 0 0 0 0  # Heap_SetCurrent(its heap)
+vcall 7651 022b0ac8 4 022b0ac8 0 0 0 02253454  # ov004 EtcMuseumReceiver_Delete (slot 1)
+call 7651 020e9a08 r2 0 0 0 0 0  # Heap_SetCurrent(as before)
+end

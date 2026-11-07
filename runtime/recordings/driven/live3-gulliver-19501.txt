@@ -1,0 +1,9 @@
+# 1 functions of the deleting destructors of vtable slot 1: each on a live object of its class, through the object's vtable, at the end of frame 19501 of gulliver (tools/driven.py --plan)
+scene gulliver
+frames 19510
+ram 2600,7300,8500,9500,12000,16000
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 19501 020e9a08 022a3378 0 0 0 0 0  # Heap_SetCurrent(its heap)
+vcall 19501 022b63d8 4 022b63d8 0 0 0 022399ac  # ov003 GullSpot_ReceiverDestroyAndFree (slot 1)
+call 19501 020e9a08 r2 0 0 0 0 0  # Heap_SetCurrent(as before)
+end

@@ -1,0 +1,15 @@
+# 3 functions of the deleting destructors of vtable slot 1: each on a live object of its class, through the object's vtable, at the end of frame 7601 of house-kinds (tools/driven.py --plan)
+scene house-kinds
+frames 7610
+ram 2600,3700,4600,5600,6600
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 7601 020e9a08 0236272c 0 0 0 0 0  # Heap_SetCurrent(its heap)
+vcall 7601 02364c40 4 02364c40 0 0 0 02251ac0  # ov004 RoomObject02251a14Receiver_Delete (slot 1)
+call 7601 020e9a08 r2 0 0 0 0 0  # Heap_SetCurrent(as before)
+call 7601 020e9a08 0236272c 0 0 0 0 0  # Heap_SetCurrent(its heap)
+vcall 7601 0236552c 4 0236552c 0 0 0 02252678  # ov004 RoomObject022525ccReceiver_Delete (slot 1)
+call 7601 020e9a08 r2 0 0 0 0 0  # Heap_SetCurrent(as before)
+call 7601 020e9a08 0236272c 0 0 0 0 0  # Heap_SetCurrent(its heap)
+vcall 7601 02365e18 4 02365e18 0 0 0 022522f4  # ov004 RoomObject02252248Receiver_Delete (slot 1)
+call 7601 020e9a08 r2 0 0 0 0 0  # Heap_SetCurrent(as before)
+end

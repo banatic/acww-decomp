@@ -1,0 +1,15 @@
+# 3 functions of the deleting destructors of vtable slot 1: each on a live object of its class, through the object's vtable, at the end of frame 8101 of sable-talk (tools/driven.py --plan)
+scene sable-talk
+frames 8110
+ram 2600,4700,5300,6300,7500
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 8101 020e9a08 0237ae9c 0 0 0 0 0  # Heap_SetCurrent(its heap)
+vcall 8101 0237b8ec 4 0237b8ec 0 0 0 02252420  # ov004 RoomObject02252374Receiver_Delete (slot 1)
+call 8101 020e9a08 r2 0 0 0 0 0  # Heap_SetCurrent(as before)
+call 8101 020e9a08 0237ae9c 0 0 0 0 0  # Heap_SetCurrent(its heap)
+vcall 8101 0237e588 4 0237e588 0 0 0 02251f70  # ov004 ShopDesignObjectReceiver_Delete (slot 1)
+call 8101 020e9a08 r2 0 0 0 0 0  # Heap_SetCurrent(as before)
+call 8101 020e9a08 0237ae9c 0 0 0 0 0  # Heap_SetCurrent(its heap)
+vcall 8101 0237d3b0 4 0237d3b0 0 0 0 02250b84  # ov004 SwitchShownReceiver_Delete (slot 1)
+call 8101 020e9a08 r2 0 0 0 0 0  # Heap_SetCurrent(as before)
+end

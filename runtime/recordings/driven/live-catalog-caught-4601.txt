@@ -8,9 +8,11 @@ vcall 4601 022a3378 48 022a3378 0 0 0 0213e5b0  # autoload_2 ExpHeap_GroupId (sl
 vcall 4601 022c2788 30 022c2788 0 0 0 0213e608  # autoload_2 FrameHeap_BlockSize (slot 12)
 vcall 4601 022c2788 24 022c2788 0 0 0 0213e608  # autoload_2 FrameHeap_Unk24 (slot 9)
 vcall 4601 022a3378 24 022a3378 0 0 0 0213e5b0  # autoload_2 ExpHeap_Unk24 (slot 9)
+vcall 4601 022a3378 30 022a3378 022b730c 0 0 0213e5b0  # autoload_2 ExpHeap_BlockSize (slot 12): of a live block of that heap
 vcall 4601 022a3378 10 022a3378 0 0 0 0213e5b0  # autoload_2 ExpHeap_TryLock (slot 4)
 vcall 4601 022c2788 10 022c2788 0 0 0 0213e608  # autoload_2 Heap_TryLockNothing (slot 4)
 vcall 4601 02392170 3c 02392170 0 0 0 020d82b4  # autoload_2 Process_FillHeapDefault (slot 15)
+vcall 4601 02392170 34 02392170 400 022a3378 0 020d82b4  # autoload_2 Process_CreateFittedHeap (slot 13): 0x400 bytes in the game's expanded heap
 vcall 4601 02392170 38 02392170 0 0 0 020d82b4  # autoload_2 Process_CreateHeap (slot 14)
 vcall 4601 022a6cac a4 022a6cac 0 0 0 022792ec  # main SceneObject_VfuncA4 (slot 41)
 vcall 4601 022b1fcc 5c 022b1fcc 0 0 0 02238010  # main SceneObjectBase_Slot5c (slot 23)

@@ -4977,3 +4977,37 @@ What reading the Clean code found about the groups above; counts are of function
   console's player 4, the link guard 3, code only unreachable code calls 2, local wireless 1.
 - Checked (run or driven call), on main c39f07de: 23,716 before, 23,751 after (entered 22,236
   to 22,285). The plan: seed 263 to 255, unknown 289 to 282, unreachable 2,393 to 2,359.
+
+### Driven calls through the C++ thunks, heap slots with real arguments (2026-11-08, driven4)
+- The message receivers' destructors (RoomObject*Receiver_Destroy, AtmReceiver_Destroy, the
+  outdoor objects' _ReceiverDestroy, 48 of "the destructors of vtable slot 0 of those classes")
+  are this-adjusting thunks (_ZThn236_...D1Ev). Their matching sources declare no C result, so
+  tools/native.py could not read it (RET_SKIP) and the policy ran them Native for Native callers
+  only: a driven call (an interpreter call) ran the ROM's thunk and they were not counted. Their
+  Clean versions declare a pointer or nothing; tools/run.py (clean_result) now gives the Clean
+  table that kind and makes the policy N for them (148 functions: the 134 receiver thunks and 14
+  void slots such as TalkReceiver_Reset and TownObjectActor_RunMode), so the ROM's callers and
+  driven calls run the Clean code, its result compared as a word. Native alone is unchanged.
+- The same thunks' deleting destructors (_ZThn<N>_...D0Ev, slot 1 of the receiver's vtable) free
+  the complete object, which starts N bytes before the receiver: `delete` through the receiver
+  base. driven.py --plan (thunk_offsets) now takes an object whose base part sits N bytes into a
+  block of a game Heap's expanded heap; live3-*: 20 checks, 49 of the slot 1 group's functions.
+- Heap slots with real arguments (live-catalog-caught-4601): ExpHeap_BlockSize on a live block
+  of the game's expanded heap (022b730c), Process_CreateFittedHeap on the field actor with 0x400
+  bytes in that heap. No process had a heap of its own at that moment, so the call makes one.
+- Driven list 1,062 -> 1,161 (checked, run or driven call, 23,298 -> 23,397).
+- What stays: the other 211 deleting destructors of slot 1 have live objects only inside another
+  object (200), in .bss or a frame heap (31), never at a block's start (the survey of all 578
+  scenes' checkpoints), and a frame heap's free halts (FrameHeap_Free): no honest call frees one.
+  CollisionTriangle_PushOut has live triangles but takes two Vec3 it writes, and a driven call has
+  no buffer of its own to give it. The pockets view (ov099) and the carried letters (ov103) have
+  no live object in any scene (no code opens them); a check would have to construct one.
+- ov103's CarriedLetters_Destroy and _Delete named ov119's and ov128's function at 0x0229bc30;
+  the relocation allows ov094, ov119 and ov128, and the next call of both (0x0229afe0) is ov094's
+  alone, so ov094 is the overlay loaded with ov103: both now name func_ov094_0229bc30 (verify.py
+  ok). A scan of every source's calls over the relocation table (a multi-overlay relocation named
+  for an overlay its module's single-overlay relocations do not name, where they name another of
+  the set) finds only these two; 42 more name one overlay of a set where the module names none of
+  the set (main, ov007-ov015, ov095, ...), which only a run could decide.
+- dtor-barber-9801-2's Native-alone pass once stopped with func_0206e6a0 looping (waiting for
+  interpreted code) under load; alone it passes.

@@ -1,0 +1,18 @@
+# 4 functions of the deleting destructors of vtable slot 1: each on a live object of its class, through the object's vtable, at the end of frame 8251 of villager-birthday (tools/driven.py --plan)
+scene villager-birthday
+frames 8260
+ram 2600,4100,6100
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 8251 020e9a08 0236c1e4 0 0 0 0 0  # Heap_SetCurrent(its heap)
+vcall 8251 0236e6f8 4 0236e6f8 0 0 0 02252d80  # ov004 RoomObject02252cd4Receiver_Delete (slot 1)
+call 8251 020e9a08 r2 0 0 0 0 0  # Heap_SetCurrent(as before)
+call 8251 020e9a08 0236c1e4 0 0 0 0 0  # Heap_SetCurrent(its heap)
+vcall 8251 023701bc 4 023701bc 0 0 0 02253104  # ov004 BedObjectReceiver_Delete (slot 1)
+call 8251 020e9a08 r2 0 0 0 0 0  # Heap_SetCurrent(as before)
+call 8251 020e9a08 0236c1e4 0 0 0 0 0  # Heap_SetCurrent(its heap)
+vcall 8251 0236de0c 4 0236de0c 0 0 0 022521c8  # ov004 ChestReceiver_Delete (slot 1)
+call 8251 020e9a08 r2 0 0 0 0 0  # Heap_SetCurrent(as before)
+call 8251 020e9a08 0236c1e4 0 0 0 0 0  # Heap_SetCurrent(its heap)
+vcall 8251 0236f8d0 4 0236f8d0 0 0 0 0225173c  # ov004 RoomObject02251690Receiver_Delete (slot 1)
+call 8251 020e9a08 r2 0 0 0 0 0  # Heap_SetCurrent(as before)
+end
