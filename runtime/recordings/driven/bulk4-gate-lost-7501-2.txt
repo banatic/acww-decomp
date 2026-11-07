@@ -1,0 +1,15 @@
+# 0 functions of the boxes' choice and error message: each on a live object of its class, at the end of frame 7501 of gate-lost
+scene gate-lost
+frames 7510
+ram 2600,4700,5900,6600,7200
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 7501 0229ca7d 0237dad0 0 0 0 0229ca7c b081b530  # ov110 PublicBox_PointAtFirstRow (this: an object of vtable 0229ecb8)
+call 7501 0229cac9 0237dad0 0 0 0 0229cac8 b081b530  # ov110 PublicBox_PointAtLastRow (this: an object of vtable 0229ecb8)
+call 7501 0229cb29 0237dad0 0 0 0 0229cb28 b081b530  # ov110 PublicBox_GlideToRow (this: an object of vtable 0229ecb8)
+call 7501 0229d8f5 0237dad0 0 0 0 0229d8f4 1c04b510  # ov110 PublicBox_WaitError (this: an object of vtable 0229ecb8)
+call 7501 0229d949 0237dad0 0 0 0 0229d948 1c04b510  # ov110 PublicBox_CloseChoice (this: an object of vtable 0229ecb8)
+call 7501 0229d98d 0237dad0 0 0 0 0229d98c 1c04b510  # ov110 PublicBox_WaitChoiceShown (this: an object of vtable 0229ecb8)
+call 7501 0229dbf5 0237dad0 0 0 0 0229dbf4 1c04b510  # ov110 PublicBox_PickChoiceRow (this: an object of vtable 0229ecb8)
+call 7501 0229dc41 0237dad0 0 0 0 0229dc40 1c04b510  # ov110 PublicBox_ChooseByKeys (this: an object of vtable 0229ecb8)
+call 7501 0229e05d 0237dad0 0 0 0 0229e05c b081b530  # ov110 PublicBox_WatchChoiceTouch (this: an object of vtable 0229ecb8)
+end
