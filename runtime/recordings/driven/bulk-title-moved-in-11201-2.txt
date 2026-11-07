@@ -1,0 +1,19 @@
+# 13 functions of the menu scenes' destructors of vtable slot 16, the menu scenes' phases 3 and 4, the other classes' destructors of vtable slot 16, the town map's list by the keys and the pen: each on a live object of its class, at the end of frame 11201 of title-moved-in
+scene title-moved-in
+frames 11210
+ram 1100,1500,3400,7900,10000
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 11201 0229b6e5 023b5964 0 0 0 023b5964 0229c650  # ov120 TownMap_SubKnobHold (this: an object of vtable 0229c650)
+call 11201 0229b71d 023b5964 0 0 0 023b5964 0229c650  # ov120 TownMap_SubKnobPress (this: an object of vtable 0229c650)
+call 11201 0229b741 023b5964 0 0 0 023b5964 0229c650  # ov120 TownMap_SubRelease (this: an object of vtable 0229c650)
+call 11201 0229b785 023b5964 0 0 0 023b5964 0229c650  # ov120 TownMap_SubPress (this: an object of vtable 0229c650)
+call 11201 0229b7cd 023b5964 0 0 0 023b5964 0229c650  # ov120 TownMap_SubGlide (this: an object of vtable 0229c650)
+call 11201 0229b7f9 023b5964 0 0 0 023b5964 0229c650  # ov120 TownMap_SubKeys (this: an object of vtable 0229c650)
+call 11201 0229b8d1 023b5964 0 0 0 023b5964 0229c650  # ov120 TownMap_SubDrag (this: an object of vtable 0229c650)
+call 11201 0229b901 023b5964 0 0 0 023b5964 0229c650  # ov120 TownMap_SubTouch (this: an object of vtable 0229c650)
+vcall 11201 023b5964 58 023b5964 0 0 0 0229c650  # ov120 TownMap_Phase4 (slot 22)
+vcall 11201 023b5964 54 023b5964 0 0 0 0229c650  # ov120 TownMap_Phase3 (slot 21)
+call 11201 0203f0f9 0236ad74 0 0 0 0236ad74 020d82b4  # main SceneObjectBase_Destruct (this: an object of vtable 020d82b4)
+call 11201 020b727d 022a712c 0 0 0 022a712c 0213e7b4  # main SceneClass3_Destruct (this: an object of vtable 0213e7b4)
+vcall 11201 023b5964 40 023b5964 0 0 0 0229c650  # ov120 TownMap_Destroy (slot 16)
+end

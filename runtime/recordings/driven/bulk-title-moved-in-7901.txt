@@ -1,0 +1,25 @@
+# 0 functions of a second player and the title screen, chat, board, keyboard entry and name screens, the base classes' own destructors every class replaces, the destructors of main's static objects, the destructors of vtable slot 0 of those classes, the keyboard entry's question, the keyboards' conversions: no key gives the codes 0x103-0x105, the menu screens' error messages no code opens: each on a live object of its class, at the end of frame 7901 of title-moved-in
+scene title-moved-in
+frames 7910
+ram 1100,1500,3400
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 7901 0226072d 022b0d84 0 0 0 022b0d84 02261804  # ov051 TaxiDriverTalk_OnAnswer30 (this: an object of vtable 02261804)
+call 7901 022a032d 023835f4 41 0 0 023835f4 022a20c8  # ov126 KeyboardEntry_Convert (this: an object of vtable 022a20c8)
+call 7901 022a0b91 023835f4 0 0 0 023835f4 022a20c8  # ov126 KeyboardEntry_BeginAsk (this: an object of vtable 022a20c8)
+call 7901 022a0bb1 023835f4 0 0 0 023835f4 022a20c8  # ov126 KeyboardEntry_BeginAskKeys (this: an object of vtable 022a20c8)
+call 7901 022a0bc9 023835f4 0 0 0 023835f4 022a20c8  # ov126 KeyboardEntry_BeginAskTouch (this: an object of vtable 022a20c8)
+call 7901 022a0c35 023835f4 0 0 0 023835f4 022a20c8  # ov126 KeyboardEntry_Error (this: an object of vtable 022a20c8)
+call 7901 022a1021 023835f4 0 0 0 023835f4 022a20c8  # ov126 KeyboardEntry_AskKeys (this: an object of vtable 022a20c8)
+call 7901 022a1109 023835f4 0 0 0 023835f4 022a20c8  # ov126 KeyboardEntry_AskTouch (this: an object of vtable 022a20c8)
+call 7901 022a16d9 023835f4 0 0 0 023835f4 022a20c8  # ov126 KeyboardEntry_BackWipeIn (this: an object of vtable 022a20c8)
+call 7901 022a16fd 023835f4 0 0 0 023835f4 022a20c8  # ov126 KeyboardEntry_BackWipeOut (this: an object of vtable 022a20c8)
+call 7901 022a172d 023835f4 0 0 0 023835f4 022a20c8  # ov126 KeyboardEntry_StartBack (this: an object of vtable 022a20c8)
+call 7901 022a1749 023835f4 0 0 0 023835f4 022a20c8  # ov126 KeyboardEntry_AskWipeIn (this: an object of vtable 022a20c8)
+call 7901 022a176d 023835f4 0 0 0 023835f4 022a20c8  # ov126 KeyboardEntry_AskWipeOut (this: an object of vtable 022a20c8)
+call 7901 022a17bd 023835f4 0 0 0 023835f4 022a20c8  # ov126 KeyboardEntry_StartAsk (this: an object of vtable 022a20c8)
+call 7901 022a185d 023835f4 0 0 0 023835f4 022a20c8  # ov126 KeyboardEntry_AddFriend (this: an object of vtable 022a20c8)
+call 7901 0200316d 023779f4 0 0 0 023779f4 020d82b4  # main Actor_Destruct (this: an object of vtable 020d82b4)
+call 7901 0202f0f5 022a712c 0 0 0 022a712c 0213e7b4  # main GameProcess_Destruct (this: an object of vtable 0213e7b4)
+call 7901 02083c9d 021d1e0c 0 0 0 021d1e0c 020e1a90  # main SlotPool_BaseDestructVirtual (this: an object of vtable 020e1a90)
+call 7901 0220a3e9 02387584 0 0 0 02387584 0220bc50  # ov002 Glider_DestroyVirtual (this: an object of vtable 0220bc50)
+end

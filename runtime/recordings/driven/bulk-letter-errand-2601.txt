@@ -1,0 +1,6 @@
+# 1 functions of the scene classes 3 and 4 and the plain process, which nothing spawns: each on a live object of its class, at the end of frame 2601 of letter-errand
+scene letter-errand
+frames 2610
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 2601 022b6a64 48 022b6a64 0 0 0 020e5408  # main SceneClass4_New (slot 18)
+end

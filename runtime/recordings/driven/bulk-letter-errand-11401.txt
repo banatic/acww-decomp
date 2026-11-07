@@ -1,0 +1,7 @@
+# 1 functions of furniture of each room-object class: each on a live object of its class, at the end of frame 11401 of letter-errand
+scene letter-errand
+frames 11410
+ram 2600,5300,9000
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 11401 02212551 0236f7e4 0 0 0 0236f7e4 02250ad8  # ov004 SwitchShown_RequestOn (this: an object of vtable 02250ad8)
+end

@@ -1,0 +1,69 @@
+# small functions with no object given values the game passes, fixed records and blocks taken
+# from a heap of the game (022a3378) as arguments; at the end of frame 5301 of villager-chat
+scene villager-chat
+frames 5310
+ram 2600,4500,5300
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 5301 020e9948 022a3378 100 0 0 00000000 00000000  # autoload_2 Heap_Alloc (scratch block A)
+call 5301 020e9948 022a3378 100 0 0 00000000 00000000  # autoload_2 Heap_Alloc (scratch block B)
+call 5301 020e9948 022a3378 100 0 0 00000000 00000000  # autoload_2 Heap_Alloc (scratch block C)
+call 5301 020e9948 022a3378 100 0 0 00000000 00000000  # autoload_2 Heap_Alloc (scratch block D)
+call 5301 020e9948 022a3378 100 0 0 00000000 00000000  # autoload_2 Heap_Alloc (scratch block E)
+call 5301 02117568 r5 0 100 0 00000000 00000000  # autoload_2 MI_CpuFill8 (scratch block A cleared)
+call 5301 02117568 r5 0 100 0 00000000 00000000  # autoload_2 MI_CpuFill8 (scratch block B cleared)
+call 5301 02117568 r5 0 100 0 00000000 00000000  # autoload_2 MI_CpuFill8 (scratch block C cleared)
+call 5301 02117568 r5 0 100 0 00000000 00000000  # autoload_2 MI_CpuFill8 (scratch block D cleared)
+call 5301 02117568 r5 0 100 0 00000000 00000000  # autoload_2 MI_CpuFill8 (scratch block E cleared)
+call 5301 020f2368 0 0 0 0 00000000 00000000  # autoload_2 SoundSystem_MasterVolumeFull
+call 5301 020046a5 0 0 0 0 00000000 00000000  # main SoundSys_MasterVolumeFull
+call 5301 0201d419 0 0 0 0 00000000 00000000  # main VillagerTalk_ClearOption
+call 5301 020694f1 0 0 0 0 00000000 00000000  # main TalkTags_Nothing11_4
+call 5301 0206c5f5 0 0 0 0 00000000 00000000  # main TalkPageMeasurer_Nothing11_4
+call 5301 0206f53d 0 0 0 0 00000000 00000000  # main StateFlags_Test100
+call 5301 0206f7b1 0 0 0 0 00000000 00000000  # main GroupParams_C88
+call 5301 0206f7c9 0 0 0 0 00000000 00000000  # main GroupParams_ClearC80C88
+call 5301 020a12fd 0 0 0 0 00000000 00000000  # main StartKind_SetUnchanged
+call 5301 020ad889 0 0 0 0 00000000 00000000  # main Shops_AllAnsweredFox
+call 5301 020b3b15 0 0 0 0 00000000 00000000  # main BuildingTaker_Get
+call 5301 020b4d71 41 0 0 0 00000000 00000000  # main MessageDecoder_CanInsert (a character)
+call 5301 020b4d71 8250 0 0 0 00000000 00000000  # main MessageDecoder_CanInsert (a wide character)
+call 5301 020a11e1 0 0 0 0 00000000 00000000  # main Activity_SetCurrentSlot100
+call 5301 020a1211 0 0 0 0 00000000 00000000  # main Activity_SetCurrentFlagF3
+call 5301 020ad7e5 0 0 0 0 00000000 00000000  # main Shops_CountAnswer (the shops' answers, data_021f49ec)
+call 5301 020b01dd 021f49ec 0 0 0 00000000 00000000  # main ShopAnswers_Count (the shops' answers, data_021f49ec)
+call 5301 020984e9 0 0 0 0 00000000 00000000  # main PlayerRecords_Current (the current player's record)
+call 5301 0209895d r1 0 0 0 00000000 00000000  # main PlayerRecord_MailMark (that record)
+call 5301 02098931 r2 r1 0 0 00000000 00000000  # main PlayerRecord_SetMailMark (that record, its own mark)
+call 5301 02099641 r3 0 0 0 00000000 00000000  # main PlayerRecord_VillagerPart (that record's villager part)
+call 5301 0209ab79 r1 0 0 0 00000000 00000000  # main VillagerPart_SetType13 (that part)
+call 5301 02036649 0 0 0 0 00000000 00000000  # main SceneMusic_Clock (the scene music's clock)
+call 5301 0203741d r1 0 0 0 00000000 00000000  # main MusicClock_Reset (that clock)
+call 5301 0207813d 021eed68 0 0 0 00000000 00000000  # main Bbs_GetLastNotice (the town's board, data_021eed68)
+call 5301 02078131 021eed68 r1 0 0 00000000 00000000  # main Bbs_SetLastNotice (the town's board, its own number)
+call 5301 02096441 r36 r35 r34 0 00000000 00000000  # main SessionPlayers_SplitLowHigh (scratch blocks)
+call 5301 02078449 r37 r36 r35 0 00000000 00000000  # main SessionVillager_UnpackItem (scratch blocks)
+call 5301 0207835d r38 r37 r36 0 00000000 00000000  # main SessionVillager_UnpackItems (scratch blocks)
+call 5301 020786d9 r39 r38 r37 r36 00000000 00000000  # main SessionVillager_UnpackObjectChange (scratch blocks)
+call 5301 02078795 r40 r39 r38 r37 00000000 00000000  # main SessionVillager_UnpackMemoryItem (scratch blocks)
+call 5301 020789f5 r41 r40 r39 0 00000000 00000000  # main SessionVillager_UnpackMemory (scratch blocks)
+call 5301 020b47fd r42 10 3 0 00000000 00000000  # main NumberText_InsertCommas (a scratch work text)
+call 5301 020b488d r43 10 4 0 00000000 00000000  # main NumberText_PadSpacesBefore (a scratch work text)
+call 5301 020b48b5 r44 10 4 0 00000000 00000000  # main NumberText_PadSpacesAfter (a scratch work text)
+call 5301 020b4931 r45 10 0 2 00000000 00000000  # main NumberText_MoveUp (a scratch work text)
+call 5301 022163f9 r46 r45 0 0 00000000 00000000  # ov003 FieldActor_GetState4BSaved (scratch blocks)
+call 5301 0222b9b5 r47 r46 0 0 00000000 00000000  # ov004 FieldActorPlaceStates_GetOffSaved (scratch blocks)
+call 5301 020881ad r48 0 0 0 00000000 00000000  # main MysteryCatRecord_Checksum (a scratch record)
+call 5301 020881b9 r49 0 0 0 00000000 00000000  # main MysteryCatRecord_SetChecksum (a scratch record)
+call 5301 02088285 r50 0 0 0 00000000 00000000  # main PairedTown_ClearChildEscorted (a scratch pairing)
+call 5301 0203f659 0 0 0 0 00000000 00000000  # main WfcDelivery_LetterHmac
+call 5301 020397f1 0 0 0 0 00000000 00000000  # main QuickMessage_ResetCurrent
+call 5301 02035295 0 0 0 0 00000000 00000000  # main Music_Reset
+call 5301 0206f5cd 0 0 0 0 00000000 00000000  # main StateFlags_AskMenuClose
+call 5301 020b8e11 0 0 0 0 00000000 00000000  # main FieldLabel_ChooseMessage
+call 5301 020b8dd9 0 0 0 0 00000000 00000000  # main FieldLabel_ShowMessage9
+call 5301 020e993c 022a3378 r57 0 0 00000000 00000000  # autoload_2 Heap_Free (scratch block A)
+call 5301 020e993c 022a3378 r57 0 0 00000000 00000000  # autoload_2 Heap_Free (scratch block B)
+call 5301 020e993c 022a3378 r57 0 0 00000000 00000000  # autoload_2 Heap_Free (scratch block C)
+call 5301 020e993c 022a3378 r57 0 0 00000000 00000000  # autoload_2 Heap_Free (scratch block D)
+call 5301 020e993c 022a3378 r57 0 0 00000000 00000000  # autoload_2 Heap_Free (scratch block E)
+end

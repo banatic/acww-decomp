@@ -1,0 +1,29 @@
+# 0 functions of ev_arbeit's messages for the player record's count 1, which no store makes (the talk spans, the option's events), message tags no shown message holds, tags no shown message holds, by the whole archives, the talk tag of Gracie's lines: each on a live object of its class, at the end of frame 7601 of gate-lost
+scene gate-lost
+frames 7610
+ram 2600,4700,5900,6600,7200
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 7601 0206a999 02374e94 0 0 0 02374e94 020defe4  # main TalkTags_Receiver1cWith4 (this: an object of vtable 020defe4)
+call 7601 0206a9bd 02374e94 0 0 0 02374e94 020defe4  # main TalkTags_Receiver1cWith3 (this: an object of vtable 020defe4)
+call 7601 0206abe9 02374e94 0 0 0 02374e94 020defe4  # main TalkTags_PutLeftBrace (this: an object of vtable 020defe4)
+call 7601 0206afa5 02374e94 0 0 0 02374e94 020defe4  # main TalkTags_DispatchGroup8 (this: an object of vtable 020defe4)
+call 7601 0206bb5d 02374e94 0 0 0 02374e94 020defe4  # main TalkTags_StepSpans (this: an object of vtable 020defe4)
+call 7601 0206bf09 02374ef4 0 0 0 02374ef4 020def9c  # main TalkSpan_Step (this: an object of vtable 020def9c)
+call 7601 0206c481 0237459c 0 0 0 0237459c 020def7c  # main TalkPageMeasurer_Value3 (this: an object of vtable 020def7c)
+call 7601 0206c4d9 0237459c 0 0 0 0237459c 020def7c  # main TalkPageMeasurer_Part10 (this: an object of vtable 020def7c)
+call 7601 0206c4f5 0237459c 0 0 0 0237459c 020def7c  # main TalkPageMeasurer_Part9 (this: an object of vtable 020def7c)
+call 7601 0206c511 0237459c 0 0 0 0237459c 020def7c  # main TalkPageMeasurer_Part8 (this: an object of vtable 020def7c)
+call 7601 0206c52d 0237459c 0 0 0 0237459c 020def7c  # main TalkPageMeasurer_Part7 (this: an object of vtable 020def7c)
+call 7601 0206c549 0237459c 0 0 0 0237459c 020def7c  # main TalkPageMeasurer_Part6 (this: an object of vtable 020def7c)
+call 7601 0206c565 0237459c 0 0 0 0237459c 020def7c  # main TalkPageMeasurer_Part5 (this: an object of vtable 020def7c)
+call 7601 0206c581 0237459c 0 0 0 0237459c 020def7c  # main TalkPageMeasurer_Part4 (this: an object of vtable 020def7c)
+call 7601 0206c59d 0237459c 0 0 0 0237459c 020def7c  # main TalkPageMeasurer_Part3 (this: an object of vtable 020def7c)
+call 7601 0206c5b9 0237459c 0 0 0 0237459c 020def7c  # main TalkPageMeasurer_Part2 (this: an object of vtable 020def7c)
+call 7601 0206c5cd 0237459c 0 0 0 0237459c 020def7c  # main TalkPageMeasurer_Part1 (this: an object of vtable 020def7c)
+call 7601 0206c5e1 0237459c 0 0 0 0237459c 020def7c  # main TalkPageMeasurer_Part0 (this: an object of vtable 020def7c)
+call 7601 0206c5fd 0237459c 0 0 0 0237459c 020def7c  # main TalkPageMeasurer_Set50Two (this: an object of vtable 020def7c)
+call 7601 0206c605 0237459c 0 0 0 0237459c 020def7c  # main TalkPageMeasurer_Set50One (this: an object of vtable 020def7c)
+call 7601 0206c60d 0237459c 0 0 0 0237459c 020def7c  # main TalkPageMeasurer_PutBoom (this: an object of vtable 020def7c)
+call 7601 0206c65d 0237459c 0 0 0 0237459c 020def7c  # main TalkPageMeasurer_PutPraise (this: an object of vtable 020def7c)
+call 7601 0206c6ad 0237459c 0 0 0 0237459c 020def7c  # main TalkPageMeasurer_PutNickname (this: an object of vtable 020def7c)
+end

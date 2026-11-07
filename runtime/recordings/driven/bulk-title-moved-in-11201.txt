@@ -1,0 +1,31 @@
+# 25 functions of the post clerk's step 15 after job 0x1f is asked for, the town map's list by the keys and the pen: each on a live object of its class, at the end of frame 11201 of title-moved-in
+scene title-moved-in
+frames 11210
+ram 1100,1500,3400,7900,10000
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 11201 02261429 022b0414 0 0 0 022b0414 02263004  # ov054 PostClerkTalk_AwaitJob1f (this: an object of vtable 02263004)
+call 11201 0229a45d 023b5964 0 0 0 023b5964 0229c650  # ov120 TownMap_MapCursorFromRow (this: an object of vtable 0229c650)
+call 11201 0229a4bd 023b5964 0 0 0 023b5964 0229c650  # ov120 TownMap_Pick (this: an object of vtable 0229c650)
+call 11201 0229a585 023b5964 40 0 0 023b5964 0229c650  # ov120 TownMap_MoveCursor (this: an object of vtable 0229c650)
+call 11201 0229a6f1 023b5964 0 0 0 023b5964 0229c650  # ov120 TownMap_ReleasePointer (this: an object of vtable 0229c650)
+call 11201 0229a711 023b5964 0 0 0 023b5964 0229c650  # ov120 TownMap_PressPointer (this: an object of vtable 0229c650)
+call 11201 0229a731 023b5964 0 0 0 023b5964 0229c650  # ov120 TownMap_GlideToCursor (this: an object of vtable 0229c650)
+call 11201 0229a905 023b5964 0 0 0 023b5964 0229c650  # ov120 TownMap_StartBlink (this: an object of vtable 0229c650)
+call 11201 0229a9b5 023b5964 0 0 0 023b5964 0229c650  # ov120 TownMap_TouchTabs (this: an object of vtable 0229c650)
+call 11201 0229aa31 023b5964 0 0 0 023b5964 0229c650  # ov120 TownMap_ScrollByKeys (this: an object of vtable 0229c650)
+call 11201 0229aa81 023b5964 0 0 0 023b5964 0229c650  # ov120 TownMap_ScrollByDrag (this: an object of vtable 0229c650)
+call 11201 0229aacd 023b5964 0 0 0 023b5964 0229c650  # ov120 TownMap_TouchKnob (this: an object of vtable 0229c650)
+call 11201 0229ab21 023b5964 0 0 0 023b5964 0229c650  # ov120 TownMap_StepScroll (this: an object of vtable 0229c650)
+call 11201 0229abdd 023b5964 0 0 0 023b5964 0229c650  # ov120 TownMap_SetScrollTarget (this: an object of vtable 0229c650)
+call 11201 0229abed 023b5964 0 0 0 023b5964 0229c650  # ov120 TownMap_SetScroll (this: an object of vtable 0229c650)
+call 11201 0229ac09 023b5964 0 0 0 023b5964 0229c650  # ov120 TownMap_ScrollToPickedRow (this: an object of vtable 0229c650)
+call 11201 0229ac61 023b5964 0 0 0 023b5964 0229c650  # ov120 TownMap_ScrollToSwitchedRow (this: an object of vtable 0229c650)
+call 11201 0229ac8d 023b5964 0 0 0 023b5964 0229c650  # ov120 TownMap_MarkOfTarget (this: an object of vtable 0229c650)
+call 11201 0229acf5 023b5964 0 0 0 023b5964 0229c650  # ov120 TownMap_RowOfTarget (this: an object of vtable 0229c650)
+call 11201 0229ae79 023b5964 80 60 0 023b5964 0229c650  # ov120 TownMap_FindMarkAt (this: an object of vtable 0229c650)
+call 11201 0229aed9 023b5964 0 0 0 023b5964 0229c650  # ov120 TownMap_TouchMap (this: an object of vtable 0229c650)
+call 11201 0229b101 023b5964 0 0 0 023b5964 0229c650  # ov120 TownMap_TouchList (this: an object of vtable 0229c650)
+call 11201 0229b215 023b5964 0 0 0 023b5964 0229c650  # ov120 TownMap_ShowPlaces (this: an object of vtable 0229c650)
+call 11201 0229b64d 023b5964 0 0 0 023b5964 0229c650  # ov120 TownMap_EnterTouch (this: an object of vtable 0229c650)
+call 11201 0229b6b9 023b5964 0 0 0 023b5964 0229c650  # ov120 TownMap_SubKnobRelease (this: an object of vtable 0229c650)
+end

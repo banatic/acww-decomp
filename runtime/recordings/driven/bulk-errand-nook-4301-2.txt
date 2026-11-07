@@ -1,0 +1,9 @@
+# 0 functions of the item and letter picks' hold and swap code, the other classes' destructors of vtable slot 16: each on a live object of its class, at the end of frame 4301 of errand-nook
+scene errand-nook
+frames 4310
+ram 2600,3800
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 4301 0229d29d 0237540c 0 0 0 0237540c 0229e078  # ov101 PocketsPick_WaitCursorAnim (this: an object of vtable 0229e078)
+call 4301 0229d411 0237540c 0 0 0 0237540c 0229e078  # ov101 PocketsPick_MoveHeldByKeys (this: an object of vtable 0229e078)
+call 4301 0229d5a9 0237540c 0 0 0 0237540c 0229e078  # ov101 PocketsPick_DragHeld (this: an object of vtable 0229e078)
+end

@@ -1,0 +1,7 @@
+# 2 functions of the room objects' state entries no code asks for, the telephone's state 4, after the clock screen outside the continue menu's room: each on a live object of its class, at the end of frame 2001 of museum
+scene museum
+frames 2010
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 2001 02218101 023b7360 0 0 0 023b7360 02253058  # ov004 BedObject_EnterPushed (this: an object of vtable 02253058)
+call 2001 022310a5 022b032c 0 0 0 022b032c 022558f8  # ov004 RmoTelephone_UpdateState4 (this: an object of vtable 022558f8)
+end

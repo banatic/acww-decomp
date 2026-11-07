@@ -1,0 +1,28 @@
+# 0 functions of a snowman's balls shaking and bursting, code only unreachable code calls, the item and letter picks' hold and swap code, the night pelican, the talk engine: tags, pages, windows, sliders: each on a live object of its class, at the end of frame 17201 of letter-errand
+scene letter-errand
+frames 17210
+ram 2600,5300,9000,11400,15450
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 17201 0226ebc5 022b214c 0 0 0 022b214c 02238078  # ov068 Snowball_UpdateShakeHead (this: an object of vtable 02238078)
+call 17201 0226ec55 022b214c 0 0 0 022b214c 02238078  # ov068 Snowball_EnterShakeHead (this: an object of vtable 02238078)
+call 17201 0226eca9 022b214c 0 0 0 022b214c 02238078  # ov068 Snowball_UpdateShakeBody (this: an object of vtable 02238078)
+call 17201 0226ed39 022b214c 0 0 0 022b214c 02238078  # ov068 Snowball_EnterShakeBody (this: an object of vtable 02238078)
+call 17201 0229c52d 023cb300 0 0 0 023cb300 0229e098  # ov108 LetterPick_BeginSwap (this: an object of vtable 0229e098)
+call 17201 0229c579 023cb300 0 0 0 023cb300 0229e098  # ov108 LetterPick_BeginPutDown (this: an object of vtable 0229e098)
+call 17201 0229c865 023cb300 0 0 0 023cb300 0229e098  # ov108 LetterPick_SwapHeldWith (this: an object of vtable 0229e098)
+call 17201 0229c8a5 023cb300 0 0 0 023cb300 0229e098  # ov108 LetterPick_PutHeldAt (this: an object of vtable 0229e098)
+call 17201 0229c8c9 023cb300 0 0 0 023cb300 0229e098  # ov108 LetterPick_PickUpLetter (this: an object of vtable 0229e098)
+call 17201 0229c919 023cb300 0 0 0 023cb300 0229e098  # ov108 LetterPick_FollowGlide (this: an object of vtable 0229e098)
+call 17201 0229c96d 023cb300 0 0 0 023cb300 0229e098  # ov108 LetterPick_FollowTouch (this: an object of vtable 0229e098)
+call 17201 0229ca99 023cb300 0 0 0 023cb300 0229e098  # ov108 LetterPick_HighlightPlace (this: an object of vtable 0229e098)
+call 17201 0229cac9 023cb300 0 0 0 023cb300 0229e098  # ov108 LetterPick_ClearHighlights (this: an object of vtable 0229e098)
+call 17201 0229ccc1 023cb300 0 0 0 023cb300 0229e098  # ov108 LetterPick_PutHeldLetterAt (this: an object of vtable 0229e098)
+call 17201 0229ce01 023cb300 0 4 0 023cb300 0229e098  # ov108 LetterPick_GlideHeldTo (this: an object of vtable 0229e098)
+call 17201 0229ce69 023cb300 0 0 0 023cb300 0229e098  # ov108 LetterPick_PickUpWithCursor (this: an object of vtable 0229e098)
+call 17201 0229d04d 023cb300 0 0 0 023cb300 0229e098  # ov108 LetterPick_WaitError (this: an object of vtable 0229e098)
+call 17201 0229d131 023cb300 0 0 0 023cb300 0229e098  # ov108 LetterPick_StepHeldGlide (this: an object of vtable 0229e098)
+call 17201 0229d169 023cb300 0 0 0 023cb300 0229e098  # ov108 LetterPick_FinishSwap (this: an object of vtable 0229e098)
+call 17201 0229d1ad 023cb300 0 0 0 023cb300 0229e098  # ov108 LetterPick_Swap (this: an object of vtable 0229e098)
+call 17201 0229d1f5 023cb300 0 0 0 023cb300 0229e098  # ov108 LetterPick_PutDown (this: an object of vtable 0229e098)
+call 17201 0229d249 023cb300 0 0 0 023cb300 0229e098  # ov108 LetterPick_FinishPickUp (this: an object of vtable 0229e098)
+end

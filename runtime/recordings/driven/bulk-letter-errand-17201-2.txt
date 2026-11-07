@@ -1,0 +1,10 @@
+# 4 functions of the item and letter picks' hold and swap code: each on a live object of its class, at the end of frame 17201 of letter-errand
+scene letter-errand
+frames 17210
+ram 2600,5300,9000,11400,15450
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 17201 0229d279 023cb300 0 0 0 023cb300 0229e098  # ov108 LetterPick_PickUpAtCursor (this: an object of vtable 0229e098)
+call 17201 0229d2a9 023cb300 0 0 0 023cb300 0229e098  # ov108 LetterPick_FinishPlacePress (this: an object of vtable 0229e098)
+call 17201 0229d419 023cb300 0 0 0 023cb300 0229e098  # ov108 LetterPick_MoveHeldByKeys (this: an object of vtable 0229e098)
+call 17201 0229d621 023cb300 0 0 0 023cb300 0229e098  # ov108 LetterPick_DragHeld (this: an object of vtable 0229e098)
+end
