@@ -58,7 +58,7 @@ enum PhoneClockSubState {
     PHONE_CLOCK_SUB_BROWSE = 6,         /* PhoneClock_BrowseByKeys */
     PHONE_CLOCK_SUB_EDIT = 7,           /* PhoneClock_EditByKeys */
     PHONE_CLOCK_SUB_HOLD_A = 8,         /* PhoneClock_HoldButtonA */
-    PHONE_CLOCK_SUB_EDIT_WAIT = 9,      /* PhoneClock_WaitEditor */
+    PHONE_CLOCK_SUB_THUMB_SETTLE = 9,   /* PhoneClock_WaitThumbSettled */
     PHONE_CLOCK_SUB_SPRITE_MOVE = 10,   /* PhoneClock_WaitCursorSprite */
     PHONE_CLOCK_SUB_PRESS = 11,         /* PhoneClock_PickWhenPressed */
     PHONE_CLOCK_SUB_RELEASE = 12,       /* PhoneClock_WaitRelease */
@@ -110,7 +110,7 @@ void PhoneClock_FollowPanelPress(PhoneClock *self);
 void PhoneClock_WaitRelease(PhoneClock *self);
 void PhoneClock_PickWhenPressed(PhoneClock *self);
 void PhoneClock_WaitCursorSprite(PhoneClock *self);
-void PhoneClock_WaitEditor(PhoneClock *self);
+void PhoneClock_WaitThumbSettled(PhoneClock *self);
 void PhoneClock_HoldButtonA(PhoneClock *self);
 void PhoneClock_EditByKeys(PhoneClock *self);
 void PhoneClock_BrowseByKeys(PhoneClock *self);

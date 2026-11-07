@@ -943,7 +943,8 @@ CLEAN_AS(func_ov100_0229d1d0, PocketsBox_LockSlots)
  * the item's code:
  * - 0x1e: locked in 0x1492-0x14fd; free in 0x11a8-0x12a7, 0x1380-0x139f, 0x13a8-0x1407,
  *   0x1408-0x1428 and 0x1431-0x1491; locked otherwise;
- * - 0x1d: locked in 0x1492-0x14fd, and in 0x1531-0x153a while word 0xc of data_021dc744 is 0;
+ * - 0x1d: locked in 0x1492-0x14fd, and the turnips (0x1531-0x153a) on Sundays (the date's
+ *   weekday, data_021dc744, 0);
  *   free otherwise;
  * - 0x1f: always locked;
  * - 0x20: for an item func_ov094_02299b04 accepts, free in 0x1531-0x1541 and 0x154a-0x1553 and

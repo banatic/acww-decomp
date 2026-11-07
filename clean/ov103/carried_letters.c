@@ -979,14 +979,14 @@ void CarriedLetters_StepHeldGlide(CarriedLetters *self)
 CLEAN_AS(func_ov103_0229d158, CarriedLetters_StepHeldGlide)
 
 /* func_ov103_0229d190 (sub state 0x12): back to the sub state kept once the cursor sprite's
- * animation has ended; once its turn has settled, the held letter is shown again and follows the
+ * animation has ended; once its turn holds (Glider_TurnHolds), the held letter is shown again and follows the
  * sprite. */
 void CarriedLetters_FinishSwap(CarriedLetters *self)
 {
     if (CellLayerSprite_IsDone(carried_cursor_cells(self))) {
         MenuScene_SetSubState(carried_scene(self), self->return_state);
     }
-    if (Glider_IsTurnSettled(&self->cursor_sprite)) {
+    if (Glider_TurnHolds(&self->cursor_sprite)) {
         CarriedLetters_ClearFlags(self, CARRIED_LETTERS_FLAG_HELD_HIDDEN);
         CarriedLetters_FollowCursorSprite(self);
     }
@@ -1009,12 +1009,12 @@ void CarriedLetters_Swap(CarriedLetters *self)
 }
 CLEAN_AS(func_ov103_0229d1d4, CarriedLetters_Swap)
 
-/* func_ov103_0229d21c (sub state 0x10): while the cursor sprite's turn has not settled, the held
+/* func_ov103_0229d21c (sub state 0x10): once the cursor sprite's turn no longer holds (Glider_TurnHolds), the held
  * letter is put down at `target` when the cursor is on it (the popup updated, sub state 5), else
- * glided there in 4 steps; once it has, the letter follows the sprite. */
+ * glided there in 4 steps; while it holds, the letter follows the sprite. */
 void CarriedLetters_PutDown(CarriedLetters *self)
 {
-    if (Glider_IsTurnSettled(&self->cursor_sprite) == 0) {
+    if (Glider_TurnHolds(&self->cursor_sprite) == 0) {
         u8 target = self->target;
         if (self->cursor == target) {
             CarriedLetters_PutHeldLetterAt(self, target);
@@ -1040,11 +1040,11 @@ void CarriedLetters_FinishPickUp(CarriedLetters *self)
 }
 CLEAN_AS(func_ov103_0229d270, CarriedLetters_FinishPickUp)
 
-/* func_ov103_0229d2a0 (sub state 0x0e): once the cursor sprite's turn has settled, the letter at
+/* func_ov103_0229d2a0 (sub state 0x0e): once the cursor sprite's turn holds (Glider_TurnHolds), the letter at
  * the cursor is picked up; sub state 0x0f. */
 void CarriedLetters_PickUpAtCursor(CarriedLetters *self)
 {
-    if (Glider_IsTurnSettled(&self->cursor_sprite)) {
+    if (Glider_TurnHolds(&self->cursor_sprite)) {
         CarriedLetters_PickUpWithCursor(self, self->cursor);
         MenuScene_SetSubState(carried_scene(self), CARRIED_LETTERS_SUB_PICK_UP_END);
     }

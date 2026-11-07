@@ -137,7 +137,7 @@ typedef struct StorageScene {
     Glide glide;                            /* 0x225c: the held item's glide to a place */
     Glider cursor_sprite;                   /* 0x2274: a Glider0 */
     ErrorMessage error;                     /* 0x22d8 */
-    TextLabel labels[STORAGE_SCENE_LABELS]; /* 0x23f4: the title's (StorageScene_ShowTitle) */
+    TextLabel labels[STORAGE_SCENE_LABELS]; /* 0x23f4: the close label's (StorageScene_ShowCloseLabel) */
     u32 flags;                              /* 0x24cc: StorageSceneFlag */
     s32 objects_y;                          /* 0x24d0: the wipe's y while the pockets wipe (layer 6) */
     s32 page_y;                             /* 0x24d4: the wipe's y while the page wipes (layer 4) */
@@ -173,7 +173,7 @@ void StorageScene_ShowPage(StorageScene *self);
 int StorageScene_TabAtTouch(StorageScene *self, int x, int y);
 void StorageScene_DrawTabs(StorageScene *self);
 void StorageScene_SaveAndClose(StorageScene *self, int with_delay);
-void StorageScene_ShowTitle(StorageScene *self, int highlighted);
+void StorageScene_ShowCloseLabel(StorageScene *self, int highlighted);
 TextLabel *StorageScene_NextLabel(StorageScene *self);
 void StorageScene_CloseLabels(StorageScene *self);
 int StorageScene_MoveCursor(StorageScene *self, int keys, int holding);

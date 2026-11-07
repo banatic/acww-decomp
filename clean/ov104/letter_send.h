@@ -86,8 +86,8 @@ enum LetterSendPlace {
     LETTER_SEND_CARRIED_LAST = 0x14,
     LETTER_SEND_OUTBOX_FIRST = 0x15, /* 0x15-0x1e: the letters to post, 0x15 + row * 2 + column */
     LETTER_SEND_OUTBOX_LAST = 0x1e,
-    LETTER_SEND_BELOW_CARRIED = 0x1f, /* below the carried letters (at 0xbc, 0xb6) */
-    LETTER_SEND_BELOW_OUTBOX = 0x20,  /* below the letters to post (at 0x74, 0xb6) */
+    LETTER_SEND_POST_BUTTON = 0x1f,   /* the post button, below the carried letters (at 0xbc, 0xb6; LetterSend_Post) */
+    LETTER_SEND_CANCEL_BUTTON = 0x20, /* the cancel button, below the letters to post (at 0x74, 0xb6; LetterSend_Cancel) */
     LETTER_SEND_NO_PLACE = 0x21
 };
 

@@ -28,7 +28,7 @@ int OrderCatalog_CursorX(OrderCatalog *self);
 void OrderCatalog_PlaceCursorSprite(OrderCatalog *self);
 void OrderCatalog_Quit(OrderCatalog *self);
 void OrderCatalog_Order(OrderCatalog *self);
-void OrderCatalog_Close(OrderCatalog *self);
+void OrderCatalog_StartClose(OrderCatalog *self);
 void OrderCatalog_ResumeConfirm(OrderCatalog *self);
 void OrderCatalog_ConfirmByKeysStart(OrderCatalog *self);
 void OrderCatalog_ConfirmByTouchStart(OrderCatalog *self);

@@ -2,7 +2,7 @@
 # not in this repository). As fish-swap.txt up to 5880: a fish caught with the pockets full, the
 # pockets swap page (ov107/pockets_swap.c) up.
 # Save: full-rod-catches. The keys from 5880: down four times to the place below the pockets and A
-# (PocketsSwap_ShowCursorSecondOfSet, WaitBelowPress): the fish is let go.
+# (PocketsSwap_BeginQuitPress, WaitBelowPress): the fish is let go.
 900 START -
 906 - -
 1000 A -

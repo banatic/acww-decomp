@@ -63,8 +63,8 @@ enum LetterStoragePlace {
     LETTER_STORAGE_CARRIED_LAST = 0x23,
     LETTER_STORAGE_PAGE_FIRST = 0x24, /* 0x24-0x3c: the page's letters, 0x24 + row * 5 + column */
     LETTER_STORAGE_PAGE_LAST = 0x3c,
-    LETTER_STORAGE_BELOW = 0x3d,     /* below the carried letters and the page (at 0xbc, 0xb6) */
-    LETTER_STORAGE_TAB_FIRST = 0x3e, /* 0x3e-0x3f: the tabs of pages 0 and 1 */
+    LETTER_STORAGE_DONE_BUTTON = 0x3d, /* the Done button, below the carried letters and the page (at 0xbc, 0xb6) */
+    LETTER_STORAGE_TAB_FIRST = 0x3e,   /* 0x3e-0x3f: the tabs of pages 0 and 1 */
     LETTER_STORAGE_TAB_LAST = 0x3f,
     LETTER_STORAGE_NO_PLACE = 0x40 /* `popup_place` before any (LetterStorage_Setup) */
 };
@@ -90,36 +90,36 @@ enum LetterStorageAction {
 };
 
 typedef struct LetterStorage {
-    MenuScene base;                      /* 0x00 */
-    u32 flags;                           /* 0x94: LetterStorageFlag */
-    s32 objects_y;                       /* 0x98: the offset the ov094 objects are drawn at (LetterStorage_Draw) */
-    s32 wipe_y;                          /* 0x9c: MenuScene_WipeOffsetY's */
-    s32 wipe_x;                          /* 0xa0: MenuScene_WipeOffsetX's (LetterStorage_ScrollPageLayer); the tabs are
+    MenuScene base;       /* 0x00 */
+    u32 flags;            /* 0x94: LetterStorageFlag */
+    s32 objects_y;        /* 0x98: the offset the ov094 objects are drawn at (LetterStorage_Draw) */
+    s32 wipe_y;           /* 0x9c: MenuScene_WipeOffsetY's */
+    s32 wipe_x;           /* 0xa0: MenuScene_WipeOffsetX's (LetterStorage_ScrollPageLayer); the tabs are
                                * drawn 0x80 right of it */
-    s32 grab_dx;                         /* 0xa4: from the touch to the held letter */
-    s32 grab_dy;                         /* 0xa8 */
-    s32 held_x;                          /* 0xac: where the held letter is drawn */
-    s32 held_y;                          /* 0xb0 */
-    Letter held;                         /* 0xb4: the held letter's copy */
-    Letter swapped;                      /* 0x1b4: the letter a swap took from its place */
-    u8 held_kind;                        /* 0x2b4: LetterStorageHeldKind */
-    u8 touch_place;                      /* 0x2b5: the place touched */
-    u8 popup_place;                      /* 0x2b6: the place the popup tells of */
-    u8 unk_2b7;                          /* 0x2b7: set with `held_from` by func_ov105_0229d908 */
-    u8 held_page;                        /* 0x2b8: the page the held letter was taken from */
-    u8 held_from;                        /* 0x2b9: the place it was taken from */
-    u8 cursor;                           /* 0x2ba: LetterStoragePlace */
-    u8 slot;                             /* 0x2bb: the place whose choice is open */
-    u8 target;                           /* 0x2bc: the place the held letter is put down on or swapped at */
-    u8 return_state;                     /* 0x2bd: the sub state to go back to */
-    u8 action;                           /* 0x2be: LetterStorageAction */
-    u8 choice_row;                       /* 0x2bf: the choice row the cursor sprite points at */
-    u8 page;                             /* 0x2c0: the page shown, 0 or 1 */
-    u8 unk_2c1;                          /* 0x2c1 */
-    u8 unk_2c2;                          /* 0x2c2: picks LetterStorage_PressPanelButton4 over ...3 (func_ov105_0229db8c) */
-    u8 open_delay;                       /* 0x2c3: frames before a touched place's choice opens (2) */
-    u8 unk_2c4[0x38];                    /* 0x2c4: an object of main's (constructor func_020b9af4) */
-    u8 grid[0xa60];                      /* 0x2fc: ov094's grid object (destructor func_ov094_0229afe0) */
+    s32 grab_dx;          /* 0xa4: from the touch to the held letter */
+    s32 grab_dy;          /* 0xa8 */
+    s32 held_x;           /* 0xac: where the held letter is drawn */
+    s32 held_y;           /* 0xb0 */
+    Letter held;          /* 0xb4: the held letter's copy */
+    Letter swapped;       /* 0x1b4: the letter a swap took from its place */
+    u8 held_kind;         /* 0x2b4: LetterStorageHeldKind */
+    u8 touch_place;       /* 0x2b5: the place touched */
+    u8 popup_place;       /* 0x2b6: the place the popup tells of */
+    u8 unk_2b7;           /* 0x2b7: set with `held_from` by func_ov105_0229d908 */
+    u8 held_page;         /* 0x2b8: the page the held letter was taken from */
+    u8 held_from;         /* 0x2b9: the place it was taken from */
+    u8 cursor;            /* 0x2ba: LetterStoragePlace */
+    u8 slot;              /* 0x2bb: the place whose choice is open */
+    u8 target;            /* 0x2bc: the place the held letter is put down on or swapped at */
+    u8 return_state;      /* 0x2bd: the sub state to go back to */
+    u8 action;            /* 0x2be: LetterStorageAction */
+    u8 choice_row;        /* 0x2bf: the choice row the cursor sprite points at */
+    u8 page;              /* 0x2c0: the page shown, 0 or 1 */
+    u8 unk_2c1;           /* 0x2c1 */
+    u8 confirm_no_chosen; /* 0x2c2: the confirmation's No (LetterStorage_PressConfirmNo) chosen over Yes (func_ov105_0229db8c) */
+    u8 open_delay;        /* 0x2c3: frames before a touched place's choice opens (2) */
+    u8 unk_2c4[0x38];     /* 0x2c4: an object of main's (constructor func_020b9af4) */
+    u8 grid[0xa60];       /* 0x2fc: ov094's grid object (destructor func_ov094_0229afe0) */
     PocketsLetters letters;              /* 0xd5c: ov094's letters object */
     u8 wallet[0x1638];                   /* 0xd84: ov094's wallet display (destructor func_ov094_0229a2d0) */
     Popup popup;                         /* 0x23bc */
@@ -148,9 +148,9 @@ int LetterStorage_PageTabAtTouch(LetterStorage *self, int x, int y);
 void LetterStorage_StartPageWipeOut(LetterStorage *self);
 void LetterStorage_StartPageWipeIn(LetterStorage *self);
 void LetterStorage_DrawPageTabs(LetterStorage *self);
-void LetterStorage_PressPanelButton4(LetterStorage *self);
-void LetterStorage_PressPanelButton3(LetterStorage *self);
-void LetterStorage_PressPanelButton9(LetterStorage *self);
+void LetterStorage_PressConfirmNo(LetterStorage *self);
+void LetterStorage_PressConfirmYes(LetterStorage *self);
+void LetterStorage_PressDone(LetterStorage *self);
 void LetterStorage_DoNothing(LetterStorage *self);
 void LetterStorage_RunDiscardConfirm(LetterStorage *self);
 void LetterStorage_DiscardSlotLetter(LetterStorage *self);

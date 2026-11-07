@@ -220,7 +220,7 @@ void KeyboardEntry_ReleaseToKeys(KeyboardEntry *self);
 void KeyboardEntry_BeginKeyPress(KeyboardEntry *self);
 void KeyboardEntry_PlacePointer(KeyboardEntry *self);
 void KeyboardEntry_GlidePointer(KeyboardEntry *self);
-int KeyboardEntry_RestPointer(KeyboardEntry *self);
+int KeyboardEntry_HidePointer(KeyboardEntry *self);
 void KeyboardEntry_PointAtKey(KeyboardEntry *self);
 void KeyboardEntry_SetPanelLayout(KeyboardEntry *self);
 int KeyboardEntry_TouchPanel(KeyboardEntry *self);

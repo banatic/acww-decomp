@@ -42,7 +42,7 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 #define MY_DESIGNS_SHIRT_LAST 0x12a7
 #define MY_DESIGNS_CLOTHES_ITEM 0x12a8
 #define MY_DESIGNS_HEAD_ITEM 0x1429
-#define MY_DESIGNS_HELD_ITEM 0x13a0
+#define MY_DESIGNS_UMBRELLA_FIRST 0x13a0
 /* The carpets and wallpapers of designs; the others go back to the pockets when replaced. */
 #define MY_DESIGNS_ROOM_DESIGN_FIRST 0x1188
 #define MY_DESIGNS_ROOM_DESIGN_LAST 0x11a7
@@ -100,7 +100,7 @@ CLEAN_AS(func_ov121_02299a70, MyDesigns_MayChangeRoom)
 int MyDesigns_IsChangeDone(MyDesigns *self, int kind)
 {
     (void) self;
-    if (kind == MY_DESIGNS_WEAR_HELD) {
+    if (kind == MY_DESIGNS_WEAR_UMBRELLA) {
         return PlayerActorOps_InState3F() == 0;
     }
     return PlayerActorOps_EarlyInState7() == 0;
@@ -118,7 +118,7 @@ int MyDesigns_RequestChange(MyDesigns *self, int kind, int item)
             return PlayerActorOps_RequestState7Kind0Next5(&code) != 0;
         case MY_DESIGNS_WEAR_HEAD:
             return PlayerActorOps_RequestState7Kind2Next5(&code) != 0;
-        case MY_DESIGNS_WEAR_HELD:
+        case MY_DESIGNS_WEAR_UMBRELLA:
             return PlayerActorOps_RequestState3F(&code) != 0;
         default:
             return 0;
@@ -129,8 +129,8 @@ CLEAN_AS(func_ov121_02299ad8, MyDesigns_RequestChange)
 /* func_ov121_02299b20: `item` put on as the current player's clothes or head item, and what was
  * worn before given back for the pockets: clothes only when they were a shirt, a head item
  * unless it was a design's (0x1429-0x1430); ITEM_CODE_NONE for nothing.
- * QUIRK: for the held item nothing is set; the one held is answered unless it was a design's
- * (0x13a0-0x13a7). For an unknown kind the answer is MyDesigns_WornItem's. */
+ * QUIRK: for the umbrella nothing is set; the one held is answered unless it was a design's
+ * (an original umbrella, 0x13a0-0x13a7). For an unknown kind the answer is MyDesigns_WornItem's. */
 unsigned short MyDesigns_SwapWornItem(MyDesigns *self, int kind, unsigned short item)
 {
     u16 worn = MyDesigns_WornItem(self, kind);
@@ -149,8 +149,8 @@ unsigned short MyDesigns_SwapWornItem(MyDesigns *self, int kind, unsigned short 
                 worn = ITEM_CODE_NONE;
             }
             break;
-        case MY_DESIGNS_WEAR_HELD:
-            if (in_range(worn, MY_DESIGNS_HELD_ITEM, MY_DESIGNS_HELD_ITEM + MY_DESIGNS_COUNT - 1)) {
+        case MY_DESIGNS_WEAR_UMBRELLA:
+            if (in_range(worn, MY_DESIGNS_UMBRELLA_FIRST, MY_DESIGNS_UMBRELLA_FIRST + MY_DESIGNS_COUNT - 1)) {
                 worn = ITEM_CODE_NONE;
             }
             break;
@@ -172,7 +172,7 @@ unsigned short MyDesigns_WornItem(MyDesigns *self, int kind)
             return *PlayerRecord_Clothes(record);
         case MY_DESIGNS_WEAR_HEAD:
             return *PlayerRecord_HeadItem(record);
-        case MY_DESIGNS_WEAR_HELD:
+        case MY_DESIGNS_WEAR_UMBRELLA:
             return *PlayerRecord_HeldItem(record);
         default:
             return ITEM_CODE_NONE;
@@ -227,7 +227,7 @@ void MyDesigns_RunChoiceAction(MyDesigns *self)
             MyDesigns_WearPicked(self, MY_DESIGNS_WEAR_CLOTHES);
             break;
         case MY_DESIGNS_ACTION_FURNITURE:
-            MyDesigns_PlaceEasel(self);
+            MyDesigns_PlaceFurniture(self);
             break;
         case MY_DESIGNS_ACTION_HEAD:
             MyDesigns_WearPicked(self, MY_DESIGNS_WEAR_HEAD);
@@ -262,7 +262,7 @@ CLEAN_AS(func_ov121_0229a63c, MyDesigns_DropOnGround)
  * camera's view back, the button blinks and the scene goes back to idle. Refused with more than
  * one player here, when the furniture cannot be made or the room is full, or when there is no
  * space for it; another target goes back to idle at once. */
-void MyDesigns_PlaceEasel(MyDesigns *self)
+void MyDesigns_PlaceFurniture(MyDesigns *self)
 {
     u32 placement;
     int result;
@@ -281,7 +281,7 @@ void MyDesigns_PlaceEasel(MyDesigns *self)
         case MY_DESIGNS_BUTTON_EASEL:
             result = RoomPlacement_PlaceMyEasel(&placement, (u8) MyDesigns_DesignAt(self, self->picked), 1);
             break;
-        case MY_DESIGNS_BUTTON_HELD:
+        case MY_DESIGNS_BUTTON_UMBRELLA:
             result = RoomPlacement_PlaceMyUmbrella(&placement, (u8) MyDesigns_DesignAt(self, self->picked), 1);
             break;
         default:
@@ -304,7 +304,7 @@ void MyDesigns_PlaceEasel(MyDesigns *self)
             break;
     }
 }
-CLEAN_AS(func_ov121_0229a6b4, MyDesigns_PlaceEasel)
+CLEAN_AS(func_ov121_0229a6b4, MyDesigns_PlaceFurniture)
 
 /* The design item that `kind` is worn as, for the picked design. */
 static u16 worn_design_item(MyDesigns *self, int kind)
@@ -316,7 +316,7 @@ static u16 worn_design_item(MyDesigns *self, int kind)
         case MY_DESIGNS_WEAR_HEAD:
             return design_item(MY_DESIGNS_HEAD_ITEM, design);
         default:
-            return design_item(MY_DESIGNS_HELD_ITEM, design);
+            return design_item(MY_DESIGNS_UMBRELLA_FIRST, design);
     }
 }
 
@@ -340,8 +340,8 @@ void MyDesigns_WearPicked(MyDesigns *self, u8 kind)
                 worn = ITEM_CODE_NONE;
             }
             break;
-        case MY_DESIGNS_WEAR_HELD:
-            if (in_range(worn, MY_DESIGNS_HELD_ITEM, MY_DESIGNS_HELD_ITEM + MY_DESIGNS_COUNT - 1)) {
+        case MY_DESIGNS_WEAR_UMBRELLA:
+            if (in_range(worn, MY_DESIGNS_UMBRELLA_FIRST, MY_DESIGNS_UMBRELLA_FIRST + MY_DESIGNS_COUNT - 1)) {
                 worn = ITEM_CODE_NONE;
             }
             break;
@@ -356,7 +356,7 @@ void MyDesigns_WearPicked(MyDesigns *self, u8 kind)
         CurrentPockets_Give(&worn, 0);
     }
     MyDesigns_SaveCamera(self);
-    if (self->wear_kind <= MY_DESIGNS_WEAR_HELD) {
+    if (self->wear_kind <= MY_DESIGNS_WEAR_UMBRELLA) {
         self->item = worn_design_item(self, self->wear_kind);
     }
     MyDesigns_SwapWornItem(self, self->wear_kind, self->item);
@@ -494,7 +494,7 @@ static void open_room_choice(MyDesigns *self, int choice, char locked)
 
 /* func_ov121_0229ac00: the picked design put down on `target`: on a design the two swap places
  * (0, the caller goes on); on a button its use (1), by `where` for the buttons 12-14 (in the
- * player's own room a choice, or furniture for 14). 0 for MY_DESIGNS_BUTTON_HELD in
+ * player's own room a choice, or furniture for 14). 0 for MY_DESIGNS_BUTTON_UMBRELLA in
  * MY_DESIGNS_ROOM and for any other place. */
 int MyDesigns_UseOnTarget(MyDesigns *self)
 {
@@ -537,19 +537,19 @@ int MyDesigns_UseOnTarget(MyDesigns *self)
                     break;
             }
             return 1;
-        case MY_DESIGNS_BUTTON_HELD:
+        case MY_DESIGNS_BUTTON_UMBRELLA:
             switch (self->where) {
                 case MY_DESIGNS_OUTSIDE:
-                    MyDesigns_WearPicked(self, MY_DESIGNS_WEAR_HELD);
+                    MyDesigns_WearPicked(self, MY_DESIGNS_WEAR_UMBRELLA);
                     return 1;
                 case MY_DESIGNS_OWN_ROOM:
-                    MyDesigns_PlaceEasel(self);
+                    MyDesigns_PlaceFurniture(self);
                     return 1;
                 default:
                     return 0;
             }
         case MY_DESIGNS_BUTTON_EASEL:
-            MyDesigns_PlaceEasel(self);
+            MyDesigns_PlaceFurniture(self);
             return 1;
         case MY_DESIGNS_BUTTON_GROUND:
             MyDesigns_DropOnGround(self);

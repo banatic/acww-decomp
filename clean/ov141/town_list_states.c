@@ -202,7 +202,7 @@ CLEAN_AS(func_ov141_0229aa94, TownList_WipeIn)
  * state 2. */
 void TownList_StartWipeIn(TownList *self)
 {
-    ResRows_MakeHeadings(town_list_rows(self));
+    ResRows_MakeButtonCaptions(town_list_rows(self));
     MenuScene_StartWipeCoveredOnWindow2(town_list_scene(self), 8, 4, 0, 0x30);
     DisplayLayer_Show(6);
     TownList_ScrollWithWipe(self);

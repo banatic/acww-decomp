@@ -56,7 +56,7 @@ enum BirthdayScreenSubState {
     BIRTHDAY_SCREEN_SUB_FIELDS = 4,        /* BirthdayScreen_FieldsByKeys */
     BIRTHDAY_SCREEN_SUB_LIST = 5,          /* BirthdayScreen_ListByKeys */
     BIRTHDAY_SCREEN_SUB_BAR = 6,           /* BirthdayScreen_ListBarByKeys */
-    BIRTHDAY_SCREEN_SUB_BAR_RETURN = 7,    /* BirthdayScreen_ReturnFromBar */
+    BIRTHDAY_SCREEN_SUB_THUMB_SETTLE = 7,  /* BirthdayScreen_WaitThumbSettled */
     BIRTHDAY_SCREEN_SUB_SPRITE_MOVE = 8,   /* BirthdayScreen_WaitCursorSprite */
     BIRTHDAY_SCREEN_SUB_PRESSED = 9,       /* BirthdayScreen_AfterPress */
     BIRTHDAY_SCREEN_SUB_RELEASE_ANIM = 10, /* BirthdayScreen_WaitReleaseAnim */
@@ -107,7 +107,7 @@ void BirthdayScreen_FollowOkPress(BirthdayScreen *self);
 void BirthdayScreen_WaitReleaseAnim(BirthdayScreen *self);
 void BirthdayScreen_AfterPress(BirthdayScreen *self);
 void BirthdayScreen_WaitCursorSprite(BirthdayScreen *self);
-void BirthdayScreen_ReturnFromBar(BirthdayScreen *self);
+void BirthdayScreen_WaitThumbSettled(BirthdayScreen *self);
 void BirthdayScreen_ListBarByKeys(BirthdayScreen *self);
 void BirthdayScreen_ListByKeys(BirthdayScreen *self);
 void BirthdayScreen_FieldsByKeys(BirthdayScreen *self);

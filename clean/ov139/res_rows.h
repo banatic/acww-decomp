@@ -4,7 +4,7 @@
  *
  * It begins with a message window of ov002's (ov002/message_window.h) and keeps twenty text
  * labels for six rows of two columns (each row's two six-character names: the first through
- * menu message 0x66, the second as it is) and three headings (menu messages 0x65, 0xc2, 0xc1).
+ * menu message 0x66, the second as it is) and three button captions (menu messages 0x65 Quit, 0xc2 Decide, 0xc1 Other).
  * Row N is written in colour 14 - N of the background's palette 7 ("menu/res/bg7.bpl"), which
  * ResRows_FadeRow blends towards colour 15 and a layer task queues when it changed. Overlay
  * 140 fills the rows from a list of 32 entries of 0x23 bytes, six a page. */
@@ -47,7 +47,7 @@ TextLabel *ResRows_TakeLabel(ResRows *self);
 void ResRows_ReleaseLabels(ResRows *self);
 void ResRows_ClearRow(ResRows *self, int row);
 void ResRows_SetRow(ResRows *self, int row, const u16 *names);
-void ResRows_MakeHeadings(ResRows *self);
+void ResRows_MakeButtonCaptions(ResRows *self);
 void ResRows_FadeRow(ResRows *self, int row, int step, int steps, int color);
 void ResRows_LoadObjFiles(ResRows *self);
 void ResRows_ClearRows(ResRows *self);

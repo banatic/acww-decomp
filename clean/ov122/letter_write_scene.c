@@ -1294,7 +1294,8 @@ CLEAN_AS(func_ov122_022a02a0, LetterWrite_RunError)
 
 /* func_ov122_022a02c8 (LETTER_WRITE_SUB_BUTTON): once the pointer's press has played, the
  * panel's button plays its press with the pointer on it; then what the button does: 0 the
- * choice, 1 the taboo filter and state 6, 3 main's menu, 4 state 8. */
+ * choice, 1 the taboo filter and state 6, 3 back to the menu's tab 0 (the pockets,
+ * LetterWrite_SwitchTab), 4 state 8. */
 void LetterWrite_RunButton(LetterWriteScene *self)
 {
     if (CellLayerSprite_AnimNumber(letter_write_pointer_cells(self)) != 0 &&
@@ -1844,7 +1845,7 @@ void LetterWrite_Paste(LetterWriteScene *self)
         LetterWrite_DeleteMarked(self);
     }
     SoftKeyboard_HangulReset(letter_write_keyboard(self));
-    SoftKeyboard_SetFlag02(letter_write_keyboard(self));
+    SoftKeyboard_SetPasting(letter_write_keyboard(self));
     count = func_02051c8c_unk(self->clipboard, LETTER_BODY_CHARS);
     for (i = 0; i < count; i++) {
         if (LetterWrite_InsertChar(self, self->clipboard[i], 0) == 0) {
@@ -1857,7 +1858,7 @@ void LetterWrite_Paste(LetterWriteScene *self)
     SoftKeyboard_PlaySe23(letter_write_keyboard(self));
     LetterWrite_Refresh(self, 0, 1);
     LetterWrite_PlaceCursor(self);
-    SoftKeyboard_ClearFlag02(letter_write_keyboard(self));
+    SoftKeyboard_ClearPasting(letter_write_keyboard(self));
 }
 CLEAN_AS(func_ov122_022a0cec, LetterWrite_Paste)
 
@@ -2495,7 +2496,7 @@ void LetterWrite_Setup(LetterWriteScene *self)
     PagedChoice_BuildPages(letter_write_choice(self));
     self->unk_a4 = 0;
     if (Letter_HasNoAddressee(self->letter) != 0) {
-        SoftKeyboard_SetFlag08(letter_write_keyboard(self));
+        SoftKeyboard_SetNoHeader(letter_write_keyboard(self));
         LetterWrite_SetFlags(self, LETTER_WRITE_FLAG_NO_HEADER);
     }
 }

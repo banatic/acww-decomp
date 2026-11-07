@@ -64,7 +64,7 @@ enum MailboxScenePlace {
     MAILBOX_SCENE_CARRIED_LAST = 0x14,
     MAILBOX_SCENE_MAILBOX_FIRST = 0x15, /* 0x15-0x1e: the mailbox's letters, 0x15 + row * 2 + column */
     MAILBOX_SCENE_MAILBOX_LAST = 0x1e,
-    MAILBOX_SCENE_BELOW = 0x1f,   /* below the carried letters and the mailbox's (at 0xbc, 0xb6) */
+    MAILBOX_SCENE_CLOSE = 0x1f,   /* the Close button below the letters (at 0xbc, 0xb6) */
     MAILBOX_SCENE_NO_PLACE = 0x20 /* `popup_place` before any (the setup) */
 };
 
@@ -135,7 +135,7 @@ MailboxScene *MailboxScene_Delete(MailboxScene *self);
 void MailboxScene_ClearFlags(MailboxScene *self, unsigned int flags);
 void MailboxScene_SetFlags(MailboxScene *self, unsigned int flags);
 int MailboxScene_TestFlags(MailboxScene *self, int flags);
-void MailboxScene_PressPanelButton9(MailboxScene *self);
+void MailboxScene_PressClose(MailboxScene *self);
 void MailboxScene_RunDiscardConfirm(MailboxScene *self);
 void MailboxScene_DiscardSlotLetter(MailboxScene *self);
 void MailboxScene_CloseOnRequest(MailboxScene *self);

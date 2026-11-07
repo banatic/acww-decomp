@@ -468,13 +468,13 @@ CLEAN_AS(func_ov142_0229bf6c, OrderCatalog_Draw)
 
 /* func_ov142_0229c1cc (vtable slot 0x0c): the scene closes: the parent told and the members torn
  * down. Answers 1. */
-int OrderCatalog_Shutdown(OrderCatalog *self)
+int OrderCatalog_Close(OrderCatalog *self)
 {
     MenuDispatch_ChildClosed(catalog_parent(self));
     OrderCatalog_Teardown(self);
     return 1;
 }
-CLEAN_AS(func_ov142_0229c1cc, OrderCatalog_Shutdown)
+CLEAN_AS(func_ov142_0229c1cc, OrderCatalog_Close)
 
 /* func_ov142_0229c1e8 (vtable slot 0x00): the scene starts: its setup, state 0 (set directly)
  * and phase 0. Answers 1. */

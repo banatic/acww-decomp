@@ -620,8 +620,8 @@ int PocketsView_PlaceIsEmpty(PocketsView *self, int place)
 }
 CLEAN_AS(func_ov099_0229cc74, PocketsView_PlaceIsEmpty)
 
-/* func_ov099_0229ccc8: what the part's object answers for `place` being taken; 0 for other
- * places. */
+/* func_ov099_0229ccc8: whether `place` is dimmed, as the part's object answers
+ * (PocketsGrid_IsDimmed, PocketsLetters_IsDimmed); 0 for other places. */
 int PocketsView_PlaceIsDimmed(PocketsView *self, int place)
 {
     if (PocketsView_IsGridPlace(self, (unsigned int) place)) {
@@ -930,8 +930,8 @@ static int move_cursor_by_keys(PocketsView *self)
 }
 
 /* func_ov099_0229d050: the pen touched `place` (sub state 1): the offset from the touch to the
- * place kept and the popup queued for it; POCKETS_VIEW_FLAG_TOUCHED_FREE set for a grid place its object
- * does not call taken, cleared otherwise. */
+ * place kept and the popup queued for it; POCKETS_VIEW_FLAG_TOUCHED_FREE set for a place that is not
+ * dimmed and not a letter, cleared otherwise. */
 void PocketsView_TouchPlace(PocketsView *self, u8 place)
 {
     self->touch_place = place;
@@ -1050,14 +1050,14 @@ void PocketsView_StepHeldGlide(PocketsView *self)
 CLEAN_AS(func_ov099_0229d240, PocketsView_StepHeldGlide)
 
 /* func_ov099_0229d278 (sub state 0x0f): after a swap, back to the kept sub state once the
- * cursor sprite's animation ends. While its turn has settled, the held item is drawn again and
+ * cursor sprite's animation ends. While its turn holds (Glider_TurnHolds), the held item is drawn again and
  * follows the cursor sprite. */
 void PocketsView_FinishSwapWithCursor(PocketsView *self)
 {
     if (CellLayerSprite_IsDone((CellLayerSprite *) (void *) &self->cursor_sprite)) {
         MenuScene_SetSubState(scene_of(self), self->return_state);
     }
-    if (Glider_IsTurnSettled(&self->cursor_sprite)) {
+    if (Glider_TurnHolds(&self->cursor_sprite)) {
         PocketsView_ClearFlags(self, POCKETS_VIEW_FLAG_HELD_HIDDEN);
         PocketsView_FollowCursorSprite(self);
     }
@@ -1080,12 +1080,12 @@ void PocketsView_SwapWithCursor(PocketsView *self)
 }
 CLEAN_AS(func_ov099_0229d2bc, PocketsView_SwapWithCursor)
 
-/* func_ov099_0229d304 (sub state 0x0d): while the cursor sprite's turn has not settled the held
+/* func_ov099_0229d304 (sub state 0x0d): while the cursor sprite's turn holds (Glider_TurnHolds) the held
  * item follows it. Then it is put down at `target` when the cursor is there (the popup told of
  * the place, sub state 4), else it glides to `target`. */
 void PocketsView_PutDownWithCursor(PocketsView *self)
 {
-    if (Glider_IsTurnSettled(&self->cursor_sprite) != 0) {
+    if (Glider_TurnHolds(&self->cursor_sprite) != 0) {
         PocketsView_FollowCursorSprite(self);
         return;
     }
@@ -1111,11 +1111,11 @@ void PocketsView_FinishPickUp(PocketsView *self)
 }
 CLEAN_AS(func_ov099_0229d358, PocketsView_FinishPickUp)
 
-/* func_ov099_0229d388 (sub state 0x0b): once the cursor sprite's turn has settled, the item at
+/* func_ov099_0229d388 (sub state 0x0b): once the cursor sprite's turn holds (Glider_TurnHolds), the item at
  * the cursor is picked up (sub state 0x0c). */
 void PocketsView_PickUpOnTurn(PocketsView *self)
 {
-    if (Glider_IsTurnSettled(&self->cursor_sprite)) {
+    if (Glider_TurnHolds(&self->cursor_sprite)) {
         PocketsView_PickUpWithCursor(self, self->cursor);
         MenuScene_SetSubState(scene_of(self), SUB_PICKED_UP);
     }
@@ -1222,7 +1222,7 @@ CLEAN_AS(func_ov099_0229d518, PocketsView_MoveHeldItemByKeys)
  * sprite and the popup (sub state 0). The d-pad moves the cursor. A on a grid place that holds
  * an item opens its choice. Y closes the scene (state 3 in phase 1, the popup and the cursor
  * sprite hidden); else a queued popup is shown.
- * QUIRK: A at a place the grid's object calls taken is not taken as A: Y is tested next. */
+ * QUIRK: A at a dimmed place is not taken as A: Y is tested next. */
 void PocketsView_IdleByKeys(PocketsView *self)
 {
     if (MenuScene_TakeTouch(scene_of(self)) != 0) {
@@ -1441,8 +1441,8 @@ void PocketsView_Setup(PocketsView *self)
 }
 CLEAN_AS(func_ov099_0229d994, PocketsView_Setup)
 
-/* func_ov099_0229da34 (state 4): the scene wipes out. When done, layer 6 hidden, the run phase
- * set and nothing drawn. The objects' offset follows the wipe. */
+/* func_ov099_0229da34 (state 4): the scene wipes out. When done, layer 6 hidden, the delete phase
+ * (MENU_SCENE_PHASE_DELETE) set and nothing drawn. The objects' offset follows the wipe. */
 void PocketsView_WipeOut(PocketsView *self)
 {
     if (MenuScene_StepWipe(scene_of(self), 0) != 0) {

@@ -302,7 +302,7 @@ void WfcHostList_Setup(WfcHostList *self)
     MessageWindow_Close(&self->window);
     MessageWindow_Open(&self->window, WFC_HOST_LIST_WINDOW_MESSAGE, 0x90, 0x10);
     SlidingWindow_ShowExtra((SlidingWindow *) (void *) &self->window);
-    self->titles_shown = 0;
+    self->captions_shown = 0;
     PushButton_ShowUp(&self->knob_button);
     for (int i = 0; i < WFC_HOST_LIST_ROWS; i++) {
         self->row_friend[i] = WFC_HOST_LIST_NONE + 1;
@@ -360,14 +360,14 @@ void WfcHostList_StartWipeOut(WfcHostList *self)
 CLEAN_AS(func_ov146_0229ae28, WfcHostList_StartWipeOut)
 
 /* func_ov146_0229ae60 (WFC_HOST_LIST_STATE_WIPE_IN): the layers wipe in; when done, the input
- * begins (phase 2), else the titles are shown (once). */
+ * begins (phase 2), else the button captions are shown (once). */
 void WfcHostList_WipeIn(WfcHostList *self)
 {
     if (MenuScene_StepWipeBack(wfc_host_list_scene(self), 0) != 0) {
         MenuScene_SetPhase(wfc_host_list_scene(self), WFC_HOST_LIST_PHASE_INTERACTIVE);
         WfcHostList_BeginInput(self);
     } else {
-        WfcHostList_ShowTitlesOnce(self);
+        WfcHostList_ShowButtonCaptionsOnce(self);
     }
     WfcHostList_ScrollWithWipe(self);
 }

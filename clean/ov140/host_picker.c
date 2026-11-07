@@ -961,13 +961,13 @@ void HostPicker_StartWipeIn(HostPicker *self)
 CLEAN_AS(func_ov140_0229adf8, HostPicker_StartWipeIn)
 
 /* func_ov140_0229ae44 (state 0): the layers set up, the background and the OBJ files loaded,
- * the rows' headings made; state 1. */
+ * the rows' button captions made; state 1. */
 void HostPicker_StartSetup(HostPicker *self)
 {
     HostPicker_SetUpLayers();
     HostPicker_LoadBackground(self);
     HostPicker_LoadObjFiles(self);
-    ResRows_MakeHeadings(&self->rows);
+    ResRows_MakeButtonCaptions(&self->rows);
     MenuScene_SetState(host_scene(self), HOST_PICKER_STATE_START_WIPE_IN);
 }
 CLEAN_AS(func_ov140_0229ae44, HostPicker_StartSetup)

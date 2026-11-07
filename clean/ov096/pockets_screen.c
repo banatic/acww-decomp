@@ -257,7 +257,7 @@ void PocketsScreen_PutPaperInLetter(PocketsScreen *self)
     PagedChoice_Apply(choice_of(self), (void *) (uintptr_t) letter, self->choice_code);
     GroupParams_SetPointer((u32) letter);
     PocketsScreen_SwitchTab(self, 8);
-    PocketsScreen_ClearParentByte94(self);
+    PocketsScreen_SlideOutTabs(self);
     unsigned int count = (unsigned int) ItemCode_PileCount(&pile);
     int left = count <= 1 ? ITEM_CODE_NONE : ItemCode_MakePile(pile_item, (int) (count - 1));
     PocketsScreen_SetPlaceItem(self, self->prev_slot, left, 0);
@@ -296,7 +296,7 @@ void PocketsScreen_ActionReadLetter(PocketsScreen *self)
     MenuScene_SetState(scene_of(self), 5);
     MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_STATES);
     PocketsScreen_SetFlags(self, POCKETS_FLAG_READ_LETTER);
-    PocketsScreen_ClearParentByte94(self);
+    PocketsScreen_SlideOutTabs(self);
 }
 CLEAN_AS(func_ov096_0229c538, PocketsScreen_ActionReadLetter)
 
@@ -700,7 +700,7 @@ void PocketsScreen_AddLetterEntries(PocketsScreen *self, int place)
         ChoiceEntries_Add(&self->entries, 0, 1);
     }
     unsigned int kind = Letter_State(letter_ptr);
-    PocketsScreen_ClearFlags(self, POCKETS_FLAG_08);
+    PocketsScreen_ClearFlags(self, POCKETS_FLAG_BOTTLE_ROW_ADDED);
 
     switch (kind) {
         case 0:
@@ -714,7 +714,7 @@ void PocketsScreen_AddLetterEntries(PocketsScreen *self, int place)
                 PocketsTown_AddLetterRows(self);
             }
             ChoiceEntries_Add(&self->entries, 0x16, 5);
-            if (!PocketsScreen_TestFlags(self, POCKETS_FLAG_08) && Letter_Item(letter_ptr) == ITEM_CODE_NONE &&
+            if (!PocketsScreen_TestFlags(self, POCKETS_FLAG_BOTTLE_ROW_ADDED) && Letter_Item(letter_ptr) == ITEM_CODE_NONE &&
                 data_020e54a8 == 0) {
                 ChoiceEntries_Add(&self->entries, 0x15, 0x0a);
             }
@@ -1049,7 +1049,7 @@ void PocketsScreen_ActionTakeRecordItem(PocketsScreen *self)
         PocketsScreen_DropHeld(self);
         self->item = ITEM_CODE_NONE;
         PocketsScreen_BeginSubState25(self);
-        PocketsScreen_SetFlags(self, POCKETS_FLAG_8000);
+        PocketsScreen_SetFlags(self, POCKETS_FLAG_TAKEN_OFF_RECORD);
     }
 }
 CLEAN_AS(func_ov096_0229d6dc, PocketsScreen_ActionTakeRecordItem)
@@ -1095,7 +1095,7 @@ void PocketsScreen_ActionWriteBottleLetter(PocketsScreen *self)
         GroupParams_SetPointer((u32) letter);
         PocketsScreen_EmptyPlace(self, self->prev_slot);
         PocketsScreen_SwitchTab(self, 8);
-        PocketsScreen_ClearParentByte94(self);
+        PocketsScreen_SlideOutTabs(self);
     }
 }
 CLEAN_AS(func_ov096_0229d878, PocketsScreen_ActionWriteBottleLetter)
@@ -1152,7 +1152,7 @@ void PocketsScreen_ActionRewriteLetter(PocketsScreen *self)
     GroupParams_SetC50((char) self->slot);
     GroupParams_SetPointer((u32) PocketsScreen_SlotLetter(self));
     PocketsScreen_SwitchTab(self, 8);
-    PocketsScreen_ClearParentByte94(self);
+    PocketsScreen_SlideOutTabs(self);
 }
 CLEAN_AS(func_ov096_0229d9a0, PocketsScreen_ActionRewriteLetter)
 
@@ -1184,7 +1184,7 @@ void PocketsScreen_ActionDropItem(PocketsScreen *self)
     }
     if (how == 2) {
         MenuScene_SetSubState(scene_of(self), 0x28);
-        PocketsScreen_SetFlags(self, POCKETS_FLAG_1000);
+        PocketsScreen_SetFlags(self, POCKETS_FLAG_DROP_FROM_SLOT);
     } else {
         PocketsGrid_EmptyPlace((PocketsGrid *) (void *) self->grid, func_ov096_0229f7ac(self, place));
         PocketsScreen_EndAction(self);
@@ -1596,10 +1596,10 @@ void PocketsScreen_RefuseRecordSlot(PocketsScreen *self)
 }
 CLEAN_AS(func_ov096_0229e29c, PocketsScreen_RefuseRecordSlot)
 
-/* func_ov096_0229e2c8: whether the player's field actor (func_02096718(4)) is in a state that
- * lets record slot `record_slot` change: state 0x3f for slot 5, not state 5 for slots 7 and
- * 8, func_02095f58's test for the others. */
-int PocketsScreen_ActorReadyForSlot(PocketsScreen *self, int record_slot)
+/* func_ov096_0229e2c8: whether the player's field actor (func_02096718(4)) is still busy
+ * changing record slot `record_slot` (nonzero while it is): state 0x3f for slot 5, not state 5
+ * for slots 7 and 8, func_02095f58's test for the others. */
+int PocketsScreen_ActorBusyWithSlot(PocketsScreen *self, int record_slot)
 {
     (void) self;
     switch (record_slot) {
@@ -1612,7 +1612,7 @@ int PocketsScreen_ActorReadyForSlot(PocketsScreen *self, int record_slot)
             return PlayerActorOps_EarlyInState7();
     }
 }
-CLEAN_AS(func_ov096_0229e2c8, PocketsScreen_ActorReadyForSlot)
+CLEAN_AS(func_ov096_0229e2c8, PocketsScreen_ActorBusyWithSlot)
 
 /* func_ov096_0229e2fc: asks the player's field actor to take `item` for record slot `record_slot`
  * (main's requests of it); whether it was asked. Slot 6 also clears slot 4's item; slot 7, when
@@ -1773,7 +1773,7 @@ void PocketsScreen_BeginSubState25(PocketsScreen *self)
 {
     MenuScene_SetSubState(scene_of(self), 0x25);
     PocketsScreen_GiveToRecordSlot(self);
-    PocketsScreen_ClearFlags(self, POCKETS_FLAG_8000);
+    PocketsScreen_ClearFlags(self, POCKETS_FLAG_TAKEN_OFF_RECORD);
 }
 CLEAN_AS(func_ov096_0229e67c, PocketsScreen_BeginSubState25)
 
@@ -1817,7 +1817,7 @@ int PocketsScreen_DropHeldItem(PocketsScreen *self)
             return 1;
         case 2:
             MenuScene_SetSubState(scene_of(self), 0x28);
-            PocketsScreen_ClearFlags(self, POCKETS_FLAG_1000);
+            PocketsScreen_ClearFlags(self, POCKETS_FLAG_DROP_FROM_SLOT);
             return 0;
         default:
             PocketsScreen_ReturnHeld(self, 1);
@@ -2322,8 +2322,8 @@ int PocketsScreen_PlaceIsEmpty(PocketsScreen *self, int place)
 }
 CLEAN_AS(func_ov096_0229f150, PocketsScreen_PlaceIsEmpty)
 
-/* func_ov096_0229f1a8: what the part's object answers for `place` being taken (non-zero:
- * taken, where PocketsScreen_PlaceIsEmpty says 0); 0 for other places. */
+/* func_ov096_0229f1a8: whether `place` is dimmed, as the part's object answers
+ * (PocketsGrid_IsDimmed and the like); 0 for other places. */
 int PocketsScreen_PlaceIsDimmed(PocketsScreen *self, int place)
 {
     if (PocketsScreen_IsGridPlace(self, place)) {
@@ -2816,7 +2816,7 @@ CLEAN_AS(func_ov096_0229f9dc, PocketsScreen_PickUpWithTouch)
 
 /* func_ov096_0229fa44: `place` touched: sub state 1, the offset from the touch to the place
  * kept, the popup told of the place and shown, the place's choice rows made, flag 4 set when
- * the place holds nothing; places other than the grid and the player's ask the switch off.
+ * the place is not dimmed (it may be dragged); places other than the grid and the player's ask the switch off.
  * Command 0xc. */
 void PocketsScreen_TouchPlace(PocketsScreen *self, int place)
 {
@@ -2932,7 +2932,7 @@ static void finish_drop_request(PocketsScreen *self, int result, int message)
 {
     switch (result) {
         case POCKETS_DROP_DONE:
-            if (PocketsScreen_TestFlags(self, POCKETS_FLAG_1000)) {
+            if (PocketsScreen_TestFlags(self, POCKETS_FLAG_DROP_FROM_SLOT)) {
                 PocketsGrid_EmptyPlace((PocketsGrid *) (void *) self->grid, func_ov096_0229f7ac(self, self->slot));
             } else {
                 PocketsScreen_DropHeld(self);
@@ -2940,7 +2940,7 @@ static void finish_drop_request(PocketsScreen *self, int result, int message)
             PocketsScreen_EndAction(self);
             break;
         case POCKETS_DROP_FAILED:
-            if (PocketsScreen_TestFlags(self, POCKETS_FLAG_1000) == 0) {
+            if (PocketsScreen_TestFlags(self, POCKETS_FLAG_DROP_FROM_SLOT) == 0) {
                 PocketsScreen_ReturnHeld(self, 1);
             }
             PocketsScreen_EndAction(self);
@@ -3049,11 +3049,11 @@ void PocketsScreen_WaitLetterDiscarded(PocketsScreen *self)
 }
 CLEAN_AS(func_ov096_0229fe74, PocketsScreen_WaitLetterDiscarded)
 
-/* func_ov096_0229fe9c (sub state 0x27): once PocketsScreen_ActorReadyForSlot answers 0 for the
- * record slot, the scene lets go, the wallet's display stops blinking and the action ends. */
+/* func_ov096_0229fe9c (sub state 0x27): once PocketsScreen_ActorBusyWithSlot answers 0 for the
+ * record slot (the actor is done), the scene lets go, the wallet's display stops blinking and the action ends. */
 void PocketsScreen_WaitActorForRecord(PocketsScreen *self)
 {
-    if (PocketsScreen_ActorReadyForSlot(self, self->record_slot) != 0) {
+    if (PocketsScreen_ActorBusyWithSlot(self, self->record_slot) != 0) {
         return;
     }
     PocketsScreen_DropHeld(self);
@@ -3074,7 +3074,7 @@ void PocketsScreen_WaitRecordBlink(PocketsScreen *self)
     PocketsScreen_DropHeld(self);
     PocketsWallet_LoadHeldItemPicture((PocketsWallet *) (void *) self->unk_de0);
     if (self->item != ITEM_CODE_NONE) {
-        if (PocketsScreen_TestFlags(self, POCKETS_FLAG_8000)) {
+        if (PocketsScreen_TestFlags(self, POCKETS_FLAG_TAKEN_OFF_RECORD)) {
             PocketsScreen_HoldAndGlide(self, POCKETS_PLACE_PLAYER, self->held_place, self->item, 0);
             return;
         }
@@ -3436,14 +3436,14 @@ void PocketsScreen_ReaderByKeys(PocketsScreen *self)
 CLEAN_AS(func_ov096_022a03e4, PocketsScreen_ReaderByKeys)
 
 /* func_ov096_022a04a4 (sub state 0x16): after a swap by the cursor, back to the kept sub state
- * once the cursor sprite's animation ends. While its turn has settled, the held thing is drawn
+ * once the cursor sprite's animation ends. While its turn holds (Glider_TurnHolds), the held thing is drawn
  * again (sound 0xd when it was hidden) and follows the cursor sprite. */
 void PocketsScreen_FinishSwapWithCursor(PocketsScreen *self)
 {
     if (CellLayerSprite_IsDone((CellLayerSprite *) (void *) &self->cursor_sprite)) {
         MenuScene_SetSubState(scene_of(self), self->return_state);
     }
-    if (Glider_IsTurnSettled(&self->cursor_sprite)) {
+    if (Glider_TurnHolds(&self->cursor_sprite)) {
         if (PocketsScreen_TestFlags(self, POCKETS_FLAG_40)) {
             PocketsScreen_ClearFlags(self, POCKETS_FLAG_40);
             PocketsSound_Play0d();
@@ -3469,14 +3469,14 @@ void PocketsScreen_SwapWithCursor(PocketsScreen *self)
 }
 CLEAN_AS(func_ov096_022a04f4, PocketsScreen_SwapWithCursor)
 
-/* func_ov096_022a053c (sub state 0x14): while the cursor sprite's turn has not settled the held
+/* func_ov096_022a053c (sub state 0x14): while the cursor sprite's turn holds (Glider_TurnHolds) the held
  * thing follows it. Then it is put down at `unk_b7` when the cursor is there (and with
  * POCKETS_FLAG_2000 `place_item` is held and glides on to `unk_b9`), else it glides to
  * `unk_b7`. When no glide started: the popup told of the cursor's place, sub state 0x0a and
  * sound 0xe. */
 void PocketsScreen_PutDownWithCursor(PocketsScreen *self)
 {
-    if (Glider_IsTurnSettled(&self->cursor_sprite) != 0) {
+    if (Glider_TurnHolds(&self->cursor_sprite) != 0) {
         PocketsScreen_FollowCursorSprite(self);
         return;
     }
@@ -3510,11 +3510,11 @@ int PocketsScreen_FinishPickUp(PocketsScreen *self)
 }
 CLEAN_AS(func_ov096_022a05d0, PocketsScreen_FinishPickUp)
 
-/* func_ov096_022a05fc (sub state 0x12): once the cursor sprite's turn has settled, what is at
+/* func_ov096_022a05fc (sub state 0x12): once the cursor sprite's turn holds (Glider_TurnHolds), what is at
  * the cursor is picked up (sub state 0x13). */
 void PocketsScreen_PickUpOnTurn(PocketsScreen *self)
 {
-    if (Glider_IsTurnSettled(&self->cursor_sprite)) {
+    if (Glider_TurnHolds(&self->cursor_sprite)) {
         PocketsScreen_PickUpWithCursor(self, self->cursor);
         MenuScene_SetSubState(scene_of(self), 0x13);
     }
@@ -4249,16 +4249,16 @@ void PocketsScreen_Setup(PocketsScreen *self)
 }
 CLEAN_AS(func_ov096_022a1488, PocketsScreen_Setup)
 
-/* func_ov096_022a1540: the parent's byte 0x94 cleared. */
-void PocketsScreen_ClearParentByte94(PocketsScreen *self)
+/* func_ov096_022a1540: the parent's menu tabs slide out (MenuTabs_SlideOut). */
+void PocketsScreen_SlideOutTabs(PocketsScreen *self)
 {
     MenuTabs_SlideOut((MenuTabs *) (void *) parent_of(self));
 }
-CLEAN_AS(func_ov096_022a1540, PocketsScreen_ClearParentByte94)
+CLEAN_AS(func_ov096_022a1540, PocketsScreen_SlideOutTabs)
 
 /* func_ov096_022a1554 (state 10): the letter read wipes out. When done, layers 3 and 4 hidden
  * and the button no longer drawn; leaving the menu (POCKETS_FLAG_EXITING) ends the run phase
- * and the drawing, else the parent's bytes 0x94 and 0x91 are set and the setup starts again
+ * and the drawing, else the parent's menu tabs slide in (MenuTabs_SlideIn) and the setup starts again
  * (state 0). */
 void PocketsScreen_WipeOutReader(PocketsScreen *self)
 {

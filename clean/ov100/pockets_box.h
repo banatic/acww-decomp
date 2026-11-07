@@ -43,7 +43,7 @@ enum PocketsBoxFlag {
     POCKETS_BOX_FLAG_WRAPPED_LEFT = 0x10,  /* this move wrapped the cursor over the left edge */
     POCKETS_BOX_FLAG_WRAPPED_RIGHT = 0x20, /* this move wrapped it over the right edge */
     POCKETS_BOX_FLAG_HELD_HIDDEN = 0x40,   /* the held item is not drawn */
-    POCKETS_BOX_FLAG_80 = 0x80,            /* the grid is drawn at `exit_wipe_y` */
+    POCKETS_BOX_FLAG_BOX_DRAWN = 0x80,     /* the grid's box is drawn at `box_wipe_y` */
     POCKETS_BOX_FLAG_SPRITE_SET = 0x100,   /* the cursor sprite's set changed; it is updated by
                                              * PocketsBox_GlideToCursor */
     POCKETS_BOX_FLAG_STARTED_EMPTY = 0x200 /* the box started empty (modes 0x1d and 0x1e) */
@@ -143,7 +143,7 @@ typedef struct PocketsBox {
     TextLabel labels[POCKETS_BOX_LABELS]; /* 0x27e8: the closing labels (PocketsBox_NextLabel) */
     u32 flags;                            /* 0x28c0: PocketsBoxFlag */
     s32 wipe_y;                           /* 0x28c4: func_ov002_02207f60's, where the objects are drawn */
-    s32 exit_wipe_y;                      /* 0x28c8: func_ov002_02207f60's when the scene closes */
+    s32 box_wipe_y;                       /* 0x28c8: the box's wipe offset (MenuScene_WipeOffsetY) while it wipes */
     s32 grab_dx;                          /* 0x28cc: from the touch to the held item */
     s32 grab_dy;                          /* 0x28d0 */
     s32 held_x;                           /* 0x28d4: where the held item is drawn */

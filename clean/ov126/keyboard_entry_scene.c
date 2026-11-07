@@ -507,7 +507,7 @@ CLEAN_AS(func_ov126_022a1a68, KeyboardEntry_Slot54)
 /* Obj_ov126_022a20c8::func_ov126_022a1a6c (vtable slot 0x50, phase 2): a frame of the input. The
  * menu close's delay is counted first; when the menu is asked to close in a friend mode, in a sub
  * state other than the question's (3, 5), the glide (8) and 15 and 16, the input ends cancelled:
- * the cursor hidden, the pointer at rest, the menu closed (tab 7), the scene wiping out on window
+ * the cursor hidden, the pointer hidden, the menu closed (tab 7), the scene wiping out on window
  * 2 (state 5, phase 1), and a friend being added cleared from the roster. Then the frame's start,
  * its sub state and its end. Answers 1. */
 int KeyboardEntry_RunInput(KeyboardEntry *self)
@@ -530,7 +530,7 @@ int KeyboardEntry_RunInput(KeyboardEntry *self)
                 case KEYBOARD_ENTRY_SUB_WHILE_L:
                 case KEYBOARD_ENTRY_SUB_WHILE_R:
                     KeyboardEntry_ClearFlags(self, KEYBOARD_ENTRY_FLAG_CURSOR_SHOWN);
-                    KeyboardEntry_RestPointer(self);
+                    KeyboardEntry_HidePointer(self);
                     MenuTabs_SelectTab((MenuTabs *) (void *) keyboard_entry_parent(self), KEYBOARD_ENTRY_TAB_CLOSE);
                     KeyboardEntry_SetFlags(self, KEYBOARD_ENTRY_FLAG_CANCELLED);
                     MenuScene_StartWipeOnWindow2(keyboard_entry_scene(self), 10, 0, 0, KEYBOARD_ENTRY_WIPE_MARGIN);

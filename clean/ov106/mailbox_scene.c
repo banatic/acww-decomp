@@ -152,13 +152,13 @@ int MailboxScene_TestFlags(MailboxScene *self, int flags)
 CLEAN_AS(func_ov106_0229c364, MailboxScene_TestFlags)
 
 /* func_ov106_0229c378: sound 0x27, the panel's button 9 selected, sub state 0x23. */
-void MailboxScene_PressPanelButton9(MailboxScene *self)
+void MailboxScene_PressClose(MailboxScene *self)
 {
     SoundSys_PlaySe(0x27);
     ButtonPanel_Select(&self->panel, 9);
     MenuScene_SetSubState(mbx_scene(self), 0x23);
 }
-CLEAN_AS(func_ov106_0229c378, MailboxScene_PressPanelButton9)
+CLEAN_AS(func_ov106_0229c378, MailboxScene_PressClose)
 
 /* func_ov106_0229c3a0 (action 3) */
 void MailboxScene_RunDiscardConfirm(MailboxScene *self)
@@ -218,7 +218,7 @@ void MailboxScene_RunActionRead(MailboxScene *self)
 CLEAN_AS(func_ov106_0229c47c, MailboxScene_RunActionRead)
 
 /* func_ov106_0229c4a0: the cursor moved by `keys` (KeyRepeat_Has*) in the part of the scene it
- * is in; `mode` 0 lets it go down to MAILBOX_SCENE_BELOW, `mode` 1 (a letter held) keeps a
+ * is in; `mode` 0 lets it go down to MAILBOX_SCENE_CLOSE, `mode` 1 (a letter held) keeps a
  * carried letter out of the mailbox. The wrap flags are cleared first. 1 when the cursor changed
  * place; 0 at once when `keys` is 0. */
 int MailboxScene_MoveCursor(MailboxScene *self, int keys, int mode)
@@ -240,7 +240,7 @@ int MailboxScene_MoveCursor(MailboxScene *self, int keys, int mode)
 }
 CLEAN_AS(func_ov106_0229c4a0, MailboxScene_MoveCursor)
 
-/* func_ov106_0229c524: up from MAILBOX_SCENE_BELOW goes to the carried letters' bottom left
+/* func_ov106_0229c524: up from MAILBOX_SCENE_CLOSE goes to the carried letters' bottom left
  * (0x13), the cursor sprite turning to set A. */
 void MailboxScene_MoveCursorBelow(MailboxScene *self, int keys)
 {
@@ -252,7 +252,7 @@ void MailboxScene_MoveCursorBelow(MailboxScene *self, int keys)
 CLEAN_AS(func_ov106_0229c524, MailboxScene_MoveCursorBelow)
 
 /* Up and down within a column of five rows of two (shared by the carried letters and the
- * mailbox's): up stops at the top row, down from the bottom row goes to MAILBOX_SCENE_BELOW
+ * mailbox's): up stops at the top row, down from the bottom row goes to MAILBOX_SCENE_CLOSE
  * when `mode` is 0, the cursor sprite turning to set B. */
 static void mbx_move_in_column(MailboxScene *self, int keys, int mode, int row)
 {
@@ -268,7 +268,7 @@ static void mbx_move_in_column(MailboxScene *self, int keys, int mode, int row)
             return;
         }
         if (mode == 0) {
-            self->cursor = MAILBOX_SCENE_BELOW;
+            self->cursor = MAILBOX_SCENE_CLOSE;
             Glider_TurnToSetB(&self->cursor_sprite);
         }
     }
@@ -608,7 +608,7 @@ int MailboxScene_CursorSpriteX(MailboxScene *self)
 }
 CLEAN_AS(func_ov106_0229cc84, MailboxScene_CursorSpriteX)
 
-/* func_ov106_0229ccc8: the cursor sprite put at the cursor, animation 7 on MAILBOX_SCENE_BELOW
+/* func_ov106_0229ccc8: the cursor sprite put at the cursor, animation 7 on MAILBOX_SCENE_CLOSE
  * and 1 elsewhere, then its set's first animation shown. */
 void MailboxScene_ShowCursorAtCursor(MailboxScene *self)
 {
@@ -817,13 +817,13 @@ void MailboxScene_DimCarriedLetters(MailboxScene *self)
 CLEAN_AS(func_ov106_0229d104, MailboxScene_DimCarriedLetters)
 
 /* func_ov106_0229d128: the y of `place`: a letter's by the letters object less 0x10, 0xb6 for
- * MAILBOX_SCENE_BELOW, else 0. */
+ * MAILBOX_SCENE_CLOSE, else 0. */
 int MailboxScene_PlaceY(MailboxScene *self, int place)
 {
     if (mbx_is_letter_place(self, place)) {
         return PocketsLetters_PlaceY(&self->letters, mbx_letter_index(self, place)) - 0x10;
     }
-    if (place == MAILBOX_SCENE_BELOW) {
+    if (place == MAILBOX_SCENE_CLOSE) {
         return 0xb6;
     }
     return 0;
@@ -831,13 +831,13 @@ int MailboxScene_PlaceY(MailboxScene *self, int place)
 CLEAN_AS(func_ov106_0229d128, MailboxScene_PlaceY)
 
 /* func_ov106_0229d170: the x of `place`: a letter's by the letters object, 0xbc for
- * MAILBOX_SCENE_BELOW, else 0. */
+ * MAILBOX_SCENE_CLOSE, else 0. */
 int MailboxScene_PlaceX(MailboxScene *self, int place)
 {
     if (mbx_is_letter_place(self, place)) {
         return PocketsLetters_PlaceX(&self->letters, mbx_letter_index(self, place));
     }
-    if (place == MAILBOX_SCENE_BELOW) {
+    if (place == MAILBOX_SCENE_CLOSE) {
         return 0xbc;
     }
     return 0;
@@ -947,7 +947,7 @@ CLEAN_AS(func_ov106_0229d360, MailboxScene_LetterIndex)
 int MailboxScene_IsBelowPlace(MailboxScene *self, int place)
 {
     (void) self;
-    return place == MAILBOX_SCENE_BELOW;
+    return place == MAILBOX_SCENE_CLOSE;
 }
 CLEAN_AS(func_ov106_0229d384, MailboxScene_IsBelowPlace)
 
@@ -1281,12 +1281,12 @@ CLEAN_AS(func_ov106_0229d7d4, MailboxScene_StepTakenLetterGlide)
 
 /* func_ov106_0229d810 (sub state 0x24): the mailbox's first letter glides to the player's first
  * free letter slot (sub state 0x25). With no letter left in the mailbox, the cursor goes to
- * MAILBOX_SCENE_BELOW and the action ends; with no free slot, message 6 is shown. */
+ * MAILBOX_SCENE_CLOSE and the action ends; with no free slot, message 6 is shown. */
 void MailboxScene_TakeNextLetter(MailboxScene *self)
 {
     int from = MailboxScene_FirstMailboxLetterPlace(self);
     if (from == MAILBOX_SCENE_NO_PLACE) {
-        self->cursor = MAILBOX_SCENE_BELOW;
+        self->cursor = MAILBOX_SCENE_CLOSE;
         MailboxScene_EndAction(self);
         return;
     }
@@ -1312,7 +1312,7 @@ static void mbx_follow_selected_press(MailboxScene *self)
     }
 }
 
-/* func_ov106_0229d860 (sub state 0x23, after MailboxScene_PressPanelButton9): while the selected
+/* func_ov106_0229d860 (sub state 0x23, after MailboxScene_PressClose): while the selected
  * panel button's press plays, the cursor sprite (when shown) follows it; after, the sprite is
  * hidden, state 4 (written directly), MAILBOX_SCENE_FLAG_READ cleared and phase 1. */
 void MailboxScene_FollowPanelPress(MailboxScene *self)
@@ -1590,14 +1590,14 @@ void MailboxScene_StepHeldGlide(MailboxScene *self)
 CLEAN_AS(func_ov106_0229ddf0, MailboxScene_StepHeldGlide)
 
 /* func_ov106_0229de28 (sub state 0x14): back to the sub state kept once the cursor sprite's
- * animation has ended; once its turn has settled, a hidden held letter is shown again (sound
+ * animation has ended; once its turn holds (Glider_TurnHolds), a hidden held letter is shown again (sound
  * 0xd) and follows the sprite. */
 void MailboxScene_FinishSwap(MailboxScene *self)
 {
     if (CellLayerSprite_IsDone(mbx_cursor_cells(self))) {
         MenuScene_SetSubState(mbx_scene(self), self->return_state);
     }
-    if (Glider_IsTurnSettled(&self->cursor_sprite)) {
+    if (Glider_TurnHolds(&self->cursor_sprite)) {
         if (MailboxScene_TestFlags(self, MAILBOX_SCENE_FLAG_HELD_HIDDEN)) {
             MailboxScene_ClearFlags(self, MAILBOX_SCENE_FLAG_HELD_HIDDEN);
             PocketsSound_Play0d();
@@ -1623,12 +1623,12 @@ void MailboxScene_Swap(MailboxScene *self)
 }
 CLEAN_AS(func_ov106_0229de78, MailboxScene_Swap)
 
-/* func_ov106_0229dec0 (sub state 0x12): while the cursor sprite's turn has not settled, the held
+/* func_ov106_0229dec0 (sub state 0x12): once the cursor sprite's turn no longer holds (Glider_TurnHolds), the held
  * letter is put down at `target` when the cursor is on it (the popup updated, sub state 7, sound
- * 0xe), else glided there in 4 steps; once it has, the letter follows the sprite. */
+ * 0xe), else glided there in 4 steps; while it holds, the letter follows the sprite. */
 void MailboxScene_PutDown(MailboxScene *self)
 {
-    if (Glider_IsTurnSettled(&self->cursor_sprite) == 0) {
+    if (Glider_TurnHolds(&self->cursor_sprite) == 0) {
         u8 target = self->target;
         if (self->cursor == target) {
             MailboxScene_PutHeldLetterAt(self, target);
@@ -1655,11 +1655,11 @@ void MailboxScene_FinishPickUp(MailboxScene *self)
 }
 CLEAN_AS(func_ov106_0229df14, MailboxScene_FinishPickUp)
 
-/* func_ov106_0229df40 (sub state 0x10): once the cursor sprite's turn has settled, the letter at
+/* func_ov106_0229df40 (sub state 0x10): once the cursor sprite's turn holds (Glider_TurnHolds), the letter at
  * the cursor is picked up; sub state 0x11. */
 void MailboxScene_PickUpAtCursor(MailboxScene *self)
 {
-    if (Glider_IsTurnSettled(&self->cursor_sprite)) {
+    if (Glider_TurnHolds(&self->cursor_sprite)) {
         MailboxScene_PickUpWithCursor(self, self->cursor);
         MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_PICK_UP_END);
     }
@@ -1678,14 +1678,14 @@ void MailboxScene_FinishPlacePress(MailboxScene *self)
 CLEAN_AS(func_ov106_0229df70, MailboxScene_FinishPlacePress)
 
 /* func_ov106_0229df98 (sub state 0x0e): once the cursor sprite's animation has ended, the place
- * is pressed: MAILBOX_SCENE_BELOW presses panel button 9, other places go to sub state 0x0f. */
+ * is pressed: MAILBOX_SCENE_CLOSE presses panel button 9, other places go to sub state 0x0f. */
 void MailboxScene_PressPlace(MailboxScene *self)
 {
     if (CellLayerSprite_IsDone(mbx_cursor_cells(self)) == 0) {
         return;
     }
-    if (self->cursor == MAILBOX_SCENE_BELOW) {
-        MailboxScene_PressPanelButton9(self);
+    if (self->cursor == MAILBOX_SCENE_CLOSE) {
+        MailboxScene_PressClose(self);
     } else {
         MailboxScene_BeginSubState0f(self);
     }
@@ -1795,7 +1795,7 @@ void MailboxScene_MoveHeldByKeys(MailboxScene *self)
     if (StateFlags_MenuCloseAsked()) {
         MailboxScene_PutHeldAt(self, self->held_from);
         MailboxScene_HideCursorSprite(self);
-        MailboxScene_PressPanelButton9(self);
+        MailboxScene_PressClose(self);
         Popup_Hide(&self->popup, 0);
         return;
     }
@@ -1872,7 +1872,7 @@ void MailboxScene_BrowseByKeys(MailboxScene *self)
     u16 pressed = data_021fbe40.pressed;
     if ((pressed & MAILBOX_SCENE_PAD_START) || (pressed & MAILBOX_SCENE_PAD_B)) {
         MailboxScene_HideCursorSprite(self);
-        MailboxScene_PressPanelButton9(self);
+        MailboxScene_PressClose(self);
         Popup_Hide(&self->popup, 0);
         return;
     }
@@ -1939,7 +1939,7 @@ void MailboxScene_DragHeld(MailboxScene *self)
 {
     if (StateFlags_MenuCloseAsked()) {
         MailboxScene_PutHeldAt(self, self->held_from);
-        MailboxScene_PressPanelButton9(self);
+        MailboxScene_PressClose(self);
         Popup_Hide(&self->popup, 0);
         return;
     }
@@ -2023,7 +2023,7 @@ CLEAN_AS(func_ov106_0229e6c4, MailboxScene_WatchChoiceTouch)
 #define MAILBOX_SCENE_WIPE_MARGIN 0x30
 
 /* The panel's button below the letters, and its message. */
-#define MAILBOX_SCENE_PANEL_BUTTON_9 9
+#define MAILBOX_SCENE_CLOSE_BUTTON 9
 #define MAILBOX_SCENE_PANEL_MESSAGE 0x88
 
 /* The heap the scenes load into (autoload_2/heap.c). */
@@ -2126,8 +2126,8 @@ void MailboxScene_IdleByTouch(MailboxScene *self)
         MailboxScene_TouchPlace(self, place);
         return;
     }
-    if (ButtonPanel_IsTouched(&self->panel, MAILBOX_SCENE_PANEL_BUTTON_9) != 0) {
-        MailboxScene_PressPanelButton9(self);
+    if (ButtonPanel_IsTouched(&self->panel, MAILBOX_SCENE_CLOSE_BUTTON) != 0) {
+        MailboxScene_PressClose(self);
     }
 }
 CLEAN_AS(func_ov106_0229e7e0, MailboxScene_IdleByTouch)
@@ -2518,7 +2518,7 @@ int MailboxScene_RunInteractive(MailboxScene *self)
         if (sub_state == MAILBOX_SCENE_SUB_TOUCH_IDLE || sub_state == MAILBOX_SCENE_SUB_TOUCH_HOLD ||
             sub_state == MAILBOX_SCENE_SUB_BROWSE) {
             MailboxScene_HideCursorSprite(self);
-            MailboxScene_PressPanelButton9(self);
+            MailboxScene_PressClose(self);
             Popup_Hide(&self->popup, 0);
             return 1;
         }

@@ -455,19 +455,19 @@ CLEAN_AS(func_ov146_0229a174, WfcHostList_FriendList)
 
 /* --- The labels --- */
 
-/* func_ov146_0229a17c: the titles shown, on the first call only. */
-void WfcHostList_ShowTitlesOnce(WfcHostList *self)
+/* func_ov146_0229a17c: the button captions shown, on the first call only. */
+void WfcHostList_ShowButtonCaptionsOnce(WfcHostList *self)
 {
-    if (self->titles_shown == 0) {
-        WfcHostList_ShowTitles(self);
-        self->titles_shown++;
+    if (self->captions_shown == 0) {
+        WfcHostList_ShowButtonCaptions(self);
+        self->captions_shown++;
     }
 }
-CLEAN_AS(func_ov146_0229a17c, WfcHostList_ShowTitlesOnce)
+CLEAN_AS(func_ov146_0229a17c, WfcHostList_ShowButtonCaptionsOnce)
 
-/* A title: menu message `message` in a label on layer 8 at tile `tile` (6 cells, colours 15 and
+/* A button caption: menu message `message` in a label on layer 8 at tile `tile` (6 cells, colours 15 and
  * 0), centred. */
-static void wfc_host_list_show_title(WfcHostList *self, int message, int tile)
+static void wfc_host_list_show_caption(WfcHostList *self, int message, int tile)
 {
     TextLabel *label = WfcHostList_TakeLabel(self);
     TextLabel_LoadMenuMessage(label, (char) message);
@@ -475,15 +475,15 @@ static void wfc_host_list_show_title(WfcHostList *self, int message, int tile)
     TextLabel_Show(label, 1, 0);
 }
 
-/* func_ov146_0229a1a0: the three titles: menu messages 0x65, 0xc2 and 0xc1 at tiles 0x93, 0x8d
+/* func_ov146_0229a1a0: the three button captions: menu messages 0x65 (Quit), 0xc2 (Decide) and 0xc1 (Other) at tiles 0x93, 0x8d
  * and 0x99. */
-void WfcHostList_ShowTitles(WfcHostList *self)
+void WfcHostList_ShowButtonCaptions(WfcHostList *self)
 {
-    wfc_host_list_show_title(self, 0x65, 0x93);
-    wfc_host_list_show_title(self, 0xc2, 0x8d);
-    wfc_host_list_show_title(self, 0xc1, 0x99);
+    wfc_host_list_show_caption(self, 0x65, 0x93);
+    wfc_host_list_show_caption(self, 0xc2, 0x8d);
+    wfc_host_list_show_caption(self, 0xc1, 0x99);
 }
-CLEAN_AS(func_ov146_0229a1a0, WfcHostList_ShowTitles)
+CLEAN_AS(func_ov146_0229a1a0, WfcHostList_ShowButtonCaptions)
 
 /* func_ov146_0229a238: the labels of the rows on screen set again where the friend their slot
  * shows changed: a row past the list's 32 places only forgets its slot's friend; a row whose

@@ -45,7 +45,7 @@ extern const u8 data_ov108_0229e098[];
 #define LETTER_PICK_DIMMED_STATES 3
 
 /* The panel's button below the letters. */
-#define LETTER_PICK_PANEL_BUTTON_9 9
+#define LETTER_PICK_QUIT_BUTTON 9
 
 static PagedChoice *lp_choice(LetterPick *self)
 {
@@ -137,7 +137,7 @@ int LetterPick_TestFlags(LetterPick *self, unsigned int flags)
 CLEAN_AS(func_ov108_0229c2dc, LetterPick_TestFlags)
 
 /* func_ov108_0229c2f0: the cursor moved by `keys` (KeyRepeat_Has*): among the carried letters
- * (LetterPick_MoveCursorInCarried), or up from LETTER_PICK_BELOW to the bottom left letter (0x13).
+ * (LetterPick_MoveCursorInCarried), or up from LETTER_PICK_QUIT to the bottom left letter (0x13).
  * The wrap flags are cleared first. 1 when the cursor changed place; 0 at once when `keys` is 0. */
 int LetterPick_MoveCursor(LetterPick *self, int keys, int mode)
 {
@@ -149,7 +149,7 @@ int LetterPick_MoveCursor(LetterPick *self, int keys, int mode)
     }
     if (LetterPick_IsCarriedPlace(self, self->cursor) != 0) {
         LetterPick_MoveCursorInCarried(self, keys, mode);
-    } else if (self->cursor == LETTER_PICK_BELOW && KeyRepeat_HasUp(keys) != 0) {
+    } else if (self->cursor == LETTER_PICK_QUIT && KeyRepeat_HasUp(keys) != 0) {
         self->cursor = 0x13;
     }
     return before != self->cursor;
@@ -158,7 +158,7 @@ CLEAN_AS(func_ov108_0229c2f0, LetterPick_MoveCursor)
 
 /* func_ov108_0229c358: the cursor on the carried letters (5 rows of 2): left and right stay in
  * the row; then, while it is still on a letter and no wrap flag is set, up stops at the top row
- * and down from the bottom row goes to LETTER_PICK_BELOW.
+ * and down from the bottom row goes to LETTER_PICK_QUIT.
  * QUIRK: `mode` (1 with a letter held) is not read, so a held letter may be taken below too. */
 void LetterPick_MoveCursorInCarried(LetterPick *self, int keys, int mode)
 {
@@ -189,7 +189,7 @@ void LetterPick_MoveCursorInCarried(LetterPick *self, int keys, int mode)
         if (row < LETTER_PICK_ROWS - 1) {
             self->cursor += LETTER_PICK_COLUMNS;
         } else {
-            self->cursor = LETTER_PICK_BELOW;
+            self->cursor = LETTER_PICK_QUIT;
         }
     }
 }
@@ -279,7 +279,7 @@ CLEAN_AS(func_ov108_0229c578, LetterPick_BeginPutDown)
 void LetterPick_BeginBelowPress(LetterPick *self)
 {
     Glider_ShowSecondOfSet(&self->cursor_sprite);
-    MenuScene_SetSubState(lp_scene(self), LETTER_PICK_SUB_BELOW_PRESS);
+    MenuScene_SetSubState(lp_scene(self), LETTER_PICK_SUB_QUIT_PRESS);
 }
 CLEAN_AS(func_ov108_0229c5b4, LetterPick_BeginBelowPress)
 
@@ -338,12 +338,12 @@ void LetterPick_GlideToRow(LetterPick *self)
 }
 CLEAN_AS(func_ov108_0229c6d8, LetterPick_GlideToRow)
 
-/* func_ov108_0229c72c: the cursor sprite turned to set B on LETTER_PICK_BELOW and to set A
+/* func_ov108_0229c72c: the cursor sprite turned to set B on LETTER_PICK_QUIT and to set A
  * elsewhere, then eased to the cursor in 3 steps; the sub state to go back to kept, sub state
  * 0x0a. */
 void LetterPick_GlideToCursor(LetterPick *self)
 {
-    if (self->cursor == LETTER_PICK_BELOW) {
+    if (self->cursor == LETTER_PICK_QUIT) {
         Glider_TurnToSetB(&self->cursor_sprite);
     } else {
         Glider_TurnToSetA(&self->cursor_sprite);
@@ -385,14 +385,14 @@ int LetterPick_CursorSpriteX(LetterPick *self)
 }
 CLEAN_AS(func_ov108_0229c7c8, LetterPick_CursorSpriteX)
 
-/* func_ov108_0229c810: the cursor sprite put at the cursor, animation 7 on LETTER_PICK_BELOW and
+/* func_ov108_0229c810: the cursor sprite put at the cursor, animation 7 on LETTER_PICK_QUIT and
  * 1 elsewhere, then its set's first animation shown. */
 void LetterPick_ShowCursorAtCursor(LetterPick *self)
 {
     int x = LetterPick_CursorSpriteX(self);
     int y = LetterPick_CursorSpriteY(self);
     Glider_PlaceAt(&self->cursor_sprite, x, y);
-    if (self->cursor == LETTER_PICK_BELOW) {
+    if (self->cursor == LETTER_PICK_QUIT) {
         Glider_SetAnim(&self->cursor_sprite, 7);
     } else {
         Glider_SetAnim(&self->cursor_sprite, 1);
@@ -581,13 +581,13 @@ void LetterPick_DimLetters(LetterPick *self)
 CLEAN_AS(func_ov108_0229cbbc, LetterPick_DimLetters)
 
 /* func_ov108_0229cbe4: the y of `place`: a letter's by the letters object less 0x10, 0xb6 for
- * LETTER_PICK_BELOW, else 0. */
+ * LETTER_PICK_QUIT, else 0. */
 int LetterPick_PlaceY(LetterPick *self, int place)
 {
     if (lp_is_carried(self, place)) {
         return PocketsLetters_PlaceY(&self->letters, lp_letter_index(self, place)) - 0x10;
     }
-    if (place == LETTER_PICK_BELOW) {
+    if (place == LETTER_PICK_QUIT) {
         return 0xb6;
     }
     return 0;
@@ -595,13 +595,13 @@ int LetterPick_PlaceY(LetterPick *self, int place)
 CLEAN_AS(func_ov108_0229cbe4, LetterPick_PlaceY)
 
 /* func_ov108_0229cc20: the x of `place`: a letter's by the letters object, 0xbc for
- * LETTER_PICK_BELOW, else 0. */
+ * LETTER_PICK_QUIT, else 0. */
 int LetterPick_PlaceX(LetterPick *self, int place)
 {
     if (lp_is_carried(self, place)) {
         return PocketsLetters_PlaceX(&self->letters, lp_letter_index(self, place));
     }
-    if (place == LETTER_PICK_BELOW) {
+    if (place == LETTER_PICK_QUIT) {
         return 0xbc;
     }
     return 0;
@@ -695,13 +695,13 @@ void LetterPick_EndLayerTask(LetterPick *self)
 CLEAN_AS(func_ov108_0229cd80, LetterPick_EndLayerTask)
 
 /* func_ov108_0229cd90: the panel's button 9 selected, sub state 0x17, sound 0x28. */
-void LetterPick_PressPanelButton9(LetterPick *self)
+void LetterPick_PressQuit(LetterPick *self)
 {
-    ButtonPanel_Select(&self->panel, LETTER_PICK_PANEL_BUTTON_9);
+    ButtonPanel_Select(&self->panel, LETTER_PICK_QUIT_BUTTON);
     MenuScene_SetSubState(lp_scene(self), LETTER_PICK_SUB_PANEL_PRESSED);
     SoundSys_PlaySe(0x28);
 }
-CLEAN_AS(func_ov108_0229cd90, LetterPick_PressPanelButton9)
+CLEAN_AS(func_ov108_0229cd90, LetterPick_PressQuit)
 
 /* func_ov108_0229cdb8 (action 0): the letter of the place whose choice is open is the one
  * picked: its index (0-9) handed to main (GroupParams_SetArg) with GroupParams_SetC4C(1); state 3
@@ -927,14 +927,14 @@ void LetterPick_StepHeldGlide(LetterPick *self)
 CLEAN_AS(func_ov108_0229d130, LetterPick_StepHeldGlide)
 
 /* func_ov108_0229d168 (sub state 0x11): back to the sub state kept once the cursor sprite's
- * animation has ended; once its turn has settled, the held letter is shown again and follows the
+ * animation has ended; once its turn holds (Glider_TurnHolds), the held letter is shown again and follows the
  * sprite. */
 void LetterPick_FinishSwap(LetterPick *self)
 {
     if (CellLayerSprite_IsDone(lp_cursor_cells(self))) {
         MenuScene_SetSubState(lp_scene(self), self->return_state);
     }
-    if (Glider_IsTurnSettled(&self->cursor_sprite)) {
+    if (Glider_TurnHolds(&self->cursor_sprite)) {
         LetterPick_ClearFlags(self, LETTER_PICK_FLAG_HELD_HIDDEN);
         LetterPick_FollowCursorSprite(self);
     }
@@ -957,12 +957,12 @@ void LetterPick_Swap(LetterPick *self)
 }
 CLEAN_AS(func_ov108_0229d1ac, LetterPick_Swap)
 
-/* func_ov108_0229d1f4 (sub state 0x0f): while the cursor sprite's turn has not settled, the held
+/* func_ov108_0229d1f4 (sub state 0x0f): once the cursor sprite's turn no longer holds (Glider_TurnHolds), the held
  * letter is put down at `target` when the cursor is on it (the popup updated, sub state 6), else
- * glided there in 4 steps; once it has, the letter follows the sprite. */
+ * glided there in 4 steps; while it holds, the letter follows the sprite. */
 void LetterPick_PutDown(LetterPick *self)
 {
-    if (Glider_IsTurnSettled(&self->cursor_sprite) == 0) {
+    if (Glider_TurnHolds(&self->cursor_sprite) == 0) {
         u8 target = self->target;
         if (self->cursor == target) {
             LetterPick_PutHeldLetterAt(self, target);
@@ -989,10 +989,10 @@ void LetterPick_FinishPickUp(LetterPick *self)
 CLEAN_AS(func_ov108_0229d248, LetterPick_FinishPickUp)
 
 /* func_ov108_0229d278 (sub state 0x0d, which nothing of the overlay enters): once the cursor
- * sprite's turn has settled, the letter at the cursor is picked up; sub state 0x0e. */
+ * sprite's turn holds (Glider_TurnHolds), the letter at the cursor is picked up; sub state 0x0e. */
 void LetterPick_PickUpAtCursor(LetterPick *self)
 {
-    if (Glider_IsTurnSettled(&self->cursor_sprite)) {
+    if (Glider_TurnHolds(&self->cursor_sprite)) {
         LetterPick_PickUpWithCursor(self, self->cursor);
         MenuScene_SetSubState(lp_scene(self), LETTER_PICK_SUB_PICK_UP_END);
     }
@@ -1011,16 +1011,16 @@ void LetterPick_FinishPlacePress(LetterPick *self)
 CLEAN_AS(func_ov108_0229d2a8, LetterPick_FinishPlacePress)
 
 /* func_ov108_0229d2d0 (sub state 0x0b): once the cursor sprite's animation has ended, the
- * panel's button 9 selected (without the sound of LetterPick_PressPanelButton9); sub state
+ * panel's button 9 selected (without the sound of LetterPick_PressQuit); sub state
  * 0x17. */
-void LetterPick_PressBelow(LetterPick *self)
+void LetterPick_WaitQuitPress(LetterPick *self)
 {
     if (CellLayerSprite_IsDone(lp_cursor_cells(self)) != 0) {
-        ButtonPanel_Select(&self->panel, LETTER_PICK_PANEL_BUTTON_9);
+        ButtonPanel_Select(&self->panel, LETTER_PICK_QUIT_BUTTON);
         MenuScene_SetSubState(lp_scene(self), LETTER_PICK_SUB_PANEL_PRESSED);
     }
 }
-CLEAN_AS(func_ov108_0229d2d0, LetterPick_PressBelow)
+CLEAN_AS(func_ov108_0229d2d0, LetterPick_WaitQuitPress)
 
 /* func_ov108_0229d300 (sub state 0x0a): once the cursor sprite stops moving, back to the sub
  * state kept (the cursor's place selected for sub state 6), which runs at once; the held letter
@@ -1077,7 +1077,7 @@ CLEAN_AS(func_ov108_0229d39c, LetterPick_ChooseByKeys)
  * moves the sprite (the popup hidden, its queue kept). A puts the letter down at the cursor (sub
  * state 0x0f) when its place is empty, else swaps (sub state 0x10); B sends the letter back to
  * its place (sub state 0x0f). Else the letter follows the sprite and a queued popup is shown.
- * QUIRK: LETTER_PICK_BELOW counts as empty, so A there puts the letter down where the letters
+ * QUIRK: LETTER_PICK_QUIT counts as empty, so A there puts the letter down where the letters
  * object keeps nothing. */
 void LetterPick_MoveHeldByKeys(LetterPick *self)
 {
@@ -1133,7 +1133,7 @@ void LetterPick_BrowseByKeys(LetterPick *self)
     }
     if ((data_021fbe40.pressed & LETTER_PICK_PAD_B) != 0) {
         LetterPick_HideCursorSprite(self);
-        LetterPick_PressPanelButton9(self);
+        LetterPick_PressQuit(self);
         Popup_Hide(&self->popup, 0);
     } else {
         Popup_ShowQueued(&self->popup);
@@ -1269,8 +1269,8 @@ void LetterPick_IdleByTouch(LetterPick *self)
         LetterPick_TouchPlace(self, place);
         return;
     }
-    if (ButtonPanel_IsTouched(&self->panel, LETTER_PICK_PANEL_BUTTON_9) != 0) {
-        LetterPick_PressPanelButton9(self);
+    if (ButtonPanel_IsTouched(&self->panel, LETTER_PICK_QUIT_BUTTON) != 0) {
+        LetterPick_PressQuit(self);
     }
 }
 CLEAN_AS(func_ov108_0229d7ac, LetterPick_IdleByTouch)

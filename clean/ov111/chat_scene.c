@@ -795,7 +795,7 @@ void ChatScene_Paste(ChatScene *self)
     if (ChatScene_TestFlags(self, CHAT_SCENE_FLAG_COPIED) == 0) {
         return;
     }
-    SoftKeyboard_SetFlag02(chat_keyboard(self));
+    SoftKeyboard_SetPasting(chat_keyboard(self));
     if (ChatScene_IsMarking(self)) {
         self->cursor = SoftKeyboard_DeleteRange(chat_keyboard(self), chat_line(self), self->mark_from, self->mark_to,
                                                 CHAT_SCENE_LINE_CHARS);
@@ -815,7 +815,7 @@ void ChatScene_Paste(ChatScene *self)
     ChatScene_PlaceCursorAtChar(self);
     ChatScene_RedrawLine(self);
     SoftKeyboard_PlaySe23(chat_keyboard(self));
-    SoftKeyboard_ClearFlag02(chat_keyboard(self));
+    SoftKeyboard_ClearPasting(chat_keyboard(self));
 }
 CLEAN_AS(func_ov111_0229f860, ChatScene_Paste)
 

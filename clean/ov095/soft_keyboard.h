@@ -1,6 +1,6 @@
 /* The software keyboard of overlay 95 ("menu/chat2/key*.bch"): the keyboard on the sub screen
- * that the chat (ov111, kind 0), the letter writing (ov122/letter_write_scene.h, kind 1) and
- * overlay 126 (kinds 3-5) keep inside their scenes and drive every frame.
+ * that the chat (ov111, kind 0), the letter writing (ov122/letter_write_scene.h, kind 1), the
+ * bulletin board's writing (ov112/bbs_write_scene.c, kind 2) and overlay 126 (kinds 3-5) keep inside their scenes and drive every frame.
  *
  * - It has three pages of keys (`page`): English (a QWERTY board, lower and upper case),
  *   symbols and Hangul (a two-set jamo board). Each page has a layout (`layout`, the files
@@ -29,9 +29,9 @@
 /* The flags (`flags`). */
 enum SoftKeyboardFlag {
     SOFT_KEYBOARD_FLAG_SCREEN_DIRTY = 0x0001, /* the screen is to be loaded (SoftKeyboard_QueueScreen) */
-    SOFT_KEYBOARD_FLAG_02 = 0x0002,           /* set by the owner around a paste; cleared each draw */
+    SOFT_KEYBOARD_FLAG_PASTING = 0x0002,      /* set by the owner around a paste; cleared each draw */
     SOFT_KEYBOARD_FLAG_CHAT_LAYOUT = 0x0004,  /* kind 0's layout: the keys 8 pixels lower, the emotion tabs */
-    SOFT_KEYBOARD_FLAG_08 = 0x0008,           /* set by the letter scene for a letter without a header */
+    SOFT_KEYBOARD_FLAG_NO_HEADER = 0x0008,    /* set by the letter scene for a letter without a header */
     SOFT_KEYBOARD_FLAG_LEFT_KEYS = 0x0010,    /* the cursor moved off the keyboard (SoftKeyboard_MoveCursor: 4) */
     SOFT_KEYBOARD_FLAG_SHIFT = 0x0020,        /* the shift key is down: the next character goes back to lower case */
     SOFT_KEYBOARD_FLAG_TEXT_FULL = 0x0040,    /* a character did not fit: no room */
@@ -54,7 +54,7 @@ enum SoftKeyboardPage {
 enum SoftKeyboardKind {
     SOFT_KEYBOARD_KIND_CHAT = 0,   /* ov111: the menu tabs, key 0xf7 and the emotion tabs */
     SOFT_KEYBOARD_KIND_LETTER = 1, /* ov122: the scroll button (0x103) and buttons 0x104, 0x105 */
-    SOFT_KEYBOARD_KIND_2 = 2,      /* buttons 0x103, 0x104 and 0x106 */
+    SOFT_KEYBOARD_KIND_BBS = 2,    /* ov112, the bulletin board: buttons 0x103, 0x104 and 0x106 */
     SOFT_KEYBOARD_KIND_3 = 3,      /* ov126: no buttons */
     SOFT_KEYBOARD_KIND_4 = 4,      /* ov126: button 0x107 */
     SOFT_KEYBOARD_KIND_5 = 5       /* ov126: buttons 0x107 and 0x108 */
@@ -246,8 +246,8 @@ void SoftKeyboard_DrawKeys(SoftKeyboard *kb, int x, int y);
 void SoftKeyboard_DrawTabRow(SoftKeyboard *kb, int x, int y, int priority);
 void SoftKeyboard_LoadEmotions(SoftKeyboard *kb);
 int SoftKeyboard_LoadObjGraphics(SoftKeyboard *kb);
-void SoftKeyboard_ClearFlag02(SoftKeyboard *kb);
-void SoftKeyboard_SetFlag02(SoftKeyboard *kb);
+void SoftKeyboard_ClearPasting(SoftKeyboard *kb);
+void SoftKeyboard_SetPasting(SoftKeyboard *kb);
 int SoftKeyboard_HandleCommand(SoftKeyboard *kb, int code, int layer);
 int SoftKeyboard_IsCommand(SoftKeyboard *kb, int code);
 void SoftKeyboard_EnableBackspace(SoftKeyboard *kb, int character);
@@ -260,7 +260,7 @@ void SoftKeyboard_QueueScreen(SoftKeyboard *kb, unsigned int layer);
 void SoftKeyboard_LoadScreenNow(SoftKeyboard *kb, int layer);
 int SoftKeyboard_ReadScreen(SoftKeyboard *kb, const char *path);
 int SoftKeyboard_LoadLetterChars(SoftKeyboard *kb, int layer);
-void SoftKeyboard_SetFlag08(SoftKeyboard *kb);
+void SoftKeyboard_SetNoHeader(SoftKeyboard *kb);
 void SoftKeyboard_Finish(SoftKeyboard *kb);
 void SoftKeyboard_Init(SoftKeyboard *kb, int kind);
 void SoftKeyboard_ReleaseShift(SoftKeyboard *kb, int layer);

@@ -211,9 +211,10 @@ void ResRows_SetRow(ResRows *self, int row, const u16 *names)
 }
 CLEAN_AS(func_ov139_022997c0, ResRows_SetRow)
 
-/* func_ov139_022997f0: the three headings on the sub screen's OBJs: menu messages 0x65 (from
- * character 0x93), 0xc2 (0x8d) and 0xc1 (0x99), 6 cells each, centred. */
-void ResRows_MakeHeadings(ResRows *self)
+/* func_ov139_022997f0: the three button captions on the sub screen's OBJs: menu messages 0x65
+ * "Quit" (from character 0x93), 0xc2 "Decide" (0x8d) and 0xc1 "Other" (0x99), 6 cells each,
+ * centred. */
+void ResRows_MakeButtonCaptions(ResRows *self)
 {
     static const struct {
         u8 message;
@@ -227,7 +228,7 @@ void ResRows_MakeHeadings(ResRows *self)
         TextLabel_Show(label, 1, 0);
     }
 }
-CLEAN_AS(func_ov139_022997f0, ResRows_MakeHeadings)
+CLEAN_AS(func_ov139_022997f0, ResRows_MakeButtonCaptions)
 
 /* func_ov139_02299888: a row's colour (14 - `row`) made `step` of `steps` of the way from
  * colour 15 to colour `color` of the file's palette, each 5-bit channel rounded down (in a

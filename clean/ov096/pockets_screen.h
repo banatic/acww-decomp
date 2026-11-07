@@ -41,20 +41,20 @@
 enum PocketsScreenFlag {
     POCKETS_FLAG_DRAWN = 0x01,         /* the scene is drawn (PocketsScreen_Draw) */
     POCKETS_FLAG_OBJECTS_DRAWN = 0x02, /* the grid, the letters and the wallet are drawn */
-    POCKETS_FLAG_TOUCHED_FREE = 0x04,  /* the place touched holds nothing (PocketsScreen_TouchPlace) */
-    POCKETS_FLAG_08 = 0x08,            /* cleared and tested by PocketsScreen_AddLetterEntries */
-    POCKETS_FLAG_WRAPPED_LEFT = 0x10,  /* this move wrapped the cursor over the left edge */
-    POCKETS_FLAG_WRAPPED_RIGHT = 0x20, /* this move wrapped it over the right edge */
-    POCKETS_FLAG_40 = 0x40,            /* the held thing is not drawn */
-    POCKETS_FLAG_READ_LETTER = 0x80,   /* the picked letter is read once the pockets have wiped out */
-    POCKETS_FLAG_BUTTON_DRAWN = 0x100, /* the letter reader's button is drawn */
+    POCKETS_FLAG_TOUCHED_FREE = 0x04,  /* the place touched is not dimmed, so it may be dragged (PocketsScreen_TouchPlace) */
+    POCKETS_FLAG_BOTTLE_ROW_ADDED = 0x08, /* the bottle row was added (PocketsTown_AddLetterRows) */
+    POCKETS_FLAG_WRAPPED_LEFT = 0x10,     /* this move wrapped the cursor over the left edge */
+    POCKETS_FLAG_WRAPPED_RIGHT = 0x20,    /* this move wrapped it over the right edge */
+    POCKETS_FLAG_40 = 0x40,               /* the held thing is not drawn */
+    POCKETS_FLAG_READ_LETTER = 0x80,      /* the picked letter is read once the pockets have wiped out */
+    POCKETS_FLAG_BUTTON_DRAWN = 0x100,    /* the letter reader's button is drawn */
     POCKETS_FLAG_200 = 0x200,
-    POCKETS_FLAG_SWITCH_ON = 0x400,      /* see PocketsScreen_ApplySwitch */
-    POCKETS_FLAG_SWITCH_PENDING = 0x800, /* see PocketsScreen_ApplySwitch */
-    POCKETS_FLAG_1000 = 0x1000,
-    POCKETS_FLAG_2000 = 0x2000, /* the held thing glides on to `unk_b9` (PocketsScreen_SettleHeld) */
-    POCKETS_FLAG_4000 = 0x4000, /* a touch on the bells' place finds no place (PocketsScreen_PlaceAtTouch) */
-    POCKETS_FLAG_8000 = 0x8000,
+    POCKETS_FLAG_SWITCH_ON = 0x400,         /* see PocketsScreen_ApplySwitch */
+    POCKETS_FLAG_SWITCH_PENDING = 0x800,    /* see PocketsScreen_ApplySwitch */
+    POCKETS_FLAG_DROP_FROM_SLOT = 0x1000,   /* the thing dropped comes from its slot, not held: the slot is emptied */
+    POCKETS_FLAG_2000 = 0x2000,             /* the held thing glides on to `unk_b9` (PocketsScreen_SettleHeld) */
+    POCKETS_FLAG_4000 = 0x4000,             /* a touch on the bells' place finds no place (PocketsScreen_PlaceAtTouch) */
+    POCKETS_FLAG_TAKEN_OFF_RECORD = 0x8000, /* the item was taken off the record slot (PocketsScreen_ActionTakeRecordItem) */
     POCKETS_FLAG_NO_ENTRIES = 0x10000,      /* the touched place of the grid offers no choice row */
     POCKETS_FLAG_EXITING = 0x20000,         /* set by PocketsScreen_ExitToParent */
     POCKETS_FLAG_DISCARD_CONFIRM = 0x40000, /* the choice is PocketsScreen_OpenDiscardConfirm's */
@@ -235,7 +235,7 @@ int PocketsScreen_HoldsBellBag(PocketsScreen *self, int fits_wallet);
 int PocketsScreen_PutBagInWallet(PocketsScreen *self);
 void PocketsScreen_PublishHeldBells(PocketsScreen *self);
 void PocketsScreen_RefuseRecordSlot(PocketsScreen *self);
-int PocketsScreen_ActorReadyForSlot(PocketsScreen *self, int record_slot);
+int PocketsScreen_ActorBusyWithSlot(PocketsScreen *self, int record_slot);
 int PocketsScreen_ActorTakeSlotItem(PocketsScreen *self, unsigned int record_slot, u16 item);
 int PocketsScreen_SwapRecordSlot(PocketsScreen *self, int record_slot, int item);
 int PocketsScreen_RecordSlotItem(PocketsScreen *self, int record_slot);
@@ -373,7 +373,7 @@ void PocketsScreen_EndInteractiveFrame(PocketsScreen *self);
 void PocketsScreen_BeginInteractiveFrame(PocketsScreen *self);
 void PocketsScreen_Teardown(PocketsScreen *self);
 void PocketsScreen_Setup(PocketsScreen *self);
-void PocketsScreen_ClearParentByte94(PocketsScreen *self);
+void PocketsScreen_SlideOutTabs(PocketsScreen *self);
 void PocketsScreen_WipeOutReader(PocketsScreen *self);
 void PocketsScreen_StartWipeOutReader(PocketsScreen *self);
 void PocketsScreen_WipeInReader(PocketsScreen *self);

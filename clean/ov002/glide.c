@@ -313,10 +313,10 @@ int Glider_IsTurnAtFrame2(Glider *glider)
 }
 CLEAN_AS(func_ov002_02209f70, Glider_IsTurnAtFrame2)
 
-/* func_ov002_02209f9c: for a turn, whether it has gone far enough: turns 4 and 10 from their
- * frame 4, turns 5 and 11 before their frame 3, turns 6 and 12 always; 0 for the other
- * animations. */
-int Glider_IsTurnSettled(Glider *glider)
+/* func_ov002_02209f9c: for a turn, whether its frame shows the hand holding: turns 4 and 10
+ * from their frame 4, turns 5 and 11 before their frame 3, turns 6 and 12 always; 0 for the
+ * other animations. While it holds, a held thing follows the sprite. */
+int Glider_TurnHolds(Glider *glider)
 {
     switch (CellLayerSprite_AnimNumber((CellLayerSprite *) (void *) glider)) {
         case GLIDER_ANIM_TURN_A:
@@ -332,7 +332,7 @@ int Glider_IsTurnSettled(Glider *glider)
             return 0;
     }
 }
-CLEAN_AS(func_ov002_02209f9c, Glider_IsTurnSettled)
+CLEAN_AS(func_ov002_02209f9c, Glider_TurnHolds)
 
 /* func_ov002_0220a000: plays sound effect 0xb and eases to the pixel (x, y) in `steps` steps, or
  * in `near_steps` when it is within NEAR_DISTANCE pixels of the glider on both axes. */

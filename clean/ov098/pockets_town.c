@@ -284,7 +284,7 @@ void PocketsTown_ActionPlant(PocketsScreen *self)
         SoundSys_PlaySe(SOUND_ERROR);
     } else {
         MenuScene_SetSubState(scene_of(self), SUB_DROP_REQUEST);
-        PocketsScreen_SetFlags(self, POCKETS_FLAG_1000);
+        PocketsScreen_SetFlags(self, POCKETS_FLAG_DROP_FROM_SLOT);
     }
 }
 CLEAN_AS(func_ov098_022a2a0c, PocketsTown_ActionPlant)
@@ -526,7 +526,7 @@ CLEAN_AS(func_ov098_022a2fc0, PocketsTown_FindWaterAhead)
  * bottle letter in) and flag 8. */
 void PocketsTown_AddLetterRows(PocketsScreen *self)
 {
-    PocketsScreen_ClearFlags(self, POCKETS_FLAG_08);
+    PocketsScreen_ClearFlags(self, POCKETS_FLAG_BOTTLE_ROW_ADDED);
     if (Session_IsLinked(data_020ccf94) != 0) {
         return;
     }
@@ -534,7 +534,7 @@ void PocketsTown_AddLetterRows(PocketsScreen *self)
         return;
     }
     ChoiceEntries_Add(&self->entries, ROW_SEND, ACTION_THROW_BOTTLE);
-    PocketsScreen_SetFlags(self, POCKETS_FLAG_08);
+    PocketsScreen_SetFlags(self, POCKETS_FLAG_BOTTLE_ROW_ADDED);
 }
 CLEAN_AS(func_ov098_022a3060, PocketsTown_AddLetterRows)
 

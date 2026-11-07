@@ -142,18 +142,18 @@ void SoftKeyboard_PlaySe22(SoftKeyboard *kb)
 CLEAN_AS(func_ov095_022999f4, SoftKeyboard_PlaySe22)
 
 /* func_ov095_0229b388 */
-void SoftKeyboard_ClearFlag02(SoftKeyboard *kb)
+void SoftKeyboard_ClearPasting(SoftKeyboard *kb)
 {
-    SoftKeyboard_ClearFlags(kb, SOFT_KEYBOARD_FLAG_02);
+    SoftKeyboard_ClearFlags(kb, SOFT_KEYBOARD_FLAG_PASTING);
 }
-CLEAN_AS(func_ov095_0229b388, SoftKeyboard_ClearFlag02)
+CLEAN_AS(func_ov095_0229b388, SoftKeyboard_ClearPasting)
 
 /* func_ov095_0229b394 */
-void SoftKeyboard_SetFlag02(SoftKeyboard *kb)
+void SoftKeyboard_SetPasting(SoftKeyboard *kb)
 {
-    SoftKeyboard_SetFlags(kb, SOFT_KEYBOARD_FLAG_02);
+    SoftKeyboard_SetFlags(kb, SOFT_KEYBOARD_FLAG_PASTING);
 }
-CLEAN_AS(func_ov095_0229b394, SoftKeyboard_SetFlag02)
+CLEAN_AS(func_ov095_0229b394, SoftKeyboard_SetPasting)
 
 /* func_ov095_0229bf70 */
 void SoftKeyboard_MarkScreenDirty(SoftKeyboard *kb)
@@ -163,11 +163,11 @@ void SoftKeyboard_MarkScreenDirty(SoftKeyboard *kb)
 CLEAN_AS(func_ov095_0229bf70, SoftKeyboard_MarkScreenDirty)
 
 /* func_ov095_0229c050 */
-void SoftKeyboard_SetFlag08(SoftKeyboard *kb)
+void SoftKeyboard_SetNoHeader(SoftKeyboard *kb)
 {
-    SoftKeyboard_SetFlags(kb, SOFT_KEYBOARD_FLAG_08);
+    SoftKeyboard_SetFlags(kb, SOFT_KEYBOARD_FLAG_NO_HEADER);
 }
-CLEAN_AS(func_ov095_0229c050, SoftKeyboard_SetFlag08)
+CLEAN_AS(func_ov095_0229c050, SoftKeyboard_SetNoHeader)
 
 /* --- Drawing --- */
 
@@ -298,7 +298,7 @@ void SoftKeyboard_QueueScreen(SoftKeyboard *kb, unsigned int layer)
             SoftKeyboard_ClearFlags(kb, SOFT_KEYBOARD_FLAG_SCREEN_DIRTY);
         }
     }
-    SoftKeyboard_ClearFlags(kb, SOFT_KEYBOARD_FLAG_02);
+    SoftKeyboard_ClearFlags(kb, SOFT_KEYBOARD_FLAG_PASTING);
     SoftKeyboard_ClearFlags(kb, SOFT_KEYBOARD_FLAG_TYPED);
 }
 CLEAN_AS(func_ov095_0229bf7c, SoftKeyboard_QueueScreen)
@@ -672,8 +672,8 @@ CLEAN_AS(func_ov095_0229c420, SoftKeyboard_LoadSavedLayout)
 /* --- Set up and end --- */
 
 /* func_ov095_0229c084: the keyboard set up for an owner of `kind`, on the Hangul page with no
- * layout loaded; kind 0 gets its own layout and controls. The keyboard's click (SoundSys's
- * byte 0x71) is off for a current player whose byte 0x1c is 0, else on. */
+ * layout loaded; kind 0 gets its own layout and controls. SoundSys's byte 0x71 is set from the
+ * current player's gender: 0 for gender 0, else 1. */
 void SoftKeyboard_Init(SoftKeyboard *kb, int kind)
 {
     u8 *record;

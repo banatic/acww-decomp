@@ -236,14 +236,14 @@ void PublicBox_StepHeldGlide(PublicBox *self)
 CLEAN_AS(func_ov110_0229d9c8, PublicBox_StepHeldGlide)
 
 /* func_ov110_0229da00 (sub state 0x0f): once the cursor sprite's animation is done, back to the
- * kept sub state. Once its turn has settled, the held item hidden for the swap is shown again
+ * kept sub state. Once its turn holds (Glider_TurnHolds), the held item hidden for the swap is shown again
  * (sound 0x0d) and follows the sprite. */
 void PublicBox_FinishSwap(PublicBox *self)
 {
     if (CellLayerSprite_IsDone(pbox_cursor_cells(self))) {
         MenuScene_SetSubState(pbox_scene(self), self->return_state);
     }
-    if (Glider_IsTurnSettled(&self->cursor_sprite)) {
+    if (Glider_TurnHolds(&self->cursor_sprite)) {
         if (PublicBox_TestFlags(self, PUBLIC_BOX_FLAG_HELD_HIDDEN)) {
             PublicBox_ClearFlags(self, PUBLIC_BOX_FLAG_HELD_HIDDEN);
             PocketsSound_Play0d();
@@ -268,12 +268,12 @@ void PublicBox_Swap(PublicBox *self)
 }
 CLEAN_AS(func_ov110_0229da50, PublicBox_Swap)
 
-/* func_ov110_0229da98 (sub state 0x0d): while Glider_IsTurnSettled answers 0, the held item is
+/* func_ov110_0229da98 (sub state 0x0d): once Glider_TurnHolds answers 0, the held item is
  * put down: on the cursor's place at once (the popup updated, sub state 4, sound 0x0e), else it
- * glides to the target in 4 steps. Once settled, it follows the cursor sprite. */
+ * glides to the target in 4 steps. While it holds, it follows the cursor sprite. */
 void PublicBox_PutDown(PublicBox *self)
 {
-    if (Glider_IsTurnSettled(&self->cursor_sprite) == 0) {
+    if (Glider_TurnHolds(&self->cursor_sprite) == 0) {
         u8 target = self->target;
         if (self->cursor == target) {
             PublicBox_PutHeldAtPlace(self, target);
@@ -300,11 +300,11 @@ void PublicBox_FinishPickUp(PublicBox *self)
 }
 CLEAN_AS(func_ov110_0229daec, PublicBox_FinishPickUp)
 
-/* func_ov110_0229db18 (sub state 0x0b): once the cursor sprite's turn has settled, the cursor's
+/* func_ov110_0229db18 (sub state 0x0b): once the cursor sprite's turn holds (Glider_TurnHolds), the cursor's
  * item is picked up, sub state 0x0c. */
 void PublicBox_PickUpAtCursor(PublicBox *self)
 {
-    if (Glider_IsTurnSettled(&self->cursor_sprite) == 0) {
+    if (Glider_TurnHolds(&self->cursor_sprite) == 0) {
         return;
     }
     PublicBox_PickUpWithCursor(self, (char) self->cursor);

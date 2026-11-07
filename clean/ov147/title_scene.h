@@ -44,7 +44,7 @@ enum TitleSceneState {
     TITLE_STATE_EXIT_NEW = 7,           /* TitleScene_EnterExitNew, TitleScene_ExitToScene2d */
     TITLE_STATE_EXIT_WIFI_SETUP = 8,    /* TitleScene_EnterExitWifiSetup, TitleScene_ExitToWifiSetup */
     TITLE_STATE_EXIT_FIND_MOVER = 9,    /* TitleScene_EnterExitFindMover, TitleScene_ExitToFindMover */
-    TITLE_STATE_EXIT_SCENE_30 = 10,     /* TitleScene_EnterExitScene30, TitleScene_ExitToScene30 */
+    TITLE_STATE_EXIT_TAG_MODE = 10,     /* TitleScene_EnterExitTagMode, TitleScene_ExitToTagMode */
     TITLE_STATE_IDLE_RESTART = 11,      /* TitleScene_EnterIdleRestart, TitleScene_RestartTitle */
     TITLE_STATES = 12
 };
@@ -160,8 +160,8 @@ TitleReceiver *TitleReceiver_Construct(TitleReceiver *self);
 /* title_scene.c */
 void TitleScene_ExitToWifiSetup(TitleScene *self);
 void TitleScene_EnterExitWifiSetup(TitleScene *self);
-void TitleScene_ExitToScene30(TitleScene *self);
-void TitleScene_EnterExitScene30(TitleScene *self);
+void TitleScene_ExitToTagMode(TitleScene *self);
+void TitleScene_EnterExitTagMode(TitleScene *self);
 void TitleScene_ExitToFindMover(TitleScene *self);
 void TitleScene_EnterExitFindMover(TitleScene *self);
 void TitleScene_ExitToScene2d(TitleScene *self);

@@ -657,7 +657,7 @@ CLEAN_AS(func_ov113_02299f10, BbsBoard_ShowDate)
 /* func_ov113_0229a004: the post's text broken into its six lines (96 characters, up to 16 a
  * line, 0xa0 pixels wide), each line's label cleared and set from its characters (when it has
  * any), then each drawn into its characters (a box at 0x14, 0xe, colour 0xd) and shown; the
- * characters queued for BG 2 (0x11-0x100). The text is looked up again for each line. */
+ * characters queued for BG 3 (0x11-0x100). The text is looked up again for each line. */
 void BbsBoard_ShowText(BbsBoard *self, int post)
 {
     BbsPost *shown = Bbs_GetPost(&data_021eed68, post);
@@ -797,7 +797,7 @@ void BbsBoard_UpdateTouch(BbsBoard *self)
 }
 CLEAN_AS(func_ov113_0229a274, BbsBoard_UpdateTouch)
 
-/* func_ov113_0229a2c4: the background loaded on BG 2: palettes 8-14, the screen read into
+/* func_ov113_0229a2c4: the background loaded on BG 3: palettes 8-14, the screen read into
  * `screen` and loaded, characters 16-319. */
 void BbsBoard_LoadLayers(BbsBoard *self)
 {
@@ -809,7 +809,7 @@ void BbsBoard_LoadLayers(BbsBoard *self)
 }
 CLEAN_AS(func_ov113_0229a2c4, BbsBoard_LoadLayers)
 
-/* func_ov113_0229a32c: the main engine in BG mode 0, BG 2 at priority 1 with its control 0. */
+/* func_ov113_0229a32c: the main engine in BG mode 0, BG 3 at priority 1 with its control 0. */
 void BbsBoard_SetUpLayers(void)
 {
     DisplayShadow_SetMainBgMode(0);
@@ -818,7 +818,7 @@ void BbsBoard_SetUpLayers(void)
 }
 CLEAN_AS(func_ov113_0229a32c, BbsBoard_SetUpLayers)
 
-/* func_ov113_0229a350: a changed screen queued for BG 2 (the flag cleared once it is). */
+/* func_ov113_0229a350: a changed screen queued for BG 3 (the flag cleared once it is). */
 void BbsBoard_QueueScreen(BbsBoard *self)
 {
     if (BbsBoard_TestFlags(self, BBS_BOARD_FLAG_SCREEN_DIRTY)) {
@@ -916,7 +916,7 @@ static int bbs_tab_direction(BbsBoard *self, int earlier, int later)
 
 /* func_ov113_0229a504 (state 7): the button picked unlit (NEWEST, OLDEST), the new page starts
  * to wipe in on window 0 from the side the turn goes to (3 for NEWEST and NEWER, 2 for OLDEST
- * and OLDER; for a tab 3 when it is later, else 2), BG 2 shown and following the wipe (state 8),
+ * and OLDER; for a tab 3 when it is later, else 2), BG 3 shown and following the wipe (state 8),
  * and the post shown. */
 void BbsBoard_TurnShow(BbsBoard *self)
 {
@@ -948,7 +948,7 @@ void BbsBoard_TurnShow(BbsBoard *self)
 }
 CLEAN_AS(func_ov113_0229a504, BbsBoard_TurnShow)
 
-/* func_ov113_0229a590 (state 6): the old page wipes out; when done, BG 2 hidden (state 7), else
+/* func_ov113_0229a590 (state 6): the old page wipes out; when done, BG 3 hidden (state 7), else
  * the layer follows the wipe. */
 void BbsBoard_TurnOut(BbsBoard *self)
 {
@@ -996,7 +996,7 @@ void BbsBoard_StartTurn(BbsBoard *self)
 }
 CLEAN_AS(func_ov113_0229a5c0, BbsBoard_StartTurn)
 
-/* func_ov113_0229a658 (state 4): the scene wipes out; when done, BG 2 hidden and its scroll
+/* func_ov113_0229a658 (state 4): the scene wipes out; when done, BG 3 hidden and its scroll
  * reset, the scene asks to be deleted (phase 5) and is no longer drawn. Else the layer and the
  * OBJs follow the wipe. */
 void BbsBoard_WipeOut(BbsBoard *self)
@@ -1051,7 +1051,7 @@ void BbsBoard_ShowFirstPost(BbsBoard *self)
 CLEAN_AS(func_ov113_0229a71c, BbsBoard_ShowFirstPost)
 
 /* func_ov113_0229a74c (state 0): the layers set up and loaded, the scene starts to wipe in on
- * window 0, BG 2 shown and following the wipe (state 1). */
+ * window 0, BG 3 shown and following the wipe (state 1). */
 void BbsBoard_Open(BbsBoard *self)
 {
     BbsBoard_SetUpLayers();

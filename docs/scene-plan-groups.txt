@@ -69,7 +69,7 @@ match: autoload_2/network:Wfc_CountFriends main/activity_link_jobs:ActivityLinkJ
   ov139/res_rows:ResRows_ClearFlags ov139/res_rows:ResRows_ClearRow ov139/res_rows:ResRows_ClearRows
   ov139/res_rows:ResRows_Construct ov139/res_rows:ResRows_Destroy ov139/res_rows:ResRows_DrawAt
   ov139/res_rows:ResRows_End ov139/res_rows:ResRows_FadeRow ov139/res_rows:ResRows_LoadBg
-  ov139/res_rows:ResRows_LoadObjFiles ov139/res_rows:ResRows_MakeHeadings
+  ov139/res_rows:ResRows_LoadObjFiles ov139/res_rows:ResRows_MakeButtonCaptions
   ov139/res_rows:ResRows_Open ov139/res_rows:ResRows_QueuePalette
   ov139/res_rows:ResRows_ReleaseLabels ov139/res_rows:ResRows_SetFirstColumn
   ov139/res_rows:ResRows_SetFlags ov139/res_rows:ResRows_SetRow
@@ -1701,7 +1701,7 @@ match: ov112/bbs_write_input:BbsWrite_CloseOnRequest ov119/friend_roster_input:F
 area: Unreachable for one player
 group: the mailbox's press of a place other than the one below the letters
 scene: none: sub state 0x0f of the mailbox (ov106), which a place's press would go to when the cursor were not on the place below the letters (MailboxScene_BeginSubState0f and its update MailboxScene_FinishPlacePress)
-reach: sub state 0x0e (MailboxScene_PressPlace) is set only by MailboxScene_BeginSubState0e, which only MailboxScene_BrowseByKeys calls, when A is pressed with the cursor (+0xb8) on the place below the letters (MAILBOX_SCENE_BELOW, 0x1f), or by a return to the kept sub state (+0xbb), which holds the sub state its setters (BeginSubState13, GlideToRow, EaseCursorSpriteTo, GlideToCursor) ran in, and none runs in 0x0e; the cursor is stored only by MailboxScene_MoveCursor's parts (called only by BrowseByKeys and MoveHeldByKeys) and MailboxScene_TakeNextLetter (0x1f). So in 0x0e the cursor is 0x1f and PressPlace presses panel button 9 (sub state 0x23); BeginSubState0f, the only setter of 0x0f, never runs (findings 2026-10-31, rows19, w59-wt5/cls/classify.py, gate cursor)
+reach: sub state 0x0e (MailboxScene_PressPlace) is set only by MailboxScene_BeginSubState0e, which only MailboxScene_BrowseByKeys calls, when A is pressed with the cursor (+0xb8) on the place below the letters (MAILBOX_SCENE_CLOSE, 0x1f), or by a return to the kept sub state (+0xbb), which holds the sub state its setters (BeginSubState13, GlideToRow, EaseCursorSpriteTo, GlideToCursor) ran in, and none runs in 0x0e; the cursor is stored only by MailboxScene_MoveCursor's parts (called only by BrowseByKeys and MoveHeldByKeys) and MailboxScene_TakeNextLetter (0x1f). So in 0x0e the cursor is 0x1f and PressPlace presses panel button 9 (sub state 0x23); BeginSubState0f, the only setter of 0x0f, never runs (findings 2026-10-31, rows19, w59-wt5/cls/classify.py, gate cursor)
 needs: unreachable
 match: ov106/mailbox_scene:MailboxScene_BeginSubState0f ov106/mailbox_scene:MailboxScene_FinishPlacePress
 

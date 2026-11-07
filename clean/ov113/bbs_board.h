@@ -4,10 +4,10 @@
  * town's bulletin board (main/bbs.h) one post at a time, as the evidence says:
  *
  * - its background is "menu/bbs/b_bbs.bsc" (characters "...b_bbs.bch", palettes "...b_bbs.bpl")
- *   on BG 2 of the main engine; the screen is kept in `screen`, whose palettes it changes and
+ *   on BG 3 of the main engine; the screen is kept in `screen`, whose palettes it changes and
  *   then queues again (BBS_BOARD_FLAG_SCREEN_DIRTY);
  * - a post is shown as its date ("20YY" and "MMDD" in full-width digits), its number and its six
- *   lines of text drawn into characters of BG 2 (BbsBoard_ShowPost); showing it marks it read by
+ *   lines of text drawn into characters of BG 3 (BbsBoard_ShowPost); showing it marks it read by
  *   the current player (BbsPost_MarkRead), and a mark on the board says whether it was;
  * - the posts' tabs (one OBJ a post, the oldest first, centred) and two arrows are drawn as OBJs
  *   over the board (BbsBoard_Draw).
@@ -41,7 +41,7 @@ enum BbsBoardCursor {
 
 /* The flags (BbsBoard.flags). */
 enum BbsBoardFlag {
-    BBS_BOARD_FLAG_SCREEN_DIRTY = 0x001, /* `screen` is queued for BG 2 at the frame's end */
+    BBS_BOARD_FLAG_SCREEN_DIRTY = 0x001, /* `screen` is queued for BG 3 at the frame's end */
     BBS_BOARD_FLAG_NEWER_LIT = 0x002,    /* the right arrow drawn in palette 11 */
     BBS_BOARD_FLAG_OLDER_LIT = 0x004,    /* the left arrow drawn in palette 11 */
     BBS_BOARD_FLAG_DRAWN = 0x008,        /* the scene's OBJs are drawn */
@@ -115,8 +115,8 @@ typedef struct BbsBoard {
     u8 pad_9f;                                                 /* 0x009f */
     u16 screen[BBS_BOARD_SCREEN_SIZE / 2];                     /* 0x00a0: "menu/bbs/b_bbs.bsc" */
     u8 line_chars[BBS_BOARD_LINES][BBS_BOARD_LINE_CHARS_SIZE]; /* 0x08a0: characters 0x11-0x100 */
-    LayerTask chars_task;                                      /* 0x26a0: line_chars to BG 2 */
-    LayerTask screen_task;                                     /* 0x26c4: screen to BG 2 */
+    LayerTask chars_task;                                      /* 0x26a0: line_chars to BG 3 */
+    LayerTask screen_task;                                     /* 0x26c4: screen to BG 3 */
     TextLabel labels[BBS_BOARD_DATE_LABELS];                   /* 0x26e8: BbsBoardLabel */
     TextLabel lines[BBS_BOARD_LINES];                          /* 0x2898 */
     Glider cursor_sprite;                                      /* 0x2b20: a Glider1 */

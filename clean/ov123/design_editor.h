@@ -95,7 +95,7 @@ enum DesignEditorPlace {
 /* Which part the d-pad walks (`key_mode`). */
 enum DesignEditorKeyMode {
     DESIGN_EDITOR_KEYS_PLACES = 0,  /* the tools, buttons and colours */
-    DESIGN_EDITOR_KEYS_COLOURS = 1, /* the colours, from the canvas's Y */
+    DESIGN_EDITOR_KEYS_COLOURS = 1, /* the colours, from the places' Y (Y again goes to the canvas) */
     DESIGN_EDITOR_KEYS_CANVAS = 2   /* a cursor on the canvas's pixels */
 };
 

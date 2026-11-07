@@ -796,7 +796,7 @@ CLEAN_AS(func_ov130_0229a678, BankPad_LoadBackground)
 /* func_ov130_0229a6d8: the pad set up for a kind of entry on two layers: the layout and the
  * teller's picture by the kind (both kept for a kind not listed), no label, the cursor on C, no
  * key pressed, the amounts 0. The sound system's byte 0x71 is 0 when there is a current player
- * whose byte 0x1c is 0, else 1. */
+ * whose gender (PlayerId_Gender) is 0, else 1. */
 void BankPad_Setup(BankPad *pad, u8 kind, u8 digits_layer, u8 keys_layer)
 {
     pad->dirty = 0;

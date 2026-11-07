@@ -34,8 +34,8 @@
 enum PocketsViewFlag {
     POCKETS_VIEW_FLAG_DRAWN = 0x01,         /* the scene is drawn (func_ov099_0229ddec) */
     POCKETS_VIEW_FLAG_OBJECTS_DRAWN = 0x02, /* the grid, the letters and the wallet are drawn */
-    POCKETS_VIEW_FLAG_TOUCHED_FREE = 0x04,  /* set by func_ov099_0229d050 for a touched place of the
-                                             * grid its object does not call taken */
+    POCKETS_VIEW_FLAG_TOUCHED_FREE = 0x04,  /* set by func_ov099_0229d050 for a touched place that is
+                                             * not dimmed (never a letter) */
     POCKETS_VIEW_FLAG_08 = 0x08,            /* the cursor sprite jumps instead of easing
                                              * (PocketsView_GlideToCursor); never set here */
     POCKETS_VIEW_FLAG_WRAPPED_LEFT = 0x10,  /* this move wrapped the cursor over the left edge */

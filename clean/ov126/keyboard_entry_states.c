@@ -37,11 +37,11 @@ int KeyboardEntry_BeginAskKeys(KeyboardEntry *self)
 }
 CLEAN_AS(func_ov126_022a0bb0, KeyboardEntry_BeginAskKeys)
 
-/* func_ov126_022a0bc8: the question by the pen: the pointer at rest, then
+/* func_ov126_022a0bc8: the question by the pen: the pointer hidden, then
  * KEYBOARD_ENTRY_SUB_ASK_TOUCH. Gives MenuScene_SetSubState's answer. */
 int KeyboardEntry_BeginAskTouch(KeyboardEntry *self)
 {
-    KeyboardEntry_RestPointer(self);
+    KeyboardEntry_HidePointer(self);
     return (int) (uintptr_t) MenuScene_SetSubState(keyboard_entry_scene(self), KEYBOARD_ENTRY_SUB_ASK_TOUCH);
 }
 CLEAN_AS(func_ov126_022a0bc8, KeyboardEntry_BeginAskTouch)
@@ -66,10 +66,10 @@ u8 *KeyboardEntry_BeginKeys(KeyboardEntry *self)
 }
 CLEAN_AS(func_ov126_022a0c00, KeyboardEntry_BeginKeys)
 
-/* func_ov126_022a0c1c: the input by the pen: the pointer at rest, KEYBOARD_ENTRY_SUB_TOUCH. */
+/* func_ov126_022a0c1c: the input by the pen: the pointer hidden, KEYBOARD_ENTRY_SUB_TOUCH. */
 u8 *KeyboardEntry_BeginTouch(KeyboardEntry *self)
 {
-    KeyboardEntry_RestPointer(self);
+    KeyboardEntry_HidePointer(self);
     return MenuScene_SetSubState(keyboard_entry_scene(self), KEYBOARD_ENTRY_SUB_TOUCH);
 }
 CLEAN_AS(func_ov126_022a0c1c, KeyboardEntry_BeginTouch)
@@ -88,7 +88,7 @@ CLEAN_AS(func_ov126_022a0c34, KeyboardEntry_Error)
 
 /* func_ov126_022a0c64 (KEYBOARD_ENTRY_SUB_PANEL_PRESS): the selected button's press plays, the
  * pointer (while animated) following the button as it is pressed; when it is over, the pointer
- * at rest and phase 1, which runs the state the press chose. */
+ * hidden and phase 1, which runs the state the press chose. */
 void KeyboardEntry_PanelPress(KeyboardEntry *self)
 {
     if (ButtonPanel_StepSelectedPress(&self->panel) != 0) {
@@ -99,7 +99,7 @@ void KeyboardEntry_PanelPress(KeyboardEntry *self)
             Glider_PlaceAt(&self->pointer, frame + x, frame + y);
         }
     } else {
-        KeyboardEntry_RestPointer(self);
+        KeyboardEntry_HidePointer(self);
         MenuScene_SetPhase(keyboard_entry_scene(self), KEYBOARD_ENTRY_PHASE_STATES);
     }
 }

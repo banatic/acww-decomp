@@ -52,14 +52,15 @@ enum MyDesignsPlace {
     MY_DESIGNS_DESIGN_FIRST = 0, /* 0-3: the top row of designs, 4-7 the bottom one */
     MY_DESIGNS_DESIGN_LAST = 7,
     MY_DESIGNS_BUTTON_BACKDROP = 8,   /* the menu backdrop's clothing (MyDesigns_UseAsBackdrop) */
-    MY_DESIGNS_BUTTON_EASEL = 9,      /* an easel, the furniture series 0x3f24 (MyDesigns_PlaceEasel) */
+    MY_DESIGNS_BUTTON_EASEL = 9,      /* an easel, the furniture series 0x3f24 (MyDesigns_PlaceFurniture, as the others) */
     MY_DESIGNS_BUTTON_CARPET = 10,    /* the room's carpet, by a choice */
     MY_DESIGNS_BUTTON_WALLPAPER = 11, /* the room's wallpaper, by a choice */
     MY_DESIGNS_BUTTON_HEAD = 12,      /* the head item, or in the player's own room a choice */
     MY_DESIGNS_BUTTON_CLOTHES = 13,   /* the clothes, or in the player's own room a choice */
-    MY_DESIGNS_BUTTON_HELD = 14,      /* the held item, or in the player's own room furniture */
-    MY_DESIGNS_BUTTON_GROUND = 15,    /* a pattern on the ground (MyDesigns_DropOnGround) */
-    MY_DESIGNS_TAB_FIRST = 0x10,      /* 0x10-0x17: the tab bar's tabs 0-7 */
+    MY_DESIGNS_BUTTON_UMBRELLA =
+        14,                        /* the umbrella (original umbrellas 0x13a0-0x13a7), or in the player's own room furniture */
+    MY_DESIGNS_BUTTON_GROUND = 15, /* a pattern on the ground (MyDesigns_DropOnGround) */
+    MY_DESIGNS_TAB_FIRST = 0x10,   /* 0x10-0x17: the tab bar's tabs 0-7 */
     MY_DESIGNS_TAB_LAST = 0x17,
     MY_DESIGNS_NO_PLACE = 0x18
 };
@@ -87,7 +88,7 @@ enum MyDesignsAction {
 };
 
 /* What is worn (`wear_kind`, MyDesigns_WornItem). */
-enum MyDesignsWearKind { MY_DESIGNS_WEAR_CLOTHES = 0, MY_DESIGNS_WEAR_HEAD = 1, MY_DESIGNS_WEAR_HELD = 2 };
+enum MyDesignsWearKind { MY_DESIGNS_WEAR_CLOTHES = 0, MY_DESIGNS_WEAR_HEAD = 1, MY_DESIGNS_WEAR_UMBRELLA = 2 };
 
 /* The scene's sub states (MenuScene.sub_state), each run by its handler of the table of
  * MyDesigns_RunSubState. */
@@ -275,7 +276,7 @@ int MyDesigns_RestoreCamera(MyDesigns *self);
 void MyDesigns_SaveCamera(MyDesigns *self);
 void MyDesigns_RunChoiceAction(MyDesigns *self);
 void MyDesigns_DropOnGround(MyDesigns *self);
-void MyDesigns_PlaceEasel(MyDesigns *self);
+void MyDesigns_PlaceFurniture(MyDesigns *self);
 void MyDesigns_WearPicked(MyDesigns *self, u8 kind);
 void MyDesigns_UseAsWallpaper(MyDesigns *self, int option);
 void MyDesigns_UseAsCarpet(MyDesigns *self, int option);

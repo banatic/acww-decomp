@@ -479,9 +479,9 @@ void BirthdayScreen_WaitCursorSprite(BirthdayScreen *self)
 }
 CLEAN_AS(func_ov137_0229cb20, BirthdayScreen_WaitCursorSprite)
 
-/* func_ov137_0229cb48 (sub state 7): once the picker's cursor is back from the scroll bar, the
- * list by the keys again, after the release animation; the cursor sprite follows meanwhile. */
-void BirthdayScreen_ReturnFromBar(BirthdayScreen *self)
+/* func_ov137_0229cb48 (sub state 7): once the thumb's release animation has ended
+ * (ClockSetter_SettleThumb), the list by the keys again, after the release animation; the cursor sprite follows meanwhile. */
+void BirthdayScreen_WaitThumbSettled(BirthdayScreen *self)
 {
     if (ClockSetter_SettleThumb(&self->picker)) {
         MenuScene_SetSubState(birthday_scene(self), BIRTHDAY_SCREEN_SUB_LIST);
@@ -491,7 +491,7 @@ void BirthdayScreen_ReturnFromBar(BirthdayScreen *self)
     int y = BirthdayScreen_CursorY(self);
     Glider_PlaceAt(&self->cursor_sprite, x, y);
 }
-CLEAN_AS(func_ov137_0229cb48, BirthdayScreen_ReturnFromBar)
+CLEAN_AS(func_ov137_0229cb48, BirthdayScreen_WaitThumbSettled)
 
 /* func_ov137_0229cb90 (sub state 6): while A is held the scroll bar moves by up and down, the
  * cursor sprite following; once A is let go the bar is too (sub state 7). */
@@ -504,7 +504,7 @@ void BirthdayScreen_ListBarByKeys(BirthdayScreen *self)
         Glider_PlaceAt(&self->cursor_sprite, x, y);
     } else {
         ClockSetter_ReleaseThumb(&self->picker);
-        MenuScene_SetSubState(birthday_scene(self), BIRTHDAY_SCREEN_SUB_BAR_RETURN);
+        MenuScene_SetSubState(birthday_scene(self), BIRTHDAY_SCREEN_SUB_THUMB_SETTLE);
     }
 }
 CLEAN_AS(func_ov137_0229cb90, BirthdayScreen_ListBarByKeys)

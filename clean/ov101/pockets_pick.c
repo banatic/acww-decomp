@@ -194,7 +194,7 @@ static int pick_move_cursor_by_keys(PocketsPick *self)
     return 1;
 }
 
-/* The scene closes: the menu scene's state set to `state` (directly, not by MenuScene_SetState)
+/* The scene closes: the menu scene's state set to PICK_STATE_START_WIPE_OUT (3; directly, not by MenuScene_SetState)
  * in the states' phase, the popup and the cursor sprite hidden. */
 static void pick_close_scene(PocketsPick *self)
 {
@@ -1032,14 +1032,14 @@ void PocketsPick_StepHeldGlide(PocketsPick *self)
 CLEAN_AS(func_ov101_0229d134, PocketsPick_StepHeldGlide)
 
 /* func_ov101_0229d168 (sub state 0x11): after a swap, back to the kept sub state once the cursor
- * sprite's animation ends; once its turn has settled, PICK_FLAG_SWAPPING is cleared and the held
+ * sprite's animation ends; once its turn holds (Glider_TurnHolds), PICK_FLAG_SWAPPING is cleared and the held
  * item follows the cursor sprite. */
 void PocketsPick_FinishSwap(PocketsPick *self)
 {
     if (CellLayerSprite_IsDone(pick_sprite_cells(self)) != 0) {
         MenuScene_SetSubState(pick_scene(self), self->return_state);
     }
-    if (Glider_IsTurnSettled(&self->cursor_sprite) != 0) {
+    if (Glider_TurnHolds(&self->cursor_sprite) != 0) {
         PocketsPick_ClearFlags(self, PICK_FLAG_SWAPPING);
         PocketsPick_FollowCursorSprite(self);
     }
@@ -1062,12 +1062,12 @@ void PocketsPick_Swap(PocketsPick *self)
 }
 CLEAN_AS(func_ov101_0229d1a8, PocketsPick_Swap)
 
-/* func_ov101_0229d1f0 (sub state 0x0f): while the cursor sprite's turn has not settled the held
+/* func_ov101_0229d1f0 (sub state 0x0f): while the cursor sprite's turn holds (Glider_TurnHolds) the held
  * item follows it. Then it is put down at `target` when the cursor is there (the popup told of
  * the place, sub state 6), else it glides to `target`. */
 void PocketsPick_PutDownWithCursor(PocketsPick *self)
 {
-    if (Glider_IsTurnSettled(&self->cursor_sprite) != 0) {
+    if (Glider_TurnHolds(&self->cursor_sprite) != 0) {
         PocketsPick_FollowCursorSprite(self);
         return;
     }
@@ -1092,11 +1092,11 @@ void PocketsPick_FinishPickUp(PocketsPick *self)
 }
 CLEAN_AS(func_ov101_0229d240, PocketsPick_FinishPickUp)
 
-/* func_ov101_0229d26c (sub state 0x0d): once the cursor sprite's turn has settled, the item at
+/* func_ov101_0229d26c (sub state 0x0d): once the cursor sprite's turn holds (Glider_TurnHolds), the item at
  * the cursor is picked up (sub state 0x0e). */
 void PocketsPick_PickUpOnTurn(PocketsPick *self)
 {
-    if (Glider_IsTurnSettled(&self->cursor_sprite) != 0) {
+    if (Glider_TurnHolds(&self->cursor_sprite) != 0) {
         PocketsPick_PickUpWithCursor(self, self->cursor);
         MenuScene_SetSubState(pick_scene(self), PICK_SUB_PICKED_UP);
     }

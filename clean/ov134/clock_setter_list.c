@@ -231,7 +231,9 @@ static int list_fast_step(ClockSetter *self)
  * thumb, left moves the cursor onto the row at the thumb's height; on the rows, right moves it
  * back. Up and down step the cursor a row and count the run (`key_run`); after six steps one
  * way, while the pad holds that way, the cursor steps each call with the scroll done at once
- * (and the run ends when the pad lets go). */
+ * (and the run ends when the pad lets go).
+ * QUIRK: ClockSetter_Update zeroes `key_run` each frame the pad holds the run's way, so the run
+ * never reaches six and the fast steps (CLOCK_SETTER_KEYS_FAST, list_fast_step) never happen. */
 int ClockSetter_ListKeys(ClockSetter *self, int keys)
 {
     if (self->cursor == 0) {

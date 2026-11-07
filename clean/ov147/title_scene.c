@@ -58,7 +58,7 @@ static_assert(sizeof(TitleScene) == 0xf8, "TitleScene");
 #define TITLE_SCENE_TITLE 0x2c
 #define TITLE_SCENE_NEW 0x2d
 #define TITLE_SCENE_2E 0x2e
-#define TITLE_SCENE_30 0x30
+#define TITLE_SCENE_TAG_MODE 0x30
 #define TITLE_SCENE_6 6
 #define TITLE_CHANGE_ARG 2
 
@@ -136,25 +136,25 @@ void TitleScene_EnterExitWifiSetup(TitleScene *self)
 }
 CLEAN_AS(func_ov147_02299b44, TitleScene_EnterExitWifiSetup)
 
-/* func_ov147_02299b4c (TITLE_STATE_EXIT_SCENE_30): with the screen shown and talk 0 closed, the
+/* func_ov147_02299b4c (TITLE_STATE_EXIT_TAG_MODE): with the screen shown and talk 0 closed, the
  * talk let go, scene 0x30 to go to (arguments 2 and 2) and the music stopped. */
-void TitleScene_ExitToScene30(TitleScene *self)
+void TitleScene_ExitToTagMode(TitleScene *self)
 {
     TalkObject *talk = TalkObject_Get(TITLE_TALK);
     if (title_screen_shown() && talk->state == TALK_OBJECT_CLOSED) {
         TalkObject_DetachReceiver(talk);
-        SceneExit_SetToScene(title_entry_record(), TITLE_SCENE_30, TITLE_CHANGE_ARG, 2);
+        SceneExit_SetToScene(title_entry_record(), TITLE_SCENE_TAG_MODE, TITLE_CHANGE_ARG, 2);
         TitleScene_StopMusic(self);
     }
 }
-CLEAN_AS(func_ov147_02299b4c, TitleScene_ExitToScene30)
+CLEAN_AS(func_ov147_02299b4c, TitleScene_ExitToTagMode)
 
-/* func_ov147_02299b90 (TITLE_STATE_EXIT_SCENE_30's entry). */
-void TitleScene_EnterExitScene30(TitleScene *self)
+/* func_ov147_02299b90 (TITLE_STATE_EXIT_TAG_MODE's entry). */
+void TitleScene_EnterExitTagMode(TitleScene *self)
 {
     TitleScene_EndMusicOnLeave(self);
 }
-CLEAN_AS(func_ov147_02299b90, TitleScene_EnterExitScene30)
+CLEAN_AS(func_ov147_02299b90, TitleScene_EnterExitTagMode)
 
 /* func_ov147_02299b98 (TITLE_STATE_EXIT_FIND_MOVER): with the screen shown and talk 0 closed, the
  * talk let go, scene 0x2e to go to (arguments 2 and 3) with the activity's job 0x1c (finding a
@@ -609,7 +609,7 @@ int TitleScene_InitStateTable(void)
     static const MemberPointer *const last[8] = {
         &data_ov147_0229a8dc, &data_ov147_0229a9cc, /* TITLE_STATE_EXIT_WIFI_SETUP */
         &data_ov147_0229a8e4, &data_ov147_0229a9bc, /* TITLE_STATE_EXIT_FIND_MOVER */
-        &data_ov147_0229a9b4, &data_ov147_0229a9ac, /* TITLE_STATE_EXIT_SCENE_30 */
+        &data_ov147_0229a9b4, &data_ov147_0229a9ac, /* TITLE_STATE_EXIT_TAG_MODE */
         &data_ov147_0229a8fc, &data_ov147_0229a99c, /* TITLE_STATE_IDLE_RESTART */
     };
     for (int i = 0; i < 16; i++) {

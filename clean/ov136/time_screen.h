@@ -59,7 +59,7 @@ enum TimeScreenSubState {
     TIME_SCREEN_SUB_FIELDS = 6,        /* TimeScreen_FieldsByKeys */
     TIME_SCREEN_SUB_LIST = 7,          /* TimeScreen_ListByKeys */
     TIME_SCREEN_SUB_BAR = 8,           /* TimeScreen_ListBarByKeys */
-    TIME_SCREEN_SUB_BAR_RETURN = 9,    /* TimeScreen_ReturnFromBar */
+    TIME_SCREEN_SUB_THUMB_SETTLE = 9,  /* TimeScreen_WaitThumbSettled */
     TIME_SCREEN_SUB_SPRITE_MOVE = 10,  /* TimeScreen_WaitCursorSprite */
     TIME_SCREEN_SUB_PRESSED = 11,      /* TimeScreen_AfterPress */
     TIME_SCREEN_SUB_RELEASE_ANIM = 12, /* TimeScreen_WaitReleaseAnim */
@@ -110,7 +110,7 @@ void TimeScreen_FollowOkPress(TimeScreen *self);
 void TimeScreen_WaitReleaseAnim(TimeScreen *self);
 void TimeScreen_AfterPress(TimeScreen *self);
 void TimeScreen_WaitCursorSprite(TimeScreen *self);
-void TimeScreen_ReturnFromBar(TimeScreen *self);
+void TimeScreen_WaitThumbSettled(TimeScreen *self);
 void TimeScreen_ListBarByKeys(TimeScreen *self);
 void TimeScreen_ListByKeys(TimeScreen *self);
 void TimeScreen_FieldsByKeys(TimeScreen *self);

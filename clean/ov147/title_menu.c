@@ -46,7 +46,6 @@ enum TitleMenuMessage {
     TITLE_MESSAGE_REMOVED = 0x06,          /* "... removed from the town"; the talk ends: TITLE_STATE_EXIT_REMOVE_PLAYER */
     TITLE_MESSAGE_THEN_31B = 0x0a,         /* message 0x31 follows */
     TITLE_MESSAGE_DELETE_TOWN = 0x0b,      /* "I will delete the town"; the talk ends: TITLE_STATE_EXIT_DELETE_TOWN */
-    TITLE_MESSAGE_ANSWER_YES = 0x12,       /* the answers' messages with sound kind 1 (and 0, 1) */
     TITLE_MESSAGE_PLAYER_MOVING_IN = 0x24, /* "a player is moving, the game starts"; with flag 0x12 of the
                                             * state block: START_KIND_MOVED_IN */
     TITLE_MESSAGE_NEW_PLAYER = 0x27,       /* START_KIND_NEW_PLAYER */
@@ -55,12 +54,14 @@ enum TitleMenuMessage {
     TITLE_MESSAGE_ASK_FIND_MOVER = 0x30, /* yes: TITLE_STATE_EXIT_FIND_MOVER */
     TITLE_MESSAGE_MENU = 0x31,           /* the first menu again */
     TITLE_MESSAGE_WFC_FAILED = 0x32,     /* the talk ends: back to the title */
-    TITLE_MESSAGE_ASK_BOTTLE = 0x35,     /* yes: TITLE_STATE_EXIT_SCENE_30 */
-    TITLE_MESSAGE_BACK = 0x37            /* back to the title */
+    TITLE_MESSAGE_ASK_TAG_MODE = 0x35,   /* "start DS wireless communication?" (tag mode); yes: TITLE_STATE_EXIT_TAG_MODE */
+    TITLE_MESSAGE_NEED_BOTTLE = 0x37     /* "send a bottle letter to use tag mode"; back to the title */
 };
 
 #define TITLE_MESSAGE_LIST_CANCEL 0x10 /* the last answer of the players' list */
-#define TITLE_PLAYER_ANSWER_70 4       /* the players' answers' next_message */
+#define TITLE_PLAYER_ANSWER_NEXT 4     /* the players' answers' next_message (TITLE_MESSAGE_REMOVE) */
+/* The answer of the answers' file ("select2") with sound kind 1 besides 0 and 1: "Start". */
+#define TITLE_ANSWER_START 0x12
 #define TITLE_SE_CLOSE 0x3a            /* the sound when the talk of 0x24 or 0x27 closes */
 #define STATE_BLOCK_FLAG_MOVED_IN 0x12 /* the flag of the state block job 0xe reads */
 
@@ -163,7 +164,7 @@ void TitleMenu_CheckBottleLetter(TitleReceiver *self)
     if (ExchangeBlock_Drifts(block) != 0) {
         return;
     }
-    u8 message = TITLE_MESSAGE_ASK_BOTTLE;
+    u8 message = TITLE_MESSAGE_ASK_TAG_MODE;
     TalkObject_SetMessage(title_receiver_talk(self), &message, NULL);
 }
 CLEAN_AS(func_ov147_02299338, TitleMenu_CheckBottleLetter)
@@ -226,7 +227,7 @@ CLEAN_AS(func_ov147_02299414, TitleMenu_NewTown)
  * - the first menu: the member function of the town's table for the answer, if any;
  * - messages 0 and 0x30: yes ends the talk and leaves by TITLE_STATE_EXIT_WIFI_SETUP or
  *   TITLE_STATE_EXIT_FIND_MOVER; message 0x35: yes ends the receiver's talk and leaves by
- *   TITLE_STATE_EXIT_SCENE_30;
+ *   TITLE_STATE_EXIT_TAG_MODE;
  * - message 3: the player picked (TitleMenu_PickTownPlayer).
  * The four tables are filled first, once each.
  * REQUIRES: the answer is in its table (below 4, or 5 for TITLE_TOWN_OTHER); the game reads past
@@ -274,10 +275,10 @@ void TitleMenu_OnAnswer(TitleReceiver *self)
                 TitleScene_SetState(self->scene, TITLE_STATE_EXIT_FIND_MOVER);
             }
             break;
-        case TITLE_MESSAGE_ASK_BOTTLE:
+        case TITLE_MESSAGE_ASK_TAG_MODE:
             if (picked == 0) {
                 TalkObject_SetMessage(title_receiver_talk(self), &data_021f43e8, NULL);
-                TitleScene_SetState(self->scene, TITLE_STATE_EXIT_SCENE_30);
+                TitleScene_SetState(self->scene, TITLE_STATE_EXIT_TAG_MODE);
             }
             break;
         case TITLE_MESSAGE_PICK_PLAYER:
@@ -320,7 +321,7 @@ void TitleMenu_ListTownPlayers(TitleReceiver *self)
         PlayerIdText_Construct(&name);
         PlayerId_NameToText(PlayerRecord_Player(PlayerRecords_TownRecord(data_021dc7bc, i)), (TextBase *) (void *) &name);
         TalkAnswer *answer = TalkAnswers_Answer(answers, count);
-        player_value = TITLE_PLAYER_ANSWER_70;
+        player_value = TITLE_PLAYER_ANSWER_NEXT;
         TalkAnswers_SetNext(answer, &player_value);
         TextBase_Copy(TalkAnswers_Text(answer), (TextBase *) (void *) &name);
         count++;
@@ -356,7 +357,7 @@ void TitleMenu_OfferChoices(TitleReceiver *self, const TitleChoices *choices)
         u8 answer[2];
         answer[0] = messages[i];
         answer[1] = values[i];
-        int sound_kind = answer[0] == TITLE_MESSAGE_ANSWER_YES || answer[0] <= 1;
+        int sound_kind = answer[0] == TITLE_ANSWER_START || answer[0] <= 1;
         TalkAnswers_Set(answers, i, &answer[0], 1, &answer[1], NULL, sound_kind);
     }
     TalkAnswers_LoadTexts(answers);
@@ -429,12 +430,12 @@ void TitleMenu_AfterMessage(TitleReceiver *self)
             TalkObject_SetMessage(talk, &message, data_ov147_0229a8b0);
             break;
         }
-        case TITLE_MESSAGE_BACK:
+        case TITLE_MESSAGE_NEED_BOTTLE:
             TitleScene_SetState(self->scene, TITLE_STATE_END_TALK);
             break;
         case TITLE_MESSAGE_ASK_WIFI_SETUP:
         case TITLE_MESSAGE_ASK_FIND_MOVER:
-        case TITLE_MESSAGE_ASK_BOTTLE:
+        case TITLE_MESSAGE_ASK_TAG_MODE:
             TitleMenu_OfferChoices(self, &data_ov147_0229aad0);
             break;
         case TITLE_MESSAGE_PLAYER_MOVING_IN:

@@ -657,13 +657,13 @@ CLEAN_AS(func_ov104_0229cc30, LetterSend_MoveCursor)
 void LetterSend_MoveCursorBelow(LetterSendScene *self, int keys)
 {
     if (KeyRepeat_HasLeft(keys) != 0) {
-        self->cursor = LETTER_SEND_BELOW_OUTBOX;
+        self->cursor = LETTER_SEND_CANCEL_BUTTON;
     } else if (KeyRepeat_HasRight(keys) != 0) {
-        self->cursor = LETTER_SEND_BELOW_CARRIED;
+        self->cursor = LETTER_SEND_POST_BUTTON;
     }
     if (KeyRepeat_HasUp(keys) != 0) {
         Glider_TurnToSetA(&self->cursor_sprite);
-        self->cursor = self->cursor == LETTER_SEND_BELOW_OUTBOX ? 0x1d : 0x13;
+        self->cursor = self->cursor == LETTER_SEND_CANCEL_BUTTON ? 0x1d : 0x13;
     }
 }
 CLEAN_AS(func_ov104_0229ccb4, LetterSend_MoveCursorBelow)
@@ -717,7 +717,7 @@ void LetterSend_MoveCursorInOutbox(LetterSendScene *self, int keys, int mode)
     if (LetterSend_IsOutboxPlace(self, self->cursor) == 0 || LetterSend_TestFlags(self, LETTER_SEND_FLAGS_WRAPPED) != 0) {
         return;
     }
-    lsend_move_in_column(self, keys, mode, row, LETTER_SEND_BELOW_OUTBOX);
+    lsend_move_in_column(self, keys, mode, row, LETTER_SEND_CANCEL_BUTTON);
 }
 CLEAN_AS(func_ov104_0229cd18, LetterSend_MoveCursorInOutbox)
 
@@ -746,7 +746,7 @@ void LetterSend_MoveCursorInCarried(LetterSendScene *self, int keys, int mode)
     if (LetterSend_IsCarriedPlace(self, self->cursor) == 0 || LetterSend_TestFlags(self, LETTER_SEND_FLAGS_WRAPPED) != 0) {
         return;
     }
-    lsend_move_in_column(self, keys, mode, row, LETTER_SEND_BELOW_CARRIED);
+    lsend_move_in_column(self, keys, mode, row, LETTER_SEND_POST_BUTTON);
 }
 CLEAN_AS(func_ov104_0229cdf0, LetterSend_MoveCursorInCarried)
 
@@ -1214,7 +1214,7 @@ CLEAN_AS(func_ov104_0229d830, LetterSend_DimUnpostable)
 /* The two places below the letters, as the ROM tests them: by the place's low byte. */
 static int lsend_is_below(int place)
 {
-    return (u8) ((u32) place - LETTER_SEND_BELOW_CARRIED) <= 1;
+    return (u8) ((u32) place - LETTER_SEND_POST_BUTTON) <= 1;
 }
 
 /* func_ov104_0229d858: the y of `place`: a letter's by the letters object less 0x10, 0xb6 for
@@ -1238,10 +1238,10 @@ int LetterSend_PlaceX(LetterSendScene *self, int place)
     if (lsend_is_letter_place(self, place)) {
         return PocketsLetters_PlaceX(&self->letters, lsend_letter_index(self, place));
     }
-    if (place == LETTER_SEND_BELOW_CARRIED) {
+    if (place == LETTER_SEND_POST_BUTTON) {
         return 0xbc;
     }
-    if (place == LETTER_SEND_BELOW_OUTBOX) {
+    if (place == LETTER_SEND_CANCEL_BUTTON) {
         return 0x74;
     }
     return 0;
@@ -1651,14 +1651,14 @@ void LetterSend_StepHeldGlide(LetterSendScene *self)
 CLEAN_AS(func_ov104_0229df4c, LetterSend_StepHeldGlide)
 
 /* func_ov104_0229df84 (sub state 0x14): back to the sub state kept once the cursor sprite's
- * animation has ended; once its turn has settled, a hidden held letter is shown again (sound
+ * animation has ended; once its turn holds (Glider_TurnHolds), a hidden held letter is shown again (sound
  * 0xd) and follows the sprite. */
 void LetterSend_FinishSwap(LetterSendScene *self)
 {
     if (CellLayerSprite_IsDone(lsend_cursor_cells(self))) {
         MenuScene_SetSubState(lsend_scene(self), self->return_state);
     }
-    if (Glider_IsTurnSettled(&self->cursor_sprite)) {
+    if (Glider_TurnHolds(&self->cursor_sprite)) {
         if (LetterSend_TestFlags(self, LETTER_SEND_FLAG_HELD_HIDDEN)) {
             LetterSend_ClearFlags(self, LETTER_SEND_FLAG_HELD_HIDDEN);
             PocketsSound_Play0d();
@@ -1684,12 +1684,12 @@ void LetterSend_Swap(LetterSendScene *self)
 }
 CLEAN_AS(func_ov104_0229dfd4, LetterSend_Swap)
 
-/* func_ov104_0229e01c (sub state 0x12): while the cursor sprite's turn has not settled, the held
+/* func_ov104_0229e01c (sub state 0x12): once the cursor sprite's turn no longer holds (Glider_TurnHolds), the held
  * letter is put down at `target` when the cursor is on it (the popup updated, sub state 7, sound
- * 0xe), else glided there in 4 steps; once it has, the letter follows the sprite. */
+ * 0xe), else glided there in 4 steps; while it holds, the letter follows the sprite. */
 void LetterSend_PutDown(LetterSendScene *self)
 {
-    if (Glider_IsTurnSettled(&self->cursor_sprite) == 0) {
+    if (Glider_TurnHolds(&self->cursor_sprite) == 0) {
         u8 target = self->target;
         if (self->cursor == target) {
             LetterSend_PutHeldLetterAt(self, target);
@@ -1716,11 +1716,11 @@ void LetterSend_FinishPickUp(LetterSendScene *self)
 }
 CLEAN_AS(func_ov104_0229e070, LetterSend_FinishPickUp)
 
-/* func_ov104_0229e09c (sub state 0x10): once the cursor sprite's turn has settled, the letter at
+/* func_ov104_0229e09c (sub state 0x10): once the cursor sprite's turn holds (Glider_TurnHolds), the letter at
  * the cursor is picked up; sub state 0x11. */
 void LetterSend_PickUpAtCursor(LetterSendScene *self)
 {
-    if (Glider_IsTurnSettled(&self->cursor_sprite)) {
+    if (Glider_TurnHolds(&self->cursor_sprite)) {
         LetterSend_PickUpWithCursor(self, self->cursor);
         MenuScene_SetSubState(lsend_scene(self), LETTER_SEND_SUB_PICK_UP_END);
     }
@@ -1745,7 +1745,7 @@ void LetterSend_PressPlace(LetterSendScene *self)
     if (CellLayerSprite_IsDone(lsend_cursor_cells(self)) == 0) {
         return;
     }
-    if (self->cursor == LETTER_SEND_BELOW_CARRIED) {
+    if (self->cursor == LETTER_SEND_POST_BUTTON) {
         LetterSend_Post(self);
     } else {
         LetterSend_Cancel(self);

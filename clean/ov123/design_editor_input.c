@@ -175,7 +175,8 @@ CLEAN_AS(func_ov123_022998c0, DesignEditor_ColourByShoulders)
 
 /* func_ov123_022999b0: the canvas cursor moved by the d-pad held (one pixel, within the
  * design); left before right and up before down win. A move waits for `key_delay`: a press
- * starts it at 4 and moves at once, a hold moves every fourth frame. A move plays sound 0x865
+ * starts it at 4 and moves at once, then a hold waits three frames and moves every frame. A
+ * move plays sound 0x865
  * (unless `quiet`) and sets the sound player's byte to the cursor's x on the screen. Answers 1
  * when it moved. The keys handed in are not read. */
 int DesignEditor_MoveCanvasCursor(DesignEditor *self, int keys, int quiet)
@@ -939,9 +940,9 @@ void DesignEditor_ShapeByKeys(DesignEditor *self)
 CLEAN_AS(func_ov123_0229b8ec, DesignEditor_ShapeByKeys)
 
 /* func_ov123_0229b9bc (sub state 5): a pen drawing while A is held: each move of the canvas
- * cursor dabs the pen there (sound 0x861; 0x860 too when held, not pressed). Sound 0x863 runs
- * while the cursor moves without waiting, and stops (in a frame) otherwise or when A is let
- * go. */
+ * cursor dabs the pen there (sound 0x861; 0x860 too on a fresh press's step). Held past the
+ * delay the cursor moves without waiting and the loop 0x863 runs; it stops (in a frame)
+ * otherwise or when A is let go. */
 void DesignEditor_DrawByKeys(DesignEditor *self)
 {
     if ((data_021fbe40.held & DESIGN_EDITOR_PAD_A) == 0) {

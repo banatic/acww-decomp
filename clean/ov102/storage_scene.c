@@ -88,12 +88,12 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 /* The sounds of the scene (main/sound.h). */
 #define STORAGE_SOUND_CLOSE 0x27
 
-/* The title label: style 4, at (0x1d6, 6), colour 15 when highlighted (else 1) and 9, message
+/* The close button's label ("Close"): style 4, at (0x1d6, 6), colour 15 when highlighted (else 1) and 9, message
  * 0x88 of the menu's messages. */
-#define STORAGE_TITLE_STYLE 4
-#define STORAGE_TITLE_FIRST_TILE 0x1d6
-#define STORAGE_TITLE_CELLS 6
-#define STORAGE_TITLE_MESSAGE 0x88
+#define STORAGE_CLOSE_LABEL_STYLE 4
+#define STORAGE_CLOSE_LABEL_FIRST_TILE 0x1d6
+#define STORAGE_CLOSE_LABEL_CELLS 6
+#define STORAGE_CLOSE_LABEL_MESSAGE 0x88
 
 /* The close button's touch area. */
 #define STORAGE_CLOSE_MIN_X 0xc8
@@ -282,7 +282,7 @@ void StorageScene_DrawTabs(StorageScene *self)
 CLEAN_AS(func_ov102_0229c3bc, StorageScene_DrawTabs)
 
 /* func_ov102_0229c460: the scene closes: sound 0x27, a delay of 5 frames (or none) before the
- * wipe out (sub state 0x0f), the title highlighted, main told the storage changed
+ * wipe out (sub state 0x0f), the close label highlighted, main told the storage changed
  * (GroupParams_SetC4C(1), always) and the scene's 90 items copied back to the current player's
  * storage. */
 void StorageScene_SaveAndClose(StorageScene *self, int with_delay)
@@ -290,24 +290,25 @@ void StorageScene_SaveAndClose(StorageScene *self, int with_delay)
     SoundSys_PlaySe(STORAGE_SOUND_CLOSE);
     self->delay = with_delay ? STORAGE_CLOSE_DELAY : 0;
     MenuScene_SetSubState(storage_base(self), STORAGE_SCENE_SUB_CLOSE_DELAY);
-    StorageScene_ShowTitle(self, 1);
+    StorageScene_ShowCloseLabel(self, 1);
     GroupParams_SetC4C(1);
     u16 *items = PlayerStorage_Items(PlayerRecord_Storage(PlayerRecords_Current()));
     MI_CpuCopy8(self->storage, items, sizeof(self->storage));
 }
 CLEAN_AS(func_ov102_0229c460, StorageScene_SaveAndClose)
 
-/* func_ov102_0229c4c0: the title shown this frame in the next label: style 4 at (0x1d6, 6) in
+/* func_ov102_0229c4c0: the close button's label ("Close") shown this frame in the next label: style 4 at (0x1d6, 6) in
  * colours 15 (highlighted) or 1 and 9, message 0x88. */
-void StorageScene_ShowTitle(StorageScene *self, int highlighted)
+void StorageScene_ShowCloseLabel(StorageScene *self, int highlighted)
 {
     int color = highlighted ? 15 : 1;
     TextLabel *label = StorageScene_NextLabel(self);
-    TextLabel_OpenStyledBox2(label, STORAGE_TITLE_STYLE, STORAGE_TITLE_FIRST_TILE, STORAGE_TITLE_CELLS, (u8) color, 9, 0);
-    TextLabel_LoadMenuMessage(label, (char) STORAGE_TITLE_MESSAGE);
+    TextLabel_OpenStyledBox2(label, STORAGE_CLOSE_LABEL_STYLE, STORAGE_CLOSE_LABEL_FIRST_TILE, STORAGE_CLOSE_LABEL_CELLS,
+                             (u8) color, 9, 0);
+    TextLabel_LoadMenuMessage(label, (char) STORAGE_CLOSE_LABEL_MESSAGE);
     TextLabel_Show(label, 1, 1);
 }
-CLEAN_AS(func_ov102_0229c4c0, StorageScene_ShowTitle)
+CLEAN_AS(func_ov102_0229c4c0, StorageScene_ShowCloseLabel)
 
 /* func_ov102_0229c504: the next of the two labels this frame; once both are used, the second
  * again. */
@@ -600,7 +601,7 @@ void StorageScene_StartPutDown(StorageScene *self, u8 place)
 CLEAN_AS(func_ov102_0229c9fc, StorageScene_StartPutDown)
 
 /* func_ov102_0229ca38: the cursor sprite's animation 4, sub state 8, which picks up the cursor's
- * item once its turn has settled. */
+ * item once its turn holds (Glider_TurnHolds). */
 void StorageScene_StartPickUp(StorageScene *self)
 {
     Glider_SetAnim(&self->cursor_sprite, GLIDER_ANIM_TURN_A);
@@ -1356,14 +1357,14 @@ void StorageScene_StepHeldGlide(StorageScene *self)
 CLEAN_AS(func_ov102_0229d830, StorageScene_StepHeldGlide)
 
 /* func_ov102_0229d88c (sub state 0x0c): after a swap, back to the kept sub state once the cursor
- * sprite's animation ends. While its turn has settled, the held item is drawn again (with sound
+ * sprite's animation ends. While its turn holds (Glider_TurnHolds), the held item is drawn again (with sound
  * 0x0d, once) and follows the cursor sprite. */
 void StorageScene_FinishSwap(StorageScene *self)
 {
     if (CellLayerSprite_IsDone(storage_cursor_cells(self))) {
         MenuScene_SetSubState(storage_base(self), self->return_state);
     }
-    if (Glider_IsTurnSettled(&self->cursor_sprite)) {
+    if (Glider_TurnHolds(&self->cursor_sprite)) {
         if (StorageScene_TestFlags(self, STORAGE_SCENE_FLAG_HELD_HIDDEN)) {
             StorageScene_ClearFlags(self, STORAGE_SCENE_FLAG_HELD_HIDDEN);
             PocketsSound_Play0d();
@@ -1389,12 +1390,12 @@ void StorageScene_SwapWithCursor(StorageScene *self)
 }
 CLEAN_AS(func_ov102_0229d8e0, StorageScene_SwapWithCursor)
 
-/* func_ov102_0229d928 (sub state 0x0a): while the cursor sprite's turn has not settled the held
+/* func_ov102_0229d928 (sub state 0x0a): while the cursor sprite's turn holds (Glider_TurnHolds) the held
  * item follows it. Then it is put down at `target` when the cursor is there (the popup told of
  * the place, sub state 3, sound 0x0e), else it glides to `target`. */
 void StorageScene_PutDownWithCursor(StorageScene *self)
 {
-    if (Glider_IsTurnSettled(&self->cursor_sprite) != 0) {
+    if (Glider_TurnHolds(&self->cursor_sprite) != 0) {
         StorageScene_FollowCursorSprite(self);
         return;
     }
@@ -1420,11 +1421,11 @@ void StorageScene_FinishPickUp(StorageScene *self)
 }
 CLEAN_AS(func_ov102_0229d980, StorageScene_FinishPickUp)
 
-/* func_ov102_0229d9b0 (sub state 8): once the cursor sprite's turn has settled, the item at the
+/* func_ov102_0229d9b0 (sub state 8): once the cursor sprite's turn holds (Glider_TurnHolds), the item at the
  * cursor is picked up (sub state 9). */
 void StorageScene_PickUpOnTurn(StorageScene *self)
 {
-    if (Glider_IsTurnSettled(&self->cursor_sprite)) {
+    if (Glider_TurnHolds(&self->cursor_sprite)) {
         StorageScene_PickUpWithCursor(self, self->cursor);
         MenuScene_SetSubState(storage_base(self), STORAGE_SCENE_SUB_PICK_UP_END);
     }
@@ -1757,13 +1758,13 @@ void StorageScene_LoadPage(StorageScene *self)
 CLEAN_AS(func_ov102_0229dfa4, StorageScene_LoadPage)
 
 /* func_ov102_0229dff0: the page's layer loaded (its screen and characters 0x1b9-0x238), and the
- * title shown. */
+ * close label shown. */
 void StorageScene_LoadBackground(StorageScene *self)
 {
     Heap *heap = data_021fbe94;
     DisplayLayer_LoadScreenFromFile(data_ov102_0229eb6c, heap, STORAGE_PAGE_LAYER);
     DisplayLayer_LoadCharsFromFile(data_ov102_0229eb90, heap, STORAGE_PAGE_LAYER, 0x1b9, 0x1b9, 0x238);
-    StorageScene_ShowTitle(self, 0);
+    StorageScene_ShowCloseLabel(self, 0);
 }
 CLEAN_AS(func_ov102_0229dff0, StorageScene_LoadBackground)
 
@@ -1797,7 +1798,7 @@ void StorageScene_EndFrame(StorageScene *self)
 CLEAN_AS(func_ov102_0229e084, StorageScene_EndFrame)
 
 /* func_ov102_0229e0b0: the start of a frame: the layer task ended, the three objects of ov094's
- * updated, and the labels closed (the title is shown again each frame it is wanted). */
+ * updated, and the labels closed (the close label is shown again each frame it is wanted). */
 void StorageScene_BeginFrame(StorageScene *self)
 {
     StorageScene_EndLayerTask(self);

@@ -533,7 +533,7 @@ CLEAN_AS(func_ov135_0229cbd8, PhoneClock_WaitCursorSprite)
 /* func_ov135_0229cc00 (sub state 9): when overlay 134's object is done (ClockSetter_SettleThumb), the
  * sprite shows its third animation and the editing goes on (sub state 7); either way the cursor
  * sprite put at the field's cursor. */
-void PhoneClock_WaitEditor(PhoneClock *self)
+void PhoneClock_WaitThumbSettled(PhoneClock *self)
 {
     if (ClockSetter_SettleThumb(&self->editor) != 0) {
         MenuScene_SetSubState(clock_scene(self), PHONE_CLOCK_SUB_EDIT);
@@ -543,7 +543,7 @@ void PhoneClock_WaitEditor(PhoneClock *self)
     int y = PhoneClock_CursorY(self);
     Glider_PlaceAt(&self->cursor_sprite, x, y);
 }
-CLEAN_AS(func_ov135_0229cc00, PhoneClock_WaitEditor)
+CLEAN_AS(func_ov135_0229cc00, PhoneClock_WaitThumbSettled)
 
 /* func_ov135_0229cc48 (sub state 8): while A is held, overlay 134's object stepped
  * (ClockSetter_MoveThumbByKeys) and the cursor sprite put at its cursor; once let go, the object told
@@ -557,7 +557,7 @@ void PhoneClock_HoldButtonA(PhoneClock *self)
         Glider_PlaceAt(&self->cursor_sprite, x, y);
     } else {
         ClockSetter_ReleaseThumb(&self->editor);
-        MenuScene_SetSubState(clock_scene(self), PHONE_CLOCK_SUB_EDIT_WAIT);
+        MenuScene_SetSubState(clock_scene(self), PHONE_CLOCK_SUB_THUMB_SETTLE);
     }
 }
 CLEAN_AS(func_ov135_0229cc48, PhoneClock_HoldButtonA)

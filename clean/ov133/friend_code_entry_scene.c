@@ -412,7 +412,7 @@ void FriendCodeEntry_Teardown(FriendCodeEntry *self)
 CLEAN_AS(func_ov133_0229c1dc, FriendCodeEntry_Teardown)
 
 /* func_ov133_0229c210: the setup: no label nor flags, the pointer at the clear key, nothing lit
- * nor repeating; sound byte 0x71 cleared when the current player's byte 0x1c is 0, else set. */
+ * nor repeating; sound byte 0x71 cleared when the current player's gender (PlayerId_Gender) is 0, else set. */
 void FriendCodeEntry_Setup(FriendCodeEntry *self)
 {
     self->label_count = 0;

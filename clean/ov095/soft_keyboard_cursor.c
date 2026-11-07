@@ -200,7 +200,7 @@ int SoftKeyboard_MoveOutsideKeys(SoftKeyboard *kb, int keys)
         case SOFT_KEYBOARD_KIND_CHAT:
             return SoftKeyboard_MoveOnChatTabs(kb, keys);
         case SOFT_KEYBOARD_KIND_LETTER:
-        case SOFT_KEYBOARD_KIND_2:
+        case SOFT_KEYBOARD_KIND_BBS:
             return SoftKeyboard_MoveOnLetterButtons(kb, keys);
         case SOFT_KEYBOARD_KIND_4:
         case SOFT_KEYBOARD_KIND_5:
@@ -519,7 +519,7 @@ void SoftKeyboard_CursorUpFromTabRow(SoftKeyboard *kb)
             }
             break;
         case SOFT_KEYBOARD_KIND_LETTER:
-        case SOFT_KEYBOARD_KIND_2:
+        case SOFT_KEYBOARD_KIND_BBS:
             kb->key = SOFT_KEYBOARD_KEY_MOVABLE;
             break;
         case SOFT_KEYBOARD_KIND_3:
@@ -949,13 +949,13 @@ void SoftKeyboard_CursorToFirstButton(SoftKeyboard *kb)
         case SOFT_KEYBOARD_KIND_CHAT:
             break;
         case SOFT_KEYBOARD_KIND_LETTER:
-            if (SoftKeyboard_TestFlags(kb, SOFT_KEYBOARD_FLAG_08) != 0) {
+            if (SoftKeyboard_TestFlags(kb, SOFT_KEYBOARD_FLAG_NO_HEADER) != 0) {
                 kb->key = SOFT_KEYBOARD_KEY_BUTTON_104;
             } else {
                 kb->key = SOFT_KEYBOARD_KEY_BUTTON_105;
             }
             break;
-        case SOFT_KEYBOARD_KIND_2:
+        case SOFT_KEYBOARD_KIND_BBS:
             kb->key = SOFT_KEYBOARD_KEY_BUTTON_106;
             break;
         case SOFT_KEYBOARD_KIND_5:
@@ -973,7 +973,7 @@ void SoftKeyboard_CursorToLastButton(SoftKeyboard *kb)
 {
     switch (kb->kind) {
         case SOFT_KEYBOARD_KIND_LETTER:
-        case SOFT_KEYBOARD_KIND_2:
+        case SOFT_KEYBOARD_KIND_BBS:
             kb->key = SOFT_KEYBOARD_KEY_BUTTON_104;
             break;
         case SOFT_KEYBOARD_KIND_4:
@@ -1125,7 +1125,7 @@ int SoftKeyboard_PlaceOutsideCursor(SoftKeyboard *kb)
         case SOFT_KEYBOARD_KIND_CHAT:
             return SoftKeyboard_PlaceChatCursor(kb);
         case SOFT_KEYBOARD_KIND_LETTER:
-        case SOFT_KEYBOARD_KIND_2:
+        case SOFT_KEYBOARD_KIND_BBS:
             return SoftKeyboard_PlaceLetterCursor(kb);
         case SOFT_KEYBOARD_KIND_3:
         case SOFT_KEYBOARD_KIND_4:

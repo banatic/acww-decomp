@@ -168,13 +168,14 @@ void KeyboardEntry_GlidePointer(KeyboardEntry *self)
 }
 CLEAN_AS(func_ov126_0229ff68, KeyboardEntry_GlidePointer)
 
-/* func_ov126_0229ffdc: the pointer's animation 0 (at rest); gives its update's answer. */
-int KeyboardEntry_RestPointer(KeyboardEntry *self)
+/* func_ov126_0229ffdc: the pointer hidden (its animation 0, GLIDER_ANIM_NONE); gives its
+ * update's answer. */
+int KeyboardEntry_HidePointer(KeyboardEntry *self)
 {
     Glider_SetAnim(&self->pointer, 0);
     return keyboard_entry_update_pointer(self);
 }
-CLEAN_AS(func_ov126_0229ffdc, KeyboardEntry_RestPointer)
+CLEAN_AS(func_ov126_0229ffdc, KeyboardEntry_HidePointer)
 
 /* func_ov126_022a0000: the pointer at the keyboard's key (put at the key its mode starts on),
  * in animation 1 with its first set shown. */
@@ -458,7 +459,7 @@ void KeyboardEntry_Paste(KeyboardEntry *self)
     if (KeyboardEntry_TestFlags(self, KEYBOARD_ENTRY_FLAG_COPIED) == 0) {
         return;
     }
-    SoftKeyboard_SetFlag02(keyboard_entry_keyboard(self));
+    SoftKeyboard_SetPasting(keyboard_entry_keyboard(self));
     SoftKeyboard_HangulReset(keyboard_entry_keyboard(self));
     if (KeyboardEntry_IsMarking(self) != 0) {
         KeyboardEntry_DeleteMarked(self);
@@ -478,7 +479,7 @@ void KeyboardEntry_Paste(KeyboardEntry *self)
     KeyboardEntry_SetPosition(self, (char) position);
     KeyboardEntry_PlaceCursor(self);
     KeyboardEntry_ShowField(self);
-    SoftKeyboard_ClearFlag02(keyboard_entry_keyboard(self));
+    SoftKeyboard_ClearPasting(keyboard_entry_keyboard(self));
 }
 CLEAN_AS(func_ov126_022a054c, KeyboardEntry_Paste)
 
@@ -722,16 +723,16 @@ CLEAN_AS(func_ov126_022a0978, KeyboardEntry_UpdateKeys)
 /* --- The panel's buttons pressed --- */
 
 /* func_ov126_022a0a50: B with nothing to delete: with the two buttons it presses cancel, with
- * the cancelling button that one (the pointer at rest first); else a buzz. 1 when pressed. */
+ * the cancelling button that one (the pointer hidden first); else a buzz. 1 when pressed. */
 int KeyboardEntry_NothingToDelete(KeyboardEntry *self)
 {
     switch (self->panel_kind) {
         case KEYBOARD_ENTRY_PANEL_OK_CANCEL:
-            KeyboardEntry_RestPointer(self);
+            KeyboardEntry_HidePointer(self);
             KeyboardEntry_PressButton(self, 1);
             return 1;
         case KEYBOARD_ENTRY_PANEL_CANCEL:
-            KeyboardEntry_RestPointer(self);
+            KeyboardEntry_HidePointer(self);
             KeyboardEntry_PressButton(self, 0);
             return 1;
         default:
@@ -741,7 +742,7 @@ int KeyboardEntry_NothingToDelete(KeyboardEntry *self)
 }
 CLEAN_AS(func_ov126_022a0a50, KeyboardEntry_NothingToDelete)
 
-/* func_ov126_022a0a90: the OK button pressed (the pointer at rest first) when it is not dimmed
+/* func_ov126_022a0a90: the OK button pressed (the pointer hidden first) when it is not dimmed
  * and the panel has it; else a buzz. 1 when pressed. */
 int KeyboardEntry_PressOk(KeyboardEntry *self)
 {
@@ -750,7 +751,7 @@ int KeyboardEntry_PressOk(KeyboardEntry *self)
         return 0;
     }
     if (self->panel_kind == KEYBOARD_ENTRY_PANEL_OK_CANCEL || self->panel_kind == KEYBOARD_ENTRY_PANEL_OK) {
-        KeyboardEntry_RestPointer(self);
+        KeyboardEntry_HidePointer(self);
         KeyboardEntry_PressButton(self, 0);
         return 1;
     }

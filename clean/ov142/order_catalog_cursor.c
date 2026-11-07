@@ -557,7 +557,7 @@ void OrderCatalog_Quit(OrderCatalog *self)
     GroupParams_SetC4C(0);
     ButtonPanel_Select(&self->panel, ORDER_CATALOG_BUTTON_QUIT);
     MenuScene_SetSubState(catalog_scene(self), ORDER_CATALOG_SUB_PANEL_PRESSED);
-    OrderCatalog_Close(self);
+    OrderCatalog_StartClose(self);
 }
 CLEAN_AS(func_ov142_0229b10c, OrderCatalog_Quit)
 
@@ -578,7 +578,7 @@ CLEAN_AS(func_ov142_0229b138, OrderCatalog_Order)
 
 /* func_ov142_0229b174: the scene to close (state 2); in a room the item shown there is taken
  * away. */
-void OrderCatalog_Close(OrderCatalog *self)
+void OrderCatalog_StartClose(OrderCatalog *self)
 {
     MenuScene_SetState(catalog_scene(self), ORDER_CATALOG_STATE_START_WIPE_OUT);
     if (data_020e54a8 == 1 && OrderCatalog_TestFlags(self, ORDER_CATALOG_FLAG_PREVIEW) != 0) {
@@ -586,7 +586,7 @@ void OrderCatalog_Close(OrderCatalog *self)
         RoomPreview_Clear(RoomPreview_Get());
     }
 }
-CLEAN_AS(func_ov142_0229b174, OrderCatalog_Close)
+CLEAN_AS(func_ov142_0229b174, OrderCatalog_StartClose)
 
 /* func_ov142_0229b1b8: the confirmation, by touch or by the keys as the player last used. */
 void OrderCatalog_ResumeConfirm(OrderCatalog *self)
@@ -700,7 +700,7 @@ void OrderCatalog_Accept(OrderCatalog *self)
     MenuScene_SetSubState(catalog_scene(self), ORDER_CATALOG_SUB_PANEL_PRESSED);
     GroupParams_SetC4C(1);
     GroupParams_SetItemB(*OrderCatalog_ItemAt(self, self->picked_row));
-    OrderCatalog_Close(self);
+    OrderCatalog_StartClose(self);
 }
 CLEAN_AS(func_ov142_0229b350, OrderCatalog_Accept)
 

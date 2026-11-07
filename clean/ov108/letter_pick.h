@@ -53,7 +53,7 @@ enum LetterPickFlag {
 enum LetterPickPlace {
     LETTER_PICK_CARRIED_FIRST = 0x0b, /* 0x0b-0x14: the carried letters, 0x0b + row * 2 + column */
     LETTER_PICK_CARRIED_LAST = 0x14,
-    LETTER_PICK_BELOW = 0x15,   /* below the letters (at 0xbc, 0xb6): the panel's button 9 */
+    LETTER_PICK_QUIT = 0x15,    /* the Quit button below the letters (at 0xbc, 0xb6): the panel's button 9 */
     LETTER_PICK_NO_PLACE = 0x16 /* `popup_place` before any, and no place under a touch */
 };
 
@@ -86,7 +86,7 @@ enum LetterPickSubState {
     LETTER_PICK_SUB_CHOICE_BY_KEYS = 0x08,  /* LetterPick_ChooseByKeys */
     LETTER_PICK_SUB_CHOICE_PICK = 0x09,     /* LetterPick_PickChoiceRow */
     LETTER_PICK_SUB_SPRITE_MOVE = 0x0a,     /* LetterPick_WaitCursorSprite */
-    LETTER_PICK_SUB_BELOW_PRESS = 0x0b,     /* LetterPick_PressBelow */
+    LETTER_PICK_SUB_QUIT_PRESS = 0x0b,      /* LetterPick_WaitQuitPress */
     LETTER_PICK_SUB_PRESS_END = 0x0c,       /* LetterPick_FinishPlacePress */
     LETTER_PICK_SUB_PICK_UP = 0x0d,         /* LetterPick_PickUpAtCursor */
     LETTER_PICK_SUB_PICK_UP_END = 0x0e,     /* LetterPick_FinishPickUp */
@@ -207,7 +207,7 @@ int LetterPick_LetterPlace(LetterPick *self, unsigned int index);
 int LetterPick_LetterIndex(LetterPick *self, unsigned int place);
 int LetterPick_IsCarriedPlace(LetterPick *self, unsigned int place);
 void LetterPick_EndLayerTask(LetterPick *self);
-void LetterPick_PressPanelButton9(LetterPick *self);
+void LetterPick_PressQuit(LetterPick *self);
 void LetterPick_PickSlotLetter(LetterPick *self);
 void LetterPick_GlideHeldTo(LetterPick *self, int place, int steps);
 void LetterPick_PickUpWithCursor(LetterPick *self, int place);
@@ -228,7 +228,7 @@ void LetterPick_PutDown(LetterPick *self);
 void LetterPick_FinishPickUp(LetterPick *self);
 void LetterPick_PickUpAtCursor(LetterPick *self);
 void LetterPick_FinishPlacePress(LetterPick *self);
-void LetterPick_PressBelow(LetterPick *self);
+void LetterPick_WaitQuitPress(LetterPick *self);
 void LetterPick_WaitCursorSprite(LetterPick *self);
 void LetterPick_PickChoiceRow(LetterPick *self);
 void LetterPick_ChooseByKeys(LetterPick *self);

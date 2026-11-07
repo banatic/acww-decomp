@@ -124,7 +124,7 @@ typedef struct WfcHostList {
     u8 cursor;                                 /* 0xb2: WfcHostListCursor */
     u8 return_sub_state;                       /* 0xb3 */
     u8 labels_used;                            /* 0xb4: labels taken this frame */
-    u8 titles_shown;                           /* 0xb5 */
+    u8 captions_shown;                         /* 0xb5 */
     u8 host_count;                             /* 0xb6: the friends hosting, 0x21 before the first count */
     u8 anim_delay;                             /* 0xb7: frames to the busy animation's next frame */
     u8 anim_frame;                             /* 0xb8: 0-4 */
@@ -203,8 +203,8 @@ int WfcHostList_RefreshList(WfcHostList *self);
 void WfcHostList_UpdateHosts(WfcHostList *self);
 void WfcHostList_CopyHosts(WfcHostList *self);
 FriendList *WfcHostList_FriendList(WfcHostList *self);
-void WfcHostList_ShowTitlesOnce(WfcHostList *self);
-void WfcHostList_ShowTitles(WfcHostList *self);
+void WfcHostList_ShowButtonCaptionsOnce(WfcHostList *self);
+void WfcHostList_ShowButtonCaptions(WfcHostList *self);
 void WfcHostList_RefreshRowLabels(WfcHostList *self);
 void WfcHostList_CloseLabels(WfcHostList *self);
 TextLabel *WfcHostList_TakeLabel(WfcHostList *self);

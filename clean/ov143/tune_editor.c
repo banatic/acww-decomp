@@ -57,7 +57,8 @@ extern const OamEntry data_ov143_0229afc0[];
 #define TUNE_EDITOR_MESSAGE_ERASE_ALL 0x8d
 #define TUNE_EDITOR_PITCHED_NOTES 13
 
-/* The sounds: the erase button and its "no", the play delay passed to TownTune_Play. */
+/* The sounds: the erase button and its "no", and the sound number the tune is played as
+ * (TownTune_Play). */
 #define TUNE_EDITOR_SOUND_BUTTON 0x2a
 #define TUNE_EDITOR_PLAY_NUMBER 400
 

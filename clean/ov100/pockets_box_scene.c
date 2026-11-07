@@ -108,7 +108,7 @@ extern const MemberPointer data_ov100_0229ebc0, data_ov100_0229ebc8, data_ov100_
 #define PBS_BUTTONS_BOTTOM 0x70
 #define PBS_CANCEL_TOP 0x60
 
-/* The frames of the closed scene before it leaves. */
+/* The state the closed scene goes to (PocketsBox_Leave). */
 #define PBS_STATE_LEAVE POCKETS_BOX_STATE_LEAVE
 
 /* A sum of two 32-bit values, wrapping as the ROM's addition does. */
@@ -402,14 +402,14 @@ void PocketsBox_StepGlide(PocketsBox *self)
 CLEAN_AS(func_ov100_0229da40, PocketsBox_StepGlide)
 
 /* func_ov100_0229da7c (sub state 0x0f): back to the sub state kept once the cursor sprite's
- * animation is done; once its turn has settled, the held item (shown again, with sound 0x0d, if
+ * animation is done; once its turn holds (Glider_TurnHolds), the held item (shown again, with sound 0x0d, if
  * it was hidden) follows the sprite. */
 void PocketsBox_Swapped(PocketsBox *self)
 {
     if (CellLayerSprite_IsDone(pbs_cursor_cells(self)) != 0) {
         pbs_set_sub_state(self, self->return_state);
     }
-    if (Glider_IsTurnSettled(&self->cursor_sprite) != 0) {
+    if (Glider_TurnHolds(&self->cursor_sprite) != 0) {
         if (PocketsBox_TestFlags(self, POCKETS_BOX_FLAG_HELD_HIDDEN) != 0) {
             PocketsBox_ClearFlags(self, POCKETS_BOX_FLAG_HELD_HIDDEN);
             PocketsSound_Play0d();
@@ -435,12 +435,12 @@ void PocketsBox_Swap(PocketsBox *self)
 }
 CLEAN_AS(func_ov100_0229dad0, PocketsBox_Swap)
 
-/* func_ov100_0229db18 (sub state 0x0d): while the cursor sprite's turn has not settled, the
+/* func_ov100_0229db18 (sub state 0x0d): once the cursor sprite's turn no longer holds (Glider_TurnHolds), the
  * held item is put down: at the cursor's place at once (the popup for it, sub state 4, sound
- * 0x0e), elsewhere by a glide to the target. Once it has settled the item follows the sprite. */
+ * 0x0e), elsewhere by a glide to the target. While it holds the item follows the sprite. */
 void PocketsBox_PutDown(PocketsBox *self)
 {
-    if (Glider_IsTurnSettled(&self->cursor_sprite) != 0) {
+    if (Glider_TurnHolds(&self->cursor_sprite) != 0) {
         PocketsBox_FollowCursorSprite(self);
         return;
     }
@@ -466,11 +466,11 @@ void PocketsBox_PickedUp(PocketsBox *self)
 }
 CLEAN_AS(func_ov100_0229db70, PocketsBox_PickedUp)
 
-/* func_ov100_0229dba0 (sub state 0x0b): once the cursor sprite's turn has settled, the
+/* func_ov100_0229dba0 (sub state 0x0b): once the cursor sprite's turn holds (Glider_TurnHolds), the
  * cursor's item taken and sub state 0x0c. */
 void PocketsBox_PickUp(PocketsBox *self)
 {
-    if (Glider_IsTurnSettled(&self->cursor_sprite) != 0) {
+    if (Glider_TurnHolds(&self->cursor_sprite) != 0) {
         PocketsBox_TakeItem(self, self->cursor);
         pbs_set_sub_state(self, POCKETS_BOX_SUB_PICKED_UP);
     }
@@ -946,14 +946,14 @@ void PocketsBox_Layer4WipeOut(PocketsBox *self)
 {
     if (MenuScene_StepWipe(pbs_scene(self), PBS_WIPE_SCREEN)) {
         DisplayLayer_HideAndResetScroll(PBS_BOX_LAYER);
-        PocketsBox_ClearFlags(self, POCKETS_BOX_FLAG_80);
+        PocketsBox_ClearFlags(self, POCKETS_BOX_FLAG_BOX_DRAWN);
         MenuScene_StartWipeOnWindow2(pbs_scene(self), 8, 0, 0, PBS_WIPE_MARGIN);
         MenuScene_ScrollWipe(pbs_scene(self), PBS_POCKETS_LAYER, 0, 0);
         MenuScene_SetState(pbs_scene(self), POCKETS_BOX_STATE_LAYER6_WIPE_OUT);
         PocketsBox_Layer6WipeOut(self);
     } else {
         MenuScene_ScrollWipe(pbs_scene(self), PBS_BOX_LAYER, 0, 0);
-        self->exit_wipe_y = MenuScene_WipeOffsetY(pbs_scene(self));
+        self->box_wipe_y = MenuScene_WipeOffsetY(pbs_scene(self));
     }
 }
 CLEAN_AS(func_ov100_0229e54c, PocketsBox_Layer4WipeOut)
@@ -972,7 +972,7 @@ void PocketsBox_Leave(PocketsBox *self)
     MenuScene_StartWipeOnWindow2(pbs_scene(self), 2, 4, 1, PBS_WIPE_MARGIN);
     MenuScene_SetWipeExtent(pbs_scene(self), PBS_WIPE_EXTENT);
     MenuScene_ScrollWipe(pbs_scene(self), PBS_BOX_LAYER, 0, 0);
-    self->exit_wipe_y = MenuScene_WipeOffsetY(pbs_scene(self));
+    self->box_wipe_y = MenuScene_WipeOffsetY(pbs_scene(self));
     MenuScene_SetState(pbs_scene(self), POCKETS_BOX_STATE_LAYER4_WIPE_OUT);
 }
 CLEAN_AS(func_ov100_0229e5b8, PocketsBox_Leave)
@@ -986,7 +986,7 @@ void PocketsBox_Layer4WipeIn(PocketsBox *self)
         PocketsBox_EndAction(self);
     }
     MenuScene_ScrollWipe(pbs_scene(self), PBS_BOX_LAYER, 0, 0);
-    self->exit_wipe_y = MenuScene_WipeOffsetY(pbs_scene(self));
+    self->box_wipe_y = MenuScene_WipeOffsetY(pbs_scene(self));
 }
 CLEAN_AS(func_ov100_0229e62c, PocketsBox_Layer4WipeIn)
 
@@ -1003,10 +1003,10 @@ void PocketsBox_Layer6WipeIn(PocketsBox *self)
     PocketsBox_LoadLayers(self);
     MenuScene_StartWipeCoveredOnWindow2(pbs_scene(self), 2, 0, 1, PBS_WIPE_MARGIN);
     MenuScene_SetWipeExtent(pbs_scene(self), PBS_WIPE_EXTENT);
-    PocketsBox_SetFlags(self, POCKETS_BOX_FLAG_80);
+    PocketsBox_SetFlags(self, POCKETS_BOX_FLAG_BOX_DRAWN);
     DisplayLayer_Show(PBS_BOX_LAYER);
     MenuScene_ScrollWipe(pbs_scene(self), PBS_BOX_LAYER, 0, 0);
-    self->exit_wipe_y = MenuScene_WipeOffsetY(pbs_scene(self));
+    self->box_wipe_y = MenuScene_WipeOffsetY(pbs_scene(self));
     MenuScene_SetState(pbs_scene(self), POCKETS_BOX_STATE_LAYER4_WIPE_IN);
 }
 CLEAN_AS(func_ov100_0229e668, PocketsBox_Layer6WipeIn)
@@ -1126,8 +1126,8 @@ int PocketsBox_Draw(PocketsBox *self)
         Glider_DrawWrapped(&self->cursor_sprite);
     }
     PocketsBox_DrawHeld(self);
-    if (PocketsBox_TestFlags(self, POCKETS_BOX_FLAG_80)) {
-        PocketsGrid_DrawBox(pbs_grid(self), 0, self->exit_wipe_y);
+    if (PocketsBox_TestFlags(self, POCKETS_BOX_FLAG_BOX_DRAWN)) {
+        PocketsGrid_DrawBox(pbs_grid(self), 0, self->box_wipe_y);
     }
     if (PocketsBox_TestFlags(self, POCKETS_BOX_FLAG_OBJECTS_DRAWN)) {
         PocketsGrid_DrawPockets(pbs_grid(self), 0, self->wipe_y);

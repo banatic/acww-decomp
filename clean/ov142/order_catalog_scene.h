@@ -34,7 +34,7 @@ int OrderCatalog_Phase3Idle(void);
 int OrderCatalog_RunInteractive(OrderCatalog *self);
 int OrderCatalog_RunState(OrderCatalog *self);
 int OrderCatalog_Draw(OrderCatalog *self);
-int OrderCatalog_Shutdown(OrderCatalog *self);
+int OrderCatalog_Close(OrderCatalog *self);
 int OrderCatalog_Start(OrderCatalog *self);
 OrderCatalog *OrderCatalog_New(void);
 

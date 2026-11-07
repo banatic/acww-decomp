@@ -275,20 +275,20 @@ void LetterStorage_DrawPageTabs(LetterStorage *self)
 }
 CLEAN_AS(func_ov105_0229c55c, LetterStorage_DrawPageTabs)
 
-/* func_ov105_0229c5fc: sound 0x2a, the panel's button 4 selected, state 0x12 (written
+/* func_ov105_0229c5fc: the confirmation's No: sound 0x2a, the panel's button 4 selected, state 0x12 (written
  * directly), sub state 0x1b. */
-void LetterStorage_PressPanelButton4(LetterStorage *self)
+void LetterStorage_PressConfirmNo(LetterStorage *self)
 {
     SoundSys_PlaySe(0x2a);
     ButtonPanel_Select(&self->panel, 4);
     self->base.state = 0x12;
     MenuScene_SetSubState(scene_of(self), 0x1b);
 }
-CLEAN_AS(func_ov105_0229c5fc, LetterStorage_PressPanelButton4)
+CLEAN_AS(func_ov105_0229c5fc, LetterStorage_PressConfirmNo)
 
-/* func_ov105_0229c62c: sound 0x27, the panel's button 3 selected, state 4 (written directly),
+/* func_ov105_0229c62c: the confirmation's Yes: sound 0x27, the panel's button 3 selected, state 4 (written directly),
  * flag 0x100 cleared, sub state 0x1b. */
-void LetterStorage_PressPanelButton3(LetterStorage *self)
+void LetterStorage_PressConfirmYes(LetterStorage *self)
 {
     SoundSys_PlaySe(0x27);
     ButtonPanel_Select(&self->panel, 3);
@@ -296,18 +296,18 @@ void LetterStorage_PressPanelButton3(LetterStorage *self)
     LetterStorage_ClearFlags(self, LETTER_STORAGE_FLAG_READ);
     MenuScene_SetSubState(scene_of(self), 0x1b);
 }
-CLEAN_AS(func_ov105_0229c62c, LetterStorage_PressPanelButton3)
+CLEAN_AS(func_ov105_0229c62c, LetterStorage_PressConfirmYes)
 
-/* func_ov105_0229c668: sound 0x29, the panel's button 9 selected, sub state 0x1b, then state
+/* func_ov105_0229c668: Done pressed: sound 0x29, the panel's button 9 selected, sub state 0x1b, then state
  * 0x0e (written directly). */
-void LetterStorage_PressPanelButton9(LetterStorage *self)
+void LetterStorage_PressDone(LetterStorage *self)
 {
     SoundSys_PlaySe(0x29);
     ButtonPanel_Select(&self->panel, 9);
     MenuScene_SetSubState(scene_of(self), 0x1b);
     self->base.state = 0x0e;
 }
-CLEAN_AS(func_ov105_0229c668, LetterStorage_PressPanelButton9)
+CLEAN_AS(func_ov105_0229c668, LetterStorage_PressDone)
 
 /* func_ov105_0229c694: nothing (called by the setup, LetterStorage_Setup). */
 void LetterStorage_DoNothing(LetterStorage *self)
@@ -360,7 +360,7 @@ void LetterStorage_RunActionRead(LetterStorage *self)
 CLEAN_AS(func_ov105_0229c734, LetterStorage_RunActionRead)
 
 /* func_ov105_0229c758: the cursor moved by `keys` (KeyRepeat_Has*) in the part of the scene it
- * is in; `mode` 0 lets it go down to LETTER_STORAGE_BELOW. The wrap flags are cleared first.
+ * is in; `mode` 0 lets it go down to LETTER_STORAGE_DONE_BUTTON. The wrap flags are cleared first.
  * 1 when the cursor changed place; 0 at once when `keys` is 0. */
 int LetterStorage_MoveCursor(LetterStorage *self, int keys, int mode)
 {
@@ -409,7 +409,7 @@ void LetterStorage_MoveCursorInTabs(LetterStorage *self, int keys)
 }
 CLEAN_AS(func_ov105_0229c82c, LetterStorage_MoveCursorInTabs)
 
-/* func_ov105_0229c888: up from LETTER_STORAGE_BELOW goes to the carried letters' last place
+/* func_ov105_0229c888: up from LETTER_STORAGE_DONE_BUTTON goes to the carried letters' last place
  * (0x22, their bottom left), the cursor sprite turning to set A. */
 void LetterStorage_MoveCursorBelow(LetterStorage *self, int keys)
 {
@@ -424,7 +424,7 @@ CLEAN_AS(func_ov105_0229c888, LetterStorage_MoveCursorBelow)
  * the carried letters' right column of the same row (LETTER_STORAGE_FLAG_WRAPPED_LEFT), right
  * of the right column to their left column (no flag). Up and down are taken only when the move
  * stayed on the page and did not wrap: up from the top row goes to the tab above (columns 0-1
- * to page 0's tab, 2-4 to page 1's), down from the bottom row to LETTER_STORAGE_BELOW when
+ * to page 0's tab, 2-4 to page 1's), down from the bottom row to LETTER_STORAGE_DONE_BUTTON when
  * `mode` is 0, the cursor sprite turning to set B. */
 void LetterStorage_MoveCursorInPage(LetterStorage *self, int keys, int mode)
 {
@@ -468,7 +468,7 @@ void LetterStorage_MoveCursorInPage(LetterStorage *self, int keys, int mode)
         if (row < LETTER_STORAGE_ROWS - 1) {
             self->cursor += LETTER_STORAGE_PAGE_COLUMNS;
         } else if (mode == 0) {
-            self->cursor = LETTER_STORAGE_BELOW;
+            self->cursor = LETTER_STORAGE_DONE_BUTTON;
             Glider_TurnToSetB(&self->cursor_sprite);
         }
     }
@@ -479,7 +479,7 @@ CLEAN_AS(func_ov105_0229c8b4, LetterStorage_MoveCursorInPage)
  * goes to the page's right column of the same row (no flag), right of the right column to its
  * left column (LETTER_STORAGE_FLAG_WRAPPED_RIGHT). Up and down are taken only when the move
  * stayed on the carried letters and did not wrap: up stops at the top row, down from the
- * bottom row goes to LETTER_STORAGE_BELOW when `mode` is 0, the cursor sprite turning to set B. */
+ * bottom row goes to LETTER_STORAGE_DONE_BUTTON when `mode` is 0, the cursor sprite turning to set B. */
 void LetterStorage_MoveCursorInCarried(LetterStorage *self, int keys, int mode)
 {
     int index = (int) self->cursor - LETTER_STORAGE_CARRIED_FIRST;
@@ -514,7 +514,7 @@ void LetterStorage_MoveCursorInCarried(LetterStorage *self, int keys, int mode)
         if (row < LETTER_STORAGE_ROWS - 1) {
             self->cursor += LETTER_STORAGE_CARRIED_COLUMNS;
         } else if (mode == 0) {
-            self->cursor = LETTER_STORAGE_BELOW;
+            self->cursor = LETTER_STORAGE_DONE_BUTTON;
             Glider_TurnToSetB(&self->cursor_sprite);
         }
     }
@@ -783,7 +783,7 @@ int LetterStorage_CursorSpriteX(LetterStorage *self)
 }
 CLEAN_AS(func_ov105_0229cff4, LetterStorage_CursorSpriteX)
 
-/* func_ov105_0229d03c: the cursor sprite put at the cursor, animation 7 on LETTER_STORAGE_BELOW
+/* func_ov105_0229d03c: the cursor sprite put at the cursor, animation 7 on LETTER_STORAGE_DONE_BUTTON
  * and 1 elsewhere, then its set's first animation shown. */
 void LetterStorage_ShowCursorAtCursor(LetterStorage *self)
 {
@@ -1052,13 +1052,13 @@ void LetterStorage_DimCarriedLetters(LetterStorage *self)
 CLEAN_AS(func_ov105_0229d49c, LetterStorage_DimCarriedLetters)
 
 /* func_ov105_0229d4c4: the y of `place`: a letter's by the letters object less 0x10, 0xb6 for
- * LETTER_STORAGE_BELOW, a tab's first OBJ's plus 0x58, else 0. */
+ * LETTER_STORAGE_DONE_BUTTON, a tab's first OBJ's plus 0x58, else 0. */
 int LetterStorage_PlaceY(LetterStorage *self, int place)
 {
     if (is_letter_place(self, place)) {
         return PocketsLetters_PlaceY(&self->letters, LetterStorage_LetterIndex(self, (unsigned int) place)) - 0x10;
     }
-    if (place == LETTER_STORAGE_BELOW) {
+    if (place == LETTER_STORAGE_DONE_BUTTON) {
         return 0xb6;
     }
     if (LetterStorage_IsTabPlace(self, place)) {
@@ -1069,13 +1069,13 @@ int LetterStorage_PlaceY(LetterStorage *self, int place)
 CLEAN_AS(func_ov105_0229d4c4, LetterStorage_PlaceY)
 
 /* func_ov105_0229d530: the x of `place`: a letter's by the letters object, 0xbc for
- * LETTER_STORAGE_BELOW, a tab's first OBJ's plus 0x80, else 0. */
+ * LETTER_STORAGE_DONE_BUTTON, a tab's first OBJ's plus 0x80, else 0. */
 int LetterStorage_PlaceX(LetterStorage *self, int place)
 {
     if (is_letter_place(self, place)) {
         return PocketsLetters_PlaceX(&self->letters, LetterStorage_LetterIndex(self, (unsigned int) place));
     }
-    if (place == LETTER_STORAGE_BELOW) {
+    if (place == LETTER_STORAGE_DONE_BUTTON) {
         return 0xbc;
     }
     if (LetterStorage_IsTabPlace(self, place)) {
@@ -1179,7 +1179,7 @@ CLEAN_AS(func_ov105_0229d73c, LetterStorage_IsTabPlace)
 int LetterStorage_IsBelowPlace(LetterStorage *self, int place)
 {
     (void) self;
-    return place == LETTER_STORAGE_BELOW;
+    return place == LETTER_STORAGE_DONE_BUTTON;
 }
 CLEAN_AS(func_ov105_0229d750, LetterStorage_IsBelowPlace)
 
@@ -1368,7 +1368,7 @@ CLEAN_AS(func_ov105_0229da7c, LetterStorage_OfferPanelButtons)
 void LetterStorage_OfferPanelButtonsByKeys(LetterStorage *self)
 {
     MenuScene_ResetKeyRepeat(scene_of(self));
-    self->unk_2c2 = 1;
+    self->confirm_no_chosen = 1;
     Glider_SetAnim(&self->cursor_sprite, 1);
     update_cursor_sprite(&self->cursor_sprite);
     int x = ButtonPanel_ButtonX(&self->panel, LETTER_STORAGE_PANEL_BUTTON_4);
@@ -1421,14 +1421,14 @@ void LetterStorage_EndActionHidden(LetterStorage *self)
 CLEAN_AS(func_ov105_0229db70, LetterStorage_EndActionHidden)
 
 /* func_ov105_0229db8c (sub state 0x1f): once the cursor sprite's animation has ended, the
- * chosen panel button pressed (`unk_2c2` set: button 4, clear: button 3). */
+ * chosen panel button pressed (`confirm_no_chosen` set: button 4, clear: button 3). */
 void LetterStorage_PressChosenPanelButton(LetterStorage *self)
 {
     if (CellLayerSprite_IsDone(cursor_cells(self))) {
-        if (self->unk_2c2 != 0) {
-            LetterStorage_PressPanelButton4(self);
+        if (self->confirm_no_chosen != 0) {
+            LetterStorage_PressConfirmNo(self);
         } else {
-            LetterStorage_PressPanelButton3(self);
+            LetterStorage_PressConfirmYes(self);
         }
     }
 }
@@ -1437,7 +1437,7 @@ CLEAN_AS(func_ov105_0229db8c, LetterStorage_PressChosenPanelButton)
 /* func_ov105_0229dbc0 (sub state 0x1e): panel buttons 3 and 4 by the keys. A touch gives them
  * to the touch; A presses the chosen one (sub state 0x1f, once the sprite's second animation of
  * its set has played), B presses button 4 and START button 3 at once; left chooses button 3,
- * right button 4 (`unk_2c2` 0 or 1), the cursor sprite easing to it. */
+ * right button 4 (`confirm_no_chosen` 0 or 1), the cursor sprite easing to it. */
 void LetterStorage_ChoosePanelButtonByKeys(LetterStorage *self)
 {
     if (MenuScene_TakeTouch(scene_of(self))) {
@@ -1452,28 +1452,28 @@ void LetterStorage_ChoosePanelButtonByKeys(LetterStorage *self)
     }
     if (pressed & LETTER_STORAGE_PAD_B) {
         LetterStorage_HideCursorSprite(self);
-        LetterStorage_PressPanelButton4(self);
+        LetterStorage_PressConfirmNo(self);
         return;
     }
     if (pressed & LETTER_STORAGE_PAD_START) {
         LetterStorage_HideCursorSprite(self);
-        LetterStorage_PressPanelButton3(self);
+        LetterStorage_PressConfirmYes(self);
         return;
     }
 
-    u8 before = self->unk_2c2;
+    u8 before = self->confirm_no_chosen;
     int keys = (int) MenuScene_LatchRepeatedKeys(scene_of(self));
     if (KeyRepeat_HasLeft(keys)) {
-        if (self->unk_2c2 != 0) {
-            self->unk_2c2--;
+        if (self->confirm_no_chosen != 0) {
+            self->confirm_no_chosen--;
         }
     } else if (KeyRepeat_HasRight(keys)) {
-        if (self->unk_2c2 < 1) {
-            self->unk_2c2++;
+        if (self->confirm_no_chosen < 1) {
+            self->confirm_no_chosen++;
         }
     }
-    if (before != self->unk_2c2) {
-        int button = self->unk_2c2 != 0 ? LETTER_STORAGE_PANEL_BUTTON_4 : LETTER_STORAGE_PANEL_BUTTON_3;
+    if (before != self->confirm_no_chosen) {
+        int button = self->confirm_no_chosen != 0 ? LETTER_STORAGE_PANEL_BUTTON_4 : LETTER_STORAGE_PANEL_BUTTON_3;
         int x = ButtonPanel_ButtonX(&self->panel, button);
         int y = ButtonPanel_ButtonY(&self->panel, button);
         LetterStorage_EaseCursorSpriteTo(self, x, y);
@@ -1493,11 +1493,11 @@ void LetterStorage_ChoosePanelButtonByTouch(LetterStorage *self)
         return;
     }
     if (ButtonPanel_IsTouched(&self->panel, LETTER_STORAGE_PANEL_BUTTON_3)) {
-        LetterStorage_PressPanelButton3(self);
+        LetterStorage_PressConfirmYes(self);
     }
     /* Not an else: both run when both buttons answer the touch. */
     if (ButtonPanel_IsTouched(&self->panel, LETTER_STORAGE_PANEL_BUTTON_4)) {
-        LetterStorage_PressPanelButton4(self);
+        LetterStorage_PressConfirmNo(self);
     }
 }
 CLEAN_AS(func_ov105_0229dcc4, LetterStorage_ChoosePanelButtonByTouch)
@@ -1625,14 +1625,14 @@ void LetterStorage_StepHeldGlide(LetterStorage *self)
 CLEAN_AS(func_ov105_0229df20, LetterStorage_StepHeldGlide)
 
 /* func_ov105_0229df7c (sub state 0x14): back to the sub state kept once the cursor sprite's
- * animation has ended; once its turn has settled, a hidden held letter is shown again (sound
+ * animation has ended; once its turn holds (Glider_TurnHolds), a hidden held letter is shown again (sound
  * 0xd) and follows the sprite. */
 void LetterStorage_FinishSwap(LetterStorage *self)
 {
     if (CellLayerSprite_IsDone(cursor_cells(self))) {
         MenuScene_SetSubState(scene_of(self), self->return_state);
     }
-    if (Glider_IsTurnSettled(&self->cursor_sprite)) {
+    if (Glider_TurnHolds(&self->cursor_sprite)) {
         if (LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_HELD_HIDDEN)) {
             LetterStorage_ClearFlags(self, LETTER_STORAGE_FLAG_HELD_HIDDEN);
             PocketsSound_Play0d();
@@ -1658,12 +1658,12 @@ void LetterStorage_Swap(LetterStorage *self)
 }
 CLEAN_AS(func_ov105_0229dfd0, LetterStorage_Swap)
 
-/* func_ov105_0229e018 (sub state 0x12): while the cursor sprite's turn has not settled, the
+/* func_ov105_0229e018 (sub state 0x12): once the cursor sprite's turn no longer holds (Glider_TurnHolds), the
  * held letter is put down at `target` when the cursor is on it (the popup updated, sub state 7,
- * sound 0xe), else glided there in 4 steps; once it has, the letter follows the sprite. */
+ * sound 0xe), else glided there in 4 steps; while it holds, the letter follows the sprite. */
 void LetterStorage_PutDown(LetterStorage *self)
 {
-    if (Glider_IsTurnSettled(&self->cursor_sprite) == 0) {
+    if (Glider_TurnHolds(&self->cursor_sprite) == 0) {
         u8 target = self->target;
         if (self->cursor == target) {
             LetterStorage_PutHeldLetterAt(self, target);
@@ -1690,11 +1690,11 @@ void LetterStorage_FinishPickUp(LetterStorage *self)
 }
 CLEAN_AS(func_ov105_0229e070, LetterStorage_FinishPickUp)
 
-/* func_ov105_0229e0a0 (sub state 0x10): once the cursor sprite's turn has settled, the letter
+/* func_ov105_0229e0a0 (sub state 0x10): once the cursor sprite's turn holds (Glider_TurnHolds), the letter
  * at the cursor is picked up; sub state 0x11. */
 void LetterStorage_PickUpAtCursor(LetterStorage *self)
 {
-    if (Glider_IsTurnSettled(&self->cursor_sprite)) {
+    if (Glider_TurnHolds(&self->cursor_sprite)) {
         LetterStorage_PickUpWithCursor(self, self->cursor);
         MenuScene_SetSubState(scene_of(self), LETTER_STORAGE_SUB_PICK_UP_END);
     }
@@ -1717,7 +1717,7 @@ void LetterStorage_FinishPlacePress(LetterStorage *self)
 CLEAN_AS(func_ov105_0229e0d0, LetterStorage_FinishPlacePress)
 
 /* func_ov105_0229e110 (sub state 0x0e): once the cursor sprite's animation has ended, the place
- * is pressed: LETTER_STORAGE_BELOW presses panel button 9; a tab shows its page
+ * is pressed: LETTER_STORAGE_DONE_BUTTON presses panel button 9; a tab shows its page
  * (LetterStorage_ShowPage), or goes to sub state 0x0f when that page is shown already; other
  * places go to sub state 0x0f. */
 void LetterStorage_PressPlace(LetterStorage *self)
@@ -1726,7 +1726,7 @@ void LetterStorage_PressPlace(LetterStorage *self)
         return;
     }
     if (LetterStorage_IsBelowPlace(self, self->cursor)) {
-        LetterStorage_PressPanelButton9(self);
+        LetterStorage_PressDone(self);
     } else if (LetterStorage_IsTabPlace(self, self->cursor)) {
         int page = self->cursor - LETTER_STORAGE_TAB_FIRST;
         if (page == self->page) {
@@ -1926,7 +1926,7 @@ void LetterStorage_BrowseByKeys(LetterStorage *self)
     u16 pressed = data_021fbe40.pressed;
     if ((pressed & LETTER_STORAGE_PAD_START) || (pressed & LETTER_STORAGE_PAD_B)) {
         LetterStorage_HideCursorSprite(self);
-        LetterStorage_PressPanelButton9(self);
+        LetterStorage_PressDone(self);
         Popup_Hide(&self->popup, 0);
         return;
     }
@@ -2032,10 +2032,11 @@ CLEAN_AS(func_ov105_0229e7bc, LetterStorage_OpenTouchedChoice)
 /* The frames a popup stays after the pen leaves a place. */
 #define LETTER_STORAGE_POPUP_FRAMES 0x3c
 
-/* The panel's button that opens the prompt, and the messages of its two layouts. */
+/* The panel's button that opens the confirmation (Done), and the messages of its two layouts
+ * ("Done", "Are you done?"). */
 #define LETTER_STORAGE_PANEL_BUTTON_9 9
-#define LETTER_STORAGE_PANEL_MESSAGE 0x21
-#define LETTER_STORAGE_PROMPT_MESSAGE 0x22
+#define LETTER_STORAGE_DONE_MESSAGE 0x21
+#define LETTER_STORAGE_CONFIRM_MESSAGE 0x22
 
 /* The files of the page layer: its palettes, its screen and its characters. */
 extern const char data_ov105_0229fb30[]; /* "menu/inventory/b_itm_post.bpl" */
@@ -2164,7 +2165,7 @@ void LetterStorage_IdleByTouch(LetterStorage *self)
         return;
     }
     if (ButtonPanel_IsTouched(&self->panel, LETTER_STORAGE_PANEL_BUTTON_9) != 0) {
-        LetterStorage_PressPanelButton9(self);
+        LetterStorage_PressDone(self);
         return;
     }
     if (LetterStorage_PageTabAtTouch(self, x, y) != 0) {
@@ -2179,7 +2180,7 @@ void LetterStorage_PreparePanel(LetterStorage *self)
 {
     PocketsWallet_LoadObjFiles((PocketsWallet *) (void *) self->wallet);
     ButtonPanel_LoadTextColors(&self->panel);
-    ButtonPanel_SetLayout5(&self->panel, LETTER_STORAGE_PANEL_MESSAGE);
+    ButtonPanel_SetLayout5(&self->panel, LETTER_STORAGE_DONE_MESSAGE);
 }
 CLEAN_AS(func_ov105_0229e9a4, LetterStorage_PreparePanel)
 
@@ -2315,7 +2316,7 @@ CLEAN_AS(func_ov105_0229ec3c, LetterStorage_PanelWipeIn)
 void LetterStorage_RestorePanel(LetterStorage *self)
 {
     MenuScene_StartWipeCovered(scene_of(self), 0, 0);
-    ButtonPanel_SetLayout5(&self->panel, LETTER_STORAGE_PANEL_MESSAGE);
+    ButtonPanel_SetLayout5(&self->panel, LETTER_STORAGE_DONE_MESSAGE);
     MenuScene_SetState(scene_of(self), LETTER_STORAGE_STATE_PANEL_WIPE_IN);
 }
 CLEAN_AS(func_ov105_0229ec68, LetterStorage_RestorePanel)
@@ -2359,7 +2360,7 @@ void LetterStorage_ShowPrompt(LetterStorage *self)
 {
     LetterStorage_BeginPanelDim(self);
     MenuScene_StartWipeCovered(scene_of(self), 0, 0);
-    ButtonPanel_SetLayout11(&self->panel, LETTER_STORAGE_PROMPT_MESSAGE);
+    ButtonPanel_SetLayout11(&self->panel, LETTER_STORAGE_CONFIRM_MESSAGE);
     MenuScene_SetState(scene_of(self), LETTER_STORAGE_STATE_PROMPT_WIPE_IN);
 }
 CLEAN_AS(func_ov105_0229ed04, LetterStorage_ShowPrompt)

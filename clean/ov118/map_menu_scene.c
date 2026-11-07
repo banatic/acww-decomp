@@ -138,7 +138,7 @@ static void map_menu_destroy_members(MapMenu *self)
     self->base.vtable = data_ov118_0229cc08;
     __cxa_vec_cleanup(self->marks, MAP_MENU_MARKS, sizeof(MapMenuMark), func_ov118_0229a438);
     __cxa_vec_cleanup(self->extra_marks, MAP_MENU_EXTRA_MARKS, sizeof(MapMenuMark), func_ov118_0229a438);
-    TownMapMarkers_Destruct(self->spots);
+    TownMapMarkers_Destruct(self->markers);
     Glider0_Destroy(&self->cursor);
     PushButton_Destroy(&self->knob_button);
     __cxa_vec_cleanup(self->labels, MAP_MENU_ROWS, sizeof(TextLabel), func_02070be8);
@@ -174,15 +174,15 @@ void MapMenu_LoadObjFiles(void)
 CLEAN_AS(func_ov118_0229bda4, MapMenu_LoadObjFiles)
 
 /* func_ov118_0229be04: the map finished: overlay 117's last step, its characters into
- * `map_chars` (then loaded as the map layer's characters 0x60-0x15f) and its spots into `spots`,
+ * `map_chars` (then loaded as the map layer's characters 0x60-0x15f) and its markers into `markers`,
  * from which the marks are made. */
 void MapMenu_FinishMap(MapMenu *self)
 {
     TownMapImage_DrawRow(3);
-    TownMapMarkers_Clear(self->spots);
-    TownMapImage_Finish((int) (uintptr_t) self->map_chars, (int) (uintptr_t) self->spots);
+    TownMapMarkers_Clear(self->markers);
+    TownMapImage_Finish((int) (uintptr_t) self->map_chars, (int) (uintptr_t) self->markers);
     DisplayLayer_LoadChars((u32) (uintptr_t) self->map_chars, MAP_MENU_LAYER_MAP, 0x60, 0x60, 0x15f);
-    MapMenu_FillMarks(self, self->spots);
+    MapMenu_FillMarks(self, self->markers);
 }
 CLEAN_AS(func_ov118_0229be04, MapMenu_FinishMap)
 
@@ -684,7 +684,7 @@ MapMenu *MapMenu_New(void)
     __cxa_vec_ctor(self->labels, MAP_MENU_ROWS, sizeof(TextLabel), func_02070c08, func_02070be8);
     PushButton_Construct(&self->knob_button);
     Glider0_Construct(&self->cursor);
-    TownMapMarkers_Construct(self->spots);
+    TownMapMarkers_Construct(self->markers);
     __cxa_vec_ctor(self->extra_marks, MAP_MENU_EXTRA_MARKS, sizeof(MapMenuMark), func_ov118_0229a43c, func_ov118_0229a438);
     __cxa_vec_ctor(self->marks, MAP_MENU_MARKS, sizeof(MapMenuMark), func_ov118_0229a43c, func_ov118_0229a438);
     return self;

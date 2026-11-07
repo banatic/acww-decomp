@@ -93,7 +93,7 @@ int Glider_FrameY(Glider *glider);
 int Glider_FrameX(Glider *glider);
 int Glider_IsMoving(Glider *glider);
 int Glider_IsTurnAtFrame2(Glider *glider);
-int Glider_IsTurnSettled(Glider *glider);
+int Glider_TurnHolds(Glider *glider);
 void Glider_EaseToByDistance(Glider *glider, int x, int y, int steps, u8 near_steps);
 void Glider_EaseTo(Glider *glider, int x, int y, int steps, int play_se);
 int Glider_MoveTo(Glider *glider, int x, int y, int steps);

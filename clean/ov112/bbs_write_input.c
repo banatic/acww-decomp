@@ -235,7 +235,7 @@ void BbsWrite_Paste(BbsWriteScene *self)
         BbsWrite_DeleteMarked(self);
     }
     SoftKeyboard_HangulReset((SoftKeyboard *) (void *) self->keyboard);
-    SoftKeyboard_SetFlag02(bbs_write_keyboard(self));
+    SoftKeyboard_SetPasting(bbs_write_keyboard(self));
     int count = func_02051c8c_unk(self->clipboard, BBS_POST_LENGTH);
     for (int i = 0; i < count; i++) {
         if (BbsWrite_InsertChar(self, self->clipboard[i], 0) == 0) {
@@ -248,7 +248,7 @@ void BbsWrite_Paste(BbsWriteScene *self)
     SoftKeyboard_PlaySe23((SoftKeyboard *) (void *) self->keyboard);
     BbsWrite_Refresh(self);
     BbsWrite_PlaceCursor(self);
-    SoftKeyboard_ClearFlag02(bbs_write_keyboard(self));
+    SoftKeyboard_ClearPasting(bbs_write_keyboard(self));
 }
 CLEAN_AS(func_ov112_022a00ac, BbsWrite_Paste)
 

@@ -27,7 +27,7 @@ static_assert(sizeof(PushButton) == 0x48 && offsetof(MapMenu, cursor) == 0x6c0, 
 static_assert(sizeof(Glider) == 0x64 && offsetof(MapMenu, map_screen) == 0x724, "map_screen");
 static_assert(offsetof(MapMenu, shown_rows) == 0xf24 && offsetof(MapMenu, rows) == 0x1724, "rows");
 static_assert(offsetof(MapMenu, rows_template) == 0x1f24 && offsetof(MapMenu, map_chars) == 0x2724, "chars");
-static_assert(sizeof(TownMapMarker) == 6 && offsetof(MapMenu, spots) == 0x4724, "spots");
+static_assert(sizeof(TownMapMarker) == 6 && offsetof(MapMenu, markers) == 0x4724, "markers");
 static_assert(offsetof(MapMenu, residents) == 0x478a && offsetof(MapMenu, places) == 0x4797, "lists");
 static_assert(sizeof(MapMenuMark) == 3 && offsetof(MapMenu, extra_marks) == 0x47a4, "marks");
 static_assert(offsetof(MapMenu, marks) == 0x47ad && sizeof(MapMenu) == 0x47d8, "size (func_ov118_0229c9e0)");
@@ -37,7 +37,7 @@ extern u8 data_021dc7bc[];
 extern VillagerTown data_021e5a2c;
 
 /* The mark of each place (MAP_MENU_ENTRY_PLACE + i), and the row of each building mark 9-13 in
- * the places' list; the kind of the marks of spots 12-16. */
+ * the places' list; the kind of the marks of markers 12-16. */
 extern const u8 data_ov118_0229ca90[MAP_MENU_PLACES];
 extern const u8 data_ov118_0229ca98[MAP_MENU_PLACES];
 extern const u8 data_ov118_0229caa0[MAP_MENU_PLACES];
@@ -388,20 +388,20 @@ int MapMenu_MarkAt(MapMenu *self, int x, int y)
 }
 CLEAN_AS(func_ov118_0229b088, MapMenu_MarkAt)
 
-/* func_ov118_0229b120: the marks from overlay 117's spots, 8 pixels left of and 16 below them.
- * Spots 0-2 are the extra marks, by the spot's kind (0: kind 8, 1: 7, 2: 9, 3: 9 flipped, others
- * none); spots 3-10 are villagers' houses, 11 the players' house, 12-16 the town hall,
- * the museum, the store, the tailor and the gate (data_ov118_0229caa0). A spot without a place has no mark. */
-void MapMenu_FillMarks(MapMenu *self, TownMapMarker *spots)
+/* func_ov118_0229b120: the marks from overlay 117's markers, 8 pixels left of and 16 below them.
+ * Markers 0-2 are the extra marks, by the marker's kind (0: kind 8, 1: 7, 2: 9, 3: 9 flipped, others
+ * none); markers 3-10 are villagers' houses, 11 the players' house, 12-16 the town hall,
+ * the museum, the store, the tailor and the gate (data_ov118_0229caa0). A marker without a place has no mark. */
+void MapMenu_FillMarks(MapMenu *self, TownMapMarker *markers)
 {
     for (int i = 0; i < MAP_MENU_EXTRA_MARKS; i++) {
         MapMenuMark *mark = &self->extra_marks[i];
-        const TownMapMarker *spot = TownMapMarkers_Get(spots, (unsigned int) i);
-        if (spot == NULL) {
+        const TownMapMarker *marker = TownMapMarkers_Get(markers, (unsigned int) i);
+        if (marker == NULL) {
             mark->kind = MAP_MENU_MARK_NONE;
             continue;
         }
-        switch (TownMapMarkers_Kind(spots, (unsigned int) i)) {
+        switch (TownMapMarkers_Kind(markers, (unsigned int) i)) {
             case 0:
                 mark->kind = 8;
                 break;
@@ -418,14 +418,14 @@ void MapMenu_FillMarks(MapMenu *self, TownMapMarker *spots)
                 mark->kind = MAP_MENU_MARK_NONE;
                 break;
         }
-        mark->x = (u8) (spot->x - 8);
-        mark->y = (u8) (spot->y + 0x10);
+        mark->x = (u8) (marker->x - 8);
+        mark->y = (u8) (marker->y + 0x10);
     }
     for (int i = 0; i < MAP_MENU_MARKS; i++) {
         unsigned int index = (unsigned int) i + MAP_MENU_EXTRA_MARKS;
         MapMenuMark *mark = &self->marks[i];
-        const TownMapMarker *spot = TownMapMarkers_Get(spots, index);
-        if (spot == NULL) {
+        const TownMapMarker *marker = TownMapMarkers_Get(markers, index);
+        if (marker == NULL) {
             mark->kind = MAP_MENU_MARK_NONE;
             continue;
         }
@@ -436,8 +436,8 @@ void MapMenu_FillMarks(MapMenu *self, TownMapMarker *spots)
         } else {
             mark->kind = data_ov118_0229caa0[index - 12];
         }
-        mark->x = (u8) (spot->x - 8);
-        mark->y = (u8) (spot->y + 0x10);
+        mark->x = (u8) (marker->x - 8);
+        mark->y = (u8) (marker->y + 0x10);
     }
 }
 CLEAN_AS(func_ov118_0229b120, MapMenu_FillMarks)

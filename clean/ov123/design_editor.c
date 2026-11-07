@@ -780,7 +780,7 @@ CLEAN_AS(func_ov123_0229bf90, DesignEditor_BeginInteractiveFrame)
 
 /* func_ov123_0229bfac: the scene's members ended: the text boxes closed and the layer tasks
  * taken off the queue; the player asked to go back to state 0x10, and the scene sound's slot
- * 0x24 given 0 when the town's design was edited. */
+ * 0x24 given 0 when Blanca's face (the mystery cat record's design) was edited. */
 void DesignEditor_Teardown(DesignEditor *self)
 {
     ButtonPanel_CloseTexts(&self->panel);
@@ -1038,7 +1038,7 @@ void DesignEditor_WipeIn(DesignEditor *self)
 CLEAN_AS(func_ov123_0229c448, DesignEditor_WipeIn)
 
 /* func_ov123_0229c470 (state 0): the layers set up and loaded, tool 0 chosen, the sprites
- * loaded, the design taken (GroupParams_Mode 2: the player's, 3: the town's), its characters
+ * loaded, the design taken (GroupParams_Mode 2: the player's, 3: Blanca's face), its characters
  * made and loaded at once; the panel in layout 2, the wipe in on window 2, layers 6, 4 and 3
  * shown, the scene drawn (state 1). */
 void DesignEditor_StartSetup(DesignEditor *self)

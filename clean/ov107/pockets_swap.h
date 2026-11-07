@@ -54,7 +54,7 @@ enum PocketsSwapFlag {
 enum PocketsSwapPlace {
     POCKETS_SWAP_GRID_FIRST = 0x00, /* 0-14: the grid, row * 5 + column */
     POCKETS_SWAP_GRID_LAST = 0x0e,
-    POCKETS_SWAP_BELOW = 0x0f,   /* below the grid (at 0xbc, 0xb6): panel button 9 */
+    POCKETS_SWAP_QUIT = 0x0f,    /* the Quit button below the grid (at 0xbc, 0xb6): panel button 9 */
     POCKETS_SWAP_NO_PLACE = 0x10 /* `popup_place` before any; PocketsSwap_PlaceAtTouch's none */
 };
 
@@ -88,7 +88,7 @@ enum PocketsSwapSubState {
     POCKETS_SWAP_SUB_CHOICE_BY_KEYS = 0x06,  /* PocketsSwap_ChooseByKeys */
     POCKETS_SWAP_SUB_CHOICE_PICK = 0x07,     /* PocketsSwap_PickChoiceRow */
     POCKETS_SWAP_SUB_SPRITE_MOVE = 0x08,     /* PocketsSwap_WaitCursorSprite */
-    POCKETS_SWAP_SUB_BELOW_PRESS = 0x09,     /* PocketsSwap_WaitBelowPress */
+    POCKETS_SWAP_SUB_QUIT_PRESS = 0x09,      /* PocketsSwap_WaitBelowPress */
     POCKETS_SWAP_SUB_SPRITE_ANIM = 0x0a,     /* PocketsSwap_WaitSpriteAnim */
     POCKETS_SWAP_SUB_CHOICE_OPEN = 0x0b,     /* PocketsSwap_WaitChoiceShown */
     POCKETS_SWAP_SUB_CHOICE_CLOSE = 0x0c,    /* PocketsSwap_CloseChoice */
@@ -187,12 +187,12 @@ void PocketsSwap_MoveCursorInGrid(PocketsSwap *self, int keys);
 void PocketsSwap_OpenChoice(PocketsSwap *self, int place, int above_popup);
 void PocketsSwap_AddEntries(PocketsSwap *self);
 void PocketsSwap_TakeNewItem(PocketsSwap *self);
-void PocketsSwap_PressBelow(PocketsSwap *self);
+void PocketsSwap_PressQuit(PocketsSwap *self);
 void PocketsSwap_Finish(PocketsSwap *self);
 void PocketsSwap_CancelChoice(PocketsSwap *self);
 void PocketsSwap_ShowChoice(PocketsSwap *self, int above_popup);
 void PocketsSwap_RunAction(PocketsSwap *self);
-void PocketsSwap_ShowCursorSecondOfSet(PocketsSwap *self);
+void PocketsSwap_BeginQuitPress(PocketsSwap *self);
 void PocketsSwap_ShowCursorFirstOfSet(PocketsSwap *self);
 void PocketsSwap_PlaceCursorSprite(PocketsSwap *self);
 void PocketsSwap_PointAtFirstRow(PocketsSwap *self);

@@ -481,9 +481,9 @@ void TimeScreen_WaitCursorSprite(TimeScreen *self)
 }
 CLEAN_AS(func_ov136_0229cb30, TimeScreen_WaitCursorSprite)
 
-/* func_ov136_0229cb58 (sub state 9): once the picker's cursor is back from the scroll bar, the
- * list by the keys again, after the release animation; the cursor sprite follows meanwhile. */
-void TimeScreen_ReturnFromBar(TimeScreen *self)
+/* func_ov136_0229cb58 (sub state 9): once the thumb's release animation has ended
+ * (ClockSetter_SettleThumb), the list by the keys again, after the release animation; the cursor sprite follows meanwhile. */
+void TimeScreen_WaitThumbSettled(TimeScreen *self)
 {
     if (ClockSetter_SettleThumb(&self->picker)) {
         MenuScene_SetSubState(time_scene(self), TIME_SCREEN_SUB_LIST);
@@ -493,7 +493,7 @@ void TimeScreen_ReturnFromBar(TimeScreen *self)
     int y = TimeScreen_CursorY(self);
     Glider_PlaceAt(&self->cursor_sprite, x, y);
 }
-CLEAN_AS(func_ov136_0229cb58, TimeScreen_ReturnFromBar)
+CLEAN_AS(func_ov136_0229cb58, TimeScreen_WaitThumbSettled)
 
 /* func_ov136_0229cba0 (sub state 8): while A is held the scroll bar moves by up and down, the
  * cursor sprite following; once A is let go the bar is too (sub state 9). */
@@ -506,7 +506,7 @@ void TimeScreen_ListBarByKeys(TimeScreen *self)
         Glider_PlaceAt(&self->cursor_sprite, x, y);
     } else {
         ClockSetter_ReleaseThumb(&self->picker);
-        MenuScene_SetSubState(time_scene(self), TIME_SCREEN_SUB_BAR_RETURN);
+        MenuScene_SetSubState(time_scene(self), TIME_SCREEN_SUB_THUMB_SETTLE);
     }
 }
 CLEAN_AS(func_ov136_0229cba0, TimeScreen_ListBarByKeys)

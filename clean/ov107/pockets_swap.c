@@ -103,7 +103,7 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
 /* The panel's button that closes the scene without a swap, and the message shown when a tile
  * request cannot be asked or is refused. */
-#define POCKETS_SWAP_PANEL_BUTTON 9
+#define POCKETS_SWAP_QUIT_BUTTON 9
 #define POCKETS_SWAP_MESSAGE_REFUSED 3
 #define POCKETS_SWAP_RETURN_HERE 0xff
 
@@ -525,7 +525,7 @@ void PocketsSwap_RunActionDrop(PocketsSwap *self)
 CLEAN_AS(func_ov107_0229c7b0, PocketsSwap_RunActionDrop)
 
 /* func_ov107_0229c824: the cursor moved by `keys` (KeyRepeat_Has*): in the grid
- * (PocketsSwap_MoveCursorInGrid), or up from POCKETS_SWAP_BELOW to the grid's last place (the
+ * (PocketsSwap_MoveCursorInGrid), or up from POCKETS_SWAP_QUIT to the grid's last place (the
  * cursor sprite turning to set A). The wrap flags are cleared first. 1 when the cursor changed
  * place; 0 at once when `keys` is 0. */
 int PocketsSwap_MoveCursor(PocketsSwap *self, int keys)
@@ -538,7 +538,7 @@ int PocketsSwap_MoveCursor(PocketsSwap *self, int keys)
     }
     if (PocketsSwap_IsGridPlace(self, self->cursor) != 0) {
         PocketsSwap_MoveCursorInGrid(self, keys);
-    } else if (self->cursor == POCKETS_SWAP_BELOW && KeyRepeat_HasUp(keys) != 0) {
+    } else if (self->cursor == POCKETS_SWAP_QUIT && KeyRepeat_HasUp(keys) != 0) {
         self->cursor = POCKETS_SWAP_GRID_LAST;
         Glider_TurnToSetA(&self->cursor_sprite);
     }
@@ -549,7 +549,7 @@ CLEAN_AS(func_ov107_0229c824, PocketsSwap_MoveCursor)
 /* func_ov107_0229c894: the cursor in the grid (3 rows of 5). Left (unless up is also held off
  * the top row) and right (unless down is also held) wrap over the edges within the row, with
  * their flag; when the move did not wrap, up stops at the top row and down from the bottom row
- * goes to POCKETS_SWAP_BELOW, the cursor sprite turning to set B. */
+ * goes to POCKETS_SWAP_QUIT, the cursor sprite turning to set B. */
 void PocketsSwap_MoveCursorInGrid(PocketsSwap *self, int keys)
 {
     int column = self->cursor;
@@ -588,7 +588,7 @@ void PocketsSwap_MoveCursorInGrid(PocketsSwap *self, int keys)
         if (row < POCKETS_SWAP_ROWS - 1) {
             self->cursor += POCKETS_SWAP_COLUMNS;
         } else {
-            self->cursor = POCKETS_SWAP_BELOW;
+            self->cursor = POCKETS_SWAP_QUIT;
             Glider_TurnToSetB(&self->cursor_sprite);
         }
     }
@@ -666,13 +666,13 @@ void PocketsSwap_TakeNewItem(PocketsSwap *self)
 CLEAN_AS(func_ov107_0229caa8, PocketsSwap_TakeNewItem)
 
 /* func_ov107_0229cb14: panel button 9 selected, sub state 0x0f, sound 0x28. */
-void PocketsSwap_PressBelow(PocketsSwap *self)
+void PocketsSwap_PressQuit(PocketsSwap *self)
 {
-    ButtonPanel_Select(&self->panel, POCKETS_SWAP_PANEL_BUTTON);
+    ButtonPanel_Select(&self->panel, POCKETS_SWAP_QUIT_BUTTON);
     MenuScene_SetSubState(psw_scene(self), POCKETS_SWAP_SUB_PANEL_PRESSED);
     SoundSys_PlaySe(0x28);
 }
-CLEAN_AS(func_ov107_0229cb14, PocketsSwap_PressBelow)
+CLEAN_AS(func_ov107_0229cb14, PocketsSwap_PressQuit)
 
 /* func_ov107_0229cb3c: the swap done: `slot` handed back as GroupParams_SetArg, C4C 1, state 3
  * in phase 1 (the wipe out), the popup and the cursor sprite hidden. */
@@ -736,12 +736,12 @@ void PocketsSwap_RunAction(PocketsSwap *self)
 CLEAN_AS(func_ov107_0229cc14, PocketsSwap_RunAction)
 
 /* func_ov107_0229cca8: the cursor sprite's second set shown, sub state 9. */
-void PocketsSwap_ShowCursorSecondOfSet(PocketsSwap *self)
+void PocketsSwap_BeginQuitPress(PocketsSwap *self)
 {
     Glider_ShowSecondOfSet(&self->cursor_sprite);
-    MenuScene_SetSubState(psw_scene(self), POCKETS_SWAP_SUB_BELOW_PRESS);
+    MenuScene_SetSubState(psw_scene(self), POCKETS_SWAP_SUB_QUIT_PRESS);
 }
-CLEAN_AS(func_ov107_0229cca8, PocketsSwap_ShowCursorSecondOfSet)
+CLEAN_AS(func_ov107_0229cca8, PocketsSwap_BeginQuitPress)
 
 /* func_ov107_0229ccc8: the cursor sprite's first set shown and the sprite updated. */
 void PocketsSwap_ShowCursorFirstOfSet(PocketsSwap *self)
@@ -854,7 +854,7 @@ void PocketsSwap_ShowCursorAtCursor(PocketsSwap *self)
     int x = PocketsSwap_CursorSpriteX(self);
     int y = PocketsSwap_CursorSpriteY(self);
     Glider_PlaceAt(&self->cursor_sprite, x, y);
-    if (self->cursor == POCKETS_SWAP_BELOW) {
+    if (self->cursor == POCKETS_SWAP_QUIT) {
         Glider_SetAnim(&self->cursor_sprite, 7);
     } else {
         Glider_SetAnim(&self->cursor_sprite, 1);
@@ -1006,7 +1006,7 @@ int PocketsSwap_PlaceY(PocketsSwap *self, int place)
     if (PocketsSwap_IsGridPlace(self, (unsigned int) place) != 0) {
         return PocketsGrid_PlaceY(&self->grid, PocketsSwap_GridIndex(self, place)) - 0x10;
     }
-    return place == POCKETS_SWAP_BELOW ? 0xb6 : 0;
+    return place == POCKETS_SWAP_QUIT ? 0xb6 : 0;
 }
 CLEAN_AS(func_ov107_0229d260, PocketsSwap_PlaceY)
 
@@ -1016,7 +1016,7 @@ int PocketsSwap_PlaceX(PocketsSwap *self, int place)
     if (PocketsSwap_IsGridPlace(self, (unsigned int) place) != 0) {
         return PocketsGrid_PlaceX(&self->grid, PocketsSwap_GridIndex(self, place));
     }
-    return place == POCKETS_SWAP_BELOW ? 0xbc : 0;
+    return place == POCKETS_SWAP_QUIT ? 0xbc : 0;
 }
 CLEAN_AS(func_ov107_0229d29c, PocketsSwap_PlaceX)
 
@@ -1271,11 +1271,11 @@ void PocketsSwap_WaitSpriteAnim(PocketsSwap *self)
 CLEAN_AS(func_ov107_0229d6c0, PocketsSwap_WaitSpriteAnim)
 
 /* func_ov107_0229d6e8 (sub state 9): once the cursor sprite's animation is done, panel button 9
- * pressed (PocketsSwap_PressBelow). */
+ * pressed (PocketsSwap_PressQuit). */
 void PocketsSwap_WaitBelowPress(PocketsSwap *self)
 {
     if (CellLayerSprite_IsDone(psw_cursor_cells(self)) != 0) {
-        ButtonPanel_Select(&self->panel, POCKETS_SWAP_PANEL_BUTTON);
+        ButtonPanel_Select(&self->panel, POCKETS_SWAP_QUIT_BUTTON);
         MenuScene_SetSubState(psw_scene(self), POCKETS_SWAP_SUB_PANEL_PRESSED);
         SoundSys_PlaySe(0x28);
     }
@@ -1361,14 +1361,14 @@ void PocketsSwap_BrowseByKeys(PocketsSwap *self)
             if (PocketsSwap_PlaceIsEmpty(self, self->cursor) == 0) {
                 PocketsSwap_OpenChoice(self, self->cursor, 0);
             }
-        } else if (self->cursor == POCKETS_SWAP_BELOW) {
-            PocketsSwap_ShowCursorSecondOfSet(self);
+        } else if (self->cursor == POCKETS_SWAP_QUIT) {
+            PocketsSwap_BeginQuitPress(self);
         }
         return;
     }
     if (data_021fbe40.pressed & POCKETS_SWAP_PAD_B) {
         PocketsSwap_HideCursorSprite(self);
-        PocketsSwap_PressBelow(self);
+        PocketsSwap_PressQuit(self);
         Popup_Hide(&self->popup, 0);
     } else {
         Popup_ShowQueued(&self->popup);
@@ -1472,8 +1472,8 @@ void PocketsSwap_IdleByTouch(PocketsSwap *self)
         PocketsSwap_TouchPlace(self, place);
         return;
     }
-    if (ButtonPanel_IsTouched(&self->panel, POCKETS_SWAP_PANEL_BUTTON) != 0) {
-        PocketsSwap_PressBelow(self);
+    if (ButtonPanel_IsTouched(&self->panel, POCKETS_SWAP_QUIT_BUTTON) != 0) {
+        PocketsSwap_PressQuit(self);
     }
 }
 CLEAN_AS(func_ov107_0229daa4, PocketsSwap_IdleByTouch)

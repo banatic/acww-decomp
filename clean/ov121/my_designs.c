@@ -1025,7 +1025,7 @@ CLEAN_AS(func_ov121_0229b214, MyDesigns_RunChoiceKeys)
  * QUIRK: MY_DESIGNS_FLAG_CARRYING is cleared twice when put down. */
 void MyDesigns_PutDown(MyDesigns *self)
 {
-    if (Glider_IsTurnSettled(&self->pointer) != 0) {
+    if (Glider_TurnHolds(&self->pointer) != 0) {
         return;
     }
     MyDesigns_ClearFlags(self, MY_DESIGNS_FLAG_CARRYING);
@@ -1059,7 +1059,7 @@ CLEAN_AS(func_ov121_0229b31c, MyDesigns_PickedUp)
  * enough, the design at the cursor is carried, with its sound (MY_DESIGNS_SUB_PICKED_UP). */
 void MyDesigns_PickUp(MyDesigns *self)
 {
-    if (Glider_IsTurnSettled(&self->pointer) != 0) {
+    if (Glider_TurnHolds(&self->pointer) != 0) {
         MenuScene_SetSubState(scene(self), MY_DESIGNS_SUB_PICKED_UP);
         self->picked = self->cursor;
         MyDesigns_SetFlags(self, MY_DESIGNS_FLAG_CARRYING);
@@ -1416,7 +1416,7 @@ void MyDesigns_Setup(MyDesigns *self)
         MyDesigns_Disable(self, MY_DESIGNS_BUTTON_EASEL);
         MyDesigns_Disable(self, MY_DESIGNS_BUTTON_CARPET);
         MyDesigns_Disable(self, MY_DESIGNS_BUTTON_WALLPAPER);
-        MyDesigns_Disable(self, MY_DESIGNS_BUTTON_HELD);
+        MyDesigns_Disable(self, MY_DESIGNS_BUTTON_UMBRELLA);
         MyDesigns_Disable(self, MY_DESIGNS_BUTTON_GROUND);
     }
     PagedChoice_Init(choice(self), LAYER_SUB_BG0, 1, NULL);

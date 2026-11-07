@@ -4,7 +4,7 @@
 # Save: bottle-sent (the town's exchange block holding the letter in a bottle bottle-throw threw,
 # not drifted yet). The title asks whether to send the bottle (ov147/title_menu.c
 # TitleMenu_CheckBottleLetter, message 0x35); A every 60 frames from 1200 answers yes: the title
-# leaves for scene 0x30 (TitleScene_ExitToScene30), the exchange block is written to both copies
+# leaves for scene 0x30 (TitleScene_ExitToTagMode), the exchange block is written to both copies
 # of the save (CardSave_WriteExchangeBlock) and the passing exchange of overlay 55 starts
 # (XctExchange_*, the room camera looking at its frame, a constellation drafted for the block),
 # then waits for another system with its line up (message 0x38), to 2399.
