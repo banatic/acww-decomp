@@ -1,0 +1,21 @@
+# the first villager's record (021e5a2c) and its memory of player 0 (021dec3a): greeting, texts,
+# nickname, the picture given, mood frames, impressions, items, given a block taken from a heap
+# of the game (022a3378) and given back after; at the end of frame 5301 of villager-chat
+scene villager-chat
+frames 5310
+ram 2600,4500,5300
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 5301 020e9948 022a3378 100 0 0 00000000 00000000  # autoload_2 Heap_Alloc (a scratch block)
+call 5301 02080109 021e5a2c r1 4 021dec3a 00000000 00000000  # main VillagerMemory_SetGreeting
+call 5301 0208016d 021e5a2c r2 4 021dec3a 00000000 00000000  # main VillagerMemory_SetText2A
+call 5301 020802a5 021e5a2c r3 4 021dec3a 00000000 00000000  # main VillagerMemory_SetNicknameChars
+call 5301 020802c9 021e5a2c 023978f0 021dec3a 0 00000000 00000000  # main VillagerMemory_SetNickname (the talk's wide text)
+call 5301 02081a05 r1 0 0 0 00000000 00000000  # main VillagerMemoryEntry_SetPictureGiven
+call 5301 02081b01 r2 023978f0 0 0 00000000 00000000  # main VillagerMemoryEntry_GreetingToWide
+call 5301 0207ca49 021e5a2c r7 3 0 00000000 00000000  # main VillagerResidents_RemoveNumber
+call 5301 020794a9 r8 5 0 0 00000000 00000000  # main VillagerState_AddMoodFrames
+call 5301 0207e3f5 021e5a2c 0 0 0 00000000 00000000  # main VillagerImpression_AccessoryWithHeadKind236
+call 5301 0207e459 021e5a2c 0 0 0 00000000 00000000  # main VillagerImpression_AccessoryWithHeadKind01457
+call 5301 0207de71 021e5a2c r11 0 0 00000000 00000000  # main VillagerItems_Remove
+call 5301 020e993c 022a3378 r12 0 0 00000000 00000000  # autoload_2 Heap_Free
+end
