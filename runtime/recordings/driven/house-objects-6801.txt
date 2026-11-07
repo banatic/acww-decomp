@@ -1,0 +1,18 @@
+# the house's room objects at the end of frame 6801 of house-switches: whether the first
+# (023627a4) is busy (its class's slot 0xa0), the three stubs that answer 1, the base class's
+# slots 0x7c and 0x80 (1), one of the objects switched on picked at random (none tested) and
+# set off, and a scratch block's animation of slot 0x10 set; the run ends after the calls
+scene house-switches
+frames 6810
+ram 2600,4600
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 6801 0220ce05 023627a4 0 0 0 0220ce04 b081b500  # ov004 RoomObject_IsBusy
+call 6801 0223b335 0 0 0 0 0223b334 47702001  # ov004 RoomObjects_Stub0223b334
+call 6801 0223b339 0 0 0 0 0223b338 47702001  # ov004 RoomObjects_Stub0223b338
+call 6801 0223b33d 0 0 0 0 0223b33c 47702001  # ov004 RoomObjects_Stub0223b33c
+call 6801 022111ed 0 0 0 0 022111ec 47702001  # ov004 RoomObject_Vfunc7C
+call 6801 02210ab9 0 0 0 0 02210ab8 47702001  # ov004 RoomObject_Vfunc80
+call 6801 0223c1ed 0 0 0 0 0223c1ec b083b5f0  # ov004 RoomObjects_PickOn
+call 6801 020e9948 022a3378 40 0 0 00000000 00000000  # autoload_2 Heap_Alloc (a scratch block)
+call 6801 0220da2d r1 1234 1 0 0220da2c 401a2301  # ov004 AnimSet_SetAnim10
+end

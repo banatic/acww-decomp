@@ -1,0 +1,15 @@
+# at the end of frame 5451 of gate-flag: a scratch block as the camera's button grid, its
+# cursor moved by the pad's press and set from its column and row, and as a caution window put
+# in state 0; the activity's job 0xd stepped while talk 0 is open (nothing), then talk 0
+# closed and given message 10 of "sp_etc_sequence2" next; the run ends after the calls
+scene gate-flag
+frames 5460
+ram 2600,3800,4700
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 5451 020e9948 022a3378 64 0 0 00000000 00000000  # autoload_2 Heap_Alloc (a scratch block)
+call 5451 0208c491 r1 0 0 0 00000000 00000000  # main CameraGrid_MoveByPad
+call 5451 0208c3ed r2 0 0 0 00000000 00000000  # main CameraGrid_CursorFromPlace
+call 5451 020382d5 r3 0 0 0 00000000 00000000  # main CautionWindow_EnterOff
+call 5451 020a44bd 0 0 0 0 00000000 00000000  # main ActivityJobs_Step0D
+call 5451 020a261d 0 0 0 0 00000000 00000000  # main ActivityTalk_QueueMessage10
+end

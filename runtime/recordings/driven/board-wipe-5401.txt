@@ -1,0 +1,11 @@
+# the bulletin board's writing scene (023c726c, class data_ov112_022a20d0) at the end of frame
+# 5401 of board-keys: sound 0x34 (what could not be done), the close started (the text and the
+# keyboard wiping out on window 2) and its first step; the run ends after the calls
+scene board-keys
+frames 5410
+ram 2600,4300,4900,5400
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 5401 0229ff51 023c726c 0 0 0 0229ff50 4b012034  # ov112 BbsWrite_PlaySound34
+call 5401 022a145d 023c726c 0 0 0 022a145c b082b510  # ov112 BbsWrite_StartCloseWipeOut
+call 5401 022a13f5 023c726c 0 0 0 022a13f4 1c04b510  # ov112 BbsWrite_CloseWipeOut
+end

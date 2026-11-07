@@ -1,0 +1,10 @@
+# the town object actor of sp_etc_sequence4 (022b1cd8, its state 2) at the end of frame 5001 of
+# new-player: its state set to 0 (the animation of its vtable's slot 0x64 started) and its
+# state's update run (state 0's, which does nothing); the run ends after the calls
+scene new-player
+frames 5010
+ram 1300,2300,2800
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 5001 02272a7d 022b1cd8 0 0 0 02272a7c b081b5f0  # ov068 Sequence4_SetState
+call 5001 02272935 022b1cd8 0 0 0 02272934 1c02b570  # ov068 Sequence4_UpdateState
+end

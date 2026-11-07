@@ -1,0 +1,9 @@
+# Gracie's spot outdoors (022b4558, class data_ov003_022387a8) at the end of frame 6701 of
+# villager-furniture: its destructor without freeing (vtable slot 0x40); the run ends after
+# the call
+scene villager-furniture
+frames 6710
+ram 2600,4100,5500,6500
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 6701 022b4558 40 022b4558 0 0 0 022387a8  # ov003 GiraffeSpot_Destroy (slot 16)
+end

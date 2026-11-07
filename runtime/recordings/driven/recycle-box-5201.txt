@@ -1,0 +1,9 @@
+# the town hall's recycle box (022af78c, class data_ov004_022553d8; its talk receiver at 0x290,
+# 022afa1c) at the end of frame 5201 of box-keys: the player's answer through the receiver's
+# slot 0x18 and through the box's own slot 0x70 (both do nothing)
+scene box-keys
+frames 5210
+ram 2600,4400,4800
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 5201 022afa1c 18 022afa1c 0 0 0 02255454  # ov004 RecycleBinReceiver_OnAnswer (receiver slot 0x18)
+vcall 5201 022af78c 70 022af78c 0 0 0 022553d8  # ov004 RecycleBin_OnAnswer (slot 0x70)

@@ -1,0 +1,15 @@
+# the gatekeeper's talk at the end of frame 5451 of gate-flag: its slider window's message
+# window (02373c64, class data_020e3fe4) stepped in state 9, put in state 10, stepped in state
+# 10 and in state 11; the activity's talk receiver (022b0ee8, class data_020e3b38) given an
+# answer (slot 6, nothing); and the activity's job 2 asked for; the run ends after the calls
+scene gate-flag
+frames 5460
+ram 2600,3800,4700
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 5451 022b0ee8 18 022b0ee8 0 0 0 020e3b38  # main ActivityReceiver_OnAnswer (slot 6)
+call 5451 020ab9ed 02373c64 0 0 0 00000000 00000000  # main MesSliderWindow_Step9
+call 5451 020ab9c9 02373c64 0 0 0 00000000 00000000  # main MesSliderWindow_Enter10
+call 5451 020ab9ad 02373c64 0 0 0 00000000 00000000  # main MesSliderWindow_Step10
+call 5451 020ab989 02373c64 0 0 0 00000000 00000000  # main MesSliderWindow_StepDone
+call 5451 020a193d 0 0 0 0 00000000 00000000  # main ActivityJob_Ask2
+end

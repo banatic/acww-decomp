@@ -1,0 +1,7 @@
+# the title scene (022a7370, class data_ov147_0229aa28) at the end of frame 1301 of nook-job,
+# the title on screen: its logo's layer hidden at once; the run ends after the call
+scene nook-job
+frames 1310
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 1301 02299119 022a7370 0 0 0 02299118 1c04b510  # ov147 TitleLogo_Hide
+end

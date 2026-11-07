@@ -1,0 +1,15 @@
+# a town insect in view (02261c74, 022617bc + 2 * 0x25c, kind 0xd) at the end of frame 6401 of
+# villager-chat started as kind 0x30 (on the ground, its hop's base height its own) and moved by
+# that kind's update four times; then shown again by its record's address (it is not hidden:
+# nothing); the run ends after the calls
+scene villager-chat
+frames 6410
+ram 2600,4500,5300,6400
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 6401 02230315 02261c74 0 0 0 02230314 b086b510  # ov003 TownInsectKind_Start30
+call 6401 0223030d 02261c74 0 0 0 0223030c 47184b00  # ov003 TownInsectKind_Update30
+call 6401 0223030d 02261c74 0 0 0 0223030c 47184b00  # ov003 TownInsectKind_Update30
+call 6401 0223030d 02261c74 0 0 0 0223030c 47184b00  # ov003 TownInsectKind_Update30
+call 6401 0223030d 02261c74 0 0 0 0223030c 47184b00  # ov003 TownInsectKind_Update30
+call 6401 0222e4c1 02261c74 0 0 0 0222e4c0 b081b500  # ov003 TownInsect_Show
+end

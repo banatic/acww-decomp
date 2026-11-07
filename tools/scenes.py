@@ -687,6 +687,10 @@ SAVES["clear"] = [(WEATHER_DAY + 4, "<B", 0)]
 # the seed's day given the weather pattern 0x13: in its hour 15:00 (data_020d22b5) the sky's
 # object of kind 10 shows for 45 minutes, the clouds blended (main/sky_events.h)
 SAVES["pattern-13"] = [(WEATHER_DAY + 4, "<B", 0x13)]
+# the seed's day marked wet (the day's wet flag at 7 of SkyWeatherDay, set when rain of level 3
+# or 4 is asked for, main/sky_weather_day.c): booted the next day, the flag moves to the day
+# before's and the town's day passing waters the wilted flowers (TownDay_WaterWiltedFlowers)
+SAVES["wet-day"] = [(WEATHER_DAY + 7, "<B", 1)]
 
 # flag 6 of the player's record set (the flags at 0x23f8, the seed's 0x6608), which qualifies
 # the player for the dated events of kind 0 (main/day_events.h)
@@ -1555,6 +1559,9 @@ scene("save-quit", "seed", 4500, [2600, 3400, 4000, 4499], frames(2700, 4500, 50
 scene("kk-request", "museum", 8500, [2800, 3900, 5640, 6600, 7580, 8499], frames(5600, 8500, 100),
       "on a Saturday night (another day than the save's: the day's notices are posted), ask K.K. "
       "in the museum's cafe for a song by name", rtc="2026-09-12 20:30:00")
+scene("kk-request-leave", "museum", 9800, [2800, 3900, 5640, 6600, 7580, 8499, 9799], frames(8400, 9800, 50),
+      "kk-request, then back to the stairs and up into the museum's hall: the cafe's room objects are deleted",
+      rtc="2026-09-12 20:30:00")
 scene("fox-tent", "wallet", 12950, [2600, 4400, 5500, 7300, 9900, 11000, 12949], frames(3300, 12950, 100),
       "on the fox's day of the week, give the password at his tent, join his club, buy a painting "
       "from him and leave")
@@ -2403,6 +2410,9 @@ scene("designs-cancel", "rod", 4328, [2600, 3500, 4100, 4200, 4327], frames(3500
 scene("town-stage0", "stage0", 3000, [2000, 2600, 2999], frames(2400, 3000, 50),
       "boot a day after the town's last day with codes of the growth lines' first stage on the map: "
       "the day's growth checks their ground and puts some back")
+scene("town-wet-day", "wet-day", 3000, [2000, 2600, 2999], frames(2400, 3000, 50),
+      "boot the day after a wet day: the day passing waters the wilted flowers", recording="town-stage0",
+      rtc="2026-09-12 11:30:00")
 scene("mole-cricket", "unweeded-jan-shovel", 5970, [2600, 4400, 5000, 5500, 5969], frames(4400, 5970, 50),
       "in January with the shovel, dig the tile of the insect of kind 0x31 hidden in the ground: it hops out "
       "and walks off, and stops as the player follows it", rtc="2027-01-12 11:30:06")

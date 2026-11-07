@@ -1,0 +1,13 @@
+# the letter writing scene's keyboard (0237233c, at 0xc0 of the scene 0237227c) at the end of
+# frame 8501 of letter-keys, where overlay 90's menu tabs are loaded: its cursor put on the
+# chat's key f7, the last button, the menu tab under x 0x60 and the tab row under x 0x60; the
+# run ends after the calls
+scene letter-keys
+frames 8510
+ram 2600,5500,8090,8500
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 8501 0229a149 0237233c 0 0 0 0229a148 628121f7  # ov095 SoftKeyboard_CursorToChatF7
+call 8501 0229aa3d 0237233c 0 0 0 0229aa3c 31421c01  # ov095 SoftKeyboard_CursorToLastButton
+call 8501 0229a155 0237233c 60 0 0 0229a154 1c04b510  # ov095 SoftKeyboard_CursorToMenuTabAt
+call 8501 0229a171 0237233c 60 0 0 0229a170 1c04b510  # ov095 SoftKeyboard_CursorToTabRowAtB
+end

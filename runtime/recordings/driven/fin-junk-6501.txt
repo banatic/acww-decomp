@@ -1,0 +1,11 @@
+# the fish shadows' process (022ab18c, class data_ov003_0223bfcc) at the end of frame 6501 of
+# fish-junk: the fin (data_ov003_0225f220) taken into an entry of the process's "fish_fin" pool
+# (at 0x68, 022ab1f4) and loaded there (at this moment the load answers 0, part way); the run
+# ends after the calls (moving the fin with a shadow then reads a model that is not there)
+scene fish-junk
+frames 6510
+ram 2600,3450,6056
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 6501 02228d1d 022ab18c 0 0 0 02228d1c b081b500  # ov003 FishShadow_TakeFin
+call 6501 02227681 0225f220 022ab1f4 0 0 02227680 b083b5f0  # ov003 FishFin_Load
+end

@@ -1,0 +1,14 @@
+# at the end of frame 6801 of house-switches: a room object of the base class taken from the
+# room's heap (zeroed), constructed and deleted by its deleting destructor (slot 0x44); then
+# one made by the base class's own create (left in place); and the base class's slot 0x60 told
+# a state to show (it answers 1); the run ends after the calls
+scene house-switches
+frames 6810
+ram 2600,4600
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 6801 0221152d 844 0 0 0 0221152c b081b530  # ov004 RoomObject_Alloc
+call 6801 02210fdd r1 0 0 0 02210fdc b082b510  # ov004 RoomObject_Construct
+call 6801 02210de9 r2 0 0 0 02210de8 1c04b510  # ov004 RoomObject_Delete
+call 6801 02211559 0 0 0 0 02211558 b081b500  # ov004 RoomObject_Create
+call 6801 0222c6cd 0 0 0 0 0222c6cc 47702001  # ov004 RmoObjectSlots_ShowState
+end
