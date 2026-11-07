@@ -355,27 +355,26 @@ typedef struct State45Work {
 } State45Work;
 
 /* What a request for state 0x3e carries, and its work: the state to go to at the animation's
- * end (0x38, 0x39, 0x10 or 2), a point, a value passed on and flags (bits 0-1: 2 plays the
+ * end (0x38, 0x39, 0x10 or 2), a point, a yaw passed on and flags (bits 0-1: 2 plays the
  * animation forwards; bits 2-3: the kind passed on to state 0x39). */
 typedef struct State3EWork {
     int next;
     fx32 x;
     fx32 z;
-    s16 value;
+    s16 yaw;
     u8 flags;
 } State3EWork;
 
-/* State 0x3e's arguments as saved at 0x8f0: the point packed by func_020779b8, the value packed
+/* State 0x3e's arguments as saved at 0x8f0: the point packed by func_020779b8, the yaw packed
  * by func_02077910, and the flags with the next state coded in the high nibble (0 for 0x38,
  * 1 for 0x39, 2 for 0x10, 3 for 2). */
 typedef struct State3ESaved {
     u8 xz[5];
-    u8 value[2];
+    u8 yaw[2];
     u8 flags;
 } State3ESaved;
 
-/* State 0x3d's work: what a request for it carries (laid out as State3EWork, `value` being a
- * yaw) and a weight that moves by 0x249 a frame towards 1.0 (flags 2) or 0 and is given to the
+/* State 0x3d's work: what a request for it carries (laid out as State3EWork) and a weight that moves by 0x249 a frame towards 1.0 (flags 2) or 0 and is given to the
  * held item. */
 typedef struct State3DWork {
     int next;
@@ -629,7 +628,7 @@ typedef struct FieldActor {
         u8 flag4b; /* state 0x4b: the request's flag */
         State49Saved s49;
         State3ESaved s3e;
-        /* States 0x3d, 0x39 and 0x38 save their point, yaw (in `value`) and flags or kind
+        /* States 0x3d, 0x39 and 0x38 save their point, yaw and flags or kind
          * (0x38: none) the way state 0x3e does. */
         State3ESaved s3d;
         State3ESaved s39;
@@ -929,7 +928,7 @@ int FieldActor_RequestState5B(FieldActor *actor, int priority, int arg);
 
 void FieldActor_UpdateState5A(FieldActor *actor);
 int FieldActor_ActAt(FieldActor *actor, Vec3 *point, u8 use_point);
-void FieldActor_FaceState5ATile(FieldActor *actor);
+void FieldActor_ContactState5ATile(FieldActor *actor);
 void FieldActor_State5AMessage(FieldActor *actor, int arg);
 void FieldActor_EnterState5A(FieldActor *actor, const StateRequest *request, int previous);
 void State5ASaved_Get(const TileArgs *saved, int *tile);
@@ -941,7 +940,7 @@ void State5AArgs_Set(TileArgs *args, const int *tile);
 void FieldActor_UpdateState59(FieldActor *actor);
 void FieldActor_EndState59Remote(FieldActor *actor);
 void FieldActor_RunState59(FieldActor *actor);
-void FieldActor_FaceState59Point(FieldActor *actor);
+void FieldActor_ContactState59Point(FieldActor *actor);
 void FieldActor_TurnState59(FieldActor *actor);
 void FieldActor_State59Message(FieldActor *actor, int arg);
 void FieldActor_EnterState59(FieldActor *actor, const StateRequest *request, int previous);
@@ -988,7 +987,7 @@ int FieldActor_State56Reaches(FieldActor *actor, const Vec3 *hit, const Vec3 *in
 int FieldActor_ClassifyState56(FieldActor *actor, const u8 *has_insect, const Vec3 *insect, const u8 *insect_flag);
 void FieldActor_State56Points(FieldActor *actor, Vec3 *sweep, Vec3 *base, Vec3 *tip);
 void FieldActor_SweepState56(FieldActor *actor);
-void FieldActor_TurnState56(FieldActor *actor);
+void FieldActor_ContactState56Ahead(FieldActor *actor);
 void FieldActor_FaceState56(FieldActor *actor);
 void FieldActor_AnimateState56(FieldActor *actor);
 void FieldActor_State56Message(FieldActor *actor, int arg);
@@ -1123,7 +1122,7 @@ int FieldActor_RequestState48(FieldActor *actor, int priority, int arg);
 
 void FieldActor_UpdateState47(FieldActor *actor);
 int FieldActor_ActAhead(FieldActor *actor, int check_other);
-void FieldActor_TurnState47(FieldActor *actor);
+void FieldActor_ContactState47Ahead(FieldActor *actor);
 void FieldActor_State47Message(FieldActor *actor, int arg);
 void FieldActor_EnterState47(FieldActor *actor, const StateRequest *request, int previous);
 int FieldActor_RequestState47(FieldActor *actor, int priority, int arg);
@@ -1131,7 +1130,7 @@ int FieldActor_RequestState47(FieldActor *actor, int priority, int arg);
 void FieldActor_UpdateState46(FieldActor *actor);
 void FieldActor_EndState46Remote(FieldActor *actor);
 void FieldActor_EndState46Local(FieldActor *actor);
-void FieldActor_TurnState46(FieldActor *actor);
+void FieldActor_ContactState46Point(FieldActor *actor);
 void FieldActor_FaceState46(FieldActor *actor);
 void FieldActor_State46Message(FieldActor *actor, int arg);
 void FieldActor_EnterState46(FieldActor *actor, const StateRequest *request, int previous);
@@ -1156,11 +1155,11 @@ void FieldActor_EndState3E(FieldActor *actor);
 void FieldActor_RunState3E(FieldActor *actor);
 void FieldActor_State3EMessage(FieldActor *actor, int arg);
 void FieldActor_EnterState3E(FieldActor *actor, const StateRequest *request, int previous);
-u16 FieldActor_GetState3ESaved(const State3ESaved *saved, u8 *flags, fx32 *x, fx32 *z, u16 *value);
-void FieldActor_SetState3ESaved(State3ESaved *saved, char flags, fx32 x, fx32 z, s16 value);
-void FieldActor_SetState3EWork(State3EWork *work, int next, char flags, fx32 x, fx32 z, s16 value);
-int FieldActor_RequestState3E(FieldActor *actor, int next, int flags, fx32 x, fx32 z, s16 value, int priority, s16 arg);
-void FieldActor_SetState3EArgs(State3EWork *args, int next, char flags, fx32 x, fx32 z, s16 value);
+u16 FieldActor_GetState3ESaved(const State3ESaved *saved, u8 *flags, fx32 *x, fx32 *z, u16 *yaw);
+void FieldActor_SetState3ESaved(State3ESaved *saved, char flags, fx32 x, fx32 z, s16 yaw);
+void FieldActor_SetState3EWork(State3EWork *work, int next, char flags, fx32 x, fx32 z, s16 yaw);
+int FieldActor_RequestState3E(FieldActor *actor, int next, int flags, fx32 x, fx32 z, s16 yaw, int priority, s16 arg);
+void FieldActor_SetState3EArgs(State3EWork *args, int next, char flags, fx32 x, fx32 z, s16 yaw);
 
 void FieldActor_UpdateState3D(FieldActor *actor);
 void FieldActor_StepState3D(FieldActor *actor);

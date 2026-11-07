@@ -1,5 +1,5 @@
-/* Overlay 3's search for where a villager walks to (walk_target.h). */
-#include "walk_target.h"
+/* Overlay 3's search for a spot an insect settles on (insect_spot.h). */
+#include "insect_spot.h"
 
 #include "clean.h"
 #include "main/acre_map.h"
@@ -14,14 +14,14 @@ extern AcreMap *data_021c80bc;
  * the low. */
 extern const u8 data_ov003_02236ca0[81];
 
-#define WALK_TARGET_AROUND 81
+#define INSECT_SPOT_AROUND 81
 
 /* func_ov003_02224718: the day's spot (TownDay_RafflesiaPosition, from zero) in `target`; whether
  * there is one, as TownDay_RafflesiaPosition answers.
  * QUIRK: the difference to `from` is computed and its squared length in x and z (in 32 bits)
  * compared with 0x90000000 as a signed number; that can only make the answer 1, which it
  * already is. */
-int WalkTarget_DaySpot(Vec3 *target, const Vec3 *from)
+int InsectSpot_DaySpot(Vec3 *target, const Vec3 *from)
 {
     target->x = 0;
     target->y = 0;
@@ -37,10 +37,11 @@ int WalkTarget_DaySpot(Vec3 *target, const Vec3 *from)
     }
     return found;
 }
-CLEAN_AS(func_ov003_02224718, WalkTarget_DaySpot)
+CLEAN_AS(func_ov003_02224718, InsectSpot_DaySpot)
 
-/* Codes of the flower lines and the codes after them (main/map_item.h). */
-static int walk_target_flower_code(u16 code)
+/* Flower codes, fresh or watered (not wilted): the flower lines and the codes after them
+ * (main/map_item.h). */
+static int insect_spot_code_is_flower(u16 code)
 {
     return code <= 0x1a || code == 0x1c || code == 0x1d || (code >= 0x8a && code <= 0xa5);
 }
@@ -49,7 +50,7 @@ static int walk_target_flower_code(u16 code)
  * (nearest first, data_ov003_02236ca0) the first holding a flower code whose kind
  * (TownFamily_Kind) has its bit set in `lines`: `target` becomes that tile's centre and the
  * answer is 1; 0 when there is none. */
-int WalkTarget_NearFlower(Vec3 *target, const Vec3 *from, int lines)
+int InsectSpot_NearFlower(Vec3 *target, const Vec3 *from, int lines)
 {
     AcreMap *map = data_021c80bc;
     if (map == NULL) {
@@ -58,14 +59,14 @@ int WalkTarget_NearFlower(Vec3 *target, const Vec3 *from, int lines)
     int x = 0;
     int z = 0;
     Position_Tile(&x, &z, (const Position *) (const void *) from);
-    for (int i = 0; i < WALK_TARGET_AROUND; i++) {
+    for (int i = 0; i < INSECT_SPOT_AROUND; i++) {
         u8 around = data_ov003_02236ca0[i];
         int tile_x = x + ((around >> 4) - 8);
         int tile_z = z + ((around & 0xf) - 8);
         int acre_x = tile_x >> 4;
         int acre_z = tile_z >> 4;
         u16 *item = AcreTile_ItemInAcre(map, (u32) acre_x, (u32) acre_z, tile_x & 0xf, tile_z & 0xf, 0);
-        if (item == NULL || !walk_target_flower_code(*item)) {
+        if (item == NULL || !insect_spot_code_is_flower(*item)) {
             continue;
         }
         if (((lines >> TownFamily_Kind(item)) & 1) != 0) {
@@ -75,4 +76,4 @@ int WalkTarget_NearFlower(Vec3 *target, const Vec3 *from, int lines)
     }
     return 0;
 }
-CLEAN_AS(func_ov003_02224768, WalkTarget_NearFlower)
+CLEAN_AS(func_ov003_02224768, InsectSpot_NearFlower)

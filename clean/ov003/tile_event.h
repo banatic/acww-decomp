@@ -1,7 +1,7 @@
 /* Overlay 3's tile events: a table of four entries (0xa4 bytes each) per player at
  * data_ov003_0223cfe4, set up by the process of vtable 0x0223bc7c (0x6a70 bytes, made by
  * func_ov003_02227454). func_ov003_022213f8 starts an event in a free entry of a player: a kind
- * (3-14), a tile, a point, an id (an item or object code) and two more values; the
+ * (0-14), a tile, a point, an id (an item or object code) and two more values; the
  * func_ov003_0222139c variant first makes the player 0 unless the session is linked.
  *
  * The functions here start the event of one kind each from what the field's players do (the
@@ -46,7 +46,7 @@ void TileEvent_StartKindB(int player, int id, const TileChangesTile *tile);
 int TileEvent_StartKindA(int player, const Vec3 *position);
 void TileEvent_StartKind9(int player, int id, const TileChangesTile *tile, const Vec3 *position);
 int TileEvent_StartKind8(int player, const Vec3 *position, int angle);
-void TileEvent_StartKind7(int player, u32 id, const TileChangesTile *tile, const Vec3 *position);
+void TileEvent_StartBeehiveFall(int player, u32 id, const TileChangesTile *tile, const Vec3 *position);
 void TileEvent_StartKind6(int player, int id, const TileChangesTile *tile, const Vec3 *position, int extra);
 void TileEvent_StartKind5(int player, int id, const TileChangesTile *tile, const Vec3 *position, short angle, int extra);
 int TileEvent_StartKind4(int player, int id, const TileChangesTile *tile);
@@ -71,7 +71,7 @@ typedef struct TileEventEntry {
     Vec3 offset;          /* 0x24: added to the position when drawn */
     Vec3 velocity;        /* 0x30: added to the position by the kinds that move */
     Vec3 scale;           /* 0x3c */
-    s16 angle;            /* 0x48: the start's `angle` (kinds 8 and 11 a direction, 5 and 6 a flag) */
+    s16 angle;            /* 0x48: the start's `angle` (kinds 8 and 11 a direction, 5 a flag; 6 always 0) */
     s16 unk_4a;           /* 0x4a: 0 */
     s16 state;            /* 0x4c: the kind's phase, from 0 */
     u16 frames;           /* 0x4e: frames since the start (kind 6 adds to it) */
@@ -126,8 +126,8 @@ void TileEvent_StepKind9(TileEventEntry *entry);
 void TileEvent_InitKind9(TileEventEntry *entry, const TileChangesTile *tile, const Vec3 *from, u16 id);
 void TileEvent_StepKind8(TileEventEntry *entry);
 void TileEvent_InitKind8(TileEventEntry *entry, const TileChangesTile *tile, int angle);
-void TileEvent_StepKind7(TileEventEntry *entry);
-void TileEvent_InitKind7(TileEventEntry *entry, const TileChangesTile *tile, const Vec3 *from);
+void TileEvent_StepBeehiveFall(TileEventEntry *entry);
+void TileEvent_InitBeehiveFall(TileEventEntry *entry, const TileChangesTile *tile, const Vec3 *from);
 void TileEvent_StepKind6(TileEventEntry *entry);
 void TileEvent_InitKind6(TileEventEntry *entry, const TileChangesTile *tile, const Vec3 *from);
 void TileEvent_StepKind5(TileEventEntry *entry);

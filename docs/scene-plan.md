@@ -4079,7 +4079,7 @@ What reading the Clean code found about the groups above; counts are of function
   0x37, 0x5d and 0xc8, the town's last day the day before the boot's): the boot's day of growth
   checks each code's ground (TownLines_CheckGround's _Check5d, _CheckC8 and _CheckTile, the room
   around a code, TownLines_PutBack and the codes around), lists the quarters
-  (TownGrowth_ListInQuarter, _AddToQuarter) and draws code 0x25 (TownItemModels_DrawCode25).
+  (TownGrowth_ListInQuarter, _AddToQuarter) and draws code 0x25 (TownItemModels_DrawDeadTree).
 - Proved unreachable (w61-wt5/cls/classify.py, calibrated with EXTRA='*': no run function cut off):
   the bank pad's big digits (gate layout: BankPad_Setup sets layout 2-5 for every kind, and its
   kind is GroupParams' mode - 0x34, 0x34-0x3a being the only modes of overlay group 0x1f);

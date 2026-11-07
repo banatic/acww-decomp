@@ -18,7 +18,7 @@
  * event insect, and its index in the low four bits.
  *
  * A record's kind is the insect's (the item 0x12b0 + kind, 0-0x37), or one of the stand-ins
- * 0x39 (a firefly, kind 0x25, let go; it carries effect 0x3a), 0x3a the wasps (caught as a wasp,
+ * 0x39 (a firefly, kind 0x25, taken up into the hand; it carries its glow, effect 0x3a), 0x3a the wasps (caught as a wasp,
  * kind 0xb) and 0x3b the ants (caught as an ant, kind 0x18). Its state (TOWN_INSECT_STATE_*) picks what the process's update does with it; its
  * action (TOWN_INSECT_ACTION_*) is the step of its own behaviour, run by functions of the kind
  * from the table data_ov003_0223c2ac.
@@ -60,17 +60,17 @@
 
 /* TownInsect.kind */
 #define TOWN_INSECT_NO_KIND (-1)
-#define TOWN_INSECT_KIND_FAILED (-10) /* a town record kept from use after a failed placing */
-#define TOWN_INSECT_KIND_GLOWING 0x39 /* a firefly (kind 0x25) let go; carries effect 0x3a */
-#define TOWN_INSECT_KIND_WASPS 0x3a   /* caught as a wasp, kind 0xb */
-#define TOWN_INSECT_KIND_ANTS 0x3b    /* caught as an ant, kind 0x18 */
-#define TOWN_INSECT_KINDS 0x3c        /* the kinds the tables of data_ov003_0223c144 cover */
+#define TOWN_INSECT_KIND_FAILED (-10)      /* a town record kept from use after a failed placing */
+#define TOWN_INSECT_KIND_HELD_FIREFLY 0x39 /* a firefly (kind 0x25) taken up into the hand; carries its glow, effect 0x3a */
+#define TOWN_INSECT_KIND_WASPS 0x3a        /* caught as a wasp, kind 0xb */
+#define TOWN_INSECT_KIND_ANTS 0x3b         /* caught as an ant, kind 0x18 */
+#define TOWN_INSECT_KINDS 0x3c             /* the kinds the tables of data_ov003_0223c144 cover */
 
 /* TownInsect.state */
 #define TOWN_INSECT_STATE_NONE 0
-#define TOWN_INSECT_STATE_1 1      /* a held insect taken from its player (func_ov003_0222ffdc) */
-#define TOWN_INSECT_STATE_2 2      /* run by func_ov003_0222fa20 */
-#define TOWN_INSECT_STATE_ACTIVE 3 /* drawn; run by func_ov003_0222f6b0 */
+#define TOWN_INSECT_STATE_1 1       /* a held insect taken from its player (func_ov003_0222ffdc) */
+#define TOWN_INSECT_STATE_LOADING 2 /* loaded by TownInsect_Load (func_ov003_0222fa20) */
+#define TOWN_INSECT_STATE_ACTIVE 3  /* drawn; run by func_ov003_0222f6b0 */
 #define TOWN_INSECT_STATE_LEAVING 4
 
 /* TownInsect.action, the steps named from what sets them. */
@@ -174,7 +174,7 @@ typedef struct TownInsectMask {
 } TownInsectMask;
 
 int TownInsect_CountTiles(u16 *mask, int kind, int *acre_x, int *acre_z, AcreMap *map, int place);
-void TownInsect_UnmarkTownObjectActors(TownInsectMask *mask);
+void TownInsect_UnmarkLitBuildings(TownInsectMask *mask);
 void TownInsect_FillMask(TownInsectMask *mask);
 int TownInsect_PickTile(TownInsect *insect, TownInsectMask *mask, int kind, int place);
 void TownInsect_CopyMask(void *dst, int place);

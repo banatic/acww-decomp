@@ -64,7 +64,7 @@ extern void func_02055764(void *model);
 #define TILE_EVENT_KIND_4 4
 #define TILE_EVENT_KIND_5 5
 #define TILE_EVENT_KIND_6 6
-#define TILE_EVENT_KIND_7 7
+#define TILE_EVENT_KIND_BEEHIVE 7
 #define TILE_EVENT_KIND_8 8
 #define TILE_EVENT_KIND_9 9
 #define TILE_EVENT_KIND_A 0xa
@@ -264,13 +264,13 @@ int TileEvent_StartKind8(int player, const Vec3 *position, int angle)
 CLEAN_AS(func_ov003_02220f40, TileEvent_StartKind8)
 
 /* func_ov003_02221054: kind 7 with `id` at `tile` and `position`. */
-void TileEvent_StartKind7(int player, u32 id, const TileChangesTile *tile, const Vec3 *position)
+void TileEvent_StartBeehiveFall(int player, u32 id, const TileChangesTile *tile, const Vec3 *position)
 {
     int point[3] = {position->x, position->y, position->z};
     int at[2] = {tile->x, tile->z};
-    TileEvent_Start(data_ov003_0223cfe4, player, at, point, TILE_EVENT_KIND_7, (int) id, 0, 0);
+    TileEvent_Start(data_ov003_0223cfe4, player, at, point, TILE_EVENT_KIND_BEEHIVE, (int) id, 0, 0);
 }
-CLEAN_AS(func_ov003_02221054, TileEvent_StartKind7)
+CLEAN_AS(func_ov003_02221054, TileEvent_StartBeehiveFall)
 
 /* func_ov003_02221094: kind 6 with `id` at `tile` and `position`, and `extra`. */
 void TileEvent_StartKind6(int player, int id, const TileChangesTile *tile, const Vec3 *position, int extra)
@@ -416,8 +416,9 @@ static fx32 tile_event_cos(u16 angle)
     return FX_SinCosTable_[(angle >> 4) * 2 + 1];
 }
 
-/* Items 0x1492-0x14fd: the kinds play their own sounds for them. */
-static int tile_event_is_14xx(u16 code)
+/* Items 0x1492-0x14fd, the bells (money bags of 100 to 99000): the kinds play their own sounds
+ * for them. */
+static int tile_event_is_bells(u16 code)
 {
     return code >= 0x1492 && code <= 0x14fd;
 }
@@ -638,11 +639,11 @@ static void tile_event_draw(TileEventEntry *entry, TileEventDraw *draw)
         TownItemModels_DrawFlower(data_ov003_0223cf70, (const u16 *) draw, data_021fbe48);
     } else if (code >= 0x6e && code <= 0x87) {
         /* The wilted flowers. */
-        TownItemModels_DrawWiltedFlower(data_ov003_0223cf70, (const u16 *) draw, data_021fbe48);
+        TownItemModels_DrawWiltedOrWateredFlower(data_ov003_0223cf70, (const u16 *) draw, data_021fbe48);
     } else if (code == 0x1a || code == 0x1b || code == 0x1d || code == 0x1e || code == 0x88 || code == 0x89) {
         TownItemModels_DrawCode1a(data_ov003_0223cf70, (const u16 *) draw, data_021fbe48);
     } else if (code == TILE_EVENT_ID_UNIT_0 || code == TILE_EVENT_ID_UNIT_SET) {
-        TownItemModels_DrawCodeFc(data_ov003_0223cf70, (const u16 *) draw, data_021fbe48);
+        TownItemModels_DrawHole(data_ov003_0223cf70, (const u16 *) draw, data_021fbe48);
     } else if (tile_event_drawn_as_short(code)) {
         TownItemModels_DrawStump(data_ov003_0223cf70, (const u16 *) draw, data_021fbe48);
     } else if (tile_event_drawn_as_growth(code)) {
@@ -650,13 +651,13 @@ static void tile_event_draw(TileEventEntry *entry, TileEventDraw *draw)
         TownItemModels_DrawGrowth(data_ov003_0223cf70, (const u16 *) draw, entry->tile.x, entry->tile.z, &draw->growth_point,
                                   data_021fbe48);
     } else if (code == 0x25 || code == 0x5c || code == 0xc7) {
-        TownItemModels_DrawCode25(data_ov003_0223cf70, (const u16 *) draw, entry->tile.x, entry->tile.z, data_021fbe48);
+        TownItemModels_DrawDeadTree(data_ov003_0223cf70, (const u16 *) draw, entry->tile.x, entry->tile.z, data_021fbe48);
     } else if (code >= 0xe3 && code <= 0xfb) {
-        TownItemModels_DrawCodeE3(data_ov003_0223cf70, (const u16 *) draw, data_021fbe48);
+        TownItemModels_DrawStone(data_ov003_0223cf70, (const u16 *) draw, data_021fbe48);
     } else if (code >= 0xd4 && code <= 0xe1) {
-        TownItemModels_DrawCodeD4(data_ov003_0223cf70, (const u16 *) draw, data_021fbe48);
+        TownItemModels_DrawRedTurnip(data_ov003_0223cf70, (const u16 *) draw, data_021fbe48);
     } else if (code >= 0xa7 && code <= 0xc6) {
-        TownItemModels_DrawCodeA7(data_ov003_0223cf70, (const u16 *) draw, data_021fbe48);
+        TownItemModels_DrawDesign(data_ov003_0223cf70, (const u16 *) draw, data_021fbe48);
     }
 }
 
@@ -706,8 +707,8 @@ void TileEvent_StepAll(TileEventEntry *entries)
             case TILE_EVENT_KIND_6:
                 TileEvent_StepKind6(entries);
                 break;
-            case TILE_EVENT_KIND_7:
-                TileEvent_StepKind7(entries);
+            case TILE_EVENT_KIND_BEEHIVE:
+                TileEvent_StepBeehiveFall(entries);
                 break;
             case TILE_EVENT_KIND_8:
                 TileEvent_StepKind8(entries);
@@ -921,7 +922,7 @@ static int tile_event_fall(TileEventEntry *entry)
 
 /* func_ov003_02221dd0: kind 9's step: the scale's x and z grow by 410/4096 a frame to 1.0; it
  * falls; on the ground (height 0) it stops and ends, with sound 0x70 the first time when the
- * item under it is one of 0x1492-0x14fd. */
+ * item under it is bells (0x1492-0x14fd). */
 void TileEvent_StepKind9(TileEventEntry *entry)
 {
     entry->scale.x += 0x19a;
@@ -932,7 +933,7 @@ void TileEvent_StepKind9(TileEventEntry *entry)
     if (tile_event_fall(entry)) {
         entry->position.y = 0;
         tile_event_stop(entry);
-        if (entry->state == 0 && tile_event_is_14xx(entry->under)) {
+        if (entry->state == 0 && tile_event_is_bells(entry->under)) {
             SoundEmitter_PlayB(tile_event_sound(entry), TILE_EVENT_SOUND_LAND, TILE_EVENT_VOLUME, 0);
         }
         entry->state = 1;
@@ -943,7 +944,7 @@ CLEAN_AS(func_ov003_02221dd0, TileEvent_StepKind9)
 
 /* func_ov003_02221e78: kind 9's start: from `from`, thrown up (1.0) towards the tile's centre in
  * 8 frames, its scale's x and z 0; it will not finish its tile change; sound 0x74 for items
- * 0x1492-0x14fd, else 0x75. */
+ * 0x1492-0x14fd (bells), else 0x75. */
 void TileEvent_InitKind9(TileEventEntry *entry, const TileChangesTile *tile, const Vec3 *from, u16 id)
 {
     Vec3 centre;
@@ -955,7 +956,7 @@ void TileEvent_InitKind9(TileEventEntry *entry, const TileChangesTile *tile, con
     tile_event_place(entry, from);
     tile_event_set_scale(entry, 0, FX32_ONE, 0);
     entry->finish_change = 0;
-    SoundEmitter_PlayB(tile_event_sound(entry), tile_event_is_14xx(id) ? 0x74 : 0x75, TILE_EVENT_VOLUME, 0);
+    SoundEmitter_PlayB(tile_event_sound(entry), tile_event_is_bells(id) ? 0x74 : 0x75, TILE_EVENT_VOLUME, 0);
 }
 CLEAN_AS(func_ov003_02221e78, TileEvent_InitKind9)
 
@@ -990,7 +991,7 @@ CLEAN_AS(func_ov003_02221f50, TileEvent_InitKind8)
  * frames on the event's insect is put at it (TownInsect_SetEventPoint); 30 frames later it
  * waits for its countdown to pass 0 and is made free without letting go of its change
  * (TileEvent_Clear). */
-void TileEvent_StepKind7(TileEventEntry *entry)
+void TileEvent_StepBeehiveFall(TileEventEntry *entry)
 {
     switch (entry->state) {
         case 0:
@@ -1032,12 +1033,12 @@ void TileEvent_StepKind7(TileEventEntry *entry)
             break;
     }
 }
-CLEAN_AS(func_ov003_02221fb0, TileEvent_StepKind7)
+CLEAN_AS(func_ov003_02221fb0, TileEvent_StepBeehiveFall)
 
 /* func_ov003_022220a4: kind 7's start: from `from`, thrown up 0.5 and 0.1875 a frame along z,
  * scale 1.0; sound 0x7d6; the tile change let go at once, and main told no item may be dropped
  * (TileRequests_ForbidItemDrop). */
-void TileEvent_InitKind7(TileEventEntry *entry, const TileChangesTile *tile, const Vec3 *from)
+void TileEvent_InitBeehiveFall(TileEventEntry *entry, const TileChangesTile *tile, const Vec3 *from)
 {
     (void) tile;
     entry->velocity.x = 0;
@@ -1049,7 +1050,7 @@ void TileEvent_InitKind7(TileEventEntry *entry, const TileChangesTile *tile, con
     TileEvent_LetGoChange(entry);
     TileRequests_ForbidItemDrop();
 }
-CLEAN_AS(func_ov003_022220a4, TileEvent_InitKind7)
+CLEAN_AS(func_ov003_022220a4, TileEvent_InitBeehiveFall)
 
 /* func_ov003_022220f4: kind 6's step: it moves by its velocity, swaying along x by half the sine
  * of a phase stepped 0x888 a frame (in `frames`); below the ground it stops and ends. */
@@ -1067,7 +1068,8 @@ void TileEvent_StepKind6(TileEventEntry *entry)
 CLEAN_AS(func_ov003_022220f4, TileEvent_StepKind6)
 
 /* func_ov003_0222214c: kind 6's start: from `from`, moving to the tile's centre at height 0 in
- * 30 frames, scale 1.0; with `angle` set the tile change is let go at once; sound 0x7eb. */
+ * 30 frames, scale 1.0; with `angle` set the tile change is let go at once (never: kind 6 is
+ * always started with angle 0); sound 0x7eb. */
 void TileEvent_InitKind6(TileEventEntry *entry, const TileChangesTile *tile, const Vec3 *from)
 {
     Vec3 centre;
@@ -1088,7 +1090,7 @@ void TileEvent_InitKind6(TileEventEntry *entry, const TileChangesTile *tile, con
 CLEAN_AS(func_ov003_0222214c, TileEvent_InitKind6)
 
 /* func_ov003_022221cc: kind 5's step: it falls; the first time on the ground it is thrown up
- * (1.0) towards the tile's centre in 8 frames, with sound 0x70 for items 0x1492-0x14fd; the
+ * (1.0) towards the tile's centre in 8 frames, with sound 0x70 for the bells (items 0x1492-0x14fd); the
  * second time it stops and ends. */
 void TileEvent_StepKind5(TileEventEntry *entry)
 {
@@ -1103,7 +1105,7 @@ void TileEvent_StepKind5(TileEventEntry *entry)
         entry->velocity.y = FX32_ONE;
         entry->velocity.z = dz;
         entry->state = 1;
-        if (tile_event_is_14xx(entry->id)) {
+        if (tile_event_is_bells(entry->id)) {
             SoundEmitter_PlayB(tile_event_sound(entry), TILE_EVENT_SOUND_LAND, TILE_EVENT_VOLUME, 0);
         }
     } else {
@@ -1116,7 +1118,7 @@ CLEAN_AS(func_ov003_022221cc, TileEvent_StepKind5)
 
 /* func_ov003_0222228c: kind 5's start: from `from`, thrown up 0.5 and 0.1875 a frame along z,
  * scale 1.0; with `angle` set it will not finish its tile change; unless `extra` is set, sound
- * 0x74 for items 0x1492-0x14fd, else 0x7d6. */
+ * 0x74 for the bells (items 0x1492-0x14fd), else 0x7d6. */
 void TileEvent_InitKind5(TileEventEntry *entry, const TileChangesTile *tile, const Vec3 *from, int extra)
 {
     (void) tile;
@@ -1131,7 +1133,7 @@ void TileEvent_InitKind5(TileEventEntry *entry, const TileChangesTile *tile, con
     if (extra != 0) {
         return;
     }
-    SoundEmitter_PlayB(tile_event_sound(entry), tile_event_is_14xx(entry->id) ? 0x74 : 0x7d6, TILE_EVENT_VOLUME, 0);
+    SoundEmitter_PlayB(tile_event_sound(entry), tile_event_is_bells(entry->id) ? 0x74 : 0x7d6, TILE_EVENT_VOLUME, 0);
 }
 CLEAN_AS(func_ov003_0222228c, TileEvent_InitKind5)
 
@@ -1269,7 +1271,7 @@ CLEAN_AS(func_ov003_022225c4, TileEvent_InitKind1)
 
 /* func_ov003_022226c8: kinds 0 and 0xd's step: the scale's x and z grow by 410/4096 a frame to
  * 1.0; it falls; the first time on the ground it bounces (0.375 up, its sideways speed times
- * 0x4cd/4096) with sound 0x70 for items 0x1492-0x14fd; the second time it stops and ends. */
+ * 0x4cd/4096) with sound 0x70 for the bells (items 0x1492-0x14fd); the second time it stops and ends. */
 void TileEvent_StepKind0(TileEventEntry *entry)
 {
     entry->scale.x += 0x19a;
@@ -1286,7 +1288,7 @@ void TileEvent_StepKind0(TileEventEntry *entry)
         entry->velocity.x = (entry->velocity.x * 0x4cd) >> 12;
         entry->velocity.y = 0x600;
         entry->velocity.z = (entry->velocity.z * 0x4cd) >> 12;
-        if (tile_event_is_14xx(entry->id)) {
+        if (tile_event_is_bells(entry->id)) {
             SoundEmitter_PlayB(tile_event_sound(entry), TILE_EVENT_SOUND_LAND, TILE_EVENT_VOLUME, 0);
         }
     } else {
@@ -1298,7 +1300,7 @@ void TileEvent_StepKind0(TileEventEntry *entry)
 CLEAN_AS(func_ov003_022226c8, TileEvent_StepKind0)
 
 /* func_ov003_02222798: kinds 0 and 0xd's start: from `from`, thrown up (1.0) towards the tile's
- * centre in 9 frames, its scale's x and z 0. Sound: for items 0x1492-0x14fd 0x74 (kind 0xd:
+ * centre in 9 frames, its scale's x and z 0. Sound: for the bells (items 0x1492-0x14fd) 0x74 (kind 0xd:
  * 0x815 from item 0x149b on, else none), for other codes 0x75. */
 void TileEvent_InitKind0(TileEventEntry *entry, const TileChangesTile *tile, const Vec3 *from)
 {
@@ -1312,7 +1314,7 @@ void TileEvent_InitKind0(TileEventEntry *entry, const TileChangesTile *tile, con
     tile_event_set_scale(entry, 0, FX32_ONE, 0);
 
     int sound = -1;
-    if (!tile_event_is_14xx(entry->id)) {
+    if (!tile_event_is_bells(entry->id)) {
         sound = 0x75;
     } else if (entry->kind != TILE_EVENT_KIND_D) {
         sound = 0x74;
@@ -1402,8 +1404,8 @@ void TileEvent_Begin(TileEventEntry *entry, int player, const int *tile, const i
         case TILE_EVENT_KIND_6:
             TileEvent_InitKind6(entry, &on, &from);
             break;
-        case TILE_EVENT_KIND_7:
-            TileEvent_InitKind7(entry, &on, &from);
+        case TILE_EVENT_KIND_BEEHIVE:
+            TileEvent_InitBeehiveFall(entry, &on, &from);
             break;
         case TILE_EVENT_KIND_8:
             TileEvent_InitKind8(entry, &on, angle);

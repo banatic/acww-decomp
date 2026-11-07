@@ -63,9 +63,9 @@ extern const u32 data_0213f020[];
 #define AQUARIUM_FISH_ANIMS 4
 #define AQUARIUM_TANKS 2
 #define SWIMMER_GLASS_STEP 3
-#define SWIMMER_SWIM_224 0x28
-#define SWIMMER_LEVEL 0x3000
-#define SWIMMER_SWIM_228 0x1000
+#define SWIMMER_CLIMB_STEP 0x28
+#define SWIMMER_TOP 0x3000
+#define SWIMMER_BOTTOM 0x1000
 
 /* The speeds kinds 37, 35 and 36 start at, and kind 36's pulse. */
 #define KIND37_SPEED 0xa3
@@ -642,10 +642,10 @@ static AquariumFish *AquariumSwimmer_construct(AquariumFish *fish)
     own->own.unk_21c = 0;
     own->own.unk_220 = 0;
     fish->vertical = 0;
-    fish->swim_224 = SWIMMER_SWIM_224;
+    fish->climb_step = SWIMMER_CLIMB_STEP;
     own->own.bending = 0;
-    fish->level = SWIMMER_LEVEL;
-    fish->swim_228 = SWIMMER_SWIM_228;
+    fish->top = SWIMMER_TOP;
+    fish->bottom = SWIMMER_BOTTOM;
     fish->pad_1ef = 0;
     fish->focus_frames = 0;
     return fish;

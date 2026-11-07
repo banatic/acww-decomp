@@ -223,7 +223,7 @@ CLEAN_AS(func_ov003_02222d68, GrowthModel_DropAt)
 /* func_ov003_02222d8c: what the code at `tile` drops falls, for the session slot `slot`: lines
  * 0x2f-0x5b and 0xc8-0xcf at their last stage (MapItem_IsGrown) drop three
  * (GrowthModel_DropThree); 0x67 and 0x6b, when main lets items drop, a kind 7 event
- * (GrowthModel_DropKind7); the other codes of 0x66-0x68 and 0x6a-0x6c one
+ * (GrowthModel_DropBeehive); the other codes of 0x66-0x68 and 0x6a-0x6c one
  * (GrowthModel_DropOne); other codes nothing. (Also main's TileChanges_Replace.) */
 void GrowthModel_Drop(u16 *code, int slot, const TileChangesTile *tile)
 {
@@ -241,7 +241,7 @@ void GrowthModel_Drop(u16 *code, int slot, const TileChangesTile *tile)
             return;
         }
         TileChangesTile at = *tile;
-        GrowthModel_DropKind7(slot, &at);
+        GrowthModel_DropBeehive(slot, &at);
         return;
     }
     if ((id >= 0x66 && id <= 0x68) || (id >= 0x6a && id <= 0x6c)) {
@@ -291,7 +291,7 @@ CLEAN_AS(func_ov003_02222e24, GrowthModel_DropOne)
 /* func_ov003_02222f0c: unless the session is linked or flag 1 of the current player record is
  * set, item 0x1569 falls as a kind 7 event from the tile's centre plus the offset of the
  * player's side of table [0]. */
-void GrowthModel_DropKind7(int slot, const TileChangesTile *tile)
+void GrowthModel_DropBeehive(int slot, const TileChangesTile *tile)
 {
     if (Session_IsLinked(data_020ccf94)) {
         return;
@@ -305,9 +305,9 @@ void GrowthModel_DropKind7(int slot, const TileChangesTile *tile)
     Vec3 from;
     Vec_Add(&from, &centre, offset);
     TileChangesTile at = *tile;
-    TileEvent_StartKind7(slot, 0x1569, &at, &from);
+    TileEvent_StartBeehiveFall(slot, 0x1569, &at, &from);
 }
-CLEAN_AS(func_ov003_02222f0c, GrowthModel_DropKind7)
+CLEAN_AS(func_ov003_02222f0c, GrowthModel_DropBeehive)
 
 /* func_ov003_02222f8c: drops fall as kind 5 events from the tile's centre plus each offset of a
  * table: code 0xcc two of item 0x1548 (table [2]), 0x5b three of 0x14b8, other codes three of
@@ -489,7 +489,7 @@ static int growth_model_fading(GrowthModel *model, u16 frame, fx32 fade_step, u1
 /* func_ov003_02223274: a playing model steps its animation; at its end the model is reset.
  * Before that, by mode: modes 4 and 5 fade by 0x2955 and start parts the second time at frame
  * 20, modes 6 and 7 by 0x2627 and at frame 13 (growth_model_fading); mode 3 none; mode 2 at
- * frame 4 the first time, and at other times sets byte 0x0d of its parts to 0x1a; the others at
+ * frame 4 the first time, and at other times sets its parts' life to 0x1a frames; the others at
  * frame 4 the first time. The fade's whole part and the polygon ID 0x33 + this system's player
  * go to the model. Parts start, on the town's map with an item at the tile, at the item's
  * stage (MapItem_ShortStage or MapItem_GrowthStage) when it is above 0. The sound follows the
@@ -520,10 +520,10 @@ void GrowthModel_Update(GrowthModel *model)
                         start_parts = 1;
                     } else {
                         if (model->part_a != NULL) {
-                            model->part_a->unk_0d = 0x1a;
+                            model->part_a->life = 0x1a;
                         }
                         if (model->part_b != NULL) {
-                            model->part_b->unk_0d = 0x1a;
+                            model->part_b->life = 0x1a;
                         }
                     }
                     break;

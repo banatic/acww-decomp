@@ -22,8 +22,8 @@
  *   StartKind_IsNewTown or StartKind_IsNewPlayer says so, else "sp_etc_sequence2" (state byte 0); at 0x19 it
  *   ends (SEQUENCE_END, 5: the player is told RoomPlayerActor_RequestPlaceOff once the link closes);
  * - whenever the receiver's state byte is 0 it offers two choices (messages 0xc and 0xd). The
- *   answer in mode 1 ends the sequence (0: SEQUENCE_DONE, 6, which also queues event 0x2e of
- *   SceneTables_EntryRecord; 1: SEQUENCE_END), otherwise it picks (0: CHOOSE_ITEM, 10; 1: TALK_END, 9);
+ *   answer in mode 1 ends the sequence (0: SEQUENCE_DONE, 6, which also sets the exit of
+ *   SceneTables_EntryRecord to scene 0x2e; 1: SEQUENCE_END), otherwise it picks (0: CHOOSE_ITEM, 10; 1: TALK_END, 9);
  * - TALK_NEXT (7) goes on to TALK (8), which takes the receiver named "obj_etc_player" in state
  *   4; TALK_END (9) lets the scene go on once the link closes;
  * - CHOOSE_ITEM (10): once the link closes, opens the pockets (group 9) on the items

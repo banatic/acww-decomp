@@ -386,7 +386,7 @@ void AquariumHomeFish_GoToRest(AquariumHomeFish *fish, int hurry)
     }
     if (base->position.y > fish->own.rest_point.y) {
         Approach_S32((int *) (void *) &base->position.y, fish->own.rest_point.y,
-                     hurry ? Kinds_shl(base->swim_224, 2) : base->swim_224);
+                     hurry ? Kinds_shl(base->climb_step, 2) : base->climb_step);
     }
     if (Vec_Distance(&base->position, &fish->own.rest_point) <= 0x800) {
         if (base->position.y <= fish->own.rest_point.y) {
@@ -570,9 +570,9 @@ void AquariumRisingFish_Climb(AquariumRisingFish *fish)
             }
             break;
         case AQUARIUM_MODE_FLEE:
-            base->position.y = (fx32) ((u32) base->position.y - (u32) Kinds_mul(base->swim_224, 2));
-            if (base->position.y < base->swim_228) {
-                base->position.y = base->swim_228;
+            base->position.y = (fx32) ((u32) base->position.y - (u32) Kinds_mul(base->climb_step, 2));
+            if (base->position.y < base->bottom) {
+                base->position.y = base->bottom;
             }
             return;
     }
@@ -584,7 +584,7 @@ void AquariumRisingFish_Climb(AquariumRisingFish *fish)
     } else if (base->pitch >= 0x1554) {
         base->pitch = 0x1554;
     }
-    base->position.y += Kinds_mul(base->swim_224, fish->own.climb);
+    base->position.y += Kinds_mul(base->climb_step, fish->own.climb);
     switch (fish->own.stage) {
         case 0:
             if (base->position.y > SURFACE && base->mode == AQUARIUM_MODE_CRUISE) {
@@ -597,9 +597,9 @@ void AquariumRisingFish_Climb(AquariumRisingFish *fish)
             }
             break;
         case 1:
-            base->position.y -= FX_MulFunc(0x1800, Kinds_mul(base->swim_224, fish->own.climb));
+            base->position.y -= FX_MulFunc(0x1800, Kinds_mul(base->climb_step, fish->own.climb));
             if (base->mode == AQUARIUM_MODE_REST) {
-                if (base->position.y < base->level) {
+                if (base->position.y < base->top) {
                     fish->own.climb = 1;
                     fish->own.rising = 0;
                     fish->own.stage = 0;
@@ -612,7 +612,7 @@ void AquariumRisingFish_Climb(AquariumRisingFish *fish)
             }
             break;
         case 2:
-            if (base->position.y < base->level && base->mode == AQUARIUM_MODE_NEW_COURSE) {
+            if (base->position.y < base->top && base->mode == AQUARIUM_MODE_NEW_COURSE) {
                 fish->own.climb = 1;
                 fish->own.rising = 0;
                 fish->own.stage = 0;
@@ -622,8 +622,8 @@ void AquariumRisingFish_Climb(AquariumRisingFish *fish)
     }
     if (base->position.y > SURFACE) {
         base->position.y = SURFACE;
-    } else if (base->position.y < base->swim_228) {
-        base->position.y = base->swim_228;
+    } else if (base->position.y < base->bottom) {
+        base->position.y = base->bottom;
     }
 }
 CLEAN_AS(func_ov004_02237454, AquariumRisingFish_Climb)
@@ -737,16 +737,16 @@ CLEAN_AS(func_ov004_02237834, AquariumKind30_Wait)
 void AquariumKind30_Bob(AquariumKind30 *fish)
 {
     AquariumFish *base = &fish->base;
-    base->position.y += Kinds_mul(base->swim_224, base->vertical);
+    base->position.y += Kinds_mul(base->climb_step, base->vertical);
     if (AquariumSwim_Random(0, 100) < 15) {
         base->vertical = (s8) -base->vertical;
     }
-    if (base->position.y > base->level) {
+    if (base->position.y > base->top) {
         base->vertical = -1;
-        base->position.y = base->level;
-    } else if (base->position.y < base->swim_228) {
+        base->position.y = base->top;
+    } else if (base->position.y < base->bottom) {
         base->vertical = 1;
-        base->position.y = base->swim_228;
+        base->position.y = base->bottom;
     }
 }
 CLEAN_AS(func_ov004_02237870, AquariumKind30_Bob)
@@ -767,7 +767,7 @@ void AquariumKind30_Snap(AquariumKind30 *fish)
         Approach_S16(&base->pitch, 0, 0x16c);
     }
     if (base->position.y != KIND30_HEIGHT) {
-        Approach_S32((int *) (void *) &base->position.y, KIND30_HEIGHT, base->swim_224);
+        Approach_S32((int *) (void *) &base->position.y, KIND30_HEIGHT, base->climb_step);
     }
     switch (fish->own.snap) {
         case AQUARIUM_SNAP_LUNGE:
@@ -814,7 +814,7 @@ void AquariumKind30_Follow(AquariumKind30 *fish)
             Approach_S16(&base->pitch, 0, 0x222);
         }
         if (base->position.y != KIND30_HEIGHT) {
-            Approach_S32((int *) (void *) &base->position.y, KIND30_HEIGHT, base->swim_224);
+            Approach_S32((int *) (void *) &base->position.y, KIND30_HEIGHT, base->climb_step);
         }
         fish->own.count = 0;
     } else {

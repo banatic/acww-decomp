@@ -12,8 +12,8 @@
  *     growth models' animated trees (growth_model.h);
  *   - flowers: the four families at 0x1590, the two flowers at 0x2df0 and the dandelions of
  *     model set 1 (pointers at 0x3060);
- *   - grass, holes, cracks, func_ov003_022271f8, stumps (func_ov003_022271a0), red turnips and
- *     the players' designs on the ground (0x3068).
+ *   - grass, stones (TownItemLoad_LoadStones, the five pointers at 0x46f4), holes, cracks, stumps
+ *     (func_ov003_022271a0), red turnips and the players' designs on the ground (0x3068).
  *
  * A model is read from a model file (.nsbmd) with the textures and palettes of a texture file
  * (.nsbtx) read and placed in VRAM for it; the texture files are freed again once the models

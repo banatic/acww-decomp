@@ -76,7 +76,7 @@ typedef struct FishShadowUnit {
 #define FISH_STATE_FIN_FIRST 0x34 /* the kinds that show the fin */
 #define FISH_STATE_FIN_LAST 0x36
 #define FISH_STATE_RAIN_KIND 0x37      /* the kind placed only while it rains or snows */
-#define FISH_STATE_SENSE_KIND 0xb      /* the only kind that hears the player (FishShadowSense) */
+#define FISH_STATE_FROG_KIND 0xb       /* the frog (item 0x12f3), the only kind that hears the player (FishShadowSense) */
 #define FISH_STATE_SURFACE_Y (-0x1333) /* the height a shadow is drawn at */
 #define FISH_STATE_ALPHA_FULL 0x1f
 #define FISH_STATE_ALPHA_FLEE 0x1e
@@ -132,10 +132,10 @@ extern u8 *func_02107b44(void *set, int index);
 extern u8 *func_02107bbc(void *set, int index);
 
 /* The frames the player at this console must keep running near it before it flees (the byte
- * at 0x214). */
+ * at 0x214, scare_wait). */
 static u8 *fish_state_scare_wait(FishShadow *fish)
 {
-    return &fish->pad_214[0];
+    return &fish->scare_wait;
 }
 
 static AnimatedModel *fish_state_model(FishShadowModel *model)
@@ -668,7 +668,8 @@ void FishShadow_CheckInView(FishShadowProcess *self, FishShadow *fish, int index
 }
 CLEAN_AS(func_ov003_0222807c, FishShadow_CheckInView)
 
-/* The effect of a fleeing shadow's splash, by its size class (none for 8 or more). */
+/* The effect of a fleeing shadow's wake (kinds 0x1a-0x21, as PlayerFish's wake_kinds; the
+ * splashes are 0x12-0x19), by its size class (none for 8 or more). */
 static int fish_state_flee_effect(int size)
 {
     static const u8 kinds[8] = {0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0x21, 0x20};
@@ -678,7 +679,7 @@ static int fish_state_flee_effect(int size)
 /* func_ov003_02228150: the shown shadow (none: 0) flees from `from`, unless it already flees
  * (free or from the hook): free, its swimming state becomes FISH_SHADOW_FLEEING, hooked, its
  * hook state FISH_SHADOW_HOOK_FLEEING. It starts fading (alpha 0x1e), its frames start again,
- * it turns away from `from` (a shadow with the fin to yaw 0), and its splash at the water's
+ * it turns away from `from` (a shadow with the fin to yaw 0), and its wake at the water's
  * surface is its effect (kept for the size classes 0-7). Whether it flees now. */
 int FishShadow_Flee(FishShadow *fish, const Vec3 *from)
 {
@@ -1053,16 +1054,16 @@ void FishShadow_EnterAway(void) {}
 CLEAN_AS(func_ov003_022288e0, FishShadow_EnterAway)
 
 /* func_ov003_022288e4: state 2's update. A shadow with the fin waits for the fin to load
- * (FishFin_Load, in the "fish_fin" pool); then it moves (FishShadow_StepPlacing) and is shown
+ * (FishFin_Load, in the "fish_fin" pool); then it moves (FishShadow_StepAppearing) and is shown
  * (FISH_SHADOW_SHOWN, set without its entry function) fully, its model and the fin's placed at
  * its position. Another moves and is shown once it has moved more than 3 frames, or when its
- * swimming state is 3; kind 0xb's sense starts cleared. */
+ * swimming state is 3; the frog's (kind 0xb) sense starts cleared. */
 void FishShadow_UpdateAppearing(FishShadowProcess *self, FishShadow *fish)
 {
     if (fish->has_fin) {
         FishFin *fin = &data_ov003_0225f220;
         if (FishFin_Load(fin, &self->fin)) {
-            FishShadow_StepPlacing(fish);
+            FishShadow_StepAppearing(fish);
             fish->state = FISH_SHADOW_SHOWN;
             fish->alpha = FISH_STATE_ALPHA_FULL;
             int yaw = fish->yaw;
@@ -1071,13 +1072,13 @@ void FishShadow_UpdateAppearing(FishShadowProcess *self, FishShadow *fish)
         }
         return;
     }
-    FishShadow_StepPlacing(fish);
+    FishShadow_StepAppearing(fish);
     if (fish->unk_201 > 3 || fish->behaviour == 3) {
         fish->state = FISH_SHADOW_SHOWN;
         fish->alpha = FISH_STATE_ALPHA_FULL;
         fish->unk_201 = 0;
         FishShadow_PlaceModel(self, &fish->position, &fish->model.object, fish->yaw);
-        if (fish->kind == FISH_STATE_SENSE_KIND) {
+        if (fish->kind == FISH_STATE_FROG_KIND) {
             FishShadow_ResetSense(fish);
         }
     }
@@ -1089,7 +1090,7 @@ void FishShadow_EnterAppearing(void) {}
 CLEAN_AS(func_ov003_022289b0, FishShadow_EnterAppearing)
 
 /* func_ov003_022289b4: state 1's update: once the place it was put at is in the camera's view,
- * the shadow goes to state 2 (FishShadow_SetState2) and, with the fin, the fin starts loading
+ * the shadow goes to state 2 (FishShadow_StartAppearing) and, with the fin, the fin starts loading
  * (FishShadow_TakeFin). */
 void FishShadow_UpdatePlaced(FishShadowProcess *self, FishShadow *fish, int index)
 {
@@ -1098,7 +1099,7 @@ void FishShadow_UpdatePlaced(FishShadowProcess *self, FishShadow *fish, int inde
     }
     Vec3 camera = data_021c67d0;
     if (FishShadow_InBox(&fish->placed_at, &camera, FISH_STATE_VIEW_X, FISH_STATE_VIEW_AHEAD, FISH_STATE_VIEW_BEHIND)) {
-        FishShadow_SetState2(self, index);
+        FishShadow_StartAppearing(self, index);
         if (fish->has_fin) {
             FishShadow_TakeFin(self);
         }

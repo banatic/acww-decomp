@@ -19,7 +19,7 @@
 #include "main/town_family.h"
 #include "ov003/field_actor.h"
 #include "ov003/town_insect_moves.h"
-#include "ov003/walk_target.h"
+#include "ov003/insect_spot.h"
 
 static_assert(offsetof(TownInsect, position) == 0x204, "position");
 static_assert(offsetof(TownInsect, model) == 0x50, "model");
@@ -171,9 +171,9 @@ int InsectPath_FindSpot(TownInsect *insect, s16 *turn, int *distance, Vec3 *spot
     u8 kind = (u8) insect->kind;
     int found;
     if (kind == INSECT_PATH_KIND_FLY) {
-        found = WalkTarget_DaySpot(spot, position) != 0;
+        found = InsectSpot_DaySpot(spot, position) != 0;
     } else {
-        found = WalkTarget_NearFlower(spot, position, TownInsectMove_TestFlags((s8) kind)) != 0;
+        found = InsectSpot_NearFlower(spot, position, TownInsectMove_FlowerLinesOfKind((s8) kind)) != 0;
     }
     if (!found) {
         return 0;

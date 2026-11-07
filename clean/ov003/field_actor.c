@@ -650,8 +650,9 @@ void FieldActor_FinishPendingTile(FieldActor *actor)
 CLEAN_AS(func_ov003_0220cbb4, FieldActor_FinishPendingTile)
 
 /* func_ov003_0220cc24: unless flag 11 or 0x16 is set, func_0200ea0c refuses the state or a
- * target is held already, looks for a target on the actor's tile with func_020438dc (mode by
- * tool: 1 -> 2, 2 -> 1, 4 -> 3, 5 -> 4, others 0) and keeps it. A target of kind 0x19 makes the
+ * target is held already, looks for a target on the actor's tile with func_020438dc
+ * (TileRequests_AskMarkedPitfallFor; the mode it is passed by tool, 1 -> 2, 2 -> 1, 4 -> 3,
+ * 5 -> 4, others 0, is ignored) and keeps it. A target of kind 0x19 makes the
  * tile pending (func_0200e854, flags 0x16 and 0x13). */
 void FieldActor_FindTileTarget(FieldActor *actor)
 {
@@ -1472,8 +1473,8 @@ CLEAN_AS(func_ov003_0220dde8, FieldActor_UpdateState78)
 
 /* func_ov003_0220de04: animations 0x71 to 0x75 follow each other as each ends; during 0x72
  * func_0200faa8 runs (0x3ae), and the start of 0x74 plays sound 0x817 and, when the player's
- * record exists (func_020984e8), marks it (func_02099740, flag 0x19 once flag 0x17 is set) and
- * writes its value plus 0x10 at 0x70d. During 0x75 the actor turns to yaw 0 (func_0200faf0,
+ * record exists (func_020984e8), marks it stung (func_02099740, flag 0x19 once flag 0x17 is set)
+ * and loads the stung face texture (the record's face plus 0x10) into unk_70D. During 0x75 the actor turns to yaw 0 (func_0200faf0,
  * 0x59a), which on arrival runs func_02035624 and func_020356c4, and `step` goes:
  *   0: the receiver at 0xec is registered (SceneObjectBase_TakeReceiver) as "obj_etc_player",
  *      flag 0x11 set, its byte 0x1e set to 20, the link's request raised and func_0203ae98 run;
@@ -3417,7 +3418,7 @@ void FieldActor_EndState64(FieldActor *actor)
 }
 CLEAN_AS(func_ov003_022101a8, FieldActor_EndState64)
 
-/* func_ov003_022101fc: the actor turns to yaw 0 (func_0200faa8, 0x400). During animation
+/* func_ov003_022101fc: the actor turns to yaw 0x8000 (FieldActor_TurnToHalfTurn, 0x400). During animation
  * 0x5f, at a point 0xb00 above and 0x300 beyond (z) where the frame's update began, the frames
  * before 11 run func_0200f2a0 (0x851); on frame 11 the slingshot's pellet (the float at 0x5c8)
  * is shot from there (FISHING_FLOAT_PELLET_SHOT), sounds 0x852 and 0x853 play and flag 9 is
@@ -4998,7 +4999,8 @@ CLEAN_AS(func_ov003_0221248c, FieldActor_RequestState5B)
 
 /* func_ov003_022124c4: state 0x5a's update: the speed at 0x98 slows by 0x9c a frame; the actor
  * of this console acts on the work's tile (FieldActor_ActAt), another player's actor notes the
- * state after this one. The actor turns to the tile, and effect 0x2a marks the frame it stops. */
+ * state after this one. The second contact body is put on the tile, and effect 0x2a marks the
+ * frame it stops. */
 void FieldActor_UpdateState5A(FieldActor *actor)
 {
     int speed_before = actor->unk_098;
@@ -5017,7 +5019,7 @@ void FieldActor_UpdateState5A(FieldActor *actor)
         FieldActor_EnterContact(actor);
         actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
     }
-    FieldActor_FaceState5ATile(actor);
+    FieldActor_ContactState5ATile(actor);
     if (speed_before != 0 && actor->unk_098 == 0) {
         EffectSystem_StartKind(0x2a, &actor->position, &actor->yaw, 0);
     }
@@ -5098,15 +5100,16 @@ int FieldActor_ActAt(FieldActor *actor, Vec3 *point, u8 use_point)
 }
 CLEAN_AS(func_ov003_02212574, FieldActor_ActAt)
 
-/* func_ov003_02212728: the actor turns towards the middle of the work's tile. */
-void FieldActor_FaceState5ATile(FieldActor *actor)
+/* func_ov003_02212728: the second contact body is put at the middle of the work's tile, size
+ * 0xf33, and entered for the frame. */
+void FieldActor_ContactState5ATile(FieldActor *actor)
 {
     Vec3 middle;
     AcreTile_TileCentre(&middle, actor->work.s5a.x, actor->work.s5a.z);
     FieldActor_SetContactBSized(actor, &middle, 0xf33, 0x1000);
     FieldBody_Enter((FieldBody *) actor->unk_1C4);
 }
-CLEAN_AS(func_ov003_02212728, FieldActor_FaceState5ATile)
+CLEAN_AS(func_ov003_02212728, FieldActor_ContactState5ATile)
 
 /* func_ov003_02212768: state 0x5a's message handler: the state is asked for again at the saved
  * tile. */
@@ -5201,7 +5204,7 @@ void FieldActor_UpdateState59(FieldActor *actor)
         FieldActor_MoveWithCollision(actor);
         FieldActor_EnterContact(actor);
         FieldActor_RunState59(actor);
-        FieldActor_FaceState59Point(actor);
+        FieldActor_ContactState59Point(actor);
     } else {
         FieldActor_UpdateBody(actor);
         if (FieldActor_FollowReported(actor)) {
@@ -5258,14 +5261,15 @@ void FieldActor_RunState59(FieldActor *actor)
 }
 CLEAN_AS(func_ov003_02212968, FieldActor_RunState59)
 
-/* func_ov003_02212a14: the actor turns towards the work's point. */
-void FieldActor_FaceState59Point(FieldActor *actor)
+/* func_ov003_02212a14: the second contact body is put at the work's point, size 0xf33, and
+ * entered for the frame. */
+void FieldActor_ContactState59Point(FieldActor *actor)
 {
     Vec3 point = actor->work.s59.point;
     FieldActor_SetContactBSized(actor, &point, 0xf33, 0x1000);
     FieldBody_Enter((FieldBody *) actor->unk_1C4);
 }
-CLEAN_AS(func_ov003_02212a14, FieldActor_FaceState59Point)
+CLEAN_AS(func_ov003_02212a14, FieldActor_ContactState59Point)
 
 /* func_ov003_02212a54: the actor turns towards the work's yaw. Once it has stopped while the
  * point is not fixed, the point becomes the tile ahead and the yaw the direction to it from the
@@ -6223,7 +6227,7 @@ CLEAN_AS(func_ov003_02213ae4, FieldActor_RequestState57)
 
 /* func_ov003_02213b28: state 0x56's update. The actor of this console faces the request's yaw
  * and sweeps; another player's actor only checks what the swing hits. Then both slow down,
- * end the swing when it is over and turn towards the point ahead, and the tip of what the actor
+ * end the swing when it is over and put the second contact body at the point ahead, and the tip of what the actor
  * holds is noted. */
 void FieldActor_UpdateState56(FieldActor *actor)
 {
@@ -6242,7 +6246,7 @@ void FieldActor_UpdateState56(FieldActor *actor)
     FieldActor_EnterContact(actor);
     FieldActor_SlowState56(actor);
     FieldActor_EndState56(actor);
-    FieldActor_TurnState56(actor);
+    FieldActor_ContactState56Ahead(actor);
 
     Vec3 tip = actor->held_tip;
     Vec3 out;
@@ -6618,15 +6622,16 @@ void FieldActor_SweepState56(FieldActor *actor)
 }
 CLEAN_AS(func_ov003_02214384, FieldActor_SweepState56)
 
-/* func_ov003_02214568: the actor turns towards the point ahead of it. */
-void FieldActor_TurnState56(FieldActor *actor)
+/* func_ov003_02214568: the second contact body is put at the point ahead of the actor, size
+ * 0x99a, and entered for the frame. */
+void FieldActor_ContactState56Ahead(FieldActor *actor)
 {
     Vec3 ahead;
     FieldActor_PointAheadOfSelf(&ahead, actor);
     FieldActor_SetContactBSized(actor, &ahead, 0x99a, 0x1000);
     FieldBody_Enter((FieldBody *) actor->unk_1C4);
 }
-CLEAN_AS(func_ov003_02214568, FieldActor_TurnState56)
+CLEAN_AS(func_ov003_02214568, FieldActor_ContactState56Ahead)
 
 /* func_ov003_022145a0: the actor faces the request's yaw. */
 void FieldActor_FaceState56(FieldActor *actor)
@@ -8559,8 +8564,8 @@ CLEAN_AS(func_ov003_02216bc4, FieldActor_RequestState48)
 
 /* func_ov003_02216bfc: state 0x47's update. The speed at 0x98 slows by 0x9c a frame, towards 0.
  * The actor of this console then tries to act ahead (FieldActor_ActAhead, without checking for
- * objects); another player's actor notes the state after this one. Both turn towards the point
- * ahead. */
+ * objects); another player's actor notes the state after this one. Both put the second contact
+ * body at the point ahead. */
 void FieldActor_UpdateState47(FieldActor *actor)
 {
     FieldActor_UpdateBody(actor);
@@ -8579,7 +8584,7 @@ void FieldActor_UpdateState47(FieldActor *actor)
         FieldActor_SetSpeed(actor, &speed);
         actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
     }
-    FieldActor_TurnState47(actor);
+    FieldActor_ContactState47Ahead(actor);
 }
 CLEAN_AS(func_ov003_02216bfc, FieldActor_UpdateState47)
 
@@ -8648,15 +8653,16 @@ int FieldActor_ActAhead(FieldActor *actor, int check_other)
 }
 CLEAN_AS(func_ov003_02216c9c, FieldActor_ActAhead)
 
-/* func_ov003_02216e5c: turns the actor towards the point ahead of it (func_02010d88). */
-void FieldActor_TurnState47(FieldActor *actor)
+/* func_ov003_02216e5c: the second contact body is put at the point ahead of the actor, size
+ * 0xf33 (FieldActor_SetContactBSized), and entered for the frame. */
+void FieldActor_ContactState47Ahead(FieldActor *actor)
 {
     Vec3 ahead;
     FieldActor_PointAheadOfSelf(&ahead, actor);
     FieldActor_SetContactBSized(actor, &ahead, 0xf33, 0x1000);
     FieldBody_Enter((FieldBody *) actor->unk_1C4);
 }
-CLEAN_AS(func_ov003_02216e5c, FieldActor_TurnState47)
+CLEAN_AS(func_ov003_02216e5c, FieldActor_ContactState47Ahead)
 
 /* func_ov003_02216e94: state 0x47's message handler asks for the state again. */
 void FieldActor_State47Message(FieldActor *actor, int arg)
@@ -8691,7 +8697,7 @@ static_assert(offsetof(FieldActor, start_position.z) == 0x6fc, "start position z
 
 /* func_ov003_02216eec: state 0x46's update. The speed at 0x98 slows by 0x171 a frame, towards 0
  * (func_020113a4); when it reaches 0 here, effect 0x2c starts at the actor. The actor of this
- * console faces the work's yaw first and turns towards its point last. */
+ * console faces the work's yaw first and puts the second contact body at its point last. */
 void FieldActor_UpdateState46(FieldActor *actor)
 {
     int before = actor->unk_098;
@@ -8704,7 +8710,7 @@ void FieldActor_UpdateState46(FieldActor *actor)
         int speed = FieldActor_StepDown(actor->unk_098, 0, 0x171);
         FieldActor_SetSpeed(actor, &speed);
         FieldActor_EndState46Local(actor);
-        FieldActor_TurnState46(actor);
+        FieldActor_ContactState46Point(actor);
     } else {
         FieldActor_UpdateBody(actor);
         if (FieldActor_FollowReported(actor)) {
@@ -8745,14 +8751,15 @@ void FieldActor_EndState46Local(FieldActor *actor)
 }
 CLEAN_AS(func_ov003_02216fec, FieldActor_EndState46Local)
 
-/* func_ov003_02217020: turns the actor towards the work's point (func_02010d88). */
-void FieldActor_TurnState46(FieldActor *actor)
+/* func_ov003_02217020: the second contact body is put at the work's point, size 0xf33
+ * (FieldActor_SetContactBSized), and entered for the frame. */
+void FieldActor_ContactState46Point(FieldActor *actor)
 {
     Vec3 point = actor->work.s46.point;
     FieldActor_SetContactBSized(actor, &point, 0xf33, 0x1000);
     FieldBody_Enter((FieldBody *) actor->unk_1C4);
 }
-CLEAN_AS(func_ov003_02217020, FieldActor_TurnState46)
+CLEAN_AS(func_ov003_02217020, FieldActor_ContactState46Point)
 
 /* func_ov003_02217060: the actor faces the work's yaw (func_0200fb34). */
 void FieldActor_FaceState46(FieldActor *actor)
@@ -8999,7 +9006,7 @@ void FieldActor_UpdateState3E(FieldActor *actor)
 CLEAN_AS(func_ov003_02217488, FieldActor_UpdateState3E)
 
 /* func_ov003_022174a4: at the animation's end flag 1 is set and the actor goes to the work's next
- * state with its point and value: 0x38 (FieldActor_RequestState38) and 0x39 (FieldActor_RequestState39,
+ * state with its point and yaw: 0x38 (FieldActor_RequestState38) and 0x39 (FieldActor_RequestState39,
  * with the kind in bits 2-3 of the flags) clearing flag 0 first; 0x10 clears flag 0 and moves on
  * through func_0200c3b0 (3, 5); 2 runs func_0203e110 and moves on the usual way. */
 void FieldActor_EndState3E(FieldActor *actor)
@@ -9012,11 +9019,11 @@ void FieldActor_EndState3E(FieldActor *actor)
     switch (work->next) {
         case 0x38:
             FieldActor_ClearFlag(actor, 0);
-            FieldActor_RequestState38(actor, work->x, work->z, work->value, 6, -1);
+            FieldActor_RequestState38(actor, work->x, work->z, work->yaw, 6, -1);
             break;
         case 0x39:
             FieldActor_ClearFlag(actor, 0);
-            FieldActor_RequestState39(actor, (work->flags & 0xc) >> 2, work->x, work->z, work->value, 6, -1);
+            FieldActor_RequestState39(actor, (work->flags & 0xc) >> 2, work->x, work->z, work->yaw, 6, -1);
             break;
         case 0x10:
             FieldActor_ClearFlag(actor, 0);
@@ -9052,17 +9059,17 @@ void FieldActor_RunState3E(FieldActor *actor)
 CLEAN_AS(func_ov003_02217590, FieldActor_RunState3E)
 
 /* func_ov003_02217608: state 0x3e's message handler asks for the state again with the saved
- * point, value and flags, the next state decoded from the flags' high nibble (0: 0x38, 1: 0x39,
+ * point, yaw and flags, the next state decoded from the flags' high nibble (0: 0x38, 1: 0x39,
  * 2: 0x10, others 2). */
 void FieldActor_State3EMessage(FieldActor *actor, int arg)
 {
     u8 flags;
     fx32 x;
     fx32 z;
-    u16 value;
+    u16 yaw;
     int next;
 
-    FieldActor_GetState3ESaved(&actor->saved.s3e, &flags, &x, &z, &value);
+    FieldActor_GetState3ESaved(&actor->saved.s3e, &flags, &x, &z, &yaw);
     switch (flags & 0xf0) {
         case 0x00:
             next = 0x38;
@@ -9077,7 +9084,7 @@ void FieldActor_State3EMessage(FieldActor *actor, int arg)
             next = 2;
             break;
     }
-    FieldActor_RequestState3E(actor, next, flags & 0xf, x, z, (s16) value, 6, (s16) arg);
+    FieldActor_RequestState3E(actor, next, flags & 0xf, x, z, (s16) yaw, 6, (s16) arg);
 }
 CLEAN_AS(func_ov003_02217608, FieldActor_State3EMessage)
 
@@ -9117,8 +9124,8 @@ void FieldActor_EnterState3E(FieldActor *actor, const StateRequest *request, int
     int next = args->next;
     fx32 x = args->x;
     fx32 z = args->z;
-    s16 value = args->value;
-    FieldActor_SetState3EWork(&actor->work.s3e, next, (char) flags, x, z, value);
+    s16 yaw = args->yaw;
+    FieldActor_SetState3EWork(&actor->work.s3e, next, (char) flags, x, z, yaw);
 
     switch (next) {
         case 0x39:
@@ -9133,63 +9140,63 @@ void FieldActor_EnterState3E(FieldActor *actor, const StateRequest *request, int
         default:
             break;
     }
-    FieldActor_SetState3ESaved(&actor->saved.s3e, (char) flags, x, z, value);
+    FieldActor_SetState3ESaved(&actor->saved.s3e, (char) flags, x, z, yaw);
     FieldActor_PlaySound(actor, 0x4f);
 }
 CLEAN_AS(func_ov003_02217678, FieldActor_EnterState3E)
 
-/* func_ov003_022177d0: the saved flags (read first), point and value; returns the value. */
-u16 FieldActor_GetState3ESaved(const State3ESaved *saved, u8 *flags, fx32 *x, fx32 *z, u16 *value)
+/* func_ov003_022177d0: the saved flags (read first), point and yaw; returns the yaw. */
+u16 FieldActor_GetState3ESaved(const State3ESaved *saved, u8 *flags, fx32 *x, fx32 *z, u16 *yaw)
 {
     *flags = saved->flags;
     PackedBytes_UnpackPoint(saved->xz, (u32 *) x, (u32 *) z);
-    u16 v = (u16) PackedBytes_ReadS16(saved->value);
-    *value = v;
+    u16 v = (u16) PackedBytes_ReadS16(saved->yaw);
+    *yaw = v;
     return v;
 }
 CLEAN_AS(func_ov003_022177d0, FieldActor_GetState3ESaved)
 
-/* func_ov003_022177f4: the flags first, then the point and the value packed. */
-void FieldActor_SetState3ESaved(State3ESaved *saved, char flags, fx32 x, fx32 z, s16 value)
+/* func_ov003_022177f4: the flags first, then the point and the yaw packed. */
+void FieldActor_SetState3ESaved(State3ESaved *saved, char flags, fx32 x, fx32 z, s16 yaw)
 {
     saved->flags = (u8) flags;
     PackedBytes_PackPoint(saved->xz, x, z);
-    PackedBytes_WriteS16(saved->value, value);
+    PackedBytes_WriteS16(saved->yaw, yaw);
 }
 CLEAN_AS(func_ov003_022177f4, FieldActor_SetState3ESaved)
 
 /* func_ov003_0221781c */
-void FieldActor_SetState3EWork(State3EWork *work, int next, char flags, fx32 x, fx32 z, s16 value)
+void FieldActor_SetState3EWork(State3EWork *work, int next, char flags, fx32 x, fx32 z, s16 yaw)
 {
     work->next = next;
     work->flags = (u8) flags;
     work->x = x;
     work->z = z;
-    work->value = value;
+    work->yaw = yaw;
 }
 CLEAN_AS(func_ov003_0221781c, FieldActor_SetState3EWork)
 
 /* func_ov003_02217838: asks for state 0x3e, flag 1 cleared before the request is queued; whether
  * it was queued. */
-int FieldActor_RequestState3E(FieldActor *actor, int next, int flags, fx32 x, fx32 z, s16 value, int priority, s16 arg)
+int FieldActor_RequestState3E(FieldActor *actor, int next, int flags, fx32 x, fx32 z, s16 yaw, int priority, s16 arg)
 {
     StateRequest request;
 
     open_request(&request, 0x3e, priority, arg);
-    FieldActor_SetState3EArgs((State3EWork *) (void *) request.payload, next, (char) flags, x, z, value);
+    FieldActor_SetState3EArgs((State3EWork *) (void *) request.payload, next, (char) flags, x, z, yaw);
     FieldActor_ClearFlag(actor, 1);
     return send_request(actor, &request);
 }
 CLEAN_AS(func_ov003_02217838, FieldActor_RequestState3E)
 
 /* func_ov003_02217894: the request's payload, laid out as the work. */
-void FieldActor_SetState3EArgs(State3EWork *args, int next, char flags, fx32 x, fx32 z, s16 value)
+void FieldActor_SetState3EArgs(State3EWork *args, int next, char flags, fx32 x, fx32 z, s16 yaw)
 {
     args->next = next;
     args->flags = (u8) flags;
     args->x = x;
     args->z = z;
-    args->value = value;
+    args->yaw = yaw;
 }
 CLEAN_AS(func_ov003_02217894, FieldActor_SetState3EArgs)
 
@@ -9356,7 +9363,7 @@ void FieldActor_EnterState3D(FieldActor *actor, const StateRequest *request, int
     u8 flags = args->flags;
     fx32 x = args->x;
     fx32 z = args->z;
-    s16 yaw = args->value;
+    s16 yaw = args->yaw;
     FieldActor_SetState3DWork(&actor->work.s3d, next, flags, x, z, yaw, weight);
 
     switch (next) {
@@ -9382,7 +9389,7 @@ void FieldActor_GetState3DSaved(const State3ESaved *saved, u8 *flags, fx32 *x, f
 {
     *flags = saved->flags;
     PackedBytes_UnpackPoint(saved->xz, (u32 *) x, (u32 *) z);
-    *yaw = (u16) PackedBytes_ReadS16(saved->value);
+    *yaw = (u16) PackedBytes_ReadS16(saved->yaw);
 }
 CLEAN_AS(func_ov003_02217bf0, FieldActor_GetState3DSaved)
 
@@ -9391,7 +9398,7 @@ void FieldActor_SetState3DSaved(State3ESaved *saved, char flags, fx32 x, fx32 z,
 {
     saved->flags = (u8) flags;
     PackedBytes_PackPoint(saved->xz, x, z);
-    PackedBytes_WriteS16(saved->value, yaw);
+    PackedBytes_WriteS16(saved->yaw, yaw);
 }
 CLEAN_AS(func_ov003_02217c14, FieldActor_SetState3DSaved)
 
@@ -9433,7 +9440,7 @@ void FieldActor_SetState3DArgs(State3EWork *args, int next, char flags, fx32 x, 
     args->flags = (u8) flags;
     args->x = x;
     args->z = z;
-    args->value = yaw;
+    args->yaw = yaw;
 }
 CLEAN_AS(func_ov003_02217d1c, FieldActor_SetState3DArgs)
 
@@ -9935,7 +9942,7 @@ void FieldActor_GetState39Saved(const State3ESaved *saved, u8 *kind, fx32 *x, fx
 {
     *kind = saved->flags;
     PackedBytes_UnpackPoint(saved->xz, (u32 *) x, (u32 *) z);
-    *yaw = (u16) PackedBytes_ReadS16(saved->value);
+    *yaw = (u16) PackedBytes_ReadS16(saved->yaw);
 }
 CLEAN_AS(func_ov003_02218664, FieldActor_GetState39Saved)
 
@@ -9944,7 +9951,7 @@ void FieldActor_SetState39Saved(State3ESaved *saved, char kind, fx32 x, fx32 z, 
 {
     saved->flags = (u8) kind;
     PackedBytes_PackPoint(saved->xz, x, z);
-    PackedBytes_WriteS16(saved->value, yaw);
+    PackedBytes_WriteS16(saved->yaw, yaw);
 }
 CLEAN_AS(func_ov003_02218688, FieldActor_SetState39Saved)
 
@@ -10058,7 +10065,7 @@ CLEAN_AS(func_ov003_02218844, FieldActor_EnterState38)
 void FieldActor_GetState38Saved(const State3ESaved *saved, fx32 *x, fx32 *z, s16 *yaw)
 {
     PackedBytes_UnpackPoint(saved->xz, (u32 *) x, (u32 *) z);
-    *yaw = PackedBytes_ReadS16(saved->value);
+    *yaw = PackedBytes_ReadS16(saved->yaw);
 }
 CLEAN_AS(func_ov003_02218890, FieldActor_GetState38Saved)
 
@@ -10066,7 +10073,7 @@ CLEAN_AS(func_ov003_02218890, FieldActor_GetState38Saved)
 void FieldActor_SetState38Saved(State3ESaved *saved, fx32 x, fx32 z, int yaw)
 {
     PackedBytes_PackPoint(saved->xz, x, z);
-    PackedBytes_WriteS16(saved->value, yaw);
+    PackedBytes_WriteS16(saved->yaw, yaw);
 }
 CLEAN_AS(func_ov003_022188ac, FieldActor_SetState38Saved)
 

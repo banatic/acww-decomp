@@ -76,7 +76,7 @@ typedef struct AquariumFish {
     u8 yielding;           /* 0x1c9: it makes way for another (yield_to) */
     s8 vertical;           /* 0x1ca: the way it passes another: 1 up, -1 down */
     u8 pad_1cb;
-    fx32 level;   /* 0x1cc: the height it passes others at */
+    fx32 top;     /* 0x1cc: the top of the height it swims at (its bottom is `bottom`) */
     Vec3 ends[2]; /* 0x1d0: its head and its tail */
     u8 focus;     /* 0x1e8: the kind it pays attention to; its own for none */
     u8 yield_to;  /* 0x1e9 */
@@ -103,8 +103,8 @@ typedef struct AquariumFish {
     int swim_214;     /* 0x214 */
     int swim_218;     /* 0x218 */
     u8 unk_21c[8];    /* 0x21c */
-    int swim_224;     /* 0x224 */
-    fx32 swim_228;    /* 0x228 */
+    int climb_step;   /* 0x224: how far it climbs or dives a frame */
+    fx32 bottom;      /* 0x228: the bottom of the height it swims at */
     u8 unk_22c[3];    /* 0x22c */
     u8 turning;       /* 0x22f: it turns to target_yaw */
     u16 swim_230;     /* 0x230 */

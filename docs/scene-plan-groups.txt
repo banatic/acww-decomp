@@ -1998,7 +1998,7 @@ scene: fall into a pitfall and climb out, pick items up, eat fruit, shake a tree
 reach: saves with the tools and items (tools/scenes.py SAVES): pitfall seed 0x1566, fruit 0x1518-0x151c; the pending scene pitfall covers states 0x73-0x75, 0x19, 0x85 and 0x86; besides (findings 2026-10-29, actions), B asks for the tile ahead (FieldActor_TryTarget, a point 0.4-0.5 ahead: stand within 0.3 of the tile's edge, facing it): a dug hole (0xfc, 0xfd) held with any tool but the shovel gives states 0x66 and 0x67 (hole-step), codes 0x1f and the flowers 0x6e-0xa5 states 0x16 and 0x17 (field-pluck), the clover 0x20 state 0x18; states 0x5a and 0x47 (verdict 0) need a target held as the shovel or axe acts, which only an unanswered request leaves (linked), 0x5c (verdict 7) a refused dig: another actor near the tile (TileRequestGrant_NoOneNear) or four requests open; state 0x52 a float without a fish in state 0x50
 needs: seed
 match: ov003/field_actor ov003/tile_event main/field_actor_states main/tile_* main/field_actor_support
-  main/field_actor_motion main/field_actor_control main/field_actor main/player_actor_ops ov003/walk_target
+  main/field_actor_motion main/field_actor_control main/field_actor main/player_actor_ops ov003/insect_spot
   main/held_item* main/touch_pick*
 
 area: Player actions (the seed's day)

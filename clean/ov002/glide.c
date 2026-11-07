@@ -334,7 +334,7 @@ int Glider_IsTurnSettled(Glider *glider)
 }
 CLEAN_AS(func_ov002_02209f9c, Glider_IsTurnSettled)
 
-/* func_ov002_0220a000: sends command 0xb and eases to the pixel (x, y) in `steps` steps, or
+/* func_ov002_0220a000: plays sound effect 0xb and eases to the pixel (x, y) in `steps` steps, or
  * in `near_steps` when it is within NEAR_DISTANCE pixels of the glider on both axes. */
 void Glider_EaseToByDistance(Glider *glider, int x, int y, int steps, u8 near_steps)
 {
@@ -352,17 +352,17 @@ void Glider_EaseToByDistance(Glider *glider, int x, int y, int steps, u8 near_st
 }
 CLEAN_AS(func_ov002_0220a000, Glider_EaseToByDistance)
 
-/* func_ov002_0220a05c: eases to the pixel (x, y), sending command 0xb first when `cue`. */
-void Glider_EaseTo(Glider *glider, int x, int y, int steps, int cue)
+/* func_ov002_0220a05c: eases to the pixel (x, y), playing sound effect 0xb first when `play_se`. */
+void Glider_EaseTo(Glider *glider, int x, int y, int steps, int play_se)
 {
-    if (cue) {
+    if (play_se) {
         SoundSys_PlaySe(0xb);
     }
     Glide_EaseTo(&glider->glide, x, y, steps);
 }
 CLEAN_AS(func_ov002_0220a05c, Glider_EaseTo)
 
-/* func_ov002_0220a08c: sends command 0xb and glides to the pixel (x, y) in equal steps;
+/* func_ov002_0220a08c: plays sound effect 0xb and glides to the pixel (x, y) in equal steps;
  * returns the vertical step. */
 int Glider_MoveTo(Glider *glider, int x, int y, int steps)
 {

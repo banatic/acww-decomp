@@ -17,7 +17,7 @@ static_assert(offsetof(AquariumFish, index) == 0x15c, "fish index");
 static_assert(offsetof(AquariumFish, files) == 0x168, "fish files");
 static_assert(offsetof(AquariumFish, position) == 0x1a8, "fish position");
 static_assert(offsetof(AquariumFish, yaw) == 0x1c0, "fish yaw");
-static_assert(offsetof(AquariumFish, level) == 0x1cc, "fish level");
+static_assert(offsetof(AquariumFish, top) == 0x1cc, "fish top");
 static_assert(offsetof(AquariumFish, focus) == 0x1e8, "fish focus");
 static_assert(offsetof(AquariumFish, away_yaw) == 0x1ec, "fish away yaw");
 static_assert(offsetof(AquariumFish, met) == 0x1f4, "fish met");
@@ -90,9 +90,9 @@ void AquariumFish_SetSwim(AquariumFish *fish)
     fish->swim_204[2] = swim[5];
     fish->swim_204[3] = swim[6];
     fish->swim_230 = swim[7];
-    fish->swim_224 = swim[8] << 2;
-    fish->level = ((fx32) swim[9] << 7) - FX32_ONE;
-    fish->swim_228 = ((fx32) swim[10] << 6) - FX32_ONE;
+    fish->climb_step = swim[8] << 2;
+    fish->top = ((fx32) swim[9] << 7) - FX32_ONE;
+    fish->bottom = ((fx32) swim[10] << 6) - FX32_ONE;
 }
 CLEAN_AS(func_ov004_022354e0, AquariumFish_SetSwim)
 
@@ -254,12 +254,12 @@ void AquariumFish_Turn(AquariumFish *fish)
 }
 CLEAN_AS(func_ov004_0223592c, AquariumFish_Turn)
 
-/* func_ov004_022359c8: two fish passing each other: the one of lower level goes down and the
+/* func_ov004_022359c8: two fish passing each other: the one with the lower top goes down and the
  * other up (on a tie the first goes up); the other takes its way only while it is not making
  * way for someone. */
 void AquariumFish_SetPassingWays(AquariumFish *fish, AquariumFish **other)
 {
-    if (fish->level < (*other)->level) {
+    if (fish->top < (*other)->top) {
         fish->vertical = -1;
         if (!(*other)->yielding) {
             (*other)->vertical = 1;
@@ -356,16 +356,15 @@ static void AquariumFish_run_mode(AquariumFish *fish)
     MemberPointer_CallVoid(&data_ov004_0225949c[fish->mode], fish);
 }
 
-/* A fish's way up or down when it sets off: down from its top (level), up from its bottom
- * (swim_228), else either at random; not while it pays attention to another. */
+/* A fish's way up or down when it sets off: down from its top, up from its bottom, else either at random; not while it pays attention to another. */
 static void AquariumFish_choose_vertical(AquariumFish *fish)
 {
     if (fish->focus != fish->index) {
         return;
     }
-    if (fish->position.y >= fish->level) {
+    if (fish->position.y >= fish->top) {
         fish->vertical = -1;
-    } else if (fish->position.y <= fish->swim_228) {
+    } else if (fish->position.y <= fish->bottom) {
         fish->vertical = 1;
     } else {
         fish->vertical = AquariumSwim_Random(0, 2) > 0 ? 1 : -1;

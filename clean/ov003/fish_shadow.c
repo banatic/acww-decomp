@@ -84,7 +84,7 @@ extern const FishRodRanges data_ov003_0223bf00[2];
 extern const CreatureTableInfo data_020cb784[];
 extern NetSession *data_020ccf94;
 extern Heap *data_021fbe94;
-/* The shadow's model file's path, and the pools' names "fish_sdw" and "fish_fin". */
+/* The shadow's joint animation file's path ("/fish/03/fish_shadow.nsbca"), and the pools' names "fish_sdw" and "fish_fin". */
 extern const char *data_ov003_0223bdac;
 extern char data_ov003_0223c0b4[];
 extern char data_ov003_0223c0c0[];
@@ -166,7 +166,7 @@ void FishShadow_Update(FishShadowProcess *self, FishShadow *fish, int index)
 CLEAN_AS(func_ov003_02228ae8, FishShadow_Update)
 
 /* func_ov003_02228b74 (vtable slot 0): creation: the pools (six shadows, one fin), the
- * shadow's model file loaded, each shadow's model set up from it and the shadow left waiting
+ * shadow's joint animation file loaded, each shadow's model set up and animated from it and the shadow left waiting
  * to be placed in its group, a respawn countdown of 2400 frames plus 400 for each before it,
  * and its sounds stopped. Each other console's player whose fish is shown (fish display state
  * 3) is set to 6, so that it is shown again; the players' fish's sounds are stopped. */
@@ -257,17 +257,17 @@ void FishShadow_Reset(FishShadowProcess *self, int index)
 }
 CLEAN_AS(func_ov003_02228d48, FishShadow_Reset)
 
-/* func_ov003_02228dfc: shadow `index` (0-5) set to state 2; whether it is one. */
-int FishShadow_SetState2(FishShadowProcess *self, int index)
+/* func_ov003_02228dfc: shadow `index` (0-5) set to state 2 (appearing); whether it is one. */
+int FishShadow_StartAppearing(FishShadowProcess *self, int index)
 {
     (void) self;
     if (index >= 0 && index < FISH_SHADOW_COUNT) {
-        data_ov003_0225f76c[index].state = FISH_SHADOW_STATE_2;
+        data_ov003_0225f76c[index].state = FISH_SHADOW_APPEARING;
         return 1;
     }
     return 0;
 }
-CLEAN_AS(func_ov003_02228dfc, FishShadow_SetState2)
+CLEAN_AS(func_ov003_02228dfc, FishShadow_StartAppearing)
 
 /* The destructor's work: the pools, then the base class's. */
 static void fish_shadow_destruct(FishShadowProcess *self)

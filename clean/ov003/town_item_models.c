@@ -48,7 +48,7 @@ extern void func_02107524(u8 *model, u16 colour);
 /* The process's words outside the parts tile_event.h names. */
 #define TOWN_ITEM_MODELS_ITEM_HOLDERS 0x0050 /* the holders of items, by ItemTraits_Look */
 #define TOWN_ITEM_MODELS_CODE_1D 0x3060      /* the holders of codes 0x1d and 0x1e */
-#define TOWN_ITEM_MODELS_CODE_E3 0x46f4      /* five holders for the codes 0xe3-0xfb */
+#define TOWN_ITEM_MODELS_STONES 0x46f4       /* five holders for the stones, codes 0xe3-0xfb */
 #define TOWN_ITEM_MODELS_STUMPS 0x4978       /* twelve holders for the stumps */
 #define TOWN_ITEM_MODELS_CLOCK 0x6a6c        /* frames, 0-59 */
 
@@ -236,26 +236,26 @@ static void town_item_draw_map_code(TileEventProcess *process, AcreMap *map, con
     } else if (code <= 0x19 || code == 0x1c) {
         TownItemModels_DrawFlower(process, tile, matrix);
     } else if ((code >= 0x6e && code <= 0x87) || (code >= 0x8a && code <= 0xa3) || code == 0xa5) {
-        TownItemModels_DrawWiltedFlower(process, tile, matrix);
+        TownItemModels_DrawWiltedOrWateredFlower(process, tile, matrix);
     } else if (town_item_code_e3(code)) {
         Vec3 at = *point;
-        TownItemModels_DrawCodeE3WithShadow(process, tile, &at, matrix);
+        TownItemModels_DrawStoneWithShadow(process, tile, &at, matrix);
     } else if (code == 0xa6 || code == 0xfe) {
-        TownItemModels_DrawCodeA6(process, tile, matrix);
+        TownItemModels_DrawCrack(process, tile, matrix);
     } else if (code == 0xfc || code == 0xfd) {
-        TownItemModels_DrawCodeFc(process, tile, matrix);
+        TownItemModels_DrawHole(process, tile, matrix);
     } else if (code == 0x25 || code == 0x5c || code == 0xc7) {
-        TownItemModels_DrawCode25(process, tile, x, z, matrix);
+        TownItemModels_DrawDeadTree(process, tile, x, z, matrix);
     } else if (town_item_stump(code)) {
         TownItemModels_DrawStump(process, tile, matrix);
     } else if (town_item_code_1a(code) || code == 0xa4) {
         TownItemModels_DrawCode1a(process, tile, matrix);
     } else if (FieldUnits_IsBitSet((UnitBitsGrid *) (void *) map, x, z)) {
-        TownItemModels_DrawCodeA6(process, tile, matrix);
+        TownItemModels_DrawCrack(process, tile, matrix);
     } else if (code >= 0xa7 && code <= 0xc6) {
-        TownItemModels_DrawCodeA7(process, tile, matrix);
+        TownItemModels_DrawDesign(process, tile, matrix);
     } else if (code >= 0xd4 && code <= 0xe2) {
-        TownItemModels_DrawCodeD4(process, tile, matrix);
+        TownItemModels_DrawRedTurnip(process, tile, matrix);
     }
 }
 
@@ -309,7 +309,7 @@ void TownItemModels_DrawAround(TileEventProcess *process, AcreMap *map)
                 case 3:
                 case 4:
                     if (FieldUnits_IsBitSet((UnitBitsGrid *) (void *) map, x, z)) {
-                        TownItemModels_DrawCodeA6(process, tile, matrix);
+                        TownItemModels_DrawCrack(process, tile, matrix);
                     } else {
                         ModelObject *holder = town_item_pointer(process, TOWN_ITEM_MODELS_ITEM_HOLDERS, ItemTraits_Look(tile));
                         TownItemModels_Draw(process, holder, matrix);
@@ -341,60 +341,60 @@ void TownItemModels_Draw(TileEventProcess *process, ModelObject *model, Mtx43 ma
 }
 CLEAN_AS(func_ov003_022251a4, TownItemModels_Draw)
 
-/* func_ov003_022251e8: codes 0xa7-0xc6, a holder each from 0x3068. */
-ModelObject *TownItemModels_DrawCodeA7(TileEventProcess *process, const u16 *code, Mtx43 matrix)
+/* func_ov003_022251e8: the players' designs on the ground, codes 0xa7-0xc6, a holder each from 0x3068. */
+ModelObject *TownItemModels_DrawDesign(TileEventProcess *process, const u16 *code, Mtx43 matrix)
 {
     ModelObject *model = town_item_model(process->models_3068, *code - 0xa7);
     TownItemModels_Draw(process, model, matrix);
     return model;
 }
-CLEAN_AS(func_ov003_022251e8, TownItemModels_DrawCodeA7)
+CLEAN_AS(func_ov003_022251e8, TownItemModels_DrawDesign)
 
-/* func_ov003_02225240: codes 0xd4-0xe2: the second holder at 0x49a8 for 0xe2, else the first. */
-ModelObject *TownItemModels_DrawCodeD4(TileEventProcess *process, const u16 *code, Mtx43 matrix)
+/* func_ov003_02225240: the red turnips, codes 0xd4-0xe2: the second holder at 0x49a8 for 0xe2, else the first. */
+ModelObject *TownItemModels_DrawRedTurnip(TileEventProcess *process, const u16 *code, Mtx43 matrix)
 {
     ModelObject *model = &process->models_49a8[*code == 0xe2 ? 1 : 0];
     TownItemModels_Draw(process, model, matrix);
     return model;
 }
-CLEAN_AS(func_ov003_02225240, TownItemModels_DrawCodeD4)
+CLEAN_AS(func_ov003_02225240, TownItemModels_DrawRedTurnip)
 
-/* func_ov003_022252a0: codes 0xa6 and 0xfe (and tiles whose unit bit is set): the second holder
+/* func_ov003_022252a0: the cracks, codes 0xa6 and 0xfe (and tiles whose unit bit is set): the second holder
  * at 0x4840 for 0xfe, else the first. */
-void TownItemModels_DrawCodeA6(TileEventProcess *process, const u16 *code, Mtx43 matrix)
+void TownItemModels_DrawCrack(TileEventProcess *process, const u16 *code, Mtx43 matrix)
 {
     TownItemModels_Draw(process, &process->models_4840[*code == 0xfe ? 1 : 0], matrix);
 }
-CLEAN_AS(func_ov003_022252a0, TownItemModels_DrawCodeA6)
+CLEAN_AS(func_ov003_022252a0, TownItemModels_DrawCrack)
 
-/* func_ov003_022252fc: codes 0xfc and 0xfd: the second holder at 0x4708 for 0xfd, else the
+/* func_ov003_022252fc: the holes, codes 0xfc and 0xfd: the second holder at 0x4708 for 0xfd, else the
  * first. */
-ModelObject *TownItemModels_DrawCodeFc(TileEventProcess *process, const u16 *code, Mtx43 matrix)
+ModelObject *TownItemModels_DrawHole(TileEventProcess *process, const u16 *code, Mtx43 matrix)
 {
     ModelObject *model = &process->models_4708[*code == 0xfd ? 1 : 0];
     TownItemModels_Draw(process, model, matrix);
     return model;
 }
-CLEAN_AS(func_ov003_022252fc, TownItemModels_DrawCodeFc)
+CLEAN_AS(func_ov003_022252fc, TownItemModels_DrawHole)
 
-/* func_ov003_0222535c: a code of 0xe3-0xfb drawn (TownItemModels_DrawCodeE3), then a wide
+/* func_ov003_0222535c: a code of 0xe3-0xfb drawn (TownItemModels_DrawStone), then a wide
  * shadow at `point`. */
-void TownItemModels_DrawCodeE3WithShadow(TileEventProcess *process, const u16 *code, const Vec3 *point, Mtx43 matrix)
+void TownItemModels_DrawStoneWithShadow(TileEventProcess *process, const u16 *code, const Vec3 *point, Mtx43 matrix)
 {
-    TownItemModels_DrawCodeE3(process, code, matrix);
+    TownItemModels_DrawStone(process, code, matrix);
     ObjShadow_DrawWide(point);
 }
-CLEAN_AS(func_ov003_0222535c, TownItemModels_DrawCodeE3WithShadow)
+CLEAN_AS(func_ov003_0222535c, TownItemModels_DrawStoneWithShadow)
 
-/* func_ov003_022253a8: codes 0xe3-0xfb: the holder of the five pointers at 0x46f4 by the code
+/* func_ov003_022253a8: the stones, codes 0xe3-0xfb: the holder of the five pointers at 0x46f4 by the code
  * less 0xe3, modulo 5 (a signed remainder). */
-ModelObject *TownItemModels_DrawCodeE3(TileEventProcess *process, const u16 *code, Mtx43 matrix)
+ModelObject *TownItemModels_DrawStone(TileEventProcess *process, const u16 *code, Mtx43 matrix)
 {
-    ModelObject *model = town_item_pointer(process, TOWN_ITEM_MODELS_CODE_E3, (*code - 0xe3) % 5);
+    ModelObject *model = town_item_pointer(process, TOWN_ITEM_MODELS_STONES, (*code - 0xe3) % 5);
     TownItemModels_Draw(process, model, matrix);
     return model;
 }
-CLEAN_AS(func_ov003_022253a8, TownItemModels_DrawCodeE3)
+CLEAN_AS(func_ov003_022253a8, TownItemModels_DrawStone)
 
 /* func_ov003_02225404: the grass, codes 0x1f-0x24: holder 4 at 0x43e8 (the clover model) for 0x1f
  * and 0x20, else the code less 0x21 (the weeds' models grass A-D). */
@@ -441,17 +441,18 @@ ModelObject *TownItemModels_DrawCode1a(TileEventProcess *process, const u16 *cod
 }
 CLEAN_AS(func_ov003_02225474, TownItemModels_DrawCode1a)
 
-/* func_ov003_02225538: the wilted flowers: the first holder of the code's kind
- * (TownFamily_Kind) at 0x1590. */
-ModelObject *TownItemModels_DrawWiltedFlower(TileEventProcess *process, const u16 *code, Mtx43 matrix)
+/* func_ov003_02225538: the wilted flowers (and, on the town's map, the watered ones): the first
+ * holder of the code's kind (TownFamily_Kind) at 0x1590. */
+ModelObject *TownItemModels_DrawWiltedOrWateredFlower(TileEventProcess *process, const u16 *code, Mtx43 matrix)
 {
     ModelObject *model = town_item_model(process->models_1590, TOWN_ITEM_MODELS_PER_LINE * TownFamily_Kind(code));
     TownItemModels_Draw(process, model, matrix);
     return model;
 }
-CLEAN_AS(func_ov003_02225538, TownItemModels_DrawWiltedFlower)
+CLEAN_AS(func_ov003_02225538, TownItemModels_DrawWiltedOrWateredFlower)
 
-/* func_ov003_02225598: the flowers and watered flowers: the holder of the code's kind and colour
+/* func_ov003_02225598: the flowers (and, through TownItemModels_DrawCode, the watered flowers):
+ * the holder of the code's kind and colour
  * (TownFamily_Kind, TownFamily_Colour) at 0x1590 (lines 4 and 5 run on into the holders at
  * 0x2df0). */
 ModelObject *TownItemModels_DrawFlower(TileEventProcess *process, const u16 *code, Mtx43 matrix)
@@ -486,9 +487,9 @@ ModelObject *TownItemModels_DrawStump(TileEventProcess *process, const u16 *code
 }
 CLEAN_AS(func_ov003_02225608, TownItemModels_DrawStump)
 
-/* func_ov003_02225694: codes 0x25 (holder 5 of the set at 0x174 for the tile's parity), 0xc7
+/* func_ov003_02225694: the dead trees (holder 5, the dead stage), codes 0x25 (holder 5 of the set at 0x174 for the tile's parity), 0xc7
  * (holder 5 at 0x11e8) and 0x5c (any other: holder 5 at 0xc6c). */
-ModelObject *TownItemModels_DrawCode25(TileEventProcess *process, const u16 *code, int x, int z, Mtx43 matrix)
+ModelObject *TownItemModels_DrawDeadTree(TileEventProcess *process, const u16 *code, int x, int z, Mtx43 matrix)
 {
     u16 id = *code;
     ModelObject *model;
@@ -502,7 +503,7 @@ ModelObject *TownItemModels_DrawCode25(TileEventProcess *process, const u16 *cod
     TownItemModels_Draw(process, model, matrix);
     return model;
 }
-CLEAN_AS(func_ov003_02225694, TownItemModels_DrawCode25)
+CLEAN_AS(func_ov003_02225694, TownItemModels_DrawDeadTree)
 
 /* func_ov003_02225714: a growth code drawn at `point` (TownItemModels_DrawGrowth, on a copy),
  * then a tree's shadow at `point` sized by its stage. */
@@ -612,8 +613,9 @@ static int town_item_flower_code(u16 code)
  * and by the three angles, scaled by `scale`: codes 0xd4-0xda as items 0x153b-0x1541, 0xdb-0xe1
  * as item 0x153b, 0x20 as item 0x156a; items (kinds 1, 3 and 4) by their holder; codes of kind
  * 0 by TownItemModels_DrawCode1a (0x1a, 0x1b, 0x1d, 0x1e, 0x88, 0x89),
- * TownItemModels_DrawFlower (the flowers and watered flowers, 0x1a, 0x1c, 0x1d and 0xa4) or
- * TownItemModels_DrawCodeA7 (0xa7-0xc6); others are not drawn. */
+ * TownItemModels_DrawFlower (the flowers 0-0x19 and 0x1c and the watered flowers 0x8a-0xa5,
+ * 0xa4 among them; 0x1a and 0x1d went to DrawCode1a first) or
+ * TownItemModels_DrawDesign (0xa7-0xc6); others are not drawn. */
 void TownItemModels_DrawCode(TileEventProcess *process, u16 code, const Vec3 *point, const Vec3 *scale, short angle_x,
                              short angle_y, short angle_z)
 {
@@ -636,7 +638,7 @@ void TownItemModels_DrawCode(TileEventProcess *process, u16 code, const Vec3 *po
             } else if (town_item_flower_code(drawn)) {
                 TownItemModels_DrawFlower(process, &drawn, data_021fbe48);
             } else if (drawn >= 0xa7 && drawn <= 0xc6) {
-                TownItemModels_DrawCodeA7(process, &drawn, data_021fbe48);
+                TownItemModels_DrawDesign(process, &drawn, data_021fbe48);
             }
             break;
         case 1:

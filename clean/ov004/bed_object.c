@@ -87,8 +87,8 @@ static_assert(sizeof(BedObject) == 0x8b8, "the size BedObject_Create allocates")
 #define CHOICE_SECOND 0xd
 #define SEQUENCE_4 0x19 /* the receiver's state byte with "sp_etc_sequence4" */
 #define TALK_STATE 4    /* the receiver's state byte with "obj_etc_player" */
-#define DONE_EVENT 0x2e /* queued in SceneTables_EntryRecord's object when the sequence is done */
-#define DONE_EVENT_ARG 2
+#define DONE_SCENE 0x2e /* the entry record's exit set to it when the sequence is done */
+#define DONE_CHANGE_ARG 2
 #define BED_OBJECT_SIZE 0x8b8
 
 /* The class's vtables, and its receiver part's. */
@@ -433,13 +433,13 @@ int BedObject_EnterTalkNext(BedObject *object)
 }
 CLEAN_AS(func_ov004_02217c6c, BedObject_EnterTalkNext)
 
-/* func_ov004_02217c70 (update of SEQUENCE_DONE): once the link has closed, ends the talk, queues
- * event 0x2e in SceneTables_EntryRecord's object and sets the flag of ActivityJob_Ask1. */
+/* func_ov004_02217c70 (update of SEQUENCE_DONE): once the link has closed, ends the talk, sets
+ * the entry record's exit to scene 0x2e (SceneExit_SetToScene, change arg 2) and sets the flag of ActivityJob_Ask1. */
 void BedObject_UpdateSequenceDone(BedObject *object)
 {
     if (link_closed(object)) {
         end_talk(object);
-        SceneExit_SetToScene((SceneExit *) (uintptr_t) SceneTables_EntryRecord(), DONE_EVENT, DONE_EVENT_ARG, 0);
+        SceneExit_SetToScene((SceneExit *) (uintptr_t) SceneTables_EntryRecord(), DONE_SCENE, DONE_CHANGE_ARG, 0);
         ActivityJob_Ask1();
     }
 }

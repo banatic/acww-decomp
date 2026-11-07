@@ -145,7 +145,7 @@ static void AquariumSwim_check_levelling(AquariumFish *fish)
         return;
     }
     int vertical = fish->vertical;
-    if ((vertical == 1 && fish->position.y == fish->level) || (vertical == -1 && fish->position.y == fish->swim_228)) {
+    if ((vertical == 1 && fish->position.y == fish->top) || (vertical == -1 && fish->position.y == fish->bottom)) {
         fish->levelling = 1;
     }
 }
@@ -227,32 +227,32 @@ CLEAN_AS(func_ov004_022396a0, AquariumSwim_TiltFixed)
 void AquariumSwim_ClimbByFocus(AquariumFish *fish)
 {
     if ((u32) fish->index - (u32) KIND_FISH_45 <= 1 || fish->focus == fish->index) {
-        AquariumSwim_ClimbWithin(fish, fish->swim_224, fish->level, fish->swim_228);
+        AquariumSwim_ClimbWithin(fish, fish->climb_step, fish->top, fish->bottom);
     } else {
-        AquariumSwim_ClimbWithin(fish, FOCUS_CLIMB_STEP, FOCUS_CLIMB_TOP, fish->swim_228);
+        AquariumSwim_ClimbWithin(fish, FOCUS_CLIMB_STEP, FOCUS_CLIMB_TOP, fish->bottom);
     }
 }
 CLEAN_AS(func_ov004_02239700, AquariumSwim_ClimbByFocus)
 
 /* func_ov004_02239768: the fish climbs or dives at its vertical speed within its own heights
- * (level down to swim_228). */
+ * (top down to bottom). */
 void AquariumSwim_Climb(AquariumFish *fish)
 {
-    AquariumSwim_ClimbWithin(fish, fish->swim_224, fish->level, fish->swim_228);
+    AquariumSwim_ClimbWithin(fish, fish->climb_step, fish->top, fish->bottom);
 }
 CLEAN_AS(func_ov004_02239768, AquariumSwim_Climb)
 
 /* func_ov004_02239790: the fish climbs or dives `step` a frame; above `top` it goes back towards
- * its level, below `bottom` towards its bottom (swim_228), `step` a frame.
- * QUIRK: above `top` it goes towards its level, not to `top`. */
+ * its top, below `bottom` towards its bottom, `step` a frame.
+ * QUIRK: above `top` it goes towards its own top, not to `top`. */
 void AquariumSwim_ClimbWithin(AquariumFish *fish, int step, fx32 top, fx32 bottom)
 {
     int *y = (int *) (void *) &fish->position.y;
     *y = AquariumSwim_add(*y, AquariumSwim_mul(step, fish->vertical));
     if (*y > top) {
-        Approach_S32(y, fish->level, step);
+        Approach_S32(y, fish->top, step);
     } else if (*y < bottom) {
-        Approach_S32(y, fish->swim_228, step);
+        Approach_S32(y, fish->bottom, step);
     }
 }
 CLEAN_AS(func_ov004_02239790, AquariumSwim_ClimbWithin)

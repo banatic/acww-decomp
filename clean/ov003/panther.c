@@ -21,8 +21,8 @@ static_assert(sizeof(Panther) == 0x2b8, "the size Panther_New allocates");
 
 #define PANTHER_RECEIVER_OFFSET 0xec
 #define PANTHER_HOUR_FROM 6
-#define PANTHER_MESSAGE_EARLY 0xf
-#define PANTHER_MESSAGE_LATE 0x12
+#define PANTHER_MESSAGE_CLOSED 0xf /* closing time already */
+#define PANTHER_MESSAGE_FULL 0x12  /* a customer is inside (as FOX_MESSAGE_FULL) */
 /* A name code of main (func_02082438): 0xd in the top four bits takes entry `low twelve bits`
  * of main's list of names, here 10. */
 #define PANTHER_NAME_CODE 0xd00a
@@ -39,8 +39,8 @@ typedef struct PantherText {
 } PantherText;
 
 /* func_ov003_0221d10c (vtable slot 0x78, before a talk): names the receiver "sp_npc_panther",
- * picks PANTHER_MESSAGE_LATE when vtable slot 0x8c (Panther_IsAfterSix) agrees, else
- * PANTHER_MESSAGE_EARLY, and sets the speaker to the name PANTHER_NAME_CODE gives (the string
+ * picks PANTHER_MESSAGE_FULL when vtable slot 0x8c (Panther_IsAfterSix) agrees, else
+ * PANTHER_MESSAGE_CLOSED, and sets the speaker to the name PANTHER_NAME_CODE gives (the string
  * object's vtable slot 0x0c gives its characters). */
 void Panther_PrepareTalk(Panther *panther)
 {
@@ -50,9 +50,9 @@ void Panther_PrepareTalk(Panther *panther)
     MessageReceiver_SetName((MessageReceiver *) &panther->receiver_vtable, data_ov003_02238ef8);
     PantherSlot after_six = (PantherSlot) (uintptr_t) *(const u32 *) ((const u8 *) panther->vtable + 0x8c);
     if (after_six(panther) == 0) {
-        panther->message = PANTHER_MESSAGE_EARLY;
+        panther->message = PANTHER_MESSAGE_CLOSED;
     } else {
-        panther->message = PANTHER_MESSAGE_LATE;
+        panther->message = PANTHER_MESSAGE_FULL;
     }
 
     PantherText text;

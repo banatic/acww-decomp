@@ -222,7 +222,7 @@ u32 MenuScene_LatchRepeatedKeys(MenuScene *scene)
 CLEAN_AS(func_ov002_02208008, MenuScene_LatchRepeatedKeys)
 
 /* func_ov002_02208014: when the pen touched the screen this frame, clears state flag 2 and marks
- * the input as by touch (ControlMode_UseTouch), sends command 0x866 and returns 1; else 0. The
+ * the input as by touch (ControlMode_UseTouch), plays sound effect 0x866 and returns 1; else 0. The
  * scene is not read. */
 int MenuScene_TakeTouch(MenuScene *scene)
 {
@@ -237,9 +237,9 @@ int MenuScene_TakeTouch(MenuScene *scene)
 CLEAN_AS(func_ov002_02208014, MenuScene_TakeTouch)
 
 /* func_ov002_02208054: when a button was pressed this frame, sets state flag 2 and marks the input
- * as by buttons (ControlMode_UseButtons), sends command 0x866 (and 0x3b with `also_command_3b`) and
+ * as by buttons (ControlMode_UseButtons), plays sound effect 0x866 (and 0x3b with `also_se_3b`) and
  * returns 1; else 0. The scene is not read. */
-int MenuScene_TakeButtons(MenuScene *scene, int also_command_3b)
+int MenuScene_TakeButtons(MenuScene *scene, int also_se_3b)
 {
     (void) scene;
     if ((data_021fbe40.pressed & BUTTONS_ALL) == 0) {
@@ -247,7 +247,7 @@ int MenuScene_TakeButtons(MenuScene *scene, int also_command_3b)
     }
     ControlMode_UseButtons();
     SoundSys_PlaySe(0x866);
-    if (also_command_3b) {
+    if (also_se_3b) {
         SoundSys_PlaySe(0x3b);
     }
     return 1;

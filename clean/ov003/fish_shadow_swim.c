@@ -2,7 +2,7 @@
  * (FishShadow.behaviour), and on a fishing float by their hook state (FishShadow.hook_state),
  * from the tables of member functions data_ov003_0225f160 and data_ov003_0225f190. Which of
  * the two runs is picked by FishShadow.hooked from the pairs in data_ov003_0225f118: the first
- * of a pair while the shadow is being placed (FishShadow_StepPlacing), the second once it is
+ * of a pair while the shadow appears (state 2, FishShadow_StepAppearing), the second once it is
  * shown (FishShadow_StepShown). */
 #include "fish_shadow.h"
 
@@ -38,15 +38,15 @@ typedef struct FishSwimRodTables {
 
 /* A pair of data_ov003_0225f118. */
 typedef struct FishSwimStepPair {
-    MemberPointer placing;
+    MemberPointer appearing;
     MemberPointer shown;
 } FishSwimStepPair;
 
 #define FISH_SWIM_SIZES 8
 #define FISH_SWIM_ROD 0x1374
 #define FISH_SWIM_GOLDEN_ROD 0x1375
-#define FISH_SWIM_THIS_CONSOLE 4     /* main's player number for the player at this console */
-#define FISH_SWIM_NIBBLE_SOUND 0x84f /* the float pulled under */
+#define FISH_SWIM_THIS_CONSOLE 4   /* main's player number for the player at this console */
+#define FISH_SWIM_BITE_SOUND 0x84f /* the float pulled under */
 #define FISH_SWIM_VOLUME 0x7f
 #define FISH_SWIM_JUNK_FIRST 0x38 /* the kinds that are not fish (fish_disp.h) */
 #define FISH_SWIM_JUNK_LAST 0x3a
@@ -54,7 +54,7 @@ typedef struct FishSwimStepPair {
 #define FISH_SWIM_TURN 0x222          /* a turn away from what blocks it */
 #define FISH_SWIM_EDGE_TURN 0x555     /* a turn back from the town's edge */
 #define FISH_SWIM_SPEED 0x19a         /* its cruising speed, 0.1 a frame */
-#define FISH_SWIM_KIND_WITH_SENSE 0xb /* the only kind that hears the player (FishShadowSense) */
+#define FISH_SWIM_FROG_KIND 0xb       /* the frog (item 0x12f3), the only kind that hears the player (FishShadowSense) */
 
 /* FishShadow.behaviour: the swimming states. */
 #define FISH_SWIM_START 0
@@ -427,7 +427,7 @@ int FishShadowHook_StepNibble(FishShadow *fish)
             int ret = 0;
             fish->unk_13c = 0;
             FishingFloat_SetState(fishing_float, FISHING_FLOAT_SINKING);
-            SoundEmitter_PlayB((SoundEmitter *) fish->emitter, FISH_SWIM_NIBBLE_SOUND, FISH_SWIM_VOLUME, 0);
+            SoundEmitter_PlayB((SoundEmitter *) fish->emitter, FISH_SWIM_BITE_SOUND, FISH_SWIM_VOLUME, 0);
             int junk = fish->kind >= FISH_SWIM_JUNK_FIRST && fish->kind <= FISH_SWIM_JUNK_LAST;
             TileRequestTile tile = {0, 0};
             if (!junk || TileRequests_FindDropTile(FISH_SWIM_JUNK_DROP_KIND, &tile, NULL) != 0) {
@@ -631,9 +631,9 @@ void FishShadowHook_Update(FishShadow *fish)
 }
 CLEAN_AS(func_ov003_0222b744, FishShadowHook_Update)
 
-/* func_ov003_0222b794 (the placing step of a hooked shadow): nothing. */
-void FishShadowHook_StepPlacing(void) {}
-CLEAN_AS(func_ov003_0222b794, FishShadowHook_StepPlacing)
+/* func_ov003_0222b794 (the appearing step of a hooked shadow): nothing. */
+void FishShadowHook_StepAppearing(void) {}
+CLEAN_AS(func_ov003_0222b794, FishShadowHook_StepAppearing)
 
 /* The shadow's move by `speed` along its yaw with a swing of `swing` across it, by the sine of
  * its wobble (turned 45 degrees first). */
@@ -752,7 +752,7 @@ static void fish_swim_turn(FishShadow *fish, int amount)
     fish->yaw = (s16) (fish->unk_210 != 0 ? fish->yaw + amount : fish->yaw - amount);
 }
 
-/* func_ov003_0222bb0c (the shown step of a free shadow): the shadow of kind 0xb listens for the
+/* func_ov003_0222bb0c (the shown step of a free shadow): the frog's shadow (kind 0xb) listens for the
  * player first (FishShadowSense_Step); then the step of its swimming state
  * (data_ov003_0225f160) and the check of where it went (FishShadow_CheckMove, not while
  * fleeing): blocked, it turns towards its side (while speeding up only, for the blocks of
@@ -765,7 +765,7 @@ static void fish_swim_turn(FishShadow *fish, int amount)
  * escapes (func_ov003_022282b8). */
 void FishShadowSwim_Update(FishShadow *fish)
 {
-    if (fish->kind == FISH_SWIM_KIND_WITH_SENSE) {
+    if (fish->kind == FISH_SWIM_FROG_KIND) {
         FishShadowSense_Step(&fish->sense, fish);
     }
     MemberPointer_CallVoid(fish_swim_member(data_ov003_0225f160, fish->behaviour), fish);
@@ -836,12 +836,12 @@ void FishShadowSwim_Update(FishShadow *fish)
 }
 CLEAN_AS(func_ov003_0222bb0c, FishShadowSwim_Update)
 
-/* func_ov003_0222bd40 (the placing step of a free shadow): from where it was placed (placed_at),
+/* func_ov003_0222bd40 (the appearing step (state 2) of a free shadow): from where it was placed (placed_at),
  * the step of its swimming state and the check of where it went: blocked, it turns (by 60
  * degrees in group 0; a random yaw within 15 degrees either way in group 1) and
  * its count of clear steps (unk_201) starts again; else that count goes up. Its frames go up by
  * 2. */
-void FishShadowSwim_Settle(FishShadow *fish)
+void FishShadowSwim_StepAppearing(FishShadow *fish)
 {
     fish->position = fish->placed_at;
     MemberPointer_CallVoid(fish_swim_member(data_ov003_0225f160, fish->behaviour), fish);
@@ -858,7 +858,7 @@ void FishShadowSwim_Settle(FishShadow *fish)
     }
     fish->unk_13c += 2;
 }
-CLEAN_AS(func_ov003_0222bd40, FishShadowSwim_Settle)
+CLEAN_AS(func_ov003_0222bd40, FishShadowSwim_StepAppearing)
 
 /* func_ov003_0222be08: the shown step by whether the shadow is on a float
  * (data_ov003_0225f118: FishShadowSwim_Update, FishShadowHook_Update). */
@@ -868,13 +868,13 @@ void FishShadow_StepShown(FishShadow *fish)
 }
 CLEAN_AS(func_ov003_0222be08, FishShadow_StepShown)
 
-/* func_ov003_0222be40: the placing step by whether the shadow is on a float
- * (FishShadowSwim_Settle, FishShadowHook_StepPlacing). */
-void FishShadow_StepPlacing(FishShadow *fish)
+/* func_ov003_0222be40: the appearing step (state 2) by whether the shadow is on a float
+ * (FishShadowSwim_StepAppearing, FishShadowHook_StepAppearing). */
+void FishShadow_StepAppearing(FishShadow *fish)
 {
-    MemberPointer_CallVoid(&fish_swim_pair(fish->hooked)->placing, fish);
+    MemberPointer_CallVoid(&fish_swim_pair(fish->hooked)->appearing, fish);
 }
-CLEAN_AS(func_ov003_0222be40, FishShadow_StepPlacing)
+CLEAN_AS(func_ov003_0222be40, FishShadow_StepAppearing)
 
 /* func_ov003_0222be78: `position` moved `distance` along `angle` (x by its sine, z by its
  * cosine). */

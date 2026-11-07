@@ -187,7 +187,7 @@ int TownItemLoad_InitProcess(TileEventProcess *process)
 CLEAN_AS(func_ov003_02225ebc, TownItemLoad_InitProcess)
 
 /* func_ov003_02225f68: the loaders of data_ov003_0223b8a4 run in order (trees, flowers, grass,
- * func_ov003_022271f8, holes, cracks, stumps, red turnips, designs) until one fails: 0; 1 when
+ * stones (TownItemLoad_LoadStones), holes, cracks, stumps, red turnips, designs) until one fails: 0; 1 when
  * all succeed. They work on the current process, not on `process`. */
 int TownItemLoad_RunLoaders(TileEventProcess *process)
 {

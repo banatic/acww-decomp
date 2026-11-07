@@ -3,7 +3,7 @@
  *
  * The process (class vtable data_ov003_0223bfcc, derived from data_020da13c's) owns two pools
  * of model heaps: "fish_sdw" (six entries, one per shadow) and "fish_fin" (one entry, for the
- * fin). Its creation (vtable slot 0) loads the shadow model file and sets up the six shadows;
+ * fin). Its creation (vtable slot 0) loads the shadow's joint animation file and sets up the six shadows;
  * each frame (slot 6) every shadow runs the update of its state and the players' fish are
  * moved (func_ov003_02228618).
  *
@@ -51,9 +51,9 @@
 /* FishShadow.state. The drawing and fleeing ask for state 3. */
 #define FISH_SHADOW_NONE 0
 #define FISH_SHADOW_PLACED 1 /* set when a place is found for it */
-#define FISH_SHADOW_STATE_2 2
+#define FISH_SHADOW_APPEARING 2
 #define FISH_SHADOW_SHOWN 3
-#define FISH_SHADOW_AWAY 4 /* gone with a timer (the player too far from it) */
+#define FISH_SHADOW_AWAY 4 /* out of the camera's view box, with a timer */
 
 /* FishShadow.group_state: 0 or 1 is the group it is placed for, 3 or 4 waits to be placed in
  * group 0 or 1, 5 or 6 found no place in group 0 or 1; 2 is what the constructor sets. */
@@ -141,7 +141,8 @@ typedef struct FishShadow {
     u8 unk_210;                  /* 0x210 */
     u8 index;                    /* 0x211: its number */
     s16 respawn;                 /* 0x212: frames before it is placed again */
-    u8 pad_214[4];               /* 0x214 */
+    u8 scare_wait;               /* 0x214: frames the player must keep running near before it flees */
+    u8 pad_215[3];               /* 0x215 */
     Vec3 last_position;          /* 0x218: where it was before the last move */
     u8 hook_state;               /* 0x224: FISH_SHADOW_HOOK_* */
     u8 hook_step;                /* 0x225: the step within the hook state (FishShadowHook_*) */
@@ -177,7 +178,7 @@ typedef struct FishShadowProcess {
     Process base;      /* 0x00 */
     ModelPool shadows; /* 0x50: "fish_sdw" */
     ModelPool fin;     /* 0x68: "fish_fin" */
-    void *shadow_file; /* 0x80: the shadow's model file */
+    void *shadow_file; /* 0x80: the shadow's joint animation file (fish_shadow.nsbca) */
     u8 unk_84;         /* 0x84: cleared each frame */
 } FishShadowProcess;
 
@@ -213,7 +214,7 @@ int FishShadow_Create(FishShadowProcess *self);
 void FishShadow_ReleaseFin(FishShadowProcess *self);
 int FishShadow_TakeFin(FishShadowProcess *self);
 void FishShadow_Reset(FishShadowProcess *self, int index);
-int FishShadow_SetState2(FishShadowProcess *self, int index);
+int FishShadow_StartAppearing(FishShadowProcess *self, int index);
 FishShadowProcess *FishShadow_DestructFree(FishShadowProcess *self);
 FishShadowProcess *FishShadow_Destruct(FishShadowProcess *self);
 FishShadowProcess *FishShadow_Construct(FishShadowProcess *self);
@@ -277,7 +278,7 @@ int FishShadowHook_StepHesitate(FishShadow *fish);
 int FishShadowHook_StepApproach(FishShadow *fish);
 int FishShadowHook_StepWait(FishShadow *fish);
 void FishShadowHook_Update(FishShadow *fish);
-void FishShadowHook_StepPlacing(void);
+void FishShadowHook_StepAppearing(void);
 void FishShadowSwim_Flee(FishShadow *fish);
 void FishShadowSwim_Drift(FishShadow *fish);
 void FishShadowSwim_SlowDown(FishShadow *fish);
@@ -285,9 +286,9 @@ void FishShadowSwim_Cruise(FishShadow *fish);
 void FishShadowSwim_SpeedUp(FishShadow *fish);
 void FishShadowSwim_Start(FishShadow *fish);
 void FishShadowSwim_Update(FishShadow *fish);
-void FishShadowSwim_Settle(FishShadow *fish);
+void FishShadowSwim_StepAppearing(FishShadow *fish);
 void FishShadow_StepShown(FishShadow *fish);
-void FishShadow_StepPlacing(FishShadow *fish);
+void FishShadow_StepAppearing(FishShadow *fish);
 void FishShadow_MoveAlong(Vec3 *position, int distance, u16 angle);
 void FishShadow_MoveCos(fx32 *value, int distance, int angle);
 void FishShadow_MoveSin(fx32 *value, int distance, int angle);

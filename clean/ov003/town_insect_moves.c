@@ -298,8 +298,8 @@ void TownInsectMove_WanderInBox(TownInsect *insect)
 }
 CLEAN_AS(func_ov003_02231104, TownInsectMove_WanderInBox)
 
-/* func_ov003_0223126c: watches this console's player. Off a tile of set B
- * (TownInsectMove_OnSetBTile) its alarm is at its height (TOWN_INSECT_BYTE254_NEAR); then the
+/* func_ov003_0223126c: watches this console's player. Off a flower tile
+ * (TownInsectMove_OnFlowerTile) its alarm is at its height (TOWN_INSECT_BYTE254_NEAR); then the
  * alarm is counted (TownInsectMove_Sense). A player within 0.8 makes it fly off (action 9).
  * Kinds 0xe and 0xf: alarmed above 20, they close their wings (animation 9 from where it is) for
  * 60 frames; then within reach of the player they open them (animation 4), else close them
@@ -310,7 +310,7 @@ void TownInsectMove_WatchPlayer(TownInsect *insect, u16 *frames)
 {
     Actor *player = SessionPlayers_ActorOf(TOWN_INSECT_MOVES_THIS_PLAYER);
     const Vec3 *position = &insect->position;
-    if (TownInsectMove_OnSetBTile(position) == 0) {
+    if (TownInsectMove_OnFlowerTile(position) == 0) {
         insect->unk_254 = TOWN_INSECT_BYTE254_NEAR;
     }
     insect->unk_24a = 0;
@@ -372,9 +372,10 @@ void TownInsectMove_WatchPlayer(TownInsect *insect, u16 *frames)
 }
 CLEAN_AS(func_ov003_0223126c, TownInsectMove_WatchPlayer)
 
-/* func_ov003_0223141c: whether `point` is on a town tile whose item code is of set B: 0-0x1a,
- * 0x1c, 0x1d or 0x8a-0xa5 (the codes TownInsect_CountTiles counts for places 1 and 2). */
-int TownInsectMove_OnSetBTile(const Vec3 *point)
+/* func_ov003_0223141c: whether `point` is on a town tile whose item code is a flower, fresh or
+ * watered (not wilted): 0-0x1a, 0x1c, 0x1d or 0x8a-0xa5 (the codes TownInsect_CountTiles counts
+ * for places 1 and 2). */
+int TownInsectMove_OnFlowerTile(const Vec3 *point)
 {
     AcreMap *map = (AcreMap *) (uintptr_t) AcreMap_Town();
     if (map == NULL) {
@@ -390,7 +391,7 @@ int TownInsectMove_OnSetBTile(const Vec3 *point)
     u16 item = *code;
     return item <= 0x1a || item == 0x1c || item == 0x1d || (item >= 0x8a && item <= 0xa5);
 }
-CLEAN_AS(func_ov003_0223141c, TownInsectMove_OnSetBTile)
+CLEAN_AS(func_ov003_0223141c, TownInsectMove_OnFlowerTile)
 
 /* func_ov003_022314fc (kinds 0xe, 0xf, 0x1a and 0x20): wanders in its box (action 4) and rests
  * (action 0x13), watching the player in both, for a while each: kind 0x1a wanders up to 320
@@ -712,8 +713,9 @@ void TownInsectMove_Ascend(TownInsect *insect, short *frames)
 }
 CLEAN_AS(func_ov003_02231c80, TownInsectMove_Ascend)
 
-/* func_ov003_02231d1c (action 0x13 of the leaning kinds): rests. Kinds 0x10-0x14 with their
- * byte 0x246 set and an alarm under 10 play their sound 0 every 60 frames. Kind 9 holds its
+/* func_ov003_02231d1c (action 0x13 of the leaning kinds): rests. Kinds 0x10-0x14 (the cicadas)
+ * with their byte 0x246 set and an alarm under 10 wait out their byte 0x252 (60 again whenever
+ * either fails), then play their sound 0 every frame until one fails. Kind 9 holds its
  * wings (animation 9 at speed 0 from frame 9) and after 80 frames opens them (animation 14) on a
  * chance in thirteen, counting to 160. The others count frames on chances of three in ten and
  * every 20th sway (action 3) or rise (action 2). */
@@ -1089,8 +1091,8 @@ CLEAN_AS(func_ov003_022325d4, TownInsectMove_Update23)
  * let go it hops; fleeing it plays its sound 0 and flees; turning (action 3) it turns by 0x666 a
  * frame to its word 0x240 and then walks. At rest (0x13): when its byte 0x24c is set, unless kind
  * 0x36 is still falling (its word 0x23e counting up by 3 while it is above the ground, gravity
- * -10n^2), it turns (action 3) half a turn and up to 40 degrees more; else once its word 0x244
- * has run out it turns up to 80 degrees for 20 times 0-2 frames. */
+ * -10n^2), it turns (action 3) half a turn and up to 35 degrees more; else once its word 0x244
+ * has run out it turns up to 75 degrees for 20 times 0-2 frames. */
 void TownInsectMove_Update36(TownInsect *insect)
 {
     int heard = 0;
@@ -2135,7 +2137,7 @@ void TownInsectMove_Wait(TownInsect *insect, short *frames)
 CLEAN_AS(func_ov003_02233cb8, TownInsectMove_Wait)
 
 /* func_ov003_02233d68 (kinds 0xc, 0xd and 0x1b-0x1d): unless flying, fleeing or let go its alarm
- * is counted; more than 4 low bits in its word 0x21c make it flee. Turning (3, 0xf) to its word
+ * is counted; more than 4 turns at obstacles (the low four bits of its word 0x21c) make it flee. Turning (3, 0xf) to its word
  * 0x240 it flies on; startled (7) it turns from what is ahead; fleeing or let go (alarmed) and
  * flying (4, 0x11) it flies to its point. At rest (0x13), at frame 0 with its sound, it turns from
  * what is ahead or else waits (its word 0x21c cleared). */
@@ -2146,7 +2148,7 @@ void TownInsectMove_UpdateWaiting(TownInsect *insect)
     if (action != TOWN_INSECT_ACTION_LET_GO && action != 9 && action != 4) {
         TownInsectMove_Sense(insect);
     }
-    TownInsectMove_FleeIfFlagged(insect, 4);
+    TownInsectMove_FleeAfterTurns(insect, 4);
     switch (action) {
         case 3:
         case 0xf:
@@ -2448,7 +2450,7 @@ CLEAN_AS(func_ov003_022343a8, TownInsectMove_FlyToTarget)
  * 0x228, 5 frames up and 5 down. In a session without the scene, moved off its point it flies
  * (action 4). Else it turns (action 3, the bits 0xf00 of its word 0x21c set) on chances that grow
  * with the frames (at frame 0, 10, 20 and 30), at frame 40 at the latest; out of actions 0xd and
- * 0xe up to 25 degrees (kind 0x17) or 65 degrees, its point where it is. */
+ * 0xe up to 20 degrees (kind 0x17) or 60 degrees, its point where it is. */
 void TownInsectMove_Hover(TownInsect *insect, short *frames)
 {
     Vec3 *position = &insect->position;
@@ -2490,7 +2492,7 @@ CLEAN_AS(func_ov003_022344c8, TownInsectMove_Hover)
 
 /* func_ov003_02234600 (kinds 0x15-0x17): with a count in bits 4-7 of its word 0x21c, at rest it
  * flaps now and then (frame 2 or 0 every 20th frame of its counter); else it flaps. Unless
- * fleeing or let go its alarm is counted; more than 5 low bits in its word 0x21c make it flee.
+ * fleeing or let go its alarm is counted; more than 5 turns at obstacles (the low four bits of its word 0x21c) make it flee.
  * Turning (3, and 0xf which then waits at 0x12) to its word 0x240; flying (4) to its point (with
  * a count overlay 68 does it), turning off what is ahead; hovering (0xc-0xe; kind 0x17 from frame
  * 100); startled (7) it turns from where it is; fleeing or let go it rises away. Otherwise, with
@@ -2521,7 +2523,7 @@ void TownInsectMove_UpdateTurned(TownInsect *insect)
     if (insect->action != TOWN_INSECT_ACTION_LET_GO && insect->action != 9) {
         TownInsectMove_Sense(insect);
     }
-    TownInsectMove_FleeIfFlagged(insect, 5);
+    TownInsectMove_FleeAfterTurns(insect, 5);
     switch (insect->action) {
         case 0xf:
             waits = 1;
@@ -2585,13 +2587,14 @@ void TownInsectMove_UpdateTurned(TownInsect *insect)
 }
 CLEAN_AS(func_ov003_02234600, TownInsectMove_UpdateTurned)
 
-/* func_ov003_0223482c: the flags func_ov003_02224768 tests for `value` (overlay 68's
- * func_ov068_02270070): 0xf for 2 and 3, else 0x3f. */
-int TownInsectMove_TestFlags(int value)
+/* func_ov003_0223482c: the mask of flower lines (bits by TownFamily_Kind) an insect of `kind`
+ * settles on, for InsectSpot_NearFlower (overlay 68's InsectPath_FindSpot): 0xf for kinds 2 and
+ * 3, else 0x3f. */
+int TownInsectMove_FlowerLinesOfKind(int kind)
 {
-    return value == 2 || value == 3 ? 0xf : 0x3f;
+    return kind == 2 || kind == 3 ? 0xf : 0x3f;
 }
-CLEAN_AS(func_ov003_0223482c, TownInsectMove_TestFlags)
+CLEAN_AS(func_ov003_0223482c, TownInsectMove_FlowerLinesOfKind)
 
 /* ---- Kinds 0-7, and the moves the kinds share */
 
@@ -3290,8 +3293,8 @@ CLEAN_AS(func_ov003_02235518, TownInsectMove_SuitsCode)
  * sensed (TownInsectMove_Sense), until the word 0x244 has counted down
  * (TownInsectMove_WaitOver).
  *   Waiting, kinds 0xa and 0x33 stay at frame 0 and wander in their box
- *   (TownInsectMove_WanderInBox); the others are alarmed (byte 0x254 NEAR) off a tile of set B
- *   (TownInsectMove_OnSetBTile) and play their resting animation (0x11 frames from frame 9),
+ *   (TownInsectMove_WanderInBox); the others are alarmed (byte 0x254 NEAR) off a flower tile
+ *   (TownInsectMove_OnFlowerTile) and play their resting animation (0x11 frames from frame 9),
  *   started again now and then (4 times in 100) when at frame 0x10.
  *   Done, the insect starts again (action 0x13) at the floor of the word 0x228, waiting
  *   (7 to 12) times 0x14 frames next time, with its flying animation (frame 1 for kinds 0xa and
@@ -3307,7 +3310,7 @@ void TownInsectMove_OnSpot(TownInsect *insect)
             }
             TownInsectMove_WanderInBox(insect);
         } else {
-            if (TownInsectMove_OnSetBTile(&insect->position) == 0) {
+            if (TownInsectMove_OnFlowerTile(&insect->position) == 0) {
                 insect->unk_254 = TOWN_INSECT_BYTE254_NEAR;
             }
             if (town_insect_moves_frame_count(insect) < 0xc) {
@@ -3440,15 +3443,16 @@ int TownInsectMove_SetTarget(TownInsect *insect, int angle, fx32 distance)
 }
 CLEAN_AS(func_ov003_02235834, TownInsectMove_SetTarget)
 
-/* func_ov003_02235934: action 9 (fleeing) when the low four bits of the word 0x21c are above
+/* func_ov003_02235934: action 9 (fleeing) when its turns at obstacles (the low four bits of the
+ * word 0x21c, counted by TownInsectMove_TurnAtObstacle and CheckObstacle) are above
  * `most`. */
-void TownInsectMove_FleeIfFlagged(TownInsect *insect, int most)
+void TownInsectMove_FleeAfterTurns(TownInsect *insect, int most)
 {
     if ((insect->unk_21c & 0xf) > most) {
         insect->action = 9;
     }
 }
-CLEAN_AS(func_ov003_02235934, TownInsectMove_FleeIfFlagged)
+CLEAN_AS(func_ov003_02235934, TownInsectMove_FleeAfterTurns)
 
 /* func_ov003_02235950: whether the unit type of the tile under `point` has a group
  * (UnitTypeInfo_GroupAt). */

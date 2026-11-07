@@ -3,8 +3,9 @@
  * (Katrina the fortune teller is the game's panther, but nothing here names her). It is derived from overlay 9's town object actor (Obj_ov009_022658dc), which runs the rest.
  *
  * Set up (vtable slot 0x70), it keeps the clock's hour. Before a talk (slot 0x78) it names the
- * receiver, picks message 0x12 when both that hour and the hour now are 6 or later (slot 0x8c),
- * else 0xf, and sets the speaker to name 10 of main's list of names (code 0xd00a). */
+ * receiver, picks message 0x12 (a customer is inside) when both that hour and the hour now are 6
+ * or later (slot 0x8c), else 0xf (closing time), and sets the speaker to name 10 of main's list
+ * of names (code 0xd00a). */
 #ifndef CLEAN_OV003_PANTHER_H
 #define CLEAN_OV003_PANTHER_H
 

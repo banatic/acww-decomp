@@ -3,7 +3,7 @@
  * overlay 9's town object actors of the town's objects (codes 0x5000-0x5021, main/town_objects.h),
  * and the list of those actors overlay 3 keeps while they exist (data_ov003_0223cef0).
  *
- * Set up (vtable slot 0), it marks the objects' footprints, empties the list, claims main's
+ * Set up (vtable slot 0), it clears misplaced objects' footprints, empties the list, claims main's
  * building slot (main/building_taker.h), makes the countdown heap, loads the houses' three sets
  * of files (house_files.h), spawns a town object actor for every object on the scene's map
  * (ObjectActors_PlaceAll) and spawns process class 0xf. Released (slot 3) it undoes that in

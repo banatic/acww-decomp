@@ -31,7 +31,7 @@
 /* A part func_ov003_02223c7c or func_ov003_02223d14 started, as far as it is read here. */
 typedef struct GrowthModelPart {
     u8 unk_00[0x0d];
-    u8 unk_0d; /* 0x0d: set to 0x1a by mode 2 */
+    u8 life; /* 0x0d: GrowthPart.life, frames left; set to 0x1a (26) by mode 2 */
 } GrowthModelPart;
 
 typedef struct GrowthModel {
@@ -84,7 +84,7 @@ void GrowthModel_Start(GrowthModel *model, int player, const TileChangesTile *ti
 void GrowthModel_DropAt(GrowthModel *model, u16 *item);
 void GrowthModel_Drop(u16 *code, int slot, const TileChangesTile *tile);
 void GrowthModel_DropOne(u16 *code, int slot, const TileChangesTile *tile);
-void GrowthModel_DropKind7(int slot, const TileChangesTile *tile);
+void GrowthModel_DropBeehive(int slot, const TileChangesTile *tile);
 void GrowthModel_DropThree(u16 *code, int slot, const TileChangesTile *tile);
 int GrowthModel_PlayerSide(int slot, const Vec3 *point);
 void GrowthModel_Hit(GrowthModel *model, int quiet);

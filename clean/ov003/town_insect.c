@@ -210,8 +210,9 @@ static int town_insect_code_in_set_a(u16 code)
            (code >= 0x66 && code <= 0x6d) || (code >= 0xc8 && code <= 0xcf);
 }
 
-/* The item codes that count for places 1 and 2: 0-0x1a, 0x1c, 0x1d and 0x8a-0xa5. */
-static int town_insect_code_in_set_b(u16 code)
+/* The flower codes that count for places 1 and 2, flowers fresh or watered (not wilted): 0-0x1a,
+ * 0x1c, 0x1d and 0x8a-0xa5 (main/map_item.h). */
+static int town_insect_code_is_flower(u16 code)
 {
     return code <= 0x1a || code == 0x1c || code == 0x1d || (code >= 0x8a && code <= 0xa5);
 }
@@ -225,9 +226,9 @@ static int town_insect_code_in_set_b(u16 code)
  *
  * Places, by the tile (its world tile (wx, wz), its item code):
  *   0  an empty tile (0xfff1);
- *   1  any code but set A; the found flag by a code of set B (for kinds 2 and 3 only when
+ *   1  any code but set A; the found flag by a flower code (for kinds 2 and 3 only when
  *      TownInsectMove_SuitsCode also agrees);
- *   2  a code of set B (for kind 0xf only when TownInsectMove_SuitsCode agrees);
+ *   2  a flower code (for kind 0xf only when TownInsectMove_SuitsCode agrees);
  *   3  none;
  *   4  an empty tile of unit type 3;
  *   5  a tile of unit group 2;
@@ -314,7 +315,7 @@ int TownInsect_CountTiles(u16 *mask, int kind, int *acre_x, int *acre_z, AcreMap
                         if (town_insect_code_in_set_a(id)) {
                             break;
                         }
-                        if (!found && town_insect_code_in_set_b(id)) {
+                        if (!found && town_insect_code_is_flower(id)) {
                             if (kind_minus_2 <= 1) {
                                 if (TownInsectMove_SuitsCode(kind, code) != 0) {
                                     found = 1;
@@ -327,7 +328,7 @@ int TownInsect_CountTiles(u16 *mask, int kind, int *acre_x, int *acre_z, AcreMap
                         break;
                     }
                     case 2:
-                        if (town_insect_code_in_set_b(*code) && (kind != 0xf || TownInsectMove_SuitsCode(kind, code) != 0)) {
+                        if (town_insect_code_is_flower(*code) && (kind != 0xf || TownInsectMove_SuitsCode(kind, code) != 0)) {
                             count++;
                         }
                         break;
@@ -409,11 +410,11 @@ int TownInsect_CountTiles(u16 *mask, int kind, int *acre_x, int *acre_z, AcreMap
 CLEAN_AS(func_ov003_0222c888, TownInsect_CountTiles)
 
 /* func_ov003_0222ce50: in `mask`, the tiles around each building (its shape's 'M' tiles) whose
- * town object actor has the member at 0x1f4 set made free again (their bits cleared), for the 0x22
- * buildings that have a shape and an actor.
+ * town object actor has its lights lit (TownObjectActor_LightsLit) made free again (their bits
+ * cleared), for the 0x22 buildings that have a shape and an actor: the moths' (kind 8) lit windows.
  * QUIRK: the tile's place in the mask is found by C's division and remainder by 16 from tile 16
  * on, as the original does; a bit of 16 or more (or a negative remainder) clears nothing. */
-void TownInsect_UnmarkTownObjectActors(TownInsectMask *mask)
+void TownInsect_UnmarkLitBuildings(TownInsectMask *mask)
 {
     for (u32 i = 0; i < BUILDING_SHAPES_COUNT; i++) {
         u16 code = MapCode_Building(i);
@@ -450,16 +451,16 @@ void TownInsect_UnmarkTownObjectActors(TownInsectMask *mask)
         }
     }
 }
-CLEAN_AS(func_ov003_0222ce50, TownInsect_UnmarkTownObjectActors)
+CLEAN_AS(func_ov003_0222ce50, TownInsect_UnmarkLitBuildings)
 
-/* func_ov003_0222cf1c: `mask` with every tile marked, then the tiles around the town object actors'
- * buildings freed (TownInsect_UnmarkTownObjectActors). */
+/* func_ov003_0222cf1c: `mask` with every tile marked, then the tiles around the lit buildings
+ * freed (TownInsect_UnmarkLitBuildings). */
 void TownInsect_FillMask(TownInsectMask *mask)
 {
     for (int i = 0; i < 0x100; i++) {
         mask->rows[i] = 0xffff;
     }
-    TownInsect_UnmarkTownObjectActors(mask);
+    TownInsect_UnmarkLitBuildings(mask);
 }
 CLEAN_AS(func_ov003_0222cf1c, TownInsect_FillMask)
 
@@ -995,12 +996,12 @@ int TownInsect_HeldFromMatrix(int player, short *scale, Mtx43 *matrix, int end)
             }
         }
     }
-    if (insect->state == TOWN_INSECT_STATE_2 || insect->state == TOWN_INSECT_STATE_NONE) {
+    if (insect->state == TOWN_INSECT_STATE_LOADING || insect->state == TOWN_INSECT_STATE_NONE) {
         result = 0;
     }
     if (end != 0) {
         insect->action = TOWN_INSECT_ACTION_END;
-        if (insect->kind == TOWN_INSECT_KIND_GLOWING && insect->effect != -1) {
+        if (insect->kind == TOWN_INSECT_KIND_HELD_FIREFLY && insect->effect != -1) {
             EffectSystem_EndHandle(insect->effect);
             insect->effect = -1;
         }
@@ -1053,7 +1054,7 @@ CLEAN_AS(func_ov003_0222da9c, TownInsect_PlaceNew)
  * in a free town record, TOWN_INSECT_MODE_EVENT: in the second event record); 1 when placed.
  *
  * The tiles start from a copy of the place's mask (kind 8: every tile marked but those around
- * the buildings with town object actors). For the town, the tiles around the other town insects are
+ * the buildings whose lights are lit). For the town, the tiles around the other town insects are
  * marked (none for kind 0x33 or 8) and, but for kind 0x33, those around the players: each
  * player in the town in a session, else this console's player. A second insect of kind 0x23
  * is not placed. Outside a session kind 0x23 is placed beside a loose snowball farther than 12.0
@@ -1311,7 +1312,7 @@ void TownInsect_SetMatrix(int unused, TownInsect *insect, int held)
         Mtx43_RotateZ(&data_021fbe48, insect->angle_z);
     }
     insect->model.matrix = data_021fbe48;
-    if (held == 0 || insect->kind != TOWN_INSECT_KIND_GLOWING) {
+    if (held == 0 || insect->kind != TOWN_INSECT_KIND_HELD_FIREFLY) {
         return;
     }
     Mtx43 rotation = data_021fbe48;
@@ -1595,7 +1596,7 @@ void TownInsect_TakeHeld(int kind, int player)
     insect->action = TOWN_INSECT_ACTION_HIDDEN;
     switch (kind) {
         case 0x25:
-            insect->kind = TOWN_INSECT_KIND_GLOWING;
+            insect->kind = TOWN_INSECT_KIND_HELD_FIREFLY;
             break;
         case TOWN_INSECT_KIND_WASPS:
             insect->kind = 0xb;
@@ -1712,7 +1713,7 @@ void TownInsect_LetGo(int player, int angle)
             case 0x1d:
                 TownInsectMove_TurnToHeading(insect, 1);
                 break;
-            case TOWN_INSECT_KIND_GLOWING:
+            case TOWN_INSECT_KIND_HELD_FIREFLY:
                 if (insect->effect != -1) {
                     EffectSystem_EndHandle(insect->effect);
                     insect->effect = -1;
@@ -1800,7 +1801,7 @@ void TownInsect_UpdateHeld(TownInsectProcess *process)
         int state = PlayerActorOps_State(i);
         if (local != i && insect->action != TOWN_INSECT_ACTION_LET_GO && state != 0x57 && state != 0x58 && state != 0x76 &&
             state != 6) {
-            if (insect->kind == TOWN_INSECT_KIND_GLOWING) {
+            if (insect->kind == TOWN_INSECT_KIND_HELD_FIREFLY) {
                 EffectSystem_EndHandle(insect->effect);
                 insect->effect = -1;
             }
@@ -1811,7 +1812,7 @@ void TownInsect_UpdateHeld(TownInsectProcess *process)
             case TOWN_INSECT_STATE_1:
                 TownInsect_StartHeld(process, insect);
                 break;
-            case TOWN_INSECT_STATE_2:
+            case TOWN_INSECT_STATE_LOADING:
                 TownInsect_Load(process, insect, 2);
                 CollisionQuery_Move(&insect->contacts, &insect->position, &insect->position, insect->angle_y,
                                     town_insect_kind_info(insect->kind)->size, NULL, 0xa);
@@ -1837,7 +1838,7 @@ void TownInsect_UpdateEvent(TownInsectProcess *process)
     TownInsect *insect = data_ov003_02260994;
     for (u8 i = 0; i < TOWN_INSECT_EVENT_COUNT; i++, insect++) {
         switch (insect->state) {
-            case TOWN_INSECT_STATE_2:
+            case TOWN_INSECT_STATE_LOADING:
                 TownInsect_Load(process, insect, 1);
                 break;
             case TOWN_INSECT_STATE_ACTIVE:
@@ -1977,7 +1978,7 @@ void TownInsect_UpdateStates(TownInsectProcess *process)
                             insect->start.x = insect->position.x;
                             insect->start.y = insect->position.y;
                             insect->start.z = insect->position.z;
-                            insect->state = TOWN_INSECT_STATE_2;
+                            insect->state = TOWN_INSECT_STATE_LOADING;
                         }
                     } else if (byte254 == TOWN_INSECT_BYTE254_GONE || x == 1) {
                         if (!(kind == 0x1e && (insect->action == 9 || insect->action == TOWN_INSECT_ACTION_11))) {
@@ -1997,7 +1998,7 @@ void TownInsect_UpdateStates(TownInsectProcess *process)
             }
         }
         switch (state) {
-            case TOWN_INSECT_STATE_2:
+            case TOWN_INSECT_STATE_LOADING:
                 if (LinkGlobal_HoldsScene() == 0 && Session_IsSlotTaken(session, session->local_slot) != 0) {
                     if (kind != insect->kind && x > 0) {
                         TownInsect_Remove(process, insect, TOWN_INSECT_MODE_TOWN);
@@ -2436,7 +2437,7 @@ void TownInsect_CountDown(int unused, TownInsect *insect)
 }
 CLEAN_AS(func_ov003_0222f958, TownInsect_CountDown)
 
-/* func_ov003_0222fa20: an insect of TOWN_INSECT_STATE_2 loaded into the process's model pool
+/* func_ov003_0222fa20: an insect of TOWN_INSECT_STATE_LOADING loaded into the process's model pool
  * `pool` (0 the town's, 1 the event's, else the held insects'), and started. Its kind (0-0x3b)
  * names its files (see above); it stops at any file missing or not loaded. The model goes to its
  * model object; the animation file is read into the pool entry's heap, but for the event insects
@@ -2607,14 +2608,14 @@ void TownInsect_Remove(TownInsectProcess *process, TownInsect *insect, int mode)
 }
 CLEAN_AS(func_ov003_0222fe18, TownInsect_Remove)
 
-/* func_ov003_0222ff2c: a free town insect taken up for loading (TOWN_INSECT_STATE_2, an entry of
+/* func_ov003_0222ff2c: a free town insect taken up for loading (TOWN_INSECT_STATE_LOADING, an entry of
  * the town's pool, its files reset, out of view); whether it was free. */
 int TownInsect_StartTown(TownInsectProcess *process, TownInsect *insect)
 {
     if (insect->state != TOWN_INSECT_STATE_NONE) {
         return 0;
     }
-    insect->state = TOWN_INSECT_STATE_2;
+    insect->state = TOWN_INSECT_STATE_LOADING;
     ModelPool_Take(&process->pools[0], &insect->slot);
     ModelPoolFiles_Reset(&insect->files);
     insect->in_view = 0;
@@ -2636,7 +2637,7 @@ int TownInsect_StartEvent(TownInsectProcess *process, int kind, int index)
     insect->anim.anim = NULL;
     insect->anim.model = NULL;
     insect->kind = (s8) kind;
-    insect->state = TOWN_INSECT_STATE_2;
+    insect->state = TOWN_INSECT_STATE_LOADING;
     return 1;
 }
 CLEAN_AS(func_ov003_0222ff74, TownInsect_StartEvent)
@@ -2663,7 +2664,7 @@ int TownInsect_StartHeld(TownInsectProcess *process, TownInsect *insect)
         insect->target.y = target.y;
         insect->target.z = target.z;
     }
-    insect->state = TOWN_INSECT_STATE_2;
+    insect->state = TOWN_INSECT_STATE_LOADING;
     ModelPool_Take(&process->pools[2], &insect->slot);
     ModelPoolFiles_Reset(&insect->files);
     insect->in_view = 1;

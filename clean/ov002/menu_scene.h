@@ -73,7 +73,7 @@ int MenuScene_RepeatedDown(MenuScene *scene);
 int MenuScene_RepeatedUp(MenuScene *scene);
 u32 MenuScene_LatchRepeatedKeys(MenuScene *scene);
 int MenuScene_TakeTouch(MenuScene *scene);
-int MenuScene_TakeButtons(MenuScene *scene, int also_command_3b);
+int MenuScene_TakeButtons(MenuScene *scene, int also_se_3b);
 void MenuScene_SetState(MenuScene *scene, u8 state);
 u8 *MenuScene_SetSubState(MenuScene *scene, u8 sub_state);
 u8 *MenuScene_SetPhase(MenuScene *scene, u8 phase);

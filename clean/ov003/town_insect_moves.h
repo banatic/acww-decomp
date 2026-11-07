@@ -25,7 +25,7 @@
  *   0x23                      TownInsectMove_Update23
  *   0x25, 0x39                TownInsectMove_Update25
  *   0x30                      TownInsectMove_Update30       (hops)
- *   0x31                      TownInsectMove_Update31       (comes out when a player stands by)
+ *   0x31                      TownInsectMove_Update31       (comes out when a tool acts on its tile)
  *   0x32                      TownInsectMove_Update32
  *   0x35                      TownInsectMove_Update35
  *   0x36, 0x37                TownInsectMove_Update36
@@ -44,7 +44,7 @@ void TownInsectMove_SetBox(TownInsect *insect);
 void TownInsectMove_ShiftAside(TownInsect *insect);
 void TownInsectMove_WanderInBox(TownInsect *insect);
 void TownInsectMove_WatchPlayer(TownInsect *insect, u16 *frames);
-int TownInsectMove_OnSetBTile(const Vec3 *point);
+int TownInsectMove_OnFlowerTile(const Vec3 *point);
 void TownInsectMove_UpdateInArea(TownInsect *insect);
 void TownInsectMove_CheckStartle(TownInsect *insect, short *frames);
 void TownInsectMove_FadeByAlarm(TownInsect *insect, short *frames);
@@ -97,7 +97,7 @@ void TownInsectMove_RiseAway(TownInsect *insect, short *frames);
 void TownInsectMove_FlyToTarget(TownInsect *insect);
 void TownInsectMove_Hover(TownInsect *insect, short *frames);
 void TownInsectMove_UpdateTurned(TownInsect *insect);
-int TownInsectMove_TestFlags(int value);
+int TownInsectMove_FlowerLinesOfKind(int kind);
 void TownInsectMove_FlapCycle(TownInsect *insect, short *frames);
 void TownInsectMove_Escape(TownInsect *insect, fx32 speed);
 int TownInsectMove_WaitOver(TownInsect *insect);
@@ -122,7 +122,7 @@ void TownInsectMove_OnSpot(TownInsect *insect);
 Actor *TownInsectMove_NearestPlayer(const Vec3 *point);
 int TownInsectMove_TargetAhead(TownInsect *insect, int angle, int steps);
 int TownInsectMove_SetTarget(TownInsect *insect, int angle, fx32 distance);
-void TownInsectMove_FleeIfFlagged(TownInsect *insect, int most);
+void TownInsectMove_FleeAfterTurns(TownInsect *insect, int most);
 int TownInsectMove_OnGroupTile(const Vec3 *point);
 void TownInsectMove_StepAlong(Vec3 *step, int angle);
 int TownInsectMove_PlaceFeelers(TownInsect *insect, int percent, int spread);
