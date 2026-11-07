@@ -19,7 +19,7 @@ void MusicCommands_Apply(MusicCommands *self)
 {
     if (self->value_set != 0) {
         self->value_set = 0;
-        SoundSys_Call020f1c00(self->value);
+        SoundSys_EndMusic(self->value);
     }
     if (self->music_set != 0) {
         self->music_set = 0;
@@ -55,7 +55,7 @@ void MusicCommands_SetVolume(MusicCommands *self, int volume, int frames)
 }
 CLEAN_AS(func_02035fd8, MusicCommands_SetVolume)
 
-/* func_02035fe4: the word for SoundSys_Call020f1c00. */
+/* func_02035fe4: the word for SoundSys_EndMusic. */
 void MusicCommands_SetValue(MusicCommands *self, int value)
 {
     self->value_set = 1;

@@ -117,7 +117,7 @@ typedef struct TalkObject {
     MessagePart impression;                 /* 0x1da8 */
     PlayerIdText nickname;                  /* 0x1e04 */
     Label22Text praise;                     /* 0x1e24 */
-    VillagerMemoryLabel memory;             /* 0x1e4c */
+    VillagerMemoryLabel greeting;           /* 0x1e4c: the greeting the player taught the villager */
     u8 unk_1e74;                            /* 0x1e74 */
     u8 unk_1e75;                            /* 0x1e75 */
     u8 other_colour;                        /* 0x1e76 */
@@ -206,8 +206,8 @@ int TalkObject_AutoAdvanceDue(TalkObject *talk);
 void TalkObject_SetAutoAdvance(TalkObject *talk, int frames);
 void TalkObject_ClearAutoAdvance(TalkObject *talk);
 /* The texts loaded from the villager talked to (or about), and cleared. */
-int TalkObject_LoadMemory(TalkObject *talk);
-void TalkObject_ClearMemory(TalkObject *talk);
+int TalkObject_LoadGreeting(TalkObject *talk);
+void TalkObject_ClearGreeting(TalkObject *talk);
 int TalkObject_LoadPraise(TalkObject *talk);
 void TalkObject_ClearPraise(TalkObject *talk);
 int TalkObject_LoadNickname(TalkObject *talk);

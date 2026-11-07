@@ -11,7 +11,7 @@
 
 static_assert(offsetof(SceneClaimExit, next_tile) == 0x10, "SceneClaimExit.next_tile is at 0x10");
 static_assert(offsetof(SceneClaimExit, angle) == 0x1c, "SceneClaimExit.angle is at 0x1c");
-static_assert(offsetof(SceneClaimExit, placed) == 0x20, "SceneClaimExit.placed is at 0x20");
+static_assert(offsetof(SceneClaimExit, door_kind) == 0x20, "SceneClaimExit.door_kind is at 0x20");
 static_assert(sizeof(SceneClaimExit) == 0x24, "SceneClaimExit is 0x24 bytes");
 static_assert(sizeof(SceneClaimRoom) == 2, "SceneClaimRoom is 2 bytes");
 
@@ -158,16 +158,16 @@ int SceneClaim_TakeExit(int exit)
 
     Vec3 from = player->position;
     s16 player_angle = player->angle;
-    int placed;
+    int door_kind;
     s16 exit_angle;
     Vec3 exit_position;
-    SceneExit_DoorInfo((const SceneExit *) (uintptr_t) SceneTables_EntryRecord(), exit, &placed, &exit_angle);
+    SceneExit_DoorInfo((const SceneExit *) (uintptr_t) SceneTables_EntryRecord(), exit, &door_kind, &exit_angle);
     SceneExit_DoorPoint((const SceneExit *) (uintptr_t) SceneTables_EntryRecord(), exit, &exit_position, &from);
 
     SceneClaimExit_SetExit(&data_021dc6e8, exit);
-    SceneClaimExit_SetPlaced(&data_021dc6e8, (unsigned char) placed);
+    SceneClaimExit_SetDoorKind(&data_021dc6e8, (unsigned char) door_kind);
     SceneClaimExit_SetScene(&data_021dc6e8, scene);
-    if (placed != 0) {
+    if (door_kind != 0) {
         SceneClaimExit_SetPosition(&data_021dc6e8, &exit_position);
         SceneClaimExit_SetAngle(&data_021dc6e8, exit_angle);
     } else {
@@ -272,11 +272,11 @@ void SceneClaimExit_SetScene(SceneClaimExit *target, int scene)
 CLEAN_AS(func_0209d82c, SceneClaimExit_SetScene)
 
 /* func_0209d830 */
-void SceneClaimExit_SetPlaced(SceneClaimExit *target, unsigned char placed)
+void SceneClaimExit_SetDoorKind(SceneClaimExit *target, unsigned char door_kind)
 {
-    target->placed = placed;
+    target->door_kind = door_kind;
 }
-CLEAN_AS(func_0209d830, SceneClaimExit_SetPlaced)
+CLEAN_AS(func_0209d830, SceneClaimExit_SetDoorKind)
 
 /* func_0209d838 */
 void SceneClaimExit_SetExit(SceneClaimExit *target, int exit)
@@ -307,11 +307,11 @@ int SceneClaimExit_Position(SceneClaimExit *target)
 CLEAN_AS(func_0209d844, SceneClaimExit_Position)
 
 /* func_0209d848 */
-unsigned char SceneClaimExit_Placed(SceneClaimExit *target)
+unsigned char SceneClaimExit_DoorKind(SceneClaimExit *target)
 {
-    return target->placed;
+    return target->door_kind;
 }
-CLEAN_AS(func_0209d848, SceneClaimExit_Placed)
+CLEAN_AS(func_0209d848, SceneClaimExit_DoorKind)
 
 /* func_0209d850 */
 int SceneClaimExit_Answer(SceneClaimExit *target)
@@ -325,7 +325,7 @@ void SceneClaimExit_Clear(SceneClaimExit *target)
 {
     SceneClaimExit_SetAnswer(target, SCENE_CLAIM_GIVEN);
     SceneClaimExit_SetExit(target, NO_EXIT);
-    SceneClaimExit_SetPlaced(target, 0);
+    SceneClaimExit_SetDoorKind(target, 0);
     SceneClaimExit_SetScene(target, 0);
     SceneClaimExit_SetPosition(target, &data_021fbee8);
     SceneClaimExit_SetAngle(target, 0);

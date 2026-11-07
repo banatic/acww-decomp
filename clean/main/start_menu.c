@@ -50,8 +50,8 @@ extern u8 data_021c75b8;
 extern const s32 data_020d1b98[];
 
 #define PAD_START 0x0008
-#define SCENE_45 45 /* a scene in which START does nothing */
-#define START_MENU_EVENT 46
+#define SCENE_45 45         /* a scene in which START does nothing */
+#define START_MENU_SCENE 46 /* the scene the exit is set to (0x2e) */
 #define START_MENU_TALK_INDEX 0
 #define START_MENU_STATUS_TIMER 200 /* StartMenuReceiver.status_timer when a status is sent */
 
@@ -252,8 +252,9 @@ void StartMenu_EnterWait2(StartMenu *menu)
 }
 CLEAN_AS(func_0209f658, StartMenu_EnterWait2)
 
-/* func_0209f668 (update of START_MENU_LEAVE): once the talk closed, it is let go and event 46
- * posted; in a linked session func_020b5ee4 and func_020a18ac follow, alone func_020a1948. */
+/* func_0209f668 (update of START_MENU_LEAVE): once the talk closed, it is let go and the scene
+ * exit set to scene 46 (SceneExit_SetToScene); in a linked session func_020b5ee4 and
+ * func_020a18ac follow, alone func_020a1948. */
 void StartMenu_UpdateLeave(void)
 {
     StartMenuTalk *talk = (StartMenuTalk *) TalkObject_Get(START_MENU_TALK_INDEX);
@@ -261,7 +262,7 @@ void StartMenu_UpdateLeave(void)
         return;
     }
     TalkObject_DetachReceiver((TalkObject *) talk);
-    SceneExit_SetToScene((SceneExit *) (uintptr_t) SceneTables_EntryRecord(), START_MENU_EVENT, 2, 3);
+    SceneExit_SetToScene((SceneExit *) (uintptr_t) SceneTables_EntryRecord(), START_MENU_SCENE, 2, 3);
     if (Session_IsLinked(data_020ccf94)) {
         ScenePlace_SavePlayer(SceneTables_EntryRecord(), 0);
         ActivityJob_Ask1A();

@@ -505,7 +505,7 @@ void StarScope_HoldArrow(StarScope *scope, int arrow, int bounce)
     }
 
     if (StarScope_TestFlags(scope, STAR_SCOPE_FLAG_SCROLL_SE) != 0 && bounce != 0) {
-        SoundSys_ChangePlayerByte(data_ov127_0229b5e0[arrow]);
+        SoundSys_ChangePan(data_ov127_0229b5e0[arrow]);
     }
 }
 CLEAN_AS(func_ov127_02299c08, StarScope_HoldArrow)

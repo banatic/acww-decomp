@@ -2,14 +2,15 @@
  * their "taken" byte:
  *
  *   data_021d1f04  vtable data_020e1b00  0x6c-byte entries: a held item at 4 (held_item_link.h)
- *   data_021d1e34  vtable data_020e1b38  2-byte entries: a part number at 1
- *   data_021d1e0c  vtable data_020e1a90  2-byte entries: an animation set number at 1
+ *   data_021d1e34  vtable data_020e1b38  2-byte entries: a face animation heap's number at 1
+ *   data_021d1e0c  vtable data_020e1a90  2-byte entries: a face animation slot's number at 1
  *
  * They derive from the slot pool base class (vtable data_020e1b70: func_02083ca8 constructs it
  * with its number of entries, func_02083c78 destroys it, func_02083c30 gives an entry back,
  * func_02083cb8 and func_02083cb4 construct and destroy the base part of an entry). Taking entry
- * `index` (vtable entry 2) sets it up with the number 4 + `index`: the item, part or animation
- * set it then stands for (func_0205ec50, func_0205db4c, func_0205d8c4).
+ * `index` (vtable entry 2) sets it up with the number 4 + `index`: the item, face animation
+ * heap or face animation slot it then stands for (func_0205ec50, FaceAnimHeaps_Assign,
+ * FaceAnimSlots_Assign).
  *
  * QUIRK: the functions that read or set up an entry check `index` against the pool they are
  * given but then use the game's own pool, found through its function; they are only ever given
@@ -38,7 +39,7 @@ typedef struct SlotPoolItems {
 
 typedef struct SlotPoolByteEntry {
     u8 taken;
-    u8 number; /* 0x01: the part or animation set */
+    u8 number; /* 0x01: the face animation heap or slot */
 } SlotPoolByteEntry;
 
 typedef struct SlotPoolBytes {
@@ -60,28 +61,28 @@ void SlotPool_ItemEntrySet(SlotPoolItemEntry *entry, int number, const u16 *item
 SlotPoolItemEntry *SlotPool_ItemEntryDestruct(SlotPoolItemEntry *entry);
 SlotPoolItemEntry *SlotPool_ItemEntryConstruct(SlotPoolItemEntry *entry);
 
-u8 *SlotPool_Part(SlotPoolBytes *pool, u32 index);
-SlotPoolByteEntry *SlotPool_PartEntry(SlotPoolBytes *pool, u32 index);
-void SlotPool_PartTake(SlotPoolBytes *pool, u32 index);
-SlotPoolBytes *SlotPool_Parts(void);
-SlotPoolBytes *SlotPool_PartsDestructDelete(SlotPoolBytes *pool);
-SlotPoolBytes *SlotPool_PartsDestruct(SlotPoolBytes *pool);
-SlotPoolBytes *SlotPool_PartsConstruct(SlotPoolBytes *pool);
-void SlotPool_PartEntrySet(SlotPoolByteEntry *entry, u8 number);
-SlotPoolByteEntry *SlotPool_PartEntryDestruct(SlotPoolByteEntry *entry);
-SlotPoolByteEntry *SlotPool_PartEntryConstruct(SlotPoolByteEntry *entry);
+u8 *SlotPool_FaceAnimHeap(SlotPoolBytes *pool, u32 index);
+SlotPoolByteEntry *SlotPool_FaceAnimHeapEntry(SlotPoolBytes *pool, u32 index);
+void SlotPool_FaceAnimHeapTake(SlotPoolBytes *pool, u32 index);
+SlotPoolBytes *SlotPool_FaceAnimHeaps(void);
+SlotPoolBytes *SlotPool_FaceAnimHeapsDestructDelete(SlotPoolBytes *pool);
+SlotPoolBytes *SlotPool_FaceAnimHeapsDestruct(SlotPoolBytes *pool);
+SlotPoolBytes *SlotPool_FaceAnimHeapsConstruct(SlotPoolBytes *pool);
+void SlotPool_FaceAnimHeapEntrySet(SlotPoolByteEntry *entry, u8 number);
+SlotPoolByteEntry *SlotPool_FaceAnimHeapEntryDestruct(SlotPoolByteEntry *entry);
+SlotPoolByteEntry *SlotPool_FaceAnimHeapEntryConstruct(SlotPoolByteEntry *entry);
 
-u8 *SlotPool_AnimSet(SlotPoolBytes *pool, u32 index);
-SlotPoolByteEntry *SlotPool_AnimSetEntry(SlotPoolBytes *pool, u32 index);
-void SlotPool_AnimSetTake(SlotPoolBytes *pool, u32 index);
-SlotPoolBytes *SlotPool_AnimSets(void);
-SlotPoolBytes *SlotPool_AnimSetsDestructDelete(SlotPoolBytes *pool);
-SlotPoolBytes *SlotPool_AnimSetsDestruct(SlotPoolBytes *pool);
-SlotPoolBytes *SlotPool_AnimSetsConstruct(SlotPoolBytes *pool);
-void SlotPool_AnimSetEntrySet(SlotPoolByteEntry *entry, int number);
-SlotPoolByteEntry *SlotPool_AnimSetEntryDestruct(SlotPoolByteEntry *entry);
+u8 *SlotPool_FaceAnimSlot(SlotPoolBytes *pool, u32 index);
+SlotPoolByteEntry *SlotPool_FaceAnimSlotEntry(SlotPoolBytes *pool, u32 index);
+void SlotPool_FaceAnimSlotTake(SlotPoolBytes *pool, u32 index);
+SlotPoolBytes *SlotPool_FaceAnimSlots(void);
+SlotPoolBytes *SlotPool_FaceAnimSlotsDestructDelete(SlotPoolBytes *pool);
+SlotPoolBytes *SlotPool_FaceAnimSlotsDestruct(SlotPoolBytes *pool);
+SlotPoolBytes *SlotPool_FaceAnimSlotsConstruct(SlotPoolBytes *pool);
+void SlotPool_FaceAnimSlotEntrySet(SlotPoolByteEntry *entry, int number);
+SlotPoolByteEntry *SlotPool_FaceAnimSlotEntryDestruct(SlotPoolByteEntry *entry);
 
-SlotPoolByteEntry *SlotPool_AnimSetEntryConstruct(SlotPoolByteEntry *entry);
+SlotPoolByteEntry *SlotPool_FaceAnimSlotEntryConstruct(SlotPoolByteEntry *entry);
 
 /* Five more of the game's slot pools, built on the same base class:
  *

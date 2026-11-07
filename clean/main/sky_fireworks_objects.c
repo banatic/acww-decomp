@@ -323,8 +323,9 @@ static u32 sky_fireworks_object_round(fx32 value)
 }
 
 /* func_020c013c: a burst's two colours set: its place's colour, faded from the first to the
- * second over frames 16 to 26, the first at full brightness and the second at half, then from
- * frame 11 the two brightnesses swapped every two frames; its slot's resource reloaded.
+ * second over frames 16 to 26 (the second's alone from frame 27); both at full brightness until
+ * frame 11, then one at full and the other at half, swapped every two frames; its slot's
+ * resource reloaded.
  * QUIRK: a component below 0 after rounding becomes 31, like one above. */
 void SkyFireworksObject_SetColors(SkyObject *object)
 {

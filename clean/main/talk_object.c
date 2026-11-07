@@ -54,7 +54,7 @@ static_assert(offsetof(TalkObject, second_text) == 0x1c30, "talk second text");
 static_assert(offsetof(TalkObject, town_name) == 0x1c8c, "talk town name");
 static_assert(offsetof(TalkObject, other_player) == 0x1d2c, "talk other player");
 static_assert(offsetof(TalkObject, impression) == 0x1da8, "talk impression");
-static_assert(offsetof(TalkObject, memory) == 0x1e4c, "talk memory");
+static_assert(offsetof(TalkObject, greeting) == 0x1e4c, "talk greeting");
 static_assert(offsetof(TalkObject, message) == 0x1e77, "talk message");
 static_assert(offsetof(TalkObject, go_on) == 0x1e92, "talk go on");
 static_assert(offsetof(TalkObject, quiet) == 0x1e9a, "talk quiet");
@@ -617,7 +617,7 @@ TalkObject *TalkObject_Destruct(TalkObject *talk)
 {
     TalkObject_FreeNameBox(talk);
     TalkObject_DetachReceiver(talk);
-    VillagerMemoryLabel_Destruct(&talk->memory);
+    VillagerMemoryLabel_Destruct(&talk->greeting);
     Label22Text_Destruct(&talk->praise);
     PlayerIdText_Destruct(&talk->nickname);
     MessagePart_Destruct(&talk->impression);
@@ -708,7 +708,7 @@ TalkObject *TalkObject_Construct(TalkObject *talk)
     MessagePart_Construct(&talk->impression);
     PlayerIdText_Construct(&talk->nickname);
     Label22Text_Construct(&talk->praise);
-    VillagerMemoryLabel_Construct(&talk->memory);
+    VillagerMemoryLabel_Construct(&talk->greeting);
     talk->unk_1e74 = 0;
     talk->unk_1e75 = 0;
     talk->other_colour = 0;
@@ -1091,24 +1091,25 @@ CLEAN_AS(func_020676c8, TalkObject_ClearAutoAdvance)
  * clears its text and, with a villager, loads it; 1 when it did. Each is cleared again for the
  * next message (TalkFlow_NextMessage). */
 
-/* func_020676d0: what the villager remembers of this system's player; 1 when it does. */
-int TalkObject_LoadMemory(TalkObject *talk)
+/* func_020676d0: the greeting this system's player taught the villager
+ * (VillagerMemory_GetGreeting); 1 when there is one. */
+int TalkObject_LoadGreeting(TalkObject *talk)
 {
     u8 *villager = talk_object_villager(talk);
-    TextBase_Clear(&talk->memory);
+    TextBase_Clear(&talk->greeting);
     if (villager == NULL) {
         return 0;
     }
-    return VillagerMemory_GetGreeting(villager, &talk->memory, talk_object_player()) != 0;
+    return VillagerMemory_GetGreeting(villager, &talk->greeting, talk_object_player()) != 0;
 }
-CLEAN_AS(func_020676d0, TalkObject_LoadMemory)
+CLEAN_AS(func_020676d0, TalkObject_LoadGreeting)
 
-/* func_02067718 */
-void TalkObject_ClearMemory(TalkObject *talk)
+/* func_02067718: the greeting cleared. */
+void TalkObject_ClearGreeting(TalkObject *talk)
 {
-    TextBase_Clear(&talk->memory);
+    TextBase_Clear(&talk->greeting);
 }
-CLEAN_AS(func_02067718, TalkObject_ClearMemory)
+CLEAN_AS(func_02067718, TalkObject_ClearGreeting)
 
 /* func_02067728: the villager's praise word for this system's player. */
 int TalkObject_LoadPraise(TalkObject *talk)

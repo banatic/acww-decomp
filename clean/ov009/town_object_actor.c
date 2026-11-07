@@ -213,7 +213,7 @@ CLEAN_AS(func_ov009_02262ec4, TownObjectActor_Position)
 void TownObjectActorSound_PlayEx(TownObjectActorSound *sound, int number)
 {
     if (sound->state.on) {
-        SoundEmitter_PlayEx(&sound->emitter, number, TOWN_OBJECT_ACTOR_SOUND_VOLUME, 0);
+        SoundEmitter_PlayHeld(&sound->emitter, number, TOWN_OBJECT_ACTOR_SOUND_VOLUME, 0);
     }
 }
 CLEAN_AS(func_ov009_02262ed4, TownObjectActorSound_PlayEx)

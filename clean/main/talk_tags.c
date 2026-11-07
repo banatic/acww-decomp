@@ -857,7 +857,7 @@ CLEAN_AS(func_0206a150, TalkTags_PutLikedNpc)
 #define TALK_TAGS_CATCHPHRASE 0x1c70  /* the villager's catchphrase (func_02067a74) */
 #define TALK_TAGS_TOWN_NAME 0x1c8c    /* the town's name (func_02067a3c) */
 #define TALK_TAGS_PLAYER_NAME 0x1cac  /* this system's player's name (func_020679fc) */
-#define TALK_TAGS_REMEMBERED 0x1e4c   /* the text the villager remembers of the player (func_020676d0) */
+#define TALK_TAGS_GREETING 0x1e4c     /* the greeting the player taught the villager (TalkObject_LoadGreeting) */
 
 /* The colour tag put after the town's name. */
 #define TALK_TAGS_COLOUR_TOWN 8
@@ -1273,26 +1273,26 @@ void TalkTags_ShakeLight(TalkTagsWalker *walker)
 CLEAN_AS(func_0206aab0, TalkTags_ShakeLight)
 
 /* func_0206aae4 (tag 1/7): nothing; it ends the text tag 1/6 may replace. */
-void TalkTags_RememberedEnd(void) {}
-CLEAN_AS(func_0206aae4, TalkTags_RememberedEnd)
+void TalkTags_GreetingEnd(void) {}
+CLEAN_AS(func_0206aae4, TalkTags_GreetingEnd)
 
-/* func_0206aae8 (tag 1/6): when a tag 1/7 follows and the villager talked to remembers a text
- * of the player, the walk goes on at that tag 1/7 and that text is walked in place of what
+/* func_0206aae8 (tag 1/6): when a tag 1/7 follows and the player taught the villager talked to a
+ * greeting, the walk goes on at that tag 1/7 and the greeting is walked in place of what
  * was between them. */
-void TalkTags_RememberedText(TalkTagsWalker *walker)
+void TalkTags_GreetingText(TalkTagsWalker *walker)
 {
     int position = (int) walker->base.position;
     int end = MessageQuery_FindTag(position, 1, 7);
     if (end == 0) {
         return;
     }
-    if (TalkObject_LoadMemory(talk_tags_object(walker)) == 0) {
+    if (TalkObject_LoadGreeting(talk_tags_object(walker)) == 0) {
         return;
     }
     MessageWalker_Skip(&walker->base, end - position);
-    MessageWalker_Enter(&walker->base, talk_tags_characters(talk_tags_at(walker, TALK_TAGS_REMEMBERED)));
+    MessageWalker_Enter(&walker->base, talk_tags_characters(talk_tags_at(walker, TALK_TAGS_GREETING)));
 }
-CLEAN_AS(func_0206aae8, TalkTags_RememberedText)
+CLEAN_AS(func_0206aae8, TalkTags_GreetingText)
 
 /* func_0206ab30 (tag 1/5): the walk can be hurried again. */
 void TalkTags_HurryAllowed(TalkTagsWalker *walker)

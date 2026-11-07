@@ -23,8 +23,9 @@
 #define ROOM_SCORE_MAIL_RECORD_MEMBER 0xe
 /* The first letter's message. */
 #define ROOM_SCORE_MAIL_WELCOME 0x1b
-/* The game variable (bank 0) that has the judgement sent to every player. */
-#define ROOM_SCORE_MAIL_VARIABLE_ALL 0x22
+/* The game variable (bank 0) that, when set, has the house judged whatever the week
+ * (room_score.c) and the judgement sent to every player. */
+#define ROOM_SCORE_MAIL_VARIABLE_JUDGE_ANYWAY 0x22
 /* The text slots of the judgement: the total, the group, the theme. */
 #define ROOM_SCORE_MAIL_SLOT_TOTAL 1
 #define ROOM_SCORE_MAIL_SLOT_GROUP 2
@@ -163,7 +164,7 @@ int RoomScoreMail_SendJudgement(RoomScoreRoom *room, int message, int total, int
         if (record == NULL || PlayerRecord_HasPlayer(record) == 0) {
             continue;
         }
-        if (*GameVariables_Slot(0, ROOM_SCORE_MAIL_VARIABLE_ALL) == 0 &&
+        if (*GameVariables_Slot(0, ROOM_SCORE_MAIL_VARIABLE_JUDGE_ANYWAY) == 0 &&
             PlayerRecord_TestFlag(record, ROOM_SCORE_MAIL_RECORD_MEMBER) == 0) {
             continue;
         }

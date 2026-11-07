@@ -636,7 +636,7 @@ CLEAN_AS(func_02039540, QuickMessage_PlaceWaiting)
  * while it is shown. */
 int QuickMessage_PlaceBalloon(QuickMessageBoard *board, QuickMessageBalloon *balloon)
 {
-    if (SlotOwner_Contains((const SlotOwner *) board, balloon) != 0) {
+    if (QuickMessage_IsShown((const SlotOwner *) board, balloon) != 0) {
         QuickMessage_BalloonRelease(balloon);
         return 0;
     }

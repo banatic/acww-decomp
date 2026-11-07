@@ -67,10 +67,10 @@ extern Mtx43 data_021f4790;
 /* The shadows' alphas: the characters' and the objects'. */
 extern u8 data_020e4100;
 extern u8 data_020e4104;
-/* The camera, while it exists, and its position. */
+/* The camera, while it exists, and the point it looks at. */
 extern int data_021c67a4;
 extern const Vec3 data_021c67d0;
-/* Shadow_FadeAlpha's fade per unit behind the camera, made once (guard bit 0 of
+/* Shadow_FadeAlpha's fade per unit north of the point the camera looks at, made once (guard bit 0 of
  * data_021f47cc). */
 extern u32 data_021f47cc;
 extern fx32 data_021f47d4;
@@ -536,32 +536,33 @@ int Shadow_ObjAlpha(const Vec3 *pos, int range)
 CLEAN_AS(func_020ad2d4, Shadow_ObjAlpha)
 
 /* func_020ad2e4: `alpha` for a shadow at `pos`, `range` the reach of what casts it. Without a
- * camera, or behind the camera (lower z), `alpha` as it is; further behind than 0xb000 (11
- * units) alpha / 32; else faded by 31/32 of itself per 11 units. Ahead of the camera, 0 when
- * further than `range` + 12 units ahead or `range` + 15 units across.
+ * camera `alpha` as it is. North of the point the camera looks at (data_021c67d0, lower z):
+ * further than 0xb000 (11 units) alpha / 32, else faded by 31/32 of itself per 11 units. South
+ * of it, 0 when further than `range` + 12 units south or `range` + 15 units across, else
+ * `alpha`.
  * QUIRK: the faded value is cut to 8 bits; `alpha` is returned unchanged in width otherwise. */
 int Shadow_FadeAlpha(const Vec3 *pos, int range, int alpha)
 {
     if (data_021c67a4 == 0) {
         return alpha;
     }
-    Vec3 camera = data_021c67d0;
-    if (camera.z > pos->z) {
-        int behind = camera.z - pos->z;
-        if (behind > 0xb000) {
+    Vec3 focus = data_021c67d0;
+    if (focus.z > pos->z) {
+        int north = focus.z - pos->z;
+        if (north > 0xb000) {
             return (u8) (alpha >> 5);
         }
         if ((data_021f47cc & 1) == 0) {
             data_021f47d4 = FX_Div(0xf80, 0xb000);
             data_021f47cc |= 1;
         }
-        int fade = FX_MulFunc(FX_MulFunc((int) ((u32) alpha << 12), data_021f47d4), behind) >> 12;
+        int fade = FX_MulFunc(FX_MulFunc((int) ((u32) alpha << 12), data_021f47d4), north) >> 12;
         return (u8) (alpha - (u8) fade);
     }
-    if (pos->z - camera.z > range + 0xc000) {
+    if (pos->z - focus.z > range + 0xc000) {
         return 0;
     }
-    if (abs_int(pos->x - camera.x) > range + 0xf000) {
+    if (abs_int(pos->x - focus.x) > range + 0xf000) {
         return 0;
     }
     return alpha;

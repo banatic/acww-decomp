@@ -367,8 +367,9 @@ CLEAN_AS(func_020a55dc, SceneProcessBase_CanCreate)
 
 /* func_020a5670: the display for a scene: the 2D engines reset, the 3D engine set up, the VRAM
  * banks given out (BG: F, OBJ: A, BG extended palettes: G, textures: B and C, texture
- * palettes: E), the light: vector (0, 0, -1 << 9) in white, white diffuse and ambient, no
- * specular or emission; then the 3D engine's state.
+ * palettes: E), the light: vector (0, 0, -1 << 9) in white, white diffuse, black (no) ambient
+ * (REG_DIF_AMB 0x7fff; bit 15 clear, so the diffuse is not the vertex colour), no specular or
+ * emission; then the 3D engine's state.
  * HW: the four lighting registers are written in this order. */
 void SceneProcessBase_SetUpDisplay(void)
 {

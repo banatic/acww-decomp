@@ -386,9 +386,9 @@ CLEAN_INSECT_ROOM_SHA = '07356b2f5b1b211ddcf8f2b66fc9dd67318de0852c921b9512e40b2
 # build compiles copies with the Native ones' guest slots and registers.
 CLEAN_CUE_SHA = {
     'clean/autoload_2/music_cue.c': '5e0d82994301bbde71bb4747d619c4a7ebf8558c757f9285fc36420a0c6a9dd1',
-    'clean/main/sound.c': 'b5bd51de34fc0cd43046258cba16dff603d7764a368bba78f15499cbb5dbdf8d',
+    'clean/main/sound.c': '5e1a5a3c835991fafa2653e4bfbfb467083efbe85e4251438f99f617d87b534e',
     'clean/ov004/room_object_body.c': 'c318ca069d92ac2122ab5f6de4c8ece9bc143fa80fa33ad665af5f6ba63eb3b5',
-    'clean/main/talk_object.c': 'a3ce05a0bff434a6fc7cd08f9a5466e7a66389947af3131955f102cc08abe2c9',
+    'clean/main/talk_object.c': '3b7cc6bc90bf1f9b6413d484e303e64956be574594d94883a9dac6a710c4ec47',
     'clean/main/villager_talk_offers.c': '533242081ce0c010d3b9fbb10bb8a24b6df49a01c2fc30dd13c8a43173bfabe1',
     'clean/autoload_2/matrix.c': '6e4e1fe2d50a238897e20e224004b63f073337a296a08fa10158644c8527cf18',
     'clean/main/field_collision.c': 'c1efa49efed565e2a051e4edf64d29ba420d6051bfaceae83c5eebf0b36650bf',

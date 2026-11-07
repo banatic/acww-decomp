@@ -238,8 +238,7 @@ int DesignArchive_ReadInfo(RecordFile *archive, DesignInfo *info, int entry)
     if (entry >= ARCHIVE_ENTRIES) {
         return 0;
     }
-    const ArchiveEntry *record =
-        (const ArchiveEntry *) RecordFile_Record((FurnitureRecordFile *) archive, (unsigned int) entry);
+    const ArchiveEntry *record = (const ArchiveEntry *) RecordFile_Record(archive, (unsigned int) entry);
     if (record == NULL) {
         return 0;
     }
@@ -278,21 +277,21 @@ CLEAN_AS(func_02072268, DesignArchive_ReadInfo)
 /* func_02072330 */
 void DesignArchive_Close(RecordFile *archive)
 {
-    RecordFile_Close((FurnitureRecordFile *) archive);
+    RecordFile_Close(archive);
 }
 CLEAN_AS(func_02072330, DesignArchive_Close)
 
 /* func_02072338: opens "/myOrg/myD.bin". */
 void DesignArchive_Open(RecordFile *archive)
 {
-    RecordFile_Open((FurnitureRecordFile *) archive, data_020e1828, ARCHIVE_ENTRY_SIZE, ARCHIVE_ENTRIES);
+    RecordFile_Open(archive, data_020e1828, ARCHIVE_ENTRY_SIZE, ARCHIVE_ENTRIES);
 }
 CLEAN_AS(func_02072338, DesignArchive_Open)
 
 /* func_02072350: the file's destructor (registered by __sinit_020c5c94). */
 int DesignArchive_Destruct(RecordFile *archive)
 {
-    RecordFile_Destruct((FurnitureRecordFile *) archive);
+    RecordFile_Destruct(archive);
     return (int) (uintptr_t) archive;
 }
 CLEAN_AS(func_02072350, DesignArchive_Destruct)
@@ -300,7 +299,7 @@ CLEAN_AS(func_02072350, DesignArchive_Destruct)
 /* func_02072360: its constructor. */
 int DesignArchive_Construct(RecordFile *archive)
 {
-    RecordFile_Construct((FurnitureRecordFile *) archive);
+    RecordFile_Construct(archive);
     return (int) (uintptr_t) archive;
 }
 CLEAN_AS(func_02072360, DesignArchive_Construct)

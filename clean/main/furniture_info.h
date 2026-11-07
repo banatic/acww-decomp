@@ -98,21 +98,21 @@ int FurnitureInfo_DmaUnk1E(int number);
 #define FURNITURE_FILE_RECORDS 0x800
 
 /* One record file (0x1c bytes). */
-typedef struct FurnitureRecordFile {
+typedef struct RecordFile {
     u8 file_id[8];   /* 0x00: NitroSDK's FSFileID of the file */
     u32 record_size; /* 0x08 */
     u32 records;     /* 0x0c: FURNITURE_FILE_RECORDS */
     void *whole;     /* 0x10: the whole file, when it is read into memory */
     s32 cached;      /* 0x14: -1 when nothing is cached */
     void *cache;     /* 0x18: room for eight records */
-} FurnitureRecordFile;
+} RecordFile;
 
 /* The three files at data_021c8c48 (0x54 bytes). */
-typedef struct FurnitureRecordFiles {
-    FurnitureRecordFile always; /* 0x00 */
-    FurnitureRecordFile indoor; /* 0x1c */
-    FurnitureRecordFile dma;    /* 0x38 */
-} FurnitureRecordFiles;
+typedef struct RecordFiles {
+    RecordFile always; /* 0x00 */
+    RecordFile indoor; /* 0x1c */
+    RecordFile dma;    /* 0x38 */
+} RecordFiles;
 
 int FurnitureInfo_DmaUnk1D(int number);
 int FurnitureInfo_NoneA(int number);
@@ -121,12 +121,12 @@ int FurnitureInfo_NoneC(int number);
 int FurnitureInfo_DmaUnk19(int number);
 u8 FurnitureInfo_DmaUnk18(int number);
 u16 FurnitureInfo_Price(int number);
-void FurnitureFiles_FreeIndoor(FurnitureRecordFiles *files);
-int FurnitureFiles_LoadIndoor(FurnitureRecordFiles *files, int stream);
-void FurnitureFiles_Close(FurnitureRecordFiles *files);
-int FurnitureFiles_Open(FurnitureRecordFiles *files);
-FurnitureRecordFiles *FurnitureFiles_Destruct(FurnitureRecordFiles *files);
-FurnitureRecordFiles *FurnitureFiles_Construct(FurnitureRecordFiles *files);
+void FurnitureFiles_FreeIndoor(RecordFiles *files);
+int FurnitureFiles_LoadIndoor(RecordFiles *files, int stream);
+void FurnitureFiles_Close(RecordFiles *files);
+int FurnitureFiles_Open(RecordFiles *files);
+RecordFiles *FurnitureFiles_Destruct(RecordFiles *files);
+RecordFiles *FurnitureFiles_Construct(RecordFiles *files);
 void FurnitureInfo_FreeIndoor(void);
 void *FurnitureInfo_LoadIndoor(void *stream);
 void FurnitureInfo_Close(void);

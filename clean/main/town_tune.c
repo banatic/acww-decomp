@@ -21,7 +21,7 @@ void TownTune_Update(void)
     if (data_021cfbac != 0) {
         data_021cfbac--;
     }
-    data_020df2a0 = SoundSet_Poll(&data_021cfbcc);
+    data_020df2a0 = MelodySetCall_Update(&data_021cfbcc);
 }
 CLEAN_AS(func_0206e8d8, TownTune_Update)
 
@@ -29,7 +29,7 @@ CLEAN_AS(func_0206e8d8, TownTune_Update)
  * playing nothing, and the town tune made its melody. */
 void TownTune_Init(void)
 {
-    SoundSet_MakeCurrent(&data_021cfbcc);
+    MelodySetCall_MakeCurrent(&data_021cfbcc);
     data_020df2a0 = -1;
     TownTune_UseTune();
 }
@@ -38,7 +38,7 @@ CLEAN_AS(func_0206e904, TownTune_Init)
 /* func_0206e928: the sound layer's default melody stored as the town tune of the save. */
 void TownTune_StoreDefault(void)
 {
-    const u8 *melody = SoundSet_Default(&data_021cfbcc);
+    const u8 *melody = MelodySetCall_DefaultMelody(&data_021cfbcc);
     if (melody != NULL) {
         TownTune_Pack(&data_021f3b68, melody);
     }
@@ -49,7 +49,7 @@ CLEAN_AS(func_0206e928, TownTune_StoreDefault)
  * melody and stored as the town tune of the save. */
 void TownTune_StorePreset(void)
 {
-    const u8 *melody = SoundSet_LoadBlock((u8 *) &data_021cfbcc);
+    const u8 *melody = MelodySetCall_LoadPreset((u8 *) &data_021cfbcc);
     if (melody != NULL) {
         TownTune_Pack(&data_021f3b68, melody);
     }
@@ -59,7 +59,7 @@ CLEAN_AS(func_0206e94c, TownTune_StorePreset)
 /* func_0206e970: a preset melody picked at random and played as sound `number`. */
 int TownTune_PlayRandomPreset(int number)
 {
-    return SoundSet_Load(&data_021cfbcc, (u32) number);
+    return MelodySetCall_PlayRandomPreset(&data_021cfbcc, (u32) number);
 }
 CLEAN_AS(func_0206e970, TownTune_PlayRandomPreset)
 
@@ -67,14 +67,14 @@ CLEAN_AS(func_0206e970, TownTune_PlayRandomPreset)
  * update (asked only when there is no delay). */
 int TownTune_IsBusy(void)
 {
-    return data_021cfbac != 0 || SoundSet_WasActive(&data_021cfbcc) != 0;
+    return data_021cfbac != 0 || MelodySetCall_APlaying(&data_021cfbcc) != 0;
 }
 CLEAN_AS(func_0206e980, TownTune_IsBusy)
 
 /* func_0206e9ac: the second player's sound `index` of sequence archive 0xd3. */
 void TownTune_PlaySeqD3(int index)
 {
-    SoundSet_Call020f65fc(&data_021cfbcc, index);
+    MelodySetCall_PlaySeqD3B(&data_021cfbcc, index);
 }
 CLEAN_AS(func_0206e9ac, TownTune_PlaySeqD3)
 
@@ -82,7 +82,7 @@ CLEAN_AS(func_0206e9ac, TownTune_PlaySeqD3)
  * `long_delay`, else short. */
 void TownTune_StartFirst(int long_delay)
 {
-    SoundSet_Call020f66f0(&data_021cfbcc);
+    MelodySetCall_StartA(&data_021cfbcc);
     data_021cfbac = long_delay ? TOWN_TUNE_DELAY_LONG : TOWN_TUNE_DELAY_SHORT;
 }
 CLEAN_AS(func_0206e9bc, TownTune_StartFirst)
@@ -90,28 +90,28 @@ CLEAN_AS(func_0206e9bc, TownTune_StartFirst)
 /* func_0206e9ec: the set's melody played at `pos` as `kind` (MelodySet_PlayAt). */
 void TownTune_PlayAt(const Vec3 *pos, int kind)
 {
-    SoundSet_LoadAt(&data_021cfbcc, pos, kind);
+    MelodySetCall_PlayAt(&data_021cfbcc, pos, kind);
 }
 CLEAN_AS(func_0206e9ec, TownTune_PlayAt)
 
 /* func_0206ea00: the set's melody played as sound `number`. */
 void TownTune_PlayOwn(int number)
 {
-    SoundSet_LoadOwn(&data_021cfbcc, (u32) number);
+    MelodySetCall_PlayOwn(&data_021cfbcc, (u32) number);
 }
 CLEAN_AS(func_0206ea00, TownTune_PlayOwn)
 
 /* func_0206ea10: the town tune played as sound `number`. */
 void TownTune_Play(unsigned int number)
 {
-    SoundSet_LoadWith(&data_021cfbcc, number, data_021cfbbc);
+    MelodySetCall_PlayWith(&data_021cfbcc, number, data_021cfbbc);
 }
 CLEAN_AS(func_0206ea10, TownTune_Play)
 
 /* func_0206ea28: the town tune copied into the set's melody. */
 void TownTune_UseTune(void)
 {
-    SoundSet_SetBlock((u8 *) &data_021cfbcc, data_021cfbbc);
+    MelodySetCall_SetMelody((u8 *) &data_021cfbcc, data_021cfbbc);
 }
 CLEAN_AS(func_0206ea28, TownTune_UseTune)
 

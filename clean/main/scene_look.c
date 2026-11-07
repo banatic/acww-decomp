@@ -423,7 +423,8 @@ void SceneLook_SetPitchLimit(SceneLook *self, int limit)
 }
 CLEAN_AS(func_0201ad88, SceneLook_SetPitchLimit)
 
-/* func_0201ad8c: the head point onto the curved ground drawn (func_0203f7d0) into `out`, and 1;
+/* func_0201ad8c: the head point taken back from the drawn curved ground to the map
+ * (Globe_Unbend) into `out`, and 1;
  * 0 while the head point is the origin (not read yet). */
 int SceneLook_HeadPoint(SceneLook *self, Vec3 *out)
 {

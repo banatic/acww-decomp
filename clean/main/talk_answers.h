@@ -13,7 +13,7 @@
 #include "types.h"
 
 #define TALK_ANSWERS_MAX 5
-#define TALK_ANSWERS_NAME_SIZE 0x1a
+#define TALK_ANSWERS_NEXT_FILE_SIZE 0x1a
 #define TALK_ANSWERS_TEXT_SIZE 0x5c
 
 /* What a pick plays (TalkAnswer.sound_kind, read by TalkChoiceCursor_PlayAnswerSound). */
@@ -23,13 +23,14 @@
 #define TALK_ANSWER_SOUND_3 3
 
 typedef struct TalkAnswer {
-    u8 unk_00;                         /* 0x00: data_021f43ec's byte when cleared */
-    u8 pad_01[3];                      /* 0x01 */
-    u32 file_name;                     /* 0x04: the address of its select file's name (TalkAnswers_SelectFileName) */
-    u8 text[TALK_ANSWERS_TEXT_SIZE];   /* 0x08: its text (an 8-bit text, text_base.h) */
-    MessageEntry entry;                /* 0x64 */
-    u8 next_message;                   /* 0x70: data_021f43ec's byte when cleared */
-    char name[TALK_ANSWERS_NAME_SIZE]; /* 0x71: up to 0x19 characters */
+    u8 unk_00;                       /* 0x00: data_021f43ec's byte when cleared */
+    u8 pad_01[3];                    /* 0x01 */
+    u32 file_name;                   /* 0x04: the address of its select file's name (TalkAnswers_SelectFileName) */
+    u8 text[TALK_ANSWERS_TEXT_SIZE]; /* 0x08: its text (an 8-bit text, text_base.h) */
+    MessageEntry entry;              /* 0x64 */
+    u8 next_message;                 /* 0x70: data_021f43ec's byte when cleared */
+    char next_file
+        [TALK_ANSWERS_NEXT_FILE_SIZE]; /* 0x71: the next message's file name, up to 0x19 characters (TalkObject_SetMessage) */
     u8 weight;                         /* 0x8b: its share of the slider's 16 steps */
     u32 sound_kind;                    /* 0x8c: TALK_ANSWER_SOUND_* */
 } TalkAnswer;
@@ -40,12 +41,12 @@ typedef struct TalkAnswers {
     s32 cancel;                           /* 0x2d4: the answer B picks, or -1 */
     s32 picked;                           /* 0x2d8: or -1 while none is */
     /* A copy of the answer picked. */
-    u8 picked_next;                           /* 0x2dc: its next_message */
-    char picked_name[TALK_ANSWERS_NAME_SIZE]; /* 0x2dd */
-    u8 pad_2f7;                               /* 0x2f7 */
-    u8 picked_text[TALK_ANSWERS_TEXT_SIZE];   /* 0x2f8 */
-    MessageEntry picked_entry;                /* 0x354 */
-    u32 picked_step;                          /* 0x360: the slider's step (0 to 15) it was picked at */
+    u8 picked_next;                                     /* 0x2dc: its next_message */
+    char picked_next_file[TALK_ANSWERS_NEXT_FILE_SIZE]; /* 0x2dd */
+    u8 pad_2f7;                                         /* 0x2f7 */
+    u8 picked_text[TALK_ANSWERS_TEXT_SIZE];             /* 0x2f8 */
+    MessageEntry picked_entry;                          /* 0x354 */
+    u32 picked_step;                                    /* 0x360: the slider's step (0 to 15) it was picked at */
 } TalkAnswers;
 
 u32 TalkAnswers_SelectFileName(unsigned int index);
@@ -55,7 +56,7 @@ void TalkAnswers_SetCancelToLast(TalkAnswers *answers);
 void TalkAnswers_SetCount(TalkAnswers *answers, int count);
 MessageEntry *TalkAnswers_PickedEntry(TalkAnswers *answers);
 u8 *TalkAnswers_PickedText(TalkAnswers *answers);
-char *TalkAnswers_PickedName(TalkAnswers *answers);
+char *TalkAnswers_PickedNextFile(TalkAnswers *answers);
 u8 *TalkAnswers_PickedNext(TalkAnswers *answers);
 u32 TalkAnswers_PickedStep(TalkAnswers *answers);
 unsigned int TalkAnswers_Picked(TalkAnswers *answers);
@@ -68,21 +69,21 @@ void TalkAnswers_ClearAnswers(TalkAnswers *answers);
 void TalkAnswers_ClearPick(TalkAnswers *answers);
 void TalkAnswers_Clear(TalkAnswers *answers);
 void TalkAnswers_LoadTexts(TalkAnswers *answers);
-void TalkAnswers_Set(TalkAnswers *answers, int index, const u8 *message, int file, const u8 *next_message, const char *name,
-                     int sound_kind);
+void TalkAnswers_Set(TalkAnswers *answers, int index, const u8 *message, int file, const u8 *next_message,
+                     const char *next_file, int sound_kind);
 void TalkAnswers_Reset(TalkAnswers *answers, int count, int cancel);
 TalkAnswers *TalkAnswers_Destruct(TalkAnswers *answers);
 TalkAnswers *TalkAnswers_Construct(TalkAnswers *answers);
 void TalkAnswers_LoadAnswerText(TalkAnswer *answer);
 void TalkAnswers_SetSoundKind(TalkAnswer *answer, u32 sound_kind);
-void TalkAnswers_SetName(TalkAnswer *answer, const char *name);
+void TalkAnswers_SetNextFile(TalkAnswer *answer, const char *next_file);
 void TalkAnswers_SetNext(TalkAnswer *answer, const u8 *value);
 void TalkAnswers_SetFile(TalkAnswer *answer, int file);
 void TalkAnswers_SetMessage(TalkAnswer *answer, const u8 *message);
 u32 TalkAnswers_SoundKind(TalkAnswer *answer);
 u8 *TalkAnswers_Weight(TalkAnswer *answer);
 MessageEntry *TalkAnswers_Entry(TalkAnswer *answer);
-char *TalkAnswers_Name(TalkAnswer *answer);
+char *TalkAnswers_NextFile(TalkAnswer *answer);
 u8 *TalkAnswers_AnswerNext(TalkAnswer *answer);
 struct TextBase *TalkAnswers_Text(TalkAnswer *answer);
 void TalkAnswers_ClearAnswer(TalkAnswer *answer);

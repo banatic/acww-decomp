@@ -16,7 +16,7 @@ static_assert(offsetof(TalkChoicesScene, functions) == 0x140, "TalkChoicesScene 
 #define TALK_CHOICES_NONE (-1)
 
 extern const MemberPointer __ptmf_null;
-/* The message data each choice is set with. */
+/* The next message each choice is set with (none, 0xff). */
 extern u8 data_021f43f8[];
 
 static void *talk_choices_menu(TalkChoicesScene *scene)
@@ -41,7 +41,7 @@ CLEAN_AS(func_0201ce68, TalkChoices_Reply)
 
 /* func_0201cec8: with the talk's menu, the list's choices offered: the scene's functions
  * cleared, the menu given the count and the cancel choice, then each choice a message drawn
- * at random from its range (one byte, on the stack) with the message data at 0x021f43f8, and
+ * at random from its range (one byte, on the stack) with the next message at 0x021f43f8 (none, 0xff), and
  * its function kept by the scene; the menu then made ready. */
 void TalkChoices_Offer(TalkChoicesScene *scene, TalkChoiceList *list)
 {

@@ -44,7 +44,7 @@
 
 /* The screens command 0 opens (`screen`). */
 #define SCENE_COMMAND_SCREEN_POCKETS 0   /* GroupParams_OpenWithMask */
-#define SCENE_COMMAND_SCREEN_MODE_25 1   /* func_0206f99c */
+#define SCENE_COMMAND_SCREEN_LETTER 1    /* GroupParams_OpenLetter: mode 0x25, the letter */
 #define SCENE_COMMAND_SCREEN_MODE 2      /* GroupParams_Open */
 #define SCENE_COMMAND_SCREEN_MODE_ARG 3  /* GroupParams_OpenWithArg */
 #define SCENE_COMMAND_SCREEN_MODE_3D 4   /* func_0206f7dc */

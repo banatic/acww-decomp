@@ -29,8 +29,8 @@
 #define SKY_EVENTS_THUNDER_START 50
 #define SKY_EVENTS_THUNDER_SPREAD 200
 #define SKY_EVENTS_THUNDER_MIN 10
-#define SKY_EVENTS_THUNDER_SOUND 0 /* SceneLights_StartFlash's kind */
-#define SKY_EVENTS_NIGHT_END 4     /* hours 19:00 to 3:59 are the night */
+
+#define SKY_EVENTS_NIGHT_END 4 /* hours 19:00 to 3:59 are the night */
 #define SKY_EVENTS_NIGHT_START 19
 #define SKY_EVENTS_SHOOTING_STAR_SECOND 30
 #define SKY_EVENTS_SHOOTING_STAR_DELAY 600
@@ -451,14 +451,14 @@ static int sky_events_thunder_due(SkyObjects *objects)
     return objects->thunder_timer <= 0;
 }
 
-/* func_020bda88: the thunder: heard (SceneLights_StartFlash) when its timer runs out, then again 10 to
+/* func_020bda88: the thunder: flashed and heard (SceneLights_StartFlash, SCENE_FLASH_THUNDER) when its timer runs out, then again 10 to
  * 209 frames later. */
 void SkyEvents_Thunder(SkyObjects *objects)
 {
     if (!sky_events_thunder_due(objects)) {
         return;
     }
-    SceneLights_StartFlash(SKY_EVENTS_THUNDER_SOUND);
+    SceneLights_StartFlash(SCENE_FLASH_THUNDER);
     objects->thunder_timer = (s32) MainRandom_Below(SKY_EVENTS_THUNDER_SPREAD) + SKY_EVENTS_THUNDER_MIN;
 }
 CLEAN_AS(func_020bda88, SkyEvents_Thunder)
@@ -472,7 +472,7 @@ void SkyEvents_HeavyThunder(SkyObjects *objects)
     if (MainRandom_Below(SKY_EVENTS_ODDS) == 0) {
         SkyObjects_Add(objects, SKY_OBJECT_LIGHTNING, SKY_ENTRY_LIGHTNING, NULL, 0);
     }
-    SceneLights_StartFlash(SKY_EVENTS_THUNDER_SOUND);
+    SceneLights_StartFlash(SCENE_FLASH_THUNDER);
     objects->thunder_timer = (s32) MainRandom_Below(SKY_EVENTS_THUNDER_SPREAD) + SKY_EVENTS_THUNDER_MIN;
 }
 CLEAN_AS(func_020bdac8, SkyEvents_HeavyThunder)

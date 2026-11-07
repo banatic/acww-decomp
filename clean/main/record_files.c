@@ -4,32 +4,32 @@
 #include "clean.h"
 #include "record_file.h"
 
-static_assert(sizeof(FurnitureRecordFile) == 0x1c, "record file size");
-static_assert(offsetof(FurnitureRecordFiles, dma) == 0x38, "third file");
+static_assert(sizeof(RecordFile) == 0x1c, "record file size");
+static_assert(offsetof(RecordFiles, dma) == 0x38, "third file");
 
 /* func_0206e6e4: the third file. */
 int RecordFiles_Third(int files)
 {
-    return (int) ((u32) files + offsetof(FurnitureRecordFiles, dma));
+    return (int) ((u32) files + offsetof(RecordFiles, dma));
 }
 CLEAN_AS(func_0206e6e4, RecordFiles_Third)
 
 /* func_0206e6e8: the second file. */
 int RecordFiles_Second(int files)
 {
-    return (int) ((u32) files + offsetof(FurnitureRecordFiles, indoor));
+    return (int) ((u32) files + offsetof(RecordFiles, indoor));
 }
 CLEAN_AS(func_0206e6e8, RecordFiles_Second)
 
 /* func_0206e6ec: the first file. */
-FurnitureRecordFile *RecordFiles_First(FurnitureRecordFiles *files)
+RecordFile *RecordFiles_First(RecordFiles *files)
 {
     return &files->always;
 }
 CLEAN_AS(func_0206e6ec, RecordFiles_First)
 
 /* func_0206e6f0: the second file's whole copy freed. Always 1. */
-int RecordFiles_FreeSecond(FurnitureRecordFiles *files)
+int RecordFiles_FreeSecond(RecordFiles *files)
 {
     RecordFile_FreeWhole(&files->indoor);
     return 1;
@@ -37,7 +37,7 @@ int RecordFiles_FreeSecond(FurnitureRecordFiles *files)
 CLEAN_AS(func_0206e6f0, RecordFiles_FreeSecond)
 
 /* func_0206e704: unless `stream`, the second file read whole. Always 1. */
-int RecordFiles_LoadSecond(FurnitureRecordFiles *files, int stream)
+int RecordFiles_LoadSecond(RecordFiles *files, int stream)
 {
     if (!stream) {
         RecordFile_ReadWhole(&files->indoor);
@@ -47,7 +47,7 @@ int RecordFiles_LoadSecond(FurnitureRecordFiles *files, int stream)
 CLEAN_AS(func_0206e704, RecordFiles_LoadSecond)
 
 /* func_0206e71c: the three closed. */
-void RecordFiles_Close(FurnitureRecordFiles *files)
+void RecordFiles_Close(RecordFiles *files)
 {
     RecordFile_Close(&files->always);
     RecordFile_Close(&files->indoor);
@@ -57,8 +57,8 @@ CLEAN_AS(func_0206e71c, RecordFiles_Close)
 
 /* func_0206e73c: the three opened with their record sizes, room for `records` records each,
  * and the first read whole. Always 1. */
-int RecordFiles_Open(FurnitureRecordFiles *files, const char *path0, int size0, const char *path1, int size1,
-                     const char *path2, int size2, int records)
+int RecordFiles_Open(RecordFiles *files, const char *path0, int size0, const char *path1, int size1, const char *path2,
+                     int size2, int records)
 {
     RecordFile_Open(&files->always, path0, size0, records);
     RecordFile_Open(&files->indoor, path1, size1, records);

@@ -333,8 +333,8 @@ void SceneMotion_RunGoToSpot(SceneMotion *self, u8 *object)
     static const MemberPointer *const steps[] = {
         &data_020d87e4, /* SceneMotion_GoToSpotStand */
         &data_020d8a1c, /* SceneMotion_GoToSpotWalk */
-        &data_020d8a6c, /* SceneMotion_GoToSpotTurnFirst */
-        &data_020d87b4, /* SceneMotion_GoToSpotTurnAtSpot */
+        &data_020d8a6c, /* SceneMotion_GoToSpotTurnAtSpot */
+        &data_020d87b4, /* SceneMotion_GoToSpotTurnFirst */
     };
     MemberTable_InitOnce(&data_021c1530, data_021c174c, steps, SCENE_MOTION_SPOT_STEPS);
     if (self->step < SCENE_MOTION_SPOT_STEPS) {
@@ -343,13 +343,13 @@ void SceneMotion_RunGoToSpot(SceneMotion *self, u8 *object)
 }
 CLEAN_AS(_ZN12Obj_020d8bd413func_020169b8EPv, SceneMotion_RunGoToSpot)
 
-/* func_02016a48: step 2, turning at the spot. The mover's angle is brought up to date
+/* func_02016a48: step 3, turning before walking (data_020d87b4). The mover's angle is brought up to date
  * (func_0201b188). Without a spot, the object stands. On the spot exactly, the object's angle
  * goes to its word at 0x94 and it turns on to the spot's angle, or stands once there. Out of
  * reach, it walks when the spot is ahead (its word at 0x94 is set as above; step 1), else it
  * keeps turning, to face the spot; either way the spot is the target.
  * QUIRK: within reach but not exactly on the spot, nothing happens. */
-void SceneMotion_GoToSpotTurnAtSpot(SceneMotion *self, u8 *object)
+void SceneMotion_GoToSpotTurnFirst(SceneMotion *self, u8 *object)
 {
     s16 *angle_94 = (s16 *) (void *) scene_motion_part(object, SCENE_MOTION_OBJECT_ANGLE_94);
     Vec3 spot = {0, 0, 0};
@@ -386,13 +386,13 @@ void SceneMotion_GoToSpotTurnAtSpot(SceneMotion *self, u8 *object)
     }
     scene_motion_set_target(object, &spot);
 }
-CLEAN_AS(func_02016a48, SceneMotion_GoToSpotTurnAtSpot)
+CLEAN_AS(func_02016a48, SceneMotion_GoToSpotTurnFirst)
 
-/* func_02016bfc: step 3, turning before walking. Without a spot, the object stands. Within
+/* func_02016bfc: step 2, turning at the spot (data_020d8a6c). Without a spot, the object stands. Within
  * reach, the mover turns to the spot's angle, and once it has it and the object faces that
  * way, step 0. Out of reach, it walks when the spot is ahead (step 1), else turns to face it
  * (step 3); the spot is the target. */
-void SceneMotion_GoToSpotTurnFirst(SceneMotion *self, u8 *object)
+void SceneMotion_GoToSpotTurnAtSpot(SceneMotion *self, u8 *object)
 {
     Vec3 spot = {0, 0, 0};
     s16 angle = scene_motion_angle(object);
@@ -424,7 +424,7 @@ void SceneMotion_GoToSpotTurnFirst(SceneMotion *self, u8 *object)
     }
     scene_motion_set_target(object, &spot);
 }
-CLEAN_AS(func_02016bfc, SceneMotion_GoToSpotTurnFirst)
+CLEAN_AS(func_02016bfc, SceneMotion_GoToSpotTurnAtSpot)
 
 /* func_02016d6c: step 1, walking. The mover's angle is brought up to date (func_0201b188).
  * Without a spot, the object stands. Within reach, it turns to the spot's angle (step 2) or

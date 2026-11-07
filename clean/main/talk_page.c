@@ -366,14 +366,14 @@ CLEAN_AS(func_0206c4c4, TalkPageMeasurer_Value0)
 #define TALK_PAGE_TALK_IMPRESSION 0x1da8   /* (func_020677d0) */
 #define TALK_PAGE_TALK_NICKNAME 0x1e04     /* (func_0206777c) */
 #define TALK_PAGE_TALK_PRAISE 0x1e24       /* (func_02067728) */
-#define TALK_PAGE_TALK_REMEMBERED 0x1e4c   /* the text the villager remembers of the player (func_020676d0) */
+#define TALK_PAGE_TALK_GREETING 0x1e4c     /* the greeting the player taught the villager (TalkObject_LoadGreeting) */
 
 /* The vtable slot of a text object that answers its characters. */
 #define TALK_PAGE_SLOT_CHARACTERS 0x0c
 
 /* The tag that ends the text a tag 1/6 may replace. */
-#define TALK_PAGE_REMEMBERED_END_GROUP 1
-#define TALK_PAGE_REMEMBERED_END_KIND 7
+#define TALK_PAGE_GREETING_END_GROUP 1
+#define TALK_PAGE_GREETING_END_KIND 7
 
 /* The texts of the villager (and of the players and the town) loaded into the talk: 0 when
  * they could not be (the measurer does not look). */
@@ -835,26 +835,26 @@ void TalkPageMeasurer_PutPlayerName(TalkPageMeasurer *measurer)
 CLEAN_AS(func_0206cc2c, TalkPageMeasurer_PutPlayerName)
 
 /* func_0206cc7c (tag 1/7): nothing; it ends the text tag 1/6 may replace. */
-void TalkPageMeasurer_RememberedEnd(void) {}
-CLEAN_AS(func_0206cc7c, TalkPageMeasurer_RememberedEnd)
+void TalkPageMeasurer_GreetingEnd(void) {}
+CLEAN_AS(func_0206cc7c, TalkPageMeasurer_GreetingEnd)
 
-/* func_0206cc80 (tag 1/6): when a tag 1/7 follows and the villager talked to remembers a text
- * of the player, the walk goes on at that tag 1/7 and that text is walked in place of what was
+/* func_0206cc80 (tag 1/6): when a tag 1/7 follows and the player taught the villager talked to a
+ * greeting, the walk goes on at that tag 1/7 and the greeting is walked in place of what was
  * between them. */
-void TalkPageMeasurer_RememberedText(TalkPageMeasurer *measurer)
+void TalkPageMeasurer_GreetingText(TalkPageMeasurer *measurer)
 {
     int position = (int) measurer->walker.base.position;
-    int end = MessageQuery_FindTag(position, TALK_PAGE_REMEMBERED_END_GROUP, TALK_PAGE_REMEMBERED_END_KIND);
+    int end = MessageQuery_FindTag(position, TALK_PAGE_GREETING_END_GROUP, TALK_PAGE_GREETING_END_KIND);
     if (end == 0) {
         return;
     }
-    if (TalkObject_LoadMemory((TalkObject *) (void *) measurer->talk) == 0) {
+    if (TalkObject_LoadGreeting((TalkObject *) (void *) measurer->talk) == 0) {
         return;
     }
     MessageWalker_Skip(&measurer->walker.base, end - position);
-    MessageWalker_Enter(&measurer->walker.base, talk_page_characters(talk_page_talk_at(measurer, TALK_PAGE_TALK_REMEMBERED)));
+    MessageWalker_Enter(&measurer->walker.base, talk_page_characters(talk_page_talk_at(measurer, TALK_PAGE_TALK_GREETING)));
 }
-CLEAN_AS(func_0206cc80, TalkPageMeasurer_RememberedText)
+CLEAN_AS(func_0206cc80, TalkPageMeasurer_GreetingText)
 
 /* func_0206ccc8 (tag 0/8): "{" walked in place of the tag. */
 void TalkPageMeasurer_PutLeftBrace(TalkPageMeasurer *measurer)
@@ -937,8 +937,8 @@ void TalkPageMeasurer_SkipTexts(TalkPageMeasurer *measurer)
 }
 CLEAN_AS(func_0206d18c, TalkPageMeasurer_SkipTexts)
 
-/* func_0206d1a4 (group 1): kinds 0 to 16: 6 TalkPageMeasurer_RememberedText, 7
- * TalkPageMeasurer_RememberedEnd, the others nothing. */
+/* func_0206d1a4 (group 1): kinds 0 to 16: 6 TalkPageMeasurer_GreetingText, 7
+ * TalkPageMeasurer_GreetingEnd, the others nothing. */
 void TalkPageMeasurer_DispatchGroup1(TalkPageMeasurer *measurer)
 {
     static const MemberPointer *const constants[17] = {

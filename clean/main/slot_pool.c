@@ -162,43 +162,43 @@ CLEAN_AS(func_020832ac, SlotPool_ItemEntryConstruct)
 /* ---- The parts (data_021d1e34, vtable data_020e1b38; vtable entry 3 is the base class's) */
 
 /* func_020832c4: the part number of entry `index`, or null for a number past the pool. */
-u8 *SlotPool_Part(SlotPoolBytes *pool, u32 index)
+u8 *SlotPool_FaceAnimHeap(SlotPoolBytes *pool, u32 index)
 {
     if (index >= pool->base.count) {
         return NULL;
     }
-    return &SlotPool_Parts()->entries[index].number;
+    return &SlotPool_FaceAnimHeaps()->entries[index].number;
 }
-CLEAN_AS(func_020832c4, SlotPool_Part)
+CLEAN_AS(func_020832c4, SlotPool_FaceAnimHeap)
 
 /* func_020832e4 (vtable entry 4): entry `index`, or null for a number past the pool. */
-SlotPoolByteEntry *SlotPool_PartEntry(SlotPoolBytes *pool, u32 index)
+SlotPoolByteEntry *SlotPool_FaceAnimHeapEntry(SlotPoolBytes *pool, u32 index)
 {
     if (index >= pool->base.count) {
         return NULL;
     }
     return &pool->entries[index];
 }
-CLEAN_AS(func_020832e4, SlotPool_PartEntry)
+CLEAN_AS(func_020832e4, SlotPool_FaceAnimHeapEntry)
 
 /* func_020832f8 (vtable entry 2): entry `index` taken as part 4 + `index`. */
-void SlotPool_PartTake(SlotPoolBytes *pool, u32 index)
+void SlotPool_FaceAnimHeapTake(SlotPoolBytes *pool, u32 index)
 {
     if (index < pool->base.count) {
-        SlotPool_PartEntrySet(&SlotPool_Parts()->entries[index], (u8) (SLOT_POOL_FIRST_NUMBER + index));
+        SlotPool_FaceAnimHeapEntrySet(&SlotPool_FaceAnimHeaps()->entries[index], (u8) (SLOT_POOL_FIRST_NUMBER + index));
     }
 }
-CLEAN_AS(func_020832f8, SlotPool_PartTake)
+CLEAN_AS(func_020832f8, SlotPool_FaceAnimHeapTake)
 
 /* func_02083320 */
-SlotPoolBytes *SlotPool_Parts(void)
+SlotPoolBytes *SlotPool_FaceAnimHeaps(void)
 {
     return &data_021d1e34;
 }
-CLEAN_AS(func_02083320, SlotPool_Parts)
+CLEAN_AS(func_02083320, SlotPool_FaceAnimHeaps)
 
 /* func_02083328 (vtable entry 1) */
-SlotPoolBytes *SlotPool_PartsDestructDelete(SlotPoolBytes *pool)
+SlotPoolBytes *SlotPool_FaceAnimHeapsDestructDelete(SlotPoolBytes *pool)
 {
     pool->base.vtable = &data_020e1b38;
     __cxa_vec_cleanup(pool->entries, SLOT_POOL_ENTRIES, sizeof(SlotPoolByteEntry), func_020833d4);
@@ -206,96 +206,96 @@ SlotPoolBytes *SlotPool_PartsDestructDelete(SlotPoolBytes *pool)
     Heap_OperatorDeleteB(pool);
     return pool;
 }
-CLEAN_AS(func_02083328, SlotPool_PartsDestructDelete)
+CLEAN_AS(func_02083328, SlotPool_FaceAnimHeapsDestructDelete)
 
 /* func_0208335c (vtable entry 0) */
-SlotPoolBytes *SlotPool_PartsDestruct(SlotPoolBytes *pool)
+SlotPoolBytes *SlotPool_FaceAnimHeapsDestruct(SlotPoolBytes *pool)
 {
     pool->base.vtable = &data_020e1b38;
     __cxa_vec_cleanup(pool->entries, SLOT_POOL_ENTRIES, sizeof(SlotPoolByteEntry), func_020833d4);
     SlotPool_BaseDestruct(&pool->base);
     return pool;
 }
-CLEAN_AS(func_0208335c, SlotPool_PartsDestruct)
+CLEAN_AS(func_0208335c, SlotPool_FaceAnimHeapsDestruct)
 
 /* func_02083388 */
-SlotPoolBytes *SlotPool_PartsConstruct(SlotPoolBytes *pool)
+SlotPoolBytes *SlotPool_FaceAnimHeapsConstruct(SlotPoolBytes *pool)
 {
     SlotPool_BaseConstruct(&pool->base, SLOT_POOL_ENTRIES);
     pool->base.vtable = &data_020e1b38;
     __cxa_vec_ctor(pool->entries, SLOT_POOL_ENTRIES, sizeof(SlotPoolByteEntry), func_020833ec, func_020833d4);
     return pool;
 }
-CLEAN_AS(func_02083388, SlotPool_PartsConstruct)
+CLEAN_AS(func_02083388, SlotPool_FaceAnimHeapsConstruct)
 
 /* func_020833c0: the entry set to part `number` (func_0205db4c) and taken. */
-void SlotPool_PartEntrySet(SlotPoolByteEntry *entry, u8 number)
+void SlotPool_FaceAnimHeapEntrySet(SlotPoolByteEntry *entry, u8 number)
 {
     FaceAnimHeaps_Assign(&entry->number, number);
     entry->taken = 1;
 }
-CLEAN_AS(func_020833c0, SlotPool_PartEntrySet)
+CLEAN_AS(func_020833c0, SlotPool_FaceAnimHeapEntrySet)
 
 /* func_020833d4 */
-SlotPoolByteEntry *SlotPool_PartEntryDestruct(SlotPoolByteEntry *entry)
+SlotPoolByteEntry *SlotPool_FaceAnimHeapEntryDestruct(SlotPoolByteEntry *entry)
 {
     FaceAnimHeaps_DestructSlot(&entry->number);
     SlotPool_BaseEntryDestruct(entry);
     return entry;
 }
-CLEAN_AS(func_020833d4, SlotPool_PartEntryDestruct)
+CLEAN_AS(func_020833d4, SlotPool_FaceAnimHeapEntryDestruct)
 
 /* func_020833ec */
-SlotPoolByteEntry *SlotPool_PartEntryConstruct(SlotPoolByteEntry *entry)
+SlotPoolByteEntry *SlotPool_FaceAnimHeapEntryConstruct(SlotPoolByteEntry *entry)
 {
     SlotPool_BaseEntryConstruct((u8 *) entry);
     FaceAnimHeaps_ConstructSlot(&entry->number);
     return entry;
 }
-CLEAN_AS(func_020833ec, SlotPool_PartEntryConstruct)
+CLEAN_AS(func_020833ec, SlotPool_FaceAnimHeapEntryConstruct)
 
 /* ---- The animation sets (data_021d1e0c, vtable data_020e1a90; vtable entry 3 is the base
  * class's) */
 
 /* func_02083404: the animation set number of entry `index`, or null for a number past the
  * pool. */
-u8 *SlotPool_AnimSet(SlotPoolBytes *pool, u32 index)
+u8 *SlotPool_FaceAnimSlot(SlotPoolBytes *pool, u32 index)
 {
     if (index >= pool->base.count) {
         return NULL;
     }
-    return &SlotPool_AnimSets()->entries[index].number;
+    return &SlotPool_FaceAnimSlots()->entries[index].number;
 }
-CLEAN_AS(func_02083404, SlotPool_AnimSet)
+CLEAN_AS(func_02083404, SlotPool_FaceAnimSlot)
 
 /* func_02083424 (vtable entry 4): entry `index`, or null for a number past the pool. */
-SlotPoolByteEntry *SlotPool_AnimSetEntry(SlotPoolBytes *pool, u32 index)
+SlotPoolByteEntry *SlotPool_FaceAnimSlotEntry(SlotPoolBytes *pool, u32 index)
 {
     if (index >= pool->base.count) {
         return NULL;
     }
     return &pool->entries[index];
 }
-CLEAN_AS(func_02083424, SlotPool_AnimSetEntry)
+CLEAN_AS(func_02083424, SlotPool_FaceAnimSlotEntry)
 
 /* func_02083438 (vtable entry 2): entry `index` taken as animation set 4 + `index`. */
-void SlotPool_AnimSetTake(SlotPoolBytes *pool, u32 index)
+void SlotPool_FaceAnimSlotTake(SlotPoolBytes *pool, u32 index)
 {
     if (index < pool->base.count) {
-        SlotPool_AnimSetEntrySet(&SlotPool_AnimSets()->entries[index], (int) (SLOT_POOL_FIRST_NUMBER + index));
+        SlotPool_FaceAnimSlotEntrySet(&SlotPool_FaceAnimSlots()->entries[index], (int) (SLOT_POOL_FIRST_NUMBER + index));
     }
 }
-CLEAN_AS(func_02083438, SlotPool_AnimSetTake)
+CLEAN_AS(func_02083438, SlotPool_FaceAnimSlotTake)
 
 /* func_02083460 */
-SlotPoolBytes *SlotPool_AnimSets(void)
+SlotPoolBytes *SlotPool_FaceAnimSlots(void)
 {
     return &data_021d1e0c;
 }
-CLEAN_AS(func_02083460, SlotPool_AnimSets)
+CLEAN_AS(func_02083460, SlotPool_FaceAnimSlots)
 
 /* func_02083468 (vtable entry 1) */
-SlotPoolBytes *SlotPool_AnimSetsDestructDelete(SlotPoolBytes *pool)
+SlotPoolBytes *SlotPool_FaceAnimSlotsDestructDelete(SlotPoolBytes *pool)
 {
     pool->base.vtable = &data_020e1a90;
     __cxa_vec_cleanup(pool->entries, SLOT_POOL_ENTRIES, sizeof(SlotPoolByteEntry), func_02083514);
@@ -303,55 +303,55 @@ SlotPoolBytes *SlotPool_AnimSetsDestructDelete(SlotPoolBytes *pool)
     Heap_OperatorDeleteB(pool);
     return pool;
 }
-CLEAN_AS(func_02083468, SlotPool_AnimSetsDestructDelete)
+CLEAN_AS(func_02083468, SlotPool_FaceAnimSlotsDestructDelete)
 
 /* func_0208349c (vtable entry 0) */
-SlotPoolBytes *SlotPool_AnimSetsDestruct(SlotPoolBytes *pool)
+SlotPoolBytes *SlotPool_FaceAnimSlotsDestruct(SlotPoolBytes *pool)
 {
     pool->base.vtable = &data_020e1a90;
     __cxa_vec_cleanup(pool->entries, SLOT_POOL_ENTRIES, sizeof(SlotPoolByteEntry), func_02083514);
     SlotPool_BaseDestruct(&pool->base);
     return pool;
 }
-CLEAN_AS(func_0208349c, SlotPool_AnimSetsDestruct)
+CLEAN_AS(func_0208349c, SlotPool_FaceAnimSlotsDestruct)
 
 /* func_020834c8 */
-SlotPoolBytes *SlotPool_AnimSetsConstruct(SlotPoolBytes *pool)
+SlotPoolBytes *SlotPool_FaceAnimSlotsConstruct(SlotPoolBytes *pool)
 {
     SlotPool_BaseConstruct(&pool->base, SLOT_POOL_ENTRIES);
     pool->base.vtable = &data_020e1a90;
     __cxa_vec_ctor(pool->entries, SLOT_POOL_ENTRIES, sizeof(SlotPoolByteEntry), func_0208352c, func_02083514);
     return pool;
 }
-CLEAN_AS(func_020834c8, SlotPool_AnimSetsConstruct)
+CLEAN_AS(func_020834c8, SlotPool_FaceAnimSlotsConstruct)
 
 /* func_02083500: the entry set to animation set `number` (func_0205d8c4) and taken. */
-void SlotPool_AnimSetEntrySet(SlotPoolByteEntry *entry, int number)
+void SlotPool_FaceAnimSlotEntrySet(SlotPoolByteEntry *entry, int number)
 {
     FaceAnimSlots_Assign(&entry->number, number);
     entry->taken = 1;
 }
-CLEAN_AS(func_02083500, SlotPool_AnimSetEntrySet)
+CLEAN_AS(func_02083500, SlotPool_FaceAnimSlotEntrySet)
 
 /* func_02083514 */
-SlotPoolByteEntry *SlotPool_AnimSetEntryDestruct(SlotPoolByteEntry *entry)
+SlotPoolByteEntry *SlotPool_FaceAnimSlotEntryDestruct(SlotPoolByteEntry *entry)
 {
     FaceAnimSlots_DestructSlot(&entry->number);
     SlotPool_BaseEntryDestruct(entry);
     return entry;
 }
-CLEAN_AS(func_02083514, SlotPool_AnimSetEntryDestruct)
+CLEAN_AS(func_02083514, SlotPool_FaceAnimSlotEntryDestruct)
 
 extern void func_0205d8ec(u8 *set); /* constructor */
 
 /* func_0208352c */
-SlotPoolByteEntry *SlotPool_AnimSetEntryConstruct(SlotPoolByteEntry *entry)
+SlotPoolByteEntry *SlotPool_FaceAnimSlotEntryConstruct(SlotPoolByteEntry *entry)
 {
     SlotPool_BaseEntryConstruct((u8 *) entry);
     FaceAnimSlots_ConstructSlot(&entry->number);
     return entry;
 }
-CLEAN_AS(func_0208352c, SlotPool_AnimSetEntryConstruct)
+CLEAN_AS(func_0208352c, SlotPool_FaceAnimSlotEntryConstruct)
 
 /* ---- The other pools (slot_pool.h) */
 

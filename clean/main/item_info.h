@@ -15,7 +15,7 @@
 #ifndef CLEAN_MAIN_ITEM_INFO_H
 #define CLEAN_MAIN_ITEM_INFO_H
 
-#include "furniture_info.h" /* FurnitureRecordFile, FurnitureRecordFiles */
+#include "furniture_info.h" /* RecordFile, RecordFiles */
 #include "types.h"
 
 #define ITEM_INFO_NUMBERS 0x56e
@@ -57,8 +57,8 @@ typedef struct ItemInfoSeries {
 
 /* The four files. */
 typedef struct ItemInfoFiles {
-    FurnitureRecordFiles files; /* 0x00: always.bin, indoor.bin, dma.bin */
-    FurnitureRecordFile series; /* 0x54 */
+    RecordFiles files; /* 0x00: always.bin, indoor.bin, dma.bin */
+    RecordFile series; /* 0x54 */
 } ItemInfoFiles;
 
 const char *ItemInfo_LookModelName(int look, int outdoors);

@@ -13,8 +13,8 @@
 
 /* The slot of the session's leader. */
 #define TALK_CHECKS_HOST_SLOT 0
-/* The message data each fixed choice is set with. */
-#define TALK_CHECKS_CHOICE_DATA 0xff
+/* The next message each fixed choice is set with: none. */
+#define TALK_CHECKS_NO_NEXT_MESSAGE 0xff
 
 extern NetSession *data_020ccf94;
 
@@ -77,7 +77,7 @@ void TalkChecks_OfferMessages(SceneBase *scene, const u8 *messages, int count, i
     for (int i = 0; i < count; i++) {
         u8 choice[2];
         choice[0] = messages[i];
-        choice[1] = TALK_CHECKS_CHOICE_DATA;
+        choice[1] = TALK_CHECKS_NO_NEXT_MESSAGE;
         TalkAnswers_Set(menu, i, &choice[0], 0, &choice[1], 0, 0);
     }
     TalkAnswers_LoadTexts(menu);

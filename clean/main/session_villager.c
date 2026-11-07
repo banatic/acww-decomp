@@ -10,8 +10,8 @@
 #define VILLAGERS 8 /* the town's villagers (data_021e5a2c) */
 
 /* The handlers of session_message.c the messages are for. */
-#define HANDLER_ENTRY_SENDER 54
-#define HANDLER_ENTRY_FILL 55
+#define HANDLER_MEMORY_TAKE 54
+#define HANDLER_MEMORY_UPDATE 55
 #define HANDLER_ENTRY_BYTE_6D 56
 #define HANDLER_ENTRY_BYTE_6C 57
 #define HANDLER_VILLAGER_ITEM_7D2 58
@@ -410,43 +410,44 @@ static void send_entry(int index, int entry, u32 handler)
     send_message(&byte, 1, handler);
 }
 
-/* func_020788f4: the villager's memory `entry` is to be filled with this system's name. */
-void SessionVillager_SendMemoryFill(u8 *villager, int entry)
+/* func_020788f4: the villager's memory `entry` is to be updated for a meeting with this
+ * system's player. */
+void SessionVillager_SendMemoryUpdate(u8 *villager, int entry)
 {
     int index;
     if (should_send(villager, &index)) {
-        SessionVillager_SendMemoryFillByIndex(index, entry);
+        SessionVillager_SendMemoryUpdateByIndex(index, entry);
     }
 }
-CLEAN_AS(func_020788f4, SessionVillager_SendMemoryFill)
+CLEAN_AS(func_020788f4, SessionVillager_SendMemoryUpdate)
 
-/* func_0207892c: as SessionVillager_SendMemoryFill, for villager `index`. */
-void SessionVillager_SendMemoryFillByIndex(int index, int entry)
+/* func_0207892c: as SessionVillager_SendMemoryUpdate, for villager `index`. */
+void SessionVillager_SendMemoryUpdateByIndex(int index, int entry)
 {
     if (Session_IsLinked(data_020ccf94)) {
-        send_entry(index, entry, HANDLER_ENTRY_FILL);
+        send_entry(index, entry, HANDLER_MEMORY_UPDATE);
     }
 }
-CLEAN_AS(func_0207892c, SessionVillager_SendMemoryFillByIndex)
+CLEAN_AS(func_0207892c, SessionVillager_SendMemoryUpdateByIndex)
 
-/* func_02078974: the villager's memory `entry` is to get this system's name. */
-void SessionVillager_SendMemorySender(u8 *villager, int entry)
+/* func_02078974: the villager's memory `entry` is to be taken for this system's player. */
+void SessionVillager_SendMemoryTake(u8 *villager, int entry)
 {
     int index;
     if (should_send(villager, &index)) {
-        SessionVillager_SendMemorySenderByIndex(index, entry);
+        SessionVillager_SendMemoryTakeByIndex(index, entry);
     }
 }
-CLEAN_AS(func_02078974, SessionVillager_SendMemorySender)
+CLEAN_AS(func_02078974, SessionVillager_SendMemoryTake)
 
-/* func_020789ac: as SessionVillager_SendMemorySender, for villager `index`. */
-void SessionVillager_SendMemorySenderByIndex(int index, int entry)
+/* func_020789ac: as SessionVillager_SendMemoryTake, for villager `index`. */
+void SessionVillager_SendMemoryTakeByIndex(int index, int entry)
 {
     if (Session_IsLinked(data_020ccf94)) {
-        send_entry(index, entry, HANDLER_ENTRY_SENDER);
+        send_entry(index, entry, HANDLER_MEMORY_TAKE);
     }
 }
-CLEAN_AS(func_020789ac, SessionVillager_SendMemorySenderByIndex)
+CLEAN_AS(func_020789ac, SessionVillager_SendMemoryTakeByIndex)
 
 /* ---- A villager and one of its entries in one byte */
 

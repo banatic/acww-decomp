@@ -6,9 +6,9 @@
  * each rounded up to 4 bytes; for units that are themselves frame heaps, or blocks made like
  * them, 0x48 bytes more each (SCENE_HEAPS_FRAME_HEAP_COST: a heap object and NNS's frame heap
  * header). The counts come from the scene (SceneTables_FirstCount, _SecondCount,
- * ResourcePools_SceneHeapCount) or from the session's number of players. Four are expanded
- * heaps (ExpHeap_Create): the field actors', and two that model pools (func_0209d180) are
- * given as their allocate and release functions.
+ * ResourcePools_SceneHeapCount) or from the session's number of players. Fourteen are expanded
+ * heaps (ExpHeap_Create), among them the field actors' and two that model pools
+ * (func_0209d180) are given as their allocate and release functions.
  *
  * Those whose system is not named yet are named after the word that keeps them; the loaders
  * that create them come in pairs with a release in scene_process.c. */

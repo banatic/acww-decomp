@@ -16,7 +16,7 @@ match: autoload_2/network:Wfc_CountFriends main/activity_link_jobs:ActivityLinkJ
   main/activity_link_jobs:ActivityLinkJobs_Step1E main/activity_save:ActivitySave_EndSteps
   main/link_bundle:LinkBundle_ReadEnteredNothing main/link_bundle:LinkBundle_ReadLeftNothing
   main/recent_slots:RecentSlots_Newest main/session_message:SessionMessage_ChangeVillagerObject
-  main/session_message:SessionMessage_FillVillagerMemory
+  main/session_message:SessionMessage_UpdateVillagerMemory
   main/session_message:SessionMessage_Handle20 main/session_message:SessionMessage_Handle26
   main/session_message:SessionMessage_Handle27 main/session_message:SessionMessage_Handle29
   main/session_message:SessionMessage_Handle30 main/session_message:SessionMessage_Handle31
@@ -42,7 +42,7 @@ match: autoload_2/network:Wfc_CountFriends main/activity_link_jobs:ActivityLinkJ
   main/session_message:SessionMessage_SetVillagerMemoryFondness
   main/session_message:SessionMessage_SetVillagerMemoryImpression
   main/session_message:SessionMessage_SetVillagerMemoryItem
-  main/session_message:SessionMessage_SetVillagerMemorySender
+  main/session_message:SessionMessage_TakeVillagerMemory
   main/session_message:SessionMessage_SetVillagerClothes
   main/session_message:SessionMessage_SetVillagerItems7B0
   main/session_message:SessionMessage_SetVillagerObject
@@ -792,8 +792,8 @@ match: main/a_mes_obj:AMesObj_Destruct main/ab_all_obj:AbAllObj_Destruct
   main/tailor_stock:TailorStock_Destruct main/shop_points:ShopPoints_Destruct
   main/shop_points:ShopPoints_DoNothing main/sky:Sky_Destruct main/sky_objects:SkyObject_Destruct
   main/sky_objects:SkyObjects_Destruct main/sky_shots:SkyShots_DestructRequest
-  main/sky_weather_day:SkyWeatherDay_Destruct main/slot_pool:SlotPool_AnimSetEntryDestruct
-  main/slot_pool:SlotPool_AnimSetsDestruct main/slot_pool:SlotPool_AnimSetsDestructDelete
+  main/sky_weather_day:SkyWeatherDay_Destruct main/slot_pool:SlotPool_FaceAnimSlotEntryDestruct
+  main/slot_pool:SlotPool_FaceAnimSlotsDestruct main/slot_pool:SlotPool_FaceAnimSlotsDestructDelete
   main/slot_pool:SlotPool_BaseDestruct main/slot_pool:SlotPool_BaseDestructDelete
   main/slot_pool:SlotPool_BaseDestructVirtual main/slot_pool:SlotPool_BaseEntryDestruct
   main/slot_pool:SlotPool_BlockEntryDestruct main/slot_pool:SlotPool_BlocksDestruct
@@ -803,8 +803,8 @@ match: main/a_mes_obj:AMesObj_Destruct main/ab_all_obj:AbAllObj_Destruct
   main/slot_pool:SlotPool_Heap4EntryDestruct main/slot_pool:SlotPool_Heap8Destruct
   main/slot_pool:SlotPool_Heap8DestructDelete main/slot_pool:SlotPool_Heap8EntryDestruct
   main/slot_pool:SlotPool_ItemEntryDestruct main/slot_pool:SlotPool_ItemsDestruct
-  main/slot_pool:SlotPool_ItemsDestructDelete main/slot_pool:SlotPool_PartEntryDestruct
-  main/slot_pool:SlotPool_PartsDestruct main/slot_pool:SlotPool_PartsDestructDelete
+  main/slot_pool:SlotPool_ItemsDestructDelete main/slot_pool:SlotPool_FaceAnimHeapEntryDestruct
+  main/slot_pool:SlotPool_FaceAnimHeapsDestruct main/slot_pool:SlotPool_FaceAnimHeapsDestructDelete
   main/slot_pool:SlotPool_SpeakerEntryDestruct main/slot_pool:SlotPool_SpeakersDestruct
   main/slot_pool:SlotPool_SpeakersDestructDelete main/snowmen:Snowmen_DestructLooseBall
   main/snowmen:Snowmen_DestructLooseBalls main/snowmen:Snowmen_DestructRecord
@@ -877,7 +877,7 @@ match: autoload_2/network:Wfc_FinishPost autoload_2/network:Wfc_FriendIndexOf
 area: Unreachable for one player
 group: what only the linked session and the visits call
 scene: none: the receivers of the session's messages (the room's furniture, lights and items put or taken, a place claimed, a tile's request granted, a town insect startled or hidden, the player actor's worn item and tan), what the activity's link jobs and session records ask for (the bells panel frozen, the sky reseeded, constellations drafted, the start menu left, event kind 13), the gatekeepers' visit walks (the room camera's modes 14 and 15, the check-in gate closed), a snowball's shake and the state block's destructor's waiting letter
-reach: the fixed point of "code only unreachable code calls" run over every group of the plan: each of these is called or named only by functions of the unreachable groups (SessionMessage_Handle*, ActivityLinkJobs_*, SessionRecord_Write*, LinkState_SystemStep, XctExchange_*, the gatekeeper's visit states, Snowball_EnterShakeBody, StateBlock_Destruct) or by functions found so; no word in data names them (findings 2026-10-28, town4); besides (findings 2026-10-29, proofs1), the forward pass had counted each C++ name of size 0 at a function's address (2,355) as a function of unknown size running into the next symbol; without those edges these are reached only through the words the reason closes (w22/forward.py); besides (findings 2026-10-29, town7, second batch), Session_Start with network mode 1 or 2 calls Local_Setup, whose WM set-up never returns in the runtime (no wireless: town-hall-move, title-move-in), so what follows such a call never runs (w24/guard2.py --halt): the rest of ActivityLinkJobs_Start1D, job 0x1d's step (its start halts first), job 0x1e (started on message 38 of sp_etc_sequence1, which only job 0x1d's step shows: no other code gives it and no message of the file names it), the post clerk's steps 12 and 13 (SearchGame, AwaitConnection: set only after line 0x36's Session_Start(2, ...)) and 14 and 15 (AskJob1f, AwaitJob1f: set only at the end of line 0x3b of opelican, which only the choices of lines 0x38 and 0x39 name, which only SearchGame says) with job 0x1f, which only step 14 asks for (w24/classify.py, gate halt); besides (findings 2026-10-29, town7, third batch), the game-stop latch data_021dc6c4 is set (to 1) only by GameStop_Update when data_021fbe38 is not 0, and data_021fbe38's only store is Pad_Update's 0 (BSS; the relocations name it only there and in GameStop_Update), so what only `if (data_021dc6c4 != 0)` reaches never runs (GameStop_Release and the resets it calls); and the Wi-Fi session's received notice, letter and statistics flags (data_021f3c18, _3c04, _3c14) are set only by WfcSession_FinishNoticeGet, _FinishLetterGet and _FinishCatRecordGet, which are not reached with that cut left open, so WfcSession_ApplyNotice, _ApplyLetter and _ApplyCatRecord return at once (w24/guard2.py --zero; w24/classify.py, gate latch); besides (findings 2026-11-01, link1), a second console is now simulated (runtime/wm.c, docs/multi-console.md): the scenes title-move-in-alone and gate-visit-alone (one console with its wireless, the search finding nobody) and gate-visit-link (two consoles: a visit by DS wireless) run 5 of this group's functions (EventQueue_StartKind13, PlayerActorOps_SwitchFlag10, Sky_RedrawDayAngleForLink, RoomCamera_SetMode14, RoomCamera_SetMode15), which left it; besides (findings 2026-11-05, link2), the two-console scenes visit-tools, visit-leave and visit-chat run 6 of this group's functions (TileRequestGrant_ReceiveAnswer, TileRequestGrant_Apply, TileRequestGrant_NoOtherNearFor, TileChanges_Replace, TownInsect_KindFlees, TownInsect_Startle), which left it; besides (findings 2026-11-06, link3), the two-console scene host-ends-link runs 1 of this group's functions (StartMenu_LeaveChoice), which left it; besides (findings 2026-11-06, link4), the two-console scene visit-house runs 4 of this group's functions (RoomSync_ReceivePutFurniture, RoomSync_ReceiveLit, RoomSync_ReceiveState, RoomSync_ApplyState), which left it
+reach: the fixed point of "code only unreachable code calls" run over every group of the plan: each of these is called or named only by functions of the unreachable groups (SessionMessage_Handle*, ActivityLinkJobs_*, SessionRecord_Write*, LinkState_SystemStep, XctExchange_*, the gatekeeper's visit states, Snowball_EnterShakeBody, StateBlock_Destruct) or by functions found so; no word in data names them (findings 2026-10-28, town4); besides (findings 2026-10-29, proofs1), the forward pass had counted each C++ name of size 0 at a function's address (2,355) as a function of unknown size running into the next symbol; without those edges these are reached only through the words the reason closes (w22/forward.py); besides (findings 2026-10-29, town7, second batch), Session_Start with network mode 1 or 2 calls Local_Setup, whose WM set-up never returns in the runtime (no wireless: town-hall-move, title-move-in), so what follows such a call never runs (w24/guard2.py --halt): the rest of ActivityLinkJobs_Start1D, job 0x1d's step (its start halts first), job 0x1e (started on message 38 of sp_etc_sequence1, which only job 0x1d's step shows: no other code gives it and no message of the file names it), the post clerk's steps 12 and 13 (SearchGame, AwaitConnection: set only after line 0x36's Session_Start(2, ...)) and 14 and 15 (AskJob1f, AwaitJob1f: set only at the end of line 0x3b of opelican, which only the choices of lines 0x38 and 0x39 name, which only SearchGame says) with job 0x1f, which only step 14 asks for (w24/classify.py, gate halt); besides (findings 2026-10-29, town7, third batch), the game-stop latch data_021dc6c4 is set (to 1) only by GameStop_Update when data_021fbe38 is not 0, and data_021fbe38's only store is Pad_Update's 0 (BSS; the relocations name it only there and in GameStop_Update), so what only `if (data_021dc6c4 != 0)` reaches never runs (GameStop_Release and the resets it calls); and the Wi-Fi session's received notice, letter and statistics flags (data_021f3c18, _3c04, _3c14) are set only by WfcSession_FinishNoticeGet, _FinishLetterGet and _FinishCatRecordGet, which are not reached with that cut left open, so WfcSession_ApplyNotice, _ApplyLetter and _ApplyCatRecord return at once (w24/guard2.py --zero; w24/classify.py, gate latch); besides (findings 2026-11-01, link1), a second console is now simulated (runtime/wm.c, docs/multi-console.md): the scenes title-move-in-alone and gate-visit-alone (one console with its wireless, the search finding nobody) and gate-visit-link (two consoles: a visit by DS wireless) run 5 of this group's functions (EventQueue_StartKind13, PlayerActorOps_SwitchFlag10, Sky_RedrawRainAngleForLink, RoomCamera_SetMode14, RoomCamera_SetMode15), which left it; besides (findings 2026-11-05, link2), the two-console scenes visit-tools, visit-leave and visit-chat run 6 of this group's functions (TileRequestGrant_ReceiveAnswer, TileRequestGrant_Apply, TileRequestGrant_NoOtherNearFor, TileChanges_Replace, TownInsect_KindFlees, TownInsect_Startle), which left it; besides (findings 2026-11-06, link3), the two-console scene host-ends-link runs 1 of this group's functions (StartMenu_LeaveChoice), which left it; besides (findings 2026-11-06, link4), the two-console scene visit-house runs 4 of this group's functions (RoomSync_ReceivePutFurniture, RoomSync_ReceiveLit, RoomSync_ReceiveState, RoomSync_ApplyState), which left it
 needs: unreachable
 match: main/bells_panel:BellsPanel_Freeze main/bells_panel:BellsPanel_Unfreeze
   main/event_queue:EventQueue_FinishKind13 main/house_record:HouseRecord_StopSong
@@ -1121,11 +1121,11 @@ match: autoload_2/sound_emitter_class:SoundEmitterClass_Destruct2Delete
   main/music_queue:Music2e4_DestructDelete main/music_queue:Music2f0_DestructDelete
   main/name_tag:NameTag_Delete main/name_texts:NameText_Delete main/name_texts:NameWideText_Delete
   main/obj_020d9ff8:Obj020d9ff8_DestructDelete main/player_id:PlayerIdText_Delete
-  main/player_id:PlayerIdWideText_Delete main/pool_link:PoolLink_AnimSetDestructDelete
+  main/player_id:PlayerIdWideText_Delete main/pool_link:PoolLink_FaceAnimSlotDestructDelete
   main/pool_link:PoolLink_BaseDestructDelete main/pool_link:PoolLink_BlockDestructDelete
   main/pool_link:PoolLink_Heap4DestructDelete main/pool_link:PoolLink_Heap8DestructDelete
-  main/pool_link:PoolLink_ItemDestructDelete main/pool_link:PoolLink_PartDestructDelete
-  main/pool_link:PoolLink_Pool1E20DestructDelete main/pool_link:PoolLink_Pool1E48DestructDelete
+  main/pool_link:PoolLink_ItemDestructDelete main/pool_link:PoolLink_FaceAnimHeapDestructDelete
+  main/pool_link:PoolLink_ClothesDestructDelete main/pool_link:PoolLink_SpeakerAnimDestructDelete
   main/quick_message:QuickMessage_BalloonDestructDelete
   main/quick_message:QuickMessage_BoardDestructDelete
   main/quick_message:QuickMessage_NameBaseDestructDelete
@@ -1614,9 +1614,9 @@ match: autoload_2/network:Net_ClearSendQueue autoload_2/network:Wfc_CanSendToAll
   main/session_villager:SessionVillager_PackObjectChange
   main/session_villager:SessionVillager_SendMemoryFondnessByIndex
   main/session_villager:SessionVillager_SendMemoryImpressionByIndex
-  main/session_villager:SessionVillager_SendMemoryFillByIndex
+  main/session_villager:SessionVillager_SendMemoryUpdateByIndex
   main/session_villager:SessionVillager_SendMemoryItemByIndex
-  main/session_villager:SessionVillager_SendMemorySenderByIndex
+  main/session_villager:SessionVillager_SendMemoryTakeByIndex
   main/session_villager:SessionVillager_SendClothesByIndex
   main/session_villager:SessionVillager_SendItemsByIndex
   main/session_villager:SessionVillager_SendObjectByIndex
@@ -2059,8 +2059,8 @@ match: main/talk_page:TalkPageMeasurer_AltText main/talk_page:TalkPageMeasurer_I
   main/talk_page:TalkPageMeasurer_PutPlayerName main/talk_page:TalkPageMeasurer_PutPraise
   main/talk_page:TalkPageMeasurer_PutRandomNpc main/talk_page:TalkPageMeasurer_PutReceiverName
   main/talk_page:TalkPageMeasurer_PutSecond main/talk_page:TalkPageMeasurer_PutWeekday
-  main/talk_page:TalkPageMeasurer_PutYear main/talk_page:TalkPageMeasurer_RememberedEnd
-  main/talk_page:TalkPageMeasurer_RememberedText main/talk_page:TalkPageMeasurer_Set50One
+  main/talk_page:TalkPageMeasurer_PutYear main/talk_page:TalkPageMeasurer_GreetingEnd
+  main/talk_page:TalkPageMeasurer_GreetingText main/talk_page:TalkPageMeasurer_Set50One
   main/talk_page:TalkPageMeasurer_Set50Two main/talk_tags:TalkTags_ConvertNext
   main/talk_tags:TalkTags_NotePart0 main/talk_tags:TalkTags_NotePart1
   main/talk_tags:TalkTags_NotePart10 main/talk_tags:TalkTags_NotePart2

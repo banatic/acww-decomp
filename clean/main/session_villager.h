@@ -15,8 +15,9 @@
  *       the item (2 bytes), then the index (high nibble of byte 2) and the memory (low nibble);
  *   57  the memory's fondness (0x6c): the index and memory (byte 0, as in 62), then the value;
  *   56  the memory's impression (0x6d): the same 2 bytes;
- *   55  the memory is filled with the sender's name: the index and memory (1 byte);
- *   54  the memory gets the sender's name: the same byte.
+ *   55  the memory is updated for a meeting with the sender's player
+ *       (VillagerMemoryEntry_Update): the index and memory (1 byte);
+ *   54  the memory is taken for the sender's player (VillagerMemoryEntry_Take): the same byte.
  *
  * Each is sent, with kind 4, only while the session is linked, and only for a villager of the
  * town (its index, func_0207f294, below eight). */
@@ -69,10 +70,10 @@ void SessionVillager_SendMemoryFondness(u8 *villager, int entry, int value);
 void SessionVillager_SendMemoryFondnessByIndex(int index, int entry, int value);
 void SessionVillager_SendMemoryImpression(u8 *villager, int entry, int value);
 void SessionVillager_SendMemoryImpressionByIndex(int index, int entry, int value);
-void SessionVillager_SendMemoryFill(u8 *villager, int entry);
-void SessionVillager_SendMemoryFillByIndex(int index, int entry);
-void SessionVillager_SendMemorySender(u8 *villager, int entry);
-void SessionVillager_SendMemorySenderByIndex(int index, int entry);
+void SessionVillager_SendMemoryUpdate(u8 *villager, int entry);
+void SessionVillager_SendMemoryUpdateByIndex(int index, int entry);
+void SessionVillager_SendMemoryTake(u8 *villager, int entry);
+void SessionVillager_SendMemoryTakeByIndex(int index, int entry);
 void SessionVillager_UnpackMemory(int *index, int *entry, const u8 *byte);
 void SessionVillager_PackMemory(u8 *byte, int index, int entry);
 

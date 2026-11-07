@@ -25,11 +25,11 @@ static SlotPool *pool_link_pool(PoolLink *link)
  * the caller gets the pool. */
 
 /* func_02082c0c (vtable data_020e1a18) */
-void PoolLink_Pool1E48(void)
+void PoolLink_SpeakerAnimPool(void)
 {
     SlotPool_Speakers();
 }
-CLEAN_AS(func_02082c0c, PoolLink_Pool1E48)
+CLEAN_AS(func_02082c0c, PoolLink_SpeakerAnimPool)
 
 /* func_02082c14 (vtable data_020e1a04) */
 void PoolLink_Heap8Pool(void)
@@ -46,11 +46,11 @@ void PoolLink_Heap4Pool(void)
 CLEAN_AS(func_02082c1c, PoolLink_Heap4Pool)
 
 /* func_02082c24 (vtable data_020e1a54) */
-void PoolLink_Pool1E20(void)
+void PoolLink_ClothesPool(void)
 {
     SlotPool_Clothes();
 }
-CLEAN_AS(func_02082c24, PoolLink_Pool1E20)
+CLEAN_AS(func_02082c24, PoolLink_ClothesPool)
 
 /* func_02082c2c (vtable data_020e1a7c) */
 void PoolLink_BlockPool(void)
@@ -60,18 +60,18 @@ void PoolLink_BlockPool(void)
 CLEAN_AS(func_02082c2c, PoolLink_BlockPool)
 
 /* func_02082c34 (vtable data_020e1a68) */
-void PoolLink_AnimSetPool(void)
+void PoolLink_FaceAnimSlotPool(void)
 {
-    SlotPool_AnimSets();
+    SlotPool_FaceAnimSlots();
 }
-CLEAN_AS(func_02082c34, PoolLink_AnimSetPool)
+CLEAN_AS(func_02082c34, PoolLink_FaceAnimSlotPool)
 
 /* func_02082c3c (vtable data_020e19dc) */
-void PoolLink_PartPool(void)
+void PoolLink_FaceAnimHeapPool(void)
 {
-    SlotPool_Parts();
+    SlotPool_FaceAnimHeaps();
 }
-CLEAN_AS(func_02082c3c, PoolLink_PartPool)
+CLEAN_AS(func_02082c3c, PoolLink_FaceAnimHeapPool)
 
 /* func_02082c44 (vtable data_020e1a40) */
 void PoolLink_ItemPool(void)
@@ -103,8 +103,8 @@ void PoolLink_FreeAll(void)
     SlotPool_GiveBackAll((SlotPool *) SlotPool_Speakers());
     SlotPool_GiveBackAll((SlotPool *) SlotPool_Clothes());
     SlotPool_GiveBackAll((SlotPool *) SlotPool_Blocks());
-    SlotPool_GiveBackAll((SlotPool *) SlotPool_AnimSets());
-    SlotPool_GiveBackAll((SlotPool *) SlotPool_Parts());
+    SlotPool_GiveBackAll((SlotPool *) SlotPool_FaceAnimSlots());
+    SlotPool_GiveBackAll((SlotPool *) SlotPool_FaceAnimHeaps());
     SlotPool_GiveBackAll((SlotPool *) SlotPool_Items());
 }
 CLEAN_AS(func_02082c5c, PoolLink_FreeAll)
@@ -165,84 +165,84 @@ CLEAN_AS(func_02082d1c, PoolLink_ItemConstruct)
 /* ---- The part link (vtable data_020e19dc) */
 
 /* func_02082d34: the part the link's entry holds, or null. */
-int PoolLink_Part(PoolLink *link)
+int PoolLink_FaceAnimHeap(PoolLink *link)
 {
     SlotPool *pool = pool_link_pool(link);
     if (pool == NULL) {
         return 0;
     }
-    return (int) (uintptr_t) SlotPool_Part((SlotPoolBytes *) pool, (u32) link->index);
+    return (int) (uintptr_t) SlotPool_FaceAnimHeap((SlotPoolBytes *) pool, (u32) link->index);
 }
-CLEAN_AS(func_02082d34, PoolLink_Part)
+CLEAN_AS(func_02082d34, PoolLink_FaceAnimHeap)
 
 /* func_02082d58 (vtable entry 1) */
-PoolLink *PoolLink_PartDestructDelete(PoolLink *link)
+PoolLink *PoolLink_FaceAnimHeapDestructDelete(PoolLink *link)
 {
     link->vtable = &data_020e19dc;
     PoolLink_BaseDestruct(link);
     Heap_OperatorDeleteB(link);
     return link;
 }
-CLEAN_AS(func_02082d58, PoolLink_PartDestructDelete)
+CLEAN_AS(func_02082d58, PoolLink_FaceAnimHeapDestructDelete)
 
 /* func_02082d78 (vtable entry 0) */
-PoolLink *PoolLink_PartDestruct(PoolLink *link)
+PoolLink *PoolLink_FaceAnimHeapDestruct(PoolLink *link)
 {
     link->vtable = &data_020e19dc;
     PoolLink_BaseDestruct(link);
     return link;
 }
-CLEAN_AS(func_02082d78, PoolLink_PartDestruct)
+CLEAN_AS(func_02082d78, PoolLink_FaceAnimHeapDestruct)
 
 /* func_02082d90: a part link with no entry. */
-PoolLink *PoolLink_PartConstruct(PoolLink *link)
+PoolLink *PoolLink_FaceAnimHeapConstruct(PoolLink *link)
 {
     PoolLink_BaseConstruct(link);
     link->vtable = &data_020e19dc;
     return link;
 }
-CLEAN_AS(func_02082d90, PoolLink_PartConstruct)
+CLEAN_AS(func_02082d90, PoolLink_FaceAnimHeapConstruct)
 
 /* ---- The animation set link (vtable data_020e1a68) */
 
 /* func_02082da8: the animation set the link's entry holds, or null. */
-int PoolLink_AnimSet(PoolLink *link)
+int PoolLink_FaceAnimSlot(PoolLink *link)
 {
     SlotPool *pool = pool_link_pool(link);
     if (pool == NULL) {
         return 0;
     }
-    return (int) (uintptr_t) SlotPool_AnimSet((SlotPoolBytes *) pool, (u32) link->index);
+    return (int) (uintptr_t) SlotPool_FaceAnimSlot((SlotPoolBytes *) pool, (u32) link->index);
 }
-CLEAN_AS(func_02082da8, PoolLink_AnimSet)
+CLEAN_AS(func_02082da8, PoolLink_FaceAnimSlot)
 
 /* func_02082dcc (vtable entry 1) */
-PoolLink *PoolLink_AnimSetDestructDelete(PoolLink *link)
+PoolLink *PoolLink_FaceAnimSlotDestructDelete(PoolLink *link)
 {
     link->vtable = &data_020e1a68;
     PoolLink_BaseDestruct(link);
     Heap_OperatorDeleteB(link);
     return link;
 }
-CLEAN_AS(func_02082dcc, PoolLink_AnimSetDestructDelete)
+CLEAN_AS(func_02082dcc, PoolLink_FaceAnimSlotDestructDelete)
 
 /* func_02082dec (vtable entry 0) */
-PoolLink *PoolLink_AnimSetDestruct(PoolLink *link)
+PoolLink *PoolLink_FaceAnimSlotDestruct(PoolLink *link)
 {
     link->vtable = &data_020e1a68;
     PoolLink_BaseDestruct(link);
     return link;
 }
-CLEAN_AS(func_02082dec, PoolLink_AnimSetDestruct)
+CLEAN_AS(func_02082dec, PoolLink_FaceAnimSlotDestruct)
 
 /* func_02082e04: an animation set link with no entry. */
-PoolLink *PoolLink_AnimSetConstruct(PoolLink *link)
+PoolLink *PoolLink_FaceAnimSlotConstruct(PoolLink *link)
 {
     PoolLink_BaseConstruct(link);
     link->vtable = &data_020e1a68;
     return link;
 }
-CLEAN_AS(func_02082e04, PoolLink_AnimSetConstruct)
+CLEAN_AS(func_02082e04, PoolLink_FaceAnimSlotConstruct)
 
 /* The entries of the pools the remaining classes of link stand for, by number, past their
  * "taken" byte; null for a number past the pool. */
@@ -299,7 +299,7 @@ CLEAN_AS(func_02082e78, PoolLink_BlockConstruct)
 /* ---- The data_021d1e20 link (vtable data_020e1a54) */
 
 /* func_02082e90: the entry of data_021d1e20 the link's entry holds, or null. */
-int PoolLink_Pool1E20Entry(PoolLink *link)
+int PoolLink_ClothesEntry(PoolLink *link)
 {
     SlotPool *pool = pool_link_pool(link);
     if (pool == NULL) {
@@ -307,35 +307,35 @@ int PoolLink_Pool1E20Entry(PoolLink *link)
     }
     return (int) (uintptr_t) SlotPool_Cloth((SlotPoolBytes *) pool, (u32) link->index);
 }
-CLEAN_AS(func_02082e90, PoolLink_Pool1E20Entry)
+CLEAN_AS(func_02082e90, PoolLink_ClothesEntry)
 
 /* func_02082eb4 (vtable entry 1) */
-PoolLink *PoolLink_Pool1E20DestructDelete(PoolLink *link)
+PoolLink *PoolLink_ClothesDestructDelete(PoolLink *link)
 {
     link->vtable = &data_020e1a54;
     PoolLink_BaseDestruct(link);
     Heap_OperatorDeleteB(link);
     return link;
 }
-CLEAN_AS(func_02082eb4, PoolLink_Pool1E20DestructDelete)
+CLEAN_AS(func_02082eb4, PoolLink_ClothesDestructDelete)
 
 /* func_02082ed4 (vtable entry 0) */
-PoolLink *PoolLink_Pool1E20Destruct(PoolLink *link)
+PoolLink *PoolLink_ClothesDestruct(PoolLink *link)
 {
     link->vtable = &data_020e1a54;
     PoolLink_BaseDestruct(link);
     return link;
 }
-CLEAN_AS(func_02082ed4, PoolLink_Pool1E20Destruct)
+CLEAN_AS(func_02082ed4, PoolLink_ClothesDestruct)
 
 /* func_02082eec: a data_021d1e20 link with no entry. */
-PoolLink *PoolLink_Pool1E20Construct(PoolLink *link)
+PoolLink *PoolLink_ClothesConstruct(PoolLink *link)
 {
     PoolLink_BaseConstruct(link);
     link->vtable = &data_020e1a54;
     return link;
 }
-CLEAN_AS(func_02082eec, PoolLink_Pool1E20Construct)
+CLEAN_AS(func_02082eec, PoolLink_ClothesConstruct)
 
 /* ---- The heap4 slot link (vtable data_020e19f0) */
 
@@ -425,7 +425,7 @@ CLEAN_AS(func_02082fd4, PoolLink_Heap8Construct)
  * speaking animations, speaker_anim.h). */
 
 /* func_02082fec: the address of value `which` of the link's entry, or null. */
-int PoolLink_Pool1E48Byte(PoolLink *link, int which)
+int PoolLink_SpeakerAnimByte(PoolLink *link, int which)
 {
     SlotPool *pool = pool_link_pool(link);
     if (pool == NULL) {
@@ -433,35 +433,35 @@ int PoolLink_Pool1E48Byte(PoolLink *link, int which)
     }
     return (int) (uintptr_t) (SlotPool_SpeakerAnim((SlotPoolSpeakers *) pool, (u32) link->index, (u32) which));
 }
-CLEAN_AS(func_02082fec, PoolLink_Pool1E48Byte)
+CLEAN_AS(func_02082fec, PoolLink_SpeakerAnimByte)
 
 /* func_02083018 (vtable entry 1) */
-PoolLink *PoolLink_Pool1E48DestructDelete(PoolLink *link)
+PoolLink *PoolLink_SpeakerAnimDestructDelete(PoolLink *link)
 {
     link->vtable = &data_020e1a18;
     PoolLink_BaseDestruct(link);
     Heap_OperatorDeleteB(link);
     return link;
 }
-CLEAN_AS(func_02083018, PoolLink_Pool1E48DestructDelete)
+CLEAN_AS(func_02083018, PoolLink_SpeakerAnimDestructDelete)
 
 /* func_02083038 (vtable entry 0) */
-PoolLink *PoolLink_Pool1E48Destruct(PoolLink *link)
+PoolLink *PoolLink_SpeakerAnimDestruct(PoolLink *link)
 {
     link->vtable = &data_020e1a18;
     PoolLink_BaseDestruct(link);
     return link;
 }
-CLEAN_AS(func_02083038, PoolLink_Pool1E48Destruct)
+CLEAN_AS(func_02083038, PoolLink_SpeakerAnimDestruct)
 
 /* func_02083050: a data_021d1e48 link with no entry. */
-PoolLink *PoolLink_Pool1E48Construct(PoolLink *link)
+PoolLink *PoolLink_SpeakerAnimConstruct(PoolLink *link)
 {
     PoolLink_BaseConstruct(link);
     link->vtable = &data_020e1a18;
     return link;
 }
-CLEAN_AS(func_02083050, PoolLink_Pool1E48Construct)
+CLEAN_AS(func_02083050, PoolLink_SpeakerAnimConstruct)
 
 /* ---- The link base class (vtable data_020e1a2c) */
 

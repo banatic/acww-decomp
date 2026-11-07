@@ -733,7 +733,7 @@ static void step_to_beat(RmoAnimatedModel *model, fx32 speed)
 int CafeProps_Update(CafeProps *self)
 {
     if (Math_IsBetween(Music_CurrentMusic(), MUSIC_FIRST, MUSIC_LAST)) {
-        const int *record = SoundSys_FirstEntryData();
+        const int *record = SoundSys_OwnerData();
         if (record != NULL && ((const s8 *) record)[3] != RECORD_STOPPED) {
             step_to_beat(&self->base.body, record[4]);
             step_to_beat(&self->parts[0], record[4]);

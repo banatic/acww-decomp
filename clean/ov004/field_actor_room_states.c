@@ -1117,7 +1117,7 @@ void FieldActorRoomStates_RunExitWalk(FieldActor *actor)
                 case SCENE_CLAIM_WAITING:
                     break;
                 case SCENE_CLAIM_GIVEN:
-                    if (!SceneClaimExit_Placed(claim)) {
+                    if (!SceneClaimExit_DoorKind(claim)) {
                         SceneExit_Take(fars_exits(), FARS_EXIT_INDEX(actor));
                     } else {
                         work->phase = FIELD_ACTOR_EXIT_AT_POINT;
@@ -2306,7 +2306,7 @@ CLEAN_AS(func_ov004_02228c84, FieldActorRoomStates_TryLeaveSpotStay)
 void FieldActorRoomStates_BeatSpotStay(FieldActor *actor)
 {
     if (Math_IsBetween(Music_CurrentMusic(), FARS_BEAT_MUSIC_FIRST, FARS_BEAT_MUSIC_LAST)) {
-        const int *entry = SoundSys_FirstEntryData();
+        const int *entry = SoundSys_OwnerData();
         if (entry != NULL && ((const s8 *) entry)[3] != FARS_SOUND_STOPPED) {
             LayeredModel *model = (LayeredModel *) (void *) actor->unk_234;
             FieldActorSpotStay *work = fars_spot_stay_of(actor);

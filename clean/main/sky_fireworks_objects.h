@@ -10,7 +10,7 @@
  * 30 of its parameter (a large shell: look 0 and look 1 with bit 30, both large). The other
  * looks are bursts: animated once, sized each frame from a table by the animation's frame, and
  * the burst without bit 30 tints two of the overridable colours (SkyPalettes_SetOverride) from
- * its place's colours, fading over frames 16 to 27, flickering from frame 11; bit 29 of its
+ * its place's colours, fading over frames 16 to 26, flickering from frame 11; bit 29 of its
  * parameter is set at frame 29 (SkyFireworks_PlaceFreeForLarge reads it).
  *
  * Every one is placed on the sky shifted by the camera (SkyFireworksObject_PlaceShifted): sideways

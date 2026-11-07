@@ -158,7 +158,8 @@ CLEAN_AS(func_020b0bbc, SceneSetup_SpawnObjects)
 
 /* func_020b0c4c: step kind 1: in a scene with players' actors, each player that has a place
  * (SceneSetup_PlayerPlace, the step's items being the four players' points) gets its actor;
- * without a linked session each also takes the next turn first. Then the object of class 0x0b
+ * without a linked session each first takes the lowest free look index
+ * (SessionPlayers_FreeLookIndex). Then the object of class 0x0b
  * is made; always 1.
  * QUIRK: whether this system's slot is taken is asked and not used. */
 int SceneSetup_SpawnPlayers(SceneSetupStep *step)

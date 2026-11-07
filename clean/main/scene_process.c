@@ -83,9 +83,10 @@ static_assert(sizeof(SceneInfo) == 0x18, "scene info");
 #define SCENE_PROCESS_NO_PLAYER 4
 /* data_021c75b8 while the player may steer. */
 #define SCENE_PROCESS_STEERING 2
-/* The link value of data_021f4320 the scenes 0x0c-0x0e, 0x2e and 0x2f set, and the one the
- * end of scene 0x0e leaves. */
-#define SCENE_PROCESS_LINK_IDLE 4
+/* The done kind (LinkGlobal_SetDoneKind) entering scenes 0x0c-0x0e, 0x2e and 0x2f sets: none. */
+#define SCENE_PROCESS_DONE_KIND_NONE 4
+/* The served slot (LinkGlobal_SetServedSlot) the end of scene 0x0e leaves: none. */
+#define SCENE_PROCESS_NO_SERVED_SLOT 4
 /* Scenes the code below tests. */
 #define SCENE_PROCESS_SCENE_0C 0x0c
 #define SCENE_PROCESS_SCENE_0D 0x0d
@@ -263,7 +264,7 @@ int SceneProcess_End(void)
             }
             SessionPlayers_ClearRecordNumber(player);
         }
-        LinkGlobal_SetServedSlot(SCENE_PROCESS_LINK_IDLE);
+        LinkGlobal_SetServedSlot(SCENE_PROCESS_NO_SERVED_SLOT);
     }
 
     SceneProcess_ReleaseOverlays();
@@ -498,8 +499,8 @@ int SceneProcess_Enter(void)
     int link = LinkGlobal_DoneKind();
     if (scene == SCENE_PROCESS_SCENE_2E || scene == SCENE_PROCESS_SCENE_0D || scene == SCENE_PROCESS_SCENE_0C ||
         scene == SCENE_PROCESS_SCENE_0E || scene == SCENE_PROCESS_SCENE_2F) {
-        if (link != SCENE_PROCESS_LINK_IDLE) {
-            LinkGlobal_SetDoneKind(SCENE_PROCESS_LINK_IDLE);
+        if (link != SCENE_PROCESS_DONE_KIND_NONE) {
+            LinkGlobal_SetDoneKind(SCENE_PROCESS_DONE_KIND_NONE);
         }
     }
     SceneObjectBase_ClearRegistry();

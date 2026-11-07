@@ -1,6 +1,6 @@
 /* The member at 0x2b4 of the field's sound object (music_queue.h): what the sound system is
  * asked at the end of the frame. The queue and the volume member set a music to change to, a
- * word for SoundSys_Call020f1c00 and a volume to move to; MusicCommands_Apply hands each one set
+ * word for SoundSys_EndMusic and a volume to move to; MusicCommands_Apply hands each one set
  * to the sound system once. */
 #ifndef CLEAN_MAIN_MUSIC_COMMANDS_H
 #define CLEAN_MAIN_MUSIC_COMMANDS_H
@@ -15,7 +15,7 @@ typedef struct MusicCommands {
     u16 music;    /* 0x06: for SoundSys_ChangeMusic */
     u8 value_set; /* 0x08 */
     u8 unk_09[3];
-    s32 value;     /* 0x0c: for SoundSys_Call020f1c00 */
+    s32 value;     /* 0x0c: for SoundSys_EndMusic */
     u8 volume_set; /* 0x10 */
     u8 unk_11[3];
     s32 volume; /* 0x14: for SoundSys_MoveVolume */

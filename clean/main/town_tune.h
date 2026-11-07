@@ -3,7 +3,7 @@
  *
  * The town tune is kept in the save's state block at 0x173c0 (data_021f3b68) as 16 steps of
  * 4 bits each, step i in bits 4i to 4i+3 of a 64-bit word, and unpacked one step to a byte at
- * data_021cfbbc; the functions below hand the set to the sound layer's (sound.h's SoundSet).
+ * data_021cfbbc; the functions below hand the set to the sound layer's (sound.h's MelodySetCall).
  * Each frame the set is updated (TownTune_Update): the second player's
  * step is kept at data_020df2a0 (-1 while it plays nothing), and a delay at data_021cfbac,
  * set when the first player starts, counts down. */

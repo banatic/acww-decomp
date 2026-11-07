@@ -16,6 +16,8 @@ static_assert(sizeof(RoomInteriorChange) == 4, "message size");
 
 /* The session message a change is sent as. */
 #define ROOM_CHANGE_HANDLER 0x14
+/* The kind the change is sent with (Session_EndMessage): to every system. */
+#define ROOM_CHANGE_TO_ALL 4
 
 /* 1 indoors, when overlay 4 has the room being shown. */
 extern u8 data_020e54a8;
@@ -229,7 +231,7 @@ void RoomInterior_SendChange(const u16 *item, int option, u16 wallpaper, u16 wit
     }
     Session_BeginMessage(data_020ccf94);
     Session_AppendMessage(data_020ccf94, &change, sizeof(change));
-    Session_EndMessage(data_020ccf94, ROOM_CHANGE_HANDLER, sizeof(change));
+    Session_EndMessage(data_020ccf94, ROOM_CHANGE_HANDLER, ROOM_CHANGE_TO_ALL);
 }
 CLEAN_AS(func_02034bd4, RoomInterior_SendChange)
 

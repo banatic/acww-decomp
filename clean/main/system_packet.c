@@ -264,9 +264,9 @@ void SystemPacket_SetActivityFlagE4(u8 *payload, u32 length, int sender)
 }
 CLEAN_AS(func_02075484, SystemPacket_SetActivityFlagE4)
 
-/* func_020754b0: in scene 12 with an activity: the payload's 8 bytes into its bytes from 0xdc,
- * and its flag 0xda set. */
-void SystemPacket_SetActivityDataDC(u8 *payload, u32 length, int sender)
+/* func_020754b0: in scene 12 with an activity: the payload's 8 bytes as its date and time (0xdc,
+ * Activity_DateTime), and its flag 0xda set. */
+void SystemPacket_SetActivityDateTime(u8 *payload, u32 length, int sender)
 {
     (void) length;
     (void) sender;
@@ -279,7 +279,7 @@ void SystemPacket_SetActivityDataDC(u8 *payload, u32 length, int sender)
     MI_CpuCopy8(payload, Activity_DateTime(Activity_Current()), 8);
     Activity_SetFlagDA(Activity_Current(), 1);
 }
-CLEAN_AS(func_020754b0, SystemPacket_SetActivityDataDC)
+CLEAN_AS(func_020754b0, SystemPacket_SetActivityDateTime)
 
 /* func_020754e8 */
 void SystemPacket_SetActivityFlagD9(u8 *payload, u32 length, int sender)
@@ -591,7 +591,7 @@ int SystemPacket_SendActivityPlayerEF(int value, int to)
 }
 CLEAN_AS(func_02075aa4, SystemPacket_SendActivityPlayerEF)
 
-/* func_02075b14: the clock's date and time (8 bytes, SystemPacket_SetActivityDataDC). */
+/* func_02075b14: the clock's date and time (8 bytes, SystemPacket_SetActivityDateTime). */
 int SystemPacket_SendDateTime(int to)
 {
     if (!system_packet_can_send((u32) to)) {

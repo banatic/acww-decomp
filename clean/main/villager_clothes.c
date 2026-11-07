@@ -78,7 +78,7 @@ CLEAN_AS(func_0202df18, VillagerClothes_Change)
  * the item's. Its textures (ClothTexture_GetTextures), 0 without a slot or a file. */
 int VillagerClothes_LoadTexture(VillagerClothes *clothes, u8 *villager, u16 *item)
 {
-    unsigned char *slot = (unsigned char *) (uintptr_t) PoolLink_Pool1E20Entry(&clothes->slot);
+    unsigned char *slot = (unsigned char *) (uintptr_t) PoolLink_ClothesEntry(&clothes->slot);
     if (slot == NULL) {
         return 0;
     }
@@ -116,7 +116,7 @@ CLEAN_AS(func_0202e058, VillagerClothes_Start)
 /* func_0202e094: the destructor: the pool link's. */
 VillagerClothes *VillagerClothes_Destruct(VillagerClothes *clothes)
 {
-    PoolLink_Pool1E20Destruct(&clothes->slot);
+    PoolLink_ClothesDestruct(&clothes->slot);
     return clothes;
 }
 CLEAN_AS(func_0202e094, VillagerClothes_Destruct)
@@ -126,7 +126,7 @@ VillagerClothes *VillagerClothes_Construct(VillagerClothes *clothes)
 {
     VramCopyMaterial_Construct(&clothes->copy);
     clothes->item = ITEM_CODE_NONE;
-    PoolLink_Pool1E20Construct(&clothes->slot);
+    PoolLink_ClothesConstruct(&clothes->slot);
     return clothes;
 }
 CLEAN_AS(func_0202e0a8, VillagerClothes_Construct)

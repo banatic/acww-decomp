@@ -5,7 +5,7 @@
 #include "cell_anim.h"
 #include "clean.h"
 #include "oam_buffer.h" /* OamBuffer_DrawCell */
-#include "sound.h"      /* SoundSys_ChangePlayerByte */
+#include "sound.h"      /* SoundSys_ChangePan */
 
 static_assert(offsetof(CellLayerSprite, anim) == 0x0c && offsetof(CellLayerSprite, offset_x) == 0x20, "CellLayerSprite");
 static_assert(offsetof(CellLayerSprite, priority) == 0x28 && offsetof(CellLayerSprite, layer2) == 0x2c, "CellLayerSprite");
@@ -97,7 +97,7 @@ void CellLayerSprite_SetOffset(CellLayerSprite *sprite, int x, int y)
     if (screen_x > CELL_LAYER_SPRITE_X_MAX) {
         screen_x = CELL_LAYER_SPRITE_X_MAX;
     }
-    SoundSys_ChangePlayerByte(screen_x);
+    SoundSys_ChangePan(screen_x);
 }
 CLEAN_AS(func_0208e594, CellLayerSprite_SetOffset)
 

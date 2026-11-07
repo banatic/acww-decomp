@@ -1,5 +1,6 @@
-/* An object that keeps up to four other objects in fixed slots at 0x2f4 in it. Its caller
- * func_020395a8 puts an object in the last empty slot, unless the object is already in one. */
+/* The quick messages' board (quick_message.h) as one function sees it: its four shown balloons
+ * at 0x2f4. QuickMessage_PlaceBalloon puts a balloon in the last empty entry, unless it is
+ * shown already. */
 #ifndef CLEAN_MAIN_SLOTS_H
 #define CLEAN_MAIN_SLOTS_H
 
@@ -11,6 +12,6 @@ typedef struct SlotOwner {
 } SlotOwner;
 
 /* func_02039444 */
-BOOL SlotOwner_Contains(const SlotOwner *owner, const void *item);
+BOOL QuickMessage_IsShown(const SlotOwner *owner, const void *item);
 
 #endif

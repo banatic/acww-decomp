@@ -679,14 +679,14 @@ CLEAN_AS(func_0200f290, FieldActor_TestFlag)
 
 /* ---- Sounds */
 
-/* func_0200f2a0: unless far and not drawn, sound `number` plays (SoundEmitter_PlayEx, 0x7f)
+/* func_0200f2a0: unless far and not drawn, sound `number` plays (SoundEmitter_PlayHeld, 0x7f)
  * and the emitters' point becomes `at`. */
 void FieldActor_PlaySoundAt(FieldActor *actor, int number, const Vec3 *at)
 {
     if (field_actor_support_is_silent(actor)) {
         return;
     }
-    SoundEmitter_PlayEx(field_actor_support_emitter(actor), number, 0x7f, 0);
+    SoundEmitter_PlayHeld(field_actor_support_emitter(actor), number, 0x7f, 0);
     FIELD_ACTOR_SOUND_POINT(actor).x = at->x;
     FIELD_ACTOR_SOUND_POINT(actor).y = at->y;
     FIELD_ACTOR_SOUND_POINT(actor).z = at->z;

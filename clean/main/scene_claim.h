@@ -41,7 +41,8 @@ typedef struct SceneClaimExit {
     u16 angle;      /* 0x1c: the angle the player takes it at */
     u8 exit;        /* 0x1e: its number in the exit table; 0xff for none */
     u8 answer;      /* 0x1f: SceneClaimAnswer */
-    u8 placed;      /* 0x20: the exit's byte 0x18: its own position and angle are used */
+    u8 door_kind;   /* 0x20: the exit's door kind (byte 0x18, SceneExit_DoorInfo): not 0, its own
+                     * position and angle are used */
     u8 pad_21[3];
 } SceneClaimExit;
 
@@ -71,12 +72,12 @@ void SceneClaimExit_SetNextTile(SceneClaimExit *target, const Vec3 *next_tile);
 void SceneClaimExit_SetAngle(SceneClaimExit *target, int angle);
 void SceneClaimExit_SetPosition(SceneClaimExit *target, const Vec3 *position);
 void SceneClaimExit_SetScene(SceneClaimExit *target, int scene);
-void SceneClaimExit_SetPlaced(SceneClaimExit *target, unsigned char placed);
+void SceneClaimExit_SetDoorKind(SceneClaimExit *target, unsigned char door_kind);
 void SceneClaimExit_SetExit(SceneClaimExit *target, int exit);
 void SceneClaimExit_SetAnswer(SceneClaimExit *target, int answer);
 int SceneClaimExit_NextTile(SceneClaimExit *target);
 int SceneClaimExit_Position(SceneClaimExit *target);
-unsigned char SceneClaimExit_Placed(SceneClaimExit *target);
+unsigned char SceneClaimExit_DoorKind(SceneClaimExit *target);
 int SceneClaimExit_Answer(SceneClaimExit *target);
 void SceneClaimExit_Clear(SceneClaimExit *target);
 void SceneClaimExit_Destruct(void *target);

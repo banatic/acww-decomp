@@ -57,7 +57,7 @@ void StaticInit_ItemInfo(void);
 void StaticInit_Colours5ae4(void);
 void StaticInit_Texts5b40(void);
 void StaticInit_Colours5ba0(void);
-void StaticInit_SoundSet(void);
+void StaticInit_MelodySet(void);
 void StaticInit_OverlayGroups(void);
 void StaticInit_Nothing5c90(void);
 void StaticInit_Designs(void);

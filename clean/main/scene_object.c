@@ -522,8 +522,8 @@ CLEAN_AS(func_0201bd48, SceneObject_Start)
 
 /* func_0201bdb4 (slot 0x04): the set-up once the scene object's (func_0203f030) agrees (else
  * 0): the person from the low half of the spawn argument, no scene, the members reset, solid
- * with a shadow, enabled and posed, no held item, no extra bytes, and the set-up ended
- * (func_0203ed98). Returns 1. */
+ * with a shadow, enabled and posed, no held item, no extra bytes, and the object marked as a
+ * person (flag 4, SceneObjectBase_MarkPerson). Returns 1. */
 int SceneObject_Init(u8 *object)
 {
     if (SceneObjectBase_CanCreate((SceneObjectBase *) (void *) object) == 0) {

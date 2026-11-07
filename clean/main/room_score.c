@@ -44,8 +44,9 @@ static_assert(sizeof(RoomScoreRoom) == 0x14, "RoomScoreRoom size");
 #define ROOM_SCORE_SPECIAL_POINTS 7777
 /* The five rooms of the player's house. */
 #define ROOM_SCORE_HOUSE_ROOMS 5
-/* The game variable (bank 0) that has the letters sent whatever the week. */
-#define ROOM_SCORE_VARIABLE_ALWAYS 0x22
+/* The game variable (bank 0) that, when set, has the house judged whatever the week and the
+ * judgement sent to every player (room_score_mail.c). */
+#define ROOM_SCORE_VARIABLE_JUDGE_ANYWAY 0x22
 
 /* Each group's best score of the rooms, by group. */
 extern u32 data_021c9854[ROOM_SCORE_GROUPS];
@@ -879,7 +880,7 @@ int RoomScore_Total(RoomScoreRoom *room, u16 *bonuses, int *theme, int *first, i
         return total;
     }
     if (RoomScoreState_WeekPassed((Date *) (void *) data_021f3b70) == 0 &&
-        *GameVariables_Slot(0, ROOM_SCORE_VARIABLE_ALWAYS) == 0) {
+        *GameVariables_Slot(0, ROOM_SCORE_VARIABLE_JUDGE_ANYWAY) == 0) {
         return total;
     }
     int house_value = (int) HouseRecord_Size((const HouseRecord *) (void *) data_021ebcd4);

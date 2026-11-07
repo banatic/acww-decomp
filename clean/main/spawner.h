@@ -2,7 +2,8 @@
  * that makes one special actor at a time, on request.
  *
  * A request (data_020e1ca8) names an actor profile, the scene it is for, a priority (0: none,
- * 1-4) and a position. Each frame (func_02085558) the spawner runs the checks of its table
+ * 1-4) and a position. When the spawner is created (Spawner_Create, the create phase, once a
+ * scene) it runs the checks of its table
  * (data_020e1d08, highest priority first): the first check above the pending request's priority
  * that answers with an entry of the spawn table replaces the request (Spawner_RunChecks). Then
  * a pending request for the current scene is carried out: its entry's placer sets the actor's

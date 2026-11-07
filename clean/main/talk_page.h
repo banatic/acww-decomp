@@ -132,8 +132,8 @@ void TalkPageMeasurer_PutReceiverName(TalkPageMeasurer *measurer);
 void TalkPageMeasurer_PutPlayerName(TalkPageMeasurer *measurer);
 
 /* Group 1. */
-void TalkPageMeasurer_RememberedEnd(void);
-void TalkPageMeasurer_RememberedText(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_GreetingEnd(void);
+void TalkPageMeasurer_GreetingText(TalkPageMeasurer *measurer);
 
 /* Group 0. */
 void TalkPageMeasurer_PutLeftBrace(TalkPageMeasurer *measurer);

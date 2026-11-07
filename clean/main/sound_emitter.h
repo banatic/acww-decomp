@@ -60,7 +60,7 @@ void SoundEmitter_PlayAlternating(SoundEmitter *emitter, u32 number, u32 flag);
 void SoundEmitter_UpdateAt(SoundEmitter *emitter, const Vec3 *pos);
 void SoundEmitter_Reset(SoundEmitter *emitter);
 int SoundEmitter_FinishB(SoundEmitter *emitter);
-int SoundEmitter_PlayEx(SoundEmitter *emitter, int number, int arg2, int arg3);
+int SoundEmitter_PlayHeld(SoundEmitter *emitter, int number, int arg2, int arg3);
 int SoundEmitter_PlayB(SoundEmitter *emitter, int number, int volume, int arg);
 void SoundEmitter_UpdateAtB(SoundEmitter *emitter, const Vec3 *pos);
 void SoundEmitter_ResetB(SoundEmitter *emitter);

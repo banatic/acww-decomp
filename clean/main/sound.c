@@ -117,65 +117,65 @@ void SoundCue_Init(void *cue, u16 number)
 CLEAN_AS(func_02004110, SoundCue_Init)
 
 /* func_02004118: the sound layer's fixed object at data_02138fe4 (`set` is not used). */
-void *SoundSet_Default(void *set)
+void *MelodySetCall_DefaultMelody(void *set)
 {
     (void) set;
     return (void *) (void *) MelodySet_DefaultMelody();
 }
-CLEAN_AS(func_02004118, SoundSet_Default)
+CLEAN_AS(func_02004118, MelodySetCall_DefaultMelody)
 
-/* func_02004120: the 16-byte block its index at 0x3b picks, copied to 0x28; returns the copy. */
-void *SoundSet_LoadBlock(u8 *set)
+/* func_02004120: the preset melody its index at 0x3b picks, copied to 0x28; returns the copy. */
+void *MelodySetCall_LoadPreset(u8 *set)
 {
     return MelodySet_LoadPreset((MelodySet *) (void *) set);
 }
-CLEAN_AS(func_02004120, SoundSet_LoadBlock)
+CLEAN_AS(func_02004120, MelodySetCall_LoadPreset)
 
 /* func_02004128 */
-int SoundSet_Load(void *set, u32 number)
+int MelodySetCall_PlayRandomPreset(void *set, u32 number)
 {
     return MelodySet_PlayRandomPreset(set, number);
 }
-CLEAN_AS(func_02004128, SoundSet_Load)
+CLEAN_AS(func_02004128, MelodySetCall_PlayRandomPreset)
 
-/* func_02004130: the byte at 0x38 that SoundSet_Poll sets. */
-u8 SoundSet_WasActive(void *set)
+/* func_02004130: the byte at 0x38 that MelodySetCall_Update sets. */
+u8 MelodySetCall_APlaying(void *set)
 {
     return MelodySet_APlaying(set);
 }
-CLEAN_AS(func_02004130, SoundSet_WasActive)
+CLEAN_AS(func_02004130, MelodySetCall_APlaying)
 
 /* func_02004138 */
-int SoundSet_Poll(void *set)
+int MelodySetCall_Update(void *set)
 {
     return MelodySet_Update(set);
 }
-CLEAN_AS(func_02004138, SoundSet_Poll)
+CLEAN_AS(func_02004138, MelodySetCall_Update)
 
 /* func_02004140 */
-void SoundSet_Call020f65fc(void *set, int value)
+void MelodySetCall_PlaySeqD3B(void *set, int value)
 {
     MelodySet_PlaySeqD3B(set, value);
 }
-CLEAN_AS(func_02004140, SoundSet_Call020f65fc)
+CLEAN_AS(func_02004140, MelodySetCall_PlaySeqD3B)
 
 /* func_02004148 */
-void SoundSet_Call020f66f0(void *set)
+void MelodySetCall_StartA(void *set)
 {
     MelodySet_StartA(set);
 }
-CLEAN_AS(func_02004148, SoundSet_Call020f66f0)
+CLEAN_AS(func_02004148, MelodySetCall_StartA)
 
-/* func_02004150: load by number with the set's own block at 0x28. */
-void SoundSet_LoadOwn(void *set, u32 number)
+/* func_02004150: play sound `number` with the set's own melody at 0x28. */
+void MelodySetCall_PlayOwn(void *set, u32 number)
 {
     MelodySet_PlayOwn(set, number);
 }
-CLEAN_AS(func_02004150, SoundSet_LoadOwn)
+CLEAN_AS(func_02004150, MelodySetCall_PlayOwn)
 
-/* func_02004158: load one of a few fixed entries (by `index`) at `pos`. Without a camera
+/* func_02004158: play the set's melody at `pos` as `index`. Without a camera
  * nothing is called. REQUIRES: `pos` is not NULL. */
-void SoundSet_LoadAt(void *set, const Vec3 *pos, int index)
+void MelodySetCall_PlayAt(void *set, const Vec3 *pos, int index)
 {
     if (data_021c67a4 == NULL) {
         return;
@@ -183,42 +183,42 @@ void SoundSet_LoadAt(void *set, const Vec3 *pos, int index)
     Vec3 rel = relative(pos);
     MelodySet_PlayAt(set, &rel, (u32) index);
 }
-CLEAN_AS(func_02004158, SoundSet_LoadAt)
+CLEAN_AS(func_02004158, MelodySetCall_PlayAt)
 
-/* func_02004194: load by number with the 16-byte `block`. */
-void SoundSet_LoadWith(void *set, u32 number, void *block)
+/* func_02004194: play sound `number` with the 16-step melody `block`. */
+void MelodySetCall_PlayWith(void *set, u32 number, void *block)
 {
     MelodySet_PlayWith(set, number, block);
 }
-CLEAN_AS(func_02004194, SoundSet_LoadWith)
+CLEAN_AS(func_02004194, MelodySetCall_PlayWith)
 
-/* func_0200419c: copy a 16-byte block to 0x28. */
-void SoundSet_SetBlock(u8 *set, const u8 *block)
+/* func_0200419c: a 16-step melody copied to 0x28. */
+void MelodySetCall_SetMelody(u8 *set, const u8 *block)
 {
     MelodySet_SetMelody((MelodySet *) (void *) set, block);
 }
-CLEAN_AS(func_0200419c, SoundSet_SetBlock)
+CLEAN_AS(func_0200419c, MelodySetCall_SetMelody)
 
 /* func_020041a4: make the set the sound state's current one and clear it. */
-void SoundSet_MakeCurrent(void *set)
+void MelodySetCall_MakeCurrent(void *set)
 {
     MelodySet_MakeCurrent(set);
 }
-CLEAN_AS(func_020041a4, SoundSet_MakeCurrent)
+CLEAN_AS(func_020041a4, MelodySetCall_MakeCurrent)
 
-/* func_020041ac: set the byte at 0x70 and hand it on to the players. */
-void SoundSys_SetPlayerByte(int value)
+/* func_020041ac: set the effects' pan at 0x70 and hand it on to the players. */
+void SoundSys_SetPan(int value)
 {
     SoundSystem_SetPan((SoundSystem *) (void *) data_021fd1bc, value);
 }
-CLEAN_AS(func_020041ac, SoundSys_SetPlayerByte)
+CLEAN_AS(func_020041ac, SoundSys_SetPan)
 
-/* func_020041bc: the same when the byte changes. */
-void SoundSys_ChangePlayerByte(int value)
+/* func_020041bc: the same when the pan changes. */
+void SoundSys_ChangePan(int value)
 {
     SoundSystem_ChangePan((SoundSystem *) (void *) data_021fd1bc, value);
 }
-CLEAN_AS(func_020041bc, SoundSys_ChangePlayerByte)
+CLEAN_AS(func_020041bc, SoundSys_ChangePan)
 
 /* func_020041cc: the second fader back to full volume, unless the music is lowered. */
 void SoundSys_RestoreSecond(void)
@@ -248,19 +248,20 @@ void SoundSys_LowerMusic(void)
 }
 CLEAN_AS(func_020041fc, SoundSys_LowerMusic)
 
-/* func_0200420c: 0x14 bytes into the entry the state's first word points to, or NULL. */
-int *SoundSys_FirstEntryData(void)
+/* func_0200420c: the owner's data, 0x14 bytes into the entry the state's first word points
+ * to, or NULL. */
+int *SoundSys_OwnerData(void)
 {
     return SoundSystem_OwnerData((SoundSystem *) (void *) data_021fd1bc);
 }
-CLEAN_AS(func_0200420c, SoundSys_FirstEntryData)
+CLEAN_AS(func_0200420c, SoundSys_OwnerData)
 
 /* func_0200421c */
-void SoundSys_SetMode(int mode)
+void SoundSys_SetArrangement(int mode)
 {
     SoundSystem_SetArrangement((SoundSystem *) (void *) data_021fd1bc, mode);
 }
-CLEAN_AS(func_0200421c, SoundSys_SetMode)
+CLEAN_AS(func_0200421c, SoundSys_SetArrangement)
 
 /* func_0200422c: the fader at 0x04 from silence to full volume, with one of five track
  * masks. */
@@ -271,11 +272,11 @@ void SoundSys_FadeInTracks(int set)
 CLEAN_AS(func_0200422c, SoundSys_FadeInTracks)
 
 /* func_0200423c: a track mask chosen by `set`, faded out or applied at once. */
-void SoundSys_SetTracks(int set)
+void SoundSys_FadeOutTracks(int set)
 {
     SoundSystem_FadeOutTracks((SoundSystem *) (void *) data_021fd1bc, set);
 }
-CLEAN_AS(func_0200423c, SoundSys_SetTracks)
+CLEAN_AS(func_0200423c, SoundSys_FadeOutTracks)
 
 /* func_0200424c: move the music's volume (clamped to 0..0x7f) over `frames`. */
 void SoundSys_MoveVolume(int volume, int frames)
@@ -285,11 +286,11 @@ void SoundSys_MoveVolume(int volume, int frames)
 CLEAN_AS(func_0200424c, SoundSys_MoveVolume)
 
 /* func_02004260 */
-void SoundSys_Call020f1c00(int value)
+void SoundSys_EndMusic(int value)
 {
     SoundSystem_EndMusic((SoundSystem *) (void *) data_021fd1bc, value);
 }
-CLEAN_AS(func_02004260, SoundSys_Call020f1c00)
+CLEAN_AS(func_02004260, SoundSys_EndMusic)
 
 extern void func_020f1c6c(void *sys, u32 music);
 

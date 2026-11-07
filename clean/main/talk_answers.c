@@ -12,7 +12,7 @@ static_assert(offsetof(TalkAnswer, entry) == 0x64, "talk answer");
 static_assert(offsetof(TalkAnswer, weight) == 0x8b, "talk answer");
 static_assert(sizeof(TalkAnswer) == 0x90, "talk answer");
 static_assert(offsetof(TalkAnswers, count) == 0x2d0, "talk answers");
-static_assert(offsetof(TalkAnswers, picked_name) == 0x2dd, "talk answers");
+static_assert(offsetof(TalkAnswers, picked_next_file) == 0x2dd, "talk answers");
 static_assert(offsetof(TalkAnswers, picked_text) == 0x2f8, "talk answers");
 static_assert(offsetof(TalkAnswers, picked_entry) == 0x354, "talk answers");
 static_assert(sizeof(TalkAnswers) == 0x364, "talk answers");
@@ -37,8 +37,8 @@ CLEAN_AS(func_020ab39c, TalkAnswers_SelectFileName)
 /* func_020ab3a8: the answer the slider's level (0 to 0x1000) picks. The level is cut into 16
  * steps (the top level counts as the last step); the first four answers share the steps by
  * their weights, in order, the first whose running total passes the step being picked (the
- * fourth when none does). The pick keeps its next_message, its message entry and the step, not its name or
- * text.
+ * fourth when none does). The pick keeps its next_message, its message entry and the step, not its next
+ * message's file name or text.
  * QUIRK: the step is the level's bits 8 to 11 as an arithmetic shift of the level shifted left
  * by 4, so levels beyond 0x0fffffff wrap. */
 void TalkAnswers_PickByLevel(TalkAnswers *answers, int level)
@@ -66,7 +66,7 @@ void TalkAnswers_PickByLevel(TalkAnswers *answers, int level)
 }
 CLEAN_AS(func_020ab3a8, TalkAnswers_PickByLevel)
 
-/* func_020ab42c: answer `index` picked: its index, next_message, text, name (at most 0x19
+/* func_020ab42c: answer `index` picked: its index, next_message, text, next file name (at most 0x19
  * characters, always ended) and message entry kept. */
 void TalkAnswers_Pick(TalkAnswers *answers, int index)
 {
@@ -74,9 +74,9 @@ void TalkAnswers_Pick(TalkAnswers *answers, int index)
     answers->picked = index;
     answers->picked_next = *TalkAnswers_AnswerNext(answer);
     TextBase_Copy((TextBase *) answers->picked_text, TalkAnswers_Text(answer));
-    const char *name = TalkAnswers_Name(answer);
-    answers->picked_name[TALK_ANSWERS_NAME_SIZE - 1] = '\0';
-    strncpy(answers->picked_name, name, TALK_ANSWERS_NAME_SIZE - 1);
+    const char *next_file = TalkAnswers_NextFile(answer);
+    answers->picked_next_file[TALK_ANSWERS_NEXT_FILE_SIZE - 1] = '\0';
+    strncpy(answers->picked_next_file, next_file, TALK_ANSWERS_NEXT_FILE_SIZE - 1);
     MessageEntry_Copy(&answers->picked_entry, MessageEntry_Self(TalkAnswers_Entry(answer)));
 }
 CLEAN_AS(func_020ab42c, TalkAnswers_Pick)
@@ -109,12 +109,12 @@ u8 *TalkAnswers_PickedText(TalkAnswers *answers)
 }
 CLEAN_AS(func_020ab4d4, TalkAnswers_PickedText)
 
-/* func_020ab4e0 */
-char *TalkAnswers_PickedName(TalkAnswers *answers)
+/* func_020ab4e0: the picked answer's next message's file name. */
+char *TalkAnswers_PickedNextFile(TalkAnswers *answers)
 {
-    return answers->picked_name;
+    return answers->picked_next_file;
 }
-CLEAN_AS(func_020ab4e0, TalkAnswers_PickedName)
+CLEAN_AS(func_020ab4e0, TalkAnswers_PickedNextFile)
 
 /* func_020ab4ec */
 u8 *TalkAnswers_PickedNext(TalkAnswers *answers)
@@ -201,7 +201,7 @@ void TalkAnswers_ClearPick(TalkAnswers *answers)
 {
     answers->picked = -1;
     answers->picked_next = data_021f43ec;
-    MI_CpuFill8(answers->picked_name, 0, TALK_ANSWERS_NAME_SIZE);
+    MI_CpuFill8(answers->picked_next_file, 0, TALK_ANSWERS_NEXT_FILE_SIZE);
     TextBase_Clear(answers->picked_text);
     MessageEntry_Clear(&answers->picked_entry);
     answers->picked_step = 0;
@@ -227,18 +227,18 @@ CLEAN_AS(func_020ab5f8, TalkAnswers_LoadTexts)
 
 /* func_020ab628: answer `index` set: its message (the byte at `message`), its message file
  * (entry `file` of TalkAnswers_SelectFileName's table), its next_message (the byte at `next_message`), its sound
- * kind and, unless `name` is NULL, its name. Its text is not read here
+ * kind and, unless `next_file` is NULL, its next message's file name. Its text is not read here
  * (TalkAnswers_LoadTexts). */
-void TalkAnswers_Set(TalkAnswers *answers, int index, const u8 *message, int file, const u8 *next_message, const char *name,
-                     int sound_kind)
+void TalkAnswers_Set(TalkAnswers *answers, int index, const u8 *message, int file, const u8 *next_message,
+                     const char *next_file, int sound_kind)
 {
     TalkAnswer *answer = &answers->answers[index];
     TalkAnswers_SetMessage(answer, message);
     TalkAnswers_SetFile(answer, (int) TalkAnswers_SelectFileName((unsigned int) file));
     TalkAnswers_SetNext(answer, next_message);
     TalkAnswers_SetSoundKind(answer, (u32) sound_kind);
-    if (name != NULL) {
-        TalkAnswers_SetName(answer, name);
+    if (next_file != NULL) {
+        TalkAnswers_SetNextFile(answer, next_file);
     }
 }
 CLEAN_AS(func_020ab628, TalkAnswers_Set)
@@ -296,13 +296,13 @@ void TalkAnswers_SetSoundKind(TalkAnswer *answer, u32 sound_kind)
 }
 CLEAN_AS(func_020ab750, TalkAnswers_SetSoundKind)
 
-/* func_020ab758: the name, at most 0x19 characters, always ended. */
-void TalkAnswers_SetName(TalkAnswer *answer, const char *name)
+/* func_020ab758: the next message's file name, at most 0x19 characters, always ended. */
+void TalkAnswers_SetNextFile(TalkAnswer *answer, const char *next_file)
 {
-    answer->name[TALK_ANSWERS_NAME_SIZE - 1] = '\0';
-    strncpy(answer->name, name, TALK_ANSWERS_NAME_SIZE - 1);
+    answer->next_file[TALK_ANSWERS_NEXT_FILE_SIZE - 1] = '\0';
+    strncpy(answer->next_file, next_file, TALK_ANSWERS_NEXT_FILE_SIZE - 1);
 }
-CLEAN_AS(func_020ab758, TalkAnswers_SetName)
+CLEAN_AS(func_020ab758, TalkAnswers_SetNextFile)
 
 /* func_020ab76c: next_message from the byte at `value`. */
 void TalkAnswers_SetNext(TalkAnswer *answer, const u8 *value)
@@ -346,12 +346,12 @@ MessageEntry *TalkAnswers_Entry(TalkAnswer *answer)
 }
 CLEAN_AS(func_020ab78c, TalkAnswers_Entry)
 
-/* func_020ab790 */
-char *TalkAnswers_Name(TalkAnswer *answer)
+/* func_020ab790: the next message's file name. */
+char *TalkAnswers_NextFile(TalkAnswer *answer)
 {
-    return answer->name;
+    return answer->next_file;
 }
-CLEAN_AS(func_020ab790, TalkAnswers_Name)
+CLEAN_AS(func_020ab790, TalkAnswers_NextFile)
 
 /* func_020ab794 */
 u8 *TalkAnswers_AnswerNext(TalkAnswer *answer)
@@ -367,7 +367,7 @@ TextBase *TalkAnswers_Text(TalkAnswer *answer)
 }
 CLEAN_AS(func_020ab798, TalkAnswers_Text)
 
-/* func_020ab79c: the answer cleared: no message, no file, an empty text, name and message entry, no
+/* func_020ab79c: the answer cleared: no message, no file, an empty text, next message's file name and message entry, no
  * weight, the default sound. */
 void TalkAnswers_ClearAnswer(TalkAnswer *answer)
 {
@@ -376,7 +376,7 @@ void TalkAnswers_ClearAnswer(TalkAnswer *answer)
     TextBase_Clear(answer->text);
     MessageEntry_Clear(&answer->entry);
     answer->next_message = data_021f43ec;
-    MI_CpuFill8(answer->name, 0, TALK_ANSWERS_NAME_SIZE);
+    MI_CpuFill8(answer->next_file, 0, TALK_ANSWERS_NEXT_FILE_SIZE);
     answer->weight = 0;
     answer->sound_kind = TALK_ANSWER_SOUND_DEFAULT;
 }

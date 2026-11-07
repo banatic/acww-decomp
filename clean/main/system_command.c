@@ -14,20 +14,11 @@
 #define SYSTEM_RUN_COMMANDS 13 /* the system packet kind of a command list */
 
 /* The villagers' states (villager_state.h, the entries of data_021d13e4) opcode 1 carries, and
- * what it carries of each: the place (1), the object (12), the room score (4) and its flags (2). */
+ * what it carries of each: the place (1), the errand (12, VillagerErrand), the room score (4) and its flags (2). */
 #define COMMAND_ENTRIES 8
 #define COMMAND_ENTRY_SIZE 19
 
-/* An item object (12 bytes): made empty by func_0209bd80 (no item 0xfff1, type 0x16 = none),
- * its item at 8 (func_0209bb70) and type at 0xa (func_0209bc40). */
-typedef struct SystemCommandObject {
-    u32 unk_00;
-    u32 unk_04;
-    u16 item; /* 0x08 */
-    u8 type;  /* 0x0a */
-    u8 unk_0b;
-} SystemCommandObject;
-static_assert(sizeof(SystemCommandObject) == 12, "size");
+static_assert(sizeof(VillagerErrand) == 12, "size");
 
 extern NetSession *data_020ccf94;                   /* the session */
 extern SystemCommandWriter *const data_020ccf98[];  /* the section writers, by opcode */
@@ -99,28 +90,28 @@ int SystemCommand_BuildList(int slot)
 CLEAN_AS(func_02077690, SystemCommand_BuildList)
 
 /* func_02077744: the handler of opcode 1: the eight villagers' states from `data`, 19 bytes
- * each (written by SystemCommand_WriteVillagerStates): the place, the object (of which only its
+ * each (written by SystemCommand_WriteVillagerStates): the place, the errand (of which only its
  * type and item are taken, the low bits of byte 0xb cleared), the room score and its flags.
  * `length` is not read. */
 void SystemCommand_ReadVillagerStates(u8 *data, u16 length)
 {
     (void) length;
-    SystemCommandObject object;
+    VillagerErrand errand;
 
-    VillagerErrand_Construct((VillagerErrand *) &object);
+    VillagerErrand_Construct(&errand);
     for (int i = 0; i < COMMAND_ENTRIES; i++) {
         VillagerState *entry = VillagerTown_StateAt(i);
-        u8 status;
+        u8 place;
         u32 word;
         u16 half;
 
-        MI_CpuCopy8(data, &status, 1);
-        VillagerState_SetPlace(entry, status);
+        MI_CpuCopy8(data, &place, 1);
+        VillagerState_SetPlace(entry, place);
 
-        MI_CpuCopy8(data + 1, &object, sizeof(object));
+        MI_CpuCopy8(data + 1, &errand, sizeof(errand));
         u8 *dst = VillagerState_Errand(entry);
-        u8 type = (u8) VillagerErrand_Type((VillagerErrand *) &object);
-        u16 *item = VillagerErrand_Item((VillagerErrand *) &object);
+        u8 type = (u8) VillagerErrand_Type(&errand);
+        u16 *item = VillagerErrand_Item(&errand);
         VillagerErrand_Set((VillagerErrand *) (void *) dst, type, item, 0);
 
         MI_CpuCopy8(data + 13, &word, 4);
@@ -130,7 +121,7 @@ void SystemCommand_ReadVillagerStates(u8 *data, u16 length)
 
         data += COMMAND_ENTRY_SIZE;
     }
-    VillagerErrand_Destruct((VillagerErrand *) &object);
+    VillagerErrand_Destruct(&errand);
 }
 CLEAN_AS(func_02077744, SystemCommand_ReadVillagerStates)
 
@@ -143,10 +134,10 @@ void SystemCommand_ReadNothing(u8 *data, u16 length)
 CLEAN_AS(func_020777ec, SystemCommand_ReadNothing)
 
 /* func_020777f0: the writer of opcode 1: appends the eight villagers' states to the share
- * block, 19 bytes each: the place (3 for a missing state), the object, the room score and its
+ * block, 19 bytes each: the place (3 for a missing state), the errand, the room score and its
  * flags. `slot` is not read.
  * REQUIRES: func_0207b9d0 gives an entry for every index below 8, as it does. For a missing
- * one the ROM writes status 3 and still reads the other fields through the null pointer. */
+ * one the ROM writes place 3 and still reads the other fields through the null pointer. */
 void SystemCommand_WriteVillagerStates(int slot)
 {
     (void) slot;
@@ -154,9 +145,9 @@ void SystemCommand_WriteVillagerStates(int slot)
 
     for (int i = 0; i < COMMAND_ENTRIES; i++) {
         VillagerState *entry = VillagerTown_StateAt(i);
-        u8 status = entry != NULL ? VillagerState_LinkedPlace(entry) : 3;
-        Session_AppendShareData(session, &status, 1);
-        Session_AppendShareData(session, VillagerState_Errand(entry), sizeof(SystemCommandObject));
+        u8 place = entry != NULL ? VillagerState_LinkedPlace(entry) : 3;
+        Session_AppendShareData(session, &place, 1);
+        Session_AppendShareData(session, VillagerState_Errand(entry), sizeof(VillagerErrand));
         u32 word = entry->room_score;
         Session_AppendShareData(session, &word, 4);
         u16 half = entry->room_score_flags;

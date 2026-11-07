@@ -177,10 +177,10 @@ CLEAN_AS(func_02016448, SpeakerAnim_UpdateSpeed)
  * 0x144 without one. QUIRK: func_02082fec is asked twice. */
 int SpeakerAnim_Number(SpeakerAnim *anim, int which)
 {
-    if (PoolLink_Pool1E48Byte((PoolLink *) anim, which) == 0) {
+    if (PoolLink_SpeakerAnimByte((PoolLink *) anim, which) == 0) {
         return SPEAKER_ANIM_NONE;
     }
-    return AnimSlots_SlotResource((void *) (uintptr_t) PoolLink_Pool1E48Byte((PoolLink *) anim, which));
+    return AnimSlots_SlotResource((void *) (uintptr_t) PoolLink_SpeakerAnimByte((PoolLink *) anim, which));
 }
 CLEAN_AS(func_020164a0, SpeakerAnim_Number)
 
@@ -289,7 +289,7 @@ int SpeakerAnim_TalkResource(SpeakerAnim *anim)
     if (SpeakerAnim_HasTalk(anim) == 0) {
         return 0;
     }
-    int animation = PoolLink_Pool1E48Byte((PoolLink *) anim, SPEAKER_ANIM_SLOT_TALK);
+    int animation = PoolLink_SpeakerAnimByte((PoolLink *) anim, SPEAKER_ANIM_SLOT_TALK);
     if (animation == 0) {
         return 0;
     }
@@ -300,7 +300,7 @@ CLEAN_AS(func_020165bc, SpeakerAnim_TalkResource)
 /* func_020165f4: puts the talking animation (0x143) into slot 2, when the entry has one. */
 void SpeakerAnim_LoadTalk(SpeakerAnim *anim)
 {
-    int animation = PoolLink_Pool1E48Byte((PoolLink *) anim, SPEAKER_ANIM_SLOT_TALK);
+    int animation = PoolLink_SpeakerAnimByte((PoolLink *) anim, SPEAKER_ANIM_SLOT_TALK);
     if (animation != 0) {
         AnimSlots_Load((void *) (uintptr_t) animation, SPEAKER_ANIM_TALK, 0, 0);
     }
@@ -442,7 +442,7 @@ CLEAN_AS(func_020168ac, SpeakerAnim_Resolve)
  * resource, or 0 when the entry has no such slot. */
 int SpeakerAnim_Load(SpeakerAnim *anim, int number, int slot)
 {
-    int animation = PoolLink_Pool1E48Byte((PoolLink *) anim, slot);
+    int animation = PoolLink_SpeakerAnimByte((PoolLink *) anim, slot);
     if (animation == 0) {
         return 0;
     }
@@ -477,19 +477,19 @@ int SpeakerAnim_Init(SpeakerAnim *anim, u8 *object, s32 speed_scale)
 }
 CLEAN_AS(func_0201691c, SpeakerAnim_Init)
 
-/* func_02016998: the destructor: the holder's (PoolLink_Pool1E48Destruct). Returns the member. */
+/* func_02016998: the destructor: the holder's (PoolLink_SpeakerAnimDestruct). Returns the member. */
 SpeakerAnim *SpeakerAnim_Destruct(SpeakerAnim *anim)
 {
-    PoolLink_Pool1E48Destruct((PoolLink *) anim);
+    PoolLink_SpeakerAnimDestruct((PoolLink *) anim);
     return anim;
 }
 CLEAN_AS(func_02016998, SpeakerAnim_Destruct)
 
-/* func_020169a8: the constructor: the holder's (PoolLink_Pool1E48Construct). Returns the
+/* func_020169a8: the constructor: the holder's (PoolLink_SpeakerAnimConstruct). Returns the
  * member. */
 SpeakerAnim *SpeakerAnim_Construct(SpeakerAnim *anim)
 {
-    PoolLink_Pool1E48Construct((PoolLink *) anim);
+    PoolLink_SpeakerAnimConstruct((PoolLink *) anim);
     return anim;
 }
 CLEAN_AS(func_020169a8, SpeakerAnim_Construct)

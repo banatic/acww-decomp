@@ -57,8 +57,8 @@ typedef struct SceneMotion {
 int SceneMotion_FinishAnimation(SceneMotion *self, u8 *object, u16 *item, int animation, u8 flag);
 
 void SceneMotion_RunGoToSpot(SceneMotion *self, u8 *object);
-void SceneMotion_GoToSpotTurnAtSpot(SceneMotion *self, u8 *object);
 void SceneMotion_GoToSpotTurnFirst(SceneMotion *self, u8 *object);
+void SceneMotion_GoToSpotTurnAtSpot(SceneMotion *self, u8 *object);
 void SceneMotion_GoToSpotWalk(SceneMotion *self, u8 *object);
 void SceneMotion_GoToSpotStand(SceneMotion *self, u8 *object);
 int SceneMotion_StartGoToSpot(SceneMotion *self, u8 *object);

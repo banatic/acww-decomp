@@ -96,7 +96,7 @@ typedef struct Sky {
     s32 target_weather;                 /* 0x152c: the level asked for, -1: none */
     u32 direction;                      /* 0x1530: SKY_DIRECTION_... */
     s32 precipitation;                  /* 0x1534: SKY_FALLING_... */
-    u16 unk_1538;                       /* 0x1538: set by func_020bbc90 from the date */
+    u16 rain_angle;                     /* 0x1538: the day's rain angle (Sky_DrawRainAngle) */
     u16 unk_153a;                       /* 0x153a */
     u16 stars_x;                        /* 0x153c: BG1HOFS of the stars */
     u16 stars_y;                        /* 0x153e: BG1VOFS before the shift; 0x100: hidden */
@@ -147,10 +147,10 @@ extern int data_021f6cd8;         /* the sky is drawn */
 void Sky_SwapLineShift(void);
 void Sky_FireShots(int player);
 void Sky_RefreshEvents(int arg);
-void Sky_RedrawDayAngleForLink(void);
-void Sky_RedrawDayAngleForMode3(void);
-void Sky_RedrawDayAngleForMode4(void);
-void Sky_RedrawDayAngleForMode2(void);
+void Sky_RedrawRainAngleForLink(void);
+void Sky_RedrawRainAngleForMode3(void);
+void Sky_RedrawRainAngleForMode4(void);
+void Sky_RedrawRainAngleForMode2(void);
 void Sky_TimeForStarScroll(DateTime *when, int scroll_x, int scroll_y);
 unsigned short Sky_StarsY(void);
 unsigned short Sky_StarsX(void);
@@ -205,7 +205,7 @@ int Sky_LoadPalette(int screen);
 void Sky_ColorWeights(Sky *sky, u32 *minute_weight, u32 *fade_weight);
 void Sky_MixPalette(SkyPalette *dst, const SkyPalette *a, const SkyPalette *b, int weight);
 void Sky_MixColor(u16 *dst, const u16 *a, const u16 *b, int weight);
-void Sky_DrawDayAngle(Sky *sky);
+void Sky_DrawRainAngle(Sky *sky);
 int Sky_AllocPalettes(SkyPalette **palettes);
 int Sky_LoadHourColors(void);
 unsigned char Sky_LightLevel(int index);

@@ -74,14 +74,13 @@ static unsigned int item_info_full_number(const u16 *item)
 
 static const ItemInfoAlways *item_info_always(unsigned int number)
 {
-    return (const ItemInfoAlways *) (void *) RecordFile_Record(RecordFiles_First((FurnitureRecordFiles *) &data_021cb5e0),
-                                                               number);
+    return (const ItemInfoAlways *) (void *) RecordFile_Record(RecordFiles_First((RecordFiles *) &data_021cb5e0), number);
 }
 
 static const ItemInfoIndoor *item_info_indoor(unsigned int number)
 {
     return (const ItemInfoIndoor *) (void *) RecordFile_Record(
-        (FurnitureRecordFile *) (uintptr_t) RecordFiles_Second((int) (uintptr_t) &data_021cb5e0), number);
+        (RecordFile *) (uintptr_t) RecordFiles_Second((int) (uintptr_t) &data_021cb5e0), number);
 }
 
 /* Bit `bit` of the flags of the item's full pile; 0 without the record. */
@@ -377,7 +376,7 @@ CLEAN_AS(func_020629ec, ItemInfo_Icon)
 const ItemInfoName *ItemInfo_NameRecord(const u16 *item)
 {
     return (const ItemInfoName *) (void *) (RecordFile_Record(
-        (FurnitureRecordFile *) (uintptr_t) RecordFiles_Third((int) (uintptr_t) &data_021cb5e0), item_info_full_number(item)));
+        (RecordFile *) (uintptr_t) RecordFiles_Third((int) (uintptr_t) &data_021cb5e0), item_info_full_number(item)));
 }
 CLEAN_AS(func_02062a28, ItemInfo_NameRecord)
 
@@ -488,21 +487,21 @@ CLEAN_AS(func_02062c0c, ItemInfo_FindHeldModels)
 /* func_02062c94: indoor.bin's copy in memory freed. */
 int ItemInfoFiles_FreeIndoor(ItemInfoFiles *files)
 {
-    return RecordFiles_FreeSecond((FurnitureRecordFiles *) files);
+    return RecordFiles_FreeSecond((RecordFiles *) files);
 }
 CLEAN_AS(func_02062c94, ItemInfoFiles_FreeIndoor)
 
 /* func_02062c9c: unless `stream`, indoor.bin read whole into memory. */
 void ItemInfoFiles_LoadIndoor(ItemInfoFiles *files, int stream)
 {
-    RecordFiles_LoadSecond((FurnitureRecordFiles *) files, stream);
+    RecordFiles_LoadSecond((RecordFiles *) files, stream);
 }
 CLEAN_AS(func_02062c9c, ItemInfoFiles_LoadIndoor)
 
 /* The record files' functions ItemInfoFiles uses beside those above (main's record file code,
  * as furniture_info.c names them): close the three; open the three; close one; read all of
  * one's records; open one; a record file's destructor and constructor. */
-extern void func_0206e71c(FurnitureRecordFiles *files);
+extern void func_0206e71c(RecordFiles *files);
 
 extern const char data_020de5b0[]; /* "/item_info/always.bin" */
 extern const char data_020de5c8[]; /* "/item_info/indoor.bin" */

@@ -35,7 +35,7 @@ void SystemPacket_SetActivityPlayerEF(u8 *payload, u32 length, int sender);  /* 
 void SystemPacket_RunCommands(u8 *payload, u32 length, int sender);          /* kind 13 */
 void SystemPacket_WriteSharedRecords(u8 *payload, u32 length, int sender);   /* kind 12 */
 void SystemPacket_SetActivityFlagE4(u8 *payload, u32 length, int sender);    /* kind 11 */
-void SystemPacket_SetActivityDataDC(u8 *payload, u32 length, int sender);    /* kind 10 */
+void SystemPacket_SetActivityDateTime(u8 *payload, u32 length, int sender);  /* kind 10 */
 void SystemPacket_SetActivityFlagD9(u8 *payload, u32 length, int sender);    /* kind 9 */
 void SystemPacket_RequestMode(u8 *payload, u32 length, int sender);          /* kind 8 */
 void SystemPacket_SetLinkFlagC4(u8 *payload, u32 length, int sender);        /* kind 7 */

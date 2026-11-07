@@ -797,7 +797,7 @@ int Snowman_Push(Snowman *snowman, Vec3 *behind, s16 *angle, int *speed, int for
     *behind = point;
     snowman->flags |= SNOWMAN_FLAG_PUSHED;
     snowman->heading = heading;
-    SoundEmitter_PlayEx(snowman_sound(snowman), 0x820, 0x7f, 0);
+    SoundEmitter_PlayHeld(snowman_sound(snowman), 0x820, 0x7f, 0);
     fx32 growth = FX_Div(snowman->size - SNOWMAN_SIZE_PUSHABLE, SNOWMAN_SIZE_PUSHABLE);
     fx32 rate = FX_MulFunc(0xc00, 0x1000 - growth) + 0x200;
     Approach_EaseS32(&snowman->roll_factor, 0x1000, rate, 0x1000);

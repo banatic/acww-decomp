@@ -183,8 +183,8 @@ static void scene_map_clear_tile(AcreMap *map, int x, int z, u16 *none)
 /* func_0204d0ac: on the edge of the map's inner acres (all but the outer ring of acres) every
  * growing code past its first stage is taken off: along the top row, then down the left and
  * right columns, row by row. Each tile's unit is retyped first (AcreTile_RetypeUnit).
- * QUIRK: the bottom row is not cleared (but for its two corners), and the top left corner is
- * done twice. */
+ * QUIRK: the bottom row is not cleared (but for its two corners), and the top left and top
+ * right corners are done twice. */
 void SceneMap_ClearRimGrowth(AcreMap *map)
 {
     if (map == NULL) {

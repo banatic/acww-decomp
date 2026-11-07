@@ -10,6 +10,7 @@
 #define CLEAN_MAIN_DESIGN_ASSETS_H
 
 #include "design.h"
+#include "furniture_info.h" /* RecordFile (record_file.h) */
 #include "types.h"
 
 #define DESIGN_PALETTES 16
@@ -27,11 +28,6 @@ typedef struct DesignManager {
     u8 unk_00[4];
     DesignPalettes palettes;
 } DesignManager;
-
-/* A file of fixed-size records (func_0206e890 opens one; 0x1c bytes). */
-typedef struct RecordFile {
-    u32 words[7];
-} RecordFile;
 
 /* A copy of the design item's model (0x2c4 bytes) and what sends a texture from it (0x38). */
 typedef struct DesignModel {

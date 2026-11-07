@@ -4,10 +4,11 @@
  * vtable entry 4 gives the address of an entry's "taken" byte (or null). The game keeps eight
  * of them, each behind a function that returns it:
  *
- *   data_021d1e48 (func_02083b00)  data_021d1e20 (func_02083708)
+ *   data_021d1e48 (func_02083b00)  speakers' animations (speaker_anim.h)
+ *   data_021d1e20 (func_02083708)  villagers' clothes (villager_clothes.h)
  *   data_021d1e8c (func_020835a0)  the block slots (resource_pools.h)
- *   data_021d1e0c (func_02083460)  2-byte entries: animation sets (scene_face.c)
- *   data_021d1e34 (func_02083320)  2-byte entries: parts (scene_face.c)
+ *   data_021d1e0c (func_02083460)  2-byte entries: face animation slots (scene_face.c)
+ *   data_021d1e34 (func_02083320)  2-byte entries: face animation heaps (scene_face.c)
  *   data_021d1f04 (func_020831c0)  0x6c-byte entries: held items (held_item_link.h)
  *   data_021d1e64 (func_0208385c)  the heap4 slots (resource_pools.h)
  *   data_021d1ebc (func_0208399c)  the heap8 slots (resource_pools.h)
@@ -18,13 +19,13 @@
  * its vtable entry 2 the function that returns its pool:
  *
  *   vtable          pool           entry 2
- *   data_020e19dc   parts          PoolLink_PartPool
+ *   data_020e19dc   face heaps     PoolLink_FaceAnimHeapPool
  *   data_020e19f0   heap4 slots    PoolLink_Heap4Pool
  *   data_020e1a04   heap8 slots    PoolLink_Heap8Pool
- *   data_020e1a18   data_021d1e48  PoolLink_Pool1E48
+ *   data_020e1a18   speaker anims  PoolLink_SpeakerAnimPool
  *   data_020e1a40   held items     PoolLink_ItemPool
- *   data_020e1a54   data_021d1e20  PoolLink_Pool1E20
- *   data_020e1a68   animation sets PoolLink_AnimSetPool
+ *   data_020e1a54   clothes        PoolLink_ClothesPool
+ *   data_020e1a68   face slots     PoolLink_FaceAnimSlotPool
  *   data_020e1a7c   block slots    PoolLink_BlockPool
  *
  * At the start and at the end of a scene every entry of six of the pools (all but the heap
@@ -65,13 +66,13 @@ struct PoolLink {
     u8 unused_05[3];
 };
 
-void PoolLink_Pool1E48(void);
+void PoolLink_SpeakerAnimPool(void);
 void PoolLink_Heap8Pool(void);
 void PoolLink_Heap4Pool(void);
-void PoolLink_Pool1E20(void);
+void PoolLink_ClothesPool(void);
 void PoolLink_BlockPool(void);
-void PoolLink_AnimSetPool(void);
-void PoolLink_PartPool(void);
+void PoolLink_FaceAnimSlotPool(void);
+void PoolLink_FaceAnimHeapPool(void);
 void PoolLink_ItemPool(void);
 void PoolLink_FreeAllAtSceneEnd(void);
 void PoolLink_FreeAllAtSceneStart(void);
@@ -82,22 +83,22 @@ int PoolLink_ItemOpen(PoolLink *link, int arg);
 PoolLink *PoolLink_ItemDestructDelete(PoolLink *link);
 PoolLink *PoolLink_ItemDestruct(PoolLink *link);
 PoolLink *PoolLink_ItemConstruct(PoolLink *link);
-int PoolLink_Part(PoolLink *link);
-PoolLink *PoolLink_PartDestructDelete(PoolLink *link);
-PoolLink *PoolLink_PartDestruct(PoolLink *link);
-PoolLink *PoolLink_PartConstruct(PoolLink *link);
-int PoolLink_AnimSet(PoolLink *link);
-PoolLink *PoolLink_AnimSetDestructDelete(PoolLink *link);
-PoolLink *PoolLink_AnimSetDestruct(PoolLink *link);
-PoolLink *PoolLink_AnimSetConstruct(PoolLink *link);
+int PoolLink_FaceAnimHeap(PoolLink *link);
+PoolLink *PoolLink_FaceAnimHeapDestructDelete(PoolLink *link);
+PoolLink *PoolLink_FaceAnimHeapDestruct(PoolLink *link);
+PoolLink *PoolLink_FaceAnimHeapConstruct(PoolLink *link);
+int PoolLink_FaceAnimSlot(PoolLink *link);
+PoolLink *PoolLink_FaceAnimSlotDestructDelete(PoolLink *link);
+PoolLink *PoolLink_FaceAnimSlotDestruct(PoolLink *link);
+PoolLink *PoolLink_FaceAnimSlotConstruct(PoolLink *link);
 int PoolLink_Block(PoolLink *link);
 PoolLink *PoolLink_BlockDestructDelete(PoolLink *link);
 PoolLink *PoolLink_BlockDestruct(PoolLink *link);
 PoolLink *PoolLink_BlockConstruct(PoolLink *link);
-int PoolLink_Pool1E20Entry(PoolLink *link);
-PoolLink *PoolLink_Pool1E20DestructDelete(PoolLink *link);
-PoolLink *PoolLink_Pool1E20Destruct(PoolLink *link);
-PoolLink *PoolLink_Pool1E20Construct(PoolLink *link);
+int PoolLink_ClothesEntry(PoolLink *link);
+PoolLink *PoolLink_ClothesDestructDelete(PoolLink *link);
+PoolLink *PoolLink_ClothesDestruct(PoolLink *link);
+PoolLink *PoolLink_ClothesConstruct(PoolLink *link);
 int PoolLink_Heap4(PoolLink *link);
 PoolLink *PoolLink_Heap4DestructDelete(PoolLink *link);
 PoolLink *PoolLink_Heap4Destruct(PoolLink *link);
@@ -106,10 +107,10 @@ int PoolLink_Heap8(PoolLink *link);
 PoolLink *PoolLink_Heap8DestructDelete(PoolLink *link);
 PoolLink *PoolLink_Heap8Destruct(PoolLink *link);
 PoolLink *PoolLink_Heap8Construct(PoolLink *link);
-int PoolLink_Pool1E48Byte(PoolLink *link, int which);
-PoolLink *PoolLink_Pool1E48DestructDelete(PoolLink *link);
-PoolLink *PoolLink_Pool1E48Destruct(PoolLink *link);
-PoolLink *PoolLink_Pool1E48Construct(PoolLink *link);
+int PoolLink_SpeakerAnimByte(PoolLink *link, int which);
+PoolLink *PoolLink_SpeakerAnimDestructDelete(PoolLink *link);
+PoolLink *PoolLink_SpeakerAnimDestruct(PoolLink *link);
+PoolLink *PoolLink_SpeakerAnimConstruct(PoolLink *link);
 void PoolLink_Release(PoolLink *link);
 int PoolLink_Take(PoolLink *link);
 void PoolLink_BaseDestruct(PoolLink *link);

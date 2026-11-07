@@ -104,7 +104,7 @@ extern const Vec3 data_021fbee8;
 extern const SpawnerEvent data_020d0684[];
 extern SpawnerCondition *const data_020d0654[];
 extern const SpawnerEvent data_020d064c[];
-/* Spawner_CheckProfile56OrD025In's eight events and the event each needs going on. */
+/* Spawner_CheckEvents06a4In's eight events and the event each needs going on. */
 extern const SpawnerEvent data_020d06a4[];
 extern const int data_020d0664[];
 
@@ -415,7 +415,7 @@ int Spawner_CheckD023In(int check_mode)
 }
 CLEAN_AS(func_02084188, Spawner_CheckD023In)
 
-/* func_02084210 (from the spawner's update): while this console is in the session, the player
+/* func_02084210 (from Spawner_Create): while this console is in the session, the player
  * lacks flag 1 and func_020883cc holds, part 0x0c of the object at data_021d27ac goes to
  * func_02087f58 outdoors. */
 void Spawner_UpdatePartCInSession(Spawner *self)

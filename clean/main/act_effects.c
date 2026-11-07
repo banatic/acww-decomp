@@ -115,18 +115,18 @@ void ActEffects_StopSound(ActEffects *self)
 }
 CLEAN_AS(func_0201a5b0, ActEffects_StopSound)
 
-/* func_0201a5d8: a kept sound through the emitter is played again (SoundEmitter_PlayEx). */
+/* func_0201a5d8: a kept sound through the emitter is played again (SoundEmitter_PlayHeld). */
 void ActEffects_KeepSound(ActEffects *self)
 {
     if (self->sound == ACT_EFFECTS_SOUND_KEPT && self->on_handle == 0) {
-        SoundEmitter_PlayEx(self->emitter, act_effects_sound(self), ACT_EFFECTS_VOLUME, 0);
+        SoundEmitter_PlayHeld(self->emitter, act_effects_sound(self), ACT_EFFECTS_VOLUME, 0);
     }
 }
 CLEAN_AS(func_0201a5d8, ActEffects_KeepSound)
 
 /* func_0201a608: when `cue` repeats or no sound is on, the act's sound starts the way its
  * record's byte 0x19 says, which becomes the group's sound state: 1 through the emitter's
- * SoundEmitter_PlayEx (or SoundSys_StartOnHandle40), another through SoundEmitter_PlayB (or
+ * SoundEmitter_PlayHeld (or SoundSys_StartOnHandle40), another through SoundEmitter_PlayB (or
  * SoundSys_StartOnHandle40B).
  * REQUIRES: the act is below 60 (SceneMotion_Act gives null for others, which the ROM reads
  * through). */
@@ -139,7 +139,7 @@ void ActEffects_StartSound(ActEffects *self, ActEffectCue *cue)
     self->sound = record->unk_19[0];
     if (self->sound == ACT_EFFECTS_SOUND_KEPT) {
         if (self->on_handle == 0) {
-            SoundEmitter_PlayEx(self->emitter, act_effects_sound(self), ACT_EFFECTS_VOLUME, 0);
+            SoundEmitter_PlayHeld(self->emitter, act_effects_sound(self), ACT_EFFECTS_VOLUME, 0);
         } else {
             SoundSys_StartOnHandle40((u16) act_effects_sound(self));
         }

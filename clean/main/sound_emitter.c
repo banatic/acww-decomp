@@ -222,11 +222,11 @@ CLEAN_AS(func_020044a0, SoundEmitter_FinishB)
 
 /* func_020044b0: play sound `number` through the sound layer's other entry; 0 while the sound
  * state's byte 0x4d is 1. */
-int SoundEmitter_PlayEx(SoundEmitter *emitter, int number, int arg2, int arg3)
+int SoundEmitter_PlayHeld(SoundEmitter *emitter, int number, int volume, int pitch)
 {
-    return SoundEmitterClass_PlayHeld((SoundEmitterObject *) emitter, number, arg2, arg3);
+    return SoundEmitterClass_PlayHeld((SoundEmitterObject *) emitter, number, volume, pitch);
 }
-CLEAN_AS(func_020044b0, SoundEmitter_PlayEx)
+CLEAN_AS(func_020044b0, SoundEmitter_PlayHeld)
 
 /* func_020044c0: a second copy of SoundEmitter_Play. */
 int SoundEmitter_PlayB(SoundEmitter *emitter, int number, int volume, int arg)

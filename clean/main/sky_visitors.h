@@ -9,7 +9,7 @@
  *   SkyShots_StartLook2): its present falls straight down, slowed by drag.
  * - Kind 6, the spaceship (it sets flag 9 of the state block when set up): plays two animations as it is
  *   thrown up and sideways, then falls with a drift, giving off small objects of kind 2 every
- *   two or three frames (SkySpaceship_Sparkle); off the screen it marks calendar event 0x44 for
+ *   one or two frames (SkySpaceship_Sparkle); off the screen it marks calendar event 0x44 for
  *   today and has the crashed spaceship (building 0x5020) placed near the player's position
  *   (EventBuildings_PlaceSpaceship), whose parts the gull (overlay 72) has the player find.
  * - Kind 7 (west to east when its resource is 0x28): gives one object of kind 2 where it was

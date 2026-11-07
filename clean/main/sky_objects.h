@@ -5,7 +5,7 @@
  * time of day and the fireworks show of kind-9 objects launched from four places (sky_fireworks.h).
  *
  * Without the sky drawn (Sky's data_021f6cd8 0) only the thunder and the show run, and the show
- * is then heard rather than seen (SkyFireworks_Launch). */
+ * then only lights the scene (its flashes, SkyFireworks_Launch). */
 #ifndef CLEAN_MAIN_SKY_OBJECTS_H
 #define CLEAN_MAIN_SKY_OBJECTS_H
 

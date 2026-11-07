@@ -60,10 +60,10 @@ extern int NNS_G3dBindMdlPltt(u8 *model, void *texture);
 /* ---- The sound emitter */
 
 /* func_ov004_0222c2c8: sound `number` played at full volume through the sound layer's other
- * entry (SoundEmitter_PlayEx). */
+ * entry (SoundEmitter_PlayHeld). */
 int RmoSound_PlayEx(SoundEmitter *emitter, int number)
 {
-    return SoundEmitter_PlayEx(emitter, number, RMO_SOUND_VOLUME, 0);
+    return SoundEmitter_PlayHeld(emitter, number, RMO_SOUND_VOLUME, 0);
 }
 CLEAN_AS(func_ov004_0222c2c8, RmoSound_PlayEx)
 

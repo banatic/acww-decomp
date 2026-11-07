@@ -825,7 +825,7 @@ void StaticInit_RoomCells(void)
 }
 CLEAN_AS(__sinit_020c52d8, StaticInit_RoomCells)
 
-extern FurnitureRecordFiles data_021c8c48;
+extern RecordFiles data_021c8c48;
 extern StaticInitRecord data_021c8c3c;
 extern void func_02053ed8(void *files); /* FurnitureFiles_Destruct */
 
@@ -1167,17 +1167,17 @@ void StaticInit_Colours5ba0(void)
 }
 CLEAN_AS(__sinit_020c5ba0, StaticInit_Colours5ba0)
 
-/* The sound set (sound.h); it has no constructor. */
+/* The town tune's melody set (MelodySet, town_tune.h); it has no constructor. */
 extern u8 data_021cfbcc[];
 extern StaticInitRecord data_021cfbb0;
 extern void func_0206eac0(void *set); /* its destructor (its two melody players') */
 
-/* __sinit_020c5c24: the sound set registered. */
-void StaticInit_SoundSet(void)
+/* __sinit_020c5c24: the melody set registered. */
+void StaticInit_MelodySet(void)
 {
     static_init_register(data_021cfbcc, func_0206eac0, &data_021cfbb0);
 }
-CLEAN_AS(__sinit_020c5c24, StaticInit_SoundSet)
+CLEAN_AS(__sinit_020c5c24, StaticInit_MelodySet)
 
 /* The owners the overlay groups are loaded for (overlay_groups.c), a letter like
  * data_021c2604, and the object of global_021cfc98.h. */
@@ -1352,9 +1352,9 @@ void StaticInit_SlotPools(void)
     static_init_register(&data_021d1e20, func_02083744, &data_021d1dd0);
     SlotPool_BlocksConstruct(&data_021d1e8c);
     static_init_register(&data_021d1e8c, func_020835dc, &data_021d1de8);
-    SlotPool_AnimSetsConstruct(&data_021d1e0c);
+    SlotPool_FaceAnimSlotsConstruct(&data_021d1e0c);
     static_init_register(&data_021d1e0c, func_0208349c, &data_021d1ddc);
-    SlotPool_PartsConstruct(&data_021d1e34);
+    SlotPool_FaceAnimHeapsConstruct(&data_021d1e34);
     static_init_register(&data_021d1e34, func_0208335c, &data_021d1e00);
     SlotPool_ItemsConstruct(&data_021d1f04);
     static_init_register(&data_021d1f04, func_020831fc, &data_021d1df4);

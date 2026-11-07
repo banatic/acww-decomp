@@ -26,8 +26,8 @@ extern const u8 data_020ccc48[];
 extern const SceneLightsPreset data_020ccc7c[];
 /* The fireworks' colours, by kind - 1. */
 extern const u16 data_020ccb98[];
-/* The thunder's sound, by the timer's state (only state 0 is read): in scenes 0 and 31, and in
- * the others. */
+/* The thunder's sound, by the timer's state (only state 0 is read): in scenes 0 and 0x31, and
+ * in the others. */
 extern const u16 data_020ccb6c[];
 extern const u16 data_020ccb68[];
 /* 0 outdoors, 1 in a room. */
@@ -661,7 +661,7 @@ void SceneFlashTimer_Delete(SceneFlashTimer *timer)
 CLEAN_AS(func_02065560, SceneFlashTimer_Delete)
 
 /* func_02065564: a frame of a timer: counting, it counts down and, once below 0, plays the
- * thunder (sound 0x7f3 in scenes 0 and 31, else 0x4cf) and goes idle.
+ * thunder (sound 0x7f3 in scenes 0 and 0x31, else 0x4cf) and goes idle.
  * QUIRK: a timer in any other state is made idle. */
 void SceneFlashTimer_Run(SceneFlashTimer *timer)
 {

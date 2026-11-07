@@ -1302,7 +1302,7 @@ int CafeMaster_Update(CafeMaster *master)
             }
             master->on_beat = 1;
         }
-        const int *entry = SoundSys_FirstEntryData();
+        const int *entry = SoundSys_OwnerData();
         if (entry != NULL && ((const s8 *) entry)[3] != CAFE_MASTER_SOUND_STOPPED) {
             model->base.frames.frame = 0;
             model->base.frames.speed = entry[4];

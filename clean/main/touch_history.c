@@ -38,7 +38,7 @@ extern u16 data_021f6c6c; /* the raw y (data_021fbde4) */
 /* func_020b9280: this frame's touch read. The values of the frame before are kept first; with
  * the lid closed the pen is lifted (going up this frame if it was down, at (0, 0)), else the
  * touch screen is read. While the pen is down its place is kept (and, when it just went down,
- * where it went down) and the x is handed to the sound system (SoundSys_SetPlayerByte); the
+ * where it went down) and the x is handed to the sound system (SoundSys_SetPan); the
  * count since it went down or up runs.
  * QUIRK: the raw x and y of the frame before keep only their low byte. */
 void TouchHistory_Update(void)
@@ -77,7 +77,7 @@ void TouchHistory_Update(void)
         u8 x = (u8) data_021fbde0;
         data_021f6c58 = x;
         data_021f6c54 = (u8) data_021fbde4;
-        SoundSys_SetPlayerByte(x);
+        SoundSys_SetPan(x);
     } else {
         if (data_021fbddc != 0) {
             data_021f6c64 = 0;

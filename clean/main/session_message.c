@@ -411,10 +411,11 @@ static u8 *session_message_villager_entry(const u8 *byte)
     return (u8 *) VillagerMemory_At(record, entry);
 }
 
-/* func_02076a18: the entry the payload names gets the sender's name (func_02081e94).
- * REQUIRES: size <= 4 (the payload is one byte, SessionVillager_SendMemorySenderByIndex); the original
+/* func_02076a18: the memory the payload names is taken for the sender's player
+ * (VillagerMemoryEntry_Take).
+ * REQUIRES: size <= 4 (the payload is one byte, SessionVillager_SendMemoryTakeByIndex); the original
  * reads it into a 4-byte variable. */
-void SessionMessage_SetVillagerMemorySender(int size, int kind, int scene, int slot)
+void SessionMessage_TakeVillagerMemory(int size, int kind, int scene, int slot)
 {
     (void) kind;
     (void) scene;
@@ -427,13 +428,13 @@ void SessionMessage_SetVillagerMemorySender(int size, int kind, int scene, int s
                                  (const TownName *) (void *) data_021dc7aa, NULL);
     }
 }
-CLEAN_AS(func_02076a18, SessionMessage_SetVillagerMemorySender)
+CLEAN_AS(func_02076a18, SessionMessage_TakeVillagerMemory)
 
-/* func_020769b8: the entry the payload names is filled with the sender's name
- * (func_02081e14).
- * REQUIRES: size <= 4 (the payload is one byte, SessionVillager_SendMemoryFillByIndex); the original
+/* func_020769b8: the memory the payload names is updated for a meeting with the sender's
+ * player (VillagerMemoryEntry_Update).
+ * REQUIRES: size <= 4 (the payload is one byte, SessionVillager_SendMemoryUpdateByIndex); the original
  * reads it into a 4-byte variable. */
-void SessionMessage_FillVillagerMemory(int size, int kind, int scene, int slot)
+void SessionMessage_UpdateVillagerMemory(int size, int kind, int scene, int slot)
 {
     (void) kind;
     (void) scene;
@@ -446,7 +447,7 @@ void SessionMessage_FillVillagerMemory(int size, int kind, int scene, int slot)
                                    (const TownName *) (void *) data_021dc7aa, NULL);
     }
 }
-CLEAN_AS(func_020769b8, SessionMessage_FillVillagerMemory)
+CLEAN_AS(func_020769b8, SessionMessage_UpdateVillagerMemory)
 
 /* func_0207695c: the memory the first byte names gets the second byte as its impression (byte
  * 0x6d); the second byte is read only when the memory exists. */

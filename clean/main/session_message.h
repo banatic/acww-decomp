@@ -7,7 +7,8 @@
  * activity object (func_020a132c), or on items on the town map; handlers 52 and 53 are a
  * scene claim's answer and release (scene_claim.h); handlers 54-63 change one of the villagers
  * (data_021e5a2c, eight entries of 0x7ec bytes, func_0207cec0) or an entry of one
- * (func_020807c0), their payload naming the villager in its high nibble.
+ * (func_020807c0), their payload naming the villager in a high nibble (54-57 and 60-62), in
+ * the whole of byte 2 (58 and 63) or in byte 8 (59).
  *
  * Handlers 20-51 read their payload and hand it on: to Design_Receive (21), to
  * PlayerMessages_Dispatch (22), to the sender's player record (func_020984fc; 43, 44, 46), to
@@ -75,8 +76,8 @@ void SessionMessage_Handle50(int size, int kind, int scene, u32 slot);          
 void SessionMessage_ReceiveSceneRequest(int size, int kind, int scene, int slot);        /* 51 */
 void SessionMessage_ReceiveSceneAnswer(int size, int kind, u8 scene, u32 slot);          /* 52 */
 void SessionMessage_ReceiveSceneRelease(int size, int kind, u8 scene, u32 slot);         /* 53 */
-void SessionMessage_SetVillagerMemorySender(int size, int kind, int scene, int slot);    /* 54 */
-void SessionMessage_FillVillagerMemory(int size, int kind, int scene, int slot);         /* 55 */
+void SessionMessage_TakeVillagerMemory(int size, int kind, int scene, int slot);         /* 54 */
+void SessionMessage_UpdateVillagerMemory(int size, int kind, int scene, int slot);       /* 55 */
 void SessionMessage_SetVillagerMemoryImpression(int size, int kind, u8 scene, u32 slot); /* 56 */
 void SessionMessage_SetVillagerMemoryFondness(int size, int kind, u8 scene, u32 slot);   /* 57 */
 void SessionMessage_SetVillagerClothes(int size, int kind, u8 scene, u32 slot);          /* 58 */

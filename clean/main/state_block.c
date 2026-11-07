@@ -133,7 +133,7 @@ extern const MemberFn data_020e367c, data_020e3654, data_020e366c, data_020e3664
 
 /* The default town (StateBlock_StartMode3). */
 extern const StateBlockTown data_020e368c;
-/* A sound effect for each value of func_0203d470. */
+/* A capture effect for each value of PlayerOptions_StereoInUse. */
 extern const int data_020d1b90[];
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
@@ -330,8 +330,9 @@ static void settle_town(StateBlock *block)
     TownLayout_SetUpperSettings((unsigned int) (uintptr_t) block->layout);
 }
 
-/* The end of modes 6, 5, 1 and 0: villager index 0x16c cleared (-1), the villagers outdoors
- * updated keeping their time, func_02087eb0, and the villagers searched. */
+/* The end of modes 6, 5, 1 and 0: no birthday greeter (VillagerState_SetBirthdayGreeter(-1)),
+ * the villagers outdoors updated keeping their time, part 0x30 of the block at data_021d27ac
+ * cleared and every room scored (VillagerTown_ScoreAllRooms). */
 static void finish_villagers(StateBlock *block)
 {
     VillagerState_SetBirthdayGreeter(-1);
@@ -385,7 +386,8 @@ void StateBlock_StartMode5(StateBlock *block)
 CLEAN_AS(func_0209eac8, StateBlock_StartMode5)
 
 /* func_0209eb74 (mode 4): the town loaded and its villagers updated without the designs
- * (VillagerTown_Update); flag 0 cleared in each of the town's player records.
+ * (VillagerTown_Update); the stung flag cleared in each of the town's player records
+ * (PlayerRecord_SetStung).
  * QUIRK: the records are those of the game's block (data_021dc7a8), whatever `block` is. */
 void StateBlock_StartMode4(StateBlock *block)
 {
@@ -394,7 +396,7 @@ void StateBlock_StartMode4(StateBlock *block)
     VillagerPlot_GiveHouses(villagers_of(block));
     VillagerState_SetBirthdayGreeter(-1);
     VillagerRoster_UpdateOutdoors(villagers_of(block), 1);
-    Sky_RedrawDayAngleForMode4();
+    Sky_RedrawRainAngleForMode4();
     Block021d27acPart30_Clear(Block021d27ac_Part30(Block021d27ac_Get()));
     for (int i = 0; i < STATE_BLOCK_PLAYERS; i++) {
         u8 *record = PlayerRecords_TownRecord(data_021dc7a8.players, i);
@@ -419,17 +421,19 @@ void StateBlock_StartMode3(StateBlock *block)
     VillagerState_SetBirthdayGreeter(-1);
     VillagerRoster_UpdateOutdoors(villagers_of(block), 0);
     SaveStamp_Clear((SaveStamp *) (void *) block->part_173f8);
-    Sky_RedrawDayAngleForMode3();
+    Sky_RedrawRainAngleForMode3();
     Block021d27acPart30_Clear(Block021d27ac_Part30(Block021d27ac_Get()));
 }
 CLEAN_AS(func_0209ebec, StateBlock_StartMode3)
 
 /* func_0209ec74 (mode 2): the town loaded (in scene 6 its map, rooms, clock and the
- * villagers' update are left out), then the day's mail, the sound effect for func_0203d470's
- * value and the town's other systems brought up to date. In scene 6, with villager index
- * 0x16c at -1, a player record with flag 2 (unsaved) and without flag 0x23 (new resident) gets func_02088b68 and
- * func_02087e9c. Flag 2 is then set and the villager letter sent; outside scene 6 the
- * villagers are searched. */
+ * villagers' update are left out), then the welcome letter (RoomScoreMail_SendWelcome), the
+ * capture effect for the stereo option (PlayerOptions_StereoInUse) and the town's other systems
+ * brought up to date. In scene 6, with no birthday greeter, a player record with flag 2
+ * (unsaved) and without flag 0x23 (new resident) has its resets raised
+ * (PlayerField2416_RaiseResets) and part 0x30 of the block at data_021d27ac set. Flag 2 is then
+ * set and the villager letter sent; outside scene 6 every room is scored
+ * (VillagerTown_ScoreAllRooms). */
 void StateBlock_StartMode2(StateBlock *block)
 {
     u8 *record = PlayerRecords_Current();
@@ -449,7 +453,7 @@ void StateBlock_StartMode2(StateBlock *block)
     Constellations_AcceptExchanged();
     Mail_DeliverWaiting();
     StartKind_Clear();
-    Sky_RedrawDayAngleForMode2();
+    Sky_RedrawRainAngleForMode2();
     Block020ba298_SetByte9();
     TurnipPrices_RedrawIfClockMoved((TurnipPrices *) (void *) block->part_17364);
     VillagerTown_PickBirthdayGreeter(villagers_of(block), NULL);

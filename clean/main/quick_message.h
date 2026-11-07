@@ -5,7 +5,8 @@
  *
  * The process has three parts, each a small class of its own:
  *   0x050  the sender (vtable data_020da5e8): each frame, while no message was posted in the
- *          last 30 frames (data_021c6730), a button pressed in one of four scenes posts
+ *          last 30 frames (data_021c6730), a button pressed in one of four player-actor
+ *          states (0x28, 0x2b, 8 and 9) posts
  *          message 0xf0-0xf4 or 0xef of the menu archive under this system's slot, with
  *          sound 0x32 (QuickMessage_PollButtons; QuickMessage_PostDefault posts 0xef);
  *   0x054  the board (vtable data_020da5d8, its address in data_021c6738): four balloons

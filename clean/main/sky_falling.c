@@ -146,7 +146,7 @@ CLEAN_AS(func_020c1334, SkyRain_Run)
 /* func_020c13bc: a drop set up: at x 128 plus or less up to 137 (on the other side from the
  * drop before), 20 to 35 pixels above the screen or with `start` 1 lower by up to its line
  * and 256 pixels; falling at the angle of a random spread (up to 0x556 either way) plus
- * Sky.unk_1538 (read as signed), times the wind, turned to match and twice as tall; one of
+ * Sky.rain_angle (read as signed), times the wind, turned to match and twice as tall; one of
  * three looks (animations 2 to 4) with its line: 128 to 191 pixels past 256, 64 to 127, or 0
  * to 63. */
 void SkyRain_SetUp(SkyObject *object, int start)
@@ -162,7 +162,7 @@ void SkyRain_SetUp(SkyObject *object, int start)
     body->position.z = 0;
     s32 wind = data_021f8b48.wind;
     int spread = (int) MainRandom_Below(0xaac) - 0x556;
-    int turn = (spread + (s16) data_021f75b0.unk_1538) * wind;
+    int turn = (spread + (s16) data_021f75b0.rain_angle) * wind;
     u16 angle = (u16) ((u32) turn >> 12);
     int index = (angle >> 4) * 2;
     body->velocity.x = -SKY_RAIN_SPEED * FX_SinCosTable_[index];

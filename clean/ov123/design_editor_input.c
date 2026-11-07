@@ -231,7 +231,7 @@ int DesignEditor_MoveCanvasCursor(DesignEditor *self, int keys, int quiet)
     if (quiet == 0) {
         SoundSys_PlaySe(0x865);
     }
-    SoundSys_ChangePlayerByte((u8) DesignEditor_ScreenX(self, x));
+    SoundSys_ChangePan((u8) DesignEditor_ScreenX(self, x));
     return 1;
 }
 CLEAN_AS(func_ov123_022999b0, DesignEditor_MoveCanvasCursor)
@@ -771,7 +771,7 @@ void DesignEditor_EnterIdleByKeys(DesignEditor *self)
         DesignEditor_HideCursor(self);
         MenuScene_SetKeyRepeat(de_scene(self), 5, 0, 5);
         MenuScene_SetSubState(de_scene(self), DESIGN_EDITOR_SUB_CANVAS);
-        SoundSys_ChangePlayerByte((u8) DesignEditor_ScreenX(self, self->cursor_px));
+        SoundSys_ChangePan((u8) DesignEditor_ScreenX(self, self->cursor_px));
     } else {
         DesignEditor_PlaceCursorSprite(self);
         MenuScene_ResetKeyRepeat(de_scene(self));

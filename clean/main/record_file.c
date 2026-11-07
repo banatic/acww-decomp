@@ -8,11 +8,11 @@
 #include "clean.h"
 #include "rom_file.h"
 
-static_assert(sizeof(FurnitureRecordFile) == 0x1c, "record file size");
-static_assert(offsetof(FurnitureRecordFile, record_size) == 0x08, "record size");
-static_assert(offsetof(FurnitureRecordFile, whole) == 0x10, "whole copy");
-static_assert(offsetof(FurnitureRecordFile, cached) == 0x14, "cached block");
-static_assert(offsetof(FurnitureRecordFile, cache) == 0x18, "cache");
+static_assert(sizeof(RecordFile) == 0x1c, "record file size");
+static_assert(offsetof(RecordFile, record_size) == 0x08, "record size");
+static_assert(offsetof(RecordFile, whole) == 0x10, "whole copy");
+static_assert(offsetof(RecordFile, cached) == 0x14, "cached block");
+static_assert(offsetof(RecordFile, cache) == 0x18, "cache");
 static_assert(sizeof(RomFileId) == 8, "file id size");
 
 /* The game's record of the save memory. */
@@ -23,7 +23,7 @@ extern int FS_OpenFileFast(RomFileFs *file, RomFileId id);
 extern int FS_CloseFile(RomFileFs *file);
 extern int FS_ConvertPathToFileID(void *id, const char *path);
 
-static RomFileId record_file_id(const FurnitureRecordFile *file)
+static RomFileId record_file_id(const RecordFile *file)
 {
     RomFileId id;
     memcpy(&id, file->file_id, sizeof id);
@@ -31,7 +31,7 @@ static RomFileId record_file_id(const FurnitureRecordFile *file)
 }
 
 /* The file id's first word, its archive, cleared. */
-static void clear_archive(FurnitureRecordFile *file)
+static void clear_archive(RecordFile *file)
 {
     memset(file->file_id, 0, 4); /* a 32-bit pointer */
 }
@@ -39,7 +39,7 @@ static void clear_archive(FurnitureRecordFile *file)
 /* func_0206e778: the block of eight records holding record `index` read into the cache.
  * Nothing is read when the file cannot be opened.
  * QUIRK: the save memory's status is asked first and not looked at. */
-void RecordFile_ReadBlock(FurnitureRecordFile *file, unsigned int index)
+void RecordFile_ReadBlock(RecordFile *file, unsigned int index)
 {
     RomFileFs fs;
     unsigned int block = index / RECORD_FILE_CACHE_RECORDS;
@@ -56,7 +56,7 @@ CLEAN_AS(func_0206e778, RecordFile_ReadBlock)
 
 /* func_0206e7bc: record `index`, from the whole copy when there is one, else from the cache
  * (its block read first unless it is the one cached). NULL when the file has no cache. */
-char *RecordFile_Record(FurnitureRecordFile *file, unsigned int index)
+char *RecordFile_Record(RecordFile *file, unsigned int index)
 {
     unsigned int block = index / RECORD_FILE_CACHE_RECORDS;
     unsigned int in_block = index % RECORD_FILE_CACHE_RECORDS;
@@ -79,7 +79,7 @@ CLEAN_AS(func_0206e7bc, RecordFile_Record)
 /* func_0206e808: the file closed: nothing cached, no records, and the whole copy and the
  * cache freed.
  * QUIRK: only the first word of the file id (its archive) is cleared. */
-void RecordFile_Close(FurnitureRecordFile *file)
+void RecordFile_Close(RecordFile *file)
 {
     clear_archive(file);
     file->cached = -1;
@@ -97,7 +97,7 @@ void RecordFile_Close(FurnitureRecordFile *file)
 CLEAN_AS(func_0206e808, RecordFile_Close)
 
 /* func_0206e83c: the whole copy freed, if there is one. */
-void RecordFile_FreeWhole(FurnitureRecordFile *file)
+void RecordFile_FreeWhole(RecordFile *file)
 {
     if (file->whole != NULL) {
         Heap_FreeCurrent(file->whole);
@@ -109,7 +109,7 @@ CLEAN_AS(func_0206e83c, RecordFile_FreeWhole)
 /* func_0206e854: the whole file read into memory, allocated unless a copy is there already.
  * QUIRK: the save memory's status is asked first and not looked at.
  * BUG: a failed allocation is not noticed: the file is read to address 0. */
-void RecordFile_ReadWhole(FurnitureRecordFile *file)
+void RecordFile_ReadWhole(RecordFile *file)
 {
     u32 size = file->record_size * file->records;
 
@@ -125,7 +125,7 @@ CLEAN_AS(func_0206e854, RecordFile_ReadWhole)
  * its cache allocated. Always 1.
  * QUIRK: whether the path was found is not looked at, and the cached block is left as it was
  * (RecordFile_Construct and RecordFile_Close set it to none). */
-int RecordFile_Open(FurnitureRecordFile *file, const char *path, int record_size, int records)
+int RecordFile_Open(RecordFile *file, const char *path, int record_size, int records)
 {
     file->record_size = (u32) record_size;
     file->records = (u32) records;
@@ -136,7 +136,7 @@ int RecordFile_Open(FurnitureRecordFile *file, const char *path, int record_size
 CLEAN_AS(func_0206e890, RecordFile_Open)
 
 /* func_0206e8b4: the destructor: the file closed; the file's address is the answer. */
-int RecordFile_Destruct(FurnitureRecordFile *file)
+int RecordFile_Destruct(RecordFile *file)
 {
     RecordFile_Close(file);
     return (int) (uintptr_t) file;
@@ -145,7 +145,7 @@ CLEAN_AS(func_0206e8b4, RecordFile_Destruct)
 
 /* func_0206e8c4: the constructor: nothing open, read or cached.
  * QUIRK: only the first word of the file id (its archive) is cleared. */
-void RecordFile_Construct(FurnitureRecordFile *file)
+void RecordFile_Construct(RecordFile *file)
 {
     clear_archive(file);
     file->cached = -1;

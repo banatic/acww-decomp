@@ -172,8 +172,9 @@ CLEAN_AS(func_02014b14, SceneCommand_SoundWaitStart)
 
 /* func_02014b30 (command 10, step 0): the first speaker's sound (its vtable slot 0x84). With
  * none (0xffff) the command is finished at step 3. Else the talk is held, the sound set plays
- * it (with the sixteen values unpacked into data_021cfbbc, or by number alone when
- * `sound_without_values`) and the step is 1.
+ * it as a town tune (the sixteen values unpacked into data_021cfbbc, TownTune_Play), or, when
+ * `sound_without_values`, plays a random preset melody (TownTune_PlayRandomPreset); the step
+ * is 1.
  * QUIRK: without a first speaker the sound is 0, which is played. */
 int SceneCommand_SoundStart(SceneCommandScene *scene)
 {
@@ -202,8 +203,8 @@ int SceneCommand_SoundStart(SceneCommandScene *scene)
 }
 CLEAN_AS(func_02014b30, SceneCommand_SoundStart)
 
-/* func_02014ba0: asks for the first speaker's sound, played by number alone. Whether the scene
- * took it. */
+/* func_02014ba0: asks for the first speaker's sound, played as a random preset melody
+ * (TownTune_PlayRandomPreset). Whether the scene took it. */
 int SceneCommand_RequestSound(SceneCommandScene *scene)
 {
     if (SceneCommand_Request(scene, SCENE_COMMAND_SOUND)) {
@@ -708,7 +709,7 @@ int SceneCommand_OpenScreen(SceneCommandScene *scene)
             opened = GroupParams_OpenWithMask((u16) mask, params->pocket_arg);
             break;
         }
-        case SCENE_COMMAND_SCREEN_MODE_25:
+        case SCENE_COMMAND_SCREEN_LETTER:
             params->stay_on_line = 1;
             opened = GroupParams_OpenLetter();
             break;

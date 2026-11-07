@@ -6,8 +6,8 @@
 
 #include "clean.h"
 
-/* func_02039444: is `item` in one of the owner's slots? */
-BOOL SlotOwner_Contains(const SlotOwner *owner, const void *item)
+/* func_02039444: whether `item` is one of the board's shown balloons. */
+BOOL QuickMessage_IsShown(const SlotOwner *owner, const void *item)
 {
     for (int i = 0; i < 4; i++) {
         if (owner->slots[i] == item) {
@@ -16,6 +16,6 @@ BOOL SlotOwner_Contains(const SlotOwner *owner, const void *item)
     }
     return FALSE;
 }
-CLEAN_AS(func_02039444, SlotOwner_Contains)
+CLEAN_AS(func_02039444, QuickMessage_IsShown)
 
 static_assert(offsetof(SlotOwner, slots) == 0x2f4, "slot array offset");

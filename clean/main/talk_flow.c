@@ -478,7 +478,7 @@ CLEAN_AS(func_02067108, TalkFlow_EnterNext)
 void TalkFlow_TakeAnswer(TalkObject *talk)
 {
     const u8 *message = TalkAnswers_PickedNext(&talk->answers);
-    const char *name = TalkAnswers_PickedName(&talk->answers);
+    const char *name = TalkAnswers_PickedNextFile(&talk->answers);
     TalkObject_SetMessage(talk, message, name);
     TalkObject_GoOn(talk);
     talk->unk_1e96 = 1;
@@ -522,7 +522,7 @@ void TalkFlow_NextMessage(TalkObject *talk)
     TalkObject_ClearImpression(talk);
     TalkObject_ClearNickname(talk);
     TalkObject_ClearPraise(talk);
-    TalkObject_ClearMemory(talk);
+    TalkObject_ClearGreeting(talk);
     TalkFlow_NewPage(talk);
 }
 CLEAN_AS(func_02067b54, TalkFlow_NextMessage)

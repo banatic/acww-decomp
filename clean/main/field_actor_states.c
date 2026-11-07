@@ -2072,7 +2072,7 @@ void FieldActor_HeightState6F(FieldActor *actor)
     }
     FieldActor_MoveWithCollision(actor);
     u8 *object = (u8 *) (uintptr_t) SceneClaim_Exit();
-    if (SceneClaimExit_Placed((SceneClaimExit *) (void *) object) != 1) {
+    if (SceneClaimExit_DoorKind((SceneClaimExit *) (void *) object) != 1) {
         return;
     }
     int ground = CollisionQuery_FloorHeight(0);

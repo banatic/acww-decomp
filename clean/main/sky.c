@@ -163,33 +163,33 @@ void Sky_RefreshEvents(int arg)
 }
 CLEAN_AS(func_020ba36c, Sky_RefreshEvents)
 
-/* func_020ba37c: the sky's day angle redrawn (Sky_DrawDayAngle, by ActivityLinkJobs). */
-void Sky_RedrawDayAngleForLink(void)
+/* func_020ba37c: the sky's rain angle redrawn (Sky_DrawRainAngle, by ActivityLinkJobs). */
+void Sky_RedrawRainAngleForLink(void)
 {
-    Sky_DrawDayAngle(&data_021f75b0);
+    Sky_DrawRainAngle(&data_021f75b0);
 }
-CLEAN_AS(func_020ba37c, Sky_RedrawDayAngleForLink)
+CLEAN_AS(func_020ba37c, Sky_RedrawRainAngleForLink)
 
 /* func_020ba38c: the same, by StateBlock_StartMode3. */
-void Sky_RedrawDayAngleForMode3(void)
+void Sky_RedrawRainAngleForMode3(void)
 {
-    Sky_DrawDayAngle(&data_021f75b0);
+    Sky_DrawRainAngle(&data_021f75b0);
 }
-CLEAN_AS(func_020ba38c, Sky_RedrawDayAngleForMode3)
+CLEAN_AS(func_020ba38c, Sky_RedrawRainAngleForMode3)
 
 /* func_020ba39c: the same, by StateBlock_StartMode4. */
-void Sky_RedrawDayAngleForMode4(void)
+void Sky_RedrawRainAngleForMode4(void)
 {
-    Sky_DrawDayAngle(&data_021f75b0);
+    Sky_DrawRainAngle(&data_021f75b0);
 }
-CLEAN_AS(func_020ba39c, Sky_RedrawDayAngleForMode4)
+CLEAN_AS(func_020ba39c, Sky_RedrawRainAngleForMode4)
 
 /* func_020ba3ac: the same, by StateBlock_StartMode2. */
-void Sky_RedrawDayAngleForMode2(void)
+void Sky_RedrawRainAngleForMode2(void)
 {
-    Sky_DrawDayAngle(&data_021f75b0);
+    Sky_DrawRainAngle(&data_021f75b0);
 }
-CLEAN_AS(func_020ba3ac, Sky_RedrawDayAngleForMode2)
+CLEAN_AS(func_020ba3ac, Sky_RedrawRainAngleForMode2)
 
 /* func_020ba3bc: the next time at which the stars are scrolled by (scroll_x, scroll_y) from
  * where they are now: as many days ahead as columns of 8 pixels to the right (the 0x200 pixels
@@ -1026,7 +1026,7 @@ void Sky_ChangeStart(Sky *sky)
         Sky_LoadCloudScreen(sky, &sky->change_screen_data, &sky->change_screen_size, kind, next)) {
         Sky_SetWeathers(sky, sky->weather, next);
         if (sky->weather < SKY_WEATHER_RAIN && sky->next_weather >= SKY_WEATHER_RAIN) {
-            Sky_DrawDayAngle(sky);
+            Sky_DrawRainAngle(sky);
         }
         sky->row = 0;
         sky->fade = 0;
@@ -1236,7 +1236,7 @@ CLEAN_AS(func_020bb8e0, Sky_Reset)
 #define SKY_LIGHT_COLORS 4
 #define SKY_LIGHT_LEVELS 2
 #define SKY_CLEAR_DEPTH 0x1c2
-#define SKY_DAY_ANGLE_RANGE 0x2aaa /* a sixth of a turn */
+#define SKY_RAIN_ANGLE_RANGE 0x2aaa /* a sixth of a turn */
 
 extern const char *const data_020e5fe0[2][2];       /* the hour colour files */
 extern const s32 data_020d2364[SKY_WEATHER_LEVELS]; /* the set of hour colours per level */
@@ -1271,7 +1271,7 @@ Sky *Sky_Construct(Sky *sky)
     sky->palettes[1] = NULL;
     sky->palettes[2] = NULL;
     sky->precipitation = SKY_FALLING_NONE;
-    Sky_DrawDayAngle(sky);
+    Sky_DrawRainAngle(sky);
     return sky;
 }
 CLEAN_AS(func_020bb99c, Sky_Construct)
@@ -1375,10 +1375,11 @@ void Sky_MixColor(u16 *dst, const u16 *a, const u16 *b, int weight)
 }
 CLEAN_AS(func_020bbbf0, Sky_MixColor)
 
-/* func_020bbc90: the day's angle (Sky.unk_1538), within a twelfth of a turn either way, drawn
- * from the town's number and today's date (the day, month and year).
+/* func_020bbc90: the day's rain angle (Sky.rain_angle, the slant of the rain's drops,
+ * SkyRain_SetUp), within a twelfth of a turn either way, drawn from the town's number and
+ * today's date (the day, month and year).
  * QUIRK: the generator is seeded with 1 before it is seeded with the date. */
-void Sky_DrawDayAngle(Sky *sky)
+void Sky_DrawRainAngle(Sky *sky)
 {
     DateTime now = {0};
     StateBlockTown town;
@@ -1389,9 +1390,9 @@ void Sky_DrawDayAngle(Sky *sky)
     Random random;
     Random_Init(&random, 1);
     Random_Init(&random, seed);
-    sky->unk_1538 = (u16) (Random_Below(&random, SKY_DAY_ANGLE_RANGE) - SKY_DAY_ANGLE_RANGE / 2);
+    sky->rain_angle = (u16) (Random_Below(&random, SKY_RAIN_ANGLE_RANGE) - SKY_RAIN_ANGLE_RANGE / 2);
 }
-CLEAN_AS(func_020bbc90, Sky_DrawDayAngle)
+CLEAN_AS(func_020bbc90, Sky_DrawRainAngle)
 
 /* func_020bbcfc: the three palette buffers allocated where missing; 0 when one could not be. */
 int Sky_AllocPalettes(SkyPalette **palettes)

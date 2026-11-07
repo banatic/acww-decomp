@@ -171,7 +171,7 @@ void SceneFace_Play(SceneFace *self, int number_a, int number_b, int flags, int 
         return;
     }
 
-    void *set = (void *) (uintptr_t) PoolLink_AnimSet((PoolLink *) (void *) self->set_link);
+    void *set = (void *) (uintptr_t) PoolLink_FaceAnimSlot((PoolLink *) (void *) self->set_link);
     if (number_a != 0 || self->anim_a_number != 0) {
         FaceAnimSlots_Load(set, number_a, 1, 0);
         NNS_G3dGetAnmByIdx(FaceAnimSlots_SlotDataA(set), 0);
@@ -224,7 +224,7 @@ void SceneFace_PlayB(SceneFace *self, int number, int flags)
     if (!SceneFace_IsReady(self)) {
         return;
     }
-    void *set = (void *) (uintptr_t) PoolLink_AnimSet((PoolLink *) (void *) self->set_link);
+    void *set = (void *) (uintptr_t) PoolLink_FaceAnimSlot((PoolLink *) (void *) self->set_link);
     FaceAnimSlots_Load(set, number, 1, 0);
     TexPatternAnim_Start((TexPatternAnim *) &self->anim_b, (void *) (uintptr_t) FaceAnimSlots_SlotDataB(set), 0, 0, flags,
                          SCENE_FACE_SPEED);
@@ -319,7 +319,7 @@ int SceneFace_Load(SceneFace *self, void *model)
     if (!PoolLink_Take((PoolLink *) (void *) self->part_link)) {
         return 0;
     }
-    void *part = (void *) (uintptr_t) PoolLink_Part((PoolLink *) (void *) self->part_link);
+    void *part = (void *) (uintptr_t) PoolLink_FaceAnimHeap((PoolLink *) (void *) self->part_link);
     int g3d = *(const int *) ((const u8 *) model + SCENE_FACE_MODEL_G3D);
     int block = ResourcePools_BlockSlotBlock(texture);
     if (!TexPatternAnim_Load((TexPatternAnim *) &self->anim_a, (u8 *) (uintptr_t) g3d, (u8 *) (uintptr_t) block, 1,
@@ -363,9 +363,9 @@ SceneFace *SceneFace_Destruct(SceneFace *self)
 {
     TexPatternAnim_Destruct((TexPatternAnim *) &self->anim_b);
     TexPatternAnim_Destruct((TexPatternAnim *) &self->anim_a);
-    PoolLink_AnimSetDestruct((PoolLink *) (void *) self->set_link);
+    PoolLink_FaceAnimSlotDestruct((PoolLink *) (void *) self->set_link);
     PoolLink_BlockDestruct((PoolLink *) (void *) self->texture_link);
-    PoolLink_PartDestruct((PoolLink *) (void *) self->part_link);
+    PoolLink_FaceAnimHeapDestruct((PoolLink *) (void *) self->part_link);
     FaceAnimTimer_Destruct(self->timer);
     return self;
 }
@@ -376,9 +376,9 @@ CLEAN_AS(func_0201a3f8, SceneFace_Destruct)
 SceneFace *SceneFace_Construct(SceneFace *self)
 {
     FaceAnimTimer_Construct(self->timer);
-    PoolLink_PartConstruct((PoolLink *) (void *) self->part_link);
+    PoolLink_FaceAnimHeapConstruct((PoolLink *) (void *) self->part_link);
     PoolLink_BlockConstruct((PoolLink *) (void *) self->texture_link);
-    PoolLink_AnimSetConstruct((PoolLink *) (void *) self->set_link);
+    PoolLink_FaceAnimSlotConstruct((PoolLink *) (void *) self->set_link);
     TexPatternAnim_Construct((TexPatternAnim *) &self->anim_a);
     TexPatternAnim_Construct((TexPatternAnim *) &self->anim_b);
     self->ready = 0;

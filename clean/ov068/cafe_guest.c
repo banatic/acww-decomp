@@ -534,7 +534,7 @@ CLEAN_AS(func_ov068_02273b70, CafeGuestScene_GiveSong)
  * BUG: with no entry in the sound system, its data is copied from address 0. */
 void CafeGuestScene_FollowShow(CafeGuestScene *scene)
 {
-    const CafeGuestShow *now = (const CafeGuestShow *) (const void *) SoundSys_FirstEntryData();
+    const CafeGuestShow *now = (const CafeGuestShow *) (const void *) SoundSys_OwnerData();
     CafeGuestShow *seen = &scene->show;
     CafeGuest *owner = scene->owner;
     StaffRollOverlay_Update();

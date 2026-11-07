@@ -1,7 +1,7 @@
 /* The process that answers the START button (class vtable data_020e3708, 0xa4 bytes, made by
  * func_0209f9fc). In the town, START opens a talk of message file "sp_etc_sequence2" or
- * "sp_etc_sequence4" through the process's own message receiver; a yes posts event 46 to
- * main's event queue (func_020b6434), after the other systems of a linked session answered
+ * "sp_etc_sequence4" through the process's own message receiver; a yes sets the scene exit to
+ * scene 46 (SceneExit_SetToScene), after the other systems of a linked session answered
  * (Session_SendLocalStatus).
  *
  * The process runs one of six states (StartMenuState). Each state has an entry and an update
@@ -18,7 +18,7 @@ enum StartMenuState {
     START_MENU_IDLE = 0,   /* waiting for START */
     START_MENU_OPEN = 1,   /* the talk asked for */
     START_MENU_TALK = 2,   /* the talk is up; back to idle once it closed */
-    START_MENU_LEAVE = 3,  /* once the talk closed, event 46 posted */
+    START_MENU_LEAVE = 3,  /* once the talk closed, the exit set to scene 46 */
     START_MENU_WAIT_2 = 4, /* local status 2 sent; waiting for the session's answer */
     START_MENU_WAIT_3 = 5, /* local status 3 sent; waiting for the session's answer */
     START_MENU_STATES

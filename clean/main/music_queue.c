@@ -374,7 +374,7 @@ void MusicQueue_RemoveDone(MusicQueue *queue)
 CLEAN_AS(func_02035040, MusicQueue_RemoveDone)
 
 /* func_020350a4: when the current request has a music, a word 0x08 handed on (to
- * SoundSys_Call020f1c00 next frame): that of the first request ahead of it not done, else its
+ * SoundSys_EndMusic next frame): that of the first request ahead of it not done, else its
  * own when it is done. */
 void Obj021c526c_SendRequestValue(Obj021c526c *self)
 {
@@ -694,7 +694,7 @@ void Music2f0_ApplyMode(Music2f0 *self)
     } else if (second >= 3 && kind == 2) {
         mode = 0x0d;
     }
-    SoundSys_SetMode(mode);
+    SoundSys_SetArrangement(mode);
 }
 CLEAN_AS(func_020356fc, Music2f0_ApplyMode)
 
@@ -725,7 +725,7 @@ void Music2f0_SetTracksForScene(void)
             break;
     }
     if (set != 0) {
-        SoundSys_SetTracks(set);
+        SoundSys_FadeOutTracks(set);
     }
 }
 CLEAN_AS(func_02035750, Music2f0_SetTracksForScene)
@@ -765,7 +765,7 @@ void Music2f0_SetTracksForScene22(Music2f0 *self)
 {
     (void) self;
     if (SceneQuery_Current() == 0x22) {
-        SoundSys_SetTracks(5);
+        SoundSys_FadeOutTracks(5);
     }
 }
 CLEAN_AS(func_0203584c, Music2f0_SetTracksForScene22)
@@ -815,7 +815,7 @@ void Music_SetTracksForSceneChange(void)
     int set = music_tracks_for_change(next, current);
 
     if (set != 0) {
-        SoundSys_SetTracks(set);
+        SoundSys_FadeOutTracks(set);
     }
 }
 CLEAN_AS(func_02035930, Music_SetTracksForSceneChange)

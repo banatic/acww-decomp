@@ -128,7 +128,7 @@ void TalkTags_PutLikedNpc(TalkTagsWalker *walker);
  * - group 0: characters that stand for codes in a text, put as themselves ("*", "/", "&", "%",
  *   "{"), and nothing for the other kinds;
  * - group 1: the walk itself: a pause, a stop that keeps the window, the whole text at once,
- *   no hurrying, a text the villager remembers, the window shaken with a sound, the receiver's
+ *   no hurrying, the greeting the player taught the villager, the window shaken with a sound, the receiver's
  *   slot 0x1c, the talk's word 0x10;
  * - group 2: two to five choices from the tag's texts (also with the last as the cancel), after
  *   the walk went through a lone tag 1/1;
@@ -187,8 +187,8 @@ void TalkTags_Receiver1cWith0(TalkTagsWalker *walker);
 void TalkTags_ShakeStrong(TalkTagsWalker *walker);
 void TalkTags_ShakeMedium(TalkTagsWalker *walker);
 void TalkTags_ShakeLight(TalkTagsWalker *walker);
-void TalkTags_RememberedEnd(void);
-void TalkTags_RememberedText(TalkTagsWalker *walker);
+void TalkTags_GreetingEnd(void);
+void TalkTags_GreetingText(TalkTagsWalker *walker);
 void TalkTags_HurryAllowed(TalkTagsWalker *walker);
 void TalkTags_HurryForbidden(TalkTagsWalker *walker);
 void TalkTags_InstantOff(TalkTagsWalker *walker);

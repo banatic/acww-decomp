@@ -94,7 +94,7 @@ void TownGenerator_PickCandidate(TownGenerator *generator, int number)
     }
     data_021dc580 = candidate;
 
-    const u8 *kinds = (const u8 *) RecordFile_Record((FurnitureRecordFile *) &generator->candidates, (unsigned int) candidate);
+    const u8 *kinds = (const u8 *) RecordFile_Record((RecordFile *) &generator->candidates, (unsigned int) candidate);
     if (kinds == NULL) {
         return;
     }
@@ -523,16 +523,16 @@ CLEAN_AS(func_0209cec0, TownGenerator_Generate)
 /* func_0209cf70 */
 void TownGenerator_CloseCandidates(TownGenerator *generator)
 {
-    RecordFile_Close((FurnitureRecordFile *) &generator->candidates);
+    RecordFile_Close((RecordFile *) &generator->candidates);
 }
 CLEAN_AS(func_0209cf70, TownGenerator_CloseCandidates)
 
 /* func_0209cf80: opens "/bg/rndCand.bin" and reads its 524 candidates; whether it opened. */
 int TownGenerator_OpenCandidates(TownGenerator *generator)
 {
-    if (RecordFile_Open((FurnitureRecordFile *) &generator->candidates, data_020e35ec, TOWN_GENERATOR_CANDIDATE_SIZE,
+    if (RecordFile_Open((RecordFile *) &generator->candidates, data_020e35ec, TOWN_GENERATOR_CANDIDATE_SIZE,
                         TOWN_GENERATOR_CANDIDATES)) {
-        RecordFile_ReadWhole((FurnitureRecordFile *) &generator->candidates);
+        RecordFile_ReadWhole((RecordFile *) &generator->candidates);
         return 1;
     }
     return 0;
@@ -542,7 +542,7 @@ CLEAN_AS(func_0209cf80, TownGenerator_OpenCandidates)
 /* func_0209cfb8: the generator's destructor. */
 TownGenerator *TownGenerator_Destruct(TownGenerator *generator)
 {
-    RecordFile_Destruct((FurnitureRecordFile *) &generator->candidates);
+    RecordFile_Destruct((RecordFile *) &generator->candidates);
     __cxa_vec_cleanup(generator->cells, TOWN_GENERATOR_CELLS, sizeof(TownGeneratorCell), func_0209d038);
     return generator;
 }
@@ -552,7 +552,7 @@ CLEAN_AS(func_0209cfb8, TownGenerator_Destruct)
 TownGenerator *TownGenerator_Construct(TownGenerator *generator)
 {
     __cxa_vec_ctor(generator->cells, TOWN_GENERATOR_CELLS, sizeof(TownGeneratorCell), func_0209d03c, func_0209d038);
-    RecordFile_Construct((FurnitureRecordFile *) &generator->candidates);
+    RecordFile_Construct((RecordFile *) &generator->candidates);
     return generator;
 }
 CLEAN_AS(func_0209cfe0, TownGenerator_Construct)
