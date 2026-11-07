@@ -35,13 +35,13 @@ extern const u8 data_ov003_022396ac[];
 /* The town's record in the state block. */
 extern TownRecord data_021f39fc;
 
-/* func_ov003_0221e9d8 (vtable slot 0x8c): whether a talk asks main for a visit record; always
- * 0, so the talk starts at once. */
-int SignBoard_WantsVisit(void)
+/* func_ov003_0221e9d8 (vtable slot 0x8c, TownObjectActor_IsOpen): whether it is open, so a talk
+ * asks main for a visit record; always 0, so the talk starts at once. */
+int SignBoard_IsOpen(void)
 {
     return 0;
 }
-CLEAN_AS(func_ov003_0221e9d8, SignBoard_WantsVisit)
+CLEAN_AS(func_ov003_0221e9d8, SignBoard_IsOpen)
 
 /* func_ov003_0221e9dc (vtable slot 0x78, before a talk): names the receiver "obj_etc_board",
  * picks message 1 + (number % 14), and puts the name of the town's fruit in part 1 of the talk

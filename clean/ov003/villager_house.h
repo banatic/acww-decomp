@@ -32,7 +32,8 @@
 #include "types.h"
 
 /* Bits of VillagerHouse.flags. */
-#define VILLAGER_HOUSE_FLAG_ERROR 0x02 /* the talk is "obj_etc_error"'s */
+#define VILLAGER_HOUSE_FLAG_FULL                                                                                              \
+    0x02 /* the visit record said 2 (as TOWN_OBJECT_ACTOR_FLAG_FULL): the talk is "obj_etc_error"'s */
 
 /* A model object of main (Obj_020dd05c, 0xb8 bytes; destructor func_020551e0, constructor
  * func_02055210). */
@@ -75,9 +76,9 @@ typedef struct VillagerHouse {
     u8 unk_19C[0x1a0 - 0x19c];
     Mtx43 matrix; /* that model object's placement (its matrix, 0x64 bytes in) */
     u8 unk_1D0[0x235 - 0x1d0];
-    u8 flags_235;   /* bit 0: slot 0x18 leaves the X model's animation alone */
-    u8 flags;       /* VILLAGER_HOUSE_FLAG_* */
-    u8 message_set; /* nonzero: the messages of the second table */
+    u8 flags_235;       /* bit 0: slot 0x18 leaves the X model's animation alone */
+    u8 flags;           /* VILLAGER_HOUSE_FLAG_* */
+    u8 villager_asleep; /* the visit record said 3: the asleep messages (as TownObjectActor.villager_asleep) */
     u8 unk_238[0x2b4 - 0x238];
     VillagerHouseModel x_model; /* the second model, from "/str/npcHsX.arc" */
     VillagerHouseAnim x_anim;   /* "obj_x_deco" on the X model */
@@ -86,7 +87,7 @@ typedef struct VillagerHouse {
 int VillagerHouse_Slot98(void);
 int VillagerHouse_Slot90(void);
 int VillagerHouse_Slot9C(VillagerHouse *house);
-int VillagerHouse_Slot8C(VillagerHouse *house);
+int VillagerHouse_IsOpen(VillagerHouse *house);
 void VillagerHouse_PrepareTalk(VillagerHouse *house);
 void VillagerHouse_GetAnimO(void);
 void VillagerHouse_GetAnimI(void);

@@ -91,9 +91,9 @@ static void RoomObject02252cd4_update_stood_on(RoomObject02252cd4 *object)
     }
 }
 
-/* Whether the entry's state lets the player be sent, and the action it is sent with: state 0
- * (action 0); for kind 0x26 also state 3 (action 1) and state 1 (action 2). The entry's state
- * is read again for each comparison. */
+/* Whether the side pushed of the entry (RoomPushes_Side) lets the player be sent, and the action
+ * it is sent with: side 0 (action 0); for kind 0x26 also side 3 (action 1) and side 1 (action
+ * 2). The entry's side is read again for each comparison. */
 static int RoomObject02252cd4_entry_ready(RoomObject02252cd4 *object, void *entry, u8 *action)
 {
     *action = 0;

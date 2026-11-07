@@ -56,7 +56,7 @@ extern IconModels *data_ov004_02258ae4;
 extern DroppedItem data_ov004_02258af4[DROPPED_ITEMS];
 extern const char data_ov004_02255c1c[];
 
-extern AcreMap *data_021c80bc;   /* the town's map, or null */
+extern AcreMap *data_021c80bc;   /* the scene's map, or null */
 extern void *data_021c67a4;      /* the field camera, or null */
 extern const Vec3 data_021c67d0; /* the point it looks at */
 extern Mtx43 data_021fbe48;      /* the matrix being built */
@@ -102,7 +102,7 @@ int IconModels_Release(IconModels *self)
 }
 CLEAN_AS(func_ov004_02233c20, IconModels_Release)
 
-/* func_ov004_02233c44 (the process's draw): with the town's map and the camera, the items on
+/* func_ov004_02233c44 (the process's draw): with the scene's map and the camera, the items on
  * the map, then those on their way. */
 int IconModels_Draw(IconModels *self)
 {

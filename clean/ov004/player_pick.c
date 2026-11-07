@@ -71,8 +71,8 @@ static_assert(offsetof(PlayerPick, fixed) == 0x338, "the fixed tag's text");
 /* How far the player walks off from the start position, along z. */
 #define PLAYER_PICK_LEAVE_DISTANCE 0x6000
 #define PLAYER_PICK_LEAVE_ACCEL 0x2b8
-/* The scene's player actor action of state 3 (RoomPlayerActor_RequestPlaceOff's last argument). */
-#define PLAYER_PICK_ACTION_ARG 1
+/* RoomPlayerActor_RequestPlaceOff's `store_sun`: the sun level is stored as it gets off. */
+#define PLAYER_PICK_STORE_SUN 1
 /* The cell layer sprite's and the name tags' vtable slots: draw and step. */
 #define PLAYER_PICK_SLOT_DRAW 2
 #define PLAYER_PICK_SLOT_STEP 3
@@ -274,8 +274,9 @@ void PlayerPick_UpdatePicked(PlayerPick *self)
 }
 CLEAN_AS(func_ov004_022458b8, PlayerPick_UpdatePicked)
 
-/* func_ov004_022458dc (entry of PLAYER_PICK_PICKED): the scene's player actor takes its action
- * to the left for players 0 and 2 (the left column), else to the right; the cursor off, the
+/* func_ov004_022458dc (entry of PLAYER_PICK_PICKED): the scene's player actor gets off its
+ * claimed place (the bed, RoomPlayerActor_RequestPlaceOff) to the left for players 0 and 2 (the
+ * left column), else to the right; the cursor off, the
  * tags hidden, and 25 frames. */
 void PlayerPick_EnterPicked(PlayerPick *self)
 {
@@ -283,7 +284,7 @@ void PlayerPick_EnterPicked(PlayerPick *self)
     if (self->selection == 0 || self->selection == 2) {
         left = 1;
     }
-    RoomPlayerActor_RequestPlaceOff(left, PLAYER_PICK_ACTION_ARG);
+    RoomPlayerActor_RequestPlaceOff(left, PLAYER_PICK_STORE_SUN);
     CellLayerSprite_SetAnim(&self->cursor, PLAYER_PICK_CURSOR_OFF);
     for (u8 i = 0; i < PLAYER_PICK_TAGS; i++) {
         NameTag_Hide(&self->tags[i]);

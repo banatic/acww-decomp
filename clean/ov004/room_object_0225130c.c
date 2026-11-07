@@ -117,7 +117,7 @@ void RoomObject0225130c_UpdateStopping(RoomObject0225130c *object)
 }
 CLEAN_AS(func_ov004_02212ab8, RoomObject0225130c_UpdateStopping)
 
-/* func_ov004_02212b70 (entry of STOPPING): the switch off (shown at once), the sound at 4 and
+/* func_ov004_02212b70 (entry of STOPPING): the switch off (shown at once), sound 2 of its row (RoomObject_PlaySound2) and
  * the animations of variant 1 once, each from the frame it is at. */
 int RoomObject0225130c_EnterStopping(RoomObject0225130c *object)
 {
@@ -164,7 +164,7 @@ void RoomObject0225130c_UpdateStarting(RoomObject0225130c *object)
 CLEAN_AS(func_ov004_02212c90, RoomObject0225130c_UpdateStarting)
 
 /* func_ov004_02212ce4 (entry of STARTING): the switch on (shown at once), the animations of
- * variant 0 once from the start and the sound at 2. */
+ * variant 0 once from the start and sound 1 of its row (RoomObject_PlaySound1). */
 int RoomObject0225130c_EnterStarting(RoomObject0225130c *object)
 {
     Switch_Set(&object->base.on_switch, 1, 0);

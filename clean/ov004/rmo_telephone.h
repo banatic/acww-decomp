@@ -77,8 +77,8 @@ void RmoTelephone_UpdateState10(RmoTelephone *self);
  *
  * Its talk's messages change the player's options (main/player_options.h): message 0xe (and
  * 0x1f) offers a list of answers whose pick leads to the next message; messages 0x14, 0x17,
- * 0x1a, 0x1b and 0x11 set the options' flag, flags 0x13 and 0x14 of the state block, the sound
- * and the setting, and messages 0x2a to 0x2c put the setting back on their second answer. */
+ * 0x1a, 0x1b and 0x11 set the options' flag, flags 0x13 and 0x14 of the state block, stereo or
+ * surround and the setting, and messages 0x2a to 0x2c put the setting back on their second answer. */
 
 /* A list of answers the talk offers (RmoTelephone_OfferAnswers). */
 typedef struct RmoTelephoneAnswers {

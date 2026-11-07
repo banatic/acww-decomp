@@ -1178,19 +1178,19 @@ CLEAN_AS(func_ov004_0222136c, FleaMarketBuyer_EnterStepIn)
 /* Its vtable slot giving its town record. */
 #define FMB_SLOT_RECORD 0x64
 
-/* State 0: the frames between its tries to knock, the chance of a try (it knocks when a draw
- * below 101 is 25 or less), how far from it the player must be, its knock's sound, and the
- * frames it asks for its event after a knock. */
+/* State 0: the frames between its tries to ring, the chance of a try (it rings when a draw
+ * below 101 is 25 or less), how far from it the player must be, the doorbell's sound, and the
+ * frames it asks for its event after a ring. */
 #define FMB_CALL_WAIT 100
 #define FMB_CALL_DRAWS 0x65
 #define FMB_CALL_CHANCE 0x19
 #define FMB_CALL_DISTANCE 0x8000
-#define FMB_KNOCK_SOUND 0x4ca
-#define FMB_KNOCK_FRAMES 0x1e
+#define FMB_DOORBELL_SOUND 0x4ca /* as HOUSE_VISITOR_SOUND_BELL */
+#define FMB_RING_FRAMES 0x1e
 /* Its sounds' volume. */
 #define FMB_SOUND_VOLUME 0x7f
-/* State 1: the sound of its greeting, the frame of its wait it is put in place at, and where. */
-#define FMB_GREETING_SOUND 0x4cb
+/* State 1: the sound of the door opening, the frame of its wait it is put in place at, and where. */
+#define FMB_DOOR_OPEN_SOUND 0x4cb /* as HOUSE_VISITOR_SOUND_DOOR */
 #define FMB_PLACE_FRAME 8
 #define FMB_PLACE_X 0x10000
 #define FMB_PLACE_Z 0x1f000
@@ -1230,7 +1230,7 @@ static void fmb_place(FleaMarketBuyer *buyer, fx32 x, fx32 z)
 }
 
 /* func_ov004_0222137c (state 1's update): nothing while talk 0 is open. With 40 frames of its
- * wait left it plays its greeting (FleaMarketBuyer_PlayGreeting). It faces into the room (its
+ * wait left the door opens (FleaMarketBuyer_PlayDoorOpen). It faces into the room (its
  * angles and its movement's angles (0, 0x8000, 0)) and its wait counts down: at 8 it is put at
  * (0x10000, 0x1f000); at 0 it steps in (state 2). 1. */
 int FleaMarketBuyer_UpdateGreet(FleaMarketBuyer *buyer)
@@ -1240,7 +1240,7 @@ int FleaMarketBuyer_UpdateGreet(FleaMarketBuyer *buyer)
         return 1;
     }
     if (buyer->step_wait == FMB_GREETED_WAIT) {
-        FleaMarketBuyer_PlayGreeting(buyer);
+        FleaMarketBuyer_PlayDoorOpen(buyer);
     }
     Actor *actor = fmb_actor_of(buyer);
     actor->angle[0] = 0;
@@ -1268,10 +1268,10 @@ int FleaMarketBuyer_EnterGreet(FleaMarketBuyer *buyer)
 }
 CLEAN_AS(func_ov004_02221410, FleaMarketBuyer_EnterGreet)
 
-/* func_ov004_02221444 (state 0's update): while it is not knocking, the wait between its tries
+/* func_ov004_02221444 (state 0's update): while it is not ringing, the wait between its tries
  * (byte 0xadf) counts down; at 0, three draws in four (above 25 of 0 to 100) wait another 100
- * frames; else, with this console's player's field actor farther than 0x8000 from it, it knocks
- * (sound 0x4ca) and knocks for 30 frames. While it knocks, its event (kind 6) is asked for each
+ * frames; else, with this console's player's field actor farther than 0x8000 from it, it rings
+ * the doorbell (sound 0x4ca) for 30 frames. While it rings, its event (kind 6) is asked for each
  * frame and the count goes down to 1 (it stays there). 1.
  * QUIRK: with no field actor of the player, or the player near, the wait stays 0 and the next
  * frame draws again. */
@@ -1289,8 +1289,9 @@ int FleaMarketBuyer_UpdateCall(FleaMarketBuyer *buyer)
         if (player != NULL) {
             Vec3 at = player->position;
             if (Vec_DistanceXZ(&at, &fmb_actor_of(buyer)->position) > FMB_CALL_DISTANCE) {
-                SoundEmitter_PlayB((SoundEmitter *) (void *) fmb_part(buyer, FMB_SOUND), FMB_KNOCK_SOUND, FMB_SOUND_VOLUME, 0);
-                buyer->talk_wait = FMB_KNOCK_FRAMES;
+                SoundEmitter_PlayB((SoundEmitter *) (void *) fmb_part(buyer, FMB_SOUND), FMB_DOORBELL_SOUND, FMB_SOUND_VOLUME,
+                                   0);
+                buyer->talk_wait = FMB_RING_FRAMES;
             }
         }
     }
@@ -1313,14 +1314,14 @@ int FleaMarketBuyer_EnterCall(FleaMarketBuyer *buyer)
 }
 CLEAN_AS(func_ov004_022214f0, FleaMarketBuyer_EnterCall)
 
-/* func_ov004_0222152c: its greeting: the sound 0x4cb, then the scene's sound
- * (Block020b220c_PlaySceneMelody). */
-void FleaMarketBuyer_PlayGreeting(FleaMarketBuyer *buyer)
+/* func_ov004_0222152c: the door opening: the sound 0x4cb, then the scene's melody
+ * (Block020b220c_PlaySceneMelody), as the field actor's door does. */
+void FleaMarketBuyer_PlayDoorOpen(FleaMarketBuyer *buyer)
 {
-    SoundEmitter_PlayB((SoundEmitter *) (void *) fmb_part(buyer, FMB_SOUND), FMB_GREETING_SOUND, FMB_SOUND_VOLUME, 0);
+    SoundEmitter_PlayB((SoundEmitter *) (void *) fmb_part(buyer, FMB_SOUND), FMB_DOOR_OPEN_SOUND, FMB_SOUND_VOLUME, 0);
     Block020b220c_PlaySceneMelody();
 }
-CLEAN_AS(func_ov004_0222152c, FleaMarketBuyer_PlayGreeting)
+CLEAN_AS(func_ov004_0222152c, FleaMarketBuyer_PlayDoorOpen)
 
 /* func_ov004_02221550: state `state` taken when its entry function, if it has one, answers
  * nonzero; the state before is kept.

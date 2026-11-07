@@ -57,14 +57,15 @@ static_assert(offsetof(StateRequest, payload) == 0x0c, "payload");
 #define FIELD_ACTOR_ROOMS_PRIORITY 6
 #define FIELD_ACTOR_ROOMS_ENTRY_PRIORITY 5
 #define FIELD_ACTOR_ROOMS_NO_ARG (-1)
-/* The numbers state 0x18 is asked with for an item on the floor: with full pockets, and with
+/* The numbers state 0x18 is asked with for an item lying on top of furniture: with full pockets, and with
  * more than one visitor. */
 #define FIELD_ACTOR_ROOMS_POCKETS_FULL (-1)
 #define FIELD_ACTOR_ROOMS_VISITORS (-3)
 
-/* What RoomObjects_FindAheadOfPlayer answers besides an object's index: an item on the floor ahead. */
-#define FIELD_ACTOR_ROOMS_FLOOR_ITEM (-2)
-/* The tools' reaches (FieldActor_InToolReach) for the floor's item and the last try. */
+/* What RoomObjects_FindAheadOfPlayer answers besides an object's index: an item lying on top of
+ * the furniture ahead (layer 1). */
+#define FIELD_ACTOR_ROOMS_TOP_ITEM (-2)
+/* The tools' reaches (FieldActor_InToolReach) for the item on top and the last try. */
 #define FIELD_ACTOR_ROOMS_REACH_ITEM 14
 #define FIELD_ACTOR_ROOMS_REACH_LAST 12
 /* The layers of the map tried (AcreTile_ItemAt). */
@@ -103,9 +104,9 @@ static_assert(offsetof(StateRequest, payload) == 0x0c, "payload");
 
 /* The session (main/session.h). */
 extern NetSession *data_020ccf94;
-/* The town's map (main/acre_map.h). */
+/* The scene's map (main/acre_map.h). */
 extern void *data_021c80bc;
-/* How far ahead the floor's item is looked for (2.0), and the last try (0.8). */
+/* How far ahead the item on top is looked for (2.0), and the last try (0.8). */
 extern const fx32 data_ov004_02247780;
 extern const fx32 data_ov004_02254aec;
 /* The door states' speed (0x400). */
@@ -246,7 +247,7 @@ static int far_point(FieldActor *actor, Vec3 *point, const fx32 *distance, int r
  * player in a house's room only; whether one started.
  * - The room's object in front of the player (when it is the one picked, or the actor aims
  *   ahead): state 0x18 with it (no tile), or state 0x1c with its tile when it goes with one.
- * - An item on the floor: at the point (2.0 ahead, or the aim point within reach 14) on layer
+ * - An item on top of furniture: at the point (2.0 ahead, or the aim point within reach 14) on layer
  *   1, an item of kind 1: with full pockets state 0x18 at its tile with -1; else with at most
  *   one visitor the tool's target there (FieldActor_FindTarget, FieldActor_ActOnTarget mode
  *   1), with more state 0x18 with -3.
@@ -278,8 +279,7 @@ int FieldActorRooms_TryTarget(FieldActor *actor, int tool, int mode)
     }
 
     AcreMap *map = (AcreMap *) data_021c80bc;
-    if (index == FIELD_ACTOR_ROOMS_FLOOR_ITEM &&
-        far_point(actor, &point, &data_ov004_02247780, FIELD_ACTOR_ROOMS_REACH_ITEM)) {
+    if (index == FIELD_ACTOR_ROOMS_TOP_ITEM && far_point(actor, &point, &data_ov004_02247780, FIELD_ACTOR_ROOMS_REACH_ITEM)) {
         u16 *item = AcreTile_ItemAt(map, &point, FIELD_ACTOR_ROOMS_LAYER_ITEM);
         if (CurrentPockets_FreeSlot() == -1) {
             if (item != NULL && ItemCode_IsKind1((const ItemCode *) item)) {
@@ -625,7 +625,7 @@ CLEAN_AS(func_ov004_02226630, FieldActorRooms_UpdateExit)
 #define FIELD_ACTOR_ROOMS_GONE_DOOR 2
 #define FIELD_ACTOR_ROOMS_SOUND_SLIDE 0x4d2
 #define FIELD_ACTOR_ROOMS_SOUND_DOOR 0x4cb
-#define FIELD_ACTOR_ROOMS_SOUND_DOOR_HELD 0x4ca
+#define FIELD_ACTOR_ROOMS_SOUND_DOORBELL 0x4ca /* as HOUSE_VISITOR_SOUND_BELL */
 
 /* State 0x8b: how many frames the actor waits behind the door before walking, and the frame
  * of the count at which it starts. */
@@ -873,7 +873,7 @@ CLEAN_AS(func_ov004_02226a80, FieldActorRooms_ArriveMessage)
 
 /* func_ov004_02226aac (state 0x8b's entry): the walk's animation loops from a stop. By the way
  * through the door: a door with this console's actor linked and not player 0 in a house's
- * room, or in a scene of group 11, makes the actor wait 20 frames (sound 0x4ca), another door
+ * room, or in a scene of group 11, makes the actor wait 20 frames (the doorbell, sound 0x4ca), another door
  * plays 0x4cb (and the scene's door sound); a sliding one makes it wait 20 frames (sound
  * 0x4d2). Not waiting, the walk is under way at once. This console's actor walks to where it
  * stands (kept packed at 0x8f0) from 6.0 further in z; another console's actor plays the sound
@@ -896,7 +896,7 @@ void FieldActorRooms_EnterArrive(FieldActor *actor, const StateRequest *request,
         case FIELD_ACTOR_ROOMS_GONE_DOOR:
             if ((FieldActor_LinkedNotPlayer0(actor) && SceneKinds_CurrentIsHouseRoom()) || SceneQuery_InVillagerHouse()) {
                 wait = FIELD_ACTOR_ROOMS_ARRIVE_WAIT;
-                sound = FIELD_ACTOR_ROOMS_SOUND_DOOR_HELD;
+                sound = FIELD_ACTOR_ROOMS_SOUND_DOORBELL;
                 FIELD_ACTOR_ROOMS_WALKING(actor) = 0;
             } else {
                 sound = FIELD_ACTOR_ROOMS_SOUND_DOOR;

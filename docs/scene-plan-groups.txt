@@ -1325,7 +1325,7 @@ reach: the fixed point of "code only unreachable code calls", with a call or wor
 needs: unreachable
 match: ov003/field_actor:FieldActor_GetState3ESaved ov003/field_actor:FieldActor_GetState4BSaved
   ov003/town_insect:TownInsect_HideById
-  ov004/field_actor_place_states:FieldActorPlaceStates_GetApproachSaved
+  ov004/field_actor_place_states:FieldActorPlaceStates_GetClaimPlaceSaved
   ov004/field_actor_place_states:FieldActorPlaceStates_GetOffSaved
 
 area: Unreachable for one player
@@ -1473,7 +1473,7 @@ match: main/field_actor_states:FieldActor_State14Message
   ov004/field_actor_room_states:FieldActorRoomStates_PullMessage
   ov004/field_actor_room_states:FieldActorRoomStates_PullStepMessage
   ov004/field_actor_room_states:FieldActorRoomStates_PushStepMessage
-  ov004/field_actor_room_states:FieldActorRoomStates_Sequence8AMessage
+  ov004/field_actor_room_states:FieldActorRoomStates_DrinkCoffeeMessage
   ov004/field_actor_room_states:FieldActorRoomStates_SpotApproachMessage
   ov004/field_actor_room_states:FieldActorRoomStates_SpotClaimMessage
   ov004/field_actor_room_states:FieldActorRoomStates_SpotEnterMessage

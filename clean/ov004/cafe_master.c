@@ -653,7 +653,7 @@ CLEAN_AS(func_ov004_02223c1c, CafeMasterTalk_OnClose)
 
 /* func_ov004_02223c40 (sequence 2, the drink, each step of the scene), while the talk is gone:
  * the first time the props are in their state 5 they enter state 8, the player's field actor
- * plays its animation of it (RoomPlayerActor_RequestSequence8A) and the frames start again. Each frame:
+ * plays its animation of it (RoomPlayerActor_RequestDrinkCoffee) and the frames start again. Each frame:
  * sounds 0x4e1, 0x4e2 (with the value (20, 0) added to the music at priority 16) and 0x4e3 at
  * frames 7, 20 and 40, and at frame 70 0x4e4 or 0x4e5 by the current player id's byte 0x1c
  * (0 or not). Once part 1's animation 11 of the props is at frame 9: his line is picked (0x30
@@ -670,7 +670,7 @@ void CafeMasterTalk_Drink(CafeMasterTalk *talk)
     }
     if (CafeProps_State() == 5) {
         CafeProps_EnterState8();
-        RoomPlayerActor_RequestSequence8A();
+        RoomPlayerActor_RequestDrinkCoffee();
         talk->master->talk_frames = 0;
     }
     CafeMaster *master = talk->master;

@@ -34,13 +34,13 @@ typedef struct MuseumSetup {
 
 /* An obj_etc_museum spot: what EtcMuseum_Spawn is given (0x1c bytes). */
 typedef struct MuseumSetupSpot {
-    Vec3 position;        /* 0x00 */
-    u32 face_angle;       /* 0x0c */
-    s16 yaw;              /* 0x10 */
-    s16 complete_message; /* 0x12 */
-    const u8 *exhibits;   /* 0x14 */
-    u8 count;             /* 0x18 */
-    u8 kind;              /* 0x19: enum EtcMuseumKind */
+    Vec3 position;             /* 0x00 */
+    u32 face_angle;            /* 0x0c */
+    s16 yaw;                   /* 0x10 */
+    s16 skeleton_name_message; /* 0x12 */
+    const u8 *exhibits;        /* 0x14 */
+    u8 count;                  /* 0x18 */
+    u8 kind;                   /* 0x19: enum EtcMuseumKind */
     u8 pad_1a[2];
 } MuseumSetupSpot;
 
@@ -74,7 +74,7 @@ MuseumSetup *MuseumSetup_ConstructBase(MuseumSetup *self);
 void MuseumSetup_New(void);
 unsigned char MuseumSetupSpot_Count(const MuseumSetupSpot *spot);
 u32 MuseumSetupSpot_Exhibits(const MuseumSetupSpot *spot);
-short MuseumSetupSpot_CompleteMessage(const MuseumSetupSpot *spot);
+short MuseumSetupSpot_SkeletonMessage(const MuseumSetupSpot *spot);
 unsigned char MuseumSetupSpot_Kind(const MuseumSetupSpot *spot);
 u32 MuseumSetupSpot_FaceAngle(const MuseumSetupSpot *spot);
 int MuseumSetupSpot_Yaw(const MuseumSetupSpot *spot);
@@ -83,18 +83,18 @@ int MuseumSetupSpot_Yaw(const MuseumSetupSpot *spot);
  * spot from one (MuseumSetupSpot_Construct). `directions` has a bit for each quarter turn
  * (bit i for the yaw i * 0x4000) from which the spot is faced. */
 typedef struct MuseumSetupSpotSource {
-    Vec3 position;        /* 0x00 */
-    u8 directions;        /* 0x0c */
-    u8 kind;              /* 0x0d: enum EtcMuseumKind */
-    s16 complete_message; /* 0x0e */
-    const u8 *exhibits;   /* 0x10 */
-    u8 count;             /* 0x14 */
+    Vec3 position;             /* 0x00 */
+    u8 directions;             /* 0x0c */
+    u8 kind;                   /* 0x0d: enum EtcMuseumKind */
+    s16 skeleton_name_message; /* 0x0e */
+    const u8 *exhibits;        /* 0x10 */
+    u8 count;                  /* 0x14 */
     u8 pad_15[3];
 } MuseumSetupSpotSource;
 
 Vec3 *MuseumSetupSpot_Position(const MuseumSetupSpot *spot);
 MuseumSetupSpot *MuseumSetupSpot_Construct(MuseumSetupSpot *spot, const MuseumSetupSpotSource *source);
-void MuseumSetupSpot_Init(MuseumSetupSpot *spot, const Vec3 *position, int directions, int kind, short complete_message,
+void MuseumSetupSpot_Init(MuseumSetupSpot *spot, const Vec3 *position, int directions, int kind, short skeleton_name_message,
                           const u8 *exhibits, unsigned char count);
 void MuseumSetupSpot_Destruct(MuseumSetupSpot *spot);
 

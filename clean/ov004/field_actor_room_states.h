@@ -15,7 +15,8 @@
  *         plays from its end;
  *   0x7f  the telephone hung up: the pick-up animation plays backwards, as does the
  *         telephone's; then state 2;
- *   0x8a  animations 0x95, 0x96 and 0x97 one after another (after 0x98, state 0x28).
+ *   0x8a  drinking a coffee (cafe_master.c): animations 0x95, 0x96 and 0x97 one after another
+ *         (after 0x98, state 0x28).
  * Each request carries its two bytes (0x7a to 0x7c) or nothing; each message handler asks for
  * the state again with priority 6 (0x7a to 0x7c and 0x8a do nothing). */
 #ifndef CLEAN_OV004_FIELD_ACTOR_ROOM_STATES_H
@@ -77,11 +78,11 @@ void FieldActorRoomStates_HangUpMessage(struct FieldActor *actor, int arg);
 void FieldActorRoomStates_EnterHangUp(struct FieldActor *actor, const struct StateRequest *request, int previous);
 int FieldActorRoomStates_RequestHangUp(struct FieldActor *actor, int priority, int arg);
 
-void FieldActorRoomStates_UpdateSequence8A(struct FieldActor *actor);
-void FieldActorRoomStates_StepSequence8A(struct FieldActor *actor);
-void FieldActorRoomStates_Sequence8AMessage(struct FieldActor *actor, int arg);
-void FieldActorRoomStates_EnterSequence8A(struct FieldActor *actor, const struct StateRequest *request, int previous);
-int FieldActorRoomStates_RequestSequence8A(struct FieldActor *actor, int priority, int arg);
+void FieldActorRoomStates_UpdateDrinkCoffee(struct FieldActor *actor);
+void FieldActorRoomStates_StepDrinkCoffee(struct FieldActor *actor);
+void FieldActorRoomStates_DrinkCoffeeMessage(struct FieldActor *actor, int arg);
+void FieldActorRoomStates_EnterDrinkCoffee(struct FieldActor *actor, const struct StateRequest *request, int previous);
+int FieldActorRoomStates_RequestDrinkCoffee(struct FieldActor *actor, int priority, int arg);
 
 /* The states around the room's exits, the chests and the item shown (each message handler of
  * 0x41 to 0x44 asks for the state again with priority 9, of 0x2e and 0x2f with priority 6 and

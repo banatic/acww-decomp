@@ -3,12 +3,12 @@
  * through vtable slot 0x70 and dispatched through tables of member pointers (member_pointer.h):
  *
  * - off: the switch off; touching it (a change of the switch pending) requests starting;
- * - starting: the switch on, sound 2 of its row and the animations of variant 0 once; then
+ * - starting: the switch on, sound 1 of its row and the animations of variant 0 once; then
  *   running;
  * - running: the switch on and the animations of variant 1 from their end; at frames 0 and
  *   0x14 of the joint animation it sets variable 0 of its sound (to 1, and at 0x14 to 1 and 2
  *   in turn); touching it requests stopping;
- * - stopping: the switch off, sound 4 of its row and the animations of variant 1 once from
+ * - stopping: the switch off, sound 2 of its row and the animations of variant 1 once from
  *   where they are, still setting the sound as when running; then settling;
  * - settling: the animations of variant 0 from their end, the sound's variable set to 1 once;
  *   then off.

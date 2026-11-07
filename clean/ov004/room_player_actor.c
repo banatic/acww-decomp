@@ -74,15 +74,15 @@ int RoomPlayerActor_PlayAnimation98(void)
 CLEAN_AS(func_ov004_0222be34, RoomPlayerActor_PlayAnimation98)
 
 /* func_ov004_0222be58: this console's actor asked for state 0x8a; whether it was queued. */
-int RoomPlayerActor_RequestSequence8A(void)
+int RoomPlayerActor_RequestDrinkCoffee(void)
 {
     FieldActor *actor = SessionPlayers_FieldActor(RPA_OWN);
     if (actor == NULL) {
         return 0;
     }
-    return FieldActorRoomStates_RequestSequence8A(actor, RPA_PRIORITY, RPA_NO_ARG);
+    return FieldActorRoomStates_RequestDrinkCoffee(actor, RPA_PRIORITY, RPA_NO_ARG);
 }
-CLEAN_AS(func_ov004_0222be58, RoomPlayerActor_RequestSequence8A)
+CLEAN_AS(func_ov004_0222be58, RoomPlayerActor_RequestDrinkCoffee)
 
 /* func_ov004_0222be7c: this console's actor lowers its bar for requests to its state's end
  * priority and is asked for state 0x12 (the fixed point) with priority 5; whether it was
@@ -285,7 +285,7 @@ int RoomPlayerActor_RequestPlaceApproach(const fx32 *x, const fx32 *z, const s16
         return 0;
     }
     int side = AngleSector_Side((s16) (*yaw - facing)) == ANGLE_SECTOR_NEGATIVE ? 1 : 0;
-    return FieldActorPlaceStates_RequestApproach(actor, *x, *z, *yaw, (u8) side, RPA_PRIORITY, RPA_NO_ARG);
+    return FieldActorPlaceStates_RequestClaimPlace(actor, *x, *z, *yaw, (u8) side, RPA_PRIORITY, RPA_NO_ARG);
 }
 CLEAN_AS(func_ov004_0222c14c, RoomPlayerActor_RequestPlaceApproach)
 

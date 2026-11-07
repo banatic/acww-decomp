@@ -1,4 +1,4 @@
-/* A room object (room_object.h) on the town's map: the cells it covers, putting it on the map
+/* A room object (room_object.h) on the scene's map: the cells it covers, putting it on the map
  * and taking it off (the map's record of its item code, RoomSync_PutFurniture and RoomSync_TakeFurniture, and
  * the grid of the room's objects, RoomObjects_Grid), moving it with the objects standing
  * on it, and whether a move or a turn is free: no player, item or other object in the way. */

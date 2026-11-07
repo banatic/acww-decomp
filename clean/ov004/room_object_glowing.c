@@ -148,8 +148,8 @@ int GlowingRoomObject_Update(GlowingRoomObject *object)
 CLEAN_AS(_ZN18Obj_ov004_022509ac19func_ov004_02212264Ev, GlowingRoomObject_Update)
 
 /* func_ov004_02212280 (vtable slot 0x7c, once the model is bound): binds the animations of
- * variant 0 (once) and the glows, lit as the switch is; then in mode 1 requests GLOWING_OFF
- * (RoomSync_SetState), else enters GLOWING_ON when the switch is on and RoomObjects_InNookOrScene0AOr0F says
+ * variant 0 (once) and the glows, lit as the switch is; then in mode 1 sets GLOWING_OFF at once
+ * and sends it (RoomSync_SetState), else enters GLOWING_ON when the switch is on and RoomObjects_InNookOrScene0AOr0F says
  * no, GLOWING_OFF otherwise; done at once. */
 int GlowingRoomObject_Start(GlowingRoomObject *object)
 {

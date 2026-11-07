@@ -53,15 +53,15 @@ void RoomObject02250c04_OnMoveStart(RoomObject02250c04 *object, int ahead)
     if (entry != NULL) {
         const AnimFile *joints =
             (const AnimFile *) (uintptr_t) (u32) AnimSet_Anim00(FurnitureModel_Anims(&object->base.model_files), 0);
-        u32 forward_state = 3;
-        u32 backward_state = 1;
+        u32 forward_side = 3;
+        u32 backward_side = 1;
         if (object->base.unk_780 == KIND_16) {
-            forward_state = 2;
-            backward_state = 0;
+            forward_side = 2;
+            backward_side = 0;
         }
-        if (RoomPushes_Side(entry) == forward_state) {
+        if (RoomPushes_Side(entry) == forward_side) {
             RoomObject02250c04_play(object, ahead != 0, joints, &played);
-        } else if (RoomPushes_Side(entry) == backward_state) {
+        } else if (RoomPushes_Side(entry) == backward_side) {
             RoomObject02250c04_play(object, ahead == 0, joints, &played);
         }
     }

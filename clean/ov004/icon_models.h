@@ -4,7 +4,7 @@
  *
  * The process (vtable slots: IconModels_Init, IconModels_Release, IconModels_Update,
  * IconModels_Draw; made by IconModels_Create) also moves and draws the items on their way to
- * the ground (dropped_items.h), and draws the items lying on the town's map round the camera's
+ * the ground (dropped_items.h), and draws the items lying on the scene's map round the camera's
  * focus. data_ov004_02258ae4 points to it once it has started. Others draw an item's model
  * (IconModels_DrawItemAt, by item) or a look's (IconModels_DrawLookAt). */
 #ifndef CLEAN_OV004_ICON_MODELS_H

@@ -55,7 +55,7 @@ static_assert(sizeof(Vec3) <= sizeof(FieldActorWork), "state 0x7d's work");
 #define FARS_PICK_UP 0x7d
 #define FARS_ON_PHONE 0x7e
 #define FARS_HANG_UP 0x7f
-#define FARS_SEQUENCE_8A 0x8a
+#define FARS_DRINK_COFFEE 0x8a
 
 #define FARS_PRIORITY 6
 #define FARS_NO_ARG (-1)
@@ -573,19 +573,19 @@ int FieldActorRoomStates_RequestHangUp(FieldActor *actor, int priority, int arg)
 }
 CLEAN_AS(func_ov004_02226dfc, FieldActorRoomStates_RequestHangUp)
 
-/* ---- State 0x8a, three animations in a row */
+/* ---- State 0x8a, drinking a coffee at the cafe: three animations in a row */
 
 /* func_ov004_02226c80 (state 0x8a's update): the body, then the state's step. */
-void FieldActorRoomStates_UpdateSequence8A(FieldActor *actor)
+void FieldActorRoomStates_UpdateDrinkCoffee(FieldActor *actor)
 {
     FieldActor_UpdateBody(actor);
-    FieldActorRoomStates_StepSequence8A(actor);
+    FieldActorRoomStates_StepDrinkCoffee(actor);
 }
-CLEAN_AS(func_ov004_02226c80, FieldActorRoomStates_UpdateSequence8A)
+CLEAN_AS(func_ov004_02226c80, FieldActorRoomStates_UpdateDrinkCoffee)
 
 /* func_ov004_02226c94: once an animation is over the next plays (0x95, 0x96, 0x97, without a
  * blend); after 0x97 the actor stays; after 0x98 state 0x28 is asked for with 0 (priority 6). */
-void FieldActorRoomStates_StepSequence8A(FieldActor *actor)
+void FieldActorRoomStates_StepDrinkCoffee(FieldActor *actor)
 {
     if (!FrameCtrl_IsDone(&actor->anim)) {
         return;
@@ -606,32 +606,32 @@ void FieldActorRoomStates_StepSequence8A(FieldActor *actor)
             break;
     }
 }
-CLEAN_AS(func_ov004_02226c94, FieldActorRoomStates_StepSequence8A)
+CLEAN_AS(func_ov004_02226c94, FieldActorRoomStates_StepDrinkCoffee)
 
 /* func_ov004_02226cfc (state 0x8a's message handler): nothing. */
-void FieldActorRoomStates_Sequence8AMessage(FieldActor *actor, int arg)
+void FieldActorRoomStates_DrinkCoffeeMessage(FieldActor *actor, int arg)
 {
     (void) actor;
     (void) arg;
 }
-CLEAN_AS(func_ov004_02226cfc, FieldActorRoomStates_Sequence8AMessage)
+CLEAN_AS(func_ov004_02226cfc, FieldActorRoomStates_DrinkCoffeeMessage)
 
 /* func_ov004_02226d00 (state 0x8a's entry): animation 0x95 plays once (blended over 3
  * frames). */
-void FieldActorRoomStates_EnterSequence8A(FieldActor *actor, const StateRequest *request, int previous)
+void FieldActorRoomStates_EnterDrinkCoffee(FieldActor *actor, const StateRequest *request, int previous)
 {
     (void) request;
     (void) previous;
     FieldActor_PlayAnimationOnce(actor, FARS_ANIM_8A_FIRST, FARS_BLEND, 0);
 }
-CLEAN_AS(func_ov004_02226d00, FieldActorRoomStates_EnterSequence8A)
+CLEAN_AS(func_ov004_02226d00, FieldActorRoomStates_EnterDrinkCoffee)
 
 /* func_ov004_02226d14: state 0x8a asked for; whether it was queued. */
-int FieldActorRoomStates_RequestSequence8A(FieldActor *actor, int priority, int arg)
+int FieldActorRoomStates_RequestDrinkCoffee(FieldActor *actor, int priority, int arg)
 {
-    return fars_request(actor, FARS_SEQUENCE_8A, priority, arg);
+    return fars_request(actor, FARS_DRINK_COFFEE, priority, arg);
 }
-CLEAN_AS(func_ov004_02226d14, FieldActorRoomStates_RequestSequence8A)
+CLEAN_AS(func_ov004_02226d14, FieldActorRoomStates_RequestDrinkCoffee)
 
 /* ---- The states around the exits, the chests and the item shown */
 

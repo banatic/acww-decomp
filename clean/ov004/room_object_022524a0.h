@@ -3,14 +3,14 @@
  * (member_pointer.h):
  *
  * - IDLE (0): entered with the value 0 of its node set and the animations of variant 0 played
- *   once; when its switch is asked to change it requests PLAYING for the object at its cell
- *   (RoomSync_SetState);
+ *   once; when its switch is asked to change it sets PLAYING on the object at its cell at
+ *   once and sends it to everyone (RoomSync_SetState);
  * - PLAYING (1): entered with the value 1 of its node set, the animations of variant 0 played
- *   once and the sound at 2; once the model's joint animation has ended it requests IDLE.
+ *   once and the sound at 2; once the model's joint animation has ended it sets IDLE so.
  *
  * While PLAYING, the model's hook after the description of a node of the node set takes that
  * node's place in the world and asks the ground there (CollisionGround_Init); where the ground answers
- * above 0 it requests IDLE at once. Its start binds the animations of variant 0 and enters
+ * above 0 it sets IDLE at once. Its start binds the animations of variant 0 and enters
  * IDLE. */
 #ifndef CLEAN_OV004_ROOM_OBJECT_022524A0_H
 #define CLEAN_OV004_ROOM_OBJECT_022524A0_H

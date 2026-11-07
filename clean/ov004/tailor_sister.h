@@ -81,11 +81,11 @@ typedef struct TailorSister {
     s32 state;                        /* 0x654: enum TailorSisterState */
     TailorSisterTalk talk;            /* 0x658 */
     s16 home_yaw;                     /* 0x70c: the angle it faced at its start */
-    u8 dated_event_told;              /* 0x70e: the player's dated event of kind 2 told today */
-    u8 unk_70f;                       /* 0x70f */
-    u16 sew_frame;                    /* 0x710: where its sewing animation stopped */
-    u8 machine_turns;                 /* 0x712: the machine's part's whole turns */
-    u8 unk_713;                       /* 0x713 */
+    u8 dated_event_today; /* 0x70e: set when the player has a dated event of kind 2 today (at start, and when a talk tells it) */
+    u8 unk_70f;           /* 0x70f */
+    u16 sew_frame;        /* 0x710: where its sewing animation stopped */
+    u8 machine_turns;     /* 0x712: the machine's part's whole turns */
+    u8 unk_713;           /* 0x713 */
 } TailorSister;
 
 TailorSister *TailorSister_Destroy(TailorSister *sister);

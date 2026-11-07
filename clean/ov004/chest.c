@@ -49,7 +49,7 @@ static_assert(sizeof(Chest) == 0x868, "the size Chest_Create allocates");
 #define LINE_COUNT 16  /* the values of the receiver's state byte the talk chooses from */
 #define STEP 0x2000    /* one cell, 20.12 fixed point (two units of 0x1000 a cell) */
 #define STEP_SHIFT 13  /* a cell from a step */
-#define BLOCK_CELLS 16 /* cells along a block of the town's map */
+#define BLOCK_CELLS 16 /* cells along a block of the scene's map */
 
 /* "obj_etc_nchest", the receiver's name. */
 extern const char data_ov004_02253200[];
@@ -83,7 +83,7 @@ extern u32 data_ov004_02257020;
 extern MemberPointer data_ov004_022574cc[CHEST_LID_STATE_COUNT];
 extern const MemberPointer data_ov004_022505b8, data_ov004_022505d8, data_ov004_02250650, data_ov004_02250648;
 
-/* The town's map (AcreTile_ItemInAcre finds the item on a cell of it), and whether an item is of the
+/* The scene's map (AcreTile_ItemInAcre finds the item on a cell of it), and whether an item is of the
  * kind ItemCode_IsFurniture tells. */
 extern void *data_021c80bc;
 
@@ -206,7 +206,7 @@ void Chest_UpdateTalk(Chest *chest)
 }
 CLEAN_AS(func_ov004_02216cf8, Chest_UpdateTalk)
 
-/* The item on cell (x, y) of the town's map, layer 0. */
+/* The item on cell (x, y) of the scene's map, layer 0. */
 static u16 *Chest_item_on_cell(void *map, s32 x, s32 y)
 {
     return AcreTile_ItemInAcre(map, shift_right(x, 4), shift_right(y, 4), x & (BLOCK_CELLS - 1), y & (BLOCK_CELLS - 1), 0);
@@ -215,7 +215,7 @@ static u16 *Chest_item_on_cell(void *map, s32 x, s32 y)
 /* func_ov004_02216d1c (entry of CHEST_TALK): takes the receiver (SceneObjectBase_TakeReceiver), raises the
  * link's request and names the receiver "obj_etc_nchest". Its state byte is set to one of 16
  * values: the furniture's number plus the scene, plus x + 16 y of the first of its cells that
- * holds an item ItemCode_IsFurniture tells (on the town's map, when there is one).
+ * holds an item ItemCode_IsFurniture tells (on the scene's map, when there is one).
  * REQUIRES: the receiver has a link once SceneObjectBase_TakeReceiver has taken it. */
 int Chest_EnterTalk(Chest *chest)
 {

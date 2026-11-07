@@ -53,7 +53,7 @@ static_assert(offsetof(TownObjectActor, tile_z) == 0x230, "tile z");
 static_assert(offsetof(TownObjectActor, exit_step) == 0x234, "exit step");
 static_assert(offsetof(TownObjectActor, flags_235) == 0x235, "flags 0x235");
 static_assert(offsetof(TownObjectActor, flags) == 0x236, "flags");
-static_assert(offsetof(TownObjectActor, nobody_home) == 0x237, "nobody home");
+static_assert(offsetof(TownObjectActor, villager_asleep) == 0x237, "villager asleep");
 static_assert(offsetof(TownObjectActor, sound) == 0x238, "sound");
 static_assert(offsetof(TownObjectActor, state) == 0x27c, "state");
 static_assert(offsetof(TownObjectActor, skip_visit) == 0x280, "skip visit");
@@ -88,9 +88,9 @@ static_assert(sizeof(TownObjectActor) == 0x2b4, "size");
 #define SLOT_TALK_OPEN 0x7c    /* TownObjectActor_OnTalkOpen */
 #define SLOT_TALK_WAIT 0x80    /* TownObjectActor_OnTalkWait */
 #define SLOT_TALK_CLOSED 0x84  /* TownObjectActor_OnTalkClosed */
-#define SLOT_8C 0x8c
-#define SLOT_STATE_38 0x90 /* TownObjectActor_WalksWithState38 */
-#define SLOT_KEEP_X 0x94   /* TownObjectActor_KeepsPointX */
+#define SLOT_IS_OPEN 0x8c      /* TownObjectActor_IsOpen */
+#define SLOT_STATE_38 0x90     /* TownObjectActor_WalksWithState38 */
+#define SLOT_KEEP_X 0x94       /* TownObjectActor_KeepsPointX */
 
 /* What TownObjectActor_GetStandPoint gives: a point 1.0 ahead of the first area, at height 0x200
  * and 0x200 back along z. */
@@ -579,9 +579,9 @@ CLEAN_AS(_ZN18Obj_ov009_022658dc19func_ov009_022633acEji, TownObjectActor_OnScen
 
 /* func_ov009_02263410 (vtable slot 0x48): whether `other` can talk to it. It must face it
  * (within 0x1000 of its direction turned half round). An actor of kind 0 then needs vtable
- * slot 0x8c to say no and `other`'s talk point within 3.0 of its own in the ground plane;
+ * slot 0x8c (TownObjectActor_IsOpen) to say no and `other`'s talk point within 3.0 of its own in the ground plane;
  * any other kind needs TOWN_OBJECT_ACTOR_FLAG_TALKABLE and kind 2, and the talk skips the visit
- * record when slot 0x8c says no. Past those first checks func_0203edd0 runs on it.
+ * record when it is not open (slot 0x8c). Past those first checks func_0203edd0 runs on it.
  * QUIRK: for kind 0, func_0203edd0 runs and the visit record is skipped even when `other` is
  * too far away. */
 int TownObjectActor_CanTalkTo(TownObjectActor *actor, TownObjectActor *other)
@@ -596,12 +596,12 @@ int TownObjectActor_CanTalkTo(TownObjectActor *actor, TownObjectActor *other)
         if (!(actor->flags_235 & TOWN_OBJECT_ACTOR_FLAG_TALKABLE) || TownObjectActor_Kind(actor) != 2) {
             return 0;
         }
-        int slot_8c = town_object_actor_call_int(actor, SLOT_8C);
+        int is_open = town_object_actor_call_int(actor, SLOT_IS_OPEN);
         SceneObjectBase_ClearApproach((SceneObjectBase *) actor);
-        actor->skip_visit = slot_8c == 0;
+        actor->skip_visit = is_open == 0;
         return 1;
     }
-    if (town_object_actor_call_int(actor, SLOT_8C) != 0) {
+    if (town_object_actor_call_int(actor, SLOT_IS_OPEN) != 0) {
         return 0;
     }
     const Vec3 *theirs = (const Vec3 *) (uintptr_t) town_object_actor_call_int(other, SLOT_TALK_POINT);
@@ -834,7 +834,7 @@ CLEAN_AS(_ZN18Obj_ov009_022658dc19func_ov009_022637bcEv, TownObjectActor_EnterTa
 /* _ZN18Obj_ov009_022658dc19func_ov009_022637ecEv (update of TOWN_OBJECT_ACTOR_VISIT): when the talk
  * skips the visit record, on to TOWN_OBJECT_ACTOR_TALK. Else, once main has an answer (nonzero), it
  * keeps whether it is 2 (TOWN_OBJECT_ACTOR_FLAG_FULL, too many inside) and whether it is 3
- * (nobody_home); either starts
+ * (villager_asleep, TOWN_OBJECTS_ANSWER_ASLEEP); either starts
  * the talk, else kind 1 moves to TOWN_OBJECT_ACTOR_LEAVE_AGAIN and others to TOWN_OBJECT_ACTOR_LEAVE. */
 void TownObjectActor_UpdateVisit(TownObjectActor *actor)
 {
@@ -847,8 +847,8 @@ void TownObjectActor_UpdateVisit(TownObjectActor *actor)
         return;
     }
     actor->flags = (u8) ((actor->flags & ~TOWN_OBJECT_ACTOR_FLAG_FULL) | (answer == 2 ? TOWN_OBJECT_ACTOR_FLAG_FULL : 0));
-    actor->nobody_home = answer == 3;
-    if ((actor->flags & TOWN_OBJECT_ACTOR_FLAG_FULL) || actor->nobody_home) {
+    actor->villager_asleep = answer == 3;
+    if ((actor->flags & TOWN_OBJECT_ACTOR_FLAG_FULL) || actor->villager_asleep) {
         TownObjectActor_SetState(actor, TOWN_OBJECT_ACTOR_TALK);
     } else if (TownObjectActor_Kind(actor) == 1) {
         TownObjectActor_SetState(actor, TOWN_OBJECT_ACTOR_LEAVE_AGAIN);
@@ -866,7 +866,7 @@ int TownObjectActor_EnterVisit(TownObjectActor *actor)
         TownObjects_RequestVisit(actor->code);
     }
     actor->flags &= ~TOWN_OBJECT_ACTOR_FLAG_FULL;
-    actor->nobody_home = 0;
+    actor->villager_asleep = 0;
     return 1;
 }
 CLEAN_AS(func_ov009_02263888, TownObjectActor_EnterVisit)

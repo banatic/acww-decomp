@@ -1,4 +1,4 @@
-/* A room object on the town's map (room_object_map.h). */
+/* A room object on the scene's map (room_object_map.h). */
 #include "room_object_map.h"
 
 #include <assert.h>
@@ -48,7 +48,7 @@ static_assert(offsetof(FurnitureAnim, base.ctrl.frame) == 0x08, "anim frame");
 #define OTHER_PLAYERS 4     /* actors 0 to 3 */
 #define LAYER_FLOOR 0       /* RoomObject.layer: on the floor */
 #define LAYER_ON_TOP 1      /* standing on another object */
-#define BLOCK_CELLS 16      /* cells along a block of the town's map */
+#define BLOCK_CELLS 16      /* cells along a block of the scene's map */
 #define CELL 0x2000         /* the width of a cell, 20.12 fixed point */
 #define HALF_CELL 0x1000    /* half of it */
 #define NO_ACTOR (-1)       /* func_02030890 finds no one on the point */
@@ -60,7 +60,7 @@ static_assert(offsetof(FurnitureAnim, base.ctrl.frame) == 0x08, "anim frame");
 #define ANGLE_SIDE_3 0xa000
 #define ANGLE_SIDE_0 0xe000 /* ...and side 0 wraps round 0 */
 
-/* The town's map (AcreTile_ItemInAcre finds the item on a cell of it). */
+/* The scene's map (AcreTile_ItemInAcre finds the item on a cell of it). */
 extern void *data_021c80bc;
 /* The scratch matrix of overlay 4's objects. */
 extern Mtx43 data_021fbe48;
@@ -94,7 +94,7 @@ static s32 shift_right(s32 value, int bits)
     return value >= 0 ? value >> bits : ~(~value >> bits);
 }
 
-/* The item the town's map holds on cell (x, y) of `layer`, or none. */
+/* The item the scene's map holds on cell (x, y) of `layer`, or none. */
 static ItemCode *map_item(void *map, int x, int y, int layer)
 {
     return AcreTile_ItemInAcre(map, shift_right(x, 4), shift_right(y, 4), x & (BLOCK_CELLS - 1), y & (BLOCK_CELLS - 1), layer);
@@ -109,7 +109,7 @@ static void set_vec(Vec3 *v, fx32 x, fx32 y, fx32 z)
 
 /* func_ov004_0220e8f0: whether the object may move by `offset`, or else turn by `turn`. Not
  * when unk_77D is set, when SceneKinds_CurrentIsHouseRoom or Room_PlayerIsOfThisTown say no, when it stands on
- * another object, without the town's map or the player, or when CarriedItems_CellsAreClear
+ * another object, without the scene's map or the player, or when CarriedItems_CellsAreClear
  * says no. Else it is taken off the map for the test, and each cell it would cover must hold no
  * item on the floor, pass UnitTypeInfo_Byte04At and have no object on top that is not idle. Without
  * `offset`, a cell may not be the player's, and the cells at half the turn must hold no item on
@@ -223,7 +223,7 @@ int RoomObject_CanTurn(RoomObject *object, int turn)
 CLEAN_AS(func_ov004_0220ebe0, RoomObject_CanTurn)
 
 /* func_ov004_0220ebec: whether an object on the floor that carries what stands on it holds an
- * item on one of its cells (layer 1 of the town's map). */
+ * item on one of its cells (layer 1 of the scene's map). */
 int RoomObject_HasItemsOnTop(RoomObject *object)
 {
     CellList cells;

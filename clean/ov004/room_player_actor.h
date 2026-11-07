@@ -11,7 +11,7 @@
 #include "types.h"
 
 int RoomPlayerActor_PlayAnimation98(void);
-int RoomPlayerActor_RequestSequence8A(void);
+int RoomPlayerActor_RequestDrinkCoffee(void);
 int RoomPlayerActor_RequestFixedPoint(void);
 int RoomPlayerActor_RequestSpotStay(void);
 int RoomPlayerActor_RequestHangUp(void);

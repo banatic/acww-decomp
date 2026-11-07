@@ -22,7 +22,7 @@ typedef struct SignBoard {
     u8 unk_2B6[2];
 } SignBoard;
 
-int SignBoard_WantsVisit(void);
+int SignBoard_IsOpen(void);
 void SignBoard_PrepareTalk(SignBoard *board);
 int SignBoard_DrawShadow(SignBoard *board);
 int SignBoard_SetUp(SignBoard *board);

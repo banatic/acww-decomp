@@ -66,7 +66,7 @@ extern NetSession *data_020ccf94;
 #define FT_NAME_CHARS 10
 
 /* The music request of the shuffle and of the clearing (Music_AddValue) and its priority,
- * which the tarot's state 2 drops. */
+ * which the talk drops (style 0x1f) as it puts the tarot in state 2. */
 #define FT_MUSIC_PRIORITY 0x10
 
 /* The talking styles that move the tarot cards to their states 1 to 3 (tarot_object.h), and

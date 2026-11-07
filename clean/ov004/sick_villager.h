@@ -13,7 +13,7 @@
  * player (0x898, set by its line), whether the player answered since (0x899), whether its
  * action sound was played (0x89a), its state (0x89c), its talk scene (0x8a0, a town villager's
  * talk scene with the stage and a pointer back to it, vtable 0x02254148), its drawing member
- * (0xa4c), a spawner part (0xa54) and the waits and points of its walk (0xa74 to 0xa90).
+ * (0xa4c), the room's free tiles (0xa54, a TileGrid) and the waits and points of its walk (0xa74 to 0xa90).
  *
  * Its states (0x89c), each an entry and an update function, through tables of member pointers
  * filled the first time each is used:
@@ -69,7 +69,7 @@ typedef struct SickVillager {
     s32 state;                        /* 0x89c: enum SickVillagerState */
     SickVillagerTalk talk;            /* 0x8a0 */
     MemberPointer draw;               /* 0xa4c: run by its vtable slot 0x24 */
-    u8 spawner[0x20];                 /* 0xa54: a spawner part (main's spawner.h) */
+    u8 grid[0x20];                    /* 0xa54: the room's free tiles (a TileGrid, main/tile_grid.h; as RoomVillager.grid) */
     s16 turn_yaw;                     /* 0xa74: the direction it turns to */
     u16 wander_wait;                  /* 0xa76: frames before its next turn or walk */
     Vec3 walk_point;                  /* 0xa78: the point the mover heads for */

@@ -1,4 +1,4 @@
-/* The cells of the town's map a room object covers (RoomObject_ListCells lists them in a
+/* The cells of the scene's map a room object covers (RoomObject_ListCells lists them in a
  * CellList, room_object.h), and the set of other objects standing on those cells (layer 1 of
  * the map) that move and turn along with an object on the floor (RoomObject_MoveOnMap). */
 #ifndef CLEAN_OV004_CELLS_H

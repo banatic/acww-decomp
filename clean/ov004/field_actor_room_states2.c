@@ -283,8 +283,8 @@ void FieldActorRoomStates2_ClaimPlaceMessage(FieldActor *actor, s16 arg)
     u32 z;
     s16 yaw;
     u8 side;
-    FieldActorPlaceStates_GetApproachSaved(actor->saved.packed, &x, &z, &yaw, &side);
-    FieldActorPlaceStates_RequestApproach(actor, x, z, yaw, side, FARS2_PRIORITY, arg);
+    FieldActorPlaceStates_GetClaimPlaceSaved(actor->saved.packed, &x, &z, &yaw, &side);
+    FieldActorPlaceStates_RequestClaimPlace(actor, x, z, yaw, side, FARS2_PRIORITY, arg);
 }
 CLEAN_AS(func_ov004_0222b0b8, FieldActorRoomStates2_ClaimPlaceMessage)
 

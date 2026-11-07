@@ -1333,10 +1333,10 @@ void InsectMotion_NextPlace(MuseumInsect *insect)
 }
 CLEAN_AS(func_ov004_02242e84, InsectMotion_NextPlace)
 
-/* func_ov004_02242f1c (mode 4 of kind 49): while calm, a flight to its kept point weaving
+/* func_ov004_02242f1c (mode 4 of kind 49, the pill bug): while calm, a walk to its kept point weaving
  * 0xaaa either way; there, the next place is drawn and it turns to it (mode 3). At the end of
  * its time it rests 40-80 frames. */
-void InsectMotion_FlyToPlace(MuseumInsect *insect)
+void InsectMotion_WalkToPlace(MuseumInsect *insect)
 {
     if (!InsectMotion_Calm(insect)) {
         return;
@@ -1360,7 +1360,7 @@ void InsectMotion_FlyToPlace(MuseumInsect *insect)
         }
     }
 }
-CLEAN_AS(func_ov004_02242f1c, InsectMotion_FlyToPlace)
+CLEAN_AS(func_ov004_02242f1c, InsectMotion_WalkToPlace)
 
 /* func_ov004_02242fe8: kind 49 calm (its alarm below the threshold, and unk_50 below 2): its
  * animation at frame 1, and 1. Otherwise frame 0 and a wait counted down from 60 (to 1), and
@@ -1383,9 +1383,10 @@ int InsectMotion_Calm(MuseumInsect *insect)
 }
 CLEAN_AS(func_ov004_02242fe8, InsectMotion_Calm)
 
-/* func_ov004_02243048 (kind 49's frame): a turn to the next place (mode 3) and the flight
- * there (mode 4), while calm; at the end of a rest, a flight of 80-240 frames. */
-void InsectMotion_UpdateVisitor(MuseumInsect *insect)
+/* func_ov004_02243048 (kind 49's frame, the pill bug, item 0x12e1): a turn to the next place
+ * (mode 3) and the walk there (mode 4), while calm; at the end of a rest, a walk of 80-240
+ * frames. */
+void InsectMotion_UpdatePillBug(MuseumInsect *insect)
 {
     switch (insect->mode) {
         case INSECT_MOTION_TURN:
@@ -1398,7 +1399,7 @@ void InsectMotion_UpdateVisitor(MuseumInsect *insect)
             }
             break;
         case INSECT_MOTION_MOVE:
-            InsectMotion_FlyToPlace(insect);
+            InsectMotion_WalkToPlace(insect);
             break;
         default:
             if (InsectMotion_TimerDone(insect) && InsectMotion_Calm(insect)) {
@@ -1412,7 +1413,7 @@ void InsectMotion_UpdateVisitor(MuseumInsect *insect)
             break;
     }
 }
-CLEAN_AS(func_ov004_02243048, InsectMotion_UpdateVisitor)
+CLEAN_AS(func_ov004_02243048, InsectMotion_UpdatePillBug)
 
 /* func_ov004_022430f8: the turn of a walker whose feelers meet a wall (InsectMotion_FeelGround,
  * 02245174 for kind 52), given back: both blocked, 0xaaa (left after a left turn, unk_50 1 or

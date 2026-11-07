@@ -23,9 +23,9 @@ static_assert(offsetof(CarriedItems, slots) == 4, "carried slots");
 static_assert(sizeof(CarriedItems) == 0x44, "carried items");
 
 #define SLOTS 4
-#define BLOCK_CELLS 16 /* cells along a block of the town's map */
+#define BLOCK_CELLS 16 /* cells along a block of the scene's map */
 
-/* The town's map (AcreTile_ItemInAcre finds the item on a cell of it). */
+/* The scene's map (AcreTile_ItemInAcre finds the item on a cell of it). */
 extern void *data_021c80bc;
 
 /* The scratch matrix RoomObject_BuildMatrix builds an object's matrix into. */
@@ -52,7 +52,7 @@ static s32 shift_right(s32 value, int bits)
     return value >= 0 ? value >> bits : ~(~value >> bits);
 }
 
-/* The item on cell (x, y) of the town's map, layer 1. */
+/* The item on cell (x, y) of the scene's map, layer 1. */
 static ItemCode *item_on_cell(void *map, s32 x, s32 y)
 {
     return AcreTile_ItemInAcre(map, shift_right(x, 4), shift_right(y, 4), x & (BLOCK_CELLS - 1), y & (BLOCK_CELLS - 1), 1);

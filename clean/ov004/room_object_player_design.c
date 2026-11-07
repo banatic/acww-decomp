@@ -14,7 +14,7 @@
 #include "main/player_record.h"
 #include "main/player_records.h"
 
-static_assert(offsetof(PlayerDesignObject, cleared_node) == 0x844, "cleared node");
+static_assert(offsetof(PlayerDesignObject, hidden_node) == 0x844, "hidden node");
 static_assert(sizeof(PlayerDesignObject) == 0x848, "the size PlayerDesignObject_Create allocates");
 
 #define PLAYER_DESIGN_OBJECT_SIZE 0x848
@@ -35,11 +35,11 @@ extern const char data_ov004_022531d0[];
 extern const u8 data_ov004_02251ff0[];
 extern const u8 data_ov004_0225209c[];
 
-/* func_ov004_02213b70 (vtable slot 0x64, the model's hook for a node): for the cleared node,
- * sets the word the state points to to 0. */
+/* func_ov004_02213b70 (vtable slot 0x64, the model's hook for a node): the hidden node is not
+ * drawn (the state's visible word set to 0). */
 void PlayerDesignObject_NodeHook(PlayerDesignObject *object, int node, G3dRenderState *state)
 {
-    if (node == object->cleared_node) {
+    if (node == object->hidden_node) {
         *state->visible = 0;
     }
 }
@@ -65,7 +65,7 @@ CLEAN_AS(func_ov004_02213b8c, PlayerDesignObject_Update)
 int PlayerDesignObject_Start(PlayerDesignObject *object)
 {
     u16 item = ItemCode_MakeFurniture(RoomObject_Number(&object->base), 0);
-    object->cleared_node = PLAYER_DESIGN_NO_NODE;
+    object->hidden_node = PLAYER_DESIGN_NO_NODE;
     int design = 0;
     for (int i = 0; i < PLAYER_DESIGN_RANGES; i++) {
         if (item >= player_design_first[i] && item < player_design_first[i] + PLAYER_DESIGN_RANGE_CODES) {
@@ -78,9 +78,9 @@ int PlayerDesignObject_Start(PlayerDesignObject *object)
     u8 *record = PlayerRecords_Get(player);
     if (record != NULL) {
         if (PlayerId_Gender((const s8 *) PlayerRecord_Player(record)) == 0) {
-            object->cleared_node = G3dRes_NodeIndex((const u8 *) object->base.model_resource, data_ov004_022531cc);
+            object->hidden_node = G3dRes_NodeIndex((const u8 *) object->base.model_resource, data_ov004_022531cc);
         } else {
-            object->cleared_node = G3dRes_NodeIndex((const u8 *) object->base.model_resource, data_ov004_022531d0);
+            object->hidden_node = G3dRes_NodeIndex((const u8 *) object->base.model_resource, data_ov004_022531d0);
         }
     }
     DesignManager *designs = (DesignManager *) (uintptr_t) DesignManager_Get();

@@ -5,8 +5,8 @@
  *   in state 0x28, RoomPlayerActor_PointAtSpot) stands on one of its cells, which also advances the
  *   animations and plays sound 0 for each such player; kind 9 advances the animations and plays
  *   sound 0 every frame;
- * - with its entry among two (RoomPushes_FindObject of RoomPushes_Records) in state 0 (or, for
- *   kind 0x26, in state 0, 3 or 1, giving the player's action 0, 1 or 2) and RoomPushes_Allowed
+ * - with its entry among two (RoomPushes_FindObject of RoomPushes_Records) pushed on side 0 (or,
+ *   for kind 0x26, on side 0, 3 or 1, giving the player's action 0, 1 or 2) and RoomPushes_Allowed
  *   allowing it, nobody near the point in front of the entry (RoomObject02252cd4_ProbePoint)
  *   counts up to 7 frames; once the entry has moved more than 0x200 with the count at 7, the
  *   player is sent to that point (RoomPlayerActor_RequestSpotApproach) and the count starts again.

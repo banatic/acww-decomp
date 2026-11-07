@@ -210,7 +210,7 @@ CLEAN_AS(func_ov004_0224045c, InsectKind_Init10)
 /* func_ov004_02240488 (kind 49's frame) */
 void InsectKind_Frame49(MuseumInsect *insect)
 {
-    InsectMotion_UpdateVisitor(insect);
+    InsectMotion_UpdatePillBug(insect);
 }
 CLEAN_AS(func_ov004_02240488, InsectKind_Frame49)
 

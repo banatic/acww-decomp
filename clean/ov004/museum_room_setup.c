@@ -192,10 +192,10 @@ void MuseumSetup_SpawnSpots(void)
             Vec3 *position = MuseumSetupSpot_Position(spot);
             int yaw = MuseumSetupSpot_Yaw(spot);
             int face_angle = (int) MuseumSetupSpot_FaceAngle(spot);
-            s16 complete_message = MuseumSetupSpot_CompleteMessage(spot);
+            s16 skeleton_name_message = MuseumSetupSpot_SkeletonMessage(spot);
             const u8 *exhibits = (const u8 *) (uintptr_t) MuseumSetupSpot_Exhibits(spot);
             int spots = MuseumSetupSpot_Count(spot);
-            EtcMuseum_Spawn(kind, position, yaw, face_angle, complete_message, exhibits, spots);
+            EtcMuseum_Spawn(kind, position, yaw, face_angle, skeleton_name_message, exhibits, spots);
         }
         break;
     }
@@ -303,11 +303,11 @@ u32 MuseumSetupSpot_Exhibits(const MuseumSetupSpot *spot)
 CLEAN_AS(func_ov004_02245538, MuseumSetupSpot_Exhibits)
 
 /* func_ov004_0224553c */
-short MuseumSetupSpot_CompleteMessage(const MuseumSetupSpot *spot)
+short MuseumSetupSpot_SkeletonMessage(const MuseumSetupSpot *spot)
 {
-    return spot->complete_message;
+    return spot->skeleton_name_message;
 }
-CLEAN_AS(func_ov004_0224553c, MuseumSetupSpot_CompleteMessage)
+CLEAN_AS(func_ov004_0224553c, MuseumSetupSpot_SkeletonMessage)
 
 /* func_ov004_02245544 */
 unsigned char MuseumSetupSpot_Kind(const MuseumSetupSpot *spot)
@@ -351,7 +351,7 @@ extern int FX_Div(int numerator, int denominator);
 MuseumSetupSpot *MuseumSetupSpot_Construct(MuseumSetupSpot *spot, const MuseumSetupSpotSource *source)
 {
     Vec3 position = source->position;
-    MuseumSetupSpot_Init(spot, &position, source->directions, source->kind, source->complete_message, source->exhibits,
+    MuseumSetupSpot_Init(spot, &position, source->directions, source->kind, source->skeleton_name_message, source->exhibits,
                          source->count);
     return spot;
 }
@@ -362,14 +362,14 @@ CLEAN_AS(func_ov004_02245558, MuseumSetupSpot_Construct)
  * is a quarter turn or more from the last one (the two lie across angle 0, or face each other);
  * its face angle is the widest angle between that yaw and one of the directions, plus 0x1300.
  * QUIRK: with no direction the mean is FX_Div(0, 0), whatever the SDK answers. */
-void MuseumSetupSpot_Init(MuseumSetupSpot *spot, const Vec3 *position, int directions, int kind, short complete_message,
+void MuseumSetupSpot_Init(MuseumSetupSpot *spot, const Vec3 *position, int directions, int kind, short skeleton_name_message,
                           const u8 *exhibits, unsigned char count)
 {
     spot->position.x = position->x;
     spot->position.y = position->y;
     spot->position.z = position->z;
     spot->kind = (u8) kind;
-    spot->complete_message = complete_message;
+    spot->skeleton_name_message = skeleton_name_message;
     spot->exhibits = exhibits;
     spot->count = count;
 

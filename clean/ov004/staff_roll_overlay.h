@@ -4,7 +4,7 @@
  * destructed, freed and the overlay released by StaffRollOverlay_Close. In between, while it
  * exists (bit 0 of data_ov004_0225ff50), the other functions hand it on to overlay 93's: its
  * update and the upload of its two buffers each frame, a restart at a speed, the switch to the
- * logo, and the test of bit 8 of its flags (the show's end). */
+ * logo, and the test of flag 0x8 of its flags (STAFF_ROLL_FLAG_ENDED, the show's end). */
 #ifndef CLEAN_OV004_STAFF_ROLL_OVERLAY_H
 #define CLEAN_OV004_STAFF_ROLL_OVERLAY_H
 

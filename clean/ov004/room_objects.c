@@ -54,7 +54,7 @@ static_assert(offsetof(MapActor, angle) == 0x8e, "actor angle");
 #define CELL_SHIFT 13
 #define HALF_CELL 0x1000
 
-/* The town's map, the room being its only acre. */
+/* The scene's map, the room being its only acre. */
 extern AcreMap *data_021c80bc;
 
 extern const s16 FX_SinCosTable_[];
@@ -314,7 +314,7 @@ CLEAN_AS(func_ov004_0223bbc0, RoomObjects_FindAheadOfPlayer)
  * as the cell's centre is within the layer's reach: the first idle object with nothing on top
  * gives its index, its item code (RoomObject_ItemCode) and the code of its number facing side
  * 0; on top, a cell without an object holding an item of kind 1 gives
- * ROOM_OBJECTS_AHEAD_FLOOR_ITEM with that item's code in both. (x, z) is the last cell tried
+ * ROOM_OBJECTS_AHEAD_TOP_ITEM with that item's code in both. (x, z) is the last cell tried
  * in reach. The codes are ITEM_CODE_NONE when nothing is found; NULL for either is not
  * wanted.
  * QUIRK: the cell of `position` is worked out first and not used. */
@@ -380,7 +380,7 @@ int RoomObjects_FindAhead(int *x, int *z, const Vec3 *position, int angle, ItemC
                     if (item_copy != NULL) {
                         *item_copy = *tile;
                     }
-                    return ROOM_OBJECTS_AHEAD_FLOOR_ITEM;
+                    return ROOM_OBJECTS_AHEAD_TOP_ITEM;
                 }
             }
         }

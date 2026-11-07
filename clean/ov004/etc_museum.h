@@ -53,25 +53,27 @@ enum EtcMuseumKind {
 #define ETC_MUSEUM_NO_INDEX 0xff
 
 typedef struct EtcMuseum {
-    SceneObjectBase base;   /* 0x000: its vtable data_ov004_022533e0 */
-    TalkReceiver receiver;  /* 0x0ec: its vtable data_ov004_02253454 */
-    s32 state;              /* 0x134: enum EtcMuseumState */
-    TouchPickSphere sphere; /* 0x138: where the pen picks it */
-    u8 index;               /* 0x154: its entry in the table, ETC_MUSEUM_NO_INDEX for none */
-    u8 current;             /* 0x155: the exhibit talked about (an index into `items`) */
-    u8 unk_156[2];          /* 0x156 */
-    s32 face_angle;         /* 0x158: how far from facing it the player may turn */
-    u32 kind;               /* 0x15c: enum EtcMuseumKind */
-    s16 complete_message;   /* 0x160: the fossils' message once every exhibit is given */
-    u8 unk_162[2];          /* 0x162 */
-    u16 *items;             /* 0x164: the exhibits' item codes (from the current heap) */
-    u32 count;              /* 0x168: how many */
-    u8 talks;               /* 0x16c: the lone one's talks */
-    u8 unk_16d[3];          /* 0x16d */
+    SceneObjectBase base;      /* 0x000: its vtable data_ov004_022533e0 */
+    TalkReceiver receiver;     /* 0x0ec: its vtable data_ov004_02253454 */
+    s32 state;                 /* 0x134: enum EtcMuseumState */
+    TouchPickSphere sphere;    /* 0x138: where the pen picks it */
+    u8 index;                  /* 0x154: its entry in the table, ETC_MUSEUM_NO_INDEX for none */
+    u8 current;                /* 0x155: the exhibit talked about (an index into `items`) */
+    u8 unk_156[2];             /* 0x156 */
+    s32 face_angle;            /* 0x158: how far from facing it the player may turn */
+    u32 kind;                  /* 0x15c: enum EtcMuseumKind */
+    s16 skeleton_name_message; /* 0x160: the fossils' message naming the dinosaur, once any part
+                             * is given; its facts follow at +1 once every part is given */
+    u8 unk_162[2];             /* 0x162 */
+    u16 *items;                /* 0x164: the exhibits' item codes (from the current heap) */
+    u32 count;                 /* 0x168: how many */
+    u8 talks;                  /* 0x16c: the lone one's talks */
+    u8 unk_16d[3];             /* 0x16d */
 } EtcMuseum;
 
 int EtcMuseum_SpawnLone(void);
-void EtcMuseum_Spawn(int kind, Vec3 *position, int yaw, int face_angle, s16 complete_message, const u8 *exhibits, int count);
+void EtcMuseum_Spawn(int kind, Vec3 *position, int yaw, int face_angle, s16 skeleton_name_message, const u8 *exhibits,
+                     int count);
 EtcMuseum *EtcMuseum_Get(int index);
 void EtcMuseum_UpdateLoneTalk(EtcMuseum *museum);
 int EtcMuseum_EnterLoneTalk(EtcMuseum *museum);

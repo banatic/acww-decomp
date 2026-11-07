@@ -1,8 +1,8 @@
 /* A class of overlay 4's room objects (vtable 0x02252374, receiver part 0x02252420, 0x878 bytes,
  * class number 0x1b in RoomObject.unk_780) for the room items 0x3984-0x3d83 (four codes,
- * variants, an item). Once its model is bound it loads, from the room's heap, a copy of the
- * model of the item those codes convert to (ItemForm_ToCarried: 0x11a8 and on, the design item's
- * model and those after it), and puts a texture on its own model's material "w" by its state
+ * variants, an item). Once its model is bound it loads, from its model-pool entry's heap, a copy
+ * of the model of the item those codes convert to (ItemForm_ToCarried: the clothing item,
+ * 0x11a8-0x12a7, whose texture it shows), and puts a texture on its own model's material "w" by its state
  * (RoomObject02252374.state, through tables of member pointers, member_pointer.h):
  *
  * - ON (0): its switch on, every frame; the texture of the loaded model;

@@ -28,7 +28,7 @@ static_assert(offsetof(EtcMuseum, index) == 0x154, "index");
 static_assert(offsetof(EtcMuseum, current) == 0x155, "current");
 static_assert(offsetof(EtcMuseum, face_angle) == 0x158, "face angle");
 static_assert(offsetof(EtcMuseum, kind) == 0x15c, "kind");
-static_assert(offsetof(EtcMuseum, complete_message) == 0x160, "complete message");
+static_assert(offsetof(EtcMuseum, skeleton_name_message) == 0x160, "skeleton name message");
 static_assert(offsetof(EtcMuseum, items) == 0x164, "items");
 static_assert(offsetof(EtcMuseum, count) == 0x168, "count");
 static_assert(offsetof(EtcMuseum, talks) == 0x16c, "talks");
@@ -65,7 +65,7 @@ extern EtcMuseum *data_ov004_0225797c[ETC_MUSEUM_MAX];
 extern u8 data_ov004_02257908;
 extern u8 data_ov004_02257904;
 /* What the spawns leave for the object's creation (EtcMuseum_OnCreate) to read: its kind,
- * the fossils' message, its exhibits and their count, and its face angle. */
+ * the fossils' name message, its exhibits and their count, and its face angle. */
 extern s32 data_ov004_02257914;
 extern s16 data_ov004_0225337c;
 extern const u8 *data_ov004_02257918;
@@ -101,8 +101,8 @@ static u8 count_message(unsigned int left)
     return (u8) ((left - 1) % 3 + ETC_MUSEUM_MESSAGE_ONE);
 }
 
-/* The message about the current exhibit of insects and paintings: given by a player of the town or by
- * one who left. */
+/* The message about the current exhibit of paintings (and the fossils' answers): given by a
+ * player of the town or by one who left. */
 static u8 giver_message(EtcMuseum *museum)
 {
     u16 item = museum->items[museum->current];
@@ -130,12 +130,13 @@ CLEAN_AS(func_ov004_0221b1cc, EtcMuseum_SpawnLone)
 
 /* func_ov004_0221b224: makes one of `kind` at `position`, turned `yaw` about the vertical axis,
  * for the `count` exhibits numbered in `exhibits`; the rest is left for its creation. */
-void EtcMuseum_Spawn(int kind, Vec3 *position, int yaw, int face_angle, s16 complete_message, const u8 *exhibits, int count)
+void EtcMuseum_Spawn(int kind, Vec3 *position, int yaw, int face_angle, s16 skeleton_name_message, const u8 *exhibits,
+                     int count)
 {
     s16 angle[3];
 
     data_ov004_02257914 = kind;
-    data_ov004_0225337c = complete_message;
+    data_ov004_0225337c = skeleton_name_message;
     data_ov004_02257918 = exhibits;
     data_ov004_02257928 = count;
     data_ov004_02257938 = face_angle;
@@ -251,7 +252,7 @@ int EtcMuseum_EnterTalk(EtcMuseum *museum)
         if (museum->count == 1) {
             museum->receiver.base.message = ETC_MUSEUM_MESSAGE_ONE;
         } else {
-            museum->receiver.base.message = (u8) museum->complete_message;
+            museum->receiver.base.message = (u8) museum->skeleton_name_message;
         }
     } else if (museum->kind <= ETC_MUSEUM_FISH) {
         museum->receiver.base.message = count_message((unsigned int) EtcMuseum_CountGivenLeft(museum));
@@ -378,7 +379,7 @@ void EtcMuseum_OnMessageEnded(EtcMuseum *museum)
     }
     if (museum->kind == ETC_MUSEUM_FOSSILS) {
         u8 shown = museum->receiver.base.message;
-        if (shown != ETC_MUSEUM_MESSAGE_ONE && EtcMuseum_AllGiven(museum) && museum->complete_message == shown) {
+        if (shown != ETC_MUSEUM_MESSAGE_ONE && EtcMuseum_AllGiven(museum) && museum->skeleton_name_message == shown) {
             message = (u8) (shown + 1);
         } else {
             message = data_021f43e8;
@@ -720,7 +721,7 @@ int EtcMuseum_OnCreate(EtcMuseum *museum)
 {
     EtcMuseum_ClearTableIfEmpty();
     museum->kind = (u32) data_ov004_02257914;
-    museum->complete_message = data_ov004_0225337c;
+    museum->skeleton_name_message = data_ov004_0225337c;
     museum->count = (u32) data_ov004_02257928;
     museum->face_angle = data_ov004_02257938;
     if (!EtcMuseum_Register(museum)) {

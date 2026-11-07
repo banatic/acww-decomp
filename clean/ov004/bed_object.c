@@ -127,7 +127,7 @@ extern NetSession *data_020ccf94;
 /* The width the room's halves are taken from. */
 extern s32 data_020ca0ec;
 
-/* The town's map: a cell's point and a point's cell, whether a cell holds something
+/* The scene's map: a cell's point and a point's cell, whether a cell holds something
  * (RoomObjects_HeightAtCell, CollisionMap_UnclaimedObjectAt gives -1 for nothing), the same for the cell of a point,
  * and the grid of the room's objects. */
 extern void VEC_Add(const Vec3 *a, const Vec3 *b, Vec3 *sum);

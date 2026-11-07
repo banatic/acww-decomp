@@ -76,10 +76,11 @@ typedef struct MuseumInsect {
     u8 pad_23;
     SoundSource sound; /* 0x024: the class's vtable data_0213f020 */
     u8 unk_30[4];      /* 0x030 */
-    Vec3 kept;         /* 0x034: a position kept (its body touched one of flags 0x40) */
-    Vec3 anchor;       /* 0x040: a point it hovers about */
-    int unk_4c;        /* 0x04c: each motion's own (a turn step, a place, an x, a choice) */
-    u8 unk_50;         /* 0x050: each motion's own (a wait, a way to turn) */
+    Vec3
+        kept; /* 0x034: the point a motion heads to or comes back to (a place, a hop's end, where it was; also where its body touched one of flags 0x40) */
+    Vec3 anchor; /* 0x040: a point it hovers about */
+    int unk_4c;  /* 0x04c: each motion's own (a turn step, a place, an x, a choice) */
+    u8 unk_50;   /* 0x050: each motion's own (a wait, a way to turn) */
     u8 unk_51[3];
     fx32 level;                 /* 0x054: the height it bobs about, mostly `height` */
     fx32 low[2];                /* 0x058: the x and z it is kept within (InsectRoom_KeepInBounds) */

@@ -637,8 +637,8 @@ static int RmoTelephone_flag(u32 flag)
  *   only, none);
  * - 0x14: the options' flag cleared (first answer) or set (second);
  * - 0x17 and 0x1a: state block flag 0x13 or 0x14 cleared (first) or set (second);
- * - 0x1b: the sound on and capture effect 0, then message 0x1c (first); the sound off and
- *   capture effect 1, then message 0x1e (second);
+ * - 0x1b: stereo (PlayerOptions_ChangeStereo(1)) and capture effect 0, then message 0x1c
+ *   (first); surround (stereo cleared) and capture effect 1, then message 0x1e (second);
  * - 0x11: the setting in use kept, then set to the answer (0 to 2);
  * - 0x2a to 0x2c: the second answer puts the kept setting back.
  * Then, outside scene 6, the options stored in the player's record, and the next message shown

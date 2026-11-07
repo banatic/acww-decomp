@@ -38,7 +38,7 @@ static_assert(offsetof(VillagerHouse, model) == 0x198, "model");
 static_assert(offsetof(VillagerHouse, matrix) == 0x1a0, "model object matrix");
 static_assert(offsetof(VillagerHouse, flags_235) == 0x235, "flags 0x235");
 static_assert(offsetof(VillagerHouse, flags) == 0x236, "flags");
-static_assert(offsetof(VillagerHouse, message_set) == 0x237, "message set");
+static_assert(offsetof(VillagerHouse, villager_asleep) == 0x237, "villager asleep");
 static_assert(offsetof(VillagerHouse, x_model) == 0x2b4, "X model");
 static_assert(offsetof(VillagerHouse, x_anim) == 0x36c, "X animation");
 static_assert(sizeof(VillagerHouse) == 0x38c, "the size VillagerHouse_New allocates");
@@ -178,9 +178,9 @@ int VillagerHouse_Slot9C(VillagerHouse *house)
 }
 CLEAN_AS(func_ov003_0221d2b0, VillagerHouse_Slot9C)
 
-/* func_ov003_0221d3a4 (vtable slot 0x8c): whether there is such a villager, func_0207f1d4 says
+/* func_ov003_0221d3a4 (vtable slot 0x8c, TownObjectActor_IsOpen): whether there is such a villager, func_0207f1d4 says
  * yes and its status is neither 0 nor 3 to 7. */
-int VillagerHouse_Slot8C(VillagerHouse *house)
+int VillagerHouse_IsOpen(VillagerHouse *house)
 {
     void *villager = VillagerRoster_At((VillagerTown *) data_021e5a2c, villager_house_index(house));
     if (villager == NULL) {
@@ -194,13 +194,14 @@ int VillagerHouse_Slot8C(VillagerHouse *house)
     }
     return 1;
 }
-CLEAN_AS(func_ov003_0221d3a4, VillagerHouse_Slot8C)
+CLEAN_AS(func_ov003_0221d3a4, VillagerHouse_IsOpen)
 
 /* func_ov003_0221d43c (vtable slot 0x78, before a talk): names the receiver "obj_etc_closed"
  * and picks its message: VILLAGER_HOUSE_MESSAGE_GONE when func_0207f1d4 says there is no
- * villager; with VILLAGER_HOUSE_FLAG_ERROR the receiver is renamed "obj_etc_error" with
- * message 0; else, when the villager has an NpcId, the message of its personality from the
- * first table, or the second when message_set is nonzero (otherwise the message stays). The
+ * villager; with VILLAGER_HOUSE_FLAG_FULL (too many inside) the receiver is renamed
+ * "obj_etc_error" with message 0; else, when the villager has an NpcId, the message of its
+ * personality from the first table, or from the asleep messages (data_ov003_02236644) when
+ * villager_asleep is set (otherwise the message stays). The
  * villager's name goes to the link as line 0. */
 void VillagerHouse_PrepareTalk(VillagerHouse *house)
 {
@@ -208,13 +209,13 @@ void VillagerHouse_PrepareTalk(VillagerHouse *house)
     MessageReceiver_SetName((MessageReceiver *) &house->receiver_vtable, data_ov003_02239064);
     if (VillagerStatus_Exists(villager) == 0) {
         house->message = VILLAGER_HOUSE_MESSAGE_GONE;
-    } else if (house->flags & VILLAGER_HOUSE_FLAG_ERROR) {
+    } else if (house->flags & VILLAGER_HOUSE_FLAG_FULL) {
         MessageReceiver_SetName((MessageReceiver *) &house->receiver_vtable, data_ov003_02239074);
         house->message = 0;
     } else {
         NpcId *npc = TownVillager_NpcId(villager);
         if (npc != NULL) {
-            if (house->message_set == 0) {
+            if (house->villager_asleep == 0) {
                 house->message = data_ov003_0223664c[NpcId_Personality(npc)];
             } else {
                 house->message = data_ov003_02236644[NpcId_Personality(npc)];

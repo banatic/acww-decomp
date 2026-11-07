@@ -28,7 +28,7 @@ static_assert(offsetof(AnimatedModel, frames) == 0x9c, "animated model frames");
 #define TOWN_OBJECT_ACTOR_MODE_SLOT_ANIM_0 0x64   /* the first animation (TownObjectActor_JointAnim0) */
 #define TOWN_OBJECT_ACTOR_MODE_SLOT_ANIM_1 0x68   /* the second (TownObjectActor_JointAnim1) */
 #define TOWN_OBJECT_ACTOR_MODE_SLOT_SET_MODE 0x6c /* TownObjectActor_SetMode */
-#define TOWN_OBJECT_ACTOR_MODE_SLOT_ASKS 0x8c     /* TownObjectActor_AsksToVisit */
+#define TOWN_OBJECT_ACTOR_MODE_SLOT_IS_OPEN 0x8c  /* TownObjectActor_IsOpen */
 #define TOWN_OBJECT_ACTOR_MODE_SLOT_TUNE 0x98     /* whether modes 1 and 2 play the melody (TownObjectActor_Slot98) */
 
 /* How the animations are started: looping (mode 0) or once, at normal speed from frame 0. */
@@ -251,10 +251,10 @@ int TownObjectActor_EnterMode1(TownObjectActor *actor)
 CLEAN_AS(func_ov009_02263e58, TownObjectActor_EnterMode1)
 
 /* Asks for the event of kind 6 that takes the player in: the visit record is skipped unless
- * vtable slot 0x8c says to ask for it. */
+ * vtable slot 0x8c (TownObjectActor_IsOpen) says it is open. */
 static void mode_request_entry(TownObjectActor *actor)
 {
-    if (mode_call_int(actor, TOWN_OBJECT_ACTOR_MODE_SLOT_ASKS) == 0) {
+    if (mode_call_int(actor, TOWN_OBJECT_ACTOR_MODE_SLOT_IS_OPEN) == 0) {
         SceneObjectBase_ClearApproach((SceneObjectBase *) (void *) actor);
         actor->skip_visit = 1;
     } else {

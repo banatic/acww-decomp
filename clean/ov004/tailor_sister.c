@@ -36,7 +36,7 @@ static_assert(sizeof(TailorSisterStep) == 0x10, "a state's functions");
 static_assert(offsetof(TailorSister, state) == 0x654, "state");
 static_assert(offsetof(TailorSister, talk) == 0x658, "talk scene");
 static_assert(offsetof(TailorSister, home_yaw) == 0x70c, "home yaw");
-static_assert(offsetof(TailorSister, dated_event_told) == 0x70e, "dated event told");
+static_assert(offsetof(TailorSister, dated_event_today) == 0x70e, "dated event today");
 static_assert(offsetof(TailorSister, sew_frame) == 0x710, "sew frame");
 static_assert(offsetof(TailorSister, machine_turns) == 0x712, "machine turns");
 static_assert(sizeof(TailorSister) == 0x714, "the size func_ov004_0222353c allocates");
@@ -449,7 +449,7 @@ void TailorSisterTalk_Line(TailorSisterTalk *talk, TailorSisterLine *out)
         out->message = TAILOR_SISTER_LINE_NEW_START;
     } else if (TalkChecks_TodaysEventOfKind((int) (uintptr_t) talk->owner, &event, TAILOR_SISTER_EVENT_KIND)) {
         file = TAILOR_SISTER_FILE_DRAMA;
-        talk->owner->dated_event_told = 1;
+        talk->owner->dated_event_today = 1;
         out->message = data_ov004_022476dc[DAY_EVENT_INDEX(event) * TAILOR_SISTER_DRAMA_PARTS + DAY_EVENT_PART(event)];
         TalkChecks_MarkDayEvent((int) (uintptr_t) talk->owner, &event);
     } else if (!TalkChecks_TestSetDailyBit(TAILOR_SISTER_DAILY_FIRST_LINE, 1)) {
@@ -772,7 +772,7 @@ int TailorSister_Start(TailorSister *sister)
     } else {
         TailorSister_SetState(sister, TAILOR_SISTER_SEW);
         if (TalkChecks_TodaysEventOfKind((int) (uintptr_t) sister, &event, TAILOR_SISTER_EVENT_KIND)) {
-            sister->dated_event_told = 1;
+            sister->dated_event_today = 1;
         }
     }
     return 1;

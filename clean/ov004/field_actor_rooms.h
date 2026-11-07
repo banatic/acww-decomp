@@ -11,7 +11,8 @@
  *                   the scene's exit (at once when the way is neither a door nor a sliding
  *                   one);
  *   0x8b  arrive:   the actor starts 6.0 further in z than its place and walks to it, after
- *                   waiting 20 frames behind a sliding door (or a held door).
+ *                   waiting 20 frames behind a sliding door (or after ringing a house's
+ *                   doorbell).
  * In each the work at 0x7d4 is a FieldActorRoomsWalk, and the point the actor walks to is kept
  * packed at 0x8f0 (x and z) for the message handler of another console's actor. */
 #ifndef CLEAN_OV004_FIELD_ACTOR_ROOMS_H
@@ -28,8 +29,9 @@ typedef struct FieldActorRoomsWalk {
     Vec3 point;     /* 0x00: where it walks to */
     fx32 speed;     /* 0x0c: its speed (20.12) */
     fx32 max_speed; /* 0x10 */
-    u8 frames;      /* 0x14: state 0x8c: frames since its entry */
-    u8 kind;        /* 0x15: state 0x8c: how it goes through the door (1 and 2 take the exit) */
+    u8 frames;      /* 0x14: state 0x8c: frames since its entry; state 0x8b: the wait left */
+    u8 kind;        /* 0x15: states 0x8c and 0x8b: how it goes through the door (0x8c takes the
+                     * exit at frame 10 for 1 and 2, at its entry for 0 and 3) */
 } FieldActorRoomsWalk;
 
 void FieldActorRooms_WalkToward(struct FieldActor *actor, const Vec3 *target, fx32 *speed, const fx32 *max_speed);

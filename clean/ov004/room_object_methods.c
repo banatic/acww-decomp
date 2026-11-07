@@ -24,12 +24,12 @@
 
 #define KIND_NO_ITEM 0x1c     /* unk_780 of an object that is no item of the map */
 #define EFFECT_3D 0x3d        /* what RoomObject_Effect3dAt gives EffectSystem_StartOneShotSetNumber */
-#define BLOCK_CELLS 16        /* cells along a block of the town's map */
+#define BLOCK_CELLS 16        /* cells along a block of the scene's map */
 #define INDEX_BITS 0x1ff      /* a reference by index: the index, 9 bits... */
 #define INDEX_SCENE_BITS 0x7f /* ...and the scene, 7 bits */
 #define CELL_SCENE_BITS 0x3f  /* a reference by cell: the scene in 6 bits */
 
-/* The town's map (AcreTile_ItemInAcre finds the item on a cell of it). */
+/* The scene's map (AcreTile_ItemInAcre finds the item on a cell of it). */
 extern void *data_021c80bc;
 /* The farthest distance there is, to start a search for the nearest. */
 extern const fx32 data_020ca0ec;
@@ -216,7 +216,7 @@ int RoomEffect_SpawnRoach(Vec3 *point, int angle)
 CLEAN_AS(func_ov004_0220e73c, RoomEffect_SpawnRoach)
 
 /* func_ov004_0220e758: the first of the cells the object would cover (moved by `offset` and
- * turned by `turn`, RoomObject_ListCells) where the town's map holds, on the object's layer, a
+ * turned by `turn`, RoomObject_ListCells) where the scene's map holds, on the object's layer, a
  * furniture code; whether there is one. */
 int RoomObject_FindFurnitureCell(RoomObject *object, int *x, int *y, Vec3 *offset, s16 turn)
 {

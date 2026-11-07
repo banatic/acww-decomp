@@ -49,7 +49,7 @@ static_assert(sizeof(FieldActorPlaceProbeWork) <= sizeof(FieldActorWork), "state
 #define FAPS_CLAIM 0x0b
 #define FAPS_REFUSED 0x0c
 #define FAPS_STEP 0x0d
-#define FAPS_APPROACH 0x0e
+#define FAPS_CLAIM_PLACE 0x0e
 /* The states state 8 is entered from without a blend. */
 #define FAPS_FROM_0F 0x0f
 
@@ -185,7 +185,7 @@ static void faps_ahead_beside(FieldActor *actor, int side, fx32 *dx, fx32 *dz)
  * console's actor takes the point 2.0 ahead of it (at that yaw) and claims it. The work and the
  * saved bytes get the point, yaw and side (the work also the kind); animation 0x1a loops
  * (blended over 3 frames). */
-void FieldActorPlaceStates_EnterApproach(FieldActor *actor, const StateRequest *request, int previous)
+void FieldActorPlaceStates_EnterClaimPlace(FieldActor *actor, const StateRequest *request, int previous)
 {
     (void) previous;
     const FieldActorPlaceArgs *args = (const FieldActorPlaceArgs *) (const void *) request->payload;
@@ -200,36 +200,36 @@ void FieldActorPlaceStates_EnterApproach(FieldActor *actor, const StateRequest *
         FieldActor_PointAhead(&ahead, actor, &point, &yaw, &data_ov004_02247780);
         point = ahead;
     }
-    FieldActorPlaceStates_SetApproachWork(faps_place_of(actor), point.x, point.z, (s16) yaw, side, args->kind);
-    FieldActorPlaceStates_PutApproachSaved(actor->saved.packed, point.x, point.z, (s16) yaw, side);
+    FieldActorPlaceStates_SetClaimPlaceWork(faps_place_of(actor), point.x, point.z, (s16) yaw, side, args->kind);
+    FieldActorPlaceStates_PutClaimPlaceSaved(actor->saved.packed, point.x, point.z, (s16) yaw, side);
     if (faps_is_local(actor)) {
         PlaceClaim_Request3(&point);
     }
     FieldActor_PlayAnimationLoop(actor, FAPS_ANIM_APPROACH, FAPS_BLEND, 0);
 }
-CLEAN_AS(func_ov004_0222b0fc, FieldActorPlaceStates_EnterApproach)
+CLEAN_AS(func_ov004_0222b0fc, FieldActorPlaceStates_EnterClaimPlace)
 
 /* func_ov004_0222b1b4: state 0x0e's saved bytes: the point (packed), the yaw at byte 5, the side
  * at byte 7. */
-void FieldActorPlaceStates_GetApproachSaved(const u8 *saved, u32 *x, u32 *z, s16 *yaw, u8 *side)
+void FieldActorPlaceStates_GetClaimPlaceSaved(const u8 *saved, u32 *x, u32 *z, s16 *yaw, u8 *side)
 {
     PackedBytes_UnpackPoint(saved, x, z);
     *yaw = PackedBytes_ReadS16(saved + 5);
     *side = saved[7];
 }
-CLEAN_AS(func_ov004_0222b1b4, FieldActorPlaceStates_GetApproachSaved)
+CLEAN_AS(func_ov004_0222b1b4, FieldActorPlaceStates_GetClaimPlaceSaved)
 
 /* func_ov004_0222b1d8: state 0x0e's saved bytes put. */
-void FieldActorPlaceStates_PutApproachSaved(u8 *saved, int x, int z, int yaw, u8 side)
+void FieldActorPlaceStates_PutClaimPlaceSaved(u8 *saved, int x, int z, int yaw, u8 side)
 {
     PackedBytes_PackPoint(saved, x, z);
     PackedBytes_WriteS16(saved + 5, yaw);
     saved[7] = side;
 }
-CLEAN_AS(func_ov004_0222b1d8, FieldActorPlaceStates_PutApproachSaved)
+CLEAN_AS(func_ov004_0222b1d8, FieldActorPlaceStates_PutClaimPlaceSaved)
 
 /* func_ov004_0222b1fc: state 0x0e's work. */
-void FieldActorPlaceStates_SetApproachWork(FieldActorPlaceArgs *work, int x, int z, s16 yaw, u8 side, u8 kind)
+void FieldActorPlaceStates_SetClaimPlaceWork(FieldActorPlaceArgs *work, int x, int z, s16 yaw, u8 side, u8 kind)
 {
     work->x = x;
     work->z = z;
@@ -237,25 +237,25 @@ void FieldActorPlaceStates_SetApproachWork(FieldActorPlaceArgs *work, int x, int
     work->side = side;
     work->kind = kind;
 }
-CLEAN_AS(func_ov004_0222b1fc, FieldActorPlaceStates_SetApproachWork)
+CLEAN_AS(func_ov004_0222b1fc, FieldActorPlaceStates_SetClaimPlaceWork)
 
 /* func_ov004_0222b214: state 0x0e asked for with the point, yaw and side; the kind is 1 when
  * `priority` is 6. Whether it was queued. */
-int FieldActorPlaceStates_RequestApproach(FieldActor *actor, int x, int z, int yaw, u8 side, int priority, s16 arg)
+int FieldActorPlaceStates_RequestClaimPlace(FieldActor *actor, int x, int z, int yaw, u8 side, int priority, s16 arg)
 {
     StateRequest request;
     StateRequest_Construct(&request);
-    StateRequest_Set(&request, FAPS_APPROACH, priority, arg);
-    FieldActorPlaceStates_PutApproachArgs((FieldActorPlaceArgs *) (void *) request.payload, x, z, (s16) yaw, side,
-                                          priority == FAPS_PRIORITY);
+    StateRequest_Set(&request, FAPS_CLAIM_PLACE, priority, arg);
+    FieldActorPlaceStates_PutClaimPlaceArgs((FieldActorPlaceArgs *) (void *) request.payload, x, z, (s16) yaw, side,
+                                            priority == FAPS_PRIORITY);
     int queued = FieldActor_QueueRequest(actor, &request);
     StateRequest_Destruct(&request);
     return queued;
 }
-CLEAN_AS(func_ov004_0222b214, FieldActorPlaceStates_RequestApproach)
+CLEAN_AS(func_ov004_0222b214, FieldActorPlaceStates_RequestClaimPlace)
 
 /* func_ov004_0222b270: what a request for state 0x0e carries. */
-void FieldActorPlaceStates_PutApproachArgs(FieldActorPlaceArgs *args, int x, int z, s16 yaw, u8 side, u8 kind)
+void FieldActorPlaceStates_PutClaimPlaceArgs(FieldActorPlaceArgs *args, int x, int z, s16 yaw, u8 side, u8 kind)
 {
     args->x = x;
     args->z = z;
@@ -263,7 +263,7 @@ void FieldActorPlaceStates_PutApproachArgs(FieldActorPlaceArgs *args, int x, int
     args->side = side;
     args->kind = kind;
 }
-CLEAN_AS(func_ov004_0222b270, FieldActorPlaceStates_PutApproachArgs)
+CLEAN_AS(func_ov004_0222b270, FieldActorPlaceStates_PutClaimPlaceArgs)
 
 /* ---- State 0x0d: a step off to the side */
 

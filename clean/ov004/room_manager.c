@@ -71,7 +71,7 @@ extern u16 data_ov004_022595bc;
 extern s32 data_ov004_022595d8;
 /* The point the TV's sound plays at when no TV is near. */
 extern Vec3 data_021fbee8;
-/* The town's map, the room being its only acre. */
+/* The scene's map, the room being its only acre. */
 extern AcreMap *data_021c80bc;
 
 /* The tests of the objects looked for (room_object_methods.h), and the marks the nearest get

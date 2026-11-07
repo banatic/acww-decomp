@@ -22,7 +22,7 @@
 
 /* What RoomObjects_FindAhead gives besides an object's index. */
 #define ROOM_OBJECTS_AHEAD_NONE (-1)
-#define ROOM_OBJECTS_AHEAD_FLOOR_ITEM (-2) /* an item of kind 1 lying on the cell ahead */
+#define ROOM_OBJECTS_AHEAD_TOP_ITEM (-2) /* an item of kind 1 lying on top (layer 1) of the cell ahead */
 
 /* What RoomObjects_PointAheadState gives. */
 enum RoomObjectsPointState {

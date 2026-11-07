@@ -53,7 +53,7 @@ static_assert(offsetof(SickVillager, talk) == 0x8a0, "talk scene");
 static_assert(offsetof(SickVillager, talk.base.scene.talk) == 0x8e0, "the talk scene's talk");
 static_assert(offsetof(SickVillager, talk.stage) == 0xa44, "the talk scene's stage");
 static_assert(offsetof(SickVillager, draw) == 0xa4c, "draw");
-static_assert(offsetof(SickVillager, spawner) == 0xa54, "spawner part");
+static_assert(offsetof(SickVillager, grid) == 0xa54, "grid");
 static_assert(offsetof(SickVillager, turn_yaw) == 0xa74, "turn yaw");
 static_assert(offsetof(SickVillager, wander_wait) == 0xa76, "wander wait");
 static_assert(offsetof(SickVillager, walk_point) == 0xa78, "walk point");
@@ -210,12 +210,12 @@ SickVillagerTalk *SickVillagerTalk_Delete(SickVillagerTalk *talk)
 }
 CLEAN_AS(func_ov004_02221b9c, SickVillagerTalk_Delete)
 
-/* The destructor's body: the spawner part, its talk scene, then the town villager scene
+/* The destructor's body: the tile grid, its talk scene, then the town villager scene
  * object. */
 static void sk_destruct(SickVillager *villager)
 {
     *(const u8 **) (void *) villager->base = data_ov004_022541d8;
-    TileGrid_Destruct(villager->spawner);
+    TileGrid_Destruct(villager->grid);
     sk_set_talk_vtable(&villager->talk);
     VillagerTalkScene_DestructBody(&villager->talk.base);
     VillagerSceneObject_DestructBody(villager->base);
@@ -1015,7 +1015,7 @@ int SickVillager_IsAskedItem(u16 *item, int state)
 CLEAN_AS(func_ov004_02222a30, SickVillager_IsAskedItem)
 
 /* func_ov004_02222a88 (its create function): allocates (zeroed) and builds a villager: the town
- * villager scene object, its talk scene and its spawner part. */
+ * villager scene object, its talk scene and its tile grid. */
 SickVillager *SickVillager_New(void)
 {
     SickVillager *villager = Heap_AllocAuxZeroed(sizeof(SickVillager));
@@ -1024,7 +1024,7 @@ SickVillager *SickVillager_New(void)
         *(const u8 **) (void *) villager->base = data_ov004_022541d8;
         VillagerTalkScene_ConstructAlt(&villager->talk.base);
         sk_set_talk_vtable(&villager->talk);
-        TileGrid_Construct(villager->spawner);
+        TileGrid_Construct(villager->grid);
     }
     return villager;
 }

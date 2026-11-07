@@ -154,7 +154,7 @@ typedef struct TownObjectActor {
     u8 exit_step; /* set to 1 by scene event 6, counts to 3 (TownObjectActor_UpdateExit) */
     u8 flags_235;
     u8 flags;
-    u8 nobody_home; /* the visit record said 3: a villager's house with nobody in */
+    u8 villager_asleep; /* the visit record said 3 (TOWN_OBJECTS_ANSWER_ASLEEP): the villager is asleep */
     TownObjectActorSound sound;
     int state;     /* enum TownObjectActorState */
     u8 skip_visit; /* the talk starts without asking for the visit record */

@@ -75,12 +75,12 @@ typedef struct FieldActorPlaceStepWork {
     fx32 z;
 } FieldActorPlaceStepWork;
 
-void FieldActorPlaceStates_EnterApproach(struct FieldActor *actor, const struct StateRequest *request, int previous);
-void FieldActorPlaceStates_GetApproachSaved(const u8 *saved, u32 *x, u32 *z, s16 *yaw, u8 *side);
-void FieldActorPlaceStates_PutApproachSaved(u8 *saved, int x, int z, int yaw, u8 side);
-void FieldActorPlaceStates_SetApproachWork(FieldActorPlaceArgs *work, int x, int z, s16 yaw, u8 side, u8 kind);
-int FieldActorPlaceStates_RequestApproach(struct FieldActor *actor, int x, int z, int yaw, u8 side, int priority, s16 arg);
-void FieldActorPlaceStates_PutApproachArgs(FieldActorPlaceArgs *args, int x, int z, s16 yaw, u8 side, u8 kind);
+void FieldActorPlaceStates_EnterClaimPlace(struct FieldActor *actor, const struct StateRequest *request, int previous);
+void FieldActorPlaceStates_GetClaimPlaceSaved(const u8 *saved, u32 *x, u32 *z, s16 *yaw, u8 *side);
+void FieldActorPlaceStates_PutClaimPlaceSaved(u8 *saved, int x, int z, int yaw, u8 side);
+void FieldActorPlaceStates_SetClaimPlaceWork(FieldActorPlaceArgs *work, int x, int z, s16 yaw, u8 side, u8 kind);
+int FieldActorPlaceStates_RequestClaimPlace(struct FieldActor *actor, int x, int z, int yaw, u8 side, int priority, s16 arg);
+void FieldActorPlaceStates_PutClaimPlaceArgs(FieldActorPlaceArgs *args, int x, int z, s16 yaw, u8 side, u8 kind);
 
 void FieldActorPlaceStates_UpdateStep(struct FieldActor *actor);
 void FieldActorPlaceStates_EndStep(struct FieldActor *actor);

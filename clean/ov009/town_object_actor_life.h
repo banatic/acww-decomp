@@ -24,7 +24,7 @@
 #include "town_object_actor.h"
 
 int TownObjectActor_IsNight(TownObjectActor *actor);
-int TownObjectActor_AsksToVisit(TownObjectActor *actor);
+int TownObjectActor_IsOpen(TownObjectActor *actor);
 int TownObjectActor_LightsOn(TownObjectActor *actor);
 int TownObjectActor_Kind(TownObjectActor *actor);
 int TownObjectActor_ViewRangeZAhead(const TownObjectActor *actor);

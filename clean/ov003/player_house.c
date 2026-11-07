@@ -54,12 +54,12 @@ int PlayerHouse_Slot98(void)
 }
 CLEAN_AS(func_ov003_0221dc04, PlayerHouse_Slot98)
 
-/* func_ov003_0221dc08 (vtable slot 0x8c): always 1. */
-int PlayerHouse_Slot8C(void)
+/* func_ov003_0221dc08 (vtable slot 0x8c, TownObjectActor_IsOpen): always 1. */
+int PlayerHouse_IsOpen(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov003_0221dc08, PlayerHouse_Slot8C)
+CLEAN_AS(func_ov003_0221dc08, PlayerHouse_IsOpen)
 
 /* func_ov003_0221dc0c (vtable slot 0x9c): whether bits 18 to 23 of the house's word at 0x15a0
  * are nonzero.

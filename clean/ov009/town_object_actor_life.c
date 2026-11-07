@@ -50,7 +50,7 @@ static_assert(sizeof(BuildingLights) == 0x38, "building lights");
 #define TOWN_OBJECT_ACTOR_LIFE_SLOT_SET_MODE 0x6c   /* TownObjectActor_SetMode */
 #define TOWN_OBJECT_ACTOR_LIFE_SLOT_INIT_END 0x70   /* TownObjectActor_Slot70: what TownObjectActor_Init returns */
 #define TOWN_OBJECT_ACTOR_LIFE_SLOT_RUN_MODE 0x74   /* TownObjectActor_RunMode */
-#define TOWN_OBJECT_ACTOR_LIFE_SLOT_ASKS 0x8c       /* TownObjectActor_AsksToVisit */
+#define TOWN_OBJECT_ACTOR_LIFE_SLOT_IS_OPEN 0x8c    /* TownObjectActor_IsOpen */
 #define TOWN_OBJECT_ACTOR_LIFE_SLOT_LIGHTS_ON 0x9c  /* TownObjectActor_LightsOn */
 #define TOWN_OBJECT_ACTOR_LIFE_SLOT_FLASH 0xa0      /* TownObjectActor_RecordByte5 */
 #define TOWN_OBJECT_ACTOR_LIFE_SLOT_ARCHIVE 0xa4    /* TownObjectActor_ArchivePath */
@@ -174,20 +174,21 @@ int TownObjectActor_IsNight(TownObjectActor *actor)
 }
 CLEAN_AS(func_ov009_02264c40, TownObjectActor_IsNight)
 
-/* func_ov009_02264c64 (vtable slot 0x8c): whether going in asks for the visit record; always
- * 1 here. */
-int TownObjectActor_AsksToVisit(TownObjectActor *actor)
+/* func_ov009_02264c64 (vtable slot 0x8c): whether it is open (lit at night, and going in asks
+ * for the visit record); always 1 here. Overrides: VillagerHouse_IsOpen, PlayerHouse_IsOpen,
+ * SignBoard_IsOpen, StoreFront_LetsIn, Fox_IsAfterSix, Panther_IsAfterSix. */
+int TownObjectActor_IsOpen(TownObjectActor *actor)
 {
     (void) actor;
     return 1;
 }
-CLEAN_AS(func_ov009_02264c64, TownObjectActor_AsksToVisit)
+CLEAN_AS(func_ov009_02264c64, TownObjectActor_IsOpen)
 
 /* func_ov009_02264c68 (vtable slot 0x9c): whether its lights are on: at night, when vtable
  * slot 0x8c says so. */
 int TownObjectActor_LightsOn(TownObjectActor *actor)
 {
-    return TownObjectActor_IsNight(actor) && life_call_int(actor, TOWN_OBJECT_ACTOR_LIFE_SLOT_ASKS) != 0;
+    return TownObjectActor_IsNight(actor) && life_call_int(actor, TOWN_OBJECT_ACTOR_LIFE_SLOT_IS_OPEN) != 0;
 }
 CLEAN_AS(func_ov009_02264c68, TownObjectActor_LightsOn)
 

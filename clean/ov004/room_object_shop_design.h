@@ -1,6 +1,6 @@
 /* A class of overlay 4's room objects (vtable 0x02251ec4, receiver part 0x02251f70, 0x88c bytes)
  * that shows one of the shop's eight designs (design_assets.h): the room items 0x3e04-0x3e23,
- * four codes (variants) a design. Once the model is bound and the shop's texture of that design
+ * four codes (its facing sides) a design. Once the model is bound and the shop's texture of that design
  * exists (in scene 10 only), it is put on the model's material "w"; until then the start is
  * tried again. From then on a sound emitter of its own plays sound 0x50 at the object's centre
  * each time that design of the shop changes. */

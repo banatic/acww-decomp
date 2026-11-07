@@ -3,7 +3,7 @@
  * model (the model of furniture 0x3984 in its archive) plays "ft_push1" or "ft_pull1" from
  * "/ftr/anm/anm.arc", and the furniture follows the model's root node, placed by the mover's
  * transform (the furniture's start and its angle). One move at a time: a room object asks with
- * the flag it keeps (FurnitureMoveFlag, RoomObject.unk_250), and steps the move each frame until
+ * the flag it keeps (FurnitureMoveFlag, RoomObject.move_flag), and steps the move each frame until
  * the animation ends (room_object.c). "ft_kb_hw_def_anim", the third animation, is not played
  * here; room objects take it for their joints (room_object_02252ba8.c).
  *

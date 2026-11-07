@@ -25,7 +25,7 @@ static_assert(offsetof(DroppedItem, layer) == 0x90, "dropped item layer");
 extern DroppedItem data_ov004_02258af4[DROPPED_ITEMS];
 extern IconModels *data_ov004_02258ae4;
 
-extern AcreMap *data_021c80bc;    /* the town's map, or null */
+extern AcreMap *data_021c80bc;    /* the scene's map, or null */
 extern NetSession *data_020ccf94; /* the session */
 extern Mtx43 data_021fbe48;       /* the matrix being built */
 
@@ -87,7 +87,7 @@ int DroppedItems_DropOnTile(int player, int item, const TileChangesTile *tile, c
 CLEAN_AS(func_ov004_022335b8, DroppedItems_DropOnTile)
 
 /* func_ov004_0223362c: the item set going in the first free of the player's three places;
- * whether there was one (none without the town's map). */
+ * whether there was one (none without the scene's map). */
 int DroppedItems_Start(DroppedItem *items, int player, const TileChangesTile *tile, const Vec3 *from, const Vec3 *to,
                        int landed, u16 item, short unk_48, u8 layer)
 {
@@ -308,7 +308,7 @@ void DroppedItem_FinishTile(DroppedItem *drop)
 }
 CLEAN_AS(func_ov004_02233aa4, DroppedItem_FinishTile)
 
-/* func_ov004_02233ad4: `item` put on the town map at tile (x, z) of `layer`.
+/* func_ov004_02233ad4: `item` put on the scene's map at tile (x, z) of `layer`.
  * QUIRK: whether the scene is scene 0 is asked and not used. */
 void DroppedItems_PutOnMap(int x, int z, u16 item, int layer)
 {
@@ -322,7 +322,7 @@ void DroppedItems_PutOnMap(int x, int z, u16 item, int layer)
 CLEAN_AS(func_ov004_02233ad4, DroppedItems_PutOnMap)
 
 /* func_ov004_02233ba8: `item` dropped by this console's player (player 0 unless linked) from
- * where it stands to `to`; whether it could be (it needs the town's map and the player). */
+ * where it stands to `to`; whether it could be (it needs the scene's map and the player). */
 int DroppedItems_DropFromLocalPlayer(const u16 *item, const Vec3 *to)
 {
     AcreMap *map = data_021c80bc;
