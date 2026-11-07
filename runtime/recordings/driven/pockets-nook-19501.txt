@@ -1,0 +1,10 @@
+# the pockets screen (02373bd4, class data_ov096_022a23e8) at the end of frame 19501 of
+# nook-job: its action sub state 0x31 and the slot's item handed to the actor; the run ends after
+# the calls
+scene nook-job
+frames 19510
+ram 1300,5200,9400,11300,15300,19500
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 19501 0229d5d5 02373bd4 0 0 0 0229d5d4 1c04b510  # ov096 PocketsScreen_ActionSubState31
+call 19501 0229fdb1 02373bd4 0 0 0 0229fdb0 b082b510  # ov096 PocketsScreen_HandSlotItemToActor
+end

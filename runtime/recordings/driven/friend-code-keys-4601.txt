@@ -1,0 +1,9 @@
+# the friend code entry (023cb83c, class data_ov133_0229c908) at the end of frame 4601 of
+# friend-code-keys: its held delete and the friend set again; the run ends after the calls
+scene friend-code-keys
+frames 4610
+ram 2600,3800,4200,4600
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 4601 0229bd19 023cb83c 0 0 0 0229bd18 b081b530  # ov133 FriendCodeEntry_DeleteHeld
+call 4601 0229bc09 023cb83c 0 0 0 0229bc08 1c05b570  # ov133 FriendCodeEntry_RetrySetFriend
+end

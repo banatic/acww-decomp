@@ -1,0 +1,8 @@
+# the order catalog (02374d08, class data_ov142_0229c3e8) at the end of frame 5901 of
+# catalog-bar: its cursor put on the buttons; the run ends after the call
+scene catalog-bar
+frames 5910
+ram 2600,4800,5300,5900
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 5901 0229a0d5 02374d08 0 0 0 0229a0d4 1c04b510  # ov142 OrderCatalog_CursorToButtons
+end

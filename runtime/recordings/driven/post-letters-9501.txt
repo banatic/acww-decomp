@@ -1,0 +1,9 @@
+# the post office's posting scene (023b3d54, class data_ov104_0229f6d0) at the end of frame 9501
+# of post-letters: the first letter of player 0's pockets (021dd964) sent to the host; the run
+# ends after the call
+scene post-letters
+frames 9510
+ram 2600,5000,6500,8000,9500
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 9501 0229c379 023b3d54 021dd964 0 0 0229c378 1c0db570  # ov104 LetterSend_SendToHost
+end

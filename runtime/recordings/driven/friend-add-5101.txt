@@ -1,0 +1,18 @@
+# the friend roster (023cacd4, class data_ov119_0229cea0) and its menu tabs (023cccfc, class
+# data_ov090_02299820) at the end of frame 5101 of friend-add: the tabs' error update, whether a
+# zeroed friend's data (a block of the game's heap) is set,
+# friend 0 refreshed, a player added, and the friend set and deleted again; the run ends
+# after the calls
+scene friend-add
+frames 5110
+ram 2600,3800,4250,4700,5100
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 5101 020e9948 022a3378 40 0 0 00000000 00000000  # autoload_2 Heap_Alloc
+call 5101 02117568 r1 0 40 0 00000000 00000000  # autoload_2 MI_CpuFill8
+call 5101 02299259 023cccfc 0 0 0 02299258 18404902  # ov090 MenuTabs_UpdateError
+call 5101 0229ac3d 023cacd4 r3 0 0 0229ac3c 1c0eb570  # ov119 FriendRoster_HasFriend
+call 5101 0229b249 023cacd4 0 0 0 0229b248 b081b530  # ov119 FriendRoster_Refresh
+call 5101 0229b285 023cacd4 0 0 0 0229b284 b085b5f0  # ov119 FriendRoster_AddPlayer
+call 5101 0229bc75 023cacd4 0 0 0 0229bc74 1c04b510  # ov119 FriendRoster_RetrySetFriend
+call 5101 0229bc49 023cacd4 0 0 0 0229bc48 1c04b510  # ov119 FriendRoster_RetryDeleteFriend
+end

@@ -1,0 +1,9 @@
+# the star designer (02364524, class data_ov129_0229dc38) at the end of frame 15501 of
+# observatory-more: error message 1 shown and its sub state 14 run; the run ends after the calls
+scene observatory-more
+frames 15510
+ram 2600,11200,12500,14000,15500
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 15501 0229c611 02364524 1 0 0 0229c610 b082b510  # ov129 StarDesigner_ShowError
+call 15501 0229c891 02364524 0 0 0 0229c890 1c04b510  # ov129 StarDesigner_SubError
+end

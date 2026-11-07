@@ -1,0 +1,11 @@
+# the pockets' box at the store's counter (023754bc, class data_ov100_0229ecb8) at the end of
+# frame 4801 of shop-sell: its sub state 0x10 begun, the box sent as message 3, its done button;
+# the run ends after the calls
+scene shop-sell
+frames 4810
+ram 2600,3800,4800
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 4801 0229ca3d 023754bc 0 0 0 0229ca3c 1c04b510  # ov100 PocketsBox_BeginSubState10
+call 4801 0229c325 023754bc 3 0 0 0229c324 b089b530  # ov100 PocketsBox_SendBox
+call 4801 0229dbd1 023754bc 0 0 0 0229dbd0 1c04b510  # ov100 PocketsBox_ButtonDone
+end

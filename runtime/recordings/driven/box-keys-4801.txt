@@ -1,0 +1,11 @@
+# the town hall's public box screen (023b57a8, class data_ov110_0229ecb8) at the end of frame
+# 4801 of box-keys: its end button begun and its press finished, and the held item dropped at
+# place 0; the run ends after the calls
+scene box-keys
+frames 4810
+ram 2600,4400,4800
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 4801 0229d681 023b57a8 0 0 0 0229d680 1c05b570  # ov110 PublicBox_DropHeldAtTouch
+call 4801 0229c9e9 023b57a8 0 0 0 0229c9e8 1c04b510  # ov110 PublicBox_BeginButtonEnd
+call 4801 0229db49 023b57a8 0 0 0 0229db48 1c04b510  # ov110 PublicBox_FinishButtonPress
+end

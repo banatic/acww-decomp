@@ -1,0 +1,10 @@
+# the pockets' swap screen (023cb4e4, class data_ov107_0229e3b8) at the end of frame 5901 of
+# fish-swap: error message 1 opened (back to the current sub state) and waited on; the run
+# ends after the calls
+scene fish-swap
+frames 5910
+ram 2600,3700,5100,5900
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 5901 0229d3a1 023cb4e4 1 ff 0 0229d3a0 b082b510  # ov107 PocketsSwap_ShowMessage
+call 5901 0229d5e1 023cb4e4 0 0 0 0229d5e0 1c04b510  # ov107 PocketsSwap_WaitError
+end

@@ -1,0 +1,8 @@
+# the phone's clock screen (023b46bc, class data_ov135_0229d610) at the end of frame 2601 of
+# clock-keys: its wait for the hands to settle; the run ends after the call
+scene clock-keys
+frames 2610
+ram 1400,2300,2600
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 2601 0229cec5 023b46bc 0 0 0 0229cec4 1c04b510  # ov135 PhoneClock_WaitDragSettled
+end

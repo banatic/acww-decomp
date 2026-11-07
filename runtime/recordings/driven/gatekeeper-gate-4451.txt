@@ -1,0 +1,14 @@
+# the first gatekeeper (022af924, class data_ov048_02264298) and his talk (022aff7c, at 0x658)
+# at the end of frame 4451 of gate-flag: the talk's line 0x21 or 0x22 picked, its talk
+# state run, the owner's state 5,
+# and the gatekeeper's state 0xe entered and run; the run ends after the calls
+scene gate-flag
+frames 4460
+ram 2600,3800
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 4451 022609fd 022aff7c 0 0 0 022609fc b081b500  # ov048 GatekeeperTalk_Line21Or22
+call 4451 022616c1 022aff7c 0 0 0 022616c0 1c01b510  # ov048 GatekeeperTalk_RunTalkState
+call 4451 02262369 022aff7c 0 0 0 02262368 680030b8  # ov048 GatekeeperTalk_SetOwnerState5
+call 4451 022628b5 022af924 0 0 0 022628b4 47702001  # ov048 Gatekeeper_EnterStateE
+call 4451 02262881 022af924 0 0 0 02262880 1c04b510  # ov048 Gatekeeper_RunStateE
+end
