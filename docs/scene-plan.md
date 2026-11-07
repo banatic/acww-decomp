@@ -4995,7 +4995,9 @@ What reading the Clean code found about the groups above; counts are of function
 - Heap slots with real arguments (live-catalog-caught-4601): ExpHeap_BlockSize on a live block
   of the game's expanded heap (022b730c), Process_CreateFittedHeap on the field actor with 0x400
   bytes in that heap. No process had a heap of its own at that moment, so the call makes one.
-- Driven list 1,062 -> 1,161 (checked, run or driven call, 23,298 -> 23,397).
+- Driven list 1,062 -> 1,161 (checked, run or driven call, 23,298 -> 23,397); live4-*: 7 checks
+  more (--plan over this round's groups, slots 0-47) for receivers' slot 0 thunks the earlier
+  checks had not called and a blended model's destructor, 1,169 (23,405).
 - What stays: the other 211 deleting destructors of slot 1 have live objects only inside another
   object (200), in .bss or a frame heap (31), never at a block's start (the survey of all 578
   scenes' checkpoints), and a frame heap's free halts (FrameHeap_Free): no honest call frees one.

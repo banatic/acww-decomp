@@ -1,0 +1,21 @@
+# 15 functions of the destructors of vtable slot 0 of those classes, the menu scenes' destructors of vtable slot 16, the menu scenes' phases 3 and 4, the scene object bases' slots 0x58, 0x5c and 0xa4 no call site's receiver keeps, the scene sound classes' slot 0 and base slots, the talk receivers' scene moves no plain receiver's message asks for, vtable slots no code calls: heaps and triangles: each on a live object of its class, through the object's vtable, at the end of frame 4601 of catalog-caught (tools/driven.py --plan)
+scene catalog-caught
+frames 4610
+ram 2600,3500,3800,4200
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 4601 022a6cac a4 022a6cac 0 0 0 022792ec  # main SceneObject_VfuncA4 (slot 41)
+vcall 4601 0239225c 60 0239225c 0 0 0 020d832c  # main TalkReceiver_Nothing60 (slot 24)
+vcall 4601 0239225c 5c 0239225c 0 0 0 020d832c  # main TalkReceiver_Nothing5c (slot 23)
+vcall 4601 0239225c 58 0239225c 0 0 0 020d832c  # main TalkReceiver_Nothing58 (slot 22)
+vcall 4601 0239225c 54 0239225c 0 0 0 020d832c  # main TalkReceiver_Nothing54 (slot 21)
+vcall 4601 0239225c 50 0239225c 0 0 0 020d832c  # main TalkReceiver_Nothing50 (slot 20)
+vcall 4601 0239225c 4c 0239225c 0 0 0 020d832c  # main TalkReceiver_Nothing4c (slot 19)
+vcall 4601 0239225c 48 0239225c 0 0 0 020d832c  # main TalkReceiver_Nothing48 (slot 18)
+vcall 4601 0239225c 3c 0239225c 0 0 0 020d832c  # main TalkReceiver_Nothing3c (slot 15)
+vcall 4601 023cb8bc 58 023cb8bc 0 0 0 0229e8b8  # ov116 InsectCatalog_Phase4 (slot 22)
+vcall 4601 023cb8bc 54 023cb8bc 0 0 0 0229e8b8  # ov116 InsectCatalog_Phase3 (slot 21)
+vcall 4601 02322220 8 02322220 0 0 0 0213ef80  # autoload_2 SoundSceneBase_Vfunc08 (slot 2)
+vcall 4601 021ca4b0 0 021ca4b0 0 0 0 020dd0fc  # main AnimatedModel_DestructBlendedFromRamp (slot 0)
+vcall 4601 0239225c 40 0239225c 0 0 0 020d832c  # main TalkReceiver_Nothing40 (slot 16)
+vcall 4601 023cb8bc 40 023cb8bc 0 0 0 0229e8b8  # ov116 InsectCatalog_Destroy (slot 16)
+end
