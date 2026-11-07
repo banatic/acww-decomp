@@ -17,7 +17,7 @@ vcall 4101 021f66a0 0 021f66a0 0 0 0 020e5254  # main MessageCursor_Destruct (sl
 vcall 4101 021f4dac 0 021f4dac 0 0 0 020e5278  # main MessageDecoder_Destruct (slot 0)
 vcall 4101 021f4df8 0 021f4df8 0 0 0 020e51e8  # main MessageFile_Destruct (slot 0)
 vcall 4101 022b6a68 40 022b6a68 0 0 0 020e5574  # main SceneClass6_Destruct (slot 16)
-vcall 4101 022ab11c 40 022ab11c 0 0 0 020e69a4  # main Block020ba298_Destruct (slot 16)
+vcall 4101 022ab11c 40 022ab11c 0 0 0 020e69a4  # main SkyProcess_Destruct (slot 16)
 vcall 4101 023c9d34 0 023c9d34 0 0 0 0220bb04  # ov002 Progress_DestroyBase (slot 0)
 vcall 4101 022b1fcc 40 022b1fcc 0 0 0 02238010  # ov003 VillagerNameplate_Destroy (slot 16)
 vcall 4101 022b2880 0 022b2880 0 0 0 02238078  # ov003 VillagerNameplate_ReceiverDestroy (slot 0)
