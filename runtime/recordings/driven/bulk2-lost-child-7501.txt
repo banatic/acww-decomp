@@ -1,0 +1,10 @@
+# 4 functions of code only unreachable code calls, the lost child's walk home, and the test character, the states and state entries no code asks for: the fish shadows, the lost child's pause, Mr. Resetti's state 0, Tom Nook's state 11: each on a live object of its class, at the end of frame 7501 of lost-child
+scene lost-child
+frames 7510
+ram 2600,3800,4500,5200,6000,7000
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 7501 020157a5 022a695c 0 0 0 022a695c 020e7bd0  # main SceneCommand_SetScreenArgs (this: an object of vtable 020e7bd0)
+call 7501 020c2301 022a6304 0 0 0 022a6304 020e7c60  # main MissingNpc1_UpdatePause (this: an object of vtable 020e7c60)
+call 7501 020c2325 022a6304 0 0 0 022a6304 020e7c60  # main MissingNpc1_EnterPause (this: an object of vtable 020e7c60)
+vcall 7501 022a6304 c0 022a6304 0 0 0 020e7c60  # main MissingNpc2_UpdateTalked (slot 48)
+end

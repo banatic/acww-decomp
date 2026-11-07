@@ -1,0 +1,7 @@
+# 1 functions of the menus' close on main's request: each on a live object of its class, at the end of frame 3301 of friend-tabs
+scene friend-tabs
+frames 3310
+ram 2600
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 3301 0229a53d 023cbb58 0 0 0 0229a53c 1c04b510  # ov121 MyDesigns_CloseChoiceOnRequest (this: an object of vtable 0229c3a8)
+end

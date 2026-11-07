@@ -1,0 +1,9 @@
+# 3 functions of Shop3Villager, profile 0x88, which nothing makes, the flea market and Joan, the other classes' destructors of vtable slot 16: each on a live object of its class, at the end of frame 11401 of flea-buyer-bye
+scene flea-buyer-bye
+frames 11410
+ram 4100,5500,8500,10300,10700
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 11401 020a5255 022a5a80 0 0 0 022a5a80 0213e7b4  # main SceneProcessBase_Destruct (this: an object of vtable 0213e7b4)
+call 11401 020b5cad 02361120 0 0 0 02361120 0213e7b4  # main SceneClass4_Destruct (this: an object of vtable 0213e7b4)
+call 11401 02221851 022afd50 0 0 0 02221850 1c04b510  # ov004 Shop3Villager_Destroy (this: an object of vtable 02253e10)
+end

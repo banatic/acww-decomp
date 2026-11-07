@@ -1,0 +1,17 @@
+# 11 functions of the lost child's walk home, and the test character: each on a live object of its class, at the end of frame 6001 of lost-mother
+scene lost-mother
+frames 6010
+ram 2600,3800,4500,5100,5800
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 6001 020c344d 022a631c 0 0 0 022a631c 020e7ea4  # main MissingNpc2_UpdateTurn (this: an object of vtable 020e7ea4)
+call 6001 020c349d 022a631c 0 0 0 022a631c 020e7ea4  # main MissingNpc2_EnterTurn (this: an object of vtable 020e7ea4)
+call 6001 020c3abd 022a631c 0 0 0 022a631c 020e7ea4  # main NpcPlc_OnEvent (this: an object of vtable 020e7ea4)
+vcall 6001 022a631c dc 022a631c 0 0 0 020e7ea4  # main NpcPlc_UpdateTurnBack (slot 55)
+vcall 6001 022a631c cc 022a631c 0 0 0 020e7ea4  # main NpcPlc_UpdateTalked (slot 51)
+vcall 6001 022a631c ec 022a631c 0 0 0 020e7ea4  # main NpcPlc_UpdateIdle (slot 59)
+vcall 6001 022a631c d4 022a631c 0 0 0 020e7ea4  # main NpcPlc_EnterIdle (slot 53)
+call 6001 020c3df1 022a631c 0 0 0 022a631c 020e7ea4  # main NpcPlc_Update (this: an object of vtable 020e7ea4)
+call 6001 020c3e55 022a631c 0 0 0 022a631c 020e7ea4  # main NpcPlc_Leave (this: an object of vtable 020e7ea4)
+call 6001 020c3e6d 022a631c 0 0 0 022a631c 020e7ea4  # main NpcPlc_Start (this: an object of vtable 020e7ea4)
+call 6001 020c3a69 022a631c 0 0 0 022a631c 020e7ea4  # main NpcPlc_Destruct (this: an object of vtable 020e7ea4)
+end

@@ -1,0 +1,9 @@
+# 3 functions of the menu scenes' destructors of vtable slot 16, the menu scenes' phases 3 and 4: each on a live object of its class, at the end of frame 6601 of post-swap
+scene post-swap
+frames 6610
+ram 2600,5000,5300,5700,6200
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 6601 023b555c 58 023b555c 0 0 0 0229d4e0  # ov138 DateScreen_Phase4Idle (slot 22)
+vcall 6601 023b555c 54 023b555c 0 0 0 0229d4e0  # ov138 DateScreen_Phase3Idle (slot 21)
+vcall 6601 023b555c 40 023b555c 0 0 0 0229d4e0  # ov138 DateScreen_Destroy (slot 16)
+end

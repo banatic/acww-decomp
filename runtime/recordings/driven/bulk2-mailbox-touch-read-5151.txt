@@ -1,0 +1,10 @@
+# 4 functions of the mailbox's press of a place other than the one below the letters, the menu scenes' sub states no code sets, the menus' close on main's request: each on a live object of its class, at the end of frame 5151 of mailbox-touch-read
+scene mailbox-touch-read
+frames 5160
+ram 2600,3700,4600,4960
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 5151 0229c419 023c9b58 0 0 0 0229c418 1c04b510  # ov106 MailboxScene_CloseOnRequest (this: an object of vtable 0229f6e0)
+call 5151 0229c9fd 023c9b58 0 0 0 0229c9fc 1c04b510  # ov106 MailboxScene_BeginSubState0f (this: an object of vtable 0229f6e0)
+call 5151 0229dd11 023c9b58 0 0 0 0229dd10 1c04b510  # ov106 MailboxScene_WaitError (this: an object of vtable 0229f6e0)
+call 5151 0229df71 023c9b58 0 0 0 0229df70 1c04b510  # ov106 MailboxScene_FinishPlacePress (this: an object of vtable 0229f6e0)
+end

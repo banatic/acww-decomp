@@ -1,0 +1,7 @@
+# 1 functions of designs: each on a live object of its class, at the end of frame 6201 of wendell-fish
+scene wendell-fish
+frames 6210
+ram 2600,3500,4500,5300
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 6201 022a0001 023cd658 0 0 0 022a0000 1c04b510  # ov125 DesignPicker_WaitQuitSprite (this: an object of vtable 022a0ab8)
+end

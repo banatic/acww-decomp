@@ -1,0 +1,7 @@
+# 0 functions of catalogs, map, friends, tunes, songs, storage, the menus' close on main's request: each on a live object of its class, at the end of frame 4501 of friend-tabs
+scene friend-tabs
+frames 4510
+ram 2600,4100,4300,4400
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 4501 0229a4e5 023cacd4 0 0 0 0229a4e4 1c04b510  # ov119 FriendRoster_CancelChoiceOnClose (this: an object of vtable 0229cea0)
+end

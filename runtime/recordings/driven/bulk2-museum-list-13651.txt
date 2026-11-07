@@ -1,0 +1,7 @@
+# 1 functions of the museum: Blathers, the cafe and the observatory: each on a live object of its class, at the end of frame 13651 of museum-list
+scene museum-list
+frames 13660
+ram 2600,6900,11000,12400,13100
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 13651 0229a549 023758e0 0 0 0 0229a548 1c04b510  # ov145 DonationList_TrackTouch (this: an object of vtable 0229ae00)
+end

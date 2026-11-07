@@ -1,0 +1,18 @@
+# 10 functions of furniture of each room-object class, the base classes' own destructors every class replaces, the item and letter picks' hold and swap code, the states and state entries no code asks for: the fish shadows, the lost child's pause, Mr. Resetti's state 0, Tom Nook's state 11: each on a live object of its class, at the end of frame 4301 of errand-nook
+scene errand-nook
+frames 4310
+ram 2600,3800
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 4301 0229cd81 0237540c 0 0 0 0229cd80 1c05b570  # ov101 PocketsPick_DropHeldAt (this: an object of vtable 0229e078)
+call 4301 0229ceb5 0237540c 0 0 0 0229ceb4 b081b530  # ov101 PocketsPick_PickUpWithCursor (this: an object of vtable 0229e078)
+call 4301 0229d055 0237540c 0 0 0 0229d054 1c04b510  # ov101 PocketsPick_WaitError (this: an object of vtable 0229e078)
+call 4301 0229d135 0237540c 0 0 0 0229d134 1c04b510  # ov101 PocketsPick_StepHeldGlide (this: an object of vtable 0229e078)
+call 4301 0229d169 0237540c 0 0 0 0229d168 1c04b510  # ov101 PocketsPick_FinishSwap (this: an object of vtable 0229e078)
+call 4301 0229d1a9 0237540c 0 0 0 0229d1a8 1c04b510  # ov101 PocketsPick_Swap (this: an object of vtable 0229e078)
+call 4301 0229d1f1 0237540c 0 0 0 0229d1f0 1c04b510  # ov101 PocketsPick_PutDownWithCursor (this: an object of vtable 0229e078)
+call 4301 0229d241 0237540c 0 0 0 0229d240 1c04b510  # ov101 PocketsPick_FinishPickUp (this: an object of vtable 0229e078)
+call 4301 0229d26d 0237540c 0 0 0 0229d26c 1c04b510  # ov101 PocketsPick_PickUpOnTurn (this: an object of vtable 0229e078)
+call 4301 020e9a08 02367ee8 0 0 0 0 0  # Heap_SetCurrent(its heap)
+call 4301 0203f0b9 02367f60 0 0 0 02367f60 020d82b4  # main SceneObjectBase_DestructFree (this: an object of vtable 020d82b4)
+call 4301 020e9a08 r2 0 0 0 0 0  # Heap_SetCurrent(as before)
+end

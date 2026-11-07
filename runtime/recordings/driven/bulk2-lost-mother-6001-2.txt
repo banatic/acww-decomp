@@ -1,0 +1,9 @@
+# 1 functions of the lost child's walk home, and the test character: each on a live object of its class, at the end of frame 6001 of lost-mother
+scene lost-mother
+frames 6010
+ram 2600,3800,4500,5100,5800
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 6001 020e9a08 022a3378 0 0 0 0 0  # Heap_SetCurrent(its heap)
+call 6001 020c3a91 022a631c 0 0 0 022a631c 020e7ea4  # main NpcPlc_DestructDelete (this: an object of vtable 020e7ea4)
+call 6001 020e9a08 r2 0 0 0 0 0  # Heap_SetCurrent(as before)
+end

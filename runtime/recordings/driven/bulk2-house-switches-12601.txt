@@ -1,0 +1,7 @@
+# 1 functions of the other classes' destructors of vtable slot 16: each on a live object of its class, at the end of frame 12601 of house-switches
+scene house-switches
+frames 12610
+ram 2600,4600,6800,9000,11200
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 12601 02364268 40 02364268 0 0 0 02251c6c  # ov004 Compass_Destroy (slot 16)
+end

@@ -1,0 +1,13 @@
+# 7 functions of the keyboards' conversions: no key gives the codes 0x103-0x105, the menu screens' error messages no code opens: each on a live object of its class, at the end of frame 27301 of visit-chat
+scene visit-chat
+frames 27310
+ram 2600,12400,24516,25800,26300,26900
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 27301 0229f9d5 023a7890 0 0 0 0229f9d4 1c04b510  # ov111 ChatScene_Convert3 (this: an object of vtable 022a1008)
+call 27301 0229f9fd 023a7890 0 0 0 0229f9fc b082b510  # ov111 ChatScene_TryConvert3 (this: an object of vtable 022a1008)
+call 27301 0229fa51 023a7890 0 0 0 0229fa50 1c04b510  # ov111 ChatScene_Convert2 (this: an object of vtable 022a1008)
+call 27301 0229fa79 023a7890 0 0 0 0229fa78 b082b510  # ov111 ChatScene_TryConvert2 (this: an object of vtable 022a1008)
+call 27301 0229facd 023a7890 0 0 0 0229facc 1c04b510  # ov111 ChatScene_Convert1 (this: an object of vtable 022a1008)
+call 27301 0229faf5 023a7890 0 0 0 0229faf4 b082b510  # ov111 ChatScene_TryConvert1 (this: an object of vtable 022a1008)
+call 27301 0229fff5 023a7890 0 0 0 0229fff4 1c04b510  # ov111 ChatScene_UpdateError (this: an object of vtable 022a1008)
+end

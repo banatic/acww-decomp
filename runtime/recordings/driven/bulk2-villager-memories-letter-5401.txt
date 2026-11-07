@@ -1,0 +1,9 @@
+# 3 functions of the menu scenes' destructors of vtable slot 16, the menu scenes' phases 3 and 4: each on a live object of its class, at the end of frame 5401 of villager-memories-letter
+scene villager-memories-letter
+frames 5410
+ram 2600,4900
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 5401 023cdae4 58 023cdae4 0 0 0 02299530  # ov091 LetterReader_Phase4 (slot 22)
+vcall 5401 023cdae4 54 023cdae4 0 0 0 02299530  # ov091 LetterReader_Phase3 (slot 21)
+vcall 5401 023cdae4 40 023cdae4 0 0 0 02299530  # ov091 LetterReader_Destroy (slot 16)
+end

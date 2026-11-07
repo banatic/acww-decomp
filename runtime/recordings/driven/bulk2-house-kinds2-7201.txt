@@ -1,0 +1,7 @@
+# 1 functions of the other classes' destructors of vtable slot 16: each on a live object of its class, at the end of frame 7201 of house-kinds2
+scene house-kinds2
+frames 7210
+ram 2600,4500,6800
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 7201 02364268 40 02364268 0 0 0 022524a0  # ov004 RoomObject022524a0_Destroy (slot 16)
+end

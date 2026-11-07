@@ -1,0 +1,11 @@
+# 5 functions of furniture of each room-object class, the base classes' own destructors every class replaces, the item and letter picks' hold and swap code, the states and state entries no code asks for: the fish shadows, the lost child's pause, Mr. Resetti's state 0, Tom Nook's state 11: each on a live object of its class, at the end of frame 4301 of errand-nook
+scene errand-nook
+frames 4310
+ram 2600,3800
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 4301 0229c945 0237540c 0 0 0 0229c944 1c04b510  # ov101 PocketsPick_PutHeldAt (this: an object of vtable 0229e078)
+call 4301 0229c971 0237540c 0 0 0 0229c970 b081b530  # ov101 PocketsPick_PickUpItem (this: an object of vtable 0229e078)
+call 4301 0229cb19 0237540c 0 0 0 0229cb18 b081b530  # ov101 PocketsPick_MarkPlace (this: an object of vtable 0229e078)
+call 4301 0229cbbd 0237540c 0 0 0 0229cbbc b081b530  # ov101 PocketsPick_PlaceItemState (this: an object of vtable 0229e078)
+call 4301 0229cbed 0237540c 0 0 0 0229cbec b081b530  # ov101 PocketsPick_PlaceItem (this: an object of vtable 0229e078)
+end

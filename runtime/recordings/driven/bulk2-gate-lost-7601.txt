@@ -1,0 +1,25 @@
+# 2 functions of code only unreachable code calls, job 0x1f's step: its start halts, message tags no shown message holds, the Able Sisters and the barber, the activity's jobs no reachable code starts, the pockets screen, the scene classes 3 and 4 and the plain process, which nothing spawns, the talk engine: tags, pages, windows, sliders: each on a live object of its class, at the end of frame 7601 of gate-lost
+scene gate-lost
+frames 7610
+ram 2600,4700,5900,6600,7200
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 7601 0206ccc9 0237459c 0 0 0 0237459c 020def7c  # main TalkPageMeasurer_PutLeftBrace (this: an object of vtable 020def7c)
+call 7601 0206cce1 0237459c 0 0 0 0237459c 020def7c  # main TalkPageMeasurer_PutPercent (this: an object of vtable 020def7c)
+call 7601 0206ccf9 0237459c 0 0 0 0237459c 020def7c  # main TalkPageMeasurer_PutAmpersand (this: an object of vtable 020def7c)
+call 7601 0208c3ed 021d3444 0 0 0 021d3444 020e2250  # main CameraGrid_CursorFromPlace (this: an object of vtable 020e2250)
+call 7601 0208c491 021d3444 0 0 0 021d3444 020e2250  # main CameraGrid_MoveByPad (this: an object of vtable 020e2250)
+call 7601 020a11b9 022b2b60 0 0 0 022b2b60 020e3758  # main Activity_SetFlag101 (this: an object of vtable 020e3758)
+call 7601 020a1241 022b2b60 0 0 0 022b2b60 020e3758  # main Activity_SetSlotEB (this: an object of vtable 020e3758)
+call 7601 020a1249 022b2b60 0 0 0 022b2b60 020e3758  # main Activity_SetSlotE7 (this: an object of vtable 020e3758)
+call 7601 020a245d 022b2b60 0 0 0 022b2b60 020e3758  # main Activity_Byte102 (this: an object of vtable 020e3758)
+call 7601 020a25e9 022b2b60 0 0 0 022b2b60 020e3758  # main ActivityTalk_QueueMessage11 (this: an object of vtable 020e3758)
+vcall 7601 022b2b60 f8 022b2b60 0 0 0 020e3758  # main ActivityLinkJobs_Step1F (slot 62)
+call 7601 020a43e5 022b2b60 0 0 0 022b2b60 020e3758  # main ActivityJobs_Step0F (this: an object of vtable 020e3758)
+call 7601 020a4455 022b2b60 0 0 0 022b2b60 020e3758  # main ActivityJobs_Step0E (this: an object of vtable 020e3758)
+call 7601 020a4561 022b2b60 0 0 0 022b2b60 020e3758  # main ActivityJobs_Step0B (this: an object of vtable 020e3758)
+call 7601 020a45f1 022b2b60 0 0 0 022b2b60 020e3758  # main ActivityJobs_Step09 (this: an object of vtable 020e3758)
+call 7601 020a467d 022b2b60 0 0 0 022b2b60 020e3758  # main ActivityJobs_Step07 (this: an object of vtable 020e3758)
+call 7601 020a7a49 021f4548 0 0 0 021f4548 020e3e44  # main MessageQuery_CountCharacter (this: an object of vtable 020e3e44)
+vcall 7601 021f6b28 14 021f6b28 0 0 0 020e5858  # main PlainProcess_Create (slot 5)
+call 7601 0222ce1d 022b07a8 0 0 0 0222ce1c b082b510  # ov004 CheckInGate_UpdateClosing (this: an object of vtable 02254e4c)
+end

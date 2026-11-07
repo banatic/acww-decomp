@@ -1,0 +1,7 @@
+# 1 functions of the other classes' destructors of vtable slot 16: each on a live object of its class, at the end of frame 5701 of catalog-preview
+scene catalog-preview
+frames 5710
+ram 2600,4800,5100,5600
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 5701 023790ec 40 023790ec 0 0 0 02250e5c  # ov004 CarpetPreview_Destroy (slot 16)
+end

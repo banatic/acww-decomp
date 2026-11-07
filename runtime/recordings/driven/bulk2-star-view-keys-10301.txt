@@ -1,0 +1,16 @@
+# 8 functions of the star view's free pointer, whose flag nothing sets: each on a live object of its class, at the end of frame 10301 of star-view-keys
+scene star-view-keys
+frames 10310
+ram 2600,6300,9900,10100
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 10301 0229bbe5 02364910 0 0 0 0229bbe4 1c04b510  # ov128 StarView_ReleasePointer (this: an object of vtable 0229cbc0)
+call 10301 0229bc11 02364910 0 0 0 0229bc10 1c04b510  # ov128 StarView_PressPointer (this: an object of vtable 0229cbc0)
+call 10301 0229bc51 02364910 80 60 0 0229bc50 b082b510  # ov128 StarView_GlideTo (this: an object of vtable 0229cbc0)
+call 10301 0229bc89 02364910 0 0 0 0229bc88 b081b530  # ov128 StarView_GlideToCursor (this: an object of vtable 0229cbc0)
+call 10301 0229be79 02364910 0 0 0 0229be78 1c04b510  # ov128 StarView_SubRelease (this: an object of vtable 0229cbc0)
+call 10301 0229bea9 02364910 0 0 0 0229bea8 1c04b510  # ov128 StarView_SubPress (this: an object of vtable 0229cbc0)
+call 10301 0229bedd 02364910 0 0 0 0229bedc 1c04b510  # ov128 StarView_SubGlide (this: an object of vtable 0229cbc0)
+call 10301 020e9a08 0235eaac 0 0 0 0 0  # Heap_SetCurrent(its heap)
+call 10301 0229bff1 02364910 0 0 0 0229bff0 1c04b570  # ov128 StarView_SubFree (this: an object of vtable 0229cbc0)
+call 10301 020e9a08 r2 0 0 0 0 0  # Heap_SetCurrent(as before)
+end
