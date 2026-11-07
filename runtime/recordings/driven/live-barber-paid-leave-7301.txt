@@ -1,0 +1,8 @@
+# 2 functions of the destructors of vtable slot 0 of those classes, the scene object bases' slots 0x58, 0x5c and 0xa4 no call site's receiver keeps: each on a live object of its class, through the object's vtable, at the end of frame 7301 of barber-paid-leave (tools/driven.py --plan)
+scene barber-paid-leave
+frames 7310
+ram 2600,5600,6800,7060
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 7301 022b06c8 58 022b06c8 0 0 0 02261b98  # ov053 Barber_MayActKind6 (slot 22)
+vcall 7301 022b05d0 0 022b05d0 0 0 0 02254cc8  # ov004 BarberMachineReceiver_Destruct (slot 0)
+end

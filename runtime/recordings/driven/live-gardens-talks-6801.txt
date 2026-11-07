@@ -1,0 +1,7 @@
+# 1 functions of the other classes' destructors of vtable slot 16: each on a live object of its class, through the object's vtable, at the end of frame 6801 of gardens-talks (tools/driven.py --plan)
+scene gardens-talks
+frames 6810
+ram 2800,4200,5000,5900
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 6801 022a6314 40 022a6314 0 0 0 0227928c  # ov083 TurtleGardens_Destruct (slot 16)
+end

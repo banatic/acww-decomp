@@ -1,0 +1,15 @@
+# 9 functions of the menu scenes' destructors of vtable slot 16, the menu scenes' phases 3 and 4, the other classes' destructors of vtable slot 16, the scene object bases' slots 0x58, 0x5c and 0xa4 no call site's receiver keeps, the scene sound classes' slot 0 and base slots: each on a live object of its class, through the object's vtable, at the end of frame 6701 of gate-flag (tools/driven.py --plan)
+scene gate-flag
+frames 6710
+ram 2600,3800,4700,5900
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 6701 022af200 58 022af200 0 0 0 02254918  # ov004 Gatekeeper2_MayActOrLocal (slot 22)
+vcall 6701 022af924 58 022af924 0 0 0 02264298  # ov048 Gatekeeper_Ask58 (slot 22)
+vcall 6701 0237fb7c 58 0237fb7c 0 0 0 022a0ab8  # ov125 DesignPicker_Phase4Idle (slot 22)
+vcall 6701 0237fb7c 54 0237fb7c 0 0 0 022a0ab8  # ov125 DesignPicker_Phase3Idle (slot 21)
+vcall 6701 0232ae20 0 0232ae20 0 0 0 0213ead4  # autoload_2 SoundScene22_Destruct (slot 0)
+vcall 6701 022af200 40 022af200 0 0 0 02254918  # ov004 Gatekeeper2_Destroy (slot 16)
+vcall 6701 022b07a8 40 022b07a8 0 0 0 02254e4c  # ov004 CheckInGate_Destruct (slot 16)
+vcall 6701 022af924 40 022af924 0 0 0 02264298  # ov048 Gatekeeper_Destruct (slot 16)
+vcall 6701 0237fb7c 40 0237fb7c 0 0 0 022a0ab8  # ov125 DesignPicker_Destroy (slot 16)
+end

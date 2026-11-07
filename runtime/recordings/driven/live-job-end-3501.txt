@@ -1,0 +1,9 @@
+# 3 functions of the menu scenes' destructors of vtable slot 16, the menu scenes' phases 3 and 4: each on a live object of its class, through the object's vtable, at the end of frame 3501 of job-end (tools/driven.py --plan)
+scene job-end
+frames 3800
+ram 2600
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 3501 023cb354 58 023cb354 0 0 0 0229ac00  # ov113 BbsBoard_Phase4 (slot 22)
+vcall 3501 023cb354 54 023cb354 0 0 0 0229ac00  # ov113 BbsBoard_Phase3 (slot 21)
+vcall 3501 023cb354 40 023cb354 0 0 0 0229ac00  # ov113 BbsBoard_Destroy (slot 16)
+end

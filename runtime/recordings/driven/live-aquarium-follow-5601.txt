@@ -1,0 +1,8 @@
+# 2 functions of the other classes' destructors of vtable slot 16, the scene sound classes' slot 0 and base slots: each on a live object of its class, through the object's vtable, at the end of frame 5601 of aquarium-follow (tools/driven.py --plan)
+scene aquarium-follow
+frames 5610
+ram 2600,4500
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 5601 0232ae20 0 0232ae20 0 0 0 0213edac  # autoload_2 SoundScene45_Destruct (slot 0)
+vcall 5601 022b082c 40 022b082c 0 0 0 022562c0  # ov004 InsectRoom_Destruct (slot 16)
+end

@@ -1,0 +1,10 @@
+# 4 functions of the destructors of vtable slot 0 of those classes, the menu scenes' destructors of vtable slot 16, the menu scenes' phases 3 and 4: each on a live object of its class, through the object's vtable, at the end of frame 4901 of halt-debug-screen (tools/driven.py --plan)
+scene halt-debug-screen
+frames 4910
+ram 2600
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 4901 023b6f14 58 023b6f14 0 0 0 0229b1c0  # ov143 TuneEditor_Phase4Idle (slot 22)
+vcall 4901 023b6f14 54 023b6f14 0 0 0 0229b1c0  # ov143 TuneEditor_Phase3Idle (slot 21)
+vcall 4901 022afa1c 0 022afa1c 0 0 0 02255454  # ov004 RecycleBinReceiver_Destruct (slot 0)
+vcall 4901 023b6f14 40 023b6f14 0 0 0 0229b1c0  # ov143 TuneEditor_Destroy (slot 16)
+end

@@ -1,0 +1,11 @@
+# 5 functions of the destructors of vtable slot 0 of those classes, the menu scenes' destructors of vtable slot 16, the menu scenes' phases 3 and 4, the room objects' switch state for the linked session (vtable slot 0x74): each on a live object of its class, through the object's vtable, at the end of frame 4201 of house-furni (tools/driven.py --plan)
+scene house-furni
+frames 4210
+ram 2600,3500
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 4201 02364268 74 02364268 0 0 0 0225211c  # ov004 Chest_LidStateIsOn (slot 29)
+vcall 4201 023600cc 58 023600cc 0 0 0 0229ea60  # ov102 StorageScene_Phase4Idle (slot 22)
+vcall 4201 023600cc 54 023600cc 0 0 0 0229ea60  # ov102 StorageScene_Phase3Idle (slot 21)
+vcall 4201 02364354 0 02364354 0 0 0 022521c8  # ov004 ChestReceiver_Destroy (slot 0)
+vcall 4201 023600cc 40 023600cc 0 0 0 0229ea60  # ov102 StorageScene_Destroy (slot 16)
+end

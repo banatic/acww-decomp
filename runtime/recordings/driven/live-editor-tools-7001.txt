@@ -1,0 +1,8 @@
+# 2 functions of the menu scenes' phases 3 and 4: each on a live object of its class, through the object's vtable, at the end of frame 7001 of editor-tools (tools/driven.py --plan)
+scene editor-tools
+frames 7010
+ram 2600,6100,6450
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 7001 02375bec 58 02375bec 0 0 0 0229d024  # ov123 DesignEditor_Phase4Idle (slot 22)
+vcall 7001 02375bec 54 02375bec 0 0 0 0229d024  # ov123 DesignEditor_Phase3Idle (slot 21)
+end

@@ -1,0 +1,10 @@
+# 4 functions of the menu scenes' destructors of vtable slot 16, the menu scenes' phases 3 and 4, the other classes' destructors of vtable slot 16: each on a live object of its class, through the object's vtable, at the end of frame 17201 of letter-errand (tools/driven.py --plan)
+scene letter-errand
+frames 17210
+ram 2600,5300,9000,11400,15450
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 17201 023cb300 58 023cb300 0 0 0 0229e098  # ov108 LetterPick_Phase4Idle (slot 22)
+vcall 17201 023cb300 54 023cb300 0 0 0 0229e098  # ov108 LetterPick_Phase3Idle (slot 21)
+vcall 17201 022a6314 40 022a6314 0 0 0 022799fc  # ov075 TownPelican_Destroy (slot 16)
+vcall 17201 023cb300 40 023cb300 0 0 0 0229e098  # ov108 LetterPick_Destroy (slot 16)
+end

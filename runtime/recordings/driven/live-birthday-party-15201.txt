@@ -1,0 +1,8 @@
+# 2 functions of the destructors of vtable slot 0 of those classes, the scene object bases' slots 0x58, 0x5c and 0xa4 no call site's receiver keeps: each on a live object of its class, through the object's vtable, at the end of frame 15201 of birthday-party (tools/driven.py --plan)
+scene birthday-party
+frames 15210
+ram 2600,6100,9859,11400,12400,14600
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 15201 022b0534 58 022b0534 0 0 0 02253674  # ov004 BirthdayVillager_Ask58 (slot 22)
+vcall 15201 0236f8d0 0 0236f8d0 0 0 0 0225173c  # ov004 RoomObject02251690Receiver_Destroy (slot 0)
+end

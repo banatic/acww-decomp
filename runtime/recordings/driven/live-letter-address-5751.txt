@@ -1,0 +1,8 @@
+# 2 functions of the menu scenes' phases 3 and 4: each on a live object of its class, through the object's vtable, at the end of frame 5751 of letter-address (tools/driven.py --plan)
+scene letter-address
+frames 5760
+ram 2600,3420,3830,4250,5030
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 5751 023c836c 58 023c836c 0 0 0 022a2738  # ov122 LetterWrite_Phase4Idle (slot 22)
+vcall 5751 023c836c 54 023c836c 0 0 0 022a2738  # ov122 LetterWrite_Phase3Idle (slot 21)
+end

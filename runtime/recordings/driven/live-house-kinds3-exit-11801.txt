@@ -1,0 +1,8 @@
+# 2 functions of the other classes' destructors of vtable slot 16, the room objects' switch state for the linked session (vtable slot 0x74): each on a live object of its class, through the object's vtable, at the end of frame 11801 of house-kinds3-exit (tools/driven.py --plan)
+scene house-kinds3-exit
+frames 11810
+ram 2600,9000,11315
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 11801 02364268 74 02364268 0 0 0 02252950  # ov004 Telephone_SwitchStateIsOn (slot 29)
+vcall 11801 02364268 40 02364268 0 0 0 02252950  # ov004 Telephone_Destroy (slot 16)
+end

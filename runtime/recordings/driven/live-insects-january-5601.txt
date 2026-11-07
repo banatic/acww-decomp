@@ -1,0 +1,8 @@
+# 2 functions of the destructors of vtable slot 0 of those classes, the other classes' destructors of vtable slot 16: each on a live object of its class, through the object's vtable, at the end of frame 5601 of insects-january (tools/driven.py --plan)
+scene insects-january
+frames 5610
+ram 2800,4200,5000
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 5601 02348c18 40 02348c18 0 0 0 022382ac  # ov003 Snowman_Destroy (slot 16)
+vcall 5601 023490b8 0 023490b8 0 0 0 02238314  # ov003 Snowman_ReceiverDestroy (slot 0)
+end

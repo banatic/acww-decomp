@@ -1,0 +1,9 @@
+# 3 functions of the menu scenes' destructors of vtable slot 16, the menu scenes' phases 3 and 4: each on a live object of its class, through the object's vtable, at the end of frame 4101 of friend-tabs (tools/driven.py --plan)
+scene friend-tabs
+frames 4110
+ram 2600
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 4101 023c8514 58 023c8514 0 0 0 0229cc08  # ov118 MapMenu_Phase4 (slot 22)
+vcall 4101 023c8514 54 023c8514 0 0 0 0229cc08  # ov118 MapMenu_Phase3 (slot 21)
+vcall 4101 023c8514 40 023c8514 0 0 0 0229cc08  # ov118 MapMenu_Destroy (slot 16)
+end

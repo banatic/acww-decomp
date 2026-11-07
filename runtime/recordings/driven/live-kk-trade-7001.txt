@@ -1,0 +1,9 @@
+# 3 functions of the gatekeeper's visits and connections, the other classes' destructors of vtable slot 16: each on a live object of its class, through the object's vtable, at the end of frame 7001 of kk-trade (tools/driven.py --plan)
+scene kk-trade
+frames 7010
+ram 2600,5640,6600
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 7001 022af714 b8 022af714 0 0 0 022546e0  # ov004 Gatekeeper2_UpdateAwait (slot 46)
+vcall 7001 022aefb4 40 022aefb4 0 0 0 02277e50  # ov068 CafeGuest_Destruct (slot 16)
+vcall 7001 022aeba8 40 022aeba8 0 0 0 02277f3c  # ov068 CafeRoom_Destruct (slot 16)
+end

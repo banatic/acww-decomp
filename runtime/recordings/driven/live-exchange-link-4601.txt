@@ -1,0 +1,8 @@
+# 2 functions of the other classes' destructors of vtable slot 16, the scene object bases' slots 0x58, 0x5c and 0xa4 no call site's receiver keeps: each on a live object of its class, through the object's vtable, at the end of frame 4601 of exchange-link (tools/driven.py --plan)
+scene exchange-link
+frames 4610
+ram 1100,2399,3000,3800
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 4601 022af284 58 022af284 0 0 0 02260fd4  # ov055 XctExchange_AgreesToOwnEvent (slot 22)
+vcall 4601 022af284 40 022af284 0 0 0 02260fd4  # ov055 XctExchange_Destruct (slot 16)
+end

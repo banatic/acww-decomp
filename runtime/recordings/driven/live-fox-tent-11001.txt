@@ -1,0 +1,7 @@
+# 1 functions of the scene object bases' slots 0x58, 0x5c and 0xa4 no call site's receiver keeps: each on a live object of its class, through the object's vtable, at the end of frame 11001 of fox-tent (tools/driven.py --plan)
+scene fox-tent
+frames 11010
+ram 2600,4400,5500,7300,9900
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 11001 022b06a8 58 022b06a8 0 0 0 02261f40  # ov052 FoxTent_MayActKind6 (slot 22)
+end

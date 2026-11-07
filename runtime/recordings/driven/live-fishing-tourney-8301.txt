@@ -1,0 +1,9 @@
+# 3 functions of the menu scenes' phases 3 and 4, the other classes' destructors of vtable slot 16: each on a live object of its class, through the object's vtable, at the end of frame 8301 of fishing-tourney (tools/driven.py --plan)
+scene fishing-tourney
+frames 8310
+ram 4100,4800,6700
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 8301 023cb4fc 58 023cb4fc 0 0 0 0229e078  # ov101 PocketsPick_Phase4Idle (slot 22)
+vcall 8301 023cb4fc 54 023cb4fc 0 0 0 0229e078  # ov101 PocketsPick_Phase3Idle (slot 21)
+vcall 8301 022a6308 40 022a6308 0 0 0 022797bc  # ov081 TurtleFishing_Destruct (slot 16)
+end

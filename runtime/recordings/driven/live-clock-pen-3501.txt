@@ -1,0 +1,12 @@
+# 6 functions of the destructors of vtable slot 0 of those classes, the menu scenes' destructors of vtable slot 16, the menu scenes' phases 3 and 4, the other classes' destructors of vtable slot 16: each on a live object of its class, through the object's vtable, at the end of frame 3501 of clock-pen (tools/driven.py --plan)
+scene clock-pen
+frames 3510
+ram 1400,2420,2700,3100
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 3501 023b46bc 58 023b46bc 0 0 0 0229d610  # ov135 PhoneClock_Phase4Idle (slot 22)
+vcall 3501 023b46bc 54 023b46bc 0 0 0 0229d610  # ov135 PhoneClock_Phase3Idle (slot 21)
+vcall 3501 023b744c 0 023b744c 0 0 0 02253104  # ov004 BedObjectReceiver_Destroy (slot 0)
+vcall 3501 022b05bc 0 022b05bc 0 0 0 02255974  # ov004 RmoTelephoneReceiver_Destruct (slot 0)
+vcall 3501 022b6634 40 022b6634 0 0 0 0225684c  # ov004 PlayerPick_Destruct (slot 16)
+vcall 3501 023b46bc 40 023b46bc 0 0 0 0229d610  # ov135 PhoneClock_Destroy (slot 16)
+end

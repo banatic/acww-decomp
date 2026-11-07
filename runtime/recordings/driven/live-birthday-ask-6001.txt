@@ -1,0 +1,9 @@
+# 3 functions of the menu scenes' destructors of vtable slot 16, the menu scenes' phases 3 and 4: each on a live object of its class, through the object's vtable, at the end of frame 6001 of birthday-ask (tools/driven.py --plan)
+scene birthday-ask
+frames 6010
+ram 2600,4300,5250,5600
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 6001 023cb360 58 023cb360 0 0 0 0229d440  # ov137 BirthdayScreen_Phase4Idle (slot 22)
+vcall 6001 023cb360 54 023cb360 0 0 0 0229d440  # ov137 BirthdayScreen_Phase3Idle (slot 21)
+vcall 6001 023cb360 40 023cb360 0 0 0 0229d440  # ov137 BirthdayScreen_Destroy (slot 16)
+end

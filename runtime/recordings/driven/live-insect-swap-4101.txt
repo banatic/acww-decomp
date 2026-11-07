@@ -1,0 +1,9 @@
+# 3 functions of the menu scenes' destructors of vtable slot 16, the menu scenes' phases 3 and 4: each on a live object of its class, through the object's vtable, at the end of frame 4101 of insect-swap (tools/driven.py --plan)
+scene insect-swap
+frames 4110
+ram 2600,3420,3900
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 4101 023cb4e4 58 023cb4e4 0 0 0 0229e3b8  # ov107 PocketsSwap_Phase4Idle (slot 22)
+vcall 4101 023cb4e4 54 023cb4e4 0 0 0 0229e3b8  # ov107 PocketsSwap_Phase3Idle (slot 21)
+vcall 4101 023cb4e4 40 023cb4e4 0 0 0 0229e3b8  # ov107 PocketsSwap_Destroy (slot 16)
+end

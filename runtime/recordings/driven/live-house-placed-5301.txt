@@ -1,0 +1,13 @@
+# 7 functions of the destructors of vtable slot 0 of those classes, the other classes' destructors of vtable slot 16, the room objects' switch state for the linked session (vtable slot 0x74): each on a live object of its class, through the object's vtable, at the end of frame 5301 of house-placed (tools/driven.py --plan)
+scene house-placed
+frames 5310
+ram 2600,4200,4800
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 5301 02363090 74 02363090 0 0 0 02252ba8  # ov004 RoomObject02252ba8_StateIsOn (slot 29)
+vcall 5301 02365440 74 02365440 0 0 0 022510b4  # ov004 RoomObject022510b4_StateIsOn (slot 29)
+vcall 5301 023627a4 40 023627a4 0 0 0 02250c04  # ov004 RoomObject02250c04_Destroy (slot 16)
+vcall 5301 02365440 40 02365440 0 0 0 022510b4  # ov004 RoomObject022510b4_Destroy (slot 16)
+vcall 5301 02365e18 0 02365e18 0 0 0 02252eac  # ov004 RoomObject02252e00Receiver_Destroy (slot 0)
+vcall 5301 0236317c 0 0236317c 0 0 0 02252c54  # ov004 RoomObject02252ba8Receiver_Destroy (slot 0)
+vcall 5301 02366704 0 02366704 0 0 0 0225209c  # ov004 PlayerDesignObjectReceiver_Destroy (slot 0)
+end

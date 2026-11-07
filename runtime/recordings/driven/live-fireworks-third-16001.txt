@@ -1,0 +1,8 @@
+# 2 functions of the other classes' destructors of vtable slot 16, the scene sound classes' slot 0 and base slots: each on a live object of its class, through the object's vtable, at the end of frame 16001 of fireworks-third (tools/driven.py --plan)
+scene fireworks-third
+frames 16010
+ram 4400,7059,10000,13000
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 16001 02322220 0 02322220 0 0 0 0213ec40  # autoload_2 SoundScene3_Destruct (slot 0)
+vcall 16001 022a6318 40 022a6318 0 0 0 022794ac  # ov084 TurtleFireworks_Destroy (slot 16)
+end

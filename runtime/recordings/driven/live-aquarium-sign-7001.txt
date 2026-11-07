@@ -1,0 +1,10 @@
+# 4 functions of the destructors of vtable slot 0 of those classes, the other classes' destructors of vtable slot 16, the scene sound classes' slot 0 and base slots: each on a live object of its class, through the object's vtable, at the end of frame 7001 of aquarium-sign (tools/driven.py --plan)
+scene aquarium-sign
+frames 7010
+ram 2600,4500,6400
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 7001 0232ae20 0 0232ae20 0 0 0 0213ed44  # autoload_2 SoundScene43_Destruct (slot 0)
+vcall 7001 022b09dc 40 022b09dc 0 0 0 022533e0  # ov004 EtcMuseum_Destroy (slot 16)
+vcall 7001 022b0c48 0 022b0c48 0 0 0 02253454  # ov004 EtcMuseumReceiver_Destroy (slot 0)
+vcall 7001 022b01bc 40 022b01bc 0 0 0 02255ebc  # ov004 Aquarium_Destruct (slot 16)
+end

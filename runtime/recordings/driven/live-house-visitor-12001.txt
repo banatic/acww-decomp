@@ -1,0 +1,7 @@
+# 1 functions of the other classes' destructors of vtable slot 16: each on a live object of its class, through the object's vtable, at the end of frame 12001 of house-visitor (tools/driven.py --plan)
+scene house-visitor
+frames 12010
+ram 2600,3700,6000,9500
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 12001 022b0528 40 022b0528 0 0 0 02278140  # ov068 HouseVisitor_Destroy (slot 16)
+end

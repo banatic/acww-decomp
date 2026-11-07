@@ -1,0 +1,11 @@
+# 5 functions of the destructors of vtable slot 0 of those classes, the menu scenes' destructors of vtable slot 16, the menu scenes' phases 3 and 4, the other classes' destructors of vtable slot 16: each on a live object of its class, through the object's vtable, at the end of frame 13201 of gracie-design (tools/driven.py --plan)
+scene gracie-design
+frames 13210
+ram 4000,4400,7400,9200
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 13201 023cc980 58 023cc980 0 0 0 0229b8f0  # ov131 BankAmount_Slot58 (slot 22)
+vcall 13201 023cc980 54 023cc980 0 0 0 0229b8f0  # ov131 BankAmount_Slot54 (slot 21)
+vcall 13201 022b487c 0 022b487c 0 0 0 0223886c  # ov003 GiraffeSpot_ReceiverDestroy (slot 0)
+vcall 13201 022a6030 40 022a6030 0 0 0 02279e4c  # ov070 Giraffe_Destroy (slot 16)
+vcall 13201 023cc980 40 023cc980 0 0 0 0229b8f0  # ov131 BankAmount_Destroy (slot 16)
+end

@@ -1,0 +1,21 @@
+# 15 functions of the destructors of vtable slot 0 of those classes, the menu scenes' destructors of vtable slot 16, the menu scenes' phases 3 and 4, the room objects' switch state for the linked session (vtable slot 0x74), the scene object bases' slots 0x58, 0x5c and 0xa4 no call site's receiver keeps, the special characters' talk with another console's player, the special characters' wait for the linked session: each on a live object of its class, through the object's vtable, at the end of frame 5301 of able-sell-free (tools/driven.py --plan)
+scene able-sell-free
+frames 5310
+ram 2600,4700
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 5301 0237d2c4 74 0237d2c4 0 0 0 02250ad8  # ov004 SwitchShown_StateIsOn (slot 29)
+vcall 5301 0237b800 74 0237b800 0 0 0 02252374  # ov004 RoomObject02252374_StateIsOn (slot 29)
+vcall 5301 022b06d4 b8 022b06d4 0 0 0 0225445c  # ov004 CafeMaster_UpdateOther (slot 46)
+vcall 5301 022b06d4 b0 022b06d4 0 0 0 0225445c  # ov004 CafeMaster_UpdateAwait (slot 44)
+vcall 5301 022afd4c 58 022afd4c 0 0 0 02263544  # ov049 Mabel_MayActKind6 (slot 22)
+vcall 5301 0237adf8 58 0237adf8 0 0 0 02299508  # ov092 MenuDispatch_Phase4 (slot 22)
+vcall 5301 0237adf8 54 0237adf8 0 0 0 02299508  # ov092 MenuDispatch_Phase3 (slot 21)
+vcall 5301 023784bc 58 023784bc 0 0 0 0229ecb8  # ov100 PocketsBox_Phase4Idle (slot 22)
+vcall 5301 023784bc 54 023784bc 0 0 0 0229ecb8  # ov100 PocketsBox_Phase3Idle (slot 21)
+vcall 5301 023784bc 58 023784bc 0 0 0 0229ecb8  # ov110 PublicBox_Phase4Idle (slot 22)
+vcall 5301 023784bc 54 023784bc 0 0 0 0229ecb8  # ov110 PublicBox_Phase3Idle (slot 21)
+vcall 5301 0237b8ec 0 0237b8ec 0 0 0 02252420  # ov004 RoomObject02252374Receiver_Destroy (slot 0)
+vcall 5301 0237e588 0 0237e588 0 0 0 02251f70  # ov004 ShopDesignObjectReceiver_Destroy (slot 0)
+vcall 5301 0237d3b0 0 0237d3b0 0 0 0 02250b84  # ov004 SwitchShownReceiver_Destroy (slot 0)
+vcall 5301 023784bc 40 023784bc 0 0 0 0229ecb8  # ov100 PocketsBox_Destroy (slot 16)
+end

@@ -1,0 +1,7 @@
+# 1 functions of the other classes' destructors of vtable slot 16: each on a live object of its class, through the object's vtable, at the end of frame 12068 of karaoke-song-no (tools/driven.py --plan)
+scene karaoke-song-no
+frames 12077
+ram 2600,5400,8800,10900,11500
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 12068 022a62ec 40 022a62ec 0 0 0 0227a278  # ov071 Insurer_Destroy (slot 16)
+end

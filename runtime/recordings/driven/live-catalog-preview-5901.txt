@@ -1,0 +1,12 @@
+# 6 functions of the destructors of vtable slot 0 of those classes, the menu scenes' destructors of vtable slot 16, the menu scenes' phases 3 and 4, the other classes' destructors of vtable slot 16, the scene object bases' slots 0x58, 0x5c and 0xa4 no call site's receiver keeps: each on a live object of its class, through the object's vtable, at the end of frame 5901 of catalog-preview (tools/driven.py --plan)
+scene catalog-preview
+frames 5910
+ram 2600,4800,5100,5600
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 5901 022b06a4 58 022b06a4 0 0 0 02265a60  # ov050 NookClerk_MayActKind6 (slot 22)
+vcall 5901 02374d08 58 02374d08 0 0 0 0229c3e8  # ov142 OrderCatalog_Phase4Idle (slot 22)
+vcall 5901 02374d08 54 02374d08 0 0 0 0229c3e8  # ov142 OrderCatalog_Phase3Idle (slot 21)
+vcall 5901 022b0304 0 022b0304 0 0 0 0224fcc0  # ov004 AtmReceiver_Destroy (slot 0)
+vcall 5901 023790ec 40 023790ec 0 0 0 02250d30  # ov004 RoomObject02250d30_Destroy (slot 16)
+vcall 5901 02374d08 40 02374d08 0 0 0 0229c3e8  # ov142 OrderCatalog_Destroy (slot 16)
+end

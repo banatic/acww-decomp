@@ -1,0 +1,8 @@
+# 2 functions of the other classes' destructors of vtable slot 16, the scene object bases' slots 0x58, 0x5c and 0xa4 no call site's receiver keeps: each on a live object of its class, through the object's vtable, at the end of frame 11401 of flea-buyer-bye (tools/driven.py --plan)
+scene flea-buyer-bye
+frames 11410
+ram 4100,5500,8500,10300,10700
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 11401 022afd50 58 022afd50 0 0 0 02253e10  # ov004 FleaMarketBuyer_IsIdle (slot 22)
+vcall 11401 022afd50 40 022afd50 0 0 0 02253e10  # ov004 FleaMarketBuyer_Destroy (slot 16)
+end

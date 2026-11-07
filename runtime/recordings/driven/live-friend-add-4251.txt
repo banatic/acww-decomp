@@ -1,0 +1,8 @@
+# 2 functions of the menu scenes' phases 3 and 4: each on a live object of its class, through the object's vtable, at the end of frame 4251 of friend-add (tools/driven.py --plan)
+scene friend-add
+frames 4550
+ram 2600,3800
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 4251 023c8a64 58 023c8a64 0 0 0 022a20c8  # ov126 KeyboardEntry_Slot58 (slot 22)
+vcall 4251 023c8a64 54 023c8a64 0 0 0 022a20c8  # ov126 KeyboardEntry_Slot54 (slot 21)
+end

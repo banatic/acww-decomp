@@ -1,0 +1,9 @@
+# 3 functions of the menu scenes' destructors of vtable slot 16, the menu scenes' phases 3 and 4: each on a live object of its class, through the object's vtable, at the end of frame 4301 of house-music (tools/driven.py --plan)
+scene house-music
+frames 4310
+ram 2600,3500,3900
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 4301 0236056c 58 0236056c 0 0 0 0229b3f8  # ov144 MusicList_Phase4Idle (slot 22)
+vcall 4301 0236056c 54 0236056c 0 0 0 0229b3f8  # ov144 MusicList_Phase3Idle (slot 21)
+vcall 4301 0236056c 40 0236056c 0 0 0 0229b3f8  # ov144 MusicList_Destroy (slot 16)
+end

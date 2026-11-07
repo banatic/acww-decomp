@@ -1,0 +1,7 @@
+# 1 functions of the other classes' destructors of vtable slot 16: each on a live object of its class, through the object's vtable, at the end of frame 4901 of insects-may (tools/driven.py --plan)
+scene insects-may
+frames 4910
+ram 2800,4200,4700
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 4901 022a630c 40 022a630c 0 0 0 0227a104  # ov079 Walrus_Destruct (slot 16)
+end

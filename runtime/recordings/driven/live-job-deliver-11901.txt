@@ -1,0 +1,8 @@
+# 2 functions of the destructors of vtable slot 0 of those classes, the other classes' destructors of vtable slot 16: each on a live object of its class, through the object's vtable, at the end of frame 11901 of job-deliver (tools/driven.py --plan)
+scene job-deliver
+frames 11910
+ram 2600,4300,6400,8700
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 11901 0236cc34 0 0236cc34 0 0 0 02251e44  # ov004 ClockReceiver_Destroy (slot 0)
+vcall 11901 022b06c8 40 022b06c8 0 0 0 022539cc  # ov004 RoomVillager_Destroy (slot 16)
+end
