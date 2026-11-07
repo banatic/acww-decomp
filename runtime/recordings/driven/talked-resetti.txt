@@ -1,0 +1,12 @@
+# Mr. Resetti's empty state updates (his talked state's and state 0's), whether the player may act
+# on him, and his destructor (without freeing), on the mole of the lecture (022a6c94, vtable
+# 0227988c) at the end of frame 8801 of resetti; the run ends after the calls
+scene resetti
+frames 8810
+ram 2600,2800,5000,7600
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 8801 022792dd 022a6c94 0 0 0 022792dc 47702001  # ov077 Mole_UpdateTalked (guarded by the overlay's word at 022792dc)
+call 8801 02279351 022a6c94 0 0 0 02279350 47702001  # ov077 Mole_UpdateState0
+vcall 8801 022a6c94 48 022a6c94 0 0 0 0227988c  # ov077 Mole_MayAct (slot 18)
+vcall 8801 022a6c94 40 022a6c94 0 0 0 0227988c  # ov077 Mole_Destruct (slot 16)
+end

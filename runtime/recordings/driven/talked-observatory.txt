@@ -1,0 +1,6 @@
+# the update of a state its overlay's character takes after a talk: called on the character at the end of frame 11101 of observatory
+scene observatory
+frames 11110
+ram 2600,4000,6300,7600,8900,9900
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 11101 02261709 022b06a4 0 0 0 02261708 47702001  # ov046 Astro_UpdateTalked (on 022b06a4, the object of vtable 022620e0 at a block's start; guarded by the overlay's word at 02261708)

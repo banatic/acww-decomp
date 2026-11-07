@@ -1,0 +1,6 @@
+# the update of a state its overlay's character takes after a talk: called on the character at the end of frame 7551 of gate-flag
+scene gate-flag
+frames 7560
+ram 2600,3800,4700,5900,6700
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 7551 0222562d 022af200 0 0 0 0222562c 47702001  # ov004 Gatekeeper2_UpdateTalked (on 022af200, the object of vtable 02254918 at a block's start; guarded by the overlay's word at 0222562c)

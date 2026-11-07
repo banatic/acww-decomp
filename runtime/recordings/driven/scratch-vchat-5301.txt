@@ -1,0 +1,13 @@
+# functions that write their answers through pointers, given a block taken from a heap of the
+# game (022a3378) and given back after: the new constellation, an acre without lilies of the
+# valley drawn, the field actor's saved point and mode unpacked; at the end of frame 5301 of
+# villager-chat (a villager's talk on screen)
+scene villager-chat
+frames 5310
+ram 2600,4500,5300
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 5301 020e9948 022a3378 20 0 0 00000000 00000000  # autoload_2 Heap_Alloc (32 bytes for the answers)
+call 5301 020b1329 r1 0 0 0 00000000 00000000  # main Constellations_TakeNew
+call 5301 020485d5 r2 0 4 4 00000000 00000000  # main TownSpawn_PickAcreWithoutLily (the 4 x 4 inner acres)
+call 5301 02215b91 02392a60 r3 r3 0 02215b90 b081b500  # ov003 FieldActor_GetPackedPointMode (the field actor's saved state arguments (02392170 + 0x8f0))
+call 5301 020e993c 022a3378 r4 0 0 00000000 00000000  # autoload_2 Heap_Free

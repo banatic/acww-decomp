@@ -1,0 +1,6 @@
+# the update of a state its overlay's character takes after a talk: called on the character at the end of frame 7001 of snow-festival
+scene snow-festival
+frames 7010
+ram 4400,5400,6000,6600
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 7001 0227904d 022a6304 0 0 0 0227904c 47702001  # ov085 TurtleSnowFestival_UpdateTalked (on 022a6304, the object of vtable 022794f0 at a block's start; guarded by the overlay's word at 0227904c)

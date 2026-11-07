@@ -1,0 +1,6 @@
+# the update of a state its overlay's character takes after a talk: called on the character at the end of frame 6901 of saharah
+scene saharah
+frames 6910
+ram 2600,3500,4800,6400
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 6901 0227963d 022a6f74 0 0 0 02279640 1c04b510  # ov078 Camel_UpdateDone (on 022a6f74, the object of vtable 02279b2c at a block's start; guarded by the overlay's word at 02279640)

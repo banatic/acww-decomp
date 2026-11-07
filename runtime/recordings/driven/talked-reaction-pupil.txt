@@ -1,0 +1,6 @@
+# the update of a state its overlay's character takes after a talk: called on the character at the end of frame 8501 of reaction-pupil
+scene reaction-pupil
+frames 8510
+ram 2600,3500,4400,5400,6946,7600
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 8501 02279751 022a6f4c 0 0 0 02279750 47702001  # ov088 ReactionNpc_UpdateTalked (on 022a6f4c, the object of vtable 02279cec at a block's start; guarded by the overlay's word at 02279750)

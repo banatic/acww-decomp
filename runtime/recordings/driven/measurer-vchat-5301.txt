@@ -1,0 +1,15 @@
+# a talk page measurer's tag handlers (the talk's values, its part 1, the town's name, the slash
+# and the asterisk), on a live measurer of the talk on screen (0239658c, vtable 020def7c), at the
+# end of frame 5301 of villager-chat; the run ends after the calls
+scene villager-chat
+frames 5310
+ram 2600,4500,5300
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 5301 0206c4c5 0239658c 0 0 0 00000000 00000000  # main TalkPageMeasurer_Value0
+call 5301 0206c4b1 0239658c 0 0 0 00000000 00000000  # main TalkPageMeasurer_Value1
+call 5301 0206c49d 0239658c 0 0 0 00000000 00000000  # main TalkPageMeasurer_Value2
+call 5301 0206c7e9 0239658c 0 0 0 00000000 00000000  # main TalkPageMeasurer_PutPart1
+call 5301 0206cb39 0239658c 0 0 0 00000000 00000000  # main TalkPageMeasurer_PutTownName
+call 5301 0206cd11 0239658c 0 0 0 00000000 00000000  # main TalkPageMeasurer_PutSlash
+call 5301 0206cd29 0239658c 0 0 0 00000000 00000000  # main TalkPageMeasurer_PutAsterisk
+end

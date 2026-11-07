@@ -1,0 +1,6 @@
+# the update of a state its overlay's character takes after a talk: called on the character at the end of frame 5951 of gardens
+scene gardens
+frames 5960
+ram 4400,5300
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 5951 02278da1 022a6314 0 0 0 02278da0 47702001  # ov083 TurtleGardens_UpdateTalked (on 022a6314, the object of vtable 0227928c at a block's start; guarded by the overlay's word at 02278da0)

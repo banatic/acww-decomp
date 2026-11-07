@@ -1,0 +1,18 @@
+# the steps of an outdoor villager's behaviours 19 (netted), 21 (pushed) and 23 (watching the
+# player), each called with the behaviour member (at 0x8b8) of a live villager of the town
+# (022a880c) and the villager, at the end of frame 6401 of villager-chat; the run ends after
+# the calls (they leave the villager in states it was not in)
+scene villager-chat
+frames 6410
+ram 2600,4500,5300,6400
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 6401 02267401 022a90c4 022a880c 0 0 02267400 b081b530  # ov068 OutdoorVillagerActs_Watch23
+call 6401 02267469 022a90c4 022a880c 0 0 02267468 b081b530  # ov068 OutdoorVillagerActs_Turn23
+call 6401 02267395 022a90c4 022a880c 0 0 02267394 b081b5f0  # ov068 OutdoorVillagerActs_Update23
+call 6401 022674b1 022a90c4 022a880c 0 0 022674b0 b087b530  # ov068 OutdoorVillagerActs_Start23
+call 6401 02267965 022a90c4 022a880c 0 0 02267964 b081b530  # ov068 OutdoorVillagerActs_TurnPushed
+call 6401 022678d1 022a90c4 022a880c 0 0 022678d0 b081b5f0  # ov068 OutdoorVillagerActs_UpdatePushed
+call 6401 0226793d 022a90c4 022a880c 0 0 0226793c 1c0cb510  # ov068 OutdoorVillagerActs_WaitPushed
+call 6401 02267b3d 022a90c4 022a880c 0 0 02267b3c b081b530  # ov068 OutdoorVillagerActs_TurnNetted
+call 6401 02267b0d 022a90c4 022a880c 0 0 02267b0c 1c0cb510  # ov068 OutdoorVillagerActs_WaitNetted
+end

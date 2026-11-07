@@ -1,0 +1,6 @@
+# the update of a state its overlay's character takes after a talk: called on the character at the end of frame 9301 of turnip-buy
+scene turnip-buy
+frames 9310
+ram 2800,3900,5900,7600,8800
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 9301 0227901d 022a630c 0 0 0 0227901c 47702001  # ov073 Boar_UpdateDone (on 022a630c, the object of vtable 02279b00 at a block's start; guarded by the overlay's word at 0227901c)

@@ -1,0 +1,6 @@
+# the update of a state its overlay's character takes after a talk: called on the character at the end of frame 4751 of villager-q10-catalog
+scene villager-q10-catalog
+frames 4760
+ram 2600,3700,4400
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 4751 02278e61 022a6cac 0 0 0 02278e60 47702001  # ov080 Turtle_UpdateTalked (on 022a6cac, the object of vtable 022792ec at a block's start; guarded by the overlay's word at 02278e60)

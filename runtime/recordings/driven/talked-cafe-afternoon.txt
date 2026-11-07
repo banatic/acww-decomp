@@ -1,0 +1,6 @@
+# the update of a state its overlay's character takes after a talk: called on the character at the end of frame 6601 of cafe-afternoon
+scene cafe-afternoon
+frames 6610
+ram 2600,4400,5450,5700
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 6601 02274835 022aefb4 0 0 0 02274834 47702001  # ov068 CafeGuest_UpdateDone (on 022aefb4, the object of vtable 02277e50 at a block's start; guarded by the overlay's word at 02274834)

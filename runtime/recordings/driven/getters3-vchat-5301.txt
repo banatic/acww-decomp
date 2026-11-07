@@ -1,0 +1,19 @@
+# the text codes, the reaction slots, the talk's option flag and the villagers' records (the
+# town's villagers at 021e5a2c, the first one's record there; the player's id at 0x247e of
+# record 0), at the end of frame 5301 of villager-chat (a villager's talk on screen)
+scene villager-chat
+frames 5310
+ram 2600,4500,5300
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 5301 02050c11 0 0 0 0 00000000 00000000  # main TextCodes_RightParen
+call 5301 02050c19 0 0 0 0 00000000 00000000  # main TextCodes_LeftParen
+call 5301 02050c29 0 0 0 0 00000000 00000000  # main TextCodes_NewlineCode
+call 5301 02050c41 0 0 0 0 00000000 00000000  # main TextCodes_Asterisk
+call 5301 02050c49 0 0 0 0 00000000 00000000  # main TextCodes_Percent
+call 5301 02050c51 0 0 0 0 00000000 00000000  # main TextCodes_LeftBrace
+call 5301 0203fa4d 0 0 0 0 00000000 00000000  # main ReactionSlots_FindEmpty
+call 5301 02068115 0 0 0 0 00000000 00000000  # main TalkObject_OptionFlagOff
+call 5301 0207cb11 021e5a2c 021dec3a 0 0 00000000 00000000  # main VillagerRoster_FondestOrAny (the villagers, the player's id)
+call 5301 0207dd61 021e5a2c 0 0 0 00000000 00000000  # main VillagerCheck_ClearFleasIfSelf (the first villager's record)
+call 5301 0207d5bd 021e5a2c 0 0 0 00000000 00000000  # main VillagerEntry_ClearMemoryFlag6
+call 5301 0207a44d 021e5a2c 0 0 0 00000000 00000000  # main VillagerTown_ClearMemoryFlags

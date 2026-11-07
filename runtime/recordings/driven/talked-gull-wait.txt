@@ -1,0 +1,6 @@
+# the update of a state its overlay's character takes after a talk: called on the character at the end of frame 3151 of gull-wait
+scene gull-wait
+frames 3160
+ram 2600,3000
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 3151 02278fa5 022a6f68 0 0 0 02278fa4 47702001  # ov072 Gull_UpdateTalked (on 022a6f68, the object of vtable 02279b08 at a block's start; guarded by the overlay's word at 02278fa4)

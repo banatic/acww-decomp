@@ -1,0 +1,6 @@
+# the update of a state its overlay's character takes after a talk: called on the character at the end of frame 8001 of villager-furniture
+scene villager-furniture
+frames 8010
+ram 2600,4100,5500,6500,7300,7800
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 8001 022798d5 022a6030 0 0 0 022798d4 47702001  # ov070 Giraffe_UpdateTalked (on 022a6030, the object of vtable 02279e4c at a block's start; guarded by the overlay's word at 022798d4)

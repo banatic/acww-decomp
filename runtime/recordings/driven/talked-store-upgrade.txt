@@ -1,0 +1,6 @@
+# the update of a state its overlay's character takes after a talk: called on the character at the end of frame 3761 of store-upgrade
+scene store-upgrade
+frames 3770
+ram 2600,2900,3500
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 3761 02278de9 022a6314 0 0 0 02278de8 47702001  # ov075 TownPelican_UpdateTalked (on 022a6314, the pelican, vtable 022799fc; guarded by the overlay's word at 02278de8)

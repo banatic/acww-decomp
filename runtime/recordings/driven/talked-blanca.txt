@@ -1,0 +1,6 @@
+# the update of a state its overlay's character takes after a talk: called on the character at the end of frame 11501 of blanca
+scene blanca
+frames 11510
+ram 2600,4200,6000,6700,7300,8700,10900
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 11501 02279191 022a62f0 0 0 0 02279190 47702001  # ov074 MysteryCat_UpdateTalked (on 022a62f0, the mystery cat, vtable 02279c68; guarded by the overlay's word at 02279190)

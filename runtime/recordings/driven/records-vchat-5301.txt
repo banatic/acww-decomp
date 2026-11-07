@@ -1,0 +1,12 @@
+# the town's snowmen records (021f3b56, data_021f3b56): a snowman recorded in the first free
+# record, taken off the map and forgotten again; the event queue's kind 8 and the lost child's
+# talked state, at the end of frame 5301 of villager-chat (a villager's talk on screen)
+scene villager-chat
+frames 5310
+ram 2600,4500,5300
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 5301 020b060d 021f3b56 1000 2000 1 00000000 00000000  # main Snowmen_Add (head and body sizes in fx32, face 1)
+call 5301 020b0541 021f3b56 r1 0 0 00000000 00000000  # main Snowmen_TakeOffMap (the number it was given)
+call 5301 020b0651 021f3b56 r2 0 0 00000000 00000000  # main Snowmen_Forget
+call 5301 0203e3f9 0 0 0 0 00000000 00000000  # main EventQueue_FinishKind8
+call 5301 020c2345 0 0 0 0 00000000 00000000  # main MissingNpc1_UpdateTalked

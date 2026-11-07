@@ -1,0 +1,47 @@
+# small getters and setters on live objects and the game's own records, at the end of frame
+# 5301 of villager-chat (a villager's talk on screen): a villager's scene motion, the field
+# actor's saved state arguments, the player's record (021dc7bc, record 0), the options in use,
+# the heaps, the constellations' store and the item groups
+scene villager-chat
+frames 5310
+ram 2600,4500,5300
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 5301 02019b69 022a7930 0 0 0 00000000 00000000  # main SceneMotion_Hold (the first villager's scene motion (its object at 022a73cc + 0x564))
+call 5301 02019b61 022a7930 0 0 0 00000000 00000000  # main SceneMotion_Release
+call 5301 02019b79 022a7930 0 0 0 00000000 00000000  # main SceneMotion_AskHold
+call 5301 02019b71 022a7930 0 0 0 00000000 00000000  # main SceneMotion_AskRelease
+call 5301 02213a81 02392a60 0 0 0 02213a80 4b011d00  # ov003 State57Saved_Angle (the field actor's saved state arguments (its object at 02392170 + 0x8f0))
+call 5301 02213a8d 02392a60 0 0 0 02213a8c 47707800  # ov003 State57Saved_Step
+call 5301 02213ac1 02392a60 r1 0 0 02213ac0 47707001  # ov003 State57Saved_SetStep (the step it holds)
+call 5301 02213169 02392a60 0 0 0 02213168 4b011c80  # ov003 State58Saved_Angle
+call 5301 02213175 02392a60 0 0 0 02213174 47707840  # ov003 State58Saved_Step
+call 5301 02214bfd 02392a60 0 0 0 02214bfc 47707800  # ov003 State55Saved_Step
+call 5301 022195a9 02392a60 0 0 0 022195a8 47707880  # ov003 FieldActor_GetState6Progress
+call 5301 02088ab9 021debd2 0 0 0 00000000 00000000  # main PlayerField2416_Gardening (the player's record's field at 0x2416)
+call 5301 02088b99 021debd2 0 0 0 00000000 00000000  # main PlayerField2416_AddAcornPoints
+call 5301 02088b81 021debd2 0 0 0 00000000 00000000  # main PlayerField2416_RaiseAcornLevel
+call 5301 020ae4c9 0 0 0 0 00000000 00000000  # main FoxPassword_VisitorMarked
+call 5301 02063f41 0 0 0 0 00000000 00000000  # main ItemGroupOrder_Weight
+call 5301 02063f41 1 0 0 0 00000000 00000000  # main ItemGroupOrder_Weight
+call 5301 02063f41 2 0 0 0 00000000 00000000  # main ItemGroupOrder_Weight
+call 5301 02063f41 3 0 0 0 00000000 00000000  # main ItemGroupOrder_Weight
+call 5301 0204b3b5 5 0 0 0 00000000 00000000  # main ItemGroup_Insect
+call 5301 0204c5c5 021de3ae 0 0 0 00000000 00000000  # main ItemGroup_IsRoom3894 (the player's first pocket)
+call 5301 020b12b1 0 0 40 40 00000000 00000000  # main Constellations_InView
+call 5301 020b1311 0 0 0 0 00000000 00000000  # main Constellations_ClearNew
+call 5301 0203d339 021c6998 0 0 0 00000000 00000000  # main PlayerOptions_Flag (the options in use)
+call 5301 0203d4a9 0 0 0 0 00000000 00000000  # main PlayerOptions_FlagInUse
+call 5301 0203d32d 021c6998 0 0 0 00000000 00000000  # main PlayerOptions_SetFlag
+call 5301 0203d481 r2 0 0 0 00000000 00000000  # main PlayerOptions_ChangeFlag (back to the flag it had)
+call 5301 0203d245 021c6998 0 0 0 00000000 00000000  # main PlayerOptions_MarkFlagChanged
+call 5301 020eea3c 2 0 0 0 00000000 00000000  # autoload_2 Process_PhaseName
+call 5301 020e9d64 022a3378 4 0 0 00000000 00000000  # autoload_2 Heap_GetAllocatableSize (a heap of the game)
+call 5301 020e9dd0 022a3378 0 0 0 00000000 00000000  # autoload_2 Heap_GetLargestBlock
+call 5301 020e9e78 022a3378 0 0 0 00000000 00000000  # autoload_2 Heap_Report
+call 5301 020eeea0 0 0 0 0 00000000 00000000  # autoload_2 Sound_DisposeNothing
+call 5301 020716e9 0 0 0 0 00000000 00000000  # main Design_FindSlot0
+call 5301 020716dd 0 0 0 0 00000000 00000000  # main Design_FindSlot1
+call 5301 020716d1 0 0 0 0 00000000 00000000  # main Design_FindSlot2
+call 5301 020716c5 0 0 0 0 00000000 00000000  # main Design_FindSlot3
+call 5301 02071649 0 0 0 0 00000000 00000000  # main Design_FindRecord8
+call 5301 0208ffd9 0 0 0 0 00000000 00000000  # main ControlModeIcon_SetNone

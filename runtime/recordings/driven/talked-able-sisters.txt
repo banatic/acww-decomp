@@ -1,0 +1,6 @@
+# the update of a state its overlay's character takes after a talk: called on the character at the end of frame 4651 of able-sisters
+scene able-sisters
+frames 4660
+ram 2600,3600
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 4651 022231bd 022b06d4 0 0 0 022231bc 47702001  # ov004 TailorSister_UpdateTalked (on 022b06d4, the object of vtable 0225445c at a block's start; guarded by the overlay's word at 022231bc)

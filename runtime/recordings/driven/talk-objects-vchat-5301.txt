@@ -1,0 +1,44 @@
+# the talk engine's empty receiver slots, a talk span's slots, the heaps' size queries and other
+# empty or constant slots, each on a live object of its class at the end of frame 5301 of
+# villager-chat (a villager's talk on screen)
+scene villager-chat
+frames 5310
+ram 2600,4500,5300
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 5301 0239225c 1c 0239225c 0 0 0 020d832c  # main TalkReceiver_Nothing1c (the field actor's receiver)
+vcall 5301 0239225c 20 0239225c 0 0 0 020d832c  # main TalkReceiver_Nothing20
+vcall 5301 0239225c 24 0239225c 0 0 0 020d832c  # main TalkReceiver_Nothing24
+vcall 5301 0239225c 28 0239225c 0 0 0 020d832c  # main TalkReceiver_Nothing28
+vcall 5301 0239225c 2c 0239225c 0 0 0 020d832c  # main TalkReceiver_Nothing2c
+vcall 5301 0239225c 30 0239225c 0 0 0 020d832c  # main TalkReceiver_Nothing30
+vcall 5301 0239225c 64 0239225c 0 0 0 020d832c  # main TalkReceiver_Nothing64
+vcall 5301 022a9308 18 022a9308 0 0 0 020df008  # main TalkReceiver_Nothing18 (a receiver of the base class)
+vcall 5301 02396ee4 18 02396ee4 0 0 0 020def9c  # main TalkSpan_WantsMore
+vcall 5301 02396ee4 14 02396ee4 0 0 0 020def9c  # main TalkSpan_OnTag
+vcall 5301 02396ee4 8 02396ee4 0 0 0 020def9c  # main TalkSpan_OnText
+vcall 5301 02396ee4 10 02396ee4 20 0 0 020def9c  # main TalkSpan_OnCharacter (a space)
+vcall 5301 02396ee4 c 02396ee4 0 0 0 020def9c  # main TalkSpan_OnEnd
+call 5301 0206be6d 02396ee4 0 0 0 0 0  # main TalkSpan_Reset
+vcall 5301 023978f0 20 023978f0 0 0 0 020e18d4  # main VillagerMemoryWide_Capacity (slot 2 of 020e18ec)
+vcall 5301 023978f0 24 023978f0 0 0 0 020e18d4  # main VillagerMemoryWide_Buffer (slot 3 of 020e18ec)
+vcall 5301 022a3378 34 022a3378 0 0 0 0213e5b0  # autoload_2 ExpHeap_FreeSize
+vcall 5301 022a3378 38 022a3378 0 0 0 0213e5b0  # autoload_2 ExpHeap_LargestBlock
+vcall 5301 022a3378 3c 022a3378 4 0 0 0213e5b0  # autoload_2 ExpHeap_Allocatable (alignment 4)
+vcall 5301 022a3378 4c 022a3378 0 0 0 0213e5b0  # autoload_2 ExpHeap_Adjust
+vcall 5301 022a3378 28 022a3378 0 0 0 0213e5b0  # autoload_2 ExpHeap_Report
+vcall 5301 022c2788 3c 022c2788 4 0 0 0213e608  # autoload_2 FrameHeap_Allocatable (alignment 4)
+vcall 5301 022c2788 38 022c2788 0 0 0 0213e608  # autoload_2 FrameHeap_LargestBlock
+vcall 5301 022c2788 28 022c2788 0 0 0 0213e608  # autoload_2 FrameHeap_Report
+vcall 5301 022c2788 1c 022c2788 0 0 0 0213e608  # autoload_2 FrameHeap_Free (no block)
+vcall 5301 021f4a80 0 021f4a80 0 0 0 020de64c  # main DatedRandom_Year
+call 5301 02063e55 021f4a80 0 0 0 0 0  # main DateRandom_Year
+call 5301 020ee624 022b730c 0 0 0 0 0  # autoload_2 Process_CreateDefault (a process)
+call 5301 0203e645 021c69b4 0 0 0 0 0  # main EventKind_None
+call 5301 020045c9 02322220 0 0 0 0 0  # main SceneSound_BaseVfunc24 (a scene sound)
+vcall 5301 021f66e0 c 021f66e0 0 0 0 020e5230  # main MessageLineWalker_OnEnd
+vcall 5301 021f66e0 14 021f66e0 0 0 0 020e5230  # main MessageLineWalker_OnTag
+vcall 5301 021f66a0 14 021f66a0 0 0 0 020e5254  # main MessageCursor_OnTag
+vcall 5301 022b57ac 98 022b57ac 0 0 0 022658dc  # ov009 TownObjectActor_Slot98
+vcall 5301 022b57ac 78 022b57ac 0 0 0 022658dc  # ov009 TownObjectActor_PrepareTalk
+call 5301 0201b6e1 022a7a4c 0 0 0 0 0  # main SceneObject_Vfunc60 (a villager's talk scene)
+vcall 5301 022a7a4c 30 022a7a4c 10 0 0 020d9df8  # main VillagerTalkScene_AskMood4

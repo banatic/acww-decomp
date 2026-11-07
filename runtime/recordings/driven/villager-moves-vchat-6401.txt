@@ -1,0 +1,19 @@
+# the steps of an outdoor villager's behaviours 7 (calling the player), 11 (the fleas gone), 16
+# (an item shown) and the walk home, and its effect's countdown, each called with the behaviour
+# member (at 0x8b8) or the effect (at 0x9f4) of a live villager of the town (022a7dec) and the
+# villager, at the end of frame 6401 of villager-chat; the run ends after the calls
+scene villager-chat
+frames 6410
+ram 2600,4500,5300,6400
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 6401 0226863d 022a86a4 022a7dec 0 0 0226863c b083b530  # ov068 OutdoorVillagerMoves_Close16
+call 6401 0226b88d 022a86a4 022a7dec 0 0 0226b88c b083b530  # ov068 OutdoorVillagerHome_AfterWalk2
+call 6401 022693f1 022a86a4 022a7dec 0 0 022693f0 b081b530  # ov068 OutdoorVillagerMoves_Turn7
+call 6401 02269315 022a86a4 022a7dec 0 0 02269314 b088b570  # ov068 OutdoorVillagerMoves_Wait7
+call 6401 02269029 022a86a4 022a7dec 0 0 02269028 b081b530  # ov068 OutdoorVillagerMoves_TurnFleasGone
+call 6401 02268f41 022a86a4 022a7dec 0 0 02268f40 b081b5f0  # ov068 OutdoorVillagerMoves_UpdateFleasGone
+call 6401 02268fad 022a86a4 022a7dec 0 0 02268fac b081b530  # ov068 OutdoorVillagerMoves_WatchFleasGone
+call 6401 0226906d 022a86a4 022a7dec 0 0 0226906c b087b530  # ov068 OutdoorVillagerMoves_StartFleasGone
+call 6401 02266e79 022a87e0 0 0 0 02266e78 47708041  # ov068 OutdoorVillagerEffect_SetCountdown
+call 6401 02266e81 022a87e0 022a7dec 0 0 02266e80 43d22200  # ov068 OutdoorVillagerEffect_Stop
+end
