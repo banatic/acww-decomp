@@ -15,7 +15,8 @@ static_assert(sizeof(MessagePart) == 0x5c, "part");
 
 extern const u8 data_020e3d4c[]; /* the receiver's vtable */
 extern const u8 data_020e3d64[]; /* the message part's vtable */
-/* A byte nothing writes (0): what a cleared receiver's message number is set to. */
+/* 0xff, no message (set by __sinit_020c6bb0, StaticInit_TextWalkers): what a cleared
+ * receiver's message number is set to. */
 extern u8 data_021f43ec;
 
 extern void MI_CpuFill8(void *dst, int value, unsigned int size);
@@ -29,7 +30,7 @@ void MessageReceiver_SetName(MessageReceiver *receiver, const char *name)
 }
 CLEAN_AS(func_020a8164, MessageReceiver_SetName)
 
-/* func_020a8170 (vtable slot 2): no name and message number 0. */
+/* func_020a8170 (vtable slot 2): no name and no message (0xff). */
 void MessageReceiver_Clear(MessageReceiver *receiver)
 {
     receiver->message = data_021f43ec;

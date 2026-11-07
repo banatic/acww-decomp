@@ -1,12 +1,13 @@
 /* An item held in the hand (a field actor's at 0x5a0, FieldActor.held points at it; the slot
  * pool's item entries, slot_pool.h): the number of its entry in the held items' pool at
  * data_021ca16c (HELD_ITEM_NONE for none), its scale, an animation of its model's materials
- * and its line (the fishing line of the rods, held_line in overlay 3's field actor code).
+ * and its fishing float (fishing_float.h: the rods' float, the slingshots' pellet).
  *
  * The pool keeps for each entry the item's code (0xfff1 for none), its model (an animated
  * model, AnimatedModel) with the model file, VRAM region and upload task, its heaps, and its
- * animation files. Items whose model kind (func_0205f64c) is HELD_ITEM_NO_MODEL have no
- * model; those of kind HELD_ITEM_TEXTURE_ANIMATED play a texture SRT animation as well. The
+ * animation files. Items whose joint animation (HeldItemPool_JointAnimNumber) is
+ * HELD_ITEM_NO_JOINT_ANIM play none; those of HELD_ITEM_TEXTURE_ANIMATED play a texture SRT
+ * animation as well. The
  * first eight bytes are the HeldItem of held_item_link.h. */
 #ifndef CLEAN_MAIN_HELD_ITEM_H
 #define CLEAN_MAIN_HELD_ITEM_H
@@ -19,22 +20,22 @@
 /* The number of the pool's entries, also an item's number for none. */
 #define HELD_ITEM_NONE 9
 
-/* The line's first words (the class of func_020606c0, its pool at data_021cad80). */
-typedef struct HeldItemLine {
+/* The fishing float's first words (FishingFloat, fishing_float.h; its pool at data_021cad80). */
+typedef struct HeldItemFloat {
     u8 index;     /* 0x00: its number in its pool, 9 for none */
     u8 unk_01[3]; /* 0x01 */
     int state;    /* 0x04 */
-} HeldItemLine;
+} HeldItemFloat;
 
 typedef struct HeldItemObject {
-    u8 index;          /* 0x00: its entry in the pool */
-    u8 unk_01[3];      /* 0x01 */
-    fx32 scale;        /* 0x04: on all three axes */
-    ModelAnim anim;    /* 0x08: a HeldItemAnim (vtable data_020dd754) */
-    HeldItemLine line; /* 0x28 */
+    u8 index;                    /* 0x00: its entry in the pool */
+    u8 unk_01[3];                /* 0x01 */
+    fx32 scale;                  /* 0x04: on all three axes */
+    ModelAnim anim;              /* 0x08: a HeldItemAnim (vtable data_020dd754) */
+    HeldItemFloat fishing_float; /* 0x28 */
 } HeldItemObject;
 
-int HeldItem_LineState4Or5(HeldItemObject *held);
+int HeldItem_FloatInWater(HeldItemObject *held);
 int HeldItem_Model(const unsigned char *held);
 void HeldItem_JointMatrix(Mtx43 *out, const u8 *held, u32 joint);
 void HeldItem_Draw(HeldItemObject *held, const Mtx43 *matrix);

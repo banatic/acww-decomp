@@ -394,7 +394,7 @@ void InsectDraw_MissingPlaces(int *places, int *count)
 }
 CLEAN_AS(func_0202d3d4, InsectDraw_MissingPlaces)
 
-/* func_0202d6e4: one of `count` places picked by their weights (place j when the random number
+/* func_0202d6e4: one of `count` indexes picked by their weights (index j when the random number
  * below the total falls in its share), -1 when the weights add up to 0.
  * QUIRK: the total and the running sum are bytes: weights adding up past 255 wrap. */
 int InsectDraw_PickByWeights(const u8 *weights, int count)

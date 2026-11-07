@@ -101,10 +101,10 @@ int SpecialSceneObject_HasActionSound(u8 *object)
 }
 CLEAN_AS(func_0202ebcc, SpecialSceneObject_HasActionSound)
 
-/* func_0202ebf8 (slot 0x78): the sort: Lookups_KindDFirst of the person. */
+/* func_0202ebf8 (slot 0x78): the sort: Lookups_SpecialNpcSortKey of the person. */
 int SpecialSceneObject_Sort(u8 *object)
 {
-    return Lookups_KindDFirst((const ItemCode *) (const void *) sso_at(object, SSO_PERSON));
+    return Lookups_SpecialNpcSortKey((const ItemCode *) (const void *) sso_at(object, SSO_PERSON));
 }
 CLEAN_AS(func_0202ebf8, SpecialSceneObject_Sort)
 

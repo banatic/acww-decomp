@@ -7490,7 +7490,7 @@ CLEAN_AS(func_ov003_02215798, FieldActor_UpdateState4F)
 void FieldActor_RunState4F(FieldActor *actor)
 {
     FieldActor_CheckState4FLine(actor);
-    if (!HeldItem_LineState4Or5((HeldItemObject *) actor->held)) {
+    if (!HeldItem_FloatInWater((HeldItemObject *) actor->held)) {
         return;
     }
     if (FieldActor_TestFlag(actor, 0xb)) {
@@ -7519,7 +7519,7 @@ CLEAN_AS(func_ov003_022157f4, FieldActor_RunState4F)
  * 0x1c4 of data_021c526c. */
 void FieldActor_CheckState4FLine(FieldActor *actor)
 {
-    if (!HeldItem_LineState4Or5((HeldItemObject *) actor->held)) {
+    if (!HeldItem_FloatInWater((HeldItemObject *) actor->held)) {
         return;
     }
     if (actor->unk_600 == 0) {

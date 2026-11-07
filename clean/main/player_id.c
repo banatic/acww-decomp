@@ -11,7 +11,7 @@
 static_assert(sizeof(DesignCreator) == 0x1e, "DesignCreator size");
 static_assert(offsetof(DesignCreator, player_id) == 0x0e, "DesignCreator.player_id");
 static_assert(offsetof(DesignCreator, player_name) == 0x10, "DesignCreator.player_name");
-static_assert(offsetof(DesignCreator, unk_1c) == 0x1c, "DesignCreator.unk_1c");
+static_assert(offsetof(DesignCreator, gender) == 0x1c, "DesignCreator.gender");
 static_assert(sizeof(PlayerIdWideText) == 0x1c && offsetof(PlayerIdWideText, chars) == 0x0e, "PlayerIdWideText layout");
 static_assert(sizeof(PlayerIdText) == 0x20 && offsetof(PlayerIdText, chars) == 0x12, "PlayerIdText layout");
 
@@ -28,7 +28,7 @@ extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 #define PLAYER_ID_NUMBER_RANGE 0x7ffc
 #define PLAYER_ID_NUMBER_MADE 0x8000
 /* The byte at 0x1c of a cleared id. */
-#define PLAYER_ID_BYTE_1C_CLEARED 2
+#define PLAYER_ID_GENDER_CLEARED 2
 
 /* PlayerId_WhichTown */
 #define PLAYER_ID_THIS_TOWN 0
@@ -219,14 +219,14 @@ CLEAN_AS(func_020950ac, PlayerId_SetName)
 /* func_020950c0: the id's byte at 0x1c, signed: the player's gender (0 a boy, 1 a girl). */
 int PlayerId_Gender(const s8 *player)
 {
-    return ((const DesignCreator *) (const void *) player)->unk_1c;
+    return ((const DesignCreator *) (const void *) player)->gender;
 }
 CLEAN_AS(func_020950c0, PlayerId_Gender)
 
 /* func_020950c8: the id's byte at 0x1c set (its low 8 bits). */
 void PlayerId_SetGender(u8 *player, int value)
 {
-    ((DesignCreator *) (void *) player)->unk_1c = (s8) (u8) value;
+    ((DesignCreator *) (void *) player)->gender = (s8) (u8) value;
 }
 CLEAN_AS(func_020950c8, PlayerId_SetGender)
 
@@ -281,11 +281,11 @@ CLEAN_AS(func_02095128, PlayerId_NumberIsIn)
 
 /* func_02095158: an id made of the six characters at `name`, the number, the byte at 0x1c and
  * the town `town` (NULL: this town). */
-void PlayerId_Make(DesignCreator *player, const u16 *name, u16 number, u8 byte_1c, const TownName *town)
+void PlayerId_Make(DesignCreator *player, const u16 *name, u16 number, u8 gender, const TownName *town)
 {
     MI_CpuCopy8(name, player->player_name, sizeof(player->player_name));
     player->player_id = number;
-    player->unk_1c = (s8) byte_1c;
+    player->gender = (s8) gender;
     if (town == NULL) {
         town = &data_021dc7aa;
     }
@@ -297,7 +297,7 @@ CLEAN_AS(func_02095158, PlayerId_Make)
  * name (the towns are not compared). */
 int PlayerId_SamePlayer(const DesignCreator *a, const DesignCreator *b)
 {
-    return a->player_id == b->player_id && a->unk_1c == b->unk_1c &&
+    return a->player_id == b->player_id && a->gender == b->gender &&
            memcmp(a->player_name, b->player_name, sizeof(a->player_name)) == 0;
 }
 CLEAN_AS(func_0209518c, PlayerId_SamePlayer)
@@ -314,7 +314,7 @@ void PlayerId_CopyTo(const DesignCreator *src, DesignCreator *dst)
 {
     MI_CpuCopy8(src->player_name, dst->player_name, sizeof(dst->player_name));
     dst->player_id = src->player_id;
-    dst->unk_1c = src->unk_1c;
+    dst->gender = src->gender;
     TownName_CopyTo(&src->town_id, &dst->town_id);
 }
 CLEAN_AS(func_020951dc, PlayerId_CopyTo)
@@ -325,7 +325,7 @@ void PlayerId_Assign(DesignCreator *dst, const DesignCreator *src)
 {
     MI_CpuCopy8(src->player_name, dst->player_name, sizeof(dst->player_name));
     dst->player_id = src->player_id;
-    dst->unk_1c = src->unk_1c;
+    dst->gender = src->gender;
     TownName_Assign(player_id_town(dst), (const TownName *) (const void *) src);
 }
 CLEAN_AS(func_02095208, PlayerId_Assign)
@@ -335,7 +335,7 @@ void PlayerId_Clear(DesignCreator *player)
 {
     MI_CpuFill8(player->player_name, 0, sizeof(player->player_name));
     player->player_id = 0;
-    player->unk_1c = PLAYER_ID_BYTE_1C_CLEARED;
+    player->gender = PLAYER_ID_GENDER_CLEARED;
     TownName_Clear(player_id_town(player));
 }
 CLEAN_AS(func_02095238, PlayerId_Clear)

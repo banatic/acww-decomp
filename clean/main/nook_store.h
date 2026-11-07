@@ -99,7 +99,7 @@ int NookStore_IsUpgradeDue(NookStore *store);
 int NookStore_IsUpgradeDueAt(NookStore *store, const DateTime *now);
 Date NookStore_ClosedDay(NookStore *store);
 NookUpgrade *NookStore_Upgrade(NookStore *store);
-int NookStore_HasKind4Item(NookStore *store);
+int NookStore_HasFurnitureGroup4(NookStore *store);
 int NookStore_IsBonusDayToday(NookStore *store);
 int NookStore_IsBonusDay(NookStore *store, const DateTime *when);
 int NookStore_IsTimeSale(NookStore *store);

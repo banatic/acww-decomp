@@ -61,7 +61,7 @@ int PlayerId_Number(const u16 *player);
 u16 PlayerId_NewNumber(void);
 int PlayerId_NewNumberNotIn(const u16 *numbers, int count);
 int PlayerId_NumberIsIn(u16 number, const u16 *numbers, int count);
-void PlayerId_Make(DesignCreator *player, const u16 *name, u16 number, u8 byte_1c, const TownName *town);
+void PlayerId_Make(DesignCreator *player, const u16 *name, u16 number, u8 gender, const TownName *town);
 int PlayerId_SamePlayer(const DesignCreator *a, const DesignCreator *b);
 int PlayerId_IsSet(DesignCreator *player);
 void PlayerId_CopyTo(const DesignCreator *src, DesignCreator *dst);

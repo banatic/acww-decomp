@@ -27,12 +27,12 @@ match: autoload_2/network:Wfc_CountFriends main/activity_link_jobs:ActivityLinkJ
   main/session_message:SessionMessage_Handle44 main/session_message:SessionMessage_Handle45
   main/session_message:SessionMessage_Handle46 main/session_message:SessionMessage_Handle47
   main/session_message:SessionMessage_ReceiveSceneRequest
-  main/session_message:SessionMessage_PlaceTownItems
+  main/session_message:SessionMessage_PlaceMapItems
   main/session_message:SessionMessage_ReceiveSceneAnswer
   main/session_message:SessionMessage_ReceiveDesign
   main/session_message:SessionMessage_ReceivePlayerMessage
   main/session_message:SessionMessage_ReceiveSceneRelease
-  main/session_message:SessionMessage_RelayTownItems
+  main/session_message:SessionMessage_RelayMapItems
   main/session_message:SessionMessage_RemovePlayer
   main/session_message:SessionMessage_SetActivityFlagE6
   main/session_message:SessionMessage_SetActivityFlagF3

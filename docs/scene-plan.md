@@ -2748,7 +2748,7 @@ What reading the Clean code found about the groups above; counts are of function
   (the keyboard again, then row 4); row 6 says row 7. The earlier runs pressed only A, which types
   on the keyboard. New scene villager-admire-day (11 of the talk map's rows).
 - Line table 11 on a day other than the 31st (town event 9, New Year's Day, going on at once)
-  before the end of the personality's hours (Lookups_DayWindow: they end from 5:00 to 10:00) takes
+  before the end of the personality's hours (Lookups_NightWindow: they end from 5:00 to 10:00) takes
   data_021c23f4, row 4 of data_021c2394: villager-new-year at 00:30.
 - A villager's house while it sleeps (02:00): A at the door gives "obj_etc_closed"
   (VillagerHouse_PrepareTalk). A scene of it (rtc 2026-09-11 02:00) played the shut house but

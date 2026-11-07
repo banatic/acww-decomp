@@ -17,7 +17,7 @@ extern StateBlock data_021dc7a8;
 extern const u16 data_020e3a68[];
 
 #define FIRST_RECORD 0
-#define NEW_PLAYER_ARG 0
+#define NEW_PLAYER_GENDER 0
 
 /* func_020a128c */
 void StartKind_Clear(void)
@@ -111,6 +111,6 @@ void StartKind_Apply(void)
     NetSession *session = data_020ccf94;
     session->local_player = 0;
     SessionPlayers_SetRecordNumber(session->local_player, number);
-    PlayerRecords_NewPlayer(data_021dc7a8.players, data_020e3a68, NEW_PLAYER_ARG, number);
+    PlayerRecords_NewPlayer(data_021dc7a8.players, data_020e3a68, NEW_PLAYER_GENDER, number);
 }
 CLEAN_AS(func_020a13e8, StartKind_Apply)

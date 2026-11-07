@@ -64,7 +64,7 @@ extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 #define RT_EXTRA_MESSAGE 5
 #define RT_EXTRA_SELECT2 1 /* the select file "select2" */
 
-/* No motion number (Obj020d8c64_LastMotionNumber). */
+/* No motion number (Obj020d8c64_LastReaction). */
 #define RT_NO_NUMBER (-1)
 
 static u8 rt_line_shown(const ReactionNpcTalk *talk)
@@ -270,7 +270,7 @@ void ReactionNpcTalk_StepWatch(ReactionNpcTalk *talk)
     if (owner->watch == 0) {
         owner->watch = RT_WATCH_LATER;
     }
-    if (Obj020d8c64_LastMotionNumber((s16 *) (void *) owner) == RT_NO_NUMBER &&
+    if (Obj020d8c64_LastReaction((s16 *) (void *) owner) == RT_NO_NUMBER &&
         Countdown_Tick8(&owner->watch) > RT_WATCH_IN_TIME) {
         return;
     }
@@ -318,7 +318,7 @@ void ReactionNpcTalk_StepFirstLesson(ReactionNpcTalk *talk)
         return;
     }
     talk->owner->watch = RT_WATCH_FIRST;
-    if (Obj020d8c64_LastMotionNumber((s16 *) (void *) talk->owner) == RT_NO_NUMBER) {
+    if (Obj020d8c64_LastReaction((s16 *) (void *) talk->owner) == RT_NO_NUMBER) {
         return;
     }
     rt_put_name(rt_talk_object(talk), 0, RT_FIRST_REACTION);

@@ -25,7 +25,7 @@ void PlayerRecords_ClearThree(u8 *records);
 u8 *PlayerRecords_Guests(void);
 u8 *PlayerRecords_DestructGuests(u8 *guests);
 u8 *PlayerRecords_ConstructGuests(u8 *guests);
-u8 *PlayerRecords_NewPlayer(u8 *players, const void *name, int arg, int number);
+u8 *PlayerRecords_NewPlayer(u8 *players, const void *name, int gender, int number);
 
 /* The start of a player's id (func_02099870, at 0x247e of the record): the player's town, its
  * id and name. func_0209518c compares the rest (the player's number and name). */

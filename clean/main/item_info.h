@@ -43,10 +43,10 @@ typedef struct ItemInfoIndoor {
     u8 unk_02[2];    /* 0x02 */
 } ItemInfoIndoor;
 
-/* A record of dma.bin. */
-typedef struct ItemInfoDma {
+/* A record of dma.bin: the item's name (UTF-16, 12 characters; name_texts.c). */
+typedef struct ItemInfoName {
     u8 unk_00[0x18];
-} ItemInfoDma;
+} ItemInfoName;
 
 /* A record of series.bin. */
 typedef struct ItemInfoSeries {
@@ -82,7 +82,7 @@ int ItemInfo_NoneA(const u16 *item);
 int ItemInfo_NoneB(const u16 *item);
 int ItemInfo_NoneC(const u16 *item);
 u16 ItemInfo_Icon(const u16 *item);
-const ItemInfoDma *ItemInfo_Dma(const u16 *item);
+const ItemInfoName *ItemInfo_NameRecord(const u16 *item);
 int ItemInfo_FreeIndoor(void);
 void ItemInfo_LoadIndoor(int stream);
 void ItemInfo_Close(void);

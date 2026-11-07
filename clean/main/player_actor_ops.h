@@ -45,7 +45,7 @@ int PlayerActorOps_RequestState3F(unsigned short *item);
 int PlayerActorOps_RequestState7Kind2Next10(u16 *item);
 void PlayerActorOps_RequestState7Kind1Next10(u16 *item);
 int PlayerActorOps_RequestState7Kind0Next10(u16 *item);
-int PlayerActorOps_RequestState7NoItem(void);
+int PlayerActorOps_RequestCureSting(void);
 int PlayerActorOps_RequestState7Kind2Next5(u16 *item);
 int PlayerActorOps_RequestState7Kind1Next5(u16 *item);
 int PlayerActorOps_RequestState7Kind0Next5(u16 *item);

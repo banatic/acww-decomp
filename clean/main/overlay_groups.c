@@ -14,7 +14,7 @@
 #include "overlay_slots.h"
 #include "state_flags.h"
 
-extern u32 data_021cfcb4[3]; /* the groups in use, one bit each */
+extern u32 data_021cfcb4[3]; /* the groups marked to be released, one bit each */
 extern u32 data_021cfccc[3]; /* the groups loaded */
 extern OverlayGroupsRequest data_020df328;
 /* The objects the groups are loaded for, each linked in by an OverlayGroupsOwner; the first
@@ -37,26 +37,26 @@ static BOOL test_bit(const u32 *set, int group)
     return (set[group >> 5] & (1u << (group & 31))) != 0;
 }
 
-/* func_0206ff00: the group's in-use mark cleared. */
-void OverlayGroups_ClearInUse(int group)
+/* func_0206ff00: the group's mark to be released cleared. */
+void OverlayGroups_UnmarkRelease(int group)
 {
     clear_bit(data_021cfcb4, group);
 }
-CLEAN_AS(func_0206ff00, OverlayGroups_ClearInUse)
+CLEAN_AS(func_0206ff00, OverlayGroups_UnmarkRelease)
 
-/* func_0206ff24: the group marked in use. */
-void OverlayGroups_SetInUse(int group)
+/* func_0206ff24: the group marked to be released (OverlayGroups_ReleaseMarked). */
+void OverlayGroups_MarkForRelease(int group)
 {
     set_bit(data_021cfcb4, group);
 }
-CLEAN_AS(func_0206ff24, OverlayGroups_SetInUse)
+CLEAN_AS(func_0206ff24, OverlayGroups_MarkForRelease)
 
-/* func_0206ff48: whether the group is marked in use. */
-BOOL OverlayGroups_IsInUse(int group)
+/* func_0206ff48: whether the group is marked to be released. */
+BOOL OverlayGroups_IsMarkedForRelease(int group)
 {
     return test_bit(data_021cfcb4, group);
 }
-CLEAN_AS(func_0206ff48, OverlayGroups_IsInUse)
+CLEAN_AS(func_0206ff48, OverlayGroups_IsMarkedForRelease)
 
 /* func_0206ff74: the group's loaded mark cleared. */
 void OverlayGroups_ClearLoaded(int group)
@@ -139,7 +139,7 @@ BOOL OverlayGroups_Release(int group)
         OverlaySlots_Release((u8) overlays[i]);
     }
     OverlayGroups_ClearLoaded(group);
-    OverlayGroups_ClearInUse(group);
+    OverlayGroups_UnmarkRelease(group);
     return TRUE;
 }
 CLEAN_AS(func_020700cc, OverlayGroups_Release)
@@ -179,14 +179,14 @@ BOOL OverlayGroups_StartLoaded(void)
 }
 CLEAN_AS(func_02070150, OverlayGroups_StartLoaded)
 
-/* func_020701a8: release every marked group (OverlayGroups_SetInUse). */
+/* func_020701a8: release every marked group (OverlayGroups_MarkForRelease). */
 void OverlayGroups_ReleaseMarked(void)
 {
     if (data_021cfcb4[0] == 0 && data_021cfcb4[1] == 0 && data_021cfcb4[2] == 0) {
         return;
     }
     for (int group = 0; group < OVERLAY_GROUP_COUNT; group++) {
-        if (OverlayGroups_IsInUse(group)) {
+        if (OverlayGroups_IsMarkedForRelease(group)) {
             OverlayGroups_Release(group);
         }
     }
@@ -197,7 +197,7 @@ CLEAN_AS(func_020701a8, OverlayGroups_ReleaseMarked)
 void OverlayGroups_RemoveOwner(OverlayGroupsOwner *link)
 {
     List_Remove(&data_021cfca0, &link->node);
-    OverlayGroups_SetInUse(link->owner[OVERLAY_GROUPS_OWNER_GROUP]);
+    OverlayGroups_MarkForRelease(link->owner[OVERLAY_GROUPS_OWNER_GROUP]);
 }
 CLEAN_AS(func_020701e4, OverlayGroups_RemoveOwner)
 

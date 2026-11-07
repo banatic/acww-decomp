@@ -85,30 +85,30 @@ void *Obj020d8c64_DestructDelete(void *object)
 }
 CLEAN_AS(func_02012014, Obj020d8c64_DestructDelete)
 
-/* ---- The motion number kept at 0x63e */
+/* ---- The reaction last offered (an act number), kept at 0x63e */
 
 #define OBJ_020D8C64_MOTION 0x564
 #define OBJ_020D8C64_ACTION 0x618
-#define OBJ_020D8C64_MOTION_NUMBER 0x63e
+#define OBJ_020D8C64_LAST_REACTION 0x63e
 #define OBJ_020D8C64_NO_NUMBER (-1)
 /* The kind of motion of a talk, and the numbers its byte 0xa9 may give. */
 #define OBJ_020D8C64_MOTION_TALK 8
 #define OBJ_020D8C64_NUMBER_LAST 59
 
 /* func_02013a0c (vtable slot 0xa0 of the class): no number (-1). */
-int Obj020d8c64_NoMotionNumber(void *object)
+int Obj020d8c64_NoReaction(void *object)
 {
     (void) object;
     return OBJ_020D8C64_NO_NUMBER;
 }
-CLEAN_AS(func_02013a0c, Obj020d8c64_NoMotionNumber)
+CLEAN_AS(func_02013a0c, Obj020d8c64_NoReaction)
 
 /* func_02013a14: while an action runs or is requested (SceneAction_IsBusy), the motion is the
  * talk's (kind 8), and the object is in a scene (func_0201c274) without another speaker
- * (func_020160d4): the number its motion shows (byte 0xa9, func_02019df8) when it is 1 to 59,
- * not the one kept, and none of the four bytes of the player's record (func_0203f9e0); it is
+ * (func_020160d4): the act number its motion shows (SceneMotion_ActNumber) when it is 1 to 59,
+ * not the one kept, and not a reaction the current player has yet (ReactionSlots_Find); it is
  * then kept. Else -1. */
-int Obj020d8c64_TakeNewMotionNumber(void *object)
+int Obj020d8c64_TakeNewReaction(void *object)
 {
     void *motion = at(object, OBJ_020D8C64_MOTION);
     if (SceneAction_IsBusy((const SceneAction *) at(object, OBJ_020D8C64_ACTION)) == 0 ||
@@ -120,32 +120,32 @@ int Obj020d8c64_TakeNewMotionNumber(void *object)
         return OBJ_020D8C64_NO_NUMBER;
     }
     int number = SceneMotion_ActNumber(motion);
-    if (number > 0 && number <= OBJ_020D8C64_NUMBER_LAST && number != Obj020d8c64_LastMotionNumber((s16 *) object) &&
+    if (number > 0 && number <= OBJ_020D8C64_NUMBER_LAST && number != Obj020d8c64_LastReaction((s16 *) object) &&
         ReactionSlots_Find((u8) number) == -1) {
-        Obj020d8c64_SetLastMotionNumber(object, (u8) number);
+        Obj020d8c64_SetLastReaction(object, (u8) number);
         return number;
     }
     return OBJ_020D8C64_NO_NUMBER;
 }
-CLEAN_AS(func_02013a14, Obj020d8c64_TakeNewMotionNumber)
+CLEAN_AS(func_02013a14, Obj020d8c64_TakeNewReaction)
 
 /* func_02013a94 */
-s16 Obj020d8c64_LastMotionNumber(s16 *object)
+s16 Obj020d8c64_LastReaction(s16 *object)
 {
-    return *(const s16 *) at(object, OBJ_020D8C64_MOTION_NUMBER);
+    return *(const s16 *) at(object, OBJ_020D8C64_LAST_REACTION);
 }
-CLEAN_AS(func_02013a94, Obj020d8c64_LastMotionNumber)
+CLEAN_AS(func_02013a94, Obj020d8c64_LastReaction)
 
 /* func_02013aa0 */
-void Obj020d8c64_SetLastMotionNumber(void *object, u16 number)
+void Obj020d8c64_SetLastReaction(void *object, u16 number)
 {
-    *(u16 *) at(object, OBJ_020D8C64_MOTION_NUMBER) = number;
+    *(u16 *) at(object, OBJ_020D8C64_LAST_REACTION) = number;
 }
-CLEAN_AS(func_02013aa0, Obj020d8c64_SetLastMotionNumber)
+CLEAN_AS(func_02013aa0, Obj020d8c64_SetLastReaction)
 
 /* func_02013aac: none kept (0xffff). */
-void Obj020d8c64_ClearLastMotionNumber(void *object)
+void Obj020d8c64_ClearLastReaction(void *object)
 {
-    *(u16 *) at(object, OBJ_020D8C64_MOTION_NUMBER) = 0xffff;
+    *(u16 *) at(object, OBJ_020D8C64_LAST_REACTION) = 0xffff;
 }
-CLEAN_AS(func_02013aac, Obj020d8c64_ClearLastMotionNumber)
+CLEAN_AS(func_02013aac, Obj020d8c64_ClearLastReaction)

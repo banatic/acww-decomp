@@ -814,12 +814,12 @@ int PathWalker_Step(PathWalker *self, Vec3 *position)
 }
 CLEAN_AS(func_020132a0, PathWalker_Step)
 
-/* func_02013300 */
-int PathWalker_Status(const PathWalker *self)
+/* func_02013300: the walk kind (PATH_WALKER_KINDS for none). */
+int PathWalker_Kind(const PathWalker *self)
 {
-    return (int) self->status;
+    return (int) self->kind;
 }
-CLEAN_AS(func_02013300, PathWalker_Status)
+CLEAN_AS(func_02013300, PathWalker_Kind)
 
 /* func_02013304: the junction remembered at `tile`, dropped from the trail with the newer ones
  * (the older move up to the front); all zero when there is none. */
@@ -1148,7 +1148,7 @@ CLEAN_AS(func_020137ec, PathWalker_SearchLine)
 /* func_02013894: whether a walk is under way (its kind is one of the seven). */
 int PathWalker_IsWalking(const PathWalker *self)
 {
-    return self->status < PATH_WALKER_KINDS;
+    return self->kind < PATH_WALKER_KINDS;
 }
 CLEAN_AS(func_02013894, PathWalker_IsWalking)
 
@@ -1213,7 +1213,7 @@ void PathWalker_Start(PathWalker *self, Vec3 *position, u32 kind, int state, voi
         return;
     }
     PathWalker_Init(self);
-    self->status = kind;
+    self->kind = kind;
     self->state = (u32) state;
     self->table = &data_021c1914[kind];
     const MemberPointer *pick = &self->table->unk_08;
@@ -1237,7 +1237,7 @@ void PathWalker_Init(PathWalker *self)
 {
     MI_CpuFill8(self, 0, sizeof(*self));
     self->state = PATH_WALKER_STATE_NONE;
-    self->status = PATH_WALKER_KINDS;
+    self->kind = PATH_WALKER_KINDS;
     self->unk_24 = 0xffffffffu;
     self->mode = PATH_WALKER_NONE;
     self->return_dir = PATH_WALKER_NO_STEP;

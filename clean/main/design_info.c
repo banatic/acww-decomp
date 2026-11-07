@@ -194,7 +194,7 @@ void DesignInfo_SetCreator(DesignInfo *info, DesignCreator *creator)
     copy_halves(to->town_name, creator->town_name, 6);
     to->player_id = creator->player_id;
     copy_halves(to->player_name, creator->player_name, 6);
-    to->unk_1c = creator->unk_1c;
+    to->gender = creator->gender;
     to->unk_1d = creator->unk_1d;
 }
 CLEAN_AS(func_02072eec, DesignInfo_SetCreator)

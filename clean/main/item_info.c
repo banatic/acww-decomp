@@ -9,7 +9,7 @@
 
 static_assert(sizeof(ItemInfoAlways) == 12, "ItemInfoAlways size");
 static_assert(sizeof(ItemInfoIndoor) == 4, "ItemInfoIndoor size");
-static_assert(sizeof(ItemInfoDma) == 0x18, "ItemInfoDma size");
+static_assert(sizeof(ItemInfoName) == 0x18, "ItemInfoName size");
 static_assert(sizeof(ItemInfoSeries) == 0x18 && offsetof(ItemInfoSeries, kind) == 0x16, "ItemInfoSeries layout");
 static_assert(offsetof(ItemInfoFiles, series) == 0x54, "ItemInfoFiles layout");
 
@@ -373,13 +373,13 @@ u16 ItemInfo_Icon(const u16 *item)
 }
 CLEAN_AS(func_020629ec, ItemInfo_Icon)
 
-/* func_02062a28: the dma.bin record (of the full pile), or NULL. */
-const ItemInfoDma *ItemInfo_Dma(const u16 *item)
+/* func_02062a28: the item's name record from dma.bin (of the full pile), or NULL. */
+const ItemInfoName *ItemInfo_NameRecord(const u16 *item)
 {
-    return (const ItemInfoDma *) (void *) (RecordFile_Record(
+    return (const ItemInfoName *) (void *) (RecordFile_Record(
         (FurnitureRecordFile *) (uintptr_t) RecordFiles_Third((int) (uintptr_t) &data_021cb5e0), item_info_full_number(item)));
 }
-CLEAN_AS(func_02062a28, ItemInfo_Dma)
+CLEAN_AS(func_02062a28, ItemInfo_NameRecord)
 
 /* func_02062ad4: ItemInfoFiles_FreeIndoor on the game's files. */
 int ItemInfo_FreeIndoor(void)
@@ -529,7 +529,7 @@ int ItemInfoFiles_Open(ItemInfoFiles *files)
 {
     data_021cb5c0 = 0;
     (void) RecordFiles_Open(&files->files, data_020de5b0, sizeof(ItemInfoAlways), data_020de5c8, sizeof(ItemInfoIndoor),
-                            data_020de5e0, sizeof(ItemInfoDma), ITEM_INFO_FILE_RECORDS);
+                            data_020de5e0, sizeof(ItemInfoName), ITEM_INFO_FILE_RECORDS);
     ItemInfo_FindHeldModels();
     ItemInfo_CountSharedPairs();
     ItemInfo_CountTailorHeadwear();

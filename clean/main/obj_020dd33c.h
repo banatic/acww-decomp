@@ -35,15 +35,15 @@ typedef struct Obj020dd33c {
     int look; /* 0x54: OBJ_020DD33C_LOOK_MODEL_27 or 0 */
     u8 stage; /* 0x58 */
     u8 pad_59[3];
-    int kind;        /* 0x5c: which column (0 or 1) of the mode table runs */
-    Vec3 point;      /* 0x60: where the item is drawn */
-    Vec3 target;     /* 0x6c: where the point is going */
-    Vec3 offset;     /* 0x78: added to the point, turned to the first actor's heading */
-    Vec3 velocity;   /* 0x84: the offset before turning, or the point less the held point */
-    Vec3 speed;      /* 0x90: the step on each axis towards the target */
-    Vec3 goal;       /* 0x9c: the point beside the first actor the item settles at */
-    Vec3 scale;      /* 0xa8: the item's drawn size (x, y and z kept equal) */
-    s16 rotation[3]; /* 0xb4: the item's drawn angles */
+    int kind;         /* 0x5c: which column (0 or 1) of the mode table runs */
+    Vec3 point;       /* 0x60: where the item is drawn */
+    Vec3 target;      /* 0x6c: where the point is going */
+    Vec3 offset;      /* 0x78: added to the point, turned to the first actor's heading */
+    Vec3 hold_offset; /* 0x84: the offset before turning, or the point less the held point */
+    Vec3 speed;       /* 0x90: the step on each axis towards the target */
+    Vec3 goal;        /* 0x9c: the point beside the first actor the item settles at */
+    Vec3 scale;       /* 0xa8: the item's drawn size (x, y and z kept equal) */
+    s16 rotation[3];  /* 0xb4: the item's drawn angles */
     u8 pad_ba[2];
     fx32 reach;      /* 0xbc: the distance from the point an actor is near within */
     fx32 scale_step; /* 0xc0: the step the scale shrinks by */

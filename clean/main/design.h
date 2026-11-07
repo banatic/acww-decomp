@@ -20,7 +20,7 @@ typedef struct DesignCreator {
     u16 town_name[6];
     u16 player_id;
     u16 player_name[6];
-    s8 unk_1c;
+    s8 gender; /* 0x1c: PlayerId_Gender */
     u8 unk_1d;
 } DesignCreator;
 

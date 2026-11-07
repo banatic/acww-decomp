@@ -260,7 +260,7 @@ void VillagerMode_LearnFrom(u8 *villager, u8 *other)
 CLEAN_AS(func_0207daf4, VillagerMode_LearnFrom)
 
 /* func_0207db48: whether `now` (to the minute) is after the villager's wake time following
- * `since`: the end of its personality's night (Lookups_DayWindow) on the day of `since`, or on
+ * `since`: the end of its personality's night (Lookups_NightWindow) on the day of `since`, or on
  * the next day when `since` is past that hour.
  * QUIRK: within the hour of the wake time, the next day is taken only when `since` is at the
  * very minute of it; a later minute of that hour keeps the same day, already passed. */
@@ -271,7 +271,7 @@ int VillagerMode_IsWakeTimePast(u8 *villager, const DateTime *now)
     if (!NpcId_IsValid(npc) || VillagerModeRecord_IsInUse(record) == 0) {
         return 0;
     }
-    const DayWindow *night = Lookups_DayWindow((u32) NpcId_Personality(npc));
+    const NightWindow *night = Lookups_NightWindow((u32) NpcId_Personality(npc));
     const DateTime *since = VillagerModeRecord_Since(record);
     if (DateTime_IsInvalid(since) != 0) {
         return 0;

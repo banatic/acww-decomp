@@ -335,8 +335,9 @@ void SessionMessage_SetLinkFlag7C(int size, int kind, u8 scene, u32 slot)
 }
 CLEAN_AS(func_02076230, SessionMessage_SetLinkFlag7C)
 
-/* func_020761fc: item records (5 bytes each) put on the town map. */
-void SessionMessage_PlaceTownItems(u32 size, int kind, u8 scene, u32 slot)
+/* func_020761fc: item records (5 bytes each) put on their maps (the town's or a room's;
+ * linked_map_items.h). */
+void SessionMessage_PlaceMapItems(u32 size, int kind, u8 scene, u32 slot)
 {
     (void) kind;
     (void) scene;
@@ -348,11 +349,11 @@ void SessionMessage_PlaceTownItems(u32 size, int kind, u8 scene, u32 slot)
         LinkedMapItems_Place(record);
     }
 }
-CLEAN_AS(func_020761fc, SessionMessage_PlaceTownItems)
+CLEAN_AS(func_020761fc, SessionMessage_PlaceMapItems)
 
-/* func_02076198: item records (5 bytes each), each put on the town map here or sent on
- * (func_0205f9d4). */
-void SessionMessage_RelayTownItems(u32 size, int kind, u8 scene, u32 slot)
+/* func_02076198: item records (5 bytes each), each put on its map (the town's or a room's) here
+ * or sent on (LinkedMapItems_Set). */
+void SessionMessage_RelayMapItems(u32 size, int kind, u8 scene, u32 slot)
 {
     (void) kind;
     (void) scene;
@@ -368,7 +369,7 @@ void SessionMessage_RelayTownItems(u32 size, int kind, u8 scene, u32 slot)
         LinkedMapItems_Set((s8) record[3], (s8) record[4], item_scene, item, flag != 0 ? 1 : 0);
     }
 }
-CLEAN_AS(func_02076198, SessionMessage_RelayTownItems)
+CLEAN_AS(func_02076198, SessionMessage_RelayMapItems)
 
 /* func_02076aa0: the answer (a byte) to a scene claim's request, message 52
  * (SceneClaim_ReceiveAnswer). */

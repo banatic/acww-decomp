@@ -1646,7 +1646,7 @@ int PocketsScreen_ActorTakeSlotItem(PocketsScreen *self, unsigned int record_slo
             }
             return 0;
         case 8:
-            return PlayerActorOps_RequestState7NoItem() != 0;
+            return PlayerActorOps_RequestCureSting() != 0;
         default:
             return 0;
     }

@@ -265,7 +265,7 @@ int RoomPlayerActor_RequestPlaceOff(int side, int store_sun)
     if (FieldActorPlaceStates_RequestOff(actor, side, store_sun, RPA_PRIORITY, RPA_NO_ARG) == 0) {
         return 0;
     }
-    FieldActor_TakeAimMode(actor);
+    FieldActor_TakeControlMode(actor);
     return 1;
 }
 CLEAN_AS(func_ov004_0222c110, RoomPlayerActor_RequestPlaceOff)

@@ -34,9 +34,9 @@ typedef struct OverlayGroupsOwner {
 
 #define OVERLAY_GROUPS_OWNER_GROUP 0x90
 
-void OverlayGroups_ClearInUse(int group);
-void OverlayGroups_SetInUse(int group);
-BOOL OverlayGroups_IsInUse(int group);
+void OverlayGroups_UnmarkRelease(int group);
+void OverlayGroups_MarkForRelease(int group);
+BOOL OverlayGroups_IsMarkedForRelease(int group);
 void OverlayGroups_ClearLoaded(int group);
 void OverlayGroups_SetLoaded(int group);
 BOOL OverlayGroups_IsLoaded(int group);

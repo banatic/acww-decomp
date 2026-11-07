@@ -1109,7 +1109,7 @@ void NookClerkTalk_Line(NookClerkTalk *talk, NookClerkLine *out)
                 NookClerkTalk_SetMode(talk, talk->mode == NOOK_CLERK_MODE_NOOK_GREET ? 2 : 0x1a);
             } else if (NookStore_IsTimeSale(&data_021f395c) != 0) {
                 NookClerkTalk_SetMode(talk, talk->mode == NOOK_CLERK_MODE_NOOK_GREET ? 3 : 0x1b);
-            } else if (NookStore_HasKind4Item(&data_021f395c) != 0) {
+            } else if (NookStore_HasFurnitureGroup4(&data_021f395c) != 0) {
                 NookClerkTalk_SetMode(talk, talk->mode == NOOK_CLERK_MODE_NOOK_GREET ? 4 : 0x1c);
             }
         }

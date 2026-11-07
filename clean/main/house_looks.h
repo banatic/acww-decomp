@@ -8,8 +8,8 @@
  * - The design (DesignHolder, design_sets.h) is the one overlay 3's checkpoint wears
  *   (ov003/checkpoint.h); the style after it (0-2) picks the checkpoint's model, "obj_check<n>".
  *
- * Resetting the record (a new town) also takes every building off the town's inner acres
- * 1-4. */
+ * Resetting the record (a new town) also puts every building on the town's acres (1, 1) to
+ * (4, 4) down again, its shape's tiles marked (AcreMap_StampBuildingAt). */
 #ifndef CLEAN_MAIN_HOUSE_LOOKS_H
 #define CLEAN_MAIN_HOUSE_LOOKS_H
 

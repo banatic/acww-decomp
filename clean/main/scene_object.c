@@ -545,7 +545,7 @@ int SceneObject_Init(u8 *object)
     Footsteps_Init((Footsteps *) scene_object_at(object, SCENE_OBJECT_FOOTSTEPS));
     object[SCENE_OBJECT_SOLID] = 1;
     object[SCENE_OBJECT_SHADOW] = 1;
-    Obj020d8c64_ClearLastMotionNumber(object);
+    Obj020d8c64_ClearLastReaction(object);
     object[SCENE_OBJECT_ENABLED] = 1;
     object[SCENE_OBJECT_POSED] = 1;
     *(u32 *) scene_object_at(object, SCENE_OBJECT_HELD_ITEM) = 0;

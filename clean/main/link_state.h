@@ -21,6 +21,17 @@
 
 #define LINK_STATE_SLOTS 4
 
+/* A slot's link status (LinkState.status, LinkGlobal_SetStatus): 0 to 3 a request of that kind;
+ * then its outcome: being served, accepted or refused (the last two to be told by the host),
+ * and idle once told. */
+enum LinkStatus {
+    LINK_STATUS_REQUEST_LAST = 3,
+    LINK_STATUS_IN_PROGRESS = 4,
+    LINK_STATUS_ACCEPTED = 5,
+    LINK_STATUS_REFUSED = 6,
+    LINK_STATUS_IDLE = 7,
+};
+
 /* Where a slot is (link_scene.h): the scene it is in (0x3f for none), whether it holds that
  * scene's state, and whether the host let it move to another scene. */
 typedef struct LinkStatePlace {

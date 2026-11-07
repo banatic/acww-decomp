@@ -257,7 +257,7 @@ static void acts_turn_and_talk(u8 *villager, int clear_motion_number)
     int target = SceneBase_MotionArg((SceneBase *) (void *) acts_at(villager, OUTDOOR_VILLAGER_TALK));
     int angle = 0;
     if (clear_motion_number) {
-        Obj020d8c64_ClearLastMotionNumber(villager);
+        Obj020d8c64_ClearLastReaction(villager);
     }
     if (target != 0) {
         angle = SceneObject_YawTo(villager, (u8 *) (uintptr_t) (u32) target);
@@ -387,7 +387,7 @@ CLEAN_AS(func_ov068_022677a0, OutdoorVillagerActs_WaitNettedTalk)
  * 0xec still plays, step 0; else the turn and the talk, step 1. */
 int OutdoorVillagerActs_StartNettedTalk(OutdoorVillagerBehaviour *self, u8 *villager)
 {
-    Obj020d8c64_ClearLastMotionNumber(villager);
+    Obj020d8c64_ClearLastReaction(villager);
     if (acts_anim_netted_playing(villager)) {
         self->step = 0;
         return 1;

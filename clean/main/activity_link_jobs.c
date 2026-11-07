@@ -630,7 +630,7 @@ void ActivityLinkJobs_Step18(Activity *activity)
             }
             *member_mask(activity) = (u16) Session_GetMemberMask();
             ExchangeBlocks_SwapWithRandom(activity);
-            PairedTown_PairOwn(activity);
+            PairedTown_PairServed(activity);
             activity->state = 1;
             return;
         case 1:

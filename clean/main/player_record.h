@@ -173,7 +173,7 @@ void PlayerRecord_SetFace(u8 *record, u32 face);
 u32 PlayerRecord_Face(u8 *record);
 int PlayerRecord_Number(u8 *record);
 DesignCreator *PlayerRecord_Player(u8 *record);
-void PlayerRecord_NewPlayer(u8 *record, const void *name, int player_id, int byte_1c, const TownName *town, u8 face,
+void PlayerRecord_NewPlayer(u8 *record, const void *name, int player_id, int gender, const TownName *town, u8 face,
                             u8 head_kind, u8 hair_color, u8 sun_level, u8 flag0, int bells, const u16 *held_item);
 int PlayerRecord_HasPlayer(u8 *record);
 void PlayerRecord_Clear(u8 *record);

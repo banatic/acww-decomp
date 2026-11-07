@@ -374,7 +374,7 @@ int OutdoorVillagerWalks_Start5(OutdoorVillagerBehaviour *self, u8 *villager)
 {
     (void) self;
     OutdoorVillagerObject_ResetActEffects(villager);
-    Obj020d8c64_ClearLastMotionNumber(villager);
+    Obj020d8c64_ClearLastReaction(villager);
     if (VillagerSceneObject_HasWord644(villager) != 0) {
         SceneAction_RequestTalk(walks_action(villager), 1, 0);
         return 1;
@@ -426,7 +426,7 @@ int OutdoorVillagerWalks_Update1(OutdoorVillagerBehaviour *self, u8 *villager)
         OutdoorVillagerBehaviour_Start(self, villager, WALKS_DO_IN);
         return 1;
     }
-    if (PathWalker_Status(walks_walker(self)) != WALKS_WALKER_HOME && OutdoorVillagerWalks_TimeToGoHome(self, villager) != 0) {
+    if (PathWalker_Kind(walks_walker(self)) != WALKS_WALKER_HOME && OutdoorVillagerWalks_TimeToGoHome(self, villager) != 0) {
         PathWalker_Start(walks_walker(self), walks_position(villager), WALKS_WALKER_HOME, 1, villager);
         *walks_half(self, WALKS_STEP_TIME) = 0;
     }
@@ -943,7 +943,7 @@ CLEAN_AS(func_ov068_0226c63c, OutdoorVillagerWalks_StepAside)
 int OutdoorVillagerWalks_StepWalker(OutdoorVillagerBehaviour *self, Vec3 *point, u8 *villager)
 {
     if (walks_record(villager) != NULL && walks_flag_1(walks_record(villager)) &&
-        PathWalker_Status(walks_walker(self)) != WALKS_WALKER_HOME) {
+        PathWalker_Kind(walks_walker(self)) != WALKS_WALKER_HOME) {
         *walks_half(self, WALKS_WALK_TIME) = 0;
     }
     if (PathWalker_IsWalking(walks_walker(self)) == 0 || *walks_half(self, WALKS_WALK_TIME) == 0) {
@@ -1049,7 +1049,7 @@ CLEAN_AS(func_ov068_0226c820, OutdoorVillagerWalks_CrossesEvent)
  * of the centre of the tile in front of its house. */
 int OutdoorVillagerWalks_AtHome(OutdoorVillagerBehaviour *self, u8 *villager)
 {
-    if (PathWalker_IsWalking(walks_walker(self)) == 0 || PathWalker_Status(walks_walker(self)) != WALKS_WALKER_HOME) {
+    if (PathWalker_IsWalking(walks_walker(self)) == 0 || PathWalker_Kind(walks_walker(self)) != WALKS_WALKER_HOME) {
         return 0;
     }
     VillagerPlot *home = VillagerHome_Tile(walks_record(villager));
@@ -1115,7 +1115,7 @@ int OutdoorVillagerWalks_DrawWalkKind(OutdoorVillagerBehaviour *self)
     PathWalker *walker = walks_walker(self);
     int index = (int) MainRandom_Below(PathWalker_IsWalking(walker) != 0 ? 2 : 3);
     int kind = data_ov068_022767ac[index];
-    if (kind == PathWalker_Status(walker)) {
+    if (kind == PathWalker_Kind(walker)) {
         kind = data_ov068_022767ac[index + 1 < WALKS_WALKER_KINDS ? index + 1 : 0];
     }
     return kind;

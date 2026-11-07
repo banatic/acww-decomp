@@ -10,7 +10,7 @@ static void a_kind(DiffRng *rng, uint32_t args[4])
 
 static uint32_t day_window(const uint32_t args[4])
 {
-    return (uint32_t) (uintptr_t) Lookups_DayWindow(args[0]);
+    return (uint32_t) (uintptr_t) Lookups_NightWindow(args[0]);
 }
 
 /* A valid day of the year, often a sign's first or last day. */
@@ -75,12 +75,12 @@ static void an_item(DiffRng *rng, uint32_t args[4])
 
 static uint32_t kind_d_record(const uint32_t args[4])
 {
-    return (uint32_t) (uintptr_t) Lookups_KindDRecord((const ItemCode *) (uintptr_t) args[0]);
+    return (uint32_t) (uintptr_t) Lookups_SpecialNpcRecord((const ItemCode *) (uintptr_t) args[0]);
 }
 
 static uint32_t kind_d_first(const uint32_t args[4])
 {
-    return (uint32_t) Lookups_KindDFirst((const ItemCode *) (uintptr_t) args[0]);
+    return (uint32_t) Lookups_SpecialNpcSortKey((const ItemCode *) (uintptr_t) args[0]);
 }
 
 DIFF_CHECK(func_0208222c, "main", 0x0208222c | 1, 32, 0, a_kind, day_window)

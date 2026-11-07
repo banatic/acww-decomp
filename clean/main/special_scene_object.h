@@ -8,7 +8,7 @@
  *
  * Its vtable slots, beyond the base class's:
  * - 0x00 start, 0x04 init, 0x0c leave, 0x10 the deletion check, 0x40 and 0x44 destructors;
- * - 0x74 its name into a string; 0x78 its sort (Lookups_KindDFirst of its person);
+ * - 0x74 its name into a string; 0x78 its sort (Lookups_SpecialNpcSortKey of its person);
  * - 0x7c, 0x80, 0x84: the sound of an action's start: played unless the field is the rooms'
  *   (data_020e54a8 1) and it has played already; noted as played; the sound, 0xc8 plus the
  *   person's index;

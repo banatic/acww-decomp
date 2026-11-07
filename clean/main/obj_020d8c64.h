@@ -10,12 +10,13 @@
 void *Obj020d8c64_Destruct(void *object);
 void *Obj020d8c64_DestructDelete(void *object);
 
-/* The motion number kept at 0x63e (obj_020d8c64.c): a number 1 to 59 the object's motion (its
- * member at 0x564) shows in its byte 0xa9, taken once while the object talks alone. */
-int Obj020d8c64_NoMotionNumber(void *object);
-int Obj020d8c64_TakeNewMotionNumber(void *object);
-s16 Obj020d8c64_LastMotionNumber(s16 *object);
-void Obj020d8c64_SetLastMotionNumber(void *object, u16 number);
-void Obj020d8c64_ClearLastMotionNumber(void *object);
+/* The reaction kept at 0x63e (obj_020d8c64.c): an act number 1 to 59 the object's motion (its
+ * member at 0x564) shows, which the current player does not have yet (reaction_slots.h), taken
+ * once while the object talks alone. */
+int Obj020d8c64_NoReaction(void *object);
+int Obj020d8c64_TakeNewReaction(void *object);
+s16 Obj020d8c64_LastReaction(s16 *object);
+void Obj020d8c64_SetLastReaction(void *object, u16 number);
+void Obj020d8c64_ClearLastReaction(void *object);
 
 #endif

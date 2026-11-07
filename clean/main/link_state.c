@@ -54,15 +54,6 @@ extern void __register_global_object(void *object, void *destruct, void *record)
 #define HANDLER_STATUS_BYTE 0xc
 #define HANDLER_LINK_STATUS 1
 
-/* Link statuses (func_020a6170): 0-3 a request of that kind; then the request's outcome. */
-enum {
-    STATUS_REQUEST_LAST = 3,
-    STATUS_SERVED = 4,
-    STATUS_ACCEPTED = 5,
-    STATUS_REFUSED = 6,
-    STATUS_TOLD = 7,
-};
-
 enum {
     KIND_JOIN = 0,
     KIND_LEAVE = 1,
@@ -455,7 +446,7 @@ CLEAN_AS(func_020a5c30, LinkState_SetServedSlot)
 /* A status that lets a request be served: a request (0-3) or told (7). */
 static int status_is_quiet(int status)
 {
-    return (unsigned int) status <= STATUS_REQUEST_LAST || status == STATUS_TOLD;
+    return (unsigned int) status <= LINK_STATUS_REQUEST_LAST || status == LINK_STATUS_IDLE;
 }
 
 static int scene_is_linked(int scene)
@@ -489,7 +480,7 @@ static void tell_served(LinkState *state, int served, int status)
         LinkState_SetStatus(state, served, status);
     } else {
         send_link_status(session, status, served);
-        LinkState_SetStatus(state, served, STATUS_TOLD);
+        LinkState_SetStatus(state, served, LINK_STATUS_IDLE);
     }
 }
 
@@ -521,7 +512,7 @@ void LinkState_HostStep(LinkState *state)
     for (unsigned int slot = 0; slot < LINK_STATE_SLOTS; slot++) {
         unsigned int request = (unsigned int) LinkState_Status(state, (int) slot);
         int ok;
-        if (request > STATUS_REQUEST_LAST) {
+        if (request > LINK_STATUS_REQUEST_LAST) {
             continue;
         }
         ok = 1;
@@ -544,7 +535,7 @@ void LinkState_HostStep(LinkState *state)
             LinkState_SetHostPhase(state, LINK_STATE_HOST_ASK);
             LinkState_SetChosen(state, (int) slot);
             LinkState_SetKind(state, request);
-            LinkState_SetStatus(state, (int) slot, STATUS_SERVED);
+            LinkState_SetStatus(state, (int) slot, LINK_STATUS_IN_PROGRESS);
         } else {
             LinkState_RefuseRequest(state, (int) slot, request == KIND_JOIN);
         }
@@ -594,7 +585,7 @@ void LinkState_HostStep(LinkState *state)
                         give_answer(state, session, slot, LINK_STATE_ANSWER_GO);
                     }
                 }
-                tell_served(state, served, STATUS_ACCEPTED);
+                tell_served(state, served, LINK_STATUS_ACCEPTED);
                 if (LinkState_Kind(state) == KIND_JOIN) {
                     LinkState_GlobalSetByteC4(0);
                 }
@@ -626,7 +617,7 @@ void LinkState_HostStep(LinkState *state)
     if (LinkState_HostPhase(state) == LINK_STATE_HOST_CANCEL) {
         served = LinkState_Chosen(state);
         if (others_answered(state, data_020ccf94, served, LINK_STATE_ANSWER_DONE)) {
-            tell_served(state, served, STATUS_REFUSED);
+            tell_served(state, served, LINK_STATUS_REFUSED);
             if (LinkState_Kind(state) == KIND_JOIN) {
                 Wfc_AllowNewClients();
             }
@@ -660,12 +651,12 @@ extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(v
 void LinkState_RefuseRequest(LinkState *state, int slot, int direct)
 {
     if (direct) {
-        LinkState_SetStatus(state, slot, STATUS_REFUSED);
+        LinkState_SetStatus(state, slot, LINK_STATUS_REFUSED);
     } else if (slot == HOST_SLOT) {
-        LinkState_SetStatus(state, HOST_SLOT, STATUS_REFUSED);
+        LinkState_SetStatus(state, HOST_SLOT, LINK_STATUS_REFUSED);
     } else {
-        send_link_status(data_020ccf94, STATUS_REFUSED, slot);
-        LinkState_SetStatus(state, slot, STATUS_TOLD);
+        send_link_status(data_020ccf94, LINK_STATUS_REFUSED, slot);
+        LinkState_SetStatus(state, slot, LINK_STATUS_IDLE);
     }
 }
 CLEAN_AS(func_020a6104, LinkState_RefuseRequest)
@@ -674,7 +665,7 @@ CLEAN_AS(func_020a6104, LinkState_RefuseRequest)
 void LinkState_ResetStatuses(LinkState *state)
 {
     for (int slot = 0; slot < LINK_STATE_SLOTS; slot++) {
-        state->status[slot] = STATUS_TOLD;
+        state->status[slot] = LINK_STATUS_IDLE;
     }
 }
 CLEAN_AS(func_020a6160, LinkState_ResetStatuses)
@@ -738,7 +729,7 @@ void LinkState_ForgetSlot(LinkState *state, int slot)
     LinkState_ResetAnswer(state, slot);
     LinkScene_SetAcked(state, slot, 0);
     if (slot != HOST_SLOT) {
-        LinkState_SetStatus(state, slot, STATUS_TOLD);
+        LinkState_SetStatus(state, slot, LINK_STATUS_IDLE);
     }
     if (slot == LinkScene_Successor(state)) {
         LinkScene_SetSuccessor(state, LINK_STATE_SLOTS);

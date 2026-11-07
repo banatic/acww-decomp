@@ -514,7 +514,8 @@ void GroupParams_LetterToPockets(void)
 }
 CLEAN_AS(func_0206f910, GroupParams_LetterToPockets)
 
-/* func_0206f92c: the letter made the current player's dated letter, marked written, and dated
+/* func_0206f92c: the letter made the current player's dated letter, advanced from written to
+ * received (Letter_AdvanceWritten), and dated
  * with the day, month and year of the kept date (data_021cfc98) at hour 0. The date is first
  * set to day 1 of month 1 of year 0, then given the kept day, month and year. */
 void GroupParams_LetterToDated(void)

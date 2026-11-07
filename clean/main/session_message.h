@@ -39,8 +39,8 @@ void SessionMessage_SetLinkWord74(int size, int kind, u8 scene, u32 slot);      
 void SessionMessage_ReceiveBundle15(int size, int kind, u8 scene, u32 slot);             /* 15 */
 void SessionMessage_ReceiveBundle16(int size, int kind, u8 scene, u32 slot);             /* 16 */
 void SessionMessage_SetLinkFlag7C(int size, int kind, u8 scene, u32 slot);               /* 17 */
-void SessionMessage_PlaceTownItems(u32 size, int kind, u8 scene, u32 slot);              /* 18 */
-void SessionMessage_RelayTownItems(u32 size, int kind, u8 scene, u32 slot);              /* 19 */
+void SessionMessage_PlaceMapItems(u32 size, int kind, u8 scene, u32 slot);               /* 18 */
+void SessionMessage_RelayMapItems(u32 size, int kind, u8 scene, u32 slot);               /* 19 */
 void SessionMessage_Handle20(int size, int kind, u8 scene, u32 slot);                    /* 20 */
 void SessionMessage_ReceiveDesign(int size, int kind, u8 scene, u32 slot);               /* 21 */
 void SessionMessage_ReceivePlayerMessage(int size, int kind, u8 scene, u32 slot);        /* 22 */

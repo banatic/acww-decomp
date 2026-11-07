@@ -20,14 +20,15 @@
 
 /* The ModelLoaderTask.state of a task that is queued. */
 #define HELD_ITEM_TASK_QUEUED 1
-/* The model kinds (func_0205f64c): no model; a model that also plays a texture SRT animation. */
-#define HELD_ITEM_NO_MODEL 0x2b
+/* The joint animations (HeldItemPool_JointAnimNumber): none; one whose model also plays a
+ * texture SRT animation. */
+#define HELD_ITEM_NO_JOINT_ANIM 0x2b
 #define HELD_ITEM_TEXTURE_ANIMATED 0x27
 /* The items made from a design. */
 #define HELD_ITEM_DESIGN_FIRST 0x13a0
 #define HELD_ITEM_DESIGN_LAST 0x13a7
-/* The fishing rods (their line takes kind 0 or 1) and the slingshots (their band takes kind 2);
- * other items' lines take kind 3. */
+/* The fishing rods (their float takes kind 0 or 1) and the slingshots (their pellet takes kind
+ * 2); other items' floats take kind 3. */
 #define HELD_ITEM_ROD 0x1374
 #define HELD_ITEM_GOLDEN_ROD 0x1375
 #define HELD_ITEM_SLINGSHOT 0x137a
@@ -43,12 +44,9 @@
 /* The animation action that starts texture SRT animation 1, and the line states the action
  * gives (HeldItem_Act). */
 #define HELD_ITEM_ACTION_TEXTURE_ANIM 0x28
-/* The line states in which its position is set again after the item is drawn. */
-#define HELD_ITEM_LINE_STATE_7 7
-#define HELD_ITEM_LINE_STATE_8 8
 
 static_assert(offsetof(HeldItemObject, anim) == 0x08, "HeldItemObject.anim");
-static_assert(offsetof(HeldItemObject, line) == 0x28, "HeldItemObject.line");
+static_assert(offsetof(HeldItemObject, fishing_float) == 0x28, "HeldItemObject.fishing_float");
 static_assert(offsetof(AnimatedModel, frames) == 0x9c, "AnimatedModel.frames");
 
 extern u8 data_021ca16c[];       /* the held items' pool */
@@ -71,12 +69,13 @@ static int held_item_is(ItemCode *item, ItemCode code)
     return *item == code;
 }
 
-/* func_0205e8d8: whether the line's state is 4 or 5. */
-int HeldItem_LineState4Or5(HeldItemObject *held)
+/* func_0205e8d8: whether the fishing float is in the water (FishingFloat_IsInWater: floating
+ * or sinking). */
+int HeldItem_FloatInWater(HeldItemObject *held)
 {
-    return FishingFloat_IsInWater((FishingFloat *) &held->line);
+    return FishingFloat_IsInWater((FishingFloat *) &held->fishing_float);
 }
-CLEAN_AS(func_0205e8d8, HeldItem_LineState4Or5)
+CLEAN_AS(func_0205e8d8, HeldItem_FloatInWater)
 
 /* func_0205e8e4: the model of the item's entry, as an address. */
 int HeldItem_Model(const unsigned char *held)
@@ -104,8 +103,8 @@ void HeldItem_JointMatrix(Mtx43 *out, const u8 *held, u32 joint)
 CLEAN_AS(func_0205e8f8, HeldItem_JointMatrix)
 
 /* func_0205e954: with an item, its model drawn at `matrix` with the item's scale on all three
- * axes; the line then follows the model's joint (HELD_ITEM_ROD_JOINT for the rods, else 0),
- * and in states 7 and 8 is put at that joint's position on the curved ground. */
+ * axes; the fishing float then follows the model's joint (HELD_ITEM_ROD_JOINT for the rods,
+ * else 0), and while reeled in (FISHING_FLOAT_REEL, _REEL_HIGH) is put at that joint's position on the curved ground. */
 void HeldItem_Draw(HeldItemObject *held, const Mtx43 *matrix)
 {
     int index = held->index;
@@ -124,13 +123,13 @@ void HeldItem_Draw(HeldItemObject *held, const Mtx43 *matrix)
     } else {
         HeldItem_JointMatrix(&joint, &held->index, 0);
     }
-    FishingFloat_Draw((FishingFloat *) &held->line, &joint, &scale);
+    FishingFloat_Draw((FishingFloat *) &held->fishing_float, &joint, &scale);
     Vec3 position = {joint.m[3][0], joint.m[3][1], joint.m[3][2]};
     Vec3 on_ground;
     Globe_Unbend(&on_ground, &position);
-    if (held->line.state == HELD_ITEM_LINE_STATE_7 || held->line.state == HELD_ITEM_LINE_STATE_8) {
+    if (held->fishing_float.state == FISHING_FLOAT_REEL || held->fishing_float.state == FISHING_FLOAT_REEL_HIGH) {
         Vec3 at = on_ground;
-        FishingFloat_SetTarget((FishingFloat *) &held->line, &at);
+        FishingFloat_SetTarget((FishingFloat *) &held->fishing_float, &at);
     }
 }
 CLEAN_AS(func_0205e954, HeldItem_Draw)
@@ -143,8 +142,8 @@ void HeldItem_Update(HeldItemObject *held)
     int index = held->index;
     if (*HeldItemPool_Code((HeldItemPool *) (void *) data_021ca16c, index) != ITEM_CODE_NONE) {
         HeldItem_PollUpload(data_021ca16c, index);
-        int kind = HeldItemPool_ModelKind(HeldItemPool_Code((HeldItemPool *) (void *) data_021ca16c, index));
-        if (kind != HELD_ITEM_NO_MODEL) {
+        int kind = HeldItemPool_JointAnimNumber(HeldItemPool_Code((HeldItemPool *) (void *) data_021ca16c, index));
+        if (kind != HELD_ITEM_NO_JOINT_ANIM) {
             AnimatedModel_Update(
                 (AnimatedModel *) (uintptr_t) HeldItemPool_Model((HeldItemPool *) (void *) data_021ca16c, index));
             if (kind == HELD_ITEM_TEXTURE_ANIMATED) {
@@ -153,7 +152,7 @@ void HeldItem_Update(HeldItemObject *held)
             }
         }
     }
-    FishingFloat_Update((FishingFloat *) &held->line);
+    FishingFloat_Update((FishingFloat *) &held->fishing_float);
 }
 CLEAN_AS(func_0205ea60, HeldItem_Update)
 
@@ -169,7 +168,7 @@ CLEAN_AS(func_0205eac4, HeldItem_SetAnimSpeed)
  * 0x19 and 0x1b: 7, 0x1a: 8), and HELD_ITEM_ACTION_TEXTURE_ANIM starts texture animation 1. */
 void HeldItem_Act(u8 *held, int action, int blend, int flags)
 {
-    HeldItemLine *line = (HeldItemLine *) (void *) (held + offsetof(HeldItemObject, line));
+    HeldItemFloat *line = (HeldItemFloat *) (void *) (held + offsetof(HeldItemObject, fishing_float));
     HeldItemPool_PlayJointAnim((HeldItemPool *) (void *) data_021ca16c, held[0], action, blend, flags);
     switch (action) {
         case 0x13:
@@ -214,9 +213,10 @@ CLEAN_AS(func_0205eb8c, HeldItem_Take)
  * no item; the item then names no entry. */
 void HeldItem_Clear(HeldItemObject *held)
 {
-    FishingFloat_Release((FishingFloat *) &held->line);
+    FishingFloat_Release((FishingFloat *) &held->fishing_float);
     int index = held->index;
-    if (HeldItemPool_ModelKind(HeldItemPool_Code((HeldItemPool *) (void *) data_021ca16c, index)) != HELD_ITEM_NO_MODEL) {
+    if (HeldItemPool_JointAnimNumber(HeldItemPool_Code((HeldItemPool *) (void *) data_021ca16c, index)) !=
+        HELD_ITEM_NO_JOINT_ANIM) {
         AnimatedModel_DetachJoints(
             (AnimatedModel *) (uintptr_t) HeldItemPool_Model((HeldItemPool *) (void *) data_021ca16c, index));
         held->anim.anim = NULL;
@@ -239,8 +239,8 @@ CLEAN_AS(func_0205ebb4, HeldItem_Clear)
  * becomes `*item`. An item without a model number holds nothing. Otherwise its model file is
  * read; for a design item, unless `plain`, the design (from `record`) is loaded into the
  * clothes' scratch slot and its texture "cloth" (image, then palette) copied over the model's
- * "myD". The texture is placed and the model takes the file; with a model kind other than
- * HELD_ITEM_NO_MODEL its joint animation and results are allocated from the entry's heap, a
+ * "myD". The texture is placed and the model takes the file; with a joint animation other
+ * than HELD_ITEM_NO_JOINT_ANIM its joint animation and results are allocated from the entry's heap, a
  * texture-animated item gets its texture animation (buffer, heap, file 0, attached to the
  * model, looping at speed 1.0), the rest of the heap becomes the joint animation's buffer, the
  * model plays joint animation `kind`, is attached, and unless `plain` gets the node callbacks
@@ -271,8 +271,8 @@ void HeldItem_Setup(HeldItemObject *held, int index, void *owner, ItemCode *item
             HeldItemPool_PlaceTexture((HeldItemPool *) (void *) pool, index);
             AnimatedModel *model = (AnimatedModel *) (uintptr_t) (HeldItemPool_Model((HeldItemPool *) (void *) pool, index));
             ModelObject_UseFileModel(&model->object, (u8 *) (uintptr_t) file);
-            int kind = HeldItemPool_ModelKind(item);
-            if (kind != HELD_ITEM_NO_MODEL) {
+            int kind = HeldItemPool_JointAnimNumber(item);
+            if (kind != HELD_ITEM_NO_JOINT_ANIM) {
                 AnimatedModel_LoadAnim(model, (Heap *) (uintptr_t) HeldItemPool_Heap((HeldItemPool *) (void *) pool, index));
                 ModelObject_AllocJointResults(&model->object,
                                               (Heap *) (uintptr_t) HeldItemPool_Heap((HeldItemPool *) (void *) pool, index));
@@ -325,9 +325,9 @@ void HeldItem_Setup(HeldItemObject *held, int index, void *owner, ItemCode *item
     } else {
         line_kind = 3;
     }
-    FishingFloat_Setup((FishingFloat *) &held->line, index, owner, line_kind);
+    FishingFloat_Setup((FishingFloat *) &held->fishing_float, index, owner, line_kind);
     if (held_item_is(item, HELD_ITEM_ROD) || held_item_is(item, HELD_ITEM_GOLDEN_ROD)) {
-        FishingFloat_SetState((FishingFloat *) &held->line, 1);
+        FishingFloat_SetState((FishingFloat *) &held->fishing_float, 1);
     }
 }
 CLEAN_AS(func_0205ec50, HeldItem_Setup)
@@ -366,7 +366,7 @@ CLEAN_AS(func_0205ef5c, HeldItem_BeforeNode)
  * item. */
 HeldItemObject *HeldItem_Destruct(HeldItemObject *held)
 {
-    FishingFloat_Destruct(&held->line);
+    FishingFloat_Destruct(&held->fishing_float);
     HeldItemAnim_Destruct(&held->anim);
     return held;
 }
@@ -377,7 +377,7 @@ CLEAN_AS(func_0205ef90, HeldItem_Destruct)
 HeldItemObject *HeldItem_Construct(HeldItemObject *held)
 {
     HeldItemAnim_Construct(&held->anim);
-    FishingFloat_Construct((FishingFloat *) &held->line);
+    FishingFloat_Construct((FishingFloat *) &held->fishing_float);
     held->index = HELD_ITEM_NONE;
     held->scale = FX32_ONE;
     return held;

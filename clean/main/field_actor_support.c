@@ -559,8 +559,9 @@ int FieldActor_StateFlagA20(FieldActor *actor, int state)
 CLEAN_AS(func_0200f05c, FieldActor_StateFlagA20)
 
 /* func_0200f098: while flag 0x15 is set the head turns (FieldActor_TurnAngle, by 0x400) towards the
- * pitch and yaw at 0x460 and 0x462; once all four are 0 the flag is cleared. */
-void FieldActor_TurnHeadBack(FieldActor *actor)
+ * look's pitch and yaw at 0x460 and 0x462 (PlayerActorOps_SetLook); once all four are 0 the flag
+ * is cleared. */
+void FieldActor_TurnHeadToLook(FieldActor *actor)
 {
     if (!FieldActor_TestFlag(actor, 0x15)) {
         return;
@@ -572,7 +573,7 @@ void FieldActor_TurnHeadBack(FieldActor *actor)
         FieldActor_ClearFlag(actor, 0x15);
     }
 }
-CLEAN_AS(func_0200f098, FieldActor_TurnHeadBack)
+CLEAN_AS(func_0200f098, FieldActor_TurnHeadToLook)
 
 /* ---- Messages to the session */
 
@@ -638,9 +639,9 @@ int FieldActor_JointBPoint(FieldActor *actor, Vec3 *out)
 }
 CLEAN_AS(func_0200f1ec, FieldActor_JointBPoint)
 
-/* func_0200f234: the aim mode (FieldActor.control_mode) from the setting func_0208ffac and
+/* func_0200f234: the control mode (FieldActor.control_mode) from the setting func_0208ffac and
  * func_0208ff98 read: 1, 2, else 0. */
-void FieldActor_TakeAimMode(FieldActor *actor)
+void FieldActor_TakeControlMode(FieldActor *actor)
 {
     if (ControlModeIcon_IsButtons()) {
         actor->control_mode = 1;
@@ -650,7 +651,7 @@ void FieldActor_TakeAimMode(FieldActor *actor)
         actor->control_mode = 0;
     }
 }
-CLEAN_AS(func_0200f234, FieldActor_TakeAimMode)
+CLEAN_AS(func_0200f234, FieldActor_TakeControlMode)
 
 /* ---- Flags (FieldActor.flags) */
 

@@ -226,14 +226,14 @@ void VillagerTalk_Line2bdb4(VillagerTalk *talk, VillagerTalkLine *out)
 CLEAN_AS(func_0201e890, VillagerTalk_Line2bdb4)
 
 /* func_0201e898: a line by the clock and the hours of the villager's personality
- * (Lookups_DayWindow). On the 31st of a month before 23:00 the table data_021c2394; else,
+ * (Lookups_NightWindow). On the 31st of a month before 23:00 the table data_021c2394; else,
  * unless func_02020a5c says a line (then the player is only noted), on the 31st the table
  * data_021c23dc, and on other days data_021c23f4 before the end of the hours, then
  * data_021c240c, or data_021c2424 once the talk of the day was had; on other days than the
  * 31st the year (2000 + the clock's) also goes into slot 0. The table's line function writes
  * the line, then the player is noted and bit 6 of the memory set. The villager is the one of
  * the talk on entry. */
-void VillagerTalk_LineByDayWindow(VillagerTalk *talk, VillagerTalkLine *out)
+void VillagerTalk_LineByNightWindow(VillagerTalk *talk, VillagerTalkLine *out)
 {
     u8 *record = lines_record(talk);
     DateTime now = {0};
@@ -248,7 +248,7 @@ void VillagerTalk_LineByDayWindow(VillagerTalk *talk, VillagerTalkLine *out)
     if (now.day == 31) {
         VillagerTalkScene_SetLines(talk, now.hour < 23 ? data_021c2394 : data_021c23dc);
     } else {
-        const DayWindow *window = Lookups_DayWindow((u32) NpcId_Personality(TownVillager_NpcId(record)));
+        const NightWindow *window = Lookups_NightWindow((u32) NpcId_Personality(TownVillager_NpcId(record)));
         if (now.hour < window->end_hour || (now.hour == window->end_hour && now.minute < window->end_minute)) {
             VillagerTalkScene_SetLines(talk, data_021c23f4);
         } else if (!lines_talked_today(talk)) {
@@ -264,7 +264,7 @@ void VillagerTalk_LineByDayWindow(VillagerTalk *talk, VillagerTalkLine *out)
     }
     lines_note_and_mark(talk, record);
 }
-CLEAN_AS(func_0201e898, VillagerTalk_LineByDayWindow)
+CLEAN_AS(func_0201e898, VillagerTalk_LineByNightWindow)
 
 /* func_0201e9e0 */
 void VillagerTalk_OfferChoices1e14A(VillagerTalk *talk)

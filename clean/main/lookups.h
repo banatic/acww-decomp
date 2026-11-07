@@ -1,17 +1,18 @@
 /* Small table lookups the game keeps together: star signs by birthday, a window of the night
- * for each of six kinds, and records for the items of kind 0xd. */
+ * for each of six personalities, and records for the 38 special characters (person codes of
+ * kind 0xd, NPC_CODE_KIND_SPECIAL). */
 #ifndef CLEAN_MAIN_LOOKUPS_H
 #define CLEAN_MAIN_LOOKUPS_H
 
 #include "types.h"
 
 /* A time window, both ends excluded (NpcLookup_IsInNightWindow, func_020821d4, tests the clock against it). */
-typedef struct DayWindow {
+typedef struct NightWindow {
     u8 start_hour;
     u8 start_minute;
     u8 end_hour;
     u8 end_minute;
-} DayWindow;
+} NightWindow;
 
 /* A birthday as the game stores it: month first. */
 typedef struct MonthDay {
@@ -38,11 +39,11 @@ enum StarSign {
 /* An item code: the kind in the top four bits, an index in the rest. */
 typedef u16 ItemCode;
 
-const DayWindow *Lookups_DayWindow(u32 kind);
+const NightWindow *Lookups_NightWindow(u32 personality);
 u32 Lookups_StarSignOf(const MonthDay *birthday);
 u32 Lookups_StarSign(u32 month, u32 day);
 u8 Lookups_SlotIndex(const u8 *pair);
-const u8 *Lookups_KindDRecord(const ItemCode *item);
-int Lookups_KindDFirst(const ItemCode *item);
+const u8 *Lookups_SpecialNpcRecord(const ItemCode *item);
+int Lookups_SpecialNpcSortKey(const ItemCode *item);
 
 #endif

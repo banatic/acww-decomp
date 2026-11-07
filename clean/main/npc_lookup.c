@@ -36,7 +36,7 @@ extern const char data_020e19c8[]; /* "st_npc_name" */
  * QUIRK: both ends are excluded: at the very minute the window starts, it is not in it. */
 int NpcLookup_IsInNightWindow(int personality, const DateTime *when)
 {
-    const DayWindow *window = Lookups_DayWindow((u32) personality);
+    const NightWindow *window = Lookups_NightWindow((u32) personality);
     DateTime bound;
     memset(&bound, 0, sizeof(bound));
     bound.hour = window->start_hour;
@@ -98,7 +98,7 @@ int NpcLookup_SpeciesByte(const ItemCode *code)
     int index = NPC_CODE_INDEX(*code);
     switch (NPC_CODE_KIND(*code)) {
         case NPC_CODE_KIND_SPECIAL: {
-            const u8 *record = Lookups_KindDRecord(code);
+            const u8 *record = Lookups_SpecialNpcRecord(code);
             if (record != NULL) {
                 return record[NPC_SPECIAL_SPECIES];
             }
@@ -130,7 +130,7 @@ int NpcLookup_PersonalityKind(ItemCode *code)
             break;
         }
         case NPC_CODE_KIND_SPECIAL: {
-            const u8 *record = Lookups_KindDRecord(code);
+            const u8 *record = Lookups_SpecialNpcRecord(code);
             if (record != NULL) {
                 return record[NPC_SPECIAL_KIND];
             }

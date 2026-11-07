@@ -8,11 +8,11 @@
 
 /* The tiles NearSpot_Pick searches: rows from 5 tiles to +z of the position, starting 8 tiles
  * to the side, and columns from that side, from the position's row to 4 tiles to +z; each row
- * and column keeps at most NEAR_SPOT_ROWS x 16 candidates. */
+ * and column keeps at most NEAR_SPOT_BIT_WORDS x 16 candidates. */
 #define NEAR_SPOT_SIDE_TILES 8
 #define NEAR_SPOT_FIRST_ROW 5
 #define NEAR_SPOT_FIRST_COLUMN_END 4
-#define NEAR_SPOT_ROWS 4
+#define NEAR_SPOT_BIT_WORDS 4
 
 extern AcreMap *data_021c80bc; /* the map of the scene */
 
@@ -65,8 +65,8 @@ int NearSpot_Pick(NearSpot *spot, const Position *from, int side)
     int column_x = row_end_x;
     int column_end_z = from_z + NEAR_SPOT_FIRST_COLUMN_END;
     Vec3 centre = {0, 0, 0};
-    u16 row_bits[NEAR_SPOT_ROWS];
-    u16 column_bits[NEAR_SPOT_ROWS];
+    u16 row_bits[NEAR_SPOT_BIT_WORDS];
+    u16 column_bits[NEAR_SPOT_BIT_WORDS];
     int row_found = 0;
     int column_found = 0;
 
@@ -74,7 +74,7 @@ int NearSpot_Pick(NearSpot *spot, const Position *from, int side)
         if (row_z < high) {
             in_row.z = row_z;
             row_found =
-                NearSpot_PickInRange(&in_row.x, func_02087dd8, row_z, row_end_x, from_x, map, row_bits, NEAR_SPOT_ROWS);
+                NearSpot_PickInRange(&in_row.x, func_02087dd8, row_z, row_end_x, from_x, map, row_bits, NEAR_SPOT_BIT_WORDS);
             if (row_end_x > 0 && row_end_x < wide - 1) {
                 row_end_x += step;
             }
@@ -83,7 +83,7 @@ int NearSpot_Pick(NearSpot *spot, const Position *from, int side)
         if (column_x >= 0 && column_x < wide) {
             in_column.x = column_x;
             column_found = NearSpot_PickInRange(&in_column.z, func_02087dd0, column_x, from_z, column_end_z, map, column_bits,
-                                                NEAR_SPOT_ROWS);
+                                                NEAR_SPOT_BIT_WORDS);
             column_x += step;
             if (column_end_z < high - 1) {
                 column_end_z++;
@@ -117,29 +117,29 @@ int NearSpot_Pick(NearSpot *spot, const Position *from, int side)
 CLEAN_AS(func_02087b8c, NearSpot_Pick)
 
 /* func_02087d00: of the tiles `first` to `last` (either way round) of a row or column, the
- * ones `test` accepts noted in `bits` (`rows` halfwords of 16 bits, cleared first; the search
+ * ones `test` accepts noted in `bits` (`words` halfwords of 16 bits, cleared first; the search
  * stops when they are full), and one of them picked at random into `*out`. Whether one was. */
-int NearSpot_PickInRange(int *out, NearSpotTest *test, int fixed, int first, int last, AcreMap *map, u16 *bits, int rows)
+int NearSpot_PickInRange(int *out, NearSpotTest *test, int fixed, int first, int last, AcreMap *map, u16 *bits, int words)
 {
     int count = 0;
-    int row = 0;
+    int word = 0;
     int bit = 0;
     if (first > last) {
         int swap = first;
         first = last;
         last = swap;
     }
-    MI_CpuFill8(bits, 0, (u32) (rows * 2));
+    MI_CpuFill8(bits, 0, (u32) (words * 2));
     for (int i = first; i <= last; i++) {
         if (test(fixed, i, map) != 0) {
-            bits[row] = (u16) (bits[row] | (1u << bit));
+            bits[word] = (u16) (bits[word] | (1u << bit));
             count++;
         }
         if (++bit >= 16) {
             bit = 0;
-            row++;
+            word++;
         }
-        if (row >= rows) {
+        if (word >= words) {
             break;
         }
     }
@@ -147,10 +147,10 @@ int NearSpot_PickInRange(int *out, NearSpotTest *test, int fixed, int first, int
         return 0;
     }
     int pick = (int) MainRandom_Below(count);
-    row = 0;
+    word = 0;
     bit = 0;
     for (int i = first; i <= last; i++) {
-        if (((bits[row] >> bit) & 1) != 0) {
+        if (((bits[word] >> bit) & 1) != 0) {
             if (pick == 0) {
                 *out = i;
                 return 1;
@@ -159,9 +159,9 @@ int NearSpot_PickInRange(int *out, NearSpotTest *test, int fixed, int first, int
         }
         if (++bit >= 16) {
             bit = 0;
-            row++;
+            word++;
         }
-        if (row >= rows) {
+        if (word >= words) {
             break;
         }
     }

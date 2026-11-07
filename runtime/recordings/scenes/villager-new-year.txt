@@ -2,8 +2,8 @@
 # is not in this repository). Booted on 1 January 2027 at 00:30 (town event 9, calendar event 0x13,
 # going on at once; fireworks over the town): as villager-talk.txt to 2600, then nothing to 4600.
 # From 4600 the player walks to the tile west of the villager at about (52.4, 63.4) (personality
-# ko), faces it and presses A every 30 frames: line table 11 (VillagerTalk_LineByDayWindow) on a
-# day other than the 31st, before the end of its personality's hours (Lookups_DayWindow):
+# ko), faces it and presses A every 30 frames: line table 11 (VillagerTalk_LineByNightWindow) on a
+# day other than the 31st, before the end of its personality's hours (Lookups_NightWindow):
 # row 4 of data_021c2394, the table data_021c23f4 (VillagerTalk_Line8b50Group14).
 0 - -
 900 START -

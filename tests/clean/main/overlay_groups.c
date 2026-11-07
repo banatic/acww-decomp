@@ -65,9 +65,9 @@ static void a_group(DiffRng *rng, uint32_t args[4])
         return 0;                                                                                                             \
     }
 
-GROUP_CALL_VOID(clear_in_use, OverlayGroups_ClearInUse)
-GROUP_CALL_VOID(set_in_use, OverlayGroups_SetInUse)
-GROUP_CALL(is_in_use, OverlayGroups_IsInUse)
+GROUP_CALL_VOID(clear_in_use, OverlayGroups_UnmarkRelease)
+GROUP_CALL_VOID(set_in_use, OverlayGroups_MarkForRelease)
+GROUP_CALL(is_in_use, OverlayGroups_IsMarkedForRelease)
 GROUP_CALL_VOID(clear_loaded, OverlayGroups_ClearLoaded)
 GROUP_CALL_VOID(set_loaded, OverlayGroups_SetLoaded)
 GROUP_CALL(is_loaded, OverlayGroups_IsLoaded)

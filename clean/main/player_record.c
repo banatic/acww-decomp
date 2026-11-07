@@ -959,10 +959,10 @@ CLEAN_AS(func_02099870, PlayerRecord_Player)
  * 0x3884 at 0x240e, the first clothes, nothing on its head nor as the accessory, the shirt 0x11fa
  * behind the menus (0x2410), a sun date of 1 January 2000, no birthday, a fresh savings account
  * and date of last play, and no byte for any villager. */
-void PlayerRecord_NewPlayer(u8 *record, const void *name, int player_id, int byte_1c, const TownName *town, u8 face,
+void PlayerRecord_NewPlayer(u8 *record, const void *name, int player_id, int gender, const TownName *town, u8 face,
                             u8 head_kind, u8 hair_color, u8 sun_level, u8 flag0, int bells, const u16 *held_item)
 {
-    PlayerId_Make(PlayerRecord_Player(record), name, (u16) player_id, (u8) byte_1c, (const TownName *) town);
+    PlayerId_Make(PlayerRecord_Player(record), name, (u16) player_id, (u8) gender, (const TownName *) town);
     PlayerRecord_SetFace(record, face);
     PlayerRecord_SetHeadKind(record, head_kind);
     PlayerRecord_SetHairColor(record, hair_color);

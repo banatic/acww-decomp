@@ -25,9 +25,9 @@
 #define HELD_ITEM_POOL_TEXTURE_4X4_SIZE 0
 #define HELD_ITEM_POOL_PALETTE_SIZE 80
 #define HELD_ITEM_POOL_ALIGN 4
-/* What the item tables give for an item outside them: no model (the model kind), the
+/* What the item tables give for an item outside them: no joint animation, the
  * holder's animation for none, and model 0x32. */
-#define HELD_ITEM_POOL_KIND_NONE 0x2b
+#define HELD_ITEM_POOL_NO_JOINT_ANIM 0x2b
 #define HELD_ITEM_POOL_ANIM_NONE 0x144
 #define HELD_ITEM_POOL_MODEL_NONE 0x32
 
@@ -48,7 +48,8 @@ extern Heap *data_021c9ad8;        /* the model files' heap (SceneHeaps_Create02
 extern NetSession *data_020ccf94;  /* the session */
 
 /* The tables of the items with a model, by their number (func_02062148) below
- * func_02062230: the model kind, the holder's animation and the model number. */
+ * func_02062230: the item model's joint animation, the holder's animation and the model
+ * number. */
 extern const u8 data_020cc900[];
 extern const u16 data_020cc940[];
 extern const u8 data_020cc8c0[];
@@ -468,17 +469,17 @@ int HeldItemPool_ModelFileSize(void)
 }
 CLEAN_AS(func_0205f644, HeldItemPool_ModelFileSize)
 
-/* func_0205f64c: the item's model kind (HELD_ITEM_POOL_KIND_NONE for an item without a
- * model). */
-int HeldItemPool_ModelKind(ItemCode *item)
+/* func_0205f64c: the joint animation the item's model plays (HELD_ITEM_POOL_NO_JOINT_ANIM
+ * for none and for an item without a model). */
+int HeldItemPool_JointAnimNumber(ItemCode *item)
 {
     unsigned int number = ItemInfo_HeldModelNumber(item);
     if (number < ItemInfo_HeldModelCount()) {
         return data_020cc900[number];
     }
-    return HELD_ITEM_POOL_KIND_NONE;
+    return HELD_ITEM_POOL_NO_JOINT_ANIM;
 }
-CLEAN_AS(func_0205f64c, HeldItemPool_ModelKind)
+CLEAN_AS(func_0205f64c, HeldItemPool_JointAnimNumber)
 
 /* func_0205f670: the animation the holder plays with the item (HELD_ITEM_POOL_ANIM_NONE for
  * none). */

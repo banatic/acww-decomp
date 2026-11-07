@@ -77,7 +77,7 @@ int HeldItemPool_Texture4x4Size(void);
 int HeldItemPool_TextureSize(void);
 int HeldItemPool_HeapSize(void);
 int HeldItemPool_ModelFileSize(void);
-int HeldItemPool_ModelKind(ItemCode *item);
+int HeldItemPool_JointAnimNumber(ItemCode *item);
 unsigned int HeldItemPool_ItemAnim(ItemCode *item);
 unsigned char HeldItemPool_ModelNumber(ItemCode *item);
 char *HeldItemPool_ModelPath(unsigned int model);

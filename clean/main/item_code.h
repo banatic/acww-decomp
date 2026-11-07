@@ -10,8 +10,8 @@
 /* The code of "nothing": an empty pocket, an empty tile, a free actor table entry. */
 #define ITEM_CODE_NONE 0xfff1
 
-/* Kind 1 codes 0x1000-0x10ff: 64 items, each in a pile of 1 to 4 (the low two bits are the
- * count less one). */
+/* Kind 1 codes 0x1000-0x10ff: the stationery, 64 kinds of paper, each in a pile of 1 to 4
+ * sheets (the low two bits are the count less one). */
 #define ITEM_CODE_PILE_FIRST 0x1000
 #define ITEM_CODE_PILE_LAST 0x10ff
 #define ITEM_CODE_PILE_ITEMS 64

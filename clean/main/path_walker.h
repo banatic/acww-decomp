@@ -54,7 +54,7 @@ typedef struct PathWalkerTable {
 typedef struct PathWalker {
     u32 state;                                   /* 0x00: 0 or 1, the row of steps */
     u32 phase;                                   /* 0x04: 0 to 2 */
-    u32 status;                                  /* 0x08 */
+    u32 kind;                                    /* 0x08: the walk kind (PATH_WALKER_KINDS for none) */
     s32 goal_x;                                  /* 0x0c: the goal tile */
     s32 goal_z;                                  /* 0x10 */
     s32 goal_acre_x;                             /* 0x14: the goal acre */
@@ -104,7 +104,7 @@ void PathWalker_ChooseRoute(PathWalker *self, const Vec3 *position);
 int PathWalker_Opposite(int self, int direction);
 void PathWalker_PickInAcre(PathWalkerTile *out, PathWalker *self, const s32 *acre, PathWalkerMap *map);
 int PathWalker_Step(PathWalker *self, Vec3 *position);
-int PathWalker_Status(const PathWalker *self);
+int PathWalker_Kind(const PathWalker *self);
 PathWalkerJunction PathWalker_PopTo(PathWalker *self, const PathWalkerTile *tile);
 int PathWalker_FindJunction(PathWalker *self, const PathWalkerTile *tile);
 void PathWalker_PushJunction(PathWalker *self, int tried, int from, const PathWalkerTile *tile);

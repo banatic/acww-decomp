@@ -4,30 +4,30 @@
 
 #include <assert.h>
 
-/* For each kind, the night hours 1:30-8:00, 2:00-6:30, 4:30-10:00, 1:00-5:00, 2:30-7:00 and
- * 3:30-9:00. The kind is the byte at 14 in the records func_020036e8 reads. */
-extern const DayWindow data_020cd4ac[6];
+/* For each personality, the night hours 1:30-8:00, 2:00-6:30, 4:30-10:00, 1:00-5:00, 2:30-7:00
+ * and 3:30-9:00. The personality is the byte at 14 in the records func_020036e8 reads. */
+extern const NightWindow data_020cd4ac[6];
 /* The last day of each star sign, in enum StarSign order. */
 extern const MonthDay data_020cd494[12];
 /* Where each of the five furniture taste attributes (item_attributes.h) starts in the 32 lines
  * of st_furniture_taste (0, 2, 14, 16, 20). */
 extern const u8 data_020cd424[5];
-/* Three bytes for each of the 38 items of kind 0xd. */
+/* Three bytes for each of the 38 special characters (person codes of kind 0xd). */
 extern const u8 data_020cd550[38][3];
 
 #define ITEM_KIND(code) ((code) >> 12)
 #define ITEM_INDEX(code) ((code) & 0xfff)
-#define ITEM_KIND_D 0xd
+#define LOOKUPS_KIND_SPECIAL_NPC 0xd
 
-/* func_0208222c. QUIRK: a kind past the table reads the first entry. */
-const DayWindow *Lookups_DayWindow(u32 kind)
+/* func_0208222c. QUIRK: a personality past the table reads the first entry. */
+const NightWindow *Lookups_NightWindow(u32 personality)
 {
-    if (kind >= 6) {
-        kind = 0;
+    if (personality >= 6) {
+        personality = 0;
     }
-    return &data_020cd4ac[kind];
+    return &data_020cd4ac[personality];
 }
-CLEAN_AS(func_0208222c, Lookups_DayWindow)
+CLEAN_AS(func_0208222c, Lookups_NightWindow)
 
 /* func_02082264 */
 u32 Lookups_StarSignOf(const MonthDay *birthday)
@@ -72,27 +72,28 @@ u8 Lookups_SlotIndex(const u8 *pair)
 }
 CLEAN_AS(func_020822b0, Lookups_SlotIndex)
 
-/* func_020824d0: the record of an item of kind 0xd, or null for other items and indexes past
- * the table. */
-const u8 *Lookups_KindDRecord(const ItemCode *item)
+/* func_020824d0: the record of a special character (a person code of kind 0xd), or null for
+ * other codes and indexes past the table. */
+const u8 *Lookups_SpecialNpcRecord(const ItemCode *item)
 {
     u32 index = ITEM_INDEX(*item);
-    if (ITEM_KIND(*item) != ITEM_KIND_D || index >= 38) {
+    if (ITEM_KIND(*item) != LOOKUPS_KIND_SPECIAL_NPC || index >= 38) {
         return NULL;
     }
     return data_020cd550[index];
 }
-CLEAN_AS(func_020824d0, Lookups_KindDRecord)
+CLEAN_AS(func_020824d0, Lookups_SpecialNpcRecord)
 
-/* func_02082374: the first byte of the item's record, signed, or 0 when it has none. */
-int Lookups_KindDFirst(const ItemCode *item)
+/* func_02082374: the first byte of the special character's record, signed (its sort key,
+ * special_scene_object.h), or 0 when it has none. */
+int Lookups_SpecialNpcSortKey(const ItemCode *item)
 {
-    if (ITEM_KIND(*item) != ITEM_KIND_D) {
+    if (ITEM_KIND(*item) != LOOKUPS_KIND_SPECIAL_NPC) {
         return 0;
     }
-    const u8 *record = Lookups_KindDRecord(item);
+    const u8 *record = Lookups_SpecialNpcRecord(item);
     return record != NULL ? (s8) record[0] : 0;
 }
-CLEAN_AS(func_02082374, Lookups_KindDFirst)
+CLEAN_AS(func_02082374, Lookups_SpecialNpcSortKey)
 
-static_assert(sizeof(DayWindow) == 4 && sizeof(MonthDay) == 2, "table layouts");
+static_assert(sizeof(NightWindow) == 4 && sizeof(MonthDay) == 2, "table layouts");

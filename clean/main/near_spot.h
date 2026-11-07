@@ -28,7 +28,7 @@ typedef struct NearSpot {
 typedef int NearSpotTest(int fixed, int i, AcreMap *map);
 
 int NearSpot_Pick(NearSpot *spot, const Position *from, int side);
-int NearSpot_PickInRange(int *out, NearSpotTest *test, int fixed, int first, int last, AcreMap *map, u16 *bits, int rows);
+int NearSpot_PickInRange(int *out, NearSpotTest *test, int fixed, int first, int last, AcreMap *map, u16 *bits, int words);
 int NearSpot_ColumnTileSuits(int x, int z, AcreMap *map);
 int NearSpot_RowTileSuits(int z, int x, AcreMap *map);
 int NearSpot_Facing(const NearSpot *spot);

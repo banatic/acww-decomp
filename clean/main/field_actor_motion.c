@@ -28,7 +28,7 @@ static_assert(offsetof(FieldActor, position) == 0x5c, "position");
 static_assert(offsetof(FieldActor, yaw) == 0x8e, "yaw");
 static_assert(offsetof(FieldActor, unk_140) == 0x140, "aim at a point ahead");
 static_assert(offsetof(FieldActor, aim_point) == 0x158, "aim point");
-static_assert(offsetof(FieldActor, control_mode) == 0x170, "aim mode");
+static_assert(offsetof(FieldActor, control_mode) == 0x170, "control mode");
 static_assert(offsetof(FieldActor, start_position) == 0x6f4, "start position");
 static_assert(offsetof(FieldActor, state) == 0x7f0, "state");
 
@@ -45,12 +45,13 @@ extern const fx32 data_020d72f8;
 
 /* An angle a tool reaches to either side of the yaw (60 degrees). */
 #define TOOL_REACH_ANGLE 0x2aaa
-/* The fastest walk (20.12), what is too slow to walk, and the limits against a wall ahead and on
- * the collider's flag 3. */
+/* The fastest walk (20.12), what is too slow to walk, and the limits with a body touched ahead
+ * (FieldBody_TouchedWith 8 and FieldBody_TouchedAhead) and with a wall ahead (the collider's
+ * COLLISION_TOUCH_1_AHEAD, 8). */
 #define WALK_SPEED_MAX 0x6e2
 #define WALK_SPEED_MIN 0x108
-#define WALK_SPEED_BLOCKED 0x245
-#define WALK_SPEED_COLLIDER_3 0x307
+#define WALK_SPEED_BODY_AHEAD 0x245
+#define WALK_SPEED_WALL_AHEAD 0x307
 /* The collider's and the contact body's size and height. */
 #define COLLIDER_SIZE 0xfd7
 #define CONTACT_HEIGHT 0x2800
@@ -133,7 +134,7 @@ CLEAN_AS(func_0201005c, FieldActor_InToolReach)
  * Nothing while func_0203e31c is set or with flag 0x13. On an act (FieldActor_Act), the object
  * picked (0x13c) goes to func_0203e0e0; then, with none picked, func_0203ef5c decides; with one,
  * func_0203ee34 or else the object's virtual function at 0x54. Otherwise the tool held is tried
- * (FieldActor_TryToolInScene), and in aim mode 2 with the byte at 0x140 set, the point 0.8
+ * (FieldActor_TryToolInScene), and in control mode 2 with the byte at 0x140 set, the point 0.8
  * ahead stands in for the aim point while tool 0 is tried on it. */
 int FieldActor_TryAct(FieldActor *actor)
 {
@@ -176,9 +177,9 @@ CLEAN_AS(func_02010538, FieldActor_TryAct)
 /* ---- Speed, lean and yaw */
 
 /* func_02010718: the walking speed the push gives: the push times WALK_SPEED_MAX, at most that
- * and 0 below WALK_SPEED_MIN; at most WALK_SPEED_BLOCKED when the contact body has a contact of
- * flag 8 that the yaw faces (func_02089cc0, func_0208a038), else at most WALK_SPEED_COLLIDER_3
- * with the collider's flag 3. */
+ * and 0 below WALK_SPEED_MIN; at most WALK_SPEED_BODY_AHEAD when the contact body has a contact of
+ * flag 8 that the yaw faces (FieldBody_TouchedWith, FieldBody_TouchedAhead), else at most
+ * WALK_SPEED_WALL_AHEAD with a wall ahead (the collider's flag 8, COLLISION_TOUCH_1_AHEAD). */
 int FieldActor_WalkSpeed(FieldActor *actor)
 {
     int speed = FX_MulFunc((int) FieldActor_Push(actor), WALK_SPEED_MAX);
@@ -190,12 +191,12 @@ int FieldActor_WalkSpeed(FieldActor *actor)
     u8 *contact = field_actor_motion_at(actor, FIELD_ACTOR_CONTACT);
     if (FieldBody_TouchedWith((FieldBody *) (void *) contact, 8) != 0 &&
         FieldBody_TouchedAhead((FieldBody *) (void *) contact, actor->yaw) != 0) {
-        if (speed > WALK_SPEED_BLOCKED) {
-            speed = WALK_SPEED_BLOCKED;
+        if (speed > WALK_SPEED_BODY_AHEAD) {
+            speed = WALK_SPEED_BODY_AHEAD;
         }
     } else if (FIELD_ACTOR_COLLIDER_FLAGS(actor) & 8) {
-        if (speed > WALK_SPEED_COLLIDER_3) {
-            speed = WALK_SPEED_COLLIDER_3;
+        if (speed > WALK_SPEED_WALL_AHEAD) {
+            speed = WALK_SPEED_WALL_AHEAD;
         }
     }
     return speed;

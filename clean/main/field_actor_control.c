@@ -79,7 +79,7 @@ extern int FX_Sqrt(int value);
 static_assert(offsetof(FieldActor, unk_140) == 0x140, "0x140");
 static_assert(offsetof(FieldActor, pick_point) == 0x14c, "0x14c");
 static_assert(offsetof(FieldActor, aim_point) == 0x158, "aim point");
-static_assert(offsetof(FieldActor, control_mode) == 0x170, "aim mode");
+static_assert(offsetof(FieldActor, control_mode) == 0x170, "control mode");
 static_assert(offsetof(FieldActor, start_position) == 0x6f4, "start position");
 
 static const Vec3 *position_of(const FieldActor *actor)
@@ -150,7 +150,7 @@ static fx32 push_of_length(fx32 length)
  * picked point (func_0204f7e0), and the extra byte at 0x16d whether or not the pen came down.
  *
  * An act on the actor, or func_0203de78 without a ground point, stops it: no push, A held, act
- * at 0x140, the aim 1.0 ahead at data_020d72f4, aim mode 2. Else in aim mode 2 the pen's ground
+ * at 0x140, the aim 1.0 ahead at data_020d72f4, control mode 2. Else in control mode 2 the pen's ground
  * point keeps it (else mode 1); in mode 1 a button switches to it, and a ground point back to
  * mode 2. In mode 2 the push comes from how far the pen is from the actor (push_of_length; on
  * the ground, or for states 0x1d to 0x23 from a point behind the actor by the camera's pitch
@@ -394,7 +394,7 @@ s16 FieldActor_PushAngle(FieldActor *actor)
 CLEAN_AS(func_0200dc80, FieldActor_PushAngle)
 
 /* func_0200dc48: the push's angle in the world: the camera's yaw (func_0203c568) is added
- * unless the pen steers (aim mode 2) or there is no camera. */
+ * unless the pen steers (control mode 2) or there is no camera. */
 s16 FieldActor_PushYaw(FieldActor *actor)
 {
     s16 yaw = FieldActor_PushAngle(actor);

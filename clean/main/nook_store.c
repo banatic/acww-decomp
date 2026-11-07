@@ -67,8 +67,9 @@ static_assert(offsetof(NookStore, sold) == 0x5c, "sold");
 /* The bonus day's notice goes up this many days before it at the earliest (the days between
  * are the three before it). */
 #define NOOK_NOTICE_DAYS 4
-/* A bonus day this far back is forgotten. */
-#define NOOK_BONUS_DAY_EXPIRES (-7)
+/* A bonus day this many days ahead of today, or more, is forgotten (Calendar_DaysFrom gives
+ * today less the bonus day). */
+#define NOOK_BONUS_DAY_TOO_FAR (-7)
 
 /* The town map's cells: 16 by 16, the store's building among them. */
 #define NOOK_MAP_CELLS 16
@@ -458,7 +459,7 @@ void NookStore_PlanBonusDay(NookStore *store, const DateTime *now)
         Date today;
         Calendar_Today(&today);
         int days = Calendar_DaysFrom(&today, &store->bonus_day);
-        if (days >= 1 || days <= NOOK_BONUS_DAY_EXPIRES) {
+        if (days >= 1 || days <= NOOK_BONUS_DAY_TOO_FAR) {
             StateBlock_ClearFlag(data_021dc7a8, NOOK_FLAG_BONUS_DAY);
         }
     }
@@ -912,8 +913,8 @@ CLEAN_AS(func_020aea84, NookStore_UpgradeIfDue)
 #define NOOK_TIME_SALE_END 23
 /* DateTime_Compare's fields with the hour (see NOOK_COMPARE_DATE). */
 #define NOOK_COMPARE_DATE_HOUR 0x3c
-/* What func_0206300c answers for the items NookStore_HasKind4Item looks for. */
-#define NOOK_ITEM_KIND_4 4
+/* The furniture list group (ItemLists_GroupOf) NookStore_HasFurnitureGroup4 looks for. */
+#define NOOK_FURNITURE_GROUP_4 4
 
 /* "bbs_raccoon" and "bbs_shopinfo". */
 extern const char data_020e41b8[];
@@ -1018,20 +1019,20 @@ NookUpgrade *NookStore_Upgrade(NookStore *store)
 }
 CLEAN_AS(func_020afad4, NookStore_Upgrade)
 
-/* func_020afad8: whether a place holds an item that func_0204bcdc accepts and func_0206300c
- * answers 4 for (a sold place reads as the sold marker). */
-int NookStore_HasKind4Item(NookStore *store)
+/* func_020afad8: whether a place holds a piece of furniture (ItemCode_IsFurniture) of list
+ * group 4 (ItemLists_GroupOf; a sold place reads as the sold marker). */
+int NookStore_HasFurnitureGroup4(NookStore *store)
 {
     for (u32 place = 0; place < NOOK_STORE_PLACES; place++) {
         u16 code = ITEM_CODE_NONE;
         u16 *item = NookStore_Item(store, place, &code);
-        if (ItemCode_IsFurniture(item) != 0 && ItemLists_GroupOf(item, 0) == NOOK_ITEM_KIND_4) {
+        if (ItemCode_IsFurniture(item) != 0 && ItemLists_GroupOf(item, 0) == NOOK_FURNITURE_GROUP_4) {
             return 1;
         }
     }
     return 0;
 }
-CLEAN_AS(func_020afad8, NookStore_HasKind4Item)
+CLEAN_AS(func_020afad8, NookStore_HasFurnitureGroup4)
 
 /* func_020afb24: whether today is the bonus day. */
 int NookStore_IsBonusDayToday(NookStore *store)

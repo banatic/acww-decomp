@@ -4,9 +4,9 @@
  * in its acre) or on the room's map of that number.
  *
  * The machine that holds the scene (LinkGlobal_HoldsScene) puts the item down and, when
- * linked, sends the record on to the others as session message 18 (SessionMessage_PlaceTownItems
+ * linked, sends the record on to the others as session message 18 (SessionMessage_PlaceMapItems
  * puts it down there); any other machine sends it to the holder as message 19
- * (SessionMessage_RelayTownItems). */
+ * (SessionMessage_RelayMapItems). */
 #ifndef CLEAN_MAIN_LINKED_MAP_ITEMS_H
 #define CLEAN_MAIN_LINKED_MAP_ITEMS_H
 

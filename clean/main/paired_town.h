@@ -25,7 +25,7 @@ int PairedTown_AreFriends(Activity *activity, u8 *record, u8 *owner);
 void PairedTown_Pair(Activity *activity, int player);
 void PairedTown_Note(Activity *activity, u8 *pairing);
 void PairedTown_PairAll(Activity *activity);
-void PairedTown_PairOwn(Activity *activity);
+void PairedTown_PairServed(Activity *activity);
 void PairedTown_TakeOwn(void *unused);
 
 /* The byte after the town: its days in bits 0-3 and the two flags. */

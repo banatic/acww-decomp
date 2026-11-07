@@ -19,8 +19,8 @@ extern u8 data_021d5738[];        /* the three guest records */
 extern int data_021d56f0;
 extern u16 data_021d56f4[PLAYER_RECORDS_TOWN];
 extern u8 data_021d572c[], data_021d5720[], data_021d5714[], data_021d5708[];
-#define STARTING_ITEM_FIRST 0x3884
-#define STARTING_ITEM_STEP 4
+#define STARTING_BED_FIRST 0x3884
+#define STARTING_BED_STEP 4
 
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
@@ -144,10 +144,10 @@ u8 *PlayerRecords_ConstructGuests(u8 *guests)
 CLEAN_AS(func_020985a0, PlayerRecords_ConstructGuests)
 
 /* func_020985cc: make a new player in town record `number` (0-3) of `players`: clear the
- * record, then give it `name`, `arg`, a player id that none of the other town players has, no
- * item at 0x2406 and the record number's starting item. The record, or NULL for another
+ * record, then give it `name`, `gender`, a player id that none of the other town players has, no
+ * item at 0x2406 and the record number's starting bed (PlayerRecord_SetBed). The record, or NULL for another
  * number. */
-u8 *PlayerRecords_NewPlayer(u8 *players, const void *name, int arg, int number)
+u8 *PlayerRecords_NewPlayer(u8 *players, const void *name, int gender, int number)
 {
     if (PlayerRecords_IsTownNumber((u32) number) != 1) {
         return NULL;
@@ -155,7 +155,7 @@ u8 *PlayerRecords_NewPlayer(u8 *players, const void *name, int arg, int number)
     if ((data_021d56f0 & 1) == 0) {
         u8 *blocks[PLAYER_RECORDS_TOWN] = {data_021d572c, data_021d5720, data_021d5714, data_021d5708};
         for (int i = 0; i < PLAYER_RECORDS_TOWN; i++) {
-            data_021d56f4[i] = (u16) (STARTING_ITEM_FIRST + i * STARTING_ITEM_STEP);
+            data_021d56f4[i] = (u16) (STARTING_BED_FIRST + i * STARTING_BED_STEP);
             __register_global_object(&data_021d56f4[i], (void *) (uintptr_t) func_020051b0, blocks[i]);
         }
         data_021d56f0 |= 1;
@@ -179,7 +179,7 @@ u8 *PlayerRecords_NewPlayer(u8 *players, const void *name, int arg, int number)
 
     PlayerRecord_Clear(self);
     u16 no_item = ITEM_CODE_NONE;
-    PlayerRecord_NewPlayer(self, name, PlayerId_NewNumberNotIn(taken, count), arg, 0, 0, 0, 0, 0, 0, 0, &no_item);
+    PlayerRecord_NewPlayer(self, name, PlayerId_NewNumberNotIn(taken, count), gender, 0, 0, 0, 0, 0, 0, 0, &no_item);
     PlayerRecord_SetBed(self, &data_021d56f4[number & 3]);
     return self;
 }

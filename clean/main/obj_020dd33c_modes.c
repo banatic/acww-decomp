@@ -45,7 +45,7 @@ static_assert(offsetof(Obj020dd33c, look) == 0x54, "Obj020dd33c look");
 static_assert(offsetof(Obj020dd33c, kind) == 0x5c, "Obj020dd33c kind");
 static_assert(offsetof(Obj020dd33c, target) == 0x6c, "Obj020dd33c target");
 static_assert(offsetof(Obj020dd33c, offset) == 0x78, "Obj020dd33c offset");
-static_assert(offsetof(Obj020dd33c, velocity) == 0x84, "Obj020dd33c velocity");
+static_assert(offsetof(Obj020dd33c, hold_offset) == 0x84, "Obj020dd33c hold_offset");
 static_assert(offsetof(Obj020dd33c, speed) == 0x90, "Obj020dd33c speed");
 static_assert(offsetof(Obj020dd33c, goal) == 0x9c, "Obj020dd33c goal");
 static_assert(offsetof(Obj020dd33c, scale) == 0xa8, "Obj020dd33c scale");
@@ -155,20 +155,20 @@ static void point_to_target(Obj020dd33c *obj)
     approach(&obj->point.z, obj->target.z, obj->speed.z);
 }
 
-/* The velocity moved a step towards 0 on each axis. */
-static void velocity_to_zero(Obj020dd33c *obj)
+/* The hold offset moved a step towards 0 on each axis. */
+static void hold_offset_to_zero(Obj020dd33c *obj)
 {
-    approach(&obj->velocity.x, 0, obj->speed.x);
-    approach(&obj->velocity.y, 0, obj->speed.y);
-    approach(&obj->velocity.z, 0, obj->speed.z);
+    approach(&obj->hold_offset.x, 0, obj->speed.x);
+    approach(&obj->hold_offset.y, 0, obj->speed.y);
+    approach(&obj->hold_offset.z, 0, obj->speed.z);
 }
 
-/* The velocity's steps to 0 over `frames` frames. */
-static void steps_of_velocity(Obj020dd33c *obj, int frames)
+/* The hold offset's steps to 0 over `frames` frames. */
+static void steps_of_hold_offset(Obj020dd33c *obj, int frames)
 {
-    fx32 z = step_over(obj->velocity.z, frames);
-    fx32 y = step_over(obj->velocity.y, frames);
-    fx32 x = step_over(obj->velocity.x, frames);
+    fx32 z = step_over(obj->hold_offset.z, frames);
+    fx32 y = step_over(obj->hold_offset.y, frames);
+    fx32 x = step_over(obj->hold_offset.x, frames);
     obj->speed.x = x;
     obj->speed.y = y;
     obj->speed.z = z;
@@ -253,8 +253,8 @@ void Obj020dd33c_UpdateMode9Kind1(Obj020dd33c *obj)
 CLEAN_AS(func_02057d90, Obj020dd33c_UpdateMode9Kind1)
 
 /* func_02057e0c: mode 9 kind 1, phase 2: until the frame count reaches data_020cbaf4[2], the
- * scale shrinks to 0 by the step made once from that phase's length, the velocity slows to 0,
- * and the point is the hold point plus the velocity turned to the first actor's heading. Then
+ * scale shrinks to 0 by the step made once from that phase's length, the hold offset slows to 0,
+ * and the point is the hold point plus the hold offset turned to the first actor's heading. Then
  * phase 3, and the movement is over. */
 void Obj020dd33c_Mode9Kind1Shrink(Obj020dd33c *obj)
 {
@@ -270,8 +270,8 @@ void Obj020dd33c_Mode9Kind1Shrink(Obj020dd33c *obj)
     Obj020dd33c_HoldPoint(obj, &obj->point);
     Approach_S32Again(&scale, 0, data_021c9368);
     set_scale(obj, scale);
-    velocity_to_zero(obj);
-    turn_offset(obj, &obj->velocity);
+    hold_offset_to_zero(obj);
+    turn_offset(obj, &obj->hold_offset);
     VEC_Add(&obj->point, &obj->offset, &obj->point);
     obj->frames++;
     if (obj->frames < limit) {
@@ -284,7 +284,7 @@ CLEAN_AS(func_02057e0c, Obj020dd33c_Mode9Kind1Shrink)
 
 /* func_02057f38: mode 9 kind 1, phase 1: until the frame count reaches data_020cbaf4[1], the
  * target is the hold point plus the turned offset data_021c9390 and the point steps towards
- * it. Then the velocity starts as that offset, to slow to 0 over 8 frames, and phase 2. */
+ * it. Then the hold offset starts as that offset, to slow to 0 over 8 frames, and phase 2. */
 void Obj020dd33c_Mode9Kind1Follow(Obj020dd33c *obj)
 {
     int limit = data_020cbaf4[1];
@@ -302,11 +302,11 @@ void Obj020dd33c_Mode9Kind1Follow(Obj020dd33c *obj)
     obj->target.x = 0;
     obj->target.y = 0;
     obj->target.z = 0;
-    obj->velocity = data_021c9390;
+    obj->hold_offset = data_021c9390;
     obj->offset.x = 0;
     obj->offset.y = 0;
     obj->offset.z = 0;
-    steps_of_velocity(obj, 8);
+    steps_of_hold_offset(obj, 8);
     obj->phase = 2;
 }
 CLEAN_AS(func_02057f38, Obj020dd33c_Mode9Kind1Follow)
@@ -356,7 +356,7 @@ void Obj020dd33c_EnterMode7Kind1(Obj020dd33c *obj)
 CLEAN_AS(func_02058164, Obj020dd33c_EnterMode7Kind1)
 
 /* func_0205817c: mode 5 kind 1, each of 8 frames: the scale shrinks to 0 by 0x200 (a static
- * made once), the velocity slows to 0, and the point is the hold point plus the velocity
+ * made once), the hold offset slows to 0, and the point is the hold point plus the hold offset
  * turned to the first actor's heading. After the eighth, the movement is over. */
 void Obj020dd33c_UpdateMode5Kind1(Obj020dd33c *obj)
 {
@@ -371,8 +371,8 @@ void Obj020dd33c_UpdateMode5Kind1(Obj020dd33c *obj)
     Obj020dd33c_HoldPoint(obj, &obj->point);
     Approach_S32Again(&scale, 0, data_021c9360);
     set_scale(obj, scale);
-    velocity_to_zero(obj);
-    turn_offset(obj, &obj->velocity);
+    hold_offset_to_zero(obj);
+    turn_offset(obj, &obj->hold_offset);
     VEC_Add(&obj->point, &obj->offset, &obj->point);
     obj->frames++;
     if (obj->frames >= 8) {
@@ -381,18 +381,18 @@ void Obj020dd33c_UpdateMode5Kind1(Obj020dd33c *obj)
 }
 CLEAN_AS(func_0205817c, Obj020dd33c_UpdateMode5Kind1)
 
-/* func_02058280: mode 5 kind 1 starts: the velocity is the offset data_021c9390, to slow to 0
+/* func_02058280: mode 5 kind 1 starts: the hold offset is the offset data_021c9390, to slow to 0
  * over 8 frames; the target and the offset are cleared; moving, from frame 0 and phase 0. */
 void Obj020dd33c_EnterMode5Kind1(Obj020dd33c *obj)
 {
     obj->target.x = 0;
     obj->target.y = 0;
     obj->target.z = 0;
-    obj->velocity = data_021c9390;
+    obj->hold_offset = data_021c9390;
     obj->offset.x = 0;
     obj->offset.y = 0;
     obj->offset.z = 0;
-    steps_of_velocity(obj, 8);
+    steps_of_hold_offset(obj, 8);
     Obj020dd33c_SetMoving(obj, 1);
     obj->frames = 0;
     obj->phase = 0;
@@ -538,8 +538,8 @@ void Obj020dd33c_Mode1Kind1Drop(Obj020dd33c *obj)
 CLEAN_AS(func_020586b0, Obj020dd33c_Mode1Kind1Drop)
 
 /* func_02058788: mode 1 kind 1, phase 1: until the frame count reaches data_020cbaf0[1], the
- * scale grows to 0x1000 by 0x200, the velocity steps towards the target, and the point is the
- * hold point plus the velocity turned to the first actor's heading. Then the target is the
+ * scale grows to 0x1000 by 0x200, the hold offset steps towards the target, and the point is the
+ * hold point plus the hold offset turned to the first actor's heading. Then the target is the
  * tile in front of the first actor (target_drop_tile, with this mode's own fixed point), the
  * steps cover the way there in data_021c9344[1] frames, and phase 2. */
 void Obj020dd33c_Mode1Kind1Grow(Obj020dd33c *obj)
@@ -552,10 +552,10 @@ void Obj020dd33c_Mode1Kind1Grow(Obj020dd33c *obj)
     Obj020dd33c_HoldPoint(obj, &obj->point);
     Approach_S32Again(&scale, 0x1000, 0x200);
     set_scale(obj, scale);
-    approach(&obj->velocity.x, obj->target.x, obj->speed.x);
-    approach(&obj->velocity.y, obj->target.y, obj->speed.y);
-    approach(&obj->velocity.z, obj->target.z, obj->speed.z);
-    turn_offset(obj, &obj->velocity);
+    approach(&obj->hold_offset.x, obj->target.x, obj->speed.x);
+    approach(&obj->hold_offset.y, obj->target.y, obj->speed.y);
+    approach(&obj->hold_offset.z, obj->target.z, obj->speed.z);
+    turn_offset(obj, &obj->hold_offset);
     VEC_Add(&obj->point, &obj->offset, &obj->point);
     obj->frames++;
     if (obj->frames < limit) {
@@ -568,7 +568,7 @@ void Obj020dd33c_Mode1Kind1Grow(Obj020dd33c *obj)
 CLEAN_AS(func_02058788, Obj020dd33c_Mode1Kind1Grow)
 
 /* func_02058964: mode 1 kind 1, phase 0: nothing until the frame count reaches
- * data_020cbaf0[0]; then the velocity and the offset start at 0 to go to the target offset
+ * data_020cbaf0[0]; then the hold offset and the offset start at 0 to go to the target offset
  * data_021c9390 in 12 frames, and phase 1. */
 void Obj020dd33c_Mode1Kind1Wait(Obj020dd33c *obj)
 {
@@ -579,9 +579,9 @@ void Obj020dd33c_Mode1Kind1Wait(Obj020dd33c *obj)
     if (obj->frames < data_020cbaf0[0]) {
         return;
     }
-    obj->velocity.x = 0;
-    obj->velocity.y = 0;
-    obj->velocity.z = 0;
+    obj->hold_offset.x = 0;
+    obj->hold_offset.y = 0;
+    obj->hold_offset.z = 0;
     obj->offset.x = 0;
     obj->offset.y = 0;
     obj->offset.z = 0;
@@ -596,13 +596,13 @@ void Obj020dd33c_Mode1Kind1Wait(Obj020dd33c *obj)
 }
 CLEAN_AS(func_02058964, Obj020dd33c_Mode1Kind1Wait)
 
-/* func_02058a10: mode 1 kind 1 starts: the velocity, the offset and the scale at 0, the item
+/* func_02058a10: mode 1 kind 1 starts: the hold offset, the offset and the scale at 0, the item
  * shown; moving, from frame 0 and phase 0. */
 void Obj020dd33c_EnterMode1Kind1(Obj020dd33c *obj)
 {
-    obj->velocity.x = 0;
-    obj->velocity.y = 0;
-    obj->velocity.z = 0;
+    obj->hold_offset.x = 0;
+    obj->hold_offset.y = 0;
+    obj->hold_offset.z = 0;
     obj->offset.x = 0;
     obj->offset.y = 0;
     obj->offset.z = 0;
@@ -632,7 +632,7 @@ void Obj020dd33c_UpdateMode11Kind0(Obj020dd33c *obj)
 CLEAN_AS(func_02058a5c, Obj020dd33c_UpdateMode11Kind0)
 
 /* func_02058ac8: mode 11 kind 0, phase 1: until the frame count reaches data_020cbaec[1], the
- * scale shrinks to 0 by its step and the point is the hold point plus the velocity. Then the
+ * scale shrinks to 0 by its step and the point is the hold point plus the hold offset. Then the
  * next phase. */
 void Obj020dd33c_Mode11Kind0Shrink(Obj020dd33c *obj)
 {
@@ -643,7 +643,7 @@ void Obj020dd33c_Mode11Kind0Shrink(Obj020dd33c *obj)
     Approach_S32Again(&scale, 0, obj->scale_step);
     set_scale(obj, scale);
     Obj020dd33c_HoldPoint(obj, &obj->point);
-    VEC_Add(&obj->point, &obj->velocity, &obj->point);
+    VEC_Add(&obj->point, &obj->hold_offset, &obj->point);
     obj->frames++;
     if (obj->frames >= data_020cbaec[obj->phase]) {
         obj->phase++;
@@ -652,7 +652,7 @@ void Obj020dd33c_Mode11Kind0Shrink(Obj020dd33c *obj)
 CLEAN_AS(func_02058ac8, Obj020dd33c_Mode11Kind0Shrink)
 
 /* func_02058b5c: mode 11 kind 0, phase 0: until the frame count reaches data_020cbaec[0], the
- * point is the hold point plus the velocity. Then the scale's step is set to shrink it to 0
+ * point is the hold point plus the hold offset. Then the scale's step is set to shrink it to 0
  * over data_021c933c[0] frames, and the next phase. */
 void Obj020dd33c_Mode11Kind0Follow(Obj020dd33c *obj)
 {
@@ -660,7 +660,7 @@ void Obj020dd33c_Mode11Kind0Follow(Obj020dd33c *obj)
         return;
     }
     Obj020dd33c_HoldPoint(obj, &obj->point);
-    VEC_Add(&obj->point, &obj->velocity, &obj->point);
+    VEC_Add(&obj->point, &obj->hold_offset, &obj->point);
     obj->frames++;
     if (obj->frames >= data_020cbaec[obj->phase]) {
         obj->scale_step = step_over(obj->scale.x, data_021c933c[obj->phase]);
@@ -669,7 +669,7 @@ void Obj020dd33c_Mode11Kind0Follow(Obj020dd33c *obj)
 }
 CLEAN_AS(func_02058b5c, Obj020dd33c_Mode11Kind0Follow)
 
-/* func_02058be0: mode 11 kind 0 starts: moving; the velocity is the point less the hold
+/* func_02058be0: mode 11 kind 0 starts: moving; the hold offset is the point less the hold
  * point (so the item keeps its place by the hand); from frame 0 and phase 0. */
 void Obj020dd33c_EnterMode11Kind0(Obj020dd33c *obj)
 {
@@ -678,7 +678,7 @@ void Obj020dd33c_EnterMode11Kind0(Obj020dd33c *obj)
     Obj020dd33c_SetMoving(obj, 1);
     Obj020dd33c_HoldPoint(obj, &hold);
     Vec_Subtract(&difference, &obj->point, &hold);
-    obj->velocity = difference;
+    obj->hold_offset = difference;
     obj->frames = 0;
     obj->phase = 0;
 }
@@ -712,14 +712,14 @@ void Obj020dd33c_EnterMode8Kind0(Obj020dd33c *obj)
 CLEAN_AS(func_02058c60, Obj020dd33c_EnterMode8Kind0)
 
 /* func_02058c90: mode 7 kind 0, each of 9 frames: the point is the hold point plus the
- * velocity. After the ninth, the movement is over. */
+ * hold offset. After the ninth, the movement is over. */
 void Obj020dd33c_UpdateMode7Kind0(Obj020dd33c *obj)
 {
     if (obj->frames >= 9) {
         return;
     }
     Obj020dd33c_HoldPoint(obj, &obj->point);
-    VEC_Add(&obj->point, &obj->velocity, &obj->point);
+    VEC_Add(&obj->point, &obj->hold_offset, &obj->point);
     obj->frames++;
     if (obj->frames >= 9) {
         Obj020dd33c_SetMoving(obj, 0);
@@ -727,7 +727,7 @@ void Obj020dd33c_UpdateMode7Kind0(Obj020dd33c *obj)
 }
 CLEAN_AS(func_02058c90, Obj020dd33c_UpdateMode7Kind0)
 
-/* func_02058cdc: mode 7 kind 0 starts: the velocity is the point less the hold point; moving,
+/* func_02058cdc: mode 7 kind 0 starts: the hold offset is the point less the hold point; moving,
  * from frame 0. */
 void Obj020dd33c_EnterMode7Kind0(Obj020dd33c *obj)
 {
@@ -735,7 +735,7 @@ void Obj020dd33c_EnterMode7Kind0(Obj020dd33c *obj)
     Vec3 difference;
     Obj020dd33c_HoldPoint(obj, &hold);
     Vec_Subtract(&difference, &obj->point, &hold);
-    obj->velocity = difference;
+    obj->hold_offset = difference;
     Obj020dd33c_SetMoving(obj, 1);
     obj->frames = 0;
 }
@@ -750,7 +750,7 @@ void Obj020dd33c_EnterMode6Kind0(void) {}
 CLEAN_AS(func_02058d28, Obj020dd33c_EnterMode6Kind0)
 
 /* func_02058d2c: mode 5 kind 0, each of 8 frames: the scale shrinks to 0 by its step, the
- * velocity slows to 0, and the point is the hold point plus the velocity turned to the first
+ * hold offset slows to 0, and the point is the hold point plus the hold offset turned to the first
  * actor's heading. After the eighth, the movement is over. */
 void Obj020dd33c_UpdateMode5Kind0(Obj020dd33c *obj)
 {
@@ -761,8 +761,8 @@ void Obj020dd33c_UpdateMode5Kind0(Obj020dd33c *obj)
     Obj020dd33c_HoldPoint(obj, &obj->point);
     Approach_S32Again(&scale, 0, obj->scale_step);
     set_scale(obj, scale);
-    velocity_to_zero(obj);
-    turn_offset(obj, &obj->velocity);
+    hold_offset_to_zero(obj);
+    turn_offset(obj, &obj->hold_offset);
     VEC_Add(&obj->point, &obj->offset, &obj->point);
     obj->frames++;
     if (obj->frames >= 8) {
@@ -771,7 +771,7 @@ void Obj020dd33c_UpdateMode5Kind0(Obj020dd33c *obj)
 }
 CLEAN_AS(func_02058d2c, Obj020dd33c_UpdateMode5Kind0)
 
-/* func_02058e0c: mode 5 kind 0 starts: the velocity is the point less the hold point, turned
+/* func_02058e0c: mode 5 kind 0 starts: the hold offset is the point less the hold point, turned
  * back from the first actor's heading, to slow to 0 over 8 frames, and the scale shrinks to 0
  * over 8 frames; the target and the offset are cleared; moving, from frame 0 and phase 0. */
 void Obj020dd33c_EnterMode5Kind0(Obj020dd33c *obj)
@@ -783,15 +783,15 @@ void Obj020dd33c_EnterMode5Kind0(Obj020dd33c *obj)
     obj->target.z = 0;
     Obj020dd33c_HoldPoint(obj, &hold);
     Vec_Subtract(&difference, &obj->point, &hold);
-    obj->velocity = difference;
+    obj->hold_offset = difference;
     if (obj->actors[0] != NULL) {
         /* QUIRK: the heading is negated in 16 bits, so 0x8000 stays 0x8000. */
-        Vec_RotateY(&obj->velocity, (s16) -obj->actors[0]->angle[1]);
+        Vec_RotateY(&obj->hold_offset, (s16) -obj->actors[0]->angle[1]);
     }
     obj->offset.x = 0;
     obj->offset.y = 0;
     obj->offset.z = 0;
-    steps_of_velocity(obj, 8);
+    steps_of_hold_offset(obj, 8);
     obj->scale_step = step_over(obj->scale.x, 8);
     Obj020dd33c_SetMoving(obj, 1);
     obj->frames = 0;
@@ -799,16 +799,16 @@ void Obj020dd33c_EnterMode5Kind0(Obj020dd33c *obj)
 }
 CLEAN_AS(func_02058e0c, Obj020dd33c_EnterMode5Kind0)
 
-/* func_02058eec: mode 10 kind 0, each frame: the point is the hold point plus the velocity. */
+/* func_02058eec: mode 10 kind 0, each frame: the point is the hold point plus the hold offset. */
 void Obj020dd33c_UpdateMode10Kind0(Obj020dd33c *obj)
 {
     Obj020dd33c_HoldPoint(obj, &obj->point);
-    VEC_Add(&obj->point, &obj->velocity, &obj->point);
+    VEC_Add(&obj->point, &obj->hold_offset, &obj->point);
 }
 CLEAN_AS(func_02058eec, Obj020dd33c_UpdateMode10Kind0)
 
 /* func_02058f0c: mode 10 kind 0 starts: not moving (it follows the hold point for as long as
- * it lasts); the velocity is the point less the hold point; from frame 0. */
+ * it lasts); the hold offset is the point less the hold point; from frame 0. */
 void Obj020dd33c_EnterMode10Kind0(Obj020dd33c *obj)
 {
     Vec3 hold;
@@ -816,15 +816,15 @@ void Obj020dd33c_EnterMode10Kind0(Obj020dd33c *obj)
     Obj020dd33c_SetMoving(obj, 0);
     Obj020dd33c_HoldPoint(obj, &hold);
     Vec_Subtract(&difference, &obj->point, &hold);
-    obj->velocity = difference;
+    obj->hold_offset = difference;
     obj->frames = 0;
 }
 CLEAN_AS(func_02058f0c, Obj020dd33c_EnterMode10Kind0)
 
 /* func_02058f54: mode 4 kind 0 (and mode 7 kind 1), each frame: for 9 frames the point steps
  * towards the target on X and Z, its height the hold point's plus the target's; after the
- * ninth the velocity keeps the point's place from the hold point and the movement is over.
- * On the frame after, the point is the hold point plus that velocity (and nothing after).
+ * ninth the hold offset keeps the point's place from the hold point and the movement is over.
+ * On the frame after, the point is the hold point plus that hold offset (and nothing after).
  * BUG: the hold point is read even when the first actor's method writes nothing (no first
  * actor, or a joint at the origin), from a stale stack word in the ROM; here it is 0. */
 void Obj020dd33c_UpdateMode4Kind0(Obj020dd33c *obj)
@@ -839,12 +839,12 @@ void Obj020dd33c_UpdateMode4Kind0(Obj020dd33c *obj)
         if (obj->frames >= 9) {
             Vec3 difference;
             Vec_Subtract(&difference, &obj->point, &hold);
-            obj->velocity = difference;
+            obj->hold_offset = difference;
             Obj020dd33c_SetMoving(obj, 0);
         }
     } else if (obj->frames == 9) {
         Obj020dd33c_HoldPoint(obj, &obj->point);
-        VEC_Add(&obj->point, &obj->velocity, &obj->point);
+        VEC_Add(&obj->point, &obj->hold_offset, &obj->point);
     }
 }
 CLEAN_AS(func_02058f54, Obj020dd33c_UpdateMode4Kind0)
@@ -1020,14 +1020,14 @@ void Obj020dd33c_Mode1Kind0Hold(Obj020dd33c *obj)
 }
 CLEAN_AS(func_02059420, Obj020dd33c_Mode1Kind0Hold)
 
-/* func_020594c0: mode 1 kind 0 starts: the velocity, the offset and the goal at 0; the goal
+/* func_020594c0: mode 1 kind 0 starts: the hold offset, the offset and the goal at 0; the goal
  * placed beside the first actor (the base offset data_021c93e4 and the fish's first offset);
  * the scale at 0, the item shown; moving, from phase 0. */
 void Obj020dd33c_EnterMode1Kind0(Obj020dd33c *obj)
 {
-    obj->velocity.x = 0;
-    obj->velocity.y = 0;
-    obj->velocity.z = 0;
+    obj->hold_offset.x = 0;
+    obj->hold_offset.y = 0;
+    obj->hold_offset.z = 0;
     obj->offset.x = 0;
     obj->offset.y = 0;
     obj->offset.z = 0;

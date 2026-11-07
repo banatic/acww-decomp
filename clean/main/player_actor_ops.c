@@ -581,13 +581,13 @@ int PlayerActorOps_RequestState7Kind0Next10(u16 *item)
 }
 CLEAN_AS(func_02095b58, PlayerActorOps_RequestState7Kind0Next10)
 
-/* func_02095b64: state 7 with no item, kind 3, then state 5. */
-int PlayerActorOps_RequestState7NoItem(void)
+/* func_02095b64: state 7 with no item, kind 3 (the sting cured), then state 5. */
+int PlayerActorOps_RequestCureSting(void)
 {
     u16 item = ITEM_CODE_NONE;
     return PlayerActorOps_RequestState7(&item, 3, 5);
 }
-CLEAN_AS(func_02095b64, PlayerActorOps_RequestState7NoItem)
+CLEAN_AS(func_02095b64, PlayerActorOps_RequestCureSting)
 
 /* func_02095b84: state 7 with `*item`, kind 2, then state 5. */
 int PlayerActorOps_RequestState7Kind2Next5(u16 *item)

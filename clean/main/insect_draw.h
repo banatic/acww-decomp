@@ -13,8 +13,8 @@
  * pick a time of day at random among those whose list holds insects of the band (marked in
  * data_021c1d20).
  *
- * Also here: a pick among a few places by weights of a byte each (InsectDraw_PickByWeights),
- * which the fish draws use too. */
+ * Also here: a pick of an index by weights of a byte each (InsectDraw_PickByWeights), which
+ * the fish draws and other draws use too. */
 #ifndef CLEAN_MAIN_INSECT_DRAW_H
 #define CLEAN_MAIN_INSECT_DRAW_H
 

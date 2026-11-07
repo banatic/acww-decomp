@@ -146,7 +146,7 @@ int NameText_SetItem(NameText *text, u16 *item)
     u16 carried;
     ItemForm_ToCarried(&carried, item);
     if (ItemCode_IsKind1(&carried)) {
-        NameText_SetChars((int) (uintptr_t) text, (int) (uintptr_t) ItemInfo_Dma(&carried));
+        NameText_SetChars((int) (uintptr_t) text, (int) (uintptr_t) ItemInfo_NameRecord(&carried));
         text->attr_04 = ItemInfo_NoneC(&carried);
         text->attr_09 = (u8) ItemInfo_NoneB(&carried);
         text->attr_08 = (u8) ItemInfo_NoneA(&carried);

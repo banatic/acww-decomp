@@ -100,7 +100,7 @@ static_assert(sizeof(ReactionNpc) == 0x73c, "the size ReactionNpc_Create allocat
 /* The event taking part in which teaching a reaction marks. */
 #define RNPC_EVENT 0x43
 
-/* No motion number (Obj020d8c64_TakeNewMotionNumber). */
+/* No motion number (Obj020d8c64_TakeNewReaction). */
 #define RNPC_NO_NUMBER (-1)
 
 /* The motions it asks for (scene_motion_kinds.h): stand, walk, walk in the second way, turn
@@ -264,13 +264,13 @@ void ReactionNpc_PutReaction(ReactionNpc *npc, int slot, int reaction)
 CLEAN_AS(func_ov088_02278a54, ReactionNpc_PutReaction)
 
 /* func_ov088_02278a6c (vtable slot 0xa0): while it is watched (ReactionNpc.watch), a new
- * number its motion shows, kept (Obj020d8c64_TakeNewMotionNumber); else none (-1). */
+ * number its motion shows, kept (Obj020d8c64_TakeNewReaction); else none (-1). */
 int ReactionNpc_MotionNumber(ReactionNpc *npc)
 {
     if (npc->watch == 0) {
         return RNPC_NO_NUMBER;
     }
-    return Obj020d8c64_TakeNewMotionNumber(npc);
+    return Obj020d8c64_TakeNewReaction(npc);
 }
 CLEAN_AS(func_ov088_02278a6c, ReactionNpc_MotionNumber)
 

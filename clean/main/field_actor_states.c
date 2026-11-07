@@ -92,9 +92,9 @@ extern u8 data_020e54a8;
 /* Per-state bytes (and words at data_020c7e48), indexed by the state, that the functions here
  * test. */
 extern const u8 data_020c76a8[];  /* FieldActor_StopForState */
-extern const u8 data_020c773c[];  /* FieldActor_ClearPitchForState */
-extern const u8 data_020c77d0[];  /* FieldActor_ResetPitchForState */
-extern const u8 data_020c7864[];  /* FieldActor_SyncAimMode */
+extern const u8 data_020c773c[];  /* FieldActor_ClearLeanForState */
+extern const u8 data_020c77d0[];  /* FieldActor_EaseLeanForState */
+extern const u8 data_020c7864[];  /* FieldActor_SyncControlMode */
 extern const u8 data_020c78f8[];  /* FieldActor_SetShadowForState */
 extern const u8 data_020c7b48[];  /* FieldActor_StateFlagB48 */
 extern const u8 data_020c7bdc[];  /* FieldActor_StatePriority */
@@ -337,7 +337,7 @@ static int request_state(FieldActor *actor, int state, int priority, int arg, co
  * item's translations its position on the flat ground. Then: the actor of this console runs
  * func_0200dc98 (with no func_0200dc8c, the byte at 0x8ea becomes 0), another's follows its
  * console unless flag 0x10 is set; the remote action and the requests are taken; the state's
- * update runs (after FieldActor_StepFaceAnims); the pitch, the aim mode and the model matrix are kept; for
+ * update runs (after FieldActor_StepFaceAnims); the lean, the control mode and the model matrix are kept; for
  * the actor of this console outdoors overlay 3's tile tracking runs; the counters at 0x8e8 (this
  * console's actor only) and 0x8ec run down; with flag 0xa the sound emitter (0x83c with flag
  * 0x19, else 0x880) plays at the sound point, which is the position when not set this frame;
@@ -380,9 +380,9 @@ void FieldActor_RunFrame(FieldActor *actor)
 
     FieldActor_NoteObjectUnderfoot(actor->player);
     int state = actor->state;
-    FieldActor_ResetPitchForState(actor, state, 0);
+    FieldActor_EaseLeanForState(actor, state, 0);
     if (Session_IsLocalPlayer(session, actor->player)) {
-        FieldActor_SyncAimMode(actor, state);
+        FieldActor_SyncControlMode(actor, state);
     }
     FieldActor_UpdateModelMatrix(actor);
     FieldActor_ApplyAccessory(actor);
@@ -406,7 +406,7 @@ void FieldActor_RunFrame(FieldActor *actor)
     if (Session_IsLocalPlayer(session, actor->player) && data_020e54a8 == 0) {
         FieldActor_FinishPendingTile(actor);
     }
-    FieldActor_TurnHeadBack(actor);
+    FieldActor_TurnHeadToLook(actor);
     if (FieldActor_TestFlag(actor, 0xa)) {
         Vec3 *point = &FIELD_ACTOR_SOUND_POINT(actor);
         if (point->x == 0 && point->y == 0 && point->z == 0) {
@@ -432,10 +432,10 @@ void FieldActor_SetShadowForState(FieldActor *actor, u32 state)
 }
 CLEAN_AS(func_020064cc, FieldActor_SetShadowForState)
 
-/* func_020064f0: in a state whose byte is set the aim mode is handed out (the word at
+/* func_020064f0: in a state whose byte is set the control mode is handed out (the word at
  * data_021d369c + 0xc becomes 1 for mode 1, 2 for mode 2, else 0); in the others it is taken
- * from there (FieldActor_TakeAimMode). */
-void FieldActor_SyncAimMode(FieldActor *actor, int state)
+ * from there (FieldActor_TakeControlMode). */
+void FieldActor_SyncControlMode(FieldActor *actor, int state)
 {
     if (data_020c7864[state] != 0) {
         switch (actor->control_mode) {
@@ -450,21 +450,21 @@ void FieldActor_SyncAimMode(FieldActor *actor, int state)
                 break;
         }
     } else {
-        FieldActor_TakeAimMode(actor);
+        FieldActor_TakeControlMode(actor);
     }
 }
-CLEAN_AS(func_020064f0, FieldActor_SyncAimMode)
+CLEAN_AS(func_020064f0, FieldActor_SyncControlMode)
 
-/* func_02006530: with `force`, or in a state whose byte is set, FieldActor_LeanTowards(0) works on the
- * pitch (Actor.angle[0], at 0x8c). */
-void FieldActor_ResetPitchForState(FieldActor *actor, int state, int force)
+/* func_02006530: with `force`, or in a state whose byte is set, the lean (Actor.angle[0], at
+ * 0x8c) eases back towards 0 (FieldActor_LeanTowards). */
+void FieldActor_EaseLeanForState(FieldActor *actor, int state, int force)
 {
     int reset = force != 0 ? 1 : data_020c77d0[state];
     if (reset) {
         FieldActor_LeanTowards(actor, 0);
     }
 }
-CLEAN_AS(func_02006530, FieldActor_ResetPitchForState)
+CLEAN_AS(func_02006530, FieldActor_EaseLeanForState)
 
 /* func_02006554: the remote action, then the queued requests in order (up to 30, until
  * func_0200e86c has none): each whose priority is above the current bar (0x7fc) is entered,
@@ -754,7 +754,7 @@ void FieldActor_EnterState(FieldActor *actor, const StateRequest *request)
     actor->state = state;
     FieldActor_StopForState(actor, (u32) state);
     FieldActor_StatesFlaggedB48(actor, state, previous);
-    FieldActor_ClearPitchForState(actor, state);
+    FieldActor_ClearLeanForState(actor, state);
     FieldActor_SetContact(actor, &state);
     FieldActor_SetShadowForState(actor, (u32) state);
 
@@ -779,15 +779,15 @@ void FieldActor_EnterState(FieldActor *actor, const StateRequest *request)
 }
 CLEAN_AS(func_02007364, FieldActor_EnterState)
 
-/* func_02007ce4: in a state whose byte is set the pitch (Actor.angle[0]) becomes 0
+/* func_02007ce4: in a state whose byte is set the lean (Actor.angle[0]) becomes 0
  * (FieldActor_SetLean). */
-void FieldActor_ClearPitchForState(FieldActor *actor, int state)
+void FieldActor_ClearLeanForState(FieldActor *actor, int state)
 {
     if (data_020c773c[state] != 0) {
         FieldActor_SetLean(actor, 0);
     }
 }
-CLEAN_AS(func_02007ce4, FieldActor_ClearPitchForState)
+CLEAN_AS(func_02007ce4, FieldActor_ClearLeanForState)
 
 /* func_02007d00: in a state whose byte is set the actor stops: no speed, and no velocity but
  * the vertical one. */
@@ -4469,8 +4469,8 @@ int FieldActor_RequestState13(FieldActor *actor, int priority, int arg)
 CLEAN_AS(func_0200c1b8, FieldActor_RequestState13)
 
 /* ---- State 0x10: animation 0 blended in over the request's frames. The actor of this console
- * turns towards the object func_0203dfac gives and, when the object it aims at (aim mode 2: the
- * one at 0x13c; aim mode 1: func_0203dfac's, on a press of X) is an actor whose virtual function
+ * turns towards the object func_0203dfac gives and, when the object it aims at (control mode 2: the
+ * one at 0x13c; control mode 1: func_0203dfac's, on a press of X) is an actor whose virtual function
  * at 0xa0 does not answer -1, asks for state 0x15. */
 
 /* What a request for states 0x10 and 5 carries: the frames handed to FieldActor_PlayAnimationLoop. */
@@ -4621,7 +4621,8 @@ CLEAN_AS(func_0200c3f0, FieldActor_SetArgs10)
  * when state 0x10 is to follow) while the body turns back to yaw 0; sound 0x76 (0x77 for kind 2
  * with 0x13c3) and effect 0x61 on entering, effects 0x27 at frame 3 and 0x22 at frame 0xd.
  * Kinds 0 to 2 hand the request's value to FieldActor_SetCloth, FieldActor_RequestAccessory and FieldActor_RequestHead;
- * kind 3 takes the player's record (func_020984fc). Then state 5 or 0x10 follows, or
+ * kind 3 cures the sting (the record's stung flag cleared, the face reloaded). Then state 5
+ * or 0x10 follows, or
  * func_02095bdc. Leaving the state does what was not done yet, and the actor of this console
  * passes the value on (FieldActor_SendItem, or FieldActor_SendNotStung for kind 3). */
 
@@ -4666,9 +4667,10 @@ static State7Work *state7_work(FieldActor *actor)
     return (State7Work *) &actor->work;
 }
 
-/* Kind 3: the player's record (func_020984fc), if any, goes through func_02099740 and
- * func_0209984c into 0x70d; NULL without one. */
-static void *state7_take_record(FieldActor *actor)
+/* Kind 3, the sting cured: the player's record, if any, has its stung flag cleared
+ * (PlayerRecord_SetStung) and its face reloaded into 0x70d (FaceTexture_Load); the record, or
+ * NULL without one. */
+static void *state7_cure_sting(FieldActor *actor)
 {
     void *record = PlayerRecords_OfPlayer(actor->player);
     if (record == NULL) {
@@ -4751,7 +4753,7 @@ void FieldActor_RunState7(FieldActor *actor)
             FieldActor_ApplyState7Kind2(actor);
             break;
         case 3: {
-            if (state7_take_record(actor) == NULL) {
+            if (state7_cure_sting(actor) == NULL) {
                 return;
             }
             u8 flags = actor->anim.flags;
@@ -4857,7 +4859,7 @@ void FieldActor_ExitState7(FieldActor *actor)
                 FieldActor_ApplyState7Kind2(actor);
                 break;
             case 3:
-                if (state7_take_record(actor) != NULL) {
+                if (state7_cure_sting(actor) != NULL) {
                     FieldActor_RestartAnimation(actor);
                     VillagerState_ClearAllStingSaid();
                 }
@@ -5290,18 +5292,18 @@ CLEAN_AS(func_0200cce8, FieldActor_RunState3)
 
 /* func_0200cdc8: while running (animation 2) the body leans forwards (FieldActor_LeanTowards) by up to
  * 0xc17 as the speed goes from 0x53f to 0x6e2; otherwise the lean is reset
- * (FieldActor_ResetPitchForState with no state).
+ * (FieldActor_EaseLeanForState with no state).
  * QUIRK: below 0x53f in animation 2 the lean is reset and then still set from the negative
  * fraction. */
 void FieldActor_LeanState3(FieldActor *actor)
 {
     if (actor->animation != 2) {
-        FieldActor_ResetPitchForState(actor, FIELD_ACTOR_STATES, 1);
+        FieldActor_EaseLeanForState(actor, FIELD_ACTOR_STATES, 1);
         return;
     }
     int over = FieldActor_Base(actor)->speed - SPEED_RUN;
     if (over < 0) {
-        FieldActor_ResetPitchForState(actor, FIELD_ACTOR_STATES, 1);
+        FieldActor_EaseLeanForState(actor, FIELD_ACTOR_STATES, 1);
     }
     fx32 fraction = FX_Div(over, SPEED_MAX - SPEED_RUN);
     fx32 lean = FX_MulFunc(0xc17000, fraction);

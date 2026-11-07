@@ -183,8 +183,8 @@ void PairedTown_PairAll(Activity *activity)
 CLEAN_AS(func_020a0eac, PairedTown_PairAll)
 
 /* func_020a0efc: the paired town of every taken slot's exchange block cleared, then the player
- * of the link state's slot (func_020a6ed0) paired. */
-void PairedTown_PairOwn(Activity *activity)
+ * of the served slot (LinkGlobal_ServedSlot) paired. */
+void PairedTown_PairServed(Activity *activity)
 {
     NetSession *session = data_020ccf94;
     for (int slot = SESSION_SLOTS - 1; slot >= 0; slot--) {
@@ -195,7 +195,7 @@ void PairedTown_PairOwn(Activity *activity)
     }
     PairedTown_Pair(activity, (int) LinkGlobal_ServedSlot());
 }
-CLEAN_AS(func_020a0efc, PairedTown_PairOwn)
+CLEAN_AS(func_020a0efc, PairedTown_PairServed)
 
 /* func_020a0b94: when this system's exchange block holds a paired town (days left), it goes
  * into this system's player's record; then the block's is cleared. `unused` is not read.

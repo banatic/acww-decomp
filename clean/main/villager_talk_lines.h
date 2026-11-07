@@ -19,7 +19,7 @@
 #include "villager_talk.h"
 
 void VillagerTalk_Line2bdb4(VillagerTalk *talk, VillagerTalkLine *out);
-void VillagerTalk_LineByDayWindow(VillagerTalk *talk, VillagerTalkLine *out);
+void VillagerTalk_LineByNightWindow(VillagerTalk *talk, VillagerTalkLine *out);
 void VillagerTalk_OfferChoices1e14A(VillagerTalk *talk);
 void VillagerTalk_Line2a5e8A(VillagerTalk *talk, VillagerTalkLine *out);
 void VillagerTalk_Say208c(VillagerTalk *talk);

@@ -470,9 +470,9 @@ void Obj020dd33c_Reset(Obj020dd33c *obj)
     obj->frames = 0;
     obj->phase = 0;
     Obj020dd33c_ClearActorMode(obj);
-    obj->velocity.x = 0;
-    obj->velocity.y = 0;
-    obj->velocity.z = 0;
+    obj->hold_offset.x = 0;
+    obj->hold_offset.y = 0;
+    obj->hold_offset.z = 0;
     obj->offset.x = 0;
     obj->offset.y = 0;
     obj->offset.z = 0;

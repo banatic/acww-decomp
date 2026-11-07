@@ -9,9 +9,9 @@
  * data_020e7b64): an entry, run by MissingNpc1_SetState, whose answer 0 refuses the state,
  * and an update, run each frame by its vtable slot 0x68 (MissingNpc1_Update).
  *
- * Where it starts depends on the scene (MissingNpc1_Start): in the town (scene 0) by the
- * town's gate (building 0x500b) or, when the middle spot of the town (middle_spot.h) is marked,
- * following the player; in scenes 0xb and 0xc following the player; in scene 0x2f it plays the
+ * Where it starts depends on the scene (MissingNpc1_Start): in the town (scene 0) at the
+ * middle spot (middle_spot.h), or, when the middle spot is marked and the player comes from
+ * scene 0xb, a tile before the town's gate (building 0x500b), following the player; in scenes 0xb and 0xc following the player; in scene 0x2f it plays the
  * scripted walk of state MISSING_NPC1_SCENE_2F, at whose end the player leaves through a scene
  * exit. Each frame in scene 0 (and in scene 0xb while the player escorts it to the paired town,
  * paired_town.h) its position is kept in the middle spot.

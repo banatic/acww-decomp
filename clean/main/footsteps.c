@@ -9,14 +9,14 @@
 #include "ground_sound.h"
 #include "scene_mover.h"
 
-static_assert(offsetof(Footsteps, ground) == 0x04, "Footsteps layout");
+static_assert(offsetof(Footsteps, mode) == 0x04, "Footsteps layout");
 
 /* The scene object's parts used here. */
 #define FOOTSTEPS_OBJECT_POSITION 0x5c /* a Vec3 */
 #define FOOTSTEPS_OBJECT_ANGLE 0x8e    /* s16, the angle about y */
 #define FOOTSTEPS_OBJECT_FLAGS 0xb0
 #define FOOTSTEPS_OBJECT_BODY_ANIM 0x188
-#define FOOTSTEPS_OBJECT_GROUND 0x350
+#define FOOTSTEPS_OBJECT_MOVER 0x350
 #define FOOTSTEPS_OBJECT_FOOT_A 0x490 /* a Vec3, marked on frame 1 */
 #define FOOTSTEPS_OBJECT_FOOT_B 0x484 /* a Vec3, marked on frame 9 */
 #define FOOTSTEPS_OBJECT_SOUND 0x514  /* a SoundEmitter */
@@ -24,10 +24,10 @@ static_assert(offsetof(Footsteps, ground) == 0x04, "Footsteps layout");
 /* The flags at 0xb0 that, both set, keep the steps silent. */
 #define FOOTSTEPS_SILENT_FLAGS 6
 
-/* The ground kinds that take marks, and the one that takes effect 0 too. */
-#define FOOTSTEPS_GROUND_FIRST 1
-#define FOOTSTEPS_GROUND_LAST 3
-#define FOOTSTEPS_GROUND_EXTRA 2
+/* The scene mover's modes that take marks, and the one that takes effect 0 too. */
+#define FOOTSTEPS_MODE_FIRST SCENE_MOVER_WALK
+#define FOOTSTEPS_MODE_LAST SCENE_MOVER_TURN
+#define FOOTSTEPS_MODE_EXTRA SCENE_MOVER_WALK_2
 
 #define FOOTSTEPS_EFFECT_MARK 0x28
 #define FOOTSTEPS_EFFECT_EXTRA 0
@@ -36,7 +36,7 @@ static_assert(offsetof(Footsteps, ground) == 0x04, "Footsteps layout");
 #define FOOTSTEPS_FRAME_A 1
 #define FOOTSTEPS_FRAME_B 9
 
-#define FOOTSTEPS_INITIAL_GROUND 5
+#define FOOTSTEPS_INITIAL_MODE SCENE_MOVER_MODES
 
 /* What the effects are handed: the mark gets the angle (and what follows), effect 0 the angle
  * turned round (and may change it before the mark reads it), both the point. */
@@ -53,18 +53,18 @@ static u8 *footsteps_part(void *object, u32 offset)
     return (u8 *) object + offset;
 }
 
-/* func_02013abc: one frame of the steps (footsteps.h); the ground kind is kept for the next.
+/* func_02013abc: one frame of the steps (footsteps.h); the mover's mode is kept for the next.
  * BUG: when marking both feet at once, the original hands effect 0x28 a FootstepMark whose
  * angle alone is set (the rest is what the stack held); here the rest is zero. */
 void Footsteps_Update(Footsteps *steps, void *object)
 {
-    s32 ground = SceneMover_Mode((SceneMover *) (void *) footsteps_part(object, FOOTSTEPS_OBJECT_GROUND));
+    s32 mode = SceneMover_Mode((SceneMover *) (void *) footsteps_part(object, FOOTSTEPS_OBJECT_MOVER));
 
-    if (steps->enabled != 0 && (u32) ground - FOOTSTEPS_GROUND_FIRST <= FOOTSTEPS_GROUND_LAST - FOOTSTEPS_GROUND_FIRST) {
+    if (steps->enabled != 0 && (u32) mode - FOOTSTEPS_MODE_FIRST <= FOOTSTEPS_MODE_LAST - FOOTSTEPS_MODE_FIRST) {
         FootstepMark mark = {0};
         mark.angle = *(const s16 *) footsteps_part(object, FOOTSTEPS_OBJECT_ANGLE);
 
-        if (steps->ground == 0) {
+        if (steps->mode == SCENE_MOVER_STAND) {
             EffectSystem_StartKind(FOOTSTEPS_EFFECT_MARK,
                                    (const Vec3 *) (void *) footsteps_part(object, FOOTSTEPS_OBJECT_FOOT_A),
                                    (const s16 *) &mark, 0);
@@ -82,7 +82,7 @@ void Footsteps_Update(Footsteps *steps, void *object)
                 mark.back_angle = (s16) (mark.angle + 0x8000);
                 /* the foot's point at the height of the object */
                 mark.at.y = ((const Vec3 *) footsteps_part(object, FOOTSTEPS_OBJECT_POSITION))->y;
-                if (ground == FOOTSTEPS_GROUND_EXTRA) {
+                if (mode == FOOTSTEPS_MODE_EXTRA) {
                     EffectSystem_StartKind(FOOTSTEPS_EFFECT_EXTRA, &mark.at, &mark.back_angle, 0);
                 }
                 EffectSystem_StartKind(FOOTSTEPS_EFFECT_MARK, &mark.at, (const s16 *) &mark, 0);
@@ -90,7 +90,7 @@ void Footsteps_Update(Footsteps *steps, void *object)
             }
         }
     }
-    steps->ground = ground;
+    steps->mode = mode;
 }
 CLEAN_AS(func_02013abc, Footsteps_Update)
 
@@ -123,11 +123,11 @@ void Footsteps_Enable(Footsteps *steps)
 }
 CLEAN_AS(func_02013c0c, Footsteps_Enable)
 
-/* func_02013c14: disabled, the ground kind 5 (none of those that take marks). */
+/* func_02013c14: disabled, the mode SCENE_MOVER_MODES (none of those that take marks). */
 void Footsteps_Init(Footsteps *steps)
 {
     Footsteps_Disable(steps);
-    steps->ground = FOOTSTEPS_INITIAL_GROUND;
+    steps->mode = FOOTSTEPS_INITIAL_MODE;
 }
 CLEAN_AS(func_02013c14, Footsteps_Init)
 

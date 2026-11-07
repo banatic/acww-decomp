@@ -51,11 +51,6 @@ static_assert(offsetof(NetSession, active) == 0x74, "active");
 #define HEADER_KIND 3
 #define HEADER_SOURCE 4
 
-/* The link state statuses this file sets or tests (session_link.h). */
-#define STATUS_WAITING 4
-#define STATUS_PENDING_FIRST 5 /* 5 and 6: to be told by the host */
-#define STATUS_DONE 7
-
 /* System packet kinds sent here (system_packet.c). */
 #define SYSTEM_SET_SENDER_STATUS 5
 #define SYSTEM_SET_OWN_STATUS 6
@@ -252,9 +247,9 @@ void Session_FinishLocalStatus(void)
     NetSession *session = data_020ccf94;
     int slot = session->local_slot;
     if (Session_IsSlotTaken(session, slot) == 0) {
-        LinkGlobal_SetStatus(SESSION_UNLINKED_SLOT, STATUS_DONE);
+        LinkGlobal_SetStatus(SESSION_UNLINKED_SLOT, LINK_STATUS_IDLE);
     } else {
-        LinkGlobal_SetStatus(slot, STATUS_DONE);
+        LinkGlobal_SetStatus(slot, LINK_STATUS_IDLE);
     }
 }
 CLEAN_AS(func_02074120, Session_FinishLocalStatus)
@@ -281,7 +276,7 @@ int Session_SendLocalStatus(int status)
     NetSession *session = data_020ccf94;
     int slot = session->local_slot;
     if (Session_IsSlotTaken(session, slot) == 0) {
-        LinkGlobal_SetStatus(SESSION_UNLINKED_SLOT, STATUS_WAITING);
+        LinkGlobal_SetStatus(SESSION_UNLINKED_SLOT, LINK_STATUS_IN_PROGRESS);
         u8 *packet = Session_GetSendBlock(session, SHARE_BLOCK);
         SessionNet_WriteSystemHeader(packet, 0, SYSTEM_SET_SENDER_STATUS);
         packet[1] = 0;
@@ -290,7 +285,7 @@ int Session_SendLocalStatus(int status)
     if (Session_IsLocalSlot(session, 0) != 0) {
         LinkGlobal_SetStatus(slot, status);
     } else {
-        LinkGlobal_SetStatus(slot, STATUS_WAITING);
+        LinkGlobal_SetStatus(slot, LINK_STATUS_IN_PROGRESS);
         u8 byte = (u8) status;
         session = data_020ccf94;
         Session_BeginMessage(session);
@@ -461,7 +456,7 @@ static void send_data(NetSession *session)
                 Session_SetOwedCredits(session, slot, 0);
             }
         } else if (sent != 0 && Session_IsLocalSlot(session, 0) != 0 && Session_IsStatusPending(slot) != 0) {
-            LinkGlobal_SetStatus(slot, STATUS_DONE);
+            LinkGlobal_SetStatus(slot, LINK_STATUS_IDLE);
         }
     }
     if (LinkScene_GlobalPhase() == 7) {
@@ -853,7 +848,7 @@ CLEAN_AS(func_02074dfc, Session_WriteStatusPacket)
 int Session_IsStatusPending(int slot)
 {
     u32 status = (u32) LinkGlobal_Status(slot);
-    return status - STATUS_PENDING_FIRST <= 1;
+    return status - LINK_STATUS_ACCEPTED <= 1;
 }
 CLEAN_AS(func_02074e48, Session_IsStatusPending)
 
