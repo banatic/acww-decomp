@@ -1,0 +1,14 @@
+# the message reader's decoder (021f4dac, class data_020e5278) holding the part tag 4/15 it met
+# last, at the end of frame 7701 of villager-furniture: the tag kept in the text (and through
+# the 0xff/2 handler without the request's first byte), and its parameters split and expanded;
+# the run ends after the calls
+scene villager-furniture
+frames 7710
+ram 2600,4100,5500,6500,7300
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 7701 020b50e1 021f4dac 0 0 0 00000000 00000000  # main MessageDecoder_KeepTag
+call 7701 020b4e39 021f4dac 0 0 0 00000000 00000000  # main MessageDecoder_CopyTag
+call 7701 020e9948 022a3378 40 0 0 00000000 00000000  # autoload_2 Heap_Alloc
+call 7701 020a8329 021f4dd4 r1 r1 r1 00000000 00000000  # main MessageTag_SplitParams
+call 7701 020b5075 021f4dac 0 0 0 00000000 00000000  # main MessageDecoder_ExpandTag
+end

@@ -1,0 +1,21 @@
+# the owner's talk (022b0d48, its errand at 0x154 is 021e6184) at the end of frame 5001 of
+# villager-errand-done: its lines by the talk object's group, place and type, the poison
+# greeting, its line tables 0x2034 and 0x8d18 group 4, the talk object marked done and its gift
+# given by type, into a block of the game's heap (022a3378); the run ends after the calls
+scene villager-errand-done
+frames 5010
+ram 2600,4138,5000
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 5001 020e9948 022a3378 40 0 0 00000000 00000000  # autoload_2 Heap_Alloc (the line)
+call 5001 02028359 022b0d48 0 0 0 00000000 00000000  # main VillagerTalkRequest_ReadType
+call 5001 0201e4a1 022b0d48 r2 0 0 00000000 00000000  # main VillagerTalk_Line2034
+call 5001 0201db25 022b0d48 r3 0 0 00000000 00000000  # main VillagerTalk_Line8d18Group4
+call 5001 0202c2c5 022b0d48 ffffffff 0 0 00000000 00000000  # main VillagerTalkGreeting_PoisonTexts
+call 5001 02024289 022b0d48 r5 0 0 00000000 00000000  # main VillagerTalkObject_LineByGroupPlace
+call 5001 02024bf9 022b0d48 r6 0 0 00000000 00000000  # main VillagerTalkObject_LineGroupByType
+call 5001 02023d0d 022b0d48 r7 0 0 00000000 00000000  # main VillagerTalkSteps_LineByObjectType
+call 5001 02023d89 022b0d48 0 0 0 00000000 00000000  # main VillagerTalkSteps_Say2f14
+call 5001 02025431 022b0d48 r9 0 0 00000000 00000000  # main VillagerTalkObject_LineClearItem
+call 5001 02023ddd 022b0d48 0 0 0 00000000 00000000  # main VillagerTalkSteps_GiveByObjectType
+call 5001 02024229 022b0d48 0 0 0 00000000 00000000  # main VillagerTalkObject_MarkDone
+end

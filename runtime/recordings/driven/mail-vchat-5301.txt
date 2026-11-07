@@ -1,0 +1,19 @@
+# letters and records of the seed's day at the end of frame 5301 of villager-chat: the
+# snowman's gift letters, an insurance letter carrying the item of player 0's first pocket
+# (021de3ae), a museum item marked as given by a former player, the session's villager
+# messages (no session), the friend data copied and compared; the run ends after the calls
+scene villager-chat
+frames 5700
+ram 2600,4500,5300
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 5301 020b048d 0 0 0 0 00000000 00000000  # main Snowmen_MailGiftItem
+call 5301 020b0401 0 0 0 0 00000000 00000000  # main Snowmen_MailGift
+call 5301 0208893d 0 0 021de3ae 0 00000000 00000000  # main NpcLetters_SendInsuranceLetter
+call 5301 020713ed 021f38f8 021de3ae 0 0 00000000 00000000  # main MuseumRecord_SetFormer
+call 5301 02078479 022a7dec 021de3ae 0 0 00000000 00000000  # main SessionVillager_SendObjectItem
+call 5301 020789ad 0 0 0 0 00000000 00000000  # main SessionVillager_SendMemoryTakeByIndex
+call 5301 0207892d 0 0 0 0 00000000 00000000  # main SessionVillager_SendMemoryUpdateByIndex
+call 5301 020e9948 022a3378 40 0 0 00000000 00000000  # autoload_2 Heap_Alloc
+call 5301 02077ea5 r1 021de3ae 0 0 00000000 00000000  # main WifiFriendData_Copy
+call 5301 02077e75 r2 r2 0 0 00000000 00000000  # main WifiFriendData_Matches
+end

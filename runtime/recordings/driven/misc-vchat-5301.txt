@@ -1,0 +1,34 @@
+# small functions given villager-chat's live objects and fixed records and blocks of the
+# game's heap (022a3378), at the end of frame 5301: the activity's job tests, the debug text's
+# writers and readability test, the fox's password, the save stamp's flag, a claim's exits,
+# the touch picks, the field actor (02392170) following a tile, a villager's held item link
+# (022a7dec + 0x9b4); the run ends after the calls
+scene villager-chat
+frames 5310
+ram 2600,4500,5300
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 5301 020a17a9 0 0 0 0 00000000 00000000  # main ActivityJob_1FShowingEndMessage
+call 5301 020a17d1 0 0 0 0 00000000 00000000  # main ActivityJob_IsIdleForOv054
+call 5301 02001911 02000000 100 0 0 00000000 00000000  # main DebugScreen_IsReadable
+call 5301 02001911 0 4 0 0 00000000 00000000  # main DebugScreen_IsReadable
+call 5301 020e9948 022a3378 200 0 0 00000000 00000000  # autoload_2 Heap_Alloc
+call 5301 020e9948 022a3378 40 0 0 00000000 00000000  # autoload_2 Heap_Alloc
+call 5301 020015fd 0 r2 40 0 00000000 00000000  # main DebugScreen_FillWords
+call 5301 020b9835 r3 d000 41 0 00000000 00000000  # main DebugText_PutChar
+call 5301 020b9809 r4 d000 020e3c2c 0 00000000 00000000  # main DebugText_PutString ("sp_npc_gatekeeper")
+call 5301 020b97e5 r5 d000 020e3c2c r4 00000000 00000000  # main DebugText_VPrintf
+call 5301 020b97d5 r5 r6 020e3c2c 0 00000000 00000000  # main DebugText_Print
+call 5301 020b97b5 r6 r7 020e3c2c 0 00000000 00000000  # main DebugText_Printf
+call 5301 020018b5 r8 020e3c2c 10 0 00000000 00000000  # main DebugScreen_DumpWords
+call 5301 020a01d5 0 0 0 0 00000000 00000000  # main SaveStamp_SetLostFlag
+call 5301 020ae3b9 021f3b30 0 0 0 00000000 00000000  # main FoxShop_Password
+call 5301 020ae495 r1 0 0 0 00000000 00000000  # main FoxPassword_MarkVisitor
+call 5301 0209d841 r11 0 0 0 00000000 00000000  # main SceneClaimExit_NextTile
+call 5301 0209d845 r12 0 0 0 00000000 00000000  # main SceneClaimExit_Position
+call 5301 020b735d 0 0 0 0 00000000 00000000  # main TouchPick_Snowman
+call 5301 020b73ad 0 0 0 0 00000000 00000000  # main TouchPick_Telephone
+call 5301 020b74a5 0 0 0 0 00000000 00000000  # main TouchPick_ObjectActorKind6
+call 5301 0200f531 02392170 r16 0 0 00000000 00000000  # main FieldActor_FollowReportedToTile
+call 5301 020121c5 022a87a0 0 0 0 00000000 00000000  # main HeldItemLink_Model
+call 5301 020863dd r18 0 0 0 00000000 00000000  # main EventWinner_IsNearAttr4
+end

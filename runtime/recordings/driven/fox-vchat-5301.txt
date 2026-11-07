@@ -1,0 +1,11 @@
+# the fox outdoors (022b4788, class data_ov003_02238630) at the end of frame 5301 of
+# villager-chat: his idle state entered, his receiver part's slot 0x18 through its thunk (the
+# part at 0xec); the run ends after the calls
+scene villager-chat
+frames 5310
+ram 2600,4500,5300
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 5301 0221bec5 022b4788 0 0 0 0221bec4 47702001  # ov003 Fox_EnterIdle
+call 5301 0221c2a5 022b4874 0 0 0 0221c2a4 4a04b404  # ov003 Fox_ReceiverThunk18
+call 5301 0221c09d 022b4788 0 0 0 0221c09c 00004770  # ov003 Fox_ReceiverSlot18
+end

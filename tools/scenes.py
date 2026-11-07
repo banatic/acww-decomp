@@ -251,6 +251,9 @@ SAVES = {
     + [(POCKETS + 2 * i, "<H", 0x3508) for i in range(2, 15)],
     "full-net-catches": [(HELD, "<H", 0x1376), (POCKETS, "<H", 0x12E8), (POCKETS + 2, "<H", 0x12B0)]
     + [(POCKETS + 2 * i, "<H", 0x3508) for i in range(2, 15)],
+    # "full-net-catches" with a firefly (0x12d5) in place of the insect
+    "full-net-firefly": [(HELD, "<H", 0x1376), (POCKETS, "<H", 0x12E8), (POCKETS + 2, "<H", 0x12D5)]
+    + [(POCKETS + 2 * i, "<H", 0x3508) for i in range(2, 15)],
     "bare": [(HELD, "<H", 0xFFF1)],  # nothing held (0xfff1, the code of an empty slot)
     # pockets 0-3: a fish (0x12e8, the first), an insect (0x12b0), a fossil (0x450c) and a
     # painting (0x3894), the first item of each of the museum's four collections
@@ -2097,6 +2100,12 @@ scene("villager-memories-gift", "memories-resident", 10950, [2600, 4900, 8000, 1
 scene("villager-memories-resident", "memories-resident", 10950, [2600, 4900, 8000, 10300, 10700, 10949],
       frames(9900, 10950, 100), "villager-memories-gift at another second of the clock: the villager talks of "
       "the former resident", "villager-talks", "2026-09-11 11:30:27")
+scene("villager-memories-learn", "memories", 10950, [2600, 4900, 8000, 10300, 10700, 10949], frames(9900, 10950, 100),
+      "villager-memories at another second of the clock: two villagers chatting, the second learns from the "
+      "first (the bonds' exchange that only learns)", "villager-talks", "2026-09-11 11:30:14")
+scene("villager-memories-bond", "memories", 10950, [2600, 4900, 8000, 10300, 10700, 10949], frames(9900, 10950, 100),
+      "villager-memories a minute later: two villagers chatting talk of how they get on", "villager-talks",
+      "2026-09-11 11:31:30")
 scene("villager-mail-held", "letter-held-3f", 12730, [2600, 7200, 10400, 11100, 12000, 12729], frames(10400, 12730, 50),
       "villager-mail with the villager holding a letter of a player of another town: it shows that letter",
       "villager-mail")
@@ -2353,6 +2362,9 @@ scene("post-swap", "mail-items", 7058, [2600, 5000, 5300, 5700, 6200, 6700, 7057
 scene("insect-release-pocket", "full-net-catches", 4638, [2600, 3420, 3900, 4100, 4300, 4637],
       frames(3900, 4638, 25), "insect-swap with an insect in the pockets: a choice cancelled by the pen, then "
       "the pocket's insect let go for the mantis")
+scene("insect-release-firefly", "full-net-firefly", 4638, [2600, 3420, 3900, 4100, 4300, 4637],
+      frames(3900, 4638, 25), "insect-release-pocket with a firefly in the pockets: let go by day, it only flies "
+      "off", "insect-release-pocket")
 scene("fish-release-pocket", "full-rod-catches", 6484, [2600, 3700, 5100, 5900, 6100, 6483], frames(5800, 6484, 25),
       "fish-swap with a fish in the pockets: by the river the pocket's fish is put back into the water for "
       "the catch")

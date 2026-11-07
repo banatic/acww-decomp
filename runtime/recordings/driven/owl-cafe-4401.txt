@@ -1,0 +1,8 @@
+# Blathers' talk (022b03a0, at 0x658 of 022afd48, class data_ov047_02262ca4) told of the first
+# answer to line 0x0e, at the end of frame 4401 of cafe-afternoon; the run ends after the calls
+scene cafe-afternoon
+frames 4410
+ram 2600
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 4401 02260781 022b03a0 0 0 0 02260780 d1022900  # ov047 OwlTalk_OnAnswer0e
+end

@@ -1,0 +1,15 @@
+# the town's first fish shadow (data_ov003_0225f76c, waiting to be placed) at the end of frame
+# 5301 of villager-chat: its sense cleared and stepped in each mode (far, near, the sound), and
+# let go of a line it is not on; the run ends after the calls
+scene villager-chat
+frames 5310
+ram 2600,4500,5300
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 5301 02229da5 0225f76c 0 0 0 02229da4 18404901  # ov003 FishShadow_ResetSense
+call 5301 02229db5 0225f9b4 0 0 0 02229db4 70012100  # ov003 FishShadowSense_Reset
+call 5301 02229f01 0225f9b4 0225f76c 0 0 02229f00 b081b500  # ov003 FishShadowSense_Step
+call 5301 02229ead 0225f9b4 0225f76c 0 0 02229eac b081b530  # ov003 FishShadowSense_StepFar
+call 5301 02229e2d 0225f9b4 0225f76c 0 0 02229e2c b081b530  # ov003 FishShadowSense_StepNear
+call 5301 02229dc1 0225f9b4 0225f76c 0 0 02229dc0 1c04b510  # ov003 FishShadowSense_StepSound
+call 5301 0222ad2d 0225f76c 0 0 0 0222ad2c 1c04b510  # ov003 FishShadowHook_LetGo
+end

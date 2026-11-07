@@ -1,0 +1,8 @@
+# the barber (022b06c8, class data_ov053_02261b98) at the end of frame 7101 of barber: whether
+# she may act in a kind-6 act; the run ends after the call
+scene barber
+frames 7110
+ram 3900,4400,5700,7100
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 7101 0226071d 022b06c8 0 0 0 0226071c b081b500  # ov053 Barber_MayActKind6
+end

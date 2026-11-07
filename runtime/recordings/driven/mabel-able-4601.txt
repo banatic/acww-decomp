@@ -1,0 +1,14 @@
+# Mabel (022afd4c, class data_ov049_02263544) in her states 10 and 11 of a linked session
+# (entered and updated: standing, turning to the player) and her talk (at 0x658) told of an
+# answer to another file's line, at the end of frame 4601 of able-sisters; the run ends after
+# the calls
+scene able-sisters
+frames 4610
+ram 2600,3600
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 4601 022623f1 022afd4c 0 0 0 022623f0 b081b500  # ov049 Mabel_EnterLinkedStand
+call 4601 022623b5 022afd4c 0 0 0 022623b4 1c04b510  # ov049 Mabel_UpdateLinkedStand
+call 4601 02262375 022afd4c 0 0 0 02262374 b088b510  # ov049 Mabel_EnterLinkedTurn
+call 4601 02262345 022afd4c 0 0 0 02262344 1c04b510  # ov049 Mabel_UpdateLinkedTurn
+call 4601 02261161 022b03a4 0 0 0 02261160 b082b510  # ov049 MabelTalk_OnDramaAnswer
+end

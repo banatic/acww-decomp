@@ -1,0 +1,38 @@
+# a villager of the town (022a880c): its scene motion (at 0x564) in the steps of kinds 5, 9, 13
+# and 14 and going to a spot, its action (at 0x618) started and stepped, its mode record (its
+# town record 021e6218 + 0x734) to mode 11 and the town's newcomer set to it, at the end of
+# frame 6401 of villager-chat; the run ends after the calls
+scene villager-chat
+frames 6410
+ram 2600,4500,5300,6400
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 6401 02016bfd 022a8d70 022a880c 0 0 00000000 00000000  # main SceneMotion_GoToSpotTurnAtSpot
+call 6401 02016a49 022a8d70 022a880c 0 0 00000000 00000000  # main SceneMotion_GoToSpotTurnFirst
+call 6401 02016d6d 022a8d70 022a880c 0 0 00000000 00000000  # main SceneMotion_GoToSpotWalk
+call 6401 02017e7d 022a8d70 022a880c 0 0 00000000 00000000  # main SceneMotion_Kind14Step7
+call 6401 02017e21 022a8d70 022a880c 0 0 00000000 00000000  # main SceneMotion_Kind14Step8
+call 6401 02017e01 022a8d70 022a880c 0 0 00000000 00000000  # main SceneMotion_Kind14Step9
+call 6401 02017dd9 022a8d70 022a880c 0 0 00000000 00000000  # main SceneMotion_Kind14Step10
+call 6401 02017d81 022a8d70 022a880c 0 0 00000000 00000000  # main SceneMotion_Kind14Step11
+call 6401 02017d15 022a8d70 022a880c 0 0 00000000 00000000  # main SceneMotion_Kind14Step12
+call 6401 02017af1 022a8d70 022a880c 0 0 00000000 00000000  # main SceneMotion_Kind14Step18
+call 6401 02017ab5 022a8d70 022a880c 0 0 00000000 00000000  # main SceneMotion_Kind14Step19
+call 6401 02018715 022a8d70 022a880c 0 0 00000000 00000000  # main SceneMotion_Kind13Step3
+call 6401 02018d7d 022a8d70 022a880c 0 0 00000000 00000000  # main SceneMotion_RunKind9
+call 6401 02018db1 022a8d70 022a880c 0 0 00000000 00000000  # main SceneMotion_StartKind9
+call 6401 020191c9 022a8d70 022a880c 0 0 00000000 00000000  # main SceneMotion_StartKind5
+call 6401 02014245 022a8e24 022a880c 0 0 00000000 00000000  # main SceneAction_Start2
+call 6401 02013dc1 022a8e24 022a880c 0 0 00000000 00000000  # main SceneAction_Start3
+call 6401 020141e9 022a8e24 022a880c 0 0 00000000 00000000  # main SceneAction_WaitMotion3
+call 6401 020141c5 022a8e24 022a880c 0 0 00000000 00000000  # main SceneAction_WaitRelease
+call 6401 02014159 022a8e24 022a880c 0 0 00000000 00000000  # main SceneAction_RunPhase2
+call 6401 02013d5d 022a8e24 022a880c 0 0 00000000 00000000  # main SceneAction_RunPhase3
+call 6401 0201ce35 022a880c 0 0 0 00000000 00000000  # main VillagerSceneObject_VfuncB4
+call 6401 0201ce31 022a880c 0 0 0 00000000 00000000  # main VillagerSceneObject_VfuncB8
+call 6401 0201ce2d 022a880c 0 0 0 00000000 00000000  # main VillagerSceneObject_VfuncBc
+call 6401 0202e42d 022a880c 0 0 0 00000000 00000000  # main VillagerSceneObject_VfuncA8
+call 6401 0207f1c9 021e6218 0 0 0 00000000 00000000  # main VillagerStatus_ModeRecord
+call 6401 0209c215 r1 0 0 0 00000000 00000000  # main VillagerModeRecord_EnterMode11
+call 6401 0208150d 021e6218 0 0 0 00000000 00000000  # main TownVillager_NpcId
+call 6401 0207c461 021e5a2c r1 0 0 00000000 00000000  # main VillagerResidents_SetNewcomerNpc
+end

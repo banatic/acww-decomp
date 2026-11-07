@@ -1,0 +1,19 @@
+# the loose snowball at rest (02348fcc, class data_ov003_022382ac) in snowball-float at the end
+# of frame 5801, while the other floats: its face for a ratio, then its slide, drift, jump-on and
+# settling as a body and as a head, each entered and run once; the run ends after the calls
+scene snowball-float
+frames 5810
+ram 2700,4000,5000,5400,5700
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 5801 0226fd29 800 0 0 0 0226fd28 4288490f  # ov068 Snowball_Face
+call 5801 0226f349 02348fcc 0 0 0 0226f348 b081b530  # ov068 Snowball_EnterSlide
+call 5801 0226f299 02348fcc 0 0 0 0226f298 b081b530  # ov068 Snowball_UpdateSlide
+call 5801 0226f231 02348fcc 0 0 0 0226f230 b081b530  # ov068 Snowball_EnterDrift
+call 5801 0226f179 02348fcc 0 0 0 0226f178 b090b510  # ov068 Snowball_UpdateDrift
+call 5801 0226ef05 02348fcc 0 0 0 0226ef04 b081b530  # ov068 Snowball_EnterJumpOn
+call 5801 0226ee55 02348fcc 0 0 0 0226ee54 1c04b510  # ov068 Snowball_UpdateJumpOn
+call 5801 0226f0e1 02348fcc 0 0 0 0226f0e0 b081b530  # ov068 Snowball_EnterSettleBody
+call 5801 0226effd 02348fcc 0 0 0 0226effc b086b570  # ov068 Snowball_UpdateSettleBody
+call 5801 0226ee0d 02348fcc 0 0 0 0226ee0c 1c04b510  # ov068 Snowball_EnterSettleHead
+call 5801 0226ed9d 02348fcc 0 0 0 0226ed9c b081b500  # ov068 Snowball_UpdateSettleHead
+end

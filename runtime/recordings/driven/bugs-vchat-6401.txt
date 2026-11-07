@@ -1,0 +1,15 @@
+# a town insect in view (022617bc + 2 * 0x25c, kind 0xd) moved by its fade, fly-off, rise and
+# walk steps with a counter from the heap, then rested and swayed on its path, at the end of
+# frame 6401 of villager-chat; the run ends after the calls
+scene villager-chat
+frames 6410
+ram 2600,4500,5300,6400
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 6401 020e9948 022a3378 10 0 0 00000000 00000000  # autoload_2 Heap_Alloc
+call 6401 02231819 02261c74 r1 0 0 02231818 b084b570  # ov003 TownInsectMove_FadeByAlarm
+call 6401 022319bd 02261c74 r2 0 0 022319bc b087b5f0  # ov003 TownInsectMove_FlyOff
+call 6401 022342f9 02261c74 r3 0 0 022342f8 b085b5f0  # ov003 TownInsectMove_RiseAway
+call 6401 02232e89 02261c74 r4 0 0 02232e88 b082b570  # ov003 TownInsectMove_Walk1E
+call 6401 02271359 02261c74 0 0 0 02271358 b081b530  # ov068 InsectPath_Rest
+call 6401 02271069 02261c74 0 0 0 02271068 4918b510  # ov068 InsectPath_Sway
+end

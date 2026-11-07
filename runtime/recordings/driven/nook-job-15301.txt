@@ -1,0 +1,10 @@
+# Tom Nook outdoors (022a6c94, class data_ov068_02277574) and his talk scene (022a72ec, vtable
+# data_ov068_022774e4) at the end of frame 15301 of nook-job: whether he may act, and the talk's
+# close; the run ends after the calls
+scene nook-job
+frames 15310
+ram 1300,5200,9400,11300,15300
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 15301 0226e1fd 022a6c94 0 0 0 0226e1fc 49032200  # ov068 TownNook_MayAct
+call 15301 0226e3b5 022a72ec 0 0 0 0226e3b4 b081b530  # ov068 TownNookScene_OnTalkClosed
+end

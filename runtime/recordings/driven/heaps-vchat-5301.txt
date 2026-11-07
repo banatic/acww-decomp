@@ -1,0 +1,22 @@
+# heaps made for the check in a heap of the game (022a3378) and their other paths: an expanded
+# heap's blocks freed all at once (each visited), a frame heap's block resized, both destroyed,
+# and a heap made in a block of its own taken back to the base class; at the end of frame 5301
+# of villager-chat; the run ends after the calls
+scene villager-chat
+frames 5310
+ram 2600,4500,5300
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 5301 020ea1bc 200 022a3378 0 0 00000000 00000000  # autoload_2 ExpHeap_Create (an expanded heap of 0x200 bytes)
+call 5301 020e9948 r1 20 0 0 00000000 00000000  # autoload_2 Heap_Alloc
+call 5301 020e9948 r2 20 0 0 00000000 00000000  # autoload_2 Heap_Alloc
+call 5301 020e9b9c r3 0 0 0 00000000 00000000  # autoload_2 Heap_FreeAll
+call 5301 020ea0e0 200 022a3378 0 0 00000000 00000000  # autoload_2 FrameHeap_Create
+call 5301 020e9948 r1 20 0 0 00000000 00000000  # autoload_2 Heap_Alloc
+call 5301 020e9cbc r2 r1 40 0 00000000 00000000  # autoload_2 FrameHeap_Resize
+call 5301 020e9fd4 r3 0 0 0 00000000 00000000  # autoload_2 Heap_Destroy
+call 5301 020e9fd4 r8 0 0 0 00000000 00000000  # autoload_2 Heap_Destroy
+call 5301 020e9948 022a3378 100 0 0 00000000 00000000  # autoload_2 Heap_Alloc (a block for a heap of its own)
+call 5301 020ea298 r1 100 0 0 00000000 00000000  # autoload_2 ExpHeap_CreateAt
+call 5301 020ea3e0 r1 0 0 0 00000000 00000000  # autoload_2 Heap_Destruct
+call 5301 020e993c 022a3378 r3 0 0 00000000 00000000  # autoload_2 Heap_Free
+end

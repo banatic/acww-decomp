@@ -1,0 +1,12 @@
+# the store's clerk (022b0538, class data_ov050_02265a60) in its states 13 and 14 of a linked
+# session (entered and updated: standing, turning to the player), at the end of frame 4081 of
+# store-upgrade; the run ends after the calls
+scene store-upgrade
+frames 4090
+ram 2600,2900,3500,3800
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 4081 02263df9 022b0538 0 0 0 02263df8 b081b500  # ov050 NookClerk_EnterLinkedStand
+call 4081 02263dbd 022b0538 0 0 0 02263dbc 1c04b510  # ov050 NookClerk_UpdateLinkedStand
+call 4081 02263d7d 022b0538 0 0 0 02263d7c b088b510  # ov050 NookClerk_EnterLinkedTurn
+call 4081 02263d45 022b0538 0 0 0 02263d44 1c04b510  # ov050 NookClerk_UpdateLinkedTurn
+end

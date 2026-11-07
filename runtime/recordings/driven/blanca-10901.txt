@@ -1,0 +1,10 @@
+# Blanca (022a62f0, class data_ov074_02279c68) at the end of frame 10901 of blanca: the point
+# beside her, at no offset, into a block of the game's heap (022a3378); the run ends after the
+# calls
+scene blanca
+frames 10910
+ram 2600,4200,6000,6700,7300,8700
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 10901 020e9948 022a3378 40 0 0 00000000 00000000  # autoload_2 Heap_Alloc
+call 10901 0227959d 022a62f0 r1 r1 0 0227959c b084b570  # ov074 MysteryCat_SidePoint
+end

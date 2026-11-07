@@ -1,0 +1,30 @@
+# the town's events and effects at the field actor's position (023921cc), a villager's path
+# walker (the behaviour of 022a880c + 0x3c) asked for tiles and its goal, its sound slots
+# (022a7dec + 0x518) stopped, the object at data_021c9350 (022aacf0) entering mode 7 of kind 1,
+# a scene process made and freed, at the end of frame 6401 of villager-chat; the run ends after
+# the calls
+scene villager-chat
+frames 6410
+ram 2600,4500,5300,6400
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 6401 020e9948 022a3378 40 0 0 00000000 00000000  # autoload_2 Heap_Alloc
+call 6401 02220bf1 r1 0 0 0 02220bf0 b089b5f0  # ov003 TileEvent_FindFreeTileAround
+call 6401 02221151 0 023921cc 0 0 02221150 b08db530  # ov003 TileEvent_StartKind3
+call 6401 02220c8d 0 0 0 0 02220c8c b091b530  # ov003 TileEvent_StartKindC
+call 6401 02235951 023921cc 0 0 0 02235950 b083b500  # ov003 TownInsectMove_OnGroupTile
+call 6401 022235d9 0 r5 0 0 022235d8 b083b5f0  # ov003 GrowthModel_Loop
+call 6401 02091599 60 023921cc r6 r6 00000000 00000000  # main EffectSystem_StartKind60
+call 6401 02093079 2f 023921cc r7 r7 00000000 00000000  # main EffectKinds_StartKind2f
+call 6401 02091d91 4d 023921cc r8 r8 00000000 00000000  # main EffectSystem_StartKind4d
+call 6401 020449ad r9 0 0 0 00000000 00000000  # main TileEffects_StartE2
+call 6401 0201298d 022a9100 022a8868 0 0 00000000 00000000  # main PathWalker_OnGoalTileB
+call 6401 02012951 022a9100 022a8868 0 0 00000000 00000000  # main PathWalker_StepUntilArrived
+call 6401 020126d1 r12 022a9100 0 0 00000000 00000000  # main PathWalker_PickInAnyAcre
+call 6401 020129c1 r13 0 0 022a880c 00000000 00000000  # main PathWalker_PickOtherFront
+call 6401 020ef144 022a8304 0 0 0 00000000 00000000  # autoload_2 SoundSlots_StopHeld
+call 6401 020f555c 022a8304 0 0 0 00000000 00000000  # autoload_2 SoundEmitterClass_ApplyLowered
+call 6401 02058165 022aacf0 0 0 0 00000000 00000000  # main Obj020dd33c_EnterMode7Kind1
+call 6401 020a56d5 0 0 0 0 00000000 00000000  # main SceneProcessBase_New
+call 6401 020a5275 r1 0 0 0 00000000 00000000  # main SceneProcessBase_DestructFree
+call 6401 020b4bf1 021f66a0 2 0 0 00000000 00000000  # main MessageCursor_Mask
+end

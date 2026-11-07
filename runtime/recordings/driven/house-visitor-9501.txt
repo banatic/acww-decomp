@@ -1,0 +1,8 @@
+# the house's visitor (022b0528, class data_ov068_02278140) walking about the room at the end of
+# frame 9501 of house-visitor: its pace slowed; the run ends after the call
+scene house-visitor
+frames 9510
+ram 2600,3700,6000,9500
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 9501 02276459 022b0528 0 0 0 02276458 b081b500  # ov068 HouseVisitor_SlowPace
+end

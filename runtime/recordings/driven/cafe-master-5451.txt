@@ -1,0 +1,8 @@
+# Brewster's talk (022afd6c, at 0x658 of 022af714, class data_ov004_022546e0) told a command of
+# its scene ended, at the end of frame 5451 of cafe-afternoon; the run ends after the calls
+scene cafe-afternoon
+frames 5460
+ram 2600,4400
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 5451 0222422d 022afd6c 0 0 0 0222422c b081b530  # ov004 CafeMasterTalk_RunCommandSequence
+end
