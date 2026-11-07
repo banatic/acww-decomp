@@ -1,5 +1,5 @@
 /* The announcements of the town's events: when one of eleven events of the calendar
- * (data_020ca508: 0x09-0x13) starts or ends, or the day changes (event_kinds' check at 6:00,
+ * (data_020ca508: 0x09-0x13) starts or ends, or the town's day changes (TownDay_OnClock,
  * func_020469f4) or event 0x44 is over (func_020be830), the player is taken into scene 0x31 at
  * a building of the town map and talk 0 shows a message of "obj_ev_start" or "obj_ev_end",
  * then the player goes back out.

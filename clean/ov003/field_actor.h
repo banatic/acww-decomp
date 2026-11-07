@@ -541,12 +541,12 @@ typedef struct FieldActor {
     u8 aimed;      /* a point was aimed at this frame (the pen, or B): aim_point */
     u8 unk_149[3];
     Vec3 pick_point; /* the point picked (pick_kind); a request for state 0x59 aims at it when aimed is 0 */
-    Vec3 aim_point;  /* the point tools act on when aim_mode is not 1 */
+    Vec3 aim_point;  /* the point tools act on when control_mode is not 1 */
     u8 unk_164[4];
     void *other;     /* the object FieldActor_CheckOther found */
     u8 other_result; /* FieldActor_CheckOther's verdict: 0-4 */
     u8 unk_16D[3];
-    int aim_mode; /* 1: tools act on a point ahead of the actor; otherwise on aim_point (some only with 2) */
+    int control_mode; /* 1: tools act on a point ahead of the actor; otherwise on aim_point (some only with 2) */
     u8 unk_174[0x1c4 - 0x174];
     u8 unk_1C4[0x1d2 - 0x1c4]; /* func_02089fc8 runs on it after func_02010d88 */
     u8 other_kind;             /* the kind of object met: 2 and 3 in main's tables, 0x11 and 0x12 here */

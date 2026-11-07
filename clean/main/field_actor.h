@@ -367,7 +367,7 @@ u8 FieldActor_Act(struct FieldActor *actor);
 
 /* field_actor.c: the set-up once the actor is made. */
 int FieldActor_Init(struct FieldActor *actor);
-void FieldActor_SetupPartC(struct FieldActor *actor);
+void FieldActor_SetupAccessory(struct FieldActor *actor);
 void FieldActor_SetupPartB(struct FieldActor *actor);
 void FieldActor_SetupLooks(struct FieldActor *actor);
 
@@ -448,22 +448,22 @@ void FieldActor_EaseValueBy(fx32 *value, int target, fx32 rate, int max_step, in
 int FieldActor_NoteObjectUnderfoot(int player);
 
 /* field_actor_looks.c: the looks, from the player's record: the palettes, the clothes, the
- * head (part B), part C, and the sun level. */
+ * head (part B), the accessory, and the sun level. */
 void FieldActor_CopyPalette(struct FieldActor *actor, int from, int to, const void *from_name, const void *to_name);
 void FieldActor_CopyTexture(struct FieldActor *actor, int from, int to, const void *from_name, const void *to_name);
 int FieldActor_RequestHead(struct FieldActor *actor, const u16 *item, u8 kind, u8 hair_color, u8 with_face);
 void FieldActor_PollHead(struct FieldActor *actor);
 void FieldActor_ApplyHead(struct FieldActor *actor);
-int FieldActor_RequestPartC(struct FieldActor *actor, const u16 *item);
-void FieldActor_PollPartC(struct FieldActor *actor);
-void FieldActor_ApplyPartC(struct FieldActor *actor);
+int FieldActor_RequestAccessory(struct FieldActor *actor, const u16 *item);
+void FieldActor_PollAccessory(struct FieldActor *actor);
+void FieldActor_ApplyAccessory(struct FieldActor *actor);
 int FieldActor_BindCloth(struct FieldActor *actor);
 void FieldActor_SetCloth(struct FieldActor *actor, u16 *item);
 void FieldActor_SetPalettes(struct FieldActor *actor, int hair_color, int sun_level);
 void FieldActor_RecordHeldItem(u16 *item, struct FieldActor *actor);
 int FieldActor_RecordFace(struct FieldActor *actor);
 int FieldActor_RecordStung(struct FieldActor *actor);
-void FieldActor_RecordPartCItem(u16 *item, struct FieldActor *actor);
+void FieldActor_RecordAccessoryItem(u16 *item, struct FieldActor *actor);
 u8 FieldActor_SunLevel(struct FieldActor *actor, int store);
 unsigned int FieldActor_RecordSunLevel(struct FieldActor *actor);
 unsigned int FieldActor_RecordHairColor(struct FieldActor *actor);

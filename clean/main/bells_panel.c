@@ -48,8 +48,8 @@ extern fx32 FX_MulFunc(fx32 a, fx32 b);
 #define SHIFT_SPEED_MIN 0x2300
 #define SHIFT_SPEED_MAX 0x5000
 #define SHIFT_WAIT 5
-/* The lift at state flag 4's value 0 (192 pixels, 20.12). */
-#define LIFT_AT_ZERO 0x000c0000
+/* The drop at state flag 4's value 0 (192 pixels, 20.12). */
+#define DROP_AT_ZERO 0x000c0000
 
 /* The number: 7 digits, not padded, no unit, half-width characters. */
 #define BELLS_DIGITS 7
@@ -122,16 +122,16 @@ void BellsPanel_UpdateShift(BellsPanel *panel)
 }
 CLEAN_AS(func_0208b658, BellsPanel_UpdateShift)
 
-/* func_0208b6ec: `lift` from state flag 4's value v: 0 * v + 192 * (1 - v), in whole pixels.
+/* func_0208b6ec: `drop` from state flag 4's value v: 0 * v + 192 * (1 - v), in whole pixels.
  * QUIRK: the first product is always 0, and still computed. */
-void BellsPanel_UpdateLift(BellsPanel *panel)
+void BellsPanel_UpdateDrop(BellsPanel *panel)
 {
     fx32 value = StateFlags_ValueOrOne();
     fx32 at_one = FX_MulFunc(0, value);
-    fx32 at_zero = FX_MulFunc(LIFT_AT_ZERO, FX32_ONE - value);
-    panel->lift = (at_one + at_zero) >> 12;
+    fx32 at_zero = FX_MulFunc(DROP_AT_ZERO, FX32_ONE - value);
+    panel->drop = (at_one + at_zero) >> 12;
 }
-CLEAN_AS(func_0208b6ec, BellsPanel_UpdateLift)
+CLEAN_AS(func_0208b6ec, BellsPanel_UpdateDrop)
 
 /* func_0208b720: the bells of this system's player, money bags included, plus the bells held
  * on the pockets screen's cursor; 0 without a player. The panel is not used. */
@@ -358,10 +358,10 @@ void BellsPanel_Show(BellsPanel *panel)
 }
 CLEAN_AS(func_0208b9d8, BellsPanel_Show)
 
-/* func_0208b9e0: the lift updated, then the class's draw. */
+/* func_0208b9e0: the drop updated, then the class's draw. */
 void BellsPanel_CallDraw(BellsPanel *panel)
 {
-    BellsPanel_UpdateLift(panel);
+    BellsPanel_UpdateDrop(panel);
     call_slot(panel, SLOT_DRAW);
 }
 CLEAN_AS(func_0208b9e0, BellsPanel_CallDraw)
@@ -411,7 +411,7 @@ void BellsPanel_Update(BellsPanel *panel)
 CLEAN_AS(func_0208ba54, BellsPanel_Update)
 
 /* func_0208bad4 (vtable slot 2): unless closed, the animation's cell drawn on the main screen
- * at the sprite's place plus the frame's offset, `lift` and `shift` (rounded) lower. */
+ * at the sprite's place plus the frame's offset, `drop` and `shift` (rounded) lower. */
 void BellsPanel_Draw(BellsPanel *panel)
 {
     if (panel->state == BELLS_PANEL_CLOSED) {
@@ -426,7 +426,7 @@ void BellsPanel_Draw(BellsPanel *panel)
     int shift = (panel->shift + 0x800) >> 12;
     int y = ScreenSprite_Y(&panel->base);
     y += CellAnim_FrameY(&panel->anim, -1);
-    y += panel->lift + shift;
+    y += panel->drop + shift;
     OamBuffer_DrawCell(0, cell, x, y, -1, -1, FX32_ONE, FX32_ONE, 0, -1, 0, 0);
 }
 CLEAN_AS(func_0208bad4, BellsPanel_Draw)
@@ -465,7 +465,7 @@ BellsPanel *BellsPanel_Construct(BellsPanel *panel)
     panel->base.vtable = data_020e21fc;
     CellAnim_Construct(&panel->anim);
     panel->state = BELLS_PANEL_CLOSED;
-    panel->lift = 0;
+    panel->drop = 0;
     panel->shift = 0;
     panel->shift_target = 0;
     panel->shift_speed = 0;

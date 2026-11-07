@@ -39,7 +39,7 @@
 
 /* Event numbers with code of their own. 0x3c is the insurer's visit (ov071 insurer_talk.c
  * bars it), 0x40 Gracie's (ov070 giraffe_talk.c, ov003 giraffe_spot.c). 0x3d is the fox's (fox_shop.h): its letters go out
- * the day before its day of the schedule (EventSchedule_Update). */
+ * the day before its day of the schedule or on the day itself, once (EventSchedule_Update). */
 #define EVENT_CALENDAR_EVENT_0B 0x0b
 #define EVENT_CALENDAR_EVENT_16 0x16
 #define EVENT_CALENDAR_EVENT_18 0x18

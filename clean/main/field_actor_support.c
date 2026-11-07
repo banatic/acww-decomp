@@ -638,16 +638,16 @@ int FieldActor_JointBPoint(FieldActor *actor, Vec3 *out)
 }
 CLEAN_AS(func_0200f1ec, FieldActor_JointBPoint)
 
-/* func_0200f234: the aim mode (FieldActor.aim_mode) from the setting func_0208ffac and
+/* func_0200f234: the aim mode (FieldActor.control_mode) from the setting func_0208ffac and
  * func_0208ff98 read: 1, 2, else 0. */
 void FieldActor_TakeAimMode(FieldActor *actor)
 {
     if (ControlModeIcon_IsButtons()) {
-        actor->aim_mode = 1;
+        actor->control_mode = 1;
     } else if (ControlModeIcon_IsTouch()) {
-        actor->aim_mode = 2;
+        actor->control_mode = 2;
     } else {
-        actor->aim_mode = 0;
+        actor->control_mode = 0;
     }
 }
 CLEAN_AS(func_0200f234, FieldActor_TakeAimMode)

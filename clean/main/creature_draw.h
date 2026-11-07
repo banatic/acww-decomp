@@ -1,7 +1,6 @@
 /* Fish drawn from the creature tables (creature_table.h): the lists of a month's period, one per
  * time of day (CreatureTable_TimeSlot) and place (two), whose entries are a kind (the fish
- * 0x12e8 + kind for kinds below 0x38), a second number (the kind of water, which
- * CreatureDraw_PlaceGroup sorts) and a weight. A weight falls into one of five bands
+ * 0x12e8 + kind for kinds below 0x38), a second number (the kind of water) and a weight. A weight falls into one of five bands
  * (CreatureWeight_FishBand: 0 for the heaviest, the commonest, to 4).
  *
  * A draw for a band picks a time of day among those of the given hours whose lists hold fish of
@@ -20,7 +19,7 @@
 #define CREATURE_DRAW_TIME_SLOTS 3
 #define CREATURE_DRAW_PLACES 2
 
-int CreatureDraw_PlaceGroup(int place);
+int CreatureDraw_InsectPlaceGroup(int place);
 int CreatureDraw_FishAvailable(u16 *item, int first_hour, int last_hour, int month, u8 day);
 void CreatureDraw_FishNow(u16 *item);
 int CreatureDraw_FishByWeights(u16 *item, int *band, int *second, int *time_slot, void *period);

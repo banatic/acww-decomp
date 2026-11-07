@@ -1,4 +1,4 @@
-/* A sound of overlay 4's scenes and five bytes of main (block_020b220c.h). */
+/* A melody of overlay 4's scenes and five bytes of main (block_020b220c.h). */
 #include "block_020b220c.h"
 
 #include "autoload_2/vector.h"
@@ -22,12 +22,12 @@ extern u8 data_021f4b1c;
 extern void __register_global_object(void *object, void *destruct, void *record);
 extern void func_020012dc(void *object); /* TrivialObject_Destruct */
 
-/* func_020b220c: in scenes 1-5 and 17-24 entry 0 of the scenes' sound
- * set plays at (1.0, 0, 30.0); in scene 0x1a entry 1, in 9 entry 2, in 10 entry 3; in other
- * scenes nothing.
+/* func_020b220c: in the houses' rooms and the villagers' houses melody 0 of the town tune's
+ * melody set plays at (1.0, 0, 30.0) (TownTune_PlayAt); in scene 0x1a melody 1, in 9 melody
+ * 2, in 10 melody 3; in other scenes nothing.
  * QUIRK: the first call that plays builds the point as a function-local static and registers
  * it for destruction (func_020012dc, which does nothing). */
-void Block020b220c_PlaySceneSound(void)
+void Block020b220c_PlaySceneMelody(void)
 {
     int scene = SceneQuery_Current();
     int entry;
@@ -52,7 +52,7 @@ void Block020b220c_PlaySceneSound(void)
     }
     TownTune_PlayAt(&data_021f4b7c, entry);
 }
-CLEAN_AS(func_020b220c, Block020b220c_PlaySceneSound)
+CLEAN_AS(func_020b220c, Block020b220c_PlaySceneMelody)
 
 /* func_020b22a0 */
 int Block020b220c_GoneKind(void)

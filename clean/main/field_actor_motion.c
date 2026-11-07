@@ -28,7 +28,7 @@ static_assert(offsetof(FieldActor, position) == 0x5c, "position");
 static_assert(offsetof(FieldActor, yaw) == 0x8e, "yaw");
 static_assert(offsetof(FieldActor, unk_140) == 0x140, "aim at a point ahead");
 static_assert(offsetof(FieldActor, aim_point) == 0x158, "aim point");
-static_assert(offsetof(FieldActor, aim_mode) == 0x170, "aim mode");
+static_assert(offsetof(FieldActor, control_mode) == 0x170, "aim mode");
 static_assert(offsetof(FieldActor, start_position) == 0x6f4, "start position");
 static_assert(offsetof(FieldActor, state) == 0x7f0, "state");
 
@@ -160,7 +160,7 @@ int FieldActor_TryAct(FieldActor *actor)
     if (FieldActor_TryToolInScene(actor)) {
         return 1;
     }
-    if (actor->unk_140 && actor->aim_mode == 2) {
+    if (actor->unk_140 && actor->control_mode == 2) {
         Vec3 saved = actor->aim_point;
         Vec3 ahead;
         FieldActor_PointAhead(&ahead, actor, &actor->position, (const u16 *) &actor->yaw, &data_020d72f8);

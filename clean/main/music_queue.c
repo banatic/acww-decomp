@@ -3,6 +3,7 @@
 #include "music_queue.h"
 
 #include "autoload_2/heap.h"
+#include "autoload_2/process.h"
 #include "clean.h"
 #include "block_020b220c.h"
 #include "item_code.h"
@@ -320,12 +321,10 @@ extern Obj021c526c *data_021c526c;
 extern u8 data_020e54a8;
 /* Frames of delay for the member at 0x2d0, by index. */
 extern const u8 data_020c9f14[];
-/* An object whose halfword at 0x0c is 5 while Music2d0_Finish does nothing. */
-typedef struct Obj021f42f4 {
-    u8 unk_00[0x0c];
-    u16 unk_0c;
-} Obj021f42f4;
-extern Obj021f42f4 *data_021f42f4;
+/* The running scene's process: while it is the process between scenes (class 5),
+ * Music2d0_Finish and Music2d0_Start do nothing. */
+extern Process *data_021f42f4;
+#define MUSIC_QUEUE_SCENE_CHANGE_CLASS 5
 
 /* The vtables of the members at 0x2e4 and 0x2f0. */
 extern const u32 data_020da2b4[];
@@ -1116,14 +1115,14 @@ void Music2d0_Create(Music2d0 *self)
 }
 CLEAN_AS(func_02035dc8, Music2d0_Create)
 
-/* func_02035dcc: (from func_02041c88) unless data_021f42f4's halfword 0x0c is 5: a delay below
+/* func_02035dcc: (from func_02041c88) unless between scenes (MUSIC_QUEUE_SCENE_CHANGE_CLASS): a delay below
  * 0 chosen by the player's state (left for 0x3c; 0x21 for 0x8b, 0x8e, 0x43 and 0x44; 0x19
  * for 2; else 0x14), the tracks faded in for the scene change when byte 0x09 is set, the
  * bytes 0x08-0x0a cleared, and the members at 0x264 and 0x2a0 handed 0.
  * QUIRK: the address of the member at 0x2f0 (func_02035e7c) is asked for and not used. */
 void Music2d0_Finish(Music2d0 *self)
 {
-    if (data_021f42f4->unk_0c == 5) {
+    if (data_021f42f4->class_id == MUSIC_QUEUE_SCENE_CHANGE_CLASS) {
         return;
     }
     if (self->delay < 0) {
@@ -1184,7 +1183,7 @@ Music2f0 *Music_Object2f0(void)
 CLEAN_AS(func_02035e7c, Music_Object2f0)
 
 /* func_02035e90: (from func_02041d14, when the state it starts has a function) unless
- * data_021f42f4's halfword 0x0c is 5: a byte 0x0b of 1 adds a request of priority 8 with word
+ * between scenes (MUSIC_QUEUE_SCENE_CHANGE_CLASS): a byte 0x0b of 1 adds a request of priority 8 with word
  * 0x0f (and becomes 2), one of 3 drops it (and becomes 0); the byte 0x09 says whether the scene
  * being gone to has the current scene's music, and the member at 0x2a0 keeps its music then.
  * With none of the bytes 0x08-0x0a set, the delay is set below 0 (for Music2d0_Finish) and the
@@ -1194,7 +1193,7 @@ CLEAN_AS(func_02035e7c, Music_Object2f0)
  * QUIRK: the address of the member at 0x2f0 (func_02035e7c) is asked for and not used. */
 void Music2d0_Start(Music2d0 *self)
 {
-    if (data_021f42f4->unk_0c == 5) {
+    if (data_021f42f4->class_id == MUSIC_QUEUE_SCENE_CHANGE_CLASS) {
         return;
     }
     if (self->unk_0b == 1) {

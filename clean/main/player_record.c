@@ -418,7 +418,7 @@ CLEAN_AS(func_020992f0, PlayerRecord_ReactionSlots)
 #define RECORD_HELD_ITEM 0x2406
 #define RECORD_CLOTHES 0x2408
 #define RECORD_HEAD_ITEM 0x240a
-#define RECORD_PART_C_ITEM 0x240c
+#define RECORD_ACCESSORY_ITEM 0x240c
 #define RECORD_BED 0x240e
 #define RECORD_BACKDROP_CLOTHES 0x2410
 #define RECORD_SUN_DATE 0x2412
@@ -769,18 +769,18 @@ u16 *PlayerRecord_Bed(u8 *record)
 CLEAN_AS(func_020996c8, PlayerRecord_Bed)
 
 /* func_020996d4 */
-void PlayerRecord_SetPartCItem(u8 *record, const u16 *item)
+void PlayerRecord_SetAccessoryItem(u8 *record, const u16 *item)
 {
-    *player_record_u16(record, RECORD_PART_C_ITEM) = *item;
+    *player_record_u16(record, RECORD_ACCESSORY_ITEM) = *item;
 }
-CLEAN_AS(func_020996d4, PlayerRecord_SetPartCItem)
+CLEAN_AS(func_020996d4, PlayerRecord_SetAccessoryItem)
 
 /* func_020996e0 */
-u16 *PlayerRecord_PartCItem(u8 *record)
+u16 *PlayerRecord_AccessoryItem(u8 *record)
 {
-    return player_record_u16(record, RECORD_PART_C_ITEM);
+    return player_record_u16(record, RECORD_ACCESSORY_ITEM);
 }
-CLEAN_AS(func_020996e0, PlayerRecord_PartCItem)
+CLEAN_AS(func_020996e0, PlayerRecord_AccessoryItem)
 
 /* func_020996ec */
 void PlayerRecord_SetHeadItem(u8 *record, const u16 *item)
@@ -956,7 +956,7 @@ CLEAN_AS(func_02099870, PlayerRecord_Player)
 /* func_0209987c: make a new player in the record: its name, id, byte 0x1c and town (this town
  * for NULL), its looks, flag 0, its bells and held item. Its pockets, designs, shop points,
  * record of items, dated letter, mother's letters and Wi-Fi data are reset; it gets the bed
- * 0x3884 at 0x240e, the first clothes, nothing on its head nor as part C, the shirt 0x11fa
+ * 0x3884 at 0x240e, the first clothes, nothing on its head nor as the accessory, the shirt 0x11fa
  * behind the menus (0x2410), a sun date of 1 January 2000, no birthday, a fresh savings account
  * and date of last play, and no byte for any villager. */
 void PlayerRecord_NewPlayer(u8 *record, const void *name, int player_id, int byte_1c, const TownName *town, u8 face,
@@ -986,7 +986,7 @@ void PlayerRecord_NewPlayer(u8 *record, const void *name, int player_id, int byt
     PlayerRecord_ClearBirthday(record);
     *player_record_u16(record, RECORD_CLOTHES) = NEW_PLAYER_CLOTHES;
     PlayerField2416_Reset((PlayerField2416 *) (void *) (record + RECORD_FIELD_2416));
-    *player_record_u16(record, RECORD_PART_C_ITEM) = PLAYER_RECORD_NO_ITEM;
+    *player_record_u16(record, RECORD_ACCESSORY_ITEM) = PLAYER_RECORD_NO_ITEM;
     *player_record_u16(record, RECORD_HEAD_ITEM) = PLAYER_RECORD_NO_ITEM;
     *player_record_u16(record, RECORD_BACKDROP_CLOTHES) = NEW_PLAYER_BACKDROP_CLOTHES;
     DayEvents_ClearMark((DayEventMark *) (void *) (record + RECORD_FIELD_2427));

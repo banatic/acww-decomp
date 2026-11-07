@@ -357,7 +357,7 @@ void FieldActor_RunFrame(FieldActor *actor)
         FIELD_ACTOR_FIELD(actor, Vec3, FIELD_ACTOR_MATRIX_JOINT_B + 0x24) = flat;
         actor->unk_68C = flat;
     }
-    FieldActor_PollPartC(actor);
+    FieldActor_PollAccessory(actor);
     FieldActor_PollHead(actor);
 
     NetSession *session = data_020ccf94;
@@ -385,7 +385,7 @@ void FieldActor_RunFrame(FieldActor *actor)
         FieldActor_SyncAimMode(actor, state);
     }
     FieldActor_UpdateModelMatrix(actor);
-    FieldActor_ApplyPartC(actor);
+    FieldActor_ApplyAccessory(actor);
     FieldActor_ApplyHead(actor);
     if (Session_IsLocalPlayer(session, actor->player)) {
         if (data_020e54a8 == 0) {
@@ -438,7 +438,7 @@ CLEAN_AS(func_020064cc, FieldActor_SetShadowForState)
 void FieldActor_SyncAimMode(FieldActor *actor, int state)
 {
     if (data_020c7864[state] != 0) {
-        switch (actor->aim_mode) {
+        switch (actor->control_mode) {
             case 1:
                 ControlModeIcon_SetButtons();
                 break;
@@ -4522,9 +4522,9 @@ CLEAN_AS(func_0200c200, FieldActor_UpdateState10)
 void FieldActor_CheckState10Target(FieldActor *actor)
 {
     const AimedObject *aimed = NULL;
-    if (actor->aim_mode == 2) {
+    if (actor->control_mode == 2) {
         aimed = FIELD_ACTOR_FIELD(actor, const AimedObject *, 0x13c);
-    } else if (actor->aim_mode == 1 && (data_021fbe40.pressed & PAD_BUTTON_X)) {
+    } else if (actor->control_mode == 1 && (data_021fbe40.pressed & PAD_BUTTON_X)) {
         aimed = (const AimedObject *) (uintptr_t) EventQueue_TargetObjectAddress();
     }
     if (aimed == NULL) {
@@ -4620,7 +4620,7 @@ CLEAN_AS(func_0200c3f0, FieldActor_SetArgs10)
 /* ---- State 7: the actor puts something on, by kind (0 to 3), at frame 8 of animation 5 (6
  * when state 0x10 is to follow) while the body turns back to yaw 0; sound 0x76 (0x77 for kind 2
  * with 0x13c3) and effect 0x61 on entering, effects 0x27 at frame 3 and 0x22 at frame 0xd.
- * Kinds 0 to 2 hand the request's value to FieldActor_SetCloth, FieldActor_RequestPartC and FieldActor_RequestHead;
+ * Kinds 0 to 2 hand the request's value to FieldActor_SetCloth, FieldActor_RequestAccessory and FieldActor_RequestHead;
  * kind 3 takes the player's record (func_020984fc). Then state 5 or 0x10 follows, or
  * func_02095bdc. Leaving the state does what was not done yet, and the actor of this console
  * passes the value on (FieldActor_SendItem, or FieldActor_SendNotStung for kind 3). */
@@ -4784,7 +4784,7 @@ void FieldActor_ApplyState7Kind2(FieldActor *actor)
 }
 CLEAN_AS(func_0200c598, FieldActor_ApplyState7Kind2)
 
-/* func_0200c5e0: kind 1, once: the value to FieldActor_RequestPartC; done when it answers nonzero. */
+/* func_0200c5e0: kind 1, once: the value to FieldActor_RequestAccessory; done when it answers nonzero. */
 void FieldActor_ApplyState7Kind1(FieldActor *actor)
 {
     State7Work *work = state7_work(actor);
@@ -4792,7 +4792,7 @@ void FieldActor_ApplyState7Kind1(FieldActor *actor)
         return;
     }
     u16 value = work->value;
-    if (FieldActor_RequestPartC(actor, &value)) {
+    if (FieldActor_RequestAccessory(actor, &value)) {
         work->done = 1;
     }
 }
@@ -5842,7 +5842,7 @@ void FieldActor_StartState0(FieldActor *actor, const int *prepared)
                 FieldLabel_ShowMessage10();
                 FieldActor_SetFlag(actor, 0x1b);
             } else if (data_020ccf94->local_slot == 0 && (u8) (Net_GetMode() - 3) <= 1) {
-                Wfc_ClearHostTime();
+                Wfc_AllowNewClients();
             }
         }
     }

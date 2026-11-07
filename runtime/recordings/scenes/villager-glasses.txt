@@ -5,7 +5,7 @@
 # window (tag 5/5) open at 4299: DOWN DOWN focus Decide and A decides; A every 40 frames to the
 # talk's end: its impression of the player is chosen (VillagerImpression_Choose), and with part
 # C worn the rules of part C with the head kinds 2, 4, 6 and then 0, 1, 3, 5 are tried
-# (VillagerImpression_PartCWithHeadKind01357: the face's kind 5 is the last), to about 4900.
+# (VillagerImpression_AccessoryWithHeadKind01357: the face's kind 5 is the last), to about 4900.
 0 - -
 900 START -
 906 - -

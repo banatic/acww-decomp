@@ -102,13 +102,13 @@ int VillagerImpression_HeldUmbrella(u8 *record)
 CLEAN_AS(func_0207e738, VillagerImpression_HeldUmbrella)
 
 /* func_0207e780: the player has a flower: the held item is the dandelion 0x137c, else the head's
- * item is one of the flowers 0x1408-0x1428, else part C's item is one of 0x1471-0x1491 (each
+ * item is one of the flowers 0x1408-0x1428, else the accessory's item is one of 0x1471-0x1491 (each
  * looked up only when the one before fails). */
 int VillagerImpression_HasFlower(u8 *record)
 {
     return *PlayerRecord_HeldItem(record) == 0x137c ||
            VillagerImpression_InRange(*PlayerRecord_HeadItem(record), 0x1408, 0x1428) ||
-           VillagerImpression_InRange(*PlayerRecord_PartCItem(record), 0x1471, 0x1491);
+           VillagerImpression_InRange(*PlayerRecord_AccessoryItem(record), 0x1471, 0x1491);
 }
 CLEAN_AS(func_0207e780, VillagerImpression_HasFlower)
 

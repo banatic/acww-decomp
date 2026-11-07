@@ -237,7 +237,7 @@ int PlayerActorOps_SetStung(int set, int player)
 }
 CLEAN_AS(func_02095578, PlayerActorOps_SetStung)
 
-/* func_020955e0: puts on `item` as player `player`'s clothes (part 0), part C (1) or head item
+/* func_020955e0: puts on `item` as player `player`'s clothes (part 0), the accessory (1) or head item
  * (2): in the record, then on the actor (the cloth set and bound, or the part asked for, the
  * head with the record's head kind and hair colour); whether both exist and the actor's looks
  * were not fixed by its animation. Another part changes nothing but answers the same. */
@@ -252,7 +252,7 @@ int PlayerActorOps_SetWorn(u16 *item, int part, int player)
             PlayerRecord_SetClothes(record, item);
             break;
         case 1:
-            PlayerRecord_SetPartCItem(record, item);
+            PlayerRecord_SetAccessoryItem(record, item);
             break;
         case 2:
             PlayerRecord_SetHeadItem(record, item);
@@ -273,7 +273,7 @@ int PlayerActorOps_SetWorn(u16 *item, int part, int player)
             break;
         case 1:
             copy = *item;
-            FieldActor_RequestPartC(actor, &copy);
+            FieldActor_RequestAccessory(actor, &copy);
             break;
         case 2: {
             copy = *item;

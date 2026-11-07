@@ -1,8 +1,8 @@
 /* The field actor's looks (field_actor.h): what its player's record says of them, the colour
- * palettes, the clothes, the head (part B) and part C, and the sun level faded by the days
+ * palettes, the clothes, the head (part B) and the accessory, and the sun level faded by the days
  * since it was last stored.
  *
- * The head and part C change in three steps, each a separate call: a request stores the item
+ * The head and the accessory change in three steps, each a separate call: a request stores the item
  * and the values while the part is LOOKS_READY and marks it LOOKS_PENDING; the update applies a
  * pending change (LOOKS_LOADING); polls then mark it LOOKS_READY once its models are loaded
  * (field_actor_parts.h). */
@@ -55,13 +55,13 @@ extern const char data_020d83fc[]; /* "m.0" */
 extern const char data_020d8400[]; /* "hair_pl" */
 extern const char data_020d8408[]; /* "w" */
 
-/* Part C's kinds by item: 0x1431 and up (data_020cc7cc of them, 64), and 0x1471 and up through
+/* The accessory's kinds by item: 0x1431 and up (data_020cc7cc of them, 64), and 0x1471 and up through
  * func_0204bfa0 (data_020cc7d0 of them, 11). */
 extern u32 data_020cc7cc;
 extern u32 data_020cc7d0;
 
-/* Part C's kind for no part. */
-#define PART_C_NONE 0x4b
+/* The accessory's kind for no part. */
+#define ACCESSORY_NONE 0x4b
 /* A part of the head that is not there (func_0205e138 and func_0205e708's result). */
 #define HEAD_MODEL_NONE 0x9e
 
@@ -210,79 +210,79 @@ void FieldActor_ApplyHead(FieldActor *actor)
 }
 CLEAN_AS(func_02010160, FieldActor_ApplyHead)
 
-/* ---- Part C (0x59c, with its model at 0x500) */
+/* ---- The accessory (0x59c, with its model at 0x500) */
 
-/* func_020103c0: asks for part C to change to `item`; 1 when it was taken, 0 while another
+/* func_020103c0: asks for the accessory to change to `item`; 1 when it was taken, 0 while another
  * change is under way. */
-int FieldActor_RequestPartC(FieldActor *actor, const u16 *item)
+int FieldActor_RequestAccessory(FieldActor *actor, const u16 *item)
 {
-    if (FIELD_ACTOR_PART_C_STATUS(actor) != LOOKS_READY) {
+    if (FIELD_ACTOR_ACCESSORY_STATUS(actor) != LOOKS_READY) {
         return 0;
     }
-    FIELD_ACTOR_PART_C_STATUS(actor) = LOOKS_PENDING;
-    FIELD_ACTOR_PART_C_ITEM(actor) = *item;
+    FIELD_ACTOR_ACCESSORY_STATUS(actor) = LOOKS_PENDING;
+    FIELD_ACTOR_ACCESSORY_ITEM(actor) = *item;
     return 1;
 }
-CLEAN_AS(func_020103c0, FieldActor_RequestPartC)
+CLEAN_AS(func_020103c0, FieldActor_RequestAccessory)
 
-/* func_020103e4: part C being loaded is ready when it is PART_C_NONE or once func_0205de24 says
+/* func_020103e4: the accessory being loaded is ready when it is ACCESSORY_NONE or once func_0205de24 says
  * so. */
-void FieldActor_PollPartC(FieldActor *actor)
+void FieldActor_PollAccessory(FieldActor *actor)
 {
-    if (FIELD_ACTOR_PART_C_STATUS(actor) != LOOKS_LOADING) {
+    if (FIELD_ACTOR_ACCESSORY_STATUS(actor) != LOOKS_LOADING) {
         return;
     }
-    u8 *part = field_actor_looks_at(actor, FIELD_ACTOR_PART_C);
+    u8 *part = field_actor_looks_at(actor, FIELD_ACTOR_ACCESSORY);
     int ready = 1;
-    if (GlassesLook_Kind(part) != PART_C_NONE) {
-        ready = GlassesLook_PollUpload(part);
+    if (AccessoryLook_Kind(part) != ACCESSORY_NONE) {
+        ready = AccessoryLook_PollUpload(part);
     }
     if (ready) {
-        FIELD_ACTOR_PART_C_STATUS(actor) = LOOKS_READY;
+        FIELD_ACTOR_ACCESSORY_STATUS(actor) = LOOKS_READY;
     }
 }
-CLEAN_AS(func_020103e4, FieldActor_PollPartC)
+CLEAN_AS(func_020103e4, FieldActor_PollAccessory)
 
-/* func_02010424: applies a pending change of part C. Its kind comes from the item: items
+/* func_02010424: applies a pending change of the accessory. Its kind comes from the item: items
  * 0x1431 to 0x1470 by their index (func_0205e0a4, below data_020cc7cc), items 0x1471 to 0x1491
  * that func_0204bd84 accepts by func_0204bfa0's index (func_0205e098, below data_020cc7d0), and
- * PART_C_NONE for any other. With a part its model is rebuilt; it is LOOKS_LOADING either way,
+ * ACCESSORY_NONE for any other. With a part its model is rebuilt; it is LOOKS_LOADING either way,
  * and polled at once when there is none. */
-void FieldActor_ApplyPartC(FieldActor *actor)
+void FieldActor_ApplyAccessory(FieldActor *actor)
 {
-    if (FIELD_ACTOR_PART_C_STATUS(actor) != LOOKS_PENDING) {
+    if (FIELD_ACTOR_ACCESSORY_STATUS(actor) != LOOKS_PENDING) {
         return;
     }
-    u8 *part = field_actor_looks_at(actor, FIELD_ACTOR_PART_C);
-    int kind = PART_C_NONE;
-    u16 item = FIELD_ACTOR_PART_C_ITEM(actor);
+    u8 *part = field_actor_looks_at(actor, FIELD_ACTOR_ACCESSORY);
+    int kind = ACCESSORY_NONE;
+    u16 item = FIELD_ACTOR_ACCESSORY_ITEM(actor);
     if (item >= 0x1431 && item <= 0x1470) {
         u32 index = (u32) item - 0x1431;
         if (index < data_020cc7cc) {
-            kind = GlassesLook_FirstKind(index);
+            kind = AccessoryLook_FirstKind(index);
         }
-    } else if (item >= 0x1471 && item <= 0x1491 && ItemTraits_IsPairWiltedFlower(&item)) {
-        int index = ItemTraits_PairWiltedFlowerNumber(&item);
+    } else if (item >= 0x1471 && item <= 0x1491 && ItemTraits_IsPairMouthFlower(&item)) {
+        int index = ItemTraits_PairMouthFlowerNumber(&item);
         if (index >= 0 && (u32) index < data_020cc7d0) {
-            kind = GlassesLook_SecondKind((u32) index);
+            kind = AccessoryLook_SecondKind((u32) index);
         }
     }
 
-    GlassesLook_Load(part, kind);
-    if (GlassesLook_Kind(part) != PART_C_NONE) {
-        GlassesLook_PlaceTexture(part);
-        GlassesLook_StopUpload(part);
+    AccessoryLook_Load(part, kind);
+    if (AccessoryLook_Kind(part) != ACCESSORY_NONE) {
+        AccessoryLook_PlaceTexture(part);
+        AccessoryLook_StopUpload(part);
         ModelObject_Release((ModelObject *) (void *) field_actor_looks_at(actor, FIELD_ACTOR_MODEL_C));
         ModelObject_UseFileModel((ModelObject *) (void *) field_actor_looks_at(actor, FIELD_ACTOR_MODEL_C),
-                                 (u8 *) (uintptr_t) GlassesLook_File(part));
-        GlassesLook_PollUpload(part);
-        FIELD_ACTOR_PART_C_STATUS(actor) = LOOKS_LOADING;
+                                 (u8 *) (uintptr_t) AccessoryLook_File(part));
+        AccessoryLook_PollUpload(part);
+        FIELD_ACTOR_ACCESSORY_STATUS(actor) = LOOKS_LOADING;
     } else {
-        FIELD_ACTOR_PART_C_STATUS(actor) = LOOKS_LOADING;
-        FieldActor_PollPartC(actor);
+        FIELD_ACTOR_ACCESSORY_STATUS(actor) = LOOKS_LOADING;
+        FieldActor_PollAccessory(actor);
     }
 }
-CLEAN_AS(func_02010424, FieldActor_ApplyPartC)
+CLEAN_AS(func_02010424, FieldActor_ApplyAccessory)
 
 /* ---- The clothes (0x774) and the palettes (0x7a0) */
 
@@ -379,13 +379,13 @@ int FieldActor_RecordStung(FieldActor *actor)
 }
 CLEAN_AS(func_0201111c, FieldActor_RecordStung)
 
-/* func_02011138: part C's item (slot 3).
+/* func_02011138: the accessory's item (slot 3).
  * REQUIRES: the actor's player has a record (without one, the halfword at 0x240c is read). */
-void FieldActor_RecordPartCItem(u16 *item, FieldActor *actor)
+void FieldActor_RecordAccessoryItem(u16 *item, FieldActor *actor)
 {
-    *item = *PlayerRecord_PartCItem(FieldActor_Record(actor));
+    *item = *PlayerRecord_AccessoryItem(FieldActor_Record(actor));
 }
-CLEAN_AS(func_02011138, FieldActor_RecordPartCItem)
+CLEAN_AS(func_02011138, FieldActor_RecordAccessoryItem)
 
 /* func_02011150: the sun level of the record, faded by half a level a day since the date stored
  * with it. It is left as it is in the scenes 0x2e, 0xd, 0xe, 0xc and 0x2f, and unless either

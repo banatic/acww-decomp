@@ -273,7 +273,7 @@ CLEAN_AS(func_0200422c, SoundSys_FadeInTracks)
 /* func_0200423c: a track mask chosen by `set`, faded out or applied at once. */
 void SoundSys_SetTracks(int set)
 {
-    SoundSystem_SetTracks((SoundSystem *) (void *) data_021fd1bc, set);
+    SoundSystem_FadeOutTracks((SoundSystem *) (void *) data_021fd1bc, set);
 }
 CLEAN_AS(func_0200423c, SoundSys_SetTracks)
 

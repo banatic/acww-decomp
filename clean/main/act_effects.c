@@ -162,8 +162,8 @@ void ActEffects_StartPart(ActEffects *self, SceneMotionActPart *parts, int index
     if (part->restart != 0) {
         ActEffects_StopAll(self);
     }
-    if (part->effect != 0) {
-        ActEffects_SetCues(self, part->effect, part->unk_08, part->animation);
+    if (part->cues != 0) {
+        ActEffects_SetCues(self, part->cues, part->cue_count, part->animation);
         self->part = index;
     }
 }

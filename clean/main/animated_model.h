@@ -1,6 +1,6 @@
 /* Model holders (model_object.h) that play one animation. Two C++ classes of main:
  *
- * - the animated model (vtable data_020dd05c, 0xb4 bytes): a frame control steps the frame
+ * - the animated model (vtable data_020dd05c, 0xb8 bytes): a frame control steps the frame
  *   that its NitroSystem animation object (NNSG3dAnmObj) shows;
  * - the blended model (vtable data_020dd0dc, 0xf4 bytes), which adds a Ramp: a new animation
  *   is blended in over some frames from the pose each joint had, by node callbacks of

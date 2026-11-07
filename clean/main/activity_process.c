@@ -168,7 +168,7 @@ void ActivityProcess_StepDeleteTown(Activity *activity)
     int result;
     switch (activity->state) {
         case 0:
-            if (ActivityTalk_FinishWaiting(activity, TALK_WAIT_NONE)) {
+            if (ActivityTalk_StartSpinner(activity, TALK_WAIT_NONE)) {
                 activity->state = 1;
             }
             break;
@@ -300,7 +300,7 @@ void ActivityProcess_StepJob3(Activity *activity)
 {
     switch (activity->state) {
         case 0:
-            if (!ActivityTalk_FinishWaiting(activity, TALK_WAIT_NONE)) {
+            if (!ActivityTalk_StartSpinner(activity, TALK_WAIT_NONE)) {
                 break;
             }
             Clock_Init();
@@ -347,7 +347,7 @@ static void step_end_and_save(Activity *activity, int next)
     int result;
     switch (activity->state) {
         case 0:
-            if (ActivityTalk_FinishWaiting(activity, TALK_WAIT_NONE)) {
+            if (ActivityTalk_StartSpinner(activity, TALK_WAIT_NONE)) {
                 NetSession *session = data_020ccf94;
                 if (Session_IsSlotTaken(session, session->local_slot)) {
                     Session_ResetLinkStatus();

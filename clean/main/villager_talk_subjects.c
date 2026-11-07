@@ -61,22 +61,22 @@
 /* No mode: the eight kinds go from 0 to 7 (VillagerModeRecord_IsKindMode). */
 #define VILLAGER_TALK_SUBJECTS_NO_MODE 8
 
-/* The places of the five weighted choices of a catch (func_0202cb70, func_0202d060). */
-#define VILLAGER_TALK_SUBJECTS_CHOICES 5
-/* The groups of a catch's line: three for each half of the choices. */
+/* The five weight bands of a catch (func_0202cb70, func_0202d060); also "none yet". */
+#define VILLAGER_TALK_SUBJECTS_BANDS 5
+/* The groups of a catch's line: three for each half of the bands. */
 #define VILLAGER_TALK_SUBJECTS_CATCH_HALF 3
 #define VILLAGER_TALK_SUBJECTS_CATCH_TIME_SLOTS 3
 #define VILLAGER_TALK_SUBJECTS_CATCH_PLACES 2
 
-/* What a catch is worked out into: the item, the date, which of the choices, two values. */
+/* What a catch is worked out into: the item, the date, its weight band, place and time slot. */
 typedef struct VillagerTalkSubjectsCatch {
     u8 value_byte; /* 0x00: VillagerTalkSubjects_SayCatchB puts it into slot 3 */
     u8 end;        /* 0x01 */
     u16 item;      /* 0x02 */
     DateTime when; /* 0x04 */
-    s32 choice;    /* 0x0c */
-    s32 kind;      /* 0x10 */
-    s32 value;     /* 0x14 */
+    s32 band;      /* 0x0c */
+    s32 place;     /* 0x10 */
+    s32 time_slot; /* 0x14 */
 } VillagerTalkSubjectsCatch;
 
 /* The same for VillagerTalkSubjects_SayCatchA, whose item comes first. */
@@ -84,9 +84,9 @@ typedef struct VillagerTalkSubjectsCatchA {
     u16 item;      /* 0x00 */
     u8 unk_02[2];  /* 0x02 */
     DateTime when; /* 0x04 */
-    s32 choice;    /* 0x0c */
-    s32 kind;      /* 0x10 */
-    s32 value;     /* 0x14 */
+    s32 band;      /* 0x0c */
+    s32 place;     /* 0x10 */
+    s32 time_slot; /* 0x14 */
 } VillagerTalkSubjectsCatchA;
 
 /* The four halfwords VillagerTalkSubjects_SayFishWithRod and _SayInsectWithNet keep: the
@@ -97,9 +97,9 @@ typedef struct VillagerTalkSubjectsDrawn {
     u16 unk[2]; /* 0x04 */
 } VillagerTalkSubjectsDrawn;
 
-static_assert(offsetof(VillagerTalkSubjectsCatch, choice) == 0x0c, "VillagerTalkSubjectsCatch choice");
-static_assert(offsetof(VillagerTalkSubjectsCatch, value) == 0x14, "VillagerTalkSubjectsCatch value");
-static_assert(offsetof(VillagerTalkSubjectsCatchA, value) == 0x14, "VillagerTalkSubjectsCatchA value");
+static_assert(offsetof(VillagerTalkSubjectsCatch, band) == 0x0c, "VillagerTalkSubjectsCatch band");
+static_assert(offsetof(VillagerTalkSubjectsCatch, time_slot) == 0x14, "VillagerTalkSubjectsCatch time_slot");
+static_assert(offsetof(VillagerTalkSubjectsCatchA, time_slot) == 0x14, "VillagerTalkSubjectsCatchA time_slot");
 
 /* The text sets. */
 extern const VillagerTalkSubjectsTexts data_020c8cb0;
@@ -546,11 +546,11 @@ CLEAN_AS(func_02022ee4, VillagerTalkSubjects_Say8dc0)
 /* func_02022f3c: about a creature of today's lists (CreatureTable_Lists for the month and the
  * half of it): when func_0202cb70 works one out, its name goes into the talk's slot 0, its
  * value into slot 1 (VillagerTalkSubjects_PutCatchKind) and a line of the set at 0x020c8a20 is
- * drawn: group 3 * (the choice is 3 or more) + VillagerTalkSubjects_CatchGroupA of its kind. */
+ * drawn: group 3 * (the band is 3 or more) + VillagerTalkSubjects_CatchGroupA of its kind. */
 int VillagerTalkSubjects_SayCatchA(VillagerTalk *talk)
 {
     VillagerTalkSubjectsCatchA catch_ = {0};
-    catch_.choice = VILLAGER_TALK_SUBJECTS_CHOICES;
+    catch_.band = VILLAGER_TALK_SUBJECTS_BANDS;
     catch_.item = ITEM_CODE_NONE;
     DateTime_Now(&catch_.when);
     u8 month = catch_.when.month;
@@ -558,14 +558,14 @@ int VillagerTalkSubjects_SayCatchA(VillagerTalk *talk)
     if (lists == NULL) {
         return 0;
     }
-    if (CreatureDraw_FishByWeights(&catch_.item, (int *) &catch_.choice, (int *) &catch_.kind, (int *) &catch_.value, lists) !=
-        1) {
+    if (CreatureDraw_FishByWeights(&catch_.item, (int *) &catch_.band, (int *) &catch_.place, (int *) &catch_.time_slot,
+                                   lists) != 1) {
         return 0;
     }
-    int group = (catch_.choice >= 3 ? 1 : 0) * VILLAGER_TALK_SUBJECTS_CATCH_HALF +
-                VillagerTalkSubjects_CatchGroupA((unsigned int) catch_.kind);
+    int group = (catch_.band >= 3 ? 1 : 0) * VILLAGER_TALK_SUBJECTS_CATCH_HALF +
+                VillagerTalkSubjects_CatchGroupA((unsigned int) catch_.place);
     SceneBase_PutItemName(subjects_base(talk), (int) (uintptr_t) &catch_.item, 0, 7);
-    VillagerTalkSubjects_PutCatchKind(talk, catch_.value, &catch_.item, catch_.choice, *(CreatureTablePeriod *) lists, 1);
+    VillagerTalkSubjects_PutCatchKind(talk, catch_.time_slot, &catch_.item, catch_.band, *(CreatureTablePeriod *) lists, 1);
     return subjects_say(talk, &data_020c8a20, group);
 }
 CLEAN_AS(func_02022f3c, VillagerTalkSubjects_SayCatchA)
@@ -630,25 +630,25 @@ void VillagerTalkSubjects_PutCatchKind(VillagerTalk *talk, int value, u16 *item,
 }
 CLEAN_AS(func_02023040, VillagerTalkSubjects_PutCatchKind)
 
-/* func_02023124: about a creature for today's month: when func_0202d060 works one out, its
- * name goes into the talk's slot 0, its value (less 1 from 3 on) into slot 3 and a line of the
- * set at 0x020c8b88 is drawn: group 3 * (the choice is 3 or more) + func_0202c9c0 of its kind. */
+/* func_02023124: about an insect for today's month: when func_0202d060 works one out, its
+ * name goes into the talk's slot 0, its time slot (less 1 from 3 on) into slot 3 and a line of the
+ * set at 0x020c8b88 is drawn: group 3 * (the band is 3 or more) + CreatureDraw_InsectPlaceGroup of its place. */
 int VillagerTalkSubjects_SayCatchB(VillagerTalk *talk)
 {
     VillagerTalkSubjectsCatch catch_ = {0};
-    catch_.choice = VILLAGER_TALK_SUBJECTS_CHOICES;
+    catch_.band = VILLAGER_TALK_SUBJECTS_BANDS;
     catch_.item = ITEM_CODE_NONE;
     DateTime_Now(&catch_.when);
-    if (InsectDraw_ByWeights(&catch_.item, (int *) &catch_.choice, (int *) &catch_.kind, (int *) &catch_.value,
+    if (InsectDraw_ByWeights(&catch_.item, (int *) &catch_.band, (int *) &catch_.place, (int *) &catch_.time_slot,
                              &catch_.when) != 1) {
         return 0;
     }
-    int group = (catch_.choice >= 3 ? 1 : 0) * VILLAGER_TALK_SUBJECTS_CATCH_HALF + CreatureDraw_PlaceGroup(catch_.kind);
+    int group = (catch_.band >= 3 ? 1 : 0) * VILLAGER_TALK_SUBJECTS_CATCH_HALF + CreatureDraw_InsectPlaceGroup(catch_.place);
     SceneBase_PutItemName(subjects_base(talk), (int) (uintptr_t) &catch_.item, 0, 7);
-    if (catch_.value >= 3) {
-        catch_.value--;
+    if (catch_.time_slot >= 3) {
+        catch_.time_slot--;
     }
-    catch_.value_byte = (u8) catch_.value;
+    catch_.value_byte = (u8) catch_.time_slot;
     catch_.end = 0;
     SceneBase_PutBytes(subjects_base(talk), 3, &catch_.value_byte, (int) (uintptr_t) data_020d9f84, &catch_.end);
     return subjects_say(talk, &data_020c8b88, group);

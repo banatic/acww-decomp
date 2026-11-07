@@ -45,9 +45,9 @@ static int creature_entry_counts(const u8 *entry)
     return entry[0] < CREATURE_DRAW_KINDS && entry[2] != 0;
 }
 
-/* func_0202c9c0: the group of a place (an entry's second number): 0 for 12, 1 for 1, 2 and 4,
- * 2 for the others. */
-int CreatureDraw_PlaceGroup(int place)
+/* func_0202c9c0: the group of an insect's place (InsectDraw_ByWeights' place; only
+ * VillagerTalkSubjects_SayCatchB asks): 0 for 12, 1 for 1, 2 and 4, 2 for the others. */
+int CreatureDraw_InsectPlaceGroup(int place)
 {
     switch (place) {
         case 12:
@@ -60,7 +60,7 @@ int CreatureDraw_PlaceGroup(int place)
             return 2;
     }
 }
-CLEAN_AS(func_0202c9c0, CreatureDraw_PlaceGroup)
+CLEAN_AS(func_0202c9c0, CreatureDraw_InsectPlaceGroup)
 
 /* func_0202c9e8: whether the fish `*item` is in a list of the month's period (the day picks the
  * half of August and September) at any time of day of the hours first to last, with a weight

@@ -52,8 +52,8 @@ Activity *Activity_DestructFree(Activity *activity)
 CLEAN_AS(func_0209fba0, Activity_DestructFree)
 
 /* func_020a0244: message 7 of "sp_etc_sequence2" shown and the current player's flag 2 (PLAYER_FLAG_UNSAVED)
- * cleared; when the start menu's leave choice (StartMenu_LeaveChoice) is set, func_0208d0bc
- * is called and the flag set again. */
+ * cleared; when the start menu's leave choice (StartMenu_LeaveChoice) is set, the catch panel
+ * started (CatchPanel_Start) and the flag set again. */
 void Activity_TalkSequence2(Activity *activity)
 {
     ActivityTalk_Show(activity, data_020e3c40, SEQUENCE2_MESSAGE);
@@ -66,7 +66,7 @@ void Activity_TalkSequence2(Activity *activity)
 CLEAN_AS(func_020a0244, Activity_TalkSequence2)
 
 /* func_020a0284: unless `quiet`, message 105 of "sp_npc_gatekeeper" shown; then the current
- * player's flag 2 cleared and func_0208d0bc called. */
+ * player's flag 2 cleared and the catch panel started (CatchPanel_Start). */
 void Activity_TalkGatekeeper(Activity *activity, int quiet)
 {
     if (quiet == 0) {

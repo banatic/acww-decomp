@@ -34,7 +34,7 @@ typedef struct BellsPanel {
     ScreenSprite base;  /* vtable data_020e21fc */
     CellAnim anim;      /* 0x0c: data_020d5c54 opening, data_020d5c5c closing */
     int state;          /* 0x20: BellsPanelState */
-    int lift;           /* 0x24: pixels lower, from state flag 4's value */
+    int drop;           /* 0x24: pixels lower, from state flag 4's value */
     int shift;          /* 0x28: 20.12 pixels lower, eased toward `shift_target` */
     int shift_target;   /* 0x2c: 0, or 40 pixels while another balloon is out */
     int shift_speed;    /* 0x30: the ease's largest step */
@@ -50,7 +50,7 @@ typedef struct BellsPanel {
 
 void BellsPanel_ResetShift(BellsPanel *panel);
 void BellsPanel_UpdateShift(BellsPanel *panel);
-void BellsPanel_UpdateLift(BellsPanel *panel);
+void BellsPanel_UpdateDrop(BellsPanel *panel);
 int BellsPanel_Bells(BellsPanel *panel);
 void BellsPanel_SetCounting(BellsPanel *panel, int counting);
 void BellsPanel_FormatBells(BellsPanel *panel);

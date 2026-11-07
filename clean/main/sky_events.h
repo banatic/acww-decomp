@@ -18,7 +18,7 @@
  *   nothing falls.
  *
  * When func_0204714c asks for it (SkyEvents_Refresh), each player whose record has flag 0x32
- * (set when the shooting star is wished on, Block020ba298_SetPlayerFlag32) gets a letter
+ * (set when the shooting star is wished on, Sky_WishOnShootingStar) gets a letter
  * (SkyEvents_PostFlag32Letters). */
 #ifndef CLEAN_MAIN_SKY_EVENTS_H
 #define CLEAN_MAIN_SKY_EVENTS_H

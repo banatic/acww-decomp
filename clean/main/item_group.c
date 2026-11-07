@@ -15,8 +15,8 @@
 #define ITEM_GROUP_HEAD_AS 0x20
 #define ITEM_GROUP_HEAD_B 0x13c8
 #define ITEM_GROUP_HEAD_BS 0x40
-#define ITEM_GROUP_PART_C 0x1431
-#define ITEM_GROUP_PART_CS 0x40
+#define ITEM_GROUP_ACCESSORY 0x1431
+#define ITEM_GROUP_ACCESSORIES 0x40
 
 /* The code of item `index` of a group, its first for an index past it. */
 static u16 code_of(u32 index, u16 first, u32 count)
@@ -51,11 +51,11 @@ u16 ItemGroup_Umbrella(u32 index)
 CLEAN_AS(func_0204b1b8, ItemGroup_Umbrella)
 
 /* func_0204b350 */
-u16 ItemGroup_PartC(u32 index)
+u16 ItemGroup_Accessory(u32 index)
 {
-    return code_of(index, ITEM_GROUP_PART_C, ITEM_GROUP_PART_CS);
+    return code_of(index, ITEM_GROUP_ACCESSORY, ITEM_GROUP_ACCESSORIES);
 }
-CLEAN_AS(func_0204b350, ItemGroup_PartC)
+CLEAN_AS(func_0204b350, ItemGroup_Accessory)
 
 /* func_0204b368 */
 u16 ItemGroup_Cloth(u16 index)
@@ -107,18 +107,18 @@ void ItemGroup_TestIsUmbrella(const u16 *code)
 CLEAN_AS(func_0204b230, ItemGroup_TestIsUmbrella)
 
 /* func_0204b298 */
-u16 ItemGroup_IsPartC(const u16 *code)
+u16 ItemGroup_IsAccessory(const u16 *code)
 {
-    return (u16) in_group(code, ITEM_GROUP_PART_C, ITEM_GROUP_PART_CS);
+    return (u16) in_group(code, ITEM_GROUP_ACCESSORY, ITEM_GROUP_ACCESSORIES);
 }
-CLEAN_AS(func_0204b298, ItemGroup_IsPartC)
+CLEAN_AS(func_0204b298, ItemGroup_IsAccessory)
 
 /* func_0204b290 */
-void ItemGroup_TestIsPartC(const u16 *code)
+void ItemGroup_TestIsAccessory(const u16 *code)
 {
-    ItemGroup_IsPartC(code);
+    ItemGroup_IsAccessory(code);
 }
-CLEAN_AS(func_0204b290, ItemGroup_TestIsPartC)
+CLEAN_AS(func_0204b290, ItemGroup_TestIsAccessory)
 
 /* func_0204b2c8 */
 int ItemGroup_IsCloth(const u16 *code)
@@ -170,10 +170,10 @@ CLEAN_AS(func_0204b320, ItemGroup_TestIsHeadB)
 #define ITEM_GROUP_INSECTS 0x38
 #define ITEM_GROUP_FISH 0x12e8
 #define ITEM_GROUP_FISHES 0x38
-#define ITEM_GROUP_FLOWER 0x1408
-#define ITEM_GROUP_FLOWERS 0x21
-#define ITEM_GROUP_WILTED_FLOWER 0x1471
-#define ITEM_GROUP_WILTED_FLOWERS 0x21
+#define ITEM_GROUP_HEAD_FLOWER 0x1408
+#define ITEM_GROUP_HEAD_FLOWERS 0x21
+#define ITEM_GROUP_MOUTH_FLOWER 0x1471
+#define ITEM_GROUP_MOUTH_FLOWERS 0x21
 #define ITEM_GROUP_BELL_BAG 0x1492
 #define ITEM_GROUP_BELL_BAGS 0x6c
 #define ITEM_GROUP_ROOM_3894 0x3894
@@ -216,18 +216,18 @@ u16 ItemGroup_Insect(u32 index)
 CLEAN_AS(func_0204b3b4, ItemGroup_Insect)
 
 /* func_0204bdd0 */
-u16 ItemGroup_Flower(u32 index)
+u16 ItemGroup_HeadFlower(u32 index)
 {
-    return code_of(index, ITEM_GROUP_FLOWER, ITEM_GROUP_FLOWERS);
+    return code_of(index, ITEM_GROUP_HEAD_FLOWER, ITEM_GROUP_HEAD_FLOWERS);
 }
-CLEAN_AS(func_0204bdd0, ItemGroup_Flower)
+CLEAN_AS(func_0204bdd0, ItemGroup_HeadFlower)
 
 /* func_0204bf20 */
-u16 ItemGroup_WiltedFlower(u32 index)
+u16 ItemGroup_MouthFlower(u32 index)
 {
-    return code_of(index, ITEM_GROUP_WILTED_FLOWER, ITEM_GROUP_WILTED_FLOWERS);
+    return code_of(index, ITEM_GROUP_MOUTH_FLOWER, ITEM_GROUP_MOUTH_FLOWERS);
 }
-CLEAN_AS(func_0204bf20, ItemGroup_WiltedFlower)
+CLEAN_AS(func_0204bf20, ItemGroup_MouthFlower)
 
 /* func_0204c078 */
 u16 ItemGroup_Design(u32 index)
@@ -244,32 +244,32 @@ u16 ItemGroup_BellBag(u32 index)
 CLEAN_AS(func_0204c210, ItemGroup_BellBag)
 
 /* func_0204be88 */
-int ItemGroup_IsFlower(const u16 *code)
+int ItemGroup_IsHeadFlower(const u16 *code)
 {
-    return in_group(code, ITEM_GROUP_FLOWER, ITEM_GROUP_FLOWERS);
+    return in_group(code, ITEM_GROUP_HEAD_FLOWER, ITEM_GROUP_HEAD_FLOWERS);
 }
-CLEAN_AS(func_0204be88, ItemGroup_IsFlower)
+CLEAN_AS(func_0204be88, ItemGroup_IsHeadFlower)
 
 /* func_0204be60 */
-int ItemGroup_FlowerIndex(const u16 *code)
+int ItemGroup_HeadFlowerIndex(const u16 *code)
 {
-    return index_in(code, ITEM_GROUP_FLOWER, ITEM_GROUP_FLOWERS);
+    return index_in(code, ITEM_GROUP_HEAD_FLOWER, ITEM_GROUP_HEAD_FLOWERS);
 }
-CLEAN_AS(func_0204be60, ItemGroup_FlowerIndex)
+CLEAN_AS(func_0204be60, ItemGroup_HeadFlowerIndex)
 
 /* func_0204be10 */
-int ItemGroup_IsWiltedFlower(const u16 *code)
+int ItemGroup_IsMouthFlower(const u16 *code)
 {
-    return in_group(code, ITEM_GROUP_WILTED_FLOWER, ITEM_GROUP_WILTED_FLOWERS);
+    return in_group(code, ITEM_GROUP_MOUTH_FLOWER, ITEM_GROUP_MOUTH_FLOWERS);
 }
-CLEAN_AS(func_0204be10, ItemGroup_IsWiltedFlower)
+CLEAN_AS(func_0204be10, ItemGroup_IsMouthFlower)
 
 /* func_0204bde8 */
-int ItemGroup_WiltedFlowerIndex(const u16 *code)
+int ItemGroup_MouthFlowerIndex(const u16 *code)
 {
-    return index_in(code, ITEM_GROUP_WILTED_FLOWER, ITEM_GROUP_WILTED_FLOWERS);
+    return index_in(code, ITEM_GROUP_MOUTH_FLOWER, ITEM_GROUP_MOUTH_FLOWERS);
 }
-CLEAN_AS(func_0204bde8, ItemGroup_WiltedFlowerIndex)
+CLEAN_AS(func_0204bde8, ItemGroup_MouthFlowerIndex)
 
 /* func_0204c0d8 */
 int ItemGroup_IsDesign(const u16 *code)

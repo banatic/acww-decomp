@@ -351,7 +351,7 @@ static void gt_set_head(u8 *record, u16 item)
 
 static void gt_set_accessory(u8 *record, u16 item)
 {
-    PlayerRecord_SetPartCItem(record, &item);
+    PlayerRecord_SetAccessoryItem(record, &item);
 }
 
 /* func_ov070_02278e30: the player dressed for what was paid. The player scored first; the tier
@@ -503,7 +503,7 @@ void GiraffeTalk_Score(GiraffeTalk *talk)
         gt_score_item(field, talk, &talk->worn[GIRAFFE_WORN_HEAD], GIRAFFE_WORN_HEAD);
     }
 
-    talk->worn[GIRAFFE_WORN_ACCESSORY] = *PlayerRecord_PartCItem(record);
+    talk->worn[GIRAFFE_WORN_ACCESSORY] = *PlayerRecord_AccessoryItem(record);
     if (gt_is_none(&talk->worn[GIRAFFE_WORN_ACCESSORY])) {
         gt_score_empty(field);
     } else {

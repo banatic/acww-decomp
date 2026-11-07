@@ -71,41 +71,41 @@ void ItemTraits_CopyCode(ItemCode *dst, const ItemCode *src)
 CLEAN_AS(func_0204c4b8, ItemTraits_CopyCode)
 
 /* func_0204be38: a head item of a pair that counts (its always.bin flag bit 1). */
-int ItemTraits_IsPairFlower(const ItemCode *item)
+int ItemTraits_IsPairHeadFlower(const ItemCode *item)
 {
-    if (ItemGroup_IsFlower(item) && ItemGroup_FlowerIndex(item) != ITEM_TRAITS_UNPAIRED) {
+    if (ItemGroup_IsHeadFlower(item) && ItemGroup_HeadFlowerIndex(item) != ITEM_TRAITS_UNPAIRED) {
         return ItemInfo_FlagBit1(item);
     }
     return 0;
 }
-CLEAN_AS(func_0204be38, ItemTraits_IsPairFlower)
+CLEAN_AS(func_0204be38, ItemTraits_IsPairHeadFlower)
 
-/* func_0204bd84: a part C item of a pair that counts (its head item does not). */
-int ItemTraits_IsPairWiltedFlower(const ItemCode *item)
+/* func_0204bd84: an accessory item of a pair that counts (its head item does not). */
+int ItemTraits_IsPairMouthFlower(const ItemCode *item)
 {
-    if (!ItemGroup_IsWiltedFlower(item)) {
+    if (!ItemGroup_IsMouthFlower(item)) {
         return 0;
     }
-    int index = ItemGroup_WiltedFlowerIndex(item);
+    int index = ItemGroup_MouthFlowerIndex(item);
     if (index == ITEM_TRAITS_UNPAIRED) {
         return 0;
     }
-    ItemCode head = ItemGroup_Flower((u32) index);
-    return !ItemTraits_IsPairFlower(&head);
+    ItemCode head = ItemGroup_HeadFlower((u32) index);
+    return !ItemTraits_IsPairHeadFlower(&head);
 }
-CLEAN_AS(func_0204bd84, ItemTraits_IsPairWiltedFlower)
+CLEAN_AS(func_0204bd84, ItemTraits_IsPairMouthFlower)
 
-/* func_0204beb0: into `out` the part C item of a pair that counts with this number (0 when
- * the number is not below their count); the first part C item 0x1471 when none is found. */
-void ItemTraits_PairWiltedFlower(ItemCode *out, u32 number)
+/* func_0204beb0: into `out` the accessory item of a pair that counts with this number (0 when
+ * the number is not below their count); the first accessory item 0x1471 when none is found. */
+void ItemTraits_PairMouthFlower(ItemCode *out, u32 number)
 {
     if (number >= ItemInfo_CountSecondOfPair()) {
         number = 0;
     }
     u32 found = 0;
     for (u32 i = 0; i < ITEM_TRAITS_PAIRS; i++) {
-        ItemCode item = ItemGroup_WiltedFlower(i);
-        if (ItemTraits_IsPairWiltedFlower(&item)) {
+        ItemCode item = ItemGroup_MouthFlower(i);
+        if (ItemTraits_IsPairMouthFlower(&item)) {
             if (found == number) {
                 *out = item;
                 return;
@@ -113,20 +113,20 @@ void ItemTraits_PairWiltedFlower(ItemCode *out, u32 number)
             found++;
         }
     }
-    *out = ItemGroup_WiltedFlower(0);
+    *out = ItemGroup_MouthFlower(0);
 }
-CLEAN_AS(func_0204beb0, ItemTraits_PairWiltedFlower)
+CLEAN_AS(func_0204beb0, ItemTraits_PairMouthFlower)
 
 /* func_0204bf38: the same for the head items of the pairs (0x1408 when none is found). */
-void ItemTraits_PairFlower(ItemCode *out, u32 number)
+void ItemTraits_PairHeadFlower(ItemCode *out, u32 number)
 {
     if (number >= (u32) ItemInfo_CountFirstOfPair()) {
         number = 0;
     }
     u32 found = 0;
     for (u32 i = 0; i < ITEM_TRAITS_PAIRS; i++) {
-        ItemCode item = ItemGroup_Flower(i);
-        if (ItemTraits_IsPairFlower(&item)) {
+        ItemCode item = ItemGroup_HeadFlower(i);
+        if (ItemTraits_IsPairHeadFlower(&item)) {
             if (found == number) {
                 *out = item;
                 return;
@@ -134,43 +134,43 @@ void ItemTraits_PairFlower(ItemCode *out, u32 number)
             found++;
         }
     }
-    *out = ItemGroup_Flower(0);
+    *out = ItemGroup_HeadFlower(0);
 }
-CLEAN_AS(func_0204bf38, ItemTraits_PairFlower)
+CLEAN_AS(func_0204bf38, ItemTraits_PairHeadFlower)
 
-/* func_0204bfa0: the number of a part C item of a pair that counts, -1 for another item. */
-int ItemTraits_PairWiltedFlowerNumber(const ItemCode *item)
+/* func_0204bfa0: the number of an accessory item of a pair that counts, -1 for another item. */
+int ItemTraits_PairMouthFlowerNumber(const ItemCode *item)
 {
-    if (!ItemTraits_IsPairWiltedFlower(item)) {
+    if (!ItemTraits_IsPairMouthFlower(item)) {
         return -1;
     }
     for (u32 i = 0; i < ItemInfo_CountSecondOfPair(); i++) {
         ItemCode numbered;
-        ItemTraits_PairWiltedFlower(&numbered, i);
+        ItemTraits_PairMouthFlower(&numbered, i);
         if (*item == numbered) {
             return (int) i;
         }
     }
     return -1;
 }
-CLEAN_AS(func_0204bfa0, ItemTraits_PairWiltedFlowerNumber)
+CLEAN_AS(func_0204bfa0, ItemTraits_PairMouthFlowerNumber)
 
 /* func_0204bff4: the number of a head item of a pair that counts, -1 for another item. */
-int ItemTraits_PairFlowerNumber(const ItemCode *item)
+int ItemTraits_PairHeadFlowerNumber(const ItemCode *item)
 {
-    if (!ItemTraits_IsPairFlower(item)) {
+    if (!ItemTraits_IsPairHeadFlower(item)) {
         return -1;
     }
     for (u32 i = 0; i < (u32) ItemInfo_CountFirstOfPair(); i++) {
         ItemCode numbered;
-        ItemTraits_PairFlower(&numbered, i);
+        ItemTraits_PairHeadFlower(&numbered, i);
         if (*item == numbered) {
             return (int) i;
         }
     }
     return -1;
 }
-CLEAN_AS(func_0204bff4, ItemTraits_PairFlowerNumber)
+CLEAN_AS(func_0204bff4, ItemTraits_PairHeadFlowerNumber)
 
 /* func_0204c120: the bag of bells for `bells`: with `round_up` the smallest bag worth at least
  * that much, else the biggest worth at most that much; 0xfff1 when no bag is. `*rest`, when

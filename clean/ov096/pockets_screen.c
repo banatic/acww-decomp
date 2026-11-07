@@ -1670,10 +1670,10 @@ int PocketsScreen_SwapRecordSlot(PocketsScreen *self, int record_slot, int item)
             }
             break;
         case 3:
-            PlayerRecord_SetPartCItem((u8 *) (uintptr_t) record, &value);
+            PlayerRecord_SetAccessoryItem((u8 *) (uintptr_t) record, &value);
             break;
         case 6:
-            PlayerRecord_SetPartCItem((u8 *) (uintptr_t) record, &value);
+            PlayerRecord_SetAccessoryItem((u8 *) (uintptr_t) record, &value);
             old = PocketsScreen_RecordSlotItem(self, 4);
             value = ITEM_CODE_NONE;
             PlayerRecord_SetHeadItem((u8 *) (uintptr_t) record, &value);
@@ -1707,7 +1707,7 @@ int PocketsScreen_RecordSlotItem(PocketsScreen *self, int record_slot)
         case 2:
             return *PlayerRecord_Clothes((u8 *) (uintptr_t) record);
         case 3:
-            return *PlayerRecord_PartCItem((u8 *) (uintptr_t) record);
+            return *PlayerRecord_AccessoryItem((u8 *) (uintptr_t) record);
         case 4:
             return *PlayerRecord_HeadItem((u8 *) (uintptr_t) record);
         case 5:

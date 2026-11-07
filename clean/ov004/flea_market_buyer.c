@@ -1314,11 +1314,11 @@ int FleaMarketBuyer_EnterCall(FleaMarketBuyer *buyer)
 CLEAN_AS(func_ov004_022214f0, FleaMarketBuyer_EnterCall)
 
 /* func_ov004_0222152c: its greeting: the sound 0x4cb, then the scene's sound
- * (Block020b220c_PlaySceneSound). */
+ * (Block020b220c_PlaySceneMelody). */
 void FleaMarketBuyer_PlayGreeting(FleaMarketBuyer *buyer)
 {
     SoundEmitter_PlayB((SoundEmitter *) (void *) fmb_part(buyer, FMB_SOUND), FMB_GREETING_SOUND, FMB_SOUND_VOLUME, 0);
-    Block020b220c_PlaySceneSound();
+    Block020b220c_PlaySceneMelody();
 }
 CLEAN_AS(func_ov004_0222152c, FleaMarketBuyer_PlayGreeting)
 

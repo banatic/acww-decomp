@@ -100,7 +100,7 @@ typedef struct SoundParams {
     SoundSlots *slots; /* 0x00 */
     void *source;      /* 0x04: SoundSlots_Update's second argument; NULL: the defaults */
     s32 unk_08[2];
-    s32 unk_10;   /* 0x10: from hook data_021fd19c, not used here */
+    s32 distance; /* 0x10: from hook data_021fd19c (Sound_SetDistanceHook) */
     s32 volume;   /* 0x14: from hook data_021fd1a4; 0 or less: nothing pending is started */
     s32 pan;      /* 0x18: from hook data_021fd1a0 */
     s32 priority; /* 0x1c: the volume again, added to each sequence's player priority */
@@ -227,7 +227,7 @@ void SoundSlot_Init(SoundSlot *slot);
 
 void SoundParams_Get(SoundParams *params);
 void Sound_SetVolumeHook(SoundHook hook);
-void Sound_SetUnk10Hook(SoundHook hook);
+void Sound_SetDistanceHook(SoundHook hook);
 void Sound_SetPanHook(SoundHook hook);
 
 #endif

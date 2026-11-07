@@ -84,7 +84,7 @@ static_assert(offsetof(FieldActor, aimed) == 0x148, "0x148");
 static_assert(offsetof(FieldActor, aim_point) == 0x158, "aim point");
 static_assert(offsetof(FieldActor, other) == 0x168, "other");
 static_assert(offsetof(FieldActor, other_result) == 0x16c, "other result");
-static_assert(offsetof(FieldActor, aim_mode) == 0x170, "aim mode");
+static_assert(offsetof(FieldActor, control_mode) == 0x170, "aim mode");
 static_assert(offsetof(FieldActor, other_kind) == 0x1d2, "other kind");
 static_assert(offsetof(FieldActor, has_other) == 0x200, "has other");
 static_assert(offsetof(FieldActor, anim) == 0x2d0, "animation");
@@ -293,7 +293,7 @@ int FieldActor_TryTarget(FieldActor *actor, int tool, ...)
     if (FieldActor_TryTargetMode2(actor, &tool)) {
         return 1;
     }
-    if (actor->aim_mode == 1) {
+    if (actor->control_mode == 1) {
         FieldActor_PointAhead(&point, actor, &actor->position, (const u16 *) &actor->yaw, &data_ov003_02238130);
     } else {
         point = actor->aim_point;
@@ -382,9 +382,9 @@ CLEAN_AS(func_ov003_0220c3d0, FieldActor_UseTool)
  *    then the last check;
  *  - with 0x144 = 1, FieldActor_TryTargetMode2, then for tools 0, 1, 2 and 10 the action at
  *    aim_point (tool 10 as tool 0) while 0x144 is still set; with 0x144 = 2, tool 4's action;
- *  - with aim_mode 2, tool 5 on a map object of families A, B or C at aim_point;
+ *  - with control_mode 2, tool 5 on a map object of families A, B or C at aim_point;
  *  - with 0x148 set, func_02010004;
- *  - with aim_mode 2: tool 1 at the point ahead towards aim_point (aim_point stands in for it
+ *  - with control_mode 2: tool 1 at the point ahead towards aim_point (aim_point stands in for it
  *    meanwhile), tool 5 at the origin, tool 3 at aim_point if func_02031614 accepts it;
  *  - last, with no tool, 0x140 set and func_020ba310, state 0x72. */
 int FieldActor_TryTool(FieldActor *actor)
@@ -430,7 +430,7 @@ int FieldActor_TryTool(FieldActor *actor)
             break;
     }
 
-    if (actor->aim_mode == 2 && tool == 5) {
+    if (actor->control_mode == 2 && tool == 5) {
         int x;
         int z;
         Position_Tile(&x, &z, (const Position *) &actor->aim_point);
@@ -446,7 +446,7 @@ int FieldActor_TryTool(FieldActor *actor)
     if (actor->aimed != 0 && FieldActor_TryTargetInScene(actor, tool)) {
         return 1;
     }
-    if (actor->aim_mode != 2) {
+    if (actor->control_mode != 2) {
         goto last;
     }
 
@@ -909,7 +909,7 @@ int FieldActor_TryTargetMode2(FieldActor *actor, int *tool)
 {
     Vec3 point;
 
-    if (actor->aim_mode == 1) {
+    if (actor->control_mode == 1) {
         FieldActor_PointAhead(&point, actor, &actor->position, (const u16 *) &actor->yaw, data_ov003_02236608);
     } else {
         point = actor->aim_point;
@@ -2063,7 +2063,7 @@ void FieldActor_EnterState72(FieldActor *actor, const StateRequest *request, int
     (void) previous;
     FieldActor_PlayAnimationOnce(actor, 0x9c, 3, 0);
     if (is_local_player(actor)) {
-        Block020ba298_SetPlayerFlag32();
+        Sky_WishOnShootingStar();
     }
 }
 CLEAN_AS(func_ov003_0220ea10, FieldActor_EnterState72)

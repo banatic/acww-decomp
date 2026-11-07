@@ -149,7 +149,7 @@ void FieldActor_PlaceModel(FieldActor *actor)
         ModelObject_SetAlpha((ModelObject *) (void *) at(actor, FIELD_ACTOR_MODEL_B), FIELD_ACTOR_BODY_ARG(actor));
         ModelObject_Draw((ModelObject *) (void *) at(actor, FIELD_ACTOR_MODEL_B), NULL);
     }
-    if (GlassesLook_Kind(at(actor, FIELD_ACTOR_PART_C)) != 0x4b) {
+    if (AccessoryLook_Kind(at(actor, FIELD_ACTOR_ACCESSORY)) != 0x4b) {
         *matrix_at(actor, FIELD_ACTOR_MODEL_C + FIELD_ACTOR_MODEL_MATRIX) = *matrix_at(actor, FIELD_ACTOR_MATRIX_JOINT_F);
         ModelObject_SetAlpha((ModelObject *) (void *) at(actor, FIELD_ACTOR_MODEL_C), FIELD_ACTOR_BODY_ARG(actor));
         ModelObject_Draw((ModelObject *) (void *) at(actor, FIELD_ACTOR_MODEL_C), NULL);

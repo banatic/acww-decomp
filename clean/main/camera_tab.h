@@ -12,8 +12,8 @@
  * Its states (CameraTabState), stepped through a table of member functions by its update:
  * hidden; appearing (until its animation is done); shown, while the scene allows the tab; the
  * window opening; open; the window closing; hiding (until its animation is done). The tab is
- * allowed while `shown` is set, no event runs and the scene (func_020960d8(4)) is not 8 to 15
- * or 0x24 to 0x2c. */
+ * allowed while `shown` is set, no event runs and the own player's actor (4) is not in a state
+ * 8 to 15 or 0x24 to 0x2c (PlayerActorOps_State). */
 #ifndef CLEAN_MAIN_CAMERA_TAB_H
 #define CLEAN_MAIN_CAMERA_TAB_H
 

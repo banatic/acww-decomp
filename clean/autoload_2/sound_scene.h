@@ -237,8 +237,8 @@ void SoundScene_CreatePlayer17Heaps(SoundScene *scene);
 void SoundScene_CreatePlayer6Heaps(SoundScene *scene);
 
 /* The base class (vtable 0x0213efb4, kind -1): its slots, constructor and destructors. Its
- * slot 7 sets the voice's type and loads that mode's sounds (sequence
- * archive 0x85, 0x86 or 0x87); slot 8 drops them again. */
+ * slot 7 sets the voice's type and loads that mode's sounds (bank 0x85, 0x86 or 0x87); slot 8
+ * drops them again. */
 void SoundSceneBase_OnMusic(SoundScene *scene, int stopped, int music);
 void SoundSceneBase_RestoreHeap(SoundScene *scene);
 int SoundSceneBase_SetVoiceType(SoundScene *scene, unsigned int mode);

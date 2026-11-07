@@ -155,7 +155,7 @@ static void destroy(struct FieldActor *actor)
     AnimSlots_DestructSlot(at(actor, 0x701));
     AnimSlots_DestructSlot(at(actor, 0x700));
     HeldItem_Destruct((HeldItemObject *) (void *) at(actor, 0x5a0));
-    GlassesLook_DestructLook(at(actor, 0x59c));
+    AccessoryLook_DestructLook(at(actor, 0x59c));
     ModelObject_DestructComplete((ModelObject *) (void *) at(actor, 0x500));
     ModelObject_DestructComplete((ModelObject *) (void *) at(actor, 0x464));
     HeadLook_DestructLook(at(actor, 0x428));
@@ -207,7 +207,7 @@ struct FieldActor *FieldActor_Construct(struct FieldActor *actor)
     HeadLook_ConstructLook(at(actor, 0x428));
     ModelObject_Construct((ModelObject *) (void *) at(actor, 0x464));
     ModelObject_Construct((ModelObject *) (void *) at(actor, 0x500));
-    GlassesLook_ConstructLook(at(actor, 0x59c));
+    AccessoryLook_ConstructLook(at(actor, 0x59c));
     HeldItem_Construct((HeldItemObject *) (void *) at(actor, 0x5a0));
     AnimSlots_ConstructSlot(at(actor, 0x700));
     AnimSlots_ConstructSlot(at(actor, 0x701));
@@ -240,7 +240,7 @@ struct FieldActor *FieldActor_Construct(struct FieldActor *actor)
     FIELD_ACTOR_FIELD(actor, int, 0x708) = 0x144;
     FIELD_ACTOR_FIELD(actor, int, 0x76c) = 0x16f;
     FIELD_ACTOR_FIELD(actor, int, 0x770) = 0x16f;
-    actor->aim_mode = 2;
+    actor->control_mode = 2;
     FIELD_ACTOR_FIELD(actor, int, 0xc80) = -1;
     FIELD_ACTOR_FIELD(actor, int, 0xc8c) = 2;
     FIELD_ACTOR_FIELD(actor, int, 0xc94) = 2;
@@ -340,7 +340,7 @@ int FieldActor_Shutdown(struct FieldActor *actor)
     AnimatedModel_DetachJoints((AnimatedModel *) (void *) at(actor, FIELD_ACTOR_BODY));
     ModelObject_Release((ModelObject *) (void *) at(actor, FIELD_ACTOR_BODY));
     HeldItem_Clear((HeldItemObject *) (void *) actor->held);
-    GlassesLook_Unload(at(actor, FIELD_ACTOR_PART_C));
+    AccessoryLook_Unload(at(actor, FIELD_ACTOR_ACCESSORY));
     FIELD_ACTOR_FIELD(actor, int, 0xc8c) = 2;
     HeadLook_Unload(at(actor, FIELD_ACTOR_PART_B));
     ClothSlots_ResetSlot(at(actor, 0x774));
@@ -391,7 +391,7 @@ extern int func_021077e8(int value);
 /* func_0200e42c: the set-up; returns 1. The player is bits 30 and 31 of the word at 8
  * (func_02096188); it is noted at 0xdc (func_0203efb0) and with the session's players
  * (func_020962c8). The looks and models are set up from the player's tables, with the
- * player record's items (FieldActor_SetupLooks, FieldActor_SetupPartB, FieldActor_SetupPartC),
+ * player record's items (FieldActor_SetupLooks, FieldActor_SetupPartB, FieldActor_SetupAccessory),
  * and the held item (func_0205ec50). Gravity is -5.0 a step, the vertical speed at least -10.0;
  * state 0 is asked for with the start state (bits 22 to 29, func_02096180; priority 9) and the
  * requests are taken at once. The flags are 1 (and 0 outdoors); the start position is the
@@ -414,7 +414,7 @@ int FieldActor_Init(struct FieldActor *actor)
     FaceTexture_Assign(at(actor, 0x70d), data_020c75cc[SessionPlayers_LookIndex(actor->player)]);
     FaceTexture_Load(at(actor, 0x70d), FieldActor_RecordFace(actor));
     FieldActor_SetupPartB(actor);
-    FieldActor_SetupPartC(actor);
+    FieldActor_SetupAccessory(actor);
     index = SessionPlayers_LookIndex(actor->player);
     u16 item;
     FieldActor_RecordHeldItem(&item, actor);
@@ -446,18 +446,18 @@ int FieldActor_Init(struct FieldActor *actor)
 }
 CLEAN_AS(func_0200e42c, FieldActor_Init)
 
-/* func_0200e654: part C (0x59c) from the player's table data_020c75c8, then its item from the
- * player's record (FieldActor_RecordPartCItem) goes to FieldActor_RequestPartC, and FieldActor_ApplyPartC. */
-void FieldActor_SetupPartC(struct FieldActor *actor)
+/* func_0200e654: the accessory (0x59c) from the player's table data_020c75c8, then its item from the
+ * player's record (FieldActor_RecordAccessoryItem) goes to FieldActor_RequestAccessory, and FieldActor_ApplyAccessory. */
+void FieldActor_SetupAccessory(struct FieldActor *actor)
 {
     u16 item;
-    GlassesLook_SetLook(at(actor, FIELD_ACTOR_PART_C), data_020c75c8[SessionPlayers_LookIndex(actor->player)]);
-    FieldActor_RecordPartCItem(&item, actor);
+    AccessoryLook_SetLook(at(actor, FIELD_ACTOR_ACCESSORY), data_020c75c8[SessionPlayers_LookIndex(actor->player)]);
+    FieldActor_RecordAccessoryItem(&item, actor);
     u16 copy = item;
-    FieldActor_RequestPartC(actor, &copy);
-    FieldActor_ApplyPartC(actor);
+    FieldActor_RequestAccessory(actor, &copy);
+    FieldActor_ApplyAccessory(actor);
 }
-CLEAN_AS(func_0200e654, FieldActor_SetupPartC)
+CLEAN_AS(func_0200e654, FieldActor_SetupAccessory)
 
 /* func_0200e6a4: part B (0x428) from the player's table data_020c75e4, then its item from the
  * player's record (FieldActor_RecordHeadItem, 0xfff1 without a record) goes to FieldActor_RequestHead with

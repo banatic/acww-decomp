@@ -222,7 +222,7 @@ int SceneProcess_End(void)
     FishingFloat_EndScene();
     HeldItemPool_EndScene();
     ActorPalettes_EndScene();
-    GlassesLook_EndScene();
+    AccessoryLook_EndScene();
     HeadLook_EndScene();
     BodyLook_EndScene();
     BodyAnimHeaps_EndScene();
@@ -402,7 +402,7 @@ int SceneProcess_LoadResources(void)
     BodyLook_StartScene(data_021fbe94);
     HeadLook_StartScene(data_021fbe94);
     ActorPalettes_StartScene(data_021fbe94);
-    GlassesLook_StartScene(data_021fbe94);
+    AccessoryLook_StartScene(data_021fbe94);
     HeldItemPool_StartScene(data_021fbe94);
     FishingFloat_StartScene(data_021fbe94);
     ObjShadow_LoadAll(scene_process_full());

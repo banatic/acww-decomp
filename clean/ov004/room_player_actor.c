@@ -307,7 +307,7 @@ int RoomPlayerActor_SwitchHeadwear(int on)
             return 1;
         }
         FieldActor_RecordHeadItem(&head, actor);
-        FieldActor_RecordPartCItem(&part_c, actor);
+        FieldActor_RecordAccessoryItem(&part_c, actor);
         FieldActor_ClearFlag(actor, RPA_FLAG_HEADWEAR_OFF);
     } else {
         if (FieldActor_TestFlag(actor, RPA_FLAG_HEADWEAR_OFF) != 0) {
@@ -320,7 +320,7 @@ int RoomPlayerActor_SwitchHeadwear(int on)
     unsigned int kind = FieldActor_RecordHeadKind(actor);
     unsigned int hair_color = FieldActor_RecordHairColor(actor);
     if (FieldActor_RequestHead(actor, &head, (u8) kind, (u8) hair_color, 1) != 0) {
-        FieldActor_RequestPartC(actor, &part_c);
+        FieldActor_RequestAccessory(actor, &part_c);
     }
     return 1;
 }

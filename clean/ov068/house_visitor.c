@@ -642,7 +642,7 @@ void HouseVisitor_UpdateCalled(HouseVisitor *visitor)
     }
     SoundEmitter_PlayB((SoundEmitter *) (void *) hv_part(visitor, HOUSE_VISITOR_EMITTER), HOUSE_VISITOR_SOUND_DOOR,
                        HOUSE_VISITOR_SOUND_VOLUME, 0);
-    Block020b220c_PlaySceneSound();
+    Block020b220c_PlaySceneMelody();
     HouseVisitor_SetState(visitor, HOUSE_VISITOR_ENTER);
 }
 CLEAN_AS(func_ov068_02275994, HouseVisitor_UpdateCalled)

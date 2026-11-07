@@ -103,7 +103,8 @@ typedef struct ParticleHeader {
     s16 max_rotation;     /* 0x36 */
     u16 emitter_life;     /* 0x38: frames; 0 for ever */
     u16 particle_life;    /* 0x3a */
-    u8 random_scale;      /* 0x3c: how much of each the random numbers take off */
+    u8 random_scale;      /* 0x3c: amount / 256: random_life takes a random part of that much */
+                          /* off; random_scale and random_speed vary up or down by up to it */
     u8 random_life;       /* 0x3d */
     u8 random_speed;      /* 0x3e */
     u8 pad_3f;            /* 0x3f */

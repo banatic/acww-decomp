@@ -39,7 +39,7 @@ static inline Actor *FieldActor_Base(FieldActor *actor)
 #define FIELD_ACTOR_MODEL_A 0x38c
 #define FIELD_ACTOR_PART_B 0x428
 #define FIELD_ACTOR_MODEL_B 0x464
-#define FIELD_ACTOR_PART_C 0x59c
+#define FIELD_ACTOR_ACCESSORY 0x59c
 #define FIELD_ACTOR_MODEL_C 0x500
 #define FIELD_ACTOR_MODEL_MATRIX 0x64
 
@@ -102,14 +102,14 @@ static inline Actor *FieldActor_Base(FieldActor *actor)
 #define FIELD_ACTOR_COLLIDER 0x7a4
 #define FIELD_ACTOR_COLLIDER_FLAGS(actor) FIELD_ACTOR_FIELD(actor, u32, 0x7a8)
 
-/* A change of the head or of part C is asked for (status LOOKS_READY to LOOKS_PENDING with the
+/* A change of the head or of the accessory is asked for (status LOOKS_READY to LOOKS_PENDING with the
  * request's values), applied (LOOKS_LOADING) and polled until its models are loaded
  * (LOOKS_READY). */
 #define LOOKS_PENDING 0
 #define LOOKS_LOADING 1
 #define LOOKS_READY 2
-#define FIELD_ACTOR_PART_C_STATUS(actor) FIELD_ACTOR_FIELD(actor, int, 0xc8c)
-#define FIELD_ACTOR_PART_C_ITEM(actor) FIELD_ACTOR_FIELD(actor, u16, 0xc90)
+#define FIELD_ACTOR_ACCESSORY_STATUS(actor) FIELD_ACTOR_FIELD(actor, int, 0xc8c)
+#define FIELD_ACTOR_ACCESSORY_ITEM(actor) FIELD_ACTOR_FIELD(actor, u16, 0xc90)
 #define FIELD_ACTOR_HEAD_STATUS(actor) FIELD_ACTOR_FIELD(actor, int, 0xc94)
 #define FIELD_ACTOR_HEAD_ITEM(actor) FIELD_ACTOR_FIELD(actor, u16, 0xc98)
 #define FIELD_ACTOR_HEAD_KIND(actor) FIELD_ACTOR_FIELD(actor, u8, 0xc9a)

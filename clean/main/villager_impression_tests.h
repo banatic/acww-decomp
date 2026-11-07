@@ -4,7 +4,7 @@
  * around the player.
  *
  * The item tests compare a code of the player's looks (player_record.h: the held item, the
- * clothes, the head's item, part C's item) with a code or a range of codes. A code of kind 3 or
+ * clothes, the head's item, the accessory's item) with a code or a range of codes. A code of kind 3 or
  * 4 (func_0204bcdc) matches the wanted one whatever side it faces (ItemCode_FurnitureNumber). */
 #ifndef CLEAN_MAIN_VILLAGER_IMPRESSION_TESTS_H
 #define CLEAN_MAIN_VILLAGER_IMPRESSION_TESTS_H

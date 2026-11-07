@@ -3,8 +3,8 @@
  * table at data_021f3ea4 (func_020a4e94 starts one). The job the game asks for next is kept in
  * data_021f3c38: the ActivityJob_Ask* functions set it, from the overlays that start a visit
  * or a linked mode and from the session code, and func_020a4dc4 starts it once the scene it
- * belongs to is reached, then clears it. What each job does is not known yet; they are named
- * by number. */
+ * belongs to is reached, then clears it. The jobs are named by number; activity_jobs.h and
+ * activity_link_jobs.h say what each does. */
 #ifndef CLEAN_MAIN_ACTIVITY_JOB_H
 #define CLEAN_MAIN_ACTIVITY_JOB_H
 
@@ -12,12 +12,12 @@
 
 #define ACTIVITY_JOB_NONE 0
 
-int ActivityJob_Is1FAtStep15Or20(void);
+int ActivityJob_1FShowingEndMessage(void);
 int ActivityJob_IsIdleForOv054(void);
-int ActivityJob_Is13AtStep3(void);
+int ActivityJob_Save13Failed(void);
 int ActivityJob_IsIdleForOv048(void);
 int ActivityJob_IsIdleForOv004(void);
-int ActivityJob_Is12AtStep3(void);
+int ActivityJob_Save12Failed(void);
 int ActivityJob_IsIdle(void);
 void ActivityJob_AskFindMover(void);
 void ActivityJob_Ask1F(void);

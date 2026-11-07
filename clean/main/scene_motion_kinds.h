@@ -58,10 +58,10 @@ typedef struct SceneMotionPlan {
 /* A part of an act: the body's animation (0x137 for none) and the effects started with it. */
 typedef struct SceneMotionActPart {
     u32 animation;
-    u32 effect;
-    u8 unk_08;
-    u8 restart;
-    u8 unk_0a[2];
+    u32 cues;          /* 0x04: the address of the part's effect cues (ActEffects_SetCues) */
+    u8 cue_count;      /* 0x08 */
+    u8 restart;        /* 0x09 */
+    u8 sound_frame[2]; /* 0x0a: an s16, the frame the act's sound starts (ActEffects_StepCue) */
 } SceneMotionActPart;
 
 typedef struct SceneMotionAct {

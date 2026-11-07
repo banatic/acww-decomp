@@ -871,9 +871,11 @@ extern void func_02094884(void *transform);
 #define EFFECT_KINDS_SET_KIND_00_SNOW 0x18
 #define EFFECT_KINDS_SET_KIND_00_ON_13 0x17
 #define EFFECT_KINDS_SET_KIND_00 0x02
-#define EFFECT_KINDS_SET_LANDED_1F 0x1f /* where the wet kinds' particles land on the ground */
-#define EFFECT_KINDS_SET_LANDED_1E 0x1e
-#define EFFECT_KINDS_SET_LANDED_1D 0x1d
+/* The sets landed particles start: on the ground, and on the ground and at height 0 when wet
+ * or in the snow. */
+#define EFFECT_KINDS_SET_LANDED_GROUND 0x1f
+#define EFFECT_KINDS_SET_LANDED_WET 0x1e
+#define EFFECT_KINDS_SET_LANDED_SNOW 0x1d
 
 /* The model kinds 0x0b, 0x16, 0x17 and 0x19 start with their particles. */
 #define EFFECT_KINDS_MODEL_WITH_SET 2
@@ -1328,8 +1330,8 @@ void EffectKinds_FollowSet45(EffectKindsInstance *instance)
 {
     /* QUIRK: declared without a result; in the ROM the follow's result is still in r0 when it
      * returns. */
-    EffectKinds_FollowParticles(instance, EFFECT_KINDS_SET_LANDED_1F, data_020e29dc, EFFECT_KINDS_SET_LANDED_1E, data_020e29dc,
-                                EFFECT_KINDS_SET_LANDED_1E, data_020e29dc, -1, NULL);
+    EffectKinds_FollowParticles(instance, EFFECT_KINDS_SET_LANDED_GROUND, data_020e29dc, EFFECT_KINDS_SET_LANDED_WET,
+                                data_020e29dc, EFFECT_KINDS_SET_LANDED_WET, data_020e29dc, -1, NULL);
 }
 CLEAN_AS(func_02094228, EffectKinds_FollowSet45)
 
@@ -1536,8 +1538,8 @@ void EffectKinds_FollowWet(EffectKindsInstance *instance)
 {
     /* QUIRK: declared without a result; in the ROM the follow's result is still in r0 when it
      * returns. */
-    EffectKinds_FollowParticles(instance, EFFECT_KINDS_SET_LANDED_1F, data_020e29dc, EFFECT_KINDS_SET_LANDED_1E, data_020e29dc,
-                                EFFECT_KINDS_SET_LANDED_1E, data_020e29dc, -1, NULL);
+    EffectKinds_FollowParticles(instance, EFFECT_KINDS_SET_LANDED_GROUND, data_020e29dc, EFFECT_KINDS_SET_LANDED_WET,
+                                data_020e29dc, EFFECT_KINDS_SET_LANDED_WET, data_020e29dc, -1, NULL);
 }
 CLEAN_AS(func_0209469c, EffectKinds_FollowWet)
 
@@ -1546,8 +1548,8 @@ CLEAN_AS(func_0209469c, EffectKinds_FollowWet)
  * 0x1d at height 0. */
 int EffectKinds_FollowSnow(EffectKindsInstance *instance)
 {
-    return EffectKinds_FollowParticles(instance, EFFECT_KINDS_SET_LANDED_1F, data_020e29dc, EFFECT_KINDS_SET_LANDED_1D,
-                                       data_020e29dc, EFFECT_KINDS_SET_LANDED_1D, data_020e29dc, -1, NULL);
+    return EffectKinds_FollowParticles(instance, EFFECT_KINDS_SET_LANDED_GROUND, data_020e29dc, EFFECT_KINDS_SET_LANDED_SNOW,
+                                       data_020e29dc, EFFECT_KINDS_SET_LANDED_SNOW, data_020e29dc, -1, NULL);
 }
 CLEAN_AS(func_020946c4, EffectKinds_FollowSnow)
 
@@ -1808,10 +1810,6 @@ extern void func_02092898(ParticleEmitter *emitter, unsigned int after);
 #define EFFECT_KINDS_SET_KIND_37_ON_13 0x87
 #define EFFECT_KINDS_SET_KIND_36 0x7f
 #define EFFECT_KINDS_SET_KIND_35 0x7e
-/* The sets the landed particles of kinds 0x39 and 0x3f start. */
-#define EFFECT_KINDS_SET_LANDED_GROUND 0x1f
-#define EFFECT_KINDS_SET_LANDED_FLOOR_3F 0x1e
-#define EFFECT_KINDS_SET_LANDED_FLOOR_39 0x1d
 
 /* Kinds 0x35 and 0x36 follow their places from frames -181 counting up to -1 (for ever), which
  * lets their emitters fade in over the first 20 frames and out over the last 60. */
@@ -2067,12 +2065,11 @@ int EffectKinds_StartKind3f(int kind, Vec3 *position, const s16 *angle, const s1
 CLEAN_AS(func_02092064, EffectKinds_StartKind3f)
 
 /* func_020920bc: kind 0x3f's first kept emitter each frame (EffectKinds_FollowParticles): its
- * landed particles start set 0x1f on the ground, 0x1e and 0x1e at height 0. */
+ * landed particles start sets 0x1f and 0x1e on the ground, 0x1e at height 0. */
 int EffectKinds_FollowKind3f(EffectKindsInstance *instance)
 {
-    return EffectKinds_FollowParticles(instance, EFFECT_KINDS_SET_LANDED_GROUND, data_020e29dc,
-                                       EFFECT_KINDS_SET_LANDED_FLOOR_3F, data_020e29dc, EFFECT_KINDS_SET_LANDED_FLOOR_3F,
-                                       data_020e29dc, -1, NULL);
+    return EffectKinds_FollowParticles(instance, EFFECT_KINDS_SET_LANDED_GROUND, data_020e29dc, EFFECT_KINDS_SET_LANDED_WET,
+                                       data_020e29dc, EFFECT_KINDS_SET_LANDED_WET, data_020e29dc, -1, NULL);
 }
 CLEAN_AS(func_020920bc, EffectKinds_FollowKind3f)
 
@@ -2341,13 +2338,13 @@ int EffectKinds_StartKind39(int kind, const Vec3 *position, const s16 *angle, co
 CLEAN_AS(func_02092644, EffectKinds_StartKind39)
 
 /* func_020926f8: kind 0x39's kept emitter in the snow each frame (EffectKinds_FollowParticles):
- * its landed particles start set 0x1f on the ground, 0x1d and 0x1d at height 0. */
+ * its landed particles start sets 0x1f and 0x1d on the ground, 0x1d at height 0. */
 void EffectKinds_FollowKind39Snow(EffectKindsInstance *instance)
 {
     /* QUIRK: declared without a result; in the ROM EffectKinds_FollowParticles's is still in r0
      * when it returns, and the instances' follower (func_0209099c) reads it. */
-    EffectKinds_FollowParticles(instance, EFFECT_KINDS_SET_LANDED_GROUND, data_020e29dc, EFFECT_KINDS_SET_LANDED_FLOOR_39,
-                                data_020e29dc, EFFECT_KINDS_SET_LANDED_FLOOR_39, data_020e29dc, -1, NULL);
+    EffectKinds_FollowParticles(instance, EFFECT_KINDS_SET_LANDED_GROUND, data_020e29dc, EFFECT_KINDS_SET_LANDED_SNOW,
+                                data_020e29dc, EFFECT_KINDS_SET_LANDED_SNOW, data_020e29dc, -1, NULL);
 }
 CLEAN_AS(func_020926f8, EffectKinds_FollowKind39Snow)
 
@@ -2357,8 +2354,8 @@ void EffectKinds_FollowKind39Wet(EffectKindsInstance *instance)
 {
     /* QUIRK: declared without a result; in the ROM EffectKinds_FollowParticles's is still in r0
      * when it returns, and the instances' follower (func_0209099c) reads it. */
-    EffectKinds_FollowParticles(instance, EFFECT_KINDS_SET_LANDED_GROUND, data_020e29dc, EFFECT_KINDS_SET_LANDED_FLOOR_39,
-                                data_020e29dc, EFFECT_KINDS_SET_LANDED_FLOOR_39, data_020e29dc, -1, NULL);
+    EffectKinds_FollowParticles(instance, EFFECT_KINDS_SET_LANDED_GROUND, data_020e29dc, EFFECT_KINDS_SET_LANDED_SNOW,
+                                data_020e29dc, EFFECT_KINDS_SET_LANDED_SNOW, data_020e29dc, -1, NULL);
 }
 CLEAN_AS(func_02092720, EffectKinds_FollowKind39Wet)
 

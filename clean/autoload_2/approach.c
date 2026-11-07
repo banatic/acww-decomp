@@ -58,8 +58,9 @@ u8 Countdown_Tick8(u8 *counter)
 }
 CLEAN_AS(func_020e8858, Countdown_Tick8)
 
-/* func_020e8870: `value` moved by `step` towards `target` (the step's sign is ignored); TRUE
- * once it is there. With a step of 0 only tells whether it is there.
+/* func_020e8870: `value` moved by `step` towards `target`; TRUE once it is there. A negative
+ * step moves it away for one call, which the pass test then takes as passing: it snaps onto
+ * the target. With a step of 0 only tells whether it is there.
  * QUIRK: the side the target is on is taken from the 16-bit difference, which suits angles:
  * a value and target more than half a turn apart move the short way round, and then the
  * value stops on the target only when it lands near it. */

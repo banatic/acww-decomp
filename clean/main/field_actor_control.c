@@ -3,8 +3,8 @@
  * angle), a run flag, an act and an aim point each frame, and the functions after it read
  * them back.
  *
- * The push angle is relative to the camera for the buttons (aim_mode 1) and already in the
- * world for the pen (aim_mode 2). */
+ * The push angle is relative to the camera for the buttons (control_mode 1) and already in the
+ * world for the pen (control_mode 2). */
 #include "field_actor.h"
 
 #include <assert.h>
@@ -79,7 +79,7 @@ extern int FX_Sqrt(int value);
 static_assert(offsetof(FieldActor, unk_140) == 0x140, "0x140");
 static_assert(offsetof(FieldActor, pick_point) == 0x14c, "0x14c");
 static_assert(offsetof(FieldActor, aim_point) == 0x158, "aim point");
-static_assert(offsetof(FieldActor, aim_mode) == 0x170, "aim mode");
+static_assert(offsetof(FieldActor, control_mode) == 0x170, "aim mode");
 static_assert(offsetof(FieldActor, start_position) == 0x6f4, "start position");
 
 static const Vec3 *position_of(const FieldActor *actor)
@@ -164,7 +164,7 @@ void FieldActor_ReadControl(FieldActor *actor)
 {
     BOOL on_actor = 0;
     BOOL run = 0;
-    int mode = actor->aim_mode;
+    int mode = actor->control_mode;
     BOOL act = 0;
     int act_value = 0;
     BOOL on_ground = 0;
@@ -201,7 +201,7 @@ void FieldActor_ReadControl(FieldActor *actor)
         FieldLabel_ClearMessage();
         /* Network modes 3 and 4 (Net_GetMode's result less 3, as a byte, at most 1). */
         if (data_020ccf94->local_slot == 0 && (u8) (Net_GetMode() - 3) <= 1) {
-            Wfc_ClearHostTime();
+            Wfc_AllowNewClients();
         }
         int state = actor->state;
         if (state == 2 || state == 0x83 || state == 0x28 || state == 8) {
@@ -289,7 +289,7 @@ void FieldActor_ReadControl(FieldActor *actor)
         mode = 2;
     } else {
         actor->unk_140 = 0;
-        if (actor->aim_mode == 2) {
+        if (actor->control_mode == 2) {
             mode = on_ground ? 2 : 1;
         } else if (data_021fbe40.held & BUTTONS_STEER) {
             mode = 1;
@@ -346,7 +346,7 @@ void FieldActor_ReadControl(FieldActor *actor)
         } else {
             u16 steer = (EventQueue_TestFlag8() || FieldActor_TestFlag(actor, 0x13)) ? BUTTONS_ALL : BUTTONS_STEER;
             u16 held = data_021fbe40.held;
-            mode = (held & steer) ? 1 : actor->aim_mode;
+            mode = (held & steer) ? 1 : actor->control_mode;
             run = (held & (BUTTON_B | BUTTON_R | BUTTON_L)) != 0;
             act = (data_021fbe40.pressed & BUTTON_A) != 0;
             actor->unk_140 = (u8) act;
@@ -375,7 +375,7 @@ void FieldActor_ReadControl(FieldActor *actor)
     FIELD_ACTOR_HOLD(actor) = hold;
     actor->aimed = (u8) aimed;
     actor->aim_point = aim;
-    actor->aim_mode = mode;
+    actor->control_mode = mode;
 }
 CLEAN_AS(func_0200dc98, FieldActor_ReadControl)
 
@@ -398,7 +398,7 @@ CLEAN_AS(func_0200dc80, FieldActor_PushAngle)
 s16 FieldActor_PushYaw(FieldActor *actor)
 {
     s16 yaw = FieldActor_PushAngle(actor);
-    if (actor->aim_mode != 2 && data_021c67a4 != 0) {
+    if (actor->control_mode != 2 && data_021c67a4 != 0) {
         yaw = (s16) (yaw + CameraControl_Yaw((CameraControl *) (uintptr_t) data_021c67a4));
     }
     return yaw;

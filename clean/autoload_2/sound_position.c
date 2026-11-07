@@ -10,7 +10,7 @@ static_assert(offsetof(SoundDistanceCurve, near) == 0x0c, "SoundDistanceCurve.ne
 static_assert(offsetof(SoundDistanceCurve, slope_far) == 0x18, "SoundDistanceCurve.slope_far");
 static_assert(sizeof(SoundDistanceCurve) == 0x1c, "SoundDistanceCurve size");
 static_assert(offsetof(SoundParams, source) == 0x04, "SoundParams.source");
-static_assert(offsetof(SoundParams, unk_10) == 0x10, "SoundParams.unk_10");
+static_assert(offsetof(SoundParams, distance) == 0x10, "SoundParams.distance");
 
 /* The distance curve every sound uses. */
 extern SoundDistanceCurve data_021fd248;
@@ -86,17 +86,17 @@ static int clamp_volume(int volume)
 /* func_020f5988: the sound slots' three hooks taken away. */
 void SoundPosition_ClearHooks(void)
 {
-    Sound_SetUnk10Hook(NULL);
+    Sound_SetDistanceHook(NULL);
     Sound_SetVolumeHook(NULL);
     Sound_SetPanHook(NULL);
 }
 CLEAN_AS(func_020f5988, SoundPosition_ClearHooks)
 
 /* func_020f59b4: the sound slots' three hooks set: the source's distance (into
- * SoundParams.unk_10), the volume at that distance and the source's pan. */
+ * SoundParams.distance), the volume at that distance and the source's pan. */
 void SoundPosition_InstallHooks(void)
 {
-    Sound_SetUnk10Hook(func_020f5e3c);
+    Sound_SetDistanceHook(func_020f5e3c);
     Sound_SetVolumeHook(func_020f5e14);
     Sound_SetPanHook(func_020f5c50);
 }
@@ -252,7 +252,7 @@ CLEAN_AS(func_020f5cf8, SoundPosition_SplitVolumes)
 /* func_020f5e14: the volume hook: the volume at the distance the distance hook gave. */
 int SoundPosition_HookVolume(SoundParams *params)
 {
-    return SoundPosition_VolumeAt(params->unk_10);
+    return SoundPosition_VolumeAt(params->distance);
 }
 CLEAN_AS(func_020f5e14, SoundPosition_HookVolume)
 

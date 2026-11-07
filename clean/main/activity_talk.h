@@ -37,7 +37,7 @@ void ActivityReceiver_SetOwner(ActivityReceiver *receiver, Activity *owner);
 ActivityReceiver *ActivityReceiver_DestructFree(ActivityReceiver *receiver);
 ActivityReceiver *ActivityReceiver_Destruct(ActivityReceiver *receiver);
 ActivityReceiver *ActivityReceiver_Construct(ActivityReceiver *receiver);
-int ActivityTalk_FinishWaiting(Activity *activity, int value);
+int ActivityTalk_StartSpinner(Activity *activity, int sound);
 void ActivityTalk_Close(Activity *activity);
 void ActivityTalk_QueueMessage11(Activity *activity);
 void ActivityTalk_QueueMessage10(Activity *activity);

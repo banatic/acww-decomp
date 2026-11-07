@@ -233,7 +233,7 @@ SAVES = {
     # main/house_record.h, 0)
     "loan-paid": [(HELD, "<H", 0x1374), (MONEY, "<I", 30000), (0xF52C + 0x1590, "<I", 0)],
     # nothing held; pockets 0-5: items worn on the head of each model group (main/item_group.h:
-    # 0x13a8, 0x13c8 and 0x1408) and of part C (0x1431, 0x1471; main/glasses_look.h), and 0x13c3
+    # 0x13a8, 0x13c8 and 0x1408) and of the accessory (0x1431, 0x1471; main/glasses_look.h), and 0x13c3
     "wear": [(HELD, "<H", 0xFFF1)] + [(POCKETS + 2 * i, "<H", item) for i, item in
                                        enumerate((0x13A8, 0x13C8, 0x1408, 0x1431, 0x1471, 0x13C3))],
     # the wallet full (99,999 bells) and the savings account at its most (999,999,999 bells, the
@@ -711,9 +711,9 @@ SAVES["store-upgrade"] = [(HELD, "<H", 0x1374), (MONEY, "<I", 30000), (NOOK_STOR
 # the flash erased (every byte 0xff, as a new card's): the game finds no town and starts a new one
 SAVES["erased"] = None
 
-# as "weeded" with glasses worn (part C of the record, 0x240c, an item of 0x1431-0x1470,
+# as "weeded" with glasses worn (the accessory of the record, 0x240c, an item of 0x1431-0x1470,
 # main/villager_impression.c) and the face of head kind 5 (bits 4-7 of the record's byte 0x243c;
-# the seed's is 1): the impression rules of part C with the head kinds are tried
+# the seed's is 1): the impression rules of the accessory with the head kinds are tried
 SAVES["weeded-glasses"] = SAVES["weeded"] + [(0x14 + 0x240C, "<H", 0x1431), (0x14 + 0x243C, "<B", 0x54)]
 # as "weeded" with the bug net held
 SAVES["june-net"] = SAVES["weeded"] + [(HELD, "<H", 0x1376)]
@@ -1154,9 +1154,9 @@ SAVES["fly-spot"] = SAVES["clear"] + [(HELD, "<H", 0x1376), town_item(40, 69, 0x
 # the shovel held and the axe in pocket 0: a hole dug, the axe taken from the pockets, then B
 # facing the hole (FieldActor_TryTargetMode2: the shovel's tool value 2 asks for no hole)
 SAVES["hole-axe"] = [(HELD, "<H", 0x1369), (POCKETS, "<H", 0x136B)]
-# the face item 0x1483 worn (the player record's part C at 0x240c): one of 0x1471-0x1491 whose
+# the face item 0x1483 worn (the player record's the accessory at 0x240c): one of 0x1471-0x1491 whose
 # pair's head item counts (its always.bin flags bit 1), so the actor's look reads its number
-# among those pairs (FieldActor_ApplyPartC, ItemTraits_PairWiltedFlowerNumber)
+# among those pairs (FieldActor_ApplyAccessory, ItemTraits_PairMouthFlowerNumber)
 SAVES["face-pair"] = [(0x14 + 0x240C, "<H", 0x1483)]
 # "full-rod" with the present 0x156b on the tile two south of the house's door: taken up with the
 # pockets full, it is swapped in as an item drawn for it (main/current_pockets.c)

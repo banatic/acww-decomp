@@ -2,11 +2,12 @@
  * of bells for an amount, the records of item_info.h and furniture_info.h read for an item in
  * any of its forms (item_form.h), the creatures' sizes and values, and the store's price.
  *
- * The worn pairs: the items 0x1408-0x1428 (worn on the head) and 0x1471-0x1491 (worn as part C)
- * are paired by their index and share the codes they are placed as. Of each pair (but the one
+ * The worn pairs: the flowers 0x1408-0x1428 (worn on the head: tulips, pansies, cosmos, lily of
+ * the valley, dandelion, clover) and 0x1471-0x1491 (worn in the mouth as the accessory: the
+ * roses and the gold rose) are paired by their index and share the codes they are placed as. Of each pair (but the one
  * of index 30, never paired) the head item counts when its always.bin flag bit 1 is set
- * (ItemTraits_IsPairFlower), else the part C item does (ItemTraits_IsPairWiltedFlower); the items
- * that count are numbered in order (ItemTraits_PairFlower, ItemTraits_PairWiltedFlower and the
+ * (ItemTraits_IsPairHeadFlower), else the accessory item does (ItemTraits_IsPairMouthFlower); the items
+ * that count are numbered in order (ItemTraits_PairHeadFlower, ItemTraits_PairMouthFlower and the
  * numbers back). ItemInfo_CountSharedPairs counts them. */
 #ifndef CLEAN_MAIN_ITEM_TRAITS_H
 #define CLEAN_MAIN_ITEM_TRAITS_H
@@ -17,12 +18,12 @@
 void ItemTraits_ConstructCode(ItemCode *item, int code);
 void ItemTraits_CopyCode(ItemCode *dst, const ItemCode *src);
 
-int ItemTraits_IsPairFlower(const ItemCode *item);
-int ItemTraits_IsPairWiltedFlower(const ItemCode *item);
-void ItemTraits_PairWiltedFlower(ItemCode *out, u32 number);
-void ItemTraits_PairFlower(ItemCode *out, u32 number);
-int ItemTraits_PairWiltedFlowerNumber(const ItemCode *item);
-int ItemTraits_PairFlowerNumber(const ItemCode *item);
+int ItemTraits_IsPairHeadFlower(const ItemCode *item);
+int ItemTraits_IsPairMouthFlower(const ItemCode *item);
+void ItemTraits_PairMouthFlower(ItemCode *out, u32 number);
+void ItemTraits_PairHeadFlower(ItemCode *out, u32 number);
+int ItemTraits_PairMouthFlowerNumber(const ItemCode *item);
+int ItemTraits_PairHeadFlowerNumber(const ItemCode *item);
 
 int ItemTraits_BellBagFor(int bells, int round_up, int *rest);
 int ItemTraits_StorePrice(const ItemCode *item);

@@ -1,4 +1,4 @@
-/* A sound of overlay 4's scenes, the kind of the last town object actor of overlay 9 that went away
+/* A melody of overlay 4's scenes (the town tune's, by scene), the kind of the last town object actor of overlay 9 that went away
  * (data_021f4b48), and the two flags of a new player's arrival: data_021f4b18 set when the
  * taxi has brought the player into town (ov051 TaxiDriver_UpdateArrive), data_021f4b1c when
  * the town hall's clerk sends the player out (ov054 PostClerk_UpdateLeave); both cleared when
@@ -10,7 +10,7 @@
 
 #include "types.h"
 
-void Block020b220c_PlaySceneSound(void);
+void Block020b220c_PlaySceneMelody(void);
 int Block020b220c_GoneKind(void);
 void Block020b220c_SetGoneKind(unsigned int kind);
 u8 Block020b220c_ArrivedByTaxi(void);

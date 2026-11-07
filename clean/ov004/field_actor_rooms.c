@@ -33,7 +33,7 @@ static_assert(offsetof(FieldActor, yaw) == 0x8e, "yaw");
 static_assert(offsetof(FieldActor, unk_098) == 0x98, "speed");
 static_assert(offsetof(FieldActor, aimed) == 0x148, "0x148");
 static_assert(offsetof(FieldActor, aim_point) == 0x158, "aim point");
-static_assert(offsetof(FieldActor, aim_mode) == 0x170, "aim mode");
+static_assert(offsetof(FieldActor, control_mode) == 0x170, "aim mode");
 static_assert(offsetof(FieldActor, anim.speed) == 0x2e0, "animation speed");
 static_assert(offsetof(FieldActor, animation) == 0x704, "animation");
 static_assert(offsetof(FieldActor, work) == 0x7d4, "work");
@@ -234,7 +234,7 @@ static void far_request_18_at(FieldActor *actor, const Vec3 *point, int number)
  * aim point when within the reach of `reach`. Whether there is one. */
 static int far_point(FieldActor *actor, Vec3 *point, const fx32 *distance, int reach)
 {
-    if (actor->aim_mode == 1) {
+    if (actor->control_mode == 1) {
         FieldActor_PointAhead(point, actor, &actor->position, (const u16 *) (const void *) &actor->yaw, distance);
         return 1;
     }
@@ -266,7 +266,7 @@ int FieldActorRooms_TryTarget(FieldActor *actor, int tool, int mode)
         return 0;
     }
     int index = RoomObjects_FindAheadOfPlayer(&x, &z, &actor->item, &actor->unk_822);
-    if (index >= 0 && (index == FIELD_ACTOR_PICK_EXTRA(actor) || actor->aim_mode == 1)) {
+    if (index >= 0 && (index == FIELD_ACTOR_PICK_EXTRA(actor) || actor->control_mode == 1)) {
         if (!RoomObjects_LayerOf((unsigned int) index)) {
             int none[2] = {0, 0};
             FieldActor_RequestState18(actor, none, index, FIELD_ACTOR_ROOMS_PRIORITY, FIELD_ACTOR_ROOMS_NO_ARG);
@@ -648,7 +648,7 @@ static void far_door_sounds(FieldActor *actor, int sound)
 {
     FieldActor_PlaySound(actor, sound);
     if (sound == FIELD_ACTOR_ROOMS_SOUND_DOOR) {
-        Block020b220c_PlaySceneSound();
+        Block020b220c_PlaySceneMelody();
     }
 }
 
@@ -834,7 +834,7 @@ void FieldActorRooms_StepArrive(FieldActor *actor)
                 return;
             }
             if (!far_is_local(actor)) {
-                Block020b220c_PlaySceneSound();
+                Block020b220c_PlaySceneMelody();
                 FieldActor_PlaySound(actor, FIELD_ACTOR_ROOMS_SOUND_DOOR);
             }
             FIELD_ACTOR_ROOMS_WALKING(actor) = 1;

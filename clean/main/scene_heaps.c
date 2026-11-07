@@ -364,7 +364,7 @@ CLEAN_AS(func_0205c5a0, SceneHeaps_Destroy021c9adc)
 unsigned int SceneHeaps_Create021c9adc(Heap *parent)
 {
     u32 players = SceneHeaps_Players();
-    u32 unit = SceneHeaps_Align4((u32) GlassesLook_FileSize());
+    u32 unit = SceneHeaps_Align4((u32) AccessoryLook_FileSize());
     data_021c9adc = SceneHeaps_NewFrameHeap(unit * players, parent);
     return (unsigned int) (uintptr_t) data_021c9adc;
 }

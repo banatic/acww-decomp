@@ -248,12 +248,12 @@ void ItemForm_ToCarried(u16 *out, u16 *item)
     }
     if (index != -1) {
         u16 first = (u16) (ITEM_FORM_SHARED_FIRST_A + index);
-        if (ItemTraits_IsPairFlower(&first)) {
+        if (ItemTraits_IsPairHeadFlower(&first)) {
             *out = first;
             return;
         }
         u16 second = (u16) (ITEM_FORM_SHARED_FIRST_B + index);
-        if (ItemTraits_IsPairWiltedFlower(&second)) {
+        if (ItemTraits_IsPairMouthFlower(&second)) {
             *out = second;
             return;
         }

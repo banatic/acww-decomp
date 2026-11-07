@@ -678,13 +678,13 @@ void MabelTalk_OnAnswerItem(MabelTalk *talk, int answer)
         mtalk_wear_clothes(talk->owner->item);
     } else if (mtalk_is_hat(item)) {
         if (mtalk_is_hat_a(item) && ItemTraits_IsHeadAWithHatLook(&owner->item) == 0) {
-            talk->owner->worn_second = *PlayerRecord_PartCItem(record);
+            talk->owner->worn_second = *PlayerRecord_AccessoryItem(record);
             mtalk_wear_accessory(ITEM_CODE_NONE);
         }
         talk->owner->worn = *PlayerRecord_HeadItem(record);
         mtalk_wear_hat(talk->owner->item);
     } else {
-        talk->owner->worn = *PlayerRecord_PartCItem(record);
+        talk->owner->worn = *PlayerRecord_AccessoryItem(record);
         mtalk_wear_accessory(talk->owner->item);
         u16 hat = *PlayerRecord_HeadItem(record);
         if (mtalk_is_hat_a(hat) && ItemTraits_IsHeadAWithHatLook(&hat) == 0) {

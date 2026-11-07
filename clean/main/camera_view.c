@@ -117,10 +117,10 @@ typedef struct CameraViewScene {
 } CameraViewScene;
 extern CameraViewScene *data_021f6948;
 
-/* How far the point followed stays from a room's walls (5.0), and from its front wall in z
+/* How far the point followed stays from a room's walls (5.0), and from its back wall (least z)
  * (2.0). */
 #define ROOM_MARGIN 0x5000
-#define ROOM_FRONT_MARGIN 0x2000
+#define ROOM_BACK_MARGIN 0x2000
 /* Scenes the camera is set up for in CameraControl_Create and CameraControl_SetRoomBounds. */
 #define SCENE_TOWN 0
 #define SCENE_6 6
@@ -343,7 +343,7 @@ static int clamp_axis(fx32 *value, fx32 min, fx32 max, fx32 narrow, fx32 low, fx
 }
 
 /* func_0203c23c: `point` kept inside the room in x and z, a margin from the walls (less from the
- * front in z), or midway when the room is too narrow for both margins; whether it was moved.
+ * back wall, the least z), or midway when the room is too narrow for both margins; whether it was moved.
  * QUIRK: a point already midway in a narrow room counts as moved. */
 int CameraControl_ClampToRoom(CameraControl *camera, Vec3 *point)
 {
@@ -353,7 +353,7 @@ int CameraControl_ClampToRoom(CameraControl *camera, Vec3 *point)
     changed |= clamp_axis(&point->x, min, max, 2 * ROOM_MARGIN, min + ROOM_MARGIN, max - ROOM_MARGIN);
     min = camera->room_min_z;
     max = camera->room_max_z;
-    changed |= clamp_axis(&point->z, min, max, ROOM_FRONT_MARGIN + ROOM_MARGIN, min + ROOM_FRONT_MARGIN, max - ROOM_MARGIN);
+    changed |= clamp_axis(&point->z, min, max, ROOM_BACK_MARGIN + ROOM_MARGIN, min + ROOM_BACK_MARGIN, max - ROOM_MARGIN);
     return changed;
 }
 CLEAN_AS(func_0203c23c, CameraControl_ClampToRoom)

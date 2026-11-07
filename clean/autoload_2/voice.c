@@ -117,8 +117,8 @@ static int is_long_mark(unsigned ch)
  *
  * A space, a new line or a comma is voiced as the syllable `ch2` when it is one, else as the
  * last one, else not at all (sequence 0); '?', '!' and the lengthening marks repeat the last
- * syllable, or the last character's vowel. Patterns 2 and 4 start over after two spaces, the
- * others after one; '?', '!' and a new line make them start over too. */
+ * syllable, or the last character's vowel. Patterns 0, 1 and 3 start over on the second
+ * space, 2 and 4 on the third; '?', '!' and a new line make them start over too. */
 void Voice_Speak(SoundSystem *system, int action, int pattern, unsigned short ch, unsigned short ch2)
 {
     if (system->voice_type == 5) {
@@ -131,22 +131,22 @@ void Voice_Speak(SoundSystem *system, int action, int pattern, unsigned short ch
                 SoundSystem_PlayEffect(&data_021fd1bc, EFFECT_TICK);
             } else {
                 unsigned step = data_021fd1b0;
-                int spaces_to_restart = 0;
+                int spaces_before_restart = 0;
                 Tone tone = TONE_FLAT;
                 int sequence = 0;
 
                 switch (pattern) {
                     case 0:
-                        spaces_to_restart = 1;
+                        spaces_before_restart = 1;
                         tone = tone_at(PATTERN_0, 4, step, TONE_FLAT);
                         break;
                     case 1:
-                        spaces_to_restart = 1;
+                        spaces_before_restart = 1;
                         tone = tone_at(PATTERN_1, 16, step, PATTERN_1_LATER);
                         break;
                     case 2:
                         /* A falling line, starting higher every other time. */
-                        spaces_to_restart = 2;
+                        spaces_before_restart = 2;
                         if (step == 0) {
                             data_021fd1ac = data_021fd1ac == 0;
                         }
@@ -159,11 +159,11 @@ void Voice_Speak(SoundSystem *system, int action, int pattern, unsigned short ch
                         }
                         break;
                     case 3:
-                        spaces_to_restart = 1;
+                        spaces_before_restart = 1;
                         tone = tone_at(PATTERN_3, 16, step, PATTERN_3_LATER);
                         break;
                     case 4:
-                        spaces_to_restart = 2;
+                        spaces_before_restart = 2;
                         tone = tone_at(PATTERN_4, 16, step, TONE_FLAT);
                         break;
                 }
@@ -224,7 +224,7 @@ void Voice_Speak(SoundSystem *system, int action, int pattern, unsigned short ch
                     data_021fd1b0 = 0;
                 }
                 if (ch == CH_SPACE || ch2 == CH_SPACE) {
-                    if (data_021fd1a8 == spaces_to_restart) {
+                    if (data_021fd1a8 == spaces_before_restart) {
                         data_021fd1a8 = 0;
                         data_021fd1b0 = 0;
                     } else {

@@ -202,7 +202,7 @@ CLEAN_AS(func_02041470, EventAnnounce_StepShow)
  * again (the announcement dropped when it is not taken). Once it runs, the announcement's
  * event is made the one looked at and the one going on, and when the queue allows it and the
  * town tune is not playing the player is sent into scene 0x31 at the town's building (the one of event
- * 0x44's message found by AcreMap_FindSpaceship, the others' by HasBuilding5000), the music told,
+ * 0x44's message found by AcreMap_FindSpaceship, the others' by AcreMap_HasTownHall), the music told,
  * and the step is 4. */
 void EventAnnounce_StepEnter(void *unused)
 {
@@ -486,7 +486,8 @@ CLEAN_AS(func_02041850, EventAnnounceProcess_Execute)
 
 /* func_020418d0 (vtable slot 0x00): the creation; 0 in the excluded scenes, else 1.
  * Not linked and outside scene 0xd: when the last creation was, the event kept in the save is
- * made all three if the calendar has it on or not started yet; the kept event is cleared, and
+ * made all three if the calendar has it on (and not in its last 5 minutes); the kept event is
+ * cleared, and
  * in scene 0x31 without the day's change data_021c779c's object is started. Otherwise
  * everything is forgotten and the kept event made all three.
  * Then an announcement entering scene 0x31 goes on to step 5 there (the event queue's flag 1

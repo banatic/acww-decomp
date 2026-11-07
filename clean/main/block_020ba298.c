@@ -15,21 +15,21 @@ extern const u32 data_020da13c[]; /* the base class's (Process) */
 extern u8 data_021fba68[];
 extern u8 data_021f8b48[];
 
-/* The flag Block020ba298_SetPlayerFlag32 sets. */
-#define BLOCK_020BA298_PLAYER_FLAG 0x32
+/* The flag Sky_WishOnShootingStar sets. */
+#define SKY_WISHED_PLAYER_FLAG 0x32
 
-/* func_020ba298: the destructor. */
-Process *Block020ba298_Destruct(Process *process)
+/* func_020ba298: the sky's process's destructor. */
+Process *SkyProcess_Destruct(Process *process)
 {
     process->vtable = data_020e69a4;
     process->vtable = data_020da13c;
     Process_Destruct(process);
     return process;
 }
-CLEAN_AS(func_020ba298, Block020ba298_Destruct)
+CLEAN_AS(func_020ba298, SkyProcess_Destruct)
 
 /* func_020ba2b8: the destructor, then the object freed. */
-Process *Block020ba298_DestructFree(Process *process)
+Process *SkyProcess_DestructFree(Process *process)
 {
     process->vtable = data_020e69a4;
     process->vtable = data_020da13c;
@@ -37,7 +37,7 @@ Process *Block020ba298_DestructFree(Process *process)
     Heap_FreeAux(process);
     return process;
 }
-CLEAN_AS(func_020ba2b8, Block020ba298_DestructFree)
+CLEAN_AS(func_020ba2b8, SkyProcess_DestructFree)
 
 /* func_020ba2e0 */
 void Block020ba298_SetByte9(void)
@@ -46,17 +46,17 @@ void Block020ba298_SetByte9(void)
 }
 CLEAN_AS(func_020ba2e0, Block020ba298_SetByte9)
 
-/* func_020ba2ec: when there is a player at this console, its flag 0x32 set and func_020bc514
- * run on data_021f8b48. */
-void Block020ba298_SetPlayerFlag32(void)
+/* func_020ba2ec: the shooting star wished on: when there is a player at this console, its flag
+ * 0x32 set (a letter follows, sky_events.h) and the star marked (SkyObjects_MarkShootingStar). */
+void Sky_WishOnShootingStar(void)
 {
     u8 *record = PlayerRecords_Current();
     if (record != NULL) {
-        PlayerRecord_SetFlag(record, BLOCK_020BA298_PLAYER_FLAG);
+        PlayerRecord_SetFlag(record, SKY_WISHED_PLAYER_FLAG);
         SkyObjects_MarkShootingStar((SkyObjects *) (void *) data_021f8b48);
     }
 }
-CLEAN_AS(func_020ba2ec, Block020ba298_SetPlayerFlag32)
+CLEAN_AS(func_020ba2ec, Sky_WishOnShootingStar)
 
 /* The sky's process (vtable data_020e69a4; sky.h): the destructors above, its creation,
  * deletion, frame and drawing below. */

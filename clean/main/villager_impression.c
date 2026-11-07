@@ -31,9 +31,9 @@ static_assert(sizeof(VillagerImpressionRule) == 8, "rule");
 /* The head kinds come in two sets of eight (bits 4-7 of the record's byte 0x243c): kind n of the
  * second set is n + 8. */
 #define VILLAGER_IMPRESSION_HEAD_SET 8
-/* The items part C (slot 3) is tested against. */
-#define VILLAGER_IMPRESSION_PART_C_FIRST 0x1431
-#define VILLAGER_IMPRESSION_PART_C_LAST 0x1470
+/* The items the accessory (slot 3) is tested against. */
+#define VILLAGER_IMPRESSION_ACCESSORY_FIRST 0x1431
+#define VILLAGER_IMPRESSION_ACCESSORY_LAST 0x1470
 /* The fondness the tests look for. */
 #define VILLAGER_IMPRESSION_VERY_FOND 110
 #define VILLAGER_IMPRESSION_FOND 70
@@ -244,12 +244,12 @@ CLEAN_AS(func_0207e2ec, VillagerImpression_HeadKind0)
 
 static int part_c_in_range(u8 *record)
 {
-    u16 item = *PlayerRecord_PartCItem(record);
-    return item >= VILLAGER_IMPRESSION_PART_C_FIRST && item <= VILLAGER_IMPRESSION_PART_C_LAST;
+    u16 item = *PlayerRecord_AccessoryItem(record);
+    return item >= VILLAGER_IMPRESSION_ACCESSORY_FIRST && item <= VILLAGER_IMPRESSION_ACCESSORY_LAST;
 }
 
-/* func_0207e310: part C's item is one of 0x1431-0x1470 and the head's kind 0, 1, 3, 5 or 7. */
-int VillagerImpression_PartCWithHeadKind01357(u8 *record, int fondness, int mood)
+/* func_0207e310: the accessory's item is one of 0x1431-0x1470 and the head's kind 0, 1, 3, 5 or 7. */
+int VillagerImpression_AccessoryWithHeadKind01357(u8 *record, int fondness, int mood)
 {
     if (!part_c_in_range(record)) {
         return 0;
@@ -258,10 +258,10 @@ int VillagerImpression_PartCWithHeadKind01357(u8 *record, int fondness, int mood
            VillagerImpression_HeadKind3(record, fondness, mood) || VillagerImpression_HeadKind5(record, fondness, mood) ||
            VillagerImpression_HeadKind7(record, fondness, mood);
 }
-CLEAN_AS(func_0207e310, VillagerImpression_PartCWithHeadKind01357)
+CLEAN_AS(func_0207e310, VillagerImpression_AccessoryWithHeadKind01357)
 
 /* func_0207e390: the same with head kind 2, 4 or 6. */
-int VillagerImpression_PartCWithHeadKind246(u8 *record, int fondness, int mood)
+int VillagerImpression_AccessoryWithHeadKind246(u8 *record, int fondness, int mood)
 {
     if (!part_c_in_range(record)) {
         return 0;
@@ -269,10 +269,10 @@ int VillagerImpression_PartCWithHeadKind246(u8 *record, int fondness, int mood)
     return VillagerImpression_HeadKind2(record, fondness, mood) || VillagerImpression_HeadKind4(record, fondness, mood) ||
            VillagerImpression_HeadKind6(record, fondness, mood);
 }
-CLEAN_AS(func_0207e390, VillagerImpression_PartCWithHeadKind246)
+CLEAN_AS(func_0207e390, VillagerImpression_AccessoryWithHeadKind246)
 
 /* func_0207e3f4: the same with head kind 2, 3 or 6. */
-int VillagerImpression_PartCWithHeadKind236(u8 *record, int fondness, int mood)
+int VillagerImpression_AccessoryWithHeadKind236(u8 *record, int fondness, int mood)
 {
     if (!part_c_in_range(record)) {
         return 0;
@@ -280,10 +280,10 @@ int VillagerImpression_PartCWithHeadKind236(u8 *record, int fondness, int mood)
     return VillagerImpression_HeadKind2(record, fondness, mood) || VillagerImpression_HeadKind3(record, fondness, mood) ||
            VillagerImpression_HeadKind6(record, fondness, mood);
 }
-CLEAN_AS(func_0207e3f4, VillagerImpression_PartCWithHeadKind236)
+CLEAN_AS(func_0207e3f4, VillagerImpression_AccessoryWithHeadKind236)
 
 /* func_0207e458: the same with head kind 0, 1, 4, 5 or 7. */
-int VillagerImpression_PartCWithHeadKind01457(u8 *record, int fondness, int mood)
+int VillagerImpression_AccessoryWithHeadKind01457(u8 *record, int fondness, int mood)
 {
     if (!part_c_in_range(record)) {
         return 0;
@@ -292,7 +292,7 @@ int VillagerImpression_PartCWithHeadKind01457(u8 *record, int fondness, int mood
            VillagerImpression_HeadKind4(record, fondness, mood) || VillagerImpression_HeadKind5(record, fondness, mood) ||
            VillagerImpression_HeadKind7(record, fondness, mood);
 }
-CLEAN_AS(func_0207e458, VillagerImpression_PartCWithHeadKind01457)
+CLEAN_AS(func_0207e458, VillagerImpression_AccessoryWithHeadKind01457)
 
 /* The player's bells, those in bell bags included. */
 static int bells_of(u8 *record)

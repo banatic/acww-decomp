@@ -99,7 +99,7 @@ u8 *PlayerRecord_ReactionSlots(u8 *record);
  *   0x23ec, 0x2416, 0x2427, 0x242c  objects of their own (func_0208880c, func_02088c10,
  *           func_02088764, func_02088460 construct them)
  *   0x2404  the shop points (shop_points.h)
- *   0x2406  the held item, 0x2408 the clothes, 0x240a the head's item, 0x240c part C's item,
+ *   0x2406  the held item, 0x2408 the clothes, 0x240a the head's item, 0x240c the accessory's item,
  *           0x240e the player's bed in the attic, 0x2410 the clothes
  *           shown behind the menus (menu_backdrop.h; 0xfff1: none)
  *   0x2412  the date the sun level was last stored, packed (PlayerRecordSunDate)
@@ -148,8 +148,8 @@ u8 *PlayerRecord_ItemRecord(u8 *record);
 PlayerDesigns *PlayerRecord_Designs(u8 *record);
 void PlayerRecord_SetBed(u8 *record, const u16 *item);
 u16 *PlayerRecord_Bed(u8 *record);
-void PlayerRecord_SetPartCItem(u8 *record, const u16 *item);
-u16 *PlayerRecord_PartCItem(u8 *record);
+void PlayerRecord_SetAccessoryItem(u8 *record, const u16 *item);
+u16 *PlayerRecord_AccessoryItem(u8 *record);
 void PlayerRecord_SetHeadItem(u8 *record, const u16 *item);
 u16 *PlayerRecord_HeadItem(u8 *record);
 void PlayerRecord_SetClothes(u8 *record, const u16 *item);

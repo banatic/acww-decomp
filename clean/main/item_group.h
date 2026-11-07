@@ -9,8 +9,8 @@
  *                                              ItemGroup_HeadA, ItemGroup_IsHeadA
  *   0x13c8-0x1407  worn on the head, the second model (64)
  *                                              ItemGroup_IsHeadB
- *   0x1431-0x1470  worn as part C (64; glasses_look.h)
- *                                              ItemGroup_PartC, ItemGroup_IsPartC
+ *   0x1431-0x1470  worn as the accessory (64; glasses_look.h)
+ *                                              ItemGroup_Accessory, ItemGroup_IsAccessory
  *
  * Each test also has a form that answers nothing (ItemGroup_Test...). */
 #ifndef CLEAN_MAIN_ITEM_GROUP_H
@@ -21,7 +21,7 @@
 u16 ItemGroup_HeadA(u32 index);
 u16 ItemGroup_Wallpaper(u16 index);
 u16 ItemGroup_Umbrella(u32 index);
-u16 ItemGroup_PartC(u32 index);
+u16 ItemGroup_Accessory(u32 index);
 u16 ItemGroup_Cloth(u16 index);
 int ItemGroup_IsHeadA(const u16 *code);
 void ItemGroup_TestIsHeadA(const u16 *code);
@@ -29,8 +29,8 @@ int ItemGroup_IsWallpaper(const u16 *code);
 void ItemGroup_TestIsWallpaper(const u16 *code);
 int ItemGroup_IsUmbrella(const u16 *code);
 void ItemGroup_TestIsUmbrella(const u16 *code);
-u16 ItemGroup_IsPartC(const u16 *code);
-void ItemGroup_TestIsPartC(const u16 *code);
+u16 ItemGroup_IsAccessory(const u16 *code);
+void ItemGroup_TestIsAccessory(const u16 *code);
 int ItemGroup_IsCloth(const u16 *code);
 void ItemGroup_TestIsCloth(const u16 *code);
 int ItemGroup_IsCarpet(const u16 *code);
@@ -50,12 +50,14 @@ void ItemGroup_TestIsHeadB(const u16 *code);
  *   0x12e8-0x131f  fish (56, creature_table.h) ItemGroup_IsFish, ItemGroup_FishIndex
  *   0x13c8-0x1407  worn on the head, the second model (64)
  *                                              ItemGroup_HeadB
- *   0x1408-0x1428  worn on the head, the first of a pair (33; item_form.h)
- *                                              ItemGroup_Flower, ItemGroup_IsFlower,
- *                                              ItemGroup_FlowerIndex
- *   0x1471-0x1491  worn as part C, the second of a pair (33; glasses_look.h)
- *                                              ItemGroup_WiltedFlower, ItemGroup_IsWiltedFlower,
- *                                              ItemGroup_WiltedFlowerIndex
+ *   0x1408-0x1428  flowers worn on the head, the first of a pair (33; item_form.h)
+ *                                              ItemGroup_HeadFlower, ItemGroup_IsHeadFlower,
+ *                                              ItemGroup_HeadFlowerIndex
+ *   0x1471-0x1491  flowers worn in the mouth as the accessory (the roses and the gold rose),
+ *                  the second of a pair (33; glasses_look.h; the unused entries of both
+ *                  groups are named "wilted flower" in the item names)
+ *                                              ItemGroup_MouthFlower, ItemGroup_IsMouthFlower,
+ *                                              ItemGroup_MouthFlowerIndex
  *   0x1492-0x14fd  bags of bells (108, smallest first; player_pockets.h)
  *                                              ItemGroup_BellBag
  *
@@ -64,14 +66,14 @@ void ItemGroup_TestIsHeadB(const u16 *code);
 u16 ItemGroup_Carpet(u16 index);
 u16 ItemGroup_HeadB(u32 index);
 u16 ItemGroup_Insect(u32 index);
-u16 ItemGroup_Flower(u32 index);
-u16 ItemGroup_WiltedFlower(u32 index);
+u16 ItemGroup_HeadFlower(u32 index);
+u16 ItemGroup_MouthFlower(u32 index);
 u16 ItemGroup_Design(u32 index);
 u16 ItemGroup_BellBag(u32 index);
-int ItemGroup_IsFlower(const u16 *code);
-int ItemGroup_FlowerIndex(const u16 *code);
-int ItemGroup_IsWiltedFlower(const u16 *code);
-int ItemGroup_WiltedFlowerIndex(const u16 *code);
+int ItemGroup_IsHeadFlower(const u16 *code);
+int ItemGroup_HeadFlowerIndex(const u16 *code);
+int ItemGroup_IsMouthFlower(const u16 *code);
+int ItemGroup_MouthFlowerIndex(const u16 *code);
 int ItemGroup_IsDesign(const u16 *code);
 int ItemGroup_DesignIndex(const u16 *code);
 int ItemGroup_DesignSlot(const u16 *code);

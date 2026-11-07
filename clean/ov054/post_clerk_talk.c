@@ -1304,7 +1304,7 @@ CLEAN_AS(func_ov054_02261738, PostClerkTalk_AskJob12)
 void PostClerkTalk_AwaitJob12(PostClerkTalk *talk)
 {
     TalkObject *object = pct_object(talk);
-    if (ActivityJob_Is12AtStep3()) {
+    if (ActivityJob_Save12Failed()) {
         pct_release(object);
         pct_say(talk, POST_CLERK_LINE_SAVE_FAILED);
         PostClerkTalk_SetStep(talk, POST_CLERK_TALK_STEP_NONE);
@@ -1463,7 +1463,7 @@ CLEAN_AS(func_ov054_02261490, PostClerkTalk_AskJob1f)
 void PostClerkTalk_AwaitJob1f(PostClerkTalk *talk)
 {
     TalkObject *object = pct_object(talk);
-    if (ActivityJob_Is1FAtStep15Or20()) {
+    if (ActivityJob_1FShowingEndMessage()) {
         PostClerkTalk_SetStep(talk, POST_CLERK_TALK_STEP_NONE);
         return;
     }

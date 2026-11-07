@@ -507,7 +507,8 @@ CLEAN_AS(func_0204e188, AcreMap_HasTownHall)
 
 /* func_0204e204: finds a building in [first, last] (AcreMap_FindItem) and gives the point in
  * front of it: the tile's centre moved by the mean x and z of the corners of its shape's
- * triangles and one tile further along z, at height 0x200. *out is the building's code, or
+ * triangles and half a tile (0x1000) further along z, at the floor's height. *out is the
+ * building's code, or
  * empty when there is none or it has no shape; then nothing else is written.
  * QUIRK: the sums wrap at 32 bits; a shape without triangles has FX_Div divide by zero. */
 void AcreMap_FindBuildingPoint(u16 *out, void *map, int *position, int *tile_x, int *tile_z, u16 first, u16 last, u32 flags)

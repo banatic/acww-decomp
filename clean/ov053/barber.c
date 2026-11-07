@@ -269,7 +269,7 @@ int Barber_WearsHat(void *unused)
 {
     (void) unused;
     u8 *record = PlayerRecords_Current();
-    if (*PlayerRecord_PartCItem(record) != ITEM_CODE_NONE) {
+    if (*PlayerRecord_AccessoryItem(record) != ITEM_CODE_NONE) {
         return 1;
     }
     return *PlayerRecord_HeadItem(record) != ITEM_CODE_NONE;

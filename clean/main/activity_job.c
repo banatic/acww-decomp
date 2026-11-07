@@ -17,9 +17,9 @@ static int current_job_is(u32 job)
     return data_021f3c3c != NULL && data_021f3c3c->unk_50 == job;
 }
 
-/* func_020a17a8: the current activity runs job 0x1f and is at step 15 or 20 of it (overlay 54
- * asks). */
-int ActivityJob_Is1FAtStep15Or20(void)
+/* func_020a17a8: the current activity runs job 0x1f and is at step 15 or 20 of it, the steps
+ * where ActivitySave_EndSteps shows its end messages 10 and 11 (overlay 54 asks). */
+int ActivityJob_1FShowingEndMessage(void)
 {
     if (current_job_is(0x1f)) {
         u8 step = data_021f3c3c->state;
@@ -29,7 +29,7 @@ int ActivityJob_Is1FAtStep15Or20(void)
     }
     return 0;
 }
-CLEAN_AS(func_020a17a8, ActivityJob_Is1FAtStep15Or20)
+CLEAN_AS(func_020a17a8, ActivityJob_1FShowingEndMessage)
 
 /* func_020a17d0: the current activity runs no job (overlay 54 asks).
  * QUIRK: func_020a1810, func_020a182c and func_020a186c are the same function. */
@@ -39,12 +39,13 @@ int ActivityJob_IsIdleForOv054(void)
 }
 CLEAN_AS(func_020a17d0, ActivityJob_IsIdleForOv054)
 
-/* func_020a17ec: the current activity runs job 0x13 and is at its step 3 (overlay 48 asks). */
-int ActivityJob_Is13AtStep3(void)
+/* func_020a17ec: the current activity runs job 0x13 (a save) and is at its step 3, where a
+ * failed card step leaves it for good (overlay 48 asks). */
+int ActivityJob_Save13Failed(void)
 {
     return current_job_is(0x13) && data_021f3c3c->state == 3;
 }
-CLEAN_AS(func_020a17ec, ActivityJob_Is13AtStep3)
+CLEAN_AS(func_020a17ec, ActivityJob_Save13Failed)
 
 /* func_020a1810: the current activity runs no job (overlay 48 asks). */
 int ActivityJob_IsIdleForOv048(void)
@@ -60,12 +61,13 @@ int ActivityJob_IsIdleForOv004(void)
 }
 CLEAN_AS(func_020a182c, ActivityJob_IsIdleForOv004)
 
-/* func_020a1848: the current activity runs job 0x12 and is at its step 3 (overlay 54 asks). */
-int ActivityJob_Is12AtStep3(void)
+/* func_020a1848: the current activity runs job 0x12 (a save) and is at its step 3, where a
+ * failed card step leaves it for good (overlay 54 asks). */
+int ActivityJob_Save12Failed(void)
 {
     return current_job_is(0x12) && data_021f3c3c->state == 3;
 }
-CLEAN_AS(func_020a1848, ActivityJob_Is12AtStep3)
+CLEAN_AS(func_020a1848, ActivityJob_Save12Failed)
 
 /* func_020a186c: the current activity runs no job (overlays 4 and 54 ask). */
 int ActivityJob_IsIdle(void)

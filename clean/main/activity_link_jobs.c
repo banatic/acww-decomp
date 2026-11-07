@@ -526,7 +526,7 @@ void ActivityLinkJobs_Step17(Activity *activity)
     NetSession *session;
     switch (activity->state) {
         case 0:
-            if (link_lost(AIDS_HOST) || !ActivityTalk_FinishWaiting(activity, 0)) {
+            if (link_lost(AIDS_HOST) || !ActivityTalk_StartSpinner(activity, 0)) {
                 return;
             }
             *member_mask(activity) = (u16) Session_GetMemberMask();
@@ -625,7 +625,7 @@ void ActivityLinkJobs_Step18(Activity *activity)
     NetSession *session;
     switch (activity->state) {
         case 0:
-            if (link_lost(Session_GetPeerMask()) || !ActivityTalk_FinishWaiting(activity, 0)) {
+            if (link_lost(Session_GetPeerMask()) || !ActivityTalk_StartSpinner(activity, 0)) {
                 return;
             }
             *member_mask(activity) = (u16) Session_GetMemberMask();
@@ -762,7 +762,7 @@ void ActivityLinkJobs_Step19(Activity *activity)
     NetSession *session;
     switch (activity->state) {
         case 0:
-            if (link_lost(AIDS_HOST) || !ActivityTalk_FinishWaiting(activity, 0)) {
+            if (link_lost(AIDS_HOST) || !ActivityTalk_StartSpinner(activity, 0)) {
                 return;
             }
             *member_mask(activity) = (u16) Session_GetMemberMask();
@@ -871,7 +871,7 @@ void ActivityLinkJobs_Step1A(Activity *activity)
     NetSession *session;
     switch (activity->state) {
         case 0:
-            if (link_lost(Session_GetPeerMask()) || !ActivityTalk_FinishWaiting(activity, 0)) {
+            if (link_lost(Session_GetPeerMask()) || !ActivityTalk_StartSpinner(activity, 0)) {
                 return;
             }
             if (StartMenu_LeaveChoice()) {
@@ -1023,7 +1023,7 @@ void ActivityLinkJobs_Step1B(Activity *activity)
 {
     switch (activity->state) {
         case 0:
-            if (link_lost(AIDS_HOST) || !ActivityTalk_FinishWaiting(activity, 0)) {
+            if (link_lost(AIDS_HOST) || !ActivityTalk_StartSpinner(activity, 0)) {
                 return;
             }
             activity->state = 1;
@@ -1133,7 +1133,7 @@ CLEAN_AS(func_020a2ddc, ActivityLinkJobs_Start1C)
  * started. */
 void ActivityLinkJobs_Step1C(Activity *activity)
 {
-    if (!ActivityTalk_FinishWaiting(activity, 1)) {
+    if (!ActivityTalk_StartSpinner(activity, 1)) {
         return;
     }
     LibraryOverlay_Switch66();
@@ -1238,7 +1238,7 @@ void ActivityLinkJobs_Step1E(Activity *activity)
             if (link_lost(AIDS_ALL)) {
                 return;
             }
-            if (ActivityTalk_FinishWaiting(activity, 0)) {
+            if (ActivityTalk_StartSpinner(activity, 0)) {
                 activity->state = 1;
             }
             return;
@@ -1382,9 +1382,9 @@ void ActivityLinkJobs_Start1F(Activity *activity)
 CLEAN_AS(func_020a2924, ActivityLinkJobs_Start1F)
 
 /* func_020a2650: job 0x1f's steps, with the host's link:
- *   0  system packet 20 sent; 1  this system's record sent (21); 2  the record block (22);
- *   3  system packet 23;
- *   4  once sendable: byte 0x82 of the object at data_021d351c set, the current player's
+ *   0  system packet 20 sent; 1  this system's record sent (21); 2  the kept letters
+ *      (SystemPacket_SendKeptLetters, 22); 3  system packet 23;
+ *   4  once sendable: the bells panel frozen (BellsPanel_Freeze), the current player's
  *      record kept at 0xbc and cleared, and the player forgotten by the state block;
  *   5  the card checked, then the connect mode 2; 6  the copy to write written;
  *   7  system packet 14 (OK) sent to the host; 8  once sendable, its answer: OK, the connect

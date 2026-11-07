@@ -33,7 +33,7 @@ int Exchange_IsActive(void);
 void Exchange_Call0226883c(void);
 void Exchange_Start(void);
 void Exchange_Init(u8 *send, u8 *receive, int size);
-int Wfc_ClearHostTime(void);
+int Wfc_AllowNewClients(void);
 int Wfc_DeleteFriend(int index);
 int Wfc_SetFriend(int index, const void *friend_data);
 int Wfc_IsBuddyFriendData(const void *friend_data);

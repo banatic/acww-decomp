@@ -628,7 +628,7 @@ void LinkState_HostStep(LinkState *state)
         if (others_answered(state, data_020ccf94, served, LINK_STATE_ANSWER_DONE)) {
             tell_served(state, served, STATUS_REFUSED);
             if (LinkState_Kind(state) == KIND_JOIN) {
-                Wfc_ClearHostTime();
+                Wfc_AllowNewClients();
             }
             LinkState_SetHostPhase(state, LINK_STATE_HOST_IDLE);
         }

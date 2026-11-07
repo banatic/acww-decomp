@@ -59,7 +59,8 @@ extern u32 data_021fbf50;
 /* The friend list, and the user's data (NitroDWC's DWCUserData; the user's key is at +0x20). */
 extern FriendList *data_021fbf3c;
 extern u8 *data_021fbf40;
-/* TRUE while NitroDWC updates the friend list (cleared by func_020ed540). */
+/* TRUE while a NitroDWC wait is under way: a friend-list update (cleared by
+ * Wfc_OnFriendsUpdated), then from STAGE_LOGGED_IN the join (cleared by Wfc_OnJoined). */
 extern int data_0213e6c4;
 
 /* A GET request: TRUE while none is under way (cleared by the request, set by its callback),
@@ -229,10 +230,10 @@ void Exchange_Init(u8 *send, u8 *receive, int size)
 }
 CLEAN_AS(func_020ead94, Exchange_Init)
 
-/* func_020eae40: when hosting, the host's set-up time cleared and func_ov065_0227e67c called.
- * Always TRUE. The ROM's code leaves &data_021fbf34 in the first argument register; the
+/* func_020eae40: when hosting, new clients let in again (func_ov065_0227e67c, the counterpart
+ * of Wfc_BlockNewClients) and the time a client joined cleared. Always TRUE. The ROM's code leaves &data_021fbf34 in the first argument register; the
  * callee does not read it. */
-int Wfc_ClearHostTime(void)
+int Wfc_AllowNewClients(void)
 {
     if (data_021fbef8 == MODE_HOSTING) {
         data_021fbf34 = 0;
@@ -240,7 +241,7 @@ int Wfc_ClearHostTime(void)
     }
     return TRUE;
 }
-CLEAN_AS(func_020eae40, Wfc_ClearHostTime)
+CLEAN_AS(func_020eae40, Wfc_AllowNewClients)
 
 /* Whether the friend list can be changed now: NitroDWC allows it, the connection is ready and
  * no update is under way. */

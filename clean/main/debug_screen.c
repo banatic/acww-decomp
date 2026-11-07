@@ -273,7 +273,7 @@ void DebugScreen_InitDisplay(void)
     GX_SetBankForSubBG(0x80);                       /* VRAM bank H */
     REG_DISPCNT = (REG_DISPCNT & ~0x1f00u) | 0x200; /* background 1 only */
     REG_DB_DISPCNT = (REG_DB_DISPCNT & ~0x1f00u) | 0x200;
-    REG_BG1CNT = (u16) ((REG_BG1CNT & 0x43) | 0x400); /* keep priority and mosaic; map base 1 */
+    REG_BG1CNT = (u16) ((REG_BG1CNT & 0x43) | 0x400); /* keep priority and mosaic; map base 4 (0x2000) */
     REG_DB_BG1CNT = (u16) ((REG_DB_BG1CNT & 0x43) | 0x400);
     func_02112d48(data_020df71c, 0, 0x1000);
     func_02112ce0(data_020df71c, 0, 0x1000);

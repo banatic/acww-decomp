@@ -55,7 +55,7 @@ typedef struct BoardNoticesText {
 
 void BoardNotices_Update(void);
 void BoardNotices_PostDays(void *unused, StateBlock *block, int days, const DateTime *first, int weekday);
-void BoardNotices_PostFirstEvents(int unused, StateBlock *block, const DateTime *when);
+void BoardNotices_PostDayEvents(int unused, StateBlock *block, const DateTime *when);
 void BoardNotices_CatchUpPelicanDay(int unused, StateBlock *block, const DateTime *when);
 int BoardNotices_DaysSince(int unused, const BoardNoticesDay *last, const DateTime *now);
 void BoardNotices_PostEvents(int unused, const EventCalendarEvent *events, const DateTime *when);

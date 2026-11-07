@@ -569,8 +569,9 @@ void SoundSystem_SetArrangement(SoundSystem *sys, int arrangement)
 }
 CLEAN_AS(func_020f165c, SoundSystem_SetArrangement)
 
-/* The music's tracks left on by each track set of SoundSystem_FadeInTracks (1 to 5) and
- * SoundSystem_SetTracks (1 to 6, 11 to 15); 0 for no set. */
+/* The music's tracks of each track set: those SoundSystem_FadeInTracks fades in (1 to 5) and
+ * those SoundSystem_FadeOutTracks fades out (1 to 5) or puts at volume 0 at once (6, 11 to
+ * 15); 0 for no set. */
 static u16 tracks_of_set(int set)
 {
     switch (set) {
@@ -614,9 +615,9 @@ void SoundSystem_FadeInTracks(SoundSystem *sys, unsigned int set)
 CLEAN_AS(func_020f19c0, SoundSystem_FadeInTracks)
 
 /* func_020f1a54: the tracks of set `set` chosen with the music's fader put at full: sets 1 to 5
- * then fade out over 15 frames, sets 6 and 11 to 15 mute every other track at once. Other
- * sets do nothing past the fader. */
-void SoundSystem_SetTracks(SoundSystem *sys, int set)
+ * then fade those tracks out over 15 frames, sets 6 and 11 to 15 put them at volume 0 at once.
+ * Other sets do nothing past the fader. */
+void SoundSystem_FadeOutTracks(SoundSystem *sys, int set)
 {
     SoundFader_Set(&sys->fader, 0x7f);
     u16 tracks = tracks_of_set(set);
@@ -630,7 +631,7 @@ void SoundSystem_SetTracks(SoundSystem *sys, int set)
         SoundFader_Start(&sys->fader, 0, 15);
     }
 }
-CLEAN_AS(func_020f1a54, SoundSystem_SetTracks)
+CLEAN_AS(func_020f1a54, SoundSystem_FadeOutTracks)
 
 /* func_020f1ba4: the music's volume moved to `volume` (within 0..0x7f) over `frames`, on the
  * stream when there is one. */

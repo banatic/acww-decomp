@@ -46,7 +46,7 @@ void StaticInit_ClothSlots(void);
 void StaticInit_FaceAnimSlots(void);
 void StaticInit_FaceAnimHeaps(void);
 void StaticInit_FaceTexture(void);
-void StaticInit_GlassesLook(void);
+void StaticInit_AccessoryLook(void);
 void StaticInit_HeadLook(void);
 void StaticInit_HeldItemPool(void);
 void StaticInit_BodyAnimHeaps(void);

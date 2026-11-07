@@ -666,8 +666,8 @@ What reading the Clean code found about the groups above; counts are of function
   drawn there, one function each, not added.
 - ap_mail (VillagerTalkApproach_Mail) with a letter of another player held shows that letter
   (group 0, VillagerTalkTopics_HoldsLetter): villager-mail-held.
-- Impressions: glasses worn (part C 0x1431-0x1470) with the face of head kind 5 make the rules of
-  part C with the head kinds run (HeadKind0, 1, 5); the villager there first offers a thing by the
+- Impressions: glasses worn (the accessory 0x1431-0x1470) with the face of head kind 5 make the rules of
+  the accessory with the head kinds run (HeadKind0, 1, 5); the villager there first offers a thing by the
   slider window, which DOWN DOWN and A decide (villager-glasses). On a spring day (21 April 2027)
   no season's rule passes and the last rule (Always) gives the impression (villager-spring,
   booted as gardens-talks). Rules 64 and 65 are for the other kind of player (byte 0x1c) only.
@@ -2823,8 +2823,8 @@ What reading the Clean code found about the groups above; counts are of function
 
 ### A face of a pair, a present swapped in, Pascal's scallop, an insurance claim, Mabel's pay in bags (2026-10-30, furniture2, second batch)
 - The face items 0x1471-0x1491 are drawn by their number among the pairs whose head item counts
-  (FieldActor_ApplyPartC: ItemTraits_IsPairWiltedFlower, _PairWiltedFlowerNumber; the head items 0x1408-0x1428
-  whose always.bin flags have bit 1). Worn at the boot (save face-pair, the player record's part C
+  (FieldActor_ApplyAccessory: ItemTraits_IsPairMouthFlower, _PairWiltedFlowerNumber; the head items 0x1408-0x1428
+  whose always.bin flags have bit 1). Worn at the boot (save face-pair, the player record's the accessory
   at 0x240c = 0x1483), the look reads it: scene face-pair (the tools recording to 2700).
 - A present (item 0x156b) taken up with the pockets full asks to swap; on the swap page the
   present goes into the pocket as an item drawn for it (CurrentPockets_DrawPresent) and the
@@ -3245,7 +3245,7 @@ What reading the Clean code found about the groups above; counts are of function
   its 3500 on, 220 frames later: A held with a direction on the scroll knob scrolls the insect
   catalog by the keys (InsectCatalog_StartScrollByKeys, _ScrollWhileHeld, _EndScrollByKeys).
   Both ways agree.
-- Not proved: the post clerk's step 15 (PostClerkTalk_AwaitJob1f, ActivityJob_Is1FAtStep15Or20,
+- Not proved: the post clerk's step 15 (PostClerkTalk_AwaitJob1f, ActivityJob_1FShowingEndMessage,
   _IsIdleForOv054; unknown). The asked job (data_021f3c38, set to 0x1f by ActivityJob_Ask1F just
   before step 15 is set) is read only by ActivityProcess_StepJob0, job 0's step, which in scene
   9 starts the asked job 0x1f once the screen is shown (data_021c75b8 2), and by
@@ -3542,7 +3542,7 @@ What reading the Clean code found about the groups above; counts are of function
 - The classifier (w51-wt5/cls/classify.py, gate count1 with the two constants' words cut, --raw,
   RAN_EXTRA=cls/ran-extra.txt) puts the group's 7 at CONDITION:count1; calibrated with EXTRA='*',
   it cuts off 0 functions that ran.
-- Not moved: the post clerk's step 15 (PostClerkTalk_AwaitJob1f, ActivityJob_Is1FAtStep15Or20,
+- Not moved: the post clerk's step 15 (PostClerkTalk_AwaitJob1f, ActivityJob_1FShowingEndMessage,
   _IsIdleForOv054). A pending scene change cannot let it run: the scene process executes only when
   SceneProcessBase_CanExecute finds no change asked for (data_020e3c80) and no game stop, and once a
   change is asked it returns 0 until the scene is deleted (SceneProcessBase_StartAsked spawns the

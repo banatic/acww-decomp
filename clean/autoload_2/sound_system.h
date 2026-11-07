@@ -31,7 +31,7 @@ typedef struct SoundScene {
     const SoundSceneVtable *vtable; /* 0x00 */
     s8 kind;                        /* 0x04: what the music does; -1 for the base class */
     u8 stopped;                     /* 0x05 */
-    u8 started;                     /* 0x06 */
+    u8 voice_loaded;                /* 0x06: the voice's sounds loaded (slot 7; slot 8 clears it) */
     u8 pad_07;
 } SoundScene;
 
@@ -68,7 +68,7 @@ void *SoundSystem_StopMusic(SoundSystem *sys, int fade);
 void SoundSystem_PlayMusic(SoundSystem *sys, int number, int volume);
 void SoundSystem_SetArrangement(SoundSystem *sys, int arrangement);
 void SoundSystem_FadeInTracks(SoundSystem *sys, unsigned int set);
-void SoundSystem_SetTracks(SoundSystem *sys, int set);
+void SoundSystem_FadeOutTracks(SoundSystem *sys, int set);
 void SoundSystem_MoveMusicVolume(SoundSystem *sys, int volume, int frames);
 void SoundSystem_EndMusic(SoundSystem *sys, int fade_frames);
 void SoundSystem_ChangeMusic(SoundSystem *sys, unsigned int music);

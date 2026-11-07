@@ -5,7 +5,7 @@
 # each half minute, 1 time in 4 (main/sky_events.h, the sky's object of kind 3). The player
 # waits; one comes at about 9030 (the draw of 21:02:30) and A at 9030 makes the wish (field actor
 # state 0x72: the player looks up; flag 0x32 of the player's record set,
-# Block020ba298_SetPlayerFlag32), to 9256.
+# Sky_WishOnShootingStar), to 9256.
 0 - -
 900 START -
 906 - -

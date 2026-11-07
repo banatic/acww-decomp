@@ -121,19 +121,20 @@ ActivityReceiver *ActivityReceiver_Construct(ActivityReceiver *receiver)
 }
 CLEAN_AS(func_020a2584, ActivityReceiver_Construct)
 
-/* func_020a259c: when talk 0 waits at its message, it is given whether `value` is non-zero
- * (func_02068364) and 1 is given; else 0. `activity` is not read. */
-int ActivityTalk_FinishWaiting(Activity *activity, int value)
+/* func_020a259c: when talk 0 waits at its message, its spinner started, with a sound when
+ * `sound` is non-zero (TalkObject_StartSpinner), and 1 is given; else 0. `activity` is not
+ * read. */
+int ActivityTalk_StartSpinner(Activity *activity, int sound)
 {
     (void) activity;
     ActivityTalk *talk = (ActivityTalk *) TalkObject_Get(TALK_INDEX);
     if (talk->state != TALK_WAITING) {
         return 0;
     }
-    TalkObject_StartSpinner((TalkObject *) talk, value != 0);
+    TalkObject_StartSpinner((TalkObject *) talk, sound != 0);
     return 1;
 }
-CLEAN_AS(func_020a259c, ActivityTalk_FinishWaiting)
+CLEAN_AS(func_020a259c, ActivityTalk_StartSpinner)
 
 /* func_020a25cc: talk 0 told func_02068358 and its byte 0x1e93 cleared. `activity` is not
  * read. */

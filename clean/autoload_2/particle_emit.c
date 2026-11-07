@@ -19,7 +19,7 @@ enum EmissionShape {
     SHAPE_CYLINDER = 6,        /* on a cylinder of the emitter's length, moving away from it */
     SHAPE_CYLINDER_FILLED = 7, /* within a cylinder */
     SHAPE_HEMISPHERE = 8,      /* on the half sphere on the side of the axes' normal */
-    SHAPE_HALF_BALL = 9,       /* between half and all of the radius, on that side */
+    SHAPE_HALF_BALL = 9,       /* each component 0 to 1 times the radius, on that side */
 };
 
 /* The direction an emitter's axes are worked out from, unless the axis is along it: up. */
@@ -267,8 +267,8 @@ static int shape_uses_axes(u32 shape)
 /* func_020fded0: the emitter gives off its count of particles (with the fraction carried from
  * the last time), taken from `free_particles` while there are any. Each starts at its place by
  * the shape, moving away from the emitter's centre (or round the cylinder, or a random way
- * from the centre itself) and along the axis, each speed less a random part; at the
- * emitter's scale, the header's colour (or a random one of the animation's three), the
+ * from the centre itself) and along the axis, each speed more or less a random part; at the
+ * emitter's scale more or less a random part, the header's colour (or a random one of the animation's three), the
  * emitter's alpha, a life less a random part, and the resource's texture.
  * QUIRK: an animated texture's random start texture is taken by a remainder by the frame
  * count, 0 for a count of 0 (the ROM's division); the loop's and the life's factors are

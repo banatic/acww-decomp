@@ -64,8 +64,8 @@ static void BoardNotices_DayToDateTime(DateTime *when, const BoardNoticesDay *da
     when->unused[1] = 0;
 }
 
-/* Whether more than one player lives in the town, or func_0203fae4 does not hold the notices
- * back. */
+/* Whether more than one player lives in the town, or Process020dabc0_IsHeldBack does not hold
+ * the notices back. */
 static int BoardNotices_MayPostEvents(StateBlock *block)
 {
     return PlayerRecords_CountTown(block->players) > 1 || !Process020dabc0_IsHeldBack();
@@ -92,7 +92,7 @@ void BoardNotices_Update(void)
         BoardNotices_CatchUpPelicanDay((int) (uintptr_t) data_021c7768, block, &now);
         BoardNotices_PostDays(data_021c7768, block, days, &now, weekday);
     } else if (!state->events_posted && BoardNotices_MayPostEvents(block)) {
-        BoardNotices_PostFirstEvents((int) (uintptr_t) data_021c7768, block, &now);
+        BoardNotices_PostDayEvents((int) (uintptr_t) data_021c7768, block, &now);
     }
 }
 CLEAN_AS(func_02042500, BoardNotices_Update)
@@ -122,7 +122,7 @@ void BoardNotices_PostDays(void *unused, StateBlock *block, int days, const Date
             BoardNotices_PostSlogan(unused, block, &copy);
         }
         if (post_events) {
-            BoardNotices_PostFirstEvents((int) (uintptr_t) unused, block, &day);
+            BoardNotices_PostDayEvents((int) (uintptr_t) unused, block, &day);
         }
         weekday = (weekday + 1) % 7;
         DateTime_AddDays(&day, 1);
@@ -130,9 +130,9 @@ void BoardNotices_PostDays(void *unused, StateBlock *block, int days, const Date
 }
 CLEAN_AS(func_020425a8, BoardNotices_PostDays)
 
-/* func_02042684: the notices of the events on `when`'s day, and the board marked as having had
- * its first notices. */
-void BoardNotices_PostFirstEvents(int unused, StateBlock *block, const DateTime *when)
+/* func_02042684: the notices of the events on `when`'s day (BoardNotices_PostDays calls it for
+ * each day), and the board marked as having had its notices. */
+void BoardNotices_PostDayEvents(int unused, StateBlock *block, const DateTime *when)
 {
     DateTime day = {0};
     DateTime asked;
@@ -146,7 +146,7 @@ void BoardNotices_PostFirstEvents(int unused, StateBlock *block, const DateTime 
     }
     BoardNotices_State(block)->events_posted = 1;
 }
-CLEAN_AS(func_02042684, BoardNotices_PostFirstEvents)
+CLEAN_AS(func_02042684, BoardNotices_PostDayEvents)
 
 /* func_020426d8: the pelican day moved on (func_0204cc34) until it is not before `when`. */
 void BoardNotices_CatchUpPelicanDay(int unused, StateBlock *block, const DateTime *when)

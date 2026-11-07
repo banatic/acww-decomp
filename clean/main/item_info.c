@@ -449,9 +449,9 @@ void ItemInfo_CountSharedPairs(void)
         u16 pair[2];
         pair[0] = (u16) (ITEM_INFO_PAIR_FIRST_A + i);
         pair[1] = (u16) (ITEM_INFO_PAIR_FIRST_B + i);
-        if (ItemTraits_IsPairFlower(&pair[0])) {
+        if (ItemTraits_IsPairHeadFlower(&pair[0])) {
             data_021cb5b4++;
-        } else if (ItemTraits_IsPairWiltedFlower(&pair[1])) {
+        } else if (ItemTraits_IsPairMouthFlower(&pair[1])) {
             data_021cb5b8++;
         }
     }

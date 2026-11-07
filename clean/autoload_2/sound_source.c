@@ -36,8 +36,8 @@ extern void func_0210b734(SoundHandle *handle, int priority);
 extern void func_0210b634(SoundHandle *handle, u16 track_mask, int pan);
 
 /* Numbers with a way of their own (seq_arc * 1000 + index). */
-#define SOURCE_SPLIT_A 0x4ce   /* volume split between tracks 3 and 12 */
-#define SOURCE_SPLIT_B 0x80a   /* volume split between tracks 3 and 12 */
+#define SOURCE_SPLIT_A 0x4ce   /* volume split between track mask 3 (tracks 0-1) and 0xc (2-3) */
+#define SOURCE_SPLIT_B 0x80a   /* volume split between track mask 3 (tracks 0-1) and 0xc (2-3) */
 #define SOURCE_RESTART_A 0x803 /* started again at every update */
 #define SOURCE_RESTART_B 0x804 /* started again at every update */
 #define SOURCE_PAN_SIGN 0x80b  /* panned by side only */

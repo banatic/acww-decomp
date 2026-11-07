@@ -1406,8 +1406,8 @@ void SoundScene1_Vfunc24(SoundScene *scene, int value)
 }
 CLEAN_AS(func_020f3e0c, SoundScene1_Vfunc24)
 
-/* func_020f3e5c: slot 8: the base class's (the voice's sounds dropped), then sequence
- * archive 0x8f loaded again. */
+/* func_020f3e5c: slot 8: the base class's (the voice's sounds dropped), then bank 0x8f loaded
+ * again. */
 void SoundScene1_Vfunc20(SoundScene *scene)
 {
     SoundSceneBase_RestoreHeap(scene);
@@ -1636,16 +1636,16 @@ void SoundSceneBase_OnMusic(SoundScene *scene, int stopped, int music)
 CLEAN_AS(func_020f4314, SoundSceneBase_OnMusic)
 
 /* func_020f4318: slot 8: the sound heap back to its saved state (the voice's sounds
- * dropped); the scene's byte 6 cleared. */
+ * dropped); voice_loaded cleared. */
 void SoundSceneBase_RestoreHeap(SoundScene *scene)
 {
     Sound_RestoreHeapLevel(Sound_GetHeapLevel());
-    scene->started = 0;
+    scene->voice_loaded = 0;
 }
 CLEAN_AS(func_020f4318, SoundSceneBase_RestoreHeap)
 
 /* func_020f4338: slot 7: the voice's type set, and the bank
- * of that mode's sounds loaded; the scene's byte 6 set. Returns 1.
+ * of that mode's sounds loaded; voice_loaded set. Returns 1.
  * BUG: for a mode above 4 the ROM loads whatever number its register held from the caller.
  * REQUIRES: mode 0 to 4; Clean loads nothing for the others. */
 int SoundSceneBase_SetVoiceType(SoundScene *scene, unsigned int mode)
@@ -1671,7 +1671,7 @@ int SoundSceneBase_SetVoiceType(SoundScene *scene, unsigned int mode)
     if (bank >= 0) {
         SoundSystem_LoadBank(&data_021fd1bc, bank);
     }
-    scene->started = 1;
+    scene->voice_loaded = 1;
     return 1;
 }
 CLEAN_AS(func_020f4338, SoundSceneBase_SetVoiceType)
@@ -1774,7 +1774,7 @@ CLEAN_AS(func_020f458c, SoundSceneBase_Destruct)
 
 /* func_020f45c4: the base class's constructor: the object made the system's scene, sound
  * effects allowed again, the current sound set (if any) given value 0xd2, both groups of
- * players and player 15 back to full volume; kind -1, neither stopped nor started; the byte
+ * players and player 15 back to full volume; kind -1, not stopped, no voice loaded; the byte
  * at data_021fd238 cleared.
  * BUG: the sound set's byte 0x3c is cleared before the set is checked for NULL. */
 SoundScene *SoundSceneBase_Construct(SoundScene *scene)
@@ -1796,7 +1796,7 @@ SoundScene *SoundSceneBase_Construct(SoundScene *scene)
     NNS_SndPlayerSetPlayerVolume(15, 100);
     scene->kind = -1;
     scene->stopped = 0;
-    scene->started = 0;
+    scene->voice_loaded = 0;
     SoundPosition_SetUnusedFlag(0);
     return scene;
 }

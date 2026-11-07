@@ -4,6 +4,7 @@
 #include "autoload_2/heap.h"    /* Heap_AllocCurrentBack, Heap_FreeCurrent */
 #include "autoload_2/input.h"   /* PadState */
 #include "autoload_2/network.h" /* Net_GetMode, Net_GetError */
+#include "autoload_2/process.h" /* Process */
 #include "autoload_2/vector.h"  /* Vec3 */
 #include "backup_card.h"        /* BackupCard_Shutdown */
 #include "clean.h"
@@ -77,14 +78,12 @@ extern u8 data_021c5934;
 extern const u16 data_020da4d0[3];
 /* The font a text box starts with. */
 extern TextFont data_021c8230;
-/* The kind of field (0 the town, 1 the rooms), and an object whose halfword at 0xc may be 5:
- * the window is only used with one of them. */
+/* The scene mode (0 outdoors, 1 in a room, 2 between scenes; scene_process.h), and the running
+ * scene's process: the window is only used outdoors, in a room, or while the process between
+ * scenes (class 5) runs. */
 extern u8 data_020e54a8;
-typedef struct CautionWindowMode {
-    u8 unk_00[0xc];
-    u16 mode;
-} CautionWindowMode;
-extern CautionWindowMode *data_021f42f4;
+extern Process *data_021f42f4;
+#define CAUTION_WINDOW_SCENE_CHANGE_CLASS 5
 /* The touch screen: the pen is down, and it went down or up this frame. The pad. */
 extern u8 data_021fbdd8;
 extern u8 data_021fbddc;
@@ -624,14 +623,15 @@ void CautionWindow_Close(CautionWindow *self)
 }
 CLEAN_AS(func_020388f0, CautionWindow_Close)
 
-/* func_02038910: in the town, the rooms, or with data_021f42f4's mode 5, the model loaded and
+/* func_02038910: outdoors, in a room, or between scenes (the running process of class 5), the
+ * model loaded and
  * the window idle; otherwise off. */
 void CautionWindow_Start(CautionWindow *self)
 {
     int field = data_020e54a8 == 0 || data_020e54a8 == 1;
-    int mode_5 = data_021f42f4->mode == 5;
+    int scene_changing = data_021f42f4->class_id == CAUTION_WINDOW_SCENE_CHANGE_CLASS;
     CautionWindow_Reset(self);
-    if (field || mode_5) {
+    if (field || scene_changing) {
         ModelObject_LoadShared((ModelObject *) (void *) self->model, CAUTION_WINDOW_TAG, data_020da570);
         CautionWindow_SetMatrix(self);
         self->line = 0;

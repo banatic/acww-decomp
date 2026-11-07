@@ -1012,17 +1012,17 @@ void StaticInit_FaceTexture(void)
 }
 CLEAN_AS(__sinit_020c58d0, StaticInit_FaceTexture)
 
-extern GlassesLookTable data_021c9e68;
+extern AccessoryLookTable data_021c9e68;
 extern StaticInitRecord data_021c9e48;
-extern void func_0205e018(void *table); /* GlassesLook_DestructTable */
+extern void func_0205e018(void *table); /* AccessoryLook_DestructTable */
 
 /* __sinit_020c58f8: the glasses' looks (glasses_look.h). */
-void StaticInit_GlassesLook(void)
+void StaticInit_AccessoryLook(void)
 {
-    GlassesLook_ConstructTable(&data_021c9e68);
+    AccessoryLook_ConstructTable(&data_021c9e68);
     static_init_register(&data_021c9e68, func_0205e018, &data_021c9e48);
 }
-CLEAN_AS(__sinit_020c58f8, StaticInit_GlassesLook)
+CLEAN_AS(__sinit_020c58f8, StaticInit_AccessoryLook)
 
 extern HeadLookTable data_021c9f5c;
 extern StaticInitRecord data_021c9f3c;

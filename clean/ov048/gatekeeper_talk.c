@@ -954,7 +954,7 @@ void GatekeeperTalk_WaitJob13(GatekeeperTalk *talk)
 {
     TalkObject *object = talk_object(talk);
 
-    if (ActivityJob_Is13AtStep3()) {
+    if (ActivityJob_Save13Failed()) {
         u8 message = 10;
         GatekeeperTalk_Release(talk);
         TalkObject_SetMessage(object, &message, data_ov048_02264704);

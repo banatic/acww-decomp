@@ -35,12 +35,12 @@ extern u8 data_021f6c5c; /* the touch's y */
 #define TAB_RIGHT 0xe8 /* past the last column */
 #define TAB_BOTTOM 0x10
 
-/* The scenes without the tab: 8 to 15 and 0x24 to 0x2c. */
-#define SCENE_WHICH 4
-#define NO_TAB_FIRST_1 8
-#define NO_TAB_COUNT_1 8
-#define NO_TAB_FIRST_2 0x24
-#define NO_TAB_COUNT_2 9
+/* The own player's actor states without the tab: 8 to 15 and 0x24 to 0x2c. */
+#define CAMERA_TAB_OWN_PLAYER 4
+#define NO_TAB_STATES_FIRST_1 8
+#define NO_TAB_STATES_COUNT_1 8
+#define NO_TAB_STATES_FIRST_2 0x24
+#define NO_TAB_STATES_COUNT_2 9
 
 #define WINDOW_OPEN 1
 #define WINDOW_CLOSE 0
@@ -253,14 +253,14 @@ int CameraTab_Pressed(CameraTab *tab, int with_b)
 }
 CLEAN_AS(func_0208be84, CameraTab_Pressed)
 
-/* func_0208bf48: whether the tab may show: `shown` set, no event running, and a scene that
- * has it. Both the event and the scene are asked every time. */
+/* func_0208bf48: whether the tab may show: `shown` set, no event running, and the own player's
+ * actor in a state that has it. Both the event and the state are asked every time. */
 int CameraTab_IsAllowed(CameraTab *tab)
 {
     int event = EventQueue_HasCurrent() != 0;
-    unsigned int scene = (unsigned int) PlayerActorOps_State(SCENE_WHICH);
-    int no_tab_1 = scene - NO_TAB_FIRST_1 < NO_TAB_COUNT_1;
-    int no_tab_2 = scene - NO_TAB_FIRST_2 < NO_TAB_COUNT_2;
+    unsigned int player_state = (unsigned int) PlayerActorOps_State(CAMERA_TAB_OWN_PLAYER);
+    int no_tab_1 = player_state - NO_TAB_STATES_FIRST_1 < NO_TAB_STATES_COUNT_1;
+    int no_tab_2 = player_state - NO_TAB_STATES_FIRST_2 < NO_TAB_STATES_COUNT_2;
     return tab->shown != 0 && !event && !no_tab_1 && !no_tab_2;
 }
 CLEAN_AS(func_0208bf48, CameraTab_IsAllowed)

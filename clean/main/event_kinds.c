@@ -162,9 +162,10 @@ int EventKind_EndSceneObject(void)
 CLEAN_AS(func_0203e740, EventKind_EndSceneObject)
 
 /* func_0203e750 (start, kind 12): with the object of the kept tile registered (its first id):
- * at EVENT_KIND_STEP_ASK_SESSION the session is asked about it (yes: go; asked: wait, and the
- * object let go); while waiting, the session's answer read (yes: go; no: the object let go, and
- * it keeps waiting); on go the object is told the scene starts and the event is under way. */
+ * at EVENT_KIND_STEP_ASK_SESSION the session is asked about it (given: go; asked: the claim
+ * sent to the host (ObjectClaim_Claim), wait); while waiting, the session's answer read (yes:
+ * go; no: the claim asked for again, and it keeps waiting); on go the object is told the scene
+ * starts and the event is under way. */
 int EventKind_StartSceneObject(EventQueueEntry *event)
 {
     SceneObjectBase *object = find(event->first_id);

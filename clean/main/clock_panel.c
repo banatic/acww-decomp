@@ -70,8 +70,9 @@ extern const MemberPointer data_020e213c, data_020e212c, data_020e215c, data_020
 #define CLOCK_PANEL_SHIFT_SPEED_MAX 0x5000
 #define CLOCK_PANEL_SHIFT_WAIT 10
 
-/* The waits before appearing: after an event with no owner or no owner away from session
- * state 2, after an event with an owner that covers the panel, and while not asked to show. */
+/* The waits before appearing: after an event with no owner, or with no owner while the own
+ * player (CLOCK_PANEL_PLAYER) is not in actor state CLOCK_PANEL_PLAYER_STATE; after an event
+ * with an owner that covers the panel; and while not asked to show. */
 #define CLOCK_PANEL_WAIT_AWAY 30
 #define CLOCK_PANEL_WAIT_COVERED 1
 #define CLOCK_PANEL_WAIT_NOT_SHOWN 10

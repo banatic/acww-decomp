@@ -26,8 +26,8 @@ extern const u8 *data_021fd268;
 /* The sequence archive a MelodySeq played before its last start. */
 extern u16 data_021fd264;
 /* Where MelodySeq_Start loads a melody's sounds: 1 the sound heap, above the scene's level, or
- * 2 the scene's own heap. Starts at 1; a start while the scene has not started yet uses the
- * other one than the last. */
+ * 2 the scene's own heap. Starts at 1; a start while the scene's voice sounds are loaded uses
+ * 2, any other the other one than the last. */
 extern u8 data_0213f0a4;
 /* The steps of layout 3 that play the melody's notes, in order (0, 2, 3, ... 33). */
 extern const u8 data_02138fd4[13];
@@ -280,7 +280,7 @@ void MelodySeq_Start(MelodySeq *seq, unsigned short seq_arc)
     if (scene == NULL) {
         return;
     }
-    if (scene->base.started != 0) {
+    if (scene->base.voice_loaded != 0) {
         data_0213f0a4 = 2;
     } else {
         data_0213f0a4 = data_0213f0a4 == 1 ? 2 : 1;

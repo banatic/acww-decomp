@@ -115,7 +115,7 @@ void ActivityJobs_Step06(Activity *activity)
     int result;
     switch (activity->state) {
         case 0:
-            if (ActivityTalk_FinishWaiting(activity, 0)) {
+            if (ActivityTalk_StartSpinner(activity, 0)) {
                 activity->state = 1;
             }
             break;
@@ -181,7 +181,7 @@ void ActivityJobs_Step07(Activity *activity)
     int result;
     switch (activity->state) {
         case 0:
-            if (ActivityTalk_FinishWaiting(activity, 0)) {
+            if (ActivityTalk_StartSpinner(activity, 0)) {
                 activity->state = 1;
             }
             break;
