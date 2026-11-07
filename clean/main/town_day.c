@@ -55,7 +55,7 @@
 
 static_assert(sizeof(TileEffectsSource) == 0x18, "TileEffectsSource");
 static_assert(sizeof(TownDayAcre) == 0x24, "TownDayAcre");
-static_assert(offsetof(TownDayAcres, spot_acre_x) == 0x34, "TownDayAcres.spot_acre_x");
+static_assert(offsetof(TownDayAcres, rafflesia_acre_x) == 0x34, "TownDayAcres.rafflesia_acre_x");
 static_assert(offsetof(TownDayAcres, acres) == 0x44, "TownDayAcres.acres");
 static_assert(offsetof(TownDay, effects) == 0x04, "TownDay.effects");
 static_assert(offsetof(TownDay, no_drop) == 0x1c, "TownDay.no_drop");
@@ -204,15 +204,15 @@ int TownDay_FindCode6d(int x, int z)
 }
 CLEAN_AS(func_020466e0, TownDay_FindCode6d)
 
-/* func_02046730: the position of the summary's spot (in the town's map); whether there is
+/* func_02046730: the position of the summary's rafflesia (code 0x1b, in the town's map); whether there is
  * one. */
-int TownDay_SpotPosition(Vec3 *position)
+int TownDay_RafflesiaPosition(Vec3 *position)
 {
     const TownDayAcres *acres = &data_021c779c.acres;
-    int acre_x = acres->spot_acre_x;
-    int acre_z = acres->spot_acre_z;
-    int x = acres->spot_x;
-    int z = acres->spot_z;
+    int acre_x = acres->rafflesia_acre_x;
+    int acre_z = acres->rafflesia_acre_z;
+    int x = acres->rafflesia_x;
+    int z = acres->rafflesia_z;
     if (acre_x == TOWN_DAY_NO_TILE || acre_z == TOWN_DAY_NO_TILE || x == TOWN_DAY_NO_TILE || z == TOWN_DAY_NO_TILE) {
         return 0;
     }
@@ -222,7 +222,7 @@ int TownDay_SpotPosition(Vec3 *position)
     AcreTile_PositionInAcre(position, (u32) (acre_x + 1), (u32) (acre_z + 1), (u32) x, (u32) z);
     return 1;
 }
-CLEAN_AS(func_02046730, TownDay_SpotPosition)
+CLEAN_AS(func_02046730, TownDay_RafflesiaPosition)
 
 /* func_0204677c: the address of the town's object. */
 int TownDay_Object(void)
@@ -390,7 +390,7 @@ CLEAN_AS(func_020469f4, TownDay_OnClock)
  * board's notices, the start day expired (while playing), the town moved on by the days
  * (TownDay_Move, with whether the last day was wet) and the stamp set to today. Less than a
  * day: the town started when loaded; when the clock went back before the last day the counted
- * items spoil, the record's events are moved and the house is judged again; the stamp is set
+ * items spoil, the pelican's day is drawn again (TownRecord_DrawPelicanDay) and the house is judged again; the stamp is set
  * to today. Either way the turnip prices follow the days and the players' records are
  * updated. */
 void TownDay_Check(int loaded)
@@ -545,7 +545,7 @@ void TownDay_Pass(TownDay *town, const DateTime *from, const DateTime *to, int d
         TownDay_UpdateEvents(town, map, wide, high, to, loaded);
         TownGrowth_ChangeLastStages(town, map, wide, high);
         TownSpawn_MaybeLilyOfTheValley(town, map, wide, high);
-        TownSpawn_UpdateSpot(town, map, wide, high);
+        TownSpawn_UpdateRafflesia(town, map, wide, high);
         TownSpawn_PutMarkedFossils(town, map, wide, high);
         TownSpawn_PutMarkedPitfall(town, map, wide, high);
         TownSpawn_MakeMoneyRocks(town, map, wide, high);
@@ -564,7 +564,7 @@ void TownDay_Pass(TownDay *town, const DateTime *from, const DateTime *to, int d
         RoomScoreRoom house;
         RoomScore_InitRoom(&house);
         RoomScore_JudgeHouse(&house);
-        TownLayout_SetUpperSettings((unsigned int) (uintptr_t) data_021e9aac);
+        TownLayout_SetSeason((unsigned int) (uintptr_t) data_021e9aac);
         Sky_RefreshEvents(days);
         BottleMail_DailyCheck(days);
         MomLetters_DailyCheck(&mom_date, days);

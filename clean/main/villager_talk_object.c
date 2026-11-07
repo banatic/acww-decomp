@@ -346,7 +346,7 @@ void VillagerTalkObject_MarkDone(VillagerTalk *talk)
     SessionVillager_SendObjectByte0B(object_record(talk), 3);
     if (Session_IsSlotTaken(data_020ccf94, data_020ccf94->local_slot) == 0) {
         VillagerMode_FinishObject(record);
-        VillagerState_SetFlag1UnlessScene(VillagerStatus_StateEntry(record));
+        VillagerState_SetFlag1OutsideHouse(VillagerStatus_StateEntry(record));
     }
 }
 CLEAN_AS(func_02024228, VillagerTalkObject_MarkDone)
@@ -910,7 +910,7 @@ void VillagerTalkObject_CountItem(VillagerTalk *talk)
     }
     VillagerErrand_SetProgress((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk), 1);
     SessionVillager_SendObjectByte0B(record, 1);
-    VillagerState_SetFlag1UnlessScene(VillagerStatus_StateEntry(record));
+    VillagerState_SetFlag1OutsideHouse(VillagerStatus_StateEntry(record));
 }
 CLEAN_AS(func_020250c8, VillagerTalkObject_CountItem)
 

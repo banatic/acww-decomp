@@ -6,7 +6,7 @@
  *   0x00  the date and time the mode was set
  *   0x08  the day up to which the counts below have been taken into the scores
  *   0x10  the mode: 0-7 one of the eight kinds of event (villager_events.h) the villager took
- *         to, 8 none yet, 9 about to leave (villager_residents.h), 10 just moved in, 11 a mode
+ *         to, 8 no hobby (none yet, or dropped), 9 about to leave (villager_residents.h), 10 just moved in, 11 a mode
  *         that turns into a kind the next day; 12 and above: the record is not in use
  *   0x11  a score for each kind, from which a new mode is drawn (func_0209c4a8: one of the
  *         highest at random)
@@ -26,7 +26,7 @@
 #include "types.h"
 
 #define VILLAGER_MODE_KINDS 8
-#define VILLAGER_MODE_NONE_YET 8
+#define VILLAGER_MODE_NO_HOBBY 8
 #define VILLAGER_MODE_LEAVING 9
 #define VILLAGER_MODE_ARRIVED 10
 #define VILLAGER_MODE_11 11
@@ -47,7 +47,7 @@ typedef struct VillagerModeRecord {
 } VillagerModeRecord;               /* the object follows at 0x24 */
 
 void VillagerMode_FinishObject(u8 *villager);
-int VillagerMode_Update(u8 *villager, DateTime *last_arrival, DateTime *last_departure, const DateTime *now);
+int VillagerMode_Update(u8 *villager, DateTime *last_arrival, DateTime *last_change, const DateTime *now);
 int VillagerMode_UpdateDaily(u8 *villager, const DateTime *now);
 void VillagerMode_KeepCountedDate(u8 *villager, const DateTime *now);
 void VillagerMode_KeepSinceDate(u8 *villager, const DateTime *now);

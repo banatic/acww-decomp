@@ -437,13 +437,13 @@ extern u8 data_020e1f5c[];
 /* Whether the record's kind is one of the two contests (fishing, insects). */
 static int event_winner_is_contest(const EventWinner *record)
 {
-    return record->date.unused == EVENT_WINNER_KIND_FISHING || record->date.unused == EVENT_WINNER_KIND_INSECTS;
+    return record->date.extra == EVENT_WINNER_KIND_FISHING || record->date.extra == EVENT_WINNER_KIND_INSECTS;
 }
 
 /* Whether the record's kind is one of the three events. */
 static int event_winner_has_kind(const EventWinner *record)
 {
-    return event_winner_is_contest(record) || record->date.unused == EVENT_WINNER_KIND_GARDENS;
+    return event_winner_is_contest(record) || record->date.extra == EVENT_WINNER_KIND_GARDENS;
 }
 
 /* Whether an item code is the empty one: for a furniture code, whether its furniture number is
@@ -468,7 +468,7 @@ static int event_winner_same_player(const DesignCreator *a, const DesignCreator 
 /* The size into `text`: to one decimal for fishing, in whole units otherwise. */
 static void event_winner_format_size(const EventWinner *record, MessageText46 *text)
 {
-    if (record->date.unused == EVENT_WINNER_KIND_FISHING) {
+    if (record->date.extra == EVENT_WINNER_KIND_FISHING) {
         NumberText_SetFixed(text, record->size, 1);
     } else {
         NumberText_Format(text, record->size >> 12, EVENT_WINNER_SIZE_DIGITS, 0, 0, 0);
@@ -544,7 +544,7 @@ CLEAN_AS(func_020867e4, EventWinner_SetPlayer)
 /* func_02086834: the record's kind (EventWinnerKind). */
 void EventWinner_SetKind(EventWinner *record, u8 kind)
 {
-    record->date.unused = kind;
+    record->date.extra = kind;
 }
 CLEAN_AS(func_02086834, EventWinner_SetKind)
 
@@ -557,7 +557,7 @@ void EventWinner_Restart(EventWinner *record)
     record->date.year = today.year;
     record->date.month = today.month;
     record->date.day = today.day;
-    record->date.unused = EVENT_WINNER_KIND_NONE;
+    record->date.extra = EVENT_WINNER_KIND_NONE;
 }
 CLEAN_AS(func_0208683c, EventWinner_Restart)
 
@@ -618,7 +618,7 @@ void EventWinner_SendLetters(EventWinner *record)
     if (!event_winner_has_kind(record)) {
         return;
     }
-    u8 kind = record->date.unused;
+    u8 kind = record->date.extra;
     Date today;
     Calendar_Today(&today);
     if (record->date.year == 0 || record->date.month == 0 || record->date.day == 0) {
@@ -793,7 +793,7 @@ void EventWinner_PostNotice(EventWinner *record)
     }
 
     int message = event_winner_is_contest(record) ? (int) MainRandom_Below(3) : (int) MainRandom_Below(2);
-    Bbs_PostMessage(message, data_020e1fbc[record->date.unused]);
+    Bbs_PostMessage(message, data_020e1fbc[record->date.extra]);
     StateBlock_ClearFlag(data_021dc7a8, EVENT_WINNER_NOTICE_FLAG);
     PlayerIdText_Destruct((PlayerIdText *) &name);
 }

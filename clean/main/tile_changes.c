@@ -220,8 +220,9 @@ void TileChanges_ReleaseAt(const TileChangesTile *tile, int layer)
 }
 CLEAN_AS(func_02045df8, TileChanges_ReleaseAt)
 
-/* func_02045e24: the change at the tile and layer, unless its slot's actor is at the tile
- * (func_ov003_02221340): released for kinds 4, 10, 22 and 25, else finished. */
+/* func_02045e24: the change at the tile and layer, unless a tile event of its slot at that tile
+ * was ended (TileEvent_EndAt), which finishes its own change: released for kinds 4, 10, 22 and
+ * 25, else finished. */
 void TileChanges_LetGoAt(const TileChangesTile *tile, int layer)
 {
     TileChangesTile at = *tile;
@@ -269,10 +270,10 @@ CLEAN_AS(func_02045eec, TileChanges_FinishAt)
 
 /* Putting a change in a record, finishing it and freeing it. A change is put by the request's
  * fields (tile_request_grant.c names them): the slot, the item and the tile's code, the kind,
- * the result (bits 0-1 of `state`), TileRequest.unk_20 (bits 5-6), the tag (bits 2-4), the
+ * the mark (bits 0-1 of `state`), TileRequest.unk_20 (bits 5-6), the tag (bits 2-4), the
  * layer and a signed number (bits 2-5 of `flags`). */
 
-#define TILE_CHANGE_RESULT_MASK 0x03
+#define TILE_CHANGE_MARK_MASK 0x03
 #define TILE_CHANGE_UNK_20_SHIFT 5
 #define TILE_CHANGE_TAG_MASK (7 << TILE_CHANGE_TAG_SHIFT)
 #define TILE_CHANGE_UNK_20_MASK (3 << TILE_CHANGE_UNK_20_SHIFT)
@@ -295,12 +296,12 @@ CLEAN_AS(func_02045f08, TileChanges_FinishAtTile)
 /* func_02045f24: as TileChanges_Put, but a change already at the tile and layer is taken over:
  * when no one holds it, it is finished first (for the hitting kinds 1, 2, 6 and 7, after
  * func_ov003_02222d8c on its code and its own slot), and the record is then filled again. */
-int TileChanges_Replace(int slot, const TileChangesTile *tile, u32 item, int code, u8 kind, u8 result, u8 unk_20, u8 tag,
+int TileChanges_Replace(int slot, const TileChangesTile *tile, u32 item, int code, u8 kind, u8 mark, u8 unk_20, u8 tag,
                         u8 layer, s8 number)
 {
     int index = TileChanges_FindAt(tile, layer);
     if (index < 0) {
-        return TileChanges_PutNew(slot, tile, (int) item, code, kind, result, unk_20, tag, layer, number);
+        return TileChanges_PutNew(slot, tile, (int) item, code, kind, mark, unk_20, tag, layer, number);
     }
     TileChange *change = &data_021c7884[index];
     if (!TileChanges_IsHeld(change)) {
@@ -317,23 +318,23 @@ int TileChanges_Replace(int slot, const TileChangesTile *tile, u32 item, int cod
         }
         TileChanges_Finish(change);
     }
-    return TileChanges_FillAt((u32) index, (u32) slot, tile, item, (u16) code, kind, result, unk_20, tag, layer, number);
+    return TileChanges_FillAt((u32) index, (u32) slot, tile, item, (u16) code, kind, mark, unk_20, tag, layer, number);
 }
 CLEAN_AS(func_02045f24, TileChanges_Replace)
 
 /* func_02046024: the item put on the tile through a change; whether it was. With no change at
  * the tile and layer, a new one (TileChanges_PutNew); with one that `slot` (its low two bits)
  * holds, that record filled again; with anyone else's, nothing. */
-int TileChanges_Put(int slot, const TileChangesTile *tile, u32 item, u32 code, u8 kind, u8 result, u8 unk_20, u8 tag, u8 layer,
+int TileChanges_Put(int slot, const TileChangesTile *tile, u32 item, u32 code, u8 kind, u8 mark, u8 unk_20, u8 tag, u8 layer,
                     s8 number)
 {
     int index = TileChanges_FindAt(tile, layer);
     if (index < 0) {
-        return TileChanges_PutNew(slot, tile, (int) item, (int) code, kind, result, unk_20, tag, layer, number);
+        return TileChanges_PutNew(slot, tile, (int) item, (int) code, kind, mark, unk_20, tag, layer, number);
     }
     const TileChange *change = &data_021c7884[index];
     if ((slot & 3) == TileChanges_Slot(change) && TileChanges_IsHeld(change)) {
-        TileChanges_FillAt((u32) index, (u32) slot, tile, item, (u16) code, kind, result, unk_20, tag, layer, number);
+        TileChanges_FillAt((u32) index, (u32) slot, tile, item, (u16) code, kind, mark, unk_20, tag, layer, number);
         return 1;
     }
     return 0;
@@ -342,7 +343,7 @@ CLEAN_AS(func_02046024, TileChanges_Put)
 
 /* func_020460ec: a free record filled with the change, once the tile is clear of changes
  * (TileChanges_MakeRoomAt); whether it was. */
-int TileChanges_PutNew(int slot, const TileChangesTile *tile, int item, int code, u8 kind, u8 result, u8 unk_20, u8 tag,
+int TileChanges_PutNew(int slot, const TileChangesTile *tile, int item, int code, u8 kind, u8 mark, u8 unk_20, u8 tag,
                        u8 layer, s8 number)
 {
     if (!TileChanges_MakeRoomAt(tile)) {
@@ -352,7 +353,7 @@ int TileChanges_PutNew(int slot, const TileChangesTile *tile, int item, int code
     if (index < 0) {
         return 0;
     }
-    TileChanges_FillAt((u32) index, (u32) slot, tile, (u32) item, (u16) code, kind, result, unk_20, tag, layer, number);
+    TileChanges_FillAt((u32) index, (u32) slot, tile, (u32) item, (u16) code, kind, mark, unk_20, tag, layer, number);
     return 1;
 }
 CLEAN_AS(func_020460ec, TileChanges_PutNew)
@@ -375,11 +376,11 @@ int TileChanges_MakeRoomAt(const TileChangesTile *tile)
 CLEAN_AS(func_02046154, TileChanges_MakeRoomAt)
 
 /* func_02046194: record `index` filled (TileChanges_Fill) at the tile, x in the high byte. */
-int TileChanges_FillAt(u32 index, u32 slot, const TileChangesTile *tile, u32 item, u16 code, u8 kind, u8 result, u8 unk_20,
+int TileChanges_FillAt(u32 index, u32 slot, const TileChangesTile *tile, u32 item, u16 code, u8 kind, u8 mark, u8 unk_20,
                        u8 tag, u8 layer, s8 number)
 {
     u16 packed = (u16) (((u8) tile->x << 8) | (u8) tile->z);
-    return TileChanges_Fill(&data_021c7884[index], slot, packed, item, code, kind, result, unk_20, tag, layer, number);
+    return TileChanges_Fill(&data_021c7884[index], slot, packed, item, code, kind, mark, unk_20, tag, layer, number);
 }
 CLEAN_AS(func_02046194, TileChanges_FillAt)
 
@@ -407,7 +408,7 @@ CLEAN_AS(func_02046224, TileChanges_InitRecord)
 
 /* func_0204622c: a change let go of. Kinds 4, 22 and 25 stay: reported (TileChanges_Report),
  * then held and their `flags` bit 0 cleared; kind 10 the same, and it also takes its code as
- * its item and the result 1. The other kinds are finished. */
+ * its item and the mark 1. The other kinds are finished. */
 void TileChanges_LetGo(TileChange *change)
 {
     switch (TileChanges_Kind(change)) {
@@ -423,7 +424,7 @@ void TileChanges_LetGo(TileChange *change)
             change->state |= TILE_CHANGE_HELD;
             change->flags &= (u8) ~TILE_CHANGE_SET;
             change->item = change->unk_0c;
-            change->state = (u8) ((change->state & ~TILE_CHANGE_RESULT_MASK) | 1);
+            change->state = (u8) ((change->state & ~TILE_CHANGE_MARK_MASK) | 1);
             break;
         default:
             TileChanges_Finish(change);
@@ -462,42 +463,42 @@ static const u16 *TileChanges_TownCodeAt(int x, int z)
 }
 
 /* func_0204629c: a change finished. In scene 0 with the town's map, by its kind:
- * - 0x12 (the held change of its slot freed first), 0x11, 0x13, 0x18 and 0x1a: the result
+ * - 0x12 (the held change of its slot freed first), 0x11, 0x13, 0x18 and 0x1a: the mark
  *   stays (as 1) only when the tile's code takes items (TileChanges_CodeTakesNoItem);
- * - 6 and 7: unless bits 5-6 of `state` are 2, the tile's mark (TileRequests_SetMark) set to
- *   the result + 1;
- * - 10: the result kept;
+ * - 6 and 7: unless bits 5-6 of `state` are 2, the tile's request mark (TileRequests_SetMark)
+ *   set to the change's mark + 1;
+ * - 10: the mark kept;
  * - 0x19: the item cleared when the signed number is 0 or more.
- * Every other case ends with the result 0. The change is then reported and freed. */
+ * Every other case ends with the mark 0. The change is then reported and freed. */
 void TileChanges_Finish(TileChange *change)
 {
-    int result = 0;
+    int mark = 0;
     int x = change->tile >> 8;
     int z = change->tile & 0xff;
     const u16 *code = TileChanges_TownCodeAt(x, z);
     if (code != NULL) {
         switch (TileChanges_Kind(change)) {
-            case TILE_REQUEST_DROP_12:
+            case TILE_REQUEST_DROP_HELD:
                 TileChanges_FreeHeld(TileChanges_Slot(change));
                 /* fall through */
-            case TILE_REQUEST_ACTOR_TILE:
+            case TILE_REQUEST_HELD_TILE:
             case TILE_REQUEST_KIND_13:
             case TILE_REQUEST_SPLIT_DROP:
             case TILE_REQUEST_DROP_A7:
                 /* read after TileChanges_FreeHeld, which may have freed this very change */
-                if (!TileChanges_CodeTakesNoItem(*code) && (change->state & TILE_CHANGE_RESULT_MASK) != 0) {
-                    result = 1;
+                if (!TileChanges_CodeTakesNoItem(*code) && (change->state & TILE_CHANGE_MARK_MASK) != 0) {
+                    mark = 1;
                 }
                 break;
             case 6:
             case 7:
                 if (((change->state & TILE_CHANGE_UNK_20_MASK) >> TILE_CHANGE_UNK_20_SHIFT) != 2) {
                     TileRequestTile tile = {x, z};
-                    TileRequests_SetMark(&data_021c7c48, &tile, ((change->state & TILE_CHANGE_RESULT_MASK) + 1) & 3);
+                    TileRequests_SetMark(&data_021c7c48, &tile, ((change->state & TILE_CHANGE_MARK_MASK) + 1) & 3);
                 }
                 break;
             case 10:
-                result = change->state & TILE_CHANGE_RESULT_MASK;
+                mark = change->state & TILE_CHANGE_MARK_MASK;
                 break;
             case TILE_REQUEST_MARKED_PITFALL:
                 /* bit 5 of `flags` is the number's sign */
@@ -507,7 +508,7 @@ void TileChanges_Finish(TileChange *change)
                 break;
         }
     }
-    change->state = (u8) ((change->state & ~TILE_CHANGE_RESULT_MASK) | result);
+    change->state = (u8) ((change->state & ~TILE_CHANGE_MARK_MASK) | mark);
     TileChanges_Report(change);
     TileChanges_Free(change);
 }
@@ -527,14 +528,14 @@ void TileChanges_NoteItem(const TileChange *change)
 CLEAN_AS(func_02046490, TileChanges_NoteItem)
 
 /* func_020464d4: the change reported to the scene's overlay: in scene 0 to the town's field
- * (with its result), then its item noted (TileChanges_NoteItem); elsewhere to the room's (with
+ * (with its mark), then its item noted (TileChanges_NoteItem); elsewhere to the room's (with
  * its layer). */
 void TileChanges_Report(TileChange *change)
 {
     int x = change->tile >> 8;
     int z = change->tile & 0xff;
     if (SceneQuery_CurrentIs0() != 0) {
-        TileEvent_SetTownItem(x, z, change->item, change->state & TILE_CHANGE_RESULT_MASK);
+        TileEvent_SetTownItem(x, z, change->item, change->state & TILE_CHANGE_MARK_MASK);
         TileChanges_NoteItem(change);
     } else {
         DroppedItems_PutOnMap(x, z, change->item, TileChanges_Layer(change));
@@ -544,22 +545,22 @@ CLEAN_AS(func_020464d4, TileChanges_Report)
 
 /* func_02046518: the record filled and marked set; the answer is its new `flags` byte. The
  * other bits of `state` and `flags` (held, bits 6-7) are kept. */
-int TileChanges_Fill(TileChange *change, u32 slot, u16 tile, u32 item, u16 code, u8 kind, u8 result, u8 unk_20, u8 tag,
-                     u8 layer, s8 number)
+int TileChanges_Fill(TileChange *change, u32 slot, u16 tile, u32 item, u16 code, u8 kind, u8 mark, u8 unk_20, u8 tag, u8 layer,
+                     s8 number)
 {
     change->who = (u8) (((kind & 0x1f) << TILE_CHANGE_KIND_SHIFT) | (slot & TILE_CHANGE_SLOT_MASK));
     change->tile = tile;
     change->item = (u16) item;
     change->unk_0c = code;
-    change->state = (u8) ((change->state & ~(TILE_CHANGE_RESULT_MASK | TILE_CHANGE_UNK_20_MASK | TILE_CHANGE_TAG_MASK)) |
-                          (result & 3) | ((unk_20 & 3) << TILE_CHANGE_UNK_20_SHIFT) | ((tag & 7) << TILE_CHANGE_TAG_SHIFT));
+    change->state = (u8) ((change->state & ~(TILE_CHANGE_MARK_MASK | TILE_CHANGE_UNK_20_MASK | TILE_CHANGE_TAG_MASK)) |
+                          (mark & 3) | ((unk_20 & 3) << TILE_CHANGE_UNK_20_SHIFT) | ((tag & 7) << TILE_CHANGE_TAG_SHIFT));
     change->flags = (u8) ((change->flags & ~(TILE_CHANGE_LAYER | TILE_CHANGE_NUMBER_MASK)) | ((layer & 1) << 1) |
                           ((number & 0xf) << TILE_CHANGE_NUMBER_SHIFT) | TILE_CHANGE_SET);
     return change->flags;
 }
 CLEAN_AS(func_02046518, TileChanges_Fill)
 
-/* func_020465b0: the record set free: slot 7, no tile, no item, result 0, not held, tag 7, the
+/* func_020465b0: the record set free: slot 7, no tile, no item, mark 0, not held, tag 7, the
  * first layer and the number -1. The kind, the code and bits 5-6 of `state` stay. */
 void TileChanges_Free(TileChange *change)
 {

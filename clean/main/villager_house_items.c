@@ -507,7 +507,7 @@ CLEAN_AS(func_0207fe28, VillagerHouseItems_PickEmpty)
 int VillagerHouseItems_SlotRange(const u8 *villager, int *first, int *end, int size_class, int mode, u8 from_2)
 {
     (void) villager;
-    int wider = mode == 2 || (mode == VILLAGER_MODE_NONE_YET && from_2 != 0);
+    int wider = mode == 2 || (mode == VILLAGER_MODE_NO_HOBBY && from_2 != 0);
     switch (size_class) {
         case 0:
             *first = 5;
@@ -611,7 +611,7 @@ int VillagerHouseItems_Template(u8 *villager, int *template_set, int *variant)
     /* the mode is read again for each test */
     int mode_2 = VillagerModeRecord_Mode(record) == 2;
     if (!mode_2) {
-        int later = VillagerModeRecord_Mode(record) == VILLAGER_MODE_NONE_YET ||
+        int later = VillagerModeRecord_Mode(record) == VILLAGER_MODE_NO_HOBBY ||
                     VillagerModeRecord_Mode(record) == VILLAGER_MODE_LEAVING ||
                     VillagerModeRecord_Mode(record) == VILLAGER_MODE_ARRIVED ||
                     VillagerModeRecord_Mode(record) == VILLAGER_MODE_11;

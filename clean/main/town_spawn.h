@@ -40,9 +40,9 @@ int TownSpawn_MakeMoneyRock(TownDay *town, AcreMap *map, int wide, int high, int
 int TownSpawn_MakeMoneyRockIn(TownDay *town, AcreMap *map, TownAcreCount *acre, int kind, int acre_x, int acre_z);
 void TownSpawn_PutMarkedPitfall(TownDay *town, AcreMap *map, int wide, int high);
 void TownSpawn_PutMarkedFossils(TownDay *town, AcreMap *map, int wide, int high);
-void TownSpawn_UpdateSpot(TownDay *town, AcreMap *map, int wide, int high);
-void TownSpawn_SpotTo89(TownDay *town, AcreMap *map);
-int TownSpawn_PutSpot(TownDay *town, AcreMap *map, int wide, int high);
+void TownSpawn_UpdateRafflesia(TownDay *town, AcreMap *map, int wide, int high);
+void TownSpawn_WiltRafflesia(TownDay *town, AcreMap *map);
+int TownSpawn_PutRafflesia(TownDay *town, AcreMap *map, int wide, int high);
 void TownSpawn_MaybeLilyOfTheValley(TownDay *town, AcreMap *map, int wide, int high);
 void TownSpawn_PutLilyOfTheValley(TownDay *town, AcreMap *map, int wide, int high);
 void TownSpawn_PickAcreWithoutLily(TownSpawnAcre *out, TownDay *town, int wide, int high);

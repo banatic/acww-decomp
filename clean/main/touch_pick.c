@@ -33,55 +33,57 @@ int TouchPick_Object(int kind, int index)
 }
 CLEAN_AS(func_020b7338, TouchPick_Object)
 
-/* func_020b735c (kinds 17 and 18): outdoors, overlay 3's object with id `id`. */
-int TouchPick_OutdoorObjectById(int id)
+/* func_020b735c (kinds 17 and 18): outdoors, overlay 3's snowman with id `id` (Snowman_Find). */
+int TouchPick_Snowman(int id)
 {
     if (data_020e54a8 == TOUCH_PICK_MODE_OUTDOORS) {
         return (int) (uintptr_t) Snowman_Find(id);
     }
     return 0;
 }
-CLEAN_AS(func_020b735c, TouchPick_OutdoorObjectById)
+CLEAN_AS(func_020b735c, TouchPick_Snowman)
 
-/* func_020b7384 (kind 16): in a room, entry `index` of overlay 4's table of 0x40. */
-int TouchPick_RoomEntry40(int index)
+/* func_020b7384 (kind 16): in a room, entry `index` of overlay 4's board objects (0x40,
+ * RoomEtcBoard_Get). */
+int TouchPick_RoomBoard(int index)
 {
     if (data_020e54a8 == TOUCH_PICK_MODE_ROOM) {
         return (int) (uintptr_t) RoomEtcBoard_Get(index);
     }
     return 0;
 }
-CLEAN_AS(func_020b7384, TouchPick_RoomEntry40)
+CLEAN_AS(func_020b7384, TouchPick_RoomBoard)
 
-/* func_020b73ac (kind 13): in a room, the object overlay 4 keeps at 0x022588c8. */
-int TouchPick_RoomObject13(void)
+/* func_020b73ac (kind 13): in a room, overlay 4's telephone (RmoTelephone_Current, 0x022588c8). */
+int TouchPick_Telephone(void)
 {
     if (data_020e54a8 == TOUCH_PICK_MODE_ROOM) {
         return (int) RmoTelephone_Current();
     }
     return 0;
 }
-CLEAN_AS(func_020b73ac, TouchPick_RoomObject13)
+CLEAN_AS(func_020b73ac, TouchPick_Telephone)
 
-/* func_020b73d4 (kind 12): in a room, the object overlay 4 keeps at 0x02258490. */
-int TouchPick_RoomObject12(void)
+/* func_020b73d4 (kind 12): in a room, overlay 4's recycle bin (RecycleBin_Current, 0x02258490). */
+int TouchPick_RecycleBin(void)
 {
     if (data_020e54a8 == TOUCH_PICK_MODE_ROOM) {
         return (int) RecycleBin_Current();
     }
     return 0;
 }
-CLEAN_AS(func_020b73d4, TouchPick_RoomObject12)
+CLEAN_AS(func_020b73d4, TouchPick_RecycleBin)
 
-/* func_020b73fc (kind 14): in a room, entry `index` of overlay 4's table of 0x20. */
-int TouchPick_RoomEntry20(int index)
+/* func_020b73fc (kind 14): in a room, entry `index` of overlay 4's museum spots (0x20,
+ * EtcMuseum_Get). */
+int TouchPick_MuseumSpot(int index)
 {
     if (data_020e54a8 == TOUCH_PICK_MODE_ROOM) {
         return (int) (uintptr_t) EtcMuseum_Get(index);
     }
     return 0;
 }
-CLEAN_AS(func_020b73fc, TouchPick_RoomEntry20)
+CLEAN_AS(func_020b73fc, TouchPick_MuseumSpot)
 
 /* func_020b7424 (kind 11): in a room, the ATM. */
 int TouchPick_Atm(void)
@@ -113,24 +115,24 @@ int TouchPick_RoomObject(int index)
 }
 CLEAN_AS(func_020b7474, TouchPick_RoomObject)
 
-/* func_020b74a4 (kind 6): TouchPick_OutdoorEntry20.
+/* func_020b74a4 (kind 6): TouchPick_ObjectActor.
  * QUIRK: declared without a result, like the kinds 1-3 below; in the ROM the answer of the
  * call it ends with is still in r0 when it returns, and TouchPick_Object hands it on. */
-void TouchPick_OutdoorEntryKind6(int index)
+void TouchPick_ObjectActorKind6(int index)
 {
-    (void) TouchPick_OutdoorEntry20(index);
+    (void) TouchPick_ObjectActor(index);
 }
-CLEAN_AS(func_020b74a4, TouchPick_OutdoorEntryKind6)
+CLEAN_AS(func_020b74a4, TouchPick_ObjectActorKind6)
 
-/* func_020b74ac (kind 7): outdoors, entry `index` of overlay 3's table of 0x20. */
-int TouchPick_OutdoorEntry20(int index)
+/* func_020b74ac (kind 7): outdoors, object actor `index` of overlay 3's 0x20 (ObjectActors_At). */
+int TouchPick_ObjectActor(int index)
 {
     if (data_020e54a8 == TOUCH_PICK_MODE_OUTDOORS) {
         return (int) (uintptr_t) ObjectActors_At(index);
     }
     return 0;
 }
-CLEAN_AS(func_020b74ac, TouchPick_OutdoorEntry20)
+CLEAN_AS(func_020b74ac, TouchPick_ObjectActor)
 
 /* func_020b74d4 (kind 3): Actors_GetDByIndex; its answer left in r0 (see kind 6). */
 void TouchPick_ActorD(int index)

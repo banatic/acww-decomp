@@ -55,7 +55,8 @@ typedef struct VillagerTalk {
     u8 *memory;                                        /* 0x12c: the villager's memory of the player */
     u8 unk_130[4];                                     /* 0x130 */
     u8 *partner_memory;                                /* 0x134: the partner villager's memory of the player */
-    u32 record_138;                                    /* 0x138: an address whose 0x74 holds sound values */
+    u32 letter_memory;                                 /* 0x138: the address of the villager's memory the letter is about
+                                                        * (VillagerMemory); its town tune at 0x74 */
     u8 no_memory;                                      /* 0x13c: func_0202d8f8 leaves the memory alone */
     u8 unk_13d[3];                                     /* 0x13d */
     u32 functions[5];                                  /* 0x140: talk_choices.h */
@@ -91,7 +92,7 @@ void VillagerTalk_TakeItem(VillagerTalk *talk);
 int VillagerTalk_TradeItem(VillagerTalk *talk);
 void VillagerTalk_TakeSoldItem(VillagerTalk *talk);
 int VillagerTalk_BuyItem(VillagerTalk *talk);
-int VillagerTalk_PlaySound138(VillagerTalk *talk);
+int VillagerTalk_PlayMemoryTownTune(VillagerTalk *talk);
 int VillagerTalk_ShowLetter(VillagerTalk *talk);
 int VillagerTalk_GiveItem(VillagerTalk *talk);
 void VillagerTalk_Line8be0(VillagerTalk *talk, VillagerTalkLine *out);

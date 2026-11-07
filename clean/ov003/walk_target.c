@@ -16,8 +16,8 @@ extern const u8 data_ov003_02236ca0[81];
 
 #define WALK_TARGET_AROUND 81
 
-/* func_ov003_02224718: the day's spot (TownDay_SpotPosition, from zero) in `target`; whether
- * there is one, as TownDay_SpotPosition answers.
+/* func_ov003_02224718: the day's spot (TownDay_RafflesiaPosition, from zero) in `target`; whether
+ * there is one, as TownDay_RafflesiaPosition answers.
  * QUIRK: the difference to `from` is computed and its squared length in x and z (in 32 bits)
  * compared with 0x90000000 as a signed number; that can only make the answer 1, which it
  * already is. */
@@ -26,7 +26,7 @@ int WalkTarget_DaySpot(Vec3 *target, const Vec3 *from)
     target->x = 0;
     target->y = 0;
     target->z = 0;
-    int found = TownDay_SpotPosition(target);
+    int found = TownDay_RafflesiaPosition(target);
     if (found != 0) {
         Vec3 difference;
         Vec_Subtract(&difference, target, from);

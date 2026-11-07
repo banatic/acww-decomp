@@ -24,7 +24,7 @@ static_assert(sizeof(RoomEtcBoard) == 0x15c, "the size RoomEtcBoard_New allocate
 
 /* The profile (class id) Actor_Spawn makes a board from. */
 #define ROOM_ETC_BOARD_PROFILE 0x17
-/* The touch pick kind of the boards (TouchPick_RoomEntry40). */
+/* The touch pick kind of the boards (TouchPick_RoomBoard). */
 #define ROOM_ETC_BOARD_TOUCH_KIND 16
 /* How far beyond its reach a board can be talked to from, and how far from facing it (the
  * opposite of the board's own direction) the viewer may turn. */

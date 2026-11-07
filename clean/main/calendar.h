@@ -10,7 +10,7 @@ typedef struct Date {
     u8 day;
     u8 month;
     u8 year;
-    u8 unused;
+    u8 extra; /* a byte its users keep a flag or a kind in (0 when the game builds a date) */
 } Date;
 
 /* A time of day. */

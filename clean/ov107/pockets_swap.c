@@ -340,7 +340,7 @@ void PocketsSwap_RunActionTileOp(PocketsSwap *self)
     int item = PocketsSwap_PlaceItem(self, self->slot);
     NetSession *session = data_020ccf94;
 
-    self->request = TileRequests_AskAtActorTileOp(session->local_slot, 2, 0, item);
+    self->request = TileRequests_AskAtHeldTileOp(session->local_slot, 2, 0, item);
     if (self->request == -1) {
         PocketsSwap_EndAction(self);
         PocketsSwap_ShowMessage(self, POCKETS_SWAP_MESSAGE_REFUSED, POCKETS_SWAP_RETURN_HERE);
@@ -505,15 +505,15 @@ void PocketsSwap_WaitDropCarried(PocketsSwap *self)
 CLEAN_AS(func_ov107_0229c740, PocketsSwap_WaitDropCarried)
 
 /* func_ov107_0229c7b0 (action 1): the item given up asked to be dropped, at the player's tile in
- * mode 0x29 (TileRequests_AskAtActorTile), else by TileRequests_AskDrop12. When it cannot be
+ * mode 0x29 (TileRequests_AskAtHeldTile), else by TileRequests_AskDropHeld. When it cannot be
  * asked the action ends with message 3; else sub state 0x15 waits for it. */
 void PocketsSwap_RunActionDrop(PocketsSwap *self)
 {
     int item = PocketsSwap_PlaceItem(self, self->slot);
     if (GroupParams_Mode() == POCKETS_SWAP_MODE_ITEM_29) {
-        self->request = TileRequests_AskAtActorTile(data_020ccf94->local_slot, item);
+        self->request = TileRequests_AskAtHeldTile(data_020ccf94->local_slot, item);
     } else {
-        self->request = TileRequests_AskDrop12(data_020ccf94->local_slot, item);
+        self->request = TileRequests_AskDropHeld(data_020ccf94->local_slot, item);
     }
     if (self->request == -1) {
         PocketsSwap_EndAction(self);

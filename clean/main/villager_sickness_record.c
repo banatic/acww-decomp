@@ -179,7 +179,7 @@ void VillagerSicknessRecord_Start(VillagerSickness *sickness, const NpcId *npc, 
     VillagerErrand_Set((VillagerErrand *) (void *) sickness->object, VILLAGER_SICKNESS_OBJECT_TYPE, &item, 0);
     MI_CpuCopy8(today, &sickness->started, sizeof(Date));
     MI_CpuCopy8(today, &sickness->last_step, sizeof(Date));
-    sickness->last_step.unused = 1;
+    sickness->last_step.extra = 1;
     sickness->stage = (u8) (MainRandom_Below(2) + 1);
 }
 CLEAN_AS(func_0209a710, VillagerSicknessRecord_Start)
@@ -210,11 +210,11 @@ void VillagerSicknessRecord_Clear(VillagerSickness *sickness)
     sickness->started.day = 1;
     sickness->started.month = 1;
     sickness->started.year = 0;
-    sickness->started.unused = 0;
+    sickness->started.extra = 0;
     sickness->last_step.day = 1;
     sickness->last_step.month = 1;
     sickness->last_step.year = 0;
-    sickness->last_step.unused = 0;
+    sickness->last_step.extra = 0;
     sickness->stage = VILLAGER_SICKNESS_WELL;
 }
 CLEAN_AS(func_0209a77c, VillagerSicknessRecord_Clear)

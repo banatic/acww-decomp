@@ -198,11 +198,11 @@ int VillagerModeRecord_LeaveMode11(VillagerModeRecord *record, const DateTime *n
 }
 CLEAN_AS(func_0209c0a0, VillagerModeRecord_LeaveMode11)
 
-/* func_0209c108: a record in mode 8 (none yet) takes the kind it scores highest. The new mode,
+/* func_0209c108: a record in mode 8 (no hobby) takes the kind it scores highest. The new mode,
  * or 12. */
-int VillagerModeRecord_LeaveNoneYet(VillagerModeRecord *record)
+int VillagerModeRecord_LeaveNoHobby(VillagerModeRecord *record)
 {
-    if (record->mode != VILLAGER_MODE_NONE_YET) {
+    if (record->mode != VILLAGER_MODE_NO_HOBBY) {
         return VILLAGER_MODE_UNCHANGED;
     }
     int kind = VillagerModeRecord_DrawTopKind(record->scores);
@@ -212,7 +212,7 @@ int VillagerModeRecord_LeaveNoneYet(VillagerModeRecord *record)
     villager_mode_record_take_kind(record, kind);
     return kind;
 }
-CLEAN_AS(func_0209c108, VillagerModeRecord_LeaveNoneYet)
+CLEAN_AS(func_0209c108, VillagerModeRecord_LeaveNoHobby)
 
 /* func_0209c168: a record whose mode is a kind, once a highest score has reached 255: the mode
  * kept when it is that kind (its score cleared, the scores halved; the mode given), else the
@@ -228,8 +228,8 @@ int VillagerModeRecord_KeepKind(VillagerModeRecord *record)
         return VILLAGER_MODE_UNCHANGED;
     }
     if (record->mode != kind) {
-        VillagerModeRecord_EnterNoneYet(record);
-        return VILLAGER_MODE_NONE_YET;
+        VillagerModeRecord_EnterNoHobby(record);
+        return VILLAGER_MODE_NO_HOBBY;
     }
     VillagerModeRecord_HalveScores(record->scores, record->mode);
     return record->mode;
@@ -274,20 +274,20 @@ void VillagerModeRecord_EnterMode11(VillagerModeRecord *record)
 }
 CLEAN_AS(func_0209c214, VillagerModeRecord_EnterMode11)
 
-/* func_0209c270: the record to mode 8 (none yet) from now; bit 0 of the flags set when it leaves
+/* func_0209c270: the record to mode 8 (no hobby) from now; bit 0 of the flags set when it leaves
  * mode 2, else cleared. */
-void VillagerModeRecord_EnterNoneYet(VillagerModeRecord *record)
+void VillagerModeRecord_EnterNoHobby(VillagerModeRecord *record)
 {
     if (VillagerModeRecord_Mode(record) == VILLAGER_MODE_RECORD_MODE_2) {
         record->flags |= VILLAGER_MODE_FROM_2;
     } else {
         record->flags &= (u8) ~VILLAGER_MODE_FROM_2;
     }
-    VillagerModeRecord_SetMode(record, VILLAGER_MODE_NONE_YET);
+    VillagerModeRecord_SetMode(record, VILLAGER_MODE_NO_HOBBY);
     DateTime_Now(&record->since);
     MI_CpuCopy8(&record->since, &record->counted, sizeof(DateTime));
 }
-CLEAN_AS(func_0209c270, VillagerModeRecord_EnterNoneYet)
+CLEAN_AS(func_0209c270, VillagerModeRecord_EnterNoHobby)
 
 /* func_0209c2c0: bit 0 of the flags. */
 int VillagerModeRecord_IsFrom2(VillagerModeRecord *record)

@@ -536,27 +536,27 @@ int VillagerTalk_BuyItem(VillagerTalk *talk)
 }
 CLEAN_AS(func_0201d71c, VillagerTalk_BuyItem)
 
-/* func_0201d7b8: with the address at 0x138 set, the sound with the values at its 0x74; whether
+/* func_0201d7b8: with the letter's memory set (0x138), its town tune (at 0x74) played; whether
  * it was. */
-int VillagerTalk_PlaySound138(VillagerTalk *talk)
+int VillagerTalk_PlayMemoryTownTune(VillagerTalk *talk)
 {
-    u32 record = talk->record_138;
+    u32 record = talk->letter_memory;
     if (record == 0) {
         return 0;
     }
     SceneCommand_RequestSoundWith(villager_talk_scene(talk), (const u32 *) (uintptr_t) (record + 0x74));
     return 1;
 }
-CLEAN_AS(func_0201d7b8, VillagerTalk_PlaySound138)
+CLEAN_AS(func_0201d7b8, VillagerTalk_PlayMemoryTownTune)
 
-/* func_0201d7dc: a letter shown on the screen of group 12: with the address at 0x138 set, the
+/* func_0201d7dc: a letter shown on the screen of group 12: with the letter's memory set (0x138), the
  * villager's letter (TownVillager_Letter); else one written into data_021c2604 from three text
  * parts loaded for a letter number the villager's memory of the player draws (0 without a
  * memory), signed with the villager's name. */
 int VillagerTalk_ShowLetter(VillagerTalk *talk)
 {
     u8 *letter;
-    if (talk->record_138 != 0) {
+    if (talk->letter_memory != 0) {
         letter = (u8 *) TownVillager_Letter(villager_talk_record(talk));
     } else {
         u32 part1[0x28 / 4];

@@ -323,11 +323,11 @@ static void load_town(StateBlock *block)
     Clock_Init();
 }
 
-/* The snowballs left lying reset and the town's upper settings applied. */
+/* The snowballs left lying reset and the town's season set (TownLayout_SetSeason). */
 static void settle_town(StateBlock *block)
 {
     Snowmen_ResetLooseBalls(Snowmen_LooseBalls());
-    TownLayout_SetUpperSettings((unsigned int) (uintptr_t) block->layout);
+    TownLayout_SetSeason((unsigned int) (uintptr_t) block->layout);
 }
 
 /* The end of modes 6, 5, 1 and 0: no birthday greeter (VillagerState_SetBirthdayGreeter(-1)),

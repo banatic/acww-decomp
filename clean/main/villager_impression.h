@@ -2,8 +2,8 @@
  * first rule of a table (data_020cd5c4) whose test the player passes, and kept in the villager's
  * memory of the player (func_020807a8, its byte 0x6d).
  *
- * Each rule is for players of one kind (the signed byte 28 of the player's id, func_020950c0:
- * 0 or 1) or for any (2), and has a test called with the player's record, how fond the villager
+ * Each rule is for players of one gender (the signed byte 28 of the player's id, PlayerId_Gender:
+ * 0 or 1) or for either (2), and has a test called with the player's record, how fond the villager
  * is of the player (the memory's signed byte 0x6c) and the mood (byte 0x18) of the villager's state
  * entry (villager_state.h). The tests here look at the season, the town's players, the player's
  * looks, bells and collections, and the fondness. */
@@ -13,12 +13,12 @@
 #include "types.h"
 
 #define VILLAGER_IMPRESSION_COUNT 0x58 /* also what is given for none */
-#define VILLAGER_IMPRESSION_ANY_KIND 2
+#define VILLAGER_IMPRESSION_ANY_GENDER 2
 
 typedef int (*VillagerImpressionTest)(u8 *record, int fondness, int mood);
 
 typedef struct VillagerImpressionRule {
-    s8 kind; /* 0x00: the player's kind, or VILLAGER_IMPRESSION_ANY_KIND */
+    s8 gender; /* 0x00: the player's gender, or VILLAGER_IMPRESSION_ANY_GENDER */
     u8 unused_01[3];
     VillagerImpressionTest test; /* 0x04: a function of the game */
 } VillagerImpressionRule;

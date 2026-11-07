@@ -6,7 +6,7 @@
  * where it stands, how far it can be talked to from and which message it shows. Up to 64 exist
  * at once: a table at data_ov004_02257804 holds them by their index (the byte at 0x154), with
  * their count at data_ov004_022577ac; main's pen picking reads it (touch pick kind 16,
- * TouchPick_RoomEntry40).
+ * TouchPick_RoomBoard).
  *
  * Like the other scene objects it is a SceneObjectBase with a message receiver at 0xec. Its
  * update runs one of three states, chosen by the word at 0x134:

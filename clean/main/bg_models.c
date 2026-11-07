@@ -369,13 +369,13 @@ void BgModels_LoadGroundAnims(BgModels *self)
 CLEAN_AS(func_02037858, BgModels_LoadGroundAnims)
 
 /* func_02037928: the ground's texture "/bg/ct<n>/grd_set<n><season>.nsbtx", with n the town's
- * random setting and the season 'a' + bits 2-7 of the layout's settings, read at the end of the
+ * ground set and the season 'a' + bits 2-7 of the layout's settings (its season), read at the end of the
  * current heap and copied to the background heap.
  * QUIRK: the texture is taken out of the file even when the file could not be read. */
 void BgModels_LoadGroundTexture(BgModels *self)
 {
-    u32 folder = BgModels_TownSetting(self);
-    u32 set = BgModels_TownSetting(self);
+    u32 folder = BgModels_GroundSet(self);
+    u32 set = BgModels_GroundSet(self);
     const TownLayout *layout = (const TownLayout *) (const void *) data_021e9aac;
     char path[0x20];
     u8 *file;
@@ -391,15 +391,15 @@ void BgModels_LoadGroundTexture(BgModels *self)
 }
 CLEAN_AS(func_02037928, BgModels_LoadGroundTexture)
 
-/* func_020379ac: the town's random setting (bits 0-1 of the layout's settings). */
-u32 BgModels_TownSetting(BgModels *self)
+/* func_020379ac: the town's ground set (bits 0-1 of the layout's settings). */
+u32 BgModels_GroundSet(BgModels *self)
 {
     (void) self;
-    return TownLayout_RandomSetting((TownLayout *) (void *) data_021e9aac);
+    return TownLayout_GroundSet((TownLayout *) (void *) data_021e9aac);
 }
-CLEAN_AS(func_020379ac, BgModels_TownSetting)
+CLEAN_AS(func_020379ac, BgModels_GroundSet)
 
-/* func_020379bc: the field's setup: in scene 0x2c the layout's upper settings chosen again;
+/* func_020379bc: the field's setup: in scene 0x2c the layout's season set again;
  * every slot cleared; the background heap made at the scene's size (data_020c9fd4, in KB);
  * then the ground's texture loaded when `full` is set or in scenes 0x0b, 0x0c-0x0e and 0x2f,
  * and the ground's animations when `full` is set; 1. */
@@ -409,7 +409,7 @@ int BgModels_SetUp(BgModels *self, int full)
     u8 heap_kb;
 
     if (scene == 0x2c) {
-        TownLayout_SetUpperSettings((unsigned int) (uintptr_t) data_021e9aac);
+        TownLayout_SetSeason((unsigned int) (uintptr_t) data_021e9aac);
     }
     BgModels_Clear(self);
     self->full = (u8) full;

@@ -139,7 +139,7 @@ void Calendar_Today(Date *today)
     today->day = (u8) data_021dc744.day;
     today->month = (u8) data_021dc744.month;
     today->year = (u8) data_021dc744.year;
-    today->unused = 0;
+    today->extra = 0;
 }
 CLEAN_AS(func_0209df64, Calendar_Today)
 

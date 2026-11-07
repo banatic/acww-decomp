@@ -31,7 +31,7 @@ typedef struct TownFamilyCross {
     u16 code;
 } TownFamilyCross;
 
-/* A list of entries for a pair of stages. */
+/* A list of entries for a pair of colours. */
 typedef struct TownFamilyCrosses {
     int count;
     const TownFamilyCross *entries; /* NULL for none */

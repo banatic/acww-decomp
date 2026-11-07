@@ -656,7 +656,7 @@ What reading the Clean code found about the groups above; counts are of function
   at about 10300), at five seconds of the clock out of 60 (11:30:00, :02, :27, :42, :52); the
   picker that answers follows the boot's second, and waiting before the talk changes nothing (the
   main random state is not drawn while the villagers wait on a talk). Scenes villager-memories
-  (:52, the town tune of the values: VillagerTalk_PlaySound138, TownTune_Play),
+  (:52, the town tune of the values: VillagerTalk_PlayMemoryTownTune, TownTune_Play),
   villager-memories-fond, -praise, -letter (PickLetterOfTown), -unfond, -gift (PickWithItem;
   PickLetterOfResident tried), -resident (PickAny), and at other seconds -dislike (tag 4/12 and
   the month, 4/5), -design and -design2 (two villagers chatting take and pass designs,
@@ -2003,7 +2003,7 @@ What reading the Clean code found about the groups above; counts are of function
   process, the boot screen, the effect system, the tile events, the town insects, the fish
   shadows, the snowball spawner, the museum's, aquarium's, shop's and room manager's processes,
   the roaches, the special characters' and visitors' scene objects and the title scene). Left
-  out: TouchPick_RoomEntry40 and Mole_MayAct (a table's and an odd word, not destructors) and
+  out: TouchPick_RoomBoard and Mole_MayAct (a table's and an odd word, not destructors) and
   TalkReceiver_Nothing40, which TalkTags_FocusFirst can call.
 - Calibration: w24/classify.py (copied to w28) with every group: 0 ran functions cut off; the
   premises of the earlier gates still cut off.
@@ -2828,7 +2828,7 @@ What reading the Clean code found about the groups above; counts are of function
   at 0x240c = 0x1483), the look reads it: scene face-pair (the tools recording to 2700).
 - A present (item 0x156b) taken up with the pockets full asks to swap; on the swap page the
   present goes into the pocket as an item drawn for it (CurrentPockets_DrawPresent) and the
-  pocket's item is put down where the player stands (TileRequests_AskAtActorTile): save gift-full
+  pocket's item is put down where the player stands (TileRequests_AskAtHeldTile): save gift-full
   (full-rod with the present two tiles south of the door), scene gift-swap. Taken with a free
   pocket, the present goes in as it is.
 - Pascal with the scallop (0x1559) in the pockets starts at line 2; its third choice opens the
@@ -3450,7 +3450,7 @@ What reading the Clean code found about the groups above; counts are of function
 - fly-catch (save fly-spot): kinds 0x18, 0x30, 0x32 and 0x33 start effect 0x25 when caught
   (FieldActor_RunState57). Kind 0x33 (the fly) is drawn by TownInsect_SpecialKind, every 40th
   frame without a session when nothing falls: of place 8 when the town day's summary has a spot
-  (code 0x1b on a tile, TownDay_SpotPosition), else of place 7 one time in five while
+  (code 0x1b on a tile, TownDay_RafflesiaPosition), else of place 7 one time in five while
   data_ov003_0226054c is set (by TownPests_Apply from bits 7 and 6 of the summary's flags:
   items 0x1320-0x1322 and 0x154a). Kind 0x30 is left out of the month's lists (TownInsect_DrawKind)
   and 0x18 is what the event insect 0x3b is caught as. With code 0x1b on an empty tile south of
@@ -4454,11 +4454,11 @@ What reading the Clean code found about the groups above; counts are of function
   "swap it?" (FieldActor_RunState5F, step 2 to 3; FieldActor_TalkChoice's choice 0 is progress 5),
   and state 0x60 opens the swap page in mode 0x2a (GroupParams_OpenWithItem2a). There a pocket's
   first row puts its item into the hole (PocketsSwap_RunActionTileOp, _WaitTileAnswer,
-  _SendPlayerToTile, TileRequests_AskAtActorTileOp) and the page waits for the player's state 0x90
+  _SendPlayerToTile, TileRequests_AskAtHeldTileOp) and the page waits for the player's state 0x90
   (PocketsSwap_FinishWithPlayer, PlayerActorOps_InState90, FieldActor_RequestState90,
   _EnterState90, _UpdateState90, _EndState90); the second row puts the item down and frees the
   held tile (TileChanges_FindHeld, _FreeHeld); "bury it again" asks for the tile with the item
-  (TileRequests_AskAtActorTileOpFor).
+  (TileRequests_AskAtHeldTileOpFor).
 - This corrects the finding above that state 0x90 and PocketsSwap_FinishWithPlayer look
   reachable only linked: state 0x61 with the swap page's item leads to state 0x90 for the local
   player too.

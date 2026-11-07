@@ -11,8 +11,8 @@
  * place below the grid (PocketsSwap_PlaceX). Picking a pocket item opens a choice
  * (ov002/paged_choice.h) of what to do with it (PocketsSwapAction, PocketsSwap_AddEntries):
  * release it when it is an insect (into the field, TownInsect_LetGo) or a fish (into water ahead,
- * PlayerFish_PlaceFromPockets), drop it on the ground (TileRequests_AskAtActorTile or
- * TileRequests_AskDrop12), or in mode 0x2a a tile operation (TileRequests_AskAtActorTileOp 2).
+ * PlayerFish_PlaceFromPockets), drop it on the ground (TileRequests_AskAtHeldTile or
+ * TileRequests_AskDropHeld), or in mode 0x2a a tile operation (TileRequests_AskAtHeldTileOp 2).
  * Once that is done the item the scene was opened with takes the pocket item's place
  * (PocketsSwap_TakeNewItem) and the scene closes with GroupParams_SetC4C(1); the place below the
  * grid and B close it without a swap (panel button 9, GroupParams_SetC4C(0)).

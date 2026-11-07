@@ -37,9 +37,9 @@ enum TileRequestKind {
                                 0x21-0x24 and the wilted and watered flowers */
     TILE_REQUEST_KIND_9 = 9, /* 0xa with no room in the pockets */
     TILE_REQUEST_CHANGE_AROUND = 0xf,
-    TILE_REQUEST_DROP = 0x10,       /* an item put down in front of the player */
-    TILE_REQUEST_ACTOR_TILE = 0x11, /* at the tile of the player's actor record */
-    TILE_REQUEST_DROP_12 = 0x12,    /* as 0x10, for a player with an actor record */
+    TILE_REQUEST_DROP = 0x10,      /* an item put down in front of the player */
+    TILE_REQUEST_HELD_TILE = 0x11, /* at the tile the slot holds (TileChanges_HeldTileOf) */
+    TILE_REQUEST_DROP_HELD = 0x12, /* as 0x10, for a slot that holds a tile */
     TILE_REQUEST_KIND_13 = 0x13,
     TILE_REQUEST_FC_FD = 0x14,       /* on a tile of code 0xfc or 0xfd */
     TILE_REQUEST_TAKE_CLOVER = 0x15, /* the four-leaf clover 0x20 into the pockets (0x16: no room for it) */
@@ -137,10 +137,10 @@ void TileRequests_Release(int index);
 int TileRequests_Carry(int index);
 int TileRequests_FindDropTile(int kind, TileRequestTile *tile, u8 *place);
 u16 *TileRequests_DropTileFor(int kind, AcreMap *map, int x, int z, const TileRequestTile *from);
-int TileRequests_AskAtActorTileFor(int player, int item);
+int TileRequests_AskAtHeldTileFor(int player, int item);
 int TileRequests_AskDropFor(int player, int item);
-int TileRequests_AskDrop12(int slot, int item);
-int TileRequests_AskAtActorTile(int slot, int item);
+int TileRequests_AskDropHeld(int slot, int item);
+int TileRequests_AskAtHeldTile(int slot, int item);
 int TileRequests_AskDrop(int slot, u16 item);
 int TileRequests_AskPut(int slot, int kind, u16 item);
 int TileRequests_Answer(u32 index);
@@ -152,8 +152,8 @@ int TileRequests_AskForTool0For(int player, const TileRequestTile *tile, int unu
 int TileRequests_AskPile(int slot, const TileRequestTile *tile);
 int TileRequests_AskInTown(int slot, const TileRequestTile *tile);
 int TileRequests_AskForTool0(int slot, const TileRequestTile *tile, int unused);
-int TileRequests_AskAtActorTileOpFor(int player, int operation, int arg, int item);
-int TileRequests_AskAtActorTileOp(int slot, int operation, int arg, int item);
+int TileRequests_AskAtHeldTileOpFor(int player, int operation, int arg, int item);
+int TileRequests_AskAtHeldTileOp(int slot, int operation, int arg, int item);
 int TileRequests_AskOpFor(int player, const TileRequestTile *tile, int operation, int arg, u16 item);
 
 /* The operations of TileRequests_AskOp (func_02043db4), each a request of the kind the tile's

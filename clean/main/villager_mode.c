@@ -73,7 +73,7 @@ void VillagerMode_FinishObject(u8 *villager)
         VillagerMode_StepCounter7D7(villager);
     }
     VillagerObject_Clear((VillagerObject *) (void *) object);
-    VillagerModeRecord_EnterNoneYet(VillagerObject_RecordMode((VillagerRecord *) record));
+    VillagerModeRecord_EnterNoHobby(VillagerObject_RecordMode((VillagerRecord *) record));
 }
 CLEAN_AS(func_0207d71c, VillagerMode_FinishObject)
 
@@ -82,7 +82,7 @@ CLEAN_AS(func_0207d71c, VillagerMode_FinishObject)
  * when that is set (not all zero). Mode 10 takes one a day after the villager moved in. Any
  * other mode goes through VillagerMode_UpdateDaily. A new mode redraws the villager's byte
  * 0x7d8 (func_0207f414). Gives the new mode, or 12. */
-int VillagerMode_Update(u8 *villager, DateTime *last_arrival, DateTime *last_departure, const DateTime *now)
+int VillagerMode_Update(u8 *villager, DateTime *last_arrival, DateTime *last_change, const DateTime *now)
 {
     NpcId *npc = TownVillager_NpcId(villager);
     VillagerModeRecord *record = VillagerObject_RecordMode((VillagerRecord *) VillagerStatus_ModeRecord(villager));
@@ -97,13 +97,13 @@ int VillagerMode_Update(u8 *villager, DateTime *last_arrival, DateTime *last_dep
             if (result != VILLAGER_MODE_UNCHANGED) {
                 VillagerFurniture_ResetForMode(villager, result, from_2);
                 MI_CpuCopy8(now, last_arrival, sizeof(DateTime));
-                const u8 *left = (const u8 *) last_departure;
+                const u8 *left = (const u8 *) last_change;
                 int set = 0;
                 for (u32 i = 0; i < sizeof(DateTime); i++) {
                     set |= left[i];
                 }
                 if (set) {
-                    MI_CpuCopy8(now, last_departure, sizeof(DateTime));
+                    MI_CpuCopy8(now, last_change, sizeof(DateTime));
                 }
             }
             break;
@@ -137,9 +137,9 @@ int VillagerMode_UpdateDaily(u8 *villager, const DateTime *now)
         return result;
     }
     int from_2 = VillagerModeRecord_IsFrom2(record);
-    if (VillagerModeRecord_Mode(record) == VILLAGER_MODE_NONE_YET) {
+    if (VillagerModeRecord_Mode(record) == VILLAGER_MODE_NO_HOBBY) {
         if (VillagerMode_IsWakeTimePast(villager, now)) {
-            result = VillagerModeRecord_LeaveNoneYet(record);
+            result = VillagerModeRecord_LeaveNoHobby(record);
         }
     } else {
         VillagerMode_CatchUpScores(villager, now);
@@ -309,7 +309,7 @@ void VillagerMode_SetLeaving(u8 *villager, const DateTime *now)
     }
     VillagerModeRecord *record = VillagerObject_RecordMode((VillagerRecord *) VillagerStatus_ModeRecord(villager));
     if (VillagerModeRecord_Mode(record) == 2 ||
-        (VillagerModeRecord_Mode(record) == VILLAGER_MODE_NONE_YET && VillagerModeRecord_IsFrom2(record) != 0)) {
+        (VillagerModeRecord_Mode(record) == VILLAGER_MODE_NO_HOBBY && VillagerModeRecord_IsFrom2(record) != 0)) {
         record->flags |= VILLAGER_MODE_FROM_2;
     }
     VillagerModeRecord_SetMode(record, VILLAGER_MODE_LEAVING);

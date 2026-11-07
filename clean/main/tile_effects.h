@@ -3,9 +3,9 @@
  * sets each new emitter up).
  *
  * A flower code (MapItem_IsAnyFlower) starts two effects at the tile's centre, chosen
- * by the code's category (func_02049ec4), unless the mode is 1 (only the first then). Their
+ * by the code's flower kind (TownFamily_Kind), unless the mode is 1 (only the first then). Their
  * set-up functions read what the effects are for from TileEffectsSource (data_021c77a0): the
- * place, the code's category and stage, and the mode; they tint the emitter's colour by the
+ * place, the code's kind and colour, and the mode; they tint the emitter's colour by the
  * sky's light and, in mode 2, turn its axis by the source's angle.
  *
  * TileEffects_Strike (mode 1) and TileEffects_Brush (mode 1 seven times in eight, else 0) start
@@ -26,8 +26,8 @@
 /* data_021c77a0 (data_021c779c + 4): what the effects being started are for. */
 typedef struct TileEffectsSource {
     u32 mode;      /* 0x00: TILE_EFFECTS_MODE_* */
-    u8 category;   /* 0x04: func_02049ec4's category of the code, 0-6 */
-    u8 stage;      /* 0x05: the code's place in its line (func_02049d78), 0 for 0x6e-0xa5 */
+    u8 kind;       /* 0x04: the code's flower kind (TownFamily_Kind), 0-6 */
+    u8 colour;     /* 0x05: the code's colour in its kind (TownFamily_Colour), 0 for 0x6e-0xa5 */
     u8 families;   /* 0x06: the code is one of 0x6e-0xa5 (the wilted and watered flowers and after) */
     u8 unk_07;     /* 0x07 */
     Vec3 position; /* 0x08: the tile's centre */
@@ -50,7 +50,7 @@ void TileEffects_StartTurned(u16 *code, const TileEffectsTile *tile, int angle, 
 void TileEffects_Start(u16 *code, const TileEffectsTile *tile, int angle, int mode);
 void TileEffects_SetUpSecond(ParticleEmitter *emitter);
 void TileEffects_SetUpFirst(ParticleEmitter *emitter);
-void TileEffects_SetSource(TileEffectsSource *source, int mode, u8 category, u8 stage, u8 families, const Vec3 *position,
+void TileEffects_SetSource(TileEffectsSource *source, int mode, u8 kind, u8 colour, u8 families, const Vec3 *position,
                            s16 angle);
 
 #endif

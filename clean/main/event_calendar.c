@@ -772,6 +772,6 @@ void EventCalendar_DateConstruct(Date *date)
     date->day = 1;
     date->month = 1;
     date->year = 0;
-    date->unused = 0;
+    date->extra = 0;
 }
 CLEAN_AS(func_0204086c, EventCalendar_DateConstruct)

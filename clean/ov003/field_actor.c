@@ -3860,7 +3860,7 @@ void FieldActor_EnterState61(FieldActor *actor, const StateRequest *request, int
     u16 item = args->item;
     if (kind == 2) {
         if (is_local_player(actor)) {
-            actor->target = TileRequests_AskAtActorTileOpFor(actor->player, 2, 0, actor->item);
+            actor->target = TileRequests_AskAtHeldTileOpFor(actor->player, 2, 0, actor->item);
         }
     } else if (actor->animation == 0x6c) {
         kind = 3;

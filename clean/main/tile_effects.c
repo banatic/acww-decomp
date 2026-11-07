@@ -27,10 +27,10 @@ extern void *data_020db76c;
 extern void *data_020db768;
 /* The set-up function of effects 0x76-0x78 and 0x94. */
 extern void *data_020e25d4;
-/* The colour of the second effect for each category: of the wilted and watered flowers, else. */
+/* The colour of the second effect for each kind: of the wilted and watered flowers, else. */
 extern const u16 *const data_020db770[];
 extern const u16 *const data_020db7a8[];
-/* The colour of the first effect for each category and stage. */
+/* The effect colour of the first effect for each flower kind and colour. */
 extern const u16 *const data_020db78c[];
 
 #define TILE_EFFECTS_BRUSH_RANGE 80
@@ -154,8 +154,8 @@ void TileEffects_StartTurned(u16 *code, const TileEffectsTile *tile, int angle, 
 }
 CLEAN_AS(func_02044a14, TileEffects_StartTurned)
 
-/* func_02044a30: the two effects of `code` at the tile's centre, by its category: 0x44 and
- * 0x6a (category 0), 0x42 and 0x68 (1), 0x3e and 0x64 (2), 0x40 and 0x66 for 0x1c and 0xa5
+/* func_02044a30: the two effects of `code` at the tile's centre, by its kind: 0x44 and
+ * 0x6a (kind 0), 0x42 and 0x68 (1), 0x3e and 0x64 (2), 0x40 and 0x66 for 0x1c and 0xa5
  * else 0x43 and 0x69 (3), 0x41 and 0x67 (4), 0x3f and 0x65 (5), 0x63 and 0x65 (6). The source
  * is set first (data_021c77a0), the second effect left out in mode 1.
  * REQUIRES: a code of categories 0-6 (MapItem_IsAnyFlower).
@@ -164,10 +164,10 @@ CLEAN_AS(func_02044a14, TileEffects_StartTurned)
  * source and starts none. */
 void TileEffects_Start(u16 *code, const TileEffectsTile *tile, int angle, int mode)
 {
-    int category = (u8) TownFamily_Kind(code);
+    int kind = (u8) TownFamily_Kind(code);
     int first;
     int second;
-    switch (category) {
+    switch (kind) {
         case 0:
             first = 0x44;
             second = 0x6a;
@@ -211,15 +211,15 @@ void TileEffects_Start(u16 *code, const TileEffectsTile *tile, int angle, int mo
     AcreTile_TileCentre(&centre, (u32) tile->x, (u32) tile->z);
     u32 now = *code;
     int families = 0;
-    int stage = 0;
+    int colour = 0;
     if (TileEffects_InRange(now, 0x6e, 0xa5)) {
         /* The wilted and watered flowers, the codes after them (0x88, 0xa4, 0xa5) and 0x89. */
         families = 1;
     } else {
-        stage = (u8) TownFamily_Colour(code);
+        colour = (u8) TownFamily_Colour(code);
     }
     Vec3 place = centre;
-    TileEffects_SetSource(&data_021c77a0, mode, (u8) category, (u8) stage, (u8) families, &place, (s16) angle);
+    TileEffects_SetSource(&data_021c77a0, mode, (u8) kind, (u8) colour, (u8) families, &place, (s16) angle);
     if (first < 0) {
         return;
     }
@@ -269,31 +269,31 @@ static void TileEffects_Place(ParticleEmitter *emitter, u16 tint, int first)
 }
 
 /* func_02044b88: an emitter of the second effect set up, its tint from data_020db770 (families
- * B and C) or data_020db7a8 by the category. */
+ * B and C) or data_020db7a8 by the kind. */
 void TileEffects_SetUpSecond(ParticleEmitter *emitter)
 {
     const TileEffectsSource *source = &data_021c77a0;
-    u16 tint = source->families != 0 ? *data_020db770[source->category] : *data_020db7a8[source->category];
+    u16 tint = source->families != 0 ? *data_020db770[source->kind] : *data_020db7a8[source->kind];
     TileEffects_Place(emitter, tint, 0);
 }
 CLEAN_AS(func_02044b88, TileEffects_SetUpSecond)
 
 /* func_02044cc4: an emitter of the first effect set up, its tint from data_020db78c by the
- * category and the stage; in mode 1 it gives off particles every other frame. */
+ * kind and the colour; in mode 1 it gives off particles every other frame. */
 void TileEffects_SetUpFirst(ParticleEmitter *emitter)
 {
     const TileEffectsSource *source = &data_021c77a0;
-    TileEffects_Place(emitter, data_020db78c[source->category][source->stage], 1);
+    TileEffects_Place(emitter, data_020db78c[source->kind][source->colour], 1);
 }
 CLEAN_AS(func_02044cc4, TileEffects_SetUpFirst)
 
 /* func_02044df8: the source of the effects about to start. */
-void TileEffects_SetSource(TileEffectsSource *source, int mode, u8 category, u8 stage, u8 families, const Vec3 *position,
+void TileEffects_SetSource(TileEffectsSource *source, int mode, u8 kind, u8 colour, u8 families, const Vec3 *position,
                            s16 angle)
 {
     source->mode = (u32) mode;
-    source->category = category;
-    source->stage = stage;
+    source->kind = kind;
+    source->colour = colour;
     source->families = families;
     source->position.x = position->x;
     source->position.y = position->y;

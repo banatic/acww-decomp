@@ -29,7 +29,7 @@
 
 /* The flags at 0x1d of an entry. */
 #define VILLAGER_STATE_FLAG_STING_SAID 0x01
-#define VILLAGER_STATE_FLAG_1 0x02 /* set by VillagerState_SetFlag1UnlessScene */
+#define VILLAGER_STATE_FLAG_1 0x02 /* set by VillagerState_SetFlag1OutsideHouse */
 #define VILLAGER_STATE_FLAG_GREETED 0x04
 
 #define VILLAGER_TALLY_DELAY 40
@@ -113,7 +113,7 @@ void VillagerState_ClearHeldItem(VillagerState *entry);
 void VillagerState_SetHeldItem(VillagerState *entry, const u16 *item);
 u16 *VillagerState_HeldItem(VillagerState *entry);
 void VillagerState_DoubleByte1E(VillagerState *entry);
-void VillagerState_SetFlag1UnlessScene(VillagerState *entry);
+void VillagerState_SetFlag1OutsideHouse(VillagerState *entry);
 void VillagerState_CountDownMood(VillagerState *entry);
 int VillagerState_GetMoodFrames(const VillagerState *entry);
 void VillagerState_SetMoodFrames(VillagerState *entry, int counter);

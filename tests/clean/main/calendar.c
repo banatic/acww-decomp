@@ -23,7 +23,7 @@ static Date random_date(DiffRng *rng)
     d.year = (u8) diff_range(rng, 0, 99);
     d.month = (u8) diff_range(rng, 1, 12);
     d.day = (u8) diff_range(rng, 1, Calendar_DaysInMonth(d.year, d.month));
-    d.unused = 0;
+    d.extra = 0;
     return d;
 }
 

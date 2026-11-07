@@ -79,7 +79,7 @@ int BgModels_Data(BgModels *self, int key);
 void *BgModels_LoadData(int key, Heap *heap);
 void BgModels_LoadGroundAnims(BgModels *self);
 void BgModels_LoadGroundTexture(BgModels *self);
-u32 BgModels_TownSetting(BgModels *self);
+u32 BgModels_GroundSet(BgModels *self);
 int BgModels_SetUp(BgModels *self, int full);
 void BgModels_Clear(BgModels *self);
 void BgModels_Destruct(BgModels *self);

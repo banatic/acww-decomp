@@ -450,7 +450,7 @@ void VillagerTalkScene_Start(VillagerTalk *talk, u8 *villager, unsigned int line
     talk->walk = __ptmf_null;
     talk->music = __ptmf_null;
     talk->item = ITEM_CODE_NONE;
-    talk->record_138 = 0;
+    talk->letter_memory = 0;
     talk->memory_index = VILLAGER_TALK_SCENE_NO_INDEX;
     talk->memory = NULL;
     *talk_scene_word_130(talk) = -1;

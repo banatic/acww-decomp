@@ -28,7 +28,8 @@ typedef struct TownLayout {
     u8 models[TOWN_LAYOUT_ACRES];                               /* 0x0000: row by row */
     u16 items[TOWN_LAYOUT_INNER_ACRES][TOWN_LAYOUT_ACRE_ITEMS]; /* 0x0024 */
     TownLayoutAcreRecord records[TOWN_LAYOUT_INNER_ACRES];      /* 0x2024 */
-    u8 settings; /* 0x2224: bits 0-1 a number 0-2 chosen at random; bits 2-7 from func_020b7098 */
+    u8 settings; /* 0x2224: bits 0-1 the ground set, 0-2, chosen at random; bits 2-7 the season
+                  * (Season_FromDate) */
 } TownLayout;
 
 /* An acre's coordinates. */
@@ -47,8 +48,8 @@ void TownLayout_FillFromTemplates(u8 *layout, int heap);
 int TownLayout_HasFiveE3ToE7(void *layout);
 int TownLayout_HasNineFreePlots(void *layout);
 AcreMapSource *TownLayout_MakeSources(unsigned char *layout, int heap);
-void TownLayout_SetUpperSettings(unsigned int layout);
-unsigned int TownLayout_RandomSetting(TownLayout *layout);
+void TownLayout_SetSeason(unsigned int layout);
+unsigned int TownLayout_GroundSet(TownLayout *layout);
 int TownLayout_InnerAcre(int unused, TownLayoutAcre *inner, TownLayoutAcre *acre);
 int TownLayout_IsInnerAcre(int unused, int x, int z);
 void *TownLayout_AcreRecord(void *layout, int *acre);

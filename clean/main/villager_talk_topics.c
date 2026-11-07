@@ -592,7 +592,7 @@ int VillagerTalkTopics_SayOtherPlayer(VillagerTalk *talk)
         SceneBase_PutPlayerName(topics_base(talk), VillagerMemoryEntry_Player(memory), 10);
         PlayerIdText_Destruct((PlayerIdText *) &text);
     }
-    talk->record_138 = chosen;
+    talk->letter_memory = chosen;
     topics_draw(talk, data_020c8cb8.texts, data_020c8cb8.count, slot, 0);
     talk->events[1] = data_020d90f8;
     talk->events[2] = data_020d90f0;

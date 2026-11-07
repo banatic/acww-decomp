@@ -10,7 +10,7 @@
  *           (VillagerTown_SetNicknameDate)
  *   0x4050  when a villager last moved in (or the town started); kept from being after the
  *           clock (VillagerTown_Update); a villager is due to leave a set number of days after
- *   0x4058  when a villager last left, unset until one has; moved with the time above while set;
+ *   0x4058  when the villagers last changed (one moved out, in, or changed its mode), unset until one has; moved with the time above while set;
  *           the next villager is due to move in a set number of days after
  *   0x4060  the numbers of the villagers that have lived in the town (a bit each), then at
  *           0x4074 the number of the villager that last left
@@ -52,12 +52,12 @@ typedef struct VillagerTown {
     s8 bonds[VILLAGER_TOWN_PAIRS];                                      /* 0x3f60 */
     VillagerOutdoors outdoors;                                          /* 0x3f7c */
     VillagerSickness sickness;                                          /* 0x3f90 */
-    Date nickname_date;      /* 0x404c: the last nickname's day; its last byte (0x404f) set once it is */
-    DateTime last_arrival;   /* 0x4050 */
-    DateTime last_departure; /* 0x4058 */
-    u8 numbers_met[0x15];    /* 0x4060: a bit for each NpcId number met (five words), then the number gone */
-    s8 newcomer_index;       /* 0x4075 */
-    s8 last_sick;            /* 0x4076 */
+    Date nickname_date;    /* 0x404c: the last nickname's day; its last byte (0x404f) set once it is */
+    DateTime last_arrival; /* 0x4050 */
+    DateTime last_change;  /* 0x4058 */
+    u8 numbers_met[0x15];  /* 0x4060: a bit for each NpcId number met (five words), then the number gone */
+    s8 newcomer_index;     /* 0x4075 */
+    s8 last_sick;          /* 0x4076 */
     u8 unknown_4077;
     u16 mark;      /* 0x4078: VILLAGER_TOWN_MARK* */
     Date last_day; /* 0x407a */

@@ -3459,7 +3459,7 @@ static BOOL state19_ask_answer(FieldActor *actor)
     if (actor->unk_810 != -1) {
         return 0;
     }
-    actor->unk_810 = TileRequests_AskAtActorTileFor(actor->player, actor->item);
+    actor->unk_810 = TileRequests_AskAtHeldTileFor(actor->player, actor->item);
     return actor->unk_810 != -1;
 }
 

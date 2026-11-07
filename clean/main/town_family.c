@@ -133,8 +133,8 @@ int TownFamily_Cross(AcreMap *map, TownGrowthTiles *near, TownGrowthTiles *tile,
         return 0;
     }
     const u16 *code = TownAcreCount_CodeAt(map, tile->x, tile->z);
-    int line = TownFamily_Kind(code);
-    if (line != TownFamily_Kind(mate)) {
+    int kind = TownFamily_Kind(code);
+    if (kind != TownFamily_Kind(mate)) {
         return 0;
     }
     int made = TownFamily_DrawCross(code, mate);
@@ -192,22 +192,22 @@ int TownFamily_PutOnFree(AcreMap *map, const TownGrowthTiles *tile, const TownGr
 }
 CLEAN_AS(func_02049ca0, TownFamily_PutOnFree)
 
-/* func_02049d04: the code two codes of a line make: drawn from the list data_020db7c4 gives for
- * the line of `code` and the two codes' stages (lower, then higher), each entry by its chance in
+/* func_02049d04: the code two flowers of a kind make: drawn from the list data_020db7c4 gives for
+ * the kind of `code` and the two codes' colours (lower, then higher), each entry by its chance in
  * 100; 0xfff1 when the draw goes past the list or there is none. */
 int TownFamily_DrawCross(const u16 *code, const u16 *mate)
 {
     int left = (int) MainRandom_Below(100);
     int made = ACRE_MAP_ITEM_NONE;
-    int line = TownFamily_Kind(code);
+    int kind = TownFamily_Kind(code);
     int low = TownFamily_Colour(code);
     int high = TownFamily_Colour(mate);
     if (low > high) {
-        int stage = low;
+        int colour = low;
         low = high;
-        high = stage;
+        high = colour;
     }
-    const TownFamilyCrosses *list = &data_020db7c4[line][low][high];
+    const TownFamilyCrosses *list = &data_020db7c4[kind][low][high];
     const TownFamilyCross *entry = list->entries;
     if (entry != NULL) {
         for (int count = list->count; count != 0; count--, entry++) {
@@ -227,54 +227,54 @@ CLEAN_AS(func_02049d04, TownFamily_DrawCross)
 int TownFamily_Colour(const u16 *code)
 {
     u16 now = *code;
-    int stage = 1;
+    int colour = 1;
     if (now <= 0x19 || now == 0x1c) {
         switch (TownFamily_Kind(code)) {
             case 0:
-                stage = *code + 1;
+                colour = *code + 1;
                 break;
             case 1:
-                stage = *code - 0x05;
+                colour = *code - 0x05;
                 break;
             case 2:
-                stage = *code - 0x0b;
+                colour = *code - 0x0b;
                 break;
             case 3:
-                stage = *code == 0x1c ? 9 : *code - 0x11;
+                colour = *code == 0x1c ? 9 : *code - 0x11;
                 break;
         }
     } else if (TownAcreCount_IsWateredFlower(now)) {
         switch (TownFamily_Kind(code)) {
             case 0:
-                stage = *code - 0x89;
+                colour = *code - 0x89;
                 break;
             case 1:
-                stage = *code - 0x8f;
+                colour = *code - 0x8f;
                 break;
             case 2:
-                stage = *code - 0x95;
+                colour = *code - 0x95;
                 break;
             case 3:
-                stage = *code == TOWN_FAMILY_WATERED_GOLD_ROSE ? 7 : *code - 0x9b;
+                colour = *code == TOWN_FAMILY_WATERED_GOLD_ROSE ? 7 : *code - 0x9b;
                 break;
         }
     } else if (TownAcreCount_IsWiltedFlower(now)) {
         switch (TownFamily_Kind(code)) {
             case 0:
-                stage = *code - 0x6d;
+                colour = *code - 0x6d;
                 break;
             case 1:
-                stage = *code - 0x73;
+                colour = *code - 0x73;
                 break;
             case 2:
-                stage = *code - 0x79;
+                colour = *code - 0x79;
                 break;
             case 3:
-                stage = *code - 0x7f;
+                colour = *code - 0x7f;
                 break;
         }
     }
-    return stage;
+    return colour;
 }
 CLEAN_AS(func_02049d78, TownFamily_Colour)
 

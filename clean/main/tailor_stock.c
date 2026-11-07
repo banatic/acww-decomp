@@ -123,7 +123,7 @@ void TailorStock_SetStockDate(TailorStock *list, const DateTime *when)
     list->stocked.year = copy.year;
     list->stocked.month = copy.month;
     list->stocked.day = copy.day;
-    list->stocked.unused = 0;
+    list->stocked.extra = 0;
 }
 CLEAN_AS(func_020ae900, TailorStock_SetStockDate)
 
@@ -133,7 +133,7 @@ int TailorStock_StockDateDiffers(TailorStock *list, const DateTime *when)
     DateTime copy;
     MI_CpuCopy8(when, &copy, sizeof copy);
     return list->stocked.year != copy.year || list->stocked.month != copy.month || list->stocked.day != copy.day ||
-           list->stocked.unused != 0;
+           list->stocked.extra != 0;
 }
 CLEAN_AS(func_020ae92c, TailorStock_StockDateDiffers)
 
@@ -188,7 +188,7 @@ CLEAN_AS(func_020aea20, TailorStock_Init)
 void TailorStock_Clear(TailorStock *list)
 {
     ShopStock_Clear(list->items, list->sold, TAILOR_STOCK_ITEMS);
-    list->stocked.unused = 1;
+    list->stocked.extra = 1;
 }
 CLEAN_AS(func_020aea28, TailorStock_Clear)
 

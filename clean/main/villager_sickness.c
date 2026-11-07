@@ -108,7 +108,7 @@ void VillagerSickness_Update(VillagerTown *town)
 
     int owed = 0;
     int first_days = 0;
-    if (sickness->started.unused == 0 && Calendar_DaysFrom(&today, &sickness->started) >= VILLAGER_SICKNESS_FIRST_DAYS) {
+    if (sickness->started.extra == 0 && Calendar_DaysFrom(&today, &sickness->started) >= VILLAGER_SICKNESS_FIRST_DAYS) {
         int done = Calendar_DaysFrom(&sickness->last_step, &sickness->started);
         if (done >= 0 && done < VILLAGER_SICKNESS_FIRST_DAYS) {
             owed = VILLAGER_SICKNESS_FIRST_DAYS - 1 - done;
@@ -126,7 +126,7 @@ void VillagerSickness_Update(VillagerTown *town)
         taken++;
     }
     if (first_days) {
-        sickness->started.unused = 1;
+        sickness->started.extra = 1;
     }
     while (left > 0) {
         VillagerSickness_Step(town);
@@ -175,7 +175,7 @@ void VillagerSickness_Step(VillagerTown *town)
     int stage = sickness->stage;
     u8 *id = NULL;
 
-    if (VillagerSicknessRecord_HasStagePlayer(sickness) || sickness->started.unused != 0) {
+    if (VillagerSicknessRecord_HasStagePlayer(sickness) || sickness->started.extra != 0) {
         if (stage == 0) {
             stage = VILLAGER_SICKNESS_WELL;
         } else if (stage < VILLAGER_SICKNESS_STAGES) {
@@ -236,7 +236,8 @@ int VillagerSickness_PickVillager(VillagerTown *town, unsigned int month)
 }
 CLEAN_AS(func_0207b310, VillagerSickness_PickVillager)
 
-/* func_0207b3dc: the index of the villager the record names, or -1 when no one is sick. */
+/* func_0207b3dc: the index of the villager the record names (sick, or well again within its
+ * thank-you days), or -1 when the record is empty. */
 int VillagerSickness_VillagerIndex(VillagerTown *town)
 {
     if (VillagerErrand_IsInUse((VillagerErrand *) (void *) VillagerSicknessRecord_Errand(VillagerSickness_Record(town)))) {

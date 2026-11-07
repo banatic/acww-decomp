@@ -308,7 +308,7 @@ static void town_record_first_day(Date *day)
     day->day = 1;
     day->month = 1;
     day->year = 0;
-    day->unused = 0;
+    day->extra = 0;
 }
 
 /* What TownRecord_Init and TownRecord_Start both do after the pelican day: the messages and

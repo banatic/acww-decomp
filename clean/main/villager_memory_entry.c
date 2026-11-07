@@ -27,7 +27,7 @@ typedef struct VillagerMemoryNicknameText {
 } VillagerMemoryNicknameText;
 
 extern const TownName data_021dc7aa; /* this town (number and name) */
-extern const u8 data_021f3b68[];     /* type 12's values, packed (player_messages.h) */
+extern const u8 data_021f3b68[];     /* the town tune, packed (town_tune.h) */
 
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
@@ -447,7 +447,7 @@ CLEAN_AS(func_02081e10, VillagerMemoryEntry_When)
 
 /* func_02081e14: the memory updated for a meeting: the player copied in when given and set;
  * the days in a row counted, and on a new day the villager grows fonder; then the town (this
- * town when NULL) and the date (the clock's when NULL) kept, and type 12's values. */
+ * town when NULL) and the date (the clock's when NULL) kept, and the town tune (packed, town_tune.h). */
 void VillagerMemoryEntry_Update(VillagerMemory *memory, const DesignCreator *player, const TownName *town, const DateTime *now)
 {
     DateTime clock = {0};

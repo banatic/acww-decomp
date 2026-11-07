@@ -14,7 +14,7 @@
  *      who gave item 0x12e4 (or that nobody did) and is deleted after.
  * Up to 32 of kinds 0-3 exist at once: a table at data_ov004_0225797c holds them by their index
  * (the byte at 0x154), with their count at data_ov004_02257908; main's pen picking reads it
- * (touch pick kind 14, TouchPick_RoomEntry20). The byte data_ov004_02257904 is set while the
+ * (touch pick kind 14, TouchPick_MuseumSpot). The byte data_ov004_02257904 is set while the
  * lone one exists.
  *
  * Its update runs one of four states (the word at 0x134):

@@ -385,7 +385,7 @@ void VillagerResidents_MoveOut(VillagerTown *town, u8 *hold, u8 *villager, int i
         TownVillager_Copy(hold, villager);
     }
     TownVillager_Reset(villager);
-    MI_CpuCopy8(now, &town->last_departure, sizeof(DateTime));
+    MI_CpuCopy8(now, &town->last_change, sizeof(DateTime));
 }
 CLEAN_AS(func_0207c330, VillagerResidents_MoveOut)
 
@@ -407,8 +407,8 @@ void VillagerResidents_MoveIn(VillagerTown *town, u8 *place, int index, const u8
     VillagerBond_ForgetVillager(town->bonds, index);
     VillagerResidents_AddNumber(met_numbers(town), NpcId_Number(TownVillager_NpcId(place)));
     MI_CpuCopy8(now, &town->last_arrival, sizeof(DateTime));
-    if (is_set(&town->last_departure)) {
-        MI_CpuCopy8(now, &town->last_departure, sizeof(DateTime));
+    if (is_set(&town->last_change)) {
+        MI_CpuCopy8(now, &town->last_change, sizeof(DateTime));
     }
     VillagerResidents_SetNewcomer(town, (u8) index);
 }
@@ -483,17 +483,17 @@ int VillagerResidents_IsArrivalDue(VillagerTown *town, const DateTime *now)
     if (VillagerRoster_Count(town) >= VILLAGER_TOWN_VILLAGERS) {
         return 0;
     }
-    if (!is_set(&town->last_departure)) {
+    if (!is_set(&town->last_change)) {
         if (!is_set(&town->last_arrival) || DateTime_IsInvalid(&town->last_arrival) != 0) {
             return 1;
         }
         return DateTime_Compare(now, &town->last_arrival, VILLAGER_RESIDENTS_ALL_FIELDS) == 1 &&
                DateTime_DaysBetween(&town->last_arrival, now) >= 1;
     }
-    if (DateTime_Compare(now, &town->last_departure, VILLAGER_RESIDENTS_ALL_FIELDS) != 1) {
+    if (DateTime_Compare(now, &town->last_change, VILLAGER_RESIDENTS_ALL_FIELDS) != 1) {
         return 0;
     }
-    int days = DateTime_DaysBetween(&town->last_departure, now);
+    int days = DateTime_DaysBetween(&town->last_change, now);
     if (days <= 0) {
         return 0;
     }
@@ -526,8 +526,8 @@ void VillagerResidents_MoveInNew(VillagerTown *town, const DateTime *now)
         }
     }
     MI_CpuCopy8(now, &town->last_arrival, sizeof(DateTime));
-    if (is_set(&town->last_departure)) {
-        MI_CpuCopy8(now, &town->last_departure, sizeof(DateTime));
+    if (is_set(&town->last_change)) {
+        MI_CpuCopy8(now, &town->last_change, sizeof(DateTime));
     }
 }
 CLEAN_AS(func_0207c4e8, VillagerResidents_MoveInNew)

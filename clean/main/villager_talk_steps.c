@@ -574,7 +574,7 @@ void VillagerTalkSteps_LineGiveByObjectType(VillagerTalk *talk, VillagerTalkLine
                 VillagerMail_HoldsLetterFrom(steps_record(talk),
                                              VillagerMemoryEntry_Player((VillagerMemory *) (void *) talk->memory)) != 0) {
                 talk->events[2] = data_020d8ee8;
-                talk->record_138 = (u32) (uintptr_t) talk->memory;
+                talk->letter_memory = (u32) (uintptr_t) talk->memory;
                 talk->message = 0xe;
             } else {
                 talk->message = 0x16;

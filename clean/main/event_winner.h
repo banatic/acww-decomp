@@ -49,7 +49,7 @@ void EventWinner_GetItem(u16 *item, const EventWinner *record);
 void EventWinner_SetItem(EventWinner *record, const u16 *item);
 NpcId *EventWinner_Npc2E(EventWinner *record);
 
-/* The record's kind, kept in the last byte of its date (date.unused, 0x47): the event it is of.
+/* The record's kind, kept in the last byte of its date (date.extra, 0x47): the event it is of.
  * It picks the letters' archive (data_020e1fcc: "ev_fishing", "ev_insect", "ev_gardening"), the
  * notice's archive (data_020e1fbc: "bbs_fishing", ...) and the prize. */
 enum EventWinnerKind {

@@ -159,9 +159,9 @@ AcreMapSource *TownLayout_MakeSources(unsigned char *layout, int heap)
 }
 CLEAN_AS(func_0204e8c4, TownLayout_MakeSources)
 
-/* func_0204e938: sets the settings' bits 2-7 from func_020b7098 (its low six bits), then calls
- * func_020b0698. */
-void TownLayout_SetUpperSettings(unsigned int layout)
+/* func_0204e938: the season (Season_FromDate, its low six bits) put in the settings' bits 2-7,
+ * then the snowmen melted (Snowmen_Melt). */
+void TownLayout_SetSeason(unsigned int layout)
 {
     TownLayout *self = (TownLayout *) (uintptr_t) layout;
     u32 value = Season_FromDate();
@@ -169,14 +169,14 @@ void TownLayout_SetUpperSettings(unsigned int layout)
     self->settings = (u8) ((self->settings & 3) | ((value & 0x3f) << 2));
     Snowmen_Melt((SnowmenRecord *) (void *) data_021f3b56);
 }
-CLEAN_AS(func_0204e938, TownLayout_SetUpperSettings)
+CLEAN_AS(func_0204e938, TownLayout_SetSeason)
 
-/* func_0204e96c: the setting chosen at random (bits 0-1). */
-unsigned int TownLayout_RandomSetting(TownLayout *layout)
+/* func_0204e96c: the ground set chosen at random (bits 0-1 of the settings). */
+unsigned int TownLayout_GroundSet(TownLayout *layout)
 {
     return layout->settings & 3;
 }
-CLEAN_AS(func_0204e96c, TownLayout_RandomSetting)
+CLEAN_AS(func_0204e96c, TownLayout_GroundSet)
 
 /* func_0204e97c: the inner acre number (0-3 on each axis) of acre `acre`, when it is inner. */
 int TownLayout_InnerAcre(int unused, TownLayoutAcre *inner, TownLayoutAcre *acre)

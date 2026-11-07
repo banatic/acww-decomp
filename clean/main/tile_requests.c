@@ -167,8 +167,8 @@ void TileRequests_ReceiveAction(const TileRequestsActionMessage *message)
     Vec3 position;
     switch (kind) {
         case TILE_REQUEST_DROP:
-        case TILE_REQUEST_ACTOR_TILE:
-        case TILE_REQUEST_DROP_12:
+        case TILE_REQUEST_HELD_TILE:
+        case TILE_REQUEST_DROP_HELD:
             player = SessionPlayers_ActorOf(slot);
             if (player == NULL) {
                 break;
@@ -599,8 +599,8 @@ u16 *TileRequests_DropTileFor(int kind, AcreMap *map, int x, int z, const TileRe
     }
     switch (kind) {
         case TILE_REQUEST_DROP:
-        case TILE_REQUEST_ACTOR_TILE:
-        case TILE_REQUEST_DROP_12:
+        case TILE_REQUEST_HELD_TILE:
+        case TILE_REQUEST_DROP_HELD:
             if (CollisionQuery_CanStep(from->x, from->z, x, z, 0) == 0) {
                 return NULL;
             }
@@ -624,12 +624,12 @@ u16 *TileRequests_DropTileFor(int kind, AcreMap *map, int x, int z, const TileRe
 }
 CLEAN_AS(func_02043484, TileRequests_DropTileFor)
 
-/* func_02043540: TileRequests_AskAtActorTile for `player`'s slot. */
-int TileRequests_AskAtActorTileFor(int player, int item)
+/* func_02043540: TileRequests_AskAtHeldTile for `player`'s slot. */
+int TileRequests_AskAtHeldTileFor(int player, int item)
 {
-    return TileRequests_AskAtActorTile(TileRequests_SlotOf(player), item);
+    return TileRequests_AskAtHeldTile(TileRequests_SlotOf(player), item);
 }
-CLEAN_AS(func_02043540, TileRequests_AskAtActorTileFor)
+CLEAN_AS(func_02043540, TileRequests_AskAtHeldTileFor)
 
 /* func_02043554: TileRequests_AskDrop for `player`'s slot. */
 int TileRequests_AskDropFor(int player, int item)
@@ -638,21 +638,21 @@ int TileRequests_AskDropFor(int player, int item)
 }
 CLEAN_AS(func_02043554, TileRequests_AskDropFor)
 
-/* func_02043568: `item` put down by `slot` as kind 0x12 when its actor has a tile record, else
- * 0x10; -1 when the slot may not ask. */
-int TileRequests_AskDrop12(int slot, int item)
+/* func_02043568: `item` put down by `slot` as kind 0x12 when it holds a tile
+ * (TileChanges_HeldTileOf), else 0x10; -1 when the slot may not ask. */
+int TileRequests_AskDropHeld(int slot, int item)
 {
     if (TileRequests_MayAsk(slot) == 0) {
         return TILE_REQUESTS_NONE;
     }
-    int kind = TileChanges_HeldTileOf(slot) != NULL ? TILE_REQUEST_DROP_12 : TILE_REQUEST_DROP;
+    int kind = TileChanges_HeldTileOf(slot) != NULL ? TILE_REQUEST_DROP_HELD : TILE_REQUEST_DROP;
     return TileRequests_AskPut(slot, kind, (u16) item);
 }
-CLEAN_AS(func_02043568, TileRequests_AskDrop12)
+CLEAN_AS(func_02043568, TileRequests_AskDropHeld)
 
-/* func_020435a0: a request of kind 0x11 for `item` at the tile of `slot`'s actor record; -1 when
- * the slot may not ask or has no record. */
-int TileRequests_AskAtActorTile(int slot, int item)
+/* func_020435a0: a request of kind 0x11 for `item` at the tile `slot` holds
+ * (TileChanges_HeldTileOf); -1 when the slot may not ask or holds none. */
+int TileRequests_AskAtHeldTile(int slot, int item)
 {
     if (TileRequests_MayAsk(slot) == 0) {
         return TILE_REQUESTS_NONE;
@@ -662,9 +662,9 @@ int TileRequests_AskAtActorTile(int slot, int item)
         return TILE_REQUESTS_NONE;
     }
     TileRequestTile tile = TileRequests_TileOf(*record);
-    return TileRequests_Add(data_021c7c48.requests, slot, TILE_REQUEST_ACTOR_TILE, &tile, (u16) item, (u16) item, 0, 0, 0, -1);
+    return TileRequests_Add(data_021c7c48.requests, slot, TILE_REQUEST_HELD_TILE, &tile, (u16) item, (u16) item, 0, 0, 0, -1);
 }
-CLEAN_AS(func_020435a0, TileRequests_AskAtActorTile)
+CLEAN_AS(func_020435a0, TileRequests_AskAtHeldTile)
 
 /* func_020435fc: `item` put down: kind 0x1a for 0xa7-0xc6, else 0x10. */
 int TileRequests_AskDrop(int slot, u16 item)
@@ -934,16 +934,16 @@ int TileRequests_AskForTool0(int slot, const TileRequestTile *tile, int unused)
 }
 CLEAN_AS(func_02043cdc, TileRequests_AskForTool0)
 
-/* func_02043d18: TileRequests_AskAtActorTileOp for `player`'s slot. */
-int TileRequests_AskAtActorTileOpFor(int player, int operation, int arg, int item)
+/* func_02043d18: TileRequests_AskAtHeldTileOp for `player`'s slot. */
+int TileRequests_AskAtHeldTileOpFor(int player, int operation, int arg, int item)
 {
-    return TileRequests_AskAtActorTileOp(TileRequests_SlotOf(player), operation, arg, item);
+    return TileRequests_AskAtHeldTileOp(TileRequests_SlotOf(player), operation, arg, item);
 }
-CLEAN_AS(func_02043d18, TileRequests_AskAtActorTileOpFor)
+CLEAN_AS(func_02043d18, TileRequests_AskAtHeldTileOpFor)
 
-/* func_02043d34: func_02043db4's request at the tile of `slot`'s actor record; -1 when the slot
- * may not ask or has no record. */
-int TileRequests_AskAtActorTileOp(int slot, int operation, int arg, int item)
+/* func_02043d34: func_02043db4's request at the tile `slot` holds (TileChanges_HeldTileOf); -1
+ * when the slot may not ask or holds none. */
+int TileRequests_AskAtHeldTileOp(int slot, int operation, int arg, int item)
 {
     if (TileRequests_MayAsk(slot) == 0) {
         return TILE_REQUESTS_NONE;
@@ -955,7 +955,7 @@ int TileRequests_AskAtActorTileOp(int slot, int operation, int arg, int item)
     TileRequestTile tile = TileRequests_TileOf(*record);
     return TileRequests_AskOp(slot, &tile, operation, arg, (u16) item);
 }
-CLEAN_AS(func_02043d34, TileRequests_AskAtActorTileOp)
+CLEAN_AS(func_02043d34, TileRequests_AskAtHeldTileOp)
 
 /* func_02043d84: func_02043db4's request for `player`'s slot. */
 int TileRequests_AskOpFor(int player, const TileRequestTile *tile, int operation, int arg, u16 item)

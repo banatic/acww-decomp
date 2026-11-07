@@ -442,7 +442,7 @@ static int nook_pick_bonus_day(NookStore *store, const DateTime *from, u32 pick)
     store->bonus_day.year = day->year;
     store->bonus_day.month = day->month;
     store->bonus_day.day = day->day;
-    store->bonus_day.unused = 0;
+    store->bonus_day.extra = 0;
     return 1;
 }
 
@@ -511,7 +511,7 @@ void NookStore_SetStockDate(NookStore *store, const DateTime *when)
     store->stocked.year = copy.year;
     store->stocked.month = copy.month;
     store->stocked.day = copy.day;
-    store->stocked.unused = 0;
+    store->stocked.extra = 0;
 }
 CLEAN_AS(func_020af298, NookStore_SetStockDate)
 
@@ -521,7 +521,7 @@ int NookStore_StockDateDiffers(NookStore *store, const DateTime *when)
     DateTime copy;
     MI_CpuCopy8(when, &copy, sizeof copy);
     return store->stocked.year != copy.year || store->stocked.month != copy.month || store->stocked.day != copy.day ||
-           store->stocked.unused != 0;
+           store->stocked.extra != 0;
 }
 CLEAN_AS(func_020af2d0, NookStore_StockDateDiffers)
 
@@ -1075,7 +1075,7 @@ void NookStore_Initialize(NookStore *store)
     store->bits = (u16) (store->bits & ~(NOOK_LEVEL_MASK << NOOK_LEVEL_SHIFT));
     store->spent = 0;
     store->bits = (u16) (store->bits & ~NOOK_HOUR_MASK);
-    store->stocked.unused = 1;
+    store->stocked.extra = 1;
     store->upgrade.pending = 0;
 }
 CLEAN_AS(func_020afbcc, NookStore_Initialize)

@@ -87,7 +87,7 @@ void RoomScoreState_SetClockDate(Date *date)
     date->day = now.day;
     date->month = now.month;
     date->year = now.year;
-    date->unused = 0;
+    date->extra = 0;
 }
 CLEAN_AS(func_0205bf90, RoomScoreState_SetClockDate)
 

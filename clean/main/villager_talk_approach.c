@@ -368,9 +368,9 @@ int VillagerTalkApproach_Mail(VillagerTalk *talk)
     }
     int count = VillagerMemory_ListOthers(record, list, PlayerRecord_Player(PlayerRecords_Current()), 2);
     if (count > 0) {
-        talk->record_138 = (u32) VillagerTalkTopics_PickRandom(record, list, count, func_02021d60);
+        talk->letter_memory = (u32) VillagerTalkTopics_PickRandom(record, list, count, func_02021d60);
     }
-    int none = talk->record_138 == 0 ? 1 : 0;
+    int none = talk->letter_memory == 0 ? 1 : 0;
     approach_draw(talk, approach_personality(approach_record(talk)), data_020c89c8.texts, data_020c89c8.count, none, 0);
     return 1;
 }

@@ -541,7 +541,7 @@ static void fars2_take_item_ask_tile(FieldActor *actor)
     }
     fars2_take_item_of(actor)->step = FARS2_TAKE_FULL_DOWN;
     FieldActor_PlayAnimationLoop(actor, FARS2_ANIM_STAND, FARS2_BLEND_AFTER_TALK, FARS2_BLEND_AFTER_TALK);
-    actor->unk_810 = TileRequests_AskAtActorTileFor(actor->player, actor->item);
+    actor->unk_810 = TileRequests_AskAtHeldTileFor(actor->player, actor->item);
 }
 
 /* func_ov004_0222a4e4 (state 0x1c's update) */

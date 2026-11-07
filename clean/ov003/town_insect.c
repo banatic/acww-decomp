@@ -754,7 +754,7 @@ CLEAN_AS(func_ov003_0222d40c, TownInsect_KindAllowed)
 
 /* func_ov003_0222d484: whether a special insect is due, with its kind and place. For the town
  * (`town` set) when nothing falls: kind 0x33 of place 8 when the town day has a spot
- * (TownDay_SpotPosition), else, with data_ov003_0226054c set, kind 0x33 of place 7 one time in
+ * (TownDay_RafflesiaPosition), else, with data_ov003_0226054c set, kind 0x33 of place 7 one time in
  * five. Otherwise, unless weather 1: kind 0x3b of place 7 when main asked for it
  * (data_ov003_02260538) and the second event insect is active and shown. */
 int TownInsect_SpecialKind(u8 *kind, u8 *place, int town)
@@ -763,7 +763,7 @@ int TownInsect_SpecialKind(u8 *kind, u8 *place, int town)
     int falling = Sky_Falling();
     if (town != 0) {
         if (falling == 0) {
-            if (TownDay_SpotPosition(&spot) != 0) {
+            if (TownDay_RafflesiaPosition(&spot) != 0) {
                 *kind = 0x33;
                 *place = 8;
                 return 1;

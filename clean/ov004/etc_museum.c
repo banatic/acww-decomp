@@ -687,7 +687,7 @@ int EtcMuseum_Draw(void)
 }
 CLEAN_AS(func_ov004_0221bcdc, EtcMuseum_Draw)
 
-/* The radius it is picked in, and its touch pick kind (TouchPick_RoomEntry20). */
+/* The radius it is picked in, and its touch pick kind (TouchPick_MuseumSpot). */
 #define ETC_MUSEUM_PICK_RADIUS 0xc00
 #define ETC_MUSEUM_TOUCH_KIND 14
 

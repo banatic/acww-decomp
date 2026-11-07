@@ -46,8 +46,8 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 #define TOWN_SPAWN_MARKED_1549 3 /* marked items 0x1549 the town keeps */
 #define TOWN_SPAWN_ITEM_1549 0x1549
 #define TOWN_SPAWN_PITFALL_SEED 0x1566
-#define TOWN_SPAWN_CODE_SPOT 0x1b
-#define TOWN_SPAWN_CODE_89 0x89
+#define TOWN_SPAWN_CODE_RAFFLESIA 0x1b
+#define TOWN_SPAWN_CODE_WILTED_RAFFLESIA 0x89
 #define TOWN_SPAWN_GRADE_PERFECT 4 /* the perfect town's grade, which may bring code 0x1a */
 #define TOWN_SPAWN_LILY_OF_THE_VALLEY 0x1a
 #define TOWN_SPAWN_DANDELION 0x1d
@@ -320,41 +320,42 @@ void TownSpawn_PutMarkedFossils(TownDay *town, AcreMap *map, int wide, int high)
 }
 CLEAN_AS(func_02048418, TownSpawn_PutMarkedFossils)
 
-/* func_02048498: the summary's spot (code 0x1b): made code 0x89 while the town's grade is
+/* func_02048498: the summary's rafflesia (code 0x1b): made code 0x89 while the town's grade is
  * not 0; else put on an acre drawn at random when the town has none. */
-void TownSpawn_UpdateSpot(TownDay *town, AcreMap *map, int wide, int high)
+void TownSpawn_UpdateRafflesia(TownDay *town, AcreMap *map, int wide, int high)
 {
     const TownDayAcres *acres = &data_021c779c.acres;
     if (acres->grade != 0) {
-        TownSpawn_SpotTo89(town, map);
+        TownSpawn_WiltRafflesia(town, map);
         return;
     }
-    if (acres->spot_acre_x < 0 && acres->spot_acre_z < 0) {
-        TownSpawn_PutSpot(town, map, wide, high);
+    if (acres->rafflesia_acre_x < 0 && acres->rafflesia_acre_z < 0) {
+        TownSpawn_PutRafflesia(town, map, wide, high);
     }
 }
-CLEAN_AS(func_02048498, TownSpawn_UpdateSpot)
+CLEAN_AS(func_02048498, TownSpawn_UpdateRafflesia)
 
-/* func_020484c8: the summary's spot made code 0x89 (unmarked) when its acre has codes. */
-void TownSpawn_SpotTo89(TownDay *town, AcreMap *map)
+/* func_020484c8: the summary's rafflesia made code 0x89 (wilted, unmarked) when its acre has codes. */
+void TownSpawn_WiltRafflesia(TownDay *town, AcreMap *map)
 {
     const TownDayAcres *acres = &data_021c779c.acres;
-    int acre_x = acres->spot_acre_x + 1;
-    int acre_z = acres->spot_acre_z + 1;
-    if (AcreTile_ItemInAcre(map, (u32) acre_x, (u32) acre_z, acres->spot_x, acres->spot_z, 0) != NULL) {
-        TownTilePut_InAcre(town, map, acre_x, acre_z, acres->spot_x, acres->spot_z, TOWN_SPAWN_CODE_89, 0);
+    int acre_x = acres->rafflesia_acre_x + 1;
+    int acre_z = acres->rafflesia_acre_z + 1;
+    if (AcreTile_ItemInAcre(map, (u32) acre_x, (u32) acre_z, acres->rafflesia_x, acres->rafflesia_z, 0) != NULL) {
+        TownTilePut_InAcre(town, map, acre_x, acre_z, acres->rafflesia_x, acres->rafflesia_z, TOWN_SPAWN_CODE_WILTED_RAFFLESIA,
+                           0);
     }
 }
-CLEAN_AS(func_020484c8, TownSpawn_SpotTo89)
+CLEAN_AS(func_020484c8, TownSpawn_WiltRafflesia)
 
 /* func_0204851c: code 0x1b put on an acre drawn at random; whether it was. */
-int TownSpawn_PutSpot(TownDay *town, AcreMap *map, int wide, int high)
+int TownSpawn_PutRafflesia(TownDay *town, AcreMap *map, int wide, int high)
 {
     int acre_x = (int) MainRandom_Below(wide);
     int acre_z = (int) MainRandom_Below(high);
-    return TownPlace_PutInAcre(town, map, acre_x + 1, acre_z + 1, TOWN_SPAWN_CODE_SPOT, func_02048ee4, 0);
+    return TownPlace_PutInAcre(town, map, acre_x + 1, acre_z + 1, TOWN_SPAWN_CODE_RAFFLESIA, func_02048ee4, 0);
 }
-CLEAN_AS(func_0204851c, TownSpawn_PutSpot)
+CLEAN_AS(func_0204851c, TownSpawn_PutRafflesia)
 
 /* func_0204855c: in a perfect town (grade 4), one chance in two of code 0x1a. */
 void TownSpawn_MaybeLilyOfTheValley(TownDay *town, AcreMap *map, int wide, int high)

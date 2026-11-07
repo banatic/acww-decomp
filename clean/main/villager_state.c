@@ -337,14 +337,14 @@ void VillagerState_DoubleByte1E(VillagerState *entry)
 }
 CLEAN_AS(func_02079468, VillagerState_DoubleByte1E)
 
-/* func_02079478: flag 1 set unless the current scene passes func_020b6694. */
-void VillagerState_SetFlag1UnlessScene(VillagerState *entry)
+/* func_02079478: flag 1 set unless in a villager's house (SceneQuery_InVillagerHouse). */
+void VillagerState_SetFlag1OutsideHouse(VillagerState *entry)
 {
     if (SceneQuery_InVillagerHouse() == 0) {
         entry->flags |= VILLAGER_STATE_FLAG_1;
     }
 }
-CLEAN_AS(func_02079478, VillagerState_SetFlag1UnlessScene)
+CLEAN_AS(func_02079478, VillagerState_SetFlag1OutsideHouse)
 
 /* func_02079494: one off the counter, which stops at 0. */
 void VillagerState_CountDownMood(VillagerState *entry)

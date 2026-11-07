@@ -42,7 +42,7 @@ static_assert(offsetof(VillagerTown, outdoors) == 0x3f7c, "outdoors");
 static_assert(offsetof(VillagerTown, sickness) == 0x3f90, "sickness");
 static_assert(offsetof(VillagerTown, nickname_date) == 0x404c, "date 0x404c");
 static_assert(offsetof(VillagerTown, last_arrival) == 0x4050, "last arrival");
-static_assert(offsetof(VillagerTown, last_departure) == 0x4058, "last departure");
+static_assert(offsetof(VillagerTown, last_change) == 0x4058, "last change");
 static_assert(offsetof(VillagerTown, newcomer_index) == 0x4075, "newcomer");
 static_assert(offsetof(VillagerTown, last_sick) == 0x4076, "last sick");
 static_assert(offsetof(VillagerTown, mark) == 0x4078, "mark");
@@ -207,7 +207,7 @@ CLEAN_AS(func_0207a5d0, VillagerTown_AllRemember)
 void VillagerTown_SetNicknameDate(VillagerTown *town, const Date *date)
 {
     MI_CpuCopy8(date, &town->nickname_date, sizeof(Date));
-    town->nickname_date.unused = 1;
+    town->nickname_date.extra = 1;
 }
 CLEAN_AS(func_0207a62c, VillagerTown_SetNicknameDate)
 
@@ -216,7 +216,7 @@ CLEAN_AS(func_0207a62c, VillagerTown_SetNicknameDate)
 int VillagerTown_IsFarFromNicknameDate(VillagerTown *town, const Date *date)
 {
     int far = 1;
-    if (town->nickname_date.unused != 0) {
+    if (town->nickname_date.extra != 0) {
         int days;
         if (Calendar_IsOnOrAfter(date, &town->nickname_date)) {
             days = Calendar_DaysFrom(date, &town->nickname_date);
@@ -861,8 +861,8 @@ void VillagerTown_Update(VillagerTown *town, int skip_designs)
                          DATE_TIME_YEAR | DATE_TIME_MONTH | DATE_TIME_DAY | DATE_TIME_HOUR | DATE_TIME_MINUTE |
                              DATE_TIME_SECOND) == -1) {
         MI_CpuCopy8(&now, &town->last_arrival, sizeof(DateTime));
-        if (is_set(&town->last_departure)) {
-            MI_CpuCopy8(&now, &town->last_departure, sizeof(DateTime));
+        if (is_set(&town->last_change)) {
+            MI_CpuCopy8(&now, &town->last_change, sizeof(DateTime));
         }
     }
     VillagerTown_ExpireHouseVisits(town, &now);
@@ -930,7 +930,7 @@ void VillagerTown_UpdateModes(VillagerTown *town, const DateTime *now)
         }
         VillagerMode_KeepSinceDate(villager, now);
         VillagerMode_KeepCountedDate(villager, now);
-        if (VillagerMode_Update(villager, &town->last_arrival, &town->last_departure, now) != VILLAGER_TOWN_MODE_UNCHANGED) {
+        if (VillagerMode_Update(villager, &town->last_arrival, &town->last_change, now) != VILLAGER_TOWN_MODE_UNCHANGED) {
             VillagerObject_Clear(VillagerObject_OfRecord((VillagerRecord *) VillagerStatus_ModeRecord(villager)));
         }
     }

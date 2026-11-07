@@ -10,7 +10,7 @@
  * or more after the last change (VillagerResidents_MoveInNew).
  *
  * The town's block keeps for this:
- *   0x4058  when a villager last left (all zero until one has)
+ *   0x4058  when the villagers last changed (a move out or in; all zero until one has)
  *   0x4060  a set of 150 bits, one for each villager number (NpcId.number), the villagers that
  *           have lived in the town; emptied again once all those that can come have
  *   0x4074  the number of the villager that last left, or -1

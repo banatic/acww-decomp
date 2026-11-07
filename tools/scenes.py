@@ -1148,7 +1148,7 @@ SAVES["tree-grown"] = SAVES["bare-net"] + [town_item(36, 59, 0xCC)]
 SAVES["trample"] = [town_item(x, z, 0x70) for x in range(38, 45) for z in range(57, 67)]
 # "clear" (nothing falls) with the bug net held and a code 0x1b, the town's spot
 # (main/town_acre_count.h), on an empty tile 14 south of the house's door: the town day's summary
-# keeps it (TownDay_SpotPosition), so the insects placed every 40th frame are flies, kind 0x33 of
+# keeps it (TownDay_RafflesiaPosition), so the insects placed every 40th frame are flies, kind 0x33 of
 # place 8 (TownInsect_SpecialKind), on empty tiles of its acre at least 8 tiles from the player
 SAVES["fly-spot"] = SAVES["clear"] + [(HELD, "<H", 0x1376), town_item(40, 69, 0x1B)]
 # the shovel held and the axe in pocket 0: a hole dug, the axe taken from the pockets, then B

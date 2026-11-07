@@ -24,8 +24,8 @@ typedef struct TownAcreCount {
     u16 others;        /* 0x0a: other items */
     u16 trash;         /* 0x0c: items 0x1320-0x1322 */
     u16 flower_codes;  /* 0x0e: codes 0x00-0x1d and the flower codes */
-    int spot_x;        /* 0x10: the tile of code 0x1b in the acre, -1 for none */
-    int spot_z;        /* 0x14 */
+    int rafflesia_x;   /* 0x10: the tile of the rafflesia (code 0x1b) in the acre, -1 for none */
+    int rafflesia_z;   /* 0x14 */
     u16 rocks;         /* 0x18: codes 0xe3-0xe7 */
     u16 code_6d;       /* 0x1a: codes 0x6d */
     u8 beach_items;    /* 0x1c: items 0x1554-0x155c */
@@ -37,12 +37,12 @@ typedef struct TownAcreCount {
 static_assert(sizeof(TownAcreCount) == sizeof(TownDayAcre), "TownAcreCount");
 
 /* TownAcreCount.flags */
-#define TOWN_ACRE_HAS_SPOT 0x0001    /* code 0x1b */
-#define TOWN_ACRE_HAS_LILY 0x0002    /* code 0x1a */
-#define TOWN_ACRE_HAS_67 0x0008      /* code 0x67 or 0x6b */
-#define TOWN_ACRE_HAS_66 0x0010      /* code 0x66 or 0x6a */
-#define TOWN_ACRE_HAS_68 0x0020      /* code 0x68 or 0x6c */
-#define TOWN_ACRE_HAS_LINE_26 0x0800 /* a code of 0x26-0x2a or 0x66-0x68 */
+#define TOWN_ACRE_HAS_RAFFLESIA 0x0001 /* code 0x1b */
+#define TOWN_ACRE_HAS_LILY 0x0002      /* code 0x1a */
+#define TOWN_ACRE_HAS_67 0x0008        /* code 0x67 or 0x6b */
+#define TOWN_ACRE_HAS_66 0x0010        /* code 0x66 or 0x6a */
+#define TOWN_ACRE_HAS_68 0x0020        /* code 0x68 or 0x6c */
+#define TOWN_ACRE_HAS_LINE_26 0x0800   /* a code of 0x26-0x2a or 0x66-0x68 */
 
 /* The totals of the summary from byte 0x24 on (inside TownDayAcres.unk_18). */
 typedef struct TownAcreTotals {
@@ -115,7 +115,7 @@ typedef struct TownAcreWorst {
 #define TOWN_ACRE_WORST_WEEDS 2      /* the weeds, codes 0x21-0x24 */
 #define TOWN_ACRE_WORST_OTHERS 3     /* other items */
 #define TOWN_ACRE_WORST_TRASH 4      /* items 0x1320-0x1322 */
-#define TOWN_ACRE_WORST_SPOT 5       /* code 0x1b */
+#define TOWN_ACRE_WORST_RAFFLESIA 5  /* code 0x1b */
 #define TOWN_ACRE_WORST_REASONS 6
 
 /* The growth lines' codes and the codes at their last stage only (map_item.h): 0x26-0x2a,

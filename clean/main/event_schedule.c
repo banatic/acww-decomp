@@ -219,7 +219,7 @@ void EventSchedule_BarInsurer(int previous, int set)
         from->day = 1;
         from->month = 1;
         from->year = 0;
-        from->unused = 0;
+        from->extra = 0;
         return;
     }
     DateTime edge = {0};
@@ -619,7 +619,7 @@ static void event_schedule_clear_bar(Date *from)
     from->day = 1;
     from->month = 1;
     from->year = 0;
-    from->unused = 0;
+    from->extra = 0;
 }
 
 /* func_02041194: when the game is started: a bar on the insurer's visit (event 0x3c) or the fox 7 or more days old
@@ -661,11 +661,11 @@ void EventSchedule_Reset(EventSchedule *schedule)
     schedule->unk_00[0] = today.day;
     schedule->unk_00[1] = today.month;
     schedule->unk_00[2] = today.year;
-    schedule->unk_00[3] = today.unused;
+    schedule->unk_00[3] = today.extra;
     schedule->unk_00[4] = today.day;
     schedule->unk_00[5] = today.month;
     schedule->unk_00[6] = today.year;
-    schedule->unk_00[7] = today.unused;
+    schedule->unk_00[7] = today.extra;
     event_schedule_clear_bar(&schedule->no_insurer_from);
     event_schedule_clear_bar(&schedule->no_fox_from);
     schedule->fox_day = (u8) (MainRandom_Below(EVENT_SCHEDULE_DAYS) + 1);

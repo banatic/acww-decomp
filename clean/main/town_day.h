@@ -52,10 +52,10 @@ typedef struct TownDayAcres {
     int grade; /* 0x00: the town's grade, 0-4 (TownAcreCount_Grade; 4 a perfect town) */
     u8 unk_04[0x18 - 0x04];
     u8 unk_18[0x34 - 0x18]; /* 0x18: data_021c79dc */
-    int spot_acre_x;        /* 0x34: a tile func_0204a3cc picks: its inner acre (from 0), -1 for none */
-    int spot_acre_z;        /* 0x38 */
-    int spot_x;             /* 0x3c: the tile in the acre */
-    int spot_z;             /* 0x40 */
+    int rafflesia_acre_x; /* 0x34: the rafflesia's tile (code 0x1b, func_0204a3cc picks it): its inner acre (from 0), -1 for none */
+    int rafflesia_acre_z;                                        /* 0x38 */
+    int rafflesia_x;                                             /* 0x3c: the tile in the acre */
+    int rafflesia_z;                                             /* 0x40 */
     TownDayAcre acres[TOWN_DAY_ACRES_WIDE][TOWN_DAY_ACRES_HIGH]; /* 0x44: data_021c7a08, by x then z */
 } TownDayAcres;
 
@@ -101,7 +101,7 @@ void TownDay_ClearCode6d(void);
 void TownDay_AddCode6d(u32 x, u32 z);
 int TownDay_Code6dTiles(void);
 int TownDay_FindCode6d(int x, int z);
-int TownDay_SpotPosition(Vec3 *position);
+int TownDay_RafflesiaPosition(Vec3 *position);
 int TownDay_Object(void);
 int TownDay_Acres18(void);
 int TownDay_Summarize(void);

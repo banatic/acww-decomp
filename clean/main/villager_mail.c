@@ -45,7 +45,8 @@
 /* The texts each letter is drawn from, and its paper (-1: the personality's). */
 #define VILLAGER_MAIL_FAREWELL_TEXTS 5
 #define VILLAGER_MAIL_LETTER_TEXTS 3
-#define VILLAGER_MAIL_ANY_PAPER (-1)
+/* The paper VillagerPost_Send picks by the villager's personality (VILLAGER_POST_PERSONALITY_PAPER). */
+#define VILLAGER_MAIL_PERSONALITY_PAPER (-1)
 #define VILLAGER_MAIL_NEW_YEAR_PAPER 2
 /* The text slots (func_0203d7c4) the letters fill: the player's name, then words. */
 #define VILLAGER_MAIL_SLOT_PLAYER 0
@@ -199,7 +200,7 @@ void VillagerMail_SendFarewell(u8 *villager, u8 *record)
         MailText_SetPartText(VILLAGER_MAIL_SLOT_TOWN, &town);
     }
     VillagerPost_Send(data_020e1974, (u8) MainRandom_Below(VILLAGER_MAIL_FAREWELL_TEXTS), player, npc, NULL,
-                      VILLAGER_MAIL_ANY_PAPER);
+                      VILLAGER_MAIL_PERSONALITY_PAPER);
     TownNameText_Destruct((TownNameText *) &town);
 }
 CLEAN_AS(func_02080dc0, VillagerMail_SendFarewell)
@@ -333,7 +334,7 @@ void VillagerMail_SendBirthdayLetter(u8 *villager, u8 *record, const DateTime *t
     ItemList_Destruct(&copy);
     const u16 *item = present != ITEM_CODE_NONE ? &present : NULL;
     if (VillagerPost_Send(data_020e1988, (u8) MainRandom_Below(VILLAGER_MAIL_LETTER_TEXTS), player, npc, item,
-                          VILLAGER_MAIL_ANY_PAPER)) {
+                          VILLAGER_MAIL_PERSONALITY_PAPER)) {
         VillagerMemoryBits_SetBirthdayLetter(memory);
     }
     ItemList_Destruct(&list);

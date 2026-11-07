@@ -430,9 +430,9 @@ void VillagerRoster_Init(VillagerTown *town)
     town->nickname_date.day = 1;
     town->nickname_date.month = 1;
     town->nickname_date.year = 0;
-    town->nickname_date.unused = 0;
+    town->nickname_date.extra = 0;
     memset(&town->last_arrival, 0, sizeof(town->last_arrival));
-    memset(&town->last_departure, 0, sizeof(town->last_departure));
+    memset(&town->last_change, 0, sizeof(town->last_change));
     town->newcomer_index = VILLAGER_TOWN_NONE;
     town->numbers_met[0x14] = (u8) VILLAGER_TOWN_NONE; /* 0x4074: the number of the villager gone */
 
@@ -464,7 +464,7 @@ VillagerTown *VillagerRoster_Construct(VillagerTown *town)
     VillagerOutdoors_Construct(&town->outdoors);
     VillagerSicknessRecord_Construct(&town->sickness);
     memset(&town->last_arrival, 0, sizeof(town->last_arrival));
-    memset(&town->last_departure, 0, sizeof(town->last_departure));
+    memset(&town->last_change, 0, sizeof(town->last_change));
     return town;
 }
 CLEAN_AS(func_0207d080, VillagerRoster_Construct)

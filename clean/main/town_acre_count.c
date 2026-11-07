@@ -16,7 +16,7 @@ extern TownDay data_021c779c;
 #define TOWN_ACRE_MOST_LINES 15
 #define TOWN_ACRE_FREE_COUNT 2 /* codes 0x21-0x24, other items and flower codes: two pass free */
 #define TOWN_ACRE_TRASH_COST 10
-#define TOWN_ACRE_SPOT_COST 50
+#define TOWN_ACRE_RAFFLESIA_COST 50
 #define TOWN_ACRE_NO_LOW_SCORE 10000
 
 static TownAcreTotals *totals_of(TownDayAcres *acres)
@@ -59,8 +59,8 @@ static void clear_count(TownAcreCount *acre)
     acre->trash = 0;
     acre->flower_codes = 0;
     acre->flags = 0;
-    acre->spot_x = -1;
-    acre->spot_z = -1;
+    acre->rafflesia_x = -1;
+    acre->rafflesia_z = -1;
     acre->rocks = 0;
     acre->code_6d = 0;
     acre->beach_items = 0;
@@ -108,9 +108,9 @@ static void count_low_code(TownAcreCount *acre, u16 code, int index)
 {
     switch (code) {
         case 0x1b:
-            acre->spot_x = index % 16;
-            acre->spot_z = index / 16;
-            acre->flags |= TOWN_ACRE_HAS_SPOT;
+            acre->rafflesia_x = index % 16;
+            acre->rafflesia_z = index / 16;
+            acre->flags |= TOWN_ACRE_HAS_RAFFLESIA;
             break;
         case 0x1a:
             acre->flags |= TOWN_ACRE_HAS_LILY;
@@ -282,8 +282,8 @@ void TownAcreCount_Score(TownAcreCount *acre)
     }
     score -= TOWN_ACRE_TRASH_COST * acre->trash;
 #ifdef BUGFIX
-    if (acre->flags & TOWN_ACRE_HAS_SPOT) {
-        score -= TOWN_ACRE_SPOT_COST;
+    if (acre->flags & TOWN_ACRE_HAS_RAFFLESIA) {
+        score -= TOWN_ACRE_RAFFLESIA_COST;
     }
 #endif
     if (acre->flower_codes > TOWN_ACRE_FREE_COUNT) {
@@ -317,8 +317,8 @@ void TownAcreCount_FindWorst(TownAcreWorst *worst, const TownDayTile *acre_of, c
         cost[TOWN_ACRE_WORST_OTHERS] = acre->others - TOWN_ACRE_FREE_COUNT;
     }
     cost[TOWN_ACRE_WORST_TRASH] = acre->trash * TOWN_ACRE_TRASH_COST;
-    if (acre->flags & TOWN_ACRE_HAS_SPOT) {
-        cost[TOWN_ACRE_WORST_SPOT] = TOWN_ACRE_SPOT_COST;
+    if (acre->flags & TOWN_ACRE_HAS_RAFFLESIA) {
+        cost[TOWN_ACRE_WORST_RAFFLESIA] = TOWN_ACRE_RAFFLESIA_COST;
     }
     int most = -1;
     int reason = -1;
@@ -385,10 +385,10 @@ static void clear_totals(TownDayAcres *acres)
     totals->unk_2a = 0;
     totals->acres_66 = 0;
     totals->marked_fossils = 0;
-    acres->spot_acre_x = -1;
-    acres->spot_acre_z = -1;
-    acres->spot_x = -1;
-    acres->spot_z = -1;
+    acres->rafflesia_acre_x = -1;
+    acres->rafflesia_acre_z = -1;
+    acres->rafflesia_x = -1;
+    acres->rafflesia_z = -1;
     totals->rocks = 0;
     totals->flags = 0;
     int *bands = town_bands();
@@ -434,11 +434,11 @@ static void add_acre(TownDayAcres *acres, const TownAcreCount *acre, int acre_x,
         totals->flags |= TOWN_TOTALS_HAS_SPOILED_TURNIP;
     }
     town_bands()[TownAcreCount_ScoreBand(acres, acre->score)]++;
-    if (acre->flags & TOWN_ACRE_HAS_SPOT) {
-        acres->spot_acre_x = acre_x;
-        acres->spot_acre_z = acre_z;
-        acres->spot_x = acre->spot_x;
-        acres->spot_z = acre->spot_z;
+    if (acre->flags & TOWN_ACRE_HAS_RAFFLESIA) {
+        acres->rafflesia_acre_x = acre_x;
+        acres->rafflesia_acre_z = acre_z;
+        acres->rafflesia_x = acre->rafflesia_x;
+        acres->rafflesia_z = acre->rafflesia_z;
     }
 }
 
