@@ -142,6 +142,11 @@ main 0202c2c4
 main 0202d84c
 main 0202e42c
 main 0202f3e0
+main 0202fc94
+main 0202fd78
+main 0202fe00
+main 0202ff14
+main 0202ffbc
 main 020307f8
 main 02031e84
 main 02031ea8
@@ -186,6 +191,7 @@ main 02037278
 main 020372b4
 main 020372ec
 main 02037c28
+main 020382d4
 main 02038a90
 main 02038c54
 main 02038cb4

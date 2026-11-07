@@ -1,0 +1,19 @@
+# a live floor triangle of the collision world (021c4030, class 020da21c, in main's .bss) asked
+# through its vtable to push a point off it: above it (slot 0), through it (slot 1) and off its
+# edges (slot 2), the point a copy of its first corner in a block taken from a heap of the game
+# (022a3378) and given back after, the previous point the corner itself, the distance 2.0; at
+# the end of frame 6401 of villager-chat; first the caution window (021c5c4c, class 020da520, a
+# static object of main) is set off
+scene villager-chat
+frames 6410
+ram 2600,4500,5300,6400
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 6401 020382d5 021c5c4c 0 0 0 021c5c4c 020da520  # main CautionWindow_EnterOff
+call 6401 020e9948 022a3378 40 0 0 00000000 00000000  # autoload_2 Heap_Alloc (a scratch block)
+call 6401 021175fc 021c4034 r1 c 0 00000000 00000000  # autoload_2 MI_CpuCopy8 (the first corner)
+vcall 6401 021c4030 0 021c4030 r2 021c4034 2000 020da21c  # main CollisionTriangle_PushAbove (slot 0)
+call 6401 021175fc 021c4034 r3 c 0 00000000 00000000  # autoload_2 MI_CpuCopy8
+vcall 6401 021c4030 4 021c4030 r4 021c4034 2000 020da21c  # main CollisionTriangle_PushThrough (slot 1)
+call 6401 021175fc 021c4034 r5 c 0 00000000 00000000  # autoload_2 MI_CpuCopy8
+vcall 6401 021c4030 8 021c4030 r6 021c4034 2000 020da21c  # main CollisionTriangle_PushOffEdges (slot 2)
+call 6401 020e993c 022a3378 r7 0 0 00000000 00000000  # autoload_2 Heap_Free
