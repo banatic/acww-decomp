@@ -2786,6 +2786,23 @@ scene("visit-clerk", "host-tools", 30000, [2600, 12400, 24516, 26300, 28200, 289
       "post clerk (on the host she talks with the other console's player), answers that it wants "
       "nothing, hears her out and walks away from the counter",
       recording="visit-clerk-host", peer=("guest-tools", "visit-clerk-guest"))
+scene("visit-shops", "host-tools", 40000,
+      [2600, 12400, 24516, 26300, 28900, 30500, 33400, 35200, 37000, 38100, 39000, 39999],
+      frames(26300, 40000, 200),
+      "two consoles: visit-chat to the host's START question answered with play on; host and visitor walk "
+      "into Tom Nook's store, where the visitor talks to him (on the host he talks with the other console's "
+      "player), sells the axe and asks after the turnips; then into the Able Sisters' shop, where it talks "
+      "to Mabel and Sable, and out again",
+      recording="visit-shops-host", peer=("guest-tools", "visit-shops-guest"))
+scene("visit-pitfall", "host-tools", 36771,
+      [2600, 12400, 24516, 26300, 26700, 27200, 28400, 29300, 29700, 31097, 32400, 33848, 35500, 36770],
+      frames(26300, 36771, 100),
+      "two consoles: visit-chat to the host's START question answered with play on; the visitor's lid is "
+      "closed and opened and its battery runs low (the host sees the other console's player sleep and "
+      "warn), then the visitor digs and buries a pitfall seed, the host walks onto it and falls in, and "
+      "wriggles out; the visitor drops an apple and picks it up again, casts the rod into the river and "
+      "reels in, and swings the axe at a tree",
+      recording="visit-pitfall-host", peer=("guest-tools", "visit-pitfall-guest"))
 scene("exchange-link", "bottle-sent", 5352, [1100, 2399, 3000, 3800, 4600, 5351], frames(2400, 5352, 50),
       "two consoles, each with a letter in a bottle sent: title-bottle's passing exchange on both; their "
       "exchange libraries meet, the blocks go over MP, each takes the other's block, saves and goes on into "

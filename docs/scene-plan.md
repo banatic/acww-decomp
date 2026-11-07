@@ -4929,3 +4929,47 @@ What reading the Clean code found about the groups above; counts are of function
   ResidentProcess_Delete); no live SceneProcessBase (020e3c94) or VillagerMemoryWide (020e18ec)
   in any Reference image kept; empty (`bx lr`) bodies cannot count, since Native runs them as
   identity stubs.
+
+### Two consoles: the visitor in the shops, a villager's house, a pitfall, the lid and the battery (2026-11-08, link6)
+- visit-shops (two consoles, from visit-house's play-on answer at 26400): host and visitor walk
+  into Tom Nook's store, where the visitor talks to him and sells the axe through his sell
+  window and asks after the turnips. On the host Tom Nook enters his Other state for the other
+  console's player (NookClerk_EnterOther, _UpdateOther), and on the console that does not hold
+  the scene he waits for the link (NookClerk_EnterAwait, _UpdateAwait) and stands linked
+  (_EnterLinkedStand). The sale goes over the session (SessionMessage_Handle38,
+  Shops_ApplyMessage, SessionRecord_Write36, _Write37 and _Write57). In the Able Sisters' shop the
+  visitor talks to Mabel (her Other, Await, LinkedStand and LinkedTurn states) and to Sable
+  (TailorSister_EnterAwait, _UpdateAwait: only the Await on the console without the scene; the
+  visitor's A at her machine does not start a talk while the link holds her).
+- Native: with a third part, the visitor walking into a villager's house the host opened and
+  talking to it, the run diverges at frame 40425: the host's Native run calls
+  LocalRelay_SetReceiveBuffer's OS_DisableInterrupts where the Reference has
+  WM_SetMPDataToPortEx, and the visitor's Session_WriteRecords copies (MI_CpuCopy8) where the
+  Reference disables interrupts. It looks like the receive-queue timing of
+  Session_ProcessReceived (func_020739d0, Reference already) on the send side. visit-shops stops
+  at 40000, before the villager's house. In that part the villager's house gave RoomVillager's
+  Await and Release states (the room villager's wait and the other console's player's talk),
+  SessionVillager_SendMemoryTakeByIndex, _SendMemoryImpressionByIndex, _PackMemory,
+  _UnpackMemory, SessionMessage_TakeVillagerMemory, _SetVillagerMemoryImpression,
+  FieldActor_State38Message and SceneMotion_GoToSpotWalk, _GoToSpotTurnFirst and
+  _GoToSpotTurnAtSpot. Not landed.
+- visit-pitfall (two consoles, from the same frame): the visitor's lid is closed and opened (LID)
+  and its battery runs low (LOWBAT): the host runs the other console's states 0x83 and 0x84
+  (FieldActor_State83Message, _State84Message). The visitor then digs, fills and digs again
+  (State62Message, TileEvent_StartKind3), buries a pitfall seed, and the host walks onto it,
+  falls in and wriggles out (State73Message, _State74Message, _State75Message, TileArgs_Get,
+  TownTilePut_OnScene). The visitor drops an apple and picks it up by B (State19Message,
+  EndState19, FieldActor_FollowReportedToTile), casts the rod into the river and reels in
+  (State4DMessage, _State4FMessage, _State51Message, State51Saved_Get, _GetState4DSaved,
+  PackedBytes_UnpackPointAndValue) and swings the axe at a tree (State46Message, _State48Message,
+  EnterState47, RequestState47, EndState46Remote, GetState46Saved, RequestState46Saved,
+  GetPackedPointMode).
+- Not reached: the room objects' switch state (vtable slot 0x74) by the host's own furniture: in
+  the seed's house with a visitor in it, A at the cabinet, the clock, the chest and the gyroid
+  runs no class but the candle's 02252f2c (visit-house); the classes listed in
+  docs/multi-console.md still need pieces of their kinds in the host's house.
+- Refuted (the groups' reach notes, link6): the other console's field actor's messages 13,
+  what only those messages call 5, the special characters' wait 6 and talk with another
+  console's player 4, the link guard 3, code only unreachable code calls 2, local wireless 1.
+- Checked (run or driven call), on main 44a355b4: 23,298 before, 23,333 after (entered 22,236
+  to 22,285). The plan: seed 263 to 255, unknown 289 to 282, unreachable 2,393 to 2,359.

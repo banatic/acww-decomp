@@ -243,6 +243,14 @@ Done (phase 2): the access point, the network and the servers above; the scenes
 list of towns to visit, empty as no friend is online), `gate-wfc-no-ap`, `gate-wfc-no-dns`,
 `gate-wfc-conntest` and `gate-wfc-nas-error` (the error paths).
 
+Done (link6): `visit-shops` (the visitor talks to Tom Nook, sells to him, and talks to Mabel and
+Sable: the special characters' Other and Await states) and `visit-pitfall` (the visitor's lid
+and battery, a pitfall the host falls into, an apple dropped and picked up, the rod and the axe:
+the other console's field actor's states 0x19, 0x46-0x51, 0x62, 0x73-0x75, 0x83 and 0x84). Left
+open: the visitor talking to a villager in its house diverges with Native code at frame 40425
+(the send side's MP timing, as link5's receive side), and the room objects' switch state still
+needs pieces of the other classes in the host's house.
+
 Out of range: a recording's NORADIO (runtime/input.h) holds a console's wireless out of range.
 The consoles still exchange a message each frame, so they stay in step, but the one out of
 range sends nothing and takes in nothing, and the other hears nothing from it. The scene
