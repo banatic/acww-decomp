@@ -463,6 +463,20 @@ def vtable_slots(keys, slots: list[int]) -> dict[tuple[str, int], list[tuple[int
     return out
 
 
+def thunk_offsets(keys) -> dict[tuple[str, int], int]:
+    """For each function that is a C++ this-adjusting thunk (_ZThn<N>_...), N: its `this` is the
+    part of a base class N bytes into the complete object, which the thunk goes back to."""
+    syms = C.symbol_table(C.modules())
+    keys = set(keys)
+    out = {}
+    for module, ss in syms.by_module.items():
+        for s in ss:
+            m = re.match(r"_ZThn(\d+)_", s.name)
+            if m and (module, s.address & ~1) in keys:
+                out[(module, s.address & ~1)] = int(m[1])
+    return out
+
+
 def dump_scene(scene: str, frames: list[int], seed: pathlib.Path, dump: pathlib.Path) -> None:
     """The scene's Reference alone, with memory images after `frames` in `dump`."""
     sc = scenes.SCENES[scene]
@@ -539,11 +553,13 @@ def plan(groups: list[str], slots: list[int], free_slots: list[int], prefix: str
     """Check files <prefix>-<scene>-<frame>.txt from the survey: the scenes' moments taken greedily
     by how many functions they add, each function called once on a live object, no block called
     twice, a destructor that frees only on an object at the start of a block of a heap the game
-    has a Heap for, with that heap made current around it (a call at one of share_slots, a method
+    has a Heap for (or, through a this-adjusting thunk, on the base part of one: thunk_offsets),
+    with that heap made current around it (a call at one of share_slots, a method
     that leaves its object whole, may share it and is made before the others). The functions a
     driven call checks already (clean-driven.txt) are left out."""
     targets = open_targets(groups, new_only=True)
     vts = vtable_slots(targets, slots)
+    adjust = thunk_offsets(targets)
     by_vtable: dict[tuple[int, int], list[tuple[str, int]]] = {}
     for key, vs in vts.items():
         for v, slot in vs:
@@ -553,9 +569,11 @@ def plan(groups: list[str], slots: list[int], free_slots: list[int], prefix: str
         for f, found in json.loads(path.read_text()).items():
             for (v, slot), keys in by_vtable.items():
                 for o, start, _end, heap in found.get(f"{v:08x}", []):
-                    if slot in free_slots and (o != start or heap == 0):
-                        continue
                     for key in keys:
+                        # a destructor that frees: on the object a block starts with (through a
+                        # this-adjusting thunk, the base part of one: the thunk's offset past it)
+                        if slot in free_slots and (o - adjust.get(key, 0) != start or heap == 0):
+                            continue
                         moments.setdefault((path.stem, int(f)), {}).setdefault(key, []).append((o, start, v, slot, heap))
     done: set[tuple[str, int]] = set()
     written = 0

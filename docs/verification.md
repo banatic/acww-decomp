@@ -49,7 +49,8 @@ plays an existing scene's recording and, at a chosen frame, has the runtime call
 itself: when the main loop has done the frame's work and enters OS_SleepThread to wait for the
 next, the interpreter branches to the target as a game call would, with `this` a live object of
 the target's class found in that run (a block of the game's heaps whose first word is the
-class's vtable, at a block's start for a destructor that frees), through the object's own
+class's vtable, at a block's start for a destructor that frees, or for a this-adjusting thunk's
+the base part of such an object, as `delete` through a base pointer gives it), through the object's own
 vtable where the target is a slot of it. The target then runs as the ROM's code in the Reference
 run and as Native or Clean code in the other, like any function: its calls out and their
 arguments are checked at each crossing, and right after the calls memory is compared word for
@@ -60,7 +61,8 @@ A check passes when both runs, with every Clean function and with Native alone, 
 calls (none skipped; the step a call starts at is not compared, as Native code takes no steps),
 every call returned (a run that stops inside one, on an object whose state does not allow the
 call, fails even when both runs stop alike), and memory agrees. The functions it checks are
-those the calls entered in the Reference run that ran as Clean code; those no scene enters are
+those the calls entered in the Reference run that ran as Clean code (a call the interpreter makes
+runs a C++ thunk's or destructor's Clean code too, docs/runtime.md); those no scene enters are
 listed in `runtime/recordings/scenes/clean-driven.txt` (`tools/driven.py --record`), and the
 Clean progress map shows them as "checked by a driven call", below "checked in a run"; its
 legend and `tools/coverage.py` also give the two together, "checked (run or driven call)".
