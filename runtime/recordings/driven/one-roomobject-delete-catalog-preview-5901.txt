@@ -1,0 +1,9 @@
+# RoomObject_Delete (furniture of each room-object class): on a live object of its class, at the end of frame 5901 of catalog-preview
+scene catalog-preview
+frames 5910
+ram 2600,4800,5100,5600
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 5901 020e9a08 02377e9c 0 0 0 0 0  # Heap_SetCurrent(its heap)
+call 5901 02210de9 023790ec 0 0 0 02210de8 1c04b510  # ov004 RoomObject_Delete (this: an object of vtable 02250d30)
+call 5901 020e9a08 r2 0 0 0 0 0  # Heap_SetCurrent(as before)
+end

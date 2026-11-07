@@ -1,0 +1,12 @@
+# a state entry with no arguments (ov077 Mole_EnterState0, Mr. Resetti's state 0), while ov077 is loaded; at the end of frames of resetti
+scene resetti
+frames 8010
+ram 2600,2800,5000,7600
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 3001 02279355 0 0 0 0 02279354 47702001  # ov077 Mole_EnterState0
+call 4001 02279355 0 0 0 0 02279354 47702001  # ov077 Mole_EnterState0
+call 5001 02279355 0 0 0 0 02279354 47702001  # ov077 Mole_EnterState0
+call 6001 02279355 0 0 0 0 02279354 47702001  # ov077 Mole_EnterState0
+call 7001 02279355 0 0 0 0 02279354 47702001  # ov077 Mole_EnterState0
+call 8001 02279355 0 0 0 0 02279354 47702001  # ov077 Mole_EnterState0
+end

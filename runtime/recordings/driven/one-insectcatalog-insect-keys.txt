@@ -1,0 +1,17 @@
+# the insect catalog's phases 3 and 4 and its destructor of slot 16 (ov116 InsectCatalog_Phase3, _Phase4, _Destroy): on a live object of its class, while ov116 (not the fish list's ov115, at the same address) is loaded; at the end of frames of insect-keys
+scene insect-keys
+frames 4710
+ram 2600
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 3701 0229e5b9 023cb8bc 0 0 0 0229e1b8 f7fa2003  # ov116 InsectCatalog_Phase3 (this: an object of vtable 0229e8b8; the guard: a word of ov116's code that ov115's, at the same address, does not hold)
+call 3701 0229e5b5 023cb8bc 0 0 0 0229e1b8 f7fa2003  # ov116 InsectCatalog_Phase4 (this: an object of vtable 0229e8b8)
+call 4101 0229e5b9 023cb8bc 0 0 0 0229e1b8 f7fa2003  # ov116 InsectCatalog_Phase3 (this: an object of vtable 0229e8b8; the guard: a word of ov116's code that ov115's, at the same address, does not hold)
+call 4101 0229e5b5 023cb8bc 0 0 0 0229e1b8 f7fa2003  # ov116 InsectCatalog_Phase4 (this: an object of vtable 0229e8b8)
+call 4301 0229e5b9 023cb8bc 0 0 0 0229e1b8 f7fa2003  # ov116 InsectCatalog_Phase3 (this: an object of vtable 0229e8b8; the guard: a word of ov116's code that ov115's, at the same address, does not hold)
+call 4301 0229e5b5 023cb8bc 0 0 0 0229e1b8 f7fa2003  # ov116 InsectCatalog_Phase4 (this: an object of vtable 0229e8b8)
+call 4501 0229e5b9 023cb8bc 0 0 0 0229e1b8 f7fa2003  # ov116 InsectCatalog_Phase3 (this: an object of vtable 0229e8b8; the guard: a word of ov116's code that ov115's, at the same address, does not hold)
+call 4501 0229e5b5 023cb8bc 0 0 0 0229e1b8 f7fa2003  # ov116 InsectCatalog_Phase4 (this: an object of vtable 0229e8b8)
+call 4701 0229e5b9 023cb8bc 0 0 0 0229e1b8 f7fa2003  # ov116 InsectCatalog_Phase3 (this: an object of vtable 0229e8b8; the guard: a word of ov116's code that ov115's, at the same address, does not hold)
+call 4701 0229e5b5 023cb8bc 0 0 0 0229e1b8 f7fa2003  # ov116 InsectCatalog_Phase4 (this: an object of vtable 0229e8b8)
+vcall 4701 023cb8bc 40 023cb8bc 0 0 0 0229e8b8  # ov116 InsectCatalog_Destroy (slot 16; the two calls before it show ov116 is the overlay loaded)
+end

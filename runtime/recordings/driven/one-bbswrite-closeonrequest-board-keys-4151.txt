@@ -1,0 +1,7 @@
+# BbsWrite_CloseOnRequest (the menus' close on main's request): on a live object of its class, at the end of frame 4151 of board-keys
+scene board-keys
+frames 4160
+ram 2600
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 4151 0229ff5d 023c726c 0 0 0 0229ff5c 1c04b510  # ov112 BbsWrite_CloseOnRequest (this: an object of vtable 022a20d0)
+end

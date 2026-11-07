@@ -1,0 +1,7 @@
+# PocketsBox_WaitChoiceShown (the boxes' choice and error message): on a live object of its class, at the end of frame 4501 of bag-sell
+scene bag-sell
+frames 4510
+ram 2600,3800
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 4501 0229da05 023754bc 0 0 0 0229da08 1820480c  # ov100 PocketsBox_WaitChoiceShown (this: an object of vtable 0229ecb8)
+end

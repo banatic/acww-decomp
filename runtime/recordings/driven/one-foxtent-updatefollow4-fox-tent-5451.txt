@@ -1,0 +1,7 @@
+# FoxTent_UpdateFollow4 (the fox's tent's state 4, which no code asks for): on a live object of its class, at the end of frame 5451 of fox-tent
+scene fox-tent
+frames 5460
+ram 2600,4400
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 5451 022614a5 022b06a8 0 0 0 022614a4 b08db530  # ov052 FoxTent_UpdateFollow4 (this: an object of vtable 02261f40)
+end

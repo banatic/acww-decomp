@@ -1,0 +1,7 @@
+# WallpaperPreview_Destroy (the other classes' destructors of vtable slot 16): on a live object of its class, at the end of frame 5151 of catalog-preview
+scene catalog-preview
+frames 5160
+ram 2600,4800,5100
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 5151 023799d8 40 023799d8 0 0 0 022511e0  # ov004 WallpaperPreview_Destroy (slot 16)
+end
