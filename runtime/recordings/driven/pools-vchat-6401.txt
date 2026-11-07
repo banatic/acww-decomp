@@ -1,0 +1,31 @@
+# at the end of frame 6401 of villager-chat, blocks from the game's heap (operator new)
+# constructed and deleted by their deleting destructors (vtable entry 1): the pool links of the
+# clothes, the face animations' heaps and slots and the speaker's animations, the slot pools of
+# the face animations' heaps and slots (5 entries), and a sound scene of kind 32 (0x40 bytes);
+# the run ends after the calls
+scene villager-chat
+frames 6410
+ram 2600,4500,5300,6400
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 6401 020edb54 8 0 0 0 00000000 00000000  # autoload_2 Heap_OperatorNewB
+call 6401 02082eed r1 0 0 0 00000000 00000000  # main PoolLink_ClothesConstruct
+call 6401 02082eb5 r2 0 0 0 00000000 00000000  # main PoolLink_ClothesDestructDelete
+call 6401 020edb54 8 0 0 0 00000000 00000000  # autoload_2 Heap_OperatorNewB
+call 6401 02082d91 r1 0 0 0 00000000 00000000  # main PoolLink_FaceAnimHeapConstruct
+call 6401 02082d59 r2 0 0 0 00000000 00000000  # main PoolLink_FaceAnimHeapDestructDelete
+call 6401 020edb54 8 0 0 0 00000000 00000000  # autoload_2 Heap_OperatorNewB
+call 6401 02082e05 r1 0 0 0 00000000 00000000  # main PoolLink_FaceAnimSlotConstruct
+call 6401 02082dcd r2 0 0 0 00000000 00000000  # main PoolLink_FaceAnimSlotDestructDelete
+call 6401 020edb54 8 0 0 0 00000000 00000000  # autoload_2 Heap_OperatorNewB
+call 6401 02083051 r1 0 0 0 00000000 00000000  # main PoolLink_SpeakerAnimConstruct
+call 6401 02083019 r2 0 0 0 00000000 00000000  # main PoolLink_SpeakerAnimDestructDelete
+call 6401 020edb54 12 0 0 0 00000000 00000000  # autoload_2 Heap_OperatorNewB
+call 6401 02083389 r1 0 0 0 00000000 00000000  # main SlotPool_FaceAnimHeapsConstruct
+call 6401 02083329 r2 0 0 0 00000000 00000000  # main SlotPool_FaceAnimHeapsDestructDelete
+call 6401 020edb54 12 0 0 0 00000000 00000000  # autoload_2 Heap_OperatorNewB
+call 6401 020834c9 r1 0 0 0 00000000 00000000  # main SlotPool_FaceAnimSlotsConstruct
+call 6401 02083469 r2 0 0 0 00000000 00000000  # main SlotPool_FaceAnimSlotsDestructDelete
+call 6401 020edb54 40 0 0 0 00000000 00000000  # autoload_2 Heap_OperatorNewB
+call 6401 020f3390 r1 0 0 0 00000000 00000000  # autoload_2 SoundScene32_Construct
+call 6401 020f3340 r2 0 0 0 00000000 00000000  # autoload_2 SoundScene32_DestructDelete
+end

@@ -1,0 +1,9 @@
+# the checkpoint by the gate (022b5a70, class data_ov003_02238934, live at that address in the
+# outdoor scenes' images) at the end of frame 6401 of villager-chat: the town flag's design put
+# on its model again, as main does when that design changes; the run ends after the call
+scene villager-chat
+frames 6410
+ram 2600,4500,5300,6400
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 6401 0221c4bd 022b5a70 0 0 0 0221c4bc b081b530  # ov003 Checkpoint_RefreshDesign
+end
