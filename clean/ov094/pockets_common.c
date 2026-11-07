@@ -36,7 +36,8 @@ static int in_range(unsigned int item, unsigned int first, unsigned int last)
 
 /* func_ov094_022999e4: whether the pockets scene of the town (PocketsTown_CanDropItem) lets
  * `item` be dropped: not an insect or a fish (0x12b0-0x131f, they are let go), not a flower
- * (0x137c, 0x1408-0x1428, 0x1471-0x1491, they are planted); 1 for every other code. */
+ * (0x137c and 0x1408-0x1428, they are planted) and not a mouth flower (0x1471-0x1491, worn in
+ * the accessory slot); 1 for every other code. */
 int PocketsItem_CanDrop(unsigned int item)
 {
     if (in_range(item, 0x12e8, 0x131f) || in_range(item, 0x12b0, 0x12e7)) {
