@@ -1,0 +1,10 @@
+# 4 functions of the destructors of vtable slot 0 of those classes, the menu scenes' destructors of vtable slot 16, the menu scenes' phases 3 and 4: each on a live object of its class, through the object's vtable, at the end of frame 5151 of mailbox-touch-read (tools/driven.py --plan)
+scene mailbox-touch-read
+frames 5160
+ram 2600,3700,4600,4960
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 5151 023c9b58 58 023c9b58 0 0 0 0229f6e0  # ov106 MailboxScene_Phase4Idle (slot 22)
+vcall 5151 023c9b58 54 023c9b58 0 0 0 0229f6e0  # ov106 MailboxScene_Phase3Idle (slot 21)
+vcall 5151 022b4874 0 022b4874 0 0 0 022386f4  # ov003 Fox_ReceiverDestroy (slot 0)
+vcall 5151 023c9b58 40 023c9b58 0 0 0 0229f6e0  # ov106 MailboxScene_Destroy (slot 16)
+end

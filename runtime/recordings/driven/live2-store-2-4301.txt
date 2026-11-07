@@ -1,0 +1,12 @@
+# 6 functions of the destructors of vtable slot 0 of those classes, the other classes' destructors of vtable slot 16, the room objects' switch state for the linked session (vtable slot 0x74), the scene sound classes' slot 0 and base slots: each on a live object of its class, through the object's vtable, at the end of frame 4301 of store-2 (tools/driven.py --plan)
+scene store-2
+frames 4310
+ram 2600,3950
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 4301 0237aec4 74 0237aec4 0 0 0 022509ac  # ov004 GlowingRoomObject_StateIsOn (slot 29)
+vcall 4301 0232ae20 0 0232ae20 0 0 0 0213ebd8  # autoload_2 SoundScene32_Destruct (slot 0)
+vcall 4301 02368e4c 0 02368e4c 0 0 0 020dd0cc  # main LayeredModel_DestructAFromRamp (slot 0)
+vcall 4301 022b0304 0 022b0304 0 0 0 0224fcc0  # ov004 AtmReceiver_Destroy (slot 0)
+vcall 4301 0237aec4 40 0237aec4 0 0 0 022509ac  # ov004 GlowingRoomObject_Destroy (slot 16)
+vcall 4301 0237a6c4 0 0237a6c4 0 0 0 02252eac  # ov004 RoomObject02252e00Receiver_Destroy (slot 0)
+end

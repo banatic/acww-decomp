@@ -1,0 +1,9 @@
+# 3 functions of the destructors of vtable slot 0 of those classes, the other classes' destructors of vtable slot 16: each on a live object of its class, through the object's vtable, at the end of frame 5401 of villager-new-year (tools/driven.py --plan)
+scene villager-new-year
+frames 5410
+ram 2600,4600,5000
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 5401 022b4840 0 022b4840 0 0 0 02238d18  # ov003 CountdownBoard_ReceiverDestroy (slot 0)
+vcall 5401 023a502c 0 023a502c 0 0 0 02238bd4  # ov003 CountdownDigit_ReceiverDestroy (slot 0)
+vcall 5401 022a6020 40 022a6020 0 0 0 0227938c  # ov086 TurtleCountdown_Destroy (slot 16)
+end

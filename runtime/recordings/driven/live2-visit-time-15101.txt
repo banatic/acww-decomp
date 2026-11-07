@@ -1,0 +1,9 @@
+# 3 functions of the menu scenes' destructors of vtable slot 16, the menu scenes' phases 3 and 4: each on a live object of its class, through the object's vtable, at the end of frame 15101 of visit-time (tools/driven.py --plan)
+scene visit-time
+frames 15110
+ram 3000,6300,12900,13500,14300
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 15101 023cb360 58 023cb360 0 0 0 0229d510  # ov136 TimeScreen_Phase4Idle (slot 22)
+vcall 15101 023cb360 54 023cb360 0 0 0 0229d510  # ov136 TimeScreen_Phase3Idle (slot 21)
+vcall 15101 023cb360 40 023cb360 0 0 0 0229d510  # ov136 TimeScreen_Destroy (slot 16)
+end

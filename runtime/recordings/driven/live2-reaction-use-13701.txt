@@ -1,0 +1,7 @@
+# 1 functions of the other classes' destructors of vtable slot 16: each on a live object of its class, through the object's vtable, at the end of frame 13701 of reaction-use (tools/driven.py --plan)
+scene reaction-use
+frames 13710
+ram 2600,7300,11900,13200
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 13701 022a6f4c 40 022a6f4c 0 0 0 02279cec  # ov088 ReactionNpc_Destroy (slot 16)
+end

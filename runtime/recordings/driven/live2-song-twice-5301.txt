@@ -1,0 +1,10 @@
+# 4 functions of the destructors of vtable slot 0 of those classes, the menu scenes' destructors of vtable slot 16, the menu scenes' phases 3 and 4: each on a live object of its class, through the object's vtable, at the end of frame 5301 of song-twice (tools/driven.py --plan)
+scene song-twice
+frames 5310
+ram 2600,3900,4300,4800
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 5301 0235fc9c 58 0235fc9c 0 0 0 0229dbd8  # ov109 SongPockets_Phase4Idle (slot 22)
+vcall 5301 0235fc9c 54 0235fc9c 0 0 0 0229dbd8  # ov109 SongPockets_Phase3Idle (slot 21)
+vcall 5301 02363a68 0 02363a68 0 0 0 022528d0  # ov004 RoomObject02252824Receiver_Destroy (slot 0)
+vcall 5301 0235fc9c 40 0235fc9c 0 0 0 0229dbd8  # ov109 SongPockets_Destroy (slot 16)
+end

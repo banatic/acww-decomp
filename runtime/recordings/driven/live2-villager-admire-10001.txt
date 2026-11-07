@@ -1,0 +1,7 @@
+# 1 functions of the other classes' destructors of vtable slot 16: each on a live object of its class, through the object's vtable, at the end of frame 10001 of villager-admire (tools/driven.py --plan)
+scene villager-admire
+frames 10010
+ram 2600,4200,6200,8000,9100
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 10001 022a630c 40 022a630c 0 0 0 02279b00  # ov073 Boar_Destruct (slot 16)
+end

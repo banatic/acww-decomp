@@ -1,0 +1,7 @@
+# 1 functions of the other classes' destructors of vtable slot 16: each on a live object of its class, through the object's vtable, at the end of frame 15401 of villager-errand-normal (tools/driven.py --plan)
+scene villager-errand-normal
+frames 15410
+ram 3000,6600,9100,11100,13400,14900
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 15401 022a631c 40 022a631c 0 0 0 02279b2c  # ov078 Camel_Destruct (slot 16)
+end

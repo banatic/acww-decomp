@@ -1,0 +1,9 @@
+# 3 functions of the destructors of vtable slot 0 of those classes, the other classes' destructors of vtable slot 16, the scene sound classes' slot 0 and base slots: each on a live object of its class, through the object's vtable, at the end of frame 7601 of museum-fossil-sign (tools/driven.py --plan)
+scene museum-fossil-sign
+frames 7610
+ram 2600,4600,6200,6800
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 7601 0232ae20 0 0232ae20 0 0 0 0213ed78  # autoload_2 SoundScene44_Destruct (slot 0)
+vcall 7601 022b5888 0 022b5888 0 0 0 02253454  # ov004 EtcMuseumReceiver_Destroy (slot 0)
+vcall 7601 022b699c 40 022b699c 0 0 0 02256780  # ov004 MuseumSetupFossils_Destruct (slot 16)
+end

@@ -1,0 +1,11 @@
+# 5 functions of the destructors of vtable slot 0 of those classes, the other classes' destructors of vtable slot 16: each on a live object of its class, through the object's vtable, at the end of frame 6651 of sick-villager (tools/driven.py --plan)
+scene sick-villager
+frames 6660
+ram 2600,5365,5900
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 6651 02371394 0 02371394 0 0 0 02253104  # ov004 BedObjectReceiver_Destroy (slot 0)
+vcall 6651 0236cc34 0 0236cc34 0 0 0 02251868  # ov004 MusicPlayerReceiver_Destroy (slot 0)
+vcall 6651 0236e6f8 0 0236e6f8 0 0 0 02252c54  # ov004 RoomObject02252ba8Receiver_Destroy (slot 0)
+vcall 6651 0236c348 0 0236c348 0 0 0 0225173c  # ov004 RoomObject02251690Receiver_Destroy (slot 0)
+vcall 6651 022b0510 40 022b0510 0 0 0 022541d8  # ov004 SickVillager_Destroy (slot 16)
+end

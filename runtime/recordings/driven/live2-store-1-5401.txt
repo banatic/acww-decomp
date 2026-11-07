@@ -1,0 +1,7 @@
+# 1 functions of the scene sound classes' slot 0 and base slots: each on a live object of its class, through the object's vtable, at the end of frame 5401 of store-1 (tools/driven.py --plan)
+scene store-1
+frames 5410
+ram 2600,3950,4600
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 5401 0232ae20 0 0232ae20 0 0 0 0213eba4  # autoload_2 SoundScene31_Destruct (slot 0)
+end

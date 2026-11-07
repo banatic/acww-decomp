@@ -1,0 +1,11 @@
+# 5 functions of the destructors of vtable slot 0 of those classes, the lost child's walk home, and the test character, the other classes' destructors of vtable slot 16: each on a live object of its class, through the object's vtable, at the end of frame 5801 of lost-mother (tools/driven.py --plan)
+scene lost-mother
+frames 5810
+ram 2600,3800,4500,5100
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 5801 022a6974 18 022a6974 0 0 0 020e7e14  # main MissingNpc2Talk_OnAnswer (slot 6)
+vcall 5801 022a631c bc 022a631c 0 0 0 020e7ea4  # main NpcPlc_EnterTurnBack (slot 47)
+vcall 5801 022a631c b4 022a631c 0 0 0 020e7ea4  # main NpcPlc_UpdateTalk (slot 45)
+vcall 5801 022a631c ac 022a631c 0 0 0 020e7ea4  # main NpcPlc_EnterTalk (slot 43)
+vcall 5801 022a631c 40 022a631c 0 0 0 020e7ea4  # main MissingNpc2_Destruct (slot 16)
+end

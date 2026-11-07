@@ -1,0 +1,16 @@
+# 10 functions of the destructors of vtable slot 0 of those classes, the menu scenes' phases 3 and 4, the other classes' destructors of vtable slot 16, the room objects' switch state for the linked session (vtable slot 0x74), the scene sound classes' slot 0 and base slots: each on a live object of its class, through the object's vtable, at the end of frame 6301 of store-upstairs (tools/driven.py --plan)
+scene store-upstairs
+frames 6310
+ram 2600,3950,4600,5400
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+vcall 6301 0237a2c4 74 0237a2c4 0 0 0 022518e8  # ov004 RoomObject022518e8_StateIsOn (slot 29)
+vcall 6301 023754bc 58 023754bc 0 0 0 0229ecb8  # ov110 PublicBox_Phase4Idle (slot 22)
+vcall 6301 023754bc 54 023754bc 0 0 0 0229ecb8  # ov110 PublicBox_Phase3Idle (slot 21)
+vcall 6301 0232ae20 0 0232ae20 0 0 0 0213e9d0  # autoload_2 SoundScene34_Destruct (slot 0)
+vcall 6301 02368230 0 02368230 0 0 0 020dd0bc  # main LayeredModel_DestructAFromFrames (slot 0)
+vcall 6301 0237a2c4 40 0237a2c4 0 0 0 022518e8  # ov004 RoomObject022518e8_Destroy (slot 16)
+vcall 6301 02378000 0 02378000 0 0 0 02252fd8  # ov004 RoomObject02252f2cReceiver_Destroy (slot 0)
+vcall 6301 023791d8 0 023791d8 0 0 0 02252d80  # ov004 RoomObject02252cd4Receiver_Destroy (slot 0)
+vcall 6301 0237be74 0 0237be74 0 0 0 022521c8  # ov004 ChestReceiver_Destroy (slot 0)
+vcall 6301 022b3368 0 022b3368 0 0 0 022532f4  # ov004 RoomEtcBoardReceiver_Destroy (slot 0)
+end
