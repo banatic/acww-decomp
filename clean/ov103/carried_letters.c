@@ -163,8 +163,7 @@ static void carried_destroy_members(CarriedLetters *self)
     Glide_Destroy(&self->glide);
     Popup_Destroy(&self->popup);
     PocketsWallet_Destruct(&self->wallet);
-    /* The ROM calls 0x0229bc30, ov094's function; the matching sources name ov128's and ov119's
-     * at the same address. */
+    /* The ROM calls 0x0229bc30, ov094's function (the overlay loaded with this one). */
     PocketsLetters_Destruct(&self->letters);
     PocketsGrid_Destruct(&self->grid);
     MenuScene_DestroyBase(carried_scene(self));

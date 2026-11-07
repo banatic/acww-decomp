@@ -82,11 +82,10 @@ extern void *func_ov002_02209cb4(char *);
 extern void func_ov002_02209e38(char *);
 extern void *func_ov002_02207e28(char *);
 extern void *func_ov094_0229a2d0(char *);
-extern void func_ov119_0229bc30(char *);
+extern void func_ov094_0229bc30(char *);
 extern void *func_ov094_0229afe0(char *);
 extern void *func_ov002_0220826c(char *);
 extern void func_ov002_02207f6c(char *);
-extern void func_ov128_0229bc30(void *);
 extern unsigned char data_ov103_0229e2e0[];
 
 void func_ov103_0229c32c(void *p);
@@ -291,7 +290,10 @@ char *func_ov103_0229c228(char *self)
     func_ov002_02209e38(self + 0x225c);
     func_ov002_02207e28(self + 0x218c);
     func_ov094_0229a2d0(self + 0xb54);
-    func_ov119_0229bc30(self + 0xb2c);
+    /* the call's address holds ov094's function (PocketsLetters_Destruct) whenever this overlay
+     * is loaded, as the next call's, which only ov094 has; the relocation allows ov094, ov119
+     * and ov128 */
+    func_ov094_0229bc30(self + 0xb2c);
     func_ov094_0229afe0(self + 0xcc);
     func_ov002_0220826c(self);
     func_ov002_02207f6c(self);
@@ -311,7 +313,8 @@ void *func_ov103_0229c180(void *self)
     func_ov002_02209e38((char *) ((char *) self + 0x225c));
     func_ov002_02207e28((char *) ((char *) self + 0x218c));
     func_ov094_0229a2d0((char *) ((char *) self + 0x0b54));
-    func_ov128_0229bc30((char *) self + 0x0b2c);
+    /* ov094's function, as in func_ov103_0229c228 */
+    func_ov094_0229bc30((char *) self + 0x0b2c);
     func_ov094_0229afe0((char *) ((char *) self + 0xcc));
     func_ov002_0220826c((char *) self);
     return self;
