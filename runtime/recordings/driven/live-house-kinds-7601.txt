@@ -15,7 +15,6 @@ vcall 7601 021c80c4 84 021c80c4 0 0 0 020e50e8  # main MessageDecoder_InsertSour
 vcall 7601 021c80c4 8c 021c80c4 0 0 0 020e50e8  # main MessageDecoder_InsertSourceThird (slot 35)
 vcall 7601 021c80c4 54 021c80c4 0 0 0 020e50e8  # main MessageDecoder_InsertSourceSecond (slot 21)
 vcall 7601 021c80c4 4c 021c80c4 0 0 0 020e50e8  # main MessageDecoder_InsertSourceFirst (slot 19)
-vcall 7601 021f6b28 14 021f6b28 0 0 0 020e5858  # main PlainProcess_Create (slot 5)
 vcall 7601 02364268 74 02364268 0 0 0 02252e00  # ov004 RoomObject_Vfunc74 (slot 29)
 vcall 7601 02363090 74 02363090 0 0 0 022517bc  # ov004 MusicPlayer_StateIsOn (slot 29)
 vcall 7601 02365d2c 74 02365d2c 0 0 0 02252248  # ov004 RoomObject02252248_StateIsOn (slot 29)

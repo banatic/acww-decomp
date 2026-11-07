@@ -1,28 +1,29 @@
 # small functions given the villager-chat's live objects, fixed records and a block taken from a
-# heap of the game (022a3378) and given back after; at the end of frame 5301 of villager-chat
+# heap of the game (022a3378) as an argument and given back after: the talk scene (022a7a4c,
+# class 020d9df8) asked whether its command is busy and turning the player to its first speaker
+# (022a73cc), that speaker's look (+0x3b0) and mover (+0x350), the scene music (the music
+# object 022b6fa4 + 0x2a0), the near spot of data_021d27ac (+0x24), the open sound group's
+# list (021fd054); at the end of frame 5301 of villager-chat
 scene villager-chat
 frames 5310
 ram 2600,4500,5300
 arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
 call 5301 020e9948 022a3378 80 0 0 00000000 00000000  # autoload_2 Heap_Alloc (a scratch block)
-call 5301 0202ff15 02392170 023921cc 0 0 00000000 00000000  # main CollisionLine_Spans
-call 5301 0202ffbd 02392170 r2 023921cc 0 00000000 00000000  # main CollisionLine_NearestDistance
 call 5301 0202f3e1 0 0 0 0 00000000 00000000  # main CollisionSegment_IsRecorded
 call 5301 020ba31d 0 0 0 0 00000000 00000000  # main Block020ba298_SetByte7Or8
 call 5301 020ba31d 1 0 0 0 00000000 00000000  # main Block020ba298_SetByte7Or8
 call 5301 020ba335 0 0 0 0 00000000 00000000  # main Block020ba298_SetByte6
 call 5301 0206f781 0 0 0 0 00000000 00000000  # main StateFlags_Set8
-call 5301 0201595d 02392170 0 0 0 00000000 00000000  # main SceneCommand_IsBusy
-call 5301 0201a7fd 02392170 0 0 0 00000000 00000000  # main SceneLook_IsOnTarget
+call 5301 0201595d 022a7a4c 0 0 0 022a7a4c 020d9df8  # main SceneCommand_IsBusy (the talk scene)
+call 5301 0201a7fd 022a777c 0 0 0 022a73cc 022771c0  # main SceneLook_IsOnTarget (the first speaker's look)
 call 5301 0201b6dd 022a73cc 0 0 0 00000000 00000000  # main SceneObject_VillagerRecord
-call 5301 0203419d 02392170 0 0 0 00000000 00000000  # main CollisionGround_GetLimit
-call 5301 020199d9 r12 023921cc 0 0 00000000 00000000  # main SceneMotionNote_UnpackItem
-call 5301 020367e5 r13 0 0 0 00000000 00000000  # main SceneMusic_ForceLateMusic
-call 5301 0201af49 r14 0 0 0 00000000 00000000  # main SceneMover_EndAtStart
-call 5301 02087e21 r15 0 0 0 00000000 00000000  # main NearSpot_ClearFound
-call 5301 020efc20 r16 0 0 0 00000000 00000000  # autoload_2 SoundList_Prev
+call 5301 020199d9 r9 023921cc 0 0 00000000 00000000  # main SceneMotionNote_UnpackItem (into the scratch block)
+call 5301 020367e5 022b7244 0 0 0 022b7244 020da2f4  # main SceneMusic_ForceLateMusic (the music object's scene music)
+call 5301 0201af49 022a771c 0 0 0 022a73cc 022771c0  # main SceneMover_EndAtStart (the first speaker's mover)
+call 5301 02087e21 021d27d0 0 0 0 00000000 00000000  # main NearSpot_ClearFound (data_021d27ac's near spot)
+call 5301 020efc20 021fd054 0 0 0 00000000 00000000  # autoload_2 SoundList_Prev (the open sound group's list)
 call 5301 0206f4f5 023921cc 0 0 0 00000000 00000000  # main GroupParams_SetTextD48
 call 5301 0203a76d 12e8 0 0 0 00000000 00000000  # main TownItemLists_PushLostAndFound
-call 5301 02015c3d 0 022a73cc 0 0 00000000 00000000  # main SceneBase_PlayerLooksAt
-call 5301 020e993c 022a3378 r20 0 0 00000000 00000000  # autoload_2 Heap_Free
+call 5301 02015c3d 022a7a4c 022a73cc 0 0 022a7a4c 020d9df8  # main SceneBase_PlayerLooksAt (the talk scene, its first speaker)
+call 5301 020e993c 022a3378 r17 0 0 00000000 00000000  # autoload_2 Heap_Free
 end

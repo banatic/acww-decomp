@@ -2,7 +2,6 @@
 scene letter-full
 frames 2610
 arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
-vcall 2601 022b6a64 48 022b6a64 0 0 0 020e5408  # main SceneClass4_New (slot 18)
 vcall 2601 0231a994 0 0231a994 0 0 0 0213ef4c  # autoload_2 SoundScene99_Destruct (slot 0)
 vcall 2601 022b6a64 40 022b6a64 0 0 0 020e5408  # main SceneChange_Destruct (slot 16)
 end

@@ -19,8 +19,6 @@ vcall 5301 02396ee4 8 02396ee4 0 0 0 020def9c  # main TalkSpan_OnText
 vcall 5301 02396ee4 10 02396ee4 20 0 0 020def9c  # main TalkSpan_OnCharacter (a space)
 vcall 5301 02396ee4 c 02396ee4 0 0 0 020def9c  # main TalkSpan_OnEnd
 call 5301 0206be6d 02396ee4 0 0 0 0 0  # main TalkSpan_Reset
-vcall 5301 023978f0 20 023978f0 0 0 0 020e18d4  # main VillagerMemoryWide_Capacity (slot 2 of 020e18ec)
-vcall 5301 023978f0 24 023978f0 0 0 0 020e18d4  # main VillagerMemoryWide_Buffer (slot 3 of 020e18ec)
 vcall 5301 022a3378 34 022a3378 0 0 0 0213e5b0  # autoload_2 ExpHeap_FreeSize
 vcall 5301 022a3378 38 022a3378 0 0 0 0213e5b0  # autoload_2 ExpHeap_LargestBlock
 vcall 5301 022a3378 3c 022a3378 4 0 0 0213e5b0  # autoload_2 ExpHeap_Allocatable (alignment 4)

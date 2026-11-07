@@ -1,7 +1,7 @@
 # the town's events and effects at the field actor's position (023921cc), a villager's path
 # walker (the behaviour of 022a880c + 0x3c) asked for tiles and its goal, its sound slots
 # (022a7dec + 0x518) stopped, the object at data_021c9350 (022aacf0) entering mode 7 of kind 1,
-# a scene process made and freed, at the end of frame 6401 of villager-chat; the run ends after
+# at the end of frame 6401 of villager-chat; the run ends after
 # the calls
 scene villager-chat
 frames 6410
@@ -24,7 +24,5 @@ call 6401 020129c1 r13 0 0 022a880c 00000000 00000000  # main PathWalker_PickOth
 call 6401 020ef144 022a8304 0 0 0 00000000 00000000  # autoload_2 SoundSlots_StopHeld
 call 6401 020f555c 022a8304 0 0 0 00000000 00000000  # autoload_2 SoundEmitterClass_ApplyLowered
 call 6401 02058165 022aacf0 0 0 0 00000000 00000000  # main Obj020dd33c_EnterMode7Kind1
-call 6401 020a56d5 0 0 0 0 00000000 00000000  # main SceneProcessBase_New
-call 6401 020a5275 r1 0 0 0 00000000 00000000  # main SceneProcessBase_DestructFree
 call 6401 020b4bf1 021f66a0 2 0 0 00000000 00000000  # main MessageCursor_Mask
 end

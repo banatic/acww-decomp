@@ -1,6 +1,6 @@
 # small functions given villager-chat's live objects and fixed records and blocks of the
 # game's heap (022a3378), at the end of frame 5301: the activity's job tests, the debug text's
-# writers and readability test, the fox's password, the save stamp's flag, a claim's exits,
+# writers and readability test, the fox's password, the save stamp's flag, the claim's exit (021dc6e8),
 # the touch picks, the field actor (02392170) following a tile, a villager's held item link
 # (022a7dec + 0x9b4); the run ends after the calls
 scene villager-chat
@@ -23,8 +23,8 @@ call 5301 020018b5 r8 020e3c2c 10 0 00000000 00000000  # main DebugScreen_DumpWo
 call 5301 020a01d5 0 0 0 0 00000000 00000000  # main SaveStamp_SetLostFlag
 call 5301 020ae3b9 021f3b30 0 0 0 00000000 00000000  # main FoxShop_Password
 call 5301 020ae495 r1 0 0 0 00000000 00000000  # main FoxPassword_MarkVisitor
-call 5301 0209d841 r11 0 0 0 00000000 00000000  # main SceneClaimExit_NextTile
-call 5301 0209d845 r12 0 0 0 00000000 00000000  # main SceneClaimExit_Position
+call 5301 0209d841 021dc6e8 0 0 0 00000000 00000000  # main SceneClaimExit_NextTile (the claim's exit, data_021dc6e8)
+call 5301 0209d845 021dc6e8 0 0 0 00000000 00000000  # main SceneClaimExit_Position
 call 5301 020b735d 0 0 0 0 00000000 00000000  # main TouchPick_Snowman
 call 5301 020b73ad 0 0 0 0 00000000 00000000  # main TouchPick_Telephone
 call 5301 020b74a5 0 0 0 0 00000000 00000000  # main TouchPick_ObjectActorKind6

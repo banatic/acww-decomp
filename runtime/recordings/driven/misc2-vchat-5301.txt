@@ -2,7 +2,7 @@
 # a block from the game's heap (022a3378): the sender's name of the first letter of player 0's
 # pockets (021dd964), the field actor's (02392170) end of state 0x1a, the first villager's
 # (022a73cc) shared extra bytes, group 9 opened,
-# and a cloth slot's texture copied from slot 2 to slot 1; the run ends after the calls
+# and the field actor's cloth slot (02392170 + 0x774) given slot 2's texture; the run ends after the calls
 scene villager-chat
 frames 5310
 ram 2600,4500,5300
@@ -12,6 +12,5 @@ call 5301 02065f59 021dd964 r1 0 0 00000000 00000000  # main Letter_SenderName
 call 5301 0200a765 02392170 0 0 0 00000000 00000000  # main FieldActor_FinishState1A
 call 5301 0201bfd9 022a73cc r3 4 0 00000000 00000000  # main SceneShare_ReadExtra
 call 5301 0206f7dd 0 0 0 0 00000000 00000000  # main GroupParams_OpenWithC80C88
-call 5301 02117568 r5 1 1 0 00000000 00000000  # autoload_2 MI_CpuFill8
-call 5301 0205d271 r6 2 0 0 00000000 00000000  # main ClothSlots_CopySlot
+call 5301 0205d271 023928e4 2 0 0 02392170 020d82b4  # main ClothSlots_CopySlot (the field actor's cloth slot, +0x774)
 end
