@@ -74,6 +74,14 @@ cannot go on (a fish's next frame calls through a vtable the destructor replaced
 check ends right after the calls (`end`) rather than compare frames of a broken game. Paths
 inside the function that this one state does not take are not checked, as in any run.
 
+A factory that makes an actor (NpcPlc_Create, a room object's or a shop villager's) also reads
+the new actor's place and angle through two pointers the game sets right before each creation
+(Actor_Spawn, `clean/main/actor.c`) and never clears: between frames they point into a dead
+stack frame, the guest stack's in the Reference run and the PC's in the Native one, so a factory
+called there would copy two different leftovers. Its check first calls
+Actor_SetSpawnPlacement with none (NULL, NULL), as the game's own spawns of room objects do, so
+the factory leaves the place alone.
+
 ## Status (2026-10-21)
 
 | | Game code (`src/`) | With the libraries |

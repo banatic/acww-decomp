@@ -1,0 +1,8 @@
+# a factory with no arguments (ov004 RoomObject_Create, slot 2 of a live room object), with no place set for its new actor; at the end of frame 4301 of errand-nook
+scene errand-nook
+frames 4310
+ram 2600,3800
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 4301 02003379 0 0 0 0 0 0  # main Actor_SetSpawnPlacement(none): what a factory reads as its new actor's place, which the game sets right before each one (Actor_Spawn) and leaves pointing into a dead stack frame
+vcall 4301 023786d8 8 023786d8 0 0 0 0224fe44  # ov004 RoomObject_Create (slot 2)
+end

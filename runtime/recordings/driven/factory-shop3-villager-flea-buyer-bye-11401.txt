@@ -1,0 +1,8 @@
+# a factory with no arguments (ov004 Shop3Villager_New, slot 69 of a live Shop3Villager), with no place set for its new actor; at the end of frame 11401 of flea-buyer-bye
+scene flea-buyer-bye
+frames 11410
+ram 4100,5500,8500,10300,10700
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 11401 02003379 0 0 0 0 0 0  # main Actor_SetSpawnPlacement(none): what a factory reads as its new actor's place, which the game sets right before each one (Actor_Spawn) and leaves pointing into a dead stack frame
+vcall 11401 022afd50 114 022afd50 0 0 0 02253e10  # ov004 Shop3Villager_New (slot 69)
+end
