@@ -1,0 +1,32 @@
+# 0 functions of the base classes' own destructors every class replaces, the destructors of vtable slot 0 of those classes, the menu scenes' base virtual functions every class overrides, the scene object bases' slot 0x68 every class replaces, the talk engine: tags, pages, windows, sliders: each on a live object of its class, at the end of frame 8101 of resetti-3
+scene resetti-3
+frames 8110
+ram 2600,4600,7500,8040
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 8101 0201bce9 022a73cc 0 0 0 022a73cc 022771c0  # main SceneObject_Vfunc68 (this: an object of a class derived from its own, vtable 022771c0)
+call 8101 02208155 023cdee8 0 0 0 02208154 47702001  # ov002 MenuScene_Phase5 (this: an object of a class derived from its own, vtable 02299508)
+call 8101 02208159 023cdee8 0 0 0 02208158 47702001  # ov002 MenuScene_Phase4 (this: an object of a class derived from its own, vtable 02299508)
+call 8101 0220815d 023cdee8 0 0 0 0220815c 47702001  # ov002 MenuScene_Phase3 (this: an object of a class derived from its own, vtable 02299508)
+call 8101 02208161 023cdee8 0 0 0 02208160 47702001  # ov002 MenuScene_Phase2 (this: an object of a class derived from its own, vtable 02299508)
+call 8101 02208165 023cdee8 0 0 0 02208164 47702001  # ov002 MenuScene_Phase1 (this: an object of a class derived from its own, vtable 02299508)
+call 8101 020e9a08 023920f8 0 0 0 0 0  # Heap_SetCurrent(its heap)
+call 8101 0200319d 02392170 0 0 0 02392170 020d82b4  # main Actor_DestructDelete (this: an object of a class derived from its own, vtable 020d82b4)
+call 8101 020e9a08 r2 0 0 0 0 0  # Heap_SetCurrent(as before)
+call 8101 020e9a08 022a3378 0 0 0 0 0  # Heap_SetCurrent(its heap)
+call 8101 02012015 022a73cc 0 0 0 022a73cc 022771c0  # main Obj020d8c64_DestructDelete (this: an object of a class derived from its own, vtable 022771c0)
+call 8101 020e9a08 r2 0 0 0 0 0  # Heap_SetCurrent(as before)
+call 8101 020120e1 022a7dec 0 0 0 022a7dec 022771c0  # main Obj020d8c64_Destruct (this: an object of a class derived from its own, vtable 022771c0)
+call 8101 02016195 022a8e8c 0 0 0 022a8e8c 020d9df8  # main SceneBase_Destruct (this: an object of a class derived from its own, vtable 020d9df8)
+call 8101 0202eb59 022a72ec 0 0 0 022a72ec 022797fc  # main Obj020d9ff8_Destruct (this: an object of a class derived from its own, vtable 022797fc)
+call 8101 020e9a08 022a3378 0 0 0 0 0  # Heap_SetCurrent(its heap)
+call 8101 0202f10d 022b1fcc 0 0 0 022b1fcc 02238010  # main GameProcess_DestructDelete (this: an object of a class derived from its own, vtable 02238010)
+call 8101 020e9a08 r2 0 0 0 0 0  # Heap_SetCurrent(as before)
+call 8101 020a794d 021c69b4 0 0 0 021c69b4 020da9ac  # main MessageWalker_Destruct (this: an object of a class derived from its own, vtable 020da9ac)
+call 8101 020a8c89 021c5a24 0 0 0 021c5a24 020da530  # main TextBase_DestructSlot (this: an object of a class derived from its own, vtable 020da530)
+call 8101 020a9299 0239658c 0 0 0 0239658c 020def7c  # main TextWalker_DestructSlot (this: an object of a class derived from its own, vtable 020def7c)
+call 8101 020a9465 021f4548 0 0 0 021f4548 020e3e44  # main MessageWalker_BaseDestructSlot (this: an object of a class derived from its own, vtable 020e3e44)
+call 8101 020a9a79 021c6a10 0 0 0 021c6a10 020da994  # main BmgFile_DestructSlot (this: an object of a class derived from its own, vtable 020da994)
+call 8101 020e9a08 023c5300 0 0 0 0 0  # Heap_SetCurrent(its heap)
+call 8101 022082a1 023cdee8 0 0 0 022082a0 1c04b510  # ov002 MenuScene_Delete (this: an object of a class derived from its own, vtable 02299508)
+call 8101 020e9a08 r2 0 0 0 0 0  # Heap_SetCurrent(as before)
+end
