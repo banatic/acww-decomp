@@ -1079,7 +1079,7 @@ CLEAN_AS(func_ov004_022279d8, FieldActorRoomStates_UpdateExitWalk)
  * plays from frame 6 the models fade out by 6; then from frame 5, unless the screen is closed,
  * the scene's exit (0x804) is taken.
  * A claim (main's scene_claim.h): the exit is claimed (until SceneClaim_TakeExit agrees), then
- * its answer waited for. Given, the exit is taken, or, when the claimed exit is placed, the
+ * its answer waited for. Given, the exit is taken, or, when the claimed exit has a door kind, the
  * phase is "at the point" again with animation 0x3e (blended over 3 frames). Refused, the
  * actor takes its receiver (flag 0x11, named "obj_etc_error", byte 0x1e 0x15) and asks its
  * link for the talk; once the talk has opened and closed, the receiver is let go (flag 0x11
