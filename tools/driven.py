@@ -28,6 +28,17 @@ ran as Clean in the Clean pass; --record writes those no scene enters
 (runtime/recordings/scenes/clean-entered.txt) to clean-driven.txt, which the progress map
 counts as "checked by a driven call", a level below "checked in a run".
 
+With --prune N, a check that fails because a call was skipped (its object was gone) or a run
+stopped inside one (an object whose state does not allow it) loses those calls and runs again,
+N runs at most, so the survey's plans pass without a reader picking calls out by hand:
+
+    python tools/driven.py --seed PATH --survey --group unreachable --slots 0-47 -j 3
+    python tools/driven.py --plan live --group unreachable --slots 0-47 --share-slots 4-15,18-47
+    python tools/driven.py --seed PATH -j 3 --prune 4 live-able-sell-free-5301 ...
+
+(--group unreachable stands for every group of that need; a slot is the one past the nearest
+vtable start before the word naming the function.)
+
 --scout runs the scene's Reference alone with memory images at the frames given, and lists, for
 each open function of a group of docs/scene-plan-groups.txt that a vtable names at one of the
 slots given, the objects with that vtable at offset 0 that sit in a live block of the game's
@@ -156,7 +167,54 @@ def run_check(name: str, seed: pathlib.Path, clean: str | None, runtime: pathlib
         if not snaps.get(m, "").startswith("same"):
             problems.append(f"memory after the calls of frame {m}: {snaps.get(m)}")
     return dict(name=name, clean=clean, status=p.returncode, seconds=round(time.monotonic() - started), work=work,
-                calls=len(ref_calls), problems=problems, entered=entered_functions(logs["reference.log"]))
+                calls=len(ref_calls), problems=problems, entered=entered_functions(logs["reference.log"]),
+                reference_calls=[ln for ln in logs["reference.log"].splitlines()
+                                 if re.match(r"driven: frame \d+ (call|skip|returned from) ", ln)])
+
+
+def prune(name: str, results: list[dict]) -> str | None:
+    """Take out of a failing check the calls its Reference runs could not make: each call skipped
+    (its object was not there, as an earlier call destroyed it or the run has none) and the call a
+    run stopped inside (an object whose state does not allow it), with the Heap_SetCurrent pair
+    around a destructor that frees. The calls after the one a run stopped in stay for the next
+    run. Returns what was taken out, or None when there is nothing to take out (the check fails
+    otherwise: memory or frames differ, which a reader has to follow)."""
+    path = CHECKS / f"{name}.txt"
+    lines = path.read_text().splitlines()
+    calls = [i for i, ln in enumerate(lines) if ln.split("#", 1)[0].split()[:1] in (["call"], ["vcall"])]
+    drop: set[int] = set()
+    for res in results:
+        log = res.get("reference_calls", [])
+        made = [ln for ln in log if " returned from " not in ln]
+        if len(made) > len(calls):
+            return None
+        for k, ln in enumerate(made):
+            if " skip " in ln:
+                drop.add(calls[k])
+        returned = sum(" returned from " in ln for ln in log)
+        if made and " call " in made[-1] and len(made) - sum(" skip " in ln for ln in made) > returned:
+            drop.add(calls[len(made) - 1])
+    for i in list(drop):
+        body = lines[i].split("#", 1)[0].split()
+        if body[0] == "vcall":
+            for j in (i - 1, i + 1):
+                if 0 <= j < len(lines) and lines[j].split("#", 1)[0].split()[2:3] == [f"{HEAP_SET_CURRENT:08x}"]:
+                    drop.add(j)
+    if not drop:
+        return None
+    gone = [lines[i].split("#", 1)[1].strip() if "#" in lines[i] else lines[i] for i in sorted(drop)
+            if lines[i].split("#", 1)[0].split()[2:3] != [f"{HEAP_SET_CURRENT:08x}"]]
+    kept = [ln for i, ln in enumerate(lines) if i not in drop]
+    if not any(ln.split("#", 1)[0].split()[:1] in (["call"], ["vcall"]) for ln in kept):
+        path.unlink()
+        return "every call (the check is removed): " + "; ".join(gone)
+    head = kept[0]
+    m = re.match(r"# (\d+) functions of ", head)
+    if m:
+        n = sum(1 for ln in kept if ln.startswith("vcall"))
+        kept[0] = f"# {n} functions of " + head[m.end():]
+    path.write_text("\n".join(kept) + "\n", newline="\n")
+    return "; ".join(gone)
 
 
 def entered_functions(log: str) -> list[tuple[str, int]]:
@@ -208,7 +266,28 @@ def checked(name: str) -> list[tuple[str, int]]:
     return [tuple(k) for k in json.loads(result.read_text())["checked"]] if result.exists() else []
 
 
-def run_all(names: list[str], seed: pathlib.Path, jobs: int) -> int:
+def run_all(names: list[str], seed: pathlib.Path, jobs: int, rounds: int = 1) -> int:
+    """Run the checks; with rounds > 1, prune each failing check (prune) and run it again, as
+    many times at most."""
+    for r in range(rounds):
+        failed = run_round(names, seed, jobs)
+        if not failed:
+            return 0
+        if r + 1 == rounds:
+            return 1
+        again = []
+        for n, results in failed.items():
+            gone = prune(n, results) if (CHECKS / f"{n}.txt").exists() else None
+            print(f"{n}: {'pruned: ' + gone if gone else 'nothing to prune'}", flush=True)
+            if gone and (CHECKS / f"{n}.txt").exists():
+                again.append(n)
+        if not again:
+            return 1
+        names = again
+    return 1
+
+
+def run_round(names: list[str], seed: pathlib.Path, jobs: int) -> dict[str, list[dict]]:
     token = f"driven-{os.getpid()}-{time.time_ns()}"
     passes = [(n, c) for n in names for c in ("all", None)]
     runtimes = scenes.take_runtimes(min(jobs, len(passes)), "all") + scenes.take_runtimes(min(jobs, len(passes)), None)
@@ -233,7 +312,7 @@ def run_all(names: list[str], seed: pathlib.Path, jobs: int) -> int:
             verdict = "ok  " if not res["problems"] else "FAIL"
             print(f"{verdict} {res['name']} ({'Clean' if res['clean'] else 'Native alone'}, {res['calls']} calls, "
                   f"{res['seconds']} s){': ' + '; '.join(res['problems']) if res['problems'] else ''}", flush=True)
-    failed = 0
+    failed = {}
     for n, rs in sorted(results.items()):
         ok = all(not r["problems"] for r in rs) and len(rs) == 2
         clean_pass = next(r for r in rs if r["clean"])
@@ -244,12 +323,12 @@ def run_all(names: list[str], seed: pathlib.Path, jobs: int) -> int:
             result.write_text(json.dumps({"checked": got}, indent=1) + "\n")
         else:
             result.unlink(missing_ok=True)
-            failed += 1
+            failed[n] = rs
         print(f"{n}: {'passes' if ok else 'FAILS'}; its calls entered {len(clean_pass['entered'])} functions, "
               f"{len(got)} of them Clean", flush=True)
     for _, held in runtimes:
         held.close()
-    return 1 if failed else 0
+    return failed
 
 
 def record() -> int:
@@ -325,12 +404,27 @@ def module_ranges() -> list[tuple[int, int, str, bool]]:
     return out
 
 
-def open_targets(groups: list[str]) -> dict[tuple[str, int], tuple[str, str, str]]:
-    """The open functions (no scene enters them) of the plan's groups: key -> (file, name, group)."""
+def listed(path: pathlib.Path) -> set[tuple[str, int]]:
+    return {(m, int(a, 16)) for m, a in (ln.split() for ln in path.read_text().splitlines()
+                                         if ln and not ln.startswith("#"))} if path.exists() else set()
+
+
+def expand_groups(groups: list[str]) -> list[str]:
+    """The groups named; "unreachable" (or another need of the plan) stands for each group of it."""
+    plan_groups = coverage.read_plan(C.ROOT / "docs" / "scene-plan-groups.txt")
+    out = []
+    for g in groups:
+        out += [p["group"] for p in plan_groups if p["needs"] == g] if g in coverage.PLAN_NEEDS else [g]
+    return out
+
+
+def open_targets(groups: list[str], new_only: bool = False) -> dict[tuple[str, int], tuple[str, str, str]]:
+    """The open functions (no scene enters them) of the plan's groups: key -> (file, name, group);
+    with new_only, not those a driven call checks already (clean-driven.txt)."""
+    groups = expand_groups(groups)
     syms = C.symbol_table(C.modules())
     clean = coverage.clean_functions(syms)
-    entered = {(m, int(a, 16)) for m, a in (ln.split() for ln in ENTERED.read_text().splitlines()
-                                            if ln and not ln.startswith("#"))}
+    entered = listed(ENTERED) | (listed(DRIVEN) if new_only else set())
     plan_groups = coverage.read_plan(C.ROOT / "docs" / "scene-plan-groups.txt")
     out = {}
     for k, v in clean.items():
@@ -357,10 +451,15 @@ def vtable_slots(keys, slots: list[int]) -> dict[tuple[str, int], list[tuple[int
                 # an overlay's function is named by its own overlay's data or by a resident module's
                 if key[0] != module and key[0].startswith("ov") and module.startswith("ov"):
                     continue
-                for slot in slots:
+                # the nearest start before the word: a slot past another vtable's start is not its
+                for slot in range(max(slots) + 1):
                     v = i - 4 * slot
-                    if v >= 8 and struct.unpack_from("<II", image, v - 8) == (0, 0):
-                        out.setdefault(key, []).append((base + v, slot))
+                    if v < 8:
+                        break
+                    if struct.unpack_from("<II", image, v - 8) == (0, 0):
+                        if slot in slots:
+                            out.setdefault(key, []).append((base + v, slot))
+                        break
     return out
 
 
@@ -435,12 +534,15 @@ def survey(names: list[str], groups: list[str], slots: list[int], seed: pathlib.
     return 0
 
 
-def plan(groups: list[str], slots: list[int], free_slots: list[int], prefix: str, most: int) -> int:
+def plan(groups: list[str], slots: list[int], free_slots: list[int], prefix: str, most: int,
+         share_slots: list[int] = ()) -> int:
     """Check files <prefix>-<scene>-<frame>.txt from the survey: the scenes' moments taken greedily
     by how many functions they add, each function called once on a live object, no block called
     twice, a destructor that frees only on an object at the start of a block of a heap the game
-    has a Heap for, with that heap made current around it."""
-    targets = open_targets(groups)
+    has a Heap for, with that heap made current around it (a call at one of share_slots, a method
+    that leaves its object whole, may share it and is made before the others). The functions a
+    driven call checks already (clean-driven.txt) are left out."""
+    targets = open_targets(groups, new_only=True)
     vts = vtable_slots(targets, slots)
     by_vtable: dict[tuple[int, int], list[tuple[str, int]]] = {}
     for key, vs in vts.items():
@@ -467,22 +569,24 @@ def plan(groups: list[str], slots: list[int], free_slots: list[int], prefix: str
         scene, frame = best
         used_blocks: set[int] = set()
         lines: list[str] = []
+        first: list[str] = []  # the calls at share_slots, made before the others
         count = 0
         mine = []
         for key in sorted(set(moments[best]) - done):
             if count >= most:
                 break
             for o, start, v, slot, heap in moments[best][key]:
-                if start in used_blocks:
-                    continue
-                used_blocks.add(start)
+                if slot not in share_slots:
+                    if start in used_blocks:
+                        continue
+                    used_blocks.add(start)
                 call = (f"vcall {frame + 1} {o:08x} {4 * slot:x} {o:08x} 0 0 0 {v:08x}  "
                         f"# {key[0]} {targets[key][1]} (slot {slot})")
                 if slot in free_slots:
                     lines += [f"call {frame + 1} {HEAP_SET_CURRENT:08x} {heap:08x} 0 0 0 0 0  # Heap_SetCurrent(its heap)",
                               call, f"call {frame + 1} {HEAP_SET_CURRENT:08x} r2 0 0 0 0 0  # Heap_SetCurrent(as before)"]
                 else:
-                    lines.append(call)
+                    (first if slot in share_slots else lines).append(call)
                 done.add(key)
                 mine.append(key)
                 count += 1
@@ -497,7 +601,7 @@ def plan(groups: list[str], slots: list[int], free_slots: list[int], prefix: str
                 f"of its class, through the object's vtable, at the end of frame {frame + 1} of {scene} "
                 f"(tools/driven.py --plan)",
                 f"scene {scene}", f"frames {frame + 10}", *([f"ram {','.join(map(str, ram))}"] if ram else []),
-                f"arm {OS_SLEEP_THREAD:08x} {MAIN_FRAME_QUEUE:08x}  # OS_SleepThread(the main loop's queue)", *lines, "end"]
+                f"arm {OS_SLEEP_THREAD:08x} {MAIN_FRAME_QUEUE:08x}  # OS_SleepThread(the main loop's queue)", *first, *lines, "end"]
         name = f"{prefix}-{scene}-{frame + 1}"
         names[name] = names.get(name, 0) + 1
         if names[name] > 1:
@@ -534,6 +638,15 @@ def scout(scene: str, frames: list[int], groups: list[str], slots: list[int], se
     return 0
 
 
+def slot_list(text: str) -> list[int]:
+    """"0,1,16" or "0-47"."""
+    out = []
+    for part in text.split(","):
+        a, _, b = part.partition("-")
+        out += list(range(int(a), int(b or a) + 1))
+    return out
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("names", nargs="*")
@@ -548,9 +661,13 @@ def main() -> int:
     ap.add_argument("--free-slots", default="1,17", help="the slots of destructors that free the object")
     ap.add_argument("--survey", nargs="*", metavar="SCENE", help="the scenes' live objects (no SCENE: every scene)")
     ap.add_argument("--plan", metavar="PREFIX", help="check files from the survey")
+    ap.add_argument("--prune", type=int, default=1, metavar="ROUNDS",
+                    help="run a failing check again after taking out the calls it could not make, ROUNDS runs at most")
+    ap.add_argument("--share-slots", help="with --plan: slots of methods that leave the object whole, whose calls "
+                    "may share an object with another call and are made first")
     ap.add_argument("--most", type=int, default=40, help="with --plan: the calls of a check at most")
     args = ap.parse_args()
-    slots = [int(s) for s in args.slots.split(",")]
+    slots = slot_list(args.slots)
     if args.list:
         for n in checks():
             ch = read_check(n)
@@ -560,7 +677,8 @@ def main() -> int:
     if args.record:
         return record()
     if args.plan:
-        return plan(args.group, slots, [int(s) for s in args.free_slots.split(",")], args.plan, args.most)
+        return plan(args.group, slots, slot_list(args.free_slots), args.plan, args.most,
+                    slot_list(args.share_slots) if args.share_slots else [])
     if args.seed is None:
         raise SystemExit("the seed save: --seed PATH or ACWW_SCENE_SEED")
     if args.survey is not None:
@@ -571,7 +689,7 @@ def main() -> int:
     unknown = [n for n in names if not (CHECKS / f"{n}.txt").exists()]
     if unknown:
         raise SystemExit(f"no such check: {', '.join(unknown)}")
-    return run_all(names, pathlib.Path(args.seed), args.j)
+    return run_all(names, pathlib.Path(args.seed), args.j, args.prune)
 
 
 if __name__ == "__main__":
