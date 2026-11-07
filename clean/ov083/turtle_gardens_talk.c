@@ -84,9 +84,9 @@ extern const char data_ov083_02279348[];
 #define TURTLE_GARDENS_TALK_LINE_RANDOM_FIRST 0x1c
 /* Of "sp_npc_turtle": the item 0x37e0 asked about, taken, and the item 0x1559 given. */
 #define TURTLE_GARDENS_TALK_LINE_37E0_ASK 0
-#define TURTLE_GARDENS_TALK_LINE_37E0_ANSWER_1 1
+#define TURTLE_GARDENS_TALK_LINE_37E0_REFUSED 1
 #define TURTLE_GARDENS_TALK_LINE_37E0_TAKEN 2
-#define TURTLE_GARDENS_TALK_LINE_37E0_ANSWER_4 4
+#define TURTLE_GARDENS_TALK_LINE_37E0_TRADED 4
 
 static TalkObject *turtle_gardens_talk_object(TurtleGardensTalk *talk)
 {
@@ -231,12 +231,12 @@ CLEAN_AS(func_ov083_02278ab8, TurtleGardensTalk_OnAnswer)
 /* func_ov083_02278b64 (vtable slot 0x14, a line ended): see turtle_gardens_talk.h. With the
  * item 0x37e0 in the pockets: after line 1 or 4 of "sp_npc_turtle" it is no longer asked
  * about; after line 2 he gives the item 0x1559 (line 4). */
-void TurtleGardensTalk_OnLineEnd(TurtleGardensTalk *talk)
+void TurtleGardensTalk_OnLineEnded(TurtleGardensTalk *talk)
 {
     u8 shown = turtle_gardens_talk_shown(talk);
 
     if (talk->slot_37e0 >= 0) {
-        if (shown == TURTLE_GARDENS_TALK_LINE_37E0_ANSWER_1 || shown == TURTLE_GARDENS_TALK_LINE_37E0_ANSWER_4) {
+        if (shown == TURTLE_GARDENS_TALK_LINE_37E0_REFUSED || shown == TURTLE_GARDENS_TALK_LINE_37E0_TRADED) {
             talk->slot_37e0 = TURTLE_GARDENS_TALK_37E0_DONE;
         }
         if (shown == TURTLE_GARDENS_TALK_LINE_37E0_TAKEN) {
@@ -244,7 +244,7 @@ void TurtleGardensTalk_OnLineEnd(TurtleGardensTalk *talk)
             SceneCommand_RequestMotion13(turtle_gardens_talk_scene(talk), &shown_item, 0, TURTLE_GARDENS_TALK_MOTION_B, 0);
             u16 given = TURTLE_GARDENS_TALK_ITEM_1559;
             CurrentPockets_Give(&given, 0);
-            turtle_gardens_talk_say_unless_none(talk, TURTLE_GARDENS_TALK_LINE_37E0_ANSWER_4, data_ov083_02279348);
+            turtle_gardens_talk_say_unless_none(talk, TURTLE_GARDENS_TALK_LINE_37E0_TRADED, data_ov083_02279348);
         }
         return;
     }
@@ -271,4 +271,4 @@ void TurtleGardensTalk_OnLineEnd(TurtleGardensTalk *talk)
     }
     turtle_gardens_talk_say_unless_none(talk, line, data_ov083_02279338);
 }
-CLEAN_AS(func_ov083_02278b64, TurtleGardensTalk_OnLineEnd)
+CLEAN_AS(func_ov083_02278b64, TurtleGardensTalk_OnLineEnded)

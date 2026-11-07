@@ -118,7 +118,7 @@ void ReactionNpcTalk_OnAnswer(ReactionNpcTalk *talk)
         case REACTION_NPC_LINE_OFFER:
         case REACTION_NPC_LINE_MISSED: {
             u8 reaction = *rt_byte(talk->offered, answer);
-            next = (u8) (reaction + REACTION_NPC_LINE_REPLACED);
+            next = (u8) (reaction + REACTION_NPC_LINE_REACTION_BASE);
             talk->chosen = reaction;
             break;
         }

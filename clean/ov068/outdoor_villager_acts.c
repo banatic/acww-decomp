@@ -74,7 +74,8 @@ extern const MemberPointer data_ov068_02277020, data_ov068_02277050, data_ov068_
 #define ACTS_WAIT_23 20
 /* The frames behaviours 19 and 21 wait standing. */
 #define ACTS_WAIT_STANDING 40
-/* What a reaction's talk's end sets: `call_cooldown` and `net_hits_timer`. */
+/* The frames set in `call_cooldown` when a reaction's talk ends, and in `net_hits_timer` when
+ * behaviour 19 ends (OutdoorVillagerActs_ReactNetted, OutdoorVillagerActs_WaitNetted). */
 #define ACTS_REACTION_FRAMES 1200
 /* The mood asked for when a reaction's talk ends (VillagerMood_Ask's which and units). */
 #define ACTS_MOOD_WHICH 4

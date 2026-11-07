@@ -41,6 +41,7 @@ static_assert(sizeof(TurtleGardensStep) == 0x10, "a state's functions");
 /* The parts of the special character's scene object used here, by place (main's
  * scene_object.h and scene_object_members.h). */
 #define TURTLE_GARDENS_PERSON 0xea          /* u16: his person code */
+#define TURTLE_GARDENS_NO_PERSON 0xfff1     /* none yet */
 #define TURTLE_GARDENS_MODEL 0xec           /* LayeredModel */
 #define TURTLE_GARDENS_STANDARD_ANIMS 0x2a0 /* SceneStandardAnims */
 #define TURTLE_GARDENS_FACE 0x2ac           /* SceneFace */
@@ -263,7 +264,7 @@ void *TurtleGardens_Create(void)
     u8 *object = turtle->base;
     SceneObjectBase_Construct((SceneObjectBase *) (void *) object);
     *(const u8 **) (void *) object = data_020d8c64;
-    *(u16 *) (void *) turtle_gardens_part(turtle, TURTLE_GARDENS_PERSON) = ITEM_CODE_NONE;
+    *(u16 *) (void *) turtle_gardens_part(turtle, TURTLE_GARDENS_PERSON) = TURTLE_GARDENS_NO_PERSON;
     LayeredModel_ConstructB((LayeredModel *) (void *) turtle_gardens_part(turtle, TURTLE_GARDENS_MODEL));
     SceneStandardAnims_Init((SceneStandardAnims *) (void *) turtle_gardens_part(turtle, TURTLE_GARDENS_STANDARD_ANIMS));
     SceneFace_Construct((SceneFace *) (void *) turtle_gardens_part(turtle, TURTLE_GARDENS_FACE));

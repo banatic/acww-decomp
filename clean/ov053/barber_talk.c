@@ -380,7 +380,7 @@ CLEAN_AS(func_ov053_02260a18, BarberTalk_OnGoOn)
 /* func_ov053_02260a68 (vtable slot 0x78, the line the talk starts with), of "sp_npc_barber":
  * - the topic seated: the chair's line (BarberTalk_ChairLine);
  * - for a topic picked afresh (not call, seated with a hat, cut, not seated, leaving, hat back
- *   or claimed): with the cut paid for, paid; else, once a cut was had today, one of the cut
+ *   or farewell): with the cut paid for, paid; else, once a cut was had today, one of the cut
  *   today's three at random; else the first visit (the current player's flag 0xb set then) or
  *   the welcome;
  * then the line of the topic, from the table (whose names are filled on the first call).

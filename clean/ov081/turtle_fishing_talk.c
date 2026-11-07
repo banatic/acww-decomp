@@ -70,12 +70,12 @@ extern u32 data_021dc7a8[];
 /* The vtable slot of the scene that resets it (the scene base's reset). */
 #define TURTLE_FISHING_TALK_SLOT_RESET 0x08
 
-/* The fish (items 0x12e8 to 0x131f), the tourney's two rods, the item he takes and the one he
+/* The fish (items 0x12e8 to 0x131f), the fishing rod (0x1374) and the golden rod (0x1375), the item he takes and the one he
  * gives for it. */
 #define TURTLE_FISHING_TALK_FISH_FIRST 0x12e8
 #define TURTLE_FISHING_TALK_FISH_LAST 0x131f
 #define TURTLE_FISHING_TALK_ROD 0x1374
-#define TURTLE_FISHING_TALK_ROD_2 0x1375
+#define TURTLE_FISHING_TALK_GOLDEN_ROD 0x1375
 #define TURTLE_FISHING_TALK_ITEM_37E0 0x37e0
 #define TURTLE_FISHING_TALK_ITEM_1559 0x1559
 
@@ -127,7 +127,6 @@ extern u32 data_021dc7a8[];
 #define TURTLE_FISHING_TALK_LINE_AGAIN 8
 #define TURTLE_FISHING_TALK_LINE_RECORD_MINE 9
 #define TURTLE_FISHING_TALK_LINE_RECORD_OTHER 10
-#define TURTLE_FISHING_TALK_LINE_8_FIRST 11
 #define TURTLE_FISHING_TALK_LINE_SHOW_FISH 0x0b
 #define TURTLE_FISHING_TALK_LINE_NO_FISH 0x0c
 #define TURTLE_FISHING_TALK_LINE_WEIGHED 0x0d
@@ -141,9 +140,9 @@ extern u32 data_021dc7a8[];
 #define TURTLE_FISHING_TALK_LINE_SHORTER_OWN 0x16
 /* Of "sp_npc_turtle": the item 0x37e0 asked about, taken, and the item 0x1559 given. */
 #define TURTLE_FISHING_TALK_LINE_37E0_ASK 0
-#define TURTLE_FISHING_TALK_LINE_37E0_ANSWER_1 1
+#define TURTLE_FISHING_TALK_LINE_37E0_REFUSED 1
 #define TURTLE_FISHING_TALK_LINE_37E0_TAKEN 2
-#define TURTLE_FISHING_TALK_LINE_37E0_ANSWER_4 4
+#define TURTLE_FISHING_TALK_LINE_37E0_TRADED 4
 
 static TalkObject *turtle_fishing_talk_object(TurtleFishingTalk *talk)
 {
@@ -325,7 +324,7 @@ void TurtleFishingTalk_Line(TurtleFishingTalk *talk, TurtleFishingTalkStart *out
     out->message = TURTLE_FISHING_TALK_LINE_ENTERED;
     if (TalkChecks_TestSetDailyBit(TURTLE_FISHING_TALK_DAILY_BIT, 0) == 0 &&
         turtle_fishing_talk_lacks(TURTLE_FISHING_TALK_ROD, held) &&
-        turtle_fishing_talk_lacks(TURTLE_FISHING_TALK_ROD_2, held)) {
+        turtle_fishing_talk_lacks(TURTLE_FISHING_TALK_GOLDEN_ROD, held)) {
         out->message = CurrentPockets_FreeSlot() >= 0 ? TURTLE_FISHING_TALK_LINE_GIVE_ROD : TURTLE_FISHING_TALK_LINE_FULL;
         return;
     }
@@ -405,7 +404,7 @@ void TurtleFishingTalk_OnAnswer(TurtleFishingTalk *talk)
                 line = TURTLE_FISHING_TALK_LINE_RECORD_OTHER;
             }
         } else {
-            line = TURTLE_FISHING_TALK_LINE_8_FIRST;
+            line = TURTLE_FISHING_TALK_LINE_SHOW_FISH;
         }
     }
     turtle_fishing_talk_say_unless_none(talk, line, data_ov081_02279868);
@@ -474,12 +473,12 @@ static u8 turtle_fishing_talk_record_line(TurtleFishingTalk *talk, u8 shown)
 /* func_ov081_02278b68 (vtable slot 0x14, a line ended): see turtle_fishing_talk.h. With the
  * item 0x37e0 in the pockets: after line 1 or 4 of "sp_npc_turtle" it is no longer asked
  * about; after line 2 he gives the item 0x1559 (line 4). */
-void TurtleFishingTalk_OnLineEnd(TurtleFishingTalk *talk)
+void TurtleFishingTalk_OnLineEnded(TurtleFishingTalk *talk)
 {
     u8 shown = turtle_fishing_talk_shown(talk);
 
     if (talk->slot_37e0 >= 0) {
-        if (shown == TURTLE_FISHING_TALK_LINE_37E0_ANSWER_1 || shown == TURTLE_FISHING_TALK_LINE_37E0_ANSWER_4) {
+        if (shown == TURTLE_FISHING_TALK_LINE_37E0_REFUSED || shown == TURTLE_FISHING_TALK_LINE_37E0_TRADED) {
             talk->slot_37e0 = TURTLE_FISHING_TALK_37E0_DONE;
         }
         if (shown == TURTLE_FISHING_TALK_LINE_37E0_TAKEN) {
@@ -487,7 +486,7 @@ void TurtleFishingTalk_OnLineEnd(TurtleFishingTalk *talk)
             SceneCommand_RequestMotion13(turtle_fishing_talk_scene(talk), &shown_item, 0, TURTLE_FISHING_TALK_MOTION_B, 0);
             u16 given = TURTLE_FISHING_TALK_ITEM_1559;
             CurrentPockets_Give(&given, 0);
-            turtle_fishing_talk_say_unless_none(talk, TURTLE_FISHING_TALK_LINE_37E0_ANSWER_4, data_ov081_02279878);
+            turtle_fishing_talk_say_unless_none(talk, TURTLE_FISHING_TALK_LINE_37E0_TRADED, data_ov081_02279878);
         }
         return;
     }
@@ -514,7 +513,7 @@ void TurtleFishingTalk_OnLineEnd(TurtleFishingTalk *talk)
     }
     turtle_fishing_talk_say_unless_none(talk, line, data_ov081_02279868);
 }
-CLEAN_AS(func_ov081_02278b68, TurtleFishingTalk_OnLineEnd)
+CLEAN_AS(func_ov081_02278b68, TurtleFishingTalk_OnLineEnded)
 
 /* func_ov081_02279068 (after the pockets' screen of line 0xb): no item and no size yet; when a
  * pocket was picked (GroupParams_C4CIs1) its fish is weighed (a random size), shown by motion

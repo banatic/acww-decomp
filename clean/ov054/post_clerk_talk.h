@@ -104,8 +104,8 @@ void PostClerkTalk_EndMove(PostClerkTalk *talk);
 /* The lines. */
 void PostClerkTalk_Line(PostClerkTalk *talk, PostClerkTalkLine *out);
 void PostClerkTalk_OnLineBegin(PostClerkTalk *talk);
-void PostClerkTalk_ShowLetters(PostClerkTalk *talk);
-int PostClerkTalk_UnsentLine(PostClerkTalk *talk);
+void PostClerkTalk_ReturnLetters(PostClerkTalk *talk);
+int PostClerkTalk_OfficeFullLine(PostClerkTalk *talk);
 int PostClerkTalk_NoAddresseeLine(PostClerkTalk *talk);
 u8 PostClerkTalk_FullMailboxLine(PostClerkTalk *talk);
 int PostClerkTalk_PostedLine(PostClerkTalk *talk);

@@ -77,7 +77,7 @@ typedef struct Barber {
 Barber *Barber_Destruct(Barber *barber);
 void *Barber_DestructDelete(void *barber);
 void Barber_OnEvent(Barber *barber, unsigned int code, u8 participant);
-int Barber_MayTalk(Barber *barber);
+int Barber_MayActKind6(Barber *barber);
 int Barber_MayAct(Barber *barber);
 int Barber_Update(Barber *barber);
 int Barber_ModelName(void);

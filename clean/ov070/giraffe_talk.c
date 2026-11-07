@@ -82,9 +82,10 @@ extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 /* The flag of the object at data_021d27ac set when the player did not pay. */
 #define GT_FLAG_NOT_PAID 10
 
-/* The quiz: questions asked in a row before the round ends, and before the count's lines. */
+/* The quiz: questions asked in a row before the round ends; and the talks after her remark
+ * (GIRAFFE_LINE_REMARK) that start with a follow-up line. */
 #define GT_QUESTIONS_IN_A_ROW 5
-#define GT_TALKS_COUNTED 3
+#define GT_REMARK_FOLLOW_UPS 3
 
 /* A score of at least this is a high one (GIRAFFE_TALK_FIRST_HIGH). */
 #define GT_HIGH_SCORE 0x3d
@@ -586,8 +587,8 @@ CLEAN_AS(func_ov070_02279538, GiraffeTalk_AddScore)
  *   the first talk today (daily bit 7, set now)      GIRAFFE_TALK_FIRST_TODAY;
  *   no round of questions ended today (daily bit 8)  GIRAFFE_TALK_FIRST_QUIZ;
  *   dressed today (daily bit 9)                      GIRAFFE_TALK_FIRST_DRESSED;
- *   fewer than three questions asked in a row        GIRAFFE_TALK_FIRST_COUNTING, whose line
- *                                                    is 0x4c plus the count, then one more;
+ *   fewer than three talks since her remark          GIRAFFE_TALK_FIRST_AFTER_REMARK, whose
+ *                                                    line is 0x4c plus the count, then one more;
  *   a score of 61 or more, or less                   GIRAFFE_TALK_FIRST_HIGH, _LOW;
  * the last three are GIRAFFE_TALK_FIRST_REFUSED once flag 10 of the object at data_021d27ac is
  * set (the player did not pay). */
@@ -601,8 +602,8 @@ void GiraffeTalk_FirstLine(GiraffeTalk *talk, GiraffeLine *out)
         talk->first = GIRAFFE_TALK_FIRST_QUIZ;
     } else if (TalkChecks_TestSetDailyBit(GT_DAILY_DRESSED, 0) != 0) {
         talk->first = GIRAFFE_TALK_FIRST_DRESSED;
-    } else if (talk->owner->talk_count < GT_TALKS_COUNTED) {
-        talk->first = GIRAFFE_TALK_FIRST_COUNTING;
+    } else if (talk->owner->talk_count < GT_REMARK_FOLLOW_UPS) {
+        talk->first = GIRAFFE_TALK_FIRST_AFTER_REMARK;
     } else if ((u32) PlayerField2416_FashionScore(field) >= GT_HIGH_SCORE) {
         talk->first = GIRAFFE_TALK_FIRST_HIGH;
     } else {
@@ -610,7 +611,7 @@ void GiraffeTalk_FirstLine(GiraffeTalk *talk, GiraffeLine *out)
     }
 
     Block021d27ac *block = Block021d27ac_Get();
-    if (Block021d27ac_TestFlag(&block->flags, GT_FLAG_NOT_PAID) != 0 && talk->first >= GIRAFFE_TALK_FIRST_COUNTING &&
+    if (Block021d27ac_TestFlag(&block->flags, GT_FLAG_NOT_PAID) != 0 && talk->first >= GIRAFFE_TALK_FIRST_AFTER_REMARK &&
         talk->first <= GIRAFFE_TALK_FIRST_LOW) {
         talk->first = GIRAFFE_TALK_FIRST_REFUSED;
     }
@@ -618,8 +619,8 @@ void GiraffeTalk_FirstLine(GiraffeTalk *talk, GiraffeLine *out)
         return;
     }
     out->message = data_ov070_02279ba8[talk->first].message;
-    if (talk->first == GIRAFFE_TALK_FIRST_COUNTING) {
-        out->message = (u8) (talk->owner->talk_count + GIRAFFE_LINE_COUNTING);
+    if (talk->first == GIRAFFE_TALK_FIRST_AFTER_REMARK) {
+        out->message = (u8) (talk->owner->talk_count + GIRAFFE_LINE_AFTER_REMARK);
         talk->owner->talk_count++;
     }
     out->text = data_ov070_02279ba8[talk->first].text;

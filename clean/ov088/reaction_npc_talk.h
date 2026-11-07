@@ -59,19 +59,20 @@ enum ReactionNpcAnswers {
 #define REACTION_NPC_NO_LINE 0xff
 
 /* The lines of "sp_npc_reaction" (the reaction `n` is shown with line 0x1c + n). */
-#define REACTION_NPC_LINE_FIRST 0x01        /* the talk's line until taught once */
-#define REACTION_NPC_LINE_LESSON 0x0b       /* ends with the first lesson */
-#define REACTION_NPC_LINE_LEARNT_FIRST 0x0c /* the first reaction taken */
-#define REACTION_NPC_LINE_ONE_KNOWN 0x0d    /* 0x0d-0x0f: one reaction slot filled */
-#define REACTION_NPC_LINE_MORE_KNOWN 0x10   /* 0x10-0x12: more */
-#define REACTION_NPC_LINE_NOT_TODAY 0x13    /* 0x13-0x14: not taught today yet */
-#define REACTION_NPC_LINE_OFFER 0x17        /* ends with new reactions offered */
-#define REACTION_NPC_LINE_MISSED 0x18       /* not taken in time; the same ones offered */
-#define REACTION_NPC_LINE_LEARNT 0x19       /* taken; ends with it put in an empty slot */
-#define REACTION_NPC_LINE_NO_SLOT 0x1a      /* taken, no empty slot; ends with the slots offered */
-#define REACTION_NPC_LINE_KEPT 0x1b         /* the fifth answer: none given up */
-#define REACTION_NPC_LINE_REPLACED 0x1c     /* a slot given up for it */
-#define REACTION_NPC_LINE_REACTIONS 0x1d    /* 0x1d-0x39: the reactions 1 to 29 */
+#define REACTION_NPC_LINE_FIRST 0x01         /* the talk's line until taught once */
+#define REACTION_NPC_LINE_LESSON 0x0b        /* ends with the first lesson */
+#define REACTION_NPC_LINE_LEARNT_FIRST 0x0c  /* the first reaction taken */
+#define REACTION_NPC_LINE_ONE_KNOWN 0x0d     /* 0x0d-0x0f: one reaction slot filled */
+#define REACTION_NPC_LINE_MORE_KNOWN 0x10    /* 0x10-0x12: more */
+#define REACTION_NPC_LINE_NOT_TODAY 0x13     /* 0x13-0x14: not taught today yet */
+#define REACTION_NPC_LINE_OFFER 0x17         /* ends with new reactions offered */
+#define REACTION_NPC_LINE_MISSED 0x18        /* not taken in time; the same ones offered */
+#define REACTION_NPC_LINE_LEARNT 0x19        /* taken; ends with it put in an empty slot */
+#define REACTION_NPC_LINE_NO_SLOT 0x1a       /* taken, no empty slot; ends with the slots offered */
+#define REACTION_NPC_LINE_KEPT 0x1b          /* the fifth answer: none given up */
+#define REACTION_NPC_LINE_REPLACED 0x1c      /* a slot given up for it */
+#define REACTION_NPC_LINE_REACTION_BASE 0x1c /* plus a reaction (1 to 29): its line */
+#define REACTION_NPC_LINE_REACTIONS 0x1d     /* 0x1d-0x39: the reactions 1 to 29 */
 #define REACTION_NPC_LINE_REACTIONS_LAST 0x39
 
 void ReactionNpcTalk_OnAnswer(ReactionNpcTalk *talk);

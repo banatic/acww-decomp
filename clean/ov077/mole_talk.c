@@ -52,16 +52,15 @@ extern const u8 data_ov077_02279600[5];
 #define MOLE_LINE_CLOSE_8 0x08
 #define MOLE_LINE_ASK 0x0b /* answered 0: 0x0d or 0x0e at random, else 0x0c or 0x0e */
 #define MOLE_LINE_ASK_YES 0x0d
-#define MOLE_LINE_ASK_YES_YES 0x0c
+#define MOLE_LINE_ASK_YES_OTHER 0x0c /* (or 0x0e) another answer */
 #define MOLE_LINE_ASK_EITHER 0x0e
 #define MOLE_LINE_WAIT 0x0f /* ends with the 90 frames' wait */
 #define MOLE_LINE_WAITED 0x10
 #define MOLE_LINE_PHRASE 0x17 /* begins with the phrase picked, ends with its screen */
 #define MOLE_LINE_PHRASE_DONE 0x18
-#define MOLE_LINE_PHRASE_OK 0x19 /* the screen's result 1: 0x19 or 0x1a */
-#define MOLE_LINE_PHRASE_OK_2 0x1a
+#define MOLE_LINE_PHRASE_OK 0x19   /* the screen's result 1: 0x19 or 0x1a */
+#define MOLE_LINE_PHRASE_OK_2 0x1a /* also a line whose close changes his music */
 #define MOLE_LINE_CLOSE_18 0x12
-#define MOLE_LINE_CLOSE_26 0x1a
 #define MOLE_LINE_GUESS_FIRST 0x1f /* 0x1f-0x21: 0x22 when the answer's step is in range */
 #define MOLE_LINE_GUESS_LAST 0x21
 #define MOLE_LINE_GUESS_HIT 0x22
@@ -150,7 +149,7 @@ void MoleTalk_OnAnswer(MoleTalk *talk)
     u8 shown = mole_line_shown(talk);
 
     if (shown == MOLE_LINE_ASK) {
-        line = mole_either(MOLE_LINE_ASK_EITHER, answer == 0 ? MOLE_LINE_ASK_YES : MOLE_LINE_ASK_YES_YES);
+        line = mole_either(MOLE_LINE_ASK_EITHER, answer == 0 ? MOLE_LINE_ASK_YES : MOLE_LINE_ASK_YES_OTHER);
     } else if (shown >= MOLE_LINE_GUESS_FIRST && shown <= MOLE_LINE_GUESS_LAST) {
         int low = (int) MainRandom_Below(MOLE_GUESS_RANGE);
         int step = (int) TalkAnswers_PickedStep(mole_choices(talk));
@@ -275,7 +274,7 @@ void MoleTalk_OnClose(MoleTalk *talk)
         case MOLE_LINE_CLOSE_3:
         case MOLE_LINE_CLOSE_8:
         case MOLE_LINE_CLOSE_18:
-        case MOLE_LINE_CLOSE_26:
+        case MOLE_LINE_PHRASE_OK_2:
         case MOLE_LINE_CLOSE_35:
             Music_DropMusic(MOLE_MUSIC);
             Music_AddValue(MOLE_MUSIC_DROPPED_PRIORITY, MOLE_MUSIC_CLOSE_VALUE, MOLE_MUSIC_CLOSE_FRAMES);

@@ -53,7 +53,7 @@ typedef struct PostClerkTalk {
     struct PostClerk *owner; /* 0xb0 */
     u32 menu;                /* 0xb4: the menu of answers offered (POST_CLERK_TALK_MENU_*) */
     u32 step;                /* 0xb8: POST_CLERK_TALK_STEP_* (post_clerk_talk.h) */
-    u8 letters_shown;        /* 0xbc: the letters (item 0x1565) were shown in this talk */
+    u8 letters_returned;     /* 0xbc: the refused letters (item 0x1565) were given back in this talk */
     u8 unk_bd[3];            /* 0xbd */
     s32 balance;             /* 0xc0: the account's balance before its screen */
     s32 donations;           /* 0xc4: the town's donations before this one was added */

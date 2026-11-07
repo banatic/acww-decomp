@@ -14,7 +14,7 @@
  *   lines 6-8.
  *
  * Its vtable slots, beyond those of its base class: 0x00 and 0x04 its destructors, 0x14 what
- * follows the line shown (TurtleTalk_OnLineShown), 0x18 the player's answer
+ * follows the line shown (TurtleTalk_OnLineEnded), 0x18 the player's answer
  * (TurtleTalk_OnAnswer) and 0x78 the first line (TurtleTalk_Line); its reset (slot 0x08) is the
  * scene base's. */
 #ifndef CLEAN_OV080_TURTLE_TALK_H
@@ -46,7 +46,7 @@ typedef struct TurtleTalkLine {
 
 /* Its slots. */
 void TurtleTalk_OnAnswer(TurtleTalk *talk);
-void TurtleTalk_OnLineShown(TurtleTalk *talk);
+void TurtleTalk_OnLineEnded(TurtleTalk *talk);
 void TurtleTalk_Line(TurtleTalk *talk, TurtleTalkLine *line);
 void TurtleTalk_Begin(TurtleTalk *talk, struct Turtle *owner);
 

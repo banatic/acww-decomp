@@ -143,7 +143,7 @@ void OutdoorVillagerRecords_RedrawActivity(u8 *villager);
 #define WALKS_UMBRELLA_FIRST 0x1380
 #define WALKS_UMBRELLA_LAST 0x139f
 #define WALKS_WATERING_CAN 0x1378
-#define WALKS_ACTIVITY_NONE 7 /* no activity of the moment (VillagerState_GetActivity) */
+#define WALKS_ACTIVITY_DEFAULT 7 /* the activity taken without a valid record (none is 8, RECORDS_ACTIVITY_NONE) */
 #define WALKS_KIND_6 6
 #define WALKS_PITFALL_SEED 0x1566
 #define WALKS_MARKED_NEAR 0xb00
@@ -746,7 +746,7 @@ int OutdoorVillagerWalks_ChangeHeldItem(OutdoorVillagerBehaviour *self, u8 *vill
     }
     u8 *record = walks_record(villager);
     int falling = Sky_Falling();
-    int kind = walks_kind(record, WALKS_ACTIVITY_NONE);
+    int kind = walks_kind(record, WALKS_ACTIVITY_DEFAULT);
     DateTime now = {0};
     DateTime_Now(&now);
     s16 *check = walks_half(self, WALKS_ITEM_CHECK);
@@ -1095,7 +1095,7 @@ void OutdoorVillagerWalks_StartWalker(OutdoorVillagerBehaviour *self, int state,
             DateTime_Now(&now);
             if (nook_job == 0 && NpcLookup_IsInNightWindow(NpcId_Personality(TownVillager_NpcId(record)), &now) != 0) {
                 kind = WALKS_WALKER_HOME;
-            } else if (walks_kind(record, WALKS_ACTIVITY_NONE) == WALKS_KIND_6) {
+            } else if (walks_kind(record, WALKS_ACTIVITY_DEFAULT) == WALKS_KIND_6) {
                 kind = WALKS_WALKER_KIND_6;
             }
         }

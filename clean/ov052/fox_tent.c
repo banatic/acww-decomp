@@ -457,14 +457,14 @@ CLEAN_AS(func_ov052_02260718, FoxTent_OnEvent)
 
 /* func_ov052_02260854 (vtable slot 0x58, whether an event of kind 6 about him may run): his
  * action idle and no system holding him. */
-int FoxTent_MayAct1(FoxTent *fox)
+int FoxTent_MayActKind6(FoxTent *fox)
 {
     if (SceneAction_IsBusy(fox_tent_action(fox))) {
         return 0;
     }
     return SceneShare_IsHeld(fox->base) == 0;
 }
-CLEAN_AS(func_ov052_02260854, FoxTent_MayAct1)
+CLEAN_AS(func_ov052_02260854, FoxTent_MayActKind6)
 
 /* func_ov052_02260880 (vtable slot 0x48): whether the player may talk to him: his action idle,
  * no system holding him, and the player not asking about an item (FoxTent_TalkAboutItem, which

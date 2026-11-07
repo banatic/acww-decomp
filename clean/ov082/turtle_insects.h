@@ -8,8 +8,8 @@
  *
  * He is a scene object of class 0x020da088 (main's special_scene_object.h) with vtable
  * 0x0227981c, 0x728 bytes. On his start he plays animation 0x140, is held (flag 2 at 0x4e8)
- * and, unless the town's record of the day's winner (data_021f3aa4, main's event_winner.h)
- * is of today, makes one up: an insect drawn for this month with its random size, and a random
+ * and starts the town's record of the day's winner (data_021f3aa4, main's event_winner.h)
+ * afresh unless it is of today, then makes one up when it holds no insect: an insect drawn for this month with its random size, and a random
  * villager of the town as its catcher. The player may talk to him while his action is idle.
  * His talk scene (TurtleInsectsTalk, turtle_insects_talk.h) gives the contest's net, measures
  * the insect the player shows him and records the winner.

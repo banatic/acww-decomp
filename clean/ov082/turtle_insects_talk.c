@@ -70,12 +70,12 @@ extern u32 data_021dc7a8[];
 /* The vtable slot of the scene that resets it (the scene base's reset). */
 #define TURTLE_INSECTS_TALK_SLOT_RESET 0x08
 
-/* The insects (items 0x12b0 to 0x12e7), the contest's two nets, the item he takes and the one
+/* The insects (items 0x12b0 to 0x12e7), the net (0x1376) and the golden net (0x1377), the item he takes and the one
  * he gives for it. */
 #define TURTLE_INSECTS_TALK_INSECT_FIRST 0x12b0
 #define TURTLE_INSECTS_TALK_INSECT_LAST 0x12e7
 #define TURTLE_INSECTS_TALK_NET 0x1376
-#define TURTLE_INSECTS_TALK_NET_2 0x1377
+#define TURTLE_INSECTS_TALK_GOLDEN_NET 0x1377
 #define TURTLE_INSECTS_TALK_ITEM_37E0 0x37e0
 #define TURTLE_INSECTS_TALK_ITEM_1559 0x1559
 
@@ -127,7 +127,6 @@ extern u32 data_021dc7a8[];
 #define TURTLE_INSECTS_TALK_LINE_AGAIN 8
 #define TURTLE_INSECTS_TALK_LINE_RECORD_MINE 9
 #define TURTLE_INSECTS_TALK_LINE_RECORD_OTHER 10
-#define TURTLE_INSECTS_TALK_LINE_8_FIRST 11
 #define TURTLE_INSECTS_TALK_LINE_SHOW_INSECT 0x0b
 #define TURTLE_INSECTS_TALK_LINE_NO_INSECT 0x0c
 #define TURTLE_INSECTS_TALK_LINE_MEASURED 0x0d
@@ -143,9 +142,9 @@ extern u32 data_021dc7a8[];
 #define TURTLE_INSECTS_TALK_LINE_RECORD_NONE 0x1e
 /* Of "sp_npc_turtle": the item 0x37e0 asked about, taken, and the item 0x1559 given. */
 #define TURTLE_INSECTS_TALK_LINE_37E0_ASK 0
-#define TURTLE_INSECTS_TALK_LINE_37E0_ANSWER_1 1
+#define TURTLE_INSECTS_TALK_LINE_37E0_REFUSED 1
 #define TURTLE_INSECTS_TALK_LINE_37E0_TAKEN 2
-#define TURTLE_INSECTS_TALK_LINE_37E0_ANSWER_4 4
+#define TURTLE_INSECTS_TALK_LINE_37E0_TRADED 4
 
 static TalkObject *turtle_insects_talk_object(TurtleInsectsTalk *talk)
 {
@@ -326,7 +325,7 @@ void TurtleInsectsTalk_Line(TurtleInsectsTalk *talk, TurtleInsectsTalkStart *out
     PlayerActorOps_HeldItem(&held, PlayerActors_OwnPlayer());
     if (TalkChecks_TestSetDailyBit(TURTLE_INSECTS_TALK_DAILY_BIT, 0) == 0 &&
         turtle_insects_talk_lacks(TURTLE_INSECTS_TALK_NET, held) &&
-        turtle_insects_talk_lacks(TURTLE_INSECTS_TALK_NET_2, held)) {
+        turtle_insects_talk_lacks(TURTLE_INSECTS_TALK_GOLDEN_NET, held)) {
         out->message = CurrentPockets_FreeSlot() >= 0 ? TURTLE_INSECTS_TALK_LINE_GIVE_NET : TURTLE_INSECTS_TALK_LINE_FULL;
         return;
     }
@@ -409,7 +408,7 @@ void TurtleInsectsTalk_OnAnswer(TurtleInsectsTalk *talk)
                 line = TURTLE_INSECTS_TALK_LINE_RECORD_NONE;
             }
         } else {
-            line = TURTLE_INSECTS_TALK_LINE_8_FIRST;
+            line = TURTLE_INSECTS_TALK_LINE_SHOW_INSECT;
         }
     }
     turtle_insects_talk_say_unless_none(talk, line, data_ov082_022798c8);
@@ -485,12 +484,12 @@ static u8 turtle_insects_talk_record_line(TurtleInsectsTalk *talk, u8 shown)
 /* func_ov082_02278b64 (vtable slot 0x14, a line ended): see turtle_insects_talk.h. With the
  * item 0x37e0 in the pockets: after line 1 or 4 of "sp_npc_turtle" it is no longer asked
  * about; after line 2 he gives the item 0x1559 (line 4). */
-void TurtleInsectsTalk_OnLineEnd(TurtleInsectsTalk *talk)
+void TurtleInsectsTalk_OnLineEnded(TurtleInsectsTalk *talk)
 {
     u8 shown = turtle_insects_talk_shown(talk);
 
     if (talk->slot_37e0 >= 0) {
-        if (shown == TURTLE_INSECTS_TALK_LINE_37E0_ANSWER_1 || shown == TURTLE_INSECTS_TALK_LINE_37E0_ANSWER_4) {
+        if (shown == TURTLE_INSECTS_TALK_LINE_37E0_REFUSED || shown == TURTLE_INSECTS_TALK_LINE_37E0_TRADED) {
             talk->slot_37e0 = TURTLE_INSECTS_TALK_37E0_DONE;
         }
         if (shown == TURTLE_INSECTS_TALK_LINE_37E0_TAKEN) {
@@ -498,7 +497,7 @@ void TurtleInsectsTalk_OnLineEnd(TurtleInsectsTalk *talk)
             SceneCommand_RequestMotion13(turtle_insects_talk_scene(talk), &shown_item, 0, TURTLE_INSECTS_TALK_MOTION_B, 0);
             u16 given = TURTLE_INSECTS_TALK_ITEM_1559;
             CurrentPockets_Give(&given, 0);
-            turtle_insects_talk_say_unless_none(talk, TURTLE_INSECTS_TALK_LINE_37E0_ANSWER_4, data_ov082_022798d8);
+            turtle_insects_talk_say_unless_none(talk, TURTLE_INSECTS_TALK_LINE_37E0_TRADED, data_ov082_022798d8);
         }
         return;
     }
@@ -525,7 +524,7 @@ void TurtleInsectsTalk_OnLineEnd(TurtleInsectsTalk *talk)
     }
     turtle_insects_talk_say_unless_none(talk, line, data_ov082_022798c8);
 }
-CLEAN_AS(func_ov082_02278b64, TurtleInsectsTalk_OnLineEnd)
+CLEAN_AS(func_ov082_02278b64, TurtleInsectsTalk_OnLineEnded)
 
 /* func_ov082_022790a8 (after the pockets' screen of line 0xb): no item and no size yet; when a
  * pocket was picked (GroupParams_C4CIs1) its insect is measured (a random size), shown by

@@ -189,8 +189,8 @@ static_assert(sizeof(NookClerkStep) == 0x10, "a state's functions");
 #define NOOK_CLERK_PACE_SPEED_UP 0x133
 #define NOOK_CLERK_PACE_SLOW_DOWN 0x199
 
-/* The scenes a clerk's start looks at (SceneQuery_Previous): none, 0x1d and 0x1e. */
-#define NOOK_CLERK_FROM_NONE 0
+/* The scenes a clerk's start looks at (SceneQuery_Previous): the town, 0x1d and 0x1e. */
+#define NOOK_CLERK_FROM_TOWN 0
 #define NOOK_CLERK_FROM_1D 0x1d
 #define NOOK_CLERK_FROM_1E 0x1e
 
@@ -1469,7 +1469,7 @@ static void nclerk_late_music(DateTime *date)
  *   has passed), and the clerk stands when block 0's object of the player's villager part is in
  *   use and past its first step or of type 0xc or more, else greets;
  * - else twin 0x74 coming from the scene 0x1d greets (the date today's), twin 0x75 from there
- *   awaits its twin, Tom Nook coming from none greets (the date today's); any other start but
+ *   awaits its twin, Tom Nook coming from the town greets (the date today's); any other start but
  *   from the scene 0x1e makes the date today's and the clerk stands. The map's object 0 is
  *   claimed, and Tom Nook makes the music the late one once the date has passed and notes a
  *   dated event of kind 3 today.
@@ -1517,7 +1517,7 @@ int NookClerk_Start(NookClerk *clerk)
         NookClerk_SetState(clerk, NOOK_CLERK_STATE_GREET);
     } else if (NookClerk_IsTwinB(clerk) && SceneQuery_Previous() == NOOK_CLERK_FROM_1D) {
         NookClerk_SetState(clerk, NOOK_CLERK_STATE_AWAIT_TWIN);
-    } else if (NookClerk_IsNook(clerk) && SceneQuery_Previous() == NOOK_CLERK_FROM_NONE) {
+    } else if (NookClerk_IsNook(clerk) && SceneQuery_Previous() == NOOK_CLERK_FROM_TOWN) {
         Block021d27acPart18_SetToday(date);
         NookClerk_SetState(clerk, NOOK_CLERK_STATE_GREET);
     } else {

@@ -155,7 +155,7 @@ CLEAN_AS(func_ov080_02278ab8, TurtleTalk_OnAnswer)
  * Else, unless the player record has flag 1 (Nook's job): after line 0 or 2 of "sp_npc_turtle7" item
  * 0x1375 is given (flag 0x21, line 1), after line 3 or 5 item 0x1377 (flag 0x22, line 4); when
  * it does not fit, nothing follows. */
-void TurtleTalk_OnLineShown(TurtleTalk *talk)
+void TurtleTalk_OnLineEnded(TurtleTalk *talk)
 {
     int line = TURTLE_TALK_NO_LINE;
 
@@ -198,7 +198,7 @@ void TurtleTalk_OnLineShown(TurtleTalk *talk)
         turtle_talk_say(talk, (u8) line, data_ov080_022793bc);
     }
 }
-CLEAN_AS(func_ov080_02278b30, TurtleTalk_OnLineShown)
+CLEAN_AS(func_ov080_02278b30, TurtleTalk_OnLineEnded)
 
 /* func_ov080_02278c88 (slot 0x78): the first line, by the current player's record:
  * - flag 1: "sp_etc_sequence5_2", line 0 when flag 0xd is clear (and set now), else one of

@@ -13,7 +13,7 @@
  * 2.0 ahead of the player, at the press of A or a tap on it) the clerk asks for an event of
  * kind 6 and tells its price (talk modes 8 to 0x19 by the item's class, data_ov050_022650e4).
  * The twins share the counter: only the nearer of the two answers the player
- * (NookClerk_IsNearerThanTwin). Tom Nook also greets the player on the first visit of the day,
+ * (NookClerk_IsNearerThanTwin). Tom Nook also greets the player coming in from the town,
  * tells the store's news and its upgrades (the talk's line, nook_clerk_talk.h), sells and buys
  * items, takes orders from the catalog and paint for the house's roof, takes the house loan's
  * payments, and runs the part-time job a new player works for him (the player's record flag 1:

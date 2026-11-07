@@ -9,8 +9,9 @@
  * 0x02279c68, 0x740 bytes, made by MysteryCat_Create, with no texture file of her own: her face
  * (MysteryCatFace, at 0x714) is the design kept in the town's record (MysteryCatRecord_Design of
  * data_021f3278), copied over her model's material "f". Her talk scene (MysteryCatTalk,
- * mystery_cat_talk.h, at 0x658) has the player draw her a face, then takes an impression of
- * the player she will imitate (VillagerImpression_Pick on the player's record).
+ * mystery_cat_talk.h, at 0x658) has the player draw her a face and name it, then takes an
+ * impression of the player, the maker's epithet (VillagerImpression_Pick on the player's
+ * record).
  *
  * Her states (MysteryCat.state), each an entry and an update function (C++ members taking
  * her) from the table data_ov074_02279d9c (filled at start-up by __sinit_ov074_022799d8), set

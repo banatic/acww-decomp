@@ -54,8 +54,8 @@ extern s16 data_020c80f0;
 /* The effect set its effect plays, and the frames between two (a random part, then the
  * least). */
 #define OUTDOOR_VILLAGER_EFFECT_SET 0x81
-#define OUTDOOR_VILLAGER_EFFECT_FIRST_DRAW 15
-#define OUTDOOR_VILLAGER_EFFECT_DRAW 10
+#define OUTDOOR_VILLAGER_EFFECT_NEXT_DRAW 15
+#define OUTDOOR_VILLAGER_EFFECT_FIRST_DRAW 10
 #define OUTDOOR_VILLAGER_EFFECT_LEAST 15
 #define OUTDOOR_VILLAGER_EFFECT_OFF (-1)
 
@@ -492,13 +492,13 @@ void OutdoorVillagerEffect_Tick(OutdoorVillagerEffect *effect, u8 *villager)
         Vec3 at = *(const Vec3 *) (const void *) ov_at(villager, OUTDOOR_VILLAGER_JOINT_16_POINT);
         EffectSystem_StartOneShotSetNumberCopy(OUTDOOR_VILLAGER_EFFECT_SET, &at, NULL, NULL);
         if (VillagerCheck_HasFleas(ov_town_record(villager)) != 0) {
-            effect->wait = (s8) (MainRandom_Below(OUTDOOR_VILLAGER_EFFECT_FIRST_DRAW) + OUTDOOR_VILLAGER_EFFECT_LEAST);
+            effect->wait = (s8) (MainRandom_Below(OUTDOOR_VILLAGER_EFFECT_NEXT_DRAW) + OUTDOOR_VILLAGER_EFFECT_LEAST);
         } else {
             effect->wait = OUTDOOR_VILLAGER_EFFECT_OFF;
         }
     } else if (effect->wait == OUTDOOR_VILLAGER_EFFECT_OFF) {
         if (VillagerCheck_HasFleas(ov_town_record(villager)) != 0) {
-            effect->wait = (s8) (MainRandom_Below(OUTDOOR_VILLAGER_EFFECT_DRAW) + OUTDOOR_VILLAGER_EFFECT_LEAST);
+            effect->wait = (s8) (MainRandom_Below(OUTDOOR_VILLAGER_EFFECT_FIRST_DRAW) + OUTDOOR_VILLAGER_EFFECT_LEAST);
         }
     }
 }

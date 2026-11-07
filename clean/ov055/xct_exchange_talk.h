@@ -18,8 +18,8 @@
  *      when the player stops it, the library is told to stop and line 0x3a (step 3);
  *   2  done: once the lid is open, sound 0x69 and the talk released (step 0);
  *   3  stopping: once the lid is open: when the exchange was done after all, sound 0x69, the
- *      session's exchange ends and line 0x3c; while the library still runs, it is told to stop
- *      again and the talk stays; then the talk is released (step 0). */
+ *      session's exchange ends and line 0x3c; while Exchange_IsActive() is not 1, the library
+ *      is told to stop again and the talk stays; then the talk is released (step 0). */
 #ifndef CLEAN_OV055_XCT_EXCHANGE_TALK_H
 #define CLEAN_OV055_XCT_EXCHANGE_TALK_H
 

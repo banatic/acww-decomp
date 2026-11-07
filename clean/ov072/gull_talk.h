@@ -8,7 +8,7 @@
  *   count's mark, five counted, or how many of spaceship part 0x1568 the player brings. Each of item
  *   0x1568 in the player's pockets is taken out and counted (up to five);
  * - 0x14 (GullTalk_OnLineShown): what follows the line shown (the receiver's message, byte
- *   0x1e): the closing of the first talk, the placing of spaceship part 0x1568 in the town
+ *   0x1e): his waking after line 0, the placing of spaceship part 0x1568 in the town
  *   (gull_spots.h), and the gift once five were counted;
  * - 0x18 (GullTalk_OnAnswer): the player's answer read and dropped;
  * - 0x80 and 0x84: the scene's steps, a table of member functions with a flag (the scene's
@@ -26,7 +26,7 @@
 struct Gull;
 
 /* The topics (GullTalk.topic): which line it starts with (GullTalk_Line). */
-#define GULL_TALK_TOPIC_FIRST_MEETING 0 /* the first talk of the day, no mark: one of lines 0-4 */
+#define GULL_TALK_TOPIC_ASLEEP 0        /* the first talk of the day, no mark: he is asleep, one of lines 0-4 */
 #define GULL_TALK_TOPIC_1 1             /* line 5; this code never picks it */
 #define GULL_TALK_TOPIC_FIRST_MARKED 2  /* the first talk of the day after the mark: line 0x1e */
 #define GULL_TALK_TOPIC_ALL_COUNTED 3   /* five counted: one of lines 0xd-0x11 */

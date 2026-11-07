@@ -3,7 +3,8 @@
  * __sinit_ov048_022639b0). Gatekeeper_SetState enters a state (its entry, when it has one, must
  * agree) and Gatekeeper_UpdateState runs it each frame (vtable slot 0x68).
  *
- * - 0: asks for a talk (an event of kind 6) each frame: the player is back from another town.
+ * - 0: asks for a talk (an event of kind 6) each frame: the player, back from the connection
+ *   screen, is sent off (GATEKEEPER_TOPIC_TAKE_CARE or GATEKEEPER_TOPIC_FAREWELL).
  * - 1: stands and calls the player once near (Gatekeeper_CallPlayer); 2: turns to the one it
  *   talks with and talks; 3: nothing; 4: turns back to the angle it started with, then 1.
  * - 5: walks the player to (16.0, 0, 17.5), then the event ends; 6: opens the town to visitors
@@ -12,9 +13,10 @@
  *   the gate while the two gatekeepers (this one and the other, profile 0x73, overlay 4's
  *   gatekeeper2.h) turn and play animations 0x81 and 0x82; 8 then closes the screen and sets
  *   the activity's flag 0x3c08, 0xa takes the scene's exit 0.
- * - 9 and 0xb step through four steps: a player arrives and is named in line 0x67 (9, the
- *   player of the activity's slot 0x3c1c) or line 0x7b (0xb, the player the link serves), and
- *   the scene's exit 1 is taken (Gatekeeper_RunState9, Gatekeeper_RunStateB).
+ * - 9 and 0xb step through four steps: a visitor arriving is named in line 0x67 ("has come to
+ *   visit", 9, the player of the activity's slot 0x3c1c), or a visitor going home in line 0x7b
+ *   ("is going home", 0xb, the player the link serves), and the scene's exit 1 is taken
+ *   (Gatekeeper_RunState9, Gatekeeper_RunStateB).
  * - 0xc and 0xd leave for scene 0xc or 0x2e once talk 0 is gone, after a connection as a local
  *   child (GatekeeperTalk_WaitStatus0 and GatekeeperTalk_WaitStatus1); 0xe leaves for scene 0x2e.
  * - 0xf and 0x11 wait for the shared slots of the scene object (scene_share.h) to settle after

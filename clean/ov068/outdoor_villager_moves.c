@@ -109,9 +109,9 @@ extern const MemberPointer data_ov068_02277090, data_ov068_022770a0;
 #define MOVES_FRAMES_200 200
 #define MOVES_GIVE_UP_FRAMES 1200 /* `call_cooldown` when behaviour 7 gives up */
 
-/* Behaviours 15 and 16. */
-#define MOVES_ITEM_FIRST 0x1380
-#define MOVES_ITEM_LAST 0x139f
+/* Behaviours 15 and 16 (an umbrella opened and closed): the umbrellas. */
+#define MOVES_UMBRELLA_FIRST 0x1380
+#define MOVES_UMBRELLA_LAST 0x139f
 #define MOVES_ANIM_ITEM 0xcd
 #define MOVES_ANIM_NO_ITEM 0xd6
 #define MOVES_ITEM_ACTION 0x26
@@ -321,7 +321,7 @@ int OutdoorVillagerMoves_Start16(OutdoorVillagerBehaviour *self, u8 *villager)
     VillagerSceneHeld_Item(&item, villager);
     OutdoorVillagerObject_ResetActEffects(villager);
     moves_hold(villager, 0);
-    if (item >= MOVES_ITEM_FIRST && item <= MOVES_ITEM_LAST) {
+    if (item >= MOVES_UMBRELLA_FIRST && item <= MOVES_UMBRELLA_LAST) {
         u16 word = data_020c80f8;
         SceneMotion_RequestAnimation(moves_motion(villager), MOVES_PRIORITY, MOVES_ANIM_ITEM, 3, word, 0);
         HeldItemLink_Take(moves_link(villager), villager, &item, (void *) (uintptr_t) MOVES_ANIM_ITEM, word);
@@ -429,7 +429,7 @@ int OutdoorVillagerMoves_Start15(OutdoorVillagerBehaviour *self, u8 *villager)
     VillagerSceneHeld_Item(&item, villager);
     OutdoorVillagerObject_ResetActEffects(villager);
     moves_hold(villager, 0);
-    if (item >= MOVES_ITEM_FIRST && item <= MOVES_ITEM_LAST) {
+    if (item >= MOVES_UMBRELLA_FIRST && item <= MOVES_UMBRELLA_LAST) {
         u16 word = data_020c80f8;
         SceneMotion_RequestAnimation(moves_motion(villager), MOVES_PRIORITY, MOVES_ANIM_ITEM, 1, word, 0);
         HeldItemLink_Take(moves_link(villager), villager, &item, (void *) (uintptr_t) MOVES_ANIM_ITEM, word);

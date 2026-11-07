@@ -114,7 +114,7 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 #define POST_CLERK_TALK_DAY_PERSON 0xd006
 #define POST_CLERK_TALK_NIGHT_PERSON 0xd007
 
-/* The items the scene's motions hold up: the letters taken (0x1565) and the bells (0x149b). */
+/* The items the scene's motions take or give: the letters (0x1565) and the bells (0x149b). */
 #define POST_CLERK_TALK_LETTERS_ITEM 0x1565
 #define POST_CLERK_TALK_BELLS_ITEM 0x149b
 /* The item handed over once (flag 0x20) for a town perfect 15 days in a row: the golden
@@ -173,14 +173,14 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 #define POST_CLERK_LINE_GOODBYE 0x01         /* the menu's last answer */
 #define POST_CLERK_LINE_SAVE_FAILED 0x02     /* activity job 0x12 reached its step 3 */
 #define POST_CLERK_LINE_NOT_POSTED 0x03      /* the letter screen closed without posting */
-#define POST_CLERK_LINE_POSTED 0x05          /* letters posted */
+#define POST_CLERK_LINE_OTHERS_RECEIVED 0x05 /* "the other letters were received" */
 #define POST_CLERK_LINE_POSTED_ALL 0x07      /* all posted; also the dated letter kept */
 #define POST_CLERK_LINE_SERVICES_LINKED 0x08 /* linked with a slot, at the first counter place */
-#define POST_CLERK_LINE_NONE_POSTED 0x09
-#define POST_CLERK_LINE_DATE_SELF 0x0b  /* one letter to the player themself */
-#define POST_CLERK_LINE_DATE_TAKEN 0x0c /* the date picked for it */
-#define POST_CLERK_LINE_NOT_DATED 0x0e  /* not dated: back to the pockets */
-#define POST_CLERK_LINE_DATED_KEPT 0x0f /* a dated letter is kept already (its date) */
+#define POST_CLERK_LINE_POST_MORE 0x09       /* "will you post more letters?" */
+#define POST_CLERK_LINE_DATE_SELF 0x0b       /* one letter to the player themself */
+#define POST_CLERK_LINE_DATE_TAKEN 0x0c      /* the date picked for it */
+#define POST_CLERK_LINE_NOT_DATED 0x0e       /* not dated: back to the pockets */
+#define POST_CLERK_LINE_DATED_KEPT 0x0f      /* a dated letter is kept already (its date) */
 #define POST_CLERK_LINE_REDATE 0x11
 #define POST_CLERK_LINE_LOAN 0x12      /* the loan told; ends opening its screen */
 #define POST_CLERK_LINE_LOAN_NONE 0x13 /* the loan's screen closed without paying */
@@ -198,15 +198,15 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 #define POST_CLERK_LINE_ERRAND_NONE 0x51
 #define POST_CLERK_LINE_ERRAND_OTHER 0x57 /* taken, though the errand was not for her */
 #define POST_CLERK_LINE_MENU_AGAIN 0x52
-#define POST_CLERK_LINE_ERRAND 0x5f /* a villager's errand for a clerk */
-#define POST_CLERK_LINE_UNSENT 0x61 /* not all the letters were posted */
+#define POST_CLERK_LINE_ERRAND 0x5f      /* a villager's errand for a clerk */
+#define POST_CLERK_LINE_OFFICE_FULL 0x61 /* the post office is full of undelivered letters: no more taken */
 #define POST_CLERK_LINE_NO_ADDRESSEE 0x58
 #define POST_CLERK_LINE_FULL_MAILBOXES 0x58 /* plus the number of full mailboxes, 1 to 3 */
 
 /* The lines of "sp_etc_sequence4" named in the code. */
-#define POST_CLERK_SEQUENCE_LINE_OPTION 0x12   /* its answers set the player's option flag */
-#define POST_CLERK_SEQUENCE_LINE_TOWN 0x13     /* the number of the town's players told */
-#define POST_CLERK_SEQUENCE_LINE_NEW 0x12      /* the first talk, of a new town or player */
+#define POST_CLERK_SEQUENCE_LINE_TOWN 0x13 /* the number of the town's players told */
+#define POST_CLERK_SEQUENCE_LINE_NEW                                                                                          \
+    0x12 /* the first talk, of a new town or player; its answers set the player's option flag */
 #define POST_CLERK_SEQUENCE_LINE_FIRST 0x20    /* the first talk otherwise */
 #define POST_CLERK_SEQUENCE_LINE_AGAIN 0x07    /* a later talk */
 #define POST_CLERK_SEQUENCE_PLAYERS_LINE 0x22  /* plus the number of the town's players */
@@ -295,14 +295,14 @@ static void pct_open(PostClerkTalk *talk, char mode, char stay_on_line, unsigned
     PostClerkTalk_SetStep(talk, step);
 }
 
-/* The scene's motion 13 or 14 holding up `item` (its first value `a`, the second 5, the third
- * 1). */
-static void pct_hold_up(PostClerkTalk *talk, u16 item, u32 a)
+/* The scene's motion 13 (giving) or 14 (taking) of `item` (its first value `a`, the second 5,
+ * the third 1). */
+static void pct_give(PostClerkTalk *talk, u16 item, u32 a)
 {
     SceneCommand_RequestMotion13(pct_scene(talk), &item, a, POST_CLERK_TALK_MOTION_B, 1);
 }
 
-static void pct_hand_over(PostClerkTalk *talk, u16 item, u32 a)
+static void pct_take(PostClerkTalk *talk, u16 item, u32 a)
 {
     SceneCommand_RequestMotion14(pct_scene(talk), &item, a, POST_CLERK_TALK_MOTION_B, 1);
 }
@@ -505,23 +505,23 @@ void PostClerkTalk_OnLineBegin(PostClerkTalk *talk)
 }
 CLEAN_AS(func_ov054_02261380, PostClerkTalk_OnLineBegin)
 
-/* func_ov054_02261d54: the scene's motion 13 holding up the letters taken (item 0x1565), once
- * in a talk. */
-void PostClerkTalk_ShowLetters(PostClerkTalk *talk)
+/* func_ov054_02261d54: the scene's motion 13 giving back the letters refused (item 0x1565),
+ * once in a talk. */
+void PostClerkTalk_ReturnLetters(PostClerkTalk *talk)
 {
-    if (talk->letters_shown == 0) {
-        pct_hold_up(talk, POST_CLERK_TALK_LETTERS_ITEM, 0);
-        talk->letters_shown = 1;
+    if (talk->letters_returned == 0) {
+        pct_give(talk, POST_CLERK_TALK_LETTERS_ITEM, 0);
+        talk->letters_returned = 1;
     }
 }
-CLEAN_AS(func_ov054_02261d54, PostClerkTalk_ShowLetters)
+CLEAN_AS(func_ov054_02261d54, PostClerkTalk_ReturnLetters)
 
-/* func_ov054_02261d8c: after the letter screen, line 5 when letters were posted
- * (GroupParams_LetterFlag200), else 9. */
+/* func_ov054_02261d8c: after the letter screen, line 5 (the other letters received) when
+ * GroupParams_LetterFlag200 is set, else 9 (post more). */
 int PostClerkTalk_PostedLine(PostClerkTalk *talk)
 {
     (void) talk;
-    return GroupParams_LetterFlag200() ? POST_CLERK_LINE_POSTED : POST_CLERK_LINE_NONE_POSTED;
+    return GroupParams_LetterFlag200() ? POST_CLERK_LINE_OTHERS_RECEIVED : POST_CLERK_LINE_POST_MORE;
 }
 CLEAN_AS(func_ov054_02261d8c, PostClerkTalk_PostedLine)
 
@@ -534,7 +534,7 @@ u8 PostClerkTalk_FullMailboxLine(PostClerkTalk *talk)
     if (full != 0) {
         return (u8) (full + POST_CLERK_LINE_FULL_MAILBOXES);
     }
-    return POST_CLERK_LINE_NONE_POSTED;
+    return POST_CLERK_LINE_POST_MORE;
 }
 CLEAN_AS(func_ov054_02261da4, PostClerkTalk_FullMailboxLine)
 
@@ -549,16 +549,16 @@ int PostClerkTalk_NoAddresseeLine(PostClerkTalk *talk)
 }
 CLEAN_AS(func_ov054_02261dc0, PostClerkTalk_NoAddresseeLine)
 
-/* func_ov054_02261ddc: 0x61 when not all the letters were posted (GroupParams_LetterFlag400),
- * else PostClerkTalk_NoAddresseeLine. */
-int PostClerkTalk_UnsentLine(PostClerkTalk *talk)
+/* func_ov054_02261ddc: 0x61 when the post office is full (GroupParams_LetterFlag400), else
+ * PostClerkTalk_NoAddresseeLine. */
+int PostClerkTalk_OfficeFullLine(PostClerkTalk *talk)
 {
     if (GroupParams_LetterFlag400()) {
-        return POST_CLERK_LINE_UNSENT;
+        return POST_CLERK_LINE_OFFICE_FULL;
     }
     return PostClerkTalk_NoAddresseeLine(talk);
 }
-CLEAN_AS(func_ov054_02261ddc, PostClerkTalk_UnsentLine)
+CLEAN_AS(func_ov054_02261ddc, PostClerkTalk_OfficeFullLine)
 
 /* ---- The menu */
 
@@ -697,7 +697,7 @@ void PostClerkTalk_OnSequenceAnswer(PostClerkTalk *talk, unsigned int arg)
     (void) arg;
     int answer = pct_answer(talk);
     (void) PlayerRecords_Current();
-    if (pct_shown(talk) != POST_CLERK_SEQUENCE_LINE_OPTION) {
+    if (pct_shown(talk) != POST_CLERK_SEQUENCE_LINE_NEW) {
         return;
     }
     if (answer == 0) {
@@ -767,7 +767,7 @@ void PostClerkTalk_OnOwnAnswer(PostClerkTalk *talk, unsigned int arg)
             PostClerkTalk_OnMenuAnswer(talk, arg);
             break;
         case POST_CLERK_LINE_NOT_POSTED:
-        case POST_CLERK_LINE_NONE_POSTED:
+        case POST_CLERK_LINE_POST_MORE:
             if (answer == 0) {
                 SceneCommand_RequestScreen(pct_scene(talk), POST_CLERK_TALK_SCREEN_LETTERS);
                 PostClerkTalk_SetStep(talk, POST_CLERK_TALK_STEP_LETTERS);
@@ -941,11 +941,11 @@ static int pct_acres_line(int value)
 /* func_ov054_02260efc (the end of a line of her own file), by the line shown:
  * - 2: the talk held;
  * - 0, 0x52, 0x53, 0x56: the menu (PostClerkTalk_OfferMenu);
- * - 0x0e, 0x5c, 0x62: the letters shown; 9 when no written letter was handled, else
- *   PostClerkTalk_UnsentLine (5 instead of 9);
- * - 0x07: PostClerkTalk_UnsentLine; 0x61: the letters shown;
- * - 0x58: the letters shown, PostClerkTalk_FullMailboxLine (PostClerkTalk_PostedLine instead
- *   of 9); 0x59 to 0x5b: the letters shown, PostClerkTalk_PostedLine;
+ * - 0x0e, 0x5c, 0x62: the letters given back; 9 when no written letter was handled, else
+ *   PostClerkTalk_OfficeFullLine (5 instead of 9);
+ * - 0x07: PostClerkTalk_OfficeFullLine; 0x61: the letters given back;
+ * - 0x58: the letters given back, PostClerkTalk_FullMailboxLine (PostClerkTalk_PostedLine
+ *   instead of 9); 0x59 to 0x5b: the letters given back, PostClerkTalk_PostedLine;
  * - 0x0b, 0x0d, 0x11: the date's screen (mode 0x33), step 5; 0x12: the loan's (mode 0x34),
  *   step 6; 0x16: the balance noted, the account's screen (mode 0x3b), step 7; 0x19, 0x1b: the
  *   screen in mode 0x37, step 3; 0x49: the screen in mode 0x3f, step 4;
@@ -958,7 +958,7 @@ static int pct_acres_line(int value)
  * - 0x3e: 0x4b when the gift was handed over (flag 0x20); else when the town's summary
  *   answered 4 long enough and this system is the host (or alone), 0x4d when the gift 0x1379
  *   goes into the pockets; else 0x4c;
- * - 0x4e: the gift held up (motion 13), flag 0x20 set;
+ * - 0x4e: the gift given (motion 13), flag 0x20 set;
  * - 0x3b: the talk held, its spinner (sound 0), step 14 (activity job 0x1f);
  * - 0x3c: the talk's mode 0, and she leaves (state 8).
  * The line, when there is one, is shown. */
@@ -983,33 +983,33 @@ void PostClerkTalk_OnOwnLineEnd(PostClerkTalk *talk, int arg)
         case POST_CLERK_LINE_NOT_DATED:
         case 0x5c:
         case 0x62:
-            PostClerkTalk_ShowLetters(talk);
+            PostClerkTalk_ReturnLetters(talk);
             if (GroupParams_LetterNoFlag100()) {
-                line = POST_CLERK_LINE_NONE_POSTED;
+                line = POST_CLERK_LINE_POST_MORE;
                 break;
             }
-            line = PostClerkTalk_UnsentLine(talk);
-            if (line == POST_CLERK_LINE_NONE_POSTED) {
-                line = POST_CLERK_LINE_POSTED;
+            line = PostClerkTalk_OfficeFullLine(talk);
+            if (line == POST_CLERK_LINE_POST_MORE) {
+                line = POST_CLERK_LINE_OTHERS_RECEIVED;
             }
             break;
         case POST_CLERK_LINE_POSTED_ALL:
-            line = PostClerkTalk_UnsentLine(talk);
+            line = PostClerkTalk_OfficeFullLine(talk);
             break;
-        case POST_CLERK_LINE_UNSENT:
-            PostClerkTalk_ShowLetters(talk);
+        case POST_CLERK_LINE_OFFICE_FULL:
+            PostClerkTalk_ReturnLetters(talk);
             break;
         case 0x58:
-            PostClerkTalk_ShowLetters(talk);
+            PostClerkTalk_ReturnLetters(talk);
             line = PostClerkTalk_FullMailboxLine(talk);
-            if (line == POST_CLERK_LINE_NONE_POSTED) {
+            if (line == POST_CLERK_LINE_POST_MORE) {
                 line = PostClerkTalk_PostedLine(talk);
             }
             break;
         case 0x59:
         case 0x5a:
         case 0x5b:
-            PostClerkTalk_ShowLetters(talk);
+            PostClerkTalk_ReturnLetters(talk);
             line = PostClerkTalk_PostedLine(talk);
             break;
         case POST_CLERK_LINE_DATE_SELF:
@@ -1080,7 +1080,7 @@ void PostClerkTalk_OnOwnLineEnd(PostClerkTalk *talk, int arg)
             break;
         }
         case 0x4e:
-            pct_hold_up(talk, POST_CLERK_TALK_GOLDEN_CAN, 0);
+            pct_give(talk, POST_CLERK_TALK_GOLDEN_CAN, 0);
             PlayerRecord_SetFlag(record, POST_CLERK_TALK_FLAG_GIFT);
             break;
         case 0x3b:
@@ -1119,19 +1119,19 @@ CLEAN_AS(_ZN18Obj_ov054_0226300419func_ov054_022612c4Ej, PostClerkTalk_OnLineEnd
 /* ---- The steps */
 
 /* func_ov054_02261c00 (step 1, after the letter screen): when letters were posted, the line by
- * what was posted (GroupParams_LetterKind): none to the player themself, PostClerkTalk_UnsentLine
+ * what was posted (GroupParams_LetterKind): none to the player themself, PostClerkTalk_OfficeFullLine
  * (7 instead of 9); one, 0x0f when a dated letter is kept already, else 0x0b; several, 0x5c;
  * linked, 0x62. The letters are taken (motion 14 with the item 0x1565), then step 10. When
- * nothing was posted, line 3 and the next line. The letters are not shown yet in this talk. */
+ * nothing was posted, line 3 and the next line. No letters are given back yet in this talk. */
 void PostClerkTalk_AfterLetters(PostClerkTalk *talk)
 {
     int line = 0;
-    talk->letters_shown = 0;
+    talk->letters_returned = 0;
     if (GroupParams_C4CIs1()) {
         switch (GroupParams_LetterKind()) {
             case 0:
-                line = PostClerkTalk_UnsentLine(talk);
-                if (line == POST_CLERK_LINE_NONE_POSTED) {
+                line = PostClerkTalk_OfficeFullLine(talk);
+                if (line == POST_CLERK_LINE_POST_MORE) {
                     line = POST_CLERK_LINE_POSTED_ALL;
                 }
                 break;
@@ -1147,7 +1147,7 @@ void PostClerkTalk_AfterLetters(PostClerkTalk *talk)
             default:
                 break;
         }
-        pct_hand_over(talk, POST_CLERK_TALK_LETTERS_ITEM, 0);
+        pct_take(talk, POST_CLERK_TALK_LETTERS_ITEM, 0);
         PostClerkTalk_SetStep(talk, POST_CLERK_TALK_STEP_NEXT_LINE);
     } else {
         line = POST_CLERK_LINE_NOT_POSTED;
@@ -1179,7 +1179,7 @@ void PostClerkTalk_AfterDonation(PostClerkTalk *talk)
         int amount = GroupParams_C78();
         SceneBase_PutValue(&talk->base, amount, 7, POST_CLERK_TALK_VALUE_BELLS, 0, 0);
         line = amount >= POST_CLERK_TALK_BIG_AMOUNT ? 0x1d : 0x1e;
-        pct_hand_over(talk, POST_CLERK_TALK_BELLS_ITEM, 0);
+        pct_take(talk, POST_CLERK_TALK_BELLS_ITEM, 0);
         PostClerkTalk_SetStep(talk, POST_CLERK_TALK_STEP_NEXT_LINE);
         (void) PlayerRecord_Savings(PlayerRecords_Current());
         talk->donations = (s32) Savings_Donations();
@@ -1250,7 +1250,7 @@ void PostClerkTalk_AfterLoan(PostClerkTalk *talk)
         } else {
             line = POST_CLERK_LINE_LOAN_PAID;
         }
-        pct_hand_over(talk, POST_CLERK_TALK_BELLS_ITEM, 0);
+        pct_take(talk, POST_CLERK_TALK_BELLS_ITEM, 0);
         PostClerkTalk_SetStep(talk, POST_CLERK_TALK_STEP_NEXT_LINE);
     } else {
         line = POST_CLERK_LINE_LOAN_NONE;
@@ -1274,9 +1274,9 @@ void PostClerkTalk_AfterSavings(PostClerkTalk *talk)
         SceneBase_PutValue(&talk->base, balance / POST_CLERK_TALK_SAVINGS_PART, 6, POST_CLERK_TALK_VALUE_BELLS, 0, 0);
         line = POST_CLERK_LINE_SAVINGS_DONE;
         if (balance > talk->balance) {
-            pct_hand_over(talk, POST_CLERK_TALK_BELLS_ITEM, 0);
+            pct_take(talk, POST_CLERK_TALK_BELLS_ITEM, 0);
         } else {
-            pct_hold_up(talk, POST_CLERK_TALK_BELLS_ITEM, 0);
+            pct_give(talk, POST_CLERK_TALK_BELLS_ITEM, 0);
         }
         PostClerkTalk_SetStep(talk, POST_CLERK_TALK_STEP_NEXT_LINE);
     } else {

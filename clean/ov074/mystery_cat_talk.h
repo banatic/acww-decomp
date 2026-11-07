@@ -8,11 +8,12 @@
  * Its lines, of "sp_npc_mysterycat" (MYSTERY_CAT_LINE_*), as the code reads them: she asks
  * (line 3) while the daily bit 0x2b is clear, and on one talk in two when it is set; else she
  * thanks the one who drew her face (0x18 to 0x1b) or anyone else (0x11 to 0x14), naming the
- * face's maker, the maker's town, the impression she imitates ("st_impress") and the face's
+ * face's maker, the maker's town, the maker's epithet ("st_impress") and the face's
  * title. Answered at line 3, the first answer leads to 0x0a when the player drew her face, else
  * 0x09; the second to 0x0c or 0x0b; each of those then to 0x0d, whose second answer leads to
  * 0x0e. Once 0x0e ends, the design screen (mode 3) opens; then line 0x1c when the player gave
- * a design (her face shown again), else 0x0f. Once 0x1c ends, screen mode 0x14 opens; once the
+ * a design (her face shown again), else 0x0f. Line 0x1c asks for the face's title; once it
+ * ends, the title screen (mode 0x14) opens; once the
  * player confirms, she takes an impression of the player (VillagerImpression_Pick), the town's
  * record is marked to be sent, the daily bit 0x2b is set and one of the lines 5 to 7 follows. */
 #ifndef CLEAN_OV074_MYSTERY_CAT_TALK_H
@@ -33,7 +34,7 @@
 #define MYSTERY_CAT_LINE_NO_DESIGN 0x0f    /* no design given */
 #define MYSTERY_CAT_LINE_SHOWN_OTHER 0x11  /* 0x11 to 0x14: the face not the player's */
 #define MYSTERY_CAT_LINE_SHOWN_OWN 0x18    /* 0x18 to 0x1b: the player drew the face */
-#define MYSTERY_CAT_LINE_NEW_FACE 0x1c     /* a design given; ends with screen mode 0x14 */
+#define MYSTERY_CAT_LINE_ASK_TITLE 0x1c    /* a design given: asks its title; ends with screen mode 0x14 */
 
 /* What its line function gives: the message file's name (an address) and the message. */
 typedef struct MysteryCatLine {

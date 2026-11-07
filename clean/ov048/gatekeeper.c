@@ -358,14 +358,13 @@ CLEAN_AS(func_ov048_02263690, Gatekeeper_TextureName)
 #define GATEKEEPER_SCENE_SHARED 0xb
 #define GATEKEEPER_SCENE_C 0xc
 #define GATEKEEPER_SCENE_ARRIVE 0xd
-#define GATEKEEPER_SCENE_SERVED 0xe
+#define GATEKEEPER_SCENE_VISITOR_LEAVES 0xe
 
 /* The kinds of the block's part 0x20 (block_021d27ac_parts.h) set when the player left through
- * states 0xc and 0xd, and the topics of its talk after each. */
-#define GATEKEEPER_PART20_KIND_C 1
-#define GATEKEEPER_PART20_KIND_D 2
-#define GATEKEEPER_TOPIC_BACK_C 6
-#define GATEKEEPER_TOPIC_BACK_D 7
+ * states 0xc and 0xd; its talk after each has topic GATEKEEPER_TOPIC_TAKE_CARE or
+ * GATEKEEPER_TOPIC_FAREWELL (gatekeeper_talk_lines.h). */
+#define GATEKEEPER_PART20_KIND_TAKE_CARE 1
+#define GATEKEEPER_PART20_KIND_FAREWELL 2
 
 /* Its flag of the scene object: it is held (scene_action.h). */
 #define GATEKEEPER_HELD 2
@@ -377,7 +376,7 @@ int Gatekeeper_Leave(Gatekeeper *self)
     if (SpecialSceneObject_Leave(self) == 0) {
         return 0;
     }
-    if (SceneQuery_Current() == GATEKEEPER_SCENE_ARRIVE || SceneQuery_Current() == GATEKEEPER_SCENE_SERVED) {
+    if (SceneQuery_Current() == GATEKEEPER_SCENE_ARRIVE || SceneQuery_Current() == GATEKEEPER_SCENE_VISITOR_LEAVES) {
         EventQueue_ClearFlag1();
     }
     return 1;
@@ -387,9 +386,11 @@ CLEAN_AS(func_ov048_0226369c, Gatekeeper_Leave)
 /* func_ov048_022636c8 (slot 0x00): unless the base class refuses to start, it keeps its angle
  * as the one it started with, is held, and takes its first state:
  * - linked to a session in scene 0xb: 1 when the object is ours, else 0xf;
- * - back from a trip (the block's part 0x20 of kind 1 or 2): its talk's topic 6 or 7, state 0,
- *   facing and walking the part's angle, and the part's kind cleared;
- * - scene 0xd: the event queue's flag 1 set and state 9; scene 0xe: the same and state 0xb;
+ * - back from the connection screen (the block's part 0x20 of kind 1 or 2): its talk's topic 6
+ *   or 7 (to send the player off), state 0, facing and walking the part's angle, and the part's
+ *   kind cleared;
+ * - scene 0xd: the event queue's flag 1 set and state 9 (a visitor arriving); scene 0xe: the
+ *   same and state 0xb (a visitor going home);
  * - else state 1.
  * Whether it started. */
 int Gatekeeper_Start(Gatekeeper *self)
@@ -410,12 +411,12 @@ int Gatekeeper_Start(Gatekeeper *self)
         return 1;
     }
     part = (Block021d27acPart20 *) Block021d27ac_Part20(Block021d27ac_Get());
-    if (Block021d27acPart20_Kind(part) == GATEKEEPER_PART20_KIND_C ||
-        Block021d27acPart20_Kind(part) == GATEKEEPER_PART20_KIND_D) {
-        if (Block021d27acPart20_Kind(part) == GATEKEEPER_PART20_KIND_C) {
-            GatekeeperTalk_SetTopic(&self->talk, GATEKEEPER_TOPIC_BACK_C);
+    if (Block021d27acPart20_Kind(part) == GATEKEEPER_PART20_KIND_TAKE_CARE ||
+        Block021d27acPart20_Kind(part) == GATEKEEPER_PART20_KIND_FAREWELL) {
+        if (Block021d27acPart20_Kind(part) == GATEKEEPER_PART20_KIND_TAKE_CARE) {
+            GatekeeperTalk_SetTopic(&self->talk, GATEKEEPER_TOPIC_TAKE_CARE);
         } else {
-            GatekeeperTalk_SetTopic(&self->talk, GATEKEEPER_TOPIC_BACK_D);
+            GatekeeperTalk_SetTopic(&self->talk, GATEKEEPER_TOPIC_FAREWELL);
         }
         Gatekeeper_SetState(self, GATEKEEPER_STATE_0);
         self->angle = (s16) Block021d27acPart20_Value(part);
@@ -424,7 +425,7 @@ int Gatekeeper_Start(Gatekeeper *self)
     } else if (SceneQuery_Current() == GATEKEEPER_SCENE_ARRIVE) {
         EventQueue_SetFlag1();
         Gatekeeper_SetState(self, GATEKEEPER_STATE_9);
-    } else if (SceneQuery_Current() == GATEKEEPER_SCENE_SERVED) {
+    } else if (SceneQuery_Current() == GATEKEEPER_SCENE_VISITOR_LEAVES) {
         EventQueue_SetFlag1();
         Gatekeeper_SetState(self, GATEKEEPER_STATE_B);
     } else {

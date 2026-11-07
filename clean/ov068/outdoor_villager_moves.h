@@ -31,8 +31,8 @@
  *   of its talk and talks; once the action ends the camera's mode is reset, it turns to angle 0
  *   and walks to its place moved by (-0x2000, +0x8000); when there (or after 200 frames) its
  *   event is finished, it stands and the event queue's flag 0x20 is cleared.
- * - 15 and 16: the item it holds is brought out or put away. With an item of 0x1380 to 0x139f
- *   (the held item link's action 0x25 group, held_item_link.c) animation 0xcd plays with the
+ * - 15 and 16: the item it holds is brought out or put away. With an umbrella (0x1380 to 0x139f,
+ *   opened or closed; the held item link's action 0x26, held_item_link.c) animation 0xcd plays with the
  *   item's own animation (16 runs the item's frames backwards, from the last); without one,
  *   animation 0xd6 while the item's scale grows from 0 to 1.0 (15) or shrinks to 0 (16), by
  *   0x249 a frame. The byte at 0x9f0 is set when the item is out and cleared once it is put

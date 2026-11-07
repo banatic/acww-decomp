@@ -85,9 +85,9 @@ extern u32 data_ov051_02261b84;
 extern const MemberPointer data_ov051_0226175c, data_ov051_02261754, data_ov051_0226174c;
 
 /* The lines of "sp_etc_sequence3" the code names. */
-#define TDT_LINE_GREETING_0 0x00  /* begins with the greeting and the hour */
-#define TDT_LINE_GREETING_2 0x02  /* the same, after the time's screen */
-#define TDT_LINE_FIRST_OTHER 0x28 /* the first line of a start that keeps the town and player */
+#define TDT_LINE_GREETING_0 0x00      /* begins with the greeting and the hour */
+#define TDT_LINE_GREETING_2 0x02      /* the same, after the time's screen */
+#define TDT_LINE_FIRST_SAME_TOWN 0x28 /* the first line of a start in the town as it is (a new player, or unchanged) */
 
 /* The greetings of "st_general" (part 0 of the lines 0 and 2), from noon on the second. */
 #define TDT_GREETING_MORNING 0x19
@@ -594,7 +594,7 @@ void TaxiDriverTalk_Line(int talk, TaxiDriverTalkStart *out)
     if (StartKind_IsNewTown() || StartKind_IsMovedIn()) {
         out->message = TDT_LINE_GREETING_0;
     } else {
-        out->message = TDT_LINE_FIRST_OTHER;
+        out->message = TDT_LINE_FIRST_SAME_TOWN;
     }
 }
 CLEAN_AS(func_ov051_02260fd8, TaxiDriverTalk_Line)

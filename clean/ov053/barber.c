@@ -352,7 +352,7 @@ CLEAN_AS(func_ov053_02260558, Barber_CheckSeated)
  *   partner; seated in the chair (with or without a hat), it walks route B first, else talks;
  * - 0, the player talks to it: the same reset, and it talks;
  * - 8, the event ended: after the topic hat back it walks route A, else, but after the topic
- *   claimed, it turns back; either way with no topic.
+ *   farewell (BARBER_TOPIC_FAREWELL), it turns back; either way with no topic.
  * QUIRK: the current player's record is fetched and not used; with code 1 the participant is
  * stored a second time. */
 void Barber_OnEvent(Barber *barber, unsigned int code, u8 participant)
@@ -394,11 +394,11 @@ void Barber_OnEvent(Barber *barber, unsigned int code, u8 participant)
 CLEAN_AS(func_ov053_02260620, Barber_OnEvent)
 
 /* func_ov053_0226071c (vtable slot 0x58): agreed while no action of its runs. */
-int Barber_MayTalk(Barber *barber)
+int Barber_MayActKind6(Barber *barber)
 {
     return !SceneAction_IsBusy(barber_action(barber));
 }
-CLEAN_AS(func_ov053_0226071c, Barber_MayTalk)
+CLEAN_AS(func_ov053_0226071c, Barber_MayActKind6)
 
 /* func_ov053_0226073c (vtable slot 0x48): whether the player may talk to it: no action of its
  * runs. */

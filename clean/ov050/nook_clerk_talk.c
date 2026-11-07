@@ -151,8 +151,7 @@ extern int func_ov050_022634b4(unsigned short *p);
 
 #define NOOK_CLERK_NO_LINE 0xff
 
-/* The game variable (bank 0) that, when set, makes the clerks act as when linked; the player
- * record's flag set while the player works for Tom Nook. */
+/* The game variable (bank 0) that, when set, makes the clerks act as when linked. */
 #define NOOK_CLERK_TALK_VARIABLE 0x4a
 
 /* The vtable slot of the scene that resets it, the first of the job's lines by type (0xb), and

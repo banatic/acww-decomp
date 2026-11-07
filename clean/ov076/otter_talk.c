@@ -83,15 +83,10 @@ extern int func_ov076_02278f0c(u16 *item, int state);
 #define OTTER_TALK_LINE_GIVEN 6
 #define OTTER_TALK_LINE_8 8
 #define OTTER_TALK_LINE_8_SECOND 9
-#define OTTER_TALK_LINE_8_OTHER 0x0a
-#define OTTER_TALK_LINE_8_FIRST 0x0b
-#define OTTER_TALK_LINE_GIFT_10 10
-#define OTTER_TALK_LINE_GIFT_11 11
-#define OTTER_TALK_LINE_GIFT_CHECK 12
+#define OTTER_TALK_LINE_GIFT_PICTURE 0x0a /* gives the picture (0x4a38) */
+#define OTTER_TALK_LINE_GIFT_AXE 0x0b     /* gives the golden axe (0x1373) */
 #define OTTER_TALK_LINE_GIFTED 0x0c
-#define OTTER_TALK_LINE_AFTER_RANDOM 0x0d /* or 0x0e */
-#define OTTER_TALK_LINE_DRAW_13 13
-#define OTTER_TALK_LINE_DRAW_14 14
+#define OTTER_TALK_LINE_DRAW 0x0d /* or 0x0e, after a random line: a gift drawn */
 #define OTTER_TALK_LINE_RANDOM_FIRST 0x0f
 #define OTTER_TALK_LINE_RANDOM_LAST 0xfc
 #define OTTER_TALK_LINE_RANDOM_COUNT (OTTER_TALK_LINE_RANDOM_LAST - OTTER_TALK_LINE_RANDOM_FIRST + 1)
@@ -263,11 +258,11 @@ void OtterTalk_OnAnswer(OtterTalk *talk)
             break;
         case OTTER_TALK_LINE_8:
             if (answer == 0) {
-                line = OTTER_TALK_LINE_8_FIRST;
+                line = OTTER_TALK_LINE_GIFT_AXE;
             } else if (answer == 1) {
                 line = OTTER_TALK_LINE_8_SECOND;
             } else {
-                line = OTTER_TALK_LINE_8_OTHER;
+                line = OTTER_TALK_LINE_GIFT_PICTURE;
             }
             break;
     }
@@ -275,8 +270,8 @@ void OtterTalk_OnAnswer(OtterTalk *talk)
 }
 CLEAN_AS(func_ov076_02278af0, OtterTalk_OnAnswer)
 
-/* He hands talk->item to the player: the item motion, the item into the pockets and the daily
- * bit set. */
+/* He hands talk->item to the player: the item motion and the item into the pockets (the callers
+ * set the daily bit). */
 static void otter_talk_hand_over(OtterTalk *talk)
 {
     SceneCommand_RequestMotion13(otter_talk_scene(talk), &talk->item, 0, OTTER_TALK_MOTION_B, 0);
@@ -284,13 +279,13 @@ static void otter_talk_hand_over(OtterTalk *talk)
 }
 
 /* func_ov076_02278b78 (vtable slot 0x14, a line ended): see otter_talk.h. */
-void OtterTalk_OnLineEnd(OtterTalk *talk)
+void OtterTalk_OnLineEnded(OtterTalk *talk)
 {
     u8 shown = otter_talk_shown(talk);
     u8 line = OTTER_TALK_NO_LINE;
 
     if (shown == OTTER_TALK_LINE_FD || (shown >= OTTER_TALK_LINE_RANDOM_FIRST && shown <= OTTER_TALK_LINE_RANDOM_LAST)) {
-        line = (u8) (MainRandom_Below(2) + OTTER_TALK_LINE_AFTER_RANDOM);
+        line = (u8) (MainRandom_Below(2) + OTTER_TALK_LINE_DRAW);
     }
 
     switch (shown) {
@@ -299,19 +294,19 @@ void OtterTalk_OnLineEnd(OtterTalk *talk)
             SceneCommand_RequestScreen(otter_talk_scene(talk), OTTER_TALK_POCKETS_SCREEN);
             OtterTalk_SetAfterCommand(talk, 0);
             break;
-        case OTTER_TALK_LINE_GIFT_10:
-        case OTTER_TALK_LINE_GIFT_11:
-            talk->item = shown == OTTER_TALK_LINE_GIFT_10 ? OTTER_TALK_PICTURE : OTTER_TALK_GOLDEN_AXE;
+        case OTTER_TALK_LINE_GIFT_PICTURE:
+        case OTTER_TALK_LINE_GIFT_AXE:
+            talk->item = shown == OTTER_TALK_LINE_GIFT_PICTURE ? OTTER_TALK_PICTURE : OTTER_TALK_GOLDEN_AXE;
             otter_talk_hand_over(talk);
             talk->owner->gave = 1;
             TalkChecks_TestSetDailyBit(OTTER_TALK_DAILY_BIT, 1);
             line = OTTER_TALK_LINE_GIFTED;
             break;
-        case OTTER_TALK_LINE_GIFT_CHECK:
+        case OTTER_TALK_LINE_GIFTED:
             line = otter_talk_is_item(&talk->item, OTTER_TALK_PICTURE) ? OTTER_TALK_LINE_GIFT_KNOWN : OTTER_TALK_LINE_FD;
             break;
-        case OTTER_TALK_LINE_DRAW_13:
-        case OTTER_TALK_LINE_DRAW_14:
+        case OTTER_TALK_LINE_DRAW:
+        case OTTER_TALK_LINE_DRAW + 1:
             if (talk->owner->gave == 0) {
                 if (CurrentPockets_FreeSlot() >= 0) {
                     unsigned int draw = MainRandom_Below(OTTER_TALK_DRAWS);
@@ -332,7 +327,7 @@ void OtterTalk_OnLineEnd(OtterTalk *talk)
     }
     otter_talk_say_unless_none(talk, line);
 }
-CLEAN_AS(func_ov076_02278b78, OtterTalk_OnLineEnd)
+CLEAN_AS(func_ov076_02278b78, OtterTalk_OnLineEnded)
 
 /* func_ov076_02278eb4 (after the pockets' screen of line 4): when a pocket was picked
  * (GroupParams_C4CIs1), it is emptied and the item 0x1559 handed to him: line 6; else line 5.

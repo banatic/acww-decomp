@@ -1044,9 +1044,9 @@ CLEAN_AS(func_ov049_02262b2c, Mabel_TextureName)
 /* func_ov049_02262b34 (vtable slot 0x00, her start): unless the special character refuses to
  * start: linked (or with the game variable 0x4a set) she is held (flag 2 at 0x4e8); when this
  * system holds the scene she is put at (13.0, 25.0) facing and walking angle 0 and stands
- * (state 10), else she awaits the session. Unlinked she greets (state 0) when the scene came
- * from none (SceneQuery_Previous 0), else stands; she claims her place on the collision map
- * and notes a dated event of kind 2 today. Whether she started. */
+ * (state 10), else she awaits the session. Unlinked she greets (state 0) when the player came
+ * from the town (SceneQuery_Previous 0), else stands; she claims the map's object 0, the
+ * shop's way out (Mabel_CheckAtExit), and notes a dated event of kind 2 today. Whether she started. */
 int Mabel_Start(Mabel *mabel)
 {
     u8 event;

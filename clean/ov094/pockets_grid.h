@@ -3,7 +3,7 @@
  * PocketsView, 0x2fc of ov105's LetterStorage). It draws the scenes' places as OBJs on the sub
  * screen (one OBJ of data_ov094_0229bfb0 per place, PocketsGrid_PlaceObj) and the item the
  * cursor holds (the OBJ data_ov094_0229bf70), whose unwrapping (a present opened) is animated
- * (PocketsGrid_StepUnwrap): frames of an animation (the object at 0x184) copied into the held
+ * (PocketsGrid_StepUnwrap): frames of the icons object (PocketsIcons, at 0x184) copied into the held
  * OBJ's characters, and a scale from 1/10 to full size.
  *
  * Three sets of 64 bits hold, per place: whether it holds something (`filled`, drawn), whether
@@ -30,9 +30,9 @@ typedef struct PocketsBits {
 } PocketsBits;
 
 typedef struct PocketsGrid {
-    u32 vtable;                              /* 0x000: data_ov094_0229bf90 */
-    u8 held_chars[3][0x80];                  /* 0x004: characters copied for the held OBJ, one per task */
-    u8 animation[0x808];                     /* 0x184: the unwrapping's frames (func_ov094_0229b0d4, func_ov094_0229b048) */
+    u32 vtable;             /* 0x000: data_ov094_0229bf90 */
+    u8 held_chars[3][0x80]; /* 0x004: the copy buffer of each of this frame's three tasks (PocketsGrid_SetObjChars) */
+    u8 animation[0x808];    /* 0x184: the icons object (PocketsIcons): item icons and the unwrapping's frames */
     LayerTaskPair tasks[POCKETS_GRID_TASKS]; /* 0x98c */
     u32 unk_a34;                             /* 0xa34 */
     PocketsBits filled;                      /* 0xa38 */

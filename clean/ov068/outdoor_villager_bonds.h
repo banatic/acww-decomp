@@ -4,7 +4,8 @@
  * taken in. Also two of the chat's seven exchanges, the ones that only touch bonds and moods.
  *
  * A bond changes by an amount drawn from a table of five signed bytes, one for each tier of
- * the pair (VillagerPair_Tier: 0 the best, 3 the worst, 4 none). A chat changes the pair's own
+ * the pair (VillagerPair_Tier: 0 the best; 4, below every tier's least score, the worst, and
+ * also for a pair not of the town). A chat changes the pair's own
  * bond (OutdoorVillagerBonds_ChangePair) or, as gossip, the bond of two other villagers of the
  * town drawn at random (OutdoorVillagerBonds_ChangeOthers).
  *

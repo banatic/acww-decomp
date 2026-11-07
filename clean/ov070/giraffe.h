@@ -54,7 +54,7 @@ typedef struct Giraffe {
     s32 state;                             /* 0x654: GIRAFFE_* */
     GiraffeTalk talk;                      /* 0x658 */
     u8 questions_asked[GIRAFFE_QUESTIONS]; /* 0x724: 1 for each question asked */
-    u8 talk_count;                         /* 0x738: questions asked in a row */
+    u8 talk_count;                         /* 0x738: questions asked in a row; after her remark, the talks since */
     u8 unk_739[3];                         /* 0x739 */
 } Giraffe;
 

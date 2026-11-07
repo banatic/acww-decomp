@@ -609,11 +609,11 @@ void GatekeeperTalk_StartLine(GatekeeperTalk *talk, GatekeeperTalkStart *out)
 
     if (StartKind_IsSet()) {
         GatekeeperTalk_SetTopic(talk, GATEKEEPER_TOPIC_SPECIAL_START);
-    } else if (GatekeeperTalk_Topic(talk) == GATEKEEPER_TOPIC_6) {
+    } else if (GatekeeperTalk_Topic(talk) == GATEKEEPER_TOPIC_TAKE_CARE) {
         if (CheckInGate_IsOpen() == 0) {
             CheckInGate_Open();
         }
-    } else if (GatekeeperTalk_Topic(talk) == GATEKEEPER_TOPIC_7 ||
+    } else if (GatekeeperTalk_Topic(talk) == GATEKEEPER_TOPIC_FAREWELL ||
                GatekeeperTalk_Topic(talk) == GATEKEEPER_TOPIC_CALL_LINKED ||
                GatekeeperTalk_Topic(talk) == GATEKEEPER_TOPIC_CALL_ALONE) {
         /* kept */

@@ -57,8 +57,9 @@ extern const s32 data_ov068_022767b8[5];
 extern const u8 data_ov068_0227679c[8];
 /* The weights of the seven exchanges. */
 extern const u8 data_ov068_02276794[7];
-/* The moods asked for (func_ov068_0226ad44 draws one) and the records kept (func_ov068_0226ada8
- * and func_ov068_0226ae00) by the ends of the chat. */
+/* The moods asked for (func_ov068_0226ad44 draws one) and the bond changes (the pair's,
+ * OutdoorVillagerBonds_ChangePair, or as gossip two other villagers',
+ * OutdoorVillagerBonds_ChangeOthers) by the ends of the chat. */
 extern const u8 data_ov068_02276740[4];
 extern const u8 data_ov068_02276738[4];
 extern const u8 data_ov068_02276730[4];
@@ -514,7 +515,8 @@ CLEAN_AS(func_ov068_0226a1b8, OutdoorVillagerChat_Start9)
 
 /* func_ov068_0226a260: a new design for the first of the pair (the speaker): one of
  * data_021ed278's eight other than the one it wears (func_ov068_0226ac40); without one,
- * nothing (0). Else the second learns from the first, the pair's record kept, the speaker's
+ * nothing (0). Else the second learns from the first, the pair's bond changed
+ * (OutdoorVillagerBonds_ChangePair), the speaker's
  * mood asked for (1, 2), the design copied onto the first's and its clothes set to it
  * (0x12a8), and the speaker shows it (kind 20); step 2. */
 int OutdoorVillagerChat_NewDesign(OutdoorVillagerBehaviour *self, u8 *villager)
@@ -550,8 +552,8 @@ int OutdoorVillagerChat_NewDesign(OutdoorVillagerBehaviour *self, u8 *villager)
 CLEAN_AS(func_ov068_0226a260, OutdoorVillagerChat_NewDesign)
 
 /* func_ov068_0226a3e0: the second's catchphrase back to its own default (its NpcId's number's,
- * NpcLookup_CatchphraseToWide, when there is one), after it learns from the first and the
- * town's record is kept; both moods asked for from data_ov068_02276738; step 3. */
+ * NpcLookup_CatchphraseToWide, when there is one), after it learns from the first and, as
+ * gossip, two other villagers' bond is changed (OutdoorVillagerBonds_ChangeOthers); both moods asked for from data_ov068_02276738; step 3. */
 int OutdoorVillagerChat_DefaultCatchphrase(OutdoorVillagerBehaviour *self, u8 *villager)
 {
     u8 *partner = chat_partner(villager);
@@ -579,7 +581,8 @@ CLEAN_AS(func_ov068_0226a3e0, OutdoorVillagerChat_DefaultCatchphrase)
 
 /* func_ov068_0226a49c: the first of the pair (the speaker) back to its own defaults: its umbrella
  * (0x1380 to 0x139f), unless it has one, and its clothes. When the clothes it wears differ
- * from its default (by furniture number when they are furniture), both moods asked for
+ * from its default (by furniture number when they are furniture), as gossip two other
+ * villagers' bond changed (OutdoorVillagerBonds_ChangeOthers), both moods asked for
  * (data_ov068_02276730, not applied), its clothes set and the speaker shows them (kind 20),
  * step 2; else both moods asked for and applied, step 3. */
 int OutdoorVillagerChat_DefaultClothes(OutdoorVillagerBehaviour *self, u8 *villager)
@@ -635,7 +638,8 @@ CLEAN_AS(func_ov068_0226a49c, OutdoorVillagerChat_DefaultClothes)
  * second learns from the first. When the second already wears the same design, another
  * villager of the town is drawn instead (neither of the pair, one not wearing that design and
  * with a status, VillagerStatus_Get), or nobody. The design is copied onto the receiver's and
- * its clothes set to it (0x12a8); the pair's record is kept. Given to the second: both moods
+ * its clothes set to it (0x12a8); the pair's bond is changed (OutdoorVillagerBonds_ChangePair).
+ * Given to the second: both moods
  * asked for (1, 2), the speaker (here the second) shows it (kind 20), step 2; else both moods
  * asked for and applied, step 3. */
 int OutdoorVillagerChat_PassDesign(OutdoorVillagerBehaviour *self, u8 *villager)
@@ -708,7 +712,8 @@ CLEAN_AS(func_ov068_0226a618, OutdoorVillagerChat_PassDesign)
 
 /* func_ov068_0226a91c: the first's catchphrase passed on: to the second, or when the second
  * already says it, to another villager of the town drawn (neither of the pair, one not
- * saying it), or nobody. The second learns from the first, the town's record is kept, both
+ * saying it), or nobody. The second learns from the first, as gossip two other villagers'
+ * bond is changed (OutdoorVillagerBonds_ChangeOthers), both
  * moods asked for (1, 2, applied); step 3. */
 int OutdoorVillagerChat_PassCatchphrase(OutdoorVillagerBehaviour *self, u8 *villager)
 {

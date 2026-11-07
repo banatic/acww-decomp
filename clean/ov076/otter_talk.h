@@ -9,7 +9,7 @@
  *   after line 2:      the third choice, line 4;
  *   after line 8:      the first choice line 0xb, the second line 9, else line 0xa.
  *
- * The end of a line (slot 0x14, OtterTalk_OnLineEnd):
+ * The end of a line (slot 0x14, OtterTalk_OnLineEnded):
  *   lines 0x0f to 0xfc and 0xfd: line 0xd or 0xe at random;
  *   line 4:      the pockets' screen opens to pick the item 0x1559; once its command ends
  *                (slot 0x84), a picked pocket is emptied and the item handed to him (line 6),
@@ -52,7 +52,7 @@ void OtterTalk_OnCommandEnded(OtterTalk *talk);
 /* Its lines. */
 void OtterTalk_Line(OtterTalk *talk, OtterTalkStart *out);
 void OtterTalk_OnAnswer(OtterTalk *talk);
-void OtterTalk_OnLineEnd(OtterTalk *talk);
+void OtterTalk_OnLineEnded(OtterTalk *talk);
 void OtterTalk_AfterPockets(OtterTalk *talk);
 int OtterTalk_IsAskedItem(u16 *item, int state);
 

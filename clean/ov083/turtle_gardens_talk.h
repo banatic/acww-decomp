@@ -15,7 +15,7 @@
  * The player's answers (slot 0x18, TurtleGardensTalk_OnAnswer): after line 0xa, the first
  * answer gives line 0xc one time in three, else one of the lines 0x1c to 0x26 at random.
  *
- * The end of a line (slot 0x14, TurtleGardensTalk_OnLineEnd):
+ * The end of a line (slot 0x14, TurtleGardensTalk_OnLineEnded):
  *   lines 5, 6 and 9: unless the current player had the daily bit 0x1d today (it is set now),
  *              the player is owed a gardening letter, and with a free pocket he picks a prize
  *              (one of the shops' twelve random items): line 7;
@@ -47,6 +47,6 @@ void TurtleGardensTalk_Begin(TurtleGardensTalk *talk, TurtleGardens *owner);
 /* Its lines. */
 void TurtleGardensTalk_Line(TurtleGardensTalk *talk, TurtleGardensTalkStart *out);
 void TurtleGardensTalk_OnAnswer(TurtleGardensTalk *talk);
-void TurtleGardensTalk_OnLineEnd(TurtleGardensTalk *talk);
+void TurtleGardensTalk_OnLineEnded(TurtleGardensTalk *talk);
 
 #endif

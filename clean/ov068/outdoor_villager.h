@@ -136,7 +136,7 @@ typedef struct OutdoorVillagerBehaviour {
     u8 unk_28[0x10];
     u8 net_hits; /* 0x38: the net hits, behaviour 19's starts while `net_hits_timer` ran */
     u8 unk_39;
-    u16 net_hits_timer; /* 0x3a: 1200 when behaviour 19 ends without reaction 1 */
+    u16 net_hits_timer; /* 0x3a: 1200 when behaviour 19 ends (OutdoorVillagerActs_ReactNetted, _WaitNetted) */
     u8 unk_3c[0xa4];
     u8 shown; /* 0xe0: behaviour 23 ran */
     u8 unk_e1[0x13];

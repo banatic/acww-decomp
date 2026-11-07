@@ -23,8 +23,8 @@
  *
  *   1 once the talk closes after the name screen: the name taken, the song found (or drawn);
  *   2 each frame once the talk is gone: the lights and the look change, and after 45 frames
- *     the music starts and overlay 93's object is made (func_ov004_02246a2c);
- *   3 each frame: the guest follows the music's show; at its end (func_ov004_02246900), 20
+ *     the music starts and overlay 93's object is made (StaffRollOverlay_Open);
+ *   3 each frame: the guest follows the music's show; at its end (StaffRollOverlay_HasEnded), 20
  *     frames on;
  *   4 each frame: after them, the last message (the song given, or not), the music dropped
  *     and the lights back, 30 frames on;
@@ -73,7 +73,7 @@ typedef struct CafeGuestShow {
     s8 track_kind; /* 0x01: picks the face (-1: "m.0") */
     s8 var0;       /* 0x02: 1 looks ahead, else up */
     s8 var2;       /* 0x03: 0 and 1 end and start a pause */
-    s8 var3;       /* 0x04: 2, 0 or 1 switch overlay 93's object */
+    s8 var3;       /* 0x04: picks the camera: 2 the views and overlay 93's logo, 0 or 1 the next spot */
     u8 pad_05[3];
     fx32 frame_a; /* 0x08: the speed of the model's base animation for types 3 and 4 */
     fx32 frame_b; /* 0x0c */

@@ -21,8 +21,8 @@
 #define GATEKEEPER_TOPIC_FIRST_MEETING 0 /* the current player's first talk with it */
 #define GATEKEEPER_TOPIC_PART_OF_DAY 1   /* 1 to 4: Calendar_PartOfDay plus 1 */
 #define GATEKEEPER_TOPIC_NOT_HOST 5      /* TalkChecks_IsHostOrAlone refused */
-#define GATEKEEPER_TOPIC_6 6
-#define GATEKEEPER_TOPIC_7 7
+#define GATEKEEPER_TOPIC_TAKE_CARE 6     /* line 0x68, "take care on your trip": the player sent off (part 0x20 of kind 1) */
+#define GATEKEEPER_TOPIC_FAREWELL 7      /* line 0xd, "goodbye": the player sent off (part 0x20 of kind 2) */
 #define GATEKEEPER_TOPIC_SPECIAL_START 8 /* the game started in a special way (StartKind_IsSet) */
 #define GATEKEEPER_TOPIC_CALL_LINKED 9
 #define GATEKEEPER_TOPIC_CALL_ALONE 10

@@ -53,7 +53,7 @@
 
 static_assert(sizeof(SceneBase) == 0x80, "scene base");
 static_assert(offsetof(PostClerkTalk, owner) == 0xb0 && offsetof(PostClerkTalk, menu) == 0xb4, "PostClerkTalk");
-static_assert(offsetof(PostClerkTalk, step) == 0xb8 && offsetof(PostClerkTalk, letters_shown) == 0xbc, "PostClerkTalk");
+static_assert(offsetof(PostClerkTalk, step) == 0xb8 && offsetof(PostClerkTalk, letters_returned) == 0xbc, "PostClerkTalk");
 static_assert(offsetof(PostClerkTalk, balance) == 0xc0 && offsetof(PostClerkTalk, donations) == 0xc4, "PostClerkTalk");
 static_assert(offsetof(PostClerkTalk, search_frames) == 0xc8, "PostClerkTalk");
 static_assert(offsetof(PostClerk, state) == 0x654 && offsetof(PostClerk, talk) == 0x658, "PostClerk");

@@ -125,8 +125,7 @@ extern const char data_ov076_022796f0[];
 extern const char data_ov076_02279720[];
 /* The functions of his states (filled at start-up by __sinit_ov076_022795ac). */
 extern OtterStep data_ov076_0227988c[OTTER_STATES];
-/* The word his motion requests carry, the player's position (or where it would be), and the
- * range of a look. */
+/* The word his motion requests carry, the origin (0, 0, 0), and the range of a look. */
 extern u16 data_020c80f8;
 extern Vec3 data_021fbee8;
 extern fx32 data_020c814c;
@@ -426,7 +425,7 @@ CLEAN_AS(func_ov076_02279230, Otter_UpdateTurn)
 
 /* func_ov076_02279178 (state 4's entry): animation 0xf9 once (priority 1) and sound 0x814; he
  * faces and walks half a turn about; his spin back to angle 0 is a sixth of that angle a frame;
- * his head looks ahead (kind 0, with the player's position and actor 4 given); his height is
+ * his head looks ahead (kind 0, with the origin and actor 4 given); his height is
  * noted. 1. */
 int Otter_EnterDive(Otter *otter)
 {

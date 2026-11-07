@@ -14,8 +14,8 @@
  *
  * Its vtable slots:
  * - 0x08 (WalrusTalk_Reset): reset, no item, nothing to run;
- * - 0x10 (WalrusTalk_Slot10): while line 0x0f is shown, motion 19 of the scene's commands;
- * - 0x14 (WalrusTalk_OnLineShown): what follows the line shown;
+ * - 0x10 (WalrusTalk_OnLineBegins): while line 0x0f is shown, motion 19 of the scene's commands;
+ * - 0x14 (WalrusTalk_OnLineEnded): what follows the line shown;
  * - 0x18 (WalrusTalk_OnAnswer): the player's answer to the line shown;
  * - 0x78 (WalrusTalk_Line): the first line: 0, or one of 6-8 once he took an item today;
  * - 0x84 (WalrusTalk_RunAfterCommand): when a command of the scene ends, what was left to run
@@ -57,8 +57,8 @@ typedef struct WalrusTalkLine {
 
 /* Its slots. */
 void WalrusTalk_OnAnswer(WalrusTalk *talk);
-void WalrusTalk_OnLineShown(WalrusTalk *talk);
-void WalrusTalk_Slot10(WalrusTalk *talk);
+void WalrusTalk_OnLineEnded(WalrusTalk *talk);
+void WalrusTalk_OnLineBegins(WalrusTalk *talk);
 void WalrusTalk_Line(WalrusTalk *talk, WalrusTalkLine *line);
 void WalrusTalk_Begin(WalrusTalk *talk, struct Walrus *owner);
 void WalrusTalk_Reset(WalrusTalk *talk);

@@ -687,8 +687,7 @@ static_assert(offsetof(Actor, speed) == 0x98, "actor speed");
 #define INSECT_PATH_STRETCH 0x52
 
 /* What InsectPath_StartGrow and InsectPath_Grow ask of the music and the player. */
-#define INSECT_PATH_MUSIC_GROW 25 /* the priority given a value of 0 as it starts growing */
-#define INSECT_PATH_MUSIC_DROPPED 0x19
+#define INSECT_PATH_MUSIC_GROW 25 /* the priority given a value of 0 as it starts growing, and dropped */
 #define INSECT_PATH_MUSIC_CHASE_PRIORITY 0x1a
 #define INSECT_PATH_MUSIC_CHASE 0x3f
 #define INSECT_PATH_PLAYER_FLAG_CHASED 0x1a
@@ -755,7 +754,7 @@ void InsectPath_Grow(TownInsect *insect)
         scale->x = 0x1000;
         scale->y = 0x1000;
         scale->z = 0x1000;
-        Music_DropPriority(INSECT_PATH_MUSIC_DROPPED);
+        Music_DropPriority(INSECT_PATH_MUSIC_GROW);
         Music_Add(INSECT_PATH_MUSIC_CHASE_PRIORITY, INSECT_PATH_MUSIC_CHASE, 0x7f, 0);
         PlayerActorOps_SetFlag(INSECT_PATH_PLAYER_FLAG_CHASED, INSECT_PATH_PLAYER);
     }
@@ -792,7 +791,7 @@ CLEAN_AS(func_ov068_02270df8, InsectPath_StartGrow)
  * it stops following and leaves (INSECT_PATH_LEAVE, *phase 0). Within 2.0 it starts following
  * within 1/4 (the alarm from 0) and turns towards the player by at most 0x555; farther, beyond
  * 1/2 a follow that has not reached 60 stops (the alarm back to 0), and it turns by at most
- * 0x1554. A turn beyond the limit is the limit by a chance of 84 in 100 (79 in 100 farther),
+ * 0x155 (0x555 divided by 4.0). A turn beyond the limit is the limit by a chance of 84 in 100 (79 in 100 farther),
  * else none.
  *
  * Then it moves 8.0 steps of 0x29 along its facing, and its height follows *phase

@@ -263,7 +263,7 @@ CLEAN_AS(func_ov079_02278ac4, WalrusTalk_OnAnswer)
  * - 0x0b: motion 17 of the scene's commands;
  * - 0x09: the item given to the player and, when it fit, shown in his hand; line 0x0a;
  * - 0x05, 0x0a, 0x0d: daily bit 10 set. */
-void WalrusTalk_OnLineShown(WalrusTalk *talk)
+void WalrusTalk_OnLineEnded(WalrusTalk *talk)
 {
     int line = WALRUS_TALK_NO_LINE;
 
@@ -312,17 +312,17 @@ void WalrusTalk_OnLineShown(WalrusTalk *talk)
         walrus_talk_say(walrus_talk_object(talk), (u8) line);
     }
 }
-CLEAN_AS(func_ov079_02278b2c, WalrusTalk_OnLineShown)
+CLEAN_AS(func_ov079_02278b2c, WalrusTalk_OnLineEnded)
 
 /* func_ov079_02278c38 (slot 0x10): while line 0x0f is shown, motion 19 of the scene's
  * commands. */
-void WalrusTalk_Slot10(WalrusTalk *talk)
+void WalrusTalk_OnLineBegins(WalrusTalk *talk)
 {
     if (walrus_talk_shown(talk) == WALRUS_TALK_LINE_MOTION_19) {
         SceneCommand_RequestMotion19(walrus_talk_command(talk));
     }
 }
-CLEAN_AS(func_ov079_02278c38, WalrusTalk_Slot10)
+CLEAN_AS(func_ov079_02278c38, WalrusTalk_OnLineBegins)
 
 /* func_ov079_02278c4c (slot 0x78): "sp_npc_walrus", line 0; once he took an item today (daily bit 10,
  * only tested), one of the lines 6-8. */

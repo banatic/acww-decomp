@@ -12,7 +12,8 @@
  *   small random amount for an empty place; at line 0x24 she writes the player a letter whose
  *   message follows the score, with an item for the lower scores;
  * - the quiz: one of 20 questions (0x0f-0x22) not asked yet in the round, up to five in a row, then
- *   line 0x23 and the round starts again (Giraffe.questions_asked, Giraffe.talk_count);
+ *   line 0x23 and the round starts again (Giraffe.questions_asked, Giraffe.talk_count, which
+ *   after her remark, line 0x25, counts the talks that follow it up with lines 0x4c-0x4e);
  * - the dressing: the player chooses on a screen how many bells to pay (sequence 0,
  *   GiraffeTalk_TakePayment), and GiraffeTalk_Dress gives a hat or an accessory and clothes
  *   from the tier of what was paid (data_ov070_02279be0), the items worn before going back into
@@ -29,13 +30,13 @@
 
 /* What the talk starts with (GiraffeTalk.first), each with its line in data_ov070_02279ba8. */
 enum GiraffeTalkFirst {
-    GIRAFFE_TALK_FIRST_TODAY = 0,    /* first talk today: line 0x00 */
-    GIRAFFE_TALK_FIRST_QUIZ = 1,     /* no round of questions ended today: line 0x09 */
-    GIRAFFE_TALK_FIRST_COUNTING = 2, /* fewer than three questions asked: 0x4c + that count */
-    GIRAFFE_TALK_FIRST_HIGH = 3,     /* a score of 61 or more: line 0x29 */
-    GIRAFFE_TALK_FIRST_LOW = 4,      /* else: line 0x28 */
-    GIRAFFE_TALK_FIRST_REFUSED = 5,  /* 2 to 4 after the player did not pay: line 0x31 */
-    GIRAFFE_TALK_FIRST_DRESSED = 6,  /* dressed today: line 0x27 */
+    GIRAFFE_TALK_FIRST_TODAY = 0,        /* first talk today: line 0x00 */
+    GIRAFFE_TALK_FIRST_QUIZ = 1,         /* no round of questions ended today: line 0x09 */
+    GIRAFFE_TALK_FIRST_AFTER_REMARK = 2, /* fewer than three talks since her remark: 0x4c + that count */
+    GIRAFFE_TALK_FIRST_HIGH = 3,         /* a score of 61 or more: line 0x29 */
+    GIRAFFE_TALK_FIRST_LOW = 4,          /* else: line 0x28 */
+    GIRAFFE_TALK_FIRST_REFUSED = 5,      /* 2 to 4 after the player did not pay: line 0x31 */
+    GIRAFFE_TALK_FIRST_DRESSED = 6,      /* dressed today: line 0x27 */
     GIRAFFE_TALK_FIRSTS = 7
 };
 
@@ -89,7 +90,7 @@ typedef struct GiraffeTier {
 #define GIRAFFE_LINE_QUESTION_NEXT 0x46 /* 0x46-0x4a: after the n-th question */
 #define GIRAFFE_LINE_QUESTION_NEXT_LAST 0x4a
 #define GIRAFFE_LINE_NOT_PAID 0x4b
-#define GIRAFFE_LINE_COUNTING 0x4c /* 0x4c-0x4e: by the count of questions */
+#define GIRAFFE_LINE_AFTER_REMARK 0x4c /* 0x4c-0x4e: the follow-ups to her remark, by the talks since */
 
 void GiraffeTalk_OnAnswer(GiraffeTalk *talk);
 void GiraffeTalk_OnLineEnded(GiraffeTalk *talk);

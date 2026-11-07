@@ -520,8 +520,8 @@ CLEAN_AS(func_ov068_02273b70, CafeGuestScene_GiveSong)
 
 /* func_ov068_02273c7c (step 3): what changed in the music's show since the last frame (unless
  * a pause goes on, var2 1 then and now) is followed:
- * - var3: 2 switches overlay 93's object one way (func_ov004_02246e88, func_ov004_0224692c), 0
- *   or 1 the other (func_ov004_02246e98);
+ * - var3 picks the camera: 2 shows the views and overlay 93's logo (RoomCamera_ShowViews,
+ *   StaffRollOverlay_ShowLogo), 0 or 1 the next spot (RoomCamera_ShowNextSpot);
  * - the track kind: the face "m.0" to "m.5" (or "m.0" for none);
  * - var0 or the type: the guest looks ahead (var0 1) or up, and types 3 and 4 play animations
  *   0x103 and 0x104 (the first one with the word 0x28);
@@ -529,7 +529,7 @@ CLEAN_AS(func_ov068_02273b70, CafeGuestScene_GiveSong)
  *   the show's frame_a;
  * - var2: 0 ends a pause (overlay 93's object restarted), 1 starts one (face "m.0" and off, the
  *   guest stands).
- * Then what the show is now is kept, and at its end (func_ov004_02246900) step 4 follows 20
+ * Then what the show is now is kept, and at its end (StaffRollOverlay_HasEnded) step 4 follows 20
  * frames later.
  * BUG: with no entry in the sound system, its data is copied from address 0. */
 void CafeGuestScene_FollowShow(CafeGuestScene *scene)
@@ -603,7 +603,7 @@ void CafeGuestScene_FollowShow(CafeGuestScene *scene)
 CLEAN_AS(func_ov068_02273c7c, CafeGuestScene_FollowShow)
 
 /* func_ov068_02273eb0 (step 2): once the talk is gone: at 45 frames left the lights change
- * and the guest looks up; once the timer runs out overlay 4's func_ov004_02246ea8 runs, the
+ * and the guest looks up; once the timer runs out overlay 4's RoomCamera_ShowClose runs, the
  * music is picked (when the name matched no song one of 0xa9-0xac: the game's variable 0x4e
  * less 1, kept to 0-3, when it is set, else at random of the first three; else 0x63 plus the
  * song's number) and added, the show starts again, overlay 93's object is made, and step 3
@@ -1018,7 +1018,7 @@ int CafeGuest_UpdatePlay(CafeGuest *self)
 CLEAN_AS(func_ov068_02274734, CafeGuest_UpdatePlay)
 
 /* func_ov068_02274790 (start of CAFE_GUEST_PLAY): animation 0x102, overlay 4's
- * func_ov004_02246eb8, the guest looks ahead and talks (keeping the camera), and value 0xf is
+ * RoomCamera_SetModeShow, the guest looks ahead and talks (keeping the camera), and value 0xf is
  * added to the music of priority 0x10. */
 int CafeGuest_StartPlay(CafeGuest *self)
 {

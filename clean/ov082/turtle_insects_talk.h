@@ -11,7 +11,7 @@
  * (slot 0x78, TurtleInsectsTalk_Line) with:
  *   line 2 before 12:00 or from 18:00;
  *   line 1 when the current player has not had the contest's daily bit 0x1c today and has
- *          neither net (0x1376, 0x1377) in the pockets or held, line 0 when the pockets are
+ *          neither the net (0x1376) nor the golden net (0x1377) in the pockets or held, line 0 when the pockets are
  *          also full;
  *   line 8 when the daily bit was set, else line 3 (the bit is set now).
  *
@@ -19,7 +19,7 @@
  * answer gives line 11; another shows the record (TurtleInsectsTalk_ShowRecord) with line 9
  * when the current player holds it, line 10 when someone else does, line 0x1e when no one does.
  *
- * The end of a line (slot 0x14, TurtleInsectsTalk_OnLineEnd):
+ * The end of a line (slot 0x14, TurtleInsectsTalk_OnLineEnded):
  *   line 1:    he gives the net 0x1376 and sets the daily bit 0x1c: line 4;
  *   line 0xb:  the pockets' screen opens to pick an insect; once its command ends (slot 0x84)
  *              the insect picked is measured (TurtleInsectsTalk_AfterPockets): line 0xd, else
@@ -63,7 +63,7 @@ void TurtleInsectsTalk_OnCommandEnded(TurtleInsectsTalk *talk);
 /* Its lines. */
 void TurtleInsectsTalk_Line(TurtleInsectsTalk *talk, TurtleInsectsTalkStart *out);
 void TurtleInsectsTalk_OnAnswer(TurtleInsectsTalk *talk);
-void TurtleInsectsTalk_OnLineEnd(TurtleInsectsTalk *talk);
+void TurtleInsectsTalk_OnLineEnded(TurtleInsectsTalk *talk);
 int TurtleInsectsTalk_ShowRecord(TurtleInsectsTalk *talk);
 void TurtleInsectsTalk_AfterPockets(TurtleInsectsTalk *talk);
 void TurtleInsectsTalk_NextLine(TurtleInsectsTalk *talk);

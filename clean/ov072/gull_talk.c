@@ -59,9 +59,9 @@ extern const u8 data_ov072_02279a78[];
 #define GULL_TALK_VALUE_FORMAT 2
 
 /* The lines whose showing it follows up (GullTalk_OnLineShown). */
-#define GULL_TALK_LINE_FIRST_END 0x00 /* the first talk ends: step 1 */
-#define GULL_TALK_LINE_PLACE 0x0b     /* the items it was given placed in the town */
-#define GULL_TALK_LINE_TAKE_A 0x14    /* the items taken in its hand */
+#define GULL_TALK_LINE_WAKES 0x00  /* he mumbles in his sleep; its end wakes him: step 1 */
+#define GULL_TALK_LINE_PLACE 0x0b  /* the items it was given placed in the town */
+#define GULL_TALK_LINE_TAKE_A 0x14 /* the items taken in its hand */
 #define GULL_TALK_LINE_TAKE_B 0x15
 #define GULL_TALK_LINE_COUNT 0x16 /* line 0x17 when five were counted, else 0x19 plus the count */
 #define GULL_TALK_LINE_GIFT 0x18  /* an item given, then line 0x19 */
@@ -137,7 +137,7 @@ void GullTalk_Begin(GullTalk *talk, struct Gull *owner)
     const u32 *vtable = (const u32 *) (const void *) talk->scene.vtable;
     ((void (*)(GullTalk *))(uintptr_t) vtable[GULL_TALK_SLOT_RESET])(talk);
     talk->owner = owner;
-    talk->topic = GULL_TALK_TOPIC_FIRST_MEETING;
+    talk->topic = GULL_TALK_TOPIC_ASLEEP;
 }
 CLEAN_AS(func_ov072_02278d54, GullTalk_Begin)
 
@@ -193,7 +193,7 @@ void GullTalk_OnLineShown(GullTalk *talk)
     int line = GULL_TALK_NO_LINE;
 
     switch (shown) {
-        case GULL_TALK_LINE_FIRST_END:
+        case GULL_TALK_LINE_WAKES:
             SceneCommand_RequestTalkMode(gull_talk_command(talk), GULL_TALK_MODE_CLOSE);
             GullTalk_SetStep(talk, GULL_TALK_STEP_TURN_TO_PLAYER);
             break;
@@ -257,7 +257,7 @@ void GullTalk_Line(GullTalk *talk, GullTalkLine *line)
             talk->topic = GULL_TALK_TOPIC_FIRST_MARKED;
             TalkChecks_TestSetDailyBit(GULL_TALK_DAILY_TALKED, 1);
         } else {
-            talk->topic = GULL_TALK_TOPIC_FIRST_MEETING;
+            talk->topic = GULL_TALK_TOPIC_ASLEEP;
         }
     } else if (SpaceshipParts_Get(data_021ebcd2) >= GULL_TALK_COUNT_MAX) {
         talk->topic = GULL_TALK_TOPIC_ALL_COUNTED;
@@ -295,7 +295,7 @@ void GullTalk_Line(GullTalk *talk, GullTalkLine *line)
 
     if (talk->topic >= 0 && talk->topic < GULL_TALK_TOPICS) {
         line->name = data_ov072_02279874[talk->topic].name;
-        if (talk->topic == GULL_TALK_TOPIC_FIRST_MEETING) {
+        if (talk->topic == GULL_TALK_TOPIC_ASLEEP) {
             line->message = (u8) MainRandom_Below(5);
         } else if (talk->topic == GULL_TALK_TOPIC_ALL_COUNTED) {
             line->message = (u8) (MainRandom_Below(5) + 0xd);

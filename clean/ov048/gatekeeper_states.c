@@ -64,15 +64,15 @@
 #define GATEKEEPER_STATES_PLAYER_PARAM 0x00800000
 
 /* The kinds of the block's part 0x20 (block_021d27ac_parts.h) it sets with its own y angle. */
-#define GATEKEEPER_STATES_PART20_KIND_C 1
-#define GATEKEEPER_STATES_PART20_KIND_D 2
+#define GATEKEEPER_STATES_PART20_KIND_TAKE_CARE 1
+#define GATEKEEPER_STATES_PART20_KIND_FAREWELL 2
 
-/* Line 0x7b of "sp_npc_gatekeeper", with the served player's name in part 1. */
-#define GATEKEEPER_STATES_LINE_NAME 0x7b
+/* Line 0x7b of "sp_npc_gatekeeper", with the visitor's name in part 1. */
+#define GATEKEEPER_STATES_LINE_GOING_HOME 0x7b
 #define GATEKEEPER_STATES_PART_NAME 1
-/* The acceleration the served player walks with. */
+/* The acceleration the visitor going home walks with. */
 #define GATEKEEPER_STATES_WALK 0x35c
-/* The scene's exit the served player takes. */
+/* The scene's exit the visitor going home takes. */
 #define GATEKEEPER_STATES_EXIT 1
 
 /* The screen's transition (screen_transition.h): its state, 2 while the screen is shown. */
@@ -83,7 +83,7 @@ extern u8 data_021c75b8;
 extern NetSession *data_020ccf94;
 /* "sp_npc_gatekeeper", the archive of its lines (the first word of data_ov048_02263d20). */
 extern const char *const data_ov048_02263d20;
-/* The point the served player walks to: (16.0, 0, 5.0). */
+/* The point the visitor going home walks to: (16.0, 0, 5.0). */
 extern const Vec3 data_ov048_022639a4;
 
 /* The steps of states 0xb and 9, filled from their constants on the first call (bit 0 of the
@@ -264,7 +264,7 @@ int Gatekeeper_RunStateD(Gatekeeper *self)
     tile_x = 0;
     tile_z = 0;
     Position_Tile(&tile_x, &tile_z, (const Position *) (const void *) &position);
-    Block021d27acPart20_SetKind(part, GATEKEEPER_STATES_PART20_KIND_D);
+    Block021d27acPart20_SetKind(part, GATEKEEPER_STATES_PART20_KIND_FAREWELL);
     Block021d27acPart20_SetValue(part, ((const Actor *) (const void *) self)->angle[1]);
     ScenePlace_SetSaved(SceneTables_EntryRecord(), GATEKEEPER_STATES_SCENE_C, &position, GATEKEEPER_STATES_PLAYER_PARAM, angle,
                         tile_x, tile_z);
@@ -307,7 +307,7 @@ int Gatekeeper_RunStateC(Gatekeeper *self)
     tile_x = 0;
     tile_z = 0;
     Position_Tile(&tile_x, &tile_z, (const Position *) (const void *) &position);
-    Block021d27acPart20_SetKind(part, GATEKEEPER_STATES_PART20_KIND_C);
+    Block021d27acPart20_SetKind(part, GATEKEEPER_STATES_PART20_KIND_TAKE_CARE);
     Block021d27acPart20_SetValue(part, ((const Actor *) (const void *) self)->angle[1]);
     CameraControl_KeepView();
     ActivityJob_Ask14();
@@ -325,7 +325,7 @@ int Gatekeeper_EnterStateC(void)
 }
 CLEAN_AS(func_ov048_022629e4, Gatekeeper_EnterStateC)
 
-/* ---- State 0xb: the served player sent off */
+/* ---- State 0xb: the visitor going home sent off */
 
 /* func_ov048_022629e8 (state 0xb's run): its step (Gatekeeper.state_step, 0-3) run until it
  * agrees: Gatekeeper_StateBSayName, Gatekeeper_StateBMovePlayer, Gatekeeper_StateBClearRecord,
@@ -360,7 +360,7 @@ int Gatekeeper_StateBTakeExit(void)
 }
 CLEAN_AS(func_ov048_02262a94, Gatekeeper_StateBTakeExit)
 
-/* func_ov048_02262aac (state 0xb's step 2): once the served player's actor is not busy, its
+/* func_ov048_02262aac (state 0xb's step 2): once the visitor's actor is not busy, its
  * player record cleared; whether it was. */
 int Gatekeeper_StateBClearRecord(void)
 {
@@ -393,7 +393,7 @@ int Gatekeeper_StateBMovePlayer(void)
 CLEAN_AS(func_ov048_02262adc, Gatekeeper_StateBMovePlayer)
 
 /* func_ov048_02262b24 (state 0xb's step 0): once the screen is shown, its talk reset and shown
- * through talk 0 with line 0x7b, the served player's name in part 1, and talk 0 asked to open;
+ * through talk 0 with line 0x7b, the visitor's name in part 1, and talk 0 asked to open;
  * whether the screen was shown. */
 int Gatekeeper_StateBSayName(Gatekeeper *self)
 {
@@ -407,7 +407,7 @@ int Gatekeeper_StateBSayName(Gatekeeper *self)
     talk = TalkObject_Get(0);
     gatekeeper_states_reset_talk(self);
     MessageReceiver_SetName((MessageReceiver *) (void *) &self->talk, data_ov048_02263d20);
-    ((MessageReceiver *) (void *) &self->talk)->message = GATEKEEPER_STATES_LINE_NAME;
+    ((MessageReceiver *) (void *) &self->talk)->message = GATEKEEPER_STATES_LINE_GOING_HOME;
     TalkObject_AttachReceiver(talk, (TalkReceiver *) (void *) &self->talk);
     PlayerIdText_Construct(&name);
     PlayerId_NameToText(PlayerRecord_Player(record), (TextBase *) (void *) &name);
@@ -452,7 +452,7 @@ int Gatekeeper_RunState9(Gatekeeper *self)
 }
 CLEAN_AS(func_ov048_02262bc8, Gatekeeper_RunState9)
 
-/* ---- State 9: a player arrives */
+/* ---- State 9: a visitor arrives */
 
 /* The point a player arriving walks to: (16.0, 0, 17.5). */
 extern const Vec3 data_ov048_02263998;

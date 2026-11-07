@@ -109,7 +109,7 @@ int FoxTent_TalkAtExit(FoxTent *fox);
 int FoxTent_TalkAboutItem(FoxTent *fox);
 int FoxTent_FindFacedItem(FoxTent *fox);
 void FoxTent_OnEvent(FoxTent *fox, unsigned int code, int participant);
-int FoxTent_MayAct1(FoxTent *fox);
+int FoxTent_MayActKind6(FoxTent *fox);
 int FoxTent_MayAct(FoxTent *fox);
 void FoxTent_SetState(FoxTent *fox, int state);
 int FoxTent_Update(FoxTent *fox);

@@ -33,7 +33,8 @@ extern const u8 data_ov074_02279bd8[];
 extern const char data_ov074_02279d14[];
 extern const char data_ov074_02279d28[];
 /* The functions run once the screens it opens close: after the design screen
- * (MysteryCatTalk_TakeDesign) and after screen mode 0x14 (MysteryCatTalk_TakeImpression), and
+ * (MysteryCatTalk_TakeDesign) and after the face's title screen (mode 0x14,
+ * MysteryCatTalk_TakeImpression), and
  * the table they are copied into the first time one is set (bit 0 of the guard word). */
 extern const MemberPointer data_ov074_02279b90;
 extern const MemberPointer data_ov074_02279b50;
@@ -49,14 +50,14 @@ extern MysteryCatRecord data_021f3278;
 #define MCAT_TALK_DAILY_IMPRESSION 0x2b
 
 /* The screen its commands open (SceneCommand_RequestScreen: group 9 in a mode), and the
- * modes: the design screen and the one after the new face. */
+ * modes: the design screen and the face's title (KEYBOARD_ENTRY_MODE_CAT_FACE_TITLE). */
 #define MCAT_TALK_SCREEN 2
 #define MCAT_TALK_MODE_DESIGN 3
-#define MCAT_TALK_MODE_IMPRESSION 0x14
+#define MCAT_TALK_MODE_FACE_TITLE 0x14
 
 /* The functions MysteryCatTalk_SetAfter picks. */
 #define MCAT_TALK_AFTER_DESIGN 0
-#define MCAT_TALK_AFTER_IMPRESSION 1
+#define MCAT_TALK_AFTER_TITLE 1
 
 /* What its owner's face is shown on (main's scene_object.h): its model. */
 #define MCAT_TALK_OWNER_MODEL 0xec
@@ -142,8 +143,8 @@ CLEAN_AS(func_ov074_02278ba4, MysteryCatTalk_OnAnswer)
  * - 0x09 to 0x0c: line 0x0d is shown;
  * - 0x0e: her face shown again on her model, the design screen opened (mode 3, staying on the
  *   line after it) and MysteryCatTalk_TakeDesign set to run after it;
- * - 0x1c: screen mode 0x14 opened the same way and MysteryCatTalk_TakeImpression set to run
- *   after it. */
+ * - 0x1c: the face's title screen (mode 0x14) opened the same way and
+ *   MysteryCatTalk_TakeImpression set to run after it. */
 void MysteryCatTalk_OnLineEnded(MysteryCatTalk *talk)
 {
     SceneCommandScene *scene = (SceneCommandScene *) (void *) talk;
@@ -163,10 +164,10 @@ void MysteryCatTalk_OnLineEnded(MysteryCatTalk *talk)
             SceneCommand_RequestScreen(scene, MCAT_TALK_SCREEN);
             MysteryCatTalk_SetAfter(talk, MCAT_TALK_AFTER_DESIGN);
             break;
-        case MYSTERY_CAT_LINE_NEW_FACE:
-            SceneCommand_SetScreenMode(scene, MCAT_TALK_MODE_IMPRESSION, 0);
+        case MYSTERY_CAT_LINE_ASK_TITLE:
+            SceneCommand_SetScreenMode(scene, MCAT_TALK_MODE_FACE_TITLE, 0);
             SceneCommand_RequestScreen(scene, MCAT_TALK_SCREEN);
-            MysteryCatTalk_SetAfter(talk, MCAT_TALK_AFTER_IMPRESSION);
+            MysteryCatTalk_SetAfter(talk, MCAT_TALK_AFTER_TITLE);
             break;
         default:
             break;
@@ -178,7 +179,7 @@ CLEAN_AS(func_ov074_02278d44, MysteryCatTalk_OnLineEnded)
  * (she asks) when a coin says so or the daily bit 0x2b is clear; else 0x18 to 0x1b when the
  * player drew her face, 0x11 to 0x14 otherwise (one of four at random). When her face has a
  * maker, the talk's parts are filled: the maker's name (part 1) and town (part 0), the
- * impression she imitates (part 2, the record's byte 0x237 as a message of "st_impress") and
+ * epithet of the face's maker (part 2, the record's byte 0x237 as a message of "st_impress") and
  * the face's title (part 3). */
 void MysteryCatTalk_Line(MysteryCatTalk *talk, MysteryCatLine *out)
 {
@@ -248,7 +249,8 @@ void *MysteryCatTalk_Construct(void *talk)
 }
 CLEAN_AS(func_ov074_02278ffc, MysteryCatTalk_Construct)
 
-/* func_ov074_02279014 (run after screen mode 0x14): when the player confirmed on the screen
+/* func_ov074_02279014 (run after the face's title screen, mode 0x14): when the player confirmed
+ * on the screen
  * (GroupParams_C4CIs1), she takes an impression of the current player (VillagerImpression_Pick
  * with fondness 0), kept in the town's record's byte 0x237, the record is marked to be sent
  * (status 3), the daily bit 0x2b is set and one of the lines 5 to 7 is shown; else nothing. */
@@ -274,7 +276,7 @@ void MysteryCatTalk_TakeDesign(MysteryCatTalk *talk)
     TalkObject *object = mcat_talk_object(talk);
     u8 message = MYSTERY_CAT_LINE_NO_DESIGN;
     if (GroupParams_C4CIs1()) {
-        message = MYSTERY_CAT_LINE_NEW_FACE;
+        message = MYSTERY_CAT_LINE_ASK_TITLE;
         MysteryCat *owner = talk->owner;
         MysteryCatFace_Show(&owner->face, owner->base + MCAT_TALK_OWNER_MODEL);
     }
