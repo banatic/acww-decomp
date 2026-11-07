@@ -266,6 +266,41 @@ def clean_registrations(only: str | None = None) -> list[tuple[str, str, str, in
     return out
 
 
+@functools.cache
+def clean_sources() -> dict[str, pathlib.Path]:
+    """The file that defines each Clean function registered with CLEAN_AS."""
+    out = {}
+    for path in sorted((C.ROOT / "clean").rglob("*.c")):
+        for _plain, _quoted, function in CLEAN_AS.findall(path.read_text(encoding="utf-8")):
+            out[function] = path
+    return out
+
+
+SCALAR_RESULTS = {("void",), ("int",), ("unsigned",), ("unsigned", "int"), ("u32",), ("s32",), ("BOOL",)}
+
+
+def clean_result(function: str) -> tuple[int, int] | None:
+    """(result kind, parameter count) of a Clean function whose Native version's result the tools
+    cannot read (RET_SKIP: C++ destructors and this-adjusting thunks, whose sources hold no C
+    declaration), from the Clean function's own declaration when that is nothing or a word the
+    ROM's code returns in r0 as well (a pointer, a 32-bit integer); else None, and the function
+    keeps its Native's kind (floating point and structures by value stay RET_SKIP)."""
+    path = clean_sources().get(function)
+    if path is None:
+        return None
+    kind, count, member, floating = native_build.signature(path, function)
+    if member or floating or kind not in (native_build.RET_VOID, native_build.RET_32):
+        return None
+    text = native_build.COMMENT.sub(" ", path.read_text(encoding="utf-8", errors="replace"))
+    m = re.search(r"(?:^|[;}])\s*((?:\w+[\s\*]+)+?)" + re.escape(function) + r"\s*\([^;{]*\)\s*\{", text, re.M)
+    if m is None:
+        return None
+    words = tuple(w for w in m.group(1).replace("*", " * ").split() if w not in ("static", "const", "struct"))
+    if "*" not in words and words not in SCALAR_RESULTS:
+        return None
+    return kind, count
+
+
 def write_clean_table(clean: str | None) -> pathlib.Path:
     """runtime/native_table.h's clean_functions: for each Clean function, a function the Native
     run calls like a Native one (the argument registers, then the stack words) that calls the
@@ -310,6 +345,11 @@ def write_clean_table(clean: str | None) -> pathlib.Path:
             continue
         native = table.get((address, module))
         info = native[1] if native else (5 | 4 << 4 | names[module] << 16)  # NATIVE_RET_32, 4 parameters
+        # a Native result the tools cannot read (a C++ thunk's): the Clean declaration's, where
+        # it is a word or nothing, so the interpreter's calls run the Clean code (write_policy)
+        result = clean_result(function) if native and (info & 15) == RET_SKIP else None
+        if result is not None:
+            info = (info & ~0x1ff) | result[0] | (result[1] & 15) << 4
         if symbol == 'func_020404b4':
             if function != 'EventCalendar_ScheduleKey':
                 raise ValueError('Schedule-key Clean ABI needs an audit')
@@ -746,6 +786,10 @@ def write_policy(policy: str, clean: str | None = None) -> pathlib.Path:
                   if w.strip() and not w.startswith("#")}
     cleaned = ({(module, address & ~1) for _, module, address, _ in clean_checks(clean)}
                | {(module, address & ~1) for _, _, module, address, _ in clean_registrations(clean)}) if clean else set()
+    # the Clean functions registered with CLEAN_AS alone (not a check of tests/clean/), by address
+    tested = {(module, address & ~1) for _, module, address, _ in clean_checks(clean)} if clean else set()
+    registered = {(module, address & ~1): function for _, function, module, address, _ in clean_registrations(clean)
+                  if (module, address & ~1) not in tested} if clean else {}
     images: dict[str, bytes] = {}
     rows = []
     counts = {}
@@ -777,9 +821,14 @@ def write_policy(policy: str, clean: str | None = None) -> pathlib.Path:
             # what the PC cannot do (hardware, the ROM's stack layout): its Clean code cannot either.
             # One whose result the ROM's code takes another way than the PC's (a structure by
             # value: mwccarm passes a pointer to it in r0) runs Clean for Native callers only, as
-            # its Native does.
+            # its Native does. Where the Native's result is unread only because its source has no
+            # C declaration (a C++ destructor or this-adjusting thunk) and the Clean function is
+            # declared to return a word or nothing (clean_result), the Clean table takes that
+            # kind, and the Clean code runs for every caller.
             if (mod, s.address) in cleaned and s.name not in kept:
                 status = "C" if native and (native[1] & 15) == RET_SKIP else "N"
+                if status == "C" and (mod, s.address) in registered and clean_result(registered[(mod, s.address)]):
+                    status = "N"
             counts[status] = counts.get(status, 0) + 1
             frame, spill_arg, spill_offset, saves = -1, -1, -1, 0
             if (mod, s.address) in native_stack.FRAMES:

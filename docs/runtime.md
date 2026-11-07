@@ -27,6 +27,14 @@ setting can force any function, module or the whole program back to Reference. C
 implementations go through the registry, so a Clean function can call ROM code and the other way
 round.
 
+A function whose result the interpreter cannot take from PC code (a float, a structure returned
+by value) runs Native or Clean only when Native or Clean code calls it; the ROM's code calling it
+gets the ROM's version. The C++ destructors and this-adjusting thunks (`_ZThn236_...D1Ev`, the
+message receivers' destructors of the room and outdoor objects) are counted there for Native only
+because their matching sources declare no C result; their Clean versions declare one (a pointer
+to the object, or nothing), so the Clean code runs for the ROM's callers too, its result compared
+as any word's (`tools/run.py`, `clean_result`).
+
 Native is the matching source as it is, compiled for a 32-bit x86 process whose memory holds the
 DS's main RAM at its real address (0x02000000), so pointers and structure layouts are the DS's.
 Where the matching source relies on behaviour that C leaves undefined, the difference is made
