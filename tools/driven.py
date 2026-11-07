@@ -264,15 +264,25 @@ def prune(name: str, results: list[dict]) -> str | None:
 
 def entered_functions(log: str) -> list[tuple[str, int]]:
     """The game functions the calls entered: the "driven: entered" targets that are the start of
-    a function, in the module whose image has the first 8 bytes seen there."""
+    a function of the module the runtime saw loaded there (runtime/driven.c, native_module_at),
+    whose image has the first 8 bytes seen there. Overlays loaded at one address can have the
+    same bytes there: only the loaded one's function ran, so only it is credited (a log without
+    the module, from before the runtime printed it, credits none of the overlays that share the
+    address and the bytes, and every function no other module's bytes match)."""
     starts = function_starts()
     out = set()
-    for a, w0, w1 in re.findall(r"driven: entered ([0-9a-f]{8}) ([0-9a-f]{8}) ([0-9a-f]{8})", log):
+    for a, w0, w1, loaded in re.findall(r"driven: entered ([0-9a-f]{8}) ([0-9a-f]{8}) ([0-9a-f]{8})(?: (\S+))?",
+                                        log):
         address, head = int(a, 16), struct.pack("<II", int(w0, 16), int(w1, 16))
-        for module in starts.get(address, []):
+        same = []
+        for module in sorted(set(starts.get(address, []))):
             image, base = module_image(module)
             if image[address - base:address - base + 8] == head:
-                out.add((module, address))
+                same.append(module)
+        if loaded:
+            out.update((m, address) for m in same if m == loaded)
+        elif len(same) == 1:
+            out.add((same[0], address))
     return sorted(out)
 
 

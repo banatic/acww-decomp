@@ -23,7 +23,8 @@
  * crossings like any call (native_run.h); at that address the registers of the arm point are
  * put back and the game goes on from there. After the calls of a moment, memory is hashed
  * (DRIVEN_SNAPSHOT), and each branch target they reached is printed ("driven: entered", from
- * the Reference: the functions they ran). Each call prints a line "driven: ..." with what it
+ * the Reference: the functions they ran, each with the module loaded there, as overlays at one
+ * address can share bytes). Each call prints a line "driven: ..." with what it
  * did (or why it was skipped), in both passes. Without RUN_DRIVEN nothing changes. */
 #ifndef RUNTIME_DRIVEN_H
 #define RUNTIME_DRIVEN_H

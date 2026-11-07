@@ -1,7 +1,0 @@
-# 1 functions of the menu scenes' destructors of vtable slot 16: each on a live object of its class, through the object's vtable, at the end of frame 4101 of catalog-keys (tools/driven.py --plan)
-scene catalog-keys
-frames 4110
-ram 2600,3500,3800
-arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
-vcall 4101 023cb8bc 40 023cb8bc 0 0 0 0229e8b8  # ov116 InsectCatalog_Destroy (slot 16)
-end

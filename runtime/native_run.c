@@ -475,6 +475,15 @@ static Fn *loaded_at(uint32_t address)
     return found;
 }
 
+const char *native_module_at(uint32_t address)
+{
+    if (fn_count == 0 || entry_bits == NULL) {
+        return NULL;
+    }
+    Fn *f = loaded_at(address);
+    return f != NULL ? modules[f->module].name : NULL;
+}
+
 static int native_for_interpreter(const Fn *f)
 {
     return f != NULL && f->status == 'N' && f->native != NULL;

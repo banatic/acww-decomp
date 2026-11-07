@@ -92,6 +92,10 @@ ArmHook native_thread_changed(uint32_t previous, uint32_t thread);
 /* A frame has ended (memory hashes are taken at the next quiet crossing after it). */
 void native_frame_ended(uint32_t frame);
 
+/* The module whose function starts at `address` and has its code loaded there now (of overlays
+ * loaded at one address, the one in memory: the rule of RUN_FUNCTIONS_SEEN), or NULL. */
+const char *native_module_at(uint32_t address);
+
 /* Now, between instructions (the end of driven calls, driven.h): memory hashed as after a
  * frame, under `tag` in place of a frame number, and in the Native run compared with the
  * Reference's image of the same moment. In the Reference nothing is hashed while a thread is

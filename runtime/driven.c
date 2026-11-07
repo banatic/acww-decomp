@@ -35,9 +35,12 @@ static uint32_t fire_frame;
 static uint32_t current_target;
 
 /* The branch targets the calls reached (on their thread, outside IRQ mode), for the report:
- * an open-addressed set, cleared at each arm point. */
+ * an open-addressed set, cleared at each arm point. With each, the module whose code was loaded
+ * there when the calls first reached it (native_module_at): overlays loaded at one address can
+ * have the same bytes there, and only the loaded one's function ran. */
 #define SEEN_SLOTS 65536
 static uint32_t seen[SEEN_SLOTS];
+static const char *seen_module[SEEN_SLOTS];
 static int seen_count;
 
 static void note_seen(uint32_t address)
@@ -51,6 +54,7 @@ static void note_seen(uint32_t address)
         if (seen[i] == 0) {
             if (seen_count < SEEN_SLOTS / 2) {
                 seen[i] = key;
+                seen_module[i] = native_module_at(address);
                 seen_count++;
             }
             return;
@@ -214,13 +218,16 @@ static int start_next(ArmCpu *cpu)
 
 static void finish(ArmCpu *cpu)
 {
-    /* each target with its first 8 bytes, which tell an overlay's function from another's at
-       the same address (tools/driven.py keeps the function entries) */
+    /* each target with its first 8 bytes and the module loaded there ("-": no function starts
+       there), which tell an overlay's function from another's at the same address
+       (tools/driven.py keeps the function entries) */
     for (int i = 0; i < SEEN_SLOTS; i++) {
         if (seen[i] != 0) {
             uint32_t a = seen[i] & ~1u;
-            printf("driven: entered %08x %08x %08x\n", a, word_at(a), word_at(a + 4));
+            printf("driven: entered %08x %08x %08x %s\n", a, word_at(a), word_at(a + 4),
+                   seen_module[i] != NULL ? seen_module[i] : "-");
             seen[i] = 0;
+            seen_module[i] = NULL;
         }
     }
     seen_count = 0;

@@ -106,6 +106,21 @@ called there would copy two different leftovers. Its check first calls
 Actor_SetSpawnPlacement with none (NULL, NULL), as the game's own spawns of room objects do, so
 the factory leaves the place alone.
 
+Overlays loaded at one address can have the same bytes there: the fish and insect lists (ov115,
+ov116) share 49 functions byte for byte, the scene data overlays (17 and 43, 18 and 37, 38-40)
+all their code, and many overlays the static initialiser at their first address. A run credits
+such a function only to the overlay that was loaded when it ran: identical bytes do not make
+another overlay's function checked, as only the loaded module's code ran. The scenes' lists
+(`RUN_FUNCTIONS_SEEN`) and the Clean code each run takes (`loaded_at` in `runtime/native_run.c`)
+tell the loaded overlay by its other functions' bytes in memory (an overlay whose every
+function has its own bytes there), and twins whose code is all the same by their data. A driven
+call's Reference run prints each target it entered with the module loaded there at that moment
+(`driven: entered`, `native_module_at`), and `tools/driven.py` credits that module's function
+alone (a log from before it did credits none of the overlays sharing the bytes). To check
+another overlay's function at the same address, its check needs a moment where that overlay is
+loaded, best guarded by a code word that differs between the two (`call ... GUARD`, as the insect
+list's check does with 0229e1b8 = f7fa2003, f7fa2002 in the fish list).
+
 ## Status (2026-10-21)
 
 | | Game code (`src/`) | With the libraries |
