@@ -87,6 +87,9 @@ Observed in the actual Clean run:
 | Persistence | Saved and quit at frame 39102; both banks valid, with the caught fish and dated letter stored |
 | Letter delivery | A new Clean process with clock 2005-11-24 12:00:00 and the reload recording through 4794 put the letter in mailbox slot 0, state 0x42 (received, marked), retaining the three body codepoints; the fish remained in pocket 1 |
 
+A separate replay of the entire 39102-frame prepared-case recording produced a byte-identical
+256 KiB chip, including both valid banks, the fish and dated letter.
+
 The final saved chip's SHA-256 is
 `224ec9a5b6404211601ecd7a9102ccaa3aea7ae9eedcf4f28d02e895219f0a4e`.
 The dated letter before the next-day load has date bytes `18 0b 05 00`; its body begins
