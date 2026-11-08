@@ -175,6 +175,9 @@ The target ROM:
 
 - `ADMK` (Korea), SHA-1 `1fffd601d3439e37cd934e72d08e487a93fc449b`
 
+The other releases are to be added as versions of the same source tree, each checked against its
+own ROM; [docs/versions.md](docs/versions.md) describes how (`--version`, `ACWW_VERSION`).
+
 Setup instructions are in [INSTALL.md](INSTALL.md) and contribution guidelines in
 [CONTRIBUTING.md](CONTRIBUTING.md).
 
