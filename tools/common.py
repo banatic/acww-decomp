@@ -189,12 +189,14 @@ def module_image(name: str) -> bytes:
     return (ROM_DIR / f"{name}.bin").read_bytes()
 
 
-def config_dir(module: str) -> pathlib.Path:
+def config_dir(module: str, config: pathlib.Path = CONFIG) -> pathlib.Path:
+    """A module's directory in the configuration of the current version (or `config`: another
+    version's config/<version>/arm9)."""
     if module == "main":
-        return CONFIG
+        return config
     if module.startswith("ov"):
-        return CONFIG / "overlays" / module
-    return CONFIG / module
+        return config / "overlays" / module
+    return config / module
 
 
 # ------------------------------------------------------------------------------ symbols

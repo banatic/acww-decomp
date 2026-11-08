@@ -65,6 +65,11 @@ def take_option(argv: list[str]) -> str | None:
     return None
 
 
+def configured() -> list[str]:
+    """Every version with a config/<version>/, in name order."""
+    return sorted(p.name for p in (ROOT / "config").iterdir() if (p / "arm9").is_dir())
+
+
 def resolve(argv: list[str] | None = None) -> str:
     """The version named on the command line, else by ACWW_VERSION, else DEFAULT; checked, and
     put in ACWW_VERSION for the processes a tool starts."""
@@ -72,8 +77,7 @@ def resolve(argv: list[str] | None = None) -> str:
     if not NAME_FORMAT.match(name):
         raise SystemExit(f"version {name!r}: not a version's name (lower case, e.g. adm-kr)")
     if not (ROOT / "config" / name).is_dir():
-        have = sorted(p.name for p in (ROOT / "config").iterdir() if p.is_dir())
-        raise SystemExit(f"version {name}: no config/{name}/ (the versions configured: {', '.join(have)})")
+        raise SystemExit(f"version {name}: no config/{name}/ (the versions configured: {', '.join(configured())})")
     os.environ["ACWW_VERSION"] = name
     return name
 

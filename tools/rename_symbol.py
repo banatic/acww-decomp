@@ -1,5 +1,5 @@
-"""Rename a symbol in the symbol table, every source that uses it, and its file name (a file of
-one function; a unit of several keeps its name).
+"""Rename a symbol in the symbol table (every version's, docs/versions.md), every source that
+uses it, and its file name (a file of one function; a unit of several keeps its name).
 
     python tools/rename_symbol.py <module> <address> <old> <new>
     python tools/rename_symbol.py --tsv renames.tsv     # columns: module address old new
@@ -20,8 +20,10 @@ import common as C  # noqa: E402
 
 
 def table_files(module: str) -> list[pathlib.Path]:
-    d = C.config_dir(module)
-    return [p for p in (d / "symbols.txt",) if p.exists()]
+    """The module's symbol table in every version's configuration: a name is the same in every
+    version (docs/versions.md), wherever the function is in each."""
+    dirs = [C.config_dir(module, C.ROOT / "config" / v / "arm9") for v in C.versions.configured()]
+    return [p for p in (d / "symbols.txt" for d in dirs) if p.exists()]
 
 
 def main() -> None:
