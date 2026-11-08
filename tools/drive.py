@@ -47,6 +47,7 @@ import json
 import os
 import pathlib
 import re
+import shutil
 import socket
 import socketserver
 import subprocess
@@ -71,11 +72,22 @@ class Runtime:
     """The run (one console, or two linked by their wireless), and the copies `snap` keeps."""
 
     def __init__(self, base_envs: list[dict], prefixes: list[pathlib.Path | None], until: int,
-                 workdir: pathlib.Path):
+                 workdir: pathlib.Path, form: str = "reference", rom: pathlib.Path | None = None):
         import run  # noqa: PLC0415
         self.run = run
         self.manifest, self.table = run.generate()
-        self.exe = run.build(native=False)
+        self.rom = rom or run.ROM
+        if form == "clean":
+            policy = workdir / "clean-policy.txt"
+            shutil.copyfile(run.write_policy("all", "all"), policy)
+            self.exe = run.build(native=True, clean="all")
+            for env in base_envs:
+                env["RUN_NATIVE"] = "1"
+                env["RUN_NATIVE_POLICY"] = str(policy.resolve())
+        else:
+            self.exe = run.build(native=False)
+            for env in base_envs:
+                env["RUN_NATIVE"] = "0"
         self.base_envs = base_envs
         self.workdir = workdir
         self.procs: list[subprocess.Popen] = []
@@ -106,7 +118,7 @@ class Runtime:
                     env["RUN_LINK"], kwargs = links[i]
                     env["RUN_WIRELESS"] = "1"
                 self.procs.append(subprocess.Popen(
-                    [str(self.exe), str(self.run.ROM), str(self.manifest), str(self.table), "0"], cwd=C.ROOT,
+                    [str(self.exe), str(self.rom), str(self.manifest), str(self.table), "0"], cwd=C.ROOT,
                     env=env, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=self.output, text=True,
                     bufsize=1, **kwargs))
         finally:
@@ -146,7 +158,11 @@ class Runtime:
         """A command: `run` goes to every console (console k's input after `@k`); any other to
         console 0, or to console k after a leading `@k`."""
         if not self.forks and any(p.poll() is not None for p in self.procs):
-            return "@err the run ended (see run.log)"
+            for p in self.procs:
+                if p.poll() is not None and p.stdout is not None:
+                    self.output.write(p.stdout.read())
+            self.output.flush()
+            return "@err the run ended (exit codes " + str([p.poll() for p in self.procs]) + "; see run.log)"
         words = line.split()
         target = 0
         if words and AT.fullmatch(words[0]):
@@ -217,6 +233,7 @@ def serve(args) -> None:
     workdir.mkdir(parents=True, exist_ok=True)
     env = dict(os.environ, RUN_DRIVE="1", RUN_RENDER_THREAD="0")
     env["RUN_RTC"] = args.rtc
+    env.pop("RUN_SAVE", None)
     def save_of(name: str) -> str:
         save = pathlib.Path(name)
         if not save.is_file():
@@ -250,7 +267,12 @@ def serve(args) -> None:
         prefix = args.peer_prefix[k - 1] if args.peer_prefix and k - 1 < len(args.peer_prefix) else None
         envs.append(dict(env, RUN_SAVE=save_of(peer_save), RUN_RTC=rtc))
         prefixes.append(prefix_of(prefix, workdir / f"prefix-{k}.txt"))
-    rt = Runtime(envs, prefixes, args.until, workdir)
+    env["ACWW_LOCALIZED"] = args.localized or ""
+    env["ACWW_GRAMMAR"] = "es" if args.spanish_grammar else ""
+    for base in envs:
+        base["ACWW_LOCALIZED"] = env["ACWW_LOCALIZED"]
+        base["ACWW_GRAMMAR"] = env["ACWW_GRAMMAR"]
+    rt = Runtime(envs, prefixes, args.until, workdir, args.form, args.rom)
     lock = threading.Lock()
 
     class Handler(socketserver.StreamRequestHandler):
@@ -273,7 +295,9 @@ def serve(args) -> None:
 
     server = socketserver.TCPServer(("127.0.0.1", 0), Handler)
     port_file(args.name).write_text(json.dumps({"port": server.server_address[1], "pid": os.getpid(),
-                                                "lists": str(args.lists)}))
+                                                "lists": str(args.lists), "form": args.form,
+                                                "rom": str(rt.rom.resolve()), "localized": args.localized,
+                                                "spanish_grammar": args.spanish_grammar}))
     server.serve_forever()
     port_file(args.name).unlink(missing_ok=True)
 
@@ -347,6 +371,11 @@ def main() -> None:
         ap = argparse.ArgumentParser()
         ap.add_argument("mode")
         ap.add_argument("name")
+        ap.add_argument("--form", choices=("reference", "clean"), default="reference")
+        ap.add_argument("--rom", type=pathlib.Path, help="a generated ROM image; code modules remain Korean")
+        ap.add_argument("--localized", choices=("en", "fr", "de", "es", "it"),
+                        help="enable localized name plate bounds")
+        ap.add_argument("--spanish-grammar", action="store_true", help="use Spanish grammar with Clean/es resources")
         ap.add_argument("--save", help="a save file, or a derived save's name (tools/scenes.py SAVES)")
         ap.add_argument("--seed", help="the seed save (default ACWW_SCENE_SEED)")
         ap.add_argument("--rtc", default="2026-09-11 11:30:00")
@@ -360,6 +389,12 @@ def main() -> None:
                         help="with --peer-save: the second console's clock (default --rtc); again for a third")
         ap.add_argument("--lists", default=str(C.BUILD / "scenes"), help="the scenes' lists, for `new`")
         args = ap.parse_args()
+        if args.spanish_grammar and (args.form != "clean" or args.localized != "es"):
+            ap.error("--spanish-grammar requires --form clean --localized es and matching generated resources")
+        if args.rom is not None:
+            args.rom = args.rom.resolve()
+            if not args.rom.is_file():
+                ap.error("--rom must name an existing image")
         if args.mode == "_serve":
             serve(args)
             return
@@ -395,7 +430,7 @@ def main() -> None:
         print(send(name, f"run {wait} - -"))
         return
     at = 1 if AT.fullmatch(cmd[0]) else 0
-    if len(cmd) > at + 1 and cmd[at] in ("png", "log", "seen", "redraw", "video", "gx3d"):
+    if len(cmd) > at + 1 and cmd[at] in ("png", "log", "seen", "redraw", "video", "gx3d", "save"):
         cmd[at + 1] = str(pathlib.Path(cmd[at + 1]).resolve())
     print(send(name, " ".join(cmd)))
 

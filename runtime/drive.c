@@ -2,11 +2,13 @@
 #include "drive.h"
 
 #include <stdarg.h>
+#include <stdatomic.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "frame.h"
+#include "arm7.h"
 #include "gpu2d.h"
 #include "gpu3d.h"
 #include "input.h"
@@ -26,6 +28,12 @@
 void run_finish(const char *reason, int status);
 
 static int enabled = -1;
+static atomic_int paused;
+
+int drive_paused(void)
+{
+    return atomic_load(&paused);
+}
 
 /* Function entries: a bit per halfword from ITCM to the end of main RAM marks a start; the
  * entries seen are kept with their first 8 bytes. */
@@ -196,6 +204,7 @@ void drive_frame(uint32_t frame)
     if (frame < until) {
         return;
     }
+    atomic_store(&paused, 1);
     answer("@ok frame %u", frame);
     char line[1024];
     for (;;) {
@@ -215,11 +224,27 @@ void drive_frame(uint32_t frame)
                 continue;
             }
             until = frame + (frames ? frames : 1);
+            atomic_store(&paused, 0);
             return;
         } else if (strcmp(cmd, "frame") == 0) {
             answer("@ok frame %u", frame);
         } else if (strcmp(cmd, "png") == 0 && n >= 2) {
             answer(frame_last_png(a) == 0 ? "@ok" : "@err cannot write %s", a);
+        } else if (strcmp(cmd, "save") == 0 && n >= 2) {
+            uint64_t writes;
+            const uint8_t *image = arm7_backup(&writes);
+            FILE *f = fopen(a, "wbx");
+            if (f == NULL) {
+                answer("@err cannot create new save %s", a);
+            } else {
+                size_t written = fwrite(image, 1, ARM7_BACKUP_SIZE, f);
+                int closed = fclose(f);
+                if (written != ARM7_BACKUP_SIZE || closed != 0) {
+                    answer("@err cannot write save %s", a);
+                } else {
+                    answer("@ok save %u bytes, %llu game writes", ARM7_BACKUP_SIZE, (unsigned long long) writes);
+                }
+            }
         } else if (strcmp(cmd, "peek") == 0 && n >= 3) {
             uint32_t addr = (uint32_t) strtoul(a, NULL, 16), len = (uint32_t) strtoul(b, NULL, 0);
             /* memory_host takes sizes up to the smallest region's (DTCM) */

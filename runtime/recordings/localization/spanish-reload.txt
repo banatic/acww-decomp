@@ -1,0 +1,55 @@
+# Localized Clean/es with Latin keyboard and Spanish grammar.
+# Input save: the private output of spanish-new-game-save.txt (docs/localized-playtests.md).
+# Clock: 2005-11-23 12:20:00. Run through frame 4794.
+# Loads the saved town, completes the initial bedroom prompts, returns to the house
+# exterior and opens the map. Both accented names remain visible.
+0 - -
+900 START -
+906 - -
+1000 START -
+1006 - -
+1100 START -
+1106 - -
+1600 A -
+1630 - -
+1720 A -
+1750 - -
+1840 A -
+1870 - -
+1960 A -
+1990 - -
+2080 A -
+2110 - -
+2200 A -
+2230 - -
+2320 A -
+2350 - -
+2440 A -
+2470 - -
+2560 A -
+2590 - -
+2680 A -
+2710 - -
+2800 A -
+2830 - -
+2920 A -
+2950 - -
+3040 A -
+3070 - -
+3160 A -
+3190 - -
+3280 RIGHT -
+3370 - -
+3400 A -
+3430 - -
+3520 A -
+3550 - -
+3640 A -
+3670 - -
+3760 A -
+3790 - -
+3880 A -
+3910 - -
+4000 - -
+4700 X -
+4704 - -

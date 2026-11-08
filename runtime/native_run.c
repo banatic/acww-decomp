@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include "frame.h"
+#include "drive.h"
 #include "host.h"
 #include "io.h"
 #include "memory.h"
@@ -2504,7 +2505,7 @@ static int making_progress(void)
     uint64_t now = cpu->steps;
     int moved = now != watch_last_steps;
     watch_last_steps = now;
-    return moved;
+    return moved || drive_paused();
 }
 
 static void stuck_in(uint32_t eip)

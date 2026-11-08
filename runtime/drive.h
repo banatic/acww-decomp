@@ -21,6 +21,8 @@
  *                           gpu3d_capture_write)
  *     log PATH              the input so far as a recording (runtime/input.h): played again
  *                           with RUN_INPUT, it gives the same run
+ *     save PATH             export the current 256 KiB save chip to a new file; never
+ *                           overwrite an existing file or ask the game to save
  *     snap                  (POSIX) keep a copy of the run as it is now; answers its id
  *     back ID               (POSIX) end this run and continue the copy (which stays, for
  *                           another back); answers like run
@@ -40,6 +42,10 @@
 
 /* Nonzero when RUN_DRIVE is set (read once). */
 int drive_enabled(void);
+
+/* The run is intentionally waiting for a command, including command processing. Safe to
+ * read from the Native watchdog thread; an intentional pause is not a stalled game. */
+int drive_paused(void);
 
 /* Called by input.c when a frame's input is first read; stops for commands when the frames
  * asked for have begun. */
