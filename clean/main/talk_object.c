@@ -1,6 +1,7 @@
 /* A talk (talk_object.h). */
 #include "talk_object.h"
 
+#include <stdlib.h>
 #include <string.h>
 
 #include "clean.h"
@@ -1032,9 +1033,12 @@ void TalkObject_MakeNameBox(TalkObject *talk)
     talk->name_box->base.background = TALK_OBJECT_NAME_BACKGROUND;
     TalkReceiverName *speaker = TalkReceiver_SpeakerName(talk->receiver);
     talk->name_box->base.text = talk_object_chars(speaker);
-    /* A seven-character UTF-16 name can fill the Korean receiver's 14-byte field.
-     * Bound both measurement and drawing even when no complete terminator fits. */
-    talk->name_box->base.unk_14 = (u32) (uintptr_t) (talk->name_box->base.text + TALK_RECEIVER_NAME_CAPACITY);
+    const char *localized = getenv("ACWW_LOCALIZED");
+    if (localized != NULL && localized[0] != 0) {
+        /* A seven-character UTF-16 name can fill the Korean receiver's 14-byte field.
+         * Bound both measurement and drawing even when no complete terminator fits. */
+        talk->name_box->base.unk_14 = (u32) (uintptr_t) (talk->name_box->base.text + TALK_RECEIVER_NAME_CAPACITY);
+    }
     TextDraw_Center(&talk->name_box->base);
     talk->name_box->base.color = TALK_OBJECT_NAME_COLOUR;
     TextDraw_RequestDraw(&talk->name_box->base);

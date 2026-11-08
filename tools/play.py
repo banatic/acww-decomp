@@ -63,6 +63,7 @@ def build(form: str, localized_rom: pathlib.Path | None = None, language: str | 
               f"rom={(localized_rom or run.ROM).resolve()}\nmodules={manifest.resolve()}\n"
               f"symbols={table.resolve()}\npolicy={policy}\n")
     config += f"grammar={'es' if spanish_grammar else ''}\n"
+    config += f"localized={language if localized_rom else ''}\n"
     if localized_rom:
         save_dir = pathlib.Path(os.environ.get("APPDATA", str(run.C.BUILD))) / "acwwdecomp" / "localized-clean"
         save_dir.mkdir(parents=True, exist_ok=True)
