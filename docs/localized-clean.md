@@ -93,3 +93,11 @@ The last check is an equivalence check on this input, not a complete-playthrough
 original recording's Korean input timing does not complete the localized town-name keyboard;
 both forms remain there. Subsequent gameplay, all grammar alternatives and every retained
 file still need dedicated coverage.
+
+The optional Latin keyboard has a separate 14,900-frame recording,
+`runtime/recordings/localization/latin-keyboard.txt`. It clears the town-name field, opens the
+third tab and inserts three accented characters. The labels and resulting characters were
+inspected visually. With the Spanish resources and `--latin-keyboard`, Reference and Clean
+both give frame sequence SHA-1 `f8638c7bb1c3960d83981b372d7254ae744f04e6` when Reference
+timing is recorded/replayed. The five synthetic keyboard tests also check normal/chat label
+alignment, signed-safe accent codes, unchanged command keys, and the explicit data ranges.
