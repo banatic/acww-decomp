@@ -5057,6 +5057,6 @@ What reading the Clean code found about the groups above; counts are of function
 - Refuted (the groups' reach notes, link7): the other console's field actor's messages 8, the
   link guard 7, the special characters' wait 6 and talk with another console's player 6, local
   wireless 4, code only unreachable code calls 4, what only those messages call 3.
-- Checked (run or driven call), on 1c7d0162: 23,751 before, 23,787 after (entered 22,285 to
+- Checked (run or driven call), on d6dd5ff8: 23,858 before, 23,894 after (entered 22,285 to
   22,334). The plan: seed 255 to 252, date 70 to 69, unknown 282 to 275, unreachable 2,359 to
   2,321.
