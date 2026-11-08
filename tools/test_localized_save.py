@@ -5,6 +5,7 @@ import struct
 import unittest
 
 import check_localized_save as S
+import localized_playtest_fixture as F
 
 
 def bank(player="pe\u00f1a", town="\u00e1lano"):
@@ -23,6 +24,22 @@ def save(first=None, second=None):
 
 
 class SavedTown(unittest.TestCase):
+    def test_fixture_keeps_names_and_changes_only_its_declared_fields(self):
+        original = save()
+        prepared, report = F.prepare(original)
+        S.validate(prepared, "pe\u00f1a", "\u00e1lano")
+        allowed = set(range(S.CHECKSUM, S.CHECKSUM + 2))
+        for change in report["changes_in_each_bank"]:
+            start = int(change["offset"], 16)
+            allowed.update(range(start, start + struct.calcsize(change["format"])))
+        for index in range(S.BANK_SIZE):
+            if original[index] != prepared[index]:
+                self.assertIn(index, allowed)
+        self.assertEqual(prepared[:S.BANK_SIZE], prepared[S.BANK_SIZE:2 * S.BANK_SIZE])
+        self.assertEqual(original[2 * S.BANK_SIZE:], prepared[2 * S.BANK_SIZE:])
+        self.assertEqual(struct.unpack_from("<I", prepared, 0x1C24)[0], 10000)
+        self.assertEqual(struct.unpack_from("<H", prepared, 0x241A)[0], 0x1374)
+
     def test_both_copies_preserve_accents(self):
         report = S.validate(save(), "pe\u00f1a", "\u00e1lano")
         self.assertEqual(len(report["banks"]), 2)

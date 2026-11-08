@@ -43,9 +43,10 @@ The exported chip is 262144 bytes. Both 0x173fc-byte banks have setup marker 0x3
 halfword checksum sums and the expected names at the actual town/first-player fields.
 The export's SHA-256 is `a62d5ef8c305d752785b0abc845725fbf24ed42aabbcdc339fc7bd6974d43be3`.
 `tools/check_localized_save.py SAVE --player NAME --town NAME` checks these storage conditions
-without modifying the save. Four synthetic tests reject a corrupt secondary bank, wrong
+without modifying the save. Five synthetic tests reject a corrupt secondary bank, wrong
 names with valid checksums, blank chips and truncated files. Storage integrity is separate
-from actually loading the game.
+from actually loading the game. A fixture test also checks that setup changes only its declared
+fields and the bank checksums.
 
 A separate Clean process loaded that private save with clock `2005-11-23 12:20:00` and
 `runtime/recordings/localization/spanish-reload.txt` through frame 4794. It completed the
@@ -58,6 +59,48 @@ python tools/drive.py es-new stop
 python tools/drive.py start es-load --form clean --rom build/localized-clean/es-grammar/game.nds --localized es --spanish-grammar --rtc "2005-11-23 12:20:00" --save build/localized-clean/new-town.sav --prefix runtime/recordings/localization/spanish-reload.txt --until 4794
 ```
 
-Store interaction, fishing and letter checks are still in progress; this document does not
-claim those scenarios have passed. Short speaker names and the seven-character
-boundary were inspected; the original name capacities still limit longer translated names.
+## Prepared shop, letter and fishing scenarios
+
+For the following cases, a copy of the new-town save was explicitly prepared. This setup
+makes the part-time job inactive, supplies 10000 bells, equips rod 0x1374, and places apple
+0x1518 and paper 0x1020 in pockets 0 and 1. It preserves the other bank fields and recomputes
+both checksums. This is fixture preparation, not evidence of completing the job or obtaining
+these items during the new-game recording. Input saves are never modified and fixture output
+must be a new file. The generator reproduces the actual test input exactly: SHA-256
+`059e77fb73182ce1cbcd81e514d36edba8942c8d443d669bcea76b11473a4ccf`.
+
+```sh
+python tools/localized_playtest_fixture.py build/localized-clean/new-town.sav build/localized-clean/equipped.sav
+python tools/drive.py start es-cases --form clean --rom build/localized-clean/es-grammar/game.nds --localized es --spanish-grammar --rtc "2005-11-23 12:20:00" --save build/localized-clean/equipped.sav --prefix runtime/recordings/localization/spanish-shop-letter-fish.txt --until 39102
+python tools/drive.py es-cases save build/localized-clean/after-cases.sav
+```
+
+Observed in the actual Clean run:
+
+| Case | Evidence |
+|---|---|
+| Store sale | Apple moved to the sale box, 500-bell offer accepted; wallet rose from 10000 to 10500 |
+| Store purchase | A shovel (0x1369) entered pocket 0; wallet returned to 10000 after the 500-bell purchase |
+| Letter writing | Entered U+00E1, U+00F1 and U+00FC, completed the letter and reopened it with the same body |
+| Letter posting | Moved it into the post office outbox, confirmed, and scheduled it for 24 November 2005 |
+| Fishing | Cast normally; observed approach, nibble and bite states; pressed A at frame 37518, caught kind 1 and accepted its dialogue; item 0x12e9 entered pocket 1 |
+| Persistence | Saved and quit at frame 39102; both banks valid, with the caught fish and dated letter stored |
+| Letter delivery | A new Clean process with clock 2005-11-24 12:00:00 and the reload recording through 4794 put the letter in mailbox slot 0, state 0x42 (received, marked), retaining the three body codepoints; the fish remained in pocket 1 |
+
+The final saved chip's SHA-256 is
+`224ec9a5b6404211601ecd7a9102ccaa3aea7ae9eedcf4f28d02e895219f0a4e`.
+The dated letter before the next-day load has date bytes `18 0b 05 00`; its body begins
+`e1 00 f1 00 fc 00 00 00`. Delivery was checked in the game's mailbox record after the
+next-day startup, together with the visible new-mail marker on the house's mailbox.
+No fish state, letter record or wallet was modified while executing these cases. Runtime
+memory was read to observe the bite and verify the outcomes; only ordinary game inputs
+caused the sale, purchase, writing, posting, catch and saves.
+
+## Localization failures found
+
+These functional results do not mean every displayed string is Spanish. The capture message
+still uses a Korean fallback archive. Item names/metadata still come from Korean fixed-record
+files, outside the BMG conversion: for example, paper names are Korean and a name in the shop's
+purchase dialogue was empty. Those need a separate resource/runtime correction. The original
+name capacities also limit longer translated speaker names. These are recorded failures,
+not scenarios silently treated as fully localized.
