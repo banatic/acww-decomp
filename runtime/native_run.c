@@ -2710,6 +2710,19 @@ static int only_returns(const Fn *f)
     return f->size == 4 && code[0] == 0x1e && code[1] == 0xff && code[2] == 0x2f && code[3] == 0xe1;
 }
 
+/* Whether the function runs its Clean version (one selected, not on standby). */
+static int is_clean(const Fn *f)
+{
+    return f != NULL && f->native >= clean_functions && f->native < clean_functions + clean_function_count;
+}
+
+/* Whether the function's ROM code is a lone `bx lr` and its Native result is void: the ROM's
+ * code hands its first argument back in r0, which some callers use. */
+static int empty_void(const Fn *f)
+{
+    return f != NULL && f->native != NULL && native_return(f->native) == NATIVE_RET_VOID && only_returns(f);
+}
+
 static int patch_kept(void)
 {
     int count = 0;
@@ -2723,10 +2736,16 @@ static int patch_kept(void)
     int n = 0;
     for (int i = 0; i < fn_count; i++) {
         Fn *f = &fns[i];
-        if (native_for_native(f) && native_return(f->native) == NATIVE_RET_VOID && only_returns(f)) {
+        if (native_for_native(f) && empty_void(f)) {
             /* An empty function (`bx lr`) hands its first argument back in r0, and callers
                that declare it as returning a value use that; the PC's empty function returns
-               nothing. It becomes `return first argument`, what the ROM's code does. */
+               nothing. A Clean one keeps its code: Native callers reach it through a wrapper
+               that then returns the first argument (patch_clean), and the interpreter's calls
+               leave r0 as it was (native_call, NATIVE_RET_VOID), so the Clean code runs on every
+               call. A Native one becomes `return first argument`, what the ROM's code does. */
+            if (is_clean(f)) {
+                continue;
+            }
             static const uint8_t identity[5] = {0x8b, 0x44, 0x24, 0x04, 0xc3}; /* mov eax,[esp+4]; ret */
             if (native_os_patch((void *) f->native->host, identity, sizeof(identity)) != 0) {
                 return -1;
@@ -2756,15 +2775,10 @@ static int patch_kept(void)
 /* Native code calls a Native function directly, not through the table: each Native function
  * with a Clean version jumps to it, so every caller runs the Clean code. Both take the
  * arguments on the stack and return in eax. */
-static int is_clean(const Fn *f)
-{
-    return f != NULL && f->native >= clean_functions && f->native < clean_functions + clean_function_count;
-}
-
 static int patch_clean(void)
 {
     uint8_t *stubs = native_os_code_alloc((size_t) clean_function_count * 16 + 16);
-    uint8_t *wrappers = NULL; /* 48 bytes for each Clean function with a narrow result */
+    uint8_t *wrappers = NULL; /* 48 bytes for each Clean function with a narrow result or empty */
     if (stubs == NULL) {
         return -1;
     }
@@ -2812,17 +2826,22 @@ static int patch_clean(void)
             if ((n->address & ~1u) == 0x020404b4u && kind == NATIVE_RET_UNION4 && native_return(clean) == NATIVE_RET_32) {
                 to = native_aggregate_clean_bridge(NATIVE_RET_UNION4, NATIVE_RET_32, to);
             }
-            if (kind == NATIVE_RET_U8 || kind == NATIVE_RET_S8 || kind == NATIVE_RET_U16 || kind == NATIVE_RET_S16) {
+            /* an empty function (`bx lr`, patch_kept): its Clean code, then the first argument */
+            int empty = kind == NATIVE_RET_VOID && guest_functions[i] != NULL && only_returns(guest_functions[i]);
+            if (kind == NATIVE_RET_U8 || kind == NATIVE_RET_S8 || kind == NATIVE_RET_U16 || kind == NATIVE_RET_S16 || empty) {
                 /* A char or short result: Native callers (many declare such a function as
                    returning int) take eax whole, which the Native's wrapper extended as the
                    ROM's code does (tools/native.py, widen) and the PC's compiler leaves as it
                    is. The Clean function is called through a wrapper of the same kind: the
-                   argument words copied down, the result extended. */
+                   argument words copied down, the result extended. An empty function's wrapper
+                   returns its first argument instead, as the ROM's `bx lr` leaves it in r0 for
+                   the callers that use it. */
                 static const uint8_t extend[][3] = {
-                    [NATIVE_RET_U8] = {0x0f, 0xb6, 0xc0},  /* movzbl %al, %eax */
-                    [NATIVE_RET_S8] = {0x0f, 0xbe, 0xc0},  /* movsbl %al, %eax */
-                    [NATIVE_RET_U16] = {0x0f, 0xb7, 0xc0}, /* movzwl %ax, %eax */
-                    [NATIVE_RET_S16] = {0x0f, 0xbf, 0xc0}, /* movswl %ax, %eax */
+                    [NATIVE_RET_U8] = {0x0f, 0xb6, 0xc0},   /* movzbl %al, %eax */
+                    [NATIVE_RET_S8] = {0x0f, 0xbe, 0xc0},   /* movsbl %al, %eax */
+                    [NATIVE_RET_U16] = {0x0f, 0xb7, 0xc0},  /* movzwl %ax, %eax */
+                    [NATIVE_RET_S16] = {0x0f, 0xbf, 0xc0},  /* movswl %ax, %eax */
+                    [NATIVE_RET_VOID] = {0x8b, 0x45, 0x08}, /* mov 8(%ebp), %eax: the first argument */
                 };
                 if (wrappers == NULL && (wrappers = native_os_code_alloc((size_t) clean_function_count * 48)) == NULL) {
                     return -1;

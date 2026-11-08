@@ -67,6 +67,16 @@ listed in `runtime/recordings/scenes/clean-driven.txt` (`tools/driven.py --recor
 Clean progress map shows them as "checked by a driven call", below "checked in a run"; its
 legend and `tools/coverage.py` also give the two together, "checked (run or driven call)".
 
+A function whose ROM code is a lone `bx lr` (an empty function, declared void) leaves its first
+argument in r0, and some callers use it. Its Clean code runs as it is, on every call, and counts
+like any other: the interpreter's calls keep r0 as the ROM's code leaves it (native_run.c,
+NATIVE_RET_VOID), and Native code reaches it through a wrapper that calls the Clean code and then
+hands back the first argument (patch_clean). Until 2026-11-08 the Clean function's code was
+overwritten with `return the first argument` (patch_kept), so neither a scene nor a driven call
+ran it: scenes counted the 444 empty functions they enter from the Reference's functions seen
+alone, and a driven call, which counts only what ran as Clean code (`--clean-ran`), none. Native
+alone still runs the stub in place of an empty Native function.
+
 What a driven call shows: on a real object, in a real moment of the game, with memory as the
 game left it, the Clean function does to memory what the ROM's code does, and calls what it
 calls with the same arguments. What it does not show: that the game ever reaches this code, or
