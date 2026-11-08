@@ -65,14 +65,19 @@ class Rom:
 
         walk(0xF000)
 
-    def replace(self, replacements: dict[str, bytes]) -> bytes:
+    def replace(self, replacements: dict[str, bytes], unnamed: dict[int, bytes] | None = None) -> bytes:
         """Append files and update their FAT entries; never rewrite executable images."""
         result = bytearray(self.data)
-        for name, data in sorted(replacements.items()):
+        files = {self.files[name].id: data for name, data in replacements.items()}
+        for file_id, data in (unnamed or {}).items():
+            if file_id in files:
+                raise ValueError("duplicate named/unnamed resource replacement")
+            files[file_id] = data
+        for file_id, data in sorted(files.items()):
             result.extend(b"\xff" * (-len(result) % 4))
             start = len(result)
             result.extend(data)
-            struct.pack_into("<II", result, self.fat_at + self.files[name].id * 8, start, len(result))
+            struct.pack_into("<II", result, self.fat_at + file_id * 8, start, len(result))
         struct.pack_into("<I", result, 0x80, len(result))
         capacity = max(0, (len(result) - 1).bit_length() - 17)
         result[0x14] = capacity
@@ -245,7 +250,7 @@ def merge_font(korean: dict[str, bytes], european: dict[str, bytes]) -> dict[str
             "attr": b"".join(a for a, _ in ordered), "img": b"".join(b for _, b in ordered)}
 
 
-def generate(korean: bytes, european: bytes, language: str) -> tuple[bytes, dict]:
+def generate(korean: bytes, european: bytes, language: str, latin_keyboard: bool = False) -> tuple[bytes, dict]:
     if language not in LANGUAGES:
         raise ValueError("unsupported language")
     if hashlib.sha1(korean).hexdigest() != KR_SHA1:
@@ -281,16 +286,32 @@ def generate(korean: bytes, european: bytes, language: str) -> tuple[bytes, dict
             target = name.replace("_n", "_" + LANGUAGES[language].lower() + "_n")
             if target in donor.files:
                 replacements[name] = donor.files[target].data
-    result = base.replace(replacements)
+    unnamed, keyboard_report = {}, None
+    if latin_keyboard:
+        import latin_keyboard as keyboard
+        resources, file_id, image, keyboard_report = keyboard.build(korean, base, donor)
+        replacements.update(resources)
+        unnamed[file_id] = image
+    result = bytearray(base.replace(replacements, unnamed))
+    if latin_keyboard:
+        # Store the replacement overlay uncompressed; its load size and code are unchanged.
+        row = keyboard_report["overlay_table_offset"]
+        struct.pack_into("<I", result, row + 28, 0)
+    result = bytes(result)
     import extract
     original_modules = extract.split(korean)
-    if original_modules != extract.split(result):
-        raise ValueError("localization changed executable modules")
+    actual_modules = extract.split(result)
+    for name, (address, image, bss) in original_modules.items():
+        expected = unnamed[file_id] if latin_keyboard and name == "ov095" else image
+        if actual_modules[name] != (address, expected, bss):
+            raise ValueError(f"localization changed an unexpected executable module: {name}")
     report = {"language": language, "mode": "Clean, Korean executable with localized resources",
               "base_sha1": KR_SHA1, "donor_sha1": EU_SHA1,
               "generated_sha1": hashlib.sha1(result).hexdigest(),
               "replaced_files": len(replacements), "fallback_files": fallback,
-              "grammar_first_form_tags": grammar, "executable_modules_unchanged": len(original_modules)}
+              "grammar_first_form_tags": grammar,
+              "executable_modules_unchanged": len(original_modules) - int(latin_keyboard),
+              "latin_keyboard": keyboard_report}
     return result, report
 
 
@@ -299,17 +320,18 @@ def main() -> None:
     ap.add_argument("--korean", type=Path, default=ROOT / "extract" / "adm-kr.nds")
     ap.add_argument("--european", type=Path, required=True)
     ap.add_argument("--language", choices=LANGUAGES, default="es")
+    ap.add_argument("--latin-keyboard", action="store_true", help="Latin symbol page with Western accents")
     args = ap.parse_args()
     try:
-        path, report = prepare(args.korean, args.european, args.language)
+        path, report = prepare(args.korean, args.european, args.language, args.latin_keyboard)
     except (ValueError, OSError, KeyError, struct.error) as exc:
         ap.error(str(exc))
     print(f"{report['replaced_files']} resources replaced; {len(report['fallback_files'])} files kept Korean")
     print(f"All {report['executable_modules_unchanged']} executable modules unchanged. ROM: {path}")
 
 
-def prepare(korean: Path, european: Path, language: str) -> tuple[Path, dict]:
-    data, report = generate(korean.read_bytes(), european.read_bytes(), language)
+def prepare(korean: Path, european: Path, language: str, latin_keyboard: bool = False) -> tuple[Path, dict]:
+    data, report = generate(korean.read_bytes(), european.read_bytes(), language, latin_keyboard)
     out = ROOT / "build" / "localized-clean" / language
     out.mkdir(parents=True, exist_ok=True)
     path = out / "game.nds"

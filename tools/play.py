@@ -76,6 +76,7 @@ def main() -> None:
     ap.add_argument("--localize", choices=("en", "fr", "de", "es", "it"),
                     help="experimental European resources for the Korean runtime (docs/localized-clean.md)")
     ap.add_argument("--european", type=pathlib.Path, help="your European ADMP revision 0 .nds (with --localize)")
+    ap.add_argument("--latin-keyboard", action="store_true", help="Latin accent keys (requires --localize)")
     args, rest = ap.parse_known_args()
     if args.help:
         print(__doc__)
@@ -86,14 +87,14 @@ def main() -> None:
             ap.error("--localize requires --european PATH/TO/GAME.nds")
         import localize_clean
         try:
-            localized_rom, report = localize_clean.prepare(run.ROM, args.european, args.localize)
+            localized_rom, report = localize_clean.prepare(run.ROM, args.european, args.localize, args.latin_keyboard)
         except (ValueError, OSError, KeyError) as exc:
             ap.error(str(exc))
         print(f"localized resources: {report['replaced_files']} replaced, "
               f"{len(report['fallback_files'])} original files kept; see {localized_rom.parent / 'report.json'}",
               flush=True)
-    elif args.european is not None:
-        ap.error("--european requires --localize")
+    elif args.european is not None or args.latin_keyboard:
+        ap.error("--european and --latin-keyboard require --localize")
     exe = build(args.form, localized_rom, args.localize)
     if args.build_only:
         print(exe)
