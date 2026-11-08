@@ -103,7 +103,7 @@ caused the sale, purchase, writing, posting, catch and saves.
 
 These functional results do not mean every displayed string is Spanish. The capture message
 still uses a Korean fallback archive. Item names/metadata still come from Korean fixed-record
-files, outside the BMG conversion: for example, paper names are Korean and a name in the shop's
-purchase dialogue was empty. Those need a separate resource/runtime correction. The original
+files, outside the BMG conversion: for example, the paper popup and the shop's purchase dialogue
+use Korean item names. Their grammar attributes are also missing. Those need a separate resource/runtime correction. The original
 name capacities also limit longer translated speaker names. These are recorded failures,
 not scenarios silently treated as fully localized.

@@ -1,5 +1,6 @@
 /* The receiver a talk is for, and its speaker's name (talk_receiver.h). */
 #include "talk_receiver.h"
+#include "../../runtime/localized_names.h"
 
 #include "autoload_2/heap.h"
 #include "clean.h"
@@ -28,14 +29,15 @@ extern const char data_020df080[];
 /* func_02066a5c (vtable entry 3): the characters' address. */
 int TalkReceiverName_Chars(int name)
 {
-    return name + (int) offsetof(TalkReceiverName, chars);
+    return (int) (uintptr_t) localized_name_buffer((void *) (uintptr_t) (u32) name,
+                                                   (void *) (uintptr_t) (u32) (name + offsetof(TalkReceiverName, chars)));
 }
 CLEAN_AS(func_02066a5c, TalkReceiverName_Chars)
 
 /* func_02066a60 (vtable entry 2): the capacity, 14 bytes. */
 int TalkReceiverName_Capacity(void)
 {
-    return TALK_RECEIVER_NAME_CAPACITY;
+    return localized_names_enabled() ? LOCALIZED_NAME_CAPACITY : TALK_RECEIVER_NAME_CAPACITY;
 }
 CLEAN_AS(func_02066a60, TalkReceiverName_Capacity)
 
@@ -44,6 +46,7 @@ TalkReceiverName *TalkReceiverName_DestructDelete(TalkReceiverName *name)
 {
     name->vtable = &data_020def4c;
     TextBase_Destruct((TextBase *) (void *) name);
+    localized_name_release(name);
     Heap_OperatorDeleteB(name);
     return name;
 }
@@ -54,6 +57,7 @@ void *TalkReceiverName_Destruct(void *name)
 {
     ((TalkReceiverName *) name)->vtable = &data_020def4c;
     TextBase_Destruct((TextBase *) name);
+    localized_name_release(name);
     return name;
 }
 CLEAN_AS(func_02066a84, TalkReceiverName_Destruct)

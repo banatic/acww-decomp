@@ -1,5 +1,6 @@
 /* What the game knows of each piece of furniture (furniture_info.h). */
 #include "furniture_info.h"
+#include "../../runtime/localized_names.h"
 
 #include "clean.h"
 #include "item_code.h"
@@ -435,24 +436,21 @@ CLEAN_AS(func_02053d60, FurnitureInfo_DmaUnk1D)
  * where an item has no dma.bin record to read (func_02062ea4). */
 int FurnitureInfo_NoneA(int number)
 {
-    (void) number;
-    return -1;
+    return localized_names_enabled() ? localized_name_attribute(FurnitureInfo_Dma(number), sizeof(FurnitureDma), 0) : -1;
 }
 CLEAN_AS(func_02053d94, FurnitureInfo_NoneA)
 
 /* func_02053d9c: -1 for every number. */
 int FurnitureInfo_NoneB(int number)
 {
-    (void) number;
-    return -1;
+    return localized_names_enabled() ? localized_name_attribute(FurnitureInfo_Dma(number), sizeof(FurnitureDma), 1) : -1;
 }
 CLEAN_AS(func_02053d9c, FurnitureInfo_NoneB)
 
 /* func_02053da4: -1 for every number. */
 int FurnitureInfo_NoneC(int number)
 {
-    (void) number;
-    return -1;
+    return localized_names_enabled() ? localized_name_attribute(FurnitureInfo_Dma(number), sizeof(FurnitureDma), 2) : -1;
 }
 CLEAN_AS(func_02053da4, FurnitureInfo_NoneC)
 
@@ -518,7 +516,7 @@ CLEAN_AS(func_02053e9c, FurnitureFiles_Close)
 int FurnitureFiles_Open(RecordFiles *files)
 {
     return RecordFiles_Open(files, data_020dcfec, sizeof(FurnitureAlways), data_020dd004, sizeof(FurnitureIndoor),
-                            data_020dd01c, sizeof(FurnitureDma), FURNITURE_FILE_RECORDS);
+                            data_020dd01c, localized_name_stride(sizeof(FurnitureDma)), FURNITURE_FILE_RECORDS);
 }
 CLEAN_AS(func_02053ea4, FurnitureFiles_Open)
 

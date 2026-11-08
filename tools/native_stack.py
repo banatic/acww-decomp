@@ -388,7 +388,7 @@ CLEAN_CUE_SHA = {
     'clean/autoload_2/music_cue.c': '5e0d82994301bbde71bb4747d619c4a7ebf8558c757f9285fc36420a0c6a9dd1',
     'clean/main/sound.c': '5e1a5a3c835991fafa2653e4bfbfb467083efbe85e4251438f99f617d87b534e',
     'clean/ov004/room_object_body.c': 'c318ca069d92ac2122ab5f6de4c8ece9bc143fa80fa33ad665af5f6ba63eb3b5',
-    'clean/main/talk_object.c': '6b37bbd87e89c94d6cd3e0448c416162090a3e532a0bec43d4977924655280fb',
+    'clean/main/talk_object.c': '92cee58a4280b22922f31f43261a75a7536a472ddfe7156ea275833348923c61',
     'clean/main/villager_talk_offers.c': '533242081ce0c010d3b9fbb10bb8a24b6df49a01c2fc30dd13c8a43173bfabe1',
     'clean/autoload_2/matrix.c': '6e4e1fe2d50a238897e20e224004b63f073337a296a08fa10158644c8527cf18',
     'clean/main/field_collision.c': 'c1efa49efed565e2a051e4edf64d29ba420d6051bfaceae83c5eebf0b36650bf',

@@ -74,7 +74,7 @@ def generate() -> list[pathlib.Path]:
     table += ["};", f"const int diff_test_count = {len(rows)};", ""]
     tab = OUT / "diff_tests.c"
     tab.write_text("\n".join(table), newline="\n")
-    sources = [RUNTIME / n for n in ("arm.c", "memory.c", "loader.c", "diffcheck.c")]
+    sources = [RUNTIME / n for n in ("arm.c", "memory.c", "loader.c", "diffcheck.c", "localized_names.c")]
     sources += sorted((C.ROOT / "clean").rglob("*.c")) + sorted((C.ROOT / "tests" / "clean").rglob("*.c"))
     return sources + [tab]
 
@@ -274,7 +274,7 @@ def build_native(clean: bool = False) -> pathlib.Path:
         if p.returncode != 0:
             raise SystemExit(p.stdout + p.stderr)
         asm.append(obj)
-    srcs = [RUNTIME / n for n in ("arm.c", "memory.c", "loader.c", "host.c", "native_rt.c", "nativecheck.c")]
+    srcs = [RUNTIME / n for n in ("arm.c", "memory.c", "loader.c", "host.c", "native_rt.c", "nativecheck.c", "localized_names.c")]
     srcs.append(param_table())
     flags = ["-std=c11", "-O2", "-Wall", "-Wextra", f"-I{RUNTIME}"]
     run.OUT.mkdir(parents=True, exist_ok=True)

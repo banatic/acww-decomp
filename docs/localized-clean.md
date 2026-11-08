@@ -135,3 +135,7 @@ completed without errors. A synthetic in-game greeting verified the capitalizati
 before the player exists, its gender alternative is deliberately omitted. With grammar off,
 the original 1,300-frame title recording still gives expected frame sequence SHA-1
 `69297d7d46a0d122090aec6da585046bf2227aaf` in both Reference and Clean.
+
+For opt-in item/furniture names, their gender/article metadata and longer transient name
+buffers, see [localized-names.md](localized-names.md). Use the matching `--localized-names`
+Clean build and generated resources together.

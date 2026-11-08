@@ -1,5 +1,6 @@
 /* A player's id and the two text classes of a player's name (player_id.h). */
 #include "player_id.h"
+#include "../../runtime/localized_names.h"
 
 #include <string.h>
 
@@ -98,7 +99,8 @@ CLEAN_AS(func_02094f7c, PlayerIdWideText_Construct)
 /* func_02094f94 (vtable slot 3): the address of the characters. */
 int PlayerIdText_Chars(int text)
 {
-    return text + (int) offsetof(PlayerIdText, chars);
+    return (int) (uintptr_t) localized_name_buffer((void *) (uintptr_t) (u32) text,
+                                                   (void *) (uintptr_t) (u32) (text + offsetof(PlayerIdText, chars)));
 }
 CLEAN_AS(func_02094f94, PlayerIdText_Chars)
 
@@ -106,7 +108,7 @@ CLEAN_AS(func_02094f94, PlayerIdText_Chars)
 int PlayerIdText_Capacity(void *text)
 {
     (void) text;
-    return PLAYER_ID_TEXT_CAPACITY;
+    return localized_names_enabled() ? LOCALIZED_NAME_CAPACITY : PLAYER_ID_TEXT_CAPACITY;
 }
 CLEAN_AS(func_02094f98, PlayerIdText_Capacity)
 
@@ -115,6 +117,7 @@ PlayerIdText *PlayerIdText_Delete(PlayerIdText *text)
 {
     text->vtable = (const TextVtable *) data_020e2f6c;
     TextBase_Destruct((TextBase *) text);
+    localized_name_release(text);
     Heap_OperatorDeleteB(text);
     return text;
 }
@@ -125,6 +128,7 @@ PlayerIdText *PlayerIdText_Destruct(PlayerIdText *text)
 {
     text->vtable = (const TextVtable *) data_020e2f6c;
     TextBase_Destruct((TextBase *) text);
+    localized_name_release(text);
     return text;
 }
 CLEAN_AS(func_02094fbc, PlayerIdText_Destruct)

@@ -63,6 +63,7 @@ static struct {
     char save[MAX_PATH];
     char grammar[8];
     char localized[8];
+    char names[8];
     const char *rtc, *input, *language;
     int reference, read_only, scale, background, unpaced;
     uint32_t stop_frame; /* 0: none */
@@ -111,11 +112,13 @@ static int read_config(const char *path)
                    : strcmp(line, "save") == 0      ? opt.save
                    : strcmp(line, "grammar") == 0   ? opt.grammar
                    : strcmp(line, "localized") == 0 ? opt.localized
+                   : strcmp(line, "names") == 0     ? opt.names
                                                     : NULL;
         if (to != NULL) {
             size_t capacity = to == opt.form        ? sizeof(opt.form)
                               : to == opt.grammar   ? sizeof(opt.grammar)
                               : to == opt.localized ? sizeof(opt.localized)
+                              : to == opt.names     ? sizeof(opt.names)
                                                     : MAX_PATH;
             snprintf(to, capacity, "%s", value);
         }
@@ -717,6 +720,7 @@ int main(int argc, char **argv)
     _putenv_s("RUN_INPUT", opt.input ? opt.input : "");
     _putenv_s("ACWW_GRAMMAR", opt.grammar);
     _putenv_s("ACWW_LOCALIZED", opt.localized);
+    _putenv_s("ACWW_NAMES", opt.names);
     _putenv_s("RUN_LANGUAGE", opt.language ? opt.language : "");
     if (opt.language != NULL) {
         printf("play: firmware language %s\n", opt.language);

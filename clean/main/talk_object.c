@@ -1037,7 +1037,7 @@ void TalkObject_MakeNameBox(TalkObject *talk)
     if (localized != NULL && localized[0] != 0) {
         /* A seven-character UTF-16 name can fill the Korean receiver's 14-byte field.
          * Bound both measurement and drawing even when no complete terminator fits. */
-        talk->name_box->base.unk_14 = (u32) (uintptr_t) (talk->name_box->base.text + TALK_RECEIVER_NAME_CAPACITY);
+        talk->name_box->base.unk_14 = (u32) (uintptr_t) (talk->name_box->base.text + TalkReceiverName_Capacity());
     }
     TextDraw_Center(&talk->name_box->base);
     talk->name_box->base.color = TALK_OBJECT_NAME_COLOUR;

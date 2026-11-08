@@ -6,6 +6,7 @@
 #include "item_traits.h"
 #include "record_file.h"
 #include "record_files.h"
+#include "../../runtime/localized_names.h"
 
 static_assert(sizeof(ItemInfoAlways) == 12, "ItemInfoAlways size");
 static_assert(sizeof(ItemInfoIndoor) == 4, "ItemInfoIndoor size");
@@ -343,24 +344,21 @@ CLEAN_AS(func_02062998, ItemInfo_Series)
  * FurnitureInfo ones are (func_02062ea4). */
 int ItemInfo_NoneA(const u16 *item)
 {
-    (void) item;
-    return -1;
+    return localized_names_enabled() ? localized_name_attribute(ItemInfo_NameRecord(item), sizeof(ItemInfoName), 0) : -1;
 }
 CLEAN_AS(func_020629d4, ItemInfo_NoneA)
 
 /* func_020629dc: -1 for every item. */
 int ItemInfo_NoneB(const u16 *item)
 {
-    (void) item;
-    return -1;
+    return localized_names_enabled() ? localized_name_attribute(ItemInfo_NameRecord(item), sizeof(ItemInfoName), 1) : -1;
 }
 CLEAN_AS(func_020629dc, ItemInfo_NoneB)
 
 /* func_020629e4: -1 for every item. */
 int ItemInfo_NoneC(const u16 *item)
 {
-    (void) item;
-    return -1;
+    return localized_names_enabled() ? localized_name_attribute(ItemInfo_NameRecord(item), sizeof(ItemInfoName), 2) : -1;
 }
 CLEAN_AS(func_020629e4, ItemInfo_NoneC)
 
@@ -528,11 +526,12 @@ int ItemInfoFiles_Open(ItemInfoFiles *files)
 {
     data_021cb5c0 = 0;
     (void) RecordFiles_Open(&files->files, data_020de5b0, sizeof(ItemInfoAlways), data_020de5c8, sizeof(ItemInfoIndoor),
-                            data_020de5e0, sizeof(ItemInfoName), ITEM_INFO_FILE_RECORDS);
+                            data_020de5e0, localized_name_stride(sizeof(ItemInfoName)), ITEM_INFO_FILE_RECORDS);
     ItemInfo_FindHeldModels();
     ItemInfo_CountSharedPairs();
     ItemInfo_CountTailorHeadwear();
-    (void) RecordFile_Open(&files->series, data_020de5f4, sizeof(ItemInfoSeries), ITEM_INFO_SERIES_RECORDS);
+    (void) RecordFile_Open(&files->series, data_020de5f4, localized_name_stride(sizeof(ItemInfoSeries)),
+                           ITEM_INFO_SERIES_RECORDS);
     RecordFile_ReadWhole(&files->series);
     return 1;
 }

@@ -9,6 +9,7 @@
 #include "item_info.h"
 #include "text_base.h"
 #include "text_string.h"
+#include "../../runtime/localized_names.h"
 
 static_assert(sizeof(NameWideText) == 0x24 && offsetof(NameWideText, chars) == 0x0e, "NameWideText layout");
 static_assert(sizeof(NameText) == 0x28 && offsetof(NameText, attr_04) == 0x0c && offsetof(NameText, chars) == 0x12,
@@ -106,14 +107,15 @@ CLEAN_AS(func_02062e50, NameWideText_Construct)
 /* func_02062e70 (vtable slot 3): the address of the characters. */
 int NameText_Chars(int text)
 {
-    return text + (int) offsetof(NameText, chars);
+    return (int) (uintptr_t) localized_name_buffer((void *) (uintptr_t) (u32) text,
+                                                   (void *) (uintptr_t) (u32) (text + offsetof(NameText, chars)));
 }
 CLEAN_AS(func_02062e70, NameText_Chars)
 
 /* func_02062e74 (vtable slot 2): the capacity. */
 int NameText_Capacity(void)
 {
-    return NAME_TEXT_CAPACITY;
+    return localized_names_enabled() ? LOCALIZED_NAME_CAPACITY : NAME_TEXT_CAPACITY;
 }
 CLEAN_AS(func_02062e74, NameText_Capacity)
 
@@ -131,7 +133,9 @@ int NameText_SetSeries(int text, int series)
     if (series >= ITEM_INFO_SERIES) {
         return 0;
     }
-    NameText_SetChars(text, (int) (uintptr_t) ItemInfo_SeriesRecord(series));
+    const ItemInfoSeries *record = ItemInfo_SeriesRecord(series);
+    const char *name = localized_name_text(record, sizeof(*record));
+    NameText_SetChars(text, (int) (uintptr_t) (name != NULL ? (const void *) name : record));
     return 1;
 }
 CLEAN_AS(func_02062e80, NameText_SetSeries)
@@ -146,7 +150,9 @@ int NameText_SetItem(NameText *text, u16 *item)
     u16 carried;
     ItemForm_ToCarried(&carried, item);
     if (ItemCode_IsKind1(&carried)) {
-        NameText_SetChars((int) (uintptr_t) text, (int) (uintptr_t) ItemInfo_NameRecord(&carried));
+        const ItemInfoName *record = ItemInfo_NameRecord(&carried);
+        const char *name = localized_name_text(record, sizeof(*record));
+        NameText_SetChars((int) (uintptr_t) text, (int) (uintptr_t) (name != NULL ? (const void *) name : record));
         text->attr_04 = ItemInfo_NoneC(&carried);
         text->attr_09 = (u8) ItemInfo_NoneB(&carried);
         text->attr_08 = (u8) ItemInfo_NoneA(&carried);
@@ -154,7 +160,9 @@ int NameText_SetItem(NameText *text, u16 *item)
     }
     if (ItemCode_IsFurniture(&carried)) {
         int number = ItemCode_FurnitureNumber(&carried);
-        NameText_SetChars((int) (uintptr_t) text, (int) (uintptr_t) FurnitureInfo_Dma(number));
+        const FurnitureDma *record = FurnitureInfo_Dma(number);
+        const char *name = localized_name_text(record, sizeof(*record));
+        NameText_SetChars((int) (uintptr_t) text, (int) (uintptr_t) (name != NULL ? (const void *) name : record));
         text->attr_04 = FurnitureInfo_NoneC(number);
         text->attr_09 = (u8) FurnitureInfo_NoneB(number);
         text->attr_08 = (u8) FurnitureInfo_NoneA(number);
@@ -169,6 +177,7 @@ NameText *NameText_Delete(NameText *text)
 {
     text->vtable = (const TextVtable *) data_020de62c;
     TextBase_Destruct((TextBase *) text);
+    localized_name_release(text);
     Heap_OperatorDeleteB(text);
     return text;
 }
@@ -179,6 +188,7 @@ NameText *NameText_Destruct(NameText *text)
 {
     text->vtable = (const TextVtable *) data_020de62c;
     TextBase_Destruct((TextBase *) text);
+    localized_name_release(text);
     return text;
 }
 CLEAN_AS(func_02062f4c, NameText_Destruct)

@@ -269,9 +269,11 @@ def serve(args) -> None:
         prefixes.append(prefix_of(prefix, workdir / f"prefix-{k}.txt"))
     env["ACWW_LOCALIZED"] = args.localized or ""
     env["ACWW_GRAMMAR"] = "es" if args.spanish_grammar else ""
+    env["ACWW_NAMES"] = "1" if args.localized_names else ""
     for base in envs:
         base["ACWW_LOCALIZED"] = env["ACWW_LOCALIZED"]
         base["ACWW_GRAMMAR"] = env["ACWW_GRAMMAR"]
+        base["ACWW_NAMES"] = env["ACWW_NAMES"]
     rt = Runtime(envs, prefixes, args.until, workdir, args.form, args.rom)
     lock = threading.Lock()
 
@@ -376,6 +378,7 @@ def main() -> None:
         ap.add_argument("--localized", choices=("en", "fr", "de", "es", "it"),
                         help="enable localized name plate bounds")
         ap.add_argument("--spanish-grammar", action="store_true", help="use Spanish grammar with Clean/es resources")
+        ap.add_argument("--localized-names", action="store_true", help="use matching extended item name resources")
         ap.add_argument("--save", help="a save file, or a derived save's name (tools/scenes.py SAVES)")
         ap.add_argument("--seed", help="the seed save (default ACWW_SCENE_SEED)")
         ap.add_argument("--rtc", default="2026-09-11 11:30:00")
@@ -391,6 +394,8 @@ def main() -> None:
         args = ap.parse_args()
         if args.spanish_grammar and (args.form != "clean" or args.localized != "es"):
             ap.error("--spanish-grammar requires --form clean --localized es and matching generated resources")
+        if args.localized_names and (args.form != "clean" or not args.localized):
+            ap.error("--localized-names requires Clean, --localized and matching generated resources")
         if args.rom is not None:
             args.rom = args.rom.resolve()
             if not args.rom.is_file():

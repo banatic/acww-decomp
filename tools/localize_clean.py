@@ -282,8 +282,33 @@ def merge_font(korean: dict[str, bytes], european: dict[str, bytes]) -> dict[str
             "attr": b"".join(a for a, _ in ordered), "img": b"".join(b for _, b in ordered)}
 
 
+def extend_name_records(korean: bytes, european: bytes, original_size: int, donor_size: int,
+                        name_at: int, attributes_at: int | None) -> bytes:
+    """Keep every Korean record prefix and append bounded Western text/grammar data."""
+    if len(korean) % original_size or len(european) % donor_size:
+        raise ValueError("partial fixed name record")
+    count = len(korean) // original_size
+    if count != len(european) // donor_size:
+        raise ValueError("fixed name record count differs")
+    result = bytearray()
+    for i in range(count):
+        original = korean[i * original_size:(i + 1) * original_size]
+        donor = european[i * donor_size:(i + 1) * donor_size]
+        name = donor[name_at:].split(b"\0", 1)[0]
+        if any(c < 32 for c in name):
+            raise ValueError("unexpected control byte in fixed name")
+        wide = b"".join(struct.pack("<H", c) for c in name) + b"\0\0"
+        if len(wide) > 56:
+            raise ValueError("fixed name exceeds localized extension")
+        attrs = donor[attributes_at:attributes_at + 3] if attributes_at is not None else b"\xff" * 3
+        if len(attrs) != 3:
+            raise ValueError("incomplete fixed name attributes")
+        result += original + b"LTXT" + attrs + b"\0" + wide.ljust(56, b"\0")
+    return bytes(result)
+
+
 def generate(korean: bytes, european: bytes, language: str, latin_keyboard: bool = False,
-             spanish_grammar: bool = False) -> tuple[bytes, dict]:
+             spanish_grammar: bool = False, localized_names: bool = False) -> tuple[bytes, dict]:
     if language not in LANGUAGES:
         raise ValueError("unsupported language")
     if spanish_grammar and language != "es":
@@ -313,6 +338,19 @@ def generate(korean: bytes, european: bytes, language: str, latin_keyboard: bool
             fallback.append(name)
         else:
             replacements[name] = converted
+    name_records = {}
+    if localized_names:
+        for folder, filename, original_size, donor_size, name_at, attributes_at in (
+                ("item_info", "dma.bin", 24, 20, 3, 0),
+                ("ftr_info", "dma.bin", 32, 32, 12, 9),
+                ("item_info", "series.bin", 24, 20, 1, None)):
+            target = f"/{folder}/{filename}"
+            original = unpack(base.files[target].data)
+            translated = unpack(donor.files[f"/{folder}/{LANGUAGES[language]}/{filename}"].data)
+            replacements[target] = extend_name_records(original, translated, original_size, donor_size,
+                                                        name_at, attributes_at)
+            name_records[target] = {"count": len(original) // original_size,
+                                    "original_stride": original_size, "localized_stride": original_size + 64}
     for font in "ABCD":
         name = f"/font/font{font}"
         suffix = "_" + LANGUAGES[language].lower() if font == "C" else ""
@@ -353,6 +391,7 @@ def generate(korean: bytes, european: bytes, language: str, latin_keyboard: bool
               "grammar_first_form_tags": {} if spanish_grammar else grammar,
               "grammar_preserved_tags": grammar if spanish_grammar else {},
               "spanish_grammar": spanish_grammar,
+              "localized_names": name_records,
               "trimmed_empty_tail_files": trimmed_empty_tails,
               "executable_modules_unchanged": len(original_modules) - int(latin_keyboard),
               "latin_keyboard": keyboard_report}
@@ -366,9 +405,11 @@ def main() -> None:
     ap.add_argument("--language", choices=LANGUAGES, default="es")
     ap.add_argument("--latin-keyboard", action="store_true", help="Latin symbol page with Western accents")
     ap.add_argument("--spanish-grammar", action="store_true", help="preserve dynamic Spanish grammar for Clean")
+    ap.add_argument("--localized-names", action="store_true", help="extended item names; requires names-aware Clean")
     args = ap.parse_args()
     try:
-        path, report = prepare(args.korean, args.european, args.language, args.latin_keyboard, args.spanish_grammar)
+        path, report = prepare(args.korean, args.european, args.language, args.latin_keyboard, args.spanish_grammar,
+                               args.localized_names)
     except (ValueError, OSError, KeyError, struct.error) as exc:
         ap.error(str(exc))
     print(f"{report['replaced_files']} resources replaced; {len(report['fallback_files'])} files kept Korean")
@@ -376,9 +417,11 @@ def main() -> None:
 
 
 def prepare(korean: Path, european: Path, language: str, latin_keyboard: bool = False,
-            spanish_grammar: bool = False) -> tuple[Path, dict]:
-    data, report = generate(korean.read_bytes(), european.read_bytes(), language, latin_keyboard, spanish_grammar)
-    out = ROOT / "build" / "localized-clean" / (language + ("-grammar" if spanish_grammar else ""))
+            spanish_grammar: bool = False, localized_names: bool = False) -> tuple[Path, dict]:
+    data, report = generate(korean.read_bytes(), european.read_bytes(), language, latin_keyboard, spanish_grammar,
+                             localized_names)
+    out = ROOT / "build" / "localized-clean" / (language + ("-grammar" if spanish_grammar else "") +
+                                                ("-names" if localized_names else ""))
     out.mkdir(parents=True, exist_ok=True)
     path = out / "game.nds"
     if not path.exists() or hashlib.sha1(path.read_bytes()).hexdigest() != report["generated_sha1"]:
