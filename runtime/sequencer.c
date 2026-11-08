@@ -24,7 +24,7 @@
  * volume and the pitch, which decide those ends, are the driver's. The hardware's channels are
  * kept only as far as the driver reads them back: their control register, and whether each
  * still plays (a sample played once stops after its length at the rate its timer gives).
- * Nothing is mixed and no sound is made.
+ * Optional host audio renders these channel writes (sound.h).
  *
  * Two tables the driver uses are in the ARM7's BIOS, not in the ROM. The volume table
  * (SVC_GetVolumeTable: a level in 0.1 dB as a register volume for its divider) is read from the
@@ -36,6 +36,7 @@
  * fall a periodic pass from the hardware's. The driver's own tables (decibels, sine, attack,
  * channel order) are read from the ARM7 binary in the ROM. */
 #include "sequencer.h"
+#include "sound.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -241,11 +242,12 @@ enum {
  * it plays) and, for a sample played once, how far it has played. */
 typedef struct HwChannel {
     uint32_t control;
-    uint32_t timer;  /* the timer register: the sample period is 0x10000 - timer at 16.76 MHz */
-    uint32_t start;  /* the loop start, in words */
-    uint32_t length; /* the loop length, in words */
-    uint64_t last;   /* the bus cycle the position is counted to */
-    uint64_t played; /* samples played, and the bus cycles towards the next */
+    uint32_t timer;                /* the timer register: the sample period is 0x10000 - timer at 16.76 MHz */
+    uint32_t start;                /* the loop start, in words */
+    uint32_t length;               /* the loop length, in words */
+    uint32_t volume, divider, pan; /* values before SDK surround/master-pan adjustments */
+    uint64_t last;                 /* the bus cycle the position is counted to */
+    uint64_t played;               /* samples played, and the bus cycles towards the next */
     uint64_t part;
 } HwChannel;
 
@@ -255,12 +257,17 @@ static struct {
     uint32_t random; /* the driver's random number state (0x41fc), 0x12345678 at the start */
     uint64_t next_period;
     uint32_t locked, locked_weak; /* the channels locked by the ARM9 (strong, weak) */
-    uint32_t shared_work;         /* as the command being run sees it */
-    uint64_t now;                 /* the bus cycle of the pass being run */
+    int32_t surround, master_pan;
+    uint32_t shared_work; /* as the command being run sees it */
+    uint64_t now;         /* the bus cycle of the pass being run */
     HwChannel hw[CHANNELS];
     uint8_t *driver; /* the driver's code and data, as the ARM7 has them from 0x037f8000 */
     uint32_t driver_size;
     uint16_t pitch[PITCH_TABLE_SIZE];
+    struct {
+        uint64_t next, delay, period;
+        unsigned tag, active;
+    } alarms[8];
     uint64_t periods, ticks, started, finished, commands, notes, no_channel, channels_ended;
 } sq;
 
@@ -377,6 +384,18 @@ static uint32_t guest8(uint32_t a)
     uint32_t v = 0;
     bus_read(a, 1, &v);
     return v & 0xff;
+}
+
+static uint8_t audio_read(void *user, uint32_t address)
+{
+    (void) user;
+    return (uint8_t) guest8(address);
+}
+
+static void audio_write(void *user, uint32_t address, uint8_t value)
+{
+    (void) user;
+    bus_write(address, 1, value);
 }
 
 static uint32_t guest16(uint32_t a)
@@ -530,44 +549,99 @@ static int hw_busy(uint32_t no)
     return (sq.hw[no].control & HW_BUSY) != 0;
 }
 
+/* The SDK's surround attenuation (ARM7 0x3d20), excluding output-effect channels 1/3.
+ * Retain the requested values so pan and global changes can recompute the hardware volume. */
+static void hw_audio_mix(uint32_t no)
+{
+    DsAudio *audio = sound_mixer();
+    if (!audio) {
+        return;
+    }
+    HwChannel *h = &sq.hw[no];
+    int32_t pan = sq.master_pan >= 0 ? sq.master_pan : (int32_t) h->pan;
+    int32_t volume = (int32_t) h->volume;
+    if (sq.surround > 0 && no != 1 && no != 3) {
+        if (pan < 24) {
+            volume = volume * ((pan + 40) * sq.surround + (32768 - sq.surround) * 64) >> 21;
+        } else if (pan > 104) {
+            volume = volume * ((32768 + sq.surround) * 64 - (pan - 40) * sq.surround) >> 21;
+        }
+    }
+    h->control = (h->control & ~0x7f037fu) | ((uint32_t) volume & 127) | (h->divider & 3) << 8 | ((uint32_t) pan & 127) << 16;
+    ds_audio_volume(audio, no, (unsigned) volume, h->divider);
+    ds_audio_pan(audio, no, (unsigned) pan);
+}
+
 /* The channel stopped, `hold` keeping its last sample (0x3f98). */
 static void hw_stop(uint32_t no, int hold)
 {
+    sound_advance(sq.now);
+    if (sound_mixer()) {
+        ds_audio_stop(sound_mixer(), no, hold);
+    }
     hw_advance(no);
     sq.hw[no].control = (sq.hw[no].control & ~HW_BUSY) | (hold ? 0x8000u : 0);
 }
 
 /* The control register written whole (0x412c, 0x4074, 0x3fc4); it does not start the channel. */
-static void hw_setup(uint32_t no, uint32_t control, uint32_t timer, uint32_t start, uint32_t length)
+static void hw_setup(uint32_t no, uint32_t control, uint32_t timer, uint32_t start, uint32_t length, uint32_t data)
 {
+    sound_advance(sq.now);
+    if (sound_mixer()) {
+        ds_audio_setup(sound_mixer(), no, control, data, timer, start, length);
+    }
     HwChannel *h = &sq.hw[no];
     hw_advance(no);
     h->control = control & ~HW_BUSY;
     h->timer = (0x10000u - timer) & 0xffff;
     h->start = start & 0xffff;
     h->length = length & 0x3fffff;
+    h->volume = control & 127;
+    h->divider = control >> 8 & 3;
+    h->pan = control >> 16 & 127;
+    hw_audio_mix(no);
 }
 
 static void hw_set_timer(uint32_t no, uint32_t timer)
 {
+    sound_advance(sq.now);
+    if (sound_mixer()) {
+        ds_audio_timer(sound_mixer(), no, timer);
+    }
     hw_advance(no);
     sq.hw[no].timer = (0x10000u - timer) & 0xffff;
 }
 
-/* The volume and divider (0x3f14) and the pan (0x3e80); the master pan and the output effect,
- * which the driver applies here when the ARM9 sets them, are left out. */
+/* The volume and divider (0x3f14) and pan (0x3e80), with optional SDK output adjustments. */
 static void hw_set_volume(uint32_t no, uint32_t volume, uint32_t divider)
 {
+    sound_advance(sq.now);
+    if (sound_mixer()) {
+        ds_audio_volume(sound_mixer(), no, volume, divider);
+    }
     sq.hw[no].control = (sq.hw[no].control & ~0xffffu) | (volume & 0xff) | (divider & 0xff) << 8;
+    sq.hw[no].volume = volume & 127;
+    sq.hw[no].divider = divider & 3;
+    hw_audio_mix(no);
 }
 
 static void hw_set_pan(uint32_t no, uint32_t pan)
 {
+    sound_advance(sq.now);
+    if (sound_mixer()) {
+        ds_audio_pan(sound_mixer(), no, pan);
+    }
     sq.hw[no].control = (sq.hw[no].control & ~0xff0000u) | (pan & 0xff) << 16;
+    sq.hw[no].pan = pan & 127;
+    hw_audio_mix(no);
 }
 
 static void hw_start(uint32_t no)
 {
+    sound_advance(sq.now);
+    if (sound_mixer()) {
+        ds_audio_start(sound_mixer(), no);
+    }
     HwChannel *h = &sq.hw[no];
     hw_advance(no);
     if (!(h->control & HW_BUSY)) {
@@ -1138,14 +1212,14 @@ static void channel_sync(void)
                 case 0: {
                     uint32_t repeat = w8(c + C_WAVE_LOOP) != 0 ? 1 : 2;
                     hw_setup(no, base | repeat << 27 | (w8(c + C_WAVE_FORMAT) & 3) << 29, w16(c + C_TIMER),
-                             w16(c + C_WAVE_LOOP_START), w32(c + C_WAVE_LOOP_LENGTH));
+                             w16(c + C_WAVE_LOOP_START), w32(c + C_WAVE_LOOP_LENGTH), w32(c + C_DATA));
                     break;
                 }
                 case 1:
-                    hw_setup(no, base | w32(c + C_DATA) << 24 | 0x60000000u, w16(c + C_TIMER), 0, 0);
+                    hw_setup(no, base | w32(c + C_DATA) << 24 | 0x60000000u, w16(c + C_TIMER), 0, 0, 0);
                     break;
                 case 2:
-                    hw_setup(no, base | 0x60000000u, w16(c + C_TIMER), 0, 0);
+                    hw_setup(no, base | 0x60000000u, w16(c + C_TIMER), 0, 0, 0);
                     break;
                 default:
                     break;
@@ -1992,7 +2066,13 @@ static void thread_pass(int periodic)
             playing |= hw_busy(no) ? 1u << no : 0;
         }
         guest_store16(sq.shared_work + SW_CHANNEL_STATUS, playing);
-        guest_store16(sq.shared_work + SW_CAPTURE_STATUS, 0);
+        uint32_t captures = 0;
+        if (sound_mixer()) {
+            for (unsigned no = 0; no < 2; no++) {
+                captures |= sound_mixer()->capture[no].active << no;
+            }
+        }
+        guest_store16(sq.shared_work + SW_CAPTURE_STATUS, captures);
     }
     random16();
 }
@@ -2049,6 +2129,7 @@ int sequencer_init(const char *rom)
         sq.on = 0;
     }
     pitch_table();
+    sq.master_pan = -1;
     sq.random = 0x12345678u;
     sq.next_period = FIRST_DELAY_CYCLES;
     for (uint32_t i = 0; i < CHANNELS; i++) {
@@ -2056,6 +2137,9 @@ int sequencer_init(const char *rom)
     }
     for (uint32_t no = 0; no < PLAYERS; no++) {
         set8(player_at(no) + P_NO, no); /* the players' (0x71e0) */
+    }
+    if (sq.on) {
+        sound_init(audio_read, audio_write, NULL);
     }
     return sq.on;
 }
@@ -2186,7 +2270,107 @@ void sequencer_command(uint32_t id, const uint32_t args[4], uint32_t shared_work
         case CMD_READ_DRIVER_INFO:
             read_driver_info(args[0]);
             break;
-        default: /* the channels set up by the ARM9 itself, the timers, capture, alarms, volumes */
+        case 0x0c: /* SND_StartTimer: the channels reserved by the ARM9, e.g. speech */
+        case 0x0d:
+            if (sound_mixer()) {
+                for (unsigned no = 0; no < CHANNELS; no++) {
+                    if (args[0] & (1u << no)) {
+                        if (id == 0x0c) {
+                            hw_start(no);
+                        } else {
+                            hw_stop(no, args[3] & 1);
+                        }
+                    }
+                }
+                sound_advance(sq.now);
+                for (unsigned no = 0; no < 2; no++) {
+                    if (args[1] & (1u << no)) {
+                        ds_audio_capture_start(sound_mixer(), no, id == 0x0c);
+                    }
+                }
+                for (unsigned no = 0; no < 8; no++) {
+                    if (args[2] & (1u << no)) {
+                        sq.alarms[no].active = id == 0x0c;
+                        sq.alarms[no].next = sq.now + sq.alarms[no].delay;
+                        if (id == 0x0d) {
+                            sq.alarms[no].tag = (sq.alarms[no].tag + 1) & 255;
+                        }
+                    }
+                }
+            }
+            break;
+        case 0x0e: /* SND_SetupChannelPcm: packed by the supported ARM9 SDK */
+            if (sound_mixer()) {
+                uint32_t control = (args[2] >> 24 & 127) | (args[2] >> 22 & 3) << 8 | (args[3] >> 16 & 127) << 16 |
+                                   (args[3] >> 24 & 3) << 29 | (args[3] >> 26 & 3) << 27;
+                hw_setup(args[0] & 15, control, args[0] >> 16, args[3] & 65535, args[2] & 0x3fffff, args[1]);
+            }
+            break;
+        case 0x11: /* SND_SetupCapture: the ARM7 translates the packed flags to SNDCAPxCNT */
+            sound_advance(sq.now);
+            if (sound_mixer()) {
+                unsigned control =
+                    (args[2] >> 30 & 1) << 3 | ((args[2] >> 29 & 1) ^ 1) << 2 | (args[2] >> 28 & 1) << 1 | (args[2] >> 27 & 1);
+                ds_audio_capture_setup(sound_mixer(), args[2] >> 31, args[0], args[1], control);
+            }
+            break;
+        case 0x12: /* SND_SetupAlarm: OS ticks, and the ARM9 callback's generation tag */
+            if (sound_mixer()) {
+                unsigned no = args[0] & 7;
+                sq.alarms[no].delay = (uint64_t) args[1] * 64;
+                sq.alarms[no].period = (uint64_t) args[2] * 64;
+                sq.alarms[no].tag = args[3] & 255;
+                sq.alarms[no].active = 0;
+            }
+            break;
+        case 0x13: /* SND_SetChannelTimer */
+        case 0x14: /* SND_SetChannelVolume */
+        case 0x15: /* SND_SetChannelPan */
+            if (sound_mixer()) {
+                for (unsigned no = 0; no < CHANNELS; no++) {
+                    if (args[0] & (1u << no)) {
+                        if (id == 0x13) {
+                            hw_set_timer(no, args[1]);
+                        }
+                        if (id == 0x14) {
+                            hw_set_volume(no, args[1], args[2]);
+                        }
+                        if (id == 0x15) {
+                            hw_set_pan(no, args[1]);
+                        }
+                    }
+                }
+            }
+            break;
+        case 0x16: /* SNDi_SetSurroundDecay */
+        case 0x18: /* SND_SetMasterPan, -1 releases the override */
+            sound_advance(sq.now);
+            if (sound_mixer()) {
+                if (id == 0x16) {
+                    sq.surround = (int32_t) args[0] < 0 ? 0 : args[0] > 32768 ? 32768 : (int32_t) args[0];
+                } else {
+                    sq.master_pan = (int32_t) args[0] < 0 ? -1 : args[0] > 127 ? 127 : (int32_t) args[0];
+                }
+                for (unsigned no = 0; no < CHANNELS; no++) {
+                    hw_audio_mix(no);
+                }
+            }
+            break;
+        case 0x17: /* SND_SetMasterVolume */
+            sound_advance(sq.now);
+            if (sound_mixer()) {
+                sound_mixer()->master = args[0] & 127;
+            }
+            break;
+        case 0x19: /* SND_SetOutputSelector: arguments 2/3 are hardware mixer exclusions */
+            sound_advance(sq.now);
+            if (sound_mixer()) {
+                sound_mixer()->left = args[0] & 3;
+                sound_mixer()->right = args[1] & 3;
+                sound_mixer()->exclude = (args[2] ? 1u << 1 : 0) | (args[3] ? 1u << 3 : 0);
+            }
+            break;
+        default: /* commands outside the supported SDK set */
             break;
     }
 }
@@ -2206,17 +2390,45 @@ void sequencer_after_list(uint32_t shared_work)
 void sequencer_advance(uint32_t shared_work)
 {
     sq.shared_work = shared_work;
-    while (io_cycles() >= sq.next_period) {
-        pass_at(sq.next_period);
-        sq.next_period += PERIOD_CYCLES;
-        sq.periods++;
-        channel_sync();
-        thread_pass(1);
+    for (;;) {
+        uint64_t next = sq.next_period;
+        int alarm = -1;
+        for (unsigned no = 0; no < 8; no++) {
+            if (sq.alarms[no].active && sq.alarms[no].next < next) {
+                next = sq.alarms[no].next;
+                alarm = (int) no;
+            }
+        }
+        if (next > io_cycles()) {
+            break;
+        }
+        pass_at(next);
+        if (alarm >= 0) {
+            /* The ARM7 alarm's tag-7 payload wakes the game's capture-effect thread.
+             * Capture RAM must be up to date before the ARM9 can process that buffer. */
+            sound_advance(sq.now);
+            uint32_t payload = (uint32_t) alarm | sq.alarms[alarm].tag << 8;
+            if (!io_fifo_push_to_arm9(payload << 6 | 7)) {
+                break;
+            }
+            if (sq.alarms[alarm].period == 0) {
+                sq.alarms[alarm].active = 0;
+            } else {
+                sq.alarms[alarm].next += sq.alarms[alarm].period;
+            }
+        } else {
+            sq.next_period += PERIOD_CYCLES;
+            sq.periods++;
+            channel_sync();
+            thread_pass(1);
+        }
     }
+    sound_advance(io_cycles());
 }
 
 void sequencer_report(FILE *out)
 {
+    sound_report(out);
     if (!sq.on) {
         return;
     }

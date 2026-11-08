@@ -71,15 +71,11 @@ the original is kept as `SAVE.bak`. `--read-only` never writes; no other file is
 
 The clock is the PC's (`--rtc "YYYY-MM-DD HH:MM:SS"` starts it at a fixed moment instead).
 
-## Not there yet
+Sound is opt-in with `--sound`, including in Clean. It renders the sequence player's
+channels and the game's capture-buffer output path; `--audio-wav FILE` records emulated
+time for headless checks. See [sound.md](sound.md) for usage, validation and fidelity limits.
 
-- **Sound.** The ARM7 is simulated at its protocol (`runtime/arm7.c`): the sound driver's
-  command lists (PXI tag 7) are acknowledged, and nothing runs the sound hardware the ARM7
-  drives, so there is nothing to play. With `RUN_SEQUENCER=1` (`tools/run.py --sequencer`,
-  `runtime/sequencer.h`) the ARM7's sequence player runs the sequences' commands, tempo and
-  variables, which some of the game waits on (the end of K.K.'s show, the town tune editor's
-  playback), but takes no channel for a note. Sound needs the notes played on the DS's sixteen
-  sound channels, from the banks' instruments and wave archives.
+## Not there yet
 - **Linux.** The window is Win32 (`runtime/play.c`).
 - Wireless play (local and Wi-Fi) is not emulated, as in the headless runs.
 

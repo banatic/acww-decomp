@@ -2,7 +2,7 @@
  * players and their tracks, stepped by the sound driver's periodic alarm, and what they report
  * to the ARM9 (the shared work's player status and variables, and the driver's state on
  * request), and the channels the notes take, as far as the driver tracks them (when each ends).
- * No sound is made.
+ * Optional RUN_AUDIO/RUN_AUDIO_WAV output renders their hardware writes (sound.h).
  *
  * It is off unless RUN_SEQUENCER is set to a nonzero number (tools/run.py --sequencer). Off,
  * the ARM7 only counts the sound command lists (runtime/arm7.c), as before.

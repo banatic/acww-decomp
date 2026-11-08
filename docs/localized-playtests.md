@@ -107,3 +107,9 @@ files, outside the BMG conversion: for example, the paper popup and the shop's p
 use Korean item names. Their grammar attributes are also missing. Those need a separate resource/runtime correction. The original
 name capacities also limit longer translated speaker names. These are recorded failures,
 not scenarios silently treated as fully localized.
+
+Those recordings intentionally retain their original resource options. Subsequent optional
+changes address the observed [fixed-record names and longer transient buffers](localized-names.md)
+and the [audited fish capture archive](localized-captures.md). Enabling these changes can alter
+dialogue and fishing timing, so the old recording is not evidence of an identical replay with
+every newer option enabled. [Sound output](sound.md) is another independent runtime option.

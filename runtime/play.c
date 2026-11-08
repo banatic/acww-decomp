@@ -32,6 +32,7 @@
 #include "frame.h"
 #include "input.h"
 #include "run.h"
+#include "sound.h"
 
 /* The DS's frame: 263 lines of 2130 bus cycles at 33,513,982 Hz, about 59.8261 a second. */
 #define DS_CYCLES_PER_FRAME (263.0 * 2130.0)
@@ -65,7 +66,8 @@ static struct {
     char localized[8];
     char names[8];
     const char *rtc, *input, *language;
-    int reference, read_only, scale, background, unpaced;
+    int reference, read_only, scale, background, unpaced, audio;
+    const char *audio_wav;
     uint32_t stop_frame; /* 0: none */
 } opt;
 
@@ -82,6 +84,8 @@ static void usage(void)
                     "  --input FILE    also play an input recording (runtime/input.h), under the live input\n"
                     "  --scale N       the window's starting size: N times the DS's screens (default 2)\n"
                     "  --frames N      save and quit after N frames (for scripted checks)\n"
+                    "  --sound         render music, voices and effects to the Windows audio device\n"
+                    "  --audio-wav FILE record emulated-time audio to a new stereo WAV\n"
                     "  --fast          no pacing: as fast as the PC runs it (as with Tab held)\n"
                     "  --config FILE   the build's paths (default: the .cfg beside the program, from tools/play.py)\n"
                     "  ACWW_BACKGROUND=1 in the environment opens the window without taking the focus\n");
@@ -554,6 +558,7 @@ static void set_title(const char *text)
 
 static void pace(void)
 {
+    sound_fast(fast || opt.unpaced);
     int64_t start = now_ticks();
     if (next_tick == 0) {
         next_tick = (double) start;
@@ -656,6 +661,10 @@ int main(int argc, char **argv)
             opt.read_only = 1;
         } else if (strcmp(a, "--reference") == 0) {
             opt.reference = 1;
+        } else if (strcmp(a, "--sound") == 0) {
+            opt.audio = 1;
+        } else if (strcmp(a, "--audio-wav") == 0 && more) {
+            opt.audio_wav = argv[++i];
         } else if (strcmp(a, "--fast") == 0) {
             opt.unpaced = 1;
         } else if (strcmp(a, "--rtc") == 0 && more) {
@@ -721,6 +730,9 @@ int main(int argc, char **argv)
     _putenv_s("ACWW_GRAMMAR", opt.grammar);
     _putenv_s("ACWW_LOCALIZED", opt.localized);
     _putenv_s("ACWW_NAMES", opt.names);
+    _putenv_s("RUN_AUDIO", opt.audio ? "1" : "");
+    _putenv_s("RUN_AUDIO_WAV", opt.audio_wav ? opt.audio_wav : "");
+    _putenv_s("RUN_SEQUENCER", opt.audio || opt.audio_wav ? "1" : "");
     _putenv_s("RUN_LANGUAGE", opt.language ? opt.language : "");
     if (opt.language != NULL) {
         printf("play: firmware language %s\n", opt.language);
