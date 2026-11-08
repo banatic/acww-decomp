@@ -199,11 +199,31 @@ def bmg_shape(data: bytes) -> tuple[int, int, int]:
     return section_size, count, entry_size
 
 
-def convert_bmg(korean: bytes, european: bytes, grammar: dict[str, int], spanish_grammar: bool = False) -> bytes | None:
+def empty_tail_compatible(korean: bytes, european: bytes) -> bool:
+    """Only extra empty offset-only string entries may be dropped; no index is shifted."""
+    _, kr_count, kr_entry = bmg_shape(korean)
+    section_size, count, entry = bmg_shape(european)
+    if kr_entry != 4 or entry != 4 or count <= kr_count or european[0x10] != 1:
+        return False
+    source = european[0x20 + section_size + 8:]
+    for i in range(kr_count, count):
+        start, = struct.unpack_from("<I", european, 0x30 + i * entry)
+        end = struct.unpack_from("<I", european, 0x30 + (i + 1) * entry)[0] if i + 1 < count else len(source)
+        body = checked(source, start, end - start)
+        if not body or any(body):
+            return False
+    return True
+
+
+def convert_bmg(korean: bytes, european: bytes, grammar: dict[str, int], spanish_grammar: bool = False,
+                allow_empty_tail: bool = False) -> bytes | None:
     _, kr_count, kr_entry = bmg_shape(korean)
     section_size, count, entry = bmg_shape(european)
     if (kr_count, kr_entry) != (count, entry):
-        return None
+        if allow_empty_tail and empty_tail_compatible(korean, european):
+            count = kr_count
+        else:
+            return None
     if european[0x10] != 1 or korean[0x10] != 2:
         return None  # Unused Japanese remnants are not compatible with this UTF-16 reader.
     source = european[0x20 + section_size + 8:]
@@ -274,13 +294,19 @@ def generate(korean: bytes, european: bytes, language: str, latin_keyboard: bool
         raise ValueError("unsupported European ROM revision or dump")
     base, donor = Rom(korean), Rom(european)
     replacements, fallback, grammar = {}, [], {}
+    trimmed_empty_tails = []
     prefix = f"/script/{LANGUAGES[language]}/"
     for name, file in base.files.items():
         if not name.startswith("/script/KOR/"):
             continue
         target = prefix + name[len("/script/KOR/"):]
         try:
-            converted = convert_bmg(unpack(file.data), unpack(donor.files[target].data), grammar, spanish_grammar)
+            original = unpack(file.data)
+            translated = unpack(donor.files[target].data)
+            allow_tail = name.startswith("/script/KOR/string/")
+            converted = convert_bmg(original, translated, grammar, spanish_grammar, allow_empty_tail=allow_tail)
+            if converted is not None and allow_tail and bmg_shape(original)[1] != bmg_shape(translated)[1]:
+                trimmed_empty_tails.append(name)
         except ValueError as exc:
             raise ValueError(f"{name}: {exc}") from exc
         if converted is None:
@@ -327,6 +353,7 @@ def generate(korean: bytes, european: bytes, language: str, latin_keyboard: bool
               "grammar_first_form_tags": {} if spanish_grammar else grammar,
               "grammar_preserved_tags": grammar if spanish_grammar else {},
               "spanish_grammar": spanish_grammar,
+              "trimmed_empty_tail_files": trimmed_empty_tails,
               "executable_modules_unchanged": len(original_modules) - int(latin_keyboard),
               "latin_keyboard": keyboard_report}
     return result, report

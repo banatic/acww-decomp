@@ -51,10 +51,14 @@ and using the European glyphs for Western characters, including accents. Compres
 font images are unpacked: the Korean glyph renderer reads its image file directly. The four
 compatible title graphics are imported from the chosen European language too.
 
-The Spanish build replaces 1,657 script files, twelve font files and four title files. It
-deliberately retains 134 original script files: 43 have different message counts, and 91 have
-incompatible legacy encodings. Their paths are listed in `report.json`. It does not guess how
-to renumber their dialogue branches. Even files with equal counts still need broader semantic
+The Spanish build replaces 1,659 script files, twelve font files and four title files. Two
+string archives (`st_password` and `st_sweet`) have extra empty European tail entries; these
+can be dropped without shifting any of the Korean indices. It deliberately retains 132 original
+script files: 41 still require message-index mapping, 90 are legacy archives whose contents
+are identical across all five European languages, and one belongs to the documented unreachable
+test actor. Their paths are listed in `report.json`; [localization-audit.md](localization-audit.md)
+describes the evidence and the limits of that classification. It does not guess how to renumber
+dialogue branches. Even files with equal counts still need broader semantic
 verification: matching counts do not prove every regional script uses the same indices.
 
 European group-11 grammar tags do not have equivalent implementations in the Korean game.
