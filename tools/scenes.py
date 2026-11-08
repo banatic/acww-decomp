@@ -2794,6 +2794,13 @@ scene("visit-shops", "host-tools", 40000,
       "player), sells the axe and asks after the turnips; then into the Able Sisters' shop, where it talks "
       "to Mabel and Sable, and out again",
       recording="visit-shops-host", peer=("guest-tools", "visit-shops-guest"))
+scene("visit-villager", "host-tools", 43200,
+      [2600, 12400, 24516, 26300, 28900, 33400, 37000, 39999, 40400, 41000, 41900, 42500, 43199],
+      frames(39800, 43200, 100),
+      "two consoles: visit-shops, then the host walks to a villager's house, reads its sign and walks in, "
+      "the visitor follows it in and talks to the villager (on the host the villager talks with the other "
+      "console's player: its wait and the talk's memories sent over the session)",
+      recording="visit-villager-host", peer=("guest-tools", "visit-villager-guest"))
 scene("visit-pitfall", "host-tools", 36771,
       [2600, 12400, 24516, 26300, 26700, 27200, 28400, 29300, 29700, 31097, 32400, 33848, 35500, 36770],
       frames(26300, 36771, 100),
