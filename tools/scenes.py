@@ -2801,6 +2801,15 @@ scene("visit-villager", "host-tools", 43200,
       "the visitor follows it in and talks to the villager (on the host the villager talks with the other "
       "console's player: its wait and the talk's memories sent over the session)",
       recording="visit-villager-host", peer=("guest-tools", "visit-villager-guest"))
+scene("visit-museum", "host-tools", 43000,
+      [2600, 12400, 24516, 26300, 27100, 29000, 30600, 33000, 36000, 38500, 39500, 40900, 41700, 42999],
+      frames(27100, 43000, 200),
+      "two consoles: visit-chat's play on; the visitor runs into the museum first and the host after it, "
+      "the visitor talks to Blathers (on the host he talks with the other console's player), both go down "
+      "to the cafe, where the visitor talks to Brewster, and up again, where the host talks to Blathers; "
+      "the visitor goes up to the observatory, the host is turned back at its stairs and goes up once "
+      "the visitor has come down",
+      recording="visit-museum-host", peer=("guest-tools", "visit-museum-guest"))
 scene("visit-pitfall", "host-tools", 36771,
       [2600, 12400, 24516, 26300, 26700, 27200, 28400, 29300, 29700, 31097, 32400, 33848, 35500, 36770],
       frames(26300, 36771, 100),
