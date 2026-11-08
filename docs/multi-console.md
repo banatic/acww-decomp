@@ -251,6 +251,17 @@ open: the visitor talking to a villager in its house diverges with Native code a
 (the send side's MP timing, as link5's receive side), and the room objects' switch state still
 needs pieces of the other classes in the host's house.
 
+Done (link7): `visit-villager` (visit-shops, then the visitor follows the host into a villager's
+house and talks to the villager: its wait and the talk with the other console's player). The
+divergence link6 left open was the credit check of Session_Update: SessionNet_PeersHaveCredit
+reads the credits the receive callback (an interrupt) gives back, and Native code, run late,
+saw a credit that came in after the Reference's check and sent the records a frame early; it
+stays Reference, as Session_ProcessReceived does. `visit-museum` (both players in the museum, the
+cafe and the observatory: Blathers' and Brewster's talks with the other console's player, and
+the observatory's claim, refused to the host while the visitor is up there). The museum's door
+takes a player in only at a run; walking into it leaves the player in the doorway, which is what
+kept link6's visitor out. Left open: the room objects' switch state, as above.
+
 Out of range: a recording's NORADIO (runtime/input.h) holds a console's wireless out of range.
 The consoles still exchange a message each frame, so they stay in step, but the one out of
 range sends nothing and takes in nothing, and the other hears nothing from it. The scene
