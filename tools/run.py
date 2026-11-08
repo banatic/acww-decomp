@@ -128,7 +128,7 @@ WINDOWS = os.name == "nt"
 OUT = (pathlib.Path(os.environ["ACWW_RUNTIME_OUT"]) if os.environ.get("ACWW_RUNTIME_OUT")
        else C.BUILD / ("runtime" if WINDOWS else "runtime-linux"))
 RUNTIME = C.ROOT / "runtime"
-ROM = C.ROOT / "extract" / "adm-kr.nds"
+ROM = C.ROM
 NATIVE = C.BUILD / "native" / ("windows" if WINDOWS else "linux")
 KEPT = RUNTIME / "native-reference.txt"
 HELPERS = RUNTIME / "compiler-helpers.txt"

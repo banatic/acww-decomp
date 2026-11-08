@@ -10,7 +10,8 @@ sources in src/, include/ or clean/ also runs the function-level check and the t
 both ways, the scenes whose functions it touches and the driven checks (tools/driven.py); a
 change that adds or changes driven checks runs those. Anything else (runtime/, tools/, config/)
 runs every check. The seed save comes from ACWW_SCENE_SEED, as for tools/scenes.py. Each step's
-output goes to build/adm-kr/gate/<step>.log; the exit status is 1 when a step failed.
+output goes to build/<version>/gate/<step>.log (build/adm-kr/gate by default, tools/versions.py);
+the exit status is 1 when a step failed.
 
 The two scene passes and the chain of the function-level check and the recordings run at the
 same time: they build and run in directories of their own (tools/scenes.py locks its runtime
@@ -36,9 +37,10 @@ PY = sys.executable
 RTC = "2005-11-23 12:00:00"
 JOBS = os.environ.get("ACWW_GATE_JOBS") or str(max(1, (os.cpu_count() or 4) * 3 // 8))
 VERIFY = os.environ.get("ACWW_GATE_VERIFY") or "2"  # scenes a pass runs its Reference again for
+REC = C.versions.rel(C.RECORDINGS)  # runtime/recordings for adm-kr (tools/versions.py)
 RECORDINGS = [
-    ("title", "runtime/recordings/title-start", 1300, "100,390,500,700,1000,1299"),
-    ("new-game", "runtime/recordings/new-game", 13760, "1299,2600,7200,9750,12100,13300,13759"),
+    ("title", f"{REC}/title-start", 1300, "100,390,500,700,1000,1299"),
+    ("new-game", f"{REC}/new-game", 13760, "1299,2600,7200,9750,12100,13300,13759"),
 ]
 
 
@@ -86,7 +88,7 @@ def plan(base: str | None) -> list[list[list[Step]]]:
     together = ([checks] if funcs else []) + (scene_steps(names) if names else [])
     # the driven checks (tools/driven.py): every one when a function changed, else those changed
     changed = sorted(pathlib.PurePosixPath(p).stem for p in paths
-                     if p.startswith("runtime/recordings/driven/") and (C.ROOT / p).exists())
+                     if p.startswith(f"{REC}/driven/") and (C.ROOT / p).exists())
     if funcs or changed:
         together.append(driven([] if funcs else changed))
     return [native, *([together] if together else []), [[lint]]]

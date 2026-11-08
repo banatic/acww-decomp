@@ -159,7 +159,7 @@ def functions_of(paths: list[str], base: str = "main") -> tuple[set[tuple[str, i
         path = C.ROOT / rel
         if rel.startswith(QUIET) or rel.endswith(".md"):
             continue
-        if rel.startswith("runtime/recordings/scenes/"):
+        if rel.startswith(f"{C.versions.rel(C.RECORDINGS)}/scenes/"):
             scenes.add(pathlib.PurePosixPath(rel).stem)
             continue
         if rel.startswith("runtime/recordings/"):

@@ -2,9 +2,10 @@
 
     python tools/extract.py            # finds the .nds in extract/ and checks its SHA-1
 
-Writes build/adm-kr/rom/<module>.bin (decompressed, as loaded in RAM) and modules.json
-(load address, code size and .bss size of each module). The main module and overlays may be
-BLZ-compressed; autoloads (ITCM, DTCM, ...) follow the main module.
+The ROM is extract/<version>.nds (tools/versions.py; extract/adm-kr.nds by default), else the
+only .nds in extract/. Writes build/<version>/rom/<module>.bin (decompressed, as loaded in RAM)
+and modules.json (load address, code size and .bss size of each module). The main module and
+overlays may be BLZ-compressed; autoloads (ITCM, DTCM, ...) follow the main module.
 """
 
 from __future__ import annotations
@@ -15,10 +16,12 @@ import pathlib
 import struct
 import sys
 
+import versions
+
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-EXTRACT = ROOT / "extract"
-OUT = ROOT / "build" / "adm-kr" / "rom"
-SHA1_FILE = ROOT / "adm-kr.sha1"
+EXTRACT = versions.EXTRACT
+OUT = versions.BUILD / "rom"
+SHA1_FILE = versions.SHA1_FILE
 
 ARM9_BUILD_INFO_MAGIC = bytes.fromhex("2106c0de dec00621".replace(" ", ""))
 
@@ -59,6 +62,8 @@ def blz_decompress(data: bytes) -> bytes:
 
 
 def find_rom() -> pathlib.Path:
+    if versions.ROM.is_file():
+        return versions.ROM
     roms = sorted(EXTRACT.glob("*.nds"))
     if len(roms) != 1:
         sys.exit(f"put exactly one .nds file in {EXTRACT} (found {len(roms)})")

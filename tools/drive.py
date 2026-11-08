@@ -230,7 +230,7 @@ def serve(args) -> None:
             return None
         rec = pathlib.Path(name)
         if not rec.is_file():
-            rec = C.ROOT / "runtime" / "recordings" / "scenes" / f"{name}.txt"
+            rec = C.RECORDINGS / "scenes" / f"{name}.txt"
         lines = [ln for ln in rec.read_text().splitlines()
                  if ln.strip() and (ln.startswith("#") or not args.until or int(ln.split()[0]) < args.until)]
         out.write_text("\n".join(lines) + "\n")

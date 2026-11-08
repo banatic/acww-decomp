@@ -62,7 +62,7 @@ CLEAN = Map("Clean code", ("function", "run", "driven", "read", "none"),
             {"function": "#f0b429", "run": "#a371f7", "driven": "#5e7bd6", "read": "#323b46", "none": "#1f252c"},
             {"function": "Checked by function", "run": "Checked in a run", "driven": "Checked by a driven call",
              "read": "Read only", "none": "No Clean version"}, {"none", "driven"})
-DRIVEN = C.ROOT / "runtime" / "recordings" / "scenes" / "clean-driven.txt"
+DRIVEN = C.RECORDINGS / "scenes" / "clean-driven.txt"
 BG, CARD, FG, MUTED = "#0d1117", "#161b22", "#e6edf3", "#8b949e"
 
 W = 960
@@ -315,7 +315,7 @@ def merge_ran(paths: list[str]) -> None:
             ran[key] = ran.get(key, False) or bool(row.get("ran", True))
     rows = [{"module": m, "address": a, "ran": r} for (m, a), r in sorted(ran.items())]
     (C.BUILD / "clean-ran.json").write_text(json.dumps(rows, indent=1) + "\n", newline="\n")
-    print(f"build/adm-kr/clean-ran.json: {sum(ran.values())} of {len(ran)} Clean functions ran")
+    print(f"build/{C.VERSION}/clean-ran.json: {sum(ran.values())} of {len(ran)} Clean functions ran")
 
 
 def main() -> None:

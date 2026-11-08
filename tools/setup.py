@@ -38,13 +38,17 @@ import subprocess
 import sys
 import time
 
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import versions  # noqa: E402
+
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-EXTRACT = ROOT / "extract"
-TARGET = EXTRACT / "adm-kr.nds"
-WANT_SHA1 = (ROOT / "adm-kr.sha1").read_text(encoding="utf-8").split()[0].lower()
+EXTRACT = versions.EXTRACT
+TARGET = versions.ROM
+WANT_SHA1 = versions.SHA1_FILE.read_text(encoding="utf-8").split()[0].lower()
 FULL_SIZE = 32 << 20           # the cartridge: 256 Mbit
-USED_SIZE = 0x1F533C4          # the header's used size (0x80)
-TRIMMED_SHA1 = "f987baf1db78b9b8c92a98877c62df71f9d049d3"
+RELEASE = versions.info()
+USED_SIZE = RELEASE.used_size  # the header's used size (0x80)
+TRIMMED_SHA1 = RELEASE.trimmed_sha1
 
 # Animal Crossing: Wild World releases (game code -> region), to say what a wrong ROM is.
 RELEASES = {"ADME": "North America", "ADMJ": "Japan", "ADMP": "Europe", "ADMK": "Korea",
@@ -86,12 +90,14 @@ def check_rom(path: pathlib.Path) -> bytes:
     revision = data[0x1E]
     if code[:3] != "ADM":
         fail(f"{path.name}: the header names '{title}' ({code}), not Animal Crossing: Wild World",
-             "use a dump of Animal Crossing: Wild World (Korea, ADMK)")
-    if code != "ADMK":
-        fail(f"{path.name}: the {RELEASES.get(code, code)} release ({code}); this project is the Korean one (ADMK)",
-             "use a dump of the Korean cartridge")
-    if revision != 0:
-        fail(f"{path.name}: revision {revision}; the project's ROM is revision 0", "use a revision 0 dump")
+             f"use a dump of Animal Crossing: Wild World ({RELEASE.region}, {RELEASE.game_code})")
+    if code != RELEASE.game_code:
+        fail(f"{path.name}: the {RELEASES.get(code, code)} release ({code}); this project is the "
+             f"{RELEASE.adjective} one ({RELEASE.game_code})",
+             f"use a dump of the {RELEASE.adjective} cartridge")
+    if revision != RELEASE.revision:
+        fail(f"{path.name}: revision {revision}; the project's ROM is revision {RELEASE.revision}",
+             f"use a revision {RELEASE.revision} dump")
     sha1 = hashlib.sha1(data).hexdigest()
     if sha1 == WANT_SHA1:
         return data
@@ -101,7 +107,8 @@ def check_rom(path: pathlib.Path) -> bytes:
     if len(data) > FULL_SIZE or (len(data) >= USED_SIZE and hashlib.sha1(data[:USED_SIZE]).hexdigest() == TRIMMED_SHA1):
         print(f"setup: {path.name}'s padding differs from the cartridge's; keeping the used part, padded with 0xff")
         return data[:USED_SIZE] + b"\xff" * (FULL_SIZE - USED_SIZE)
-    fail(f"{path.name}: SHA-1 {sha1}, expected {WANT_SHA1} (header ADMK, revision 0: a bad or modified dump)",
+    fail(f"{path.name}: SHA-1 {sha1}, expected {WANT_SHA1} "
+         f"(header {RELEASE.game_code}, revision {RELEASE.revision}: a bad or modified dump)",
          "dump the cartridge again; patched or translated ROMs are not supported")
     return b""
 
@@ -141,7 +148,7 @@ def self_test(quick: bool) -> bool:
     logs = ROOT / "build" / "setup"
     ok = True
     for name, frames in RECORDINGS[:1] if quick else RECORDINGS:
-        rec = f"runtime/recordings/{name}"
+        rec = f"{versions.rel(versions.RECORDINGS)}/{name}"
         for form, extra in (("interpreter", []), ("matching sources", ["--native=all"]),
                             ("Clean rewrites", ["--native=all", "--clean"])):
             start = time.time()

@@ -153,7 +153,7 @@ def unit_tests() -> None:
                         "-o", str(exe)], capture_output=True, text=True)
     if p.returncode != 0:
         raise SystemExit(p.stdout + p.stderr)
-    p = subprocess.run([str(exe)], cwd=C.ROOT, capture_output=True, text=True)
+    p = subprocess.run([str(exe), C.versions.rel(C.ROM_DIR)], cwd=C.ROOT, capture_output=True, text=True)
     print(p.stdout.strip().splitlines()[-1] if p.stdout.strip() else p.stderr)
     if p.returncode != 0:
         raise SystemExit(p.stdout + p.stderr)
@@ -345,7 +345,7 @@ def write_checked_list(agree: pathlib.Path) -> None:
         rows.add((module, int(address, 16) & ~1))
     out = [{"module": module, "address": f"{address:08x}"} for module, address in sorted(rows)]
     (C.BUILD / "clean-checked.json").write_text(json.dumps(out, indent=1) + "\n", newline="\n")
-    print(f"{len(out)} Clean functions agree: build/adm-kr/clean-checked.json")
+    print(f"{len(out)} Clean functions agree: build/{C.VERSION}/clean-checked.json")
 
 
 if __name__ == "__main__":

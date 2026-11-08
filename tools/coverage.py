@@ -154,7 +154,7 @@ def unreachable_ran(syms, plan: pathlib.Path = C.ROOT / "docs" / "scene-plan-gro
     """The plan's unreachable groups that take a function a committed scene enters (by
     runtime/recordings/scenes/clean-entered.txt, which needs no scene run), one line a group."""
     entered = set()
-    for line in (C.ROOT / "runtime" / "recordings" / "scenes" / "clean-entered.txt").read_text().splitlines():
+    for line in (C.RECORDINGS / "scenes" / "clean-entered.txt").read_text().splitlines():
         parts = line.split()
         if len(parts) == 2 and not line.startswith("#"):
             entered.add((parts[0], int(parts[1], 16)))
@@ -256,7 +256,7 @@ def main() -> None:
 
     # checked by a driven call (tools/driven.py --record): below a run, above reading; with the
     # runs, the goal's checked set (run or driven call)
-    driven_list = C.ROOT / "runtime" / "recordings" / "scenes" / "clean-driven.txt"
+    driven_list = C.RECORDINGS / "scenes" / "clean-driven.txt"
     driven = {(m, int(a, 16)) for m, a in (line.split()[:2] for line in
                                             (driven_list.read_text().splitlines() if driven_list.exists() else [])
                                             if line.strip() and not line.startswith("#"))}

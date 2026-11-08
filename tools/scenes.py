@@ -61,7 +61,7 @@ import time
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import common as C  # noqa: E402
 
-RECORDINGS = C.ROOT / "runtime" / "recordings" / "scenes"
+RECORDINGS = C.RECORDINGS / "scenes"
 OUT = (pathlib.Path(os.environ["ACWW_RUNTIME_OUT"]) if os.environ.get("ACWW_RUNTIME_OUT")
        else C.BUILD / ("runtime" if os.name == "nt" else "runtime-linux")) / "scenes"
 SEED_SHA256 = "360e704aedca89b1cc70d17a1e922b15da3d48515e9299b858f6c2b9e703b0fc"

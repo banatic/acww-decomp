@@ -15,15 +15,21 @@ import subprocess
 import threading
 import time
 
+import versions
+
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-CONFIG = ROOT / "config" / "adm-kr" / "arm9"
+# The ROM version the tools work on (tools/versions.py: --version, ACWW_VERSION, else adm-kr)
+VERSION = versions.NAME
+CONFIG = versions.CONFIG
 SRC = ROOT / "src"
 # Library code (NitroSDK, NitroSystem, ...) is kept out of the game tree, under
 # libs/<Package>/<module>/. Both trees hold sources in the same format.
 LIBS = ROOT / "libs"
 SOURCE_ROOTS = (SRC, LIBS)
 INCLUDE = ROOT / "include"
-BUILD = ROOT / "build" / "adm-kr"
+BUILD = versions.BUILD
+ROM = versions.ROM
+RECORDINGS = versions.RECORDINGS
 ROM_DIR = BUILD / "rom"
 OBJ_DIR = BUILD / "obj"
 WORK_DIR = BUILD / "mwcc-cwd"

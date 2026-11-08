@@ -1103,10 +1103,11 @@ def write_config(entries: dict[str, list]) -> None:
     up = "../" * len(CFG.relative_to(C.ROOT).parts)
     text = (CFG / "config.yaml").read_text()
     text = re.sub(r"\.\./\.\./\.\./", up, text)
-    text = re.sub(r"^build_path: .*$", f"build_path: {up}build/adm-kr/obj", text, flags=re.M)
-    text = re.sub(r"^delinks_path: .*$", f"delinks_path: {up}build/adm-kr/link/delinks", text, flags=re.M)
+    build = f"{up}build/{C.VERSION}"
+    text = re.sub(r"^build_path: .*$", f"build_path: {build}/obj", text, flags=re.M)
+    text = re.sub(r"^delinks_path: .*$", f"delinks_path: {build}/link/delinks", text, flags=re.M)
     # mwldarm writes the modules to <build_path>/build
-    text = text.replace(f"{up}build/adm-kr/build/", f"{up}build/adm-kr/obj/build/")
+    text = text.replace(f"{build}/build/", f"{build}/obj/build/")
     (CFG / "config.yaml").write_text(text, newline="\n")
     rows = collections.defaultdict(list)  # module -> [(first address, file, {section: range})]
     for mod, es in entries.items():
@@ -1142,14 +1143,15 @@ def run(cmd: list[str], log: str) -> None:
     if p.returncode != 0:
         tail = [line for line in (p.stdout + p.stderr).splitlines()
                 if "multiply defined" not in line and "Ignoring the definition" not in line]
-        raise SystemExit(f"{cmd[0]} failed (build/adm-kr/link/{log}):\n" + "\n".join(tail[-15:]))
+        raise SystemExit(f"{cmd[0]} failed (build/{C.VERSION}/link/{log}):\n" + "\n".join(tail[-15:]))
 
 
 def link(objects: dict[str, bytes]) -> None:
     """`objects`: source -> the object to link for it in place of its compiled one."""
     cfg = str(CFG / "config.yaml")
-    if not (C.ROOT / "extract" / "adm-kr" / "config.yaml").exists():
-        run([str(DSD), "rom", "extract", "-r", "extract/adm-kr.nds", "-o", "extract/adm-kr"],
+    tree = C.versions.ROM_TREE
+    if not (tree / "config.yaml").exists():
+        run([str(DSD), "rom", "extract", "-r", C.versions.rel(C.ROM), "-o", C.versions.rel(tree)],
             "extract.log")
     run([str(DSD), "delink", "-c", cfg], "delink.log")
     run([str(DSD), "lcf", "-c", cfg], "lcf.log")

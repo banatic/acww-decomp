@@ -63,9 +63,9 @@ import common as C  # noqa: E402
 import coverage  # noqa: E402
 import scenes  # noqa: E402
 
-CHECKS = C.ROOT / "runtime" / "recordings" / "driven"
-ENTERED = C.ROOT / "runtime" / "recordings" / "scenes" / "clean-entered.txt"
-DRIVEN = C.ROOT / "runtime" / "recordings" / "scenes" / "clean-driven.txt"
+CHECKS = C.RECORDINGS / "driven"
+ENTERED = C.RECORDINGS / "scenes" / "clean-entered.txt"
+DRIVEN = C.RECORDINGS / "scenes" / "clean-driven.txt"
 OUT = scenes.OUT.parent / "driven"
 SNAPSHOT = 900000000  # runtime/driven.h, DRIVEN_SNAPSHOT
 # where the calls are made: OS_SleepThread entered with the main loop's queue (main/main_loop.c,
