@@ -73,7 +73,49 @@ SNAPSHOT = 900000000  # runtime/driven.h, DRIVEN_SNAPSHOT
 OS_SLEEP_THREAD, MAIN_FRAME_QUEUE = 0x02114C6C, 0x021CFB98
 HEAP_SET_CURRENT = 0x020E9A08  # Heap_SetCurrent (autoload_2/heap.c)
 HEAP_VTABLES = (0x0213E5B0, 0x0213E608, 0x0213E660)  # the expanded, frame and base heaps' vtables
+HEAP_ALLOC = 0x020E9948  # Heap_Alloc (autoload_2/heap.c): a check's scratch block (docs/verification.md)
 RUN_LINES = ("arm", "call", "vcall", "end")
+
+
+def target_symbols(syms, target: int, guard: int, value: int) -> list:
+    """The function symbols a call's target names: of the module whose image holds the guard's
+    word (an overlay's function is guarded by its own words), else of the resident modules."""
+    out = []
+    for module, ss in syms.by_module.items():
+        if guard:
+            image, base = module_image(module) if module in C.modules() else (b"", 0)
+            if not (0 <= guard - base <= len(image) - 4) or struct.unpack_from("<I", image, guard - base)[0] != value:
+                continue
+        elif module not in C.RESIDENT:
+            continue
+        out += [s for s in ss if s.kind == "function" and (s.address & ~1) == target]
+    return out
+
+
+def scratch_as_this(lines: list[str]) -> list[str]:
+    """The calls that would take a scratch block (an rN naming a Heap_Alloc of the same frame's
+    calls) as `this`: as r0 of a vcall, or of a call to a C++ member function (a mangled name,
+    _ZN or _ZThn). A scratch block is only ever an argument or an output buffer."""
+    syms = C.symbol_table(C.modules())
+    out = []
+    made: list[tuple[int, int]] = []  # (frame, target) of each call so far
+    for line in lines:
+        body = line.split("#", 1)[0].split()
+        if body[0] not in ("call", "vcall"):
+            continue
+        frame, vcall = int(body[1]), body[0] == "vcall"
+        target = 0 if vcall else int(body[2], 16) & ~1
+        r0 = body[4] if vcall else body[3]
+        if r0.startswith("r"):
+            moment = [t for f, t in made if f == frame]
+            back = int(r0[1:])
+            alloc = back <= len(moment) and moment[-back] == HEAP_ALLOC
+            member = alloc and not vcall and any(s.name.startswith(("_ZN", "_ZThn"))
+                                                 for s in target_symbols(syms, target, int(body[7], 16), int(body[8], 16)))
+            if alloc and (vcall or member):
+                out.append(line)
+        made.append((frame, target))
+    return out
 
 
 def read_check(name: str) -> dict:
@@ -97,6 +139,9 @@ def read_check(name: str) -> dict:
             raise SystemExit(f"{name}: unknown line {line!r}")
     if out["scene"] not in scenes.SCENES or not out["frames"]:
         raise SystemExit(f"{name}: needs a scene of tools/scenes.py and its frames")
+    bad = scratch_as_this(out["lines"])
+    if bad:
+        raise SystemExit(f"{name}: a scratch block is never `this`: {bad[0]}")
     return out
 
 

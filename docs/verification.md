@@ -67,6 +67,18 @@ listed in `runtime/recordings/scenes/clean-driven.txt` (`tools/driven.py --recor
 Clean progress map shows them as "checked by a driven call", below "checked in a run"; its
 legend and `tools/coverage.py` also give the two together, "checked (run or driven call)".
 
+A function that takes a buffer (a vector it reads and writes, a request, an answer it writes
+through a pointer) gets a scratch block of the game's own heap: a call to Heap_Alloc on a live
+Heap of the game, its result passed on as `rN` (the r0 of the call N before, runtime/driven.h),
+filled by the game's own MI_CpuFill8, memcpy or vector functions from values of the run (a live
+triangle's corner, its normal), handed to the target as an argument, and given back with
+Heap_Free; the allocations and frees run in both passes like the other calls, so the block is
+at the same address with the same contents in both. A scratch block is only an argument or an
+output buffer, never `this`: the object a call is made on is always one the game made.
+tools/driven.py refuses a check that passes one as r0 of a vcall or of a C++ member function
+(scratch_as_this); a C function whose first parameter is its object is held to the rule by the
+check's comment, which names the live object.
+
 A function whose ROM code is a lone `bx lr` (an empty function, declared void) leaves its first
 argument in r0, and some callers use it. Its Clean code runs as it is, on every call, and counts
 like any other: the interpreter's calls keep r0 as the ROM's code leaves it (native_run.c,
