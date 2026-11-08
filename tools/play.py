@@ -34,7 +34,8 @@ FORMS = {"clean": "acww-play", "native": "acww-play-native", "reference": "acww-
 
 
 def build(form: str, localized_rom: pathlib.Path | None = None, language: str | None = None,
-          spanish_grammar: bool = False, localized_names: bool = False) -> pathlib.Path:
+          spanish_grammar: bool = False, localized_names: bool = False,
+          localized_captures: bool = False) -> pathlib.Path:
     """The program for `form` and its .cfg; returns the program's path."""
     if not run.WINDOWS:
         raise SystemExit("the play front end is written for Windows (runtime/play.c)")
@@ -47,6 +48,8 @@ def build(form: str, localized_rom: pathlib.Path | None = None, language: str | 
         name += "-grammar"
     if localized_names:
         name += "-names"
+    if localized_captures:
+        name += "-captures"
     manifest, table = run.generate()
     policy = ""
     if form == "reference":
@@ -87,6 +90,7 @@ def main() -> None:
     ap.add_argument("--latin-keyboard", action="store_true", help="Latin accent keys (requires --localize)")
     ap.add_argument("--spanish-grammar", action="store_true", help="dynamic Spanish grammar (requires Clean/es)")
     ap.add_argument("--localized-names", action="store_true", help="Western item names and metadata (requires Clean)")
+    ap.add_argument("--localized-captures", action="store_true", help="audited European fish capture messages")
     args, rest = ap.parse_known_args()
     if args.help:
         print(__doc__)
@@ -102,15 +106,16 @@ def main() -> None:
         import localize_clean
         try:
             localized_rom, report = localize_clean.prepare(run.ROM, args.european, args.localize,
-                                                         args.latin_keyboard, args.spanish_grammar, args.localized_names)
+                                                         args.latin_keyboard, args.spanish_grammar, args.localized_names,
+                                                         args.localized_captures)
         except (ValueError, OSError, KeyError) as exc:
             ap.error(str(exc))
         print(f"localized resources: {report['replaced_files']} replaced, "
               f"{len(report['fallback_files'])} original files kept; see {localized_rom.parent / 'report.json'}",
               flush=True)
-    elif args.european is not None or args.latin_keyboard or args.spanish_grammar or args.localized_names:
-        ap.error("--european, --latin-keyboard, --spanish-grammar and --localized-names require --localize")
-    exe = build(args.form, localized_rom, args.localize, args.spanish_grammar, args.localized_names)
+    elif args.european is not None or args.latin_keyboard or args.spanish_grammar or args.localized_names or args.localized_captures:
+        ap.error("European resource options require --localize")
+    exe = build(args.form, localized_rom, args.localize, args.spanish_grammar, args.localized_names, args.localized_captures)
     if args.build_only:
         print(exe)
         return

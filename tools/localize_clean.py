@@ -215,13 +215,29 @@ def empty_tail_compatible(korean: bytes, european: bytes) -> bool:
     return True
 
 
+FISH_CAPTURE_ARCHIVE = "/script/KOR/message/obj/etc/getfish_.bmg"
+
+
+def fish_capture_compatible(korean: bytes, european: bytes) -> bool:
+    """The audited 65 common capture messages plus two empty original Korean tail rows."""
+    kr_size, kr_count, kr_entry = bmg_shape(korean)
+    _, count, entry = bmg_shape(european)
+    if (kr_count, kr_entry, count, entry, korean[0x10], european[0x10]) != (67, 12, 65, 12, 2, 1):
+        return False
+    data = korean[0x20 + kr_size + 8:]
+    return all(checked(data, struct.unpack_from("<I", korean, 0x30 + i * kr_entry)[0], 2) == b"\0\0"
+               for i in range(count, kr_count))
+
+
 def convert_bmg(korean: bytes, european: bytes, grammar: dict[str, int], spanish_grammar: bool = False,
-                allow_empty_tail: bool = False) -> bytes | None:
+                allow_empty_tail: bool = False, allow_fish_tail: bool = False) -> bytes | None:
     _, kr_count, kr_entry = bmg_shape(korean)
     section_size, count, entry = bmg_shape(european)
     if (kr_count, kr_entry) != (count, entry):
         if allow_empty_tail and empty_tail_compatible(korean, european):
             count = kr_count
+        elif allow_fish_tail and fish_capture_compatible(korean, european):
+            pass  # Read the 65 donor rows; retain all 67 original indices below.
         else:
             return None
     if european[0x10] != 1 or korean[0x10] != 2:
@@ -235,12 +251,13 @@ def convert_bmg(korean: bytes, european: bytes, grammar: dict[str, int], spanish
     for old_offset, next_offset in zip(boundaries, boundaries[1:]):
         cache[old_offset] = len(payload)
         payload.extend(convert_text(checked(source, old_offset, next_offset - old_offset), grammar, spanish_grammar))
-    for i in range(count):
-        old_offset = offsets[i]
-        entries.extend(struct.pack("<I", cache[old_offset]))
+    output_count = kr_count if allow_fish_tail and kr_count > count else count
+    for i in range(output_count):
+        offset = cache[offsets[i]] if i < count else 0
+        entries.extend(struct.pack("<I", offset))
         # Keep the base game's attributes and message indices; only replace text data.
         entries.extend(korean[0x34 + i * entry:0x30 + (i + 1) * entry])
-    info = align(b"INF1" + b"\0" * 4 + struct.pack("<HHI", count, entry, 0) + entries)
+    info = align(b"INF1" + b"\0" * 4 + struct.pack("<HHI", output_count, entry, 0) + entries)
     info = info[:4] + struct.pack("<I", len(info)) + info[8:]
     data = align(b"DAT1" + b"\0" * 4 + payload)
     data = data[:4] + struct.pack("<I", len(data)) + data[8:]
@@ -308,7 +325,8 @@ def extend_name_records(korean: bytes, european: bytes, original_size: int, dono
 
 
 def generate(korean: bytes, european: bytes, language: str, latin_keyboard: bool = False,
-             spanish_grammar: bool = False, localized_names: bool = False) -> tuple[bytes, dict]:
+             spanish_grammar: bool = False, localized_names: bool = False,
+             localized_captures: bool = False) -> tuple[bytes, dict]:
     if language not in LANGUAGES:
         raise ValueError("unsupported language")
     if spanish_grammar and language != "es":
@@ -320,6 +338,7 @@ def generate(korean: bytes, european: bytes, language: str, latin_keyboard: bool
     base, donor = Rom(korean), Rom(european)
     replacements, fallback, grammar = {}, [], {}
     trimmed_empty_tails = []
+    capture_files = []
     prefix = f"/script/{LANGUAGES[language]}/"
     for name, file in base.files.items():
         if not name.startswith("/script/KOR/"):
@@ -329,7 +348,13 @@ def generate(korean: bytes, european: bytes, language: str, latin_keyboard: bool
             original = unpack(file.data)
             translated = unpack(donor.files[target].data)
             allow_tail = name.startswith("/script/KOR/string/")
-            converted = convert_bmg(original, translated, grammar, spanish_grammar, allow_empty_tail=allow_tail)
+            allow_capture = localized_captures and name == FISH_CAPTURE_ARCHIVE
+            converted = convert_bmg(original, translated, grammar, spanish_grammar, allow_empty_tail=allow_tail,
+                                    allow_fish_tail=allow_capture)
+            if allow_capture:
+                if converted is None:
+                    raise ValueError("unsupported fish capture archive shape or nonempty original tail")
+                capture_files.append(name)
             if converted is not None and allow_tail and bmg_shape(original)[1] != bmg_shape(translated)[1]:
                 trimmed_empty_tails.append(name)
         except ValueError as exc:
@@ -392,6 +417,7 @@ def generate(korean: bytes, european: bytes, language: str, latin_keyboard: bool
               "grammar_preserved_tags": grammar if spanish_grammar else {},
               "spanish_grammar": spanish_grammar,
               "localized_names": name_records,
+              "localized_captures": capture_files,
               "trimmed_empty_tail_files": trimmed_empty_tails,
               "executable_modules_unchanged": len(original_modules) - int(latin_keyboard),
               "latin_keyboard": keyboard_report}
@@ -406,10 +432,11 @@ def main() -> None:
     ap.add_argument("--latin-keyboard", action="store_true", help="Latin symbol page with Western accents")
     ap.add_argument("--spanish-grammar", action="store_true", help="preserve dynamic Spanish grammar for Clean")
     ap.add_argument("--localized-names", action="store_true", help="extended item names; requires names-aware Clean")
+    ap.add_argument("--localized-captures", action="store_true", help="audited fish capture archive conversion")
     args = ap.parse_args()
     try:
         path, report = prepare(args.korean, args.european, args.language, args.latin_keyboard, args.spanish_grammar,
-                               args.localized_names)
+                               args.localized_names, args.localized_captures)
     except (ValueError, OSError, KeyError, struct.error) as exc:
         ap.error(str(exc))
     print(f"{report['replaced_files']} resources replaced; {len(report['fallback_files'])} files kept Korean")
@@ -417,11 +444,13 @@ def main() -> None:
 
 
 def prepare(korean: Path, european: Path, language: str, latin_keyboard: bool = False,
-            spanish_grammar: bool = False, localized_names: bool = False) -> tuple[Path, dict]:
+            spanish_grammar: bool = False, localized_names: bool = False,
+            localized_captures: bool = False) -> tuple[Path, dict]:
     data, report = generate(korean.read_bytes(), european.read_bytes(), language, latin_keyboard, spanish_grammar,
-                             localized_names)
+                             localized_names, localized_captures)
     out = ROOT / "build" / "localized-clean" / (language + ("-grammar" if spanish_grammar else "") +
-                                                ("-names" if localized_names else ""))
+                                                ("-names" if localized_names else "") +
+                                                ("-captures" if localized_captures else ""))
     out.mkdir(parents=True, exist_ok=True)
     path = out / "game.nds"
     if not path.exists() or hashlib.sha1(path.read_bytes()).hexdigest() != report["generated_sha1"]:

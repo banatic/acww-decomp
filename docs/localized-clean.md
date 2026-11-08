@@ -139,3 +139,6 @@ the original 1,300-frame title recording still gives expected frame sequence SHA
 For opt-in item/furniture names, their gender/article metadata and longer transient name
 buffers, see [localized-names.md](localized-names.md). Use the matching `--localized-names`
 Clean build and generated resources together.
+
+For the specifically audited fish capture archive and its retained empty Korean tail rows,
+see [localized-captures.md](localized-captures.md) and `--localized-captures`.
