@@ -1,6 +1,7 @@
 /* The letter texts: the requests, loading a message into a text, and the decoder with its tag
  * handlers (mail_text.h). */
 #include "mail_text.h"
+#include "localized_grammar.h"
 
 #include "autoload_2/heap.h"
 #include "clean.h"
@@ -492,6 +493,15 @@ CLEAN_AS(func_0203da8c, MailTextDecoder_SetForm1)
 void MailTextDecoder_OnForm(MailTextDecoder *decoder)
 {
     s32 kind = (s32) decoder->tag.kind;
+    if (localized_grammar_enabled() && kind >= 4 && kind <= 15) {
+        int gender = kind == 4 ? localized_grammar_player_gender()
+                               : *(const s32 *) (const void *) (decoder->writer->parts[kind - 5] + 0x0c);
+        const u8 *form = localized_grammar_form((const u8 *) decoder->tag.params, decoder->tag.size, gender);
+        if (form != NULL) {
+            MessageWalker_Enter((MessageWalker *) decoder, (int) (uintptr_t) form);
+        }
+        return;
+    }
 
     if (kind == MAIL_TEXT_FORM_1) {
         MailTextDecoder_SetForm1(decoder);
@@ -540,6 +550,10 @@ void MailTextDecoder_InsertPart(MailTextDecoder *decoder)
     const void *part = writer->parts[MessageTag_PartIndex(&decoder->tag)];
 
     MessageWalker_Enter((MessageWalker *) decoder, mail_text_virtual(part, MAIL_TEXT_CHARACTERS_SLOT));
+    const char *article = localized_grammar_article(part, (unsigned) decoder->unk_4c);
+    if (article != NULL) {
+        MessageWalker_Enter((MessageWalker *) decoder, (int) (uintptr_t) article);
+    }
     MailParticles_TakeLastSyllable(&writer->particles,
                                    (const char *) (uintptr_t) mail_text_virtual(part, MAIL_TEXT_CHARACTERS_SLOT));
     writer->particles.ro_after_rieul = 0;
@@ -621,7 +635,7 @@ CLEAN_AS(func_0203dc28, MailTextDecoder_OnTag)
 void MailTextDecoder_OnCharacter(MailTextDecoder *decoder, int character)
 {
     if (decoder->convert_next != 0) {
-        decoder->character = func_02050bdc_unk(character);
+        decoder->character = localized_grammar_enabled() ? localized_grammar_upper(character) : func_02050bdc_unk(character);
         decoder->convert_next = 0;
     } else {
         decoder->character = character;

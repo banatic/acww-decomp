@@ -2,6 +2,7 @@
  *
  * REQUIRES: the walker and the talk at word-aligned addresses, as every object of the game is. */
 #include "talk_tags.h"
+#include "localized_grammar.h"
 
 #include "clean.h"
 #include "house_record.h"
@@ -22,6 +23,8 @@
 #include "main_random.h"
 #include "player_id.h"
 #include "talk_receiver.h"
+#include "message_reader.h"
+#include "message_texts.h"
 
 static_assert(offsetof(TalkTagsWalker, talk) == 0x24, "walker talk");
 static_assert(offsetof(TalkTagsWalker, state) == 0x30, "walker state");
@@ -1400,6 +1403,22 @@ CLEAN_AS(func_0206ac64, TalkTags_DispatchGroupFF)
  * settings, then func_02069498 down to func_020692f8). */
 void TalkTags_DispatchGroup11(TalkTagsWalker *walker)
 {
+    if (localized_grammar_enabled() && walker->tag.kind >= 4 && walker->tag.kind <= 19) {
+        int gender;
+        if (walker->tag.kind == 4) {
+            gender = localized_grammar_player_gender();
+        } else {
+            u32 kind = walker->tag.kind;
+            u32 offset =
+                kind < 16 ? TALK_TAGS_PARTS + (kind - 5) * TALK_TAGS_PART_SIZE : 0x18ac + (kind - 16) * TALK_TAGS_PART_SIZE;
+            gender = *(const s32 *) (const void *) (talk_tags_at(walker, offset) + 0x0c);
+        }
+        const u8 *form = localized_grammar_form((const u8 *) walker->tag.params, walker->tag.size, gender);
+        if (form != NULL) {
+            MessageWalker_Enter(&walker->base, (int) (uintptr_t) form);
+        }
+        return;
+    }
     static const MemberPointer *const constants[21] = {
         &data_020de8fc, &data_020de90c, &data_020de91c, &data_020dea14, &data_020dea1c, &data_020dea24, &data_020dea34,
         &data_020dea4c, &data_020dea5c, &data_020dea6c, &data_020dea74, &data_020dea8c, &data_020dea94, &data_020deaa4,
@@ -1647,6 +1666,21 @@ static void talk_tags_keep_last_syllable(TalkTagsWalker *walker, const void *tex
     *(s32 *) (void *) talk_tags_at(walker, TALK_TAGS_RO_AFTER_RIEUL) = 1;
 }
 
+static void talk_tags_localized_article(TalkTagsWalker *walker, const void *text, int reset_colour)
+{
+    const char *article = localized_grammar_article(text, (unsigned) walker->unk_e0);
+    if (article == NULL) {
+        return;
+    }
+    if (reset_colour) {
+        MessageWalker_Enter(&walker->base, MessageTag_ColourTag(walker->text_colour));
+    }
+    MessageWalker_Enter(&walker->base, (int) (uintptr_t) article);
+    if (reset_colour) {
+        MessageWalker_Enter(&walker->base, MessageTag_ColourTag(0));
+    }
+}
+
 /* func_0206b984: the talk's value `index` (0 to 3) walked in place of the tag, drawn in the
  * colour the talk keeps for that value, then the walker's text colour again. */
 void TalkTags_PutValue(TalkTagsWalker *walker, int index)
@@ -1656,6 +1690,7 @@ void TalkTags_PutValue(TalkTagsWalker *walker, int index)
     MessageWalker_Enter(&walker->base, MessageTag_ColourTag(walker->text_colour));
     MessageWalker_Enter(&walker->base, talk_tags_characters(name));
     MessageWalker_Enter(&walker->base, MessageTag_ColourTag(value_colour));
+    talk_tags_localized_article(walker, name, 0);
     TalkTags_ClearE0(walker);
     talk_tags_keep_last_syllable(walker, name);
 }
@@ -1666,6 +1701,7 @@ void TalkTags_PutPart(TalkTagsWalker *walker, int index)
 {
     const void *part = talk_tags_at(walker, TALK_TAGS_PARTS + (u32) index * TALK_TAGS_PART_SIZE);
     MessageWalker_Enter(&walker->base, talk_tags_characters(part));
+    talk_tags_localized_article(walker, part, 1);
     TalkTags_ClearE0(walker);
     talk_tags_keep_last_syllable(walker, part);
 }
@@ -1806,7 +1842,7 @@ CLEAN_AS(func_0206bbdc, TalkTags_OnTag)
 void TalkTags_OnCharacter(TalkTagsWalker *walker, int character)
 {
     if (walker->convert_next != 0) {
-        character = func_02050bdc_unk(character);
+        character = localized_grammar_enabled() ? localized_grammar_upper(character) : func_02050bdc_unk(character);
         walker->convert_next = 0;
     }
     int newline = character == TALK_TAGS_NEWLINE;

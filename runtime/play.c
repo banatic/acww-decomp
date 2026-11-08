@@ -61,6 +61,7 @@ enum {
 static struct {
     char rom[MAX_PATH], modules[MAX_PATH], symbols[MAX_PATH], policy[MAX_PATH], form[32];
     char save[MAX_PATH];
+    char grammar[8];
     const char *rtc, *input, *language;
     int reference, read_only, scale, background, unpaced;
     uint32_t stop_frame; /* 0: none */
@@ -107,9 +108,11 @@ static int read_config(const char *path)
                    : strcmp(line, "policy") == 0  ? opt.policy
                    : strcmp(line, "form") == 0    ? opt.form
                    : strcmp(line, "save") == 0    ? opt.save
+                   : strcmp(line, "grammar") == 0 ? opt.grammar
                                                   : NULL;
         if (to != NULL) {
-            snprintf(to, to == opt.form ? sizeof(opt.form) : MAX_PATH, "%s", value);
+            size_t capacity = to == opt.form ? sizeof(opt.form) : to == opt.grammar ? sizeof(opt.grammar) : MAX_PATH;
+            snprintf(to, capacity, "%s", value);
         }
     }
     fclose(f);
@@ -707,6 +710,7 @@ int main(int argc, char **argv)
     _putenv_s("RUN_SAVE", file_exists(opt.save) ? opt.save : "");
     _putenv_s("RUN_RTC", opt.rtc ? opt.rtc : "");
     _putenv_s("RUN_INPUT", opt.input ? opt.input : "");
+    _putenv_s("ACWW_GRAMMAR", opt.grammar);
     _putenv_s("RUN_LANGUAGE", opt.language ? opt.language : "");
     if (opt.language != NULL) {
         printf("play: firmware language %s\n", opt.language);

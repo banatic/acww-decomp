@@ -1,5 +1,6 @@
 /* The message reader's decoder: its checks and its tag handlers (message_decoder.h). */
 #include "message_decoder.h"
+#include "../../runtime/localized_grammar.h"
 
 #include <string.h>
 
@@ -403,7 +404,8 @@ CLEAN_AS(func_020b517c, MessageDecoder_OnTag)
 void MessageDecoder_OnCharacter(MessageDecoder *decoder, unsigned int character)
 {
     if (decoder->convert_next != 0) {
-        character = (unsigned int) func_02050bdc_unk((int) character);
+        character = localized_grammar_enabled() ? (unsigned int) localized_grammar_upper((int) character)
+                                                : (unsigned int) func_02050bdc_unk((int) character);
         decoder->convert_next = 0;
     }
     if (decoder->nickname != 0 && decoder->inserted != 0) {

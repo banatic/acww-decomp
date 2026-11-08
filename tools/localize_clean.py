@@ -140,7 +140,7 @@ def align(data: bytes, alignment: int = 32) -> bytes:
     return data + b"\0" * (-len(data) % alignment)
 
 
-def convert_text(text: bytes, grammar: dict[str, int]) -> bytes:
+def convert_text(text: bytes, grammar: dict[str, int], spanish_grammar: bool = False) -> bytes:
     """Expand byte characters and the five-byte tag header to Korean UTF-16 format.
 
     European grammatical alternatives have no Korean implementation. Resolve their first
@@ -158,7 +158,19 @@ def convert_text(text: bytes, grammar: dict[str, int]) -> bytes:
         if length < 5:
             raise ValueError("short BMG tag")
         tag = checked(text, pos, length)
-        if group == 11:
+        if group == 11 and spanish_grammar:
+            key = str(kind)
+            grammar[key] = grammar.get(key, 0) + 1
+            payload = tag[5:]
+            if 4 <= kind <= 19:
+                payload = b"".join(bytes((char, 0)) for char in payload)
+                if payload[-2:] != b"\0\0":
+                    payload += b"\0\0"
+            expanded = align(b"\x1a\0\0" + tag[2:5] + payload, 2)
+            if len(expanded) > 255:
+                raise ValueError("expanded grammar tag exceeds byte size")
+            result.extend(expanded[:2] + bytes([len(expanded)]) + expanded[3:])
+        elif group == 11:
             key = str(kind)
             grammar[key] = grammar.get(key, 0) + 1
             if kind >= 4:
@@ -187,7 +199,7 @@ def bmg_shape(data: bytes) -> tuple[int, int, int]:
     return section_size, count, entry_size
 
 
-def convert_bmg(korean: bytes, european: bytes, grammar: dict[str, int]) -> bytes | None:
+def convert_bmg(korean: bytes, european: bytes, grammar: dict[str, int], spanish_grammar: bool = False) -> bytes | None:
     _, kr_count, kr_entry = bmg_shape(korean)
     section_size, count, entry = bmg_shape(european)
     if (kr_count, kr_entry) != (count, entry):
@@ -202,7 +214,7 @@ def convert_bmg(korean: bytes, european: bytes, grammar: dict[str, int]) -> byte
     cache = {}
     for old_offset, next_offset in zip(boundaries, boundaries[1:]):
         cache[old_offset] = len(payload)
-        payload.extend(convert_text(checked(source, old_offset, next_offset - old_offset), grammar))
+        payload.extend(convert_text(checked(source, old_offset, next_offset - old_offset), grammar, spanish_grammar))
     for i in range(count):
         old_offset = offsets[i]
         entries.extend(struct.pack("<I", cache[old_offset]))
@@ -250,9 +262,12 @@ def merge_font(korean: dict[str, bytes], european: dict[str, bytes]) -> dict[str
             "attr": b"".join(a for a, _ in ordered), "img": b"".join(b for _, b in ordered)}
 
 
-def generate(korean: bytes, european: bytes, language: str, latin_keyboard: bool = False) -> tuple[bytes, dict]:
+def generate(korean: bytes, european: bytes, language: str, latin_keyboard: bool = False,
+             spanish_grammar: bool = False) -> tuple[bytes, dict]:
     if language not in LANGUAGES:
         raise ValueError("unsupported language")
+    if spanish_grammar and language != "es":
+        raise ValueError("--spanish-grammar requires Spanish localization")
     if hashlib.sha1(korean).hexdigest() != KR_SHA1:
         raise ValueError("Korean base ROM does not match adm-kr.sha1")
     if hashlib.sha1(european).hexdigest() != EU_SHA1:
@@ -265,7 +280,7 @@ def generate(korean: bytes, european: bytes, language: str, latin_keyboard: bool
             continue
         target = prefix + name[len("/script/KOR/"):]
         try:
-            converted = convert_bmg(unpack(file.data), unpack(donor.files[target].data), grammar)
+            converted = convert_bmg(unpack(file.data), unpack(donor.files[target].data), grammar, spanish_grammar)
         except ValueError as exc:
             raise ValueError(f"{name}: {exc}") from exc
         if converted is None:
@@ -309,7 +324,9 @@ def generate(korean: bytes, european: bytes, language: str, latin_keyboard: bool
               "base_sha1": KR_SHA1, "donor_sha1": EU_SHA1,
               "generated_sha1": hashlib.sha1(result).hexdigest(),
               "replaced_files": len(replacements), "fallback_files": fallback,
-              "grammar_first_form_tags": grammar,
+              "grammar_first_form_tags": {} if spanish_grammar else grammar,
+              "grammar_preserved_tags": grammar if spanish_grammar else {},
+              "spanish_grammar": spanish_grammar,
               "executable_modules_unchanged": len(original_modules) - int(latin_keyboard),
               "latin_keyboard": keyboard_report}
     return result, report
@@ -321,18 +338,20 @@ def main() -> None:
     ap.add_argument("--european", type=Path, required=True)
     ap.add_argument("--language", choices=LANGUAGES, default="es")
     ap.add_argument("--latin-keyboard", action="store_true", help="Latin symbol page with Western accents")
+    ap.add_argument("--spanish-grammar", action="store_true", help="preserve dynamic Spanish grammar for Clean")
     args = ap.parse_args()
     try:
-        path, report = prepare(args.korean, args.european, args.language, args.latin_keyboard)
+        path, report = prepare(args.korean, args.european, args.language, args.latin_keyboard, args.spanish_grammar)
     except (ValueError, OSError, KeyError, struct.error) as exc:
         ap.error(str(exc))
     print(f"{report['replaced_files']} resources replaced; {len(report['fallback_files'])} files kept Korean")
     print(f"All {report['executable_modules_unchanged']} executable modules unchanged. ROM: {path}")
 
 
-def prepare(korean: Path, european: Path, language: str, latin_keyboard: bool = False) -> tuple[Path, dict]:
-    data, report = generate(korean.read_bytes(), european.read_bytes(), language, latin_keyboard)
-    out = ROOT / "build" / "localized-clean" / language
+def prepare(korean: Path, european: Path, language: str, latin_keyboard: bool = False,
+            spanish_grammar: bool = False) -> tuple[Path, dict]:
+    data, report = generate(korean.read_bytes(), european.read_bytes(), language, latin_keyboard, spanish_grammar)
+    out = ROOT / "build" / "localized-clean" / (language + ("-grammar" if spanish_grammar else ""))
     out.mkdir(parents=True, exist_ok=True)
     path = out / "game.nds"
     if not path.exists() or hashlib.sha1(path.read_bytes()).hexdigest() != report["generated_sha1"]:

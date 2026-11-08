@@ -33,7 +33,8 @@ import run  # noqa: E402
 FORMS = {"clean": "acww-play", "native": "acww-play-native", "reference": "acww-play-reference"}
 
 
-def build(form: str, localized_rom: pathlib.Path | None = None, language: str | None = None) -> pathlib.Path:
+def build(form: str, localized_rom: pathlib.Path | None = None, language: str | None = None,
+          spanish_grammar: bool = False) -> pathlib.Path:
     """The program for `form` and its .cfg; returns the program's path."""
     if not run.WINDOWS:
         raise SystemExit("the play front end is written for Windows (runtime/play.c)")
@@ -42,6 +43,8 @@ def build(form: str, localized_rom: pathlib.Path | None = None, language: str | 
     name = FORMS[form]
     if language:
         name += "-" + language
+    if spanish_grammar:
+        name += "-grammar"
     manifest, table = run.generate()
     policy = ""
     if form == "reference":
@@ -59,6 +62,7 @@ def build(form: str, localized_rom: pathlib.Path | None = None, language: str | 
     config = (f"form={form.capitalize()}{'/' + language if language else ''}\n"
               f"rom={(localized_rom or run.ROM).resolve()}\nmodules={manifest.resolve()}\n"
               f"symbols={table.resolve()}\npolicy={policy}\n")
+    config += f"grammar={'es' if spanish_grammar else ''}\n"
     if localized_rom:
         save_dir = pathlib.Path(os.environ.get("APPDATA", str(run.C.BUILD))) / "acwwdecomp" / "localized-clean"
         save_dir.mkdir(parents=True, exist_ok=True)
@@ -77,6 +81,7 @@ def main() -> None:
                     help="experimental European resources for the Korean runtime (docs/localized-clean.md)")
     ap.add_argument("--european", type=pathlib.Path, help="your European ADMP revision 0 .nds (with --localize)")
     ap.add_argument("--latin-keyboard", action="store_true", help="Latin accent keys (requires --localize)")
+    ap.add_argument("--spanish-grammar", action="store_true", help="dynamic Spanish grammar (requires Clean/es)")
     args, rest = ap.parse_known_args()
     if args.help:
         print(__doc__)
@@ -85,17 +90,20 @@ def main() -> None:
     if args.localize:
         if args.european is None:
             ap.error("--localize requires --european PATH/TO/GAME.nds")
+        if args.spanish_grammar and (args.localize != "es" or args.form != "clean"):
+            ap.error("--spanish-grammar requires --form clean --localize es")
         import localize_clean
         try:
-            localized_rom, report = localize_clean.prepare(run.ROM, args.european, args.localize, args.latin_keyboard)
+            localized_rom, report = localize_clean.prepare(run.ROM, args.european, args.localize,
+                                                         args.latin_keyboard, args.spanish_grammar)
         except (ValueError, OSError, KeyError) as exc:
             ap.error(str(exc))
         print(f"localized resources: {report['replaced_files']} replaced, "
               f"{len(report['fallback_files'])} original files kept; see {localized_rom.parent / 'report.json'}",
               flush=True)
-    elif args.european is not None or args.latin_keyboard:
-        ap.error("--european and --latin-keyboard require --localize")
-    exe = build(args.form, localized_rom, args.localize)
+    elif args.european is not None or args.latin_keyboard or args.spanish_grammar:
+        ap.error("--european, --latin-keyboard and --spanish-grammar require --localize")
+    exe = build(args.form, localized_rom, args.localize, args.spanish_grammar)
     if args.build_only:
         print(exe)
         return

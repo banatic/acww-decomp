@@ -22,6 +22,7 @@ environment, on Windows:
 ```sh
 python tools/play.py --localize es --european path/to/european.nds
 python tools/play.py --localize es --european path/to/european.nds --latin-keyboard
+python tools/play.py --localize es --european path/to/european.nds --latin-keyboard --spanish-grammar
 ```
 
 The language codes are `en`, `fr`, `de`, `es`, and `it`. Both dumps are checked by SHA-1:
@@ -60,6 +61,27 @@ European group-11 grammar tags do not have equivalent implementations in the Kor
 The converter currently removes state-only grammar tags and chooses the first explicit
 alternative where the tag carries alternatives. These approximations are counted by tag kind
 in the report. Gender, articles, capitalization and inflection are therefore incomplete.
+
+`--spanish-grammar` is an opt-in replacement for this approximation, currently for Clean/es
+only. It preserves numeric gender/article metadata and the UTF-16 alternatives in group-11
+tags. Dialogues and letter/notice-board decoding select alternatives using the current player
+or the referenced text object's gender; absent or invalid gender does not default to masculine.
+The text's primary/secondary article indices are honored, with state 2 suppressing the article.
+The six Spanish article texts are loaded into the reader's existing persistent small-text
+cache. Capitalization follows the European Western character-code table, including accents.
+
+These rules were read from the European executable: the dialogue handlers at `0206af8c` and
+`0206afe8`, their article selection at `0206b0cc`, the corresponding mail handlers around
+`0203d1d8`, and the case table used at `02050360`. In the Korean implementation the respective
+grammar handlers are empty. The added code is guarded by `ACWW_GRAMMAR=es`; the front end sets
+it from `grammar=es` in the generated configuration and clears it otherwise. Original source
+files under `src/` are untouched; normal Clean behavior remains the original contract.
+
+The resource output and executable have separate names (`es-grammar/game.nds` and
+`acww-play-es-grammar.exe`), so they do not replace the first-form adaptation. Generated reports
+distinguish preserved grammar tags from approximated ones. Grammar support cannot supply
+missing translations or repair regional message-index differences. Full event and item-name
+coverage is still pending; a successfully rendered greeting is not evidence of all grammar paths.
 
 Without `--latin-keyboard`, the Korean keyboard and its character composition logic remain
 Korean; select the Latin tab when entering a Western name. The optional accent page replaces
@@ -101,3 +123,11 @@ inspected visually. With the Spanish resources and `--latin-keyboard`, Reference
 both give frame sequence SHA-1 `f8638c7bb1c3960d83981b372d7254ae744f04e6` when Reference
 timing is recorded/replayed. The five synthetic keyboard tests also check normal/chat label
 alignment, signed-safe accent codes, unchanged command keys, and the explicit data ranges.
+
+The six grammar tests validate preservation of both gender forms, numeric metadata,
+capitalization/article states, oversized-tag rejection, and the compiled C selectors on male,
+female, neutral, empty, malformed and unknown inputs. A 15,000-frame localized Clean run
+completed without errors. A synthetic in-game greeting verified the capitalization path;
+before the player exists, its gender alternative is deliberately omitted. With grammar off,
+the original 1,300-frame title recording still gives expected frame sequence SHA-1
+`69297d7d46a0d122090aec6da585046bf2227aaf` in both Reference and Clean.
