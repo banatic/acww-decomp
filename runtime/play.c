@@ -61,7 +61,7 @@ enum {
 static struct {
     char rom[MAX_PATH], modules[MAX_PATH], symbols[MAX_PATH], policy[MAX_PATH], form[32];
     char save[MAX_PATH];
-    const char *rtc, *input;
+    const char *rtc, *input, *language;
     int reference, read_only, scale, background, unpaced;
     uint32_t stop_frame; /* 0: none */
 } opt;
@@ -74,6 +74,7 @@ static void usage(void)
                     "                  Default: %%APPDATA%%\\acwwdecomp\\acww.sav\n"
                     "  --read-only     never write the save file\n"
                     "  --reference     run every function as the ROM's code (the interpreter)\n"
+                    "  --language CODE firmware language: en, fr, de, es, it (European ROM)\n"
                     "  --rtc TIME      start the clock at \"YYYY-MM-DD HH:MM:SS\" (default: the PC's clock)\n"
                     "  --input FILE    also play an input recording (runtime/input.h), under the live input\n"
                     "  --scale N       the window's starting size: N times the DS's screens (default 2)\n"
@@ -105,6 +106,7 @@ static int read_config(const char *path)
                    : strcmp(line, "symbols") == 0 ? opt.symbols
                    : strcmp(line, "policy") == 0  ? opt.policy
                    : strcmp(line, "form") == 0    ? opt.form
+                   : strcmp(line, "save") == 0    ? opt.save
                                                   : NULL;
         if (to != NULL) {
             snprintf(to, to == opt.form ? sizeof(opt.form) : MAX_PATH, "%s", value);
@@ -647,6 +649,18 @@ int main(int argc, char **argv)
             opt.unpaced = 1;
         } else if (strcmp(a, "--rtc") == 0 && more) {
             opt.rtc = argv[++i];
+        } else if (strcmp(a, "--language") == 0 && more) {
+            const char *code = argv[++i];
+            opt.language = strcmp(code, "en") == 0   ? "1"
+                           : strcmp(code, "fr") == 0 ? "2"
+                           : strcmp(code, "de") == 0 ? "3"
+                           : strcmp(code, "it") == 0 ? "4"
+                           : strcmp(code, "es") == 0 ? "5"
+                                                     : NULL;
+            if (opt.language == NULL) {
+                fprintf(stderr, "play: unsupported language '%s' (en, fr, de, es, it)\n", code);
+                return 2;
+            }
         } else if (strcmp(a, "--input") == 0 && more) {
             opt.input = argv[++i];
         } else if (strcmp(a, "--scale") == 0 && more) {
@@ -678,7 +692,7 @@ int main(int argc, char **argv)
     }
     if (save != NULL) {
         snprintf(opt.save, sizeof(opt.save), "%s", save);
-    } else {
+    } else if (opt.save[0] == 0) {
         default_save(opt.save);
     }
     if (opt.reference || opt.policy[0] == 0) {
@@ -693,6 +707,10 @@ int main(int argc, char **argv)
     _putenv_s("RUN_SAVE", file_exists(opt.save) ? opt.save : "");
     _putenv_s("RUN_RTC", opt.rtc ? opt.rtc : "");
     _putenv_s("RUN_INPUT", opt.input ? opt.input : "");
+    _putenv_s("RUN_LANGUAGE", opt.language ? opt.language : "");
+    if (opt.language != NULL) {
+        printf("play: firmware language %s\n", opt.language);
+    }
     const char *cleared[] = {"RUN_HASH",          "RUN_PNG",      "RUN_DUMP3D",   "RUN_NATIVE_RECORD",
                              "RUN_NATIVE_REPLAY", "RUN_RAM_HASH", "RUN_RAM_DUMP", "RUN_NATIVE_LEARN",
                              "RUN_CLEAN_RAN",     "RUN_TRACE",    "RUN_CALLS",    "RUN_DRIVE"};

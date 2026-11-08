@@ -11,6 +11,11 @@ python tools/play.py my-town.sav     # play with this save file
 python tools/play.py --build-only    # only build; prints the program's path
 ```
 
+An opt-in, partial localization can use European resources while keeping the Korean Clean
+executable: `python tools/play.py --localize es --european EUROPE.nds`.
+Read [localized-clean.md](localized-clean.md) for required dumps, separate saves, validation
+and known untranslated files and grammar limitations.
+
 The ROM is the one `tools/extract.py` checked (`extract/adm-kr.nds`). The program is written to
 the runtime's build directory (`ACWW_RUNTIME_OUT`, else `build/runtime`) as `acww-play.exe`,
 with `acww-play.cfg` beside it naming the ROM, the module list, the symbols and the Native policy

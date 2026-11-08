@@ -62,7 +62,13 @@ static void user_settings(void)
     wr16(u + 0x60, 0x0e00);
     wr8(u + 0x62, 240);
     wr8(u + 0x63, 176);
-    wr16(u + 0x64, 7); /* language 7 (Korean firmware), backlight low, boot menu on */
+    /* Keep the Korean firmware default unless the front end selects a DS language. */
+    unsigned language = 7;
+    const char *selected = getenv("RUN_LANGUAGE");
+    if (selected != NULL && selected[0] >= '0' && selected[0] <= '7' && selected[1] == '\0') {
+        language = (unsigned) (selected[0] - '0');
+    }
+    wr16(u + 0x64, (uint16_t) language);
     wr8(u + 0x66, 26); /* year offset from 2000 */
     wr32(u + 0x68, 0); /* RTC offset */
 }
