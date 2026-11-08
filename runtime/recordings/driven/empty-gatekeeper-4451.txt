@@ -1,0 +1,7 @@
+# the empty answer handler for line 0x6b of the first gatekeeper's talk (022aff7c, at 0x658 of
+# the gatekeeper 022af924), which no game path calls, at the end of frame 4451 of gate-flag
+scene gate-flag
+frames 4460
+ram 2600,3800
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 4451 022619ad 022aff7c 0 0 0 022619ac 00004770  # ov048 GatekeeperTalk_OnAnswer6b (his talk, answer 0)

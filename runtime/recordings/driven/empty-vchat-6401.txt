@@ -1,0 +1,74 @@
+# the empty functions (a lone bx lr, docs/verification.md) of the outdoor scene no game path
+# calls: the player's field actor (02392170) given the empty entries, updates, exits and
+# messages of its states 0x3, 0x4, 0x30-0x35, 0x4a, 0x61-0x78, 0x87, 0x88, 0x91 and 0x92 (an
+# entry with a zeroed request from a scratch block of the game's heap, 022a3378), a live
+# villager's behaviour member (022a90c4, of 022a880c) the idle steps of its behaviours, the
+# fish shadows' empty state entries, a link-bundle reader's and a system command's empty reads
+# (a zeroed scratch block as the command), the talk receiver's slot 0x44 (0239225c) and the
+# 3D object's mode 6 (022b6800) through their vtables, and the other empty functions whose
+# declarations take nothing, at the end of frame 6401 of villager-chat
+scene villager-chat
+frames 6410
+ram 2600,4500,5300,6400
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 6401 020e9948 022a3378 20 0 0 00000000 00000000  # autoload_2 Heap_Alloc (a scratch block: the request, the command)
+call 6401 02117568 r1 0 20 0 00000000 00000000  # autoload_2 MI_CpuFill8 (the scratch block cleared)
+call 6401 02008301 02392170 r2 0 0 00000000 00000000  # main FieldActor_EnterState91 (a zeroed request)
+call 6401 020082f1 02392170 r3 0 0 00000000 00000000  # main FieldActor_EnterState92 (a zeroed request)
+call 6401 020777ed r4 20 0 0 00000000 00000000  # main SystemCommand_ReadNothing (the zeroed block, 32 bytes)
+call 6401 020e993c 022a3378 r5 0 0 00000000 00000000  # autoload_2 Heap_Free (the scratch block)
+call 6401 020082f5 02392170 0 0 0 00000000 00000000  # main FieldActor_UpdateState91
+call 6401 020082fd 02392170 0 0 0 00000000 00000000  # main FieldActor_State91Message
+call 6401 020082f9 02392170 0 0 0 00000000 00000000  # main FieldActor_ExitState91
+call 6401 020082e9 02392170 0 0 0 00000000 00000000  # main FieldActor_UpdateState92
+call 6401 020082ed 02392170 0 0 0 00000000 00000000  # main FieldActor_State92Message
+call 6401 02009569 02392170 0 0 0 00000000 00000000  # main FieldActor_State70Message
+call 6401 02009915 02392170 0 0 0 00000000 00000000  # main FieldActor_State6FMessage
+call 6401 02009e25 02392170 0 0 0 00000000 00000000  # main FieldActor_State35Message
+call 6401 02009ed5 02392170 0 0 0 00000000 00000000  # main FieldActor_State34Message
+call 6401 02009f95 02392170 0 0 0 00000000 00000000  # main FieldActor_State33Message
+call 6401 0200a2e1 02392170 0 0 0 00000000 00000000  # main FieldActor_State31Message
+call 6401 0200a3a9 02392170 0 0 0 00000000 00000000  # main FieldActor_State30Message
+call 6401 0200cabd 02392170 0 0 0 00000000 00000000  # main FieldActor_State4Message
+call 6401 0200d145 02392170 0 0 0 00000000 00000000  # main FieldActor_State3Message
+call 6401 0220e005 02392170 0 0 0 0220e004 00004770  # ov003 FieldActor_State78Message
+call 6401 0220f6d9 02392170 0 0 0 0220f6d8 00004770  # ov003 FieldActor_State69Message
+call 6401 0220fd01 02392170 0 0 0 0220fd00 00004770  # ov003 FieldActor_State67Message
+call 6401 0221013d 02392170 0 0 0 0221013c 00004770  # ov003 FieldActor_State65Message
+call 6401 02210b39 02392170 0 0 0 02210b38 00004770  # ov003 FieldActor_State61Message
+call 6401 02216641 02392170 0 0 0 02216640 00004770  # ov003 FieldActor_State4AMessage
+call 6401 02271e79 02392170 0 0 0 02271e78 00004770  # ov068 FieldActor_State88Message
+call 6401 02271f7d 02392170 0 0 0 02271f7c 00004770  # ov068 FieldActor_State87Message
+call 6401 022675c5 022a90c4 022a880c 0 0 022675c4 00004770  # ov068 OutdoorVillagerActs_IdlePushedTalk
+call 6401 02267725 022a90c4 022a880c 0 0 02267724 00004770  # ov068 OutdoorVillagerActs_IdleNettedTalk
+call 6401 02269941 022a90c4 022a880c 0 0 02269940 00004770  # ov068 OutdoorVillagerMoves_Idle6
+call 6401 0226af6d 022a90c4 022a880c 0 0 0226af6c 00004770  # ov068 OutdoorVillagerWalks_Idle5
+call 6401 02228849 0 0 0 0 02228848 00004770  # ov003 FishShadow_EnterShown
+call 6401 022288e1 0 0 0 0 022288e0 00004770  # ov003 FishShadow_EnterAway
+call 6401 022289b1 0 0 0 0 022289b0 00004770  # ov003 FishShadow_EnterAppearing
+call 6401 02228a99 0 0 0 0 02228a98 00004770  # ov003 FishShadow_EnterNone
+call 6401 0222b795 0 0 0 0 0222b794 00004770  # ov003 FishShadowHook_StepAppearing
+call 6401 020a74b9 0 0 0 0 00000000 00000000  # main LinkBundle_ReadEnteredNothing
+call 6401 020a75d1 0 0 0 0 00000000 00000000  # main LinkBundle_ReadLeftNothing
+call 6401 020ed5f4 0 0 0 0 00000000 00000000  # autoload_2 Wfc_OnNewClient
+call 6401 020ed6a8 0 0 0 0 00000000 00000000  # autoload_2 Wfc_OnClosed
+call 6401 020f70e8 0 0 0 0 00000000 00000000  # autoload_2 SoundObjectBase_Play
+call 6401 0202854d 0 0 0 0 00000000 00000000  # main VillagerTalkRequest_Nothing
+call 6401 02031e5d 0 0 0 0 00000000 00000000  # main CollisionVisitor_NoPosts
+call 6401 02031e61 0 0 0 0 00000000 00000000  # main CollisionVisitor_NoFloors
+call 6401 02031e65 0 0 0 0 00000000 00000000  # main CollisionVisitor_NoWalls
+call 6401 0203da79 0 0 0 0 00000000 00000000  # main MailTextDecoder_OnForm4
+call 6401 0204f8b9 0 0 0 0 00000000 00000000  # main DebugScreen_Nothing
+call 6401 02058d29 022b6800 0 0 0 00000000 00000000  # main Obj020dd33c_EnterMode6Kind0 (a live 3D object)
+call 6401 0206cc7d 0 0 0 0 00000000 00000000  # main TalkPageMeasurer_GreetingEnd
+call 6401 02099e79 0 0 0 0 00000000 00000000  # main WifiFriendList_OnFriendDeleted
+call 6401 020a44b9 0 0 0 0 00000000 00000000  # main ActivityJobs_Start0E
+call 6401 020a44ed 0 0 0 0 00000000 00000000  # main ActivityJobs_Start0D
+call 6401 020a4591 0 0 0 0 00000000 00000000  # main ActivityJobs_Start0B
+call 6401 020a4649 0 0 0 0 00000000 00000000  # main ActivityJobs_Start09
+call 6401 020b72d5 0 0 0 0 00000000 00000000  # main SceneClass3_Slot12
+call 6401 020b9479 0 0 0 0 00000000 00000000  # main VramFrame_ReportFull
+call 6401 02069e11 0 0 0 0 00000000 00000000  # main TalkTags_Nothing4_32
+call 6401 0206ac61 0 0 0 0 00000000 00000000  # main TalkTags_Nothing
+vcall 6401 0239225c 44 0239225c 0 0 0 020d832c  # main TalkReceiver_Nothing44 (slot 17 of the talk receiver 0239225c)
+vcall 6401 022b6800 d0 022b6800 0 0 0 020dd194  # main Obj020dd33c_UpdateMode6Kind0 (slot 52 of the 3D object 022b6800)

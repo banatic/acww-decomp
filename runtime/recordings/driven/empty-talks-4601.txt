@@ -1,0 +1,7 @@
+# the empty answer handler of Mabel's talk (022b03a4, at 0x658 of Mabel 022afd4c), which no game
+# path calls, at the end of frame 4601 of able-sisters
+scene able-sisters
+frames 4610
+ram 2600,3600
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 4601 022619fd 022b03a4 0 0 0 022619fc 00004770  # ov049 MabelTalk_OnOtherLineEnded (her talk)

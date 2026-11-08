@@ -1,0 +1,30 @@
+# the empty functions (a lone bx lr, docs/verification.md) of the rooms' overlay (ov004) no
+# game path calls: the player's field actor in the villager's house (0235c2a8) given the empty
+# messages of its room and place states, a room character's slot 36 (022b06c8, through its
+# vtable), and the empty talk answers, telephone states and aquarium fish steps whose
+# declarations take nothing, at the end of frame 5001 of villager-errand-done
+scene villager-errand-done
+frames 5010
+ram 2600,4138,5000
+arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
+call 5001 02227115 0235c2a8 0 0 0 02227114 00004770  # ov004 FieldActorRoomStates_HairOnMessage
+call 5001 022271dd 0235c2a8 0 0 0 022271dc 00004770  # ov004 FieldActorRoomStates_HairWaitMessage
+call 5001 022272f1 0235c2a8 0 0 0 022272f0 00004770  # ov004 FieldActorRoomStates_HairOffMessage
+call 5001 02227d7d 0235c2a8 0 0 0 02227d7c 00004770  # ov004 FieldActorRoomStates_ExitWalkMessage
+call 5001 02227f8d 0235c2a8 0 0 0 02227f8c 00004770  # ov004 FieldActorRoomStates_ItemBackMessage
+call 5001 022280ad 0235c2a8 0 0 0 022280ac 00004770  # ov004 FieldActorRoomStates_ItemOutMessage
+call 5001 022289b5 0235c2a8 0 0 0 022289b4 00004770  # ov004 FieldActorRoomStates_SpotClaimMessage
+call 5001 022299f9 0235c2a8 0 0 0 022299f8 00004770  # ov004 FieldActorRoomStates_PushStepMessage
+call 5001 02229e71 0235c2a8 0 0 0 02229e70 00004770  # ov004 FieldActorRoomStates2_FurnitureTurnMessage
+call 5001 0222aa8d 0235c2a8 0 0 0 0222aa8c 00004770  # ov004 FieldActorRoomStates2_TakeItemMessage
+call 5001 0222acc1 0235c2a8 0 0 0 0222acc0 00004770  # ov004 FieldActorRoomStates2_FixedPointMessage
+call 5001 0222bb09 0235c2a8 0 0 0 0222bb08 00004770  # ov004 FieldActorPlaceStates_ProbeMessage
+call 5001 0221dde9 0 0 0 0 0221dde8 00004770  # ov004 BirthdayGuestTalk_OnAnswer
+call 5001 0221e87d 0 0 0 0 0221e87c 00004770  # ov004 RoomVillager_TalkStep1
+call 5001 02221909 0 0 0 0 02221908 00004770  # ov004 Shop3VillagerTalk_OnAnswer
+call 5001 0222190d 0 0 0 0 0222190c 00004770  # ov004 Shop3VillagerTalk_OnMessageEnded
+call 5001 02231041 0 0 0 0 02231040 00004770  # ov004 RmoTelephone_UpdateState6
+call 5001 022310c9 0 0 0 0 022310c8 00004770  # ov004 RmoTelephone_EnterState4
+call 5001 022358bd 0 0 0 0 022358bc 00004770  # ov004 AquariumFish_SetUpNothing
+call 5001 02235fe1 0 0 0 0 02235fe0 00004770  # ov004 AquariumFish_ModeNone
+vcall 5001 022b06c8 90 022b06c8 0 0 0 022539cc  # main SceneObject_OnTalkEnd (slot 36 of the room character 022b06c8)
