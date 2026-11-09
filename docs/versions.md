@@ -215,8 +215,9 @@ The outline of the guide a contributor will follow:
    `tools/versions.py` (`KNOWN`: game code, revision, used size and trimmed SHA-1).
 2. `python tools/setup.py PATH.nds --version <version>` checks and extracts it to
    `extract/<version>.nds` and `build/<version>/rom/`.
-3. Make `config/<version>/arm9/` with ds-decomp (`dsd init`), then run the matching tool to name
-   its functions after the Korean ones; review the pairs it is unsure of.
+3. Make `config/<version>/arm9/` with ds-decomp (`dsd init`) or `tools/match_version.py --version
+   <version> --write`, which names its functions after the Korean ones; review the pairs it is
+   unsure of (`build/<version>/match/unsure.txt`).
 4. `python tools/verify.py --version <version>`: the shared sources that match as they are, and
    the ones that need a version condition or a source of their own.
 5. Record the title and new-game recordings for the version (`runtime/recordings/<version>/`) and
@@ -233,8 +234,35 @@ The outline of the guide a contributor will follow:
 | USA | `ADME` | 1 | `77fde3e30e1e6068395d1f96ea63be569b61c351` | `0x1f98bfc` | `22bf1eac11590f3dcc85268846eaadf32a6a0ab9` | `0xcd448` | 148 |
 
 Both are 32 MiB dumps padded with `0xff` after the used size. The USA dump is revision 1 (a
-revision 0 exists as well). Both have 148 ARM9 overlays; whether the overlays hold the same
-code under the same numbers is checked when the USA configuration is made.
+revision 0 exists as well); it is the version `adm-us-r1`.
+
+### adm-us-r1
+
+`config/adm-us-r1/arm9/` was made by `tools/match_version.py` (ds-decomp's `dsd init` stops on
+this ROM at a call into code it did not find as a function; the Korean configuration was made
+with a patched ds-decomp). Of the 29,334 Korean functions, 28,777 pair with a USA function:
+20,084 with the same instructions (relocated words and calls aside) at the only place that has
+them, 1,781 the same where calls place them, 6,393 laid out between pairs at the same size and
+519 at another size (`build/adm-us-r1/match/report.txt` has the counts per module, `pairs.txt`
+every pair, `unsure.txt` the 2,267 to review). 21,742 pairs are confirmed by the calls they make
+and receive. Data and .bss symbols are placed by the pool words that point at them: 12,442 of
+17,280. Every module, delinked by ds-decomp from this configuration and linked by mwldarm, has
+the ROM's bytes (`dsd check modules`: 153 of 153).
+
+**The overlays have the same numbers and contents.** All 148 USA overlays pair with the Korean
+overlay of the same number: 14,840 of their 15,084 Korean functions, 113 overlays completely.
+The ones that differ most are `ov095` (the soft keyboard: 81 of 131, the Hangul input has no
+counterpart), `ov004` (2,984 of 3,063), `ov128`, `ov129` and `ov134`. In `main`, 11,598 of 11,893
+pair; most of the rest is text and talk code (`talk_tags.c`, `talk_page.c`, around
+`0x02069270`-`0x0206cc00`) laid out differently, and in `autoload_2` (2,181 of 2,199) the wide
+character helpers `wctomb` and `wcstombs` have no USA counterpart.
+
+`tools/verify.py --version adm-us-r1` takes each source's address and size from the USA symbol
+table by its name. As they are, 3,342 of the 5,940 game sources and 2,205 of the 2,348 library
+sources match the USA ROM (every function's bytes; 20,708 of 29,334 functions). The rest differ
+mostly in constants: structure offsets and sizes a few bytes apart (text buffers), so they need
+version conditions or version-specific sources (step 4); 344 sources hold a function the USA
+version lacks.
 
 ## Migration
 
@@ -266,7 +294,8 @@ The order of the remaining steps. Each one keeps the Korean outputs as they are;
 ## Open questions
 
 - Which releases first, and is each one revision 0 (or are there later revisions to name)?
-- Do the releases number their overlays the same? If not, a module name (`ov097`) in function
+- Do the releases number their overlays the same? The USA release does (see `adm-us-r1`); the
+  others are checked when they are added. If one does not, a module name (`ov097`) in function
   keys and file paths is not shared, and keys need a per-version module map.
 - The European cartridge: one ROM with several languages, or one ROM per language? Several
   ROMs would be several versions (`adm-eu-en`, `adm-eu-es`, ...).
