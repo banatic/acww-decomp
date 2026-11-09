@@ -88,8 +88,8 @@ extern const MemberPointer data_ov068_02277020, data_ov068_02277050, data_ov068_
 #define ACTS_ANIM_CLIMB_OUT 0x12a
 #define ACTS_ANIM_CLIMB_OUT_HOLDING 0x12b
 #define ACTS_EFFECT_CLIMB_OUT 0x90
-#define ACTS_EFFECT_CLIMB_OUT_GROUND 0x91
-#define ACTS_GROUND_CLIMB_OUT 0x13
+#define ACTS_EFFECT_CLIMB_OUT_SAND 0x91
+#define ACTS_GROUND_SAND 0x13 /* the beach's dry sand (field_collision.c's shore): the falls' and climbs' own effects */
 #define ACTS_SOUND_CLIMB_OUT 0x7e9
 #define ACTS_SOUND_VOLUME 0x7f
 /* The object's flag an action holding it sets (0x4e8, main's scene_action.c SCENE_ACTION_HELD):
@@ -638,8 +638,8 @@ int OutdoorVillagerActs_StartClimbOut(OutdoorVillagerBehaviour *self, u8 *villag
     int attribute = ground.attr;
     Vec3 place = at;
     TileEvent_StartKindE(0, &place);
-    EffectSystem_StartOneShotSetNumberCopy(
-        attribute == ACTS_GROUND_CLIMB_OUT ? ACTS_EFFECT_CLIMB_OUT_GROUND : ACTS_EFFECT_CLIMB_OUT, &at, NULL, NULL);
+    EffectSystem_StartOneShotSetNumberCopy(attribute == ACTS_GROUND_SAND ? ACTS_EFFECT_CLIMB_OUT_SAND : ACTS_EFFECT_CLIMB_OUT,
+                                           &at, NULL, NULL);
     SoundEmitter_Play((SoundEmitter *) (void *) acts_at(villager, OUTDOOR_VILLAGER_EMITTER), ACTS_SOUND_CLIMB_OUT,
                       ACTS_SOUND_VOLUME, 0);
     VillagerMood_SoundsOff(acts_mood(villager));
@@ -680,7 +680,7 @@ extern fx32 FX_MulFunc(fx32 a, fx32 b);
 #define ACTS_ANIM_PITFALL_ENTER 0x128
 #define ACTS_ANIM_PITFALL_STAY 0x129
 #define ACTS_EFFECT_PITFALL 0x8e
-#define ACTS_EFFECT_PITFALL_GROUND 0x8f
+#define ACTS_EFFECT_PITFALL_SAND 0x8f
 #define ACTS_EFFECT_PITFALL_STAY 0x4c
 #define ACTS_SOUND_PITFALL_START 0x7ee
 #define ACTS_SOUND_PITFALL 0x7e8
@@ -790,8 +790,8 @@ void OutdoorVillagerActs_StayPitfall(OutdoorVillagerBehaviour *self, u8 *village
     int attribute = ground.attr;
     Vec3 place = at;
     TileEvent_StartKindE(0, &place);
-    EffectSystem_StartOneShotSetNumberCopy(
-        attribute == ACTS_GROUND_CLIMB_OUT ? ACTS_EFFECT_CLIMB_OUT_GROUND : ACTS_EFFECT_CLIMB_OUT, &at, NULL, NULL);
+    EffectSystem_StartOneShotSetNumberCopy(attribute == ACTS_GROUND_SAND ? ACTS_EFFECT_CLIMB_OUT_SAND : ACTS_EFFECT_CLIMB_OUT,
+                                           &at, NULL, NULL);
     SoundEmitter_Play(acts_emitter(villager), ACTS_SOUND_CLIMB_OUT, ACTS_SOUND_VOLUME, 0);
     self->step = 4;
     CollisionGround_Destroy(&ground);
@@ -849,8 +849,8 @@ void OutdoorVillagerActs_EnterPitfall(OutdoorVillagerBehaviour *self, u8 *villag
     int attribute = ground.attr;
     Vec3 place = at;
     TileEvent_StartUnitKind2(0, &place);
-    EffectSystem_StartOneShotSetNumberCopy(
-        attribute == ACTS_GROUND_CLIMB_OUT ? ACTS_EFFECT_PITFALL_GROUND : ACTS_EFFECT_PITFALL, &at, NULL, NULL);
+    EffectSystem_StartOneShotSetNumberCopy(attribute == ACTS_GROUND_SAND ? ACTS_EFFECT_PITFALL_SAND : ACTS_EFFECT_PITFALL, &at,
+                                           NULL, NULL);
     SoundEmitter_Play(acts_emitter(villager), ACTS_SOUND_PITFALL, ACTS_SOUND_VOLUME, 0);
     HeldItemLink_Action16(acts_link(villager), word, 1);
     SpeakerAnim_PlayItemPose(acts_anim(villager), villager, &acts_link(villager)->item, ACTS_ANIM_PITFALL_ENTER,

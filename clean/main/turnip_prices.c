@@ -292,8 +292,8 @@ int TurnipPrices_DrawPeak(TurnipPrices *prices)
 }
 CLEAN_AS(func_020876c8, TurnipPrices_DrawPeak)
 
-/* func_020876f0: the small spike: its peak on half day 7-12; falling before the two highs that
- * lead to it, the peak between two of 1.4-1.7, falling after. */
+/* func_020876f0: the small spike: its peak on half day 7-12; falling before the two normal
+ * prices (0.8-1.4) that lead to it, the peak between two of 1.4-1.7, falling after. */
 void TurnipPrices_DrawSmallSpike(TurnipPrices *prices)
 {
     u8 *p = prices->prices;

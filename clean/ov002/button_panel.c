@@ -239,12 +239,12 @@ static int set_layout(ButtonPanel *panel, u8 layout)
 }
 
 /* func_ov002_0220a8e8: the window with `message` at height 0x12 and its second layer
- * (func_0208aa70), messages 4 and 0x13 on the sprites. */
+ * (func_0208aa70), messages 4 and 0x13 (2d_menu's Yes and No) on the sprites. */
 int ButtonPanel_SetLayout13(ButtonPanel *panel, int message)
 {
     reopen_window(panel, message, 0x12);
     SlidingWindow_ShowExtra((SlidingWindow *) (void *) &panel->window);
-    ButtonPanel_ShowMessages4And13(panel);
+    ButtonPanel_ShowYesNo(panel);
     return set_layout(panel, 13);
 }
 CLEAN_AS(func_ov002_0220a8e8, ButtonPanel_SetLayout13)
@@ -254,7 +254,7 @@ int ButtonPanel_SetLayout12(ButtonPanel *panel, int message)
 {
     reopen_window(panel, message, 0x2a);
     SlidingWindow_ShowExtra((SlidingWindow *) (void *) &panel->window);
-    ButtonPanel_ShowMessages4And13(panel);
+    ButtonPanel_ShowYesNo(panel);
     return set_layout(panel, 12);
 }
 CLEAN_AS(func_ov002_0220a924, ButtonPanel_SetLayout12)
@@ -264,7 +264,7 @@ int ButtonPanel_SetLayout11(ButtonPanel *panel, int message)
 {
     reopen_window(panel, message, 0x22);
     SlidingWindow_HideExtra((SlidingWindow *) (void *) &panel->window);
-    ButtonPanel_ShowMessages4And13(panel);
+    ButtonPanel_ShowYesNo(panel);
     return set_layout(panel, 11);
 }
 CLEAN_AS(func_ov002_0220a960, ButtonPanel_SetLayout11)
@@ -283,21 +283,21 @@ int ButtonPanel_SetLayout9(ButtonPanel *panel, int message)
 {
     reopen_window(panel, message, 4);
     SlidingWindow_HideExtra((SlidingWindow *) (void *) &panel->window);
-    ButtonPanel_ShowMessages4And13(panel);
+    ButtonPanel_ShowYesNo(panel);
     return set_layout(panel, 9);
 }
 CLEAN_AS(func_ov002_0220a9e4, ButtonPanel_SetLayout9)
 
-/* func_ov002_0220aa20: messages 4 and 0x13 on the sprites, in 6-cell buttons. */
-void ButtonPanel_ShowMessages4And13(ButtonPanel *panel)
+/* func_ov002_0220aa20: messages 4 and 0x13 (Yes and No) on the sprites, in 6-cell buttons. */
+void ButtonPanel_ShowYesNo(ButtonPanel *panel)
 {
     show_sprite(panel, 0, data_ov002_0220be08, 6, 2, 4);
     show_sprite(panel, 1, data_ov002_0220be38, 6, 2, 0x13);
 }
-CLEAN_AS(func_ov002_0220aa20, ButtonPanel_ShowMessages4And13)
+CLEAN_AS(func_ov002_0220aa20, ButtonPanel_ShowYesNo)
 
-/* Messages 4 and 0x13 on the sprites, in 4-cell buttons. */
-static void show_small_4_and_13(ButtonPanel *panel)
+/* Messages 4 and 0x13 (Yes and No) on the sprites, in 4-cell buttons. */
+static void show_small_yes_no(ButtonPanel *panel)
 {
     show_sprite(panel, 0, data_ov002_0220bd38, 4, 1, 4);
     show_sprite(panel, 1, data_ov002_0220bd20, 4, 1, 0x13);
@@ -309,7 +309,7 @@ int ButtonPanel_SetLayout8(ButtonPanel *panel, int message)
 {
     reopen_window(panel, message, 0x11);
     SlidingWindow_HideExtra((SlidingWindow *) (void *) &panel->window);
-    show_small_4_and_13(panel);
+    show_small_yes_no(panel);
     return set_layout(panel, 8);
 }
 CLEAN_AS(func_ov002_0220aa60, ButtonPanel_SetLayout8)
@@ -319,7 +319,7 @@ int ButtonPanel_SetLayout7(ButtonPanel *panel, int message)
 {
     reopen_window(panel, message, 4);
     SlidingWindow_HideExtra((SlidingWindow *) (void *) &panel->window);
-    show_small_4_and_13(panel);
+    show_small_yes_no(panel);
     return set_layout(panel, 7);
 }
 CLEAN_AS(func_ov002_0220aacc, ButtonPanel_SetLayout7)

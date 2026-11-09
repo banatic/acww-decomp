@@ -46,7 +46,7 @@ int ButtonPanel_SetLayout12(ButtonPanel *panel, int message);
 int ButtonPanel_SetLayout11(ButtonPanel *panel, int message);
 int ButtonPanel_SetLayout10(ButtonPanel *panel);
 int ButtonPanel_SetLayout9(ButtonPanel *panel, int message);
-void ButtonPanel_ShowMessages4And13(ButtonPanel *panel);
+void ButtonPanel_ShowYesNo(ButtonPanel *panel);
 int ButtonPanel_SetLayout8(ButtonPanel *panel, int message);
 int ButtonPanel_SetLayout7(ButtonPanel *panel, int message);
 int ButtonPanel_SetLayout6(ButtonPanel *panel, int message);
