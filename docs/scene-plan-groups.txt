@@ -5,6 +5,57 @@
 # a visitor: for the boot on another day), unknown (the trigger is not identified yet),
 # unreachable (a second system, a server or a hardware event the recordings cannot make).
 
+# ================================================================== kept Reference on the PC
+
+area: Kept Reference on the PC
+group: the functions the runtime keeps Reference
+scene: none: the scenes enter them, but as the ROM's code
+reach: runtime/native-reference.txt and tools/native.py's keep-reference.txt keep these functions Reference in every run (the hardware's registers, a loop waiting for interrupts or other threads, the ROM's stack layout), so their Clean versions never run and a scene that enters one checks the ROM's code, not the Clean code (findings 2026-11-09, credit-audit: 86 functions the scenes enter, no longer counted as run; docs/verification.md, "Driven calls"). A Clean version runs only once the PC can do what keeps it Reference
+needs: unreachable
+match: autoload_2/input:Pad_Update autoload_2/particle_draw:ParticleDraw_Billboard
+  autoload_2/particle_draw:ParticleDraw_BindTexture
+  autoload_2/particle_draw:ParticleDraw_ChildBillboard autoload_2/particle_draw:ParticleDraw_Polygon
+  autoload_2/particle_draw:ParticleDraw_QuadXY autoload_2/particle_draw:ParticleDraw_QuadXZ
+  autoload_2/particle_draw:ParticleDraw_Stretched autoload_2/particle_system:ParticleSys_Draw
+  autoload_2/vector:Math_InitSqrt autoload_2/vector:Math_SqrtRounded itcm/interrupts:Irq_HBlank
+  itcm/line_effects:LineFx_GradientMain itcm/line_effects:LineFx_GradientSub
+  itcm/line_effects:LineFx_Window1Edge main/board_notices:BoardNotices_PostDays
+  main/board_notices:BoardNotices_PostPelican main/board_notices:BoardNotices_PostSlogan
+  main/boot_screen:BootScreen_SetUpPictures main/caution_window:CautionWindow_ApplyBlend
+  main/debug_screen:DebugScreen_Frame main/debug_screen:DebugScreen_Run
+  main/debug_screen:DebugScreen_WaitVBlank main/display_3d:Display3D_Init
+  main/display_3d:Display3D_InitEngine main/display_3d:Display3D_LoadToonTable
+  main/display_3d:Display3D_Reset main/display_frame:DisplayFrame_AfterVBlank
+  main/display_frame:DisplayFrame_Init main/display_frame:DisplayFrame_Reset2D
+  main/display_layers:DisplayLayer_SetBgControl main/display_layers:DisplayLayer_SetPriority
+  main/display_shadow:DisplayShadow_Flush main/display_shadow:DisplayShadow_WriteModes
+  main/joint_blend:JointBlend_Normalize main/main_loop:MainLoop_EndDraw main/main_loop:MainLoop_Run
+  main/menu_backdrop:MenuBackdrop_WipeInFrame main/menu_backdrop:MenuBackdrop_WipeOutFrame
+  main/mes_bg:MesBg_SetBgControl main/room_sync:RoomSync_PutFurniture
+  main/scene_display:SceneDisplay_ApplyFog main/scene_display:SceneDisplay_SetUp
+  main/scene_lights:SceneFlash_Draw main/scene_lights:SceneLight_Draw
+  main/scene_object:SceneObject_AfterCreate main/scene_object:SceneObject_Leave
+  main/scene_object:SceneObject_Update main/scene_process:SceneProcess_Finish
+  main/scene_process_base:SceneProcessBase_SetUpDisplay
+  main/screen_transition:ScreenTransitionCircle_HBlank
+  main/screen_transition:ScreenTransitionCircle_SetUp
+  main/screen_transition:ScreenTransitionCircle_VBlank
+  main/screen_transition:ScreenTransition_ClearBg2 main/session:Session_ProcessReceived
+  main/session_net:SessionNet_PeersHaveCredit main/shadow:ObjShadow_Draw main/sky:Sky_ShowOn
+  main/sky:Sky_VBlankMain main/sky:Sky_VBlankOff main/sky:Sky_VBlankSub main/startup:Startup_Begin
+  main/startup:Startup_InitGame main/talk_box:TalkBox_SetUpBg2
+  main/transfer_queue:TransferQueue_RunMain main/transfer_queue:TransferQueue_RunVBlank
+  main/user_settings:Nvram_Init main/user_settings:Nvram_Read ov003/fox:Fox_UpdateWalk
+  ov048/gatekeeper_states:Gatekeeper_RunStateA ov048/gatekeeper_states:Gatekeeper_StateBSayName
+  ov093/staff_roll:StaffRoll_ShowLogo ov093/staff_roll:StaffRoll_Start
+  ov094/pockets_common:PocketsItem_IsDeliveredCarpetOrWall
+  ov094/pockets_common:PocketsItem_IsDelivery ov094/pockets_common:PocketsItem_IsLostItem
+  ov118/map_menu_scene:MapMenu_Draw ov118/map_menu_scene:MapMenu_RunState
+  ov142/order_catalog_scene:OrderCatalog_Draw ov142/order_catalog_scene:OrderCatalog_RunState
+  ov144/music_list_scene:MusicList_Draw ov144/music_list_scene:MusicList_RunInteractive
+  ov144/music_list_scene:MusicList_RunState ov144/music_list_scene:MusicList_RunSubState
+  ov147/title_mes:TitleMes_HideLayer ov147/title_mes:TitleMes_SetUpLayer
+
 # ================================================================== one player cannot reach
 
 area: Unreachable for one player

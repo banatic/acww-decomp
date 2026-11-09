@@ -19,6 +19,8 @@ reports, for the game's Clean functions:
 --record writes the Clean functions the scenes of tools/scenes.py enter (from their lists, which a
 run of every scene leaves) as "module address" lines; CI's progress map counts them as checked in
 a run, since a scene is only committed when it agrees both ways. Refresh it after adding scenes.
+A function the runtime keeps Reference (kept_reference) is left out of every list: its Clean
+version never runs, so no scene checks it (docs/verification.md, "Driven calls").
     python tools/coverage.py --plan docs/scene-plan-groups.txt > docs/scene-plan.md
                                                    # every function no run enters, in the plan's groups
 
@@ -37,6 +39,7 @@ import argparse
 import collections
 import fnmatch
 import json
+import os
 import pathlib
 import re
 import sys
@@ -76,6 +79,20 @@ def clean_functions(syms) -> dict[Key, tuple[str, str]]:
                 if s.kind == "function" and not C.in_library(s.module, s.address & ~1):
                     out[(s.module, s.address & ~1)] = (rel, name)
     return out
+
+
+def kept_reference(syms) -> set[Key]:
+    """The game functions the runtime keeps Reference in every run (runtime/native-reference.txt
+    and tools/native.py's keep-reference.txt, as tools/run.py's policy reads them): what the PC
+    cannot do (the hardware, the ROM's stack layout). Their Clean versions never run, so a run
+    that enters such a function checks the ROM's code, not the Clean code: it is not credited."""
+    names = set()
+    for path in (C.ROOT / "runtime" / "native-reference.txt",
+                 C.BUILD / "native" / ("windows" if os.name == "nt" else "linux") / "keep-reference.txt"):
+        for line in path.read_text().splitlines() if path.exists() else []:
+            if line.strip() and not line.startswith("#"):
+                names.add(line.split()[0])
+    return {(s.module, s.address & ~1) for name in names for s in syms.by_name.get(name, []) if s.kind == "function"}
 
 
 def callers(syms) -> dict[Key, set[Key]]:
@@ -224,6 +241,10 @@ def main() -> None:
     lists = scene_lists(args.lists)
     if not lists:
         raise SystemExit(f"{args.lists}: no lists (run tools/scenes.py first)")
+    # a function counts as run where its own Clean code can run: not one the runtime keeps Reference
+    kept = kept_reference(syms)
+    for seen in lists.values():
+        seen -= kept
     ran_by: dict[Key, list[str]] = collections.defaultdict(list)
     for name, seen in lists.items():
         for k in seen:

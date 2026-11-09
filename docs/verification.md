@@ -121,6 +121,13 @@ another overlay's function at the same address, its check needs a moment where t
 loaded, best guarded by a code word that differs between the two (`call ... GUARD`, as the insect
 list's check does with 0229e1b8 = f7fa2003, f7fa2002 in the fish list).
 
+Nor does a run check a function whose Clean code it does not run. A function the runtime keeps
+Reference (`runtime/native-reference.txt`, `tools/native.py`'s keep-reference.txt: the
+hardware, the ROM's stack layout) runs as the ROM's code in every run, its Clean version never,
+so `tools/coverage.py` leaves it out of the scenes' lists (and of clean-entered.txt) even where a
+scene enters it; the plan holds them in the group "the functions the runtime keeps Reference".
+A driven call credits only what ran as Clean code in its Clean pass (`--clean-ran`).
+
 ## Status (2026-10-21)
 
 | | Game code (`src/`) | With the libraries |

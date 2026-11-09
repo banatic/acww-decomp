@@ -1,12 +1,18 @@
-From 587 scene lists: 25,251 Clean game functions, run 22,334, function check only 736, checked by a driven call 1,214, read only 967; checked (run or driven call) 24,125; the groups below hold 2,917 (function check only + driven + read only).
+From 587 scene lists: 25,251 Clean game functions, run 22,248, function check only 744, checked by a driven call 1,214, read only 1,045; checked (run or driven call) 24,039; the groups below hold 3,003 (function check only + driven + read only).
 
 | needs | functions |
 |---|---|
 | seed | 252 |
 | date | 69 |
 | unknown | 275 |
-| unreachable | 2,321 |
-| total | 2,917 |
+| unreachable | 2,407 |
+| total | 3,003 |
+
+## Kept Reference on the PC (86)
+
+| group | functions (check only / driven / read only) | Clean files | scene | how to reach it | needs |
+|---|---|---|---|---|---|
+| the functions the runtime keeps Reference | 86 (8 / 0 / 78) | autoload_2/particle_draw 7, main/display_3d 4, main/screen_transition 4, main/sky 4, ov144/music_list_scene 4, itcm/line_effects 3, main/board_notices 3, main/debug_screen 3, 33 more files (54) | none: the scenes enter them, but as the ROM's code | runtime/native-reference.txt and tools/native.py's keep-reference.txt keep these functions Reference in every run (the hardware's registers, a loop waiting for interrupts or other threads, the ROM's stack layout), so their Clean versions never run and a scene that enters one checks the ROM's code, not the Clean code (findings 2026-11-09, credit-audit: 86 functions the scenes enter, no longer counted as run; docs/verification.md, "Driven calls"). A Clean version runs only once the PC can do what keeps it Reference | unreachable |
 
 ## Unreachable for one player (2,321)
 
