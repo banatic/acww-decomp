@@ -37,7 +37,10 @@ typedef struct Glide {
 
 /* The animations of a Glider's sprite (func_0208e508 starts one, func_0208e4bc reads it): four
  * sets of three (1-3, 7-9, 13-15, 16-18) and two sets of turns (4-6 and 10-12); turns 5 and 11
- * go back to 1 and 7 when they end (Glider_Update). What each one shows is not known. */
+ * go back to 1 and 7 when they end (Glider_Update). By main's frame tables (data_020d6fcc,
+ * through data_020d0b08): the first of a set loops, 2 pixels off its place and back every 10
+ * ticks (at rest); the second moves 3 pixels in two ticks and holds there (the press: down for
+ * sets A and B, up for C and D); the third comes back to its place and holds (the release). */
 enum GliderAnim {
     GLIDER_ANIM_NONE = 0,
     GLIDER_ANIM_SET_A = 1,   /* 1-3 */

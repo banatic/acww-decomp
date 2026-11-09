@@ -31,11 +31,11 @@
 #define ITEM_TRAITS_KIND_ROOM_A 3
 #define ITEM_TRAITS_KIND_ROOM_B 4
 /* ItemTraits_Class of the room codes outside kind 1 (item_lists.c, current_pockets.c). */
-#define ITEM_TRAITS_CLASS_ROOM_450C 0x39
-#define ITEM_TRAITS_CLASS_ROOM_45DC 0x3a
+#define ITEM_TRAITS_CLASS_FOSSIL 0x39
+#define ITEM_TRAITS_CLASS_GYROID_OR_PAINTING 0x3a
 #define ITEM_TRAITS_CLASS_ROOM_OTHER 0x3b
-/* ItemTraits_Icon of the room codes 0x450c-0x45db. */
-#define ITEM_TRAITS_UNK02_ROOM_450C 0xa7
+/* ItemTraits_Icon of the fossils (0x450c-0x45db). */
+#define ITEM_TRAITS_ICON_FOSSIL 0xa7
 /* ItemTraits_FishSize and ItemTraits_FishGroupOrder of an item that is no fish. */
 #define ITEM_TRAITS_NO_FISH_VALUE 10
 #define ITEM_TRAITS_NO_FISH_ORDER 4
@@ -337,8 +337,8 @@ int ItemTraits_HasHeldModel(const ItemCode *item)
 CLEAN_AS(func_0204c4e8, ItemTraits_HasHeldModel)
 
 /* func_0204c520: an item's class. When its carried form is of kind 1, the class of the item's
- * always.bin record; for furniture 0x39 (0x450c-0x45db), 0x3a (0x45dc-0x47d7 and
- * 0x3894-0x38e3) or 0x3b; 0 for any other.
+ * always.bin record; for furniture 0x39 (the fossils 0x450c-0x45db), 0x3a (the gyroids
+ * 0x45dc-0x47d7 and the paintings 0x3894-0x38e3) or 0x3b; 0 for any other.
  * QUIRK: the record read is the item's own, not its carried form's: a room code whose carried
  * form is of kind 1 reads the record of the room code's low 12 bits (ItemInfo_Class). */
 int ItemTraits_Class(const ItemCode *item)
@@ -352,17 +352,17 @@ int ItemTraits_Class(const ItemCode *item)
         return 0;
     }
     if (ItemGroup_IsFossil(&carried)) {
-        return ITEM_TRAITS_CLASS_ROOM_450C;
+        return ITEM_TRAITS_CLASS_FOSSIL;
     }
     if (ItemGroup_IsGyroid(&carried) || ItemGroup_IsPainting(&carried)) {
-        return ITEM_TRAITS_CLASS_ROOM_45DC;
+        return ITEM_TRAITS_CLASS_GYROID_OR_PAINTING;
     }
     return ITEM_TRAITS_CLASS_ROOM_OTHER;
 }
 CLEAN_AS(func_0204c520, ItemTraits_Class)
 
 /* func_0204c63c: for an item whose carried form is of kind 1 that form's always.bin byte 7;
- * for one of kind 3 or 4 whether it is one of 0x45dc-0x47d7; 0 for any other. */
+ * for one of kind 3 or 4 whether it is a gyroid (0x45dc-0x47d7); 0 for any other. */
 int ItemTraits_Look(const ItemCode *item)
 {
     ItemCode carried = carried_form(item);
@@ -381,7 +381,7 @@ int ItemTraits_Look(const ItemCode *item)
 CLEAN_AS(func_0204c63c, ItemTraits_Look)
 
 /* func_0204c6b8: for an item of kind 1 its always.bin halfword 2; for one of kind 3 or 4 0xa7
- * (0x450c-0x45db), 1 (0x45dc-0x47d7) or 0; 0 for any other. */
+ * (the fossils), 1 (the gyroids) or 0; 0 for any other. */
 int ItemTraits_Icon(const ItemCode *item)
 {
     switch (ItemCode_Kind(item)) {
@@ -392,7 +392,7 @@ int ItemTraits_Icon(const ItemCode *item)
         case ITEM_TRAITS_KIND_ROOM_A:
         case ITEM_TRAITS_KIND_ROOM_B:
             if (ItemGroup_IsFossil(item)) {
-                return ITEM_TRAITS_UNK02_ROOM_450C;
+                return ITEM_TRAITS_ICON_FOSSIL;
             }
             return ItemGroup_IsGyroid(item) ? 1 : 0;
         default:

@@ -426,7 +426,7 @@ static void show_of_set(Glider *glider, int index, int otherwise)
     CellLayerSprite_SetAnim((CellLayerSprite *) (void *) glider, set < 0 ? otherwise : set + index);
 }
 
-/* func_ov002_0220a0ec: the first animation of the current one's set.
+/* func_ov002_0220a0ec: the first animation of the current one's set, at rest.
  * QUIRK: a turn, or any number outside the sets, gives 9, the last of set B. */
 void Glider_ShowFirstOfSet(Glider *glider)
 {
@@ -434,7 +434,7 @@ void Glider_ShowFirstOfSet(Glider *glider)
 }
 CLEAN_AS(func_ov002_0220a0ec, Glider_ShowFirstOfSet)
 
-/* func_ov002_0220a164: the third animation of the current one's set.
+/* func_ov002_0220a164: the third animation of the current one's set, the release.
  * QUIRK: a turn, or any number outside the sets, gives 9. */
 void Glider_ShowThirdOfSet(Glider *glider)
 {
@@ -442,7 +442,7 @@ void Glider_ShowThirdOfSet(Glider *glider)
 }
 CLEAN_AS(func_ov002_0220a164, Glider_ShowThirdOfSet)
 
-/* func_ov002_0220a1dc: the second animation of the current one's set.
+/* func_ov002_0220a1dc: the second animation of the current one's set, the press.
  * QUIRK: a turn, or any number outside the sets, gives 8. */
 void Glider_ShowSecondOfSet(Glider *glider)
 {
