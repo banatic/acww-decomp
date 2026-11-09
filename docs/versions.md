@@ -225,6 +225,17 @@ The outline of the guide a contributor will follow:
    migration is done) and its firmware language, and a CI job for it.
 7. Scenes come later, with a seed save of that release.
 
+## Dumps known so far
+
+| Version | Game code | Revision | SHA-1 | Used size | Trimmed SHA-1 | ARM9 size | Overlays |
+|---|---|---|---|---|---|---|---|
+| `adm-kr` | `ADMK` | 0 | `1fffd601d3439e37cd934e72d08e487a93fc449b` | `0x1f533c4` | `f987baf1db78b9b8c92a98877c62df71f9d049d3` | `0xcf31c` | 148 |
+| USA | `ADME` | 1 | `77fde3e30e1e6068395d1f96ea63be569b61c351` | `0x1f98bfc` | `22bf1eac11590f3dcc85268846eaadf32a6a0ab9` | `0xcd448` | 148 |
+
+Both are 32 MiB dumps padded with `0xff` after the used size. The USA dump is revision 1 (a
+revision 0 exists as well). Both have 148 ARM9 overlays; whether the overlays hold the same
+code under the same numbers is checked when the USA configuration is made.
+
 ## Migration
 
 The order of the remaining steps. Each one keeps the Korean outputs as they are; none changes a

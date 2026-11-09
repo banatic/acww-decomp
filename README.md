@@ -14,7 +14,7 @@ copy of the game to build it.
 | Version | Code | SHA-1 | Status |
 |---|---|---|---|
 | Korea | `ADMK` | `1fffd601d3439e37cd934e72d08e487a93fc449b` | matched, linked and Clean complete |
-| USA | `ADME` | to come | planned |
+| USA (Rev 1) | `ADME` | `77fde3e30e1e6068395d1f96ea63be569b61c351` | planned |
 | Europe | `ADMP` | to come | planned |
 | Japan | `ADMJ` | to come | planned |
 
