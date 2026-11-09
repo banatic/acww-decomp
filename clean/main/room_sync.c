@@ -63,7 +63,7 @@ static u16 *map_item(AcreMap *map, int x, int y, u8 layer)
 
 static int is_step_item(u16 code)
 {
-    return code >= ROOM_SYNC_STEP_ITEM_FIRST && code <= ROOM_SYNC_STEP_ITEM_LAST;
+    return code >= ROOM_SYNC_GYROID_FIRST && code <= ROOM_SYNC_GYROID_LAST;
 }
 
 /* Vtable slot 0x74: whether `state` shows the object on. */

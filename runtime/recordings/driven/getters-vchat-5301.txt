@@ -26,7 +26,7 @@ call 5301 02063f41 1 0 0 0 00000000 00000000  # main ItemGroupOrder_Weight
 call 5301 02063f41 2 0 0 0 00000000 00000000  # main ItemGroupOrder_Weight
 call 5301 02063f41 3 0 0 0 00000000 00000000  # main ItemGroupOrder_Weight
 call 5301 0204b3b5 5 0 0 0 00000000 00000000  # main ItemGroup_Insect
-call 5301 0204c5c5 021de3ae 0 0 0 00000000 00000000  # main ItemGroup_IsRoom3894 (the player's first pocket)
+call 5301 0204c5c5 021de3ae 0 0 0 00000000 00000000  # main ItemGroup_IsPainting (the player's first pocket)
 call 5301 020b12b1 0 0 40 40 00000000 00000000  # main Constellations_InView
 call 5301 020b1311 0 0 0 0 00000000 00000000  # main Constellations_ClearNew
 call 5301 0203d339 021c6998 0 0 0 00000000 00000000  # main PlayerOptions_Flag (the options in use)

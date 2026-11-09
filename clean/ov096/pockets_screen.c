@@ -2359,9 +2359,10 @@ int PocketsScreen_PlaceY(PocketsScreen *self, int place)
 }
 CLEAN_AS(func_ov096_0229f200, PocketsScreen_PlaceY)
 
-/* The item codes PocketsScreen_WaitPresentOpened records. */
-#define ITEM_136A 0x136a
-#define ITEM_137B 0x137b
+/* The items PocketsScreen_WaitPresentOpened records when a present holds them: the golden
+ * shovel and the golden slingshot. */
+#define PRESENT_GOLDEN_SHOVEL 0x136a
+#define PRESENT_GOLDEN_SLINGSHOT 0x137b
 
 /* What the grid's and the letters' objects answer for no place. */
 #define GRID_NO_INDEX 0x23
@@ -3027,9 +3028,9 @@ void PocketsScreen_WaitPresentOpened(PocketsScreen *self)
         return;
     }
     int record = (int) (uintptr_t) PlayerRecords_Current();
-    if (self->item == ITEM_136A) {
+    if (self->item == PRESENT_GOLDEN_SHOVEL) {
         PlayerRecord_SetFlag((u8 *) (uintptr_t) record, 0x27);
-    } else if (self->item == ITEM_137B) {
+    } else if (self->item == PRESENT_GOLDEN_SLINGSHOT) {
         PlayerRecord_SetFlag((u8 *) (uintptr_t) record, 0x28);
     }
     self->held_state = 0;

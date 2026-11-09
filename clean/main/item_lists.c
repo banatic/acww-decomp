@@ -42,13 +42,14 @@ extern void func_020051b0(void *item);
 #define ITEM_LISTS_CLOTHES_FIRST 0x11a8
 #define ITEM_LISTS_CLOTHES_LAST 0x12a7
 #define ITEM_LISTS_ANY_STYLE 0xa
-/* The ranges for which ItemLists_DrawRange drops its filter. */
-#define ITEM_LISTS_UNFILTERED_A_FIRST 0x450c
-#define ITEM_LISTS_UNFILTERED_A_LAST 0x45db
-#define ITEM_LISTS_UNFILTERED_B_FIRST 0x45dc
-#define ITEM_LISTS_UNFILTERED_B_LAST 0x47d7
-#define ITEM_LISTS_UNFILTERED_C_FIRST 0x1323
-#define ITEM_LISTS_UNFILTERED_C_LAST 0x1368
+/* The ranges for which ItemLists_DrawRange drops its filter: the fossils, the gyroids and the
+ * songs. */
+#define ITEM_LISTS_FOSSIL_FIRST 0x450c
+#define ITEM_LISTS_FOSSIL_LAST 0x45db
+#define ITEM_LISTS_GYROID_FIRST 0x45dc
+#define ITEM_LISTS_GYROID_LAST 0x47d7
+#define ITEM_LISTS_SONG_FIRST 0x1323
+#define ITEM_LISTS_SONG_LAST 0x1368
 /* The days after which a season starts in its first month (February's is earlier). */
 #define ITEM_LISTS_FEBRUARY_LAST_WINTER_DAY 24
 #define ITEM_LISTS_LAST_DAY_BEFORE 26
@@ -305,9 +306,9 @@ void ItemLists_DrawRange(u16 *out, int first, u32 count, u16 *drawn, u32 drawn_c
 
     u16 start = (u16) first;
     int shift = ItemCode_IsFurniture(&start) ? 2 : 0;
-    if ((start >= ITEM_LISTS_UNFILTERED_A_FIRST && start <= ITEM_LISTS_UNFILTERED_A_LAST) ||
-        (start >= ITEM_LISTS_UNFILTERED_B_FIRST && start <= ITEM_LISTS_UNFILTERED_B_LAST) ||
-        (start >= ITEM_LISTS_UNFILTERED_C_FIRST && start <= ITEM_LISTS_UNFILTERED_C_LAST)) {
+    if ((start >= ITEM_LISTS_FOSSIL_FIRST && start <= ITEM_LISTS_FOSSIL_LAST) ||
+        (start >= ITEM_LISTS_GYROID_FIRST && start <= ITEM_LISTS_GYROID_LAST) ||
+        (start >= ITEM_LISTS_SONG_FIRST && start <= ITEM_LISTS_SONG_LAST)) {
         filter = 0;
     }
 

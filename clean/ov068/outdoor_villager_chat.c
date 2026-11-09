@@ -99,8 +99,9 @@ extern const MemberPointer data_ov068_02276fb0, data_ov068_02276fc0, data_ov068_
 /* Clothes of codes 0x12a8 to 0x12af are a design. */
 #define CHAT_DESIGN_CLOTHES_FIRST 0x12a8
 #define CHAT_DESIGN_CLOTHES_LAST 0x12af
-#define CHAT_ITEM_1380_FIRST 0x1380
-#define CHAT_ITEM_1380_LAST 0x139f
+/* The umbrellas. */
+#define CHAT_UMBRELLA_FIRST 0x1380
+#define CHAT_UMBRELLA_LAST 0x139f
 #define CHAT_TOWN_PLACES 8
 
 static u8 *chat_at(void *object, u32 offset)
@@ -600,7 +601,7 @@ int OutdoorVillagerChat_DefaultClothes(OutdoorVillagerBehaviour *self, u8 *villa
 
     u16 item = *VillagerState_HeldItem(VillagerStatus_StateEntry(first));
     u16 wanted;
-    if (item < CHAT_ITEM_1380_FIRST || item > CHAT_ITEM_1380_LAST) {
+    if (item < CHAT_UMBRELLA_FIRST || item > CHAT_UMBRELLA_LAST) {
         u16 default_item;
         VillagerData_DefaultUmbrella(&default_item, first);
         wanted = default_item;

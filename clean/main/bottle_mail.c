@@ -21,8 +21,9 @@
 #define DRIFT_DRAWS 5
 /* BottleMail_DailyCheck's chance: this one of ten. */
 #define NEW_BOTTLE_DRAW 7
-/* The item marked in the player's record of items when the bottle is opened. */
-#define MARKED_ITEM 0x1033
+/* The bottle's stationery (item 0x1033), marked in the player's record of items when the bottle
+ * is opened. */
+#define BOTTLE_STATIONERY 0x1033
 
 /* The bottle's letter and the bits of the game's messages used (func_02097e38, func_02097edc). */
 extern BottleState data_021f36ec;
@@ -157,7 +158,7 @@ int BottleMail_Open(void)
         Letter_Clear(bottle);
         return 1;
     }
-    u16 item = MARKED_ITEM;
+    u16 item = BOTTLE_STATIONERY;
     ItemRecord_SetBit((ItemRecord *) PlayerRecord_ItemRecord(PlayerRecords_Current()), &item, 0, 1);
     Letter_Assign(place, bottle);
     Letter_Clear(bottle);

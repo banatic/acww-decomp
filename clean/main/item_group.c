@@ -9,8 +9,8 @@
 #define ITEM_GROUP_CARPETS 0x44
 #define ITEM_GROUP_CLOTH 0x11a8
 #define ITEM_GROUP_CLOTHS 0x100
-#define ITEM_GROUP_1380 0x1380
-#define ITEM_GROUP_1380S 0x20
+#define ITEM_GROUP_UMBRELLA 0x1380
+#define ITEM_GROUP_UMBRELLAS 0x20
 #define ITEM_GROUP_HEAD_A 0x13a8
 #define ITEM_GROUP_HEAD_AS 0x20
 #define ITEM_GROUP_HEAD_B 0x13c8
@@ -46,7 +46,7 @@ CLEAN_AS(func_0204b1a0, ItemGroup_Wallpaper)
 /* func_0204b1b8 */
 u16 ItemGroup_Umbrella(u32 index)
 {
-    return code_of(index, ITEM_GROUP_1380, ITEM_GROUP_1380S);
+    return code_of(index, ITEM_GROUP_UMBRELLA, ITEM_GROUP_UMBRELLAS);
 }
 CLEAN_AS(func_0204b1b8, ItemGroup_Umbrella)
 
@@ -95,7 +95,7 @@ CLEAN_AS(func_0204b200, ItemGroup_TestIsWallpaper)
 /* func_0204b238 */
 int ItemGroup_IsUmbrella(const u16 *code)
 {
-    return in_group(code, ITEM_GROUP_1380, ITEM_GROUP_1380S);
+    return in_group(code, ITEM_GROUP_UMBRELLA, ITEM_GROUP_UMBRELLAS);
 }
 CLEAN_AS(func_0204b238, ItemGroup_IsUmbrella)
 
@@ -176,12 +176,12 @@ CLEAN_AS(func_0204b320, ItemGroup_TestIsHeadB)
 #define ITEM_GROUP_MOUTH_FLOWERS 0x21
 #define ITEM_GROUP_BELL_BAG 0x1492
 #define ITEM_GROUP_BELL_BAGS 0x6c
-#define ITEM_GROUP_ROOM_3894 0x3894
-#define ITEM_GROUP_ROOM_3894_LAST 0x38e3
-#define ITEM_GROUP_ROOM_450C 0x450c
-#define ITEM_GROUP_ROOM_450C_LAST 0x45db
-#define ITEM_GROUP_ROOM_45DC 0x45dc
-#define ITEM_GROUP_ROOM_45DC_LAST 0x47d7
+#define ITEM_GROUP_PAINTING 0x3894
+#define ITEM_GROUP_PAINTING_LAST 0x38e3
+#define ITEM_GROUP_FOSSIL 0x450c
+#define ITEM_GROUP_FOSSIL_LAST 0x45db
+#define ITEM_GROUP_GYROID 0x45dc
+#define ITEM_GROUP_GYROID_LAST 0x47d7
 
 /* The index of a code in its group, -1 for a code outside it. */
 static int index_in(const u16 *code, u16 first, u32 count)
@@ -347,22 +347,22 @@ int ItemGroup_FishIndex(const u16 *code)
 CLEAN_AS(func_0204c3a0, ItemGroup_FishIndex)
 
 /* func_0204c5c4 */
-int ItemGroup_IsRoom3894(const u16 *code)
+int ItemGroup_IsPainting(const u16 *code)
 {
-    return in_codes(code, ITEM_GROUP_ROOM_3894, ITEM_GROUP_ROOM_3894_LAST);
+    return in_codes(code, ITEM_GROUP_PAINTING, ITEM_GROUP_PAINTING_LAST);
 }
-CLEAN_AS(func_0204c5c4, ItemGroup_IsRoom3894)
+CLEAN_AS(func_0204c5c4, ItemGroup_IsPainting)
 
 /* func_0204c5ec */
-int ItemGroup_IsRoom45dc(const u16 *code)
+int ItemGroup_IsGyroid(const u16 *code)
 {
-    return in_codes(code, ITEM_GROUP_ROOM_45DC, ITEM_GROUP_ROOM_45DC_LAST);
+    return in_codes(code, ITEM_GROUP_GYROID, ITEM_GROUP_GYROID_LAST);
 }
-CLEAN_AS(func_0204c5ec, ItemGroup_IsRoom45dc)
+CLEAN_AS(func_0204c5ec, ItemGroup_IsGyroid)
 
 /* func_0204c614 */
-int ItemGroup_IsRoom450c(const u16 *code)
+int ItemGroup_IsFossil(const u16 *code)
 {
-    return in_codes(code, ITEM_GROUP_ROOM_450C, ITEM_GROUP_ROOM_450C_LAST);
+    return in_codes(code, ITEM_GROUP_FOSSIL, ITEM_GROUP_FOSSIL_LAST);
 }
-CLEAN_AS(func_0204c614, ItemGroup_IsRoom450c)
+CLEAN_AS(func_0204c614, ItemGroup_IsFossil)

@@ -85,18 +85,19 @@ typedef struct ItemMap {
 #define ROOM_DESIGN_CODES 0x80
 #define RECORD_DESIGN_FIRST 0x1188
 #define RECORD_DESIGN_LAST 0x11a7
-#define RECORD_FIRST_DEFAULT 0x113e
-#define RECORD_SECOND_DEFAULT 0x1182
+#define RECORD_DEFAULT_WALLPAPER 0x113e
+#define RECORD_DEFAULT_CARPET 0x1182
 
 static const u16 room_design_first[ROOM_DESIGN_RANGES] = {0x3d84, 0x3ea4, 0x3f24, 0x4224};
 
-/* Design_VillagerTakeShopDesign's draw (of 100) and the items it looks for. */
+/* Design_VillagerTakeShopDesign's draw (of 100) and the items it looks for: an umbrella, as an
+ * item or as the tailor's displayed furniture. */
 #define TAKE_DRAW 100
 #define TAKE_ITEMS 6
-#define TAKE_ITEM_FIRST 0x1380
-#define TAKE_ITEM_LAST 0x139f
-#define TAKE_ROOM_ITEM_FIRST 0x3e24
-#define TAKE_ROOM_ITEM_LAST 0x3ea3
+#define TAKE_UMBRELLA_FIRST 0x1380
+#define TAKE_UMBRELLA_LAST 0x139f
+#define TAKE_SHOWN_UMBRELLA_FIRST 0x3e24
+#define TAKE_SHOWN_UMBRELLA_LAST 0x3ea3
 
 /* Design_Changed: the scene (func_020b65c4) the shop's textures exist in, and the overlay 3
  * actor that shows DESIGN_KIND_TOWN_FLAG. */
@@ -361,7 +362,7 @@ void Design_RemovePlayerItems(int player)
         if (is_record_design(*HouseRecord_RoomWallpaper(record, NULL))) {
             unsigned int code = *HouseRecord_RoomWallpaper(record, NULL);
             if (record_design_owner(code) == player) {
-                ItemCode first = RECORD_FIRST_DEFAULT;
+                ItemCode first = RECORD_DEFAULT_WALLPAPER;
                 HouseRecord_RoomSetWallpaper(record, &first, 0);
             }
         }
@@ -370,7 +371,7 @@ void Design_RemovePlayerItems(int player)
         }
         unsigned int code = *(u16 *) HouseRecord_RoomCarpet(record, NULL);
         if (record_design_owner(code) == player) {
-            ItemCode second = RECORD_SECOND_DEFAULT;
+            ItemCode second = RECORD_DEFAULT_CARPET;
             HouseRecord_RoomSetCarpet(record, &second, 0);
         }
     }
@@ -511,8 +512,8 @@ int Design_VillagerTakeShopDesign(int villager, int announce_it)
         int found = 0;
         for (int i = 0; i < TAKE_ITEMS; i++) {
             TailorStock_Item((TailorStock *) (void *) data_021f3b44, i, &item);
-            if ((item >= TAKE_ITEM_FIRST && item <= TAKE_ITEM_LAST) ||
-                (item >= TAKE_ROOM_ITEM_FIRST && item <= TAKE_ROOM_ITEM_LAST)) {
+            if ((item >= TAKE_UMBRELLA_FIRST && item <= TAKE_UMBRELLA_LAST) ||
+                (item >= TAKE_SHOWN_UMBRELLA_FIRST && item <= TAKE_SHOWN_UMBRELLA_LAST)) {
                 found = 1;
                 break;
             }

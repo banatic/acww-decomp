@@ -36,15 +36,15 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 #define TOWN_SPAWN_SHOVEL 0x1369
 #define TOWN_SPAWN_GOLDEN_SHOVEL 0x136a
 #define TOWN_SPAWN_WET_ITEMS 3
-#define TOWN_SPAWN_WET_FIRST 0x45dc
-#define TOWN_SPAWN_WET_COUNT 0x7f
+#define TOWN_SPAWN_GYROID_FIRST 0x45dc
+#define TOWN_SPAWN_GYROID_COUNT 0x7f
 #define TOWN_SPAWN_BEACH_ROW 4
 #define TOWN_SPAWN_COCONUT 0x1548
 #define TOWN_SPAWN_ROCK 0xe3 /* the rocks 0xe3-0xe7 */
 #define TOWN_SPAWN_ROCK_CODES 5
 #define TOWN_SPAWN_MONEY_ROCK_KINDS 4
-#define TOWN_SPAWN_MARKED_1549 3 /* marked items 0x1549 the town keeps */
-#define TOWN_SPAWN_ITEM_1549 0x1549
+#define TOWN_SPAWN_MARKED_FOSSILS 3 /* buried fossils (item 0x1549) the town keeps */
+#define TOWN_SPAWN_FOSSIL 0x1549
 #define TOWN_SPAWN_PITFALL_SEED 0x1566
 #define TOWN_SPAWN_CODE_RAFFLESIA 0x1b
 #define TOWN_SPAWN_CODE_WILTED_RAFFLESIA 0x89
@@ -83,8 +83,8 @@ void TownSpawn_GildBuriedShovels(TownDay *town, AcreMap *map, int wide, int high
 }
 CLEAN_AS(func_02047e54, TownSpawn_GildBuriedShovels)
 
-/* func_02047ee8: after a wet day, unless rain or snow falls now (weather 3 or 4), three items
- * drawn from 0x45dc on, each marked on a free tile of an acre drawn after the last.
+/* func_02047ee8: after a wet day, unless rain or snow falls now (weather 3 or 4), three gyroids
+ * drawn from the 127 from 0x45dc on, each marked on a free tile of an acre drawn after the last.
  *
  * QUIRK: the first acre is drawn below wide - 1 and high - 1, the later steps below them too,
  * then taken modulo wide and high. */
@@ -101,7 +101,7 @@ void TownSpawn_AfterWetDay(TownDay *town, AcreMap *map, int wide, int high, u8 w
     int acre_z = (int) MainRandom_Below(high - 1);
     for (int i = 0; i < TOWN_SPAWN_WET_ITEMS; i++) {
         u16 item;
-        ItemLists_DrawRange(&item, TOWN_SPAWN_WET_FIRST, TOWN_SPAWN_WET_COUNT, 0, 0, NULL, 1, 10, 0, 1);
+        ItemLists_DrawRange(&item, TOWN_SPAWN_GYROID_FIRST, TOWN_SPAWN_GYROID_COUNT, 0, 0, NULL, 1, 10, 0, 1);
         acre_x = (acre_x + 1 + (int) MainRandom_Below(wide - 1)) % wide;
         acre_z = (acre_z + 1 + (int) MainRandom_Below(high - 1)) % high;
         TownPlace_PutInAcre(town, map, acre_x + 1, acre_z + 1, item, func_02048e54, 1);
@@ -309,13 +309,13 @@ CLEAN_AS(func_020483c4, TownSpawn_PutMarkedPitfall)
  * last (see TownSpawn_AfterWetDay's QUIRK). */
 void TownSpawn_PutMarkedFossils(TownDay *town, AcreMap *map, int wide, int high)
 {
-    int missing = TOWN_SPAWN_MARKED_1549 - TownAcreCount_Totals(&data_021c779c)->marked_fossils;
+    int missing = TOWN_SPAWN_MARKED_FOSSILS - TownAcreCount_Totals(&data_021c779c)->marked_fossils;
     int acre_x = (int) MainRandom_Below(wide - 1);
     int acre_z = (int) MainRandom_Below(high - 1);
     for (; missing > 0; missing--) {
         acre_x = (acre_x + 1 + (int) MainRandom_Below(wide - 1)) % wide;
         acre_z = (acre_z + 1 + (int) MainRandom_Below(high - 1)) % high;
-        TownPlace_PutInAcre(town, map, acre_x + 1, acre_z + 1, TOWN_SPAWN_ITEM_1549, func_02048e54, 1);
+        TownPlace_PutInAcre(town, map, acre_x + 1, acre_z + 1, TOWN_SPAWN_FOSSIL, func_02048e54, 1);
     }
 }
 CLEAN_AS(func_02048418, TownSpawn_PutMarkedFossils)

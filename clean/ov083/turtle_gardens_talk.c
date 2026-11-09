@@ -42,8 +42,8 @@ extern const char data_ov083_02279348[];
 #define TURTLE_GARDENS_TALK_SLOT_RESET 0x08
 
 /* The item he takes and the one he gives for it. */
-#define TURTLE_GARDENS_TALK_ITEM_37E0 0x37e0
-#define TURTLE_GARDENS_TALK_ITEM_1559 0x1559
+#define TURTLE_GARDENS_TALK_MASSAGE_CHAIR 0x37e0
+#define TURTLE_GARDENS_TALK_SCALLOP 0x1559
 
 /* The current player's daily bit of his prize. */
 #define TURTLE_GARDENS_TALK_DAILY_BIT 0x1d
@@ -167,7 +167,7 @@ void TurtleGardensTalk_Line(TurtleGardensTalk *talk, TurtleGardensTalkStart *out
     PlayerRecord_VillagerPart(PlayerRecords_Current());
     out->name = data_ov083_02279338;
     if (talk->slot_37e0 == TURTLE_GARDENS_TALK_37E0_UNKNOWN) {
-        u16 item_37e0 = TURTLE_GARDENS_TALK_ITEM_37E0;
+        u16 item_37e0 = TURTLE_GARDENS_TALK_MASSAGE_CHAIR;
         talk->slot_37e0 = CurrentPockets_FindItem(&item_37e0);
         if (talk->slot_37e0 >= 0) {
             out->name = data_ov083_02279348;
@@ -209,7 +209,7 @@ void TurtleGardensTalk_OnAnswer(TurtleGardensTalk *talk)
     if (slot >= 0) {
         if (shown == TURTLE_GARDENS_TALK_LINE_37E0_ASK && answer == 0) {
             CurrentPockets_Empty(slot);
-            u16 item = TURTLE_GARDENS_TALK_ITEM_37E0;
+            u16 item = TURTLE_GARDENS_TALK_MASSAGE_CHAIR;
             SceneCommand_RequestMotion14(turtle_gardens_talk_scene(talk), &item, 0, TURTLE_GARDENS_TALK_MOTION_B, 0);
             turtle_gardens_talk_say_unless_none(talk, TURTLE_GARDENS_TALK_LINE_37E0_TAKEN, data_ov083_02279348);
         }
@@ -240,9 +240,9 @@ void TurtleGardensTalk_OnLineEnded(TurtleGardensTalk *talk)
             talk->slot_37e0 = TURTLE_GARDENS_TALK_37E0_DONE;
         }
         if (shown == TURTLE_GARDENS_TALK_LINE_37E0_TAKEN) {
-            u16 shown_item = TURTLE_GARDENS_TALK_ITEM_1559;
+            u16 shown_item = TURTLE_GARDENS_TALK_SCALLOP;
             SceneCommand_RequestMotion13(turtle_gardens_talk_scene(talk), &shown_item, 0, TURTLE_GARDENS_TALK_MOTION_B, 0);
-            u16 given = TURTLE_GARDENS_TALK_ITEM_1559;
+            u16 given = TURTLE_GARDENS_TALK_SCALLOP;
             CurrentPockets_Give(&given, 0);
             turtle_gardens_talk_say_unless_none(talk, TURTLE_GARDENS_TALK_LINE_37E0_TRADED, data_ov083_02279348);
         }

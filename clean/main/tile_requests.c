@@ -64,7 +64,7 @@ extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 
 #define TILE_REQUESTS_BOTTLE 0x1520 /* the bottle with a letter: it needs a letter's place */
 #define TILE_REQUESTS_GOLDEN_WATERING_CAN 0x1379
-#define TILE_REQUESTS_MARKED_ITEM 0x1566
+#define TILE_REQUESTS_PITFALL_SEED 0x1566
 #define TILE_REQUESTS_ROCK_HITS 8
 #define TILE_REQUESTS_ROCK_TIME 150
 #define TILE_REQUESTS_ROCK 0xe3       /* the rock's codes after it, 0xe3-0xe7 */
@@ -767,7 +767,7 @@ int TileRequests_Answer(u32 index)
 }
 CLEAN_AS(func_020436a8, TileRequests_Answer)
 
-/* A request of kind 0x19 for the tile of the town holding item 0x1566 with AcreTile_IsMarked:
+/* A request of kind 0x19 for the tile of the town holding the pitfall seed (item 0x1566) with AcreTile_IsMarked:
  * code 0xfd when AcreTile_UnitByte09 is set there, else 0xfc. Only in scene 0; -1 when not
  * made. `player` is asked for after AcreTile_IsMarked (func_02044858) when `for_player`. */
 static int TileRequests_AskMarked(int player, int for_player, const TileRequestTile *tile, s8 unk_1e)
@@ -780,7 +780,7 @@ static int TileRequests_AskMarked(int player, int for_player, const TileRequestT
         return TILE_REQUESTS_NONE;
     }
     u16 *code = TileRequests_CodeAt(town, tile->x, tile->z, 0);
-    if (code == NULL || *code != TILE_REQUESTS_MARKED_ITEM) {
+    if (code == NULL || *code != TILE_REQUESTS_PITFALL_SEED) {
         return TILE_REQUESTS_NONE;
     }
     if (AcreTile_IsMarked(town, tile->x, tile->z) == 0) {

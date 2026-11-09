@@ -76,8 +76,8 @@ extern u32 data_021dc7a8[];
 #define TURTLE_FISHING_TALK_FISH_LAST 0x131f
 #define TURTLE_FISHING_TALK_ROD 0x1374
 #define TURTLE_FISHING_TALK_GOLDEN_ROD 0x1375
-#define TURTLE_FISHING_TALK_ITEM_37E0 0x37e0
-#define TURTLE_FISHING_TALK_ITEM_1559 0x1559
+#define TURTLE_FISHING_TALK_MASSAGE_CHAIR 0x37e0
+#define TURTLE_FISHING_TALK_SCALLOP 0x1559
 
 /* The current player's daily bit of the tourney. */
 #define TURTLE_FISHING_TALK_DAILY_BIT 0x1b
@@ -307,7 +307,7 @@ void TurtleFishingTalk_Line(TurtleFishingTalk *talk, TurtleFishingTalkStart *out
     DateTime now = {0};
     DateTime_Now(&now);
     if (talk->slot_37e0 == TURTLE_FISHING_TALK_37E0_UNKNOWN) {
-        u16 item_37e0 = TURTLE_FISHING_TALK_ITEM_37E0;
+        u16 item_37e0 = TURTLE_FISHING_TALK_MASSAGE_CHAIR;
         talk->slot_37e0 = CurrentPockets_FindItem(&item_37e0);
         if (talk->slot_37e0 >= 0) {
             out->name = data_ov081_02279878;
@@ -387,7 +387,7 @@ void TurtleFishingTalk_OnAnswer(TurtleFishingTalk *talk)
     if (slot >= 0) {
         if (shown == TURTLE_FISHING_TALK_LINE_37E0_ASK && answer == 0) {
             CurrentPockets_Empty(slot);
-            u16 item = TURTLE_FISHING_TALK_ITEM_37E0;
+            u16 item = TURTLE_FISHING_TALK_MASSAGE_CHAIR;
             SceneCommand_RequestMotion14(turtle_fishing_talk_scene(talk), &item, 0, TURTLE_FISHING_TALK_MOTION_B, 0);
             turtle_fishing_talk_say_unless_none(talk, TURTLE_FISHING_TALK_LINE_37E0_TAKEN, data_ov081_02279878);
         }
@@ -482,9 +482,9 @@ void TurtleFishingTalk_OnLineEnded(TurtleFishingTalk *talk)
             talk->slot_37e0 = TURTLE_FISHING_TALK_37E0_DONE;
         }
         if (shown == TURTLE_FISHING_TALK_LINE_37E0_TAKEN) {
-            u16 shown_item = TURTLE_FISHING_TALK_ITEM_1559;
+            u16 shown_item = TURTLE_FISHING_TALK_SCALLOP;
             SceneCommand_RequestMotion13(turtle_fishing_talk_scene(talk), &shown_item, 0, TURTLE_FISHING_TALK_MOTION_B, 0);
-            u16 given = TURTLE_FISHING_TALK_ITEM_1559;
+            u16 given = TURTLE_FISHING_TALK_SCALLOP;
             CurrentPockets_Give(&given, 0);
             turtle_fishing_talk_say_unless_none(talk, TURTLE_FISHING_TALK_LINE_37E0_TRADED, data_ov081_02279878);
         }

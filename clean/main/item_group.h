@@ -61,8 +61,9 @@ void ItemGroup_TestIsHeadB(const u16 *code);
  *   0x1492-0x14fd  bags of bells (108, smallest first; player_pockets.h)
  *                                              ItemGroup_BellBag
  *
- * and three groups of room codes (four codes per item): 0x3894-0x38e3 (museum_record.h),
- * 0x450c-0x45db (item_attributes.h) and 0x45dc-0x47d7 (room_sync.h). */
+ * and three groups of furniture codes (four codes per item): the paintings 0x3894-0x38e3
+ * (museum_record.h), the fossils 0x450c-0x45db (item_attributes.h) and the gyroids
+ * 0x45dc-0x47d7 (room_sync.h), ItemGroup_IsPainting, ItemGroup_IsFossil and ItemGroup_IsGyroid. */
 u16 ItemGroup_Carpet(u16 index);
 u16 ItemGroup_HeadB(u32 index);
 u16 ItemGroup_Insect(u32 index);
@@ -84,8 +85,8 @@ int ItemGroup_IsInsect(const u16 *code);
 int ItemGroup_InsectIndex(const u16 *code);
 int ItemGroup_IsFish(const u16 *code);
 int ItemGroup_FishIndex(const u16 *code);
-int ItemGroup_IsRoom3894(const u16 *code);
-int ItemGroup_IsRoom45dc(const u16 *code);
-int ItemGroup_IsRoom450c(const u16 *code);
+int ItemGroup_IsPainting(const u16 *code);
+int ItemGroup_IsGyroid(const u16 *code);
+int ItemGroup_IsFossil(const u16 *code);
 
 #endif

@@ -718,7 +718,7 @@ static_assert(offsetof(FieldActorItemOutArgs, second) == 0x0c, "second");
 #define FARS_ITEM_BACK_SOUND 0x52
 #define FARS_ITEM_END_FRAMES 3
 #define FARS_ITEM_END_PRIORITY 5
-#define FARS_ITEM_MARKED 0x1379
+#define FARS_ITEM_GOLDEN_WATERING_CAN 0x1379
 #define FARS_ITEM_MARK 4
 #define FARS_ITEM_START_MODE 1
 
@@ -1344,7 +1344,7 @@ void FieldActorRoomStates_UpdateItemBack(FieldActor *actor)
 CLEAN_AS(func_ov004_02227f08, FieldActorRoomStates_UpdateItemBack)
 
 /* func_ov004_02227f24: once the animation is over, the state's bar for requests is its end
- * value and state 0x10 is asked for (3, priority 5); for the object's item 0x1379 the byte at
+ * value and state 0x10 is asked for (3, priority 5); for the golden watering can (0x1379) the byte at
  * 0x8eb becomes 4; the object is finished. */
 void FieldActorRoomStates_EndItemBack(FieldActor *actor)
 {
@@ -1354,7 +1354,7 @@ void FieldActorRoomStates_EndItemBack(FieldActor *actor)
     fars_end_item(actor);
     u16 item[2];
     Obj020dd33c_Item(item);
-    if (item[0] == FARS_ITEM_MARKED) {
+    if (item[0] == FARS_ITEM_GOLDEN_WATERING_CAN) {
         FIELD_ACTOR_UNK_8EB(actor) = FARS_ITEM_MARK;
     }
     Obj020dd33c_Finish(actor);

@@ -41,9 +41,9 @@ struct RoomObject;
 #define ROOM_SYNC_TO_ALL 4
 #define ROOM_SYNC_TO_SCENE 6
 
-/* The items whose cells keep a step (RoomCells). */
-#define ROOM_SYNC_STEP_ITEM_FIRST 0x45dc
-#define ROOM_SYNC_STEP_ITEM_LAST 0x47d7
+/* The gyroids, the items whose cells keep a step (RoomCells). */
+#define ROOM_SYNC_GYROID_FIRST 0x45dc
+#define ROOM_SYNC_GYROID_LAST 0x47d7
 
 /* The code the map holds at the other cells a piece of furniture covers. */
 #define ROOM_SYNC_ITEM_COVERED 0xf031

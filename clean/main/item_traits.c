@@ -351,10 +351,10 @@ int ItemTraits_Class(const ItemCode *item)
     if (!ItemCode_IsFurniture(&carried)) {
         return 0;
     }
-    if (ItemGroup_IsRoom450c(&carried)) {
+    if (ItemGroup_IsFossil(&carried)) {
         return ITEM_TRAITS_CLASS_ROOM_450C;
     }
-    if (ItemGroup_IsRoom45dc(&carried) || ItemGroup_IsRoom3894(&carried)) {
+    if (ItemGroup_IsGyroid(&carried) || ItemGroup_IsPainting(&carried)) {
         return ITEM_TRAITS_CLASS_ROOM_45DC;
     }
     return ITEM_TRAITS_CLASS_ROOM_OTHER;
@@ -373,7 +373,7 @@ int ItemTraits_Look(const ItemCode *item)
         }
         case ITEM_TRAITS_KIND_ROOM_A:
         case ITEM_TRAITS_KIND_ROOM_B:
-            return ItemGroup_IsRoom45dc(&carried) ? 1 : 0;
+            return ItemGroup_IsGyroid(&carried) ? 1 : 0;
         default:
             return 0;
     }
@@ -391,10 +391,10 @@ int ItemTraits_Icon(const ItemCode *item)
         }
         case ITEM_TRAITS_KIND_ROOM_A:
         case ITEM_TRAITS_KIND_ROOM_B:
-            if (ItemGroup_IsRoom450c(item)) {
+            if (ItemGroup_IsFossil(item)) {
                 return ITEM_TRAITS_UNK02_ROOM_450C;
             }
-            return ItemGroup_IsRoom45dc(item) ? 1 : 0;
+            return ItemGroup_IsGyroid(item) ? 1 : 0;
         default:
             return 0;
     }

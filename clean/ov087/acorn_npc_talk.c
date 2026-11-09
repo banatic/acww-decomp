@@ -63,8 +63,8 @@ extern int func_ov087_02278f04(u16 *item, int state);
 #define ACT_FORTUNE_PILE_ITEM 0x1d
 #define ACT_FORTUNE_PILE_COUNT 4
 
-/* The item shown with line 0x15. */
-#define ACT_ITEM_1565 0x1565
+/* The item shown with line 0x15: the letter of an errand (0x1565). */
+#define ACT_ITEM_ERRAND_LETTER 0x1565
 
 /* The ways of SceneBase_PutValue's numbers, and of item names. */
 #define ACT_VALUE_FORMAT 3
@@ -325,7 +325,7 @@ void AcornNpcTalk_OnLineEnded(AcornNpcTalk *talk)
             break;
         }
         case ACORN_NPC_LINE_14: {
-            u16 shown = ACT_ITEM_1565;
+            u16 shown = ACT_ITEM_ERRAND_LETTER;
             SceneCommand_RequestMotion13(act_scene(talk), &shown, 0, 5, 0);
             next = ACORN_NPC_LINE_15;
             break;
