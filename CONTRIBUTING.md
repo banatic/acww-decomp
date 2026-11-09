@@ -3,6 +3,11 @@
 Every ARM9 function already has a matching source. Most of the remaining work is naming,
 typing and making the code read like code someone wrote.
 
+The aim is faithful execution: contributions toward running the game exactly as its ROM does,
+naming, typing and new versions are welcome; changes that make the game behave differently from
+the ROM (modding) are not taken. Adding another regional release as a version is described in
+[docs/versions.md](docs/versions.md).
+
 ## Checking your change
 
 Run `python tools/verify.py <files>` and make sure every file you touched is `ok`. Both checks
