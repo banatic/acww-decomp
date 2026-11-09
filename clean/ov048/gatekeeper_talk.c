@@ -646,8 +646,8 @@ void GatekeeperTalk_WaitStatus0(GatekeeperTalk *talk)
     if (GatekeeperTalk_CheckError(talk, lost)) {
         Session_FinishLocalStatus();
         if (MiddleSpot_HasMark((const MiddleSpot *) (const void *) Block021d27ac_Part0C(Block021d27ac_Get()))) {
-            if (PairedTown_ChildEscorted(PlayerRecord_Field242C(PlayerRecords_Current()))) {
-                PairedTown_ClearChildEscorted(PlayerRecord_Field242C(PlayerRecords_Current()));
+            if (PairedTown_ChildEscorted(PlayerRecord_PairedTown(PlayerRecords_Current()))) {
+                PairedTown_ClearChildEscorted(PlayerRecord_PairedTown(PlayerRecords_Current()));
             }
         }
         return;
@@ -657,8 +657,8 @@ void GatekeeperTalk_WaitStatus0(GatekeeperTalk *talk)
     if (status == GATEKEEPER_STATUS_ACCEPTED) {
         u16 members;
         if (MiddleSpot_HasMark((const MiddleSpot *) (const void *) Block021d27ac_Part0C(Block021d27ac_Get()))) {
-            if (!PairedTown_ChildEscorted(PlayerRecord_Field242C(PlayerRecords_Current()))) {
-                PairedTown_SetChildEscorted(PlayerRecord_Field242C(PlayerRecords_Current()));
+            if (!PairedTown_ChildEscorted(PlayerRecord_PairedTown(PlayerRecords_Current()))) {
+                PairedTown_SetChildEscorted(PlayerRecord_PairedTown(PlayerRecords_Current()));
             }
         }
         members = LinkGlobal_MemberMask();

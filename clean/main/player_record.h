@@ -36,7 +36,11 @@
  *         scene 6 with it still set is one after a reset
  *   0x21  the golden rod 0x1375 was given (ov080 turtle_talk.c)
  *   0x22  the golden net 0x1377 was given
- *   0x23  set on moving in, cleared as Nook's first talk starts (ov068 town_nook.c) */
+ *   0x23  set on moving in, cleared as Nook's first talk starts (ov068 town_nook.c)
+ *   0x27  the golden shovel 0x136a was got once (its own message: ov003 field_actor.c; out of
+ *         a present: ov096 PocketsScreen_WaitPresentOpened)
+ *   0x28  the same for the golden slingshot 0x137b
+ *   0x30  the golden slingshot was found (sky_events.c) */
 #define PLAYER_FLAG_NOOK_JOB 1
 #define PLAYER_FLAG_UNSAVED 2
 #define PLAYER_FLAG_GOLDEN_ROD 0x21
@@ -92,12 +96,14 @@ u8 *PlayerRecord_ReactionSlots(u8 *record);
  *   0x0000  the player's designs (PlayerDesigns, design_sets.h)
  *   0x1c18  the record of items the player has had (ItemRecord_SetBit sets an item's bit
  *           in it)
- *   0x1d3b  a byte object (func_0203d38c, func_0203d388)
+ *   0x1d3b  the player's options, one byte (player_options.h)
  *   0x1e40  the villagers' part: two 48-byte blocks naming villagers (func_0209ad9c), an
  *           object at 0x94 and an NpcId with an object at 0xa4 (villager_errands.h)
  *   0x1f0c  the Wi-Fi account, 0x1f5c the Wi-Fi friends (wifi_friends.h)
- *   0x23ec, 0x2416, 0x2427, 0x242c  objects of their own (func_0208880c, func_02088c10,
- *           func_02088764, func_02088460 construct them)
+ *   0x23ec  the daily bits (daily_bits.h)
+ *   0x2416  the counts with the special characters (player_field_2416.h)
+ *   0x2427  the mark of the day's event reached last (day_events.h)
+ *   0x242c  the paired town of the lost child and its mother (paired_town.h)
  *   0x2404  the shop points (shop_points.h)
  *   0x2406  the held item, 0x2408 the clothes, 0x240a the head's item, 0x240c the accessory's item,
  *           0x240e the player's bed in the attic, 0x2410 the clothes
@@ -136,13 +142,13 @@ u16 *PlayerRecord_BackdropClothes(u8 *record);
 void PlayerRecord_ResetForNewTown(u8 *record);
 void PlayerRecord_OpenDeliveries(u8 *record);
 u8 *PlayerRecord_VillagerPart(u8 *record);
-u8 *PlayerRecord_Field1D3B(u8 *record);
+u8 *PlayerRecord_Options(u8 *record);
 WifiFriendList *PlayerRecord_WifiFriends(u8 *record);
 WifiAccount *PlayerRecord_WifiAccount(u8 *record);
 u8 *PlayerRecord_Field2416(u8 *record);
-u8 *PlayerRecord_Field23EC(u8 *record);
-u8 *PlayerRecord_Field242C(u8 *record);
-u8 *PlayerRecord_Field2427(u8 *record);
+u8 *PlayerRecord_DailyBits(u8 *record);
+u8 *PlayerRecord_PairedTown(u8 *record);
+u8 *PlayerRecord_DayEventMark(u8 *record);
 u16 *PlayerRecord_ShopPoints(u8 *record);
 u8 *PlayerRecord_ItemRecord(u8 *record);
 PlayerDesigns *PlayerRecord_Designs(u8 *record);

@@ -60,8 +60,8 @@ int DayEvents_PlayerHas(int year, int month, int day, u8 *event)
     }
 
     u8 marked;
-    DayEvents_MarkEvent((DayEventMark *) PlayerRecord_Field2427(record), &marked);
-    const u8 *date = DayEvents_MarkDate((DayEventMark *) PlayerRecord_Field2427(record));
+    DayEvents_MarkEvent((DayEventMark *) PlayerRecord_DayEventMark(record), &marked);
+    const u8 *date = DayEvents_MarkDate((DayEventMark *) PlayerRecord_DayEventMark(record));
 
     int kind = DAY_EVENT_KIND(*event);
     int index = DAY_EVENT_INDEX(*event);

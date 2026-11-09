@@ -35,7 +35,7 @@ CLEAN_AS(func_0202e9fc, TalkChecks_IsHostOrAlone)
 void TalkChecks_MarkDayEvent(int unused, const u8 *event)
 {
     (void) unused;
-    DayEvents_SetMark((DayEventMark *) (void *) PlayerRecord_Field2427(PlayerRecords_Current()), event);
+    DayEvents_SetMark((DayEventMark *) (void *) PlayerRecord_DayEventMark(PlayerRecords_Current()), event);
 }
 CLEAN_AS(func_0202ea28, TalkChecks_MarkDayEvent)
 
@@ -58,7 +58,7 @@ int TalkChecks_TestSetDailyBit(int bit, int set)
     if (record == NULL) {
         return 0;
     }
-    DailyBits *bits = (DailyBits *) (void *) PlayerRecord_Field23EC(record);
+    DailyBits *bits = (DailyBits *) (void *) PlayerRecord_DailyBits(record);
     int was_set = DailyBits_Test(bits, (u32) bit) != 0;
     if (set != 0) {
         DailyBits_Set(bits, (u32) bit);

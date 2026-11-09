@@ -307,7 +307,7 @@ void StateBlock_MovePlayerHere(StateBlock *block)
     PlayerField2416_ClearAcorns((PlayerField2416 *) (void *) PlayerRecord_Field2416(record));
     PlayerRecord_ClearFlag(record, 0xf);
     PlayerField2416_ClearGardening((PlayerField2416 *) (void *) PlayerRecord_Field2416(record));
-    PairedTown_Reset(PlayerRecord_Field242C(record));
+    PairedTown_Reset(PlayerRecord_PairedTown(record));
     PlayerRecord_ResetForNewTown(record);
     TownName_Destruct(&old_town);
 }

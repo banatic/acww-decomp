@@ -1,4 +1,4 @@
-/* A player's options: one byte in the player's record (at 0x1d3b, PlayerRecord_Field1D3B) and
+/* A player's options: one byte in the player's record (at 0x1d3b, PlayerRecord_Options) and
  * the options in use (data_021c6998), two bytes: the same byte of values, then a byte saying
  * which of them changed since they were last stored in the player's record
  * (PlayerOptions_Store).

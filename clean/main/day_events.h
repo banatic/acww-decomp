@@ -3,7 +3,7 @@
  * days each (data_020d07a4). An event's part is named by one byte (DayEvent): its kind in
  * bits 0-1, the event in bits 2-4 and the part in bits 5-7.
  *
- * A player's record keeps at 0x2427 (PlayerRecord_Field2427) the part it reached last and the
+ * A player's record keeps at 0x2427 (PlayerRecord_DayEventMark) the part it reached last and the
  * day it did (DayEventMark). A part counts for the player (DayEvents_PlayerHas) when it is the
  * marked one on its marked day (or with no day marked), when it follows the marked one, or,
  * for an event's first part, when the player qualifies for the kind: kind 0 by its record's

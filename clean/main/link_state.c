@@ -205,8 +205,8 @@ static void carry_out(LinkState *state, NetSession *session, int slot)
         const StateBlockTown *town = &data_021dc7a8.town;
         u8 *record = PlayerRecords_Get(LinkState_Chosen(state) + GUEST_RECORD_FIRST);
         const StateBlockTown *paired = NULL;
-        if (record != NULL && PairedTown_ChildEscorted(PlayerRecord_Field242C(record)) != 0) {
-            paired = (const StateBlockTown *) (void *) PairedTown_Town(PlayerRecord_Field242C(record));
+        if (record != NULL && PairedTown_ChildEscorted(PlayerRecord_PairedTown(record)) != 0) {
+            paired = (const StateBlockTown *) (void *) PairedTown_Town(PlayerRecord_PairedTown(record));
         }
         if (paired != NULL && paired->number == town->number && memcmp(paired->name, town->name, sizeof(town->name)) == 0) {
             SceneExit_SetToScene(entry_record(), SCENE_2F, EXIT_ARG, EXIT_ARG);

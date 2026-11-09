@@ -234,7 +234,7 @@ void SkyShots_HitEnd6(SkyShotsHit *hit)
     for (int player = 0; player < SKY_SHOTS_PLAYERS; player++) {
         u8 *record = PlayerRecords_TownRecord(data_021dc7a8.players, player);
         if (record != NULL && PlayerRecord_HasPlayer(record)) {
-            DailyBits_Clear((DailyBits *) (void *) PlayerRecord_Field23EC(record), SKY_SHOTS_FLAG_14);
+            DailyBits_Clear((DailyBits *) (void *) PlayerRecord_DailyBits(record), SKY_SHOTS_FLAG_14);
         }
     }
     SpaceshipParts_Clear(data_021ebcd2);

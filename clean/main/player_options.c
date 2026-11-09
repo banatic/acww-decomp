@@ -187,7 +187,7 @@ CLEAN_AS(func_0203d390, PlayerOptions_Nothing390)
  * player's record; then the options in use become the record's values, none changed. */
 void PlayerOptions_Store(void)
 {
-    u8 *stored = PlayerRecord_Field1D3B(PlayerRecords_Current());
+    u8 *stored = PlayerRecord_Options(PlayerRecords_Current());
     PlayerOptions *in_use = (PlayerOptions *) (uintptr_t) PlayerOptions_InUse();
     u8 values;
 

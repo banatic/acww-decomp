@@ -74,7 +74,7 @@ void PairedTown_Pair(Activity *activity, int player)
     PairedTownText player_text;
     TownNameText_Construct((TownNameText *) &player_text);
     TownName_ToText((TownName *) (void *) record_town(record), (TextBase *) &player_text);
-    u8 *pairing = PlayerRecord_Field242C(record);
+    u8 *pairing = PlayerRecord_PairedTown(record);
     if (PairedTown_Days(pairing) != 0) {
         PairedTown_Note(activity, pairing);
         TownNameText_Destruct((TownNameText *) &player_text);
@@ -96,7 +96,7 @@ void PairedTown_Pair(Activity *activity, int player)
             continue;
         }
         TownName_ToText((TownName *) (void *) record_town(partner_record), (TextBase *) &partner_text);
-        partner_pairing = PlayerRecord_Field242C(partner_record);
+        partner_pairing = PlayerRecord_PairedTown(partner_record);
         if (PairedTown_Days(partner_pairing) != 0) {
             continue;
         }
@@ -208,7 +208,7 @@ void PairedTown_TakeOwn(void *unused)
     PairedTownText player_text;
     TownNameText_Construct((TownNameText *) &player_text);
     TownName_ToText((TownName *) (void *) record_town(record), (TextBase *) &player_text);
-    u8 *own_pairing = PlayerRecord_Field242C(record);
+    u8 *own_pairing = PlayerRecord_PairedTown(record);
     u8 *arrived = (u8 *) (uintptr_t) ExchangeBlock_PairedTown((ExchangeBlock *) (void *) block);
     PairedTownText arrived_text;
     TownNameText_Construct((TownNameText *) &arrived_text);
@@ -321,7 +321,7 @@ void PairedTown_RestoreCurrent(void)
         return;
     }
     u8 *pairing = paired_town_of_state_block();
-    MI_CpuCopy8(pairing, PlayerRecord_Field242C(record), PAIRED_TOWN_SIZE);
+    MI_CpuCopy8(pairing, PlayerRecord_PairedTown(record), PAIRED_TOWN_SIZE);
     if (Math_IsBetween(PairedTown_Days(pairing), PAIRED_TOWN_WEEK_FIRST, PAIRED_TOWN_WEEK_LAST) == 0) {
         PlayerRecord_ClearFlag(record, PAIRED_TOWN_PLAYER_FLAG);
     }
@@ -333,7 +333,7 @@ void PairedTown_SaveCurrent(void)
 {
     u8 *record = PlayerRecords_Current();
     if (record != NULL) {
-        MI_CpuCopy8(PlayerRecord_Field242C(record), paired_town_of_state_block(), PAIRED_TOWN_SIZE);
+        MI_CpuCopy8(PlayerRecord_PairedTown(record), paired_town_of_state_block(), PAIRED_TOWN_SIZE);
     }
 }
 CLEAN_AS(func_02088368, PairedTown_SaveCurrent)
@@ -346,7 +346,7 @@ int PairedTown_MotherDueThisWeek(void)
     if (record == NULL) {
         return 0;
     }
-    u8 *pairing = PlayerRecord_Field242C(record);
+    u8 *pairing = PlayerRecord_PairedTown(record);
     return PairedTown_HostsMother(pairing) == 1 &&
            Math_IsBetween(PairedTown_Days(pairing), PAIRED_TOWN_WEEK_FIRST, PAIRED_TOWN_WEEK_LAST) != 0;
 }
@@ -360,7 +360,7 @@ int PairedTown_ChildDueThisWeek(void)
     if (record == NULL) {
         return 0;
     }
-    u8 *pairing = PlayerRecord_Field242C(record);
+    u8 *pairing = PlayerRecord_PairedTown(record);
     return PairedTown_HostsMother(pairing) == 0 &&
            Math_IsBetween(PairedTown_Days(pairing), PAIRED_TOWN_WEEK_FIRST, PAIRED_TOWN_WEEK_LAST) != 0;
 }

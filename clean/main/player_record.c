@@ -345,13 +345,13 @@ void PlayerRecord_UpdateSinceLastPlay(void)
         PlayerRecord_SetBirthdayYear(self, PLAYER_RECORD_NO_YEAR);
     }
     if (days != 0) {
-        DailyBits_ClearAll((DailyBits *) (void *) PlayerRecord_Field23EC(self));
+        DailyBits_ClearAll((DailyBits *) (void *) PlayerRecord_DailyBits(self));
         PlayerRecord_SetLuck(self, 0);
         PlayerField2416_ClearFireworksGifts((PlayerField2416 *) (void *) PlayerRecord_Field2416(self));
         StateBlock_ClearFlag(data_021dc7a8, STATE_FLAG_CLEARED_ON_NEW_DAY);
     }
     if (days < 0) {
-        PairedTown_Reset(PlayerRecord_Field242C(self));
+        PairedTown_Reset(PlayerRecord_PairedTown(self));
         PairedTown_Reset((u8 *) data_021dc7a8 + STATE_OBJECT_173E2);
     }
 
@@ -407,12 +407,12 @@ CLEAN_AS(func_020992f0, PlayerRecord_ReactionSlots)
 
 #define RECORD_POCKETS 0x11a8
 #define RECORD_ITEM_RECORD 0x1c18
-#define RECORD_FIELD_1D3B 0x1d3b
+#define RECORD_OPTIONS 0x1d3b
 #define RECORD_VILLAGER_PART 0x1e40
 #define RECORD_WIFI_ACCOUNT 0x1f0c
 #define RECORD_WIFI_FRIENDS 0x1f5c
 #define RECORD_SAVINGS 0x23e0
-#define RECORD_FIELD_23EC 0x23ec
+#define RECORD_DAILY_BITS 0x23ec
 #define RECORD_LAST_PLAY 0x2400
 #define RECORD_SHOP_POINTS 0x2404
 #define RECORD_HELD_ITEM 0x2406
@@ -423,8 +423,8 @@ CLEAN_AS(func_020992f0, PlayerRecord_ReactionSlots)
 #define RECORD_BACKDROP_CLOTHES 0x2410
 #define RECORD_SUN_DATE 0x2412
 #define RECORD_FIELD_2416 0x2416
-#define RECORD_FIELD_2427 0x2427
-#define RECORD_FIELD_242C 0x242c
+#define RECORD_DAY_EVENT_MARK 0x2427
+#define RECORD_PAIRED_TOWN 0x242c
 #define RECORD_LOOKS 0x243c
 #define RECORD_LOOKS_2 0x243d
 #define RECORD_PLAYER 0x247e
@@ -685,11 +685,11 @@ u8 *PlayerRecord_VillagerPart(u8 *record)
 CLEAN_AS(func_02099640, PlayerRecord_VillagerPart)
 
 /* func_0209964c */
-u8 *PlayerRecord_Field1D3B(u8 *record)
+u8 *PlayerRecord_Options(u8 *record)
 {
-    return record + RECORD_FIELD_1D3B;
+    return record + RECORD_OPTIONS;
 }
-CLEAN_AS(func_0209964c, PlayerRecord_Field1D3B)
+CLEAN_AS(func_0209964c, PlayerRecord_Options)
 
 /* func_02099658 */
 WifiFriendList *PlayerRecord_WifiFriends(u8 *record)
@@ -713,25 +713,25 @@ u8 *PlayerRecord_Field2416(u8 *record)
 CLEAN_AS(func_02099670, PlayerRecord_Field2416)
 
 /* func_0209967c */
-u8 *PlayerRecord_Field23EC(u8 *record)
+u8 *PlayerRecord_DailyBits(u8 *record)
 {
-    return record + RECORD_FIELD_23EC;
+    return record + RECORD_DAILY_BITS;
 }
-CLEAN_AS(func_0209967c, PlayerRecord_Field23EC)
+CLEAN_AS(func_0209967c, PlayerRecord_DailyBits)
 
 /* func_02099688 */
-u8 *PlayerRecord_Field242C(u8 *record)
+u8 *PlayerRecord_PairedTown(u8 *record)
 {
-    return record + RECORD_FIELD_242C;
+    return record + RECORD_PAIRED_TOWN;
 }
-CLEAN_AS(func_02099688, PlayerRecord_Field242C)
+CLEAN_AS(func_02099688, PlayerRecord_PairedTown)
 
 /* func_02099694 */
-u8 *PlayerRecord_Field2427(u8 *record)
+u8 *PlayerRecord_DayEventMark(u8 *record)
 {
-    return record + RECORD_FIELD_2427;
+    return record + RECORD_DAY_EVENT_MARK;
 }
-CLEAN_AS(func_02099694, PlayerRecord_Field2427)
+CLEAN_AS(func_02099694, PlayerRecord_DayEventMark)
 
 /* func_020996a0 */
 u16 *PlayerRecord_ShopPoints(u8 *record)
@@ -989,7 +989,7 @@ void PlayerRecord_NewPlayer(u8 *record, const void *name, int player_id, int gen
     *player_record_u16(record, RECORD_ACCESSORY_ITEM) = PLAYER_RECORD_NO_ITEM;
     *player_record_u16(record, RECORD_HEAD_ITEM) = PLAYER_RECORD_NO_ITEM;
     *player_record_u16(record, RECORD_BACKDROP_CLOTHES) = NEW_PLAYER_BACKDROP_CLOTHES;
-    DayEvents_ClearMark((DayEventMark *) (void *) (record + RECORD_FIELD_2427));
+    DayEvents_ClearMark((DayEventMark *) (void *) (record + RECORD_DAY_EVENT_MARK));
     Savings_InitAccount((SavingsAccount *) (void *) (record + RECORD_SAVINGS));
     ReactionSlots_Clear(record + RECORD_REACTION_SLOTS);
     Calendar_Today(PlayerRecord_LastPlayDate(record));
@@ -1038,17 +1038,17 @@ u8 *PlayerRecord_Destruct(u8 *record)
     PlayerId_Destruct(PlayerRecord_Player(record));
     PlayerRecordVillager_Destruct((PlayerRecordVillager *) (void *) (record + RECORD_VILLAGER));
     MomLetterState_Destruct((MomLetterState *) (void *) (record + RECORD_MOM_LETTERS));
-    PairedTown_Destruct(record + RECORD_FIELD_242C);
-    DayEvents_MarkDestruct((DayEventMark *) (void *) (record + RECORD_FIELD_2427));
+    PairedTown_Destruct(record + RECORD_PAIRED_TOWN);
+    DayEvents_MarkDestruct((DayEventMark *) (void *) (record + RECORD_DAY_EVENT_MARK));
     PlayerField2416_Destruct((PlayerField2416 *) (void *) (record + RECORD_FIELD_2416));
     ShopPoints_Destruct((u32) (uintptr_t) (record + RECORD_SHOP_POINTS));
-    DailyBits_Destruct((DailyBits *) (void *) (record + RECORD_FIELD_23EC));
+    DailyBits_Destruct((DailyBits *) (void *) (record + RECORD_DAILY_BITS));
     Savings_DestructAccount((SavingsAccount *) (void *) (record + RECORD_SAVINGS));
     WifiFriendList_Destruct((WifiFriendList *) (void *) (record + RECORD_WIFI_FRIENDS));
     WifiAccount_Destruct((WifiAccount *) (void *) (record + RECORD_WIFI_ACCOUNT));
     VillagerPart_Destruct((VillagerPart *) (void *) (record + RECORD_VILLAGER_PART));
     MailDated_Destruct((MailDatedLetter *) (void *) (record + RECORD_DATED_LETTER));
-    PlayerOptions_Destruct(record + RECORD_FIELD_1D3B);
+    PlayerOptions_Destruct(record + RECORD_OPTIONS);
     ItemRecord_Destruct((ItemRecord *) (void *) (record + RECORD_ITEM_RECORD));
     __cxa_vec_cleanup(pockets->items, PLAYER_POCKETS_SLOTS, sizeof(u16), func_020051b0);
     __cxa_vec_cleanup(pockets->letters, PLAYER_POCKETS_LETTERS, sizeof(Letter), func_02066688);
@@ -1067,20 +1067,20 @@ u8 *PlayerRecord_Construct(u8 *record)
     __cxa_vec_ctor(pockets->letters, PLAYER_POCKETS_LETTERS, sizeof(Letter), func_02066694, func_02066688);
     __cxa_vec_ctor(pockets->items, PLAYER_POCKETS_SLOTS, sizeof(u16), func_02034ce0, func_020051b0);
     ItemRecord_Construct((ItemRecord *) (void *) (record + RECORD_ITEM_RECORD));
-    PlayerOptions_Construct(record + RECORD_FIELD_1D3B);
+    PlayerOptions_Construct(record + RECORD_OPTIONS);
     MailDated_Construct((MailDatedLetter *) (void *) (record + RECORD_DATED_LETTER));
     VillagerPart_Construct((VillagerPart *) (void *) (record + RECORD_VILLAGER_PART));
     WifiAccount_Construct((WifiAccount *) (void *) (record + RECORD_WIFI_ACCOUNT));
     WifiFriendList_Construct((WifiFriendList *) (void *) (record + RECORD_WIFI_FRIENDS));
     Savings_ConstructAccount((SavingsAccount *) (void *) (record + RECORD_SAVINGS));
-    DailyBits_Construct((DailyBits *) (void *) (record + RECORD_FIELD_23EC));
+    DailyBits_Construct((DailyBits *) (void *) (record + RECORD_DAILY_BITS));
     ShopPoints_ConstructAndReset((int) (uintptr_t) (record + RECORD_SHOP_POINTS));
     for (u32 offset = RECORD_HELD_ITEM; offset <= RECORD_BACKDROP_CLOTHES; offset += sizeof(u16)) {
         *player_record_u16(record, offset) = PLAYER_RECORD_NO_ITEM;
     }
     PlayerField2416_Construct((PlayerField2416 *) (void *) (record + RECORD_FIELD_2416));
-    DayEvents_MarkConstruct((DayEventMark *) (void *) (record + RECORD_FIELD_2427));
-    PairedTown_Construct(record + RECORD_FIELD_242C);
+    DayEvents_MarkConstruct((DayEventMark *) (void *) (record + RECORD_DAY_EVENT_MARK));
+    PairedTown_Construct(record + RECORD_PAIRED_TOWN);
     MomLetterState_Construct((MomLetterState *) (void *) (record + RECORD_MOM_LETTERS));
     PlayerRecordVillager_Construct((PlayerRecordVillager *) (void *) (record + RECORD_VILLAGER));
     PlayerId_Construct(PlayerRecord_Player(record));

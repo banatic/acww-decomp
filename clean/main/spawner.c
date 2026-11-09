@@ -310,7 +310,7 @@ int Spawner_PlayerLacksFlag18(void)
     if (record == NULL) {
         return 0;
     }
-    return DailyBits_Test((DailyBits *) ((u32 *) PlayerRecord_Field23EC(record)), PLAYER_BIT_18) == 0;
+    return DailyBits_Test((DailyBits *) ((u32 *) PlayerRecord_DailyBits(record)), PLAYER_BIT_18) == 0;
 }
 CLEAN_AS(func_02083f40, Spawner_PlayerLacksFlag18)
 

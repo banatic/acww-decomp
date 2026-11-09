@@ -1,4 +1,4 @@
-/* A player record's daily bits (the object at 0x23ec, PlayerRecord_Field23EC): 64 bits that
+/* A player record's daily bits (the object at 0x23ec, PlayerRecord_DailyBits): 64 bits that
  * are cleared each new day (PlayerRecord_UpdateSinceLastPlay) and the date one was last set.
  * Bit 0x18 is the one the spawner tests (Spawner_PlayerLacksFlag18). */
 #ifndef CLEAN_MAIN_DAILY_BITS_H

@@ -3,7 +3,7 @@
  * func_02088404 takes days off it), in bit 4 which of the two towns the lost child's mother
  * comes to (PAIRED_TOWN_HOSTS_MOTHER; the other gets the lost child) and in bit 5 whether the
  * player took the child through the gate to the paired town (PAIRED_TOWN_CHILD_ESCORTED). A
- * player record keeps one at 0x242c (PlayerRecord_Field242C), each exchange block (func_02090040) one at 0x93a
+ * player record keeps one at 0x242c (PlayerRecord_PairedTown), each exchange block (func_02090040) one at 0x93a
  * (func_02090124) and the state block one at 0x173e2.
  *
  * When players visit each other, each player without a paired town is paired with another

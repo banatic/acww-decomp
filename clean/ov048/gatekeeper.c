@@ -318,14 +318,14 @@ int Gatekeeper_CheckPairedTown(void)
     if (!PairedTown_ChildDueThisWeek()) {
         return 0;
     }
-    pairing = PlayerRecord_Field242C(record);
+    pairing = PlayerRecord_PairedTown(record);
     int here = 0;
     if (TownName_IsSet((const u16 *) (const void *) PairedTown_Town(pairing))) {
         const u16 *town = (const u16 *) (const void *) PairedTown_Town(pairing);
         here = town[0] == data_021dc7aa[0] && memcmp(town + 1, data_021dc7aa + 1, 2 * TOWN_NAME_LENGTH) == 0;
     }
     if (!here) {
-        PairedTown_ClearChildEscorted(PlayerRecord_Field242C(PlayerRecords_Current()));
+        PairedTown_ClearChildEscorted(PlayerRecord_PairedTown(PlayerRecords_Current()));
     }
     if (!PairedTown_ChildEscorted(pairing)) {
         return 0;

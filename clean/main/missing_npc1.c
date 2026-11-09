@@ -255,7 +255,7 @@ static MiddleSpot *missing_npc1_spot(void)
 /* The current player's paired town (paired_town.h). */
 static u8 *missing_npc1_pairing(void)
 {
-    return PlayerRecord_Field242C(PlayerRecords_Current());
+    return PlayerRecord_PairedTown(PlayerRecords_Current());
 }
 
 /* The point of the town's gate (building 0x500b) into `point`.
@@ -606,7 +606,7 @@ int MissingNpc1_UpdateScene2F(MissingNpc1 *self)
                     PairedTown_Reset(pairing);
                 }
                 PlayerRecord_SetFlag(PlayerRecords_Current(), MISSING_NPC1_FLAG_39);
-                PairedTown_Reset(PlayerRecord_Field242C(player_record));
+                PairedTown_Reset(PlayerRecord_PairedTown(player_record));
                 MiddleSpot_Clear(missing_npc1_spot());
                 SceneExit_Take((SceneExit *) (uintptr_t) SceneTables_EntryRecord(), 1);
             }
@@ -720,7 +720,7 @@ int MissingNpc1_UpdateFollow(MissingNpc1 *self)
 
     int checks =
         SceneQuery_Current() == MISSING_NPC1_SCENE_TOWN ||
-        (SceneQuery_Current() == MISSING_NPC1_SCENE_C && PairedTown_ChildEscorted(PlayerRecord_Field242C(record)) == 0);
+        (SceneQuery_Current() == MISSING_NPC1_SCENE_C && PairedTown_ChildEscorted(PlayerRecord_PairedTown(record)) == 0);
     if (checks && SceneMotion_Kind(missing_npc1_motion(self)) == MISSING_NPC1_WALK_2) {
         if (distance > MISSING_NPC1_LOSE_DISTANCE) {
             MissingNpc1_SetState(self, MISSING_NPC1_LOST);
