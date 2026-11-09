@@ -7,7 +7,10 @@ BYTES  the function's code equals the ROM's, with linker-filled fields masked.
 LINK   every relocation, resolved through config/, gives the ROM's call target or pointer,
        and the file's own literals and tables equal the ROM's data.
 
-Statuses: ok | link (BYTES pass, LINK fails) | bytes (BYTES fail) | error.
+Statuses: ok | link (BYTES pass, LINK fails) | bytes (BYTES fail) | error, and for a version other
+than the first (tools/versions.py) absent: the source's function is not in that version's symbol
+table. For such a version a source's address, size and ISA come from the version's symbol
+table by the function's name, not from its header (which gives the first version's).
 """
 
 from __future__ import annotations
@@ -15,6 +18,7 @@ from __future__ import annotations
 import argparse
 import collections
 import concurrent.futures as cf
+import dataclasses
 import json
 import os
 import pathlib
@@ -125,6 +129,15 @@ class Checker:
         rel = path.relative_to(C.ROOT).as_posix()
         if not srcs:
             return [{"file": rel, "status": "error", "why": "no recognisable header"}]
+        if C.VERSION != C.versions.DEFAULT:
+            placed = [self.place(s) for s in srcs]
+            missing = [s for s, p in zip(srcs, placed) if p is None]
+            if missing:
+                return [{"file": rel, "module": s.module, "name": s.name, "status": "absent",
+                         "why": f"{s.object_symbol} is not a function of {C.VERSION}'s symbol table"
+                         if s in missing else "another function of the file is not in this version"}
+                        for s in srcs]
+            srcs = placed
         obj, log = C.compile_source(srcs[0], wrapper=wrapper, force=force)
         elf = C.Elf(obj) if obj is not None else None
         out = [self._check_function(src, rel, elf, log) for src in srcs]
@@ -135,6 +148,14 @@ class Checker:
                     if r["status"] == "ok":
                         r.update(status="link", problems=[{"kind": "unit-layout", "why": why}])
         return out
+
+    def place(self, src: C.Source) -> C.Source | None:
+        """The source at its address and size in the current version's symbol table, found by
+        its name (a header's address and size are the first version's; docs/versions.md)."""
+        hit = self.syms.lookup(src.object_symbol, src.module)
+        if hit is None or hit.kind != "function" or hit.module != src.module:
+            return None
+        return dataclasses.replace(src, address=hit.address, size=hit.size, thumb=hit.thumb)
 
     def unit_layout(self, srcs: list[C.Source], elf: C.Elf) -> str | None:
         """Why a unit's code does not lie in its object as in the ROM, or None: the functions of
