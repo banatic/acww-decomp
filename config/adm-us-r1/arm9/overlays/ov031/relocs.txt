@@ -1,0 +1,7 @@
+from:0x02258a10 kind:thumb_call to:0x020b4f8c module:main
+from:0x02258a1a kind:thumb_call_arm to:0x02135558 module:autoload(2)
+from:0x02258a24 kind:load to:0x0224f2d4 module:overlays(3,4)
+from:0x02258a28 kind:load to:0x02258aac module:overlay(31)
+from:0x02258a38 kind:load to:0x02258aec module:overlay(31)
+from:0x02258a40 kind:load to:0x020b4fc1 module:main
+from:0x02258a44 kind:load to:0x02258ae0 module:overlay(31)

@@ -1,0 +1,2 @@
+__sinit_ov005_02262da0 kind:function(thumb,size=0x14) addr:0x0225b760
+data_ov005_02262e0c kind:data(any) addr:0x0225b7cc

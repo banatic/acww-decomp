@@ -1,0 +1,6 @@
+__sinit_ov027_02260020 kind:function(thumb,size=0xa8) addr:0x022589e0
+data_ov027_02260130 kind:data(any) addr:0x02258af0
+data_ov027_02260160 kind:bss addr:0x02258b20
+data_ov027_0226016c kind:bss addr:0x02258b2c
+data_ov027_02260178 kind:bss addr:0x02258b38
+data_ov027_02260194 kind:bss addr:0x02258b54
