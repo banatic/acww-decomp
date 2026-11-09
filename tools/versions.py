@@ -43,6 +43,9 @@ class Version:
 KNOWN = {
     "adm-kr": Version("adm-kr", "ADMK", 0, "Korea", "Korean", 0x1F533C4,
                       "f987baf1db78b9b8c92a98877c62df71f9d049d3"),
+    # The North American release, revision 1 (a revision 0 exists as well).
+    "adm-us-r1": Version("adm-us-r1", "ADME", 1, "North America", "North American", 0x1F98BFC,
+                         "22bf1eac11590f3dcc85268846eaadf32a6a0ab9"),
 }
 
 NAME_FORMAT = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
@@ -71,12 +74,14 @@ def configured() -> list[str]:
 
 
 def resolve(argv: list[str] | None = None) -> str:
-    """The version named on the command line, else by ACWW_VERSION, else DEFAULT; checked, and
-    put in ACWW_VERSION for the processes a tool starts."""
+    """The version named on the command line, else by ACWW_VERSION, else DEFAULT; checked (it has
+    a config/<name>/ or is in KNOWN), and put in ACWW_VERSION for the processes a tool starts."""
     name = take_option(sys.argv if argv is None else argv) or os.environ.get("ACWW_VERSION") or DEFAULT
     if not NAME_FORMAT.match(name):
         raise SystemExit(f"version {name!r}: not a version's name (lower case, e.g. adm-kr)")
-    if not (ROOT / "config" / name).is_dir():
+    # A version in KNOWN can be set up and extracted before its configuration exists (step 2 of
+    # "Adding a version" comes before ds-decomp makes config/<name>/).
+    if not (ROOT / "config" / name).is_dir() and name not in KNOWN:
         raise SystemExit(f"version {name}: no config/{name}/ (the versions configured: {', '.join(configured())})")
     os.environ["ACWW_VERSION"] = name
     return name

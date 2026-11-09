@@ -38,6 +38,7 @@ CASES = [
     (header(b"POKEMON D", b"ADAE"), "not Animal Crossing"),
     (header(b"ANIMAL CROSS", b"ADME"), "North America release"),
     (header(b"ANIMAL CROSS", b"ADMJ"), "Japan release"),
+    (header(b"ANIMAL CROSS", b"ADME", revision=1), "--version adm-us-r1"),
     (header(b"ANIMAL CROSS", b"ADMK", revision=1), "revision 1"),
     (header(b"ANIMAL CROSS", b"ADMK"), "a bad or modified dump"),
 ]

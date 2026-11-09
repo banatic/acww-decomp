@@ -23,6 +23,10 @@ Steps, each saying what is wrong and how to fix it when it fails:
    (without --quick) the new-game recording the same way. This checks the runtime on this
    machine: the same frames as on the project's machines, bit for bit.
 
+Another version (tools/versions.py, docs/versions.md): `--version adm-us-r1` checks and extracts
+that release's ROM; a version that has no recordings yet stops after step 1, with ds-decomp's
+extraction made for its configuration (extract/<version>/).
+
 Nothing of the game is in the repository; everything taken from the ROM stays under extract/
 and build/.
 """
@@ -91,6 +95,11 @@ def check_rom(path: pathlib.Path) -> bytes:
     if code[:3] != "ADM":
         fail(f"{path.name}: the header names '{title}' ({code}), not Animal Crossing: Wild World",
              f"use a dump of Animal Crossing: Wild World ({RELEASE.region}, {RELEASE.game_code})")
+    other = next((v for v in versions.KNOWN.values() if (v.game_code, v.revision) == (code, revision)), None)
+    if other is not None and other.name != RELEASE.name:
+        fail(f"{path.name}: the {RELEASES.get(code, code)} release ({code}, revision {revision}); this is "
+             f"version {versions.NAME}, the {RELEASE.adjective} one ({RELEASE.game_code}, revision {RELEASE.revision})",
+             f"set this ROM up as its own version: python tools/setup.py PATH --version {other.name}")
     if code != RELEASE.game_code:
         fail(f"{path.name}: the {RELEASES.get(code, code)} release ({code}); this project is the "
              f"{RELEASE.adjective} one ({RELEASE.game_code})",
@@ -168,6 +177,27 @@ def self_test(quick: bool) -> bool:
     return ok
 
 
+def extracted_only() -> int:
+    """A version that has no recordings yet (docs/versions.md, "Adding a version"): the ROM is
+    checked and split; ds-decomp's extraction is made for `dsd init`, and setup stops there,
+    since the build and the self-test need the version's configuration and recordings."""
+    dsd = pathlib.Path(os.environ.get("DSD", ROOT / "build" / "tools" / ("dsd.exe" if os.name == "nt" else "dsd")))
+    tree = versions.ROM_TREE
+    if not (tree / "config.yaml").exists():
+        if not dsd.exists():
+            fail(f"no ds-decomp at {dsd} for the extraction {versions.rel(tree)}/",
+                 "install it (INSTALL.md) or set DSD")
+        status, text = run([str(dsd), "rom", "extract", "-r", versions.rel(TARGET), "-o", versions.rel(tree)],
+                           ROOT / "build" / "setup" / "dsd-extract.log")
+        if status != 0:
+            fail(f"dsd rom extract failed:\n{text[-1500:]}","see build/setup/dsd-extract.log")
+    print(f"setup: version {versions.NAME} has no recordings yet ({versions.rel(versions.RECORDINGS)}/): "
+          f"the ROM is checked and extracted to {versions.rel(TARGET)}, {versions.rel(versions.BUILD / 'rom')}/ "
+          f"and {versions.rel(tree)}/; the build and the self-test come with its configuration and recordings "
+          "(docs/versions.md, \"Adding a version\")")
+    return 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("rom", nargs="?", type=pathlib.Path, help="your dump of the game (.nds)")
@@ -191,6 +221,8 @@ def main() -> int:
         if status != 0:
             fail(f"tools/extract.py failed:\n{text[-1500:]}", "report it with build/setup/extract.log")
         print("setup: " + text.strip().splitlines()[-1])
+        if not (versions.RECORDINGS / f"{RECORDINGS[0][0]}.txt").exists():
+            return extracted_only()
         step("2/4 the tools")
         check_tools()
         step("3/4 the build (several minutes the first time)")
