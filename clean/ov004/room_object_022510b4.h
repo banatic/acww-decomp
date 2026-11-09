@@ -13,7 +13,7 @@
  *   their end in mode 3; then OFF.
  *
  * SWITCHING_ON and ON show it on (vtable slot 0x74). Once its model is bound it is ON when its
- * switch is on (unless RoomObjects_InNookOrScene0AOr0F says otherwise), else OFF. */
+ * switch is on (unless RoomObjects_InShop says otherwise), else OFF. */
 #ifndef CLEAN_OV004_ROOM_OBJECT_022510B4_H
 #define CLEAN_OV004_ROOM_OBJECT_022510B4_H
 

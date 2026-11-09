@@ -494,7 +494,7 @@ static int MusicPlayer_request(MusicPlayer *player, int state, int song)
 /* func_ov004_022166b8 (vtable slot 0x7c, once the model is bound): kinds 0x13 and 0x29 load the
  * animations of variant 0, looping; the glows are bound, on as the switch shows. In mode 1
  * (placement_mode) STOPPED is requested for the object's cell (RoomSync_SetState). Otherwise, with the
- * switch on outside the areas RoomObjects_InNookOrScene0AOr0F names, it plays:
+ * switch on outside the areas RoomObjects_InShop names, it plays:
  * - in a villager's house the villager's song (song 0 for no villager), noted as started
  *   (data_ov004_02256fec, the first song's item for a song past the last); but once a song was
  *   started there it stops instead;
@@ -510,7 +510,7 @@ int MusicPlayer_Start(MusicPlayer *player)
     GlowSet_Bind(&player->glows, base->model_resource, Switch_Value(&base->on_switch));
     if (base->placement_mode == 1) {
         RoomSync_SetState(&player->base, MUSIC_PLAYER_STOPPED, NO_VALUE, 1);
-    } else if (Switch_Value(&base->on_switch) != 0 && RoomObjects_InNookOrScene0AOr0F() == 0) {
+    } else if (Switch_Value(&base->on_switch) != 0 && RoomObjects_InShop() == 0) {
         if (SceneQuery_InVillagerHouse() != 0) {
             u32 song = 0;
             void *villager = VillagerRoster_At(&data_021e5a2c, SceneQuery_CurrentVillagerHouse());

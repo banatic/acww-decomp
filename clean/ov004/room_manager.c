@@ -330,7 +330,7 @@ static_assert(sizeof(RoomManager) == 0x2b4, "room");
 #define ROOM_MANAGER_POOL_HEAP 0x1cc4
 #define ROOM_MANAGER_POOL_HEAP_SMALL 0x1c00
 
-/* Set in Nook's shops and scenes 0xa and 0xf (RoomObjects_InNookOrScene0AOr0F) by the room's
+/* Set in Nook's shops and scenes 0xa and 0xf (RoomObjects_InShop) by the room's
  * start, and when a villager of the flea market is in the room (flea_market_villager.c); the
  * room's objects read it (room_object_body.c, room_pushes.c). */
 extern u8 data_ov004_022595b4;
@@ -440,7 +440,7 @@ int RoomManager_Init(RoomManager *room)
     state->told = 0;
     state->channel = 0;
     room->broadcast_changed = 0;
-    data_ov004_022595b4 = (u8) RoomObjects_InNookOrScene0AOr0F();
+    data_ov004_022595b4 = (u8) RoomObjects_InShop();
     RoomObjects_HeapCreate(&data_ov004_022595c4, RoomObjects_Capacity());
     data_ov004_022595c0 = room;
     RoomObjects_GridClear(RoomObjects_Grid());

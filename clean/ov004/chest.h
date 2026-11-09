@@ -18,7 +18,7 @@
  *   closing the lid, after which the scene goes on (EventQueue_FinishObjectEvent).
  *
  * Once its model is bound it binds the animations of variant 0, its lid starts closed when its
- * switch is on (or RoomObjects_InNookOrScene0AOr0F says so), else open, and it does not talk; each frame it
+ * switch is on (or RoomObjects_InShop says so), else open, and it does not talk; each frame it
  * runs the talk, then the lid. It is idle when the base class says so and it does not talk. */
 #ifndef CLEAN_OV004_CHEST_H
 #define CLEAN_OV004_CHEST_H

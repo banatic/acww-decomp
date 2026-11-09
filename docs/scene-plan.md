@@ -880,7 +880,7 @@ What reading the Clean code found about the groups above; counts are of function
   from 10:00 to 15:59) did not come at 11:34 after a boot at 11:33:10 with the slingshot. A rainy
   seed's day booted on 13 September did not run TownDay_WaterWiltedFlowers. The fruit tree of code 0x53
   at (35, 50) and the tree of code 0x67 at (29, 59) shaken gave nothing new. A painting in pocket 0
-  before a pear is sold instead of it (no ItemGroup_IsRoom3894 or fruit price). Stereos in every
+  before a pear is sold instead of it (no ItemGroup_IsPainting or fruit price). Stereos in every
   item place of the villagers kept the walk of villager-home out of the house. At the Able
   Sisters' clothes, A reopened Mabel's menu; the try-on (MabelTalk_OnAnswerItem's second
   answer for clothes, hats and accessories, then MabelTalk_WatchTryOn and _EndTryOn) was not
@@ -4261,7 +4261,7 @@ What reading the Clean code found about the groups above; counts are of function
   Blathers' act (Owl_EnterAct, _UpdateAct, state 5) needs a day event of kind 1 for the player
   today (DayEvents_PlayerHas, by the calendar's dates); HouseRecord_StopCurrentSong is called by
   MusicPlayer_Start only with the music player switched on, the room playing no song and
-  RoomObjects_InNookOrScene0AOr0F answering 0 (the seed's rooms play no song; which rooms those
+  RoomObjects_InShop answering 0 (the seed's rooms play no song; which rooms those
   scenes are was not traced).
 - The plan before (984f756c): seed 350, date 93, unknown 356, unreachable 3,276; after (538 scene
   lists with main's clean-entered.txt): seed 349, date 93, unknown 355, unreachable 3,276.
@@ -4292,7 +4292,7 @@ What reading the Clean code found about the groups above; counts are of function
   and 24 (message 0x2d).
 - stereo-silent (save stereo-on: "songs" with the main room's stereo, furniture 0x1d3 at (9, 10),
   switched on): house-music's recording to 3600; the stereo's start in the house finds no song
-  item and sets the room's song to none (HouseRecord_StopCurrentSong). RoomObjects_InNookOrScene0AOr0F
+  item and sets the room's song to none (HouseRecord_StopCurrentSong). RoomObjects_InShop
   answers 0 in the house's rooms.
 - Proved unreachable (w65-wt5/cls/classify.py --raw, RAN_EXTRA=cls/ran-extra.txt, the groups in
   its gate value; calibrated with EXTRA='*': no run function cut off): NookClerk_EnterFace and

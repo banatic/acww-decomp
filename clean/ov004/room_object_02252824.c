@@ -275,7 +275,7 @@ CLEAN_AS(_ZN18Obj_ov004_0225282419func_ov004_022148e0Ev, RoomObject02252824_Upda
  * variant 0 the archive has (each only when its binding, given the heap of the object's pool
  * entry, succeeds), in the order visibility, texture coordinates, joints, patterns and
  * material; all loop from frame 0 at normal speed but the material one, in mode 3. Then ON
- * when the switch is on and RoomObjects_InNookOrScene0AOr0F says no, else OFF; done at once. */
+ * when the switch is on and RoomObjects_InShop says no, else OFF; done at once. */
 int RoomObject02252824_Start(RoomObject02252824 *object)
 {
     RoomObject *base = &object->base;
@@ -328,7 +328,7 @@ int RoomObject02252824_Start(RoomObject02252824 *object)
             ModelAnim_Attach(&anim->base, ModelObject_RenderObject(&base->model.object));
         }
     }
-    if (Switch_Value(&base->on_switch) != 0 && RoomObjects_InNookOrScene0AOr0F() == 0) {
+    if (Switch_Value(&base->on_switch) != 0 && RoomObjects_InShop() == 0) {
         RoomObject02252824_switch_to(object, ROOM_OBJECT_02252824_ON);
     } else {
         RoomObject02252824_switch_to(object, ROOM_OBJECT_02252824_OFF);

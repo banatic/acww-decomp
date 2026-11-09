@@ -24,7 +24,7 @@
  *   at 4; at their end TV_ANIMATED_OFF.
  *
  * Once their model is bound both bind the glow (on as the switch is) and enter their "on"
- * state when the switch is on and RoomObjects_InNookOrScene0AOr0F says no, else "off". */
+ * state when the switch is on and RoomObjects_InShop says no, else "off". */
 #ifndef CLEAN_OV004_TV_H
 #define CLEAN_OV004_TV_H
 

@@ -206,12 +206,12 @@ int RoomObject022518e8_Update(RoomObject022518e8 *object)
 CLEAN_AS(_ZN18Obj_ov004_022518e819func_ov004_02219274Ev, RoomObject022518e8_Update)
 
 /* func_ov004_02219284 (vtable slot 0x7c, once the model is bound): binds the animations of
- * variant 0 (once, from the start); ON when the switch is on and RoomObjects_InNookOrScene0AOr0F says no,
+ * variant 0 (once, from the start); ON when the switch is on and RoomObjects_InShop says no,
  * else OFF; done at once. */
 int RoomObject022518e8_Start(RoomObject022518e8 *object)
 {
     RoomObject_LoadAnims(&object->base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
-    if (Switch_Value(&object->base.on_switch) != 0 && !RoomObjects_InNookOrScene0AOr0F()) {
+    if (Switch_Value(&object->base.on_switch) != 0 && !RoomObjects_InShop()) {
         RoomObject022518e8_switch_to(object, ROOM_OBJECT_022518E8_ON);
     } else {
         RoomObject022518e8_switch_to(object, ROOM_OBJECT_022518E8_OFF);

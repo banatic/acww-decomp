@@ -87,7 +87,7 @@ CLEAN_AS(func_ov004_022168f8, Clock_Vfunc0C)
 
 /* The striking of a clock of kind 0x10, each frame. The nearest striking clock sets variable 1
  * of its sound when its count changes (not in mode 2). With no strikes left, a new hour (not in
- * the areas RoomObjects_InNookOrScene0AOr0F names) starts the strikes of the hour, 12 for 0; in mode 2 one
+ * the areas RoomObjects_InShop names) starts the strikes of the hour, 12 for 0; in mode 2 one
  * strike at once. While strikes are left each frame plays the strike sound and advances the
  * animation; at its end the next strike starts, and the count goes down (not in mode 2). */
 static void Clock_strike(Clock *clock)
@@ -101,7 +101,7 @@ static void Clock_strike(Clock *clock)
     if (clock->strikes == NO_STRIKES) {
         if (RoomObject_IsUnplaced(base)) {
             clock->strikes = 1;
-        } else if (!RoomObjects_InNookOrScene0AOr0F() && clock->last_time.hour != clock->time.hour) {
+        } else if (!RoomObjects_InShop() && clock->last_time.hour != clock->time.hour) {
             clock->strikes = (s8) (clock->time.hour % 12);
             if (clock->strikes == 0) {
                 clock->strikes = 12;

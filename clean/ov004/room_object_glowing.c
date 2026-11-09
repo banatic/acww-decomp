@@ -149,7 +149,7 @@ CLEAN_AS(_ZN18Obj_ov004_022509ac19func_ov004_02212264Ev, GlowingRoomObject_Updat
 
 /* func_ov004_02212280 (vtable slot 0x7c, once the model is bound): binds the animations of
  * variant 0 (once) and the glows, lit as the switch is; then in mode 1 sets GLOWING_OFF at once
- * and sends it (RoomSync_SetState), else enters GLOWING_ON when the switch is on and RoomObjects_InNookOrScene0AOr0F says
+ * and sends it (RoomSync_SetState), else enters GLOWING_ON when the switch is on and RoomObjects_InShop says
  * no, GLOWING_OFF otherwise; done at once. */
 int GlowingRoomObject_Start(GlowingRoomObject *object)
 {
@@ -158,7 +158,7 @@ int GlowingRoomObject_Start(GlowingRoomObject *object)
     GlowSet_Bind(&object->glows, base->model_resource, Switch_Value(&base->on_switch));
     if (base->placement_mode == 1) {
         RoomSync_SetState(&object->base, GLOWING_OFF, SLOT_70_VALUE, 1);
-    } else if (Switch_Value(&base->on_switch) != 0 && RoomObjects_InNookOrScene0AOr0F() == 0) {
+    } else if (Switch_Value(&base->on_switch) != 0 && RoomObjects_InShop() == 0) {
         base->vtable->vfunc_70(base, GLOWING_ON, SLOT_70_VALUE);
     } else {
         base->vtable->vfunc_70(base, GLOWING_OFF, SLOT_70_VALUE);

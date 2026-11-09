@@ -9,7 +9,7 @@
  *   the sound at 0 is played each frame; while the switch has a change pending it requests OFF.
  *
  * ON shows it on (vtable slot 0x74). Once its model is bound it enters ON when its switch is on
- * and RoomObjects_InNookOrScene0AOr0F says no, else OFF. */
+ * and RoomObjects_InShop says no, else OFF. */
 #ifndef CLEAN_OV004_ROOM_OBJECT_02251A14_H
 #define CLEAN_OV004_ROOM_OBJECT_02251A14_H
 

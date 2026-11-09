@@ -9,7 +9,7 @@
  * - on: entered with the sound at 2 and the animation of variant 1 played in a loop; the sound
  *   at 0 is played each frame; while the switch has a change pending it requests "off".
  *
- * Once its model is bound it enters "on" when its switch is on, unless RoomObjects_InNookOrScene0AOr0F
+ * Once its model is bound it enters "on" when its switch is on, unless RoomObjects_InShop
  * says otherwise, and "off" if not; in mode 1 (RoomObject.placement_mode) it sets "off" at once and
  * sends it to everyone (RoomSync_SetState) instead. */
 #ifndef CLEAN_OV004_ROOM_OBJECT_GLOWING_H

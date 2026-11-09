@@ -17,7 +17,7 @@
  * ends the talk.
  *
  * Once its model is bound (vtable slot 0x7c) it plays when its switch is on, outside the areas
- * RoomObjects_InNookOrScene0AOr0F names: in a villager's house the villager's song, unless a player already
+ * RoomObjects_InShop names: in a villager's house the villager's song, unless a player already
  * started it there (data_ov004_02256fec), elsewhere the house's music item; else it is
  * stopped. Vtable slot 0x0c stops the song and forgets the villager's song started.
  *

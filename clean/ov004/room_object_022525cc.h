@@ -11,7 +11,7 @@
  *   at 0 it enters OFF.
  *
  * ON alone shows it on (vtable slot 0x74). Once its model is bound it enters ON when its switch
- * is on and RoomObjects_InNookOrScene0AOr0F says no, else OFF. */
+ * is on and RoomObjects_InShop says no, else OFF. */
 #ifndef CLEAN_OV004_ROOM_OBJECT_022525CC_H
 #define CLEAN_OV004_ROOM_OBJECT_022525CC_H
 

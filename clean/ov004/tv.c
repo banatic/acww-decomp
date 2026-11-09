@@ -67,12 +67,12 @@ static void Tv_switch_to(Tv *tv, int state)
 }
 
 /* The glow bound to the screen's material, on as the switch is; then the "on" state when the
- * switch is on and RoomObjects_InNookOrScene0AOr0F says no, else the "off" one. */
+ * switch is on and RoomObjects_InShop says no, else the "off" one. */
 static void Tv_bind_and_enter(Tv *tv, int on_state, int off_state)
 {
     int on = Switch_Value(&tv->base.on_switch);
     Glow_Bind(&tv->screen, tv->base.model_resource, data_ov004_022531d8, on);
-    if (Switch_Value(&tv->base.on_switch) != 0 && RoomObjects_InNookOrScene0AOr0F() == 0) {
+    if (Switch_Value(&tv->base.on_switch) != 0 && RoomObjects_InShop() == 0) {
         Tv_switch_to(tv, on_state);
     } else {
         Tv_switch_to(tv, off_state);
@@ -242,7 +242,7 @@ CLEAN_AS(_ZN18Obj_ov004_02250f8819func_ov004_02215a80Ev, TvAnimated_Update)
 
 /* func_ov004_02215aa0 (vtable slot 0x7c, once the model is bound): binds the animations of
  * variant 0 to play once from frame 0, then the glow; TV_ANIMATED_ON when the switch is on and
- * RoomObjects_InNookOrScene0AOr0F says no, else TV_ANIMATED_OFF; done at once. */
+ * RoomObjects_InShop says no, else TV_ANIMATED_OFF; done at once. */
 int TvAnimated_Start(TvAnimated *tv)
 {
     RoomObject_LoadAnims(&tv->base.base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
@@ -432,7 +432,7 @@ int Tv_Update(Tv *tv)
 CLEAN_AS(_ZN18Obj_ov004_0225143819func_ov004_02215de0Ev, Tv_Update)
 
 /* func_ov004_02215e08 (vtable slot 0x7c, once the model is bound): binds the glow; TV_ON when
- * the switch is on and RoomObjects_InNookOrScene0AOr0F says no, else TV_OFF; done at once. */
+ * the switch is on and RoomObjects_InShop says no, else TV_OFF; done at once. */
 int Tv_Start(Tv *tv)
 {
     Tv_bind_and_enter(tv, TV_ON, TV_OFF);

@@ -154,13 +154,13 @@ CLEAN_AS(_ZN18Obj_ov004_02251a1419func_ov004_02219d08Ev, RoomObject02251a14_Upda
 
 /* func_ov004_02219d28 (vtable slot 0x7c, once the model is bound): binds the animations of
  * variant 0 (in a loop, from the start) and the glows, lit as the switch is; then enters ON
- * when the switch is on and RoomObjects_InNookOrScene0AOr0F says no, OFF otherwise; done at once. */
+ * when the switch is on and RoomObjects_InShop says no, OFF otherwise; done at once. */
 int RoomObject02251a14_Start(RoomObject02251a14 *object)
 {
     RoomObject *base = &object->base;
     RoomObject_LoadAnims(base, 0, ANIM_MODE_LOOP, FX32_ONE, 0);
     GlowSet_Bind(&object->glows, base->model_resource, Switch_Value(&base->on_switch));
-    if (Switch_Value(&base->on_switch) != 0 && RoomObjects_InNookOrScene0AOr0F() == 0) {
+    if (Switch_Value(&base->on_switch) != 0 && RoomObjects_InShop() == 0) {
         RoomObject02251a14_switch_to(object, ROOM_OBJECT_02251A14_ON);
     } else {
         RoomObject02251a14_switch_to(object, ROOM_OBJECT_02251A14_OFF);

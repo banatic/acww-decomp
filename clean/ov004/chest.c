@@ -693,7 +693,7 @@ CLEAN_AS(_ZN18Obj_ov004_0225211c19func_ov004_022176e8Ev, Chest_Update)
 /* func_ov004_02217700 (vtable slot 0x7c, once the model is bound): the node set's value 0; in
  * mode 1 (placement_mode) the switch is set on first. The animations of variant 0 are bound (kind 0xf
  * to play once, the others in mode 3); the lid starts closed when the switch is on or
- * RoomObjects_InNookOrScene0AOr0F says so, else open; and the chest is not talking. Done at once. */
+ * RoomObjects_InShop says so, else open; and the chest is not talking. Done at once. */
 int Chest_Start(Chest *chest)
 {
     RoomObject *base = &chest->base;
@@ -706,7 +706,7 @@ int Chest_Start(Chest *chest)
     } else {
         RoomObject_LoadAnims(base, 0, ANIM_MODE_3, FX32_ONE, 0);
     }
-    if (Switch_Value(&base->on_switch) != 0 || RoomObjects_InNookOrScene0AOr0F() != 0) {
+    if (Switch_Value(&base->on_switch) != 0 || RoomObjects_InShop() != 0) {
         Chest_switch_to(chest, CHEST_LID_CLOSED);
     } else {
         Chest_switch_to(chest, CHEST_LID_OPEN);

@@ -389,14 +389,15 @@ int RoomObjects_FindAhead(int *x, int *z, const Vec3 *position, int angle, ItemC
 }
 CLEAN_AS(func_ov004_0223bbfc, RoomObjects_FindAhead)
 
-/* func_ov004_0223c10c: whether the scene is one of Nook's shops (SceneQuery_CurrentInNook) or
- * scene 0xa or 0xf; the TVs and glowing objects then do not come on by themselves. */
-int RoomObjects_InNookOrScene0AOr0F(void)
+/* func_ov004_0223c10c: whether the scene is a shop: one of Nook's (SceneQuery_CurrentInNook),
+ * the tailor's (scene 0xa) or the fox's (scene 0xf; shop_display.h); the TVs and glowing objects
+ * then do not come on by themselves. */
+int RoomObjects_InShop(void)
 {
     int scene = SceneQuery_Current();
     return SceneQuery_CurrentInNook() != 0 || scene == 0xa || scene == 0xf;
 }
-CLEAN_AS(func_ov004_0223c10c, RoomObjects_InNookOrScene0AOr0F)
+CLEAN_AS(func_ov004_0223c10c, RoomObjects_InShop)
 
 /* func_ov004_0223c130: the entries of the table of the room's objects, by the scene. */
 int RoomObjects_Capacity(void)

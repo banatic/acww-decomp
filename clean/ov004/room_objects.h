@@ -51,7 +51,7 @@ int RoomObjects_TakeWithItem(unsigned int index, ItemCode *item, ItemCode *item_
 int RoomObjects_LayerOf(unsigned int index);
 int RoomObjects_FindAheadOfPlayer(int *x, int *z, ItemCode *item, ItemCode *item_copy);
 int RoomObjects_FindAhead(int *x, int *z, const Vec3 *position, int angle, ItemCode *item, ItemCode *item_copy);
-int RoomObjects_InNookOrScene0AOr0F(void);
+int RoomObjects_InShop(void);
 int RoomObjects_Capacity(void);
 int RoomObjects_PickUnk778(int key);
 RoomObject *RoomObjects_PickOn(RoomObjectsTest test, int pending);

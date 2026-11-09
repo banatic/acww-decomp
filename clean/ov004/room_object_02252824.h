@@ -17,7 +17,7 @@
  *
  * Each frame its other animations (joints, texture coordinates, patterns, visibility) advance
  * on their own. Its start binds all five of variant 0 and enters ON when its switch is on
- * (unless RoomObjects_InNookOrScene0AOr0F says so), else OFF. */
+ * (unless RoomObjects_InShop says so), else OFF. */
 #ifndef CLEAN_OV004_ROOM_OBJECT_02252824_H
 #define CLEAN_OV004_ROOM_OBJECT_02252824_H
 
