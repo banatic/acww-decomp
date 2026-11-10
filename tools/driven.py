@@ -357,18 +357,32 @@ def run_round(names: list[str], seed: pathlib.Path, jobs: int) -> dict[str, list
         n, c = item
         r = pools[c].get()
         try:
-            return run_check(n, seed, c, r, token)
+            if C.gate_stopped():  # a step of the gate failed: the checks not yet started are left out
+                return dict(name=n, clean=c, skipped=True, problems=["not run (the gate stopped at a failure)"],
+                            calls=0, seconds=0, entered=[], work=OUT / n / ("clean" if c else "native"))
+            res = run_check(n, seed, c, r, token)
+            if res["problems"]:
+                C.gate_stop()
+            return res
         finally:
             pools[c].put(r)
     results: dict[str, list[dict]] = {}
     with cf.ThreadPoolExecutor(max(1, jobs)) as pool:
         for res in pool.map(one, passes):
             results.setdefault(res["name"], []).append(res)
+            if res.get("skipped"):
+                continue
             verdict = "ok  " if not res["problems"] else "FAIL"
             print(f"{verdict} {res['name']} ({'Clean' if res['clean'] else 'Native alone'}, {res['calls']} calls, "
                   f"{res['seconds']} s){': ' + '; '.join(res['problems']) if res['problems'] else ''}", flush=True)
     failed = {}
+    not_run = sorted(n for n, rs in results.items() if all(r.get("skipped") for r in rs))
+    if not_run:
+        print(f"{len(not_run)} checks not run (the gate stopped at a failure)", flush=True)
     for n, rs in sorted(results.items()):
+        if n in not_run:
+            failed[n] = rs
+            continue
         ok = all(not r["problems"] for r in rs) and len(rs) == 2
         clean_pass = next(r for r in rs if r["clean"])
         ran = clean_ran(clean_pass["work"] / "clean-ran.json")

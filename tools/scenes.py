@@ -3295,7 +3295,12 @@ def main() -> int:
     def one(name: str) -> dict:
         runtime = slots.get()
         try:
-            return run(name, seed, args.look, args.native, clean, runtime, ran, token, name in verified)
+            if C.gate_stopped():  # a step of the gate failed: the scenes not yet started are left out
+                return dict(name=name, skipped=True, status=1, agree=False)
+            r = run(name, seed, args.look, args.native, clean, runtime, ran, token, name in verified)
+            if not args.look and not (r["agree"] and r["status"] == 0):
+                C.gate_stop()
+            return r
         finally:
             slots.put(runtime)
     pool = cf.ThreadPoolExecutor(max(1, args.jobs))
@@ -3306,6 +3311,9 @@ def main() -> int:
         print(f"{name}...", flush=True)
         r = pending[name].result()
         results.append(r)
+        if r.get("skipped"):
+            print("  not run (the gate stopped at a failure)", flush=True)
+            continue
         if args.look:
             print(f"  {r['status']=} pngs in {(r['work'] / 'png').as_posix()} ({r['seconds']} s)")
             continue
@@ -3325,9 +3333,11 @@ def main() -> int:
         held.close()
     if args.look:
         return 0
-    failed = [r["name"] for r in results if not (r["agree"] and r["status"] == 0)]
-    print(f"scenes: {len(results) - len(failed)} of {len(results)} agree" + (f"; failed {failed}" if failed else ""))
-    return 1 if failed else 0
+    skipped = [r["name"] for r in results if r.get("skipped")]
+    failed = [r["name"] for r in results if not (r["agree"] and r["status"] == 0) and not r.get("skipped")]
+    print(f"scenes: {len(results) - len(failed) - len(skipped)} of {len(results)} agree"
+          + (f"; failed {failed}" if failed else "") + (f"; {len(skipped)} not run" if skipped else ""))
+    return 1 if failed or skipped else 0
 
 
 if __name__ == "__main__":

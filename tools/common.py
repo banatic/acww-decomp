@@ -122,10 +122,11 @@ def prune_cache(kinds: tuple[str, ...] | None = None) -> None:
     goes first, a directory entry (a Reference run's results) as a whole. Nothing used in the
     last ten minutes is removed. The whole cache is looked over at most once an hour; with
     `kinds`, only those, every time, against their own limit (ACWW_CACHE_REFERENCE_GB, default
-    16, for "reference2", the Reference runs: an entry is 2 to 15 MB, and a gate stores two for
-    every scene), which the look over the whole cache leaves alone. ("reference" holds the
-    entries of an older format, up to 700 MB each, which checkouts of before it still prune
-    to 6 GB.)"""
+    60, for "reference2", the Reference runs: an entry is 2 to 15 MB, and a gate stores two for
+    every scene and driven check, about 13 GB in all, so the limit holds the runs of several
+    branches at once and one tree's gate does not push another's out), which the look over the
+    whole cache leaves alone. ("reference" holds the entries of an older format, up to 700 MB
+    each, which checkouts of before it still prune to 6 GB.)"""
     stamp = CACHE_DIR / ".pruned"
     now = time.time()
     if kinds is None:
@@ -136,7 +137,7 @@ def prune_cache(kinds: tuple[str, ...] | None = None) -> None:
             pass
         limit = float(os.environ.get("ACWW_CACHE_LIMIT_GB", "10")) * (1 << 30)
     else:
-        limit = float(os.environ.get("ACWW_CACHE_REFERENCE_GB", "16")) * (1 << 30)
+        limit = float(os.environ.get("ACWW_CACHE_REFERENCE_GB", "60")) * (1 << 30)
     entries = []  # (last used, size, path)
     for kind in (CACHE_DIR.iterdir() if CACHE_DIR.is_dir() else ()):
         if not kind.is_dir() or (kind.name not in kinds if kinds is not None else kind.name == "reference2"):
@@ -166,6 +167,23 @@ def prune_cache(kinds: tuple[str, ...] | None = None) -> None:
         try:
             stamp.parent.mkdir(parents=True, exist_ok=True)
             stamp.touch()
+        except OSError:
+            pass
+
+
+def gate_stopped() -> bool:
+    """Whether the gate this tool runs under has had a failure (tools/gate.py names a file in
+    ACWW_GATE_STOP, made at the first one): what has not started yet is then left out."""
+    path = os.environ.get("ACWW_GATE_STOP")
+    return bool(path) and os.path.exists(path)
+
+
+def gate_stop() -> None:
+    """Tell the gate's other steps of a failure (see gate_stopped); nothing outside a gate."""
+    path = os.environ.get("ACWW_GATE_STOP")
+    if path:
+        try:
+            pathlib.Path(path).touch()
         except OSError:
             pass
 
