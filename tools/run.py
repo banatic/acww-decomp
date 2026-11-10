@@ -1257,13 +1257,14 @@ def renamed_file(name: str, data: bytes, renames: tuple[dict[str, str], dict]) -
     words, functions = renames
     if not words:
         return data
-    if name == "functions-seen.txt":  # `module address name` a line
+    if name == "functions-seen.txt":  # `module address name` a line (each line's end as it is)
         rows = []
-        for line in data.decode().splitlines():
+        for line in data.decode().splitlines(keepends=True):
             parts = line.split()
             if len(parts) == 3:
-                parts[2] = functions.get((int(parts[1], 16) & ~1, parts[0]), parts[2])
-            rows.append(" ".join(parts) + "\n")
+                end = line[len(line.rstrip("\r\n")):]
+                line = f"{parts[0]} {parts[1]} {functions.get((int(parts[1], 16) & ~1, parts[0]), parts[2])}{end}"
+            rows.append(line)
         return "".join(rows).encode()
     text = data.decode("utf-8", "surrogateescape")
     return NAME_TOKEN.sub(lambda m: words.get(m[0], m[0]), text).encode("utf-8", "surrogateescape")

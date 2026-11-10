@@ -276,7 +276,7 @@ def check_names() -> list[str]:
             out, ram = tmp / "out", tmp / "out" / "ram"
             trace = out / "crossings.bin"
             log = b"frames: sequence sha1 0\n  12  alpha\n  3 alpha+0x10 (beta+0x4?) 1=alphabet\nbranch to gamma.\n"
-            seen = b"main 02000100 alpha\nov001 02000200 beta\n"
+            seen = b"main 02000100 alpha\r\nov001 02000200 beta\r\n"  # (as the runtime writes it on Windows)
 
             def fresh() -> None:
                 shutil.rmtree(out, ignore_errors=True)
@@ -296,7 +296,7 @@ def check_names() -> list[str]:
             want = b"frames: sequence sha1 0\n  12  beta\n  3 beta+0x10 (alpha+0x4?) 1=alphabet\nbranch to gamma.\n"
             if (out / "reference.log").read_bytes() != want:
                 bad.append(f"the log came back as {(out / 'reference.log').read_bytes()!r}")
-            if (out / "functions-seen.txt").read_bytes() != b"main 02000100 beta\nov001 02000200 alpha\n":
+            if (out / "functions-seen.txt").read_bytes() != b"main 02000100 beta\r\nov001 02000200 alpha\r\n":
                 bad.append(f"the list came back as {(out / 'functions-seen.txt').read_bytes()!r}")
             if run.reference_differs("cd" * 20, out, ram, trace, after):
                 bad.append(f"the renamed entry differs from itself: {run.reference_differs('cd' * 20, out, ram, trace, after)}")
