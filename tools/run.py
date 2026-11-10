@@ -140,7 +140,7 @@ CLEAN_AS = re.compile(r"^CLEAN_AS(?:\((\w+)|_SYMBOL\(\"([^\"]+)\"),\s*(\w+)\)", 
 CLEAN_CHECK = re.compile(r"^DIFF_CHECK\((\w+), \"(\w+)\", (0x[0-9a-fA-F]+(?: \| 1)?), (\d+),", re.M)
 SOURCES = ("arm.c", "memory.c", "io.c", "bios.c", "arm7.c", "boot.c", "gpu2d.c", "gpu3d.c", "frame.c", "input.c",
            "run.c", "native_run.c", "native_aggregate.c", "native_os.c", "host.c", "native_tramp.S", "render.c", "drive.c",
-           "sequencer.c", "wm.c", "wifi.c", "driven.c")
+           "sequencer.c", "ds_audio.c", "sound.c", "wm.c", "wifi.c", "driven.c")
 
 # The ROM's compiler helpers that Native code does inline (runtime/native_run.c, status H):
 # the libs/Runtime package, and the C library functions the PC's own versions replace
@@ -595,7 +595,7 @@ def build(native: bool, clean: str | None = None, ran: bool = False, play: str |
         # address space the DS's main RAM needs.
         srcs.append(str(RUNTIME / "play.c"))
         flags = [*flags, "-DRUN_FRONT_END"]
-        link = [*link, "-luser32", "-lgdi32", "-ldelayimp", "-Wl,/DELAYLOAD:user32.dll", "-Wl,/DELAYLOAD:gdi32.dll"]
+        link = [*link, "-luser32", "-lgdi32", "-lwinmm", "-Wl,/DELAYLOAD:winmm.dll", "-ldelayimp", "-Wl,/DELAYLOAD:user32.dll", "-Wl,/DELAYLOAD:gdi32.dll"]
     cmd = [*diffcheck.compiler(), *flags, *srcs, *extra, *link, "-o", str(exe)]
     inputs = json.dumps(program_inputs(cmd, [pathlib.Path(s) for s in srcs] + runtime_sources), indent=1)
     key = link_key(cmd)  # an unchanged program is not linked again
@@ -1176,6 +1176,11 @@ def native_main(args, manifest, table, budget, env) -> int:
     env = dict(env)
     env.pop("RUN_CLEAN_RAN", None)
     hash_file = env.pop("RUN_HASH", None)
+    audio_wav = env.pop("RUN_AUDIO_WAV", None)
+    if audio_wav:
+        # Both passes must render capture RAM and deliver alarms. Only the Native pass
+        # creates the requested WAV; the Reference may come from the usual verified cache.
+        env["RUN_AUDIO"] = "1"
     out = OUT / "native-run"
     out.mkdir(parents=True, exist_ok=True)
     env["RUN_NATIVE_POLICY"] = str(policy)
@@ -1223,6 +1228,8 @@ def native_main(args, manifest, table, budget, env) -> int:
     nat_env = dict(env, RUN_NATIVE="1", RUN_HASH=hash_file or str(out / "native-hashes.txt"))
     if not args.no_timing:
         nat_env["RUN_NATIVE_REPLAY"] = str(trace)
+    if audio_wav:
+        nat_env["RUN_AUDIO_WAV"] = audio_wav
     ran = out / "clean-ran.txt"
     if args.clean_ran:
         ran.unlink(missing_ok=True)
@@ -1497,6 +1504,7 @@ def main() -> None:
     ap.add_argument("--input", metavar="FILE", help="input recording")
     ap.add_argument("--rtc", metavar="TIME", help='pin the clock: "YYYY-MM-DD HH:MM:SS"')
     ap.add_argument("--save", metavar="FILE", help="the save chip's image at power-on")
+    ap.add_argument("--audio-wav", type=pathlib.Path, help="record bus-timed stereo audio to a new WAV (implies --sequencer)")
     ap.add_argument("--sequencer", action="store_true", help="run the ARM7's sound sequences")
     ap.add_argument("--wireless", action="store_true", help="the ARM7's wireless manager answers (runtime/wm.h)")
     ap.add_argument("--wifi", nargs="?", const="1", metavar="MODE",
@@ -1522,6 +1530,10 @@ def main() -> None:
     ap.add_argument("--reuse-build", metavar="TOKEN", help="with --native: use the program and policy an earlier "
                     "run with this TOKEN and the same options made in this directory (tools/scenes.py)")
     args = ap.parse_args()
+    if args.audio_wav and (args.peer_save or args.peer_input or args.learn):
+        ap.error("--audio-wav requires a single console and no --learn retries")
+    if args.audio_wav and args.audio_wav.exists():
+        ap.error("--audio-wav refuses to overwrite an existing file")
     if args.clean_ran and not args.clean:
         raise SystemExit("--clean-ran needs --clean")
     if args.clean and not args.native:
@@ -1548,7 +1560,11 @@ def main() -> None:
         env["RUN_RTC"] = args.rtc
     env.pop("RUN_SAVE", None)
     env.pop("RUN_SEQUENCER", None)
-    if args.sequencer:
+    env.pop("RUN_AUDIO", None)
+    env.pop("RUN_AUDIO_WAV", None)
+    if args.audio_wav:
+        env["RUN_AUDIO_WAV"] = str(args.audio_wav.resolve())
+    if args.sequencer or args.audio_wav:
         env["RUN_SEQUENCER"] = "1"
     env.pop("RUN_WIRELESS", None)
     env.pop("RUN_LINK", None)
