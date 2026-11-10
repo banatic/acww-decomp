@@ -3,7 +3,7 @@ source's name, the names of its own symbols, an external name spelled otherwise)
 changes it; which names stand for the same thing in two trees; that two programs compare
 equal exactly when one is the other with names changed one for one; and that natives.s compares
 equal when its rows and pieces of code come in another order under other names, and not when
-a wrapper would name another row."""
+a wrapper would name another row; the same for clean_table.c's rows."""
 from __future__ import annotations
 
 import pathlib
@@ -282,8 +282,60 @@ def check_natives() -> list[str]:
     return bad
 
 
+def clean_table(checks: list[tuple[str, int]], functions: list[tuple[str, int, int]]) -> str:
+    """clean_table.c as tools/run.py writes it: the checks (DiffTest, address), then the
+    registered functions (name, address, info)."""
+    lines = ['#include "diffcheck.h"', '#include "native_table.h"', "", "const uint32_t *diff_stack;", ""]
+    rows = []
+    for i, (test, address) in enumerate(checks):
+        lines += [f"extern const DiffTest {test};", f"uint32_t native_body_clean_{i}(uint32_t a0)", "{",
+                  f"    return {test}.run_clean(args);", "}", f"extern void native_clean_{i}(void);", ""]
+        rows.append(f"    {{0x{address:08x}u, 0x10u, (const void *) native_clean_{i}, "
+                    "(uint32_t) NATIVE_RET_32 | 4u << 4 | (uint32_t) 0 << 16},")
+    for name, address, info in functions:
+        lines.append(f"extern void {name}(void);")
+        rows.append(f"    {{0x{address:08x}u, 0x10u, (const void *) {name}, 0x{info:08x}u}},")
+    lines += ["const NativeFunction clean_functions[] = {", *rows, "};",
+              f"const uint32_t clean_function_count = {len(rows)};", ""]
+    return "\n".join(lines)
+
+
+def check_clean_rows() -> list[str]:
+    bad = []
+    labels = F.Labels(table(alpha=0x100, beta=0x200), {"Alpha_Run": "alpha", "Beta_Run": "beta"}, "_")
+    renamed = F.Labels(table(alpha=0x100, beta=0x200), {"Alpha_Start": "alpha", "Beta_Run": "beta"}, "_")
+
+    def text(checks: list, functions: list, names: F.Labels = labels) -> str | None:
+        rows = F.clean_rows(clean_table(checks, functions))
+        return None if rows is None else F.clean_rows_text(rows, names)
+    checks = [("diff_test_alpha", 0x100), ("diff_test_beta", 0x200)]
+    functions = [("Alpha_Run", 0x100, 0x25), ("Beta_Run", 0x200, 0x35), ("Helper_Sum", 0x300, 0x15)]
+    base = text(checks, functions)
+    if base is None or "Alpha_Run" in base or "Helper_Sum" not in base:
+        bad.append(f"clean_table.c's rows: {base!r}")
+    for what, got, want in (
+            ("the checks and the functions in another order", text(checks[::-1], [functions[2], functions[0], functions[1]]), True),
+            ("a function renamed, its file listed last", text(checks, [functions[1], functions[2], ("Alpha_Start", 0x100, 0x25)],
+                                                              renamed), True),
+            ("a function renamed in the table alone", text(checks, [("Alpha_Start", 0x100, 0x25), *functions[1:]]), False),
+            ("another info", text(checks, [("Alpha_Run", 0x100, 0x26), *functions[1:]]), False),
+            ("a function on standby", text(checks, [("Alpha_Run", 0x100, 0x825), *functions[1:]]), False),
+            ("a check less", text(checks[:1], functions), False),
+            ("a check as a function", text(checks[:1], [("diff_test_beta", 0x200, 0x25), *functions]), False)):
+        if (got == base) != want:
+            bad.append(f"clean_table.c, {what}: compares {'different' if want else 'the same'}")
+    # two rows of one function: the runtime gives it the last
+    twice = [("Alpha_Run", 0x100, 0x25), ("Beta_Run", 0x100, 0x25)]
+    if text([], twice) == text([], twice[::-1]):
+        bad.append("two rows of one function in another order compare the same")
+    odd = clean_table(checks, functions).replace("(const void *) native_clean_1,", "(const void *) native_clean_0,")
+    if F.clean_rows(odd) is not None or F.clean_rows(clean_table(checks, functions).replace("count = 5", "count = 4")) is not None:
+        bad.append("a clean_table.c not written as tools/run.py writes it was read as rows")
+    return bad
+
+
 def main() -> int:
-    bad = check_shapes() + check_labels() + check_programs() + check_natives()
+    bad = check_shapes() + check_labels() + check_programs() + check_natives() + check_clean_rows()
     for line in bad:
         print(f"FAIL: {line}")
     print("fingerprint: shapes, names and programs: " + ("FAIL" if bad else "ok"))

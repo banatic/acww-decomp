@@ -25,15 +25,17 @@ same: where two would (two symbols at one address, two Clean functions registere
 function), both are compared as they are spelled. Whatever a name is part of beyond a symbol
 (a string that holds it, an assert's text and line) is in the bytes, and makes the parts
 differ. The comparison is one way only: equal parts mean the same code; code that is the same
-may still give different parts (a Clean file renamed, so that its functions come elsewhere in
-clean_table.c), and then the gate runs as for any change.
+may still give different parts, and then the gate runs as for any change.
 
 What the build lists in the order of names or of file names is compared in no order, where the
 order means nothing: the objects; the symbols absolute.s and its like place; and in natives.s
 and clean-calls.s the rows of the function table (each wrapper passes the runtime its own
 row's number: the two are compared as one), the rows of the two tables after it, and the
 pieces of code, each of which ends in a jump or a return (asm_blocks). A file that is not
-written so is compared line by line.
+written so is compared line by line. clean_table.c lists the Clean functions in the order of
+their files' names, and clean-profile.s (each function's entry, numbered by its row) is written
+from the same rows by the same tool: the two are compared as the rows, in no order
+(clean_rows), so a Clean file may be renamed.
 
 The parts:
 
@@ -41,7 +43,8 @@ The parts:
     native_tables    natives.s, absolute.s, the policy of a run without Clean, the resident
                      symbols' addresses, the modules, the ROM
     clean_objects    the Clean objects and their checks' (tools/run.py, build_clean)
-    clean_tables     clean_table.c and the policy of a run with every Clean function
+    clean_tables     clean_table.c's rows, the call stubs (clean-calls.s) and the policy of a run
+                     with every Clean function
 
 A gate that passes on a tree with nothing uncommitted keeps its parts under the commit, in the
 cache every checkout shares (record); a later gate compares its own with the record of the
@@ -61,7 +64,7 @@ import sys
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import common as C  # noqa: E402
 
-FORMAT = 2
+FORMAT = 3
 # the sections a compiler names `<kind>$<name>` for one function or variable: the part after
 # the `$` only orders them inside the linked section
 STANDARD_SECTIONS = (".text", ".data", ".rdata", ".bss", ".xdata", ".pdata")
@@ -316,6 +319,42 @@ def stubs_text(text: str, labels: Labels) -> str:
     return labels.text(text) if blocks is None else "\n".join(blocks)
 
 
+CLEAN_ROW = re.compile(r"(?m)^    \{0x([0-9a-f]{8})u, 0x([0-9a-f]+)u, \(const void \*\) (\w+), ([^{}]*)\},$")
+
+
+def clean_rows(text: str) -> list[tuple] | None:
+    """clean_table.c (tools/run.py, write_clean_table) as its rows: (the check's DiffTest or the
+    Clean function, address, size, info, the row's place among the rows of the same function);
+    None for a file not written so. Each check's row comes first, entered through
+    native_clean_<its number>, and the checks are declared in that order."""
+    rows = CLEAN_ROW.findall(text)
+    tests = re.findall(r"(?m)^extern const DiffTest (\w+);$", text)
+    count = re.search(r"(?m)^const uint32_t clean_function_count = (\d+);$", text)
+    if count is None or int(count[1]) != len(rows) or text.count("(const void *)") != len(rows):
+        return None
+    out = []
+    seen: dict[tuple[int, str], int] = {}
+    for i, (address, size, host, info) in enumerate(rows):
+        check = host.startswith("native_clean_")
+        if check != (i < len(tests)) or (check and host != f"native_clean_{i}"):
+            return None
+        # the module's index: the info's high half, as a number or as `(uint32_t) <index> << 16`
+        module = re.fullmatch(r"0x([0-9a-f]{4})[0-9a-f]{4}u|.*\(uint32_t\) (\d+) << 16", info)
+        if module is None:
+            return None
+        key = (int(address, 16) & ~1, module[1] or f"{int(module[2]):04x}")
+        seen[key] = seen.get(key, 0) + 1
+        out.append((tests[i] if check else host, "check" if check else "function", address, size, info, seen[key]))
+    return out
+
+
+def clean_rows_text(rows: list[tuple], labels: Labels) -> str:
+    """clean_rows for comparing: each name as what it stands for, in no order. The runtime finds
+    a Clean function by its address and module (and gives a function the last of its rows), and
+    clean-profile.s gives each row's entry the row's own number, so the order means nothing."""
+    return "\n".join(sorted(" ".join([labels.canon(labels.prefix + name), *map(str, rest)]) for name, *rest in rows))
+
+
 def object_hash(shape: dict, labels: Labels) -> str:
     """One object: its shape with what each of its external names stands for."""
     if "flat" in shape:
@@ -396,10 +435,13 @@ def compute() -> dict:
         raise SystemExit("run `python tools/native.py` first")
     table = run.write_clean_table("all")  # (and clean-profile.s, which build_clean assembles)
     listed = pathlib.Path(run.build_clean(run.runtime_flags())[0][1:])
-    # (the call stubs' object is compared by its source, stubs_text: its order is the names')
+    # The call stubs' object is compared by its source (stubs_text: its order is the names'), and
+    # the entries' (clean-profile.s, written from clean_table.c's rows) by those rows.
     stubs = run.OUT / "clean-calls.o"
+    rows = clean_rows(table.read_text())
+    apart = [stubs] + ([run.OUT / "clean-profile.o"] if rows is not None else [])
     groups = {"native_objects": [pathlib.Path(p) for p in (run.NATIVE / "objects.txt").read_text().split()],
-              "clean_objects": [p for p in map(pathlib.Path, listed.read_text().split()) if p != stubs]}
+              "clean_objects": [p for p in map(pathlib.Path, listed.read_text().split()) if p not in apart]}
     shapes = shapes_of(groups)
     syms = C.symbol_table(C.modules())
     table_names = {name: [(s.module, f"{s.address:08x}", s.kind, f"{s.size:x}", int(s.thumb)) for s in entries]
@@ -429,7 +471,8 @@ def compute() -> dict:
         "\n".join(sorted(f"{labels.canon(name)} {address}" for name, address in absolute)).encode(),
         policy_none, run.symbols_facts(symbols.read_text()), C.tree_free(manifest.read_text()).encode(),
         run.file_sha1(run.ROM).encode())
-    out["clean_tables"] = digest(labels.text(table.read_text(), c=True).encode(), policy_clean,
+    listed_rows = labels.text(table.read_text(), c=True) if rows is None else clean_rows_text(rows, labels)
+    out["clean_tables"] = digest(listed_rows.encode(), policy_clean,
                                  stubs_text(stubs.with_suffix(".s").read_text(), labels).encode())
     return {"parts": out, **extra}
 
