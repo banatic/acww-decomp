@@ -19,6 +19,8 @@
 #include <unistd.h>
 #endif
 
+volatile int native_os_waiting;
+
 /* Each fiber's stack: Native code, the interpreter it calls, and the Native code that calls
  * again, nest on it. */
 #define FIBER_STACK (16u << 20)

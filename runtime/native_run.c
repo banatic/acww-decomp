@@ -2510,10 +2510,15 @@ static uint64_t watch_last_steps = ~0ull;
 
 static int making_progress(void)
 {
+    /* Waiting for another console is not a loop (native_os.h), for as long as that console may
+       need to read its Reference's record on a busy disk; two consoles that wait for each other
+       would wait for ever, so not without end. */
+    static int waited;
     uint64_t now = cpu->steps;
     int moved = now != watch_last_steps;
     watch_last_steps = now;
-    return moved;
+    waited = !moved && native_os_waiting ? waited + 1 : 0;
+    return moved || (waited > 0 && waited < 600);
 }
 
 static void stuck_in(uint32_t eip)

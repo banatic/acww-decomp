@@ -25,6 +25,7 @@
 #include "input.h"
 #include "io.h"
 #include "memory.h"
+#include "native_os.h"
 #include "wifi.h"
 
 #ifdef _WIN32
@@ -1354,7 +1355,10 @@ static int link_read(void *p, uint32_t n)
     uint8_t *q = p;
     while (n > 0) {
         DWORD done = 0;
-        if (!ReadFile(wm.link_in, q, n, &done, NULL) || done == 0) {
+        native_os_waiting = 1; /* the other console may not have written yet */
+        BOOL ok = ReadFile(wm.link_in, q, n, &done, NULL);
+        native_os_waiting = 0;
+        if (!ok || done == 0) {
             return 0;
         }
         q += done;
@@ -1381,7 +1385,9 @@ static int link_read(void *p, uint32_t n)
 {
     uint8_t *q = p;
     while (n > 0) {
+        native_os_waiting = 1; /* the other console may not have written yet */
         ssize_t done = read(wm.link_in, q, n);
+        native_os_waiting = 0;
         if (done <= 0) {
             return 0;
         }

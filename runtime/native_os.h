@@ -37,6 +37,12 @@ void native_watch_hit(uint32_t eip);
  * Linux, from a signal handler on that thread). `stuck` does not return. */
 int native_os_watchdog(int seconds, int (*progress)(void), void (*stuck)(uint32_t eip));
 
+/* Nonzero while the run waits in the host for another process (a linked console's radio,
+ * wm.c): no instruction runs, and none is due. The watchdog's `progress` counts it as progress
+ * (native_run.c, for ten minutes): the other console may take long to get there (it reads its
+ * Reference's record first), and a console that ends, ends the wait. */
+extern volatile int native_os_waiting;
+
 /* A host stack that runs `entry` when first switched to, and switching to one. */
 void *native_os_fiber_current(void);
 void *native_os_fiber_create(void (*entry)(void));
