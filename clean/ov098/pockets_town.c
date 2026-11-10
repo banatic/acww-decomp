@@ -117,7 +117,7 @@ extern NetSession *data_020ccf94;
 extern Heap *data_021c9b28;
 extern u8 data_021ee418[0x100];
 extern void MI_CpuCopy8(const void *src, void *dst, unsigned int size);
-#define LETTER_SIZE 0x100
+#define POCKETS_TOWN_LETTER_SIZE 0x100
 #define MESSAGE_TO 4 /* where these messages are sent (as PlayerMessages_SetCountdown answers) */
 
 /* The angles beside the player's that PocketsTown_FindHoleAhead looks along: ahead, then
@@ -214,11 +214,11 @@ void PocketsTown_HandBottleToExchange(PocketsScreen *self)
         return;
     }
     Heap *heap = data_021c9b28;
-    u8 *message = Heap_AllocBack(heap, 1 + LETTER_SIZE);
+    u8 *message = Heap_AllocBack(heap, 1 + POCKETS_TOWN_LETTER_SIZE);
     message[0] = PLAYER_MESSAGE_BOTTLE_LETTER;
-    MI_CpuCopy8(letter, message + 1, LETTER_SIZE);
+    MI_CpuCopy8(letter, message + 1, POCKETS_TOWN_LETTER_SIZE);
     Session_BeginMessage(data_020ccf94);
-    Session_AppendMessage(data_020ccf94, message, 1 + LETTER_SIZE);
+    Session_AppendMessage(data_020ccf94, message, 1 + POCKETS_TOWN_LETTER_SIZE);
     Session_EndMessage(data_020ccf94, PLAYER_MESSAGE_CATEGORY, 0);
     Heap_Free(heap, message);
 }

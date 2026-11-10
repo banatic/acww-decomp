@@ -768,8 +768,9 @@ void Session_Start(int mode, int players, int connect_mode)
         MI_CpuFill8(user_block, 0, sizeof(state->start_header));
         u8 *record = PlayerRecords_Current();
         WifiFriend *friend_record = WifiFriendList_Entries((WifiFriendList *) PlayerRecord_WifiFriends(record));
-        for (int i = 0; i < FRIEND_COUNT; i++) {
-            MI_CpuCopy8(WifiFriendData_Data(WifiFriend_FriendData(friend_record)), friends->friend_data[i], FRIEND_DATA_SIZE);
+        for (int i = 0; i < NETWORK_FRIEND_COUNT; i++) {
+            MI_CpuCopy8(WifiFriendData_Data(WifiFriend_FriendData(friend_record)), friends->friend_data[i],
+                        NETWORK_FRIEND_DATA_SIZE);
             friend_record++;
         }
         MI_CpuCopy8((const void *) (uintptr_t) PlayerId_Name((int) (uintptr_t) PlayerRecord_Player(record)), user_block, 0xc);
@@ -861,13 +862,13 @@ int Session_CollectMessages(u8 *dst, int slot)
     u32 outbox_length = Session_OutboxLength(session);
     const u8 *message = Session_Outbox(session);
     for (u32 offset = 0; offset < outbox_length;) {
-        u8 header[MESSAGE_HEADER_SIZE];
-        MI_CpuCopy8(message, header, MESSAGE_HEADER_SIZE);
+        u8 header[SESSION_MESSAGE_HEADER_SIZE];
+        MI_CpuCopy8(message, header, SESSION_MESSAGE_HEADER_SIZE);
         u8 kind = header[HEADER_KIND];
         u8 scene;
         u8 sender;
         PackedBytes_SplitScene(&header[HEADER_SOURCE], &scene, &sender);
-        u32 size = MESSAGE_HEADER_SIZE + (u32) PackedBytes_ReadU16(header);
+        u32 size = SESSION_MESSAGE_HEADER_SIZE + (u32) PackedBytes_ReadU16(header);
         SceneQuery_Current();
         u8 hold;
         int to = LinkGlobal_MessageTarget(slot, kind, scene, &hold);

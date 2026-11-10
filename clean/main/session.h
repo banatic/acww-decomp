@@ -38,7 +38,7 @@
 #define SESSION_SLOTS 4
 #define SESSION_PEERS 3 /* the other systems: slots without this system's */
 
-#define MESSAGE_HEADER_SIZE 5
+#define SESSION_MESSAGE_HEADER_SIZE 5
 
 #define SESSION_RECV_ENTRIES 3    /* the blocks of a peer's receive queue */
 #define SESSION_BLOCK_SIZE 0x1000 /* a send or receive block */

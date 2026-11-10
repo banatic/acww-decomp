@@ -60,8 +60,8 @@ extern const MemberPointer data_ov128_0229c940; /* StarView_StateStartWipeOut */
 
 /* The sky on sub BG0, the scope's frame on sub BG3; the wipes on window 2 over both (layers
  * 9), margin 0x30. */
-#define STAR_VIEW_SKY_LAYER LAYER_SUB_BG0
-#define STAR_VIEW_SCOPE_LAYER LAYER_SUB_BG3
+#define STAR_VIEW_SKY_LAYER DISPLAY_LAYER_SUB_BG0
+#define STAR_VIEW_SCOPE_LAYER DISPLAY_LAYER_SUB_BG3
 #define STAR_VIEW_WIPE_LAYERS 9
 #define STAR_VIEW_WIPE_MARGIN 0x30
 /* Sub window 1 (window 3 of DisplayShadow_SetWindow, bit 2 of the sub windows). */
@@ -214,7 +214,7 @@ void StarView_TearDown(StarView *self)
     TextLabel_CloseBox(&self->name_label);
     PlayerActorOps_RequestState10();
     Music2f0_FadeInForScene22(star_view_music());
-    DisplayLayer_LoadCharsFromFile(data_ov128_0229cd20, data_021fbe94, LAYER_SUB_BG0, 0, 0x10, 0x10);
+    DisplayLayer_LoadCharsFromFile(data_ov128_0229cd20, data_021fbe94, DISPLAY_LAYER_SUB_BG0, 0, 0x10, 0x10);
 }
 CLEAN_AS(func_ov128_0229c398, StarView_TearDown)
 

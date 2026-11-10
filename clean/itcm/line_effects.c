@@ -95,7 +95,7 @@ static int gradient_line(void)
 {
     u32 shift = *(const u32 *) ((uintptr_t) data_021f8ac4 + data_021f85b0.shift_index * 4);
     int line = (int) (REG_VCOUNT + shift);
-    return line >= SCREEN_LINES ? SCREEN_LINES - 1 : line;
+    return line >= LINE_FX_SCREEN_LINES ? LINE_FX_SCREEN_LINES - 1 : line;
 }
 
 static u16 gradient_color(int line)

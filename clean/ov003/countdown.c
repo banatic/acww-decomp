@@ -83,10 +83,10 @@ extern u32 data_ov003_0223c8b8; /* hours */
 extern u32 data_ov003_0223c8c0; /* minutes */
 extern u32 data_ov003_0223c8bc; /* seconds */
 extern u8 data_ov003_0223c8b0;
-#define countdown_hours data_ov003_0223c8b8
-#define countdown_minutes data_ov003_0223c8c0
-#define countdown_seconds data_ov003_0223c8bc
-#define countdown_making_place data_ov003_0223c8b0
+#define COUNTDOWN_HOURS data_ov003_0223c8b8
+#define COUNTDOWN_MINUTES data_ov003_0223c8c0
+#define COUNTDOWN_SECONDS data_ov003_0223c8bc
+#define COUNTDOWN_MAKING_PLACE data_ov003_0223c8b0
 
 /* Where the digits stand along x from the board, left to right. */
 extern const fx32 data_ov003_0223662c[COUNTDOWN_PLACES];
@@ -116,22 +116,22 @@ static int countdown_place_value(u8 place, u8 *value)
 {
     switch (place) {
         case COUNTDOWN_HOUR_TENS:
-            *value = (u8) ((countdown_hours / 10) & 1);
+            *value = (u8) ((COUNTDOWN_HOURS / 10) & 1);
             return 1;
         case COUNTDOWN_HOUR_ONES:
-            *value = (u8) (countdown_hours % 10);
+            *value = (u8) (COUNTDOWN_HOURS % 10);
             return 1;
         case COUNTDOWN_MINUTE_TENS:
-            *value = (u8) (countdown_minutes / 10);
+            *value = (u8) (COUNTDOWN_MINUTES / 10);
             return 1;
         case COUNTDOWN_MINUTE_ONES:
-            *value = (u8) (countdown_minutes % 10);
+            *value = (u8) (COUNTDOWN_MINUTES % 10);
             return 1;
         case COUNTDOWN_SECOND_TENS:
-            *value = (u8) (countdown_seconds / 10);
+            *value = (u8) (COUNTDOWN_SECONDS / 10);
             return 1;
         case COUNTDOWN_SECOND_ONES:
-            *value = (u8) (countdown_seconds % 10);
+            *value = (u8) (COUNTDOWN_SECONDS % 10);
             return 1;
         default:
             return 0;
@@ -151,14 +151,14 @@ CLEAN_AS(func_ov003_0221c720, CountdownDigit_Slot0b0)
  * change makes it no longer quiet. */
 static void countdown_digit_sound(CountdownDigit *digit)
 {
-    if (countdown_hours != 0 || SceneQuery_Current() == COUNTDOWN_SILENT_SCENE) {
+    if (COUNTDOWN_HOURS != 0 || SceneQuery_Current() == COUNTDOWN_SILENT_SCENE) {
         return;
     }
     int sound = -1;
-    if (countdown_minutes == 1 && countdown_seconds == 0) {
+    if (COUNTDOWN_MINUTES == 1 && COUNTDOWN_SECONDS == 0) {
         sound = COUNTDOWN_SE_LAST_MINUTE;
-    } else if (countdown_minutes == 0 && countdown_seconds != 0) {
-        sound = countdown_seconds <= 10 ? COUNTDOWN_SE_LAST_TEN : COUNTDOWN_SE_LAST_MINUTE;
+    } else if (COUNTDOWN_MINUTES == 0 && COUNTDOWN_SECONDS != 0) {
+        sound = COUNTDOWN_SECONDS <= 10 ? COUNTDOWN_SE_LAST_TEN : COUNTDOWN_SE_LAST_MINUTE;
     }
     if (digit->shown == digit->value) {
         return;
@@ -201,13 +201,13 @@ int CountdownDigit_Update(CountdownDigit *digit)
 CLEAN_AS(func_ov003_0221c8ac, CountdownDigit_Update)
 
 /* func_ov003_0221c8fc (digit vtable slot 0x70, setting it up): takes the place the board is
- * making (countdown_making_place) as its own and in its id word, binds its animation 0 to the
+ * making (COUNTDOWN_MAKING_PLACE) as its own and in its id word, binds its animation 0 to the
  * model when it can, and starts running. Before January it shows its place's value at once,
  * the seconds' places quiet so that the first change plays no sound. Then
  * CountdownDigit_Tick; always 1. */
 int CountdownDigit_Init(CountdownDigit *digit)
 {
-    digit->place = countdown_making_place;
+    digit->place = COUNTDOWN_MAKING_PLACE;
     digit->value = 0;
     SceneObjectBase_SetId((SceneObjectBase *) digit, digit->place);
     if (ModelAnim_AllocMaterialAnim((ModelAnim *) &digit->anim, digit->model, data_021c9b1c) != 0) {
@@ -455,18 +455,18 @@ int CountdownBoard_Update(void)
     DateTime now = {0};
     DateTime_Now(&now);
     int elapsed = now.minute * 60 + now.hour * 3600 + now.second;
-    countdown_seconds = (u32) (COUNTDOWN_SECONDS_PER_DAY - elapsed);
-    countdown_hours = countdown_seconds / 3600;
-    countdown_seconds -= countdown_hours * 3600;
-    countdown_minutes = countdown_seconds / 60;
-    countdown_seconds -= countdown_minutes * 60;
+    COUNTDOWN_SECONDS = (u32) (COUNTDOWN_SECONDS_PER_DAY - elapsed);
+    COUNTDOWN_HOURS = COUNTDOWN_SECONDS / 3600;
+    COUNTDOWN_SECONDS -= COUNTDOWN_HOURS * 3600;
+    COUNTDOWN_MINUTES = COUNTDOWN_SECONDS / 60;
+    COUNTDOWN_SECONDS -= COUNTDOWN_MINUTES * 60;
     return 1;
 }
 CLEAN_AS(func_ov003_0221cdcc, CountdownBoard_Update)
 
 /* func_ov003_0221ce40 (vtable slot 0x70, setting it up): works out the time left (vtable slot
  * 0x18), makes the six digits 2.3125 units above it and 0.3125 along z, each told its place
- * through countdown_making_place, hooks its model (func_ov003_0221d038), finds "m_cbs_Adt",
+ * through COUNTDOWN_MAKING_PLACE, hooks its model (func_ov003_0221d038), finds "m_cbs_Adt",
  * binds its animation 0 to the model when it can, and enters COUNTDOWN_OVER in January, else
  * COUNTDOWN_COUNTING (vtable slot 0x6c); always 1. */
 int CountdownBoard_Init(CountdownBoard *board)
@@ -482,7 +482,7 @@ int CountdownBoard_Init(CountdownBoard *board)
         point.x = board->position.x + data_ov003_0223662c[i];
         point.y = board->position.y + 0x2500;
         point.z = board->position.z + 0x500;
-        countdown_making_place = (u8) i;
+        COUNTDOWN_MAKING_PLACE = (u8) i;
         int digit = Actor_Spawn(COUNTDOWN_DIGIT_PROFILE, COUNTDOWN_DIGIT_CODE, &point, NULL, NULL);
         board->digits[i] = (CountdownDigit *) (uintptr_t) (u32) digit;
     }

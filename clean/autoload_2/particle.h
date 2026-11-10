@@ -309,19 +309,19 @@ typedef struct Particle {
 } Particle;
 
 /* ParticleEmitter.state */
-#define EMITTER_ENDING (1u << 0) /* removed once it has no particles left */
-#define EMITTER_NO_EMISSION (1u << 1)
-#define EMITTER_NO_UPDATE (1u << 2)
-#define EMITTER_HIDDEN (1u << 3)
-#define EMITTER_STARTED (1u << 4) /* set after the start delay; its age counts from there */
+#define PARTICLE_EMITTER_ENDING (1u << 0) /* removed once it has no particles left */
+#define PARTICLE_EMITTER_NO_EMISSION (1u << 1)
+#define PARTICLE_EMITTER_NO_UPDATE (1u << 2)
+#define PARTICLE_EMITTER_HIDDEN (1u << 3)
+#define PARTICLE_EMITTER_STARTED (1u << 4) /* set after the start delay; its age counts from there */
 
 /* ParticleEmitter.misc */
-#define EMITTER_INTERVAL_SHIFT 0      /* 8 bits */
-#define EMITTER_BASE_ALPHA_SHIFT 8    /* 8 bits */
-#define EMITTER_UPDATE_CYCLE_SHIFT 16 /* 3 bits: 0 every frame, n on frames of parity n - 1 */
+#define PARTICLE_EMITTER_INTERVAL_SHIFT 0      /* 8 bits */
+#define PARTICLE_EMITTER_BASE_ALPHA_SHIFT 8    /* 8 bits */
+#define PARTICLE_EMITTER_UPDATE_CYCLE_SHIFT 16 /* 3 bits: 0 every frame, n on frames of parity n - 1 */
 
 /* No collision height of the emitter's own. */
-#define EMITTER_NO_COLLISION_Y ((fx32) INT32_MIN)
+#define PARTICLE_EMITTER_NO_COLLISION_Y ((fx32) INT32_MIN)
 
 typedef struct ParticleEmitter {
     ParticleLink link;                                                     /* 0x00 */

@@ -124,14 +124,14 @@ extern CameraViewScene *data_021f6948;
 /* Scenes the camera is set up for in CameraControl_Create and CameraControl_SetRoomBounds. */
 #define SCENE_TOWN 0
 #define SCENE_6 6
-#define SCENE_9 9
+#define CAMERA_VIEW_SCENE_9 9
 #define SCENE_12 0xc
 #define SCENE_13 0xd
 #define SCENE_14 0xe
 #define SCENE_29 0x29
 #define SCENE_ACTOR_FOLLOWED 0x2c
 #define SCENE_2D 0x2d
-#define SCENE_2F 0x2f
+#define CAMERA_VIEW_SCENE_2F 0x2f
 /* The actor slots searched in scene 0x2c, and the value for none. */
 #define FOLLOWED_SLOTS 8
 /* The vtable slot of an actor asked whether the camera may follow it there. */
@@ -647,7 +647,7 @@ int CameraControl_Create(CameraControl *camera)
     }
     CameraControl_SetRoomBounds(camera);
     int scene = SceneQuery_Current();
-    data_020da718 = scene == SCENE_9 ? 0x1000 : 0x1800;
+    data_020da718 = scene == CAMERA_VIEW_SCENE_9 ? 0x1000 : 0x1800;
     switch (scene) {
         case SCENE_ACTOR_FOLLOWED: {
             void *actor = followed_actor();
@@ -668,7 +668,7 @@ int CameraControl_Create(CameraControl *camera)
             break;
         case SCENE_13:
         case SCENE_14:
-        case SCENE_2F:
+        case CAMERA_VIEW_SCENE_2F:
             CameraControl_SetMode(camera, CAMERA_MODE_14);
             break;
         case SCENE_12:

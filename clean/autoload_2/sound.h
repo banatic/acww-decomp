@@ -59,10 +59,10 @@ typedef struct SoundGroup {
 
 /* SoundSlot.flags, by bit number (SoundSlot_SetFlag). */
 enum SoundSlotBit {
-    SLOT_FOLLOW = 0,    /* its parameters are applied at every update (set outside these files) */
-    SLOT_PENDING = 1,   /* to be started at the next update */
-    SLOT_HELD = 2,      /* stopped by an update unless asked for again since the last one */
-    SLOT_REQUESTED = 3, /* asked for since the last update (a held slot) */
+    SOUND_SLOT_FOLLOW = 0,    /* its parameters are applied at every update (set outside these files) */
+    SOUND_SLOT_PENDING = 1,   /* to be started at the next update */
+    SOUND_SLOT_HELD = 2,      /* stopped by an update unless asked for again since the last one */
+    SOUND_SLOT_REQUESTED = 3, /* asked for since the last update (a held slot) */
 };
 
 /* One sequence of a sequence archive and the handle it plays on. */
@@ -81,8 +81,8 @@ typedef void (*SoundSlotsFn)(struct SoundSlots *slots, int index, int priority);
 
 /* SoundSlots.flags, by bit number (SoundSlots_SetFlag). */
 enum SoundSlotsBit {
-    SLOTS_ENABLED = 0, /* updates start and follow the slots */
-    SLOTS_UPDATED = 1, /* updated while enabled; the first update after disabling stops them */
+    SOUND_SLOTS_ENABLED = 0, /* updates start and follow the slots */
+    SOUND_SLOTS_UPDATED = 1, /* updated while enabled; the first update after disabling stops them */
 };
 
 /* Three slots, kept in a SoundGroup's list (the link first). Other objects hold one at 4. */

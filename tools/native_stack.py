@@ -376,7 +376,7 @@ ARG_PUSHES = {('main', 0x020853b0): 0x10, ('main', 0x02085278): 0x10}
 # as the stack held them. The mixed Native/Clean build compiles a copy that keeps the four
 # centers at the same guest slot as the Native consumer, so they read the same residue.
 CLEAN_SOURCE = 'clean/ov004/house_roach.c'
-CLEAN_SHA = 'd5e8271b240f542f25f215258590107fe23a29d8281517d4c92375196678ea03'
+CLEAN_SHA = '9973a381646ac313e81df9a0a12a2dca2c55b7582020b45ff497afff50bc17b5'
 # The Clean insect room (InsectRoom_Update) sets the cases' centers' y to 0 (its BUG: note); the
 # copy keeps the centers at the Native one's guest slot instead.
 CLEAN_INSECT_ROOM = 'clean/ov004/museum_insects.c'
@@ -391,12 +391,12 @@ CLEAN_CUE_SHA = {
     'clean/main/talk_object.c': '2bbcbca756aa6ceb3edb1372086917fcb01a39980e34227b711e8e6f289a72a7',
     'clean/main/villager_talk_offers.c': '29f2afd26a82d13b3f06fe941d78e621113fe8998b4734d9d855a46d384b9686',
     'clean/autoload_2/matrix.c': '6e4e1fe2d50a238897e20e224004b63f073337a296a08fa10158644c8527cf18',
-    'clean/main/field_collision.c': 'bc3ed2a011b00d6b5315755cfbdf6f730b234969c829b73a35617f46247edfcc',
-    'clean/main/collision_query.c': '706feacacf73be2a78970010810f1e67de4a2d7fb53ae028d5627cd210341ae8',
+    'clean/main/field_collision.c': 'b777eecdcc3564a556506c6959e3a8896f11c51a419c83ec0ca6d420fc9dc935',
+    'clean/main/collision_query.c': '51e3eb08fea6814224afc39821fb0dc8577f080cd63710e6001784143f8d77d3',
     'clean/main/collision_segment.c': '5519edaa81cb8a78eaa0b1177fce67f278e5b5695f8533c34b87ade7a3e8027d',
     'clean/main/villager_talk.c': 'c93580638d5ec2c6c742b3013047ffd7bdaae8a3fd02d2c09f109b12a90a553e',
     'clean/main/villager_talk_replies.c': '355632ac0c99be54eca2e71e8cd1914ccf088c5a9bc2925db0d29911d69b7197',
-    'clean/ov094/pockets_grid.c': '9168b5cdea74ade5f31071496bde9375460a2b989c87171afe2ed590bed3c8cc',
+    'clean/ov094/pockets_grid.c': '26c6d78a9e8ec6fce8ac2e4ebe8712e629546a5a5138838daa131eaf1538b64f',
     'clean/ov004/push_box.c': 'fb3aeb338e82291f1f8a48a855d1ffbc6e065f2d65525e18b7b5e5132c995ec5',
 }
 CLEAN_CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {
@@ -497,7 +497,7 @@ CLEAN_CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {
         ('    u32 at;\n\n    (void) unused_mode;\n    (void) unused;\n    for (at = collision_first(posts->posts);'
          ' at < collision_end(posts->posts, posts->count, sizeof(CollisionPost));\n'
          '         at += sizeof(CollisionPost)) {\n        CollisionPost *post = (CollisionPost *) (uintptr_t) at;\n'
-         '        if (post->kind == COLLISION_KIND_1 &&\n            CollisionCylinder_LandOnTop(',
+         '        if (post->kind == FIELD_COLLISION_KIND_1 &&\n            CollisionCylinder_LandOnTop(',
          '    u32 at;\n    struct {\n        u32 previous, first;\n        volatile fx32 seen[3];\n    } host_locals, *locals;\n\n'
          '    _Static_assert(sizeof(host_locals) == 0x14, "the landing\'s locals");\n'
          '    (void) unused_mode;\n    (void) unused;\n'
@@ -509,7 +509,7 @@ CLEAN_CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {
          '         at += sizeof(CollisionPost)) {\n        CollisionPost *post = (CollisionPost *) (uintptr_t) at;\n'
          '        locals->seen[0] = position->x;\n        locals->seen[1] = position->y;\n'
          '        locals->seen[2] = position->z;\n'
-         '        if (post->kind == COLLISION_KIND_1 &&\n            CollisionCylinder_LandOnTop('),
+         '        if (post->kind == FIELD_COLLISION_KIND_1 &&\n            CollisionCylinder_LandOnTop('),
         ('                                CollisionContacts *contacts, void *owner)\n{\n    int pushed = 0;\n',
          '                                CollisionContacts *contacts, void *owner, volatile fx32 *seen)\n{\n'
          '    int pushed = 0;\n'),
@@ -576,9 +576,9 @@ CLEAN_CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {
          '    out = (void *) (uintptr_t) native_guest_stack_slot_if(0x02031bb8u, 4, sizeof(host_out));\n'
          '    if (out == NULL) {\n        out = &host_out;\n    }\n'
          '    CollisionGround_Init(&ground, position, 0, 0);\n'),
-        ('COLLISION_UNIT_SHIFT, &radius,\n                                       &height, &kind) != 0;\n',
-         'COLLISION_UNIT_SHIFT, &out->radius,\n'
-         '                                       &out->height, &out->kind) != 0;\n')),
+        ('FIELD_COLLISION_UNIT_SHIFT,\n                                       &radius, &height, &kind) != 0;\n',
+         'FIELD_COLLISION_UNIT_SHIFT,\n'
+         '                                       &out->radius, &out->height, &out->kind) != 0;\n')),
     # A villager's song asked for (func_0201cfe4, func_02020764; their Native copies in
     # CUE_EDITS).
     'clean/main/villager_talk.c': (

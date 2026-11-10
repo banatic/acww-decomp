@@ -102,14 +102,14 @@ int Process_RunPhase(Process *self, MemberFn main, MemberFn check, MemberFn outc
     if (result != 0) {
         result = call_int(&main, self);
         if (result == -1) {
-            told = OUTCOME_FAILED;
+            told = PROCESS_OUTCOME_FAILED;
         } else if (result == 1) {
-            told = OUTCOME_DONE;
+            told = PROCESS_OUTCOME_DONE;
         } else {
-            told = OUTCOME_PENDING;
+            told = PROCESS_OUTCOME_PENDING;
         }
     } else {
-        told = OUTCOME_REFUSED;
+        told = PROCESS_OUTCOME_REFUSED;
     }
     call_with(&outcome, self, told);
     return result;
@@ -165,14 +165,14 @@ int Process_Connect(Process *self)
 {
     if (self->delete_requested) {
         self->delete_requested = FALSE;
-        if (self->state == STATE_ACTIVE) {
+        if (self->state == PROCESS_STATE_ACTIVE) {
             List_Remove(&data_021fd004.list, &self->link.node);
             List_Remove(&data_021fd024.list, &self->draw_link.node);
         } else {
             List_Remove(&data_021fd014.list, &self->link.node);
         }
         List_PushFront(&data_021fd034.list, &self->link.node);
-        self->state = STATE_DELETING;
+        self->state = PROCESS_STATE_DELETING;
         for (TreeNode *child = self->node.tree.first_child; child != NULL; child = child->next) {
             Process_RequestDelete(((ProcessNode *) child)->owner);
         }
@@ -185,10 +185,10 @@ int Process_Connect(Process *self)
         carry_flag(self, parent, PROCESS_DRAW_STOPPED, PROCESS_DRAW_STOPPED_ABOVE);
     }
 
-    if (self->state == STATE_ACTIVE) {
+    if (self->state == PROCESS_STATE_ACTIVE) {
         apply_order(&data_021fd004, &self->link);
         apply_order(&data_021fd024, &self->draw_link);
-    } else if (self->state != STATE_DELETING) {
+    } else if (self->state != PROCESS_STATE_DELETING) {
         if (self->create_pending) {
             self->create_pending = FALSE;
             List_PushBack(&data_021fd014.list, &self->link.node);
@@ -196,7 +196,7 @@ int Process_Connect(Process *self)
             self->activate_pending = FALSE;
             ProcessList_Insert(&data_021fd004.list, &self->link);
             ProcessList_Insert(&data_021fd024.list, &self->draw_link);
-            self->state = STATE_ACTIVE;
+            self->state = PROCESS_STATE_ACTIVE;
         }
     }
     return TRUE;

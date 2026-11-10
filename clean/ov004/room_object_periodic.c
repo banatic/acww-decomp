@@ -21,7 +21,7 @@ static_assert(sizeof(PeriodicRoomObject) == 0x850, "the size PeriodicRoomObject_
 #define ANIM_MODE_ONCE 1 /* RoomObject_LoadAnims: stop at the end */
 #define SOUND_SHORT_WAIT 0x3fc
 #define SOUND_TICK 0x3ff /* played again at joint frame 20 */
-#define TICK_FRAME 20
+#define ROOM_OBJECT_PERIODIC_TICK_FRAME 20
 #define SHORT_WAIT 60
 #define LONG_WAIT 200
 
@@ -124,7 +124,7 @@ int PeriodicRoomObject_Update(PeriodicRoomObject *object)
     } else if (object->phase <= PERIODIC_BURST_3) {
         /* the joint animation's last step, before this frame's */
         const FrameCtrl *joints = &object->base.model.frames;
-        if (sound == SOUND_TICK && FrameCtrl_Passed(joints, TICK_FRAME)) {
+        if (sound == SOUND_TICK && FrameCtrl_Passed(joints, ROOM_OBJECT_PERIODIC_TICK_FRAME)) {
             play(object, sound);
         }
         if (advance(object)) {

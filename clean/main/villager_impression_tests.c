@@ -42,14 +42,14 @@ CLEAN_AS(func_0207e684, VillagerImpression_PocketsFull)
 /* func_0207e6a4: it is night (0:00-4:59). */
 int VillagerImpression_IsNight(void)
 {
-    return Calendar_PartOfDay() == PART_OF_DAY_NIGHT;
+    return Calendar_PartOfDay() == CALENDAR_PART_OF_DAY_NIGHT;
 }
 CLEAN_AS(func_0207e6a4, VillagerImpression_IsNight)
 
 /* func_0207e6bc: it is morning (5:00-11:59). */
 int VillagerImpression_IsMorning(void)
 {
-    return Calendar_PartOfDay() == PART_OF_DAY_MORNING;
+    return Calendar_PartOfDay() == CALENDAR_PART_OF_DAY_MORNING;
 }
 CLEAN_AS(func_0207e6bc, VillagerImpression_IsMorning)
 

@@ -68,7 +68,7 @@ static_assert(sizeof(SkyPalette) == 0x20, "a palette");
 #define PLANE_BG1 0x02
 #define PLANE_BG3 0x08
 #define PLANE_OBJ 0x10
-#define BGCNT_PRIORITY 0x0003
+#define SKY_BGCNT_PRIORITY 0x0003
 #define BGCNT_KEPT 0x0043 /* the priority and the mosaic */
 /* BLDCNT: the stars (background 1), nothing, or background 3 blended over the backdrop */
 #define BLEND_BG1_OVER_BACKDROP 0x2042
@@ -337,8 +337,8 @@ int Sky_ShowOn(int screen)
         }
         DisplayShadow_ShowSubPlanes(PLANE_OBJ);
         DisplayShadow_ShowSubPlanes(PLANE_BG3);
-        REG_DB_BG1CNT = (u16) ((REG_DB_BG1CNT & ~BGCNT_PRIORITY) | 3);
-        REG_DB_BG3CNT = (u16) ((REG_DB_BG3CNT & ~BGCNT_PRIORITY) | 2);
+        REG_DB_BG1CNT = (u16) ((REG_DB_BG1CNT & ~SKY_BGCNT_PRIORITY) | 3);
+        REG_DB_BG3CNT = (u16) ((REG_DB_BG3CNT & ~SKY_BGCNT_PRIORITY) | 2);
         REG_DB_BG1CNT = (u16) ((REG_DB_BG1CNT & BGCNT_KEPT) | 0x4c00); /* 256x256, map base 12 */
         REG_DB_BG3CNT = (u16) ((REG_DB_BG3CNT & BGCNT_KEPT) | 0x6f00); /* 256x256, wraps, map base 15 */
         LineHandlers_RequestChange(&data_021f6d2c, (int) (uintptr_t) func_01ffceb8, (int) (uintptr_t) func_020bad44);
@@ -351,8 +351,8 @@ int Sky_ShowOn(int screen)
         }
         DisplayShadow_ShowMainPlanes(PLANE_OBJ);
         DisplayShadow_ShowMainPlanes(PLANE_BG3);
-        REG_BG1CNT = (u16) ((REG_BG1CNT & ~BGCNT_PRIORITY) | 3);
-        REG_BG3CNT = (u16) ((REG_BG3CNT & ~BGCNT_PRIORITY) | 2);
+        REG_BG1CNT = (u16) ((REG_BG1CNT & ~SKY_BGCNT_PRIORITY) | 3);
+        REG_BG3CNT = (u16) ((REG_BG3CNT & ~SKY_BGCNT_PRIORITY) | 2);
         REG_BG1CNT = (u16) ((REG_BG1CNT & BGCNT_KEPT) | 0x4400); /* 256x256, map base 4 */
         REG_BG3CNT = (u16) ((REG_BG3CNT & BGCNT_KEPT) | 0x6700); /* 256x256, wraps, map base 7 */
         LineHandlers_RequestChange(&data_021f6d2c, (int) (uintptr_t) func_01ffcd50, (int) (uintptr_t) func_020babb4);
@@ -537,7 +537,7 @@ CLEAN_AS(func_020bab04, Sky_Frame)
 void Sky_VBlankOff(void)
 {
     REG_DB_BACKDROP = data_021f6f70.top_color;
-    REG_BACKDROP = data_021f6f70.colors[0][SCREEN_LINES - 1];
+    REG_BACKDROP = data_021f6f70.colors[0][LINE_FX_SCREEN_LINES - 1];
     REG_DISPCNT &= ~(u32) (DISPCNT_BG1 | DISPCNT_BG3);
 }
 CLEAN_AS(func_020bab74, Sky_VBlankOff)
@@ -600,11 +600,11 @@ void Sky_VBlankMain(void)
         }
     }
 
-    int sky_lines = SCREEN_LINES - shift;
+    int sky_lines = LINE_FX_SCREEN_LINES - shift;
     if (sky_lines < 0) {
         sky_lines = 0;
-    } else if (sky_lines > SCREEN_LINES) {
-        sky_lines = SCREEN_LINES;
+    } else if (sky_lines > LINE_FX_SCREEN_LINES) {
+        sky_lines = LINE_FX_SCREEN_LINES;
     }
 
     REG_BG1VOFS = stars_scroll_y(shift);
@@ -613,7 +613,7 @@ void Sky_VBlankMain(void)
     DisplayShadow_EnableMainWindows(1);
     DisplayShadow_SetMainWindow0Planes(0x15);
     DisplayShadow_SetMainOutsidePlanes(0x1f);
-    DisplayShadow_SetMainWindow0(0, (u8) sky_lines, 0xff, SCREEN_LINES);
+    DisplayShadow_SetMainWindow0(0, (u8) sky_lines, 0xff, LINE_FX_SCREEN_LINES);
 }
 CLEAN_AS(func_020babb4, Sky_VBlankMain)
 
@@ -657,7 +657,7 @@ CLEAN_AS(func_020bad44, Sky_VBlankSub)
  * line and twice as large near the bottom. */
 static s16 clouds_scale(int line)
 {
-    int rise = -(line << 8) / SCREEN_LINES;
+    int rise = -(line << 8) / LINE_FX_SCREEN_LINES;
     return (s16) (0x10000 / (rise + 0x200));
 }
 
@@ -703,11 +703,11 @@ void Sky_UpdateClouds(void)
             data_021f6ce8[i] = x;
             data_021f6ce0[i] = scroll;
             LineAffine *line = sky->clouds[i];
-            for (int j = 0; j < SCREEN_LINES; j++, line++) {
+            for (int j = 0; j < LINE_FX_SCREEN_LINES; j++, line++) {
                 line->scale_x = clouds_scale(j);
                 line->x = x - (line->scale_x - 0x100) * 128;
-                int depth = (0xc000 * j / SCREEN_LINES + 0x3000) / SCREEN_LINES;
-                line->y = scroll + SCREEN_LINES * ((depth * depth) >> 8);
+                int depth = (0xc000 * j / LINE_FX_SCREEN_LINES + 0x3000) / LINE_FX_SCREEN_LINES;
+                line->y = scroll + LINE_FX_SCREEN_LINES * ((depth * depth) >> 8);
             }
         }
     }
@@ -718,7 +718,7 @@ void Sky_UpdateClouds(void)
         data_021f6ce8[set] = x;
         data_021f6ce0[set] = scroll;
         LineAffine *line = sky->clouds[set];
-        for (int j = 0; j < SCREEN_LINES; j++, line++) {
+        for (int j = 0; j < LINE_FX_SCREEN_LINES; j++, line++) {
             if (dx != 0) {
                 line->x += dx;
             }
@@ -745,7 +745,7 @@ void Sky_UpdateClouds(void)
             int backdrop = n - 0x98;
             *blend++ = (u16) ((0x10 - backdrop) | (backdrop << 8));
         }
-        for (; n < SCREEN_LINES; n++) {
+        for (; n < LINE_FX_SCREEN_LINES; n++) {
             *blend++ = 0x1000;
         }
     }
@@ -773,7 +773,7 @@ void Sky_UpdateGradient(void)
     int bottom_line = gradient->bottom_line;
     int span = bottom_line - top_line;
 
-    for (int y = 0; y < SCREEN_LINES; y++) {
+    for (int y = 0; y < LINE_FX_SCREEN_LINES; y++) {
         if (y <= top_line) {
             colors[y] = top;
         } else if (y >= bottom_line) {
@@ -955,7 +955,7 @@ void Sky_ChangeFinish(Sky *sky)
     if (hidden != row) {
         return;
     }
-    if (!DisplayLayer_LoadScreen(sky->screen_data + hidden * SKY_MAP_ROW_SIZE, LAYER_SUB_BG3, SKY_MAP_ROW_SIZE,
+    if (!DisplayLayer_LoadScreen(sky->screen_data + hidden * SKY_MAP_ROW_SIZE, DISPLAY_LAYER_SUB_BG3, SKY_MAP_ROW_SIZE,
                                  hidden * SKY_MAP_ROW_SIZE)) {
         return;
     }
@@ -972,7 +972,7 @@ CLEAN_AS(func_020bb3f4, Sky_ChangeFinish)
 void Sky_ChangeLoad(Sky *sky)
 {
     int weather = sky->weather;
-    if (Sky_LoadCloudChars(sky, weather, LAYER_SUB_BG3) &&
+    if (Sky_LoadCloudChars(sky, weather, DISPLAY_LAYER_SUB_BG3) &&
         Sky_LoadCloudScreen(sky, &sky->screen_data, &sky->screen_size, SKY_CLOUDS_LEVEL, weather)) {
         sky->row = 0;
         sky->fade = SKY_FADE_STEPS;
@@ -992,7 +992,7 @@ void Sky_ChangeFade(Sky *sky)
         return;
     }
     int offset = hidden * SKY_MAP_ROW_SIZE;
-    if (!DisplayLayer_LoadScreen(sky->change_screen_data + offset, LAYER_SUB_BG3, SKY_MAP_ROW_SIZE, offset)) {
+    if (!DisplayLayer_LoadScreen(sky->change_screen_data + offset, DISPLAY_LAYER_SUB_BG3, SKY_MAP_ROW_SIZE, offset)) {
         return;
     }
     int fade = sky->fade + 1;
@@ -1022,7 +1022,7 @@ void Sky_ChangeStart(Sky *sky)
         kind = SKY_CLOUDS_DOWN;
         next = sky->weather - 1;
     }
-    if (Sky_LoadCloudChars(sky, next, LAYER_SUB_BG3) &&
+    if (Sky_LoadCloudChars(sky, next, DISPLAY_LAYER_SUB_BG3) &&
         Sky_LoadCloudScreen(sky, &sky->change_screen_data, &sky->change_screen_size, kind, next)) {
         Sky_SetWeathers(sky, sky->weather, next);
         if (sky->weather < SKY_WEATHER_RAIN && sky->next_weather >= SKY_WEATHER_RAIN) {
@@ -1314,7 +1314,7 @@ void Sky_UpdateColors(void)
         shown = sky->palettes[0];
     }
     Sky_SetGradientEnd(&data_021f6f70, 0, shown->gradient_top, 0);
-    Sky_SetGradientEnd(&data_021f6f70, 1, shown->gradient_bottom, SCREEN_LINES);
+    Sky_SetGradientEnd(&data_021f6f70, 1, shown->gradient_bottom, LINE_FX_SCREEN_LINES);
     Sky_UpdateLight((int) minute_weight, (int) fade_weight);
 }
 CLEAN_AS(func_020bba14, Sky_UpdateColors)

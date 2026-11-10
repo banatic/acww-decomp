@@ -42,7 +42,7 @@ static OverlayGroupsOwner *owner_of(MenuScene *scene)
 }
 
 #define WIPE_MARGIN 0x30
-#define BUTTONS_ALL 0xfff
+#define MENU_SCENE_BUTTONS_ALL 0xfff
 
 /* The game's memset (autoload_2, ARM), called by its address: in the PC build the name memset
  * is the C library's, which the PC's own start-up code uses. */
@@ -242,7 +242,7 @@ CLEAN_AS(func_ov002_02208014, MenuScene_TakeTouch)
 int MenuScene_TakeButtons(MenuScene *scene, int also_se_3b)
 {
     (void) scene;
-    if ((data_021fbe40.pressed & BUTTONS_ALL) == 0) {
+    if ((data_021fbe40.pressed & MENU_SCENE_BUTTONS_ALL) == 0) {
         return 0;
     }
     ControlMode_UseButtons();

@@ -39,7 +39,7 @@ typedef struct ActivitySaveTalk {
 /* The library routine the end of the shutdown calls (caution_window.c). */
 extern void func_02116a1c(int arg);
 
-#define TO_HOST 1 /* the AID mask of the host */
+#define ACTIVITY_SAVE_TO_HOST 1 /* the AID mask of the host */
 #define HOST_AID 0
 #define STATE_BLOCK_START 2   /* StateBlock_Start's step when the town is taken up again */
 #define NO_RECORD 7           /* LeaveSession's record number that changes nothing */
@@ -152,7 +152,7 @@ int ActivitySave_GuestSteps(Activity *activity, u8 *step, int first, int fail_st
             if (link_lost(aids)) {
                 break;
             }
-            if (SystemPacket_SendActivityPlayerEF(ACTIVITY_ANSWER_OK, TO_HOST) != 0) {
+            if (SystemPacket_SendActivityPlayerEF(ACTIVITY_ANSWER_OK, ACTIVITY_SAVE_TO_HOST) != 0) {
                 *step = (u8) (first + at + 1);
             }
             break;
@@ -339,7 +339,7 @@ int ActivitySave_EndSteps(Activity *activity, u8 *step, int first, int second, i
                 if (SystemPacket_SendActivityPlayerEF(ACTIVITY_ANSWER_END, aids) != 0) {
                     *step = (u8) (first + 1);
                 }
-            } else if (SystemPacket_SendActivityPlayerEF(ACTIVITY_ANSWER_END, TO_HOST) != 0) {
+            } else if (SystemPacket_SendActivityPlayerEF(ACTIVITY_ANSWER_END, ACTIVITY_SAVE_TO_HOST) != 0) {
                 *step = (u8) (first + 1);
             }
             break;

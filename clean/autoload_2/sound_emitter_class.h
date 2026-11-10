@@ -18,17 +18,17 @@
 
 /* SoundEmitterObject.alternation, by bit (SoundEmitterClass_NextAlternate). */
 enum {
-    EMITTER_ODD = 1 << 0,   /* the next call is an odd one */
-    EMITTER_PLUS2 = 1 << 1, /* the last odd call raised the number by 2 */
-    EMITTER_PLUS3 = 1 << 2, /* the last even call raised the number by 3 */
+    SOUND_EMITTER_ODD = 1 << 0,   /* the next call is an odd one */
+    SOUND_EMITTER_PLUS2 = 1 << 1, /* the last odd call raised the number by 2 */
+    SOUND_EMITTER_PLUS3 = 1 << 2, /* the last even call raised the number by 3 */
 };
 
 /* The kinds (SoundEmitterObject.kind). */
 enum {
-    EMITTER_KIND_BASE = 0,
-    EMITTER_KIND_1 = 1,
-    EMITTER_KIND_2 = 2,
-    EMITTER_KIND_99 = 99,
+    SOUND_EMITTER_KIND_BASE = 0,
+    SOUND_EMITTER_KIND_1 = 1,
+    SOUND_EMITTER_KIND_2 = 2,
+    SOUND_EMITTER_KIND_99 = 99,
 };
 
 typedef struct SoundEmitterObject {

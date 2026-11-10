@@ -48,10 +48,10 @@ extern RtcDate data_021dc744;
 extern RtcTime data_021dc754;
 
 enum PartOfDay {
-    PART_OF_DAY_MORNING,   /* 5:00-11:59 */
-    PART_OF_DAY_AFTERNOON, /* 12:00-16:59 */
-    PART_OF_DAY_EVENING,   /* 17:00-23:59 */
-    PART_OF_DAY_NIGHT      /* 0:00-4:59 */
+    CALENDAR_PART_OF_DAY_MORNING,   /* 5:00-11:59 */
+    CALENDAR_PART_OF_DAY_AFTERNOON, /* 12:00-16:59 */
+    CALENDAR_PART_OF_DAY_EVENING,   /* 17:00-23:59 */
+    CALENDAR_PART_OF_DAY_NIGHT      /* 0:00-4:59 */
 };
 
 BOOL Calendar_IsOnOrAfter(const Date *date, const Date *other);

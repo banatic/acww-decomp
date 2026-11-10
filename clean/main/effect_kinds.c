@@ -158,7 +158,7 @@ CLEAN_AS(func_02092e5c, EffectKinds_PlaceKind35A)
 void EffectKinds_PlaceWithSpeeds(EffectKindsInstance *instance, char interval, fx32 speed, fx32 axis_speed)
 {
     EffectPlaces_Place(instance, NULL, &data_020d1750);
-    instance->emitter->misc = particle_with_bits(instance->emitter->misc, EMITTER_INTERVAL_SHIFT, 8, (u8) interval);
+    instance->emitter->misc = particle_with_bits(instance->emitter->misc, PARTICLE_EMITTER_INTERVAL_SHIFT, 8, (u8) interval);
     instance->emitter->speed = speed;
     instance->emitter->axis_speed = axis_speed;
 }
@@ -532,7 +532,7 @@ int EffectKinds_FollowKind26(EffectKindsInstance *instance)
         lasts = 1;
     }
     if (!lasts) {
-        instance->emitter->state |= EMITTER_NO_EMISSION;
+        instance->emitter->state |= PARTICLE_EMITTER_NO_EMISSION;
         if (instance->emitter->particles.count > 0) {
             lasts = effect_kinds_land_kind26(instance->emitter);
         }
@@ -1172,7 +1172,7 @@ int EffectKinds_FollowKind11Third(EffectKindsInstance *instance)
         lasts = 1;
     }
     if (!lasts) {
-        instance->emitter->state |= EMITTER_NO_EMISSION;
+        instance->emitter->state |= PARTICLE_EMITTER_NO_EMISSION;
         if (instance->emitter->particles.count > 0) {
             lasts = effect_kinds_land_5f(instance->emitter);
         }
@@ -1823,12 +1823,12 @@ extern void func_02092898(ParticleEmitter *emitter, unsigned int after);
 /* The emitter's emission interval and base alpha (the first two bytes of its misc word). */
 static void effect_kinds_set_interval(ParticleEmitter *emitter, u8 interval)
 {
-    emitter->misc = particle_with_bits(emitter->misc, EMITTER_INTERVAL_SHIFT, 8, interval);
+    emitter->misc = particle_with_bits(emitter->misc, PARTICLE_EMITTER_INTERVAL_SHIFT, 8, interval);
 }
 
 static void effect_kinds_set_base_alpha(ParticleEmitter *emitter, u8 alpha)
 {
-    emitter->misc = particle_with_bits(emitter->misc, EMITTER_BASE_ALPHA_SHIFT, 8, alpha);
+    emitter->misc = particle_with_bits(emitter->misc, PARTICLE_EMITTER_BASE_ALPHA_SHIFT, 8, alpha);
 }
 
 /* `base` plus the half-word `step` times `count`, as a half-word. */

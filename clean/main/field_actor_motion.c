@@ -47,7 +47,7 @@ extern const fx32 data_020d72f8;
 #define TOOL_REACH_ANGLE 0x2aaa
 /* The fastest walk (20.12), what is too slow to walk, and the limits with a body touched ahead
  * (FieldBody_TouchedWith 8 and FieldBody_TouchedAhead) and with a wall ahead (the collider's
- * COLLISION_TOUCH_1_AHEAD, 8). */
+ * FIELD_COLLISION_TOUCH_1_AHEAD, 8). */
 #define WALK_SPEED_MAX 0x6e2
 #define WALK_SPEED_MIN 0x108
 #define WALK_SPEED_BODY_AHEAD 0x245
@@ -179,7 +179,7 @@ CLEAN_AS(func_02010538, FieldActor_TryAct)
 /* func_02010718: the walking speed the push gives: the push times WALK_SPEED_MAX, at most that
  * and 0 below WALK_SPEED_MIN; at most WALK_SPEED_BODY_AHEAD when the contact body has a contact of
  * flag 8 that the yaw faces (FieldBody_TouchedWith, FieldBody_TouchedAhead), else at most
- * WALK_SPEED_WALL_AHEAD with a wall ahead (the collider's flag 8, COLLISION_TOUCH_1_AHEAD). */
+ * WALK_SPEED_WALL_AHEAD with a wall ahead (the collider's flag 8, FIELD_COLLISION_TOUCH_1_AHEAD). */
 int FieldActor_WalkSpeed(FieldActor *actor)
 {
     int speed = FX_MulFunc((int) FieldActor_Push(actor), WALK_SPEED_MAX);

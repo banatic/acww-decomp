@@ -347,8 +347,8 @@ void MusicList_LoadObjGraphics(MusicList *self)
 {
     ButtonPanel_LoadTextColors(&self->panel);
     Heap *heap = data_021fbe94;
-    DisplayLayer_LoadCharsFromFile(data_ov144_0229b458, heap, LAYER_SUB_OBJ, 0xc0, 0xc0, 0x120);
-    DisplayLayer_LoadPalettesFromFile(data_ov144_0229b46c, heap, LAYER_SUB_OBJ, 4, 4, 5);
+    DisplayLayer_LoadCharsFromFile(data_ov144_0229b458, heap, DISPLAY_LAYER_SUB_OBJ, 0xc0, 0xc0, 0x120);
+    DisplayLayer_LoadPalettesFromFile(data_ov144_0229b46c, heap, DISPLAY_LAYER_SUB_OBJ, 4, 4, 5);
 }
 CLEAN_AS(func_ov144_0229ac40, MusicList_LoadObjGraphics)
 
@@ -358,9 +358,9 @@ CLEAN_AS(func_ov144_0229ac40, MusicList_LoadObjGraphics)
 void MusicList_LoadScreens(MusicList *self)
 {
     Heap *heap = data_021fbe94;
-    DisplayLayer_LoadCharsFromFile(data_ov144_0229b480, heap, LAYER_SUB_BG3, 17, 17, 152);
-    DisplayLayer_LoadCharsFromFile(data_ov144_0229b494, heap, LAYER_SUB_BG3, 0x26e, 0x26e, 0x27e);
-    DisplayLayer_LoadPalettesFromFile(data_ov144_0229b4a8, heap, LAYER_SUB_BG3, 1, 1, 0xa);
+    DisplayLayer_LoadCharsFromFile(data_ov144_0229b480, heap, DISPLAY_LAYER_SUB_BG3, 17, 17, 152);
+    DisplayLayer_LoadCharsFromFile(data_ov144_0229b494, heap, DISPLAY_LAYER_SUB_BG3, 0x26e, 0x26e, 0x27e);
+    DisplayLayer_LoadPalettesFromFile(data_ov144_0229b4a8, heap, DISPLAY_LAYER_SUB_BG3, 1, 1, 0xa);
     RomFile_Read(data_ov144_0229b4bc, self->row_screens, sizeof(self->row_screens));
     RomFile_Read(data_ov144_0229b4d0, self->buttons_screen, sizeof(self->buttons_screen));
     MusicList_RefreshButtons(self);
@@ -372,12 +372,12 @@ CLEAN_AS(func_ov144_0229ac90, MusicList_LoadScreens)
 void MusicList_SetUpLayers(void)
 {
     DisplayShadow_SetSubBgMode(0);
-    DisplayLayer_SetPriority(LAYER_SUB_BG3, 1);
-    DisplayLayer_SetBgControl(LAYER_SUB_BG3, 0, 0, 0);
-    DisplayLayer_SetPriority(LAYER_SUB_BG1, 2);
-    DisplayLayer_SetBgControl(LAYER_SUB_BG1, 0, 0, 0);
-    DisplayLayer_SetPriority(LAYER_SUB_BG0, 2);
-    DisplayLayer_SetBgControl(LAYER_SUB_BG0, 0, 0, 0);
+    DisplayLayer_SetPriority(DISPLAY_LAYER_SUB_BG3, 1);
+    DisplayLayer_SetBgControl(DISPLAY_LAYER_SUB_BG3, 0, 0, 0);
+    DisplayLayer_SetPriority(DISPLAY_LAYER_SUB_BG1, 2);
+    DisplayLayer_SetBgControl(DISPLAY_LAYER_SUB_BG1, 0, 0, 0);
+    DisplayLayer_SetPriority(DISPLAY_LAYER_SUB_BG0, 2);
+    DisplayLayer_SetBgControl(DISPLAY_LAYER_SUB_BG0, 0, 0, 0);
 }
 CLEAN_AS(func_ov144_0229ad24, MusicList_SetUpLayers)
 
@@ -447,8 +447,8 @@ CLEAN_AS(func_ov144_0229ae24, MusicList_SetUp)
  * (0, 0x18 less the scroll) moved with it, its y kept, the knob put by it. */
 void MusicList_ScrollWipe(MusicList *self)
 {
-    MenuScene_ScrollWipe(music_list_scene(self), LAYER_SUB_BG3, 0, 0);
-    MenuScene_ScrollWipe(music_list_scene(self), LAYER_SUB_BG1, 0, 0x18 - self->scroll);
+    MenuScene_ScrollWipe(music_list_scene(self), DISPLAY_LAYER_SUB_BG3, 0, 0);
+    MenuScene_ScrollWipe(music_list_scene(self), DISPLAY_LAYER_SUB_BG1, 0, 0x18 - self->scroll);
     self->wipe_y = MenuScene_WipeOffsetY(music_list_scene(self));
     MusicList_PlaceKnob(self);
 }
@@ -461,8 +461,8 @@ CLEAN_AS(func_ov144_0229ae64, MusicList_ScrollWipe)
 void MusicList_WipeOut(MusicList *self)
 {
     if (MenuScene_StepWipe(music_list_scene(self), 0) != 0) {
-        DisplayLayer_HideAndResetScroll(LAYER_SUB_BG3);
-        DisplayLayer_HideAndResetScroll(LAYER_SUB_BG1);
+        DisplayLayer_HideAndResetScroll(DISPLAY_LAYER_SUB_BG3);
+        DisplayLayer_HideAndResetScroll(DISPLAY_LAYER_SUB_BG1);
         MenuScene_SetPhase(music_list_scene(self), MUSIC_LIST_PHASE_END);
     } else {
         MusicList_ScrollWipe(self);
@@ -508,8 +508,8 @@ void MusicList_Open(MusicList *self)
     MusicList_SetUpScroll(self);
     MusicList_LoadObjGraphics(self);
     MenuScene_StartWipeCoveredOnWindow2(music_list_scene(self), MUSIC_LIST_WIPE_LAYERS, 4, 0, MUSIC_LIST_WIPE_MARGIN);
-    DisplayLayer_Show(LAYER_SUB_BG3);
-    DisplayLayer_Show(LAYER_SUB_BG1);
+    DisplayLayer_Show(DISPLAY_LAYER_SUB_BG3);
+    DisplayLayer_Show(DISPLAY_LAYER_SUB_BG1);
     MusicList_ScrollWipe(self);
     MusicList_SetFlags(self, MUSIC_LIST_FLAG_DRAWN);
     ButtonPanel_SetLayout5(&self->panel, MUSIC_LIST_PANEL_MESSAGE);

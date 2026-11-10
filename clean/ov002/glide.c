@@ -159,7 +159,7 @@ CLEAN_AS(func_ov002_02209d7c, Glide_Y)
 #define SCREEN_CENTER_Y 0x60
 /* Glider_DrawWrapped: a sprite drawn right of this x is drawn again one screen to the left. */
 #define WRAP_DRAW_X 0xe0
-#define SCREEN_WIDTH 0x100
+#define WIPE_SCREEN_WIDTH 0x100
 /* Glider_EaseToByDistance: the distance, in pixels on each axis, that counts as near. */
 #define NEAR_DISTANCE 0x30
 
@@ -253,7 +253,7 @@ void Glider_DrawWrapped(Glider *glider)
     CellLayerSprite_Draw((CellLayerSprite *) (void *) glider);
     int offset_x = glider->offset_x;
     if (add32(offset_x, ScreenSprite_X((ScreenSprite *) (void *) glider)) > WRAP_DRAW_X) {
-        glider->offset_x = sub32(glider->offset_x, SCREEN_WIDTH);
+        glider->offset_x = sub32(glider->offset_x, WIPE_SCREEN_WIDTH);
         CellLayerSprite_Draw((CellLayerSprite *) (void *) glider);
         glider->offset_x = offset_x;
     }

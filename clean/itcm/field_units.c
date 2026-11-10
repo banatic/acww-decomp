@@ -17,13 +17,13 @@ static_assert(sizeof(UnitBitsBlock) == 0x28, "a bit grid's block");
 /* The current map. */
 extern FieldBlockMap *data_020da1a8;
 
-/* func_01ffcb2c: the type of the unit at (`x`, `z`) in the current map, UNIT_TYPE_NONE outside
+/* func_01ffcb2c: the type of the unit at (`x`, `z`) in the current map, FIELD_UNIT_TYPE_NONE outside
  * its blocks. */
 u8 FieldUnits_Type(int x, int z)
 {
     FieldBlock *block = FieldUnits_Block(x >> 4, z >> 4);
     if (block == NULL) {
-        return UNIT_TYPE_NONE;
+        return FIELD_UNIT_TYPE_NONE;
     }
     return block->unit_types[(x & 0xf) + ((z & 0xf) << 4)];
 }

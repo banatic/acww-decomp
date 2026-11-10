@@ -895,9 +895,9 @@ CLEAN_AS(func_020398e8, QuickMessage_Post)
 #define NAME_BOX_FIRST_TILE 0x1c0
 #define NAME_BOX_TILE_STRIDE 8
 #define NAME_BOX_CELLS 8
-#define BOX_ROWS 2
+#define QUICK_MESSAGE_BOX_ROWS 2
 #define BOX_LAYER_OBJECTS 4
-#define BOX_COLOR 0xd
+#define QUICK_MESSAGE_BOX_COLOR 0xd
 #define TEXT_BOX_BACKGROUND 0xf
 #define NAME_BOX_BACKGROUND 0xe
 
@@ -968,7 +968,7 @@ void QuickMessage_BalloonOpenTextBox(QuickMessageBalloon *balloon)
         return;
     }
     TextDrawBox *box = (TextDrawBox *) LabelBox_NewInVram(TEXT_BOX_FIRST_TILE + balloon->position * TEXT_BOX_TILE_STRIDE,
-                                                          TEXT_BOX_CELLS, BOX_ROWS);
+                                                          TEXT_BOX_CELLS, QUICK_MESSAGE_BOX_ROWS);
     balloon->boxes[QUICK_BALLOON_TEXT_BOX] = box;
     if (box == NULL) {
         return;
@@ -979,7 +979,7 @@ void QuickMessage_BalloonOpenTextBox(QuickMessageBalloon *balloon)
     box->update_mode = TEXT_DRAW_GROUP_1;
     box->rows_full_width = 1;
     box->background = TEXT_BOX_BACKGROUND;
-    box->color = BOX_COLOR;
+    box->color = QUICK_MESSAGE_BOX_COLOR;
     TextDraw_RequestDraw(box);
 }
 CLEAN_AS(func_02039928, QuickMessage_BalloonOpenTextBox)
@@ -1002,7 +1002,7 @@ void QuickMessage_BalloonOpenNameBox(QuickMessageBalloon *balloon)
         return;
     }
     TextDrawBox *box = (TextDrawBox *) LabelBox_NewInVram(NAME_BOX_FIRST_TILE + balloon->position * NAME_BOX_TILE_STRIDE,
-                                                          NAME_BOX_CELLS, BOX_ROWS);
+                                                          NAME_BOX_CELLS, QUICK_MESSAGE_BOX_ROWS);
     balloon->boxes[QUICK_BALLOON_NAME_BOX] = box;
     if (box == NULL) {
         return;
@@ -1013,7 +1013,7 @@ void QuickMessage_BalloonOpenNameBox(QuickMessageBalloon *balloon)
     box->update_mode = TEXT_DRAW_GROUP_1;
     box->rows_full_width = 1;
     box->background = NAME_BOX_BACKGROUND;
-    box->color = BOX_COLOR;
+    box->color = QUICK_MESSAGE_BOX_COLOR;
     TextDraw_RequestDraw(box);
 }
 CLEAN_AS(func_020399e4, QuickMessage_BalloonOpenNameBox)

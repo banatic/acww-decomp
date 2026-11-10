@@ -55,7 +55,7 @@ extern void func_ov004_02233ff4(void *drop);
 #define BELL_BAG_LAST 0x14fd
 
 /* The kinds of item (the top four bits of its code). */
-#define ITEM_KIND(code) (((code) & 0xf000) >> 12)
+#define DROPPED_ITEMS_ITEM_KIND(code) (((code) & 0xf000) >> 12)
 
 static SoundEmitter *dropped_item_sound(DroppedItem *drop)
 {
@@ -138,7 +138,7 @@ void DroppedItems_Draw(DroppedItem *items)
         Mtx43_Translation(&data_021fbe48, bent.x, bent.y, bent.z);
         Mtx43_RotateX(&data_021fbe48, angle);
         Mtx43_Scale(&data_021fbe48, drop->scale.x, drop->scale.y, drop->scale.z);
-        switch (ITEM_KIND(item)) {
+        switch (DROPPED_ITEMS_ITEM_KIND(item)) {
             case 1:
             case 3:
             case 4: {
@@ -247,7 +247,7 @@ void DroppedItem_Launch(DroppedItem *drop, const TileChangesTile *tile, const Ve
     drop->scale.x = 0;
     drop->scale.y = FX32_ONE;
     drop->scale.z = 0;
-    switch (ITEM_KIND(item)) {
+    switch (DROPPED_ITEMS_ITEM_KIND(item)) {
         case 3:
         case 4:
             drop->unk_8e = 0;

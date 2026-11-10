@@ -47,7 +47,7 @@
 #define OAM_SIZE 0x400
 #define OAM_HIDDEN 0xc0 /* each OBJ's attribute 0 at y 192, below the screen; attribute 1 0 */
 #define PALETTES 0x05000000u
-#define PALETTES_SIZE 0x400
+#define DISPLAY_FRAME_PALETTES_SIZE 0x400
 
 extern u32 GXi_DmaId;
 extern void MI_DmaFill32(u32 dma, void *dest, u32 data, u32 size);
@@ -201,7 +201,7 @@ void DisplayFrame_Init(void)
     MIi_CpuClearFast(0, (void *) (uintptr_t) LCDC_VRAM, LCDC_CLEAR_SIZE);
     func_02110aa0();
     MIi_CpuClearFast(OAM_HIDDEN, (void *) (uintptr_t) OAM, OAM_SIZE);
-    MIi_CpuClearFast(0, (void *) (uintptr_t) PALETTES, PALETTES_SIZE);
+    MIi_CpuClearFast(0, (void *) (uintptr_t) PALETTES, DISPLAY_FRAME_PALETTES_SIZE);
     Display3D_Init();
     Display_LoadBackdropColor();
     TransferQueue_ClearMain();

@@ -54,7 +54,7 @@ SoundEmitterObject *SoundEmitterClass_Construct2(SoundEmitterObject *emitter)
 {
     SoundEmitterClass_ConstructBase(emitter);
     emitter->vtable = data_0213f090;
-    emitter->kind = EMITTER_KIND_2;
+    emitter->kind = SOUND_EMITTER_KIND_2;
     return emitter;
 }
 CLEAN_AS(func_020f539c, SoundEmitterClass_Construct2)
@@ -90,7 +90,7 @@ SoundEmitterObject *SoundEmitterClass_Construct99(SoundEmitterObject *emitter)
 {
     SoundEmitterClass_Construct1B(emitter);
     emitter->vtable = data_0213f058;
-    emitter->kind = EMITTER_KIND_99;
+    emitter->kind = SOUND_EMITTER_KIND_99;
     return emitter;
 }
 CLEAN_AS(func_020f5430, SoundEmitterClass_Construct99)
@@ -115,25 +115,25 @@ unsigned int SoundEmitterClass_NextAlternate(SoundEmitterObject *emitter, unsign
 {
     unsigned int roll = SoundSystem_Random(&data_021fd1bc, 4);
     u8 flags = emitter->alternation;
-    int lucky = roll == 0 && (flags & EMITTER_PLUS2) == 0 && (flags & EMITTER_PLUS3) == 0;
+    int lucky = roll == 0 && (flags & SOUND_EMITTER_PLUS2) == 0 && (flags & SOUND_EMITTER_PLUS3) == 0;
 
-    if (flags & EMITTER_ODD) {
+    if (flags & SOUND_EMITTER_ODD) {
         if (lucky) {
             number = (u16) (number + 2);
-            flags |= EMITTER_PLUS2;
+            flags |= SOUND_EMITTER_PLUS2;
         } else {
-            flags &= (u8) ~EMITTER_PLUS2;
+            flags &= (u8) ~SOUND_EMITTER_PLUS2;
         }
     } else {
         if (lucky) {
             number = (u16) (number + 3);
-            flags |= EMITTER_PLUS3;
+            flags |= SOUND_EMITTER_PLUS3;
         } else {
-            flags &= (u8) ~EMITTER_PLUS3;
+            flags &= (u8) ~SOUND_EMITTER_PLUS3;
             number = (u16) (number + 1);
         }
     }
-    emitter->alternation = flags ^ EMITTER_ODD;
+    emitter->alternation = flags ^ SOUND_EMITTER_ODD;
     return number;
 }
 CLEAN_AS(func_020f5484, SoundEmitterClass_NextAlternate)
@@ -161,7 +161,7 @@ static void construct_1(SoundEmitterObject *emitter)
     SoundEmitterClass_ConstructBase(emitter);
     emitter->vtable = data_020d8414;
     emitter->slots.update = func_020f555c;
-    emitter->kind = EMITTER_KIND_1;
+    emitter->kind = SOUND_EMITTER_KIND_1;
     emitter->alternation = 0;
 }
 
@@ -224,7 +224,7 @@ int SoundEmitterClass_Play(SoundEmitterObject *emitter, int number, int volume, 
 {
     int index_number;
 
-    if (emitter->kind == EMITTER_KIND_99 && data_021fd1bc.lowered != 0) {
+    if (emitter->kind == SOUND_EMITTER_KIND_99 && data_021fd1bc.lowered != 0) {
         SoundHandle *handle = &data_021fd1bc.effect_b;
 
         Sound_StartSeqArcEx(handle, EMITTER_EFFECT_B_PLAYER, -1, -1, number / 1000, number % 1000);
@@ -296,7 +296,7 @@ CLEAN_AS(func_020f5948, SoundEmitterClass_DestructBaseB)
 void SoundEmitterClass_ConstructBaseB(SoundEmitterObject *emitter)
 {
     emitter->vtable = data_0213f074;
-    emitter->kind = EMITTER_KIND_BASE;
+    emitter->kind = SOUND_EMITTER_KIND_BASE;
 }
 CLEAN_AS(func_020f5958, SoundEmitterClass_ConstructBaseB)
 
@@ -305,7 +305,7 @@ CLEAN_AS(func_020f5958, SoundEmitterClass_ConstructBaseB)
 void SoundEmitterClass_ConstructBase(SoundEmitterObject *emitter)
 {
     emitter->vtable = data_0213f074;
-    emitter->kind = EMITTER_KIND_BASE;
+    emitter->kind = SOUND_EMITTER_KIND_BASE;
 }
 CLEAN_AS(func_020f5970, SoundEmitterClass_ConstructBase)
 

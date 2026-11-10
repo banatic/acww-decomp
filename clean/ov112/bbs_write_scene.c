@@ -71,9 +71,9 @@ extern const MemberPointer data_ov112_022a1f60, data_ov112_022a1f68, data_ov112_
     data_ov112_022a2050, data_ov112_022a2058, data_ov112_022a2060, data_ov112_022a2068, data_ov112_022a2070,
     data_ov112_022a2078, data_ov112_022a2088, data_ov112_022a2090;
 
-/* The text's layer (LAYER_SUB_BG1), the keyboard's (LAYER_SUB_BG3), and the margin of the wipes
+/* The text's layer (DISPLAY_LAYER_SUB_BG1), the keyboard's (DISPLAY_LAYER_SUB_BG3), and the margin of the wipes
  * on window 2. */
-#define BBS_WRITE_TEXT_LAYER LAYER_SUB_BG1
+#define BBS_WRITE_SCENE_BBS_WRITE_TEXT_LAYER DISPLAY_LAYER_SUB_BG1
 #define BBS_WRITE_WIPE_MARGIN 0x30
 #define BBS_WRITE_WIPE_TEXT 2     /* the wipes' layers: the text's */
 #define BBS_WRITE_WIPE_KEYBOARD 8 /* the keyboard's */
@@ -118,13 +118,13 @@ void BbsWrite_LoadScreens(BbsWriteScene *self)
 {
     Heap *heap = data_021fbe94;
 
-    DisplayLayer_LoadPalettesFromFile(data_ov112_022a2130, heap, BBS_WRITE_TEXT_LAYER, 8, 8, 14);
+    DisplayLayer_LoadPalettesFromFile(data_ov112_022a2130, heap, BBS_WRITE_SCENE_BBS_WRITE_TEXT_LAYER, 8, 8, 14);
     RomFile_Read(data_ov112_022a2148, self->screen, sizeof(self->screen));
     ScreenMap_SetPalette(self->screen, 6, 5, 25, 6, 10);
-    DisplayLayer_LoadScreen(self->screen, BBS_WRITE_TEXT_LAYER, sizeof(self->screen), 0);
-    DisplayLayer_LoadCharsFromFile(data_ov112_022a2160, heap, BBS_WRITE_TEXT_LAYER, 317, 317, 489);
-    DisplayLayer_LoadCharsFromFile(data_ov112_022a2178, heap, BBS_WRITE_TEXT_LAYER, 16, 16, 319);
-    DisplayLayer_LoadCharsFromFile(data_ov112_022a2190, heap, BBS_WRITE_TEXT_LAYER, 257, 257, 272);
+    DisplayLayer_LoadScreen(self->screen, BBS_WRITE_SCENE_BBS_WRITE_TEXT_LAYER, sizeof(self->screen), 0);
+    DisplayLayer_LoadCharsFromFile(data_ov112_022a2160, heap, BBS_WRITE_SCENE_BBS_WRITE_TEXT_LAYER, 317, 317, 489);
+    DisplayLayer_LoadCharsFromFile(data_ov112_022a2178, heap, BBS_WRITE_SCENE_BBS_WRITE_TEXT_LAYER, 16, 16, 319);
+    DisplayLayer_LoadCharsFromFile(data_ov112_022a2190, heap, BBS_WRITE_SCENE_BBS_WRITE_TEXT_LAYER, 257, 257, 272);
     SoftKeyboard_ReadScreen((SoftKeyboard *) (void *) self->keyboard, data_ov112_022a21a8);
     BbsWrite_UpdateKeys(self);
     SoftKeyboard_LoadScreenNow((SoftKeyboard *) (void *) self->keyboard, BBS_WRITE_KEYBOARD_LAYER);
@@ -138,8 +138,8 @@ CLEAN_AS(func_ov112_022a1104, BbsWrite_LoadScreens)
 void BbsWrite_SetLayers(void)
 {
     DisplayShadow_SetSubBgMode(0);
-    DisplayLayer_SetPriority(BBS_WRITE_TEXT_LAYER, 3);
-    DisplayLayer_SetBgControl(BBS_WRITE_TEXT_LAYER, 0, 0, 0);
+    DisplayLayer_SetPriority(BBS_WRITE_SCENE_BBS_WRITE_TEXT_LAYER, 3);
+    DisplayLayer_SetBgControl(BBS_WRITE_SCENE_BBS_WRITE_TEXT_LAYER, 0, 0, 0);
     DisplayLayer_SetPriority(BBS_WRITE_KEYBOARD_LAYER, 1);
     DisplayLayer_SetBgControl(BBS_WRITE_KEYBOARD_LAYER, 0, 0, 0);
 }
@@ -240,11 +240,11 @@ CLEAN_AS(func_ov112_022a1310, BbsWrite_SetUp)
 void BbsWrite_CloseWipeOut(BbsWriteScene *self)
 {
     if (MenuScene_StepWipe(bbs_write_scene(self), 0) != 0) {
-        DisplayLayer_HideAndResetScroll(BBS_WRITE_TEXT_LAYER);
+        DisplayLayer_HideAndResetScroll(BBS_WRITE_SCENE_BBS_WRITE_TEXT_LAYER);
         DisplayLayer_HideAndResetScroll(BBS_WRITE_KEYBOARD_LAYER);
         MenuScene_SetPhase(bbs_write_scene(self), BBS_WRITE_PHASE_END);
     } else {
-        MenuScene_ScrollWipe(bbs_write_scene(self), BBS_WRITE_TEXT_LAYER, 0, -8);
+        MenuScene_ScrollWipe(bbs_write_scene(self), BBS_WRITE_SCENE_BBS_WRITE_TEXT_LAYER, 0, -8);
         MenuScene_ScrollWipe(bbs_write_scene(self), BBS_WRITE_KEYBOARD_LAYER, 0, -8);
     }
     self->unk_a4 = MenuScene_WipeOffsetY(bbs_write_scene(self));
@@ -266,7 +266,7 @@ void BbsWrite_StartCloseWipeOut(BbsWriteScene *self)
     MenuDispatch_SetMode(bbs_write_parent(self), MENU_DISPATCH_MODE_CLOSE, 1);
     MenuScene_StartWipeOnWindow2(bbs_write_scene(self), BBS_WRITE_WIPE_TEXT | BBS_WRITE_WIPE_KEYBOARD, 0, 0,
                                  BBS_WRITE_WIPE_MARGIN);
-    MenuScene_ScrollWipe(bbs_write_scene(self), BBS_WRITE_TEXT_LAYER, 0, -8);
+    MenuScene_ScrollWipe(bbs_write_scene(self), BBS_WRITE_SCENE_BBS_WRITE_TEXT_LAYER, 0, -8);
     MenuScene_ScrollWipe(bbs_write_scene(self), BBS_WRITE_KEYBOARD_LAYER, 0, -8);
     MenuScene_SetState(bbs_write_scene(self), BBS_WRITE_STATE_CLOSE_WIPE_OUT);
     self->unk_a4 = MenuScene_WipeOffsetY(bbs_write_scene(self));
@@ -279,10 +279,10 @@ CLEAN_AS(func_ov112_022a145c, BbsWrite_StartCloseWipeOut)
 void BbsWrite_FinishWipeOut(BbsWriteScene *self)
 {
     if (MenuScene_StepWipe(bbs_write_scene(self), 0) != 0) {
-        DisplayLayer_HideAndResetScroll(BBS_WRITE_TEXT_LAYER);
+        DisplayLayer_HideAndResetScroll(BBS_WRITE_SCENE_BBS_WRITE_TEXT_LAYER);
         MenuScene_SetPhase(bbs_write_scene(self), BBS_WRITE_PHASE_END);
     } else {
-        MenuScene_ScrollWipe(bbs_write_scene(self), BBS_WRITE_TEXT_LAYER, 0, -8);
+        MenuScene_ScrollWipe(bbs_write_scene(self), BBS_WRITE_SCENE_BBS_WRITE_TEXT_LAYER, 0, -8);
     }
     self->unk_a4 = MenuScene_WipeOffsetY(bbs_write_scene(self));
     self->panel_y = self->unk_a4;
@@ -301,7 +301,7 @@ void BbsWrite_FinishAfterAnswer(BbsWriteScene *self)
     BbsWrite_EndDim(self);
     MenuDispatch_SetMode(bbs_write_parent(self), MENU_DISPATCH_MODE_CLOSE, 1);
     MenuScene_StartWipeOnWindow2(bbs_write_scene(self), BBS_WRITE_WIPE_TEXT, 0, 0, BBS_WRITE_WIPE_MARGIN);
-    MenuScene_ScrollWipe(bbs_write_scene(self), BBS_WRITE_TEXT_LAYER, 0, -8);
+    MenuScene_ScrollWipe(bbs_write_scene(self), BBS_WRITE_SCENE_BBS_WRITE_TEXT_LAYER, 0, -8);
     MenuScene_SetState(bbs_write_scene(self), BBS_WRITE_STATE_FINISH_WIPE_OUT);
     self->unk_a4 = MenuScene_WipeOffsetY(bbs_write_scene(self));
     self->panel_y = self->unk_a4;
@@ -443,7 +443,7 @@ void BbsWrite_WipeIn(BbsWriteScene *self)
         BbsWrite_Refresh(self);
         BbsWrite_EndFrame(self);
     }
-    MenuScene_ScrollWipe(bbs_write_scene(self), BBS_WRITE_TEXT_LAYER, 0, -8);
+    MenuScene_ScrollWipe(bbs_write_scene(self), BBS_WRITE_SCENE_BBS_WRITE_TEXT_LAYER, 0, -8);
     MenuScene_ScrollWipe(bbs_write_scene(self), BBS_WRITE_KEYBOARD_LAYER, 0, 0);
     self->keyboard_y = MenuScene_WipeOffsetY(bbs_write_scene(self));
     self->unk_a4 = self->keyboard_y;
@@ -465,9 +465,9 @@ void BbsWrite_StartWipeIn(BbsWriteScene *self)
     SoftKeyboard_QueueScreen((SoftKeyboard *) (void *) self->keyboard, BBS_WRITE_KEYBOARD_LAYER);
     MenuScene_StartWipeCoveredOnWindow2(bbs_write_scene(self), BBS_WRITE_WIPE_TEXT | BBS_WRITE_WIPE_KEYBOARD, 7, 0,
                                         BBS_WRITE_WIPE_MARGIN);
-    DisplayLayer_Show(BBS_WRITE_TEXT_LAYER);
+    DisplayLayer_Show(BBS_WRITE_SCENE_BBS_WRITE_TEXT_LAYER);
     DisplayLayer_Show(BBS_WRITE_KEYBOARD_LAYER);
-    MenuScene_ScrollWipe(bbs_write_scene(self), BBS_WRITE_TEXT_LAYER, 0, -8);
+    MenuScene_ScrollWipe(bbs_write_scene(self), BBS_WRITE_SCENE_BBS_WRITE_TEXT_LAYER, 0, -8);
     MenuScene_ScrollWipe(bbs_write_scene(self), BBS_WRITE_KEYBOARD_LAYER, 0, 0);
     MenuScene_SetState(bbs_write_scene(self), BBS_WRITE_STATE_WIPE_IN);
     self->keyboard_y = MenuScene_WipeOffsetY(bbs_write_scene(self));
@@ -592,7 +592,7 @@ int BbsWrite_Draw(BbsWriteScene *self)
 {
     if (BbsWrite_IsScrolling(self) != 0) {
         BbsWrite_StepScroll(self);
-        DisplayLayer_SetScroll(BBS_WRITE_TEXT_LAYER, 0, self->scroll + 8);
+        DisplayLayer_SetScroll(BBS_WRITE_SCENE_BBS_WRITE_TEXT_LAYER, 0, self->scroll + 8);
     }
 
     if (BbsWrite_TestFlags(self, BBS_WRITE_FLAG_DRAWN) != 0) {

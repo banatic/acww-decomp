@@ -64,7 +64,7 @@ static fx32 collision_query_abs(fx32 value)
 /* The center of unit `unit` on its axis. */
 static fx32 collision_query_unit_center(int unit)
 {
-    return (fx32) (((u32) unit << COLLISION_UNIT_SHIFT) + COLLISION_HALF_UNIT);
+    return (fx32) (((u32) unit << FIELD_COLLISION_UNIT_SHIFT) + FIELD_COLLISION_HALF_UNIT);
 }
 
 /* func_02030ebc: gathers the shapes of the box from `min` to `max` (widened by the margin on
@@ -85,10 +85,10 @@ void CollisionQuery_Gather(const Vec3 *min, const Vec3 *max, CollisionVisitor *v
 
     Vec_Subtract(&low, min, &data_021c31a0);
     Vec_Add(&high, max, &data_021c31a0);
-    int x0 = low.x >> COLLISION_UNIT_SHIFT;
-    int z0 = low.z >> COLLISION_UNIT_SHIFT;
-    int x1 = high.x >> COLLISION_UNIT_SHIFT;
-    int z1 = high.z >> COLLISION_UNIT_SHIFT;
+    int x0 = low.x >> FIELD_COLLISION_UNIT_SHIFT;
+    int z0 = low.z >> FIELD_COLLISION_UNIT_SHIFT;
+    int x1 = high.x >> FIELD_COLLISION_UNIT_SHIFT;
+    int z1 = high.z >> FIELD_COLLISION_UNIT_SHIFT;
 
     Vec_Add(&center, &low, &high);
     center.x >>= 1;
@@ -131,7 +131,7 @@ CLEAN_AS(func_02030ebc, CollisionQuery_Gather)
 /* func_0203104c: whether a post stands on the unit under `point`. */
 int CollisionQuery_HasPostAtPoint(const Vec3 *point)
 {
-    return CollisionQuery_HasPostAt(point->x >> COLLISION_UNIT_SHIFT, point->z >> COLLISION_UNIT_SHIFT);
+    return CollisionQuery_HasPostAt(point->x >> FIELD_COLLISION_UNIT_SHIFT, point->z >> FIELD_COLLISION_UNIT_SHIFT);
 }
 CLEAN_AS(func_0203104c, CollisionQuery_HasPostAtPoint)
 
@@ -286,7 +286,7 @@ CLEAN_AS(func_020311bc, CollisionQuery_Trace)
  * walls and posts (the push-out visitor), the touches go to `contacts`, and by `flags`:
  * - COLLISION_QUERY_ALL: back to `*previous` where the ground is raised or a post stands;
  * - COLLISION_QUERY_GROUND: up to COLLISION_QUERY_CLEARANCE over the ground when below it
- *   (COLLISION_ON_GROUND and the ground's attribute), COLLISION_BELOW_LIMIT where the ground
+ *   (FIELD_COLLISION_ON_GROUND and the ground's attribute), FIELD_COLLISION_BELOW_LIMIT where the ground
  *   says so;
  * - COLLISION_QUERY_STORE: the result is written to `*position`.
  * How far the checks moved it goes to the contacts either way, and with an `owner` the objects
@@ -326,22 +326,22 @@ void CollisionQuery_Move(CollisionContacts *contacts, Vec3 *position, const Vec3
 
     CollisionContacts_StartFrame(contacts);
     CollisionQuery_Gather(&low, &high, (CollisionVisitor *) &push, flags, 0,
-                          (contacts->previous_flags & COLLISION_BELOW_LIMIT) ? 1 : 0);
+                          (contacts->previous_flags & FIELD_COLLISION_BELOW_LIMIT) ? 1 : 0);
 
     if ((flags & COLLISION_QUERY_ALL) != 0 && CollisionQuery_IsRaisedOrPost(&at) != 0) {
         at = *previous;
     }
     if ((flags & COLLISION_QUERY_GROUND) != 0) {
         CollisionGround ground;
-        CollisionGround_Init(&ground, &at, (contacts->previous_flags & COLLISION_BELOW_LIMIT) ? 1 : 0,
+        CollisionGround_Init(&ground, &at, (contacts->previous_flags & FIELD_COLLISION_BELOW_LIMIT) ? 1 : 0,
                              (flags & COLLISION_QUERY_MODE_1) ? 1 : 0);
         if (at.y < CollisionGround_Height(&ground, 0) + COLLISION_QUERY_CLEARANCE) {
-            contacts->flags |= COLLISION_ON_GROUND;
+            contacts->flags |= FIELD_COLLISION_ON_GROUND;
             contacts->ground_attr = ground.attr;
             at.y = CollisionGround_Height(&ground, 0) + COLLISION_QUERY_CLEARANCE;
         }
         if (CollisionGround_IsBelowLimit(&ground, at.y) != 0) {
-            contacts->flags |= COLLISION_BELOW_LIMIT;
+            contacts->flags |= FIELD_COLLISION_BELOW_LIMIT;
         }
         CollisionGround_Destroy(&ground);
     }
@@ -364,8 +364,10 @@ CLEAN_AS(func_02031288, CollisionQuery_Move)
 /* Whether all four sides of `cell` have attribute COLLISION_SIDE_14. */
 static int collision_query_all_sides_14(const CollisionCell *cell)
 {
-    return cell->side_attr[COLLISION_NORTH] == COLLISION_SIDE_14 && cell->side_attr[COLLISION_WEST] == COLLISION_SIDE_14 &&
-           cell->side_attr[COLLISION_SOUTH] == COLLISION_SIDE_14 && cell->side_attr[COLLISION_EAST] == COLLISION_SIDE_14;
+    return cell->side_attr[FIELD_COLLISION_NORTH] == COLLISION_SIDE_14 &&
+           cell->side_attr[FIELD_COLLISION_WEST] == COLLISION_SIDE_14 &&
+           cell->side_attr[FIELD_COLLISION_SOUTH] == COLLISION_SIDE_14 &&
+           cell->side_attr[FIELD_COLLISION_EAST] == COLLISION_SIDE_14;
 }
 
 /* func_02031498: walks the units of block (block_x, block_z) of the current map row by row
@@ -402,12 +404,16 @@ int CollisionQuery_FindSpotInBlock(int *x, int *z, int block_x, int block_z)
                 }
                 continue;
             }
-            if (unit.side_attr[COLLISION_NORTH] != COLLISION_SIDE_14 && unit.side_attr[COLLISION_WEST] != COLLISION_SIDE_14 &&
-                unit.side_attr[COLLISION_SOUTH] == COLLISION_SIDE_14 && unit.side_attr[COLLISION_EAST] == COLLISION_SIDE_14 &&
-                next.side_attr[COLLISION_NORTH] != COLLISION_SIDE_14 && next.side_attr[COLLISION_WEST] == COLLISION_SIDE_14 &&
-                next.side_attr[COLLISION_SOUTH] == COLLISION_SIDE_14 && next.side_attr[COLLISION_EAST] != COLLISION_SIDE_14) {
-                int east = next.side_attr[COLLISION_EAST];
-                int flag = east < COLLISION_TYPE_COUNT ? data_020c907c[east].unk_14 : 0;
+            if (unit.side_attr[FIELD_COLLISION_NORTH] != COLLISION_SIDE_14 &&
+                unit.side_attr[FIELD_COLLISION_WEST] != COLLISION_SIDE_14 &&
+                unit.side_attr[FIELD_COLLISION_SOUTH] == COLLISION_SIDE_14 &&
+                unit.side_attr[FIELD_COLLISION_EAST] == COLLISION_SIDE_14 &&
+                next.side_attr[FIELD_COLLISION_NORTH] != COLLISION_SIDE_14 &&
+                next.side_attr[FIELD_COLLISION_WEST] == COLLISION_SIDE_14 &&
+                next.side_attr[FIELD_COLLISION_SOUTH] == COLLISION_SIDE_14 &&
+                next.side_attr[FIELD_COLLISION_EAST] != COLLISION_SIDE_14) {
+                int east = next.side_attr[FIELD_COLLISION_EAST];
+                int flag = east < FIELD_COLLISION_TYPE_COUNT ? data_020c907c[east].unk_14 : 0;
                 return flag == 0 ? COLLISION_SPOT_EDGE : COLLISION_SPOT_EDGE_14;
             }
         }
@@ -610,8 +616,8 @@ int CollisionQuery_IsRaisedOrPost(const Vec3 *position)
     if (CollisionGround_Height(&ground, 0) != 0) {
         result = 1;
     } else {
-        result = CollisionQuery_PostAt(position->x >> COLLISION_UNIT_SHIFT, position->z >> COLLISION_UNIT_SHIFT, &radius,
-                                       &height, &kind) != 0;
+        result = CollisionQuery_PostAt(position->x >> FIELD_COLLISION_UNIT_SHIFT, position->z >> FIELD_COLLISION_UNIT_SHIFT,
+                                       &radius, &height, &kind) != 0;
     }
     CollisionGround_Destroy(&ground);
     return result;

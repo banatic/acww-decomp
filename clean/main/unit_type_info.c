@@ -48,7 +48,7 @@ CLEAN_AS(func_02031478, UnitTypeInfo_Kind6fAt)
  * QUIRK: a negative type is not refused; the row is read before the table. */
 u16 UnitTypeInfo_Word02(int type)
 {
-    if (type < COLLISION_TYPE_COUNT) {
+    if (type < FIELD_COLLISION_TYPE_COUNT) {
         return unit_type_word(unit_type_row(type), 2);
     }
     return 0xffff;
@@ -60,7 +60,7 @@ CLEAN_AS(func_02031914, UnitTypeInfo_Word02)
  * QUIRK: a negative type is not refused; the row is read before the table. */
 u16 UnitTypeInfo_Sound(int type)
 {
-    if (type < COLLISION_TYPE_COUNT) {
+    if (type < FIELD_COLLISION_TYPE_COUNT) {
         return unit_type_word(unit_type_row(type), 0);
     }
     return 0xffff;
@@ -72,7 +72,7 @@ CLEAN_AS(func_02031930, UnitTypeInfo_Sound)
 int UnitTypeInfo_Bytes18At(u8 *out, int x, int z)
 {
     int type = FieldUnits_Type(x, z);
-    if (type < COLLISION_TYPE_COUNT) {
+    if (type < FIELD_COLLISION_TYPE_COUNT) {
         const CollisionTypeInfo *row = unit_type_row(type);
         for (int i = 0; i < 4; i++) {
             out[i] = row->unk_16[2 + i];
@@ -98,7 +98,7 @@ CLEAN_AS(func_02031a48, UnitTypeInfo_IsType1eOver08)
 int UnitTypeInfo_HasByte17At(int x, int z)
 {
     int type = FieldUnits_Type(x, z);
-    return type < COLLISION_TYPE_COUNT && unit_type_row(type)->unk_16[1] != 0;
+    return type < FIELD_COLLISION_TYPE_COUNT && unit_type_row(type)->unk_16[1] != 0;
 }
 CLEAN_AS(func_02031a74, UnitTypeInfo_HasByte17At)
 
@@ -107,7 +107,7 @@ CLEAN_AS(func_02031a74, UnitTypeInfo_HasByte17At)
 int UnitTypeInfo_Word06CappedAt(int x, int z)
 {
     int type = FieldUnits_Type(x, z);
-    if (type >= COLLISION_TYPE_COUNT) {
+    if (type >= FIELD_COLLISION_TYPE_COUNT) {
         return -1;
     }
     s16 value = (s16) unit_type_word(unit_type_row(type), 6);
@@ -119,7 +119,7 @@ CLEAN_AS(func_02031aa0, UnitTypeInfo_Word06CappedAt)
 u8 UnitTypeInfo_Byte09At(int x, int z)
 {
     int type = FieldUnits_Type(x, z);
-    return type < COLLISION_TYPE_COUNT ? unit_type_row(type)->unk_00[9] : 2;
+    return type < FIELD_COLLISION_TYPE_COUNT ? unit_type_row(type)->unk_00[9] : 2;
 }
 CLEAN_AS(func_02031acc, UnitTypeInfo_Byte09At)
 
@@ -127,7 +127,7 @@ CLEAN_AS(func_02031acc, UnitTypeInfo_Byte09At)
 int UnitTypeInfo_Byte05At(int x, int z)
 {
     int type = FieldUnits_Type(x, z);
-    return type < COLLISION_TYPE_COUNT ? unit_type_row(type)->unk_00[5] : 0;
+    return type < FIELD_COLLISION_TYPE_COUNT ? unit_type_row(type)->unk_00[5] : 0;
 }
 CLEAN_AS(func_02031af0, UnitTypeInfo_Byte05At)
 
@@ -135,7 +135,7 @@ CLEAN_AS(func_02031af0, UnitTypeInfo_Byte05At)
 int UnitTypeInfo_Byte08At(int x, int z)
 {
     int type = FieldUnits_Type(x, z);
-    return type < COLLISION_TYPE_COUNT ? unit_type_row(type)->unk_00[8] : 0;
+    return type < FIELD_COLLISION_TYPE_COUNT ? unit_type_row(type)->unk_00[8] : 0;
 }
 CLEAN_AS(func_02031b14, UnitTypeInfo_Byte08At)
 
@@ -143,7 +143,7 @@ CLEAN_AS(func_02031b14, UnitTypeInfo_Byte08At)
 u8 UnitTypeInfo_Byte04At(int x, int z)
 {
     int type = FieldUnits_Type(x, z);
-    return type < COLLISION_TYPE_COUNT ? unit_type_row(type)->unk_00[4] : 0;
+    return type < FIELD_COLLISION_TYPE_COUNT ? unit_type_row(type)->unk_00[4] : 0;
 }
 CLEAN_AS(func_02031b38, UnitTypeInfo_Byte04At)
 
@@ -187,7 +187,7 @@ CLEAN_AS(func_02031ba0, UnitTypeInfo_IsType07At)
  * QUIRK: a negative attribute is not refused; the row is read before the table. */
 int UnitTypeInfo_HasByte14InMode(int attr, int mode)
 {
-    if (attr >= COLLISION_TYPE_COUNT || unit_type_row(attr)->unk_14 == 0) {
+    if (attr >= FIELD_COLLISION_TYPE_COUNT || unit_type_row(attr)->unk_14 == 0) {
         return 0;
     }
     if ((mode == UNIT_TYPE_INFO_MODE_1 || mode == UNIT_TYPE_INFO_MODE_2) && attr == UNIT_TYPE_INFO_ATTR_16) {
@@ -198,7 +198,7 @@ int UnitTypeInfo_HasByte14InMode(int attr, int mode)
 CLEAN_AS(func_02031c14, UnitTypeInfo_HasByte14InMode)
 
 /* The functions that give one side's attribute of row `type` (the ones below, by side
- * COLLISION_NORTH to COLLISION_EAST): the second set (side_attr_alt) and the first
+ * FIELD_COLLISION_NORTH to FIELD_COLLISION_EAST): the second set (side_attr_alt) and the first
  * (side_attr). */
 extern int (*const data_020c906c[4])(int type);
 extern int (*const data_020c905c[4])(int type);
@@ -216,25 +216,25 @@ CLEAN_AS(func_02031ca8, UnitTypeInfo_AltSideAttrAt)
  * QUIRK: a negative type is not refused; the row is read before the table. */
 u8 UnitTypeInfo_AltSideAttrNorth(int type)
 {
-    return type < COLLISION_TYPE_COUNT ? unit_type_row(type)->side_attr_alt[COLLISION_NORTH] : 0;
+    return type < FIELD_COLLISION_TYPE_COUNT ? unit_type_row(type)->side_attr_alt[FIELD_COLLISION_NORTH] : 0;
 }
 CLEAN_AS(func_02031cc8, UnitTypeInfo_AltSideAttrNorth)
 
 int UnitTypeInfo_AltSideAttrWest(int type)
 {
-    return type < COLLISION_TYPE_COUNT ? unit_type_row(type)->side_attr_alt[COLLISION_WEST] : 0;
+    return type < FIELD_COLLISION_TYPE_COUNT ? unit_type_row(type)->side_attr_alt[FIELD_COLLISION_WEST] : 0;
 }
 CLEAN_AS(func_02031ce0, UnitTypeInfo_AltSideAttrWest)
 
 u8 UnitTypeInfo_AltSideAttrSouth(int type)
 {
-    return type < COLLISION_TYPE_COUNT ? unit_type_row(type)->side_attr_alt[COLLISION_SOUTH] : 0;
+    return type < FIELD_COLLISION_TYPE_COUNT ? unit_type_row(type)->side_attr_alt[FIELD_COLLISION_SOUTH] : 0;
 }
 CLEAN_AS(func_02031cf8, UnitTypeInfo_AltSideAttrSouth)
 
 int UnitTypeInfo_AltSideAttrEast(int type)
 {
-    return type < COLLISION_TYPE_COUNT ? unit_type_row(type)->side_attr_alt[COLLISION_EAST] : 0;
+    return type < FIELD_COLLISION_TYPE_COUNT ? unit_type_row(type)->side_attr_alt[FIELD_COLLISION_EAST] : 0;
 }
 CLEAN_AS(func_02031d10, UnitTypeInfo_AltSideAttrEast)
 
@@ -251,47 +251,47 @@ CLEAN_AS(func_02031d28, UnitTypeInfo_SideAttrAt)
  * QUIRK: a negative type is not refused; the row is read before the table. */
 int UnitTypeInfo_SideAttrNorth(int type)
 {
-    return type < COLLISION_TYPE_COUNT ? unit_type_row(type)->side_attr[COLLISION_NORTH] : 0;
+    return type < FIELD_COLLISION_TYPE_COUNT ? unit_type_row(type)->side_attr[FIELD_COLLISION_NORTH] : 0;
 }
 CLEAN_AS(func_02031d48, UnitTypeInfo_SideAttrNorth)
 
 u8 UnitTypeInfo_SideAttrWest(int type)
 {
-    return type < COLLISION_TYPE_COUNT ? unit_type_row(type)->side_attr[COLLISION_WEST] : 0;
+    return type < FIELD_COLLISION_TYPE_COUNT ? unit_type_row(type)->side_attr[FIELD_COLLISION_WEST] : 0;
 }
 CLEAN_AS(func_02031d60, UnitTypeInfo_SideAttrWest)
 
 int UnitTypeInfo_SideAttrSouth(int type)
 {
-    return type < COLLISION_TYPE_COUNT ? unit_type_row(type)->side_attr[COLLISION_SOUTH] : 0;
+    return type < FIELD_COLLISION_TYPE_COUNT ? unit_type_row(type)->side_attr[FIELD_COLLISION_SOUTH] : 0;
 }
 CLEAN_AS(func_02031d78, UnitTypeInfo_SideAttrSouth)
 
 int UnitTypeInfo_SideAttrEast(int type)
 {
-    return type < COLLISION_TYPE_COUNT ? unit_type_row(type)->side_attr[COLLISION_EAST] : 0;
+    return type < FIELD_COLLISION_TYPE_COUNT ? unit_type_row(type)->side_attr[FIELD_COLLISION_EAST] : 0;
 }
 CLEAN_AS(func_02031d90, UnitTypeInfo_SideAttrEast)
 
 extern void VEC_Subtract(const Vec3 *a, const Vec3 *b, Vec3 *difference);
 
 /* func_02031da8: the side of its unit `position` is nearest to, the unit being cut along its
- * diagonals: COLLISION_NORTH (low Z), COLLISION_WEST (low X), COLLISION_SOUTH or
- * COLLISION_EAST. A point on the diagonal through the unit's low corner goes to the east side
+ * diagonals: FIELD_COLLISION_NORTH (low Z), FIELD_COLLISION_WEST (low X), FIELD_COLLISION_SOUTH or
+ * FIELD_COLLISION_EAST. A point on the diagonal through the unit's low corner goes to the east side
  * past the middle, else to the north; one on the other diagonal goes to the west side on the
  * high Z half, else to the north. */
 int UnitTypeInfo_SideNearest(const Vec3 *position)
 {
     Vec3 offset = *position;
-    Vec3 middle = {(fx32) (((u32) position->x & ~(u32) 0x1fff) + COLLISION_HALF_UNIT), 0,
-                   (fx32) (((u32) position->z & ~(u32) 0x1fff) + COLLISION_HALF_UNIT)};
+    Vec3 middle = {(fx32) (((u32) position->x & ~(u32) 0x1fff) + FIELD_COLLISION_HALF_UNIT), 0,
+                   (fx32) (((u32) position->z & ~(u32) 0x1fff) + FIELD_COLLISION_HALF_UNIT)};
     VEC_Subtract(&offset, &middle, &offset);
 
     fx32 across = offset.z - offset.x;
     fx32 along = offset.x + offset.z;
     if (along > 0) {
-        return across > 0 ? COLLISION_SOUTH : COLLISION_EAST;
+        return across > 0 ? FIELD_COLLISION_SOUTH : FIELD_COLLISION_EAST;
     }
-    return across > 0 ? COLLISION_WEST : COLLISION_NORTH;
+    return across > 0 ? FIELD_COLLISION_WEST : FIELD_COLLISION_NORTH;
 }
 CLEAN_AS(func_02031da8, UnitTypeInfo_SideNearest)

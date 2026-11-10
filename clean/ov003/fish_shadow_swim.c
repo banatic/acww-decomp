@@ -90,7 +90,7 @@ typedef struct FishSwimStepPair {
 extern const FishSwimSize data_ov003_0223c014[FISH_SWIM_SIZES];
 extern const FishSwimRodTables data_ov003_0223bf00[2];
 extern const CreatureTableInfo data_020cb784[];
-extern PlayerFish data_ov003_0225f4dc[PLAYER_FISH_COUNT];
+extern PlayerFish data_ov003_0225f4dc[FISH_SHADOW_PLAYER_FISH_COUNT];
 /* The tables: swimming states, hook states, and the pairs by FishShadow.hooked. */
 extern MemberPointer data_ov003_0225f160[6];
 extern MemberPointer data_ov003_0225f190[7];

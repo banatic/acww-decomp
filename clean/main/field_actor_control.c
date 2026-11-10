@@ -42,7 +42,7 @@
 #define BUTTON_DPAD (BUTTON_RIGHT | BUTTON_LEFT | BUTTON_UP | BUTTON_DOWN)
 /* Every button but Select and Start; with them. */
 #define BUTTONS_STEER 0x2ff3
-#define BUTTONS_ALL 0x2fff
+#define FIELD_ACTOR_CONTROL_BUTTONS_ALL 0x2fff
 
 /* The push of the d-pad: a walk, or a run with B, R or L held. */
 #define PUSH_WALK 0xc32
@@ -344,7 +344,8 @@ void FieldActor_ReadControl(FieldActor *actor)
                 aim = ground;
             }
         } else {
-            u16 steer = (EventQueue_TestFlag8() || FieldActor_TestFlag(actor, 0x13)) ? BUTTONS_ALL : BUTTONS_STEER;
+            u16 steer =
+                (EventQueue_TestFlag8() || FieldActor_TestFlag(actor, 0x13)) ? FIELD_ACTOR_CONTROL_BUTTONS_ALL : BUTTONS_STEER;
             u16 held = data_021fbe40.held;
             mode = (held & steer) ? 1 : actor->control_mode;
             run = (held & (BUTTON_B | BUTTON_R | BUTTON_L)) != 0;

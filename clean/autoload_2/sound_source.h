@@ -16,9 +16,9 @@
 
 /* SoundSourceObject.flags. */
 enum {
-    SOURCE_ASKED = 1 << 0,   /* asked for since the last update */
-    SOURCE_HOLD = 1 << 1,    /* keep playing while it is not asked for */
-    SOURCE_CHANGED = 1 << 2, /* the number changed: what plays is stopped at the next update */
+    SOUND_SOURCE_ASKED = 1 << 0,   /* asked for since the last update */
+    SOUND_SOURCE_HOLD = 1 << 1,    /* keep playing while it is not asked for */
+    SOUND_SOURCE_CHANGED = 1 << 2, /* the number changed: what plays is stopped at the next update */
 };
 
 typedef struct SoundSourceObject {

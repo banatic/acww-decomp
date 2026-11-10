@@ -66,11 +66,11 @@ extern u32 data_020cc7d0;
 #define HEAD_MODEL_NONE 0x9e
 
 /* The scenes where the sun level is not faded. */
-#define SCENE_2E 0x2e
-#define SCENE_0D 0x0d
+#define FIELD_ACTOR_LOOKS_SCENE_2E 0x2e
+#define FIELD_ACTOR_LOOKS_SCENE_0D 0x0d
 #define SCENE_0E 0x0e
-#define SCENE_0C 0x0c
-#define SCENE_2F 0x2f
+#define FIELD_ACTOR_LOOKS_SCENE_0C 0x0c
+#define FIELD_ACTOR_LOOKS_SCENE_2F 0x2f
 
 /* The byte func_0209626c points at: bits the sun level's update clears. */
 #define SUN_BYTE_BIT0 0x01
@@ -406,7 +406,8 @@ u8 FieldActor_SunLevel(FieldActor *actor, int store)
     int linked = 0;
 
     int scene = SceneQuery_Current();
-    if (scene == SCENE_2E || scene == SCENE_0D || scene == SCENE_0E || scene == SCENE_0C || scene == SCENE_2F) {
+    if (scene == FIELD_ACTOR_LOOKS_SCENE_2E || scene == FIELD_ACTOR_LOOKS_SCENE_0D || scene == SCENE_0E ||
+        scene == FIELD_ACTOR_LOOKS_SCENE_0C || scene == FIELD_ACTOR_LOOKS_SCENE_2F) {
         return level;
     }
     if (SceneKinds_CurrentIn6To8() != 0 && PlayerActorOps_StartState(FIELD_ACTOR_FIELD(actor, u32, 8)) == 8) {

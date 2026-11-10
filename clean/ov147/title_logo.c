@@ -15,7 +15,7 @@
 #include "main/rom_file.h"
 #include "main/screen_transition.h"
 
-#define TITLE_LOGO_LAYER LAYER_SUB_BG2
+#define TITLE_LOGO_LAYER DISPLAY_LAYER_SUB_BG2
 #define TITLE_LOGO_FIRST_CHAR 0x140
 #define TITLE_LOGO_LAST_CHAR 0x2ff
 #define TITLE_LOGO_CHARS (TITLE_LOGO_LAST_CHAR - TITLE_LOGO_FIRST_CHAR + 1) /* 448 */

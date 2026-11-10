@@ -44,7 +44,7 @@ extern void GXS_SetGraphicsMode(int bg_mode);
 /* func_020019cc */
 void DisplayShadow_MainBlendOff(void)
 {
-    data_0213fe94.blend_request |= BLEND_MAIN_OFF;
+    data_0213fe94.blend_request |= DISPLAY_SHADOW_BLEND_MAIN_OFF;
 }
 CLEAN_AS(func_020019cc, DisplayShadow_MainBlendOff)
 
@@ -55,14 +55,14 @@ void DisplayShadow_SetMainAlpha(u8 planes, u8 second_planes, u8 ev)
     data_0213fe94.blend_planes = planes;
     data_0213fe94.blend_value = second_planes;
     data_0213fe94.blend_ev = ev;
-    data_0213fe94.blend_request |= BLEND_MAIN_ALPHA;
+    data_0213fe94.blend_request |= DISPLAY_SHADOW_BLEND_MAIN_ALPHA;
 }
 CLEAN_AS(func_020019dc, DisplayShadow_SetMainAlpha)
 
 /* func_020019f4 */
 void DisplayShadow_SubBlendOff(void)
 {
-    data_0213fe94.blend_request |= BLEND_SUB_OFF;
+    data_0213fe94.blend_request |= DISPLAY_SHADOW_BLEND_SUB_OFF;
 }
 CLEAN_AS(func_020019f4, DisplayShadow_SubBlendOff)
 
@@ -72,7 +72,7 @@ void DisplayShadow_SetSubAlpha(u8 planes, u8 second_planes, u8 ev)
     data_0213fe94.blend_planes = planes;
     data_0213fe94.blend_value = second_planes;
     data_0213fe94.blend_ev = ev;
-    data_0213fe94.blend_request |= BLEND_SUB_ALPHA;
+    data_0213fe94.blend_request |= DISPLAY_SHADOW_BLEND_SUB_ALPHA;
 }
 CLEAN_AS(func_02001a04, DisplayShadow_SetSubAlpha)
 
@@ -80,7 +80,7 @@ CLEAN_AS(func_02001a04, DisplayShadow_SetSubAlpha)
 void DisplayShadow_SetSubBrightness(u8 brightness)
 {
     data_0213fe94.blend_value = brightness;
-    data_0213fe94.blend_request |= BLEND_SUB_BRIGHTNESS;
+    data_0213fe94.blend_request |= DISPLAY_SHADOW_BLEND_SUB_BRIGHTNESS;
 }
 CLEAN_AS(func_02001a1c, DisplayShadow_SetSubBrightness)
 
@@ -89,8 +89,8 @@ CLEAN_AS(func_02001a1c, DisplayShadow_SetSubBrightness)
 u8 DisplayShadow_ExcludeSubBrightnessPlanes(u8 planes)
 {
     data_0213fe94.blend_planes &= (u8) ~planes;
-    data_0213fe94.blend_request |= BLEND_SUB_BRIGHTNESS;
-    return BLEND_SUB_BRIGHTNESS;
+    data_0213fe94.blend_request |= DISPLAY_SHADOW_BLEND_SUB_BRIGHTNESS;
+    return DISPLAY_SHADOW_BLEND_SUB_BRIGHTNESS;
 }
 CLEAN_AS(func_02001a30, DisplayShadow_ExcludeSubBrightnessPlanes)
 
@@ -98,7 +98,7 @@ CLEAN_AS(func_02001a30, DisplayShadow_ExcludeSubBrightnessPlanes)
 void DisplayShadow_SubBrightnessAllPlanes(void)
 {
     data_0213fe94.blend_planes = PLANES_ALL;
-    data_0213fe94.blend_request |= BLEND_SUB_BRIGHTNESS;
+    data_0213fe94.blend_request |= DISPLAY_SHADOW_BLEND_SUB_BRIGHTNESS;
 }
 CLEAN_AS(func_02001a48, DisplayShadow_SubBrightnessAllPlanes)
 
@@ -106,8 +106,8 @@ CLEAN_AS(func_02001a48, DisplayShadow_SubBrightnessAllPlanes)
  * window off and no effect. */
 void DisplayShadow_EndSubObjWindowBrightness(void)
 {
-    DisplayShadow_DisableSubWindows(WINDOW_OBJ);
-    data_0213fe94.blend_request |= BLEND_SUB_OFF;
+    DisplayShadow_DisableSubWindows(DISPLAY_SHADOW_WINDOW_OBJ);
+    data_0213fe94.blend_request |= DISPLAY_SHADOW_BLEND_SUB_OFF;
 }
 CLEAN_AS(func_02001a5c, DisplayShadow_EndSubObjWindowBrightness)
 
@@ -118,8 +118,8 @@ void DisplayShadow_BeginSubObjWindowBrightness(void)
     DisplayShadow_SubBrightnessAllPlanes();
     DisplayShadow_SetSubOutsidePlanes(PLANES_ALL);
     DisplayShadow_SetSubObjWindowPlanes(PLANE_OBJ);
-    DisplayShadow_EnableSubWindows(WINDOW_OBJ);
-    data_0213fe94.blend_request |= BLEND_SUB_BRIGHTNESS_OBJ;
+    DisplayShadow_EnableSubWindows(DISPLAY_SHADOW_WINDOW_OBJ);
+    data_0213fe94.blend_request |= DISPLAY_SHADOW_BLEND_SUB_BRIGHTNESS_OBJ;
 }
 CLEAN_AS(func_02001a7c, DisplayShadow_BeginSubObjWindowBrightness)
 
@@ -286,7 +286,8 @@ void DisplayShadow_SetSubBgMode(u8 mode)
 {
     data_0213fe74.sub_bg_mode = mode;
     data_0213fe74.affine_bgs =
-        (u8) ((data_0213fe74.affine_bgs & ~(AFFINE_SUB_BG2 | AFFINE_SUB_BG3)) | affine_for_mode(mode) << 2);
+        (u8) ((data_0213fe74.affine_bgs & ~(DISPLAY_SHADOW_AFFINE_SUB_BG2 | DISPLAY_SHADOW_AFFINE_SUB_BG3)) |
+              affine_for_mode(mode) << 2);
 }
 CLEAN_AS(func_02001c08, DisplayShadow_SetSubBgMode)
 
@@ -295,7 +296,8 @@ void DisplayShadow_SetMainBgMode(u8 mode)
 {
     data_0213fe74.main_bg_mode = mode;
     data_0213fe74.affine_bgs =
-        (u8) ((data_0213fe74.affine_bgs & ~(AFFINE_MAIN_BG2 | AFFINE_MAIN_BG3)) | affine_for_mode(mode));
+        (u8) ((data_0213fe74.affine_bgs & ~(DISPLAY_SHADOW_AFFINE_MAIN_BG2 | DISPLAY_SHADOW_AFFINE_MAIN_BG3)) |
+              affine_for_mode(mode));
 }
 CLEAN_AS(func_02001c30, DisplayShadow_SetMainBgMode)
 
@@ -306,7 +308,7 @@ void DisplayShadow_SetSubWindow1(u8 left, u8 top, u8 right, u8 bottom)
     data_0213fe94.sub_win1_top = top;
     data_0213fe94.sub_win1_right = right;
     data_0213fe94.sub_win1_bottom = bottom;
-    data_0213fe74.window_dirty |= DIRTY_SUB_WIN1_RECT;
+    data_0213fe74.window_dirty |= DISPLAY_SHADOW_DIRTY_SUB_WIN1_RECT;
 }
 CLEAN_AS(func_02001c58, DisplayShadow_SetSubWindow1)
 
@@ -317,7 +319,7 @@ void DisplayShadow_SetSubWindow0(u8 left, u8 top, u8 right, u8 bottom)
     data_0213fe94.sub_win0_top = top;
     data_0213fe94.sub_win0_right = right;
     data_0213fe94.sub_win0_bottom = bottom;
-    data_0213fe74.window_dirty |= DIRTY_SUB_WIN0_RECT;
+    data_0213fe74.window_dirty |= DISPLAY_SHADOW_DIRTY_SUB_WIN0_RECT;
 }
 CLEAN_AS(func_02001c7c, DisplayShadow_SetSubWindow0)
 
@@ -328,7 +330,7 @@ void DisplayShadow_SetMainWindow1(u8 left, u8 top, u8 right, u8 bottom)
     data_0213fe94.main_win1_top = top;
     data_0213fe94.main_win1_right = right;
     data_0213fe94.main_win1_bottom = bottom;
-    data_0213fe74.window_dirty |= DIRTY_MAIN_WIN1_RECT;
+    data_0213fe74.window_dirty |= DISPLAY_SHADOW_DIRTY_MAIN_WIN1_RECT;
 }
 CLEAN_AS(func_02001ca0, DisplayShadow_SetMainWindow1)
 
@@ -339,7 +341,7 @@ void DisplayShadow_SetMainWindow0(u8 left, u8 top, u8 right, u8 bottom)
     data_0213fe74.main_win0_top = top;
     data_0213fe94.main_win0_right = right;
     data_0213fe94.main_win0_bottom = bottom;
-    data_0213fe74.window_dirty |= DIRTY_MAIN_WIN0_RECT;
+    data_0213fe74.window_dirty |= DISPLAY_SHADOW_DIRTY_MAIN_WIN0_RECT;
 }
 CLEAN_AS(func_02001cc4, DisplayShadow_SetMainWindow0)
 
@@ -382,14 +384,16 @@ CLEAN_AS(func_02001d1c, DisplayShadow_SetMainOutsidePlanes)
  * effects enabled inside the window when `effects` is nonzero. */
 void DisplayShadow_MarkSubWindow1Planes(unsigned int effects)
 {
-    data_0213fe74.window_dirty |= effects != 0 ? DIRTY_SUB_WIN1_PLANES : DIRTY_SUB_WIN1_PLANES_PLAIN;
+    data_0213fe74.window_dirty |=
+        effects != 0 ? DISPLAY_SHADOW_DIRTY_SUB_WIN1_PLANES : DISPLAY_SHADOW_DIRTY_SUB_WIN1_PLANES_PLAIN;
 }
 CLEAN_AS(func_02001d28, DisplayShadow_MarkSubWindow1Planes)
 
 /* func_02001d44: as DisplayShadow_MarkSubWindow1Planes, for window 0. */
 void DisplayShadow_MarkSubWindow0Planes(int effects)
 {
-    data_0213fe74.window_dirty |= effects != 0 ? DIRTY_SUB_WIN0_PLANES : DIRTY_SUB_WIN0_PLANES_PLAIN;
+    data_0213fe74.window_dirty |=
+        effects != 0 ? DISPLAY_SHADOW_DIRTY_SUB_WIN0_PLANES : DISPLAY_SHADOW_DIRTY_SUB_WIN0_PLANES_PLAIN;
 }
 CLEAN_AS(func_02001d44, DisplayShadow_MarkSubWindow0Planes)
 
@@ -413,7 +417,7 @@ CLEAN_AS(func_02001d74, DisplayShadow_SetSubWindow0Planes)
 void DisplayShadow_SetMainWindow1Planes(u8 planes)
 {
     data_0213fe94.main_win1_planes = planes;
-    data_0213fe74.window_dirty |= DIRTY_MAIN_WIN1_PLANES;
+    data_0213fe74.window_dirty |= DISPLAY_SHADOW_DIRTY_MAIN_WIN1_PLANES;
 }
 CLEAN_AS(func_02001d88, DisplayShadow_SetMainWindow1Planes)
 
@@ -421,14 +425,14 @@ CLEAN_AS(func_02001d88, DisplayShadow_SetMainWindow1Planes)
 void DisplayShadow_SetMainWindow0Planes(u8 planes)
 {
     data_0213fe94.main_win0_planes = planes;
-    data_0213fe74.window_dirty |= DIRTY_MAIN_WIN0_PLANES;
+    data_0213fe74.window_dirty |= DISPLAY_SHADOW_DIRTY_MAIN_WIN0_PLANES;
 }
 CLEAN_AS(func_02001da0, DisplayShadow_SetMainWindow0Planes)
 
 /* func_02001db8 */
 void DisplayShadow_SetSubBg3Scroll(int x, int y)
 {
-    data_0213fe74.scroll_dirty |= DIRTY_SUB_BG3;
+    data_0213fe74.scroll_dirty |= DISPLAY_SHADOW_DIRTY_SUB_BG3;
     data_0213fe64.x = x;
     data_0213fe64.y = y;
 }
@@ -437,7 +441,7 @@ CLEAN_AS(func_02001db8, DisplayShadow_SetSubBg3Scroll)
 /* func_02001dd4 */
 void DisplayShadow_SetSubBg2Scroll(int x, int y)
 {
-    data_0213fe74.scroll_dirty |= DIRTY_SUB_BG2;
+    data_0213fe74.scroll_dirty |= DISPLAY_SHADOW_DIRTY_SUB_BG2;
     data_0213fdf4.sub_bg2.x = x;
     data_0213fdf4.sub_bg2.y = y;
 }
@@ -446,7 +450,7 @@ CLEAN_AS(func_02001dd4, DisplayShadow_SetSubBg2Scroll)
 /* func_02001df4 */
 void DisplayShadow_SetSubBg1Scroll(u16 x, u16 y)
 {
-    data_0213fe74.scroll_dirty |= DIRTY_SUB_BG1;
+    data_0213fe74.scroll_dirty |= DISPLAY_SHADOW_DIRTY_SUB_BG1;
     data_0213fdf4.sub_bg1.x = x;
     data_0213fdf4.sub_bg1.y = y;
 }
@@ -455,7 +459,7 @@ CLEAN_AS(func_02001df4, DisplayShadow_SetSubBg1Scroll)
 /* func_02001e14 */
 void DisplayShadow_SetSubBg0Scroll(u16 x, u16 y)
 {
-    data_0213fe74.scroll_dirty |= DIRTY_SUB_BG0;
+    data_0213fe74.scroll_dirty |= DISPLAY_SHADOW_DIRTY_SUB_BG0;
     data_0213fdf4.sub_bg0.x = x;
     data_0213fdf4.sub_bg0.y = y;
 }
@@ -464,7 +468,7 @@ CLEAN_AS(func_02001e14, DisplayShadow_SetSubBg0Scroll)
 /* func_02001e34 */
 void DisplayShadow_SetMainBg3Scroll(unsigned int x, unsigned int y)
 {
-    data_0213fe74.scroll_dirty |= DIRTY_MAIN_BG3;
+    data_0213fe74.scroll_dirty |= DISPLAY_SHADOW_DIRTY_MAIN_BG3;
     data_0213fdf4.main_bg3.x = (s32) x;
     data_0213fdf4.main_bg3.y = (s32) y;
 }
@@ -473,7 +477,7 @@ CLEAN_AS(func_02001e34, DisplayShadow_SetMainBg3Scroll)
 /* func_02001e54 */
 void DisplayShadow_SetMainBg2Scroll(unsigned int x, unsigned int y)
 {
-    data_0213fe74.scroll_dirty |= DIRTY_MAIN_BG2;
+    data_0213fe74.scroll_dirty |= DISPLAY_SHADOW_DIRTY_MAIN_BG2;
     data_0213fdf4.main_bg2.x = (s32) x;
     data_0213fdf4.main_bg2.y = (s32) y;
 }
@@ -482,7 +486,7 @@ CLEAN_AS(func_02001e54, DisplayShadow_SetMainBg2Scroll)
 /* func_02001e74 */
 void DisplayShadow_SetMainBg1Scroll(u16 x, u16 y)
 {
-    data_0213fe74.scroll_dirty |= DIRTY_MAIN_BG1;
+    data_0213fe74.scroll_dirty |= DISPLAY_SHADOW_DIRTY_MAIN_BG1;
     data_0213fdf4.main_bg1.x = x;
     data_0213fdf4.main_bg1.y = y;
 }
@@ -593,7 +597,7 @@ void DisplayShadow_Flush(void)
 
     if (shadow->scroll_dirty != 0) {
         u8 dirty = shadow->scroll_dirty;
-        if (dirty & DIRTY_MAIN_BG0) {
+        if (dirty & DISPLAY_SHADOW_DIRTY_MAIN_BG0) {
             /* background 0 showing the 3D scrolls the 3D instead */
             if ((REG32(REG_DISPCNT) & DISPCNT_BG0_3D) == 0) {
                 write_bg_offset(REG_BG0OFS, scroll->main_bg0.x, scroll->main_bg0.y);
@@ -601,63 +605,65 @@ void DisplayShadow_Flush(void)
                 G3X_SetHOffset(scroll->main_bg0.x);
             }
         }
-        if (dirty & DIRTY_MAIN_BG1) {
+        if (dirty & DISPLAY_SHADOW_DIRTY_MAIN_BG1) {
             write_bg_offset(REG_BG1OFS, scroll->main_bg1.x, scroll->main_bg1.y);
         }
-        if (dirty & DIRTY_MAIN_BG2) {
-            write_bg_affine(affine & AFFINE_MAIN_BG2, REG_BG2PA, REG_BG2OFS, &scroll->main_bg2);
+        if (dirty & DISPLAY_SHADOW_DIRTY_MAIN_BG2) {
+            write_bg_affine(affine & DISPLAY_SHADOW_AFFINE_MAIN_BG2, REG_BG2PA, REG_BG2OFS, &scroll->main_bg2);
         }
-        if (dirty & DIRTY_MAIN_BG3) {
-            write_bg_affine(affine & AFFINE_MAIN_BG3, REG_BG3PA, REG_BG3OFS, &scroll->main_bg3);
+        if (dirty & DISPLAY_SHADOW_DIRTY_MAIN_BG3) {
+            write_bg_affine(affine & DISPLAY_SHADOW_AFFINE_MAIN_BG3, REG_BG3PA, REG_BG3OFS, &scroll->main_bg3);
         }
-        if (dirty & DIRTY_SUB_BG0) {
+        if (dirty & DISPLAY_SHADOW_DIRTY_SUB_BG0) {
             write_bg_offset(SUB_SCREEN + REG_BG0OFS, scroll->sub_bg0.x, scroll->sub_bg0.y);
         }
-        if (dirty & DIRTY_SUB_BG1) {
+        if (dirty & DISPLAY_SHADOW_DIRTY_SUB_BG1) {
             write_bg_offset(SUB_SCREEN + REG_BG1OFS, scroll->sub_bg1.x, scroll->sub_bg1.y);
         }
-        if (dirty & DIRTY_SUB_BG2) {
-            write_bg_affine(affine & AFFINE_SUB_BG2, SUB_SCREEN + REG_BG2PA, SUB_SCREEN + REG_BG2OFS, &scroll->sub_bg2);
+        if (dirty & DISPLAY_SHADOW_DIRTY_SUB_BG2) {
+            write_bg_affine(affine & DISPLAY_SHADOW_AFFINE_SUB_BG2, SUB_SCREEN + REG_BG2PA, SUB_SCREEN + REG_BG2OFS,
+                            &scroll->sub_bg2);
         }
-        if (dirty & DIRTY_SUB_BG3) {
-            write_bg_affine(affine & AFFINE_SUB_BG3, SUB_SCREEN + REG_BG3PA, SUB_SCREEN + REG_BG3OFS, &data_0213fe64);
+        if (dirty & DISPLAY_SHADOW_DIRTY_SUB_BG3) {
+            write_bg_affine(affine & DISPLAY_SHADOW_AFFINE_SUB_BG3, SUB_SCREEN + REG_BG3PA, SUB_SCREEN + REG_BG3OFS,
+                            &data_0213fe64);
         }
         shadow->scroll_dirty = 0;
     }
 
     if (shadow->window_dirty != 0) {
         u16 dirty = shadow->window_dirty;
-        if (dirty & DIRTY_MAIN_WIN0_PLANES) {
+        if (dirty & DISPLAY_SHADOW_DIRTY_MAIN_WIN0_PLANES) {
             write_window_planes(REG_WININ, WIN_LOW, win->main_win0_planes, 1);
         }
-        if (dirty & DIRTY_MAIN_WIN1_PLANES) {
+        if (dirty & DISPLAY_SHADOW_DIRTY_MAIN_WIN1_PLANES) {
             write_window_planes(REG_WININ, WIN_HIGH, win->main_win1_planes, 1);
         }
-        if (dirty & DIRTY_SUB_WIN0_PLANES) {
+        if (dirty & DISPLAY_SHADOW_DIRTY_SUB_WIN0_PLANES) {
             write_window_planes(SUB_SCREEN + REG_WININ, WIN_LOW, win->sub_win0_planes, 1);
         }
-        if (dirty & DIRTY_SUB_WIN0_PLANES_PLAIN) {
+        if (dirty & DISPLAY_SHADOW_DIRTY_SUB_WIN0_PLANES_PLAIN) {
             write_window_planes(SUB_SCREEN + REG_WININ, WIN_LOW, win->sub_win0_planes, 0);
         }
-        if (dirty & DIRTY_SUB_WIN1_PLANES) {
+        if (dirty & DISPLAY_SHADOW_DIRTY_SUB_WIN1_PLANES) {
             write_window_planes(SUB_SCREEN + REG_WININ, WIN_HIGH, win->sub_win1_planes, 1);
         }
-        if (dirty & DIRTY_SUB_WIN1_PLANES_PLAIN) {
+        if (dirty & DISPLAY_SHADOW_DIRTY_SUB_WIN1_PLANES_PLAIN) {
             write_window_planes(SUB_SCREEN + REG_WININ, WIN_HIGH, win->sub_win1_planes, 0);
         }
-        if (dirty & DIRTY_MAIN_WIN0_RECT) {
+        if (dirty & DISPLAY_SHADOW_DIRTY_MAIN_WIN0_RECT) {
             write_window_rect(REG_WIN0H, REG_WIN0V, shadow->main_win0_left, shadow->main_win0_top, win->main_win0_right,
                               win->main_win0_bottom);
         }
-        if (dirty & DIRTY_MAIN_WIN1_RECT) {
+        if (dirty & DISPLAY_SHADOW_DIRTY_MAIN_WIN1_RECT) {
             write_window_rect(REG_WIN1H, REG_WIN1V, win->main_win1_left, win->main_win1_top, win->main_win1_right,
                               win->main_win1_bottom);
         }
-        if (dirty & DIRTY_SUB_WIN0_RECT) {
+        if (dirty & DISPLAY_SHADOW_DIRTY_SUB_WIN0_RECT) {
             write_window_rect(SUB_SCREEN + REG_WIN0H, SUB_SCREEN + REG_WIN0V, win->sub_win0_left, win->sub_win0_top,
                               win->sub_win0_right, win->sub_win0_bottom);
         }
-        if (dirty & DIRTY_SUB_WIN1_RECT) {
+        if (dirty & DISPLAY_SHADOW_DIRTY_SUB_WIN1_RECT) {
             write_window_rect(SUB_SCREEN + REG_WIN1H, SUB_SCREEN + REG_WIN1V, win->sub_win1_left, win->sub_win1_top,
                               win->sub_win1_right, win->sub_win1_bottom);
         }
@@ -667,16 +673,16 @@ void DisplayShadow_Flush(void)
     /* QUIRK: blend_value is read as signed, which suits the brightness (negative darkens) but
      * also sign-extends the alpha's second planes; they never reach 0x80. */
     request = win->blend_request;
-    if (request & BLEND_MAIN_OFF) {
+    if (request & DISPLAY_SHADOW_BLEND_MAIN_OFF) {
         G2x_SetBlendBrightnessExt_(REG_BLDCNT, PLANES_ALL, PLANE_BACKDROP, 16, 16, 0);
-    } else if (request & BLEND_MAIN_ALPHA) {
+    } else if (request & DISPLAY_SHADOW_BLEND_MAIN_ALPHA) {
         G2x_SetBlendAlpha_(REG_BLDCNT, win->blend_planes, (s8) win->blend_value, win->blend_ev, 16 - win->blend_ev);
-    } else if (request & BLEND_SUB_OFF) {
+    } else if (request & DISPLAY_SHADOW_BLEND_SUB_OFF) {
         G2x_SetBlendBrightnessExt_(REG_DB_BLDCNT, PLANES_ALL, PLANE_BACKDROP, 16, 16, 0);
-    } else if (request & BLEND_SUB_ALPHA) {
+    } else if (request & DISPLAY_SHADOW_BLEND_SUB_ALPHA) {
         G2x_SetBlendAlpha_(REG_DB_BLDCNT, win->blend_planes, (s8) win->blend_value, win->blend_ev, 16 - win->blend_ev);
     } else if (request != 0) {
-        /* BLEND_SUB_BRIGHTNESS, BLEND_SUB_BRIGHTNESS_OBJ, or any other bit */
+        /* DISPLAY_SHADOW_BLEND_SUB_BRIGHTNESS, DISPLAY_SHADOW_BLEND_SUB_BRIGHTNESS_OBJ, or any other bit */
         G2x_SetBlendBrightness_(REG_DB_BLDCNT, win->blend_planes, (u32) (s8) win->blend_value);
     }
     win->blend_request = 0;

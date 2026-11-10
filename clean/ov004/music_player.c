@@ -38,19 +38,19 @@ static_assert(sizeof(MusicPlayer) == 0x8a8, "the size MusicPlayer_Create allocat
 
 #define MUSIC_PLAYER_RECEIVER_OFFSET 0xec
 #define MUSIC_PLAYER_SIZE 0x8a8
-#define ANIM_MODE_LOOP 0     /* start again at the end */
-#define ANIM_MODE_ONCE 1     /* stop at the end */
-#define KIND_ANIMATED 0x29   /* RoomObject.unk_780 of the players that animate */
-#define KIND_13 0x13         /* another kind whose animations are loaded with its model */
-#define MENU_MODE_SONGS 0x40 /* the mode group 9 opens the song menu in */
+#define ANIM_MODE_LOOP 0                /* start again at the end */
+#define ANIM_MODE_ONCE 1                /* stop at the end */
+#define MUSIC_PLAYER_KIND_ANIMATED 0x29 /* RoomObject.unk_780 of the players that animate */
+#define KIND_13 0x13                    /* another kind whose animations are loaded with its model */
+#define MENU_MODE_SONGS 0x40            /* the mode group 9 opens the song menu in */
 
 /* The music items: song n is item MUSIC_ITEM_FIRST + n. */
 #define MUSIC_ITEM_FIRST 0x1323
 #define MUSIC_ITEM_LAST 0x1368
 #define SONG_COUNT 0x46
 #define NO_SONG (-1)
-#define NO_VALUE 0xff    /* the song given with MUSIC_PLAYER_STOPPED */
-#define MUSIC_FIRST 0xb0 /* the music of song 0 */
+#define NO_VALUE 0xff                 /* the song given with MUSIC_PLAYER_STOPPED */
+#define MUSIC_PLAYER_MUSIC_FIRST 0xb0 /* the music of song 0 */
 
 /* What the receiver's state byte tells the talk: the song handed to the link, or none. */
 #define SAYS_SONG 5
@@ -136,7 +136,7 @@ int MusicPlayer_EnterPlaying(MusicPlayer *player)
     Switch_Set(&player->base.on_switch, 1, 0);
     player->song = player->base.unk_77c;
     MusicPlayer_PlaySong(player, player->base.unk_77c);
-    if (player->base.unk_780 == KIND_ANIMATED) {
+    if (player->base.unk_780 == MUSIC_PLAYER_KIND_ANIMATED) {
         RoomObject_PlayAnimsFrom(&player->base, 1, ANIM_MODE_LOOP, FX32_ONE, 0);
     }
     return 1;
@@ -147,7 +147,7 @@ CLEAN_AS(func_ov004_02215ff0, MusicPlayer_EnterPlaying)
  * towards off; when touched, the scene is asked for an event. */
 void MusicPlayer_UpdateStopped(MusicPlayer *player)
 {
-    if (player->base.unk_780 == KIND_ANIMATED) {
+    if (player->base.unk_780 == MUSIC_PLAYER_KIND_ANIMATED) {
         RoomObject_AdvanceAnims(&player->base);
     }
     GlowSet_Switch(&player->glows, 0, 1, 0);
@@ -167,7 +167,7 @@ int MusicPlayer_EnterStopped(MusicPlayer *player)
     if (player->base.unk_77e == 0) {
         MusicPlayer_StopSong(player, player->song, 1);
     }
-    if (player->base.unk_780 == KIND_ANIMATED) {
+    if (player->base.unk_780 == MUSIC_PLAYER_KIND_ANIMATED) {
         RoomObject_PlayAnimsFrom(&player->base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
     }
     return 1;
@@ -430,7 +430,7 @@ CLEAN_AS(func_ov004_02216558, MusicPlayer_OnSceneEvent)
 void MusicPlayer_StopSong(MusicPlayer *player, unsigned int song, int clear_item)
 {
     if (player->playing && song < SONG_COUNT) {
-        Music_DropMusic((u16) (song + MUSIC_FIRST));
+        Music_DropMusic((u16) (song + MUSIC_PLAYER_MUSIC_FIRST));
         if (clear_item != 0) {
             u16 none = ITEM_CODE_NONE;
             HouseRecord_SetCurrentSong(&none);
@@ -445,7 +445,7 @@ CLEAN_AS(func_ov004_02216598, MusicPlayer_StopSong)
 void MusicPlayer_PlaySong(MusicPlayer *player, unsigned int song)
 {
     if (!player->playing && song < SONG_COUNT) {
-        Music_Add(0x11, (u16) (song + MUSIC_FIRST), 0x7f, 0);
+        Music_Add(0x11, (u16) (song + MUSIC_PLAYER_MUSIC_FIRST), 0x7f, 0);
         u16 item = (u16) (MUSIC_ITEM_FIRST + song);
         HouseRecord_SetCurrentSong(&item);
         player->playing = 1;
@@ -504,7 +504,7 @@ static int music_player_request(MusicPlayer *player, int state, int song)
 int MusicPlayer_Start(MusicPlayer *player)
 {
     RoomObject *base = &player->base;
-    if (base->unk_780 == KIND_ANIMATED || base->unk_780 == KIND_13) {
+    if (base->unk_780 == MUSIC_PLAYER_KIND_ANIMATED || base->unk_780 == KIND_13) {
         RoomObject_LoadAnims(base, 0, ANIM_MODE_LOOP, FX32_ONE, 0);
     }
     GlowSet_Bind(&player->glows, base->model_resource, Switch_Value(&base->on_switch));

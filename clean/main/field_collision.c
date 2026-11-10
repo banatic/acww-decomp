@@ -106,7 +106,7 @@ extern void *func_020330e8(void *post);
 /* The center of unit `unit` on its axis. */
 static fx32 collision_unit_center(int unit)
 {
-    return (fx32) (((u32) unit << COLLISION_UNIT_SHIFT) + COLLISION_HALF_UNIT);
+    return (fx32) (((u32) unit << FIELD_COLLISION_UNIT_SHIFT) + FIELD_COLLISION_HALF_UNIT);
 }
 
 /* Row `index` of the type table, read where the game reads it for any index below 0x7c. */
@@ -218,19 +218,19 @@ void CollisionContacts_ClassifyWalls(CollisionContacts *contacts, int facing)
 
     for (i = 0; i < contacts->walls.count; i++) {
         u16 offset = (u16) ((u32) collision_contact_angle(&contacts->walls, i) - opposite);
-        int kind2 = collision_contact_kind(&contacts->walls, i) == COLLISION_KIND_2;
+        int kind2 = collision_contact_kind(&contacts->walls, i) == FIELD_COLLISION_KIND_2;
         u32 where;
 
         if (offset < 0x2000 || offset >= 0xe000) {
-            where = kind2 ? COLLISION_TOUCH_2_AHEAD : COLLISION_TOUCH_1_AHEAD;
+            where = kind2 ? FIELD_COLLISION_TOUCH_2_AHEAD : FIELD_COLLISION_TOUCH_1_AHEAD;
         } else if (offset < 0x6000) {
-            where = kind2 ? COLLISION_TOUCH_2_SIDE_PLUS : COLLISION_TOUCH_1_SIDE_PLUS;
+            where = kind2 ? FIELD_COLLISION_TOUCH_2_SIDE_PLUS : FIELD_COLLISION_TOUCH_1_SIDE_PLUS;
         } else if (offset < 0xa000) {
-            where = kind2 ? COLLISION_TOUCH_2_BEHIND : COLLISION_TOUCH_1_BEHIND;
+            where = kind2 ? FIELD_COLLISION_TOUCH_2_BEHIND : FIELD_COLLISION_TOUCH_1_BEHIND;
         } else {
-            where = kind2 ? COLLISION_TOUCH_2_SIDE_MINUS : COLLISION_TOUCH_1_SIDE_MINUS;
+            where = kind2 ? FIELD_COLLISION_TOUCH_2_SIDE_MINUS : FIELD_COLLISION_TOUCH_1_SIDE_MINUS;
         }
-        contacts->flags |= (kind2 ? COLLISION_TOUCH_2 : COLLISION_TOUCH_1) | where;
+        contacts->flags |= (kind2 ? FIELD_COLLISION_TOUCH_2 : FIELD_COLLISION_TOUCH_1) | where;
     }
 
     if (contacts->walls.count == 2) {
@@ -242,10 +242,10 @@ void CollisionContacts_ClassifyWalls(CollisionContacts *contacts, int facing)
             difference = (int) (0u - (u32) difference);
         }
         if (difference < 0x2000) {
-            contacts->flags |= COLLISION_IN_CORNER;
+            contacts->flags |= FIELD_COLLISION_IN_CORNER;
         }
         if ((s16) sum == 0) {
-            contacts->flags |= COLLISION_OPPOSITE;
+            contacts->flags |= FIELD_COLLISION_OPPOSITE;
         }
     }
 }
@@ -309,7 +309,7 @@ int CollisionContactList_Add(CollisionContactList *list, s16 angle, int kind, in
             return 0;
         }
     }
-    if (list->count < COLLISION_MAX_CONTACTS) {
+    if (list->count < FIELD_COLLISION_MAX_CONTACTS) {
         list->angle[list->count] = angle;
         list->kind[list->count] = kind;
         list->attr[list->count] = attr;
@@ -326,7 +326,7 @@ void CollisionContactList_Clear(CollisionContactList *list)
     int i;
 
     list->count = 0;
-    for (i = 0; i < COLLISION_MAX_CONTACTS; i++) {
+    for (i = 0; i < FIELD_COLLISION_MAX_CONTACTS; i++) {
         list->angle[i] = 0;
         list->attr[i] = 0;
         list->kind[i] = 0;
@@ -396,14 +396,14 @@ void CollisionPosts_Gather(CollisionPostList *posts, CollisionPostSource *source
             Vec3 at;
 
             if (source->vtable->post_at(source, &radius, &height, &kind, x, z) != 0) {
-                if (kind == COLLISION_KIND_2 && !all) {
+                if (kind == FIELD_COLLISION_KIND_2 && !all) {
                     continue;
                 }
                 at.x = collision_unit_center(x);
                 at.y = 0;
                 at.z = center_z;
-                CollisionPosts_Add(posts, &at, radius, height, kind == COLLISION_KIND_2 ? COLLISION_KIND_2 : COLLISION_KIND_1,
-                                   kind);
+                CollisionPosts_Add(posts, &at, radius, height,
+                                   kind == FIELD_COLLISION_KIND_2 ? FIELD_COLLISION_KIND_2 : FIELD_COLLISION_KIND_1, kind);
             } else {
                 fx32 extra;
                 if (!all || data_021c5124 == 0) {
@@ -416,7 +416,7 @@ void CollisionPosts_Gather(CollisionPostList *posts, CollisionPostSource *source
                 at.x = collision_unit_center(x);
                 at.y = 0;
                 at.z = center_z;
-                CollisionPosts_Add(posts, &at, extra, 0x1000, COLLISION_KIND_2, 2);
+                CollisionPosts_Add(posts, &at, extra, 0x1000, FIELD_COLLISION_KIND_2, 2);
             }
         }
     }
@@ -426,7 +426,7 @@ CLEAN_AS(func_02032d8c, CollisionPosts_Gather)
 /* func_02032e80: whether there was room for the post. */
 int CollisionPosts_Add(CollisionPostList *posts, const Vec3 *position, fx32 radius, fx32 height, int kind, int attr)
 {
-    if (posts->count >= COLLISION_MAX_POSTS) {
+    if (posts->count >= FIELD_COLLISION_MAX_POSTS) {
         return 0;
     }
     CollisionPost_Init(&posts->posts[posts->count], position, radius, height, kind, attr);
@@ -446,7 +446,7 @@ int CollisionPosts_Land(CollisionPostList *posts, Vec3 *position, const Vec3 *pr
     for (at = collision_first(posts->posts); at < collision_end(posts->posts, posts->count, sizeof(CollisionPost));
          at += sizeof(CollisionPost)) {
         CollisionPost *post = (CollisionPost *) (uintptr_t) at;
-        if (post->kind == COLLISION_KIND_1 &&
+        if (post->kind == FIELD_COLLISION_KIND_1 &&
             CollisionCylinder_LandOnTop((CollisionCylinder *) post, position, previous) != 0) {
             *attr = post->tag.attr;
             return 1;
@@ -483,7 +483,8 @@ CLEAN_AS(func_02032f0c, CollisionPosts_PushOut)
 /* func_02032f78 */
 void *CollisionPosts_Destroy(CollisionPostList *posts)
 {
-    __cxa_vec_cleanup(posts->posts, COLLISION_MAX_POSTS, sizeof(CollisionPost), (void (*)(void *))(uintptr_t) func_020330e8);
+    __cxa_vec_cleanup(posts->posts, FIELD_COLLISION_MAX_POSTS, sizeof(CollisionPost),
+                      (void (*)(void *))(uintptr_t) func_020330e8);
     return posts;
 }
 CLEAN_AS(func_02032f78, CollisionPosts_Destroy)
@@ -491,7 +492,7 @@ CLEAN_AS(func_02032f78, CollisionPosts_Destroy)
 /* func_02032f94 */
 CollisionPostList *CollisionPosts_Construct(CollisionPostList *posts)
 {
-    __cxa_vec_ctor(posts->posts, COLLISION_MAX_POSTS, sizeof(CollisionPost), (void (*)(void *))(uintptr_t) func_02033100,
+    __cxa_vec_ctor(posts->posts, FIELD_COLLISION_MAX_POSTS, sizeof(CollisionPost), (void (*)(void *))(uintptr_t) func_02033100,
                    (void (*)(void *))(uintptr_t) func_020330e8);
     posts->count = 0;
     return posts;
@@ -530,8 +531,8 @@ int CollisionPost_AddFence(CollisionPost *post, CollisionWallList *walls, Collis
     CollisionPoint_Set(&back, -normal.x, -normal.z);
 
     top = other->height > post->height ? post->height : other->height;
-    CollisionWalls_AddWall(walls, &start, &end, &normal, top, COLLISION_KIND_SILENT, 0, NULL);
-    CollisionWalls_AddWall(walls, &start, &end, &back, top, COLLISION_KIND_SILENT, 0, NULL);
+    CollisionWalls_AddWall(walls, &start, &end, &normal, top, FIELD_COLLISION_KIND_SILENT, 0, NULL);
+    CollisionWalls_AddWall(walls, &start, &end, &back, top, FIELD_COLLISION_KIND_SILENT, 0, NULL);
     return 1;
 }
 CLEAN_AS(func_02032fc0, CollisionPost_AddFence)
@@ -539,8 +540,8 @@ CLEAN_AS(func_02032fc0, CollisionPost_AddFence)
 /* func_020330bc: a post at `position`, on the unit it is in. */
 void CollisionPost_Init(CollisionPost *post, const Vec3 *position, fx32 radius, fx32 height, int kind, int attr)
 {
-    post->unit_x = (s16) (position->x >> COLLISION_UNIT_SHIFT);
-    post->unit_z = (s16) (position->z >> COLLISION_UNIT_SHIFT);
+    post->unit_x = (s16) (position->x >> FIELD_COLLISION_UNIT_SHIFT);
+    post->unit_z = (s16) (position->z >> FIELD_COLLISION_UNIT_SHIFT);
     CollisionCylinder_Set((CollisionCylinder *) post, position, radius, height);
     post->kind = kind;
     CollisionTag_Set(&post->tag, attr, NULL);
@@ -594,9 +595,9 @@ static const CollisionPoint *collision_static_normal(CollisionPoint *normal, u32
 static void collision_add_step(CollisionWallList *walls, const CollisionPoint *start, const CollisionPoint *end,
                                const CollisionPoint *face, const CollisionPoint *back_face, fx32 top, int attr, int back)
 {
-    CollisionWalls_AddWall(walls, start, end, face, top, COLLISION_KIND_1, attr, NULL);
+    CollisionWalls_AddWall(walls, start, end, face, top, FIELD_COLLISION_KIND_1, attr, NULL);
     if (back) {
-        CollisionWalls_AddWall(walls, start, end, back_face, COLLISION_BACK_TOP, COLLISION_KIND_2, 2, NULL);
+        CollisionWalls_AddWall(walls, start, end, back_face, COLLISION_BACK_TOP, FIELD_COLLISION_KIND_2, 2, NULL);
     }
 }
 
@@ -631,39 +632,39 @@ void CollisionWalls_AddCliffs(CollisionWallList *walls, CollisionCellGrid *grid,
             cx = collision_unit_center(x);
             cz = collision_unit_center(z);
 
-            if (east != NULL && cell->side_height[COLLISION_EAST] != east->side_height[COLLISION_WEST]) {
+            if (east != NULL && cell->side_height[FIELD_COLLISION_EAST] != east->side_height[FIELD_COLLISION_WEST]) {
                 const CollisionPoint *plus_x =
                     collision_static_normal(&data_021c3128, &data_021c30e8, 0x1000, 0, data_021c31c4);
                 const CollisionPoint *minus_x =
                     collision_static_normal(&data_021c3138, &data_021c30d8, -0x1000, 0, data_021c31dc);
                 CollisionPoint_Set(&start, cx + 0x1000, cz - 0x1000);
                 CollisionPoint_Set(&end, start.x, cz + 0x1000);
-                if (cell->side_height[COLLISION_EAST] > east->side_height[COLLISION_WEST]) {
-                    collision_add_step(walls, &start, &end, plus_x, minus_x, cell->side_height[COLLISION_EAST],
-                                       cell->side_attr[COLLISION_EAST], back);
+                if (cell->side_height[FIELD_COLLISION_EAST] > east->side_height[FIELD_COLLISION_WEST]) {
+                    collision_add_step(walls, &start, &end, plus_x, minus_x, cell->side_height[FIELD_COLLISION_EAST],
+                                       cell->side_attr[FIELD_COLLISION_EAST], back);
                 } else {
-                    collision_add_step(walls, &start, &end, minus_x, plus_x, east->side_height[COLLISION_NORTH],
-                                       east->side_attr[COLLISION_NORTH], back);
+                    collision_add_step(walls, &start, &end, minus_x, plus_x, east->side_height[FIELD_COLLISION_NORTH],
+                                       east->side_attr[FIELD_COLLISION_NORTH], back);
                 }
             }
 
-            if (south != NULL && cell->side_height[COLLISION_SOUTH] != south->side_height[COLLISION_NORTH]) {
+            if (south != NULL && cell->side_height[FIELD_COLLISION_SOUTH] != south->side_height[FIELD_COLLISION_NORTH]) {
                 const CollisionPoint *plus_z =
                     collision_static_normal(&data_021c3100, &data_021c30d4, 0, 0x1000, data_021c3140);
                 const CollisionPoint *minus_z =
                     collision_static_normal(&data_021c3110, &data_021c30cc, 0, -0x1000, data_021c3164);
                 CollisionPoint_Set(&start, cx - 0x1000, cz + 0x1000);
                 CollisionPoint_Set(&end, cx + 0x1000, start.z);
-                if (cell->side_height[COLLISION_SOUTH] > south->side_height[COLLISION_NORTH]) {
-                    collision_add_step(walls, &start, &end, plus_z, minus_z, cell->side_height[COLLISION_SOUTH],
-                                       cell->side_attr[COLLISION_SOUTH], back);
+                if (cell->side_height[FIELD_COLLISION_SOUTH] > south->side_height[FIELD_COLLISION_NORTH]) {
+                    collision_add_step(walls, &start, &end, plus_z, minus_z, cell->side_height[FIELD_COLLISION_SOUTH],
+                                       cell->side_attr[FIELD_COLLISION_SOUTH], back);
                 } else {
-                    collision_add_step(walls, &start, &end, minus_z, plus_z, south->side_height[COLLISION_NORTH],
-                                       south->side_attr[COLLISION_NORTH], back);
+                    collision_add_step(walls, &start, &end, minus_z, plus_z, south->side_height[FIELD_COLLISION_NORTH],
+                                       south->side_attr[FIELD_COLLISION_NORTH], back);
                 }
             }
 
-            if (cell->side_height[COLLISION_NORTH] != cell->side_height[COLLISION_WEST]) {
+            if (cell->side_height[FIELD_COLLISION_NORTH] != cell->side_height[FIELD_COLLISION_WEST]) {
                 /* (-0.707, 0.707) and its opposite */
                 const CollisionPoint *south_west =
                     collision_static_normal(&data_021c3120, &data_021c30f0, -0xb50, 0xb50, data_021c3188);
@@ -671,14 +672,14 @@ void CollisionWalls_AddCliffs(CollisionWallList *walls, CollisionCellGrid *grid,
                     collision_static_normal(&data_021c3118, &data_021c30ec, -data_021c3120.x, -data_021c3120.z, data_021c31ac);
                 CollisionPoint_Set(&start, cx - 0x1000, cz - 0x1000);
                 CollisionPoint_Set(&end, cx + 0x1000, cz + 0x1000);
-                if (cell->side_height[COLLISION_NORTH] > cell->side_height[COLLISION_WEST]) {
-                    collision_add_step(walls, &start, &end, south_west, north_east, cell->side_height[COLLISION_NORTH],
-                                       cell->side_attr[COLLISION_NORTH], back);
+                if (cell->side_height[FIELD_COLLISION_NORTH] > cell->side_height[FIELD_COLLISION_WEST]) {
+                    collision_add_step(walls, &start, &end, south_west, north_east, cell->side_height[FIELD_COLLISION_NORTH],
+                                       cell->side_attr[FIELD_COLLISION_NORTH], back);
                 } else {
-                    collision_add_step(walls, &start, &end, north_east, south_west, cell->side_height[COLLISION_WEST],
-                                       cell->side_attr[COLLISION_WEST], back);
+                    collision_add_step(walls, &start, &end, north_east, south_west, cell->side_height[FIELD_COLLISION_WEST],
+                                       cell->side_attr[FIELD_COLLISION_WEST], back);
                 }
-            } else if (cell->side_height[COLLISION_NORTH] != cell->side_height[COLLISION_EAST]) {
+            } else if (cell->side_height[FIELD_COLLISION_NORTH] != cell->side_height[FIELD_COLLISION_EAST]) {
                 /* (0.707, 0.707) and its opposite */
                 const CollisionPoint *south_east =
                     collision_static_normal(&data_021c3130, &data_021c30fc, 0xb50, 0xb50, data_021c31d0);
@@ -686,12 +687,12 @@ void CollisionWalls_AddCliffs(CollisionWallList *walls, CollisionCellGrid *grid,
                     collision_static_normal(&data_021c3108, &data_021c30f4, -data_021c3130.x, -data_021c3130.z, data_021c314c);
                 CollisionPoint_Set(&start, cx - 0x1000, cz + 0x1000);
                 CollisionPoint_Set(&end, cx + 0x1000, cz - 0x1000);
-                if (cell->side_height[COLLISION_NORTH] > cell->side_height[COLLISION_EAST]) {
-                    collision_add_step(walls, &start, &end, south_east, north_west, cell->side_height[COLLISION_NORTH],
-                                       cell->side_attr[COLLISION_NORTH], back);
+                if (cell->side_height[FIELD_COLLISION_NORTH] > cell->side_height[FIELD_COLLISION_EAST]) {
+                    collision_add_step(walls, &start, &end, south_east, north_west, cell->side_height[FIELD_COLLISION_NORTH],
+                                       cell->side_attr[FIELD_COLLISION_NORTH], back);
                 } else {
-                    collision_add_step(walls, &start, &end, north_west, south_east, cell->side_height[COLLISION_EAST],
-                                       cell->side_attr[COLLISION_EAST], back);
+                    collision_add_step(walls, &start, &end, north_west, south_east, cell->side_height[FIELD_COLLISION_EAST],
+                                       cell->side_attr[FIELD_COLLISION_EAST], back);
                 }
             }
         }
@@ -718,7 +719,7 @@ int CollisionWalls_Add(CollisionWallList *walls, const CollisionWall *wall)
 {
     u32 index;
 
-    if (walls->count >= COLLISION_MAX_WALLS) {
+    if (walls->count >= FIELD_COLLISION_MAX_WALLS) {
         return 0;
     }
     index = walls->count;
@@ -742,7 +743,7 @@ static int collision_walls_pass(CollisionWallList *walls,
         CollisionWall *wall = (CollisionWall *) (uintptr_t) at;
         if (wall->top - COLLISION_WALL_CLEARANCE > position->y && test(wall, moved, from, radius) != 0) {
             int kind = wall->kind;
-            if (kind != COLLISION_KIND_SILENT) {
+            if (kind != FIELD_COLLISION_KIND_SILENT) {
                 CollisionContactList_Add(&contacts->walls, Math_Atan2(wall->segment.normal.x, wall->segment.normal.z), kind,
                                          wall->tag.attr);
                 if (wall->tag.handler != NULL) {
@@ -784,7 +785,8 @@ CLEAN_AS(func_02033678, CollisionWalls_PushOut)
 /* func_02033878: the list's destructor destroys its walls. */
 void *CollisionWalls_Destroy(CollisionWallList *walls)
 {
-    __cxa_vec_cleanup(walls->walls, COLLISION_MAX_WALLS, sizeof(CollisionWall), (void (*)(void *))(uintptr_t) func_020339b8);
+    __cxa_vec_cleanup(walls->walls, FIELD_COLLISION_MAX_WALLS, sizeof(CollisionWall),
+                      (void (*)(void *))(uintptr_t) func_020339b8);
     return walls;
 }
 CLEAN_AS(func_02033878, CollisionWalls_Destroy)
@@ -792,7 +794,7 @@ CLEAN_AS(func_02033878, CollisionWalls_Destroy)
 /* func_02033894 */
 void *CollisionWalls_Construct(CollisionWallList *walls)
 {
-    __cxa_vec_ctor(walls->walls, COLLISION_MAX_WALLS, sizeof(CollisionWall), (void (*)(void *))(uintptr_t) func_020339dc,
+    __cxa_vec_ctor(walls->walls, FIELD_COLLISION_MAX_WALLS, sizeof(CollisionWall), (void (*)(void *))(uintptr_t) func_020339dc,
                    (void (*)(void *))(uintptr_t) func_020339b8);
     walls->count = 0;
     return walls;
@@ -867,7 +869,7 @@ int CollisionFloors_Add(CollisionFloorList *floors, const Vec3 *a, const Vec3 *b
 {
     u32 index;
 
-    if (floors->count >= COLLISION_MAX_FLOORS) {
+    if (floors->count >= FIELD_COLLISION_MAX_FLOORS) {
         return 0;
     }
     index = floors->count;
@@ -915,37 +917,37 @@ void CollisionFloors_AddCells(CollisionFloorList *floors, CollisionCellGrid *gri
             west = cx - 0x1000;
             south = cz + 0x1000;
             north = cz - 0x1000;
-            flat = cell->type < COLLISION_TYPE_COUNT ? data_020c907c[cell->type].flat : 0;
+            flat = cell->type < FIELD_COLLISION_TYPE_COUNT ? data_020c907c[cell->type].flat : 0;
             if (flat != 0) {
                 Vec3 d;
-                h = cell->side_height[COLLISION_NORTH];
+                h = cell->side_height[FIELD_COLLISION_NORTH];
                 collision_set(&a, west, h, north);
                 collision_set(&b, west, h, south);
                 collision_set(&c, east, h, south);
                 collision_set(&d, east, h, north);
-                CollisionFloors_Add(floors, &a, &b, &c, &data_021c317c, cell->side_attr[COLLISION_NORTH], NULL);
-                CollisionFloors_Add(floors, &a, &c, &d, &data_021c317c, cell->side_attr[COLLISION_NORTH], NULL);
+                CollisionFloors_Add(floors, &a, &b, &c, &data_021c317c, cell->side_attr[FIELD_COLLISION_NORTH], NULL);
+                CollisionFloors_Add(floors, &a, &c, &d, &data_021c317c, cell->side_attr[FIELD_COLLISION_NORTH], NULL);
             } else {
-                h = cell->side_height[COLLISION_NORTH];
+                h = cell->side_height[FIELD_COLLISION_NORTH];
                 collision_set(&a, cx, h, cz);
                 collision_set(&b, east, h, north);
                 collision_set(&c, west, h, north);
-                CollisionFloors_Add(floors, &a, &b, &c, &data_021c317c, cell->side_attr[COLLISION_NORTH], NULL);
-                h = cell->side_height[COLLISION_WEST];
+                CollisionFloors_Add(floors, &a, &b, &c, &data_021c317c, cell->side_attr[FIELD_COLLISION_NORTH], NULL);
+                h = cell->side_height[FIELD_COLLISION_WEST];
                 collision_set(&a, cx, h, cz);
                 collision_set(&b, west, h, north);
                 collision_set(&c, west, h, south);
-                CollisionFloors_Add(floors, &a, &b, &c, &data_021c317c, cell->side_attr[COLLISION_WEST], NULL);
-                h = cell->side_height[COLLISION_SOUTH];
+                CollisionFloors_Add(floors, &a, &b, &c, &data_021c317c, cell->side_attr[FIELD_COLLISION_WEST], NULL);
+                h = cell->side_height[FIELD_COLLISION_SOUTH];
                 collision_set(&a, cx, h, cz);
                 collision_set(&b, west, h, south);
                 collision_set(&c, east, h, south);
-                CollisionFloors_Add(floors, &a, &b, &c, &data_021c317c, cell->side_attr[COLLISION_SOUTH], NULL);
-                h = cell->side_height[COLLISION_EAST];
+                CollisionFloors_Add(floors, &a, &b, &c, &data_021c317c, cell->side_attr[FIELD_COLLISION_SOUTH], NULL);
+                h = cell->side_height[FIELD_COLLISION_EAST];
                 collision_set(&a, cx, h, cz);
                 collision_set(&b, east, h, south);
                 collision_set(&c, east, h, north);
-                CollisionFloors_Add(floors, &a, &b, &c, &data_021c317c, cell->side_attr[COLLISION_EAST], NULL);
+                CollisionFloors_Add(floors, &a, &b, &c, &data_021c317c, cell->side_attr[FIELD_COLLISION_EAST], NULL);
             }
         }
     }
@@ -955,7 +957,7 @@ CLEAN_AS(func_02033a5c, CollisionFloors_AddCells)
 /* func_02033c2c */
 int CollisionFloors_Destroy(CollisionFloorList *floors)
 {
-    __cxa_vec_cleanup(floors->floors, COLLISION_MAX_FLOORS, sizeof(CollisionFloor),
+    __cxa_vec_cleanup(floors->floors, FIELD_COLLISION_MAX_FLOORS, sizeof(CollisionFloor),
                       (void (*)(void *))(uintptr_t) func_02033ca8);
     return (int) (uintptr_t) floors;
 }
@@ -964,8 +966,8 @@ CLEAN_AS(func_02033c2c, CollisionFloors_Destroy)
 /* func_02033c48 */
 CollisionFloorList *CollisionFloors_Construct(CollisionFloorList *floors)
 {
-    __cxa_vec_ctor(floors->floors, COLLISION_MAX_FLOORS, sizeof(CollisionFloor), (void (*)(void *))(uintptr_t) func_02033ccc,
-                   (void (*)(void *))(uintptr_t) func_02033ca8);
+    __cxa_vec_ctor(floors->floors, FIELD_COLLISION_MAX_FLOORS, sizeof(CollisionFloor),
+                   (void (*)(void *))(uintptr_t) func_02033ccc, (void (*)(void *))(uintptr_t) func_02033ca8);
     floors->count = 0;
     return floors;
 }
@@ -1051,8 +1053,8 @@ void CollisionGround_Query(CollisionGround *ground, const Vec3 *position, int al
     ground->position.x = position->x;
     ground->position.y = position->y;
     ground->position.z = position->z;
-    ground->unit_x = position->x >> COLLISION_UNIT_SHIFT;
-    ground->unit_z = position->z >> COLLISION_UNIT_SHIFT;
+    ground->unit_x = position->x >> FIELD_COLLISION_UNIT_SHIFT;
+    ground->unit_z = position->z >> FIELD_COLLISION_UNIT_SHIFT;
     type = FieldUnits_Type(ground->unit_x, ground->unit_z);
     quarter = UnitTypeInfo_SideNearest(position);
     if (alternate != 0) {
@@ -1061,9 +1063,9 @@ void CollisionGround_Query(CollisionGround *ground, const Vec3 *position, int al
         ground->attr = UnitTypeInfo_SideAttrAt(ground->unit_x, ground->unit_z, quarter);
     }
     info = collision_type_info(ground->attr);
-    ground->height = ground->attr < COLLISION_TYPE_COUNT ? info->height * 256 : 0;
+    ground->height = ground->attr < FIELD_COLLISION_TYPE_COUNT ? info->height * 256 : 0;
     ground->limit = -0x12000;
-    ground->unk_30 = ground->attr < COLLISION_TYPE_COUNT ? info->unk_14 : 0;
+    ground->unk_30 = ground->attr < FIELD_COLLISION_TYPE_COUNT ? info->unk_14 : 0;
     ground->normal.x = 0;
     ground->normal.y = 0;
     ground->normal.z = 0x1000;
@@ -1133,7 +1135,7 @@ void CollisionGround_Query(CollisionGround *ground, const Vec3 *position, int al
         ground->point.y = 0;
         ground->point.z = edge;
     } else {
-        int turns = ground->attr < COLLISION_TYPE_COUNT ? collision_type_info(ground->attr)->normal_turns : 0;
+        int turns = ground->attr < FIELD_COLLISION_TYPE_COUNT ? collision_type_info(ground->attr)->normal_turns : 0;
         if (turns != 0) {
             int angle = 0;
             int i;
@@ -1195,7 +1197,7 @@ fx32 CollisionGround_Height(const CollisionGround *ground, int with_post)
         return ground->height;
     }
     if (CollisionQuery_PostAt(ground->unit_x, ground->unit_z, (fx32 *) &radius, (fx32 *) &height, &kind) != 0 &&
-        kind != COLLISION_KIND_2) {
+        kind != FIELD_COLLISION_KIND_2) {
         Vec3 center;
         s64 distance;
         center.x = collision_unit_center(ground->unit_x);
@@ -1277,12 +1279,12 @@ void CollisionCellGrid_Load(CollisionCellGrid *grid, int x0, int x1, int z0, int
 
     grid->min_x = x0;
     grid->min_z = z0;
-    if (width <= COLLISION_GRID_SIZE && depth <= COLLISION_GRID_SIZE) {
+    if (width <= FIELD_COLLISION_GRID_SIZE && depth <= FIELD_COLLISION_GRID_SIZE) {
         grid->max_x = x1;
         grid->max_z = z1;
     } else {
-        grid->max_x = x0 + COLLISION_GRID_SIZE - 1;
-        grid->max_z = z0 + COLLISION_GRID_SIZE - 1;
+        grid->max_x = x0 + FIELD_COLLISION_GRID_SIZE - 1;
+        grid->max_z = z0 + FIELD_COLLISION_GRID_SIZE - 1;
     }
     for (z = grid->min_z; z <= grid->max_z; z++) {
         for (x = grid->min_x; x <= grid->max_x; x++) {
@@ -1337,7 +1339,7 @@ extern void func_02034804(void *map);
 /* func_020343f4: the grid's constructor: 7 by 7 empty units and all bounds 0. */
 void *CollisionCellGrid_Construct(CollisionCellGrid *grid)
 {
-    __cxa_vec_ctor(grid->cells, COLLISION_GRID_SIZE * COLLISION_GRID_SIZE, sizeof(CollisionCell), func_020343f0,
+    __cxa_vec_ctor(grid->cells, FIELD_COLLISION_GRID_SIZE * FIELD_COLLISION_GRID_SIZE, sizeof(CollisionCell), func_020343f0,
                    func_02031608);
     grid->max_z = 0;
     grid->min_z = 0;
@@ -1351,7 +1353,7 @@ CLEAN_AS(func_020343f4, CollisionCellGrid_Construct)
  * types past the table. */
 static u8 collision_side_attr(u8 type, int side, int alternate)
 {
-    if (type >= COLLISION_TYPE_COUNT) {
+    if (type >= FIELD_COLLISION_TYPE_COUNT) {
         return 0;
     }
     const CollisionTypeInfo *info = collision_type_info(type);
@@ -1362,7 +1364,7 @@ static u8 collision_side_attr(u8 type, int side, int alternate)
  * 0 past the table. */
 static fx32 collision_side_height(u8 attr)
 {
-    if (attr >= COLLISION_TYPE_COUNT) {
+    if (attr >= FIELD_COLLISION_TYPE_COUNT) {
         return 0;
     }
     return (fx32) ((u32) (s32) collision_type_info(attr)->height << 8);
@@ -1375,7 +1377,7 @@ void CollisionCell_Load(CollisionCell *cell, int x, int z, int alternate)
     int side;
 
     cell->type = FieldUnits_Type(x, z);
-    for (side = COLLISION_NORTH; side <= COLLISION_EAST; side++) {
+    for (side = FIELD_COLLISION_NORTH; side <= FIELD_COLLISION_EAST; side++) {
         cell->side_attr[side] = collision_side_attr(cell->type, side, alternate);
         cell->side_height[side] = collision_side_height(cell->side_attr[side]);
     }
@@ -1385,7 +1387,7 @@ CLEAN_AS(func_02034448, CollisionCell_Load)
 /* func_020345e0: the unit `position` is in. */
 int CollisionCell_LoadAt(CollisionCell *cell, const Vec3 *position, int alternate)
 {
-    CollisionCell_Load(cell, position->x >> COLLISION_UNIT_SHIFT, position->z >> COLLISION_UNIT_SHIFT, alternate);
+    CollisionCell_Load(cell, position->x >> FIELD_COLLISION_UNIT_SHIFT, position->z >> FIELD_COLLISION_UNIT_SHIFT, alternate);
     return (int) (uintptr_t) cell;
 }
 CLEAN_AS(func_020345e0, CollisionCell_LoadAt)
@@ -1395,8 +1397,8 @@ fx32 CollisionExtraPosts_RadiusAt(const CollisionExtraPosts *posts, int x, int z
 {
     int i;
 
-    for (i = 0; i < COLLISION_EXTRA_POSTS; i++) {
-        if (((posts->in_use >> i) & 1) != 0 && posts->age[i] < COLLISION_EXTRA_POST_AGES && posts->unit_x[i] == x &&
+    for (i = 0; i < FIELD_COLLISION_EXTRA_POSTS; i++) {
+        if (((posts->in_use >> i) & 1) != 0 && posts->age[i] < FIELD_COLLISION_EXTRA_POST_AGES && posts->unit_x[i] == x &&
             posts->unit_z[i] == z) {
             return data_020c9050[posts->age[i]];
         }
@@ -1411,8 +1413,8 @@ void CollisionExtraPosts_Age(CollisionExtraPosts *posts)
 {
     int i;
 
-    for (i = 0; i < COLLISION_EXTRA_POSTS; i++) {
-        if (((posts->in_use >> i) & 1) != 0 && posts->age[i] < COLLISION_EXTRA_POST_AGES) {
+    for (i = 0; i < FIELD_COLLISION_EXTRA_POSTS; i++) {
+        if (((posts->in_use >> i) & 1) != 0 && posts->age[i] < FIELD_COLLISION_EXTRA_POST_AGES) {
             posts->age[i]++;
         } else {
             posts->age[i] = 0xff;
@@ -1427,7 +1429,7 @@ int CollisionExtraPosts_FindFree(const CollisionExtraPosts *posts)
 {
     int i;
 
-    for (i = 0; i < COLLISION_EXTRA_POSTS; i++) {
+    for (i = 0; i < FIELD_COLLISION_EXTRA_POSTS; i++) {
         if (((posts->in_use >> i) & 1) == 0) {
             return i;
         }
@@ -1459,7 +1461,7 @@ void CollisionExtraPosts_Clear(CollisionExtraPosts *posts)
     int i;
 
     posts->in_use = 0;
-    for (i = 0; i < COLLISION_EXTRA_POSTS; i++) {
+    for (i = 0; i < FIELD_COLLISION_EXTRA_POSTS; i++) {
         posts->age[i] = 0xff;
     }
 }
@@ -1494,7 +1496,7 @@ CLEAN_AS(func_02034714, CollisionBlockMap_Clear)
  * kinds but 3; CollisionWalls_PushOut tests the kind itself). */
 int CollisionWall_IsRecorded(const CollisionWall *wall)
 {
-    return (u32) wall->kind != COLLISION_KIND_SILENT;
+    return (u32) wall->kind != FIELD_COLLISION_KIND_SILENT;
 }
 CLEAN_AS(func_02034780, CollisionWall_IsRecorded)
 
@@ -1502,13 +1504,14 @@ CLEAN_AS(func_02034780, CollisionWall_IsRecorded)
  * construction. */
 void *CollisionWorld_Destroy(CollisionWorld *world)
 {
-    __cxa_vec_cleanup(world->grid.cells, COLLISION_GRID_SIZE * COLLISION_GRID_SIZE, sizeof(CollisionCell), func_02031608);
+    __cxa_vec_cleanup(world->grid.cells, FIELD_COLLISION_GRID_SIZE * FIELD_COLLISION_GRID_SIZE, sizeof(CollisionCell),
+                      func_02031608);
     CollisionArea_ListDestruct(&world->unk_1a91);
     CollisionBox_ListDestruct(&world->unk_1a90);
     CollisionPosts_Destroy(&world->posts);
     CollisionFloors_Destroy(&world->floors);
     CollisionWalls_Destroy(&world->walls);
-    __cxa_vec_cleanup(world->maps, COLLISION_BLOCK_MAPS, sizeof(FieldBlockMap), func_02034804);
+    __cxa_vec_cleanup(world->maps, FIELD_COLLISION_BLOCK_MAPS, sizeof(FieldBlockMap), func_02034804);
     return world;
 }
 CLEAN_AS(func_02034790, CollisionWorld_Destroy)

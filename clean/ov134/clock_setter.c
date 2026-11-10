@@ -569,7 +569,7 @@ void ClockSetter_DrawPickLabel(ClockSetter *self)
         default:
             break;
     }
-    ClockSetter_DrawNumber(self, LAYER_SUB_OBJ, 0xcb, cells, number, 15, 0);
+    ClockSetter_DrawNumber(self, DISPLAY_LAYER_SUB_OBJ, 0xcb, cells, number, 15, 0);
 }
 CLEAN_AS(func_ov134_0229b6dc, ClockSetter_DrawPickLabel)
 
@@ -718,19 +718,19 @@ int ClockSetter_LoadSprites(ClockSetter *self)
 {
     Heap *heap = data_021fbe94;
     u32 size;
-    DisplayLayer_LoadPalettesFromFile(data_ov134_0229c3f4, heap, LAYER_SUB_OBJ, 4, 4, 10);
-    DisplayLayer_LoadCharsFromFile(data_ov134_0229c410, heap, LAYER_SUB_OBJ, 0xc0, 0xc0, 0x1df);
+    DisplayLayer_LoadPalettesFromFile(data_ov134_0229c3f4, heap, DISPLAY_LAYER_SUB_OBJ, 4, 4, 10);
+    DisplayLayer_LoadCharsFromFile(data_ov134_0229c410, heap, DISPLAY_LAYER_SUB_OBJ, 0xc0, 0xc0, 0x1df);
     u8 face = self->face;
     u8 *file = RomFile_Load(data_ov134_0229c020[face >> 2], heap, -4, &size);
     u32 data = (u32) (uintptr_t) file + ((u32) (face % 4) << 8);
     u32 first = 0xc0;
     for (int row = 0; row < 8; row++) {
-        DisplayLayer_LoadChars(data, LAYER_SUB_OBJ, first, first, first + 7);
+        DisplayLayer_LoadChars(data, DISPLAY_LAYER_SUB_OBJ, first, first, first + 7);
         data += 0x400;
         first += 0x20;
     }
     Heap_Free(heap, file);
-    return DisplayLayer_LoadPaletteFromFile(data_ov134_0229c42c, heap, LAYER_SUB_OBJ, self->face, 4);
+    return DisplayLayer_LoadPaletteFromFile(data_ov134_0229c42c, heap, DISPLAY_LAYER_SUB_OBJ, self->face, 4);
 }
 CLEAN_AS(func_ov134_0229b954, ClockSetter_LoadSprites)
 

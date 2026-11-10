@@ -28,8 +28,8 @@
 #define REG_DB_DISPCNT 0x04001000u
 #define REG_SWAP_BUFFERS 0x04000540u
 #define DB_DISPCNT_DISPLAY_ON 0x00010000u /* the sub screen's display mode 1: its graphics */
-#define SWAP_MANUAL_SORT 0x1
-#define SWAP_W_BUFFER 0x2
+#define MAIN_LOOP_SWAP_MANUAL_SORT 0x1
+#define MAIN_LOOP_SWAP_W_BUFFER 0x2
 
 extern NetSession *data_020ccf94;
 extern u16 data_021cfb6c;  /* set while the loop waits for the next frame */
@@ -118,7 +118,7 @@ void MainLoop_EndDraw(u32 errors)
     Session_Update((int) errors);
     DisplayFrame_EndDraw();
     data_021fbdd0++;
-    REG32(REG_SWAP_BUFFERS) = SWAP_MANUAL_SORT | SWAP_W_BUFFER;
+    REG32(REG_SWAP_BUFFERS) = MAIN_LOOP_SWAP_MANUAL_SORT | MAIN_LOOP_SWAP_W_BUFFER;
 }
 CLEAN_AS(func_0206e63c, MainLoop_EndDraw)
 

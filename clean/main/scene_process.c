@@ -60,7 +60,7 @@ static_assert(sizeof(SceneInfo) == 0x18, "scene info");
 
 #define REG16(addr) (*(volatile u16 *) (uintptr_t) (addr))
 #define REG_BG0CNT 0x04000008u
-#define BGCNT_PRIORITY 3u
+#define SCENE_PROCESS_BGCNT_PRIORITY 3u
 /* The first background's priority while a scene runs. */
 #define SCENE_PROCESS_BG0_PRIORITY 2u
 
@@ -344,7 +344,7 @@ int SceneProcess_Finish(void *process)
 {
     SceneDisplay_ResetFog(process);
     EffectSystem_ResetPlaces();
-    REG16(REG_BG0CNT) = (u16) ((REG16(REG_BG0CNT) & ~BGCNT_PRIORITY) | SCENE_PROCESS_BG0_PRIORITY);
+    REG16(REG_BG0CNT) = (u16) ((REG16(REG_BG0CNT) & ~SCENE_PROCESS_BGCNT_PRIORITY) | SCENE_PROCESS_BG0_PRIORITY);
     FieldBody_Reset();
     data_021d3124 = 0;
     SceneExit_Clear(&data_021f69d0);

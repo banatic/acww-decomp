@@ -66,7 +66,7 @@ extern Mtx43 data_021cfe68;
 #define OBJECT_SPEED 0x98      /* fx32 */
 
 /* The size of the object. */
-#define OBJECT_SIZE 0xa10
+#define OUTDOOR_VILLAGER_OBJECT_OBJECT_SIZE 0xa10
 /* The slot of the talk scene called at init (its reset, main's scene_base.h). */
 #define OBJECT_TALK_SLOT_RESET 0x08
 
@@ -439,7 +439,7 @@ CLEAN_AS(func_ov068_0226da28, OutdoorVillagerObject_IsLinked)
  * room. */
 u8 *OutdoorVillagerObject_New(void)
 {
-    u8 *villager = Heap_AllocAuxZeroed(OBJECT_SIZE);
+    u8 *villager = Heap_AllocAuxZeroed(OUTDOOR_VILLAGER_OBJECT_OBJECT_SIZE);
     if (villager == NULL) {
         return NULL;
     }

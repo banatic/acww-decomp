@@ -224,7 +224,7 @@ void ResRows_MakeButtonCaptions(ResRows *self)
     for (int i = 0; i < 3; i++) {
         TextLabel *label = ResRows_TakeLabel(self);
         TextLabel_LoadMenuMessage(label, (char) headings[i].message);
-        TextLabel_OpenStyledBox2(label, LAYER_SUB_OBJ, headings[i].chars, 6, 0xf, 0, 0);
+        TextLabel_OpenStyledBox2(label, DISPLAY_LAYER_SUB_OBJ, headings[i].chars, 6, 0xf, 0, 0);
         TextLabel_Show(label, 1, 0);
     }
 }
@@ -256,9 +256,9 @@ void ResRows_LoadObjFiles(ResRows *self)
     Heap *heap = data_021fbe94;
 
     (void) self;
-    DisplayLayer_LoadCharsFromFile(data_ov139_02299e00, heap, LAYER_SUB_OBJ, 0x80, 0x80, 0xff);
-    DisplayLayer_LoadCharsFromFile(data_ov139_02299e14, heap, LAYER_SUB_OBJ, 0x160, 0x160, 0x1ff);
-    DisplayLayer_LoadPalettesFromFile(data_ov139_02299e28, heap, LAYER_SUB_OBJ, 4, 4, 0xd);
+    DisplayLayer_LoadCharsFromFile(data_ov139_02299e00, heap, DISPLAY_LAYER_SUB_OBJ, 0x80, 0x80, 0xff);
+    DisplayLayer_LoadCharsFromFile(data_ov139_02299e14, heap, DISPLAY_LAYER_SUB_OBJ, 0x160, 0x160, 0x1ff);
+    DisplayLayer_LoadPalettesFromFile(data_ov139_02299e28, heap, DISPLAY_LAYER_SUB_OBJ, 4, 4, 0xd);
 }
 CLEAN_AS(func_ov139_02299964, ResRows_LoadObjFiles)
 

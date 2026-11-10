@@ -162,7 +162,7 @@ void CollisionVisitor_PushOutPosts(CollisionPushOut *visitor, CollisionPostList 
         int attr;
         if (CollisionPosts_Land(posts, visitor->position, &visitor->previous, &attr, (u32) (uintptr_t) visitor->owner,
                                 (int) (uintptr_t) CollisionPostSource_Current()) != 0) {
-            visitor->contacts->flags |= COLLISION_ON_GROUND;
+            visitor->contacts->flags |= FIELD_COLLISION_ON_GROUND;
             visitor->contacts->ground_attr = attr;
         }
     }
@@ -185,7 +185,7 @@ void CollisionVisitor_PushOutFloors(CollisionPushOut *visitor, CollisionFloorLis
         if (visitor->position->y < floor->triangle.corner[0].y &&
             CollisionTriangle_ContainsXZ(&floor->triangle, visitor->position) != 0) {
             visitor->position->y = floor->triangle.corner[0].y;
-            visitor->contacts->flags |= COLLISION_ON_GROUND;
+            visitor->contacts->flags |= FIELD_COLLISION_ON_GROUND;
             visitor->contacts->ground_attr = floor->tag.attr;
         }
     }

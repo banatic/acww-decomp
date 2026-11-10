@@ -24,15 +24,15 @@
 
 /* The scenes (func_020b65c4) the activity handlers act in. */
 #define SCENE_09 9
-#define SCENE_0C 12
-#define SCENE_0D 13
-#define SCENE_2E 46
-#define SCENE_2F 47
+#define SYSTEM_PACKET_SCENE_0C 12
+#define SYSTEM_PACKET_SCENE_0D 13
+#define SYSTEM_PACKET_SCENE_2E 46
+#define SYSTEM_PACKET_SCENE_2F 47
 
-#define UNLINKED_SLOT 3 /* the link state slot of this system while it has no slot */
-#define SHARE_BLOCK 4   /* Session_SendBlock(session, 4): where system packets are built */
-#define TO_HOST 1       /* the AID mask of the host (AID 0) */
-#define OWN_BLOCK 4     /* func_02090040(4): this system's 0x950-byte block */
+#define UNLINKED_SLOT 3         /* the link state slot of this system while it has no slot */
+#define SHARE_BLOCK 4           /* Session_SendBlock(session, 4): where system packets are built */
+#define SYSTEM_PACKET_TO_HOST 1 /* the AID mask of the host (AID 0) */
+#define OWN_BLOCK 4             /* func_02090040(4): this system's 0x950-byte block */
 #define SLOT_BLOCK_SIZE 0x950
 #define PLAYER_RECORD_SIZE 0x249c   /* a player record (func_0209847c) */
 #define KEPT_LETTERS_SIZE 0x3200    /* the block func_020989e0 gives for a player record */
@@ -96,7 +96,7 @@ void SystemPacket_SetActivityFlag101(u8 *payload, u32 length, int sender)
     (void) payload;
     (void) length;
     (void) sender;
-    if (SceneQuery_Current() == SCENE_2E && Activity_Current() != NULL) {
+    if (SceneQuery_Current() == SYSTEM_PACKET_SCENE_2E && Activity_Current() != NULL) {
         Activity_SetFlag101(Activity_Current(), 1);
     }
 }
@@ -121,7 +121,7 @@ CLEAN_AS(func_02075278, SystemPacket_WriteKeptLetters)
 void SystemPacket_WriteOwnRecord(u8 *payload, u32 length, int sender)
 {
     (void) sender;
-    if (SceneQuery_Current() != SCENE_2E) {
+    if (SceneQuery_Current() != SYSTEM_PACKET_SCENE_2E) {
         return;
     }
     if (Activity_Current() == NULL) {
@@ -152,7 +152,7 @@ void SystemPacket_SetActivityPlayerF4(u8 *payload, u32 length, int sender)
 {
     (void) payload;
     (void) length;
-    if (SceneQuery_Current() == SCENE_2E && Activity_Current() != NULL) {
+    if (SceneQuery_Current() == SYSTEM_PACKET_SCENE_2E && Activity_Current() != NULL) {
         Activity_SetSlotAck(Activity_Current(), sender, 1);
     }
 }
@@ -164,7 +164,7 @@ void SystemPacket_SetActivityFlagE5(u8 *payload, u32 length, int sender)
     (void) payload;
     (void) length;
     (void) sender;
-    if (SceneQuery_Current() == SCENE_2E && Activity_Current() != NULL) {
+    if (SceneQuery_Current() == SYSTEM_PACKET_SCENE_2E && Activity_Current() != NULL) {
         Activity_SetFlagE5(Activity_Current(), 1);
     }
 }
@@ -175,7 +175,7 @@ void SystemPacket_SetActivityPlayerFC(u8 *payload, u32 length, int sender)
 {
     (void) payload;
     (void) length;
-    if (SceneQuery_Current() == SCENE_2E && Activity_Current() != NULL) {
+    if (SceneQuery_Current() == SYSTEM_PACKET_SCENE_2E && Activity_Current() != NULL) {
         Activity_SetSlotFC(Activity_Current(), sender, 1);
     }
 }
@@ -186,7 +186,7 @@ void SystemPacket_SetActivityPlayerF8(u8 *payload, u32 length, int sender)
 {
     (void) payload;
     (void) length;
-    if (SceneQuery_Current() == SCENE_2E && Activity_Current() != NULL) {
+    if (SceneQuery_Current() == SYSTEM_PACKET_SCENE_2E && Activity_Current() != NULL) {
         Activity_SetSlotReported(Activity_Current(), sender, 1);
     }
 }
@@ -218,7 +218,7 @@ CLEAN_AS(func_020753a8, SystemPacket_SetLinkEntries)
 void SystemPacket_SetActivityPlayerEF(u8 *payload, u32 length, int sender)
 {
     (void) length;
-    if (SceneQuery_Current() == SCENE_2E || SceneQuery_Current() == SCENE_09) {
+    if (SceneQuery_Current() == SYSTEM_PACKET_SCENE_2E || SceneQuery_Current() == SCENE_09) {
         u8 *activity = (u8 *) Activity_Current();
         if (activity != NULL) {
             if (Net_GetMyAid() == 0) {
@@ -256,7 +256,7 @@ void SystemPacket_SetActivityFlagE4(u8 *payload, u32 length, int sender)
     (void) payload;
     (void) length;
     (void) sender;
-    if (SceneQuery_Current() == SCENE_0D || SceneQuery_Current() == SCENE_2F) {
+    if (SceneQuery_Current() == SYSTEM_PACKET_SCENE_0D || SceneQuery_Current() == SYSTEM_PACKET_SCENE_2F) {
         if (Activity_Current() != NULL) {
             Activity_SetFlagE4(Activity_Current(), 1);
         }
@@ -270,7 +270,7 @@ void SystemPacket_SetActivityDateTime(u8 *payload, u32 length, int sender)
 {
     (void) length;
     (void) sender;
-    if (SceneQuery_Current() != SCENE_0C) {
+    if (SceneQuery_Current() != SYSTEM_PACKET_SCENE_0C) {
         return;
     }
     if (Activity_Current() == NULL) {
@@ -287,7 +287,7 @@ void SystemPacket_SetActivityFlagD9(u8 *payload, u32 length, int sender)
     (void) payload;
     (void) length;
     (void) sender;
-    if (SceneQuery_Current() == SCENE_0D || SceneQuery_Current() == SCENE_2F) {
+    if (SceneQuery_Current() == SYSTEM_PACKET_SCENE_0D || SceneQuery_Current() == SYSTEM_PACKET_SCENE_2F) {
         if (Activity_Current() != NULL) {
             Activity_SetFlagD9(Activity_Current(), 1);
         }
@@ -364,7 +364,7 @@ void SystemPacket_SetOwnBlock(u8 *payload, u32 length, int sender)
     } else {
         MI_CpuCopy8(payload, (void *) (uintptr_t) ExchangeBlock_OfSlot(OWN_BLOCK), SLOT_BLOCK_SIZE);
     }
-    if (SceneQuery_Current() != SCENE_2E) {
+    if (SceneQuery_Current() != SYSTEM_PACKET_SCENE_2E) {
         return;
     }
     if (Activity_Current() == NULL) {
@@ -387,7 +387,7 @@ void SystemPacket_WriteSlotBlock(u8 *payload, u32 length, int sender)
     } else {
         ExchangeBlock_Clear((ExchangeBlock *) (uintptr_t) ExchangeBlock_OfSlot(sender));
     }
-    if (SceneQuery_Current() == SCENE_0D || SceneQuery_Current() == SCENE_2F) {
+    if (SceneQuery_Current() == SYSTEM_PACKET_SCENE_0D || SceneQuery_Current() == SYSTEM_PACKET_SCENE_2F) {
         if (Activity_Current() != NULL) {
             Activity_SetSlot107(Activity_Current(), sender, 1);
         }
@@ -402,7 +402,7 @@ CLEAN_AS(func_0207560c, SystemPacket_WriteSlotBlock)
 void SystemPacket_WriteActivityBuffer(u8 *payload, u32 length, int sender)
 {
     (void) sender;
-    if (SceneQuery_Current() != SCENE_0C) {
+    if (SceneQuery_Current() != SYSTEM_PACKET_SCENE_0C) {
         return;
     }
     u32 offset;
@@ -424,7 +424,7 @@ void SystemPacket_SetActivityMembers(u8 *payload, u32 length, int sender)
 {
     (void) length;
     (void) sender;
-    if (SceneQuery_Current() != SCENE_0C) {
+    if (SceneQuery_Current() != SYSTEM_PACKET_SCENE_0C) {
         return;
     }
     if (Activity_Current() == NULL) {
@@ -480,7 +480,7 @@ static int system_packet_send_kind(int kind, int to, int ask_slot0)
 /* func_0207570c */
 int SystemPacket_SendActivityFlag101(void)
 {
-    return system_packet_send_kind(SYSTEM_SET_ACTIVITY_FLAG_101, TO_HOST, 1);
+    return system_packet_send_kind(SYSTEM_SET_ACTIVITY_FLAG_101, SYSTEM_PACKET_TO_HOST, 1);
 }
 CLEAN_AS(func_0207570c, SystemPacket_SendActivityFlag101)
 
@@ -490,7 +490,7 @@ int SystemPacket_SendKeptLetters(u8 *chunks_sent)
 {
     u8 *record = PlayerRecords_Get(SessionPlayers_RecordNumber(data_020ccf94->local_player));
     u8 *block = (u8 *) PlayerRecord_KeptLetters(record);
-    return SystemPacket_SendInChunks(chunks_sent, block, KEPT_LETTERS_SIZE, SYSTEM_WRITE_KEPT_LETTERS, TO_HOST);
+    return SystemPacket_SendInChunks(chunks_sent, block, KEPT_LETTERS_SIZE, SYSTEM_WRITE_KEPT_LETTERS, SYSTEM_PACKET_TO_HOST);
 }
 CLEAN_AS(func_02075774, SystemPacket_SendKeptLetters)
 
@@ -498,14 +498,14 @@ CLEAN_AS(func_02075774, SystemPacket_SendKeptLetters)
 int SystemPacket_SendOwnRecord(u8 *chunks_sent)
 {
     u8 *record = PlayerRecords_Get(SessionPlayers_RecordNumber(data_020ccf94->local_player));
-    return SystemPacket_SendInChunks(chunks_sent, record, PLAYER_RECORD_SIZE, SYSTEM_WRITE_OWN_RECORD, TO_HOST);
+    return SystemPacket_SendInChunks(chunks_sent, record, PLAYER_RECORD_SIZE, SYSTEM_WRITE_OWN_RECORD, SYSTEM_PACKET_TO_HOST);
 }
 CLEAN_AS(func_020757ac, SystemPacket_SendOwnRecord)
 
 /* func_020757e0 */
 int SystemPacket_SendActivityPlayer100(void)
 {
-    return system_packet_send_kind(SYSTEM_SET_ACTIVITY_PLAYER_100, TO_HOST, 1);
+    return system_packet_send_kind(SYSTEM_SET_ACTIVITY_PLAYER_100, SYSTEM_PACKET_TO_HOST, 1);
 }
 CLEAN_AS(func_020757e0, SystemPacket_SendActivityPlayer100)
 
@@ -514,13 +514,13 @@ CLEAN_AS(func_020757e0, SystemPacket_SendActivityPlayer100)
  * use it. */
 int SystemPacket_SendActivityPlayerF4(void)
 {
-    if (!system_packet_can_send(TO_HOST)) {
+    if (!system_packet_can_send(SYSTEM_PACKET_TO_HOST)) {
         return 0;
     }
     NetSession *session = data_020ccf94;
     SessionNet_WriteSystemHeader(Session_SendBlock(session, SHARE_BLOCK), 0, SYSTEM_SET_ACTIVITY_PLAYER_F4);
     Session_PeerMask();
-    return system_packet_send(session, 1, TO_HOST);
+    return system_packet_send(session, 1, SYSTEM_PACKET_TO_HOST);
 }
 CLEAN_AS(func_02075848, SystemPacket_SendActivityPlayerF4)
 
@@ -534,14 +534,14 @@ CLEAN_AS(func_020758ac, SystemPacket_SendActivityFlagE5)
 /* func_02075918 */
 int SystemPacket_SendActivityPlayerFC(void)
 {
-    return system_packet_send_kind(SYSTEM_SET_ACTIVITY_PLAYER_FC, TO_HOST, 0);
+    return system_packet_send_kind(SYSTEM_SET_ACTIVITY_PLAYER_FC, SYSTEM_PACKET_TO_HOST, 0);
 }
 CLEAN_AS(func_02075918, SystemPacket_SendActivityPlayerFC)
 
 /* func_02075978 */
 int SystemPacket_SendActivityPlayerF8(void)
 {
-    return system_packet_send_kind(SYSTEM_SET_ACTIVITY_PLAYER_F8, TO_HOST, 1);
+    return system_packet_send_kind(SYSTEM_SET_ACTIVITY_PLAYER_F8, SYSTEM_PACKET_TO_HOST, 1);
 }
 CLEAN_AS(func_02075978, SystemPacket_SendActivityPlayerF8)
 
@@ -611,7 +611,7 @@ CLEAN_AS(func_02075b14, SystemPacket_SendDateTime)
 /* func_02075b98 */
 int SystemPacket_SendActivityFlagD9(void)
 {
-    return system_packet_send_kind(SYSTEM_SET_ACTIVITY_FLAG_D9, TO_HOST, 1);
+    return system_packet_send_kind(SYSTEM_SET_ACTIVITY_FLAG_D9, SYSTEM_PACKET_TO_HOST, 1);
 }
 CLEAN_AS(func_02075b98, SystemPacket_SendActivityFlagD9)
 
@@ -625,7 +625,7 @@ CLEAN_AS(func_02075c00, SystemPacket_SendActivityFlagE4)
 /* func_02075c64 */
 int SystemPacket_SendLinkFlagC4(void)
 {
-    return system_packet_send_kind(SYSTEM_SET_LINK_FLAG_C4, TO_HOST, 0);
+    return system_packet_send_kind(SYSTEM_SET_LINK_FLAG_C4, SYSTEM_PACKET_TO_HOST, 0);
 }
 CLEAN_AS(func_02075c64, SystemPacket_SendLinkFlagC4)
 
@@ -735,9 +735,9 @@ int SystemPacket_SendOwnBlock(u8 *chunks_sent)
 {
     u8 *block = (u8 *) (uintptr_t) ExchangeBlock_OfSlot(OWN_BLOCK);
     if (ExchangeBlock_IsSendable((ExchangeBlock *) (void *) block) != 0) {
-        return SystemPacket_SendInChunks(chunks_sent, block, SLOT_BLOCK_SIZE, SYSTEM_WRITE_SLOT_BLOCK, TO_HOST);
+        return SystemPacket_SendInChunks(chunks_sent, block, SLOT_BLOCK_SIZE, SYSTEM_WRITE_SLOT_BLOCK, SYSTEM_PACKET_TO_HOST);
     }
-    return system_packet_send_kind(SYSTEM_WRITE_SLOT_BLOCK, TO_HOST, 0);
+    return system_packet_send_kind(SYSTEM_WRITE_SLOT_BLOCK, SYSTEM_PACKET_TO_HOST, 0);
 }
 CLEAN_AS(func_02075f3c, SystemPacket_SendOwnBlock)
 

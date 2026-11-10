@@ -212,8 +212,8 @@ void MusicList_ColorRows(MusicList *self)
         MusicList_ColorRow(self, self->playing, MUSIC_LIST_PALETTE_PLAYING);
         MusicList_ColorRow(self, self->selected, MUSIC_LIST_PALETTE_SELECTED);
     }
-    if (LayerTask_QueueScreen(&self->list_task, (int) (uintptr_t) self->list_screen, LAYER_SUB_BG1, sizeof(self->list_screen),
-                              0) != 0) {
+    if (LayerTask_QueueScreen(&self->list_task, (int) (uintptr_t) self->list_screen, DISPLAY_LAYER_SUB_BG1,
+                              sizeof(self->list_screen), 0) != 0) {
         MusicList_ClearFlags(self, MUSIC_LIST_FLAG_LIST_DIRTY);
     }
 }
@@ -262,7 +262,7 @@ CLEAN_AS(func_ov144_02299df4, MusicList_BuildRows)
 void MusicList_ScrollTo(MusicList *self, int scroll)
 {
     self->scroll = scroll;
-    DisplayLayer_SetScroll(LAYER_SUB_BG1, 0, self->scroll - 0x18);
+    DisplayLayer_SetScroll(DISPLAY_LAYER_SUB_BG1, 0, self->scroll - 0x18);
     self->first_row = (s16) (scroll >> 4);
     MusicList_BuildRows(self);
     MusicList_SetFlags(self, MUSIC_LIST_FLAG_LABELS_DIRTY);
@@ -290,7 +290,7 @@ void MusicList_FlushScreens(MusicList *self)
         MusicList_ColorRows(self);
     }
     if (MusicList_TestFlags(self, MUSIC_LIST_FLAG_BUTTONS_DIRTY)) {
-        if (LayerTask_QueueScreen(&self->buttons_task, (int) (uintptr_t) self->buttons_screen, LAYER_SUB_BG3,
+        if (LayerTask_QueueScreen(&self->buttons_task, (int) (uintptr_t) self->buttons_screen, DISPLAY_LAYER_SUB_BG3,
                                   sizeof(self->buttons_screen), 0) != 0) {
             MusicList_ClearFlags(self, MUSIC_LIST_FLAG_BUTTONS_DIRTY);
         }

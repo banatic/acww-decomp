@@ -43,12 +43,13 @@ void SessionVillager_PackObject(u8 *bytes, u32 index, u8 kind, const u16 *item, 
 
 /* The operations of message 60 on the villager's object (SessionMessage_ChangeVillagerObject). */
 enum {
-    VILLAGER_OBJECT_SET_BYTE_0B = 0, /* func_0209bb90: the low 5 bits of its byte 0xb */
-    VILLAGER_OBJECT_CLEAR = 1,       /* func_0209ba7c: emptied */
-    VILLAGER_OBJECT_NEXT_STEP = 2,   /* func_0209b920, VillagerObject_NextStep */
-    VILLAGER_OBJECT_SET_KIND = 3,    /* func_0209b8a4, VillagerObject_SetKind: its kind (0x2f) */
-    VILLAGER_OBJECT_SET_FLAG = 4,    /* func_0209b890, VillagerObject_SetFlag (0x30), then as VILLAGER_OBJECT_SET_COUNT */
-    VILLAGER_OBJECT_SET_COUNT = 5    /* its count (0x2e) */
+    SESSION_VILLAGER_OBJECT_SET_BYTE_0B = 0, /* func_0209bb90: the low 5 bits of its byte 0xb */
+    SESSION_VILLAGER_OBJECT_CLEAR = 1,       /* func_0209ba7c: emptied */
+    SESSION_VILLAGER_OBJECT_NEXT_STEP = 2,   /* func_0209b920, VillagerObject_NextStep */
+    SESSION_VILLAGER_OBJECT_SET_KIND = 3,    /* func_0209b8a4, VillagerObject_SetKind: its kind (0x2f) */
+    SESSION_VILLAGER_OBJECT_SET_FLAG =
+        4, /* func_0209b890, VillagerObject_SetFlag (0x30), then as SESSION_VILLAGER_OBJECT_SET_COUNT */
+    SESSION_VILLAGER_OBJECT_SET_COUNT = 5 /* its count (0x2e) */
 };
 
 void SessionVillager_SendObjectCount(u8 *villager, int value);

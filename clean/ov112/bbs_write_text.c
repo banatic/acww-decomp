@@ -68,7 +68,7 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 /* The characters before a 0, at most `max` (main's). */
 extern int func_02051c8c_unk(u16 *text, int max);
 
-/* The text's layer (LAYER_SUB_BG1) and the characters its lines are drawn into. */
+/* The text's layer (DISPLAY_LAYER_SUB_BG1) and the characters its lines are drawn into. */
 #define BBS_WRITE_TEXT_LAYER 4
 #define BBS_WRITE_LINE_FIRST_CHAR 17
 #define BBS_WRITE_LINE_LAST_CHAR 0x100

@@ -8,7 +8,7 @@
 #include "types.h"
 
 /* The type a unit has outside the map's blocks. */
-#define UNIT_TYPE_NONE 0x15
+#define FIELD_UNIT_TYPE_NONE 0x15
 
 /* A block of the map: its units' types, 16 to a row, then 16 rows. */
 typedef struct FieldBlock {

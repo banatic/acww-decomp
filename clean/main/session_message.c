@@ -46,7 +46,7 @@
 #include "villager_status.h"
 
 /* The scene (func_020b65c4) the activity handlers act in. */
-#define SCENE_2E 46
+#define SESSION_MESSAGE_SCENE_2E 46
 
 /* The item ids SessionMessage_SetVillagerClothes (the clothes) and
  * SessionMessage_SetVillagerObjectItem take. */
@@ -105,7 +105,7 @@ void SessionMessage_SetActivityPlayerEB(int size, int kind, u8 scene, u32 slot)
     (void) size;
     (void) kind;
     (void) scene;
-    if (SceneQuery_Current() != SCENE_2E) {
+    if (SceneQuery_Current() != SESSION_MESSAGE_SCENE_2E) {
         return;
     }
     if (Activity_Current() != NULL) {
@@ -123,7 +123,7 @@ void SessionMessage_SetActivityFlagF3(int size, int kind, u8 scene, u32 slot)
     (void) kind;
     (void) scene;
     (void) slot;
-    if (SceneQuery_Current() == SCENE_2E && Activity_Current() != NULL) {
+    if (SceneQuery_Current() == SESSION_MESSAGE_SCENE_2E && Activity_Current() != NULL) {
         Activity_Current();
         Activity_SetCurrentFlagF3(1);
     }
@@ -136,7 +136,7 @@ void SessionMessage_SetActivityPlayerE7(int size, int kind, int scene, int slot)
     (void) size;
     (void) kind;
     (void) scene;
-    if (SceneQuery_Current() == SCENE_2E && Activity_Current() != NULL) {
+    if (SceneQuery_Current() == SESSION_MESSAGE_SCENE_2E && Activity_Current() != NULL) {
         Activity_SetSlotE7(Activity_Current(), slot, 1);
     }
 }
@@ -161,7 +161,7 @@ void SessionMessage_SetActivityPlayerF4(int size, int kind, int scene, int slot)
     (void) size;
     (void) kind;
     (void) scene;
-    if (SceneQuery_Current() == SCENE_2E && Activity_Current() != NULL) {
+    if (SceneQuery_Current() == SESSION_MESSAGE_SCENE_2E && Activity_Current() != NULL) {
         Activity_SetSlotAck(Activity_Current(), slot, 1);
     }
 }
@@ -174,7 +174,7 @@ void SessionMessage_SetActivityFlagE6(int size, int kind, u8 scene, u32 slot)
     (void) kind;
     (void) scene;
     (void) slot;
-    if (SceneQuery_Current() == SCENE_2E && Activity_Current() != NULL) {
+    if (SceneQuery_Current() == SESSION_MESSAGE_SCENE_2E && Activity_Current() != NULL) {
         Activity_SetFlagE6(Activity_Current(), 1);
     }
 }

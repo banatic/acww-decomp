@@ -76,7 +76,7 @@ void SkyObjects_Draw(SkyObjects *objects)
         int line = y - shift;
         if (data_021f75b0.screen == SKY_SCREEN_MAIN) {
             draw_object(SKY_OBJECTS_ENGINE_MAIN, object, cell_data, x, line);
-        } else if (y < SCREEN_LINES) {
+        } else if (y < LINE_FX_SCREEN_LINES) {
             draw_object(SKY_OBJECTS_ENGINE_SUB, object, cell_data, x, line);
         } else if (y > SKY_OBJECTS_MAIN_TOP) {
             draw_object(SKY_OBJECTS_ENGINE_MAIN, object, cell_data, x, line - SKY_OBJECTS_MAIN_TOP);

@@ -14,7 +14,7 @@
 #define BBS_WRITE_KEY_L 0x109
 #define BBS_WRITE_KEY_R 0x10a
 
-/* The keyboard's layer (LAYER_SUB_BG3) and the code mode keys are read in. */
+/* The keyboard's layer (DISPLAY_LAYER_SUB_BG3) and the code mode keys are read in. */
 #define BBS_WRITE_KEYBOARD_LAYER 6
 #define BBS_WRITE_CODE_MODE 9
 

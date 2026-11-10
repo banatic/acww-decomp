@@ -340,14 +340,14 @@ CLEAN_AS(func_ov111_0229efec, ChatScene_UpdateKeys)
 /* func_ov111_0229f084: the keyboard drawn on the sub screen's BG3. */
 void ChatScene_DrawKeyboardLayer(ChatScene *self)
 {
-    SoftKeyboard_QueueScreen(chat_keyboard(self), LAYER_SUB_BG3);
+    SoftKeyboard_QueueScreen(chat_keyboard(self), DISPLAY_LAYER_SUB_BG3);
 }
 CLEAN_AS(func_ov111_0229f084, ChatScene_DrawKeyboardLayer)
 
 /* func_ov111_0229f090: the keyboard set up in `state` on the sub screen's BG3. */
 void ChatScene_SetKeyboardState(ChatScene *self, int state)
 {
-    SoftKeyboard_LoadLayout(chat_keyboard(self), state, LAYER_SUB_BG3, 1);
+    SoftKeyboard_LoadLayout(chat_keyboard(self), state, DISPLAY_LAYER_SUB_BG3, 1);
 }
 CLEAN_AS(func_ov111_0229f090, ChatScene_SetKeyboardState)
 
@@ -727,7 +727,7 @@ CLEAN_AS(func_ov111_0229f6d4, ChatScene_TouchKey)
  * gives 1). Gives ChatSceneCodeResult. */
 int ChatScene_RunCode(ChatScene *self, int code)
 {
-    int result = SoftKeyboard_HandleCommand(chat_keyboard(self), code, LAYER_SUB_BG3);
+    int result = SoftKeyboard_HandleCommand(chat_keyboard(self), code, DISPLAY_LAYER_SUB_BG3);
     if (result != 0) {
         ChatScene_RedrawLine(self);
         return result;
@@ -1049,7 +1049,7 @@ void ChatScene_EnsureBox(ChatScene *self)
     if (self->box == NULL) {
         return;
     }
-    self->box->base.layer = LAYER_SUB_BG0;
+    self->box->base.layer = DISPLAY_LAYER_SUB_BG0;
     self->box->base.screens = 1;
     self->box->base.rows_full_width = 0;
     self->box->base.background = 2;
@@ -1590,10 +1590,10 @@ CLEAN_AS(func_ov111_022a075c, ChatScene_IdleByTouch)
 void ChatScene_WipeOut(ChatScene *self)
 {
     if (MenuScene_StepWipe(chat_scene(self), 0) != 0) {
-        DisplayLayer_Hide(LAYER_SUB_BG3);
+        DisplayLayer_Hide(DISPLAY_LAYER_SUB_BG3);
         MenuScene_SetPhase(chat_scene(self), CHAT_SCENE_PHASE_DELETE);
     } else {
-        MenuScene_ScrollWipe(chat_scene(self), LAYER_SUB_BG3, 0, 0);
+        MenuScene_ScrollWipe(chat_scene(self), DISPLAY_LAYER_SUB_BG3, 0, 0);
     }
 }
 CLEAN_AS(func_ov111_022a082c, ChatScene_WipeOut)
@@ -1601,8 +1601,8 @@ CLEAN_AS(func_ov111_022a082c, ChatScene_WipeOut)
 /* func_ov111_022a085c (state 4): the wipe out started on window 2 (state 5). */
 void ChatScene_StartWipeOut(ChatScene *self)
 {
-    MenuScene_StartWipeOnWindow2(chat_scene(self), LAYER_SUB_OBJ, 0, 0, CHAT_SCENE_WIPE_MARGIN);
-    MenuScene_ScrollWipe(chat_scene(self), LAYER_SUB_BG3, 0, 0);
+    MenuScene_StartWipeOnWindow2(chat_scene(self), DISPLAY_LAYER_SUB_OBJ, 0, 0, CHAT_SCENE_WIPE_MARGIN);
+    MenuScene_ScrollWipe(chat_scene(self), DISPLAY_LAYER_SUB_BG3, 0, 0);
     self->base.state = CHAT_SCENE_STATE_WIPE_OUT;
 }
 CLEAN_AS(func_ov111_022a085c, ChatScene_StartWipeOut)
@@ -1614,7 +1614,7 @@ void ChatScene_WipeIn(ChatScene *self)
         MenuScene_SetPhase(chat_scene(self), CHAT_SCENE_PHASE_INTERACTIVE);
         ChatScene_EnterInput(self);
     }
-    MenuScene_ScrollWipe(chat_scene(self), LAYER_SUB_BG3, 0, 0);
+    MenuScene_ScrollWipe(chat_scene(self), DISPLAY_LAYER_SUB_BG3, 0, 0);
 }
 CLEAN_AS(func_ov111_022a088c, ChatScene_WipeIn)
 
@@ -1623,12 +1623,12 @@ CLEAN_AS(func_ov111_022a088c, ChatScene_WipeIn)
  * shown (state 3), and the line drawn. */
 void ChatScene_StartWipeIn(ChatScene *self)
 {
-    SoftKeyboard_LoadSavedLayout(chat_keyboard(self), LAYER_SUB_BG3);
+    SoftKeyboard_LoadSavedLayout(chat_keyboard(self), DISPLAY_LAYER_SUB_BG3);
     ChatScene_DrawKeyboardLayer(self);
     ChatScene_SetFlags(self, CHAT_SCENE_FLAG_DRAWN);
-    MenuScene_StartWipeCoveredOnWindow2(chat_scene(self), LAYER_SUB_OBJ, 3, 0, CHAT_SCENE_WIPE_MARGIN);
-    DisplayLayer_Show(LAYER_SUB_BG3);
-    MenuScene_ScrollWipe(chat_scene(self), LAYER_SUB_BG3, 0, 0);
+    MenuScene_StartWipeCoveredOnWindow2(chat_scene(self), DISPLAY_LAYER_SUB_OBJ, 3, 0, CHAT_SCENE_WIPE_MARGIN);
+    DisplayLayer_Show(DISPLAY_LAYER_SUB_BG3);
+    MenuScene_ScrollWipe(chat_scene(self), DISPLAY_LAYER_SUB_BG3, 0, 0);
     MenuScene_SetState(chat_scene(self), CHAT_SCENE_STATE_WIPE_IN);
     ChatScene_RedrawLine(self);
 }
@@ -1665,19 +1665,19 @@ CLEAN_AS(func_ov111_022a0940, ChatScene_LoadKeyboard)
 void ChatScene_LoadScreenFiles(ChatScene *self)
 {
     Heap *heap = data_021fbe94;
-    DisplayLayer_LoadPalettesFromFile(data_ov111_022a1068, heap, LAYER_SUB_BG3, 1, 1, 9);
+    DisplayLayer_LoadPalettesFromFile(data_ov111_022a1068, heap, DISPLAY_LAYER_SUB_BG3, 1, 1, 9);
     SoftKeyboard_ReadScreen(chat_keyboard(self), data_ov111_022a0f88);
     ChatScene_UpdateKeys(self);
-    SoftKeyboard_LoadScreenNow(chat_keyboard(self), LAYER_SUB_BG3);
-    DisplayLayer_LoadCharsFromFile(data_ov111_022a1080, heap, LAYER_SUB_BG3, 0x13d, 0x13d, 0x1e9);
+    SoftKeyboard_LoadScreenNow(chat_keyboard(self), DISPLAY_LAYER_SUB_BG3);
+    DisplayLayer_LoadCharsFromFile(data_ov111_022a1080, heap, DISPLAY_LAYER_SUB_BG3, 0x13d, 0x13d, 0x1e9);
 }
 CLEAN_AS(func_ov111_022a0970, ChatScene_LoadScreenFiles)
 
 /* func_ov111_022a09d8: the sub screen's BG3 at priority 2, its control word 0. */
 void ChatScene_SetUpLayer(void)
 {
-    DisplayLayer_SetPriority(LAYER_SUB_BG3, 2);
-    DisplayLayer_SetBgControl(LAYER_SUB_BG3, 0, 0, 0);
+    DisplayLayer_SetPriority(DISPLAY_LAYER_SUB_BG3, 2);
+    DisplayLayer_SetBgControl(DISPLAY_LAYER_SUB_BG3, 0, 0, 0);
 }
 CLEAN_AS(func_ov111_022a09d8, ChatScene_SetUpLayer)
 

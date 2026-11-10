@@ -12,16 +12,16 @@
 
 #include "types.h"
 
-#define SCREEN_LINES 192
+#define LINE_FX_SCREEN_LINES 192
 
 /* data_021f6f70: the backdrop colors. */
 typedef struct LineGradient {
-    u32 shown;                   /* which of the two tables is shown */
-    u16 colors[2][SCREEN_LINES]; /* 0x004 */
-    u16 top_color;               /* 0x304: the color down to `top_line` */
-    u16 bottom_color;            /* 0x306: the color from `bottom_line` on */
-    int top_line;                /* 0x308 */
-    int bottom_line;             /* 0x30c */
+    u32 shown;                           /* which of the two tables is shown */
+    u16 colors[2][LINE_FX_SCREEN_LINES]; /* 0x004 */
+    u16 top_color;                       /* 0x304: the color down to `top_line` */
+    u16 bottom_color;                    /* 0x306: the color from `bottom_line` on */
+    int top_line;                        /* 0x308 */
+    int bottom_line;                     /* 0x30c */
 } LineGradient;
 
 /* A line's affine parameters of background 3 (BG3X, BG3Y, BG3PA). */
@@ -34,11 +34,11 @@ typedef struct LineAffine {
 
 /* data_021f75b0: the lines' background 3 and blending. */
 typedef struct LineLayers {
-    u32 screen;                         /* the screen last set up (func_020ba540) */
-    u32 shown;                          /* which of the two sets of tables is shown */
-    LineAffine affine[2][SCREEN_LINES]; /* 0x0008 */
+    u32 screen;                                 /* the screen last set up (func_020ba540) */
+    u32 shown;                                  /* which of the two sets of tables is shown */
+    LineAffine affine[2][LINE_FX_SCREEN_LINES]; /* 0x0008 */
     u8 unk_1208[8];
-    u16 blend_alpha[2][SCREEN_LINES]; /* 0x1210: BLDALPHA */
+    u16 blend_alpha[2][LINE_FX_SCREEN_LINES]; /* 0x1210: BLDALPHA */
 } LineLayers;
 
 /* data_021f85b0: the object whose field picks the shift of the lines read. */

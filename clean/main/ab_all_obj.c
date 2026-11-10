@@ -11,8 +11,8 @@
 static_assert(offsetof(AbAllObj, palettes) == 0x48, "AbAllObj layout");
 static_assert(offsetof(AbAllObj, chars) == 0x4c, "AbAllObj layout");
 
-#define CHARS_SIZE 0x1000  /* 128 16-color characters */
-#define PALETTES_SIZE 0x80 /* 4 16-color palettes */
+#define CHARS_SIZE 0x1000             /* 128 16-color characters */
+#define AB_ALL_OBJ_PALETTES_SIZE 0x80 /* 4 16-color palettes */
 
 extern const char data_020d7204[]; /* "/ab_all/ab_all_obj_ncg.bin" */
 extern const char data_020d7220[]; /* "/ab_all/ab_all_obj_ncl.bin" */
@@ -37,9 +37,9 @@ CLEAN_AS(func_02003038, AbAllObj_UploadChars)
 /* func_02003064: to the first OBJ palettes of both screens. */
 void AbAllObj_UploadPalettes(AbAllObj *obj)
 {
-    DC_FlushRange(obj->palettes, PALETTES_SIZE);
-    GX_LoadOBJPltt(obj->palettes, 0, PALETTES_SIZE);
-    GXS_LoadOBJPltt(obj->palettes, 0, PALETTES_SIZE);
+    DC_FlushRange(obj->palettes, AB_ALL_OBJ_PALETTES_SIZE);
+    GX_LoadOBJPltt(obj->palettes, 0, AB_ALL_OBJ_PALETTES_SIZE);
+    GXS_LoadOBJPltt(obj->palettes, 0, AB_ALL_OBJ_PALETTES_SIZE);
 }
 CLEAN_AS(func_02003064, AbAllObj_UploadPalettes)
 

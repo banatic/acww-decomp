@@ -59,11 +59,11 @@ extern fx32 FX_MulFunc(fx32 a, fx32 b);
 
 /* The text box: from VRAM tile 0x80, 8 tiles by 1, on OBJs of the main screen. */
 #define BOX_FIRST_TILE 0x80
-#define BOX_CELLS 8
-#define BOX_ROWS 1
+#define BELLS_PANEL_BOX_CELLS 8
+#define BELLS_PANEL_BOX_ROWS 1
 #define BOX_LAYER_OBJECTS 4
 #define BOX_BACKGROUND 0
-#define BOX_COLOR 0xc
+#define BELLS_PANEL_BOX_COLOR 0xc
 
 /* The sound when the counting stops. */
 #define SE_COUNT_DONE 0x2e
@@ -226,7 +226,7 @@ void BellsPanel_OpenTextBox(BellsPanel *panel)
     if (panel->box != NULL) {
         return;
     }
-    panel->box = (TextDrawBox *) LabelBox_NewInVram(BOX_FIRST_TILE, BOX_CELLS, BOX_ROWS);
+    panel->box = (TextDrawBox *) LabelBox_NewInVram(BOX_FIRST_TILE, BELLS_PANEL_BOX_CELLS, BELLS_PANEL_BOX_ROWS);
     TextDrawBox *box = panel->box;
     if (box == NULL) {
         return;
@@ -235,7 +235,7 @@ void BellsPanel_OpenTextBox(BellsPanel *panel)
     box->screens = TEXT_DRAW_TO_MAIN;
     box->rows_full_width = 1;
     box->background = BOX_BACKGROUND;
-    box->color = BOX_COLOR;
+    box->color = BELLS_PANEL_BOX_COLOR;
     const TextVtable *vtable = (const TextVtable *) panel->text.vtable;
     box->text = (const char *) (uintptr_t) ((int (*)(MessageText46 *))(uintptr_t) vtable->buffer)(&panel->text);
     box->font = &data_021c81d4;

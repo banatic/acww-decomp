@@ -42,8 +42,8 @@ extern u8 data_021fbddc; /* the pen went down or up this frame */
 /* The buttons that close the message. */
 #define BUTTON_A 0x0001
 #define BUTTON_B 0x0002
-#define BUTTON_X 0x0400
-#define BUTTON_Y 0x0800
+#define ERROR_MESSAGE_BUTTON_X 0x0400
+#define ERROR_MESSAGE_BUTTON_Y 0x0800
 
 /* The vtable entries called here: the popup's draw, the receiver's reset. */
 #define SLOT_DRAW 2
@@ -247,7 +247,7 @@ static int closing_input(int check_flag80)
     if (data_021fbdd8 != 0 && data_021fbddc != 0) {
         return 1;
     }
-    return (data_021fbe40.pressed & (BUTTON_A | BUTTON_B | BUTTON_X | BUTTON_Y)) != 0;
+    return (data_021fbe40.pressed & (BUTTON_A | BUTTON_B | ERROR_MESSAGE_BUTTON_X | ERROR_MESSAGE_BUTTON_Y)) != 0;
 }
 
 /* func_ov002_0220b8ac: a frame of the error message, then of its popup, which is drawn

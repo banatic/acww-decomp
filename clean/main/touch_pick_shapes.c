@@ -319,10 +319,10 @@ static void touch_pick_ground_bent(TouchPick *pick, Vec3 *from, Vec3 *to, const 
  * y = 0 when the segment goes down through it. Each hit shortens the segment. */
 static void touch_pick_ground_flat(TouchPick *pick, Vec3 *from, Vec3 *to)
 {
-    int from_x = from->x >> COLLISION_UNIT_SHIFT;
-    int from_z = from->z >> COLLISION_UNIT_SHIFT;
-    int to_x = to->x >> COLLISION_UNIT_SHIFT;
-    int to_z = to->z >> COLLISION_UNIT_SHIFT;
+    int from_x = from->x >> FIELD_COLLISION_UNIT_SHIFT;
+    int from_z = from->z >> FIELD_COLLISION_UNIT_SHIFT;
+    int to_x = to->x >> FIELD_COLLISION_UNIT_SHIFT;
+    int to_z = to->z >> FIELD_COLLISION_UNIT_SHIFT;
     int x_low = from_x <= to_x ? from_x : to_x;
     int x_high = from_x <= to_x ? to_x : from_x;
     int z_low = from_z <= to_z ? from_z : to_z;
@@ -337,10 +337,10 @@ static void touch_pick_ground_flat(TouchPick *pick, Vec3 *from, Vec3 *to)
             fx32 height = CollisionGround_Height(&ground, 0);
             if (height < 0x4000 && height != 0) {
                 fx32 middle_z = unit_middle(z);
-                fx32 low_x = middle_x - COLLISION_HALF_UNIT;
-                fx32 high_x = middle_x + COLLISION_HALF_UNIT;
-                fx32 low_z = middle_z - COLLISION_HALF_UNIT;
-                fx32 high_z = middle_z + COLLISION_HALF_UNIT;
+                fx32 low_x = middle_x - FIELD_COLLISION_HALF_UNIT;
+                fx32 high_x = middle_x + FIELD_COLLISION_HALF_UNIT;
+                fx32 low_z = middle_z - FIELD_COLLISION_HALF_UNIT;
+                fx32 high_z = middle_z + FIELD_COLLISION_HALF_UNIT;
                 Vec3 corner[4] = {
                     {low_x, height, low_z},
                     {low_x, height, high_z},
@@ -406,10 +406,10 @@ static void touch_pick_posts(TouchPick *pick, Vec3 *from, Vec3 *to)
     int x_high = a.x < b.x ? b.x : a.x;
     int z_low = a.z < b.z ? a.z : b.z;
     int z_high = a.z < b.z ? b.z : a.z;
-    x_low >>= COLLISION_UNIT_SHIFT;
-    z_low >>= COLLISION_UNIT_SHIFT;
-    x_high >>= COLLISION_UNIT_SHIFT;
-    z_high >>= COLLISION_UNIT_SHIFT;
+    x_low >>= FIELD_COLLISION_UNIT_SHIFT;
+    z_low >>= FIELD_COLLISION_UNIT_SHIFT;
+    x_high >>= FIELD_COLLISION_UNIT_SHIFT;
+    z_high >>= FIELD_COLLISION_UNIT_SHIFT;
 
     for (int z = z_high; z >= z_low; z--) {
         fx32 middle_z = unit_middle(z);

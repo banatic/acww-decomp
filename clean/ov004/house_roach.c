@@ -493,7 +493,7 @@ int HouseRoach_CheckRaised(HouseRoach *roach)
 {
     if (roach->actor.position.y >= HOUSE_ROACH_RAISED) {
         roach->actor.position.y = roach->actor.last_position.y;
-        if ((roach->contacts.flags & COLLISION_ON_GROUND) != 0) {
+        if ((roach->contacts.flags & FIELD_COLLISION_ON_GROUND) != 0) {
             CollisionGround ground;
             roach->state = HOUSE_ROACH_VANISH;
             CollisionGround_Init(&ground, &roach->actor.position, 0, 0);

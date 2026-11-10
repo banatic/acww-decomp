@@ -3,14 +3,14 @@
 
 #include "clean.h"
 
-#define PALETTE_SHIFT 12
-#define PALETTE_MASK 0xf000
+#define SCREEN_MAP_PALETTE_SHIFT 12
+#define SCREEN_MAP_PALETTE_MASK 0xf000
 #define TILE_MASK 0x0fff
 
 /* The palette bits of an entry with palette `palette`; only its low four bits count. */
 static u32 palette_bits(u32 palette)
 {
-    return (palette & 0xf) << PALETTE_SHIFT;
+    return (palette & 0xf) << SCREEN_MAP_PALETTE_SHIFT;
 }
 
 /* func_0206fd60: in the rectangle of columns left-right and rows top-bottom (both ends
@@ -20,7 +20,7 @@ void ScreenMap_ReplacePalette(u16 *map, int left, int top, int right, int bottom
     for (int row = top; row <= bottom; row++) {
         for (int column = left; column <= right; column++) {
             u16 *entry = &map[row * SCREEN_MAP_WIDTH + column];
-            if ((*entry & PALETTE_MASK) == palette_bits(from)) {
+            if ((*entry & SCREEN_MAP_PALETTE_MASK) == palette_bits(from)) {
                 *entry = (u16) (palette_bits(to) | (*entry & TILE_MASK));
             }
         }

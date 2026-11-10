@@ -83,7 +83,7 @@ static void player_processes_spawn_served(void)
     if (object == NULL) {
         return;
     }
-    if (object->state == STATE_DELETING) {
+    if (object->state == PROCESS_STATE_DELETING) {
         return;
     }
     int player;
@@ -233,7 +233,7 @@ int PlayerSpawnProcess_Execute(void)
         if (actor == NULL) {
             continue;
         }
-        if (actor->state == STATE_DELETING) {
+        if (actor->state == PROCESS_STATE_DELETING) {
             continue;
         }
         if (!player_processes_reported_here(player)) {

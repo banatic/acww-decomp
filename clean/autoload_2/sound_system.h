@@ -36,13 +36,13 @@ typedef struct SoundScene {
 } SoundScene;
 
 /* The music numbers played as a stream instead of on the music's handle. */
-#define MUSIC_STREAM_LAST 1
+#define SOUND_SYSTEM_MUSIC_STREAM_LAST 1
 /* The hourly music, one piece for each hour: its tracks are listed by arrangement. */
-#define MUSIC_HOURLY_FIRST 0x16
-#define MUSIC_HOURLY_LAST 0x2d
+#define SOUND_SYSTEM_MUSIC_HOURLY_FIRST 0x16
+#define SOUND_SYSTEM_MUSIC_HOURLY_LAST 0x2d
 /* Music started silent. */
-#define MUSIC_SILENT_FIRST 0xb0
-#define MUSIC_SILENT_LAST 0xf5
+#define SOUND_SYSTEM_MUSIC_SILENT_FIRST 0xb0
+#define SOUND_SYSTEM_MUSIC_SILENT_LAST 0xf5
 
 void *SoundSystem_StopEffectB(SoundSystem *sys);
 void SoundSystem_PlayEffectB(SoundSystem *sys, int index);

@@ -22,12 +22,12 @@
 #define HANDLER_VILLAGER_OBJECT_ITEM 63
 #define MESSAGE_KIND 4
 
-#define VILLAGER_ITEMS 4  /* the items from 0x7b0 */
-#define ITEMS_SIZE 9      /* the payload of message 59 */
-#define ITEM_SIZE 3       /* the payload of messages 58 and 63 */
-#define OBJECT_SIZE 4     /* the payload of message 61 */
-#define CHANGE_SIZE 2     /* the payload of message 60 */
-#define ENTRY_ITEM_SIZE 3 /* the payload of message 62 */
+#define VILLAGER_ITEMS 4               /* the items from 0x7b0 */
+#define ITEMS_SIZE 9                   /* the payload of message 59 */
+#define ITEM_SIZE 3                    /* the payload of messages 58 and 63 */
+#define SESSION_VILLAGER_OBJECT_SIZE 4 /* the payload of message 61 */
+#define CHANGE_SIZE 2                  /* the payload of message 60 */
+#define ENTRY_ITEM_SIZE 3              /* the payload of message 62 */
 
 /* The items SessionVillager_SendClothesByIndex sends (and handler 58 takes). */
 #define VILLAGER_ITEM_FIRST 0x11a8
@@ -192,9 +192,9 @@ void SessionVillager_SendObjectByIndex(int index, int kind, const u16 *item, int
     if (!Session_IsLinked(data_020ccf94)) {
         return;
     }
-    u8 payload[OBJECT_SIZE];
+    u8 payload[SESSION_VILLAGER_OBJECT_SIZE];
     SessionVillager_PackObject(payload, (u32) index, (u8) kind, item, (u32) slot, flag != 0);
-    send_message(payload, OBJECT_SIZE, HANDLER_VILLAGER_OBJECT);
+    send_message(payload, SESSION_VILLAGER_OBJECT_SIZE, HANDLER_VILLAGER_OBJECT);
 }
 CLEAN_AS(func_02078540, SessionVillager_SendObjectByIndex)
 
@@ -225,42 +225,42 @@ CLEAN_AS(func_020785dc, SessionVillager_PackObject)
 /* func_0207860c: the object's count (0x2e) becomes `value`. */
 void SessionVillager_SendObjectCount(u8 *villager, int value)
 {
-    SessionVillager_SendObjectChange(villager, value, VILLAGER_OBJECT_SET_COUNT);
+    SessionVillager_SendObjectChange(villager, value, SESSION_VILLAGER_OBJECT_SET_COUNT);
 }
 CLEAN_AS(func_0207860c, SessionVillager_SendObjectCount)
 
 /* func_02078618: bit `bit` of the object's flags (0x30) is set, and its count becomes `bit`. */
 void SessionVillager_SendObjectFlag(u8 *villager, int bit)
 {
-    SessionVillager_SendObjectChange(villager, bit, VILLAGER_OBJECT_SET_FLAG);
+    SessionVillager_SendObjectChange(villager, bit, SESSION_VILLAGER_OBJECT_SET_FLAG);
 }
 CLEAN_AS(func_02078618, SessionVillager_SendObjectFlag)
 
 /* func_02078624: the object's kind (0x2f) becomes `value` (VillagerObject_SetKind). */
 void SessionVillager_SendObjectKind(u8 *villager, int value)
 {
-    SessionVillager_SendObjectChange(villager, value, VILLAGER_OBJECT_SET_KIND);
+    SessionVillager_SendObjectChange(villager, value, SESSION_VILLAGER_OBJECT_SET_KIND);
 }
 CLEAN_AS(func_02078624, SessionVillager_SendObjectKind)
 
 /* func_02078630: operation 2 (func_0209b920), with the value 1, which it does not read. */
 void SessionVillager_SendObjectNextStep(u8 *villager)
 {
-    SessionVillager_SendObjectChange(villager, 1, VILLAGER_OBJECT_NEXT_STEP);
+    SessionVillager_SendObjectChange(villager, 1, SESSION_VILLAGER_OBJECT_NEXT_STEP);
 }
 CLEAN_AS(func_02078630, SessionVillager_SendObjectNextStep)
 
 /* func_0207863c: the object is emptied (func_0209ba7c), with the value 0. */
 void SessionVillager_SendObjectClear(u8 *villager)
 {
-    SessionVillager_SendObjectChange(villager, 0, VILLAGER_OBJECT_CLEAR);
+    SessionVillager_SendObjectChange(villager, 0, SESSION_VILLAGER_OBJECT_CLEAR);
 }
 CLEAN_AS(func_0207863c, SessionVillager_SendObjectClear)
 
 /* func_02078648: the low 5 bits of the object's byte 0xb become `value` (func_0209bb90). */
 void SessionVillager_SendObjectByte0b(u8 *villager, int value)
 {
-    SessionVillager_SendObjectChange(villager, value, VILLAGER_OBJECT_SET_BYTE_0B);
+    SessionVillager_SendObjectChange(villager, value, SESSION_VILLAGER_OBJECT_SET_BYTE_0B);
 }
 CLEAN_AS(func_02078648, SessionVillager_SendObjectByte0b)
 

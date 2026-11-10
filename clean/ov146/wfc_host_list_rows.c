@@ -47,7 +47,7 @@ extern void __register_global_object(void *object, void *destruct, void *record)
 
 /* The rows' layer and the place of the 7 row slots in the base screen (two lines of 32 tiles
  * each, from line 7). */
-#define WFC_HOST_LIST_ROWS_LAYER LAYER_SUB_BG1
+#define WFC_HOST_LIST_ROWS_LAYER DISPLAY_LAYER_SUB_BG1
 #define WFC_HOST_LIST_SLOT_FIRST_LINE 7
 #define WFC_HOST_LIST_SCREEN_LINE 0x20 /* tiles */
 #define WFC_HOST_LIST_ROW_TILES (2 * WFC_HOST_LIST_SCREEN_LINE)

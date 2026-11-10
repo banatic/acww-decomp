@@ -19,13 +19,13 @@ typedef struct FriendStatus {
     u8 num_entry;
 } FriendStatus;
 
-#define FRIEND_COUNT 32
-#define FRIEND_DATA_SIZE 12 /* NitroDWC's DWCFriendData */
+#define NETWORK_FRIEND_COUNT 32
+#define NETWORK_FRIEND_DATA_SIZE 12 /* NitroDWC's DWCFriendData */
 
 /* The friend list the game hands NitroDWC (data_021fbf3c), and what is known of each. */
 typedef struct FriendList {
-    u8 friend_data[FRIEND_COUNT][FRIEND_DATA_SIZE];
-    FriendStatus status[FRIEND_COUNT];
+    u8 friend_data[NETWORK_FRIEND_COUNT][NETWORK_FRIEND_DATA_SIZE];
+    FriendStatus status[NETWORK_FRIEND_COUNT];
 } FriendList;
 
 u32 Exchange_IsDone(void);

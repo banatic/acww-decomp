@@ -28,11 +28,11 @@ static_assert(sizeof(ScreenTransitionFunctions) == 0x10, "ScreenTransitionFuncti
 #define PALETTE_SUB 0x05000400u
 
 #define DISPSTAT_IN_HBLANK 0x0002
-#define BGCNT_PRIORITY 0x0003
-#define BGCNT_KEEP 0x0043  /* the priority and the mosaic (the character base is cleared) */
-#define BG2CNT_MAIN 0x0600 /* screen base 6, priority 0 */
-#define BG2CNT_SUB 0x0e04  /* screen base 0xe, character base 1, priority 0 */
-#define BLACK 0x8000       /* a color of the clear backgrounds */
+#define SCREEN_TRANSITION_BGCNT_PRIORITY 0x0003
+#define SCREEN_TRANSITION_BGCNT_KEEP 0x0043 /* the priority and the mosaic (the character base is cleared) */
+#define BG2CNT_MAIN 0x0600                  /* screen base 6, priority 0 */
+#define BG2CNT_SUB 0x0e04                   /* screen base 0xe, character base 1, priority 0 */
+#define BLACK 0x8000                        /* a color of the clear backgrounds */
 #define TILE_COLOR_1 0x1111
 
 #define PLANE_BG2 0x04
@@ -42,7 +42,7 @@ static_assert(sizeof(ScreenTransitionFunctions) == 0x10, "ScreenTransitionFuncti
 #define BRIGHTNESS_WHITE 16
 #define FULL_SPEED 0x1000 /* a transition done in one frame */
 
-#define SCREEN_HEIGHT 192
+#define SCREEN_TRANSITION_SCREEN_HEIGHT 192
 #define CIRCLE_MAX_RADIUS 160     /* the half diagonal of the screen, near enough */
 #define WINDOW_SPAN_ALL 0x00ff    /* window 0 from x 0 to 255 */
 #define WINDOW_SPAN_NONE 0x8080   /* an empty window at the center */
@@ -85,15 +85,15 @@ static s32 asr(s32 value, int bits)
  * HW: each control register read, written, read and written again. */
 static void clear_bg2(void)
 {
-    REG_BG2CNT &= (u16) ~BGCNT_PRIORITY;
-    REG_BG2CNT = (u16) ((REG_BG2CNT & BGCNT_KEEP) | BG2CNT_MAIN);
+    REG_BG2CNT &= (u16) ~SCREEN_TRANSITION_BGCNT_PRIORITY;
+    REG_BG2CNT = (u16) ((REG_BG2CNT & SCREEN_TRANSITION_BGCNT_KEEP) | BG2CNT_MAIN);
     MIi_CpuClear16(0, G2_GetBG2ScrPtr(), 0x800);
     MIi_CpuClear16(TILE_COLOR_1, G2_GetBG2CharPtr(), 0x20);
     MIi_CpuClear16(BLACK, (void *) (uintptr_t) PALETTE_MAIN, 4);
     DisplayShadow_ShowMainPlanes(PLANE_BG2);
 
-    REG_DB_BG2CNT &= (u16) ~BGCNT_PRIORITY;
-    REG_DB_BG2CNT = (u16) ((REG_DB_BG2CNT & BGCNT_KEEP) | BG2CNT_SUB);
+    REG_DB_BG2CNT &= (u16) ~SCREEN_TRANSITION_BGCNT_PRIORITY;
+    REG_DB_BG2CNT = (u16) ((REG_DB_BG2CNT & SCREEN_TRANSITION_BGCNT_KEEP) | BG2CNT_SUB);
     MIi_CpuClear16(0, G2S_GetBG2ScrPtr(), 0x800);
     MIi_CpuClear16(TILE_COLOR_1, G2S_GetBG2CharPtr(), 0x20);
     MIi_CpuClear16(BLACK, (void *) (uintptr_t) PALETTE_SUB, 4);
@@ -355,8 +355,8 @@ CLEAN_AS(func_02041e48, ScreenTransitionCircle_Update)
  * background 2 hidden. */
 void ScreenTransitionCircle_Finish(void)
 {
-    DisplayShadow_DisableMainWindows(WINDOW_0);
-    DisplayShadow_DisableSubWindows(WINDOW_0);
+    DisplayShadow_DisableMainWindows(DISPLAY_SHADOW_WINDOW_0);
+    DisplayShadow_DisableSubWindows(DISPLAY_SHADOW_WINDOW_0);
     if (data_021c75ac & SCREEN_TRANSITION_HANDLER) {
         LineHandlers_Remove(&data_021c75cc);
         data_021c75ac &= (u8) ~SCREEN_TRANSITION_HANDLER;
@@ -390,15 +390,15 @@ CLEAN_AS(func_02041f6c, ScreenTransitionCircle_Begin)
 void ScreenTransitionCircle_SetUp(void)
 {
     Empty0203de64_NothingValue6c(0);
-    DisplayShadow_EnableMainWindows(WINDOW_0);
-    DisplayShadow_EnableSubWindows(WINDOW_0);
+    DisplayShadow_EnableMainWindows(DISPLAY_SHADOW_WINDOW_0);
+    DisplayShadow_EnableSubWindows(DISPLAY_SHADOW_WINDOW_0);
     DisplayShadow_SetMainWindow0Planes(WINDOW_0_PLANES);
     DisplayShadow_SetSubWindow0Planes(WINDOW_0_PLANES, 1);
     DisplayShadow_SetMainOutsidePlanes(PLANE_BG2);
     DisplayShadow_SetSubOutsidePlanes(PLANE_BG2);
     if (data_021c75b8.cover == 0) {
-        DisplayShadow_SetMainWindow0(0, 0, 0xff, SCREEN_HEIGHT);
-        DisplayShadow_SetSubWindow0(0, 0, 0xff, SCREEN_HEIGHT);
+        DisplayShadow_SetMainWindow0(0, 0, 0xff, SCREEN_TRANSITION_SCREEN_HEIGHT);
+        DisplayShadow_SetSubWindow0(0, 0, 0xff, SCREEN_TRANSITION_SCREEN_HEIGHT);
     } else {
         DisplayShadow_SetMainWindow0(0, 0, 0, 0);
         DisplayShadow_SetSubWindow0(0, 0, 0, 0);
@@ -414,8 +414,8 @@ void ScreenTransitionCircle_VBlank(void)
 {
     REG_WIN0H = *data_021c75b4;
     REG_DB_WIN0H = *data_021c75b4;
-    REG_WIN0V = SCREEN_HEIGHT;
-    REG_DB_WIN0V = SCREEN_HEIGHT;
+    REG_WIN0V = SCREEN_TRANSITION_SCREEN_HEIGHT;
+    REG_DB_WIN0V = SCREEN_TRANSITION_SCREEN_HEIGHT;
 }
 CLEAN_AS(func_02042120, ScreenTransitionCircle_VBlank)
 
@@ -425,11 +425,11 @@ CLEAN_AS(func_02042120, ScreenTransitionCircle_VBlank)
 void ScreenTransitionCircle_HBlank(void)
 {
     int y = REG_VCOUNT;
-    if (y >= SCREEN_HEIGHT) {
+    if (y >= SCREEN_TRANSITION_SCREEN_HEIGHT) {
         return;
     }
     if (y >= SCREEN_TRANSITION_LINES) {
-        y = SCREEN_HEIGHT - 1 - y;
+        y = SCREEN_TRANSITION_SCREEN_HEIGHT - 1 - y;
     }
     u16 span = data_021c75b4[y];
     if (REG_DISPSTAT & DISPSTAT_IN_HBLANK) {

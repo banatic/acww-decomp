@@ -35,7 +35,7 @@ static_assert(sizeof(DesignTexture) == 0x38, "texture");
 #define DESIGN_CHARS 4
 #define SHEET_DESIGNS 8
 #define SAMPLE_IMAGE_SIZE 0x200
-#define SHEET_SIZE 0x1000
+#define DESIGN_ASSETS_SHEET_SIZE 0x1000
 /* The samples "obj%d.bch" are numbered from 2. */
 #define SAMPLE_FILE_FIRST 2
 
@@ -192,7 +192,7 @@ CLEAN_AS(func_020721e0, DesignBuSheet_ToBitmap)
 /* func_02072204: reads "menu/desi/b_myd_bu_obj.bch". */
 void DesignBuSheet_Load(unsigned char *sheet)
 {
-    RomFile_Read(data_020e17f0, sheet, SHEET_SIZE);
+    RomFile_Read(data_020e17f0, sheet, DESIGN_ASSETS_SHEET_SIZE);
 }
 CLEAN_AS(func_02072204, DesignBuSheet_Load)
 
@@ -215,7 +215,7 @@ CLEAN_AS(func_02072220, DesignMySheet_ToBitmap)
 /* func_02072244: reads "menu/desi/b_myd_my_obj.bch". */
 void DesignMySheet_Load(void *sheet)
 {
-    RomFile_Read(data_020e180c, sheet, SHEET_SIZE);
+    RomFile_Read(data_020e180c, sheet, DESIGN_ASSETS_SHEET_SIZE);
 }
 CLEAN_AS(func_02072244, DesignMySheet_Load)
 

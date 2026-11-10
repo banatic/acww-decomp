@@ -334,9 +334,9 @@ int SoftKeyboard_LoadObjGraphics(SoftKeyboard *kb)
     Heap *heap = data_021fbe94;
 
     (void) kb;
-    DisplayLayer_LoadPalettesFromFile(data_ov095_0229ee08, heap, LAYER_SUB_OBJ, 4, 4, 0xe);
-    DisplayLayer_LoadCharsFromFile(data_ov095_0229ee24, heap, LAYER_SUB_OBJ, 0xc0, 0xc0, 0x13f);
-    return DisplayLayer_LoadCharsFromFile(data_ov095_0229ee40, heap, LAYER_SUB_OBJ, 0x180, 0x180, 0x1ff);
+    DisplayLayer_LoadPalettesFromFile(data_ov095_0229ee08, heap, DISPLAY_LAYER_SUB_OBJ, 4, 4, 0xe);
+    DisplayLayer_LoadCharsFromFile(data_ov095_0229ee24, heap, DISPLAY_LAYER_SUB_OBJ, 0xc0, 0xc0, 0x13f);
+    return DisplayLayer_LoadCharsFromFile(data_ov095_0229ee40, heap, DISPLAY_LAYER_SUB_OBJ, 0x180, 0x180, 0x1ff);
 }
 CLEAN_AS(func_ov095_0229b324, SoftKeyboard_LoadObjGraphics)
 
@@ -359,8 +359,8 @@ void SoftKeyboard_LoadEmotions(SoftKeyboard *kb)
         u32 chars = (u32) (uintptr_t) kb->emotion_chars + (u32) offset;
         int first = i * 2 + SOFT_KEYBOARD_EMOTION_FIRST_CHAR;
 
-        DisplayLayer_LoadChars(chars, LAYER_SUB_OBJ, (u32) first, (u32) first, (u32) (first + 1));
-        DisplayLayer_LoadChars(chars + SOFT_KEYBOARD_EMOTION_LOWER_ROW, LAYER_SUB_OBJ, (u32) (first + 0x20),
+        DisplayLayer_LoadChars(chars, DISPLAY_LAYER_SUB_OBJ, (u32) first, (u32) first, (u32) (first + 1));
+        DisplayLayer_LoadChars(chars + SOFT_KEYBOARD_EMOTION_LOWER_ROW, DISPLAY_LAYER_SUB_OBJ, (u32) (first + 0x20),
                                (u32) (first + 0x20), (u32) (first + 0x21));
     }
 }

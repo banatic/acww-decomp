@@ -39,10 +39,10 @@ static_assert(offsetof(CafeProps, effect) == 0xf38, "effect");
 static_assert(offsetof(CafeProps, part_effects) == 0xf3c, "part effects");
 static_assert(sizeof(CafeProps) == 0xf44, "the size CafeProps_Create allocates");
 
-#define NO_EFFECT (-1)    /* CafeProps.effect and part_effects when none runs */
-#define EFFECT_SET 0x6b   /* the effect set of all three effects */
-#define EFFECT_FRAME 0x3b /* the master's frame at which state 5 starts its effect */
-#define MUSIC_FIRST 99    /* the musics whose beat the cup and part 0 follow */
+#define NO_EFFECT (-1)            /* CafeProps.effect and part_effects when none runs */
+#define EFFECT_SET 0x6b           /* the effect set of all three effects */
+#define EFFECT_FRAME 0x3b         /* the master's frame at which state 5 starts its effect */
+#define CAFE_PROPS_MUSIC_FIRST 99 /* the musics whose beat the cup and part 0 follow */
 #define MUSIC_LAST 171
 #define RECORD_STOPPED 1 /* byte 3 of the sound's entry while it does not play */
 #define PLAY_LOOP 0      /* FrameCtrlFlags */
@@ -732,7 +732,7 @@ static void step_to_beat(RmoAnimatedModel *model, fx32 speed)
  * parts 4 and 6 start their effects once shown. */
 int CafeProps_Update(CafeProps *self)
 {
-    if (Math_IsBetween(Music_CurrentMusic(), MUSIC_FIRST, MUSIC_LAST)) {
+    if (Math_IsBetween(Music_CurrentMusic(), CAFE_PROPS_MUSIC_FIRST, MUSIC_LAST)) {
         const int *record = SoundSys_OwnerData();
         if (record != NULL && ((const s8 *) record)[3] != RECORD_STOPPED) {
             step_to_beat(&self->base.body, record[4]);

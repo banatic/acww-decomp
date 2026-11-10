@@ -199,7 +199,7 @@ int Process_IsAnyDescendantCreating(Process *self)
 {
     TreeNode *end = TreeNode_NextSkipChildren(&self->node.tree);
     for (TreeNode *node = self->node.tree.first_child; node != NULL && node != end; node = TreeNode_Next(node)) {
-        if (owner_of(node)->state == STATE_CREATING) {
+        if (owner_of(node)->state == PROCESS_STATE_CREATING) {
             return TRUE;
         }
     }
@@ -234,10 +234,10 @@ CLEAN_AS(func_020ede60, Process_RunCreate)
 void Process_FirstCreate(Process *self)
 {
     Process_RunCreate(self);
-    if (self->delete_requested || self->activate_pending || self->state != STATE_CREATING) {
+    if (self->delete_requested || self->activate_pending || self->state != PROCESS_STATE_CREATING) {
         return;
     }
-    if (data_0213e7fc == PHASE_CREATE) {
+    if (data_0213e7fc == PROCESS_PHASE_CREATE) {
         self->create_pending = TRUE;
         return;
     }
@@ -400,7 +400,7 @@ CLEAN_AS(func_020ee0a4, Process_CreateFittedHeap)
  * CONNECT phase moves it. A process not active only has both orders set. */
 static void set_order(Process *self, ProcessLink *link, ProcessList *list, int list_phase, u16 order)
 {
-    if (self->state == STATE_ACTIVE) {
+    if (self->state == PROCESS_STATE_ACTIVE) {
         if (data_0213e7fc == list_phase) {
             link->wanted_order = order;
             return;
@@ -418,14 +418,14 @@ static void set_order(Process *self, ProcessLink *link, ProcessList *list, int l
 /* func_020ee324 */
 void Process_SetDrawOrder(Process *self, u16 order)
 {
-    set_order(self, &self->draw_link, &data_021fd024, PHASE_DRAW, order);
+    set_order(self, &self->draw_link, &data_021fd024, PROCESS_PHASE_DRAW, order);
 }
 CLEAN_AS(func_020ee324, Process_SetDrawOrder)
 
 /* func_020ee3c0 */
 void Process_SetExecuteOrder(Process *self, u16 order)
 {
-    set_order(self, &self->link, &data_021fd004, PHASE_EXECUTE, order);
+    set_order(self, &self->link, &data_021fd004, PROCESS_PHASE_EXECUTE, order);
 }
 CLEAN_AS(func_020ee3c0, Process_SetExecuteOrder)
 
@@ -443,7 +443,7 @@ CLEAN_AS(func_020ee45c, Process_Parent)
  * starts in the next CONNECT phase. The process is told first (vtable slot 12). */
 void Process_RequestDelete(Process *self)
 {
-    if (self->delete_requested || self->state == STATE_DELETING) {
+    if (self->delete_requested || self->state == PROCESS_STATE_DELETING) {
         return;
     }
     self->delete_requested = TRUE;
@@ -470,7 +470,7 @@ CLEAN_AS(func_020ee4d4, Process_OnDeleteRequested)
  * QUIRK: the process is tested for NULL after it was used. */
 void Process_AfterDelete(Process *self, int outcome)
 {
-    if (outcome != OUTCOME_DONE) {
+    if (outcome != PROCESS_OUTCOME_DONE) {
         return;
     }
     Tree_Detach(&data_021fcff8.tree, &self->node.tree);
@@ -512,17 +512,17 @@ CLEAN_AS(func_020ee594, Process_DeleteDefault)
  * CONNECT phase. */
 void Process_AfterCreate(Process *self, int outcome)
 {
-    if (outcome != OUTCOME_DONE) {
+    if (outcome != PROCESS_OUTCOME_DONE) {
         return;
     }
     List_Remove(&data_021fd014.list, &self->link.node);
-    if (data_0213e7fc == PHASE_EXECUTE) {
+    if (data_0213e7fc == PROCESS_PHASE_EXECUTE) {
         self->activate_pending = TRUE;
         return;
     }
     ProcessList_Insert(&data_021fd004.list, &self->link);
     ProcessList_Insert(&data_021fd024.list, &self->draw_link);
-    self->state = STATE_ACTIVE;
+    self->state = PROCESS_STATE_ACTIVE;
 }
 CLEAN_AS(func_020ee59c, Process_AfterCreate)
 
@@ -678,26 +678,26 @@ CLEAN_AS(func_020ee934, Process_RunFrame)
 /* func_020ee964 */
 void Process_RunDrawPhase(void)
 {
-    data_0213e7fc = PHASE_DRAW;
+    data_0213e7fc = PROCESS_PHASE_DRAW;
     ProcessList_ForEach(&data_021fd024);
-    data_0213e7fc = PHASE_NULL;
+    data_0213e7fc = PROCESS_PHASE_NULL;
 }
 CLEAN_AS(func_020ee964, Process_RunDrawPhase)
 
 /* func_020ee9a0 */
 void Process_RunAllPhases(void)
 {
-    data_0213e7fc = PHASE_DELETE;
+    data_0213e7fc = PROCESS_PHASE_DELETE;
     ProcessList_ForEach(&data_021fd034);
-    data_0213e7fc = PHASE_CREATE;
+    data_0213e7fc = PROCESS_PHASE_CREATE;
     ProcessList_ForEach(&data_021fd014);
-    data_0213e7fc = PHASE_EXECUTE;
+    data_0213e7fc = PROCESS_PHASE_EXECUTE;
     ProcessList_ForEach(&data_021fd004);
-    data_0213e7fc = PHASE_DRAW;
+    data_0213e7fc = PROCESS_PHASE_DRAW;
     ProcessList_ForEach(&data_021fd024);
-    data_0213e7fc = PHASE_CONNECT;
+    data_0213e7fc = PROCESS_PHASE_CONNECT;
     ProcessTree_ForEach(&data_021fcff8);
-    data_0213e7fc = PHASE_NULL;
+    data_0213e7fc = PROCESS_PHASE_NULL;
 }
 CLEAN_AS(func_020ee9a0, Process_RunAllPhases)
 
@@ -732,24 +732,24 @@ CLEAN_AS(func_020eea4c, ProcessTree_ForEach)
 /* func_020eeacc: a running list advanced by one step; TRUE unless it is still running. */
 int StepList_IsIdle(StepList *list)
 {
-    if (list->state == STEPS_RUNNING) {
+    if (list->state == PROCESS_STEPS_RUNNING) {
         list->state = StepList_Run(list, FALSE);
     }
-    return list->state != STEPS_RUNNING;
+    return list->state != PROCESS_STEPS_RUNNING;
 }
 CLEAN_AS(func_020eeacc, StepList_IsIdle)
 
 /* func_020eeb04: the steps run from the one under way, while each is done (vtable slot 2
- * returns STEPS_DONE), one only unless `all`; the list's state, STEPS_DONE without steps. The
+ * returns PROCESS_STEPS_DONE), one only unless `all`; the list's state, PROCESS_STEPS_DONE without steps. The
  * state is left as it was when no step is left. */
 s16 StepList_Run(StepList *list, int all)
 {
-    if (list->steps == NULL || list->state == STEPS_DONE) {
-        return STEPS_DONE;
+    if (list->steps == NULL || list->state == PROCESS_STEPS_DONE) {
+        return PROCESS_STEPS_DONE;
     }
     while (list->steps[list->index] != 0) {
         list->state = ((StepRun *) virtual_slot(list, 2))(list, list->steps[list->index]);
-        if (list->state != STEPS_DONE) {
+        if (list->state != PROCESS_STEPS_DONE) {
             break;
         }
         list->index++;
@@ -765,7 +765,7 @@ CLEAN_AS(func_020eeb04, StepList_Run)
 /* func_020eebb4: the steps done undone in reverse order (vtable slot 3); `index` ends at -1. */
 void StepList_Undo(StepList *list)
 {
-    if (list->steps == NULL || list->state == STEPS_NOT_STARTED) {
+    if (list->steps == NULL || list->state == PROCESS_STEPS_NOT_STARTED) {
         return;
     }
     for (list->index--; list->index >= 0; list->index--) {

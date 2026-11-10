@@ -181,7 +181,7 @@ static int count_hosting_friends(void)
 {
     const FriendList *friends = (const FriendList *) (const void *) Session_StartTable(data_020ccf94);
     int count = 0;
-    for (int i = 0; i < FRIEND_COUNT; i++) {
+    for (int i = 0; i < NETWORK_FRIEND_COUNT; i++) {
         if (friends->status[i].status == GATEKEEPER_FRIEND_HOSTING) {
             count++;
         }

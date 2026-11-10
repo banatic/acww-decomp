@@ -92,9 +92,9 @@ enum WfcHostListCursor {
     WFC_HOST_LIST_CURSOR_FIRST_ROW = 3 /* 3-9: the rows on screen, from the top */
 };
 
-#define WFC_HOST_LIST_FRIENDS FRIEND_COUNT /* 32 */
-#define WFC_HOST_LIST_NONE 0x20            /* no friend, in `list`, `row_friend` and `chosen` */
-#define WFC_HOST_LIST_ROWS 7               /* rows on screen, and row slots */
+#define WFC_HOST_LIST_FRIENDS NETWORK_FRIEND_COUNT /* 32 */
+#define WFC_HOST_LIST_NONE 0x20                    /* no friend, in `list`, `row_friend` and `chosen` */
+#define WFC_HOST_LIST_ROWS 7                       /* rows on screen, and row slots */
 #define WFC_HOST_LIST_LABELS 20
 #define WFC_HOST_LIST_SCROLL_MAX 0x1a0
 #define WFC_HOST_LIST_KNOB_MAX 0x50

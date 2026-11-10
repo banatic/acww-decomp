@@ -50,7 +50,7 @@ enum {
     MESSAGE_ASK_STATE = 14,
     MESSAGE_RELEASE = 17,
 };
-#define TO_HOST 0
+#define LINK_SCENE_TO_HOST 0
 #define TO_ALL 4
 
 #define HOST_SLOT 0
@@ -546,7 +546,7 @@ void LinkScene_ReportArrival(LinkState *state)
         NetSession *session = data_020ccf94;
         Session_BeginMessage(session);
         Session_AppendMessage(session, &byte, 1);
-        Session_EndMessage(session, MESSAGE_ARRIVED, TO_HOST);
+        Session_EndMessage(session, MESSAGE_ARRIVED, LINK_SCENE_TO_HOST);
         LinkPart_ClearArrived(arrived);
     }
 }
@@ -760,7 +760,7 @@ void LinkScene_TakeLeftState(void)
         NetSession *sender = data_020ccf94;
         Session_BeginMessage(sender);
         Session_AppendMessage(sender, packed, sizeof(packed));
-        Session_EndMessage(sender, MESSAGE_PLACE_CHANGE, TO_HOST);
+        Session_EndMessage(sender, MESSAGE_PLACE_CHANGE, LINK_SCENE_TO_HOST);
         LinkPart_EndEntryB(packed);
     } else {
         LinkGlobal_AddPlaceChange(own, LINK_SCENE_NONE, 1, 0, MASK_HOLDER);

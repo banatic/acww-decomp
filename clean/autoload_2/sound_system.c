@@ -36,7 +36,7 @@ typedef struct HourlyTracks {
     u16 arrangement_c;
     u16 arrangement_d;
 } HourlyTracks;
-extern const HourlyTracks data_0213e8d0[MUSIC_HOURLY_LAST - MUSIC_HOURLY_FIRST + 1];
+extern const HourlyTracks data_0213e8d0[SOUND_SYSTEM_MUSIC_HOURLY_LAST - SOUND_SYSTEM_MUSIC_HOURLY_FIRST + 1];
 
 extern u64 OS_GetTick(void);
 /* The ROM's symbol name: it gives the priority the sound capture's thread is made one above. */
@@ -508,8 +508,8 @@ void SoundSystem_SetArrangement(SoundSystem *sys, int arrangement)
     if (player == NULL) {
         return;
     }
-    unsigned int hour = (u16) (player->seq_no - MUSIC_HOURLY_FIRST);
-    if (hour > MUSIC_HOURLY_LAST - MUSIC_HOURLY_FIRST) {
+    unsigned int hour = (u16) (player->seq_no - SOUND_SYSTEM_MUSIC_HOURLY_FIRST);
+    if (hour > SOUND_SYSTEM_MUSIC_HOURLY_LAST - SOUND_SYSTEM_MUSIC_HOURLY_FIRST) {
         return;
     }
     sys->cross_delay = -1;
@@ -669,7 +669,7 @@ CLEAN_AS(func_020f1c00, SoundSystem_EndMusic)
  * REQUIRES: there is a scene. */
 void SoundSystem_ChangeMusic(SoundSystem *sys, unsigned int music)
 {
-    if (music <= MUSIC_STREAM_LAST) {
+    if (music <= SOUND_SYSTEM_MUSIC_STREAM_LAST) {
         func_0210fc7c(&sys->stream, (int) music, 0);
         if (music == 0) {
             sys->stream_length = NNS_SndArcStrmGetTimeLength(&sys->stream);
@@ -678,12 +678,12 @@ void SoundSystem_ChangeMusic(SoundSystem *sys, unsigned int music)
     }
 
     sys->scene->vtable->on_music(sys->scene, 0, (int) music);
-    if (music >= MUSIC_SILENT_FIRST && music <= MUSIC_SILENT_LAST) {
+    if (music >= SOUND_SYSTEM_MUSIC_SILENT_FIRST && music <= SOUND_SYSTEM_MUSIC_SILENT_LAST) {
         SoundSystem_PlayMusic(sys, (int) music, 0);
         return;
     }
     SoundSystem_PlayMusic(sys, (int) music, 0x7f);
-    if (music >= MUSIC_HOURLY_FIRST && music <= MUSIC_HOURLY_LAST) {
+    if (music >= SOUND_SYSTEM_MUSIC_HOURLY_FIRST && music <= SOUND_SYSTEM_MUSIC_HOURLY_LAST) {
         sys->arrange_due = 1;
     }
 }

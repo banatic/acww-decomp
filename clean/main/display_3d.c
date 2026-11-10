@@ -26,8 +26,8 @@
 
 #define MTX_MODE_POSITION_VECTOR 2
 #define MTX_MODE_TEXTURE 3
-#define SWAP_MANUAL_SORT 1
-#define SWAP_W_BUFFER 2
+#define DISPLAY_3D_SWAP_MANUAL_SORT 1
+#define DISPLAY_3D_SWAP_W_BUFFER 2
 
 #define CLEAR_DEPTH_MAX 0x7fff
 #define POLYGON_ID_OPAQUE 0x3f
@@ -154,7 +154,7 @@ void Display3D_InitEngine(void)
     G3i_PerspectiveW_(0x579 /* sin 20 degrees */, 0xf09 /* cos */, 0x1555 /* 4/3 */, FX32_ONE, 1000 * FX32_ONE, FX32_ONE, 1,
                       0);
     REG32(REG_MTX_STORE) = 0;
-    REG32(REG_SWAP_BUFFERS) = SWAP_MANUAL_SORT | SWAP_W_BUFFER;
+    REG32(REG_SWAP_BUFFERS) = DISPLAY_3D_SWAP_MANUAL_SORT | DISPLAY_3D_SWAP_W_BUFFER;
     NNS_G3dInit();
     Display3D_LoadToonTable();
     G3X_SetClearColor(0, 0, CLEAR_DEPTH_MAX, POLYGON_ID_OPAQUE, 1);

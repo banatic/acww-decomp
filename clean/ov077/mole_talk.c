@@ -96,7 +96,7 @@ extern const u8 data_ov077_02279600[5];
 /* His music (music_queue.h): 0x43 at priority 0x18; at a close, the value 0x16 for 0x20 frames
  * at priority 0x17. */
 #define MOLE_MUSIC 0x43
-#define MOLE_MUSIC_PRIORITY 0x18
+#define MOLE_TALK_MOLE_MUSIC_PRIORITY 0x18
 #define MOLE_MUSIC_DROPPED_PRIORITY 0x17
 #define MOLE_MUSIC_VOLUME 0x7f
 #define MOLE_MUSIC_CLOSE_VALUE 0x16
@@ -291,7 +291,7 @@ void MoleTalk_OnGoOn(MoleTalk *talk)
 {
     if (talk->music_started == 0) {
         Music_DropPriority(MOLE_MUSIC_DROPPED_PRIORITY);
-        Music_Add(MOLE_MUSIC_PRIORITY, MOLE_MUSIC, MOLE_MUSIC_VOLUME, 1);
+        Music_Add(MOLE_TALK_MOLE_MUSIC_PRIORITY, MOLE_MUSIC, MOLE_MUSIC_VOLUME, 1);
         talk->music_started = 1;
     }
 }

@@ -105,7 +105,7 @@ extern int **func_02070be8(void *label);
 extern void MI_CpuCopy8(const void *source, void *destination, u32 size);
 extern void MIi_CpuCopy16(const void *source, void *destination, u32 size);
 
-/* The layer of the sub engine's OBJs (main/display_layers.h, LAYER_SUB_OBJ). */
+/* The layer of the sub engine's OBJs (main/display_layers.h, DISPLAY_LAYER_SUB_OBJ). */
 #define CATALOG_LIST_OBJ_LAYER 8
 
 /* The sounds. */
@@ -544,7 +544,7 @@ CLEAN_AS(func_ov114_0229c8dc, CatalogList_ResetPicture)
 
 /* func_ov114_0229c924: the ring's place `slot` given the icon of `item` when it has another:
  * the icon's two rows of characters copied into the next free OBJ place of this frame and
- * queued for the sub engine's OBJs (LAYER_SUB_OBJ) at the place's tiles (t, t + 1 and t + 0x20, t + 0x21), the
+ * queued for the sub engine's OBJs (DISPLAY_LAYER_SUB_OBJ) at the place's tiles (t, t + 1 and t + 0x20, t + 0x21), the
  * place's palette the icon's. */
 void CatalogList_LoadIcon(CatalogList *self, const ItemCode *item, int slot)
 {

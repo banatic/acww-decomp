@@ -8,7 +8,7 @@
 #define ITEM_KIND_D 0xd
 #define ITEM_KIND_E 0xe
 #define ITEM_INDEX_MASK 0x0fff
-#define ITEM_KIND(code) ((code) >> 12)
+#define ACTOR_TABLE_ITEM_KIND(code) ((code) >> 12)
 
 extern ActorTable data_021d1d4c;
 
@@ -38,7 +38,7 @@ CLEAN_AS(func_0207cf74, ActorTable_IsKindESlot)
 BOOL ActorTable_IsUsedE(const ActorTable *table, const ActorEntry *entry)
 {
     (void) table;
-    return entry->actor != NULL && ITEM_KIND(entry->code) == ITEM_KIND_E;
+    return entry->actor != NULL && ACTOR_TABLE_ITEM_KIND(entry->code) == ITEM_KIND_E;
 }
 CLEAN_AS(func_02082b60, ActorTable_IsUsedE)
 
@@ -46,7 +46,7 @@ CLEAN_AS(func_02082b60, ActorTable_IsUsedE)
 BOOL ActorTable_IsUsedD(const ActorTable *table, const ActorEntry *entry)
 {
     (void) table;
-    return entry->actor != NULL && ITEM_KIND(entry->code) == ITEM_KIND_D;
+    return entry->actor != NULL && ACTOR_TABLE_ITEM_KIND(entry->code) == ITEM_KIND_D;
 }
 CLEAN_AS(func_020828c0, ActorTable_IsUsedD)
 
@@ -184,7 +184,7 @@ CLEAN_AS(func_02082808, ActorTable_AddD)
 /* func_020829b8: the actor under a kind 0xe code, or null. */
 void *ActorTable_GetE(const ActorTable *table, const ItemCode *code)
 {
-    if (ITEM_KIND(*code) != ITEM_KIND_E) {
+    if (ACTOR_TABLE_ITEM_KIND(*code) != ITEM_KIND_E) {
         return NULL;
     }
     int i = ActorTable_FindE(table, code);
@@ -195,7 +195,7 @@ CLEAN_AS(func_020829b8, ActorTable_GetE)
 /* func_0208270c: the actor under a kind 0xd code, or null. */
 void *ActorTable_GetD(const ActorTable *table, const ItemCode *code)
 {
-    if (ITEM_KIND(*code) != ITEM_KIND_D) {
+    if (ACTOR_TABLE_ITEM_KIND(*code) != ITEM_KIND_D) {
         return NULL;
     }
     int i = ActorTable_FindD(table, code);
@@ -328,7 +328,7 @@ CLEAN_AS(func_020825d8, Actors_GetE)
 /* func_020825e8: the actor under a code of kind 0xe or 0xd, or null. */
 void *Actors_Get(const ItemCode *code)
 {
-    switch (ITEM_KIND(*code)) {
+    switch (ACTOR_TABLE_ITEM_KIND(*code)) {
         case ITEM_KIND_E:
             return Actors_GetE(code);
         case ITEM_KIND_D:

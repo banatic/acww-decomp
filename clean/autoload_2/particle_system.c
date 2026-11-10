@@ -214,10 +214,11 @@ void ParticleEmitter_Init(ParticleEmitter *emitter, const ParticleResource *reso
     emitter->base_scale = header_of(emitter)->base_scale;
     emitter->particle_life = header_of(emitter)->particle_life;
     emitter->color = 0x7fff;
-    emitter->misc = particle_with_bits(emitter->misc, EMITTER_INTERVAL_SHIFT, 8, header_of(emitter)->emission_interval);
-    emitter->misc = particle_with_bits(emitter->misc, EMITTER_BASE_ALPHA_SHIFT, 8, header_of(emitter)->base_alpha);
+    emitter->misc =
+        particle_with_bits(emitter->misc, PARTICLE_EMITTER_INTERVAL_SHIFT, 8, header_of(emitter)->emission_interval);
+    emitter->misc = particle_with_bits(emitter->misc, PARTICLE_EMITTER_BASE_ALPHA_SHIFT, 8, header_of(emitter)->base_alpha);
     emitter->misc &= 0xffff; /* no update cycle */
-    emitter->collision_y = EMITTER_NO_COLLISION_Y;
+    emitter->collision_y = PARTICLE_EMITTER_NO_COLLISION_Y;
     emitter->tex_s = tex_extent(particle_bits(header_of(emitter)->misc, PARTICLE_TEX_S_SHIFT, 2));
     emitter->tex_t = tex_extent(particle_bits(header_of(emitter)->misc, PARTICLE_TEX_T_SHIFT, 2));
     if (header_of(emitter)->tex_flip & 1) {
@@ -348,9 +349,9 @@ void ParticleSys_UpdateEmitter(ParticleSystem *sys, ParticleEmitter *emitter)
     }
 
     if (header->emitter_life == 0 || emitter->age < header->emitter_life) {
-        if (particle_mod(emitter->age, (u8) particle_bits(emitter->misc, EMITTER_INTERVAL_SHIFT, 8)) == 0 &&
-            !(emitter->state & EMITTER_ENDING) && !(emitter->state & EMITTER_NO_EMISSION) &&
-            (emitter->state & EMITTER_STARTED)) {
+        if (particle_mod(emitter->age, (u8) particle_bits(emitter->misc, PARTICLE_EMITTER_INTERVAL_SHIFT, 8)) == 0 &&
+            !(emitter->state & PARTICLE_EMITTER_ENDING) && !(emitter->state & PARTICLE_EMITTER_NO_EMISSION) &&
+            (emitter->state & PARTICLE_EMITTER_STARTED)) {
             Particle_Emit(emitter, &sys->free_particles);
         }
     }
@@ -461,21 +462,21 @@ void ParticleSys_Update(ParticleSystem *sys)
         const ParticleHeader *header = emitter->resource->header;
         ParticleLink *next = node->next;
 
-        if (!(emitter->state & EMITTER_STARTED) && emitter->age >= header->start_delay) {
-            emitter->state |= EMITTER_STARTED;
+        if (!(emitter->state & PARTICLE_EMITTER_STARTED) && emitter->age >= header->start_delay) {
+            emitter->state |= PARTICLE_EMITTER_STARTED;
             emitter->age = 0;
         }
 
-        if (!(emitter->state & EMITTER_NO_UPDATE)) {
-            u32 cycle = particle_bits(emitter->misc, EMITTER_UPDATE_CYCLE_SHIFT, 3);
+        if (!(emitter->state & PARTICLE_EMITTER_NO_UPDATE)) {
+            u32 cycle = particle_bits(emitter->misc, PARTICLE_EMITTER_UPDATE_CYCLE_SHIFT, 3);
             if (cycle == 0 || data_021fd274 == cycle - 1) {
                 ParticleSys_UpdateEmitter(sys, emitter);
             }
         }
 
-        if (((header->flags & PARTICLE_SELF_MAINTAINING) && header->emitter_life != 0 && (emitter->state & EMITTER_STARTED) &&
-             emitter->age > header->emitter_life) ||
-            (emitter->state & EMITTER_ENDING)) {
+        if (((header->flags & PARTICLE_SELF_MAINTAINING) && header->emitter_life != 0 &&
+             (emitter->state & PARTICLE_EMITTER_STARTED) && emitter->age > header->emitter_life) ||
+            (emitter->state & PARTICLE_EMITTER_ENDING)) {
             if (emitter->particles.count == 0 && emitter->children.count == 0) {
                 ParticleList_Push(&sys->free_emitters, ParticleList_Remove(&sys->emitters, node));
             }
@@ -502,7 +503,7 @@ void ParticleSys_Draw(ParticleSystem *sys, const Mtx43 *view, ParticleDrawCallba
     sys->view = view;
     for (ParticleLink *node = sys->emitters.first; node != NULL; node = node->next) {
         sys->emitter = (ParticleEmitter *) node;
-        if (!(sys->emitter->state & EMITTER_HIDDEN)) {
+        if (!(sys->emitter->state & PARTICLE_EMITTER_HIDDEN)) {
             ParticleSys_DrawEmitter(sys, callback);
         }
     }

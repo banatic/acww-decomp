@@ -81,39 +81,39 @@ typedef struct SkyPalette {
 /* data_021f75b0 (0x1598 bytes; func_020bb99c constructs it). Its beginning is what the HBlank
  * functions read as LineLayers (itcm/line_effects.h). */
 typedef struct Sky {
-    u32 screen;                         /* 0x0000: SKY_SCREEN_...: where the sky was set up */
-    u32 shown;                          /* 0x0004: which set of line tables is shown */
-    LineAffine clouds[2][SCREEN_LINES]; /* 0x0008: background 3 of each line */
-    s32 cloud_scroll;                   /* 0x1208: 8.8 pixels, below 0x10000 */
-    s32 fade;                           /* 0x120c: 0 to SKY_FADE_STEPS: of the colors */
-    u16 blend_alpha[2][SCREEN_LINES];   /* 0x1210: BLDALPHA of each line */
-    u8 unk_1510[4];                     /* 0x1510 */
-    s32 shift[2];                       /* 0x1514: the lines' shift, one per set */
-    u32 shift_index;                    /* 0x151c: the one used */
-    u32 changing;                       /* 0x1520: a change of weather is under way */
-    s32 weather;                        /* 0x1524: the level */
-    s32 next_weather;                   /* 0x1528: the level the colors fade to */
-    s32 target_weather;                 /* 0x152c: the level asked for, -1: none */
-    u32 direction;                      /* 0x1530: SKY_DIRECTION_... */
-    s32 precipitation;                  /* 0x1534: SKY_FALLING_... */
-    u16 rain_angle;                     /* 0x1538: the day's rain angle (Sky_DrawRainAngle) */
-    u16 unk_153a;                       /* 0x153a */
-    u16 stars_x;                        /* 0x153c: BG1HOFS of the stars */
-    u16 stars_y;                        /* 0x153e: BG1VOFS before the shift; 0x100: hidden */
-    u8 unk_1540[4];                     /* 0x1540 */
-    u8 *hour_colors[2][2];              /* 0x1544: (func_020bbd30) */
-    u32 hour_colors_size[2][2];         /* 0x1554 */
-    SkyPalette *palettes[3];            /* 0x1564: the level's, the next level's, the mix */
-    s32 variant;                        /* 0x1570: of the level's cloud screen (0 or 1) */
-    s32 next_variant;                   /* 0x1574 */
-    s32 row;                            /* 0x1578: the next row of the map drawn, -1: none */
-    u8 *screen_data;                    /* 0x157c: the level's cloud screen */
-    u32 screen_size;                    /* 0x1580 */
-    u8 *change_screen_data;             /* 0x1584: the change's cloud screen */
-    u32 change_screen_size;             /* 0x1588 */
-    u32 step;                           /* 0x158c: SKY_STEP_... */
-    s32 frames;                         /* 0x1590: of the hidden change's steps */
-    s32 player_z;                       /* 0x1594: the player's Z last frame */
+    u32 screen;                                 /* 0x0000: SKY_SCREEN_...: where the sky was set up */
+    u32 shown;                                  /* 0x0004: which set of line tables is shown */
+    LineAffine clouds[2][LINE_FX_SCREEN_LINES]; /* 0x0008: background 3 of each line */
+    s32 cloud_scroll;                           /* 0x1208: 8.8 pixels, below 0x10000 */
+    s32 fade;                                   /* 0x120c: 0 to SKY_FADE_STEPS: of the colors */
+    u16 blend_alpha[2][LINE_FX_SCREEN_LINES];   /* 0x1210: BLDALPHA of each line */
+    u8 unk_1510[4];                             /* 0x1510 */
+    s32 shift[2];                               /* 0x1514: the lines' shift, one per set */
+    u32 shift_index;                            /* 0x151c: the one used */
+    u32 changing;                               /* 0x1520: a change of weather is under way */
+    s32 weather;                                /* 0x1524: the level */
+    s32 next_weather;                           /* 0x1528: the level the colors fade to */
+    s32 target_weather;                         /* 0x152c: the level asked for, -1: none */
+    u32 direction;                              /* 0x1530: SKY_DIRECTION_... */
+    s32 precipitation;                          /* 0x1534: SKY_FALLING_... */
+    u16 rain_angle;                             /* 0x1538: the day's rain angle (Sky_DrawRainAngle) */
+    u16 unk_153a;                               /* 0x153a */
+    u16 stars_x;                                /* 0x153c: BG1HOFS of the stars */
+    u16 stars_y;                                /* 0x153e: BG1VOFS before the shift; 0x100: hidden */
+    u8 unk_1540[4];                             /* 0x1540 */
+    u8 *hour_colors[2][2];                      /* 0x1544: (func_020bbd30) */
+    u32 hour_colors_size[2][2];                 /* 0x1554 */
+    SkyPalette *palettes[3];                    /* 0x1564: the level's, the next level's, the mix */
+    s32 variant;                                /* 0x1570: of the level's cloud screen (0 or 1) */
+    s32 next_variant;                           /* 0x1574 */
+    s32 row;                                    /* 0x1578: the next row of the map drawn, -1: none */
+    u8 *screen_data;                            /* 0x157c: the level's cloud screen */
+    u32 screen_size;                            /* 0x1580 */
+    u8 *change_screen_data;                     /* 0x1584: the change's cloud screen */
+    u32 change_screen_size;                     /* 0x1588 */
+    u32 step;                                   /* 0x158c: SKY_STEP_... */
+    s32 frames;                                 /* 0x1590: of the hidden change's steps */
+    s32 player_z;                               /* 0x1594: the player's Z last frame */
 } Sky;
 
 /* The day's weather in the state block (at 0x1737e of data_021dc7a8; func_020c1608 keeps it).

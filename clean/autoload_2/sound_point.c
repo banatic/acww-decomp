@@ -135,7 +135,7 @@ void SoundPointList_Flush(SoundPointList *list)
     }
     /* The ROM also checks the music handle's address (a global) for NULL, which never holds. */
     unsigned int music = ((const PointSeqPlayer *) data_021fd1bc.music.player)->seq_no;
-    if (music >= MUSIC_SILENT_FIRST && music <= MUSIC_SILENT_LAST) {
+    if (music >= SOUND_SYSTEM_MUSIC_SILENT_FIRST && music <= SOUND_SYSTEM_MUSIC_SILENT_LAST) {
         return;
     }
     NNS_SndPlayerStopSeqBySeqArcIdx(POINT_STOPPED_SEQ_ARC, POINT_STOPPED_INDEX, 5);

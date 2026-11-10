@@ -14,7 +14,7 @@
 #include "town_name.h"
 
 /* The message entries the letters fill in. */
-#define TOWN_NAME_ENTRY 0
+#define SAVINGS_TOWN_NAME_ENTRY 0
 #define INTEREST_ENTRY 1
 
 /* The interest letter's message, and the first of the savings steps' letters. */
@@ -141,7 +141,7 @@ void Savings_SendMilestoneLetter(int days)
     Letter_Construct(&letter);
     TownNameText_Construct((TownNameText *) &town);
     TownName_ToText((TownName *) (void *) data_021dc7aa, (TextBase *) &town);
-    MailText_SetPartText(TOWN_NAME_ENTRY, &town);
+    MailText_SetPartText(SAVINGS_TOWN_NAME_ENTRY, &town);
     Letter_WriteSpecialToPlayer(&letter, &message, data_020e3118, data_020e3108, data_020e3104, PlayerRecord_Player(player));
     Letter_SetItem(&letter, present, 1);
     if (Mail_Post(&letter) != 0) {

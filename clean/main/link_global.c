@@ -20,7 +20,7 @@ extern LinkState data_021f4320;
 
 /* Session messages and where they are sent (session_message.h, link_scene.h). */
 #define MESSAGE_ASK_MOVE 8
-#define TO_HOST 0
+#define LINK_GLOBAL_TO_HOST 0
 
 /* The addresses of a session message (Session_EndMessage's `kind`), past the slots 0-3. */
 enum {
@@ -133,7 +133,7 @@ void LinkGlobal_AskMove(void)
     session = data_020ccf94;
     Session_BeginMessage(session);
     Session_AppendMessage(session, request, sizeof(request));
-    Session_EndMessage(session, MESSAGE_ASK_MOVE, TO_HOST);
+    Session_EndMessage(session, MESSAGE_ASK_MOVE, LINK_GLOBAL_TO_HOST);
     LinkPart_EndByte(request);
 }
 CLEAN_AS(func_020a6f88, LinkGlobal_AskMove)

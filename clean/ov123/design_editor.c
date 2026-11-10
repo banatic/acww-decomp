@@ -116,10 +116,10 @@ extern const MemberPointer data_ov123_0229ce70, data_ov123_0229ce80, data_ov123_
 
 /* The layers: the canvas, the tools and the palette on 6, 4 behind it, and 3 that the button
  * 0x0d shows and hides. */
-#define DESIGN_EDITOR_LAYER_CANVAS LAYER_SUB_BG3
-#define DESIGN_EDITOR_LAYER_BACK LAYER_SUB_BG1
-#define DESIGN_EDITOR_LAYER_3 LAYER_SUB_BG0
-#define DESIGN_EDITOR_LAYER_OBJ LAYER_SUB_OBJ
+#define DESIGN_EDITOR_LAYER_CANVAS DISPLAY_LAYER_SUB_BG3
+#define DESIGN_EDITOR_LAYER_BACK DISPLAY_LAYER_SUB_BG1
+#define DESIGN_EDITOR_LAYER_3 DISPLAY_LAYER_SUB_BG0
+#define DESIGN_EDITOR_LAYER_OBJ DISPLAY_LAYER_SUB_OBJ
 #define DESIGN_EDITOR_SUB_SCREEN 1
 
 /* The wipes' margin on window 2. */

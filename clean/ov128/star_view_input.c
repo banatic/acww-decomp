@@ -182,7 +182,7 @@ void StarView_ApplyName(StarView *self)
         if (self->name_cells < STAR_VIEW_NAME_MIN_CELLS) {
             self->name_cells = STAR_VIEW_NAME_MIN_CELLS;
         }
-        TextLabel_OpenStyledBox2(&self->name_label, LAYER_SUB_OBJ, 0xc6, self->name_cells, 0xf, 0, 0);
+        TextLabel_OpenStyledBox2(&self->name_label, DISPLAY_LAYER_SUB_OBJ, 0xc6, self->name_cells, 0xf, 0, 0);
         TextLabel_Show(&self->name_label, 1, 0);
         self->named = self->wanted;
     }

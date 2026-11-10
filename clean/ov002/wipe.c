@@ -47,7 +47,7 @@ void Wipe_ApplyWindow(Wipe *wipe, int window)
     int x1 = 0;
     int y1 = 0;
     int x2 = 0xff;
-    int y2 = SCREEN_HEIGHT;
+    int y2 = WIPE_SCREEN_HEIGHT;
 
     switch (wipe->direction) {
         case WIPE_TOP:
@@ -57,9 +57,9 @@ void Wipe_ApplyWindow(Wipe *wipe, int window)
             }
             break;
         case WIPE_BOTTOM:
-            y2 = wipe->margin + SCREEN_HEIGHT - wipe->position;
-            if (y2 > SCREEN_HEIGHT - 1) {
-                y2 = SCREEN_HEIGHT - 1;
+            y2 = wipe->margin + WIPE_SCREEN_HEIGHT - wipe->position;
+            if (y2 > WIPE_SCREEN_HEIGHT - 1) {
+                y2 = WIPE_SCREEN_HEIGHT - 1;
             }
             break;
         case WIPE_RIGHT:
@@ -107,10 +107,10 @@ static int extent_of(u8 direction)
     switch (direction) {
         case WIPE_TOP:
         case WIPE_BOTTOM:
-            return SCREEN_HEIGHT;
+            return WIPE_SCREEN_HEIGHT;
         case WIPE_RIGHT:
         case WIPE_LEFT:
-            return SCREEN_WIDTH;
+            return WIPE_SCREEN_WIDTH;
     }
     return 0;
 }
@@ -150,9 +150,9 @@ CLEAN_AS(func_ov002_02208458, Wipe_StartCovered)
 void Wipe_StartOnWindow0(Wipe *wipe, int layers, int frames, int direction, int margin)
 {
     Wipe_Start(wipe, frames, (u8) direction, margin);
-    DisplayShadow_EnableMainWindows(WINDOW_0);
+    DisplayShadow_EnableMainWindows(DISPLAY_SHADOW_WINDOW_0);
     DisplayShadow_SetMainWindow0Planes(0x1f);
-    if (DisplayShadow_MainWindows() & WINDOW_1) {
+    if (DisplayShadow_MainWindows() & DISPLAY_SHADOW_WINDOW_1) {
         DisplayShadow_HideMainOutsidePlanes((u8) layers);
     } else {
         DisplayShadow_SetMainOutsidePlanes((u8) (~layers & 0x1f));
@@ -166,7 +166,7 @@ CLEAN_AS(func_ov002_02208498, Wipe_StartOnWindow0)
 void Wipe_StartCoveredOnWindow0(Wipe *wipe, int layers, int frames, int direction, int margin)
 {
     Wipe_StartCovered(wipe, frames, (u8) direction, (u32) margin);
-    DisplayShadow_EnableMainWindows(WINDOW_0);
+    DisplayShadow_EnableMainWindows(DISPLAY_SHADOW_WINDOW_0);
     DisplayShadow_SetMainWindow0Planes(0x1f);
     DisplayShadow_SetMainOutsidePlanes((u8) (~layers & 0x1f));
     Wipe_ApplyWindow(wipe, 0);
@@ -178,7 +178,7 @@ CLEAN_AS(func_ov002_022084e4, Wipe_StartCoveredOnWindow0)
 void Wipe_StartOnWindow2(Wipe *wipe, int layers, int frames, int direction, int margin)
 {
     Wipe_Start(wipe, frames, (u8) direction, margin);
-    DisplayShadow_EnableSubWindows(WINDOW_0);
+    DisplayShadow_EnableSubWindows(DISPLAY_SHADOW_WINDOW_0);
     DisplayShadow_SetSubWindow0Planes(0x1f, 1);
     DisplayShadow_SetSubOutsidePlanes((u8) (~layers & 0x1f));
     Wipe_ApplyWindow(wipe, 2);
@@ -190,7 +190,7 @@ CLEAN_AS(func_ov002_0220851c, Wipe_StartOnWindow2)
 void Wipe_StartCoveredOnWindow2(Wipe *wipe, int layers, int frames, int direction, int margin)
 {
     Wipe_StartCovered(wipe, frames, (u8) direction, (u32) margin);
-    DisplayShadow_EnableSubWindows(WINDOW_0);
+    DisplayShadow_EnableSubWindows(DISPLAY_SHADOW_WINDOW_0);
     DisplayShadow_SetSubWindow0Planes(0x1f, 1);
     DisplayShadow_SetSubOutsidePlanes((u8) (~layers & 0x1f));
     Wipe_ApplyWindow(wipe, 2);
@@ -205,10 +205,10 @@ int Wipe_Step(Wipe *wipe, int screen)
     if (Progress_Step(&wipe->progress)) {
         switch (screen) {
             case WIPE_ON_SUB:
-                DisplayShadow_DisableSubWindows(WINDOW_0);
+                DisplayShadow_DisableSubWindows(DISPLAY_SHADOW_WINDOW_0);
                 break;
             case WIPE_ON_MAIN:
-                DisplayShadow_DisableMainWindows(WINDOW_0);
+                DisplayShadow_DisableMainWindows(DISPLAY_SHADOW_WINDOW_0);
                 break;
         }
         return 1;
@@ -250,11 +250,11 @@ void Wipe_StepVertical(Wipe *wipe, int screen)
     if (wipe->position > wipe->margin) {
         switch (screen) {
             case WIPE_ON_SUB:
-                DisplayShadow_EnableSubWindows(WINDOW_0);
+                DisplayShadow_EnableSubWindows(DISPLAY_SHADOW_WINDOW_0);
                 Wipe_ApplyWindow(wipe, 2);
                 break;
             case WIPE_ON_MAIN:
-                DisplayShadow_EnableMainWindows(WINDOW_0);
+                DisplayShadow_EnableMainWindows(DISPLAY_SHADOW_WINDOW_0);
                 Wipe_ApplyWindow(wipe, 0);
                 break;
         }
@@ -267,11 +267,11 @@ static void close_window(int screen)
 {
     switch (screen) {
         case WIPE_ON_SUB:
-            DisplayShadow_DisableSubWindows(WINDOW_0);
+            DisplayShadow_DisableSubWindows(DISPLAY_SHADOW_WINDOW_0);
             DisplayShadow_SetSubOutsidePlanes(0x1f);
             break;
         case WIPE_ON_MAIN:
-            DisplayShadow_DisableMainWindows(WINDOW_0);
+            DisplayShadow_DisableMainWindows(DISPLAY_SHADOW_WINDOW_0);
             DisplayShadow_SetMainOutsidePlanes(0x1f);
             break;
     }
@@ -430,8 +430,8 @@ CLEAN_AS(func_ov002_0220880c, Progress_Step)
  * numerator for a zero divisor. */
 void Progress_Start(Progress *progress, unsigned int frames)
 {
-    progress->left = PROGRESS_ONE;
-    progress->rate = (s32) (frames != 0 ? PROGRESS_ONE / frames : PROGRESS_ONE);
+    progress->left = WIPE_PROGRESS_ONE;
+    progress->rate = (s32) (frames != 0 ? WIPE_PROGRESS_ONE / frames : WIPE_PROGRESS_ONE);
 }
 CLEAN_AS(func_ov002_0220882c, Progress_Start)
 

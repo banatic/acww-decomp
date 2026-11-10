@@ -519,15 +519,15 @@ void PocketsLetters_DimByState(PocketsLetters *letters, unsigned int states)
     }
     heap = data_021fbe94;
     if (written) {
-        DisplayLayer_LoadPalettesFromFile(data_ov094_0229c154, heap, LAYER_SUB_OBJ, POCKETS_LETTERS_PALETTE_FILE_FIRST,
+        DisplayLayer_LoadPalettesFromFile(data_ov094_0229c154, heap, DISPLAY_LAYER_SUB_OBJ, POCKETS_LETTERS_PALETTE_FILE_FIRST,
                                           POCKETS_LETTERS_PALETTE_WRITTEN, POCKETS_LETTERS_PALETTE_WRITTEN);
     }
     if (received) {
-        DisplayLayer_LoadPalettesFromFile(data_ov094_0229c154, heap, LAYER_SUB_OBJ, POCKETS_LETTERS_PALETTE_FILE_FIRST,
+        DisplayLayer_LoadPalettesFromFile(data_ov094_0229c154, heap, DISPLAY_LAYER_SUB_OBJ, POCKETS_LETTERS_PALETTE_FILE_FIRST,
                                           POCKETS_LETTERS_PALETTE_RECEIVED, POCKETS_LETTERS_PALETTE_RECEIVED);
     }
     if (villagers) {
-        DisplayLayer_LoadPalettesFromFile(data_ov094_0229c154, heap, LAYER_SUB_OBJ, POCKETS_LETTERS_PALETTE_FILE_FIRST,
+        DisplayLayer_LoadPalettesFromFile(data_ov094_0229c154, heap, DISPLAY_LAYER_SUB_OBJ, POCKETS_LETTERS_PALETTE_FILE_FIRST,
                                           POCKETS_LETTERS_PALETTE_VILLAGERS, POCKETS_LETTERS_PALETTE_VILLAGERS);
     }
 }

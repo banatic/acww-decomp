@@ -99,7 +99,7 @@ typedef struct FishShadowUnit {
 
 extern FishShadow data_ov003_0225f76c[FISH_SHADOW_COUNT];
 extern FishFin data_ov003_0225f220;
-extern PlayerFish data_ov003_0225f4dc[PLAYER_FISH_COUNT];
+extern PlayerFish data_ov003_0225f4dc[FISH_SHADOW_PLAYER_FISH_COUNT];
 extern ThrownBottle data_ov003_0225f35c[THROWN_BOTTLE_COUNT];
 /* The object ThrownBottle_Step is handed (fish_shadow.h, FishShadowGlobal0225f0b4_*). */
 extern u8 data_ov003_0225f0b4[];
@@ -251,8 +251,8 @@ void FishShadow_SetAnimSpeed(FishShadow *fish, int speed)
 CLEAN_AS(func_ov003_022277fc, FishShadow_SetAnimSpeed)
 
 /* func_ov003_0222780c: a fish from the pockets (items 0x12e8-0x131f, the item's halfword) let
- * go by player `player` (0-3) towards `point`: it starts from the player's actor (PLAYER_FISH_ARC,
- * PLAYER_FISH_TAKE), turned for its kind towards the point. 0 for another item or player, a
+ * go by player `player` (0-3) towards `point`: it starts from the player's actor (FISH_SHADOW_PLAYER_FISH_ARC,
+ * FISH_SHADOW_PLAYER_FISH_TAKE), turned for its kind towards the point. 0 for another item or player, a
  * player whose fish is busy or one without an actor. */
 int PlayerFish_PlaceFromPockets(int player, int item, Vec3 *point)
 {
@@ -260,11 +260,11 @@ int PlayerFish_PlaceFromPockets(int player, int item, Vec3 *point)
     if (code < 0x12e8 || code > 0x131f) {
         return 0;
     }
-    if (player < 0 || player >= PLAYER_FISH_COUNT) {
+    if (player < 0 || player >= FISH_SHADOW_PLAYER_FISH_COUNT) {
         return 0;
     }
     PlayerFish *fish = &data_ov003_0225f4dc[player];
-    if (fish->state != PLAYER_FISH_IDLE) {
+    if (fish->state != FISH_SHADOW_PLAYER_FISH_IDLE) {
         return 0;
     }
     Actor *actor = SessionPlayers_ActorOf(player);
@@ -279,21 +279,21 @@ int PlayerFish_PlaceFromPockets(int player, int item, Vec3 *point)
     fish->point_b = *point;
     fish->position = from;
     fish->frames = 0;
-    fish->mode = PLAYER_FISH_ARC;
-    fish->state = PLAYER_FISH_TAKE;
+    fish->mode = FISH_SHADOW_PLAYER_FISH_ARC;
+    fish->state = FISH_SHADOW_PLAYER_FISH_TAKE;
     return 1;
 }
 CLEAN_AS(func_ov003_0222780c, PlayerFish_PlaceFromPockets)
 
 /* func_ov003_022278e0: where the hooked fish of player `player` (0-3) started in the water, in
- * `out`; whether it is hooked (PLAYER_FISH_HOOKED). */
+ * `out`; whether it is hooked (FISH_SHADOW_PLAYER_FISH_HOOKED). */
 int PlayerFish_HookedStart(Vec3 *out, int player)
 {
-    if (player < 0 || player >= PLAYER_FISH_COUNT) {
+    if (player < 0 || player >= FISH_SHADOW_PLAYER_FISH_COUNT) {
         return 0;
     }
     PlayerFish *fish = &data_ov003_0225f4dc[player];
-    if (fish->mode != PLAYER_FISH_HOOKED) {
+    if (fish->mode != FISH_SHADOW_PLAYER_FISH_HOOKED) {
         return 0;
     }
     *out = fish->point_a;
@@ -833,7 +833,7 @@ CLEAN_AS(func_ov003_02228460, FishShadow_StopBottles)
 void FishShadow_EndPlayerFish(FishShadowProcess *self)
 {
     (void) self;
-    for (int i = 0; i < PLAYER_FISH_COUNT; i++) {
+    for (int i = 0; i < FISH_SHADOW_PLAYER_FISH_COUNT; i++) {
         PlayerFish *fish = &data_ov003_0225f4dc[i];
         PlayerFish_StepEnd(fish, (u8) i);
         SoundEmitter_FinishB((SoundEmitter *) (void *) fish->emitter);
@@ -937,7 +937,7 @@ void FishShadow_StepPlayers(FishShadowProcess *self)
     if (Session_IsLinked(data_020ccf94)) {
         PlayerFish_Sync(self);
     }
-    for (int i = 0; i < PLAYER_FISH_COUNT; i++) {
+    for (int i = 0; i < FISH_SHADOW_PLAYER_FISH_COUNT; i++) {
         PlayerFish_Update(&data_ov003_0225f4dc[i], (u8) i);
         ThrownBottle_Step(data_ov003_0225f0b4, &data_ov003_0225f35c[i]);
     }

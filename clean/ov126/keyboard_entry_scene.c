@@ -84,7 +84,7 @@ void KeyboardEntry_LoadField(KeyboardEntry *self)
 {
     SoftKeyboard_LoadObjGraphics(keyboard_entry_keyboard(self));
     HanPanel_LoadSign((HanPanel *) (void *) self->field, KEYBOARD_ENTRY_LAYER);
-    DisplayLayer_LoadPalettesFromFile(data_ov126_022a2140, data_021fbe94, LAYER_SUB_OBJ, 5, 5, 5);
+    DisplayLayer_LoadPalettesFromFile(data_ov126_022a2140, data_021fbe94, DISPLAY_LAYER_SUB_OBJ, 5, 5, 5);
     ButtonPanel_LoadTextColors(&self->panel);
     if (KeyboardEntry_TestFlags(self, KEYBOARD_ENTRY_FLAG_HINT) != 0) {
         TextLabel empty;

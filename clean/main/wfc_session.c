@@ -20,10 +20,10 @@
 #include "mystery_cat_record.h"
 
 #define NOTICE_SIZE 0xd2
-#define LETTER_SIZE 0x114
+#define WFC_SESSION_LETTER_SIZE 0x114
 #define CAT_RECORD_SIZE 0x238
 #define HMAC_SIZE 0x10 /* the digest, and the key's length */
-#define URL_SIZE 0x80
+#define WFC_SESSION_URL_SIZE 0x80
 
 /* The state block flag that keeps the notice and the letter from being fetched. */
 #define STATE_BLOCK_FLAG_NO_DOWNLOADS 20
@@ -40,7 +40,7 @@ extern NetSession *data_020ccf94;
 
 /* What was fetched, and whether each fetch has finished since it was last applied. */
 extern u8 data_021f3cbc[NOTICE_SIZE];
-extern u8 data_021f3d90[LETTER_SIZE];
+extern u8 data_021f3d90[WFC_SESSION_LETTER_SIZE];
 extern u8 data_021f40a4[CAT_RECORD_SIZE];
 extern u8 data_021f3c18; /* the notice */
 extern u8 data_021f3c04; /* the letter */
@@ -94,17 +94,17 @@ void WfcSession_ApplyLetter(void)
         return;
     }
     data_021f3c04 = 0;
-    u8 copy[LETTER_SIZE];
+    u8 copy[WFC_SESSION_LETTER_SIZE];
     u8 digest[HMAC_SIZE];
     WfcDelivery_ConstructLetter((WfcLetter *) (void *) copy);
-    MI_CpuCopy8(data_021f3d90, copy, LETTER_SIZE);
+    MI_CpuCopy8(data_021f3d90, copy, WFC_SESSION_LETTER_SIZE);
     MI_CpuFill8((void *) (uintptr_t) WfcDelivery_LetterHmac((u32) (uintptr_t) copy), 0, HMAC_SIZE);
-    DGT_Hash1CalcHmac(digest, copy, LETTER_SIZE, func_02000b7c(), HMAC_SIZE);
+    DGT_Hash1CalcHmac(digest, copy, WFC_SESSION_LETTER_SIZE, func_02000b7c(), HMAC_SIZE);
     if (CLib_BytesDiffer((const void *) (uintptr_t) WfcDelivery_LetterHmac((u32) (uintptr_t) data_021f3d90), digest,
                          HMAC_SIZE) == 0) {
         WfcDelivery_DeliverLetter((WfcLetter *) (void *) data_021f3d90);
     }
-    MI_CpuFill8(data_021f3d90, 0, LETTER_SIZE);
+    MI_CpuFill8(data_021f3d90, 0, WFC_SESSION_LETTER_SIZE);
     WfcDelivery_DestructLetter((WfcLetter *) (void *) copy);
 }
 CLEAN_AS(func_0209fcd8, WfcSession_ApplyLetter)
@@ -186,7 +186,7 @@ static int start_page_get(const char *file, u8 *buffer, int size)
     if (StateBlock_TestFlag((u32 *) (void *) &data_021dc7a8, STATE_BLOCK_FLAG_NO_DOWNLOADS) != 0) {
         return 0;
     }
-    char url[URL_SIZE];
+    char url[WFC_SESSION_URL_SIZE];
     strcpy(url, data_020e3808);
     func_0212d914(url, file);
     LibraryOverlay_Require65();
@@ -203,7 +203,7 @@ CLEAN_AS(func_0209fe40, WfcSession_StartNoticeGet)
 /* func_0209fea4 */
 int WfcSession_StartLetterGet(void)
 {
-    return start_page_get(data_020e380c, data_021f3d90, LETTER_SIZE);
+    return start_page_get(data_020e380c, data_021f3d90, WFC_SESSION_LETTER_SIZE);
 }
 CLEAN_AS(func_0209fea4, WfcSession_StartLetterGet)
 

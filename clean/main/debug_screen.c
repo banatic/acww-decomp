@@ -60,7 +60,7 @@ enum DebugScreenState {
 };
 
 #define OS_PROCMODE_SYS 0x1f
-#define ROW 32                /* characters per row of a screen */
+#define DEBUG_SCREEN_ROW 32   /* characters per row of a screen */
 #define PALETTE_13 0xd000     /* the text colors: palettes 13-15 are loaded from the font's */
 #define BLANK_PAIR 0x007f007f /* two blank characters */
 
@@ -159,7 +159,7 @@ extern const char data_020d34e0[]; /* "" */
 
 static short *at(short *screen, int row, int column)
 {
-    return screen + row * ROW + column;
+    return screen + row * DEBUG_SCREEN_ROW + column;
 }
 
 /* func_020012ec: take over after an exception: disable interrupts, note the time and run the

@@ -74,7 +74,7 @@ typedef struct FishRodRanges {
 
 extern FishShadow data_ov003_0225f76c[FISH_SHADOW_COUNT];
 extern FishFin data_ov003_0225f220;
-extern PlayerFish data_ov003_0225f4dc[PLAYER_FISH_COUNT];
+extern PlayerFish data_ov003_0225f4dc[FISH_SHADOW_PLAYER_FISH_COUNT];
 /* Each state's entry and update functions, member functions of the process. */
 extern MemberPointer data_ov003_0225f1d0[FISH_SHADOW_STATES][2];
 /* Frames since a float landed (FishShadow_NoteSplash), counted down. */
@@ -187,7 +187,7 @@ int FishShadow_Create(FishShadowProcess *self)
         SoundSource_Init(&fish->source);
     }
     NetSession *session = data_020ccf94;
-    for (int i = 0; i < PLAYER_FISH_COUNT; i++) {
+    for (int i = 0; i < FISH_SHADOW_PLAYER_FISH_COUNT; i++) {
         if (Session_IsLinked(session) && !Session_IsLocalSlot(session, i) && FishDisp_PlayerState((u8) i) == 3) {
             FishDisp_SetPlayerState((u8) i, 6, -1, 0, 0);
         }
@@ -225,7 +225,7 @@ CLEAN_AS(func_ov003_02228d1c, FishShadow_TakeFin)
 
 /* func_ov003_02228d48: shadow `index` (0-5) taken away: no state, its effect ended, waiting to
  * be placed again in its group. A shadow on a float lets go of it (unless its player's fish is
- * being taken, PLAYER_FISH_TAKE) and its hook state is cleared.
+ * being taken, FISH_SHADOW_PLAYER_FISH_TAKE) and its hook state is cleared.
  * QUIRK: the player's fish is looked up without a check of the player number. */
 void FishShadow_Reset(FishShadowProcess *self, int index)
 {
@@ -246,7 +246,7 @@ void FishShadow_Reset(FishShadowProcess *self, int index)
     fish->acre_z = 0;
     FishingFloat *fishing_float = fish->fishing_float;
     if (fishing_float != NULL) {
-        if (fish_shadow_player_fish(fish->player)->state != PLAYER_FISH_TAKE) {
+        if (fish_shadow_player_fish(fish->player)->state != FISH_SHADOW_PLAYER_FISH_TAKE) {
             FishingFloat_SetFish(fishing_float, NULL);
             fish->fishing_float = NULL;
             fish->player = FISH_SHADOW_NO_PLAYER;
@@ -744,7 +744,7 @@ static void fish_shadow_splash(int size, const Vec3 *at)
 
 /* func_ov003_0222a3ec: the shadow caught by its player (none: 0): its alpha set to 1, its
  * player's fish set to take a model and fly from the shadow's position to the player's hand
- * (PLAYER_FISH_HOOKED) with the shadow's kind and number `index`, a splash at its size, and
+ * (FISH_SHADOW_PLAYER_FISH_HOOKED) with the shadow's kind and number `index`, a splash at its size, and
  * message 42 sent: byte 0 (state 0), the kind and the point packed in five bytes.
  * QUIRK: the player's fish is looked up without a check of the player number. */
 int FishShadow_Catch(FishShadow *fish, int index)
@@ -756,8 +756,8 @@ int FishShadow_Catch(FishShadow *fish, int index)
         return 0;
     }
     PlayerFish *caught = fish_shadow_player_fish(player);
-    caught->state = PLAYER_FISH_TAKE;
-    caught->mode = PLAYER_FISH_HOOKED;
+    caught->state = FISH_SHADOW_PLAYER_FISH_TAKE;
+    caught->mode = FISH_SHADOW_PLAYER_FISH_HOOKED;
     caught->point_a = fish->position;
     caught->shadow = (s8) index;
     int kind = fish->kind;

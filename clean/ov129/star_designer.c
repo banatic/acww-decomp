@@ -162,9 +162,9 @@ CLEAN_AS(func_ov129_0229b7ec, StarDesigner_TestFlags)
  * only with pieces drawn. */
 void StarDesigner_LoadLayers(StarDesigner *self)
 {
-    StarScope_LoadSkyLayer(&self->scope, LAYER_SUB_BG0);
-    StarScope_LoadScopeLayer(&self->scope, LAYER_SUB_BG3, 1);
-    StarPalette_Start(&self->palette, LAYER_SUB_BG0);
+    StarScope_LoadSkyLayer(&self->scope, DISPLAY_LAYER_SUB_BG0);
+    StarScope_LoadScopeLayer(&self->scope, DISPLAY_LAYER_SUB_BG3, 1);
+    StarPalette_Start(&self->palette, DISPLAY_LAYER_SUB_BG0);
     StarScope_LoadObjGraphics(&self->scope);
     ButtonPanel_LoadTextColors(&self->panel);
     ButtonPanel_SetLayout4(&self->panel);
@@ -177,10 +177,10 @@ CLEAN_AS(func_ov129_0229d110, StarDesigner_LoadLayers)
 void StarDesigner_SetUpLayers(void)
 {
     DisplayShadow_SetSubBgMode(0);
-    DisplayLayer_SetPriority(LAYER_SUB_BG0, 2);
-    DisplayLayer_SetBgControl(LAYER_SUB_BG0, 1, 0, 0);
-    DisplayLayer_SetPriority(LAYER_SUB_BG3, 1);
-    DisplayLayer_SetBgControl(LAYER_SUB_BG3, 0, 0, 0);
+    DisplayLayer_SetPriority(DISPLAY_LAYER_SUB_BG0, 2);
+    DisplayLayer_SetBgControl(DISPLAY_LAYER_SUB_BG0, 1, 0, 0);
+    DisplayLayer_SetPriority(DISPLAY_LAYER_SUB_BG3, 1);
+    DisplayLayer_SetBgControl(DISPLAY_LAYER_SUB_BG3, 0, 0, 0);
 }
 CLEAN_AS(func_ov129_0229d180, StarDesigner_SetUpLayers)
 
@@ -236,7 +236,7 @@ void StarDesigner_TearDown(StarDesigner *self)
     ButtonPanel_CloseTexts(&self->panel);
     PlayerActorOps_RequestState10();
     Music2f0_FadeInForScene22((Music2f0 *) (void *) (data_021c526c + 0x2f0));
-    DisplayLayer_LoadCharsFromFile(data_ov129_0229dc98, data_021fbe94, LAYER_SUB_BG0, 0, 0x10, 0x10);
+    DisplayLayer_LoadCharsFromFile(data_ov129_0229dc98, data_021fbe94, DISPLAY_LAYER_SUB_BG0, 0, 0x10, 0x10);
 }
 CLEAN_AS(func_ov129_0229d268, StarDesigner_TearDown)
 
@@ -408,9 +408,9 @@ void StarDesigner_FollowWipeWindow(StarDesigner *self)
     }
     bottom = MenuScene_WipeOffsetY(star_designer_base(self)) - 0x30;
     if (bottom <= 0) {
-        DisplayShadow_DisableSubWindows(WINDOW_1);
+        DisplayShadow_DisableSubWindows(DISPLAY_SHADOW_WINDOW_1);
     } else {
-        DisplayShadow_EnableSubWindows(WINDOW_1);
+        DisplayShadow_EnableSubWindows(DISPLAY_SHADOW_WINDOW_1);
         DisplayShadow_SetWindow(3, 0, top, 0xff, bottom);
     }
 }
@@ -419,7 +419,7 @@ CLEAN_AS(func_ov129_0229d5a4, StarDesigner_FollowWipeWindow)
 /* func_ov129_0229d5ec: sub BG3 scrolled with the wipe; both offsets follow it. */
 void StarDesigner_FollowWipe(StarDesigner *self)
 {
-    MenuScene_ScrollWipe(star_designer_base(self), LAYER_SUB_BG3, 0, 0);
+    MenuScene_ScrollWipe(star_designer_base(self), DISPLAY_LAYER_SUB_BG3, 0, 0);
     self->arrows_offset = MenuScene_WipeOffsetY(star_designer_base(self));
     self->panel_offset = MenuScene_WipeOffsetY(star_designer_base(self));
 }
@@ -430,9 +430,9 @@ CLEAN_AS(func_ov129_0229d5ec, StarDesigner_FollowWipe)
 void StarDesigner_StateWipeOut(StarDesigner *self)
 {
     if (MenuScene_StepWipe(star_designer_base(self), 0) != 0) {
-        DisplayLayer_HideAndResetScroll(LAYER_SUB_BG0);
-        DisplayLayer_HideAndResetScroll(LAYER_SUB_BG3);
-        DisplayShadow_DisableSubWindows(WINDOW_1);
+        DisplayLayer_HideAndResetScroll(DISPLAY_LAYER_SUB_BG0);
+        DisplayLayer_HideAndResetScroll(DISPLAY_LAYER_SUB_BG3);
+        DisplayShadow_DisableSubWindows(DISPLAY_SHADOW_WINDOW_1);
         MenuScene_SetPhase(star_designer_base(self), STAR_DESIGNER_PHASE_DELETE);
     } else {
         StarDesigner_FollowWipeWindow(self);
@@ -463,7 +463,7 @@ void StarDesigner_StateWipeIn(StarDesigner *self)
         StarDesigner_EnterDrawing(self);
         StarDesigner_SetFlags(self, STAR_DESIGNER_FLAG_CENTER);
         StarDesigner_Refresh(self, 1);
-        DisplayShadow_DisableSubWindows(WINDOW_1);
+        DisplayShadow_DisableSubWindows(DISPLAY_SHADOW_WINDOW_1);
     } else {
         StarDesigner_FollowWipeWindow(self);
     }
@@ -481,8 +481,8 @@ void StarDesigner_StateOpen(StarDesigner *self)
     MenuScene_StartWipeCoveredOnWindow2(star_designer_base(self), STAR_DESIGNER_WIPE_LAYERS, 4, 0, STAR_DESIGNER_WIPE_MARGIN);
     DisplayShadow_SetSubWindow1Planes(STAR_DESIGNER_WINDOW_PLANES, 1);
     StarDesigner_FollowWipeWindow(self);
-    DisplayLayer_Show(LAYER_SUB_BG0);
-    DisplayLayer_Show(LAYER_SUB_BG3);
+    DisplayLayer_Show(DISPLAY_LAYER_SUB_BG0);
+    DisplayLayer_Show(DISPLAY_LAYER_SUB_BG3);
     StarDesigner_SetFlags(self, STAR_DESIGNER_FLAG_ARROWS);
     StarDesigner_SetFlags(self, STAR_DESIGNER_FLAG_PANEL);
     StarDesigner_FollowWipe(self);

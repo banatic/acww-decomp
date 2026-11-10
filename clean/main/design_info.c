@@ -19,8 +19,8 @@ static_assert(sizeof(DesignTitleWide) == 0x24, "wide title");
 
 /* The two halves of DesignInfo.palette_and_kind. */
 #define KIND_MASK 0x0f
-#define PALETTE_SHIFT 4
-#define PALETTE_MASK 0xf0
+#define DESIGN_INFO_PALETTE_SHIFT 4
+#define DESIGN_INFO_PALETTE_MASK 0xf0
 
 /* The town part of a creator: its number and name (0xe bytes), compared by DesignInfo_Equals. */
 #define TOWN_NAME_SIZE 12
@@ -118,7 +118,7 @@ CLEAN_AS(func_02072dd4, Design_Equals)
 void DesignInfo_SetKind(u8 *info, int kind)
 {
     DesignInfo *self = (DesignInfo *) info;
-    self->palette_and_kind = (u8) ((self->palette_and_kind & PALETTE_MASK) | (kind & KIND_MASK));
+    self->palette_and_kind = (u8) ((self->palette_and_kind & DESIGN_INFO_PALETTE_MASK) | (kind & KIND_MASK));
 }
 CLEAN_AS(func_02072e18, DesignInfo_SetKind)
 
@@ -211,14 +211,14 @@ CLEAN_AS(func_02072f38, DesignInfo_SetCreatorLocal)
 /* func_02072f54: sets the palette (0-15, the high four bits of byte 0x32). */
 void DesignInfo_SetPalette(DesignInfo *info, int palette)
 {
-    info->palette_and_kind = (u8) ((info->palette_and_kind & KIND_MASK) | ((palette & 0xf) << PALETTE_SHIFT));
+    info->palette_and_kind = (u8) ((info->palette_and_kind & KIND_MASK) | ((palette & 0xf) << DESIGN_INFO_PALETTE_SHIFT));
 }
 CLEAN_AS(func_02072f54, DesignInfo_SetPalette)
 
 /* func_02072f74 */
 unsigned char DesignInfo_Palette(DesignInfo *info)
 {
-    return (unsigned char) (info->palette_and_kind >> PALETTE_SHIFT);
+    return (unsigned char) (info->palette_and_kind >> DESIGN_INFO_PALETTE_SHIFT);
 }
 CLEAN_AS(func_02072f74, DesignInfo_Palette)
 

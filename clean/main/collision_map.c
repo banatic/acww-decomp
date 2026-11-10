@@ -74,7 +74,7 @@ static u8 *collision_map_path_byte(const FieldBlock *block, int x, int z, int *h
 }
 
 /* func_02030738: the bounds of the room in the default map (slot 0): from the first unit to
- * past the last one of the 32 by 32 units whose type is not UNIT_TYPE_NONE, on X and Z, as
+ * past the last one of the 32 by 32 units whose type is not FIELD_UNIT_TYPE_NONE, on X and Z, as
  * positions. Only when map 0 is complete, and then the result is 1; else every bound is 0
  * (`max_z` may be NULL) and the result 0.
  * QUIRK: a unit only widens the maximum when it does not lower the minimum, so the first unit
@@ -98,7 +98,7 @@ int CollisionMap_GetRoomBounds(fx32 *min_x, fx32 *max_x, fx32 *min_z, fx32 *max_
     int high_z = 0;
     for (int z = 0; z < 32; z++) {
         for (int x = 0; x < 32; x++) {
-            if (FieldUnits_Type(x, z) == UNIT_TYPE_NONE) {
+            if (FieldUnits_Type(x, z) == FIELD_UNIT_TYPE_NONE) {
                 continue;
             }
             if (x < low_x) {
@@ -113,11 +113,11 @@ int CollisionMap_GetRoomBounds(fx32 *min_x, fx32 *max_x, fx32 *min_z, fx32 *max_
             }
         }
     }
-    *min_x = low_x << COLLISION_UNIT_SHIFT;
-    *max_x = (high_x << COLLISION_UNIT_SHIFT) + 2 * COLLISION_HALF_UNIT;
-    *min_z = low_z << COLLISION_UNIT_SHIFT;
+    *min_x = low_x << FIELD_COLLISION_UNIT_SHIFT;
+    *max_x = (high_x << FIELD_COLLISION_UNIT_SHIFT) + 2 * FIELD_COLLISION_HALF_UNIT;
+    *min_z = low_z << FIELD_COLLISION_UNIT_SHIFT;
     if (max_z != NULL) {
-        *max_z = (high_z << COLLISION_UNIT_SHIFT) + 2 * COLLISION_HALF_UNIT;
+        *max_z = (high_z << FIELD_COLLISION_UNIT_SHIFT) + 2 * FIELD_COLLISION_HALF_UNIT;
     }
     return 1;
 }
@@ -138,7 +138,8 @@ CLEAN_AS(func_020307f8, CollisionMap_ClearClaim)
 /* func_02030818: whether the unit under `point` is the current map's claimed object. */
 int CollisionMap_IsClaimedAtPoint(const Vec3 *point)
 {
-    int object = collision_map_object_of(FieldUnits_Type(point->x >> COLLISION_UNIT_SHIFT, point->z >> COLLISION_UNIT_SHIFT));
+    int object = collision_map_object_of(
+        FieldUnits_Type(point->x >> FIELD_COLLISION_UNIT_SHIFT, point->z >> FIELD_COLLISION_UNIT_SHIFT));
     if (object < 0) {
         return 0;
     }
@@ -161,7 +162,7 @@ CLEAN_AS(func_02030864, CollisionMap_Claim)
 /* func_02030890: CollisionMap_UnclaimedObjectAt of the unit under `point`. */
 int CollisionMap_UnclaimedObjectAtPoint(const Vec3 *point)
 {
-    return CollisionMap_UnclaimedObjectAt(point->x >> COLLISION_UNIT_SHIFT, point->z >> COLLISION_UNIT_SHIFT);
+    return CollisionMap_UnclaimedObjectAt(point->x >> FIELD_COLLISION_UNIT_SHIFT, point->z >> FIELD_COLLISION_UNIT_SHIFT);
 }
 CLEAN_AS(func_02030890, CollisionMap_UnclaimedObjectAtPoint)
 
@@ -210,7 +211,7 @@ int CollisionMap_RetypeWithSides(int x, int z, int sides)
     }
 
     int found = 0;
-    for (int i = 0; i < COLLISION_TYPE_COUNT; i++) {
+    for (int i = 0; i < FIELD_COLLISION_TYPE_COUNT; i++) {
         const CollisionTypeInfo *info = collision_map_type_info(i);
         if (want[0] == info->side_attr[0] && want[1] == info->side_attr[1] && want[2] == info->side_attr[2] &&
             want[3] == info->side_attr[3]) {
@@ -240,7 +241,7 @@ int CollisionMap_RetypeToPlain(int x, int z)
     }
     u8 *unit = (u8 *) block->unit_types + (x & 0xf) + ((z & 0xf) << 4);
     int type = *unit;
-    if (type >= COLLISION_TYPE_COUNT || collision_map_word06(collision_map_type_info(type)) <= 0) {
+    if (type >= FIELD_COLLISION_TYPE_COUNT || collision_map_word06(collision_map_type_info(type)) <= 0) {
         return 1;
     }
     if (type == UNIT_TYPE_03) {
@@ -253,7 +254,7 @@ int CollisionMap_RetypeToPlain(int x, int z)
     }
 
     const CollisionTypeInfo *from = collision_map_type_info(type);
-    for (int i = 0; i < COLLISION_TYPE_COUNT; i++) {
+    for (int i = 0; i < FIELD_COLLISION_TYPE_COUNT; i++) {
         const CollisionTypeInfo *info = collision_map_type_info(i);
         if (collision_map_word06(info) == 0 && from->side_attr[0] == info->side_attr[0] &&
             from->side_attr[1] == info->side_attr[1] && from->side_attr[2] == info->side_attr[2] &&
@@ -419,7 +420,7 @@ CLEAN_AS(func_02030ddc, CollisionMap_SetUp)
 void CollisionMap_Select(int slot)
 {
     if (CollisionMaps_SetIndex(&data_021c31e8.map_index, slot) == 0) {
-        CollisionMaps_SetIndex(&data_021c31e8.map_index, slot < 0 ? 0 : COLLISION_BLOCK_MAPS - 1);
+        CollisionMaps_SetIndex(&data_021c31e8.map_index, slot < 0 ? 0 : FIELD_COLLISION_BLOCK_MAPS - 1);
     }
     data_020da1a8 = collision_map_slot(data_021c31e8.map_index);
 }

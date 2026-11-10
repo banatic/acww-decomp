@@ -46,7 +46,7 @@ static_assert(offsetof(Spawner, overlay) == 0x74 && sizeof(Spawner) == 0x78, "sp
 
 /* Scenes some checks look for (func_020b65c4). */
 #define SCENE_0 0x00 /* where the checks of codes 0xd011 and 0xd019 answer */
-#define SCENE_9 0x09
+#define SPAWNER_SCENE_9 0x09
 #define SCENE_B 0x0b
 #define SCENE_C 0x0c
 #define SCENE_2C 0x2c /* where no check run with a check mode answers */
@@ -649,7 +649,7 @@ CLEAN_AS(func_020846c0, Spawner_CheckEvents06a4)
 int Spawner_CheckEvents06a4In(int check_mode)
 {
     if (in_session()) {
-        return SceneQuery_Current() == SCENE_9 ? code_result(0xd025) : 0;
+        return SceneQuery_Current() == SPAWNER_SCENE_9 ? code_result(0xd025) : 0;
     }
     int allowed = mode_allows(check_mode);
     if (Spawner_PlayerBlock0Ready()) {
@@ -668,7 +668,7 @@ int Spawner_CheckEvents06a4In(int check_mode)
     if (index != -1) {
         return allowed ? profile_result(&data_020d06a4[index].profile) : 0;
     }
-    if (Spawner_Profile56Allowed() || SceneQuery_Current() != SCENE_9) {
+    if (Spawner_Profile56Allowed() || SceneQuery_Current() != SPAWNER_SCENE_9) {
         return 0;
     }
     return code_result(0xd025);

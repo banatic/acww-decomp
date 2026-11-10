@@ -287,12 +287,12 @@ int SceneProcessBase_CanExecute(Process *process)
 }
 CLEAN_AS(func_020a5430, SceneProcessBase_CanExecute)
 
-/* func_020a553c (vtable slot 5): once deleted (OUTCOME_DONE) the next scene may be spawned, a
+/* func_020a553c (vtable slot 5): once deleted (PROCESS_OUTCOME_DONE) the next scene may be spawned, a
  * stopped game's leftovers are released, there is no running scene any more and the scene's
  * sound is deleted; then the root class's. */
 void SceneProcessBase_AfterDelete(Process *process, int outcome)
 {
-    if (outcome == OUTCOME_DONE) {
+    if (outcome == PROCESS_OUTCOME_DONE) {
         data_020e3c7c = 0;
         if (data_021dc6c4 != 0) {
             GameStop_Release();
@@ -311,12 +311,12 @@ int SceneProcessBase_CanDelete(Process *process)
 }
 CLEAN_AS(func_020a5580, SceneProcessBase_CanDelete)
 
-/* func_020a5598 (vtable slot 2): once created (OUTCOME_DONE) the creation's step is cleared,
+/* func_020a5598 (vtable slot 2): once created (PROCESS_OUTCOME_DONE) the creation's step is cleared,
  * the second backgrounds cleared (not for the field's class), the session's messages delivered,
  * the link's work of the frame done, func_02046600 and func_0203de64; then func_0202f144's. */
 void SceneProcessBase_AfterCreate(Process *process, int outcome)
 {
-    if (outcome == OUTCOME_DONE) {
+    if (outcome == PROCESS_OUTCOME_DONE) {
         data_021f42f0 = 0;
         if (process->class_id != SCENE_FIELD_CLASS) {
             ScreenTransition_ClearBg2();

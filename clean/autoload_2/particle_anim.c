@@ -155,7 +155,7 @@ void ParticleBehavior_Collision(const ParticleCollision *data, Particle *ptcl, V
     int crossed;
 
     (void) acc;
-    if (emitter->collision_y != EMITTER_NO_COLLISION_Y) {
+    if (emitter->collision_y != PARTICLE_EMITTER_NO_COLLISION_Y) {
         y = emitter->collision_y;
     }
     if (type > 1) {

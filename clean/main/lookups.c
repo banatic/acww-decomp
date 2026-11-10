@@ -15,7 +15,7 @@ extern const u8 data_020cd424[5];
 /* Three bytes for each of the 38 special characters (person codes of kind 0xd). */
 extern const u8 data_020cd550[38][3];
 
-#define ITEM_KIND(code) ((code) >> 12)
+#define LOOKUPS_ITEM_KIND(code) ((code) >> 12)
 #define ITEM_INDEX(code) ((code) & 0xfff)
 #define LOOKUPS_KIND_SPECIAL_NPC 0xd
 
@@ -77,7 +77,7 @@ CLEAN_AS(func_020822b0, Lookups_SlotIndex)
 const u8 *Lookups_SpecialNpcRecord(const ItemCode *item)
 {
     u32 index = ITEM_INDEX(*item);
-    if (ITEM_KIND(*item) != LOOKUPS_KIND_SPECIAL_NPC || index >= 38) {
+    if (LOOKUPS_ITEM_KIND(*item) != LOOKUPS_KIND_SPECIAL_NPC || index >= 38) {
         return NULL;
     }
     return data_020cd550[index];
@@ -88,7 +88,7 @@ CLEAN_AS(func_020824d0, Lookups_SpecialNpcRecord)
  * special_scene_object.h), or 0 when it has none. */
 int Lookups_SpecialNpcSortKey(const ItemCode *item)
 {
-    if (ITEM_KIND(*item) != LOOKUPS_KIND_SPECIAL_NPC) {
+    if (LOOKUPS_ITEM_KIND(*item) != LOOKUPS_KIND_SPECIAL_NPC) {
         return 0;
     }
     const u8 *record = Lookups_SpecialNpcRecord(item);

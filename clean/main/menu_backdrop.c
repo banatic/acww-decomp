@@ -61,8 +61,8 @@ extern void func_0206f38c(void);
 #define WIPE_HANDLER_ADDED 0x01
 
 /* The layers of the picture: background 2 of the main and of the sub engine. */
-#define LAYER_MAIN LAYER_MAIN_BG2
-#define LAYER_SUB LAYER_SUB_BG2
+#define LAYER_MAIN DISPLAY_LAYER_MAIN_BG2
+#define LAYER_SUB DISPLAY_LAYER_SUB_BG2
 
 #define PLANE_BG1 0x02
 #define PLANE_BG2 0x04
@@ -159,7 +159,7 @@ int MenuBackdrop_StepWipeOut(void)
 {
     if (!MenuBackdrop_IsWiping()) {
         data_021cfc20 = MENU_BACKDROP_CLOSED;
-        DisplayShadow_DisableMainWindows(WINDOW_1);
+        DisplayShadow_DisableMainWindows(DISPLAY_SHADOW_WINDOW_1);
         DisplayLayer_HideAndResetScroll(LAYER_MAIN);
         StateFlags_Clear10();
     }
@@ -173,8 +173,8 @@ CLEAN_AS(func_0206eb7c, MenuBackdrop_StepWipeOut)
  * QUIRK: until then all of it is done again each frame, the sweep begun anew. */
 int MenuBackdrop_StepRestore(void)
 {
-    DisplayShadow_EnableMainWindows(WINDOW_1);
-    DisplayShadow_DisableMainWindows(WINDOW_0);
+    DisplayShadow_EnableMainWindows(DISPLAY_SHADOW_WINDOW_1);
+    DisplayShadow_DisableMainWindows(DISPLAY_SHADOW_WINDOW_0);
     DisplayShadow_SetMainWindow1Planes(PLANES_ALL);
     DisplayShadow_SetMainOutsidePlanes(PLANES_BUT_BG2);
     DisplayShadow_HideMainPlanes(PLANE_BG1 | PLANE_BG3);
@@ -240,8 +240,8 @@ CLEAN_AS(func_0206ec98, MenuBackdrop_StepClose)
  * step 7. Always 1. */
 int MenuBackdrop_StepShow(void)
 {
-    DisplayShadow_DisableMainWindows(WINDOW_0);
-    DisplayShadow_DisableMainWindows(WINDOW_1);
+    DisplayShadow_DisableMainWindows(DISPLAY_SHADOW_WINDOW_0);
+    DisplayShadow_DisableMainWindows(DISPLAY_SHADOW_WINDOW_1);
     DisplayShadow_HideMainPlanes(PLANE_BG1 | PLANE_BG2 | PLANE_BG3);
     data_021cfc20 = MENU_BACKDROP_OPEN;
     return 1;
@@ -274,7 +274,7 @@ CLEAN_AS(func_0206ed2c, MenuBackdrop_StepEaseIn)
 int MenuBackdrop_StepLoadSub(void)
 {
     if (MenuBackdrop_LoadLayer(LAYER_SUB)) {
-        DisplayShadow_DisableMainWindows(WINDOW_1);
+        DisplayShadow_DisableMainWindows(DISPLAY_SHADOW_WINDOW_1);
         DisplayShadow_HideSubPlanes(SUB_PLANES_BG);
         DisplayLayer_Show(LAYER_SUB);
         data_021c8c9c = 1;
@@ -328,7 +328,7 @@ int MenuBackdrop_StepLoadMain(void)
     }
     data_021cfc20 = MENU_BACKDROP_WIPE_IN;
     DisplayLayer_Show(LAYER_MAIN);
-    DisplayShadow_EnableMainWindows(WINDOW_1);
+    DisplayShadow_EnableMainWindows(DISPLAY_SHADOW_WINDOW_1);
     DisplayShadow_SetMainWindow1Planes(PLANES_ALL);
     DisplayShadow_SetMainOutsidePlanes(PLANES_BUT_BG2);
     MenuBackdrop_BeginWipeIn();
@@ -382,7 +382,7 @@ void MenuBackdrop_End(void)
         DisplayLayer_HideAndResetScroll(LAYER_MAIN);
         DisplayLayer_HideAndResetScroll(LAYER_SUB);
     }
-    DisplayShadow_DisableMainWindows(WINDOW_1);
+    DisplayShadow_DisableMainWindows(DISPLAY_SHADOW_WINDOW_1);
     data_021c8c9c = 0;
     StateFlags_Clear10();
     MenuBackdrop_Reset();

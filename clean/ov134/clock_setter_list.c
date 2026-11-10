@@ -994,7 +994,7 @@ void ClockSetter_OpenList(ClockSetter *self, int field)
     self->field_y = (u8) list_shl(ClockSetter_FieldBottom(self, field), 3);
     self->window_top = (u8) (self->field_y - 8);
     self->window_bottom = (u8) (self->field_y + 8);
-    ClockSetter_DrawTitle(self, LAYER_SUB_OBJ, 0x1aa, 8, data_ov134_0229bf5c[field], width + 1);
+    ClockSetter_DrawTitle(self, DISPLAY_LAYER_SUB_OBJ, 0x1aa, 8, data_ov134_0229bf5c[field], width + 1);
     ClockSetter_SetFlags(self, CLOCK_SETTER_FLAG_LIST_FRESH);
     if (field == CLOCK_SETTER_YEAR) {
         self->top_cell = data_ov134_0229c294;

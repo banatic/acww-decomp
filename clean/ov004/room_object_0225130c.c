@@ -23,11 +23,11 @@ static_assert(sizeof(RoomObject0225130c) == 0x848, "the size RoomObject0225130c_
 #define ROOM_OBJECT_0225130C_SIZE 0x848
 #define ANIM_MODE_LOOP 0 /* RoomObject_PlayAnimsFrom: start again at the end */
 #define ANIM_MODE_ONCE 1
-#define ANIM_MODE_3 3       /* the animations' mode 3 */
-#define KEEP_FRAME 0xffff   /* RoomObject_PlayAnimsFrom: each animation keeps its frame */
-#define SLOT_70_VALUE 0xff  /* the second argument given with a state (vtable slot 0x70) */
-#define RUNNING_SOUND 0x42a /* the sound kept playing at its center */
-#define TICK_FRAME 0x14     /* the joint animation's frame where the sound's variable changes */
+#define ANIM_MODE_3 3                        /* the animations' mode 3 */
+#define KEEP_FRAME 0xffff                    /* RoomObject_PlayAnimsFrom: each animation keeps its frame */
+#define SLOT_70_VALUE 0xff                   /* the second argument given with a state (vtable slot 0x70) */
+#define RUNNING_SOUND 0x42a                  /* the sound kept playing at its center */
+#define ROOM_OBJECT_0225130C_TICK_FRAME 0x14 /* the joint animation's frame where the sound's variable changes */
 
 /* The state tables (member_pointer.h): their guards, the tables and their constants. */
 extern u32 data_ov004_0225703c;
@@ -69,7 +69,7 @@ static void room_object0225130c_tick(RoomObject0225130c *object)
     }
     if (FrameCtrl_Passed(&object->base.model.frames, 0)) {
         RoomSound_SetVariable(&object->base.sound, 1);
-    } else if (FrameCtrl_Passed(&object->base.model.frames, TICK_FRAME)) {
+    } else if (FrameCtrl_Passed(&object->base.model.frames, ROOM_OBJECT_0225130C_TICK_FRAME)) {
         RoomSound_SetVariable(&object->base.sound, (object->ticks & 1) != 0 ? 2 : 1);
         object->ticks++;
     }

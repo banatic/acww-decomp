@@ -23,7 +23,7 @@ void *LineHandlers_RequestChange(LineHandler *handler, int hblank_function, int 
 {
     handler->next_vblank_function = (u32) vblank_function;
     handler->next_hblank_function = (u32) hblank_function;
-    handler->state = LINE_HANDLER_CHANGE;
+    handler->state = IRQ_LINE_HANDLER_CHANGE;
     return (void *) (uintptr_t) 1;
 }
 CLEAN_AS(func_0205bfd0, LineHandlers_RequestChange)
@@ -60,7 +60,7 @@ int LineHandlers_Add(LineHandler *handler, int hblank_function, int vblank_funct
     handler->vblank_function = (u32) vblank_function;
     handler->frame_function = (u32) frame_function;
     handler->next = NULL;
-    handler->state = LINE_HANDLER_NEW;
+    handler->state = IRQ_LINE_HANDLER_NEW;
     if (data_021c9aac != NULL) {
         data_021c9aac->next = handler;
         data_021c9aac = handler;
@@ -77,7 +77,7 @@ CLEAN_AS(func_0205c024, LineHandlers_Add)
 void LineHandlers_RunVBlank(void)
 {
     for (LineHandler *handler = data_021c9aa8; handler != NULL; handler = handler->next) {
-        if (handler->state == LINE_HANDLER_ACTIVE || handler->state == LINE_HANDLER_CHANGE) {
+        if (handler->state == IRQ_LINE_HANDLER_ACTIVE || handler->state == IRQ_LINE_HANDLER_CHANGE) {
             if (handler->vblank_function != 0) {
                 line_handlers_call(handler->vblank_function);
             }
@@ -92,8 +92,8 @@ CLEAN_AS(func_0205c054, LineHandlers_RunVBlank)
 void LineHandlers_RunFrame(void)
 {
     for (LineHandler *handler = data_021c9aa8; handler != NULL; handler = handler->next) {
-        if (handler->state == LINE_HANDLER_NEW) {
-            handler->state = LINE_HANDLER_ACTIVE;
+        if (handler->state == IRQ_LINE_HANDLER_NEW) {
+            handler->state = IRQ_LINE_HANDLER_ACTIVE;
             handler->hblank_function = handler->next_hblank_function;
             if (handler->vblank_function != 0) {
                 line_handlers_call(handler->vblank_function);
@@ -102,8 +102,8 @@ void LineHandlers_RunFrame(void)
         if (handler->frame_function != 0) {
             line_handlers_call(handler->frame_function);
         }
-        if (handler->state == LINE_HANDLER_CHANGE) {
-            handler->state = LINE_HANDLER_ACTIVE;
+        if (handler->state == IRQ_LINE_HANDLER_CHANGE) {
+            handler->state = IRQ_LINE_HANDLER_ACTIVE;
             handler->hblank_function = handler->next_hblank_function;
             handler->vblank_function = handler->next_vblank_function;
             if (handler->vblank_function != 0) {

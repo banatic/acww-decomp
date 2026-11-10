@@ -91,7 +91,7 @@ extern const char data_0213e73c[]; /* "region" */
  * second half. */
 #define HASH_TEXT_SIZE 0x29
 #define SHA1_DIGEST_SIZE 0x14
-#define URL_SIZE 0x100
+#define NETWORK_URL_SIZE 0x100
 
 /* The local wireless library's entries (Local_ListEntries) and the copy Local_SelectEntry
  * hands it. */
@@ -266,7 +266,7 @@ int Wfc_DeleteFriend(int index)
         return FALSE;
     }
     func_ov065_022797a4(data_021fbf3c->friend_data[index]);
-    MI_CpuFill8(data_021fbf3c->friend_data[index], 0, FRIEND_DATA_SIZE);
+    MI_CpuFill8(data_021fbf3c->friend_data[index], 0, NETWORK_FRIEND_DATA_SIZE);
     clear_friend_status(index);
     return TRUE;
 }
@@ -280,7 +280,7 @@ int Wfc_SetFriend(int index, const void *friend_data)
     if (!can_change_friends()) {
         return FALSE;
     }
-    MI_CpuCopy8(friend_data, data_021fbf3c->friend_data[index], FRIEND_DATA_SIZE);
+    MI_CpuCopy8(friend_data, data_021fbf3c->friend_data[index], NETWORK_FRIEND_DATA_SIZE);
     clear_friend_status(index);
     data_0213e6c4 = TRUE;
     int started = func_ov065_02277edc(NULL, func_020ed540, NULL, func_020ed4cc, NULL, func_020ed440, NULL);
@@ -360,7 +360,7 @@ int Wfc_GetSigned(const char *url, void *buffer, int size, const char *region)
     if (data_021fbefc < STAGE_LOGGED_IN || !data_0213e6c0) {
         return FALSE;
     }
-    data_021fbf44 = Net_Alloc(URL_SIZE, 4);
+    data_021fbf44 = Net_Alloc(NETWORK_URL_SIZE, 4);
     if (data_021fbf44 == NULL) {
         return FALSE;
     }
@@ -375,7 +375,7 @@ int Wfc_GetSigned(const char *url, void *buffer, int size, const char *region)
     data_021fbf14 = size;
     data_021fbf10 = region;
     u64 key = Wfc_GetUserKey(data_021fbf40 + 0x20);
-    OS_SNPrintf(data_021fbf44, URL_SIZE, data_0213e6f0, data_021fbf4c, key, region);
+    OS_SNPrintf(data_021fbf44, NETWORK_URL_SIZE, data_0213e6f0, data_021fbf4c, key, region);
     DWC_GetGHTTPData(data_021fbf44, func_020ed194, buffer);
     return TRUE;
 }
@@ -941,7 +941,7 @@ CLEAN_AS(func_020ec148, Net_CountJoinable)
 /* func_020ec198 */
 int Wfc_CountFriends(void)
 {
-    return func_ov065_02279894(data_021fbf3c, FRIEND_COUNT);
+    return func_ov065_02279894(data_021fbf3c, NETWORK_FRIEND_COUNT);
 }
 CLEAN_AS(func_020ec198, Wfc_CountFriends)
 
@@ -1092,7 +1092,7 @@ void Wfc_SetUp(int mode, ReceiveHandler *on_received, void (*on_deleted)(int ind
     data_021fbf0c = NULL;
     data_021fbf34 = 0;
     MI_CpuFill8(data_021fbff8, 0, sizeof(data_021fbff8));
-    for (u32 i = 0; i < FRIEND_COUNT; i++) {
+    for (u32 i = 0; i < NETWORK_FRIEND_COUNT; i++) {
         data_021fbf3c->status[i].status = 0;
     }
     func_ov065_0227f1f4((u32) (uintptr_t) func_020edab8, (u32) (uintptr_t) func_020edaa8);
@@ -1170,7 +1170,7 @@ int Wfc_UpdateConnection(void)
             data_0213e6bc = TRUE;
             data_0213e6c4 = TRUE;
             func_ov065_022782d4(data_021fc220, data_021fbf40 + 0x20, 0x299e, data_0213e744, data_0213e750, 0, 0, data_021fbf3c,
-                                FRIEND_COUNT);
+                                NETWORK_FRIEND_COUNT);
             func_ov065_02277f98(0, 0, func_020ed3d4, 0);
             data_021fbefc = STAGE_LOGGING_IN;
             break;
@@ -1677,7 +1677,7 @@ void Wfc_OnSignedGetChallenge(const char *reply, int length, int result, char *b
     MATH_CalcSHA1(data_021fbf0c + SHA1_DIGEST_SIZE, buffer, (u32) (length + STD_GetStringLength(data_0213e708)));
     digest_to_hex(data_021fbf0c);
     u64 key = Wfc_GetUserKey(data_021fbf40 + 0x20);
-    OS_SNPrintf(data_021fbf44, URL_SIZE, data_0213e758, data_021fbf4c, key, data_021fbf0c, data_021fbf10);
+    OS_SNPrintf(data_021fbf44, NETWORK_URL_SIZE, data_0213e758, data_021fbf4c, key, data_021fbf0c, data_021fbf10);
     DWC_GetGHTTPData(data_021fbf44, func_020ed370, buffer);
 }
 CLEAN_AS(func_020ed194, Wfc_OnSignedGetChallenge)
@@ -1736,7 +1736,7 @@ void Wfc_OnFriendDeleted(int index, int reason, void *argument)
 {
     (void) reason;
     (void) argument;
-    MI_CpuFill8(data_021fbf3c->friend_data[index], 0, FRIEND_DATA_SIZE);
+    MI_CpuFill8(data_021fbf3c->friend_data[index], 0, NETWORK_FRIEND_DATA_SIZE);
     clear_friend_status(index);
     if (data_021fbf30 != NULL) {
         data_021fbf30(index);
@@ -1774,7 +1774,7 @@ void Wfc_OnFriendsUpdated(void *result, int changed, void *argument)
         return;
     }
     data_0213e6c4 = FALSE;
-    for (u32 i = 0; i < FRIEND_COUNT; i++) {
+    for (u32 i = 0; i < NETWORK_FRIEND_COUNT; i++) {
         if (func_0210132c(data_021fbf3c->friend_data[i])) {
             read_friend_status((int) i);
         }

@@ -15,16 +15,16 @@ static_assert(offsetof(SlidingWindow, open_request) == 0x54 && offsetof(SlidingW
 static_assert(offsetof(SlidingWindow, lines) == 0x60 && offsetof(SlidingWindow, boxes) == 0xc0, "SlidingWindow");
 static_assert(sizeof(SlidingWindow) == 0xcc, "SlidingWindow");
 
-#define SCREEN_WIDTH 0x100
+#define WIPE_SCREEN_WIDTH 0x100
 #define SCREEN_CENTER_X 0x80
 
 /* The text boxes: 20 tiles wide, 2 rows, from these OBJ tiles. */
 #define BOX_FIRST_TILE_0 0x41
 #define BOX_FIRST_TILE_1 0x61
-#define BOX_CELLS 0x14
-#define BOX_ROWS 2
+#define SLIDING_WINDOW_BOX_CELLS 0x14
+#define SLIDING_WINDOW_BOX_ROWS 2
 #define BOX_LAYER_OBJ 4
-#define BOX_COLOR 3
+#define SLIDING_WINDOW_BOX_COLOR 3
 
 #define OPENING_FRAMES 3
 #define CLOSING_FRAMES 2
@@ -59,7 +59,7 @@ void SlidingWindow_KeepOnScreen(SlidingWindow *window)
     int half_width = CellAnim_Frame(&window->body) * 4 + 0xc;
     int center = window->x + window->slide_x;
     int left = center - half_width + SCREEN_CENTER_X;
-    int right_over = half_width + center - (SCREEN_WIDTH - SCREEN_CENTER_X);
+    int right_over = half_width + center - (WIPE_SCREEN_WIDTH - SCREEN_CENTER_X);
     if (left < 0) {
         window->screen_shift = -left;
     } else if (right_over > 0) {
@@ -96,7 +96,7 @@ static void setup_box(SlidingWindow *window, TextDrawBox *box, SlidingWindowText
     box->font = font;
     box->rows_full_width = 1;
     box->background = 0;
-    box->color = BOX_COLOR;
+    box->color = SLIDING_WINDOW_BOX_COLOR;
     TextDraw_RequestDraw(box);
 }
 
@@ -106,13 +106,15 @@ void SlidingWindow_MakeBoxes(SlidingWindow *window)
 {
     int two_lines = window->line_count == 2;
     if (window->boxes[0] == NULL) {
-        window->boxes[0] = (TextDrawBox *) LabelBox_NewInVram(BOX_FIRST_TILE_0, BOX_CELLS, BOX_ROWS);
+        window->boxes[0] =
+            (TextDrawBox *) LabelBox_NewInVram(BOX_FIRST_TILE_0, SLIDING_WINDOW_BOX_CELLS, SLIDING_WINDOW_BOX_ROWS);
         if (window->boxes[0] != NULL) {
             setup_box(window, window->boxes[0], &window->lines[0], two_lines ? &data_021c828c : &data_021c8230);
         }
     }
     if (window->boxes[1] == NULL && two_lines) {
-        window->boxes[1] = (TextDrawBox *) LabelBox_NewInVram(BOX_FIRST_TILE_1, BOX_CELLS, BOX_ROWS);
+        window->boxes[1] =
+            (TextDrawBox *) LabelBox_NewInVram(BOX_FIRST_TILE_1, SLIDING_WINDOW_BOX_CELLS, SLIDING_WINDOW_BOX_ROWS);
         if (window->boxes[1] != NULL) {
             setup_box(window, window->boxes[1], &window->lines[1], &data_021c828c);
         }

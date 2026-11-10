@@ -325,7 +325,7 @@ int Astro_Start(Astro *self)
     self->anim_word = 0;
     self->flags |= ASTRO_HELD;
     AstroTalk_SetTopic(&self->talk, ASTRO_TALK_TOPIC_PENDING);
-    if (Calendar_PartOfDay() == PART_OF_DAY_EVENING || Calendar_PartOfDay() == PART_OF_DAY_NIGHT ||
+    if (Calendar_PartOfDay() == CALENDAR_PART_OF_DAY_EVENING || Calendar_PartOfDay() == CALENDAR_PART_OF_DAY_NIGHT ||
         Session_IsLinked(data_020ccf94) || *GameVariables_Slot(0, ASTRO_VARIABLE) != 0) {
         Astro_SetState(self, ASTRO_IDLE);
     } else {
@@ -484,7 +484,7 @@ int Astro_UpdateIdle(Astro *self)
         return 1;
     }
     if (Session_IsLinked(data_020ccf94) || *GameVariables_Slot(0, ASTRO_VARIABLE) != 0 ||
-        Calendar_PartOfDay() == PART_OF_DAY_EVENING || Calendar_PartOfDay() == PART_OF_DAY_NIGHT) {
+        Calendar_PartOfDay() == CALENDAR_PART_OF_DAY_EVENING || Calendar_PartOfDay() == CALENDAR_PART_OF_DAY_NIGHT) {
         return 1;
     }
     if (Countdown_Tick16(&self->countdown) == 0) {

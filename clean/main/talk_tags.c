@@ -469,11 +469,11 @@ void TalkTags_BranchByPartOfDay(TalkTagsWalker *walker)
     MessageTag_ReadFourBytes(&walker->tag, &messages[0], &messages[1], &messages[2], &messages[3]);
     s32 part = *(const s32 *) (const void *) talk_tags_at(walker, TALK_TAGS_PART_OF_DAY);
     int index = 0;
-    if (part == PART_OF_DAY_AFTERNOON) {
+    if (part == CALENDAR_PART_OF_DAY_AFTERNOON) {
         index = 1;
-    } else if (part == PART_OF_DAY_EVENING) {
+    } else if (part == CALENDAR_PART_OF_DAY_EVENING) {
         index = 2;
-    } else if (part == PART_OF_DAY_NIGHT) {
+    } else if (part == CALENDAR_PART_OF_DAY_NIGHT) {
         index = 3;
     }
     talk_tags_go_to(walker, messages[index]);

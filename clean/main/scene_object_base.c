@@ -290,10 +290,10 @@ int SceneObjectBase_CanDelete(SceneObjectBase *object)
 CLEAN_AS(func_0203efdc, SceneObjectBase_CanDelete)
 
 /* func_0203f004 (vtable slot 0x08, told how its creation went): once created
- * (OUTCOME_DONE), the object joins the registry; then the actors' own. */
+ * (PROCESS_OUTCOME_DONE), the object joins the registry; then the actors' own. */
 void SceneObjectBase_AfterCreate(SceneObjectBase *object, int outcome)
 {
-    if (outcome == OUTCOME_DONE) {
+    if (outcome == PROCESS_OUTCOME_DONE) {
         ListOps_Append(&data_021c72cc, &object->entry.link);
     }
     Actor_Vfunc08((Actor *) object, outcome);

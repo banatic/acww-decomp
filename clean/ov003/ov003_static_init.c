@@ -271,7 +271,7 @@ CLEAN_AS(__sinit_ov003_02237aa4, Ov003Init_TileEvents)
 extern AcreMap *data_021c80bc;
 extern FishShadow data_ov003_0225f76c[FISH_SHADOW_COUNT];
 extern FishFin data_ov003_0225f220;
-extern PlayerFish data_ov003_0225f4dc[PLAYER_FISH_COUNT];
+extern PlayerFish data_ov003_0225f4dc[FISH_SHADOW_PLAYER_FISH_COUNT];
 extern u8 data_ov003_0225f0b4[];
 extern AcreMap *data_ov003_0225f0bc;
 extern ThrownBottle data_ov003_0225f35c[THROWN_BOTTLE_COUNT];
@@ -362,7 +362,8 @@ void Ov003Init_Fish(void)
     ov003_init_register(NULL, func_ov003_0222c494, &data_ov003_0225f0c4);
     FishFin_Construct(&data_ov003_0225f220);
     ov003_init_register(&data_ov003_0225f220, func_ov003_02228f54, &data_ov003_0225f0d0);
-    __cxa_vec_ctor(data_ov003_0225f4dc, PLAYER_FISH_COUNT, sizeof(PlayerFish), func_ov003_02228ed4, func_ov003_02228ec4);
+    __cxa_vec_ctor(data_ov003_0225f4dc, FISH_SHADOW_PLAYER_FISH_COUNT, sizeof(PlayerFish), func_ov003_02228ed4,
+                   func_ov003_02228ec4);
     ov003_init_register(NULL, func_ov003_0222c474, &data_ov003_0225f0dc);
     AcreMap *map = data_021c80bc;
     data_ov003_0225f0bc = map;

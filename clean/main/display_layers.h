@@ -8,15 +8,15 @@
 #include "types.h"
 
 enum DisplayLayer {
-    LAYER_MAIN_BG1 = 0,
-    LAYER_MAIN_BG2 = 1,
-    LAYER_MAIN_BG3 = 2,
-    LAYER_SUB_BG0 = 3,
-    LAYER_SUB_BG1 = 4,
-    LAYER_SUB_BG2 = 5,
-    LAYER_SUB_BG3 = 6,
-    LAYER_MAIN_OBJ = 7,
-    LAYER_SUB_OBJ = 8
+    DISPLAY_LAYER_MAIN_BG1 = 0,
+    DISPLAY_LAYER_MAIN_BG2 = 1,
+    DISPLAY_LAYER_MAIN_BG3 = 2,
+    DISPLAY_LAYER_SUB_BG0 = 3,
+    DISPLAY_LAYER_SUB_BG1 = 4,
+    DISPLAY_LAYER_SUB_BG2 = 5,
+    DISPLAY_LAYER_SUB_BG3 = 6,
+    DISPLAY_LAYER_MAIN_OBJ = 7,
+    DISPLAY_LAYER_SUB_OBJ = 8
 };
 
 void DisplayLayer_Show(unsigned int layer);

@@ -22,7 +22,7 @@
 /* The corners of a flat box. */
 #define COLLISION_BOX_FLAT_CORNERS 2
 /* What a box's sides and top are, as walls and floors. */
-#define COLLISION_BOX_KIND COLLISION_KIND_1
+#define COLLISION_BOX_KIND FIELD_COLLISION_KIND_1
 #define COLLISION_BOX_ATTR 1
 
 typedef struct CollisionBox {

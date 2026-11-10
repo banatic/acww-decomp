@@ -181,8 +181,8 @@ typedef struct GroundInfo {
 #define BUTTON_START 0x0008
 #define BUTTON_R 0x0100
 #define BUTTON_L 0x0200
-#define BUTTON_X 0x0400
-#define BUTTON_Y 0x0800
+#define FIELD_ACTOR_BUTTON_X 0x0400
+#define FIELD_ACTOR_BUTTON_Y 0x0800
 
 extern PadState data_021fbe40;
 extern const s16 FX_SinCosTable_[];
@@ -1738,7 +1738,8 @@ void FieldActor_RunState74(FieldActor *actor)
         push = FX_Div(FX_MulFunc(VEC_Mag(&change), 0x6400), 0x59a);
     }
 
-    static const u16 buttons[] = {BUTTON_A, BUTTON_B, BUTTON_X, BUTTON_Y, BUTTON_L, BUTTON_R, BUTTON_START, BUTTON_SELECT};
+    static const u16 buttons[] = {BUTTON_A, BUTTON_B, FIELD_ACTOR_BUTTON_X, FIELD_ACTOR_BUTTON_Y,
+                                  BUTTON_L, BUTTON_R, BUTTON_START,         BUTTON_SELECT};
     int bonus = 0;
     for (size_t i = 0; i < sizeof(buttons) / sizeof(buttons[0]); i++) {
         if (data_021fbe40.pressed & buttons[i]) {

@@ -159,23 +159,23 @@ void SoundSourceClass_Update(SoundSourceObject *source, const Vec3 *pos)
     if (data_021fd1bc.muted == 1) {
         return;
     }
-    if (source->flags & SOURCE_CHANGED) {
+    if (source->flags & SOUND_SOURCE_CHANGED) {
         stop_if_playing(source);
-        source->flags &= (u8) ~SOURCE_CHANGED;
+        source->flags &= (u8) ~SOUND_SOURCE_CHANGED;
     }
 
-    if (source->flags & SOURCE_ASKED) {
+    if (source->flags & SOUND_SOURCE_ASKED) {
         number = source->number;
         volume = source_distance(number, pos);
         if (volume > (SoundPosition_Curve()->far >> 12)) {
             stop_if_playing(source);
-            source->flags &= (u8) ~SOURCE_ASKED;
+            source->flags &= (u8) ~SOUND_SOURCE_ASKED;
             return;
         }
         volume = SoundPosition_VolumeAt(volume);
         if (volume == 0) {
             stop_if_playing(source);
-            source->flags &= (u8) ~SOURCE_ASKED;
+            source->flags &= (u8) ~SOUND_SOURCE_ASKED;
             return;
         }
 
@@ -211,11 +211,11 @@ void SoundSourceClass_Update(SoundSourceObject *source, const Vec3 *pos)
                 func_0210b634(&source->handle, data_0213e858, pan);
             }
         }
-        source->flags &= (u8) ~SOURCE_ASKED;
-    } else if (!(source->flags & SOURCE_HOLD)) {
+        source->flags &= (u8) ~SOUND_SOURCE_ASKED;
+    } else if (!(source->flags & SOUND_SOURCE_HOLD)) {
         stop_if_playing(source);
     }
-    source->flags &= (u8) ~SOURCE_ASKED;
+    source->flags &= (u8) ~SOUND_SOURCE_ASKED;
 }
 CLEAN_AS(func_020f4690, SoundSourceClass_Update)
 
@@ -245,13 +245,13 @@ void SoundSourceClass_Play(SoundSourceObject *source, unsigned short number)
     u8 flags = source->flags;
 
     if (source->number != number) {
-        flags |= SOURCE_CHANGED;
+        flags |= SOUND_SOURCE_CHANGED;
     } else {
-        flags &= (u8) ~SOURCE_CHANGED;
+        flags &= (u8) ~SOUND_SOURCE_CHANGED;
     }
     source->number = number;
-    flags &= (u8) ~SOURCE_HOLD;
-    source->flags = flags | SOURCE_ASKED;
+    flags &= (u8) ~SOUND_SOURCE_HOLD;
+    source->flags = flags | SOUND_SOURCE_ASKED;
 }
 CLEAN_AS(func_020f4ba8, SoundSourceClass_Play)
 
@@ -262,12 +262,12 @@ void SoundSourceClass_PlayHeld(SoundSourceObject *source, unsigned short number)
     u8 flags = source->flags;
 
     if (source->number != number) {
-        flags |= SOURCE_CHANGED;
+        flags |= SOUND_SOURCE_CHANGED;
     } else {
-        flags &= (u8) ~SOURCE_CHANGED;
+        flags &= (u8) ~SOUND_SOURCE_CHANGED;
     }
     source->number = number;
-    source->flags = flags | SOURCE_HOLD | SOURCE_ASKED;
+    source->flags = flags | SOUND_SOURCE_HOLD | SOUND_SOURCE_ASKED;
 }
 CLEAN_AS(func_020f4be8, SoundSourceClass_PlayHeld)
 

@@ -121,15 +121,15 @@ int Calendar_PartOfDay(void)
     Time now;
     Calendar_Now(&now);
     if (now.hour < 5) {
-        return PART_OF_DAY_NIGHT;
+        return CALENDAR_PART_OF_DAY_NIGHT;
     }
     if (now.hour < 12) {
-        return PART_OF_DAY_MORNING;
+        return CALENDAR_PART_OF_DAY_MORNING;
     }
     if (now.hour < 17) {
-        return PART_OF_DAY_AFTERNOON;
+        return CALENDAR_PART_OF_DAY_AFTERNOON;
     }
-    return PART_OF_DAY_EVENING;
+    return CALENDAR_PART_OF_DAY_EVENING;
 }
 CLEAN_AS(func_0209dcac, Calendar_PartOfDay)
 

@@ -28,7 +28,7 @@ static_assert(offsetof(MuseumRecord, day) == 0x60, "date");
 /* The item the letters carry. */
 #define LETTER_ITEM 0x3870
 /* The message entry the town's name is put in for the letters. */
-#define TOWN_NAME_ENTRY 2
+#define MUSEUM_RECORD_TOWN_NAME_ENTRY 2
 
 #define PLAYERS 4
 
@@ -265,7 +265,7 @@ int MuseumRecord_SendLetters(void *record)
     Letter letter;
     TownNameText_Construct((TownNameText *) &town);
     TownName_ToText((TownName *) (void *) data_021dc7aa, (TextBase *) &town);
-    MailText_SetPartText(TOWN_NAME_ENTRY, &town);
+    MailText_SetPartText(MUSEUM_RECORD_TOWN_NAME_ENTRY, &town);
     int posted = 0;
     for (int i = 0; i < PLAYERS; i++) {
         u8 *player = PlayerRecords_TownRecord(data_021dc7bc, i);

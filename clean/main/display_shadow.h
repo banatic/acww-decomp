@@ -100,45 +100,50 @@ typedef struct WindowBlendShadow {
     u8 blend_ev;         /* 0x15: the first target's weight of 16 (alpha) */
 } WindowBlendShadow;
 
-enum AffineBgs { AFFINE_MAIN_BG2 = 1 << 0, AFFINE_MAIN_BG3 = 1 << 1, AFFINE_SUB_BG2 = 1 << 2, AFFINE_SUB_BG3 = 1 << 3 };
+enum AffineBgs {
+    DISPLAY_SHADOW_AFFINE_MAIN_BG2 = 1 << 0,
+    DISPLAY_SHADOW_AFFINE_MAIN_BG3 = 1 << 1,
+    DISPLAY_SHADOW_AFFINE_SUB_BG2 = 1 << 2,
+    DISPLAY_SHADOW_AFFINE_SUB_BG3 = 1 << 3
+};
 
-enum Windows { WINDOW_0 = 1 << 0, WINDOW_1 = 1 << 1, WINDOW_OBJ = 1 << 2 };
+enum Windows { DISPLAY_SHADOW_WINDOW_0 = 1 << 0, DISPLAY_SHADOW_WINDOW_1 = 1 << 1, DISPLAY_SHADOW_WINDOW_OBJ = 1 << 2 };
 
 /* The PLANES bits write a window's planes with the color effects enabled inside it, the
  * PLANES_PLAIN ones without; the RECT bits its rectangle. */
 enum WindowDirty {
-    DIRTY_MAIN_WIN0_PLANES = 1 << 0,
-    DIRTY_MAIN_WIN1_PLANES = 1 << 1,
-    DIRTY_SUB_WIN0_PLANES = 1 << 2,
-    DIRTY_SUB_WIN1_PLANES = 1 << 3,
-    DIRTY_MAIN_WIN0_RECT = 1 << 4,
-    DIRTY_MAIN_WIN1_RECT = 1 << 5,
-    DIRTY_SUB_WIN0_RECT = 1 << 6,
-    DIRTY_SUB_WIN1_RECT = 1 << 7,
-    DIRTY_SUB_WIN0_PLANES_PLAIN = 1 << 8,
-    DIRTY_SUB_WIN1_PLANES_PLAIN = 1 << 9
+    DISPLAY_SHADOW_DIRTY_MAIN_WIN0_PLANES = 1 << 0,
+    DISPLAY_SHADOW_DIRTY_MAIN_WIN1_PLANES = 1 << 1,
+    DISPLAY_SHADOW_DIRTY_SUB_WIN0_PLANES = 1 << 2,
+    DISPLAY_SHADOW_DIRTY_SUB_WIN1_PLANES = 1 << 3,
+    DISPLAY_SHADOW_DIRTY_MAIN_WIN0_RECT = 1 << 4,
+    DISPLAY_SHADOW_DIRTY_MAIN_WIN1_RECT = 1 << 5,
+    DISPLAY_SHADOW_DIRTY_SUB_WIN0_RECT = 1 << 6,
+    DISPLAY_SHADOW_DIRTY_SUB_WIN1_RECT = 1 << 7,
+    DISPLAY_SHADOW_DIRTY_SUB_WIN0_PLANES_PLAIN = 1 << 8,
+    DISPLAY_SHADOW_DIRTY_SUB_WIN1_PLANES_PLAIN = 1 << 9
 };
 
 /* DisplayShadow.scroll_dirty: the backgrounds whose scrolling (and affine parameters) to write. */
 enum ScrollDirty {
-    DIRTY_MAIN_BG0 = 1 << 0,
-    DIRTY_MAIN_BG1 = 1 << 1,
-    DIRTY_MAIN_BG2 = 1 << 2,
-    DIRTY_MAIN_BG3 = 1 << 3,
-    DIRTY_SUB_BG0 = 1 << 4,
-    DIRTY_SUB_BG1 = 1 << 5,
-    DIRTY_SUB_BG2 = 1 << 6,
-    DIRTY_SUB_BG3 = 1 << 7
+    DISPLAY_SHADOW_DIRTY_MAIN_BG0 = 1 << 0,
+    DISPLAY_SHADOW_DIRTY_MAIN_BG1 = 1 << 1,
+    DISPLAY_SHADOW_DIRTY_MAIN_BG2 = 1 << 2,
+    DISPLAY_SHADOW_DIRTY_MAIN_BG3 = 1 << 3,
+    DISPLAY_SHADOW_DIRTY_SUB_BG0 = 1 << 4,
+    DISPLAY_SHADOW_DIRTY_SUB_BG1 = 1 << 5,
+    DISPLAY_SHADOW_DIRTY_SUB_BG2 = 1 << 6,
+    DISPLAY_SHADOW_DIRTY_SUB_BG3 = 1 << 7
 };
 
 /* In the order func_02001ecc tries them: the first one set is applied. */
 enum BlendRequest {
-    BLEND_MAIN_OFF = 1 << 5,          /* no effect on the main screen */
-    BLEND_MAIN_ALPHA = 1 << 4,        /* alpha blending on the main screen */
-    BLEND_SUB_OFF = 1 << 1,           /* no effect on the sub screen */
-    BLEND_SUB_ALPHA = 1 << 3,         /* alpha blending on the sub screen */
-    BLEND_SUB_BRIGHTNESS = 1 << 2,    /* brightness change on the sub screen */
-    BLEND_SUB_BRIGHTNESS_OBJ = 1 << 0 /* the same, set with the sub screen's OBJ window */
+    DISPLAY_SHADOW_BLEND_MAIN_OFF = 1 << 5,          /* no effect on the main screen */
+    DISPLAY_SHADOW_BLEND_MAIN_ALPHA = 1 << 4,        /* alpha blending on the main screen */
+    DISPLAY_SHADOW_BLEND_SUB_OFF = 1 << 1,           /* no effect on the sub screen */
+    DISPLAY_SHADOW_BLEND_SUB_ALPHA = 1 << 3,         /* alpha blending on the sub screen */
+    DISPLAY_SHADOW_BLEND_SUB_BRIGHTNESS = 1 << 2,    /* brightness change on the sub screen */
+    DISPLAY_SHADOW_BLEND_SUB_BRIGHTNESS_OBJ = 1 << 0 /* the same, set with the sub screen's OBJ window */
 };
 
 void DisplayShadow_MainBlendOff(void);

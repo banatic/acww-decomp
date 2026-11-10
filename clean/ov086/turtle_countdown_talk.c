@@ -255,9 +255,9 @@ void TurtleCountdownTalk_FirstLine(TurtleCountdownTalk *talk, TurtleCountdownLin
     DateTime_Now(&now);
 
     if (today.month == T6T_DECEMBER) {
-        if (Calendar_PartOfDay() == PART_OF_DAY_MORNING) {
+        if (Calendar_PartOfDay() == CALENDAR_PART_OF_DAY_MORNING) {
             out->message = (u8) MainRandom_Below(3);
-        } else if (Calendar_PartOfDay() == PART_OF_DAY_AFTERNOON) {
+        } else if (Calendar_PartOfDay() == CALENDAR_PART_OF_DAY_AFTERNOON) {
             out->message = t6t_zero_or(2);
         } else if (now.hour < T6T_LAST_HOUR) {
             out->message = t6t_zero_or(4);

@@ -279,7 +279,7 @@ void EffectSystem_EndInstance(EffectSystemInstance *instance)
 {
     ParticleEmitter *emitter = instance->emitter;
     if (emitter != NULL) {
-        emitter->state |= EMITTER_ENDING;
+        emitter->state |= PARTICLE_EMITTER_ENDING;
     }
     instance->resource = EFFECT_SYSTEM_FREE;
 }
@@ -421,7 +421,7 @@ int EffectSystem_StartSet(int set, const Vec3 *position, const s16 *angle, void 
                 emitter = ParticleSys_CreateEmitterWith(data_021d52c4->particles, *resources,
                                                         (void (*)(ParticleEmitter *))(uintptr_t) *setups);
                 if (emitter != NULL && EffectSystem_AddShared(shared, *resources, emitter) != 0) {
-                    emitter->state |= EMITTER_NO_EMISSION;
+                    emitter->state |= PARTICLE_EMITTER_NO_EMISSION;
                     effect_system_emit_shared(emitter, position, angle);
                 }
             } else {
@@ -1239,8 +1239,8 @@ int EffectSystem_FollowKind56(EffectKindsInstance *instance)
         effect_system_put_emitter(emitter, &place->position);
         if (place->frames > 0) {
             /* QUIRK: the alpha is the low byte of the product. */
-            emitter->misc =
-                particle_with_bits(emitter->misc, EMITTER_BASE_ALPHA_SHIFT, 8, (u8) (EFFECT_SYSTEM_FADE_STEP * place->frames));
+            emitter->misc = particle_with_bits(emitter->misc, PARTICLE_EMITTER_BASE_ALPHA_SHIFT, 8,
+                                               (u8) (EFFECT_SYSTEM_FADE_STEP * place->frames));
             place->frames--;
         }
         lasts = 1;

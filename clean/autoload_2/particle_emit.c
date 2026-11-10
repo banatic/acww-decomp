@@ -335,7 +335,7 @@ void Particle_Emit(ParticleEmitter *emitter, ParticleList *free_particles)
         }
 
         ptcl->visibility = (u16) particle_with_bits(ptcl->visibility, PARTICLE_BASE_ALPHA_SHIFT, 5,
-                                                    particle_bits(emitter->misc, EMITTER_BASE_ALPHA_SHIFT, 8));
+                                                    particle_bits(emitter->misc, PARTICLE_EMITTER_BASE_ALPHA_SHIFT, 8));
         ptcl->visibility = (u16) particle_with_bits(ptcl->visibility, PARTICLE_ANIM_ALPHA_SHIFT, 5, 31);
 
         if (header->flags & PARTICLE_RANDOM_ANGLE) {

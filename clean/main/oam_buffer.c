@@ -6,8 +6,8 @@
 static_assert(sizeof(OamEntry) == 8, "OamEntry");
 
 #define FX32_HALF 0x800
-#define SCREEN_WIDTH 0x100
-#define SCREEN_HEIGHT 0xc0
+#define WIPE_SCREEN_WIDTH 0x100
+#define OAM_BUFFER_SCREEN_HEIGHT 0xc0
 #define OAM_BUFFER_SIZE (OAM_BUFFER_ENTRIES * (int) sizeof(OamEntry))
 #define AFFINE_GROUP 4 /* entries per affine group */
 #define OAM_HIDDEN_Y 0xc0
@@ -121,7 +121,7 @@ static OamBufferTarget target_of(int screen)
 /* Whether a box at (x, y) of `w` by `h` reaches the screen (edges included). */
 static int on_screen(int x, int y, int w, int h)
 {
-    return x + w >= 0 && x <= SCREEN_WIDTH && y + h >= 0 && y <= SCREEN_HEIGHT;
+    return x + w >= 0 && x <= WIPE_SCREEN_WIDTH && y + h >= 0 && y <= OAM_BUFFER_SCREEN_HEIGHT;
 }
 
 /* The affine parameters for an angle and scales, with the OBJ's flips turned into signs.
@@ -548,10 +548,10 @@ int OamBuffer_DrawObjAffine(int screen, const OamEntry *obj, int x, int y, int p
         w = shl(w, 1);
         h = shl(h, 1);
     }
-    if (ox + w < 0 || ox > SCREEN_WIDTH) {
+    if (ox + w < 0 || ox > WIPE_SCREEN_WIDTH) {
         return -2;
     }
-    if (oy + h < 0 || oy > SCREEN_HEIGHT) {
+    if (oy + h < 0 || oy > OAM_BUFFER_SCREEN_HEIGHT) {
         return -3;
     }
 

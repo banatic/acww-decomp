@@ -57,7 +57,7 @@ typedef int (*PlayerFishHoldPointFn)(Actor *actor, Vec3 *out);
 
 typedef void (*PlayerFishStateFn)(void *self, int player);
 
-extern PlayerFish data_ov003_0225f4dc[PLAYER_FISH_COUNT];
+extern PlayerFish data_ov003_0225f4dc[FISH_SHADOW_PLAYER_FISH_COUNT];
 extern FishShadow data_ov003_0225f76c[FISH_SHADOW_COUNT];
 /* Each state's step function, member functions of a player's fish. */
 extern MemberPointer data_ov003_0225f138[5];
@@ -121,10 +121,10 @@ CLEAN_AS(func_ov003_02228ec4, PlayerFish_Destruct)
 PlayerFish *PlayerFish_Construct(PlayerFish *self)
 {
     SoundEmitterClass_ConstructBaseB((SoundEmitterObject *) self->emitter);
-    self->state = PLAYER_FISH_IDLE;
+    self->state = FISH_SHADOW_PLAYER_FISH_IDLE;
     self->model = -1;
     self->mode = 0;
-    self->shadow = PLAYER_FISH_NO_SHADOW;
+    self->shadow = FISH_SHADOW_PLAYER_FISH_NO_SHADOW;
     self->arrived = 0;
     self->frames = 0;
     player_fish_set_scale(self, PLAYER_FISH_SCALE);
@@ -145,7 +145,7 @@ CLEAN_AS(func_ov003_02228ed4, PlayerFish_Construct)
 static int player_fish_end_unless(PlayerFish *fish, int ok)
 {
     if (!ok) {
-        fish->state = PLAYER_FISH_END;
+        fish->state = FISH_SHADOW_PLAYER_FISH_END;
         return 0;
     }
     return 1;
@@ -153,23 +153,23 @@ static int player_fish_end_unless(PlayerFish *fish, int ok)
 
 /* func_ov003_02229100: another console's player's fish display state 2 (that player threw the
  * fish back, PlayerFish_ThrowBack): a shown fish is thrown, an idle one starts and is thrown
- * (state PLAYER_FISH_TAKE), a waiting one is shown and thrown. A throw that fails ends it (0). */
+ * (state FISH_SHADOW_PLAYER_FISH_TAKE), a waiting one is shown and thrown. A throw that fails ends it (0). */
 int PlayerFish_OnRemoteState2(FishShadowProcess *self, unsigned int player)
 {
     (void) self;
-    if (player >= PLAYER_FISH_COUNT) {
+    if (player >= FISH_SHADOW_PLAYER_FISH_COUNT) {
         return 0;
     }
     PlayerFish *fish = &data_ov003_0225f4dc[player];
     int state = fish->state;
-    if (state == PLAYER_FISH_SHOW) {
+    if (state == FISH_SHADOW_PLAYER_FISH_SHOW) {
         return player_fish_end_unless(fish, PlayerFish_ThrowBack((int) player, 0));
     }
-    if (state == PLAYER_FISH_IDLE) {
+    if (state == FISH_SHADOW_PLAYER_FISH_IDLE) {
         return player_fish_end_unless(fish, PlayerFish_ThrowBack((int) player, 1));
     }
-    if (state == PLAYER_FISH_WAIT) {
-        fish->state = PLAYER_FISH_SHOW;
+    if (state == FISH_SHADOW_PLAYER_FISH_WAIT) {
+        fish->state = FISH_SHADOW_PLAYER_FISH_SHOW;
         return player_fish_end_unless(fish, PlayerFish_ThrowBack((int) player, 0));
     }
     return 1;
@@ -177,21 +177,21 @@ int PlayerFish_OnRemoteState2(FishShadowProcess *self, unsigned int player)
 CLEAN_AS(func_ov003_02229100, PlayerFish_OnRemoteState2)
 
 /* func_ov003_02229184: an idle fish of `player` starts as another console's player's catch of
- * kind `kind` at `point` (PLAYER_FISH_REMOTE); whether it did. */
+ * kind `kind` at `point` (FISH_SHADOW_PLAYER_FISH_REMOTE); whether it did. */
 int PlayerFish_StartRemote(FishShadowProcess *self, unsigned int player, int kind, const Vec3 *point)
 {
     (void) self;
-    if (player >= PLAYER_FISH_COUNT) {
+    if (player >= FISH_SHADOW_PLAYER_FISH_COUNT) {
         return 0;
     }
     PlayerFish *fish = &data_ov003_0225f4dc[player];
-    if (fish->state != PLAYER_FISH_IDLE) {
+    if (fish->state != FISH_SHADOW_PLAYER_FISH_IDLE) {
         return 0;
     }
     fish->point_a = *point;
     fish->kind = kind;
-    fish->state = PLAYER_FISH_TAKE;
-    fish->mode = PLAYER_FISH_REMOTE;
+    fish->state = FISH_SHADOW_PLAYER_FISH_TAKE;
+    fish->mode = FISH_SHADOW_PLAYER_FISH_REMOTE;
     return 1;
 }
 CLEAN_AS(func_ov003_02229184, PlayerFish_StartRemote)
@@ -200,10 +200,10 @@ CLEAN_AS(func_ov003_02229184, PlayerFish_StartRemote)
 int PlayerFish_OnRemoteState1(FishShadowProcess *self, unsigned int player)
 {
     (void) self;
-    if (player >= PLAYER_FISH_COUNT) {
+    if (player >= FISH_SHADOW_PLAYER_FISH_COUNT) {
         return 0;
     }
-    data_ov003_0225f4dc[player].state = PLAYER_FISH_END;
+    data_ov003_0225f4dc[player].state = FISH_SHADOW_PLAYER_FISH_END;
     return 1;
 }
 CLEAN_AS(func_ov003_022291c8, PlayerFish_OnRemoteState1)
@@ -222,7 +222,7 @@ void PlayerFish_OnRemoteState0(FishShadowProcess *self, int player)
         if (PlayerFish_StartRemote(self, (u8) player, kind, &point)) {
             FishDisp_SetPlayerState((u8) player, 3, -1, 0, 0);
         } else {
-            player_fish_at(player)->state = PLAYER_FISH_END;
+            player_fish_at(player)->state = FISH_SHADOW_PLAYER_FISH_END;
         }
     }
 }
@@ -235,7 +235,7 @@ CLEAN_AS(func_ov003_022291e4, PlayerFish_OnRemoteState0)
 void PlayerFish_Sync(FishShadowProcess *self)
 {
     NetSession *session = data_020ccf94;
-    for (int i = 0; i < PLAYER_FISH_COUNT; i++) {
+    for (int i = 0; i < FISH_SHADOW_PLAYER_FISH_COUNT; i++) {
         if (Session_IsLocalSlot(session, i)) {
             continue;
         }
@@ -255,14 +255,14 @@ void PlayerFish_Sync(FishShadowProcess *self)
                 if (PlayerFish_OnRemoteState1(self, (u8) i)) {
                     FishDisp_SetPlayerState((u8) i, FISH_DISP_PLAYER_NONE, -1, 0, 0);
                 } else {
-                    data_ov003_0225f4dc[i].state = PLAYER_FISH_END;
+                    data_ov003_0225f4dc[i].state = FISH_SHADOW_PLAYER_FISH_END;
                 }
                 break;
             case 2:
                 if (PlayerFish_OnRemoteState2(self, (u8) i)) {
                     FishDisp_SetPlayerState((u8) i, FISH_DISP_PLAYER_NONE, -1, 0, 0);
                 } else {
-                    data_ov003_0225f4dc[i].state = PLAYER_FISH_END;
+                    data_ov003_0225f4dc[i].state = FISH_SHADOW_PLAYER_FISH_END;
                 }
                 break;
         }
@@ -296,7 +296,7 @@ int PlayerFish_Swim(PlayerFish *self, const Vec3 *player_position)
     if (frame == 0) {
         self->rotation[1] = Vec_YawTo(player_position, &self->position);
     } else if (frame >= PLAYER_FISH_SWIM_FRAMES) {
-        self->state = PLAYER_FISH_END;
+        self->state = FISH_SHADOW_PLAYER_FISH_END;
     }
     if (step > PLAYER_FISH_SWIM_MAX_STEP) {
         step = PLAYER_FISH_SWIM_MAX_STEP;
@@ -333,7 +333,7 @@ int PlayerFish_ArcStep(Vec3 *position, const Vec3 *from, const Vec3 *to, int fra
 CLEAN_AS(func_ov003_02229428, PlayerFish_ArcStep)
 
 /* func_ov003_022294b4: a frame of the arc between the fish's points (`back`: from point_b to
- * point_a 1.5 lower, PLAYER_FISH_ARC_BACK; else from point_a to point_b): once the fish is at
+ * point_a 1.5 lower, FISH_SHADOW_PLAYER_FISH_ARC_BACK; else from point_a to point_b): once the fish is at
  * or past the end (func_ov003_0222796c), or the arc is over, it ends in the water (`splash`).
  * QUIRK: the arc back's rise is point_a's height less 1.5 rather than a difference of heights
  * as the other arc's is. */
@@ -354,14 +354,14 @@ void PlayerFish_StepArc(PlayerFish *self, int back)
     Vec3 check_from = from;
     Vec3 check_to = to;
     if (FishShadow_ReachedXZ(&at, &check_from, &check_to)) {
-        self->state = PLAYER_FISH_END;
+        self->state = FISH_SHADOW_PLAYER_FISH_END;
         self->splash = 1;
     } else {
         Vec3 arc_from = from;
         Vec3 arc_to = to;
         if (PlayerFish_ArcStep(&self->position, &arc_from, &arc_to, self->frames, PLAYER_FISH_ARC_HEIGHT,
                                PLAYER_FISH_ARC_FRAMES) == 0) {
-            self->state = PLAYER_FISH_END;
+            self->state = FISH_SHADOW_PLAYER_FISH_END;
             self->splash = 1;
         }
         self->frames++;
@@ -370,8 +370,8 @@ void PlayerFish_StepArc(PlayerFish *self, int back)
 CLEAN_AS(func_ov003_022294b4, PlayerFish_StepArc)
 
 /* func_ov003_02229590: the fish lands in the water: it becomes the shadow (kind 0x3b) at the
- * surface, scaled by its size class, starting again (PLAYER_FISH_TAKE) to swim away
- * (PLAYER_FISH_SWIM). A splash and a wake that follows it (kept in `effect`) at its size, and
+ * surface, scaled by its size class, starting again (FISH_SHADOW_PLAYER_FISH_TAKE) to swim away
+ * (FISH_SHADOW_PLAYER_FISH_SWIM). A splash and a wake that follows it (kept in `effect`) at its size, and
  * the size's sound (0x7e2-0x7e4); none for a size of 8 or more. The shadows within the first
  * rod's reach for the kind flee the point (func_ov003_02228400), unless the player is another
  * console's in a session.
@@ -381,7 +381,7 @@ void PlayerFish_Splash(PlayerFish *self, int player)
     static const u8 splash_kinds[PLAYER_FISH_SIZES] = {0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x19, 0x18};
     static const u8 wake_kinds[PLAYER_FISH_SIZES] = {0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0x21, 0x20};
     static const u16 sounds[PLAYER_FISH_SIZES] = {0x7e2, 0x7e2, 0x7e2, 0x7e3, 0x7e3, 0x7e4, 0x7e4, 0x7e3};
-    self->state = PLAYER_FISH_TAKE;
+    self->state = FISH_SHADOW_PLAYER_FISH_TAKE;
     self->splash = 0;
     const CreatureTableInfo *info = player_fish_creature(self->kind);
     int size = info->size_class;
@@ -389,14 +389,14 @@ void PlayerFish_Splash(PlayerFish *self, int player)
     self->scale.y = 0x1000;
     self->scale.z = (data_ov003_0223c014[size].scale_z << 12) / 100;
     self->position.y = data_020c904c;
-    self->kind = PLAYER_FISH_KIND_SHADOW;
+    self->kind = FISH_SHADOW_PLAYER_FISH_KIND_SHADOW;
     Vec3 at = self->position;
     if (size < PLAYER_FISH_SIZES) {
         EffectSystem_StartKind(splash_kinds[size], &at, NULL, NULL);
         self->effect = EffectSystem_StartKind(wake_kinds[size], &at, NULL, NULL);
         SoundEmitter_PlayB((SoundEmitter *) self->emitter, sounds[size], PLAYER_FISH_VOLUME, 0);
     }
-    self->mode = PLAYER_FISH_SWIM;
+    self->mode = FISH_SHADOW_PLAYER_FISH_SWIM;
     NetSession *session = data_020ccf94;
     if (!Session_IsLinked(session) || Session_IsLocalSlot(session, player)) {
         int reach = (data_ov003_0223bf00[0].ranges[info->unk_01].reach << 12) / 10;
@@ -411,8 +411,8 @@ void PlayerFish_End(PlayerFish *self, int player)
 {
     FishDisp_ReleaseModel(self->model);
     self->model = -1;
-    self->state = PLAYER_FISH_IDLE;
-    self->shadow = PLAYER_FISH_NO_SHADOW;
+    self->state = FISH_SHADOW_PLAYER_FISH_IDLE;
+    self->shadow = FISH_SHADOW_PLAYER_FISH_NO_SHADOW;
     self->arrived = 0;
     self->unk_a0 = 0;
     self->frames = 0;
@@ -434,7 +434,7 @@ CLEAN_AS(func_ov003_022297f0, PlayerFish_End)
 int PlayerFish_LetShadowGo(PlayerFish *self)
 {
     int index = self->shadow;
-    if (index == PLAYER_FISH_NO_SHADOW) {
+    if (index == FISH_SHADOW_PLAYER_FISH_NO_SHADOW) {
         return 0;
     }
     FishShadow *shadow = player_fish_shadow(index);
@@ -448,11 +448,11 @@ int PlayerFish_LetShadowGo(PlayerFish *self)
 }
 CLEAN_AS(func_ov003_02229874, PlayerFish_LetShadowGo)
 
-/* func_ov003_022298c4: PLAYER_FISH_END: a fish caught here (PLAYER_FISH_HOOKED) or thrown back
- * (PLAYER_FISH_ARC_BACK) lets go of its shadow; then it ends. */
+/* func_ov003_022298c4: FISH_SHADOW_PLAYER_FISH_END: a fish caught here (FISH_SHADOW_PLAYER_FISH_HOOKED) or thrown back
+ * (FISH_SHADOW_PLAYER_FISH_ARC_BACK) lets go of its shadow; then it ends. */
 int PlayerFish_StepEnd(PlayerFish *self, int player)
 {
-    if (self->mode == PLAYER_FISH_HOOKED || self->mode == PLAYER_FISH_ARC_BACK) {
+    if (self->mode == FISH_SHADOW_PLAYER_FISH_HOOKED || self->mode == FISH_SHADOW_PLAYER_FISH_ARC_BACK) {
         PlayerFish_LetShadowGo(self);
     }
     PlayerFish_End(self, player);
@@ -489,13 +489,13 @@ static Vec3 player_fish_hand(int player, const Vec3 *offset)
     return hand;
 }
 
-/* func_ov003_022298f0: PLAYER_FISH_REMOTE's frame: without the player's actor the fish ends
+/* func_ov003_022298f0: FISH_SHADOW_PLAYER_FISH_REMOTE's frame: without the player's actor the fish ends
  * (0). It flies to the actor's hold point, then stays at the point of the player's hand. */
 int PlayerFish_FollowRemote(PlayerFish *self, int player)
 {
     Actor *actor = (Actor *) (uintptr_t) SessionPlayers_ActorHandle(player);
     if (actor == NULL) {
-        self->state = PLAYER_FISH_END;
+        self->state = FISH_SHADOW_PLAYER_FISH_END;
         return 0;
     }
     if (self->arrived == 0) {
@@ -510,7 +510,7 @@ int PlayerFish_FollowRemote(PlayerFish *self, int player)
 }
 CLEAN_AS(func_ov003_022298f0, PlayerFish_FollowRemote)
 
-/* func_ov003_022299b8: PLAYER_FISH_HOOKED's frame: the fish flies to the hold point of the
+/* func_ov003_022299b8: FISH_SHADOW_PLAYER_FISH_HOOKED's frame: the fish flies to the hold point of the
  * player's actor (none: it ends, 0); once there it only looks at its model's first frame
  * while unk_a0 is clear (else 0). */
 int PlayerFish_FollowLocal(PlayerFish *self, int player)
@@ -518,7 +518,7 @@ int PlayerFish_FollowLocal(PlayerFish *self, int player)
     if (self->arrived == 0) {
         Actor *actor = (Actor *) (uintptr_t) SessionPlayers_ActorHandle(player);
         if (actor == NULL) {
-            self->state = PLAYER_FISH_END;
+            self->state = FISH_SHADOW_PLAYER_FISH_END;
             return 0;
         }
         player_fish_fly_to_hand(self, actor);
@@ -532,7 +532,7 @@ int PlayerFish_FollowLocal(PlayerFish *self, int player)
 }
 CLEAN_AS(func_ov003_022299b8, PlayerFish_FollowLocal)
 
-/* func_ov003_02229a38: PLAYER_FISH_SHOW: the fish moved by its mode, then its model shown
+/* func_ov003_02229a38: FISH_SHADOW_PLAYER_FISH_SHOW: the fish moved by its mode, then its model shown
  * (animated; with its sound in the player's hand; the swimming shadow fading out over 30
  * frames). Without the player's actor while swimming it ends (0). */
 int PlayerFish_StepShow(PlayerFish *self, int player)
@@ -540,24 +540,24 @@ int PlayerFish_StepShow(PlayerFish *self, int player)
     int alpha = PLAYER_FISH_SWIM_FRAMES;
     u8 play_sound = 0;
     switch (self->mode) {
-        case PLAYER_FISH_HOOKED:
+        case FISH_SHADOW_PLAYER_FISH_HOOKED:
             PlayerFish_FollowLocal(self, player);
             play_sound = 1;
             break;
-        case PLAYER_FISH_REMOTE:
+        case FISH_SHADOW_PLAYER_FISH_REMOTE:
             PlayerFish_FollowRemote(self, player);
             play_sound = 1;
             break;
-        case PLAYER_FISH_ARC_BACK:
+        case FISH_SHADOW_PLAYER_FISH_ARC_BACK:
             PlayerFish_StepArc(self, 1);
             break;
-        case PLAYER_FISH_ARC:
+        case FISH_SHADOW_PLAYER_FISH_ARC:
             PlayerFish_StepArc(self, 0);
             break;
-        case PLAYER_FISH_SWIM: {
+        case FISH_SHADOW_PLAYER_FISH_SWIM: {
             Actor *actor = SessionPlayers_ActorOf(player);
             if (actor == NULL) {
-                self->state = PLAYER_FISH_END;
+                self->state = FISH_SHADOW_PLAYER_FISH_END;
                 return 0;
             }
             PlayerFish_Swim(self, &actor->position);
@@ -580,14 +580,14 @@ static int player_fish_actor_hidden(const Actor *actor)
     return (actor->cull_flags & ACTOR_CULL_FAR) != 0 && (actor->cull_flags & ACTOR_CULL_SKIP_DRAW) != 0;
 }
 
-/* func_ov003_02229ae0: PLAYER_FISH_WAIT: while the player's actor is out of sight the fish
+/* func_ov003_02229ae0: FISH_SHADOW_PLAYER_FISH_WAIT: while the player's actor is out of sight the fish
  * stays at the actor's position (0); then it is in the hand and shown (1). Without the actor it
  * ends (0). */
 int PlayerFish_StepWait(PlayerFish *self, int player)
 {
     Actor *actor = (Actor *) (uintptr_t) SessionPlayers_ActorHandle(player);
     if (actor == NULL) {
-        self->state = PLAYER_FISH_END;
+        self->state = FISH_SHADOW_PLAYER_FISH_END;
         return 0;
     }
     if (player_fish_actor_hidden(actor)) {
@@ -596,7 +596,7 @@ int PlayerFish_StepWait(PlayerFish *self, int player)
         return 0;
     }
     self->arrived = 1;
-    self->state = PLAYER_FISH_SHOW;
+    self->state = FISH_SHADOW_PLAYER_FISH_SHOW;
     return 1;
 }
 CLEAN_AS(func_ov003_02229ae0, PlayerFish_StepWait)
@@ -606,12 +606,12 @@ CLEAN_AS(func_ov003_02229ae0, PlayerFish_StepWait)
  * the fish ends (0). */
 int PlayerFish_StartArc(PlayerFish *self, unsigned int player)
 {
-    if (player >= PLAYER_FISH_COUNT) {
-        self->state = PLAYER_FISH_END;
+    if (player >= FISH_SHADOW_PLAYER_FISH_COUNT) {
+        self->state = FISH_SHADOW_PLAYER_FISH_END;
         return 0;
     }
     if (SessionPlayers_ActorHandle((int) player) == 0) {
-        self->state = PLAYER_FISH_END;
+        self->state = FISH_SHADOW_PLAYER_FISH_END;
         return 0;
     }
     Vec3 offset = {PLAYER_FISH_HAND_OFFSET, 0, 0};
@@ -623,7 +623,7 @@ int PlayerFish_StartArc(PlayerFish *self, unsigned int player)
 }
 CLEAN_AS(func_ov003_02229b54, PlayerFish_StartArc)
 
-/* func_ov003_02229c04: PLAYER_FISH_TAKE: a model taken (none while it has one: 0), the fish
+/* func_ov003_02229c04: FISH_SHADOW_PLAYER_FISH_TAKE: a model taken (none while it has one: 0), the fish
  * scaled for its kind unless it is the swimming shadow, its flight set up for a catch, then
  * shown (or waiting while another console's player is out of sight). */
 int PlayerFish_StepTake(PlayerFish *self, int player)
@@ -632,29 +632,29 @@ int PlayerFish_StepTake(PlayerFish *self, int player)
         return 0;
     }
     self->model = FishDisp_TakeModel();
-    if (self->mode != PLAYER_FISH_SWIM) {
+    if (self->mode != FISH_SHADOW_PLAYER_FISH_SWIM) {
         PlayerFish_KindScale(&self->scale, self->kind);
     }
-    if (self->mode == PLAYER_FISH_HOOKED) {
+    if (self->mode == FISH_SHADOW_PLAYER_FISH_HOOKED) {
         if (PlayerFish_StartArc(self, (unsigned int) player) == 0) {
             return 0;
         }
-    } else if (self->mode == PLAYER_FISH_REMOTE) {
+    } else if (self->mode == FISH_SHADOW_PLAYER_FISH_REMOTE) {
         if (PlayerFish_StartArc(self, (unsigned int) player) == 0) {
             return 0;
         }
         Actor *actor = SessionPlayers_ActorOf(player);
         if (actor != NULL && player_fish_actor_hidden(actor)) {
-            self->state = PLAYER_FISH_WAIT;
+            self->state = FISH_SHADOW_PLAYER_FISH_WAIT;
             return 1;
         }
     }
-    self->state = PLAYER_FISH_SHOW;
+    self->state = FISH_SHADOW_PLAYER_FISH_SHOW;
     return 1;
 }
 CLEAN_AS(func_ov003_02229c04, PlayerFish_StepTake)
 
-/* func_ov003_02229ca4: PLAYER_FISH_IDLE: nothing. */
+/* func_ov003_02229ca4: FISH_SHADOW_PLAYER_FISH_IDLE: nothing. */
 int PlayerFish_StepIdle(void)
 {
     return 1;
@@ -697,7 +697,7 @@ void PlayerFish_Update(PlayerFish *self, int player)
         ((PlayerFishStateFn) (uintptr_t) MemberPointer_Code(step, object))(object, player);
     }
     NetSession *session = data_020ccf94;
-    if (Session_IsLinked(session) && Session_IsLocalSlot(session, player) == 0 && self->state == PLAYER_FISH_END) {
+    if (Session_IsLinked(session) && Session_IsLocalSlot(session, player) == 0 && self->state == FISH_SHADOW_PLAYER_FISH_END) {
         FishDisp_SetPlayerState((unsigned int) player, FISH_DISP_PLAYER_NONE, -1, 0, 0);
     }
 }
@@ -783,11 +783,11 @@ CLEAN_AS(func_ov003_0222a88c, PlayerFish_ModelPastFirst)
  * once that it is in the hand (message 42 with byte 1); whether it did now. */
 int PlayerFish_AnnounceHeld(int player)
 {
-    if (player < 0 || player >= PLAYER_FISH_COUNT) {
+    if (player < 0 || player >= FISH_SHADOW_PLAYER_FISH_COUNT) {
         return 0;
     }
     PlayerFish *fish = &data_ov003_0225f4dc[player];
-    if (fish->state != PLAYER_FISH_SHOW && fish->state != PLAYER_FISH_WAIT) {
+    if (fish->state != FISH_SHADOW_PLAYER_FISH_SHOW && fish->state != FISH_SHADOW_PLAYER_FISH_WAIT) {
         return 0;
     }
     if (fish->unk_a0 != 0) {
@@ -803,7 +803,7 @@ CLEAN_AS(func_ov003_0222a8a8, PlayerFish_AnnounceHeld)
  * QUIRK: for a player outside 0-3 it is player 0's fish's. */
 Vec3 *PlayerFish_PositionOf(int player)
 {
-    if (player < 0 || player >= PLAYER_FISH_COUNT) {
+    if (player < 0 || player >= FISH_SHADOW_PLAYER_FISH_COUNT) {
         return &data_ov003_0225f4dc[0].position;
     }
     return &data_ov003_0225f4dc[player].position;
@@ -814,17 +814,17 @@ CLEAN_AS(func_ov003_0222a918, PlayerFish_PositionOf)
  * player outside 0-3. */
 int PlayerFish_IsBusy(int player)
 {
-    if (player < 0 || player >= PLAYER_FISH_COUNT) {
+    if (player < 0 || player >= FISH_SHADOW_PLAYER_FISH_COUNT) {
         return 1;
     }
-    return data_ov003_0225f4dc[player].state != PLAYER_FISH_IDLE;
+    return data_ov003_0225f4dc[player].state != FISH_SHADOW_PLAYER_FISH_IDLE;
 }
 CLEAN_AS(func_ov003_0222a938, PlayerFish_IsBusy)
 
 /* func_ov003_0222a960: player `player`'s (0-3) fish is thrown back into the water from the
- * hand (PLAYER_FISH_ARC_BACK): it flies back towards where it came from, to the first water up
+ * hand (FISH_SHADOW_PLAYER_FISH_ARC_BACK): it flies back towards where it came from, to the first water up
  * to 7.5 ahead of the player (CollisionQuery_FindWaterAhead; else where it came from), turned
- * for its kind; `start` also starts it (PLAYER_FISH_TAKE). In a session, the player at this
+ * for its kind; `start` also starts it (FISH_SHADOW_PLAYER_FISH_TAKE). In a session, the player at this
  * console tells the other consoles (message 42 with byte 2). Something that is not a fish
  * (0x38-0x3a) only ends, when not to be started. 0 for another player or one without an actor,
  * else 1. */
@@ -841,7 +841,7 @@ int PlayerFish_ThrowBack(int player, int start)
     int kind = fish->kind;
     if (kind >= PLAYER_FISH_JUNK_FIRST && kind <= PLAYER_FISH_JUNK_LAST) {
         if (!start) {
-            fish->state = PLAYER_FISH_END;
+            fish->state = FISH_SHADOW_PLAYER_FISH_END;
         }
         return 1;
     }
@@ -853,9 +853,9 @@ int PlayerFish_ThrowBack(int player, int start)
     }
     PlayerFish_TurnForThrow(fish, yaw, kind);
     if (start) {
-        fish->state = PLAYER_FISH_TAKE;
+        fish->state = FISH_SHADOW_PLAYER_FISH_TAKE;
     }
-    fish->mode = PLAYER_FISH_ARC_BACK;
+    fish->mode = FISH_SHADOW_PLAYER_FISH_ARC_BACK;
     NetSession *session = data_020ccf94;
     if (Session_IsLinked(session) && Session_IsLocalSlot(session, player)) {
         player_fish_send(2);
@@ -907,7 +907,7 @@ int PlayerFish_EndForShadow(FishShadow *shadow)
     if (shadow == NULL || shadow->player == FISH_SHADOW_NO_PLAYER) {
         return 0;
     }
-    player_fish_at(shadow->player)->state = PLAYER_FISH_END;
+    player_fish_at(shadow->player)->state = FISH_SHADOW_PLAYER_FISH_END;
     return 1;
 }
 CLEAN_AS(func_ov003_0222aae8, PlayerFish_EndForShadow)
@@ -928,6 +928,6 @@ CLEAN_AS(func_ov003_0222ab14, PlayerFish_ArrivedForShadow)
 void PlayerFish_DestroyAll(void *object)
 {
     (void) object;
-    __cxa_vec_cleanup(data_ov003_0225f4dc, PLAYER_FISH_COUNT, sizeof(PlayerFish), func_ov003_02228ec4);
+    __cxa_vec_cleanup(data_ov003_0225f4dc, FISH_SHADOW_PLAYER_FISH_COUNT, sizeof(PlayerFish), func_ov003_02228ec4);
 }
 CLEAN_AS(func_ov003_0222c474, PlayerFish_DestroyAll)

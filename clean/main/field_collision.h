@@ -24,40 +24,40 @@
 #include "autoload_2/vector.h"
 #include "types.h"
 
-#define COLLISION_UNIT_SHIFT 13
-#define COLLISION_HALF_UNIT 0x1000
-#define COLLISION_TYPE_COUNT 0x7c
+#define FIELD_COLLISION_UNIT_SHIFT 13
+#define FIELD_COLLISION_HALF_UNIT 0x1000
+#define FIELD_COLLISION_TYPE_COUNT 0x7c
 
-#define COLLISION_GRID_SIZE 7
-#define COLLISION_MAX_WALLS 24
-#define COLLISION_MAX_FLOORS 40
-#define COLLISION_MAX_POSTS 16
-#define COLLISION_MAX_CONTACTS 2
+#define FIELD_COLLISION_GRID_SIZE 7
+#define FIELD_COLLISION_MAX_WALLS 24
+#define FIELD_COLLISION_MAX_FLOORS 40
+#define FIELD_COLLISION_MAX_POSTS 16
+#define FIELD_COLLISION_MAX_CONTACTS 2
 
 /* The kinds of walls and posts. Kind 1 and kind 2 touches are kept apart in the contact flags;
  * a kind 3 wall pushes but records nothing. */
-#define COLLISION_KIND_1 1
-#define COLLISION_KIND_2 2
-#define COLLISION_KIND_SILENT 3
+#define FIELD_COLLISION_KIND_1 1
+#define FIELD_COLLISION_KIND_2 2
+#define FIELD_COLLISION_KIND_SILENT 3
 
 /* CollisionContacts.flags. The wall bits say where a touched wall's normal points compared
  * with the actor's facing: AHEAD when it points back at the actor (the wall is in front),
  * BEHIND when it points the way the actor faces, SIDE_PLUS and SIDE_MINUS a quarter turn off
  * (the normal's angle minus the facing's opposite is about +0x4000 or -0x4000). */
-#define COLLISION_ON_GROUND 0x0001   /* pushed up onto the ground's height */
-#define COLLISION_BELOW_LIMIT 0x0002 /* CollisionGround_IsBelowLimit */
-#define COLLISION_TOUCH_1 0x0004     /* touching a wall or post of kind other than 2 */
-#define COLLISION_TOUCH_1_AHEAD 0x0008
-#define COLLISION_TOUCH_1_SIDE_MINUS 0x0010
-#define COLLISION_TOUCH_1_SIDE_PLUS 0x0020
-#define COLLISION_TOUCH_1_BEHIND 0x0040
-#define COLLISION_TOUCH_2 0x0080 /* touching a wall or post of kind 2 */
-#define COLLISION_TOUCH_2_AHEAD 0x0100
-#define COLLISION_TOUCH_2_SIDE_MINUS 0x0200
-#define COLLISION_TOUCH_2_SIDE_PLUS 0x0400
-#define COLLISION_TOUCH_2_BEHIND 0x0800
-#define COLLISION_IN_CORNER 0x1000 /* two touches whose mean normal is about against the facing */
-#define COLLISION_OPPOSITE 0x2000  /* two touches whose angles sum to 0 */
+#define FIELD_COLLISION_ON_GROUND 0x0001   /* pushed up onto the ground's height */
+#define FIELD_COLLISION_BELOW_LIMIT 0x0002 /* CollisionGround_IsBelowLimit */
+#define FIELD_COLLISION_TOUCH_1 0x0004     /* touching a wall or post of kind other than 2 */
+#define FIELD_COLLISION_TOUCH_1_AHEAD 0x0008
+#define FIELD_COLLISION_TOUCH_1_SIDE_MINUS 0x0010
+#define FIELD_COLLISION_TOUCH_1_SIDE_PLUS 0x0020
+#define FIELD_COLLISION_TOUCH_1_BEHIND 0x0040
+#define FIELD_COLLISION_TOUCH_2 0x0080 /* touching a wall or post of kind 2 */
+#define FIELD_COLLISION_TOUCH_2_AHEAD 0x0100
+#define FIELD_COLLISION_TOUCH_2_SIDE_MINUS 0x0200
+#define FIELD_COLLISION_TOUCH_2_SIDE_PLUS 0x0400
+#define FIELD_COLLISION_TOUCH_2_BEHIND 0x0800
+#define FIELD_COLLISION_IN_CORNER 0x1000 /* two touches whose mean normal is about against the facing */
+#define FIELD_COLLISION_OPPOSITE 0x2000  /* two touches whose angles sum to 0 */
 
 /* A point seen from above (NitroSDK-style 2D vector of X and Z). */
 typedef struct CollisionPoint {
@@ -104,7 +104,7 @@ typedef struct CollisionWall {
 } CollisionWall;
 
 typedef struct CollisionWallList {
-    CollisionWall walls[COLLISION_MAX_WALLS];
+    CollisionWall walls[FIELD_COLLISION_MAX_WALLS];
     u32 count; /* 0x480 */
 } CollisionWallList;
 
@@ -123,7 +123,7 @@ typedef struct CollisionFloor {
 } CollisionFloor;
 
 typedef struct CollisionFloorList {
-    CollisionFloor floors[COLLISION_MAX_FLOORS];
+    CollisionFloor floors[FIELD_COLLISION_MAX_FLOORS];
     u32 count; /* 0xa00 */
 } CollisionFloorList;
 
@@ -140,7 +140,7 @@ typedef struct CollisionPost {
 
 typedef struct CollisionPostList {
     u32 count;
-    CollisionPost posts[COLLISION_MAX_POSTS]; /* 0x04 */
+    CollisionPost posts[FIELD_COLLISION_MAX_POSTS]; /* 0x04 */
 } CollisionPostList;
 
 /* The object that tells which units hold a post (the map's at 0x120, else a default). */
@@ -156,10 +156,10 @@ typedef struct CollisionPostSource {
 
 /* A unit of the grid: its sides' heights and attributes, north (low Z), west (low X), south,
  * east, and the unit's type. */
-#define COLLISION_NORTH 0
-#define COLLISION_WEST 1
-#define COLLISION_SOUTH 2
-#define COLLISION_EAST 3
+#define FIELD_COLLISION_NORTH 0
+#define FIELD_COLLISION_WEST 1
+#define FIELD_COLLISION_SOUTH 2
+#define FIELD_COLLISION_EAST 3
 typedef struct CollisionCell {
     fx32 side_height[4];
     u8 side_attr[4]; /* 0x10 */
@@ -168,7 +168,7 @@ typedef struct CollisionCell {
 } CollisionCell;
 
 typedef struct CollisionCellGrid {
-    CollisionCell cells[COLLISION_GRID_SIZE][COLLISION_GRID_SIZE];
+    CollisionCell cells[FIELD_COLLISION_GRID_SIZE][FIELD_COLLISION_GRID_SIZE];
     int min_x; /* 0x498 */
     int max_x;
     int min_z;
@@ -177,11 +177,11 @@ typedef struct CollisionCellGrid {
 
 /* Up to two touches of walls or posts in a frame. */
 typedef struct CollisionContactList {
-    s16 angle[COLLISION_MAX_CONTACTS]; /* the angle of the wall's normal, or from the post */
-    u8 count;                          /* 0x04 */
+    s16 angle[FIELD_COLLISION_MAX_CONTACTS]; /* the angle of the wall's normal, or from the post */
+    u8 count;                                /* 0x04 */
     u8 unk_05[3];
-    int attr[COLLISION_MAX_CONTACTS]; /* 0x08 */
-    int kind[COLLISION_MAX_CONTACTS]; /* 0x10 */
+    int attr[FIELD_COLLISION_MAX_CONTACTS]; /* 0x08 */
+    int kind[FIELD_COLLISION_MAX_CONTACTS]; /* 0x10 */
 } CollisionContactList;
 
 /* What an actor's moves met (the field actor's at 0x7a4). */
@@ -313,24 +313,24 @@ void CollisionCell_Construct(CollisionCell *cell);
 /* Up to four posts of kind 2 put on single units for a few frames (data_021c5124): their
  * radius grows with their age (0.5, 0.75, 1.0 for ages 0 to 2) and they go at age 3. A slot
  * is in use when its bit of `in_use` is set; a free slot has age 0xff. */
-#define COLLISION_EXTRA_POSTS 4
-#define COLLISION_EXTRA_POST_AGES 3
+#define FIELD_COLLISION_EXTRA_POSTS 4
+#define FIELD_COLLISION_EXTRA_POST_AGES 3
 typedef struct CollisionExtraPosts {
     u8 in_use;
-    u8 age[COLLISION_EXTRA_POSTS];    /* 0x01 */
-    s8 unit_x[COLLISION_EXTRA_POSTS]; /* 0x05 */
-    s8 unit_z[COLLISION_EXTRA_POSTS]; /* 0x09 */
+    u8 age[FIELD_COLLISION_EXTRA_POSTS];    /* 0x01 */
+    s8 unit_x[FIELD_COLLISION_EXTRA_POSTS]; /* 0x05 */
+    s8 unit_z[FIELD_COLLISION_EXTRA_POSTS]; /* 0x09 */
 } CollisionExtraPosts;
 
 /* Everything above in one global object (data_021c31e8), built by __sinit_020c4af0. */
-#define COLLISION_BLOCK_MAPS 8
+#define FIELD_COLLISION_BLOCK_MAPS 8
 typedef struct CollisionWorld {
-    int map_index;                            /* CollisionMaps_SetIndex */
-    FieldBlockMap maps[COLLISION_BLOCK_MAPS]; /* 0x0004 */
-    CollisionWallList walls;                  /* 0x09c4 */
-    CollisionFloorList floors;                /* 0x0e48 */
-    CollisionPostList posts;                  /* 0x184c */
-    u8 unk_1a90;                              /* objects with empty constructors and destructors */
+    int map_index;                                  /* CollisionMaps_SetIndex */
+    FieldBlockMap maps[FIELD_COLLISION_BLOCK_MAPS]; /* 0x0004 */
+    CollisionWallList walls;                        /* 0x09c4 */
+    CollisionFloorList floors;                      /* 0x0e48 */
+    CollisionPostList posts;                        /* 0x184c */
+    u8 unk_1a90;                                    /* objects with empty constructors and destructors */
     u8 unk_1a91;
     u8 unk_1a92[2];
     CollisionCellGrid grid;          /* 0x1a94 */

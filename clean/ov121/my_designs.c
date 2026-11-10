@@ -75,7 +75,7 @@ extern NetSession *data_020ccf94;
 #define MY_DESIGNS_SE_ROW 0x50
 
 /* The layers: the buttons' screen on the sub screen's background 3, the designs' OBJs. */
-#define MY_DESIGNS_LAYER LAYER_SUB_BG3
+#define MY_DESIGNS_LAYER DISPLAY_LAYER_SUB_BG3
 #define MY_DESIGNS_WIPE_MARGIN 0x30
 
 /* The scene's vtable, and the profile's places of each design and button (by place, x and
@@ -1288,7 +1288,7 @@ void MyDesigns_LoadDesignObjs(MyDesigns *self)
 {
     (void) self;
     Heap *heap = data_021fbe94;
-    DisplayLayer_LoadCharsFromFile(data_ov121_0229c408, heap, LAYER_SUB_OBJ, 0x140, 0x140, 0x17f);
+    DisplayLayer_LoadCharsFromFile(data_ov121_0229c408, heap, DISPLAY_LAYER_SUB_OBJ, 0x140, 0x140, 0x17f);
 
     u32 *sheet = Heap_AllocBack(heap, 0x1000);
     PlayerDesigns *designs = PlayerRecord_Designs(PlayerRecords_Current());
@@ -1296,7 +1296,7 @@ void MyDesigns_LoadDesignObjs(MyDesigns *self)
         Design *design = (Design *) (uintptr_t) (u32) PlayerDesigns_InOrder(designs, i);
         TileConvert_BitmapToSheet(Design_Pixels(design), sheet, i * 4, 4, 4);
     }
-    DisplayLayer_LoadChars((u32) (uintptr_t) sheet, LAYER_SUB_OBJ, 0xc0, 0xc0, 0x13f);
+    DisplayLayer_LoadChars((u32) (uintptr_t) sheet, DISPLAY_LAYER_SUB_OBJ, 0xc0, 0xc0, 0x13f);
     Heap_Free(heap, sheet);
 
     u16 *palettes = Heap_AllocBack(heap, 0x120);
@@ -1307,7 +1307,7 @@ void MyDesigns_LoadDesignObjs(MyDesigns *self)
         MIi_CpuCopy16(colors, palettes + i * 0x10, 0x20);
     }
     RomFile_Read(data_ov121_0229c420, palettes + MY_DESIGNS_COUNT * 0x10, 0x20);
-    DisplayLayer_LoadPalettes((u8 *) palettes, LAYER_SUB_OBJ, 4, 4, 0xc);
+    DisplayLayer_LoadPalettes((u8 *) palettes, DISPLAY_LAYER_SUB_OBJ, 4, 4, 0xc);
     Heap_Free(heap, palettes);
 }
 CLEAN_AS(func_ov121_0229b7d4, MyDesigns_LoadDesignObjs)
@@ -1419,7 +1419,7 @@ void MyDesigns_SetUp(MyDesigns *self)
         MyDesigns_Disable(self, MY_DESIGNS_BUTTON_UMBRELLA);
         MyDesigns_Disable(self, MY_DESIGNS_BUTTON_GROUND);
     }
-    PagedChoice_Init(choice(self), LAYER_SUB_BG0, 1, NULL);
+    PagedChoice_Init(choice(self), DISPLAY_LAYER_SUB_BG0, 1, NULL);
     self->highlighted = MY_DESIGNS_NO_PLACE;
     self->cursor = MY_DESIGNS_DESIGN_FIRST;
 }

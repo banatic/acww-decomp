@@ -131,13 +131,13 @@ int SoundSlots_PlayHeld(SoundSlots *slots, int seq_arc, int index, int volume, s
 {
     int i;
 
-    if ((slots->flags & (1 << SLOTS_ENABLED)) == 0) {
+    if ((slots->flags & (1 << SOUND_SLOTS_ENABLED)) == 0) {
         return -1;
     }
     for (i = 0; i < slots->count; i++) {
         SoundSlot *slot = &slots->slots[i];
         if (SoundSlot_IsHeld(slot) && SoundSlot_Plays(slot, seq_arc, index)) {
-            SoundSlot_SetFlag(slot, SLOT_REQUESTED, 1);
+            SoundSlot_SetFlag(slot, SOUND_SLOT_REQUESTED, 1);
             SoundSlot_SetVolumePitch(slot, volume, pitch);
             return i;
         }
@@ -159,7 +159,7 @@ int SoundSlots_Play(SoundSlots *slots, int seq_arc, int index, int volume, short
     int found = SOUND_NONE;
     int i;
 
-    if ((slots->flags & (1 << SLOTS_ENABLED)) == 0) {
+    if ((slots->flags & (1 << SOUND_SLOTS_ENABLED)) == 0) {
         return -1;
     }
     for (i = 0; i < slots->count; i++) {
@@ -211,10 +211,10 @@ void SoundSlots_Update(SoundSlots *slots, void *source)
     if (slots->count == 0) {
         GameHalt_Terminate();
     }
-    if ((slots->flags & (1 << SLOTS_ENABLED)) == 0) {
-        if ((slots->flags & (1 << SLOTS_UPDATED)) != 0) {
+    if ((slots->flags & (1 << SOUND_SLOTS_ENABLED)) == 0) {
+        if ((slots->flags & (1 << SOUND_SLOTS_UPDATED)) != 0) {
             SoundSlots_StopHeld(slots, 0);
-            SoundSlots_SetFlag(slots, SLOTS_UPDATED, 0);
+            SoundSlots_SetFlag(slots, SOUND_SLOTS_UPDATED, 0);
         }
         return;
     }
@@ -231,14 +231,14 @@ void SoundSlots_Update(SoundSlots *slots, void *source)
         int apply = 0;
 
         if (SoundSlot_IsHeld(slot)) {
-            if ((slot->flags & (1 << SLOT_REQUESTED)) == 0) {
+            if ((slot->flags & (1 << SOUND_SLOT_REQUESTED)) == 0) {
                 SoundSlots_StopSlot(slots, i, 0);
                 continue;
             }
-            SoundSlot_SetFlag(slot, SLOT_REQUESTED, 0);
+            SoundSlot_SetFlag(slot, SOUND_SLOT_REQUESTED, 0);
             apply = 1;
         }
-        if ((slot->flags & (1 << SLOT_PENDING)) != 0) {
+        if ((slot->flags & (1 << SOUND_SLOT_PENDING)) != 0) {
             if (!asked) {
                 SoundParams_Get(&params);
                 asked = 1;
@@ -248,10 +248,10 @@ void SoundSlots_Update(SoundSlots *slots, void *source)
                 slots->start(slots, i, priority);
                 apply = 1;
             }
-            SoundSlot_SetFlag(slot, SLOT_PENDING, 0);
+            SoundSlot_SetFlag(slot, SOUND_SLOT_PENDING, 0);
         }
         if (!apply) {
-            apply = (slot->flags & (1 << SLOT_FOLLOW)) != 0;
+            apply = (slot->flags & (1 << SOUND_SLOT_FOLLOW)) != 0;
         }
         if (apply && slot->handle.player != NULL) {
             if (!asked) {
@@ -267,7 +267,7 @@ void SoundSlots_Update(SoundSlots *slots, void *source)
             slots->update(slots, i, priority);
         }
     }
-    SoundSlots_SetFlag(slots, SLOTS_UPDATED, 1);
+    SoundSlots_SetFlag(slots, SOUND_SLOTS_UPDATED, 1);
 }
 CLEAN_AS(func_020ef498, SoundSlots_Update)
 
@@ -305,7 +305,7 @@ int SoundSlots_FindFree(SoundSlots *slots)
 
     for (i = 0; i < count; i++) {
         const SoundSlot *slot = &slots->slots[i];
-        if (slot->handle.player == NULL && (slot->flags & (1 << SLOT_PENDING)) == 0) {
+        if (slot->handle.player == NULL && (slot->flags & (1 << SOUND_SLOT_PENDING)) == 0) {
             return i;
         }
     }
@@ -319,7 +319,7 @@ void SoundSlots_SetEnabled(SoundSlots *slots, int enabled)
     if (slots == NULL) {
         GameHalt_Terminate();
     }
-    SoundSlots_SetFlag(slots, SLOTS_ENABLED, enabled);
+    SoundSlots_SetFlag(slots, SOUND_SLOTS_ENABLED, enabled);
 }
 CLEAN_AS(func_020ef840, SoundSlots_SetEnabled)
 
@@ -369,7 +369,7 @@ CLEAN_AS(func_020efbb8, SoundSlots_StartSlot)
 /* func_020ef8bc: whether the slot is held. */
 int SoundSlot_IsHeld(SoundSlot *slot)
 {
-    return (slot->flags & (1 << SLOT_HELD)) != 0;
+    return (slot->flags & (1 << SOUND_SLOT_HELD)) != 0;
 }
 CLEAN_AS(func_020ef8bc, SoundSlot_IsHeld)
 
@@ -395,9 +395,9 @@ void SoundSlot_Stop(SoundSlot *slot, int fade_frames)
     if (slot->handle.player != NULL) {
         NNS_SndPlayerStopSeq(&slot->handle, fade_frames);
     }
-    SoundSlot_SetFlag(slot, SLOT_HELD, 0);
-    SoundSlot_SetFlag(slot, SLOT_REQUESTED, 0);
-    SoundSlot_SetFlag(slot, SLOT_PENDING, 0);
+    SoundSlot_SetFlag(slot, SOUND_SLOT_HELD, 0);
+    SoundSlot_SetFlag(slot, SOUND_SLOT_REQUESTED, 0);
+    SoundSlot_SetFlag(slot, SOUND_SLOT_PENDING, 0);
 }
 CLEAN_AS(func_020ef918, SoundSlot_Stop)
 
@@ -412,8 +412,8 @@ CLEAN_AS(func_020ef968, SoundSlot_Plays)
 void SoundSlot_SetHeld(SoundSlot *slot, int seq_arc, int index, int volume, short pitch)
 {
     SoundSlot_Set(slot, seq_arc, index, volume, pitch);
-    SoundSlot_SetFlag(slot, SLOT_HELD, 1);
-    SoundSlot_SetFlag(slot, SLOT_REQUESTED, 1);
+    SoundSlot_SetFlag(slot, SOUND_SLOT_HELD, 1);
+    SoundSlot_SetFlag(slot, SOUND_SLOT_REQUESTED, 1);
 }
 CLEAN_AS(func_020ef998, SoundSlot_SetHeld)
 
@@ -426,7 +426,7 @@ void SoundSlot_Set(SoundSlot *slot, unsigned char seq_arc, unsigned short index,
     }
     slot->seq_arc = seq_arc;
     slot->index = index;
-    SoundSlot_SetFlag(slot, SLOT_PENDING, 1);
+    SoundSlot_SetFlag(slot, SOUND_SLOT_PENDING, 1);
     SoundSlot_SetVolumePitch(slot, volume, pitch);
 }
 CLEAN_AS(func_020ef9dc, SoundSlot_Set)

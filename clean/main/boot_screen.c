@@ -181,18 +181,18 @@ void BootScreen_SetUpPictures(BootScreen *screen)
     Display_SetMainBgModeNow(0);
     Display_SetSubBgModeNow(0);
     REG32(REG_DISPCNT) &= ~DISPCNT_CHAR_BASE;
-    DisplayLayer_SetBgControl(LAYER_SUB_BG3, 0, 0, 0);
-    DisplayLayer_SetBgControl(LAYER_MAIN_BG3, 0, 0, 0);
+    DisplayLayer_SetBgControl(DISPLAY_LAYER_SUB_BG3, 0, 0, 0);
+    DisplayLayer_SetBgControl(DISPLAY_LAYER_MAIN_BG3, 0, 0, 0);
 
     Heap *heap = data_021fbe94;
-    DisplayLayer_LoadCharsFromFile(data_020e5368, heap, LAYER_SUB_BG3, 0, 0, BOOT_SCREEN_NIN_LAST_CHAR);
-    DisplayLayer_LoadPalettesFromFile(data_020e537c, heap, LAYER_SUB_BG3, 0, 0, 0);
-    DisplayLayer_LoadScreenFromFile(data_020e5390, heap, LAYER_SUB_BG3);
-    DisplayLayer_LoadCharsFromFile(data_020e53a4, heap, LAYER_MAIN_BG3, 0, 0, BOOT_SCREEN_ARR_LAST_CHAR);
-    DisplayLayer_LoadPalettesFromFile(data_020e53b8, heap, LAYER_MAIN_BG3, 0, 0, 0);
-    DisplayLayer_LoadScreenFromFile(data_020e53cc, heap, LAYER_MAIN_BG3);
-    DisplayLayer_Show(LAYER_SUB_BG3);
-    DisplayLayer_Show(LAYER_MAIN_BG3);
+    DisplayLayer_LoadCharsFromFile(data_020e5368, heap, DISPLAY_LAYER_SUB_BG3, 0, 0, BOOT_SCREEN_NIN_LAST_CHAR);
+    DisplayLayer_LoadPalettesFromFile(data_020e537c, heap, DISPLAY_LAYER_SUB_BG3, 0, 0, 0);
+    DisplayLayer_LoadScreenFromFile(data_020e5390, heap, DISPLAY_LAYER_SUB_BG3);
+    DisplayLayer_LoadCharsFromFile(data_020e53a4, heap, DISPLAY_LAYER_MAIN_BG3, 0, 0, BOOT_SCREEN_ARR_LAST_CHAR);
+    DisplayLayer_LoadPalettesFromFile(data_020e53b8, heap, DISPLAY_LAYER_MAIN_BG3, 0, 0, 0);
+    DisplayLayer_LoadScreenFromFile(data_020e53cc, heap, DISPLAY_LAYER_MAIN_BG3);
+    DisplayLayer_Show(DISPLAY_LAYER_SUB_BG3);
+    DisplayLayer_Show(DISPLAY_LAYER_MAIN_BG3);
 }
 CLEAN_AS(func_020b5794, BootScreen_SetUpPictures)
 

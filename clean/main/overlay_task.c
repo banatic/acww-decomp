@@ -22,8 +22,8 @@
 
 /* The buttons the update answers (PadState.pressed bits). */
 #define BUTTON_SELECT 0x0004
-#define BUTTON_X 0x0400
-#define BUTTON_Y 0x0800
+#define OVERLAY_TASK_BUTTON_X 0x0400
+#define OVERLAY_TASK_BUTTON_Y 0x0800
 
 /* The corner of the touch screen it answers: x 232 and up, y 16 and down. */
 #define CORNER_MIN_X 0xe8
@@ -92,9 +92,9 @@ BOOL OverlayTask_Update(void)
         answer(MODE_CORNER, ControlMode_UseTouch);
     } else if (data_021fbe40.pressed & BUTTON_SELECT) {
         answer(MODE_SELECT, ControlMode_UseButtons);
-    } else if (data_021fbe40.pressed & BUTTON_Y) {
+    } else if (data_021fbe40.pressed & OVERLAY_TASK_BUTTON_Y) {
         answer(MODE_Y, ControlMode_UseButtons);
-    } else if (AMesObj_Style() != 2 && (data_021fbe40.pressed & BUTTON_X)) {
+    } else if (AMesObj_Style() != 2 && (data_021fbe40.pressed & OVERLAY_TASK_BUTTON_X)) {
         answer(MODE_X, ControlMode_UseButtons);
     }
     return TRUE;

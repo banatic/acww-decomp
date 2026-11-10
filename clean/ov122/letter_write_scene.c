@@ -2403,13 +2403,13 @@ void LetterWrite_LoadScreens(LetterWriteScene *self)
 {
     Heap *heap = data_021fbe94;
 
-    DisplayLayer_LoadPalettesFromFile(data_ov122_022a2798, heap, LAYER_SUB_BG3, 1, 1, 9);
+    DisplayLayer_LoadPalettesFromFile(data_ov122_022a2798, heap, DISPLAY_LAYER_SUB_BG3, 1, 1, 9);
     SoftKeyboard_ReadScreen(letter_write_keyboard(self), data_ov122_022a27b0);
     LetterWrite_UpdateKeys(self);
-    SoftKeyboard_LoadScreenNow(letter_write_keyboard(self), LAYER_SUB_BG3);
-    DisplayLayer_LoadCharsFromFile(data_ov122_022a27c8, heap, LAYER_SUB_BG3, 0x13d, 0x13d, 0x1e9);
-    Paper_LoadBackground(Letter_Paper(self->letter), LAYER_SUB_BG1);
-    LetterView_LoadScreen(&self->view, LAYER_SUB_BG0);
+    SoftKeyboard_LoadScreenNow(letter_write_keyboard(self), DISPLAY_LAYER_SUB_BG3);
+    DisplayLayer_LoadCharsFromFile(data_ov122_022a27c8, heap, DISPLAY_LAYER_SUB_BG3, 0x13d, 0x13d, 0x1e9);
+    Paper_LoadBackground(Letter_Paper(self->letter), DISPLAY_LAYER_SUB_BG1);
+    LetterView_LoadScreen(&self->view, DISPLAY_LAYER_SUB_BG0);
     LetterWrite_Refresh(self, 1, 1);
     LetterView_Redraw(&self->view);
 }
@@ -2419,12 +2419,12 @@ CLEAN_AS(func_ov122_022a1770, LetterWrite_LoadScreens)
  * up. */
 void LetterWrite_SetLayers(void)
 {
-    DisplayLayer_SetPriority(LAYER_SUB_BG3, 1);
-    DisplayLayer_SetBgControl(LAYER_SUB_BG3, 0, 0, 0);
-    DisplayLayer_SetPriority(LAYER_SUB_BG1, 3);
-    DisplayLayer_SetBgControl(LAYER_SUB_BG1, 0, 0, 0);
-    DisplayLayer_SetPriority(LAYER_SUB_BG0, 3);
-    DisplayLayer_SetBgControl(LAYER_SUB_BG0, 0, 0, 0);
+    DisplayLayer_SetPriority(DISPLAY_LAYER_SUB_BG3, 1);
+    DisplayLayer_SetBgControl(DISPLAY_LAYER_SUB_BG3, 0, 0, 0);
+    DisplayLayer_SetPriority(DISPLAY_LAYER_SUB_BG1, 3);
+    DisplayLayer_SetBgControl(DISPLAY_LAYER_SUB_BG1, 0, 0, 0);
+    DisplayLayer_SetPriority(DISPLAY_LAYER_SUB_BG0, 3);
+    DisplayLayer_SetBgControl(DISPLAY_LAYER_SUB_BG0, 0, 0, 0);
 }
 CLEAN_AS(func_ov122_022a1808, LetterWrite_SetLayers)
 
@@ -2446,7 +2446,7 @@ CLEAN_AS(func_ov122_022a1854, LetterWrite_ClosePanelTexts)
 void LetterWrite_Draw(LetterWriteScene *self)
 {
     LetterView_Redraw(&self->view);
-    SoftKeyboard_QueueScreen(letter_write_keyboard(self), LAYER_SUB_BG3);
+    SoftKeyboard_QueueScreen(letter_write_keyboard(self), DISPLAY_LAYER_SUB_BG3);
     PagedChoice_Update(letter_write_choice(self));
     LetterWrite_Idle(self);
 }
@@ -2486,13 +2486,13 @@ void LetterWrite_SetUp(LetterWriteScene *self)
 {
     self->letter = GroupParams_Pointer();
     SoftKeyboard_Init(letter_write_keyboard(self), 1);
-    LetterView_Init(&self->view, LAYER_SUB_BG0);
+    LetterView_Init(&self->view, DISPLAY_LAYER_SUB_BG0);
     LetterView_SetName(&self->view, letter_write_view_letter(self));
     LetterWrite_SetScroll(self, 0x10);
     LetterWrite_ScrollTo(self, 0x10);
     self->flags = 0;
     DualCellSprite_SetState(letter_write_button_cells(self), 1);
-    PagedChoice_Init(letter_write_choice(self), LAYER_SUB_BG3, 1, NULL);
+    PagedChoice_Init(letter_write_choice(self), DISPLAY_LAYER_SUB_BG3, 1, NULL);
     PagedChoice_BuildPages(letter_write_choice(self));
     self->unk_a4 = 0;
     if (Letter_HasNoAddressee(self->letter) != 0) {
@@ -2507,14 +2507,14 @@ CLEAN_AS(func_ov122_022a18f8, LetterWrite_SetUp)
 void LetterWrite_StepWipeOut(LetterWriteScene *self)
 {
     if (MenuScene_StepWipe(letter_write_scene(self), 0)) {
-        DisplayLayer_HideAndResetScroll(LAYER_SUB_BG3);
-        DisplayLayer_HideAndResetScroll(LAYER_SUB_BG1);
-        DisplayLayer_HideAndResetScroll(LAYER_SUB_BG0);
+        DisplayLayer_HideAndResetScroll(DISPLAY_LAYER_SUB_BG3);
+        DisplayLayer_HideAndResetScroll(DISPLAY_LAYER_SUB_BG1);
+        DisplayLayer_HideAndResetScroll(DISPLAY_LAYER_SUB_BG0);
         MenuScene_SetPhase(letter_write_scene(self), 5);
     } else {
-        MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG3, 0, 0);
-        MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG1, 0, 0);
-        MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG0, 0, 0);
+        MenuScene_ScrollWipe(letter_write_scene(self), DISPLAY_LAYER_SUB_BG3, 0, 0);
+        MenuScene_ScrollWipe(letter_write_scene(self), DISPLAY_LAYER_SUB_BG1, 0, 0);
+        MenuScene_ScrollWipe(letter_write_scene(self), DISPLAY_LAYER_SUB_BG0, 0, 0);
         self->unk_94 = MenuScene_WipeOffsetY(letter_write_scene(self));
         self->unk_98 = self->unk_94;
     }
@@ -2526,9 +2526,9 @@ void LetterWrite_StartWipeOut(LetterWriteScene *self)
 {
     if (LetterWrite_IsScrolling(self) == 0) {
         MenuScene_StartWipeOnWindow2(letter_write_scene(self), 11, 0, 0, 0x30);
-        MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG3, 0, 0);
-        MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG1, 0, 0);
-        MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG0, 0, 0);
+        MenuScene_ScrollWipe(letter_write_scene(self), DISPLAY_LAYER_SUB_BG3, 0, 0);
+        MenuScene_ScrollWipe(letter_write_scene(self), DISPLAY_LAYER_SUB_BG1, 0, 0);
+        MenuScene_ScrollWipe(letter_write_scene(self), DISPLAY_LAYER_SUB_BG0, 0, 0);
         MenuScene_SetState(letter_write_scene(self), LETTER_WRITE_STATE_WIPE_OUT);
     }
 }
@@ -2603,7 +2603,7 @@ int LetterWrite_KeyboardWipeIn(LetterWriteScene *self)
         MenuScene_SetPhase(letter_write_scene(self), MENU_SCENE_PHASE_INTERACTIVE);
         LetterWrite_BeginInput(self);
     }
-    MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG3, 0, 0);
+    MenuScene_ScrollWipe(letter_write_scene(self), DISPLAY_LAYER_SUB_BG3, 0, 0);
     self->unk_94 = MenuScene_WipeOffsetY(letter_write_scene(self));
     return self->unk_94;
 }
@@ -2614,11 +2614,11 @@ CLEAN_AS(func_ov122_022a1a84, LetterWrite_KeyboardWipeIn)
  * panel following the wipe (state 11). */
 void LetterWrite_StartKeyboardWipeIn(LetterWriteScene *self)
 {
-    SoftKeyboard_Restore(letter_write_keyboard(self), LAYER_SUB_BG3);
-    DisplayLayer_SetPriority(LAYER_SUB_BG3, 1);
+    SoftKeyboard_Restore(letter_write_keyboard(self), DISPLAY_LAYER_SUB_BG3);
+    DisplayLayer_SetPriority(DISPLAY_LAYER_SUB_BG3, 1);
     MenuScene_StartWipeCoveredOnWindow2(letter_write_scene(self), 8, 0, 0, LETTER_WRITE_WIPE_MARGIN);
-    DisplayLayer_Show(LAYER_SUB_BG3);
-    MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG3, 0, 0);
+    DisplayLayer_Show(DISPLAY_LAYER_SUB_BG3);
+    MenuScene_ScrollWipe(letter_write_scene(self), DISPLAY_LAYER_SUB_BG3, 0, 0);
     LetterWrite_SetPanelLayout(self);
     LetterWrite_SetFlags(self, LETTER_WRITE_FLAG_01);
     self->unk_94 = MenuScene_WipeOffsetY(letter_write_scene(self));
@@ -2685,12 +2685,12 @@ CLEAN_AS(func_ov122_022a1ba4, LetterWrite_StartPanelMessage)
 void LetterWrite_KeyboardWipeOut(LetterWriteScene *self)
 {
     if (MenuScene_StepWipe(letter_write_scene(self), 0) != 0) {
-        DisplayLayer_Hide(LAYER_SUB_BG3);
-        DisplayLayer_SetScroll(LAYER_SUB_BG3, 0, 0);
+        DisplayLayer_Hide(DISPLAY_LAYER_SUB_BG3);
+        DisplayLayer_SetScroll(DISPLAY_LAYER_SUB_BG3, 0, 0);
         LetterWrite_ClearFlags(self, LETTER_WRITE_FLAG_01);
         self->base.state = self->next_state;
     } else {
-        MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG3, 0, 0);
+        MenuScene_ScrollWipe(letter_write_scene(self), DISPLAY_LAYER_SUB_BG3, 0, 0);
         self->unk_94 = MenuScene_WipeOffsetY(letter_write_scene(self));
     }
 }
@@ -2702,7 +2702,7 @@ void LetterWrite_LeaveKeyboard(LetterWriteScene *self)
 {
     if (LetterWrite_TestFlags(self, LETTER_WRITE_FLAG_DIMMED) == 0) {
         MenuScene_StartWipeOnWindow2(letter_write_scene(self), 8, 0, 0, LETTER_WRITE_WIPE_MARGIN);
-        MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG3, 0, 0);
+        MenuScene_ScrollWipe(letter_write_scene(self), DISPLAY_LAYER_SUB_BG3, 0, 0);
         self->base.state = LETTER_WRITE_STATE_KEYBOARD_WIPE_OUT;
     } else {
         LetterWrite_ScrollTo(self, 0);
@@ -2715,14 +2715,14 @@ CLEAN_AS(func_ov122_022a1c24, LetterWrite_LeaveKeyboard)
 void LetterWrite_LetterWipeOut(LetterWriteScene *self)
 {
     if (MenuScene_StepWipe(letter_write_scene(self), 0) != 0) {
-        DisplayLayer_Hide(LAYER_SUB_BG1);
-        DisplayLayer_Hide(LAYER_SUB_BG0);
-        DisplayLayer_SetScroll(LAYER_SUB_BG1, 0, 0);
-        DisplayLayer_SetScroll(LAYER_SUB_BG0, 0, 0);
+        DisplayLayer_Hide(DISPLAY_LAYER_SUB_BG1);
+        DisplayLayer_Hide(DISPLAY_LAYER_SUB_BG0);
+        DisplayLayer_SetScroll(DISPLAY_LAYER_SUB_BG1, 0, 0);
+        DisplayLayer_SetScroll(DISPLAY_LAYER_SUB_BG0, 0, 0);
         MenuScene_SetPhase(letter_write_scene(self), MENU_SCENE_PHASE_DELETE);
     } else {
-        MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG1, 0, 0);
-        MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG0, 0, 0);
+        MenuScene_ScrollWipe(letter_write_scene(self), DISPLAY_LAYER_SUB_BG1, 0, 0);
+        MenuScene_ScrollWipe(letter_write_scene(self), DISPLAY_LAYER_SUB_BG0, 0, 0);
         self->unk_98 = MenuScene_WipeOffsetY(letter_write_scene(self));
     }
 }
@@ -2733,8 +2733,8 @@ CLEAN_AS(func_ov122_022a1c68, LetterWrite_LetterWipeOut)
 void LetterWrite_StartLetterWipeOut(LetterWriteScene *self)
 {
     MenuScene_StartWipeOnWindow2(letter_write_scene(self), 3, 0, 0, LETTER_WRITE_WIPE_MARGIN);
-    MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG1, 0, 0);
-    MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG0, 0, 0);
+    MenuScene_ScrollWipe(letter_write_scene(self), DISPLAY_LAYER_SUB_BG1, 0, 0);
+    MenuScene_ScrollWipe(letter_write_scene(self), DISPLAY_LAYER_SUB_BG0, 0, 0);
     MenuScene_SetState(letter_write_scene(self), LETTER_WRITE_STATE_LETTER_WIPE_OUT);
 }
 CLEAN_AS(func_ov122_022a1cc8, LetterWrite_StartLetterWipeOut)
@@ -2749,9 +2749,9 @@ void LetterWrite_WipeIn(LetterWriteScene *self)
         LetterWrite_Start(self);
         LetterWrite_BeginInput(self);
     }
-    MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG3, 0, 0);
-    MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG1, 0, -0x10);
-    MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG0, 0, -0x10);
+    MenuScene_ScrollWipe(letter_write_scene(self), DISPLAY_LAYER_SUB_BG3, 0, 0);
+    MenuScene_ScrollWipe(letter_write_scene(self), DISPLAY_LAYER_SUB_BG1, 0, -0x10);
+    MenuScene_ScrollWipe(letter_write_scene(self), DISPLAY_LAYER_SUB_BG0, 0, -0x10);
     self->unk_94 = MenuScene_WipeOffsetY(letter_write_scene(self));
 }
 CLEAN_AS(func_ov122_022a1d04, LetterWrite_WipeIn)
@@ -2764,15 +2764,15 @@ void LetterWrite_StartWipeIn(LetterWriteScene *self)
 {
     LetterWrite_SetLayers();
     LetterWrite_LoadScreens(self);
-    SoftKeyboard_LoadSavedLayout(letter_write_keyboard(self), LAYER_SUB_BG3);
-    SoftKeyboard_QueueScreen(letter_write_keyboard(self), LAYER_SUB_BG3);
+    SoftKeyboard_LoadSavedLayout(letter_write_keyboard(self), DISPLAY_LAYER_SUB_BG3);
+    SoftKeyboard_QueueScreen(letter_write_keyboard(self), DISPLAY_LAYER_SUB_BG3);
     MenuScene_StartWipeCoveredOnWindow2(letter_write_scene(self), 0xb, 0, 0, LETTER_WRITE_WIPE_MARGIN);
-    DisplayLayer_Show(LAYER_SUB_BG3);
-    DisplayLayer_Show(LAYER_SUB_BG1);
-    DisplayLayer_Show(LAYER_SUB_BG0);
-    MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG3, 0, 0);
-    MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG1, 0, -0x10);
-    MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG0, 0, -0x10);
+    DisplayLayer_Show(DISPLAY_LAYER_SUB_BG3);
+    DisplayLayer_Show(DISPLAY_LAYER_SUB_BG1);
+    DisplayLayer_Show(DISPLAY_LAYER_SUB_BG0);
+    MenuScene_ScrollWipe(letter_write_scene(self), DISPLAY_LAYER_SUB_BG3, 0, 0);
+    MenuScene_ScrollWipe(letter_write_scene(self), DISPLAY_LAYER_SUB_BG1, 0, -0x10);
+    MenuScene_ScrollWipe(letter_write_scene(self), DISPLAY_LAYER_SUB_BG0, 0, -0x10);
     LetterWrite_LoadKeyboardScreen(self);
     LetterWrite_SetPanelLayout(self);
     LetterWrite_SetFlags(self, LETTER_WRITE_FLAG_01);
@@ -2957,8 +2957,8 @@ int LetterWrite_DrawScene(LetterWriteScene *self)
 
     if (LetterWrite_IsScrolling(self) != 0) {
         LetterWrite_StepScroll(self);
-        DisplayLayer_SetScroll(LAYER_SUB_BG1, 0, self->scroll);
-        DisplayLayer_SetScroll(LAYER_SUB_BG0, 0, self->scroll);
+        DisplayLayer_SetScroll(DISPLAY_LAYER_SUB_BG1, 0, self->scroll);
+        DisplayLayer_SetScroll(DISPLAY_LAYER_SUB_BG0, 0, self->scroll);
         if (self->scroll > 0x40) {
             if (LetterWrite_TestFlags(self, LETTER_WRITE_FLAG_DIMMED) == 0) {
                 LetterWrite_SetFlags(self, LETTER_WRITE_FLAG_DIMMED);

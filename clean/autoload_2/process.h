@@ -26,27 +26,27 @@ struct Process;
 
 /* The phase the main loop is in (data_0213e7fc). */
 enum ProcessPhase {
-    PHASE_NULL = 0, /* between phases */
-    PHASE_CONNECT = 1,
-    PHASE_CREATE = 2,
-    PHASE_EXECUTE = 3,
-    PHASE_DELETE = 4,
-    PHASE_DRAW = 5,
+    PROCESS_PHASE_NULL = 0, /* between phases */
+    PROCESS_PHASE_CONNECT = 1,
+    PROCESS_PHASE_CREATE = 2,
+    PROCESS_PHASE_EXECUTE = 3,
+    PROCESS_PHASE_DELETE = 4,
+    PROCESS_PHASE_DRAW = 5,
 };
 
 /* What a phase's last virtual function is told (func_01ffd44c). */
 enum ProcessOutcome {
-    OUTCOME_REFUSED = 0, /* the check before said not now */
-    OUTCOME_PENDING = 1, /* the work is not done yet */
-    OUTCOME_DONE = 2,
-    OUTCOME_FAILED = 3,
+    PROCESS_OUTCOME_REFUSED = 0, /* the check before said not now */
+    PROCESS_OUTCOME_PENDING = 1, /* the work is not done yet */
+    PROCESS_OUTCOME_DONE = 2,
+    PROCESS_OUTCOME_FAILED = 3,
 };
 
 /* A process's state. */
 enum ProcessState {
-    STATE_CREATING = 0, /* its creation is not finished */
-    STATE_ACTIVE = 1,   /* in the execute and draw lists */
-    STATE_DELETING = 2, /* in the delete list */
+    PROCESS_STATE_CREATING = 0, /* its creation is not finished */
+    PROCESS_STATE_ACTIVE = 1,   /* in the execute and draw lists */
+    PROCESS_STATE_DELETING = 2, /* in the delete list */
 };
 
 /* Flags (Process.flags). An ancestor's flags carry over to the child at its construction and
@@ -106,9 +106,9 @@ typedef struct StepList {
 } StepList;
 
 enum StepListState {
-    STEPS_NOT_STARTED = 0,
-    STEPS_RUNNING = 1,
-    STEPS_DONE = 2,
+    PROCESS_STEPS_NOT_STARTED = 0,
+    PROCESS_STEPS_RUNNING = 1,
+    PROCESS_STEPS_DONE = 2,
 };
 
 /* What a process class is made from (the table data_021fd044, by class id); subclasses' profiles

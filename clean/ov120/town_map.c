@@ -653,9 +653,9 @@ void TownMap_LoadObjFiles(void)
 {
     Heap *heap = data_021fbe94;
 
-    DisplayLayer_LoadPalettesFromFile(data_ov120_0229c6b0, heap, LAYER_SUB_OBJ, 6, 6, 14);
-    DisplayLayer_LoadCharsFromFile(data_ov120_0229c6c8, heap, LAYER_SUB_OBJ, 0xc0, 0xc0, 0xff);
-    DisplayLayer_LoadCharsFromFile(data_ov120_0229c6e4, heap, LAYER_SUB_OBJ, 0x180, 0x180, 0x1ff);
+    DisplayLayer_LoadPalettesFromFile(data_ov120_0229c6b0, heap, DISPLAY_LAYER_SUB_OBJ, 6, 6, 14);
+    DisplayLayer_LoadCharsFromFile(data_ov120_0229c6c8, heap, DISPLAY_LAYER_SUB_OBJ, 0xc0, 0xc0, 0xff);
+    DisplayLayer_LoadCharsFromFile(data_ov120_0229c6e4, heap, DISPLAY_LAYER_SUB_OBJ, 0x180, 0x180, 0x1ff);
 }
 CLEAN_AS(func_ov120_0229b97c, TownMap_LoadObjFiles)
 
@@ -676,7 +676,7 @@ void TownMap_LoadMap(TownMap *self)
     }
     TownMapMarkers_Clear(data_ov120_0229c820);
     TownMapImage_Build((int) (uintptr_t) chars, (int) (uintptr_t) data_ov120_0229c820);
-    DisplayLayer_LoadChars((u32) (uintptr_t) chars, LAYER_SUB_BG1, 0x60, 0x60, 0x15f);
+    DisplayLayer_LoadChars((u32) (uintptr_t) chars, DISPLAY_LAYER_SUB_BG1, 0x60, 0x60, 0x15f);
     TownMap_ReadMarks(self, data_ov120_0229c820);
     Heap_Free(heap, chars);
 }
@@ -689,11 +689,11 @@ void TownMap_LoadBg(TownMap *self)
 {
     Heap *heap = data_021fbe94;
 
-    DisplayLayer_LoadPalettesFromFile(data_ov120_0229c700, heap, LAYER_SUB_BG1, 1, 1, 0xf);
-    DisplayLayer_LoadCharsFromFile(data_ov120_0229c718, heap, LAYER_SUB_BG1, 0x11, 0x11, 0x5f);
-    DisplayLayer_LoadCharsFromFile(data_ov120_0229c730, heap, LAYER_SUB_BG1, 0x230, 0x230, 0x25f);
+    DisplayLayer_LoadPalettesFromFile(data_ov120_0229c700, heap, DISPLAY_LAYER_SUB_BG1, 1, 1, 0xf);
+    DisplayLayer_LoadCharsFromFile(data_ov120_0229c718, heap, DISPLAY_LAYER_SUB_BG1, 0x11, 0x11, 0x5f);
+    DisplayLayer_LoadCharsFromFile(data_ov120_0229c730, heap, DISPLAY_LAYER_SUB_BG1, 0x230, 0x230, 0x25f);
     RomFile_Read(data_ov120_0229c748, self->map_screen, TOWN_MAP_SCREEN_BYTES);
-    DisplayLayer_LoadScreen(self->map_screen, LAYER_SUB_BG1, TOWN_MAP_SCREEN_BYTES, 0);
+    DisplayLayer_LoadScreen(self->map_screen, DISPLAY_LAYER_SUB_BG1, TOWN_MAP_SCREEN_BYTES, 0);
     RomFile_Read(data_ov120_0229c760, self->list_template, TOWN_MAP_SCREEN_BYTES);
     ScreenMap_SetPalette(self->list_template, 0x13, 0, 0x1c, 1, 4);
 }
@@ -702,10 +702,10 @@ CLEAN_AS(func_ov120_0229ba68, TownMap_LoadBg)
 /* func_ov120_0229bb18: sub BG1 and BG3 at priority 2 with the plain background control. */
 void TownMap_SetUpLayers(void)
 {
-    DisplayLayer_SetPriority(LAYER_SUB_BG1, 2);
-    DisplayLayer_SetPriority(LAYER_SUB_BG3, 2);
-    DisplayLayer_SetBgControl(LAYER_SUB_BG1, 0, 0, 0);
-    DisplayLayer_SetBgControl(LAYER_SUB_BG3, 0, 0, 0);
+    DisplayLayer_SetPriority(DISPLAY_LAYER_SUB_BG1, 2);
+    DisplayLayer_SetPriority(DISPLAY_LAYER_SUB_BG3, 2);
+    DisplayLayer_SetBgControl(DISPLAY_LAYER_SUB_BG1, 0, 0, 0);
+    DisplayLayer_SetBgControl(DISPLAY_LAYER_SUB_BG3, 0, 0, 0);
 }
 CLEAN_AS(func_ov120_0229bb18, TownMap_SetUpLayers)
 
@@ -734,7 +734,7 @@ void TownMap_UpdateScreens(TownMap *self)
 {
     if (TownMap_IsScrolling(self) != 0) {
         TownMap_StepScroll(self);
-        DisplayLayer_SetScroll(LAYER_SUB_BG3, 0, (int) self->scroll - TOWN_MAP_LIST_Y);
+        DisplayLayer_SetScroll(DISPLAY_LAYER_SUB_BG3, 0, (int) self->scroll - TOWN_MAP_LIST_Y);
         if (self->first_row != self->scroll >> 4) {
             TownMap_SetFlags(self, TOWN_MAP_FLAG_LIST_DIRTY);
         }
@@ -745,14 +745,14 @@ void TownMap_UpdateScreens(TownMap *self)
         TownMap_ClearFlags(self, TOWN_MAP_FLAG_LIST_DIRTY);
     }
     if (TownMap_TestFlags(self, TOWN_MAP_FLAG_MAP_UPLOAD) != 0) {
-        if (LayerTask_QueueScreen(&self->map_task, (int) (uintptr_t) self->map_screen, LAYER_SUB_BG1, TOWN_MAP_SCREEN_BYTES,
-                                  0) != 0) {
+        if (LayerTask_QueueScreen(&self->map_task, (int) (uintptr_t) self->map_screen, DISPLAY_LAYER_SUB_BG1,
+                                  TOWN_MAP_SCREEN_BYTES, 0) != 0) {
             TownMap_ClearFlags(self, TOWN_MAP_FLAG_MAP_UPLOAD);
         }
     }
     if (TownMap_TestFlags(self, TOWN_MAP_FLAG_LIST_UPLOAD) != 0) {
-        if (LayerTask_QueueScreen(&self->list_task, (int) (uintptr_t) self->list_shown, LAYER_SUB_BG3, TOWN_MAP_SCREEN_BYTES,
-                                  0) != 0) {
+        if (LayerTask_QueueScreen(&self->list_task, (int) (uintptr_t) self->list_shown, DISPLAY_LAYER_SUB_BG3,
+                                  TOWN_MAP_SCREEN_BYTES, 0) != 0) {
             TownMap_ClearFlags(self, TOWN_MAP_FLAG_LIST_UPLOAD);
         }
     }
@@ -812,8 +812,8 @@ CLEAN_AS(func_ov120_0229bc74, TownMap_SetUp)
 /* Both layers scrolled with the wipe (sub BG3 at the list's scroll) and its offset kept. */
 static void town_map_follow_wipe(TownMap *self)
 {
-    MenuScene_ScrollWipe(town_map_scene(self), LAYER_SUB_BG1, 0, 0);
-    MenuScene_ScrollWipe(town_map_scene(self), LAYER_SUB_BG3, 0, TOWN_MAP_LIST_Y - self->scroll);
+    MenuScene_ScrollWipe(town_map_scene(self), DISPLAY_LAYER_SUB_BG1, 0, 0);
+    MenuScene_ScrollWipe(town_map_scene(self), DISPLAY_LAYER_SUB_BG3, 0, TOWN_MAP_LIST_Y - self->scroll);
     self->wipe_y = MenuScene_WipeOffsetY(town_map_scene(self));
 }
 
@@ -822,8 +822,8 @@ static void town_map_follow_wipe(TownMap *self)
 void TownMap_StateWipeOut(TownMap *self)
 {
     if (MenuScene_StepWipe(town_map_scene(self), 0)) {
-        DisplayLayer_HideAndResetScroll(LAYER_SUB_BG1);
-        DisplayLayer_HideAndResetScroll(LAYER_SUB_BG3);
+        DisplayLayer_HideAndResetScroll(DISPLAY_LAYER_SUB_BG1);
+        DisplayLayer_HideAndResetScroll(DISPLAY_LAYER_SUB_BG3);
         TownMap_ClearFlags(self, TOWN_MAP_FLAG_DRAWN);
         MenuScene_SetPhase(town_map_scene(self), TOWN_MAP_PHASE_DELETE);
     } else {
@@ -837,8 +837,8 @@ void TownMap_StateStartWipeOut(TownMap *self)
 {
     TownMap_HidePointer(self);
     MenuScene_StartWipeOnWindow2(town_map_scene(self), TOWN_MAP_WIPE_LAYERS, 0, 0, TOWN_MAP_WIPE_MARGIN);
-    MenuScene_ScrollWipe(town_map_scene(self), LAYER_SUB_BG1, 0, 0);
-    MenuScene_ScrollWipe(town_map_scene(self), LAYER_SUB_BG3, 0, TOWN_MAP_LIST_Y - self->scroll);
+    MenuScene_ScrollWipe(town_map_scene(self), DISPLAY_LAYER_SUB_BG1, 0, 0);
+    MenuScene_ScrollWipe(town_map_scene(self), DISPLAY_LAYER_SUB_BG3, 0, TOWN_MAP_LIST_Y - self->scroll);
     MenuScene_SetState(town_map_scene(self), TOWN_MAP_STATE_WIPE_OUT);
     self->wipe_y = MenuScene_WipeOffsetY(town_map_scene(self));
 }
@@ -892,10 +892,10 @@ void TownMap_StateStartWipeIn(TownMap *self)
     TownNameText_Destruct(&name);
 
     MenuScene_StartWipeCoveredOnWindow2(town_map_scene(self), TOWN_MAP_WIPE_LAYERS, 0, 0, TOWN_MAP_WIPE_MARGIN);
-    DisplayLayer_Show(LAYER_SUB_BG1);
-    MenuScene_ScrollWipe(town_map_scene(self), LAYER_SUB_BG1, 0, 0);
-    DisplayLayer_Show(LAYER_SUB_BG3);
-    MenuScene_ScrollWipe(town_map_scene(self), LAYER_SUB_BG3, 0, TOWN_MAP_LIST_Y - self->scroll);
+    DisplayLayer_Show(DISPLAY_LAYER_SUB_BG1);
+    MenuScene_ScrollWipe(town_map_scene(self), DISPLAY_LAYER_SUB_BG1, 0, 0);
+    DisplayLayer_Show(DISPLAY_LAYER_SUB_BG3);
+    MenuScene_ScrollWipe(town_map_scene(self), DISPLAY_LAYER_SUB_BG3, 0, TOWN_MAP_LIST_Y - self->scroll);
     TownMap_SetFlags(self, TOWN_MAP_FLAG_DRAWN);
     self->wipe_y = MenuScene_WipeOffsetY(town_map_scene(self));
     MenuScene_SetState(town_map_scene(self), TOWN_MAP_STATE_WIPE_IN);

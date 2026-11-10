@@ -16,7 +16,7 @@ static_assert(offsetof(PlayerDesigns, order) == 0x11a0, "order");
 static_assert(sizeof(ShopDesigns) == 0x11a0, "shop");
 
 #define SAMPLE_IMAGE_SIZE 0x200
-#define SHEET_SIZE 0x1000
+#define DESIGN_SETS_SHEET_SIZE 0x1000
 
 /* The records of "/myOrg/myD.bin" each set's information comes from. */
 #define PLAYER_ENTRY_FIRST 0
@@ -249,7 +249,7 @@ CLEAN_AS(func_02072a48, ShopDesigns_At)
  * for the sheet (from the current heap). */
 void ShopDesigns_Reset(ShopDesigns *designs)
 {
-    void *sheet = Heap_AllocCurrent(SHEET_SIZE);
+    void *sheet = Heap_AllocCurrent(DESIGN_SETS_SHEET_SIZE);
     if (sheet == NULL) {
         return;
     }
@@ -372,7 +372,7 @@ CLEAN_AS(func_02072be0, PlayerDesigns_UpdateTown)
  * the sheet (from the current heap) only the order is reset. */
 void PlayerDesigns_Reset(PlayerDesigns *designs, DesignCreator *player)
 {
-    void *sheet = Heap_AllocCurrent(SHEET_SIZE);
+    void *sheet = Heap_AllocCurrent(DESIGN_SETS_SHEET_SIZE);
     if (sheet != NULL) {
         DesignMySheet_Construct();
         DesignMySheet_Load(sheet);

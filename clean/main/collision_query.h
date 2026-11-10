@@ -3,7 +3,7 @@
  * along a path, the ground's height and attribute under a point, posts, water around a point
  * and whether a step between neighboring units is open.
  *
- * Positions are 20.12 fixed point and a unit is 2.0 wide (COLLISION_UNIT_SHIFT). */
+ * Positions are 20.12 fixed point and a unit is 2.0 wide (FIELD_COLLISION_UNIT_SHIFT). */
 #ifndef CLEAN_MAIN_COLLISION_QUERY_H
 #define CLEAN_MAIN_COLLISION_QUERY_H
 

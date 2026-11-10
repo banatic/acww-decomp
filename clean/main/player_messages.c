@@ -23,7 +23,7 @@
 #include "town_tune.h"
 #include "villager_town.h"
 
-#define LETTER_SIZE 0x100
+#define PLAYER_MESSAGES_LETTER_SIZE 0x100
 #define ITEM_LIST_SIZE 30
 #define TOWN_TUNE_NOTES 16
 #define PACKED_POSITION_SIZE 5
@@ -51,8 +51,8 @@ extern const int data_020df6a8[PLAYER_MESSAGE_COUNTDOWNS]; /* the time of each c
 extern u8 data_021cfbbc[TOWN_TUNE_NOTES];                  /* the town tune's notes */
 extern u64 data_021f3b68;                                  /* and packed, one in each 4 bits */
 extern u16 data_021e5a2c;
-extern u8 data_021f36ec[LETTER_SIZE];
-extern u8 data_021ee418[LETTER_SIZE];
+extern u8 data_021f36ec[PLAYER_MESSAGES_LETTER_SIZE];
+extern u8 data_021ee418[PLAYER_MESSAGES_LETTER_SIZE];
 extern u8 data_021f3a68[ITEM_LIST_SIZE]; /* the lost and found's list */
 extern u8 data_021f3a86[ITEM_LIST_SIZE]; /* the recycle bin's list */
 extern u8 data_020e54a8;                 /* types 1, 2 and 5 are ignored unless 0 */
@@ -137,9 +137,9 @@ CLEAN_AS(func_020704f4, PlayerMessages_StoreReply)
 void PlayerMessages_HoldLetter(const u8 *message, int player)
 {
     Heap *heap = data_021fbe94;
-    void *record = Heap_AllocBack(heap, LETTER_SIZE);
+    void *record = Heap_AllocBack(heap, PLAYER_MESSAGES_LETTER_SIZE);
     int reply = PLAYER_MESSAGE_NOT_STORED;
-    MI_CpuCopy8(message + 1, record, LETTER_SIZE);
+    MI_CpuCopy8(message + 1, record, PLAYER_MESSAGES_LETTER_SIZE);
     if (Mail_HoldAtPostOffice(record, 1) != 0) {
         reply = Mail_PostOfficeHasRoom() != 0 ? PLAYER_MESSAGE_STORED : PLAYER_MESSAGE_STORED_FULL;
     }
@@ -188,8 +188,8 @@ void PlayerMessages_BottleLetter(const char *message, int player)
 {
     (void) player;
     Heap *heap = data_021fbe94;
-    void *copy = Heap_AllocBack(heap, LETTER_SIZE);
-    MI_CpuCopy8(message + 1, copy, LETTER_SIZE);
+    void *copy = Heap_AllocBack(heap, PLAYER_MESSAGES_LETTER_SIZE);
+    MI_CpuCopy8(message + 1, copy, PLAYER_MESSAGES_LETTER_SIZE);
     Letter_Assign((Letter *) ExchangeBlock_BottleLetter((ExchangeBlock *) (void *) data_021ee418), copy);
     ExchangeBlock_ClearDrifts((ExchangeBlock *) (void *) data_021ee418);
     ExchangeBlock_SetArrivesAtOnce((ExchangeBlock *) (void *) data_021ee418, 0);

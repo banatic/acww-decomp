@@ -459,10 +459,10 @@ int PocketsWallet_LoadObjFiles(PocketsWallet *wallet)
     Heap *heap = data_021fbe94;
 
     (void) wallet;
-    DisplayLayer_LoadPalettesFromFile(data_ov094_0229be58, heap, LAYER_SUB_OBJ, 4, 4, 6);
-    DisplayLayer_LoadPalettesFromFile(data_ov094_0229be78, heap, LAYER_SUB_OBJ, 7, 7, 0xe);
-    DisplayLayer_LoadCharsFromFile(data_ov094_0229be90, heap, LAYER_SUB_OBJ, 0xc0, 0xc0, 0x15f);
-    return DisplayLayer_LoadCharsFromFile(data_ov094_0229bea8, heap, LAYER_SUB_OBJ, 0x160, 0x160, 0x1ff);
+    DisplayLayer_LoadPalettesFromFile(data_ov094_0229be58, heap, DISPLAY_LAYER_SUB_OBJ, 4, 4, 6);
+    DisplayLayer_LoadPalettesFromFile(data_ov094_0229be78, heap, DISPLAY_LAYER_SUB_OBJ, 7, 7, 0xe);
+    DisplayLayer_LoadCharsFromFile(data_ov094_0229be90, heap, DISPLAY_LAYER_SUB_OBJ, 0xc0, 0xc0, 0x15f);
+    return DisplayLayer_LoadCharsFromFile(data_ov094_0229bea8, heap, DISPLAY_LAYER_SUB_OBJ, 0x160, 0x160, 0x1ff);
 }
 CLEAN_AS(func_ov094_0229a098, PocketsWallet_LoadObjFiles)
 

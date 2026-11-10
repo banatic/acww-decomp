@@ -436,7 +436,7 @@ void StaticInit_CollisionWorld(void)
     static_init_register(&data_021c31a0, func_020012dc, &data_021c3194);
 
     CollisionWorld *world = &data_021c31e8;
-    __cxa_vec_ctor(world->maps, COLLISION_BLOCK_MAPS, sizeof(FieldBlockMap), func_02034824, func_02034804);
+    __cxa_vec_ctor(world->maps, FIELD_COLLISION_BLOCK_MAPS, sizeof(FieldBlockMap), func_02034824, func_02034804);
     CollisionWalls_Construct(&world->walls);
     CollisionFloors_Construct(&world->floors);
     CollisionPosts_Construct(&world->posts);

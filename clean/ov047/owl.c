@@ -187,7 +187,7 @@ static int owl_linked_or_variable(NetSession *session)
 /* Whether it is the evening or the night, the hours it is awake. */
 static int owl_awake_hours(void)
 {
-    return Calendar_PartOfDay() == PART_OF_DAY_EVENING || Calendar_PartOfDay() == PART_OF_DAY_NIGHT;
+    return Calendar_PartOfDay() == CALENDAR_PART_OF_DAY_EVENING || Calendar_PartOfDay() == CALENDAR_PART_OF_DAY_NIGHT;
 }
 
 /* Its talk scene reset through its vtable slot 0x08, the talk's partner this console's player's

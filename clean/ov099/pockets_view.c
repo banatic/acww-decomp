@@ -27,7 +27,7 @@ extern u8 data_021f6c58, data_021f6c54, data_021f6c60, data_021f6c5c;
 extern u8 data_021f6c30;
 
 /* What the grid's and the letters' objects answer for no place under the touch. */
-#define GRID_NO_INDEX 0x23
+#define POCKETS_VIEW_GRID_NO_INDEX 0x23
 #define LETTERS_NO_INDEX 0x37
 
 /* What PocketsView_PlaceItemState answers for a place outside the grid (PocketsView_PlaceItem:
@@ -733,7 +733,7 @@ CLEAN_AS(func_ov099_0229ce68, PocketsView_DropHeldAt)
 int PocketsView_GridPlaceAtTouch(PocketsView *self, int x, int y, int with_item)
 {
     int index = PocketsGrid_PocketPlaceAtTouch((PocketsGrid *) (void *) self->grid, x, y);
-    if (index == GRID_NO_INDEX) {
+    if (index == POCKETS_VIEW_GRID_NO_INDEX) {
         return POCKETS_VIEW_NO_PLACE;
     }
     if (with_item != 0 && PocketsGrid_IsEmpty((PocketsGrid *) (void *) self->grid, index) != 0) {

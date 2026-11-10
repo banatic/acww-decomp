@@ -2365,7 +2365,7 @@ CLEAN_AS(func_ov096_0229f200, PocketsScreen_PlaceY)
 #define PRESENT_GOLDEN_SLINGSHOT 0x137b
 
 /* What the grid's and the letters' objects answer for no place. */
-#define GRID_NO_INDEX 0x23
+#define POCKETS_SCREEN_GRID_NO_INDEX 0x23
 #define LETTERS_NO_INDEX 0x37
 
 /* func_ov096_0229f290: the x of `place`: by the grid's or the letters' object, by ov090's
@@ -2626,7 +2626,7 @@ CLEAN_AS(func_ov096_0229f650, PocketsScreen_PutHeldItemAt)
 int PocketsScreen_GridPlaceAtTouch(PocketsScreen *self, int x, int y, int with_item)
 {
     int index = PocketsGrid_PocketPlaceAtTouch((PocketsGrid *) (void *) self->grid, x, y);
-    if (index == GRID_NO_INDEX) {
+    if (index == POCKETS_SCREEN_GRID_NO_INDEX) {
         return POCKETS_NO_PLACE;
     }
     if (with_item != 0 && PocketsGrid_IsEmpty((PocketsGrid *) (void *) self->grid, index) != 0) {

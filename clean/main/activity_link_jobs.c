@@ -102,7 +102,7 @@ enum ActivityLinkMessage {
     SEQUENCE2_LEFT = 6,
 };
 
-#define WAIT_FRAMES 600
+#define ACTIVITY_LINK_JOBS_WAIT_FRAMES 600
 
 /* Fields of the activity these jobs give a meaning to. */
 static u8 *record_copy(Activity *activity) /* 0xbc: room for a player record */
@@ -1148,7 +1148,7 @@ void ActivityLinkJobs_Start1d(Activity *activity)
 {
     u8 offer[16];
 
-    *countdown(activity) = WAIT_FRAMES;
+    *countdown(activity) = ACTIVITY_LINK_JOBS_WAIT_FRAMES;
     Session_Start(1, 2, 0);
     Session_SetHostReceiveBuffers();
     MI_CpuCopy8((const void *) (uintptr_t) TownName_Name((int) (uintptr_t) &data_021dc7a8.town), offer, 12);

@@ -18,11 +18,11 @@
  * Players' fish (data_ov003_0225f4dc, four records of 0xa4 bytes, one per player). Each shows
  * one model of main's fish display (fish_disp.h) through five states, from the member functions
  * in data_ov003_0225f138:
- *   0 PLAYER_FISH_IDLE  nothing;
- *   1 PLAYER_FISH_TAKE  takes a model and sets the move up (PlayerFish_StepTake);
- *   2 PLAYER_FISH_WAIT  waits while the other console's player is out of sight;
- *   3 PLAYER_FISH_SHOW  moves it by its mode and shows it (PlayerFish_StepShow);
- *   4 PLAYER_FISH_END   gives the model back (PlayerFish_End), then a splash into the water
+ *   0 FISH_SHADOW_PLAYER_FISH_IDLE  nothing;
+ *   1 FISH_SHADOW_PLAYER_FISH_TAKE  takes a model and sets the move up (PlayerFish_StepTake);
+ *   2 FISH_SHADOW_PLAYER_FISH_WAIT  waits while the other console's player is out of sight;
+ *   3 FISH_SHADOW_PLAYER_FISH_SHOW  moves it by its mode and shows it (PlayerFish_StepShow);
+ *   4 FISH_SHADOW_PLAYER_FISH_END   gives the model back (PlayerFish_End), then a splash into the water
  *                       and a shadow swimming away when it ended in the water.
  * Its modes: 1 the catch flying from the water to the hand of the player at this console, 2 a
  * catch of another console's player, in that player's hand, 3 and 4 arcs between its two
@@ -46,7 +46,7 @@
 #define FISH_SHADOW_COUNT 6
 #define FISH_SHADOW_GROUP_SIZE 3 /* shadows 0-2 are of group 0, 3-5 of group 1 */
 #define FISH_SHADOW_STATES 5
-#define PLAYER_FISH_COUNT 4
+#define FISH_SHADOW_PLAYER_FISH_COUNT 4
 
 /* FishShadow.state. The drawing and fleeing ask for state 3. */
 #define FISH_SHADOW_NONE 0
@@ -73,24 +73,24 @@
 
 /* FishShadow.player and PlayerFish.shadow for none. */
 #define FISH_SHADOW_NO_PLAYER (-1)
-#define PLAYER_FISH_NO_SHADOW (-1)
+#define FISH_SHADOW_PLAYER_FISH_NO_SHADOW (-1)
 
 /* The kind of a fish's shadow model (fish_disp.h, FISH_DISP_KIND_SHADOW). */
-#define PLAYER_FISH_KIND_SHADOW 0x3b
+#define FISH_SHADOW_PLAYER_FISH_KIND_SHADOW 0x3b
 
 /* PlayerFish.state */
-#define PLAYER_FISH_IDLE 0
-#define PLAYER_FISH_TAKE 1
-#define PLAYER_FISH_WAIT 2
-#define PLAYER_FISH_SHOW 3
-#define PLAYER_FISH_END 4
+#define FISH_SHADOW_PLAYER_FISH_IDLE 0
+#define FISH_SHADOW_PLAYER_FISH_TAKE 1
+#define FISH_SHADOW_PLAYER_FISH_WAIT 2
+#define FISH_SHADOW_PLAYER_FISH_SHOW 3
+#define FISH_SHADOW_PLAYER_FISH_END 4
 
 /* PlayerFish.mode */
-#define PLAYER_FISH_HOOKED 1   /* flying from the water to the hand of the player at this console */
-#define PLAYER_FISH_REMOTE 2   /* another console's player's catch, in that player's hand */
-#define PLAYER_FISH_ARC_BACK 3 /* an arc from point_b to point_a, 1.5 lower */
-#define PLAYER_FISH_ARC 4      /* an arc from point_a to point_b */
-#define PLAYER_FISH_SWIM 5     /* the shadow swimming away from the player */
+#define FISH_SHADOW_PLAYER_FISH_HOOKED 1   /* flying from the water to the hand of the player at this console */
+#define FISH_SHADOW_PLAYER_FISH_REMOTE 2   /* another console's player's catch, in that player's hand */
+#define FISH_SHADOW_PLAYER_FISH_ARC_BACK 3 /* an arc from point_b to point_a, 1.5 lower */
+#define FISH_SHADOW_PLAYER_FISH_ARC 4      /* an arc from point_a to point_b */
+#define FISH_SHADOW_PLAYER_FISH_SWIM 5     /* the shadow swimming away from the player */
 
 /* What a shadow senses of the player (the four bytes at 0x248). */
 #define FISH_SHADOW_SENSE_FAR 0   /* the player is 8.0 or more away */
@@ -184,21 +184,21 @@ typedef struct FishShadowProcess {
 
 typedef struct PlayerFish {
     u8 emitter[0x40]; /* 0x00: a sound emitter of the base class B */
-    int state;        /* 0x40: PLAYER_FISH_IDLE ... */
+    int state;        /* 0x40: FISH_SHADOW_PLAYER_FISH_IDLE ... */
     int model;        /* 0x44: its model of the fish display, -1 for none */
-    int mode;         /* 0x48: PLAYER_FISH_HOOKED ... */
+    int mode;         /* 0x48: FISH_SHADOW_PLAYER_FISH_HOOKED ... */
     fx32 gravity;     /* 0x4c: of its flight (FishingFloat_Fly, FishingFloat_Arc) */
     fx32 speed;       /* 0x50: the vertical speed */
     Vec3 position;    /* 0x54 */
     Vec3 point_a;     /* 0x60: where a catch starts in the water, or a point ahead of the player */
     Vec3 point_b;     /* 0x6c: the hand it reached, or the point in the water it is let go to */
-    s8 shadow;        /* 0x78: the shadow it was, PLAYER_FISH_NO_SHADOW for none */
+    s8 shadow;        /* 0x78: the shadow it was, FISH_SHADOW_PLAYER_FISH_NO_SHADOW for none */
     u8 pad_79[3];     /* 0x79 */
     int frames;       /* 0x7c: frames of the move */
     u8 arrived;       /* 0x80: it reached the hand */
     u8 pad_81[3];     /* 0x81 */
     Vec3 scale;       /* 0x84 */
-    int kind;         /* 0x90: the fish's kind, or PLAYER_FISH_KIND_SHADOW */
+    int kind;         /* 0x90: the fish's kind, or FISH_SHADOW_PLAYER_FISH_KIND_SHADOW */
     u8 splash;        /* 0x94: the arc ended in the water */
     u8 pad_95;        /* 0x95 */
     s16 rotation[3];  /* 0x96: about x, y and z */

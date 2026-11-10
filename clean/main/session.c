@@ -395,13 +395,13 @@ static void deliver_all(const u8 *message, u32 length)
 {
     u32 done = 0;
     while (done < length) {
-        u8 header[MESSAGE_HEADER_SIZE];
+        u8 header[SESSION_MESSAGE_HEADER_SIZE];
         u8 scene;
         u8 slot;
 
-        MI_CpuCopy8(message, header, MESSAGE_HEADER_SIZE);
-        message += MESSAGE_HEADER_SIZE;
-        done += MESSAGE_HEADER_SIZE;
+        MI_CpuCopy8(message, header, SESSION_MESSAGE_HEADER_SIZE);
+        message += SESSION_MESSAGE_HEADER_SIZE;
+        done += SESSION_MESSAGE_HEADER_SIZE;
         PackedBytes_SplitScene(&header[HEADER_SOURCE], &scene, &slot);
         u16 size = PackedBytes_ReadU16(header);
         SessionMessage_Dispatch(header[HEADER_HANDLER], message, size, header[HEADER_KIND], scene, slot);
@@ -469,10 +469,10 @@ void Session_DeliverSceneQueue(NetSession *session)
     }
     const u8 *first = Session_SceneQueue(session);
 
-    u8 header[MESSAGE_HEADER_SIZE];
+    u8 header[SESSION_MESSAGE_HEADER_SIZE];
     u8 scene;
     u8 slot;
-    MI_CpuCopy8(first, header, MESSAGE_HEADER_SIZE);
+    MI_CpuCopy8(first, header, SESSION_MESSAGE_HEADER_SIZE);
     PackedBytes_SplitScene(&header[HEADER_SOURCE], &scene, &slot);
     if (scene != SceneQuery_Current()) {
         return;
@@ -537,10 +537,10 @@ void Session_RouteHeldMessages(NetSession *session)
     }
     const u8 *message = Session_HeldQueue(session);
 
-    u8 header[MESSAGE_HEADER_SIZE];
+    u8 header[SESSION_MESSAGE_HEADER_SIZE];
     u8 scene;
     u8 slot;
-    MI_CpuCopy8(message, header, MESSAGE_HEADER_SIZE);
+    MI_CpuCopy8(message, header, SESSION_MESSAGE_HEADER_SIZE);
     PackedBytes_SplitScene(&header[HEADER_SOURCE], &scene, &slot);
 
     int owner = LinkGlobal_SceneOwner(scene);
@@ -552,8 +552,8 @@ void Session_RouteHeldMessages(NetSession *session)
         u32 local_length = Session_LocalQueueLength(session);
         u8 *dst = Session_LocalQueue(session) + local_length;
         for (u32 done = 0; done < length;) {
-            MI_CpuCopy8(message, header, MESSAGE_HEADER_SIZE);
-            u32 whole = (u32) PackedBytes_ReadU16(header) + MESSAGE_HEADER_SIZE;
+            MI_CpuCopy8(message, header, SESSION_MESSAGE_HEADER_SIZE);
+            u32 whole = (u32) PackedBytes_ReadU16(header) + SESSION_MESSAGE_HEADER_SIZE;
             MI_CpuCopy8(message, dst, whole);
             dst += whole;
             local_length += whole;
@@ -563,9 +563,9 @@ void Session_RouteHeldMessages(NetSession *session)
         Session_SetLocalQueueLength(session, local_length);
     } else {
         for (u32 done = 0; done < length;) {
-            MI_CpuCopy8(message, header, MESSAGE_HEADER_SIZE);
-            message += MESSAGE_HEADER_SIZE;
-            done += MESSAGE_HEADER_SIZE;
+            MI_CpuCopy8(message, header, SESSION_MESSAGE_HEADER_SIZE);
+            message += SESSION_MESSAGE_HEADER_SIZE;
+            done += SESSION_MESSAGE_HEADER_SIZE;
             u16 size = PackedBytes_ReadU16(header);
             Session_BeginMessage(session);
             Session_AppendMessage(session, message, size);
@@ -714,12 +714,12 @@ void Session_EndMessage(NetSession *session, u32 handler, u32 kind)
     }
     u32 whole = (u32) ((uintptr_t) session->message_cursor - (uintptr_t) session->message_start);
 
-    u8 header[MESSAGE_HEADER_SIZE];
-    PackedBytes_WriteU16(header, (PackedBytesHalf){.value = (u16) (whole - MESSAGE_HEADER_SIZE)});
+    u8 header[SESSION_MESSAGE_HEADER_SIZE];
+    PackedBytes_WriteU16(header, (PackedBytesHalf){.value = (u16) (whole - SESSION_MESSAGE_HEADER_SIZE)});
     header[HEADER_HANDLER] = (u8) handler;
     header[HEADER_KIND] = (u8) kind;
     PackedBytes_JoinScene(&header[HEADER_SOURCE], SceneQuery_Current(), (u8) session->local_slot);
-    MI_CpuCopy8(header, session->message_start, MESSAGE_HEADER_SIZE);
+    MI_CpuCopy8(header, session->message_start, SESSION_MESSAGE_HEADER_SIZE);
 
     session->send_length += whole;
     session->send_end = session->message_cursor;
@@ -743,7 +743,7 @@ void Session_BeginMessage(NetSession *session)
 {
     if (Session_IsLinked(session)) {
         session->message_start = session->send_end;
-        session->message_cursor = (u8 *) ((uintptr_t) session->send_end + MESSAGE_HEADER_SIZE);
+        session->message_cursor = (u8 *) ((uintptr_t) session->send_end + SESSION_MESSAGE_HEADER_SIZE);
     }
 }
 CLEAN_AS(func_02073820, Session_BeginMessage)
@@ -986,13 +986,13 @@ void Session_ProcessReceived(NetSession *session)
 
             u32 messages = (u16) (length - used);
             for (u32 done = 0; done < messages;) {
-                u8 header[MESSAGE_HEADER_SIZE];
+                u8 header[SESSION_MESSAGE_HEADER_SIZE];
                 u8 scene;
                 u8 sender;
 
-                MI_CpuCopy8(read, header, MESSAGE_HEADER_SIZE);
-                read += MESSAGE_HEADER_SIZE;
-                done += MESSAGE_HEADER_SIZE;
+                MI_CpuCopy8(read, header, SESSION_MESSAGE_HEADER_SIZE);
+                read += SESSION_MESSAGE_HEADER_SIZE;
+                done += SESSION_MESSAGE_HEADER_SIZE;
                 u8 kind = header[HEADER_KIND];
                 PackedBytes_SplitScene(&header[HEADER_SOURCE], &scene, &sender);
                 u8 current_scene = SceneQuery_Current();
@@ -1001,8 +1001,8 @@ void Session_ProcessReceived(NetSession *session)
                 if (LinkGlobal_PlaceMoving(session->local_slot) != 0 && kind == KIND_SCENE_QUEUED && scene != current_scene) {
                     u32 queued = Session_SceneQueueLength(session);
                     u8 *dst = Session_SceneQueue(session) + queued;
-                    MI_CpuCopy8(read - MESSAGE_HEADER_SIZE, dst, (u32) size + MESSAGE_HEADER_SIZE);
-                    Session_SetSceneQueueLength(session, queued + size + MESSAGE_HEADER_SIZE);
+                    MI_CpuCopy8(read - SESSION_MESSAGE_HEADER_SIZE, dst, (u32) size + SESSION_MESSAGE_HEADER_SIZE);
+                    Session_SetSceneQueueLength(session, queued + size + SESSION_MESSAGE_HEADER_SIZE);
                 } else {
                     int ready = LinkGlobal_HoldsScene();
                     int drop = (kind == KIND_SAME_SCENE && (ready == 0 || scene != current_scene)) ||

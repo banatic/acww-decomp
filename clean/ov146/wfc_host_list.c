@@ -73,10 +73,10 @@ extern const MemberPointer data_ov146_0229b400, data_ov146_0229b408, data_ov146_
     data_ov146_0229b430, data_ov146_0229b438, data_ov146_0229b440, data_ov146_0229b448, data_ov146_0229b450,
     data_ov146_0229b458, data_ov146_0229b470, data_ov146_0229b478, data_ov146_0229b480, data_ov146_0229b488;
 
-/* The background's layer (LAYER_SUB_BG3) and the rows' (LAYER_SUB_BG1); the wipes' layers (bit
+/* The background's layer (DISPLAY_LAYER_SUB_BG3) and the rows' (DISPLAY_LAYER_SUB_BG1); the wipes' layers (bit
  * 1 the rows', bit 3 the background's) and margin on window 2. */
-#define WFC_HOST_LIST_BG_LAYER LAYER_SUB_BG3
-#define WFC_HOST_LIST_ROWS_LAYER LAYER_SUB_BG1
+#define WFC_HOST_LIST_BG_LAYER DISPLAY_LAYER_SUB_BG3
+#define WFC_HOST_LIST_ROWS_LAYER DISPLAY_LAYER_SUB_BG1
 #define WFC_HOST_LIST_WIPE_LAYERS 0x0a
 #define WFC_HOST_LIST_WIPE_MARGIN 0x28
 
@@ -192,9 +192,9 @@ void WfcHostList_LoadObjFiles(WfcHostList *self)
 {
     (void) self;
     Heap *heap = data_021fbe94;
-    DisplayLayer_LoadCharsFromFile(data_ov146_0229b6e0, heap, LAYER_SUB_OBJ, 0x80, 0x80, 0xff);
-    DisplayLayer_LoadCharsFromFile(data_ov146_0229b6f4, heap, LAYER_SUB_OBJ, 0x160, 0x160, 0x1ff);
-    DisplayLayer_LoadPalettesFromFile(data_ov146_0229b708, heap, LAYER_SUB_OBJ, 4, 4, 0xd);
+    DisplayLayer_LoadCharsFromFile(data_ov146_0229b6e0, heap, DISPLAY_LAYER_SUB_OBJ, 0x80, 0x80, 0xff);
+    DisplayLayer_LoadCharsFromFile(data_ov146_0229b6f4, heap, DISPLAY_LAYER_SUB_OBJ, 0x160, 0x160, 0x1ff);
+    DisplayLayer_LoadPalettesFromFile(data_ov146_0229b708, heap, DISPLAY_LAYER_SUB_OBJ, 4, 4, 0xd);
 }
 CLEAN_AS(func_ov146_0229aac8, WfcHostList_LoadObjFiles)
 

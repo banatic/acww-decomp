@@ -453,8 +453,8 @@ void PocketsGrid_SetObjChars(PocketsGrid *grid, OamEntry *obj, const u8 *chars, 
 
     MI_CpuCopy8(chars, top, POCKETS_GRID_HALF_CHARS);
     MI_CpuCopy8(chars + POCKETS_GRID_NEXT_ROW, bottom, POCKETS_GRID_HALF_CHARS);
-    LayerTask_QueueTwoChars(&grid->tasks[task], (int) (uintptr_t) top, (int) (uintptr_t) bottom, LAYER_SUB_OBJ, tile, tile + 1,
-                            tile + POCKETS_GRID_ROW_TILES, tile + POCKETS_GRID_ROW_TILES + 1);
+    LayerTask_QueueTwoChars(&grid->tasks[task], (int) (uintptr_t) top, (int) (uintptr_t) bottom, DISPLAY_LAYER_SUB_OBJ, tile,
+                            tile + 1, tile + POCKETS_GRID_ROW_TILES, tile + POCKETS_GRID_ROW_TILES + 1);
     obj->attr2 = with_palette(obj->attr2, palette);
 }
 CLEAN_AS(func_ov094_0229a8cc, PocketsGrid_SetObjChars)
@@ -735,9 +735,9 @@ void PocketsGrid_LoadPlace(PocketsGrid *grid, int place, u16 *item, int state)
     obj = PocketsGrid_PlaceObj(grid_address(grid), place);
     tile = obj->attr2 & POCKETS_GRID_TILE_MASK;
     chars = PocketsIcons_Chars(grid_icons(grid), icon);
-    DisplayLayer_LoadChars((u32) (uintptr_t) chars, LAYER_SUB_OBJ, tile, tile, tile + 1);
+    DisplayLayer_LoadChars((u32) (uintptr_t) chars, DISPLAY_LAYER_SUB_OBJ, tile, tile, tile + 1);
     tile += POCKETS_GRID_ROW_TILES;
-    DisplayLayer_LoadChars((u32) (uintptr_t) (chars + POCKETS_GRID_NEXT_ROW), LAYER_SUB_OBJ, tile, tile, tile + 1);
+    DisplayLayer_LoadChars((u32) (uintptr_t) (chars + POCKETS_GRID_NEXT_ROW), DISPLAY_LAYER_SUB_OBJ, tile, tile, tile + 1);
     obj->attr2 = with_palette(obj->attr2, PocketsIcons_Palette(grid_icons(grid), icon));
 }
 CLEAN_AS(func_ov094_0229ad64, PocketsGrid_LoadPlace)

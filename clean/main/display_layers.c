@@ -7,19 +7,19 @@
 
 #define REG16(addr) (*(volatile u16 *) (addr))
 
-#define CHAR_UNIT 32    /* a 16-color character; a 256-color one is two */
-#define PALETTE_SIZE 32 /* 16 colors */
-#define ALIGN_BACK -4   /* allocate from the heap's end */
+#define CHAR_UNIT 32                   /* a 16-color character; a 256-color one is two */
+#define DISPLAY_LAYERS_PALETTE_SIZE 32 /* 16 colors */
+#define ALIGN_BACK -4                  /* allocate from the heap's end */
 #define LAYER_COUNT 9
 
 /* The background control registers (BGxCNT) of the background layers, and the screen base
  * block each layer's screen is fixed at. */
-static const u32 bg_control_regs[LAYER_SUB_BG3 + 1] = {0x0400000a, 0x0400000c, 0x0400000e, 0x04001008,
-                                                       0x0400100a, 0x0400100c, 0x0400100e};
-static const u8 screen_bases[LAYER_SUB_BG3 + 1] = {5, 6, 7, 12, 13, 14, 15};
+static const u32 bg_control_regs[DISPLAY_LAYER_SUB_BG3 + 1] = {0x0400000a, 0x0400000c, 0x0400000e, 0x04001008,
+                                                               0x0400100a, 0x0400100c, 0x0400100e};
+static const u8 screen_bases[DISPLAY_LAYER_SUB_BG3 + 1] = {5, 6, 7, 12, 13, 14, 15};
 
-#define BGCNT_KEEP 0x43 /* the priority and the mosaic bit */
-#define BGCNT_PRIORITY 0x3
+#define DISPLAY_LAYERS_BGCNT_KEEP 0x43 /* the priority and the mosaic bit */
+#define DISPLAY_LAYERS_BGCNT_PRIORITY 0x3
 
 extern void DC_FlushRange(const void *start, u32 size);
 extern void GX_LoadBG2Char(const void *src, u32 offset, u32 size);
@@ -52,7 +52,7 @@ static const u8 layer_plane_numbers[LAYER_COUNT] = {1, 2, 3, 0, 1, 2, 3, 4, 4};
 
 static int is_main_screen(unsigned int layer)
 {
-    return layer <= LAYER_MAIN_BG3 || layer == LAYER_MAIN_OBJ;
+    return layer <= DISPLAY_LAYER_MAIN_BG3 || layer == DISPLAY_LAYER_MAIN_OBJ;
 }
 
 /* func_02002708: numbers that are no layer do nothing. */
@@ -96,25 +96,25 @@ CLEAN_AS(func_020027f0, DisplayLayer_HideAndResetScroll)
 void DisplayLayer_SetScroll(unsigned int layer, int x, int y)
 {
     switch (layer) {
-        case LAYER_MAIN_BG1:
+        case DISPLAY_LAYER_MAIN_BG1:
             DisplayShadow_SetMainBg1Scroll((u16) x, (u16) y);
             break;
-        case LAYER_MAIN_BG2:
+        case DISPLAY_LAYER_MAIN_BG2:
             DisplayShadow_SetMainBg2Scroll((unsigned int) x, (unsigned int) y);
             break;
-        case LAYER_MAIN_BG3:
+        case DISPLAY_LAYER_MAIN_BG3:
             DisplayShadow_SetMainBg3Scroll((unsigned int) x, (unsigned int) y);
             break;
-        case LAYER_SUB_BG0:
+        case DISPLAY_LAYER_SUB_BG0:
             DisplayShadow_SetSubBg0Scroll((u16) x, (u16) y);
             break;
-        case LAYER_SUB_BG1:
+        case DISPLAY_LAYER_SUB_BG1:
             DisplayShadow_SetSubBg1Scroll((u16) x, (u16) y);
             break;
-        case LAYER_SUB_BG2:
+        case DISPLAY_LAYER_SUB_BG2:
             DisplayShadow_SetSubBg2Scroll(x, y);
             break;
-        case LAYER_SUB_BG3:
+        case DISPLAY_LAYER_SUB_BG3:
             DisplayShadow_SetSubBg3Scroll(x, y);
             break;
     }
@@ -129,12 +129,12 @@ void DisplayLayer_SetBgControl(unsigned int layer, int size, int colors_256, int
 {
     u32 reg;
 
-    if (layer > LAYER_SUB_BG3) {
+    if (layer > DISPLAY_LAYER_SUB_BG3) {
         return;
     }
     reg = bg_control_regs[layer];
-    REG16(reg) = (u16) ((u32) char_base << 2 | (u32) colors_256 << 7 | (REG16(reg) & BGCNT_KEEP) | (u32) size << 14 |
-                        (u32) screen_bases[layer] << 8);
+    REG16(reg) = (u16) ((u32) char_base << 2 | (u32) colors_256 << 7 | (REG16(reg) & DISPLAY_LAYERS_BGCNT_KEEP) |
+                        (u32) size << 14 | (u32) screen_bases[layer] << 8);
 }
 CLEAN_AS(func_020028bc, DisplayLayer_SetBgControl)
 
@@ -144,11 +144,11 @@ void DisplayLayer_SetPriority(int layer, int priority)
 {
     u32 reg;
 
-    if ((unsigned int) layer > LAYER_SUB_BG3) {
+    if ((unsigned int) layer > DISPLAY_LAYER_SUB_BG3) {
         return;
     }
     reg = bg_control_regs[layer];
-    REG16(reg) = (u16) ((REG16(reg) & ~BGCNT_PRIORITY) | priority);
+    REG16(reg) = (u16) ((REG16(reg) & ~DISPLAY_LAYERS_BGCNT_PRIORITY) | priority);
 }
 CLEAN_AS(func_020029e8, DisplayLayer_SetPriority)
 
@@ -162,31 +162,31 @@ int DisplayLayer_LoadChars(u32 data, int layer, u32 data_first, u32 first, u32 l
 
     DC_FlushRange(src, size);
     switch (layer) {
-        case LAYER_MAIN_BG1:
+        case DISPLAY_LAYER_MAIN_BG1:
             func_02112d48(src, offset, size);
             break;
-        case LAYER_MAIN_BG2:
+        case DISPLAY_LAYER_MAIN_BG2:
             GX_LoadBG2Char(src, offset, size);
             break;
-        case LAYER_MAIN_BG3:
+        case DISPLAY_LAYER_MAIN_BG3:
             func_02112ba8(src, offset, size);
             break;
-        case LAYER_SUB_BG0:
+        case DISPLAY_LAYER_SUB_BG0:
             func_02112db0(src, offset, size);
             break;
-        case LAYER_SUB_BG1:
+        case DISPLAY_LAYER_SUB_BG1:
             func_02112ce0(src, offset, size);
             break;
-        case LAYER_SUB_BG2:
+        case DISPLAY_LAYER_SUB_BG2:
             func_02112c10(src, offset, size);
             break;
-        case LAYER_SUB_BG3:
+        case DISPLAY_LAYER_SUB_BG3:
             func_02112b40(src, offset, size);
             break;
-        case LAYER_MAIN_OBJ:
+        case DISPLAY_LAYER_MAIN_OBJ:
             GX_LoadOBJ(src, offset, size);
             break;
-        case LAYER_SUB_OBJ:
+        case DISPLAY_LAYER_SUB_OBJ:
             GXS_LoadOBJ(src, offset, size);
             break;
     }
@@ -199,25 +199,25 @@ int DisplayLayer_LoadScreen(void *data, int layer, int size, int offset)
 {
     DC_FlushRange(data, (u32) size);
     switch (layer) {
-        case LAYER_MAIN_BG1:
+        case DISPLAY_LAYER_MAIN_BG1:
             func_02113088(data, (u32) offset, (u32) size);
             break;
-        case LAYER_MAIN_BG2:
+        case DISPLAY_LAYER_MAIN_BG2:
             GX_LoadBG2Scr(data, (u32) offset, (u32) size);
             break;
-        case LAYER_MAIN_BG3:
+        case DISPLAY_LAYER_MAIN_BG3:
             func_02112ee8(data, (u32) offset, (u32) size);
             break;
-        case LAYER_SUB_BG0:
+        case DISPLAY_LAYER_SUB_BG0:
             func_021130f0(data, (u32) offset, (u32) size);
             break;
-        case LAYER_SUB_BG1:
+        case DISPLAY_LAYER_SUB_BG1:
             func_02113020(data, (u32) offset, (u32) size);
             break;
-        case LAYER_SUB_BG2:
+        case DISPLAY_LAYER_SUB_BG2:
             func_02112f50(data, (u32) offset, (u32) size);
             break;
-        case LAYER_SUB_BG3:
+        case DISPLAY_LAYER_SUB_BG3:
             func_02112e80(data, (u32) offset, (u32) size);
             break;
     }
@@ -231,22 +231,22 @@ CLEAN_AS(func_02002b40, DisplayLayer_LoadScreen)
  * backdrop. */
 int DisplayLayer_LoadPalettes(u8 *data, unsigned int layer, int data_first, int first, u8 last)
 {
-    u8 *src = data + (first - data_first) * PALETTE_SIZE;
-    int size = (last - first + 1) * PALETTE_SIZE;
-    int offset = first * PALETTE_SIZE;
+    u8 *src = data + (first - data_first) * DISPLAY_LAYERS_PALETTE_SIZE;
+    int size = (last - first + 1) * DISPLAY_LAYERS_PALETTE_SIZE;
+    int offset = first * DISPLAY_LAYERS_PALETTE_SIZE;
 
     DC_FlushRange(src, (u32) size);
-    if (layer == LAYER_MAIN_OBJ) {
+    if (layer == DISPLAY_LAYER_MAIN_OBJ) {
         GX_LoadOBJPltt(src, (u32) offset, (u32) size);
-    } else if (layer == LAYER_SUB_OBJ) {
+    } else if (layer == DISPLAY_LAYER_SUB_OBJ) {
         GXS_LoadOBJPltt(src, (u32) offset, (u32) size);
-    } else if (layer <= LAYER_SUB_BG3) {
+    } else if (layer <= DISPLAY_LAYER_SUB_BG3) {
         if (offset == 0) {
             offset = sizeof(u16);
             size -= sizeof(u16);
             src += sizeof(u16);
         }
-        if (layer <= LAYER_MAIN_BG3) {
+        if (layer <= DISPLAY_LAYER_MAIN_BG3) {
             GX_LoadBGPltt(src, (u32) offset, (u32) size);
         } else {
             GXS_LoadBGPltt(src, (u32) offset, (u32) size);
@@ -298,8 +298,8 @@ int DisplayLayer_LoadPaletteFromFile(const char *path, Heap *heap, int layer, in
 {
     u32 file_size;
     u8 *data = RomFile_Load(path, heap, ALIGN_BACK, &file_size);
-    int result =
-        DisplayLayer_LoadPalettes(data + file_palette * PALETTE_SIZE, (unsigned int) layer, palette, palette, palette);
+    int result = DisplayLayer_LoadPalettes(data + file_palette * DISPLAY_LAYERS_PALETTE_SIZE, (unsigned int) layer, palette,
+                                           palette, palette);
 
     Heap_Free(heap, data);
     return result;

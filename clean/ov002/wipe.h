@@ -13,11 +13,11 @@
 
 #include "types.h"
 
-#define SCREEN_WIDTH 0x100
-#define SCREEN_HEIGHT 0xc0
+#define WIPE_SCREEN_WIDTH 0x100
+#define WIPE_SCREEN_HEIGHT 0xc0
 
 /* 1.0 in the progress's fixed point (20.12) */
-#define PROGRESS_ONE 0x1000
+#define WIPE_PROGRESS_ONE 0x1000
 
 /* The wipe's base class (vtable data_ov002_0220bb04). */
 typedef struct Progress {

@@ -56,7 +56,7 @@ extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 #define FS_READ_FAILED (-1)
 
 /* Rows of characters, in the files as in VRAM: 32 characters of 0x20 bytes. */
-#define ROW 0x400
+#define A_MES_OBJ_ROW 0x400
 #define ROWS 2
 
 #define SCREEN_ICON_VRAM 0x38c0
@@ -67,13 +67,13 @@ extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 #define EXTRA_ROW 0x100 /* 8 characters */
 #define WINDOW_VRAM 0x1000
 #define WINDOW_ROW 0x280 /* 20 characters */
-#define SHEET_SIZE 0x3000
-#define PALETTES_SIZE 0x180
+#define A_MES_OBJ_SHEET_SIZE 0x3000
+#define A_MES_OBJ_PALETTES_SIZE 0x180
 #define PALETTES_VRAM 0x80      /* palette 4 */
 #define PALETTES_FIRST 0x100    /* palettes 4 to 11 */
 #define PALETTE_LAST_FROM 0x160 /* palette 11 of the file ... */
 #define PALETTE_LAST_VRAM 0x1e0 /* ... goes to palette 15 */
-#define PALETTE_SIZE 0x20
+#define A_MES_OBJ_PALETTE_SIZE 0x20
 
 static int to_main(u32 screens)
 {
@@ -92,7 +92,7 @@ static u8 *row_at(u8 *base, u32 i, u32 row_size)
     return (u8 *) ((uintptr_t) base + i * row_size);
 }
 
-/* Reads ROWS rows of `row_size` bytes, ROW apart from `offset` on in the open file, into
+/* Reads ROWS rows of `row_size` bytes, A_MES_OBJ_ROW apart from `offset` on in the open file, into
  * `dst` one after the other; whether every seek and read worked (each one is tried). */
 static int read_rows(AMesObj *obj, u8 *dst, s32 offset, s32 row_size)
 {
@@ -104,7 +104,7 @@ static int read_rows(AMesObj *obj, u8 *dst, s32 offset, s32 row_size)
         if (FS_ReadFile(obj->file, row_at(dst, i, (u32) row_size), row_size) == FS_READ_FAILED) {
             ok = 0;
         }
-        offset += ROW;
+        offset += A_MES_OBJ_ROW;
     }
     return ok;
 }
@@ -125,7 +125,7 @@ void AMesObj_UploadScreenIcon(AMesObj *obj)
         const u8 *row = row_at(obj->chars, i, SCREEN_ICON_ROW);
         GX_LoadOBJ(row, offset, SCREEN_ICON_ROW);
         GXS_LoadOBJ(row, offset, SCREEN_ICON_ROW);
-        offset += ROW;
+        offset += A_MES_OBJ_ROW;
     }
 }
 CLEAN_AS(func_020116bc, AMesObj_UploadScreenIcon)
@@ -166,7 +166,7 @@ void AMesObj_UploadWirelessIcon(AMesObj *obj)
         const u8 *row = row_at(obj->chars, i, WIRELESS_ICON_ROW);
         GX_LoadOBJ(row, offset, WIRELESS_ICON_ROW);
         GXS_LoadOBJ(row, offset, WIRELESS_ICON_ROW);
-        offset += ROW;
+        offset += A_MES_OBJ_ROW;
     }
 }
 CLEAN_AS(func_020117a8, AMesObj_UploadWirelessIcon)
@@ -205,7 +205,7 @@ void AMesObj_UploadExtraChars(AMesObj *obj, int screens)
         if (on_sub) {
             GXS_LoadOBJ(row, offset, EXTRA_ROW);
         }
-        offset += ROW;
+        offset += A_MES_OBJ_ROW;
     }
 }
 CLEAN_AS(func_020118a0, AMesObj_UploadExtraChars)
@@ -237,7 +237,7 @@ void AMesObj_UploadWindowChars(AMesObj *obj, int screens)
         if (on_sub) {
             GXS_LoadOBJ(row, offset, WINDOW_ROW);
         }
-        offset += ROW;
+        offset += A_MES_OBJ_ROW;
     }
 }
 CLEAN_AS(func_020119c4, AMesObj_UploadWindowChars)
@@ -267,12 +267,12 @@ CLEAN_AS(func_02011a58, AMesObj_LoadWindowChars)
 /* func_02011af8: the whole sheet to the screens asked for. */
 void AMesObj_UploadSheet(AMesObj *obj, u32 screens)
 {
-    DC_FlushRange(obj->chars, SHEET_SIZE);
+    DC_FlushRange(obj->chars, A_MES_OBJ_SHEET_SIZE);
     if (to_main(screens)) {
-        GX_LoadOBJ(obj->chars, WINDOW_VRAM, SHEET_SIZE);
+        GX_LoadOBJ(obj->chars, WINDOW_VRAM, A_MES_OBJ_SHEET_SIZE);
     }
     if (to_sub(screens)) {
-        GXS_LoadOBJ(obj->chars, WINDOW_VRAM, SHEET_SIZE);
+        GXS_LoadOBJ(obj->chars, WINDOW_VRAM, A_MES_OBJ_SHEET_SIZE);
     }
 }
 CLEAN_AS(func_02011af8, AMesObj_UploadSheet)
@@ -281,16 +281,16 @@ CLEAN_AS(func_02011af8, AMesObj_UploadSheet)
  * palette 15, of the screens asked for. */
 void AMesObj_UploadPalettes(AMesObj *obj, u32 screens)
 {
-    DC_FlushRange(obj->palettes, PALETTES_SIZE);
+    DC_FlushRange(obj->palettes, A_MES_OBJ_PALETTES_SIZE);
     const u8 *first = obj->palettes;
     const u8 *last = first + PALETTE_LAST_FROM;
     if (to_main(screens)) {
         GX_LoadOBJPltt(first, PALETTES_VRAM, PALETTES_FIRST);
-        GX_LoadOBJPltt(last, PALETTE_LAST_VRAM, PALETTE_SIZE);
+        GX_LoadOBJPltt(last, PALETTE_LAST_VRAM, A_MES_OBJ_PALETTE_SIZE);
     }
     if (to_sub(screens)) {
         GXS_LoadOBJPltt(first, PALETTES_VRAM, PALETTES_FIRST);
-        GXS_LoadOBJPltt(last, PALETTE_LAST_VRAM, PALETTE_SIZE);
+        GXS_LoadOBJPltt(last, PALETTE_LAST_VRAM, A_MES_OBJ_PALETTE_SIZE);
     }
 }
 CLEAN_AS(func_02011b38, AMesObj_UploadPalettes)
@@ -320,10 +320,10 @@ CLEAN_AS(func_02011bb0, AMesObj_FreePalettes)
 int AMesObj_LoadSheet(AMesObj *obj)
 {
     int opened = FS_OpenFile(obj->file, AMesObj_CharsPath(obj, AMES_KIND_SCENE));
-    obj->chars = Heap_AllocCurrentBack(SHEET_SIZE);
+    obj->chars = Heap_AllocCurrentBack(A_MES_OBJ_SHEET_SIZE);
     int read = 0;
     if (obj->chars != NULL) {
-        read = FS_ReadFile(obj->file, obj->chars, SHEET_SIZE) != FS_READ_FAILED;
+        read = FS_ReadFile(obj->file, obj->chars, A_MES_OBJ_SHEET_SIZE) != FS_READ_FAILED;
     }
     int closed = FS_CloseFile(obj->file);
     return opened && read && closed && obj->chars != NULL;
@@ -335,10 +335,10 @@ CLEAN_AS(func_02011bc8, AMesObj_LoadSheet)
 int AMesObj_LoadPalettes(AMesObj *obj, int kind)
 {
     int opened = FS_OpenFile(obj->file, AMesObj_PalettesPath(obj, kind));
-    obj->palettes = Heap_AllocCurrentBack(PALETTES_SIZE);
+    obj->palettes = Heap_AllocCurrentBack(A_MES_OBJ_PALETTES_SIZE);
     int read = 0;
     if (obj->palettes != NULL) {
-        read = FS_ReadFile(obj->file, obj->palettes, PALETTES_SIZE) != FS_READ_FAILED;
+        read = FS_ReadFile(obj->file, obj->palettes, A_MES_OBJ_PALETTES_SIZE) != FS_READ_FAILED;
     }
     int closed = FS_CloseFile(obj->file);
     return opened && read && closed && obj->palettes != NULL;

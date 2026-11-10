@@ -26,11 +26,11 @@ static_assert(sizeof(Clock) == 0x84c, "the size Clock_Create allocates");
 static_assert(offsetof(RoomObject, model_files) == 0x6cc, "the model files");
 
 #define CLOCK_SIZE 0x84c
-#define ANIM_MODE_LOOP 0   /* start again at the end */
-#define ANIM_MODE_ONCE 1   /* stop at the end */
-#define KIND_STRIKING 0x10 /* RoomObject.unk_780 of the clocks that strike the hours */
-#define KIND_SHARED 0x11   /* of those that show the shared frame counter */
-#define KIND_ANIMATED 0x2b /* of those that advance their animations */
+#define ANIM_MODE_LOOP 0         /* start again at the end */
+#define ANIM_MODE_ONCE 1         /* stop at the end */
+#define KIND_STRIKING 0x10       /* RoomObject.unk_780 of the clocks that strike the hours */
+#define KIND_SHARED 0x11         /* of those that show the shared frame counter */
+#define CLOCK_KIND_ANIMATED 0x2b /* of those that advance their animations */
 #define NO_STRIKES (-1)
 #define STRIKE_SOUND 0x42d
 #define TICK_SOUND 0x4d0
@@ -139,7 +139,7 @@ int Clock_Update(Clock *clock)
     Calendar_Now(&clock->time);
     if (base->unk_780 == KIND_STRIKING) {
         clock_strike(clock);
-    } else if (base->unk_780 == KIND_ANIMATED) {
+    } else if (base->unk_780 == CLOCK_KIND_ANIMATED) {
         RoomObject_AdvanceAnims(base);
     }
     int frame = RoomManager_FrameCounter();
@@ -183,7 +183,7 @@ int Clock_Start(Clock *clock)
         clock_bind_joints(clock, entry, ANIM_MODE_ONCE);
     } else if (base->unk_780 == KIND_SHARED) {
         clock_bind_joints(clock, entry, ANIM_MODE_LOOP);
-    } else if (base->unk_780 == KIND_ANIMATED) {
+    } else if (base->unk_780 == CLOCK_KIND_ANIMATED) {
         RoomObject_LoadAnims(base, 0, ANIM_MODE_LOOP, FX32_ONE, 0);
     }
     return 1;

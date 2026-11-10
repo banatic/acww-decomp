@@ -25,15 +25,15 @@ extern u8 data_021f6c58; /* x */
 extern u8 data_021f6c54; /* y */
 
 /* What the grid's object answers for no slot under the touch. */
-#define GRID_NO_INDEX POCKETS_GRID_NO_PLACE
+#define SONG_POCKETS_GRID_NO_INDEX POCKETS_GRID_NO_PLACE
 
 /* What SongPockets_PlaceItemState answers for a place outside the grid (SongPockets_PlaceItem:
  * ITEM_CODE_NONE). */
 #define NO_ITEM_STATE 0xf1
 
 /* Where SONG_POCKETS_BUTTON is (SongPockets_PlaceX, SongPockets_PlaceY). */
-#define BUTTON_X 0xbc
-#define BUTTON_Y 0xb6
+#define SONG_POCKETS_BUTTON_X 0xbc
+#define SONG_POCKETS_BUTTON_Y 0xb6
 
 /* The grid's places are drawn 0x10 lower than its object says (SongPockets_PlaceY). */
 #define GRID_OFFSET_Y 0x10
@@ -570,7 +570,7 @@ int SongPockets_PlaceY(SongPockets *self, int place)
         return PocketsGrid_PlaceY(&self->grid, SongPockets_GridIndex(self, place)) - GRID_OFFSET_Y;
     }
     if (place == SONG_POCKETS_BUTTON) {
-        return BUTTON_Y;
+        return SONG_POCKETS_BUTTON_Y;
     }
     return 0;
 }
@@ -583,7 +583,7 @@ int SongPockets_PlaceX(SongPockets *self, int place)
         return PocketsGrid_PlaceX(&self->grid, SongPockets_GridIndex(self, place));
     }
     if (place == SONG_POCKETS_BUTTON) {
-        return BUTTON_X;
+        return SONG_POCKETS_BUTTON_X;
     }
     return 0;
 }
@@ -606,7 +606,7 @@ CLEAN_AS(func_ov109_0229cc0c, SongPockets_SetSlotItem)
 int SongPockets_GridPlaceAtTouch(SongPockets *self, int x, int y, int with_item)
 {
     int index = PocketsGrid_PocketPlaceAtTouch(&self->grid, x, y);
-    if (index == GRID_NO_INDEX) {
+    if (index == SONG_POCKETS_GRID_NO_INDEX) {
         return SONG_POCKETS_NO_PLACE;
     }
     if (with_item != 0 && PocketsGrid_IsEmpty(&self->grid, index)) {

@@ -41,11 +41,11 @@ int GameProcess_SpawnChild(int class_id, int parent, int param, int unk_12)
 }
 CLEAN_AS(func_0202f134, GameProcess_SpawnChild)
 
-/* func_0202f144 (slot 2): a creation that ends with OUTCOME_PENDING asks for the process's
+/* func_0202f144 (slot 2): a creation that ends with PROCESS_OUTCOME_PENDING asks for the process's
  * deletion (Process_RequestDelete); then the base's end of creation (Process_AfterCreate). */
 void GameProcess_AfterCreate(Process *self, int outcome)
 {
-    if (outcome == OUTCOME_PENDING) {
+    if (outcome == PROCESS_OUTCOME_PENDING) {
         Process_RequestDelete(self);
     }
     Process_AfterCreate(self, outcome);

@@ -67,7 +67,7 @@ static_assert(sizeof(BedObject) == 0x8b8, "the size BedObject_Create allocates")
 #define PLAYER_COUNT 4     /* the actors RoomPlayerActor_PointAtPlace is asked for */
 #define PUSH_FRAMES 7      /* frames of pushing before it counts */
 #define MOVED_ENOUGH 0x200 /* how far the entry must have moved (RoomPushes_Moved) */
-#define WAIT_FRAMES 0x18
+#define BED_OBJECT_WAIT_FRAMES 0x18
 #define VANISH_FRAMES 0x16
 #define KIND_2A 0x2a       /* RoomObject.unk_780 of the kind with glows */
 #define KIND_BED 0x37      /* RoomObject.unk_00c of this class */
@@ -499,10 +499,10 @@ CLEAN_AS(func_ov004_02217d00, BedObject_EnterSequence)
 /* func_ov004_02217d68 (update of WAIT): the sequence after 24 frames. */
 void BedObject_UpdateWait(BedObject *object)
 {
-    if (object->wait < WAIT_FRAMES) {
+    if (object->wait < BED_OBJECT_WAIT_FRAMES) {
         object->wait++;
     }
-    if (object->wait == WAIT_FRAMES) {
+    if (object->wait == BED_OBJECT_WAIT_FRAMES) {
         switch_to(object, BED_OBJECT_SEQUENCE);
     }
 }
