@@ -3265,7 +3265,7 @@ def main() -> int:
         raise SystemExit(f"unknown scenes {unknown}; --list")
     if args.affected:
         import affected  # noqa: PLC0415
-        names = affected.select(names, args.affected, OUT)
+        names = affected.select(names, affected.merge_base(args.affected), OUT)
         if not names:
             print("scenes: none affected")
             return 0

@@ -226,20 +226,26 @@ def address_of(text: str) -> int:
     return value
 
 
+def checks_in(text: str) -> list[tuple[str, str, int, int]]:
+    """The checks a file of tests/clean/ holds, as clean_checks gives them."""
+    out = []
+    for m in diffcheck.TEST.finditer(text):
+        fields = dict(diffcheck.FIELD.findall(m.group(2)))
+        bits = re.search(r"\.return_bits\s*=\s*(\d+)", m.group(2))
+        address = address_of(fields["address"])
+        out.append((m.group(1), fields["module"].strip().strip('"'), address, int(bits.group(1)) if bits else 32))
+    for m in CLEAN_CHECK.finditer(text):
+        out.append((f"diff_test_{m.group(1)}", m.group(2), address_of(m.group(3)), int(m.group(4))))
+    return out
+
+
 def clean_checks(only: str | None = None) -> list[tuple[str, str, int, int]]:
     """Every Clean function's check in tests/clean/: (DiffTest symbol, module, DS address with
     the Thumb bit, result width in bits); with `only` ("all" or a file of names or addresses),
     those it lists."""
     out = []
     for path in sorted((C.ROOT / "tests" / "clean").rglob("*.c")):
-        text = path.read_text(encoding="utf-8")
-        for m in diffcheck.TEST.finditer(text):
-            fields = dict(diffcheck.FIELD.findall(m.group(2)))
-            bits = re.search(r"\.return_bits\s*=\s*(\d+)", m.group(2))
-            address = address_of(fields["address"])
-            out.append((m.group(1), fields["module"].strip().strip('"'), address, int(bits.group(1)) if bits else 32))
-        for m in CLEAN_CHECK.finditer(text):
-            out.append((f"diff_test_{m.group(1)}", m.group(2), address_of(m.group(3)), int(m.group(4))))
+        out += checks_in(path.read_text(encoding="utf-8"))
     if only and only != "all":
         wanted = {w.split()[0] for w in pathlib.Path(only).read_text().splitlines() if w.strip()}
         out = [c for c in out if c[0][len("diff_test_"):] in wanted or f"{c[2] & ~1:08x}" in wanted]

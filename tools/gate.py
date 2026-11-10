@@ -11,11 +11,16 @@ gained since is not this tree's change), committed or not.
 
 A change that only adds or changes scenes (recordings, expected frames, tools/scenes.py's
 tables) runs those scenes both ways (all Clean, and Native alone) and the lint. A change to
-sources in src/, include/ or clean/ also runs the function-level check and the two recordings
-both ways, the scenes whose functions it touches and the driven checks (tools/driven.py); a
-change that adds or changes driven checks runs those. Anything else (runtime/, tools/, config/)
-runs every check. A change to src/, include/ or config/ first checks the matching sources as CI
-does: tools/verify.py (every function of src/ ok), tools/link.py, and that the link leaves
+sources in src/, include/, clean/ or tests/clean/ also runs the function-level checks (the
+Clean functions; the Native ones too when src/ or include/ changed) and the two recordings both
+ways, and the scenes and driven checks (tools/driven.py) whose last run ran a function it
+touches; a change that adds or changes driven checks runs those. A change to runtime/wm.c,
+wifi.c or sequencer.c runs the scenes and driven checks that turn that feature on, and the
+tools' tests; one to another program's source (runtime/play.c; the function-level checks') runs
+that program's check; one to a tool no run is made of runs the tools' tests (tools/affected.py
+tells these apart). Anything else (the rest of runtime/ and tools/, config/) runs every check.
+A change to src/, include/ or config/ first checks the matching sources as CI does:
+tools/verify.py (every function of src/ ok), tools/link.py, and that the link leaves
 runtime/native-private.txt as it is. The seed save comes from ACWW_SCENE_SEED, as for
 tools/scenes.py. Each step's output goes to build/<version>/gate/<step>.log (build/adm-kr/gate
 by default, tools/versions.py); the exit status is 1 when a step failed.
@@ -156,21 +161,22 @@ def plan(base: str | None, dry: bool = False) -> Iterator[Phase]:
     native = [step("native", [PY, "tools/native.py"]),
               step("fingerprint", [PY, "tools/fingerprint.py", "--write", str(FINGERPRINT)])]
     lint = step("lint", [PY, "tools/lint.py"])
-    diffcheck = [step("diffcheck", [PY, "tools/diffcheck.py", "--native", "--clean"])]
+    # the function-level checks: the Clean functions, and the Native ones that call nothing
+    clean_check = step("diffcheck", [PY, "tools/diffcheck.py", "--native", "--clean"])
+    native_check = step("diffcheck-native", [PY, "tools/diffcheck.py", "--native"])
 
     def driven(names: list[str]) -> Phase:
         return [[step("driven", [PY, "tools/driven.py", "-j", JOBS, *names])]]
     # (the tools' tests read what the Native build writes: after it, beside the function-level check)
-    full = [[diffcheck, *recording_chains(), unit_steps()], scene_chains([]), driven([])]
+    full = [[[clean_check, native_check], *recording_chains(), unit_steps()], scene_chains([]), driven([])]
     if base is None:
         yield [[*matching_chain(), *native], [lint]]
         yield from full
         return
     commit = affected.merge_base(base)
     paths = affected.changed_paths(commit)
-    funcs, own = affected.functions_of(paths, commit)
-    matching = any(p.startswith(("src/", "include/", "config/")) for p in paths)
-    yield [[*(matching_chain() if matching else []), *native], [lint]]
+    change = affected.describe(paths, commit)
+    yield [[*(matching_chain() if change.matching else []), *native], [lint]]
     # A change that only renames: the PC code and its tables are the base's (every part of the
     # fingerprint), and nothing else that runs changed. The base passed its checks, and this
     # tree would run them on the same code: the tools' tests and one run of the title are enough.
@@ -184,23 +190,39 @@ def plan(base: str | None, dry: bool = False) -> Iterator[Phase]:
     if renames and not dry:
         print("gate: not a change of names alone: " + (f"no gate has passed on {commit[:12]} in this cache"
               if same is None else f"{', '.join(sorted(set(PARTS) - same))} differ from {commit[:12]}'s"))
-    if funcs is affected.EVERYTHING:
-        print(f"gate: every check (a change since {commit[:12]} outside src/, include/, clean/ and the scenes)")
+    if change.everything:
+        print(f"gate: every check ({change.everything} changed since {commit[:12]}: no list of functions bounds it)")
         yield from full
         return
+    import driven as driven_checks  # noqa: PLC0415
     import scenes  # noqa: PLC0415 (its OUT follows ACWW_RUNTIME_OUT)
-    # with no function changed only the scenes whose own entries changed can differ
-    names = affected.select(list(scenes.SCENES), commit, scenes.OUT) if funcs else sorted(own & set(scenes.SCENES))
+    # the scenes and driven checks that run a changed function, whose own files changed, or that
+    # turn on a feature whose runtime source changed
+    names = affected.select(list(scenes.SCENES), commit, scenes.OUT, change)
+    checks = affected.select_driven(driven_checks.checks(), commit, change)
     print(f"gate: {len(names)} scenes: {' '.join(names)}")
-    if funcs:
-        yield [diffcheck, *recording_chains()]
-    if names:
-        yield scene_chains(names)
-    # the driven checks (tools/driven.py): every one when a function changed, else those changed
-    changed = sorted(pathlib.PurePosixPath(p).stem for p in paths
-                     if p.startswith(f"{REC}/driven/") and (C.ROOT / p).exists())
-    if funcs or changed:
-        yield driven([] if funcs else changed)
+    print(f"gate: {len(checks)} driven checks: {' '.join(checks)}")
+    for phase in chosen(change, names, checks, clean_check, native_check, driven):
+        yield phase
+
+
+def chosen(change: affected.Change, names: list[str], checks: list[str], clean_check: Step, native_check: Step,
+           driven) -> list[Phase]:
+    """The phases after the first of a change some list bounds: the function-level checks and the
+    recordings (a function changed), the tools' tests (a tool, or a runtime source outside the
+    run's), another program's own check, then the scenes `names`, then the driven checks `checks`."""
+    programs = "diffcheck" in change.programs
+    functions = ([clean_check] if change.funcs or programs else []) + ([native_check] if change.native or programs else [])
+    recordings = recording_chains() if change.funcs or change.recordings else []
+    # the front end builds where the recordings with Clean code do: after them
+    play = [step("play-build", [PY, "tools/play.py", "--build-only"], ACWW_RUNTIME_OUT=str(RUNTIME / "gate-clean"))
+            ] if "play" in change.programs and os.name == "nt" else []
+    if recordings:
+        recordings[-1] = [*recordings[-1], *play]
+    elif play:
+        recordings = [play]
+    first = [c for c in ([functions] if functions else []) + recordings + ([unit_steps()] if change.tools else [])]
+    return [phase for phase in (first, scene_chains(names) if names else [], driven(checks) if checks else []) if phase]
 
 
 def keep_parts() -> None:

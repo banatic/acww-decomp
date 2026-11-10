@@ -1,8 +1,12 @@
 """tools/affected.py's reading of tools/scenes.py on made-up files: which edits are tables only
-(the gate runs just the scenes they change) and which are code (the gate runs every check); and
-which changed paths a change that only renames may have."""
+(the gate runs just the scenes they change) and which are code (the gate runs every check);
+which changed paths a change that only renames may have; what a change to paths outside the
+sources is (describe: the paths here need no symbol table); which tools the runs are made of;
+and which scenes a set of changed functions chooses."""
 from __future__ import annotations
 
+import contextlib
+import io
 import pathlib
 import sys
 
@@ -66,8 +70,87 @@ RENAMES = [
 ]
 
 
+REC = affected.C.versions.rel(affected.C.RECORDINGS)
+FEATURES = {"wm.c": "RUN_WIRELESS", "sequencer.c": "RUN_SEQUENCER"}
+TOOLS = frozenset({"run.py", "common.py", "native.py"})
+# paths -> the fields of the Change that are not empty
+DESCRIBED = [
+    (["docs/runtime.md", "README.md", ".github/workflows/build.yml"], {}),
+    (["runtime/wm.c"], {"features": {"RUN_WIRELESS"}, "tools": True}),
+    (["runtime/wm.c", "runtime/sequencer.c"], {"features": {"RUN_WIRELESS", "RUN_SEQUENCER"}, "tools": True}),
+    (["runtime/wm.h"], {"everything": "runtime/wm.h"}),  # a header: other sources include it
+    (["runtime/sub/wm.c"], {"everything": "runtime/sub/wm.c"}),
+    (["runtime/arm.c"], {"everything": "runtime/arm.c"}),
+    (["runtime/native-reference.txt"], {"everything": "runtime/native-reference.txt"}),
+    (["runtime/play.c"], {"programs": {"play"}, "tools": True}),
+    (["runtime/diffcheck.c", "runtime/loader.c"], {"programs": {"diffcheck"}, "tools": True}),
+    (["tools/report.py", "tools/test_units.py"], {"tools": True}),
+    (["tools/run.py"], {"everything": "tools/run.py", "tools": True}),
+    (["tools/verify.py"], {"tools": True, "matching": True}),
+    (["tools/mwccarm/license.dat"], {"everything": "tools/mwccarm/license.dat"}),
+    ([f"{REC}/scenes/fish-cast.txt", f"{REC}/scenes/fish-cast.sha1"], {"scenes": {"fish-cast"}}),
+    ([f"{REC}/driven/aquarium-base.txt"], {"driven": {"aquarium-base"}}),
+    ([f"{REC}/title-start.sha1"], {"recordings": True}),
+    ([f"{REC}/other/title-start.sha1"], {}),  # another version's
+    (["config/adm-kr/arm9/symbols.txt"], {"everything": "config/adm-kr/arm9/symbols.txt", "matching": True}),
+    (["libs/NitroSDK/main/os.c"], {"everything": "libs/NitroSDK/main/os.c"}),
+    (["runtime/wm.c", "tools/run.py"], {"everything": "tools/run.py", "features": {"RUN_WIRELESS"}, "tools": True}),
+]
+
+
+def check_described() -> list[str]:
+    bad = []
+    empty = affected.Change()
+    for paths, want in DESCRIBED:
+        got = affected.describe(paths, "HEAD", FEATURES, TOOLS)
+        fields = {f.name: getattr(got, f.name) for f in affected.dataclasses.fields(got)
+                  if getattr(got, f.name) != getattr(empty, f.name)}
+        if fields != want:
+            bad.append(f"describe({paths}): {fields}, not {want}")
+    return bad
+
+
+def check_tools() -> list[str]:
+    """The tools a run is made of: what the roots import, a function's own imports too."""
+    sources = {"run.py": "import os\nimport common as C\nimport native\n", "common.py": "import versions\n",
+               "versions.py": "", "native.py": "def main():\n    import objrewrite  # noqa\n", "objrewrite.py": "",
+               "report.py": "import common\n", "gate.py": "import affected\nfrom run import build\n", "affected.py": ""}
+    bad = []
+    got = affected.closure(sources, ("run.py", "scenes.py"))
+    if got != {"run.py", "common.py", "versions.py", "native.py", "objrewrite.py"}:
+        bad.append(f"the tools of a run: {sorted(got)}")
+    if affected.imports_of("from . import x\nfrom .y import z\nimport a.b\nfrom c.d import e\n") != {"a", "c"}:
+        bad.append("imports read wrong")
+    return bad
+
+
+def check_chosen() -> list[str]:
+    """Scenes by the functions they ran, their own files, and no list yet."""
+    ran = {"a": {("main", 0x100), ("main", 0x200)}, "b": {("main", 0x300)}, "c": None, "d": {("ov001", 0x100)}}
+    bad = []
+    for what, funcs, own, want in (
+            ("a changed function", {("main", 0x200)}, set(), ["a", "c"]),
+            ("the same address in another module", {("ov001", 0x100)}, set(), ["c", "d"]),
+            ("a scene's own files", set(), {"b"}, ["b"]),
+            ("a function and a scene's own files", {("main", 0x300)}, {"d"}, ["b", "c", "d"]),
+            ("nothing", set(), set(), [])):
+        with contextlib.redirect_stdout(io.StringIO()):  # (it says why for each)
+            got = affected.choose(list(ran), funcs, own, ran.get)
+        if got != want:
+            bad.append(f"{what}: chose {got}, not {want}")
+    features = affected.scene_features
+    if (features({"wireless": True}) != {"RUN_WIRELESS"} or features({"wifi": "1"}) != {"RUN_WIRELESS"}
+            or features({"peers": [("a", "b")]}) != {"RUN_WIRELESS"} or features({"sequencer": True}) != {"RUN_SEQUENCER"}
+            or features({"wireless": False, "wifi": None, "peers": [], "sequencer": False})):
+        bad.append("a scene's features read wrong")
+    return bad
+
+
 def main() -> int:
     bad = 0
+    for line in check_described() + check_tools() + check_chosen():
+        bad += 1
+        print(f"FAIL: {line}")
     for paths, want in RENAMES:
         if affected.renames_only(paths) != want:
             bad += 1
@@ -79,7 +162,7 @@ def main() -> int:
         if got != want:
             bad += 1
             print(f"FAIL: {what}: expected {want}, got {got}")
-    print(f"{len(CASES) + len(RENAMES) - bad} of {len(CASES) + len(RENAMES)} changes read right")
+    print("changes read right" if not bad else f"{bad} changes read wrong")
     return 1 if bad else 0
 
 

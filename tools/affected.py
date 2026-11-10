@@ -1,26 +1,44 @@
-"""Which scenes a change can affect (tools/scenes.py --affected).
+"""What a change is, and which scenes and driven checks it can affect (tools/gate.py,
+tools/scenes.py --affected, tools/driven.py --affected).
 
 A scene's Reference run lists the functions the game ran (RUN_FUNCTIONS_SEEN, written by
 runtime/native_run.c while it records the crossings, kept in the scene's directory as
-functions-seen.txt). A Native or Clean function only runs where the game runs that function, so
-a change to it can only change the scenes whose list names it. A change is mapped to functions:
+functions-seen.txt; a driven check's list also has the functions its calls entered). A Native or
+Clean function only runs where the game runs that function, so a change to it can only change
+the scenes whose list names it. A change is mapped to functions (describe):
 
 - a source in src/: the functions it defines (a unit defines several);
-- a header in include/: every source in src/ that includes it;
+- a header in include/: those of every source in src/ that includes it, and of every Clean
+  source and check that does;
 - a Clean source: the functions it registers (CLEAN_AS); a Clean header: those of every Clean
-  source that includes it;
-- a scene's recording or expected frames: that scene;
+  source and check that includes it;
+- a check in tests/clean/ (linked into every run with Clean code): the functions its checks
+  are for;
+- a source that is gone: the functions it had in the base.
+
+Other changes are told apart by what they can reach:
+
+- a scene's recording or expected frames: that scene; a driven check's file: that check;
 - tools/scenes.py, when only its tables changed (scene() entries, SAVES and its entries, loops
   that only add to them, constants no function reads, and helpers only those use): the scenes
-  whose entry or save changed.
+  whose entry or save changed;
+- runtime/wm.c, wifi.c or sequencer.c (the file, not its header): the scenes and driven checks
+  that turn its feature on, as the run's code enters it nowhere else (tools/run.py,
+  FEATURE_SOURCES; tools/test_run_reference.py checks that on every gate that takes this way);
+- a source of another program than the run's (runtime/play.c, the front end; diffcheck.c,
+  nativecheck.c and loader.c, the function-level checks'): that program's own check;
+- a tool no run is made of (one that tools/native.py, run.py, scenes.py, driven.py and
+  diffcheck.py do not import, directly or through another): the lint and the tools' tests.
 
-Anything else that runs (config/, runtime/, tools/, libs/) can change every scene, and so do
-the Native policy lists: then every scene is chosen. Text that does not run (docs, README) and
-the two recordings' files change none. A scene that has no list yet is always chosen.
+Anything else that runs (config/, the rest of runtime/ and tools/, libs/) can change every
+scene, and so do the Native policy lists: then every check is chosen. Text that does not run
+(docs, README) changes none. A scene or check that has no list yet is always chosen.
 """
 from __future__ import annotations
 
 import ast
+import dataclasses
+import functools
 import pathlib
 import re
 import subprocess
@@ -32,7 +50,14 @@ import common as C  # noqa: E402
 EVERYTHING = None  # a change no function list can bound
 CLEAN_AS = re.compile(r'^CLEAN_AS(?:\((\w+)|_SYMBOL\("([^"]+)"),\s*(\w+)\)', re.M)
 QUIET = ("docs/", ".github/", "README", "INSTALL", "CONTRIBUTING", "LICENSE", "AGENTS", "CLAUDE",
-         "tests/clean/", "tests/native/known.txt", ".recomp.json", ".gitignore", ".clang-format")
+         "tests/native/known.txt", ".recomp.json", ".gitignore", ".clang-format")
+# the tools every run of the gate is made of; with what they import, a change to one can change
+# every run (run_tools)
+RUN_ROOTS = ("native.py", "run.py", "scenes.py", "driven.py", "diffcheck.py")
+# runtime sources of other programs than the run's: the program whose check a change to one needs
+OTHER_PROGRAMS = {"play.c": "play", "diffcheck.c": "diffcheck", "nativecheck.c": "diffcheck", "loader.c": "diffcheck"}
+# the files of the two recordings every gate of a source change plays (tools/gate.py, RECORDINGS)
+RECORDINGS = ("title-start.txt", "title-start.sha1", "new-game.txt", "new-game.sha1")
 
 
 def merge_base(base: str) -> str:
@@ -95,15 +120,60 @@ def _removed_functions(rel: str, base: str) -> set[tuple[str, int]] | None:
     return None
 
 
-def _clean_functions(path: pathlib.Path) -> set[tuple[str, int]]:
+def _texts(rel: str, base: str) -> list[str]:
+    """A file's text in the tree and in `base` (what it registered there and no longer does has
+    changed too), where each has it."""
+    path = C.ROOT / rel
+    out = [path.read_text(encoding="utf-8", errors="replace")] if path.exists() else []
+    old = subprocess.run(["git", "show", f"{base}:{rel}"], cwd=C.ROOT, capture_output=True)
+    return out + ([old.stdout.decode("utf-8", "replace")] if old.returncode == 0 else [])
+
+
+def _clean_functions(text: str) -> set[tuple[str, int]]:
+    """The functions a Clean source registers (CLEAN_AS)."""
     syms = C.symbol_table(C.modules())
     out = set()
-    text = path.read_text(encoding="utf-8", errors="replace") if path.exists() else ""
     for plain, quoted, _ in CLEAN_AS.findall(text):
         for s in syms.by_name.get(plain or quoted, []):
             if s.kind == "function" and s.size:
                 out.add((s.module, s.address & ~1))
     return out
+
+
+def _check_functions(text: str) -> set[tuple[str, int]]:
+    """The functions the checks of a file of tests/clean/ are for."""
+    import run  # noqa: PLC0415 (its reading of the checks)
+    return {(module, address & ~1) for _, module, address, _ in run.checks_in(text)}
+
+
+def imports_of(source: str) -> set[str]:
+    """The modules a Python source imports, anywhere in it (a function's own imports too)."""
+    out = set()
+    for node in ast.walk(ast.parse(source)):
+        if isinstance(node, ast.Import):
+            out |= {alias.name.split(".")[0] for alias in node.names}
+        elif isinstance(node, ast.ImportFrom) and node.module and not node.level:
+            out.add(node.module.split(".")[0])
+    return out
+
+
+def closure(sources: dict[str, str], roots: tuple[str, ...]) -> frozenset[str]:
+    """`roots` and every file of `sources` (name -> text) they import, directly or not."""
+    seen: set[str] = set()
+    todo = [r for r in roots if r in sources]
+    while todo:
+        name = todo.pop()
+        if name not in seen:
+            seen.add(name)
+            todo += [f"{m}.py" for m in imports_of(sources[name]) if f"{m}.py" in sources]
+    return frozenset(seen)
+
+
+@functools.cache
+def run_tools() -> frozenset[str]:
+    """The tools the gate's runs are made of: RUN_ROOTS and what they import."""
+    sources = {p.name: p.read_text(encoding="utf-8") for p in (C.ROOT / "tools").glob("*.py")}
+    return closure(sources, RUN_ROOTS)
 
 
 def _scene_tables(text: str) -> tuple[str, dict, dict]:
@@ -179,52 +249,131 @@ def scene_table_changes(base: str) -> set[str] | None:
             if scenes0.get(name) != sc or saves0.get(sc["save"]) != saves1.get(sc["save"])}
 
 
-def functions_of(paths: list[str], base: str = "main") -> tuple[set[tuple[str, int]] | None, set[str]]:
-    """(the functions the change touches, or EVERYTHING; the scenes whose own files changed)."""
-    funcs: set[tuple[str, int]] = set()
-    scenes: set[str] = set()
+@dataclasses.dataclass
+class Change:
+    """What a change is, for choosing its checks (describe)."""
+    everything: str | None = None  # the path no list bounds (every check runs), or None
+    # the functions it touches, and those of them it touches through src/ or include/ (their
+    # Native code; the others only through Clean code)
+    funcs: set[tuple[str, int]] = dataclasses.field(default_factory=set)
+    native: set[tuple[str, int]] = dataclasses.field(default_factory=set)
+    scenes: set[str] = dataclasses.field(default_factory=set)    # the scenes whose own files changed
+    driven: set[str] = dataclasses.field(default_factory=set)    # the driven checks whose own files changed
+    features: set[str] = dataclasses.field(default_factory=set)  # the RUN_ variables of the gated sources changed
+    programs: set[str] = dataclasses.field(default_factory=set)  # "play", "diffcheck": another program's source
+    recordings: bool = False  # a file of the two recordings changed
+    matching: bool = False    # src/, include/ or config/ changed: the matching checks (verify, link)
+    tools: bool = False       # a tool, a test or a source no run is made of changed: the tools' tests
+
+
+def describe(paths: list[str], base: str = "main", features: dict[str, str] | None = None,
+             tools: frozenset[str] | None = None) -> Change:
+    """What the change of `paths` since `base` is. `features` (runtime source -> RUN_ variable,
+    default tools/run.py's FEATURE_SOURCES) and `tools` (default run_tools) are given by tests."""
+    change = Change()
     headers, clean_headers = set(), set()
+    rec = C.versions.rel(C.RECORDINGS)
+
+    def everything(rel: str) -> None:
+        change.everything = change.everything or rel
     for rel in paths:
         path = C.ROOT / rel
-        if rel.startswith(QUIET) or rel.endswith(".md"):
+        name = pathlib.PurePosixPath(rel).name
+        change.matching = change.matching or rel.startswith(("src/", "include/", "config/"))
+        if quiet(rel):
             continue
-        if rel.startswith(f"{C.versions.rel(C.RECORDINGS)}/scenes/"):
-            scenes.add(pathlib.PurePosixPath(rel).stem)
-            continue
-        if rel.startswith("runtime/recordings/"):
-            continue
-        if rel == "tools/scenes.py":
+        if rel.startswith(f"{rec}/scenes/"):
+            change.scenes.add(pathlib.PurePosixPath(rel).stem)
+        elif rel.startswith(f"{rec}/driven/"):
+            change.driven.add(pathlib.PurePosixPath(rel).stem)
+        elif rel.startswith("runtime/recordings/"):
+            change.recordings = change.recordings or (rel == f"{rec}/{name}" and name in RECORDINGS)
+        elif rel == "tools/scenes.py":
             changed = scene_table_changes(base)
             if changed is None:
-                return EVERYTHING, scenes
-            scenes |= changed
-            continue
-        if rel.startswith("src/") and rel.endswith((".c", ".cpp")):
+                everything(rel)
+            else:
+                change.scenes |= changed
+        elif rel.startswith("src/") and rel.endswith((".c", ".cpp")):
             f = _source_functions(path)
             if f is None:
                 # a source removed: the functions it had, if a source of the base defined them
                 f = _removed_functions(rel, base)
             if f is None:
-                return EVERYTHING, scenes
-            funcs |= f
+                everything(rel)
+            else:
+                change.funcs |= f
+                change.native |= f
         elif rel.startswith("include/"):
             headers.add(path.resolve())
         elif rel.startswith("clean/") and rel.endswith(".c"):
-            funcs |= _clean_functions(path)
+            texts = _texts(rel, base)
+            if not texts:
+                everything(rel)
+            for text in texts:
+                change.funcs |= _clean_functions(text)
         elif rel.startswith("clean/") and rel.endswith(".h"):
             clean_headers.add(path.resolve())
+        elif rel.startswith("tests/clean/") and rel.endswith(".c"):
+            texts = _texts(rel, base)
+            if not texts:
+                everything(rel)
+            for text in texts:
+                change.funcs |= _check_functions(text)
+        elif rel.startswith("tests/clean/") and rel.endswith(".h"):
+            clean_headers.add(path.resolve())
+        elif rel.startswith("runtime/") and rel.count("/") == 1 and name in OTHER_PROGRAMS:
+            change.programs.add(OTHER_PROGRAMS[name])
+            change.tools = True
+        elif rel.startswith("runtime/") and rel.count("/") == 1 and name in _features(features):
+            change.features.add(_features(features)[name])
+            change.tools = True  # (tools/test_run_reference.py: the file is entered only under its variable)
+        elif rel.startswith("tools/") and rel.count("/") == 1 and name.endswith(".py"):
+            if name in (run_tools() if tools is None else tools):
+                everything(rel)
+            change.tools = True
+            change.matching = change.matching or name in ("verify.py", "link.py")
         else:
-            return EVERYTHING, scenes  # config, runtime, tools, libs: anything can change
+            everything(rel)  # config, the rest of runtime and tools, libs: anything can change
+    if change.everything:
+        return change
     if headers:
         for src in sorted(C.SRC.rglob("*.c*")):
             if headers & set(C.included_files(src)):
-                funcs |= _source_functions(src) or set()
-    if clean_headers:
-        import run  # noqa: PLC0415 (its header walk, which knows clean/)
-        for src in sorted((C.ROOT / "clean").rglob("*.c")):
-            if clean_headers & {p.resolve() for p in run.clean_headers(src)}:
-                funcs |= _clean_functions(src)
-    return funcs, scenes
+                f = _source_functions(src) or set()
+                change.funcs |= f
+                change.native |= f
+    if headers or clean_headers:
+        import run  # noqa: PLC0415 (its header walk, which knows clean/ and include/)
+        for top, functions in ((C.ROOT / "clean", _clean_functions), (C.ROOT / "tests" / "clean", _check_functions)):
+            for src in sorted(top.rglob("*.c")):
+                if (headers | clean_headers) & {p.resolve() for p in run.clean_headers(src)}:
+                    change.funcs |= functions(src.read_text(encoding="utf-8", errors="replace"))
+    return change
+
+
+def _features(given: dict[str, str] | None) -> dict[str, str]:
+    if given is not None:
+        return given
+    import run  # noqa: PLC0415
+    return run.FEATURE_SOURCES
+
+
+def functions_of(paths: list[str], base: str = "main") -> tuple[set[tuple[str, int]] | None, set[str]]:
+    """(the functions the change touches, or EVERYTHING; the scenes whose own files changed)."""
+    change = describe(paths, base)
+    return (EVERYTHING if change.everything else change.funcs), change.scenes
+
+
+def scene_features(sc: dict) -> set[str]:
+    """The RUN_ variables a scene's runs set (tools/scenes.py and tools/run.py: a scene of two
+    consoles has its wireless on)."""
+    out = set()
+    if sc.get("wireless") or sc.get("wifi") or sc.get("peers"):
+        out.add("RUN_WIRELESS")
+    if sc.get("sequencer"):
+        out.add("RUN_SEQUENCER")
+    return out
 
 
 def seen_functions(listing: pathlib.Path) -> set[tuple[str, int]] | None:
@@ -239,25 +388,51 @@ def seen_functions(listing: pathlib.Path) -> set[tuple[str, int]] | None:
     return out
 
 
-def select(names: list[str], base: str, scene_dir: pathlib.Path) -> list[str]:
-    """The scenes of `names` a change since `base` can affect, saying why for each."""
-    funcs, own = functions_of(changed_paths(base), base)
-    if funcs is EVERYTHING:
-        print(f"affected: every scene (a change since {base} outside src/, include/ and clean/)")
-        return names
-    print(f"affected: {len(funcs)} functions changed since {base}")
+def choose(names: list[str], funcs: set[tuple[str, int]], own: set[str], seen, what: str = "scenes") -> list[str]:
+    """The scenes (or driven checks) of `names` that a change to `funcs` can affect, or whose own
+    files changed (`own`), saying why for each. `seen(name)`: the functions its last run ran, or
+    None without a list."""
     chosen = []
     for name in names:
-        seen = seen_functions(scene_dir / name / "functions-seen.txt")
+        ran = seen(name)
         if name in own:
-            why = "its recording changed"
-        elif seen is None:
+            why = "its own files changed, or a runtime source its runs enter"
+        elif not funcs:
+            why = ""
+        elif ran is None:
             why = "no list of the functions it runs yet"
         else:
-            hit = funcs & seen
+            hit = funcs & ran
             why = f"runs {len(hit)} of them" if hit else ""
         if why:
             chosen.append(name)
             print(f"  {name}: {why}")
-    print(f"affected: {len(chosen)} of {len(names)} scenes")
+    print(f"affected: {len(chosen)} of {len(names)} {what}")
     return chosen
+
+
+def select(names: list[str], base: str, scene_dir: pathlib.Path, change: Change | None = None) -> list[str]:
+    """The scenes of `names` a change since `base` can affect, saying why for each."""
+    import scenes  # noqa: PLC0415 (it imports this module)
+    change = change or describe(changed_paths(base), base)
+    if change.everything:
+        print(f"affected: every scene ({change.everything} changed since {base})")
+        return names
+    print(f"affected: {len(change.funcs)} functions changed since {base}")
+    own = change.scenes | {n for n in names if change.features & scene_features(scenes.SCENES.get(n, {}))}
+    return choose(names, change.funcs, own, lambda n: seen_functions(scene_dir / n / "functions-seen.txt"))
+
+
+def select_driven(names: list[str], base: str, change: Change | None = None) -> list[str]:
+    """The driven checks of `names` a change since `base` can affect: as select, by the list each
+    check's last run left (tools/driven.py, seen_listing)."""
+    import driven  # noqa: PLC0415
+    import scenes  # noqa: PLC0415
+    change = change or describe(changed_paths(base), base)
+    if change.everything:
+        print(f"affected: every driven check ({change.everything} changed since {base})")
+        return names
+    own = set(change.driven)
+    if change.features:
+        own |= {n for n in names if change.features & scene_features(scenes.SCENES.get(driven.read_check(n)["scene"], {}))}
+    return choose(names, change.funcs, own, lambda n: seen_functions(driven.seen_listing(n)), "driven checks")

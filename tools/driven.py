@@ -4,6 +4,8 @@ and checked both ways (docs/verification.md, "Driven calls"; runtime/driven.h).
     python tools/driven.py --list
     python tools/driven.py --seed PATH                       # every check, Clean and Native alone
     python tools/driven.py --seed PATH -j 2 aquarium-river   # some of them
+    python tools/driven.py --seed PATH --pass clean          # one of the two passes (or: native)
+    python tools/driven.py --seed PATH --affected            # only those a change since main can affect
     python tools/driven.py --record                          # runtime/recordings/scenes/clean-driven.txt
     python tools/driven.py --seed PATH --scout museum-halls --frames 8000,8800 \\
         --group "the aquarium fish's destructors" --slots 2,3  # the live objects for a new check
@@ -180,6 +182,15 @@ def run_check(name: str, seed: pathlib.Path, clean: str | None, runtime: pathlib
     for log in ("reference.log", "native.log"):
         logs[log] = (run_dir / log).read_text(encoding="utf-8", errors="replace") if (run_dir / log).exists() else ""
         (work / log).write_text(logs[log], encoding="utf-8")
+    # the functions the run ran (its scene's, and those the calls entered), for --affected
+    seen = (run_dir / "functions-seen.txt").read_text() if (run_dir / "functions-seen.txt").exists() else ""
+    listed = {tuple(line.split()[:2]) for line in seen.splitlines()}
+    seen += "".join(f"{m} {a:08x} (driven)\n" for m, a in entered_functions(logs["reference.log"])
+                    if (m, f"{a:08x}") not in listed)
+    if p.returncode == 0 and seen:
+        (work / "functions-seen.txt").write_text(seen, newline="\n")
+    else:
+        (work / "functions-seen.txt").unlink(missing_ok=True)  # (a run that failed lists too little)
     (run_dir / "crossings.bin").unlink(missing_ok=True)
     for image in (run_dir / "ram").glob("ram-*.bin"):
         image.unlink(missing_ok=True)
@@ -321,11 +332,21 @@ def checked(name: str) -> list[tuple[str, int]]:
     return [tuple(k) for k in json.loads(result.read_text())["checked"]] if result.exists() else []
 
 
-def run_all(names: list[str], seed: pathlib.Path, jobs: int, rounds: int = 1) -> int:
+def seen_listing(name: str) -> pathlib.Path:
+    """The list of the functions a check's last run ran (tools/affected.py): the Clean pass's,
+    else Native alone's (both passes make the same Reference run but for the crossings)."""
+    for kind in ("clean", "native"):
+        if (OUT / name / kind / "functions-seen.txt").exists():
+            return OUT / name / kind / "functions-seen.txt"
+    return OUT / name / "clean" / "functions-seen.txt"
+
+
+def run_all(names: list[str], seed: pathlib.Path, jobs: int, rounds: int = 1,
+            kinds: tuple[str | None, ...] = ("all", None)) -> int:
     """Run the checks; with rounds > 1, prune each failing check (prune) and run it again, as
-    many times at most."""
+    many times at most. `kinds`: the passes ("all": with every Clean function; None: Native alone)."""
     for r in range(rounds):
-        failed = run_round(names, seed, jobs)
+        failed = run_round(names, seed, jobs, kinds)
         if not failed:
             return 0
         if r + 1 == rounds:
@@ -342,9 +363,10 @@ def run_all(names: list[str], seed: pathlib.Path, jobs: int, rounds: int = 1) ->
     return 1
 
 
-def run_round(names: list[str], seed: pathlib.Path, jobs: int) -> dict[str, list[dict]]:
+def run_round(names: list[str], seed: pathlib.Path, jobs: int,
+              kinds: tuple[str | None, ...] = ("all", None)) -> dict[str, list[dict]]:
     token = f"driven-{os.getpid()}-{time.time_ns()}"
-    passes = [(n, c) for n in names for c in ("all", None)]
+    passes = [(n, c) for n in names for c in kinds]
     runtimes = scenes.take_runtimes(min(jobs, len(passes)), "all") + scenes.take_runtimes(min(jobs, len(passes)), None)
     free = {"all": [r for r, _ in runtimes[:min(jobs, len(passes))]], None: [r for r, _ in runtimes[min(jobs, len(passes)):]]}
     import queue  # noqa: PLC0415
@@ -383,8 +405,13 @@ def run_round(names: list[str], seed: pathlib.Path, jobs: int) -> dict[str, list
         if n in not_run:
             failed[n] = rs
             continue
-        ok = all(not r["problems"] for r in rs) and len(rs) == 2
-        clean_pass = next(r for r in rs if r["clean"])
+        ok = all(not r["problems"] for r in rs) and len(rs) == len(kinds)
+        clean_pass = next((r for r in rs if r["clean"]), None)
+        if clean_pass is None:  # Native alone only: what the check checked as Clean stays as it was
+            if not ok:
+                failed[n] = rs
+            print(f"{n}: {'passes' if ok else 'FAILS'} (Native alone)", flush=True)
+            continue
         ran = clean_ran(clean_pass["work"] / "clean-ran.json")
         got = [k for k in clean_pass["entered"] if k in ran]
         result = OUT / n / "result.json"
@@ -753,6 +780,10 @@ def main() -> int:
     ap.add_argument("--share-slots", help="with --plan: slots of methods that leave the object whole, whose calls "
                     "may share an object with another call and are made first")
     ap.add_argument("--most", type=int, default=40, help="with --plan: the calls of a check at most")
+    ap.add_argument("--pass", dest="kind", choices=("both", "clean", "native"), default="both",
+                    help="run each check with every Clean function, with Native alone, or (default) both ways")
+    ap.add_argument("--affected", nargs="?", const="main", metavar="BASE", help="only the checks a change since "
+                    "BASE (default main) can affect: those whose last run ran a changed function (tools/affected.py)")
     args = ap.parse_args()
     slots = slot_list(args.slots)
     if args.list:
@@ -776,7 +807,14 @@ def main() -> int:
     unknown = [n for n in names if not (CHECKS / f"{n}.txt").exists()]
     if unknown:
         raise SystemExit(f"no such check: {', '.join(unknown)}")
-    return run_all(names, pathlib.Path(args.seed), args.j, args.prune)
+    if args.affected:
+        import affected  # noqa: PLC0415
+        names = affected.select_driven(names, affected.merge_base(args.affected))
+        if not names:
+            print("driven: none affected")
+            return 0
+    kinds = {"both": ("all", None), "clean": ("all",), "native": (None,)}[args.kind]
+    return run_all(names, pathlib.Path(args.seed), args.j, args.prune, kinds)
 
 
 if __name__ == "__main__":
