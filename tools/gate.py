@@ -164,8 +164,12 @@ def passes(same: set[str] | None, native: set[tuple[str, int]], in_clean: set[tu
     return (not clean_same or reached), not native_same
 
 
-def unit_steps() -> Chain:
-    return [step(f"unit-{t.stem}", [PY, str(t.relative_to(C.ROOT))]) for t in sorted((C.ROOT / "tools").glob("test_*.py"))]
+def unit_chains() -> Phase:
+    """The tools' own tests, in two chains side by side: tools/test_native_statics.py takes about
+    as long as all the others together (185 s of 400)."""
+    steps = [step(f"unit-{t.stem}", [PY, str(t.relative_to(C.ROOT))]) for t in sorted((C.ROOT / "tools").glob("test_*.py"))]
+    long = [s for s in steps if s[0] == "unit-test_native_statics"]
+    return [chain for chain in ([s for s in steps if s not in long], long) if chain]
 
 
 def matching_chain() -> Chain:
@@ -222,7 +226,7 @@ def plan(base: str | None, dry: bool = False, both: bool = False) -> Iterator[Ph
     clean_check = step("diffcheck", [PY, "tools/diffcheck.py", "--native", "--clean"])
     native_check = step("diffcheck-native", [PY, "tools/diffcheck.py", "--native"], ACWW_RUNTIME_OUT=str(RUNTIME / "gate-check"))
     # (the tools' tests read what the Native build writes: after it, beside the function-level check)
-    full = [[[clean_check], [native_check], *recording_chains(), unit_steps()], scene_chains([], []), driven_chains([], [])]
+    full = [[[clean_check], [native_check], *recording_chains(), *unit_chains()], scene_chains([], []), driven_chains([], [])]
     if base is None:
         yield [[*matching_chain(), *native], [lint]]
         yield from full
@@ -239,9 +243,12 @@ def plan(base: str | None, dry: bool = False, both: bool = False) -> Iterator[Ph
     if renames and same is not None and len(same) == len(PARTS):
         print(f"gate: only names changed since {commit[:12]}: the PC code is the same (tools/fingerprint.py); "
               "the tools' tests and one run")
-        yield [unit_steps(), recording_chains(native=False)[0][:1]]
+        yield [*unit_chains(), recording_chains(native=False)[0][:1]]
         return
-    if renames and not dry and not both:
+    if renames and dry and not both:
+        print("gate: if the fingerprint step finds the PC code to be the base's (a change of names alone), the phases "
+              "after the first are the tools' tests and one run; else:")
+    elif renames and not both:
         print("gate: not a change of names alone: " + (f"no gate has passed on {commit[:12]} in this cache"
               if same is None else f"{', '.join(sorted(set(PARTS) - same))} differ from {commit[:12]}'s"))
     if change.everything:
@@ -288,7 +295,7 @@ def chosen(change: affected.Change, names: list[str], checks: list[str], own: se
         recordings[-1] = [*recordings[-1], *play]
     elif play:
         recordings.append(play)
-    first = functions + recordings + ([unit_steps()] if change.tools else [])
+    first = functions + recordings + (unit_chains() if change.tools else [])
 
     def kept(listed: list[str], always: set[str], wanted: bool) -> list[str] | None:
         return [n for n in listed if wanted or n in always] or None

@@ -14,7 +14,7 @@ import gate  # noqa: E402
 ALL = set(gate.PARTS)
 F, G = ("main", 0x02000100), ("ov004", 0x02200000)
 CLEAN, NATIVE = gate.step("diffcheck", []), gate.step("diffcheck-native", [])
-UNITS = [name for name, _, _ in gate.unit_steps()]
+UNITS = [[name for name, _, _ in chain] for chain in gate.unit_chains()]
 PLAY = ["play-build"] if os.name == "nt" else []
 
 # (what, the parts that are the base's, the functions touched through src/, those whose Native
@@ -68,14 +68,14 @@ def check_chosen() -> list[str]:
             ("a scene's recording", Change(scenes={"a"}), ["a"], [], {"a"}, set(), (True, True), [both_scenes]),
             ("a driven check's file", Change(driven={"x"}), [], ["x"], set(), {"x"}, (True, True), [[["driven"]]]),
             ("the wireless manager's source", Change(features={"RUN_WIRELESS"}, tools=True), ["w"], ["x"], {"w"}, {"x"},
-             (True, True), [[UNITS], both_scenes, [["driven"]]]),
+             (True, True), [UNITS, both_scenes, [["driven"]]]),
             ("the front end", Change(programs={"play"}, tools=True), [], [], set(), set(), (True, True),
-             [[*([PLAY] if PLAY else []), UNITS]]),
+             [[*([PLAY] if PLAY else []), *UNITS]]),
             ("the front end and Clean code", Change(funcs={F}, programs={"play"}, tools=True), [], [], set(), set(),
-             (True, True), [[["diffcheck"], title_native, [*title_clean, *PLAY], UNITS]]),
+             (True, True), [[["diffcheck"], title_native, [*title_clean, *PLAY], *UNITS]]),
             ("the function-level check's program", Change(programs={"diffcheck"}, tools=True), [], [], set(), set(),
-             (True, True), [[["diffcheck"], ["diffcheck-native"], UNITS]]),
-            ("a tool no run is made of", Change(tools=True), [], [], set(), set(), (True, True), [[UNITS]]),
+             (True, True), [[["diffcheck"], ["diffcheck-native"], *UNITS]]),
+            ("a tool no run is made of", Change(tools=True), [], [], set(), set(), (True, True), [UNITS]),
             ("the title's recording", Change(recordings=True), [], [], set(), set(), (True, True),
              [[title_native, title_clean]]),
             ("text that does not run", Change(), [], [], set(), set(), (True, True), [])):
