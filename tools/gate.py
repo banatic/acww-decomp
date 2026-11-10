@@ -217,11 +217,12 @@ def plan(base: str | None, dry: bool = False, both: bool = False) -> Iterator[Ph
     native = [step("native", [PY, "tools/native.py"]),
               step("fingerprint", [PY, "tools/fingerprint.py", "--write", str(FINGERPRINT)])]
     lint = step("lint", [PY, "tools/lint.py"])
-    # the function-level checks: the Clean functions, and the Native ones that call nothing
+    # the function-level checks: the Clean functions, and the Native ones that call nothing (in a
+    # runtime directory of its own, so the two run side by side)
     clean_check = step("diffcheck", [PY, "tools/diffcheck.py", "--native", "--clean"])
-    native_check = step("diffcheck-native", [PY, "tools/diffcheck.py", "--native"])
+    native_check = step("diffcheck-native", [PY, "tools/diffcheck.py", "--native"], ACWW_RUNTIME_OUT=str(RUNTIME / "gate-check"))
     # (the tools' tests read what the Native build writes: after it, beside the function-level check)
-    full = [[[clean_check, native_check], *recording_chains(), unit_steps()], scene_chains([], []), driven_chains([], [])]
+    full = [[[clean_check], [native_check], *recording_chains(), unit_steps()], scene_chains([], []), driven_chains([], [])]
     if base is None:
         yield [[*matching_chain(), *native], [lint]]
         yield from full
@@ -276,8 +277,8 @@ def chosen(change: affected.Change, names: list[str], checks: list[str], own: se
     own files changed, or a runtime source their runs enter) run both ways."""
     clean, native = need
     programs = "diffcheck" in change.programs
-    functions = ([clean_check] if (change.funcs and clean) or programs else []) + (
-        [native_check] if (change.native and native) or programs else [])
+    functions = ([[clean_check]] if (change.funcs and clean) or programs else []) + (
+        [[native_check]] if (change.native and native) or programs else [])
     recordings = recording_chains(native=change.recordings or (bool(change.funcs) and native),
                                   clean=change.recordings or (bool(change.funcs) and clean))
     # the front end builds where the recordings with Clean code do: after them
@@ -287,7 +288,7 @@ def chosen(change: affected.Change, names: list[str], checks: list[str], own: se
         recordings[-1] = [*recordings[-1], *play]
     elif play:
         recordings.append(play)
-    first = ([functions] if functions else []) + recordings + ([unit_steps()] if change.tools else [])
+    first = functions + recordings + ([unit_steps()] if change.tools else [])
 
     def kept(listed: list[str], always: set[str], wanted: bool) -> list[str] | None:
         return [n for n in listed if wanted or n in always] or None
