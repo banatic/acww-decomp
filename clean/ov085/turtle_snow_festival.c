@@ -284,7 +284,7 @@ int TurtleSnowFestival_Start(TurtleSnowFestival *turtle)
     turtle->festival_day = (u8) EventCalendar_DaysSinceStart(T5_FESTIVAL_EVENT);
     EventWinner_ExpireForEvent(&data_021f3aa4, T5_WINNER_EVENT);
     if (TalkChecks_TestSetDailyBit(T5_DAILY_TALKED, 0) == 0) {
-        EventWinner_ClearNpc2E(&data_021f3aa4);
+        EventWinner_ClearNpc2e(&data_021f3aa4);
     }
     return 1;
 }

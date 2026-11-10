@@ -1323,7 +1323,7 @@ typedef struct CollisionBlockMapTail {
     s16 unk_134;
     u8 unk_136[2];
 } CollisionBlockMapTail;
-static_assert(sizeof(CollisionBlockMapTail) == sizeof(((FieldBlockMap *) 0)->unk_12C), "block map tail");
+static_assert(sizeof(CollisionBlockMapTail) == sizeof(((FieldBlockMap *) 0)->unk_12c), "block map tail");
 
 /* The constructors and destructors handed to __cxa_vec_ctor and __cxa_vec_cleanup are the
  * game's own: a unit's, a block's, a block map's destructor. Then the destructors of the two
@@ -1470,7 +1470,7 @@ CLEAN_AS(func_020346fc, CollisionExtraPosts_Clear)
 /* func_02034714: an empty map: no size, every block 0, the word at 0x12c -1. */
 void CollisionBlockMap_Clear(FieldBlockMap *map)
 {
-    CollisionBlockMapTail *tail = (CollisionBlockMapTail *) (void *) map->unk_12C;
+    CollisionBlockMapTail *tail = (CollisionBlockMapTail *) (void *) map->unk_12c;
     int row;
     int column;
 

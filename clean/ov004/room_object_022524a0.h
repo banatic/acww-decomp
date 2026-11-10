@@ -41,7 +41,7 @@ void RoomObject022524a0_UpdateState(RoomObject022524a0 *object);
 int RoomObject022524a0_EnterState(RoomObject022524a0 *object, unsigned int state, int value);
 void RoomObject022524a0_NodeGroundHook(RoomObject022524a0 *object, int node, G3dRenderState *state);
 void RoomObject022524a0_OnVanish(RoomObject022524a0 *object);
-int RoomObject022524a0_Vfunc0C(RoomObject022524a0 *object);
+int RoomObject022524a0_Vfunc0c(RoomObject022524a0 *object);
 int RoomObject022524a0_Update(RoomObject022524a0 *object);
 int RoomObject022524a0_Start(RoomObject022524a0 *object);
 RoomObject022524a0 *RoomObject022524a0_Delete(RoomObject022524a0 *object);

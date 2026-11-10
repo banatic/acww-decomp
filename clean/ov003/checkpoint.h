@@ -34,7 +34,7 @@ typedef struct Checkpoint {
     u8 unk_F0[0x13c - 0xf0];
     u8 model_object[0x198 - 0x13c]; /* main's model object (Obj_020dd05c) */
     void *model;                    /* the model the design is put on: the model object's */
-    u8 unk_19C[0x2b4 - 0x19c];
+    u8 unk_19c[0x2b4 - 0x19c];
     CheckpointDesign design;
 } Checkpoint;
 

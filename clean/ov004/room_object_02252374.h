@@ -50,7 +50,7 @@ u8 RoomObject02252374_StateIsOn(RoomObject02252374 *object, unsigned int state);
 int RoomObject02252374_RequestOff(RoomObject02252374 *object);
 int RoomObject02252374_RequestOn(RoomObject02252374 *object);
 int RoomObject02252374_KeepsTextureCopy(void);
-int RoomObject02252374_Vfunc0C(void);
+int RoomObject02252374_Vfunc0c(void);
 int RoomObject02252374_Update(RoomObject02252374 *object);
 int RoomObject02252374_Start(RoomObject02252374 *object);
 RoomObject02252374 *RoomObject02252374_Delete(RoomObject02252374 *object);

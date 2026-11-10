@@ -31,11 +31,11 @@ int CarpetPreview_CanDraw(CarpetPreview *object)
 CLEAN_AS(func_ov004_02212764, CarpetPreview_CanDraw)
 
 /* func_ov004_02212778 (vtable slot 0x0c) */
-int CarpetPreview_Vfunc0C(void)
+int CarpetPreview_Vfunc0c(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov004_02212778, CarpetPreview_Vfunc0C)
+CLEAN_AS(func_ov004_02212778, CarpetPreview_Vfunc0c)
 
 /* func_ov004_0221277c (vtable slot 0x80, each frame while neither appearing nor vanishing):
  * counts the frames since the carpet was put on, up to 2. */

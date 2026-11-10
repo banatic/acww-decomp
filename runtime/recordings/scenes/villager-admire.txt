@@ -10,8 +10,8 @@
 # praised and opens the text screen (mode 23, VillagerTalk_ShowText9310, at about 8960). The pen
 # erases (232,103), types a syllable (14,103 and 180,122) and decides (228,180 at 9092 and 9128):
 # the word is kept at 0x2a of its memory of the player (VillagerTalk_StoreText,
-# VillagerMemoryEntry_SetText2A) and its next line says it back (message 2, tag 4/33:
-# TalkTags_PutPraise, TalkObject_LoadPraise, VillagerMemory_GetText2A), to 11203.
+# VillagerMemoryEntry_SetText2a) and its next line says it back (message 2, tag 4/33:
+# TalkTags_PutPraise, TalkObject_LoadPraise, VillagerMemory_GetText2a), to 11203.
 0 - -
 900 START -
 906 - -

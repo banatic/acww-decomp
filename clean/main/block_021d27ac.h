@@ -46,7 +46,7 @@ void Block021d27ac_NoteGoldenToolDue(Block021d27ac *self);
 u8 *Block021d27ac_Part04(Block021d27ac *self);
 u8 *Block021d27ac_Part31(Block021d27ac *self);
 u8 *Block021d27ac_Part24(Block021d27ac *self);
-u8 *Block021d27ac_Part0C(Block021d27ac *self);
+u8 *Block021d27ac_Part0c(Block021d27ac *self);
 u8 *Block021d27ac_Part30(Block021d27ac *self);
 u8 *Block021d27ac_Part20(Block021d27ac *self);
 u8 *Block021d27ac_Part18(Block021d27ac *self);

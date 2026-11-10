@@ -484,7 +484,7 @@ int MusicList_TakeOut(MusicList *self)
     CurrentPockets_Set(&song, 0, slot);
     if (self->selected == self->playing) {
         if (data_020e54a8 != 0) {
-            RoomObjects_SyncKind3AOn();
+            RoomObjects_SyncKind3aOn();
         }
         self->playing = MUSIC_LIST_NO_ROW;
     }
@@ -505,7 +505,7 @@ CLEAN_AS(func_ov144_0229a5f4, MusicList_TakeOut)
 void MusicList_StopSong(MusicList *self)
 {
     if (data_020e54a8 != 0) {
-        RoomObjects_SyncKind3AOn();
+        RoomObjects_SyncKind3aOn();
     }
     MusicList_ScrollToRow(self, self->playing);
     self->playing = MUSIC_LIST_NO_ROW;

@@ -439,7 +439,7 @@ int FieldActor_Init(struct FieldActor *actor)
     actor->unk_818 = 0;
     actor->progress = 0xf;
     FIELD_ACTOR_BODY_ARG(actor) = 0x1f;
-    actor->unk_8E8 = 0;
+    actor->unk_8e8 = 0;
     actor->other = NULL;
     actor->other_result = 0;
     return 1;

@@ -191,7 +191,7 @@ void LetterWrite_CloseChoice(LetterWriteScene *self);
 void LetterWrite_OpenChoicePage(LetterWriteScene *self, int wipe);
 void LetterWrite_GlideToChoiceRow(LetterWriteScene *self);
 void LetterWrite_PointerFirstOfSet(LetterWriteScene *self);
-void LetterWrite_BeginSub0A(LetterWriteScene *self);
+void LetterWrite_BeginSub0a(LetterWriteScene *self);
 void LetterWrite_BeginSub08(LetterWriteScene *self);
 void LetterWrite_PlacePointer(LetterWriteScene *self);
 void LetterWrite_GlidePointerTo(LetterWriteScene *self, int x, int y);

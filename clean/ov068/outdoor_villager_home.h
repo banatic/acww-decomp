@@ -20,7 +20,7 @@
  *   it comes out: on screen (OutdoorVillagerWalks_OnScreen) behaviour 4 unless this console's
  *   player is within 0x6000; off screen it is put in front of the house at once and walks on
  *   (behaviour 0, showing its held item). Every 900 frames in, its record's byte 0x1e rises
- *   (VillagerEntry_RaiseByte1E).
+ *   (VillagerEntry_RaiseByte1e).
  * - 4: it is put in front of the house, raised 0x1000, facing away; once the house agrees,
  *   animation 0x3d (its held item drawn by the draw hook at 0x8b0) and the state entry's state
  *   1; at its end its shadow on, its collider 0xd00, no longer held, and behaviour 15 (to bring

@@ -1,7 +1,7 @@
 /* A class of overlay 4's room objects (vtable 0x02252ba8, receiver part 0x02252c54, 0x864 bytes)
  * that plays a sound (the sound at 6 of the furniture's row, FurnitureSounds_Sound3) through a
  * sound cue of the main program (main/sound.h) and moves its joints with it. The cue's step is
- * the sound library's variable 2 (taken 0-15); the object keeps it in RoomObject.unk_77C, which
+ * the sound library's variable 2 (taken 0-15); the object keeps it in RoomObject.unk_77c, which
  * the map's record gets, and at its cell in the scene's record (RoomCells_SetStep).
  *
  * Its state (RoomObject02252ba8.state) runs through tables of member pointers
@@ -61,7 +61,7 @@ int RoomObject02252ba8_UpdateCue(RoomObject02252ba8 *object, const Vec3 *point);
 int RoomObject02252ba8_InitCue(RoomObject02252ba8 *object, u16 sound);
 void RoomObject02252ba8_NodeDescAfterHook(RoomObject02252ba8 *object, int node, G3dRenderState *state);
 void RoomObject02252ba8_NodeDescHook(RoomObject02252ba8 *object, int node, G3dRenderState *state);
-int RoomObject02252ba8_Vfunc0C(RoomObject02252ba8 *object);
+int RoomObject02252ba8_Vfunc0c(RoomObject02252ba8 *object);
 int RoomObject02252ba8_UpdateUnsettled(RoomObject02252ba8 *object);
 int RoomObject02252ba8_Update(RoomObject02252ba8 *object);
 int RoomObject02252ba8_Start(RoomObject02252ba8 *object);

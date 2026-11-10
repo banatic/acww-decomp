@@ -67,20 +67,20 @@ void PlayerOptions_Clear(PlayerOptions *options)
 CLEAN_AS(func_0203d28c, PlayerOptions_Clear)
 
 /* func_0203d2b4: an empty function called, `value` given back. */
-int PlayerOptions_Empty2B4(int value)
+int PlayerOptions_Empty2b4(int value)
 {
     PlayerOptions_Nothing384();
     return value;
 }
-CLEAN_AS(func_0203d2b4, PlayerOptions_Empty2B4)
+CLEAN_AS(func_0203d2b4, PlayerOptions_Empty2b4)
 
 /* func_0203d2c4: the same with the other empty function. */
-int PlayerOptions_Empty2C4(int value)
+int PlayerOptions_Empty2c4(int value)
 {
     PlayerOptions_Nothing390();
     return value;
 }
-CLEAN_AS(func_0203d2c4, PlayerOptions_Empty2C4)
+CLEAN_AS(func_0203d2c4, PlayerOptions_Empty2c4)
 
 /* func_0203d2d4: the voice (its low two bits). */
 void PlayerOptions_SetVoice(u8 *values, unsigned int voice)

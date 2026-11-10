@@ -293,7 +293,7 @@ void Telephone_UpdateSwitch(Telephone *phone)
 }
 CLEAN_AS(_ZN18Obj_ov004_0225295019func_ov004_02211a14Ev, Telephone_UpdateSwitch)
 
-/* func_ov004_02211aa0 (vtable slot 0x70): the base class's (RoomObject_SetUnk77C, given `state`
+/* func_ov004_02211aa0 (vtable slot 0x70): the base class's (RoomObject_SetUnk77c, given `state`
  * and `value`), then enters `state` of the switch if its entry (through a table) agrees;
  * whether it did. States 4 and above do not exist. */
 int Telephone_EnterSwitch(Telephone *phone, unsigned int state, int value)
@@ -304,7 +304,7 @@ int Telephone_EnterSwitch(Telephone *phone, unsigned int state, int value)
         &data_ov004_02250060, /* Telephone_EnterSwitchOn */
         &data_ov004_02250068, /* Telephone_EnterSwitchTurningOff */
     };
-    RoomObject_SetUnk77C(&phone->base, (int) state, value);
+    RoomObject_SetUnk77c(&phone->base, (int) state, value);
     MemberTable_InitOnce(&data_ov004_02256ff0, data_ov004_0225734c, entries, TELEPHONE_SWITCH_STATE_COUNT);
     if (state < TELEPHONE_SWITCH_STATE_COUNT && MemberPointer_CallInt(&data_ov004_0225734c[state], phone) != 0) {
         phone->switch_state = (u8) state;
@@ -343,11 +343,11 @@ void Telephone_OnSceneEvent(Telephone *phone, int event)
 CLEAN_AS(func_ov004_02211b54, Telephone_OnSceneEvent)
 
 /* func_ov004_02211b7c (vtable slot 0x0c) */
-int Telephone_Vfunc0C(void)
+int Telephone_Vfunc0c(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov004_02211b7c, Telephone_Vfunc0C)
+CLEAN_AS(func_ov004_02211b7c, Telephone_Vfunc0c)
 
 /* _ZN18Obj_ov004_0225295019func_ov004_02211b80Ev (vtable slot 0x80, each frame while neither
  * appearing nor vanishing): the call, then the switch. */

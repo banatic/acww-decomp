@@ -88,9 +88,9 @@ typedef struct SnowmanBody {
     fx32 push_x; /* how far what touches it pushes it this frame */
     fx32 unk_14;
     fx32 push_z;
-    u8 unk_1C[0x3c - 0x1c];
+    u8 unk_1c[0x3c - 0x1c];
     u8 touched; /* nonzero while something touches it */
-    u8 unk_3D[0x44 - 0x3d];
+    u8 unk_3d[0x44 - 0x3d];
     u8 hit; /* set when it is told of a contact with flag 4 */
     u8 unk_45[0x48 - 0x45];
     int weight; /* handed to func_02089c20; grows with the size */
@@ -100,7 +100,7 @@ typedef struct Snowman {
     const void *vtable; /* data_ov003_022382ac */
     u8 unk_04[0x08 - 0x04];
     u32 index; /* see above */
-    u8 unk_0C[0x5c - 0x0c];
+    u8 unk_0c[0x5c - 0x0c];
     Vec3 position;
     Vec3 last_position; /* where it was when the frame began; collisions run from it */
     u8 unk_74[0xec - 0x74];
@@ -109,7 +109,7 @@ typedef struct Snowman {
     char receiver_name[25];      /* written by func_020a8164 */
     u8 unk_109;
     u8 message; /* Base_02066994's byte at 0x1e: the message to show */
-    u8 unk_10B[0x12c - 0x10b];
+    u8 unk_10b[0x12c - 0x10b];
     SnowmanLink *link; /* Base_02066994's word at 0x40 */
     u8 unk_130[0x134 - 0x130];
     SnowmanModel ball_model; /* "SNW0" */
@@ -135,10 +135,10 @@ typedef struct Snowman {
     u8 sound[0x41];     /* a sound emitter (vtable 0x0213f074) */
     u8 last_collisions; /* collisions as last seen */
     u8 rolling_sound;   /* nonzero once sound 0x81c has played for the contact going on */
-    u8 unk_36B[0x374 - 0x36b];
+    u8 unk_36b[0x374 - 0x36b];
     int roll_factor; /* how much of a push it takes, eased towards 1.0 while pushed */
     u16 flags;
-    u8 unk_37A[0x394 - 0x37a];
+    u8 unk_37a[0x394 - 0x37a];
     s16 heading; /* the direction it was last pushed in */
     u8 unk_396[0x39a - 0x396];
     u16 item_under;  /* the item a body's map object replaced, 0xfff1 for none */

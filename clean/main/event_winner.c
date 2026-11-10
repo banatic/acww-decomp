@@ -388,11 +388,11 @@ void EventWinner_SetItem(EventWinner *record, const u16 *item)
 CLEAN_AS(func_02086754, EventWinner_SetItem)
 
 /* func_0208675c */
-NpcId *EventWinner_Npc2E(EventWinner *record)
+NpcId *EventWinner_Npc2e(EventWinner *record)
 {
     return (NpcId *) (uintptr_t) ((uintptr_t) record + offsetof(EventWinner, npc_2e));
 }
-CLEAN_AS(func_0208675c, EventWinner_Npc2E)
+CLEAN_AS(func_0208675c, EventWinner_Npc2e)
 
 /* ---- The record's parts, its life, and the letters and notice of its event ---- */
 
@@ -498,18 +498,18 @@ static void copy_halfwords(void *dst, const void *src, size_t size)
 }
 
 /* func_02086760 */
-void EventWinner_SetNpc2E(EventWinner *record, const NpcId *npc)
+void EventWinner_SetNpc2e(EventWinner *record, const NpcId *npc)
 {
     copy_halfwords(&record->npc_2e, npc, sizeof record->npc_2e);
 }
-CLEAN_AS(func_02086760, EventWinner_SetNpc2E)
+CLEAN_AS(func_02086760, EventWinner_SetNpc2e)
 
 /* func_02086794 */
-void EventWinner_ClearNpc2E(EventWinner *record)
+void EventWinner_ClearNpc2e(EventWinner *record)
 {
     NpcId_Clear(&record->npc_2e);
 }
-CLEAN_AS(func_02086794, EventWinner_ClearNpc2E)
+CLEAN_AS(func_02086794, EventWinner_ClearNpc2e)
 
 /* func_020867a0 */
 NpcId *EventWinner_Villager(EventWinner *record)

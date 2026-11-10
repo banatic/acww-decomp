@@ -19,7 +19,7 @@
 typedef struct SignBoard {
     TownObjectActor actor;
     u16 number; /* 0x2b4: picks its message */
-    u8 unk_2B6[2];
+    u8 unk_2b6[2];
 } SignBoard;
 
 int SignBoard_IsOpen(void);

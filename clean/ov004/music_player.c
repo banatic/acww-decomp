@@ -91,7 +91,7 @@ extern const u8 data_ov004_02251868[];
  * none: a player there starts on with the villager's song only while none was started. */
 extern u16 data_ov004_02256fec;
 
-/* Whether unk_00C is 0x3a and the switch on (RoomObject_Unk00CIs3AAndOn), handed to
+/* Whether unk_00c is 0x3a and the switch on (RoomObject_Unk00cIs3aAndOn), handed to
  * RoomObjects_SetSwitches by its symbol. */
 extern int func_ov004_02211308(RoomObject *object);
 
@@ -126,16 +126,16 @@ int MusicPlayer_UpdatePlaying(MusicPlayer *player)
 CLEAN_AS(func_ov004_02215f8c, MusicPlayer_UpdatePlaying)
 
 /* func_ov004_02215ff0 (entry of MUSIC_PLAYER_PLAYING): the sound at 2; every room object with
- * unk_00C 0x3a that is on (this one included) switched off; the switch on (shown at once); the
- * song given with the state (RoomObject.unk_77C) kept and played; kind 0x29 loops the
+ * unk_00c 0x3a that is on (this one included) switched off; the switch on (shown at once); the
+ * song given with the state (RoomObject.unk_77c) kept and played; kind 0x29 loops the
  * animations of variant 1 from the start. */
 int MusicPlayer_EnterPlaying(MusicPlayer *player)
 {
     RoomObject_PlaySound1(&player->base);
     RoomObjects_SetSwitches(0, func_ov004_02211308, 0);
     Switch_Set(&player->base.on_switch, 1, 0);
-    player->song = player->base.unk_77C;
-    MusicPlayer_PlaySong(player, player->base.unk_77C);
+    player->song = player->base.unk_77c;
+    MusicPlayer_PlaySong(player, player->base.unk_77c);
     if (player->base.unk_780 == KIND_ANIMATED) {
         RoomObject_PlayAnimsFrom(&player->base, 1, ANIM_MODE_LOOP, FX32_ONE, 0);
     }
@@ -159,12 +159,12 @@ CLEAN_AS(func_ov004_0221605c, MusicPlayer_UpdateStopped)
 
 /* func_ov004_022160b0 (entry of MUSIC_PLAYER_STOPPED): the sound at 4, the switch off (shown at
  * once); the song stopped, its item cleared, unless the model is being bound
- * (RoomObject.unk_77E); kind 0x29 plays the animations of variant 0 once from the start. */
+ * (RoomObject.unk_77e); kind 0x29 plays the animations of variant 0 once from the start. */
 int MusicPlayer_EnterStopped(MusicPlayer *player)
 {
     RoomObject_PlaySound2(&player->base);
     Switch_Set(&player->base.on_switch, 0, 0);
-    if (player->base.unk_77E == 0) {
+    if (player->base.unk_77e == 0) {
         MusicPlayer_StopSong(player, player->song, 1);
     }
     if (player->base.unk_780 == KIND_ANIMATED) {
@@ -188,7 +188,7 @@ void MusicPlayer_UpdateState(MusicPlayer *player)
 }
 CLEAN_AS(_ZN18Obj_ov004_022517bc19func_ov004_02216110Ev, MusicPlayer_UpdateState)
 
-/* func_ov004_0221617c (vtable slot 0x70): the base class's (RoomObject_SetUnk77C, given `state`
+/* func_ov004_0221617c (vtable slot 0x70): the base class's (RoomObject_SetUnk77c, given `state`
  * and `value`, the song), then enters `state` if its entry (through a table) agrees; whether
  * it did. States 2 and above do not exist. */
 int MusicPlayer_EnterState(MusicPlayer *player, unsigned int state, int value)
@@ -197,7 +197,7 @@ int MusicPlayer_EnterState(MusicPlayer *player, unsigned int state, int value)
         &data_ov004_02250470, /* MusicPlayer_EnterStopped */
         &data_ov004_02250130, /* MusicPlayer_EnterPlaying */
     };
-    RoomObject_SetUnk77C(&player->base, (int) state, value);
+    RoomObject_SetUnk77c(&player->base, (int) state, value);
     MemberTable_InitOnce(&data_ov004_02257034, data_ov004_02257144, entries, MUSIC_PLAYER_STATE_COUNT);
     if (state < MUSIC_PLAYER_STATE_COUNT && MemberPointer_CallInt(&data_ov004_02257144[state], player) != 0) {
         player->state = (u8) state;

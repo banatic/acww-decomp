@@ -5,10 +5,10 @@
  * fade in while it plays. Kind 0x29 (RoomObject.unk_780) also animates while playing.
  *
  * Its state (MusicPlayer.state) runs through tables of member pointers (member_pointer.h),
- * entered through vtable slot 0x70 with the song as the value it keeps (RoomObject.unk_77C):
+ * entered through vtable slot 0x70 with the song as the value it keeps (RoomObject.unk_77c):
  * - MUSIC_PLAYER_STOPPED (0): entered with the sound at 4 and the switch off, the song stopped
  *   unless the model is being bound; kind 0x29 plays the animations of variant 0 once;
- * - MUSIC_PLAYER_PLAYING (1): entered with the sound at 2, every room object with unk_00C 0x3a
+ * - MUSIC_PLAYER_PLAYING (1): entered with the sound at 2, every room object with unk_00c 0x3a
  *   that is on switched off (this one included), then the switch on and the song played; kind
  *   0x29 loops the animations of variant 1. Each frame the sound at 0 follows the object.
  * Touching it does not switch it: the switch is put back and the scene is asked for an event

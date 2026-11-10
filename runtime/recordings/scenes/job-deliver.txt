@@ -2,7 +2,7 @@
 # not in this repository). As shop-talk.txt to 4300: into Nook's store and up to him.
 # Save: job-0d, the seed's player at work for Tom Nook (ov050/nook_clerk_talk.h) with the
 # errand of greeting every villager done. A every 46 frames from 4300: his job's next errand
-# (NookClerkTalk_JobLine0D, the type 0xd line with every villager known and the birthday set;
+# (NookClerkTalk_JobLine0d, the type 0xd line with every villager known and the birthday set;
 # NookClerkTalk_JobGive1563: the item 0x1563 to deliver to a villager picked at random, here
 # villager 0, VillagerPart_SetFirstPick) and the item into the pockets. Out of the store (about
 # 6350), south and east along the path to villager 0's house (tile 51.5, 62), in (about 8160);

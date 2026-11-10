@@ -30,7 +30,7 @@ typedef struct Compass {
 void Compass_NeedleHook(Compass *compass, int node, G3dRenderState *state);
 void Compass_OnTurnFrame(Compass *compass, int down);
 Compass *Compass_OnTurnStart(Compass *compass);
-int Compass_Vfunc0C(void);
+int Compass_Vfunc0c(void);
 int Compass_Update(Compass *compass);
 int Compass_Start(Compass *compass);
 Compass *Compass_Delete(Compass *compass);

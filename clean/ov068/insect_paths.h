@@ -7,7 +7,7 @@
  *   fly) a point of its own;
  * - kinds 0x36 and 0x37, the tarantula and the scorpion (both run by func_ov003_02232640), which go for the player once
  *   alarmed (InsectPath_WatchPlayer): they turn to the player and, close enough while the
- *   player is in a state that allows it, make the player react (FieldActor_PlayerRequestState6D,
+ *   player is in a state that allows it, make the player react (FieldActor_PlayerRequestState6d,
  *   with 1 for kind 0x37); kind 0x36 hops, and kind 0x37 plays frames 0xb to 0xe of its
  *   animation; out of reach they flee, stop, and calm down (InsectPath_CalmDown);
  * - kinds 0xb and 0x3a, the wasp and the wasps (run by func_ov003_02233674), which chase the player

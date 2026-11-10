@@ -45,8 +45,8 @@ int VillagerTalkTopics_PickWithTownTune(VillagerTalk *talk, VillagerMemory **lis
 int VillagerTalkTopics_HasTownTune(u8 *villager, VillagerMemory *memory);
 int VillagerTalkTopics_PickLetterOfResident(VillagerTalk *talk, VillagerMemory **list, int count);
 int VillagerTalkTopics_HoldsLetterOfResident(u8 *villager, VillagerMemory *memory);
-void *VillagerTalkTopics_PickWithText2A(VillagerTalk *talk, VillagerMemory **list, int count);
-int VillagerTalkTopics_HasText2A(u8 *villager, VillagerMemory *memory);
+void *VillagerTalkTopics_PickWithText2a(VillagerTalk *talk, VillagerMemory **list, int count);
+int VillagerTalkTopics_HasText2a(u8 *villager, VillagerMemory *memory);
 void *VillagerTalkTopics_PickLetterOfTown(VillagerTalk *talk, VillagerMemory **list, int count);
 int VillagerTalkTopics_HoldsLetterOfTown(u8 *villager, VillagerMemory *memory);
 int VillagerTalkTopics_HoldsLetter(u8 *villager, VillagerMemory *memory);

@@ -21,7 +21,7 @@ typedef struct ShopDesignObject {
     u8 unk_889[3];
 } ShopDesignObject;
 
-int ShopDesignObject_Vfunc0C(ShopDesignObject *object);
+int ShopDesignObject_Vfunc0c(ShopDesignObject *object);
 int ShopDesignObject_Update(ShopDesignObject *object);
 int ShopDesignObject_Start(ShopDesignObject *object);
 ShopDesignObject *ShopDesignObject_Delete(ShopDesignObject *object);

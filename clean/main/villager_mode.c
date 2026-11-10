@@ -70,7 +70,7 @@ void VillagerMode_FinishObject(u8 *villager)
         return;
     }
     if (VillagerErrand_Type((VillagerErrand *) (void *) held) == VILLAGER_MODE_OBJECT_TYPE_4) {
-        VillagerMode_StepCounter7D7(villager);
+        VillagerMode_StepCounter7d7(villager);
     }
     VillagerObject_Clear((VillagerObject *) (void *) object);
     VillagerModeRecord_EnterNoHobby(VillagerObject_RecordMode((VillagerRecord *) record));
@@ -319,7 +319,7 @@ void VillagerMode_SetLeaving(u8 *villager, const DateTime *now)
 CLEAN_AS(func_0207dc30, VillagerMode_SetLeaving)
 
 /* func_0207dcf4: the villager's number at 0x7d7 steps on, 5 back to 0. */
-void VillagerMode_StepCounter7D7(u8 *villager)
+void VillagerMode_StepCounter7d7(u8 *villager)
 {
     u8 *counter = villager + VILLAGER_MODE_COUNTER_7D7;
     *counter += 1;
@@ -327,11 +327,11 @@ void VillagerMode_StepCounter7D7(u8 *villager)
         *counter = 0;
     }
 }
-CLEAN_AS(func_0207dcf4, VillagerMode_StepCounter7D7)
+CLEAN_AS(func_0207dcf4, VillagerMode_StepCounter7d7)
 
 /* func_0207dd10: the villager's number at 0x7d7. */
-u8 VillagerMode_Counter7D7(u8 *villager)
+u8 VillagerMode_Counter7d7(u8 *villager)
 {
     return villager[VILLAGER_MODE_COUNTER_7D7];
 }
-CLEAN_AS(func_0207dd10, VillagerMode_Counter7D7)
+CLEAN_AS(func_0207dd10, VillagerMode_Counter7d7)

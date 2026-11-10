@@ -358,7 +358,7 @@ static int part_villager_item(VillagerTalk *talk)
  * object in its group (data_020d9cc0) and the villager object's step, when the step is below
  * the steps of the type. The step and type are the villager object's when its object is in
  * use, else step 0 and the talk object's type. For type 4 (furniture) the index of what the
- * villager likes (VillagerData_Like of VillagerMode_Counter7D7) goes into slot 0 as a byte;
+ * villager likes (VillagerData_Like of VillagerMode_Counter7d7) goes into slot 0 as a byte;
  * for a type other than 0 and 1 the sound 0x5e is set. `out` names the talk's text either
  * way. */
 void VillagerTalkPart_LineByPlaceStep9cc0(VillagerTalk *talk, VillagerTalkLine *out)
@@ -378,7 +378,7 @@ void VillagerTalkPart_LineByPlaceStep9cc0(VillagerTalk *talk, VillagerTalkLine *
         if (type == VILLAGER_TALK_PART_TYPE_FURNITURE) {
             u8 *record = part_record(talk);
             u8 bytes[2];
-            bytes[0] = Lookups_SlotIndex((const u8 *) VillagerData_Like(record, VillagerMode_Counter7D7(record)));
+            bytes[0] = Lookups_SlotIndex((const u8 *) VillagerData_Like(record, VillagerMode_Counter7d7(record)));
             bytes[1] = 0;
             SceneBase_PutBytes(part_base(talk), 0, &bytes[0], (int) (uintptr_t) data_020d9fa0, &bytes[1]);
         }

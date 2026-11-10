@@ -20,14 +20,14 @@ typedef struct PlayerHouse {
     const void *receiver_vtable; /* data_ov003_02239318 */
     u8 unk_F0[0x198 - 0xf0];
     void *model; /* overlay 9's model object's model */
-    u8 unk_19C[0x2b4 - 0x19c];
+    u8 unk_19c[0x2b4 - 0x19c];
     void *texture;   /* the house's texture, loaded by PlayerHouse_LoadTexture */
     void *texture_2; /* bound with its palettes when set; nothing here sets it */
 } PlayerHouse;
 
 int PlayerHouse_Slot98(void);
 int PlayerHouse_IsOpen(void);
-void PlayerHouse_Slot9C(void);
+void PlayerHouse_Slot9c(void);
 int PlayerHouse_Slot90(void);
 void PlayerHouse_BindTextures(PlayerHouse *house);
 void PlayerHouse_LoadTexture(PlayerHouse *house);

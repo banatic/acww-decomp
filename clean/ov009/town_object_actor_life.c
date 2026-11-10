@@ -99,7 +99,7 @@ extern u8 *data_021c526c;
 extern void func_ov009_022655c4(void *state);
 extern void func_ov009_022655d4(void *state);
 /* Overlay 3's field actor: this console's player asked for state 0x3b. */
-int FieldActor_PlayerRequestState3B(void);
+int FieldActor_PlayerRequestState3b(void);
 
 /* The address of the function in vtable slot `offset`. */
 static uintptr_t life_slot(const TownObjectActor *actor, u32 offset)
@@ -302,7 +302,7 @@ void TownObjectActor_UpdateExit(TownObjectActor *actor)
                 actor->exit_step = 0;
                 return;
         }
-        if (FieldActor_PlayerRequestState3B() != 0) {
+        if (FieldActor_PlayerRequestState3b() != 0) {
             actor->exit_step = 0;
             return;
         }

@@ -51,9 +51,9 @@ typedef struct VillagerHouseAnim {
     const void *vtable;
     u8 unk_04[4];
     u32 frame; /* in 20.12 fixed point */
-    u8 unk_0C[0xc];
+    u8 unk_0c[0xc];
     u32 *target;
-    u32 unk_1C;
+    u32 unk_1c;
 } VillagerHouseAnim;
 
 typedef struct VillagerHouse {
@@ -66,16 +66,16 @@ typedef struct VillagerHouse {
     char receiver_name[25];      /* written by func_020a8164 */
     u8 unk_109;
     u8 message; /* Base_02066994's byte at 0x1e: the message to show */
-    u8 unk_10B[0x12c - 0x10b];
+    u8 unk_10b[0x12c - 0x10b];
     void *link; /* Base_02066994's word at 0x40 */
     u8 unk_130[0x136 - 0x130];
     u16 code; /* the town object's code: 0x5001 + the villager's index */
     u8 unk_138[0x13c - 0x138];
     u8 model_object[0x198 - 0x13c]; /* overlay 9's model object (Obj_020dd05c) */
     void *model;                    /* that model object's model */
-    u8 unk_19C[0x1a0 - 0x19c];
+    u8 unk_19c[0x1a0 - 0x19c];
     Mtx43 matrix; /* that model object's placement (its matrix, 0x64 bytes in) */
-    u8 unk_1D0[0x235 - 0x1d0];
+    u8 unk_1d0[0x235 - 0x1d0];
     u8 flags_235;       /* bit 0: slot 0x18 leaves the X model's animation alone */
     u8 flags;           /* VILLAGER_HOUSE_FLAG_* */
     u8 villager_asleep; /* the visit record said 3: the asleep messages (as TownObjectActor.villager_asleep) */
@@ -86,7 +86,7 @@ typedef struct VillagerHouse {
 
 int VillagerHouse_Slot98(void);
 int VillagerHouse_Slot90(void);
-int VillagerHouse_Slot9C(VillagerHouse *house);
+int VillagerHouse_Slot9c(VillagerHouse *house);
 int VillagerHouse_IsOpen(VillagerHouse *house);
 void VillagerHouse_PrepareTalk(VillagerHouse *house);
 void VillagerHouse_GetAnimO(void);

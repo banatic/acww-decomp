@@ -101,7 +101,7 @@ int MyDesigns_IsChangeDone(MyDesigns *self, int kind)
 {
     (void) self;
     if (kind == MY_DESIGNS_WEAR_UMBRELLA) {
-        return PlayerActorOps_InState3F() == 0;
+        return PlayerActorOps_InState3f() == 0;
     }
     return PlayerActorOps_EarlyInState7() == 0;
 }
@@ -119,7 +119,7 @@ int MyDesigns_RequestChange(MyDesigns *self, int kind, int item)
         case MY_DESIGNS_WEAR_HEAD:
             return PlayerActorOps_RequestState7Kind2Next5(&code) != 0;
         case MY_DESIGNS_WEAR_UMBRELLA:
-            return PlayerActorOps_RequestState3F(&code) != 0;
+            return PlayerActorOps_RequestState3f(&code) != 0;
         default:
             return 0;
     }

@@ -118,7 +118,7 @@ void RoomObject02252e00_UpdateState(RoomObject02252e00 *object)
 }
 CLEAN_AS(_ZN18Obj_ov004_02252e0019func_ov004_02219f58Ev, RoomObject02252e00_UpdateState)
 
-/* func_ov004_02219fc4 (vtable slot 0x70): the base class's (RoomObject_SetUnk77C, given `state`
+/* func_ov004_02219fc4 (vtable slot 0x70): the base class's (RoomObject_SetUnk77c, given `state`
  * and `value`), then enters `state` if its entry (through a table) agrees; whether it did.
  * States 2 and above do not exist. */
 int RoomObject02252e00_EnterState(RoomObject02252e00 *object, unsigned int state, int value)
@@ -127,7 +127,7 @@ int RoomObject02252e00_EnterState(RoomObject02252e00 *object, unsigned int state
         &data_ov004_02250340, /* RoomObject02252e00_EnterStill */
         &data_ov004_022502a0, /* RoomObject02252e00_EnterPlaying */
     };
-    RoomObject_SetUnk77C(&object->base, (int) state, value);
+    RoomObject_SetUnk77c(&object->base, (int) state, value);
     MemberTable_InitOnce(&data_ov004_02257060, data_ov004_02257194, entries, ROOM_OBJECT_02252E00_STATE_COUNT);
     if (state < ROOM_OBJECT_02252E00_STATE_COUNT && MemberPointer_CallInt(&data_ov004_02257194[state], object) != 0) {
         object->state = (u8) state;

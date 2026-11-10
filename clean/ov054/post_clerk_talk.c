@@ -1452,7 +1452,7 @@ CLEAN_AS(func_ov054_022614b4, PostClerkTalk_AwaitMoveTarget)
 void PostClerkTalk_AskJob1f(PostClerkTalk *talk)
 {
     if (PostClerk_ReadyForJob(talk->owner)) {
-        ActivityJob_Ask1F();
+        ActivityJob_Ask1f();
         PostClerkTalk_SetStep(talk, POST_CLERK_TALK_STEP_AWAIT_JOB_1F);
     }
 }

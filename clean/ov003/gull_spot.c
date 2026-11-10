@@ -20,11 +20,11 @@ extern const u8 data_ov003_022398e8[];
 extern const u8 data_ov003_022399ac[];
 
 /* func_ov003_0221ee48 (vtable slot 0x0c): always 1. */
-int GullSpot_Slot0C(void)
+int GullSpot_Slot0c(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov003_0221ee48, GullSpot_Slot0C)
+CLEAN_AS(func_ov003_0221ee48, GullSpot_Slot0c)
 
 /* func_ov003_0221ee4c (vtable slot 0x24, its drawing): nothing to draw; always 1. */
 int GullSpot_Draw(void)

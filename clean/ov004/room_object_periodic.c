@@ -98,11 +98,11 @@ static void update_wait(PeriodicRoomObject *object, int sound, int single)
 }
 
 /* func_ov004_02211c80 (vtable slot 0x0c) */
-int PeriodicRoomObject_Vfunc0C(void)
+int PeriodicRoomObject_Vfunc0c(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov004_02211c80, PeriodicRoomObject_Vfunc0C)
+CLEAN_AS(func_ov004_02211c80, PeriodicRoomObject_Vfunc0c)
 
 /* func_ov004_02211c84 (vtable slot 0x80, each frame while neither appearing nor vanishing).
  * Phases 2 and 3 do nothing with sounds 0x3f9 to 0x3fc, and phases above 3 nothing at all. */

@@ -47,7 +47,7 @@ int EventWinner_Size(const EventWinner *record);
 void EventWinner_SetSize(EventWinner *record, int size);
 void EventWinner_GetItem(u16 *item, const EventWinner *record);
 void EventWinner_SetItem(EventWinner *record, const u16 *item);
-NpcId *EventWinner_Npc2E(EventWinner *record);
+NpcId *EventWinner_Npc2e(EventWinner *record);
 
 /* The record's kind, kept in the last byte of its date (date.extra, 0x47): the event it is of.
  * It picks the letters' archive (data_020e1fcc: "ev_fishing", "ev_insect", "ev_gardening"), the
@@ -59,8 +59,8 @@ enum EventWinnerKind {
     EVENT_WINNER_KIND_GARDENS = 3
 };
 
-void EventWinner_SetNpc2E(EventWinner *record, const NpcId *npc);
-void EventWinner_ClearNpc2E(EventWinner *record);
+void EventWinner_SetNpc2e(EventWinner *record, const NpcId *npc);
+void EventWinner_ClearNpc2e(EventWinner *record);
 NpcId *EventWinner_Villager(EventWinner *record);
 void EventWinner_SetVillager(EventWinner *record, const NpcId *villager);
 DesignCreator *EventWinner_Player(EventWinner *record);

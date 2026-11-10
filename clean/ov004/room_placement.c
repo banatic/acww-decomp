@@ -26,7 +26,7 @@
 #define SHAPE_TWO_CELLS 1
 #define SHAPE_TWO_BY_TWO 2
 
-/* FurnitureInfo_DmaUnk1A of a piece that may stand on top of another. */
+/* FurnitureInfo_DmaUnk1a of a piece that may stand on top of another. */
 #define CAN_STAND_ON_TOP 2
 
 /* The four players' records, and each player's eight items of a series. */
@@ -222,7 +222,7 @@ int RoomPlacement_TryAt(u32 *out, int x, int z, int side, int number, u8 layer, 
 {
     int on_actor_cell = FurnitureInfo_IndoorBit2(number);
     int shape = FurnitureInfo_Shape(number);
-    int stands = FurnitureInfo_DmaUnk1A(number);
+    int stands = FurnitureInfo_DmaUnk1a(number);
     u16 code = ItemCode_MakeFurniture(number, side);
     ItemFootprint footprint;
     ItemFootprint_Construct(&footprint, &code);

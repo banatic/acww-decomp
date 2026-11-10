@@ -117,11 +117,11 @@ Compass *Compass_OnTurnStart(Compass *compass)
 CLEAN_AS(func_ov004_02213850, Compass_OnTurnStart)
 
 /* func_ov004_0221385c (vtable slot 0x0c) */
-int Compass_Vfunc0C(void)
+int Compass_Vfunc0c(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov004_0221385c, Compass_Vfunc0C)
+CLEAN_AS(func_ov004_0221385c, Compass_Vfunc0c)
 
 /* func_ov004_02213860 (vtable slot 0x80, each frame while neither appearing nor vanishing):
  * the swing decays towards 0; the phase advances while it is not 0 and is 0 once it is; the

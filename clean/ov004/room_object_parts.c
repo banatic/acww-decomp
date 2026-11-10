@@ -100,13 +100,13 @@ int Switch_Apply(Switch *sw, RoomObject *object)
 CLEAN_AS(func_ov004_0220d300, Switch_Apply)
 
 /* func_ov004_0220d318: the value to start with, shown at once: when placement_mode is 1 or 2, on if
- * unk_78D is 0; otherwise what the town's map record of the object's cell says (off when it has
+ * unk_78d is 0; otherwise what the town's map record of the object's cell says (off when it has
  * no cell). */
 void Switch_Load(Switch *sw, RoomObject *object)
 {
     int value = 0;
     if (object->placement_mode == 1 || RoomObject_IsUnplaced(object) != 0) {
-        value = object->unk_78D == 0;
+        value = object->unk_78d == 0;
     } else {
         int x;
         int y;

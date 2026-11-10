@@ -145,7 +145,7 @@ CLEAN_AS(func_ov003_0221d2ac, VillagerHouse_Slot90)
  * no such villager; else 0 when func_0207f1d4 says no or the status is 0 or 3 to 7; for status
  * 2 whether one of the four session slots taken names this villager in its link state; else
  * 1. */
-int VillagerHouse_Slot9C(VillagerHouse *house)
+int VillagerHouse_Slot9c(VillagerHouse *house)
 {
     int index = villager_house_index(house);
     if (TownObjectActor_IsNight((TownObjectActor *) house) == 0) {
@@ -176,7 +176,7 @@ int VillagerHouse_Slot9C(VillagerHouse *house)
     }
     return 0;
 }
-CLEAN_AS(func_ov003_0221d2b0, VillagerHouse_Slot9C)
+CLEAN_AS(func_ov003_0221d2b0, VillagerHouse_Slot9c)
 
 /* func_ov003_0221d3a4 (vtable slot 0x8c, TownObjectActor_IsOpen): whether there is such a villager, func_0207f1d4 says
  * yes and its status is neither 0 nor 3 to 7. */

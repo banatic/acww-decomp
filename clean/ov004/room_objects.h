@@ -57,7 +57,7 @@ int RoomObjects_PickUnk778(int key);
 RoomObject *RoomObjects_PickOn(RoomObjectsTest test, int pending);
 int RoomObjects_CountOn(RoomObjectsTest test);
 void RoomObjects_SetSwitches(int value, RoomObjectsTest test, int pending);
-int RoomObjects_SyncKind3AOn(void);
+int RoomObjects_SyncKind3aOn(void);
 int RoomObjects_IsFreeAt270(Vec3 *position, int angle);
 int RoomObjects_IsFreeAt90(Vec3 *position, int angle);
 int RoomObjects_IsFreeAhead(Vec3 *position, int angle);

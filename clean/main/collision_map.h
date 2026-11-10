@@ -18,7 +18,7 @@
 #include "field_collision.h"
 #include "types.h"
 
-/* The words after a map's blocks (FieldBlockMap.unk_12C). */
+/* The words after a map's blocks (FieldBlockMap.unk_12c). */
 typedef struct CollisionMapState {
     s32 claimed;   /* 0x12c: the claimed object, -1 for none */
     u8 complete;   /* 0x130: every block of the map's size has its data */

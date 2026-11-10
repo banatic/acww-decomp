@@ -1,5 +1,5 @@
 /* A player's bed in the house's attic: a class of overlay 4's room objects (vtable 0x02253058,
- * receiver part 0x02253104, 0x8b8 bytes) of kind 0x37 (RoomObject.unk_00C). Pushed against,
+ * receiver part 0x02253104, 0x8b8 bytes) of kind 0x37 (RoomObject.unk_00c). Pushed against,
  * it asks whether the player is done for the day (sp_etc_sequence2/4 line 0); talked to, it
  * lets the player swap it for a bed from the pockets (PlayerRecord_SetBed). Its state
  * (BedObject.state), entered through vtable slot 0x70, runs through tables of member pointers
@@ -137,7 +137,7 @@ void BedObject_PointAhead(BedObject *object, Vec3 *out, const Vec3 *point, int a
 int BedObject_CheckStep(BedObject *object, Vec3 *point, int angle, Vec3 *offset);
 unsigned int BedObject_ListCells(BedObject *object, Cell *cells);
 int BedObject_FrontCells(BedObject *object, Cell *cells);
-int BedObject_Vfunc0C(void);
+int BedObject_Vfunc0c(void);
 int BedObject_Vfunc24(void);
 int BedObject_Update(BedObject *object);
 int BedObject_Start(BedObject *object);

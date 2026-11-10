@@ -34,7 +34,7 @@ u8 SwitchShown_StateIsOn(SwitchShownObject *object, unsigned int state);
 int SwitchShown_RequestOn(SwitchShownObject *object);
 int SwitchShown_RequestOff(SwitchShownObject *object);
 int SwitchShown_CanDraw(SwitchShownObject *object);
-int SwitchShown_Vfunc0C(void);
+int SwitchShown_Vfunc0c(void);
 int SwitchShown_Update(SwitchShownObject *object);
 int SwitchShown_Start(SwitchShownObject *object);
 SwitchShownObject *SwitchShown_Delete(SwitchShownObject *object);

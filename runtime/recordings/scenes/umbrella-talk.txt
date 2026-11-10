@@ -1,7 +1,7 @@
 # umbrella-talk (format: runtime/input.h), played from a town save by tools/scenes.py (the save
 # is not in this repository). As villager-talk.txt (the walk up to villager e003 and a talk).
 # Save: umbrella: an umbrella (0x1380, tool 10) held. When the talk ends the held item is taken
-# out again (FieldActor_RequestState3D), and an umbrella by state 0x3e (animation 0x62), to 5000.
+# out again (FieldActor_RequestState3d), and an umbrella by state 0x3e (animation 0x62), to 5000.
 0 - -
 900 START -
 906 - -

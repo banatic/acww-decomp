@@ -75,11 +75,11 @@ void RoomObject02250c04_OnMoveStart(RoomObject02250c04 *object, int ahead)
 CLEAN_AS(func_ov004_02215504, RoomObject02250c04_OnMoveStart)
 
 /* func_ov004_0221569c (vtable slot 0x0c) */
-int RoomObject02250c04_Vfunc0C(void)
+int RoomObject02250c04_Vfunc0c(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov004_0221569c, RoomObject02250c04_Vfunc0C)
+CLEAN_AS(func_ov004_0221569c, RoomObject02250c04_Vfunc0c)
 
 /* func_ov004_022156a0 (vtable slot 0x80, each frame while neither appearing nor vanishing):
  * advances its animations. */

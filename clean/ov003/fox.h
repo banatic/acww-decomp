@@ -56,7 +56,7 @@ typedef struct FoxLink {
     int unk_00;
     int status;    /* 0 once closed; 5 is what FOX_SCREEN_ASK waits for */
     int requested; /* set to 1 when a message is given */
-    u8 unk_0C[0x14 - 0x0c];
+    u8 unk_0c[0x14 - 0x0c];
     int unk_14; /* set to 1 when message 2 ends */
 } FoxLink;
 
@@ -72,7 +72,7 @@ typedef struct Fox {
     char receiver_name[25];      /* written by func_020a8164 */
     u8 unk_109;
     u8 message; /* Base_02066994's byte at 0x1e: the message to show */
-    u8 unk_10B[0x12c - 0x10b];
+    u8 unk_10b[0x12c - 0x10b];
     FoxLink *link; /* Base_02066994's word at 0x40 */
     u8 unk_130[0x136 - 0x130];
     u16 code; /* the town object's code (0x5000 to 0x5021) */
@@ -111,7 +111,7 @@ void Fox_UpdateIdle(Fox *fox);
 int Fox_EnterIdle(Fox *fox);
 void Fox_UpdateState(Fox *fox);
 int Fox_SetState(Fox *fox, int state);
-int Fox_ReceiverSlot6C(Fox *fox);
+int Fox_ReceiverSlot6c(Fox *fox);
 void Fox_ReceiverSlot18(Fox *fox);
 void Fox_OnMessageEnd(Fox *fox);
 void Fox_ReceiverSlot10(Fox *fox);
@@ -124,7 +124,7 @@ Fox *Fox_Destroy(Fox *fox);
 Fox *Fox_Construct(Fox *fox);
 void Fox_New(void);
 Fox *Fox_ReceiverDestroyAndFree(void *receiver);
-int Fox_ReceiverThunk6C(void *receiver);
+int Fox_ReceiverThunk6c(void *receiver);
 void Fox_ReceiverThunk18(void *receiver);
 void Fox_ReceiverThunk14(void *receiver);
 void Fox_ReceiverThunk10(void *receiver);

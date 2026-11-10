@@ -64,7 +64,7 @@ struct RoomObject;
 #define ROOM_SYNC_STATE_STATE_SHIFT 16 /* 5 bits */
 #define ROOM_SYNC_STATE_VALUE_SHIFT 21 /* 8 bits */
 #define ROOM_SYNC_STATE_RELAY_SHIFT 29
-#define ROOM_SYNC_STATE_MUSIC_SHIFT 30 /* the object is a music player (unk_00C 0x3a) */
+#define ROOM_SYNC_STATE_MUSIC_SHIFT 30 /* the object is a music player (unk_00c 0x3a) */
 #define ROOM_SYNC_STATE_FLAG_SHIFT 31
 
 /* Message 25, a byte. */

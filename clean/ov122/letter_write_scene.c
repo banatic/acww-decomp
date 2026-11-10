@@ -224,13 +224,13 @@ void LetterWrite_PointerFirstOfSet(LetterWriteScene *self)
 CLEAN_AS(func_ov122_0229f150, LetterWrite_PointerFirstOfSet)
 
 /* func_ov122_0229f170: the keyboard's pressed keys released, the pointer at the third of its set. */
-void LetterWrite_BeginSub0A(LetterWriteScene *self)
+void LetterWrite_BeginSub0a(LetterWriteScene *self)
 {
     SoftKeyboard_ReleasePressed(letter_write_keyboard(self));
     Glider_ShowThirdOfSet(&self->pointer);
     MenuScene_SetSubState(letter_write_scene(self), LETTER_WRITE_SUB_0A);
 }
-CLEAN_AS(func_ov122_0229f170, LetterWrite_BeginSub0A)
+CLEAN_AS(func_ov122_0229f170, LetterWrite_BeginSub0a)
 
 /* func_ov122_0229f194 */
 void LetterWrite_BeginSub08(LetterWriteScene *self)
@@ -1501,7 +1501,7 @@ CLEAN_AS(func_ov122_022a05d0, LetterWrite_RunPanelKeys)
 void LetterWrite_RunScrollRelease(LetterWriteScene *self)
 {
     if (DualCellSprite_IsDone(letter_write_button_cells(self))) {
-        LetterWrite_BeginSub0A(self);
+        LetterWrite_BeginSub0a(self);
         LetterWrite_ClearFlags(self, LETTER_WRITE_FLAG_POINTER_ON_BUTTON);
     }
 }
@@ -1656,7 +1656,7 @@ void LetterWrite_RunKeyRepeat(LetterWriteScene *self)
     int key;
 
     if ((data_021fbe40.held & LETTER_WRITE_PAD_A) == 0) {
-        LetterWrite_BeginSub0A(self);
+        LetterWrite_BeginSub0a(self);
         return;
     }
     if (SoftKeyboard_StepRepeat(letter_write_keyboard(self)) != 0) {
@@ -1703,7 +1703,7 @@ void LetterWrite_RunKeyPressed(LetterWriteScene *self)
         if (result == 4) {
             SoftKeyboard_ReleasePressed(letter_write_keyboard(self));
         } else {
-            LetterWrite_BeginSub0A(self);
+            LetterWrite_BeginSub0a(self);
         }
     }
 }

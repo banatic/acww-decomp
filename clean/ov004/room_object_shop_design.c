@@ -44,14 +44,14 @@ static DesignManager *shop_design_object_designs(void)
 }
 
 /* func_ov004_02213984 (vtable slot 0x0c): the emitter's slot 0x10 while it is in use; 1. */
-int ShopDesignObject_Vfunc0C(ShopDesignObject *object)
+int ShopDesignObject_Vfunc0c(ShopDesignObject *object)
 {
     if (object->has_sound != 0) {
         SoundEmitter_FinishB(shop_design_object_emitter(object));
     }
     return 1;
 }
-CLEAN_AS(func_ov004_02213984, ShopDesignObject_Vfunc0C)
+CLEAN_AS(func_ov004_02213984, ShopDesignObject_Vfunc0c)
 
 /* func_ov004_022139a8 (vtable slot 0x80, each frame while neither appearing nor vanishing):
  * while the emitter is in use, plays sound 0x50 when the shop's design changed since the last

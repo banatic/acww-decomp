@@ -11,7 +11,7 @@
 # Decide (6519): the letter goes (VillagerMail_Receive; noted for the errand, the block's step
 # 2); her question answered by DOWN and A; cancel and leave. South, west and north into the
 # store (about 9000) and up to Tom Nook: A every 46 frames, the letter done
-# (NookClerkTalk_JobLine0F), the next errand, the item 0x1561 for a third villager
+# (NookClerkTalk_JobLine0f), the next errand, the item 0x1561 for a third villager
 # (NookClerkTalk_JobGiveDelivery, NookClerkTalk_JobShowDelivery); his reminder (JobLine10) to the end.
 0 - -
 900 START -

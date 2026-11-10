@@ -27,7 +27,7 @@ typedef struct RoomObject02252cd4 {
 } RoomObject02252cd4;
 
 void RoomObject02252cd4_ProbePoint(RoomObject02252cd4 *object, Vec3 *out, void *entry);
-int RoomObject02252cd4_Vfunc0C(void);
+int RoomObject02252cd4_Vfunc0c(void);
 int RoomObject02252cd4_Update(RoomObject02252cd4 *object);
 int RoomObject02252cd4_Start(RoomObject02252cd4 *object);
 RoomObject02252cd4 *RoomObject02252cd4_Delete(RoomObject02252cd4 *object);

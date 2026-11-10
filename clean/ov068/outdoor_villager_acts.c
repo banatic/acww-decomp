@@ -463,7 +463,7 @@ int OutdoorVillagerActs_StartPushed(OutdoorVillagerBehaviour *self, u8 *villager
     self->step = 0;
     VillagerMood_SoundsOff(acts_mood(villager));
     if (acts_record(villager) != NULL) {
-        VillagerEntry_HalveByte1E(acts_record(villager));
+        VillagerEntry_HalveByte1e(acts_record(villager));
     }
     return 1;
 }

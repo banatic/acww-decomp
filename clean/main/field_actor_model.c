@@ -36,7 +36,7 @@ extern u8 data_020e54a8;
 /* NitroSDK's table of sines and cosines, interleaved, for 4096 angles. */
 extern const s16 FX_SinCosTable_[];
 
-/* The placement modes (FieldActor.unk_7F8) as member pointers: a table of two filled from
+/* The placement modes (FieldActor.unk_7f8) as member pointers: a table of two filled from
  * constants on the first call (field_actor_parts.h). */
 extern u32 data_021bfff4;
 extern MemberPointer data_021c0008[2];
@@ -78,7 +78,7 @@ static Vec3 translation_of(const Mtx43 *matrix)
 }
 
 /* func_02005338: vtable slot 0x24 (FieldActor_Vfunc24): the model placed by the mode at
- * FieldActor.unk_7F8 (0: FieldActor_PlaceAtPosition, 1: FieldActor_PlaceModel); then, with
+ * FieldActor.unk_7f8 (0: FieldActor_PlaceAtPosition, 1: FieldActor_PlaceModel); then, with
  * flag 0xd, the item at unk_822 is drawn at unk_824 scaled by unk_830 (state 0x85).
  * REQUIRES: the mode is 0 or 1 (the ROM indexes its table unchecked). */
 void FieldActor_PlaceForDraw(FieldActor *actor)
@@ -86,7 +86,7 @@ void FieldActor_PlaceForDraw(FieldActor *actor)
     static const MemberPointer *const constants[2] = {&data_020d747c, &data_020d74b4};
 
     MemberTable_InitOnce(&data_021bfff4, data_021c0008, constants, 2);
-    MemberPointer place = data_021c0008[actor->unk_7F8];
+    MemberPointer place = data_021c0008[actor->unk_7f8];
     FieldActor_CallUpdate(&place, actor);
     if (FieldActor_TestFlag(actor, 0xd)) {
         Vec3 position = actor->unk_824;

@@ -633,7 +633,7 @@ void Chest_UpdateLid(Chest *chest)
 }
 CLEAN_AS(_ZN18Obj_ov004_0225211c19func_ov004_02217580Ev, Chest_UpdateLid)
 
-/* func_ov004_0221760c (vtable slot 0x70): the base class's (RoomObject_SetUnk77C, given `state`
+/* func_ov004_0221760c (vtable slot 0x70): the base class's (RoomObject_SetUnk77c, given `state`
  * and `value`), then enters lid state `state` if its entry (through a table) agrees; whether it
  * did. States 4 and above do not exist. */
 int Chest_EnterLid(Chest *chest, unsigned int state, int value)
@@ -644,7 +644,7 @@ int Chest_EnterLid(Chest *chest, unsigned int state, int value)
         &data_ov004_02250650, /* Chest_EnterLidOpen */
         &data_ov004_02250648, /* Chest_EnterLidClosing */
     };
-    RoomObject_SetUnk77C(&chest->base, (int) state, value);
+    RoomObject_SetUnk77c(&chest->base, (int) state, value);
     MemberTable_InitOnce(&data_ov004_02257020, data_ov004_022574cc, entries, CHEST_LID_STATE_COUNT);
     if (state < CHEST_LID_STATE_COUNT && MemberPointer_CallInt(&data_ov004_022574cc[state], chest) != 0) {
         chest->lid = (u8) state;
@@ -674,11 +674,11 @@ int Chest_IsIdle(Chest *chest)
 CLEAN_AS(func_ov004_022176c0, Chest_IsIdle)
 
 /* func_ov004_022176e4 (vtable slot 0x0c) */
-int Chest_Vfunc0C(void)
+int Chest_Vfunc0c(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov004_022176e4, Chest_Vfunc0C)
+CLEAN_AS(func_ov004_022176e4, Chest_Vfunc0c)
 
 /* _ZN18Obj_ov004_0225211c19func_ov004_022176e8Ev (vtable slot 0x80, each frame while neither
  * appearing nor vanishing): the talk, then the lid. */

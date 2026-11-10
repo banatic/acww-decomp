@@ -21,7 +21,7 @@ int CardSave_WriteExchangeBlock(void);
 int CardSave_WriteFriendRoster(void);
 int CardSave_WriteAccount(void);
 int CardSave_WriteClearedMarks(void);
-int CardSave_ClearByte3FFFC(void);
+int CardSave_ClearByte3fffc(void);
 int CardSave_SameSerial(void);
 
 #endif

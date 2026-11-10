@@ -47,9 +47,9 @@ typedef struct MailboxAnim {
     const void *vtable;
     u8 unk_04[4];
     u32 frame; /* in 20.12 fixed point */
-    u8 unk_0C[0xc];
+    u8 unk_0c[0xc];
     u32 *target;
-    u32 unk_1C;
+    u32 unk_1c;
 } MailboxAnim;
 
 /* A joint animation file: its number of frames. */
@@ -74,9 +74,9 @@ typedef struct Mailbox {
     u8 sound[0x2b4 - 0x238]; /* overlay 9's sound source: func_ov009_02262ef0 plays on it */
     int state;               /* the other machine's (func_ov003_0221e4e8) */
     MailboxAnim pattern;     /* the texture pattern animation */
-    u8 unk_2D8[0x2f4 - 0x2d8];
+    u8 unk_2d8[0x2f4 - 0x2d8];
     u8 moves_on; /* nonzero: the modes move on (func_ov003_0221e6a0) */
-    u8 unk_2F5[3];
+    u8 unk_2f5[3];
 } Mailbox;
 
 void Mailbox_RunClose(Mailbox *mailbox);

@@ -23,7 +23,7 @@ static_assert(offsetof(VillagerNameplate, index) == 0x08, "index");
 static_assert(offsetof(VillagerNameplate, position) == 0x5c, "position");
 static_assert(offsetof(VillagerNameplate, receiver_vtable) == 0xec, "receiver");
 static_assert(offsetof(VillagerNameplate, receiver_name) == 0xf0, "receiver name");
-static_assert(offsetof(VillagerNameplate, receiver_unk_1E) == 0x10a, "receiver byte 0x1e");
+static_assert(offsetof(VillagerNameplate, receiver_unk_1e) == 0x10a, "receiver byte 0x1e");
 static_assert(offsetof(VillagerNameplate, link) == 0x12c, "link");
 static_assert(offsetof(VillagerNameplate, state) == 0x134, "state");
 static_assert(offsetof(VillagerNameplate, member_138) == 0x138, "member");
@@ -94,7 +94,7 @@ int VillagerNameplate_EnterWaiting(VillagerNameplate *board)
 
     SceneObjectBase_TakeReceiver((SceneObjectBase *) board, receiver_of(board));
     MessageReceiver_SetName((MessageReceiver *) &board->receiver_vtable, data_ov003_022380f0);
-    board->receiver_unk_1E = 0;
+    board->receiver_unk_1e = 0;
     board->link->requested = 1;
 
     PlayerIdText_Construct((PlayerIdText *) text);

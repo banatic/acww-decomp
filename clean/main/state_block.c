@@ -168,7 +168,7 @@ void StateBlock_FinishStart(StateBlock *block)
     TownDay_Load();
     NookStore_Refresh((NookStore *) block->nook_store, 0);
     TownTune_Load((const TownTunePacked *) (void *) block->part_173c0);
-    MiddleSpot_Pick((MiddleSpot *) (void *) Block021d27ac_Part0C(Block021d27ac_Get()));
+    MiddleSpot_Pick((MiddleSpot *) (void *) Block021d27ac_Part0c(Block021d27ac_Get()));
     NearSpot_Clear((NearSpot *) (void *) Block021d27ac_Part24(Block021d27ac_Get()));
     Block021d27ac_NoteGoldenToolDue(Block021d27ac_Get());
     TownSpot_PickRandom((TownSpot *) (void *) Block021d27ac_Part04(Block021d27ac_Get()));
@@ -177,7 +177,7 @@ void StateBlock_FinishStart(StateBlock *block)
     VillagerTown_PickFoxPasswordVillager(villagers_of(block));
     GroupParams_ResetC90();
     TownObjects_ClearExtraVisitors();
-    VillagerTown_SetByte1E(villagers_of(block), PlayerRecords_Current());
+    VillagerTown_SetByte1e(villagers_of(block), PlayerRecords_Current());
     VillagerState_ClearIdleFrames();
     VillagerState_ClearAllGreeted();
     VillagerState_ClearAllTallies();

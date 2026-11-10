@@ -9,18 +9,18 @@ extern StateBlock *data_021f3c24;
 extern int data_021f3c34;
 
 /* func_020a13a0 */
-void ActivityVars_SetFlag3C08(void)
+void ActivityVars_SetFlag3c08(void)
 {
     data_021f3c08 = 1;
 }
-CLEAN_AS(func_020a13a0, ActivityVars_SetFlag3C08)
+CLEAN_AS(func_020a13a0, ActivityVars_SetFlag3c08)
 
 /* func_020a13ac */
-u8 ActivityVars_Flag3C08(void)
+u8 ActivityVars_Flag3c08(void)
 {
     return data_021f3c08;
 }
-CLEAN_AS(func_020a13ac, ActivityVars_Flag3C08)
+CLEAN_AS(func_020a13ac, ActivityVars_Flag3c08)
 
 /* func_020a13b8 */
 StateBlock *ActivityVars_ReceivedBlock(void)
@@ -30,18 +30,18 @@ StateBlock *ActivityVars_ReceivedBlock(void)
 CLEAN_AS(func_020a13b8, ActivityVars_ReceivedBlock)
 
 /* func_020a13c4: the slot's low byte kept (overlay 48 gives this system's AID). */
-void ActivityVars_SetSlot3C1C(u32 slot)
+void ActivityVars_SetSlot3c1c(u32 slot)
 {
     data_021f3c1c = (u8) slot;
 }
-CLEAN_AS(func_020a13c4, ActivityVars_SetSlot3C1C)
+CLEAN_AS(func_020a13c4, ActivityVars_SetSlot3c1c)
 
 /* func_020a13d0 */
-u8 ActivityVars_Slot3C1C(void)
+u8 ActivityVars_Slot3c1c(void)
 {
     return data_021f3c1c;
 }
-CLEAN_AS(func_020a13d0, ActivityVars_Slot3C1C)
+CLEAN_AS(func_020a13d0, ActivityVars_Slot3c1c)
 
 /* func_020a13dc */
 void ActivityVars_SetTownPlayer(int number)

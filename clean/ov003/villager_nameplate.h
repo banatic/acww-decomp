@@ -40,20 +40,20 @@ typedef struct VillagerNameplate {
     const void *vtable; /* data_ov003_02238010 */
     u8 unk_04[4];
     u32 index; /* 0-7 */
-    u8 unk_0C[0x5c - 0x0c];
+    u8 unk_0c[0x5c - 0x0c];
     Vec3 position;
     u8 unk_68[0xec - 0x68];
     /* The message receiver (Base_02066994) */
     const void *receiver_vtable; /* data_ov003_02238078 */
     char receiver_name[25];      /* written by func_020a8164 */
     u8 unk_109;
-    u8 receiver_unk_1E; /* Base_02066994's byte at 0x1e */
-    u8 unk_10B[0x12c - 0x10b];
+    u8 receiver_unk_1e; /* Base_02066994's byte at 0x1e */
+    u8 unk_10b[0x12c - 0x10b];
     VillagerNameplateLink *link; /* Base_02066994's word at 0x40 */
     u8 unk_130[4];
     int state;        /* enum VillagerNameplateState */
     u8 member_138[4]; /* constructed by func_020b7f70, destroyed by func_020b7f60 */
-    u8 unk_13C[0x154 - 0x13c];
+    u8 unk_13c[0x154 - 0x13c];
 } VillagerNameplate;
 
 #define VILLAGER_NAMEPLATE_MAX 8

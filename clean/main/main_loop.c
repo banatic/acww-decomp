@@ -113,7 +113,7 @@ CLEAN_AS(func_0206e624, MainLoop_AfterVBlank)
 void MainLoop_EndDraw(u32 errors)
 {
     if (errors == 0) {
-        LinkScene_Empty6C04();
+        LinkScene_Empty6c04();
     }
     Session_Update((int) errors);
     DisplayFrame_EndDraw();

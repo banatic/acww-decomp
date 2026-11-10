@@ -3,7 +3,7 @@
 # house, the rod not held). Save: weeded, booted 20 May 2027 15:00:04: the town's insects drawn at
 # the boot hold kind 0x0a (in March to August at 8:00-16:59) at (46.1, 64.3), south of the house.
 # South-east and west steps from 4700 to about (45.5, 61.2), beside it: it is updated in view
-# (TownInsectKind_Update0A), to about 5040.
+# (TownInsectKind_Update0a), to about 5040.
 0 - -
 900 START -
 906 - -

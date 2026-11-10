@@ -74,7 +74,7 @@ int FurnitureInfo_LightKind(int number);
 int FurnitureInfo_IndoorBit3(int number);
 int FurnitureInfo_IndoorBit2(int number);
 int FurnitureInfo_IndoorBit0(int number);
-int FurnitureInfo_DmaUnk1A(int number);
+int FurnitureInfo_DmaUnk1a(int number);
 int FurnitureInfo_ItemCategory(const ItemCode *item);
 u8 FurnitureInfo_Category(int number);
 int FurnitureInfo_ItemFeel(const ItemCode *item);
@@ -92,7 +92,7 @@ int FurnitureInfo_ItemSeries(const ItemCode *item);
 u8 FurnitureInfo_Series(int number);
 int FurnitureInfo_ColorB(int number);
 int FurnitureInfo_ColorA(int number);
-int FurnitureInfo_DmaUnk1E(int number);
+int FurnitureInfo_DmaUnk1e(int number);
 
 /* How many records each file is opened with room for. */
 #define FURNITURE_FILE_RECORDS 0x800
@@ -114,7 +114,7 @@ typedef struct RecordFiles {
     RecordFile dma;    /* 0x38 */
 } RecordFiles;
 
-int FurnitureInfo_DmaUnk1D(int number);
+int FurnitureInfo_DmaUnk1d(int number);
 int FurnitureInfo_NoneA(int number);
 int FurnitureInfo_NoneB(int number);
 int FurnitureInfo_NoneC(int number);

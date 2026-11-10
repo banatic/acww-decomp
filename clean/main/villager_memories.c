@@ -79,19 +79,19 @@ CLEAN_AS(func_0208012c, VillagerMemory_GetGreeting)
 
 /* func_0208016c: the text at 0x2a of the villager's memory of the player set from `length`
  * characters, when it knows the player. */
-void VillagerMemory_SetText2A(u8 *villager, const u16 *text, int length, const DesignCreator *player)
+void VillagerMemory_SetText2a(u8 *villager, const u16 *text, int length, const DesignCreator *player)
 {
     VillagerMemory *memory = VillagerMemory_Of(villager, player);
     if (memory != NULL) {
-        VillagerMemoryEntry_SetText2A(memory, text, length);
+        VillagerMemoryEntry_SetText2a(memory, text, length);
     }
 }
-CLEAN_AS(func_0208016c, VillagerMemory_SetText2A)
+CLEAN_AS(func_0208016c, VillagerMemory_SetText2a)
 
 /* func_02080190: the text at 0x2a of the villager's memory of the player copied to `text`, when
  * it knows the player, the player is set and the text has been; what func_02081bc4 returns
  * then, else 0. */
-int VillagerMemory_GetText2A(u8 *villager, void *text, const DesignCreator *player)
+int VillagerMemory_GetText2a(u8 *villager, void *text, const DesignCreator *player)
 {
     VillagerMemory *memory = VillagerMemory_Of(villager, player);
     if (memory == NULL) {
@@ -101,13 +101,13 @@ int VillagerMemory_GetText2A(u8 *villager, void *text, const DesignCreator *play
     if (result == 0) {
         return 0;
     }
-    result = VillagerMemoryEntry_Text2ASet(memory);
+    result = VillagerMemoryEntry_Text2aSet(memory);
     if (result == 0) {
         return 0;
     }
-    return (int) (uintptr_t) VillagerMemoryEntry_Text2AToLabel(memory, text);
+    return (int) (uintptr_t) VillagerMemoryEntry_Text2aToLabel(memory, text);
 }
-CLEAN_AS(func_02080190, VillagerMemory_GetText2A)
+CLEAN_AS(func_02080190, VillagerMemory_GetText2a)
 
 /* func_020801c4: when two villagers both know the player of `record` (the current player's
  * record when NULL), and one of them calls the player something other than the player's name

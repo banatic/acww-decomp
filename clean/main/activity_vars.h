@@ -14,11 +14,11 @@
 #include "state_block.h"
 #include "types.h"
 
-void ActivityVars_SetFlag3C08(void);
-u8 ActivityVars_Flag3C08(void);
+void ActivityVars_SetFlag3c08(void);
+u8 ActivityVars_Flag3c08(void);
 StateBlock *ActivityVars_ReceivedBlock(void);
-void ActivityVars_SetSlot3C1C(u32 slot);
-u8 ActivityVars_Slot3C1C(void);
+void ActivityVars_SetSlot3c1c(u32 slot);
+u8 ActivityVars_Slot3c1c(void);
 void ActivityVars_SetTownPlayer(int number);
 
 #endif

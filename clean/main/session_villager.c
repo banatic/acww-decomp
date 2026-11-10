@@ -258,11 +258,11 @@ void SessionVillager_SendObjectClear(u8 *villager)
 CLEAN_AS(func_0207863c, SessionVillager_SendObjectClear)
 
 /* func_02078648: the low 5 bits of the object's byte 0xb become `value` (func_0209bb90). */
-void SessionVillager_SendObjectByte0B(u8 *villager, int value)
+void SessionVillager_SendObjectByte0b(u8 *villager, int value)
 {
     SessionVillager_SendObjectChange(villager, value, VILLAGER_OBJECT_SET_BYTE_0B);
 }
-CLEAN_AS(func_02078648, SessionVillager_SendObjectByte0B)
+CLEAN_AS(func_02078648, SessionVillager_SendObjectByte0b)
 
 /* func_02078654: sends operation `operation` (VILLAGER_OBJECT_*) with `value` on the
  * villager's object. */

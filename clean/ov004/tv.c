@@ -189,7 +189,7 @@ void TvAnimated_UpdateState(TvAnimated *tv)
 }
 CLEAN_AS(_ZN18Obj_ov004_02250f8819func_ov004_0221593cEv, TvAnimated_UpdateState)
 
-/* func_ov004_022159c8 (vtable slot 0x70): the base class's (RoomObject_SetUnk77C, given `state`
+/* func_ov004_022159c8 (vtable slot 0x70): the base class's (RoomObject_SetUnk77c, given `state`
  * and `value`), then enters `state` if its entry (through a table) agrees; whether it did.
  * States 4 and above do not exist. */
 int TvAnimated_EnterState(TvAnimated *tv, unsigned int state, int value)
@@ -200,7 +200,7 @@ int TvAnimated_EnterState(TvAnimated *tv, unsigned int state, int value)
         &data_ov004_022503c0, /* TvAnimated_EnterOn */
         &data_ov004_022503b8, /* TvAnimated_EnterTurningOff */
     };
-    RoomObject_SetUnk77C(&tv->base.base, (int) state, value);
+    RoomObject_SetUnk77c(&tv->base.base, (int) state, value);
     MemberTable_InitOnce(&data_ov004_0225702c, data_ov004_0225738c, entries, TV_ANIMATED_STATE_COUNT);
     if (state < TV_ANIMATED_STATE_COUNT && MemberPointer_CallInt(&data_ov004_0225738c[state], tv) != 0) {
         tv->base.animated_state = (u8) state;
@@ -223,11 +223,11 @@ u8 TvAnimated_StateIsOn(TvAnimated *tv, unsigned int state)
 CLEAN_AS(func_ov004_02215a68, TvAnimated_StateIsOn)
 
 /* func_ov004_02215a7c (vtable slot 0x0c) */
-int TvAnimated_Vfunc0C(void)
+int TvAnimated_Vfunc0c(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov004_02215a7c, TvAnimated_Vfunc0C)
+CLEAN_AS(func_ov004_02215a7c, TvAnimated_Vfunc0c)
 
 /* _ZN18Obj_ov004_02250f8819func_ov004_02215a80Ev (vtable slot 0x80, each frame while neither
  * appearing nor vanishing): the glow, then the state's update.
@@ -355,7 +355,7 @@ void Tv_UpdateState(Tv *tv)
 }
 CLEAN_AS(_ZN18Obj_ov004_0225143819func_ov004_02215c70Ev, Tv_UpdateState)
 
-/* func_ov004_02215cdc (vtable slot 0x70): the base class's (RoomObject_SetUnk77C, given `state`
+/* func_ov004_02215cdc (vtable slot 0x70): the base class's (RoomObject_SetUnk77c, given `state`
  * and `value`), then enters `state` if its entry (through a table) agrees; whether it did.
  * States 2 and above do not exist. */
 int Tv_EnterState(Tv *tv, unsigned int state, int value)
@@ -364,7 +364,7 @@ int Tv_EnterState(Tv *tv, unsigned int state, int value)
         &data_ov004_02250420, /* Tv_EnterOff */
         &data_ov004_022503d8, /* Tv_EnterOn */
     };
-    RoomObject_SetUnk77C(&tv->base, (int) state, value);
+    RoomObject_SetUnk77c(&tv->base, (int) state, value);
     MemberTable_InitOnce(&data_ov004_02257000, data_ov004_02257184, entries, TV_STATE_COUNT);
     if (state < TV_STATE_COUNT && MemberPointer_CallInt(&data_ov004_02257184[state], tv) != 0) {
         tv->state = (u8) state;
@@ -413,11 +413,11 @@ int Tv_ShowScreen(Tv *tv, int on)
 CLEAN_AS(func_ov004_02215d80, Tv_ShowScreen)
 
 /* func_ov004_02215ddc (vtable slot 0x0c) */
-int Tv_Vfunc0C(void)
+int Tv_Vfunc0c(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov004_02215ddc, Tv_Vfunc0C)
+CLEAN_AS(func_ov004_02215ddc, Tv_Vfunc0c)
 
 /* _ZN18Obj_ov004_0225143819func_ov004_02215de0Ev (vtable slot 0x80, each frame while neither
  * appearing nor vanishing): the glow, the state's update, and `heard` cleared for

@@ -170,11 +170,11 @@ void CameraControl_SnapToPoint(const Vec3 *point)
 CLEAN_AS(func_0203ab78, CameraControl_SnapToPoint)
 
 /* func_0203ac04 */
-void CameraControl_SetFlag1F5(void)
+void CameraControl_SetFlag1f5(void)
 {
     data_021c67a4->unk_1f5 = 1;
 }
-CLEAN_AS(func_0203ac04, CameraControl_SetFlag1F5)
+CLEAN_AS(func_0203ac04, CameraControl_SetFlag1f5)
 
 /* func_0203ac18: overlay 68's stage 3 started on the camera (func_ov068_0226dc64). */
 void CameraControl_StartStage3(void)
@@ -254,11 +254,11 @@ int CameraControl_IsMoving(void)
 CLEAN_AS(func_0203ad88, CameraControl_IsMoving)
 
 /* func_0203adb0: the camera's eased blend share (CameraControl.share). */
-u32 CameraControl_Value1E8(void)
+u32 CameraControl_Value1e8(void)
 {
     return (u32) data_021c67a4->share;
 }
-CLEAN_AS(func_0203adb0, CameraControl_Value1E8)
+CLEAN_AS(func_0203adb0, CameraControl_Value1e8)
 
 /* func_0203adc4: in modes 2 and 4, in mode 1 entered from mode 2, or while a view is saved:
  * whether `point`'s z less half of `size` is past 2.0 before the goal's second offset's z.

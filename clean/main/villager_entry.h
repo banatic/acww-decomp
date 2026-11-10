@@ -21,14 +21,14 @@
 #define VILLAGER_ENTRY_MEMORY_SIZE 0x80
 #define VILLAGER_ENTRY_BYTE_1E_MAX 32
 
-void VillagerEntry_AddByte1E(u8 *villager, int amount);
-void VillagerEntry_DoubleByte1E(u8 *villager);
-void VillagerEntry_HalveByte1E(u8 *villager);
-void VillagerEntry_ClearByte1E(u8 *villager);
-int VillagerEntry_IsByte1EFull(u8 *villager, void *record);
-void VillagerEntry_RaiseByte1E(u8 *villager, void *record);
+void VillagerEntry_AddByte1e(u8 *villager, int amount);
+void VillagerEntry_DoubleByte1e(u8 *villager);
+void VillagerEntry_HalveByte1e(u8 *villager);
+void VillagerEntry_ClearByte1e(u8 *villager);
+int VillagerEntry_IsByte1eFull(u8 *villager, void *record);
+void VillagerEntry_RaiseByte1e(u8 *villager, void *record);
 int VillagerEntry_IsNotUpset(u8 *villager);
-void VillagerEntry_SetByte1E(u8 *villager, void *record);
+void VillagerEntry_SetByte1e(u8 *villager, void *record);
 int VillagerEntry_NoteVisitor(u8 *villager, void *record);
 void VillagerEntry_MarkFleaMarketDone(u8 *villager, const void *player);
 int VillagerEntry_IsSleepTime(u8 *villager, const DateTime *when);

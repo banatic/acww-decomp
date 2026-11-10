@@ -5,7 +5,7 @@
 # schedule, so her tent stands south of the town hall. As fox-tent.txt to the tent (3400); A
 # and UP go in, UP to her table (3966). A every 40 frames: the first answer asks for the day's
 # fortune, the card is good luck (VillagerTown_UpdateAlone: the villagers' state byte 0x1e
-# doubled, VillagerTown_DoubleByte1E, villager 3's to its full 32); she asks again: answer
+# doubled, VillagerTown_DoubleByte1e, villager 3's to its full 32); she asks again: answer
 # rows by the keys and a pen tap on a row (8052, TalkChoiceCursor_StepTouch), DOWN DOWN picks
 # goodbye (9104-9124). DOWN out of the tent (outside at about 10300); east to stand about
 # two tiles west of villager 3 (11354): with its byte full it calls the player (behaviour 7,

@@ -36,7 +36,7 @@ static_assert(offsetof(RoomObject, pick_box) == 0x28c, "pick box");
 static_assert(offsetof(RoomObject, model_resource) == 0x594, "model resource");
 static_assert(offsetof(RoomObject, joint_frame) == 0x5dc, "joint frame");
 static_assert(offsetof(RoomObject, unk_774) == 0x774, "unk_774");
-static_assert(offsetof(RoomObject, unk_77C) == 0x77c, "unk_77C");
+static_assert(offsetof(RoomObject, unk_77c) == 0x77c, "unk_77c");
 static_assert(offsetof(RoomObject, light_kind) == 0x794, "light kind");
 static_assert(offsetof(RoomObject, sound) == 0x798, "sound");
 static_assert(offsetof(RoomObject, anims) == 0x7c4, "anims");
@@ -108,19 +108,19 @@ static void set_vec(Vec3 *v, fx32 x, fx32 y, fx32 z)
 }
 
 /* func_ov004_0220e8f0: whether the object may move by `offset`, or else turn by `turn`. Not
- * when unk_77D is set, when SceneKinds_CurrentIsHouseRoom or Room_PlayerIsOfThisTown say no, when it stands on
+ * when unk_77d is set, when SceneKinds_CurrentIsHouseRoom or Room_PlayerIsOfThisTown say no, when it stands on
  * another object, without the scene's map or the player, or when CarriedItems_CellsAreClear
  * says no. Else it is taken off the map for the test, and each cell it would cover must hold no
  * item on the floor, pass UnitTypeInfo_Byte04At and have no object on top that is not idle. Without
  * `offset`, a cell may not be the player's, and the cells at half the turn must hold no item on
  * the floor either. With `turn` 0, the player's position moved by `offset` must hold no other
- * object (but one with unk_78C), CollisionMap_UnclaimedObjectAtPoint must find nothing there (-1) and
+ * object (but one with unk_78c), CollisionMap_UnclaimedObjectAtPoint must find nothing there (-1) and
  * RoomObjects_HeightAtPoint must give 0.
  * QUIRK: the tests on the player's position are made again for each cell. The object is put
  * back on the map (without its reference) either way. */
 int RoomObject_CanMoveOrTurn(RoomObject *object, Vec3 *offset, int turn)
 {
-    if (object->unk_77D) {
+    if (object->unk_77d) {
         return 0;
     }
     if (!SceneKinds_CurrentIsHouseRoom()) {
@@ -194,7 +194,7 @@ int RoomObject_CanMoveOrTurn(RoomObject *object, Vec3 *offset, int turn)
             break;
         }
         if (turn == 0) {
-            if ((in_the_way != NULL && !in_the_way->unk_78C && in_the_way != object) ||
+            if ((in_the_way != NULL && !in_the_way->unk_78c && in_the_way != object) ||
                 CollisionMap_UnclaimedObjectAtPoint(&destination) != NO_ACTOR || RoomObjects_HeightAtPoint(&destination)) {
                 free = 0;
                 break;

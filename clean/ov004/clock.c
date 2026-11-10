@@ -79,11 +79,11 @@ void Clock_NodeDescAfterHook(Clock *clock, int node, G3dRenderState *state)
 CLEAN_AS(func_ov004_022168f0, Clock_NodeDescAfterHook)
 
 /* func_ov004_022168f8 (vtable slot 0x0c) */
-int Clock_Vfunc0C(void)
+int Clock_Vfunc0c(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov004_022168f8, Clock_Vfunc0C)
+CLEAN_AS(func_ov004_022168f8, Clock_Vfunc0c)
 
 /* The striking of a clock of kind 0x10, each frame. The nearest striking clock sets variable 1
  * of its sound when its count changes (not in mode 2). With no strikes left, a new hour (not in

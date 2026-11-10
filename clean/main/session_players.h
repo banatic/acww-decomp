@@ -38,7 +38,7 @@ typedef struct SessionPlayers {
     u16 sun_date;                                     /* 0x18: year (7 bits), month (4) and day (5) */
     u16 sun_countdown;                                /* 0x1a */
     u8 sun_flags;                                     /* 0x1c */
-    u8 unk_1D[3];
+    u8 unk_1d[3];
     int saved_state[SESSION_PLAYERS_COUNT];     /* 0x20 */
     u8 saved_scene[SESSION_PLAYERS_COUNT];      /* 0x30 */
     Vec3 saved_position[SESSION_PLAYERS_COUNT]; /* 0x34 */

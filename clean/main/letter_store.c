@@ -36,11 +36,11 @@ void LetterStore_MarkBlockReady(u8 *block)
 CLEAN_AS(func_0209e5d8, LetterStore_MarkBlockReady)
 
 /* func_0209e5e4: the state byte set to 0x1c, a value whose meaning is not known. */
-void LetterStore_MarkBlock1C(u8 *block)
+void LetterStore_MarkBlock1c(u8 *block)
 {
     block[LETTER_STORE_BLOCK_STATE] = 0x1c;
 }
-CLEAN_AS(func_0209e5e4, LetterStore_MarkBlock1C)
+CLEAN_AS(func_0209e5e4, LetterStore_MarkBlock1c)
 
 /* func_0209e5f0 */
 int LetterStore_IsBlockReady(u8 *block)

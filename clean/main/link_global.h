@@ -34,7 +34,7 @@ void LinkGlobal_SetArrived(int slot, int value);
 void LinkGlobal_SetPlace(int slot, int scene, int holder, int moving, int mask);
 void LinkGlobal_QueueMove(int slot, int scene);
 void LinkGlobal_Empty7448(void);
-int LinkGlobal_Zero744C(void);
+int LinkGlobal_Zero744c(void);
 int LinkGlobal_Zero7450(void);
 
 #endif

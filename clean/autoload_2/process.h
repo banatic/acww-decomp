@@ -101,7 +101,7 @@ typedef struct StepList {
     s16 state;        /* StepListState */
     s16 index;        /* the step under way; the number of steps done */
     const int *steps; /* ends with 0 */
-    u8 unk_0C[6];
+    u8 unk_0c[6];
     s16 step_state; /* cleared when a step is done; the steps' own use */
 } StepList;
 

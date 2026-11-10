@@ -23,7 +23,7 @@ call 6401 020082f9 02392170 0 0 0 00000000 00000000  # main FieldActor_ExitState
 call 6401 020082e9 02392170 0 0 0 00000000 00000000  # main FieldActor_UpdateState92
 call 6401 020082ed 02392170 0 0 0 00000000 00000000  # main FieldActor_State92Message
 call 6401 02009569 02392170 0 0 0 00000000 00000000  # main FieldActor_State70Message
-call 6401 02009915 02392170 0 0 0 00000000 00000000  # main FieldActor_State6FMessage
+call 6401 02009915 02392170 0 0 0 00000000 00000000  # main FieldActor_State6fMessage
 call 6401 02009e25 02392170 0 0 0 00000000 00000000  # main FieldActor_State35Message
 call 6401 02009ed5 02392170 0 0 0 00000000 00000000  # main FieldActor_State34Message
 call 6401 02009f95 02392170 0 0 0 00000000 00000000  # main FieldActor_State33Message
@@ -36,7 +36,7 @@ call 6401 0220f6d9 02392170 0 0 0 0220f6d8 00004770  # ov003 FieldActor_State69M
 call 6401 0220fd01 02392170 0 0 0 0220fd00 00004770  # ov003 FieldActor_State67Message
 call 6401 0221013d 02392170 0 0 0 0221013c 00004770  # ov003 FieldActor_State65Message
 call 6401 02210b39 02392170 0 0 0 02210b38 00004770  # ov003 FieldActor_State61Message
-call 6401 02216641 02392170 0 0 0 02216640 00004770  # ov003 FieldActor_State4AMessage
+call 6401 02216641 02392170 0 0 0 02216640 00004770  # ov003 FieldActor_State4aMessage
 call 6401 02271e79 02392170 0 0 0 02271e78 00004770  # ov068 FieldActor_State88Message
 call 6401 02271f7d 02392170 0 0 0 02271f7c 00004770  # ov068 FieldActor_State87Message
 call 6401 022675c5 022a90c4 022a880c 0 0 022675c4 00004770  # ov068 OutdoorVillagerActs_IdlePushedTalk
@@ -62,9 +62,9 @@ call 6401 0204f8b9 0 0 0 0 00000000 00000000  # main DebugScreen_Nothing
 call 6401 02058d29 022b6800 0 0 0 00000000 00000000  # main Obj020dd33c_EnterMode6Kind0 (a live 3D object)
 call 6401 0206cc7d 0 0 0 0 00000000 00000000  # main TalkPageMeasurer_GreetingEnd
 call 6401 02099e79 0 0 0 0 00000000 00000000  # main WifiFriendList_OnFriendDeleted
-call 6401 020a44b9 0 0 0 0 00000000 00000000  # main ActivityJobs_Start0E
-call 6401 020a44ed 0 0 0 0 00000000 00000000  # main ActivityJobs_Start0D
-call 6401 020a4591 0 0 0 0 00000000 00000000  # main ActivityJobs_Start0B
+call 6401 020a44b9 0 0 0 0 00000000 00000000  # main ActivityJobs_Start0e
+call 6401 020a44ed 0 0 0 0 00000000 00000000  # main ActivityJobs_Start0d
+call 6401 020a4591 0 0 0 0 00000000 00000000  # main ActivityJobs_Start0b
 call 6401 020a4649 0 0 0 0 00000000 00000000  # main ActivityJobs_Start09
 call 6401 020b72d5 0 0 0 0 00000000 00000000  # main SceneClass3_Slot12
 call 6401 020b9479 0 0 0 0 00000000 00000000  # main VramFrame_ReportFull

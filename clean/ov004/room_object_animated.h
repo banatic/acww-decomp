@@ -13,7 +13,7 @@ typedef struct AnimatedRoomObject {
     s32 start_frame; /* what ItemInfo_Zero gave */
 } AnimatedRoomObject;
 
-int AnimatedRoomObject_Vfunc0C(void);
+int AnimatedRoomObject_Vfunc0c(void);
 int AnimatedRoomObject_Vfunc80(void);
 int AnimatedRoomObject_StartAnims(AnimatedRoomObject *object);
 AnimatedRoomObject *AnimatedRoomObject_Delete(AnimatedRoomObject *object);

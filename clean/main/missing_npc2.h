@@ -103,8 +103,8 @@ void MissingNpc2_OnTalkEnd(MissingNpc2 *self);
 void MissingNpc2_SetState(MissingNpc2 *self, int state);
 
 /* What "sp_npc_missing1" asks of the one that exists. */
-void MissingNpc2_StartScene2FWalk(void);
-void MissingNpc2_StartScene2FExit(void);
+void MissingNpc2_StartScene2fWalk(void);
+void MissingNpc2_StartScene2fExit(void);
 
 /* The states' entries and updates. */
 int MissingNpc2_EnterIdle(MissingNpc2 *self);
@@ -115,12 +115,12 @@ int MissingNpc2_EnterTalked(void);
 int MissingNpc2_UpdateTalked(void);
 void MissingNpc2_EnterSpeaker(MissingNpc2 *self);
 int MissingNpc2_UpdateSpeaker(void);
-int MissingNpc2_EnterScene2FWalk(MissingNpc2 *self);
-int MissingNpc2_UpdateScene2FWalk(MissingNpc2 *self);
+int MissingNpc2_EnterScene2fWalk(MissingNpc2 *self);
+int MissingNpc2_UpdateScene2fWalk(MissingNpc2 *self);
 int MissingNpc2_EnterTurn(MissingNpc2 *self);
 int MissingNpc2_UpdateTurn(MissingNpc2 *self);
-int MissingNpc2_EnterScene2FExit(MissingNpc2 *self);
-int MissingNpc2_UpdateScene2FExit(MissingNpc2 *self);
+int MissingNpc2_EnterScene2fExit(MissingNpc2 *self);
+int MissingNpc2_UpdateScene2fExit(MissingNpc2 *self);
 int MissingNpc2_EnterTurnAndTalk(MissingNpc2 *self);
 int MissingNpc2_UpdateTurnAndTalk(void);
 

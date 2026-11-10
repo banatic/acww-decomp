@@ -165,16 +165,16 @@ void RoomObject_Vfunc08(RoomObject *object, int mode)
 CLEAN_AS(func_ov004_02210b94, RoomObject_Vfunc08)
 
 /* Once the model files are in: the model and its texture to the model object, then
- * RoomObject_BindModel with unk_77E set, cleared again when the class (vtable slot 0x7c) says
+ * RoomObject_BindModel with unk_77e set, cleared again when the class (vtable slot 0x7c) says
  * it is done. Whether it is. */
 static int bind_model(RoomObject *object)
 {
     u8 *model = FurnitureModel_Model(&object->model_files);
     ModelObject_SetModel(&object->model.object, model, FurnitureModel_Texture(&object->model_files));
-    object->unk_77E = 1;
+    object->unk_77e = 1;
     RoomObject_BindModel(object);
     if (object->vtable->on_model_bound(object)) {
-        object->unk_77E = 0;
+        object->unk_77e = 0;
         return 1;
     }
     return 0;
@@ -299,11 +299,11 @@ RoomObject *RoomObject_ConstructBase(RoomObject *object)
 CLEAN_AS(func_ov004_022110e4, RoomObject_ConstructBase)
 
 /* func_ov004_022111ec (vtable slot 0x7c, once the model is bound): done at once. */
-int RoomObject_Vfunc7C(void)
+int RoomObject_Vfunc7c(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov004_022111ec, RoomObject_Vfunc7C)
+CLEAN_AS(func_ov004_022111ec, RoomObject_Vfunc7c)
 
 /* func_ov004_02211518 (the class's operator delete): back to the room's heap. */
 void RoomObject_Free(void *block)

@@ -30,7 +30,7 @@ CLEAN_AS(func_02080814, VillagerData_ModeWeights)
  * 0x7d7 picks, ItemAttributes_Match); 0 when the number is past 5 or there is no data. */
 int VillagerData_ItemLiking(u8 *villager, u16 *item)
 {
-    const VillagerDataLike *like = VillagerData_Like(villager, VillagerMode_Counter7D7(villager));
+    const VillagerDataLike *like = VillagerData_Like(villager, VillagerMode_Counter7d7(villager));
     if (like == NULL) {
         return 0;
     }

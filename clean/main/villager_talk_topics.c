@@ -122,10 +122,10 @@ extern MemberPointer data_021c1f94[VILLAGER_TALK_TOPICS_PICKERS];
 extern const MemberPointer data_020d9250; /* VillagerTalkTopics_PickFond */
 extern const MemberPointer data_020d92a8; /* VillagerTalkTopics_PickUnfond */
 extern const MemberPointer data_020d9190; /* VillagerTalkTopics_PickLetterOfTown */
-extern const MemberPointer data_020d9300; /* VillagerTalkTopics_PickWithText2A */
+extern const MemberPointer data_020d9300; /* VillagerTalkTopics_PickWithText2a */
 extern const MemberPointer data_020d9318; /* VillagerTalkTopics_PickWithTownTune */
 extern const MemberPointer data_020d9330; /* VillagerTalkTopics_PickAny */
-extern const MemberPointer data_020d92c8; /* VillagerTalkTopics_PickWithText2A */
+extern const MemberPointer data_020d92c8; /* VillagerTalkTopics_PickWithText2a */
 extern const MemberPointer data_020d9418; /* VillagerTalkTopics_PickLetterOfResident */
 extern const MemberPointer data_020d9458; /* VillagerTalkTopics_PickLetterOfResident */
 extern const MemberPointer data_020d8ef8; /* VillagerTalkTopics_PickWithItem */
@@ -695,29 +695,29 @@ CLEAN_AS(func_02021c08, VillagerTalkTopics_HoldsLetterOfResident)
 
 /* func_02021c4c: a memory with its text at 0x2a set; the text into the talk's slot 1 and its
  * town into slot 9. */
-void *VillagerTalkTopics_PickWithText2A(VillagerTalk *talk, VillagerMemory **list, int count)
+void *VillagerTalkTopics_PickWithText2a(VillagerTalk *talk, VillagerMemory **list, int count)
 {
     int memory = VillagerTalkTopics_PickRandom(topics_record(talk), list, count, func_02021cac);
     if (memory != 0) {
         VillagerMemory *picked = (VillagerMemory *) (uintptr_t) (u32) memory;
         Label22Text label;
         Label22Text_Construct(&label);
-        VillagerMemoryEntry_Text2AToLabel(picked, &label);
+        VillagerMemoryEntry_Text2aToLabel(picked, &label);
         TalkObject_SetPart((TalkObject *) talk->scene.talk, 1, (TextBase *) &label);
         SceneBase_PutTownName(topics_base(talk), (unsigned int) VillagerMemoryEntry_Town(picked), 9);
         Label22Text_Destruct(&label);
     }
     return (void *) (uintptr_t) (u32) memory;
 }
-CLEAN_AS(func_02021c4c, VillagerTalkTopics_PickWithText2A)
+CLEAN_AS(func_02021c4c, VillagerTalkTopics_PickWithText2a)
 
 /* func_02021cac */
-int VillagerTalkTopics_HasText2A(u8 *villager, VillagerMemory *memory)
+int VillagerTalkTopics_HasText2a(u8 *villager, VillagerMemory *memory)
 {
     (void) villager;
-    return VillagerMemoryEntry_Text2ASet(memory) == 1;
+    return VillagerMemoryEntry_Text2aSet(memory) == 1;
 }
-CLEAN_AS(func_02021cac, VillagerTalkTopics_HasText2A)
+CLEAN_AS(func_02021cac, VillagerTalkTopics_HasText2a)
 
 /* func_02021cc8: a memory of a player whose letter the villager holds and who is of the town
  * the villager got its last letter in; that town into the talk's slot 9. */

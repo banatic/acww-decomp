@@ -329,13 +329,13 @@ u16 *VillagerState_HeldItem(VillagerState *entry)
 CLEAN_AS(func_02079464, VillagerState_HeldItem)
 
 /* func_02079468: byte 0x1e doubled, at most 32. */
-void VillagerState_DoubleByte1E(VillagerState *entry)
+void VillagerState_DoubleByte1e(VillagerState *entry)
 {
     int doubled = entry->byte_1e * 2;
 
     entry->byte_1e = (u8) (doubled > 32 ? 32 : doubled);
 }
-CLEAN_AS(func_02079468, VillagerState_DoubleByte1E)
+CLEAN_AS(func_02079468, VillagerState_DoubleByte1e)
 
 /* func_02079478: flag 1 set unless in a villager's house (SceneQuery_InVillagerHouse). */
 void VillagerState_SetFlag1OutsideHouse(VillagerState *entry)

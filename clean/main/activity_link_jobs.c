@@ -257,7 +257,7 @@ void ActivityLinkJobs_Step14(Activity *activity)
             return;
         }
         case 4:
-            if (link_lost(AIDS_HOST) || !ActivityVars_Flag3C08()) {
+            if (link_lost(AIDS_HOST) || !ActivityVars_Flag3c08()) {
                 return;
             }
             Process_RequestDelete(SessionPlayers_ActorOf(SESSION_PLAYERS_OWN));
@@ -843,11 +843,11 @@ void ActivityLinkJobs_Step19(Activity *activity)
 CLEAN_AS(func_020a33e0, ActivityLinkJobs_Step19)
 
 /* func_020a33d8: job 0x1a starts: message 7 of "sp_etc_sequence2" (Activity_TalkSequence2). */
-void ActivityLinkJobs_Start1A(Activity *activity)
+void ActivityLinkJobs_Start1a(Activity *activity)
 {
     Activity_TalkSequence2(activity);
 }
-CLEAN_AS(func_020a33d8, ActivityLinkJobs_Start1A)
+CLEAN_AS(func_020a33d8, ActivityLinkJobs_Start1a)
 
 /* func_020a3084: job 0x1a's steps, with the peers' link; "leaving" is the start menu's leave
  * choice (StartMenu_LeaveChoice):
@@ -865,7 +865,7 @@ CLEAN_AS(func_020a33d8, ActivityLinkJobs_Start1A)
  *   14 message 7/5 sent;
  *   16-26  ActivitySave_EndSteps from 0x10;
  * then talk 0 closed, leaving it is given message 6 of "sp_etc_sequence2" next; job 8. */
-void ActivityLinkJobs_Step1A(Activity *activity)
+void ActivityLinkJobs_Step1a(Activity *activity)
 {
     NetSession *session;
     switch (activity->state) {
@@ -994,14 +994,14 @@ void ActivityLinkJobs_Step1A(Activity *activity)
             return;
     }
 }
-CLEAN_AS(func_020a3084, ActivityLinkJobs_Step1A)
+CLEAN_AS(func_020a3084, ActivityLinkJobs_Step1a)
 
 /* func_020a307c: job 0x1b starts: message 7 of "sp_etc_sequence2" (Activity_TalkSequence2). */
-void ActivityLinkJobs_Start1B(Activity *activity)
+void ActivityLinkJobs_Start1b(Activity *activity)
 {
     Activity_TalkSequence2(activity);
 }
-CLEAN_AS(func_020a307c, ActivityLinkJobs_Start1B)
+CLEAN_AS(func_020a307c, ActivityLinkJobs_Start1b)
 
 /* func_020a2dec: job 0x1b's steps, with the host's link; "leaving" is the start menu's leave
  * choice:
@@ -1018,7 +1018,7 @@ CLEAN_AS(func_020a307c, ActivityLinkJobs_Start1B)
  *   17-27  ActivitySave_EndSteps from 0x11;
  * then talk 0 closed; leaving, it is given message 6 of "sp_etc_sequence2" next and job 0x11
  * starts; else job 8. */
-void ActivityLinkJobs_Step1B(Activity *activity)
+void ActivityLinkJobs_Step1b(Activity *activity)
 {
     switch (activity->state) {
         case 0:
@@ -1119,18 +1119,18 @@ void ActivityLinkJobs_Step1B(Activity *activity)
             return;
     }
 }
-CLEAN_AS(func_020a2dec, ActivityLinkJobs_Step1B)
+CLEAN_AS(func_020a2dec, ActivityLinkJobs_Step1b)
 
 /* func_020a2ddc: job 0x1c starts: message 35 of "sp_etc_sequence1". */
-void ActivityLinkJobs_Start1C(Activity *activity)
+void ActivityLinkJobs_Start1c(Activity *activity)
 {
     ActivityTalk_Show(activity, data_020e3c54, SEQUENCE1_WAITING);
 }
-CLEAN_AS(func_020a2ddc, ActivityLinkJobs_Start1C)
+CLEAN_AS(func_020a2ddc, ActivityLinkJobs_Start1c)
 
 /* func_020a2dbc: job 0x1c's step: once talk 0 waits (given 1), overlay 66 loaded and job 0x1d
  * started. */
-void ActivityLinkJobs_Step1C(Activity *activity)
+void ActivityLinkJobs_Step1c(Activity *activity)
 {
     if (!ActivityTalk_StartSpinner(activity, 1)) {
         return;
@@ -1138,13 +1138,13 @@ void ActivityLinkJobs_Step1C(Activity *activity)
     LibraryOverlay_Switch66();
     ActivityProcess_StartJob(activity, 0x1d);
 }
-CLEAN_AS(func_020a2dbc, ActivityLinkJobs_Step1C)
+CLEAN_AS(func_020a2dbc, ActivityLinkJobs_Step1c)
 
 /* func_020a2d48: job 0x1d starts: a countdown of 600 frames, a session started (mode 1, two
  * players), the host's receive buffers set, and 14 bytes handed to overlay 66
  * (Local_Call02269638): the town's name (12 bytes), whether the state block is not set up,
  * and 1. The first free town record number kept in byte_102. */
-void ActivityLinkJobs_Start1D(Activity *activity)
+void ActivityLinkJobs_Start1d(Activity *activity)
 {
     u8 offer[16];
 
@@ -1158,13 +1158,13 @@ void ActivityLinkJobs_Start1D(Activity *activity)
     Local_Call02269638(offer, 14);
     activity->byte_102 = (u8) PlayerRecords_FirstFree(data_021dc7a8.players);
 }
-CLEAN_AS(func_020a2d48, ActivityLinkJobs_Start1D)
+CLEAN_AS(func_020a2d48, ActivityLinkJobs_Start1d)
 
 /* func_020a2c8c: job 0x1d's step: once system packet 20 named a slot 1-3, talk 0 closed and
  * given message 38 of "sp_etc_sequence1", and job 0. Else, with two players the countdown is
  * reset; with one it counts down (sending nothing meanwhile); with none or at its end the Wi-Fi
  * session ended (then overlay 68), talk 0 given message 37 and closed, and job 0xc. */
-void ActivityLinkJobs_Step1D(Activity *activity)
+void ActivityLinkJobs_Step1d(Activity *activity)
 {
     int slot = Activity_CurrentSlot100();
     if (slot > 0 && slot < NO_SLOT) {
@@ -1202,16 +1202,16 @@ void ActivityLinkJobs_Step1D(Activity *activity)
         ActivityProcess_StartJob(activity, 0xc);
     }
 }
-CLEAN_AS(func_020a2c8c, ActivityLinkJobs_Step1D)
+CLEAN_AS(func_020a2c8c, ActivityLinkJobs_Step1d)
 
 /* func_020a2c5c: job 0x1e starts at step 0; byte 0x10b says whether the state block is not set
  * up. */
-void ActivityLinkJobs_Start1E(Activity *activity)
+void ActivityLinkJobs_Start1e(Activity *activity)
 {
     activity->state = 0;
     activity->unk_10b[0] = StateBlock_IsSetUp(&data_021dc7a8) == 0;
 }
-CLEAN_AS(func_020a2c5c, ActivityLinkJobs_Start1E)
+CLEAN_AS(func_020a2c5c, ActivityLinkJobs_Start1e)
 
 /* func_020a2948: job 0x1e's steps, with every AID's link, for the slot of system packet 20
  * (Activity_CurrentSlot100):
@@ -1228,7 +1228,7 @@ CLEAN_AS(func_020a2c5c, ActivityLinkJobs_Start1E)
  *   11-21  ActivitySave_EndSteps from 0xb;
  * then talk 0 closed and job 0xe. A failed card step goes to step 0xb.
  * REQUIRES: the slot of system packet 20 stays 1-3 from step 1 on (it indexes slot_answer). */
-void ActivityLinkJobs_Step1E(Activity *activity)
+void ActivityLinkJobs_Step1e(Activity *activity)
 {
     int result;
     int slot;
@@ -1368,17 +1368,17 @@ void ActivityLinkJobs_Step1E(Activity *activity)
             return;
     }
 }
-CLEAN_AS(func_020a2948, ActivityLinkJobs_Step1E)
+CLEAN_AS(func_020a2948, ActivityLinkJobs_Step1e)
 
 /* func_020a2924: job 0x1f starts at step 0: the current player's flag 2 (PLAYER_FLAG_UNSAVED) cleared and the
  * transfer of this system's AID stopped. */
-void ActivityLinkJobs_Start1F(Activity *activity)
+void ActivityLinkJobs_Start1f(Activity *activity)
 {
     PlayerRecord_ClearFlag(PlayerRecords_Current(), PLAYER_FLAG_UNSAVED);
     Session_StopTransfer((u32) Net_GetMyAid());
     activity->state = 0;
 }
-CLEAN_AS(func_020a2924, ActivityLinkJobs_Start1F)
+CLEAN_AS(func_020a2924, ActivityLinkJobs_Start1f)
 
 /* func_020a2650: job 0x1f's steps, with the host's link:
  *   0  system packet 20 sent; 1  this system's record sent (21); 2  the kept letters
@@ -1393,7 +1393,7 @@ CLEAN_AS(func_020a2924, ActivityLinkJobs_Start1F)
  *   10 after a lost link or END, the copy written again, the connect mode 0;
  *   11-21  ActivitySave_EndSteps from 0xb;
  * then job 0. A failed card step goes to step 0xb (connect mode 0 again once it was 2). */
-void ActivityLinkJobs_Step1F(Activity *activity)
+void ActivityLinkJobs_Step1f(Activity *activity)
 {
     int result;
     switch (activity->state) {
@@ -1518,4 +1518,4 @@ void ActivityLinkJobs_Step1F(Activity *activity)
             return;
     }
 }
-CLEAN_AS(func_020a2650, ActivityLinkJobs_Step1F)
+CLEAN_AS(func_020a2650, ActivityLinkJobs_Step1f)

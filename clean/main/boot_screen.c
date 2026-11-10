@@ -118,7 +118,7 @@ void BootScreen_ApplySave(BootScreen *screen)
             SaveStamp_SetLostFlag(1);
         }
         if (screen->save_status == BOOT_SCREEN_SAVE_BOTH_BAD) {
-            CardSave_ClearByte3FFFC();
+            CardSave_ClearByte3fffc();
         }
         StateBlock_Init((StateBlock *) (void *) data_021dc7a8);
         PlayerRecords_ClearGuests();

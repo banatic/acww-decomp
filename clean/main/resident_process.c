@@ -74,7 +74,7 @@ int ResidentProcess_Delete(void)
     AcreMap_FreeTown(data_021fbe94);
     AcreMap_FreeRooms((int) (uintptr_t) data_021fbe94);
     Session_FreeHeap();
-    LinkScene_Empty6C90();
+    LinkScene_Empty6c90();
     return 1;
 }
 CLEAN_AS(func_0209da30, ResidentProcess_Delete)
@@ -93,7 +93,7 @@ int ResidentProcess_Create(Process *self)
     AcreMap_CreateTown(data_021fbe94);
     AcreMap_CreateRooms(data_021fbe94);
     Session_CreateHeap(data_021fbe94);
-    LinkScene_Empty6C94();
+    LinkScene_Empty6c94();
     SceneShareTable_Reset();
     return 1;
 }

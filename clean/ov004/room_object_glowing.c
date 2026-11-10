@@ -99,7 +99,7 @@ void GlowingRoomObject_UpdateState(GlowingRoomObject *object)
 }
 CLEAN_AS(_ZN18Obj_ov004_022509ac19func_ov004_0221215cEv, GlowingRoomObject_UpdateState)
 
-/* func_ov004_022121c8 (vtable slot 0x70): the base class's (RoomObject_SetUnk77C, given `state`
+/* func_ov004_022121c8 (vtable slot 0x70): the base class's (RoomObject_SetUnk77c, given `state`
  * and `value`), then enters `state` if its entry (through a table) agrees; whether it did.
  * States 2 and above do not exist. */
 int GlowingRoomObject_EnterState(GlowingRoomObject *object, unsigned int state, int value)
@@ -108,7 +108,7 @@ int GlowingRoomObject_EnterState(GlowingRoomObject *object, unsigned int state, 
         &data_ov004_02250458, /* GlowingRoomObject_EnterOff */
         &data_ov004_02250488, /* GlowingRoomObject_EnterOn */
     };
-    RoomObject_SetUnk77C(&object->base, (int) state, value);
+    RoomObject_SetUnk77c(&object->base, (int) state, value);
     MemberTable_InitOnce(&data_ov004_02257048, data_ov004_02257224, entries, GLOWING_STATE_COUNT);
     if (state < GLOWING_STATE_COUNT && MemberPointer_CallInt(&data_ov004_02257224[state], object) != 0) {
         object->state = (u8) state;
@@ -131,11 +131,11 @@ u8 GlowingRoomObject_StateIsOn(GlowingRoomObject *object, unsigned int state)
 CLEAN_AS(func_ov004_0221224c, GlowingRoomObject_StateIsOn)
 
 /* func_ov004_02212260 (vtable slot 0x0c) */
-int GlowingRoomObject_Vfunc0C(void)
+int GlowingRoomObject_Vfunc0c(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov004_02212260, GlowingRoomObject_Vfunc0C)
+CLEAN_AS(func_ov004_02212260, GlowingRoomObject_Vfunc0c)
 
 /* _ZN18Obj_ov004_022509ac19func_ov004_02212264Ev (vtable slot 0x80, each frame while neither
  * appearing nor vanishing): the state, then each glow's frame. */

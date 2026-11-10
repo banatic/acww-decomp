@@ -249,7 +249,7 @@ static void missing_npc1_set_standard(MissingNpc1 *self, int first, int second)
 /* The middle spot of the town (part 0x0c of data_021d27ac). */
 static MiddleSpot *missing_npc1_spot(void)
 {
-    return (MiddleSpot *) Block021d27ac_Part0C(Block021d27ac_Get());
+    return (MiddleSpot *) Block021d27ac_Part0c(Block021d27ac_Get());
 }
 
 /* The current player's paired town (paired_town.h). */
@@ -499,9 +499,9 @@ CLEAN_AS(func_020c1b84, MissingNpc1Talk_Construct)
  *    spot cleared and exit 1 taken; then this system's player resets its own paired town,
  *    clears the spot, sets flag 0x31 and takes exit 0, any other takes exit 1.
  * Always 1. */
-int MissingNpc1_UpdateScene2F(MissingNpc1 *self)
+int MissingNpc1_UpdateScene2f(MissingNpc1 *self)
 {
-    int player = ActivityVars_Slot3C1C();
+    int player = ActivityVars_Slot3c1c();
     NetSession *session = data_020ccf94;
     int local = session->local_player;
     u8 *player_record = PlayerRecords_OfPlayer(player);
@@ -536,7 +536,7 @@ int MissingNpc1_UpdateScene2F(MissingNpc1 *self)
             }
             TalkObject_Hold((TalkObject *) talk);
             missing_npc1_move(self, MISSING_NPC1_WALK_2, 2, 0xea00, 0x12e00, 0);
-            MissingNpc2_StartScene2FWalk();
+            MissingNpc2_StartScene2fWalk();
             CameraControl_SetMode19();
             self->step = 4;
             break;
@@ -572,7 +572,7 @@ int MissingNpc1_UpdateScene2F(MissingNpc1 *self)
             }
             missing_npc1_move(self, MISSING_NPC1_WALK, 1, 0xde00, 0x13a00, 0);
             PlayerActorOps_Turn(0, player);
-            MissingNpc2_StartScene2FExit();
+            MissingNpc2_StartScene2fExit();
             self->step = 7;
             break;
         case 7:
@@ -625,15 +625,15 @@ int MissingNpc1_UpdateScene2F(MissingNpc1 *self)
     }
     return 1;
 }
-CLEAN_AS(func_020c1b9c, MissingNpc1_UpdateScene2F)
+CLEAN_AS(func_020c1b9c, MissingNpc1_UpdateScene2f)
 
 /* func_020c1fb8: the walk of scene 0x2f begins at its first step. */
-char MissingNpc1_EnterScene2F(MissingNpc1 *self)
+char MissingNpc1_EnterScene2f(MissingNpc1 *self)
 {
     self->step = 0;
     return 1;
 }
-CLEAN_AS(func_020c1fb8, MissingNpc1_EnterScene2F)
+CLEAN_AS(func_020c1fb8, MissingNpc1_EnterScene2f)
 
 /* func_020c1fc8: during animation 0x122, effect 0x39 at its frame 7 and effect 0x38 at frame
  * 9 (at its position and angle), and once its motion is done, animation 0x123; once that is

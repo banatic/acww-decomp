@@ -139,11 +139,11 @@ static int countdown_place_value(u8 place, u8 *value)
 }
 
 /* func_ov003_0221c720 (digit vtable slot 0xb0): always 0. */
-int CountdownDigit_Slot0B0(void)
+int CountdownDigit_Slot0b0(void)
 {
     return 0;
 }
-CLEAN_AS(func_ov003_0221c720, CountdownDigit_Slot0B0)
+CLEAN_AS(func_ov003_0221c720, CountdownDigit_Slot0b0)
 
 /* The sound of a digit that changed, in the last hour outside scene 0x2c: in the last minute
  * the last place plays COUNTDOWN_SE_LAST_TEN for the last ten seconds and

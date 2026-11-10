@@ -52,7 +52,7 @@ typedef struct VillagerState {
     u16 mood_frames;      /* 0x1a */
     u8 activity;          /* 0x1c: 12 when set up */
     u8 flags;             /* 0x1d: VILLAGER_STATE_FLAG_* */
-    u8 byte_1e;           /* 0x1e: doubled up to 32 by VillagerState_DoubleByte1E */
+    u8 byte_1e;           /* 0x1e: doubled up to 32 by VillagerState_DoubleByte1e */
     u8 unused_1f;         /* 0x1f */
     u32 room_score;       /* 0x20: VillagerTown_ScoreRoom */
     u16 room_score_flags; /* 0x24 */
@@ -112,7 +112,7 @@ VillagerTally *VillagerState_Tally(VillagerState *entry);
 void VillagerState_ClearHeldItem(VillagerState *entry);
 void VillagerState_SetHeldItem(VillagerState *entry, const u16 *item);
 u16 *VillagerState_HeldItem(VillagerState *entry);
-void VillagerState_DoubleByte1E(VillagerState *entry);
+void VillagerState_DoubleByte1e(VillagerState *entry);
 void VillagerState_SetFlag1OutsideHouse(VillagerState *entry);
 void VillagerState_CountDownMood(VillagerState *entry);
 int VillagerState_MoodFrames(const VillagerState *entry);

@@ -130,8 +130,8 @@ int MissingNpc1_EnterLost(MissingNpc1 *self);
 int MissingNpc1_UpdateLost(MissingNpc1 *self);
 int MissingNpc1_EnterTalked(void);
 int MissingNpc1_UpdateTalked(void);
-char MissingNpc1_EnterScene2F(MissingNpc1 *self);
-int MissingNpc1_UpdateScene2F(MissingNpc1 *self);
+char MissingNpc1_EnterScene2f(MissingNpc1 *self);
+int MissingNpc1_UpdateScene2f(MissingNpc1 *self);
 
 /* Its talk scene. */
 MissingNpc1Talk *MissingNpc1Talk_Construct(MissingNpc1Talk *talk);

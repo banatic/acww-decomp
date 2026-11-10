@@ -47,7 +47,7 @@ void BulletinBoard_UpdateState(BulletinBoard *object);
 int BulletinBoard_SetState(BulletinBoard *object, int state);
 void BulletinBoard_OnSceneEvent(BulletinBoard *object, int event);
 int BulletinBoard_IsFacedBy(BulletinBoard *object, BulletinBoardViewer *viewer);
-int BulletinBoard_Slot0C(void);
+int BulletinBoard_Slot0c(void);
 int BulletinBoard_Slot24(void);
 int BulletinBoard_Update(BulletinBoard *object);
 int BulletinBoard_Reset(BulletinBoard *object);

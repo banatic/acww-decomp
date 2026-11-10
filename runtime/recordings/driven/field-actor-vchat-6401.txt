@@ -6,14 +6,14 @@ scene villager-chat
 frames 6410
 ram 2600,4500,5300,6400
 arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
-call 6401 022123a9 02392170 6 ffffffff 0 022123a8 b088b570  # ov003 FieldActor_RequestState5C
+call 6401 022123a9 02392170 6 ffffffff 0 022123a8 b088b570  # ov003 FieldActor_RequestState5c
 call 6401 02215495 02392170 6 ffffffff 0 02215494 b088b570  # ov003 FieldActor_RequestState52
 call 6401 02216eb5 02392170 6 ffffffff 0 02216eb4 b088b570  # ov003 FieldActor_RequestState47
 call 6401 02213f75 02392170 023921cc 023921cc 02392a60 02213f74 b083b5f0  # ov003 FieldActor_State56Reaches (its own position as the hit and the insect)
 call 6401 02219931 023921cc 0 0 0 02219930 b081b530  # ov003 FieldActor_PlayerFacePoint
-call 6401 02212395 02392170 0 0 0 02212394 b081b500  # ov003 FieldActor_EnterState5C
-call 6401 02212309 02392170 0 0 0 02212308 b082b510  # ov003 FieldActor_UpdateState5C
-call 6401 02212349 02392170 0 0 0 02212348 1c04b510  # ov003 FieldActor_EndState5C
+call 6401 02212395 02392170 0 0 0 02212394 b081b500  # ov003 FieldActor_EnterState5c
+call 6401 02212309 02392170 0 0 0 02212308 b082b510  # ov003 FieldActor_UpdateState5c
+call 6401 02212349 02392170 0 0 0 02212348 1c04b510  # ov003 FieldActor_EndState5c
 call 6401 02215395 02392170 0 0 0 02215394 b082b510  # ov003 FieldActor_UpdateState52
 call 6401 022153e9 02392170 0 0 0 022153e8 1c04b510  # ov003 FieldActor_EndState52
 call 6401 02216ea1 02392170 0 0 0 02216ea0 b081b500  # ov003 FieldActor_EnterState47
@@ -22,7 +22,7 @@ call 6401 02216bfd 02392170 0 0 0 02216bfc b082b510  # ov003 FieldActor_UpdateSt
 call 6401 02010f6d 02392170 0 0 0 00000000 00000000  # main FieldActor_StepTowardReported
 call 6401 0200f165 02392170 0 0 0 00000000 00000000  # main FieldActor_SendNotStung
 call 6401 0200ae05 02392170 0 0 0 00000000 00000000  # main FieldActor_EndState19
-call 6401 0200a7e9 02392170 0 0 0 00000000 00000000  # main FieldActor_EndState1A
+call 6401 0200a7e9 02392170 0 0 0 00000000 00000000  # main FieldActor_EndState1a
 call 6401 02095b65 0 0 0 0 00000000 00000000  # main PlayerActorOps_RequestCureSting
 call 6401 02043555 0 12e8 0 0 00000000 00000000  # main TileRequests_AskDropFor (player 0, a fish)
 end

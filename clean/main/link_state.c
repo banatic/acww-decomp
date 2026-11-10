@@ -199,7 +199,7 @@ static void carry_out(LinkState *state, NetSession *session, int slot)
     }
 
     LinkState_SetDoneKind(state, LinkState_Kind(state));
-    ActivityVars_SetSlot3C1C((u32) LinkState_Chosen(state));
+    ActivityVars_SetSlot3c1c((u32) LinkState_Chosen(state));
     ScenePlace_SavePlayer(SceneTables_EntryRecord(), 0);
     if (LinkState_Kind(state) == KIND_JOIN) {
         const StateBlockTown *town = &data_021dc7a8.town;
@@ -235,10 +235,10 @@ static void carry_out(LinkState *state, NetSession *session, int slot)
     } else if (kind == KIND_LEAVE) {
         ActivityJob_Ask19();
     } else if (kind == KIND_END_STAY) {
-        ActivityJob_Ask1B();
+        ActivityJob_Ask1b();
         StartMenu_SetLeaveChoice(0);
     } else {
-        ActivityJob_Ask1B();
+        ActivityJob_Ask1b();
         StartMenu_SetLeaveChoice(1);
     }
 

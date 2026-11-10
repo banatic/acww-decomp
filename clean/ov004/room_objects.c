@@ -32,7 +32,7 @@ static_assert(offsetof(RoomObject, unk_774) == 0x774, "unk_774");
 static_assert(offsetof(RoomObject, unk_778) == 0x778, "unk_778");
 static_assert(offsetof(RoomObject, unk_780) == 0x780, "unk_780");
 static_assert(offsetof(RoomObject, unk_788) == 0x788, "unk_788");
-static_assert(offsetof(RoomObject, unk_78C) == 0x78c, "unk_78C");
+static_assert(offsetof(RoomObject, unk_78c) == 0x78c, "unk_78c");
 static_assert(offsetof(RoomObject, top_height) == 0x790, "top height");
 static_assert(offsetof(MapActor, angle) == 0x8e, "actor angle");
 
@@ -43,7 +43,7 @@ static_assert(offsetof(MapActor, angle) == 0x8e, "actor angle");
 #define KIND_780_ROOM_FLOOR 0x26
 #define KIND_780_SWITCH_SHOWN 0x27
 
-/* The RoomObject.unk_00C of the objects RoomObjects_CheckStep asks (bed_object.h). */
+/* The RoomObject.unk_00c of the objects RoomObjects_CheckStep asks (bed_object.h). */
 #define KIND_00C_BED 0x37
 
 /* How far ahead RoomObjects_FindAhead looks for an item on the floor (1.05 cells), and the
@@ -509,16 +509,16 @@ void RoomObjects_SetSwitches(int value, RoomObjectsTest test, int pending)
 }
 CLEAN_AS(func_ov004_0223c2b4, RoomObjects_SetSwitches)
 
-/* func_ov004_0223c310: for every object of kind 0x3a (RoomObject.unk_00C) whose switch is
+/* func_ov004_0223c310: for every object of kind 0x3a (RoomObject.unk_00c) whose switch is
  * wanted on, RoomSync_SetState(object, 0, 0xff, 1); 1. */
-int RoomObjects_SyncKind3AOn(void)
+int RoomObjects_SyncKind3aOn(void)
 {
     for (unsigned int i = 0; i < (unsigned int) RoomObjects_Capacity(); i++) {
         RoomObject *object = object_of(i);
         if (object == NULL) {
             continue;
         }
-        if (RoomObject_Unk00CIs3A(object) == 0) {
+        if (RoomObject_Unk00cIs3a(object) == 0) {
             continue;
         }
         if (Switch_Value(&object->on_switch) == 0) {
@@ -528,7 +528,7 @@ int RoomObjects_SyncKind3AOn(void)
     }
     return 1;
 }
-CLEAN_AS(func_ov004_0223c310, RoomObjects_SyncKind3AOn)
+CLEAN_AS(func_ov004_0223c310, RoomObjects_SyncKind3aOn)
 
 /* The object on the floor under `position` is none or of kind 0x26 (RoomObject.unk_780). */
 static int floor_is_plain(Vec3 *position)
@@ -628,7 +628,7 @@ CLEAN_AS(func_ov004_0223c510, RoomObjects_CheckStepXPlus)
 int RoomObjects_CheckStep(Vec3 *point, int angle, Vec3 *offset)
 {
     RoomObject *object = RoomObjects_GridObjectAtPoint(RoomObjects_Grid(), point, ROOM_OBJECTS_LAYER_FLOOR);
-    if (object != NULL && object->unk_00C == KIND_00C_BED) {
+    if (object != NULL && object->unk_00c == KIND_00C_BED) {
         return BedObject_CheckStep((BedObject *) (void *) object, point, angle, offset);
     }
     return 0;
@@ -643,12 +643,12 @@ fx32 RoomObjects_HeightAtPoint(const Vec3 *point)
 CLEAN_AS(func_ov004_0223c5a4, RoomObjects_HeightAtPoint)
 
 /* func_ov004_0223c5b8: the height of cell (x, z): with an object on the floor there, its height
- * (with its top height unless unk_78C is 1); else the ground's at the cell's centre. */
+ * (with its top height unless unk_78c is 1); else the ground's at the cell's centre. */
 fx32 RoomObjects_HeightAtCell(int x, int z)
 {
     RoomObject *object = RoomObjects_GridObjectAt(RoomObjects_Grid(), x, z, ROOM_OBJECTS_LAYER_FLOOR);
     if (object != NULL) {
-        if (object->unk_78C == 1) {
+        if (object->unk_78c == 1) {
             return object->position.y;
         }
         return object->top_height + object->position.y;

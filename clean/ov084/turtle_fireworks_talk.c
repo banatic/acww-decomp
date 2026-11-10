@@ -300,7 +300,7 @@ void TurtleFireworksTalk_FirstLine(TurtleFireworksTalk *talk, TurtleFireworksLin
 
     if (TalkChecks_TestSetDailyBit(T4T_DAILY_TALKED, 1) != 0) {
         u16 held;
-        PlayerActorOps_HeldItem(&held, ActivityVars_Slot3C1C());
+        PlayerActorOps_HeldItem(&held, ActivityVars_Slot3c1c());
         int ready = !t4t_lacks(T4T_QUIET_FIREWORKS) && !t4t_lacks(T4T_SHOWY_FIREWORKS);
         if (!ready && !(held >= T4T_QUIET_FIREWORKS && held <= T4T_SHOWY_FIREWORKS)) {
             out->message = TURTLE_FIREWORKS_LINE_NOT_BOTH;

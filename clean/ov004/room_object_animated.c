@@ -16,11 +16,11 @@ extern const u8 data_ov004_022526f8[];
 extern const u8 data_ov004_022527a4[];
 
 /* func_ov004_022115ac (vtable slot 0x0c) */
-int AnimatedRoomObject_Vfunc0C(void)
+int AnimatedRoomObject_Vfunc0c(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov004_022115ac, AnimatedRoomObject_Vfunc0C)
+CLEAN_AS(func_ov004_022115ac, AnimatedRoomObject_Vfunc0c)
 
 /* func_ov004_022115b0 (vtable slot 0x80, each frame while neither appearing nor vanishing) */
 int AnimatedRoomObject_Vfunc80(void)

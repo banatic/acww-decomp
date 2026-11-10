@@ -29,7 +29,7 @@ typedef struct LineAffine {
     s32 x;
     s32 y;
     s16 scale_x;
-    s16 unk_0A;
+    s16 unk_0a;
 } LineAffine;
 
 /* data_021f75b0: the lines' background 3 and blending. */

@@ -38,7 +38,7 @@ int Bromide_EnterIdle(Bromide *bromide);
 void Bromide_UpdateState(Bromide *bromide);
 int Bromide_EnterState(Bromide *bromide, int state);
 void Bromide_OnSceneEvent(Bromide *bromide, int event);
-int Bromide_Vfunc0C(void);
+int Bromide_Vfunc0c(void);
 int Bromide_Update(Bromide *bromide);
 int Bromide_Start(void);
 Bromide *Bromide_Delete(Bromide *bromide);

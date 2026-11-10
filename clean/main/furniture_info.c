@@ -238,12 +238,12 @@ int FurnitureInfo_IndoorBit0(int number)
 CLEAN_AS(func_0205391c, FurnitureInfo_IndoorBit0)
 
 /* func_0205395c: FurnitureDma.unk_1a. */
-int FurnitureInfo_DmaUnk1A(int number)
+int FurnitureInfo_DmaUnk1a(int number)
 {
     const FurnitureDma *record = dma_record(number);
     return record != NULL ? record->unk_1a : 0;
 }
-CLEAN_AS(func_0205395c, FurnitureInfo_DmaUnk1A)
+CLEAN_AS(func_0205395c, FurnitureInfo_DmaUnk1a)
 
 /* func_02053990 */
 int FurnitureInfo_ItemCategory(const ItemCode *item)
@@ -415,21 +415,21 @@ int FurnitureInfo_ColorA(int number)
 CLEAN_AS(func_02053cf0, FurnitureInfo_ColorA)
 
 /* func_02053d24: FurnitureDma.unk_1e, with 0xff (none) read as -1. */
-int FurnitureInfo_DmaUnk1E(int number)
+int FurnitureInfo_DmaUnk1e(int number)
 {
     const FurnitureDma *record = dma_record(number);
     int value = record != NULL ? record->unk_1e : 0;
     return value == 0xff ? -1 : value;
 }
-CLEAN_AS(func_02053d24, FurnitureInfo_DmaUnk1E)
+CLEAN_AS(func_02053d24, FurnitureInfo_DmaUnk1e)
 
 /* func_02053d60: FurnitureDma.unk_1d. */
-int FurnitureInfo_DmaUnk1D(int number)
+int FurnitureInfo_DmaUnk1d(int number)
 {
     const FurnitureDma *record = dma_record(number);
     return record != NULL ? record->unk_1d : 0;
 }
-CLEAN_AS(func_02053d60, FurnitureInfo_DmaUnk1D)
+CLEAN_AS(func_02053d60, FurnitureInfo_DmaUnk1d)
 
 /* func_02053d94: -1 for every number. Read with FurnitureInfo_NoneB and FurnitureInfo_NoneC
  * where an item has no dma.bin record to read (func_02062ea4). */

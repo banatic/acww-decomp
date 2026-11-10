@@ -13,7 +13,7 @@
 void LetterStore_Clear(Letter *letters);
 Letter *LetterStore_Page(Letter *letters, int page);
 void LetterStore_MarkBlockReady(u8 *block);
-void LetterStore_MarkBlock1C(u8 *block);
+void LetterStore_MarkBlock1c(u8 *block);
 int LetterStore_IsBlockReady(u8 *block);
 
 #endif

@@ -100,7 +100,7 @@ void Chest_UpdateLid(Chest *chest);
 int Chest_EnterLid(Chest *chest, unsigned int state, int value);
 u8 Chest_LidStateIsOn(Chest *chest, unsigned int state);
 int Chest_IsIdle(Chest *chest);
-int Chest_Vfunc0C(void);
+int Chest_Vfunc0c(void);
 int Chest_Update(Chest *chest);
 int Chest_Start(Chest *chest);
 Chest *Chest_Delete(Chest *chest);

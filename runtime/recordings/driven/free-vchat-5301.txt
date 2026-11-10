@@ -50,7 +50,7 @@ call 5301 020b47fd r42 10 3 0 00000000 00000000  # main NumberText_InsertCommas 
 call 5301 020b488d r43 10 4 0 00000000 00000000  # main NumberText_PadSpacesBefore (a scratch work text)
 call 5301 020b48b5 r44 10 4 0 00000000 00000000  # main NumberText_PadSpacesAfter (a scratch work text)
 call 5301 020b4931 r45 10 0 2 00000000 00000000  # main NumberText_MoveUp (a scratch work text)
-call 5301 022163f9 r46 r45 0 0 00000000 00000000  # ov003 FieldActor_GetState4BSaved (scratch blocks)
+call 5301 022163f9 r46 r45 0 0 00000000 00000000  # ov003 FieldActor_GetState4bSaved (scratch blocks)
 call 5301 020881ad r47 0 0 0 00000000 00000000  # main MysteryCatRecord_Checksum (a scratch record)
 call 5301 020881b9 r48 0 0 0 00000000 00000000  # main MysteryCatRecord_SetChecksum (a scratch record)
 call 5301 02088285 r49 0 0 0 00000000 00000000  # main PairedTown_ClearChildEscorted (a scratch pairing)

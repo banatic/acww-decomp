@@ -2,7 +2,7 @@
 # save is not in this repository). As villager-approach.txt to 10400 (the fortune teller's good
 # luck, out of her tent), with the clock started 34 seconds later (11:30:34): the bytes 0x1e of
 # the villagers' state entries are drawn at the load from the main random state
-# (VillagerEntry_SetByte1E), and at this second villager 1's (personality fu) is 20 at the load
+# (VillagerEntry_SetByte1e), and at this second villager 1's (personality fu) is 20 at the load
 # and full (32) after the good luck.
 # Save: visitor-3f (as villager-approach). From 10400 south past the house's east side, over
 # the bridge by the river's mouth, east along the beach and north onto the river's south-east

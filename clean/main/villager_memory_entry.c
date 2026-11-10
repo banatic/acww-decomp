@@ -237,7 +237,7 @@ CLEAN_AS(func_02081b54, VillagerMemoryEntry_GreetingSet)
 
 /* func_02081b68: the text at 0x2a emptied, then set from up to 10 characters, and marked set.
  * REQUIRES: length >= 0, as for VillagerMemoryEntry_SetGreeting. */
-void VillagerMemoryEntry_SetText2A(VillagerMemory *memory, const u16 *text, int length)
+void VillagerMemoryEntry_SetText2a(VillagerMemory *memory, const u16 *text, int length)
 {
     MI_CpuFill8(memory->text_2a, 0, sizeof(memory->text_2a));
     if (length > VILLAGER_MEMORY_TEXT_LENGTH) {
@@ -246,37 +246,37 @@ void VillagerMemoryEntry_SetText2A(VillagerMemory *memory, const u16 *text, int 
     MI_CpuCopy8(text, memory->text_2a, (u32) length * 2);
     set_flag(memory, VILLAGER_MEMORY_TEXT_2A_SET);
 }
-CLEAN_AS(func_02081b68, VillagerMemoryEntry_SetText2A)
+CLEAN_AS(func_02081b68, VillagerMemoryEntry_SetText2a)
 
 /* func_02081ba0: the wide text emptied, then set from the 10 characters at 0x2a. */
-void VillagerMemoryEntry_Text2AToWide(VillagerMemory *memory, void *wide)
+void VillagerMemoryEntry_Text2aToWide(VillagerMemory *memory, void *wide)
 {
     TextString_ClearWide((TextObject *) wide);
     TextBase_SetWide(wide, memory->text_2a, VILLAGER_MEMORY_TEXT_LENGTH);
 }
-CLEAN_AS(func_02081ba0, VillagerMemoryEntry_Text2AToWide)
+CLEAN_AS(func_02081ba0, VillagerMemoryEntry_Text2aToWide)
 
 /* func_02081bc4: the text at 0x2a converted to 8 bits into the label; gives what the wide
  * text's destructor gives (the wide text's address).
  * QUIRK: the wide text is set from the characters twice; it is a different class (vtable
  * data_020e194c) from the one VillagerMemoryEntry_GreetingToLabel uses, of the same size. */
-void *VillagerMemoryEntry_Text2AToLabel(VillagerMemory *memory, void *label)
+void *VillagerMemoryEntry_Text2aToLabel(VillagerMemory *memory, void *label)
 {
     VillagerMemoryWide wide;
     Wide10Text_Construct((Wide10Text *) &wide);
-    VillagerMemoryEntry_Text2AToWide(memory, &wide);
+    VillagerMemoryEntry_Text2aToWide(memory, &wide);
     TextBase_SetWide(&wide, memory->text_2a, VILLAGER_MEMORY_TEXT_LENGTH);
     TextBase_WideToBytes(label, (WideTextBase *) &wide, 0, 0);
     return Wide10Text_Destruct((Wide10Text *) &wide);
 }
-CLEAN_AS(func_02081bc4, VillagerMemoryEntry_Text2AToLabel)
+CLEAN_AS(func_02081bc4, VillagerMemoryEntry_Text2aToLabel)
 
 /* func_02081c00 */
-int VillagerMemoryEntry_Text2ASet(VillagerMemory *memory)
+int VillagerMemoryEntry_Text2aSet(VillagerMemory *memory)
 {
     return has_flag(memory, VILLAGER_MEMORY_TEXT_2A_SET);
 }
-CLEAN_AS(func_02081c00, VillagerMemoryEntry_Text2ASet)
+CLEAN_AS(func_02081c00, VillagerMemoryEntry_Text2aSet)
 
 /* ---- What the villager calls the player */
 

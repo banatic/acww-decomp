@@ -41,7 +41,7 @@ int PlayerActorOps_RequestState30(u16 *item, int *a, unsigned char *b, int *c, i
 int PlayerActorOps_Turn(int yaw, int player);
 int PlayerActorOps_MoveTo(Vec3 *point, int max_speed, int player);
 int PlayerActorOps_RequestState85(unsigned short *item);
-int PlayerActorOps_RequestState3F(unsigned short *item);
+int PlayerActorOps_RequestState3f(unsigned short *item);
 int PlayerActorOps_RequestState7Kind2Next10(u16 *item);
 void PlayerActorOps_RequestState7Kind1Next10(u16 *item);
 int PlayerActorOps_RequestState7Kind0Next10(u16 *item);
@@ -64,7 +64,7 @@ int PlayerActorOps_SwitchFlag10(int on, int player);
 void PlayerActorOps_SwitchFlag0e(int on, int player);
 int PlayerActorOps_SwitchOwnFlag0b(int on);
 int PlayerActorOps_StateFlagA20(void);
-int PlayerActorOps_InState3F(void);
+int PlayerActorOps_InState3f(void);
 int PlayerActorOps_EarlyInState7(void);
 int PlayerActorOps_StateOrStartState(void);
 int PlayerActorOps_PlaceAfterState(Vec3 *position, s16 *yaw);

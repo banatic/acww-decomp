@@ -52,7 +52,7 @@ int RoomObject0225130c_EnterOff(RoomObject0225130c *object);
 void RoomObject0225130c_UpdateState(RoomObject0225130c *object);
 int RoomObject0225130c_EnterState(RoomObject0225130c *object, unsigned int state, int value);
 u8 RoomObject0225130c_StateIsOn(RoomObject0225130c *object, unsigned int state);
-int RoomObject0225130c_Vfunc0C(void);
+int RoomObject0225130c_Vfunc0c(void);
 int RoomObject0225130c_UpdateUnsettled(RoomObject0225130c *object);
 int RoomObject0225130c_Update(RoomObject0225130c *object);
 int RoomObject0225130c_Start(RoomObject0225130c *object);

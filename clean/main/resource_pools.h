@@ -72,8 +72,8 @@ void ResourcePools_BlockStartUp(Heap *parent);
 void ResourcePools_BlockDestruct(u8 **blocks);
 void ResourcePools_BlockConstruct(u8 **blocks);
 
-int ResourcePools_UnitSize31EC(void);
-int ResourcePools_UnitSize2BCC(void);
+int ResourcePools_UnitSize31ec(void);
+int ResourcePools_UnitSize2bcc(void);
 
 void ResourcePools_ShutDown(void);
 void ResourcePools_StartUp(void);

@@ -31,11 +31,11 @@ int WallpaperPreview_CanDraw(WallpaperPreview *object)
 CLEAN_AS(func_ov004_022128bc, WallpaperPreview_CanDraw)
 
 /* func_ov004_022128d0 (vtable slot 0x0c) */
-int WallpaperPreview_Vfunc0C(void)
+int WallpaperPreview_Vfunc0c(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov004_022128d0, WallpaperPreview_Vfunc0C)
+CLEAN_AS(func_ov004_022128d0, WallpaperPreview_Vfunc0c)
 
 /* func_ov004_022128d4 (vtable slot 0x80, each frame while neither appearing nor vanishing):
  * counts the frames since the wallpaper was put on, up to 2. */

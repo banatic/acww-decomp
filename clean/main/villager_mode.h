@@ -57,7 +57,7 @@ void VillagerMode_LearnFrom(u8 *villager, u8 *other);
 int VillagerMode_IsWakeTimePast(u8 *villager, const DateTime *now);
 void VillagerMode_SetArrived(u8 *villager, const DateTime *now);
 void VillagerMode_SetLeaving(u8 *villager, const DateTime *now);
-void VillagerMode_StepCounter7D7(u8 *villager);
-u8 VillagerMode_Counter7D7(u8 *villager);
+void VillagerMode_StepCounter7d7(u8 *villager);
+u8 VillagerMode_Counter7d7(u8 *villager);
 
 #endif

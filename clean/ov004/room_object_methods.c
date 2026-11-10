@@ -94,19 +94,19 @@ int RoomObject_Unk780Is18(RoomObject *object)
 }
 CLEAN_AS(func_ov004_0220e5a8, RoomObject_Unk780Is18)
 
-/* func_ov004_0220e5b0: what RoomObject_TestUnk00CIs36Or37 says (unk_00C is 0x36 or 0x37). */
-int RoomObject_Unk00CIs36Or37(RoomObject *object)
+/* func_ov004_0220e5b0: what RoomObject_TestUnk00cIs36Or37 says (unk_00c is 0x36 or 0x37). */
+int RoomObject_Unk00cIs36Or37(RoomObject *object)
 {
-    return RoomObject_TestUnk00CIs36Or37(object);
+    return RoomObject_TestUnk00cIs36Or37(object);
 }
-CLEAN_AS(func_ov004_0220e5b0, RoomObject_Unk00CIs36Or37)
+CLEAN_AS(func_ov004_0220e5b0, RoomObject_Unk00cIs36Or37)
 
-/* func_ov004_0220e5b8: what RoomObject_TestUnk00CIs3A says (unk_00C is 0x3a). */
-int RoomObject_Unk00CIs3A(RoomObject *object)
+/* func_ov004_0220e5b8: what RoomObject_TestUnk00cIs3a says (unk_00c is 0x3a). */
+int RoomObject_Unk00cIs3a(RoomObject *object)
 {
-    return RoomObject_TestUnk00CIs3A(object);
+    return RoomObject_TestUnk00cIs3a(object);
 }
-CLEAN_AS(func_ov004_0220e5b8, RoomObject_Unk00CIs3A)
+CLEAN_AS(func_ov004_0220e5b8, RoomObject_Unk00cIs3a)
 
 /* func_ov004_0220e5c0: what RoomObject_IsLight says (FurnitureInfo_LightKind accepts the furniture's
  * number and placement_mode is not 2). */
@@ -268,7 +268,7 @@ u16 RoomObject_Reference(RoomObject *object, Vec3 *offset, int turn)
 }
 CLEAN_AS(func_ov004_0220e808, RoomObject_Reference)
 
-/* The kinds (RoomObject.unk_780 and unk_00C) the questions below ask about. */
+/* The kinds (RoomObject.unk_780 and unk_00c) the questions below ask about. */
 #define KIND_780_10 0x10
 #define KIND_780_11 0x11
 #define KIND_780_18 0x18
@@ -322,43 +322,43 @@ int RoomObject_TestUnk780Is18(const RoomObject *object)
 }
 CLEAN_AS(func_ov004_02211280, RoomObject_TestUnk780Is18)
 
-/* func_ov004_02211294: whether unk_00C is 0x36 or 0x37 (RoomObject_Unk00CIs36Or37 asks through
+/* func_ov004_02211294: whether unk_00c is 0x36 or 0x37 (RoomObject_Unk00cIs36Or37 asks through
  * it). */
-int RoomObject_TestUnk00CIs36Or37(const RoomObject *object)
+int RoomObject_TestUnk00cIs36Or37(const RoomObject *object)
 {
-    return object->unk_00C == KIND_00C_36 || object->unk_00C == KIND_00C_37;
+    return object->unk_00c == KIND_00C_36 || object->unk_00c == KIND_00C_37;
 }
-CLEAN_AS(func_ov004_02211294, RoomObject_TestUnk00CIs36Or37)
+CLEAN_AS(func_ov004_02211294, RoomObject_TestUnk00cIs36Or37)
 
-/* func_ov004_022112c4: whether unk_00C is 0x3b or 0x3c and the switch is on (wanted on).
+/* func_ov004_022112c4: whether unk_00c is 0x3b or 0x3c and the switch is on (wanted on).
  * RoomManager_UpdateTvSound looks for the nearest such object to the player. */
-int RoomObject_Unk00CIs3BOr3CAndOn(RoomObject *object)
+int RoomObject_Unk00cIs3bOr3cAndOn(RoomObject *object)
 {
-    if (object->unk_00C != KIND_00C_3B && object->unk_00C != KIND_00C_3C) {
+    if (object->unk_00c != KIND_00C_3B && object->unk_00c != KIND_00C_3C) {
         return 0;
     }
     return Switch_Value(&object->on_switch) != 0;
 }
-CLEAN_AS(func_ov004_022112c4, RoomObject_Unk00CIs3BOr3CAndOn)
+CLEAN_AS(func_ov004_022112c4, RoomObject_Unk00cIs3bOr3cAndOn)
 
-/* func_ov004_02211308: whether unk_00C is 0x3a (RoomObject_TestUnk00CIs3A) and then the
+/* func_ov004_02211308: whether unk_00c is 0x3a (RoomObject_TestUnk00cIs3a) and then the
  * switch's wanted value. */
-int RoomObject_Unk00CIs3AAndOn(RoomObject *object)
+int RoomObject_Unk00cIs3aAndOn(RoomObject *object)
 {
-    if (RoomObject_TestUnk00CIs3A(object)) {
+    if (RoomObject_TestUnk00cIs3a(object)) {
         return Switch_Value(&object->on_switch);
     }
     return 0;
 }
-CLEAN_AS(func_ov004_02211308, RoomObject_Unk00CIs3AAndOn)
+CLEAN_AS(func_ov004_02211308, RoomObject_Unk00cIs3aAndOn)
 
-/* func_ov004_0221132c: whether `object` (or NULL) has unk_00C 0x3a (RoomObject_Unk00CIs3A asks
+/* func_ov004_0221132c: whether `object` (or NULL) has unk_00c 0x3a (RoomObject_Unk00cIs3a asks
  * through it). */
-int RoomObject_TestUnk00CIs3A(const RoomObject *object)
+int RoomObject_TestUnk00cIs3a(const RoomObject *object)
 {
-    return object != NULL && object->unk_00C == KIND_00C_3A;
+    return object != NULL && object->unk_00c == KIND_00C_3A;
 }
-CLEAN_AS(func_ov004_0221132c, RoomObject_TestUnk00CIs3A)
+CLEAN_AS(func_ov004_0221132c, RoomObject_TestUnk00cIs3a)
 
 /* func_ov004_0221134c: whether `object` (or NULL) is a light: FurnitureInfo_LightKind accepts its
  * furniture's number and it is not a preview (RoomObject_IsUnplaced). The lights' code

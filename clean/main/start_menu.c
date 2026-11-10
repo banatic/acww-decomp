@@ -265,7 +265,7 @@ void StartMenu_UpdateLeave(void)
     SceneExit_SetToScene((SceneExit *) (uintptr_t) SceneTables_EntryRecord(), START_MENU_SCENE, 2, 3);
     if (Session_IsLinked(data_020ccf94)) {
         ScenePlace_SavePlayer(SceneTables_EntryRecord(), 0);
-        ActivityJob_Ask1A();
+        ActivityJob_Ask1a();
     } else {
         ActivityJob_Ask1();
     }

@@ -94,11 +94,11 @@ u8 *Block021d27ac_Part24(Block021d27ac *self)
 CLEAN_AS(func_020860c0, Block021d27ac_Part24)
 
 /* func_020860c4 */
-u8 *Block021d27ac_Part0C(Block021d27ac *self)
+u8 *Block021d27ac_Part0c(Block021d27ac *self)
 {
     return block_021d27ac_part(self, offsetof(Block021d27ac, part_0c));
 }
-CLEAN_AS(func_020860c4, Block021d27ac_Part0C)
+CLEAN_AS(func_020860c4, Block021d27ac_Part0c)
 
 /* func_020860c8 */
 u8 *Block021d27ac_Part30(Block021d27ac *self)

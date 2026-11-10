@@ -1604,7 +1604,7 @@ int PocketsScreen_ActorBusyWithSlot(PocketsScreen *self, int record_slot)
     (void) self;
     switch (record_slot) {
         case 5:
-            return PlayerActorOps_InState3F();
+            return PlayerActorOps_InState3f();
         case 7:
         case 8:
             return PlayerActorOps_InState5() == 0;
@@ -1636,7 +1636,7 @@ int PocketsScreen_ActorTakeSlotItem(PocketsScreen *self, unsigned int record_slo
         case 4:
             return PlayerActorOps_RequestState7Kind2Next5(&asked) != 0;
         case 5:
-            return PlayerActorOps_RequestState3F(&asked) != 0;
+            return PlayerActorOps_RequestState3f(&asked) != 0;
         case 7:
             if (PlayerActorOps_RequestState85(&asked) != 0) {
                 if (CameraControl_IsViewSaved() == 0) {

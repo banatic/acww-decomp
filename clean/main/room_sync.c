@@ -100,7 +100,7 @@ int RoomSync_IsFreeTopAt(int x, int y)
         return 0;
     }
     u16 *top = map_item(map, x, y, LAYER_ON_TOP);
-    if (FurnitureInfo_DmaUnk1A(RoomObject_Number(object)) != 1 || top == NULL) {
+    if (FurnitureInfo_DmaUnk1a(RoomObject_Number(object)) != 1 || top == NULL) {
         return 0;
     }
     if (ItemCode_IsFurniture(top)) {
@@ -124,7 +124,7 @@ CLEAN_AS(func_02051f4c, RoomSync_ToggleSwitchAtPoint)
 
 /* func_02051f74: toggles the switch of the object at cell (x, y) of `layer`: at once
  * (RoomSync_ToggleAt) unless the session is linked and func_020a7278 says 0; then the object
- * there, if any, is held still (unk_77D) and message 29 goes to the systems in this scene.
+ * there, if any, is held still (unk_77d) and message 29 goes to the systems in this scene.
  * BUG: the message's halfword is built in an uninitialised stack slot and its bit 15 is never
  * set, so the ROM sends what it held; here it is 0. The receiver does not read it. */
 void RoomSync_ToggleSwitchAt(u32 scene, u32 x, u32 y, u32 layer)
@@ -135,7 +135,7 @@ void RoomSync_ToggleSwitchAt(u32 scene, u32 x, u32 y, u32 layer)
     }
     RoomObject *object = object_at((int) x, (int) y, (int) layer);
     if (object != NULL) {
-        object->unk_77D = 1;
+        object->unk_77d = 1;
     }
     u16 message = (u16) ((scene & 0x3f) | (layer & 1) << ROOM_SYNC_TOGGLE_LAYER_SHIFT | (x & 0xf) << ROOM_SYNC_TOGGLE_X_SHIFT |
                          (y & 0xf) << ROOM_SYNC_TOGGLE_Y_SHIFT);
@@ -289,7 +289,7 @@ CLEAN_AS(func_020523e4, RoomSync_PutFurniture)
 /* func_020525a4: asks for `state` (with `value`) of the object at cell (x, y) of `layer`. Where
  * the session is not linked or this system is the host it is set at once (RoomSync_SetStateAt).
  * Otherwise, in the room shown with an object there and `send`, the host is asked (message 24
- * with the relay bit) and the object held still (unk_77D) until the answer; 1 when asked. */
+ * with the relay bit) and the object held still (unk_77d) until the answer; 1 when asked. */
 int RoomSync_RequestStateAt(int x, int y, int layer, int state, u8 value, u8 flag, u8 send_it)
 {
     NetSession *session = data_020ccf94;
@@ -304,7 +304,7 @@ int RoomSync_RequestStateAt(int x, int y, int layer, int state, u8 value, u8 fla
         return 0;
     }
     if (RoomSync_SendState(x, y, layer, state, value, flag, ROOM_SYNC_TO_HOST)) {
-        object->unk_77D = 1;
+        object->unk_77d = 1;
         return 1;
     }
     return 0;
@@ -377,7 +377,7 @@ int RoomSync_SendState(int x, int y, int layer, int state, u8 value, u8 flag, in
     if (Session_IsLinked(data_020ccf94) && !RoomObject_IsUnplaced(object)) {
         u32 on = (u32) shows_on(object, state);
         u32 scene = SceneQuery_Current();
-        u32 music = (u32) RoomObject_Unk00CIs3A(object);
+        u32 music = (u32) RoomObject_Unk00cIs3a(object);
         u32 message = (scene & ROOM_SYNC_STATE_SCENE) | ((u32) layer & 1) << ROOM_SYNC_STATE_LAYER_SHIFT |
                       (on & 1) << ROOM_SYNC_STATE_ON_SHIFT | ((u32) x & 0xf) << ROOM_SYNC_STATE_X_SHIFT |
                       ((u32) y & 0xf) << ROOM_SYNC_STATE_Y_SHIFT | ((u32) state & 0x1f) << ROOM_SYNC_STATE_STATE_SHIFT |

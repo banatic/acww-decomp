@@ -76,7 +76,7 @@ static int player_processes_served_scene(void)
  * none, on the floor at a fixed place, starting in state 0x10. */
 static void player_processes_spawn_served(void)
 {
-    if (ActivityVars_Flag3C08() != 0) {
+    if (ActivityVars_Flag3c08() != 0) {
         return;
     }
     Process *object = Actor_FindNextOfProfile(PLAYER_PROCESSES_PROFILE_72, NULL);
@@ -88,7 +88,7 @@ static void player_processes_spawn_served(void)
     }
     int player;
     if (player_processes_served_scene()) {
-        player = ActivityVars_Slot3C1C();
+        player = ActivityVars_Slot3c1c();
     } else {
         player = (int) LinkGlobal_ServedSlot();
     }

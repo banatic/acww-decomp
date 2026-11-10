@@ -188,7 +188,7 @@ int Astro_TakeCall(Astro *self)
         return 0;
     }
     AstroTalk_SetTopic(&self->talk, ASTRO_TALK_TOPIC_CALLED);
-    CameraControl_SetFlag1F5();
+    CameraControl_SetFlag1f5();
     EventQueue_RequestKind6(self, 0);
     return 1;
 }

@@ -262,7 +262,7 @@ static void choose_successor(LinkState *state, NetSession *session, int own)
     u8 holder = 0;
     u8 moving = 0;
 
-    if (LinkGlobal_Zero7450() || LinkGlobal_Zero744C()) {
+    if (LinkGlobal_Zero7450() || LinkGlobal_Zero744c()) {
         return;
     }
     LinkScene_GlobalPlace(own, &scene, &holder, &moving);
@@ -306,7 +306,7 @@ static void wait_acks(LinkState *state, NetSession *session, int own)
         }
     }
     if (Session_HeldQueueLength(session) || Session_SceneQueueLength(session) || Session_LocalQueueLength(session) ||
-        LinkGlobal_Zero744C()) {
+        LinkGlobal_Zero744c()) {
         return;
     }
     LinkScene_ResetAcked(state);
@@ -632,8 +632,8 @@ void LinkScene_HostStep(LinkState *state)
 CLEAN_AS(func_020a68e0, LinkScene_HostStep)
 
 /* func_020a6c04 */
-void LinkScene_Empty6C04(void) {}
-CLEAN_AS(func_020a6c04, LinkScene_Empty6C04)
+void LinkScene_Empty6c04(void) {}
+CLEAN_AS(func_020a6c04, LinkScene_Empty6c04)
 
 /* func_020a6c08: the link's work of a frame, while this system has a slot: the state sent
  * forgotten once its receiver arrived, moving slots released; the host settles arrivals, lets
@@ -664,16 +664,16 @@ void LinkScene_Update(void)
 CLEAN_AS(func_020a6c08, LinkScene_Update)
 
 /* func_020a6c8c */
-void LinkScene_Empty6C8C(void) {}
-CLEAN_AS(func_020a6c8c, LinkScene_Empty6C8C)
+void LinkScene_Empty6c8c(void) {}
+CLEAN_AS(func_020a6c8c, LinkScene_Empty6c8c)
 
 /* func_020a6c90 */
-void LinkScene_Empty6C90(void) {}
-CLEAN_AS(func_020a6c90, LinkScene_Empty6C90)
+void LinkScene_Empty6c90(void) {}
+CLEAN_AS(func_020a6c90, LinkScene_Empty6c90)
 
 /* func_020a6c94 */
-void LinkScene_Empty6C94(void) {}
-CLEAN_AS(func_020a6c94, LinkScene_Empty6C94)
+void LinkScene_Empty6c94(void) {}
+CLEAN_AS(func_020a6c94, LinkScene_Empty6c94)
 
 /* func_020a6c98: whether `scene` is one a join or a leave passes through (0xc-0xe, 0x2e,
  * 0x2f, link_state.h), where systems do not hand scenes' states over. */

@@ -77,7 +77,7 @@ extern AcreMap *data_021c80bc;
 /* The tests of the objects looked for (room_object_methods.h), and the marks the nearest get
  * (clock.h). */
 struct Clock;
-int RoomObject_Unk00CIs3BOr3CAndOn(RoomObject *object);
+int RoomObject_Unk00cIs3bOr3cAndOn(RoomObject *object);
 int RoomObject_Check022111f0(RoomObject *object);
 int RoomObject_SettledUnk780Is10(RoomObject *object);
 struct Clock *Clock_MarkNearest(struct Clock *clock);
@@ -95,7 +95,7 @@ static int is_kind(RoomObject *object, int kind)
 {
     switch (kind) {
         case NEAREST_TV_ON:
-            return RoomObject_Unk00CIs3BOr3CAndOn(object);
+            return RoomObject_Unk00cIs3bOr3cAndOn(object);
         case NEAREST_CLOCK:
             return RoomObject_Check022111f0(object);
         default:
@@ -183,7 +183,7 @@ int RoomManager_TvTexture(void)
 CLEAN_AS(func_ov004_0223b314, RoomManager_TvTexture)
 
 /* func_ov004_0223bdac: while the TV is heard (data_ov004_022595b8), the TV that is on nearest to
- * the player (RoomObject_Unk00CIs3BOr3CAndOn) is marked heard (Tv_SetHeard) and the TV's sound
+ * the player (RoomObject_Unk00cIs3bOr3cAndOn) is marked heard (Tv_SetHeard) and the TV's sound
  * plays at it, at the picture's frame. With none near, the sound is silenced once and plays
  * without a point. When a TV comes near, the first time, or when the channel changes, the
  * sound is raised: with 1 at the start of a new picture (frame at most 1, no loop yet,

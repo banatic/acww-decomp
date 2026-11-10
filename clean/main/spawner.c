@@ -388,7 +388,7 @@ CLEAN_AS(func_02084058, Spawner_CheckD020In)
 int Spawner_PlaceFromPartC(Spawner *self, Vec3 *position)
 {
     (void) self;
-    MiddleSpot_ToPosition((const MiddleSpot *) (void *) Block021d27ac_Part0C(Block021d27ac_Get()), position);
+    MiddleSpot_ToPosition((const MiddleSpot *) (void *) Block021d27ac_Part0c(Block021d27ac_Get()), position);
     return 1;
 }
 CLEAN_AS(func_02084160, Spawner_PlaceFromPartC)
@@ -425,7 +425,7 @@ void Spawner_UpdatePartCInSession(Spawner *self)
         return;
     }
     if (outdoors()) {
-        MiddleSpot_Pick((MiddleSpot *) (void *) Block021d27ac_Part0C(Block021d27ac_Get()));
+        MiddleSpot_Pick((MiddleSpot *) (void *) Block021d27ac_Part0c(Block021d27ac_Get()));
     }
 }
 CLEAN_AS(func_02084210, Spawner_UpdatePartCInSession)
@@ -436,7 +436,7 @@ int Spawner_PlaceFromPartCOrRoom(Spawner *self, Vec3 *position)
 {
     (void) self;
     if (outdoors()) {
-        MiddleSpot_ToPosition((const MiddleSpot *) (void *) Block021d27ac_Part0C(Block021d27ac_Get()), position);
+        MiddleSpot_ToPosition((const MiddleSpot *) (void *) Block021d27ac_Part0c(Block021d27ac_Get()), position);
         return 1;
     }
     AcreTile_TileCentre(position, 6, 0x11);
@@ -468,11 +468,11 @@ int Spawner_CheckD022In(int check_mode)
         Spawner_EventOn(EVENT_3D, NULL) == 0) {
         return code_result(0xd022);
     }
-    if (MiddleSpot_HasMark((const MiddleSpot *) (void *) Block021d27ac_Part0C(Block021d27ac_Get())) != 0 &&
+    if (MiddleSpot_HasMark((const MiddleSpot *) (void *) Block021d27ac_Part0c(Block021d27ac_Get())) != 0 &&
         SceneQuery_Current() == SCENE_B && Session_IsLinked(data_020ccf94) == 0) {
         return code_result(0xd022);
     }
-    if (MiddleSpot_HasMark((const MiddleSpot *) (void *) Block021d27ac_Part0C(Block021d27ac_Get())) != 0 &&
+    if (MiddleSpot_HasMark((const MiddleSpot *) (void *) Block021d27ac_Part0c(Block021d27ac_Get())) != 0 &&
         SceneQuery_Current() == SCENE_C) {
         return code_result(0xd022);
     }

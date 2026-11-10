@@ -71,7 +71,7 @@ void Telephone_UpdateSwitch(Telephone *phone);
 int Telephone_EnterSwitch(Telephone *phone, unsigned int state, int value);
 u8 Telephone_SwitchStateIsOn(Telephone *phone, unsigned int state);
 void Telephone_OnSceneEvent(Telephone *phone, int event);
-int Telephone_Vfunc0C(void);
+int Telephone_Vfunc0c(void);
 int Telephone_Update(Telephone *phone);
 int Telephone_Start(Telephone *phone);
 Telephone *Telephone_Delete(Telephone *phone);

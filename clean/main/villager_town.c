@@ -558,14 +558,14 @@ void VillagerTown_ScoreRoom(VillagerTown *town, int villager)
 CLEAN_AS(func_0207ac40, VillagerTown_ScoreRoom)
 
 /* func_0207acbc: unless this system is linked with others, VillagerTown_PickFortuneGiver; and
- * unless it holds its slot of the session, VillagerTown_DoubleByte1E. */
+ * unless it holds its slot of the session, VillagerTown_DoubleByte1e. */
 void VillagerTown_UpdateAlone(VillagerTown *town, const void *player)
 {
     if (!Session_IsLinked(data_020ccf94)) {
         VillagerTown_PickFortuneGiver(town, player);
     }
     if (!Session_IsSlotTaken(data_020ccf94, data_020ccf94->local_slot)) {
-        VillagerTown_DoubleByte1E(town);
+        VillagerTown_DoubleByte1e(town);
     }
 }
 CLEAN_AS(func_0207acbc, VillagerTown_UpdateAlone)
@@ -616,45 +616,45 @@ CLEAN_AS(func_0207acf8, VillagerTown_PickFortuneGiver)
 
 /* func_0207adf4: unless this system holds its slot of the session, byte 0x1e of every
  * villager's state entry halved. */
-void VillagerTown_HalveByte1E(VillagerTown *town)
+void VillagerTown_HalveByte1e(VillagerTown *town)
 {
     if (Session_IsSlotTaken(data_020ccf94, data_020ccf94->local_slot)) {
         return;
     }
     for (int i = 0; i < VILLAGER_TOWN_VILLAGERS; i++) {
         if (has_villager(town->villagers[i])) {
-            VillagerEntry_HalveByte1E(town->villagers[i]);
+            VillagerEntry_HalveByte1e(town->villagers[i]);
         }
     }
 }
-CLEAN_AS(func_0207adf4, VillagerTown_HalveByte1E)
+CLEAN_AS(func_0207adf4, VillagerTown_HalveByte1e)
 
 /* func_0207ae34: unless this system holds its slot of the session, byte 0x1e of every
  * villager's state entry doubled (up to 32). */
-void VillagerTown_DoubleByte1E(VillagerTown *town)
+void VillagerTown_DoubleByte1e(VillagerTown *town)
 {
     if (Session_IsSlotTaken(data_020ccf94, data_020ccf94->local_slot)) {
         return;
     }
     for (int i = 0; i < VILLAGER_TOWN_VILLAGERS; i++) {
         if (has_villager(town->villagers[i])) {
-            VillagerEntry_DoubleByte1E(town->villagers[i]);
+            VillagerEntry_DoubleByte1e(town->villagers[i]);
         }
     }
 }
-CLEAN_AS(func_0207ae34, VillagerTown_DoubleByte1E)
+CLEAN_AS(func_0207ae34, VillagerTown_DoubleByte1e)
 
 /* func_0207ae74: byte 0x1e of every villager's state entry set from its fondness of the player
  * of `record` (func_0207d2b4). */
-void VillagerTown_SetByte1E(VillagerTown *town, void *record)
+void VillagerTown_SetByte1e(VillagerTown *town, void *record)
 {
     for (int i = 0; i < VILLAGER_TOWN_VILLAGERS; i++) {
         if (has_villager(town->villagers[i])) {
-            VillagerEntry_SetByte1E(town->villagers[i], record);
+            VillagerEntry_SetByte1e(town->villagers[i], record);
         }
     }
 }
-CLEAN_AS(func_0207ae74, VillagerTown_SetByte1E)
+CLEAN_AS(func_0207ae74, VillagerTown_SetByte1e)
 
 /* ---- The calendar's events */
 

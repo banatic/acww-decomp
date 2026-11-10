@@ -14,14 +14,14 @@
  *
  *   kinds                     update
  *   9, 0x10-0x14, 0x1f, ...   TownInsectMove_UpdateLeaning  (rests on something, sways, flies off)
- *   0xa, 0x33                 TownInsectMove_Update0A
- *   0xb, 0x3a                 TownInsectMove_Update0B
+ *   0xa, 0x33                 TownInsectMove_Update0a
+ *   0xb, 0x3a                 TownInsectMove_Update0b
  *   0xc, 0xd, 0x1b-0x1d       TownInsectMove_UpdateWaiting  (waits, turns, flies to a new point)
  *   0xe, 0xf, 0x1a, 0x20      TownInsectMove_UpdateInArea   (wanders in a box around its place)
  *   0x15-0x17                 TownInsectMove_UpdateTurned   (hovers, turns, flies to a new point)
  *   0x18, 0x3b                TownInsectMove_Update18
  *   0x19                      TownInsectMove_Update19
- *   0x1e                      TownInsectMove_Update1E
+ *   0x1e                      TownInsectMove_Update1e
  *   0x23                      TownInsectMove_Update23
  *   0x25, 0x39                TownInsectMove_Update25
  *   0x30                      TownInsectMove_Update30       (hops)
@@ -69,19 +69,19 @@ void TownInsectMove_Walk31(TownInsect *insect);
 void TownInsectMove_Wait31(TownInsect *insect);
 void TownInsectMove_Update31(TownInsect *insect);
 int TownInsectMove_TurnFromObstacle(TownInsect *insect);
-void TownInsectMove_Walk1E(TownInsect *insect, short *frames);
+void TownInsectMove_Walk1e(TownInsect *insect, short *frames);
 void TownInsectMove_Flee(TownInsect *insect, short *frames);
 void TownInsectMove_Hop(TownInsect *insect, short *frames);
-void TownInsectMove_Wait1E(TownInsect *insect, short *frames);
-void TownInsectMove_Update1E(TownInsect *insect);
+void TownInsectMove_Wait1e(TownInsect *insect, short *frames);
+void TownInsectMove_Update1e(TownInsect *insect);
 void TownInsectMove_Update18(TownInsect *insect);
-void TownInsectMove_Update0A(TownInsect *insect);
-void TownInsectMove_Update0B(TownInsect *insect);
+void TownInsectMove_Update0a(TownInsect *insect);
+void TownInsectMove_Update0b(TownInsect *insect);
 void TownInsectMove_Crawl25(TownInsect *insect);
 void TownInsectMove_Update25(TownInsect *insect);
 void TownInsectMove_Update32(TownInsect *insect);
 void TownInsectMove_Update19(TownInsect *insect);
-void TownInsectMove_Sound1BTo1D(TownInsect *insect);
+void TownInsectMove_Sound1bTo1d(TownInsect *insect);
 void TownInsectMove_SoundCD(TownInsect *insect);
 int TownInsectMove_TurnAtObstacle(TownInsect *insect, short *frames);
 void TownInsectMove_FlyWaiting(TownInsect *insect);

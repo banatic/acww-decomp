@@ -32,14 +32,14 @@ void SessionMessage_SetActivityPlayerF4(int size, int kind, int scene, int slot)
 void SessionMessage_SetActivityFlagE6(int size, int kind, u8 scene, u32 slot);           /* 7 */
 void SessionMessage_AddLinkPair(int size, int kind, int scene, int slot);                /* 8 */
 void SessionMessage_SetLinkEntry(int size, int kind, u8 scene, u32 slot);                /* 9 */
-void SessionMessage_SetLinkWord2C(int size, int kind, int scene, int slot);              /* 10 */
-void SessionMessage_SetLinkEntry3C(int size, int kind, int scene, int slot);             /* 11 */
+void SessionMessage_SetLinkWord2c(int size, int kind, int scene, int slot);              /* 10 */
+void SessionMessage_SetLinkEntry3c(int size, int kind, int scene, int slot);             /* 11 */
 void SessionMessage_SetLinkStatusBits(int size, int kind, int scene, int slot);          /* 12 */
 void SessionMessage_SetLinkSlotFlag68(int size, int kind, u8 scene, u32 slot);           /* 13 */
 void SessionMessage_SetLinkWord74(int size, int kind, u8 scene, u32 slot);               /* 14 */
 void SessionMessage_ReceiveBundle15(int size, int kind, u8 scene, u32 slot);             /* 15 */
 void SessionMessage_ReceiveBundle16(int size, int kind, u8 scene, u32 slot);             /* 16 */
-void SessionMessage_SetLinkFlag7C(int size, int kind, u8 scene, u32 slot);               /* 17 */
+void SessionMessage_SetLinkFlag7c(int size, int kind, u8 scene, u32 slot);               /* 17 */
 void SessionMessage_PlaceMapItems(u32 size, int kind, u8 scene, u32 slot);               /* 18 */
 void SessionMessage_RelayMapItems(u32 size, int kind, u8 scene, u32 slot);               /* 19 */
 void SessionMessage_Handle20(int size, int kind, u8 scene, u32 slot);                    /* 20 */
@@ -81,7 +81,7 @@ void SessionMessage_UpdateVillagerMemory(int size, int kind, int scene, int slot
 void SessionMessage_SetVillagerMemoryImpression(int size, int kind, u8 scene, u32 slot); /* 56 */
 void SessionMessage_SetVillagerMemoryFondness(int size, int kind, u8 scene, u32 slot);   /* 57 */
 void SessionMessage_SetVillagerClothes(int size, int kind, u8 scene, u32 slot);          /* 58 */
-void SessionMessage_SetVillagerItems7B0(int size, int kind, u8 scene, u32 slot);         /* 59 */
+void SessionMessage_SetVillagerItems7b0(int size, int kind, u8 scene, u32 slot);         /* 59 */
 void SessionMessage_ChangeVillagerObject(int size, int kind, u8 scene, u32 slot);        /* 60 */
 void SessionMessage_SetVillagerObject(int size, int kind, u8 scene, u32 slot);           /* 61 */
 void SessionMessage_SetVillagerMemoryItem(int size, int kind, u8 scene, u32 slot);       /* 62 */

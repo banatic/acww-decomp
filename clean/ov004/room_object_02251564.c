@@ -49,12 +49,12 @@ void RoomObject02251564_UpdateUsed(RoomObject02251564 *object)
 CLEAN_AS(func_ov004_02213008, RoomObject02251564_UpdateUsed)
 
 /* func_ov004_02213010 (entry of USED): the sound at 2; when the player who used it
- * (RoomObject.unk_77C) is this system's and there is a player record, one bell less in the
+ * (RoomObject.unk_77c) is this system's and there is a player record, one bell less in the
  * wallet if it holds any. */
 int RoomObject02251564_EnterUsed(RoomObject02251564 *object)
 {
     RoomObject_PlaySound1(&object->base);
-    if (object->base.unk_77C == data_020ccf94->local_player) {
+    if (object->base.unk_77c == data_020ccf94->local_player) {
         u8 *player = PlayerRecords_Current();
         if (player != NULL && PlayerPockets_Bells(room_object02251564_pockets(player), 0) > 0) {
             PlayerPockets *pockets = room_object02251564_pockets(player);
@@ -102,7 +102,7 @@ void RoomObject02251564_UpdateState(RoomObject02251564 *object)
 }
 CLEAN_AS(_ZN18Obj_ov004_0225156419func_ov004_022130c4Ev, RoomObject02251564_UpdateState)
 
-/* func_ov004_02213130 (vtable slot 0x70): the base class's (RoomObject_SetUnk77C, given `state`
+/* func_ov004_02213130 (vtable slot 0x70): the base class's (RoomObject_SetUnk77c, given `state`
  * and `value`), then enters `state` if its entry (through a table) agrees; whether it did.
  * States 2 and above do not exist. */
 int RoomObject02251564_EnterState(RoomObject02251564 *object, unsigned int state, int value)
@@ -111,7 +111,7 @@ int RoomObject02251564_EnterState(RoomObject02251564 *object, unsigned int state
         &data_ov004_02250170, /* RoomObject02251564_EnterIdle */
         &data_ov004_02250168, /* RoomObject02251564_EnterUsed */
     };
-    RoomObject_SetUnk77C(&object->base, (int) state, value);
+    RoomObject_SetUnk77c(&object->base, (int) state, value);
     MemberTable_InitOnce(&data_ov004_02257078, data_ov004_02257124, entries, ROOM_OBJECT_02251564_STATE_COUNT);
     if (state < ROOM_OBJECT_02251564_STATE_COUNT && MemberPointer_CallInt(&data_ov004_02257124[state], object) != 0) {
         object->state = (u8) state;
@@ -122,11 +122,11 @@ int RoomObject02251564_EnterState(RoomObject02251564 *object, unsigned int state
 CLEAN_AS(func_ov004_02213130, RoomObject02251564_EnterState)
 
 /* func_ov004_022131b4 (vtable slot 0x0c) */
-int RoomObject02251564_Vfunc0C(void)
+int RoomObject02251564_Vfunc0c(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov004_022131b4, RoomObject02251564_Vfunc0C)
+CLEAN_AS(func_ov004_022131b4, RoomObject02251564_Vfunc0c)
 
 /* _ZN18Obj_ov004_0225156419func_ov004_022131b8Ev (vtable slot 0x80, each frame while neither
  * appearing nor vanishing): the state's update. */

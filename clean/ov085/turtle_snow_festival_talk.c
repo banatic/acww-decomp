@@ -177,7 +177,7 @@ void TurtleSnowFestivalTalk_OnAnswer(TurtleSnowFestivalTalk *talk)
                 if (MainRandom_Below(2) == 0) {
                     EventWinner_SetVillager(&data_021f3aa4, TownVillager_NpcId(villager));
                 }
-                EventWinner_SetNpc2E(&data_021f3aa4, TownVillager_NpcId(villager));
+                EventWinner_SetNpc2e(&data_021f3aa4, TownVillager_NpcId(villager));
                 next = (u8) (MainRandom_Below(2) + TURTLE_SNOW_FESTIVAL_LINE_NAMED);
                 PlayerIdText_Destruct(&name);
             } else {
@@ -319,7 +319,7 @@ void TurtleSnowFestivalTalk_FirstLine(TurtleSnowFestivalTalk *talk, TurtleSnowFe
         return;
     }
 
-    NpcId *named = EventWinner_Npc2E(&data_021f3aa4);
+    NpcId *named = EventWinner_Npc2e(&data_021f3aa4);
     if (NpcId_IsValid(named)) {
         PlayerIdText name;
         PlayerIdText_Construct(&name);

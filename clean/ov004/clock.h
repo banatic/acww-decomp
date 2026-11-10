@@ -35,7 +35,7 @@ typedef struct Clock {
 Clock *Clock_MarkNearestStriker(Clock *clock);
 Clock *Clock_MarkNearest(Clock *clock);
 void Clock_NodeDescAfterHook(Clock *clock, int node, G3dRenderState *state);
-int Clock_Vfunc0C(void);
+int Clock_Vfunc0c(void);
 int Clock_Update(Clock *clock);
 int Clock_Start(Clock *clock);
 Clock *Clock_Delete(Clock *clock);

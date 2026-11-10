@@ -32,9 +32,9 @@ typedef struct CountdownAnim {
     const void *vtable;
     u8 unk_04[4];
     u32 frame; /* in 20.12 fixed point */
-    u8 unk_0C[0xc];
+    u8 unk_0c[0xc];
     u32 *target;
-    u32 unk_1C;
+    u32 unk_1c;
 } CountdownAnim;
 
 /* The places of a digit, left to right. */
@@ -55,15 +55,15 @@ typedef struct CountdownDigit {
     u8 unk_F0[0x13c - 0xf0];
     u8 model_object[0x198 - 0x13c]; /* main's model object (Obj_020dd05c) */
     void *model;                    /* the model object's */
-    u8 unk_19C[0x2b4 - 0x19c];
+    u8 unk_19c[0x2b4 - 0x19c];
     u8 place; /* enum CountdownPlace */
     u8 value; /* what it shows: the frame of its animation */
     u8 shown; /* the value at the end of the last update; 0xff before the first */
-    u8 unk_2B7;
+    u8 unk_2b7;
     CountdownAnim anim;
     u8 running; /* cleared once the month is January */
     u8 quiet;   /* the next change plays no sound */
-    u8 unk_2DA[2];
+    u8 unk_2da[2];
 } CountdownDigit;
 
 /* The board's modes (overlay 9's byte at 0x134). */
@@ -82,17 +82,17 @@ typedef struct CountdownBoard {
     u8 unk_138[0x13c - 0x138];
     u8 model_object[0x198 - 0x13c]; /* main's model object (Obj_020dd05c) */
     void *model;                    /* the model object's */
-    u8 unk_19C[0x235 - 0x19c];
+    u8 unk_19c[0x235 - 0x19c];
     u8 flags_235; /* bit 0: the digits are not drawn */
     u8 unk_236[0x2b4 - 0x236];
     CountdownAnim anim;
     s8 material; /* the index of "m_cbs_Adt" in the model, -1 until set up */
     u8 alpha;    /* the alpha "m_cbs_Adt" is drawn with (0 to 31) */
-    u8 unk_2D6[2];
+    u8 unk_2d6[2];
     CountdownDigit *digits[COUNTDOWN_PLACES];
 } CountdownBoard;
 
-int CountdownDigit_Slot0B0(void);
+int CountdownDigit_Slot0b0(void);
 void CountdownDigit_Tick(CountdownDigit *digit);
 int CountdownDigit_Update(CountdownDigit *digit);
 int CountdownDigit_Init(CountdownDigit *digit);

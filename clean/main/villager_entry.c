@@ -56,7 +56,7 @@ static int fondness_factor(const s8 *memory)
 /* ---- Byte 0x1e of its state entry */
 
 /* func_0207d0f0: `amount` added to byte 0x1e, kept within 0-32. */
-void VillagerEntry_AddByte1E(u8 *villager, int amount)
+void VillagerEntry_AddByte1e(u8 *villager, int amount)
 {
     if (!has_villager(villager)) {
         return;
@@ -70,35 +70,35 @@ void VillagerEntry_AddByte1E(u8 *villager, int amount)
     }
     state->byte_1e = (u8) value;
 }
-CLEAN_AS(func_0207d0f0, VillagerEntry_AddByte1E)
+CLEAN_AS(func_0207d0f0, VillagerEntry_AddByte1e)
 
-/* func_0207d128: byte 0x1e doubled (VillagerState_DoubleByte1E). */
-void VillagerEntry_DoubleByte1E(u8 *villager)
+/* func_0207d128: byte 0x1e doubled (VillagerState_DoubleByte1e). */
+void VillagerEntry_DoubleByte1e(u8 *villager)
 {
     if (has_villager(villager)) {
-        VillagerState_DoubleByte1E(VillagerStatus_StateEntry(villager));
+        VillagerState_DoubleByte1e(VillagerStatus_StateEntry(villager));
     }
 }
-CLEAN_AS(func_0207d128, VillagerEntry_DoubleByte1E)
+CLEAN_AS(func_0207d128, VillagerEntry_DoubleByte1e)
 
 /* func_0207d148: byte 0x1e halved. */
-void VillagerEntry_HalveByte1E(u8 *villager)
+void VillagerEntry_HalveByte1e(u8 *villager)
 {
     if (has_villager(villager)) {
         VillagerState *state = VillagerStatus_StateEntry(villager);
         state->byte_1e = (u8) (state->byte_1e >> 1);
     }
 }
-CLEAN_AS(func_0207d148, VillagerEntry_HalveByte1E)
+CLEAN_AS(func_0207d148, VillagerEntry_HalveByte1e)
 
 /* func_0207d16c: byte 0x1e cleared. */
-void VillagerEntry_ClearByte1E(u8 *villager)
+void VillagerEntry_ClearByte1e(u8 *villager)
 {
     if (has_villager(villager)) {
         VillagerStatus_StateEntry(villager)->byte_1e = 0;
     }
 }
-CLEAN_AS(func_0207d16c, VillagerEntry_ClearByte1E)
+CLEAN_AS(func_0207d16c, VillagerEntry_ClearByte1e)
 
 /* The player's record, the current player's for NULL, when it can be used here: it exists, its
  * player id is set and it is no longer on Nook's part-time job (PLAYER_FLAG_NOOK_JOB clear);
@@ -117,7 +117,7 @@ static void *usable_record(void *record)
 
 /* func_0207d18c: whether byte 0x1e is full (32) and the entry's mood (byte 0x18) 0 or 1, for a usable
  * player record (`record`, else the current player's). */
-int VillagerEntry_IsByte1EFull(u8 *villager, void *record)
+int VillagerEntry_IsByte1eFull(u8 *villager, void *record)
 {
     int full = 0;
     if (usable_record(record) != NULL && has_villager(villager) &&
@@ -126,12 +126,12 @@ int VillagerEntry_IsByte1EFull(u8 *villager, void *record)
     }
     return full && VillagerEntry_IsNotUpset(villager) != 0;
 }
-CLEAN_AS(func_0207d18c, VillagerEntry_IsByte1EFull)
+CLEAN_AS(func_0207d18c, VillagerEntry_IsByte1eFull)
 
 /* func_0207d1f8: byte 0x1e raised by a draw of 0-2 times how fond the villager is of the
  * player (a factor of 1 or 2), when the player's record is usable, the entry's mood (byte 0x18) is 0 or 1 and the
  * villager knows the player; else by nothing (kept within 0-32 all the same). */
-void VillagerEntry_RaiseByte1E(u8 *villager, void *record)
+void VillagerEntry_RaiseByte1e(u8 *villager, void *record)
 {
     if (!has_villager(villager)) {
         return;
@@ -145,9 +145,9 @@ void VillagerEntry_RaiseByte1E(u8 *villager, void *record)
             amount = (int) MainRandom_Below(VILLAGER_ENTRY_RAISE_DRAW) * factor;
         }
     }
-    VillagerEntry_AddByte1E(villager, amount);
+    VillagerEntry_AddByte1e(villager, amount);
 }
-CLEAN_AS(func_0207d1f8, VillagerEntry_RaiseByte1E)
+CLEAN_AS(func_0207d1f8, VillagerEntry_RaiseByte1e)
 
 /* func_0207d278: whether the mood (byte 0x18) of the villager's state entry is 0 (none) or 1
  * (happy), not angry (2), sad (3) or 4 (by personality). */
@@ -167,7 +167,7 @@ CLEAN_AS(func_0207d278, VillagerEntry_IsNotUpset)
 /* func_0207d2b4: byte 0x1e cleared, then, when the player's record is usable and the villager
  * knows the player, set to how fond the villager is (a factor of 1 or 2) times a draw of 1-10,
  * within 0-32. */
-void VillagerEntry_SetByte1E(u8 *villager, void *record)
+void VillagerEntry_SetByte1e(u8 *villager, void *record)
 {
     if (!has_villager(villager)) {
         return;
@@ -191,7 +191,7 @@ void VillagerEntry_SetByte1E(u8 *villager, void *record)
     }
     state->byte_1e = (u8) value;
 }
-CLEAN_AS(func_0207d2b4, VillagerEntry_SetByte1E)
+CLEAN_AS(func_0207d2b4, VillagerEntry_SetByte1e)
 
 /* ---- Players */
 

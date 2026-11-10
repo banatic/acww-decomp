@@ -148,7 +148,7 @@ void RoomObject02252248_UpdateState(RoomObject02252248 *object)
 }
 CLEAN_AS(_ZN18Obj_ov004_0225224819func_ov004_02219514Ev, RoomObject02252248_UpdateState)
 
-/* func_ov004_022195a0 (vtable slot 0x70): the base class's (RoomObject_SetUnk77C, given `state`
+/* func_ov004_022195a0 (vtable slot 0x70): the base class's (RoomObject_SetUnk77c, given `state`
  * and `value`), then enters `state` if its entry (through a table) agrees; whether it did.
  * States 4 and above do not exist. */
 int RoomObject02252248_EnterState(RoomObject02252248 *object, unsigned int state, int value)
@@ -159,7 +159,7 @@ int RoomObject02252248_EnterState(RoomObject02252248 *object, unsigned int state
         &data_ov004_02250388, /* RoomObject02252248_EnterOn */
         &data_ov004_022502b8, /* RoomObject02252248_EnterSwitchingOff */
     };
-    RoomObject_SetUnk77C(&object->base, (int) state, value);
+    RoomObject_SetUnk77c(&object->base, (int) state, value);
     MemberTable_InitOnce(&data_ov004_0225709c, data_ov004_022573ac, entries, ROOM_OBJECT_02252248_STATE_COUNT);
     if (state < ROOM_OBJECT_02252248_STATE_COUNT && MemberPointer_CallInt(&data_ov004_022573ac[state], object) != 0) {
         object->state = (u8) state;
@@ -182,11 +182,11 @@ u8 RoomObject02252248_StateIsOn(RoomObject02252248 *object, unsigned int state)
 CLEAN_AS(func_ov004_02219640, RoomObject02252248_StateIsOn)
 
 /* func_ov004_02219654 (vtable slot 0x0c) */
-int RoomObject02252248_Vfunc0C(void)
+int RoomObject02252248_Vfunc0c(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov004_02219654, RoomObject02252248_Vfunc0C)
+CLEAN_AS(func_ov004_02219654, RoomObject02252248_Vfunc0c)
 
 /* _ZN18Obj_ov004_0225224819func_ov004_02219658Ev (vtable slot 0x80, each frame while neither
  * appearing nor vanishing): the state's update. */

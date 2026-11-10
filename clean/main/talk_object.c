@@ -1119,7 +1119,7 @@ int TalkObject_LoadPraise(TalkObject *talk)
     if (villager == NULL) {
         return 0;
     }
-    VillagerMemory_GetText2A(villager, &talk->praise, talk_object_player());
+    VillagerMemory_GetText2a(villager, &talk->praise, talk_object_player());
     return 1;
 }
 CLEAN_AS(func_02067728, TalkObject_LoadPraise)

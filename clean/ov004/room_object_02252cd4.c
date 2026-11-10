@@ -56,11 +56,11 @@ void RoomObject02252cd4_ProbePoint(RoomObject02252cd4 *object, Vec3 *out, void *
 CLEAN_AS(func_ov004_02218848, RoomObject02252cd4_ProbePoint)
 
 /* func_ov004_022188b4 (vtable slot 0x0c) */
-int RoomObject02252cd4_Vfunc0C(void)
+int RoomObject02252cd4_Vfunc0c(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov004_022188b4, RoomObject02252cd4_Vfunc0C)
+CLEAN_AS(func_ov004_022188b4, RoomObject02252cd4_Vfunc0c)
 
 /* Kind 0x2c: the node set's value 0, or 1 while a player stands on one of its cells (each such
  * player also advancing the animations and playing sound 0). */

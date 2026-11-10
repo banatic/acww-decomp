@@ -268,7 +268,7 @@ CLEAN_AS(func_ov068_022701b0, InsectPath_GoToSpot)
  *
  * Once unk_247 is set, *counter is 0 or above 0x1f and the model is opaque: when the player
  * was seen near (mode 1 or 3) and stands within 1.0, the player is asked to react
- * (FieldActor_PlayerRequestState6D); if the player does, it turns calm (action 0x13), unk_24c is
+ * (FieldActor_PlayerRequestState6d); if the player does, it turns calm (action 0x13), unk_24c is
  * set and its animation restarts (frames 0, flags 2) from the frame it is at; else kind 0x36
  * goes on hopping while unk_23e runs (INSECT_PATH_HOP). That gives 1; out of reach it
  * misses (INSECT_PATH_MISSED) and gives 2. In the other modes a fleeing insect stops
@@ -286,7 +286,7 @@ int InsectPath_GoForPlayer(TownInsect *insect, int mode, const Vec3 *player, s16
         if (mode == 3 || mode == 1) {
             if (Vec_DistanceXZ(player, position) < 0x1000) {
                 s16 *hop = &insect->unk_23e;
-                if (FieldActor_PlayerRequestState6D(insect->kind == INSECT_PATH_KIND_SCORPION) != 0) {
+                if (FieldActor_PlayerRequestState6d(insect->kind == INSECT_PATH_KIND_SCORPION) != 0) {
                     insect->action = INSECT_PATH_CALM;
                     insect->unk_24c = 1;
                     FrameCtrl_Init(&insect->model.frames, 0, 2, 0x1000, frame_number(insect->model.frames.frame));

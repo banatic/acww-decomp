@@ -564,13 +564,13 @@ CLEAN_AS(__sinit_020c4d74, StaticInit_CameraView)
 
 extern PlayerOptions data_021c6998;
 extern StaticInitRecord data_021c699c;
-extern void func_0203d2b4(void *options); /* PlayerOptions_Empty2B4 */
+extern void func_0203d2b4(void *options); /* PlayerOptions_Empty2b4 */
 
 /* __sinit_020c5088: the player's options (player_options.h), whose constructor and destructor
  * do nothing. */
 void StaticInit_PlayerOptions(void)
 {
-    PlayerOptions_Empty2C4((int) (uintptr_t) &data_021c6998);
+    PlayerOptions_Empty2c4((int) (uintptr_t) &data_021c6998);
     static_init_register(&data_021c6998, func_0203d2b4, &data_021c699c);
 }
 CLEAN_AS(__sinit_020c5088, StaticInit_PlayerOptions)

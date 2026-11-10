@@ -218,7 +218,7 @@ void SessionMessage_SetLinkEntry(int size, int kind, u8 scene, u32 slot)
 CLEAN_AS(func_0207639c, SessionMessage_SetLinkEntry)
 
 /* func_02076374: the sender's word 0x2c of the link state becomes the payload's byte. */
-void SessionMessage_SetLinkWord2C(int size, int kind, int scene, int slot)
+void SessionMessage_SetLinkWord2c(int size, int kind, int scene, int slot)
 {
     (void) size;
     (void) kind;
@@ -227,10 +227,10 @@ void SessionMessage_SetLinkWord2C(int size, int kind, int scene, int slot)
     Session_ReadMessage(data_020ccf94, &value, 1);
     LinkGlobal_SetArrived(slot, value);
 }
-CLEAN_AS(func_02076374, SessionMessage_SetLinkWord2C)
+CLEAN_AS(func_02076374, SessionMessage_SetLinkWord2c)
 
 /* func_0207631c: the sender's entry from 0x3c of the link state, from 2 bytes. */
-void SessionMessage_SetLinkEntry3C(int size, int kind, int scene, int slot)
+void SessionMessage_SetLinkEntry3c(int size, int kind, int scene, int slot)
 {
     (void) size;
     (void) kind;
@@ -246,7 +246,7 @@ void SessionMessage_SetLinkEntry3C(int size, int kind, int scene, int slot)
     LinkGlobal_AddPlaceChange(slot, byte0, byte1, byte2, (int) fields);
     LinkPart_EndEntryB(entry);
 }
-CLEAN_AS(func_0207631c, SessionMessage_SetLinkEntry3C)
+CLEAN_AS(func_0207631c, SessionMessage_SetLinkEntry3c)
 
 /* func_020762b8: a byte whose bits 0-2 go to the link state's word for the sender's slot (for
  * this system's slot when the sender is slot 0), bits 5-7 to func_020a6f10 and bits 3-4 to
@@ -325,7 +325,7 @@ void SessionMessage_ReceiveBundle16(int size, int kind, u8 scene, u32 slot)
 CLEAN_AS(func_0207623c, SessionMessage_ReceiveBundle16)
 
 /* func_02076230 */
-void SessionMessage_SetLinkFlag7C(int size, int kind, u8 scene, u32 slot)
+void SessionMessage_SetLinkFlag7c(int size, int kind, u8 scene, u32 slot)
 {
     (void) size;
     (void) kind;
@@ -333,7 +333,7 @@ void SessionMessage_SetLinkFlag7C(int size, int kind, u8 scene, u32 slot)
     (void) slot;
     LinkScene_GlobalSetReleased(1);
 }
-CLEAN_AS(func_02076230, SessionMessage_SetLinkFlag7C)
+CLEAN_AS(func_02076230, SessionMessage_SetLinkFlag7c)
 
 /* func_020761fc: item records (5 bytes each) put on their maps (the town's or a room's;
  * linked_map_items.h). */
@@ -509,7 +509,7 @@ CLEAN_AS(func_020765cc, SessionMessage_SetVillagerClothes)
 
 /* func_02076568: four items (2 bytes each) and a villager (byte 8): the villager's items from
  * 0x7b0. */
-void SessionMessage_SetVillagerItems7B0(int size, int kind, u8 scene, u32 slot)
+void SessionMessage_SetVillagerItems7b0(int size, int kind, u8 scene, u32 slot)
 {
     (void) size;
     (void) kind;
@@ -531,7 +531,7 @@ void SessionMessage_SetVillagerItems7B0(int size, int kind, u8 scene, u32 slot)
         }
     }
 }
-CLEAN_AS(func_02076568, SessionMessage_SetVillagerItems7B0)
+CLEAN_AS(func_02076568, SessionMessage_SetVillagerItems7b0)
 
 /* func_020767ac: a villager (high nibble of byte 0), an operation on its object (low nibble)
  * and a value (byte 1): 0 func_0209bb90, 1 func_0209ba7c, 2 func_0209b920, 3 func_0209b8a4,

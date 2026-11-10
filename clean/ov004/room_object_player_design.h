@@ -19,7 +19,7 @@ typedef struct PlayerDesignObject {
 } PlayerDesignObject;
 
 void PlayerDesignObject_NodeHook(PlayerDesignObject *object, int node, G3dRenderState *state);
-int PlayerDesignObject_Vfunc0C(void);
+int PlayerDesignObject_Vfunc0c(void);
 int PlayerDesignObject_Update(void);
 int PlayerDesignObject_Start(PlayerDesignObject *object);
 PlayerDesignObject *PlayerDesignObject_Delete(PlayerDesignObject *object);

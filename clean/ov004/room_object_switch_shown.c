@@ -86,7 +86,7 @@ void SwitchShown_UpdateState(SwitchShownObject *object)
 }
 CLEAN_AS(_ZN18Obj_ov004_02250ad819func_ov004_0221244cEv, SwitchShown_UpdateState)
 
-/* func_ov004_022124b8 (vtable slot 0x70): the base class's (RoomObject_SetUnk77C, given `state`
+/* func_ov004_022124b8 (vtable slot 0x70): the base class's (RoomObject_SetUnk77c, given `state`
  * and `value`), then enters `state` if its entry (through a table) agrees; whether it did.
  * States 2 and above do not exist. */
 int SwitchShown_EnterState(SwitchShownObject *object, unsigned int state, int value)
@@ -95,7 +95,7 @@ int SwitchShown_EnterState(SwitchShownObject *object, unsigned int state, int va
         &data_ov004_02250298, /* SwitchShown_EnterOff */
         &data_ov004_02250310, /* SwitchShown_EnterOn */
     };
-    RoomObject_SetUnk77C(&object->base, (int) state, value);
+    RoomObject_SetUnk77c(&object->base, (int) state, value);
     MemberTable_InitOnce(&data_ov004_0225704c, data_ov004_022571e4, entries, SWITCH_SHOWN_STATE_COUNT);
     if (state < SWITCH_SHOWN_STATE_COUNT && MemberPointer_CallInt(&data_ov004_022571e4[state], object) != 0) {
         object->state = (u8) state;
@@ -139,11 +139,11 @@ int SwitchShown_CanDraw(SwitchShownObject *object)
 CLEAN_AS(func_ov004_02212578, SwitchShown_CanDraw)
 
 /* func_ov004_0221259c (vtable slot 0x0c) */
-int SwitchShown_Vfunc0C(void)
+int SwitchShown_Vfunc0c(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov004_0221259c, SwitchShown_Vfunc0C)
+CLEAN_AS(func_ov004_0221259c, SwitchShown_Vfunc0c)
 
 /* _ZN18Obj_ov004_02250ad819func_ov004_022125a0Ev (vtable slot 0x80, each frame while neither
  * appearing nor vanishing) */

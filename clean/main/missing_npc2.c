@@ -595,20 +595,20 @@ MissingNpc2Talk *MissingNpc2Talk_Construct(MissingNpc2Talk *talk)
 CLEAN_AS(func_020c33a4, MissingNpc2Talk_Construct)
 
 /* func_020c33bc: once the walk after its turn (kind 1) is done, standing. Always 1. */
-int MissingNpc2_UpdateScene2FExit(MissingNpc2 *self)
+int MissingNpc2_UpdateScene2fExit(MissingNpc2 *self)
 {
     missing_npc2_stand_after(self, MISSING_NPC2_WALK);
     return 1;
 }
-CLEAN_AS(func_020c33bc, MissingNpc2_UpdateScene2FExit)
+CLEAN_AS(func_020c33bc, MissingNpc2_UpdateScene2fExit)
 
 /* func_020c340c: a turn, then a walk (kind 4, priority 2) to (0x10000, 0x1d000). Always 1. */
-int MissingNpc2_EnterScene2FExit(MissingNpc2 *self)
+int MissingNpc2_EnterScene2fExit(MissingNpc2 *self)
 {
     missing_npc2_move_at(self, MISSING_NPC2_TURN_THEN_WALK, 2, 0x10000, 0x1d000);
     return 1;
 }
-CLEAN_AS(func_020c340c, MissingNpc2_EnterScene2FExit)
+CLEAN_AS(func_020c340c, MissingNpc2_EnterScene2fExit)
 
 /* func_020c344c: once its turn is done, standing. Always 1. */
 int MissingNpc2_UpdateTurn(MissingNpc2 *self)
@@ -628,20 +628,20 @@ int MissingNpc2_EnterTurn(MissingNpc2 *self)
 CLEAN_AS(func_020c349c, MissingNpc2_EnterTurn)
 
 /* func_020c34e4: once the walk (kind 2) is done, standing. Always 1. */
-int MissingNpc2_UpdateScene2FWalk(MissingNpc2 *self)
+int MissingNpc2_UpdateScene2fWalk(MissingNpc2 *self)
 {
     missing_npc2_stand_after(self, MISSING_NPC2_WALK_2);
     return 1;
 }
-CLEAN_AS(func_020c34e4, MissingNpc2_UpdateScene2FWalk)
+CLEAN_AS(func_020c34e4, MissingNpc2_UpdateScene2fWalk)
 
 /* func_020c3534: a walk (kind 2, priority 2) to (0xf400, 0x14600). Always 1. */
-int MissingNpc2_EnterScene2FWalk(MissingNpc2 *self)
+int MissingNpc2_EnterScene2fWalk(MissingNpc2 *self)
 {
     missing_npc2_move_at(self, MISSING_NPC2_WALK_2, 2, 0xf400, 0x14600);
     return 1;
 }
-CLEAN_AS(func_020c3534, MissingNpc2_EnterScene2FWalk)
+CLEAN_AS(func_020c3534, MissingNpc2_EnterScene2fWalk)
 
 /* func_020c3574: nothing. */
 int MissingNpc2_UpdateSpeaker(void)
@@ -826,22 +826,22 @@ int MissingNpc2_TextureName(void)
 CLEAN_AS(func_020c37d4, MissingNpc2_TextureName)
 
 /* func_020c37dc: the one that exists (if any) set to MISSING_NPC2_SCENE_2F_EXIT. */
-void MissingNpc2_StartScene2FExit(void)
+void MissingNpc2_StartScene2fExit(void)
 {
     if (data_021fbca0 != NULL) {
         MissingNpc2_SetState(data_021fbca0, MISSING_NPC2_SCENE_2F_EXIT);
     }
 }
-CLEAN_AS(func_020c37dc, MissingNpc2_StartScene2FExit)
+CLEAN_AS(func_020c37dc, MissingNpc2_StartScene2fExit)
 
 /* func_020c37f8: the one that exists (if any) set to MISSING_NPC2_SCENE_2F_WALK. */
-void MissingNpc2_StartScene2FWalk(void)
+void MissingNpc2_StartScene2fWalk(void)
 {
     if (data_021fbca0 != NULL) {
         MissingNpc2_SetState(data_021fbca0, MISSING_NPC2_SCENE_2F_WALK);
     }
 }
-CLEAN_AS(func_020c37f8, MissingNpc2_StartScene2FWalk)
+CLEAN_AS(func_020c37f8, MissingNpc2_StartScene2fWalk)
 
 /* func_020c3814 (slot 0x0c): unless the base class refuses to leave, it is no longer the one
  * that exists. Whether it left. */

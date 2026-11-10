@@ -298,7 +298,7 @@ CLEAN_AS(func_0201ea44, VillagerTalk_Line8d60)
  * group 12 when it is this villager, else 15; a valid person's name goes into slot 1. */
 void VillagerTalk_Line8d60AboutNpc(VillagerTalk *talk, VillagerTalkLine *out)
 {
-    NpcId *npc = EventWinner_Npc2E((EventWinner *) (void *) data_021f3aa4);
+    NpcId *npc = EventWinner_Npc2e((EventWinner *) (void *) data_021f3aa4);
     const NpcId *self = TownVillager_NpcId(lines_record(talk));
     int group = lines_same_npc(npc, self) ? 12 : 15;
     if (NpcId_IsValid(npc) != 0) {
@@ -355,7 +355,7 @@ CLEAN_AS(func_0201eb5c, VillagerTalk_Line8d60SinceEvent17)
 void VillagerTalk_LineRandom2044(VillagerTalk *talk, VillagerTalkLine *out)
 {
     u8 *record = lines_record(talk);
-    NpcId *npc = EventWinner_Npc2E((EventWinner *) (void *) data_021f3aa4);
+    NpcId *npc = EventWinner_Npc2e((EventWinner *) (void *) data_021f3aa4);
     if (VillagerTalkReplies_LineForSituation(talk, out) != 0) {
         lines_note(talk, record);
         return;
@@ -955,7 +955,7 @@ CLEAN_AS(func_02020014, VillagerTalk_StoreTextSay22ec)
 
 /* func_0202006c: when the screen gave a text (GroupParams_C4CIs1), its first 10 units become
  * the text at 0x2a of the villager's memory of the player; without a memory, of the memory the
- * villager has of the current player (VillagerMemory_SetText2A). */
+ * villager has of the current player (VillagerMemory_SetText2a). */
 void VillagerTalk_StoreText(VillagerTalk *talk)
 {
     if (!GroupParams_C4CIs1()) {
@@ -964,11 +964,11 @@ void VillagerTalk_StoreText(VillagerTalk *talk)
     u8 *record = lines_record(talk);
     if (talk->memory != NULL) {
         u16 *text = GroupParams_Text();
-        VillagerMemoryEntry_SetText2A(lines_memory(talk), text, 10);
+        VillagerMemoryEntry_SetText2a(lines_memory(talk), text, 10);
     } else {
         u16 *text = GroupParams_Text();
         DesignCreator *player = PlayerRecord_Player(PlayerRecords_Current());
-        VillagerMemory_SetText2A(record, text, 10, player);
+        VillagerMemory_SetText2a(record, text, 10, player);
     }
 }
 CLEAN_AS(func_0202006c, VillagerTalk_StoreText)

@@ -609,7 +609,7 @@ CLEAN_AS(func_ov004_02226630, FieldActorRooms_UpdateExit)
 
 /* Set once the walk of states 0x8e, 0x8c and 0x8b is under way: their walk ends at a stop
  * only then. */
-#define FIELD_ACTOR_ROOMS_WALKING(actor) ((actor)->unk_7F8)
+#define FIELD_ACTOR_ROOMS_WALKING(actor) ((actor)->unk_7f8)
 
 /* The animation by the speed: its rate is 0.23 of the speed (at least 0.5) unless that
  * exceeds the animation's length; above 0x53f the run (animation 2) plays, else the walk. */

@@ -3,7 +3,7 @@
  *
  *   0x06  ten item codes, the items its house starts with (TownVillager_SetUp)
  *   0x1a  six pairs of an attribute and a value of it (ItemAttributes_Match), one for each of
- *         the villager's numbers at 0x7d7 (VillagerMode_Counter7D7): the items it likes
+ *         the villager's numbers at 0x7d7 (VillagerMode_Counter7d7): the items it likes
  *   0x26  its birthday (month, then day)
  *   0x28  a byte whose bits 2-4 pick its house's room (VillagerHouseItems_RoomModel)
  *   0x29  the two clothing styles the villager likes (ItemTraits_ClothStyle values; the first

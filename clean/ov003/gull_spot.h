@@ -14,7 +14,7 @@ typedef struct GullSpot {
     TownObjectActor actor;
 } GullSpot;
 
-int GullSpot_Slot0C(void);
+int GullSpot_Slot0c(void);
 int GullSpot_Draw(void);
 int GullSpot_Update(void);
 int GullSpot_SetUp(GullSpot *spot);

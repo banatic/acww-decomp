@@ -126,7 +126,7 @@ int CardSave_WriteClearedMarks(void)
 {
     u8 *letters = Activity_CurrentLetters();
     SaveStamp_Clear(&data_021f3ba0);
-    LetterStore_MarkBlock1C(letters);
+    LetterStore_MarkBlock1c(letters);
     if (write_both_copies(&data_021f3ba0, STAMP_SIZE) != 0) {
         return 1;
     }
@@ -140,7 +140,7 @@ CLEAN_AS(func_020a1628, CardSave_WriteClearedMarks)
 
 /* func_020a16b0: a 0 written to the save memory's byte 0x3fffc, outside the parts (the boot
  * screen does it when both copies are bad). */
-int CardSave_ClearByte3FFFC(void)
+int CardSave_ClearByte3fffc(void)
 {
     u8 zero = 0;
     if (BackupCard_Write(&data_021c8188, BYTE_3FFFC, &zero, 1) == BACKUP_CARD_FAILED) {
@@ -148,7 +148,7 @@ int CardSave_ClearByte3FFFC(void)
     }
     return 0;
 }
-CLEAN_AS(func_020a16b0, CardSave_ClearByte3FFFC)
+CLEAN_AS(func_020a16b0, CardSave_ClearByte3fffc)
 
 /* func_020a16e0: whether the two copies' stamps on the card have the same serial (with both
  * good, the boot screen then uses copy 1).

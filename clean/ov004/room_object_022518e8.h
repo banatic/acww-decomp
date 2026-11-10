@@ -47,7 +47,7 @@ int RoomObject022518e8_EnterOff(RoomObject022518e8 *object);
 void RoomObject022518e8_UpdateState(RoomObject022518e8 *object);
 int RoomObject022518e8_EnterState(RoomObject022518e8 *object, unsigned int state, int value);
 u8 RoomObject022518e8_StateIsOn(RoomObject022518e8 *object, unsigned int state);
-int RoomObject022518e8_Vfunc0C(void);
+int RoomObject022518e8_Vfunc0c(void);
 int RoomObject022518e8_Update(RoomObject022518e8 *object);
 int RoomObject022518e8_Start(RoomObject022518e8 *object);
 RoomObject022518e8 *RoomObject022518e8_Delete(RoomObject022518e8 *object);

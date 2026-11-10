@@ -97,7 +97,7 @@ typedef struct TownObjectActorLink {
     int unk_00;
     int status;    /* nonzero while what the request opened is up, 0 once it closed */
     int requested; /* set to 1 when a talk starts */
-    int unk_0C;
+    int unk_0c;
     int unk_10; /* set to 100 when a message ends (TownObjectActor_OnMessageEnd) */
 } TownObjectActorLink;
 
@@ -105,7 +105,7 @@ typedef struct TownObjectActorLink {
 typedef struct TownObjectActorArea {
     u8 unk_00[0x28];
     fx32 facing_x; /* the direction the area faces, in the ground plane */
-    fx32 unk_2C;
+    fx32 unk_2c;
     fx32 facing_z;
     u8 unk_34[0x3c - 0x34];
     Vec3 origin; /* what func_02032754 gives */
@@ -135,7 +135,7 @@ typedef struct TownObjectActor {
     char receiver_name[25];      /* written by func_020a8164 */
     u8 unk_109;
     u8 message; /* Base_02066994's byte at 0x1e: the message to show */
-    u8 unk_10B[0x12c - 0x10b];
+    u8 unk_10b[0x12c - 0x10b];
     TownObjectActorLink *link; /* Base_02066994's word at 0x40 */
     u8 unk_130[0x132 - 0x130];
     u16 close_wait; /* mode 4: the frames before the door closes */
@@ -145,9 +145,9 @@ typedef struct TownObjectActor {
     u32 index;                      /* the code's low 12 bits: the building's number in its files' names */
     u8 model_object[0x198 - 0x13c]; /* main's model object (Obj_020dd05c) ... */
     void *model;                    /* ... its model, */
-    u8 unk_19C[0x1a0 - 0x19c];
+    u8 unk_19c[0x1a0 - 0x19c];
     Mtx43 model_matrix;        /* ... and the matrix it is drawn with */
-    u8 unk_1D0[0x1f4 - 0x1d0]; /* ... up to its end */
+    u8 unk_1d0[0x1f4 - 0x1d0]; /* ... up to its end */
     u8 lights[0x22c - 0x1f4];  /* a member object of main's (Member_020b33b8, parts up to 0x34) */
     int tile_x;                /* the position's x and z over 0x2000 */
     int tile_z;

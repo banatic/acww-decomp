@@ -80,7 +80,7 @@ static_assert(offsetof(FieldActor, unk_698) == 0x698, "unk_698");
 static_assert(sizeof(FieldActorBlock48) == 0x30, "FieldActorBlock48");
 static_assert(offsetof(FieldActor, start_position) == 0x6f4, "start_position");
 static_assert(offsetof(FieldActor, animation) == 0x704, "animation");
-static_assert(offsetof(FieldActor, unk_70D) == 0x70d, "unk_70D");
+static_assert(offsetof(FieldActor, unk_70d) == 0x70d, "unk_70d");
 static_assert(offsetof(FieldActor, state) == 0x7f0, "state");
 static_assert(offsetof(FieldActor, request_priority) == 0x7fc, "request_priority");
 
@@ -232,7 +232,7 @@ int PlayerActorOps_SetStung(int set, int player)
     if (set != 0) {
         face += 0x10;
     }
-    FaceTexture_Load(&actor->unk_70D[0], (int) face);
+    FaceTexture_Load(&actor->unk_70d[0], (int) face);
     return 1;
 }
 CLEAN_AS(func_02095578, PlayerActorOps_SetStung)
@@ -457,7 +457,7 @@ void PlayerActorOps_Approach(unsigned int approach)
         FieldActor_SetFlag(actor, PLAYER_ACTOR_OPS_FLAG_1);
         FieldActor_RequestState10(actor, 3, PLAYER_ACTOR_OPS_PRIORITY_5, PLAYER_ACTOR_OPS_ARG);
     } else {
-        FieldActor_RequestState3D(actor, 0x10, (int) approach, actor->position.x, actor->position.z, actor->yaw,
+        FieldActor_RequestState3d(actor, 0x10, (int) approach, actor->position.x, actor->position.z, actor->yaw,
                                   PLAYER_ACTOR_OPS_PRIORITY_6, PLAYER_ACTOR_OPS_ARG);
     }
 }
@@ -531,7 +531,7 @@ int PlayerActorOps_MoveTo(Vec3 *point, int max_speed, int player)
         return 0;
     }
     Vec3 copy = *point;
-    return FieldActor_RequestState6F(actor, &copy, max_speed, PLAYER_ACTOR_OPS_PRIORITY_5, PLAYER_ACTOR_OPS_ARG);
+    return FieldActor_RequestState6f(actor, &copy, max_speed, PLAYER_ACTOR_OPS_PRIORITY_5, PLAYER_ACTOR_OPS_ARG);
 }
 CLEAN_AS(func_02095ab0, PlayerActorOps_MoveTo)
 
@@ -550,15 +550,15 @@ CLEAN_AS(func_02095aec, PlayerActorOps_RequestState85)
 
 /* func_02095b1c: this console's actor is asked for state 0x3f with `*item`; whether it was
  * queued. */
-int PlayerActorOps_RequestState3F(unsigned short *item)
+int PlayerActorOps_RequestState3f(unsigned short *item)
 {
     FieldActor *actor = SessionPlayers_FieldActor(PLAYER_ACTOR_OPS_OWN);
     if (actor == NULL) {
         return 0;
     }
-    return FieldActor_RequestState3F(actor, *item, PLAYER_ACTOR_OPS_PRIORITY_6, PLAYER_ACTOR_OPS_ARG);
+    return FieldActor_RequestState3f(actor, *item, PLAYER_ACTOR_OPS_PRIORITY_6, PLAYER_ACTOR_OPS_ARG);
 }
-CLEAN_AS(func_02095b1c, PlayerActorOps_RequestState3F)
+CLEAN_AS(func_02095b1c, PlayerActorOps_RequestState3f)
 
 /* func_02095b40: state 7 with `*item`, kind 2, then state 0x10. */
 int PlayerActorOps_RequestState7Kind2Next10(u16 *item)
@@ -658,7 +658,7 @@ int PlayerActorOps_FinishState(void)
             empty = items[0] == ITEM_CODE_NONE;
         }
         if (!empty && FieldActor_HeldToolNumber(actor) == 0 && state != 0x39) {
-            return FieldActor_RequestState3D(actor, 2, 2, 0, 0, 0, PLAYER_ACTOR_OPS_PRIORITY_6, PLAYER_ACTOR_OPS_ARG);
+            return FieldActor_RequestState3d(actor, 2, 2, 0, 0, 0, PLAYER_ACTOR_OPS_PRIORITY_6, PLAYER_ACTOR_OPS_ARG);
         }
     }
     return FieldActor_RequestState2(actor, 3, PLAYER_ACTOR_OPS_PRIORITY_5, PLAYER_ACTOR_OPS_ARG);
@@ -823,11 +823,11 @@ int PlayerActorOps_StateFlagA20(void)
 CLEAN_AS(func_02095f28, PlayerActorOps_StateFlagA20)
 
 /* func_02095f4c: whether this console's actor is in state 0x3f. */
-int PlayerActorOps_InState3F(void)
+int PlayerActorOps_InState3f(void)
 {
     return PlayerActorOps_InState(0x3f, PLAYER_ACTOR_OPS_OWN);
 }
-CLEAN_AS(func_02095f4c, PlayerActorOps_InState3F)
+CLEAN_AS(func_02095f4c, PlayerActorOps_InState3f)
 
 /* func_02095f58: whether this console's actor is in state 7 before frame 19 of its animation. */
 int PlayerActorOps_EarlyInState7(void)

@@ -20,10 +20,10 @@ typedef struct OutdoorClock {
     u8 unk_F0[0x13c - 0xf0];
     u8 model_object[0x198 - 0x13c]; /* overlay 9's model object (Obj_020dd05c) */
     void *model;                    /* that model object's model */
-    u8 unk_19C[0x2b4 - 0x19c];
+    u8 unk_19c[0x2b4 - 0x19c];
     s8 hour_node;   /* the index of the joint "kh_j" in the model, -1 for none */
     s8 minute_node; /* the index of the joint "km_j" in the model, -1 for none */
-    u8 unk_2B6[2];
+    u8 unk_2b6[2];
 } OutdoorClock;
 
 int OutdoorClock_Slot98(void);

@@ -181,15 +181,15 @@ void SceneHeaps_DestroyUnits(void)
 }
 CLEAN_AS(func_0205c1e0, SceneHeaps_DestroyUnits)
 
-/* func_0205c200: the unit heap, with room for a unit of ResourcePools_UnitSize2BCC bytes for
- * each block counted and one of ResourcePools_UnitSize31EC for each of the scene's heaps;
+/* func_0205c200: the unit heap, with room for a unit of ResourcePools_UnitSize2bcc bytes for
+ * each block counted and one of ResourcePools_UnitSize31ec for each of the scene's heaps;
  * made only when that is not 0. The unit heap (it stays as it was when nothing is made). */
 unsigned int SceneHeaps_CreateUnits(Heap *parent)
 {
     u32 blocks = scene_heaps_block_count();
     u32 heaps = (u32) ResourcePools_SceneHeapCount();
-    u32 size = scene_heaps_frame_unit((u32) ResourcePools_UnitSize2BCC()) * blocks;
-    size += scene_heaps_frame_unit((u32) ResourcePools_UnitSize31EC()) * heaps;
+    u32 size = scene_heaps_frame_unit((u32) ResourcePools_UnitSize2bcc()) * blocks;
+    size += scene_heaps_frame_unit((u32) ResourcePools_UnitSize31ec()) * heaps;
     if (size != 0) {
         data_021c9ab8 = scene_heaps_new_frame_heap(size, parent);
     }

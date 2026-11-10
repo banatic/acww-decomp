@@ -64,10 +64,10 @@ void VillagerMemoryEntry_SetGreeting(VillagerMemory *memory, const u16 *text, in
 void VillagerMemoryEntry_GreetingToWide(VillagerMemory *memory, void *wide);
 void VillagerMemoryEntry_GreetingToLabel(VillagerMemory *memory, void *label);
 int VillagerMemoryEntry_GreetingSet(VillagerMemory *memory);
-void VillagerMemoryEntry_SetText2A(VillagerMemory *memory, const u16 *text, int length);
-void VillagerMemoryEntry_Text2AToWide(VillagerMemory *memory, void *wide);
-void *VillagerMemoryEntry_Text2AToLabel(VillagerMemory *memory, void *label);
-int VillagerMemoryEntry_Text2ASet(VillagerMemory *memory);
+void VillagerMemoryEntry_SetText2a(VillagerMemory *memory, const u16 *text, int length);
+void VillagerMemoryEntry_Text2aToWide(VillagerMemory *memory, void *wide);
+void *VillagerMemoryEntry_Text2aToLabel(VillagerMemory *memory, void *label);
+int VillagerMemoryEntry_Text2aSet(VillagerMemory *memory);
 void VillagerMemoryEntry_SetNicknameChars(VillagerMemory *memory, const u16 *chars, int length);
 void *VillagerMemoryEntry_SetNickname(VillagerMemory *memory, void *label);
 void VillagerMemoryEntry_NicknameToWide(VillagerMemory *memory, void *wide);

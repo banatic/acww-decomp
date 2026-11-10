@@ -363,7 +363,7 @@ SAVES = {
     "axe-worn": [(HELD, "<H", 0x1372)],
 
     # an umbrella (0x1380, tool 10) held: the actions that end by taking the held item out again
-    # (FieldActor_RequestState3D) take out an umbrella by state 0x3e instead
+    # (FieldActor_RequestState3d) take out an umbrella by state 0x3e instead
     "umbrella": [(HELD, "<H", 0x1380)],
 
     # the town's mystery cat record (main/mystery_cat_record.h, 0x238 bytes at 0x16ad0 of the state
@@ -465,7 +465,7 @@ SAVES["visitor-3f-trade"] = [e for e in SAVES["visitor-3f"] if e[0] != MONEY] + 
 SAVES["visitor-3f-present"] = [e for e in SAVES["visitor-3f-trade"] if e[0] != POCKETS + 28]
 # as "job-0d" with no birthday told yet (the record's day and month at 0x2414 both 0, as a new
 # resident's are, PlayerRecord_ClearBirthday): Tom Nook's line for this errand then sends the
-# player to tell a villager (ov050/nook_clerk_talk.c NookClerkTalk_JobLine0D, line 0x15)
+# player to tell a villager (ov050/nook_clerk_talk.c NookClerkTalk_JobLine0d, line 0x15)
 SAVES["job-0d-nobirthday"] = SAVES["job-0d"] + [(0x14 + 0x2414, "<H", 0)]
 SAVES["job-0c-nobirthday"] = SAVES["job-0c"] + [(0x14 + 0x2414, "<H", 0)]
 # a player as new to the villagers as a new resident is: no birthday told (as above) and the
@@ -504,7 +504,7 @@ SAVES["job-12"] = job_stage(
     "0000000000000000f1ff1200000000000000000000000000000006ff6ec6433143314331433143314331002f000000000000000000000000f1ff1600000000000000000000000000000006ff000000000000000000000000000006ff000000006ec6433143314331433143314331024d6ec6433143314331433143314331002f6ec64331433143314331433143310310010000000000000000000000f1ff160005000000000000000000000000000000000006ff0000000000000000f1ff1600000000000000000000000000",
     (0x3230, 0x116E))
 # the errand's object of "job-0f" and "job-11" at step 1 (its low bits, byte 0x0b of block 0): Tom
-# Nook's line for it is 0x27 (NookClerkTalk_JobLine0F) and 0x31 (_JobLine11), whose ends set the
+# Nook's line for it is 0x27 (NookClerkTalk_JobLine0f) and 0x31 (_JobLine11), whose ends set the
 # object back to step 0 (NookClerkTalk_JobStep0) and to step 2 with the block's type 18
 # (NookClerkTalk_JobErrand18)
 SAVES["job-0f-step1"] = SAVES["job-0f"] + [(VILLAGER_PART + 0x0B, "<B", 1)]
@@ -1111,7 +1111,7 @@ SAVES["errand-done-4-0"] = villager_errand(0, 4, 0, low=2, player=True)
 # furniture (0x3230, the fossil 0x450c, 0x3234, 0x3238) and four group A fossils (0x4510, 0x4530,
 # 0x4560, 0x4590), and villager 2's errand of an item with variants done (low bits 3): the load
 # puts the items into their houses (VillagerHouseItems_MakeRoom, _StoreGroupA) and ends the errand
-# (VillagerMode_FinishObject, VillagerMode_StepCounter7D7)
+# (VillagerMode_FinishObject, VillagerMode_StepCounter7d7)
 SAVES["villager-items"] = [(TOWN_VILLAGERS + 0x7EC * villager + 0x7B0 + 2 * i, "<H", item)
                            for villager, items in ((0, (0x3230, 0x450C, 0x3234, 0x3238)), (1, (0x4510, 0x4530, 0x4560, 0x4590)))
                            for i, item in enumerate(items)] + villager_errand(2, 4, 0, low=3, player=True)

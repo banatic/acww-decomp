@@ -34,7 +34,7 @@
 static_assert(offsetof(FieldActor, position) == 0x5c, "position");
 static_assert(offsetof(FieldActor, yaw) == 0x8e, "yaw");
 static_assert(offsetof(FieldActor, receiver) == 0xec, "receiver");
-static_assert(offsetof(FieldActor, receiver_unk_1E) == 0x10a, "receiver's byte 0x1e");
+static_assert(offsetof(FieldActor, receiver_unk_1e) == 0x10a, "receiver's byte 0x1e");
 static_assert(offsetof(FieldActor, link) == 0x12c, "receiver's link");
 static_assert(offsetof(FieldActor, anim) == 0x2d0, "animation control");
 static_assert(offsetof(FieldActor, anim.flags) == 0x2e4, "animation flags");
@@ -181,7 +181,7 @@ static void fars2_open_talk(FieldActor *actor, const char *name, u8 kind)
     SceneObjectBase_TakeReceiver((SceneObjectBase *) (void *) actor, (TalkReceiver *) (void *) actor->receiver);
     FieldActor_SetFlag(actor, FARS2_FLAG_TALK);
     MessageReceiver_SetName((MessageReceiver *) (void *) actor->receiver, name);
-    actor->receiver_unk_1E = kind;
+    actor->receiver_unk_1e = kind;
     actor->link->requested = 1;
 }
 

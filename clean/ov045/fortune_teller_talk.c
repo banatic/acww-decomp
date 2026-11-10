@@ -398,7 +398,7 @@ static void ftt_read_friendship(FortuneTeller *teller, u8 *record, int luck, Des
  * Then, with a card drawn: at the line of its meaning the reading takes effect and 0x10 is
  * next, the card's lines forgotten: the luck reading sets the current player's luck of the day
  * to the card's (good luck: VillagerTown_UpdateAlone with the player; bad luck:
- * VillagerTown_HalveByte1E), the friendship reading acts on the villager named
+ * VillagerTown_HalveByte1e), the friendship reading acts on the villager named
  * (ftt_read_friendship). At the line of the card, the line of its meaning is next. The line,
  * when one was picked, is shown. */
 void FortuneTellerTalk_OnLineEnded(FortuneTellerTalk *talk)
@@ -451,7 +451,7 @@ void FortuneTellerTalk_OnLineEnded(FortuneTellerTalk *talk)
                     if (luck == FORTUNE_TELLER_LUCK_GOOD) {
                         VillagerTown_UpdateAlone(ftt_town(), player);
                     } else if (luck == FORTUNE_TELLER_LUCK_BAD) {
-                        VillagerTown_HalveByte1E(ftt_town());
+                        VillagerTown_HalveByte1e(ftt_town());
                     }
                     break;
                 case FORTUNE_TELLER_READING_FRIENDSHIP:

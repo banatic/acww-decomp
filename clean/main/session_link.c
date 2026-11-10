@@ -339,7 +339,7 @@ void Session_Host(void)
     session->local_slot = 0;
     Session_SetSlotTaken(session, session->local_slot, 1);
     Session_SetReceiveBuffers(0);
-    LinkScene_Empty6C8C();
+    LinkScene_Empty6c8c();
     LinkGlobal_SetPlace(0, SceneQuery_Current(), 1, 0, 7);
 }
 CLEAN_AS(func_020742b4, Session_Host)

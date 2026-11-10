@@ -85,25 +85,25 @@ void ActivityJob_AskFindMover(void)
 CLEAN_AS(func_020a1888, ActivityJob_AskFindMover)
 
 /* func_020a1894 */
-void ActivityJob_Ask1F(void)
+void ActivityJob_Ask1f(void)
 {
     data_021f3c38 = 0x1f;
 }
-CLEAN_AS(func_020a1894, ActivityJob_Ask1F)
+CLEAN_AS(func_020a1894, ActivityJob_Ask1f)
 
 /* func_020a18a0 */
-void ActivityJob_Ask1B(void)
+void ActivityJob_Ask1b(void)
 {
     data_021f3c38 = 0x1b;
 }
-CLEAN_AS(func_020a18a0, ActivityJob_Ask1B)
+CLEAN_AS(func_020a18a0, ActivityJob_Ask1b)
 
 /* func_020a18ac */
-void ActivityJob_Ask1A(void)
+void ActivityJob_Ask1a(void)
 {
     data_021f3c38 = 0x1a;
 }
-CLEAN_AS(func_020a18ac, ActivityJob_Ask1A)
+CLEAN_AS(func_020a18ac, ActivityJob_Ask1a)
 
 /* func_020a18b8 */
 void ActivityJob_Ask19(void)

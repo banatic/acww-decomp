@@ -1553,7 +1553,7 @@ CLEAN_AS(func_ov050_02262eec, NookClerkTalk_JobLine10)
  * object at step 2 line 0x28; at step 0, at the job talk's step 0 or 2 the block's second
  * villager (when there is one) named in part 0 and line 0x21 (step 2 becomes 1), else 0x10; at
  * step 1 the villager named and line 0x27. */
-void NookClerkTalk_JobLine0F(NookClerkTalk *talk, NookClerkLine *out)
+void NookClerkTalk_JobLine0f(NookClerkTalk *talk, NookClerkLine *out)
 {
     if (NookClerkTalk_JobNotInUniform(talk, out) != 0) {
         return;
@@ -1588,15 +1588,15 @@ void NookClerkTalk_JobLine0F(NookClerkTalk *talk, NookClerkLine *out)
     }
     PlayerIdText_Destruct(&name);
 }
-CLEAN_AS(func_ov050_02262f48, NookClerkTalk_JobLine0F)
+CLEAN_AS(func_ov050_02262f48, NookClerkTalk_JobLine0f)
 
 /* func_ov050_02263028 (vtable slot 0x94, type 0xe): step 1 line 0x1e, else 0x1c the first
  * time, then 0x10. */
-void NookClerkTalk_JobLine0E(NookClerkTalk *talk, NookClerkLine *out)
+void NookClerkTalk_JobLine0e(NookClerkTalk *talk, NookClerkLine *out)
 {
     ntalk_job_line_simple(talk, out, 0x1e, 0x1c);
 }
-CLEAN_AS(func_ov050_02263028, NookClerkTalk_JobLine0E)
+CLEAN_AS(func_ov050_02263028, NookClerkTalk_JobLine0e)
 
 /* Whether every villager of the town remembers the current player, the record's flag 0xa set. */
 static int ntalk_known_to_all(u8 *record)
@@ -1609,7 +1609,7 @@ static int ntalk_known_to_all(u8 *record)
  * asked for first (not used); not without the uniform. Unless the player's record has the flag
  * 0xa and every villager remembers the player: line 0x13 at the job talk's step 1 or more,
  * else 0x14. Else line 0x15 without a birthday set, 0x16 with one. */
-void NookClerkTalk_JobLine0D(NookClerkTalk *talk, NookClerkLine *out)
+void NookClerkTalk_JobLine0d(NookClerkTalk *talk, NookClerkLine *out)
 {
     u8 *record = PlayerRecords_Current();
     VillagerPartBlock_Errand(VillagerPart_Block((VillagerPart *) (void *) PlayerRecord_VillagerPart(record), 0));
@@ -1627,7 +1627,7 @@ void NookClerkTalk_JobLine0D(NookClerkTalk *talk, NookClerkLine *out)
         out->message = 0x16;
     }
 }
-CLEAN_AS(func_ov050_02263084, NookClerkTalk_JobLine0D)
+CLEAN_AS(func_ov050_02263084, NookClerkTalk_JobLine0d)
 
 /* func_ov050_0226310c (vtable slot 0x8c, type 0xc): the errand's object and a free pocket slot
  * asked for first (not used); not without the uniform. While the pockets still hold one of the
@@ -1636,7 +1636,7 @@ CLEAN_AS(func_ov050_02263084, NookClerkTalk_JobLine0D)
  * step 1. With none left the talk is at step 1; when the player's record has the flag 0xa, every
  * villager remembers the player and a birthday is set, the errand's object goes to step 1 and
  * line 0x1a; else 0x11. */
-void NookClerkTalk_JobLine0C(NookClerkTalk *talk, NookClerkLine *out)
+void NookClerkTalk_JobLine0c(NookClerkTalk *talk, NookClerkLine *out)
 {
     u8 *record = PlayerRecords_Current();
     VillagerErrand *errand = (VillagerErrand *) (void *) VillagerPartBlock_Errand(
@@ -1664,7 +1664,7 @@ void NookClerkTalk_JobLine0C(NookClerkTalk *talk, NookClerkLine *out)
     }
     out->message = 0x11;
 }
-CLEAN_AS(func_ov050_0226310c, NookClerkTalk_JobLine0C)
+CLEAN_AS(func_ov050_0226310c, NookClerkTalk_JobLine0c)
 
 /* Whether the player record's clothes are the uniform (by furniture number for a furniture code). */
 static int ntalk_in_uniform(u8 *record)
@@ -1685,7 +1685,7 @@ static int ntalk_in_uniform(u8 *record)
  *   4 when it goes in (state 0), else 2; with it there, line 5;
  * - else when the uniform goes into the pockets (state 0) the villager part is reset and line
  *   3; else line 1. */
-void NookClerkTalk_JobLine0B(NookClerkTalk *talk, NookClerkLine *out)
+void NookClerkTalk_JobLine0b(NookClerkTalk *talk, NookClerkLine *out)
 {
     u8 *record = PlayerRecords_Current();
     VillagerPart *part = (VillagerPart *) (void *) PlayerRecord_VillagerPart(record);
@@ -1722,7 +1722,7 @@ void NookClerkTalk_JobLine0B(NookClerkTalk *talk, NookClerkLine *out)
         out->message = 1;
     }
 }
-CLEAN_AS(func_ov050_02263258, NookClerkTalk_JobLine0B)
+CLEAN_AS(func_ov050_02263258, NookClerkTalk_JobLine0b)
 
 /* func_ov050_02263394: with the villager part's flag set, whether the player (with a record) is
  * not in uniform: then the job's line 0xe. */

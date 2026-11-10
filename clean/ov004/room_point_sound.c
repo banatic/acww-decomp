@@ -15,7 +15,7 @@
 static RoomObject *room_point_sound_object(Vec3 *point)
 {
     RoomObject *object = RoomObjects_GridObjectAtPoint(RoomObjects_Grid(), point, LAYER_FLOOR);
-    if (object != NULL && RoomObject_Unk00CIs36Or37(object) != 0) {
+    if (object != NULL && RoomObject_Unk00cIs36Or37(object) != 0) {
         return object;
     }
     return NULL;

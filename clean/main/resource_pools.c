@@ -344,19 +344,19 @@ void ResourcePools_BlockConstruct(u8 **blocks)
 CLEAN_AS(func_02078d68, ResourcePools_BlockConstruct)
 
 /* func_02078d78: 12780 (0x31ec), the bytes func_0205c200 reserves for each of the units
- * func_02085f08 counts (next to ResourcePools_UnitSize2BCC's 11212 for the others). */
-int ResourcePools_UnitSize31EC(void)
+ * func_02085f08 counts (next to ResourcePools_UnitSize2bcc's 11212 for the others). */
+int ResourcePools_UnitSize31ec(void)
 {
     return 0x31ec;
 }
-CLEAN_AS(func_02078d78, ResourcePools_UnitSize31EC)
+CLEAN_AS(func_02078d78, ResourcePools_UnitSize31ec)
 
 /* func_02078d80: 11212 (0x2bcc), the bytes func_0205c200 reserves for each block counted. */
-int ResourcePools_UnitSize2BCC(void)
+int ResourcePools_UnitSize2bcc(void)
 {
     return 0x2bcc;
 }
-CLEAN_AS(func_02078d80, ResourcePools_UnitSize2BCC)
+CLEAN_AS(func_02078d80, ResourcePools_UnitSize2bcc)
 
 /* ---- All of them */
 

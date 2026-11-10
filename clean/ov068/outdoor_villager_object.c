@@ -282,7 +282,7 @@ int OutdoorVillagerObject_OnItemSwung(u8 *villager, u16 *item)
         return 0;
     }
     if (object_record(villager) != NULL) {
-        VillagerEntry_HalveByte1E(object_record(villager));
+        VillagerEntry_HalveByte1e(object_record(villager));
     }
     u8 *town_record = *(u8 **) (void *) object_at(villager, OUTDOOR_VILLAGER_RECORD);
     if (VillagerCheck_HasFleas(town_record) != 0) {

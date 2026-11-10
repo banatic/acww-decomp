@@ -26,11 +26,11 @@
 
 static_assert(offsetof(RoomObjectVtable, vfunc_90) == 0x90, "vtable slot 0x90");
 static_assert(offsetof(RoomObjectVtable, is_idle) == 0xa0, "vtable slot 0xa0");
-static_assert(offsetof(RoomObject, unk_00C) == 0x0c, "unk_00C");
+static_assert(offsetof(RoomObject, unk_00c) == 0x0c, "unk_00c");
 static_assert(offsetof(RoomObject, position) == 0x5c, "position");
 static_assert(offsetof(RoomObject, angle) == 0x8e, "angle");
 static_assert(offsetof(RoomObject, scale_x) == 0x150, "scale");
-static_assert(offsetof(RoomObject, unk_15C) == 0x15c, "unk_15C");
+static_assert(offsetof(RoomObject, unk_15c) == 0x15c, "unk_15c");
 static_assert(offsetof(RoomObject, timer) == 0x160, "timer");
 static_assert(offsetof(RoomObject, wobble_amplitude) == 0x168, "wobble");
 static_assert(offsetof(RoomObject, target_angle) == 0x16c, "target angle");
@@ -43,7 +43,7 @@ static_assert(offsetof(RoomObject, nodes) == 0x742, "nodes");
 static_assert(offsetof(RoomObject, glow) == 0x748, "glow");
 static_assert(offsetof(RoomObject, node_set) == 0x764, "node set");
 static_assert(offsetof(RoomObject, placement_mode) == 0x76c, "placement_mode");
-static_assert(offsetof(RoomObject, unk_78D) == 0x78d, "unk_78D");
+static_assert(offsetof(RoomObject, unk_78d) == 0x78d, "unk_78d");
 static_assert(offsetof(RoomObject, top_height) == 0x790, "top height");
 static_assert(offsetof(RoomObject, move_flag) == 0x250, "move flag");
 static_assert(offsetof(RoomObject, number) == 0x284, "number");
@@ -332,16 +332,16 @@ int RoomObject_EnterIdle(RoomObject *object)
 }
 CLEAN_AS(func_ov004_0220c9f8, RoomObject_EnterIdle)
 
-/* func_ov004_0220c9fc (update of ROOM_OBJECT_APPEAR): unk_15C rises towards 0x1000 by 0x88.
+/* func_ov004_0220c9fc (update of ROOM_OBJECT_APPEAR): unk_15c rises towards 0x1000 by 0x88.
  * For 15 frames the object stays at scale 0 (a sound at frame 12, an effect at frame 15), two
  * more frames pass, then its scale wobbles: x and y around 1 in opposite directions by the
  * sine of the phase times the amplitude, z as x. Each time the sine changes sign the
- * amplitude drops to 0.3 of itself and the phase speeds up by 0x960. Once unk_15C is 0x1000
+ * amplitude drops to 0.3 of itself and the phase speeds up by 0x960. Once unk_15c is 0x1000
  * and the amplitude below 0x52, the object is idle. While wobbling, it calls
  * RoomObject_EffectNearCorner with 0 and 2 in its first frame and with 1 and 3 in its third. */
 void RoomObject_UpdateAppear(RoomObject *object)
 {
-    Approach_S32Again(&object->unk_15C, FX32_ONE, 0x88);
+    Approach_S32Again(&object->unk_15c, FX32_ONE, 0x88);
 
     if (object->timer < 15) {
         object->timer++;
@@ -374,7 +374,7 @@ void RoomObject_UpdateAppear(RoomObject *object)
         object->wobble_amplitude = FX_MulFunc(object->wobble_amplitude, 0x4cd);
         object->wobble_speed = (s16) (object->wobble_speed + 0x960);
     }
-    if (object->unk_15C == FX32_ONE && magnitude(object->wobble_amplitude) < 0x52) {
+    if (object->unk_15c == FX32_ONE && magnitude(object->wobble_amplitude) < 0x52) {
         RoomObject_EnterState(object, ROOM_OBJECT_IDLE);
     }
 
@@ -398,7 +398,7 @@ CLEAN_AS(func_ov004_0220c9fc, RoomObject_UpdateAppear)
  * the value ItemCode_MakeFurniture makes of number; its result decides. */
 int RoomObject_EnterAppear(RoomObject *object)
 {
-    object->unk_15C = 0x555;
+    object->unk_15c = 0x555;
     object->scale_x = 0;
     object->scale_y = 0;
     object->scale_z = 0;
@@ -527,7 +527,7 @@ void RoomObject_Shrink(RoomObject *object)
 CLEAN_AS(func_ov004_0220ce50, RoomObject_Shrink)
 
 /* A move one step along `step_angle` (if RoomObject_CanMove allows it), keeping `angle` as
- * the target angle, in `state`; the object's move sound unless its unk_00C is 0x3d. Whether
+ * the target angle, in `state`; the object's move sound unless its unk_00c is 0x3d. Whether
  * it moves. The state's entry is not asked whether it agrees here. */
 static int try_move(RoomObject *object, u16 angle, int step_angle, int state)
 {
@@ -541,7 +541,7 @@ static int try_move(RoomObject *object, u16 angle, int step_angle, int state)
     object->target_position = target;
     object->target_angle = (s16) angle;
     RoomObject_EnterState(object, state);
-    if (object->unk_00C != KIND_SILENT_MOVE) {
+    if (object->unk_00c != KIND_SILENT_MOVE) {
         int sound = RoomObject_MoveSound(object);
         if (sound != NO_SOUND) {
             PlayerActors_OwnPlaySound(sound);

@@ -355,7 +355,7 @@ void FieldActor_RunFrame(FieldActor *actor)
         FIELD_ACTOR_FIELD(actor, Vec3, FIELD_ACTOR_MATRIX_HELD_ALT + 0x24) = flat;
         actor->held_tip = flat;
         FIELD_ACTOR_FIELD(actor, Vec3, FIELD_ACTOR_MATRIX_JOINT_B + 0x24) = flat;
-        actor->unk_68C = flat;
+        actor->unk_68c = flat;
     }
     FieldActor_PollAccessory(actor);
     FieldActor_PollHead(actor);
@@ -394,8 +394,8 @@ void FieldActor_RunFrame(FieldActor *actor)
             FieldActor_FindTileTarget(actor);
             FieldActor_UpdateSunLevel(actor);
         }
-        if (actor->unk_8E8 != 0) {
-            actor->unk_8E8--;
+        if (actor->unk_8e8 != 0) {
+            actor->unk_8e8--;
         }
     }
     if (FIELD_ACTOR_COUNTDOWN(actor) != 0) {
@@ -418,8 +418,8 @@ void FieldActor_RunFrame(FieldActor *actor)
             SoundEmitter_UpdateAt((SoundEmitter *) &FIELD_ACTOR_FIELD(actor, u8, FIELD_ACTOR_EMITTER), point);
         }
     }
-    if (actor->unk_7F4 != actor->state) {
-        actor->unk_7F4 = actor->state;
+    if (actor->unk_7f4 != actor->state) {
+        actor->unk_7f4 = actor->state;
     }
 }
 CLEAN_AS(func_020058e4, FieldActor_RunFrame)
@@ -614,7 +614,7 @@ void FieldActor_TakeRemoteAction(FieldActor *actor)
             if (type == 3 || type == 4) {
                 FieldActor_RequestState19Numbered(actor, tile, -1, type == 4, 6, -1);
             } else {
-                FieldActor_RequestState1AFromMap(actor, tile, type == 22, 6, -1);
+                FieldActor_RequestState1aFromMap(actor, tile, type == 22, 6, -1);
             }
             break;
         case 5:
@@ -630,18 +630,18 @@ void FieldActor_TakeRemoteAction(FieldActor *actor)
         case 6:
         case 7:
             if (sub == 2) {
-                FieldActor_RequestState4B(actor, 1, tile, 6, -1);
+                FieldActor_RequestState4b(actor, 1, tile, 6, -1);
             } else {
-                FieldActor_RequestState4A(actor, sub != 0, type != 6, tile, 6, -1);
+                FieldActor_RequestState4a(actor, sub != 0, type != 6, tile, 6, -1);
             }
             break;
         case 8:
         case 11:
-            FieldActor_RequestState5E(actor, type == 11, &point, 6, -1);
+            FieldActor_RequestState5e(actor, type == 11, &point, 6, -1);
             break;
         case 9:
         case 10:
-            FieldActor_RequestState5FNoItem(actor, &point, type == 10, 6, -1);
+            FieldActor_RequestState5fNoItem(actor, &point, type == 10, 6, -1);
             break;
         case 19:
             FieldActor_RequestState62(actor, 0, (const u32 *) tile, ITEM_CODE_NONE, 6, -1);
@@ -664,9 +664,9 @@ void FieldActor_TakeRemoteAction(FieldActor *actor)
         case 14:
             actor->other_result = 0;
             if (sub == 2) {
-                FieldActor_RequestState4B(actor, 1, tile, 6, -1);
+                FieldActor_RequestState4b(actor, 1, tile, 6, -1);
             } else if (sub == 3) {
-                FieldActor_RequestState5D(actor, 1, tile, 6, -1);
+                FieldActor_RequestState5d(actor, 1, tile, 6, -1);
             } else {
                 FieldActor_RequestState49(actor, sub != 0, 1, tile, 6, -1);
             }
@@ -748,7 +748,7 @@ void FieldActor_EnterState(FieldActor *actor, const StateRequest *request)
     int state = request->state;
     s16 sequence = request->arg;
     MemberPointer entry = data_021c0de0[state];
-    int previous = actor->unk_7F4;
+    int previous = actor->unk_7f4;
     FieldActor_LeaveState(actor, state);
     FieldActor_ClearWork(actor);
     actor->state = state;
@@ -1206,7 +1206,7 @@ void FieldActor_RunState84(FieldActor *actor)
                                              (TalkReceiver *) (void *) (actor != NULL ? actor->receiver : NULL));
                 FieldActor_SetFlag(actor, 0x11);
                 MessageReceiver_SetName((MessageReceiver *) (void *) actor->receiver, data_020d83a4);
-                actor->receiver_unk_1E = 0x1e;
+                actor->receiver_unk_1e = 0x1e;
                 actor->link->requested = 1;
                 BatteryWarning_Disable();
             } else {
@@ -1419,7 +1419,7 @@ void FieldActor_RunState79(FieldActor *actor)
                 SceneObjectBase_TakeReceiver((SceneObjectBase *) actor, receiver_of(actor));
                 FieldActor_SetFlag(actor, 0x11);
                 MessageReceiver_SetName((MessageReceiver *) (void *) actor->receiver, data_020d83b4);
-                actor->receiver_unk_1E = 0x15;
+                actor->receiver_unk_1e = 0x15;
                 actor->link->requested = 1;
                 CameraControl_SetMode4();
             }
@@ -1597,15 +1597,15 @@ static State76Work *state76_work(FieldActor *actor)
 void FieldActor_UpdateState76(FieldActor *actor)
 {
     FieldActor_UpdateBody(actor);
-    Vec3 kept_c4 = actor->unk_0C4;
-    s16 kept_d0 = actor->unk_0D0;
+    Vec3 kept_c4 = actor->unk_0c4;
+    s16 kept_d0 = actor->unk_0d0;
     FieldActorBlock48 kept_298 = actor->unk_298;
     FieldActorBlock48 kept_698 = actor->unk_698;
     FieldActor_RebuildPose(actor);
     FieldActor_EnterContact(actor);
     FieldActor_RunState76(actor);
-    actor->unk_0C4 = kept_c4;
-    actor->unk_0D0 = kept_d0;
+    actor->unk_0c4 = kept_c4;
+    actor->unk_0d0 = kept_d0;
     actor->unk_298 = kept_298;
     actor->unk_698 = kept_698;
 }
@@ -1631,7 +1631,7 @@ static void state76_finish(FieldActor *actor)
     u16 item;
     FieldActor_RecordHeldItem(&item, actor);
     if (!item_is_nothing(&item) && FieldActor_HeldToolNumber(actor) == 0 && data_020e54a8 == 0) {
-        FieldActor_RequestState3D(actor, 2, 2, 0, 0, 0, 6, -1);
+        FieldActor_RequestState3d(actor, 2, 2, 0, 0, 0, 6, -1);
         return;
     }
     if (data_020e54a8 == 0) {
@@ -1742,27 +1742,27 @@ void FieldActor_RunState76(FieldActor *actor)
                 switch (mode) {
                     case 0:
                         MessageReceiver_SetName((MessageReceiver *) (void *) actor->receiver, data_020d83c4);
-                        actor->receiver_unk_1E = 0x40;
+                        actor->receiver_unk_1e = 0x40;
                         break;
                     case 1:
                         MessageReceiver_SetName((MessageReceiver *) (void *) actor->receiver, data_020d83d8);
-                        actor->receiver_unk_1E = 0x40;
+                        actor->receiver_unk_1e = 0x40;
                         break;
                     case 2:
                         MessageReceiver_SetName((MessageReceiver *) (void *) actor->receiver, data_020d83b4);
-                        actor->receiver_unk_1E = 0x28;
+                        actor->receiver_unk_1e = 0x28;
                         break;
                     case 3:
                         MessageReceiver_SetName((MessageReceiver *) (void *) actor->receiver, data_020d83b4);
-                        actor->receiver_unk_1E = 0x29;
+                        actor->receiver_unk_1e = 0x29;
                         break;
                     case 7:
                         MessageReceiver_SetName((MessageReceiver *) (void *) actor->receiver, data_020d83b4);
-                        actor->receiver_unk_1E = 0x22;
+                        actor->receiver_unk_1e = 0x22;
                         break;
                     default:
                         MessageReceiver_SetName((MessageReceiver *) (void *) actor->receiver, data_020d83b4);
-                        actor->receiver_unk_1E = (u8) (mode + 0x1a);
+                        actor->receiver_unk_1e = (u8) (mode + 0x1a);
                         break;
                 }
                 actor->link->requested = 1;
@@ -2004,41 +2004,41 @@ CLEAN_AS(func_020095f0, FieldActor_SetArgs70)
 /* ---- State 0x6f: walking to a point */
 
 /* State 0x6f's work, and what a request for it carries. */
-typedef struct State6FWork {
+typedef struct State6fWork {
     Vec3 point;
     fx32 speed;
     fx32 max_speed;
     int previous; /* the state the actor came from */
-} State6FWork;
+} State6fWork;
 
-typedef struct State6FArgs {
+typedef struct State6fArgs {
     Vec3 point;
     fx32 max_speed;
-} State6FArgs;
+} State6fArgs;
 
-static_assert(sizeof(State6FWork) <= sizeof(FieldActorWork), "state 0x6f work");
-static_assert(sizeof(State6FArgs) <= sizeof(((StateRequest *) NULL)->payload), "state 0x6f arguments");
+static_assert(sizeof(State6fWork) <= sizeof(FieldActorWork), "state 0x6f work");
+static_assert(sizeof(State6fArgs) <= sizeof(((StateRequest *) NULL)->payload), "state 0x6f arguments");
 
-static State6FWork *state6f_work(FieldActor *actor)
+static State6fWork *state6f_work(FieldActor *actor)
 {
-    return (State6FWork *) &actor->work;
+    return (State6fWork *) &actor->work;
 }
 
 /* func_020095f4: state 0x6f's update. */
-void FieldActor_UpdateState6F(FieldActor *actor)
+void FieldActor_UpdateState6f(FieldActor *actor)
 {
-    int arrived = FieldActor_MoveState6F(actor);
-    FieldActor_AnimateState6F(actor);
-    FieldActor_HeightState6F(actor);
+    int arrived = FieldActor_MoveState6f(actor);
+    FieldActor_AnimateState6f(actor);
+    FieldActor_HeightState6f(actor);
     FieldActor_EnterContact(actor);
-    FieldActor_EndState6F(actor, arrived);
+    FieldActor_EndState6f(actor, arrived);
 }
-CLEAN_AS(func_020095f4, FieldActor_UpdateState6F)
+CLEAN_AS(func_020095f4, FieldActor_UpdateState6f)
 
 /* func_02009624: once the actor is at the point: with flag 0x18 it stops (animation 0 if not
  * already), the bar drops, func_0200d4e8 (3) moves on, func_0203e3f8 runs and flags 5, 0x18 and
  * 3 are cleared; without it func_0200c3b0 (3, priority 5) and flag 5 is cleared. */
-void FieldActor_EndState6F(FieldActor *actor, int arrived)
+void FieldActor_EndState6f(FieldActor *actor, int arrived)
 {
     if (!arrived) {
         return;
@@ -2058,13 +2058,13 @@ void FieldActor_EndState6F(FieldActor *actor, int arrived)
         FieldActor_ClearFlag(actor, 5);
     }
 }
-CLEAN_AS(func_02009624, FieldActor_EndState6F)
+CLEAN_AS(func_02009624, FieldActor_EndState6f)
 
 /* func_020096ac: FieldActor_MoveWithCollision; then with flag 0x18, while the object at data_021dc6e8 has its
  * byte 0x20 at 1, the actor's height follows func_020310c8 (0): it is set to it when below it
  * or when 1.0 or more away along Z from the object's Z (its word at 0xc); nearer it rises by
  * 6/32 x (1.0 - the distance). */
-void FieldActor_HeightState6F(FieldActor *actor)
+void FieldActor_HeightState6f(FieldActor *actor)
 {
     if (!FieldActor_TestFlag(actor, 0x18)) {
         FieldActor_MoveWithCollision(actor);
@@ -2092,13 +2092,13 @@ void FieldActor_HeightState6F(FieldActor *actor)
         actor->position.y = ground;
     }
 }
-CLEAN_AS(func_020096ac, FieldActor_HeightState6F)
+CLEAN_AS(func_020096ac, FieldActor_HeightState6f)
 
 /* func_02009728: with no animation, FieldActor_UpdateBody only. Otherwise the speed (the word at 0x98,
  * doubled with flag 0x18) times 0x3ae1 becomes the animation's speed (unless above its frame
  * count) and picks animation 2 above 0x53f, else 1 (FieldActor_SwitchAnimation); then the body is updated
  * and FieldActor_Footfall runs. */
-void FieldActor_AnimateState6F(FieldActor *actor)
+void FieldActor_AnimateState6f(FieldActor *actor)
 {
     if (actor->animation == 0) {
         FieldActor_UpdateBody(actor);
@@ -2122,7 +2122,7 @@ void FieldActor_AnimateState6F(FieldActor *actor)
     LayeredModel_UpdateA((LayeredModel *) (void *) actor->unk_234);
     FieldActor_Footfall(actor);
 }
-CLEAN_AS(func_02009728, FieldActor_AnimateState6F)
+CLEAN_AS(func_02009728, FieldActor_AnimateState6f)
 
 /* func_020097c0: one step towards the point; whether the actor got there.
  * With flag 0x18 the point's X is the actor's (it walks along Z); in scene 0x20, coming from
@@ -2134,9 +2134,9 @@ CLEAN_AS(func_02009728, FieldActor_AnimateState6F)
  * frame, up to the top speed). While the speed is not 0 the body turns towards the point (FieldActor_TurnAngleStep);
  * the step taken (FieldActor_SetSpeed) is the speed times the cosine of the angle between the body
  * and the point, made positive. */
-int FieldActor_MoveState6F(FieldActor *actor)
+int FieldActor_MoveState6f(FieldActor *actor)
 {
-    State6FWork *work = state6f_work(actor);
+    State6fWork *work = state6f_work(actor);
     fx32 *speed = &work->speed;
     fx32 max_speed = work->max_speed;
     int arrived = 0;
@@ -2185,27 +2185,27 @@ int FieldActor_MoveState6F(FieldActor *actor)
     FieldActor_SetSpeed(actor, &step);
     return arrived;
 }
-CLEAN_AS(func_020097c0, FieldActor_MoveState6F)
+CLEAN_AS(func_020097c0, FieldActor_MoveState6f)
 
 /* func_02009914: state 0x6f's message handler: nothing. */
-void FieldActor_State6FMessage(FieldActor *actor, int arg)
+void FieldActor_State6fMessage(FieldActor *actor, int arg)
 {
     (void) actor;
     (void) arg;
 }
-CLEAN_AS(func_02009914, FieldActor_State6FMessage)
+CLEAN_AS(func_02009914, FieldActor_State6fMessage)
 
 /* func_02009918: state 0x6f's entry: animation 1, the request's point and top speed into the
  * work with speed 0 and the state before, flag 5, and the word at 0x808 cleared. In scene 0xc,
  * for this console's actor with FieldActor_LinkedNotPlayer0 and a top speed of 0x666, flags 1 and 2 of
  * func_0209626c are cleared and today's date (yesterday's unless flag 0 is set) goes into the
  * player's record (func_02099794) packed as year (7 bits), month (4 bits) and day (5 bits). */
-void FieldActor_EnterState6F(FieldActor *actor, const StateRequest *request, int previous)
+void FieldActor_EnterState6f(FieldActor *actor, const StateRequest *request, int previous)
 {
-    const State6FArgs *args = (const State6FArgs *) request->payload;
+    const State6fArgs *args = (const State6fArgs *) request->payload;
     FieldActor_PlayAnimationLoop(actor, 1, 3, 0);
     fx32 max_speed = args->max_speed;
-    FieldActor_SetWork6F(state6f_work(actor), args->point, max_speed, previous);
+    FieldActor_SetWork6f(state6f_work(actor), args->point, max_speed, previous);
     FieldActor_SetFlag(actor, 5);
     FIELD_ACTOR_FIELD(actor, int, 0x808) = 0;
 
@@ -2221,22 +2221,22 @@ void FieldActor_EnterState6F(FieldActor *actor, const StateRequest *request, int
         PlayerRecord_SetSunDate(FieldActor_Record(actor), (PlayerRecordSunDate){date});
     }
 }
-CLEAN_AS(func_02009918, FieldActor_EnterState6F)
+CLEAN_AS(func_02009918, FieldActor_EnterState6f)
 
 /* func_02009a24: state 0x6f's work from a point, a top speed and the state before. */
-void FieldActor_SetWork6F(State6FWork *work, Vec3 point, int max_speed, int previous)
+void FieldActor_SetWork6f(State6fWork *work, Vec3 point, int max_speed, int previous)
 {
     work->point = point;
     work->speed = 0;
     work->max_speed = max_speed;
     work->previous = previous;
 }
-CLEAN_AS(func_02009a24, FieldActor_SetWork6F)
+CLEAN_AS(func_02009a24, FieldActor_SetWork6f)
 
 /* func_02009a44: asks for state 0x6f with a point and a top speed, unless the actor is
  * already in it; whether it was queued.
  * BUG: as in request_state, the request's unset bytes are the stack's. */
-int FieldActor_RequestState6F(FieldActor *actor, const Vec3 *point, int max_speed, int priority, s16 arg)
+int FieldActor_RequestState6f(FieldActor *actor, const Vec3 *point, int max_speed, int priority, s16 arg)
 {
     if (actor->state == 0x6f) {
         return 0;
@@ -2247,34 +2247,34 @@ int FieldActor_RequestState6F(FieldActor *actor, const Vec3 *point, int max_spee
 #endif
     StateRequest_Construct(&request);
     StateRequest_Set(&request, 0x6f, priority, arg);
-    FieldActor_SetArgs6F((State6FArgs *) request.payload, *point, max_speed);
+    FieldActor_SetArgs6f((State6fArgs *) request.payload, *point, max_speed);
     int queued = FieldActor_QueueRequest(actor, &request);
     StateRequest_Destruct(&request);
     return queued;
 }
-CLEAN_AS(func_02009a44, FieldActor_RequestState6F)
+CLEAN_AS(func_02009a44, FieldActor_RequestState6f)
 
 /* func_02009a9c: state 0x6f's point and top speed into a request's payload. */
-void FieldActor_SetArgs6F(State6FArgs *args, Vec3 point, int max_speed)
+void FieldActor_SetArgs6f(State6fArgs *args, Vec3 point, int max_speed)
 {
     args->point = point;
     args->max_speed = max_speed;
 }
-CLEAN_AS(func_02009a9c, FieldActor_SetArgs6F)
+CLEAN_AS(func_02009a9c, FieldActor_SetArgs6f)
 
 /* ---- State 0x3f: animation 0x13 with an item */
 
 /* State 0x3f's work. */
-typedef struct State3FWork {
+typedef struct State3fWork {
     fx32 unk_00; /* 1.0 */
     u16 item;
     u8 from_10; /* the actor came from state 0x10: func_0200c3b0 ends the state, else
                  * func_0200c9a8 */
-} State3FWork;
+} State3fWork;
 
-static State3FWork *state3f_work(FieldActor *actor)
+static State3fWork *state3f_work(FieldActor *actor)
 {
-    return (State3FWork *) &actor->work;
+    return (State3fWork *) &actor->work;
 }
 
 /* Items 0x1369 to 0x13a7 go to func_02095694 as 1 to 0x3f. */
@@ -2284,7 +2284,7 @@ static BOOL state3f_numbered(u16 item)
 }
 
 /* Ends state 0x3f: the bar drops and func_0200c3b0 or func_0200c9a8 (3, priority 5). */
-static void state3f_end(FieldActor *actor, const State3FWork *work)
+static void state3f_end(FieldActor *actor, const State3fWork *work)
 {
     drop_priority(actor);
     if (work->from_10) {
@@ -2295,22 +2295,22 @@ static void state3f_end(FieldActor *actor, const State3FWork *work)
 }
 
 /* func_02009ab4: state 0x3f's update. */
-void FieldActor_UpdateState3F(FieldActor *actor)
+void FieldActor_UpdateState3f(FieldActor *actor)
 {
     FieldActor_UpdateBody(actor);
     FieldActor_FollowReported(actor);
     FieldActor_EnterContact(actor);
-    FieldActor_RunState3F(actor);
+    FieldActor_RunState3f(actor);
 }
-CLEAN_AS(func_02009ab4, FieldActor_UpdateState3F)
+CLEAN_AS(func_02009ab4, FieldActor_UpdateState3f)
 
 /* func_02009ad4: indoors (scene 1) the item's number (0 for an item outside 0x1369 to 0x13a7)
  * goes to func_02095694 and the state ends at once. Otherwise the actor turns towards yaw 0 (by
  * 0x400); at frame 8 func_02095694 gets 0, at frame 11 the item's number (only for an item in
  * the range), at frame 14 FieldActor_AnimateHeldItem (0, 6) runs, and the state ends with the animation. */
-void FieldActor_RunState3F(FieldActor *actor)
+void FieldActor_RunState3f(FieldActor *actor)
 {
-    State3FWork *work = state3f_work(actor);
+    State3fWork *work = state3f_work(actor);
     u16 item = work->item;
     if (data_020e54a8 == 1) {
         PlayerActorOps_SetHeldModel(state3f_numbered(item) ? item - 0x1368 : 0, actor->player);
@@ -2337,11 +2337,11 @@ void FieldActor_RunState3F(FieldActor *actor)
         state3f_end(actor, work);
     }
 }
-CLEAN_AS(func_02009ad4, FieldActor_RunState3F)
+CLEAN_AS(func_02009ad4, FieldActor_RunState3f)
 
 /* func_02009c08: leaving state 0x3f: for this console's actor the item in the player's record
  * (func_02099728), if there is one, goes to FieldActor_SendItem (3). */
-void FieldActor_ExitState3F(FieldActor *actor)
+void FieldActor_ExitState3f(FieldActor *actor)
 {
     if (!is_local_player(actor)) {
         return;
@@ -2351,22 +2351,22 @@ void FieldActor_ExitState3F(FieldActor *actor)
         FieldActor_SendItem(actor, 3, *item);
     }
 }
-CLEAN_AS(func_02009c08, FieldActor_ExitState3F)
+CLEAN_AS(func_02009c08, FieldActor_ExitState3f)
 
 /* func_02009c48: state 0x3f's message handler: asks for it with the saved item. */
-void FieldActor_State3FMessage(FieldActor *actor, int arg)
+void FieldActor_State3fMessage(FieldActor *actor, int arg)
 {
     u16 item;
-    FieldActor_GetSavedItem3F(actor->saved.packed, &item);
-    FieldActor_RequestState3F(actor, item, 6, arg);
+    FieldActor_GetSavedItem3f(actor->saved.packed, &item);
+    FieldActor_RequestState3f(actor, item, 6, arg);
 }
-CLEAN_AS(func_02009c48, FieldActor_State3FMessage)
+CLEAN_AS(func_02009c48, FieldActor_State3fMessage)
 
 /* func_02009c74: state 0x3f's entry. Outdoors animation 0x13 starts while the record's item is
  * nothing (func_0209971c), and the item is put back after. The request's item and whether the
  * actor comes from state 0x10 go into the work, sound 0x31 plays (0x78 for no item) and the
  * item is saved at 0x8f0. */
-void FieldActor_EnterState3F(FieldActor *actor, const StateRequest *request, int previous)
+void FieldActor_EnterState3f(FieldActor *actor, const StateRequest *request, int previous)
 {
     u16 requested = (u16) (request->payload[0] | request->payload[1] << 8);
     if (data_020e54a8 == 0) {
@@ -2378,36 +2378,36 @@ void FieldActor_EnterState3F(FieldActor *actor, const StateRequest *request, int
         FieldActor_PlayAnimationOnce(actor, 0x13, 5, 5);
         PlayerRecord_SetHeldItem(record, &held);
     }
-    State3FWork *work = state3f_work(actor);
+    State3fWork *work = state3f_work(actor);
     work->unk_00 = FX32_ONE;
     work->item = requested;
     work->from_10 = previous == 0x10;
     FieldActor_PlaySound(actor, work->item != ITEM_CODE_NONE ? 0x31 : 0x78);
-    FieldActor_SetSavedItem3F(actor->saved.packed, requested);
+    FieldActor_SetSavedItem3f(actor->saved.packed, requested);
 }
-CLEAN_AS(func_02009c74, FieldActor_EnterState3F)
+CLEAN_AS(func_02009c74, FieldActor_EnterState3f)
 
 /* func_02009d20: the item saved by state 0x3f (func_02077898). */
-void FieldActor_GetSavedItem3F(const u8 *saved, u16 *item)
+void FieldActor_GetSavedItem3f(const u8 *saved, u16 *item)
 {
     *item = PackedBytes_ReadItem(saved);
 }
-CLEAN_AS(func_02009d20, FieldActor_GetSavedItem3F)
+CLEAN_AS(func_02009d20, FieldActor_GetSavedItem3f)
 
 /* func_02009d30: saves state 0x3f's item (func_020778b0). */
-void FieldActor_SetSavedItem3F(u8 *saved, u16 item)
+void FieldActor_SetSavedItem3f(u8 *saved, u16 item)
 {
     PackedBytes_WriteItem(saved, item);
 }
-CLEAN_AS(func_02009d30, FieldActor_SetSavedItem3F)
+CLEAN_AS(func_02009d30, FieldActor_SetSavedItem3f)
 
 /* func_02009d38: asks for state 0x3f with an item; whether it was queued. */
-int FieldActor_RequestState3F(FieldActor *actor, u16 item, int priority, int arg)
+int FieldActor_RequestState3f(FieldActor *actor, u16 item, int priority, int arg)
 {
     u8 payload[2] = {(u8) item, (u8) (item >> 8)};
     return request_state(actor, 0x3f, priority, arg, payload, 2);
 }
-CLEAN_AS(func_02009d38, FieldActor_RequestState3F)
+CLEAN_AS(func_02009d38, FieldActor_RequestState3f)
 
 /* ---- States 0x35 and 0x34: animation 0x2c with the object of func_02057cf4 */
 
@@ -2793,7 +2793,7 @@ typedef struct State30Args {
     u8 unk_04;
     u8 unk_05[3];
     u32 unk_08;
-    u32 unk_0C;
+    u32 unk_0c;
 } State30Args;
 
 static_assert(sizeof(State30Args) <= sizeof(((StateRequest *) NULL)->payload), "state 0x30 arguments");
@@ -2843,7 +2843,7 @@ void FieldActor_EnterState30(FieldActor *actor, const StateRequest *request, int
     (void) previous;
     const State30Args *args = (const State30Args *) request->payload;
     Obj020dd33c_Start(&actor->item, args->unk_00, args->unk_04, args->unk_08, (Actor *) actor,
-                      (Actor *) (uintptr_t) args->unk_0C);
+                      (Actor *) (uintptr_t) args->unk_0c);
     FieldActor_PlayAnimationOnce(actor, 0x28, 3, 0);
     Obj020dd33c_SetActorMode(1, actor);
     FieldActor_PlaySound(actor, 0x4f);
@@ -2889,7 +2889,7 @@ void FieldActor_SetArgs30(State30Args *args, int a, u8 b, int c, int d)
     args->unk_00 = (u32) a;
     args->unk_04 = b;
     args->unk_08 = (u32) c;
-    args->unk_0C = (u32) d;
+    args->unk_0c = (u32) d;
 }
 CLEAN_AS(func_0200a4ac, FieldActor_SetArgs30)
 
@@ -2906,12 +2906,12 @@ CLEAN_AS(func_0200a4ac, FieldActor_SetArgs30)
  * func_02045f08. */
 
 /* The work of states 0x1b and 0x1a. */
-typedef struct State1AWork {
+typedef struct State1aWork {
     u8 flag;
     u8 step; /* state 0x1a: 0 to 2; state 0x1b: FieldActor_RunState19's */
     u8 x;
     u8 z;
-} State1AWork;
+} State1aWork;
 
 /* State 0x19's work. */
 typedef struct State19Work {
@@ -2924,12 +2924,12 @@ typedef struct State19Work {
 } State19Work;
 
 /* What a request for state 0x1a carries. */
-typedef struct State1AArgs {
+typedef struct State1aArgs {
     u16 item;
     u8 x;
     u8 z;
     u8 flag;
-} State1AArgs;
+} State1aArgs;
 
 /* What a request for state 0x19 carries (func_0200b894 writes it). */
 typedef struct State19Args {
@@ -2943,14 +2943,14 @@ typedef struct State19Args {
 
 static_assert(sizeof(State19Work) <= sizeof(FieldActorWork), "state 0x19 work");
 static_assert(offsetof(State19Args, flag) == 0xa, "state 0x19 arguments");
-static_assert(offsetof(State1AArgs, flag) == 4, "state 0x1a arguments");
+static_assert(offsetof(State1aArgs, flag) == 4, "state 0x1a arguments");
 
 /* The town map (func_0204f5a8). */
 extern void *data_021c80bc;
 
-static State1AWork *state1a_work(FieldActor *actor)
+static State1aWork *state1a_work(FieldActor *actor)
 {
-    return (State1AWork *) &actor->work;
+    return (State1aWork *) &actor->work;
 }
 
 static State19Work *state19_work(FieldActor *actor)
@@ -2960,7 +2960,7 @@ static State19Work *state19_work(FieldActor *actor)
 
 /* The tile of state 0x1a's or 0x1b's work goes to func_02045df8 with the flag, else to
  * func_02045f08. */
-static void state1a_act_on_tile(const State1AWork *work)
+static void state1a_act_on_tile(const State1aWork *work)
 {
     int tile[2] = {work->x, work->z};
     if (work->flag) {
@@ -2987,29 +2987,29 @@ static void pose_held_for_tool4(FieldActor *actor, int pose, int a, int b)
 }
 
 /* func_0200a4b8: state 0x1b's update. */
-void FieldActor_UpdateState1B(FieldActor *actor)
+void FieldActor_UpdateState1b(FieldActor *actor)
 {
-    State1AWork *work = state1a_work(actor);
+    State1aWork *work = state1a_work(actor);
     FieldActor_UpdateBody(actor);
     if (is_local_player(actor)) {
         FieldActor_EnterContact(actor);
-        FieldActor_ScaleState1B(actor);
+        FieldActor_ScaleState1b(actor);
         FieldActor_RunState19(actor, &work->step, work->flag);
     } else {
         int tile[2] = {work->x, work->z};
         FieldActor_FollowReportedToTile(actor, tile);
         FieldActor_EnterContact(actor);
-        FieldActor_ScaleState1B(actor);
+        FieldActor_ScaleState1b(actor);
         FieldActor_EndState19(actor);
     }
 }
-CLEAN_AS(func_0200a4b8, FieldActor_UpdateState1B)
+CLEAN_AS(func_0200a4b8, FieldActor_UpdateState1b)
 
 /* func_0200a528: during animation 0x18 the item shrinks in its first 6 frames (1.0 less a sixth
  * per frame, handed to FieldActor_EasePoint824) and is 0 after; with another animation the factors are 0
  * and flag 0xd is cleared. (The ROM also clears the flag for a negative factor, which the first
  * 6 frames cannot give.) */
-void FieldActor_ScaleState1B(FieldActor *actor)
+void FieldActor_ScaleState1b(FieldActor *actor)
 {
     if (actor->animation != 0x18) {
         set_factors(actor, 0);
@@ -3025,63 +3025,63 @@ void FieldActor_ScaleState1B(FieldActor *actor)
         set_factors(actor, 0);
     }
 }
-CLEAN_AS(func_0200a528, FieldActor_ScaleState1B)
+CLEAN_AS(func_0200a528, FieldActor_ScaleState1b)
 
 /* func_0200a5b8: state 0x1b's message handler: asks for it with the saved tile and flag. */
-void FieldActor_State1BMessage(FieldActor *actor, int arg)
+void FieldActor_State1bMessage(FieldActor *actor, int arg)
 {
     u32 tile[2] = {0, 0};
     u8 flag;
-    FieldActor_GetSaved1B(actor->saved.packed, tile, &flag);
+    FieldActor_GetSaved1b(actor->saved.packed, tile, &flag);
     int copy[2] = {(int) tile[0], (int) tile[1]};
-    FieldActor_RequestState1B(actor, copy, flag, 6, (s16) arg);
+    FieldActor_RequestState1b(actor, copy, flag, 6, (s16) arg);
 }
-CLEAN_AS(func_0200a5b8, FieldActor_State1BMessage)
+CLEAN_AS(func_0200a5b8, FieldActor_State1bMessage)
 
 /* func_0200a5f8: state 0x1b's entry: the request's flag and tile into the work (step 0) and
  * saved at 0x8f0, the factors at 1.0, sound 0x4f, animation 0x18, and the held item's pose 6
  * for tool 4. */
-void FieldActor_EnterState1B(FieldActor *actor, const StateRequest *request, int previous)
+void FieldActor_EnterState1b(FieldActor *actor, const StateRequest *request, int previous)
 {
     (void) previous;
     u8 x = request->payload[1];
     u8 z = request->payload[2];
     u8 flag = request->payload[0];
-    State1AWork *work = state1a_work(actor);
+    State1aWork *work = state1a_work(actor);
     work->step = 0;
     work->x = x;
     work->z = z;
     work->flag = flag;
     u32 tile[2] = {x, z};
-    FieldActor_SetSaved1B(actor->saved.packed, tile, flag);
+    FieldActor_SetSaved1b(actor->saved.packed, tile, flag);
     set_factors(actor, FX32_ONE);
     FieldActor_PlaySound(actor, 0x4f);
     FieldActor_PlayAnimationOnce(actor, 0x18, 3, 0);
     pose_held_for_tool4(actor, 6, 3, 1);
 }
-CLEAN_AS(func_0200a5f8, FieldActor_EnterState1B)
+CLEAN_AS(func_0200a5f8, FieldActor_EnterState1b)
 
 /* func_0200a684: state 0x1b's saved tile and flag. */
-void FieldActor_GetSaved1B(const u8 *saved, u32 *tile, u8 *flag)
+void FieldActor_GetSaved1b(const u8 *saved, u32 *tile, u8 *flag)
 {
     tile[0] = saved[1];
     tile[1] = saved[2];
     *flag = saved[0];
 }
-CLEAN_AS(func_0200a684, FieldActor_GetSaved1B)
+CLEAN_AS(func_0200a684, FieldActor_GetSaved1b)
 
 /* func_0200a694: saves state 0x1b's tile and flag. */
-void FieldActor_SetSaved1B(u8 *saved, const u32 *tile, u8 flag)
+void FieldActor_SetSaved1b(u8 *saved, const u32 *tile, u8 flag)
 {
     saved[1] = (u8) tile[0];
     saved[2] = (u8) tile[1];
     saved[0] = flag;
 }
-CLEAN_AS(func_0200a694, FieldActor_SetSaved1B)
+CLEAN_AS(func_0200a694, FieldActor_SetSaved1b)
 
 /* func_0200a6a0: asks for state 0x1b with a tile and a flag; whether it was queued.
  * BUG: as in request_state, the request's unset bytes are the stack's. */
-int FieldActor_RequestState1B(FieldActor *actor, const int *tile, u32 flag, int priority, s16 arg)
+int FieldActor_RequestState1b(FieldActor *actor, const int *tile, u32 flag, int priority, s16 arg)
 {
     StateRequest request;
 #ifdef BUGFIX
@@ -3090,45 +3090,45 @@ int FieldActor_RequestState1B(FieldActor *actor, const int *tile, u32 flag, int 
     StateRequest_Construct(&request);
     StateRequest_Set(&request, 0x1b, priority, arg);
     u32 copy[2] = {(u32) tile[0], (u32) tile[1]};
-    FieldActor_SetArgs1B(request.payload, copy, (u8) flag);
+    FieldActor_SetArgs1b(request.payload, copy, (u8) flag);
     int queued = FieldActor_QueueRequest(actor, &request);
     StateRequest_Destruct(&request);
     return queued;
 }
-CLEAN_AS(func_0200a6a0, FieldActor_RequestState1B)
+CLEAN_AS(func_0200a6a0, FieldActor_RequestState1b)
 
 /* func_0200a6f0: state 0x1b's tile and flag into a request's payload. */
-void FieldActor_SetArgs1B(u8 *payload, const u32 *tile, u8 flag)
+void FieldActor_SetArgs1b(u8 *payload, const u32 *tile, u8 flag)
 {
     payload[1] = (u8) tile[0];
     payload[2] = (u8) tile[1];
     payload[0] = flag;
 }
-CLEAN_AS(func_0200a6f0, FieldActor_SetArgs1B)
+CLEAN_AS(func_0200a6f0, FieldActor_SetArgs1b)
 
 /* func_0200a6fc: state 0x1a's update. */
-void FieldActor_UpdateState1A(FieldActor *actor)
+void FieldActor_UpdateState1a(FieldActor *actor)
 {
-    State1AWork *work = state1a_work(actor);
+    State1aWork *work = state1a_work(actor);
     FieldActor_UpdateBody(actor);
     if (is_local_player(actor)) {
         FieldActor_EnterContact(actor);
-        FieldActor_KeepPoseState1A(actor);
-        FieldActor_RunState1A(actor);
+        FieldActor_KeepPoseState1a(actor);
+        FieldActor_RunState1a(actor);
     } else {
         int tile[2] = {work->x, work->z};
         FieldActor_FollowReportedToTile(actor, tile);
         FieldActor_EnterContact(actor);
-        FieldActor_KeepPoseState1A(actor);
-        FieldActor_EndState1A(actor);
+        FieldActor_KeepPoseState1a(actor);
+        FieldActor_EndState1a(actor);
     }
 }
-CLEAN_AS(func_0200a6fc, FieldActor_UpdateState1A)
+CLEAN_AS(func_0200a6fc, FieldActor_UpdateState1a)
 
 /* func_0200a764: state 0x1a's end for another console's actor: flag 0xd is set, the tile is
  * acted on, flag 0x1c is cleared, sound 0x5d plays outdoors, the bar drops and flag 0x12 is
  * cleared. */
-void FieldActor_FinishState1A(FieldActor *actor)
+void FieldActor_FinishState1a(FieldActor *actor)
 {
     FieldActor_SetFlag(actor, 0xd);
     state1a_act_on_tile(state1a_work(actor));
@@ -3139,16 +3139,16 @@ void FieldActor_FinishState1A(FieldActor *actor)
     drop_priority(actor);
     FieldActor_ClearFlag(actor, 0x12);
 }
-CLEAN_AS(func_0200a764, FieldActor_FinishState1A)
+CLEAN_AS(func_0200a764, FieldActor_FinishState1a)
 
 /* func_0200a7e8: another console's actor ends state 0x1a at frame 6 of the animation. */
-void FieldActor_EndState1A(FieldActor *actor)
+void FieldActor_EndState1a(FieldActor *actor)
 {
     if (FrameCtrl_Passed(&actor->anim, 6)) {
-        FieldActor_FinishState1A(actor);
+        FieldActor_FinishState1a(actor);
     }
 }
-CLEAN_AS(func_0200a7e8, FieldActor_EndState1A)
+CLEAN_AS(func_0200a7e8, FieldActor_EndState1a)
 
 /* func_0200a80c: state 0x1a for this console's actor, by step:
  *   0: func_0203ae98 at frame 1 of the animation; at frame 6 the tile is acted on, flag 0x1c is
@@ -3163,9 +3163,9 @@ CLEAN_AS(func_0200a7e8, FieldActor_EndState1A)
  *      flag.
  * QUIRK: the receiver's address is taken as NULL for a NULL actor.
  * REQUIRES: the link is set at step 0 (the ROM writes through it unchecked there). */
-void FieldActor_RunState1A(FieldActor *actor)
+void FieldActor_RunState1a(FieldActor *actor)
 {
-    State1AWork *work = state1a_work(actor);
+    State1aWork *work = state1a_work(actor);
     switch (work->step) {
         case 0:
             if (FrameCtrl_Passed(&actor->anim, 1)) {
@@ -3187,11 +3187,11 @@ void FieldActor_RunState1A(FieldActor *actor)
             FieldActor_SetFlag(actor, 0x11);
             MessageReceiver_SetName((MessageReceiver *) (void *) actor->receiver, data_020d83b4);
             if (actor->item == 0x137b) {
-                actor->receiver_unk_1E = 0x23;
+                actor->receiver_unk_1e = 0x23;
             } else if (actor->item == 0x136a) {
-                actor->receiver_unk_1E = 0x21;
+                actor->receiver_unk_1e = 0x21;
             } else {
-                actor->receiver_unk_1E = 0x25;
+                actor->receiver_unk_1e = 0x25;
             }
             actor->link->requested = 1;
             Music_DropPriority(0x12);
@@ -3215,39 +3215,39 @@ void FieldActor_RunState1A(FieldActor *actor)
                 CameraControl_ResetMode();
                 int tile[2] = {work->x, work->z};
                 drop_priority(actor);
-                FieldActor_RequestState1B(actor, tile, flag, 6, -1);
+                FieldActor_RequestState1b(actor, tile, flag, 6, -1);
             }
             break;
         default:
             break;
     }
 }
-CLEAN_AS(func_0200a80c, FieldActor_RunState1A)
+CLEAN_AS(func_0200a80c, FieldActor_RunState1a)
 
 /* func_0200a9e0: FieldActor_RebuildPose and FieldActor_EasePoint824 (1.0) with the words at 0xc4, the halfword at
  * 0xd0 and the matrices at 0x298 and 0x698 kept across them; from frame 6 of the animation the
  * actor turns towards yaw 0 (by 0x400). */
-void FieldActor_KeepPoseState1A(FieldActor *actor)
+void FieldActor_KeepPoseState1a(FieldActor *actor)
 {
-    Vec3 kept_c4 = actor->unk_0C4;
-    s16 kept_d0 = actor->unk_0D0;
+    Vec3 kept_c4 = actor->unk_0c4;
+    s16 kept_d0 = actor->unk_0d0;
     FieldActorBlock48 kept_298 = actor->unk_298;
     FieldActorBlock48 kept_698 = actor->unk_698;
     FieldActor_RebuildPose(actor);
     FieldActor_EasePoint824(actor, FX32_ONE);
-    actor->unk_0C4 = kept_c4;
-    actor->unk_0D0 = kept_d0;
+    actor->unk_0c4 = kept_c4;
+    actor->unk_0d0 = kept_d0;
     actor->unk_298 = kept_298;
     actor->unk_698 = kept_698;
     if (anim_frame(actor) >= 6) {
         FieldActor_TurnToZero(actor, 0x400);
     }
 }
-CLEAN_AS(func_0200a9e0, FieldActor_KeepPoseState1A)
+CLEAN_AS(func_0200a9e0, FieldActor_KeepPoseState1a)
 
 /* func_0200aaa0: leaving state 0x1a: another console's actor still holding flag 0x1c (it left
  * before frame 6) finishes it. */
-void FieldActor_ExitState1A(FieldActor *actor)
+void FieldActor_ExitState1a(FieldActor *actor)
 {
     if (is_local_player(actor)) {
         return;
@@ -3255,15 +3255,15 @@ void FieldActor_ExitState1A(FieldActor *actor)
     if (!FieldActor_TestFlag(actor, 0x1c)) {
         return;
     }
-    FieldActor_FinishState1A(actor);
+    FieldActor_FinishState1a(actor);
 }
-CLEAN_AS(func_0200aaa0, FieldActor_ExitState1A)
+CLEAN_AS(func_0200aaa0, FieldActor_ExitState1a)
 
 /* func_0200aad4: state 0x1a's message handler. While the countdown at 0x8ec runs the message
  * only adds one to it (holding it, as each frame takes one off); an actor already in state 0x1a
  * keeps the argument at 0xc84; otherwise state 0x1a is asked for with the saved tile, item and
  * flag. */
-void FieldActor_State1AMessage(FieldActor *actor, u32 arg)
+void FieldActor_State1aMessage(FieldActor *actor, u32 arg)
 {
     u8 *countdown = &FIELD_ACTOR_COUNTDOWN(actor);
     if (*countdown != 0) {
@@ -3277,26 +3277,26 @@ void FieldActor_State1AMessage(FieldActor *actor, u32 arg)
     u32 tile[2] = {0, 0};
     u16 item;
     u8 flag;
-    FieldActor_GetSaved1A(actor->saved.packed, tile, &item, &flag);
+    FieldActor_GetSaved1a(actor->saved.packed, tile, &item, &flag);
     int copy[2] = {(int) tile[0], (int) tile[1]};
-    FieldActor_RequestState1A(actor, copy, item, flag, 6, (s16) arg);
+    FieldActor_RequestState1a(actor, copy, item, flag, 6, (s16) arg);
 }
-CLEAN_AS(func_0200aad4, FieldActor_State1AMessage)
+CLEAN_AS(func_0200aad4, FieldActor_State1aMessage)
 
 /* func_0200ab44: state 0x1a's entry: the request's flag and tile into the work (step 0); the
  * tile's point at 0x824 (func_0204f794) and the factors at 1.0; the item is the request's, or
  * for nothing the one on the map at the point (func_0204f5a8), at 0x822 and 0x820; tile, item
  * and flag are saved at 0x8f0; animation 0x17, the held item's pose 0xd for tool 4,
  * func_02035684 (0x12, 0xf, 0) for this console's actor, and flag 0x1c. */
-void FieldActor_EnterState1A(FieldActor *actor, const StateRequest *request, int previous)
+void FieldActor_EnterState1a(FieldActor *actor, const StateRequest *request, int previous)
 {
     (void) previous;
-    const State1AArgs *args = (const State1AArgs *) request->payload;
+    const State1aArgs *args = (const State1aArgs *) request->payload;
     u8 x = args->x;
     u8 z = args->z;
     u16 requested = args->item;
     u8 flag = args->flag;
-    State1AWork *work = state1a_work(actor);
+    State1aWork *work = state1a_work(actor);
     work->step = 0;
     work->x = x;
     work->z = z;
@@ -3314,7 +3314,7 @@ void FieldActor_EnterState1A(FieldActor *actor, const StateRequest *request, int
     actor->item = actor->unk_822;
 
     u32 tile[2] = {x, z};
-    FieldActor_SetSaved1A(actor->saved.packed, tile, actor->item, flag);
+    FieldActor_SetSaved1a(actor->saved.packed, tile, actor->item, flag);
     FieldActor_PlayAnimationOnce(actor, 0x17, 3, 0);
     pose_held_for_tool4(actor, 0xd, 3, 1);
     if (is_local_player(actor)) {
@@ -3322,31 +3322,31 @@ void FieldActor_EnterState1A(FieldActor *actor, const StateRequest *request, int
     }
     FieldActor_SetFlag(actor, 0x1c);
 }
-CLEAN_AS(func_0200ab44, FieldActor_EnterState1A)
+CLEAN_AS(func_0200ab44, FieldActor_EnterState1a)
 
 /* func_0200ac8c: state 0x1a's saved tile, item (func_02077898) and flag. */
-void FieldActor_GetSaved1A(const u8 *saved, u32 *tile, u16 *item, u8 *flag)
+void FieldActor_GetSaved1a(const u8 *saved, u32 *tile, u16 *item, u8 *flag)
 {
     tile[0] = saved[3];
     tile[1] = saved[4];
     *item = PackedBytes_ReadItem(saved + 1);
     *flag = saved[0];
 }
-CLEAN_AS(func_0200ac8c, FieldActor_GetSaved1A)
+CLEAN_AS(func_0200ac8c, FieldActor_GetSaved1a)
 
 /* func_0200acb0: saves state 0x1a's tile, item (func_020778b0) and flag. */
-void FieldActor_SetSaved1A(u8 *saved, const u32 *tile, u32 item, u8 flag)
+void FieldActor_SetSaved1a(u8 *saved, const u32 *tile, u32 item, u8 flag)
 {
     saved[3] = (u8) tile[0];
     saved[4] = (u8) tile[1];
     PackedBytes_WriteItem(saved + 1, (int) item);
     saved[0] = flag;
 }
-CLEAN_AS(func_0200acb0, FieldActor_SetSaved1A)
+CLEAN_AS(func_0200acb0, FieldActor_SetSaved1a)
 
 /* func_0200acd4: asks for state 0x1a with a tile, an item and a flag; whether it was queued.
  * BUG: as in request_state, the request's unset bytes are the stack's. */
-int FieldActor_RequestState1A(FieldActor *actor, const int *tile, int item, int flag, int priority, s16 arg)
+int FieldActor_RequestState1a(FieldActor *actor, const int *tile, int item, int flag, int priority, s16 arg)
 {
     StateRequest request;
 #ifdef BUGFIX
@@ -3355,17 +3355,17 @@ int FieldActor_RequestState1A(FieldActor *actor, const int *tile, int item, int 
     StateRequest_Construct(&request);
     StateRequest_Set(&request, 0x1a, priority, arg);
     u32 copy[2] = {(u32) tile[0], (u32) tile[1]};
-    FieldActor_SetArgs1A((State1AArgs *) request.payload, copy, (u16) item, (u8) flag);
+    FieldActor_SetArgs1a((State1aArgs *) request.payload, copy, (u16) item, (u8) flag);
     int queued = FieldActor_QueueRequest(actor, &request);
     StateRequest_Destruct(&request);
     return queued;
 }
-CLEAN_AS(func_0200acd4, FieldActor_RequestState1A)
+CLEAN_AS(func_0200acd4, FieldActor_RequestState1a)
 
 /* func_0200ad24: asks for state 0x1a with a tile, the item there on the map (nothing in the
  * request) and a flag; whether it was queued.
  * BUG: as in request_state, the request's unset bytes are the stack's. */
-int FieldActor_RequestState1AFromMap(FieldActor *actor, const int *tile, int flag, int priority, s16 arg)
+int FieldActor_RequestState1aFromMap(FieldActor *actor, const int *tile, int flag, int priority, s16 arg)
 {
     StateRequest request;
 #ifdef BUGFIX
@@ -3374,22 +3374,22 @@ int FieldActor_RequestState1AFromMap(FieldActor *actor, const int *tile, int fla
     StateRequest_Construct(&request);
     StateRequest_Set(&request, 0x1a, priority, arg);
     u32 copy[2] = {(u32) tile[0], (u32) tile[1]};
-    FieldActor_SetArgs1A((State1AArgs *) request.payload, copy, ITEM_CODE_NONE, (u8) flag);
+    FieldActor_SetArgs1a((State1aArgs *) request.payload, copy, ITEM_CODE_NONE, (u8) flag);
     int queued = FieldActor_QueueRequest(actor, &request);
     StateRequest_Destruct(&request);
     return queued;
 }
-CLEAN_AS(func_0200ad24, FieldActor_RequestState1AFromMap)
+CLEAN_AS(func_0200ad24, FieldActor_RequestState1aFromMap)
 
 /* func_0200ad78: state 0x1a's tile, item and flag into a request's payload. */
-void FieldActor_SetArgs1A(State1AArgs *args, const u32 *tile, u16 item, u8 flag)
+void FieldActor_SetArgs1a(State1aArgs *args, const u32 *tile, u16 item, u8 flag)
 {
     args->x = (u8) tile[0];
     args->z = (u8) tile[1];
     args->item = item;
     args->flag = flag;
 }
-CLEAN_AS(func_0200ad78, FieldActor_SetArgs1A)
+CLEAN_AS(func_0200ad78, FieldActor_SetArgs1a)
 
 /* func_0200ad8c: state 0x19's update. */
 void FieldActor_UpdateState19(FieldActor *actor)
@@ -3506,7 +3506,7 @@ void FieldActor_RunState19(FieldActor *actor, u8 *step, int flag)
                 SceneObjectBase_TakeReceiver((SceneObjectBase *) actor, receiver_of(actor));
                 FieldActor_SetFlag(actor, 0x11);
                 MessageReceiver_SetName((MessageReceiver *) (void *) actor->receiver, data_020d83a4);
-                actor->receiver_unk_1E = 0x12;
+                actor->receiver_unk_1e = 0x12;
                 actor->link->requested = 1;
                 break;
             }
@@ -3519,7 +3519,7 @@ void FieldActor_RunState19(FieldActor *actor, u8 *step, int flag)
                 SceneObjectBase_TakeReceiver((SceneObjectBase *) actor, receiver_of(actor));
                 FieldActor_SetFlag(actor, 0x11);
                 MessageReceiver_SetName((MessageReceiver *) (void *) actor->receiver, data_020d83b4);
-                actor->receiver_unk_1E = 2;
+                actor->receiver_unk_1e = 2;
                 actor->link->requested = 1;
                 break;
             }
@@ -3644,14 +3644,14 @@ void FieldActor_ScaleState19(FieldActor *actor)
         FieldActor_ClearFlag(actor, 0xd);
     }
     set_factors(actor, factor);
-    Vec3 kept_c4 = actor->unk_0C4;
-    s16 kept_d0 = actor->unk_0D0;
+    Vec3 kept_c4 = actor->unk_0c4;
+    s16 kept_d0 = actor->unk_0d0;
     FieldActorBlock48 kept_298 = actor->unk_298;
     FieldActorBlock48 kept_698 = actor->unk_698;
     FieldActor_RebuildPose(actor);
     FieldActor_EasePoint824(actor, factor);
-    actor->unk_0C4 = kept_c4;
-    actor->unk_0D0 = kept_d0;
+    actor->unk_0c4 = kept_c4;
+    actor->unk_0d0 = kept_d0;
     actor->unk_298 = kept_298;
     actor->unk_698 = kept_698;
 }
@@ -3751,7 +3751,7 @@ void FieldActor_EnterState19(FieldActor *actor, const StateRequest *request, int
                 if (bit != 0 && !PlayerRecord_TestFlag(record, bit)) {
                     PlayerRecord_SetFlag(record, bit);
                     int tile[2] = {x, z};
-                    FieldActor_RequestState1AFromMap(actor, tile, request_flag, 6, -1);
+                    FieldActor_RequestState1aFromMap(actor, tile, request_flag, 6, -1);
                     return;
                 }
             }
@@ -3931,7 +3931,7 @@ static void state18_open_receiver(FieldActor *actor, u8 next, const char *name, 
     SceneObjectBase_TakeReceiver((SceneObjectBase *) actor, receiver_of(actor));
     FieldActor_SetFlag(actor, 0x11);
     MessageReceiver_SetName((MessageReceiver *) (void *) actor->receiver, name);
-    actor->receiver_unk_1E = kind;
+    actor->receiver_unk_1e = kind;
     actor->link->requested = 1;
 }
 
@@ -3985,7 +3985,7 @@ void FieldActor_RunState18(FieldActor *actor)
                     break;
                 case 21:
                 case 22:
-                    FieldActor_RequestState1AFromMap(actor, tile, type == 22, 6, -1);
+                    FieldActor_RequestState1aFromMap(actor, tile, type == 22, 6, -1);
                     break;
                 default:
                     break;
@@ -4251,7 +4251,7 @@ typedef struct State14Part {
     u32 effect;    /* func_0201a6c8's, when not 0 */
     u8 unk_08;
     u8 restart; /* nonzero: the effects at 0x90c are cleared first (func_0201a4e4) */
-    u8 unk_0A[2];
+    u8 unk_0a[2];
 } State14Part;
 
 /* A kind's record (data_020c8290, 60 of them). */
@@ -4633,7 +4633,7 @@ typedef struct State7Work {
     u32 kind;
     u32 next; /* 5 or 0x10: the state that follows; else func_02095bdc */
     u8 done;  /* the kind's work is done */
-    u8 unk_0D;
+    u8 unk_0d;
     s16 turn; /* added to the yaw each frame: a third of the yaw on entering, negated */
 } State7Work;
 
@@ -4677,7 +4677,7 @@ static void *state7_cure_sting(FieldActor *actor)
         return NULL;
     }
     PlayerRecord_SetStung(record, 0);
-    FaceTexture_Load(actor->unk_70D, PlayerRecord_Face(record));
+    FaceTexture_Load(actor->unk_70d, PlayerRecord_Face(record));
     return record;
 }
 
@@ -5264,7 +5264,7 @@ CLEAN_AS(func_0200cccc, FieldActor_EndState3)
  * yaw (priority 3). */
 int FieldActor_RunState3(FieldActor *actor, const s16 *heading)
 {
-    if (data_020e54a8 == 0 && actor->unk_8E8 == 0 && FieldActor_Base(actor)->speed == SPEED_MAX) {
+    if (data_020e54a8 == 0 && actor->unk_8e8 == 0 && FieldActor_Base(actor)->speed == SPEED_MAX) {
         BOOL may_trip = 1;
         if (PlayerRecord_Luck(PlayerRecords_Current()) != 2) {
             u16 item;
@@ -5554,15 +5554,15 @@ void FieldActor_EndState2(FieldActor *actor, const u8 *moved)
     if (*moved != 0) {
         FieldActor_RequestState3(actor, 0, 1, -1);
     }
-    if (actor->unk_7F8 != 0) {
+    if (actor->unk_7f8 != 0) {
         return;
     }
     if (PlayerActorOps_TestFlag(0x1b, 4)) {
-        actor->unk_7F8 = 1;
+        actor->unk_7f8 = 1;
     } else {
         int remote_state;
         if (SessionPlayers_State(&remote_state, -1, actor->player) && (remote_state == 2 || remote_state == 0x40)) {
-            actor->unk_7F8 = 1;
+            actor->unk_7f8 = 1;
         }
     }
 }
@@ -5642,7 +5642,7 @@ CLEAN_AS(func_0200d3a4, FieldActor_FollowState2)
 void FieldActor_ExitState2(FieldActor *actor)
 {
     if (!is_local_player(actor)) {
-        actor->unk_7F8 = 1;
+        actor->unk_7f8 = 1;
     }
 }
 CLEAN_AS(func_0200d44c, FieldActor_ExitState2)
@@ -5709,7 +5709,7 @@ CLEAN_AS(func_0200d52c, FieldActor_UpdateState1)
 /* func_0200d530: leaving state 1: the word at 0x7f8 becomes 1. */
 void FieldActor_ExitState1(FieldActor *actor)
 {
-    actor->unk_7F8 = 1;
+    actor->unk_7f8 = 1;
 }
 CLEAN_AS(func_0200d530, FieldActor_ExitState1)
 
@@ -5725,7 +5725,7 @@ void FieldActor_EnterState1(FieldActor *actor, const StateRequest *request, int 
 {
     (void) request;
     (void) previous;
-    actor->unk_7F8 = 0;
+    actor->unk_7f8 = 0;
 }
 CLEAN_AS(func_0200d548, FieldActor_EnterState1)
 
@@ -5865,23 +5865,23 @@ void FieldActor_StartState0(FieldActor *actor, const int *prepared)
             }
             break;
         case 0x3b:
-            FieldActor_RequestState3BPlain(actor, 6, -1);
+            FieldActor_RequestState3bPlain(actor, 6, -1);
             break;
         case 0x3c:
             if (is_local_player(actor) && TownObjects_HasKeptObject() == 0) {
                 Music2e4_Begin((Music2e4 *) (void *) ((u8 *) (uintptr_t) data_021c526c + 0x2e4));
-                FieldActor_RequestState6D(actor, 0, 7, -1);
+                FieldActor_RequestState6d(actor, 0, 7, -1);
                 start = 0x6d;
             } else {
-                FieldActor_RequestState3C(actor, 1, -1);
+                FieldActor_RequestState3c(actor, 1, -1);
             }
             break;
         case 0x6d:
             Music2e4_Begin((Music2e4 *) (void *) ((u8 *) (uintptr_t) data_021c526c + 0x2e4));
-            FieldActor_RequestState6D(actor, 1, 7, -1);
+            FieldActor_RequestState6d(actor, 1, 7, -1);
             break;
         case 0x6e:
-            FieldActor_RequestState6E(actor, 7, -1);
+            FieldActor_RequestState6e(actor, 7, -1);
             break;
         case 0x43:
             FieldActorRoomStates_RequestFadeIn43(actor, 6, -1);
@@ -5896,7 +5896,7 @@ void FieldActor_StartState0(FieldActor *actor, const int *prepared)
             FieldActorRoomStates_RequestSpotStay(actor, 0, 6, -1);
             break;
         case 0x10:
-            actor->unk_7F8 = 1;
+            actor->unk_7f8 = 1;
             FieldActor_RequestState10(actor, 3, 5, -1);
             break;
         case 0x8b:
@@ -5971,7 +5971,7 @@ void FieldActor_ExitState0(FieldActor *actor, int next)
 {
     Actor *base = FieldActor_Base(actor);
     if (is_local_player(actor) || (next != 2 && next != 0x8b)) {
-        actor->unk_7F8 = 1;
+        actor->unk_7f8 = 1;
     }
     if (!is_local_player(actor)) {
         u8 scene = SceneQuery_Current();
@@ -6024,7 +6024,7 @@ void FieldActor_EnterState0(FieldActor *actor, const StateRequest *request, int 
 {
     (void) previous;
     FieldActor_SetWork0(state0_work(actor), ((const State0Args *) request->payload)->start_state);
-    actor->unk_7F8 = 0;
+    actor->unk_7f8 = 0;
 }
 CLEAN_AS(func_0200db88, FieldActor_EnterState0)
 
@@ -6048,7 +6048,7 @@ int FieldActor_RequestState0(FieldActor *actor, int start_state, int priority, i
     StateRequest_Construct(&request);
     StateRequest_Set(&request, 0, priority, arg);
     FieldActor_SetArgs0((State0Args *) request.payload, start_state);
-    actor->unk_7F4 = 0;
+    actor->unk_7f4 = 0;
     int queued = FieldActor_QueueRequest(actor, &request);
     StateRequest_Destruct(&request);
     return queued;

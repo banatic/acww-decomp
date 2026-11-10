@@ -417,12 +417,12 @@ int Fox_SetState(Fox *fox, int state)
 CLEAN_AS(_ZN18Obj_ov003_0223863019func_ov003_0221bfa8Ei, Fox_SetState)
 
 /* func_ov003_0221c098 (receiver slot 0x6c): always 0. */
-int Fox_ReceiverSlot6C(Fox *fox)
+int Fox_ReceiverSlot6c(Fox *fox)
 {
     (void) fox;
     return 0;
 }
-CLEAN_AS(func_ov003_0221c098, Fox_ReceiverSlot6C)
+CLEAN_AS(func_ov003_0221c098, Fox_ReceiverSlot6c)
 
 /* func_ov003_0221c09c (receiver slot 0x18): nothing. */
 void Fox_ReceiverSlot18(Fox *fox)
@@ -574,12 +574,12 @@ Fox *Fox_ReceiverDestroyAndFree(void *receiver)
 }
 CLEAN_AS(_ZThn236_N18Obj_ov003_02238630D0Ev, Fox_ReceiverDestroyAndFree)
 
-/* _ZThn236_N18Obj_ov003_0223863017vfunc_02066994_6cEv: Fox_ReceiverSlot6C. */
-int Fox_ReceiverThunk6C(void *receiver)
+/* _ZThn236_N18Obj_ov003_0223863017vfunc_02066994_6cEv: Fox_ReceiverSlot6c. */
+int Fox_ReceiverThunk6c(void *receiver)
 {
-    return Fox_ReceiverSlot6C(fox_from_receiver(receiver));
+    return Fox_ReceiverSlot6c(fox_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov003_0223863017vfunc_02066994_6cEv, Fox_ReceiverThunk6C)
+CLEAN_AS(_ZThn236_N18Obj_ov003_0223863017vfunc_02066994_6cEv, Fox_ReceiverThunk6c)
 
 /* _ZThn236_N18Obj_ov003_0223863017vfunc_02066994_18Ev: Fox_ReceiverSlot18. */
 void Fox_ReceiverThunk18(void *receiver)

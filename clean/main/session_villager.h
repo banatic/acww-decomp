@@ -56,7 +56,7 @@ void SessionVillager_SendObjectFlag(u8 *villager, int bit);
 void SessionVillager_SendObjectKind(u8 *villager, int value);
 void SessionVillager_SendObjectNextStep(u8 *villager);
 void SessionVillager_SendObjectClear(u8 *villager);
-void SessionVillager_SendObjectByte0B(u8 *villager, int value);
+void SessionVillager_SendObjectByte0b(u8 *villager, int value);
 void SessionVillager_SendObjectChange(u8 *villager, int value, int operation);
 void SessionVillager_SendObjectChangeByIndex(int index, int value, int operation);
 void SessionVillager_UnpackObjectChange(u32 *index, u8 *operation, u8 *value, const u8 *bytes);

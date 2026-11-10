@@ -394,11 +394,11 @@ CLEAN_AS(func_020a7448, LinkGlobal_Empty7448)
 
 /* func_020a744c: always 0 (asked before a moving holder chooses a successor and before it
  * sends its scene's state). */
-int LinkGlobal_Zero744C(void)
+int LinkGlobal_Zero744c(void)
 {
     return 0;
 }
-CLEAN_AS(func_020a744c, LinkGlobal_Zero744C)
+CLEAN_AS(func_020a744c, LinkGlobal_Zero744c)
 
 /* func_020a7450: always 0 (asked before a moving holder chooses a successor). */
 int LinkGlobal_Zero7450(void)

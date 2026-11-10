@@ -15,7 +15,7 @@ typedef struct RoomObject02250c04 {
 } RoomObject02250c04;
 
 void RoomObject02250c04_OnMoveStart(RoomObject02250c04 *object, int ahead);
-int RoomObject02250c04_Vfunc0C(void);
+int RoomObject02250c04_Vfunc0c(void);
 int RoomObject02250c04_Update(RoomObject02250c04 *object);
 int RoomObject02250c04_Start(RoomObject02250c04 *object);
 RoomObject02250c04 *RoomObject02250c04_Delete(RoomObject02250c04 *object);

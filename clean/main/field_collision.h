@@ -200,7 +200,7 @@ typedef struct CollisionPushOut {
     Vec3 *position;              /* 0x08 */
     Vec3 previous;               /* 0x0c */
     u16 facing;                  /* 0x18 */
-    u8 unk_1A[2];
+    u8 unk_1a[2];
     fx32 radius; /* 0x1c */
     void *owner; /* 0x20: handed to the walls' handlers */
     u32 flags;   /* 0x24 */

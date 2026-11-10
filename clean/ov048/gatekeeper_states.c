@@ -501,7 +501,7 @@ CLEAN_AS(func_ov048_02262c8c, Gatekeeper_State9CloseTalk)
  * name in part 1, and talk 0 asked to open; whether the actor was not busy. */
 int Gatekeeper_State9SayName(Gatekeeper *self)
 {
-    int player = ActivityVars_Slot3C1C();
+    int player = ActivityVars_Slot3c1c();
     u8 *record = PlayerRecords_OfPlayer(player);
     TalkObject *talk;
     PlayerIdText name;
@@ -528,7 +528,7 @@ CLEAN_AS(func_ov048_02262cc0, Gatekeeper_State9SayName)
  * 0x0e and the arriving one is asked to walk to (16.0, 0, 17.5); whether it was. */
 int Gatekeeper_State9WalkIn(void)
 {
-    int player = ActivityVars_Slot3C1C();
+    int player = ActivityVars_Slot3c1c();
 
     if (data_021c75b8 != GATEKEEPER_STATES_SCREEN_SHOWN) {
         return 0;
@@ -671,7 +671,7 @@ int Gatekeeper_PassLeave(Gatekeeper *self)
         if (data_021c75b8 != 0) {
             return 0;
         }
-        ActivityVars_SetFlag3C08();
+        ActivityVars_SetFlag3c08();
         Gatekeeper_SetState(self, GATEKEEPER_STATE_3);
     } else {
         SceneExit_Take(gatekeeper_states_exit(), 0);

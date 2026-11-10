@@ -704,7 +704,7 @@ static int offer_known_errand(VillagerTalk *talk)
 /* The choices for the errand of a villager object that names a player, by the talk object's
  * type: 0 and 1 through VillagerTalkOffer_ChoicesByPredicate (the game's insect or fish
  * predicate), 2-4 their own; for type 4 the index of what the villager likes
- * (VillagerData_Like of VillagerMode_Counter7D7) goes into slot 0 as a byte. Whether it offered. */
+ * (VillagerData_Like of VillagerMode_Counter7d7) goes into slot 0 as a byte. Whether it offered. */
 static int offer_known_named(VillagerTalk *talk, int type)
 {
     int offered = 0;
@@ -726,7 +726,7 @@ static int offer_known_named(VillagerTalk *talk, int type)
             if (offered == 1) {
                 u8 *record = offer_record(talk);
                 u8 bytes[2];
-                bytes[0] = Lookups_SlotIndex((const u8 *) VillagerData_Like(record, VillagerMode_Counter7D7(record)));
+                bytes[0] = Lookups_SlotIndex((const u8 *) VillagerData_Like(record, VillagerMode_Counter7d7(record)));
                 bytes[1] = 0;
                 SceneBase_PutBytes(offer_base(talk), 0, &bytes[0], (int) (uintptr_t) data_020d9fa0, &bytes[1]);
             }

@@ -12,18 +12,18 @@
  *   8                                              TownInsectKind_Start08     -> 02232a44
  *   9, 0x10-0x14, 0x1f, 0x21, 0x22, 0x24, 0x26-0x2f, 0x34
  *                                                  TownInsectKind_StartLeaning -> 02231e24
- *   0xa                                            TownInsectKind_Start0A     -> 022335cc
- *   0xb, 0x3a                                      TownInsectKind_Start0B     -> 02233674
+ *   0xa                                            TownInsectKind_Start0a     -> 022335cc
+ *   0xb, 0x3a                                      TownInsectKind_Start0b     -> 02233674
  *   0xc, 0xd, 0x1b-0x1d                            TownInsectKind_StartWaiting -> 02233d68
  *   0xe, 0xf, 0x1a, 0x20                           TownInsectKind_StartInArea -> 022314fc
  *   0x15-0x17                                      TownInsectKind_StartTurned -> 02234600
  *   0x18, 0x3b                                     TownInsectKind_Start18     -> 022334d8
  *   0x19                                           TownInsectKind_Start19     -> 02233930
- *   0x1e                                           TownInsectKind_Start1E     -> 0223345c
+ *   0x1e                                           TownInsectKind_Start1e     -> 0223345c
  *   0x23                                           TownInsectKind_Start23     -> 022325d4
  *   0x25, 0x39                                     TownInsectKind_Start25     -> 022337d8
  *   0x30                                           TownInsectKind_Start30     -> 02232874
- *   0x31                                           TownInsectKind_Start1E     -> 02232d30
+ *   0x31                                           TownInsectKind_Start1e     -> 02232d30
  *   0x32                                           TownInsectKind_Start32     -> 02233890
  *   0x33                                           TownInsectKind_Start33     -> 022335cc
  *   0x35                                           TownInsectKind_Start35     -> 02231f20
@@ -51,13 +51,13 @@ void TownInsectKind_Update30(TownInsect *insect);
 void TownInsectKind_Start30(TownInsect *insect);
 void TownInsectKind_Update33(TownInsect *insect);
 void TownInsectKind_Start33(TownInsect *insect);
-void TownInsectKind_Update0A(TownInsect *insect);
-void TownInsectKind_Start0A(TownInsect *insect);
-void TownInsectKind_Update0B(TownInsect *insect);
-void TownInsectKind_Start0B(TownInsect *insect);
+void TownInsectKind_Update0a(TownInsect *insect);
+void TownInsectKind_Start0a(TownInsect *insect);
+void TownInsectKind_Update0b(TownInsect *insect);
+void TownInsectKind_Start0b(TownInsect *insect);
 void TownInsectKind_Update31(TownInsect *insect);
-void TownInsectKind_Update1E(TownInsect *insect);
-void TownInsectKind_Start1E(TownInsect *insect);
+void TownInsectKind_Update1e(TownInsect *insect);
+void TownInsectKind_Start1e(TownInsect *insect);
 void TownInsectKind_StartInArea(TownInsect *insect);
 void TownInsectKind_UpdateInArea(TownInsect *insect);
 void TownInsectKind_BeginInArea(TownInsect *insect, int reached, int reach, int byte257, s16 pace);

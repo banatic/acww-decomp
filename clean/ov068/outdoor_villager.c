@@ -345,7 +345,7 @@ void OutdoorVillager_OnEvent(u8 *object, int code, int participant)
             }
             OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_TALK);
             if (*lines == OUTDOOR_VILLAGER_LINES_DOING_7 && ov_record(object) != NULL) {
-                VillagerEntry_ClearByte1E(ov_record(object));
+                VillagerEntry_ClearByte1e(ov_record(object));
             }
             *partner = 0;
             *lines = OUTDOOR_VILLAGER_LINES_DEFAULT;
@@ -375,7 +375,7 @@ void OutdoorVillager_OnEvent(u8 *object, int code, int participant)
             }
             SceneObjectBase_DefaultApproach((SceneObjectBase *) (void *) object);
             if (ov_record(object) != NULL) {
-                VillagerEntry_AddByte1E(ov_record(object), OUTDOOR_VILLAGER_ENDED_BYTE_1E);
+                VillagerEntry_AddByte1e(ov_record(object), OUTDOOR_VILLAGER_ENDED_BYTE_1E);
             }
             break;
         case OUTDOOR_VILLAGER_EVENT_REFUSED:

@@ -404,7 +404,7 @@ void OutdoorVillagerHome_Stay3(OutdoorVillagerBehaviour *self, u8 *villager)
     if (!out) {
         if (*home_raise(self) == 0) {
             if (home_record(villager) != NULL) {
-                VillagerEntry_RaiseByte1E(home_record(villager), NULL);
+                VillagerEntry_RaiseByte1e(home_record(villager), NULL);
             }
             *home_raise(self) = HOME_RAISE_FRAMES;
         }

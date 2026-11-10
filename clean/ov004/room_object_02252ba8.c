@@ -34,7 +34,7 @@ static_assert(sizeof(RoomObject02252ba8) == 0x864, "the size RoomObject02252ba8_
 #define ANIM_MODE_LOOP 0   /* start again at the end */
 #define ANIM_MODE_ONCE 1   /* stop at the end */
 #define SLOT_70_VALUE 0xff /* the second argument given with a state (vtable slot 0x70) */
-#define NO_STEP 0xff       /* RoomObject.unk_77C without a step */
+#define NO_STEP 0xff       /* RoomObject.unk_77c without a step */
 #define STEP_MASK 0xf      /* the steps of the cue: 0-15 */
 #define CUE_OFF 0          /* SoundCue_SetMode: off */
 #define CUE_PLAY 1         /* start playing */
@@ -146,14 +146,14 @@ static void room_object02252ba8_hold_joints(RoomObject02252ba8 *object, const An
 
 /* func_ov004_02214df8 (entry of STARTING): the sound at 2, the switch on, at once, and the
  * countdown at 0xffff. Then, by the tile it is on:
- * - while its model is being bound (RoomObject.unk_77E) in the mode given (placement_mode not 0) or
+ * - while its model is being bound (RoomObject.unk_77e) in the mode given (placement_mode not 0) or
  *   where SceneQuery_InVillagerHouse says so: the cue plays (even when it was not set up) and its step goes
- *   to the cell and to unk_77C; the joints take the archive's animation; the countdown at 0;
+ *   to the cell and to unk_77c; the joints take the archive's animation; the countdown at 0;
  * - while its model is being bound otherwise: the cue waits for the step the cell keeps, which
- *   goes to unk_77C; the joints take the mover's animation;
+ *   goes to unk_77c; the joints take the mover's animation;
  * - when the session is linked and vtable slot 0x78 gives a step: the cue plays and that step
- *   goes to the cell (unk_77C stays); the joints take the mover's animation;
- * - else: the cue plays and its step goes to the cell and to unk_77C; the joints take the
+ *   goes to the cell (unk_77c stays); the joints take the mover's animation;
+ * - else: the cue plays and its step goes to the cell and to unk_77c; the joints take the
  *   mover's animation.
  * REQUIRES: but in the first case the mover exists (FurnitureMover_IdleAnim is given its NULL). */
 int RoomObject02252ba8_EnterStarting(RoomObject02252ba8 *object)
@@ -165,19 +165,19 @@ int RoomObject02252ba8_EnterStarting(RoomObject02252ba8 *object)
     Switch_Set(&base->on_switch, 1, 0);
     object->countdown = 0xffff;
     Position_Tile(&x, &y, (const Position *) (const void *) &base->position);
-    if (base->unk_77E != 0) {
+    if (base->unk_77e != 0) {
         if (base->placement_mode != 0 || SceneQuery_InVillagerHouse() != 0) {
             SoundCue_SetMode(object->cue, CUE_PLAY);
             step = SoundCue_ReadVariable((char *) object->cue) & STEP_MASK;
             RoomCells_SetStep(x, y, (u8) step, SceneQuery_Current());
-            base->unk_77C = (u8) step;
+            base->unk_77c = (u8) step;
             room_object02252ba8_hold_joints(object, room_object02252ba8_joint_anim(object));
             object->countdown = 0;
         } else {
             RoomObject02252ba8_CueSetMode(object, CUE_WAIT);
             step = RoomCells_Step(x, y, SceneQuery_Current()) & STEP_MASK;
             RoomObject02252ba8_CueSetTarget(object, (u8) step);
-            base->unk_77C = (u8) step;
+            base->unk_77c = (u8) step;
             room_object02252ba8_hold_joints(object, room_object02252ba8_mover_anim(RoomManager_Mover()));
         }
     } else if (Session_IsLinked(data_020ccf94) != 0 && base->vtable->vfunc_78(base) != NO_STEP) {
@@ -189,7 +189,7 @@ int RoomObject02252ba8_EnterStarting(RoomObject02252ba8 *object)
         RoomObject02252ba8_CueSetMode(object, CUE_PLAY);
         step = RoomObject02252ba8_CueStep(object) & STEP_MASK;
         RoomCells_SetStep(x, y, (u8) step, SceneQuery_Current());
-        base->unk_77C = (u8) step;
+        base->unk_77c = (u8) step;
         room_object02252ba8_hold_joints(object, room_object02252ba8_mover_anim(RoomManager_Mover()));
     }
     return 1;
@@ -210,7 +210,7 @@ void RoomObject02252ba8_UpdateOff(RoomObject02252ba8 *object)
 }
 CLEAN_AS(func_ov004_02214fc8, RoomObject02252ba8_UpdateOff)
 
-/* func_ov004_02215020 (entry of OFF): no step (unk_77C), RoomCells_ClearStep at its tile, the cue
+/* func_ov004_02215020 (entry of OFF): no step (unk_77c), RoomCells_ClearStep at its tile, the cue
  * off, the sound at 4 and the switch off, at once. With the mover the joints take its
  * animation, held at frame 0: at once while the model is being bound, else with the value 0x20
  * at the model's 0xb8. */
@@ -219,14 +219,14 @@ int RoomObject02252ba8_EnterOff(RoomObject02252ba8 *object)
     RoomObject *base = &object->base;
     int x, y;
     Position_Tile(&x, &y, (const Position *) (const void *) &base->position);
-    base->unk_77C = NO_STEP;
+    base->unk_77c = NO_STEP;
     RoomCells_ClearStep(x, y, SceneQuery_Current());
     RoomObject02252ba8_CueSetMode(object, CUE_OFF);
     RoomObject_PlaySound2(base);
     Switch_Set(&base->on_switch, 0, 0);
     if (RoomManager_Mover() != NULL) {
         const AnimFile *file = room_object02252ba8_mover_anim(RoomManager_Mover());
-        if (base->unk_77E != 0) {
+        if (base->unk_77e != 0) {
             AnimatedModel_Start(&base->model, (const u8 *) file, ANIM_MODE_LOOP, 0, 0, 0);
         } else {
             AnimatedModel_Play(&base->model, (const u8 *) file, BLEND_FRAMES, ANIM_MODE_LOOP, 0, 0, 0);
@@ -251,7 +251,7 @@ void RoomObject02252ba8_UpdateState(RoomObject02252ba8 *object)
 }
 CLEAN_AS(_ZN18Obj_ov004_02252ba819func_ov004_022150b8Ev, RoomObject02252ba8_UpdateState)
 
-/* func_ov004_02215134 (vtable slot 0x70): the base class's (RoomObject_SetUnk77C, given
+/* func_ov004_02215134 (vtable slot 0x70): the base class's (RoomObject_SetUnk77c, given
  * `state` and `value`), then enters `state` if its entry (through a table) agrees; whether it
  * did. States 3 and above do not exist. */
 int RoomObject02252ba8_EnterState(RoomObject02252ba8 *object, unsigned int state, int value)
@@ -261,7 +261,7 @@ int RoomObject02252ba8_EnterState(RoomObject02252ba8 *object, unsigned int state
         &data_ov004_02250350, /* RoomObject02252ba8_EnterStarting */
         &data_ov004_02250500, /* RoomObject02252ba8_EnterPlaying */
     };
-    RoomObject_SetUnk77C(&object->base, (int) state, value);
+    RoomObject_SetUnk77c(&object->base, (int) state, value);
     MemberTable_InitOnce(&data_ov004_02257038, data_ov004_02257294, entries, ROOM_OBJECT_02252BA8_STATE_COUNT);
     if (state < ROOM_OBJECT_02252BA8_STATE_COUNT && MemberPointer_CallInt(&data_ov004_02257294[state], object) != 0) {
         object->state = (u8) state;
@@ -396,12 +396,12 @@ void RoomObject02252ba8_NodeDescHook(RoomObject02252ba8 *object, int node, G3dRe
 CLEAN_AS(func_ov004_0221533c, RoomObject02252ba8_NodeDescHook)
 
 /* func_ov004_02215350 (vtable slot 0x0c): stops the cue. */
-int RoomObject02252ba8_Vfunc0C(RoomObject02252ba8 *object)
+int RoomObject02252ba8_Vfunc0c(RoomObject02252ba8 *object)
 {
     RoomObject02252ba8_StopCue(object);
     return 1;
 }
-CLEAN_AS(func_ov004_02215350, RoomObject02252ba8_Vfunc0C)
+CLEAN_AS(func_ov004_02215350, RoomObject02252ba8_Vfunc0c)
 
 /* func_ov004_02215360 (vtable slot 0x84, each frame while appearing or vanishing): the same as
  * while settled (vtable slot 0x80). */
@@ -432,7 +432,7 @@ int RoomObject02252ba8_Start(RoomObject02252ba8 *object)
 {
     RoomObject *base = &object->base;
     object->frames = 0;
-    base->unk_77C = NO_STEP;
+    base->unk_77c = NO_STEP;
     RoomObject02252ba8_InitCue(object, (u16) FurnitureSounds_Sound3(RoomObject_Number(base)));
     RoomObject_LoadAnims(base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
     ModelObject_AllocJointResults(
@@ -483,7 +483,7 @@ RoomObject02252ba8 *RoomObject02252ba8_Construct(RoomObject02252ba8 *object)
 {
     RoomObject_ConstructBase(&object->base);
     room_object02252ba8_set_vtables(object);
-    object->base.unk_77C = NO_STEP;
+    object->base.unk_77c = NO_STEP;
     return object;
 }
 CLEAN_AS(func_ov004_022154b8, RoomObject02252ba8_Construct)

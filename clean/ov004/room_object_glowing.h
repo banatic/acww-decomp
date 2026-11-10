@@ -36,7 +36,7 @@ int GlowingRoomObject_EnterOff(GlowingRoomObject *object);
 void GlowingRoomObject_UpdateState(GlowingRoomObject *object);
 int GlowingRoomObject_EnterState(GlowingRoomObject *object, unsigned int state, int value);
 u8 GlowingRoomObject_StateIsOn(GlowingRoomObject *object, unsigned int state);
-int GlowingRoomObject_Vfunc0C(void);
+int GlowingRoomObject_Vfunc0c(void);
 int GlowingRoomObject_Update(GlowingRoomObject *object);
 int GlowingRoomObject_Start(GlowingRoomObject *object);
 GlowingRoomObject *GlowingRoomObject_Delete(GlowingRoomObject *object);

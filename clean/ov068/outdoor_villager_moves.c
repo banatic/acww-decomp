@@ -724,9 +724,9 @@ static void moves_give_up(OutdoorVillagerBehaviour *self, u8 *villager, int halv
     self->call_cooldown = MOVES_GIVE_UP_FRAMES;
     if (moves_record(villager) != NULL) {
         if (halve) {
-            VillagerEntry_HalveByte1E(moves_record(villager));
+            VillagerEntry_HalveByte1e(moves_record(villager));
         } else {
-            VillagerEntry_AddByte1E(moves_record(villager), -1);
+            VillagerEntry_AddByte1e(moves_record(villager), -1);
         }
     }
 }

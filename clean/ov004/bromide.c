@@ -183,11 +183,11 @@ void Bromide_OnSceneEvent(Bromide *bromide, int event)
 CLEAN_AS(func_ov004_0221362c, Bromide_OnSceneEvent)
 
 /* func_ov004_02213650 (vtable slot 0x0c) */
-int Bromide_Vfunc0C(void)
+int Bromide_Vfunc0c(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov004_02213650, Bromide_Vfunc0C)
+CLEAN_AS(func_ov004_02213650, Bromide_Vfunc0c)
 
 /* _ZN18Obj_ov004_02251b4019func_ov004_02213654Ev (vtable slot 0x80, each frame while neither
  * appearing nor vanishing): the state's update. */

@@ -135,7 +135,7 @@ CLEAN_AS(func_ov003_02230314, TownInsectKind_Start30)
 /* func_ov003_0223035c (kind 0x33's update). */
 void TownInsectKind_Update33(TownInsect *insect)
 {
-    TownInsectMove_Update0A(insect);
+    TownInsectMove_Update0a(insect);
 }
 CLEAN_AS(func_ov003_0223035c, TownInsectKind_Update33)
 
@@ -148,30 +148,30 @@ void TownInsectKind_Start33(TownInsect *insect)
 CLEAN_AS(func_ov003_02230364, TownInsectKind_Start33)
 
 /* func_ov003_02230390 (kind 0xa's update). */
-void TownInsectKind_Update0A(TownInsect *insect)
+void TownInsectKind_Update0a(TownInsect *insect)
 {
-    TownInsectMove_Update0A(insect);
+    TownInsectMove_Update0a(insect);
 }
-CLEAN_AS(func_ov003_02230390, TownInsectKind_Update0A)
+CLEAN_AS(func_ov003_02230390, TownInsectKind_Update0a)
 
 /* func_ov003_02230398 (kind 0xa's start): with its box (func_ov003_02230f88). */
-void TownInsectKind_Start0A(TownInsect *insect)
+void TownInsectKind_Start0a(TownInsect *insect)
 {
     TownInsectKind_BeginPaced(insect, 0xc8, 0x3c, 0x25, 9, 0x1000);
     TownInsectMove_SetBox(insect);
 }
-CLEAN_AS(func_ov003_02230398, TownInsectKind_Start0A)
+CLEAN_AS(func_ov003_02230398, TownInsectKind_Start0a)
 
 /* func_ov003_022303c4 (kinds 0xb and 0x3a's update). */
-void TownInsectKind_Update0B(TownInsect *insect)
+void TownInsectKind_Update0b(TownInsect *insect)
 {
-    TownInsectMove_Update0B(insect);
+    TownInsectMove_Update0b(insect);
 }
-CLEAN_AS(func_ov003_022303c4, TownInsectKind_Update0B)
+CLEAN_AS(func_ov003_022303c4, TownInsectKind_Update0b)
 
 /* func_ov003_022303cc (kinds 0xb and 0x3a's start): one still shown fades out first; its word
  * 0x21c is cleared. */
-void TownInsectKind_Start0B(TownInsect *insect)
+void TownInsectKind_Start0b(TownInsect *insect)
 {
     if (insect->action == TOWN_INSECT_ACTION_CALM) {
         town_insect_kinds_fade(insect);
@@ -179,7 +179,7 @@ void TownInsectKind_Start0B(TownInsect *insect)
     TownInsectKind_Begin(insect, 0, 0x5a, 0x3c, 0, 0, 2, 0, 0, 0);
     insect->unk_21c = 0;
 }
-CLEAN_AS(func_ov003_022303cc, TownInsectKind_Start0B)
+CLEAN_AS(func_ov003_022303cc, TownInsectKind_Start0b)
 
 /* func_ov003_02230420 (kind 0x31's update). */
 void TownInsectKind_Update31(TownInsect *insect)
@@ -189,15 +189,15 @@ void TownInsectKind_Update31(TownInsect *insect)
 CLEAN_AS(func_ov003_02230420, TownInsectKind_Update31)
 
 /* func_ov003_02230428 (kind 0x1e's update). */
-void TownInsectKind_Update1E(TownInsect *insect)
+void TownInsectKind_Update1e(TownInsect *insect)
 {
-    TownInsectMove_Update1E(insect);
+    TownInsectMove_Update1e(insect);
 }
-CLEAN_AS(func_ov003_02230428, TownInsectKind_Update1E)
+CLEAN_AS(func_ov003_02230428, TownInsectKind_Update1e)
 
 /* func_ov003_02230430 (kinds 0x1e and 0x31's start): its timer at 360 (what TownInsect_CountDown
  * runs down); placed, it fades out. */
-void TownInsectKind_Start1E(TownInsect *insect)
+void TownInsectKind_Start1e(TownInsect *insect)
 {
     if (insect->kind == 0x1e) {
         TownInsectKind_Begin(insect, 0, 0x28, 0x50, 0, 0, 0, 0, 4, 0);
@@ -209,7 +209,7 @@ void TownInsectKind_Start1E(TownInsect *insect)
         town_insect_kinds_fade(insect);
     }
 }
-CLEAN_AS(func_ov003_02230430, TownInsectKind_Start1E)
+CLEAN_AS(func_ov003_02230430, TownInsectKind_Start1e)
 
 /* func_ov003_022304b0 (kinds 0xe, 0xf, 0x1a and 0x20's start); kinds 0xe and 0xf also start
  * their model's animation again, once and backwards, at frame 1 and a frame count of 0. */

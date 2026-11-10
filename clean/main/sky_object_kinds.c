@@ -172,7 +172,7 @@ void SkyObjectKinds_Place(SkyObject *object, const Vec3 *at, fx32 sway)
     fx32 nearness = 0x1000 - eased;
     fx32 lift = 0;
     if (data_021c67a4 != NULL) {
-        lift = FX_MulFunc((fx32) CameraControl_Value1E8(), nearness);
+        lift = FX_MulFunc((fx32) CameraControl_Value1e8(), nearness);
     }
     lift = FX_MulFunc(lift, 0x10000);
     body->position.x = x;

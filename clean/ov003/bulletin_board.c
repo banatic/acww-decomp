@@ -153,11 +153,11 @@ int BulletinBoard_IsFacedBy(BulletinBoard *object, BulletinBoardViewer *viewer)
 CLEAN_AS(func_ov003_0221b96c, BulletinBoard_IsFacedBy)
 
 /* func_ov003_0221b9b8 (vtable slot 0x0c): always 1. */
-int BulletinBoard_Slot0C(void)
+int BulletinBoard_Slot0c(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov003_0221b9b8, BulletinBoard_Slot0C)
+CLEAN_AS(func_ov003_0221b9b8, BulletinBoard_Slot0c)
 
 /* func_ov003_0221b9bc (vtable slot 0x24): always 1. */
 int BulletinBoard_Slot24(void)

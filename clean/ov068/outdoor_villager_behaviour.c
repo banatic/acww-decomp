@@ -97,7 +97,7 @@ CLEAN_AS(func_ov068_0226cc00, OutdoorVillagerBehaviour_IsIdle)
 
 /* func_ov068_0226cc20: whether behaviour 7 calls this console's player over: there is a
  * player's object, the villager has a town record whose byte 0x1e is full
- * (VillagerEntry_IsByte1EFull), the current scene is not 31, `call_cooldown` has run out, and
+ * (VillagerEntry_IsByte1eFull), the current scene is not 31, `call_cooldown` has run out, and
  * the player is within 7.0 of it and no further than data_ov068_02278264 either way of where it
  * faces. The town record is asked for twice. */
 int OutdoorVillagerBehaviour_CallsPlayer(OutdoorVillagerBehaviour *self, u8 *villager)
@@ -105,7 +105,7 @@ int OutdoorVillagerBehaviour_CallsPlayer(OutdoorVillagerBehaviour *self, u8 *vil
     int player = SessionPlayers_ActorHandle(OUTDOOR_VILLAGER_PLAYER_ACTOR);
     int full = 0;
     if (ovb_record(villager) != NULL) {
-        full = VillagerEntry_IsByte1EFull(ovb_record(villager), NULL) != 0;
+        full = VillagerEntry_IsByte1eFull(ovb_record(villager), NULL) != 0;
     }
     if (SceneQuery_CurrentIs31() != 0) {
         return 0;

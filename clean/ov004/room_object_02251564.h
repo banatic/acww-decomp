@@ -3,7 +3,7 @@
  * vtable slot 0x70 and dispatched through tables of member pointers (member_pointer.h):
  *
  * - idle: touching it (a change of the switch pending) requests the used state with this
- *   system's player number as the value vtable slot 0x70 keeps (RoomObject.unk_77C);
+ *   system's player number as the value vtable slot 0x70 keeps (RoomObject.unk_77c);
  * - used: on entry, the sound at 2 and, when the player who used it is this system's, one bell
  *   less in the player's wallet (at 0xa68 of the pockets, PlayerPockets_Bells and PlayerPockets_SetBells) if
  *   any is left. Its update is idle's, so it can be used again.
@@ -35,7 +35,7 @@ void RoomObject02251564_UpdateIdle(RoomObject02251564 *object);
 int RoomObject02251564_EnterIdle(RoomObject02251564 *object);
 void RoomObject02251564_UpdateState(RoomObject02251564 *object);
 int RoomObject02251564_EnterState(RoomObject02251564 *object, unsigned int state, int value);
-int RoomObject02251564_Vfunc0C(void);
+int RoomObject02251564_Vfunc0c(void);
 int RoomObject02251564_Update(RoomObject02251564 *object);
 int RoomObject02251564_Start(RoomObject02251564 *object);
 RoomObject02251564 *RoomObject02251564_Delete(RoomObject02251564 *object);

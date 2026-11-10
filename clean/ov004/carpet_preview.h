@@ -25,7 +25,7 @@ typedef struct CarpetPreview {
 } CarpetPreview;
 
 int CarpetPreview_CanDraw(CarpetPreview *object);
-int CarpetPreview_Vfunc0C(void);
+int CarpetPreview_Vfunc0c(void);
 int CarpetPreview_Update(CarpetPreview *object);
 int CarpetPreview_Start(CarpetPreview *object);
 CarpetPreview *CarpetPreview_Delete(CarpetPreview *object);

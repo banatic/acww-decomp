@@ -320,7 +320,7 @@ CLEAN_AS(func_02015d04, SceneBase_LookAtPlayer)
 int SceneBase_PlayerActorId(void)
 {
     if (SceneQuery_Current() == SCENE_BASE_SCENE_2F) {
-        return ActivityVars_Slot3C1C();
+        return ActivityVars_Slot3c1c();
     }
     return PlayerActors_OwnPlayer();
 }

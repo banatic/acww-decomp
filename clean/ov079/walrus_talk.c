@@ -466,7 +466,7 @@ void WalrusTalk_GiveDesign(WalrusTalk *talk)
         if (umbrella == held &&
             walrus_talk_in(*PlayerRecord_HeldItem(player), WALRUS_TALK_UMBRELLA_FIRST, WALRUS_TALK_UMBRELLA_FIRST + 7)) {
             u16 item = umbrella;
-            PlayerActorOps_RequestState3F(&item);
+            PlayerActorOps_RequestState3f(&item);
         }
 
         int design = PlayerDesigns_At(PlayerRecord_Designs(player), (int) slot);

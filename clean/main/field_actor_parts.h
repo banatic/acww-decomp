@@ -45,7 +45,7 @@ static inline Actor *FieldActor_Base(FieldActor *actor)
 
 /* Matrices kept by the body's update (Mtx43): the actor's model matrix (FieldActor.unk_298),
  * the joints 0xf, 0xe and 0xb, and the held item's two placements (FieldActor.held_tip and
- * unk_68C are the translations of the second and third). */
+ * unk_68c are the translations of the second and third). */
 #define FIELD_ACTOR_MATRIX_MODEL 0x298
 #define FIELD_ACTOR_MATRIX_JOINT_F 0x42c
 #define FIELD_ACTOR_MATRIX_JOINT_E 0x668

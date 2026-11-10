@@ -46,11 +46,11 @@ void PlayerDesignObject_NodeHook(PlayerDesignObject *object, int node, G3dRender
 CLEAN_AS(func_ov004_02213b70, PlayerDesignObject_NodeHook)
 
 /* func_ov004_02213b88 (vtable slot 0x0c) */
-int PlayerDesignObject_Vfunc0C(void)
+int PlayerDesignObject_Vfunc0c(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov004_02213b88, PlayerDesignObject_Vfunc0C)
+CLEAN_AS(func_ov004_02213b88, PlayerDesignObject_Vfunc0c)
 
 /* func_ov004_02213b8c (vtable slot 0x80, each frame while neither appearing nor vanishing) */
 int PlayerDesignObject_Update(void)

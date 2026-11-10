@@ -412,7 +412,7 @@ int OutdoorVillagerWalks_Update1(OutdoorVillagerBehaviour *self, u8 *villager)
     OutdoorVillagerRecords_EachMinute(villager);
     if (*walks_word(self, WALKS_RAISE) == 0) {
         if (walks_record(villager) != NULL) {
-            VillagerEntry_RaiseByte1E(walks_record(villager), NULL);
+            VillagerEntry_RaiseByte1e(walks_record(villager), NULL);
         }
         *walks_word(self, WALKS_RAISE) = WALKS_RAISE_FRAMES;
     }

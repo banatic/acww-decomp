@@ -54,12 +54,12 @@ int VillagerImpression_IsMorning(void)
 CLEAN_AS(func_0207e6bc, VillagerImpression_IsMorning)
 
 /* func_0207e6d4: the player wears clothes 0x12a8-0x12af. */
-int VillagerImpression_Clothes12A8(u8 *record)
+int VillagerImpression_Clothes12a8(u8 *record)
 {
     u16 clothes = *PlayerRecord_Clothes(record);
     return clothes >= 0x12a8 && clothes <= 0x12af;
 }
-CLEAN_AS(func_0207e6d4, VillagerImpression_Clothes12A8)
+CLEAN_AS(func_0207e6d4, VillagerImpression_Clothes12a8)
 
 /* func_0207e708: snow is falling (Sky_Falling gives SKY_FALLING_SNOW, 2). */
 int VillagerImpression_IsSnowing(void)
@@ -120,39 +120,39 @@ int VillagerImpression_HeadIs1406(u8 *record)
 CLEAN_AS(func_0207e7fc, VillagerImpression_HeadIs1406)
 
 /* func_0207e848 */
-int VillagerImpression_HeadIs13E4(u8 *record)
+int VillagerImpression_HeadIs13e4(u8 *record)
 {
     return villager_impression_head_is(record, 0x13e4);
 }
-CLEAN_AS(func_0207e848, VillagerImpression_HeadIs13E4)
+CLEAN_AS(func_0207e848, VillagerImpression_HeadIs13e4)
 
 /* func_0207e894 */
-int VillagerImpression_HeadIs13E3(u8 *record)
+int VillagerImpression_HeadIs13e3(u8 *record)
 {
     return villager_impression_head_is(record, 0x13e3);
 }
-CLEAN_AS(func_0207e894, VillagerImpression_HeadIs13E3)
+CLEAN_AS(func_0207e894, VillagerImpression_HeadIs13e3)
 
 /* func_0207e8e0 */
-int VillagerImpression_HeadIs13F5(u8 *record)
+int VillagerImpression_HeadIs13f5(u8 *record)
 {
     return villager_impression_head_is(record, 0x13f5);
 }
-CLEAN_AS(func_0207e8e0, VillagerImpression_HeadIs13F5)
+CLEAN_AS(func_0207e8e0, VillagerImpression_HeadIs13f5)
 
 /* func_0207e92c */
-int VillagerImpression_HeadIs13EA(u8 *record)
+int VillagerImpression_HeadIs13ea(u8 *record)
 {
     return villager_impression_head_is(record, 0x13ea);
 }
-CLEAN_AS(func_0207e92c, VillagerImpression_HeadIs13EA)
+CLEAN_AS(func_0207e92c, VillagerImpression_HeadIs13ea)
 
 /* func_0207e978 */
-int VillagerImpression_HeadIs13E6(u8 *record)
+int VillagerImpression_HeadIs13e6(u8 *record)
 {
     return villager_impression_head_is(record, 0x13e6);
 }
-CLEAN_AS(func_0207e978, VillagerImpression_HeadIs13E6)
+CLEAN_AS(func_0207e978, VillagerImpression_HeadIs13e6)
 
 /* func_0207e9c4 */
 int VillagerImpression_HeadIs1405(u8 *record)
@@ -162,32 +162,32 @@ int VillagerImpression_HeadIs1405(u8 *record)
 CLEAN_AS(func_0207e9c4, VillagerImpression_HeadIs1405)
 
 /* func_0207ea10 */
-int VillagerImpression_HeadIs13BC(u8 *record)
+int VillagerImpression_HeadIs13bc(u8 *record)
 {
     return villager_impression_head_is(record, 0x13bc);
 }
-CLEAN_AS(func_0207ea10, VillagerImpression_HeadIs13BC)
+CLEAN_AS(func_0207ea10, VillagerImpression_HeadIs13bc)
 
 /* func_0207ea5c */
-int VillagerImpression_HeadIs13A8(u8 *record)
+int VillagerImpression_HeadIs13a8(u8 *record)
 {
     return villager_impression_head_is(record, 0x13a8);
 }
-CLEAN_AS(func_0207ea5c, VillagerImpression_HeadIs13A8)
+CLEAN_AS(func_0207ea5c, VillagerImpression_HeadIs13a8)
 
 /* func_0207eaa8 */
-int VillagerImpression_HeadIs13B2(u8 *record)
+int VillagerImpression_HeadIs13b2(u8 *record)
 {
     return villager_impression_head_is(record, 0x13b2);
 }
-CLEAN_AS(func_0207eaa8, VillagerImpression_HeadIs13B2)
+CLEAN_AS(func_0207eaa8, VillagerImpression_HeadIs13b2)
 
 /* func_0207eaf4 */
-int VillagerImpression_HeadIs13C1(u8 *record)
+int VillagerImpression_HeadIs13c1(u8 *record)
 {
     return villager_impression_head_is(record, 0x13c1);
 }
-CLEAN_AS(func_0207eaf4, VillagerImpression_HeadIs13C1)
+CLEAN_AS(func_0207eaf4, VillagerImpression_HeadIs13c1)
 
 /* func_0207eb40: the held item is a watering can, 0x1378 or 0x1379. */
 int VillagerImpression_HeldWateringCan(u8 *record)

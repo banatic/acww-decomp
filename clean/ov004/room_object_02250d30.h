@@ -15,7 +15,7 @@ typedef struct RoomObject02250d30 {
     u8 unk_846[2];
 } RoomObject02250d30;
 
-int RoomObject02250d30_Vfunc0C(void);
+int RoomObject02250d30_Vfunc0c(void);
 int RoomObject02250d30_Vfunc80(void);
 int RoomObject02250d30_Start(RoomObject02250d30 *object);
 RoomObject02250d30 *RoomObject02250d30_Delete(RoomObject02250d30 *object);

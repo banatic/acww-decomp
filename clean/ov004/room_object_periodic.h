@@ -38,7 +38,7 @@ enum PeriodicPhase {
     PERIODIC_BURST_3 = 3
 };
 
-int PeriodicRoomObject_Vfunc0C(void);
+int PeriodicRoomObject_Vfunc0c(void);
 int PeriodicRoomObject_Update(PeriodicRoomObject *object);
 int PeriodicRoomObject_Start(PeriodicRoomObject *object);
 PeriodicRoomObject *PeriodicRoomObject_Delete(PeriodicRoomObject *object);

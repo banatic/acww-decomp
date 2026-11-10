@@ -25,11 +25,11 @@ extern const u8 data_ov004_0225173c[];
 /* The sound number that means none. */
 extern u16 data_ov004_0224fd38;
 
-/* func_ov004_02213270 (vtable slot 0x70): the base class's (RoomObject_SetUnk77C, given `state`
+/* func_ov004_02213270 (vtable slot 0x70): the base class's (RoomObject_SetUnk77c, given `state`
  * and `value`), then starts the furniture's sound at 2 when it has one; 1. */
 int RoomObject02251690_Play(RoomObject02251690 *object, int state, int value)
 {
-    RoomObject_SetUnk77C(&object->base, state, value);
+    RoomObject_SetUnk77c(&object->base, state, value);
     int sound = FurnitureSounds_Sound1(RoomObject_Number(&object->base));
     if (sound != data_ov004_0224fd38) {
         SoundSeq_Start(&object->seq, (u16) sound);

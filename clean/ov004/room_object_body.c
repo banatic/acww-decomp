@@ -171,7 +171,7 @@ void RoomObject_SetUp(RoomObject *object)
         AcreTile_TileCentreInAcre(&object->position, 0, 0, (int) PLACE_X(word), (int) PLACE_Y(word));
         object->position.y = RoomObjects_HeightAtPoint(&object->position);
         set_scale(object, ONE);
-        object->unk_15C = ONE;
+        object->unk_15c = ONE;
     } else {
         Vec3 from = data_021c67b8;
         Vec3 to = data_021c67d0;
@@ -185,7 +185,7 @@ void RoomObject_SetUp(RoomObject *object)
         object->position.y = from.y + y;
         object->position.z = from.z + z;
         set_scale(object, PREVIEW_SCALE);
-        object->unk_15C = ONE;
+        object->unk_15c = ONE;
         data_ov004_02256c40 = (u16) (Math_Atan2(direction.z, direction.y) - 0xb000);
         data_ov004_02256c3c = (u16) (Math_Atan2(direction.x, direction.z) + 0x8000);
     }
@@ -205,11 +205,11 @@ void RoomObject_SetUp(RoomObject *object)
     object->unk_780 = FurnitureInfo_DmaUnk18(object->number);
     object->top_height = FurnitureInfo_DmaUnk19(object->number);
     object->unk_784 = FurnitureInfo_Shape(object->number);
-    object->unk_774 = FurnitureInfo_DmaUnk1D(object->number);
-    object->unk_778 = FurnitureInfo_DmaUnk1E(object->number);
-    object->unk_78C = (u8) FurnitureInfo_IndoorBit2(object->number);
-    object->unk_78D = (u8) FurnitureInfo_IndoorBit3(object->number);
-    object->unk_788 = (u32) FurnitureInfo_DmaUnk1A(object->number);
+    object->unk_774 = FurnitureInfo_DmaUnk1d(object->number);
+    object->unk_778 = FurnitureInfo_DmaUnk1e(object->number);
+    object->unk_78c = (u8) FurnitureInfo_IndoorBit2(object->number);
+    object->unk_78d = (u8) FurnitureInfo_IndoorBit3(object->number);
+    object->unk_788 = (u32) FurnitureInfo_DmaUnk1a(object->number);
     object->light_kind = FurnitureInfo_LightKind(object->number);
     if (!RoomObject_IsUnplaced(object)) {
         if (object->unk_784 == FOOTPRINT_TWO_BY_TWO) {
@@ -272,7 +272,7 @@ static int pick_kind(void)
 }
 
 /* func_ov004_0220f8c0 (each frame): moves the box to the object (CollisionBox_Place, when the box
- * is set up and the object has one: not with unk_78C) and its touch-pick box, 3/4 of its
+ * is set up and the object has one: not with unk_78c) and its touch-pick box, 3/4 of its
  * size, with it; the box is added again (TouchPick_AddFaces) when the box did not move. Nothing for a preview. */
 void RoomObject_UpdateBoxAndPick(RoomObject *object)
 {
@@ -282,11 +282,11 @@ void RoomObject_UpdateBoxAndPick(RoomObject *object)
     Vec3 size;
     RoomObject_Size(object, &size);
     Vec3 scale;
-    set_vec(&scale, object->unk_15C, object->unk_15C, object->unk_15C);
+    set_vec(&scale, object->unk_15c, object->unk_15c, object->unk_15c);
     Vec3 centre;
     RoomObject_Centre(object, &centre);
     int shown = 0;
-    if (!object->unk_78C) {
+    if (!object->unk_78c) {
         if (object->push_box.base.active) {
             shown = CollisionBox_Place(&object->push_box.base, &centre, object->angle, &scale);
         } else {
@@ -309,7 +309,7 @@ CLEAN_AS(func_ov004_0220f8c0, RoomObject_UpdateBoxAndPick)
 /* func_ov004_0220f994: takes the box out of the world, when the object has one. */
 void RoomObject_RemoveBox(RoomObject *object)
 {
-    if (!RoomObject_IsUnplaced(object) && !object->unk_78C) {
+    if (!RoomObject_IsUnplaced(object) && !object->unk_78c) {
         CollisionBox_Remove(&object->push_box.base);
         PushBox_ClearOwner(&object->push_box);
     }
@@ -327,10 +327,10 @@ void RoomObject_SetUpBoxAndPick(RoomObject *object)
     Vec3 size;
     RoomObject_Size(object, &size);
     Vec3 scale;
-    set_vec(&scale, object->unk_15C, object->unk_15C, object->unk_15C);
+    set_vec(&scale, object->unk_15c, object->unk_15c, object->unk_15c);
     Vec3 centre;
     RoomObject_Centre(object, &centre);
-    if (!object->unk_78C) {
+    if (!object->unk_78c) {
         PushBox_SetOwner(&object->push_box, object);
         void *objects = RoomObjects_Table();
         (void) RoomObjects_At(objects, Mount_Parent(&object->mount));
@@ -440,10 +440,10 @@ int RoomObject_Layer(RoomObject *object)
 }
 CLEAN_AS(func_ov004_0220fd8c, RoomObject_Layer)
 
-/* func_ov004_0220fd98: toggles the switch (to be applied), unless unk_77D; whether it did. */
+/* func_ov004_0220fd98: toggles the switch (to be applied), unless unk_77d; whether it did. */
 int RoomObject_ToggleSwitch(RoomObject *object)
 {
-    if (object->unk_77D == 0) {
+    if (object->unk_77d == 0) {
         Switch_Toggle(&object->on_switch, 1);
         return 1;
     }
@@ -458,15 +458,15 @@ int RoomObject_Vfunc74(void)
 }
 CLEAN_AS(func_ov004_0220fdc4, RoomObject_Vfunc74)
 
-/* func_ov004_0220fdc8 (vtable slot 0x70): sets unk_77C to `value` and clears unk_77D; 1. */
-int RoomObject_SetUnk77C(RoomObject *object, int unused, int value)
+/* func_ov004_0220fdc8 (vtable slot 0x70): sets unk_77c to `value` and clears unk_77d; 1. */
+int RoomObject_SetUnk77c(RoomObject *object, int unused, int value)
 {
     (void) unused;
-    object->unk_77C = (u8) value;
-    object->unk_77D = 0;
+    object->unk_77c = (u8) value;
+    object->unk_77d = 0;
     return 1;
 }
-CLEAN_AS(func_ov004_0220fdc8, RoomObject_SetUnk77C)
+CLEAN_AS(func_ov004_0220fdc8, RoomObject_SetUnk77c)
 
 /* func_ov004_0220fde0: the furniture's number. */
 int RoomObject_Number(RoomObject *object)
@@ -519,11 +519,11 @@ int RoomObject_Lookup020537a8(RoomObject *object)
 CLEAN_AS(func_ov004_0221081c, RoomObject_Lookup020537a8)
 
 /* func_ov004_0221082c (vtable slot 0x78) */
-int RoomObject_Unk77C(RoomObject *object)
+int RoomObject_Unk77c(RoomObject *object)
 {
-    return object->unk_77C;
+    return object->unk_77c;
 }
-CLEAN_AS(func_ov004_0221082c, RoomObject_Unk77C)
+CLEAN_AS(func_ov004_0221082c, RoomObject_Unk77c)
 
 /* func_ov004_02210838 (vtable slot 0x50): the point one unit before the player, the way the
  * player faces; the object's position without a player.
@@ -571,11 +571,11 @@ int RoomObject_Vfunc88(void)
 CLEAN_AS(func_ov004_022108c8, RoomObject_Vfunc88)
 
 /* func_ov004_022108cc (vtable slot 0x8c) */
-int RoomObject_Vfunc8C(void)
+int RoomObject_Vfunc8c(void)
 {
     return 0;
 }
-CLEAN_AS(func_ov004_022108cc, RoomObject_Vfunc8C)
+CLEAN_AS(func_ov004_022108cc, RoomObject_Vfunc8c)
 
 /* func_ov004_022108d0 (vtable slot 0x14): with 2, the object leaves: its sound stops, the
  * room's lighting follows (RoomObject_ExitLight), its box goes, its switch is saved unless it

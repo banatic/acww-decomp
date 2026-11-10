@@ -329,7 +329,7 @@ static_assert(offsetof(TownObjectActor, yaw) == 0x8e, "actor yaw");
 static_assert(offsetof(TownObjectActor, code) == 0x136, "actor code");
 static_assert(offsetof(TownObjectActor, model) == 0x198, "actor model");
 static_assert(sizeof(ModelAnim) == sizeof(MailboxAnim), "the pattern is main's animation");
-static_assert(sizeof(TouchPickSphere) == sizeof(((Mailbox *) NULL)->unk_2D8), "touch sphere");
+static_assert(sizeof(TouchPickSphere) == sizeof(((Mailbox *) NULL)->unk_2d8), "touch sphere");
 
 #define MAILBOX_RECEIVER_OFFSET 0xec
 /* The scene events of vtable slot 0x4c. */
@@ -338,7 +338,7 @@ static_assert(sizeof(TouchPickSphere) == sizeof(((Mailbox *) NULL)->unk_2D8), "t
 #define MAILBOX_EVENT_IDLE 8
 /* The mode of group 9 that shows the letters. */
 #define MAILBOX_LETTERS_MODE 0x27
-/* FieldActor_PlayerRequestState6BOr6C's choice of state 0x6c. */
+/* FieldActor_PlayerRequestState6bOr6c's choice of state 0x6c. */
 #define MAILBOX_PLAYER_STATE_6C 2
 /* Where the player is asked to go: 2.0 along z from the mailbox. */
 #define MAILBOX_APPROACH_Z 0x2000
@@ -405,7 +405,7 @@ static ModelAnim *mailbox_pattern(Mailbox *mailbox)
 
 static TouchPickSphere *mailbox_sphere(Mailbox *mailbox)
 {
-    return (TouchPickSphere *) (void *) mailbox->unk_2D8;
+    return (TouchPickSphere *) (void *) mailbox->unk_2d8;
 }
 
 /* Sets the mode through vtable slot 0x6c. */
@@ -444,7 +444,7 @@ CLEAN_AS(func_ov003_0221e424, Mailbox_EnterClose)
  * queued. */
 void Mailbox_RunReading(Mailbox *mailbox)
 {
-    if (GroupParams_CanOpen() && FieldActor_PlayerRequestState6BOr6C(MAILBOX_PLAYER_STATE_6C)) {
+    if (GroupParams_CanOpen() && FieldActor_PlayerRequestState6bOr6c(MAILBOX_PLAYER_STATE_6C)) {
         Mailbox_SetState(mailbox, MAILBOX_STATE_CLOSE);
     }
 }
@@ -495,7 +495,7 @@ int Mailbox_EnterApproach(Mailbox *mailbox)
     point.x = actor->position.x;
     point.y = CollisionQuery_FloorHeight(0);
     point.z = actor->position.z + MAILBOX_APPROACH_Z;
-    if (FieldActor_PlayerRequestState6A(&point)) {
+    if (FieldActor_PlayerRequestState6a(&point)) {
         TownObjects_SetActorMode(actor, MAILBOX_OPENING);
     }
     return 1;

@@ -6,7 +6,7 @@
 #include "collision_area.h"
 #include "collision_box.h"
 
-static_assert(sizeof(CollisionMapState) == sizeof(((FieldBlockMap *) 0)->unk_12C), "a map's words after its blocks");
+static_assert(sizeof(CollisionMapState) == sizeof(((FieldBlockMap *) 0)->unk_12c), "a map's words after its blocks");
 static_assert(offsetof(CollisionWorld, maps) == 4 && offsetof(CollisionWorld, extra_posts) == 0x1f3c, "collision world");
 
 /* The world of the collision code and its current map (one of world.maps). */
@@ -40,7 +40,7 @@ static FieldBlock *collision_map_block(FieldBlockMap *map, int x, int z)
 
 static CollisionMapState *collision_map_state(FieldBlockMap *map)
 {
-    return (CollisionMapState *) (void *) map->unk_12C;
+    return (CollisionMapState *) (void *) map->unk_12c;
 }
 
 /* Row `index` of the type table; `index` is below 0x7c. */

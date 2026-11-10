@@ -45,7 +45,7 @@
 #include "room_objects.h"
 #include "room_pushes.h"
 
-static_assert(offsetof(RoomObject, unk_00C) == 0xc, "kind");
+static_assert(offsetof(RoomObject, unk_00c) == 0xc, "kind");
 static_assert(offsetof(RoomObject, position) == 0x5c, "position");
 static_assert(offsetof(RoomObject, angle) == 0x8e, "angle");
 static_assert(offsetof(RoomObject, receiver_state) == 0x10a, "receiver state byte");
@@ -70,7 +70,7 @@ static_assert(sizeof(BedObject) == 0x8b8, "the size BedObject_Create allocates")
 #define WAIT_FRAMES 0x18
 #define VANISH_FRAMES 0x16
 #define KIND_2A 0x2a       /* RoomObject.unk_780 of the kind with glows */
-#define KIND_BED 0x37      /* RoomObject.unk_00C of this class */
+#define KIND_BED 0x37      /* RoomObject.unk_00c of this class */
 #define LONG_SHAPE 2       /* RoomObject.unk_784 of the shape two cells wide */
 #define BACK_Z 0x16000     /* the z from which on it is in the back of the room */
 #define STEP 0x2000        /* one cell, 20.12 fixed point */
@@ -677,7 +677,7 @@ void BedObject_UpdateState(BedObject *object)
 }
 CLEAN_AS(_ZN18Obj_ov004_0225305819func_ov004_02218110Ev, BedObject_UpdateState)
 
-/* func_ov004_02218228 (vtable slot 0x70): the base class's (RoomObject_SetUnk77C, given `state`
+/* func_ov004_02218228 (vtable slot 0x70): the base class's (RoomObject_SetUnk77c, given `state`
  * and `value`), then enters `state` if its entry (through a table) agrees; whether it did.
  * States 14 and above do not exist. */
 int BedObject_EnterState(BedObject *object, unsigned int state, int value)
@@ -698,7 +698,7 @@ int BedObject_EnterState(BedObject *object, unsigned int state, int value)
         &data_ov004_022502c8, /* BedObject_EnterPlace */
         &data_ov004_02250440, /* BedObject_EnterVanish */
     };
-    RoomObject_SetUnk77C(&object->base, (int) state, value);
+    RoomObject_SetUnk77c(&object->base, (int) state, value);
     MemberTable_InitOnce(&data_ov004_02257070, data_ov004_022576cc, entries, BED_OBJECT_STATE_COUNT);
     if (state < BED_OBJECT_STATE_COUNT && MemberPointer_CallInt(&data_ov004_022576cc[state], object) != 0) {
         object->state = (u8) state;
@@ -809,7 +809,7 @@ int BedObject_CheckStep(BedObject *object, Vec3 *point, int angle, Vec3 *offset)
     if (FurnitureInfo_IndoorBit2(RoomObject_Number(other)) != 0) {
         return BED_OBJECT_STEP_OPEN;
     }
-    if (object->base.angle == other->angle && other->unk_00C == KIND_BED) {
+    if (object->base.angle == other->angle && other->unk_00c == KIND_BED) {
         Cell mine[2];
         Cell theirs[2];
         BedObject_CellsConstruct(mine);
@@ -881,11 +881,11 @@ int BedObject_FrontCells(BedObject *object, Cell *cells)
 CLEAN_AS(func_ov004_022185b0, BedObject_FrontCells)
 
 /* func_ov004_02218604 (vtable slot 0x0c) */
-int BedObject_Vfunc0C(void)
+int BedObject_Vfunc0c(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov004_02218604, BedObject_Vfunc0C)
+CLEAN_AS(func_ov004_02218604, BedObject_Vfunc0c)
 
 /* func_ov004_02218608 (vtable slot 0x24) */
 int BedObject_Vfunc24(void)

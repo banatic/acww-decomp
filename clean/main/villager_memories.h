@@ -59,8 +59,8 @@ typedef int (*VillagerMemoryTest)(void *player, void *town, void *players);
 
 void VillagerMemory_SetGreeting(u8 *villager, const u16 *text, int length, const DesignCreator *player);
 int VillagerMemory_GetGreeting(u8 *villager, void *text, const DesignCreator *player);
-void VillagerMemory_SetText2A(u8 *villager, const u16 *text, int length, const DesignCreator *player);
-int VillagerMemory_GetText2A(u8 *villager, void *text, const DesignCreator *player);
+void VillagerMemory_SetText2a(u8 *villager, const u16 *text, int length, const DesignCreator *player);
+int VillagerMemory_GetText2a(u8 *villager, void *text, const DesignCreator *player);
 void VillagerMemory_ShareNickname(u8 *villager_a, u8 *villager_b, u8 *record);
 VillagerMemory *VillagerMemory_SetNicknameChars(u8 *villager, const u16 *chars, int length, const DesignCreator *player);
 VillagerMemory *VillagerMemory_SetNickname(u8 *villager, void *text, const DesignCreator *player);

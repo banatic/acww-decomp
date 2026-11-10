@@ -636,7 +636,7 @@ CLEAN_AS(func_ov004_02226d14, FieldActorRoomStates_RequestDrinkCoffee)
 /* ---- The states around the exits, the chests and the item shown */
 
 static_assert(offsetof(FieldActor, receiver) == 0xec, "receiver");
-static_assert(offsetof(FieldActor, receiver_unk_1E) == 0x10a, "receiver's byte 0x1e");
+static_assert(offsetof(FieldActor, receiver_unk_1e) == 0x10a, "receiver's byte 0x1e");
 static_assert(offsetof(FieldActor, link) == 0x12c, "receiver's link");
 static_assert(offsetof(FieldActor, anim.speed) == 0x2e0, "animation speed");
 static_assert(offsetof(FieldActor, animation) == 0x704, "animation");
@@ -1129,7 +1129,7 @@ void FieldActorRoomStates_RunExitWalk(FieldActor *actor)
                                                  (TalkReceiver *) (void *) actor->receiver);
                     FieldActor_SetFlag(actor, FARS_FLAG_TALK);
                     MessageReceiver_SetName((MessageReceiver *) (void *) actor->receiver, data_ov004_02254b00);
-                    actor->receiver_unk_1E = FARS_TALK_KIND;
+                    actor->receiver_unk_1e = FARS_TALK_KIND;
                     actor->link->requested = 1;
                     work->phase++;
                     break;
@@ -1148,7 +1148,7 @@ void FieldActorRoomStates_RunExitWalk(FieldActor *actor)
                 SceneObjectBase_ReleaseReceiver((SceneObjectBase *) (void *) actor, (TalkReceiver *) (void *) actor->receiver);
                 FieldActor_ClearFlag(actor, FARS_FLAG_TALK);
                 actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
-                FieldActor_RequestState6F(actor, &tile, FARS_WALK_BACK_SPEED, FARS_WALK_BACK_PRIORITY, FARS_NO_ARG);
+                FieldActor_RequestState6f(actor, &tile, FARS_WALK_BACK_SPEED, FARS_WALK_BACK_PRIORITY, FARS_NO_ARG);
             }
             break;
         default:
@@ -1656,7 +1656,7 @@ CLEAN_AS(func_ov004_0222840c, FieldActorRoomStates_PutAtChestArgs)
 
 /* ---- State 0x2d, to a chest; the states of a spot (0x27 to 0x2c) */
 
-static_assert(offsetof(FieldActor, unk_1C4) == FIELD_ACTOR_CONTACT_B, "second contact body");
+static_assert(offsetof(FieldActor, unk_1c4) == FIELD_ACTOR_CONTACT_B, "second contact body");
 static_assert(offsetof(FieldActor, has_other) == 0x200, "an object met");
 static_assert(offsetof(FieldActor, anim.flags) == 0x2e4, "animation flags");
 static_assert(offsetof(FieldActor, unk_C84) == 0xc84, "0xc84");
@@ -1753,7 +1753,7 @@ static FieldActorSpotEnter *fars_spot_enter_of(FieldActor *actor)
 
 static FieldBody *fars_contact_b(FieldActor *actor)
 {
-    return (FieldBody *) (void *) actor->unk_1C4;
+    return (FieldBody *) (void *) actor->unk_1c4;
 }
 
 /* func_ov004_02228410 (state 0x2d's update): the ease to the work's point and yaw, the

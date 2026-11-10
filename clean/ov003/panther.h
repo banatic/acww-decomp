@@ -19,9 +19,9 @@ typedef struct Panther {
     char receiver_name[25];      /* written by func_020a8164 */
     u8 unk_109;
     u8 message; /* Base_02066994's byte at 0x1e: the message to show */
-    u8 unk_10B[0x2b4 - 0x10b];
+    u8 unk_10b[0x2b4 - 0x10b];
     u8 hour; /* the hour Panther_KeepHour saw */
-    u8 unk_2B5[3];
+    u8 unk_2b5[3];
 } Panther;
 
 void Panther_PrepareTalk(Panther *panther);

@@ -25,7 +25,7 @@ typedef struct WallpaperPreview {
 } WallpaperPreview;
 
 int WallpaperPreview_CanDraw(WallpaperPreview *object);
-int WallpaperPreview_Vfunc0C(void);
+int WallpaperPreview_Vfunc0c(void);
 int WallpaperPreview_Update(WallpaperPreview *object);
 int WallpaperPreview_Start(WallpaperPreview *object);
 WallpaperPreview *WallpaperPreview_Delete(WallpaperPreview *object);

@@ -523,7 +523,7 @@ void Sky_Frame(void)
     Sky_LoadPalette((int) data_021f75b0.screen);
     if (data_021c67a4 != NULL) {
         int from_flags = (StateFlags_ValueOrZero() * 0x123) >> 12;
-        int from_camera = ((int) CameraControl_Value1E8() * 0x1e) >> 12;
+        int from_camera = ((int) CameraControl_Value1e8() * 0x1e) >> 12;
         data_021f75b0.shift[data_021f75b0.shift_index ^ 1] = from_flags + from_camera;
     }
     data_021f75b0.stars_y = (u16) Sky_StarsYNow(&data_021f75b0);

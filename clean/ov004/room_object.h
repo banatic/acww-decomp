@@ -54,9 +54,9 @@ typedef struct RoomObjectVtable {
     int (*node_hook)(struct RoomObject *object, int node, struct G3dRenderState *state);
     int (*node_desc_hook)(struct RoomObject *object, int node, struct G3dRenderState *state);
     int (*node_desc_after_hook)(struct RoomObject *object, int node, struct G3dRenderState *state);
-    int (*vfunc_70)(struct RoomObject *object, int a1, int a2); /* RoomObject_SetUnk77C in the base */
+    int (*vfunc_70)(struct RoomObject *object, int a1, int a2); /* RoomObject_SetUnk77c in the base */
     const void *unk_74;
-    int (*vfunc_78)(struct RoomObject *object);             /* RoomObject_Unk77C in the base */
+    int (*vfunc_78)(struct RoomObject *object);             /* RoomObject_Unk77c in the base */
     int (*on_model_bound)(struct RoomObject *object);       /* after RoomObject_Init binds the model: whether it is done */
     int (*update_settled)(struct RoomObject *object);       /* each frame, when neither appearing nor vanishing */
     int (*update_unsettled)(struct RoomObject *object);     /* each frame, when appearing or vanishing */
@@ -77,7 +77,7 @@ typedef struct RoomObject {
             const RoomObjectVtable *vtable;
             u8 unk_004[4];
             u32 placement; /* how it was placed (room_object_body.c) */
-            u16 unk_00C;   /* 0x3d: moving it plays no sound */
+            u16 unk_00c;   /* 0x3d: moving it plays no sound */
             u8 unk_00e[0x4e];
             Vec3 position;
             u8 unk_068[0x26];
@@ -110,7 +110,7 @@ typedef struct RoomObject {
             int scale_z;
         };
     };
-    int unk_15C;      /* rises to 0x1000 while appearing; the wobble ends only once it is there */
+    int unk_15c;      /* rises to 0x1000 while appearing; the wobble ends only once it is there */
     u16 timer;        /* frames since it started to appear */
     u16 wobble_phase; /* an angle */
     s16 wobble_speed;
@@ -158,15 +158,15 @@ typedef struct RoomObject {
     u8 unk_772[2];
     s32 unk_774;
     s32 unk_778;
-    u8 unk_77C; /* what vtable slot 0x78 gives in the base (the map's record gets it) */
-    u8 unk_77D; /* set: it neither moves nor switches */
-    u8 unk_77E; /* set while the constructor's loading binds its model */
+    u8 unk_77c; /* what vtable slot 0x78 gives in the base (the map's record gets it) */
+    u8 unk_77d; /* set: it neither moves nor switches */
+    u8 unk_77e; /* set while the constructor's loading binds its model */
     u8 unk_77f;
     u32 unk_780; /* 0x23 to 0x25: spinning does not turn it */
     u32 unk_784; /* 1: two cells long, its pivot at either end (PushBox_SettlePivot) */
     u32 unk_788; /* 1: the objects on its cells turn with it */
-    u8 unk_78C;
-    u8 unk_78D; /* 0: its switch starts on when placement_mode is 1 or 2 */
+    u8 unk_78c;
+    u8 unk_78d; /* 0: its switch starts on when placement_mode is 1 or 2 */
     u8 unk_78e[2];
     fx32 top_height; /* the height of what stands on it, in its own space */
     s32 light_kind;  /* func_02053818 of its number: 0 for no light */

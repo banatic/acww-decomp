@@ -23,7 +23,7 @@ typedef struct FieldBlockMap {
     u32 unk_120;
     u32 width;  /* 0x124: in blocks */
     u32 height; /* 0x128: in blocks */
-    u8 unk_12C[0x138 - 0x12c];
+    u8 unk_12c[0x138 - 0x12c];
 } FieldBlockMap;
 
 /* A block of a bit grid: a halfword per row of 16 units, bit n for the unit n units in. */
