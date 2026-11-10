@@ -244,7 +244,8 @@ with a patched ds-decomp). Of the 29,334 Korean functions, 28,777 pair with a US
 20,084 with the same instructions (relocated words and calls aside) at the only place that has
 them, 1,781 the same where calls place them, 6,393 laid out between pairs at the same size and
 519 at another size (`build/adm-us-r1/match/report.txt` has the counts per module, `pairs.txt`
-every pair, `unsure.txt` the 2,267 to review). 21,742 pairs are confirmed by the calls they make
+every pair, `unsure.txt` the 2,267 to review; a copy of that list is kept in
+`config/adm-us-r1/unsure.txt`). 21,742 pairs are confirmed by the calls they make
 and receive. Data and .bss symbols are placed by the pool words that point at them: 12,442 of
 17,280. Every module, delinked by ds-decomp from this configuration and linked by mwldarm, has
 the ROM's bytes (`dsd check modules`: 153 of 153).
