@@ -347,30 +347,30 @@ def objects_part(groups: dict[str, list[dict]], labels: Labels) -> dict[str, str
     return out
 
 
-def shapes_of(paths: list[pathlib.Path]) -> list[dict] | None:
-    """coff_shape of each object, kept by the file's size and time (build/<version>/fingerprint);
-    None when one is not a COFF object."""
+def shapes_of(groups: dict[str, list[pathlib.Path]]) -> dict[str, list[dict]] | None:
+    """coff_shape of each object of each group, kept by the SHA-1 of the file's bytes
+    (build/<version>/fingerprint: the objects of the last call; two compiles of one source differ
+    by the time in the header); None when one is not a COFF object."""
     memo_path = C.BUILD / "fingerprint" / "shapes.json"
     try:
         memo = json.loads(memo_path.read_text())
         memo = memo["shapes"] if memo.get("format") == FORMAT else {}
     except (OSError, ValueError, KeyError):
         memo = {}
-    out, kept = [], {}
-    for path in paths:
-        st = path.stat()
-        stamp = [st.st_size, st.st_mtime_ns]
-        entry = memo.get(str(path))
-        if entry is None or entry[0] != stamp:
-            shape = coff_shape(path.read_bytes())
+    out: dict[str, list[dict]] = {}
+    kept: dict[str, dict] = {}
+    for group, paths in groups.items():
+        out[group] = []
+        for path in paths:
+            data = path.read_bytes()
+            digest = hashlib.sha1(data).hexdigest()
+            shape = memo.get(digest) or kept.get(digest) or coff_shape(data)
             if shape is None:
                 return None
-            entry = [stamp, shape]
-        kept[str(path)] = entry
-        out.append(entry[1])
+            kept[digest] = shape
+            out[group].append(shape)
     memo_path.parent.mkdir(parents=True, exist_ok=True)
-    memo.update(kept)
-    memo_path.write_text(json.dumps({"format": FORMAT, "shapes": memo}), newline="\n")
+    memo_path.write_text(json.dumps({"format": FORMAT, "shapes": kept}), newline="\n")
     return out
 
 
@@ -400,7 +400,7 @@ def compute() -> dict:
     stubs = run.OUT / "clean-calls.o"
     groups = {"native_objects": [pathlib.Path(p) for p in (run.NATIVE / "objects.txt").read_text().split()],
               "clean_objects": [p for p in map(pathlib.Path, listed.read_text().split()) if p != stubs]}
-    shapes = {group: shapes_of(paths) for group, paths in groups.items()}
+    shapes = shapes_of(groups)
     syms = C.symbol_table(C.modules())
     table_names = {name: [(s.module, f"{s.address:08x}", s.kind, f"{s.size:x}", int(s.thumb)) for s in entries]
                    for name, entries in syms.by_name.items()}
@@ -413,7 +413,7 @@ def compute() -> dict:
     extra = {"native_in_clean": native_in_clean(policy, cleaned)}
     policy_clean = run.policy_facts(policy)
     policy_none = run.policy_facts(run.write_policy("all", None).read_text())
-    if None in shapes.values():
+    if shapes is None:
         return {"parts": None, **extra}
     labels.add_definitions([shape for group in shapes.values() for shape in group])
     out = objects_part(shapes, labels)
