@@ -34,7 +34,7 @@ void ActivityReceiver_OnMessage(ActivityReceiver *receiver);
 
 /* The receiver's life, and talk 0 as the activity's jobs drive it. */
 void ActivityReceiver_SetOwner(ActivityReceiver *receiver, Activity *owner);
-ActivityReceiver *ActivityReceiver_DestructFree(ActivityReceiver *receiver);
+ActivityReceiver *ActivityReceiver_Delete(ActivityReceiver *receiver);
 ActivityReceiver *ActivityReceiver_Destruct(ActivityReceiver *receiver);
 ActivityReceiver *ActivityReceiver_Construct(ActivityReceiver *receiver);
 int ActivityTalk_StartSpinner(Activity *activity, int sound);

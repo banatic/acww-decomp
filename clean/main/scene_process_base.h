@@ -27,7 +27,7 @@
 #define SCENE_PROCESS_BASE_NONE 0xd8 /* data_020e3c80 when no scene is asked for */
 
 Process *SceneProcessBase_Destruct(Process *process);
-Process *SceneProcessBase_DestructFree(Process *process);
+Process *SceneProcessBase_Delete(Process *process);
 void SceneProcessBase_CheckChange(Process *process);
 int SceneProcessBase_StartAsked(void);
 void SceneProcessBase_ResetRequest(void);

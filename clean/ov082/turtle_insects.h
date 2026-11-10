@@ -70,7 +70,7 @@ typedef struct TurtleInsectsStep {
 
 /* His object. */
 TurtleInsects *TurtleInsects_Destruct(TurtleInsects *turtle);
-TurtleInsects *TurtleInsects_DestructDelete(TurtleInsects *turtle);
+TurtleInsects *TurtleInsects_Delete(TurtleInsects *turtle);
 void TurtleInsects_OnEvent(TurtleInsects *turtle, int code);
 int TurtleInsects_AgreesToTalk(TurtleInsects *turtle);
 void TurtleInsects_SetState(TurtleInsects *turtle, int state);

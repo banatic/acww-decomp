@@ -4,7 +4,7 @@ frames 5410
 ram 2600,4600,5000
 arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
 call 5401 020e9a08 023920f8 0 0 0 0 0  # Heap_SetCurrent(its heap)
-vcall 5401 0239225c 4 0239225c 0 0 0 020d832c  # main FieldActorReceiver_DestructDelete (slot 1)
+vcall 5401 0239225c 4 0239225c 0 0 0 020d832c  # main FieldActorReceiver_Delete (slot 1)
 call 5401 020e9a08 r2 0 0 0 0 0  # Heap_SetCurrent(as before)
 call 5401 020e9a08 022a3378 0 0 0 0 0  # Heap_SetCurrent(its heap)
 vcall 5401 022b1e4c 4 022b1e4c 0 0 0 02238078  # ov003 VillagerNameplate_ReceiverDestroyAndFree (slot 1)
@@ -40,6 +40,6 @@ call 5401 020e9a08 022a3378 0 0 0 0 0  # Heap_SetCurrent(its heap)
 vcall 5401 022b35e8 4 022b35e8 0 0 0 02239818  # ov003 StoreFront_ReceiverDestroyAndFree (slot 1)
 call 5401 020e9a08 r2 0 0 0 0 0  # Heap_SetCurrent(as before)
 call 5401 020e9a08 022a3378 0 0 0 0 0  # Heap_SetCurrent(its heap)
-vcall 5401 022b5898 4 022b5898 0 0 0 022659a0  # ov009 TownObjectActor_ReceiverDestructDelete (slot 1)
+vcall 5401 022b5898 4 022b5898 0 0 0 022659a0  # ov009 TownObjectActor_ReceiverDelete (slot 1)
 call 5401 020e9a08 r2 0 0 0 0 0  # Heap_SetCurrent(as before)
 end

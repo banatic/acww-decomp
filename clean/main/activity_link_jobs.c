@@ -115,7 +115,7 @@ static u16 *countdown(Activity *activity) /* 0xd0 */
     return (u16 *) (void *) &activity->unk_d0[0];
 }
 
-static u16 *member_mask(Activity *activity) /* 0xd2: Session_GetMemberMask when the job began */
+static u16 *member_mask(Activity *activity) /* 0xd2: Session_MemberMask when the job began */
 {
     return (u16 *) (void *) &activity->unk_d0[2];
 }
@@ -145,8 +145,7 @@ static int sendable(void)
 static int no_peer_owes(NetSession *session)
 {
     for (int slot = ACTIVITY_SLOTS - 1; slot >= 0; slot--) {
-        if (Session_IsSlotTaken(session, slot) && !Session_IsLocalSlot(session, slot) &&
-            Session_GetOwedCredits(session, slot)) {
+        if (Session_IsSlotTaken(session, slot) && !Session_IsLocalSlot(session, slot) && Session_OwedCredits(session, slot)) {
             return 0;
         }
     }
@@ -321,7 +320,7 @@ void ActivityLinkJobs_Step14(Activity *activity)
             return;
         }
         case 7:
-            if (link_lost(AIDS_HOST) || !SystemPacket_SendActivityFlagE4(Session_GetPeerMask())) {
+            if (link_lost(AIDS_HOST) || !SystemPacket_SendActivityFlagE4(Session_PeerMask())) {
                 return;
             }
             activity->state = 8;
@@ -375,14 +374,14 @@ void ActivityLinkJobs_Step15(Activity *activity)
 {
     switch (activity->state) {
         case 0:
-            if (link_lost(Session_GetPeerMask() | (1 << LinkGlobal_ServedSlot())) || !LinkState_GlobalByteC4()) {
+            if (link_lost(Session_PeerMask() | (1 << LinkGlobal_ServedSlot())) || !LinkState_GlobalByteC4()) {
                 return;
             }
             activity->state = 1;
             return;
         case 1:
         case 2:
-            if (link_lost(Session_GetPeerMask() | (1 << LinkGlobal_ServedSlot()))) {
+            if (link_lost(Session_PeerMask() | (1 << LinkGlobal_ServedSlot()))) {
                 return;
             }
             Activity_StepRequestMode1(activity, &activity->state, 1, 0xd, 0x2f);
@@ -392,32 +391,32 @@ void ActivityLinkJobs_Step15(Activity *activity)
             add_new_slot();
             return;
         case 3:
-            if (link_lost(Session_GetPeerMask()) || !SystemPacket_SendActivityMembers(new_slot_bit())) {
+            if (link_lost(Session_PeerMask()) || !SystemPacket_SendActivityMembers(new_slot_bit())) {
                 return;
             }
             activity->state = 4;
             return;
         case 4:
-            if (link_lost(Session_GetPeerMask()) || !SystemCommand_BuildList(data_021f3c1c)) {
+            if (link_lost(Session_PeerMask()) || !SystemCommand_BuildList(data_021f3c1c)) {
                 return;
             }
             activity->state = 5;
             return;
         case 5:
-            if (link_lost(Session_GetPeerMask()) || !SystemPacket_SendShareData(new_slot_bit())) {
+            if (link_lost(Session_PeerMask()) || !SystemPacket_SendShareData(new_slot_bit())) {
                 return;
             }
             activity->unk_d8 = 0;
             activity->state = 6;
             return;
         case 6:
-            if (link_lost(Session_GetPeerMask()) || !SystemPacket_SendSharedRecords(&activity->unk_d8, new_slot_bit())) {
+            if (link_lost(Session_PeerMask()) || !SystemPacket_SendSharedRecords(&activity->unk_d8, new_slot_bit())) {
                 return;
             }
             activity->state = 7;
             return;
         case 7:
-            if (link_lost(Session_GetPeerMask()) || !SystemPacket_SendLinkEntries(data_021f3c1c)) {
+            if (link_lost(Session_PeerMask()) || !SystemPacket_SendLinkEntries(data_021f3c1c)) {
                 return;
             }
             TownPack_StartThread(activity->pack_thread, (void *) 1);
@@ -425,7 +424,7 @@ void ActivityLinkJobs_Step15(Activity *activity)
             activity->state = 8;
             return;
         case 8:
-            if (link_lost(Session_GetPeerMask()) || !TownPack_IsDone(activity->pack_thread)) {
+            if (link_lost(Session_PeerMask()) || !TownPack_IsDone(activity->pack_thread)) {
                 return;
             }
             DC_FlushAll();
@@ -435,13 +434,13 @@ void ActivityLinkJobs_Step15(Activity *activity)
             activity->state = 9;
             return;
         case 9:
-            if (link_lost(Session_GetPeerMask()) || !activity->flag_d9 || !SystemPacket_SendDateTime(new_slot_bit())) {
+            if (link_lost(Session_PeerMask()) || !activity->flag_d9 || !SystemPacket_SendDateTime(new_slot_bit())) {
                 return;
             }
             activity->state = 10;
             return;
         case 10:
-            if (link_lost(Session_GetPeerMask()) || !sendable() || !activity->flag_e4) {
+            if (link_lost(Session_PeerMask()) || !sendable() || !activity->flag_e4) {
                 return;
             }
             Session_SetMode(data_020ccf94, SESSION_MODE_2);
@@ -472,7 +471,7 @@ void ActivityLinkJobs_Step16(Activity *activity)
             if (link_lost(AIDS_HOST)) {
                 return;
             }
-            if (Session_GetMode(data_020ccf94) == SESSION_MODE_1) {
+            if (Session_Mode(data_020ccf94) == SESSION_MODE_1) {
                 add_new_slot();
                 activity->state = 1;
             }
@@ -529,7 +528,7 @@ void ActivityLinkJobs_Step17(Activity *activity)
             if (link_lost(AIDS_HOST) || !ActivityTalk_StartSpinner(activity, 0)) {
                 return;
             }
-            *member_mask(activity) = (u16) Session_GetMemberMask();
+            *member_mask(activity) = (u16) Session_MemberMask();
             activity->state = 1;
             return;
         case 1:
@@ -625,29 +624,29 @@ void ActivityLinkJobs_Step18(Activity *activity)
     NetSession *session;
     switch (activity->state) {
         case 0:
-            if (link_lost(Session_GetPeerMask()) || !ActivityTalk_StartSpinner(activity, 0)) {
+            if (link_lost(Session_PeerMask()) || !ActivityTalk_StartSpinner(activity, 0)) {
                 return;
             }
-            *member_mask(activity) = (u16) Session_GetMemberMask();
+            *member_mask(activity) = (u16) Session_MemberMask();
             ExchangeBlocks_SwapWithRandom(activity);
             PairedTown_PairServed(activity);
             activity->state = 1;
             return;
         case 1:
         case 2:
-            if (link_lost(Session_GetPeerMask())) {
+            if (link_lost(Session_PeerMask())) {
                 return;
             }
             Activity_StepRequestMode1(activity, &activity->state, 1, 0x2e, 0x2e);
             return;
         case 3:
-            if (link_lost(Session_GetPeerMask()) || !Activity_AllPeersReported(activity)) {
+            if (link_lost(Session_PeerMask()) || !Activity_AllPeersReported(activity)) {
                 return;
             }
             activity->state = 4;
             return;
         case 4: {
-            if (link_lost(Session_GetPeerMask()) || !ExchangeBlocks_SendToGuests(activity)) {
+            if (link_lost(Session_PeerMask()) || !ExchangeBlocks_SendToGuests(activity)) {
                 return;
             }
             int leaving = (int) LinkGlobal_ServedSlot();
@@ -667,14 +666,14 @@ void ActivityLinkJobs_Step18(Activity *activity)
         case 9:
         case 10:
         case 11:
-            ActivitySave_HostSteps(activity, &activity->state, 1, 5, 0xf, 0x15, NO_SLOT, 1, Session_GetPeerMask());
+            ActivitySave_HostSteps(activity, &activity->state, 1, 5, 0xf, 0x15, NO_SLOT, 1, Session_PeerMask());
             return;
         case 12:
-            if (link_lost(Session_GetPeerMask())) {
+            if (link_lost(Session_PeerMask())) {
                 return;
             }
             session = data_020ccf94;
-            if (!all_peers_set(session, activity->slot_fc) || Session_GetOwedCredits(session, (int) LinkGlobal_ServedSlot())) {
+            if (!all_peers_set(session, activity->slot_fc) || Session_OwedCredits(session, (int) LinkGlobal_ServedSlot())) {
                 return;
             }
             if (!SystemPacket_SendActivityFlagE5((u16) (1 << LinkGlobal_ServedSlot()))) {
@@ -683,7 +682,7 @@ void ActivityLinkJobs_Step18(Activity *activity)
             activity->state = 13;
             return;
         case 13:
-            if (link_lost(Session_GetPeerMask() ^ (u16) (1 << LinkGlobal_ServedSlot()))) {
+            if (link_lost(Session_PeerMask() ^ (u16) (1 << LinkGlobal_ServedSlot()))) {
                 return;
             }
             if (!sendable() && (unsigned int) Net_CountPlayers() > 1) {
@@ -702,7 +701,7 @@ void ActivityLinkJobs_Step18(Activity *activity)
             activity->state = 14;
             return;
         case 14:
-            if (link_lost(Session_GetPeerMask())) {
+            if (link_lost(Session_PeerMask())) {
                 return;
             }
             session = data_020ccf94;
@@ -729,7 +728,7 @@ void ActivityLinkJobs_Step18(Activity *activity)
         case 23:
         case 24:
         case 25:
-            ActivitySave_EndSteps(activity, &activity->state, 0xf, 0x15, Session_GetPeerMask(), 1);
+            ActivitySave_EndSteps(activity, &activity->state, 0xf, 0x15, Session_PeerMask(), 1);
             return;
         default:
             ActivityTalk_Close(activity);
@@ -765,7 +764,7 @@ void ActivityLinkJobs_Step19(Activity *activity)
             if (link_lost(AIDS_HOST) || !ActivityTalk_StartSpinner(activity, 0)) {
                 return;
             }
-            *member_mask(activity) = (u16) Session_GetMemberMask();
+            *member_mask(activity) = (u16) Session_MemberMask();
             activity->state = 1;
             return;
         case 1:
@@ -796,7 +795,7 @@ void ActivityLinkJobs_Step19(Activity *activity)
             if (link_lost(AIDS_HOST)) {
                 return;
             }
-            if (Session_GetOwedCredits(data_020ccf94, (int) LinkGlobal_ServedSlot()) || !SystemPacket_SendActivityPlayerFC()) {
+            if (Session_OwedCredits(data_020ccf94, (int) LinkGlobal_ServedSlot()) || !SystemPacket_SendActivityPlayerFC()) {
                 return;
             }
             activity->state = 13;
@@ -805,7 +804,7 @@ void ActivityLinkJobs_Step19(Activity *activity)
             if (link_lost(AIDS_HOST) || !sendable()) {
                 return;
             }
-            if (*member_mask(activity) == (u16) Session_GetMemberMask()) {
+            if (*member_mask(activity) == (u16) Session_MemberMask()) {
                 return;
             }
             LinkState_GlobalForgetSlot((int) LinkGlobal_ServedSlot());
@@ -871,7 +870,7 @@ void ActivityLinkJobs_Step1A(Activity *activity)
     NetSession *session;
     switch (activity->state) {
         case 0:
-            if (link_lost(Session_GetPeerMask()) || !ActivityTalk_StartSpinner(activity, 0)) {
+            if (link_lost(Session_PeerMask()) || !ActivityTalk_StartSpinner(activity, 0)) {
                 return;
             }
             if (StartMenu_LeaveChoice()) {
@@ -882,19 +881,19 @@ void ActivityLinkJobs_Step1A(Activity *activity)
             return;
         case 1:
         case 2:
-            if (link_lost(Session_GetPeerMask())) {
+            if (link_lost(Session_PeerMask())) {
                 return;
             }
             Activity_StepRequestMode1(activity, &activity->state, 1, 0x2e, 0x2e);
             return;
         case 3:
-            if (link_lost(Session_GetPeerMask()) || !Activity_AllPeersReported(activity)) {
+            if (link_lost(Session_PeerMask()) || !Activity_AllPeersReported(activity)) {
                 return;
             }
             activity->state = 4;
             return;
         case 4:
-            if (link_lost(Session_GetPeerMask())) {
+            if (link_lost(Session_PeerMask())) {
                 return;
             }
             if (StartMenu_LeaveChoice()) {
@@ -923,10 +922,10 @@ void ActivityLinkJobs_Step1A(Activity *activity)
         case 10:
         case 11:
             ActivitySave_HostSteps(activity, &activity->state, 1, 5, 0x10, 0x16, NO_SLOT, StartMenu_LeaveChoice() != 0,
-                                   Session_GetPeerMask());
+                                   Session_PeerMask());
             return;
         case 12:
-            if (link_lost(Session_GetPeerMask()) || !sendable()) {
+            if (link_lost(Session_PeerMask()) || !sendable()) {
                 return;
             }
             if (!StartMenu_LeaveChoice()) {
@@ -937,7 +936,7 @@ void ActivityLinkJobs_Step1A(Activity *activity)
             }
             return;
         case 14:
-            if (link_lost(Session_GetPeerMask())) {
+            if (link_lost(Session_PeerMask())) {
                 return;
             }
             session = data_020ccf94;
@@ -946,20 +945,20 @@ void ActivityLinkJobs_Step1A(Activity *activity)
             activity->state = 0x1b;
             return;
         case 13:
-            if (link_lost(Session_GetPeerMask())) {
+            if (link_lost(Session_PeerMask())) {
                 return;
             }
             session = data_020ccf94;
             if (!all_peers_set(session, activity->slot_fc) || !no_peer_owes(session)) {
                 return;
             }
-            if (!SystemPacket_SendActivityFlagE5(Session_GetPeerMask())) {
+            if (!SystemPacket_SendActivityFlagE5(Session_PeerMask())) {
                 return;
             }
             activity->state = 15;
             return;
         case 15: {
-            if (link_lost(Session_GetPeerMask())) {
+            if (link_lost(Session_PeerMask())) {
                 return;
             }
             Session_DisableInterrupts();
@@ -984,7 +983,7 @@ void ActivityLinkJobs_Step1A(Activity *activity)
         case 24:
         case 25:
         case 26:
-            ActivitySave_EndSteps(activity, &activity->state, 0x10, 0x16, Session_GetPeerMask(), 1);
+            ActivitySave_EndSteps(activity, &activity->state, 0x10, 0x16, Session_PeerMask(), 1);
             return;
         default:
             ActivityTalk_Close(activity);
@@ -1332,7 +1331,7 @@ void ActivityLinkJobs_Step1E(Activity *activity)
             }
             return;
         case 9:
-            if ((Net_GetConnectedMask() & (1 << Activity_CurrentSlot100())) == 0) {
+            if ((Net_ConnectedMask() & (1 << Activity_CurrentSlot100())) == 0) {
                 if (WfcSession_End(activity)) {
                     LibraryOverlay_Switch68();
                 }

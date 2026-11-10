@@ -126,7 +126,7 @@ Gatekeeper *Gatekeeper_Destruct(Gatekeeper *self)
 CLEAN_AS(func_ov048_02260420, Gatekeeper_Destruct)
 
 /* func_ov048_02260448 (slot 0x44): destructed, then freed to the auxiliary heap. */
-Gatekeeper *Gatekeeper_DestructDelete(Gatekeeper *self)
+Gatekeeper *Gatekeeper_Delete(Gatekeeper *self)
 {
     *(const u8 **) (void *) self = data_ov048_02264298;
     GatekeeperTalk_Destruct(&self->talk);
@@ -134,7 +134,7 @@ Gatekeeper *Gatekeeper_DestructDelete(Gatekeeper *self)
     Heap_FreeAux(self);
     return self;
 }
-CLEAN_AS(func_ov048_02260448, Gatekeeper_DestructDelete)
+CLEAN_AS(func_ov048_02260448, Gatekeeper_Delete)
 
 /* func_ov048_02260474: whether it waits with the missing character: its face's second animation
  * is 0xba, the missing character faces the player in the same pose, and its talk waits for the

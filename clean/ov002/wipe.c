@@ -152,7 +152,7 @@ void Wipe_StartOnWindow0(Wipe *wipe, int layers, int frames, int direction, int 
     Wipe_Start(wipe, frames, (u8) direction, margin);
     DisplayShadow_EnableMainWindows(WINDOW_0);
     DisplayShadow_SetMainWindow0Planes(0x1f);
-    if (DisplayShadow_GetMainWindows() & WINDOW_1) {
+    if (DisplayShadow_MainWindows() & WINDOW_1) {
         DisplayShadow_HideMainOutsidePlanes((u8) layers);
     } else {
         DisplayShadow_SetMainOutsidePlanes((u8) (~layers & 0x1f));

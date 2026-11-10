@@ -17,8 +17,8 @@ call 5301 02117568 r5 0 100 0 00000000 00000000  # autoload_2 MI_CpuFill8 (scrat
 call 5301 020f2368 0 0 0 0 00000000 00000000  # autoload_2 SoundSystem_MasterVolumeFull
 call 5301 020046a5 0 0 0 0 00000000 00000000  # main SoundSys_MasterVolumeFull
 call 5301 0201d419 0 0 0 0 00000000 00000000  # main VillagerTalk_ClearOption
-call 5301 020694f1 0 0 0 0 00000000 00000000  # main TalkTags_Nothing11_4
-call 5301 0206c5f5 0 0 0 0 00000000 00000000  # main TalkPageMeasurer_Nothing11_4
+call 5301 020694f1 0 0 0 0 00000000 00000000  # main TalkTags_NothingGroup11Tag4
+call 5301 0206c5f5 0 0 0 0 00000000 00000000  # main TalkPageMeasurer_NothingGroup11Tag4
 call 5301 0206f53d 0 0 0 0 00000000 00000000  # main StateFlags_Test100
 call 5301 0206f7b1 0 0 0 0 00000000 00000000  # main GroupParams_C88
 call 5301 0206f7c9 0 0 0 0 00000000 00000000  # main GroupParams_ClearC80C88
@@ -38,7 +38,7 @@ call 5301 02099641 r3 0 0 0 00000000 00000000  # main PlayerRecord_VillagerPart 
 call 5301 0209ab79 r1 0 0 0 00000000 00000000  # main VillagerPart_SetType13 (that part)
 call 5301 02036649 0 0 0 0 00000000 00000000  # main SceneMusic_Clock (the scene music's clock)
 call 5301 0203741d r1 0 0 0 00000000 00000000  # main MusicClock_Reset (that clock)
-call 5301 0207813d 021eed68 0 0 0 00000000 00000000  # main Bbs_GetLastNotice (the town's board, data_021eed68)
+call 5301 0207813d 021eed68 0 0 0 00000000 00000000  # main Bbs_LastNotice (the town's board, data_021eed68)
 call 5301 02078131 021eed68 r1 0 0 00000000 00000000  # main Bbs_SetLastNotice (the town's board, its own number)
 call 5301 02096441 r36 r35 r34 0 00000000 00000000  # main SessionPlayers_SplitLowHigh (scratch blocks)
 call 5301 02078449 r37 r36 r35 0 00000000 00000000  # main SessionVillager_UnpackItem (scratch blocks)

@@ -83,8 +83,8 @@ void LinkBundle_SendEntered(int slot)
     LinkBundle_WriteEntered();
     NetSession *session = data_020ccf94;
     Session_BeginMessage(session);
-    u8 *bundle = Session_GetBundle16Buffer(session);
-    u32 length = Session_GetBundle16Length(session);
+    u8 *bundle = Session_Bundle16Buffer(session);
+    u32 length = Session_Bundle16Length(session);
     Session_AppendMessage(session, bundle, (int) length);
     Session_EndMessage(session, MESSAGE_ENTERED_STATE, (u32) slot);
     Session_ClearBundle16Length(session);
@@ -98,8 +98,8 @@ void LinkBundle_SendLeft(int slot)
     LinkBundle_WriteLeft();
     NetSession *session = data_020ccf94;
     Session_BeginMessage(session);
-    u8 *bundle = Session_GetBundle15Buffer(session);
-    u32 length = Session_GetBundle15Length(session);
+    u8 *bundle = Session_Bundle15Buffer(session);
+    u32 length = Session_Bundle15Length(session);
     Session_AppendMessage(session, bundle, (int) length);
     Session_EndMessage(session, MESSAGE_LEFT_STATE, (u32) slot);
     Session_ClearBundle15Length(session);
@@ -110,7 +110,7 @@ CLEAN_AS(func_020a70a8, LinkBundle_SendLeft)
 void LinkBundle_ReadEntered(void)
 {
     NetSession *session = data_020ccf94;
-    read_sections(Session_GetBundle16Buffer(session), data_020d1c30);
+    read_sections(Session_Bundle16Buffer(session), data_020d1c30);
     Session_ClearBundle16Length(session);
 }
 CLEAN_AS(func_020a7454, LinkBundle_ReadEntered)
@@ -125,7 +125,7 @@ void LinkBundle_WriteEntered(void)
 {
     NetSession *session = data_020ccf94;
     Session_ClearBundle16Length(session);
-    u8 *bundle = Session_GetBundle16Buffer(session);
+    u8 *bundle = Session_Bundle16Buffer(session);
     u8 *end = bundle + BUNDLE_HEADER_SIZE;
     int scene = SceneQuery_Current();
     u8 *start = end + sizeof(LinkBundleSection);
@@ -149,7 +149,7 @@ CLEAN_AS(func_020a7538, LinkBundle_WriteEnteredNothing)
 void LinkBundle_ReadLeft(void)
 {
     NetSession *session = data_020ccf94;
-    read_sections(Session_GetBundle15Buffer(session), data_020d1c34);
+    read_sections(Session_Bundle15Buffer(session), data_020d1c34);
     Session_ClearBundle15Length(session);
 }
 CLEAN_AS(func_020a753c, LinkBundle_ReadLeft)
@@ -178,7 +178,7 @@ void LinkBundle_WriteLeft(void)
 {
     NetSession *session = data_020ccf94;
     Session_ClearBundle15Length(session);
-    u8 *bundle = Session_GetBundle15Buffer(session);
+    u8 *bundle = Session_Bundle15Buffer(session);
     u8 *end = bundle + BUNDLE_HEADER_SIZE;
     int scene = SceneQuery_Current();
     for (u32 kind = 0; kind < LEFT_SECTIONS; kind++) {

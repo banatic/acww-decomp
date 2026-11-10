@@ -797,14 +797,14 @@ void AstroTalk_Reset(AstroTalk *talk)
 CLEAN_AS(func_ov046_022612a0, AstroTalk_Reset)
 
 /* func_ov046_022612cc (slot 0x04): destructed, then freed. */
-AstroTalk *AstroTalk_DestructDelete(AstroTalk *talk)
+AstroTalk *AstroTalk_Delete(AstroTalk *talk)
 {
     talk->scene.vtable = data_ov046_0226204c;
     Obj020d9ff8_DestructBody(talk);
     Heap_OperatorDeleteB(talk);
     return talk;
 }
-CLEAN_AS(func_ov046_022612cc, AstroTalk_DestructDelete)
+CLEAN_AS(func_ov046_022612cc, AstroTalk_Delete)
 
 /* func_ov046_022612ec (slot 0x00): the destructor: its class's vtable, then the base class's
  * body. */

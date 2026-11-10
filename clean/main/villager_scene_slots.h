@@ -42,7 +42,7 @@ void VillagerSceneObject_NameInto(u8 *object, char *name);
 int VillagerSceneObject_NpcNumber(u8 *object);
 void VillagerSceneObject_FindRecord(u8 *object);
 u8 *VillagerSceneObject_DestructBody(u8 *object);
-u8 *VillagerSceneObject_DestructDelete(u8 *object);
+u8 *VillagerSceneObject_Delete(u8 *object);
 u8 *VillagerSceneObject_Destruct(u8 *object);
 u8 *VillagerSceneObject_Construct(u8 *object);
 

@@ -264,7 +264,7 @@ PostClerk *PostClerk_Destruct(PostClerk *clerk)
 CLEAN_AS(func_ov054_02260420, PostClerk_Destruct)
 
 /* func_ov054_02260448 (vtable slot 0x44): the same, then the object freed. */
-PostClerk *PostClerk_DestructDelete(PostClerk *clerk)
+PostClerk *PostClerk_Delete(PostClerk *clerk)
 {
     *(const u8 **) (void *) clerk->base = data_ov054_02263094;
     PostClerkTalk_Destruct(&clerk->talk);
@@ -272,7 +272,7 @@ PostClerk *PostClerk_DestructDelete(PostClerk *clerk)
     Heap_FreeAux(clerk);
     return clerk;
 }
-CLEAN_AS(func_ov054_02260448, PostClerk_DestructDelete)
+CLEAN_AS(func_ov054_02260448, PostClerk_Delete)
 
 /* func_ov054_02260474: whether the session is linked (the clerk is not looked at). */
 int PostClerk_IsLinked(PostClerk *clerk)

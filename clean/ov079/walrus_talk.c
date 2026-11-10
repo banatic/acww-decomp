@@ -391,14 +391,14 @@ CLEAN_AS(func_ov079_022794fc, WalrusTalk_IsOfferable)
 /* ---- Its life */
 
 /* func_ov079_02278cfc (slot 0x04): destructed, then freed. */
-WalrusTalk *WalrusTalk_DestructDelete(WalrusTalk *talk)
+WalrusTalk *WalrusTalk_Delete(WalrusTalk *talk)
 {
     talk->scene.vtable = data_ov079_0227a074;
     Obj020d9ff8_DestructBody(talk);
     Heap_OperatorDeleteB(talk);
     return talk;
 }
-CLEAN_AS(func_ov079_02278cfc, WalrusTalk_DestructDelete)
+CLEAN_AS(func_ov079_02278cfc, WalrusTalk_Delete)
 
 /* func_ov079_02278d1c (slot 0x00): the destructor: its class's vtable, then the base class's
  * body. */

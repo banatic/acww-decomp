@@ -335,7 +335,7 @@ int VillagerTalkSubjects_SayByStateKind(VillagerTalk *talk)
     if (data_020e54a8 != 0) {
         return 0;
     }
-    int kind = VillagerState_GetActivity(VillagerStatus_StateEntry(subjects_record(talk)));
+    int kind = VillagerState_Activity(VillagerStatus_StateEntry(subjects_record(talk)));
     if (VillagerModeRecord_IsKindMode((unsigned int) kind) == 0) {
         return 0;
     }

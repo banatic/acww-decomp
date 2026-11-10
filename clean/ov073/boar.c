@@ -193,7 +193,7 @@ Boar *Boar_Destruct(Boar *self)
 CLEAN_AS(func_ov073_02278a00, Boar_Destruct)
 
 /* func_ov073_02278a28 (slot 0x44): destructed, then freed to the auxiliary heap. */
-Boar *Boar_DestructDelete(Boar *self)
+Boar *Boar_Delete(Boar *self)
 {
     *(const u8 **) (void *) self = data_ov073_02279b00;
     BoarTalk_Destruct(&self->talk);
@@ -201,7 +201,7 @@ Boar *Boar_DestructDelete(Boar *self)
     Heap_FreeAux(self);
     return self;
 }
-CLEAN_AS(func_ov073_02278a28, Boar_DestructDelete)
+CLEAN_AS(func_ov073_02278a28, Boar_Delete)
 
 /* func_ov073_02278a54 (slot 0x4c): told of event 0, BOAR_FINISH; told the act starts (3), the
  * talk reset and given the player's object as its motion argument, then BOAR_TALK; told the

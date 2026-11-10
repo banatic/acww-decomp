@@ -78,7 +78,7 @@ typedef struct BarberTalkStart {
 
 /* The class (barber_talk.c). */
 void *BarberTalk_Destruct(void *talk);
-BarberTalk *BarberTalk_DestructDelete(BarberTalk *talk);
+BarberTalk *BarberTalk_Delete(BarberTalk *talk);
 void *BarberTalk_Construct(void *talk);
 void BarberTalk_Begin(BarberTalk *talk, struct Barber *owner);
 u32 BarberTalk_Topic(BarberTalk *talk);

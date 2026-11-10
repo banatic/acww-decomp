@@ -215,7 +215,7 @@ CLEAN_AS(func_0208150c, TownVillager_NpcId)
  * data's scores (`mode_draw` handed on), its house items reset for that mode, its byte 0x7d8
  * (below 10 in mode 2), the marks of its items and its byte 0x7da. Last how it came to the
  * town (`came`). */
-void TownVillager_Setup(u8 *villager, u32 number, int came, const TownName *town, u8 mode_draw)
+void TownVillager_SetUp(u8 *villager, u32 number, int came, const TownName *town, u8 mode_draw)
 {
     const VillagerData *data = NpcLookup_Data((int) number);
     VillagerCatchphraseText text;
@@ -250,7 +250,7 @@ void TownVillager_Setup(u8 *villager, u32 number, int came, const TownName *town
     VillagerStatus_SetCame(villager, (u8) came);
     CatchphraseWide_Destruct((CatchphraseWide *) &text);
 }
-CLEAN_AS(func_02081518, TownVillager_Setup)
+CLEAN_AS(func_02081518, TownVillager_SetUp)
 
 /* func_0208164c: the whole villager copied. */
 void TownVillager_Copy(u8 *dst, const u8 *src)

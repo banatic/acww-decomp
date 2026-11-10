@@ -8,7 +8,7 @@
 #include "types.h"
 
 void *Obj020d8c64_Destruct(void *object);
-void *Obj020d8c64_DestructDelete(void *object);
+void *Obj020d8c64_Delete(void *object);
 
 /* The reaction kept at 0x63e (obj_020d8c64.c): an act number 1 to 59 the object's motion (its
  * member at 0x564) shows, which the current player does not have yet (reaction_slots.h), taken

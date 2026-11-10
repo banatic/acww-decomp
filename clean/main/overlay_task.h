@@ -30,6 +30,6 @@ BOOL OverlayTask_End(void);
 BOOL OverlayTask_Init(OverlayTask *self);
 OverlayTask *OverlayTask_New(void);
 OverlayTask *OverlayTask_Destruct(OverlayTask *self);
-OverlayTask *OverlayTask_DestructDelete(OverlayTask *self);
+OverlayTask *OverlayTask_Delete(OverlayTask *self);
 
 #endif

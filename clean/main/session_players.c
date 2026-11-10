@@ -90,7 +90,7 @@ CLEAN_AS(func_020961c0, SessionPlayers_FreeLookIndex)
 /* func_020961d0: player `player`'s index of looks. */
 int SessionPlayers_LookIndex(int player)
 {
-    return SessionPlayers_GetLook(session_players(), player);
+    return SessionPlayers_Look(session_players(), player);
 }
 CLEAN_AS(func_020961d0, SessionPlayers_LookIndex)
 
@@ -175,7 +175,7 @@ CLEAN_AS(func_0209627c, SessionPlayers_SunDate)
 /* func_02096284: the number of player `player`'s record; 7 for none. */
 u8 SessionPlayers_RecordNumber(int player)
 {
-    return SessionPlayers_GetRecord(session_players(), player);
+    return SessionPlayers_Record(session_players(), player);
 }
 CLEAN_AS(func_02096284, SessionPlayers_RecordNumber)
 
@@ -249,7 +249,7 @@ int SessionPlayers_FirstFreeLook(SessionPlayers *players)
     for (unsigned int index = 0; index < SESSION_PLAYERS_COUNT; index++) {
         int held = 0;
         for (int player = 0; player < SESSION_PLAYERS_COUNT; player++) {
-            if (index == (unsigned int) SessionPlayers_GetLook(players, player)) {
+            if (index == (unsigned int) SessionPlayers_Look(players, player)) {
                 held = 1;
                 break;
             }
@@ -265,14 +265,14 @@ CLEAN_AS(func_02096398, SessionPlayers_FirstFreeLook)
 /* func_020963d4: player `player`'s index of looks; 4 past player 3.
  * REQUIRES: 0 <= player (the ROM reads before the array for a negative one; so do the
  * functions below for theirs). */
-int SessionPlayers_GetLook(SessionPlayers *players, int player)
+int SessionPlayers_Look(SessionPlayers *players, int player)
 {
     if (player < SESSION_PLAYERS_COUNT) {
         return players->look_index[player];
     }
     return SESSION_PLAYERS_NO_LOOK;
 }
-CLEAN_AS(func_020963d4, SessionPlayers_GetLook)
+CLEAN_AS(func_020963d4, SessionPlayers_Look)
 
 /* func_020963e4: player `player`'s index of looks given up. */
 void SessionPlayers_ResetLook(SessionPlayers *players, int player)
@@ -290,14 +290,14 @@ void SessionPlayers_PutLook(SessionPlayers *players, int player, int index)
 CLEAN_AS(func_020963f0, SessionPlayers_PutLook)
 
 /* func_020963f8: the number of player `player`'s record; 7 past player 3. */
-u8 SessionPlayers_GetRecord(SessionPlayers *players, int player)
+u8 SessionPlayers_Record(SessionPlayers *players, int player)
 {
     if (player < SESSION_PLAYERS_COUNT) {
         return players->record_number[player];
     }
     return SESSION_PLAYERS_NO_RECORD;
 }
-CLEAN_AS(func_020963f8, SessionPlayers_GetRecord)
+CLEAN_AS(func_020963f8, SessionPlayers_Record)
 
 /* func_02096408: player `player` given no record. */
 void SessionPlayers_ResetRecord(SessionPlayers *players, int player)
@@ -314,14 +314,14 @@ void SessionPlayers_PutRecord(SessionPlayers *players, int player, int number)
 CLEAN_AS(func_02096414, SessionPlayers_PutRecord)
 
 /* func_0209641c: player `player`'s field actor; NULL past player 3. */
-struct FieldActor *SessionPlayers_GetActor(SessionPlayers *players, int player)
+struct FieldActor *SessionPlayers_Actor(SessionPlayers *players, int player)
 {
     if (player < SESSION_PLAYERS_COUNT) {
         return players->actors[player];
     }
     return NULL;
 }
-CLEAN_AS(func_0209641c, SessionPlayers_GetActor)
+CLEAN_AS(func_0209641c, SessionPlayers_Actor)
 
 /* func_0209642c: player `player`'s field actor gone. */
 void SessionPlayers_ResetActor(SessionPlayers *players, int player)
@@ -371,7 +371,7 @@ CLEAN_AS(func_02096484, SessionPlayers_WriteItemKind)
 
 /* func_0209649c: the writer of the state records (8-11): from this system's field actor, the
  * current scene, its state plus 1, its halfword at 0xc84 and the 8 bytes it saved for its
- * state; without the actor, the state byte 0x94 (no state). SessionRecord_GetSize(id) bytes are
+ * state; without the actor, the state byte 0x94 (no state). SessionRecord_Size(id) bytes are
  * copied into `record`.
  * BUG: without the actor only the state byte is set, and the rest of the record is copied from
  * uninitialised stack bytes; the state byte is left so too when the actor's state is not found
@@ -395,7 +395,7 @@ void SessionPlayers_WriteStateRecord(u8 *record, int id)
     } else {
         built.state = SESSION_PLAYERS_NO_STATE + 1;
     }
-    MI_CpuCopy8(&built, record, SessionRecord_GetSize((u32) id));
+    MI_CpuCopy8(&built, record, SessionRecord_Size((u32) id));
 }
 CLEAN_AS(func_0209649c, SessionPlayers_WriteStateRecord)
 
@@ -515,27 +515,27 @@ CLEAN_AS(func_02096614, SessionPlayers_ScenePoint)
 /* func_020966c4: player `player`'s state record. */
 u8 *SessionPlayers_StateRecord(int player)
 {
-    return Session_GetRecord(data_020ccf94, data_020d1884[player]);
+    return Session_Record(data_020ccf94, data_020d1884[player]);
 }
 CLEAN_AS(func_020966c4, SessionPlayers_StateRecord)
 
 /* func_020966e0: player `player`'s yaw record. */
 u8 *SessionPlayers_YawRecord(int player)
 {
-    return Session_GetRecord(data_020ccf94, data_020d1874[player]);
+    return Session_Record(data_020ccf94, data_020d1874[player]);
 }
 CLEAN_AS(func_020966e0, SessionPlayers_YawRecord)
 
 /* func_020966fc: player `player`'s point record. */
 u8 *SessionPlayers_PointRecord(int player)
 {
-    return Session_GetRecord(data_020ccf94, data_020d1864[player]);
+    return Session_Record(data_020ccf94, data_020d1864[player]);
 }
 CLEAN_AS(func_020966fc, SessionPlayers_PointRecord)
 
 /* func_02096718: player `player`'s field actor (4: this system's player); NULL for none. */
 struct FieldActor *SessionPlayers_FieldActor(int player)
 {
-    return SessionPlayers_GetActor(session_players(), session_players_number(player));
+    return SessionPlayers_Actor(session_players(), session_players_number(player));
 }
 CLEAN_AS(func_02096718, SessionPlayers_FieldActor)

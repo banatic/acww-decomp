@@ -169,7 +169,7 @@ OverlayTask *OverlayTask_Destruct(OverlayTask *self)
 CLEAN_AS(func_0206f49c, OverlayTask_Destruct)
 
 /* func_0206f4bc (slot 17): destructed, then freed to the auxiliary heap. */
-OverlayTask *OverlayTask_DestructDelete(OverlayTask *self)
+OverlayTask *OverlayTask_Delete(OverlayTask *self)
 {
     self->vtable = data_020df548;
     self->vtable = data_020da13c;
@@ -177,4 +177,4 @@ OverlayTask *OverlayTask_DestructDelete(OverlayTask *self)
     Heap_FreeAux(self);
     return self;
 }
-CLEAN_AS(func_0206f4bc, OverlayTask_DestructDelete)
+CLEAN_AS(func_0206f4bc, OverlayTask_Delete)

@@ -49,11 +49,11 @@ static_assert(offsetof(LocalParent, mac) == 2, "a parent's address");
 #define GATEKEEPER_MODE_HOSTING 3
 #define GATEKEEPER_MODE_JOINING 4
 
-/* The local statuses the peers answer with (Session_GetLocalStatus). */
+/* The local statuses the peers answer with (Session_LocalStatus). */
 #define GATEKEEPER_STATUS_ACCEPTED 5
 #define GATEKEEPER_STATUS_REFUSED 6
 
-/* Errors of the network layer (Net_GetError) with a line of their own. */
+/* Errors of the network layer (Net_Error) with a line of their own. */
 #define GATEKEEPER_ERROR_400A 0x400a
 #define GATEKEEPER_ERROR_400B 0x400b
 #define GATEKEEPER_ERROR_800C 0x800c
@@ -144,7 +144,7 @@ static int magnitude(int value)
 
 static int is_wfc_mode(void)
 {
-    return Net_GetMode() == GATEKEEPER_MODE_HOSTING || Net_GetMode() == GATEKEEPER_MODE_JOINING;
+    return Net_Mode() == GATEKEEPER_MODE_HOSTING || Net_Mode() == GATEKEEPER_MODE_JOINING;
 }
 
 static void set_next_state(GatekeeperTalk *talk, int step)
@@ -179,7 +179,7 @@ static void put_error_parts(GatekeeperTalk *talk, int code)
 /* The number of the friends of the session's start table that host a game. */
 static int count_hosting_friends(void)
 {
-    const FriendList *friends = (const FriendList *) (const void *) Session_GetStartTable(data_020ccf94);
+    const FriendList *friends = (const FriendList *) (const void *) Session_StartTable(data_020ccf94);
     int count = 0;
     for (int i = 0; i < FRIEND_COUNT; i++) {
         if (friends->status[i].status == GATEKEEPER_FRIEND_HOSTING) {
@@ -243,7 +243,7 @@ int GatekeeperTalk_LineOfSession(GatekeeperTalk *talk)
     if (Session_IsLinked(session)) {
         return 0x17;
     }
-    return Net_GetMode() == GATEKEEPER_MODE_HOSTING ? 0x3a : 0x38;
+    return Net_Mode() == GATEKEEPER_MODE_HOSTING ? 0x3a : 0x38;
 }
 CLEAN_AS(func_ov048_02260a24, GatekeeperTalk_LineOfSession)
 
@@ -260,7 +260,7 @@ int GatekeeperTalk_LineOfChoice(GatekeeperTalk *talk)
             u64 key;
             LibraryOverlay_Switch65();
             line = 0x26;
-            key = Wfc_GetUserKey(WifiAccount_GetUserData(PlayerRecord_WifiAccount(PlayerRecords_Current())));
+            key = Wfc_GetUserKey(WifiAccount_UserData(PlayerRecord_WifiAccount(PlayerRecords_Current())));
             GatekeeperTalk_PutFriendCode(talk, key);
             LibraryOverlay_Switch68();
             break;
@@ -358,8 +358,8 @@ int GatekeeperTalk_TimeOutOrError(GatekeeperTalk *talk)
         GatekeeperTalk_EndWithLine(talk, 0x7a, 1);
         return 1;
     }
-    if (Net_GetError() != 0) {
-        int line = GatekeeperTalk_PutErrorCode(talk, magnitude(Net_GetErrorDetail()));
+    if (Net_Error() != 0) {
+        int line = GatekeeperTalk_PutErrorCode(talk, magnitude(Net_ErrorDetail()));
         GatekeeperTalk_EndWithLine(talk, line, 1);
         return 1;
     }
@@ -398,7 +398,7 @@ CLEAN_AS(func_ov048_02260f30, GatekeeperTalk_TimeOutByMode)
  * ended. */
 int GatekeeperTalk_CheckError(GatekeeperTalk *talk, int lost)
 {
-    int error = Net_GetError();
+    int error = Net_Error();
 
     if (error == 0 && lost == 0) {
         return 0;
@@ -408,7 +408,7 @@ int GatekeeperTalk_CheckError(GatekeeperTalk *talk, int lost)
         return 1;
     }
     {
-        int code = magnitude(Net_GetErrorDetail());
+        int code = magnitude(Net_ErrorDetail());
         int high = code / 1000;
         MessageText46 thousands;
         MessageText46 units;
@@ -438,7 +438,7 @@ CLEAN_AS(func_ov048_02260f64, GatekeeperTalk_CheckError)
 /* func_ov048_022614ac: whether the error detail is a server's, 98000-98999. */
 int GatekeeperTalk_IsServerError(void)
 {
-    return Math_IsBetween(magnitude(Net_GetErrorDetail()), 98000, 98999) != 0;
+    return Math_IsBetween(magnitude(Net_ErrorDetail()), 98000, 98999) != 0;
 }
 CLEAN_AS(func_ov048_022614ac, GatekeeperTalk_IsServerError)
 
@@ -599,8 +599,8 @@ void GatekeeperTalk_WaitConnected(GatekeeperTalk *talk)
     if (!Net_UpdateConnection()) {
         return;
     }
-    if (Net_GetMode() != GATEKEEPER_MODE_HOSTING) {
-        Net_GetMode();
+    if (Net_Mode() != GATEKEEPER_MODE_HOSTING) {
+        Net_Mode();
     }
     talk->owner->countdown = GATEKEEPER_WAIT_LOCAL;
     GatekeeperTalk_SetState(talk, GATEKEEPER_TALK_SEND_STATUS_0);
@@ -653,7 +653,7 @@ void GatekeeperTalk_WaitStatus0(GatekeeperTalk *talk)
         return;
     }
 
-    status = Session_GetLocalStatus();
+    status = Session_LocalStatus();
     if (status == GATEKEEPER_STATUS_ACCEPTED) {
         u16 members;
         if (MiddleSpot_HasMark((const MiddleSpot *) (const void *) Block021d27ac_Part0C(Block021d27ac_Get()))) {
@@ -676,11 +676,11 @@ void GatekeeperTalk_WaitStatus0(GatekeeperTalk *talk)
         return;
     }
 
-    if (status != GATEKEEPER_STATUS_REFUSED && Net_GetError() != GATEKEEPER_ERROR_800C) {
+    if (status != GATEKEEPER_STATUS_REFUSED && Net_Error() != GATEKEEPER_ERROR_800C) {
         return;
     }
     Session_FinishLocalStatus();
-    if (Net_GetError() == GATEKEEPER_ERROR_800C) {
+    if (Net_Error() == GATEKEEPER_ERROR_800C) {
         GatekeeperTalk_EndWithLine(talk, 0x79, 1);
     } else {
         GatekeeperTalk_EndWithLine(talk, GatekeeperTalk_Line80Or63(talk), 0);
@@ -704,7 +704,7 @@ CLEAN_AS(func_ov048_02260b4c, GatekeeperTalk_SendStatus1)
 void GatekeeperTalk_WaitStatus1(GatekeeperTalk *talk)
 {
     TalkObject *object = talk_object(talk);
-    int status = Session_GetLocalStatus();
+    int status = Session_LocalStatus();
 
     if (status != GATEKEEPER_STATUS_ACCEPTED && status != GATEKEEPER_STATUS_REFUSED) {
         return;
@@ -736,7 +736,7 @@ void GatekeeperTalk_WaitFriends(GatekeeperTalk *talk)
         return;
     }
     LibraryOverlay_Require65();
-    if (Wfc_GetFriendList() == NULL) {
+    if (Wfc_FriendList() == NULL) {
         return;
     }
     if (talk->choice == 0) {
@@ -845,13 +845,13 @@ CLEAN_AS(func_ov048_022615a4, GatekeeperTalk_FinishNoticeGet)
 void GatekeeperTalk_AfterDownloads(GatekeeperTalk *talk)
 {
     NetSession *session = data_020ccf94;
-    u8 *header = Session_GetStartHeader(session);
+    u8 *header = Session_StartHeader(session);
     u8 *record = PlayerRecords_Current();
     u8 *user_data = header + 0x20;
     int line;
 
     if (shown_line(talk) == 0x62) {
-        const u8 *friends = Session_GetStartTable(session);
+        const u8 *friends = Session_StartTable(session);
         int index;
         u8 status;
 
@@ -872,10 +872,10 @@ void GatekeeperTalk_AfterDownloads(GatekeeperTalk *talk)
     }
 
     if (Wfc_TakeDirty(user_data)) {
-        WifiFriendData *friend_data = WifiFriendData_GetData(WifiAccount_GetFriendData(PlayerRecord_WifiAccount(record)));
+        WifiFriendData *friend_data = WifiFriendData_Data(WifiAccount_FriendData(PlayerRecord_WifiAccount(record)));
         u8 *account_data;
         Wfc_Call0210111c(user_data, friend_data);
-        account_data = WifiAccount_GetUserData(PlayerRecord_WifiAccount(record));
+        account_data = WifiAccount_UserData(PlayerRecord_WifiAccount(record));
         MI_CpuCopy8(user_data, account_data, 0x40);
         line = CardSave_WriteAccount() ? 2 : 0x75;
     } else {

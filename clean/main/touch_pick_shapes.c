@@ -334,7 +334,7 @@ static void touch_pick_ground_flat(TouchPick *pick, Vec3 *from, Vec3 *to)
         for (int z = z_low; z <= z_high; z++) {
             CollisionGround ground;
             CollisionGround_InitAtUnit(&ground, x, z, 0, 0);
-            fx32 height = CollisionGround_GetHeight(&ground, 0);
+            fx32 height = CollisionGround_Height(&ground, 0);
             if (height < 0x4000 && height != 0) {
                 fx32 middle_z = unit_middle(z);
                 fx32 low_x = middle_x - COLLISION_HALF_UNIT;

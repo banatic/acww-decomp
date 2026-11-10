@@ -23,7 +23,7 @@
  * (missing_npc1.h) and the activity's job 0x13 (activity_job.h).
  *
  * A wait counts down the gatekeeper's halfword at 0xe6e (Countdown_Tick16): at 0 the talk shows
- * a line and the state ends. Errors of the network layer (Net_GetError) end it the same way. */
+ * a line and the state ends. Errors of the network layer (Net_Error) end it the same way. */
 #ifndef CLEAN_OV048_GATEKEEPER_TALK_H
 #define CLEAN_OV048_GATEKEEPER_TALK_H
 

@@ -66,7 +66,7 @@ extern const MemberPointer data_ov116_0229e890; /* InsectCatalog_FinishRelease *
 extern const MemberPointer data_ov116_0229e850; /* InsectCatalog_StartScrollByKeys */
 extern const MemberPointer data_ov116_0229e848; /* InsectCatalog_ScrollWhileHeld */
 extern const MemberPointer data_ov116_0229e8a0; /* InsectCatalog_EndScrollByKeys */
-extern const MemberPointer data_ov116_0229e840; /* InsectCatalog_Setup */
+extern const MemberPointer data_ov116_0229e840; /* InsectCatalog_SetUp */
 extern const MemberPointer data_ov116_0229e8a8; /* InsectCatalog_WipeIn */
 extern const MemberPointer data_ov116_0229e868; /* InsectCatalog_StartWipeOut */
 extern const MemberPointer data_ov116_0229e898; /* InsectCatalog_WipeOut */
@@ -78,7 +78,7 @@ static MenuScene *scene_of(CatalogScene *self)
 
 static MenuTabs *menu_of(CatalogScene *self)
 {
-    return (MenuTabs *) (void *) Process_GetParent((Process *) (void *) self);
+    return (MenuTabs *) (void *) Process_Parent((Process *) (void *) self);
 }
 
 /* The cursor sprite's update through its class (vtable slot 3, Glider_Update for the base),
@@ -488,12 +488,12 @@ void InsectCatalog_BeginInteractiveFrame(CatalogScene *self)
 CLEAN_AS(func_ov116_0229e354, InsectCatalog_BeginInteractiveFrame)
 
 /* func_ov116_0229e36c: the list's end, the label's box closed. */
-void InsectCatalog_Teardown(CatalogScene *self)
+void InsectCatalog_TearDown(CatalogScene *self)
 {
-    CatalogList_Teardown(&self->list);
+    CatalogList_TearDown(&self->list);
     InsectCatalog_CloseLabel(self);
 }
-CLEAN_AS(func_ov116_0229e36c, InsectCatalog_Teardown)
+CLEAN_AS(func_ov116_0229e36c, InsectCatalog_TearDown)
 
 /* func_ov116_0229e384: no flags; the list started on the three layers with the insects. */
 void InsectCatalog_Init(CatalogScene *self)
@@ -555,7 +555,7 @@ CLEAN_AS(func_ov116_0229e454, InsectCatalog_WipeIn)
 /* func_ov116_0229e47c (state 0): the layers set up, the list's files loaded, the wipe in
  * started covered on window 2 (layers 0xb, margin 0x30), layers 3 and 6 shown, the scene
  * drawn; then state 1. */
-void InsectCatalog_Setup(CatalogScene *self)
+void InsectCatalog_SetUp(CatalogScene *self)
 {
     InsectCatalog_SetUpLayers();
     InsectCatalog_LoadBackground(self);
@@ -567,7 +567,7 @@ void InsectCatalog_Setup(CatalogScene *self)
     InsectCatalog_ScrollLayers(self);
     MenuScene_SetState(scene_of(self), CATALOG_SCENE_STATE_WIPE_IN);
 }
-CLEAN_AS(func_ov116_0229e47c, InsectCatalog_Setup)
+CLEAN_AS(func_ov116_0229e47c, InsectCatalog_SetUp)
 
 /* func_ov116_0229e4cc: a switch to `tab` of the menu (MenuTabs_SelectTab of the parent), unless
  * it is none (-1) or this tab: then the scene wipes out (state 2, phase 1). Answers whether it
@@ -712,7 +712,7 @@ CLEAN_AS(func_ov116_0229e748, InsectCatalog_Draw)
 int InsectCatalog_End(CatalogScene *self)
 {
     MenuTabs_ChildClosed(menu_of(self));
-    InsectCatalog_Teardown(self);
+    InsectCatalog_TearDown(self);
     return 1;
 }
 CLEAN_AS(func_ov116_0229e7a4, InsectCatalog_End)

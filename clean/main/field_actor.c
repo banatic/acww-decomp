@@ -59,7 +59,7 @@ extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)
 extern u32 func_0200e92c(void *request);
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
 
-/* What FieldActor_Shutdown releases. */
+/* What FieldActor_ShutDown releases. */
 extern NetSession *data_020ccf94;
 
 /* The queue of state requests at 0x934: 30 of 0x1c bytes. */
@@ -101,11 +101,11 @@ CLEAN_AS(func_02004bbc, FieldActor_New)
 /* func_02004bf4: vtable slot 0x0c, run when the actor goes away (func_020051b4). QUIRK: the
  * original ends in a call to it and so gives back its result; like the matching source, this
  * returns none. */
-void FieldActor_Teardown(struct FieldActor *actor)
+void FieldActor_TearDown(struct FieldActor *actor)
 {
-    FieldActor_Shutdown(actor);
+    FieldActor_ShutDown(actor);
 }
-CLEAN_AS(func_02004bf4, FieldActor_Teardown)
+CLEAN_AS(func_02004bf4, FieldActor_TearDown)
 
 /* func_02004bfc: vtable slot 0x24 (func_02005338), then 1. */
 int FieldActor_Vfunc24(struct FieldActor *actor)
@@ -125,12 +125,12 @@ int FieldActor_Update(struct FieldActor *actor)
 CLEAN_AS(func_02004c0c, FieldActor_Update)
 
 /* func_02004c1c: vtable slot 0x00, the set-up once the actor is made (FieldActor_Init). QUIRK:
- * as FieldActor_Teardown, the original gives back the callee's result and this none. */
-void FieldActor_Setup(struct FieldActor *actor)
+ * as FieldActor_TearDown, the original gives back the callee's result and this none. */
+void FieldActor_SetUp(struct FieldActor *actor)
 {
     FieldActor_Init(actor);
 }
-CLEAN_AS(func_02004c1c, FieldActor_Setup)
+CLEAN_AS(func_02004c1c, FieldActor_SetUp)
 
 /* The members are destroyed in the reverse order of their places, then the message receiver
  * and the base. */
@@ -275,11 +275,11 @@ static struct FieldActor *actor_of(void *receiver)
 }
 
 /* func_0201160c */
-struct FieldActor *FieldActorReceiver_DestructDelete(void *receiver)
+struct FieldActor *FieldActorReceiver_Delete(void *receiver)
 {
     return FieldActor_DestructDelete(actor_of(receiver));
 }
-CLEAN_AS(_ZThn236_N12Obj_020d82b4D0Ev, FieldActorReceiver_DestructDelete)
+CLEAN_AS(_ZThn236_N12Obj_020d82b4D0Ev, FieldActorReceiver_Delete)
 
 /* func_02011628 */
 void FieldActorReceiver_TalkClosing(void *receiver)
@@ -316,12 +316,12 @@ void *FieldActorReceiver_Destruct(void *receiver)
 }
 CLEAN_AS(_ZThn236_N12Obj_020d82b4D1Ev, FieldActorReceiver_Destruct)
 
-/* func_020051b4: run when the actor goes away (FieldActor_Teardown). In state 0x6d its effect
+/* func_020051b4: run when the actor goes away (FieldActor_TearDown). In state 0x6d its effect
  * is ended; the session's and the members' resources are released; and flags 0x1a
  * (func_02035638 0x3f), 0xa (the sound emitter that plays: 0x83c with flag 0x19, else 0x880)
  * and 0x1b (func_020b8db4) are undone. Returns 1.
  * QUIRK: the player number plus 8 goes to func_020771cc as its first argument. */
-int FieldActor_Shutdown(struct FieldActor *actor)
+int FieldActor_ShutDown(struct FieldActor *actor)
 {
     if (actor->state == 0x6d && actor->work.s6d.effect != -1) {
         EffectSystem_EndHandle(actor->work.s6d.effect);
@@ -364,9 +364,9 @@ int FieldActor_Shutdown(struct FieldActor *actor)
     }
     return 1;
 }
-CLEAN_AS(func_020051b4, FieldActor_Shutdown)
+CLEAN_AS(func_020051b4, FieldActor_ShutDown)
 
-/* ---- The set-up once the actor is made (FieldActor_Setup): its player and looks from the
+/* ---- The set-up once the actor is made (FieldActor_SetUp): its player and looks from the
  * word it was made with, its models, and state 0 queued with the state it starts in. */
 
 /* The player's looks by the player's index (func_020961d0): the member at 0x7a0, the parts at
@@ -391,7 +391,7 @@ extern int func_021077e8(int value);
 /* func_0200e42c: the set-up; returns 1. The player is bits 30 and 31 of the word at 8
  * (func_02096188); it is noted at 0xdc (func_0203efb0) and with the session's players
  * (func_020962c8). The looks and models are set up from the player's tables, with the
- * player record's items (FieldActor_SetupLooks, FieldActor_SetupPartB, FieldActor_SetupAccessory),
+ * player record's items (FieldActor_SetUpLooks, FieldActor_SetUpPartB, FieldActor_SetUpAccessory),
  * and the held item (func_0205ec50). Gravity is -5.0 a step, the vertical speed at least -10.0;
  * state 0 is asked for with the start state (bits 22 to 29, func_02096180; priority 9) and the
  * requests are taken at once. The flags are 1 (and 0 outdoors); the start position is the
@@ -408,17 +408,17 @@ int FieldActor_Init(struct FieldActor *actor)
     ActorPalettes_SetSlot(at(actor, 0x7a0), data_020c75c4[SessionPlayers_LookIndex(actor->player)]);
     int index = FieldActor_RecordHairColor(actor);
     FieldActor_SetPalettes(actor, index, FieldActor_SunLevel(actor, 1));
-    FieldActor_SetupLooks(actor);
+    FieldActor_SetUpLooks(actor);
     FaceAnimHeaps_Assign(at(actor, 0x70f), data_020c75d4[SessionPlayers_LookIndex(actor->player)]);
     FaceAnimSlots_Assign(at(actor, 0x70e), data_020c75dc[SessionPlayers_LookIndex(actor->player)]);
     FaceTexture_Assign(at(actor, 0x70d), data_020c75cc[SessionPlayers_LookIndex(actor->player)]);
     FaceTexture_Load(at(actor, 0x70d), FieldActor_RecordFace(actor));
-    FieldActor_SetupPartB(actor);
-    FieldActor_SetupAccessory(actor);
+    FieldActor_SetUpPartB(actor);
+    FieldActor_SetUpAccessory(actor);
     index = SessionPlayers_LookIndex(actor->player);
     u16 item;
     FieldActor_RecordHeldItem(&item, actor);
-    HeldItem_Setup((HeldItemObject *) (void *) actor->held, data_020c75e0[index], actor, &item, FieldActor_Record(actor), 0);
+    HeldItem_SetUp((HeldItemObject *) (void *) actor->held, data_020c75e0[index], actor, &item, FieldActor_Record(actor), 0);
     FishingFloat_SetPlayer((FishingFloat *) (void *) at(actor, 0x5c8), actor->player);
     base->gravity = -0x5000;
     base->min_y_velocity = -0xa000;
@@ -448,7 +448,7 @@ CLEAN_AS(func_0200e42c, FieldActor_Init)
 
 /* func_0200e654: the accessory (0x59c) from the player's table data_020c75c8, then its item from the
  * player's record (FieldActor_RecordAccessoryItem) goes to FieldActor_RequestAccessory, and FieldActor_ApplyAccessory. */
-void FieldActor_SetupAccessory(struct FieldActor *actor)
+void FieldActor_SetUpAccessory(struct FieldActor *actor)
 {
     u16 item;
     AccessoryLook_SetLook(at(actor, FIELD_ACTOR_ACCESSORY), data_020c75c8[SessionPlayers_LookIndex(actor->player)]);
@@ -457,12 +457,12 @@ void FieldActor_SetupAccessory(struct FieldActor *actor)
     FieldActor_RequestAccessory(actor, &copy);
     FieldActor_ApplyAccessory(actor);
 }
-CLEAN_AS(func_0200e654, FieldActor_SetupAccessory)
+CLEAN_AS(func_0200e654, FieldActor_SetUpAccessory)
 
 /* func_0200e6a4: part B (0x428) from the player's table data_020c75e4, then its item from the
  * player's record (FieldActor_RecordHeadItem, 0xfff1 without a record) goes to FieldActor_RequestHead with
  * FieldActor_RecordHeadKind's and FieldActor_RecordHairColor's values. */
-void FieldActor_SetupPartB(struct FieldActor *actor)
+void FieldActor_SetUpPartB(struct FieldActor *actor)
 {
     u16 item;
     HeadLook_SetLook(at(actor, FIELD_ACTOR_PART_B), data_020c75e4[SessionPlayers_LookIndex(actor->player)]);
@@ -472,14 +472,14 @@ void FieldActor_SetupPartB(struct FieldActor *actor)
     int b = FieldActor_RecordHairColor(actor);
     FieldActor_RequestHead(actor, &copy, a, b, 1);
 }
-CLEAN_AS(func_0200e6a4, FieldActor_SetupPartB)
+CLEAN_AS(func_0200e6a4, FieldActor_SetUpPartB)
 
 /* func_0200e704: the looks at 0x389 (from data_020c75d8, then whether FieldActor_RecordIsFemale) and 0x774
  * (from data_020c75d0), the record's item at FieldActor_RecordCloth to FieldActor_SetCloth, and the pairs of
  * func_021077e8 of the looks handed to FieldActor_CopyTexture and FieldActor_CopyPalette (0x774 with 0x389, with
  * data_020d83e8) and to FieldActor_CopyPalette (0x7a0 with 0x389, with data_020d83f0); then
  * func_0205d034 on 0x389. */
-void FieldActor_SetupLooks(struct FieldActor *actor)
+void FieldActor_SetUpLooks(struct FieldActor *actor)
 {
     u16 item;
     BodyLook_SetLook(at(actor, 0x389), data_020c75d8[SessionPlayers_LookIndex(actor->player)]);
@@ -497,4 +497,4 @@ void FieldActor_SetupLooks(struct FieldActor *actor)
     FieldActor_CopyPalette(actor, look_7a0, look_389, &data_020d83f0, &data_020d83f0);
     BodyLook_PlaceTexture(at(actor, 0x389));
 }
-CLEAN_AS(func_0200e704, FieldActor_SetupLooks)
+CLEAN_AS(func_0200e704, FieldActor_SetUpLooks)

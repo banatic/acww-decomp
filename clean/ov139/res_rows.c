@@ -310,14 +310,14 @@ void ResRows_QueuePalette(ResRows *self)
 CLEAN_AS(func_ov139_02299a80, ResRows_QueuePalette)
 
 /* func_ov139_02299ac0: the labels let go and the layer task ended. */
-void ResRows_Teardown(ResRows *self)
+void ResRows_TearDown(ResRows *self)
 {
     ResRows_ReleaseLabels(self);
     LayerTask_End(&self->palette_task);
 }
-CLEAN_AS(func_ov139_02299ac0, ResRows_Teardown)
+CLEAN_AS(func_ov139_02299ac0, ResRows_TearDown)
 
-/* func_ov139_02299adc: the same as ResRows_Teardown. */
+/* func_ov139_02299adc: the same as ResRows_TearDown. */
 void ResRows_End(ResRows *self)
 {
     ResRows_ReleaseLabels(self);

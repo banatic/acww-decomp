@@ -19,7 +19,7 @@ static int current_job_is(u32 job)
 
 /* func_020a17a8: the current activity runs job 0x1f and is at step 15 or 20 of it, the steps
  * where ActivitySave_EndSteps shows its end messages 10 and 11 (overlay 54 asks). */
-int ActivityJob_1FShowingEndMessage(void)
+int ActivityJob_ShowingEndMessage1f(void)
 {
     if (current_job_is(0x1f)) {
         u8 step = data_021f3c3c->state;
@@ -29,7 +29,7 @@ int ActivityJob_1FShowingEndMessage(void)
     }
     return 0;
 }
-CLEAN_AS(func_020a17a8, ActivityJob_1FShowingEndMessage)
+CLEAN_AS(func_020a17a8, ActivityJob_ShowingEndMessage1f)
 
 /* func_020a17d0: the current activity runs no job (overlay 54 asks).
  * QUIRK: func_020a1810, func_020a182c and func_020a186c are the same function. */

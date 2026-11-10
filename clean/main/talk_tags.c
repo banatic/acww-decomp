@@ -238,11 +238,11 @@ void TalkTags_NotePart0(TalkTagsWalker *walker)
 CLEAN_AS(func_020694dc, TalkTags_NotePart0)
 
 /* func_020694f0 (tag 11/4): the empty func_0206b980. */
-void TalkTags_Nothing11_4(void)
+void TalkTags_NothingGroup11Tag4(void)
 {
     TalkTags_NoteNothing();
 }
-CLEAN_AS(func_020694f0, TalkTags_Nothing11_4)
+CLEAN_AS(func_020694f0, TalkTags_NothingGroup11Tag4)
 
 /* func_020694f8 (tag 11/3): the next character shown is first turned into its other form. */
 void TalkTags_ConvertNext(TalkTagsWalker *walker)
@@ -266,11 +266,11 @@ void TalkTags_SetE0One(TalkTagsWalker *walker)
 CLEAN_AS(func_02069508, TalkTags_SetE0One)
 
 /* func_02069510 (tag 10/0): nothing. */
-void TalkTags_Nothing10_0(void *walker)
+void TalkTags_NothingGroup10Tag0(void *walker)
 {
     (void) walker;
 }
-CLEAN_AS(func_02069510, TalkTags_Nothing10_0)
+CLEAN_AS(func_02069510, TalkTags_NothingGroup10Tag0)
 
 /* func_02069514 (tag 9/9): the scene passes the turn to the next speaker. */
 void TalkTags_PassTurn(TalkTagsWalker *walker)
@@ -346,25 +346,25 @@ void TalkTags_FocusPlayer(TalkTagsWalker *walker)
 CLEAN_AS(func_02069634, TalkTags_FocusPlayer)
 
 /* func_02069654 (tag 8/2): nothing. */
-void TalkTags_Nothing8_2(void *walker)
+void TalkTags_NothingGroup8Tag2(void *walker)
 {
     (void) walker;
 }
-CLEAN_AS(func_02069654, TalkTags_Nothing8_2)
+CLEAN_AS(func_02069654, TalkTags_NothingGroup8Tag2)
 
 /* func_02069658 (tag 8/1): nothing. */
-void TalkTags_Nothing8_1(void *walker)
+void TalkTags_NothingGroup8Tag1(void *walker)
 {
     (void) walker;
 }
-CLEAN_AS(func_02069658, TalkTags_Nothing8_1)
+CLEAN_AS(func_02069658, TalkTags_NothingGroup8Tag1)
 
 /* func_0206965c (tag 8/0): nothing. */
-void TalkTags_Nothing8_0(void *walker)
+void TalkTags_NothingGroup8Tag0(void *walker)
 {
     (void) walker;
 }
-CLEAN_AS(func_0206965c, TalkTags_Nothing8_0)
+CLEAN_AS(func_0206965c, TalkTags_NothingGroup8Tag0)
 
 /* func_02069660 (tag 6/13): the tag's bytes are a species plus 1 and two messages: the second
  * when the villager talked to is not of that species, else the first. Without a villager, a
@@ -678,8 +678,8 @@ void TalkTags_PutPraise(TalkTagsWalker *walker)
 CLEAN_AS(func_02069d8c, TalkTags_PutPraise)
 
 /* func_02069e10 (tag 4/32): nothing. */
-void TalkTags_Nothing4_32(void) {}
-CLEAN_AS(func_02069e10, TalkTags_Nothing4_32)
+void TalkTags_NothingGroup4Tag32(void) {}
+CLEAN_AS(func_02069e10, TalkTags_NothingGroup4Tag32)
 
 /* func_02069e14 (tag 4/31): the nickname the villager gives the player (func_0206777c). */
 void TalkTags_PutNickname(TalkTagsWalker *walker)
@@ -1409,7 +1409,7 @@ void TalkTags_DispatchGroup11(TalkTagsWalker *walker)
 }
 CLEAN_AS(func_0206ace4, TalkTags_DispatchGroup11)
 
-/* func_0206ae64 (group 10): kind 0 only (TalkTags_Nothing10_0). */
+/* func_0206ae64 (group 10): kind 0 only (TalkTags_NothingGroup10Tag0). */
 void TalkTags_DispatchGroup10(TalkTagsWalker *walker)
 {
     static const MemberPointer *const constants[1] = {&data_020de8cc};

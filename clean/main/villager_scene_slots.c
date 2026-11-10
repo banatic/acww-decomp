@@ -377,13 +377,13 @@ u8 *VillagerSceneObject_DestructBody(u8 *object)
 CLEAN_AS(func_0202e5e0, VillagerSceneObject_DestructBody)
 
 /* func_0202e6e0 (slot 0x44): destructed, then freed to the auxiliary heap. */
-u8 *VillagerSceneObject_DestructDelete(u8 *object)
+u8 *VillagerSceneObject_Delete(u8 *object)
 {
     vso_destruct(object);
     Heap_FreeAux(object);
     return object;
 }
-CLEAN_AS(func_0202e6e0, VillagerSceneObject_DestructDelete)
+CLEAN_AS(func_0202e6e0, VillagerSceneObject_Delete)
 
 /* func_0202e7e4 (slot 0x40): the destructor. */
 u8 *VillagerSceneObject_Destruct(u8 *object)

@@ -244,13 +244,13 @@ void *SpecialSceneObject_DestructBody(void *object)
 CLEAN_AS(func_0202ee5c, SpecialSceneObject_DestructBody)
 
 /* func_0202ef38 (slot 0x44): destructed, then freed to the auxiliary heap. */
-void *SpecialSceneObject_DestructDelete(void *object)
+void *SpecialSceneObject_Delete(void *object)
 {
     sso_destruct(object);
     Heap_FreeAux(object);
     return object;
 }
-CLEAN_AS(func_0202ef38, SpecialSceneObject_DestructDelete)
+CLEAN_AS(func_0202ef38, SpecialSceneObject_Delete)
 
 /* func_0202f018 (slot 0x40): the destructor. */
 void *SpecialSceneObject_Destruct(void *object)

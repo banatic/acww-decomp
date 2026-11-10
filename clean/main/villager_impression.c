@@ -84,7 +84,7 @@ int VillagerImpression_Choose(u8 *villager, s8 *memory, u8 *record)
     }
     if (memory != NULL) {
         int fondness = VillagerMemoryEntry_Fondness((VillagerMemory *) (void *) memory);
-        impression = VillagerImpression_Pick(record, fondness, VillagerState_GetMood(VillagerStatus_StateEntry(villager)));
+        impression = VillagerImpression_Pick(record, fondness, VillagerState_Mood(VillagerStatus_StateEntry(villager)));
         VillagerMemoryEntry_SetImpression((VillagerMemory *) (void *) memory, (u8) impression);
     }
     return impression;

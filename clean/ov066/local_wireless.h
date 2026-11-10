@@ -16,7 +16,7 @@
 /* The library's states (LocalControl.state). The names of 2 to 4 are WM's states after the WM
  * call that reaches them; 5 to 11 from the code that sets them. */
 enum LocalState {
-    LOCAL_STATE_NONE = 0,            /* shut down (LocalWireless_Shutdown) */
+    LOCAL_STATE_NONE = 0,            /* shut down (LocalWireless_ShutDown) */
     LOCAL_STATE_SET_UP = 1,          /* the control block is set up, WM not initialised */
     LOCAL_STATE_WM_READY = 2,        /* WM initialised and disabled (WM_Disable) */
     LOCAL_STATE_WM_STOP = 3,         /* WM enabled, its radio off (WM_Enable, WM_PowerOff) */
@@ -242,10 +242,10 @@ void LocalWireless_StepStop(void);
 void LocalWireless_StepReady(void);
 int LocalWireless_Request(int request, LocalDoneHandler *on_done, void *argument);
 int LocalWireless_IsRequestDone(void);
-int LocalWireless_Shutdown(void);
+int LocalWireless_ShutDown(void);
 int LocalWireless_Init(int wm_dma, LocalAllocator *alloc, LocalFree *release, LocalErrorHandler *on_error);
 void LocalWireless_ResetControl(u8 wm_dma);
-int LocalWireless_GetState(void);
+int LocalWireless_State(void);
 void LocalWireless_SetReceiveHandler(LocalReceiveHandler *handler);
 int LocalWireless_IsMacSet(const u8 *mac);
 

@@ -144,7 +144,7 @@ static CellLayerSprite *psw_cursor_cells(PocketsSwap *self)
 
 static Process *psw_parent(PocketsSwap *self)
 {
-    return Process_GetParent((Process *) (void *) self);
+    return Process_Parent((Process *) (void *) self);
 }
 
 /* The cursor sprite's update through its class (vtable slot 3). */
@@ -1541,20 +1541,20 @@ void PocketsSwap_BeginInteractiveFrame(PocketsSwap *self)
 CLEAN_AS(func_ov107_0229dbfc, PocketsSwap_BeginInteractiveFrame)
 
 /* func_ov107_0229dc18: the members' teardown before the scene closes. */
-void PocketsSwap_Teardown(PocketsSwap *self)
+void PocketsSwap_TearDown(PocketsSwap *self)
 {
     PocketsSwap_EndLayerTask(self);
-    PocketsWallet_Teardown(&self->wallet);
-    PocketsGrid_Teardown(&self->grid);
+    PocketsWallet_TearDown(&self->wallet);
+    PocketsGrid_TearDown(&self->grid);
     PagedChoice_Dismiss(psw_choice(self));
     ButtonPanel_CloseTexts(&self->panel);
 }
-CLEAN_AS(func_ov107_0229dc18, PocketsSwap_Teardown)
+CLEAN_AS(func_ov107_0229dc18, PocketsSwap_TearDown)
 
 /* func_ov107_0229dc58: the scene's setup: no flags, the three objects of ov094's set up, no
  * popup place, the glide stopped, nothing held, the cursor on the first place, the choice on
  * layer 3; POCKETS_SWAP_FLAG_WATER when water is found for a fish; no open delay. */
-void PocketsSwap_Setup(PocketsSwap *self)
+void PocketsSwap_SetUp(PocketsSwap *self)
 {
     self->flags = 0;
     PocketsGrid_Init(&self->grid, 2);
@@ -1570,7 +1570,7 @@ void PocketsSwap_Setup(PocketsSwap *self)
     }
     self->open_delay = 0;
 }
-CLEAN_AS(func_ov107_0229dc58, PocketsSwap_Setup)
+CLEAN_AS(func_ov107_0229dc58, PocketsSwap_SetUp)
 
 /* func_ov107_0229dcdc (state 4): the wipe out stepped; once over, layer 6 hidden and the scene
  * deleted (phase 5) and no longer drawn; else layer 6 scrolled 16 up. The objects follow the
@@ -1746,7 +1746,7 @@ CLEAN_AS(func_ov107_0229e0e8, PocketsSwap_Draw)
 int PocketsSwap_Close(PocketsSwap *self)
 {
     MenuDispatch_ChildClosed((MenuDispatch *) (void *) psw_parent(self));
-    PocketsSwap_Teardown(self);
+    PocketsSwap_TearDown(self);
     return 1;
 }
 CLEAN_AS(func_ov107_0229e190, PocketsSwap_Close)
@@ -1755,7 +1755,7 @@ CLEAN_AS(func_ov107_0229e190, PocketsSwap_Close)
  * Answers 1. */
 int PocketsSwap_Start(PocketsSwap *self)
 {
-    PocketsSwap_Setup(self);
+    PocketsSwap_SetUp(self);
     MenuScene_SetState(psw_scene(self), POCKETS_SWAP_STATE_START_SETUP);
     MenuScene_SetPhase(psw_scene(self), POCKETS_SWAP_PHASE_START);
     return 1;

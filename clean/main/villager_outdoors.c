@@ -173,7 +173,7 @@ CLEAN_AS(func_02079e64, VillagerOutdoors_PutToSleep)
 void VillagerOutdoors_TakeBirthdayGreeter(VillagerOutdoors *outdoors, s8 *chosen, int *count, s8 *list, u8 *villagers)
 {
     (void) outdoors;
-    int wanted = VillagerState_GetBirthdayGreeter();
+    int wanted = VillagerState_BirthdayGreeter();
 
     if (!ActorTable_IsKindESlot((u32) wanted)) {
         return;

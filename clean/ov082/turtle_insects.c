@@ -142,7 +142,7 @@ TurtleInsects *TurtleInsects_Destruct(TurtleInsects *turtle)
 CLEAN_AS(func_ov082_02278a00, TurtleInsects_Destruct)
 
 /* func_ov082_02278a28 (vtable slot 0x44): the same, then the object freed. */
-TurtleInsects *TurtleInsects_DestructDelete(TurtleInsects *turtle)
+TurtleInsects *TurtleInsects_Delete(TurtleInsects *turtle)
 {
     *(const u8 **) (void *) turtle->base = data_ov082_0227981c;
     TurtleInsectsTalk_Destruct(&turtle->talk);
@@ -150,7 +150,7 @@ TurtleInsects *TurtleInsects_DestructDelete(TurtleInsects *turtle)
     Heap_FreeAux(turtle);
     return turtle;
 }
-CLEAN_AS(func_ov082_02278a28, TurtleInsects_DestructDelete)
+CLEAN_AS(func_ov082_02278a28, TurtleInsects_Delete)
 
 /* func_ov082_02278a54 (vtable slot 0x4c, an event about him): when the player talked to him,
  * his talk scene is reset and given the player's field actor, and he talks (state 1); once the

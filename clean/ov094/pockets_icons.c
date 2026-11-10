@@ -74,13 +74,13 @@ void PocketsIcons_Forget(PocketsIcons *icons)
 CLEAN_AS(func_ov094_0229b0d4, PocketsIcons_Forget)
 
 /* func_ov094_0229b0e0 (vtable entry 3): the destructor that frees the sheet. */
-PocketsIcons *PocketsIcons_DestructDelete(PocketsIcons *icons)
+PocketsIcons *PocketsIcons_Delete(PocketsIcons *icons)
 {
     icons->vtable = (u32) (uintptr_t) data_ov094_0229bf80;
     Heap_OperatorDeleteB(icons);
     return icons;
 }
-CLEAN_AS(func_ov094_0229b0e0, PocketsIcons_DestructDelete)
+CLEAN_AS(func_ov094_0229b0e0, PocketsIcons_Delete)
 
 /* func_ov094_0229b0f8 (vtable entry 2): the destructor. */
 void PocketsIcons_Destruct(PocketsIcons *icons)

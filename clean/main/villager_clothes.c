@@ -75,7 +75,7 @@ CLEAN_AS(func_0202df18, VillagerClothes_Change)
 
 /* func_0202dfd0: the clothes' texture loaded into the slot of the pool entry: the item's own for
  * the items 0x11a8-0x12a7, else the villager's design when the object has a town record, else
- * the item's. Its textures (ClothTexture_GetTextures), 0 without a slot or a file. */
+ * the item's. Its textures (ClothTexture_CallTextures), 0 without a slot or a file. */
 int VillagerClothes_LoadTexture(VillagerClothes *clothes, u8 *villager, u16 *item)
 {
     unsigned char *slot = (unsigned char *) (uintptr_t) PoolLink_ClothesEntry(&clothes->slot);
@@ -94,7 +94,7 @@ int VillagerClothes_LoadTexture(VillagerClothes *clothes, u8 *villager, u16 *ite
     if (file == 0) {
         return 0;
     }
-    return (int) (uintptr_t) ClothTexture_GetTextures((DesignModel *) (uintptr_t) file);
+    return (int) (uintptr_t) ClothTexture_CallTextures((DesignModel *) (uintptr_t) file);
 }
 CLEAN_AS(func_0202dfd0, VillagerClothes_LoadTexture)
 

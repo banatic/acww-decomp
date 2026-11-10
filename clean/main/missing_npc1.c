@@ -451,14 +451,14 @@ void MissingNpc1Talk_SetOwner(MissingNpc1Talk *talk, MissingNpc1 *owner)
 CLEAN_AS(func_020c1b30, MissingNpc1Talk_SetOwner)
 
 /* func_020c1b4c (the talk's slot 0x04): destructed, then freed (Heap_OperatorDeleteB). */
-MissingNpc1Talk *MissingNpc1Talk_DestructDelete(MissingNpc1Talk *talk)
+MissingNpc1Talk *MissingNpc1Talk_Delete(MissingNpc1Talk *talk)
 {
     *(const u8 **) (void *) talk = data_020e7bd0;
     Obj020d9ff8_DestructBody(talk);
     Heap_OperatorDeleteB(talk);
     return talk;
 }
-CLEAN_AS(func_020c1b4c, MissingNpc1Talk_DestructDelete)
+CLEAN_AS(func_020c1b4c, MissingNpc1Talk_Delete)
 
 /* func_020c1b6c (the talk's slot 0x00): the destructor. */
 MissingNpc1Talk *MissingNpc1Talk_Destruct(MissingNpc1Talk *talk)
@@ -1128,7 +1128,7 @@ MissingNpc1 *MissingNpc1_Destruct(MissingNpc1 *self)
 CLEAN_AS(func_020c1820, MissingNpc1_Destruct)
 
 /* func_020c1848 (slot 0x44): destructed, then freed to the auxiliary heap. */
-MissingNpc1 *MissingNpc1_DestructDelete(MissingNpc1 *self)
+MissingNpc1 *MissingNpc1_Delete(MissingNpc1 *self)
 {
     *(const u8 **) (void *) self = data_020e7c60;
     MissingNpc1Talk_Destruct(&self->talk);
@@ -1136,7 +1136,7 @@ MissingNpc1 *MissingNpc1_DestructDelete(MissingNpc1 *self)
     Heap_FreeAux(self);
     return self;
 }
-CLEAN_AS(func_020c1848, MissingNpc1_DestructDelete)
+CLEAN_AS(func_020c1848, MissingNpc1_Delete)
 
 /* func_020c2b1c (data_020e7b94's create function): a zeroed block of 0x72c bytes from the
  * auxiliary heap, constructed: the scene object base, the class 0x020d8c64's vtable and

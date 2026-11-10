@@ -594,14 +594,14 @@ void TownInsect_CopyMask(void *dst, int place)
 CLEAN_AS(func_ov003_0222d1bc, TownInsect_CopyMask)
 
 /* func_ov003_0222d1f8 (vtable data_ov003_0223c0ec): the insect's animation destroyed and freed. */
-ModelAnim *TownInsectAnim_DestructDelete(ModelAnim *anim)
+ModelAnim *TownInsectAnim_Delete(ModelAnim *anim)
 {
     anim->ctrl.vtable = data_ov003_0223c0ec;
     ModelAnim_Destruct(anim);
     Heap_OperatorDeleteB(anim);
     return anim;
 }
-CLEAN_AS(func_ov003_0222d1f8, TownInsectAnim_DestructDelete)
+CLEAN_AS(func_ov003_0222d1f8, TownInsectAnim_Delete)
 
 /* func_ov003_0222d218: the insect's animation's destructor. */
 ModelAnim *TownInsectAnim_Destruct(ModelAnim *anim)
@@ -2350,7 +2350,7 @@ void TownInsect_Run(TownInsectProcess *process, TownInsect *insect, int index, i
                 if (mode == TOWN_INSECT_MODE_HELD) {
                     CollisionGround ground;
                     CollisionGround_Init(&ground, &insect->position, 0, 0);
-                    int high = CollisionGround_GetHeight(&ground, 0) > 0x4000;
+                    int high = CollisionGround_Height(&ground, 0) > 0x4000;
                     CollisionGround_Destroy(&ground);
                     if (high) {
                         flags = 0xa;

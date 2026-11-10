@@ -644,14 +644,14 @@ int ConstellationsWideName_Capacity(void)
 CLEAN_AS(func_020b18c0, ConstellationsWideName_Capacity)
 
 /* func_020b18c4 (vtable entry 1) */
-ConstellationsWideName *ConstellationsWideName_DestructDelete(ConstellationsWideName *text)
+ConstellationsWideName *ConstellationsWideName_Delete(ConstellationsWideName *text)
 {
     text->vtable = &data_020e4278;
     TextBase_WideDestruct(text);
     Heap_OperatorDeleteB(text);
     return text;
 }
-CLEAN_AS(func_020b18c4, ConstellationsWideName_DestructDelete)
+CLEAN_AS(func_020b18c4, ConstellationsWideName_Delete)
 
 /* func_020b18e4 (vtable entry 0) */
 ConstellationsWideName *ConstellationsWideName_Destruct(ConstellationsWideName *text)
@@ -686,14 +686,14 @@ int ConstellationsLabel_Capacity(void)
 CLEAN_AS(func_020b1918, ConstellationsLabel_Capacity)
 
 /* func_020b191c (vtable entry 1) */
-ConstellationsLabel *ConstellationsLabel_DestructDelete(ConstellationsLabel *label)
+ConstellationsLabel *ConstellationsLabel_Delete(ConstellationsLabel *label)
 {
     label->vtable = &data_020e4290;
     TextBase_Destruct((TextBase *) label);
     Heap_OperatorDeleteB(label);
     return label;
 }
-CLEAN_AS(func_020b191c, ConstellationsLabel_DestructDelete)
+CLEAN_AS(func_020b191c, ConstellationsLabel_Delete)
 
 /* func_020b193c (vtable entry 0) */
 ConstellationsLabel *ConstellationsLabel_Destruct(ConstellationsLabel *label)

@@ -6,7 +6,7 @@
 #include "clean.h"
 #include "main/session.h"
 
-#define MODE_HOSTING 3 /* Net_GetMode: hosting a game friends join over the Wi-Fi Connection */
+#define MODE_HOSTING 3 /* Net_Mode: hosting a game friends join over the Wi-Fi Connection */
 #define MODE_JOINING 4 /* joining a friend's game */
 
 #define ALL_SLOTS 0xf /* the mask of slots 0-3 */
@@ -22,7 +22,7 @@ extern Heap *data_021c9b30;       /* the network heap */
 /* func_02077a64: whether the session runs over the Wi-Fi Connection (hosting or joining). */
 int SessionNet_IsWifiGame(void)
 {
-    int mode = Net_GetMode();
+    int mode = Net_Mode();
     return mode == MODE_HOSTING || mode == MODE_JOINING;
 }
 CLEAN_AS(func_02077a64, SessionNet_IsWifiGame)
@@ -50,7 +50,7 @@ int SessionNet_PeersHaveCredit(u16 slots)
         if ((slots & (1u << slot)) == 0) {
             continue;
         }
-        if (Session_GetCredits(session, slot) == 0) {
+        if (Session_Credits(session, slot) == 0) {
             return 0;
         }
     }
@@ -73,18 +73,18 @@ void *SessionNet_Alloc(int size, int align)
 CLEAN_AS(func_02077afc, SessionNet_Alloc)
 
 /* func_02077b14: a system packet's kind. */
-int SessionNet_GetSystemKind(const u8 *packet)
+int SessionNet_SystemKind(const u8 *packet)
 {
     return *packet >> PACKET_KIND_SHIFT & PACKET_KIND;
 }
-CLEAN_AS(func_02077b14, SessionNet_GetSystemKind)
+CLEAN_AS(func_02077b14, SessionNet_SystemKind)
 
 /* func_02077b20: the credits a packet gives back. */
-int SessionNet_GetCredits(const u8 *packet)
+int SessionNet_Credits(const u8 *packet)
 {
     return *packet & PACKET_CREDITS;
 }
-CLEAN_AS(func_02077b20, SessionNet_GetCredits)
+CLEAN_AS(func_02077b20, SessionNet_Credits)
 
 /* func_02077b28: whether a packet is a system packet. */
 int SessionNet_IsSystemPacket(const u8 *packet)

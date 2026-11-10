@@ -449,7 +449,7 @@ CLEAN_AS(func_ov146_0229a0f8, WfcHostList_CopyHosts)
 FriendList *WfcHostList_FriendList(WfcHostList *self)
 {
     (void) self;
-    return Wfc_GetFriendList();
+    return Wfc_FriendList();
 }
 CLEAN_AS(func_ov146_0229a174, WfcHostList_FriendList)
 

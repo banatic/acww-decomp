@@ -221,7 +221,7 @@ Owl *Owl_Destruct(Owl *owl)
 CLEAN_AS(func_ov047_02260420, Owl_Destruct)
 
 /* func_ov047_02260448 (vtable slot 0x44): the same, then the object freed. */
-void *Owl_DestructDelete(Owl *owl)
+void *Owl_Delete(Owl *owl)
 {
     *(const u8 **) (void *) owl = data_ov047_02262ca4;
     OwlTalk_Destruct(&owl->talk);
@@ -229,7 +229,7 @@ void *Owl_DestructDelete(Owl *owl)
     Heap_FreeAux(owl);
     return owl;
 }
-CLEAN_AS(func_ov047_02260448, Owl_DestructDelete)
+CLEAN_AS(func_ov047_02260448, Owl_Delete)
 
 /* func_ov047_02260474 (vtable slot 0x4c, told of an event about it by `participant`'s system, 4
  * for this one):

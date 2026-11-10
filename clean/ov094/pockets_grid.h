@@ -103,10 +103,10 @@ u8 PocketsGrid_PlaceInside(PocketsGrid *grid, int min_x, int min_y, int max_x, i
 int PocketsGrid_TouchOnBells(PocketsGrid *grid, int x, int y);
 int PocketsGrid_BoxPlaceAtTouch(PocketsGrid *grid, int x, int y);
 int PocketsGrid_PocketPlaceAtTouch(PocketsGrid *grid, int x, int y);
-void PocketsGrid_Teardown(PocketsGrid *grid);
+void PocketsGrid_TearDown(PocketsGrid *grid);
 void PocketsGrid_BeginFrame(PocketsGrid *grid);
 void PocketsGrid_Init(PocketsGrid *grid, int priority);
-PocketsGrid *PocketsGrid_DestructDelete(PocketsGrid *grid);
+PocketsGrid *PocketsGrid_Delete(PocketsGrid *grid);
 PocketsGrid *PocketsGrid_Destruct(PocketsGrid *grid);
 PocketsGrid *PocketsGrid_Construct(PocketsGrid *grid);
 

@@ -142,14 +142,14 @@ void GullTalk_Begin(GullTalk *talk, struct Gull *owner)
 CLEAN_AS(func_ov072_02278d54, GullTalk_Begin)
 
 /* func_ov072_02278d78 (slot 0x04): destructed, then freed. */
-GullTalk *GullTalk_DestructDelete(GullTalk *talk)
+GullTalk *GullTalk_Delete(GullTalk *talk)
 {
     talk->scene.vtable = data_ov072_02279a78;
     Obj020d9ff8_DestructBody(talk);
     Heap_OperatorDeleteB(talk);
     return talk;
 }
-CLEAN_AS(func_ov072_02278d78, GullTalk_DestructDelete)
+CLEAN_AS(func_ov072_02278d78, GullTalk_Delete)
 
 /* func_ov072_02278d98 (slot 0x00): the destructor: its class's vtable, then the base class's
  * body. */

@@ -99,7 +99,7 @@ void MesSliderWindow_Dismiss(MesSliderWindow *self);
 void MesSliderWindow_Open(MesSliderWindow *self);
 void MesSliderWindow_Draw(MesSliderWindow *self);
 void MesSliderWindow_Update(MesSliderWindow *self);
-MesSliderWindow *MesSliderWindow_DestructDelete(MesSliderWindow *self);
+MesSliderWindow *MesSliderWindow_Delete(MesSliderWindow *self);
 MesSliderWindow *MesSliderWindow_Destruct(MesSliderWindow *self);
 MesSliderWindow *MesSliderWindow_Construct(MesSliderWindow *self);
 

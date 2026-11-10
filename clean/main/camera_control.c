@@ -70,7 +70,7 @@ CameraControl *CameraControl_Destruct(CameraControl *camera)
 CLEAN_AS(func_0203a9cc, CameraControl_Destruct)
 
 /* func_0203a9f4: destroyed and freed to the auxiliary heap. */
-CameraControl *CameraControl_DestructFree(CameraControl *camera)
+CameraControl *CameraControl_DestructDelete(CameraControl *camera)
 {
     camera->vtable = data_020da87c;
     camera->vtable = data_020e58cc;
@@ -79,7 +79,7 @@ CameraControl *CameraControl_DestructFree(CameraControl *camera)
     Heap_FreeAux(camera);
     return camera;
 }
-CLEAN_AS(func_0203a9f4, CameraControl_DestructFree)
+CLEAN_AS(func_0203a9f4, CameraControl_DestructDelete)
 
 /* func_0203aa24: where a point on the flat ground shows on the screen, from its middle. */
 void CameraControl_ScreenPosition(int *x, int *y, const Vec3 *point)

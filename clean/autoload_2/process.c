@@ -75,7 +75,7 @@ extern void (*data_021fcfec)(int class_id);
  *  3 Process_DeleteDefault       4 Process_CanDelete          5 Process_AfterDelete
  *  6-8 execute and 9-11 draw (in the ITCM)
  * 12 Process_OnDeleteRequested  13 Process_CreateFittedHeap  14 Process_CreateHeap
- * 15 Process_FillHeapDefault    16 (none)                    17 Process_DestructFree */
+ * 15 Process_FillHeapDefault    16 (none)                    17 Process_Delete */
 extern const u32 data_0213e7b4[];
 #define SLOT_ON_DELETE_REQUESTED 12
 #define SLOT_FILL_HEAP 15
@@ -432,12 +432,12 @@ CLEAN_AS(func_020ee3c0, Process_SetExecuteOrder)
 /* ---- The base class ---- */
 
 /* func_020ee45c: the parent process, NULL at the top. */
-Process *Process_GetParent(Process *self)
+Process *Process_Parent(Process *self)
 {
     TreeNode *parent = self->node.tree.parent;
     return parent != NULL ? owner_of(parent) : NULL;
 }
-CLEAN_AS(func_020ee45c, Process_GetParent)
+CLEAN_AS(func_020ee45c, Process_Parent)
 
 /* func_020ee470: the process's deletion asked for, once, and not while it is being deleted; it
  * starts in the next CONNECT phase. The process is told first (vtable slot 12). */
@@ -550,13 +550,13 @@ CLEAN_AS(func_020ee62c, Process_Destruct)
 
 /* func_020ee63c (vtable slot 17): the destructor, and the object freed to the auxiliary heap
  * processes are allocated from (Heap_AllocAuxZeroed). */
-Process *Process_DestructFree(Process *self)
+Process *Process_Delete(Process *self)
 {
     self->vtable = data_0213e7b4;
     Heap_FreeAux(self);
     return self;
 }
-CLEAN_AS(func_020ee63c, Process_DestructFree)
+CLEAN_AS(func_020ee63c, Process_Delete)
 
 /* func_020ee660: the constructor. The process takes the next id and the spawn's arguments
  * (Process_SetConstructArgs), joins the tree under the parent given there, and takes its orders
@@ -581,7 +581,7 @@ Process *Process_Construct(Process *self)
     self->draw_link.order = profile->draw_order;
     self->draw_link.wanted_order = profile->draw_order;
 
-    Process *parent = Process_GetParent(self);
+    Process *parent = Process_Parent(self);
     if (parent != NULL) {
         if ((parent->flags & (PROCESS_EXECUTE_STOPPED | PROCESS_EXECUTE_STOPPED_ABOVE)) != 0) {
             self->flags |= PROCESS_EXECUTE_STOPPED_ABOVE;

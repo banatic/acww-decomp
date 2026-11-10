@@ -589,13 +589,13 @@ int Mailbox_CountLetters(Mailbox *mailbox)
     if (Mailbox_MovesOn(mailbox) == 0) {
         return 0;
     }
-    MailBox *box = PlayerRecord_Mailbox(PlayerRecords_Current());
+    MailboxRecord *box = PlayerRecord_Mailbox(PlayerRecords_Current());
     if (box == NULL) {
         return 0;
     }
     int count = 0;
     for (int i = 0; i < MAILBOX_LETTERS; i++) {
-        Letter *letter = MailBox_Letter(box, i);
+        Letter *letter = MailboxRecord_Letter(box, i);
         if (letter != NULL && Letter_State(letter) != 0) {
             count++;
         }

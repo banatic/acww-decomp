@@ -46,15 +46,15 @@ int RoomCells_SetStep(int x, int y, int step, int scene)
 CLEAN_AS(func_02052e98, RoomCells_SetStep)
 
 /* func_02052ec0: the step at cell (x, y) of the scene's record; -1 without a record or step. */
-int RoomCells_GetStep(int x, int y, int scene)
+int RoomCells_Step(int x, int y, int scene)
 {
     RoomCells *cells = RoomCells_ForScene(scene);
     if (cells == NULL) {
         return -1;
     }
-    return RoomCells_GetStepIn(cells, x, y);
+    return RoomCells_StepIn(cells, x, y);
 }
-CLEAN_AS(func_02052ec0, RoomCells_GetStep)
+CLEAN_AS(func_02052ec0, RoomCells_Step)
 
 /* func_02052ee8: sets the switch bit of cell (x, y) on `layer` of the scene's record to `on`;
  * nothing without a record. */
@@ -69,15 +69,15 @@ CLEAN_AS(func_02052ee8, RoomCells_SetSwitch)
 
 /* func_02052f14: the switch bit of cell (x, y) on `layer` of the scene's record; 0 without a
  * record. */
-int RoomCells_GetSwitch(int x, int y, int layer, int scene)
+int RoomCells_Switch(int x, int y, int layer, int scene)
 {
     RoomCells *cells = RoomCells_ForScene(scene);
     if (cells == NULL) {
         return 0;
     }
-    return RoomCells_GetSwitchIn(cells, x, y, layer);
+    return RoomCells_SwitchIn(cells, x, y, layer);
 }
-CLEAN_AS(func_02052f14, RoomCells_GetSwitch)
+CLEAN_AS(func_02052f14, RoomCells_Switch)
 
 /* func_02052f3c: the scene's record (room_cells.h), or NULL: a house room without its record,
  * or a scene without one. */
@@ -115,11 +115,11 @@ int RoomCells_SetStepIn(RoomCells *cells, int x, int y, int step)
 CLEAN_AS(func_02052fc0, RoomCells_SetStepIn)
 
 /* func_02052fd0 */
-int RoomCells_GetStepIn(RoomCells *cells, int x, int y)
+int RoomCells_StepIn(RoomCells *cells, int x, int y)
 {
     return RoomCellSteps_Get(&cells->steps, x, y);
 }
-CLEAN_AS(func_02052fd0, RoomCells_GetStepIn)
+CLEAN_AS(func_02052fd0, RoomCells_StepIn)
 
 /* func_02052fdc: resets the record of scene 17 + `index` (data_020d20cc holds the 17).
  * QUIRK: the scene is cut to 8 bits. */
@@ -172,11 +172,11 @@ CLEAN_AS(func_02053060, RoomCells_SetSwitchIn)
 
 /* func_0205307c: the switch bit of cell (x, y) on `layer`.
  * REQUIRES: layer is 0 or 1 (the ROM takes the grid at layer * 0x20 unchecked). */
-int RoomCells_GetSwitchIn(RoomCells *cells, int x, int y, int layer)
+int RoomCells_SwitchIn(RoomCells *cells, int x, int y, int layer)
 {
     return RoomSwitchGrid_Get(cells->switches[layer], x, y);
 }
-CLEAN_AS(func_0205307c, RoomCells_GetSwitchIn)
+CLEAN_AS(func_0205307c, RoomCells_SwitchIn)
 
 /* func_02053088: every switch bit set on both layers, and no step. */
 void RoomCells_Reset(RoomCells *cells)

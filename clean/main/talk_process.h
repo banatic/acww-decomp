@@ -20,7 +20,7 @@ int TalkProcess_Draw(void);
 int TalkProcess_Execute(void);
 int TalkProcess_Delete(void);
 int TalkProcess_Create(void);
-Process *TalkProcess_DestructFree(Process *self);
+Process *TalkProcess_DestructDelete(Process *self);
 Process *TalkProcess_Destruct(Process *self);
 Process *TalkProcess_Construct(Process *self);
 void TalkProcess_Spawn(void);

@@ -15,8 +15,8 @@
  * data_021d1e8c. A model takes its heap from a heap slot (func_0202ee10, func_0202e318), and
  * func_0201a304 reads a file into the block of a block slot.
  *
- * ResourcePools_Startup makes, from the heap data_021fbe94, the unit heap data_021c9ab8
- * (func_0205c200) and then the block, heap8 and heap4 pools; ResourcePools_Shutdown destroys
+ * ResourcePools_StartUp makes, from the heap data_021fbe94, the unit heap data_021c9ab8
+ * (func_0205c200) and then the block, heap8 and heap4 pools; ResourcePools_ShutDown destroys
  * the unit heap (func_0205c1e0) and then takes the pools down in the same order. */
 #ifndef CLEAN_MAIN_RESOURCE_POOLS_H
 #define CLEAN_MAIN_RESOURCE_POOLS_H
@@ -51,32 +51,32 @@ void ResourcePools_BlockSlotConstruct(ResourceSlot *slot);
 void ResourcePools_Heap4Release(Heap **heaps);
 void ResourcePools_Heap4Create(Heap **heaps);
 u32 ResourcePools_Heap4At(Heap *const *heaps, int entry);
-void ResourcePools_Heap4Shutdown(void);
-void ResourcePools_Heap4Startup(Heap *parent);
+void ResourcePools_Heap4ShutDown(void);
+void ResourcePools_Heap4StartUp(Heap *parent);
 void ResourcePools_Heap4Destruct(Heap **heaps);
 void ResourcePools_Heap4Construct(Heap **heaps);
 
 void ResourcePools_Heap8Release(Heap **heaps);
 void ResourcePools_Heap8Create(Heap **heaps);
 u32 ResourcePools_Heap8At(Heap *const *heaps, int entry);
-void ResourcePools_Heap8Shutdown(void);
-void ResourcePools_Heap8Startup(Heap *parent);
+void ResourcePools_Heap8ShutDown(void);
+void ResourcePools_Heap8StartUp(Heap *parent);
 void ResourcePools_Heap8Destruct(Heap **heaps);
 void ResourcePools_Heap8Construct(Heap **heaps);
 
 void ResourcePools_BlockRelease(u8 **blocks);
 void ResourcePools_BlockCreate(u8 **blocks);
 u32 ResourcePools_BlockAt(u8 *const *blocks, int entry);
-void ResourcePools_BlockShutdown(void);
-void ResourcePools_BlockStartup(Heap *parent);
+void ResourcePools_BlockShutDown(void);
+void ResourcePools_BlockStartUp(Heap *parent);
 void ResourcePools_BlockDestruct(u8 **blocks);
 void ResourcePools_BlockConstruct(u8 **blocks);
 
 int ResourcePools_UnitSize31EC(void);
 int ResourcePools_UnitSize2BCC(void);
 
-void ResourcePools_Shutdown(void);
-void ResourcePools_Startup(void);
+void ResourcePools_ShutDown(void);
+void ResourcePools_StartUp(void);
 int ResourcePools_SceneHeapCount(void);
 
 #endif

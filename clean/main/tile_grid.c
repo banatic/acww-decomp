@@ -80,7 +80,7 @@ int TileGrid_Build(TileGrid *grid)
             CollisionGround ground;
             AcreTile_TileCentre(&position, x, z);
             CollisionGround_Init(&ground, &position, 0, 0);
-            if (*item == ACRE_MAP_ITEM_NONE && CollisionGround_GetHeight(&ground, 1) == 0) {
+            if (*item == ACRE_MAP_ITEM_NONE && CollisionGround_Height(&ground, 1) == 0) {
                 TileGrid_Mark(grid, x, z);
             }
             item++;

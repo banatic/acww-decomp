@@ -59,7 +59,7 @@ enum PocketsScreenFlag {
     POCKETS_FLAG_EXITING = 0x20000,         /* set by PocketsScreen_ExitToParent */
     POCKETS_FLAG_DISCARD_CONFIRM = 0x40000, /* the choice is PocketsScreen_OpenDiscardConfirm's */
     POCKETS_FLAG_STEPWISE_SETUP = 0x80000   /* states 0-2 of the setup take a frame each (the
-                                           * parent's byte 0x98 was set, PocketsScreen_Setup) */
+                                           * parent's byte 0x98 was set, PocketsScreen_SetUp) */
 };
 
 #define POCKETS_FLAGS_WRAPPED (POCKETS_FLAG_WRAPPED_LEFT | POCKETS_FLAG_WRAPPED_RIGHT)
@@ -371,8 +371,8 @@ void PocketsScreen_EndFrame(PocketsScreen *self);
 void PocketsScreen_BeginFrame(PocketsScreen *self);
 void PocketsScreen_EndInteractiveFrame(PocketsScreen *self);
 void PocketsScreen_BeginInteractiveFrame(PocketsScreen *self);
-void PocketsScreen_Teardown(PocketsScreen *self);
-void PocketsScreen_Setup(PocketsScreen *self);
+void PocketsScreen_TearDown(PocketsScreen *self);
+void PocketsScreen_SetUp(PocketsScreen *self);
 void PocketsScreen_SlideOutTabs(PocketsScreen *self);
 void PocketsScreen_WipeOutReader(PocketsScreen *self);
 void PocketsScreen_StartWipeOutReader(PocketsScreen *self);
@@ -382,8 +382,8 @@ void PocketsScreen_WipeOut(PocketsScreen *self);
 void PocketsScreen_StartWipeOut(PocketsScreen *self);
 void PocketsScreen_WipeIn(PocketsScreen *self);
 void PocketsScreen_StartWipeIn(PocketsScreen *self);
-void PocketsScreen_SetupWalletStep(PocketsScreen *self);
-void PocketsScreen_SetupWallet(PocketsScreen *self);
+void PocketsScreen_SetUpWalletStep(PocketsScreen *self);
+void PocketsScreen_SetUpWallet(PocketsScreen *self);
 void PocketsScreen_StartSetup(PocketsScreen *self);
 int PocketsScreen_SwitchTab(PocketsScreen *self, int tab);
 int PocketsScreen_TakeTabSwitch(PocketsScreen *self);

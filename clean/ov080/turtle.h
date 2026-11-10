@@ -52,7 +52,7 @@ extern TurtleStateRow data_ov080_022793e0[TURTLE_STATES];
 
 /* The object's life and vtable slots. */
 Turtle *Turtle_Destruct(Turtle *self);
-Turtle *Turtle_DestructDelete(Turtle *self);
+Turtle *Turtle_Delete(Turtle *self);
 void Turtle_OnEvent(Turtle *self, int code);
 int Turtle_MayAct(Turtle *self);
 int Turtle_ModelName(void);

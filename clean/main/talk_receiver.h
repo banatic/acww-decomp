@@ -51,7 +51,7 @@ typedef struct TalkReceiver {
 
 int TalkReceiverName_Chars(int name);
 int TalkReceiverName_Capacity(void);
-TalkReceiverName *TalkReceiverName_DestructDelete(TalkReceiverName *name);
+TalkReceiverName *TalkReceiverName_Delete(TalkReceiverName *name);
 void *TalkReceiverName_Destruct(void *name);
 void *TalkReceiverName_Construct(void *name);
 
@@ -93,7 +93,7 @@ void TalkReceiver_SetSpeakerText(TalkReceiver *receiver, TextBase *name, int sty
 void TalkReceiver_SetSpeaker(TalkReceiver *receiver, const char *name, int style);
 void TalkReceiver_Reset(TalkReceiver *receiver);
 void *TalkReceiver_Destruct(TalkReceiver *receiver);
-void *TalkReceiver_DestructDelete(TalkReceiver *receiver);
+void *TalkReceiver_Delete(TalkReceiver *receiver);
 void *TalkReceiver_DestructSlot(TalkReceiver *receiver);
 TalkReceiver *TalkReceiver_Construct(TalkReceiver *receiver);
 TalkReceiver *TalkReceiver_ConstructBase(TalkReceiver *receiver);

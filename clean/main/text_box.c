@@ -86,13 +86,13 @@ void TextBoxBase_DestructSlot(TextDrawBox *box)
 CLEAN_AS(func_02050ca8, TextBoxBase_DestructSlot)
 
 /* func_02050c90 (vtable slot 1): the destructor, and the box freed (operator delete). */
-void *TextBoxBase_DestructDelete(void *box)
+void *TextBoxBase_Delete(void *box)
 {
     ((TextDrawBox *) box)->vtable = data_020dcf28;
     Heap_OperatorDeleteB(box);
     return box;
 }
-CLEAN_AS(func_02050c90, TextBoxBase_DestructDelete)
+CLEAN_AS(func_02050c90, TextBoxBase_Delete)
 
 /* func_02050d6c: the constructor of a box drawn into VRAM: `rows` tiles high and `cells` wide,
  * from tile `first_tile` of BG2's tiles on the sub screen, with no RAM destination; otherwise

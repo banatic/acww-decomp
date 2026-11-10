@@ -57,7 +57,7 @@ typedef struct Activity {
 } Activity;
 
 Activity *Activity_Destruct(Activity *activity);
-Activity *Activity_DestructFree(Activity *activity);
+Activity *Activity_Delete(Activity *activity);
 void Activity_TalkSequence2(Activity *activity);
 void Activity_TalkGatekeeper(Activity *activity, int quiet);
 void Activity_StepSendReport(Activity *activity, u8 *step, int first);

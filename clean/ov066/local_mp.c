@@ -457,7 +457,7 @@ CLEAN_AS(func_ov066_02269934, LocalMp_CanSend)
  * after its cache line is invalidated; 0 in any other state. */
 u16 LocalMp_ConnectedAids(void)
 {
-    if (LocalWireless_GetState() != LOCAL_STATE_PARENT) {
+    if (LocalWireless_State() != LOCAL_STATE_PARENT) {
         return 0;
     }
     LocalWmStatus *status = ((LocalWmWork *) data_ov066_0226bdf4->wm_work)->status;

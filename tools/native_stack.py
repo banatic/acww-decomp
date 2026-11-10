@@ -376,7 +376,7 @@ ARG_PUSHES = {('main', 0x020853b0): 0x10, ('main', 0x02085278): 0x10}
 # as the stack held them. The mixed Native/Clean build compiles a copy that keeps the four
 # centres at the same guest slot as the Native consumer, so they read the same residue.
 CLEAN_SOURCE = 'clean/ov004/house_roach.c'
-CLEAN_SHA = '55901f32464cc12e4c0b3d053b1d51faf93b06c69144983fa35de66b3128bceb'
+CLEAN_SHA = 'ff6c1eb8594f61cdd35d211d96050b5336c5a3c2e6f11b6a363a71e7d5f3c14b'
 # The Clean insect room (InsectRoom_Update) sets the cases' centres' y to 0 (its BUG: note); the
 # copy keeps the centres at the Native one's guest slot instead.
 CLEAN_INSECT_ROOM = 'clean/ov004/museum_insects.c'
@@ -391,12 +391,12 @@ CLEAN_CUE_SHA = {
     'clean/main/talk_object.c': '3b7cc6bc90bf1f9b6413d484e303e64956be574594d94883a9dac6a710c4ec47',
     'clean/main/villager_talk_offers.c': '533242081ce0c010d3b9fbb10bb8a24b6df49a01c2fc30dd13c8a43173bfabe1',
     'clean/autoload_2/matrix.c': '6e4e1fe2d50a238897e20e224004b63f073337a296a08fa10158644c8527cf18',
-    'clean/main/field_collision.c': 'c1efa49efed565e2a051e4edf64d29ba420d6051bfaceae83c5eebf0b36650bf',
-    'clean/main/collision_query.c': '64b4370e713ddc57343b34d5e4aca0b4c2ef0dcd7384f66a554d2a3df3fe7a6a',
+    'clean/main/field_collision.c': 'abcf26303d709cc897bb8d8eb6290939c224fe5788a9e1f84c182282893fb9d0',
+    'clean/main/collision_query.c': '7f281301b19e981d27c27db7f3d5106c934170c84ebe83c3f53b8cbe612899f5',
     'clean/main/collision_segment.c': '5519edaa81cb8a78eaa0b1177fce67f278e5b5695f8533c34b87ade7a3e8027d',
     'clean/main/villager_talk.c': 'c93580638d5ec2c6c742b3013047ffd7bdaae8a3fd02d2c09f109b12a90a553e',
-    'clean/main/villager_talk_replies.c': '749a0f10f5ce9019ae9efe7f2c96469982d6c2907cce9a89a99824a67a465996',
-    'clean/ov094/pockets_grid.c': 'da2d6aef2b91512999d0730fa0022d6e328f3e2ff62cf49b88ff5a7395efa549',
+    'clean/main/villager_talk_replies.c': '355632ac0c99be54eca2e71e8cd1914ccf088c5a9bc2925db0d29911d69b7197',
+    'clean/ov094/pockets_grid.c': '2c1e2ee8980fef142b69706b9da81cd88710c68d8baee7c3c10af6013f58c513',
     'clean/ov004/push_box.c': '7a3464385bff4588f7aad11452e78ed5283edd2ff6d409d3e7a3188a519b8d52',
 }
 CLEAN_CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {

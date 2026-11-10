@@ -744,7 +744,7 @@ void RoomShell_MeasureSize(RoomShell *self)
     for (int x = 0; x < ROOM_SHELL_MEASURE_UNITS; x++) {
         CollisionGround ground;
         CollisionGround_InitAtUnit(&ground, x, ROOM_SHELL_MEASURE_ROW, 0, 0);
-        if (CollisionGround_GetHeight(&ground, 0) == 0) {
+        if (CollisionGround_Height(&ground, 0) == 0) {
             count++;
         }
         CollisionGround_Destroy(&ground);

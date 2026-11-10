@@ -56,7 +56,7 @@ typedef struct FoxTentTalkStart {
 /* The class. */
 FoxTentTalk *FoxTentTalk_Construct(FoxTentTalk *talk);
 FoxTentTalk *FoxTentTalk_Destruct(FoxTentTalk *talk);
-FoxTentTalk *FoxTentTalk_DestructDelete(FoxTentTalk *talk);
+FoxTentTalk *FoxTentTalk_Delete(FoxTentTalk *talk);
 void FoxTentTalk_Reset(FoxTentTalk *talk);
 void FoxTentTalk_Begin(FoxTentTalk *talk, FoxTent *owner);
 u32 FoxTentTalk_Sequence(FoxTentTalk *talk);

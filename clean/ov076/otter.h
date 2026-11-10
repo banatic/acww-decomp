@@ -80,7 +80,7 @@ typedef struct OtterStep {
 
 /* His object. */
 Otter *Otter_Destruct(Otter *otter);
-Otter *Otter_DestructDelete(Otter *otter);
+Otter *Otter_Delete(Otter *otter);
 void Otter_OnEvent(Otter *otter, int code);
 int Otter_AgreesToTalk(Otter *otter);
 void Otter_SetState(Otter *otter, int state);

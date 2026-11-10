@@ -131,7 +131,7 @@ CLEAN_AS(func_0205f110, HeldItemPool_MaterialAnim)
 
 /* func_0205f120: the material animation of the item holding entry `index` (NULL when it lets
  * the entry go). The original's source declares `anim` an unsigned char, but its callers
- * (HeldItem_Setup, HeldItem_Clear) pass the item's ModelAnim or NULL and the whole word is
+ * (HeldItem_SetUp, HeldItem_Clear) pass the item's ModelAnim or NULL and the whole word is
  * kept: it is a pointer here. */
 void HeldItemPool_SetMaterialAnim(HeldItemPool *pool, int index, ModelAnim *anim)
 {

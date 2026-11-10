@@ -6,7 +6,7 @@
 #include "autoload_2/process.h"
 
 Process *Process020daae4_Destruct(Process *process);
-Process *Process020daae4_DestructFree(Process *process);
+Process *Process020daae4_DestructDelete(Process *process);
 
 /* Its vtable's own execute (slot 6), after-execute (slot 8) and draw (slot 9): it runs main's
  * queue of events (event_queue.h). */

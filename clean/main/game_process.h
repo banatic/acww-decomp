@@ -9,7 +9,7 @@
 #include "types.h"
 
 Process *GameProcess_Destruct(Process *self);
-void *GameProcess_DestructDelete(void *self);
+void *GameProcess_Delete(void *self);
 int GameProcess_SpawnRoot(int class_id, int param, int unk_12);
 int GameProcess_SpawnChild(int class_id, int parent, int param, int unk_12);
 void GameProcess_AfterCreate(Process *self, int outcome);

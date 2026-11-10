@@ -135,7 +135,7 @@ void MesChoiceWindow_Update(MesChoiceWindow *self)
 CLEAN_AS(func_020ac278, MesChoiceWindow_Update)
 
 /* func_020ac2a0 (vtable slot 1): destroyed (as MesChoiceWindow_Destruct) and freed. */
-MesChoiceWindow *MesChoiceWindow_DestructDelete(MesChoiceWindow *self)
+MesChoiceWindow *MesChoiceWindow_Delete(MesChoiceWindow *self)
 {
     self->bg.vtable = data_020e3ffc;
     MesBgMarker_Destruct(&self->marker);
@@ -143,7 +143,7 @@ MesChoiceWindow *MesChoiceWindow_DestructDelete(MesChoiceWindow *self)
     Heap_OperatorDeleteB(self);
     return self;
 }
-CLEAN_AS(func_020ac2a0, MesChoiceWindow_DestructDelete)
+CLEAN_AS(func_020ac2a0, MesChoiceWindow_Delete)
 
 /* func_020ac2c8 (vtable slot 0): the destructor: the marker, then the base. */
 MesChoiceWindow *MesChoiceWindow_Destruct(MesChoiceWindow *self)

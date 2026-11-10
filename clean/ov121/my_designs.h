@@ -15,7 +15,7 @@
  * a button, which uses it: as the menu backdrop's piece of clothing, as the room's carpet or
  * wallpaper, as clothes, head item or held item, as a piece of furniture of the room, or as a
  * pattern on the ground. Some buttons open a choice (ov002/paged_choice.h) of how; which ones
- * can be used depends on where the player is (`where`, MyDesigns_Setup).
+ * can be used depends on where the player is (`where`, MyDesigns_SetUp).
  *
  * A pointer sprite (`pointer`, a Glider0 of ov002/glide.h) shows the d-pad's cursor; a popup
  * (`popup`) names the design under it or under the pen (`hover`). */
@@ -248,7 +248,7 @@ void MyDesigns_Nothing(void *self);
 void MyDesigns_UpdateAfterSubState(MyDesigns *self);
 void MyDesigns_UpdatePointerFirst(MyDesigns *self);
 void MyDesigns_Release(MyDesigns *self);
-void MyDesigns_Setup(MyDesigns *self);
+void MyDesigns_SetUp(MyDesigns *self);
 void MyDesigns_WipeOut(MyDesigns *self);
 void MyDesigns_StartWipeOut(MyDesigns *self);
 void MyDesigns_WipeIn(MyDesigns *self);

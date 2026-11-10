@@ -30,12 +30,12 @@ typedef struct VillagerMemoryLabel {
 
 int VillagerMemoryWide_Buffer(int text);
 int VillagerMemoryWide_Capacity(void);
-VillagerMemoryWide *VillagerMemoryWide_DestructDelete(VillagerMemoryWide *text);
+VillagerMemoryWide *VillagerMemoryWide_Delete(VillagerMemoryWide *text);
 void *VillagerMemoryWide_Destruct(void *text);
 void *VillagerMemoryWide_Construct(void *text);
 int VillagerMemoryLabel_Buffer(int label);
 int VillagerMemoryLabel_Capacity(void);
-void *VillagerMemoryLabel_DestructDelete(void *label);
+void *VillagerMemoryLabel_Delete(void *label);
 void *VillagerMemoryLabel_Destruct(void *label);
 void *VillagerMemoryLabel_Construct(void *label);
 

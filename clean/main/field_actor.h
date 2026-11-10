@@ -21,16 +21,16 @@ struct FieldActor;
 
 void FieldActor_Delete(void *actor);
 void *FieldActor_New(int size);
-void FieldActor_Teardown(struct FieldActor *actor);
+void FieldActor_TearDown(struct FieldActor *actor);
 int FieldActor_Vfunc24(struct FieldActor *actor);
 int FieldActor_Update(struct FieldActor *actor);
-void FieldActor_Setup(struct FieldActor *actor);
+void FieldActor_SetUp(struct FieldActor *actor);
 struct FieldActor *FieldActor_DestructDelete(struct FieldActor *actor);
 void *FieldActor_Destruct(struct FieldActor *actor);
 struct FieldActor *FieldActor_Construct(struct FieldActor *actor);
-int FieldActor_Shutdown(struct FieldActor *actor);
+int FieldActor_ShutDown(struct FieldActor *actor);
 void FieldActor_Create(void);
-struct FieldActor *FieldActorReceiver_DestructDelete(void *receiver);
+struct FieldActor *FieldActorReceiver_Delete(void *receiver);
 void FieldActorReceiver_TalkClosing(void *receiver);
 void FieldActorReceiver_TalkChoice(void *receiver);
 void FieldActorReceiver_TalkMessage(void *receiver);
@@ -367,9 +367,9 @@ u8 FieldActor_Act(struct FieldActor *actor);
 
 /* field_actor.c: the set-up once the actor is made. */
 int FieldActor_Init(struct FieldActor *actor);
-void FieldActor_SetupAccessory(struct FieldActor *actor);
-void FieldActor_SetupPartB(struct FieldActor *actor);
-void FieldActor_SetupLooks(struct FieldActor *actor);
+void FieldActor_SetUpAccessory(struct FieldActor *actor);
+void FieldActor_SetUpPartB(struct FieldActor *actor);
+void FieldActor_SetUpLooks(struct FieldActor *actor);
 
 /* field_actor_support.c: the state requests, the message receiver's hooks, the flags, sounds and
  * footsteps, turning and easing, following another console's actor, the sun level's messages

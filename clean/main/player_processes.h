@@ -23,7 +23,7 @@ int PlayerSpawnProcess_Delete(void);
 int PlayerSpawnProcess_Draw(void);
 int PlayerSpawnProcess_Execute(void);
 int PlayerSpawnProcess_Create(void);
-Process *PlayerSpawnProcess_DestructFree(Process *self);
+Process *PlayerSpawnProcess_DestructDelete(Process *self);
 Process *PlayerSpawnProcess_Destruct(Process *self);
 Process *PlayerSpawnProcess_Construct(Process *self);
 void PlayerSpawnProcess_Spawn(void);
@@ -32,7 +32,7 @@ int PlayerReportProcess_Delete(void);
 int PlayerReportProcess_Draw(void);
 int PlayerReportProcess_Execute(void);
 int PlayerReportProcess_Create(void);
-Process *PlayerReportProcess_DestructFree(Process *self);
+Process *PlayerReportProcess_DestructDelete(Process *self);
 Process *PlayerReportProcess_Destruct(Process *self);
 
 #endif

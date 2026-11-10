@@ -89,14 +89,14 @@ static void xct_exchange_talk_say(XctExchangeTalk *talk, int line)
 
 /* func_ov055_02260a20 (vtable slot 0x04): the destructor of the scene class it derives from,
  * then the scene freed. */
-XctExchangeTalk *XctExchangeTalk_DestructDelete(XctExchangeTalk *talk)
+XctExchangeTalk *XctExchangeTalk_Delete(XctExchangeTalk *talk)
 {
     talk->base.vtable = data_ov055_02260f44;
     Obj020d9ff8_DestructBody(talk);
     Heap_OperatorDeleteB(talk);
     return talk;
 }
-CLEAN_AS(func_ov055_02260a20, XctExchangeTalk_DestructDelete)
+CLEAN_AS(func_ov055_02260a20, XctExchangeTalk_Delete)
 
 /* func_ov055_02260a40 (vtable slot 0x00): the destructor of the scene class it derives from. */
 XctExchangeTalk *XctExchangeTalk_Destruct(XctExchangeTalk *talk)

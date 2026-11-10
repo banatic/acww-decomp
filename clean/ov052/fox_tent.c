@@ -270,7 +270,7 @@ FoxTent *FoxTent_Destruct(FoxTent *fox)
 CLEAN_AS(func_ov052_02260420, FoxTent_Destruct)
 
 /* func_ov052_0226045c (vtable slot 0x44): the same, then the object freed. */
-FoxTent *FoxTent_DestructDelete(FoxTent *fox)
+FoxTent *FoxTent_Delete(FoxTent *fox)
 {
     *(const u8 **) (void *) fox->base = data_ov052_02261f40;
     __cxa_vec_cleanup(fox->told, FOX_TENT_TOLD_ITEMS, sizeof(u16), func_020051b0);
@@ -279,7 +279,7 @@ FoxTent *FoxTent_DestructDelete(FoxTent *fox)
     Heap_FreeAux(fox);
     return fox;
 }
-CLEAN_AS(func_ov052_0226045c, FoxTent_DestructDelete)
+CLEAN_AS(func_ov052_0226045c, FoxTent_Delete)
 
 /* ---- The reasons he talks */
 

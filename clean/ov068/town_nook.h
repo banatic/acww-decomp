@@ -49,7 +49,7 @@ typedef struct TownNookTalkStart {
 } TownNookTalkStart;
 
 u8 *TownNook_Destruct(u8 *object);
-u8 *TownNook_DestructDelete(u8 *object);
+u8 *TownNook_Delete(u8 *object);
 void TownNook_OnEvent(u8 *object, int code);
 int TownNook_MayAct(u8 *object);
 void TownNookScene_WalkAndTalk(TownNookScene *scene);
@@ -60,7 +60,7 @@ void TownNookScene_OnAnswer(void);
 void TownNookScene_OnMessageEnded(TownNookScene *scene);
 void TownNookScene_StartTalk(TownNookScene *scene, TownNookTalkStart *start);
 void TownNookScene_Begin(TownNookScene *scene, u8 *owner);
-TownNookScene *TownNookScene_DestructDelete(TownNookScene *scene);
+TownNookScene *TownNookScene_Delete(TownNookScene *scene);
 TownNookScene *TownNookScene_Destruct(TownNookScene *scene);
 TownNookScene *TownNookScene_Construct(TownNookScene *scene);
 

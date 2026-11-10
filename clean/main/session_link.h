@@ -43,11 +43,11 @@ NetSession *Session_Construct(NetSession *session);
 int Session_IsLinkLost(int expected_aids);
 void Session_RaiseSendTimeout(void);
 void Session_Close(void);
-unsigned int Session_GetMemberMask(void);
-int Session_GetPeerMask(void);
+unsigned int Session_MemberMask(void);
+int Session_PeerMask(void);
 
 void Session_FinishLocalStatus(void);
-int Session_GetLocalStatus(void);
+int Session_LocalStatus(void);
 int Session_SendLocalStatus(int status);
 
 void Session_SetReceiveBuffers(u32 local_aid);

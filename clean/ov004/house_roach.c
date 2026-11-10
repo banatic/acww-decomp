@@ -376,8 +376,7 @@ static int feeler_blocked(HouseRoach *roach, CollisionContacts *contacts, const 
     }
     CollisionQuery_Move(contacts, feeler, last, angle, HOUSE_ROACH_RADIUS, roach, HOUSE_ROACH_COLLISION_FLAGS);
     s16 hits = contacts->walls.count;
-    return CollisionGround_GetHeight(ground, 1) > HOUSE_ROACH_FEELER_STEP || feeler->y > HOUSE_ROACH_FEELER_TOO_HIGH ||
-           hits > 0;
+    return CollisionGround_Height(ground, 1) > HOUSE_ROACH_FEELER_STEP || feeler->y > HOUSE_ROACH_FEELER_TOO_HIGH || hits > 0;
 }
 
 /* func_ov004_0223db08: which feelers are blocked: 1 for the first, 2 for the second.
@@ -498,7 +497,7 @@ int HouseRoach_CheckRaised(HouseRoach *roach)
             CollisionGround ground;
             roach->state = HOUSE_ROACH_VANISH;
             CollisionGround_Init(&ground, &roach->actor.position, 0, 0);
-            roach->actor.position.y = CollisionGround_GetHeight(&ground, 1);
+            roach->actor.position.y = CollisionGround_Height(&ground, 1);
             CollisionGround_Destroy(&ground);
             return 1;
         }

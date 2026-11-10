@@ -128,7 +128,7 @@ static SlidingWindow *storage_popup_window(StorageScene *self)
 
 static Process *storage_parent(StorageScene *self)
 {
-    return Process_GetParent((Process *) (void *) self);
+    return Process_Parent((Process *) (void *) self);
 }
 
 /* The cursor sprite's update through its class (vtable slot 3, Glider_Update for the base). */
@@ -1826,20 +1826,20 @@ void StorageScene_BeginInteractiveFrame(StorageScene *self)
 CLEAN_AS(func_ov102_0229e0ec, StorageScene_BeginInteractiveFrame)
 
 /* func_ov102_0229e108: the members' teardown before the scene closes. */
-void StorageScene_Teardown(StorageScene *self)
+void StorageScene_TearDown(StorageScene *self)
 {
     StorageScene_EndLayerTask(self);
-    PocketsWallet_Teardown(&self->wallet);
-    PocketsGrid_Teardown(&self->grid);
+    PocketsWallet_TearDown(&self->wallet);
+    PocketsGrid_TearDown(&self->grid);
     StorageScene_CloseLabels(self);
 }
-CLEAN_AS(func_ov102_0229e108, StorageScene_Teardown)
+CLEAN_AS(func_ov102_0229e108, StorageScene_TearDown)
 
 /* func_ov102_0229e130: the scene's setup: no flags, the three objects of ov094's set up (the
  * grid's OBJs at priority 1, the letters' at 2, the wallet on layer 6), no popup place, the glide
  * stopped, nothing held, the cursor at the first pocket, no label used; the current player's 90
  * stored items copied into `storage`, the pockets saved (Pockets_Save) and page 0 shown. */
-void StorageScene_Setup(StorageScene *self)
+void StorageScene_SetUp(StorageScene *self)
 {
     self->flags = 0;
     PocketsGrid_Init(&self->grid, 1);
@@ -1855,7 +1855,7 @@ void StorageScene_Setup(StorageScene *self)
     Pockets_Save();
     self->page = 0;
 }
-CLEAN_AS(func_ov102_0229e130, StorageScene_Setup)
+CLEAN_AS(func_ov102_0229e130, StorageScene_SetUp)
 
 /* func_ov102_0229e1c4 (state 9): the turned page wipes in, as in state 3. */
 void StorageScene_TurnPageWipeIn(StorageScene *self)
@@ -2146,7 +2146,7 @@ CLEAN_AS(func_ov102_0229e7cc, StorageScene_Draw)
 int StorageScene_Close(StorageScene *self)
 {
     MenuDispatch_ChildClosed((MenuDispatch *) (void *) storage_parent(self));
-    StorageScene_Teardown(self);
+    StorageScene_TearDown(self);
     return 1;
 }
 CLEAN_AS(func_ov102_0229e874, StorageScene_Close)
@@ -2155,7 +2155,7 @@ CLEAN_AS(func_ov102_0229e874, StorageScene_Close)
  * Answers 1. */
 int StorageScene_Start(StorageScene *self)
 {
-    StorageScene_Setup(self);
+    StorageScene_SetUp(self);
     MenuScene_SetState(storage_base(self), STORAGE_SCENE_STATE_START_SETUP);
     MenuScene_SetPhase(storage_base(self), STORAGE_SCENE_PHASE_WAIT);
     return 1;

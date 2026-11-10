@@ -72,7 +72,7 @@ static CellLayerSprite *time_sprite_cells(TimeScreen *self)
 
 static MenuDispatch *time_parent(TimeScreen *self)
 {
-    return (MenuDispatch *) (void *) Process_GetParent((Process *) (void *) self);
+    return (MenuDispatch *) (void *) Process_Parent((Process *) (void *) self);
 }
 
 /* The cursor sprite's update through its class (vtable slot 3, Glider_Update for the base). */
@@ -745,22 +745,22 @@ void TimeScreen_BeginInteractiveFrame(TimeScreen *self)
 CLEAN_AS(func_ov136_0229cfd4, TimeScreen_BeginInteractiveFrame)
 
 /* func_ov136_0229cfec: the members torn down: the picker's, then the panel's texts closed. */
-void TimeScreen_Teardown(TimeScreen *self)
+void TimeScreen_TearDown(TimeScreen *self)
 {
-    ClockSetter_Teardown(&self->picker);
+    ClockSetter_TearDown(&self->picker);
     ButtonPanel_CloseTexts(&self->panel);
 }
-CLEAN_AS(func_ov136_0229cfec, TimeScreen_Teardown)
+CLEAN_AS(func_ov136_0229cfec, TimeScreen_TearDown)
 
 /* func_ov136_0229d00c: the setup: the picker for a time (on layers 6, 4 and 3), the cursor at
  * the hour, no flags. */
-void TimeScreen_Setup(TimeScreen *self)
+void TimeScreen_SetUp(TimeScreen *self)
 {
     ClockSetter_Init(&self->picker, CLOCK_SETTER_MODE_TIME, 6, 4, 3);
     self->place = TIME_SCREEN_PLACE_HOUR;
     self->flags = 0;
 }
-CLEAN_AS(func_ov136_0229d00c, TimeScreen_Setup)
+CLEAN_AS(func_ov136_0229d00c, TimeScreen_SetUp)
 
 /* func_ov136_0229d044: layers 6 and 4 scrolled with the wipe. */
 void TimeScreen_ScrollWithWipe(TimeScreen *self)
@@ -916,7 +916,7 @@ CLEAN_AS(func_ov136_0229d344, TimeScreen_Draw)
 int TimeScreen_Close(TimeScreen *self)
 {
     MenuDispatch_ChildClosed(time_parent(self));
-    TimeScreen_Teardown(self);
+    TimeScreen_TearDown(self);
     return 1;
 }
 CLEAN_AS(func_ov136_0229d398, TimeScreen_Close)
@@ -925,7 +925,7 @@ CLEAN_AS(func_ov136_0229d398, TimeScreen_Close)
  * and phase 0. Answers 1. */
 int TimeScreen_Start(TimeScreen *self)
 {
-    TimeScreen_Setup(self);
+    TimeScreen_SetUp(self);
     self->base.state = TIME_SCREEN_STATE_START_WIPE_IN;
     MenuScene_SetPhase(time_scene(self), 0);
     return 1;

@@ -118,7 +118,7 @@ Turtle *Turtle_Destruct(Turtle *turtle)
 CLEAN_AS(func_ov080_02278a00, Turtle_Destruct)
 
 /* func_ov080_02278a28 (vtable slot 0x44): the same, then the object freed. */
-Turtle *Turtle_DestructDelete(Turtle *turtle)
+Turtle *Turtle_Delete(Turtle *turtle)
 {
     *(const u8 **) (void *) turtle->base = data_ov080_022792ec;
     TurtleTalk_Destruct(&turtle->talk);
@@ -126,7 +126,7 @@ Turtle *Turtle_DestructDelete(Turtle *turtle)
     Heap_FreeAux(turtle);
     return turtle;
 }
-CLEAN_AS(func_ov080_02278a28, Turtle_DestructDelete)
+CLEAN_AS(func_ov080_02278a28, Turtle_Delete)
 
 /* func_ov080_02278a54 (vtable slot 0x4c, told of an event about him): code 0, the player's
  * act: his talk reset (its slot 2), the talk's partner this console's player's object, and he

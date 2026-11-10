@@ -271,7 +271,7 @@ CLEAN_AS(func_ov144_02299e6c, MusicList_ScrollTo)
 
 /* func_ov144_02299ea8: the scroll's end by the count (16 pixels a row past the eighth, at least
  * 0), then the playing row shown. */
-void MusicList_SetupScroll(MusicList *self)
+void MusicList_SetUpScroll(MusicList *self)
 {
     self->scroll_max = (self->count - MUSIC_LIST_ROWS_SHOWN) * MUSIC_LIST_ROW_HEIGHT;
     if (self->scroll_max < 0) {
@@ -279,7 +279,7 @@ void MusicList_SetupScroll(MusicList *self)
     }
     MusicList_ScrollToRow(self, self->playing);
 }
-CLEAN_AS(func_ov144_02299ea8, MusicList_SetupScroll)
+CLEAN_AS(func_ov144_02299ea8, MusicList_SetUpScroll)
 
 /* func_ov144_02299ed4: at the frame's end, what changed sent on: the rows coloured and queued,
  * the buttons' screen queued for the sub screen's BG3 (the flag kept until the task takes it),

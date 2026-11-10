@@ -50,7 +50,7 @@ typedef struct TurtleFishingTalkStart {
 /* The class. */
 TurtleFishingTalk *TurtleFishingTalk_Construct(TurtleFishingTalk *talk);
 TurtleFishingTalk *TurtleFishingTalk_Destruct(TurtleFishingTalk *talk);
-TurtleFishingTalk *TurtleFishingTalk_DestructDelete(TurtleFishingTalk *talk);
+TurtleFishingTalk *TurtleFishingTalk_Delete(TurtleFishingTalk *talk);
 void TurtleFishingTalk_Begin(TurtleFishingTalk *talk, TurtleFishing *owner);
 void TurtleFishingTalk_PickCommandFunction(TurtleFishingTalk *talk, MemberPointer *slot, int index);
 void TurtleFishingTalk_SetAfterCommand(TurtleFishingTalk *talk, int index);

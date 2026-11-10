@@ -88,7 +88,7 @@ typedef struct Owl {
 
 /* Its vtable slots and questions (owl.c). */
 Owl *Owl_Destruct(Owl *owl);
-void *Owl_DestructDelete(Owl *owl);
+void *Owl_Delete(Owl *owl);
 void Owl_OnEvent(Owl *owl, int code, int participant);
 int Owl_MayAct(Owl *owl);
 int Owl_Start(Owl *owl);

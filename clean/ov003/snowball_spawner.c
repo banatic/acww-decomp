@@ -171,7 +171,7 @@ int SnowballSpawner_Create(SnowballSpawner *self)
 CLEAN_AS(func_ov003_022364cc, SnowballSpawner_Create)
 
 /* func_ov003_022364e4 (vtable slot 17): the destructor, and the process freed. */
-SnowballSpawner *SnowballSpawner_DestructFree(SnowballSpawner *self)
+SnowballSpawner *SnowballSpawner_DestructDelete(SnowballSpawner *self)
 {
     self->base.vtable = data_ov003_0223c550;
     self->base.vtable = data_020da13c;
@@ -179,7 +179,7 @@ SnowballSpawner *SnowballSpawner_DestructFree(SnowballSpawner *self)
     Heap_FreeAux(self);
     return self;
 }
-CLEAN_AS(func_ov003_022364e4, SnowballSpawner_DestructFree)
+CLEAN_AS(func_ov003_022364e4, SnowballSpawner_DestructDelete)
 
 /* func_ov003_0223650c (vtable slot 16): the destructor. */
 SnowballSpawner *SnowballSpawner_Destruct(SnowballSpawner *self)

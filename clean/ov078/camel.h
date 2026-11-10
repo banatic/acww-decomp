@@ -65,7 +65,7 @@ extern CamelStateRow data_ov078_02279c48[CAMEL_STATES];
 
 /* The object's life and vtable slots. */
 Camel *Camel_Destruct(Camel *self);
-Camel *Camel_DestructDelete(Camel *self);
+Camel *Camel_Delete(Camel *self);
 void Camel_OnEvent(Camel *self, unsigned int code);
 int Camel_MayAct(Camel *self);
 int Camel_ModelName(void);

@@ -84,7 +84,7 @@ void PocketsWallet_SetFramePalette2(PocketsWallet *wallet);
 void PocketsWallet_QueueScreen(PocketsWallet *wallet);
 void PocketsWallet_CloseLabels(PocketsWallet *wallet);
 void PocketsWallet_EndTasks(PocketsWallet *wallet);
-void PocketsWallet_Teardown(PocketsWallet *wallet);
+void PocketsWallet_TearDown(PocketsWallet *wallet);
 void PocketsWallet_Update(PocketsWallet *wallet);
 void PocketsWallet_BeginFrame(PocketsWallet *wallet);
 int PocketsWallet_LoadObjFiles(PocketsWallet *wallet);

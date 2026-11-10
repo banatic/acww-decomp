@@ -1670,7 +1670,7 @@ CLEAN_AS(func_020948b8, EffectKinds_FollowParticles)
 
 /* For each of the emitter's particles at its point in the world (its position plus its
  * emitter's): where the ground there has unk_30 and the particle is not above its limit (as
- * CollisionGround_GetLimit gives it when `scaled`, else as it is kept), the ground sets start at
+ * CollisionGround_Limit gives it when `scaled`, else as it is kept), the ground sets start at
  * that height; elsewhere, where it is not above height 0, the floor
  * sets start at height 0. Each set (-1 for none) is a one-shot set of kind 0x64 with no angle,
  * and a particle that starts them is made as old as its life (so it ends). Whether the emitter
@@ -1693,7 +1693,7 @@ static int effect_kinds_land_particles(ParticleEmitter *emitter, int scaled, int
         at.z = effect_kinds_add(particle->position.z, particle->emitter_pos.z);
         CollisionGround_Init(&ground, &at, 0, 0);
         if (ground.unk_30 != 0) {
-            fx32 top = scaled ? CollisionGround_GetLimit(&ground) : ground.limit;
+            fx32 top = scaled ? CollisionGround_Limit(&ground) : ground.limit;
 
             if (at.y <= top) {
                 at.y = top;
@@ -1723,7 +1723,7 @@ static int effect_kinds_land_particles(ParticleEmitter *emitter, int scaled, int
 }
 
 /* func_0209493c: the emitter's particles that have come down (effect_kinds_land_particles),
- * to the ground's limit as CollisionGround_GetLimit gives it where the ground has unk_30, else
+ * to the ground's limit as CollisionGround_Limit gives it where the ground has unk_30, else
  * to height 0. */
 int EffectKinds_LandParticles(ParticleEmitter *emitter, int ground_set, void *const *ground_setups, int ground_set2,
                               void *const *ground_setups2, int floor_set, void *const *floor_setups, int floor_set2,
@@ -1735,7 +1735,7 @@ int EffectKinds_LandParticles(ParticleEmitter *emitter, int ground_set, void *co
 CLEAN_AS(func_0209493c, EffectKinds_LandParticles)
 
 /* func_02094a4c: as EffectKinds_LandParticles, with the ground's limit as it is kept (without
- * CollisionGround_GetLimit's scaling on attribute 0x16). */
+ * CollisionGround_Limit's scaling on attribute 0x16). */
 int EffectKinds_LandParticlesAtLimit(ParticleEmitter *emitter, int ground_set, void *const *ground_setups, int ground_set2,
                                      void *const *ground_setups2, int floor_set, void *const *floor_setups, int floor_set2,
                                      void *const *floor_setups2)

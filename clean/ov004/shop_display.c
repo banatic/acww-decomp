@@ -409,7 +409,7 @@ int ShopDisplay_Create(ShopDisplay *self)
 CLEAN_AS(func_ov004_02246728, ShopDisplay_Create)
 
 /* func_ov004_022467e0 (vtable slot 17): the destructor, and the process freed. */
-ShopDisplay *ShopDisplay_DestructFree(ShopDisplay *self)
+ShopDisplay *ShopDisplay_DestructDelete(ShopDisplay *self)
 {
     self->base.vtable = data_ov004_022568c4;
     self->base.vtable = data_020da13c;
@@ -417,7 +417,7 @@ ShopDisplay *ShopDisplay_DestructFree(ShopDisplay *self)
     Heap_FreeAux(self);
     return self;
 }
-CLEAN_AS(func_ov004_022467e0, ShopDisplay_DestructFree)
+CLEAN_AS(func_ov004_022467e0, ShopDisplay_DestructDelete)
 
 /* func_ov004_02246808 (vtable slot 16): the destructor. */
 ShopDisplay *ShopDisplay_Destruct(ShopDisplay *self)

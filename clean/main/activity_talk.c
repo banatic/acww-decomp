@@ -94,14 +94,14 @@ void ActivityReceiver_SetOwner(ActivityReceiver *receiver, Activity *owner)
 CLEAN_AS(func_020a2548, ActivityReceiver_SetOwner)
 
 /* func_020a254c: the receiver destructed (its base class's destructor), then freed. */
-ActivityReceiver *ActivityReceiver_DestructFree(ActivityReceiver *receiver)
+ActivityReceiver *ActivityReceiver_Delete(ActivityReceiver *receiver)
 {
     receiver->vtable = data_020e3b38;
     TalkReceiver_Destruct((TalkReceiver *) receiver);
     Heap_OperatorDeleteB(receiver);
     return receiver;
 }
-CLEAN_AS(func_020a254c, ActivityReceiver_DestructFree)
+CLEAN_AS(func_020a254c, ActivityReceiver_Delete)
 
 /* func_020a256c: the receiver destructed (its base class's destructor). */
 ActivityReceiver *ActivityReceiver_Destruct(ActivityReceiver *receiver)

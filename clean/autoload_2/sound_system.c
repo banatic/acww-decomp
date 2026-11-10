@@ -706,7 +706,7 @@ CLEAN_AS(func_020f1d3c, SoundSystem_Random)
 int SoundSystem_LoadBank(SoundSystem *sys, int bank)
 {
     (void) sys;
-    return func_0210e198(bank, Sound_GetHeap());
+    return func_0210e198(bank, Sound_Heap());
 }
 CLEAN_AS(func_020f1d84, SoundSystem_LoadBank)
 
@@ -907,7 +907,7 @@ void SoundSystem_Init(SoundSystem *sys, u8 *memory, u32 size, const void *archiv
     sys->output_effect = 1;
     SoundSystem_StartOutputEffect(sys);
     func_0210ab38(0x7f);
-    func_0210fe08(10, Sound_GetHeap());
+    func_0210fe08(10, Sound_Heap());
     func_0210fbf8(&sys->stream);
     Sound_LoadGroup(0);
     Sound_InitHandle(&sys->voice);

@@ -507,7 +507,7 @@ void MesSliderWindow_Update(MesSliderWindow *self)
 CLEAN_AS(func_020abe7c, MesSliderWindow_Update)
 
 /* func_020ac040 (vtable slot 1): destroyed (as MesSliderWindow_Destruct) and freed. */
-MesSliderWindow *MesSliderWindow_DestructDelete(MesSliderWindow *self)
+MesSliderWindow *MesSliderWindow_Delete(MesSliderWindow *self)
 {
     self->bg.vtable = data_020e3fe4;
     MesBgSlider_Destruct(&self->slider);
@@ -517,7 +517,7 @@ MesSliderWindow *MesSliderWindow_DestructDelete(MesSliderWindow *self)
     Heap_OperatorDeleteB(self);
     return self;
 }
-CLEAN_AS(func_020ac040, MesSliderWindow_DestructDelete)
+CLEAN_AS(func_020ac040, MesSliderWindow_Delete)
 
 /* func_020ac078 (vtable slot 0): the destructor: the slider, the button, the marker, then the
  * base. */

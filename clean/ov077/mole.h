@@ -80,7 +80,7 @@ extern MoleStep data_ov077_022799a0[MOLE_STATES];
 
 /* His object. */
 Mole *Mole_Destruct(Mole *mole);
-Mole *Mole_DestructDelete(Mole *mole);
+Mole *Mole_Delete(Mole *mole);
 void Mole_OnEvent(Mole *mole, int code);
 int Mole_MayAct(void);
 void Mole_SetState(Mole *mole, int state);

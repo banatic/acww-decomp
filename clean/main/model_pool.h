@@ -57,7 +57,7 @@ void ModelPool_Destruct(void *pool);
 void ModelPool_Init(ModelPool *pool);
 
 int ModelPoolEntry_Empty(ModelPoolEntry *entry);
-int ModelPoolEntry_Setup(ModelPoolEntry *entry, int texture_size, int palette_size, int heap_size, int parent);
+int ModelPoolEntry_SetUp(ModelPoolEntry *entry, int texture_size, int palette_size, int heap_size, int parent);
 int ModelPoolEntry_Vram(ModelPoolEntry *entry);
 int ModelPoolEntry_Heap(ModelPoolEntry *entry);
 ModelPoolEntry *ModelPoolEntry_Construct(ModelPoolEntry *entry);

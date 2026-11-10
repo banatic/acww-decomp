@@ -90,7 +90,7 @@ static PagedChoice *fr_choice(FriendRoster *self)
 
 static MenuTabs *fr_menu(FriendRoster *self)
 {
-    return (MenuTabs *) (void *) Process_GetParent((Process *) (void *) self);
+    return (MenuTabs *) (void *) Process_Parent((Process *) (void *) self);
 }
 
 /* The members' destructors, last member first, then the base's. */
@@ -151,8 +151,8 @@ int FriendRoster_HasFriend(FriendRoster *self, const void *friend_data)
 {
     WifiFriend *friends = FriendRoster_Friends(self);
     for (int i = 0; i < WIFI_FRIENDS; i++) {
-        if (WifiFriendData_IsSet(WifiFriend_GetFriendData(&friends[i])) &&
-            WifiFriendData_Matches(friend_data, WifiFriend_GetFriendData(&friends[i])) != 0) {
+        if (WifiFriendData_IsSet(WifiFriend_FriendData(&friends[i])) &&
+            WifiFriendData_Matches(friend_data, WifiFriend_FriendData(&friends[i])) != 0) {
             return 1;
         }
     }
@@ -165,7 +165,7 @@ int FriendRoster_FreeIndex(FriendRoster *self)
 {
     WifiFriend *friends = FriendRoster_Friends(self);
     for (int i = 0; i < WIFI_FRIENDS; i++) {
-        if (!WifiFriendData_IsSet(WifiFriend_GetFriendData(&friends[i]))) {
+        if (!WifiFriendData_IsSet(WifiFriend_FriendData(&friends[i]))) {
             return i;
         }
     }
@@ -173,28 +173,28 @@ int FriendRoster_FreeIndex(FriendRoster *self)
 }
 CLEAN_AS(func_ov119_0229ac80, FriendRoster_FreeIndex)
 
-/* func_ov119_0229acb4: the roster's friend data made NitroDWC's (Wfc_GetFriendList): each
+/* func_ov119_0229acb4: the roster's friend data made NitroDWC's (Wfc_FriendList): each
  * place where either has a friend (a type not 0, or a set friend) takes NitroDWC's data, unless
  * func_0210101c finds the two alike and both are buddies or both not. Whether any changed. */
 int FriendRoster_SyncFromNetwork(FriendRoster *self)
 {
-    FriendList *list = Wfc_GetFriendList();
+    FriendList *list = Wfc_FriendList();
     WifiFriend *friends = FriendRoster_Friends(self);
     int changed = 0;
     for (int i = 0; i < WIFI_FRIENDS; i++) {
         WifiFriendData data;
         MI_CpuCopy8(list->friend_data[i], &data, sizeof(data));
-        if (Wfc_GetFriendDataType(&data) == 0 && !WifiFriendData_IsSet(WifiFriend_GetFriendData(&friends[i]))) {
+        if (Wfc_GetFriendDataType(&data) == 0 && !WifiFriendData_IsSet(WifiFriend_FriendData(&friends[i]))) {
             continue;
         }
         WifiFriend *entry = &friends[i];
-        if (Wfc_Call0210101c(&data, WifiFriendData_GetData(WifiFriend_GetFriendData(entry)))) {
+        if (Wfc_Call0210101c(&data, WifiFriendData_Data(WifiFriend_FriendData(entry)))) {
             int buddy = Wfc_IsBuddyFriendData(&data);
-            if (buddy == Wfc_IsBuddyFriendData(WifiFriendData_GetData(WifiFriend_GetFriendData(entry)))) {
+            if (buddy == Wfc_IsBuddyFriendData(WifiFriendData_Data(WifiFriend_FriendData(entry)))) {
                 continue;
             }
         }
-        MI_CpuCopy8(&data, WifiFriendData_GetData(WifiFriend_GetFriendData(entry)), sizeof(data));
+        MI_CpuCopy8(&data, WifiFriendData_Data(WifiFriend_FriendData(entry)), sizeof(data));
         changed = 1;
     }
     return changed;
@@ -220,7 +220,7 @@ int FriendRoster_HasGap(FriendRoster *self)
     WifiFriend *friends = FriendRoster_Friends(self);
     int gap = 0;
     for (int i = 0; i < WIFI_FRIENDS; i++) {
-        if (WifiFriendData_IsSet(WifiFriend_GetFriendData(&friends[i]))) {
+        if (WifiFriendData_IsSet(WifiFriend_FriendData(&friends[i]))) {
             if (gap) {
                 return 1;
             }
@@ -239,7 +239,7 @@ void FriendRoster_BuildSlots(FriendRoster *self)
     WifiFriend *friends = FriendRoster_Friends(self);
     int count = 0;
     for (int i = 0; i < WIFI_FRIENDS; i++) {
-        if (WifiFriendData_IsSet(WifiFriend_GetFriendData(&friends[i]))) {
+        if (WifiFriendData_IsSet(WifiFriend_FriendData(&friends[i]))) {
             self->slots[count] = (u8) i;
             count++;
         }
@@ -276,16 +276,16 @@ CLEAN_AS(func_ov119_0229ae28, FriendRoster_FriendAtCursor)
 WifiFriend *FriendRoster_Friends(FriendRoster *self)
 {
     (void) self;
-    return WifiFriendList_GetEntries(PlayerRecord_WifiFriends(PlayerRecords_Current()));
+    return WifiFriendList_Entries(PlayerRecord_WifiFriends(PlayerRecords_Current()));
 }
 CLEAN_AS(func_ov119_0229ae50, FriendRoster_Friends)
 
-/* func_ov119_0229ae68: whether the network is hosting or joining a game (Net_GetMode 3 or 4):
+/* func_ov119_0229ae68: whether the network is hosting or joining a game (Net_Mode 3 or 4):
  * then NitroDWC's friend list is changed with the roster. */
 int FriendRoster_IsOnline(FriendRoster *self)
 {
     (void) self;
-    u8 mode = Net_GetMode();
+    u8 mode = Net_Mode();
     return mode == FRIEND_ROSTER_NET_HOSTING || mode == FRIEND_ROSTER_NET_JOINING;
 }
 CLEAN_AS(func_ov119_0229ae68, FriendRoster_IsOnline)
@@ -340,7 +340,7 @@ CLEAN_AS(func_ov119_0229c318, FriendRoster_BeginFrame)
 
 /* func_ov119_0229c34c: the scene's members torn down: the choice dismissed, the labels
  * released, the layer tasks ended. */
-void FriendRoster_Teardown(FriendRoster *self)
+void FriendRoster_TearDown(FriendRoster *self)
 {
     PagedChoice_Dismiss(fr_choice(self));
     FriendRoster_ReleaseLabels(self);
@@ -348,13 +348,13 @@ void FriendRoster_Teardown(FriendRoster *self)
         LayerTask_End(&self->tasks[i]);
     }
 }
-CLEAN_AS(func_ov119_0229c34c, FriendRoster_Teardown)
+CLEAN_AS(func_ov119_0229c34c, FriendRoster_TearDown)
 
 /* func_ov119_0229c388: the scene's setup. Offline a roster with gaps is compacted, online it
  * takes NitroDWC's friend data; either change is told to the menu. Then no labels, no flags, the
  * cursor on the first page tab, the list's map, no row picked, no page yet, the button's palette
  * 7, the fade at its end, this user's friend key, the choice on layer 3 and the slots. */
-void FriendRoster_Setup(FriendRoster *self)
+void FriendRoster_SetUp(FriendRoster *self)
 {
     if (!FriendRoster_IsOnline(self)) {
         if (FriendRoster_HasGap(self)) {
@@ -377,7 +377,7 @@ void FriendRoster_Setup(FriendRoster *self)
     PagedChoice_Init(fr_choice(self), FRIEND_ROSTER_LAYER_CHOICE, 1, data_ov119_0229cfe0);
     FriendRoster_BuildSlots(self);
 }
-CLEAN_AS(func_ov119_0229c388, FriendRoster_Setup)
+CLEAN_AS(func_ov119_0229c388, FriendRoster_SetUp)
 
 /* ---- The states */
 
@@ -600,7 +600,7 @@ CLEAN_AS(func_ov119_0229c94c, FriendRoster_Draw)
 int FriendRoster_Close(FriendRoster *self)
 {
     MenuTabs_ChildClosed(fr_menu(self));
-    FriendRoster_Teardown(self);
+    FriendRoster_TearDown(self);
     return 1;
 }
 CLEAN_AS(func_ov119_0229caf8, FriendRoster_Close)
@@ -609,7 +609,7 @@ CLEAN_AS(func_ov119_0229caf8, FriendRoster_Close)
  * Answers 1. */
 int FriendRoster_Start(FriendRoster *self)
 {
-    FriendRoster_Setup(self);
+    FriendRoster_SetUp(self);
     MenuScene_SetState(fr_scene(self), FRIEND_ROSTER_STATE_LOAD);
     MenuScene_SetPhase(fr_scene(self), FRIEND_ROSTER_PHASE_STATES);
     return 1;

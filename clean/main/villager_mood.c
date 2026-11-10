@@ -120,7 +120,7 @@ void VillagerMood_Update(VillagerMood *mood, u8 *villager)
 {
     VillagerState *entry =
         VillagerStatus_StateEntry(*(u8 **) (void *) villager_mood_at(villager, VILLAGER_MOOD_TOWN_VILLAGER));
-    int shown = VillagerState_GetMood(entry);
+    int shown = VillagerState_Mood(entry);
 
     if (VillagerMood_IsOn(mood) == 0) {
         return;
@@ -147,7 +147,7 @@ void VillagerMood_Update(VillagerMood *mood, u8 *villager)
             VillagerMood_ClearAsked(mood);
         }
         VillagerState_CountDownMood(entry);
-        if (shown != VILLAGER_MOOD_NONE && VillagerState_GetMoodFrames(entry) == 0) {
+        if (shown != VILLAGER_MOOD_NONE && VillagerState_MoodFrames(entry) == 0) {
             shown = VILLAGER_MOOD_NONE;
             VillagerState_SetMood(entry, shown);
         }

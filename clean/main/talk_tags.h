@@ -55,16 +55,16 @@ typedef struct TalkTagsWalker {
 void TalkTags_NotePart2(TalkTagsWalker *walker);
 void TalkTags_NotePart1(TalkTagsWalker *walker);
 void TalkTags_NotePart0(TalkTagsWalker *walker);
-void TalkTags_Nothing11_4(void);
+void TalkTags_NothingGroup11Tag4(void);
 void TalkTags_ConvertNext(TalkTagsWalker *walker);
 void TalkTags_SetE0Two(TalkTagsWalker *walker);
 void TalkTags_SetE0One(TalkTagsWalker *walker);
 
 /* Groups 8 and 10. */
-void TalkTags_Nothing10_0(void *walker);
-void TalkTags_Nothing8_2(void *walker);
-void TalkTags_Nothing8_1(void *walker);
-void TalkTags_Nothing8_0(void *walker);
+void TalkTags_NothingGroup10Tag0(void *walker);
+void TalkTags_NothingGroup8Tag2(void *walker);
+void TalkTags_NothingGroup8Tag1(void *walker);
+void TalkTags_NothingGroup8Tag0(void *walker);
 
 /* Group 9. */
 void TalkTags_PassTurn(TalkTagsWalker *walker);
@@ -100,7 +100,7 @@ void TalkTags_SliderChoices(TalkTagsWalker *walker);
 /* Group 4. */
 void TalkTags_PutBoom(TalkTagsWalker *walker);
 void TalkTags_PutPraise(TalkTagsWalker *walker);
-void TalkTags_Nothing4_32(void);
+void TalkTags_NothingGroup4Tag32(void);
 void TalkTags_PutNickname(TalkTagsWalker *walker);
 void TalkTags_PutImpression(TalkTagsWalker *walker);
 void TalkTags_PutValue3(TalkTagsWalker *walker);

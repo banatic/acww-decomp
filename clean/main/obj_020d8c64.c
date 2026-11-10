@@ -33,7 +33,7 @@ static u8 *at(void *object, u32 offset)
     return (u8 *) object + offset;
 }
 
-/* func_020120e0: the destructor: as Obj020d8c64_DestructDelete without freeing the memory.
+/* func_020120e0: the destructor: as Obj020d8c64_Delete without freeing the memory.
  * Returns the object. */
 void *Obj020d8c64_Destruct(void *object)
 {
@@ -61,7 +61,7 @@ CLEAN_AS(func_020120e0, Obj020d8c64_Destruct)
 /* func_02012014: the deleting destructor (vtable slot 0x44): the class's vtable, the members in
  * the reverse order of their places (the emitter at 0x514 gets its own vtable first), the
  * base, then the memory freed to the auxiliary heap. Returns the object. */
-void *Obj020d8c64_DestructDelete(void *object)
+void *Obj020d8c64_Delete(void *object)
 {
     *(const u8 **) object = data_020d8c64;
     SceneAction_Destruct((SceneAction *) (void *) at(object, 0x618));
@@ -83,7 +83,7 @@ void *Obj020d8c64_DestructDelete(void *object)
     Heap_FreeAux(object);
     return object;
 }
-CLEAN_AS(func_02012014, Obj020d8c64_DestructDelete)
+CLEAN_AS(func_02012014, Obj020d8c64_Delete)
 
 /* ---- The reaction last offered (an act number), kept at 0x63e */
 

@@ -58,7 +58,7 @@ int ScreenIndicators_Create(void)
 CLEAN_AS(func_0208af98, ScreenIndicators_Create)
 
 /* func_0208afb4: the destructor, then the process freed. */
-ScreenIndicators *ScreenIndicators_DestructFree(ScreenIndicators *indicators)
+ScreenIndicators *ScreenIndicators_DestructDelete(ScreenIndicators *indicators)
 {
     indicators->process.vtable = data_020e2288;
     indicators->process.vtable = data_020da13c;
@@ -66,7 +66,7 @@ ScreenIndicators *ScreenIndicators_DestructFree(ScreenIndicators *indicators)
     Heap_FreeAux(indicators);
     return indicators;
 }
-CLEAN_AS(func_0208afb4, ScreenIndicators_DestructFree)
+CLEAN_AS(func_0208afb4, ScreenIndicators_DestructDelete)
 
 /* func_0208afdc: the destructor. */
 ScreenIndicators *ScreenIndicators_Destruct(ScreenIndicators *indicators)

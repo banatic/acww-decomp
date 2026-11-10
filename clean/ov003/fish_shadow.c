@@ -280,13 +280,13 @@ static void fish_shadow_destruct(FishShadowProcess *self)
 }
 
 /* func_ov003_02228e20 (vtable slot 17): the destructor, and the process freed. */
-FishShadowProcess *FishShadow_DestructFree(FishShadowProcess *self)
+FishShadowProcess *FishShadow_Delete(FishShadowProcess *self)
 {
     fish_shadow_destruct(self);
     Heap_FreeAux(self);
     return self;
 }
-CLEAN_AS(func_ov003_02228e20, FishShadow_DestructFree)
+CLEAN_AS(func_ov003_02228e20, FishShadow_Delete)
 
 /* func_ov003_02228e58 (vtable slot 16): the destructor. */
 FishShadowProcess *FishShadow_Destruct(FishShadowProcess *self)
@@ -920,14 +920,14 @@ CLEAN_AS(func_ov003_0222c41c, FishShadow_New)
 
 /* func_ov003_0222c434 (slot 1 of vtable data_ov003_0223c0d4): the fin animation destroyed and
  * freed. */
-ModelAnim *FishFinAnim_DestructDelete(ModelAnim *anim)
+ModelAnim *FishFinAnim_Delete(ModelAnim *anim)
 {
     anim->ctrl.vtable = data_ov003_0223c0d4;
     ModelAnim_Destruct(anim);
     Heap_OperatorDeleteB(anim);
     return anim;
 }
-CLEAN_AS(func_ov003_0222c434, FishFinAnim_DestructDelete)
+CLEAN_AS(func_ov003_0222c434, FishFinAnim_Delete)
 
 /* func_ov003_0222c494 (registered at the overlay's start): the six shadows destroyed. */
 void FishShadow_DestroyAll(void *object)

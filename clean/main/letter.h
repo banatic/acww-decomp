@@ -105,7 +105,7 @@ typedef struct LetterBodyText {
 
 int LetterBodyText_Buffer(int text);
 int LetterBodyText_Capacity(void);
-LetterBodyText *LetterBodyText_DestructDelete(LetterBodyText *text);
+LetterBodyText *LetterBodyText_Delete(LetterBodyText *text);
 void *LetterBodyText_Destruct(void *text);
 void *LetterBodyText_Construct(void *text);
 
@@ -159,7 +159,7 @@ void Letter_StartBottle(Letter *letter);
 void Letter_StartWriting(Letter *letter, int paper);
 u8 Letter_Paper(const Letter *letter);
 void Letter_Clear(Letter *letter);
-Letter *Letter_DestructDelete(Letter *letter);
+Letter *Letter_Delete(Letter *letter);
 void Letter_Destruct(Letter *letter);
 void Letter_Construct(Letter *letter);
 

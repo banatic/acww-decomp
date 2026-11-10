@@ -91,11 +91,11 @@ u8 *CarpetTexture_Construct(u8 *file)
 CLEAN_AS(func_0203cbcc, CarpetTexture_Construct)
 
 /* func_0203cfa8 */
-G3dResTex *ClothTexture_GetTextures(DesignModel *file)
+G3dResTex *ClothTexture_CallTextures(DesignModel *file)
 {
     return ClothTexture_Textures(file);
 }
-CLEAN_AS(func_0203cfa8, ClothTexture_GetTextures)
+CLEAN_AS(func_0203cfa8, ClothTexture_CallTextures)
 
 /* func_0203cfb0 */
 int ClothTexture_PutDesign(DesignModel *file, Design *design)

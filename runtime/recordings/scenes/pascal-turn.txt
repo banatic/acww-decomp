@@ -5,7 +5,7 @@
 # talk ends he turns back to the angle he started with (Otter_EnterTurn, _UpdateTurn) and stays.
 # B ends his next talk; north, east past villager 0's house (shut: its villager is out) and west
 # to the player's house (tile 41.5, 55), UP with A into it (inside at about 9450): the town's
-# scene ends with the otter in it, so he is deleted (Otter_DestructDelete, OtterTalk_Destruct).
+# scene ends with the otter in it, so he is deleted (Otter_Delete, OtterTalk_Destruct).
 900 START -
 906 - -
 1000 A -

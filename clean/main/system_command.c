@@ -10,7 +10,7 @@
 #include "villager_state.h"
 #include "villager_town.h"
 
-#define SHARE_BLOCK 4          /* Session_GetSendBlock(session, 4): where system packets are built */
+#define SHARE_BLOCK 4          /* Session_SendBlock(session, 4): where system packets are built */
 #define SYSTEM_RUN_COMMANDS 13 /* the system packet kind of a command list */
 
 /* The villagers' states (villager_state.h, the entries of data_021d13e4) opcode 1 carries, and
@@ -62,19 +62,19 @@ int SystemCommand_BuildList(int slot)
 
     NetSession *session = data_020ccf94;
     Session_ClearShareLength(session);
-    SessionNet_WriteSystemHeader(Session_GetSendBlock(session, SHARE_BLOCK), 0, SYSTEM_RUN_COMMANDS);
+    SessionNet_WriteSystemHeader(Session_SendBlock(session, SHARE_BLOCK), 0, SYSTEM_RUN_COMMANDS);
     Session_SetShareLength(session, 1);
 
     for (int opcode = 0; opcode < SYSTEM_COMMAND_OPCODES; opcode++) {
         /* The header's room is kept, the writer appends the data, then the header is filled in
          * or, with no data, given back. */
-        u32 start = Session_GetShareLength(session);
-        u8 *header = Session_GetSendBlock(session, SHARE_BLOCK) + start;
+        u32 start = Session_ShareLength(session);
+        u8 *header = Session_SendBlock(session, SHARE_BLOCK) + start;
         Session_SetShareLength(session, (int) (start + SYSTEM_COMMAND_HEADER_SIZE));
 
         data_020ccf98[opcode](slot);
 
-        u32 end = Session_GetShareLength(session);
+        u32 end = Session_ShareLength(session);
         if (end <= start + SYSTEM_COMMAND_HEADER_SIZE) {
             Session_SetShareLength(session, (int) start);
         } else {

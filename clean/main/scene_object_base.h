@@ -111,7 +111,7 @@ void SceneObjectBase_AfterCreate(SceneObjectBase *object, int outcome);
 int SceneObjectBase_CanCreate(SceneObjectBase *object);
 void SceneObjectBase_ClearRegistry(void);
 SceneObjectBase *SceneObjectBase_DestructBase(SceneObjectBase *object);
-SceneObjectBase *SceneObjectBase_DestructFree(SceneObjectBase *object);
+SceneObjectBase *SceneObjectBase_Delete(SceneObjectBase *object);
 SceneObjectBase *SceneObjectBase_Destruct(SceneObjectBase *object);
 SceneObjectBase *SceneObjectBase_Construct(SceneObjectBase *object);
 

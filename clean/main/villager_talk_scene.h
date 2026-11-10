@@ -54,7 +54,7 @@ void VillagerTalkScene_SetCommandEnd(VillagerTalk *talk, MemberPointer member);
 void VillagerTalkScene_Step(VillagerTalk *talk);
 void VillagerTalkScene_Start(VillagerTalk *talk, u8 *villager, unsigned int lines);
 VillagerTalk *VillagerTalkScene_DestructBody(VillagerTalk *talk);
-VillagerTalk *VillagerTalkScene_DestructDelete(VillagerTalk *talk);
+VillagerTalk *VillagerTalkScene_Delete(VillagerTalk *talk);
 VillagerTalk *VillagerTalkScene_Destruct(VillagerTalk *talk);
 VillagerTalk *VillagerTalkScene_Construct(VillagerTalk *talk);
 VillagerTalk *VillagerTalkScene_ConstructAlt(VillagerTalk *talk);

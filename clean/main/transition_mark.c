@@ -105,7 +105,7 @@ int TransitionMarkProcess_Create(void)
 CLEAN_AS(func_0208f690, TransitionMarkProcess_Create)
 
 /* func_0208f6a0: the destructor, then the process freed. */
-TransitionMarkProcess *TransitionMarkProcess_DestructFree(TransitionMarkProcess *process)
+TransitionMarkProcess *TransitionMarkProcess_DestructDelete(TransitionMarkProcess *process)
 {
     process->process.vtable = data_020e241c;
     process->process.vtable = data_020da13c;
@@ -113,7 +113,7 @@ TransitionMarkProcess *TransitionMarkProcess_DestructFree(TransitionMarkProcess 
     Heap_FreeAux(process);
     return process;
 }
-CLEAN_AS(func_0208f6a0, TransitionMarkProcess_DestructFree)
+CLEAN_AS(func_0208f6a0, TransitionMarkProcess_DestructDelete)
 
 /* func_0208f6c8: the destructor. */
 TransitionMarkProcess *TransitionMarkProcess_Destruct(TransitionMarkProcess *process)

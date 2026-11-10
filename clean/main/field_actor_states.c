@@ -766,7 +766,7 @@ void FieldActor_EnterState(FieldActor *actor, const StateRequest *request)
                 FIELD_ACTOR_ENTERED_STATE(actor) = state;
             }
         } else {
-            actor->unk_C84 = Session_GetFrameSequence(session);
+            actor->unk_C84 = Session_FrameSequence(session);
         }
     }
     FieldActor_CallEntry(&entry, actor, request, previous);
@@ -5843,7 +5843,7 @@ void FieldActor_StartState0(FieldActor *actor, const int *prepared)
             if (SceneTables_NoPlayerInClosedScene() == 0 || FieldActor_AnyPlayerUnreported(actor) == 1) {
                 FieldLabel_ShowMessage10();
                 FieldActor_SetFlag(actor, 0x1b);
-            } else if (data_020ccf94->local_slot == 0 && (u8) (Net_GetMode() - 3) <= 1) {
+            } else if (data_020ccf94->local_slot == 0 && (u8) (Net_Mode() - 3) <= 1) {
                 Wfc_AllowNewClients();
             }
         }

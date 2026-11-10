@@ -66,7 +66,7 @@ extern const MemberPointer data_ov126_022a1fc8, data_ov126_022a1fd0, data_ov126_
 
 static Process *keyboard_entry_parent(KeyboardEntry *self)
 {
-    return Process_GetParent((Process *) (void *) self);
+    return Process_Parent((Process *) (void *) self);
 }
 
 static int keyboard_entry_is_friend_mode(unsigned int mode)
@@ -165,20 +165,20 @@ void KeyboardEntry_BeginInputFrame(KeyboardEntry *self)
 CLEAN_AS(func_ov126_022a1480, KeyboardEntry_BeginInputFrame)
 
 /* func_ov126_022a149c: the members' boxes closed and the keyboard's own teardown. */
-void KeyboardEntry_Teardown(KeyboardEntry *self)
+void KeyboardEntry_TearDown(KeyboardEntry *self)
 {
     HanPanel_CloseTexts((HanPanel *) (void *) self->field);
     SoftKeyboard_Finish(keyboard_entry_keyboard(self));
     ButtonPanel_CloseTexts(&self->panel);
     TextLabel_CloseBox(&self->hint);
 }
-CLEAN_AS(func_ov126_022a149c, KeyboardEntry_Teardown)
+CLEAN_AS(func_ov126_022a149c, KeyboardEntry_TearDown)
 
 /* func_ov126_022a14d0: the scene set up for GroupParams' mode: the panel's kind (the two buttons
  * and other sounds for a friend being added), the keyboard's mode by it, the field's size and
  * place by its kind, the text loaded (kept only when not blank) and the hint for modes 0x10,
  * 0x12, 0x18 and 0x19. A mode not listed keeps the panel's kind the scene had. */
-void KeyboardEntry_Setup(KeyboardEntry *self)
+void KeyboardEntry_SetUp(KeyboardEntry *self)
 {
     self->flags = 0;
     self->hint_x = 0;
@@ -262,7 +262,7 @@ void KeyboardEntry_Setup(KeyboardEntry *self)
         KeyboardEntry_SetFlags(self, KEYBOARD_ENTRY_FLAG_HINT);
     }
 }
-CLEAN_AS(func_ov126_022a14d0, KeyboardEntry_Setup)
+CLEAN_AS(func_ov126_022a14d0, KeyboardEntry_SetUp)
 
 /* func_ov126_022a16ac: backgrounds 1 and 3 follow the wipe, whose y is kept. */
 void KeyboardEntry_ScrollWipe(KeyboardEntry *self)
@@ -377,7 +377,7 @@ void KeyboardEntry_AddFriend(KeyboardEntry *self)
 {
     WifiFriend *entry = KeyboardEntry_Friend();
     int index = GroupParams_Arg();
-    WifiFriendData *data = WifiFriendData_GetData(WifiFriend_GetFriendData(entry));
+    WifiFriendData *data = WifiFriendData_Data(WifiFriend_FriendData(entry));
     if (Wfc_SetFriend(index, data) != 0) {
         MenuScene_StartWipeOnWindow2(keyboard_entry_scene(self), 10, 0, 0, KEYBOARD_ENTRY_WIPE_MARGIN);
         KeyboardEntry_ScrollWipe(self);
@@ -414,7 +414,7 @@ void KeyboardEntry_Finish(KeyboardEntry *self)
                 MenuTabs_SelectTab(menu, KEYBOARD_ENTRY_TAB_6);
                 StateFlags_Set200();
                 if (Session_IsSlotTaken(data_020ccf94, data_020ccf94->local_slot)) {
-                    int net_mode = Net_GetMode();
+                    int net_mode = Net_Mode();
                     if (net_mode == 3 || net_mode == 4) {
                         MenuScene_SetState(keyboard_entry_scene(self), KEYBOARD_ENTRY_STATE_ADD_FRIEND);
                         KeyboardEntry_AddFriend(self);
@@ -634,7 +634,7 @@ int KeyboardEntry_Close(KeyboardEntry *self)
     } else {
         MenuDispatch_ChildClosed((MenuDispatch *) (void *) keyboard_entry_parent(self));
     }
-    KeyboardEntry_Teardown(self);
+    KeyboardEntry_TearDown(self);
     return 1;
 }
 CLEAN_AS(func_ov126_022a1e8c, KeyboardEntry_Close)
@@ -643,7 +643,7 @@ CLEAN_AS(func_ov126_022a1e8c, KeyboardEntry_Close)
  * Answers 1. */
 int KeyboardEntry_Start(KeyboardEntry *self)
 {
-    KeyboardEntry_Setup(self);
+    KeyboardEntry_SetUp(self);
     self->base.state = KEYBOARD_ENTRY_STATE_LOAD;
     MenuScene_SetPhase(keyboard_entry_scene(self), KEYBOARD_ENTRY_PHASE_WAIT);
     return 1;

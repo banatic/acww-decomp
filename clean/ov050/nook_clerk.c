@@ -400,7 +400,7 @@ void *NookClerk_Destruct(NookClerk *clerk)
 CLEAN_AS(func_ov050_02260420, NookClerk_Destruct)
 
 /* func_ov050_02260448 (vtable slot 0x44): the same, then the object freed. */
-void *NookClerk_DestructDelete(NookClerk *clerk)
+void *NookClerk_Delete(NookClerk *clerk)
 {
     *(const u8 **) (void *) clerk = data_ov050_02265a60;
     NookClerkTalk_Destruct(&clerk->talk);
@@ -408,7 +408,7 @@ void *NookClerk_DestructDelete(NookClerk *clerk)
     Heap_FreeAux(clerk);
     return clerk;
 }
-CLEAN_AS(func_ov050_02260448, NookClerk_DestructDelete)
+CLEAN_AS(func_ov050_02260448, NookClerk_Delete)
 
 /* func_ov050_02260474: the distance beyond which a clerk hurries, 4.0.
  * QUIRK: for a twin it first asks whether it is the nearer of the two, and does not use it. */

@@ -53,7 +53,7 @@ u16 *TownVillager_Clothes(u8 *villager);
 Letter *TownVillager_Letter(u8 *villager);
 u8 *TownVillager_Design(u8 *villager);
 NpcId *TownVillager_NpcId(u8 *villager);
-void TownVillager_Setup(u8 *villager, u32 number, int came, const TownName *town, u8 mode_draw);
+void TownVillager_SetUp(u8 *villager, u32 number, int came, const TownName *town, u8 mode_draw);
 void TownVillager_Copy(u8 *dst, const u8 *src);
 void TownVillager_Reset(u8 *villager);
 u8 *TownVillager_Destruct(u8 *villager);

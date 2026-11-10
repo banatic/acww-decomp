@@ -69,14 +69,14 @@ int WideText_Capacity(void)
 CLEAN_AS(func_02070794, WideText_Capacity)
 
 /* func_02070798 (vtable entry 1) */
-WideText *WideText_DestructDelete(WideText *text)
+WideText *WideText_Delete(WideText *text)
 {
     text->vtable = &data_020e1784;
     TextBase_WideDestruct(text);
     Heap_OperatorDeleteB(text);
     return text;
 }
-CLEAN_AS(func_02070798, WideText_DestructDelete)
+CLEAN_AS(func_02070798, WideText_Delete)
 
 /* func_020707b8 (vtable entry 0) */
 void *WideText_Destruct(void *text)
@@ -368,7 +368,7 @@ TextLabel *TextLabel_DestructCopy(TextLabel *label)
 CLEAN_AS(func_02070ba4, TextLabel_DestructCopy)
 
 /* func_02070bc4 (vtable entry 1) */
-TextLabel *TextLabel_DestructDelete(TextLabel *label)
+TextLabel *TextLabel_Delete(TextLabel *label)
 {
     label->vtable = &data_020e179c;
     TextLabel_CloseBox(label);
@@ -376,7 +376,7 @@ TextLabel *TextLabel_DestructDelete(TextLabel *label)
     Heap_OperatorDeleteB(label);
     return label;
 }
-CLEAN_AS(func_02070bc4, TextLabel_DestructDelete)
+CLEAN_AS(func_02070bc4, TextLabel_Delete)
 
 /* func_02070be8 (vtable entry 0): free the box, then the base. */
 TextLabel *TextLabel_Destruct(TextLabel *label)

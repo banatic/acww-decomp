@@ -10,7 +10,7 @@
 TextDrawBox *TextBoxBase_Construct(TextDrawBox *box, int ram_dest, int cells, int rows);
 void TextBoxBase_Destruct(TextDrawBox *box);
 void TextBoxBase_DestructSlot(TextDrawBox *box);
-void *TextBoxBase_DestructDelete(void *box);
+void *TextBoxBase_Delete(void *box);
 TextDrawBox *TextBoxBase_ConstructInVram(TextDrawBox *box, u32 first_tile, u32 cells, u32 rows);
 
 #endif

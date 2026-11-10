@@ -70,7 +70,7 @@ typedef struct GullTalkStep {
 extern GullTalkStep data_ov072_02279a24[GULL_TALK_STEPS];
 
 /* Its life. */
-GullTalk *GullTalk_DestructDelete(GullTalk *talk);
+GullTalk *GullTalk_Delete(GullTalk *talk);
 GullTalk *GullTalk_Destruct(GullTalk *talk);
 GullTalk *GullTalk_Construct(GullTalk *talk);
 void GullTalk_Begin(GullTalk *talk, struct Gull *owner);

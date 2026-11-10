@@ -75,7 +75,7 @@ int DesignManager_Get(void);
 unsigned int DesignManager_Palette(DesignManager *manager, unsigned int index);
 int DesignManager_ShopTexture(DesignManager *manager, unsigned int index);
 int DesignManager_PlayerTexture(DesignManager *manager, int player, int index);
-void DesignManager_Shutdown(DesignManager *manager);
-void DesignManager_Startup(DesignManager *manager);
+void DesignManager_ShutDown(DesignManager *manager);
+void DesignManager_StartUp(DesignManager *manager);
 
 #endif

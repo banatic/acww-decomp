@@ -69,7 +69,7 @@ typedef struct PlayerRecordVillager {
 void PlayerRecord_SetMailMark(u8 *record, int mark);
 int PlayerRecord_MailMark(u8 *record);
 PlayerStorage *PlayerRecord_Storage(u8 *record);
-MailBox *PlayerRecord_Mailbox(u8 *record);
+MailboxRecord *PlayerRecord_Mailbox(u8 *record);
 Letter *PlayerRecord_KeptLetters(u8 *record);
 MomLetterState *PlayerRecord_MomLetterState(u8 *record);
 u8 *PlayerRecord_DatedLetter(u8 *record);

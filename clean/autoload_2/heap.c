@@ -767,14 +767,14 @@ Heap *ExpHeap_CreateAt(void *memory, u32 size)
 CLEAN_AS(func_020ea298, ExpHeap_CreateAt)
 
 /* func_020ea30c (vtable slot 1 of the frame heap): destructed and freed to the current heap. */
-Heap *FrameHeap_DestructFree(Heap *heap)
+Heap *FrameHeap_Delete(Heap *heap)
 {
     heap->vtable = &data_0213e608;
     Heap_DestructBase(heap);
     Heap_OperatorDeleteB(heap);
     return heap;
 }
-CLEAN_AS(func_020ea30c, FrameHeap_DestructFree)
+CLEAN_AS(func_020ea30c, FrameHeap_Delete)
 
 /* func_020ea338 (vtable slot 0 of the frame heap): back to the base class; the NNS heap is
  * left to Heap_Destroy. */
@@ -787,14 +787,14 @@ Heap *FrameHeap_Destruct(Heap *heap)
 CLEAN_AS(func_020ea338, FrameHeap_Destruct)
 
 /* func_020ea35c (vtable slot 1 of the expanded heap). */
-Heap *ExpHeap_DestructFree(Heap *heap)
+Heap *ExpHeap_Delete(Heap *heap)
 {
     heap->vtable = &data_0213e5b0;
     Heap_DestructBase(heap);
     Heap_OperatorDeleteB(heap);
     return heap;
 }
-CLEAN_AS(func_020ea35c, ExpHeap_DestructFree)
+CLEAN_AS(func_020ea35c, ExpHeap_Delete)
 
 /* func_020ea388 (vtable slot 0 of the expanded heap). */
 Heap *ExpHeap_Destruct(Heap *heap)
@@ -813,13 +813,13 @@ void Heap_DestructBase(Heap *heap)
 CLEAN_AS(func_020ea3ac, Heap_DestructBase)
 
 /* func_020ea3bc (vtable slot 1 of the base class). */
-Heap *Heap_DestructFree(Heap *heap)
+Heap *Heap_DestructDelete(Heap *heap)
 {
     heap->vtable = &data_0213e660;
     Heap_OperatorDeleteB(heap);
     return heap;
 }
-CLEAN_AS(func_020ea3bc, Heap_DestructFree)
+CLEAN_AS(func_020ea3bc, Heap_DestructDelete)
 
 /* func_020ea3e0 (vtable slot 0 of the base class): the same as Heap_DestructBase. */
 void Heap_Destruct(Heap *heap)

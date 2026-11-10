@@ -302,11 +302,11 @@ void RoomManager_PlaceMapFurniture(RoomManager *room)
 CLEAN_AS(func_ov004_0223c080, RoomManager_PlaceMapFurniture)
 
 /* func_ov004_0223c108: called by the room's start; does nothing. */
-void RoomManager_StartStub(RoomManager *room)
+void RoomManager_StartNothing(RoomManager *room)
 {
     (void) room;
 }
-CLEAN_AS(func_ov004_0223c108, RoomManager_StartStub)
+CLEAN_AS(func_ov004_0223c108, RoomManager_StartNothing)
 
 /* func_ov004_0223c1e0: the room's shared frame counter (0 to 0x27). */
 unsigned short RoomManager_FrameCounter(void)
@@ -452,7 +452,7 @@ int RoomManager_Init(RoomManager *room)
     u32 count = (u32) RoomObjects_Capacity();
     ModelPool_Create(&data_ov004_02259698, count, ROOM_MANAGER_POOL_TEXTURE, ROOM_MANAGER_POOL_PALETTE, heap_size,
                      func_0205ca98, func_0205ca7c, (void *) (uintptr_t) data_ov004_02256188);
-    RoomManager_StartStub(room);
+    RoomManager_StartNothing(room);
     if (RoomObjects_Capacity() > 1) {
         TvBroadcast_Init(&room->tv);
     }

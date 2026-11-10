@@ -1211,7 +1211,7 @@ void TownInsectMove_Update30(TownInsect *insect)
             if (ground.unk_30 != 0) {
                 floor = ground.limit;
             } else {
-                floor = CollisionGround_GetHeight(&ground, 1);
+                floor = CollisionGround_Height(&ground, 1);
                 floor += CollisionQuery_FloorHeight(0);
                 if (floor > 0x1000) {
                     if (floor > 0x4000) {
@@ -1632,7 +1632,7 @@ void TownInsectMove_Hop(TownInsect *insect, short *frames)
     if (ground.unk_30 != 0) {
         floor = ground.limit;
     } else {
-        floor = CollisionGround_GetHeight(&ground, 0);
+        floor = CollisionGround_Height(&ground, 0);
         if (floor > 0x4000) {
             floor = 0;
             position->x = before.x;
@@ -2066,7 +2066,7 @@ void TownInsectMove_FlyWaiting(TownInsect *insect)
                 return;
             }
         } else {
-            floor = CollisionGround_GetHeight(&ground, 1);
+            floor = CollisionGround_Height(&ground, 1);
             if (floor > 0x4000) {
                 floor = CollisionQuery_FloorHeight(0);
             } else {
@@ -3389,7 +3389,7 @@ int TownInsectMove_TargetAhead(TownInsect *insect, int angle, int steps)
         probe.z = position->z + FX_MulFunc(t, cos);
         CollisionGround ground;
         CollisionGround_Init(&ground, &probe, 0, 0);
-        int blocked = CollisionGround_GetHeight(&ground, 1) > floor;
+        int blocked = CollisionGround_Height(&ground, 1) > floor;
         CollisionGround_Destroy(&ground);
         if (blocked) {
             break;
@@ -3508,12 +3508,12 @@ int TownInsectMove_FeelersOffGround(TownInsect *insect)
     CollisionGround second;
 
     CollisionGround_Init(&first, &feelers[0], 0, 0);
-    fx32 height = CollisionGround_GetHeight(&first, 1);
+    fx32 height = CollisionGround_Height(&first, 1);
     if (height < 0 || height > top) {
         sides = (u8) (sides + 1);
     }
     CollisionGround_Init(&second, &feelers[1], 0, 0);
-    height = CollisionGround_GetHeight(&second, 1);
+    height = CollisionGround_Height(&second, 1);
     if (height < 0 || height > top) {
         sides = (u8) (sides + 2);
     }
@@ -3534,11 +3534,11 @@ int TownInsectMove_FeelersBlocked(TownInsect *insect)
     CollisionGround second;
 
     CollisionGround_Init(&first, &feelers[0], 0, 0);
-    if (CollisionGround_GetHeight(&first, 1) > top) {
+    if (CollisionGround_Height(&first, 1) > top) {
         sides = (u8) (sides + 1);
     }
     CollisionGround_Init(&second, &feelers[1], 0, 0);
-    if (CollisionGround_GetHeight(&second, 1) > top) {
+    if (CollisionGround_Height(&second, 1) > top) {
         sides = (u8) (sides + 2);
     }
     CollisionGround_Destroy(&second);

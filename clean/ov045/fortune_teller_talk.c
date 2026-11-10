@@ -344,7 +344,7 @@ static void ftt_mark_villager(VillagerState *entry, int counter, int state)
     if (Session_IsSlotTaken(data_020ccf94, data_020ccf94->local_slot) != 0 || entry == NULL) {
         return;
     }
-    if (VillagerState_GetMood(entry) == state) {
+    if (VillagerState_Mood(entry) == state) {
         VillagerState_AddMoodFrames(entry, counter);
     } else {
         VillagerState_SetMoodFrames(entry, counter);

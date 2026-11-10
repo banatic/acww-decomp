@@ -175,7 +175,7 @@ int RoomObject02252ba8_EnterStarting(RoomObject02252ba8 *object)
             object->countdown = 0;
         } else {
             RoomObject02252ba8_CueSetMode(object, CUE_WAIT);
-            step = RoomCells_GetStep(x, y, SceneQuery_Current()) & STEP_MASK;
+            step = RoomCells_Step(x, y, SceneQuery_Current()) & STEP_MASK;
             RoomObject02252ba8_CueSetTarget(object, (u8) step);
             base->unk_77C = (u8) step;
             room_object02252ba8_hold_joints(object, room_object02252ba8_mover_anim(RoomManager_Mover()));

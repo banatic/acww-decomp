@@ -12,7 +12,7 @@
 
 #define ACTIVITY_JOB_NONE 0
 
-int ActivityJob_1FShowingEndMessage(void);
+int ActivityJob_ShowingEndMessage1f(void);
 int ActivityJob_IsIdleForOv054(void);
 int ActivityJob_Save13Failed(void);
 int ActivityJob_IsIdleForOv048(void);

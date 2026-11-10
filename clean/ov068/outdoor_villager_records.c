@@ -131,7 +131,7 @@ u8 OutdoorVillagerRecords_Mood(u8 *villager)
     if (state == NULL) {
         return 0;
     }
-    return (u8) VillagerState_GetMood(state);
+    return (u8) VillagerState_Mood(state);
 }
 CLEAN_AS(func_ov068_0226cf8c, OutdoorVillagerRecords_Mood)
 
@@ -263,7 +263,7 @@ void OutdoorVillagerRecords_RefreshItem(u8 *villager)
         return;
     }
     VillagerState *state = VillagerStatus_StateEntry(record);
-    int kind = VillagerState_GetActivity(state);
+    int kind = VillagerState_Activity(state);
     int sky = Sky_Falling();
     if (sky != RECORDS_RAIN && records_is_umbrella(*VillagerState_HeldItem(state))) {
         u16 none = ITEM_CODE_NONE;
@@ -301,7 +301,7 @@ void OutdoorVillagerRecords_CheckActivity(u8 *villager)
     if (record == NULL || !records_valid(record)) {
         return;
     }
-    int kind = VillagerState_GetActivity(VillagerStatus_StateEntry(record));
+    int kind = VillagerState_Activity(VillagerStatus_StateEntry(record));
     VillagerModeRecord *mode = records_mode_record(record);
     DateTime now = {0};
     DateTime_Now(&now);

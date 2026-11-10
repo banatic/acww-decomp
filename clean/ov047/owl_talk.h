@@ -45,7 +45,7 @@ typedef struct OwlTalkStart {
 /* The constructor, the destructors and the reset. */
 OwlTalk *OwlTalk_Construct(OwlTalk *talk);
 void *OwlTalk_Destruct(OwlTalk *talk);
-void *OwlTalk_DestructDelete(void *talk);
+void *OwlTalk_Delete(void *talk);
 void OwlTalk_Reset(OwlTalk *talk);
 void OwlTalk_Begin(OwlTalk *talk, Owl *owner);
 

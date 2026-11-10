@@ -521,7 +521,7 @@ void VillagerResidents_MoveInNew(VillagerTown *town, const DateTime *now)
         int number = VillagerResidents_PickNumber(town);
         if (number != VILLAGER_RESIDENTS_NONE) {
             TownVillager_Reset(data_021d1554);
-            TownVillager_Setup(data_021d1554, (u8) number, 1, 0, 0);
+            TownVillager_SetUp(data_021d1554, (u8) number, 1, 0, 0);
             VillagerResidents_MoveIn(town, place, index, data_021d1554, VILLAGER_RESIDENTS_CAME_NEW, now);
         }
     }
@@ -570,7 +570,7 @@ void VillagerResidents_StartTown(VillagerTown *town)
         if (number == VILLAGER_RESIDENTS_NONE) {
             continue;
         }
-        TownVillager_Setup(town->villagers[i], (u8) number, 0, 0, 1);
+        TownVillager_SetUp(town->villagers[i], (u8) number, 0, 0, 1);
         VillagerResidents_AddNumber(met_numbers(town), (u8) number);
         excluded = (u8) (excluded | (1u << personality));
     }

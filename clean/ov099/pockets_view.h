@@ -15,7 +15,7 @@
  *
  * The scene runs in two ways, as state flag 2 says (func_0206fe54/func_0206fe60): by the touch
  * (sub states 0-3, the cursor sprite hidden) or by the keys (sub states 4-7, the cursor sprite
- * shown). Y in the keys' idle sub state closes it. Its setup (PocketsView_Setup) also puts
+ * shown). Y in the keys' idle sub state closes it. Its setup (PocketsView_SetUp) also puts
  * item 0x11a9 in pocket slot 0 and item 0x1548 in slot 2. Which part of the game opens the
  * scene is not known; the name says only what it shows. */
 #ifndef CLEAN_OV099_POCKETS_VIEW_H
@@ -201,8 +201,8 @@ void PocketsView_EndFrame(PocketsView *self);
 void PocketsView_BeginFrame(PocketsView *self);
 void PocketsView_EndInteractiveFrame(PocketsView *self);
 void PocketsView_BeginInteractiveFrame(PocketsView *self);
-void PocketsView_Teardown(PocketsView *self);
-void PocketsView_Setup(PocketsView *self);
+void PocketsView_TearDown(PocketsView *self);
+void PocketsView_SetUp(PocketsView *self);
 void PocketsView_WipeOut(PocketsView *self);
 void PocketsView_StartWipeOut(PocketsView *self);
 void PocketsView_WipeIn(PocketsView *self);

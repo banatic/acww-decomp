@@ -218,8 +218,8 @@ void ChatScene_EnsureBox(ChatScene *self);
 void ChatScene_FreeBox(ChatScene *self);
 void ChatScene_DrawKeyboard(ChatScene *self);
 void ChatScene_ShowSendFrame(ChatScene *self, int frame);
-void ChatScene_Teardown(ChatScene *self);
-void ChatScene_Setup(ChatScene *self);
+void ChatScene_TearDown(ChatScene *self);
+void ChatScene_SetUp(ChatScene *self);
 
 void ChatScene_UpdateError(ChatScene *self);
 void ChatScene_SendAnimOut(ChatScene *self);

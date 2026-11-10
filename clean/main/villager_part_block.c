@@ -204,25 +204,25 @@ static int villager_part_block_give(VillagerPartBlock *block, u16 item)
 }
 
 /* func_0209b254: type 17's setup. */
-int VillagerPartBlock_SetupType17(VillagerPartBlock *block)
+int VillagerPartBlock_SetUpType17(VillagerPartBlock *block)
 {
     return villager_part_block_give(block, VILLAGER_PART_BLOCK_ITEM_17);
 }
-CLEAN_AS(func_0209b254, VillagerPartBlock_SetupType17)
+CLEAN_AS(func_0209b254, VillagerPartBlock_SetUpType17)
 
 /* func_0209b270: type 16's setup. */
-int VillagerPartBlock_SetupType16(VillagerPartBlock *block)
+int VillagerPartBlock_SetUpType16(VillagerPartBlock *block)
 {
     return villager_part_block_give(block, VILLAGER_PART_BLOCK_ITEM_16);
 }
-CLEAN_AS(func_0209b270, VillagerPartBlock_SetupType16)
+CLEAN_AS(func_0209b270, VillagerPartBlock_SetUpType16)
 
 /* func_0209b28c: type 14's setup. */
-int VillagerPartBlock_SetupType14(VillagerPartBlock *block)
+int VillagerPartBlock_SetUpType14(VillagerPartBlock *block)
 {
     return villager_part_block_give(block, VILLAGER_PART_BLOCK_ITEM_14);
 }
-CLEAN_AS(func_0209b28c, VillagerPartBlock_SetupType14)
+CLEAN_AS(func_0209b28c, VillagerPartBlock_SetUpType14)
 
 /* func_0209b2a8: a letter written into `letter` from the block's two villagers, when both
  * NpcIds are valid: message argument 0 the second villager's name, 1 the first's, 2-7 six
@@ -267,14 +267,14 @@ void VillagerPartBlock_WriteLetter(VillagerPartBlock *block, void *letter)
 CLEAN_AS(func_0209b2a8, VillagerPartBlock_WriteLetter)
 
 /* func_0209b3b0: type 19's setup. */
-int VillagerPartBlock_SetupType19(VillagerPartBlock *block)
+int VillagerPartBlock_SetUpType19(VillagerPartBlock *block)
 {
     return villager_part_block_give(block, VILLAGER_PART_BLOCK_ITEM_19);
 }
-CLEAN_AS(func_0209b3b0, VillagerPartBlock_SetupType19)
+CLEAN_AS(func_0209b3b0, VillagerPartBlock_SetUpType19)
 
 /* func_0209b3cc: type 10's setup: the object's item drawn from item list 2, group 0. */
-int VillagerPartBlock_SetupType10(VillagerPartBlock *block)
+int VillagerPartBlock_SetUpType10(VillagerPartBlock *block)
 {
     u16 item;
     VillagerPartItemList list;
@@ -284,7 +284,7 @@ int VillagerPartBlock_SetupType10(VillagerPartBlock *block)
     VillagerErrand_SetItem((VillagerErrand *) (void *) block->object, &item);
     return 1;
 }
-CLEAN_AS(func_0209b3cc, VillagerPartBlock_SetupType10)
+CLEAN_AS(func_0209b3cc, VillagerPartBlock_SetUpType10)
 
 /* func_0209adb0: the whole part emptied: both blocks, the picks, the entry at 0x94 and the
  * record at 0xa4. */

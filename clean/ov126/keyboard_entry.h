@@ -8,7 +8,7 @@
  *   (KeyboardEntryMode) says what the text is, where it comes from (KeyboardEntry_LoadText) and
  *   where it goes (KeyboardEntry_Commit);
  * - the text is shown in overlay 124's entry field ("menu/han/...") at 0xb0, whose kind (by the
- *   mode) sets the most characters and the field's place on the screen (KeyboardEntry_Setup);
+ *   mode) sets the most characters and the field's place on the screen (KeyboardEntry_SetUp);
  * - its own files are "menu/chat2/b_cht.bch", "menu/letter/b_key.bsc" and "menu/han/obj.bpl";
  * - the keyboard is at 0x19c (as in overlay 122's letter writing, ov122/letter_write_scene.h,
  *   whose keyboard calls this scene shares), a pointer sprite (a Glider0) points at a key or at
@@ -286,8 +286,8 @@ void KeyboardEntry_EndFrame(KeyboardEntry *self);
 void KeyboardEntry_BeginFrame(KeyboardEntry *self);
 void KeyboardEntry_EndInputFrame(KeyboardEntry *self);
 void KeyboardEntry_BeginInputFrame(KeyboardEntry *self);
-void KeyboardEntry_Teardown(KeyboardEntry *self);
-void KeyboardEntry_Setup(KeyboardEntry *self);
+void KeyboardEntry_TearDown(KeyboardEntry *self);
+void KeyboardEntry_SetUp(KeyboardEntry *self);
 void KeyboardEntry_ScrollWipe(KeyboardEntry *self);
 void KeyboardEntry_BackWipeIn(KeyboardEntry *self);
 void KeyboardEntry_BackWipeOut(KeyboardEntry *self);

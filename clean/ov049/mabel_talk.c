@@ -1114,14 +1114,14 @@ void MabelTalk_Begin(MabelTalk *talk, Mabel *owner)
 CLEAN_AS(func_ov049_02262094, MabelTalk_Begin)
 
 /* func_ov049_022620b0 (slot 0x04): its destructor, then the scene freed. */
-void *MabelTalk_DestructDelete(MabelTalk *talk)
+void *MabelTalk_Delete(MabelTalk *talk)
 {
     *(const u8 **) (void *) talk = data_ov049_022634b4;
     Obj020d9ff8_DestructBody(talk);
     Heap_OperatorDeleteB(talk);
     return talk;
 }
-CLEAN_AS(func_ov049_022620b0, MabelTalk_DestructDelete)
+CLEAN_AS(func_ov049_022620b0, MabelTalk_Delete)
 
 /* func_ov049_022620d0 (slot 0x00): the scene class's destructor. */
 MabelTalk *MabelTalk_Destruct(MabelTalk *talk)

@@ -80,14 +80,14 @@ int LetterBodyText_Capacity(void)
 CLEAN_AS(func_02065c74, LetterBodyText_Capacity)
 
 /* func_02065c78 (vtable entry 1): the destructor, then the object freed. */
-LetterBodyText *LetterBodyText_DestructDelete(LetterBodyText *text)
+LetterBodyText *LetterBodyText_Delete(LetterBodyText *text)
 {
     text->vtable = &data_020de770;
     TextBase_WideDestruct(text);
     Heap_OperatorDeleteB(text);
     return text;
 }
-CLEAN_AS(func_02065c78, LetterBodyText_DestructDelete)
+CLEAN_AS(func_02065c78, LetterBodyText_Delete)
 
 /* func_02065c98 (vtable entry 0): the destructor. */
 void *LetterBodyText_Destruct(void *text)
@@ -706,13 +706,13 @@ void Letter_Clear(Letter *letter)
 CLEAN_AS(func_02066650, Letter_Clear)
 
 /* func_02066670 (vtable entry 1): the destructor, then the object freed. */
-Letter *Letter_DestructDelete(Letter *letter)
+Letter *Letter_Delete(Letter *letter)
 {
     letter->vtable = data_020de760;
     Heap_OperatorDeleteB(letter);
     return letter;
 }
-CLEAN_AS(func_02066670, Letter_DestructDelete)
+CLEAN_AS(func_02066670, Letter_Delete)
 
 /* func_02066688 (vtable entry 0): the destructor: the vtable set. */
 void Letter_Destruct(Letter *letter)

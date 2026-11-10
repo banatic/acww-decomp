@@ -43,7 +43,7 @@ typedef struct OtterTalkStart {
 /* The class. */
 OtterTalk *OtterTalk_Construct(OtterTalk *talk);
 OtterTalk *OtterTalk_Destruct(OtterTalk *talk);
-OtterTalk *OtterTalk_DestructDelete(OtterTalk *talk);
+OtterTalk *OtterTalk_Delete(OtterTalk *talk);
 void OtterTalk_Reset(OtterTalk *talk);
 void OtterTalk_Begin(OtterTalk *talk, Otter *owner);
 void OtterTalk_SetAfterCommand(OtterTalk *talk, int index);

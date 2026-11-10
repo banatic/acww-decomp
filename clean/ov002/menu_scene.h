@@ -89,7 +89,7 @@ int MenuScene_Slot1c(MenuScene *scene);
 void MenuScene_Slot14(MenuScene *scene, int how);
 int MenuScene_Slot10(MenuScene *scene);
 void MenuScene_Slot08(MenuScene *scene, int how);
-int MenuScene_Setup(MenuScene *scene);
+int MenuScene_SetUp(MenuScene *scene);
 MenuScene *MenuScene_DestroyBase(MenuScene *scene);
 MenuScene *MenuScene_Delete(MenuScene *scene);
 MenuScene *MenuScene_Destroy(MenuScene *scene);

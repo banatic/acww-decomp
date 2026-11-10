@@ -166,16 +166,16 @@ u32 ResourcePools_Heap4At(Heap *const *heaps, int entry)
 CLEAN_AS(func_02078b64, ResourcePools_Heap4At)
 
 /* func_02078b6c: the pool released, then the heap it came from destroyed. */
-void ResourcePools_Heap4Shutdown(void)
+void ResourcePools_Heap4ShutDown(void)
 {
     ResourcePools_Heap4Release(data_021d12a4);
     SceneHeaps_DestroyHeap4Pool();
 }
-CLEAN_AS(func_02078b6c, ResourcePools_Heap4Shutdown)
+CLEAN_AS(func_02078b6c, ResourcePools_Heap4ShutDown)
 
 /* func_02078b84: the heap data_021c9abc made from `parent`, the pool's heaps from it, and then
  * it shrunk to them. */
-void ResourcePools_Heap4Startup(Heap *parent)
+void ResourcePools_Heap4StartUp(Heap *parent)
 {
     SceneHeaps_CreateHeap4Pool((Heap *) (uintptr_t) parent);
     ResourcePools_Heap4Create(data_021d12a4);
@@ -183,7 +183,7 @@ void ResourcePools_Heap4Startup(Heap *parent)
         Heap_Adjust(data_021c9abc);
     }
 }
-CLEAN_AS(func_02078b84, ResourcePools_Heap4Startup)
+CLEAN_AS(func_02078b84, ResourcePools_Heap4StartUp)
 
 /* func_02078bac: the destructor: does nothing. */
 void ResourcePools_Heap4Destruct(Heap **heaps)
@@ -228,16 +228,16 @@ u32 ResourcePools_Heap8At(Heap *const *heaps, int entry)
 CLEAN_AS(func_02078c2c, ResourcePools_Heap8At)
 
 /* func_02078c34: the pool released, then the heap it came from destroyed. */
-void ResourcePools_Heap8Shutdown(void)
+void ResourcePools_Heap8ShutDown(void)
 {
     ResourcePools_Heap8Release(data_021d1310);
     SceneHeaps_DestroyHeap8Pool();
 }
-CLEAN_AS(func_02078c34, ResourcePools_Heap8Shutdown)
+CLEAN_AS(func_02078c34, ResourcePools_Heap8ShutDown)
 
 /* func_02078c4c: the heap data_021c9ac0 made from `parent`, the pool's heaps from it, and then
  * it shrunk to them. */
-void ResourcePools_Heap8Startup(Heap *parent)
+void ResourcePools_Heap8StartUp(Heap *parent)
 {
     SceneHeaps_CreateHeap8Pool((Heap *) (uintptr_t) parent);
     ResourcePools_Heap8Create(data_021d1310);
@@ -245,7 +245,7 @@ void ResourcePools_Heap8Startup(Heap *parent)
         Heap_Adjust(data_021c9ac0);
     }
 }
-CLEAN_AS(func_02078c4c, ResourcePools_Heap8Startup)
+CLEAN_AS(func_02078c4c, ResourcePools_Heap8StartUp)
 
 /* func_02078c74: the destructor: does nothing. */
 void ResourcePools_Heap8Destruct(Heap **heaps)
@@ -308,16 +308,16 @@ u32 ResourcePools_BlockAt(u8 *const *blocks, int entry)
 CLEAN_AS(func_02078d1c, ResourcePools_BlockAt)
 
 /* func_02078d24: the pool released, then the heap it came from destroyed. */
-void ResourcePools_BlockShutdown(void)
+void ResourcePools_BlockShutDown(void)
 {
     ResourcePools_BlockRelease(data_021d12dc);
     SceneHeaps_DestroyBlockPool();
 }
-CLEAN_AS(func_02078d24, ResourcePools_BlockShutdown)
+CLEAN_AS(func_02078d24, ResourcePools_BlockShutDown)
 
 /* func_02078d3c: the heap data_021c9ac4 made from `parent`, the blocks from it, and then it
  * shrunk to them. */
-void ResourcePools_BlockStartup(Heap *parent)
+void ResourcePools_BlockStartUp(Heap *parent)
 {
     SceneHeaps_CreateBlockPool((Heap *) (uintptr_t) parent);
     ResourcePools_BlockCreate(data_021d12dc);
@@ -325,7 +325,7 @@ void ResourcePools_BlockStartup(Heap *parent)
         Heap_Adjust(data_021c9ac4);
     }
 }
-CLEAN_AS(func_02078d3c, ResourcePools_BlockStartup)
+CLEAN_AS(func_02078d3c, ResourcePools_BlockStartUp)
 
 /* func_02078d64: the destructor: does nothing. */
 void ResourcePools_BlockDestruct(u8 **blocks)
@@ -361,24 +361,24 @@ CLEAN_AS(func_02078d80, ResourcePools_UnitSize2BCC)
 /* ---- All of them */
 
 /* func_02078d88: the unit heap destroyed, then the pools taken down in the order they were made. */
-void ResourcePools_Shutdown(void)
+void ResourcePools_ShutDown(void)
 {
     SceneHeaps_DestroyUnits();
-    ResourcePools_BlockShutdown();
-    ResourcePools_Heap8Shutdown();
-    ResourcePools_Heap4Shutdown();
+    ResourcePools_BlockShutDown();
+    ResourcePools_Heap8ShutDown();
+    ResourcePools_Heap4ShutDown();
 }
-CLEAN_AS(func_02078d88, ResourcePools_Shutdown)
+CLEAN_AS(func_02078d88, ResourcePools_ShutDown)
 
 /* func_02078da4: the unit heap and the three pools made from the heap data_021fbe94. */
-void ResourcePools_Startup(void)
+void ResourcePools_StartUp(void)
 {
     SceneHeaps_CreateUnits((Heap *) (uintptr_t) data_021fbe94);
-    ResourcePools_BlockStartup(data_021fbe94);
-    ResourcePools_Heap8Startup(data_021fbe94);
-    ResourcePools_Heap4Startup(data_021fbe94);
+    ResourcePools_BlockStartUp(data_021fbe94);
+    ResourcePools_Heap8StartUp(data_021fbe94);
+    ResourcePools_Heap4StartUp(data_021fbe94);
 }
-CLEAN_AS(func_02078da4, ResourcePools_Startup)
+CLEAN_AS(func_02078da4, ResourcePools_StartUp)
 
 /* ---- The scene's count of heap4 heaps */
 

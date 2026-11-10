@@ -106,7 +106,7 @@ typedef struct PostClerkStep {
 
 /* Her vtable slots and questions (post_clerk.c). */
 PostClerk *PostClerk_Destruct(PostClerk *clerk);
-PostClerk *PostClerk_DestructDelete(PostClerk *clerk);
+PostClerk *PostClerk_Delete(PostClerk *clerk);
 int PostClerk_IsLinked(PostClerk *clerk);
 u8 PostClerk_HasSessionSlot(PostClerk *clerk);
 int PostClerk_ReadyForJob(PostClerk *clerk);

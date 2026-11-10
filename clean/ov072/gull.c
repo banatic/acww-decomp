@@ -161,7 +161,7 @@ Gull *Gull_Destruct(Gull *self)
 CLEAN_AS(func_ov072_02278a00, Gull_Destruct)
 
 /* func_ov072_02278a28 (slot 0x44): destructed, then freed to the auxiliary heap. */
-Gull *Gull_DestructDelete(Gull *self)
+Gull *Gull_Delete(Gull *self)
 {
     *(const u8 **) (void *) self = data_ov072_02279b08;
     GullTalk_Destruct(&self->talk);
@@ -169,7 +169,7 @@ Gull *Gull_DestructDelete(Gull *self)
     Heap_FreeAux(self);
     return self;
 }
-CLEAN_AS(func_ov072_02278a28, Gull_DestructDelete)
+CLEAN_AS(func_ov072_02278a28, Gull_Delete)
 
 /* func_ov072_02278a54 (slot 0x4c): told of event 0, the talk reset and given the player's
  * object as its motion argument, then GULL_TALK; told the act ended (8), GULL_IDLE once the

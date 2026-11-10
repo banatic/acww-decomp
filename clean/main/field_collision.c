@@ -1053,7 +1053,7 @@ void CollisionGround_Query(CollisionGround *ground, const Vec3 *position, int al
     ground->position.z = position->z;
     ground->unit_x = position->x >> COLLISION_UNIT_SHIFT;
     ground->unit_z = position->z >> COLLISION_UNIT_SHIFT;
-    type = FieldUnits_GetType(ground->unit_x, ground->unit_z);
+    type = FieldUnits_Type(ground->unit_x, ground->unit_z);
     quarter = UnitTypeInfo_SideNearest(position);
     if (alternate != 0) {
         ground->attr = UnitTypeInfo_AltSideAttrAt(ground->unit_x, ground->unit_z, quarter);
@@ -1174,18 +1174,18 @@ int CollisionGround_IsBelowLimit(const CollisionGround *ground, fx32 y)
 CLEAN_AS(func_02034184, CollisionGround_IsBelowLimit)
 
 /* func_0203419c: the limit, times 0.3 (30 / 100) on attribute 0x16. */
-fx32 CollisionGround_GetLimit(const CollisionGround *ground)
+fx32 CollisionGround_Limit(const CollisionGround *ground)
 {
     if (ground->attr == COLLISION_ATTR_16) {
         return FX_MulFunc(ground->limit, FX_Div(0x1e000, 0x64000));
     }
     return ground->limit;
 }
-CLEAN_AS(func_0203419c, CollisionGround_GetLimit)
+CLEAN_AS(func_0203419c, CollisionGround_Limit)
 
 /* func_020341c8: the ground's height; `with_post` adds the height main's tables give the
  * unit's post (kind other than 2) when the point is within its radius of the unit's centre. */
-fx32 CollisionGround_GetHeight(const CollisionGround *ground, int with_post)
+fx32 CollisionGround_Height(const CollisionGround *ground, int with_post)
 {
     int radius;
     int height;
@@ -1208,7 +1208,7 @@ fx32 CollisionGround_GetHeight(const CollisionGround *ground, int with_post)
     }
     return ground->height;
 }
-CLEAN_AS(func_020341c8, CollisionGround_GetHeight)
+CLEAN_AS(func_020341c8, CollisionGround_Height)
 
 /* func_0203423c: nothing to do. */
 void CollisionGround_Destroy(CollisionGround *ground)
@@ -1374,7 +1374,7 @@ void CollisionCell_Load(CollisionCell *cell, int x, int z, int alternate)
 {
     int side;
 
-    cell->type = FieldUnits_GetType(x, z);
+    cell->type = FieldUnits_Type(x, z);
     for (side = COLLISION_NORTH; side <= COLLISION_EAST; side++) {
         cell->side_attr[side] = collision_side_attr(cell->type, side, alternate);
         cell->side_height[side] = collision_side_height(cell->side_attr[side]);

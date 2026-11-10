@@ -46,7 +46,7 @@ typedef struct TextLabel {
 int WideText_Length(WideText *text);
 int WideText_Buffer(int text);
 int WideText_Capacity(void);
-WideText *WideText_DestructDelete(WideText *text);
+WideText *WideText_Delete(WideText *text);
 void *WideText_Destruct(void *text);
 void *WideText_Construct(void *text);
 int TextLabel_EqualsTrimmed(TextLabel *label, const u16 *text, u16 length);
@@ -72,7 +72,7 @@ void TextLabel_CloseBox(void *label);
 int TextLabel_Buffer(int label);
 int TextLabel_Capacity(void);
 TextLabel *TextLabel_DestructCopy(TextLabel *label);
-TextLabel *TextLabel_DestructDelete(TextLabel *label);
+TextLabel *TextLabel_Delete(TextLabel *label);
 TextLabel *TextLabel_Destruct(TextLabel *label);
 TextLabel *TextLabel_Construct(TextLabel *label);
 TextLabel *TextLabel_ConstructCopy(TextLabel *label);

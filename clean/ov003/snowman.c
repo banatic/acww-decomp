@@ -643,7 +643,7 @@ CLEAN_AS(func_ov003_0221a68c, Snowman_CanStandAt)
  * (func_020b0594), its face, then takes its size from it: a body (state 9) the body's size, a
  * head (state 0xb) the head's, lifted to sit on the body. Without the snowman nothing more
  * happens. */
-void Snowman_Setup(Snowman *snowman)
+void Snowman_SetUp(Snowman *snowman)
 {
     if (Snowman_IsLoose(snowman)) {
         Snowman_SetState(snowman, SNOWMAN_STATE_LOOSE);
@@ -666,7 +666,7 @@ void Snowman_Setup(Snowman *snowman)
         Snowman_SetState(snowman, SNOWMAN_STATE_HEAD);
     }
 }
-CLEAN_AS(func_ov003_0221a7a0, Snowman_Setup)
+CLEAN_AS(func_ov003_0221a7a0, Snowman_SetUp)
 
 /* func_ov003_0221a860: whether it is a snowman's body (an odd index from 3). */
 int Snowman_IsBody(Snowman *snowman)
@@ -1100,7 +1100,7 @@ CLEAN_AS(_ZN18Obj_ov003_022382ac19func_ov003_0221b320Ev, Snowman_Update)
 /* func_ov003_0221b414 (vtable slot 0x00): starting. Nothing under it, no rotation, both models
  * loaded; a loose ball takes its size from main's table and writes its position there (and the
  * same size back). Then func_0203efb0 with the index, the talk idle, the starting state
- * (Snowman_Setup), its collider settled from where it is (layer 0xb), the models placed, its
+ * (Snowman_SetUp), its collider settled from where it is (layer 0xb), the models placed, its
  * sound stopped and func_0203edd0; it enters overlay 3's table of balls. */
 void Snowman_Init(Snowman *snowman)
 {
@@ -1119,7 +1119,7 @@ void Snowman_Init(Snowman *snowman)
     }
     SceneObjectBase_SetId((SceneObjectBase *) snowman, (u16) snowman->index);
     SnowmanTalk_SetState(snowman, SNOWMAN_TALK_IDLE);
-    Snowman_Setup(snowman);
+    Snowman_SetUp(snowman);
 
     snowman->last_position = snowman->position;
     snowman->body.rolling.start_position = snowman->last_position;

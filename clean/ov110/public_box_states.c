@@ -708,22 +708,22 @@ void PublicBox_BeginInteractiveFrame(PublicBox *self)
 CLEAN_AS(func_ov110_0229e370, PublicBox_BeginInteractiveFrame)
 
 /* func_ov110_0229e38c: the members' teardown before the scene closes. */
-void PublicBox_Teardown(PublicBox *self)
+void PublicBox_TearDown(PublicBox *self)
 {
     PublicBox_EndLayerTask(self);
-    PocketsWallet_Teardown(&self->wallet);
-    PocketsGrid_Teardown(&self->grid);
+    PocketsWallet_TearDown(&self->wallet);
+    PocketsGrid_TearDown(&self->grid);
     PagedChoice_Dismiss(pbox_choice(self));
     PublicBox_CloseLabels(self);
 }
-CLEAN_AS(func_ov110_0229e38c, PublicBox_Teardown)
+CLEAN_AS(func_ov110_0229e38c, PublicBox_TearDown)
 
 /* func_ov110_0229e3c4: the scene's setup: no flags, the three objects of ov094's set up, no
  * popup place, the glide stopped, nothing held, the cursor on the first pocket, the choice on
  * layer 3, no label in use. The box by the mode: empty for 0x1d and 0x1e
  * (PUBLIC_BOX_FLAG_STARTED_EMPTY), list A for 0x1f, list B for 0x20 (left as it is for any
  * other); its copy kept as `box_start`, and the pockets saved (Pockets_Save). */
-void PublicBox_Setup(PublicBox *self)
+void PublicBox_SetUp(PublicBox *self)
 {
     self->flags = 0;
     PocketsGrid_Init(&self->grid, 1);
@@ -753,7 +753,7 @@ void PublicBox_Setup(PublicBox *self)
     MI_CpuCopy8(self->box, self->box_start, sizeof self->box);
     Pockets_Save();
 }
-CLEAN_AS(func_ov110_0229e3c4, PublicBox_Setup)
+CLEAN_AS(func_ov110_0229e3c4, PublicBox_SetUp)
 
 /* func_ov110_0229e4b0 (state 6): the pockets wipe out; when done, their layer hidden, the end
  * phase begins and the scene is no longer drawn. Else their layer follows the wipe. The wipe's y
@@ -801,7 +801,7 @@ void PublicBox_StartWipeOut(PublicBox *self)
     }
     Popup_Hide(&self->popup, 1);
     PublicBox_HideCursorSprite(self);
-    MenuDispatch *parent = (MenuDispatch *) (void *) Process_GetParent((Process *) (void *) self);
+    MenuDispatch *parent = (MenuDispatch *) (void *) Process_Parent((Process *) (void *) self);
     MenuDispatch_SetMode(parent, MENU_DISPATCH_MODE_CLOSE, 1);
     MenuScene_StartWipeOnWindow2(pbox_scene(self), PUBLIC_BOX_WIPE_BOX, 4, 1, PUBLIC_BOX_WIPE_MARGIN);
     MenuScene_SetWipeExtent(pbox_scene(self), PUBLIC_BOX_WIPE_EXTENT);
@@ -1003,8 +1003,8 @@ CLEAN_AS(func_ov110_0229ea10, PublicBox_Draw)
  * down. Answers 1. */
 int PublicBox_Close(PublicBox *self)
 {
-    MenuDispatch_ChildClosed((MenuDispatch *) (void *) Process_GetParent((Process *) (void *) self));
-    PublicBox_Teardown(self);
+    MenuDispatch_ChildClosed((MenuDispatch *) (void *) Process_Parent((Process *) (void *) self));
+    PublicBox_TearDown(self);
     return 1;
 }
 CLEAN_AS(func_ov110_0229eab4, PublicBox_Close)
@@ -1013,7 +1013,7 @@ CLEAN_AS(func_ov110_0229eab4, PublicBox_Close)
  * base's wait). Answers 1. */
 int PublicBox_Start(PublicBox *self)
 {
-    PublicBox_Setup(self);
+    PublicBox_SetUp(self);
     MenuScene_SetState(pbox_scene(self), PUBLIC_BOX_STATE_START_SETUP);
     MenuScene_SetPhase(pbox_scene(self), PUBLIC_BOX_PHASE_WAIT);
     return 1;

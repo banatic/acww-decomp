@@ -17,7 +17,7 @@ int ScreenIndicators_Draw(void);
 int ScreenIndicators_Execute(void);
 int ScreenIndicators_Delete(void);
 int ScreenIndicators_Create(void);
-ScreenIndicators *ScreenIndicators_DestructFree(ScreenIndicators *indicators);
+ScreenIndicators *ScreenIndicators_DestructDelete(ScreenIndicators *indicators);
 ScreenIndicators *ScreenIndicators_Destruct(ScreenIndicators *indicators);
 ScreenIndicators *ScreenIndicators_Construct(ScreenIndicators *indicators);
 void ScreenIndicators_New(void);

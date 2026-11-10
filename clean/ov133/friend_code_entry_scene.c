@@ -71,7 +71,7 @@ static MenuScene *friend_code_scene_of(FriendCodeEntry *self)
 
 static MenuTabs *friend_code_menu(FriendCodeEntry *self)
 {
-    return (MenuTabs *) (void *) Process_GetParent((Process *) (void *) self);
+    return (MenuTabs *) (void *) Process_Parent((Process *) (void *) self);
 }
 
 static CellLayerSprite *friend_code_pointer_cells(FriendCodeEntry *self)
@@ -108,7 +108,7 @@ void FriendCodeEntry_RetrySetFriend(FriendCodeEntry *self)
 {
     WifiFriend *friend = FriendCodeEntry_Friend(self);
     int index = GroupParams_Arg();
-    WifiFriendData *data = WifiFriendData_GetData(WifiFriend_GetFriendData(friend));
+    WifiFriendData *data = WifiFriendData_Data(WifiFriend_FriendData(friend));
     if (Wfc_SetFriend(index, data)) {
         MenuScene_SetSubState(friend_code_scene_of(self), FRIEND_CODE_SUB_BUTTON_PRESS);
     }
@@ -402,18 +402,18 @@ CLEAN_AS(func_ov133_0229c158, FriendCodeEntry_BeginFrame)
 
 /* func_ov133_0229c1dc: the members torn down: the screens' tasks ended, the label and the
  * panel's texts closed. */
-void FriendCodeEntry_Teardown(FriendCodeEntry *self)
+void FriendCodeEntry_TearDown(FriendCodeEntry *self)
 {
     LayerTask_End(&self->tasks[0]);
     LayerTask_End(&self->tasks[1]);
     FriendCodeEntry_CloseLabels(self);
     ButtonPanel_CloseTexts(&self->panel);
 }
-CLEAN_AS(func_ov133_0229c1dc, FriendCodeEntry_Teardown)
+CLEAN_AS(func_ov133_0229c1dc, FriendCodeEntry_TearDown)
 
 /* func_ov133_0229c210: the setup: no label nor flags, the pointer at the clear key, nothing lit
  * nor repeating; sound byte 0x71 cleared when the current player's gender (PlayerId_Gender) is 0, else set. */
-void FriendCodeEntry_Setup(FriendCodeEntry *self)
+void FriendCodeEntry_SetUp(FriendCodeEntry *self)
 {
     self->label_count = 0;
     self->flags = 0;
@@ -429,7 +429,7 @@ void FriendCodeEntry_Setup(FriendCodeEntry *self)
     }
     SoundSys_SetByte71(1);
 }
-CLEAN_AS(func_ov133_0229c210, FriendCodeEntry_Setup)
+CLEAN_AS(func_ov133_0229c210, FriendCodeEntry_SetUp)
 
 /* func_ov133_0229c25c (state 4): the wipe out stepped; at its end layers 4 and 6 hidden, the
  * scene no longer drawn and deleted (phase 5); before, the layers follow it. */
@@ -626,7 +626,7 @@ int FriendCodeEntry_Close(FriendCodeEntry *self)
     if (MenuTabs_ChildClosed(menu) == FRIEND_CODE_TAB_ROSTER) {
         MenuTabs_SlideIn(menu);
     }
-    FriendCodeEntry_Teardown(self);
+    FriendCodeEntry_TearDown(self);
     return 1;
 }
 CLEAN_AS(func_ov133_0229c6c0, FriendCodeEntry_Close)
@@ -635,7 +635,7 @@ CLEAN_AS(func_ov133_0229c6c0, FriendCodeEntry_Close)
  * run (phase 1). Answers 1. */
 int FriendCodeEntry_Start(FriendCodeEntry *self)
 {
-    FriendCodeEntry_Setup(self);
+    FriendCodeEntry_SetUp(self);
     MenuScene_SetState(friend_code_scene_of(self), FRIEND_CODE_STATE_LOAD);
     MenuScene_SetPhase(friend_code_scene_of(self), FRIEND_CODE_PHASE_STATES);
     return 1;

@@ -183,7 +183,7 @@ SceneShareEntry *SceneShareTable_SharedRecordD(const u16 *person)
     if (index >= SCENE_SHARE_TABLE_D_COUNT) {
         return NULL;
     }
-    return (SceneShareEntry *) Session_GetRecord(data_020ccf94, (int) index + SCENE_SHARE_TABLE_RECORDS_D);
+    return (SceneShareEntry *) Session_Record(data_020ccf94, (int) index + SCENE_SHARE_TABLE_RECORDS_D);
 }
 CLEAN_AS(func_020851e0, SceneShareTable_SharedRecordD)
 
@@ -197,7 +197,7 @@ void SceneShareTable_WriteRecordD(u8 *record, int id)
     }
     SceneShareEntry *entry = &data_021d232c[index];
     entry->in_use = 1;
-    MI_CpuCopy8(entry, record, SessionRecord_GetSize((u32) id));
+    MI_CpuCopy8(entry, record, SessionRecord_Size((u32) id));
 }
 CLEAN_AS(func_0208520c, SceneShareTable_WriteRecordD)
 
@@ -258,7 +258,7 @@ SceneShareEntry *SceneShareTable_SharedRecordE(const u16 *person)
     if (index >= SCENE_SHARE_TABLE_E_COUNT) {
         return NULL;
     }
-    return (SceneShareEntry *) Session_GetRecord(data_020ccf94, (int) index + SCENE_SHARE_TABLE_RECORDS_E);
+    return (SceneShareEntry *) Session_Record(data_020ccf94, (int) index + SCENE_SHARE_TABLE_RECORDS_E);
 }
 CLEAN_AS(func_020852e4, SceneShareTable_SharedRecordE)
 
@@ -272,7 +272,7 @@ void SceneShareTable_WriteRecordE(u8 *record, int id)
     }
     SceneShareEntry *entry = &data_021d213c[index];
     entry->in_use = 1;
-    MI_CpuCopy8(entry, record, SessionRecord_GetSize((u32) id));
+    MI_CpuCopy8(entry, record, SessionRecord_Size((u32) id));
     data_021d2128 = 1;
 }
 CLEAN_AS(func_02085310, SceneShareTable_WriteRecordE)

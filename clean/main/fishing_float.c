@@ -759,7 +759,7 @@ CLEAN_AS(func_0206060c, FishingFloat_Release)
 /* func_0206064c: the float set up on entry `entry` with float model `model` (below 3; any
  * other loads model 0 and leaves the entry without the float), its texture placed and the
  * model made from the file; `holder`, unless NULL, its new holder; its state none. */
-void FishingFloat_Setup(FishingFloat *self, int entry, Actor *holder, unsigned int model)
+void FishingFloat_SetUp(FishingFloat *self, int entry, Actor *holder, unsigned int model)
 {
     FishingFloatPool *pool = &data_021cad80;
     self->entry = (u8) entry;
@@ -778,7 +778,7 @@ void FishingFloat_Setup(FishingFloat *self, int entry, Actor *holder, unsigned i
     }
     self->state = FISHING_FLOAT_NONE;
 }
-CLEAN_AS(func_0206064c, FishingFloat_Setup)
+CLEAN_AS(func_0206064c, FishingFloat_SetUp)
 
 /* func_020606bc: the float's destructor, which does nothing. */
 void FishingFloat_Destruct(void *self)

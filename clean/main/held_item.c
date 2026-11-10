@@ -203,7 +203,7 @@ void HeldItem_Take(HeldItemObject *held, ItemCode *item, u8 *record)
 {
     int index = held->index;
     HeldItem_Clear(held);
-    HeldItem_Setup(held, index, NULL, item, record, 0);
+    HeldItem_SetUp(held, index, NULL, item, record, 0);
 }
 CLEAN_AS(func_0205eb8c, HeldItem_Take)
 
@@ -247,7 +247,7 @@ CLEAN_AS(func_0205ebb4, HeldItem_Clear)
  * (func_0205ef5c, given the item). Last the line is set up with `owner` (kind 0 or 1 for the
  * rods, 2 for the slingshots 0x137a and 0x137b, else 3) and set to state 1 for the rods.
  * QUIRK: a texture-animated item takes 0x1c more bytes from its heap and never uses them. */
-void HeldItem_Setup(HeldItemObject *held, int index, void *owner, ItemCode *item, u8 *record, int plain)
+void HeldItem_SetUp(HeldItemObject *held, int index, void *owner, ItemCode *item, u8 *record, int plain)
 {
     u8 *pool = data_021ca16c;
     held->index = (u8) index;
@@ -325,12 +325,12 @@ void HeldItem_Setup(HeldItemObject *held, int index, void *owner, ItemCode *item
     } else {
         line_kind = 3;
     }
-    FishingFloat_Setup((FishingFloat *) &held->fishing_float, index, owner, line_kind);
+    FishingFloat_SetUp((FishingFloat *) &held->fishing_float, index, owner, line_kind);
     if (held_item_is(item, HELD_ITEM_ROD) || held_item_is(item, HELD_ITEM_GOLDEN_ROD)) {
         FishingFloat_SetState((FishingFloat *) &held->fishing_float, 1);
     }
 }
-CLEAN_AS(func_0205ec50, HeldItem_Setup)
+CLEAN_AS(func_0205ec50, HeldItem_SetUp)
 
 /* func_0205ef28: the node callback after a node: the item's model's (AnimatedModel_AfterNode),
  * then HeldItem_BeforeNode for the next node. */

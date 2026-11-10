@@ -96,7 +96,7 @@ static MenuScene *tune_scene(TuneEditor *self)
 
 static MenuDispatch *tune_parent(TuneEditor *self)
 {
-    return (MenuDispatch *) (void *) Process_GetParent((Process *) (void *) self);
+    return (MenuDispatch *) (void *) Process_Parent((Process *) (void *) self);
 }
 
 static CellLayerSprite *tune_sprite_cells(TuneEditor *self)
@@ -134,7 +134,7 @@ void TuneEditor_SendTune(TuneEditor *self)
     Session_BeginMessage(session);
     Session_AppendMessage(session, message, sizeof(message));
     Session_EndMessage(session, TUNE_EDITOR_SEND_HANDLER, TUNE_EDITOR_SEND_KIND);
-    self->sequence = Session_GetFrameSequence(session);
+    self->sequence = Session_FrameSequence(session);
 }
 CLEAN_AS(func_ov143_0229a1a4, TuneEditor_SendTune)
 
@@ -578,18 +578,18 @@ void TuneEditor_BeginInteractiveFrame(TuneEditor *self)
 CLEAN_AS(func_ov143_0229a94c, TuneEditor_BeginInteractiveFrame)
 
 /* func_ov143_0229a964: the members torn down, as at a frame's start. */
-void TuneEditor_Teardown(TuneEditor *self)
+void TuneEditor_TearDown(TuneEditor *self)
 {
     LayerTask_End(&self->screen_task);
     TuneEditor_CloseLabels(self);
     ButtonPanel_CloseTexts(&self->panel);
 }
-CLEAN_AS(func_ov143_0229a964, TuneEditor_Teardown)
+CLEAN_AS(func_ov143_0229a964, TuneEditor_TearDown)
 
 /* func_ov143_0229a98c: the scene's own fields set up: no flag, the tune unpacked from the save
  * into the steps, the playing notes' second OBJ list pointed 4 tiles past note 15's, no step
  * lit and the cursor on the first step. */
-void TuneEditor_Setup(TuneEditor *self)
+void TuneEditor_SetUp(TuneEditor *self)
 {
     self->flags = 0;
     self->steps = data_021cfbbc;
@@ -599,7 +599,7 @@ void TuneEditor_Setup(TuneEditor *self)
     self->lit_step = -1;
     self->cursor = TUNE_EDITOR_STEP_FIRST;
 }
-CLEAN_AS(func_ov143_0229a98c, TuneEditor_Setup)
+CLEAN_AS(func_ov143_0229a98c, TuneEditor_SetUp)
 
 /* func_ov143_0229a9f4 (state 7): the fade back to the tune stepped (both screens); at its end
  * the editing goes on (phase 2). */
@@ -818,7 +818,7 @@ CLEAN_AS(func_ov143_0229adc4, TuneEditor_Draw)
 int TuneEditor_Close(TuneEditor *self)
 {
     MenuDispatch_ChildClosed(tune_parent(self));
-    TuneEditor_Teardown(self);
+    TuneEditor_TearDown(self);
     return 1;
 }
 CLEAN_AS(func_ov143_0229ae48, TuneEditor_Close)
@@ -827,7 +827,7 @@ CLEAN_AS(func_ov143_0229ae48, TuneEditor_Close)
  * and phase 0. Answers 1. */
 int TuneEditor_Start(TuneEditor *self)
 {
-    TuneEditor_Setup(self);
+    TuneEditor_SetUp(self);
     self->base.state = TUNE_EDITOR_STATE_START_SETUP;
     MenuScene_SetPhase(tune_scene(self), TUNE_EDITOR_PHASE_WAIT);
     return 1;

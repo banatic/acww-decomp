@@ -75,7 +75,7 @@ typedef struct Barber {
 
 /* Its vtable slots (barber.c). */
 Barber *Barber_Destruct(Barber *barber);
-void *Barber_DestructDelete(void *barber);
+void *Barber_Delete(void *barber);
 void Barber_OnEvent(Barber *barber, unsigned int code, u8 participant);
 int Barber_MayActKind6(Barber *barber);
 int Barber_MayAct(Barber *barber);

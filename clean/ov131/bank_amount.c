@@ -74,7 +74,7 @@ static MenuScene *scene_of(BankAmount *self)
 
 static MenuDispatch *dispatch_of(BankAmount *self)
 {
-    return (MenuDispatch *) (void *) Process_GetParent((Process *) (void *) self);
+    return (MenuDispatch *) (void *) Process_Parent((Process *) (void *) self);
 }
 
 /* The cursor sprite's update through its class (vtable slot 3, Glider_Update for the base). */
@@ -604,23 +604,23 @@ void BankAmount_BeginInputFrame(BankAmount *self)
 CLEAN_AS(func_ov131_0229b498, BankAmount_BeginInputFrame)
 
 /* func_ov131_0229b4b0: the panel's texts closed and the pad's teardown. */
-void BankAmount_Teardown(BankAmount *self)
+void BankAmount_TearDown(BankAmount *self)
 {
     ButtonPanel_CloseTexts(&self->panel);
-    BankPad_Teardown(&self->pad);
+    BankPad_TearDown(&self->pad);
 }
-CLEAN_AS(func_ov131_0229b4b0, BankAmount_Teardown)
+CLEAN_AS(func_ov131_0229b4b0, BankAmount_TearDown)
 
 /* func_ov131_0229b4cc: the pad set up for GroupParams' mode on the two layers, its range, and no
  * flags. */
-void BankAmount_Setup(BankAmount *self)
+void BankAmount_SetUp(BankAmount *self)
 {
     int mode = GroupParams_Mode();
-    BankPad_Setup(&self->pad, (u8) (mode - BANK_AMOUNT_MODE_PAY_LOAN), BANK_AMOUNT_DIGITS_LAYER, BANK_AMOUNT_KEYS_LAYER);
+    BankPad_SetUp(&self->pad, (u8) (mode - BANK_AMOUNT_MODE_PAY_LOAN), BANK_AMOUNT_DIGITS_LAYER, BANK_AMOUNT_KEYS_LAYER);
     BankAmount_SetUpRange(self);
     self->flags = 0;
 }
-CLEAN_AS(func_ov131_0229b4cc, BankAmount_Setup)
+CLEAN_AS(func_ov131_0229b4cc, BankAmount_SetUp)
 
 /* func_ov131_0229b504: the pad's two layers follow the wipe. */
 void BankAmount_ScrollWipe(BankAmount *self)
@@ -778,7 +778,7 @@ CLEAN_AS(func_ov131_0229b794, BankAmount_Draw)
 int BankAmount_Close(BankAmount *self)
 {
     MenuDispatch_ChildClosed(dispatch_of(self));
-    BankAmount_Teardown(self);
+    BankAmount_TearDown(self);
     return 1;
 }
 CLEAN_AS(func_ov131_0229b7e4, BankAmount_Close)
@@ -787,7 +787,7 @@ CLEAN_AS(func_ov131_0229b7e4, BankAmount_Close)
  * Answers 1. */
 int BankAmount_Start(BankAmount *self)
 {
-    BankAmount_Setup(self);
+    BankAmount_SetUp(self);
     self->base.state = BANK_AMOUNT_STATE_LOAD;
     MenuScene_SetPhase(scene_of(self), BANK_AMOUNT_PHASE_WAIT);
     return 1;

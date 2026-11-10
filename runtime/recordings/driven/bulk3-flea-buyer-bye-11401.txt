@@ -4,7 +4,7 @@ frames 11410
 ram 4100,5500,8500,10300,10700
 arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
 call 11401 020e9a08 022a3378 0 0 0 0 0  # Heap_SetCurrent(its heap)
-call 11401 0202e6e1 022afd50 0 0 0 022afd50 02253e10  # main VillagerSceneObject_DestructDelete (this: an object of a class derived from its own, vtable 02253e10)
+call 11401 0202e6e1 022afd50 0 0 0 022afd50 02253e10  # main VillagerSceneObject_Delete (this: an object of a class derived from its own, vtable 02253e10)
 call 11401 020e9a08 r2 0 0 0 0 0  # Heap_SetCurrent(as before)
 call 11401 020a88c9 021cd920 0 0 0 021cd920 020de770  # main TextBase_WideDestructSlot (this: an object of a class derived from its own, vtable 020de770)
 end

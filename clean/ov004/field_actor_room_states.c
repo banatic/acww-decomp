@@ -562,7 +562,7 @@ void FieldActorRoomStates_EnterHangUp(FieldActor *actor, const StateRequest *req
     unsigned int frames = fars_whole_frames(actor->anim.end);
     FrameCtrl_Init(&actor->anim, frames, FARS_HANG_UP_FLAGS, FARS_HANG_UP_SPEED, (u16) (frames - 1));
     (void) RmoTelephone_Current();
-    RmoTelephone_PlayBackFromEnd();
+    RmoTelephone_PlayBackwardsFromEnd();
 }
 CLEAN_AS(func_ov004_02226db4, FieldActorRoomStates_EnterHangUp)
 

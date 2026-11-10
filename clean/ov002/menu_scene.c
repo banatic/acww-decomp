@@ -424,7 +424,7 @@ void MenuScene_Slot08(MenuScene *scene, int how)
 {
     OverlayGroups_AddOwner(owner_of(scene));
     if (how == 2) {
-        const Process *parent = Process_GetParent(process_of(scene));
+        const Process *parent = Process_Parent(process_of(scene));
         if (parent != NULL) {
             Process_SetExecuteOrder(process_of(scene), (u16) (parent->link.order + 1));
             Process_SetDrawOrder(process_of(scene), (u16) (parent->draw_link.order + 1));
@@ -436,7 +436,7 @@ CLEAN_AS(func_ov002_022081f4, MenuScene_Slot08)
 
 /* func_ov002_0220823c (slot 0x04): links the scene to main's list and sets the usual key
  * repeat. Returns 0 if Process_CanCreateDefault does (it never does). */
-int MenuScene_Setup(MenuScene *scene)
+int MenuScene_SetUp(MenuScene *scene)
 {
     if (!Process_CanCreateDefault()) {
         return 0;
@@ -446,7 +446,7 @@ int MenuScene_Setup(MenuScene *scene)
     KeyRepeat_Set(&scene->keys, 8, 1, 7);
     return 1;
 }
-CLEAN_AS(func_ov002_0220823c, MenuScene_Setup)
+CLEAN_AS(func_ov002_0220823c, MenuScene_SetUp)
 
 /* func_ov002_0220826c: the destructor as one of the base's pair (it does what
  * MenuScene_Destroy does). */

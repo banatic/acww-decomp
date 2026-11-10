@@ -813,11 +813,11 @@ int PocketsGrid_PocketPlaceAtTouch(PocketsGrid *grid, int x, int y)
 CLEAN_AS(func_ov094_0229aee8, PocketsGrid_PocketPlaceAtTouch)
 
 /* func_ov094_0229af18: last frame's tasks ended. */
-void PocketsGrid_Teardown(PocketsGrid *grid)
+void PocketsGrid_TearDown(PocketsGrid *grid)
 {
     PocketsGrid_EndTasks(grid);
 }
-CLEAN_AS(func_ov094_0229af18, PocketsGrid_Teardown)
+CLEAN_AS(func_ov094_0229af18, PocketsGrid_TearDown)
 
 /* func_ov094_0229af20: a frame begun: last frame's tasks ended, the lift a step on. */
 void PocketsGrid_BeginFrame(PocketsGrid *grid)
@@ -847,14 +847,14 @@ void PocketsGrid_Init(PocketsGrid *grid, int priority)
 CLEAN_AS(func_ov094_0229af40, PocketsGrid_Init)
 
 /* func_ov094_0229afb8 (vtable entry 3): the destructor that frees the grid. */
-PocketsGrid *PocketsGrid_DestructDelete(PocketsGrid *grid)
+PocketsGrid *PocketsGrid_Delete(PocketsGrid *grid)
 {
     grid->vtable = (u32) (uintptr_t) data_ov094_0229bf90;
     PocketsIcons_Destruct(grid_icons(grid));
     Heap_OperatorDeleteB(grid);
     return grid;
 }
-CLEAN_AS(func_ov094_0229afb8, PocketsGrid_DestructDelete)
+CLEAN_AS(func_ov094_0229afb8, PocketsGrid_Delete)
 
 /* func_ov094_0229afe0 (vtable entry 2): the destructor (the tasks have none). */
 PocketsGrid *PocketsGrid_Destruct(PocketsGrid *grid)

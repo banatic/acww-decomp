@@ -7,7 +7,7 @@
 #include "types.h"
 
 Process *Process020dabc0_Destruct(Process *process);
-Process *Process020dabc0_DestructFree(Process *process);
+Process *Process020dabc0_DestructDelete(Process *process);
 int Process020dabc0_IsHeldBack(void);
 
 int Process020dabc0_Create(void);

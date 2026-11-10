@@ -5,7 +5,7 @@
  * an empty place in a mailbox) and its halfword 0xfc the item it carries (0xfff1: none). Its
  * addressee starts at 4: a player of a town (func_02065f70) or a villager (func_02065f64).
  *
- * Each of the four players has a mailbox of ten letters (data_021ef8ec, MailBox). The post
+ * Each of the four players has a mailbox of ten letters (data_021ef8ec, MailboxRecord). The post
  * office keeps ten more (data_021f20fc, MailPostOffice): letters that found no room, or came from
  * another console. They are handed out at the delivery hours, 9:00 and 17:00 (Mail_DeliverDue):
  * to a player of this town into the mailbox, to a villager (Mail_GiveToVillager); a letter for
@@ -30,10 +30,10 @@
 #define MAIL_NOT_HERE (-2)      /* it is, but not to one of this town */
 
 /* A player's mailbox (0xa04 bytes each, at data_021ef8ec). */
-typedef struct MailBox {
+typedef struct MailboxRecord {
     Letter letters[MAILBOX_LETTERS];
     u8 unk_a00[4];
-} MailBox;
+} MailboxRecord;
 
 /* A date with an hour, in the order the records keep it. */
 typedef struct MailTime {
@@ -66,7 +66,7 @@ void Mail_DeliverWaiting(void);
 void Mail_DeliverDue(void);
 int Mail_PostOfficeHasRoom(void);
 int Mail_HasDatedLetter(void *player);
-void Mail_DoNothing(void);
+void Mail_Nothing(void);
 int Mail_CountLetters(Letter *letters, int count);
 int Mail_Compact(Letter *letters, int count);
 int Mail_FindVillagerAddressee(Letter *letter);
@@ -80,7 +80,7 @@ int Mail_IsMailboxFull(int player);
 int Mail_DeliverHeld(void);
 
 MailTask *MailTask_Destruct(MailTask *task);
-MailTask *MailTask_DestructFree(MailTask *task);
+MailTask *MailTask_DestructDelete(MailTask *task);
 void MailTask_ClearFlags(MailTask *task, u16 flags);
 void MailTask_SetFlags(MailTask *task, u32 flags);
 int MailTask_TestFlags(MailTask *task, u32 flags);
@@ -111,12 +111,12 @@ Letter *MailPostOffice_Letter(MailPostOffice *office, int index);
 MailPostOffice *MailPostOffice_Destruct(MailPostOffice *office);
 MailPostOffice *MailPostOffice_Construct(MailPostOffice *office);
 
-/* MailBox.unk_a00 holds, in its first halfword, the mark MailBox_SetMark keeps. */
-void MailBox_SetMark(MailBox *box, u32 mark);
-u16 MailBox_Mark(MailBox *box);
-void MailBox_Init(MailBox *box);
-Letter *MailBox_Letter(MailBox *box, int index);
-MailBox *MailBox_Destruct(MailBox *box);
-MailBox *MailBox_Construct(MailBox *box);
+/* MailboxRecord.unk_a00 holds, in its first halfword, the mark MailboxRecord_SetMark keeps. */
+void MailboxRecord_SetMark(MailboxRecord *box, u32 mark);
+u16 MailboxRecord_Mark(MailboxRecord *box);
+void MailboxRecord_Init(MailboxRecord *box);
+Letter *MailboxRecord_Letter(MailboxRecord *box, int index);
+MailboxRecord *MailboxRecord_Destruct(MailboxRecord *box);
+MailboxRecord *MailboxRecord_Construct(MailboxRecord *box);
 
 #endif

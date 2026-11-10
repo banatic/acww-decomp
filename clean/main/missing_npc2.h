@@ -40,7 +40,7 @@ typedef struct MissingNpc2 {
 } MissingNpc2;
 
 MissingNpc2 *MissingNpc2_Destruct(MissingNpc2 *self);
-MissingNpc2 *MissingNpc2_DestructDelete(MissingNpc2 *self);
+MissingNpc2 *MissingNpc2_Delete(MissingNpc2 *self);
 int MissingNpc2_UpdateOutOfView(MissingNpc2 *self);
 int MissingNpc2_EnterOutOfView(MissingNpc2 *self);
 int MissingNpc2_UpdateWander(MissingNpc2 *self);
@@ -127,7 +127,7 @@ int MissingNpc2_UpdateTurnAndTalk(void);
 /* Its talk scene. */
 MissingNpc2Talk *MissingNpc2Talk_Construct(MissingNpc2Talk *talk);
 MissingNpc2Talk *MissingNpc2Talk_Destruct(MissingNpc2Talk *talk);
-MissingNpc2Talk *MissingNpc2Talk_DestructDelete(MissingNpc2Talk *talk);
+MissingNpc2Talk *MissingNpc2Talk_Delete(MissingNpc2Talk *talk);
 void MissingNpc2Talk_SetOwner(MissingNpc2Talk *talk, struct MissingNpc2 *owner);
 u32 MissingNpc2Talk_Topic(MissingNpc2Talk *talk);
 void MissingNpc2Talk_SetTopic(MissingNpc2Talk *talk, u32 topic);

@@ -78,10 +78,10 @@ typedef struct MesBgSlider {
 
 int MesBg_LoadScreen(MesBg *bg, void *file);
 MesBg *MesBg_DestructBase(MesBg *bg);
-MesBg *MesBg_DestructDelete(MesBg *bg);
+MesBg *MesBg_Delete(MesBg *bg);
 MesBg *MesBg_Destruct(MesBg *bg);
 void MesBg_Construct(MesBg *bg);
-MesBgMarker *MesBgMarker_DestructDelete(MesBgMarker *marker);
+MesBgMarker *MesBgMarker_Delete(MesBgMarker *marker);
 MesBgMarker *MesBgMarker_Destruct(MesBgMarker *marker);
 MesBgMarker *MesBgMarker_Construct(MesBgMarker *marker);
 void MesBgSlider_PlayIndicatorB(MesBgSlider *slider);
@@ -99,7 +99,7 @@ void MesBgSlider_SetLevel(MesBgSlider *slider, fx32 level);
 void MesBgSlider_SetPlace(MesBgSlider *slider, int x, int y);
 void MesBgSlider_Update(MesBgSlider *slider);
 void MesBgSlider_Draw(MesBgSlider *slider);
-MesBgSlider *MesBgSlider_DestructDelete(MesBgSlider *slider);
+MesBgSlider *MesBgSlider_Delete(MesBgSlider *slider);
 MesBgSlider *MesBgSlider_Destruct(MesBgSlider *slider);
 MesBgSlider *MesBgSlider_Construct(MesBgSlider *slider);
 

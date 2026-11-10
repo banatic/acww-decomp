@@ -283,14 +283,14 @@ void MysteryCatFace_Show(MysteryCatFace *face, u8 *model)
 }
 CLEAN_AS(func_ov074_02278a90, MysteryCatFace_Show)
 
-/* func_ov074_02278adc: the textures of the texture file (ClothTexture_GetTextures), 0 without
+/* func_ov074_02278adc: the textures of the texture file (ClothTexture_CallTextures), 0 without
  * a file. */
 int MysteryCatFace_Textures(MysteryCatFace *face)
 {
     if (face->file == NULL) {
         return 0;
     }
-    return (int) (uintptr_t) ClothTexture_GetTextures((DesignModel *) (void *) face->file);
+    return (int) (uintptr_t) ClothTexture_CallTextures((DesignModel *) (void *) face->file);
 }
 CLEAN_AS(func_ov074_02278adc, MysteryCatFace_Textures)
 

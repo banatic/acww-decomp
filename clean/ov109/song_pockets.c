@@ -733,7 +733,7 @@ extern const MemberPointer data_ov109_0229db28, data_ov109_0229db30, data_ov109_
 /* The parent process (ov092's dispatch). */
 static MenuDispatch *parent_of(SongPockets *self)
 {
-    return (MenuDispatch *) (void *) Process_GetParent((Process *) (void *) self);
+    return (MenuDispatch *) (void *) Process_Parent((Process *) (void *) self);
 }
 
 /* Calls the draw (vtable slot 2) of a member object through its own vtable, as the game does. */
@@ -1164,20 +1164,20 @@ void SongPockets_BeginInteractiveFrame(SongPockets *self)
 CLEAN_AS(func_ov109_0229d4bc, SongPockets_BeginInteractiveFrame)
 
 /* func_ov109_0229d4d8: the members' teardown before the scene closes. */
-void SongPockets_Teardown(SongPockets *self)
+void SongPockets_TearDown(SongPockets *self)
 {
     SongPockets_EndLayerTask(self);
-    PocketsWallet_Teardown(&self->wallet);
-    PocketsGrid_Teardown(&self->grid);
+    PocketsWallet_TearDown(&self->wallet);
+    PocketsGrid_TearDown(&self->grid);
     PagedChoice_Dismiss(choice_of(self));
     ButtonPanel_CloseTexts(&self->panel);
 }
-CLEAN_AS(func_ov109_0229d4d8, SongPockets_Teardown)
+CLEAN_AS(func_ov109_0229d4d8, SongPockets_TearDown)
 
 /* func_ov109_0229d514: the scene's setup: no flags, the three objects of ov094's set up, no
  * popup place, the glide stopped, nothing held, the cursor at place 0, the choice on layer 3,
  * no delay. */
-void SongPockets_Setup(SongPockets *self)
+void SongPockets_SetUp(SongPockets *self)
 {
     self->flags = 0;
     PocketsGrid_Init(&self->grid, 2);
@@ -1190,7 +1190,7 @@ void SongPockets_Setup(SongPockets *self)
     PagedChoice_Init(choice_of(self), 3, 1, NULL);
     self->open_delay = 0;
 }
-CLEAN_AS(func_ov109_0229d514, SongPockets_Setup)
+CLEAN_AS(func_ov109_0229d514, SongPockets_SetUp)
 
 /* func_ov109_0229d590 (state 4): the scene wipes out. When done, layer 6 hidden, the delete
  * phase set and nothing drawn; else the layer scrolls with the wipe. The objects' offset
@@ -1383,7 +1383,7 @@ CLEAN_AS(func_ov109_0229d980, SongPockets_Draw)
 int SongPockets_Close(SongPockets *self)
 {
     MenuDispatch_ChildClosed(parent_of(self));
-    SongPockets_Teardown(self);
+    SongPockets_TearDown(self);
     return 1;
 }
 CLEAN_AS(func_ov109_0229da24, SongPockets_Close)
@@ -1392,7 +1392,7 @@ CLEAN_AS(func_ov109_0229da24, SongPockets_Close)
  * phase. Answers 1. */
 int SongPockets_Start(SongPockets *self)
 {
-    SongPockets_Setup(self);
+    SongPockets_SetUp(self);
     MenuScene_SetState(scene_of(self), SONG_POCKETS_STATE_START_SETUP);
     MenuScene_SetPhase(scene_of(self), SONG_POCKETS_PHASE_WAIT);
     return 1;

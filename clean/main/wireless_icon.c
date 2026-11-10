@@ -104,7 +104,7 @@ CLEAN_AS(func_02003c38, WirelessIcon_TrackFlag)
 /* func_02003c98: whether the graphics loaded are those of the library in use. */
 int WirelessIcon_GraphicsMatch(WirelessIcon *icon)
 {
-    u8 mode = Net_GetMode();
+    u8 mode = Net_Mode();
     return icon->wfc_graphics == (mode == 3 || mode == 4);
 }
 CLEAN_AS(func_02003c98, WirelessIcon_GraphicsMatch)
@@ -112,7 +112,7 @@ CLEAN_AS(func_02003c98, WirelessIcon_GraphicsMatch)
 /* func_02003cc0: a wireless library in use (a mode other than 0 and 6) and no delay. */
 int WirelessIcon_IsActive(WirelessIcon *icon)
 {
-    int in_use = Net_GetMode() != 0 && Net_GetMode() != 6;
+    int in_use = Net_Mode() != 0 && Net_Mode() != 6;
     return in_use && icon->delay == 0;
 }
 CLEAN_AS(func_02003cc0, WirelessIcon_IsActive)

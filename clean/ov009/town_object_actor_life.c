@@ -527,13 +527,13 @@ CLEAN_AS(func_ov009_0226539c, TownObjectActor_Destruct)
 
 /* func_ov009_022653fc (vtable slot 0x44): the deleting destructor; the memory goes back to the
  * auxiliary heap. */
-TownObjectActor *TownObjectActor_DestructDelete(TownObjectActor *actor)
+TownObjectActor *TownObjectActor_Delete(TownObjectActor *actor)
 {
     life_destruct(actor);
     Heap_FreeAux(actor);
     return actor;
 }
-CLEAN_AS(func_ov009_022653fc, TownObjectActor_DestructDelete)
+CLEAN_AS(func_ov009_022653fc, TownObjectActor_Delete)
 
 /* func_ov009_02265460 (vtable slot 0x40): the complete destructor. */
 void *TownObjectActor_DestructComplete(TownObjectActor *actor)
@@ -615,11 +615,11 @@ CLEAN_AS(func_ov009_02265680, TownObjectActor_Create)
 
 /* _ZThn236_N18Obj_ov009_022658dcD0Ev (func_ov009_022656bc, receiver slot 0x04): the deleting
  * destructor reached through the receiver part's vtable, with the part's address. */
-TownObjectActor *TownObjectActor_ReceiverDestructDelete(void *receiver)
+TownObjectActor *TownObjectActor_ReceiverDelete(void *receiver)
 {
-    return TownObjectActor_DestructDelete((TownObjectActor *) ((uintptr_t) receiver - TOWN_OBJECT_ACTOR_RECEIVER));
+    return TownObjectActor_Delete((TownObjectActor *) ((uintptr_t) receiver - TOWN_OBJECT_ACTOR_RECEIVER));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov009_022658dcD0Ev, TownObjectActor_ReceiverDestructDelete)
+CLEAN_AS(_ZThn236_N18Obj_ov009_022658dcD0Ev, TownObjectActor_ReceiverDelete)
 
 /* _ZThn236_N18Obj_ov009_022658dcD1Ev (func_ov009_022656d8, receiver slot 0x00): the complete
  * destructor reached the same way. */

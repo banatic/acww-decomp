@@ -65,7 +65,7 @@ enum MenuTabsRoster {
 /* The states (MenuScene.state), run by MenuTabs_RunState, and the sub states
  * (MenuScene.sub_state), run by MenuTabs_RunInteractive. */
 enum MenuTabsState {
-    MENU_TABS_STATE_SETUP = 0, /* MenuTabs_Setup */
+    MENU_TABS_STATE_SETUP = 0, /* MenuTabs_SetUp */
     MENU_TABS_STATE_SHOW = 1,  /* MenuTabs_Show */
     MENU_TABS_STATE_HIDE = 2,  /* MenuTabs_Hide */
     MENU_TABS_STATES = 3
@@ -113,7 +113,7 @@ void MenuTabs_EndTasksOnClose(MenuTabs *self);
 void MenuTabs_ResetBar(MenuTabs *self);
 void MenuTabs_Hide(MenuTabs *self);
 void MenuTabs_Show(MenuTabs *self);
-void MenuTabs_Setup(MenuTabs *self);
+void MenuTabs_SetUp(MenuTabs *self);
 int MenuTabs_UpdateError(MenuTabs *self);
 void MenuTabs_RequestTabGroup(MenuTabs *self);
 void MenuTabs_Idle(MenuTabs *self);

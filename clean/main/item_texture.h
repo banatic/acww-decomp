@@ -21,7 +21,7 @@ G3dResTex *CarpetTexture_Textures(u8 *file);
 int CarpetTexture_Load(u8 *file, const ItemCode *item);
 u8 *CarpetTexture_Construct(u8 *file);
 
-G3dResTex *ClothTexture_GetTextures(DesignModel *file);
+G3dResTex *ClothTexture_CallTextures(DesignModel *file);
 int ClothTexture_PutDesign(DesignModel *file, Design *design);
 int ClothTexture_LoadItem(DesignModel *file, const ItemCode *item, u8 *player);
 int ClothTexture_Size(void);

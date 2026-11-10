@@ -115,7 +115,7 @@ typedef struct MabelTalkChoices {
 unsigned long MabelTalk_Mode(MabelTalk *talk);
 void MabelTalk_SetMode(MabelTalk *talk, unsigned long mode);
 void MabelTalk_Begin(MabelTalk *talk, Mabel *owner);
-void *MabelTalk_DestructDelete(MabelTalk *talk);
+void *MabelTalk_Delete(MabelTalk *talk);
 MabelTalk *MabelTalk_Destruct(MabelTalk *talk);
 void *MabelTalk_Construct(void *talk);
 void MabelTalk_Line(MabelTalk *talk, MabelTalkLine *out);

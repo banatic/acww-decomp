@@ -33,7 +33,7 @@ enum CatalogSceneFlag {
 
 /* The states (MenuScene.state, run in phase 1 by the scene's RunState). */
 enum CatalogSceneState {
-    CATALOG_SCENE_STATE_SETUP = 0,          /* _Setup */
+    CATALOG_SCENE_STATE_SETUP = 0,          /* _SetUp */
     CATALOG_SCENE_STATE_WIPE_IN = 1,        /* _WipeIn */
     CATALOG_SCENE_STATE_START_WIPE_OUT = 2, /* _StartWipeOut (set by _SelectTab) */
     CATALOG_SCENE_STATE_WIPE_OUT = 3,       /* _WipeOut */

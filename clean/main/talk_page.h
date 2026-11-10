@@ -91,7 +91,7 @@ void TalkPageMeasurer_Part3(TalkPageMeasurer *measurer);
 void TalkPageMeasurer_Part2(TalkPageMeasurer *measurer);
 void TalkPageMeasurer_Part1(TalkPageMeasurer *measurer);
 void TalkPageMeasurer_Part0(TalkPageMeasurer *measurer);
-void TalkPageMeasurer_Nothing11_4(void);
+void TalkPageMeasurer_NothingGroup11Tag4(void);
 void TalkPageMeasurer_Set50Two(TalkPageMeasurer *measurer);
 void TalkPageMeasurer_Set50One(TalkPageMeasurer *measurer);
 

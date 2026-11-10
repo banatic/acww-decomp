@@ -1301,7 +1301,7 @@ extern const MemberPointer data_ov108_0229dfa0, data_ov108_0229dfa8, data_ov108_
 /* The dispatcher (overlay 92's scene), the parent process. */
 static MenuDispatch *lp_parent(LetterPick *self)
 {
-    return (MenuDispatch *) (void *) Process_GetParent((Process *) (void *) self);
+    return (MenuDispatch *) (void *) Process_Parent((Process *) (void *) self);
 }
 
 /* A member drawn through its class (vtable slot 2). */
@@ -1382,20 +1382,20 @@ int LetterPick_BeginInteractiveFrame(LetterPick *self)
 CLEAN_AS(func_ov108_0229d904, LetterPick_BeginInteractiveFrame)
 
 /* func_ov108_0229d920: the members' teardown before the scene closes. */
-void LetterPick_Teardown(LetterPick *self)
+void LetterPick_TearDown(LetterPick *self)
 {
     LetterPick_EndLayerTask(self);
-    PocketsWallet_Teardown(&self->wallet);
-    PocketsGrid_Teardown(&self->grid);
+    PocketsWallet_TearDown(&self->wallet);
+    PocketsGrid_TearDown(&self->grid);
     PagedChoice_Dismiss(lp_choice(self));
     ButtonPanel_CloseTexts(&self->panel);
 }
-CLEAN_AS(func_ov108_0229d920, LetterPick_Teardown)
+CLEAN_AS(func_ov108_0229d920, LetterPick_TearDown)
 
 /* func_ov108_0229d960: the scene's setup: no flags, the three objects of ov094's set up, no
  * popup place, the glide stopped, nothing held, the cursor on the first carried letter, the
  * choice on layer 3 at priority 1; no open delay. */
-void LetterPick_Setup(LetterPick *self)
+void LetterPick_SetUp(LetterPick *self)
 {
     self->flags = 0;
     PocketsGrid_Init(&self->grid, 2);
@@ -1408,7 +1408,7 @@ void LetterPick_Setup(LetterPick *self)
     PagedChoice_Init(lp_choice(self), LETTER_PICK_TEXT_LAYER, 1, NULL);
     self->open_delay = 0;
 }
-CLEAN_AS(func_ov108_0229d960, LetterPick_Setup)
+CLEAN_AS(func_ov108_0229d960, LetterPick_SetUp)
 
 /* func_ov108_0229d9e0 (state 4): the scene wipes out; when done, its layer hidden, the scene and
  * its objects no longer drawn and the end phase begins (LetterPick_End); else the layer follows
@@ -1583,7 +1583,7 @@ CLEAN_AS(func_ov108_0229dde0, LetterPick_Draw)
 int LetterPick_Close(LetterPick *self)
 {
     MenuDispatch_ChildClosed(lp_parent(self));
-    LetterPick_Teardown(self);
+    LetterPick_TearDown(self);
     return 1;
 }
 CLEAN_AS(func_ov108_0229de88, LetterPick_Close)
@@ -1592,7 +1592,7 @@ CLEAN_AS(func_ov108_0229de88, LetterPick_Close)
  * Answers 1. */
 int LetterPick_Start(LetterPick *self)
 {
-    LetterPick_Setup(self);
+    LetterPick_SetUp(self);
     MenuScene_SetState(lp_scene(self), LETTER_PICK_STATE_START_SETUP);
     MenuScene_SetPhase(lp_scene(self), LETTER_PICK_PHASE_WAIT);
     return 1;

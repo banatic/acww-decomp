@@ -243,7 +243,7 @@ FishDisp *FishDisp_Destruct(FishDisp *disp)
 CLEAN_AS(func_0204fcac, FishDisp_Destruct)
 
 /* func_0204fcf0 (vtable slot 17): the destructor, and the display freed. */
-FishDisp *FishDisp_DestructFree(FishDisp *disp)
+FishDisp *FishDisp_DestructDelete(FishDisp *disp)
 {
     disp->base.vtable = data_020dce48;
     ModelPool_Destruct(disp->pool);
@@ -253,7 +253,7 @@ FishDisp *FishDisp_DestructFree(FishDisp *disp)
     Heap_FreeAux(disp);
     return disp;
 }
-CLEAN_AS(func_0204fcf0, FishDisp_DestructFree)
+CLEAN_AS(func_0204fcf0, FishDisp_DestructDelete)
 
 /* func_0205072c: a model's constructor: free, no kind, position and scale (1.0, 1.0, 1.0), no
  * rotation and alpha 31. */

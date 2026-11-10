@@ -16,7 +16,7 @@ call 5301 02213ac1 02392a60 r1 0 0 02213ac0 47707001  # ov003 State57Saved_SetSt
 call 5301 02213169 02392a60 0 0 0 02213168 4b011c80  # ov003 State58Saved_Angle
 call 5301 02213175 02392a60 0 0 0 02213174 47707840  # ov003 State58Saved_Step
 call 5301 02214bfd 02392a60 0 0 0 02214bfc 47707800  # ov003 State55Saved_Step
-call 5301 022195a9 02392a60 0 0 0 022195a8 47707880  # ov003 FieldActor_GetState6Progress
+call 5301 022195a9 02392a60 0 0 0 022195a8 47707880  # ov003 FieldActor_State6Progress
 call 5301 02088ab9 021debd2 0 0 0 00000000 00000000  # main PlayerField2416_Gardening (the player's record's field at 0x2416)
 call 5301 02088b99 021debd2 0 0 0 00000000 00000000  # main PlayerField2416_AddAcornPoints
 call 5301 02088b81 021debd2 0 0 0 00000000 00000000  # main PlayerField2416_RaiseAcornLevel

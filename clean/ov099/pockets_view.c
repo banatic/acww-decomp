@@ -882,7 +882,7 @@ extern const MemberPointer data_ov099_0229df60, data_ov099_0229df68, data_ov099_
 /* The parent process. */
 static Process *parent_of(PocketsView *self)
 {
-    return Process_GetParent((Process *) (void *) self);
+    return Process_Parent((Process *) (void *) self);
 }
 
 /* Calls the draw (vtable slot 2) of a member object through its own vtable, as the game does. */
@@ -1411,19 +1411,19 @@ void PocketsView_BeginInteractiveFrame(PocketsView *self)
 CLEAN_AS(func_ov099_0229d948, PocketsView_BeginInteractiveFrame)
 
 /* func_ov099_0229d964: the members' teardown before the scene closes. */
-void PocketsView_Teardown(PocketsView *self)
+void PocketsView_TearDown(PocketsView *self)
 {
     PocketsView_EndLayerTask(self);
-    PocketsWallet_Teardown((PocketsWallet *) (void *) self->wallet);
-    PocketsGrid_Teardown((PocketsGrid *) (void *) self->grid);
+    PocketsWallet_TearDown((PocketsWallet *) (void *) self->wallet);
+    PocketsGrid_TearDown((PocketsGrid *) (void *) self->grid);
     PagedChoice_Dismiss(choice_of(self));
 }
-CLEAN_AS(func_ov099_0229d964, PocketsView_Teardown)
+CLEAN_AS(func_ov099_0229d964, PocketsView_TearDown)
 
 /* func_ov099_0229d994: the scene's setup: no flags, the three objects of ov094's set up, no
  * popup place, the glide stopped, nothing held, the cursor at place 0, the choice on layer 3;
  * then item 0x11a9 stored in pocket slot 0 (in state 1) and item 0x1548 in slot 2. */
-void PocketsView_Setup(PocketsView *self)
+void PocketsView_SetUp(PocketsView *self)
 {
     self->flags = 0;
     PocketsGrid_Init((PocketsGrid *) (void *) self->grid, 2);
@@ -1439,7 +1439,7 @@ void PocketsView_Setup(PocketsView *self)
     u16 second = 0x1548;
     CurrentPockets_Set(&second, 0, 2);
 }
-CLEAN_AS(func_ov099_0229d994, PocketsView_Setup)
+CLEAN_AS(func_ov099_0229d994, PocketsView_SetUp)
 
 /* func_ov099_0229da34 (state 4): the scene wipes out. When done, layer 6 hidden, the delete phase
  * (MENU_SCENE_PHASE_DELETE) set and nothing drawn. The objects' offset follows the wipe. */
@@ -1615,7 +1615,7 @@ CLEAN_AS(func_ov099_0229ddec, PocketsView_Draw)
 int PocketsView_Close(PocketsView *self)
 {
     MenuDispatch_ChildClosed((MenuDispatch *) (void *) parent_of(self));
-    PocketsView_Teardown(self);
+    PocketsView_TearDown(self);
     return 1;
 }
 CLEAN_AS(func_ov099_0229de7c, PocketsView_Close)
@@ -1624,7 +1624,7 @@ CLEAN_AS(func_ov099_0229de7c, PocketsView_Close)
  * Answers 1. */
 int PocketsView_Start(PocketsView *self)
 {
-    PocketsView_Setup(self);
+    PocketsView_SetUp(self);
     MenuScene_SetState(scene_of(self), STATE_START_SETUP);
     MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_WAIT);
     return 1;

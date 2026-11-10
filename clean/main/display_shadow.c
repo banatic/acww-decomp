@@ -159,11 +159,11 @@ void DisplayShadow_SetSubPlanes(u8 planes)
 CLEAN_AS(func_02001b1c, DisplayShadow_SetSubPlanes)
 
 /* func_02001b28 */
-u8 DisplayShadow_GetSubPlanes(void)
+u8 DisplayShadow_SubPlanes(void)
 {
     return data_0213fe74.sub_planes;
 }
-CLEAN_AS(func_02001b28, DisplayShadow_GetSubPlanes)
+CLEAN_AS(func_02001b28, DisplayShadow_SubPlanes)
 
 /* func_02001b34 */
 void DisplayShadow_HideMainPlanes(u8 planes)
@@ -187,11 +187,11 @@ void DisplayShadow_SetMainPlanes(u8 planes)
 CLEAN_AS(func_02001b54, DisplayShadow_SetMainPlanes)
 
 /* func_02001b60 */
-u8 DisplayShadow_GetMainPlanes(void)
+u8 DisplayShadow_MainPlanes(void)
 {
     return data_0213fe74.main_planes;
 }
-CLEAN_AS(func_02001b60, DisplayShadow_GetMainPlanes)
+CLEAN_AS(func_02001b60, DisplayShadow_MainPlanes)
 
 /* func_02001b6c */
 void DisplayShadow_DisableSubWindows(u8 windows)
@@ -215,11 +215,11 @@ void DisplayShadow_SetSubWindows(u8 windows)
 CLEAN_AS(func_02001b8c, DisplayShadow_SetSubWindows)
 
 /* func_02001b98 */
-u8 DisplayShadow_GetSubWindows(void)
+u8 DisplayShadow_SubWindows(void)
 {
     return data_0213fe74.sub_windows;
 }
-CLEAN_AS(func_02001b98, DisplayShadow_GetSubWindows)
+CLEAN_AS(func_02001b98, DisplayShadow_SubWindows)
 
 /* func_02001ba4 */
 void DisplayShadow_DisableMainWindows(u8 windows)
@@ -243,11 +243,11 @@ void DisplayShadow_SetMainWindows(u8 windows)
 CLEAN_AS(func_02001bc4, DisplayShadow_SetMainWindows)
 
 /* func_02001bd0 */
-u8 DisplayShadow_GetMainWindows(void)
+u8 DisplayShadow_MainWindows(void)
 {
     return data_0213fe74.main_windows;
 }
-CLEAN_AS(func_02001bd0, DisplayShadow_GetMainWindows)
+CLEAN_AS(func_02001bd0, DisplayShadow_MainWindows)
 
 /* func_02001bdc: the sub screen's background mode, in the copy and in the hardware. */
 void Display_SetSubBgModeNow(int mode)

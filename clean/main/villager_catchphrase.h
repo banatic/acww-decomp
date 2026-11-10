@@ -1,6 +1,6 @@
 /* The catchphrase of one of the town's villagers: four characters at 0x7c6 (town_villager.h),
  * cleared to 0. A new villager takes the one its number has in the message group
- * "st_npc_habit" (TownVillager_Setup).
+ * "st_npc_habit" (TownVillager_SetUp).
  *
  * The catchphrase goes in and out through a wide text object of its own (vtable data_020e1934,
  * func_02082164 constructs it, func_0208214c destroys it, its characters at 0x0e) and through

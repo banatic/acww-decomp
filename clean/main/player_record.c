@@ -70,7 +70,7 @@ static_assert(sizeof(PlayerStorage) == 0xb4, "PlayerStorage layout");
 #define LETTER_WORDS 6
 #define LETTER_ENTRY_TOWN 8
 
-extern MailBox data_021ef8ec[MAIL_PLAYERS];       /* the players' mailboxes */
+extern MailboxRecord data_021ef8ec[MAIL_PLAYERS]; /* the players' mailboxes */
 extern PlayerStorage data_021f2fa8[MAIL_PLAYERS]; /* the players' storages */
 extern u32 data_021dc7a8[];                       /* the state block (state_block.h) */
 extern u8 data_020e3128[];                        /* passed to func_0207d3dc for the villager's letter */
@@ -98,12 +98,12 @@ static int player_number(u8 *record)
     return number >= 0 && number < MAIL_PLAYERS ? number : -1;
 }
 
-/* func_02098930: set the mark of the record's player's mailbox (MailBox_SetMark). */
+/* func_02098930: set the mark of the record's player's mailbox (MailboxRecord_SetMark). */
 void PlayerRecord_SetMailMark(u8 *record, int mark)
 {
     int number = player_number(record);
     if (number != -1) {
-        MailBox_SetMark(&data_021ef8ec[number], (u32) mark);
+        MailboxRecord_SetMark(&data_021ef8ec[number], (u32) mark);
     }
 }
 CLEAN_AS(func_02098930, PlayerRecord_SetMailMark)
@@ -113,7 +113,7 @@ int PlayerRecord_MailMark(u8 *record)
 {
     int number = player_number(record);
     if (number != -1) {
-        return MailBox_Mark(&data_021ef8ec[number]);
+        return MailboxRecord_Mark(&data_021ef8ec[number]);
     }
     return 0;
 }
@@ -128,7 +128,7 @@ PlayerStorage *PlayerRecord_Storage(u8 *record)
 CLEAN_AS(func_0209898c, PlayerRecord_Storage)
 
 /* func_020989b4: the record's player's mailbox, or NULL. */
-MailBox *PlayerRecord_Mailbox(u8 *record)
+MailboxRecord *PlayerRecord_Mailbox(u8 *record)
 {
     int number = player_number(record);
     return number != -1 ? &data_021ef8ec[number] : NULL;

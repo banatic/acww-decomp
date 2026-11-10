@@ -1250,7 +1250,7 @@ void FieldActor_PlaceState6(FieldActor *actor);
 void FieldActor_ExitState6(FieldActor *actor);
 void FieldActor_State6Message(FieldActor *actor, int arg);
 void FieldActor_EnterState6(FieldActor *actor, const StateRequest *request, int previous);
-int FieldActor_GetState6Progress(const State6Saved *saved);
+int FieldActor_State6Progress(const State6Saved *saved);
 void FieldActor_SetState6Progress(State6Saved *saved, int progress);
 void FieldActor_GetState6SavedItem(const State6Saved *saved, u16 *item);
 void FieldActor_SetState6SavedItem(State6Saved *saved, int item);

@@ -122,7 +122,7 @@ int SceneMap_Build(SceneMap *self, Heap *heap)
         return 1;
     }
 
-    const SceneMapSetupEnd *end = (const SceneMapSetupEnd *) (uintptr_t) (u32) SceneKinds_SetupEnd();
+    const SceneMapSetupEnd *end = (const SceneMapSetupEnd *) (uintptr_t) (u32) SceneKinds_SetUpEnd();
     Heap *current = data_021fbe94;
     int *models = NULL;
     AcreMapSize size = {0, 0};

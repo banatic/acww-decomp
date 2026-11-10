@@ -182,7 +182,7 @@ int Snowman_ClearTile(const Vec3 *position);
 int Snowman_PlaceObjectNearby(int number, Vec3 *position, u16 *replaced);
 int Snowman_PlaceObject(int number, Vec3 *position, u16 *replaced);
 int Snowman_CanStandAt(Vec3 *position);
-void Snowman_Setup(Snowman *snowman);
+void Snowman_SetUp(Snowman *snowman);
 int Snowman_IsBody(Snowman *snowman);
 int Snowman_IsHead(Snowman *snowman);
 int Snowman_IsPart(Snowman *snowman);

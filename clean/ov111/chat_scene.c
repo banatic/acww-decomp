@@ -181,7 +181,7 @@ static TextBase *chat_message(ChatScene *self)
 
 static Process *chat_parent(ChatScene *self)
 {
-    return Process_GetParent((Process *) (void *) self);
+    return Process_Parent((Process *) (void *) self);
 }
 
 /* A member's virtual function at `slot` (a word of its vtable), taking the member. */
@@ -1124,7 +1124,7 @@ CLEAN_AS(func_ov111_0229fed8, ChatScene_ShowSendFrame)
 
 /* func_ov111_0229ff60: the scene's members ended: the text box freed, the keyboard ended and,
  * unless the menu is closing, the player's actors told (a call that does nothing). */
-void ChatScene_Teardown(ChatScene *self)
+void ChatScene_TearDown(ChatScene *self)
 {
     ChatScene_FreeBox(self);
     SoftKeyboard_Finish(chat_keyboard(self));
@@ -1132,12 +1132,12 @@ void ChatScene_Teardown(ChatScene *self)
         PlayerActors_Nothing();
     }
 }
-CLEAN_AS(func_ov111_0229ff60, ChatScene_Teardown)
+CLEAN_AS(func_ov111_0229ff60, ChatScene_TearDown)
 
 /* func_ov111_0229ff88: the scene set up: no flags, not sending, no expression's wait, the line
  * emptied, no text box, the keyboard set up in mode 0, the line kept by GroupParams copied in,
  * and whether the menu opened with this tab. */
-void ChatScene_Setup(ChatScene *self)
+void ChatScene_SetUp(ChatScene *self)
 {
     self->flags = 0;
     self->unk_99 = 0;
@@ -1153,7 +1153,7 @@ void ChatScene_Setup(ChatScene *self)
         ChatScene_SetFlags(self, CHAT_SCENE_FLAG_OPENING);
     }
 }
-CLEAN_AS(func_ov111_0229ff88, ChatScene_Setup)
+CLEAN_AS(func_ov111_0229ff88, ChatScene_SetUp)
 
 /* --- The sub states --- */
 
@@ -1862,7 +1862,7 @@ CLEAN_AS(func_ov111_022a0d9c, ChatScene_Draw)
 int ChatScene_End(ChatScene *self)
 {
     MenuTabs_ChildClosed((MenuTabs *) (void *) chat_parent(self));
-    ChatScene_Teardown(self);
+    ChatScene_TearDown(self);
     return 1;
 }
 CLEAN_AS(func_ov111_022a0dcc, ChatScene_End)
@@ -1871,7 +1871,7 @@ CLEAN_AS(func_ov111_022a0dcc, ChatScene_End)
  * Answers 1. */
 int ChatScene_Start(ChatScene *self)
 {
-    ChatScene_Setup(self);
+    ChatScene_SetUp(self);
     MenuScene_SetState(chat_scene(self), CHAT_SCENE_STATE_LOAD_KEYBOARD);
     MenuScene_SetPhase(chat_scene(self), CHAT_SCENE_PHASE_STATES);
     return 1;

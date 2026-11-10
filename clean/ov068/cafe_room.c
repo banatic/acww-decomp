@@ -184,7 +184,7 @@ int CafeRoom_Start(CafeRoom *self)
 CLEAN_AS(func_ov068_022750d0, CafeRoom_Start)
 
 /* func_ov068_02275140 (vtable slot 0x44): CafeRoom_Destruct, then the object freed. */
-CafeRoom *CafeRoom_DestructDelete(CafeRoom *self)
+CafeRoom *CafeRoom_Delete(CafeRoom *self)
 {
     *(const u8 **) (void *) self = data_ov068_02277f3c;
     RmoTexture_Destruct(&self->chr_texture);
@@ -194,7 +194,7 @@ CafeRoom *CafeRoom_DestructDelete(CafeRoom *self)
     Heap_FreeAux(self);
     return self;
 }
-CLEAN_AS(func_ov068_02275140, CafeRoom_DestructDelete)
+CLEAN_AS(func_ov068_02275140, CafeRoom_Delete)
 
 /* func_ov068_02275184 (vtable slot 0x40): the destructor: its members in the reverse order of
  * their making, then the RMO base. */

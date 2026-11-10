@@ -31,7 +31,7 @@ int SpecialSceneObject_Init(void *object);
 void SpecialSceneObject_SetBodySize(u8 *object, u32 radius, u32 height);
 int SpecialSceneObject_LoadModel(u8 *object);
 void *SpecialSceneObject_DestructBody(void *object);
-void *SpecialSceneObject_DestructDelete(void *object);
+void *SpecialSceneObject_Delete(void *object);
 void *SpecialSceneObject_Destruct(void *object);
 
 #endif

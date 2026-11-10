@@ -40,14 +40,14 @@ int TalkReceiverName_Capacity(void)
 CLEAN_AS(func_02066a60, TalkReceiverName_Capacity)
 
 /* func_02066a64 (vtable entry 1): the destructor, then the object freed. */
-TalkReceiverName *TalkReceiverName_DestructDelete(TalkReceiverName *name)
+TalkReceiverName *TalkReceiverName_Delete(TalkReceiverName *name)
 {
     name->vtable = &data_020def4c;
     TextBase_Destruct((TextBase *) (void *) name);
     Heap_OperatorDeleteB(name);
     return name;
 }
-CLEAN_AS(func_02066a64, TalkReceiverName_DestructDelete)
+CLEAN_AS(func_02066a64, TalkReceiverName_Delete)
 
 /* func_02066a84 (vtable entry 0): the destructor: the text base's. */
 void *TalkReceiverName_Destruct(void *name)
@@ -293,13 +293,13 @@ void *TalkReceiver_Destruct(TalkReceiver *receiver)
 CLEAN_AS(func_02066994, TalkReceiver_Destruct)
 
 /* func_020669b8 (vtable entry 1): the destructor, then the object freed. */
-void *TalkReceiver_DestructDelete(TalkReceiver *receiver)
+void *TalkReceiver_Delete(TalkReceiver *receiver)
 {
     talk_receiver_destruct(receiver);
     Heap_OperatorDeleteB(receiver);
     return receiver;
 }
-CLEAN_AS(func_020669b8, TalkReceiver_DestructDelete)
+CLEAN_AS(func_020669b8, TalkReceiver_Delete)
 
 /* func_020669e0 (vtable entry 0): the destructor, as func_02066994. */
 void *TalkReceiver_DestructSlot(TalkReceiver *receiver)

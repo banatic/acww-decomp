@@ -2482,7 +2482,7 @@ CLEAN_AS(func_ov122_022a18c4, LetterWrite_Release)
 /* func_ov122_022a18f8: the scene set up for the letter of main's group parameters: the keyboard
  * (mode 1), the view with the addressee's name, the scroll at 0x10, the scroll button up, the
  * choice on background 3. Without an addressee, no header. */
-void LetterWrite_Setup(LetterWriteScene *self)
+void LetterWrite_SetUp(LetterWriteScene *self)
 {
     self->letter = GroupParams_Pointer();
     SoftKeyboard_Init(letter_write_keyboard(self), 1);
@@ -2500,7 +2500,7 @@ void LetterWrite_Setup(LetterWriteScene *self)
         LetterWrite_SetFlags(self, LETTER_WRITE_FLAG_NO_HEADER);
     }
 }
-CLEAN_AS(func_ov122_022a18f8, LetterWrite_Setup)
+CLEAN_AS(func_ov122_022a18f8, LetterWrite_SetUp)
 
 /* func_ov122_022a1998 (LETTER_WRITE_STATE_WIPE_OUT): the wipe stepped, the three backgrounds
  * moved with it; once it is done they are hidden and the scene's phase is 5. */
@@ -2572,7 +2572,7 @@ extern const MemberPointer data_ov122_022a25a0, data_ov122_022a25a8, data_ov122_
 
 static Process *letter_write_parent(LetterWriteScene *self)
 {
-    return Process_GetParent((Process *) (void *) self);
+    return Process_Parent((Process *) (void *) self);
 }
 
 /* An object drawn through its class (vtable slot 2). */
@@ -3025,7 +3025,7 @@ CLEAN_AS(func_ov122_022a2474, LetterWrite_Close)
  * Answers 1. */
 int LetterWrite_Begin(LetterWriteScene *self)
 {
-    LetterWrite_Setup(self);
+    LetterWrite_SetUp(self);
     MenuScene_SetState(letter_write_scene(self), LETTER_WRITE_STATE_START);
     MenuScene_SetPhase(letter_write_scene(self), MENU_SCENE_PHASE_STATES);
     return 1;

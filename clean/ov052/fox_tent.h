@@ -103,7 +103,7 @@ typedef struct FoxTentStep {
 
 /* His vtable slots and questions. */
 FoxTent *FoxTent_Destruct(FoxTent *fox);
-FoxTent *FoxTent_DestructDelete(FoxTent *fox);
+FoxTent *FoxTent_Delete(FoxTent *fox);
 int FoxTent_TalkIfLate(FoxTent *fox);
 int FoxTent_TalkAtExit(FoxTent *fox);
 int FoxTent_TalkAboutItem(FoxTent *fox);

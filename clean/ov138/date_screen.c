@@ -76,7 +76,7 @@ static CellLayerSprite *date_sprite_cells(DateScreen *self)
 
 static MenuDispatch *date_parent(DateScreen *self)
 {
-    return (MenuDispatch *) (void *) Process_GetParent((Process *) (void *) self);
+    return (MenuDispatch *) (void *) Process_Parent((Process *) (void *) self);
 }
 
 /* The cursor sprite's update through its class (vtable slot 3, Glider_Update for the base),
@@ -745,23 +745,23 @@ CLEAN_AS(func_ov138_0229cfbc, DateScreen_BeginInteractiveFrame)
 
 /* func_ov138_0229cfd4: the members torn down: the clock setter, and the button panel's texts
  * closed. */
-void DateScreen_Teardown(DateScreen *self)
+void DateScreen_TearDown(DateScreen *self)
 {
-    ClockSetter_Teardown(&self->clock);
+    ClockSetter_TearDown(&self->clock);
     ButtonPanel_CloseTexts(&self->panel);
 }
-CLEAN_AS(func_ov138_0229cfd4, DateScreen_Teardown)
+CLEAN_AS(func_ov138_0229cfd4, DateScreen_TearDown)
 
 /* func_ov138_0229cff4: the setup: the clock setter in mode 3 (layers 6 and 4 for its base and
  * fields, 3 for its lists) bounded below, the cursor at the year, no flags. */
-void DateScreen_Setup(DateScreen *self)
+void DateScreen_SetUp(DateScreen *self)
 {
     ClockSetter_Init(&self->clock, CLOCK_SETTER_MODE_DATE, 6, 4, 3);
     ClockSetter_UseMinimum(&self->clock);
     self->cursor = DATE_SCREEN_YEAR;
     *date_flags(self) = 0;
 }
-CLEAN_AS(func_ov138_0229cff4, DateScreen_Setup)
+CLEAN_AS(func_ov138_0229cff4, DateScreen_SetUp)
 
 /* func_ov138_0229d02c: layers 6 and 4 scrolled with the wipe. */
 void DateScreen_ScrollWithWipe(DateScreen *self)
@@ -928,7 +928,7 @@ CLEAN_AS(func_ov138_0229d310, DateScreen_Draw)
 int DateScreen_Close(DateScreen *self)
 {
     MenuDispatch_ChildClosed(date_parent(self));
-    DateScreen_Teardown(self);
+    DateScreen_TearDown(self);
     return 1;
 }
 CLEAN_AS(func_ov138_0229d364, DateScreen_Close)
@@ -938,7 +938,7 @@ CLEAN_AS(func_ov138_0229d364, DateScreen_Close)
 int DateScreen_Start(DateScreen *self, int unused)
 {
     (void) unused;
-    DateScreen_Setup(self);
+    DateScreen_SetUp(self);
     self->base.state = DATE_SCREEN_STATE_START_SETUP;
     MenuScene_SetPhase(date_scene(self), 0);
     return 1;

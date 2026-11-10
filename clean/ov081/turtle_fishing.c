@@ -142,7 +142,7 @@ TurtleFishing *TurtleFishing_Destruct(TurtleFishing *turtle)
 CLEAN_AS(func_ov081_02278a00, TurtleFishing_Destruct)
 
 /* func_ov081_02278a28 (vtable slot 0x44): the same, then the object freed. */
-TurtleFishing *TurtleFishing_DestructDelete(TurtleFishing *turtle)
+TurtleFishing *TurtleFishing_Delete(TurtleFishing *turtle)
 {
     *(const u8 **) (void *) turtle->base = data_ov081_022797bc;
     TurtleFishingTalk_Destruct(&turtle->talk);
@@ -150,7 +150,7 @@ TurtleFishing *TurtleFishing_DestructDelete(TurtleFishing *turtle)
     Heap_FreeAux(turtle);
     return turtle;
 }
-CLEAN_AS(func_ov081_02278a28, TurtleFishing_DestructDelete)
+CLEAN_AS(func_ov081_02278a28, TurtleFishing_Delete)
 
 /* func_ov081_02278a54 (vtable slot 0x4c, an event about him): when the player talked to him,
  * his talk scene is reset and given the player's field actor, and he talks (state 1); once the

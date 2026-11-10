@@ -261,11 +261,11 @@ CLEAN_AS(func_02005198, SoundEmitter_Destruct)
 
 /* func_020115ec: the deleting destructor of class 0x020d8414 (its vtable slot 1): its vtable,
  * the base's destructor, then the memory freed. Returns the emitter. */
-void *SoundEmitter_DestructDelete(SoundEmitter *emitter)
+void *SoundEmitter_Delete(SoundEmitter *emitter)
 {
     emitter->vtable = &data_020d8414;
     SoundEmitterClass_DestructBase((SoundEmitterObject *) emitter);
     Heap_OperatorDeleteB(emitter);
     return emitter;
 }
-CLEAN_AS(func_020115ec, SoundEmitter_DestructDelete)
+CLEAN_AS(func_020115ec, SoundEmitter_Delete)

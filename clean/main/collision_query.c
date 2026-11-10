@@ -204,7 +204,7 @@ int CollisionQuery_GroundY(const Vec3 *point, int *attr, int flags)
     if (attr != NULL) {
         *attr = ground.attr;
     }
-    y = CollisionGround_GetHeight(&ground, 0);
+    y = CollisionGround_Height(&ground, 0);
     CollisionGround_Destroy(&ground);
     CollisionSegmentHit_Destroy(&hit.hit);
     return y;
@@ -335,10 +335,10 @@ void CollisionQuery_Move(CollisionContacts *contacts, Vec3 *position, const Vec3
         CollisionGround ground;
         CollisionGround_Init(&ground, &at, (contacts->previous_flags & COLLISION_BELOW_LIMIT) ? 1 : 0,
                              (flags & COLLISION_QUERY_MODE_1) ? 1 : 0);
-        if (at.y < CollisionGround_GetHeight(&ground, 0) + COLLISION_QUERY_CLEARANCE) {
+        if (at.y < CollisionGround_Height(&ground, 0) + COLLISION_QUERY_CLEARANCE) {
             contacts->flags |= COLLISION_ON_GROUND;
             contacts->ground_attr = ground.attr;
-            at.y = CollisionGround_GetHeight(&ground, 0) + COLLISION_QUERY_CLEARANCE;
+            at.y = CollisionGround_Height(&ground, 0) + COLLISION_QUERY_CLEARANCE;
         }
         if (CollisionGround_IsBelowLimit(&ground, at.y) != 0) {
             contacts->flags |= COLLISION_BELOW_LIMIT;
@@ -378,7 +378,7 @@ static int collision_query_all_sides_14(const CollisionCell *cell)
  * The result is 4 when no unit matches or the block is outside the map. */
 int CollisionQuery_FindSpotInBlock(int *x, int *z, int block_x, int block_z)
 {
-    if (FieldUnits_GetBlock(block_x, block_z) == NULL) {
+    if (FieldUnits_Block(block_x, block_z) == NULL) {
         return COLLISION_SPOT_NONE;
     }
     int base_x = (int) ((u32) block_x << 4);
@@ -596,7 +596,7 @@ int CollisionQuery_Byte08IfFree(int x, int z)
 CLEAN_AS(func_020319e4, CollisionQuery_Byte08IfFree)
 
 /* func_02031bb8: whether the ground under `position` has a height other than 0 (the ground in
- * mode 0 of the first table set, CollisionGround_GetHeight without posts) or a post stands on
+ * mode 0 of the first table set, CollisionGround_Height without posts) or a post stands on
  * its unit (CollisionQuery_PostAt). */
 int CollisionQuery_IsRaisedOrPost(const Vec3 *position)
 {
@@ -607,7 +607,7 @@ int CollisionQuery_IsRaisedOrPost(const Vec3 *position)
     int result;
 
     CollisionGround_Init(&ground, position, 0, 0);
-    if (CollisionGround_GetHeight(&ground, 0) != 0) {
+    if (CollisionGround_Height(&ground, 0) != 0) {
         result = 1;
     } else {
         result = CollisionQuery_PostAt(position->x >> COLLISION_UNIT_SHIFT, position->z >> COLLISION_UNIT_SHIFT, &radius,

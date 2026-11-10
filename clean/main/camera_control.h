@@ -106,7 +106,7 @@ enum CameraControlMode {
 };
 
 CameraControl *CameraControl_Destruct(CameraControl *camera);
-CameraControl *CameraControl_DestructFree(CameraControl *camera);
+CameraControl *CameraControl_DestructDelete(CameraControl *camera);
 void CameraControl_ScreenPosition(int *x, int *y, const Vec3 *point);
 int CameraControl_ProjectPoint(int *x, int *y, const Vec3 *point);
 int CameraControl_SelectPreset(int row, int column);

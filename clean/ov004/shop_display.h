@@ -54,7 +54,7 @@ int ShopDisplay_Delete(void);
 int ShopDisplay_Draw(void);
 int ShopDisplay_Execute(void);
 int ShopDisplay_Create(ShopDisplay *self);
-ShopDisplay *ShopDisplay_DestructFree(ShopDisplay *self);
+ShopDisplay *ShopDisplay_DestructDelete(ShopDisplay *self);
 ShopDisplay *ShopDisplay_Destruct(ShopDisplay *self);
 ShopDisplay *ShopDisplay_Construct(ShopDisplay *self);
 int ShopDisplay_SpotKind(u16 *item);

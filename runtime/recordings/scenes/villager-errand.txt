@@ -4,7 +4,7 @@
 # (VillagerErrands_Deal: an item to take to another villager, class 1).
 # Save: seed. Round the west side of villager 4's house to her (about 6560); talks with A every
 # 40 frames until one ends in her offer (VillagerTalkOffer_StateClass1, about 8400): she hands
-# over a shirt (0x11c2) for villager 3 (VillagerPartBlock_SetupType10, block 0 of the player's
+# over a shirt (0x11c2) for villager 3 (VillagerPartBlock_SetUpType10, block 0 of the player's
 # villager part). East along the path south of the houses and north of the trees to villager 3
 # (about 11030): a talk, then another that ends in the delivery (VillagerTalkOffer_PartBlock):
 # he puts the shirt on (scene motion 18). Back west to villager 4 (about 14890): she hears of

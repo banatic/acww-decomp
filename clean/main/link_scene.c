@@ -305,7 +305,7 @@ static void wait_acks(LinkState *state, NetSession *session, int own)
             }
         }
     }
-    if (Session_GetHeldQueueLength(session) || Session_GetSceneQueueLength(session) || Session_GetLocalQueueLength(session) ||
+    if (Session_HeldQueueLength(session) || Session_SceneQueueLength(session) || Session_LocalQueueLength(session) ||
         LinkGlobal_Zero744C()) {
         return;
     }
@@ -402,7 +402,7 @@ void LinkScene_Step(LinkState *state)
             find_holder(state, session, own);
             return;
         case LINK_SCENE_WAIT_STATE:
-            if (!Session_GetBundle16Length(session) && !LinkScene_IsLinkingScene(SceneExit_NextScene())) {
+            if (!Session_Bundle16Length(session) && !LinkScene_IsLinkingScene(SceneExit_NextScene())) {
                 return;
             }
             LinkScene_SetPhase(state, LINK_SCENE_ENTER);
@@ -731,7 +731,7 @@ CLEAN_AS(func_020a6d24, LinkScene_SendLeftState)
 void LinkScene_TakeEnteredState(void)
 {
     NetSession *session = data_020ccf94;
-    if (Session_IsSlotTaken(session, session->local_slot) && Session_GetBundle16Length(session)) {
+    if (Session_IsSlotTaken(session, session->local_slot) && Session_Bundle16Length(session)) {
         LinkBundle_ReadEntered();
     }
 }
@@ -745,7 +745,7 @@ void LinkScene_TakeLeftState(void)
     NetSession *session = data_020ccf94;
     int own = session->local_slot;
 
-    if (!Session_IsSlotTaken(session, own) || !Session_GetBundle15Length(session)) {
+    if (!Session_IsSlotTaken(session, own) || !Session_Bundle15Length(session)) {
         return;
     }
     LinkBundle_ReadLeft();

@@ -103,7 +103,7 @@ int NookStore_HasFurnitureGroup4(NookStore *store);
 int NookStore_IsBonusDayToday(NookStore *store);
 int NookStore_IsBonusDay(NookStore *store, const DateTime *when);
 int NookStore_IsTimeSale(NookStore *store);
-void NookStore_Initialize(NookStore *store);
+void NookStore_Init(NookStore *store);
 NookStore *NookStore_Destruct(NookStore *store);
 NookStore *NookStore_Construct(NookStore *store);
 int NookStore_UpgradeDay(DateTime *when);

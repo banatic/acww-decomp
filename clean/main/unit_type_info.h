@@ -1,7 +1,7 @@
 /* What the table of unit types (data_020c907c, 0x1e-byte rows, field_collision.h's
  * CollisionTypeInfo) says of a unit of the current map, and tests of a unit's type itself.
  *
- * A row is looked up by the unit's type (FieldUnits_GetType); types from 0x7c on have no row
+ * A row is looked up by the unit's type (FieldUnits_Type); types from 0x7c on have no row
  * and each question then has its own answer. The meaning of most fields is not known; they are
  * named by their offset in the row. */
 #ifndef CLEAN_MAIN_UNIT_TYPE_INFO_H

@@ -199,8 +199,8 @@ void FieldActor_ReadControl(FieldActor *actor)
         }
         FieldActor_ClearFlag(actor, 0x1b);
         FieldLabel_ClearMessage();
-        /* Network modes 3 and 4 (Net_GetMode's result less 3, as a byte, at most 1). */
-        if (data_020ccf94->local_slot == 0 && (u8) (Net_GetMode() - 3) <= 1) {
+        /* Network modes 3 and 4 (Net_Mode's result less 3, as a byte, at most 1). */
+        if (data_020ccf94->local_slot == 0 && (u8) (Net_Mode() - 3) <= 1) {
             Wfc_AllowNewClients();
         }
         int state = actor->state;

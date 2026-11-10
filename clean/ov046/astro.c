@@ -170,7 +170,7 @@ Astro *Astro_Destruct(Astro *self)
 CLEAN_AS(func_ov046_02260420, Astro_Destruct)
 
 /* func_ov046_02260448 (slot 0x44): destructed, then freed to the auxiliary heap. */
-Astro *Astro_DestructDelete(Astro *self)
+Astro *Astro_Delete(Astro *self)
 {
     *(const u8 **) (void *) self = data_ov046_022620e0;
     AstroTalk_Destruct(&self->talk);
@@ -178,7 +178,7 @@ Astro *Astro_DestructDelete(Astro *self)
     Heap_FreeAux(self);
     return self;
 }
-CLEAN_AS(func_ov046_02260448, Astro_DestructDelete)
+CLEAN_AS(func_ov046_02260448, Astro_Delete)
 
 /* func_ov046_02260474: when the player calls it over (Astro_IsCalled), its talk's topic CALLED,
  * the camera's flag 0x1f5 set and an event of kind 6 asked for it. Whether it was called. */

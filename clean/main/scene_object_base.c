@@ -344,13 +344,13 @@ SceneObjectBase *SceneObjectBase_DestructBase(SceneObjectBase *object)
 CLEAN_AS(func_0203f080, SceneObjectBase_DestructBase)
 
 /* func_0203f0b8 (vtable slot 0x44): the destructor that also frees the object. */
-SceneObjectBase *SceneObjectBase_DestructFree(SceneObjectBase *object)
+SceneObjectBase *SceneObjectBase_Delete(SceneObjectBase *object)
 {
     destruct(object);
     Heap_FreeAux(object);
     return object;
 }
-CLEAN_AS(func_0203f0b8, SceneObjectBase_DestructFree)
+CLEAN_AS(func_0203f0b8, SceneObjectBase_Delete)
 
 /* func_0203f0f8 (vtable slot 0x40): the destructor (the same as SceneObjectBase_DestructBase). */
 SceneObjectBase *SceneObjectBase_Destruct(SceneObjectBase *object)

@@ -5,8 +5,8 @@
 #include "autoload_2/heap.h"  /* Heap_AllocAuxZeroed, Heap_FreeAux */
 #include "autoload_2/input.h" /* PadState */
 #include "clean.h"
-#include "main/session.h"   /* Session_IsLinked, Session_IsSlotTaken, Session_GetRecord */
-#include "session_record.h" /* SessionRecord_Update, SessionRecord_GetSize */
+#include "main/session.h"   /* Session_IsLinked, Session_IsSlotTaken, Session_Record */
+#include "session_record.h" /* SessionRecord_Update, SessionRecord_Size */
 #include "sound.h"          /* SoundSys_PlaySe */
 #include "text_string.h"    /* TextString_ClearWide, TextString_BytesToWide, ... */
 #include "autoload_2/approach.h"
@@ -192,13 +192,13 @@ CLEAN_AS(func_02038de8, QuickMessage_Create)
 
 /* func_02038e10 (vtable slot 17): the destructor, and the object freed to the heap processes
  * come from. */
-QuickMessageProcess *QuickMessage_DestructFree(QuickMessageProcess *self)
+QuickMessageProcess *QuickMessage_DestructDelete(QuickMessageProcess *self)
 {
     QuickMessage_Destruct(self);
     Heap_FreeAux(self);
     return self;
 }
-CLEAN_AS(func_02038e10, QuickMessage_DestructFree)
+CLEAN_AS(func_02038e10, QuickMessage_DestructDelete)
 
 /* func_02038e54 (vtable slot 16): the parts destroyed, last first, then the bases. */
 QuickMessageProcess *QuickMessage_Destruct(QuickMessageProcess *self)
@@ -387,7 +387,7 @@ void *QuickMessage_WriteRecordOf(u8 *record, int id, QuickMessageBalloon *balloo
     TextBase_BytesToWide((WideTextBase *) &text, (TextBase *) (void *) balloon->text);
     TextString_BytesToWide((TextObject *) &name, (TextObject *) balloon->name);
     data_021c675c[0] = 1;
-    MI_CpuCopy8(data_021c675c, record, SessionRecord_GetSize((u32) id));
+    MI_CpuCopy8(data_021c675c, record, SessionRecord_Size((u32) id));
     QuickMessage_ViewDestruct(&name);
     return QuickMessage_WideDestruct(&text);
 }
@@ -398,7 +398,7 @@ CLEAN_AS(func_02039128, QuickMessage_WriteRecordOf)
  * way the record's flag is cleared. */
 int QuickMessage_TakeRecord(int slot)
 {
-    u8 *record = Session_GetRecord(data_020ccf94, slot + QUICK_MESSAGE_FIRST_RECORD);
+    u8 *record = Session_Record(data_020ccf94, slot + QUICK_MESSAGE_FIRST_RECORD);
     u8 present = record[0];
     if (present != 0) {
         int scene = SceneQuery_Current();
@@ -570,7 +570,7 @@ void QuickMessage_BoardCreate(QuickMessageBoard *board)
 {
     data_021c6738 = board;
     for (int i = 0; i < QUICK_MESSAGE_BALLOONS; i++) {
-        QuickMessage_BalloonSetup(&board->balloons[i], i, data_020ca144[i], data_020ca134[i]);
+        QuickMessage_BalloonSetUp(&board->balloons[i], i, data_020ca144[i], data_020ca134[i]);
     }
 }
 CLEAN_AS(func_02039404, QuickMessage_BoardCreate)
@@ -1265,14 +1265,14 @@ int QuickMessage_BalloonRequest(QuickMessageBalloon *balloon)
 CLEAN_AS(func_02039edc, QuickMessage_BalloonRequest)
 
 /* func_02039efc: the balloon given its position and the entries of its animations. */
-void QuickMessage_BalloonSetup(QuickMessageBalloon *balloon, int position, int tag_anim, int frame_anim)
+void QuickMessage_BalloonSetUp(QuickMessageBalloon *balloon, int position, int tag_anim, int frame_anim)
 {
     balloon->position = position;
     balloon->tag_anim = tag_anim;
     balloon->frame_anim = frame_anim;
     QuickMessage_BalloonLoadAnims(balloon);
 }
-CLEAN_AS(func_02039efc, QuickMessage_BalloonSetup)
+CLEAN_AS(func_02039efc, QuickMessage_BalloonSetUp)
 
 /* func_02039f0c: the player's name and the message copied in, the palette of colour `color`
  * chosen. */
@@ -1395,13 +1395,13 @@ void QuickMessage_BalloonDraw(QuickMessageBalloon *balloon)
 CLEAN_AS(func_0203a054, QuickMessage_BalloonDraw)
 
 /* func_0203a1ac (vtable entry 1): destroyed and freed. */
-QuickMessageBalloon *QuickMessage_BalloonDestructDelete(QuickMessageBalloon *balloon)
+QuickMessageBalloon *QuickMessage_BalloonDelete(QuickMessageBalloon *balloon)
 {
     QuickMessage_BalloonDestruct(balloon);
     Heap_OperatorDeleteB(balloon);
     return balloon;
 }
-CLEAN_AS(func_0203a1ac, QuickMessage_BalloonDestructDelete)
+CLEAN_AS(func_0203a1ac, QuickMessage_BalloonDelete)
 
 /* func_0203a1f8 (vtable entry 0): the boxes freed, the members destroyed, last first. */
 QuickMessageBalloon *QuickMessage_BalloonDestruct(QuickMessageBalloon *balloon)
@@ -1496,14 +1496,14 @@ int QuickMessage_ViewCapacity(QuickMessageView *view)
 CLEAN_AS(func_0203a2b8, QuickMessage_ViewCapacity)
 
 /* func_0203a2bc (slot 1): destroyed and freed. */
-QuickMessageView *QuickMessage_ViewDestructDelete(QuickMessageView *view)
+QuickMessageView *QuickMessage_ViewDelete(QuickMessageView *view)
 {
     view->words[0] = vtable_word(data_020da610);
     view->words[0] = vtable_word(data_020da6c4);
     Heap_OperatorDeleteB(view);
     return view;
 }
-CLEAN_AS(func_0203a2bc, QuickMessage_ViewDestructDelete)
+CLEAN_AS(func_0203a2bc, QuickMessage_ViewDelete)
 
 /* func_0203a2dc (slot 0): destroyed. */
 void QuickMessage_ViewDestruct(QuickMessageView *view)
@@ -1538,14 +1538,14 @@ int QuickMessage_NameCapacity(void)
 CLEAN_AS(func_0203a30c, QuickMessage_NameCapacity)
 
 /* func_0203a310 (slot 1): destroyed and freed. */
-QuickMessageName *QuickMessage_NameDestructDelete(QuickMessageName *name)
+QuickMessageName *QuickMessage_NameDelete(QuickMessageName *name)
 {
     name->words[0] = vtable_word(data_020da5f8);
     name->words[0] = vtable_word(data_020da6dc);
     Heap_OperatorDeleteB(name);
     return name;
 }
-CLEAN_AS(func_0203a310, QuickMessage_NameDestructDelete)
+CLEAN_AS(func_0203a310, QuickMessage_NameDelete)
 
 /* func_0203a330 (slot 0): destroyed. */
 void QuickMessage_NameDestruct(QuickMessageName *name)
@@ -1580,14 +1580,14 @@ int QuickMessage_WideCapacity(QuickMessageWide *wide)
 CLEAN_AS(func_0203a368, QuickMessage_WideCapacity)
 
 /* func_0203a36c (slot 1): destroyed and freed. */
-QuickMessageWide *QuickMessage_WideDestructDelete(QuickMessageWide *wide)
+QuickMessageWide *QuickMessage_WideDelete(QuickMessageWide *wide)
 {
     wide->words[0] = vtable_word(data_020da628);
     TextBase_WideDestruct(wide);
     Heap_OperatorDeleteB(wide);
     return wide;
 }
-CLEAN_AS(func_0203a36c, QuickMessage_WideDestructDelete)
+CLEAN_AS(func_0203a36c, QuickMessage_WideDelete)
 
 /* func_0203a38c (slot 0): destroyed. */
 QuickMessageWide *QuickMessage_WideDestruct(QuickMessageWide *wide)
@@ -1624,14 +1624,14 @@ int QuickMessage_TextCapacity(void)
 CLEAN_AS(func_0203a3c8, QuickMessage_TextCapacity)
 
 /* func_0203a3cc (slot 1): destroyed and freed. */
-QuickMessageText *QuickMessage_TextDestructDelete(QuickMessageText *text)
+QuickMessageText *QuickMessage_TextDelete(QuickMessageText *text)
 {
     text->words[0] = vtable_word(data_020da640);
     TextBase_Destruct((TextBase *) text);
     Heap_OperatorDeleteB(text);
     return text;
 }
-CLEAN_AS(func_0203a3cc, QuickMessage_TextDestructDelete)
+CLEAN_AS(func_0203a3cc, QuickMessage_TextDelete)
 
 /* func_0203a3ec (slot 0): destroyed. */
 QuickMessageText *QuickMessage_TextDestruct(QuickMessageText *text)
@@ -1664,13 +1664,13 @@ void QuickMessage_NameBaseDestruct(QuickMessageName *name)
 CLEAN_AS(func_0203a424, QuickMessage_NameBaseDestruct)
 
 /* func_0203a430 (slot 1): destroyed and freed. */
-QuickMessageName *QuickMessage_NameBaseDestructDelete(QuickMessageName *name)
+QuickMessageName *QuickMessage_NameBaseDelete(QuickMessageName *name)
 {
     name->words[0] = vtable_word(data_020da6dc);
     Heap_OperatorDeleteB(name);
     return name;
 }
-CLEAN_AS(func_0203a430, QuickMessage_NameBaseDestructDelete)
+CLEAN_AS(func_0203a430, QuickMessage_NameBaseDelete)
 
 /* func_0203a448 (vtable slot 0 of the base class of views and wide texts): destroyed. */
 void QuickMessage_ViewBaseDestruct(QuickMessageView *view)
@@ -1680,10 +1680,10 @@ void QuickMessage_ViewBaseDestruct(QuickMessageView *view)
 CLEAN_AS(func_0203a448, QuickMessage_ViewBaseDestruct)
 
 /* func_0203a454 (slot 1): destroyed and freed. */
-QuickMessageView *QuickMessage_ViewBaseDestructDelete(QuickMessageView *view)
+QuickMessageView *QuickMessage_ViewBaseDelete(QuickMessageView *view)
 {
     view->words[0] = vtable_word(data_020da6c4);
     Heap_OperatorDeleteB(view);
     return view;
 }
-CLEAN_AS(func_0203a454, QuickMessage_ViewBaseDestructDelete)
+CLEAN_AS(func_0203a454, QuickMessage_ViewBaseDelete)

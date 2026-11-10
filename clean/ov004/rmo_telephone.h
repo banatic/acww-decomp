@@ -39,7 +39,7 @@ typedef struct RmoTelephone {
 } RmoTelephone;
 
 void RmoTelephone_PlayFromEnd(void);
-void RmoTelephone_PlayBackFromEnd(void);
+void RmoTelephone_PlayBackwardsFromEnd(void);
 void RmoTelephone_PlayFromStart(void);
 int RmoTelephone_EnterState10Current(void);
 int RmoTelephone_IsTalking(void);

@@ -110,7 +110,7 @@ unsigned long NookClerkTalk_Mode(NookClerkTalk *talk);
 void NookClerkTalk_SetMode(NookClerkTalk *talk, unsigned long mode);
 void NookClerkTalk_Begin(NookClerkTalk *talk, NookClerk *owner);
 void NookClerkTalk_Reset(NookClerkTalk *talk);
-void *NookClerkTalk_DestructDelete(NookClerkTalk *talk);
+void *NookClerkTalk_Delete(NookClerkTalk *talk);
 void *NookClerkTalk_Destruct(NookClerkTalk *talk);
 void *NookClerkTalk_Construct(NookClerkTalk *talk);
 void NookClerkTalk_TakeErrandItem(NookClerkTalk *talk);

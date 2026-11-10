@@ -83,7 +83,7 @@ static CellLayerSprite *clock_sprite_cells(PhoneClock *self)
 
 static MenuDispatch *clock_parent(PhoneClock *self)
 {
-    return (MenuDispatch *) (void *) Process_GetParent((Process *) (void *) self);
+    return (MenuDispatch *) (void *) Process_Parent((Process *) (void *) self);
 }
 
 /* The cursor sprite's update through its class (vtable slot 3, Glider_Update for the base). */
@@ -811,19 +811,19 @@ void PhoneClock_BeginInteractiveFrame(PhoneClock *self)
 }
 CLEAN_AS(func_ov135_0229d0b0, PhoneClock_BeginInteractiveFrame)
 
-/* func_ov135_0229d0c8: the members torn down: overlay 134's object (ClockSetter_Teardown) and the
+/* func_ov135_0229d0c8: the members torn down: overlay 134's object (ClockSetter_TearDown) and the
  * panel's texts closed. */
-void PhoneClock_Teardown(PhoneClock *self)
+void PhoneClock_TearDown(PhoneClock *self)
 {
-    ClockSetter_Teardown(&self->editor);
+    ClockSetter_TearDown(&self->editor);
     ButtonPanel_CloseTexts(&self->panel);
 }
-CLEAN_AS(func_ov135_0229d0c8, PhoneClock_Teardown)
+CLEAN_AS(func_ov135_0229d0c8, PhoneClock_TearDown)
 
 /* func_ov135_0229d0e8: the setup: overlay 134's object set up (ClockSetter_Init with 0, 6, 4
  * and 3; and ClockSetter_UseMinimum in GroupParams' mode 0x33), the cursor at the first field, no
  * flags. */
-void PhoneClock_Setup(PhoneClock *self)
+void PhoneClock_SetUp(PhoneClock *self)
 {
     ClockSetter_Init(&self->editor, CLOCK_SETTER_MODE_DATE_TIME, 6, 4, 3);
     if (GroupParams_Mode() == PHONE_CLOCK_MODE_138) {
@@ -832,7 +832,7 @@ void PhoneClock_Setup(PhoneClock *self)
     self->cursor = 0;
     *clock_flags(self) = 0;
 }
-CLEAN_AS(func_ov135_0229d0e8, PhoneClock_Setup)
+CLEAN_AS(func_ov135_0229d0e8, PhoneClock_SetUp)
 
 /* func_ov135_0229d128: layers 6 and 4 scrolled with the wipe. */
 void PhoneClock_ScrollWithWipe(PhoneClock *self)
@@ -1003,7 +1003,7 @@ CLEAN_AS(func_ov135_0229d428, PhoneClock_Draw)
 int PhoneClock_Close(PhoneClock *self)
 {
     MenuDispatch_ChildClosed(clock_parent(self));
-    PhoneClock_Teardown(self);
+    PhoneClock_TearDown(self);
     return 1;
 }
 CLEAN_AS(func_ov135_0229d47c, PhoneClock_Close)
@@ -1012,7 +1012,7 @@ CLEAN_AS(func_ov135_0229d47c, PhoneClock_Close)
  * and phase 0. Answers 1. */
 int PhoneClock_Start(PhoneClock *self)
 {
-    PhoneClock_Setup(self);
+    PhoneClock_SetUp(self);
     self->base.state = PHONE_CLOCK_STATE_START_WIPE_IN;
     MenuScene_SetPhase(clock_scene(self), 0);
     return 1;

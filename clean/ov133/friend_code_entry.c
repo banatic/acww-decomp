@@ -91,7 +91,7 @@ static MenuScene *friend_code_scene(FriendCodeEntry *self)
 
 static MenuTabs *friend_code_parent(FriendCodeEntry *self)
 {
-    return (MenuTabs *) (void *) Process_GetParent((Process *) (void *) self);
+    return (MenuTabs *) (void *) Process_Parent((Process *) (void *) self);
 }
 
 /* Digit `i` of the code: the game indexes it with bytes it keeps, which can stand past the
@@ -431,7 +431,7 @@ CLEAN_AS(func_ov133_0229b280, FriendCodeEntry_Clear)
  * cursor at the start. */
 void FriendCodeEntry_LoadCode(FriendCodeEntry *self)
 {
-    WifiFriendData *code = WifiFriend_GetFriendData(FriendCodeEntry_Friend(self));
+    WifiFriendData *code = WifiFriend_FriendData(FriendCodeEntry_Friend(self));
     if (WifiFriendData_GetKeyDigits(code, (char *) self->digits)) {
         FriendCodeEntry_SetCursor(self, 0);
         FriendCodeEntry_SetFlags(self, FRIEND_CODE_FLAG_DIGITS);
@@ -602,7 +602,7 @@ void FriendCodeEntry_Confirm(FriendCodeEntry *self)
     u8 *record = PlayerRecords_Current();
     WifiFriendData_Construct(&code);
     WifiFriendData_Clear(&code);
-    if (WifiFriendData_SetFromKeyDigits(&code, self->digits, WifiAccount_GetUserData(PlayerRecord_WifiAccount(record))) == 0) {
+    if (WifiFriendData_SetFromKeyDigits(&code, self->digits, WifiAccount_UserData(PlayerRecord_WifiAccount(record))) == 0) {
         friend_code_refuse(self, FRIEND_CODE_ERROR_INVALID);
         WifiFriendData_Destruct(&code);
         return;
@@ -619,8 +619,8 @@ void FriendCodeEntry_Confirm(FriendCodeEntry *self)
     }
 
     WifiFriend *friend = FriendCodeEntry_Friend(self);
-    WifiFriendData *stored = WifiFriend_GetFriendData(friend);
-    WifiFriendData_SetFromKeyDigits(stored, self->digits, WifiAccount_GetUserData(PlayerRecord_WifiAccount(record)));
+    WifiFriendData *stored = WifiFriend_FriendData(friend);
+    WifiFriendData_SetFromKeyDigits(stored, self->digits, WifiAccount_UserData(PlayerRecord_WifiAccount(record)));
     GroupParams_SetC4C(1);
     ButtonPanel_Select(&self->panel, FRIEND_CODE_BUTTON_OK);
     MenuScene_SetState(friend_code_scene(self), FRIEND_CODE_STATE_START_WIPE_OUT);
@@ -634,11 +634,11 @@ void FriendCodeEntry_Confirm(FriendCodeEntry *self)
         StateFlags_Set200();
         NetSession *session = data_020ccf94;
         if (Session_IsSlotTaken(session, session->local_slot)) {
-            switch (Net_GetMode()) {
+            switch (Net_Mode()) {
                 case 3:
                 case 4: {
                     int index = GroupParams_Arg();
-                    if (Wfc_SetFriend(index, WifiFriendData_GetData(WifiFriend_GetFriendData(friend))) == 0) {
+                    if (Wfc_SetFriend(index, WifiFriendData_Data(WifiFriend_FriendData(friend))) == 0) {
                         MenuScene_SetSubState(friend_code_scene(self), FRIEND_CODE_SUB_SET_FRIEND);
                         WifiFriendData_Destruct(&code);
                         return;
@@ -671,10 +671,10 @@ int FriendCodeEntry_IsOtherFriendsCode(FriendCodeEntry *self, WifiFriendData *co
     (void) self;
     u8 *record = PlayerRecords_Current();
     int skip = GroupParams_Arg();
-    WifiFriend *friends = WifiFriendList_GetEntries(PlayerRecord_WifiFriends(record));
+    WifiFriend *friends = WifiFriendList_Entries(PlayerRecord_WifiFriends(record));
     for (int i = 0; i < WIFI_FRIENDS; i++) {
-        if (WifiFriendData_IsSet(WifiFriend_GetFriendData(&friends[i])) && i != skip &&
-            WifiFriendData_Matches(code, WifiFriend_GetFriendData(&friends[i]))) {
+        if (WifiFriendData_IsSet(WifiFriend_FriendData(&friends[i])) && i != skip &&
+            WifiFriendData_Matches(code, WifiFriend_FriendData(&friends[i]))) {
             return 1;
         }
     }
@@ -688,7 +688,7 @@ WifiFriend *FriendCodeEntry_Friend(FriendCodeEntry *self)
     (void) self;
     WifiFriendList *list = PlayerRecord_WifiFriends(PlayerRecords_Current());
     int index = GroupParams_Arg();
-    WifiFriend *friends = WifiFriendList_GetEntries(list);
+    WifiFriend *friends = WifiFriendList_Entries(list);
     return &friends[index];
 }
 CLEAN_AS(func_ov133_0229b714, FriendCodeEntry_Friend)

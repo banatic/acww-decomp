@@ -58,7 +58,7 @@ extern GullStateRow data_ov072_02279bd8[GULL_STATES];
 
 /* The object's life and vtable slots. */
 Gull *Gull_Destruct(Gull *self);
-Gull *Gull_DestructDelete(Gull *self);
+Gull *Gull_Delete(Gull *self);
 void Gull_OnEvent(Gull *self, int code);
 int Gull_MayAct(Gull *self);
 int Gull_ModelName(void);

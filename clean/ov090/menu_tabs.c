@@ -86,7 +86,7 @@ extern u32 data_ov090_02299964; /* the states' guard */
 extern u32 data_ov090_02299968; /* the sub states' guard */
 extern MemberPointer data_ov090_0229996c[MENU_TABS_STATES];
 extern MemberPointer data_ov090_02299984[MENU_TABS_SUB_STATES];
-extern const MemberPointer data_ov090_022997e8; /* MenuTabs_Setup */
+extern const MemberPointer data_ov090_022997e8; /* MenuTabs_SetUp */
 extern const MemberPointer data_ov090_022997f0; /* MenuTabs_Idle */
 extern const MemberPointer data_ov090_022997f8; /* MenuTabs_UpdateError */
 extern const MemberPointer data_ov090_02299800; /* MenuTabs_RequestTabGroup */
@@ -332,7 +332,7 @@ CLEAN_AS(func_ov090_022991cc, MenuTabs_Show)
 /* func_ov090_022991e0 (state 0): the bar's palette and both character files loaded, the tab
  * of GroupParams' mode shown, the bar drawn at its place; on to state 1, the sub screen's BG
  * mode 0. */
-void MenuTabs_Setup(MenuTabs *self)
+void MenuTabs_SetUp(MenuTabs *self)
 {
     DisplayLayer_LoadPalettesFromFile(data_ov090_02299914, data_021fbe94, MENU_TABS_LAYER, MENU_TABS_PALETTE,
                                       MENU_TABS_PALETTE, MENU_TABS_PALETTE);
@@ -344,7 +344,7 @@ void MenuTabs_Setup(MenuTabs *self)
     self->base.state = MENU_TABS_STATE_SHOW;
     DisplayShadow_SetSubBgMode(0);
 }
-CLEAN_AS(func_ov090_022991e0, MenuTabs_Setup)
+CLEAN_AS(func_ov090_022991e0, MenuTabs_SetUp)
 
 /* func_ov090_02299258 (sub state 2): the roster's error message (it never closes). */
 int MenuTabs_UpdateError(MenuTabs *self)

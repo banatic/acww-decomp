@@ -10544,7 +10544,7 @@ void FieldActor_RunState6(FieldActor *actor)
             }
             break;
         case 1:
-            if (!is_local_player(actor) && FieldActor_GetState6Progress(saved) >= 2) {
+            if (!is_local_player(actor) && FieldActor_State6Progress(saved) >= 2) {
                 work->step = 2;
             }
             break;
@@ -10707,7 +10707,7 @@ void FieldActor_EnterState6(FieldActor *actor, const StateRequest *request, int 
     if (is_local_player(actor)) {
         FieldActor_SetState6SavedItem(saved, item);
         FieldActor_SetState6Progress(saved, 0);
-    } else if (FieldActor_GetState6Progress(saved) >= 1) {
+    } else if (FieldActor_State6Progress(saved) >= 1) {
         work->step = 1;
         u16 last = (u16) (((u32) actor->anim.end >> 12) - 1);
         actor->anim.frame = last << 12;
@@ -10716,11 +10716,11 @@ void FieldActor_EnterState6(FieldActor *actor, const StateRequest *request, int 
 CLEAN_AS(func_ov003_022194a8, FieldActor_EnterState6)
 
 /* func_ov003_022195a8: the saved progress (0 to 2). */
-int FieldActor_GetState6Progress(const State6Saved *saved)
+int FieldActor_State6Progress(const State6Saved *saved)
 {
     return saved->progress;
 }
-CLEAN_AS(func_ov003_022195a8, FieldActor_GetState6Progress)
+CLEAN_AS(func_ov003_022195a8, FieldActor_State6Progress)
 
 /* func_ov003_022195ac */
 void FieldActor_SetState6Progress(State6Saved *saved, int progress)

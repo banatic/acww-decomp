@@ -66,7 +66,7 @@ void ScreenIcons_RestartIconAnim(void);
 void ScreenIcons_ResetIcon(void);
 void ScreenIcon_Update(ScreenIcon *icon);
 void ScreenIcon_Draw(ScreenIcon *icon);
-ScreenIcon *ScreenIcon_DestructFree(ScreenIcon *icon);
+ScreenIcon *ScreenIcon_Delete(ScreenIcon *icon);
 ScreenIcon *ScreenIcon_Destruct(ScreenIcon *icon);
 ScreenIcon *ScreenIcon_Construct(ScreenIcon *icon);
 

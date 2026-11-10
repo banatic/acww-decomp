@@ -306,7 +306,7 @@ void SessionMessage_ReceiveBundle15(int size, int kind, u8 scene, u32 slot)
     (void) scene;
     (void) slot;
     NetSession *session = data_020ccf94;
-    Session_ReadMessage(session, Session_GetBundle15Buffer(session), size);
+    Session_ReadMessage(session, Session_Bundle15Buffer(session), size);
     Session_SetBundle15Length(session, size);
     LinkScene_TakeLeftState();
 }
@@ -319,7 +319,7 @@ void SessionMessage_ReceiveBundle16(int size, int kind, u8 scene, u32 slot)
     (void) scene;
     (void) slot;
     NetSession *session = data_020ccf94;
-    Session_ReadMessage(session, Session_GetBundle16Buffer(session), size);
+    Session_ReadMessage(session, Session_Bundle16Buffer(session), size);
     Session_SetBundle16Length(session, size);
 }
 CLEAN_AS(func_0207623c, SessionMessage_ReceiveBundle16)

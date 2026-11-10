@@ -8,7 +8,7 @@
 #include "types.h"
 
 Process *SkyProcess_Destruct(Process *process);
-Process *SkyProcess_DestructFree(Process *process);
+Process *SkyProcess_DestructDelete(Process *process);
 void Block020ba298_SetByte9(void);
 void Sky_WishOnShootingStar(void);
 

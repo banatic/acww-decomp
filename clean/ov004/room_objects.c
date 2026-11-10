@@ -659,7 +659,7 @@ fx32 RoomObjects_HeightAtCell(int x, int z)
     centre.z = (fx32) ((u32) z << CELL_SHIFT) + HALF_CELL;
     CollisionGround ground;
     CollisionGround_Init(&ground, &centre, 0, 0);
-    fx32 height = CollisionGround_GetHeight(&ground, 0);
+    fx32 height = CollisionGround_Height(&ground, 0);
     CollisionGround_Destroy(&ground);
     return height;
 }

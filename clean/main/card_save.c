@@ -91,8 +91,8 @@ int CardSave_WriteFriendRoster(void)
         number = data_020e37f8;
     }
     WifiFriendList *saved = PlayerRecord_WifiFriends(PlayerRecords_TownRecord(data_021dc7a8.players, number));
-    WifiFriendList_SetChecksum(
-        roster, BackupCard_Checksum((const u16 *) roster, FRIEND_ROSTER_SIZE, WifiFriendList_GetChecksum(roster)));
+    WifiFriendList_SetChecksum(roster,
+                               BackupCard_Checksum((const u16 *) roster, FRIEND_ROSTER_SIZE, WifiFriendList_Checksum(roster)));
     if (BackupCard_Write(&data_021c8188, card_offset(CARD_SAVE_COPY_0, saved), roster, FRIEND_ROSTER_SIZE) ==
         BACKUP_CARD_FAILED) {
         return 1;
@@ -113,8 +113,7 @@ int CardSave_WriteAccount(void)
 {
     int number = PlayerRecords_CurrentNumber();
     WifiAccount *account = PlayerRecord_WifiAccount(PlayerRecords_TownRecord(data_021dc7a8.players, number));
-    WifiAccount_SetChecksum(account,
-                            BackupCard_Checksum((const u16 *) account, ACCOUNT_SIZE, WifiAccount_GetChecksum(account)));
+    WifiAccount_SetChecksum(account, BackupCard_Checksum((const u16 *) account, ACCOUNT_SIZE, WifiAccount_Checksum(account)));
     return write_both_copies(account, ACCOUNT_SIZE);
 }
 CLEAN_AS(func_020a15ac, CardSave_WriteAccount)

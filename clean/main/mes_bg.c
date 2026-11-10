@@ -67,14 +67,14 @@ MesBg *MesBg_DestructBase(MesBg *bg)
 CLEAN_AS(func_020ac954, MesBg_DestructBase)
 
 /* func_020ac96c: the class's deleting destructor (vtable slot 1). */
-MesBg *MesBg_DestructDelete(MesBg *bg)
+MesBg *MesBg_Delete(MesBg *bg)
 {
     bg->vtable = data_020e3fb4;
     MesBg_FreeScreen(bg);
     Heap_OperatorDeleteB(bg);
     return bg;
 }
-CLEAN_AS(func_020ac96c, MesBg_DestructDelete)
+CLEAN_AS(func_020ac96c, MesBg_Delete)
 
 /* func_020ac98c: the class's destructor (vtable slot 0). */
 MesBg *MesBg_Destruct(MesBg *bg)
@@ -103,14 +103,14 @@ void MesBg_Construct(MesBg *bg)
 CLEAN_AS(func_020ac9a4, MesBg_Construct)
 
 /* func_020ac9cc: the marker's deleting destructor (vtable slot 1). */
-MesBgMarker *MesBgMarker_DestructDelete(MesBgMarker *marker)
+MesBgMarker *MesBgMarker_Delete(MesBgMarker *marker)
 {
     marker->vtable = &data_020e4030;
     CellLayerSprite_DestructCopy((CellLayerSprite *) marker);
     Heap_OperatorDeleteB(marker);
     return marker;
 }
-CLEAN_AS(func_020ac9cc, MesBgMarker_DestructDelete)
+CLEAN_AS(func_020ac9cc, MesBgMarker_Delete)
 
 /* func_020ac9ec: the marker's destructor (vtable slot 0). */
 MesBgMarker *MesBgMarker_Destruct(MesBgMarker *marker)
@@ -257,7 +257,7 @@ void MesBgSlider_Draw(MesBgSlider *slider)
 CLEAN_AS(func_020acae8, MesBgSlider_Draw)
 
 /* func_020acb48: the slider's deleting destructor (vtable slot 1). */
-MesBgSlider *MesBgSlider_DestructDelete(MesBgSlider *slider)
+MesBgSlider *MesBgSlider_Delete(MesBgSlider *slider)
 {
     slider->vtable = &data_020e4014;
     DualCellSprite_Destruct((DualCellSprite *) &slider->indicator);
@@ -265,7 +265,7 @@ MesBgSlider *MesBgSlider_DestructDelete(MesBgSlider *slider)
     Heap_OperatorDeleteB(slider);
     return slider;
 }
-CLEAN_AS(func_020acb48, MesBgSlider_DestructDelete)
+CLEAN_AS(func_020acb48, MesBgSlider_Delete)
 
 /* func_020acb70: the slider's destructor (vtable slot 0). */
 MesBgSlider *MesBgSlider_Destruct(MesBgSlider *slider)

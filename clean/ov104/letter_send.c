@@ -2240,7 +2240,7 @@ extern const MemberPointer data_ov104_0229f588, data_ov104_0229f590, data_ov104_
 /* The parent process. */
 static Process *lsend_parent(LetterSendScene *self)
 {
-    return Process_GetParent((Process *) (void *) self);
+    return Process_Parent((Process *) (void *) self);
 }
 
 /* A member drawn through its class (vtable slot 2). */
@@ -2291,22 +2291,22 @@ void LetterSend_BeginInteractiveFrame(LetterSendScene *self)
 CLEAN_AS(func_ov104_0229ea40, LetterSend_BeginInteractiveFrame)
 
 /* func_ov104_0229ea5c: the members' teardown before the scene closes. */
-void LetterSend_Teardown(LetterSendScene *self)
+void LetterSend_TearDown(LetterSendScene *self)
 {
     LetterSend_EndLayerTask(self);
-    PocketsWallet_Teardown(&self->wallet);
-    PocketsGrid_Teardown(&self->grid);
+    PocketsWallet_TearDown(&self->wallet);
+    PocketsGrid_TearDown(&self->grid);
     PagedChoice_Dismiss(lsend_choice(self));
     LetterView_ReleaseBoxes(&self->view);
     ButtonPanel_CloseTexts(&self->panel);
 }
-CLEAN_AS(func_ov104_0229ea5c, LetterSend_Teardown)
+CLEAN_AS(func_ov104_0229ea5c, LetterSend_TearDown)
 
 /* func_ov104_0229eaa8: the scene's setup: no flags, the three objects of ov094's set up, no
  * popup place, the glide stopped, nothing held, the cursor on the first carried letter, the
  * choice and the letter view on layer 3; the ten letters to post emptied, the carried letters
  * saved for a cancel; no open delay. */
-void LetterSend_Setup(LetterSendScene *self)
+void LetterSend_SetUp(LetterSendScene *self)
 {
     self->flags = 0;
     PocketsGrid_Init(&self->grid, 2);
@@ -2324,7 +2324,7 @@ void LetterSend_Setup(LetterSendScene *self)
     LetterSend_SaveCarried(self);
     self->unk_bf = 0;
 }
-CLEAN_AS(func_ov104_0229eaa8, LetterSend_Setup)
+CLEAN_AS(func_ov104_0229eaa8, LetterSend_SetUp)
 
 /* func_ov104_0229eb48: the page layer scrolled by the wipe (16 pixels up), the wipe's x kept for
  * the letters to post. */
@@ -2558,7 +2558,7 @@ CLEAN_AS(func_ov104_0229eee4, LetterSend_Update)
  *   is kept as the letter screen's result flags; when the letter screen's kind is 1 or its flag
  *   0x200 is set, VillagerPart_CurrentMarkSecondPick.
  *
- * Then (but for the linked wait) Mail_DoNothing and the scene asks to be deleted. */
+ * Then (but for the linked wait) Mail_Nothing and the scene asks to be deleted. */
 int LetterSend_End(LetterSendScene *self)
 {
     if (LetterSend_TestFlags(self, LETTER_SEND_FLAG_CANCELLED) != 0) {
@@ -2601,7 +2601,7 @@ int LetterSend_End(LetterSendScene *self)
             VillagerPart_CurrentMarkSecondPick();
         }
     }
-    Mail_DoNothing();
+    Mail_Nothing();
     Process_RequestDelete((Process *) (void *) self);
     return 1;
 }
@@ -2709,7 +2709,7 @@ CLEAN_AS(func_ov104_0229f33c, LetterSend_Draw)
 int LetterSend_Close(LetterSendScene *self)
 {
     MenuDispatch_ChildClosed((MenuDispatch *) (void *) lsend_parent(self));
-    LetterSend_Teardown(self);
+    LetterSend_TearDown(self);
     return 1;
 }
 CLEAN_AS(func_ov104_0229f424, LetterSend_Close)
@@ -2718,7 +2718,7 @@ CLEAN_AS(func_ov104_0229f424, LetterSend_Close)
  * Answers 1. */
 int LetterSend_Start(LetterSendScene *self)
 {
-    LetterSend_Setup(self);
+    LetterSend_SetUp(self);
     MenuScene_SetState(lsend_scene(self), LETTER_SEND_STATE_START_SETUP);
     MenuScene_SetPhase(lsend_scene(self), MENU_SCENE_PHASE_WAIT);
     return 1;

@@ -291,7 +291,7 @@ CLEAN_AS(func_02010424, FieldActor_ApplyAccessory)
 int FieldActor_BindCloth(FieldActor *actor)
 {
     int model = FIELD_ACTOR_FIELD(actor, int, 0x290);
-    int texture = (int) (uintptr_t) (ClothTexture_GetTextures(
+    int texture = (int) (uintptr_t) (ClothTexture_CallTextures(
         (DesignModel *) (uintptr_t) ClothSlots_SlotFile(field_actor_looks_at(actor, FIELD_ACTOR_CLOTH))));
     return VramCopyMaterial_Queue((VramCopyMaterial *) (void *) field_actor_looks_at(actor, FIELD_ACTOR_CLOTH_BINDING),
                                   (const u8 *) (uintptr_t) model, data_020d8408, (G3dResTex *) (uintptr_t) texture, 0, 0);

@@ -117,14 +117,14 @@ static void turtle_gardens_talk_say_unless_none(TurtleGardensTalk *talk, u8 line
 
 /* func_ov083_02278d44 (vtable slot 0x04): the destructor of the scene class it derives from,
  * then the scene freed. */
-TurtleGardensTalk *TurtleGardensTalk_DestructDelete(TurtleGardensTalk *talk)
+TurtleGardensTalk *TurtleGardensTalk_Delete(TurtleGardensTalk *talk)
 {
     talk->base.vtable = data_ov083_022791fc;
     Obj020d9ff8_DestructBody(talk);
     Heap_OperatorDeleteB(talk);
     return talk;
 }
-CLEAN_AS(func_ov083_02278d44, TurtleGardensTalk_DestructDelete)
+CLEAN_AS(func_ov083_02278d44, TurtleGardensTalk_Delete)
 
 /* func_ov083_02278d64 (vtable slot 0x00): the destructor of the scene class it derives from. */
 TurtleGardensTalk *TurtleGardensTalk_Destruct(TurtleGardensTalk *talk)

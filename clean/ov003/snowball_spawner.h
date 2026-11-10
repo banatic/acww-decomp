@@ -31,7 +31,7 @@ int SnowballSpawner_Delete(void);
 int SnowballSpawner_Draw(void);
 int SnowballSpawner_Execute(void);
 int SnowballSpawner_Create(SnowballSpawner *self);
-SnowballSpawner *SnowballSpawner_DestructFree(SnowballSpawner *self);
+SnowballSpawner *SnowballSpawner_DestructDelete(SnowballSpawner *self);
 SnowballSpawner *SnowballSpawner_Destruct(SnowballSpawner *self);
 SnowballSpawner *SnowballSpawner_Construct(SnowballSpawner *self);
 SnowballSpawner *SnowballSpawner_New(void);

@@ -79,7 +79,7 @@ static MenuScene *star_view_scene(StarView *self)
 
 static MenuDispatch *star_view_parent(StarView *self)
 {
-    return (MenuDispatch *) (void *) Process_GetParent((Process *) (void *) self);
+    return (MenuDispatch *) (void *) Process_Parent((Process *) (void *) self);
 }
 
 static Music2f0 *star_view_music(void)
@@ -206,7 +206,7 @@ CLEAN_AS(func_ov128_0229c390, StarView_BeginInteractive)
 /* func_ov128_0229c398: the twinkle stopped, the sky's layer task ended, the texts let go; the
  * player asked back to state 0x10, the music's tracks of scene 0x22 faded in, and sub BG0's
  * character 0x10 loaded again from "menu/inventory/b_itm0.bch". */
-void StarView_Teardown(StarView *self)
+void StarView_TearDown(StarView *self)
 {
     StarPalette_Cancel(&self->twinkle);
     StarScope_EndTask(&self->scope);
@@ -216,7 +216,7 @@ void StarView_Teardown(StarView *self)
     Music2f0_FadeInForScene22(star_view_music());
     DisplayLayer_LoadCharsFromFile(data_ov128_0229cd20, data_021fbe94, LAYER_SUB_BG0, 0, 0x10, 0x10);
 }
-CLEAN_AS(func_ov128_0229c398, StarView_Teardown)
+CLEAN_AS(func_ov128_0229c398, StarView_TearDown)
 
 /* func_ov128_0229baa8: no constellation pointed at, wanted or named; the panel hidden. */
 void StarView_ResetName(StarView *self)
@@ -233,7 +233,7 @@ CLEAN_AS(func_ov128_0229baa8, StarView_ResetName)
 /* func_ov128_0229c408: the scene's values set up: no flags, the sky view reset, the free
  * pointer at the middle, the pointer's spot by arrow 1, no name; the player held at a fixed
  * point and the music's tracks of scene 0x22 set. */
-void StarView_Setup(StarView *self)
+void StarView_SetUp(StarView *self)
 {
     self->flags = 0;
     StarScope_Reset(&self->scope);
@@ -244,7 +244,7 @@ void StarView_Setup(StarView *self)
     RoomPlayerActor_RequestFixedPoint();
     Music2f0_SetTracksForScene22(star_view_music());
 }
-CLEAN_AS(func_ov128_0229c408, StarView_Setup)
+CLEAN_AS(func_ov128_0229c408, StarView_SetUp)
 
 /* func_ov128_0229c464: sub window 1 over the rows from 64 to 48 above the wipe's offset (from
  * the top at least), on while that band is below the top. */
@@ -427,7 +427,7 @@ CLEAN_AS(func_ov128_0229c794, StarView_Draw)
 int StarView_End(StarView *self)
 {
     MenuDispatch_ChildClosed(star_view_parent(self));
-    StarView_Teardown(self);
+    StarView_TearDown(self);
     return 1;
 }
 CLEAN_AS(func_ov128_0229c7f4, StarView_End)
@@ -436,7 +436,7 @@ CLEAN_AS(func_ov128_0229c7f4, StarView_End)
  * phase. Answers 1. */
 int StarView_Start(StarView *self)
 {
-    StarView_Setup(self);
+    StarView_SetUp(self);
     self->base.state = STAR_VIEW_STATE_OPEN;
     MenuScene_SetPhase(star_view_scene(self), STAR_VIEW_PHASE_WAIT);
     return 1;

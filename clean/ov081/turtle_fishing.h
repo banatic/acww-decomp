@@ -69,7 +69,7 @@ typedef struct TurtleFishingStep {
 
 /* His object. */
 TurtleFishing *TurtleFishing_Destruct(TurtleFishing *turtle);
-TurtleFishing *TurtleFishing_DestructDelete(TurtleFishing *turtle);
+TurtleFishing *TurtleFishing_Delete(TurtleFishing *turtle);
 void TurtleFishing_OnEvent(TurtleFishing *turtle, int code);
 int TurtleFishing_AgreesToTalk(TurtleFishing *turtle);
 void TurtleFishing_SetState(TurtleFishing *turtle, int state);

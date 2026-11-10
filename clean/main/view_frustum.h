@@ -32,6 +32,6 @@ void ViewFrustum_ComputePlanes(ViewFrustum *frustum);
 void ViewFrustum_Set(ViewFrustum *frustum, fx32 aspect, u16 half_fov, fx32 near_distance, fx32 far_distance);
 ViewFrustum *ViewFrustum_Construct(ViewFrustum *frustum);
 void ViewFrustum_Destruct(ViewFrustum *frustum);
-ViewFrustum *ViewFrustum_DestructDelete(ViewFrustum *frustum);
+ViewFrustum *ViewFrustum_Delete(ViewFrustum *frustum);
 
 #endif

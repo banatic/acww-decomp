@@ -89,7 +89,7 @@ u8 TalkVoice_VillagerKind(TalkVoice *voice)
     if (villager != NULL) {
         VillagerState *state = VillagerStatus_StateEntry(villager);
         if (state != NULL) {
-            index = VillagerState_GetMood(state);
+            index = VillagerState_Mood(state);
         }
     }
     return data_020cce88[index];
@@ -221,13 +221,13 @@ void TalkVoice_Clear(TalkVoice *voice, int all)
 CLEAN_AS(func_02068ae4, TalkVoice_Clear)
 
 /* func_02068b0c (vtable slot 1): the destructor, and the object freed. */
-TalkVoice *TalkVoice_DestructDelete(TalkVoice *voice)
+TalkVoice *TalkVoice_Delete(TalkVoice *voice)
 {
     voice->vtable = data_020def3c;
     Heap_OperatorDeleteB(voice);
     return voice;
 }
-CLEAN_AS(func_02068b0c, TalkVoice_DestructDelete)
+CLEAN_AS(func_02068b0c, TalkVoice_Delete)
 
 /* func_02068b24 (vtable slot 0): the destructor. */
 void TalkVoice_Destruct(TalkVoice *voice)

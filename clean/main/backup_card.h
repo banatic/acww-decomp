@@ -31,7 +31,7 @@ void BackupCard_InitGame(void);
 void BackupCard_Init(BackupCard *card, int type, const void *name);
 int BackupCard_Status(BackupCard *card);
 void BackupCard_Finish(BackupCard *card);
-void BackupCard_Shutdown(void);
+void BackupCard_ShutDown(void);
 int BackupCard_ReadAsync(BackupCard *card, u32 dst, u32 length, u32 offset);
 int BackupCard_Read(BackupCard *card, u32 dst, u32 length, u32 offset);
 int BackupCard_WriteAsync(BackupCard *card, int offset, const void *src, int length);

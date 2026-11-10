@@ -125,7 +125,7 @@ CLEAN_AS(func_ov092_02298f58, MenuDispatch_EndMembers)
 /* func_ov092_02298f5c: the mode taken from GroupParams and its screen asked for next frame
  * (sub state 1). Mode 0 runs at once (phase 2); any other opens the backdrop first (state 0 in
  * phase 0). Then the backdrop's style, the sound and the music volume's slot 1 by the mode. */
-void MenuDispatch_Setup(MenuDispatch *self)
+void MenuDispatch_SetUp(MenuDispatch *self)
 {
     u8 *mode = menu_dispatch_mode(self);
 
@@ -176,7 +176,7 @@ void MenuDispatch_Setup(MenuDispatch *self)
     }
     MusicVolume_SetSlot1(menu_dispatch_music_volume(), music_index);
 }
-CLEAN_AS(func_ov092_02298f5c, MenuDispatch_Setup)
+CLEAN_AS(func_ov092_02298f5c, MenuDispatch_SetUp)
 
 /* func_ov092_0229906c (state 0): the sub screen's BG mode 0, then the screen is asked for
  * (phase 2). */
@@ -347,7 +347,7 @@ CLEAN_AS(func_ov092_02299460, MenuDispatch_End)
 int MenuDispatch_Start(MenuDispatch *self)
 {
     StateFlags_Clear100();
-    MenuDispatch_Setup(self);
+    MenuDispatch_SetUp(self);
     SoundSys_LowerMusic();
     ControlMode_Reapply();
     return 1;

@@ -18,14 +18,14 @@ void *Obj020d9ff8_DestructBody(void *scene)
 CLEAN_AS(func_0202eb20, Obj020d9ff8_DestructBody)
 
 /* func_0202eb38 (slot 0x04): destructed, then freed (Heap_OperatorDeleteB). */
-void *Obj020d9ff8_DestructDelete(void *scene)
+void *Obj020d9ff8_Delete(void *scene)
 {
     *(const u8 **) scene = data_020d9ff8;
     SceneBase_DestructBody(scene);
     Heap_OperatorDeleteB(scene);
     return scene;
 }
-CLEAN_AS(func_0202eb38, Obj020d9ff8_DestructDelete)
+CLEAN_AS(func_0202eb38, Obj020d9ff8_Delete)
 
 /* func_0202eb58 (slot 0x00): the destructor. */
 void *Obj020d9ff8_Destruct(void *scene)

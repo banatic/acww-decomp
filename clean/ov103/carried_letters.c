@@ -98,7 +98,7 @@ static CellLayerSprite *carried_cursor_cells(CarriedLetters *self)
 
 static MenuDispatch *carried_parent(CarriedLetters *self)
 {
-    return (MenuDispatch *) (void *) Process_GetParent((Process *) (void *) self);
+    return (MenuDispatch *) (void *) Process_Parent((Process *) (void *) self);
 }
 
 static int carried_is_letter(CarriedLetters *self, int place)
@@ -1387,20 +1387,20 @@ void CarriedLetters_BeginInteractiveFrame(CarriedLetters *self)
 CLEAN_AS(func_ov103_0229d944, CarriedLetters_BeginInteractiveFrame)
 
 /* func_ov103_0229d960: the members' teardown before the scene closes. */
-void CarriedLetters_Teardown(CarriedLetters *self)
+void CarriedLetters_TearDown(CarriedLetters *self)
 {
     CarriedLetters_EndLayerTask(self);
-    PocketsWallet_Teardown(&self->wallet);
-    PocketsGrid_Teardown(&self->grid);
+    PocketsWallet_TearDown(&self->wallet);
+    PocketsGrid_TearDown(&self->grid);
     PagedChoice_Dismiss(carried_choice(self));
     LetterView_ReleaseBoxes(&self->view);
 }
-CLEAN_AS(func_ov103_0229d960, CarriedLetters_Teardown)
+CLEAN_AS(func_ov103_0229d960, CarriedLetters_TearDown)
 
 /* func_ov103_0229d99c: the scene's setup: no flags, the three objects of ov094's set up, no popup
  * place, the glide stopped, nothing held, the cursor on the first letter, the choice and the
  * letter view on layer 3. */
-void CarriedLetters_Setup(CarriedLetters *self)
+void CarriedLetters_SetUp(CarriedLetters *self)
 {
     self->flags = 0;
     PocketsGrid_Init(&self->grid, 2);
@@ -1413,7 +1413,7 @@ void CarriedLetters_Setup(CarriedLetters *self)
     PagedChoice_Init(carried_choice(self), CARRIED_LETTERS_TEXT_LAYER, 1, NULL);
     LetterView_Init(&self->view, CARRIED_LETTERS_TEXT_LAYER);
 }
-CLEAN_AS(func_ov103_0229d99c, CarriedLetters_Setup)
+CLEAN_AS(func_ov103_0229d99c, CarriedLetters_SetUp)
 
 /* The letter's two layers (text and paper) scrolled by the wipe. */
 static void carried_scroll_letter_layers(CarriedLetters *self)
@@ -1672,7 +1672,7 @@ CLEAN_AS(func_ov103_0229dfec, CarriedLetters_Draw)
 int CarriedLetters_Close(CarriedLetters *self)
 {
     MenuDispatch_ChildClosed(carried_parent(self));
-    CarriedLetters_Teardown(self);
+    CarriedLetters_TearDown(self);
     return 1;
 }
 CLEAN_AS(func_ov103_0229e0a8, CarriedLetters_Close)
@@ -1681,7 +1681,7 @@ CLEAN_AS(func_ov103_0229e0a8, CarriedLetters_Close)
  * Answers 1. */
 int CarriedLetters_Start(CarriedLetters *self)
 {
-    CarriedLetters_Setup(self);
+    CarriedLetters_SetUp(self);
     MenuScene_SetState(carried_scene(self), CARRIED_LETTERS_STATE_START_SETUP);
     MenuScene_SetPhase(carried_scene(self), CARRIED_LETTERS_PHASE_WAIT);
     return 1;

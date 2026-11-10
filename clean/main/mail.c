@@ -33,14 +33,14 @@ typedef struct MailPlayerId {
     u8 bytes[0x20];
 } MailPlayerId;
 
-extern MailBox data_021ef8ec[MAIL_PLAYERS]; /* the players' mailboxes */
-extern MailPostOffice data_021f20fc;        /* the letters at the post office */
-extern Letter data_021f37f4;                /* a letter waiting for the current player */
-extern u8 data_021dc7bc[];                  /* the four players' records (0x249c bytes each) */
-extern u8 data_021e5a2c[];                  /* the villagers (0x7ec bytes each) */
-extern NetSession *data_020ccf94;           /* the session */
-extern const u8 data_020da13c[];            /* the base class's vtable */
-extern const u8 data_020e30b8[];            /* MailTask's */
+extern MailboxRecord data_021ef8ec[MAIL_PLAYERS]; /* the players' mailboxes */
+extern MailPostOffice data_021f20fc;              /* the letters at the post office */
+extern Letter data_021f37f4;                      /* a letter waiting for the current player */
+extern u8 data_021dc7bc[];                        /* the four players' records (0x249c bytes each) */
+extern u8 data_021e5a2c[];                        /* the villagers (0x7ec bytes each) */
+extern NetSession *data_020ccf94;                 /* the session */
+extern const u8 data_020da13c[];                  /* the base class's vtable */
+extern const u8 data_020e30b8[];                  /* MailTask's */
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
@@ -171,8 +171,8 @@ int Mail_HasDatedLetter(void *player)
 CLEAN_AS(func_02097864, Mail_HasDatedLetter)
 
 /* func_0209788c */
-void Mail_DoNothing(void) {}
-CLEAN_AS(func_0209788c, Mail_DoNothing)
+void Mail_Nothing(void) {}
+CLEAN_AS(func_0209788c, Mail_Nothing)
 
 /* func_02097890: how many of `count` letters are there. */
 int Mail_CountLetters(Letter *letters, int count)
@@ -302,7 +302,7 @@ CLEAN_AS(func_02097a54, Mail_Post)
  * its state moved on when `advance`; 0 when the mailbox is full. REQUIRES: `player` is 0-3. */
 int Mail_PutInMailbox(Letter *letter, int player, int advance)
 {
-    Letter *place = MailBox_Letter(&data_021ef8ec[player], 0);
+    Letter *place = MailboxRecord_Letter(&data_021ef8ec[player], 0);
     for (int i = 0; i < MAILBOX_LETTERS; i++) {
         if (Letter_State(place) == 0) {
             Letter_Assign(place, letter);
@@ -324,7 +324,7 @@ int Mail_IsMailboxFull(int player)
     if (player == -1) {
         player = PlayerRecord_Number(PlayerRecords_Current());
     }
-    Letter *place = MailBox_Letter(&data_021ef8ec[player], 0);
+    Letter *place = MailboxRecord_Letter(&data_021ef8ec[player], 0);
     for (int i = 0; i < MAILBOX_LETTERS; i++) {
         if (Letter_State(place) == 0) {
             return 0;
@@ -378,7 +378,7 @@ MailTask *MailTask_Destruct(MailTask *task)
 CLEAN_AS(func_02097bbc, MailTask_Destruct)
 
 /* func_02097bdc: the deleting destructor. Returns the freed task. */
-MailTask *MailTask_DestructFree(MailTask *task)
+MailTask *MailTask_DestructDelete(MailTask *task)
 {
     task->base.vtable = (const u32 *) data_020e30b8;
     task->base.vtable = (const u32 *) data_020da13c;
@@ -386,7 +386,7 @@ MailTask *MailTask_DestructFree(MailTask *task)
     Heap_FreeAux(task);
     return task;
 }
-CLEAN_AS(func_02097bdc, MailTask_DestructFree)
+CLEAN_AS(func_02097bdc, MailTask_DestructDelete)
 
 /* func_02097c04 */
 void MailTask_ClearFlags(MailTask *task, u16 flags)
@@ -469,7 +469,7 @@ MailTask *MailTask_New(void)
 CLEAN_AS(func_02097c90, MailTask_New)
 
 static_assert(sizeof(Letter) == 0x100, "Letter layout");
-static_assert(sizeof(MailBox) == 0xa04, "MailBox layout");
+static_assert(sizeof(MailboxRecord) == 0xa04, "MailboxRecord layout");
 static_assert(offsetof(MailPostOffice, last_check) == 0xa00, "MailPostOffice layout");
 static_assert(offsetof(MailPostOffice, flags) == 0xa04, "MailPostOffice layout");
 static_assert(offsetof(MailTask, flags) == 0x50, "MailTask layout");
@@ -586,60 +586,60 @@ MailPostOffice *MailPostOffice_Construct(MailPostOffice *office)
 }
 CLEAN_AS(func_02098024, MailPostOffice_Construct)
 
-static u16 *mailbox_mark(MailBox *box)
+static u16 *mailbox_mark(MailboxRecord *box)
 {
     return (u16 *) (void *) box->unk_a00;
 }
 
 /* func_02098050: the mark of the last letter put in from elsewhere (func_0203f5e4 compares a
  * letter's mark with it, so the same letter is not put in twice). QUIRK: kept in 16 bits. */
-void MailBox_SetMark(MailBox *box, u32 mark)
+void MailboxRecord_SetMark(MailboxRecord *box, u32 mark)
 {
     *mailbox_mark(box) = (u16) mark;
 }
-CLEAN_AS(func_02098050, MailBox_SetMark)
+CLEAN_AS(func_02098050, MailboxRecord_SetMark)
 
 /* func_0209805c */
-u16 MailBox_Mark(MailBox *box)
+u16 MailboxRecord_Mark(MailboxRecord *box)
 {
     return *mailbox_mark(box);
 }
-CLEAN_AS(func_0209805c, MailBox_Mark)
+CLEAN_AS(func_0209805c, MailboxRecord_Mark)
 
 /* func_02098068: empty every letter, no mark. */
-void MailBox_Init(MailBox *box)
+void MailboxRecord_Init(MailboxRecord *box)
 {
     for (int i = 0; i < MAILBOX_LETTERS; i++) {
         Letter_Clear(letter_at(box->letters, i));
     }
     *mailbox_mark(box) = 0;
 }
-CLEAN_AS(func_02098068, MailBox_Init)
+CLEAN_AS(func_02098068, MailboxRecord_Init)
 
 /* func_02098090: letter `index`; NULL outside 0-9. */
-Letter *MailBox_Letter(MailBox *box, int index)
+Letter *MailboxRecord_Letter(MailboxRecord *box, int index)
 {
     if (index >= 0 && index < MAILBOX_LETTERS) {
         return letter_at(box->letters, index);
     }
     return NULL;
 }
-CLEAN_AS(func_02098090, MailBox_Letter)
+CLEAN_AS(func_02098090, MailboxRecord_Letter)
 
 /* func_020980a4: the destructor. */
-MailBox *MailBox_Destruct(MailBox *box)
+MailboxRecord *MailboxRecord_Destruct(MailboxRecord *box)
 {
     __cxa_vec_cleanup(box->letters, MAILBOX_LETTERS, MAIL_LETTER_SIZE, func_02066688);
     return box;
 }
-CLEAN_AS(func_020980a4, MailBox_Destruct)
+CLEAN_AS(func_020980a4, MailboxRecord_Destruct)
 
 /* func_020980c4: the constructor. */
-MailBox *MailBox_Construct(MailBox *box)
+MailboxRecord *MailboxRecord_Construct(MailboxRecord *box)
 {
     __cxa_vec_ctor(box->letters, MAILBOX_LETTERS, MAIL_LETTER_SIZE, func_02066694, func_02066688);
     return box;
 }
-CLEAN_AS(func_020980c4, MailBox_Construct)
+CLEAN_AS(func_020980c4, MailboxRecord_Construct)
 
 static_assert(offsetof(MailDatedLetter, date) == 0x100, "MailDatedLetter layout");

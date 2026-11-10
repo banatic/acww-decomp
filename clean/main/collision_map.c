@@ -98,7 +98,7 @@ int CollisionMap_GetRoomBounds(fx32 *min_x, fx32 *max_x, fx32 *min_z, fx32 *max_
     int high_z = 0;
     for (int z = 0; z < 32; z++) {
         for (int x = 0; x < 32; x++) {
-            if (FieldUnits_GetType(x, z) == UNIT_TYPE_NONE) {
+            if (FieldUnits_Type(x, z) == UNIT_TYPE_NONE) {
                 continue;
             }
             if (x < low_x) {
@@ -138,8 +138,7 @@ CLEAN_AS(func_020307f8, CollisionMap_ClearClaim)
 /* func_02030818: whether the unit under `point` is the current map's claimed object. */
 int CollisionMap_IsClaimedAtPoint(const Vec3 *point)
 {
-    int object =
-        collision_map_object_of(FieldUnits_GetType(point->x >> COLLISION_UNIT_SHIFT, point->z >> COLLISION_UNIT_SHIFT));
+    int object = collision_map_object_of(FieldUnits_Type(point->x >> COLLISION_UNIT_SHIFT, point->z >> COLLISION_UNIT_SHIFT));
     if (object < 0) {
         return 0;
     }
@@ -170,7 +169,7 @@ CLEAN_AS(func_02030890, CollisionMap_UnclaimedObjectAtPoint)
  * or for the claimed one. */
 int CollisionMap_UnclaimedObjectAt(int x, int z)
 {
-    int object = collision_map_object_of(FieldUnits_GetType(x, z));
+    int object = collision_map_object_of(FieldUnits_Type(x, z));
     if (object < 0 || object == collision_map_state(data_020da1a8)->claimed) {
         return COLLISION_MAP_NO_OBJECT;
     }
@@ -199,7 +198,7 @@ CLEAN_AS(func_020308e0, CollisionMap_UnlinkPathUnit)
  * against its row's sides. */
 int CollisionMap_RetypeWithSides(int x, int z, int sides)
 {
-    FieldBlock *block = FieldUnits_GetBlock(x >> 4, z >> 4);
+    FieldBlock *block = FieldUnits_Block(x >> 4, z >> 4);
     if (block == NULL) {
         return 0;
     }
@@ -235,7 +234,7 @@ CLEAN_AS(func_02030920, CollisionMap_RetypeWithSides)
  * map's blocks gives 0. */
 int CollisionMap_RetypeToPlain(int x, int z)
 {
-    FieldBlock *block = FieldUnits_GetBlock(x >> 4, z >> 4);
+    FieldBlock *block = FieldUnits_Block(x >> 4, z >> 4);
     if (block == NULL) {
         return 0;
     }
@@ -360,7 +359,7 @@ CLEAN_AS(func_02030d48, CollisionMap_ClearPathDirections)
  * unit's half. */
 void CollisionMap_SetPathDirections(int x, int z, int directions)
 {
-    FieldBlock *block = FieldUnits_GetBlock(x >> 4, z >> 4);
+    FieldBlock *block = FieldUnits_Block(x >> 4, z >> 4);
     if (block == NULL) {
         return;
     }
@@ -392,7 +391,7 @@ CLEAN_AS(func_02030dcc, CollisionMap_AgeExtraPosts)
  * `blocks_high` blocks with `source` telling its posts; then the default map (slot 0) becomes
  * the current one. A size above 6 is not taken (that side keeps 0) and makes the result 0, else
  * it is 1. */
-int CollisionMap_Setup(u32 blocks_wide, u32 blocks_high, CollisionPostSource *source, int slot)
+int CollisionMap_SetUp(u32 blocks_wide, u32 blocks_high, CollisionPostSource *source, int slot)
 {
     FieldBlockMap *map = collision_map_slot(slot);
     int result = 1;
@@ -413,7 +412,7 @@ int CollisionMap_Setup(u32 blocks_wide, u32 blocks_high, CollisionPostSource *so
     CollisionMap_Select(0);
     return result;
 }
-CLEAN_AS(func_02030ddc, CollisionMap_Setup)
+CLEAN_AS(func_02030ddc, CollisionMap_SetUp)
 
 /* func_02030e4c: map `slot` becomes the current map; a slot outside 0 to 7 selects map 0 when
  * negative and map 7 when too large. */
@@ -437,7 +436,7 @@ CLEAN_AS(func_0203160c, CollisionMap_IsComplete)
  * blocks. */
 int CollisionMap_PathDirections(int x, int z)
 {
-    FieldBlock *block = FieldUnits_GetBlock(x >> 4, z >> 4);
+    FieldBlock *block = FieldUnits_Block(x >> 4, z >> 4);
     if (block == NULL) {
         return 0;
     }

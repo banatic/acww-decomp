@@ -506,7 +506,7 @@ CLEAN_AS(func_02072630, DesignManager_PlayerTexture)
 
 /* func_02072638: frees the palettes, forgets the textures and frees the models (from the
  * current heap). */
-void DesignManager_Shutdown(DesignManager *manager)
+void DesignManager_ShutDown(DesignManager *manager)
 {
     DesignPalettes_Free(&manager->palettes);
     DesignTextures_Release(manager);
@@ -528,7 +528,7 @@ void DesignManager_Shutdown(DesignManager *manager)
         data_021d0480 = NULL;
     }
 }
-CLEAN_AS(func_02072638, DesignManager_Shutdown)
+CLEAN_AS(func_02072638, DesignManager_ShutDown)
 
 /* Constructs the eight models and textures of a set.
  * BUG: a failed allocation is tested element by element, so with a NULL array only the first
@@ -559,7 +559,7 @@ static void construct_set(uintptr_t models, uintptr_t textures)
 /* func_020726b8: resets the manager (func_02072808), reads the palettes, makes the textures, and
  * allocates and constructs the models and textures of the players' and the shop's designs
  * from the current heap. */
-void DesignManager_Startup(DesignManager *manager)
+void DesignManager_StartUp(DesignManager *manager)
 {
     DesignManager_Reset(manager);
     DesignPalettes_Load(&manager->palettes);
@@ -574,4 +574,4 @@ void DesignManager_Startup(DesignManager *manager)
     data_021d0480 = Heap_Alloc(heap, DESIGNS_PER_SET * sizeof(DesignTexture));
     construct_set((uintptr_t) data_021d0470, (uintptr_t) data_021d0480);
 }
-CLEAN_AS(func_020726b8, DesignManager_Startup)
+CLEAN_AS(func_020726b8, DesignManager_StartUp)

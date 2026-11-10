@@ -354,8 +354,8 @@ CLEAN_AS(func_0207a810, VillagerTown_PickOutsideAcquaintance)
  * are cleared. */
 void VillagerTown_ApplyBirthdayStates(VillagerTown *town)
 {
-    int event_villager = VillagerState_GetBirthdayVillager();
-    int companion = VillagerState_GetBirthdayCompanion();
+    int event_villager = VillagerState_BirthdayVillager();
+    int companion = VillagerState_BirthdayCompanion();
     for (int i = 0; i < VILLAGER_TOWN_VILLAGERS; i++) {
         const u8 *villager = town->villagers[i];
         if (has_villager(villager) && VillagerState_LinkedState(VillagerStatus_StateEntry((u8 *) villager)) == 3) {
@@ -386,14 +386,14 @@ CLEAN_AS(func_0207a8ac, VillagerTown_ApplyBirthdayStates)
 void VillagerTown_UpdateBirthdayVillager(VillagerTown *town)
 {
     DateTime now = {0};
-    int previous = VillagerState_GetBirthdayVillager();
+    int previous = VillagerState_BirthdayVillager();
     DateTime_Now(&now);
     int event_villager = VillagerTown_FindBirthdayVillager(town, &now);
     if (event_villager == VILLAGER_TOWN_NONE) {
         VillagerState_SetBirthdayVillager((unsigned char) VILLAGER_TOWN_NONE);
         VillagerState_SetBirthdayCompanion((unsigned char) VILLAGER_TOWN_NONE);
     } else if (event_villager == previous) {
-        u8 *companion = VillagerRoster_At(town, VillagerState_GetBirthdayCompanion());
+        u8 *companion = VillagerRoster_At(town, VillagerState_BirthdayCompanion());
         if (companion != NULL && TownVillager_IsFreeCompanion(companion)) {
             return;
         }

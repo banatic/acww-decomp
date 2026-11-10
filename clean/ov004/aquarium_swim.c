@@ -444,7 +444,7 @@ int AquariumSwim_GroundIsHalf(const Vec3 *point)
 {
     CollisionGround ground;
     CollisionGround_Init(&ground, point, 0, 0);
-    int half = CollisionGround_GetHeight(&ground, 0) == TANK_GROUND;
+    int half = CollisionGround_Height(&ground, 0) == TANK_GROUND;
     CollisionGround_Destroy(&ground);
     return half;
 }

@@ -44,11 +44,11 @@ void VillagerState_ClearIdleFrames(void)
 CLEAN_AS(func_02079144, VillagerState_ClearIdleFrames)
 
 /* func_0207915c */
-int VillagerState_GetFleaMarketVisitor(void)
+int VillagerState_FleaMarketVisitor(void)
 {
     return VillagerState_Table()->flea_market_visitor;
 }
-CLEAN_AS(func_0207915c, VillagerState_GetFleaMarketVisitor)
+CLEAN_AS(func_0207915c, VillagerState_FleaMarketVisitor)
 
 /* func_02079174 */
 void VillagerState_SetFleaMarketVisitor(unsigned char index)
@@ -58,11 +58,11 @@ void VillagerState_SetFleaMarketVisitor(unsigned char index)
 CLEAN_AS(func_02079174, VillagerState_SetFleaMarketVisitor)
 
 /* func_0207918c */
-int VillagerState_GetBirthdayGreeter(void)
+int VillagerState_BirthdayGreeter(void)
 {
     return VillagerState_Table()->birthday_greeter;
 }
-CLEAN_AS(func_0207918c, VillagerState_GetBirthdayGreeter)
+CLEAN_AS(func_0207918c, VillagerState_BirthdayGreeter)
 
 /* func_020791a4 */
 void VillagerState_SetBirthdayGreeter(char index)
@@ -72,11 +72,11 @@ void VillagerState_SetBirthdayGreeter(char index)
 CLEAN_AS(func_020791a4, VillagerState_SetBirthdayGreeter)
 
 /* func_020791bc */
-signed char VillagerState_GetBirthdayCompanion(void)
+signed char VillagerState_BirthdayCompanion(void)
 {
     return VillagerState_Table()->birthday_companion;
 }
-CLEAN_AS(func_020791bc, VillagerState_GetBirthdayCompanion)
+CLEAN_AS(func_020791bc, VillagerState_BirthdayCompanion)
 
 /* func_020791d4 */
 void VillagerState_SetBirthdayCompanion(unsigned char index)
@@ -86,11 +86,11 @@ void VillagerState_SetBirthdayCompanion(unsigned char index)
 CLEAN_AS(func_020791d4, VillagerState_SetBirthdayCompanion)
 
 /* func_020791ec */
-int VillagerState_GetBirthdayVillager(void)
+int VillagerState_BirthdayVillager(void)
 {
     return VillagerState_Table()->birthday_villager;
 }
-CLEAN_AS(func_020791ec, VillagerState_GetBirthdayVillager)
+CLEAN_AS(func_020791ec, VillagerState_BirthdayVillager)
 
 /* func_02079204 */
 void VillagerState_SetBirthdayVillager(unsigned char index)
@@ -146,13 +146,13 @@ void VillagerState_Clear(void)
 }
 CLEAN_AS(func_020792a0, VillagerState_Clear)
 
-/* func_020792b4: the table asked for and VillagerState_NoOp called. */
-void VillagerState_CallNoOp(void)
+/* func_020792b4: the table asked for and VillagerState_Nothing called. */
+void VillagerState_CallNothing(void)
 {
     (void) VillagerState_Table();
-    VillagerState_NoOp();
+    VillagerState_Nothing();
 }
-CLEAN_AS(func_020792b4, VillagerState_CallNoOp)
+CLEAN_AS(func_020792b4, VillagerState_CallNothing)
 
 /* func_020792c8 */
 void VillagerState_Reset(void)
@@ -178,8 +178,8 @@ void VillagerState_ClearTable(VillagerStates *table)
 CLEAN_AS(func_020792dc, VillagerState_ClearTable)
 
 /* func_0207932c: does nothing. */
-void VillagerState_NoOp(void) {}
-CLEAN_AS(func_0207932c, VillagerState_NoOp)
+void VillagerState_Nothing(void) {}
+CLEAN_AS(func_0207932c, VillagerState_Nothing)
 
 /* func_02079330: the entry of villager index `index`, or null for an index outside 0-7. */
 VillagerState *VillagerState_At(VillagerStates *table, int index)
@@ -356,11 +356,11 @@ void VillagerState_CountDownMood(VillagerState *entry)
 CLEAN_AS(func_02079494, VillagerState_CountDownMood)
 
 /* func_020794a0 */
-int VillagerState_GetMoodFrames(const VillagerState *entry)
+int VillagerState_MoodFrames(const VillagerState *entry)
 {
     return entry->mood_frames;
 }
-CLEAN_AS(func_020794a0, VillagerState_GetMoodFrames)
+CLEAN_AS(func_020794a0, VillagerState_MoodFrames)
 
 /* func_020794a4: QUIRK: keeps the low 16 bits. */
 void VillagerState_SetMoodFrames(VillagerState *entry, int counter)
@@ -388,11 +388,11 @@ void VillagerState_SetMood(VillagerState *entry, int value)
 CLEAN_AS(func_020794c0, VillagerState_SetMood)
 
 /* func_020794c4 */
-int VillagerState_GetMood(const VillagerState *entry)
+int VillagerState_Mood(const VillagerState *entry)
 {
     return entry->mood;
 }
-CLEAN_AS(func_020794c4, VillagerState_GetMood)
+CLEAN_AS(func_020794c4, VillagerState_Mood)
 
 /* func_020794c8: QUIRK: keeps the low 8 bits. */
 void VillagerState_SetActivity(VillagerState *entry, int value)
@@ -402,11 +402,11 @@ void VillagerState_SetActivity(VillagerState *entry, int value)
 CLEAN_AS(func_020794c8, VillagerState_SetActivity)
 
 /* func_020794cc */
-int VillagerState_GetActivity(const VillagerState *entry)
+int VillagerState_Activity(const VillagerState *entry)
 {
     return entry->activity;
 }
-CLEAN_AS(func_020794cc, VillagerState_GetActivity)
+CLEAN_AS(func_020794cc, VillagerState_Activity)
 
 /* func_020794d0 */
 u8 *VillagerState_Errand(VillagerState *entry)

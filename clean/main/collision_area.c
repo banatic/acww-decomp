@@ -111,11 +111,11 @@ void CollisionArea_Set(CollisionArea *area, const Vec3 *a, const Vec3 *b, const 
 CLEAN_AS(func_020326c4, CollisionArea_Set)
 
 /* func_02032754: the area's centre. */
-Vec3 *CollisionArea_GetCentre(CollisionArea *area)
+Vec3 *CollisionArea_Centre(CollisionArea *area)
 {
     return &area->centre;
 }
-CLEAN_AS(func_02032754, CollisionArea_GetCentre)
+CLEAN_AS(func_02032754, CollisionArea_Centre)
 
 /* func_02032758: out of any list, no reach, centred at 0. */
 void CollisionArea_Reset(CollisionArea *area)

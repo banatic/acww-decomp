@@ -51,7 +51,7 @@ void TurtleTalk_Line(TurtleTalk *talk, TurtleTalkLine *line);
 void TurtleTalk_Begin(TurtleTalk *talk, struct Turtle *owner);
 
 /* Its life. */
-TurtleTalk *TurtleTalk_DestructDelete(TurtleTalk *talk);
+TurtleTalk *TurtleTalk_Delete(TurtleTalk *talk);
 TurtleTalk *TurtleTalk_Destruct(TurtleTalk *talk);
 TurtleTalk *TurtleTalk_Construct(TurtleTalk *talk);
 

@@ -490,14 +490,14 @@ VillagerTalk *VillagerTalkScene_DestructBody(VillagerTalk *talk)
 CLEAN_AS(func_0202de4c, VillagerTalkScene_DestructBody)
 
 /* func_0202de64 (slot 0x04): the destructor that also frees the talk's memory. */
-VillagerTalk *VillagerTalkScene_DestructDelete(VillagerTalk *talk)
+VillagerTalk *VillagerTalkScene_Delete(VillagerTalk *talk)
 {
     *(const u8 **) (void *) talk = data_020d9df8;
     SceneBase_DestructBody(talk);
     Heap_OperatorDeleteB(talk);
     return talk;
 }
-CLEAN_AS(func_0202de64, VillagerTalkScene_DestructDelete)
+CLEAN_AS(func_0202de64, VillagerTalkScene_Delete)
 
 /* func_0202de84 (slot 0x00): the destructor. */
 VillagerTalk *VillagerTalkScene_Destruct(VillagerTalk *talk)

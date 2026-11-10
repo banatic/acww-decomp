@@ -38,8 +38,8 @@ typedef struct UnitBitsGrid {
     int width;
 } UnitBitsGrid;
 
-u8 FieldUnits_GetType(int x, int z);
-FieldBlock *FieldUnits_GetBlock(int block_x, int block_z);
+u8 FieldUnits_Type(int x, int z);
+FieldBlock *FieldUnits_Block(int block_x, int block_z);
 int FieldUnits_IsBitSet(UnitBitsGrid *grid, int x, int z);
 
 #endif

@@ -130,7 +130,7 @@ u8 *TownNook_Destruct(u8 *object)
 CLEAN_AS(func_ov068_0226e184, TownNook_Destruct)
 
 /* func_ov068_0226e1ac (slot 0x44): the same, then the object freed (Heap_FreeAux). */
-u8 *TownNook_DestructDelete(u8 *object)
+u8 *TownNook_Delete(u8 *object)
 {
     *(const u8 **) (void *) object = data_ov068_02277574;
     TownNookScene_Destruct(nook_scene(object));
@@ -138,7 +138,7 @@ u8 *TownNook_DestructDelete(u8 *object)
     Heap_FreeAux(object);
     return object;
 }
-CLEAN_AS(func_ov068_0226e1ac, TownNook_DestructDelete)
+CLEAN_AS(func_ov068_0226e1ac, TownNook_Delete)
 
 /* func_ov068_0226e1d8 (slot 0x4c): told of an event: 1 gives state 2, 8 (ended) state 5. */
 void TownNook_OnEvent(u8 *object, int code)
@@ -336,14 +336,14 @@ CLEAN_AS(func_ov068_0226e598, TownNookScene_Begin)
 
 /* func_ov068_0226e5b4 (the scene's slot 0x04): the destructor of main's class 0x020d9ff8, then
  * the scene freed (Heap_OperatorDeleteB). */
-TownNookScene *TownNookScene_DestructDelete(TownNookScene *scene)
+TownNookScene *TownNookScene_Delete(TownNookScene *scene)
 {
     *(const u8 **) (void *) scene = data_ov068_022774e4;
     Obj020d9ff8_DestructBody(scene);
     Heap_OperatorDeleteB(scene);
     return scene;
 }
-CLEAN_AS(func_ov068_0226e5b4, TownNookScene_DestructDelete)
+CLEAN_AS(func_ov068_0226e5b4, TownNookScene_Delete)
 
 /* func_ov068_0226e5d4 (the scene's slot 0x00): the destructor of main's class 0x020d9ff8. */
 TownNookScene *TownNookScene_Destruct(TownNookScene *scene)

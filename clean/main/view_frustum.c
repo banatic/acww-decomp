@@ -103,10 +103,10 @@ void ViewFrustum_Destruct(ViewFrustum *frustum)
 CLEAN_AS(func_0203a9a8, ViewFrustum_Destruct)
 
 /* func_0203a9b4 (slot 1): destroyed and freed. */
-ViewFrustum *ViewFrustum_DestructDelete(ViewFrustum *frustum)
+ViewFrustum *ViewFrustum_Delete(ViewFrustum *frustum)
 {
     frustum->vtable = data_020da70c;
     Heap_OperatorDeleteB(frustum);
     return frustum;
 }
-CLEAN_AS(func_0203a9b4, ViewFrustum_DestructDelete)
+CLEAN_AS(func_0203a9b4, ViewFrustum_Delete)

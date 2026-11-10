@@ -224,7 +224,7 @@ Mole *Mole_Destruct(Mole *mole)
 CLEAN_AS(func_ov077_02278a00, Mole_Destruct)
 
 /* func_ov077_02278a28 (vtable slot 0x44): the same, then the object freed. */
-Mole *Mole_DestructDelete(Mole *mole)
+Mole *Mole_Delete(Mole *mole)
 {
     *(const u8 **) (void *) mole->base = data_ov077_0227988c;
     MoleTalk_Destruct(&mole->talk);
@@ -232,7 +232,7 @@ Mole *Mole_DestructDelete(Mole *mole)
     Heap_FreeAux(mole);
     return mole;
 }
-CLEAN_AS(func_ov077_02278a28, Mole_DestructDelete)
+CLEAN_AS(func_ov077_02278a28, Mole_Delete)
 
 /* func_ov077_02278a54 (vtable slot 0x4c, told of an event about him): code 1: his talk reset (its slot 0x08), the talk's partner this console's player's object,
  * and he comes up (MOLE_RISE); code 8, the act ended: MOLE_TALKED. */

@@ -300,7 +300,7 @@ CLEAN_AS(func_ov118_0229c078, MapMenu_EndMembers)
  * made; the player's place on the map from where they stand (outdoors, actor 4's start; in a
  * room, the place they came in by): its tile, 8 left and 13 down; the knob at rest. While the
  * bar's menu is opening the setup takes a frame a state (MAP_MENU_FLAG_OPENING). */
-void MapMenu_Setup(MapMenu *self)
+void MapMenu_SetUp(MapMenu *self)
 {
     Vec3 position;
 
@@ -328,11 +328,11 @@ void MapMenu_Setup(MapMenu *self)
     self->position_x = (u8) (tile_x - 8);
     self->position_y = (u8) (tile_z + 0xd);
     DualCellSprite_SetState(map_menu_knob_sprite(self), DUAL_CELL_SPRITE_STILL);
-    if (MenuTabs_IsOpening((MenuTabs *) (void *) Process_GetParent((Process *) (void *) self)) != 0) {
+    if (MenuTabs_IsOpening((MenuTabs *) (void *) Process_Parent((Process *) (void *) self)) != 0) {
         MapMenu_SetFlags(self, MAP_MENU_FLAG_OPENING);
     }
 }
-CLEAN_AS(func_ov118_0229c098, MapMenu_Setup)
+CLEAN_AS(func_ov118_0229c098, MapMenu_SetUp)
 
 /* Both layers placed by the wipe (the list's lowered to its scroll), and the wipe's y kept for
  * the OBJs. */
@@ -652,7 +652,7 @@ CLEAN_AS(func_ov118_0229c714, MapMenu_Draw)
  * the members ended. Answers 1. */
 int MapMenu_End(MapMenu *self)
 {
-    MenuTabs_ChildClosed((MenuTabs *) (void *) Process_GetParent((Process *) (void *) self));
+    MenuTabs_ChildClosed((MenuTabs *) (void *) Process_Parent((Process *) (void *) self));
     MapMenu_EndMembers(self);
     return 1;
 }
@@ -662,7 +662,7 @@ CLEAN_AS(func_ov118_0229c9a4, MapMenu_End)
  * Answers 1. */
 int MapMenu_Start(MapMenu *self)
 {
-    MapMenu_Setup(self);
+    MapMenu_SetUp(self);
     MenuScene_SetState(map_menu_scene(self), MAP_MENU_STATE_LOAD);
     MenuScene_SetPhase(map_menu_scene(self), MAP_MENU_PHASE_STATES);
     return 1;

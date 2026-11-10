@@ -85,7 +85,7 @@ int PocketsLetters_TenAt2dAtTouch(PocketsLetters *letters, int x, int y);
 int PocketsLetters_PocketAtTouch(PocketsLetters *letters, int x, int y);
 void PocketsLetters_BeginFrame(PocketsLetters *letters);
 void PocketsLetters_Init(PocketsLetters *letters, int priority);
-PocketsLetters *PocketsLetters_DestructDelete(PocketsLetters *letters);
+PocketsLetters *PocketsLetters_Delete(PocketsLetters *letters);
 void PocketsLetters_Destruct(PocketsLetters *letters);
 void PocketsLetters_Construct(PocketsLetters *letters);
 

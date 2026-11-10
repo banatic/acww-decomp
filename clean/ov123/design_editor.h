@@ -233,7 +233,7 @@ void DesignEditor_EndFrame(DesignEditor *self);
 void DesignEditor_BeginFrame(DesignEditor *self);
 void DesignEditor_EndInteractiveFrame(DesignEditor *self);
 void DesignEditor_BeginInteractiveFrame(DesignEditor *self);
-void DesignEditor_Teardown(DesignEditor *self);
+void DesignEditor_TearDown(DesignEditor *self);
 void DesignEditor_Reset(DesignEditor *self);
 void DesignEditor_ScrollLayers(DesignEditor *self);
 void DesignEditor_ScrollWithWipe(DesignEditor *self);

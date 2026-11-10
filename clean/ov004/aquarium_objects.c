@@ -111,13 +111,13 @@ static void aquarium_destruct_own(MuseumAquarium *self)
 
 /* func_ov004_02239c6c (slot 10 of the aquarium's vtable): the destructor, then the aquarium
  * freed (Heap_FreeAux). */
-MuseumAquarium *Aquarium_DestructFree(MuseumAquarium *self)
+MuseumAquarium *Aquarium_Delete(MuseumAquarium *self)
 {
     aquarium_destruct_own(self);
     Heap_FreeAux(self);
     return self;
 }
-CLEAN_AS(func_ov004_02239c6c, Aquarium_DestructFree)
+CLEAN_AS(func_ov004_02239c6c, Aquarium_Delete)
 
 /* func_ov004_02239cd4 (slot 9 of the aquarium's vtable): the destructor: the model pool, the
  * glass of both tanks, the rocks (the extra one first), then the process base. */

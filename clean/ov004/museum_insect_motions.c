@@ -592,7 +592,7 @@ int InsectMotion_Walk(MuseumInsect *insect)
     if (kind == 52 || kind == 48) {
         CollisionGround ground;
         CollisionGround_Init(&ground, position, 0, 0);
-        int high = CollisionGround_GetHeight(&ground, 0) > 0x200;
+        int high = CollisionGround_Height(&ground, 0) > 0x200;
         CollisionGround_Destroy(&ground);
         if (high) {
             if (!blocked_by && kind == 52) {
@@ -1498,7 +1498,7 @@ void InsectMotion_Leap(MuseumInsect *insect, short *frames)
     int t = *frames;
     position->y = position->y + (25 - t) * (t * 4);
     CollisionGround_Init(&ground, position, 0, 1);
-    int landed = position->y <= CollisionGround_GetHeight(&ground, 0);
+    int landed = position->y <= CollisionGround_Height(&ground, 0);
     CollisionGround_Destroy(&ground);
     if (landed && *frames > 0) {
         insect->mode = INSECT_MOTION_MOVE;
@@ -1954,7 +1954,7 @@ void InsectMotion_Glide(MuseumInsect *insect)
     } else {
         CollisionGround ground;
         CollisionGround_Init(&ground, position, 0, 1);
-        int floor = CollisionGround_GetHeight(&ground, 0);
+        int floor = CollisionGround_Height(&ground, 0);
         CollisionGround_Destroy(&ground);
         if (!Approach_EaseS32MinMax(height, floor, speed, 0x1000, 0x266)) {
             insect->countdown = (s16) ((insect_motion_random(9) + 2) * 20);
@@ -2746,7 +2746,7 @@ int InsectMotion_StayOnFloor(Vec3 *position, const Vec3 *previous)
     CollisionGround ground;
     Vec3 probe = {position->x, 0, previous->z};
     CollisionGround_Init(&ground, &probe, 0, 0);
-    int high = CollisionGround_GetHeight(&ground, 0) > 0x200;
+    int high = CollisionGround_Height(&ground, 0) > 0x200;
     CollisionGround_Destroy(&ground);
     if (high) {
         position->x = previous->x;
@@ -2755,7 +2755,7 @@ int InsectMotion_StayOnFloor(Vec3 *position, const Vec3 *previous)
     CollisionGround other;
     Vec3 second = {previous->x, 0, position->z};
     CollisionGround_Init(&other, &second, 0, 0);
-    high = CollisionGround_GetHeight(&other, 0) > 0x200;
+    high = CollisionGround_Height(&other, 0) > 0x200;
     CollisionGround_Destroy(&other);
     if (high) {
         position->z = previous->z;
@@ -2858,7 +2858,7 @@ static int insect_motion_feeler_off(MuseumInsect *insect, Vec3 *feeler, u8 kind)
 {
     CollisionGround ground;
     CollisionGround_Init(&ground, feeler, 0, 1);
-    fx32 floor = CollisionGround_GetHeight(&ground, 1);
+    fx32 floor = CollisionGround_Height(&ground, 1);
     CollisionGround_Destroy(&ground);
     return floor <= 0 || floor > feeler->y || (kind == 30 && InsectMotion_ClampToBounds(insect, feeler) != 0);
 }

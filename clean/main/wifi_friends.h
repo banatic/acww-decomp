@@ -42,10 +42,10 @@ typedef struct WifiAccount {
     u8 unk_4e[2];
 } WifiAccount;
 
-u16 WifiAccount_GetChecksum(const WifiAccount *account);
+u16 WifiAccount_Checksum(const WifiAccount *account);
 void WifiAccount_SetChecksum(WifiAccount *account, u16 checksum);
-WifiFriendData *WifiAccount_GetFriendData(WifiAccount *account);
-u8 *WifiAccount_GetUserData(WifiAccount *account);
+WifiFriendData *WifiAccount_FriendData(WifiAccount *account);
+u8 *WifiAccount_UserData(WifiAccount *account);
 int WifiAccount_Call021012c4(void *user_data);
 int WifiAccount_IsAuthentic(const void *user_data);
 u64 WifiAccount_GetUserKey(const void *user_data);
@@ -53,23 +53,23 @@ void WifiAccount_Init(WifiAccount *account);
 WifiAccount *WifiAccount_Destruct(WifiAccount *account);
 WifiAccount *WifiAccount_Construct(WifiAccount *account);
 
-u16 *WifiFriend_GetTown(WifiFriend *entry);
-u16 *WifiFriend_GetName(WifiFriend *entry);
-WifiFriendData *WifiFriend_GetFriendData(WifiFriend *entry);
+u16 *WifiFriend_Town(WifiFriend *entry);
+u16 *WifiFriend_Name(WifiFriend *entry);
+WifiFriendData *WifiFriend_FriendData(WifiFriend *entry);
 void WifiFriend_Clear(WifiFriend *entry);
 WifiFriend *WifiFriend_Copy(WifiFriend *dst, WifiFriend *src);
 WifiFriend *WifiFriend_Destruct(WifiFriend *entry);
 WifiFriend *WifiFriend_Construct(WifiFriend *entry);
 
-u16 WifiFriendList_GetChecksum(const WifiFriendList *list);
+u16 WifiFriendList_Checksum(const WifiFriendList *list);
 void WifiFriendList_SetChecksum(WifiFriendList *list, u16 checksum);
 void WifiFriendList_Compact(WifiFriendList *list);
-WifiFriend *WifiFriendList_GetEntries(WifiFriendList *list);
+WifiFriend *WifiFriendList_Entries(WifiFriendList *list);
 void WifiFriendList_ClearAll(WifiFriendList *list);
 WifiFriendList *WifiFriendList_Destruct(WifiFriendList *list);
 WifiFriendList *WifiFriendList_Construct(WifiFriendList *list);
 
-WifiFriendData *WifiFriendData_GetData(WifiFriendData *friend_data);
+WifiFriendData *WifiFriendData_Data(WifiFriendData *friend_data);
 int WifiFriendData_IsNotFriendKey(WifiFriendData *friend_data);
 int WifiFriendData_GetKeyDigits(WifiFriendData *friend_data, char *digits);
 int WifiFriendData_SetFromKeyDigits(WifiFriendData *friend_data, const u8 *digits, const void *user_data);

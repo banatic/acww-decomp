@@ -298,14 +298,14 @@ void MoleTalk_OnGoOn(MoleTalk *talk)
 CLEAN_AS(func_ov077_02278d00, MoleTalk_OnGoOn)
 
 /* func_ov077_02278d2c (slot 0x04): destructed, then freed. */
-MoleTalk *MoleTalk_DestructDelete(MoleTalk *talk)
+MoleTalk *MoleTalk_Delete(MoleTalk *talk)
 {
     talk->scene.vtable = data_ov077_022797fc;
     Obj020d9ff8_DestructBody(talk);
     Heap_OperatorDeleteB(talk);
     return talk;
 }
-CLEAN_AS(func_ov077_02278d2c, MoleTalk_DestructDelete)
+CLEAN_AS(func_ov077_02278d2c, MoleTalk_Delete)
 
 /* func_ov077_02278d4c (slot 0x00): the destructor: its class's vtable, then the scene class's
  * body. */

@@ -221,7 +221,7 @@ void PocketsBox_SendBox(PocketsBox *self, int type)
     Session_BeginMessage(session);
     Session_AppendMessage(session, message, 1 + (int) sizeof self->box);
     Session_EndMessage(session, PLAYER_MESSAGE_CATEGORY, MESSAGE_TO);
-    self->sent_frame = Session_GetFrameSequence(session);
+    self->sent_frame = Session_FrameSequence(session);
 }
 CLEAN_AS(func_ov100_0229c324, PocketsBox_SendBox)
 

@@ -82,7 +82,7 @@ void ModelObject_DrawShapes(ModelObject *object, const Vec3 *scale);
 int ModelObject_ReleaseRender(ModelObject *object);
 int ModelObject_SetModel(ModelObject *object, u8 *model, void *texture);
 int ModelObject_SetModelTexture(ModelObject *object, u8 *model, void *texture);
-void ModelObject_SetupRender(ModelObject *object);
+void ModelObject_SetUpRender(ModelObject *object);
 void ModelObject_ResetRender(ModelObject *object);
 ModelObject *ModelObject_BaseDestruct(ModelObject *object);
 ModelObject *ModelObject_BaseDelete(ModelObject *object);

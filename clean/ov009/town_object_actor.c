@@ -483,7 +483,7 @@ int TownObjectActor_GetStandPoint(TownObjectActor *actor, Vec3 *point, s16 *angl
     }
     if (point != NULL) {
         Vec3 sum;
-        Vec_Add(&sum, CollisionArea_GetCentre((CollisionArea *) area), &ahead);
+        Vec_Add(&sum, CollisionArea_Centre((CollisionArea *) area), &ahead);
         *point = sum;
         point->y = TOWN_OBJECT_ACTOR_STAND_HEIGHT;
         point->z -= TOWN_OBJECT_ACTOR_STAND_BACK;

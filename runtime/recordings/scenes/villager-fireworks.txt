@@ -2,7 +2,7 @@
 # not in this repository). Booted on Saturday 7 August 2027 at 20:00,
 # the first Saturday of August: the fireworks' evening (town event 2, calendar event 0x0f). As
 # villager-talk.txt to 2600; the boot passes the eleven months since the save (the house, then the
-# day's processing; the run also enters three visitors' destructors, Otter_DestructDelete, Walrus_DestructDelete,
+# day's processing; the run also enters three visitors' destructors, Otter_Delete, Walrus_Delete,
 # ReactionNpc_Delete); A from 3800 reads the announcement at the town hall, outside the player's house
 # at about 5000. South-east to stand west of villager 0 (personality ko) at about (51.3, 62.4), facing it
 # (5540); A every 30 frames: line table 4 (VillagerTalk_LineByCalendar, VillagerTalk_NoteMemoryOnEvent),

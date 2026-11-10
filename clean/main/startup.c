@@ -95,7 +95,7 @@ extern void func_01ffcc60(void);
 /* Start-up steps of their own, not named yet. */
 extern void func_02110794(void);
 extern void func_02110aa0(void);
-extern void StartupNoOp_Run(void);
+extern void Startup_Nothing(void);
 
 /* NitroStartUp: the start-up NitroSDK runs before main.
  * HW: with the master interrupt enable saved and set to 1 and the CPU's interrupts enabled,
@@ -206,7 +206,7 @@ void Startup_InitGame(void)
     TownDay_Init();
     CautionWindow_LoadMessages();
     data_021fd044 = data_020e3134;
-    StartupNoOp_Run();
+    Startup_Nothing();
     MainRandom_SeedFromClock();
 
     REG_040004C8 = 0x296a5800;
@@ -214,7 +214,7 @@ void Startup_InitGame(void)
     REG_040004C0 = 0x7fff;
     REG_040004C4 = 0;
 
-    MainLoop_StartupNothing();
+    MainLoop_StartUpNothing();
     ResidentProcess_SpawnAll();
     LibraryOverlay_Load(&data_021d11c4, (int) (uintptr_t) &SDK_OVERLAY_ov068_ID);
 }

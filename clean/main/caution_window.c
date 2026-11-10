@@ -3,14 +3,14 @@
 
 #include "autoload_2/heap.h"    /* Heap_AllocCurrentBack, Heap_FreeCurrent */
 #include "autoload_2/input.h"   /* PadState */
-#include "autoload_2/network.h" /* Net_GetMode, Net_GetError */
+#include "autoload_2/network.h" /* Net_Mode, Net_Error */
 #include "autoload_2/process.h" /* Process */
 #include "autoload_2/vector.h"  /* Vec3 */
-#include "backup_card.h"        /* BackupCard_Shutdown */
+#include "backup_card.h"        /* BackupCard_ShutDown */
 #include "clean.h"
 #include "display_shadow.h" /* the planes and windows of both screens */
 #include "lid_sleep.h"      /* LidSleep_KeepSoundOff */
-#include "main/session.h"   /* Session_GetConnectMode, Session_GetErrorFlags, ... */
+#include "main/session.h"   /* Session_ConnectMode, Session_ErrorFlags, ... */
 #include "ov004/member_pointer.h"
 #include "session_link.h" /* Session_Close */
 #include "sound.h"        /* SoundSys_MasterVolumeOff */
@@ -208,12 +208,12 @@ void CautionWindow_EnterLastMessage(CautionWindow *self)
 CLEAN_AS(func_02038078, CautionWindow_EnterLastMessage)
 
 /* func_020380a8: state 5: the last message becomes the window's message. */
-void CautionWindow_ShutdownUpdate(CautionWindow *self)
+void CautionWindow_ShutDownUpdate(CautionWindow *self)
 {
     TextBase_Copy((TextBase *) (void *) self->message, (TextBase *) (void *) data_021c5b38);
     CautionWindow_EnterLastMessage(self);
 }
-CLEAN_AS(func_020380a8, CautionWindow_ShutdownUpdate)
+CLEAN_AS(func_020380a8, CautionWindow_ShutDownUpdate)
 
 /* func_020380c4: the texture cleared, the sound stopped, the network's error recorded, the
  * backup card and the session shut down. */
@@ -224,7 +224,7 @@ void CautionWindow_EnterShutdown(CautionWindow *self)
     CautionWindow_ClearTexture(self);
     CautionWindow_StopSound(self);
     CautionWindow_RecordNetError();
-    BackupCard_Shutdown();
+    BackupCard_ShutDown();
     Session_Close();
 }
 CLEAN_AS(func_020380c4, CautionWindow_EnterShutdown)
@@ -319,7 +319,7 @@ CLEAN_AS(func_02038264, CautionWindow_EnterDelay)
 void CautionWindow_IdleUpdate(CautionWindow *self)
 {
     if (self->trouble != 0) {
-        if ((Session_GetShownErrorFlags(data_020ccf94) & CAUTION_WINDOW_SERIOUS_ERRORS) != 0) {
+        if ((Session_ShownErrorFlags(data_020ccf94) & CAUTION_WINDOW_SERIOUS_ERRORS) != 0) {
             CautionWindow_HidePlanes(self);
             CautionWindow_EnterShutdown(self);
         } else {
@@ -357,12 +357,12 @@ CLEAN_AS(func_020382d4, CautionWindow_EnterOff)
  * and 0x400b; never in network modes 0 and 6. */
 void CautionWindow_CheckNetError(void)
 {
-    int mode = Net_GetMode();
+    int mode = Net_Mode();
     if (mode == 0 || mode == 6) {
         return;
     }
-    u32 connect = Session_GetConnectMode(data_020ccf94);
-    int error = Net_GetError();
+    u32 connect = Session_ConnectMode(data_020ccf94);
+    int error = Net_Error();
     int raise;
     if (connect == 0 && error != 0 && error != 0x800c && error != 0x400b) {
         raise = 1;
@@ -373,7 +373,7 @@ void CautionWindow_CheckNetError(void)
     }
     if (raise) {
         NetSession *session = data_020ccf94;
-        Session_SetErrorFlags(session, (int) (Session_GetErrorFlags(session) | CAUTION_WINDOW_NET_ERROR));
+        Session_SetErrorFlags(session, (int) (Session_ErrorFlags(session) | CAUTION_WINDOW_NET_ERROR));
     }
 }
 CLEAN_AS(func_020382dc, CautionWindow_CheckNetError)
@@ -409,10 +409,10 @@ void CautionWindow_HidePlanes(CautionWindow *self)
 {
     if (self->planes_hidden == 0) {
         self->planes_hidden = 1;
-        self->main_planes = DisplayShadow_GetMainPlanes();
-        self->sub_planes = DisplayShadow_GetSubPlanes();
-        self->main_windows = DisplayShadow_GetMainWindows();
-        self->sub_windows = DisplayShadow_GetSubWindows();
+        self->main_planes = DisplayShadow_MainPlanes();
+        self->sub_planes = DisplayShadow_SubPlanes();
+        self->main_windows = DisplayShadow_MainWindows();
+        self->sub_windows = DisplayShadow_SubWindows();
         DisplayShadow_SetMainPlanes(1);
         DisplayShadow_SetSubPlanes(0);
         DisplayShadow_SetMainWindows(0);
@@ -601,7 +601,7 @@ void CautionWindow_Update(CautionWindow *self, unsigned char trouble)
         &data_020da4d8, /* CautionWindow_DelayUpdate */
         &data_020da4e8, /* CautionWindow_OpenUpdate */
         &data_020da510, /* CautionWindow_CountdownUpdate */
-        &data_020da4f0, /* CautionWindow_ShutdownUpdate */
+        &data_020da4f0, /* CautionWindow_ShutDownUpdate */
         &data_020da4f8, /* CautionWindow_LastMessageUpdate */
         &data_020da508, /* CautionWindow_EndUpdate */
     };
@@ -729,13 +729,13 @@ unsigned char CautionWindow_ArePlanesHidden(void)
 CLEAN_AS(func_02038a44, CautionWindow_ArePlanesHidden)
 
 /* func_02038a50 (vtable entry 1): the destructor, and the object freed. */
-CautionWindow *CautionWindow_DestructDelete(CautionWindow *self)
+CautionWindow *CautionWindow_Delete(CautionWindow *self)
 {
     CautionWindow_Destruct(self);
     Heap_OperatorDeleteB(self);
     return self;
 }
-CLEAN_AS(func_02038a50, CautionWindow_DestructDelete)
+CLEAN_AS(func_02038a50, CautionWindow_Delete)
 
 /* func_02038a90 (vtable entry 0): the labels and the model destroyed, last member first. */
 CautionWindow *CautionWindow_Destruct(CautionWindow *self)
@@ -812,8 +812,8 @@ CLEAN_AS(func_02038bac, CautionWindow_WidenText)
 /* func_02038bfc: the network's error detail recorded, and whether its mode is 3 or 4. */
 void CautionWindow_RecordNetError(void)
 {
-    data_021c5938 = Net_GetErrorDetail();
-    u8 mode = Net_GetMode();
+    data_021c5938 = Net_ErrorDetail();
+    u8 mode = Net_Mode();
     data_021c5934 = mode == 3 || mode == 4;
 }
 CLEAN_AS(func_02038bfc, CautionWindow_RecordNetError)
@@ -833,14 +833,14 @@ int CautionWindowLine_Capacity(void)
 CLEAN_AS(func_02038c30, CautionWindowLine_Capacity)
 
 /* func_02038c34 (vtable entry 1) */
-CautionWindowLabel *CautionWindowLine_DestructDelete(CautionWindowLabel *label)
+CautionWindowLabel *CautionWindowLine_Delete(CautionWindowLabel *label)
 {
     label->vtable = data_020da548;
     TextBase_Destruct((TextBase *) label);
     Heap_OperatorDeleteB(label);
     return label;
 }
-CLEAN_AS(func_02038c34, CautionWindowLine_DestructDelete)
+CLEAN_AS(func_02038c34, CautionWindowLine_Delete)
 
 /* func_02038c54 (vtable entry 0) */
 CautionWindowLabel *CautionWindowLine_Destruct(CautionWindowLabel *label)
@@ -876,14 +876,14 @@ int CautionWindowUnit_Capacity(void)
 CLEAN_AS(func_02038c90, CautionWindowUnit_Capacity)
 
 /* func_02038c94 (vtable entry 1) */
-CautionWindowLabel *CautionWindowUnit_DestructDelete(CautionWindowLabel *label)
+CautionWindowLabel *CautionWindowUnit_Delete(CautionWindowLabel *label)
 {
     label->vtable = data_020da560;
     TextBase_Destruct((TextBase *) label);
     Heap_OperatorDeleteB(label);
     return label;
 }
-CLEAN_AS(func_02038c94, CautionWindowUnit_DestructDelete)
+CLEAN_AS(func_02038c94, CautionWindowUnit_Delete)
 
 /* func_02038cb4 (vtable entry 0) */
 CautionWindowLabel *CautionWindowUnit_Destruct(CautionWindowLabel *label)
@@ -919,14 +919,14 @@ int CautionWindowMessage_Capacity(void)
 CLEAN_AS(func_02038cf0, CautionWindowMessage_Capacity)
 
 /* func_02038cf8 (vtable entry 1) */
-CautionWindowLabel *CautionWindowMessage_DestructDelete(CautionWindowLabel *label)
+CautionWindowLabel *CautionWindowMessage_Delete(CautionWindowLabel *label)
 {
     label->vtable = data_020da530;
     TextBase_Destruct((TextBase *) label);
     Heap_OperatorDeleteB(label);
     return label;
 }
-CLEAN_AS(func_02038cf8, CautionWindowMessage_DestructDelete)
+CLEAN_AS(func_02038cf8, CautionWindowMessage_Delete)
 
 /* func_02038d18 (vtable entry 0) */
 CautionWindowLabel *CautionWindowMessage_Destruct(CautionWindowLabel *label)
@@ -953,6 +953,6 @@ CLEAN_AS(func_02038d30, CautionWindowMessage_Construct)
 void CautionWindow_RaiseEndFailure(void)
 {
     NetSession *session = data_020ccf94;
-    Session_SetErrorFlags(session, (int) (Session_GetErrorFlags(session) | CAUTION_WINDOW_END_FAILED));
+    Session_SetErrorFlags(session, (int) (Session_ErrorFlags(session) | CAUTION_WINDOW_END_FAILED));
 }
 CLEAN_AS(func_02038d50, CautionWindow_RaiseEndFailure)

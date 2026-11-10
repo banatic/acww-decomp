@@ -185,14 +185,14 @@ static s32 turtle_fishing_talk_tenths(s32 size)
 
 /* func_ov081_02279004 (vtable slot 0x04): the destructor of the scene class it derives from,
  * then the scene freed. */
-TurtleFishingTalk *TurtleFishingTalk_DestructDelete(TurtleFishingTalk *talk)
+TurtleFishingTalk *TurtleFishingTalk_Delete(TurtleFishingTalk *talk)
 {
     talk->base.vtable = data_ov081_0227972c;
     Obj020d9ff8_DestructBody(talk);
     Heap_OperatorDeleteB(talk);
     return talk;
 }
-CLEAN_AS(func_ov081_02279004, TurtleFishingTalk_DestructDelete)
+CLEAN_AS(func_ov081_02279004, TurtleFishingTalk_Delete)
 
 /* func_ov081_02279024 (vtable slot 0x00): the destructor of the scene class it derives from. */
 TurtleFishingTalk *TurtleFishingTalk_Destruct(TurtleFishingTalk *talk)

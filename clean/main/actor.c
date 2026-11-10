@@ -89,13 +89,13 @@ Actor *Actor_Destruct(Actor *actor)
 CLEAN_AS(func_0200316c, Actor_Destruct)
 
 /* func_0200319c: the destructor that also frees the object. */
-void *Actor_DestructDelete(void *actor)
+void *Actor_Delete(void *actor)
 {
     destruct(actor);
     Heap_FreeAux(actor);
     return actor;
 }
-CLEAN_AS(func_0200319c, Actor_DestructDelete)
+CLEAN_AS(func_0200319c, Actor_Delete)
 
 /* func_020031d4: the matrix that places the actor: translated to its pivot, turned by its pitch,
  * then about Y by its y angle and about X by its x angle when it has one. */

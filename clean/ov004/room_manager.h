@@ -53,7 +53,7 @@ void RoomManager_UpdateTvSound(RoomManager *room);
 void RoomManager_MarkNearestClock(RoomManager *room);
 void RoomManager_MarkNearestStriker(RoomManager *room);
 void RoomManager_PlaceMapFurniture(RoomManager *room);
-void RoomManager_StartStub(RoomManager *room);
+void RoomManager_StartNothing(RoomManager *room);
 unsigned short RoomManager_FrameCounter(void);
 
 RoomSoundList *RoomManager_SoundList(void);

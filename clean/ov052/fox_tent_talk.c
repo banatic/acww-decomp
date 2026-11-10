@@ -191,14 +191,14 @@ static int fox_tent_talk_pick_variant(FoxTent *fox, u8 *used, u16 *told, const u
 /* ---- The class */
 
 /* func_ov052_02261108 (vtable slot 0x04): its destructor, then the scene freed. */
-FoxTentTalk *FoxTentTalk_DestructDelete(FoxTentTalk *talk)
+FoxTentTalk *FoxTentTalk_Delete(FoxTentTalk *talk)
 {
     talk->base.vtable = data_ov052_02261eb0;
     Obj020d9ff8_DestructBody(talk);
     Heap_OperatorDeleteB(talk);
     return talk;
 }
-CLEAN_AS(func_ov052_02261108, FoxTentTalk_DestructDelete)
+CLEAN_AS(func_ov052_02261108, FoxTentTalk_Delete)
 
 /* func_ov052_02261128 (vtable slot 0x00): the destructor of the scene class it derives from. */
 FoxTentTalk *FoxTentTalk_Destruct(FoxTentTalk *talk)

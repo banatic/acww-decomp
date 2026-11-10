@@ -70,11 +70,11 @@ extern const u16 data_0213e858;
 #define EFFECT_45 45
 
 /* func_020eec48: the sound heap's level (the number of states saved). */
-int Sound_GetHeapLevel(void)
+int Sound_HeapLevel(void)
 {
     return NNS_SndHeapGetCurrentLevel(data_021fd048);
 }
-CLEAN_AS(func_020eec48, Sound_GetHeapLevel)
+CLEAN_AS(func_020eec48, Sound_HeapLevel)
 
 /* func_020eec60: the sound heap taken back to `level` (Sound_LoadGroup's result), freeing what
  * was loaded since; the game stops on no level, level 0 or a level not reached.
@@ -88,10 +88,10 @@ void Sound_RestoreHeapLevel(int level)
         GameHalt_Terminate();
     }
     NNS_SndHeapLoadState(data_021fd048, level);
-    if (level != Sound_GetHeapLevel()) {
+    if (level != Sound_HeapLevel()) {
         GameHalt_Terminate();
     }
-    Sound_GetHeapLevel();
+    Sound_HeapLevel();
 }
 CLEAN_AS(func_020eec60, Sound_RestoreHeapLevel)
 
@@ -100,7 +100,7 @@ CLEAN_AS(func_020eec60, Sound_RestoreHeapLevel)
  * group could not be loaded. The game stops when the state cannot be saved. */
 int Sound_LoadGroup(int group)
 {
-    int level = Sound_GetHeapLevel();
+    int level = Sound_HeapLevel();
     if (!NNS_SndArcLoadGroup(group, data_021fd048)) {
         return -1;
     }
@@ -173,7 +173,7 @@ CLEAN_AS(func_020eedfc, Sound_Main)
  * it; the game stops when it cannot be. */
 void Sound_AllocEffectBuffer(void)
 {
-    data_021fd050 = NNS_SndHeapAlloc((void *) Sound_GetHeap(), EFFECT_BUFFER_SIZE + EFFECT_BUFFER_ALIGN, func_020eeea0, 0, 0);
+    data_021fd050 = NNS_SndHeapAlloc((void *) Sound_Heap(), EFFECT_BUFFER_SIZE + EFFECT_BUFFER_ALIGN, func_020eeea0, 0, 0);
     if (data_021fd050 == NULL) {
         GameHalt_Terminate();
     }
@@ -234,11 +234,11 @@ void Sound_Init(void *heap_memory, unsigned int heap_size, const void *arc_path,
 CLEAN_AS(func_020eeea4, Sound_Init)
 
 /* func_020eef70: the sound heap. */
-unsigned int Sound_GetHeap(void)
+unsigned int Sound_Heap(void)
 {
     return (unsigned int) data_021fd048;
 }
-CLEAN_AS(func_020eef70, Sound_GetHeap)
+CLEAN_AS(func_020eef70, Sound_Heap)
 
 /* func_020eef80: every SoundSlots in the group's list stopped and released; the game stops
  * without a group. */
@@ -250,7 +250,7 @@ void SoundGroup_StopAll(SoundGroup *group)
         GameHalt_Terminate();
     }
     for (slots = (void *) SoundList_First(&group->playing); slots != NULL; slots = SoundList_Next(&group->playing, slots)) {
-        SoundSlots_Shutdown(slots);
+        SoundSlots_ShutDown(slots);
     }
 }
 CLEAN_AS(func_020eef80, SoundGroup_StopAll)

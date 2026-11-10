@@ -88,7 +88,7 @@ FoxPassword *FoxPassword_Construct(FoxPassword *password);
 
 int FoxShopText_Capacity(void);
 u8 *FoxShopText_Buffer(FoxShopText *text);
-FoxShopText *FoxShopText_DestructFree(FoxShopText *text);
+FoxShopText *FoxShopText_Delete(FoxShopText *text);
 FoxShopText *FoxShopText_Destruct(FoxShopText *text);
 FoxShopText *FoxShopText_Construct(FoxShopText *text);
 

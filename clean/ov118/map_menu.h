@@ -204,7 +204,7 @@ typedef struct MapMenu {
 } MapMenu;
 
 /* map_menu_list.c */
-void MapMenu_ElementNoOp(void *element);
+void MapMenu_ElementNothing(void *element);
 void MapMenu_ConstructMark(void *mark);
 void MapMenu_ClearFlags(MapMenu *self, unsigned int flags);
 void MapMenu_SetFlags(MapMenu *self, unsigned short flags);
@@ -289,7 +289,7 @@ void MapMenu_BeginInteractiveFrame(MapMenu *self);
 void MapMenu_EndInteractiveFrame(MapMenu *self);
 void MapMenu_BeginFrame(MapMenu *self);
 void MapMenu_EndMembers(MapMenu *self);
-void MapMenu_Setup(MapMenu *self);
+void MapMenu_SetUp(MapMenu *self);
 void MapMenu_StateWipeOut(MapMenu *self);
 void MapMenu_StateLeave(MapMenu *self);
 void MapMenu_StateWipeIn(MapMenu *self);

@@ -73,7 +73,7 @@ enum PublicBoxHeldKind {
     PUBLIC_BOX_HELD_ITEM = 1 /* `item` and `held_state` */
 };
 
-/* GroupParams_Mode's values the scene knows (PublicBox_Setup, PublicBox_Finish). */
+/* GroupParams_Mode's values the scene knows (PublicBox_SetUp, PublicBox_Finish). */
 enum PublicBoxMode {
     PUBLIC_BOX_MODE_SELL_NOOK = 0x1d,   /* items to sell at Nook's: the box starts empty (overlay 100's) */
     PUBLIC_BOX_MODE_SELL_TAILOR = 0x1e, /* the Able Sisters': the same, with another rule for locked slots */
@@ -292,8 +292,8 @@ void PublicBox_EndFrame(PublicBox *self);
 void PublicBox_BeginFrame(PublicBox *self);
 void PublicBox_EndInteractiveFrame(PublicBox *self);
 void PublicBox_BeginInteractiveFrame(PublicBox *self);
-void PublicBox_Teardown(PublicBox *self);
-void PublicBox_Setup(PublicBox *self);
+void PublicBox_TearDown(PublicBox *self);
+void PublicBox_SetUp(PublicBox *self);
 void PublicBox_PocketsWipeOut(PublicBox *self);
 void PublicBox_BoxWipeOut(PublicBox *self);
 void PublicBox_StartWipeOut(PublicBox *self);

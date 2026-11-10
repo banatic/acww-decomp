@@ -475,10 +475,9 @@ int ActivityCard_WriteStepSums(Activity *activity, int part)
         u8 *players = block + offsetof(StateBlock, players);
         for (int player = 0; player < PLAYER_RECORDS_TOWN; player++) {
             WifiAccount *account = PlayerRecord_WifiAccount(PlayerRecords_TownRecord(players, player));
-            WifiAccount_SetChecksum(account, checksum((u8 *) account, ACCOUNT_SIZE, WifiAccount_GetChecksum(account)));
+            WifiAccount_SetChecksum(account, checksum((u8 *) account, ACCOUNT_SIZE, WifiAccount_Checksum(account)));
             WifiFriendList *roster = PlayerRecord_WifiFriends(PlayerRecords_TownRecord(players, player));
-            WifiFriendList_SetChecksum(roster,
-                                       checksum((u8 *) roster, FRIEND_ROSTER_SIZE, WifiFriendList_GetChecksum(roster)));
+            WifiFriendList_SetChecksum(roster, checksum((u8 *) roster, FRIEND_ROSTER_SIZE, WifiFriendList_Checksum(roster)));
         }
         SaveStamp_SetChecksum(stamp, checksum(block, STATE_BLOCK_SIZE, (u16) SaveStamp_Checksum(stamp)));
         sum(block, STATE_BLOCK_SIZE);

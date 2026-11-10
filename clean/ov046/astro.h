@@ -65,7 +65,7 @@ extern AstroStateRow data_ov046_0226248c[ASTRO_STATES];
 
 /* The object's life and vtable slots. */
 Astro *Astro_Destruct(Astro *self);
-Astro *Astro_DestructDelete(Astro *self);
+Astro *Astro_Delete(Astro *self);
 int Astro_TakeCall(Astro *self);
 int Astro_IsCalled(Astro *self);
 void Astro_OnEvent(Astro *self, int code);

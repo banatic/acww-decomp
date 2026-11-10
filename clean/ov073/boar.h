@@ -62,7 +62,7 @@ extern BoarStateRow data_ov073_02279c14[BOAR_STATES];
 
 /* The object's life and vtable slots. */
 Boar *Boar_Destruct(Boar *self);
-Boar *Boar_DestructDelete(Boar *self);
+Boar *Boar_Delete(Boar *self);
 void Boar_OnEvent(Boar *self, int code);
 int Boar_MayAct(Boar *self);
 int Boar_ModelName(void);

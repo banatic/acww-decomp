@@ -199,7 +199,7 @@ int AcreMap_BuildVillager(AcreMapVillager *map, int villager, int heap)
     map->map.world_wide = data_020ca0ec;
     map->map.world_high = data_020ca0e8;
     AcreTile_TileOfAcre(&map->map.tiles_wide, &map->map.tiles_high, map->map.acres_wide, map->map.acres_high, 0, 0);
-    CollisionMap_Setup(map->map.acres_wide, map->map.acres_high, 0, map->map.slot);
+    CollisionMap_SetUp(map->map.acres_wide, map->map.acres_high, 0, map->map.slot);
     void *cache = (void *) (uintptr_t) BgModels_Get();
     int data = BgModels_Data(cache, source->model);
     Vec3 origin = {0, 0, 0};
@@ -294,7 +294,7 @@ int AcreMap_BuildRoom(AcreMap *map, int room, int heap)
     map->world_wide = data_020ca0ec;
     map->world_high = data_020ca0e8;
     AcreTile_TileOfAcre(&map->tiles_wide, &map->tiles_high, map->acres_wide, map->acres_high, 0, 0);
-    CollisionMap_Setup(map->acres_wide, map->acres_high, 0, map->slot);
+    CollisionMap_SetUp(map->acres_wide, map->acres_high, 0, map->slot);
     Vec3 origin = {0, 0, 0};
     AcreRecord_SetUp((AcreRecord *) (void *) map->acres, source->model, &origin, source->items,
                      (u16 *) (uintptr_t) source->unk_08, source->extra, 0, 0, 0, 0, map->slot);
@@ -314,7 +314,7 @@ CLEAN_AS(func_0204dd78, AcreMap_ReleaseRoomSlot)
  * data_021c9b34. */
 void AcreMap_LoadRoomData(AcreMap *map)
 {
-    CollisionMap_Setup(map->acres_wide, map->acres_high, 0, map->slot);
+    CollisionMap_SetUp(map->acres_wide, map->acres_high, 0, map->slot);
     u8 *acre = (u32) map->acres_wide > 0 && (u32) map->acres_high > 0 ? map->acres : NULL;
     if (acre != NULL) {
         int model = AcreRecord_Model((const AcreRecord *) (void *) acre);
@@ -633,7 +633,7 @@ CLEAN_AS(func_0204e420, AcreMap_ReleaseTownSlot)
 void AcreMap_LoadTownData(AcreMap *map)
 {
     Heap_FreeAll(data_021c9ab0);
-    CollisionMap_Setup(map->acres_wide, map->acres_high, 0, map->slot);
+    CollisionMap_SetUp(map->acres_wide, map->acres_high, 0, map->slot);
     for (int z = 0; z < map->acres_high; z++) {
         for (int x = 0; x < map->acres_wide; x++) {
             u8 *acre = acre_map_acre_at(map, x, z);
@@ -810,7 +810,7 @@ int AcreMap_Build(AcreMap *map, AcreMapSource *sources, const AcreMapSize *size,
         __register_global_object(data_021c80c4, (void *) (uintptr_t) func_020b3ae4, data_021c80d4);
         data_021c80d0 |= 1;
     }
-    CollisionMap_Setup(map->acres_wide, map->acres_high, (CollisionPostSource *) (uintptr_t) data_021c80c4, map->slot);
+    CollisionMap_SetUp(map->acres_wide, map->acres_high, (CollisionPostSource *) (uintptr_t) data_021c80c4, map->slot);
     for (int z = 0; z < map->acres_high; z++) {
         for (int x = 0; x < map->acres_wide; x++) {
             int coordinates[2] = {x, z};

@@ -71,7 +71,7 @@ void CamelTalk_OnAnswer(CamelTalk *talk);
 void CamelTalk_OnLineEnded(CamelTalk *talk);
 void CamelTalk_FirstLine(CamelTalk *talk, CamelTalkLine *out);
 void CamelTalk_Begin(CamelTalk *talk, struct Camel *owner);
-CamelTalk *CamelTalk_DestructDelete(CamelTalk *talk);
+CamelTalk *CamelTalk_Delete(CamelTalk *talk);
 CamelTalk *CamelTalk_Destruct(CamelTalk *talk);
 CamelTalk *CamelTalk_Construct(CamelTalk *talk);
 

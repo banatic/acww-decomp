@@ -3,7 +3,7 @@
  * overlay 139 as overlay group 0x21, that lists the friends who host a game and lets one be
  * picked, as the evidence says:
  *
- * - the list is NitroDWC's friend list (Wfc_GetFriendList): an entry counts when its status is
+ * - the list is NitroDWC's friend list (Wfc_FriendList): an entry counts when its status is
  *   6, a game hosted (as the gate's talk counts them, ov048/gatekeeper_talk.c), and its status
  *   data begins with a character; its byte 0x22 (the game's entries, `num_entry`) shows how
  *   many are in that town, and a town of 4 is full and cannot be picked;
@@ -165,8 +165,8 @@ void HostPicker_EndFrame(HostPicker *self);
 void HostPicker_BeginFrame(HostPicker *self);
 void HostPicker_EndInteractiveFrame(HostPicker *self);
 void HostPicker_BeginInteractiveFrame(HostPicker *self);
-void HostPicker_Teardown(HostPicker *self);
-void HostPicker_Setup(HostPicker *self);
+void HostPicker_TearDown(HostPicker *self);
+void HostPicker_SetUp(HostPicker *self);
 int HostPicker_ScrollWithWipe(HostPicker *self);
 int HostPicker_WipeOut(HostPicker *self);
 void HostPicker_StartWipeOut(HostPicker *self);

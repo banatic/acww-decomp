@@ -90,7 +90,7 @@ void SceneBase_Update(SceneBase *scene);
 void SceneBase_Nothing80(void *scene);
 void SceneBase_Reset(SceneBase *scene);
 void *SceneBase_DestructBody(void *scene);
-void *SceneBase_DestructDelete(SceneBase *scene);
+void *SceneBase_Delete(SceneBase *scene);
 void *SceneBase_Destruct(void *scene);
 SceneBase *SceneBase_Construct(SceneBase *scene);
 

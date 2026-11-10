@@ -168,7 +168,7 @@ XctExchange *XctExchange_Destruct(XctExchange *xct)
 CLEAN_AS(func_ov055_02260420, XctExchange_Destruct)
 
 /* func_ov055_02260478 (vtable slot 0x44): the same, then the object freed. */
-XctExchange *XctExchange_DestructDelete(XctExchange *xct)
+XctExchange *XctExchange_Delete(XctExchange *xct)
 {
     *(const u8 **) (void *) xct->base = data_ov055_02260fd4;
     WaitingLetter_Destruct(&xct->received.letter);
@@ -180,7 +180,7 @@ XctExchange *XctExchange_DestructDelete(XctExchange *xct)
     Heap_FreeAux(xct);
     return xct;
 }
-CLEAN_AS(func_ov055_02260478, XctExchange_DestructDelete)
+CLEAN_AS(func_ov055_02260478, XctExchange_Delete)
 
 /* func_ov055_022604d4: the library slot's overlay ended and overlay 68 loaded into it. */
 void XctExchange_LoadLibrary68(void *unused)

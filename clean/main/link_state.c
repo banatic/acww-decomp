@@ -180,10 +180,10 @@ static void carry_out(LinkState *state, NetSession *session, int slot)
             if (PlayerRecords_Exists(joining + GUEST_RECORD_FIRST) == 0) {
                 hold = 1;
                 if (slot == HOST_SLOT) {
-                    int connected = Net_GetConnectedMask();
+                    int connected = Net_ConnectedMask();
                     u16 bit = (u16) (1u << joining);
                     if (bit != (bit & connected)) {
-                        u32 flags = Session_GetErrorFlags(session);
+                        u32 flags = Session_ErrorFlags(session);
                         if ((flags & SESSION_ERROR_PEER_MISSING) == 0) {
                             Session_SetErrorFlags(session, (int) (flags | SESSION_ERROR_PEER_MISSING));
                         }
@@ -279,7 +279,7 @@ void LinkState_SystemStep(LinkState *state)
             }
             FieldLabel_ShowTableMessage((int) kind);
             LinkState_SetAnswer(state, slot, LINK_STATE_ANSWER_YES);
-            Session_SetSlotMask(session, (u16) Session_GetMemberMask());
+            Session_SetSlotMask(session, (u16) Session_MemberMask());
         } else {
             u32 frames = LinkState_WaitFrames(state) + 1;
             if (frames >= WAIT_LIMIT) {

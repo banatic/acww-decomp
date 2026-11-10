@@ -250,13 +250,13 @@ CLEAN_AS(func_02003a90, ScreenIcon_Draw)
 extern const ScreenIconVtable data_020d72cc;
 
 /* func_02003b24: the deleting destructor. */
-ScreenIcon *ScreenIcon_DestructFree(ScreenIcon *icon)
+ScreenIcon *ScreenIcon_Delete(ScreenIcon *icon)
 {
     ScreenIcon_Destruct(icon);
     Heap_OperatorDeleteB(icon);
     return icon;
 }
-CLEAN_AS(func_02003b24, ScreenIcon_DestructFree)
+CLEAN_AS(func_02003b24, ScreenIcon_Delete)
 
 /* func_02003b50: the destructor, run at exit for data_0213ffb0. QUIRK: it starts the animation
  * again from its first frame before going back to the base class. */

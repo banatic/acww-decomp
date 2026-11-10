@@ -53,7 +53,7 @@ int PlayerActorOps_RequestState7(unsigned short *item, int kind, int next);
 int PlayerActorOps_FinishState(void);
 int PlayerActorOps_RequestState5(void);
 int PlayerActorOps_QueueBelow5(void);
-int PlayerActorOps_Flag0bInState28_2_8(void);
+int PlayerActorOps_Flag0bInState28Or2Or8(void);
 int PlayerActorOps_MayAct(void);
 int PlayerActorOps_QueueBelow6(void);
 int PlayerActorOps_MayActFree(void);

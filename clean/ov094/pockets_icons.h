@@ -27,7 +27,7 @@ u8 PocketsIcons_Palette(PocketsIcons *icons, int icon);
 u8 *PocketsIcons_LoadUnwrapFrame(PocketsIcons *icons, unsigned int frame, unsigned int variant);
 u8 *PocketsIcons_Chars(PocketsIcons *icons, int icon);
 void PocketsIcons_Forget(PocketsIcons *icons);
-PocketsIcons *PocketsIcons_DestructDelete(PocketsIcons *icons);
+PocketsIcons *PocketsIcons_Delete(PocketsIcons *icons);
 void PocketsIcons_Destruct(PocketsIcons *icons);
 void PocketsIcons_Construct(PocketsIcons *icons);
 

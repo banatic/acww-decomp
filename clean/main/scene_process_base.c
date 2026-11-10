@@ -122,7 +122,7 @@ Process *SceneProcessBase_Destruct(Process *process)
 CLEAN_AS(func_020a5254, SceneProcessBase_Destruct)
 
 /* func_020a5274 (vtable slot 17): the destructor, then the process freed. */
-Process *SceneProcessBase_DestructFree(Process *process)
+Process *SceneProcessBase_Delete(Process *process)
 {
     process->vtable = data_020e3c94;
     process->vtable = data_020da13c;
@@ -130,7 +130,7 @@ Process *SceneProcessBase_DestructFree(Process *process)
     Heap_FreeAux(process);
     return process;
 }
-CLEAN_AS(func_020a5274, SceneProcessBase_DestructFree)
+CLEAN_AS(func_020a5274, SceneProcessBase_Delete)
 
 /* func_020a529c: after the root process's execution, for the running scene: once the screen
  * is closed, the scene deletes itself. When the game stopped, scene 0xd4 is asked for first

@@ -164,7 +164,7 @@ int LetterLine_Capacity(void)
 CLEAN_AS(func_0206dd44, LetterLine_Capacity)
 
 /* func_0206dd48 (vtable entry 1) */
-LetterLine *LetterLine_DestructDelete(LetterLine *line)
+LetterLine *LetterLine_Delete(LetterLine *line)
 {
     line->vtable = &data_020df258;
     LetterLine_CloseBox(line);
@@ -172,7 +172,7 @@ LetterLine *LetterLine_DestructDelete(LetterLine *line)
     Heap_OperatorDeleteB(line);
     return line;
 }
-CLEAN_AS(func_0206dd48, LetterLine_DestructDelete)
+CLEAN_AS(func_0206dd48, LetterLine_Delete)
 
 /* func_0206dd6c (vtable entry 0): the box freed, then the base. */
 LetterLine *LetterLine_Destruct(LetterLine *line)

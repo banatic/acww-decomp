@@ -71,7 +71,7 @@ typedef struct TurtleGardensStep {
 
 /* His object. */
 TurtleGardens *TurtleGardens_Destruct(TurtleGardens *turtle);
-TurtleGardens *TurtleGardens_DestructDelete(TurtleGardens *turtle);
+TurtleGardens *TurtleGardens_Delete(TurtleGardens *turtle);
 void TurtleGardens_OnEvent(TurtleGardens *turtle, int code);
 int TurtleGardens_AgreesToTalk(TurtleGardens *turtle);
 void TurtleGardens_SetState(TurtleGardens *turtle, int state);

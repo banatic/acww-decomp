@@ -67,7 +67,7 @@ int SceneProbe_IsBlocked(Vec3 *point)
     SceneProbeGround ground;
     int blocked;
     CollisionGround_Init((CollisionGround *) &ground, point, 0, 0);
-    if (ground.unk_30 != 0 || CollisionGround_GetHeight((const CollisionGround *) &ground, 1) > 0 ||
+    if (ground.unk_30 != 0 || CollisionGround_Height((const CollisionGround *) &ground, 1) > 0 ||
         CollisionQuery_HasPostAtPoint(point) != 0) {
         blocked = 1;
     } else {

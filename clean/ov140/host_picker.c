@@ -96,7 +96,7 @@ static CellLayerSprite *host_sprite_cells(HostPicker *self)
 
 static MenuDispatch *host_parent(HostPicker *self)
 {
-    return (MenuDispatch *) (void *) Process_GetParent((Process *) (void *) self);
+    return (MenuDispatch *) (void *) Process_Parent((Process *) (void *) self);
 }
 
 /* The cursor sprite's update through its class (vtable slot 3, Glider_Update for the base). */
@@ -236,7 +236,7 @@ CLEAN_AS(func_ov140_0229a12c, HostPicker_TakeLabel)
 unsigned int HostPicker_FriendList(HostPicker *self)
 {
     (void) self;
-    return (unsigned int) (uintptr_t) Wfc_GetFriendList();
+    return (unsigned int) (uintptr_t) Wfc_FriendList();
 }
 CLEAN_AS(func_ov140_0229a15c, HostPicker_FriendList)
 
@@ -844,7 +844,7 @@ void HostPicker_BeginFrame(HostPicker *self)
 {
     LayerTask_End(&self->screen_task);
     ButtonPanel_CloseTexts(&self->panel);
-    ResRows_Teardown(&self->rows);
+    ResRows_TearDown(&self->rows);
     HostPicker_CloseLabels(self);
 }
 CLEAN_AS(func_ov140_0229ac34, HostPicker_BeginFrame)
@@ -866,19 +866,19 @@ CLEAN_AS(func_ov140_0229ac70, HostPicker_BeginInteractiveFrame)
 
 /* func_ov140_0229ac8c: the members torn down: the panel's texts closed, the rows ended, the
  * screen's task ended and the labels closed. */
-void HostPicker_Teardown(HostPicker *self)
+void HostPicker_TearDown(HostPicker *self)
 {
     ButtonPanel_CloseTexts(&self->panel);
     ResRows_End(&self->rows);
     LayerTask_End(&self->screen_task);
     HostPicker_CloseLabels(self);
 }
-CLEAN_AS(func_ov140_0229ac8c, HostPicker_Teardown)
+CLEAN_AS(func_ov140_0229ac8c, HostPicker_TearDown)
 
 /* func_ov140_0229acc0: the setup: no flags, the rows opened on layer 6 (message 0x7f), every
  * row and place empty, nothing selected, the cancel button lit and the next page button not,
  * the cursor on the first row of the first page. */
-void HostPicker_Setup(HostPicker *self)
+void HostPicker_SetUp(HostPicker *self)
 {
     self->flags = 0;
     ResRows_Open(&self->rows, 6, 0x7f);
@@ -896,7 +896,7 @@ void HostPicker_Setup(HostPicker *self)
     self->page = 0;
     self->last_page = 0;
 }
-CLEAN_AS(func_ov140_0229acc0, HostPicker_Setup)
+CLEAN_AS(func_ov140_0229acc0, HostPicker_SetUp)
 
 /* func_ov140_0229ad4c: layer 6 scrolled with the wipe, and the wipe's y kept and answered. */
 int HostPicker_ScrollWithWipe(HostPicker *self)
@@ -1111,7 +1111,7 @@ CLEAN_AS(func_ov140_0229b038, HostPicker_Draw)
 int HostPicker_Close(HostPicker *self)
 {
     MenuDispatch_ChildClosed(host_parent(self));
-    HostPicker_Teardown(self);
+    HostPicker_TearDown(self);
     return 1;
 }
 CLEAN_AS(func_ov140_0229b22c, HostPicker_Close)
@@ -1120,7 +1120,7 @@ CLEAN_AS(func_ov140_0229b22c, HostPicker_Close)
  * and phase 0. Answers 1. */
 int HostPicker_Start(HostPicker *self)
 {
-    HostPicker_Setup(self);
+    HostPicker_SetUp(self);
     self->base.state = HOST_PICKER_STATE_START_SETUP;
     MenuScene_SetPhase(host_scene(self), 0);
     return 1;

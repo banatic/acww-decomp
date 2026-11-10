@@ -66,7 +66,7 @@ void WalrusTalk_RunAfterCommand(WalrusTalk *talk);
 int WalrusTalk_IsOfferable(u16 *item, int state);
 
 /* Its life. */
-WalrusTalk *WalrusTalk_DestructDelete(WalrusTalk *talk);
+WalrusTalk *WalrusTalk_Delete(WalrusTalk *talk);
 WalrusTalk *WalrusTalk_Destruct(WalrusTalk *talk);
 WalrusTalk *WalrusTalk_Construct(WalrusTalk *talk);
 

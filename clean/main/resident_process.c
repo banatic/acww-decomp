@@ -36,7 +36,7 @@ Process *ResidentProcess_Destruct(Process *self)
 CLEAN_AS(func_0209d9d4, ResidentProcess_Destruct)
 
 /* func_0209d9f4: the destructor, then the object freed. */
-Process *ResidentProcess_DestructFree(Process *self)
+Process *ResidentProcess_DestructDelete(Process *self)
 {
     self->vtable = data_020e360c;
     self->vtable = data_020da13c;
@@ -44,7 +44,7 @@ Process *ResidentProcess_DestructFree(Process *self)
     Heap_FreeAux(self);
     return self;
 }
-CLEAN_AS(func_0209d9f4, ResidentProcess_DestructFree)
+CLEAN_AS(func_0209d9f4, ResidentProcess_DestructDelete)
 
 /* func_0209da1c (vtable slot 9): nothing to draw; done. */
 int ResidentProcess_Draw(void)

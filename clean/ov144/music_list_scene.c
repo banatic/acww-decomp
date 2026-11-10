@@ -369,7 +369,7 @@ CLEAN_AS(func_ov144_0229ac90, MusicList_LoadScreens)
 
 /* func_ov144_0229ad24: the sub screen's BG mode 0; its BG3 at priority 1, BG1 and BG0 at 2, all
  * three with BG control (0, 0, 0). */
-void MusicList_SetupLayers(void)
+void MusicList_SetUpLayers(void)
 {
     DisplayShadow_SetSubBgMode(0);
     DisplayLayer_SetPriority(LAYER_SUB_BG3, 1);
@@ -379,7 +379,7 @@ void MusicList_SetupLayers(void)
     DisplayLayer_SetPriority(LAYER_SUB_BG0, 2);
     DisplayLayer_SetBgControl(LAYER_SUB_BG0, 0, 0, 0);
 }
-CLEAN_AS(func_ov144_0229ad24, MusicList_SetupLayers)
+CLEAN_AS(func_ov144_0229ad24, MusicList_SetUpLayers)
 
 /* func_ov144_0229ad70: the frame's end: a step of the scroll, the screens sent on, the knob's
  * release settled. */
@@ -431,7 +431,7 @@ CLEAN_AS(func_ov144_0229adf0, MusicList_Release)
 
 /* func_ov144_0229ae24: the scene's setup: no flags, no song shown by the labels, the songs
  * gathered, the playing row found (and chosen), the knob at rest. */
-void MusicList_Setup(MusicList *self)
+void MusicList_SetUp(MusicList *self)
 {
     self->flags = 0;
     for (int i = 0; i < MUSIC_LIST_ROWS; i++) {
@@ -441,7 +441,7 @@ void MusicList_Setup(MusicList *self)
     MusicList_FindPlaying(self);
     PushButton_ShowUp(&self->knob_button);
 }
-CLEAN_AS(func_ov144_0229ae24, MusicList_Setup)
+CLEAN_AS(func_ov144_0229ae24, MusicList_SetUp)
 
 /* func_ov144_0229ae64: the wipe's place applied: the sub screen's BG3 at (0, 0) and BG1 at
  * (0, 0x18 less the scroll) moved with it, its y kept, the knob put by it. */
@@ -474,7 +474,7 @@ CLEAN_AS(func_ov144_0229aea4, MusicList_WipeOut)
  * screen after the store button, else the close; the wipe out started (state 3). */
 void MusicList_StartClose(MusicList *self)
 {
-    MenuDispatch *parent = (MenuDispatch *) (void *) Process_GetParent(music_list_process(self));
+    MenuDispatch *parent = (MenuDispatch *) (void *) Process_Parent(music_list_process(self));
     if (MusicList_TestFlags(self, MUSIC_LIST_FLAG_STORE)) {
         MenuDispatch_SetMode(parent, MUSIC_LIST_PARENT_STORE, 1);
     } else {
@@ -503,9 +503,9 @@ CLEAN_AS(func_ov144_0229af28, MusicList_WipeIn)
  * now on, the panel's layout 5 with message 0x65; state 1. */
 void MusicList_Open(MusicList *self)
 {
-    MusicList_SetupLayers();
+    MusicList_SetUpLayers();
     MusicList_LoadScreens(self);
-    MusicList_SetupScroll(self);
+    MusicList_SetUpScroll(self);
     MusicList_LoadObjGraphics(self);
     MenuScene_StartWipeCoveredOnWindow2(music_list_scene(self), MUSIC_LIST_WIPE_LAYERS, 4, 0, MUSIC_LIST_WIPE_MARGIN);
     DisplayLayer_Show(LAYER_SUB_BG3);
@@ -632,7 +632,7 @@ CLEAN_AS(func_ov144_0229b1c4, MusicList_Draw)
  * members hold let go. Answers 1. */
 int MusicList_Close(MusicList *self)
 {
-    MenuDispatch_ChildClosed((MenuDispatch *) (void *) Process_GetParent(music_list_process(self)));
+    MenuDispatch_ChildClosed((MenuDispatch *) (void *) Process_Parent(music_list_process(self)));
     MusicList_Release(self);
     return 1;
 }
@@ -642,7 +642,7 @@ CLEAN_AS(func_ov144_0229b254, MusicList_Close)
  * the base's wait (phase 0). Answers 1. */
 int MusicList_Start(MusicList *self)
 {
-    MusicList_Setup(self);
+    MusicList_SetUp(self);
     self->base.state = MUSIC_LIST_STATE_OPEN;
     MenuScene_SetPhase(music_list_scene(self), MUSIC_LIST_PHASE_WAIT);
     return 1;

@@ -208,7 +208,7 @@ CLEAN_AS(func_0203e750, EventKind_StartSceneObject)
 /* func_0203e7d4 (start): once func_02095d2c agrees, flag 4 set. */
 int EventKind_StartKind11(void)
 {
-    if (!PlayerActorOps_Flag0bInState28_2_8()) {
+    if (!PlayerActorOps_Flag0bInState28Or2Or8()) {
         return 0;
     }
     EventQueue_SetFlag4();

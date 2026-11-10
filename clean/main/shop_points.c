@@ -130,8 +130,8 @@ void ShopPoints_Clear(u16 *count)
 CLEAN_AS(func_020adf34, ShopPoints_Clear)
 
 /* func_020adf3c */
-void ShopPoints_DoNothing(void) {}
-CLEAN_AS(func_020adf3c, ShopPoints_DoNothing)
+void ShopPoints_Nothing(void) {}
+CLEAN_AS(func_020adf3c, ShopPoints_Nothing)
 
 /* func_020adf40: the constructor: the count starts at 0. Returns the count's address. */
 u32 ShopPoints_Construct(u32 count)
@@ -165,7 +165,7 @@ CLEAN_AS(func_020adf5c, ShopPoints_ResetB)
 /* func_020adf64: the destructor, which does nothing. Returns the count's address. */
 u32 ShopPoints_Destruct(u32 count)
 {
-    ShopPoints_DoNothing();
+    ShopPoints_Nothing();
     return count;
 }
 CLEAN_AS(func_020adf64, ShopPoints_Destruct)

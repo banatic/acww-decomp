@@ -91,7 +91,7 @@ CLEAN_AS(func_020b6818, SceneKinds_HouseRoomIndex)
 
 /* func_020b682c: the running scene's setup end (SceneSetup.end), as an address; 0 between
  * scenes. */
-int SceneKinds_SetupEnd(void)
+int SceneKinds_SetUpEnd(void)
 {
     const SceneSetup *setup = data_021f6948;
     if (setup == NULL) {
@@ -99,7 +99,7 @@ int SceneKinds_SetupEnd(void)
     }
     return (int) (uintptr_t) setup->end;
 }
-CLEAN_AS(func_020b682c, SceneKinds_SetupEnd)
+CLEAN_AS(func_020b682c, SceneKinds_SetUpEnd)
 
 /* func_020b6840: the current scene's sound kind (data_020d2150), which the sound code picks
  * its settings by. 0 when no scene process runs, when the scene is not one of the scenes

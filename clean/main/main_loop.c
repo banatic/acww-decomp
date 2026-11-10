@@ -50,8 +50,8 @@ void MainLoop_Run(void)
     NetSession *session = data_020ccf94;
     for (;;) {
         Wfc_Process();
-        Session_SetShownErrorFlags(session, (int) Session_GetErrorFlags(session));
-        u32 errors = Session_GetShownErrorFlags(session);
+        Session_SetShownErrorFlags(session, (int) Session_ErrorFlags(session));
+        u32 errors = Session_ShownErrorFlags(session);
         MainLoop_BeginFrame((int) errors);
         MainLoop_BeforeProcesses();
         int trouble = errors != 0;
@@ -154,5 +154,5 @@ void MainLoop_WaitVBlank(void)
 CLEAN_AS(func_0206e6b0, MainLoop_WaitVBlank)
 
 /* func_0206e6c0: called once at start-up (Startup_InitGame); does nothing. */
-void MainLoop_StartupNothing(void) {}
-CLEAN_AS(func_0206e6c0, MainLoop_StartupNothing)
+void MainLoop_StartUpNothing(void) {}
+CLEAN_AS(func_0206e6c0, MainLoop_StartUpNothing)

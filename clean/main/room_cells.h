@@ -36,19 +36,19 @@ typedef struct RoomCells {
 
 int RoomCells_ClearStep(int x, int y, int scene);
 int RoomCells_SetStep(int x, int y, int step, int scene);
-int RoomCells_GetStep(int x, int y, int scene);
+int RoomCells_Step(int x, int y, int scene);
 void RoomCells_SetSwitch(int x, int y, int layer, int on, u8 scene);
-int RoomCells_GetSwitch(int x, int y, int layer, int scene);
+int RoomCells_Switch(int x, int y, int layer, int scene);
 RoomCells *RoomCells_ForScene(int scene);
 int RoomCells_ClearStepIn(RoomCells *cells, int x, int y);
 int RoomCells_SetStepIn(RoomCells *cells, int x, int y, int step);
-int RoomCells_GetStepIn(RoomCells *cells, int x, int y);
+int RoomCells_StepIn(RoomCells *cells, int x, int y);
 int RoomCells_ResetByIndex(u8 index);
 int RoomCells_ResetScene(int scene);
 void RoomCells_ResetAll(void);
 void RoomCells_ResetOther(void);
 void RoomCells_SetSwitchIn(RoomCells *cells, int x, int y, int layer, u8 on);
-int RoomCells_GetSwitchIn(RoomCells *cells, int x, int y, int layer);
+int RoomCells_SwitchIn(RoomCells *cells, int x, int y, int layer);
 void RoomCells_Reset(RoomCells *cells);
 RoomCells *RoomCells_Destruct(RoomCells *cells);
 

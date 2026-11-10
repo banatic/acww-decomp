@@ -42,7 +42,7 @@ int TownObjectActor_CanRun(TownObjectActor *actor);
 int TownObjectActor_Init(TownObjectActor *actor);
 int TownObjectActor_Slot70(TownObjectActor *actor);
 void *TownObjectActor_Destruct(TownObjectActor *actor);
-TownObjectActor *TownObjectActor_DestructDelete(TownObjectActor *actor);
+TownObjectActor *TownObjectActor_Delete(TownObjectActor *actor);
 void *TownObjectActor_DestructComplete(TownObjectActor *actor);
 void *TownObjectActor_Construct(TownObjectActor *actor);
 void *TownObjectActor_ConstructBase(TownObjectActor *actor);
@@ -50,7 +50,7 @@ void TownObjectActor_SetNodeHook(G3dRenderState *state);
 void TownObjectActor_AfterNode(G3dRenderState *state);
 void TownObjectActor_Slot60(TownObjectActor *actor);
 void TownObjectActor_Create(void);
-TownObjectActor *TownObjectActor_ReceiverDestructDelete(void *receiver);
+TownObjectActor *TownObjectActor_ReceiverDelete(void *receiver);
 void *TownObjectActor_ReceiverDestructComplete(void *receiver);
 
 #endif

@@ -68,7 +68,7 @@ static MenuScene *catalog_base(OrderCatalog *self)
 
 static MenuDispatch *catalog_parent(OrderCatalog *self)
 {
-    return (MenuDispatch *) (void *) Process_GetParent((Process *) (void *) self);
+    return (MenuDispatch *) (void *) Process_Parent((Process *) (void *) self);
 }
 
 /* A member's virtual function (slot 2 draws, slot 3 updates). */
@@ -188,7 +188,7 @@ CLEAN_AS(func_ov142_0229ba00, OrderCatalog_BeginInteractiveFrame)
 
 /* func_ov142_0229ba18: the members torn down: the labels and the panel's texts closed, the four
  * loads ended. */
-void OrderCatalog_Teardown(OrderCatalog *self)
+void OrderCatalog_TearDown(OrderCatalog *self)
 {
     OrderCatalog_CloseLabels(self);
     ButtonPanel_CloseTexts(&self->panel);
@@ -196,12 +196,12 @@ void OrderCatalog_Teardown(OrderCatalog *self)
         LayerTask_End(&self->tasks[i]);
     }
 }
-CLEAN_AS(func_ov142_0229ba18, OrderCatalog_Teardown)
+CLEAN_AS(func_ov142_0229ba18, OrderCatalog_TearDown)
 
 /* func_ov142_0229ba64: the setup: no counts, no items shown, no flags, no category shown, the
  * rows not faded; nothing picked; the nine lists collected from the player's item record; the
  * thumb at rest. */
-void OrderCatalog_Setup(OrderCatalog *self)
+void OrderCatalog_SetUp(OrderCatalog *self)
 {
     for (int i = 0; i < ORDER_CATALOG_CATEGORIES; i++) {
         self->counts[i] = 0;
@@ -226,7 +226,7 @@ void OrderCatalog_Setup(OrderCatalog *self)
     OrderCatalog_ListFossils(self);
     PushButton_ShowUp(&self->thumb_button);
 }
-CLEAN_AS(func_ov142_0229ba64, OrderCatalog_Setup)
+CLEAN_AS(func_ov142_0229ba64, OrderCatalog_SetUp)
 
 /* func_ov142_0229bb08: layer 6 scrolled with the wipe, layer 4 with it and the list's scroll;
  * the wipe's y kept (for the draw and the panel) and the thumb placed. */
@@ -471,7 +471,7 @@ CLEAN_AS(func_ov142_0229bf6c, OrderCatalog_Draw)
 int OrderCatalog_Close(OrderCatalog *self)
 {
     MenuDispatch_ChildClosed(catalog_parent(self));
-    OrderCatalog_Teardown(self);
+    OrderCatalog_TearDown(self);
     return 1;
 }
 CLEAN_AS(func_ov142_0229c1cc, OrderCatalog_Close)
@@ -480,7 +480,7 @@ CLEAN_AS(func_ov142_0229c1cc, OrderCatalog_Close)
  * and phase 0. Answers 1. */
 int OrderCatalog_Start(OrderCatalog *self)
 {
-    OrderCatalog_Setup(self);
+    OrderCatalog_SetUp(self);
     self->base.state = ORDER_CATALOG_STATE_START;
     MenuScene_SetPhase(catalog_base(self), 0);
     return 1;

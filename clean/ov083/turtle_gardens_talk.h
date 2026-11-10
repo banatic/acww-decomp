@@ -41,7 +41,7 @@ typedef struct TurtleGardensTalkStart {
 /* The class. */
 TurtleGardensTalk *TurtleGardensTalk_Construct(TurtleGardensTalk *talk);
 TurtleGardensTalk *TurtleGardensTalk_Destruct(TurtleGardensTalk *talk);
-TurtleGardensTalk *TurtleGardensTalk_DestructDelete(TurtleGardensTalk *talk);
+TurtleGardensTalk *TurtleGardensTalk_Delete(TurtleGardensTalk *talk);
 void TurtleGardensTalk_Begin(TurtleGardensTalk *talk, TurtleGardens *owner);
 
 /* Its lines. */

@@ -117,7 +117,7 @@ void SessionRecord_Fill15(u8 *record);
 void SessionRecord_Fill14(u8 *record);
 void SessionRecord_Fill13(u8 *record);
 void SessionRecord_Fill12(u8 *record);
-u16 SessionRecord_GetOffset(u16 id);
-u8 SessionRecord_GetSize(u32 id);
+u16 SessionRecord_Offset(u16 id);
+u8 SessionRecord_Size(u32 id);
 
 #endif

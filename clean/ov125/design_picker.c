@@ -97,7 +97,7 @@ static CellLayerSprite *picker_sprite_cells(DesignPicker *self)
 
 static MenuDispatch *picker_parent(DesignPicker *self)
 {
-    return (MenuDispatch *) (void *) Process_GetParent((Process *) (void *) self);
+    return (MenuDispatch *) (void *) Process_Parent((Process *) (void *) self);
 }
 
 /* The cursor sprite's update through its class (vtable slot 3, Glider_Update for the base). */
@@ -869,18 +869,18 @@ CLEAN_AS(func_ov125_022a04c8, DesignPicker_BeginInteractiveFrame)
 
 /* func_ov125_022a04e4: the members torn down: the choice dismissed, the title's and the panel's
  * texts closed. */
-void DesignPicker_Teardown(DesignPicker *self)
+void DesignPicker_TearDown(DesignPicker *self)
 {
     PagedChoice_Dismiss(picker_choice(self));
     HanPanel_CloseTexts(&self->title);
     ButtonPanel_CloseTexts(&self->panel);
 }
-CLEAN_AS(func_ov125_022a04e4, DesignPicker_Teardown)
+CLEAN_AS(func_ov125_022a04e4, DesignPicker_TearDown)
 
 /* func_ov125_022a0510: the setup: no flags, the choice on layer 3 at priority 1 (its own
  * screen), no design shown nor picked, the cursor at the first design, main told nothing is
  * picked yet (GroupParams_SetC4C(0)) and the popup's draw value 2. */
-void DesignPicker_Setup(DesignPicker *self)
+void DesignPicker_SetUp(DesignPicker *self)
 {
     self->flags = 0;
     PagedChoice_Init(picker_choice(self), 3, 1, NULL);
@@ -890,7 +890,7 @@ void DesignPicker_Setup(DesignPicker *self)
     GroupParams_SetC4C(0);
     Popup_SetPriority(&self->popup, 2);
 }
-CLEAN_AS(func_ov125_022a0510, DesignPicker_Setup)
+CLEAN_AS(func_ov125_022a0510, DesignPicker_SetUp)
 
 /* func_ov125_022a0564: layers 6 and 4 scrolled with the wipe, and the wipe's y kept and
  * answered. */
@@ -1094,7 +1094,7 @@ CLEAN_AS(func_ov125_022a089c, DesignPicker_Draw)
 int DesignPicker_Close(DesignPicker *self)
 {
     MenuDispatch_ChildClosed(picker_parent(self));
-    DesignPicker_Teardown(self);
+    DesignPicker_TearDown(self);
     return 1;
 }
 CLEAN_AS(func_ov125_022a0968, DesignPicker_Close)
@@ -1103,7 +1103,7 @@ CLEAN_AS(func_ov125_022a0968, DesignPicker_Close)
  * and phase 0. Answers 1. */
 int DesignPicker_Start(DesignPicker *self)
 {
-    DesignPicker_Setup(self);
+    DesignPicker_SetUp(self);
     self->base.state = DESIGN_PICKER_STATE_START_SETUP;
     MenuScene_SetPhase(picker_scene(self), 0);
     return 1;

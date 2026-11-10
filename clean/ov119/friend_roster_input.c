@@ -93,7 +93,7 @@ static PagedChoice *fr_choice(FriendRoster *self)
 
 static MenuTabs *fr_menu(FriendRoster *self)
 {
-    return (MenuTabs *) (void *) Process_GetParent((Process *) (void *) self);
+    return (MenuTabs *) (void *) Process_Parent((Process *) (void *) self);
 }
 
 static CellLayerSprite *fr_sprite_cells(FriendRoster *self)
@@ -290,24 +290,24 @@ void FriendRoster_AddPlayer(FriendRoster *self)
         return;
     }
     u8 *record = PlayerRecords_OfPlayer(self->action - FRIEND_ROSTER_ACTION_PLAYER);
-    if (FriendRoster_HasFriend(self, WifiAccount_GetFriendData(PlayerRecord_WifiAccount(record)))) {
+    if (FriendRoster_HasFriend(self, WifiAccount_FriendData(PlayerRecord_WifiAccount(record)))) {
         FriendRoster_ShowError(self, FRIEND_ROSTER_ERROR_KNOWN);
         return;
     }
     WifiFriend *friends = FriendRoster_Friends(self);
     DesignCreator *player = PlayerRecord_Player(record);
     WifiFriend *entry = &friends[index];
-    WifiFriendData *data = WifiFriend_GetFriendData(entry);
-    WifiFriendData_Copy(data, WifiAccount_GetFriendData(PlayerRecord_WifiAccount(record)));
+    WifiFriendData *data = WifiFriend_FriendData(entry);
+    WifiFriendData_Copy(data, WifiAccount_FriendData(PlayerRecord_WifiAccount(record)));
     const u16 *name = (const u16 *) (uintptr_t) PlayerId_Name((int) (uintptr_t) player);
-    TextString_CopyChars(name, WifiFriend_GetName(entry), WIFI_FRIEND_TEXT_LENGTH);
+    TextString_CopyChars(name, WifiFriend_Name(entry), WIFI_FRIEND_TEXT_LENGTH);
     const u16 *town = (const u16 *) (uintptr_t) TownName_Name((int) (uintptr_t) PlayerId_Town(player));
-    TextString_CopyChars(town, WifiFriend_GetTown(entry), WIFI_FRIEND_TEXT_LENGTH);
+    TextString_CopyChars(town, WifiFriend_Town(entry), WIFI_FRIEND_TEXT_LENGTH);
     MenuTabs_MarkRosterChanged(fr_menu(self));
     self->friend_index = (u8) index;
     if (FriendRoster_IsOnline(self)) {
         WifiFriend *added = &friends[self->friend_index];
-        if (!Wfc_SetFriend(self->friend_index, WifiFriendData_GetData(WifiFriend_GetFriendData(added)))) {
+        if (!Wfc_SetFriend(self->friend_index, WifiFriendData_Data(WifiFriend_FriendData(added)))) {
             MenuScene_SetSubState(fr_scene(self), FRIEND_ROSTER_SUB_RETRY_SET);
             return;
         }
@@ -386,7 +386,7 @@ void FriendRoster_OpenFriendChoice(FriendRoster *self)
     ChoiceEntries_Add(&self->entries, FRIEND_ROSTER_TEXT_RENAME_TOWN, FRIEND_ROSTER_ACTION_RENAME_TOWN);
     WifiFriend *entry = FriendRoster_FriendAtCursor(self);
     if (entry != NULL) {
-        WifiFriendData *data = WifiFriend_GetFriendData(entry);
+        WifiFriendData *data = WifiFriend_FriendData(entry);
         if (WifiFriendData_IsNotFriendKey(data) == 0) {
             ChoiceEntries_Add(&self->entries, FRIEND_ROSTER_TEXT_CHANGE_CODE, FRIEND_ROSTER_ACTION_CHANGE_CODE);
         }
@@ -752,7 +752,7 @@ CLEAN_AS(func_ov119_0229bc48, FriendRoster_RetryDeleteFriend)
 void FriendRoster_RetrySetFriend(FriendRoster *self)
 {
     WifiFriend *friends = FriendRoster_Friends(self);
-    WifiFriendData *data = WifiFriendData_GetData(WifiFriend_GetFriendData(&friends[self->friend_index]));
+    WifiFriendData *data = WifiFriendData_Data(WifiFriend_FriendData(&friends[self->friend_index]));
     if (Wfc_SetFriend(self->friend_index, data)) {
         FriendRoster_Refresh(self, self->friend_index);
     }

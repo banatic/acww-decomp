@@ -94,7 +94,7 @@ CLEAN_AS(func_02050948, BackupCard_Finish)
  * and waited for, at most about 0.1 s; then its lock is given back.
  * HW: the wait reads the tick counter.
  * QUIRK: the record keeps the lock id it gave back. */
-void BackupCard_Shutdown(void)
+void BackupCard_ShutDown(void)
 {
     if (BackupCard_Status(&data_021c8188) != BACKUP_CARD_BUSY) {
         return;
@@ -108,7 +108,7 @@ void BackupCard_Shutdown(void)
         OS_ReleaseLockID((u16) data_021c8188.lock);
     }
 }
-CLEAN_AS(func_020508a0, BackupCard_Shutdown)
+CLEAN_AS(func_020508a0, BackupCard_ShutDown)
 
 /* Takes a lock for a request and locks the save memory with it; 0 when there is no lock. */
 static int take_lock(BackupCard *card)

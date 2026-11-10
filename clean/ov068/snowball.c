@@ -329,7 +329,7 @@ void Snowball_UpdateJumpOn(Snowman *ball)
 CLEAN_AS(func_ov068_0226ee54, Snowball_UpdateJumpOn)
 
 /* func_ov068_0226ef04 (entry of state 8): the head's place is the middle of the other loose
- * ball's tile, at the height a snowman's head sits on a body of that size (as Snowman_Setup);
+ * ball's tile, at the height a snowman's head sits on a body of that size (as Snowman_SetUp);
  * it jumps (speed -0x8f2) and steps there in SNOWBALL_MOVE_FRAMES frames, playing sound 0x81e.
  * REQUIRES: another loose ball exists (func_ov003_02236128 finds the body it was put on). */
 int Snowball_EnterJumpOn(Snowman *ball)
@@ -689,7 +689,7 @@ static int ball_build_snowman(Snowman *ball, Snowman *body, AcreMap *map)
 /* func_ov068_0226f854 (update of SNOWMAN_STATE_LOOSE). A ball pushed this frame while both
  * machines are idle, moving and of a pushable size may be built into a snowman with the first
  * other loose ball (ball_build_snowman); otherwise it falls and moves (Snowball_Fall), and:
- * - where the ground under it lies below 0 (CollisionGround_GetHeight), it falls (state 1);
+ * - where the ground under it lies below 0 (CollisionGround_Height), it falls (state 1);
  * - on ground of attribute 0x16 or 0x17 of the second set (unk_30 1), it slides (state 5);
  * - on a tile holding item 0xfc or 0xfd, within 1.0 of the tile's middle, it sinks (state 4),
  *   unless the other loose ball is already sinking (idle, state 4) and the two touch;
@@ -715,7 +715,7 @@ void Snowball_UpdateLoose(Snowman *ball)
     Snowball_Fall(ball);
     CollisionGround ground;
     CollisionGround_Init(&ground, &ball->position, 0, 0);
-    if (CollisionGround_GetHeight(&ground, 0) < 0) {
+    if (CollisionGround_Height(&ground, 0) < 0) {
         Snowman_SetState(ball, SNOWBALL_STATE_FALL);
         CollisionGround_Destroy(&ground);
         return;

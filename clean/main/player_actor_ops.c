@@ -686,7 +686,7 @@ CLEAN_AS(func_02095d04, PlayerActorOps_QueueBelow5)
 
 /* func_02095d2c: whether this console's actor has flag 0xb in state 0x28, 2 or 8, while flag 8
  * of the event queue and the actor's flag 0x13 are clear. */
-int PlayerActorOps_Flag0bInState28_2_8(void)
+int PlayerActorOps_Flag0bInState28Or2Or8(void)
 {
     FieldActor *actor = SessionPlayers_FieldActor(PLAYER_ACTOR_OPS_OWN);
     if (actor == NULL) {
@@ -701,7 +701,7 @@ int PlayerActorOps_Flag0bInState28_2_8(void)
     }
     return state == 0x28 || state == 2 || state == 8;
 }
-CLEAN_AS(func_02095d2c, PlayerActorOps_Flag0bInState28_2_8)
+CLEAN_AS(func_02095d2c, PlayerActorOps_Flag0bInState28Or2Or8)
 
 /* func_02095d84: whether this console's actor may act: 1 with flag 0xb in state 0x28 or 0x7c;
  * else without flag 0x13 and with nothing of priority 5 or more queued. */

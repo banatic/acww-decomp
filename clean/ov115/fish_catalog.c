@@ -66,7 +66,7 @@ extern const MemberPointer data_ov115_0229e890; /* FishCatalog_FinishRelease */
 extern const MemberPointer data_ov115_0229e850; /* FishCatalog_StartScrollByKeys */
 extern const MemberPointer data_ov115_0229e848; /* FishCatalog_ScrollWhileHeld */
 extern const MemberPointer data_ov115_0229e8a0; /* FishCatalog_EndScrollByKeys */
-extern const MemberPointer data_ov115_0229e840; /* FishCatalog_Setup */
+extern const MemberPointer data_ov115_0229e840; /* FishCatalog_SetUp */
 extern const MemberPointer data_ov115_0229e8a8; /* FishCatalog_WipeIn */
 extern const MemberPointer data_ov115_0229e868; /* FishCatalog_StartWipeOut */
 extern const MemberPointer data_ov115_0229e898; /* FishCatalog_WipeOut */
@@ -78,7 +78,7 @@ static MenuScene *scene_of(CatalogScene *self)
 
 static MenuTabs *menu_of(CatalogScene *self)
 {
-    return (MenuTabs *) (void *) Process_GetParent((Process *) (void *) self);
+    return (MenuTabs *) (void *) Process_Parent((Process *) (void *) self);
 }
 
 /* The cursor sprite's update through its class (vtable slot 3, Glider_Update for the base),
@@ -489,12 +489,12 @@ int FishCatalog_BeginInteractiveFrame(CatalogScene *self)
 CLEAN_AS(func_ov115_0229e354, FishCatalog_BeginInteractiveFrame)
 
 /* func_ov115_0229e36c: the list's end, the label's box closed. */
-void FishCatalog_Teardown(CatalogScene *self)
+void FishCatalog_TearDown(CatalogScene *self)
 {
-    CatalogList_Teardown(&self->list);
+    CatalogList_TearDown(&self->list);
     FishCatalog_CloseLabel(self);
 }
-CLEAN_AS(func_ov115_0229e36c, FishCatalog_Teardown)
+CLEAN_AS(func_ov115_0229e36c, FishCatalog_TearDown)
 
 /* func_ov115_0229e384: no flags; the list started on the three layers with the fish. */
 void FishCatalog_Init(CatalogScene *self)
@@ -556,7 +556,7 @@ CLEAN_AS(func_ov115_0229e454, FishCatalog_WipeIn)
 /* func_ov115_0229e47c (state 0): the layers set up, the list's files loaded, the wipe in
  * started covered on window 2 (layers 0xb, margin 0x30), layers 3 and 6 shown, the scene
  * drawn; then state 1. */
-void FishCatalog_Setup(CatalogScene *self)
+void FishCatalog_SetUp(CatalogScene *self)
 {
     FishCatalog_SetUpLayers();
     FishCatalog_LoadBackground(self);
@@ -568,7 +568,7 @@ void FishCatalog_Setup(CatalogScene *self)
     FishCatalog_ScrollLayers(self);
     MenuScene_SetState(scene_of(self), CATALOG_SCENE_STATE_WIPE_IN);
 }
-CLEAN_AS(func_ov115_0229e47c, FishCatalog_Setup)
+CLEAN_AS(func_ov115_0229e47c, FishCatalog_SetUp)
 
 /* func_ov115_0229e4cc: a switch to `tab` of the menu (MenuTabs_SelectTab of the parent), unless
  * it is none (-1) or this tab: then the scene wipes out (state 2, phase 1). Answers whether it
@@ -713,7 +713,7 @@ CLEAN_AS(func_ov115_0229e748, FishCatalog_Draw)
 int FishCatalog_End(CatalogScene *self)
 {
     MenuTabs_ChildClosed(menu_of(self));
-    FishCatalog_Teardown(self);
+    FishCatalog_TearDown(self);
     return 1;
 }
 CLEAN_AS(func_ov115_0229e7a4, FishCatalog_End)

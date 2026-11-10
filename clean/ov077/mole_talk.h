@@ -58,7 +58,7 @@ void MoleTalk_OnTag(MoleTalk *talk, int tag);
 void MoleTalk_Begin(MoleTalk *talk, Mole *owner);
 void MoleTalk_OnClose(MoleTalk *talk);
 void MoleTalk_OnGoOn(MoleTalk *talk);
-MoleTalk *MoleTalk_DestructDelete(MoleTalk *talk);
+MoleTalk *MoleTalk_Delete(MoleTalk *talk);
 MoleTalk *MoleTalk_Destruct(MoleTalk *talk);
 MoleTalk *MoleTalk_Construct(MoleTalk *talk);
 void MoleTalk_AfterPhrase(MoleTalk *talk);

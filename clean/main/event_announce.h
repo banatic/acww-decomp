@@ -93,7 +93,7 @@ void EventAnnounce_Reset(void);
 int EventAnnounceProcess_Delete(void);
 int EventAnnounceProcess_Execute(EventAnnounceProcess *process);
 int EventAnnounceProcess_Create(void);
-EventAnnounceProcess *EventAnnounceProcess_DestructFree(EventAnnounceProcess *process);
+EventAnnounceProcess *EventAnnounceProcess_DestructDelete(EventAnnounceProcess *process);
 EventAnnounceProcess *EventAnnounceProcess_Destruct(EventAnnounceProcess *process);
 EventAnnounceProcess *EventAnnounceProcess_Construct(EventAnnounceProcess *process);
 void EventAnnounceProcess_New(void);

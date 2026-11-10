@@ -38,14 +38,14 @@ int Wide10Text_Capacity(void)
 CLEAN_AS(func_02082064, Wide10Text_Capacity)
 
 /* func_02082068 (vtable entry 1) */
-Wide10Text *Wide10Text_DestructDelete(Wide10Text *text)
+Wide10Text *Wide10Text_Delete(Wide10Text *text)
 {
     text->vtable = &data_020e194c;
     TextBase_WideDestruct(text);
     Heap_OperatorDeleteB(text);
     return text;
 }
-CLEAN_AS(func_02082068, Wide10Text_DestructDelete)
+CLEAN_AS(func_02082068, Wide10Text_Delete)
 
 /* func_02082088 (vtable entry 0) */
 Wide10Text *Wide10Text_Destruct(Wide10Text *text)
@@ -82,14 +82,14 @@ int Label22Text_Capacity(void)
 CLEAN_AS(func_020820bc, Label22Text_Capacity)
 
 /* func_020820c0 (vtable entry 1) */
-Label22Text *Label22Text_DestructDelete(Label22Text *label)
+Label22Text *Label22Text_Delete(Label22Text *label)
 {
     label->vtable = &data_020e18d4;
     TextBase_Destruct((TextBase *) label);
     Heap_OperatorDeleteB(label);
     return label;
 }
-CLEAN_AS(func_020820c0, Label22Text_DestructDelete)
+CLEAN_AS(func_020820c0, Label22Text_Delete)
 
 /* func_020820e0 (vtable entry 0) */
 Label22Text *Label22Text_Destruct(Label22Text *label)
@@ -137,14 +137,14 @@ int CatchphraseWide_Capacity(void)
 CLEAN_AS(func_02082128, CatchphraseWide_Capacity)
 
 /* func_0208212c (vtable entry 1) */
-CatchphraseWide *CatchphraseWide_DestructDelete(CatchphraseWide *text)
+CatchphraseWide *CatchphraseWide_Delete(CatchphraseWide *text)
 {
     text->vtable = &data_020e1934;
     TextBase_WideDestruct(text);
     Heap_OperatorDeleteB(text);
     return text;
 }
-CLEAN_AS(func_0208212c, CatchphraseWide_DestructDelete)
+CLEAN_AS(func_0208212c, CatchphraseWide_Delete)
 
 /* func_0208214c (vtable entry 0) */
 CatchphraseWide *CatchphraseWide_Destruct(CatchphraseWide *text)
@@ -181,14 +181,14 @@ int Label10Text_Capacity(void)
 CLEAN_AS(func_02082180, Label10Text_Capacity)
 
 /* func_02082184 (vtable entry 1) */
-Label10Text *Label10Text_DestructDelete(Label10Text *label)
+Label10Text *Label10Text_Delete(Label10Text *label)
 {
     label->vtable = &data_020e1904;
     TextBase_Destruct((TextBase *) label);
     Heap_OperatorDeleteB(label);
     return label;
 }
-CLEAN_AS(func_02082184, Label10Text_DestructDelete)
+CLEAN_AS(func_02082184, Label10Text_Delete)
 
 /* func_020821a4 (vtable entry 0) */
 Label10Text *Label10Text_Destruct(Label10Text *label)

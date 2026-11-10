@@ -296,7 +296,7 @@ void BbsWrite_SetLayers(void);
 void BbsWrite_EndFrame(BbsWriteScene *self);
 void BbsWrite_UpdateSprites(BbsWriteScene *self);
 void BbsWrite_Release(BbsWriteScene *self);
-void BbsWrite_Setup(BbsWriteScene *self);
+void BbsWrite_SetUp(BbsWriteScene *self);
 void BbsWrite_CloseWipeOut(BbsWriteScene *self);
 void BbsWrite_StartCloseWipeOut(BbsWriteScene *self);
 void BbsWrite_FinishWipeOut(BbsWriteScene *self);

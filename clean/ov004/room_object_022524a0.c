@@ -136,7 +136,7 @@ void RoomObject022524a0_NodeGroundHook(RoomObject022524a0 *object, int node, G3d
     data_021fbe48 = object->base.matrix;
     MTX_MultVec43(&local, &data_021fbe48, &world);
     CollisionGround_Init(&ground, &world, 0, 0);
-    if (CollisionGround_GetHeight(&ground, 0) > 0) {
+    if (CollisionGround_Height(&ground, 0) > 0) {
         RoomSync_SetState(&object->base, ROOM_OBJECT_022524A0_IDLE, SLOT_70_VALUE, 1);
     }
     CollisionGround_Destroy(&ground);

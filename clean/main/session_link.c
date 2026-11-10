@@ -43,7 +43,7 @@ static_assert(offsetof(NetSession, active) == 0x74, "active");
 #define NO_SLOT 4     /* NetSession.local_slot without a slot */
 #define NO_PLAYER 4   /* NetSession.local_player without a player */
 #define NO_REQUEST 3  /* NetSession.mode_request without a request */
-#define SHARE_BLOCK 4 /* Session_GetSendBlock(session, 4): the start of the send blocks */
+#define SHARE_BLOCK 4 /* Session_SendBlock(session, 4): the start of the send blocks */
 #define ALL_PLAYERS 4 /* Session_OnPlayersChanged: every slot at once */
 #define BLOCK_ALIGN 4 /* the alignment of the session's buffers */
 
@@ -166,13 +166,13 @@ CLEAN_AS(func_02073fcc, Session_Construct)
 int Session_IsLinkLost(int expected_aids)
 {
     NetSession *session = data_020ccf94;
-    u16 limit = Session_GetSendWaitLimit(session);
+    u16 limit = Session_SendWaitLimit(session);
     if (limit != 0) {
         if (Session_IsSendReady(session) != 0) {
             Session_SetSendWait(session, 0);
             Session_SetSendWaitLimit(session, 0);
         } else {
-            u16 waited = Session_GetSendWait(session);
+            u16 waited = Session_SendWait(session);
             if (waited >= limit) {
                 return 1;
             }
@@ -181,11 +181,11 @@ int Session_IsLinkLost(int expected_aids)
     }
 
     if (expected_aids < 0) {
-        return Net_GetConnectedMask() == 0;
+        return Net_ConnectedMask() == 0;
     }
     u16 expected = (u16) expected_aids;
     if (Net_GetMyAid() == 0) {
-        return (expected & Net_GetConnectedMask()) != expected;
+        return (expected & Net_ConnectedMask()) != expected;
     }
     if (expected_aids == 0) {
         return 0;
@@ -199,7 +199,7 @@ CLEAN_AS(func_02073fdc, Session_IsLinkLost)
 void Session_RaiseSendTimeout(void)
 {
     NetSession *session = data_020ccf94;
-    u32 flags = Session_GetErrorFlags(session);
+    u32 flags = Session_ErrorFlags(session);
     if ((flags & SESSION_ERROR_SEND_TIMEOUT) == 0) {
         Session_SetErrorFlags(session, (int) (flags | SESSION_ERROR_SEND_TIMEOUT));
     }
@@ -216,19 +216,19 @@ CLEAN_AS(func_020740a0, Session_Close)
 
 /* func_020740b4: one bit per member slot: the peers' and this system's.
  * REQUIRES: the local slot is not negative (it is 0-4). */
-unsigned int Session_GetMemberMask(void)
+unsigned int Session_MemberMask(void)
 {
-    unsigned int mask = (unsigned int) Session_GetPeerMask();
+    unsigned int mask = (unsigned int) Session_PeerMask();
     int local_slot = data_020ccf94->local_slot;
     if (local_slot < SESSION_SLOTS) {
         mask |= (u16) (1 << local_slot);
     }
     return mask;
 }
-CLEAN_AS(func_020740b4, Session_GetMemberMask)
+CLEAN_AS(func_020740b4, Session_MemberMask)
 
 /* func_020740dc: one bit per peer's slot. */
-int Session_GetPeerMask(void)
+int Session_PeerMask(void)
 {
     NetSession *session = data_020ccf94;
     int mask = 0;
@@ -239,7 +239,7 @@ int Session_GetPeerMask(void)
     }
     return mask;
 }
-CLEAN_AS(func_020740dc, Session_GetPeerMask)
+CLEAN_AS(func_020740dc, Session_PeerMask)
 
 /* func_02074120: sets this system's link status (slot 3's without a slot) to 7. */
 void Session_FinishLocalStatus(void)
@@ -255,7 +255,7 @@ void Session_FinishLocalStatus(void)
 CLEAN_AS(func_02074120, Session_FinishLocalStatus)
 
 /* func_02074150: this system's link status (slot 3's without a slot). */
-int Session_GetLocalStatus(void)
+int Session_LocalStatus(void)
 {
     NetSession *session = data_020ccf94;
     int slot = session->local_slot;
@@ -264,7 +264,7 @@ int Session_GetLocalStatus(void)
     }
     return LinkGlobal_Status(slot);
 }
-CLEAN_AS(func_02074150, Session_GetLocalStatus)
+CLEAN_AS(func_02074150, Session_LocalStatus)
 
 /* func_0207417c: makes `status` this system's link status. The host sets it; a guest sets 4
  * and sends `status` to the host in a message (handler 0, kind 0). Without a slot, slot 3's
@@ -277,10 +277,10 @@ int Session_SendLocalStatus(int status)
     int slot = session->local_slot;
     if (Session_IsSlotTaken(session, slot) == 0) {
         LinkGlobal_SetStatus(SESSION_UNLINKED_SLOT, LINK_STATUS_IN_PROGRESS);
-        u8 *packet = Session_GetSendBlock(session, SHARE_BLOCK);
+        u8 *packet = Session_SendBlock(session, SHARE_BLOCK);
         SessionNet_WriteSystemHeader(packet, 0, SYSTEM_SET_SENDER_STATUS);
         packet[1] = 0;
-        return Session_SendBlocks(session, Session_GetSendBlock(session, SHARE_BLOCK), 2, 1, NULL, 0, 0, NULL, 0, 0);
+        return Session_SendBlocks(session, Session_SendBlock(session, SHARE_BLOCK), 2, 1, NULL, 0, 0, NULL, 0, 0);
     }
     if (Session_IsLocalSlot(session, 0) != 0) {
         LinkGlobal_SetStatus(slot, status);
@@ -303,11 +303,11 @@ void Session_SetReceiveBuffers(u32 local_aid)
     NetSession *session = data_020ccf94;
     for (int aid = SESSION_SLOTS - 1; aid >= 0; aid--) {
         if ((u32) aid < local_aid) {
-            u8 *block = Session_GetPeerRecvBlock(session, aid, 0);
+            u8 *block = Session_PeerRecvBlock(session, aid, 0);
             LibraryOverlay_RequireAny();
             Net_SetReceiveBuffer(aid, block, SESSION_BLOCK_SIZE);
         } else if ((u32) aid > local_aid) {
-            u8 *block = Session_GetPeerRecvBlock(session, aid - 1, 0);
+            u8 *block = Session_PeerRecvBlock(session, aid - 1, 0);
             LibraryOverlay_RequireAny();
             Net_SetReceiveBuffer(aid, block, SESSION_BLOCK_SIZE);
         }
@@ -374,12 +374,12 @@ static int send_all(NetSession *session, const Sends *sends)
 /* The send buffer moves to the outbox; SESSION_ERROR_OUTBOX_FULL says whether it could. */
 static void flush_send_buffer(NetSession *session)
 {
-    u32 length = Session_GetSendLength(session);
+    u32 length = Session_SendLength(session);
     if (length == 0) {
         return;
     }
-    u32 flags = Session_GetErrorFlags(session);
-    if (Session_QueueOutgoing(session, Session_GetSendBuffer(session), (int) length) != 0) {
+    u32 flags = Session_ErrorFlags(session);
+    if (Session_QueueOutgoing(session, Session_SendBuffer(session), (int) length) != 0) {
         Session_ClearSendBuffer(session);
         if ((flags & SESSION_ERROR_OUTBOX_FULL) != 0 && CautionWindow_IsShuttingDown() == 0) {
             Session_SetErrorFlags(session, (int) (flags ^ SESSION_ERROR_OUTBOX_FULL));
@@ -396,7 +396,7 @@ static void flush_send_buffer(NetSession *session)
  * gave the held queue are dropped again and everything stays for the next frame. */
 static void send_data(NetSession *session)
 {
-    u32 held_length = Session_GetHeldQueueLength(session);
+    u32 held_length = Session_HeldQueueLength(session);
     Session_WriteOwedCredits();
     const u8 *records = NULL;
     int records_size = 0;
@@ -405,7 +405,7 @@ static void send_data(NetSession *session)
     for (int slot = SESSION_SLOTS - 1; slot >= 0; slot--) {
         if (Session_IsSlotTaken(session, slot) != 0) {
             if (Session_IsLocalSlot(session, slot) == 0) {
-                u8 *data = Session_GetSendBlock(session, slot) + 1;
+                u8 *data = Session_SendBlock(session, slot) + 1;
                 int size = 1;
                 if (records == NULL) {
                     records = data;
@@ -417,12 +417,12 @@ static void send_data(NetSession *session)
                 size += records_size;
                 size += Session_CollectMessages(data, slot);
                 int peer = SessionNet_PeerIndex(slot);
-                sends.block[peer] = Session_GetSendBlock(session, slot);
+                sends.block[peer] = Session_SendBlock(session, slot);
                 sends.size[peer] = size;
                 sends.to[peer] = (u16) (1 << slot);
             } else {
-                u32 length = Session_GetLocalQueueLength(session);
-                u8 *queue = Session_GetLocalQueue(session);
+                u32 length = Session_LocalQueueLength(session);
+                u8 *queue = Session_LocalQueue(session);
                 int added = Session_CollectMessages(queue + length, slot);
                 if (added != 0) {
                     Session_SetLocalQueueLength(session, length + (u32) added);
@@ -432,7 +432,7 @@ static void send_data(NetSession *session)
             /* Slot 0 is this system's here, so slot - 1 is a peer index. */
             int size = Session_WriteStatusPacket(slot);
             if (size != 0) {
-                sends.block[slot - 1] = Session_GetSendBlock(session, slot);
+                sends.block[slot - 1] = Session_SendBlock(session, slot);
                 sends.size[slot - 1] = size;
                 sends.to[slot - 1] = (u16) (1 << slot);
             }
@@ -444,7 +444,7 @@ static void send_data(NetSession *session)
         Session_SetHeldQueueLength(session, held_length);
         return;
     }
-    Session_SetPendingSequence(session, (u16) Session_GetFrameSequence(session));
+    Session_SetPendingSequence(session, (u16) Session_FrameSequence(session));
     Session_ClearRecordFlags(session);
     Session_ClearOutbox(session);
     for (int slot = SESSION_SLOTS - 1; slot >= 0; slot--) {
@@ -474,8 +474,8 @@ static void send_credits(NetSession *session)
     int count = 0;
     for (int slot = SESSION_SLOTS - 1; slot >= 0; slot--) {
         if (is_peer(session, slot)) {
-            u8 *block = Session_GetSendBlock(session, slot);
-            if (SessionNet_GetCredits(block) != 0) {
+            u8 *block = Session_SendBlock(session, slot);
+            if (SessionNet_Credits(block) != 0) {
                 sends.block[count] = block;
                 sends.size[count] = 1;
                 sends.to[count] = (u16) (1 << slot);
@@ -512,7 +512,7 @@ static void send_credit_packets(NetSession *session)
     Sends sends = {{NULL}, {0}, {0}};
     for (int slot = SESSION_SLOTS - 1; slot >= 0; slot--) {
         if (is_peer(session, slot)) {
-            int owed = Session_GetOwedCredits(session, slot);
+            int owed = Session_OwedCredits(session, slot);
             int peer = SessionNet_PeerIndex(slot);
             if (owed != 0) {
                 u8 *packet = &data_021d0a34[peer];
@@ -545,7 +545,7 @@ static void check_link(NetSession *session, int local_slot)
     int silent = Session_AnyPeerSilent(session);
     Session_EnableInterrupts();
 
-    u32 flags = Session_GetErrorFlags(session);
+    u32 flags = Session_ErrorFlags(session);
     if (silent != 0) {
         if ((flags & SESSION_ERROR_PEER_SILENT) == 0) {
             Session_SetErrorFlags(session, (int) (flags | SESSION_ERROR_PEER_SILENT));
@@ -561,8 +561,8 @@ static void check_link(NetSession *session, int local_slot)
                 peers |= (u16) (1 << slot);
             }
         }
-        if (peers != (peers & Net_GetConnectedMask())) {
-            flags = Session_GetErrorFlags(session);
+        if (peers != (peers & Net_ConnectedMask())) {
+            flags = Session_ErrorFlags(session);
             if ((flags & SESSION_ERROR_PEER_MISSING) == 0) {
                 Session_SetErrorFlags(session, (int) (flags | SESSION_ERROR_PEER_MISSING));
             }
@@ -570,7 +570,7 @@ static void check_link(NetSession *session, int local_slot)
     } else {
         LibraryOverlay_RequireAny();
         if (Net_UpdateConnection() == 0) {
-            flags = Session_GetErrorFlags(session);
+            flags = Session_ErrorFlags(session);
             if ((flags & SESSION_ERROR_CONNECTION) == 0) {
                 Session_SetErrorFlags(session, (int) (flags | SESSION_ERROR_CONNECTION));
             }
@@ -593,18 +593,18 @@ void Session_Update(int keep_frame)
 
     int ready = Session_IsSendReady(session);
     if (ready != 0) {
-        s16 pending = Session_GetPendingSequence(session);
+        s16 pending = Session_PendingSequence(session);
         if (pending >= 0) {
             Session_SetSequence(session, (u16) pending);
             Session_ClearPendingSequence(session);
         }
-        if (Session_GetModeRequest(session) == SESSION_MODE_CREDITS) {
+        if (Session_ModeRequest(session) == SESSION_MODE_CREDITS) {
             Session_SetMode(session, SESSION_MODE_CREDITS);
             Session_SetModeRequest(session, NO_REQUEST);
         }
     }
 
-    int mode = Session_GetMode(session);
+    int mode = Session_Mode(session);
     if (mode != SESSION_MODE_NONE) {
         flush_send_buffer(session);
     }
@@ -641,7 +641,7 @@ void Session_Deliver(int skip)
     if (Session_IsSlotTaken(session, session->local_slot) == 0) {
         return;
     }
-    if (Session_GetMode(session) == SESSION_MODE_NONE) {
+    if (Session_Mode(session) == SESSION_MODE_NONE) {
         return;
     }
     Session_DeliverSceneQueue(session);
@@ -696,27 +696,27 @@ int Session_End(void)
     if (data_020ccf94->active != 0) {
         ended = end_library();
         NetSession *session = data_020ccf94;
-        SessionNet_Free(Session_GetBundle16Buffer(session));
+        SessionNet_Free(Session_Bundle16Buffer(session));
         Session_SetBundle16Buffer(session, NULL);
-        SessionNet_Free(Session_GetBundle15Buffer(session));
+        SessionNet_Free(Session_Bundle15Buffer(session));
         Session_SetBundle15Buffer(session, NULL);
-        SessionNet_Free(Session_GetLocalQueue(session));
+        SessionNet_Free(Session_LocalQueue(session));
         Session_SetLocalQueueBuffer(session, NULL);
-        SessionNet_Free(Session_GetSceneQueue(session));
+        SessionNet_Free(Session_SceneQueue(session));
         Session_SetSceneQueueBuffer(session, NULL);
-        SessionNet_Free(Session_GetHeldQueue(session));
+        SessionNet_Free(Session_HeldQueue(session));
         Session_SetHeldQueueBuffer(session, NULL);
-        SessionNet_Free(Session_GetOutbox(session));
+        SessionNet_Free(Session_Outbox(session));
         Session_SetOutbox(session, NULL);
-        SessionNet_Free(Session_GetSendBuffer(session));
+        SessionNet_Free(Session_SendBuffer(session));
         Session_SetSendBuffer(session, NULL);
-        SessionNet_Free(Session_GetRecvBlock(session, SESSION_SLOTS, 0));
+        SessionNet_Free(Session_RecvBlock(session, SESSION_SLOTS, 0));
         Session_SetRecvBlocks(session, NULL);
-        SessionNet_Free(Session_GetSendBlock(session, SHARE_BLOCK));
+        SessionNet_Free(Session_SendBlock(session, SHARE_BLOCK));
         Session_SetSendBlocks(session, NULL);
         SessionNet_Free(session->record_scratch);
         session->record_scratch = NULL;
-        SessionNet_Free(Session_GetRecordTable(session));
+        SessionNet_Free(Session_RecordTable(session));
         Session_SetRecordTable(session, NULL);
         Session_Reset(session);
         session->active = 0;
@@ -759,25 +759,24 @@ void Session_Start(int mode, int players, int connect_mode)
 
     if ((u8) mode == 1 || (u8) mode == 2) {
         LibraryOverlay_Require66();
-        Local_Setup(mode, func_02075050);
+        Local_SetUp(mode, func_02075050);
     } else {
         NetSession *state = data_020ccf94;
-        FriendList *friends = (FriendList *) Session_GetStartTable(state);
-        u8 *user_block = Session_GetStartHeader(state);
+        FriendList *friends = (FriendList *) Session_StartTable(state);
+        u8 *user_block = Session_StartHeader(state);
         MI_CpuFill8(friends, 0, sizeof(FriendList));
         MI_CpuFill8(user_block, 0, sizeof(state->start_header));
         u8 *record = PlayerRecords_Current();
-        WifiFriend *friend_record = WifiFriendList_GetEntries((WifiFriendList *) PlayerRecord_WifiFriends(record));
+        WifiFriend *friend_record = WifiFriendList_Entries((WifiFriendList *) PlayerRecord_WifiFriends(record));
         for (int i = 0; i < FRIEND_COUNT; i++) {
-            MI_CpuCopy8(WifiFriendData_GetData(WifiFriend_GetFriendData(friend_record)), friends->friend_data[i],
-                        FRIEND_DATA_SIZE);
+            MI_CpuCopy8(WifiFriendData_Data(WifiFriend_FriendData(friend_record)), friends->friend_data[i], FRIEND_DATA_SIZE);
             friend_record++;
         }
         MI_CpuCopy8((const void *) (uintptr_t) PlayerId_Name((int) (uintptr_t) PlayerRecord_Player(record)), user_block, 0xc);
         MI_CpuCopy8((const void *) (uintptr_t) TownName_Name((int) (uintptr_t) (data_021dc7a8 + 2)), user_block + 0x10, 0xc);
-        MI_CpuCopy8(WifiAccount_GetUserData((WifiAccount *) PlayerRecord_WifiAccount(record)), user_block + 0x20, 0x40);
+        MI_CpuCopy8(WifiAccount_UserData((WifiAccount *) PlayerRecord_WifiAccount(record)), user_block + 0x20, 0x40);
         LibraryOverlay_Require65();
-        Wfc_Setup(mode, func_02075050, (void (*)(int)) func_02099e78, user_block, friends);
+        Wfc_SetUp(mode, func_02075050, (void (*)(int)) func_02099e78, user_block, friends);
     }
     Session_SetConnectMode(session, connect_mode);
 }
@@ -789,7 +788,7 @@ void Session_CreateHeap(void *parent)
 {
     u32 largest = 0;
     for (int record = SESSION_RECORDS - 1; record >= 0; record--) {
-        u32 size = SessionRecord_GetSize((u32) record);
+        u32 size = SessionRecord_Size((u32) record);
         if (size > largest) {
             largest = size;
         }
@@ -835,10 +834,10 @@ int Session_WriteStatusPacket(int slot)
     if (Session_IsStatusPending(slot) == 0) {
         return 0;
     }
-    u8 *packet = Session_GetSendBlock(data_020ccf94, slot);
+    u8 *packet = Session_SendBlock(data_020ccf94, slot);
     SessionNet_WriteSystemHeader(packet, 0, SYSTEM_SET_OWN_STATUS);
     int status = LinkGlobal_Status(slot);
-    unsigned int members = Session_GetMemberMask();
+    unsigned int members = Session_MemberMask();
     packet[1] = (u8) ((status & 7) | ((members << 4) & 0xf0));
     return 2;
 }
@@ -859,8 +858,8 @@ int Session_CollectMessages(u8 *dst, int slot)
 {
     NetSession *session = data_020ccf94;
     u32 taken = 0;
-    u32 outbox_length = Session_GetOutboxLength(session);
-    const u8 *message = Session_GetOutbox(session);
+    u32 outbox_length = Session_OutboxLength(session);
+    const u8 *message = Session_Outbox(session);
     for (u32 offset = 0; offset < outbox_length;) {
         u8 header[MESSAGE_HEADER_SIZE];
         MI_CpuCopy8(message, header, MESSAGE_HEADER_SIZE);
@@ -873,8 +872,8 @@ int Session_CollectMessages(u8 *dst, int slot)
         u8 hold;
         int to = LinkGlobal_MessageTarget(slot, kind, scene, &hold);
         if (hold != 0) {
-            u32 held = Session_GetHeldQueueLength(session);
-            u8 *queue = Session_GetHeldQueue(session);
+            u32 held = Session_HeldQueueLength(session);
+            u8 *queue = Session_HeldQueue(session);
             MI_CpuCopy8(message, queue + held, size);
             Session_SetHeldQueueLength(session, held + size);
         } else if (to == slot) {
@@ -901,13 +900,13 @@ int Session_WriteRecords(u8 *dst, const u8 *copy, int size)
     NetSession *session = data_020ccf94;
     int written = 0;
     for (int id = SESSION_RECORDS - 1; id >= 0; id--) {
-        if (Session_GetRecordFlag(session, id) != 0) {
+        if (Session_RecordFlag(session, id) != 0) {
             u8 tag = (u8) id;
             MI_CpuCopy8(&tag, dst, 1);
             dst++;
             written++;
-            const u8 *record = Session_GetRecord(session, id);
-            u32 length = SessionRecord_GetSize((u32) id);
+            const u8 *record = Session_Record(session, id);
+            u32 length = SessionRecord_Size((u32) id);
             MI_CpuCopy8(record, dst, length);
             dst += length;
             written += (int) length;
@@ -924,8 +923,8 @@ void Session_WriteOwedCredits(void)
     NetSession *session = data_020ccf94;
     for (int slot = SESSION_SLOTS - 1; slot >= 0; slot--) {
         if (is_peer(session, slot)) {
-            u8 *packet = Session_GetSendBlock(session, slot);
-            int owed = Session_GetOwedCredits(session, slot);
+            u8 *packet = Session_SendBlock(session, slot);
+            int owed = Session_OwedCredits(session, slot);
             SessionNet_WriteDataHeader(packet, owed);
         }
     }
@@ -935,7 +934,7 @@ CLEAN_AS(func_02074fa0, Session_WriteOwedCredits)
 /* func_02074fec */
 int Session_HasReachedSequence(int sequence)
 {
-    return Session_IsSequenceReached(sequence, Session_GetSequence(data_020ccf94));
+    return Session_IsSequenceReached(sequence, Session_Sequence(data_020ccf94));
 }
 CLEAN_AS(func_02074fec, Session_HasReachedSequence)
 
@@ -975,12 +974,12 @@ void Session_OnReceived(int aid, char *packet, unsigned int size)
 {
     const u8 *bytes = (const u8 *) packet;
     DC_FlushAll();
-    int credits = SessionNet_GetCredits(bytes);
+    int credits = SessionNet_Credits(bytes);
     if (credits != 0) {
         Session_AddCredits(data_020ccf94, aid, credits);
     }
     if (SessionNet_IsSystemPacket(bytes) != 0) {
-        int kind = SessionNet_GetSystemKind(bytes);
+        int kind = SessionNet_SystemKind(bytes);
         if (kind < SESSION_SYSTEM_CREDITS) {
             SystemPacket_Dispatch((u8 *) packet + 1, size - 1, aid, kind);
         }
@@ -989,9 +988,9 @@ void Session_OnReceived(int aid, char *packet, unsigned int size)
     Session_ResetPeerSilence(data_020ccf94, aid);
     if (size > 1) {
         NetSession *session = data_020ccf94;
-        Session_SetRecvLength(session, aid, Session_GetRecvWriteEntry(session, aid), (int) size);
+        Session_SetRecvLength(session, aid, Session_RecvWriteEntry(session, aid), (int) size);
         Session_PushRecvEntry(session, aid);
-        u8 *block = Session_GetRecvBlock(session, aid, Session_GetRecvWriteEntry(session, aid));
+        u8 *block = Session_RecvBlock(session, aid, Session_RecvWriteEntry(session, aid));
         LibraryOverlay_RequireAny();
         Net_SetReceiveBuffer((u16) aid, block, SESSION_BLOCK_SIZE);
     }

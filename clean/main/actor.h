@@ -63,7 +63,7 @@ typedef struct ActorCarrier {
 } ActorCarrier;
 
 Actor *Actor_Destruct(Actor *actor);
-void *Actor_DestructDelete(void *actor);
+void *Actor_Delete(void *actor);
 void Actor_ModelMatrix(const Actor *actor, Mtx43 *out);
 s16 Vec_YawTo(const Vec3 *from, const Vec3 *to);
 void Actor_Move(Actor *actor, const ActorCarrier *carrier);

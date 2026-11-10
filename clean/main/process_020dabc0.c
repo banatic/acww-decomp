@@ -25,7 +25,7 @@ Process *Process020dabc0_Destruct(Process *process)
 CLEAN_AS(func_0203fa9c, Process020dabc0_Destruct)
 
 /* func_0203fabc (vtable slot 0x44): the destructor that also frees the process. */
-Process *Process020dabc0_DestructFree(Process *process)
+Process *Process020dabc0_DestructDelete(Process *process)
 {
     process->vtable = data_020dabc0;
     process->vtable = data_020da13c;
@@ -33,7 +33,7 @@ Process *Process020dabc0_DestructFree(Process *process)
     Heap_FreeAux(process);
     return process;
 }
-CLEAN_AS(func_0203fabc, Process020dabc0_DestructFree)
+CLEAN_AS(func_0203fabc, Process020dabc0_DestructDelete)
 
 /* func_0203fae4 (asked before the date checks; 1 skips them): 1 while the game is being started
  * (a start kind is set), without a current player, or when the current player's flag 1 (Nook's job) is

@@ -3,7 +3,7 @@
  * (ov002/menu_scene.h) that shows the letters the current player keeps (main/letter_store.h)
  * beside the ten letters they carry, as the evidence says:
  *
- * - its setup (LetterStorage_Setup) copies the 50 letters of PlayerRecord_KeptLetters for the
+ * - its setup (LetterStorage_SetUp) copies the 50 letters of PlayerRecord_KeptLetters for the
  *   current player into `stored`, and on delete (func_ov105_0229f1d0) copies them back when
  *   LETTER_STORAGE_FLAG_CHANGED is set (telling main so with GroupParams_SetC4C);
  * - the stored letters are seen as two pages of 25 (LETTER_STORE_PAGES, `page`), each with a
@@ -66,7 +66,7 @@ enum LetterStoragePlace {
     LETTER_STORAGE_DONE_BUTTON = 0x3d, /* the Done button, below the carried letters and the page (at 0xbc, 0xb6) */
     LETTER_STORAGE_TAB_FIRST = 0x3e,   /* 0x3e-0x3f: the tabs of pages 0 and 1 */
     LETTER_STORAGE_TAB_LAST = 0x3f,
-    LETTER_STORAGE_NO_PLACE = 0x40 /* `popup_place` before any (LetterStorage_Setup) */
+    LETTER_STORAGE_NO_PLACE = 0x40 /* `popup_place` before any (LetterStorage_SetUp) */
 };
 
 #define LETTER_STORAGE_CARRIED_COLUMNS 2
@@ -151,7 +151,7 @@ void LetterStorage_DrawPageTabs(LetterStorage *self);
 void LetterStorage_PressConfirmNo(LetterStorage *self);
 void LetterStorage_PressConfirmYes(LetterStorage *self);
 void LetterStorage_PressDone(LetterStorage *self);
-void LetterStorage_DoNothing(LetterStorage *self);
+void LetterStorage_Nothing(LetterStorage *self);
 void LetterStorage_RunDiscardConfirm(LetterStorage *self);
 void LetterStorage_DiscardSlotLetter(LetterStorage *self);
 void LetterStorage_PressLabelButton(LetterStorage *self);
@@ -346,8 +346,8 @@ void LetterStorage_EndFrame(LetterStorage *self);
 void LetterStorage_BeginFrame(LetterStorage *self);
 void LetterStorage_EndInteractiveFrame(LetterStorage *self);
 int LetterStorage_BeginInteractiveFrame(LetterStorage *self);
-void LetterStorage_Teardown(LetterStorage *self);
-void LetterStorage_Setup(LetterStorage *self);
+void LetterStorage_TearDown(LetterStorage *self);
+void LetterStorage_SetUp(LetterStorage *self);
 void LetterStorage_PanelWipeIn(LetterStorage *self);
 void LetterStorage_RestorePanel(LetterStorage *self);
 void LetterStorage_PromptCloseWipe(LetterStorage *self);

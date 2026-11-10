@@ -25,7 +25,7 @@ int SceneKinds_CurrentIsHouseRoom(void);
 int SceneKinds_IsHouseRoom(unsigned int scene);
 int SceneKinds_CurrentHouseRoomIndex(void);
 int SceneKinds_HouseRoomIndex(unsigned int scene);
-int SceneKinds_SetupEnd(void);
+int SceneKinds_SetUpEnd(void);
 int SceneKinds_SoundKind(int between_scenes);
 
 #endif

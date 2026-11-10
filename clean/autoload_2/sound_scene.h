@@ -14,23 +14,23 @@
 #include <stddef.h>
 
 void SoundScene99_Start(SoundScene *scene);
-SoundScene *SoundScene99_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene99_Delete(SoundScene *scene);
 SoundScene *SoundScene99_Destruct(SoundScene *scene);
 SoundScene *SoundScene99_Construct(SoundScene *scene);
 
 void SoundScene60_Start(SoundScene *scene);
-SoundScene *SoundScene60_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene60_Delete(SoundScene *scene);
 SoundScene *SoundScene60_Destruct(SoundScene *scene);
 SoundScene *SoundScene60_Construct(SoundScene *scene);
 
 void SoundScene52_Start(SoundScene *scene);
-SoundScene *SoundScene52_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene52_Delete(SoundScene *scene);
 SoundScene *SoundScene52_Destruct(SoundScene *scene);
 SoundScene *SoundScene52_Construct(SoundScene *scene);
 
 void SoundScene51_Stop(SoundScene *scene);
 void SoundScene51_Start(SoundScene *scene);
-SoundScene *SoundScene51_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene51_Delete(SoundScene *scene);
 SoundScene *SoundScene51_Destruct(SoundScene *scene);
 SoundScene *SoundScene51_Construct(SoundScene *scene);
 
@@ -57,79 +57,79 @@ static_assert(offsetof(SoundScene41, part) == 0x08, "SoundScene41.part");
 static_assert(sizeof(SoundScene41) == 0x38, "SoundScene41 size");
 
 void SoundScene50_Start(SoundScene *scene);
-SoundScene *SoundScene50_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene50_Delete(SoundScene *scene);
 SoundScene *SoundScene50_Destruct(SoundScene *scene);
 SoundScene *SoundScene50_Construct(SoundScene *scene);
 
 void SoundScene48_Start(SoundScene *scene);
-SoundScene *SoundScene48_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene48_Delete(SoundScene *scene);
 SoundScene *SoundScene48_Destruct(SoundScene *scene);
 SoundScene *SoundScene48_Construct(SoundScene *scene);
 
 void SoundScene47_Start(SoundScene *scene);
-SoundScene *SoundScene47_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene47_Delete(SoundScene *scene);
 SoundScene *SoundScene47_Destruct(SoundScene *scene);
 SoundScene *SoundScene47_Construct(SoundScene *scene);
 
 void SoundScene46_Start(SoundScene *scene);
-SoundScene *SoundScene46_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene46_Delete(SoundScene *scene);
 SoundScene *SoundScene46_Destruct(SoundScene *scene);
 SoundScene *SoundScene46_Construct(SoundScene *scene);
 
 void SoundScene45_Start(SoundScene *scene);
-SoundScene *SoundScene45_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene45_Delete(SoundScene *scene);
 SoundScene *SoundScene45_Destruct(SoundScene *scene);
 SoundScene *SoundScene45_Construct(SoundScene *scene);
 
 void SoundScene44_Start(SoundScene *scene);
-SoundScene *SoundScene44_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene44_Delete(SoundScene *scene);
 SoundScene *SoundScene44_Destruct(SoundScene *scene);
 SoundScene *SoundScene44_Construct(SoundScene *scene);
 
 void SoundScene43_Start(SoundScene *scene);
-SoundScene *SoundScene43_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene43_Delete(SoundScene *scene);
 SoundScene *SoundScene43_Destruct(SoundScene *scene);
 SoundScene *SoundScene43_Construct(SoundScene *scene);
 
 void SoundScene42_Start(SoundScene *scene);
-SoundScene *SoundScene42_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene42_Delete(SoundScene *scene);
 SoundScene *SoundScene42_Destruct(SoundScene *scene);
 SoundScene *SoundScene42_Construct(SoundScene *scene);
 
 void SoundScene41_Start(SoundScene41 *scene);
 void SoundScene41_Update(SoundScene41 *scene, int value);
 void SoundScene41_OnMusic(SoundScene41 *scene, int stopped, unsigned int music);
-SoundScene41 *SoundScene41_DestructDelete(SoundScene41 *scene);
+SoundScene41 *SoundScene41_Delete(SoundScene41 *scene);
 SoundScene41 *SoundScene41_Destruct(SoundScene41 *scene);
 SoundScene41 *SoundScene41_Construct(SoundScene41 *scene);
 
 void SoundScene40_Start(SoundScene *scene);
-SoundScene *SoundScene40_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene40_Delete(SoundScene *scene);
 SoundScene *SoundScene40_Destruct(SoundScene *scene);
 SoundScene *SoundScene40_Construct(SoundScene *scene);
 
 void SoundScene35_Start(SoundScene *scene);
-SoundScene *SoundScene35_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene35_Delete(SoundScene *scene);
 SoundScene *SoundScene35_Destruct(SoundScene *scene);
 SoundScene *SoundScene35_Construct(SoundScene *scene);
 
 void SoundScene34_Start(SoundScene *scene);
-SoundScene *SoundScene34_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene34_Delete(SoundScene *scene);
 SoundScene *SoundScene34_Destruct(SoundScene *scene);
 SoundScene *SoundScene34_Construct(SoundScene *scene);
 
 void SoundScene33_Start(SoundScene *scene);
-SoundScene *SoundScene33_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene33_Delete(SoundScene *scene);
 SoundScene *SoundScene33_Destruct(SoundScene *scene);
 SoundScene *SoundScene33_Construct(SoundScene *scene);
 
 void SoundScene32_Start(SoundScene *scene);
-SoundScene *SoundScene32_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene32_Delete(SoundScene *scene);
 SoundScene *SoundScene32_Destruct(SoundScene *scene);
 SoundScene *SoundScene32_Construct(SoundScene *scene);
 
 void SoundScene31_Start(SoundScene *scene);
-SoundScene *SoundScene31_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene31_Delete(SoundScene *scene);
 SoundScene *SoundScene31_Destruct(SoundScene *scene);
 SoundScene *SoundScene31_Construct(SoundScene *scene);
 
@@ -167,37 +167,37 @@ static_assert(offsetof(SoundScene10, stage) == 0x1c, "SoundScene10.stage");
 static_assert(sizeof(SoundScene10) == 0x20, "SoundScene10 size");
 
 void SoundScene30_Start(SoundScene *scene);
-SoundScene *SoundScene30_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene30_Delete(SoundScene *scene);
 SoundScene *SoundScene30_Destruct(SoundScene *scene);
 SoundScene *SoundScene30_Construct(SoundScene *scene);
 
 void SoundScene24_Start(SoundScene *scene);
-SoundScene *SoundScene24_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene24_Delete(SoundScene *scene);
 SoundScene *SoundScene24_Destruct(SoundScene *scene);
 SoundScene *SoundScene24_Construct(SoundScene *scene);
 
 void SoundScene23_Start(SoundScene *scene);
-SoundScene *SoundScene23_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene23_Delete(SoundScene *scene);
 SoundScene *SoundScene23_Destruct(SoundScene *scene);
 SoundScene *SoundScene23_Construct(SoundScene *scene);
 
 void SoundScene22_Start(SoundScene *scene);
-SoundScene *SoundScene22_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene22_Delete(SoundScene *scene);
 SoundScene *SoundScene22_Destruct(SoundScene *scene);
 SoundScene *SoundScene22_Construct(SoundScene *scene);
 
 void SoundScene21_Start(SoundScene *scene);
-SoundScene *SoundScene21_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene21_Delete(SoundScene *scene);
 SoundScene *SoundScene21_Destruct(SoundScene *scene);
 SoundScene *SoundScene21_Construct(SoundScene *scene);
 
 void SoundScene20_Start(SoundScene *scene);
-SoundScene *SoundScene20_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene20_Delete(SoundScene *scene);
 SoundScene *SoundScene20_Destruct(SoundScene *scene);
 SoundScene *SoundScene20_Construct(SoundScene *scene);
 
 void SoundScene19_Start(SoundScene *scene);
-SoundScene *SoundScene19_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene19_Delete(SoundScene *scene);
 SoundScene *SoundScene19_Destruct(SoundScene *scene);
 SoundScene *SoundScene19_Construct(SoundScene *scene);
 
@@ -206,17 +206,17 @@ void SoundScene10_SetVoiceType(SoundScene10 *scene, int mode);
 void SoundScene10_OnMusic(SoundScene10 *scene, unsigned char stopped);
 void SoundScene10_Update(SoundScene10 *scene, int value);
 void SoundScene10_Start(SoundScene10 *scene);
-SoundScene10 *SoundScene10_DestructDelete(SoundScene10 *scene);
+SoundScene10 *SoundScene10_Delete(SoundScene10 *scene);
 SoundScene10 *SoundScene10_Destruct(SoundScene10 *scene);
 SoundScene10 *SoundScene10_Construct(SoundScene10 *scene);
 
 void SoundScene3_Start(SoundScene *scene);
-SoundScene *SoundScene3_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene3_Delete(SoundScene *scene);
 SoundScene *SoundScene3_Destruct(SoundScene *scene);
 SoundScene *SoundScene3_Construct(SoundScene *scene);
 
 void SoundScene2_Start(SoundScene *scene);
-SoundScene *SoundScene2_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene2_Delete(SoundScene *scene);
 SoundScene *SoundScene2_Destruct(SoundScene *scene);
 SoundScene *SoundScene2_Construct(SoundScene *scene);
 
@@ -225,7 +225,7 @@ void SoundScene1_Vfunc20(SoundScene *scene);
 int SoundScene1_SetVoiceType(SoundScene *scene, int mode);
 void SoundScene1_Start(SoundScene *scene);
 SoundScene *SoundScene1_DestructBase(SoundScene *scene);
-SoundScene *SoundScene1_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene1_Delete(SoundScene *scene);
 SoundScene *SoundScene1_Destruct(SoundScene *scene);
 SoundScene *SoundScene1_Construct(SoundScene *scene);
 SoundScene *SoundScene1_ConstructBase(SoundScene *scene);
@@ -248,7 +248,7 @@ void SoundSceneBase_Update(SoundScene *scene, int value);
 void SoundSceneBase_Start(void);
 void SoundSceneBase_Vfunc08(SoundScene *scene);
 SoundScene *SoundSceneBase_DestructBase(SoundScene *scene);
-SoundScene *SoundSceneBase_DestructDelete(SoundScene *scene);
+SoundScene *SoundSceneBase_Delete(SoundScene *scene);
 SoundScene *SoundSceneBase_Destruct(SoundScene *scene);
 SoundScene *SoundSceneBase_Construct(SoundScene *scene);
 

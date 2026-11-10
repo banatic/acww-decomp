@@ -47,26 +47,26 @@ typedef struct Label10Text {
 
 int Wide10Text_Buffer(int text);
 int Wide10Text_Capacity(void);
-Wide10Text *Wide10Text_DestructDelete(Wide10Text *text);
+Wide10Text *Wide10Text_Delete(Wide10Text *text);
 Wide10Text *Wide10Text_Destruct(Wide10Text *text);
 Wide10Text *Wide10Text_Construct(Wide10Text *text);
 
 int Label22Text_Buffer(int label);
 int Label22Text_Capacity(void);
-Label22Text *Label22Text_DestructDelete(Label22Text *label);
+Label22Text *Label22Text_Delete(Label22Text *label);
 Label22Text *Label22Text_Destruct(Label22Text *label);
 Label22Text *Label22Text_Construct(Label22Text *label);
 
 int CatchphraseWide_Buffer(int text);
 void CatchphraseWide_CopyOut(CatchphraseWide *text, u16 *dst, int count);
 int CatchphraseWide_Capacity(void);
-CatchphraseWide *CatchphraseWide_DestructDelete(CatchphraseWide *text);
+CatchphraseWide *CatchphraseWide_Delete(CatchphraseWide *text);
 CatchphraseWide *CatchphraseWide_Destruct(CatchphraseWide *text);
 CatchphraseWide *CatchphraseWide_Construct(CatchphraseWide *text);
 
 int Label10Text_Buffer(int label);
 int Label10Text_Capacity(void);
-Label10Text *Label10Text_DestructDelete(Label10Text *label);
+Label10Text *Label10Text_Delete(Label10Text *label);
 Label10Text *Label10Text_Destruct(Label10Text *label);
 Label10Text *Label10Text_Construct(Label10Text *label);
 

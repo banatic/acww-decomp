@@ -138,7 +138,7 @@ void Music2f0_FadeInForScene22(Music2f0 *self);
 void Music2f0_SetTracksForScene22(Music2f0 *self);
 void Music_FadeInForSceneChange(void);
 void Music_SetTracksForSceneChange(void);
-void *Music2f0_DestructDelete(Music2f0 *self);
+void *Music2f0_Delete(Music2f0 *self);
 void Music2f0_Destruct(Music2f0 *self);
 void Music2f0_Construct(Music2f0 *self);
 void Music2e4_Release(Music2e4 *self);

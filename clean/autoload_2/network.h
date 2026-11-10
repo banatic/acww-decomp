@@ -4,7 +4,7 @@
  * and the local wireless library of overlay 66. One mode says which is in use (data_021fbef8),
  * and the Wi-Fi Connection advances through stages (data_021fbefc, func_020ec980). Over the
  * local library and NitroDWC alike the game sends blocks through one queue of 16 and reads
- * one error code (Net_GetError). */
+ * one error code (Net_Error). */
 #ifndef CLEAN_AUTOLOAD_2_NETWORK_H
 #define CLEAN_AUTOLOAD_2_NETWORK_H
 
@@ -54,7 +54,7 @@ int Wfc_TakeDirty(void *user_data);
 void Wfc_InitUserData(void *user_data, u32 game_code);
 int Wfc_JoinFriendGame(int profile_id);
 int Wfc_HostGame(void);
-FriendList *Wfc_GetFriendList(void);
+FriendList *Wfc_FriendList(void);
 int Wfc_ProfileIdAt(int index);
 int Wfc_FriendIndexOf(int profile_id);
 int Local_SelectEntry(const void *entry);
@@ -69,15 +69,15 @@ typedef void ReceiveHandler(int aid, char *buffer, unsigned int size);
 /* Called once a block of the send queue was sent. */
 typedef void SentCallback(void *argument);
 
-int Net_GetErrorDetail(void);
-int Net_GetError(void);
-int Wfc_GetError(void);
-int Local_GetError(void);
-u8 Net_GetMode(void);
+int Net_ErrorDetail(void);
+int Net_Error(void);
+int Wfc_Error(void);
+int Local_Error(void);
+u8 Net_Mode(void);
 int Net_CountJoinable(void);
 int Wfc_CountFriends(void);
 int Local_CountParents(void);
-int Net_GetConnectedMask(void);
+int Net_ConnectedMask(void);
 int Net_GetMyAid(void);
 int Net_CountPlayers(void);
 int Net_SetReceiveBuffer(int aid, void *buffer, int size);
@@ -86,8 +86,8 @@ int Wfc_GetLinkLevel(void);
 int Local_GetLinkLevel(void);
 void Net_Init(int game_code, int game_id, int local_argument, u64 timeout_ticks, u8 players, void *(*alloc)(int, int),
               void (*free)(void *));
-void Wfc_Setup(int mode, ReceiveHandler *on_received, void (*on_deleted)(int index), u8 *user_block, FriendList *friends);
-void Local_Setup(int mode, ReceiveHandler *on_received);
+void Wfc_SetUp(int mode, ReceiveHandler *on_received, void (*on_deleted)(int index), u8 *user_block, FriendList *friends);
+void Local_SetUp(int mode, ReceiveHandler *on_received);
 int Net_UpdateConnection(void);
 int Local_IsConnected(void);
 int Wfc_UpdateConnection(void);

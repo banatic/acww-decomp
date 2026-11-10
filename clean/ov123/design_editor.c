@@ -781,7 +781,7 @@ CLEAN_AS(func_ov123_0229bf90, DesignEditor_BeginInteractiveFrame)
 /* func_ov123_0229bfac: the scene's members ended: the text boxes closed and the layer tasks
  * taken off the queue; the player asked to go back to state 0x10, and the scene sound's slot
  * 0x24 given 0 when Blanca's face (the mystery cat record's design) was edited. */
-void DesignEditor_Teardown(DesignEditor *self)
+void DesignEditor_TearDown(DesignEditor *self)
 {
     ButtonPanel_CloseTexts(&self->panel);
     DesignEditor_CloseLabel(self);
@@ -791,7 +791,7 @@ void DesignEditor_Teardown(DesignEditor *self)
         SceneSound_Vfunc24(0);
     }
 }
-CLEAN_AS(func_ov123_0229bfac, DesignEditor_Teardown)
+CLEAN_AS(func_ov123_0229bfac, DesignEditor_TearDown)
 
 /* func_ov123_0229bfe0: the editor's fields at its start: colour 1, no flags, nothing lit, the
  * key cursor on the first place and the canvas cursor at (16, 16); main's byte 0xc4c cleared and
@@ -972,8 +972,7 @@ CLEAN_AS(func_ov123_0229c30c, DesignEditor_WipeOut)
 void DesignEditor_StartWipeOut(DesignEditor *self)
 {
     DesignEditor_Undim(self);
-    MenuDispatch_SetMode((MenuDispatch *) (void *) Process_GetParent((Process *) (void *) self), DESIGN_EDITOR_PARENT_CLOSE,
-                         1);
+    MenuDispatch_SetMode((MenuDispatch *) (void *) Process_Parent((Process *) (void *) self), DESIGN_EDITOR_PARENT_CLOSE, 1);
     MenuScene_StartWipeOnWindow2(de_scene(self), 0xb, 0, 0, DESIGN_EDITOR_WIPE_MARGIN);
     DesignEditor_ScrollWithWipe(self);
     MenuScene_SetState(de_scene(self), DESIGN_EDITOR_STATE_WIPE_OUT);
@@ -1183,8 +1182,8 @@ CLEAN_AS(func_ov123_0229c754, DesignEditor_Draw)
  * torn down. Answers 1. */
 int DesignEditor_Close(DesignEditor *self)
 {
-    MenuDispatch_ChildClosed((MenuDispatch *) (void *) Process_GetParent((Process *) (void *) self));
-    DesignEditor_Teardown(self);
+    MenuDispatch_ChildClosed((MenuDispatch *) (void *) Process_Parent((Process *) (void *) self));
+    DesignEditor_TearDown(self);
     return 1;
 }
 CLEAN_AS(func_ov123_0229c8f4, DesignEditor_Close)

@@ -76,7 +76,7 @@ int PlayerPick_Draw(PlayerPick *self);
 int PlayerPick_Execute(PlayerPick *self);
 int PlayerPick_Delete(PlayerPick *self);
 int PlayerPick_Create(PlayerPick *self);
-PlayerPick *PlayerPick_DestructFree(PlayerPick *self);
+PlayerPick *PlayerPick_DestructDelete(PlayerPick *self);
 PlayerPick *PlayerPick_Destruct(PlayerPick *self);
 PlayerPick *PlayerPick_Construct(PlayerPick *self);
 void PlayerPick_New(void);

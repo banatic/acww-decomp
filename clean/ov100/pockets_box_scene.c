@@ -872,22 +872,22 @@ CLEAN_AS(func_ov100_0229e3b0, PocketsBox_BeginInteractiveFrame)
 
 /* func_ov100_0229e3cc: the members torn down: the layer load task ended, the wallet and the
  * grid torn down, the choice dismissed, the labels closed. */
-void PocketsBox_Teardown(PocketsBox *self)
+void PocketsBox_TearDown(PocketsBox *self)
 {
     PocketsBox_EndLayerTask(self);
-    PocketsWallet_Teardown(pbs_wallet(self));
-    PocketsGrid_Teardown(pbs_grid(self));
+    PocketsWallet_TearDown(pbs_wallet(self));
+    PocketsGrid_TearDown(pbs_grid(self));
     PagedChoice_Dismiss(pbs_choice(self));
     PocketsBox_CloseLabels(self);
 }
-CLEAN_AS(func_ov100_0229e3cc, PocketsBox_Teardown)
+CLEAN_AS(func_ov100_0229e3cc, PocketsBox_TearDown)
 
 /* func_ov100_0229e400: the scene set up: no flags; the grid (priority 1), the letters
  * (priority 2) and the wallet (layer 6) set up; no popup place, the glide stopped, nothing
  * held, the cursor at the first pocket; the choice on layer 3 at priority 1; no label in use.
  * The box by the mode: empty (and marked so) for 0x1d and 0x1e, list A for 0x1f, list B for
  * 0x20 (else as it was); copied as the start's; and the pockets saved for a cancel. */
-void PocketsBox_Setup(PocketsBox *self)
+void PocketsBox_SetUp(PocketsBox *self)
 {
     self->flags = 0;
     PocketsGrid_Init(pbs_grid(self), 1);
@@ -918,7 +918,7 @@ void PocketsBox_Setup(PocketsBox *self)
     MI_CpuCopy8(self->box, self->box_start, sizeof self->box);
     Pockets_Save();
 }
-CLEAN_AS(func_ov100_0229e400, PocketsBox_Setup)
+CLEAN_AS(func_ov100_0229e400, PocketsBox_SetUp)
 
 /* ---- the states */
 
@@ -968,7 +968,7 @@ void PocketsBox_Leave(PocketsBox *self)
     }
     Popup_Hide(&self->popup, 1);
     PocketsBox_HideCursorSprite(self);
-    MenuDispatch_SetMode((MenuDispatch *) (void *) Process_GetParent((Process *) (void *) self), PBS_PARENT_MODE_LEAVE, 1);
+    MenuDispatch_SetMode((MenuDispatch *) (void *) Process_Parent((Process *) (void *) self), PBS_PARENT_MODE_LEAVE, 1);
     MenuScene_StartWipeOnWindow2(pbs_scene(self), 2, 4, 1, PBS_WIPE_MARGIN);
     MenuScene_SetWipeExtent(pbs_scene(self), PBS_WIPE_EXTENT);
     MenuScene_ScrollWipe(pbs_scene(self), PBS_BOX_LAYER, 0, 0);
@@ -1142,8 +1142,8 @@ CLEAN_AS(func_ov100_0229ea10, PocketsBox_Draw)
  * torn down. Answers 1. */
 int PocketsBox_Close(PocketsBox *self)
 {
-    MenuDispatch_ChildClosed((MenuDispatch *) (void *) Process_GetParent((Process *) (void *) self));
-    PocketsBox_Teardown(self);
+    MenuDispatch_ChildClosed((MenuDispatch *) (void *) Process_Parent((Process *) (void *) self));
+    PocketsBox_TearDown(self);
     return 1;
 }
 CLEAN_AS(func_ov100_0229eab0, PocketsBox_Close)
@@ -1152,7 +1152,7 @@ CLEAN_AS(func_ov100_0229eab0, PocketsBox_Close)
  * Answers 1. */
 int PocketsBox_Start(PocketsBox *self)
 {
-    PocketsBox_Setup(self);
+    PocketsBox_SetUp(self);
     MenuScene_SetState(pbs_scene(self), POCKETS_BOX_STATE_SETUP);
     MenuScene_SetPhase(pbs_scene(self), 0);
     return 1;

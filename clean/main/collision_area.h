@@ -34,7 +34,7 @@ void CollisionArea_ClearList(void *list);
 void CollisionArea_ListDestruct(void *list);
 void CollisionArea_ListConstruct(void *list);
 void CollisionArea_Set(CollisionArea *area, const Vec3 *a, const Vec3 *b, const Vec3 *c, fx32 reach);
-Vec3 *CollisionArea_GetCentre(CollisionArea *area);
+Vec3 *CollisionArea_Centre(CollisionArea *area);
 void CollisionArea_Reset(CollisionArea *area);
 CollisionArea *CollisionArea_Construct(CollisionArea *area);
 

@@ -18,14 +18,14 @@ Process *GameProcess_Destruct(Process *self)
 CLEAN_AS(func_0202f0f4, GameProcess_Destruct)
 
 /* func_0202f10c (slot 17): destructed, then freed to the auxiliary heap. */
-void *GameProcess_DestructDelete(void *self)
+void *GameProcess_Delete(void *self)
 {
     ((Process *) self)->vtable = data_020da13c;
     Process_Destruct(self);
     Heap_FreeAux(self);
     return self;
 }
-CLEAN_AS(func_0202f10c, GameProcess_DestructDelete)
+CLEAN_AS(func_0202f10c, GameProcess_Delete)
 
 /* func_0202f12c: a root process of class `class_id` spawned (Process_SpawnRoot). */
 int GameProcess_SpawnRoot(int class_id, int param, int unk_12)

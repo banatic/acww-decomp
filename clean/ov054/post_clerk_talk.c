@@ -338,14 +338,14 @@ CLEAN_AS(func_ov054_02261f5c, PostClerkTalk_Begin)
 
 /* func_ov054_02261f78 (vtable slot 0x04): the destructor of the scene class it derives from,
  * then the scene freed. */
-PostClerkTalk *PostClerkTalk_DestructDelete(PostClerkTalk *talk)
+PostClerkTalk *PostClerkTalk_Delete(PostClerkTalk *talk)
 {
     talk->base.vtable = data_ov054_02263004;
     Obj020d9ff8_DestructBody(talk);
     Heap_OperatorDeleteB(talk);
     return talk;
 }
-CLEAN_AS(func_ov054_02261f78, PostClerkTalk_DestructDelete)
+CLEAN_AS(func_ov054_02261f78, PostClerkTalk_Delete)
 
 /* func_ov054_02261f98 (vtable slot 0x00): the destructor of the scene class it derives from. */
 PostClerkTalk *PostClerkTalk_Destruct(PostClerkTalk *talk)
@@ -1463,7 +1463,7 @@ CLEAN_AS(func_ov054_02261490, PostClerkTalk_AskJob1f)
 void PostClerkTalk_AwaitJob1f(PostClerkTalk *talk)
 {
     TalkObject *object = pct_object(talk);
-    if (ActivityJob_1FShowingEndMessage()) {
+    if (ActivityJob_ShowingEndMessage1f()) {
         PostClerkTalk_SetStep(talk, POST_CLERK_TALK_STEP_NONE);
         return;
     }

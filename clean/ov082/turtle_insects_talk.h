@@ -53,7 +53,7 @@ typedef struct TurtleInsectsTalkStart {
 /* The class. */
 TurtleInsectsTalk *TurtleInsectsTalk_Construct(TurtleInsectsTalk *talk);
 TurtleInsectsTalk *TurtleInsectsTalk_Destruct(TurtleInsectsTalk *talk);
-TurtleInsectsTalk *TurtleInsectsTalk_DestructDelete(TurtleInsectsTalk *talk);
+TurtleInsectsTalk *TurtleInsectsTalk_Delete(TurtleInsectsTalk *talk);
 void TurtleInsectsTalk_Begin(TurtleInsectsTalk *talk, TurtleInsects *owner);
 void TurtleInsectsTalk_PickCommandFunction(TurtleInsectsTalk *talk, MemberPointer *slot, int index);
 void TurtleInsectsTalk_SetAfterCommand(TurtleInsectsTalk *talk, int index);

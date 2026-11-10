@@ -422,7 +422,7 @@ CLEAN_AS(func_ov093_02299418, StaffRoll_HasEnded)
 void StaffRoll_ShowLogo(StaffRoll *self)
 {
     DisplayLayer_Hide(STAFF_ROLL_LAYER_0);
-    u32 planes = DisplayShadow_GetMainPlanes();
+    u32 planes = DisplayShadow_MainPlanes();
     STAFF_ROLL_REG_DISPCNT = (STAFF_ROLL_REG_DISPCNT & ~STAFF_ROLL_DISPCNT_PLANES) | (planes << 8);
     DisplayShadow_EnableMainWindows(STAFF_ROLL_WINDOW_0);
     DisplayShadow_SetMainWindow0Planes(STAFF_ROLL_ALL_PLANES);

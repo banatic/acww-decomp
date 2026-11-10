@@ -8,7 +8,7 @@
 #include "types.h"
 
 void *Obj020d9ff8_DestructBody(void *scene);
-void *Obj020d9ff8_DestructDelete(void *scene);
+void *Obj020d9ff8_Delete(void *scene);
 void *Obj020d9ff8_Destruct(void *scene);
 void *Obj020d9ff8_Construct(void *scene);
 

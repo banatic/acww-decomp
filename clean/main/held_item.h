@@ -44,7 +44,7 @@ void HeldItem_SetAnimSpeed(unsigned char *held, int speed);
 void HeldItem_Act(u8 *held, int action, int blend, int flags);
 void HeldItem_Take(HeldItemObject *held, ItemCode *item, u8 *record);
 void HeldItem_Clear(HeldItemObject *held);
-void HeldItem_Setup(HeldItemObject *held, int index, void *owner, ItemCode *item, u8 *record, int plain);
+void HeldItem_SetUp(HeldItemObject *held, int index, void *owner, ItemCode *item, u8 *record, int plain);
 void HeldItem_AfterNode(void *state);
 void HeldItem_BeforeNode(void *state);
 HeldItemObject *HeldItem_Destruct(HeldItemObject *held);

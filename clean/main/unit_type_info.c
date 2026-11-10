@@ -36,7 +36,7 @@ static u16 unit_type_word(const CollisionTypeInfo *row, u32 offset)
 /* func_02031478: 0 for a unit of type 0x6f, 1 for type 0x70, else UNIT_TYPE_INFO_NO_KIND. */
 int UnitTypeInfo_Kind6fAt(int x, int z)
 {
-    int type = FieldUnits_GetType(x, z);
+    int type = FieldUnits_Type(x, z);
     if (type >= UNIT_TYPE_6F && type <= UNIT_TYPE_70) {
         return type - UNIT_TYPE_6F;
     }
@@ -71,7 +71,7 @@ CLEAN_AS(func_02031930, UnitTypeInfo_Sound)
  * is 1; for a type without a row the four bytes at data_020c9048 do, and the result is 0. */
 int UnitTypeInfo_Bytes18At(u8 *out, int x, int z)
 {
-    int type = FieldUnits_GetType(x, z);
+    int type = FieldUnits_Type(x, z);
     if (type < COLLISION_TYPE_COUNT) {
         const CollisionTypeInfo *row = unit_type_row(type);
         for (int i = 0; i < 4; i++) {
@@ -89,7 +89,7 @@ CLEAN_AS(func_0203194c, UnitTypeInfo_Bytes18At)
 /* func_02031a48: whether unit (x, z) is of type 0x1e and the unit after it on Z of type 8. */
 int UnitTypeInfo_IsType1eOver08(int x, int z)
 {
-    return FieldUnits_GetType(x, z) == UNIT_TYPE_1E && FieldUnits_GetType(x, z + 1) == UNIT_TYPE_08;
+    return FieldUnits_Type(x, z) == UNIT_TYPE_1E && FieldUnits_Type(x, z + 1) == UNIT_TYPE_08;
 }
 CLEAN_AS(func_02031a48, UnitTypeInfo_IsType1eOver08)
 
@@ -97,7 +97,7 @@ CLEAN_AS(func_02031a48, UnitTypeInfo_IsType1eOver08)
  * row). */
 int UnitTypeInfo_HasByte17At(int x, int z)
 {
-    int type = FieldUnits_GetType(x, z);
+    int type = FieldUnits_Type(x, z);
     return type < COLLISION_TYPE_COUNT && unit_type_row(type)->unk_16[1] != 0;
 }
 CLEAN_AS(func_02031a74, UnitTypeInfo_HasByte17At)
@@ -106,7 +106,7 @@ CLEAN_AS(func_02031a74, UnitTypeInfo_HasByte17At)
  * a type without a row. */
 int UnitTypeInfo_Word06CappedAt(int x, int z)
 {
-    int type = FieldUnits_GetType(x, z);
+    int type = FieldUnits_Type(x, z);
     if (type >= COLLISION_TYPE_COUNT) {
         return -1;
     }
@@ -118,7 +118,7 @@ CLEAN_AS(func_02031aa0, UnitTypeInfo_Word06CappedAt)
 /* func_02031acc: byte 9 of the row of unit (x, z); 2 for a type without a row. */
 u8 UnitTypeInfo_Byte09At(int x, int z)
 {
-    int type = FieldUnits_GetType(x, z);
+    int type = FieldUnits_Type(x, z);
     return type < COLLISION_TYPE_COUNT ? unit_type_row(type)->unk_00[9] : 2;
 }
 CLEAN_AS(func_02031acc, UnitTypeInfo_Byte09At)
@@ -126,7 +126,7 @@ CLEAN_AS(func_02031acc, UnitTypeInfo_Byte09At)
 /* func_02031af0: byte 5 of the row of unit (x, z); 0 for a type without a row. */
 int UnitTypeInfo_Byte05At(int x, int z)
 {
-    int type = FieldUnits_GetType(x, z);
+    int type = FieldUnits_Type(x, z);
     return type < COLLISION_TYPE_COUNT ? unit_type_row(type)->unk_00[5] : 0;
 }
 CLEAN_AS(func_02031af0, UnitTypeInfo_Byte05At)
@@ -134,7 +134,7 @@ CLEAN_AS(func_02031af0, UnitTypeInfo_Byte05At)
 /* func_02031b14: byte 8 of the row of unit (x, z); 0 for a type without a row. */
 int UnitTypeInfo_Byte08At(int x, int z)
 {
-    int type = FieldUnits_GetType(x, z);
+    int type = FieldUnits_Type(x, z);
     return type < COLLISION_TYPE_COUNT ? unit_type_row(type)->unk_00[8] : 0;
 }
 CLEAN_AS(func_02031b14, UnitTypeInfo_Byte08At)
@@ -142,7 +142,7 @@ CLEAN_AS(func_02031b14, UnitTypeInfo_Byte08At)
 /* func_02031b38: byte 4 of the row of unit (x, z); 0 for a type without a row. */
 u8 UnitTypeInfo_Byte04At(int x, int z)
 {
-    int type = FieldUnits_GetType(x, z);
+    int type = FieldUnits_Type(x, z);
     return type < COLLISION_TYPE_COUNT ? unit_type_row(type)->unk_00[4] : 0;
 }
 CLEAN_AS(func_02031b38, UnitTypeInfo_Byte04At)
@@ -150,7 +150,7 @@ CLEAN_AS(func_02031b38, UnitTypeInfo_Byte04At)
 /* func_02031b5c: 1 for a unit of type 8; 2 for type 7 or 0x0b to 0x12; else 0. */
 int UnitTypeInfo_GroupAt(int x, int z)
 {
-    int type = FieldUnits_GetType(x, z);
+    int type = FieldUnits_Type(x, z);
     if (type == UNIT_TYPE_08) {
         return 1;
     }
@@ -165,7 +165,7 @@ CLEAN_AS(func_02031b5c, UnitTypeInfo_GroupAt)
  * turns type 3 into). */
 int UnitTypeInfo_IsType03Or1dAt(int x, int z)
 {
-    int type = FieldUnits_GetType(x, z);
+    int type = FieldUnits_Type(x, z);
     return type == UNIT_TYPE_03 || type == UNIT_TYPE_1D;
 }
 CLEAN_AS(func_02031b84, UnitTypeInfo_IsType03Or1dAt)
@@ -173,7 +173,7 @@ CLEAN_AS(func_02031b84, UnitTypeInfo_IsType03Or1dAt)
 /* func_02031ba0: whether unit (x, z) is of type 7. */
 int UnitTypeInfo_IsType07At(int x, int z)
 {
-    return FieldUnits_GetType(x, z) == UNIT_TYPE_07;
+    return FieldUnits_Type(x, z) == UNIT_TYPE_07;
 }
 CLEAN_AS(func_02031ba0, UnitTypeInfo_IsType07At)
 
@@ -207,7 +207,7 @@ extern int (*const data_020c905c[4])(int type);
  * set, through the table at data_020c906c. */
 int UnitTypeInfo_AltSideAttrAt(int x, int z, int side)
 {
-    return data_020c906c[side & 3](FieldUnits_GetType(x, z));
+    return data_020c906c[side & 3](FieldUnits_Type(x, z));
 }
 CLEAN_AS(func_02031ca8, UnitTypeInfo_AltSideAttrAt)
 
@@ -242,7 +242,7 @@ CLEAN_AS(func_02031d10, UnitTypeInfo_AltSideAttrEast)
  * set, through the table at data_020c905c. */
 int UnitTypeInfo_SideAttrAt(int x, int z, int side)
 {
-    return data_020c905c[side & 3](FieldUnits_GetType(x, z));
+    return data_020c905c[side & 3](FieldUnits_Type(x, z));
 }
 CLEAN_AS(func_02031d28, UnitTypeInfo_SideAttrAt)
 

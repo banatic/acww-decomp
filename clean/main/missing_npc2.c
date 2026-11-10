@@ -140,7 +140,7 @@ MissingNpc2 *MissingNpc2_Destruct(MissingNpc2 *self)
 CLEAN_AS(func_020c2c34, MissingNpc2_Destruct)
 
 /* func_020c2c5c (slot 0x44): destructed, then freed to the auxiliary heap. */
-MissingNpc2 *MissingNpc2_DestructDelete(MissingNpc2 *self)
+MissingNpc2 *MissingNpc2_Delete(MissingNpc2 *self)
 {
     *(const u8 **) (void *) self = data_020e7ea4;
     MissingNpc2Talk_Destruct((MissingNpc2Talk *) (void *) self->talk);
@@ -148,7 +148,7 @@ MissingNpc2 *MissingNpc2_DestructDelete(MissingNpc2 *self)
     Heap_FreeAux(self);
     return self;
 }
-CLEAN_AS(func_020c2c5c, MissingNpc2_DestructDelete)
+CLEAN_AS(func_020c2c5c, MissingNpc2_Delete)
 
 /* func_020c2c88: once the camera's box holds it again, MISSING_NPC2_WANDER. Always 1. */
 int MissingNpc2_UpdateOutOfView(MissingNpc2 *self)
@@ -567,14 +567,14 @@ void MissingNpc2Talk_SetOwner(MissingNpc2Talk *talk, MissingNpc2 *owner)
 CLEAN_AS(func_020c3350, MissingNpc2Talk_SetOwner)
 
 /* func_020c336c (the talk's slot 0x04): destructed, then freed (Heap_OperatorDeleteB). */
-MissingNpc2Talk *MissingNpc2Talk_DestructDelete(MissingNpc2Talk *talk)
+MissingNpc2Talk *MissingNpc2Talk_Delete(MissingNpc2Talk *talk)
 {
     *(const u8 **) (void *) talk = data_020e7e14;
     Obj020d9ff8_DestructBody(talk);
     Heap_OperatorDeleteB(talk);
     return talk;
 }
-CLEAN_AS(func_020c336c, MissingNpc2Talk_DestructDelete)
+CLEAN_AS(func_020c336c, MissingNpc2Talk_Delete)
 
 /* func_020c338c (the talk's slot 0x00): the destructor. */
 MissingNpc2Talk *MissingNpc2Talk_Destruct(MissingNpc2Talk *talk)

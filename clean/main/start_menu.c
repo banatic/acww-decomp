@@ -91,7 +91,7 @@ StartMenu *StartMenu_Destruct(StartMenu *menu)
 CLEAN_AS(func_0209f374, StartMenu_Destruct)
 
 /* func_0209f3a0: the destructor, then the object freed. */
-StartMenu *StartMenu_DestructFree(StartMenu *menu)
+StartMenu *StartMenu_DestructDelete(StartMenu *menu)
 {
     menu->process.vtable = data_020e3708;
     StartMenuReceiver_Destruct(&menu->receiver);
@@ -100,7 +100,7 @@ StartMenu *StartMenu_DestructFree(StartMenu *menu)
     Heap_FreeAux(menu);
     return menu;
 }
-CLEAN_AS(func_0209f3a0, StartMenu_DestructFree)
+CLEAN_AS(func_0209f3a0, StartMenu_DestructDelete)
 
 /* func_0209f3d0 (receiver slot 6): the answer to the talk's question. To START_MENU_ASK_LINKED,
  * yes (0) ends the talk and sends local status 2, no (1) asks START_MENU_ASK_AGAIN; to that,
@@ -169,14 +169,14 @@ void StartMenuReceiver_SetOwner(StartMenuReceiver *receiver, StartMenu *owner)
 CLEAN_AS(func_0209f4fc, StartMenuReceiver_SetOwner)
 
 /* func_0209f500: the destructor, then the object freed. */
-StartMenuReceiver *StartMenuReceiver_DestructFree(StartMenuReceiver *receiver)
+StartMenuReceiver *StartMenuReceiver_Delete(StartMenuReceiver *receiver)
 {
     receiver->vtable = data_020e3758;
     TalkReceiver_Destruct((TalkReceiver *) receiver);
     Heap_OperatorDeleteB(receiver);
     return receiver;
 }
-CLEAN_AS(func_0209f500, StartMenuReceiver_DestructFree)
+CLEAN_AS(func_0209f500, StartMenuReceiver_Delete)
 
 /* func_0209f520: the destructor. */
 StartMenuReceiver *StartMenuReceiver_Destruct(StartMenuReceiver *receiver)
@@ -202,7 +202,7 @@ CLEAN_AS(func_0209f538, StartMenuReceiver_Construct)
 static void update_wait(StartMenu *menu, u8 choice)
 {
     StartMenuTalk *talk = menu->receiver.talk;
-    int status = Session_GetLocalStatus();
+    int status = Session_LocalStatus();
     if (status != SESSION_STATUS_AGREED && status != SESSION_STATUS_REFUSED) {
         return;
     }

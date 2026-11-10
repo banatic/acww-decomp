@@ -23,7 +23,7 @@ void ShopPoints_AddSpent(u16 *count, int spent);
 void ShopPoints_Add(u16 *count, int points);
 void ShopPoints_SendLevelLetters(void);
 void ShopPoints_Clear(u16 *count);
-void ShopPoints_DoNothing(void);
+void ShopPoints_Nothing(void);
 u32 ShopPoints_Construct(u32 count);
 u16 *ShopPoints_Count(void *points);
 void ShopPoints_ResetA(void *count);

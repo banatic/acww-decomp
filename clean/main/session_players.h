@@ -78,13 +78,13 @@ SessionPlayers *SessionPlayers_Destruct(SessionPlayers *players);
 SessionPlayers *SessionPlayers_Construct(SessionPlayers *players);
 
 int SessionPlayers_FirstFreeLook(SessionPlayers *players);
-int SessionPlayers_GetLook(SessionPlayers *players, int player);
+int SessionPlayers_Look(SessionPlayers *players, int player);
 void SessionPlayers_ResetLook(SessionPlayers *players, int player);
 void SessionPlayers_PutLook(SessionPlayers *players, int player, int index);
-u8 SessionPlayers_GetRecord(SessionPlayers *players, int player);
+u8 SessionPlayers_Record(SessionPlayers *players, int player);
 void SessionPlayers_ResetRecord(SessionPlayers *players, int player);
 void SessionPlayers_PutRecord(SessionPlayers *players, int player, int number);
-struct FieldActor *SessionPlayers_GetActor(SessionPlayers *players, int player);
+struct FieldActor *SessionPlayers_Actor(SessionPlayers *players, int player);
 void SessionPlayers_ResetActor(SessionPlayers *players, int player);
 void SessionPlayers_PutActor(SessionPlayers *players, int player, struct FieldActor *actor);
 

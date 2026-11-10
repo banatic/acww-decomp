@@ -95,7 +95,7 @@ static CellLayerSprite *bank_sprite_cells(BankMenu *self)
 
 static MenuDispatch *bank_parent(BankMenu *self)
 {
-    return (MenuDispatch *) (void *) Process_GetParent((Process *) (void *) self);
+    return (MenuDispatch *) (void *) Process_Parent((Process *) (void *) self);
 }
 
 /* The cursor sprite's update through its class (vtable slot 3, Glider_Update for the base). */
@@ -586,22 +586,22 @@ CLEAN_AS(func_ov132_0229b51c, BankMenu_BeginInteractiveFrame)
 
 /* func_ov132_0229b534: the members torn down: the panel's texts and the labels' boxes closed,
  * both screen tasks ended. */
-void BankMenu_Teardown(BankMenu *self)
+void BankMenu_TearDown(BankMenu *self)
 {
     ButtonPanel_CloseTexts(&self->panel);
     BankMenu_CloseLabels(self);
     LayerTask_End(&self->screen_tasks[0]);
     LayerTask_End(&self->screen_tasks[1]);
 }
-CLEAN_AS(func_ov132_0229b534, BankMenu_Teardown)
+CLEAN_AS(func_ov132_0229b534, BankMenu_TearDown)
 
 /* func_ov132_0229b564: the setup: the cursor at the first row, no flags. */
-void BankMenu_Setup(BankMenu *self)
+void BankMenu_SetUp(BankMenu *self)
 {
     self->cursor = BANK_MENU_DEPOSIT;
     self->flags = 0;
 }
-CLEAN_AS(func_ov132_0229b564, BankMenu_Setup)
+CLEAN_AS(func_ov132_0229b564, BankMenu_SetUp)
 
 /* func_ov132_0229b578: layers 6 and 4 scrolled with the wipe. */
 void BankMenu_ScrollWithWipe(BankMenu *self)
@@ -764,7 +764,7 @@ CLEAN_AS(func_ov132_0229b810, BankMenu_Draw)
 int BankMenu_Close(BankMenu *self)
 {
     MenuDispatch_ChildClosed(bank_parent(self));
-    BankMenu_Teardown(self);
+    BankMenu_TearDown(self);
     return 1;
 }
 CLEAN_AS(func_ov132_0229b84c, BankMenu_Close)
@@ -773,7 +773,7 @@ CLEAN_AS(func_ov132_0229b84c, BankMenu_Close)
  * and phase 0. Answers 1. */
 int BankMenu_Start(BankMenu *self)
 {
-    BankMenu_Setup(self);
+    BankMenu_SetUp(self);
     self->base.state = BANK_MENU_STATE_START_WIPE_IN;
     MenuScene_SetPhase(bank_scene(self), 0);
     return 1;

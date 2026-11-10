@@ -360,11 +360,11 @@ int OutdoorVillagerObject_Start(u8 *villager)
     OutdoorVillagerBehaviour *behaviour = object_behaviour(villager);
     *(MemberPointer *) (void *) object_at(villager, OBJECT_DRAW_HOOK) = data_ov068_02276eb0;
     OutdoorVillagerWatch_HoldOnPlayer((OutdoorVillagerWatch *) (void *) object_at(villager, OUTDOOR_VILLAGER_WATCH), villager);
-    int named = VillagerState_GetBirthdayGreeter();
+    int named = VillagerState_BirthdayGreeter();
     OutdoorVillagerWalks_InitItemCheck(behaviour);
     if (named == VillagerStatus_Index(record)) {
         OutdoorVillagerBehaviour_Start(behaviour, villager, OBJECT_DO_GREETER);
-    } else if (VillagerState_GetBirthdayVillager() == VillagerStatus_Index(record)) {
+    } else if (VillagerState_BirthdayVillager() == VillagerStatus_Index(record)) {
         OutdoorVillagerBehaviour_Start(behaviour, villager, OBJECT_DO_12);
     } else {
         int status = VillagerStatus_Get(record);

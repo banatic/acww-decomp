@@ -248,7 +248,7 @@ int ActivitySave_HostSteps(Activity *activity, u8 *step, int forced, int first, 
             if (Net_CanSend() == 0) {
                 break;
             }
-            if (SystemPacket_SendActivityPlayerEF(ACTIVITY_ANSWER_OK, Session_GetPeerMask()) == 0) {
+            if (SystemPacket_SendActivityPlayerEF(ACTIVITY_ANSWER_OK, Session_PeerMask()) == 0) {
                 break;
             }
             SaveStamp_MarkWritten(&data_021f3ba0);
@@ -269,7 +269,7 @@ int ActivitySave_HostSteps(Activity *activity, u8 *step, int forced, int first, 
             if (link_lost(aids)) {
                 break;
             }
-            u16 to = (u16) Session_GetPeerMask();
+            u16 to = (u16) Session_PeerMask();
             if (slot < ACTIVITY_SLOTS) {
                 to = (u16) (to | shift_left(1, slot));
             }

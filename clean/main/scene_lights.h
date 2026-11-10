@@ -155,7 +155,7 @@ typedef struct SceneLightsRotation {
 } SceneLightsRotation;
 
 SceneLights *SceneLights_Destruct(SceneLights *self);
-SceneLights *SceneLights_DestructFree(SceneLights *self);
+SceneLights *SceneLights_DestructDelete(SceneLights *self);
 SceneLight *SceneLight_Destruct(SceneLight *light);
 void SceneLights_RequestOff(u32 index, u32 duration);
 void SceneLights_RequestOn(int index, int duration, int mode);

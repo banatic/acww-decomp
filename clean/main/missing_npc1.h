@@ -100,7 +100,7 @@ int MissingNpc1_Start(MissingNpc1 *self);
 int MissingNpc1_Init(MissingNpc1 *self);
 int MissingNpc1_Leave(MissingNpc1 *self);
 MissingNpc1 *MissingNpc1_Destruct(MissingNpc1 *self);
-MissingNpc1 *MissingNpc1_DestructDelete(MissingNpc1 *self);
+MissingNpc1 *MissingNpc1_Delete(MissingNpc1 *self);
 int MissingNpc1_MayAct(MissingNpc1 *self);
 void MissingNpc1_OnEvent(MissingNpc1 *self, int code);
 int MissingNpc1_Update(MissingNpc1 *self);
@@ -136,7 +136,7 @@ int MissingNpc1_UpdateScene2F(MissingNpc1 *self);
 /* Its talk scene. */
 MissingNpc1Talk *MissingNpc1Talk_Construct(MissingNpc1Talk *talk);
 MissingNpc1Talk *MissingNpc1Talk_Destruct(MissingNpc1Talk *talk);
-MissingNpc1Talk *MissingNpc1Talk_DestructDelete(MissingNpc1Talk *talk);
+MissingNpc1Talk *MissingNpc1Talk_Delete(MissingNpc1Talk *talk);
 void MissingNpc1Talk_SetOwner(MissingNpc1Talk *talk, struct MissingNpc1 *owner);
 u32 MissingNpc1Talk_Topic(MissingNpc1Talk *talk);
 void MissingNpc1Talk_SetTopic(MissingNpc1Talk *talk, u32 topic);

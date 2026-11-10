@@ -99,7 +99,7 @@ enum {
 /* The end of each start: the sound heap's state saved, the players' heaps no longer kept. */
 static void finish_start(void)
 {
-    NNS_SndHeapSaveState((void *) (uintptr_t) Sound_GetHeap());
+    NNS_SndHeapSaveState((void *) (uintptr_t) Sound_Heap());
     data_021fd1bc.keep_heaps = 0;
 }
 
@@ -113,14 +113,14 @@ void SoundScene99_Start(SoundScene *scene)
 CLEAN_AS(func_020f2500, SoundScene99_Start)
 
 /* func_020f2540: slot 1. */
-SoundScene *SoundScene99_DestructDelete(SoundScene *scene)
+SoundScene *SoundScene99_Delete(SoundScene *scene)
 {
     scene->vtable = &data_0213ef4c;
     SoundSceneBase_DestructBase(scene);
     Heap_OperatorDeleteB(scene);
     return scene;
 }
-CLEAN_AS(func_020f2540, SoundScene99_DestructDelete)
+CLEAN_AS(func_020f2540, SoundScene99_Delete)
 
 /* func_020f256c: slot 0. */
 SoundScene *SoundScene99_Destruct(SoundScene *scene)
@@ -148,21 +148,21 @@ void SoundScene60_Start(SoundScene *scene)
     SoundScene_LoadGroup(scene, 0x21ef8, 4);
     SoundScene_CreatePlayer11Heaps(scene, 2);
     SoundScene_CreatePlayer12Heaps(scene);
-    NNS_SndHeapSaveState((void *) (uintptr_t) Sound_GetHeap());
+    NNS_SndHeapSaveState((void *) (uintptr_t) Sound_Heap());
     SoundSystem_LoadBank(&data_021fd1bc, BANK_60);
     data_021fd1bc.keep_heaps = 0;
 }
 CLEAN_AS(func_020f25bc, SoundScene60_Start)
 
 /* func_020f2614: slot 1. */
-SoundScene *SoundScene60_DestructDelete(SoundScene *scene)
+SoundScene *SoundScene60_Delete(SoundScene *scene)
 {
     scene->vtable = &data_0213ef18;
     SoundScene1_DestructBase(scene);
     Heap_OperatorDeleteB(scene);
     return scene;
 }
-CLEAN_AS(func_020f2614, SoundScene60_DestructDelete)
+CLEAN_AS(func_020f2614, SoundScene60_Delete)
 
 /* func_020f2640: slot 0. */
 SoundScene *SoundScene60_Destruct(SoundScene *scene)
@@ -193,14 +193,14 @@ void SoundScene52_Start(SoundScene *scene)
 CLEAN_AS(func_020f2690, SoundScene52_Start)
 
 /* func_020f26d0: slot 1. */
-SoundScene *SoundScene52_DestructDelete(SoundScene *scene)
+SoundScene *SoundScene52_Delete(SoundScene *scene)
 {
     scene->vtable = &data_0213eee4;
     SoundSceneBase_DestructBase(scene);
     Heap_OperatorDeleteB(scene);
     return scene;
 }
-CLEAN_AS(func_020f26d0, SoundScene52_DestructDelete)
+CLEAN_AS(func_020f26d0, SoundScene52_Delete)
 
 /* func_020f26fc: slot 0. */
 SoundScene *SoundScene52_Destruct(SoundScene *scene)
@@ -245,14 +245,14 @@ void SoundScene51_Start(SoundScene *scene)
 CLEAN_AS(func_020f2784, SoundScene51_Start)
 
 /* func_020f27c4: slot 1. */
-SoundScene *SoundScene51_DestructDelete(SoundScene *scene)
+SoundScene *SoundScene51_Delete(SoundScene *scene)
 {
     scene->vtable = &data_0213eeb0;
     SoundSceneBase_DestructBase(scene);
     Heap_OperatorDeleteB(scene);
     return scene;
 }
-CLEAN_AS(func_020f27c4, SoundScene51_DestructDelete)
+CLEAN_AS(func_020f27c4, SoundScene51_Delete)
 
 /* func_020f27f0: slot 0. */
 SoundScene *SoundScene51_Destruct(SoundScene *scene)
@@ -285,14 +285,14 @@ void SoundScene50_Start(SoundScene *scene)
 CLEAN_AS(func_020f2840, SoundScene50_Start)
 
 /* func_020f2888: slot 1. */
-SoundScene *SoundScene50_DestructDelete(SoundScene *scene)
+SoundScene *SoundScene50_Delete(SoundScene *scene)
 {
     scene->vtable = &data_0213ee7c;
     SoundSceneBase_DestructBase(scene);
     Heap_OperatorDeleteB(scene);
     return scene;
 }
-CLEAN_AS(func_020f2888, SoundScene50_DestructDelete)
+CLEAN_AS(func_020f2888, SoundScene50_Delete)
 
 /* func_020f28b4: slot 0. */
 SoundScene *SoundScene50_Destruct(SoundScene *scene)
@@ -326,14 +326,14 @@ void SoundScene48_Start(SoundScene *scene)
 CLEAN_AS(func_020f290c, SoundScene48_Start)
 
 /* func_020f2954: slot 1. */
-SoundScene *SoundScene48_DestructDelete(SoundScene *scene)
+SoundScene *SoundScene48_Delete(SoundScene *scene)
 {
     scene->vtable = &data_0213ee48;
     SoundSceneBase_DestructBase(scene);
     Heap_OperatorDeleteB(scene);
     return scene;
 }
-CLEAN_AS(func_020f2954, SoundScene48_DestructDelete)
+CLEAN_AS(func_020f2954, SoundScene48_Delete)
 
 /* func_020f2980: slot 0. */
 SoundScene *SoundScene48_Destruct(SoundScene *scene)
@@ -366,14 +366,14 @@ void SoundScene47_Start(SoundScene *scene)
 CLEAN_AS(func_020f29d0, SoundScene47_Start)
 
 /* func_020f2a18: slot 1. */
-SoundScene *SoundScene47_DestructDelete(SoundScene *scene)
+SoundScene *SoundScene47_Delete(SoundScene *scene)
 {
     scene->vtable = &data_0213ee14;
     SoundSceneBase_DestructBase(scene);
     Heap_OperatorDeleteB(scene);
     return scene;
 }
-CLEAN_AS(func_020f2a18, SoundScene47_DestructDelete)
+CLEAN_AS(func_020f2a18, SoundScene47_Delete)
 
 /* func_020f2a44: slot 0. */
 SoundScene *SoundScene47_Destruct(SoundScene *scene)
@@ -406,14 +406,14 @@ void SoundScene46_Start(SoundScene *scene)
 CLEAN_AS(func_020f2a94, SoundScene46_Start)
 
 /* func_020f2adc: slot 1. */
-SoundScene *SoundScene46_DestructDelete(SoundScene *scene)
+SoundScene *SoundScene46_Delete(SoundScene *scene)
 {
     scene->vtable = &data_0213ede0;
     SoundSceneBase_DestructBase(scene);
     Heap_OperatorDeleteB(scene);
     return scene;
 }
-CLEAN_AS(func_020f2adc, SoundScene46_DestructDelete)
+CLEAN_AS(func_020f2adc, SoundScene46_Delete)
 
 /* func_020f2b08: slot 0. */
 SoundScene *SoundScene46_Destruct(SoundScene *scene)
@@ -446,14 +446,14 @@ void SoundScene45_Start(SoundScene *scene)
 CLEAN_AS(func_020f2b58, SoundScene45_Start)
 
 /* func_020f2ba0: slot 1. */
-SoundScene *SoundScene45_DestructDelete(SoundScene *scene)
+SoundScene *SoundScene45_Delete(SoundScene *scene)
 {
     scene->vtable = &data_0213edac;
     SoundSceneBase_DestructBase(scene);
     Heap_OperatorDeleteB(scene);
     return scene;
 }
-CLEAN_AS(func_020f2ba0, SoundScene45_DestructDelete)
+CLEAN_AS(func_020f2ba0, SoundScene45_Delete)
 
 /* func_020f2bcc: slot 0. */
 SoundScene *SoundScene45_Destruct(SoundScene *scene)
@@ -486,14 +486,14 @@ void SoundScene44_Start(SoundScene *scene)
 CLEAN_AS(func_020f2c1c, SoundScene44_Start)
 
 /* func_020f2c64: slot 1. */
-SoundScene *SoundScene44_DestructDelete(SoundScene *scene)
+SoundScene *SoundScene44_Delete(SoundScene *scene)
 {
     scene->vtable = &data_0213ed78;
     SoundSceneBase_DestructBase(scene);
     Heap_OperatorDeleteB(scene);
     return scene;
 }
-CLEAN_AS(func_020f2c64, SoundScene44_DestructDelete)
+CLEAN_AS(func_020f2c64, SoundScene44_Delete)
 
 /* func_020f2c90: slot 0. */
 SoundScene *SoundScene44_Destruct(SoundScene *scene)
@@ -526,14 +526,14 @@ void SoundScene43_Start(SoundScene *scene)
 CLEAN_AS(func_020f2ce0, SoundScene43_Start)
 
 /* func_020f2d28: slot 1. */
-SoundScene *SoundScene43_DestructDelete(SoundScene *scene)
+SoundScene *SoundScene43_Delete(SoundScene *scene)
 {
     scene->vtable = &data_0213ed44;
     SoundSceneBase_DestructBase(scene);
     Heap_OperatorDeleteB(scene);
     return scene;
 }
-CLEAN_AS(func_020f2d28, SoundScene43_DestructDelete)
+CLEAN_AS(func_020f2d28, SoundScene43_Delete)
 
 /* func_020f2d54: slot 0. */
 SoundScene *SoundScene43_Destruct(SoundScene *scene)
@@ -566,14 +566,14 @@ void SoundScene42_Start(SoundScene *scene)
 CLEAN_AS(func_020f2da4, SoundScene42_Start)
 
 /* func_020f2dec: slot 1. */
-SoundScene *SoundScene42_DestructDelete(SoundScene *scene)
+SoundScene *SoundScene42_Delete(SoundScene *scene)
 {
     scene->vtable = &data_0213ed10;
     SoundSceneBase_DestructBase(scene);
     Heap_OperatorDeleteB(scene);
     return scene;
 }
-CLEAN_AS(func_020f2dec, SoundScene42_DestructDelete)
+CLEAN_AS(func_020f2dec, SoundScene42_Delete)
 
 /* func_020f2e18: slot 0. */
 SoundScene *SoundScene42_Destruct(SoundScene *scene)
@@ -629,7 +629,7 @@ void SoundScene41_OnMusic(SoundScene41 *scene, int stopped, unsigned int music)
 CLEAN_AS(func_020f2e68, SoundScene41_OnMusic)
 
 /* func_020f2f1c: slot 1. */
-SoundScene41 *SoundScene41_DestructDelete(SoundScene41 *scene)
+SoundScene41 *SoundScene41_Delete(SoundScene41 *scene)
 {
     scene->base.vtable = &data_0213ecdc;
     MusicBeatShow_Destruct(&scene->part);
@@ -637,7 +637,7 @@ SoundScene41 *SoundScene41_DestructDelete(SoundScene41 *scene)
     Heap_OperatorDeleteB(scene);
     return scene;
 }
-CLEAN_AS(func_020f2f1c, SoundScene41_DestructDelete)
+CLEAN_AS(func_020f2f1c, SoundScene41_Delete)
 
 /* func_020f2f54: slot 0. */
 SoundScene41 *SoundScene41_Destruct(SoundScene41 *scene)
@@ -672,14 +672,14 @@ void SoundScene40_Start(SoundScene *scene)
 CLEAN_AS(func_020f2fb8, SoundScene40_Start)
 
 /* func_020f3000: slot 1. */
-SoundScene *SoundScene40_DestructDelete(SoundScene *scene)
+SoundScene *SoundScene40_Delete(SoundScene *scene)
 {
     scene->vtable = &data_0213eca8;
     SoundSceneBase_DestructBase(scene);
     Heap_OperatorDeleteB(scene);
     return scene;
 }
-CLEAN_AS(func_020f3000, SoundScene40_DestructDelete)
+CLEAN_AS(func_020f3000, SoundScene40_Delete)
 
 /* func_020f302c: slot 0. */
 SoundScene *SoundScene40_Destruct(SoundScene *scene)
@@ -712,14 +712,14 @@ void SoundScene35_Start(SoundScene *scene)
 CLEAN_AS(func_020f307c, SoundScene35_Start)
 
 /* func_020f30c4: slot 1. */
-SoundScene *SoundScene35_DestructDelete(SoundScene *scene)
+SoundScene *SoundScene35_Delete(SoundScene *scene)
 {
     scene->vtable = &data_0213ec74;
     SoundSceneBase_DestructBase(scene);
     Heap_OperatorDeleteB(scene);
     return scene;
 }
-CLEAN_AS(func_020f30c4, SoundScene35_DestructDelete)
+CLEAN_AS(func_020f30c4, SoundScene35_Delete)
 
 /* func_020f30f0: slot 0. */
 SoundScene *SoundScene35_Destruct(SoundScene *scene)
@@ -754,14 +754,14 @@ void SoundScene34_Start(SoundScene *scene)
 CLEAN_AS(func_020f3140, SoundScene34_Start)
 
 /* func_020f3198: slot 1. */
-SoundScene *SoundScene34_DestructDelete(SoundScene *scene)
+SoundScene *SoundScene34_Delete(SoundScene *scene)
 {
     scene->vtable = &data_0213e9d0;
     SoundSceneBase_DestructBase(scene);
     Heap_OperatorDeleteB(scene);
     return scene;
 }
-CLEAN_AS(func_020f3198, SoundScene34_DestructDelete)
+CLEAN_AS(func_020f3198, SoundScene34_Delete)
 
 /* func_020f31c4: slot 0. */
 SoundScene *SoundScene34_Destruct(SoundScene *scene)
@@ -796,14 +796,14 @@ void SoundScene33_Start(SoundScene *scene)
 CLEAN_AS(func_020f3214, SoundScene33_Start)
 
 /* func_020f326c: slot 1. */
-SoundScene *SoundScene33_DestructDelete(SoundScene *scene)
+SoundScene *SoundScene33_Delete(SoundScene *scene)
 {
     scene->vtable = &data_0213ec0c;
     SoundSceneBase_DestructBase(scene);
     Heap_OperatorDeleteB(scene);
     return scene;
 }
-CLEAN_AS(func_020f326c, SoundScene33_DestructDelete)
+CLEAN_AS(func_020f326c, SoundScene33_Delete)
 
 /* func_020f3298: slot 0. */
 SoundScene *SoundScene33_Destruct(SoundScene *scene)
@@ -838,14 +838,14 @@ void SoundScene32_Start(SoundScene *scene)
 CLEAN_AS(func_020f32e8, SoundScene32_Start)
 
 /* func_020f3340: slot 1. */
-SoundScene *SoundScene32_DestructDelete(SoundScene *scene)
+SoundScene *SoundScene32_Delete(SoundScene *scene)
 {
     scene->vtable = &data_0213ebd8;
     SoundSceneBase_DestructBase(scene);
     Heap_OperatorDeleteB(scene);
     return scene;
 }
-CLEAN_AS(func_020f3340, SoundScene32_DestructDelete)
+CLEAN_AS(func_020f3340, SoundScene32_Delete)
 
 /* func_020f336c: slot 0. */
 SoundScene *SoundScene32_Destruct(SoundScene *scene)
@@ -880,14 +880,14 @@ void SoundScene31_Start(SoundScene *scene)
 CLEAN_AS(func_020f33bc, SoundScene31_Start)
 
 /* func_020f3414: slot 1. */
-SoundScene *SoundScene31_DestructDelete(SoundScene *scene)
+SoundScene *SoundScene31_Delete(SoundScene *scene)
 {
     scene->vtable = &data_0213eba4;
     SoundSceneBase_DestructBase(scene);
     Heap_OperatorDeleteB(scene);
     return scene;
 }
-CLEAN_AS(func_020f3414, SoundScene31_DestructDelete)
+CLEAN_AS(func_020f3414, SoundScene31_Delete)
 
 /* func_020f3440: slot 0. */
 SoundScene *SoundScene31_Destruct(SoundScene *scene)
@@ -922,14 +922,14 @@ void SoundScene30_Start(SoundScene *scene)
 CLEAN_AS(func_020f3490, SoundScene30_Start)
 
 /* func_020f34e8: slot 1. */
-SoundScene *SoundScene30_DestructDelete(SoundScene *scene)
+SoundScene *SoundScene30_Delete(SoundScene *scene)
 {
     scene->vtable = &data_0213eb70;
     SoundSceneBase_DestructBase(scene);
     Heap_OperatorDeleteB(scene);
     return scene;
 }
-CLEAN_AS(func_020f34e8, SoundScene30_DestructDelete)
+CLEAN_AS(func_020f34e8, SoundScene30_Delete)
 
 /* func_020f3514: slot 0. */
 SoundScene *SoundScene30_Destruct(SoundScene *scene)
@@ -962,14 +962,14 @@ void SoundScene24_Start(SoundScene *scene)
 CLEAN_AS(func_020f3564, SoundScene24_Start)
 
 /* func_020f35ac: slot 1. */
-SoundScene *SoundScene24_DestructDelete(SoundScene *scene)
+SoundScene *SoundScene24_Delete(SoundScene *scene)
 {
     scene->vtable = &data_0213eb3c;
     SoundSceneBase_DestructBase(scene);
     Heap_OperatorDeleteB(scene);
     return scene;
 }
-CLEAN_AS(func_020f35ac, SoundScene24_DestructDelete)
+CLEAN_AS(func_020f35ac, SoundScene24_Delete)
 
 /* func_020f35d8: slot 0. */
 SoundScene *SoundScene24_Destruct(SoundScene *scene)
@@ -1004,14 +1004,14 @@ void SoundScene23_Start(SoundScene *scene)
 CLEAN_AS(func_020f3628, SoundScene23_Start)
 
 /* func_020f3680: slot 1. */
-SoundScene *SoundScene23_DestructDelete(SoundScene *scene)
+SoundScene *SoundScene23_Delete(SoundScene *scene)
 {
     scene->vtable = &data_0213eb08;
     SoundSceneBase_DestructBase(scene);
     Heap_OperatorDeleteB(scene);
     return scene;
 }
-CLEAN_AS(func_020f3680, SoundScene23_DestructDelete)
+CLEAN_AS(func_020f3680, SoundScene23_Delete)
 
 /* func_020f36ac: slot 0. */
 SoundScene *SoundScene23_Destruct(SoundScene *scene)
@@ -1044,14 +1044,14 @@ void SoundScene22_Start(SoundScene *scene)
 CLEAN_AS(func_020f36fc, SoundScene22_Start)
 
 /* func_020f3744: slot 1. */
-SoundScene *SoundScene22_DestructDelete(SoundScene *scene)
+SoundScene *SoundScene22_Delete(SoundScene *scene)
 {
     scene->vtable = &data_0213ead4;
     SoundSceneBase_DestructBase(scene);
     Heap_OperatorDeleteB(scene);
     return scene;
 }
-CLEAN_AS(func_020f3744, SoundScene22_DestructDelete)
+CLEAN_AS(func_020f3744, SoundScene22_Delete)
 
 /* func_020f3770: slot 0. */
 SoundScene *SoundScene22_Destruct(SoundScene *scene)
@@ -1084,14 +1084,14 @@ void SoundScene21_Start(SoundScene *scene)
 CLEAN_AS(func_020f37c0, SoundScene21_Start)
 
 /* func_020f3808: slot 1. */
-SoundScene *SoundScene21_DestructDelete(SoundScene *scene)
+SoundScene *SoundScene21_Delete(SoundScene *scene)
 {
     scene->vtable = &data_0213eaa0;
     SoundSceneBase_DestructBase(scene);
     Heap_OperatorDeleteB(scene);
     return scene;
 }
-CLEAN_AS(func_020f3808, SoundScene21_DestructDelete)
+CLEAN_AS(func_020f3808, SoundScene21_Delete)
 
 /* func_020f3834: slot 0. */
 SoundScene *SoundScene21_Destruct(SoundScene *scene)
@@ -1124,14 +1124,14 @@ void SoundScene20_Start(SoundScene *scene)
 CLEAN_AS(func_020f3884, SoundScene20_Start)
 
 /* func_020f38cc: slot 1. */
-SoundScene *SoundScene20_DestructDelete(SoundScene *scene)
+SoundScene *SoundScene20_Delete(SoundScene *scene)
 {
     scene->vtable = &data_0213ea6c;
     SoundSceneBase_DestructBase(scene);
     Heap_OperatorDeleteB(scene);
     return scene;
 }
-CLEAN_AS(func_020f38cc, SoundScene20_DestructDelete)
+CLEAN_AS(func_020f38cc, SoundScene20_Delete)
 
 /* func_020f38f8: slot 0. */
 SoundScene *SoundScene20_Destruct(SoundScene *scene)
@@ -1164,14 +1164,14 @@ void SoundScene19_Start(SoundScene *scene)
 CLEAN_AS(func_020f3948, SoundScene19_Start)
 
 /* func_020f3990: slot 1. */
-SoundScene *SoundScene19_DestructDelete(SoundScene *scene)
+SoundScene *SoundScene19_Delete(SoundScene *scene)
 {
     scene->vtable = &data_0213ea38;
     SoundSceneBase_DestructBase(scene);
     Heap_OperatorDeleteB(scene);
     return scene;
 }
-CLEAN_AS(func_020f3990, SoundScene19_DestructDelete)
+CLEAN_AS(func_020f3990, SoundScene19_Delete)
 
 /* func_020f39bc: slot 0. */
 SoundScene *SoundScene19_Destruct(SoundScene *scene)
@@ -1199,7 +1199,7 @@ void SoundScene10_ReloadSounds(SoundScene10 *scene)
     SoundSceneBase_RestoreHeap(&scene->base);
     SoundSystem_LoadBank(&data_021fd1bc, BANK_10);
     SoundScene_CreatePlayer12Heaps(&scene->base);
-    NNS_SndHeapSaveState((void *) (uintptr_t) Sound_GetHeap());
+    NNS_SndHeapSaveState((void *) (uintptr_t) Sound_Heap());
     scene->stage = 1;
 }
 CLEAN_AS(func_020f3a0c, SoundScene10_ReloadSounds)
@@ -1246,7 +1246,7 @@ void SoundScene10_Start(SoundScene10 *scene)
     SoundScene_CreatePlayer17Heaps(&scene->base);
     SoundScene_CreatePlayer18And19Heaps(&scene->base);
 
-    heap = (void *) (uintptr_t) Sound_GetHeap();
+    heap = (void *) (uintptr_t) Sound_Heap();
     func_0210e160(9, heap);
     NNS_SndHeapSaveState(heap);
     /* QUIRK: the level is kept as a byte. */
@@ -1265,7 +1265,7 @@ void SoundScene10_Start(SoundScene10 *scene)
 CLEAN_AS(func_020f3ab4, SoundScene10_Start)
 
 /* func_020f3b80: slot 1. */
-SoundScene10 *SoundScene10_DestructDelete(SoundScene10 *scene)
+SoundScene10 *SoundScene10_Delete(SoundScene10 *scene)
 {
     scene->base.vtable = &data_0213ea04;
     MusicBeat_Destruct(&scene->part);
@@ -1273,7 +1273,7 @@ SoundScene10 *SoundScene10_DestructDelete(SoundScene10 *scene)
     Heap_OperatorDeleteB(scene);
     return scene;
 }
-CLEAN_AS(func_020f3b80, SoundScene10_DestructDelete)
+CLEAN_AS(func_020f3b80, SoundScene10_Delete)
 
 /* func_020f3bb8: slot 0. */
 SoundScene10 *SoundScene10_Destruct(SoundScene10 *scene)
@@ -1305,21 +1305,21 @@ void SoundScene3_Start(SoundScene *scene)
     SoundScene_CreatePlayer11Heaps(scene, 2);
     SoundScene_CreatePlayer13Heap(scene);
     SoundScene_CreatePlayer12Heaps(scene);
-    NNS_SndHeapSaveState((void *) (uintptr_t) Sound_GetHeap());
+    NNS_SndHeapSaveState((void *) (uintptr_t) Sound_Heap());
     SoundSystem_LoadBank(&data_021fd1bc, BANK_60);
     data_021fd1bc.keep_heaps = 0;
 }
 CLEAN_AS(func_020f3c24, SoundScene3_Start)
 
 /* func_020f3c84: slot 1. */
-SoundScene *SoundScene3_DestructDelete(SoundScene *scene)
+SoundScene *SoundScene3_Delete(SoundScene *scene)
 {
     scene->vtable = &data_0213ec40;
     SoundScene1_DestructBase(scene);
     Heap_OperatorDeleteB(scene);
     return scene;
 }
-CLEAN_AS(func_020f3c84, SoundScene3_DestructDelete)
+CLEAN_AS(func_020f3c84, SoundScene3_Delete)
 
 /* func_020f3cb0: slot 0. */
 SoundScene *SoundScene3_Destruct(SoundScene *scene)
@@ -1354,21 +1354,21 @@ void SoundScene2_Start(SoundScene *scene)
     SoundScene_LoadGroup(scene, 0x1f340, 2);
     SoundScene_CreatePlayer11Heaps(scene, 2);
     SoundScene_CreatePlayer12Heaps(scene);
-    NNS_SndHeapSaveState((void *) (uintptr_t) Sound_GetHeap());
+    NNS_SndHeapSaveState((void *) (uintptr_t) Sound_Heap());
     SoundSystem_LoadBank(&data_021fd1bc, BANK_60);
     data_021fd1bc.keep_heaps = 0;
 }
 CLEAN_AS(func_020f3d1c, SoundScene2_Start)
 
 /* func_020f3d74: slot 1. */
-SoundScene *SoundScene2_DestructDelete(SoundScene *scene)
+SoundScene *SoundScene2_Delete(SoundScene *scene)
 {
     scene->vtable = &data_0213e99c;
     SoundScene1_DestructBase(scene);
     Heap_OperatorDeleteB(scene);
     return scene;
 }
-CLEAN_AS(func_020f3d74, SoundScene2_DestructDelete)
+CLEAN_AS(func_020f3d74, SoundScene2_Delete)
 
 /* func_020f3da0: slot 0. */
 SoundScene *SoundScene2_Destruct(SoundScene *scene)
@@ -1397,7 +1397,7 @@ CLEAN_AS(func_020f3dc4, SoundScene2_Construct)
 void SoundScene1_Vfunc24(SoundScene *scene, int value)
 {
     (void) scene;
-    Sound_RestoreHeapLevel(Sound_GetHeapLevel());
+    Sound_RestoreHeapLevel(Sound_HeapLevel());
     if (value == 0) {
         SoundSystem_LoadBank(&data_021fd1bc, BANK_60);
     } else if (value == 1) {
@@ -1418,7 +1418,7 @@ CLEAN_AS(func_020f3e5c, SoundScene1_Vfunc20)
 /* func_020f3e84: slot 7: the sound heap back to its saved state (dropping bank 0x8f), then the base class's. */
 int SoundScene1_SetVoiceType(SoundScene *scene, int mode)
 {
-    Sound_RestoreHeapLevel(Sound_GetHeapLevel());
+    Sound_RestoreHeapLevel(Sound_HeapLevel());
     return SoundSceneBase_SetVoiceType(scene, (unsigned int) mode);
 }
 CLEAN_AS(func_020f3e84, SoundScene1_SetVoiceType)
@@ -1431,7 +1431,7 @@ void SoundScene1_Start(SoundScene *scene)
     SoundScene_CreatePlayer11Heaps(scene, 3);
     SoundScene_CreatePlayer13Heap(scene);
     SoundScene_CreatePlayer12Heaps(scene);
-    NNS_SndHeapSaveState((void *) (uintptr_t) Sound_GetHeap());
+    NNS_SndHeapSaveState((void *) (uintptr_t) Sound_Heap());
     SoundSystem_LoadBank(&data_021fd1bc, BANK_60);
     data_021fd1bc.keep_heaps = 0;
 }
@@ -1447,14 +1447,14 @@ SoundScene *SoundScene1_DestructBase(SoundScene *scene)
 CLEAN_AS(func_020f3f14, SoundScene1_DestructBase)
 
 /* func_020f3f38: slot 1. */
-SoundScene *SoundScene1_DestructDelete(SoundScene *scene)
+SoundScene *SoundScene1_Delete(SoundScene *scene)
 {
     scene->vtable = &data_0213ef80;
     SoundSceneBase_DestructBase(scene);
     Heap_OperatorDeleteB(scene);
     return scene;
 }
-CLEAN_AS(func_020f3f38, SoundScene1_DestructDelete)
+CLEAN_AS(func_020f3f38, SoundScene1_Delete)
 
 /* func_020f3f64: slot 0; the same as func_020f3f14. */
 SoundScene *SoundScene1_Destruct(SoundScene *scene)
@@ -1499,7 +1499,7 @@ CLEAN_AS(func_020f3fe0, SoundScene1_ConstructBase)
 /* func_020f4038: player 12's two heaps of 0x8cc bytes; the result is the second one's. */
 int SoundScene_CreatePlayer12Heaps(SoundScene *scene)
 {
-    void *heap = (void *) (uintptr_t) Sound_GetHeap();
+    void *heap = (void *) (uintptr_t) Sound_Heap();
 
     (void) scene;
     NNS_SndPlayerCreateHeap(12, heap, 0x8cc);
@@ -1511,14 +1511,14 @@ CLEAN_AS(func_020f4038, SoundScene_CreatePlayer12Heaps)
 void SoundScene_CreatePlayer13Heap(SoundScene *scene)
 {
     (void) scene;
-    NNS_SndPlayerCreateHeap(13, (void *) (uintptr_t) Sound_GetHeap(), 0x1f4c);
+    NNS_SndPlayerCreateHeap(13, (void *) (uintptr_t) Sound_Heap(), 0x1f4c);
 }
 CLEAN_AS(func_020f4080, SoundScene_CreatePlayer13Heap)
 
 /* func_020f40ac: player 18's heap of 0x5ecc bytes and player 19's of 0x46bc. */
 void SoundScene_CreatePlayer18And19Heaps(SoundScene *scene)
 {
-    void *heap = (void *) (uintptr_t) Sound_GetHeap();
+    void *heap = (void *) (uintptr_t) Sound_Heap();
 
     (void) scene;
     NNS_SndPlayerCreateHeap(18, heap, 0x5ecc);
@@ -1529,7 +1529,7 @@ CLEAN_AS(func_020f40ac, SoundScene_CreatePlayer18And19Heaps)
 /* func_020f40e8: player 17's four heaps of 0x356c bytes. */
 void SoundScene_CreatePlayer17Heaps(SoundScene *scene)
 {
-    void *heap = (void *) (uintptr_t) Sound_GetHeap();
+    void *heap = (void *) (uintptr_t) Sound_Heap();
 
     (void) scene;
     for (int i = 0; i < 4; i++) {
@@ -1541,7 +1541,7 @@ CLEAN_AS(func_020f40e8, SoundScene_CreatePlayer17Heaps)
 /* func_020f4130: player 6's two heaps of 0x7a4c bytes. */
 void SoundScene_CreatePlayer6Heaps(SoundScene *scene)
 {
-    void *heap = (void *) (uintptr_t) Sound_GetHeap();
+    void *heap = (void *) (uintptr_t) Sound_Heap();
 
     (void) scene;
     NNS_SndPlayerCreateHeap(6, heap, 0x7a4c);
@@ -1577,14 +1577,14 @@ static const u8 scene_players[] = {11, 2, 4, 5, 6, 7, 8, 9, 10, 12, 15, 16, 17, 
 void SoundScene_CreatePlayer5Heap(SoundScene *scene)
 {
     (void) scene;
-    NNS_SndPlayerCreateHeap(5, (void *) (uintptr_t) Sound_GetHeap(), 0x31ac);
+    NNS_SndPlayerCreateHeap(5, (void *) (uintptr_t) Sound_Heap(), 0x31ac);
 }
 CLEAN_AS(func_020f4178, SoundScene_CreatePlayer5Heap)
 
 /* func_020f41a4: `count` heaps of 0x650c bytes for player 11. */
 void SoundScene_CreatePlayer11Heaps(SoundScene *scene, int count)
 {
-    void *heap = (void *) (uintptr_t) Sound_GetHeap();
+    void *heap = (void *) (uintptr_t) Sound_Heap();
 
     (void) scene;
     for (int i = 0; i < count; i++) {
@@ -1597,7 +1597,7 @@ CLEAN_AS(func_020f41a4, SoundScene_CreatePlayer11Heaps)
 void SoundScene_CreatePlayer4Heap(SoundScene *scene)
 {
     (void) scene;
-    NNS_SndPlayerCreateHeap(4, (void *) (uintptr_t) Sound_GetHeap(), 0x206c);
+    NNS_SndPlayerCreateHeap(4, (void *) (uintptr_t) Sound_Heap(), 0x206c);
 }
 CLEAN_AS(func_020f41f4, SoundScene_CreatePlayer4Heap)
 
@@ -1608,7 +1608,7 @@ CLEAN_AS(func_020f41f4, SoundScene_CreatePlayer4Heap)
  * saved again. */
 void SoundScene_LoadGroup(SoundScene *scene, int player_heap, unsigned char group)
 {
-    void *heap = (void *) (uintptr_t) Sound_GetHeap();
+    void *heap = (void *) (uintptr_t) Sound_Heap();
     SoundGroupKey key;
 
     (void) scene;
@@ -1639,7 +1639,7 @@ CLEAN_AS(func_020f4314, SoundSceneBase_OnMusic)
  * dropped); voice_loaded cleared. */
 void SoundSceneBase_RestoreHeap(SoundScene *scene)
 {
-    Sound_RestoreHeapLevel(Sound_GetHeapLevel());
+    Sound_RestoreHeapLevel(Sound_HeapLevel());
     scene->voice_loaded = 0;
 }
 CLEAN_AS(func_020f4318, SoundSceneBase_RestoreHeap)
@@ -1685,7 +1685,7 @@ void SoundSceneBase_Unload(SoundScene *scene)
 
     (void) scene;
     SoundPosition_ClearHooks();
-    heap = (void *) (uintptr_t) Sound_GetHeap();
+    heap = (void *) (uintptr_t) Sound_Heap();
     SoundGroup_Close(&data_021fd054, 1);
     if (data_021fd1bc.keep_heaps != 0) {
         return;
@@ -1756,13 +1756,13 @@ SoundScene *SoundSceneBase_DestructBase(SoundScene *scene)
 CLEAN_AS(func_020f4514, SoundSceneBase_DestructBase)
 
 /* func_020f454c: slot 1: destroyed, then freed. */
-SoundScene *SoundSceneBase_DestructDelete(SoundScene *scene)
+SoundScene *SoundSceneBase_Delete(SoundScene *scene)
 {
     destruct_base(scene);
     Heap_OperatorDeleteB(scene);
     return scene;
 }
-CLEAN_AS(func_020f454c, SoundSceneBase_DestructDelete)
+CLEAN_AS(func_020f454c, SoundSceneBase_Delete)
 
 /* func_020f458c: slot 0; the same as func_020f4514. */
 SoundScene *SoundSceneBase_Destruct(SoundScene *scene)

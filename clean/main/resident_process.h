@@ -16,7 +16,7 @@
 #define RESIDENT_PROCESS_CHILDREN 7
 
 Process *ResidentProcess_Destruct(Process *self);
-Process *ResidentProcess_DestructFree(Process *self);
+Process *ResidentProcess_DestructDelete(Process *self);
 int ResidentProcess_Draw(void);
 int ResidentProcess_Execute(void);
 int ResidentProcess_Delete(void);

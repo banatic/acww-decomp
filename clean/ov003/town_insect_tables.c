@@ -60,7 +60,7 @@ int TownInsectTables_ReadRecord(TownInsectProcess *process, int index, s8 *kind,
     if (LinkGlobal_HoldsScene() == 0) {
         NetSession *session = data_020ccf94;
         if (Session_IsLinked(session) != 0) {
-            u8 *record = Session_GetRecord(session, index + TOWN_INSECT_TABLES_FIRST_RECORD);
+            u8 *record = Session_Record(session, index + TOWN_INSECT_TABLES_FIRST_RECORD);
             if (record != NULL) {
                 PackedBytes_UnpackPoint(record, (u32 *) x, (u32 *) z);
                 if (*z > 0) {
@@ -86,7 +86,7 @@ void TownInsectTables_WriteRecord(u8 *record, int id, void *unused)
     PackedBytes_PackPoint(bytes, entry->point.x, entry->point.z);
     bytes[5] = (u8) entry->kind;
     bytes[6] = entry->byte254;
-    MI_CpuCopy8(bytes, record, SessionRecord_GetSize((u32) id));
+    MI_CpuCopy8(bytes, record, SessionRecord_Size((u32) id));
 }
 CLEAN_AS(func_ov003_02235c94, TownInsectTables_WriteRecord)
 

@@ -297,7 +297,7 @@ static int walks_player_in_nook_job(void)
 static int walks_kind(u8 *record, int kind)
 {
     if (record != NULL && NpcId_IsValid(TownVillager_NpcId(record)) != 0 && VillagerStatus_StateEntry(record) != NULL) {
-        kind = VillagerState_GetActivity(VillagerStatus_StateEntry(record));
+        kind = VillagerState_Activity(VillagerStatus_StateEntry(record));
     }
     return kind;
 }

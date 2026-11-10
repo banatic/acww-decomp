@@ -62,7 +62,7 @@ int BoarTalk_IsEmptySlot(u16 *item);
 
 /* Its life. */
 void BoarTalk_Reset(BoarTalk *talk);
-BoarTalk *BoarTalk_DestructDelete(BoarTalk *talk);
+BoarTalk *BoarTalk_Delete(BoarTalk *talk);
 BoarTalk *BoarTalk_Destruct(BoarTalk *talk);
 BoarTalk *BoarTalk_Construct(BoarTalk *talk);
 

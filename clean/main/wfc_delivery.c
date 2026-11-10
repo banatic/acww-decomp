@@ -23,7 +23,7 @@ int WfcDelivery_PostNotice(WfcNotice *notice)
     Bbs *bbs = &data_021eed68;
     u16 number = notice->number;
 
-    if (number == Bbs_GetLastNotice(bbs)) {
+    if (number == Bbs_LastNotice(bbs)) {
         return 0;
     }
     Bbs_SetLastNotice(bbs, (s16) number);

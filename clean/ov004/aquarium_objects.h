@@ -48,7 +48,7 @@ typedef union AquariumLaneFish {
 } AquariumLaneFish;
 
 int AquariumRock_Destruct(AquariumRock *rock);
-MuseumAquarium *Aquarium_DestructFree(MuseumAquarium *self);
+MuseumAquarium *Aquarium_Delete(MuseumAquarium *self);
 MuseumAquarium *Aquarium_Destruct(MuseumAquarium *self);
 MuseumAquarium *Aquarium_Construct(MuseumAquarium *self);
 int AquariumRock_Construct(AquariumRock *rock);

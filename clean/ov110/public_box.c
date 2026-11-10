@@ -214,7 +214,7 @@ void PublicBox_SendBox(PublicBox *self, u8 type)
     Session_BeginMessage(session);
     Session_AppendMessage(session, message, (int) sizeof message);
     Session_EndMessage(session, PLAYER_MESSAGE_CATEGORY, PUBLIC_BOX_MESSAGE_TO);
-    self->sent_frame = Session_GetFrameSequence(session);
+    self->sent_frame = Session_FrameSequence(session);
 }
 CLEAN_AS(func_ov110_0229c324, PublicBox_SendBox)
 

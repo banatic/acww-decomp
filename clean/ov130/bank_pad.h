@@ -32,7 +32,7 @@ enum BankPadKind {
 };
 
 /* The screens' layouts (`layout`, set by the kind): the files of both screens and where the
- * amounts are drawn. Layouts 0 and 1 draw big digits; BankPad_Setup never sets them. */
+ * amounts are drawn. Layouts 0 and 1 draw big digits; BankPad_SetUp never sets them. */
 enum BankPadLayout {
     BANK_PAD_LAYOUT_0 = 0,
     BANK_PAD_LAYOUT_1 = 1,
@@ -125,12 +125,12 @@ void BankPad_StartPress(BankPad *pad);
 int BankPad_KeyAt(BankPad *pad, int x, int y);
 void BankPad_LoadScreens(BankPad *pad);
 void BankPad_BeginFrame(BankPad *pad);
-void BankPad_Teardown(BankPad *pad);
+void BankPad_TearDown(BankPad *pad);
 void BankPad_ShowMessage(BankPad *pad);
 int BankPad_LoadPicture(int picture);
 void BankPad_Load(BankPad *pad);
 int BankPad_LoadBackground(int layer);
-void BankPad_Setup(BankPad *pad, u8 kind, u8 digits_layer, u8 keys_layer);
+void BankPad_SetUp(BankPad *pad, u8 kind, u8 digits_layer, u8 keys_layer);
 BankPad *BankPad_Destroy(BankPad *pad);
 BankPad *BankPad_Construct(BankPad *pad);
 

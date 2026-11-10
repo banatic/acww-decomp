@@ -195,7 +195,7 @@ Otter *Otter_Destruct(Otter *otter)
 CLEAN_AS(func_ov076_02278a00, Otter_Destruct)
 
 /* func_ov076_02278a28 (vtable slot 0x44): the same, then the object freed. */
-Otter *Otter_DestructDelete(Otter *otter)
+Otter *Otter_Delete(Otter *otter)
 {
     *(const u8 **) (void *) otter->base = data_ov076_022797d4;
     OtterTalk_Destruct(&otter->talk);
@@ -203,7 +203,7 @@ Otter *Otter_DestructDelete(Otter *otter)
     Heap_FreeAux(otter);
     return otter;
 }
-CLEAN_AS(func_ov076_02278a28, Otter_DestructDelete)
+CLEAN_AS(func_ov076_02278a28, Otter_Delete)
 
 /* func_ov076_02278a54 (vtable slot 0x4c, an event about him): when the player talked to him,
  * his talk scene is reset and given the player's field actor, and he talks (state 1); once the

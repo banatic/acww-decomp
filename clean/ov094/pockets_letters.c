@@ -786,13 +786,13 @@ void PocketsLetters_Init(PocketsLetters *letters, int priority)
 CLEAN_AS(func_ov094_0229bbd8, PocketsLetters_Init)
 
 /* func_ov094_0229bc18 (vtable entry 1): the destructor that frees the object. */
-PocketsLetters *PocketsLetters_DestructDelete(PocketsLetters *letters)
+PocketsLetters *PocketsLetters_Delete(PocketsLetters *letters)
 {
     letters->vtable = (u32) (uintptr_t) data_ov094_0229c114;
     Heap_OperatorDeleteB(letters);
     return letters;
 }
-CLEAN_AS(func_ov094_0229bc18, PocketsLetters_DestructDelete)
+CLEAN_AS(func_ov094_0229bc18, PocketsLetters_Delete)
 
 /* func_ov094_0229bc30 (vtable entry 0): the destructor. */
 void PocketsLetters_Destruct(PocketsLetters *letters)

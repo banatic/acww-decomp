@@ -54,7 +54,7 @@ void ResRows_ClearRows(ResRows *self);
 void ResRows_LoadBg(ResRows *self);
 void ResRows_DrawAt(ResRows *self, int x, int y);
 void ResRows_QueuePalette(ResRows *self);
-void ResRows_Teardown(ResRows *self);
+void ResRows_TearDown(ResRows *self);
 void ResRows_End(ResRows *self);
 void ResRows_Open(ResRows *self, unsigned char layer, int message);
 ResRows *ResRows_Destroy(ResRows *self);

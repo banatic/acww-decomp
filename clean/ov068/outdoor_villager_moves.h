@@ -22,7 +22,7 @@
  * - 11, its fleas netted off (while its effect's countdown runs, outdoor_villager.h): it turns
  *   to this console's player and stands until the countdown is out (behaviour 0), or behaviours
  *   21 or 19 take over (the countdown then cleared).
- * - 13, the birthday greeter (VillagerState_GetBirthdayGreeter names it,
+ * - 13, the birthday greeter (VillagerState_BirthdayGreeter names it,
  *   VillagerTown_PickBirthdayGreeter): it is put a little away from the player's house (the
  *   first of the buildings 0x5014 to 0x501a on the town's map), facing it, reaction 0; music
  *   value 0x12, the state table's index at 0x16c cleared (-1), the event queue's flag 0x20 set;

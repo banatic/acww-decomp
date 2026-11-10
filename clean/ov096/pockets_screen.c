@@ -275,7 +275,7 @@ CLEAN_AS(func_ov096_0229c4dc, PocketsScreen_SlotLetter)
 void PocketsScreen_ExitToParent(PocketsScreen *self)
 {
     PocketsScreen_PressButton(self);
-    MenuTabs_SelectTab((MenuTabs *) Process_GetParent((Process *) (void *) self), 7);
+    MenuTabs_SelectTab((MenuTabs *) Process_Parent((Process *) (void *) self), 7);
     PocketsScreen_SetFlags(self, POCKETS_FLAG_EXITING);
 }
 CLEAN_AS(func_ov096_0229c4ec, PocketsScreen_ExitToParent)
@@ -3333,7 +3333,7 @@ extern const MemberPointer data_ov096_022a2388, data_ov096_022a20a0, data_ov096_
 /* The parent process (the tabs' owner). */
 static Process *parent_of(PocketsScreen *self)
 {
-    return Process_GetParent((Process *) (void *) self);
+    return Process_Parent((Process *) (void *) self);
 }
 
 /* Calls the draw (vtable slot 2) or the update (slot 3) of a member object through its own
@@ -4215,21 +4215,21 @@ void PocketsScreen_BeginInteractiveFrame(PocketsScreen *self)
 CLEAN_AS(func_ov096_022a142c, PocketsScreen_BeginInteractiveFrame)
 
 /* func_ov096_022a1448: the members' teardown before the scene closes. */
-void PocketsScreen_Teardown(PocketsScreen *self)
+void PocketsScreen_TearDown(PocketsScreen *self)
 {
     PocketsScreen_EndLayerTasks(self);
-    PocketsWallet_Teardown((PocketsWallet *) (void *) self->unk_de0);
-    PocketsGrid_Teardown((PocketsGrid *) (void *) self->grid);
+    PocketsWallet_TearDown((PocketsWallet *) (void *) self->unk_de0);
+    PocketsGrid_TearDown((PocketsGrid *) (void *) self->grid);
     PagedChoice_Dismiss(choice_of(self));
     LetterView_ReleaseBoxes((LetterView *) (void *) self->unk_2a74);
 }
-CLEAN_AS(func_ov096_022a1448, PocketsScreen_Teardown)
+CLEAN_AS(func_ov096_022a1448, PocketsScreen_TearDown)
 
 /* func_ov096_022a1488: the scene's setup: no flags, the three objects of ov094's set up, no
  * popup place, the popup's draw value 2, the glide stopped, nothing held, the cursor at main's
  * place (GroupParams_C50), the choice on layer 3, the letter view set up, no delay; when the
  * parent's byte 0x98 is set, POCKETS_FLAG_STEPWISE_SETUP. */
-void PocketsScreen_Setup(PocketsScreen *self)
+void PocketsScreen_SetUp(PocketsScreen *self)
 {
     self->flags = 0;
     PocketsGrid_Init((PocketsGrid *) (void *) self->grid, 2);
@@ -4248,7 +4248,7 @@ void PocketsScreen_Setup(PocketsScreen *self)
         PocketsScreen_SetFlags(self, POCKETS_FLAG_STEPWISE_SETUP);
     }
 }
-CLEAN_AS(func_ov096_022a1488, PocketsScreen_Setup)
+CLEAN_AS(func_ov096_022a1488, PocketsScreen_SetUp)
 
 /* func_ov096_022a1540: the parent's menu tabs slide out (MenuTabs_SlideOut). */
 void PocketsScreen_SlideOutTabs(PocketsScreen *self)
@@ -4395,7 +4395,7 @@ CLEAN_AS(func_ov096_022a17cc, PocketsScreen_StartWipeIn)
 /* func_ov096_022a1838 (state 2): a step of the wallet display's setup (its answer unused), then
  * state 3, run at once unless the setup goes step by step (POCKETS_FLAG_STEPWISE_SETUP).
  * QUIRK: the flag is then cleared although it is known to be clear. */
-void PocketsScreen_SetupWalletStep(PocketsScreen *self)
+void PocketsScreen_SetUpWalletStep(PocketsScreen *self)
 {
     PocketsScreen_StepWalletSetup(self);
     MenuScene_SetState(scene_of(self), 3);
@@ -4404,19 +4404,19 @@ void PocketsScreen_SetupWalletStep(PocketsScreen *self)
         PocketsScreen_ClearFlags(self, POCKETS_FLAG_STEPWISE_SETUP);
     }
 }
-CLEAN_AS(func_ov096_022a1838, PocketsScreen_SetupWalletStep)
+CLEAN_AS(func_ov096_022a1838, PocketsScreen_SetUpWalletStep)
 
 /* func_ov096_022a186c (state 1): the wallet's display prepared, then state 2 (at once unless
  * the setup goes step by step). */
-void PocketsScreen_SetupWallet(PocketsScreen *self)
+void PocketsScreen_SetUpWallet(PocketsScreen *self)
 {
     PocketsWallet_SetUpContents((PocketsWallet *) (void *) self->unk_de0);
     MenuScene_SetState(scene_of(self), 2);
     if (PocketsScreen_TestFlags(self, POCKETS_FLAG_STEPWISE_SETUP) == 0) {
-        PocketsScreen_SetupWalletStep(self);
+        PocketsScreen_SetUpWalletStep(self);
     }
 }
-CLEAN_AS(func_ov096_022a186c, PocketsScreen_SetupWallet)
+CLEAN_AS(func_ov096_022a186c, PocketsScreen_SetUpWallet)
 
 /* func_ov096_022a18a0 (state 0): layer 6 set up and the wallet's display started, then state 1
  * (at once unless the setup goes step by step). */
@@ -4426,7 +4426,7 @@ void PocketsScreen_StartSetup(PocketsScreen *self)
     PocketsWallet_LoadBackground((PocketsWallet *) (void *) self->unk_de0, 1);
     MenuScene_SetState(scene_of(self), 1);
     if (PocketsScreen_TestFlags(self, POCKETS_FLAG_STEPWISE_SETUP) == 0) {
-        PocketsScreen_SetupWallet(self);
+        PocketsScreen_SetUpWallet(self);
     }
 }
 CLEAN_AS(func_ov096_022a18a0, PocketsScreen_StartSetup)
@@ -4582,8 +4582,8 @@ CLEAN_AS(_ZN18Obj_ov096_022a23e819func_ov096_022a1a0cEv, PocketsScreen_RunSubSta
  * scene's states, between the frame's start and end, through the table of member functions
  * (filled once from its constants):
  *   0  PocketsScreen_StartSetup        6   PocketsScreen_WipeOut
- *   1  PocketsScreen_SetupWallet       7   PocketsScreen_OpenReader
- *   2  PocketsScreen_SetupWalletStep   8   PocketsScreen_WipeInReader
+ *   1  PocketsScreen_SetUpWallet       7   PocketsScreen_OpenReader
+ *   2  PocketsScreen_SetUpWalletStep   8   PocketsScreen_WipeInReader
  *   3  PocketsScreen_StartWipeIn       9   PocketsScreen_StartWipeOutReader
  *   4  PocketsScreen_WipeIn            10  PocketsScreen_WipeOutReader
  *   5  PocketsScreen_StartWipeOut
@@ -4638,7 +4638,7 @@ CLEAN_AS(func_ov096_022a1e8c, PocketsScreen_Draw)
 int PocketsScreen_Close(PocketsScreen *self)
 {
     MenuTabs_ChildClosed((MenuTabs *) (void *) parent_of(self));
-    PocketsScreen_Teardown(self);
+    PocketsScreen_TearDown(self);
     GroupParams_SetHeldBells(0);
     return 1;
 }
@@ -4648,7 +4648,7 @@ CLEAN_AS(func_ov096_022a1f64, PocketsScreen_Close)
  * Answers 1. */
 int PocketsScreen_Start(PocketsScreen *self)
 {
-    PocketsScreen_Setup(self);
+    PocketsScreen_SetUp(self);
     MenuScene_SetState(scene_of(self), 0);
     MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_STATES);
     return 1;

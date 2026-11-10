@@ -913,7 +913,7 @@ int Gatekeeper_RunState6(Gatekeeper *self)
                 CheckInGate_Open();
                 self->countdown = GATEKEEPER_STATES_WAIT_GATE;
                 self->state_step = GATEKEEPER_STATES_STEP_WAIT;
-                if (Net_GetMode() == GATEKEEPER_STATES_MODE_JOINING) {
+                if (Net_Mode() == GATEKEEPER_STATES_MODE_JOINING) {
                     LibraryOverlay_Require65();
                     Wfc_HostGame();
                     Session_SetConnectMode(data_020ccf94, 0);
@@ -923,7 +923,7 @@ int Gatekeeper_RunState6(Gatekeeper *self)
             break;
         case GATEKEEPER_STATES_STEP_WAIT:
             if (Countdown_Tick16(&self->countdown) != 0) {
-                if (Net_GetMode() == GATEKEEPER_STATES_MODE_HOSTING) {
+                if (Net_Mode() == GATEKEEPER_STATES_MODE_HOSTING) {
                     LibraryOverlay_RequireAny();
                     Net_UpdateConnection();
                 }
@@ -933,7 +933,7 @@ int Gatekeeper_RunState6(Gatekeeper *self)
                 gatekeeper_states_line(self) != GATEKEEPER_STATES_LINE_OPEN_6C) {
                 break;
             }
-            if (Net_GetMode() == GATEKEEPER_STATES_MODE_HOSTING) {
+            if (Net_Mode() == GATEKEEPER_STATES_MODE_HOSTING) {
                 LibraryOverlay_RequireAny();
                 if (Net_UpdateConnection() != 0) {
                     EventQueue_FinishObjectEvent(self);

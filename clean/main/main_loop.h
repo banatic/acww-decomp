@@ -19,6 +19,6 @@ void MainLoop_EndDraw(u32 errors);
 void MainLoop_BeginFrame(int errors);
 void MainLoop_WaitFrame(void);
 void MainLoop_WaitVBlank(void);
-void MainLoop_StartupNothing(void);
+void MainLoop_StartUpNothing(void);
 
 #endif

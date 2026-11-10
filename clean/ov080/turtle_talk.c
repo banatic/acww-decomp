@@ -272,14 +272,14 @@ CLEAN_AS(func_ov080_02278dec, TurtleTalk_Begin)
 /* ---- Its life */
 
 /* func_ov080_02278e10 (slot 0x04): destructed, then freed. */
-TurtleTalk *TurtleTalk_DestructDelete(TurtleTalk *talk)
+TurtleTalk *TurtleTalk_Delete(TurtleTalk *talk)
 {
     talk->scene.vtable = data_ov080_0227925c;
     Obj020d9ff8_DestructBody(talk);
     Heap_OperatorDeleteB(talk);
     return talk;
 }
-CLEAN_AS(func_ov080_02278e10, TurtleTalk_DestructDelete)
+CLEAN_AS(func_ov080_02278e10, TurtleTalk_Delete)
 
 /* func_ov080_02278e30 (slot 0x00): the destructor: its class's vtable, then the base class's
  * body. */

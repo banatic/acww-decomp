@@ -147,7 +147,7 @@ typedef struct NookClerk {
 
 /* The vtable slots and questions (nook_clerk.c). */
 void *NookClerk_Destruct(NookClerk *clerk);
-void *NookClerk_DestructDelete(NookClerk *clerk);
+void *NookClerk_Delete(NookClerk *clerk);
 int NookClerk_HurryDistance(NookClerk *clerk);
 int NookClerk_WalkDistance(NookClerk *clerk);
 int NookClerk_IsTwin(NookClerk *clerk);

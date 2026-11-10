@@ -422,7 +422,7 @@ CLEAN_AS(func_ov094_0229a018, PocketsWallet_EndTasks)
 
 /* func_ov094_0229a038: the tasks ended and the labels closed before the scene closes; a count
  * still running has its sound stopped. */
-void PocketsWallet_Teardown(PocketsWallet *wallet)
+void PocketsWallet_TearDown(PocketsWallet *wallet)
 {
     PocketsWallet_EndTasks(wallet);
     PocketsWallet_CloseLabels(wallet);
@@ -430,7 +430,7 @@ void PocketsWallet_Teardown(PocketsWallet *wallet)
         SoundSys_StopSound(POCKETS_WALLET_SOUND_COUNT, 1);
     }
 }
-CLEAN_AS(func_ov094_0229a038, PocketsWallet_Teardown)
+CLEAN_AS(func_ov094_0229a038, PocketsWallet_TearDown)
 
 /* func_ov094_0229a05c: the end of a frame: the count, the frame, then the screen and the
  * picture queued. */

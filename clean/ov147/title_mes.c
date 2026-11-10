@@ -166,7 +166,7 @@ CLEAN_AS(func_ov147_0229a31c, TitleMes_ApplyBlend)
 void TitleMes_HideLayer(void)
 {
     DisplayShadow_HideMainPlanes(TITLE_MES_PLANE_BG3);
-    u32 planes = DisplayShadow_GetMainPlanes();
+    u32 planes = DisplayShadow_MainPlanes();
     REG32(REG_DISPCNT) = (REG32(REG_DISPCNT) & ~DISPCNT_PLANES) | planes << 8;
 }
 CLEAN_AS(func_ov147_0229a374, TitleMes_HideLayer)

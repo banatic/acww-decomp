@@ -84,7 +84,7 @@ CLEAN_AS(func_020a9bd8, TalkProcess_Create)
 
 /* func_020a9c04 (vtable slot 17): the destructor, and the object freed to the heap processes
  * come from. */
-Process *TalkProcess_DestructFree(Process *self)
+Process *TalkProcess_DestructDelete(Process *self)
 {
     self->vtable = data_020e3e8c;
     self->vtable = data_020da13c;
@@ -92,7 +92,7 @@ Process *TalkProcess_DestructFree(Process *self)
     Heap_FreeAux(self);
     return self;
 }
-CLEAN_AS(func_020a9c04, TalkProcess_DestructFree)
+CLEAN_AS(func_020a9c04, TalkProcess_DestructDelete)
 
 /* func_020a9c2c (vtable slot 16): the destructor: the bases' vtables put back in turn. */
 Process *TalkProcess_Destruct(Process *self)

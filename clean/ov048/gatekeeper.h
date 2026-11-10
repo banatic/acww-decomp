@@ -56,7 +56,7 @@ typedef struct Gatekeeper {
 } Gatekeeper;
 
 Gatekeeper *Gatekeeper_Destruct(Gatekeeper *self);
-Gatekeeper *Gatekeeper_DestructDelete(Gatekeeper *self);
+Gatekeeper *Gatekeeper_Delete(Gatekeeper *self);
 int Gatekeeper_IsWaitingInPoseBA(Gatekeeper *self);
 int Gatekeeper_HasActionSound(Gatekeeper *self);
 int Gatekeeper_CallPlayer(Gatekeeper *self);

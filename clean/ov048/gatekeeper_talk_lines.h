@@ -79,7 +79,7 @@ void GatekeeperTalk_SetTopic(GatekeeperTalk *talk, u32 topic);
 void GatekeeperTalk_Start(GatekeeperTalk *talk, struct Gatekeeper *owner);
 
 /* Constructor and destructors. */
-GatekeeperTalk *GatekeeperTalk_DestructDelete(GatekeeperTalk *talk);
+GatekeeperTalk *GatekeeperTalk_Delete(GatekeeperTalk *talk);
 GatekeeperTalk *GatekeeperTalk_Destruct(GatekeeperTalk *talk);
 GatekeeperTalk *GatekeeperTalk_Construct(GatekeeperTalk *talk);
 

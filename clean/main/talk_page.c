@@ -570,11 +570,11 @@ void TalkPageMeasurer_Part0(TalkPageMeasurer *measurer)
 CLEAN_AS(func_0206c5e0, TalkPageMeasurer_Part0)
 
 /* func_0206c5f4 (tag 11/4): the empty TalkPageMeasurer_Ignore. */
-void TalkPageMeasurer_Nothing11_4(void)
+void TalkPageMeasurer_NothingGroup11Tag4(void)
 {
     TalkPageMeasurer_Ignore();
 }
-CLEAN_AS(func_0206c5f4, TalkPageMeasurer_Nothing11_4)
+CLEAN_AS(func_0206c5f4, TalkPageMeasurer_NothingGroup11Tag4)
 
 /* func_0206c5fc (tag 11/2): the measurer's word 0x50 set to 2 (the tag walker sets its own
  * word 0xe0 likewise). */
@@ -901,7 +901,7 @@ void TalkPageMeasurer_DispatchGroupFF(TalkPageMeasurer *measurer)
 CLEAN_AS(func_0206cd40, TalkPageMeasurer_DispatchGroupFF)
 
 /* func_0206cdbc (group 11): kinds 0 to 20: 1 and 2 TalkPageMeasurer_Set50One and Set50Two, 4
- * TalkPageMeasurer_Nothing11_4, 5 to 15 the parts (TalkPageMeasurer_Part0 to Part10), 16 to
+ * TalkPageMeasurer_NothingGroup11Tag4, 5 to 15 the parts (TalkPageMeasurer_Part0 to Part10), 16 to
  * 19 the values (TalkPageMeasurer_Value0 to Name3), 20 TalkPageMeasurer_PutParticle; 0 and 3
  * nothing. */
 void TalkPageMeasurer_DispatchGroup11(TalkPageMeasurer *measurer)

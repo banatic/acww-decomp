@@ -30,13 +30,13 @@
 #define SCENE_2F 47
 
 #define UNLINKED_SLOT 3 /* the link state slot of this system while it has no slot */
-#define SHARE_BLOCK 4   /* Session_GetSendBlock(session, 4): where system packets are built */
+#define SHARE_BLOCK 4   /* Session_SendBlock(session, 4): where system packets are built */
 #define TO_HOST 1       /* the AID mask of the host (AID 0) */
 #define OWN_BLOCK 4     /* func_02090040(4): this system's 0x950-byte block */
 #define SLOT_BLOCK_SIZE 0x950
 #define PLAYER_RECORD_SIZE 0x249c   /* a player record (func_0209847c) */
 #define KEPT_LETTERS_SIZE 0x3200    /* the block func_020989e0 gives for a player record */
-#define SHARED_RECORDS_SIZE 0x6a0   /* the session's shared records (Session_GetRecordTable) */
+#define SHARED_RECORDS_SIZE 0x6a0   /* the session's shared records (Session_RecordTable) */
 #define ACTIVITY_BUFFER_MAX 0x17400 /* the activity buffer's size while its first word is 0 */
 
 /* The system packet kinds sent here. */
@@ -245,7 +245,7 @@ void SystemPacket_WriteSharedRecords(u8 *payload, u32 length, int sender)
     (void) sender;
     int offset;
     MI_CpuCopy8(payload, &offset, 4);
-    u8 *records = Session_GetRecordTable(data_020ccf94);
+    u8 *records = Session_RecordTable(data_020ccf94);
     MI_CpuCopy8(payload + 4, records + offset, length - 4);
 }
 CLEAN_AS(func_02075450, SystemPacket_WriteSharedRecords)
@@ -301,7 +301,7 @@ void SystemPacket_RequestMode(u8 *payload, u32 length, int sender)
     (void) length;
     (void) sender;
     NetSession *session = data_020ccf94;
-    if (Session_GetModeRequest(session) == NO_REQUEST) {
+    if (Session_ModeRequest(session) == NO_REQUEST) {
         Session_SetModeRequest(session, *payload);
     }
 }
@@ -458,7 +458,7 @@ static int system_packet_can_send(u32 to)
 /* Sends the packet built in the share block, `length` bytes, to the AIDs of `to`. */
 static int system_packet_send(NetSession *session, int length, int to)
 {
-    return Session_SendBlocks(session, Session_GetSendBlock(session, SHARE_BLOCK), length, to, NULL, 0, 0, NULL, 0, 0);
+    return Session_SendBlocks(session, Session_SendBlock(session, SHARE_BLOCK), length, to, NULL, 0, 0, NULL, 0, 0);
 }
 
 /* Sends a packet of only its first byte, of `kind`, to the AIDs of `to`; 0 when it cannot go.
@@ -473,7 +473,7 @@ static int system_packet_send_kind(int kind, int to, int ask_slot0)
     if (ask_slot0) {
         Session_IsLocalSlot(session, 0);
     }
-    SessionNet_WriteSystemHeader(Session_GetSendBlock(session, SHARE_BLOCK), 0, kind);
+    SessionNet_WriteSystemHeader(Session_SendBlock(session, SHARE_BLOCK), 0, kind);
     return system_packet_send(session, 1, to);
 }
 
@@ -510,7 +510,7 @@ int SystemPacket_SendActivityPlayer100(void)
 CLEAN_AS(func_020757e0, SystemPacket_SendActivityPlayer100)
 
 /* func_02075848
- * QUIRK: asks for the peer mask (Session_GetPeerMask) after writing the packet and does not
+ * QUIRK: asks for the peer mask (Session_PeerMask) after writing the packet and does not
  * use it. */
 int SystemPacket_SendActivityPlayerF4(void)
 {
@@ -518,8 +518,8 @@ int SystemPacket_SendActivityPlayerF4(void)
         return 0;
     }
     NetSession *session = data_020ccf94;
-    SessionNet_WriteSystemHeader(Session_GetSendBlock(session, SHARE_BLOCK), 0, SYSTEM_SET_ACTIVITY_PLAYER_F4);
-    Session_GetPeerMask();
+    SessionNet_WriteSystemHeader(Session_SendBlock(session, SHARE_BLOCK), 0, SYSTEM_SET_ACTIVITY_PLAYER_F4);
+    Session_PeerMask();
     return system_packet_send(session, 1, TO_HOST);
 }
 CLEAN_AS(func_02075848, SystemPacket_SendActivityPlayerF4)
@@ -553,7 +553,7 @@ int SystemPacket_SendLinkEntries(int slot)
     if (!system_packet_can_send(to)) {
         return 0;
     }
-    u8 *packet = Session_GetSendBlock(data_020ccf94, SHARE_BLOCK);
+    u8 *packet = Session_SendBlock(data_020ccf94, SHARE_BLOCK);
     SessionNet_WriteSystemHeader(packet, 0, SYSTEM_SET_LINK_ENTRIES);
     u8 *write = packet + 1;
     int length = 1;
@@ -584,7 +584,7 @@ int SystemPacket_SendActivityPlayerEF(int value, int to)
         return 0;
     }
     NetSession *session = data_020ccf94;
-    u8 *packet = Session_GetSendBlock(session, SHARE_BLOCK);
+    u8 *packet = Session_SendBlock(session, SHARE_BLOCK);
     SessionNet_WriteSystemHeader(packet, 0, SYSTEM_SET_ACTIVITY_PLAYER_EF);
     packet[1] = (u8) value;
     return system_packet_send(session, 2, to);
@@ -599,7 +599,7 @@ int SystemPacket_SendDateTime(int to)
     }
     NetSession *session = data_020ccf94;
     Session_IsLocalSlot(session, 0); /* QUIRK: the answer is not used */
-    u8 *packet = Session_GetSendBlock(session, SHARE_BLOCK);
+    u8 *packet = Session_SendBlock(session, SHARE_BLOCK);
     SessionNet_WriteSystemHeader(packet, 0, SYSTEM_SET_DATE_TIME);
     DateTime now = {0};
     DateTime_Now(&now);
@@ -633,7 +633,7 @@ CLEAN_AS(func_02075c64, SystemPacket_SendLinkFlagC4)
  * once when there is no peer. */
 int SystemPacket_SendModeRequest(void)
 {
-    int to = Session_GetPeerMask();
+    int to = Session_PeerMask();
     if (to == 0) {
         return 1;
     }
@@ -642,7 +642,7 @@ int SystemPacket_SendModeRequest(void)
     }
     NetSession *session = data_020ccf94;
     Session_IsLocalSlot(session, 0); /* QUIRK: the answer is not used */
-    u8 *packet = Session_GetSendBlock(session, SHARE_BLOCK);
+    u8 *packet = Session_SendBlock(session, SHARE_BLOCK);
     SessionNet_WriteSystemHeader(packet, 0, SYSTEM_REQUEST_MODE);
     packet[1] = SESSION_MODE_CREDITS;
     return system_packet_send(session, 2, to);
@@ -650,15 +650,15 @@ int SystemPacket_SendModeRequest(void)
 CLEAN_AS(func_02075cc4, SystemPacket_SendModeRequest)
 
 /* func_02075d40: the share block as it is, with the length written to it so far
- * (Session_GetShareLength). */
+ * (Session_ShareLength). */
 int SystemPacket_SendShareData(int to)
 {
     if (!system_packet_can_send((u32) to)) {
         return 0;
     }
     NetSession *session = data_020ccf94;
-    u8 *block = Session_GetSendBlock(session, SHARE_BLOCK);
-    u32 length = Session_GetShareLength(session);
+    u8 *block = Session_SendBlock(session, SHARE_BLOCK);
+    u32 length = Session_ShareLength(session);
     return Session_SendBlocks(session, block, (int) length, to, NULL, 0, 0, NULL, 0, 0);
 }
 CLEAN_AS(func_02075d40, SystemPacket_SendShareData)
@@ -666,7 +666,7 @@ CLEAN_AS(func_02075d40, SystemPacket_SendShareData)
 /* func_02075d9c: the next chunk of the session's shared records. */
 int SystemPacket_SendSharedRecords(u8 *chunks_sent, int to)
 {
-    u8 *records = Session_GetRecordTable(data_020ccf94);
+    u8 *records = Session_RecordTable(data_020ccf94);
     return SystemPacket_SendInChunks(chunks_sent, records, SHARED_RECORDS_SIZE, SYSTEM_WRITE_SHARED_RECORDS, (u16) to);
 }
 CLEAN_AS(func_02075d9c, SystemPacket_SendSharedRecords)
@@ -701,7 +701,7 @@ int SystemPacket_SendSlotBlocks(int content1, int block1, int content2, int bloc
         if (content == SLOT_BLOCK_NONE) {
             continue;
         }
-        u8 *packet = Session_GetSendBlock(session, (int) i + 1);
+        u8 *packet = Session_SendBlock(session, (int) i + 1);
         packets[i] = packet;
         SessionNet_WriteSystemHeader(packet, 0, SYSTEM_SET_OWN_BLOCK);
         lengths[i] += 1;
@@ -768,7 +768,7 @@ int SystemPacket_SendInChunks(u8 *chunks_sent, const u8 *data, u32 size, int kin
             length = SYSTEM_PACKET_CHUNK;
         }
         NetSession *session = data_020ccf94;
-        u8 *packet = Session_GetSendBlock(session, SHARE_BLOCK);
+        u8 *packet = Session_SendBlock(session, SHARE_BLOCK);
         SessionNet_WriteSystemHeader(packet, 0, kind);
         MI_CpuCopy8(&offset, packet + 1, 4);
         MI_CpuCopy8(data + offset, packet + 5, length);
@@ -789,7 +789,7 @@ int SystemPacket_SendActivityMembers(int to)
     }
     NetSession *session = data_020ccf94;
     Session_IsLocalSlot(session, 0); /* QUIRK: the answer is not used */
-    u8 *packet = Session_GetSendBlock(session, SHARE_BLOCK);
+    u8 *packet = Session_SendBlock(session, SHARE_BLOCK);
     SessionNet_WriteSystemHeader(packet, 0, SYSTEM_SET_ACTIVITY_MEMBERS);
     u32 taken = 0;
     for (int slot = 0; slot < SESSION_SLOTS; slot++) {

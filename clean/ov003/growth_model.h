@@ -92,7 +92,7 @@ void GrowthModel_Release(GrowthModel *model);
 void GrowthModel_Draw(GrowthModel *model);
 void GrowthModel_Update(GrowthModel *model);
 
-void GrowthModel_Setup(GrowthModel *model);
+void GrowthModel_SetUp(GrowthModel *model);
 void GrowthModel_Loop(int player, const TileChangesTile *tile);
 void GrowthModels_Request(GrowthModels *models, int player, const TileChangesTile *tile, int mode, int quiet);
 void GrowthModels_RunRequest(GrowthModels *models, GrowthModelRequest *request);
@@ -100,7 +100,7 @@ GrowthModel *GrowthModels_Pick(GrowthModels *models, u16 *item, int stage, int p
 void GrowthModels_ReleaseAll(GrowthModels *models);
 void GrowthModels_DrawAll(GrowthModels *models);
 void GrowthModels_UpdateAll(GrowthModels *models);
-void GrowthModels_SetupAll(GrowthModels *models);
+void GrowthModels_SetUpAll(GrowthModels *models);
 GrowthModel *GrowthModel_Destruct(GrowthModel *model);
 GrowthModels *GrowthModels_Destruct(GrowthModels *models);
 GrowthModels *GrowthModels_Construct(GrowthModels *models);

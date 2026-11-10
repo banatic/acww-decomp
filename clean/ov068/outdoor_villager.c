@@ -123,13 +123,13 @@ u8 *OutdoorVillager_Destruct(u8 *object)
 CLEAN_AS(func_ov068_022667e0, OutdoorVillager_Destruct)
 
 /* func_ov068_0226682c (slot 0x44): the same, then the object freed (Heap_FreeAux). */
-u8 *OutdoorVillager_DestructDelete(u8 *object)
+u8 *OutdoorVillager_Delete(u8 *object)
 {
     OutdoorVillager_Destruct(object);
     Heap_FreeAux(object);
     return object;
 }
-CLEAN_AS(func_ov068_0226682c, OutdoorVillager_DestructDelete)
+CLEAN_AS(func_ov068_0226682c, OutdoorVillager_Delete)
 
 /* ---- The talks and the pairing */
 
@@ -246,7 +246,7 @@ static void ov_start_talk(u8 *object, u32 lines)
 }
 
 /* After an event that kept it at reaction 0: it stands at the middle of its home's tile,
- * then behaviour 12 (for the villager VillagerState_GetBirthdayVillager names or a status of 3 to
+ * then behaviour 12 (for the villager VillagerState_BirthdayVillager names or a status of 3 to
  * 7) or 3. */
 static void ov_ended_greeting(u8 *object)
 {
@@ -259,7 +259,7 @@ static void ov_ended_greeting(u8 *object)
     last->x = position->x;
     last->y = position->y;
     last->z = position->z;
-    int named = VillagerState_GetBirthdayVillager();
+    int named = VillagerState_BirthdayVillager();
     if (named == VillagerStatus_Index(ov_record(object)) || (unsigned int) (status - 3) <= 4) {
         OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_12);
     } else {

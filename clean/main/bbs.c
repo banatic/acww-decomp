@@ -137,14 +137,14 @@ int BbsWideText_Capacity(void)
 CLEAN_AS(func_0207801c, BbsWideText_Capacity)
 
 /* func_02078020 (vtable entry 1) */
-BbsWideText *BbsWideText_DestructDelete(BbsWideText *text)
+BbsWideText *BbsWideText_Delete(BbsWideText *text)
 {
     text->vtable = &data_020e1870;
     TextBase_WideDestruct(text);
     Heap_OperatorDeleteB(text);
     return text;
 }
-CLEAN_AS(func_02078020, BbsWideText_DestructDelete)
+CLEAN_AS(func_02078020, BbsWideText_Delete)
 
 /* func_02078040 (vtable entry 0) */
 BbsWideText *BbsWideText_Destruct(BbsWideText *text)
@@ -189,14 +189,14 @@ int BbsLabel_Capacity(void)
 CLEAN_AS(func_02078094, BbsLabel_Capacity)
 
 /* func_02078098 (vtable entry 1) */
-BbsLabel *BbsLabel_DestructDelete(BbsLabel *label)
+BbsLabel *BbsLabel_Delete(BbsLabel *label)
 {
     label->vtable = &data_020e1888;
     TextBase_Destruct((TextBase *) (void *) label);
     Heap_OperatorDeleteB(label);
     return label;
 }
-CLEAN_AS(func_02078098, BbsLabel_DestructDelete)
+CLEAN_AS(func_02078098, BbsLabel_Delete)
 
 /* func_020780b8 (vtable entry 0) */
 BbsLabel *BbsLabel_Destruct(BbsLabel *label)
@@ -239,11 +239,11 @@ void Bbs_SetLastNotice(Bbs *bbs, s16 number)
 CLEAN_AS(func_02078130, Bbs_SetLastNotice)
 
 /* func_0207813c */
-u16 Bbs_GetLastNotice(Bbs *bbs)
+u16 Bbs_LastNotice(Bbs *bbs)
 {
     return bbs->last_notice;
 }
-CLEAN_AS(func_0207813c, Bbs_GetLastNotice)
+CLEAN_AS(func_0207813c, Bbs_LastNotice)
 
 /* func_02078148: the post after the last, pushing out the oldest when the board is full. */
 BbsPost *Bbs_NewPost(Bbs *bbs)
@@ -285,11 +285,11 @@ void Bbs_Clear(Bbs *bbs)
 CLEAN_AS(func_020781bc, Bbs_Clear)
 
 /* func_020781d0 */
-BbsPost *Bbs_GetPost(Bbs *bbs, int index)
+BbsPost *Bbs_Post(Bbs *bbs, int index)
 {
     return Bbs_PostAt(bbs, index);
 }
-CLEAN_AS(func_020781d0, Bbs_GetPost)
+CLEAN_AS(func_020781d0, Bbs_Post)
 
 /* func_020781d8 */
 BbsPost *Bbs_PostAt(Bbs *bbs, int index)
@@ -351,25 +351,25 @@ int BbsPost_IsRead(const BbsPost *post, int player)
 CLEAN_AS(func_02078268, BbsPost_IsRead)
 
 /* func_02078288 */
-u8 BbsPost_GetYear(const BbsPost *post)
+u8 BbsPost_Year(const BbsPost *post)
 {
     return post->year;
 }
-CLEAN_AS(func_02078288, BbsPost_GetYear)
+CLEAN_AS(func_02078288, BbsPost_Year)
 
 /* func_02078290 */
-u8 BbsPost_GetMonth(const BbsPost *post)
+u8 BbsPost_Month(const BbsPost *post)
 {
     return post->month;
 }
-CLEAN_AS(func_02078290, BbsPost_GetMonth)
+CLEAN_AS(func_02078290, BbsPost_Month)
 
 /* func_02078298 */
-u8 BbsPost_GetDay(const BbsPost *post)
+u8 BbsPost_Day(const BbsPost *post)
 {
     return post->day;
 }
-CLEAN_AS(func_02078298, BbsPost_GetDay)
+CLEAN_AS(func_02078298, BbsPost_Day)
 
 /* func_020782a0: a new post of that date: no flags and an empty text. */
 void BbsPost_Init(BbsPost *post, const Date *date)

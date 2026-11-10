@@ -113,7 +113,7 @@ void Sequence4_EffectPoint(Vec3 *out, const Sequence4 *actor);
 int Sequence4_Release(Sequence4 *actor);
 int Sequence4_Draw(void);
 int Sequence4_Update(Sequence4 *actor);
-int Sequence4_Setup(Sequence4 *actor);
+int Sequence4_SetUp(Sequence4 *actor);
 Sequence4 *Sequence4_DestroyAndFree(Sequence4 *actor);
 Sequence4 *Sequence4_Destroy(Sequence4 *actor);
 Sequence4 *Sequence4_Construct(Sequence4 *actor);

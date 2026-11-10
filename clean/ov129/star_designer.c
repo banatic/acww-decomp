@@ -229,7 +229,7 @@ CLEAN_AS(func_ov129_0229d24c, StarDesigner_BeginInteractive)
 /* func_ov129_0229d268: the screen ends: the twinkling cancelled, the view's task ended, the
  * panel's texts closed, the player's state 10 asked for, the music faded back in and the
  * inventory's characters 0-0x10 loaded back to sub BG0. */
-void StarDesigner_Teardown(StarDesigner *self)
+void StarDesigner_TearDown(StarDesigner *self)
 {
     StarPalette_Cancel(&self->palette);
     StarScope_EndTask(&self->scope);
@@ -238,13 +238,13 @@ void StarDesigner_Teardown(StarDesigner *self)
     Music2f0_FadeInForScene22((Music2f0 *) (void *) (data_021c526c + 0x2f0));
     DisplayLayer_LoadCharsFromFile(data_ov129_0229dc98, data_021fbe94, LAYER_SUB_BG0, 0, 0x10, 0x10);
 }
-CLEAN_AS(func_ov129_0229d268, StarDesigner_Teardown)
+CLEAN_AS(func_ov129_0229d268, StarDesigner_TearDown)
 
 /* func_ov129_0229d2d0: the scene's values set up: no flag, the view reset, the free pointer at
  * the screen's centre, the key cursor on "done", nothing pointed at or flashed; every piece
  * free, then the other constellations' taken, nothing under the pointer, no end, and the
  * constellation loaded. The player held at a fixed point and the music's tracks set. */
-void StarDesigner_Setup(StarDesigner *self)
+void StarDesigner_SetUp(StarDesigner *self)
 {
     self->flags = 0;
     StarScope_Reset(&self->scope);
@@ -263,7 +263,7 @@ void StarDesigner_Setup(StarDesigner *self)
     RoomPlayerActor_RequestFixedPoint();
     Music2f0_SetTracksForScene22((Music2f0 *) (void *) (data_021c526c + 0x2f0));
 }
-CLEAN_AS(func_ov129_0229d2d0, StarDesigner_Setup)
+CLEAN_AS(func_ov129_0229d2d0, StarDesigner_SetUp)
 
 /* func_ov129_0229d360: the question answered by the pen or the keys as last used (state flag
  * 2). Returns the sub state's address as a number. */
@@ -445,7 +445,7 @@ CLEAN_AS(func_ov129_0229d618, StarDesigner_StateWipeOut)
  * sound) and the wipe out started. */
 void StarDesigner_StateClose(StarDesigner *self)
 {
-    MenuDispatch_SetMode((MenuDispatch *) (void *) Process_GetParent((Process *) (void *) self), MENU_DISPATCH_MODE_CLOSE, 1);
+    MenuDispatch_SetMode((MenuDispatch *) (void *) Process_Parent((Process *) (void *) self), MENU_DISPATCH_MODE_CLOSE, 1);
     MenuScene_StartWipeOnWindow2(star_designer_base(self), STAR_DESIGNER_WIPE_LAYERS, 0, 0, STAR_DESIGNER_WIPE_MARGIN);
     DisplayShadow_SetSubWindow1Planes(STAR_DESIGNER_WINDOW_PLANES, 1);
     StarDesigner_FollowWipeWindow(self);
@@ -589,8 +589,8 @@ CLEAN_AS(func_ov129_0229d9a4, StarDesigner_Draw)
  * down. Answers 1. */
 int StarDesigner_End(StarDesigner *self)
 {
-    MenuDispatch_ChildClosed((MenuDispatch *) (void *) Process_GetParent((Process *) (void *) self));
-    StarDesigner_Teardown(self);
+    MenuDispatch_ChildClosed((MenuDispatch *) (void *) Process_Parent((Process *) (void *) self));
+    StarDesigner_TearDown(self);
     return 1;
 }
 CLEAN_AS(func_ov129_0229da44, StarDesigner_End)
@@ -599,7 +599,7 @@ CLEAN_AS(func_ov129_0229da44, StarDesigner_End)
  * phase (0). Answers 1. */
 int StarDesigner_Start(StarDesigner *self)
 {
-    StarDesigner_Setup(self);
+    StarDesigner_SetUp(self);
     self->base.state = STAR_DESIGNER_STATE_OPEN;
     MenuScene_SetPhase(star_designer_base(self), STAR_DESIGNER_PHASE_WAIT);
     return 1;

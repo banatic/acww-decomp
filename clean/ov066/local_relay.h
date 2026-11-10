@@ -183,7 +183,7 @@ void LocalRelay_FinishBlock(void);
 void LocalRelay_OnIndication(void);
 int LocalRelay_SendBlock(const void *buffer, u32 size, int to, void (*on_sent)(void *));
 int LocalRelay_CanSend(void);
-void LocalRelay_Shutdown(void);
+void LocalRelay_ShutDown(void);
 int LocalRelay_Start(LocalRelayParams *params);
 void LocalRelay_ClearRing(LocalRelayNode *node, int count);
 LocalRelayNode *LocalRelay_CreateRing(int count);

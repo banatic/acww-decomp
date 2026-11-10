@@ -132,7 +132,7 @@ static CellLayerSprite *pick_sprite_cells(PocketsPick *self)
 
 static Process *pick_parent(PocketsPick *self)
 {
-    return Process_GetParent((Process *) (void *) self);
+    return Process_Parent((Process *) (void *) self);
 }
 
 /* The cursor sprite's update through its class (vtable slot 3, Glider_Update for the base). */
@@ -1432,20 +1432,20 @@ void PocketsPick_BeginInteractiveFrame(PocketsPick *self)
 CLEAN_AS(func_ov101_0229d924, PocketsPick_BeginInteractiveFrame)
 
 /* func_ov101_0229d940: the members' teardown before the scene closes. */
-void PocketsPick_Teardown(PocketsPick *self)
+void PocketsPick_TearDown(PocketsPick *self)
 {
     PocketsPick_EndLayerTask(self);
-    PocketsWallet_Teardown(&self->wallet);
-    PocketsGrid_Teardown(&self->grid);
+    PocketsWallet_TearDown(&self->wallet);
+    PocketsGrid_TearDown(&self->grid);
     PagedChoice_Dismiss(pick_choice(self));
     ButtonPanel_CloseTexts(&self->panel);
 }
-CLEAN_AS(func_ov101_0229d940, PocketsPick_Teardown)
+CLEAN_AS(func_ov101_0229d940, PocketsPick_TearDown)
 
 /* func_ov101_0229d97c: the scene's setup: no flags, the three objects of ov094's set up, no popup
  * place, the glide stopped, nothing held, the cursor at slot 0, the choice on layer 3, no
  * delay. */
-void PocketsPick_Setup(PocketsPick *self)
+void PocketsPick_SetUp(PocketsPick *self)
 {
     self->flags = 0;
     PocketsGrid_Init(&self->grid, 2);
@@ -1458,7 +1458,7 @@ void PocketsPick_Setup(PocketsPick *self)
     PagedChoice_Init(pick_choice(self), 3, 1, NULL);
     self->open_delay = 0;
 }
-CLEAN_AS(func_ov101_0229d97c, PocketsPick_Setup)
+CLEAN_AS(func_ov101_0229d97c, PocketsPick_SetUp)
 
 /* func_ov101_0229d9ec (state 4): the scene wipes out. When done, layer 6 hidden, the delete phase
  * set and nothing drawn. The objects' offset follows the wipe. */
@@ -1633,7 +1633,7 @@ CLEAN_AS(func_ov101_0229ddf4, PocketsPick_Draw)
 int PocketsPick_Close(PocketsPick *self)
 {
     MenuDispatch_ChildClosed((MenuDispatch *) (void *) pick_parent(self));
-    PocketsPick_Teardown(self);
+    PocketsPick_TearDown(self);
     return 1;
 }
 CLEAN_AS(func_ov101_0229de94, PocketsPick_Close)
@@ -1642,7 +1642,7 @@ CLEAN_AS(func_ov101_0229de94, PocketsPick_Close)
  * Answers 1. */
 int PocketsPick_Start(PocketsPick *self)
 {
-    PocketsPick_Setup(self);
+    PocketsPick_SetUp(self);
     MenuScene_SetState(pick_scene(self), PICK_STATE_START_SETUP);
     MenuScene_SetPhase(pick_scene(self), PICK_PHASE_0);
     return 1;

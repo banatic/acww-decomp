@@ -30,14 +30,14 @@ int VillagerMemoryWide_Capacity(void)
 CLEAN_AS(func_02081fb4, VillagerMemoryWide_Capacity)
 
 /* func_02081fb8 (vtable entry 1) */
-VillagerMemoryWide *VillagerMemoryWide_DestructDelete(VillagerMemoryWide *text)
+VillagerMemoryWide *VillagerMemoryWide_Delete(VillagerMemoryWide *text)
 {
     text->vtable = &data_020e18ec;
     TextBase_WideDestruct(text);
     Heap_OperatorDeleteB(text);
     return text;
 }
-CLEAN_AS(func_02081fb8, VillagerMemoryWide_DestructDelete)
+CLEAN_AS(func_02081fb8, VillagerMemoryWide_Delete)
 
 /* func_02081fd8 (vtable entry 0) */
 void *VillagerMemoryWide_Destruct(void *text)
@@ -74,14 +74,14 @@ int VillagerMemoryLabel_Capacity(void)
 CLEAN_AS(func_0208200c, VillagerMemoryLabel_Capacity)
 
 /* func_02082010 (vtable entry 1) */
-void *VillagerMemoryLabel_DestructDelete(void *label)
+void *VillagerMemoryLabel_Delete(void *label)
 {
     ((VillagerMemoryLabel *) label)->vtable = &data_020e191c;
     TextBase_Destruct(label);
     Heap_OperatorDeleteB(label);
     return label;
 }
-CLEAN_AS(func_02082010, VillagerMemoryLabel_DestructDelete)
+CLEAN_AS(func_02082010, VillagerMemoryLabel_Delete)
 
 /* func_02082030 (vtable entry 0) */
 void *VillagerMemoryLabel_Destruct(void *label)

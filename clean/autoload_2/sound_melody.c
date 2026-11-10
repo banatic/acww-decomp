@@ -286,12 +286,12 @@ void MelodySeq_Start(MelodySeq *seq, unsigned short seq_arc)
         data_0213f0a4 = data_0213f0a4 == 1 ? 2 : 1;
     }
     if (data_0213f0a4 == 1) {
-        heap = (void *) (uintptr_t) Sound_GetHeap();
+        heap = (void *) (uintptr_t) Sound_Heap();
         NNS_SndHeapLoadState(heap, scene->heap_level + 1);
     } else {
         /* QUIRK: the sound heap is asked for and not used. */
         heap = data_021fd1bc.scene_heap;
-        Sound_GetHeap();
+        Sound_Heap();
         NNS_SndHeapLoadState(heap, 0);
     }
     func_0210e1d0(seq->seq_arc, heap);

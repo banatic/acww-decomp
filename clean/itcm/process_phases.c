@@ -179,7 +179,7 @@ int Process_Connect(Process *self)
         return TRUE;
     }
 
-    Process *parent = Process_GetParent(self);
+    Process *parent = Process_Parent(self);
     if (parent != NULL) {
         carry_flag(self, parent, PROCESS_EXECUTE_STOPPED, PROCESS_EXECUTE_STOPPED_ABOVE);
         carry_flag(self, parent, PROCESS_DRAW_STOPPED, PROCESS_DRAW_STOPPED_ABOVE);

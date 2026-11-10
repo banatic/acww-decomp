@@ -3,7 +3,7 @@
 # the day the schedule gives him, near tile 22, 34 in the west).
 # Then south to the store's door (tile 22.4, 54.5) and UP with A into the store (inside at about
 # 7300): the town's scene ends with the walrus still in it, so he leaves (Walrus_Leave) and is
-# deleted (Walrus_DestructDelete, WalrusTalk_Destruct).
+# deleted (Walrus_Delete, WalrusTalk_Destruct).
 900 START -
 906 - -
 1000 A -

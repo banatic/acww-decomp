@@ -52,7 +52,7 @@ int TransitionMarkProcess_Draw(void);
 int TransitionMarkProcess_Execute(void);
 int TransitionMarkProcess_Delete(void);
 int TransitionMarkProcess_Create(void);
-TransitionMarkProcess *TransitionMarkProcess_DestructFree(TransitionMarkProcess *process);
+TransitionMarkProcess *TransitionMarkProcess_DestructDelete(TransitionMarkProcess *process);
 TransitionMarkProcess *TransitionMarkProcess_Destruct(TransitionMarkProcess *process);
 TransitionMarkProcess *TransitionMarkProcess_Construct(TransitionMarkProcess *process);
 void TransitionMarkProcess_New(void);

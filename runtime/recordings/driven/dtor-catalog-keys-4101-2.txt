@@ -5,7 +5,7 @@ ram 2600,3500,3800
 arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
 vcall 4101 02322220 40 02322220 0 0 0 0213ef80  # autoload_2 SoundSceneBase_Start (slot 16)
 vcall 4101 022b6c38 0 022b6c38 0 0 0 020da5e8  # main QuickMessage_SenderDestruct (slot 0)
-vcall 4101 022a7bf4 40 022a7bf4 0 0 0 020e1a04  # main PoolLink_ItemDestructDelete (slot 16)
+vcall 4101 022a7bf4 40 022a7bf4 0 0 0 020e1a04  # main PoolLink_ItemDelete (slot 16)
 vcall 4101 022aae1c 40 022aae1c 0 0 0 020e3708  # main StartMenu_Destruct (slot 16)
 call 4101 020e9a08 02319108 0 0 0 0 0  # Heap_SetCurrent(its heap)
 vcall 4101 02319180 4 02319180 0 0 0 020e3dac  # main LabelBox_Delete (slot 1)

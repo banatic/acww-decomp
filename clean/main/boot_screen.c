@@ -128,7 +128,7 @@ void BootScreen_ApplySave(BootScreen *screen)
         StateBlock_Start((StateBlock *) (void *) data_021dc7a8, BOOT_SCREEN_BLOCK_STEP_LOADED);
     }
     StateBlock_FinishStart((StateBlock *) (void *) data_021dc7a8);
-    VillagerState_CallNoOp();
+    VillagerState_CallNothing();
     SceneHeaps_DestroyBgModels();
 }
 CLEAN_AS(func_020b56a8, BootScreen_ApplySave)

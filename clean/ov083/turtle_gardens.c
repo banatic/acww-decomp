@@ -132,7 +132,7 @@ TurtleGardens *TurtleGardens_Destruct(TurtleGardens *turtle)
 CLEAN_AS(func_ov083_02278a00, TurtleGardens_Destruct)
 
 /* func_ov083_02278a28 (vtable slot 0x44): the same, then the object freed. */
-TurtleGardens *TurtleGardens_DestructDelete(TurtleGardens *turtle)
+TurtleGardens *TurtleGardens_Delete(TurtleGardens *turtle)
 {
     *(const u8 **) (void *) turtle->base = data_ov083_0227928c;
     TurtleGardensTalk_Destruct(&turtle->talk);
@@ -140,7 +140,7 @@ TurtleGardens *TurtleGardens_DestructDelete(TurtleGardens *turtle)
     Heap_FreeAux(turtle);
     return turtle;
 }
-CLEAN_AS(func_ov083_02278a28, TurtleGardens_DestructDelete)
+CLEAN_AS(func_ov083_02278a28, TurtleGardens_Delete)
 
 /* func_ov083_02278a54 (vtable slot 0x4c, an event about him): when the player talked to him,
  * his talk scene is reset and given the player's field actor, and he talks (state 1); once the

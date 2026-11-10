@@ -57,7 +57,7 @@ void CollisionMap_ClearPathDirections(u32 x, u32 z, u32 directions);
 void CollisionMap_SetPathDirections(int x, int z, int directions);
 int CollisionMap_AddExtraPost(int x, int z);
 void CollisionMap_AgeExtraPosts(void);
-int CollisionMap_Setup(u32 blocks_wide, u32 blocks_high, CollisionPostSource *source, int slot);
+int CollisionMap_SetUp(u32 blocks_wide, u32 blocks_high, CollisionPostSource *source, int slot);
 void CollisionMap_Select(int slot);
 u8 CollisionMap_IsComplete(int slot);
 int CollisionMap_PathDirections(int x, int z);

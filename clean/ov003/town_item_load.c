@@ -173,7 +173,7 @@ int TownItemLoad_InitProcess(TileEventProcess *process)
         data_ov003_0223cf70 = process;
         if (TownItemLoad_RunLoaders(process)) {
             *(int *) (void *) ((u8 *) process + TOWN_ITEM_LOAD_CLOCK) = 0;
-            GrowthModels_SetupAll(town_item_load_growth_models(process));
+            GrowthModels_SetUpAll(town_item_load_growth_models(process));
             GrowthPart_InitAll(&data_ov003_0223cfa0);
             TileEvent_InitAll(data_ov003_0223cfe4);
             TownDay_Enter();

@@ -100,7 +100,7 @@ static MenuScene *wfc_host_list_scene(WfcHostList *self)
 
 static MenuDispatch *wfc_host_list_parent(WfcHostList *self)
 {
-    return (MenuDispatch *) (void *) Process_GetParent((Process *) (void *) self);
+    return (MenuDispatch *) (void *) Process_Parent((Process *) (void *) self);
 }
 
 /* An object's virtual function at `slot` of its vtable, called with nothing more. */
@@ -293,7 +293,7 @@ CLEAN_AS(func_ov146_0229ace8, WfcHostList_Release)
  * disabled, the quit button up; the message window opened with message 0x7f at (0x90, 0x10);
  * the knob up; no friend in the row slots, the list empty; the statuses taken from the live
  * list; no count shown yet, nothing chosen. */
-void WfcHostList_Setup(WfcHostList *self)
+void WfcHostList_SetUp(WfcHostList *self)
 {
     self->flags = 0;
     self->cursor = WFC_HOST_LIST_CURSOR_FIRST_ROW;
@@ -319,7 +319,7 @@ void WfcHostList_Setup(WfcHostList *self)
     self->unk_b9 = 10;
     self->chosen = WFC_HOST_LIST_NONE;
 }
-CLEAN_AS(func_ov146_0229acfc, WfcHostList_Setup)
+CLEAN_AS(func_ov146_0229acfc, WfcHostList_SetUp)
 
 /* func_ov146_0229adb8: the layers placed by the wipe (the rows' also by the scroll, less 0x38),
  * the wipe's y kept, the knob placed. */
@@ -547,7 +547,7 @@ CLEAN_AS(func_ov146_0229b328, WfcHostList_Close)
  * the base's wait (phase 0). Answers 1. */
 int WfcHostList_Start(WfcHostList *self)
 {
-    WfcHostList_Setup(self);
+    WfcHostList_SetUp(self);
     self->base.state = WFC_HOST_LIST_STATE_START;
     MenuScene_SetPhase(wfc_host_list_scene(self), WFC_HOST_LIST_PHASE_WAIT);
     return 1;

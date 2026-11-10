@@ -1841,14 +1841,14 @@ void NookClerkTalk_Reset(NookClerkTalk *talk)
 CLEAN_AS(func_ov050_0226366c, NookClerkTalk_Reset)
 
 /* func_ov050_02263690 (slot 0x04): its destructor, then the scene freed. */
-void *NookClerkTalk_DestructDelete(NookClerkTalk *talk)
+void *NookClerkTalk_Delete(NookClerkTalk *talk)
 {
     *(const u8 **) (void *) talk = data_ov050_02265b14;
     Obj020d9ff8_DestructBody(talk);
     Heap_OperatorDeleteB(talk);
     return talk;
 }
-CLEAN_AS(func_ov050_02263690, NookClerkTalk_DestructDelete)
+CLEAN_AS(func_ov050_02263690, NookClerkTalk_Delete)
 
 /* func_ov050_022636b0 (slot 0x00): the scene class's destructor. */
 void *NookClerkTalk_Destruct(NookClerkTalk *talk)

@@ -135,7 +135,7 @@ static SceneCommandScene *gatekeeper_lines_commands(GatekeeperTalk *talk)
 /* The talk's user data of the Wi-Fi Connection: the current player's account's. */
 static u8 *gatekeeper_lines_user_data(void)
 {
-    return WifiAccount_GetUserData(PlayerRecord_WifiAccount(PlayerRecords_Current()));
+    return WifiAccount_UserData(PlayerRecord_WifiAccount(PlayerRecords_Current()));
 }
 
 /* A wait of `frames` (the gatekeeper's countdown), then the state `state`. */
@@ -192,7 +192,7 @@ void GatekeeperTalk_OnAnswerSessionOrCode(GatekeeperTalk *talk, int answer)
                 break;
             }
             LibraryOverlay_Switch65();
-            user_data = WifiAccount_GetUserData(PlayerRecord_WifiAccount(record));
+            user_data = WifiAccount_UserData(PlayerRecord_WifiAccount(record));
             if (!Wfc_Call021012c4(user_data)) {
                 line = 0x2f;
             } else if (Wfc_IsAuthentic(user_data)) {
@@ -444,7 +444,7 @@ CLEAN_AS(func_ov048_022621d8, GatekeeperTalk_SetOwnerState8)
 void GatekeeperTalk_JoinFriend(GatekeeperTalk *talk)
 {
     Session_SetConnectMode(data_020ccf94, 1);
-    if (Net_GetMode() != GATEKEEPER_LINES_MODE_JOINING) {
+    if (Net_Mode() != GATEKEEPER_LINES_MODE_JOINING) {
         GatekeeperTalk_StartWfc(talk);
     } else {
         int profile_id;
@@ -463,7 +463,7 @@ CLEAN_AS(func_ov048_022621e8, GatekeeperTalk_JoinFriend)
 void GatekeeperTalk_StartJoinParent(GatekeeperTalk *talk)
 {
     GatekeeperTalk_HoldWithSpinner(talk, 1);
-    if (Net_GetMode() == GATEKEEPER_LINES_MODE_LOCAL_CHILD) {
+    if (Net_Mode() == GATEKEEPER_LINES_MODE_LOCAL_CHILD) {
         Session_SetConnectMode(data_020ccf94, 1);
     } else {
         GatekeeperTalk_StartSession(talk, GATEKEEPER_LINES_MODE_LOCAL_CHILD, 1);
@@ -553,7 +553,7 @@ void GatekeeperTalk_EndConnection(GatekeeperTalk *talk)
 {
     Gatekeeper_SetState(talk->owner, GATEKEEPER_STATE_7);
     Session_ResetLinkStatus();
-    if (Net_GetMode() == GATEKEEPER_LINES_MODE_HOSTING || Net_GetMode() == GATEKEEPER_LINES_MODE_JOINING) {
+    if (Net_Mode() == GATEKEEPER_LINES_MODE_HOSTING || Net_Mode() == GATEKEEPER_LINES_MODE_JOINING) {
         GatekeeperTalk_SetState(talk, GATEKEEPER_TALK_END_WFC);
     } else {
         GatekeeperTalk_EndSession(talk);
@@ -637,10 +637,10 @@ CLEAN_AS(func_ov048_02262444, GatekeeperTalk_StartLine)
 /* func_ov048_0226254c: whether the current player's friend roster has a friend. */
 int GatekeeperTalk_HasFriends(GatekeeperTalk *talk)
 {
-    WifiFriend *friends = WifiFriendList_GetEntries(PlayerRecord_WifiFriends(PlayerRecords_Current()));
+    WifiFriend *friends = WifiFriendList_Entries(PlayerRecord_WifiFriends(PlayerRecords_Current()));
     (void) talk;
     for (int i = 0; i < WIFI_FRIENDS; i++) {
-        if (WifiFriendData_IsSet(WifiFriend_GetFriendData(&friends[i]))) {
+        if (WifiFriendData_IsSet(WifiFriend_FriendData(&friends[i]))) {
             return 1;
         }
     }
@@ -737,13 +737,13 @@ static void gatekeeper_lines_destruct_members(GatekeeperTalk *talk)
 }
 
 /* func_ov048_022626a4 (vtable slot 1): destructed, then freed. */
-GatekeeperTalk *GatekeeperTalk_DestructDelete(GatekeeperTalk *talk)
+GatekeeperTalk *GatekeeperTalk_Delete(GatekeeperTalk *talk)
 {
     gatekeeper_lines_destruct_members(talk);
     Heap_OperatorDeleteB(talk);
     return talk;
 }
-CLEAN_AS(func_ov048_022626a4, GatekeeperTalk_DestructDelete)
+CLEAN_AS(func_ov048_022626a4, GatekeeperTalk_Delete)
 
 /* func_ov048_022626f0 (vtable slot 0): the destructor: its mystery cat record, notice, letter and
  * design, then the scene base's. */

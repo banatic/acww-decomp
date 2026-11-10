@@ -99,7 +99,7 @@ typedef struct FishDispPlayer {
 
 FishDisp *FishDisp_New(void);
 FishDisp *FishDisp_Destruct(FishDisp *disp);
-FishDisp *FishDisp_DestructFree(FishDisp *disp);
+FishDisp *FishDisp_DestructDelete(FishDisp *disp);
 FishModel *FishDisp_ConstructModel(FishModel *model);
 FishModel *FishDisp_DestructModel(FishModel *model);
 int FishDisp_Create(FishDisp *disp);

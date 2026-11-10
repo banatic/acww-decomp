@@ -432,7 +432,7 @@ void TextDraw_FlushGroup1(void)
 CLEAN_AS(func_02051480, TextDraw_FlushGroup1)
 
 /* func_0205148c: the boxes and their heap freed, the fonts closed. */
-void TextDraw_Shutdown(void)
+void TextDraw_ShutDown(void)
 {
     if (data_021c8194 != NULL) {
         TextDraw_FreeBoxes();
@@ -444,7 +444,7 @@ void TextDraw_Shutdown(void)
     TextFont_Close(&data_021c82e8);
     TextFont_Close(&data_021c81d4);
 }
-CLEAN_AS(func_0205148c, TextDraw_Shutdown)
+CLEAN_AS(func_0205148c, TextDraw_ShutDown)
 
 /* func_020514dc: the four fonts loaded and the boxes' heap made (in the main heap); the list of
  * boxes is set up only when the heap could be made. */
@@ -564,7 +564,7 @@ CLEAN_AS(func_02051694, TextDraw_RequestDraw)
 /* func_02051b00 (vtable slot 3, delete): done at once. */
 int TextDraw_ProcessDelete(void)
 {
-    TextDraw_Shutdown();
+    TextDraw_ShutDown();
     return 1;
 }
 CLEAN_AS(func_02051b00, TextDraw_ProcessDelete)
@@ -588,7 +588,7 @@ CLEAN_AS(func_02051b20, TextDraw_ProcessCreate)
 
 /* func_02051b34 (vtable slot 17): the destructor, and the object freed to the auxiliary heap.
  * The vtables are set as the class's and its base class's destructors do, in turn. */
-void *TextDraw_ProcessDestructFree(void *process)
+void *TextDraw_ProcessDestructDelete(void *process)
 {
     *(const u32 **) process = data_020dcf40;
     *(const u32 **) process = data_020da13c;
@@ -596,7 +596,7 @@ void *TextDraw_ProcessDestructFree(void *process)
     Heap_FreeAux(process);
     return process;
 }
-CLEAN_AS(func_02051b34, TextDraw_ProcessDestructFree)
+CLEAN_AS(func_02051b34, TextDraw_ProcessDestructDelete)
 
 /* func_02051b5c (vtable slot 16): the destructor. */
 void *TextDraw_ProcessDestruct(void *process)

@@ -902,7 +902,7 @@ CLEAN_AS(_ZN18Obj_ov068_0227775019func_ov068_02272e2cEv, Sequence4_Update)
  * flag, at state 10,
  * the current player's hand emptied first; both reset the marked place. Otherwise state 0.
  * Always 1. */
-int Sequence4_Setup(Sequence4 *actor)
+int Sequence4_SetUp(Sequence4 *actor)
 {
     u8 *record = PlayerRecords_Current();
     actor->effect_point = actor->base.position;
@@ -925,7 +925,7 @@ int Sequence4_Setup(Sequence4 *actor)
     }
     return 1;
 }
-CLEAN_AS(_ZN18Obj_ov068_0227775019func_ov068_02272e50Ev, Sequence4_Setup)
+CLEAN_AS(_ZN18Obj_ov068_0227775019func_ov068_02272e50Ev, Sequence4_SetUp)
 
 /* func_ov068_02272ee8 (vtable slot 0x44, the deleting destructor): its vtables set back,
  * overlay 9's destructor, and the memory freed. */

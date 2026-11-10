@@ -78,7 +78,7 @@ NpcPlc *NpcPlc_Destruct(NpcPlc *self)
 CLEAN_AS(func_020c3a68, NpcPlc_Destruct)
 
 /* func_020c3a90 (slot 0x44): destructed, then freed to the auxiliary heap. */
-NpcPlc *NpcPlc_DestructDelete(NpcPlc *self)
+NpcPlc *NpcPlc_Delete(NpcPlc *self)
 {
     *(const u8 **) (void *) self = data_020e877c;
     NpcPlcTalk_Destruct(&self->talk);
@@ -86,7 +86,7 @@ NpcPlc *NpcPlc_DestructDelete(NpcPlc *self)
     Heap_FreeAux(self);
     return self;
 }
-CLEAN_AS(func_020c3a90, NpcPlc_DestructDelete)
+CLEAN_AS(func_020c3a90, NpcPlc_Delete)
 
 /* func_020c3abc (slot 0x4c): told of an event. Code 0: its talk is reset and given the
  * player's object as its motion argument, and it talks (NPC_PLC_TALK). Code 8 (its act ended):
@@ -179,14 +179,14 @@ void NpcPlcTalk_SetOwner(NpcPlcTalk *talk, NpcPlc *owner)
 CLEAN_AS(func_020c3c20, NpcPlcTalk_SetOwner)
 
 /* func_020c3c44 (the talk's slot 0x04): destructed, then freed (Heap_OperatorDeleteB). */
-NpcPlcTalk *NpcPlcTalk_DestructDelete(NpcPlcTalk *talk)
+NpcPlcTalk *NpcPlcTalk_Delete(NpcPlcTalk *talk)
 {
     talk->scene.vtable = data_020e86ec;
     SceneBase_DestructBody(&talk->scene);
     Heap_OperatorDeleteB(talk);
     return talk;
 }
-CLEAN_AS(func_020c3c44, NpcPlcTalk_DestructDelete)
+CLEAN_AS(func_020c3c44, NpcPlcTalk_Delete)
 
 /* func_020c3c64 (the talk's slot 0x00): the destructor. */
 NpcPlcTalk *NpcPlcTalk_Destruct(NpcPlcTalk *talk)

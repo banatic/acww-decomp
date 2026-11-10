@@ -65,7 +65,7 @@ extern WalrusStateRow data_ov079_0227a224[WALRUS_STATES];
 
 /* The object's life and vtable slots. */
 Walrus *Walrus_Destruct(Walrus *self);
-Walrus *Walrus_DestructDelete(Walrus *self);
+Walrus *Walrus_Delete(Walrus *self);
 void Walrus_OnEvent(Walrus *self, int code);
 int Walrus_MayAct(Walrus *self);
 int Walrus_ModelName(void);

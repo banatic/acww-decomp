@@ -175,7 +175,7 @@ void BbsWrite_SendPost(BbsWriteScene *self)
     Session_BeginMessage(session);
     Session_AppendMessage(session, message, BBS_WRITE_POST_MESSAGE_SIZE);
     Session_EndMessage(session, BBS_WRITE_POST_CATEGORY, BBS_WRITE_POST_TO_ALL);
-    self->post_sequence = Session_GetFrameSequence(session);
+    self->post_sequence = Session_FrameSequence(session);
     Heap_Free(heap, message);
 }
 CLEAN_AS(func_ov112_0229efe8, BbsWrite_SendPost)

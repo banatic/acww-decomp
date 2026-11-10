@@ -8,7 +8,7 @@
  * float that uses the entry.
  *
  * A float (0x40 bytes, at 0x28 in a field actor's held item) is set up for a rod or a
- * slingshot, whose pellet it is, when the item is taken (FishingFloat_Setup; the rods 0x1374
+ * slingshot, whose pellet it is, when the item is taken (FishingFloat_SetUp; the rods 0x1374
  * and 0x1375 and the slingshots 0x137a and 0x137b) and moved
  * once a frame (FishingFloat_Update) by the step function of its state, from the table of
  * member functions at data_021cad30:
@@ -118,7 +118,7 @@ void FishingFloatPool_PlaceTexture(FishingFloatPool *pool, int entry);
 int FishingFloatPool_LoadModel(FishingFloatPool *pool, int entry, int model);
 void FishingFloatPool_StopUpload(FishingFloatPool *pool, int entry);
 void FishingFloat_Release(FishingFloat *self);
-void FishingFloat_Setup(FishingFloat *self, int entry, Actor *holder, unsigned int model);
+void FishingFloat_SetUp(FishingFloat *self, int entry, Actor *holder, unsigned int model);
 void FishingFloat_Destruct(void *self);
 void FishingFloat_Construct(FishingFloat *self);
 ModelObject *FishingFloatPool_Model(FishingFloatPool *pool, int entry);

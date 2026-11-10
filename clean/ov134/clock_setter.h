@@ -223,7 +223,7 @@ int ClockSetter_IsBeforeMin(ClockSetter *self);
 void ClockSetter_CopyValue(ClockSetter *self, DateTime *out);
 void ClockSetter_Update(ClockSetter *self);
 void ClockSetter_EndFrame(ClockSetter *self);
-void ClockSetter_Teardown(ClockSetter *self);
+void ClockSetter_TearDown(ClockSetter *self);
 void ClockSetter_UseMinimum(ClockSetter *self);
 void ClockSetter_Init(ClockSetter *self, int mode, int base_layer, int panel_layer, u8 list_layer);
 ClockSetter *ClockSetter_Destroy(ClockSetter *self);

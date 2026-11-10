@@ -297,7 +297,7 @@ void LetterWrite_ClosePanelTexts(LetterWriteScene *self);
 void LetterWrite_Draw(LetterWriteScene *self);
 int LetterWrite_UpdateSprites(LetterWriteScene *self);
 void LetterWrite_Release(LetterWriteScene *self);
-void LetterWrite_Setup(LetterWriteScene *self);
+void LetterWrite_SetUp(LetterWriteScene *self);
 void LetterWrite_StepWipeOut(LetterWriteScene *self);
 void LetterWrite_StartWipeOut(LetterWriteScene *self);
 void LetterWrite_OpenChoice(LetterWriteScene *self);

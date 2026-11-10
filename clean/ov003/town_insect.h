@@ -178,7 +178,7 @@ void TownInsect_UnmarkLitBuildings(TownInsectMask *mask);
 void TownInsect_FillMask(TownInsectMask *mask);
 int TownInsect_PickTile(TownInsect *insect, TownInsectMask *mask, int kind, int place);
 void TownInsect_CopyMask(void *dst, int place);
-ModelAnim *TownInsectAnim_DestructDelete(ModelAnim *anim);
+ModelAnim *TownInsectAnim_Delete(ModelAnim *anim);
 ModelAnim *TownInsectAnim_Destruct(ModelAnim *anim);
 ModelAnim *TownInsectAnim_Construct(ModelAnim *anim);
 int TownInsect_Weather(int kind, int falling);

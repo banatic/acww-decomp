@@ -1,7 +1,7 @@
 /* The game's data of each of its 150 villagers (data_020cd884, 0x4e bytes each, func_02082500
  * by the villager number of an NpcId), and what one of the town's villagers reads of its own:
  *
- *   0x06  ten item codes, the items its house starts with (TownVillager_Setup)
+ *   0x06  ten item codes, the items its house starts with (TownVillager_SetUp)
  *   0x1a  six pairs of an attribute and a value of it (ItemAttributes_Match), one for each of
  *         the villager's numbers at 0x7d7 (VillagerMode_Counter7D7): the items it likes
  *   0x26  its birthday (month, then day)

@@ -330,7 +330,7 @@ int VillagerTalkReplies_LineForSituation(VillagerTalk *talk, VillagerTalkLine *o
 {
     u8 *record = replies_record(talk);
     VillagerState *entry = VillagerStatus_StateEntry(record);
-    int byte18 = VillagerState_GetMood(entry);
+    int byte18 = VillagerState_Mood(entry);
     const VillagerTalkRepliesTexts *texts = NULL;
     int said = 0;
     s32 which = -1;

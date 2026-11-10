@@ -42,7 +42,7 @@ extern const u8 data_ov143_0229afd0[TUNE_EDITOR_STEPS];
 extern const OamEntry data_ov143_0229af90[];
 extern const OamEntry data_ov143_0229af08[];
 extern const OamEntry data_ov143_0229b038[];
-extern OamEntry data_ov143_0229b050[]; /* written by TuneEditor_Setup, through data_ov143_0229b040 */
+extern OamEntry data_ov143_0229b050[]; /* written by TuneEditor_SetUp, through data_ov143_0229b040 */
 
 /* The "erase all" caption's OBJs (its label's characters start at the first one's tile). */
 extern const OamEntry data_ov143_0229afc0[];

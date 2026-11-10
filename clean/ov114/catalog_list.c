@@ -925,14 +925,14 @@ int CatalogText_Capacity(void)
 CLEAN_AS(func_ov114_0229d108, CatalogText_Capacity)
 
 /* func_ov114_0229d110 (vtable entry 1) */
-CatalogText *CatalogText_DestructDelete(CatalogText *text)
+CatalogText *CatalogText_Delete(CatalogText *text)
 {
     text->vtable = (const TextVtable *) (const void *) data_ov114_0229daf0;
     TextBase_Destruct((TextBase *) (void *) text);
     Heap_OperatorDeleteB(text);
     return text;
 }
-CLEAN_AS(func_ov114_0229d110, CatalogText_DestructDelete)
+CLEAN_AS(func_ov114_0229d110, CatalogText_Delete)
 
 /* func_ov114_0229d130 (vtable entry 0) */
 CatalogText *CatalogText_Destruct(CatalogText *text)
@@ -1287,13 +1287,13 @@ void CatalogList_BeginFrame(CatalogList *self)
 CLEAN_AS(func_ov114_0229d87c, CatalogList_BeginFrame)
 
 /* func_ov114_0229d8ac: the list's end: the tasks ended and the labels' boxes freed. */
-void CatalogList_Teardown(CatalogList *self)
+void CatalogList_TearDown(CatalogList *self)
 {
     LayerTask_End(&self->palette_task);
     CatalogList_EndIconTasks(self);
     CatalogList_CloseLabels(self);
 }
-CLEAN_AS(func_ov114_0229d8ac, CatalogList_Teardown)
+CLEAN_AS(func_ov114_0229d8ac, CatalogList_TearDown)
 
 /* func_ov114_0229d8d0: the list started on its layers for `kind`: no flags, the sub engine's
  * planes of layers B and C, the icons' file forgotten, the ring made, 56 entries with the bar's

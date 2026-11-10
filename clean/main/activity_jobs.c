@@ -311,7 +311,7 @@ void ActivityJobs_Step0C(Activity *activity)
         StateBlock_Start(&data_021dc7a8, STATE_BLOCK_MODE_LOADED);
     }
     StateBlock_FinishStart(&data_021dc7a8);
-    VillagerState_CallNoOp();
+    VillagerState_CallNothing();
     SceneExit_SetToScene(entry_record(), 0x2c, 3, 2);
     ActivityProcess_StartJob(activity, 0);
 }

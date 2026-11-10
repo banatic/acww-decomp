@@ -115,7 +115,7 @@ typedef struct Mabel {
 
 /* Her vtable slots and questions (mabel.c). */
 Mabel *Mabel_Destruct(Mabel *mabel);
-void *Mabel_DestructDelete(Mabel *mabel);
+void *Mabel_Delete(Mabel *mabel);
 int Mabel_CheckAtExit(Mabel *mabel);
 int Mabel_OfferShown(Mabel *mabel);
 int Mabel_FindShown(Mabel *mabel);

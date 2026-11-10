@@ -28,7 +28,7 @@
 /* The state block flag that keeps the notice and the letter from being fetched. */
 #define STATE_BLOCK_FLAG_NO_DOWNLOADS 20
 
-/* The network modes of the Wi-Fi Connection (Net_GetMode): hosting and joining. */
+/* The network modes of the Wi-Fi Connection (Net_Mode): hosting and joining. */
 #define NET_MODE_WFC_HOSTING 3
 #define NET_MODE_WFC_JOINING 4
 
@@ -245,7 +245,7 @@ CLEAN_AS(func_0209ff54, WfcSession_StartCatRecordUpload)
 int WfcSession_End(void *unused)
 {
     (void) unused;
-    int wifi = Net_GetMode() == NET_MODE_WFC_HOSTING || Net_GetMode() == NET_MODE_WFC_JOINING;
+    int wifi = Net_Mode() == NET_MODE_WFC_HOSTING || Net_Mode() == NET_MODE_WFC_JOINING;
     int result = Session_End();
     if (!wifi) {
         return result;
@@ -278,10 +278,10 @@ CLEAN_AS(func_0209ffb0, WfcSession_End)
  * roster. */
 void WfcSession_KeepFriendData(void)
 {
-    const u8 *table = Session_GetStartTable(data_020ccf94);
-    WifiFriend *entry = WifiFriendList_GetEntries(PlayerRecord_WifiFriends(PlayerRecords_Current()));
+    const u8 *table = Session_StartTable(data_020ccf94);
+    WifiFriend *entry = WifiFriendList_Entries(PlayerRecord_WifiFriends(PlayerRecords_Current()));
     for (int i = 0; i < WIFI_FRIENDS; i++) {
-        WifiFriendData *data = WifiFriendData_GetData(WifiFriend_GetFriendData(entry));
+        WifiFriendData *data = WifiFriendData_Data(WifiFriend_FriendData(entry));
         MI_CpuCopy8(table + i * sizeof(WifiFriendData), data, sizeof(WifiFriendData));
         entry++;
     }

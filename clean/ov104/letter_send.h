@@ -12,7 +12,7 @@
  * - the cursor walks the carried letters (2 columns of 5), the letters to post (`outbox`, 2
  *   columns of 5) and one place below each (LetterSendPlace); letters are picked up, held and
  *   put down as in overlay 106;
- * - its setup (LetterSend_Setup) empties `outbox` and copies the carried letters into
+ * - its setup (LetterSend_SetUp) empties `outbox` and copies the carried letters into
  *   `carried_copy` (LetterSend_SaveCarried); cancelling (panel button 7, LetterSend_Cancel)
  *   puts that copy back (LetterSend_RestoreCarried);
  * - posting (panel button 9, LetterSend_Post) hands the letters of `outbox` on: to the post
@@ -346,8 +346,8 @@ void LetterSend_EndFrame(LetterSendScene *self);
 void LetterSend_BeginFrame(LetterSendScene *self);
 void LetterSend_EndInteractiveFrame(LetterSendScene *self);
 void LetterSend_BeginInteractiveFrame(LetterSendScene *self);
-void LetterSend_Teardown(LetterSendScene *self);
-void LetterSend_Setup(LetterSendScene *self);
+void LetterSend_TearDown(LetterSendScene *self);
+void LetterSend_SetUp(LetterSendScene *self);
 void LetterSend_ScrollOutboxLayer(LetterSendScene *self);
 void LetterSend_ScrollSceneLayer(LetterSendScene *self);
 void LetterSend_ScrollLetterLayers(LetterSendScene *self);

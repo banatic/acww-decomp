@@ -112,14 +112,14 @@ CLEAN_AS(func_ov004_02230c98, RmoTelephone_PlayFromEnd)
 
 /* func_ov004_02230ce4: the one that exists plays its body's first joint animation once
  * backwards from its end (its frame count's whole frames); nothing when none exists. */
-void RmoTelephone_PlayBackFromEnd(void)
+void RmoTelephone_PlayBackwardsFromEnd(void)
 {
     RmoTelephone *self = data_ov004_022588c8;
     if (self != NULL) {
         rmo_telephone_play(self, FRAME_CTRL_ONCE | FRAME_CTRL_REVERSE, rmo_telephone_last_frame(self));
     }
 }
-CLEAN_AS(func_ov004_02230ce4, RmoTelephone_PlayBackFromEnd)
+CLEAN_AS(func_ov004_02230ce4, RmoTelephone_PlayBackwardsFromEnd)
 
 /* func_ov004_02230d30: the one that exists plays its body's first joint animation once from its
  * start; nothing when none exists. */

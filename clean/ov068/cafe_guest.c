@@ -373,7 +373,7 @@ CafeGuest *CafeGuest_Destruct(CafeGuest *self)
 CLEAN_AS(func_ov068_02273920, CafeGuest_Destruct)
 
 /* func_ov068_02273948 (slot 0x44): the same, then the object freed (Heap_FreeAux). */
-CafeGuest *CafeGuest_DestructDelete(CafeGuest *self)
+CafeGuest *CafeGuest_Delete(CafeGuest *self)
 {
     *(const u8 **) (void *) self = data_ov068_02277e50;
     CafeGuestScene_Destruct(&self->scene);
@@ -381,7 +381,7 @@ CafeGuest *CafeGuest_DestructDelete(CafeGuest *self)
     Heap_FreeAux(self);
     return self;
 }
-CLEAN_AS(func_ov068_02273948, CafeGuest_DestructDelete)
+CLEAN_AS(func_ov068_02273948, CafeGuest_Delete)
 
 /* func_ov068_02273974 (overlay 4's cafe asks it): its kind. */
 int CafeGuest_Kind(CafeGuest *self)
@@ -956,14 +956,14 @@ CLEAN_AS(func_ov068_022746c0, CafeGuestScene_Begin)
 
 /* func_ov068_022746dc (the scene's slot 0x04): the destructor of main's class 0x020d9ff8, then
  * the scene freed (Heap_OperatorDeleteB). */
-CafeGuestScene *CafeGuestScene_DestructDelete(CafeGuestScene *scene)
+CafeGuestScene *CafeGuestScene_Delete(CafeGuestScene *scene)
 {
     *(const u8 **) (void *) scene = data_ov068_02277dc0;
     Obj020d9ff8_DestructBody(scene);
     Heap_OperatorDeleteB(scene);
     return scene;
 }
-CLEAN_AS(func_ov068_022746dc, CafeGuestScene_DestructDelete)
+CLEAN_AS(func_ov068_022746dc, CafeGuestScene_Delete)
 
 /* func_ov068_022746fc (the scene's slot 0x00): the destructor of main's class 0x020d9ff8. */
 CafeGuestScene *CafeGuestScene_Destruct(CafeGuestScene *scene)

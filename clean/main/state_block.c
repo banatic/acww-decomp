@@ -458,7 +458,7 @@ void StateBlock_StartMode2(StateBlock *block)
     TurnipPrices_RedrawIfClockMoved((TurnipPrices *) (void *) block->part_17364);
     VillagerTown_PickBirthdayGreeter(villagers_of(block), NULL);
     VillagerRoster_UpdateOutdoors(villagers_of(block), 1);
-    if (SceneQuery_Current() == SCENE_6 && VillagerState_GetBirthdayGreeter() == -1 &&
+    if (SceneQuery_Current() == SCENE_6 && VillagerState_BirthdayGreeter() == -1 &&
         PlayerRecord_TestFlag(record, PLAYER_FLAG_NEW_RESIDENT) == 0 &&
         PlayerRecord_TestFlag(record, PLAYER_FLAG_UNSAVED) != 0) {
         PlayerField2416_RaiseResets((PlayerField2416 *) (void *) PlayerRecord_Field2416(record));
@@ -518,7 +518,7 @@ CLEAN_AS(func_0209ee54, StateBlock_StartMode0)
  * when the block of letters exists, its letters. */
 void StateBlock_ForgetPlayer(StateBlock *block, int player)
 {
-    MailBox_Init((MailBox *) block->mailboxes[player]);
+    MailboxRecord_Init((MailboxRecord *) block->mailboxes[player]);
     PlayerStorage_Clear((u16 *) (void *) block->part_16800[player]);
     MuseumRecord_ForgetPlayer((MuseumRecord *) block->museum, player);
     Design_RemovePlayerItems(player);
@@ -547,7 +547,7 @@ void StateBlock_Init(StateBlock *block)
     HouseRecord_Init((HouseRecord *) (void *) block->part_0f52c);
     TownRecord_Init((TownRecord *) (void *) block->part_17254);
     SkyWeatherDay_SetToday((SkyWeatherDay *) (void *) block->part_1737e);
-    NookStore_Initialize((NookStore *) block->nook_store);
+    NookStore_Init((NookStore *) block->nook_store);
     MysteryCatRecord_Reset((MysteryCatRecord *) (void *) block->part_16ad0);
     TurnipPrices_Clear((TurnipPrices *) (void *) block->part_17364);
     LastSale_Clear((LastSale *) (void *) block->part_17344);

@@ -59,7 +59,7 @@ typedef struct NpcPlc {
 
 /* The object's vtable slots. */
 NpcPlc *NpcPlc_Destruct(NpcPlc *self);
-NpcPlc *NpcPlc_DestructDelete(NpcPlc *self);
+NpcPlc *NpcPlc_Delete(NpcPlc *self);
 int NpcPlc_MayAct(NpcPlc *self, u8 *other);
 void NpcPlc_OnEvent(NpcPlc *self, int code);
 
@@ -74,7 +74,7 @@ int NpcPlc_UpdateTurnBack(NpcPlc *self);
 /* Its talk scene. */
 NpcPlcTalk *NpcPlcTalk_Construct(NpcPlcTalk *talk);
 NpcPlcTalk *NpcPlcTalk_Destruct(NpcPlcTalk *talk);
-NpcPlcTalk *NpcPlcTalk_DestructDelete(NpcPlcTalk *talk);
+NpcPlcTalk *NpcPlcTalk_Delete(NpcPlcTalk *talk);
 void NpcPlcTalk_SetOwner(NpcPlcTalk *talk, struct NpcPlc *owner);
 void NpcPlcTalk_SetLines(NpcPlcTalk *talk, u32 lines);
 void NpcPlcTalk_OnMessage(NpcPlcTalk *talk, void *message);

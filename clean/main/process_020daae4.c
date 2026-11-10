@@ -22,7 +22,7 @@ Process *Process020daae4_Destruct(Process *process)
 CLEAN_AS(func_0203de7c, Process020daae4_Destruct)
 
 /* func_0203de9c: the destructor, then the process freed. */
-Process *Process020daae4_DestructFree(Process *process)
+Process *Process020daae4_DestructDelete(Process *process)
 {
     process->vtable = data_020daae4;
     process->vtable = data_020da13c;
@@ -30,7 +30,7 @@ Process *Process020daae4_DestructFree(Process *process)
     Heap_FreeAux(process);
     return process;
 }
-CLEAN_AS(func_0203de9c, Process020daae4_DestructFree)
+CLEAN_AS(func_0203de9c, Process020daae4_DestructDelete)
 
 /* ---- Its execute and draw (vtable slots 6, 8 and 9) ---- */
 

@@ -62,11 +62,11 @@ typedef struct StartMenuStateFns {
 } StartMenuStateFns;
 
 StartMenu *StartMenu_Destruct(StartMenu *menu);
-StartMenu *StartMenu_DestructFree(StartMenu *menu);
+StartMenu *StartMenu_DestructDelete(StartMenu *menu);
 void StartMenuReceiver_OnAnswer(StartMenuReceiver *receiver);
 void StartMenuReceiver_SetUpChoices(StartMenuReceiver *receiver);
 void StartMenuReceiver_SetOwner(StartMenuReceiver *receiver, StartMenu *owner);
-StartMenuReceiver *StartMenuReceiver_DestructFree(StartMenuReceiver *receiver);
+StartMenuReceiver *StartMenuReceiver_Delete(StartMenuReceiver *receiver);
 StartMenuReceiver *StartMenuReceiver_Destruct(StartMenuReceiver *receiver);
 StartMenuReceiver *StartMenuReceiver_Construct(StartMenuReceiver *receiver);
 void StartMenu_UpdateWait3(StartMenu *menu);

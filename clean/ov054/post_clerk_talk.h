@@ -94,7 +94,7 @@ typedef struct PostClerkTalkLine {
 /* The class (post_clerk_talk.c). */
 PostClerkTalk *PostClerkTalk_Construct(PostClerkTalk *talk);
 PostClerkTalk *PostClerkTalk_Destruct(PostClerkTalk *talk);
-PostClerkTalk *PostClerkTalk_DestructDelete(PostClerkTalk *talk);
+PostClerkTalk *PostClerkTalk_Delete(PostClerkTalk *talk);
 void PostClerkTalk_Begin(PostClerkTalk *talk, PostClerk *owner);
 void PostClerkTalk_SetStep(PostClerkTalk *talk, unsigned long step);
 void PostClerkTalk_RunCommandStep(PostClerkTalk *talk);

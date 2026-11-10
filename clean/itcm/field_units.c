@@ -19,20 +19,20 @@ extern FieldBlockMap *data_020da1a8;
 
 /* func_01ffcb2c: the type of the unit at (`x`, `z`) in the current map, UNIT_TYPE_NONE outside
  * its blocks. */
-u8 FieldUnits_GetType(int x, int z)
+u8 FieldUnits_Type(int x, int z)
 {
-    FieldBlock *block = FieldUnits_GetBlock(x >> 4, z >> 4);
+    FieldBlock *block = FieldUnits_Block(x >> 4, z >> 4);
     if (block == NULL) {
         return UNIT_TYPE_NONE;
     }
     return block->unit_types[(x & 0xf) + ((z & 0xf) << 4)];
 }
-CLEAN_AS(func_01ffcb2c, FieldUnits_GetType)
+CLEAN_AS(func_01ffcb2c, FieldUnits_Type)
 
 /* func_01ffcb5c: the current map's block at (`block_x`, `block_z`); NULL outside its width and
  * height. QUIRK: the place is found in rows of 6 blocks whatever the width; the address is
  * computed as the ARM does, in 32 bits, for a width or height above 6 too. */
-FieldBlock *FieldUnits_GetBlock(int block_x, int block_z)
+FieldBlock *FieldUnits_Block(int block_x, int block_z)
 {
     FieldBlockMap *map = data_020da1a8;
     if (block_x < 0 || block_z < 0 || (u32) block_x >= map->width || (u32) block_z >= map->height) {
@@ -41,7 +41,7 @@ FieldBlock *FieldUnits_GetBlock(int block_x, int block_z)
     u32 offset = (u32) block_z * sizeof(map->blocks[0]) + (u32) block_x * sizeof(FieldBlock);
     return (FieldBlock *) ((uintptr_t) map + offset);
 }
-CLEAN_AS(func_01ffcb5c, FieldUnits_GetBlock)
+CLEAN_AS(func_01ffcb5c, FieldUnits_Block)
 
 /* func_01ffcbd8: whether the bit of the unit at (`x`, `z`) is set in `grid`.
  * REQUIRES: (`x`, `z`) is in the grid; nothing is checked (the address is computed as the ARM

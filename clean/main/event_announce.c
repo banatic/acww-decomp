@@ -558,7 +558,7 @@ int EventAnnounceProcess_Create(void)
 CLEAN_AS(func_020418d0, EventAnnounceProcess_Create)
 
 /* func_02041a00 (vtable slot 0x44): the destructor that also frees the process. */
-EventAnnounceProcess *EventAnnounceProcess_DestructFree(EventAnnounceProcess *process)
+EventAnnounceProcess *EventAnnounceProcess_DestructDelete(EventAnnounceProcess *process)
 {
     process->base.vtable = data_020db71c;
     TalkReceiver_DestructSlot(&process->receiver);
@@ -567,7 +567,7 @@ EventAnnounceProcess *EventAnnounceProcess_DestructFree(EventAnnounceProcess *pr
     Heap_FreeAux(process);
     return process;
 }
-CLEAN_AS(func_02041a00, EventAnnounceProcess_DestructFree)
+CLEAN_AS(func_02041a00, EventAnnounceProcess_DestructDelete)
 
 /* func_02041a30 (vtable slot 0x40): the destructor. */
 EventAnnounceProcess *EventAnnounceProcess_Destruct(EventAnnounceProcess *process)

@@ -85,7 +85,7 @@ void LetterLine_CloseBox(LetterLine *line);
 int LetterLine_Buffer(int line);
 void LetterLine_Place(LetterLine *line, unsigned short first_tile, int layer);
 int LetterLine_Capacity(void);
-LetterLine *LetterLine_DestructDelete(LetterLine *line);
+LetterLine *LetterLine_Delete(LetterLine *line);
 LetterLine *LetterLine_Destruct(LetterLine *line);
 LetterLine *LetterLine_Construct(LetterLine *line);
 int LetterWideText_Buffer(int text);

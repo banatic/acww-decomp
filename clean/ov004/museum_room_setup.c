@@ -53,14 +53,14 @@ int MuseumSetupPlain_SetUpScene(void)
 CLEAN_AS(func_ov004_022451c0, MuseumSetupPlain_SetUpScene)
 
 /* func_ov004_022451c4 (class 83's slot 17): the destructor, and the process freed. */
-MuseumSetup *MuseumSetupPlain_DestructFree(MuseumSetup *self)
+MuseumSetup *MuseumSetupPlain_Delete(MuseumSetup *self)
 {
     self->base.vtable = data_ov004_022566d8;
     MuseumSetup_DestructBase(self);
     Heap_FreeAux(self);
     return self;
 }
-CLEAN_AS(func_ov004_022451c4, MuseumSetupPlain_DestructFree)
+CLEAN_AS(func_ov004_022451c4, MuseumSetupPlain_Delete)
 
 /* func_ov004_022451e4 (class 83's slot 16): the destructor. */
 MuseumSetup *MuseumSetupPlain_Destruct(MuseumSetup *self)
@@ -136,14 +136,14 @@ int MuseumSetupFossils_ClearMissing(void)
 CLEAN_AS(func_ov004_0224522c, MuseumSetupFossils_ClearMissing)
 
 /* func_ov004_02245358 (class 82's slot 17): the destructor, and the process freed. */
-MuseumSetup *MuseumSetupFossils_DestructFree(MuseumSetup *self)
+MuseumSetup *MuseumSetupFossils_Delete(MuseumSetup *self)
 {
     self->base.vtable = data_ov004_02256780;
     MuseumSetup_DestructBase(self);
     Heap_FreeAux(self);
     return self;
 }
-CLEAN_AS(func_ov004_02245358, MuseumSetupFossils_DestructFree)
+CLEAN_AS(func_ov004_02245358, MuseumSetupFossils_Delete)
 
 /* func_ov004_02245378 (class 82's slot 16): the destructor. */
 MuseumSetup *MuseumSetupFossils_Destruct(MuseumSetup *self)
@@ -237,7 +237,7 @@ MuseumSetup *MuseumSetup_DestructBase(MuseumSetup *self)
 CLEAN_AS(func_ov004_02245474, MuseumSetup_DestructBase)
 
 /* func_ov004_02245494 (class 81's slot 17): the destructor, and the process freed. */
-MuseumSetup *MuseumSetup_DestructFree(MuseumSetup *self)
+MuseumSetup *MuseumSetup_Delete(MuseumSetup *self)
 {
     self->base.vtable = data_ov004_0225672c;
     self->base.vtable = data_020da13c;
@@ -245,7 +245,7 @@ MuseumSetup *MuseumSetup_DestructFree(MuseumSetup *self)
     Heap_FreeAux(self);
     return self;
 }
-CLEAN_AS(func_ov004_02245494, MuseumSetup_DestructFree)
+CLEAN_AS(func_ov004_02245494, MuseumSetup_Delete)
 
 /* func_ov004_022454bc (class 81's slot 16): the destructor. */
 MuseumSetup *MuseumSetup_Destruct(MuseumSetup *self)

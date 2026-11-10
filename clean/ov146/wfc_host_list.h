@@ -6,7 +6,7 @@
  * - ov092's dispatcher starts it for GroupParams modes 0x3c and 0x42 (overlay group 0x2d,
  *   ov092/menu_dispatch.c); its graphics are "menu/wfc/bg.bch", "bg.bpl", "bg7.bpl", "a_bg.bsc",
  *   "b_bg.bsc", "obj0.bch", "obj1.bch" and "obj.bpl";
- * - each frame it reads the friends' statuses NitroDWC reports (Wfc_GetFriendList,
+ * - each frame it reads the friends' statuses NitroDWC reports (Wfc_FriendList,
  *   autoload_2/network.h): a friend with status 6 (NitroDWC's DWC_STATUS_MATCH_SC_SV, hosting a
  *   game) and a status data that does not start with 0 is listed (WfcHostList_IsHosting); one
  *   whose game has fewer than four entries can be chosen (WfcHostList_IsJoinable);
@@ -166,7 +166,7 @@ void WfcHostList_BeginFrame(WfcHostList *self);
 void WfcHostList_EndFrame(WfcHostList *self);
 void WfcHostList_BeginInteractiveFrame(WfcHostList *self);
 void WfcHostList_Release(WfcHostList *self);
-void WfcHostList_Setup(WfcHostList *self);
+void WfcHostList_SetUp(WfcHostList *self);
 void WfcHostList_ScrollWithWipe(WfcHostList *self);
 void WfcHostList_WipeOut(WfcHostList *self);
 void WfcHostList_StartWipeOut(WfcHostList *self);

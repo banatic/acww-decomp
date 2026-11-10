@@ -93,7 +93,7 @@ static MenuScene *bbs_write_scene(BbsWriteScene *self)
 
 static MenuDispatch *bbs_write_parent(BbsWriteScene *self)
 {
-    return (MenuDispatch *) Process_GetParent((Process *) (void *) self);
+    return (MenuDispatch *) Process_Parent((Process *) (void *) self);
 }
 
 static DualCellSprite *bbs_write_button_cells(BbsWriteScene *self)
@@ -195,7 +195,7 @@ CLEAN_AS(func_ov112_022a12dc, BbsWrite_Release)
  * given its signature line (menu message 0x89 with the current player's name, at most 16
  * characters, padded with wide spaces to 16) that the cursor stays after; the knob up, the
  * lines' characters filled with 0xdd, the scroll at the top. */
-void BbsWrite_Setup(BbsWriteScene *self)
+void BbsWrite_SetUp(BbsWriteScene *self)
 {
     TextLabel message;
     PlayerIdText name;
@@ -231,7 +231,7 @@ void BbsWrite_Setup(BbsWriteScene *self)
     PlayerIdText_Destruct(&name);
     TextLabel_Destruct(&message);
 }
-CLEAN_AS(func_ov112_022a1310, BbsWrite_Setup)
+CLEAN_AS(func_ov112_022a1310, BbsWrite_SetUp)
 
 /* --- The states --- */
 
@@ -648,7 +648,7 @@ CLEAN_AS(func_ov112_022a1e2c, BbsWrite_Close)
  * the base's wait (phase 0). Answers 1. */
 int BbsWrite_Start(BbsWriteScene *self)
 {
-    BbsWrite_Setup(self);
+    BbsWrite_SetUp(self);
     self->base.state = BBS_WRITE_STATE_START;
     MenuScene_SetPhase(bbs_write_scene(self), BBS_WRITE_PHASE_WAIT);
     return 1;

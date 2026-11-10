@@ -114,12 +114,12 @@ void SoundSlots_ReleaseAll(SoundSlots *slots)
 CLEAN_AS(func_020ef238, SoundSlots_ReleaseAll)
 
 /* func_020ef284: every slot stopped at once and its handle released. */
-void SoundSlots_Shutdown(SoundSlots *slots)
+void SoundSlots_ShutDown(SoundSlots *slots)
 {
     SoundSlots_StopAll(slots, 0);
     SoundSlots_ReleaseAll(slots);
 }
-CLEAN_AS(func_020ef284, SoundSlots_Shutdown)
+CLEAN_AS(func_020ef284, SoundSlots_ShutDown)
 
 /* func_020ef2a4: a held sequence asked for: a held slot playing it is kept for this frame and
  * given the new volume and pitch, else a free slot is set to start it, held. The slot, or -1
@@ -271,10 +271,10 @@ void SoundSlots_Update(SoundSlots *slots, void *source)
 }
 CLEAN_AS(func_020ef498, SoundSlots_Update)
 
-/* func_020ef754: the slots let go of (SoundSlots_Shutdown). */
+/* func_020ef754: the slots let go of (SoundSlots_ShutDown). */
 void SoundSlots_Finish(SoundSlots *slots)
 {
-    SoundSlots_Shutdown(slots);
+    SoundSlots_ShutDown(slots);
 }
 CLEAN_AS(func_020ef754, SoundSlots_Finish)
 

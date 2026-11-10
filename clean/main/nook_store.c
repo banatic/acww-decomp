@@ -813,7 +813,7 @@ CLEAN_AS(func_020af880, NookStore_ClearStock)
 /* func_020af890 */
 void NookStore_Reset(NookStore *store)
 {
-    NookStore_Initialize(store);
+    NookStore_Init(store);
 }
 CLEAN_AS(func_020af890, NookStore_Reset)
 
@@ -1069,7 +1069,7 @@ CLEAN_AS(func_020afb90, NookStore_IsTimeSale)
 
 /* func_020afbcc: an empty store at level 0 with nothing spent, no time sale and no upgrade
  * planned, asking for a restock. */
-void NookStore_Initialize(NookStore *store)
+void NookStore_Init(NookStore *store)
 {
     NookStore_ClearStock(store);
     store->bits = (u16) (store->bits & ~(NOOK_LEVEL_MASK << NOOK_LEVEL_SHIFT));
@@ -1078,7 +1078,7 @@ void NookStore_Initialize(NookStore *store)
     store->stocked.extra = 1;
     store->upgrade.pending = 0;
 }
-CLEAN_AS(func_020afbcc, NookStore_Initialize)
+CLEAN_AS(func_020afbcc, NookStore_Init)
 
 /* func_020afc10: the destructor: the item codes are destroyed (their destructor does nothing). */
 NookStore *NookStore_Destruct(NookStore *store)
@@ -1092,7 +1092,7 @@ CLEAN_AS(func_020afc10, NookStore_Destruct)
 NookStore *NookStore_Construct(NookStore *store)
 {
     __cxa_vec_ctor(store->items, NOOK_STORE_PLACES, sizeof store->items[0], func_02034ce0, func_020051b0);
-    NookStore_Initialize(store);
+    NookStore_Init(store);
     return store;
 }
 CLEAN_AS(func_020afc2c, NookStore_Construct)

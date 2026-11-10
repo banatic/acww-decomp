@@ -194,7 +194,7 @@ void ModelObject_UseFileModel(ModelObject *object, u8 *file)
     object->model = model;
     NNS_G3dBindMdlTex(object->model, texture);
     NNS_G3dBindMdlPltt(object->model, texture);
-    ModelObject_SetupRender(object);
+    ModelObject_SetUpRender(object);
 }
 CLEAN_AS(func_020554b0, ModelObject_UseFileModel)
 
@@ -214,7 +214,7 @@ int ModelObject_LoadWithDesign(ModelObject *object, const char *path, int player
     NNS_G3dForceBindMdlTex(object->model, texture, 0, 0);
     NNS_G3dForceBindMdlPltt(object->model, texture, 0, 0);
     Heap_Free(file_heap, file);
-    ModelObject_SetupRender(object);
+    ModelObject_SetUpRender(object);
     return 1;
 }
 CLEAN_AS(func_020554ec, ModelObject_LoadWithDesign)
@@ -226,7 +226,7 @@ int ModelObject_LoadShared(ModelObject *object, int name, const char *path)
 {
     object->model = ModelCache_FindModel(name);
     if (object->model != NULL) {
-        ModelObject_SetupRender(object);
+        ModelObject_SetUpRender(object);
         return 1;
     }
     object->name = (u32) name;
@@ -283,7 +283,7 @@ int ModelObject_LoadNamed(ModelObject *object, const char *path, Heap *heap, voi
         }
     }
     Heap_Free(file_heap, file);
-    ModelObject_SetupRender(object);
+    ModelObject_SetUpRender(object);
     return 1;
 }
 CLEAN_AS(func_020555dc, ModelObject_LoadNamed)
@@ -311,7 +311,7 @@ int ModelObject_LoadFrom(ModelObject *object, const char *path, Heap *heap, int 
         NNS_G3dBindMdlPltt(object->model, texture);
     }
     Heap_Free(file_heap, file);
-    ModelObject_SetupRender(object);
+    ModelObject_SetUpRender(object);
     return 1;
 }
 CLEAN_AS(func_02055698, ModelObject_LoadFrom)
@@ -612,7 +612,7 @@ int ModelObject_SetModel(ModelObject *object, u8 *model, void *texture)
 {
     object->model = model;
     object->texture = texture;
-    ModelObject_SetupRender(object);
+    ModelObject_SetUpRender(object);
     return 1;
 }
 CLEAN_AS(func_02055f2c, ModelObject_SetModel)
@@ -627,14 +627,14 @@ int ModelObject_SetModelTexture(ModelObject *object, u8 *model, void *texture)
         NNS_G3dBindMdlTex(object->model, object->texture);
         NNS_G3dBindMdlPltt(object->model, object->texture);
     }
-    ModelObject_SetupRender(object);
+    ModelObject_SetUpRender(object);
     return 1;
 }
 CLEAN_AS(func_02055f40, ModelObject_SetModelTexture)
 
 /* func_02055f6c: the render object set up for the model; each lit material takes the lights of
  * the current scene (func_020658c4), and no material sends its emission color. */
-void ModelObject_SetupRender(ModelObject *object)
+void ModelObject_SetUpRender(ModelObject *object)
 {
     func_021054e4(&object->render, object->model);
     for (u32 i = 0; i < material_count(object->model); i++) {
@@ -646,7 +646,7 @@ void ModelObject_SetupRender(ModelObject *object)
     }
     NNSi_G3dModifyMatFlag(object->model, 0, MODEL_MATERIAL_FLAG_EMISSION);
 }
-CLEAN_AS(func_02055f6c, ModelObject_SetupRender)
+CLEAN_AS(func_02055f6c, ModelObject_SetUpRender)
 
 /* func_02055fcc: no model: the render object emptied, the base transform the identity, the
  * derived classes' flags (layered_model.h) and the VRAM region cleared. */

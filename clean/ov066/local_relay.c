@@ -40,7 +40,7 @@ static_assert(offsetof(LocalSession, unk_a8) == 0xa8, "relay shutdown");
 
 extern LocalControl *data_ov066_0226bdec;
 extern LocalSession *data_ov066_0226bdf4;
-/* The relay, NULL outside LocalRelay_Start and LocalRelay_Shutdown. */
+/* The relay, NULL outside LocalRelay_Start and LocalRelay_ShutDown. */
 extern LocalRelay *data_ov066_0226be08;
 
 /* The game's symbols of the functions below that are handed to WM and to the session. */
@@ -655,7 +655,7 @@ CLEAN_AS(func_ov066_0226b8bc, LocalRelay_CanSend)
 
 /* func_ov066_0226b90c: the relay ended, if there is one: the receive callbacks of ports 12 and
  * 13 removed, its buffers and itself freed, then the session (LocalSession_Destroy). */
-void LocalRelay_Shutdown(void)
+void LocalRelay_ShutDown(void)
 {
     if (data_ov066_0226be08 == NULL) {
         return;
@@ -670,7 +670,7 @@ void LocalRelay_Shutdown(void)
     LocalSession_Destroy();
     data_ov066_0226be08 = NULL;
 }
-CLEAN_AS(func_ov066_0226b90c, LocalRelay_Shutdown)
+CLEAN_AS(func_ov066_0226b90c, LocalRelay_ShutDown)
 
 /* func_ov066_0226b9b8: the relay started with `params`, unless there is one: the control block
  * configured, the session created, the relay's functions set as the session's handlers, the

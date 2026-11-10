@@ -115,7 +115,7 @@ typedef struct CafeGuestTalkStart {
 } CafeGuestTalkStart;
 
 CafeGuest *CafeGuest_Destruct(CafeGuest *self);
-CafeGuest *CafeGuest_DestructDelete(CafeGuest *self);
+CafeGuest *CafeGuest_Delete(CafeGuest *self);
 int CafeGuest_Kind(CafeGuest *self);
 unsigned short CafeGuest_DrawSong(void);
 int CafeGuest_WaitForListener(CafeGuest *self);
@@ -144,7 +144,7 @@ void CafeGuestScene_StartTalk(CafeGuestScene *scene, CafeGuestTalkStart *start);
 unsigned long CafeGuestScene_Phase(CafeGuestScene *scene);
 void CafeGuestScene_SetPhase(CafeGuestScene *scene, unsigned long phase);
 void CafeGuestScene_Begin(CafeGuestScene *scene, CafeGuest *owner);
-CafeGuestScene *CafeGuestScene_DestructDelete(CafeGuestScene *scene);
+CafeGuestScene *CafeGuestScene_Delete(CafeGuestScene *scene);
 CafeGuestScene *CafeGuestScene_Destruct(CafeGuestScene *scene);
 CafeGuestScene *CafeGuestScene_Construct(CafeGuestScene *scene);
 int CafeGuest_UpdatePlay(CafeGuest *self);

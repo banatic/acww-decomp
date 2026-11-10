@@ -157,14 +157,14 @@ static void owl_talk_set_greeted(void)
 /* ---- The class */
 
 /* func_ov047_02261958 (vtable slot 0x04): its destructor, then the scene freed. */
-void *OwlTalk_DestructDelete(void *talk)
+void *OwlTalk_Delete(void *talk)
 {
     *(const u8 **) talk = data_ov047_02262c14;
     Obj020d9ff8_DestructBody(talk);
     Heap_OperatorDeleteB(talk);
     return talk;
 }
-CLEAN_AS(func_ov047_02261958, OwlTalk_DestructDelete)
+CLEAN_AS(func_ov047_02261958, OwlTalk_Delete)
 
 /* func_ov047_02261978 (vtable slot 0x00): the destructor of the scene class it derives from. */
 void *OwlTalk_Destruct(OwlTalk *talk)

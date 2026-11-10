@@ -72,7 +72,7 @@ static CellLayerSprite *birthday_sprite_cells(BirthdayScreen *self)
 
 static MenuDispatch *birthday_parent(BirthdayScreen *self)
 {
-    return (MenuDispatch *) (void *) Process_GetParent((Process *) (void *) self);
+    return (MenuDispatch *) (void *) Process_Parent((Process *) (void *) self);
 }
 
 /* The cursor sprite's update through its class (vtable slot 3, Glider_Update for the base). */
@@ -712,22 +712,22 @@ void BirthdayScreen_BeginInteractiveFrame(BirthdayScreen *self)
 CLEAN_AS(func_ov137_0229cf30, BirthdayScreen_BeginInteractiveFrame)
 
 /* func_ov137_0229cf48: the members torn down: the picker's, then the panel's texts closed. */
-void BirthdayScreen_Teardown(BirthdayScreen *self)
+void BirthdayScreen_TearDown(BirthdayScreen *self)
 {
-    ClockSetter_Teardown(&self->picker);
+    ClockSetter_TearDown(&self->picker);
     ButtonPanel_CloseTexts(&self->panel);
 }
-CLEAN_AS(func_ov137_0229cf48, BirthdayScreen_Teardown)
+CLEAN_AS(func_ov137_0229cf48, BirthdayScreen_TearDown)
 
 /* func_ov137_0229cf68: the setup: the picker for a month and day (on layers 6, 4 and 3), the
  * cursor at the month, no flags. */
-void BirthdayScreen_Setup(BirthdayScreen *self)
+void BirthdayScreen_SetUp(BirthdayScreen *self)
 {
     ClockSetter_Init(&self->picker, CLOCK_SETTER_MODE_MONTH_DAY, 6, 4, 3);
     self->place = BIRTHDAY_SCREEN_PLACE_MONTH;
     self->flags = 0;
 }
-CLEAN_AS(func_ov137_0229cf68, BirthdayScreen_Setup)
+CLEAN_AS(func_ov137_0229cf68, BirthdayScreen_SetUp)
 
 /* func_ov137_0229cfa0: layers 6 and 4 scrolled with the wipe. */
 void BirthdayScreen_ScrollWithWipe(BirthdayScreen *self)
@@ -882,7 +882,7 @@ CLEAN_AS(func_ov137_0229d284, BirthdayScreen_Draw)
 int BirthdayScreen_Close(BirthdayScreen *self)
 {
     MenuDispatch_ChildClosed(birthday_parent(self));
-    BirthdayScreen_Teardown(self);
+    BirthdayScreen_TearDown(self);
     return 1;
 }
 CLEAN_AS(func_ov137_0229d2d8, BirthdayScreen_Close)
@@ -891,7 +891,7 @@ CLEAN_AS(func_ov137_0229d2d8, BirthdayScreen_Close)
  * and phase 0. Answers 1. */
 int BirthdayScreen_Start(BirthdayScreen *self)
 {
-    BirthdayScreen_Setup(self);
+    BirthdayScreen_SetUp(self);
     self->base.state = BIRTHDAY_SCREEN_STATE_START_WIPE_IN;
     MenuScene_SetPhase(birthday_scene(self), 0);
     return 1;

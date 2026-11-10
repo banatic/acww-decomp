@@ -53,12 +53,12 @@ typedef struct MuseumSetupRow {
 } MuseumSetupRow;
 
 int MuseumSetupPlain_SetUpScene(void);
-MuseumSetup *MuseumSetupPlain_DestructFree(MuseumSetup *self);
+MuseumSetup *MuseumSetupPlain_Delete(MuseumSetup *self);
 MuseumSetup *MuseumSetupPlain_Destruct(MuseumSetup *self);
 MuseumSetup *MuseumSetupPlain_Construct(MuseumSetup *self);
 void MuseumSetupPlain_New(void);
 int MuseumSetupFossils_ClearMissing(void);
-MuseumSetup *MuseumSetupFossils_DestructFree(MuseumSetup *self);
+MuseumSetup *MuseumSetupFossils_Delete(MuseumSetup *self);
 MuseumSetup *MuseumSetupFossils_Destruct(MuseumSetup *self);
 MuseumSetup *MuseumSetupFossils_Construct(MuseumSetup *self);
 void MuseumSetupFossils_New(void);
@@ -67,7 +67,7 @@ int MuseumSetup_Execute(void);
 int MuseumSetup_SetUpScene(void);
 int MuseumSetup_Create(MuseumSetup *self);
 MuseumSetup *MuseumSetup_DestructBase(MuseumSetup *self);
-MuseumSetup *MuseumSetup_DestructFree(MuseumSetup *self);
+MuseumSetup *MuseumSetup_Delete(MuseumSetup *self);
 MuseumSetup *MuseumSetup_Destruct(MuseumSetup *self);
 MuseumSetup *MuseumSetup_Construct(MuseumSetup *self);
 MuseumSetup *MuseumSetup_ConstructBase(MuseumSetup *self);

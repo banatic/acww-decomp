@@ -4,7 +4,7 @@
  * starts for GroupParams mode 0x22 (overlay group 0x13). Overlay 4's chests open group 9 in that
  * mode (ov004/chest.h, Chest_EnterMenu). As the evidence says:
  *
- * - its setup (StorageScene_Setup) copies the 90 items of the current player's storage
+ * - its setup (StorageScene_SetUp) copies the 90 items of the current player's storage
  *   (PlayerStorage_Items) into `storage`; closing it (StorageScene_SaveAndClose) copies them back and
  *   tells main so (GroupParams_SetC4C(1));
  * - the 90 items are seen as six pages of 15 (`page`), each with a tab on the touch screen
@@ -263,8 +263,8 @@ void StorageScene_EndFrame(StorageScene *self);
 void StorageScene_BeginFrame(StorageScene *self);
 void StorageScene_EndInteractiveFrame(StorageScene *self);
 void StorageScene_BeginInteractiveFrame(StorageScene *self);
-void StorageScene_Teardown(StorageScene *self);
-void StorageScene_Setup(StorageScene *self);
+void StorageScene_TearDown(StorageScene *self);
+void StorageScene_SetUp(StorageScene *self);
 void StorageScene_TurnPageWipeIn(StorageScene *self);
 void StorageScene_TurnPageWipeOut(StorageScene *self);
 void StorageScene_TurnPage(StorageScene *self);

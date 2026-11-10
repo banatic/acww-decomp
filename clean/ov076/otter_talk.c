@@ -141,14 +141,14 @@ CLEAN_AS(func_ov076_02278e34, OtterTalk_Reset)
 
 /* func_ov076_02278e58 (vtable slot 0x04): the destructor of the scene class it derives from,
  * then the scene freed. */
-OtterTalk *OtterTalk_DestructDelete(OtterTalk *talk)
+OtterTalk *OtterTalk_Delete(OtterTalk *talk)
 {
     talk->base.vtable = data_ov076_02279744;
     Obj020d9ff8_DestructBody(talk);
     Heap_OperatorDeleteB(talk);
     return talk;
 }
-CLEAN_AS(func_ov076_02278e58, OtterTalk_DestructDelete)
+CLEAN_AS(func_ov076_02278e58, OtterTalk_Delete)
 
 /* func_ov076_02278e78 (vtable slot 0x00): the destructor of the scene class it derives from. */
 OtterTalk *OtterTalk_Destruct(OtterTalk *talk)

@@ -118,14 +118,14 @@ static u32 *barber_talk_flags(void)
 /* ---- The class */
 
 /* func_ov053_02260bdc (vtable slot 0x04): its destructor, then the scene freed. */
-BarberTalk *BarberTalk_DestructDelete(BarberTalk *talk)
+BarberTalk *BarberTalk_Delete(BarberTalk *talk)
 {
     talk->base.vtable = data_ov053_02261b08;
     Obj020d9ff8_DestructBody(talk);
     Heap_OperatorDeleteB(talk);
     return talk;
 }
-CLEAN_AS(func_ov053_02260bdc, BarberTalk_DestructDelete)
+CLEAN_AS(func_ov053_02260bdc, BarberTalk_Delete)
 
 /* func_ov053_02260bfc (vtable slot 0x00): the destructor of the scene class it derives from. */
 void *BarberTalk_Destruct(void *talk)

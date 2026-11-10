@@ -111,7 +111,7 @@ void Switch_Load(Switch *sw, RoomObject *object)
         int x;
         int y;
         if (RoomObject_FindFurnitureCell(object, &x, &y, 0, 0) != 0) {
-            value = RoomCells_GetSwitch(x, y, object->layer, SceneQuery_Current());
+            value = RoomCells_Switch(x, y, object->layer, SceneQuery_Current());
         }
     }
     /* QUIRK: the record's answer is kept in a byte. */

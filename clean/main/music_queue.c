@@ -821,13 +821,13 @@ void Music_SetTracksForSceneChange(void)
 CLEAN_AS(func_02035930, Music_SetTracksForSceneChange)
 
 /* func_02035a00: the member at 0x2f0's destructor that also frees it (vtable slot 1). */
-void *Music2f0_DestructDelete(Music2f0 *self)
+void *Music2f0_Delete(Music2f0 *self)
 {
     self->vtable = data_020da314;
     Heap_OperatorDeleteB(self);
     return self;
 }
-CLEAN_AS(func_02035a00, Music2f0_DestructDelete)
+CLEAN_AS(func_02035a00, Music2f0_Delete)
 
 /* func_02035a18: its destructor (vtable slot 0). */
 void Music2f0_Destruct(Music2f0 *self)

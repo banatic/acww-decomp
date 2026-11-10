@@ -47,9 +47,9 @@ CLEAN_AS(func_0207718c, SessionRecord_Init)
 void SessionRecord_Update(int id, void *object, int mode, int force)
 {
     NetSession *session = data_020ccf94;
-    int flagged = Session_GetRecordFlag(session, id);
-    u32 size = SessionRecord_GetSize((u32) id);
-    u8 *record = Session_GetRecord(session, id);
+    int flagged = Session_RecordFlag(session, id);
+    u32 size = SessionRecord_Size((u32) id);
+    u8 *record = Session_Record(session, id);
 
     if (!flagged && !force) {
         MI_CpuCopy8(record, session->record_scratch, size);
@@ -690,7 +690,7 @@ void SessionRecord_Fill(int id)
 {
     SessionRecordFiller *fill = data_020cd1dc[id];
     if (fill != NULL) {
-        fill(Session_GetRecord(data_020ccf94, id));
+        fill(Session_Record(data_020ccf94, id));
     }
 }
 CLEAN_AS(func_02077598, SessionRecord_Fill)
@@ -753,16 +753,16 @@ CLEAN_AS(func_02077614, SessionRecord_Fill12)
 
 /* func_02077620: a record's offset in the record table.
  * REQUIRES: id < SESSION_RECORDS. */
-u16 SessionRecord_GetOffset(u16 id)
+u16 SessionRecord_Offset(u16 id)
 {
     return data_020cd050[id];
 }
-CLEAN_AS(func_02077620, SessionRecord_GetOffset)
+CLEAN_AS(func_02077620, SessionRecord_Offset)
 
 /* func_0207762c: a record's size in bytes.
  * REQUIRES: id < SESSION_RECORDS. */
-u8 SessionRecord_GetSize(u32 id)
+u8 SessionRecord_Size(u32 id)
 {
     return data_020ccfa8[id];
 }
-CLEAN_AS(func_0207762c, SessionRecord_GetSize)
+CLEAN_AS(func_0207762c, SessionRecord_Size)

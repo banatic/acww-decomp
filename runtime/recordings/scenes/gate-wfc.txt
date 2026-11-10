@@ -5,7 +5,7 @@
 # roster with the roster's checksum as CardSave_WriteFriendRoster writes it). A every 40 frames
 # from 7912: with a friend registered he does not refuse (GatekeeperTalk_HasFriends): the Wi-Fi
 # Connection is started (GatekeeperTalk_StartWfc, _StartSession, overlay 65 for the network
-# library, Session_Start and its buffers, the session records, Wfc_Setup and the connection's
+# library, Session_Start and its buffers, the session records, Wfc_SetUp and the connection's
 # steps, the wireless icon) and he says it is connecting (line 0x5b) while the runtime, with no
 # network, never connects, to 10310.
 900 START -

@@ -193,7 +193,7 @@ Walrus *Walrus_Destruct(Walrus *self)
 CLEAN_AS(func_ov079_02278a00, Walrus_Destruct)
 
 /* func_ov079_02278a28 (slot 0x44): destructed, then freed to the auxiliary heap. */
-Walrus *Walrus_DestructDelete(Walrus *self)
+Walrus *Walrus_Delete(Walrus *self)
 {
     *(const u8 **) (void *) self = data_ov079_0227a104;
     WalrusTalk_Destruct(&self->talk);
@@ -201,7 +201,7 @@ Walrus *Walrus_DestructDelete(Walrus *self)
     Heap_FreeAux(self);
     return self;
 }
-CLEAN_AS(func_ov079_02278a28, Walrus_DestructDelete)
+CLEAN_AS(func_ov079_02278a28, Walrus_Delete)
 
 /* func_ov079_02278a54 (slot 0x4c): told of event 0, WALRUS_FINISH; told the act starts (3), the
  * talk reset and given the player's object as its motion argument, then WALRUS_TALK; told the

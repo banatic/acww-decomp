@@ -89,12 +89,12 @@ typedef struct ConstellationsLabel {
 
 int ConstellationsWideName_Buffer(int text);
 int ConstellationsWideName_Capacity(void);
-ConstellationsWideName *ConstellationsWideName_DestructDelete(ConstellationsWideName *text);
+ConstellationsWideName *ConstellationsWideName_Delete(ConstellationsWideName *text);
 ConstellationsWideName *ConstellationsWideName_Destruct(ConstellationsWideName *text);
 ConstellationsWideName *ConstellationsWideName_Construct(ConstellationsWideName *text);
 int ConstellationsLabel_Buffer(int label);
 int ConstellationsLabel_Capacity(void);
-ConstellationsLabel *ConstellationsLabel_DestructDelete(ConstellationsLabel *label);
+ConstellationsLabel *ConstellationsLabel_Delete(ConstellationsLabel *label);
 ConstellationsLabel *ConstellationsLabel_Destruct(ConstellationsLabel *label);
 ConstellationsLabel *ConstellationsLabel_Construct(ConstellationsLabel *label);
 int Constellations_IsKept(const ConstellationStore *store, int number);

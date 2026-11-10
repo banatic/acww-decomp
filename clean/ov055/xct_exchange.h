@@ -83,7 +83,7 @@ typedef struct XctExchangeStep {
 
 /* His object. */
 XctExchange *XctExchange_Destruct(XctExchange *xct);
-XctExchange *XctExchange_DestructDelete(XctExchange *xct);
+XctExchange *XctExchange_Delete(XctExchange *xct);
 void XctExchange_LoadLibrary68(void *unused);
 void XctExchange_LoadLibrary67(void *unused);
 void XctExchange_SaveBlock(XctExchange *xct);

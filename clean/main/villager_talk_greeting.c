@@ -467,7 +467,7 @@ void VillagerTalkGreeting_Line(VillagerTalk *talk, VillagerTalkLine *out)
     int personality = greeting_personality(record);
     int days = 0;
     int since = VillagerTalkGreeting_SinceLastTalk(talk, &days);
-    int mood = VillagerState_GetMood(entry);
+    int mood = VillagerState_Mood(entry);
     int falling = Sky_Falling();
     int group = 0;
     (void) PlayerRecords_Current();

@@ -116,7 +116,7 @@ static MenuScene *bbs_scene(BbsBoard *self)
 
 static Process *bbs_parent(BbsBoard *self)
 {
-    return Process_GetParent((Process *) (void *) self);
+    return Process_Parent((Process *) (void *) self);
 }
 
 static CellLayerSprite *bbs_cursor_cells(BbsBoard *self)
@@ -598,7 +598,7 @@ CLEAN_AS(func_ov113_02299df4, BbsBoard_ShowPost)
  * queued again, and the post marked read by the current player. */
 void BbsBoard_ShowReadMark(BbsBoard *self, int post)
 {
-    BbsPost *shown = Bbs_GetPost(&data_021eed68, post);
+    BbsPost *shown = Bbs_Post(&data_021eed68, post);
     int player = PlayerRecords_CurrentNumber();
     int read = BbsPost_IsRead(shown, player);
     ScreenMap_SetPalette(self->screen, 0x10, 0, 0x12, 3, read ? 8 : 10);
@@ -634,21 +634,21 @@ CLEAN_AS(func_ov113_02299e98, BbsBoard_ShowNumber)
  * for each digit. */
 void BbsBoard_ShowDate(BbsBoard *self, int post)
 {
-    BbsPost *shown = Bbs_GetPost(&data_021eed68, post);
+    BbsPost *shown = Bbs_Post(&data_021eed68, post);
     u16 digits[5];
 
     digits[0] = BBS_BOARD_DIGIT_0 + 2;
     digits[1] = BBS_BOARD_DIGIT_0;
-    digits[2] = (u16) (BbsPost_GetYear(shown) / 10 + BBS_BOARD_DIGIT_0);
-    digits[3] = (u16) (BbsPost_GetYear(shown) % 10 + BBS_BOARD_DIGIT_0);
+    digits[2] = (u16) (BbsPost_Year(shown) / 10 + BBS_BOARD_DIGIT_0);
+    digits[3] = (u16) (BbsPost_Year(shown) % 10 + BBS_BOARD_DIGIT_0);
     digits[4] = 0;
     TextLabel_SetFromWide(&self->labels[BBS_BOARD_LABEL_YEAR], digits, (void *) (uintptr_t) 5);
     BbsBoard_OpenLabel(self, BBS_BOARD_LABEL_YEAR, 0x111, 4, 0, 1);
 
-    digits[0] = (u16) (BbsPost_GetMonth(shown) / 10 + BBS_BOARD_DIGIT_0);
-    digits[1] = (u16) (BbsPost_GetMonth(shown) % 10 + BBS_BOARD_DIGIT_0);
-    digits[2] = (u16) (BbsPost_GetDay(shown) / 10 + BBS_BOARD_DIGIT_0);
-    digits[3] = (u16) (BbsPost_GetDay(shown) % 10 + BBS_BOARD_DIGIT_0);
+    digits[0] = (u16) (BbsPost_Month(shown) / 10 + BBS_BOARD_DIGIT_0);
+    digits[1] = (u16) (BbsPost_Month(shown) % 10 + BBS_BOARD_DIGIT_0);
+    digits[2] = (u16) (BbsPost_Day(shown) / 10 + BBS_BOARD_DIGIT_0);
+    digits[3] = (u16) (BbsPost_Day(shown) % 10 + BBS_BOARD_DIGIT_0);
     TextLabel_SetFromWide(&self->labels[BBS_BOARD_LABEL_DAY], digits, (void *) (uintptr_t) 5);
     BbsBoard_OpenLabel(self, BBS_BOARD_LABEL_DAY, 0x116, 4, 0, 1);
 }
@@ -660,7 +660,7 @@ CLEAN_AS(func_ov113_02299f10, BbsBoard_ShowDate)
  * characters queued for BG 3 (0x11-0x100). The text is looked up again for each line. */
 void BbsBoard_ShowText(BbsBoard *self, int post)
 {
-    BbsPost *shown = Bbs_GetPost(&data_021eed68, post);
+    BbsPost *shown = Bbs_Post(&data_021eed68, post);
     s32 starts[BBS_BOARD_LINES + 1];
     s32 end_line;
 
@@ -859,7 +859,7 @@ void BbsBoard_BeginFrame(BbsBoard *self)
 CLEAN_AS(func_ov113_0229a3fc, BbsBoard_BeginFrame)
 
 /* func_ov113_0229a404: the scene closes: both layer tasks ended and the labels' boxes freed. */
-void BbsBoard_Teardown(BbsBoard *self)
+void BbsBoard_TearDown(BbsBoard *self)
 {
     LayerTask_End(&self->chars_task);
     LayerTask_End(&self->screen_task);
@@ -870,11 +870,11 @@ void BbsBoard_Teardown(BbsBoard *self)
         TextLabel_CloseBox(&self->lines[i]);
     }
 }
-CLEAN_AS(func_ov113_0229a404, BbsBoard_Teardown)
+CLEAN_AS(func_ov113_0229a404, BbsBoard_TearDown)
 
 /* func_ov113_0229a474: the scene's own state at its start: no flags, the cursor on QUIT, the
  * posts counted and the newest one shown. */
-void BbsBoard_Setup(BbsBoard *self)
+void BbsBoard_SetUp(BbsBoard *self)
 {
     self->wipe_y = 0;
     self->flags = 0;
@@ -882,7 +882,7 @@ void BbsBoard_Setup(BbsBoard *self)
     BbsBoard_CountPosts(self);
     self->post = (u8) (self->posts - 1);
 }
-CLEAN_AS(func_ov113_0229a474, BbsBoard_Setup)
+CLEAN_AS(func_ov113_0229a474, BbsBoard_SetUp)
 
 /* func_ov113_0229a4a4 (state 8): the new page wipes in; when done, the interactive phase, the
  * cursor's place unlit, then the pen (when state flag 2 is clear) or the keys take over (the
@@ -1180,7 +1180,7 @@ CLEAN_AS(func_ov113_0229aa34, BbsBoard_DrawTabs)
 int BbsBoard_Close(BbsBoard *self)
 {
     MenuDispatch_ChildClosed((MenuDispatch *) (void *) bbs_parent(self));
-    BbsBoard_Teardown(self);
+    BbsBoard_TearDown(self);
     return 1;
 }
 CLEAN_AS(func_ov113_0229aa8c, BbsBoard_Close)
@@ -1191,7 +1191,7 @@ CLEAN_AS(func_ov113_0229aa8c, BbsBoard_Close)
 int BbsBoard_Start(BbsBoard *self)
 {
     G2x_SetBlendBrightnessExt_(BBS_BOARD_REG_BLDCNT, 0x1f, 0x20, 0x10, 0x10, 0);
-    BbsBoard_Setup(self);
+    BbsBoard_SetUp(self);
     MenuScene_SetState(bbs_scene(self), BBS_BOARD_STATE_OPEN);
     MenuScene_SetPhase(bbs_scene(self), BBS_BOARD_PHASE_STATES);
     return 1;

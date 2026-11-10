@@ -801,7 +801,7 @@ CLEAN_AS(func_ov118_0229bd14, MapMenu_SubTouch)
  * Answers whether it switched. */
 int MapMenu_SelectTab(MapMenu *self, int tab)
 {
-    Process *parent = Process_GetParent((Process *) (void *) self);
+    Process *parent = Process_Parent((Process *) (void *) self);
     if (tab == -1 || tab == MAP_MENU_TAB) {
         return 0;
     }

@@ -560,14 +560,14 @@ u8 *FoxShopText_Buffer(FoxShopText *text)
 CLEAN_AS(func_020ae738, FoxShopText_Buffer)
 
 /* func_020ae73c: vtable entry 1, the destructor that frees the text. */
-FoxShopText *FoxShopText_DestructFree(FoxShopText *text)
+FoxShopText *FoxShopText_Delete(FoxShopText *text)
 {
     text->vtable = data_020e4170;
     TextBase_Destruct((TextBase *) text);
     Heap_OperatorDeleteB(text);
     return text;
 }
-CLEAN_AS(func_020ae73c, FoxShopText_DestructFree)
+CLEAN_AS(func_020ae73c, FoxShopText_Delete)
 
 /* func_020ae75c: vtable entry 0, the destructor. */
 FoxShopText *FoxShopText_Destruct(FoxShopText *text)

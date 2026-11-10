@@ -31,11 +31,11 @@ extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)
 /* ---- The account ---- */
 
 /* func_02077bb8 */
-u16 WifiAccount_GetChecksum(const WifiAccount *account)
+u16 WifiAccount_Checksum(const WifiAccount *account)
 {
     return account->checksum;
 }
-CLEAN_AS(func_02077bb8, WifiAccount_GetChecksum)
+CLEAN_AS(func_02077bb8, WifiAccount_Checksum)
 
 /* func_02077bc0 */
 void WifiAccount_SetChecksum(WifiAccount *account, u16 checksum)
@@ -45,18 +45,18 @@ void WifiAccount_SetChecksum(WifiAccount *account, u16 checksum)
 CLEAN_AS(func_02077bc0, WifiAccount_SetChecksum)
 
 /* func_02077bc8: this user's own friend data. */
-WifiFriendData *WifiAccount_GetFriendData(WifiAccount *account)
+WifiFriendData *WifiAccount_FriendData(WifiAccount *account)
 {
     return &account->friend_data;
 }
-CLEAN_AS(func_02077bc8, WifiAccount_GetFriendData)
+CLEAN_AS(func_02077bc8, WifiAccount_FriendData)
 
 /* func_02077bcc: the user's data, at the account's start. */
-u8 *WifiAccount_GetUserData(WifiAccount *account)
+u8 *WifiAccount_UserData(WifiAccount *account)
 {
     return account->user_data;
 }
-CLEAN_AS(func_02077bcc, WifiAccount_GetUserData)
+CLEAN_AS(func_02077bcc, WifiAccount_UserData)
 
 /* func_02077bd0 */
 int WifiAccount_Call021012c4(void *user_data)
@@ -83,7 +83,7 @@ CLEAN_AS(func_02077be0, WifiAccount_GetUserKey)
 void WifiAccount_Init(WifiAccount *account)
 {
     Wfc_InitUserData(account->user_data, GAME_CODE);
-    Wfc_Call0210111c(account->user_data, WifiFriendData_GetData(&account->friend_data));
+    Wfc_Call0210111c(account->user_data, WifiFriendData_Data(&account->friend_data));
 }
 CLEAN_AS(func_02077be8, WifiAccount_Init)
 
@@ -106,25 +106,25 @@ CLEAN_AS(func_02077c20, WifiAccount_Construct)
 /* ---- A friend ---- */
 
 /* func_02077c34: the friend's town's name. */
-u16 *WifiFriend_GetTown(WifiFriend *entry)
+u16 *WifiFriend_Town(WifiFriend *entry)
 {
     return entry->town;
 }
-CLEAN_AS(func_02077c34, WifiFriend_GetTown)
+CLEAN_AS(func_02077c34, WifiFriend_Town)
 
 /* func_02077c38: the friend's name. */
-u16 *WifiFriend_GetName(WifiFriend *entry)
+u16 *WifiFriend_Name(WifiFriend *entry)
 {
     return entry->name;
 }
-CLEAN_AS(func_02077c38, WifiFriend_GetName)
+CLEAN_AS(func_02077c38, WifiFriend_Name)
 
 /* func_02077c3c: the friend data, at the entry's start. */
-WifiFriendData *WifiFriend_GetFriendData(WifiFriend *entry)
+WifiFriendData *WifiFriend_FriendData(WifiFriend *entry)
 {
     return &entry->friend_data;
 }
-CLEAN_AS(func_02077c3c, WifiFriend_GetFriendData)
+CLEAN_AS(func_02077c3c, WifiFriend_FriendData)
 
 /* func_02077c40: empties the entry. */
 void WifiFriend_Clear(WifiFriend *entry)
@@ -162,11 +162,11 @@ CLEAN_AS(func_02077c8c, WifiFriend_Construct)
 /* ---- The roster ---- */
 
 /* func_02077c9c */
-u16 WifiFriendList_GetChecksum(const WifiFriendList *list)
+u16 WifiFriendList_Checksum(const WifiFriendList *list)
 {
     return list->checksum;
 }
-CLEAN_AS(func_02077c9c, WifiFriendList_GetChecksum)
+CLEAN_AS(func_02077c9c, WifiFriendList_Checksum)
 
 /* func_02077ca8 */
 void WifiFriendList_SetChecksum(WifiFriendList *list, u16 checksum)
@@ -179,12 +179,12 @@ CLEAN_AS(func_02077ca8, WifiFriendList_SetChecksum)
  * entries they leave. */
 void WifiFriendList_Compact(WifiFriendList *list)
 {
-    WifiFriend *entries = WifiFriendList_GetEntries(list);
+    WifiFriend *entries = WifiFriendList_Entries(list);
     int kept = 0;
 
     for (int i = 0; i < WIFI_FRIENDS; i++) {
         WifiFriend *entry = &entries[i];
-        if (WifiFriendData_IsSet(WifiFriend_GetFriendData(entry)) == 0) {
+        if (WifiFriendData_IsSet(WifiFriend_FriendData(entry)) == 0) {
             continue;
         }
         if (i != kept) {
@@ -197,11 +197,11 @@ void WifiFriendList_Compact(WifiFriendList *list)
 CLEAN_AS(func_02077cb4, WifiFriendList_Compact)
 
 /* func_02077d00: the entries, at the roster's start. */
-WifiFriend *WifiFriendList_GetEntries(WifiFriendList *list)
+WifiFriend *WifiFriendList_Entries(WifiFriendList *list)
 {
     return list->friends;
 }
-CLEAN_AS(func_02077d00, WifiFriendList_GetEntries)
+CLEAN_AS(func_02077d00, WifiFriendList_Entries)
 
 /* func_02077d04: empties every entry. */
 void WifiFriendList_ClearAll(WifiFriendList *list)
@@ -231,11 +231,11 @@ CLEAN_AS(func_02077d40, WifiFriendList_Construct)
 /* ---- A friend data ---- */
 
 /* func_02077d68: the data NitroDWC reads: the object itself. */
-WifiFriendData *WifiFriendData_GetData(WifiFriendData *friend_data)
+WifiFriendData *WifiFriendData_Data(WifiFriendData *friend_data)
 {
     return friend_data;
 }
-CLEAN_AS(func_02077d68, WifiFriendData_GetData)
+CLEAN_AS(func_02077d68, WifiFriendData_Data)
 
 /* func_02077d6c: 1 unless the friend data is a friend key not yet exchanged. */
 int WifiFriendData_IsNotFriendKey(WifiFriendData *friend_data)
@@ -335,6 +335,6 @@ void WifiFriendData_Construct(WifiFriendData *friend_data)
 CLEAN_AS(func_02077ec0, WifiFriendData_Construct)
 
 /* func_02099e78: the callback the Wi-Fi library calls when a friend is deleted
- * (Session_Start hands it to Wfc_Setup): does nothing. */
+ * (Session_Start hands it to Wfc_SetUp): does nothing. */
 void WifiFriendList_OnFriendDeleted(void) {}
 CLEAN_AS(func_02099e78, WifiFriendList_OnFriendDeleted)

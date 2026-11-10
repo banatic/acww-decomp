@@ -37,7 +37,7 @@ typedef struct StateBlock {
     u8 shop_designs[0x11c70 - 0x10ad0];       /* 0x10ad0: ShopDesigns */
     u8 part_11c70[0x125c0 - 0x11c70];         /* 0x11c70 */
     u8 bbs[0x13144 - 0x125c0];                /* 0x125c0: Bbs */
-    u8 mailboxes[STATE_BLOCK_PLAYERS][0xa04]; /* 0x13144: a MailBox for each player */
+    u8 mailboxes[STATE_BLOCK_PLAYERS][0xa04]; /* 0x13144: a MailboxRecord for each player */
     u8 post_office[0x1635c - 0x15954];        /* 0x15954: MailPostOffice */
     u8 constellations[0x16800 - 0x1635c];     /* 0x1635c: ConstellationStore */
     u8 part_16800[STATE_BLOCK_PLAYERS][0xb4]; /* 0x16800: one for each player */

@@ -158,7 +158,7 @@ int FriendRoster_PageOfFriend(FriendRoster *self, int index)
     WifiFriend *friends = FriendRoster_Friends(self);
     int count = 0;
     for (int i = 0; i < WIFI_FRIENDS; i++) {
-        if (WifiFriendData_IsSet(WifiFriend_GetFriendData(&friends[i]))) {
+        if (WifiFriendData_IsSet(WifiFriend_FriendData(&friends[i]))) {
             count++;
             if (i >= index) {
                 break;
@@ -244,14 +244,14 @@ void FriendRoster_DrawFriendRows(FriendRoster *self)
         TextLabel *name_label = FriendRoster_NextLabel(self);
         int index = bytes[offsetof(FriendRoster, slots) + slot];
         WifiFriend *entry = index < WIFI_FRIENDS ? &friends[index] : NULL;
-        if (entry != NULL && WifiFriendData_IsSet(WifiFriend_GetFriendData(entry))) {
-            TextBase_SetWide(&wide, WifiFriend_GetTown(entry), WIFI_FRIEND_TEXT_LENGTH);
+        if (entry != NULL && WifiFriendData_IsSet(WifiFriend_FriendData(entry))) {
+            TextBase_SetWide(&wide, WifiFriend_Town(entry), WIFI_FRIEND_TEXT_LENGTH);
             TextBase_WideToBytes((TextBase *) (void *) &town, (WideTextBase *) (void *) &wide, 0, 0);
             MessageReader_SetPart(0, (int) (uintptr_t) &town);
             TextLabel_LoadMenuMessage(town_label, FRIEND_ROSTER_MESSAGE_TOWN);
-            TextLabel_SetFromWide(name_label, WifiFriend_GetName(entry), (void *) (uintptr_t) WIFI_FRIEND_TEXT_LENGTH);
+            TextLabel_SetFromWide(name_label, WifiFriend_Name(entry), (void *) (uintptr_t) WIFI_FRIEND_TEXT_LENGTH);
             self->rows_shown++;
-            if (WifiFriendData_IsNotFriendKey(WifiFriend_GetFriendData(entry))) {
+            if (WifiFriendData_IsNotFriendKey(WifiFriend_FriendData(entry))) {
                 FriendRoster_SetRowIcon((int) (uintptr_t) self, &self->list_map[icon], FRIEND_ROSTER_ICON_FRIEND);
             } else {
                 FriendRoster_SetRowIcon((int) (uintptr_t) self, &self->list_map[icon], FRIEND_ROSTER_ICON_KEY);

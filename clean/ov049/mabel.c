@@ -330,7 +330,7 @@ Mabel *Mabel_Destruct(Mabel *mabel)
 CLEAN_AS(func_ov049_02260420, Mabel_Destruct)
 
 /* func_ov049_02260454 (vtable slot 0x44): the same, then the object freed. */
-void *Mabel_DestructDelete(Mabel *mabel)
+void *Mabel_Delete(Mabel *mabel)
 {
     *(const u8 **) (void *) mabel = data_ov049_02263544;
     Design_Destruct(&mabel->design);
@@ -339,7 +339,7 @@ void *Mabel_DestructDelete(Mabel *mabel)
     Heap_FreeAux(mabel);
     return mabel;
 }
-CLEAN_AS(func_ov049_02260454, Mabel_DestructDelete)
+CLEAN_AS(func_ov049_02260454, Mabel_Delete)
 
 /* func_ov049_0226048c: unlinked (and without the game variable 0x4a), when the player stands at
  * the shop's exit (the start point claimed on the collision map), her talk takes mode 3 (her

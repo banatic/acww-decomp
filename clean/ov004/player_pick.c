@@ -593,13 +593,13 @@ static void player_pick_destruct_members(PlayerPick *self)
 }
 
 /* func_ov004_02245ed8 (vtable slot 17): the destructor, and the process freed. */
-PlayerPick *PlayerPick_DestructFree(PlayerPick *self)
+PlayerPick *PlayerPick_DestructDelete(PlayerPick *self)
 {
     player_pick_destruct_members(self);
     Heap_FreeAux(self);
     return self;
 }
-CLEAN_AS(func_ov004_02245ed8, PlayerPick_DestructFree)
+CLEAN_AS(func_ov004_02245ed8, PlayerPick_DestructDelete)
 
 /* func_ov004_02245f28 (vtable slot 16): the destructor. */
 PlayerPick *PlayerPick_Destruct(PlayerPick *self)

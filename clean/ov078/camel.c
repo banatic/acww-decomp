@@ -193,7 +193,7 @@ Camel *Camel_Destruct(Camel *self)
 CLEAN_AS(func_ov078_02278a00, Camel_Destruct)
 
 /* func_ov078_02278a28 (slot 0x44): destructed, then freed to the auxiliary heap. */
-Camel *Camel_DestructDelete(Camel *self)
+Camel *Camel_Delete(Camel *self)
 {
     *(const u8 **) (void *) self = data_ov078_02279b2c;
     CamelTalk_Destruct(&self->talk);
@@ -201,7 +201,7 @@ Camel *Camel_DestructDelete(Camel *self)
     Heap_FreeAux(self);
     return self;
 }
-CLEAN_AS(func_ov078_02278a28, Camel_DestructDelete)
+CLEAN_AS(func_ov078_02278a28, Camel_Delete)
 
 /* Her talk reset (its vtable slot 0x08) and given the player's object as its motion argument. */
 static void camel_set_up_talk(Camel *self)

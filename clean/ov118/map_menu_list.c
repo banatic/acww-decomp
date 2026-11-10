@@ -69,11 +69,11 @@ extern void MIi_CpuClear16(u16 value, void *destination, u32 size);
 
 /* func_ov118_0229a438: a mark's destructor (handed to __cxa_vec_ctor and __cxa_vec_cleanup):
  * nothing. */
-void MapMenu_ElementNoOp(void *element)
+void MapMenu_ElementNothing(void *element)
 {
     (void) element;
 }
-CLEAN_AS(func_ov118_0229a438, MapMenu_ElementNoOp)
+CLEAN_AS(func_ov118_0229a438, MapMenu_ElementNothing)
 
 /* func_ov118_0229a43c: a mark's constructor (handed to __cxa_vec_ctor): nothing. */
 void MapMenu_ConstructMark(void *mark)

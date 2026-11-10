@@ -824,7 +824,7 @@ void ClockSetter_EndFrame(ClockSetter *self)
 CLEAN_AS(func_ov134_0229bcac, ClockSetter_EndFrame)
 
 /* func_ov134_0229bcf0 */
-void ClockSetter_Teardown(ClockSetter *self)
+void ClockSetter_TearDown(ClockSetter *self)
 {
     ClockSetter_CloseLabels(self);
     DisplayLayer_Hide(self->list_layer);
@@ -832,10 +832,10 @@ void ClockSetter_Teardown(ClockSetter *self)
     LayerTask_End(&self->list_task);
     LayerTask_End(&self->palette_task);
 }
-CLEAN_AS(func_ov134_0229bcf0, ClockSetter_Teardown)
+CLEAN_AS(func_ov134_0229bcf0, ClockSetter_TearDown)
 
 /* func_ov134_0229bd2c: the value bounded below by `min` (after ClockSetter_Init overlay 135
- * asks for it in one case of its own, overlay 138's DateScreen_Setup always). */
+ * asks for it in one case of its own, overlay 138's DateScreen_SetUp always). */
 void ClockSetter_UseMinimum(ClockSetter *self)
 {
     ClockSetter_SetFlags(self, CLOCK_SETTER_FLAG_HAS_MIN);

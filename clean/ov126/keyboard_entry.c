@@ -176,14 +176,14 @@ CLEAN_AS(func_ov126_0229f83c, KeyboardEntry_Commit)
 /* func_ov126_0229f8e8: the text's first six characters into the friend's name. */
 void KeyboardEntry_CommitFriendName(KeyboardEntry *self)
 {
-    TextString_CopyChars(self->text, WifiFriend_GetName(KeyboardEntry_Friend()), WIFI_FRIEND_TEXT_LENGTH);
+    TextString_CopyChars(self->text, WifiFriend_Name(KeyboardEntry_Friend()), WIFI_FRIEND_TEXT_LENGTH);
 }
 CLEAN_AS(func_ov126_0229f8e8, KeyboardEntry_CommitFriendName)
 
 /* func_ov126_0229f90c: the text's first six characters into the friend's town. */
 void KeyboardEntry_CommitFriendTown(KeyboardEntry *self)
 {
-    TextString_CopyChars(self->text, WifiFriend_GetTown(KeyboardEntry_Friend()), WIFI_FRIEND_TEXT_LENGTH);
+    TextString_CopyChars(self->text, WifiFriend_Town(KeyboardEntry_Friend()), WIFI_FRIEND_TEXT_LENGTH);
 }
 CLEAN_AS(func_ov126_0229f90c, KeyboardEntry_CommitFriendTown)
 
@@ -356,14 +356,14 @@ CLEAN_AS(func_ov126_0229fb9c, KeyboardEntry_LoadText)
 /* func_ov126_0229fc14: the friend's name as the text. */
 void KeyboardEntry_LoadFriendName(KeyboardEntry *self)
 {
-    TextString_CopyChars(WifiFriend_GetName(KeyboardEntry_Friend()), self->text, WIFI_FRIEND_TEXT_LENGTH);
+    TextString_CopyChars(WifiFriend_Name(KeyboardEntry_Friend()), self->text, WIFI_FRIEND_TEXT_LENGTH);
 }
 CLEAN_AS(func_ov126_0229fc14, KeyboardEntry_LoadFriendName)
 
 /* func_ov126_0229fc34: the friend's town as the text. */
 void KeyboardEntry_LoadFriendTown(KeyboardEntry *self)
 {
-    TextString_CopyChars(WifiFriend_GetTown(KeyboardEntry_Friend()), self->text, WIFI_FRIEND_TEXT_LENGTH);
+    TextString_CopyChars(WifiFriend_Town(KeyboardEntry_Friend()), self->text, WIFI_FRIEND_TEXT_LENGTH);
 }
 CLEAN_AS(func_ov126_0229fc34, KeyboardEntry_LoadFriendTown)
 
@@ -372,7 +372,7 @@ WifiFriend *KeyboardEntry_Friend(void)
 {
     WifiFriendList *list = PlayerRecord_WifiFriends(PlayerRecords_Current());
     int index = GroupParams_Arg();
-    WifiFriend *friends = WifiFriendList_GetEntries(list);
+    WifiFriend *friends = WifiFriendList_Entries(list);
     return &friends[index];
 }
 CLEAN_AS(func_ov126_0229fc54, KeyboardEntry_Friend)

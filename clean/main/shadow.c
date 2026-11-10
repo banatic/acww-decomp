@@ -172,14 +172,14 @@ void CharaShadow_Draw(const Vec3 *pos, int size, fx32 fade_height, fx32 scale)
     int ground = 0;
     if (data_020e54a8 == 0) {
         CollisionGround_Init((CollisionGround *) (void *) probe, pos, 0, 0);
-        ground = CollisionGround_GetHeight((const CollisionGround *) (void *) probe, 0);
+        ground = CollisionGround_Height((const CollisionGround *) (void *) probe, 0);
         if (ground > 0) {
             ground = 0;
         }
         CollisionGround_Destroy((CollisionGround *) (void *) probe);
     } else if (SceneQuery_CurrentIn20() != 0) {
         CollisionGround_Init((CollisionGround *) (void *) probe, pos, 0, 0);
-        ground = CollisionGround_GetHeight((const CollisionGround *) (void *) probe, 0);
+        ground = CollisionGround_Height((const CollisionGround *) (void *) probe, 0);
         CollisionGround_Destroy((CollisionGround *) (void *) probe);
     }
 

@@ -683,13 +683,13 @@ void BankPad_BeginFrame(BankPad *pad)
 CLEAN_AS(func_ov130_0229a32c, BankPad_BeginFrame)
 
 /* func_ov130_0229a378: the labels closed and the screens' tasks ended. */
-void BankPad_Teardown(BankPad *pad)
+void BankPad_TearDown(BankPad *pad)
 {
     BankPad_CloseLabels(pad);
     LayerTask_End(&pad->tasks[0]);
     LayerTask_End(&pad->tasks[1]);
 }
-CLEAN_AS(func_ov130_0229a378, BankPad_Teardown)
+CLEAN_AS(func_ov130_0229a378, BankPad_TearDown)
 
 /* func_ov130_0229a3a0: the teller's picture loaded and the teller's message of the kind shown in
  * a label on layer 8. */
@@ -797,7 +797,7 @@ CLEAN_AS(func_ov130_0229a678, BankPad_LoadBackground)
  * teller's picture by the kind (both kept for a kind not listed), no label, the cursor on C, no
  * key pressed, the amounts 0. The sound system's byte 0x71 is 0 when there is a current player
  * whose gender (PlayerId_Gender) is 0, else 1. */
-void BankPad_Setup(BankPad *pad, u8 kind, u8 digits_layer, u8 keys_layer)
+void BankPad_SetUp(BankPad *pad, u8 kind, u8 digits_layer, u8 keys_layer)
 {
     pad->dirty = 0;
     pad->kind = kind;
@@ -851,7 +851,7 @@ void BankPad_Setup(BankPad *pad, u8 kind, u8 digits_layer, u8 keys_layer)
         SoundSys_SetByte71(1);
     }
 }
-CLEAN_AS(func_ov130_0229a6d8, BankPad_Setup)
+CLEAN_AS(func_ov130_0229a6d8, BankPad_SetUp)
 
 /* func_ov130_0229a790: the labels destroyed (the screens' tasks need nothing). */
 BankPad *BankPad_Destroy(BankPad *pad)

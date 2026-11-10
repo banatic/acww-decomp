@@ -244,7 +244,7 @@ Barber *Barber_Destruct(Barber *barber)
 CLEAN_AS(func_ov053_02260420, Barber_Destruct)
 
 /* func_ov053_02260448 (vtable slot 0x44): the same, then the object freed. */
-void *Barber_DestructDelete(void *barber)
+void *Barber_Delete(void *barber)
 {
     *(const u8 **) barber = data_ov053_02261b98;
     BarberTalk_Destruct(&((Barber *) barber)->talk);
@@ -252,7 +252,7 @@ void *Barber_DestructDelete(void *barber)
     Heap_FreeAux(barber);
     return barber;
 }
-CLEAN_AS(func_ov053_02260448, Barber_DestructDelete)
+CLEAN_AS(func_ov053_02260448, Barber_Delete)
 
 /* func_ov053_02260474: whether a cut is paid for and not given yet (the flag 7 of the block
  * 0x021d27ac). */

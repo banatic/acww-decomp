@@ -160,7 +160,7 @@ int VillagerEntry_IsNotUpset(u8 *villager)
     if (state == NULL) {
         return 0;
     }
-    return VillagerState_GetMood(state) == 0 || VillagerState_GetMood(state) == 1;
+    return VillagerState_Mood(state) == 0 || VillagerState_Mood(state) == 1;
 }
 CLEAN_AS(func_0207d278, VillagerEntry_IsNotUpset)
 

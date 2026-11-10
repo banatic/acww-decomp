@@ -253,7 +253,7 @@ CLEAN_AS(func_02096a44, PlayerSpawnProcess_Create)
 
 /* func_02096a48 (vtable slot 17): the destructor, and the object freed to the heap processes
  * come from. */
-Process *PlayerSpawnProcess_DestructFree(Process *self)
+Process *PlayerSpawnProcess_DestructDelete(Process *self)
 {
     self->vtable = data_020e2f90;
     self->vtable = data_020da13c;
@@ -261,7 +261,7 @@ Process *PlayerSpawnProcess_DestructFree(Process *self)
     Heap_FreeAux(self);
     return self;
 }
-CLEAN_AS(func_02096a48, PlayerSpawnProcess_DestructFree)
+CLEAN_AS(func_02096a48, PlayerSpawnProcess_DestructDelete)
 
 /* func_02096a70 (vtable slot 16): the destructor: the bases' vtables put back in turn. */
 Process *PlayerSpawnProcess_Destruct(Process *self)
@@ -387,7 +387,7 @@ CLEAN_AS(func_02096c04, PlayerReportProcess_Create)
 
 /* func_02096c08 (vtable slot 17): the destructor, and the object freed to the heap processes
  * come from. */
-Process *PlayerReportProcess_DestructFree(Process *self)
+Process *PlayerReportProcess_DestructDelete(Process *self)
 {
     self->vtable = data_020e2fe8;
     self->vtable = data_020da13c;
@@ -395,7 +395,7 @@ Process *PlayerReportProcess_DestructFree(Process *self)
     Heap_FreeAux(self);
     return self;
 }
-CLEAN_AS(func_02096c08, PlayerReportProcess_DestructFree)
+CLEAN_AS(func_02096c08, PlayerReportProcess_DestructDelete)
 
 /* func_02096c30 (vtable slot 16): the destructor: the bases' vtables put back in turn. */
 Process *PlayerReportProcess_Destruct(Process *self)

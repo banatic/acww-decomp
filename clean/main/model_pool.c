@@ -133,7 +133,7 @@ int ModelPool_Create(ModelPool *pool, u32 count, int texture_size, int palette_s
         if (entry != NULL) {
             entry = ModelPoolEntry_Construct(entry);
         }
-        if (ModelPoolEntry_Setup(entry, texture_size, palette_size, heap_size, parent) == 0) {
+        if (ModelPoolEntry_SetUp(entry, texture_size, palette_size, heap_size, parent) == 0) {
             return 0;
         }
         entry++;
@@ -235,7 +235,7 @@ CLEAN_AS(func_0209d2d0, ModelPoolEntry_Empty)
 /* func_0209d2dc: the entry set up: a frame heap of `heap_size` bytes (rounded up to 4) inside
  * `parent` when `heap_size` is nonzero, then its VRAM when either size is nonzero; 0 when the
  * VRAM could not be had, else 1. */
-int ModelPoolEntry_Setup(ModelPoolEntry *entry, int texture_size, int palette_size, int heap_size, int parent)
+int ModelPoolEntry_SetUp(ModelPoolEntry *entry, int texture_size, int palette_size, int heap_size, int parent)
 {
     if (heap_size != 0) {
         entry->heap = FrameHeap_Create((int) (((u32) heap_size + 3) & ~3u), (Heap *) (uintptr_t) parent);
@@ -245,7 +245,7 @@ int ModelPoolEntry_Setup(ModelPoolEntry *entry, int texture_size, int palette_si
     }
     return 1;
 }
-CLEAN_AS(func_0209d2dc, ModelPoolEntry_Setup)
+CLEAN_AS(func_0209d2dc, ModelPoolEntry_SetUp)
 
 /* func_0209d320: the address of the entry's VRAM. */
 int ModelPoolEntry_Vram(ModelPoolEntry *entry)

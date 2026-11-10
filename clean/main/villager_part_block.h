@@ -7,7 +7,7 @@
  * (VillagerPartBlock_SetType), a second member pointer, and a limit for the low bits of the
  * object's byte 0x0b (VillagerPartBlock_IsPastLimit). The member functions:
  *
- *   type 10  the object's item drawn from item list 2 (VillagerPartBlock_SetupType10)
+ *   type 10  the object's item drawn from item list 2 (VillagerPartBlock_SetUpType10)
  *   type 14  item 0x1563;  type 16  item 0x1561;  type 17  item 0x1564;  type 19  item 0x1565
  *
  * For type 19 a letter is written from the block's two villagers (VillagerPartBlock_WriteLetter).
@@ -47,12 +47,12 @@ void VillagerPartBlock_Clear(VillagerPartBlock *block);
 VillagerPartBlock *VillagerPartBlock_Destruct(VillagerPartBlock *block);
 VillagerPartBlock *VillagerPartBlock_Construct(VillagerPartBlock *block);
 
-int VillagerPartBlock_SetupType17(VillagerPartBlock *block);
-int VillagerPartBlock_SetupType16(VillagerPartBlock *block);
-int VillagerPartBlock_SetupType14(VillagerPartBlock *block);
+int VillagerPartBlock_SetUpType17(VillagerPartBlock *block);
+int VillagerPartBlock_SetUpType16(VillagerPartBlock *block);
+int VillagerPartBlock_SetUpType14(VillagerPartBlock *block);
 void VillagerPartBlock_WriteLetter(VillagerPartBlock *block, void *letter);
-int VillagerPartBlock_SetupType19(VillagerPartBlock *block);
-int VillagerPartBlock_SetupType10(VillagerPartBlock *block);
+int VillagerPartBlock_SetUpType19(VillagerPartBlock *block);
+int VillagerPartBlock_SetUpType10(VillagerPartBlock *block);
 
 void VillagerPart_ClearAll(VillagerPart *part);
 VillagerPart *VillagerPart_Destruct(VillagerPart *part);

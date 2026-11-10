@@ -155,7 +155,7 @@ static CellLayerSprite *town_map_pointer_cells(TownMap *self)
 
 static MenuDispatch *town_map_parent(TownMap *self)
 {
-    return (MenuDispatch *) (void *) Process_GetParent((Process *) (void *) self);
+    return (MenuDispatch *) (void *) Process_Parent((Process *) (void *) self);
 }
 
 /* A virtual function of a member's class without arguments: slot 2 draws, slot 3 animates. */
@@ -767,19 +767,19 @@ void TownMap_BeginFrame(TownMap *self)
 CLEAN_AS(func_ov120_0229bc4c, TownMap_BeginFrame)
 
 /* func_ov120_0229bc54: the labels let go and both layer tasks ended. */
-void TownMap_Teardown(TownMap *self)
+void TownMap_TearDown(TownMap *self)
 {
     TownMap_ReleaseLabels(self);
     LayerTask_End(&self->list_task);
     LayerTask_End(&self->map_task);
 }
-CLEAN_AS(func_ov120_0229bc54, TownMap_Teardown)
+CLEAN_AS(func_ov120_0229bc54, TownMap_TearDown)
 
 /* func_ov120_0229bc74: the scene's values set up: the list at its top, nothing picked, the
  * map cursor at the map's centre, the lists built, the player's mark at the player's place
  * (outdoors the place of PlayerActorOps_StartPosition(SESSION_PLAYERS_OWN); in a room the marked place's), the
  * knob at rest. The mark is 8 pixels left of and 13 below the place's whole x and z. */
-void TownMap_Setup(TownMap *self)
+void TownMap_SetUp(TownMap *self)
 {
     Vec3 at;
 
@@ -807,7 +807,7 @@ void TownMap_Setup(TownMap *self)
     self->player_y = (u8) (((at.z + 0x800) >> 12) + 0xd);
     DualCellSprite_SetState(town_map_knob_cells(self), DUAL_CELL_SPRITE_STILL);
 }
-CLEAN_AS(func_ov120_0229bc74, TownMap_Setup)
+CLEAN_AS(func_ov120_0229bc74, TownMap_SetUp)
 
 /* Both layers scrolled with the wipe (sub BG3 at the list's scroll) and its offset kept. */
 static void town_map_follow_wipe(TownMap *self)
@@ -1077,7 +1077,7 @@ CLEAN_AS(func_ov120_0229c1d8, TownMap_Draw)
 int TownMap_End(TownMap *self)
 {
     MenuDispatch_ChildClosed(town_map_parent(self));
-    TownMap_Teardown(self);
+    TownMap_TearDown(self);
     return 1;
 }
 CLEAN_AS(func_ov120_0229c420, TownMap_End)
@@ -1086,7 +1086,7 @@ CLEAN_AS(func_ov120_0229c420, TownMap_End)
  * Answers 1. */
 int TownMap_Start(TownMap *self)
 {
-    TownMap_Setup(self);
+    TownMap_SetUp(self);
     MenuScene_SetState(town_map_scene(self), TOWN_MAP_STATE_LOAD_BG);
     MenuScene_SetPhase(town_map_scene(self), TOWN_MAP_PHASE_STATES);
     return 1;

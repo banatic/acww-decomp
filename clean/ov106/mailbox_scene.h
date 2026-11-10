@@ -3,7 +3,7 @@
  * of the current player's mailbox (main/mail.h) beside the ten letters they carry, as the evidence
  * says:
  *
- * - its setup (MailboxScene_Setup) copies the ten letters of PlayerRecord_Mailbox for the
+ * - its setup (MailboxScene_SetUp) copies the ten letters of PlayerRecord_Mailbox for the
  *   current player into `mailbox`, and its end (MailboxScene_End) compacts them (Mail_Compact)
  *   and copies them back;
  * - its background is "menu/inventory/b_itm_bg_ltr2.bsc" with the post office's characters and
@@ -335,8 +335,8 @@ void MailboxScene_EndFrame(MailboxScene *self);
 void MailboxScene_BeginFrame(MailboxScene *self);
 void MailboxScene_EndInteractiveFrame(MailboxScene *self);
 void MailboxScene_BeginInteractiveFrame(MailboxScene *self);
-void MailboxScene_Teardown(MailboxScene *self);
-void MailboxScene_Setup(MailboxScene *self);
+void MailboxScene_TearDown(MailboxScene *self);
+void MailboxScene_SetUp(MailboxScene *self);
 void MailboxScene_ScrollMailboxLayer(MailboxScene *self);
 void MailboxScene_ScrollSceneLayer(MailboxScene *self);
 void MailboxScene_ScrollLetterLayers(MailboxScene *self);

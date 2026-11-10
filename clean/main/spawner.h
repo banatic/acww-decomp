@@ -76,7 +76,7 @@ typedef struct Spawner {
 typedef int SpawnerCondition(void);
 
 Spawner *Spawner_Destruct(Spawner *self);
-Spawner *Spawner_DestructFree(Spawner *self);
+Spawner *Spawner_DestructDelete(Spawner *self);
 int Spawner_PlaceOffRequest(Spawner *self, Vec3 *position, u16 *angle, const SpawnerRequest *request);
 int Spawner_PlaceFromPart31(Spawner *self, Vec3 *position, u16 *angle, const SpawnerRequest *request);
 int Spawner_PlaceFromPart4(Spawner *self, Vec3 *position, u16 *angle);

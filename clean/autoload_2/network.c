@@ -559,14 +559,14 @@ int Wfc_HostGame(void)
 CLEAN_AS(func_020eb7ac, Wfc_HostGame)
 
 /* func_020eb844: the friend list; NULL while the connection is not logged in. */
-FriendList *Wfc_GetFriendList(void)
+FriendList *Wfc_FriendList(void)
 {
     if (data_021fbefc < STAGE_LOGGED_IN) {
         return NULL;
     }
     return data_021fbf3c;
 }
-CLEAN_AS(func_020eb844, Wfc_GetFriendList)
+CLEAN_AS(func_020eb844, Wfc_FriendList)
 
 /* func_020eb868: the profile id of friend `index`; -1 while the connection is not logged in. */
 int Wfc_ProfileIdAt(int index)
@@ -593,7 +593,7 @@ CLEAN_AS(func_020eb8a0, Wfc_FriendIndexOf)
  * library; its result, or FALSE when the library is not ready or there is no entry. */
 int Local_SelectEntry(const void *entry)
 {
-    if (LocalWireless_GetState() != LOCAL_STATE_READY || entry == NULL) {
+    if (LocalWireless_State() != LOCAL_STATE_READY || entry == NULL) {
         return FALSE;
     }
     MI_CpuCopy8(entry, data_021fc040, LOCAL_ENTRY_SIZE);
@@ -607,7 +607,7 @@ CLEAN_AS(func_020eb8d8, Local_SelectEntry)
 void **Local_ListEntries(void)
 {
     MI_CpuFill8(data_021fbf78, 0, sizeof(data_021fbf78));
-    if (LocalWireless_GetState() == LOCAL_STATE_READY) {
+    if (LocalWireless_State() == LOCAL_STATE_READY) {
         int count = 0;
         for (u32 slot = 0; slot < LOCAL_ENTRY_COUNT; slot++) {
             void *entry = LocalSearch_ParentAt(0, (u8) slot);
@@ -658,7 +658,7 @@ CLEAN_AS(func_020eb9fc, Wfc_Call022784a0)
 
 /* Each peer's ping (data_021fbff8, by AID): the latency NitroDWC last measured (0xffff for an
  * AID with nobody) and the pings sent since anything was last heard from it. Past
- * MAX_UNANSWERED the connection counts as lost (Wfc_GetError). */
+ * MAX_UNANSWERED the connection counts as lost (Wfc_Error). */
 typedef struct PeerPing {
     u16 latency;
     u8 unanswered;
@@ -713,7 +713,7 @@ extern void (*OS_PutString)(void *block);
 #define LOCAL_ENDED 0xff
 extern u8 data_021fbf68[PEER_COUNT];
 
-/* The detail of the last error (Net_GetErrorDetail): NitroDWC's error code, or
+/* The detail of the last error (Net_ErrorDetail): NitroDWC's error code, or
  * LOST_PEER_DETAIL when a peer stopped answering. */
 #define LOST_PEER_DETAIL 1000000
 extern int data_021fbf24;
@@ -851,32 +851,32 @@ static BOOL timed_out(u32 since)
 
 /* ---- Errors ---- */
 
-/* func_020eba08: the detail of the last error Net_GetError found. */
-int Net_GetErrorDetail(void)
+/* func_020eba08: the detail of the last error Net_Error found. */
+int Net_ErrorDetail(void)
 {
     return data_021fbf24;
 }
-CLEAN_AS(func_020eba08, Net_GetErrorDetail)
+CLEAN_AS(func_020eba08, Net_ErrorDetail)
 
 /* func_020eba18: the error of the library in use, 0 for none: 0x80xx from the local library,
  * 0x40xx from NitroDWC, 0xffff when no library is in use. The detail is cleared first. */
-int Net_GetError(void)
+int Net_Error(void)
 {
     u8 mode = data_021fbef8;
     data_021fbf24 = 0;
     if (is_local(mode)) {
-        return Local_GetError();
+        return Local_Error();
     }
     if (is_wfc(mode)) {
-        return Wfc_GetError();
+        return Wfc_Error();
     }
     return mode == MODE_EXCHANGE ? 0 : 0xffff;
 }
-CLEAN_AS(func_020eba18, Net_GetError)
+CLEAN_AS(func_020eba18, Net_Error)
 
 /* func_020eba94: NitroDWC's last error 1 to 11 as 0x4001 to 0x400b (its code the detail), any
  * other as 0xffff; without one, 0x4007 when a peer has not answered more than 30 pings. */
-int Wfc_GetError(void)
+int Wfc_Error(void)
 {
     int error = DWC_GetLastError(&data_021fbf24);
     if (error != 0) {
@@ -890,14 +890,14 @@ int Wfc_GetError(void)
     }
     return 0;
 }
-CLEAN_AS(func_020eba94, Wfc_GetError)
+CLEAN_AS(func_020eba94, Wfc_Error)
 
 /* func_020ebc30: the local library's error: its state with LOCAL_STATE_ERROR set carries a code
  * 1 to 16 or 65 to 68, returned as 0x8000 + code (code 0 is no error, any other 0xffff);
  * without one, 0x80ff once the library reported its end. */
-int Local_GetError(void)
+int Local_Error(void)
 {
-    int state = LocalWireless_GetState();
+    int state = LocalWireless_State();
     if (state & LOCAL_STATE_ERROR) {
         int code = state & ~LOCAL_STATE_ERROR;
         if (code == 0) {
@@ -913,16 +913,16 @@ int Local_GetError(void)
     }
     return 0;
 }
-CLEAN_AS(func_020ebc30, Local_GetError)
+CLEAN_AS(func_020ebc30, Local_Error)
 
 /* ---- What the library in use reports ---- */
 
 /* func_020ec1e8: the mode (NetworkMode). */
-u8 Net_GetMode(void)
+u8 Net_Mode(void)
 {
     return data_021fbef8;
 }
-CLEAN_AS(func_020ec1e8, Net_GetMode)
+CLEAN_AS(func_020ec1e8, Net_Mode)
 
 /* func_020ec148: the number of games a child can join: the parents the local library found,
  * or for joining what func_ov065_02279894 counts in the friend list; -1 in the other modes. */
@@ -948,7 +948,7 @@ CLEAN_AS(func_020ec198, Wfc_CountFriends)
 /* func_020ec1b4: the parents found; -1 while the library is not ready. */
 int Local_CountParents(void)
 {
-    if (LocalWireless_GetState() != LOCAL_STATE_READY) {
+    if (LocalWireless_State() != LOCAL_STATE_READY) {
         return -1;
     }
     return LocalSearch_CountParents(0);
@@ -956,7 +956,7 @@ int Local_CountParents(void)
 CLEAN_AS(func_020ec1b4, Local_CountParents)
 
 /* func_020ec1f8: the mask of the AIDs connected (the player's alone, 1, with no library). */
-int Net_GetConnectedMask(void)
+int Net_ConnectedMask(void)
 {
     u8 mode = data_021fbef8;
     if (is_local(mode)) {
@@ -967,7 +967,7 @@ int Net_GetConnectedMask(void)
     }
     return 1;
 }
-CLEAN_AS(func_020ec1f8, Net_GetConnectedMask)
+CLEAN_AS(func_020ec1f8, Net_ConnectedMask)
 
 /* func_020ec260: the player's AID: 0 for the local parent and with no library. */
 int Net_GetMyAid(void)
@@ -1072,7 +1072,7 @@ CLEAN_AS(func_020ece54, Net_Init)
  * at +0x20) and the friend list. The stages at their start, GETs allowed and POSTs held back
  * until the login (data_0213e6bc), no request buffers, the pings and the friends' statuses
  * cleared. */
-void Wfc_Setup(int mode, ReceiveHandler *on_received, void (*on_deleted)(int index), u8 *user_block, FriendList *friends)
+void Wfc_SetUp(int mode, ReceiveHandler *on_received, void (*on_deleted)(int index), u8 *user_block, FriendList *friends)
 {
     data_021fbef8 = (u8) mode;
     CTRDGi_WriteAgbFlashSectorAsync = on_received;
@@ -1097,11 +1097,11 @@ void Wfc_Setup(int mode, ReceiveHandler *on_received, void (*on_deleted)(int ind
     }
     func_ov065_0227f1f4((u32) (uintptr_t) func_020edab8, (u32) (uintptr_t) func_020edaa8);
 }
-CLEAN_AS(func_020ecba8, Wfc_Setup)
+CLEAN_AS(func_020ecba8, Wfc_SetUp)
 
 /* func_020ecce4: the local library started in `mode` (parent or child) with the game's handler
  * for data received. */
-void Local_Setup(int mode, ReceiveHandler *on_received)
+void Local_SetUp(int mode, ReceiveHandler *on_received)
 {
     LocalParameters parameters;
     CTRDGi_WriteAgbFlashSectorAsync = on_received;
@@ -1122,7 +1122,7 @@ void Local_Setup(int mode, ReceiveHandler *on_received)
         LocalWireless_Request(4, 0, 0);
     }
 }
-CLEAN_AS(func_020ecce4, Local_Setup)
+CLEAN_AS(func_020ecce4, Local_SetUp)
 
 /* ---- Connecting ---- */
 
@@ -1142,7 +1142,7 @@ CLEAN_AS(func_020ec920, Net_UpdateConnection)
 /* func_020ecb80 */
 int Local_IsConnected(void)
 {
-    int state = LocalWireless_GetState();
+    int state = LocalWireless_State();
     return state == LOCAL_STATE_CONNECTED_A || state == LOCAL_STATE_CONNECTED_B;
 }
 CLEAN_AS(func_020ecb80, Local_IsConnected)
@@ -1195,7 +1195,7 @@ int Wfc_UpdateConnection(void)
             if (data_021fbef8 != MODE_JOINING) {
                 return TRUE;
             }
-            return (Net_GetConnectedMask() & 1) && data_021fbff8[0].unanswered <= MAX_UNANSWERED;
+            return (Net_ConnectedMask() & 1) && data_021fbff8[0].unanswered <= MAX_UNANSWERED;
     }
     return FALSE;
 }
@@ -1565,7 +1565,7 @@ int Wfc_EndStep(void)
             break;
         case END_WAIT_IDLE:
             if (!data_0213e6c4 || data_021fbefc == STAGE_LOGGED_IN || timed_out(data_021fbf54)) {
-                Net_GetError();
+                Net_Error();
                 if (func_ov065_02277cbc() < 0) {
                     data_021fbf54 = 0;
                 } else {
@@ -1621,13 +1621,13 @@ int Local_End(void)
 {
     LocalWireless_Request(0, 0, 0);
     u32 start = now_ms();
-    while (LocalWireless_GetState() != LOCAL_STATE_IDLE) {
+    while (LocalWireless_State() != LOCAL_STATE_IDLE) {
         if (timed_out(start)) {
             return FALSE;
         }
     }
-    LocalRelay_Shutdown();
-    if (!LocalWireless_Shutdown()) {
+    LocalRelay_ShutDown();
+    if (!LocalWireless_ShutDown()) {
         return FALSE;
     }
     data_021fbef8 = MODE_ENDED;

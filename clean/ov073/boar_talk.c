@@ -331,14 +331,14 @@ void BoarTalk_Reset(BoarTalk *talk)
 CLEAN_AS(func_ov073_02278e58, BoarTalk_Reset)
 
 /* func_ov073_02278e7c (slot 0x04): destructed, then freed. */
-BoarTalk *BoarTalk_DestructDelete(BoarTalk *talk)
+BoarTalk *BoarTalk_Delete(BoarTalk *talk)
 {
     talk->scene.vtable = data_ov073_02279a70;
     Obj020d9ff8_DestructBody(talk);
     Heap_OperatorDeleteB(talk);
     return talk;
 }
-CLEAN_AS(func_ov073_02278e7c, BoarTalk_DestructDelete)
+CLEAN_AS(func_ov073_02278e7c, BoarTalk_Delete)
 
 /* func_ov073_02278e9c (slot 0x00): the destructor: its class's vtable, then the base class's
  * body. */

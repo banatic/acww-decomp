@@ -51,7 +51,7 @@ typedef struct XctExchangeTalkStart {
 /* The class. */
 XctExchangeTalk *XctExchangeTalk_Construct(XctExchangeTalk *talk);
 XctExchangeTalk *XctExchangeTalk_Destruct(XctExchangeTalk *talk);
-XctExchangeTalk *XctExchangeTalk_DestructDelete(XctExchangeTalk *talk);
+XctExchangeTalk *XctExchangeTalk_Delete(XctExchangeTalk *talk);
 void XctExchangeTalk_Begin(XctExchangeTalk *talk, XctExchange *owner);
 void XctExchangeTalk_SetStep(XctExchangeTalk *talk, u32 step);
 void XctExchangeTalk_RunStep(XctExchangeTalk *talk);

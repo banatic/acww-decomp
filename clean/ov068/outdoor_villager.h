@@ -80,7 +80,7 @@
 #define OUTDOOR_VILLAGER_DO_STARTS 8   /* told an event starts (3) */
 #define OUTDOOR_VILLAGER_DO_PAIRED 9   /* paired with another villager (slot 0xb8) */
 #define OUTDOOR_VILLAGER_DO_SPEAKER 10 /* joined a talk as a speaker (slot 0x8c) */
-/* As 3, for the villager VillagerState_GetBirthdayVillager names or with a status of 3 to 7. */
+/* As 3, for the villager VillagerState_BirthdayVillager names or with a status of 3 to 7. */
 #define OUTDOOR_VILLAGER_DO_12 12
 #define OUTDOOR_VILLAGER_DO_GREETED 14     /* told of event 1 after the birthday greeter's reaction */
 #define OUTDOOR_VILLAGER_DO_CLIMB_OUT 18   /* after an event while it is stuck in a pitfall */
@@ -162,7 +162,7 @@ int OutdoorVillagerBehaviour_IsIdle(OutdoorVillagerBehaviour *self);
 OutdoorVillagerBehaviour *OutdoorVillagerBehaviour_Destruct(OutdoorVillagerBehaviour *self);
 /* With an act of kind 8 running whose number is not 0, act 0's first part on its act effects. */
 void OutdoorVillagerObject_ResetActEffects(u8 *villager);
-/* Byte 0x18 of the state entry of its town record (VillagerState_GetMood), 0 without one. */
+/* Byte 0x18 of the state entry of its town record (VillagerState_Mood), 0 without one. */
 u8 OutdoorVillagerRecords_Mood(u8 *villager);
 /* The tally of the state entry of its town record (VillagerState_Tally), or null. */
 VillagerTally *OutdoorVillagerRecords_Tally(u8 *villager);
@@ -170,7 +170,7 @@ VillagerTally *OutdoorVillagerRecords_Tally(u8 *villager);
 VillagerMemory *OutdoorVillagerRecords_MemoryOfPlayer(u8 *villager);
 
 u8 *OutdoorVillager_Destruct(u8 *object);
-u8 *OutdoorVillager_DestructDelete(u8 *object);
+u8 *OutdoorVillager_Delete(u8 *object);
 void OutdoorVillager_OnTalkEnd(u8 *object);
 void OutdoorVillager_OnSpeakerJoined(u8 *object);
 int OutdoorVillager_Unpair(u8 *object);

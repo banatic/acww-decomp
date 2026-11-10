@@ -186,14 +186,14 @@ static s32 turtle_insects_talk_whole(s32 size)
 
 /* func_ov082_02279044 (vtable slot 0x04): the destructor of the scene class it derives from,
  * then the scene freed. */
-TurtleInsectsTalk *TurtleInsectsTalk_DestructDelete(TurtleInsectsTalk *talk)
+TurtleInsectsTalk *TurtleInsectsTalk_Delete(TurtleInsectsTalk *talk)
 {
     talk->base.vtable = data_ov082_0227978c;
     Obj020d9ff8_DestructBody(talk);
     Heap_OperatorDeleteB(talk);
     return talk;
 }
-CLEAN_AS(func_ov082_02279044, TurtleInsectsTalk_DestructDelete)
+CLEAN_AS(func_ov082_02279044, TurtleInsectsTalk_Delete)
 
 /* func_ov082_02279064 (vtable slot 0x00): the destructor of the scene class it derives from. */
 TurtleInsectsTalk *TurtleInsectsTalk_Destruct(TurtleInsectsTalk *talk)

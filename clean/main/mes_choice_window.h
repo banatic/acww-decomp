@@ -33,7 +33,7 @@ int MesChoiceWindow_PressDone(MesChoiceWindow *self);
 int MesChoiceWindow_MarkerBeside(MesChoiceWindow *self);
 void MesChoiceWindow_Draw(MesChoiceWindow *self);
 void MesChoiceWindow_Update(MesChoiceWindow *self);
-MesChoiceWindow *MesChoiceWindow_DestructDelete(MesChoiceWindow *self);
+MesChoiceWindow *MesChoiceWindow_Delete(MesChoiceWindow *self);
 MesChoiceWindow *MesChoiceWindow_Destruct(MesChoiceWindow *self);
 MesChoiceWindow *MesChoiceWindow_Construct(MesChoiceWindow *self);
 

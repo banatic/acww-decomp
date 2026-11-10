@@ -349,7 +349,7 @@ CLEAN_AS(func_ov078_02278f74, CamelTalk_Begin)
 
 /* func_ov078_02278fb0 (slot 0x04): destructed (the two item codes, then the scene class's
  * body), then freed. */
-CamelTalk *CamelTalk_DestructDelete(CamelTalk *talk)
+CamelTalk *CamelTalk_Delete(CamelTalk *talk)
 {
     talk->scene.vtable = data_ov078_02279a9c;
     __cxa_vec_cleanup(talk->rewards, CAMEL_TALK_REWARDS, sizeof(u16), func_020051b0);
@@ -357,7 +357,7 @@ CamelTalk *CamelTalk_DestructDelete(CamelTalk *talk)
     Heap_OperatorDeleteB(talk);
     return talk;
 }
-CLEAN_AS(func_ov078_02278fb0, CamelTalk_DestructDelete)
+CLEAN_AS(func_ov078_02278fb0, CamelTalk_Delete)
 
 /* func_ov078_02278fe4 (slot 0x00): the destructor: the two item codes destroyed, then the scene
  * class's body. */

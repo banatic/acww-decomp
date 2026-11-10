@@ -118,7 +118,7 @@ static CellLayerSprite *donation_cursor_cells(DonationList *self)
 
 static Process *donation_parent(DonationList *self)
 {
-    return Process_GetParent((Process *) (void *) self);
+    return Process_Parent((Process *) (void *) self);
 }
 
 /* The handle's function of vtable slot `slot` (2 draws, 3 updates). */
@@ -423,7 +423,7 @@ void DonationList_BeginInteractiveFrame(DonationList *self)
 CLEAN_AS(func_ov145_0229a82c, DonationList_BeginInteractiveFrame)
 
 /* func_ov145_0229a844: the labels and the panel's texts closed, the layer tasks ended. */
-void DonationList_Teardown(DonationList *self)
+void DonationList_TearDown(DonationList *self)
 {
     DonationList_CloseLabels(self);
     ButtonPanel_CloseTexts(&self->panel);
@@ -431,12 +431,12 @@ void DonationList_Teardown(DonationList *self)
     LayerTask_End(&self->frame_task);
     LayerTask_End(&self->palette_task);
 }
-CLEAN_AS(func_ov145_0229a844, DonationList_Teardown)
+CLEAN_AS(func_ov145_0229a844, DonationList_TearDown)
 
 /* func_ov145_0229a884: the scene's setup: no flags, tab 0, no row shown, the text colour at
  * full and no fade; the lists gathered from the museum's record (the fossils, the paintings,
  * the fish, the insects) and the handle at rest. */
-void DonationList_Setup(DonationList *self)
+void DonationList_SetUp(DonationList *self)
 {
     self->flags = 0;
     self->tab = DONATION_TAB_PAINTINGS;
@@ -451,7 +451,7 @@ void DonationList_Setup(DonationList *self)
     DonationList_CollectInsects(self);
     PushButton_ShowUp(&self->handle);
 }
-CLEAN_AS(func_ov145_0229a884, DonationList_Setup)
+CLEAN_AS(func_ov145_0229a884, DonationList_SetUp)
 
 /* func_ov145_0229a8e8: the layers moved with the wipe (the list's by its scroll too), the wipe's
  * y kept and the handle drawn at it. */
@@ -621,7 +621,7 @@ CLEAN_AS(func_ov145_0229abd0, DonationList_Draw)
 int DonationList_End(DonationList *self)
 {
     MenuDispatch_ChildClosed((MenuDispatch *) (void *) donation_parent(self));
-    DonationList_Teardown(self);
+    DonationList_TearDown(self);
     return 1;
 }
 CLEAN_AS(func_ov145_0229acac, DonationList_End)
@@ -630,7 +630,7 @@ CLEAN_AS(func_ov145_0229acac, DonationList_End)
  * directly) and phase 0. Answers 1. */
 int DonationList_Start(DonationList *self)
 {
-    DonationList_Setup(self);
+    DonationList_SetUp(self);
     self->base.state = DONATION_STATE_START_SETUP;
     MenuScene_SetPhase(donation_base(self), DONATION_PHASE_WAIT);
     return 1;

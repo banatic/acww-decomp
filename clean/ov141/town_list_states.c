@@ -45,7 +45,7 @@ static MenuScene *town_list_scene(TownList *self)
 
 static MenuDispatch *town_list_parent(TownList *self)
 {
-    return (MenuDispatch *) Process_GetParent((Process *) (void *) self);
+    return (MenuDispatch *) Process_Parent((Process *) (void *) self);
 }
 
 static void *town_list_rows(TownList *self)
@@ -105,7 +105,7 @@ void TownList_BeginFrame(TownList *self)
 {
     LayerTask_End(&self->screen_task);
     ButtonPanel_CloseTexts(&self->panel);
-    ResRows_Teardown(town_list_rows(self));
+    ResRows_TearDown(town_list_rows(self));
 }
 CLEAN_AS(func_ov141_0229a934, TownList_BeginFrame)
 
@@ -128,17 +128,17 @@ CLEAN_AS(func_ov141_0229a968, TownList_BeginInteractiveFrame)
 
 /* func_ov141_0229a984: the members torn down: the panel's texts closed, overlay 139's
  * teardown, the screen's task ended. */
-void TownList_Teardown(TownList *self)
+void TownList_TearDown(TownList *self)
 {
     ButtonPanel_CloseTexts(&self->panel);
     ResRows_End(town_list_rows(self));
     LayerTask_End(&self->screen_task);
 }
-CLEAN_AS(func_ov141_0229a984, TownList_Teardown)
+CLEAN_AS(func_ov141_0229a984, TownList_TearDown)
 
 /* func_ov141_0229a9b0: the scene's own fields set up: no flag, overlay 139's object on layer 6,
  * every row empty, none picked, the quit button as drawn, the cursor on the first row. */
-void TownList_Setup(TownList *self)
+void TownList_SetUp(TownList *self)
 {
     self->flags = 0;
     ResRows_Open(town_list_rows(self), 6, 0x7e);
@@ -149,7 +149,7 @@ void TownList_Setup(TownList *self)
     self->quit_palette = TOWN_LIST_BUTTON_NORMAL;
     self->cursor = TOWN_LIST_ROW_FIRST;
 }
-CLEAN_AS(func_ov141_0229a9b0, TownList_Setup)
+CLEAN_AS(func_ov141_0229a9b0, TownList_SetUp)
 
 /* func_ov141_0229aa04: layer 6 scrolled with the wipe, and the wipe's y kept. */
 void TownList_ScrollWithWipe(TownList *self)
@@ -362,7 +362,7 @@ CLEAN_AS(func_ov141_0229ad00, TownList_Draw)
 int TownList_Close(TownList *self)
 {
     MenuDispatch_ChildClosed(town_list_parent(self));
-    TownList_Teardown(self);
+    TownList_TearDown(self);
     return 1;
 }
 CLEAN_AS(func_ov141_0229ae44, TownList_Close)
@@ -371,7 +371,7 @@ CLEAN_AS(func_ov141_0229ae44, TownList_Close)
  * and phase 0. Answers 1. */
 int TownList_Start(TownList *self)
 {
-    TownList_Setup(self);
+    TownList_SetUp(self);
     self->base.state = TOWN_LIST_STATE_START_SETUP;
     MenuScene_SetPhase(town_list_scene(self), TOWN_LIST_PHASE_WAIT);
     return 1;

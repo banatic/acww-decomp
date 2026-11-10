@@ -55,7 +55,7 @@ void TalkVoice_SetKind(TalkVoice *voice, int kind);
 void TalkVoice_Update(TalkVoice *voice);
 void TalkVoice_PushChar(TalkVoice *voice, short character);
 void TalkVoice_Clear(TalkVoice *voice, int all);
-TalkVoice *TalkVoice_DestructDelete(TalkVoice *voice);
+TalkVoice *TalkVoice_Delete(TalkVoice *voice);
 void TalkVoice_Destruct(TalkVoice *voice);
 TalkVoice *TalkVoice_Construct(TalkVoice *voice, struct TalkObject *talk);
 

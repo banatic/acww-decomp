@@ -29,7 +29,7 @@ Process *SkyProcess_Destruct(Process *process)
 CLEAN_AS(func_020ba298, SkyProcess_Destruct)
 
 /* func_020ba2b8: the destructor, then the object freed. */
-Process *SkyProcess_DestructFree(Process *process)
+Process *SkyProcess_DestructDelete(Process *process)
 {
     process->vtable = data_020e69a4;
     process->vtable = data_020da13c;
@@ -37,7 +37,7 @@ Process *SkyProcess_DestructFree(Process *process)
     Heap_FreeAux(process);
     return process;
 }
-CLEAN_AS(func_020ba2b8, SkyProcess_DestructFree)
+CLEAN_AS(func_020ba2b8, SkyProcess_DestructDelete)
 
 /* func_020ba2e0 */
 void Block020ba298_SetByte9(void)

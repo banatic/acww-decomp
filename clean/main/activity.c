@@ -40,7 +40,7 @@ Activity *Activity_Destruct(Activity *activity)
 CLEAN_AS(func_0209fb74, Activity_Destruct)
 
 /* func_0209fba0: the destructor, then the object freed. */
-Activity *Activity_DestructFree(Activity *activity)
+Activity *Activity_Delete(Activity *activity)
 {
     activity->process.vtable = data_020e3ae8;
     ActivityReceiver_Destruct((ActivityReceiver *) (void *) activity->receiver);
@@ -49,7 +49,7 @@ Activity *Activity_DestructFree(Activity *activity)
     Heap_FreeAux(activity);
     return activity;
 }
-CLEAN_AS(func_0209fba0, Activity_DestructFree)
+CLEAN_AS(func_0209fba0, Activity_Delete)
 
 /* func_020a0244: message 7 of "sp_etc_sequence2" shown and the current player's flag 2 (PLAYER_FLAG_UNSAVED)
  * cleared; when the start menu's leave choice (StartMenu_LeaveChoice) is set, the catch panel
@@ -83,7 +83,7 @@ void Activity_StepSendReport(Activity *activity, u8 *step, int first)
 {
     (void) activity;
     if (*step == first) {
-        if (Session_GetMode(data_020ccf94) == SESSION_MODE_1) {
+        if (Session_Mode(data_020ccf94) == SESSION_MODE_1) {
             *step = (u8) (first + 1);
         }
     } else if (*step == first + 1) {
@@ -129,7 +129,7 @@ void Activity_StepRequestMode1(Activity *activity, u8 *step, int first, int scen
         }
         Session_SetModeRequest(session, SESSION_MODE_1);
         *step = (u8) (first + 1);
-    } else if (*step == first + 1 && Session_GetMode(data_020ccf94) == SESSION_MODE_1 && SystemPacket_SendModeRequest() != 0) {
+    } else if (*step == first + 1 && Session_Mode(data_020ccf94) == SESSION_MODE_1 && SystemPacket_SendModeRequest() != 0) {
         *step = (u8) (first + 2);
     }
 }

@@ -68,7 +68,7 @@ call 6401 020a4591 0 0 0 0 00000000 00000000  # main ActivityJobs_Start0B
 call 6401 020a4649 0 0 0 0 00000000 00000000  # main ActivityJobs_Start09
 call 6401 020b72d5 0 0 0 0 00000000 00000000  # main SceneClass3_Slot12
 call 6401 020b9479 0 0 0 0 00000000 00000000  # main VramFrame_ReportFull
-call 6401 02069e11 0 0 0 0 00000000 00000000  # main TalkTags_Nothing4_32
+call 6401 02069e11 0 0 0 0 00000000 00000000  # main TalkTags_NothingGroup4Tag32
 call 6401 0206ac61 0 0 0 0 00000000 00000000  # main TalkTags_Nothing
 vcall 6401 0239225c 44 0239225c 0 0 0 020d832c  # main TalkReceiver_Nothing44 (slot 17 of the talk receiver 0239225c)
 vcall 6401 022b6800 d0 022b6800 0 0 0 020dd194  # main Obj020dd33c_UpdateMode6Kind0 (slot 52 of the 3D object 022b6800)

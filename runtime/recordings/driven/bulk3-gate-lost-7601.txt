@@ -7,7 +7,7 @@ call 7601 0229d929 0237dad0 0 0 0 0229d928 1c04b510  # ov110 PublicBox_RunAction
 vcall 7601 0237dad0 58 0237dad0 0 0 0 0229ecb8  # ov110 PublicBox_Phase4Idle (slot 22)
 vcall 7601 0237dad0 54 0237dad0 0 0 0 0229ecb8  # ov110 PublicBox_Phase3Idle (slot 21)
 call 7601 020e9a08 022a3378 0 0 0 0 0  # Heap_SetCurrent(its heap)
-call 7601 0202ef39 022af200 0 0 0 022af200 02254918  # main SpecialSceneObject_DestructDelete (this: an object of a class derived from its own, vtable 02254918)
+call 7601 0202ef39 022af200 0 0 0 022af200 02254918  # main SpecialSceneObject_Delete (this: an object of a class derived from its own, vtable 02254918)
 call 7601 020e9a08 r2 0 0 0 0 0  # Heap_SetCurrent(as before)
 call 7601 0202f019 022af924 0 0 0 022af924 02264298  # main SpecialSceneObject_Destruct (this: an object of a class derived from its own, vtable 02264298)
 call 7601 020ac98d 02373c64 0 0 0 02373c64 020e3fe4  # main MesBg_Destruct (this: an object of a class derived from its own, vtable 020e3fe4)

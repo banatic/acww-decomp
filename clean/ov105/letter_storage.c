@@ -309,12 +309,12 @@ void LetterStorage_PressDone(LetterStorage *self)
 }
 CLEAN_AS(func_ov105_0229c668, LetterStorage_PressDone)
 
-/* func_ov105_0229c694: nothing (called by the setup, LetterStorage_Setup). */
-void LetterStorage_DoNothing(LetterStorage *self)
+/* func_ov105_0229c694: nothing (called by the setup, LetterStorage_SetUp). */
+void LetterStorage_Nothing(LetterStorage *self)
 {
     (void) self;
 }
-CLEAN_AS(func_ov105_0229c694, LetterStorage_DoNothing)
+CLEAN_AS(func_ov105_0229c694, LetterStorage_Nothing)
 
 /* func_ov105_0229c698 (action 3) */
 void LetterStorage_RunDiscardConfirm(LetterStorage *self)
@@ -1199,7 +1199,7 @@ int LetterStorage_IsCarriedPlace(LetterStorage *self, unsigned int place)
 }
 CLEAN_AS(func_ov105_0229d76c, LetterStorage_IsCarriedPlace)
 
-/* func_ov105_0229d77c (by LetterStorage_BeginFrame and LetterStorage_Teardown): the layer load task at
+/* func_ov105_0229d77c (by LetterStorage_BeginFrame and LetterStorage_TearDown): the layer load task at
  * 0x2c4 (a LayerTaskPair by its size) taken off the main loop's queue and reset. */
 void LetterStorage_EndLayerTask(LetterStorage *self)
 {
@@ -2068,7 +2068,7 @@ extern const MemberPointer data_ov105_0229f880, data_ov105_0229f888, data_ov105_
 /* The parent process. */
 static Process *parent_of(LetterStorage *self)
 {
-    return Process_GetParent((Process *) (void *) self);
+    return Process_Parent((Process *) (void *) self);
 }
 
 /* The pen went down this frame. */
@@ -2255,22 +2255,22 @@ int LetterStorage_BeginInteractiveFrame(LetterStorage *self)
 CLEAN_AS(func_ov105_0229eaec, LetterStorage_BeginInteractiveFrame)
 
 /* func_ov105_0229eb08: the members' teardown before the scene closes. */
-void LetterStorage_Teardown(LetterStorage *self)
+void LetterStorage_TearDown(LetterStorage *self)
 {
     LetterStorage_EndLayerTask(self);
-    PocketsWallet_Teardown((PocketsWallet *) (void *) self->wallet);
-    PocketsGrid_Teardown((PocketsGrid *) (void *) self->grid);
+    PocketsWallet_TearDown((PocketsWallet *) (void *) self->wallet);
+    PocketsGrid_TearDown((PocketsGrid *) (void *) self->grid);
     PagedChoice_Dismiss(choice_of(self));
     LetterView_ReleaseBoxes(&self->view);
     ButtonPanel_CloseTexts(&self->panel);
 }
-CLEAN_AS(func_ov105_0229eb08, LetterStorage_Teardown)
+CLEAN_AS(func_ov105_0229eb08, LetterStorage_TearDown)
 
 /* func_ov105_0229eb54: the scene's setup: no flags, the three objects of ov094's set up, no
  * popup place, the glide stopped, nothing held, the cursor on the first carried letter, the
  * choice and the letter view on layer 3, page 0; the 50 stored letters emptied, then copied from
  * the letters the current player keeps (when they have them); no open delay. */
-void LetterStorage_Setup(LetterStorage *self)
+void LetterStorage_SetUp(LetterStorage *self)
 {
     self->flags = 0;
     PocketsGrid_Init((PocketsGrid *) (void *) self->grid, 2);
@@ -2294,10 +2294,10 @@ void LetterStorage_Setup(LetterStorage *self)
             Letter_Assign(&self->stored[i], &src[i]);
         }
     }
-    LetterStorage_DoNothing(self);
+    LetterStorage_Nothing(self);
     self->open_delay = 0;
 }
-CLEAN_AS(func_ov105_0229eb54, LetterStorage_Setup)
+CLEAN_AS(func_ov105_0229eb54, LetterStorage_SetUp)
 
 /* func_ov105_0229ec3c (state 0x15): the scene wipes back in; when done, phase 2 and the action
  * ends. The panel's offset follows the wipe. */
@@ -2771,7 +2771,7 @@ CLEAN_AS(func_ov105_0229f604, LetterStorage_Draw)
 int LetterStorage_Close(LetterStorage *self)
 {
     MenuDispatch_ChildClosed((MenuDispatch *) (void *) parent_of(self));
-    LetterStorage_Teardown(self);
+    LetterStorage_TearDown(self);
     return 1;
 }
 CLEAN_AS(func_ov105_0229f724, LetterStorage_Close)
@@ -2780,7 +2780,7 @@ CLEAN_AS(func_ov105_0229f724, LetterStorage_Close)
  * Answers 1. */
 int LetterStorage_Start(LetterStorage *self)
 {
-    LetterStorage_Setup(self);
+    LetterStorage_SetUp(self);
     MenuScene_SetState(scene_of(self), LETTER_STORAGE_STATE_START_SETUP);
     MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_WAIT);
     return 1;

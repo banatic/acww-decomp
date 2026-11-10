@@ -27,7 +27,7 @@ typedef struct PairedTownText {
 
 #define NO_PLAYER 4
 #define OWN_BLOCK 4
-/* Network modes of the Wi-Fi Connection (Net_GetMode). */
+/* Network modes of the Wi-Fi Connection (Net_Mode). */
 #define NET_MODE_WFC_3 3
 #define NET_MODE_WFC_4 4
 /* Game variable 0x49 of bank 0: while it is 0, a pairing is made only one time in 16. */
@@ -46,10 +46,10 @@ static const u8 *record_town(u8 *record)
 int PairedTown_AreFriends(Activity *activity, u8 *record, u8 *owner)
 {
     (void) activity;
-    WifiFriendData *own = WifiFriendData_GetData(WifiAccount_GetFriendData(PlayerRecord_WifiAccount(record)));
-    WifiFriend *friends = WifiFriendList_GetEntries(PlayerRecord_WifiFriends(owner));
+    WifiFriendData *own = WifiFriendData_Data(WifiAccount_FriendData(PlayerRecord_WifiAccount(record)));
+    WifiFriend *friends = WifiFriendList_Entries(PlayerRecord_WifiFriends(owner));
     for (int i = 0; i < WIFI_FRIENDS; i++) {
-        WifiFriendData *data = WifiFriendData_GetData(WifiFriend_GetFriendData(&friends[i]));
+        WifiFriendData *data = WifiFriendData_Data(WifiFriend_FriendData(&friends[i]));
         if (data != NULL && Wfc_Call0210101c(own, data) != 0) {
             return 1;
         }
@@ -100,7 +100,7 @@ void PairedTown_Pair(Activity *activity, int player)
         if (PairedTown_Days(partner_pairing) != 0) {
             continue;
         }
-        if (Net_GetMode() == NET_MODE_WFC_3 || Net_GetMode() == NET_MODE_WFC_4) {
+        if (Net_Mode() == NET_MODE_WFC_3 || Net_Mode() == NET_MODE_WFC_4) {
             if (PairedTown_AreFriends(activity, partner_record, record) == 0 ||
                 PairedTown_AreFriends(activity, record, partner_record) == 0) {
                 continue;

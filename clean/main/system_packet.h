@@ -6,7 +6,7 @@
  * the scenes it belongs to, setting one of its flags; others write data into this system's
  * records or the session's shared records at an offset the payload starts with.
  *
- * Each kind has a sender that builds the packet in the share block (Session_GetSendBlock(s, 4))
+ * Each kind has a sender that builds the packet in the share block (Session_SendBlock(s, 4))
  * and sends it to the AIDs of a mask (bit n for AID n; 1 is the host) once every peer in the
  * mask has a credit. Data longer than a packet goes in chunks of SYSTEM_PACKET_CHUNK bytes
  * (SystemPacket_SendInChunks): each chunk is its offset (4 bytes) and its bytes, and the caller

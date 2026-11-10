@@ -128,7 +128,7 @@ static CellLayerSprite *pointer_cells(MyDesigns *self)
 
 static MenuTabs *parent_tabs(MyDesigns *self)
 {
-    return (MenuTabs *) (void *) Process_GetParent((Process *) (void *) self);
+    return (MenuTabs *) (void *) Process_Parent((Process *) (void *) self);
 }
 
 /* An object updated or drawn through its class (vtable slot `slot`). */
@@ -1392,7 +1392,7 @@ CLEAN_AS(func_ov121_0229b9fc, MyDesigns_Release)
 /* func_ov121_0229ba60: the setup: the designs in their places, no flags, the buttons that cannot
  * be used where the player is (MyDesignsWhere), the choice on the sub screen's background 0
  * (priority 1), no button lit and the cursor on design 0. */
-void MyDesigns_Setup(MyDesigns *self)
+void MyDesigns_SetUp(MyDesigns *self)
 {
     for (u8 i = 0; i < MY_DESIGNS_COUNT; i++) {
         self->order[i] = i;
@@ -1423,7 +1423,7 @@ void MyDesigns_Setup(MyDesigns *self)
     self->highlighted = MY_DESIGNS_NO_PLACE;
     self->cursor = MY_DESIGNS_DESIGN_FIRST;
 }
-CLEAN_AS(func_ov121_0229ba60, MyDesigns_Setup)
+CLEAN_AS(func_ov121_0229ba60, MyDesigns_SetUp)
 
 /* The buttons' layer follows the wipe, whose y is kept for the designs. */
 static void follow_wipe(MyDesigns *self)
@@ -1686,7 +1686,7 @@ CLEAN_AS(func_ov121_0229c160, MyDesigns_Close)
  * Answers 1. */
 int MyDesigns_Begin(MyDesigns *self)
 {
-    MyDesigns_Setup(self);
+    MyDesigns_SetUp(self);
     MenuScene_SetState(scene(self), MY_DESIGNS_STATE_START);
     MenuScene_SetPhase(scene(self), MY_DESIGNS_PHASE_STATES);
     return 1;

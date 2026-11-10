@@ -194,7 +194,7 @@ void MailboxScene_CloseOnRequest(MailboxScene *self)
     MailboxScene_HideCursorSprite(self);
     MenuScene_SetState(mbx_scene(self), 9);
     MenuScene_SetPhase(mbx_scene(self), 1);
-    MenuDispatch_SetMode((MenuDispatch *) Process_GetParent((Process *) (void *) self), MAILBOX_SCENE_PARENT_CODE_END, 1);
+    MenuDispatch_SetMode((MenuDispatch *) Process_Parent((Process *) (void *) self), MAILBOX_SCENE_PARENT_CODE_END, 1);
 }
 CLEAN_AS(func_ov106_0229c418, MailboxScene_CloseOnRequest)
 
@@ -2061,7 +2061,7 @@ extern const MemberPointer data_ov106_0229f548, data_ov106_0229f550, data_ov106_
 /* The parent process. */
 static Process *mbx_parent(MailboxScene *self)
 {
-    return Process_GetParent((Process *) (void *) self);
+    return Process_Parent((Process *) (void *) self);
 }
 
 /* A member drawn through its class (vtable slot 2). */
@@ -2213,23 +2213,23 @@ void MailboxScene_BeginInteractiveFrame(MailboxScene *self)
 CLEAN_AS(func_ov106_0229e9a4, MailboxScene_BeginInteractiveFrame)
 
 /* func_ov106_0229e9c0: the members' teardown before the scene closes. */
-void MailboxScene_Teardown(MailboxScene *self)
+void MailboxScene_TearDown(MailboxScene *self)
 {
     MailboxScene_EndLayerTask(self);
-    PocketsWallet_Teardown(&self->wallet);
-    PocketsGrid_Teardown(&self->grid);
+    PocketsWallet_TearDown(&self->wallet);
+    PocketsGrid_TearDown(&self->grid);
     PagedChoice_Dismiss(mbx_choice(self));
     LetterView_ReleaseBoxes(&self->view);
     ButtonPanel_CloseTexts(&self->panel);
 }
-CLEAN_AS(func_ov106_0229e9c0, MailboxScene_Teardown)
+CLEAN_AS(func_ov106_0229e9c0, MailboxScene_TearDown)
 
 /* func_ov106_0229ea08: the scene's setup: no flags, the three objects of ov094's set up, no
  * popup place, the glide stopped, nothing held, the cursor on the first carried letter, the
  * choice and the letter view on layer 3; the ten letters of the mailbox emptied, then copied
  * from the current player's mailbox; its letters to be taken once the scene is in
  * (MAILBOX_SCENE_FLAG_TAKE_LETTERS); no open delay. */
-void MailboxScene_Setup(MailboxScene *self)
+void MailboxScene_SetUp(MailboxScene *self)
 {
     self->flags = 0;
     PocketsGrid_Init(&self->grid, 2);
@@ -2244,16 +2244,16 @@ void MailboxScene_Setup(MailboxScene *self)
     for (int i = 0; i < MAILBOX_SCENE_LETTERS; i++) {
         Letter_Clear(&self->mailbox[i]);
     }
-    MailBox *box = PlayerRecord_Mailbox(PlayerRecords_Current());
+    MailboxRecord *box = PlayerRecord_Mailbox(PlayerRecords_Current());
     /* The mailbox's first letter: the other nine follow it. */
-    const Letter *src = MailBox_Letter(box, 0);
+    const Letter *src = MailboxRecord_Letter(box, 0);
     for (int i = 0; i < MAILBOX_SCENE_LETTERS; i++) {
         Letter_Assign(&self->mailbox[i], &src[i]);
     }
     MailboxScene_SetFlags(self, MAILBOX_SCENE_FLAG_TAKE_LETTERS);
     self->open_delay = 0;
 }
-CLEAN_AS(func_ov106_0229ea08, MailboxScene_Setup)
+CLEAN_AS(func_ov106_0229ea08, MailboxScene_SetUp)
 
 /* func_ov106_0229eadc: the mailbox layer scrolled by the wipe (16 pixels up), the wipe's x kept
  * for the mailbox's letters. */
@@ -2482,8 +2482,8 @@ int MailboxScene_End(MailboxScene *self)
 {
     GroupParams_SetC4C(1);
     Mail_Compact(self->mailbox, MAILBOX_SCENE_LETTERS);
-    MailBox *box = PlayerRecord_Mailbox(PlayerRecords_Current());
-    Letter *dst = MailBox_Letter(box, 0);
+    MailboxRecord *box = PlayerRecord_Mailbox(PlayerRecords_Current());
+    Letter *dst = MailboxRecord_Letter(box, 0);
     for (int i = 0; i < MAILBOX_SCENE_LETTERS; i++) {
         Letter_Assign(&dst[i], &self->mailbox[i]);
     }
@@ -2609,7 +2609,7 @@ CLEAN_AS(func_ov106_0229f2fc, MailboxScene_Draw)
 int MailboxScene_Close(MailboxScene *self)
 {
     MenuDispatch_ChildClosed((MenuDispatch *) (void *) mbx_parent(self));
-    MailboxScene_Teardown(self);
+    MailboxScene_TearDown(self);
     return 1;
 }
 CLEAN_AS(func_ov106_0229f3e0, MailboxScene_Close)
@@ -2618,7 +2618,7 @@ CLEAN_AS(func_ov106_0229f3e0, MailboxScene_Close)
  * Answers 1. */
 int MailboxScene_Start(MailboxScene *self)
 {
-    MailboxScene_Setup(self);
+    MailboxScene_SetUp(self);
     MenuScene_SetState(mbx_scene(self), MAILBOX_SCENE_STATE_START_SETUP);
     MenuScene_SetPhase(mbx_scene(self), MENU_SCENE_PHASE_WAIT);
     return 1;

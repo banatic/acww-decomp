@@ -46,7 +46,7 @@ typedef struct MenuDispatch {
 MenuDispatch *MenuDispatch_Destroy(MenuDispatch *self);
 MenuDispatch *MenuDispatch_Delete(MenuDispatch *self);
 void MenuDispatch_EndMembers(MenuDispatch *self);
-void MenuDispatch_Setup(MenuDispatch *self);
+void MenuDispatch_SetUp(MenuDispatch *self);
 void MenuDispatch_Open(MenuDispatch *self);
 void MenuDispatch_RequestGroup(MenuDispatch *self);
 void MenuDispatch_Idle(void);

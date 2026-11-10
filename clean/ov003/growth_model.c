@@ -613,7 +613,7 @@ static void growth_model_finish_tagged(int slot, int tags)
 /* func_ov003_02223580: a model made ready: its joints' results and its animation in the files'
  * heap, released (mode 8), with the node hook (GrowthModel_NodeHook) at node command 2, its
  * sound stopped, and reset. */
-void GrowthModel_Setup(GrowthModel *model)
+void GrowthModel_SetUp(GrowthModel *model)
 {
     AnimatedModel *animated = growth_model_animated(model);
     ModelObject_AllocJointResults(&animated->object, data_ov003_0223cf78);
@@ -623,7 +623,7 @@ void GrowthModel_Setup(GrowthModel *model)
     SoundEmitter_ResetB(&model->sound);
     GrowthModel_Reset(model);
 }
-CLEAN_AS(func_ov003_02223580, GrowthModel_Setup)
+CLEAN_AS(func_ov003_02223580, GrowthModel_SetUp)
 
 /* func_ov003_022235d8: on the town's map, when the model of the code at `tile` (at a stage
  * 1-4) plays at that tile for `player` (0 unless the session is linked), its animation is made
@@ -822,8 +822,8 @@ void GrowthModels_UpdateAll(GrowthModels *models)
 CLEAN_AS(func_ov003_02223a04, GrowthModels_UpdateAll)
 
 /* func_ov003_02223a90: the files loaded, no request pending, every model made ready
- * (GrowthModel_Setup), in the order of GrowthModels_ReleaseAll. */
-void GrowthModels_SetupAll(GrowthModels *models)
+ * (GrowthModel_SetUp), in the order of GrowthModels_ReleaseAll. */
+void GrowthModels_SetUpAll(GrowthModels *models)
 {
     GrowthModel_LoadFiles(&models->files);
     for (int i = 0; i < GROWTH_MODEL_REQUESTS; i++) {
@@ -831,15 +831,15 @@ void GrowthModels_SetupAll(GrowthModels *models)
     }
     for (int set = 0; set < 3; set++) {
         for (int stage = 0; stage < GROWTH_MODEL_STAGES; stage++) {
-            GrowthModel_Setup(&models->sets[set][stage]);
+            GrowthModel_SetUp(&models->sets[set][stage]);
         }
     }
     for (int stage = 0; stage < GROWTH_MODEL_STAGES; stage++) {
-        GrowthModel_Setup(&models->line_5d[stage]);
-        GrowthModel_Setup(&models->line_c8[stage]);
+        GrowthModel_SetUp(&models->line_5d[stage]);
+        GrowthModel_SetUp(&models->line_c8[stage]);
     }
 }
-CLEAN_AS(func_ov003_02223a90, GrowthModels_SetupAll)
+CLEAN_AS(func_ov003_02223a90, GrowthModels_SetUpAll)
 
 /* func_ov003_02223b18: a model's destructor: its sound emitter's, then its animated model's;
  * returns it. */

@@ -714,14 +714,14 @@ CLEAN_AS(func_0201615c, SceneBase_DestructBody)
 
 /* func_02016174 (slot 0x04): the destructor that also frees the scene's memory. Returns the
  * scene. */
-void *SceneBase_DestructDelete(SceneBase *scene)
+void *SceneBase_Delete(SceneBase *scene)
 {
     scene->vtable = data_020d8bd4;
     TalkReceiver_Destruct((TalkReceiver *) scene);
     Heap_OperatorDeleteB(scene);
     return scene;
 }
-CLEAN_AS(func_02016174, SceneBase_DestructDelete)
+CLEAN_AS(func_02016174, SceneBase_Delete)
 
 /* func_02016194 (slot 0x00): the destructor: the receiver's (func_02066994), which has no
  * members of the scene's own to destroy. Returns the scene. */

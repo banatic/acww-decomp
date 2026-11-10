@@ -104,7 +104,7 @@ void AstroTalk_SetOwner(AstroTalk *talk, struct Astro *owner);
 
 /* Its life. */
 void AstroTalk_Reset(AstroTalk *talk);
-AstroTalk *AstroTalk_DestructDelete(AstroTalk *talk);
+AstroTalk *AstroTalk_Delete(AstroTalk *talk);
 AstroTalk *AstroTalk_Destruct(AstroTalk *talk);
 AstroTalk *AstroTalk_Construct(AstroTalk *talk);
 

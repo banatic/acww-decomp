@@ -155,7 +155,7 @@ SceneLights *SceneLights_Destruct(SceneLights *self)
 CLEAN_AS(func_02064d1c, SceneLights_Destruct)
 
 /* func_02064d50 (vtable slot 17): the destructor, then the object freed. */
-SceneLights *SceneLights_DestructFree(SceneLights *self)
+SceneLights *SceneLights_DestructDelete(SceneLights *self)
 {
     self->process.vtable = data_020de710;
     __cxa_vec_cleanup(self->lights, SCENE_LIGHTS_MAX, sizeof(SceneLight), func_02064d8c);
@@ -164,7 +164,7 @@ SceneLights *SceneLights_DestructFree(SceneLights *self)
     Heap_FreeAux(self);
     return self;
 }
-CLEAN_AS(func_02064d50, SceneLights_DestructFree)
+CLEAN_AS(func_02064d50, SceneLights_DestructDelete)
 
 /* func_02064d8c: a light's destructor: its fader taken down. */
 SceneLight *SceneLight_Destruct(SceneLight *light)

@@ -29,7 +29,7 @@ static_assert(offsetof(LocalSession, channel_index) == 0x95, "session channel in
 static_assert(offsetof(LocalSession, on_received) == 0xb8, "receive handler");
 static_assert(offsetof(LocalSession, flags) == 0xc0, "session flags");
 
-/* The control block, NULL before LocalWireless_Init and after LocalWireless_Shutdown. */
+/* The control block, NULL before LocalWireless_Init and after LocalWireless_ShutDown. */
 extern LocalControl *data_ov066_0226bdec;
 /* The session. */
 extern LocalSession *data_ov066_0226bdf4;
@@ -576,7 +576,7 @@ CLEAN_AS(func_ov066_02267348, LocalWireless_IsRequestDone)
 /* func_ov066_02267404: the control block freed and the game's functions forgotten, once WM is
  * finished (state LOCAL_STATE_SET_UP); otherwise the library stops on
  * LOCAL_ERROR_WRONG_STATE. TRUE when shut down. */
-int LocalWireless_Shutdown(void)
+int LocalWireless_ShutDown(void)
 {
     if (data_ov066_0226bdec->state != LOCAL_STATE_SET_UP) {
         LocalWireless_Fail(LOCAL_ERROR_WRONG_STATE);
@@ -590,7 +590,7 @@ int LocalWireless_Shutdown(void)
     data_ov066_0226bdec = NULL;
     return TRUE;
 }
-CLEAN_AS(func_ov066_02267404, LocalWireless_Shutdown)
+CLEAN_AS(func_ov066_02267404, LocalWireless_ShutDown)
 
 /* func_ov066_0226748c: the library set up with the game's allocator, free function and error
  * handler, and the DMA channel WM is to use: the control block allocated, the tick and alarm
@@ -655,7 +655,7 @@ CLEAN_AS(func_ov066_02267530, LocalWireless_ResetControl)
 
 /* func_ov066_0226760c: the state (LocalState, or an error | LOCAL_STATE_ERROR), read with the
  * interrupts disabled; 0 without a control block. */
-int LocalWireless_GetState(void)
+int LocalWireless_State(void)
 {
     int state = 0;
     u32 interrupts = OS_DisableInterrupts();
@@ -665,7 +665,7 @@ int LocalWireless_GetState(void)
     OS_RestoreInterrupts(interrupts);
     return state;
 }
-CLEAN_AS(func_ov066_0226760c, LocalWireless_GetState)
+CLEAN_AS(func_ov066_0226760c, LocalWireless_State)
 
 /* func_ov066_02267fe8: `handler` set as the handler of the data received, with the interrupts
  * disabled; nothing without a session. */

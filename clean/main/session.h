@@ -109,107 +109,107 @@ typedef struct NetSession {
     u8 start_header[0x60];           /* 0x714: handed to func_020ecba8 on start */
 } NetSession;
 
-u8 *Session_GetStartHeader(NetSession *session);
-u8 *Session_GetStartTable(NetSession *session);
+u8 *Session_StartHeader(NetSession *session);
+u8 *Session_StartTable(NetSession *session);
 void Session_SetSlotMask(NetSession *session, u16 mask);
 
-u16 Session_GetSendWaitLimit(NetSession *session);
+u16 Session_SendWaitLimit(NetSession *session);
 void Session_SetSendWaitLimit(NetSession *session, u16 frames);
-u16 Session_GetSendWait(NetSession *session);
+u16 Session_SendWait(NetSession *session);
 void Session_SetSendWait(NetSession *session, u16 frames);
 
 void Session_ClearPeerSilence(NetSession *session);
 void Session_ResetPeerSilence(NetSession *session, int slot);
 int Session_AnyPeerSilent(NetSession *ignored);
-u16 Session_GetPeerSilence(NetSession *session, u32 slot);
+u16 Session_PeerSilence(NetSession *session, u32 slot);
 void Session_AgePeerSilence(NetSession *session);
 
-u32 Session_GetConnectMode(NetSession *session);
+u32 Session_ConnectMode(NetSession *session);
 void Session_SetConnectMode(NetSession *session, int mode);
-u32 Session_GetErrorFlags(NetSession *session);
+u32 Session_ErrorFlags(NetSession *session);
 void Session_SetErrorFlags(NetSession *session, int flags);
-u32 Session_GetShownErrorFlags(NetSession *session);
+u32 Session_ShownErrorFlags(NetSession *session);
 void Session_SetShownErrorFlags(NetSession *session, int flags);
 
 void Session_AppendShareData(NetSession *session, const void *data, int size);
 void Session_ClearShareLength(NetSession *session);
-u32 Session_GetShareLength(NetSession *session);
+u32 Session_ShareLength(NetSession *session);
 void Session_SetShareLength(NetSession *session, int length);
 
 void Session_ClearSequence(NetSession *session);
 void Session_ClearPendingSequence(NetSession *session);
-int Session_GetSequence(NetSession *session);
-s16 Session_GetPendingSequence(NetSession *session);
+int Session_Sequence(NetSession *session);
+s16 Session_PendingSequence(NetSession *session);
 void Session_SetSequence(NetSession *session, u16 sequence);
 void Session_SetPendingSequence(NetSession *session, u16 sequence);
 
-u32 Session_GetBundle16Length(NetSession *session);
+u32 Session_Bundle16Length(NetSession *session);
 void Session_SetBundle16Length(NetSession *session, int length);
 void Session_ClearBundle16Length(NetSession *session);
 void Session_SetBundle16Buffer(NetSession *session, u8 *buffer);
-u8 *Session_GetBundle16Buffer(NetSession *session);
+u8 *Session_Bundle16Buffer(NetSession *session);
 void Session_AppendBundle15(NetSession *session, const void *data, u32 size);
-u32 Session_GetBundle15Length(NetSession *session);
+u32 Session_Bundle15Length(NetSession *session);
 void Session_SetBundle15Length(NetSession *session, int length);
 void Session_ClearBundle15Length(NetSession *session);
 void Session_SetBundle15Buffer(NetSession *session, u8 *buffer);
-u8 *Session_GetBundle15Buffer(NetSession *session);
+u8 *Session_Bundle15Buffer(NetSession *session);
 
 void Session_DeliverLocalQueue(NetSession *session);
-u32 Session_GetLocalQueueLength(NetSession *session);
+u32 Session_LocalQueueLength(NetSession *session);
 void Session_SetLocalQueueLength(NetSession *session, u32 length);
 void Session_ClearLocalQueue(NetSession *session);
 void Session_SetLocalQueueBuffer(NetSession *session, u8 *buffer);
-u8 *Session_GetLocalQueue(NetSession *session);
+u8 *Session_LocalQueue(NetSession *session);
 
 void Session_DeliverSceneQueue(NetSession *session);
-u32 Session_GetSceneQueueLength(NetSession *session);
+u32 Session_SceneQueueLength(NetSession *session);
 void Session_SetSceneQueueLength(NetSession *session, u32 length);
 void Session_ClearSceneQueue(NetSession *session);
 void Session_SetSceneQueueBuffer(NetSession *session, u8 *buffer);
-u8 *Session_GetSceneQueue(NetSession *session);
+u8 *Session_SceneQueue(NetSession *session);
 
 void Session_RouteHeldMessages(NetSession *session);
-u32 Session_GetHeldQueueLength(NetSession *session);
+u32 Session_HeldQueueLength(NetSession *session);
 void Session_SetHeldQueueLength(NetSession *session, u32 length);
 void Session_ClearHeldQueue(NetSession *session);
 void Session_SetHeldQueueBuffer(NetSession *session, u8 *buffer);
-u8 *Session_GetHeldQueue(NetSession *session);
+u8 *Session_HeldQueue(NetSession *session);
 
 void Session_ReadMessage(NetSession *session, void *dst, int size);
-const u8 *Session_GetReadCursor(NetSession *session);
+const u8 *Session_ReadCursor(NetSession *session);
 void Session_SetReadCursor(NetSession *session, const u8 *cursor);
 
 int Session_QueueOutgoing(NetSession *ignored, const u8 *data, int size);
-u32 Session_GetOutboxLength(NetSession *session);
+u32 Session_OutboxLength(NetSession *session);
 void Session_SetOutboxLength(NetSession *session, u32 length);
 void Session_ClearOutbox(NetSession *session);
 void Session_SetOutbox(NetSession *session, u8 *buffer);
-u8 *Session_GetOutbox(NetSession *session);
+u8 *Session_Outbox(NetSession *session);
 
 void Session_EndMessage(NetSession *session, u32 handler, u32 kind);
 void Session_AppendMessage(NetSession *session, const void *data, int size);
 void Session_BeginMessage(NetSession *session);
-u32 Session_GetSendLength(NetSession *session);
+u32 Session_SendLength(NetSession *session);
 void Session_SetSendLength(NetSession *session, u32 length);
 void Session_ClearSendBuffer(NetSession *session);
 void Session_SetSendBuffer(NetSession *session, u8 *buffer);
-u8 *Session_GetSendBuffer(NetSession *session);
+u8 *Session_SendBuffer(NetSession *session);
 
 void Session_ClearRecordFlags(NetSession *session);
 void Session_SetRecordFlag(NetSession *session, int id, int value);
-int Session_GetRecordFlag(NetSession *session, int id);
-u8 *Session_GetRecord(NetSession *session, int id);
+int Session_RecordFlag(NetSession *session, int id);
+u8 *Session_Record(NetSession *session, int id);
 void Session_SetRecordTable(NetSession *session, u8 *table);
-u8 *Session_GetRecordTable(NetSession *session);
+u8 *Session_RecordTable(NetSession *session);
 
 void Session_ClearPlayerCount(NetSession *session);
 void Session_SetPlayerCount(NetSession *session, u32 count);
 int Session_IsLocalPlayer(NetSession *session, int player);
 int Session_IsLocalSlot(NetSession *session, int slot);
 
-int Session_GetRecvWriteEntry(NetSession *session, int slot);
-int Session_GetRecvReadEntry(NetSession *session, int slot);
+int Session_RecvWriteEntry(NetSession *session, int slot);
+int Session_RecvReadEntry(NetSession *session, int slot);
 void Session_PopRecvEntry(NetSession *session, int slot);
 void Session_PushRecvEntry(NetSession *session, int slot);
 void Session_ClearRecvQueues(NetSession *session);
@@ -217,29 +217,29 @@ void Session_ProcessReceived(NetSession *session);
 void Session_ClearRecv(NetSession *session);
 void Session_ClearRecvLength(NetSession *session, int slot, int entry);
 void Session_SetRecvLength(NetSession *session, int slot, int entry, int length);
-u32 Session_GetRecvLength(NetSession *session, int slot, int entry);
+u32 Session_RecvLength(NetSession *session, int slot, int entry);
 void Session_SetRecvBlocks(NetSession *session, u8 *blocks);
-u8 *Session_GetPeerRecvBlock(NetSession *session, int peer, int entry);
-u8 *Session_GetRecvBlock(NetSession *session, int slot, int entry);
+u8 *Session_PeerRecvBlock(NetSession *session, int peer, int entry);
+u8 *Session_RecvBlock(NetSession *session, int slot, int entry);
 
 void Session_ClearOwedCredits(NetSession *session);
 void Session_OweCredit(NetSession *session, int slot);
 void Session_SetOwedCredits(NetSession *session, int slot, int count);
-int Session_GetOwedCredits(NetSession *session, int slot);
+int Session_OwedCredits(NetSession *session, int slot);
 void Session_ResetCredits(NetSession *session);
 void Session_ResetCredit(NetSession *session, int slot);
 void Session_SpendCredits(NetSession *session, int slot, int count);
 void Session_AddCredits(NetSession *session, int slot, int count);
-int Session_GetCredits(NetSession *session, int slot);
+int Session_Credits(NetSession *session, int slot);
 
-u8 *Session_GetSendBlock(NetSession *session, int slot);
+u8 *Session_SendBlock(NetSession *session, int slot);
 void Session_SetSendBlocks(NetSession *session, u8 *blocks);
-int Session_GetModeRequest(NetSession *session);
+int Session_ModeRequest(NetSession *session);
 void Session_SetModeRequest(NetSession *session, int request);
-int Session_GetMode(NetSession *session);
+int Session_Mode(NetSession *session);
 void Session_SetMode(NetSession *session, int mode);
 void Session_CountFrame(NetSession *session);
-s16 Session_GetFrameSequence(NetSession *session);
+s16 Session_FrameSequence(NetSession *session);
 int Session_IsLinked(NetSession *session);
 void Session_ClearSlots(NetSession *session);
 u8 Session_IsSlotTaken(const NetSession *session, int slot);
