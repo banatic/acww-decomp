@@ -93,11 +93,20 @@ def tree_free(text: str) -> str:
 def cache_get(kind: str, key: str, dest: pathlib.Path) -> bool:
     """Copy the shared cache's `kind` object for `key` to `dest`; False when it has none."""
     entry = CACHE_DIR / kind / key[:2] / key
+    # Written whole, then renamed: `dest` may be a file other runs look for while this one copies
+    # (tools/native.py, tool_output: the scenes of a gate build side by side), and a file found
+    # half copied reads as a shorter one without an error.
+    tmp = dest.with_name(f"{dest.name}.{os.getpid()}-{threading.get_ident()}.part")
     try:
-        shutil.copyfile(entry, dest)
+        shutil.copyfile(entry, tmp)
+        os.replace(tmp, dest)
         os.utime(entry)  # used: prune_cache keeps what was used last
         return True
     except OSError:
+        try:
+            tmp.unlink(missing_ok=True)
+        except OSError:
+            pass
         return False
 
 

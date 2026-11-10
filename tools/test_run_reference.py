@@ -334,8 +334,46 @@ def check_names() -> list[str]:
     return bad
 
 
+def check_copy() -> list[str]:
+    """The shared cache's copies (tools/common.py, cache_get) appear whole: a file other runs look
+    for (a tool's output, tools/native.py) is never seen half copied. The copy is made beside
+    the file and renamed: here a reader holding the file's place sees it missing or whole."""
+    bad = []
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp = pathlib.Path(tmp)
+        saved = C.CACHE_DIR
+        C.CACHE_DIR = tmp / "cache"
+        try:
+            src, dest = tmp / "src.txt", tmp / "out" / "dest.txt"
+            dest.parent.mkdir()
+            src.write_bytes(b"U _data_1\n" * 5000)
+            C.cache_put("tool-output", "ab" * 20, src)
+            seen = []
+            copy = shutil.copyfile
+
+            def watched(a, b):  # what a reader finds at `dest` while the copy is being made
+                seen.append(dest.exists())
+                return copy(a, b)
+            shutil.copyfile = watched
+            try:
+                got = C.cache_get("tool-output", "ab" * 20, dest)
+            finally:
+                shutil.copyfile = copy
+            if not got or dest.read_bytes() != src.read_bytes():
+                bad.append("the cache's copy did not arrive")
+            if seen != [False]:
+                bad.append("the cache's copy was made in place")
+            if len(list(dest.parent.iterdir())) != 1:
+                bad.append(f"the cache's copy left {sorted(p.name for p in dest.parent.iterdir())}")
+            if C.cache_get("tool-output", "cd" * 20, dest) or dest.read_bytes() != src.read_bytes():
+                bad.append("a key the cache has not: something was copied")
+        finally:
+            C.CACHE_DIR = saved
+    return bad
+
+
 def main() -> int:
-    bad = check_entries() + check_scope() + check_entry() + check_facts() + check_names()
+    bad = check_entries() + check_scope() + check_entry() + check_facts() + check_names() + check_copy()
     for line in bad:
         print(f"FAIL: {line}")
     print("the Reference cache's key and entries: " + ("FAIL" if bad else "ok"))
