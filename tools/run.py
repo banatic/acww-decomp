@@ -894,10 +894,20 @@ def summary(text: str) -> dict:
 # checkout shares (tools/common.py). ACWW_NO_REFERENCE_CACHE=1 always runs it;
 # ACWW_REFERENCE_VERIFY=1 runs it even when the cache has it, and fails when the two differ
 # (tools/scenes.py --verify-cache does so for a few scenes of each pass).
+#
+# Nor does it follow from what anything is called: the runtime finds functions by address and
+# module, and uses a name only to print it (runtime/run.c, symbolize; runtime/native_run.c,
+# Fn.name) and, for the compiler's floating-point helpers (status H), to tell how a Native
+# caller takes the result (native_run.c, helper_floating). So the key holds the tables the
+# runtime reads without their names (the *_facts functions below; a helper's name stays), and
+# renaming functions, in clean/ or in the symbol table, leaves the key as it was. The two
+# files of an entry that print names (the log, and the list of the functions the game ran) are
+# put back with the names of the run that asks for them: an entry keeps the names it was made
+# with (names.xz, the policy's), and reference_cached replaces each that has changed.
 REFERENCE_PATHS = ("RUN_HASH", "RUN_RAM_DUMP", "RUN_NATIVE_RECORD", "RUN_FUNCTIONS_SEEN")
 # What a cache entry holds and how: changed whenever an entry's contents, their encoding, or
 # the way this file runs the Reference pass changes (the rest of this file is not in the key)
-REFERENCE_FORMAT = "2"
+REFERENCE_FORMAT = "3"
 REFERENCE_KIND = "reference2"  # the cache's directory for them (tools/common.py, prune_cache)
 # Runtime sources the program enters only when a variable is set (runtime/arm7.c, env_on, and
 # run.c through arm7_wifi): without it a Reference run does not depend on them, and the key
@@ -954,6 +964,126 @@ def reference_sources(inputs: dict, env: dict) -> list[pathlib.Path]:
     return sorted(set(sources) | set(runtime_includes(sources)))
 
 
+# A string or character constant (to its end, or the line's), or a comment; a `//` comment goes
+# on over a line that ends in a backslash.
+C_TOKEN = re.compile(r""""(?:\\.|[^"\\\n])*"?|'(?:\\.|[^'\\\n])*'?|//(?:\\\r?\n|[^\n])*|/\*.*?(?:\*/|\Z)""", re.S)
+LINE_MATTERS = re.compile(r"\b(?:__LINE__|__COUNTER__|assert)\b")
+
+
+def strip_comments(text: str) -> str:
+    """A C source or header as the compiler takes it, for the Reference cache's key: each comment
+    as one space, trailing blanks off, and the lines left empty taken out (so a change to a
+    comment alone gives the same text). Lines are only taken out of a file that never asks for
+    its line number (__LINE__, assert), and never right after a line a backslash continues;
+    a file with a trigraph (`??/` is a backslash) is left as it is."""
+    if "??" in text:
+        return text
+    numbered = LINE_MATTERS.search(text) is not None
+
+    def comment(m: re.Match) -> str:
+        if m[0][0] != "/":
+            return m[0]
+        return " " + "\n" * m[0].count("\n")  # (its lines stay, for the pass below)
+    lines = [line.rstrip() for line in C_TOKEN.sub(comment, text).split("\n")]
+    if numbered:
+        return "\n".join(lines)
+    kept: list[str] = []
+    for i, line in enumerate(lines):
+        if line or (i and lines[i - 1].endswith("\\")):
+            kept.append(line)
+    return "\n".join(kept)
+
+
+NATIVE_ROW = re.compile(r"^\t\.long 0x([0-9a-f]{8}), 0x([0-9a-f]+), \S+, 0x([0-9a-f]{8})$", re.M)
+PRIVATE_ROW = re.compile(r"^\t\.long (0x[0-9a-f]{8}), (0x[0-9a-f]{8}), (0x[0-9a-f]{8})$", re.M)
+CLEAN_ROW = re.compile(r"^    \{0x([0-9a-f]{8})u, 0x([0-9a-f]+)u, \(const void \*\) \w+, ([^{}]*)\},$", re.M)
+
+
+def natives_facts(text: str) -> bytes:
+    """What a Reference run reads of natives.s (tools/native.py), without a name: the modules in
+    order, each function's row (address, size, info), each function's own data, and the counts.
+    The rows are put in address order (rows of one address and module keep theirs: the runtime
+    gives a function the last row that names it), so sources renamed and listed in another
+    order give the same. The thunks, wrappers and stubs are PC code, which the pass does not
+    run. A file not written as tools/native.py writes it is taken whole."""
+    modules = re.findall(r'^native_module_name_\d+:\n\t\.asciz "(\w+)"$', text, re.M)
+    rows = [(int(a, 16), int(size, 16), int(info, 16)) for a, size, info in NATIVE_ROW.findall(text)]
+    private = sorted(PRIVATE_ROW.findall(text))
+    counts = [re.search(rf"native_{what}_count:\n\t\.long (\d+)$", text, re.M) for what in ("function", "private", "body")]
+    if not modules or None in counts or int(counts[0][1]) != len(rows) or int(counts[1][1]) != len(private):
+        return text.encode()
+    rows.sort(key=lambda r: (r[0] & ~1, r[2] >> 16))
+    return json.dumps([modules, rows, private, int(counts[2][1])]).encode()
+
+
+def absolute_facts(text: str) -> bytes:
+    """absolute.s (tools/native.py) without the names: the addresses it places names at. It
+    places the names Native code uses, none of which the runtime's own code uses."""
+    rows = re.findall(r"^\t\.globl (\S+)\n\t\.set (\S+), (0x[0-9a-f]{8})$", text, re.M)
+    if len(rows) * 2 != len(text.splitlines()) or any(a != b for a, b, _ in rows):
+        return text.encode()
+    return "\n".join(sorted(address for _, _, address in rows)).encode()
+
+
+def clean_table_facts(text: str) -> bytes:
+    """What a Reference run reads of clean_table.c (write_clean_table), without a name: each
+    row's address, size and info, in address order (rows of one address and module keep
+    theirs), and the count. The functions it defines are PC code. A file not written as write_clean_table
+    writes it is taken whole."""
+    rows = []
+    for a, size, info in CLEAN_ROW.findall(text):
+        # the module's index: the info's high half, as a number or as `(uint32_t) <index> << 16`
+        module = re.fullmatch(r"0x([0-9a-f]{4})[0-9a-f]{4}u|.*\(uint32_t\) (\d+) << 16", info)
+        if module is None:
+            return text.encode()
+        rows.append((int(a, 16) & ~1, int(module[1], 16) if module[1] else int(module[2]), a, size, info))
+    count = re.search(r"^const uint32_t clean_function_count = (\d+);$", text, re.M)
+    if count is None or int(count[1]) != len(rows) or text.count("(const void *)") != len(rows):
+        return text.encode()
+    rows.sort(key=lambda r: r[:2])
+    return json.dumps([[r[2:] for r in rows], "clean_bodies[1]" in text]).encode()
+
+
+def policy_facts(text: str) -> bytes:
+    """The Native policy (write_policy) without the functions' names; a compiler helper (status H)
+    keeps its name, which the runtime reads (runtime/native_run.c, helper_floating)."""
+    rows = []
+    for line in text.splitlines():
+        fields = line.split()
+        if len(fields) < 5:
+            return text.encode()
+        if fields[3] != "H":
+            fields[4] = "-"
+        rows.append(" ".join(fields))
+    return "\n".join(rows).encode()
+
+
+def policy_names(text: str) -> bytes:
+    """The names a policy gives: `address module name` for each function."""
+    return "".join(f"{f[0]} {f[1]} {f[4]}\n" for f in map(str.split, text.splitlines()) if len(f) >= 5).encode()
+
+
+def symbols_facts(text: str) -> bytes:
+    """The symbol list of the resident modules (generate) without the names."""
+    return "\n".join(" ".join(line.split()[:2]) for line in text.splitlines()).encode()
+
+
+def driven_facts(text: str) -> bytes:
+    """A driven check's calls as runtime/driven.c reads them: no comments, no blank lines."""
+    rows = (" ".join(line.split("#", 1)[0].split()) for line in text.splitlines())
+    return "\n".join(row for row in rows if row).encode()
+
+
+def source_facts(path: pathlib.Path) -> bytes:
+    """A runtime source for the key: C without its comments, the Clean table by its rows."""
+    if path.suffix not in (".c", ".h"):
+        return path.read_bytes()
+    text = path.read_bytes().decode("utf-8", "surrogateescape")
+    if path.name == "clean_table.c" and not path.is_relative_to(RUNTIME):
+        return clean_table_facts(text)
+    return strip_comments(text).encode("utf-8", "surrogateescape")
+
+
 def reference_key(env: dict, budget: list[str], manifest: pathlib.Path, table: pathlib.Path,
                   exe: pathlib.Path) -> str | None:
     try:
@@ -968,18 +1098,24 @@ def reference_key(env: dict, budget: list[str], manifest: pathlib.Path, table: p
     add("command", "\0".join(inputs["command"]).encode())
     for path in reference_sources(inputs, env):  # the interpreter and the rest of the runtime
         label = path.relative_to(RUNTIME).as_posix() if path.is_relative_to(RUNTIME) else path.name
-        add(label, path.read_bytes())
+        add(label, source_facts(path))
     add("rom", ROM.read_bytes())
     add("modules", C.tree_free(manifest.read_text()).encode())
-    add("symbols", table.read_bytes())
-    for name in ("natives.s", "absolute.s"):  # which functions have a Native, and where
-        add(name, (NATIVE / name).read_bytes())
+    # (RUN_CALLS names the functions whose calls the run prints)
+    add("symbols", table.read_bytes() if "RUN_CALLS" in env else symbols_facts(table.read_text()))
+    # which functions have a Native, and where
+    add("natives.s", natives_facts((NATIVE / "natives.s").read_text()))
+    add("absolute.s", absolute_facts((NATIVE / "absolute.s").read_text()))
     add("budget", " ".join(budget).encode())
+    facts = {"RUN_NATIVE_POLICY": policy_facts, "RUN_DRIVEN": driven_facts}
     for name, value in sorted(env.items()):
         if not name.startswith("RUN_") or name in REFERENCE_PATHS:
             continue
         path = pathlib.Path(value)
-        add(name, path.read_bytes() if path.is_file() else value.encode())  # a file by its content
+        if path.is_file() and name in facts:
+            add(name, facts[name](path.read_text()))
+        else:
+            add(name, path.read_bytes() if path.is_file() else value.encode())  # a file by its content
     add("paths", " ".join(n for n in REFERENCE_PATHS if n in env).encode())
     return h.hexdigest()
 
@@ -1063,11 +1199,74 @@ def reference_entry(key: str) -> pathlib.Path:
     return C.CACHE_DIR / REFERENCE_KIND / key[:2] / key
 
 
-def reference_cached(key: str, out: pathlib.Path, ram_dir: pathlib.Path, trace: pathlib.Path) -> bool:
+NAMED = ("reference.log", "functions-seen.txt")  # an entry's files that print functions' names
+NAME_TOKEN = re.compile(r"[\w$@?]+(?:\.[\w$@?]+)*")
+
+
+def read_names(data: bytes) -> dict[tuple[int, str], str]:
+    """policy_names read back: (address without the Thumb bit, module) -> name."""
+    out = {}
+    for line in data.decode().splitlines():
+        address, module, name = line.split()
+        out[(int(address, 16) & ~1, module)] = name
+    return out
+
+
+def entry_renames(entry: pathlib.Path, names: bytes | None) -> tuple[dict[str, str], dict] | None:
+    """How the names an entry was made with (names.xz) become `names` (policy_names of the run
+    that asks): ({old name: new name} for those that changed, the new names by function), both
+    empty when nothing changed or no names are asked for. None when the entry cannot be put
+    back exactly: it keeps no names, the two list other functions, or an old name stands for
+    functions that now have different names (a word of the log could then be either)."""
+    if names is None:
+        return {}, {}
+    try:
+        with lzma.open(entry / "names.xz", "rb") as f:
+            kept = f.read()
+    except (OSError, lzma.LZMAError):
+        return None
+    if kept == names:
+        return {}, {}
+    try:
+        old, new = read_names(kept), read_names(names)
+    except ValueError:
+        return None
+    if set(old) != set(new):
+        return None
+    renamed: dict[str, str] = {}
+    for function, name in old.items():
+        if renamed.setdefault(name, new[function]) != new[function]:
+            return None
+    return {a: b for a, b in renamed.items() if a != b}, new
+
+
+def renamed_file(name: str, data: bytes, renames: tuple[dict[str, str], dict]) -> bytes:
+    """An entry's log or list of functions with the names of the run that asks for it."""
+    words, functions = renames
+    if not words:
+        return data
+    if name == "functions-seen.txt":  # `module address name` a line
+        rows = []
+        for line in data.decode().splitlines():
+            parts = line.split()
+            if len(parts) == 3:
+                parts[2] = functions.get((int(parts[1], 16) & ~1, parts[0]), parts[2])
+            rows.append(" ".join(parts) + "\n")
+        return "".join(rows).encode()
+    text = data.decode("utf-8", "surrogateescape")
+    return NAME_TOKEN.sub(lambda m: words.get(m[0], m[0]), text).encode("utf-8", "surrogateescape")
+
+
+def reference_cached(key: str, out: pathlib.Path, ram_dir: pathlib.Path, trace: pathlib.Path,
+                     names: bytes | None = None) -> bool:
     """Put a cached Reference run's results in place; False when there is none (or it does not
-    come back exactly as it was kept)."""
+    come back exactly as it was kept). With `names` (policy_names of this run's policy), the log
+    and the list of functions come back with these names (entry_renames)."""
     entry = reference_entry(key)
     if os.environ.get("ACWW_NO_REFERENCE_CACHE") or not (entry / "done").exists():
+        return False
+    renames = entry_renames(entry, names)
+    if renames is None:
         return False
     try:
         index = json.loads((entry / "index.json").read_text())
@@ -1085,15 +1284,17 @@ def reference_cached(key: str, out: pathlib.Path, ram_dir: pathlib.Path, trace: 
                 data = packed.read(size)
                 if len(data) != size or hashlib.sha1(data).hexdigest() != sha1:
                     raise ValueError(name)
-                dest.write_bytes(data)
+                dest.write_bytes(renamed_file(name, data, renames) if name in NAMED else data)
         os.utime(entry)
         return True
     except (OSError, ValueError, lzma.LZMAError):
         return False
 
 
-def keep_reference(key: str, out: pathlib.Path, ram_dir: pathlib.Path, trace: pathlib.Path) -> None:
-    """Keep this Reference run's results in the shared cache (written whole, then renamed)."""
+def keep_reference(key: str, out: pathlib.Path, ram_dir: pathlib.Path, trace: pathlib.Path,
+                   names: bytes | None = None) -> None:
+    """Keep this Reference run's results in the shared cache (written whole, then renamed), with
+    the names its policy gave the functions (`names`, policy_names)."""
     if os.environ.get("ACWW_NO_REFERENCE_CACHE"):
         return
     entry = reference_entry(key)
@@ -1114,6 +1315,9 @@ def keep_reference(key: str, out: pathlib.Path, ram_dir: pathlib.Path, trace: pa
                 packed.write(data)
                 index.append([name, len(data), hashlib.sha1(data).hexdigest()])
         (tmp / "index.json").write_text(json.dumps(index), newline="\n")
+        if names is not None:
+            with lzma.open(tmp / "names.xz", "wb", preset=1) as f:
+                f.write(names)
         (tmp / "done").touch()
         os.replace(tmp, entry)
     except (OSError, ValueError):
@@ -1126,20 +1330,28 @@ def log_facts(text: str) -> list[str]:
     return [line for line in text.splitlines() if not re.search(r"[A-Za-z]:[\\/]|/|\bms\b", line)]
 
 
-def reference_differs(key: str, out: pathlib.Path, ram_dir: pathlib.Path, trace: pathlib.Path) -> list[str]:
-    """The files of the cache's entry for `key` that this (fresh) run did not give exactly."""
+def reference_differs(key: str, out: pathlib.Path, ram_dir: pathlib.Path, trace: pathlib.Path,
+                      names: bytes | None = None) -> list[str]:
+    """The files of the cache's entry for `key` that this (fresh) run did not give exactly; the
+    entry's log and list of functions are compared as they would come back for `names`."""
     entry = reference_entry(key)
     index = json.loads((entry / "index.json").read_text())
     files = reference_files(out, ram_dir, trace)
     differ = sorted(set(files) ^ {name for name, _, _ in index})
+    renames = entry_renames(entry, names)
     with lzma.open(entry / "files.xz", "rb") as packed:
         for name, size, sha1 in index:
             kept = packed.read(size) if name != CROSSINGS else b""
-            if name not in files:
-                continue
+            if name not in files or (name in NAMED and renames is None):
+                continue  # (an entry whose names cannot be put back is not used: reference_cached)
+            if name in NAMED:
+                kept = renamed_file(name, kept, renames)
             if name == "reference.log":
                 fresh = files[name].read_text(encoding="utf-8", errors="replace")
                 if log_facts(fresh) != log_facts(kept.decode("utf-8", errors="replace")):
+                    differ.append(name)
+            elif name in NAMED:
+                if files[name].read_bytes() != kept:
                     differ.append(name)
             elif file_sha1(files[name]) != sha1:
                 differ.append(name)
@@ -1203,15 +1415,17 @@ def native_main(args, manifest, table, budget, env) -> int:
             ref_env["RUN_FUNCTIONS_SEEN"] = str(out / "functions-seen.txt")
         # (a run that writes pictures, RUN_PNG, keeps nothing: the cache holds no pictures)
         key = None if "RUN_PNG" in ref_env else reference_key(ref_env, budget, manifest, table, exe)
+        # the names this run's policy gives the functions: an entry's log comes back with them
+        names = policy_names(pathlib.Path(ref_env["RUN_NATIVE_POLICY"]).read_text()) if key else None
         verify = (bool(os.environ.get("ACWW_REFERENCE_VERIFY")) and key is not None
                   and not os.environ.get("ACWW_NO_REFERENCE_CACHE") and (reference_entry(key) / "done").exists())
-        if key and not verify and reference_cached(key, out, ram_dir, trace):
+        if key and not verify and reference_cached(key, out, ram_dir, trace, names):
             print(f"reference run: the results of an identical one ({key[:12]})", flush=True)
             return summary((out / "reference.log").read_text(encoding="utf-8", errors="replace"))
         print("reference run" + ("" if args.no_timing else " (recording the crossings)") + "...", flush=True)
         status, text = run_once(exe, manifest, table, budget, ref_env, out / "reference.log")
         if verify:
-            differ = reference_differs(key, out, ram_dir, trace)
+            differ = reference_differs(key, out, ram_dir, trace, names)
             print(f"reference cache: entry {key[:12]} " + (f"DIFFERS from a fresh run in {', '.join(differ)}"
                                                          if differ else "is what a fresh run gives"), flush=True)
             if differ:
@@ -1221,7 +1435,7 @@ def native_main(args, manifest, table, budget, env) -> int:
         # only a run that ended as it should is kept: one cut short (a full disk, a crash)
         # would otherwise be reused as if it were the Reference
         elif key and status == 0 and summary(text)["sequence"] is not None:
-            keeping.append(keeper.submit(keep_reference, key, out, ram_dir, trace))
+            keeping.append(keeper.submit(keep_reference, key, out, ram_dir, trace, names))
         return summary(text)
 
     ref = reference()
