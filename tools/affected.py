@@ -76,12 +76,14 @@ def quiet(rel: str) -> bool:
     return rel.startswith(QUIET) or rel.endswith(".md")
 
 
-RENAMED = re.compile(r"(?:src|include|clean|tests/clean)/.+|config/[^/]+/arm9/(?:.+/)?symbols\.txt")
+RENAMED = re.compile(r"(?:src|include|clean|tests/clean)/.+|config/[^/]+/arm9/(?:.+/)?symbols\.txt"
+                     r"|runtime/native-reference\.txt")
 
 
 def renames_only(paths: list[str]) -> bool:
     """Whether a change to `paths` can be one that only renames, as far as its paths say: sources,
-    headers, Clean code and its checks, and the symbol tables, whose whole effect on a run is in
+    headers, Clean code and its checks, the symbol tables, and the list of functions kept
+    Reference (by name: tools/run.py reads it into the policy), whose whole effect on a run is in
     the PC objects and tables tools/fingerprint.py compares (and text that does not run). The
     gate then compares those with the base's; anything else changed (the runtime, a tool, a
     recording, another file of config/) runs the checks its kind needs."""

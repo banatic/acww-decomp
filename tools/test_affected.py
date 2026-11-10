@@ -64,7 +64,8 @@ RENAMES = [
     (["clean/main/calendar.c", "runtime/run.c"], False),
     (["clean/main/calendar.c", "tools/run.py"], False),
     (["config/adm-kr/arm9/relocs.txt"], False),
-    (["config/adm-kr/arm9/symbols.txt", "runtime/native-reference.txt"], False),
+    (["config/adm-kr/arm9/symbols.txt", "runtime/native-reference.txt"], True),  # (its names follow the table's)
+    (["config/adm-kr/arm9/symbols.txt", "runtime/library-arguments.txt"], False),
     (["clean/main/calendar.c", "runtime/recordings/scenes/fish-cast.txt"], False),
     (["sources/clean/main/calendar.c"], False),
 ]

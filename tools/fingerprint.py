@@ -25,8 +25,15 @@ same: where two would (two symbols at one address, two Clean functions registere
 function), both are compared as they are spelled. Whatever a name is part of beyond a symbol
 (a string that holds it, an assert's text and line) is in the bytes, and makes the parts
 differ. The comparison is one way only: equal parts mean the same code; code that is the same
-may still give different parts (sources listed in another order after a file is renamed, a
-symbol table sorted by name), and then the gate runs as for any change.
+may still give different parts (a Clean file renamed, so that its functions come elsewhere in
+clean_table.c), and then the gate runs as for any change.
+
+What the build lists in the order of names or of file names is compared in no order, where the
+order means nothing: the objects; the symbols absolute.s and its like place; and in natives.s
+and clean-calls.s the rows of the function table (each wrapper passes the runtime its own
+row's number: the two are compared as one), the rows of the two tables after it, and the
+pieces of code, each of which ends in a jump or a return (asm_blocks). A file that is not
+written so is compared line by line.
 
 The parts:
 
@@ -54,15 +61,20 @@ import sys
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import common as C  # noqa: E402
 
-FORMAT = 1
+FORMAT = 2
 # the sections a compiler names `<kind>$<name>` for one function or variable: the part after
 # the `$` only orders them inside the linked section
 STANDARD_SECTIONS = (".text", ".data", ".rdata", ".bss", ".xdata", ".pdata")
 # what tools/objrewrite.py, tools/native_clean_profile.py and runtime/diffcheck.h put before a
 # name, the longest first
 PREFIXES = ("native_body_", "native_call_", "native_pmf_", "native_", "diff_test_", "")
+# the labels inside a function's wrapper (tools/native_profile.py): its name, then one of these
+SUFFIXES = ("_guest_return", "_untracked")
 EXTERNAL, WEAK, FILE = 2, 105, 103  # COFF storage classes
-TOKEN = re.compile(r"[A-Za-z_$?@.][\w$?@.]*")
+TOKEN = re.compile(r"[A-Za-z_?@.][\w$?@.]*")  # (a `$` before a name marks a constant in assembly)
+# a piece of an assembly file's code: from a .globl (with the alignment before it) to the next
+BLOCK = re.compile(r"(?m)^(?=\t\.p2align \d\n\t\.globl )|(?<!\t\.p2align \d\n)^(?=\t\.globl )")
+TABLE_ROW = re.compile(r"(?m)^\t\.long 0x([0-9a-f]{8}), 0x([0-9a-f]+), (\S+), 0x([0-9a-f]{8})\n")
 
 
 def coff_shape(data: bytes) -> dict | None:
@@ -215,6 +227,9 @@ class Labels:
             out = self.defined.get(name)
             if out is None and name.startswith(self.prefix):
                 out = self.of_plain(name[len(self.prefix):])
+            for suffix in SUFFIXES if out is None else ():
+                if name.endswith(suffix) and not self.canon(name[:-len(suffix)]).startswith("="):
+                    out = self.canon(name[:-len(suffix)]) + suffix
             if out is None:
                 out = "=" + name
             self.memo[name] = out
@@ -227,6 +242,78 @@ class Labels:
             out = self.canon(self.prefix + m[0] if c else m[0])
             return m[0] if out.startswith("=") else out
         return TOKEN.sub(one, text)
+
+
+def asm_blocks(code: str, labels: Labels, rows: dict[str, int] | None = None) -> list[str] | None:
+    """The pieces of an assembly file's code (BLOCK), each with its names as what they stand for,
+    in no order: tools/native.py writes them in the order of their names, and where a piece
+    lands means nothing as long as none runs on into the next. With `rows` (a wrapper's name ->
+    its row in the function table), a `pushl $<number>` must be the piece's own row, and is
+    compared as that. None when the code is not made so: something before the first piece, a
+    piece that does not end in a jump or a return, a number that is not the piece's own row."""
+    pieces = BLOCK.split(code)
+    if pieces[0].strip():
+        return None
+    out = []
+    for piece in pieces[1:]:
+        head = re.match(r"(?:\t\.p2align \d\n)?\t\.globl (\S+)\n(\S+):\n", piece)
+        lines = piece.rstrip("\n").split("\n")
+        if head is None or head[1] != head[2] or lines[-1].split()[:1] not in (["jmp"], ["ret"]):
+            return None
+        own = rows.get(head[1]) if rows else None
+        for i, line in enumerate(lines):
+            number = re.fullmatch(r"\tpushl \$(\d+)", line)
+            if number is not None:
+                if own is None or int(number[1]) != own:
+                    return None
+                lines[i] = "\tpushl $<row>"
+        out.append(labels.text("\n".join(lines)))
+    return sorted(out)
+
+
+def sorted_tables(text: str) -> str:
+    """Assembly data with each run of `.long` rows in no order (tables the runtime searches)."""
+    out: list[str] = []
+    run: list[str] = []
+    for line in [*text.split("\n"), ""]:
+        if line.startswith("\t.long "):
+            run.append(line)
+        else:
+            out += [*sorted(run), line]
+            run = []
+    return "\n".join(out[:-1])
+
+
+def natives_text(text: str, labels: Labels) -> str:
+    """natives.s (tools/native.py) for comparing: names as what they stand for; the function
+    table's rows in no order, each with its place among the rows of the same function (the
+    runtime gives a function the last); the code as asm_blocks; the tables after the code
+    (each body with its wrapper, each function's own data) in no order. The runtime finds a
+    row by its address and module or by its PC address, and a wrapper names its own row, so
+    the rows' order means nothing. A file not written as tools/native.py writes it is taken
+    line by line."""
+    parts = re.split(r"(?m)^\t\.(?:text|data)\n", text)
+    rows = TABLE_ROW.findall(parts[1]) if len(parts) == 4 else []
+    index = {host: i for i, (_, _, host, _) in enumerate(rows)}
+    code = asm_blocks(parts[2], labels, index) if rows and len(index) == len(rows) and not parts[0] else None
+    if code is None:
+        return labels.text(text)
+    seen: dict[tuple[int, int], int] = {}
+    table = []
+    for address, size, host, info in rows:
+        key = (int(address, 16) & ~1, int(info, 16) >> 16)
+        seen[key] = seen.get(key, 0) + 1
+        table.append(f"{address} {size} {labels.canon(host)} {info} {seen[key]}")
+    return "\n".join([labels.text(TABLE_ROW.sub("", parts[1])), *sorted(table), "\t.text", *code, "\t.data",
+                      sorted_tables(labels.text(parts[3]))])
+
+
+def stubs_text(text: str, labels: Labels) -> str:
+    """clean-calls.s (tools/run.py, build_clean: the call stubs natives.s does not have) for
+    comparing: as asm_blocks, or line by line when it is not written so."""
+    head, found, code = text.partition("\t.text\n")
+    blocks = asm_blocks(code, labels) if found and not head else None
+    return labels.text(text) if blocks is None else "\n".join(blocks)
 
 
 def object_hash(shape: dict, labels: Labels) -> str:
@@ -309,8 +396,10 @@ def compute() -> dict:
         raise SystemExit("run `python tools/native.py` first")
     table = run.write_clean_table("all")  # (and clean-profile.s, which build_clean assembles)
     listed = pathlib.Path(run.build_clean(run.runtime_flags())[0][1:])
+    # (the call stubs' object is compared by its source, stubs_text: its order is the names')
+    stubs = run.OUT / "clean-calls.o"
     groups = {"native_objects": [pathlib.Path(p) for p in (run.NATIVE / "objects.txt").read_text().split()],
-              "clean_objects": [pathlib.Path(p) for p in listed.read_text().split()]}
+              "clean_objects": [p for p in map(pathlib.Path, listed.read_text().split()) if p != stubs]}
     shapes = {group: shapes_of(paths) for group, paths in groups.items()}
     syms = C.symbol_table(C.modules())
     table_names = {name: [(s.module, f"{s.address:08x}", s.kind, f"{s.size:x}", int(s.thumb)) for s in entries]
@@ -336,11 +425,12 @@ def compute() -> dict:
             h.update(f"{len(piece)}\0".encode() + piece)
         return h.hexdigest()
     out["native_tables"] = digest(
-        labels.text((run.NATIVE / "natives.s").read_text()).encode(),
+        natives_text((run.NATIVE / "natives.s").read_text(), labels).encode(),
         "\n".join(sorted(f"{labels.canon(name)} {address}" for name, address in absolute)).encode(),
         policy_none, run.symbols_facts(symbols.read_text()), C.tree_free(manifest.read_text()).encode(),
         run.file_sha1(run.ROM).encode())
-    out["clean_tables"] = digest(labels.text(table.read_text(), c=True).encode(), policy_clean)
+    out["clean_tables"] = digest(labels.text(table.read_text(), c=True).encode(), policy_clean,
+                                 stubs_text(stubs.with_suffix(".s").read_text(), labels).encode())
     return {"parts": out, **extra}
 
 
