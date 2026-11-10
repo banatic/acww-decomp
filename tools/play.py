@@ -12,7 +12,7 @@ written to the runtime's build directory (ACWW_RUNTIME_OUT, else build/runtime) 
 acww-play.exe (Clean), acww-play-native.exe or acww-play-reference.exe, with a .cfg beside it
 naming the ROM, the module list, the symbols and the Native policy it runs with; started without
 this script it reads that file. Every other option is the program's own (`--help` lists them):
---read-only, --reference, --rtc, --input, --scale, --frames.
+--read-only, --reference, --rtc, --input, --scale, --frames, --sound, --audio-wav.
 
 Windows only for now.
 """

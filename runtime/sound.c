@@ -158,8 +158,17 @@ void sound_init(DsAudioRead read, DsAudioWrite write, void *user)
     const char *enabled = getenv("RUN_AUDIO"), *path = getenv("RUN_AUDIO_WAV");
     /* Runtime initialization can occur again during replay; keep the atexit registration unique. */
     static int registered;
+    /* A WAV created by an earlier start keeps recording: it cannot be created again. */
+    flush_block();
+    FILE *wav = sound.wav;
+    uint64_t bytes = sound.bytes;
+    int error = sound.error;
+    sound.wav = NULL;
     finish();
     memset(&sound, 0, sizeof(sound));
+    sound.wav = wav;
+    sound.bytes = bytes;
+    sound.error = error;
     sound.on = (enabled != NULL && atoi(enabled) != 0) || (path != NULL && path[0] != 0);
     if (!sound.on) {
         return;
@@ -173,7 +182,7 @@ void sound_init(DsAudioRead read, DsAudioWrite write, void *user)
         atexit(finish);
         registered = 1;
     }
-    if (path != NULL && path[0] != 0) {
+    if (path != NULL && path[0] != 0 && sound.wav == NULL) {
         sound.wav = fopen(path, "wbx");
         if (sound.wav == NULL) {
             fprintf(stderr, "sound: cannot create new WAV %s\n", path);

@@ -14,7 +14,10 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class Audio(unittest.TestCase):
     def test_channels_and_wav(self):
-        compiler = shutil.which("clang") or shutil.which("cc")
+        # the PATH, then the LLVM the rest of the tools use on Windows (tools/diffcheck.py)
+        llvm = Path("C:/Program Files/LLVM/bin/clang.exe")
+        compiler = (shutil.which("clang") or shutil.which("cc")
+                    or (str(llvm) if os.name == "nt" and llvm.is_file() else None))
         self.assertIsNotNone(compiler, "a host C compiler is required")
         source = r'''
 #include "ds_audio.h"

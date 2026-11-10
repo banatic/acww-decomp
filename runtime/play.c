@@ -704,7 +704,9 @@ int main(int argc, char **argv)
     _putenv_s("RUN_INPUT", opt.input ? opt.input : "");
     _putenv_s("RUN_AUDIO", opt.audio ? "1" : "");
     _putenv_s("RUN_AUDIO_WAV", opt.audio_wav ? opt.audio_wav : "");
-    _putenv_s("RUN_SEQUENCER", opt.audio || opt.audio_wav ? "1" : "");
+    if (opt.audio || opt.audio_wav) {
+        _putenv_s("RUN_SEQUENCER", "1"); /* without sound, RUN_SEQUENCER is left as it was set */
+    }
     const char *cleared[] = {"RUN_HASH",          "RUN_PNG",      "RUN_DUMP3D",   "RUN_NATIVE_RECORD",
                              "RUN_NATIVE_REPLAY", "RUN_RAM_HASH", "RUN_RAM_DUMP", "RUN_NATIVE_LEARN",
                              "RUN_CLEAN_RAN",     "RUN_TRACE",    "RUN_CALLS",    "RUN_DRIVE"};
