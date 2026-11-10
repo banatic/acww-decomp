@@ -534,6 +534,18 @@ def build_clean(flags: list[str]) -> list[str]:
     return [f"@{listed}"]
 
 
+def runtime_flags() -> list[str]:
+    """What the runtime's sources are compiled with (and, with clean_flags, the Clean code)."""
+    flags = ["-std=c11", "-O2", "-Wall", "-Wextra", "-fwrapv", "-fno-strict-aliasing", "-D_CRT_SECURE_NO_WARNINGS",
+             "-D_CRT_NONSTDC_NO_WARNINGS", f"-I{RUNTIME}"]
+    if not WINDOWS:
+        flags.append("-D_DEFAULT_SOURCE")  # strdup and the POSIX calls, which -std=c11 leaves out
+        # The program is linked at a fixed address (-no-pie in build): position-independent code
+        # would only cost a register and a call per function (the interpreter's among them).
+        flags.append("-fno-pie")
+    return flags
+
+
 def build(native: bool, clean: str | None = None, ran: bool = False, play: str | None = None) -> pathlib.Path:
     """The runtime; with `native`, linked with every Native object as tools/diffcheck.py
     --native links them (runtime/native_table.h), else with an empty table; with `clean`, also
@@ -543,13 +555,7 @@ def build(native: bool, clean: str | None = None, ran: bool = False, play: str |
     (a program name), the same run with runtime/play.c's window in front (tools/play.py)."""
     name = play or (("run-native" if native else "run") + ("-ran" if ran else ""))
     exe = OUT / (name + (".exe" if WINDOWS else ""))
-    flags = ["-std=c11", "-O2", "-Wall", "-Wextra", "-fwrapv", "-fno-strict-aliasing", "-D_CRT_SECURE_NO_WARNINGS",
-             "-D_CRT_NONSTDC_NO_WARNINGS", f"-I{RUNTIME}"]
-    if not WINDOWS:
-        flags.append("-D_DEFAULT_SOURCE")  # strdup and the POSIX calls, which -std=c11 leaves out
-        # The program is linked at a fixed address (-no-pie below): position-independent code
-        # would only cost a register and a call per function (the interpreter's among them).
-        flags.append("-fno-pie")
+    flags = runtime_flags()
     srcs = [str(RUNTIME / n) for n in SOURCES]
     extra: list[str] = []
     link: list[str] = []

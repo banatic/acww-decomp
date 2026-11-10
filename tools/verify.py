@@ -2,6 +2,7 @@
 
     python tools/verify.py                 # everything; writes build/adm-kr/verify.json
     python tools/verify.py libs/NitroDWC   # a directory or individual files
+    python tools/verify.py --strict src    # exit status 1 unless every function is ok
 
 BYTES  the function's code equals the ROM's, with linker-filled fields masked.
 LINK   every relocation, resolved through config/, gives the ROM's call target or pointer,
@@ -421,6 +422,7 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("paths", nargs="*", type=pathlib.Path)
     ap.add_argument("--workers", type=int, default=max(1, (os.cpu_count() or 4) - 2))
+    ap.add_argument("--strict", action="store_true", help="fail unless every function is ok (LINK too)")
     args = ap.parse_args()
 
     files: list[pathlib.Path] = []
@@ -443,13 +445,13 @@ def main() -> None:
     if not args.paths:
         out.write_text(json.dumps(results, indent=1) + "\n")
     for r in results:
-        if r["status"] in ("bytes", "error"):
+        if r["status"] in ("bytes", "error") or (args.strict and r["status"] != "ok"):
             print(f"  {r['status'].upper():<6} {r['file']}  {r.get('why', '')}")
     print(f"\n{len(files)} sources, {len(results)} functions: " + ", ".join(f"{k} {v}" for k, v in counts.most_common()))
     print(f"  with hardcoded addresses: {hard}   header name differs from symbol table: {renamed}")
     if not args.paths:
         print(f"  details: {out.relative_to(C.ROOT)}")
-    sys.exit(1 if counts["bytes"] or counts["error"] else 0)
+    sys.exit(1 if counts["bytes"] or counts["error"] or (args.strict and len(results) != counts["ok"]) else 0)
 
 
 if __name__ == "__main__":

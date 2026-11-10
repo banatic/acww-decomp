@@ -35,6 +35,35 @@ QUIET = ("docs/", ".github/", "README", "INSTALL", "CONTRIBUTING", "LICENSE", "A
          "tests/clean/", "tests/native/known.txt", ".recomp.json", ".gitignore", ".clang-format")
 
 
+def merge_base(base: str) -> str:
+    """The commit a change since `base` started from: where this tree's history left `base`'s.
+    `base` may have moved on since (main, with other branches merged): what it gained is not this
+    tree's change, and comparing with its tip would count it as one."""
+    for args in (["merge-base", base, "HEAD"], ["rev-parse", "--verify", f"{base}^{{commit}}"]):
+        out = subprocess.run(["git", *args], cwd=C.ROOT, capture_output=True, text=True)
+        if out.returncode == 0 and out.stdout.strip():
+            return out.stdout.strip()
+    raise SystemExit(f"affected: {base} names no commit")
+
+
+def quiet(rel: str) -> bool:
+    """A path whose change no check can see (text that does not run)."""
+    return rel.startswith(QUIET) or rel.endswith(".md")
+
+
+RENAMED = re.compile(r"(?:src|include|clean|tests/clean)/.+|config/[^/]+/arm9/(?:.+/)?symbols\.txt")
+
+
+def renames_only(paths: list[str]) -> bool:
+    """Whether a change to `paths` can be one that only renames, as far as its paths say: sources,
+    headers, Clean code and its checks, and the symbol tables, whose whole effect on a run is in
+    the PC objects and tables tools/fingerprint.py compares (and text that does not run). The
+    gate then compares those with the base's; anything else changed (the runtime, a tool, a
+    recording, another file of config/) runs the checks its kind needs."""
+    loud = [rel for rel in paths if not quiet(rel)]
+    return bool(loud) and all(RENAMED.fullmatch(rel) for rel in loud)
+
+
 def changed_paths(base: str) -> list[str]:
     """The files that differ from `base`: committed since it, changed in the tree, or new."""
     def git(*args: str) -> list[str]:
