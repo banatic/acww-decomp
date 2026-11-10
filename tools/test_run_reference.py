@@ -216,6 +216,13 @@ def check_facts() -> list[str]:
     same("a line added before __LINE__", strip, numbered, numbered.replace("int c;", "/* new */\n\nint c;"), False)
     same("a comment reworded before __LINE__", strip, numbered, numbered.replace("/* one */", "/* another */"))
     same("a trigraph", strip, code + "// ??/\n", code + "// other ??/\n", False)
+    # an apostrophe in a skipped line: the comment that starts after it is not seen as one, and a
+    # `//` inside it would take the code after its end with it
+    for odd in ("#if 0\nit isn't /* so\n see http://x */ int y;\n#endif\n", "int a; /* no end\nint b;\n", 'char *s = "no end;\n'):
+        if strip(code + odd) != code + odd:
+            bad.append(f"a file that may be read wrong was not left as it is: {odd!r}")
+    if strip("char c = '\\''; char *s = \"a\\\"b\"; /* x */\n") != "char c = '\\''; char *s = \"a\\\"b\";":
+        bad.append("constants with escaped quotes read wrong")
 
     facts = run.natives_facts
     if facts(NATIVES) == NATIVES.encode():

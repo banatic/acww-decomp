@@ -978,7 +978,7 @@ def reference_sources(inputs: dict, env: dict) -> list[pathlib.Path]:
 
 # A string or character constant (to its end, or the line's), or a comment; a `//` comment goes
 # on over a line that ends in a backslash.
-C_TOKEN = re.compile(r""""(?:\\.|[^"\\\n])*"?|'(?:\\.|[^'\\\n])*'?|//(?:\\\r?\n|[^\n])*|/\*.*?(?:\*/|\Z)""", re.S)
+C_TOKEN = re.compile(r""""(?:\\.|[^"\\\n])*("?)|'(?:\\.|[^'\\\n])*('?)|//(?:\\\r?\n|[^\n])*|/\*.*?(\*/|\Z)""", re.S)
 LINE_MATTERS = re.compile(r"\b(?:__LINE__|__COUNTER__|assert)\b")
 
 
@@ -986,17 +986,24 @@ def strip_comments(text: str) -> str:
     """A C source or header as the compiler takes it, for the Reference cache's key: each comment
     as one space, trailing blanks off, and the lines left empty taken out (so a change to a
     comment alone gives the same text). Lines are only taken out of a file that never asks for
-    its line number (__LINE__, assert), and never right after a line a backslash continues;
-    a file with a trigraph (`??/` is a backslash) is left as it is."""
+    its line number (__LINE__, assert), and never right after a line a backslash continues.
+    A file this reading may have wrong is left as it is: one with a trigraph (`??/` is a
+    backslash), a constant that does not end on its line (an apostrophe in a line the compiler
+    skips: what follows it could be read as a constant, or not, wrongly), a comment without end."""
     if "??" in text:
         return text
     numbered = LINE_MATTERS.search(text) is not None
+    unsure = []
 
     def comment(m: re.Match) -> str:
         if m[0][0] != "/":
+            unsure.extend([] if m[1] or m[2] else [m[0]])
             return m[0]
+        unsure.extend([] if m[0].startswith("//") or m[3] else [m[0]])
         return " " + "\n" * m[0].count("\n")  # (its lines stay, for the pass below)
     lines = [line.rstrip() for line in C_TOKEN.sub(comment, text).split("\n")]
+    if unsure:
+        return text
     if numbered:
         return "\n".join(lines)
     kept: list[str] = []
