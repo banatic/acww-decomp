@@ -5,6 +5,7 @@
     python tools/gate.py --full        # every check
     python tools/gate.py --dry-run     # only say which checks would run
     python tools/gate.py --keep-going  # do not stop at the first failure
+    python tools/gate.py --ignore-fingerprint  # choose as if no values were kept for the base (see below)
 
 A change is what differs from the commit this tree left BASE at (their merge base: what BASE
 gained since is not this tree's change), committed or not.
@@ -34,6 +35,14 @@ those kept for the commit it started from, the code every check would run is the
 passed there: the gate then runs the lint, the matching checks, the tools' tests and the title
 recording once, and passes. If any value differs, or none is kept for that commit (run this
 tool there once: with nothing changed it is quick), it goes on as for any change.
+
+The same values say which pass a change to functions needs (passes). Clean code alone changed,
+and the Native objects and tables are the base's: the scenes, recordings and driven checks run
+with every Clean function only. Sources of src/ alone changed, the Clean objects and every
+table are the base's, and each function touched has a Clean version (which runs in its place
+in a run with Clean code): they run with Native alone only. Scenes and driven checks whose own
+files changed run both ways. Without the base's values both passes run. --ignore-fingerprint
+chooses as if there were none: no short way for a change of names, and both passes.
 
 The cheap checks come first, and the first failure stops the rest: the lint runs beside the
 Native build, then the tools' own tests, the function-level check and the two recordings (each
@@ -105,17 +114,54 @@ def recording_chains(native: bool = True, clean: bool = True) -> Phase:
     return chains
 
 
-def scene_chains(names: list[str], native: bool = True, clean: bool = True) -> Phase:
-    """The two passes, each a chain of its own (they run side by side)."""
+def scene_chains(clean: list[str] | None, native: list[str] | None) -> Phase:
+    """The two passes, each a chain of its own (they run side by side): the scenes to run with
+    every Clean function, and with Native alone. An empty list is every scene; None, or a list
+    that had names and has none left, is no pass."""
     # a few of each pass's cached Reference runs are made again: a key that leaves out something
     # a run depends on shows as a failed step (tools/run.py, ACWW_REFERENCE_VERIFY)
     verify = ["--verify-cache", VERIFY]
     chains: Phase = []
-    if clean:
-        chains.append([step("scenes-clean", [PY, "tools/scenes.py", "-j", JOBS, *verify, *names])])
-    if native:
-        chains.append([step("scenes-none", [PY, "tools/scenes.py", "--clean", "none", "-j", JOBS, *verify, *names])])
+    if clean is not None:
+        chains.append([step("scenes-clean", [PY, "tools/scenes.py", "-j", JOBS, *verify, *clean])])
+    if native is not None:
+        chains.append([step("scenes-none", [PY, "tools/scenes.py", "--clean", "none", "-j", JOBS, *verify, *native])])
     return chains
+
+
+def driven_chains(clean: list[str] | None, native: list[str] | None) -> Phase:
+    """The driven checks (tools/driven.py), as scene_chains takes them: one step that runs each
+    check both ways when the two passes have the same checks, else a step for each pass, one
+    after the other (a step runs as many checks at a time as the two scene passes together)."""
+    run = [PY, "tools/driven.py", "-j", JOBS]
+    if clean is not None and clean == native:
+        return [[step("driven", [*run, *clean])]]
+    chain = ([step("driven-clean", [*run, "--pass", "clean", *clean])] if clean is not None else []) + (
+        [step("driven-none", [*run, "--pass", "native", *native])] if native is not None else [])
+    return [chain] if chain else []
+
+
+def passes(same: set[str] | None, native: set[tuple[str, int]], in_clean: set[tuple[str, int]]) -> tuple[bool, bool]:
+    """Which of the two passes a change to functions needs: (with every Clean function, with
+    Native alone). `same`: the parts of the PC code that are the base's (same_parts; None: not
+    known, both passes); `native`: the functions the change touches through src/ or include/;
+    `in_clean`: the functions whose Native code can run in a run with every Clean function
+    (tools/fingerprint.py, native_in_clean).
+
+    The program of a run with Native alone is the runtime, the Native objects and their tables:
+    when those are the base's, so is every such run, whatever the Clean code became. The program
+    of a run with every Clean function has the Native objects too, but a function with a Clean
+    version never runs its Native code there. So when the Clean objects and tables are the
+    base's, the Native tables too (which functions are Native, how each is called, where its
+    data is), and every function the change touches has a Clean version, such a run executes
+    nothing that changed. A change to the Native tables, or Native objects that differ with no
+    source to say which functions changed, needs both."""
+    if same is None or "native_tables" not in same:
+        return True, True
+    native_same = "native_objects" in same
+    clean_same = {"clean_objects", "clean_tables"} <= same
+    reached = not native_same and (not native or bool(native & in_clean))
+    return (not clean_same or reached), not native_same
 
 
 def unit_steps() -> Chain:
@@ -154,21 +200,28 @@ def same_parts(commit: str) -> set[str] | None:
     return {name for name, value in now.items() if kept.get(name) == value}
 
 
-def plan(base: str | None, dry: bool = False) -> Iterator[Phase]:
+def native_in_clean() -> set[tuple[str, int]]:
+    """The functions whose Native code a run with every Clean function can run, as the
+    fingerprint step wrote them."""
+    try:
+        return {(m, int(a, 16)) for m, a in map(str.split, json.loads(FINGERPRINT.read_text())["native_in_clean"])}
+    except (OSError, ValueError, KeyError):
+        return set()
+
+
+def plan(base: str | None, dry: bool = False, both: bool = False) -> Iterator[Phase]:
     """The phases, one after another; a phase's chains run side by side, each chain's steps in
     turn. The phases after the first are chosen once it has run (with `dry`, as far as can be
-    told without it): its fingerprint step says whether the PC code is the base's."""
+    told without it): its fingerprint step says whether the PC code is the base's. With `both`
+    (--ignore-fingerprint), the choice is made as if no values were kept for the base."""
     native = [step("native", [PY, "tools/native.py"]),
               step("fingerprint", [PY, "tools/fingerprint.py", "--write", str(FINGERPRINT)])]
     lint = step("lint", [PY, "tools/lint.py"])
     # the function-level checks: the Clean functions, and the Native ones that call nothing
     clean_check = step("diffcheck", [PY, "tools/diffcheck.py", "--native", "--clean"])
     native_check = step("diffcheck-native", [PY, "tools/diffcheck.py", "--native"])
-
-    def driven(names: list[str]) -> Phase:
-        return [[step("driven", [PY, "tools/driven.py", "-j", JOBS, *names])]]
     # (the tools' tests read what the Native build writes: after it, beside the function-level check)
-    full = [[[clean_check, native_check], *recording_chains(), unit_steps()], scene_chains([]), driven([])]
+    full = [[[clean_check, native_check], *recording_chains(), unit_steps()], scene_chains([], []), driven_chains([], [])]
     if base is None:
         yield [[*matching_chain(), *native], [lint]]
         yield from full
@@ -181,13 +234,13 @@ def plan(base: str | None, dry: bool = False) -> Iterator[Phase]:
     # fingerprint), and nothing else that runs changed. The base passed its checks, and this
     # tree would run them on the same code: the tools' tests and one run of the title are enough.
     renames = affected.renames_only(paths)
-    same = None if dry else same_parts(commit)
+    same = None if dry or both else same_parts(commit)
     if renames and same is not None and len(same) == len(PARTS):
         print(f"gate: only names changed since {commit[:12]}: the PC code is the same (tools/fingerprint.py); "
               "the tools' tests and one run")
         yield [unit_steps(), recording_chains(native=False)[0][:1]]
         return
-    if renames and not dry:
+    if renames and not dry and not both:
         print("gate: not a change of names alone: " + (f"no gate has passed on {commit[:12]} in this cache"
               if same is None else f"{', '.join(sorted(set(PARTS) - same))} differ from {commit[:12]}'s"))
     if change.everything:
@@ -202,27 +255,44 @@ def plan(base: str | None, dry: bool = False) -> Iterator[Phase]:
     checks = affected.select_driven(driven_checks.checks(), commit, change)
     print(f"gate: {len(names)} scenes: {' '.join(names)}")
     print(f"gate: {len(checks)} driven checks: {' '.join(checks)}")
-    for phase in chosen(change, names, checks, clean_check, native_check, driven):
-        yield phase
+    need = passes(same, change.native, native_in_clean())
+    if change.funcs and need != (True, True):
+        print("gate: " + {(True, False): "the Native objects and their tables are the base's: no pass with Native alone",
+                          (False, True): "the Clean objects and tables are the base's, and every function changed has a "
+                          "Clean version: no pass with the Clean functions",
+                          (False, False): "the PC code is the base's: no pass for the functions"}[need])
+    yield from chosen(change, names, checks, affected.own_scenes(names, change), affected.own_driven(checks, change),
+                      need, clean_check, native_check)
 
 
-def chosen(change: affected.Change, names: list[str], checks: list[str], clean_check: Step, native_check: Step,
-           driven) -> list[Phase]:
+def chosen(change: affected.Change, names: list[str], checks: list[str], own: set[str], own_checks: set[str],
+           need: tuple[bool, bool], clean_check: Step, native_check: Step) -> list[Phase]:
     """The phases after the first of a change some list bounds: the function-level checks and the
     recordings (a function changed), the tools' tests (a tool, or a runtime source outside the
-    run's), another program's own check, then the scenes `names`, then the driven checks `checks`."""
+    run's), another program's own check, then the scenes `names`, then the driven checks
+    `checks`. `need` (passes) says which pass the changed functions need, with every Clean
+    function and with Native alone: the function-level check, the recordings, the scenes and
+    the driven checks run that way only. The scenes `own` and driven checks `own_checks` (their
+    own files changed, or a runtime source their runs enter) run both ways."""
+    clean, native = need
     programs = "diffcheck" in change.programs
-    functions = ([clean_check] if change.funcs or programs else []) + ([native_check] if change.native or programs else [])
-    recordings = recording_chains() if change.funcs or change.recordings else []
+    functions = ([clean_check] if (change.funcs and clean) or programs else []) + (
+        [native_check] if (change.native and native) or programs else [])
+    recordings = recording_chains(native=change.recordings or (bool(change.funcs) and native),
+                                  clean=change.recordings or (bool(change.funcs) and clean))
     # the front end builds where the recordings with Clean code do: after them
     play = [step("play-build", [PY, "tools/play.py", "--build-only"], ACWW_RUNTIME_OUT=str(RUNTIME / "gate-clean"))
             ] if "play" in change.programs and os.name == "nt" else []
-    if recordings:
+    if recordings and recordings[-1][0][0].endswith("-clean"):
         recordings[-1] = [*recordings[-1], *play]
     elif play:
-        recordings = [play]
-    first = [c for c in ([functions] if functions else []) + recordings + ([unit_steps()] if change.tools else [])]
-    return [phase for phase in (first, scene_chains(names) if names else [], driven(checks) if checks else []) if phase]
+        recordings.append(play)
+    first = ([functions] if functions else []) + recordings + ([unit_steps()] if change.tools else [])
+
+    def kept(listed: list[str], always: set[str], wanted: bool) -> list[str] | None:
+        return [n for n in listed if wanted or n in always] or None
+    return [phase for phase in (first, scene_chains(kept(names, own, clean), kept(names, own, native)),
+                                driven_chains(kept(checks, own_checks, clean), kept(checks, own_checks, native))) if phase]
 
 
 def keep_parts() -> None:
@@ -242,7 +312,7 @@ def keep_parts() -> None:
 def main() -> int:
     args = sys.argv[1:]
     flags = {a for a in args if a.startswith("--")}
-    unknown = flags - {"--full", "--dry-run", "--keep-going"}
+    unknown = flags - {"--full", "--dry-run", "--keep-going", "--ignore-fingerprint"}
     if unknown:
         raise SystemExit(f"gate: unknown option {' '.join(sorted(unknown))}")
     rest = [a for a in args if a not in flags]
@@ -282,12 +352,12 @@ def main() -> int:
                         stop.touch()
     started = time.time()
     if "--dry-run" in flags:
-        for i, phase in enumerate(plan(base, dry=True), 1):
+        for i, phase in enumerate(plan(base, dry=True, both="--ignore-fingerprint" in flags), 1):
             print(f"gate: phase {i}: " + " | ".join(", ".join(name for name, _, _ in steps) for steps in phase))
         return 0
     stop.unlink(missing_ok=True)
     FINGERPRINT.unlink(missing_ok=True)
-    for phase in plan(base):
+    for phase in plan(base, both="--ignore-fingerprint" in flags):
         with cf.ThreadPoolExecutor(len(phase)) as pool:
             list(pool.map(chain, phase))
         if stopped():

@@ -413,26 +413,39 @@ def choose(names: list[str], funcs: set[tuple[str, int]], own: set[str], seen, w
 
 def select(names: list[str], base: str, scene_dir: pathlib.Path, change: Change | None = None) -> list[str]:
     """The scenes of `names` a change since `base` can affect, saying why for each."""
-    import scenes  # noqa: PLC0415 (it imports this module)
     change = change or describe(changed_paths(base), base)
     if change.everything:
         print(f"affected: every scene ({change.everything} changed since {base})")
         return names
     print(f"affected: {len(change.funcs)} functions changed since {base}")
-    own = change.scenes | {n for n in names if change.features & scene_features(scenes.SCENES.get(n, {}))}
-    return choose(names, change.funcs, own, lambda n: seen_functions(scene_dir / n / "functions-seen.txt"))
+    return choose(names, change.funcs, own_scenes(names, change),
+                  lambda n: seen_functions(scene_dir / n / "functions-seen.txt"))
+
+
+def own_scenes(names: list[str], change: Change) -> set[str]:
+    """The scenes of `names` whose own files changed, or that turn on a feature whose runtime
+    source changed: whatever the functions do, these run."""
+    import scenes  # noqa: PLC0415 (it imports this module)
+    return (change.scenes & set(names)) | {n for n in names if change.features & scene_features(scenes.SCENES.get(n, {}))}
+
+
+def own_driven(names: list[str], change: Change) -> set[str]:
+    """As own_scenes, for the driven checks (a check's features are its scene's)."""
+    own = change.driven & set(names)
+    if change.features:
+        import driven  # noqa: PLC0415
+        import scenes  # noqa: PLC0415
+        own |= {n for n in names if change.features & scene_features(scenes.SCENES.get(driven.read_check(n)["scene"], {}))}
+    return own
 
 
 def select_driven(names: list[str], base: str, change: Change | None = None) -> list[str]:
     """The driven checks of `names` a change since `base` can affect: as select, by the list each
     check's last run left (tools/driven.py, seen_listing)."""
     import driven  # noqa: PLC0415
-    import scenes  # noqa: PLC0415
     change = change or describe(changed_paths(base), base)
     if change.everything:
         print(f"affected: every driven check ({change.everything} changed since {base})")
         return names
-    own = set(change.driven)
-    if change.features:
-        own |= {n for n in names if change.features & scene_features(scenes.SCENES.get(driven.read_check(n)["scene"], {}))}
-    return choose(names, change.funcs, own, lambda n: seen_functions(driven.seen_listing(n)), "driven checks")
+    return choose(names, change.funcs, own_driven(names, change), lambda n: seen_functions(driven.seen_listing(n)),
+                  "driven checks")
