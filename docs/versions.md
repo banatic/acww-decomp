@@ -16,7 +16,7 @@ pokeemerald, sm64 and the Zelda decompilations cover several releases:
 - **Clean does what the ROM of its version does.** A Clean function built for the European
   version behaves as the European ROM's code, and for the Korean version as the Korean ROM's.
   It never chooses a language, a text table or a keyboard of another release at run time, and
-  never adds behaviour that no ROM has. Localization is the other releases themselves: the
+  never adds behavior that no ROM has. Localization is the other releases themselves: the
   Spanish texts are whatever the European ROM holds and does with them.
 
 This document describes the design. Phase 1 (done) made the version a setting of every tool;
@@ -89,7 +89,7 @@ ROM and needs a version condition, a per-version file, or a lookup by name.
 | Interpreter self-test | `runtime/tests/arm_test.c` (the ROM's own leaf functions at Korean addresses) | per-version code | runs on `build/<version>/rom`; Korean cases only for `adm-kr` |
 | Scene saves and offsets | `tools/scenes.py` (`SEED_SHA256`, field offsets in the save) | per-version data | a table per version when a second version has scenes |
 | Recordings and every `.sha1` | `runtime/recordings/**` | per-version data | never shared: each ROM records its own |
-| Korean-only behaviour | Hangul keyboard (`ov095/soft_keyboard_hangul.c`), particles (`main/mail_particles.c`), voice by syllable (`autoload_2/voice.c`), ... | per-version code | the other versions have their own (kana, Latin) |
+| Korean-only behavior | Hangul keyboard (`ov095/soft_keyboard_hangul.c`), particles (`main/mail_particles.c`), voice by syllable (`autoload_2/voice.c`), ... | per-version code | the other versions have their own (kana, Latin) |
 | Structure layouts, save layout | `include/`, `clean/*.h` | mostly neutral | text buffer sizes may differ; checked per version by the build |
 | Interpreter, renderer, input, compiler wrappers, lint | `runtime/arm*.c`, `gpu*.c`, `tools/lint.py`, ... | neutral | |
 
@@ -171,7 +171,7 @@ for the same version.
 The rule for Clean: **a Clean function does exactly what its version's ROM does.** A difference
 between versions is written as the ROM has it, under the version condition, and is checked by
 that version's Reference runs, scenes and driven calls. A Clean function never reads a setting to
-choose between releases' behaviour while it runs. A language that the European ROM itself chooses
+choose between releases' behavior while it runs. A language that the European ROM itself chooses
 at run time (by the firmware's language) is chosen the same way in its Clean code, because the
 ROM does that; a language that only another release has is not.
 

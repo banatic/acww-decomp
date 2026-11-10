@@ -17,7 +17,7 @@ place in the ROM) is linked as its own translation unit; the rest of each module
 objects that [ds-decomp](https://github.com/AetiasHax/ds-decomp) cuts out of the ROM. dsd's
 module check then compares every linked module with the ROM byte for byte. The tool lists why
 each remaining source cannot be linked yet; most of those are functions that shared a source
-file, and data, with their neighbours.
+file, and data, with their neighbors.
 
 A source that holds several functions (a unit, one original source file) is checked function
 by function: each is BYTES and LINK as above, calls between them resolved by name. mwccarm
@@ -108,7 +108,7 @@ the factory leaves the place alone.
 
 Overlays loaded at one address can have the same bytes there: the fish and insect lists (ov115,
 ov116) share 49 functions byte for byte, the scene data overlays (17 and 43, 18 and 37, 38-40)
-all their code, and many overlays the static initialiser at their first address. A run credits
+all their code, and many overlays the static initializer at their first address. A run credits
 such a function only to the overlay that was loaded when it ran: identical bytes do not make
 another overlay's function checked, as only the loaded module's code ran. The scenes' lists
 (`RUN_FUNCTIONS_SEEN`) and the Clean code each run takes (`loaded_at` in `runtime/native_run.c`)

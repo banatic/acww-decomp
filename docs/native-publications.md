@@ -17,7 +17,7 @@ HBlank handler reads shift slot 0, containing 13. Delaying that selector until
 after the gradient calculation leaves slot 1, containing 9, visible instead.
 The handler consequently reads gradient entry 29 instead of 33. The gradient
 buffers themselves, their selector and their publication time can all agree
-while the displayed colours differ.
+while the displayed colors differ.
 
 `tools/native_publish.py` checks the complete original source and ROM body for
 each supported store. It compiles PC copies that pass the body's computed

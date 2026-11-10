@@ -357,7 +357,7 @@ returning a structure, each pinned by the source's SHA-256 with the ROM addresse
   union's word (RET_32).
 - Callers whose callee returns a scalar: func_0203ff98 (func_0204019c, func_02040180 return
   int, stored as the structure's word), func_02065604 and func_020656ac (func_020bbf00 returns
-  a short, stored as the colour's halfword).
+  a short, stored as the color's halfword).
 - The library's FS_GetOverlayFileID returns its 8-byte FSFileID through r0: func_0204f934's
   copy passes the result's address and the overlay's information as the ROM's code does
   (0204f972-0204f976). `CLEAN_CALLERS` gives OverlaySlots_Load (clean/main/overlay_slots.c)

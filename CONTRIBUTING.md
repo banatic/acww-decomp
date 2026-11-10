@@ -48,7 +48,7 @@ split them, each named for its Clean file. `python tools/regroup.py <module> <un
 joins files into a unit and declares every name once: as the unit defines it, else as most
 files declared it, with a cast at each call or use of a file that declared it otherwise (in C;
 C++ files must agree). It refuses, and writes nothing, where it would have to guess: a
-`#pragma` (mwccarm applies an optimisation pragma to every function of the file), a macro or
+`#pragma` (mwccarm applies an optimization pragma to every function of the file), a macro or
 static another file uses otherwise, an `asm` function (Native leaves its file out), or a change
 inside a function a Native table pins
 (tools/native_tables.py); such a function stays a file of its own, and so does one that no
@@ -107,14 +107,14 @@ Replacing a `FAKEMATCH` with a natural source that still verifies is always welc
 
 `clean/` holds readable versions of game functions (see [docs/runtime.md](docs/runtime.md)).
 A Clean function has the same interface as the original (the same parameters and result, so
-the runtime can call either), and the same behaviour by the contract in docs/runtime.md; its
+the runtime can call either), and the same behavior by the contract in docs/runtime.md; its
 body, names and types are free.
 
 - Group functions by subsystem, one file per subsystem: `clean/<module>/<subsystem>.c` with a
   header beside it. Say above each function which game function it is (`/* func_0209dcdc */`).
 - Name things by what the code shows they do. When the purpose is not known, keep the name
   neutral (`SKY_OBJECT_KIND_12`) rather than guessing.
-- Keep the game's odd behaviour and mark it: `QUIRK:` for something unusual but intended,
+- Keep the game's odd behavior and mark it: `QUIRK:` for something unusual but intended,
   `BUG:` for a defect kept as it is, `HW:` for an order the hardware needs, `REQUIRES:` for a
   precondition the game always meets.
 - Read the game's data by its symbol (`extern const u16 data_020d1b04[19];`); the build places

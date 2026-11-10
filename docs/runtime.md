@@ -14,7 +14,7 @@ is faithfulness.
 |---|---|---|
 | **Reference** | The ROM's ARM/Thumb code, run by an interpreter | the ROM |
 | **Native** | The matching source, compiled for the PC | `src/` |
-| **Clean** | A readable implementation with the same behaviour | `clean/` |
+| **Clean** | A readable implementation with the same behavior | `clean/` |
 
 A registry maps each function address to the implementations it has:
 
@@ -37,12 +37,12 @@ as any word's (`tools/run.py`, `clean_result`).
 
 Native is the matching source as it is, compiled for a 32-bit x86 process whose memory holds the
 DS's main RAM at its real address (0x02000000), so pointers and structure layouts are the DS's.
-Where the matching source relies on behaviour that C leaves undefined, the difference is made
+Where the matching source relies on behavior that C leaves undefined, the difference is made
 explicit in the source behind `AVOID_UB`, never silently.
 
 ## What Clean may change
 
-Clean is judged by behaviour, not by text. Its contract with the Reference is, for the same
+Clean is judged by behavior, not by text. Its contract with the Reference is, for the same
 memory and arguments on entry:
 
 - the same return value;
@@ -55,17 +55,17 @@ Register use, instruction order, stack temporaries, inlining and repeated comput
 part of the contract. Everything a matching source does only to make the compiler produce the
 ROM's bytes (`FAKEMATCH` constructs, extra temporaries, `volatile` used for scheduling) is dropped.
 
-Odd behaviour that is part of the contract stays, and is said out loud with one of these tags:
+Odd behavior that is part of the contract stays, and is said out loud with one of these tags:
 
 | Tag | For | Example |
 |---|---|---|
-| `QUIRK:` | behaviour that looks unusual but is the game's | a 16-bit truncation, a fixed-point rounding step |
-| `BUG:` | a defect of the original, kept | an off-by-one, a read of an uninitialised field |
+| `QUIRK:` | behavior that looks unusual but is the game's | a 16-bit truncation, a fixed-point rounding step |
+| `BUG:` | a defect of the original, kept | an off-by-one, a read of an uninitialized field |
 | `HW:` | an order the hardware depends on | register writes that must not be reordered |
 | `REQUIRES:` | a precondition the game always meets, outside which Clean may differ | a pointer the game never passes as null |
 
 A `BUG:` that has an obvious fix gets it behind `BUGFIX`, off by default. Clean is written as C
-without undefined behaviour and is compiled with `-fwrapv -fno-strict-aliasing`; ARM behaviour
+without undefined behavior and is compiled with `-fwrapv -fno-strict-aliasing`; ARM behavior
 that C does not define (shifts by 32 or more, unaligned loads, signed overflow) goes through
 named helpers. Structures come from `include/`, shared with Native, with their offsets checked by
 `static_assert`.
@@ -137,7 +137,7 @@ unaligned loads, indexes past a table, which random states produce and the game 
   behind `AVOID_UB`.
 - Every function that calls nothing (a leaf) runs as Native against its Reference in the
   differential check; the ones that differ are listed with the reason (an interpreter bug,
-  undefined behaviour, or a source to fix) until none are left.
+  undefined behavior, or a source to fix) until none are left.
 
 **M3: The game starts, as Reference.** Done: `tools/run.py` boots the ROM's own code (the
 interpreter with banked registers and exceptions, `runtime/io.c` for the hardware, the 2D and 3D
@@ -166,7 +166,7 @@ at one address can share most of their code (the pockets' fish and insect lists,
 ov116, differ in three functions); a call to such an address runs the function of the overlay
 whose functions are all in memory, since its Native code calls its own module's functions
 directly. Where the code of two or three overlays is all the same (the scene data overlays 17
-and 43, 18 and 37, 38 to 40, one static initialiser each), the one whose image has the most
+and 43, 18 and 37, 38 to 40, one static initializer each), the one whose image has the most
 bytes in memory, its data telling it apart, is the loaded one. A source that
 declares a callee with a char or short result its definition does not produce is compiled from
 a copy that declares it returning int: mwccarm trusts the callee to have extended r0 and goes on
@@ -193,7 +193,7 @@ kept Reference are those `tools/native.py` finds by reading the sources (unsuppo
 forms, calls into the middle of other code that `tools/native_args.py` does not know), and
 those listed with a
 reason in `runtime/native-reference.txt` (hardware access, calls with fewer arguments than the
-callee takes, undefined behaviour, a source that relies on mwccarm's stack layout).
+callee takes, undefined behavior, a source that relies on mwccarm's stack layout).
 - The same recording run with Native for every function that has a source gives the same frames
   and the same RAM at chosen points as the Reference run.
 
@@ -234,14 +234,14 @@ pelican notice packs four flags from past its buffer, the ROM's stack there hold
 caller's saved r4, into the town record; the three notice functions stay Reference
 (`runtime/native-reference.txt`) and Clean packs that word's bits as the ROM does
 (`clean/main/board_notices.c`). In house the Clean house collider reads
-its centres' heights from the guest stack slot the Native one uses
+its centers' heights from the guest stack slot the Native one uses
 ([guest stack](native-guest-stack.md)), and so does the museum's insect room for its cases; in a
 villager's house the room music cue's first update and a talk's reply read words that the ROM's
 register saves and an earlier call's locals left on its stack, which the guest frames reproduce
 (with the registers the ROM's code holds where an audited copy says so). The
 first recording run found what random entry
 states had not: callers that ask the calendar about month 0 or 13, which the game's tables
-answer from their neighbouring bytes (`clean/main/calendar.c`), and a fifth argument that a
+answer from their neighboring bytes (`clean/main/calendar.c`), and a fifth argument that a
 check placed where the game does not (`diff_stack` in `runtime/diffcheck.h`). A Clean function
 need not call what the ROM's code calls: the Reference run records nothing of its calls out
 (`runtime/native_run.c`).

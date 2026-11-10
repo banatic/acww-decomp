@@ -86,7 +86,7 @@ int func_02063f18(int arg0, unsigned char arg1)
 }
 ```
 
-**Clean source** (`clean/main/item_group_order.c`): the same behaviour with names, types and
+**Clean source** (`clean/main/item_group_order.c`): the same behavior with names, types and
 constants. The PC build runs it in the matching source's place.
 
 ```c
@@ -130,7 +130,7 @@ from the ROM.
 
 ![Clean code progress](https://raw.githubusercontent.com/banatic/acww-decomp/progress/progress-clean.svg)
 
-*Clean code: gold is checked by function, purple is checked in a run, blue is checked by a driven call, grey is read only.*
+*Clean code: gold is checked by function, purple is checked in a run, blue is checked by a driven call, gray is read only.*
 
 The map and numbers in this part are for the Korean release.
 

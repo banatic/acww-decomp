@@ -182,12 +182,12 @@ For example, consumer entry from root SP 0x027e2f04 through extents
 These are examples derived from an anchor, not hardcoded runtime addresses.
 
 The museum's insect room, `ov004:0223f218` (scene museum-halls), does the same with the
-three cases of its room: it adds three collision boxes whose `Vec` centres, at body SP + 0x18,
+three cases of its room: it adds three collision boxes whose `Vec` centers, at body SP + 0x18,
 get x and z and keep the stack's y, which becomes the height of the cases' walls and tops in
 the collision lists (0x021c3bac, 0x021c4030). It saves five registers and reserves 0x214
 bytes at entry, so every call is at entry SP - 0x228, and it is reached from the scheduler
 through 020ee934, 020ee9a0, 020ee834, 01ffd14c and 01ffd44c. A source-hash-guarded PC copy
-takes the centres from that guest slot after its three box constructors, and the mixed
+takes the centers from that guest slot after its three box constructors, and the mixed
 Native/Clean build compiles a copy of `clean/ov004/museum_insects.c` whose `InsectRoom_Update`
 (which sets the y words to 0, its `BUG:` note) uses the same slot. From anchor SP 0x027e2f5c
 the body is at 0x027e2cdc and the y words at 0x027e2cf8, 0x027e2d04 and 0x027e2d10; the
@@ -213,7 +213,7 @@ the cases 0x027e2d54 + 0x6000 and 0x0001b029 + 0x6000 high, where the PC's stack
 stack addresses and 0.
 
 The house's cockroach (0223df88, above) reads the same frames when a villager walks in the
-player's house (scene flea-buyer): the y word of a keep-out box's centre at 0x027e2c10 is the z
+player's house (scene flea-buyer): the y word of a keep-out box's center at 0x027e2c10 is the z
 of the second direction of a wall's span test, 0202f464 (called by the near-wall push 0202f3e4
 from the field actor's walls), which keeps its two directions, two points and two square
 segments at body SP + 0 to + 0x63. Its PC copy and the copy of `CollisionSegment_SpansPoint` keep
@@ -221,17 +221,17 @@ them at those slots where the frame is proved; the ROM's -0x1000 made the box's 
 where the PC's stack gave 0 and 0xa000.
 
 In the rain (scene house-thunder, frame 4200) and after the designs page in the player's room is
-closed (scene designs-pieces), the fourth keep-out box's centre y word, 0x027e2c1c, is what the
+closed (scene designs-pieces), the fourth keep-out box's center y word, 0x027e2c1c, is what the
 box's side hit (0220dd80) last left there: it keeps the side's angle and the way into it at body
 SP + 0x20 and + 0x24 (0220ddbe, 0220ddc4), and from the field actor's walls (02033678) its body is
 at 0x027e2bfc. The PC copy and the copy of `PushBox_OnSideHit` store both at those slots (its frame
 is proved on every path, as its entry spill requires). Before, the guest word kept the span test's
 earlier direction z (0xc000 or 0xf000) where the ROM had the angle (0x4000 or 0xffffc000), and the
-matrix the cockroach builds from that centre (data_021fbe48, its translation y at 0x021fbe70)
+matrix the cockroach builds from that center (data_021fbe48, its translation y at 0x021fbe70)
 differed.
 
 In the second insect room, with the player standing still (scene museum-insect-alone, from frame
-7063), the y word of its second case's centre, 0x027e2d04, is what the posts' landing (02032eb8)
+7063), the y word of its second case's center, 0x027e2d04, is what the posts' landing (02032eb8)
 left at its body SP + 0: the address of the push-out visitor's previous position, its third
 argument, which it keeps there through its loop (02032ec0). The field actor's move (02031288)
 builds that visitor at body SP + 0x48 and hands it to the gathering (02030ebc), which calls the
@@ -363,7 +363,7 @@ keeps the library functions' counts in `runtime/library-arguments.txt` when it
 reads them and uses that file in a checkout without them. Without it, every
 Native call into library code (`FX_MulFunc` among them) copied the whole host
 extent onto the ROM's stack, and in the house scene those words became the
-collider centres' y components: a checkout without `libs/` (CI's Linux one)
+collider centers' y components: a checkout without `libs/` (CI's Linux one)
 diverged at frame 3422 where one with them agreed.
 
 Assembly definitions have no proven count, so a Native call into one copied the whole extent
