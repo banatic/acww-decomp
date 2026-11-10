@@ -164,7 +164,7 @@ typedef struct TownMap {
     TextLabel labels[TOWN_MAP_LABELS];             /* 0xf8: the rows' names and the title */
     PushButton knob;                               /* 0x674: the list's knob */
     Glider pointer;                                /* 0x6bc: the pointing hand at the cursor */
-    u16 map_screen[0x400];                         /* 0x720: sub BG1's screen (b_map_a_bg.bsc), its bar coloured */
+    u16 map_screen[0x400];                         /* 0x720: sub BG1's screen (b_map_a_bg.bsc), its bar colored */
     u16 list_shown[0x400];                         /* 0xf20: sub BG3's screen: `list_screen` without the rows out of view */
     u16 list_screen[0x400];                        /* 0x1720: the list's rows with their icons and highlight */
     u16 list_template[0x400];                      /* 0x1f20: b_map_b_bg.bsc, holding the icons at the rows */

@@ -100,7 +100,7 @@ void StarScope_HoldArrow(StarScope *scope, int arrow, int bounce);
 void StarScope_ScrollByArrow(StarScope *scope, unsigned int arrow, int amount, int bounce);
 int StarScope_ArrowAt(StarScope *scope, int x, int y);
 int StarScope_DrawStarMark(StarScope *scope, int star);
-void StarScope_DrawCentre(StarScope *scope, int y);
+void StarScope_DrawCenter(StarScope *scope, int y);
 void StarScope_DrawArrows(StarScope *scope, int spread, int palette);
 void StarScope_EndTask(StarScope *scope);
 void StarScope_Update(StarScope *scope);

@@ -70,7 +70,7 @@ void CollisionBox_KeepMax(Vec3 *bound, const Vec3 *point)
 }
 CLEAN_AS(func_02031e28, CollisionBox_KeepMax)
 
-/* func_02031ecc: adds the boxes whose bounds overlap (seen from above) the box of `centre` and
+/* func_02031ecc: adds the boxes whose bounds overlap (seen from above) the box of `center` and
  * half size `half`: with COLLISION_QUERY_WALLS their sides as walls to `walls` (those not
  * wholly outside that box, CollisionBox_SideOutside), up to the box's scaled height above its
  * position, and with COLLISION_QUERY_GROUND their tops as two floor triangles to `floors`.
@@ -78,7 +78,7 @@ CLEAN_AS(func_02031e28, CollisionBox_KeepMax)
  * standing above height 0, pass 1 the others. `list` is not read.
  * QUIRK: a flat box's top is two triangles with a repeated corner.
  * REQUIRES: a box has at most four corners (corner_count is 0, 2 or 4). */
-void CollisionBox_GatherAll(void *list, const Vec3 *centre, const Vec3 *half, CollisionWallList *walls,
+void CollisionBox_GatherAll(void *list, const Vec3 *center, const Vec3 *half, CollisionWallList *walls,
                             CollisionFloorList *floors, int flags, int pass)
 {
     (void) list;
@@ -88,9 +88,9 @@ void CollisionBox_GatherAll(void *list, const Vec3 *centre, const Vec3 *half, Co
             continue;
         }
 
-        Vec3 box_centre = box->centre;
+        Vec3 box_center = box->center;
         Vec3 offset;
-        Vec_Subtract(&offset, &box_centre, centre);
+        Vec_Subtract(&offset, &box_center, center);
         fx32 dx = offset.x < 0 ? -offset.x : offset.x;
         if (dx >= box->half.x + half->x) {
             continue;
@@ -105,7 +105,7 @@ void CollisionBox_GatherAll(void *list, const Vec3 *centre, const Vec3 *half, Co
             int mask = box->corner_count - 1;
             for (int i = 0; i < box->corner_count; i++) {
                 outside[i] =
-                    (u8) CollisionBox_SideOutside(centre, half, &box->corners[i & mask], &box->corners[(i + 1) & mask]);
+                    (u8) CollisionBox_SideOutside(center, half, &box->corners[i & mask], &box->corners[(i + 1) & mask]);
             }
             fx32 top = box->position.y + FX_MulFunc(box->height, box->scale.y);
             for (int i = 0; i < box->corner_count; i++) {
@@ -155,16 +155,16 @@ static int collision_box_outcode(const Vec3 *point, const Vec3 *min, const Vec3 
     return code;
 }
 
-/* func_020320e0: whether the side from `start` to `end` is wholly outside the box of `centre`
+/* func_020320e0: whether the side from `start` to `end` is wholly outside the box of `center`
  * and half size `half` seen from above, both ends being past the same one of its four sides.
  * The test is cautious: ends past the same corner (past two sides at once) or past different
  * sides do not count, though such a side may miss the box too. */
-int CollisionBox_SideOutside(const Vec3 *centre, const Vec3 *half, const Vec3 *start, const Vec3 *end)
+int CollisionBox_SideOutside(const Vec3 *center, const Vec3 *half, const Vec3 *start, const Vec3 *end)
 {
     Vec3 min;
     Vec3 max;
-    Vec_Subtract(&min, centre, half);
-    Vec_Add(&max, centre, half);
+    Vec_Subtract(&min, center, half);
+    Vec_Add(&max, center, half);
 
     int start_code = collision_box_outcode(start, &min, &max);
     if (start_code == 0) {
@@ -283,12 +283,12 @@ int CollisionBox_Place(CollisionBox *box, const Vec3 *position, s16 angle, const
         }
     }
 
-    box->centre.x = (max.x + min.x) >> 1;
-    box->centre.y = (max.y + min.y) >> 1;
-    box->centre.z = (max.z + min.z) >> 1;
-    box->half.x = max.x - box->centre.x;
-    box->half.y = max.y - box->centre.y;
-    box->half.z = max.z - box->centre.z;
+    box->center.x = (max.x + min.x) >> 1;
+    box->center.y = (max.y + min.y) >> 1;
+    box->center.z = (max.z + min.z) >> 1;
+    box->half.x = max.x - box->center.x;
+    box->half.y = max.y - box->center.y;
+    box->half.z = max.z - box->center.z;
     return 1;
 }
 CLEAN_AS(func_02032214, CollisionBox_Place)

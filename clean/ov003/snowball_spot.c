@@ -28,7 +28,7 @@ extern void func_ov003_02235f30(void *acre);
 extern void func_ov003_02235f2c(void *acre);
 extern void *func_ov003_02235f10(void *mask);
 
-/* func_ov003_02235d88: a spot for a loose ball: `spot` becomes the centre of a free tile of the
+/* func_ov003_02235d88: a spot for a loose ball: `spot` becomes the center of a free tile of the
  * inner acres, and 1 is returned; 0 when there is none. A tile is taken when collision byte 8
  * says so of it (CollisionQuery_Byte08IfFree) or of either of the two tiles south of it
  * (CollisionQuery_Byte08IfNoPost); with `avoid_items` also when an item lies on it. With
@@ -75,11 +75,11 @@ int SnowballSpot_Pick(void *unused, Vec3 *spot, const Vec3 *away_from, int avoid
     }
 
     if (away_from != NULL) {
-        int centre_x;
-        int centre_z;
-        Position_Tile(&centre_x, &centre_z, (const Position *) (const void *) away_from);
-        for (int z = centre_z - 7; z <= centre_z + 7; z++) {
-            for (int x = centre_x - 7; x <= centre_x + 7; x++) {
+        int center_x;
+        int center_z;
+        Position_Tile(&center_x, &center_z, (const Position *) (const void *) away_from);
+        for (int z = center_z - 7; z <= center_z + 7; z++) {
+            for (int x = center_x - 7; x <= center_x + 7; x++) {
                 SnowballSpot_Take(mask, x, z);
             }
         }
@@ -88,7 +88,7 @@ int SnowballSpot_Pick(void *unused, Vec3 *spot, const Vec3 *away_from, int avoid
     int x;
     int z;
     if (SnowballSpot_PickTile(mask, &x, &z) != 0) {
-        AcreTile_TileCentre(spot, (u32) x, (u32) z);
+        AcreTile_TileCenter(spot, (u32) x, (u32) z);
         return 1;
     }
     if (avoid_items != 0) {

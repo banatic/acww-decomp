@@ -380,7 +380,7 @@ void BbsBoard_PlaceCursor(BbsBoard *self)
 }
 CLEAN_AS(func_ov113_02299a44, BbsBoard_PlaceCursor)
 
-/* func_ov113_02299a80: the number of posts, and the tabs' x that centres their row. */
+/* func_ov113_02299a80: the number of posts, and the tabs' x that centers their row. */
 void BbsBoard_CountPosts(BbsBoard *self)
 {
     self->posts = Bbs_CountTownPosts();
@@ -565,8 +565,8 @@ int BbsBoard_TestFlags(BbsBoard *self, u16 flags)
 }
 CLEAN_AS(func_ov113_02299da4, BbsBoard_TestFlags)
 
-/* func_ov113_02299db8: label `label` opened in a box of style 2 at (x, y) with colours 15 and
- * 10, and shown (centred when `center`). The last parameter is handed on unused. */
+/* func_ov113_02299db8: label `label` opened in a box of style 2 at (x, y) with colors 15 and
+ * 10, and shown (centered when `center`). The last parameter is handed on unused. */
 void BbsBoard_OpenLabel(BbsBoard *self, int label, int x, int y, int center, int unused)
 {
     TextLabel *text = &self->labels[label];
@@ -610,7 +610,7 @@ void BbsBoard_ShowReadMark(BbsBoard *self, int post)
 CLEAN_AS(func_ov113_02299e20, BbsBoard_ShowReadMark)
 
 /* func_ov113_02299e98: the post's number (post + 1, one or two full-width digits) in its label,
- * opened at (0x11a, 2) and centred. */
+ * opened at (0x11a, 2) and centered. */
 void BbsBoard_ShowNumber(BbsBoard *self, int post)
 {
     u16 digits[3] = {0, 0, 0};
@@ -630,7 +630,7 @@ void BbsBoard_ShowNumber(BbsBoard *self, int post)
 CLEAN_AS(func_ov113_02299e98, BbsBoard_ShowNumber)
 
 /* func_ov113_02299f10: the post's date: "20" and the year's two digits at (0x111, 4), the
- * month's and the day's two digits at (0x116, 4), not centred. Each part is read twice, once
+ * month's and the day's two digits at (0x116, 4), not centered. Each part is read twice, once
  * for each digit. */
 void BbsBoard_ShowDate(BbsBoard *self, int post)
 {
@@ -656,7 +656,7 @@ CLEAN_AS(func_ov113_02299f10, BbsBoard_ShowDate)
 
 /* func_ov113_0229a004: the post's text broken into its six lines (96 characters, up to 16 a
  * line, 0xa0 pixels wide), each line's label cleared and set from its characters (when it has
- * any), then each drawn into its characters (a box at 0x14, 0xe, colour 0xd) and shown; the
+ * any), then each drawn into its characters (a box at 0x14, 0xe, color 0xd) and shown; the
  * characters queued for BG 3 (0x11-0x100). The text is looked up again for each line. */
 void BbsBoard_ShowText(BbsBoard *self, int post)
 {
@@ -713,7 +713,7 @@ CLEAN_AS(func_ov113_0229a120, BbsBoard_WaitRelease)
 
 /* func_ov113_0229a148 (sub state 3): once the cursor sprite's animation is done, the action of
  * its place: done, the cursor is hidden for WRITE and QUIT, else its release (the third of its
- * set) as the page turns; not done, the press is cancelled. */
+ * set) as the page turns; not done, the press is canceled. */
 void BbsBoard_WaitPress(BbsBoard *self)
 {
     if (CellLayerSprite_IsDone(bbs_cursor_cells(self)) == 0) {

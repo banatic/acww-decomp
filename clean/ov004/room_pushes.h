@@ -2,7 +2,7 @@
  * (push_box.h) records when an actor pushes against a side of it, one record for the objects
  * on the floor and one for those on top of others (by RoomObject_Layer). The objects that can
  * be pushed read theirs back (RoomPushes_FindObject, RoomPushes_Get). The array is a C++
- * array of two objects (constructed by the overlay's static initialisation) and is reset when
+ * array of two objects (constructed by the overlay's static initialization) and is reset when
  * the room starts, every frame, and when it ends. */
 #ifndef CLEAN_OV004_ROOM_PUSHES_H
 #define CLEAN_OV004_ROOM_PUSHES_H
@@ -20,7 +20,7 @@ typedef struct RoomPush {
     Vec3 from;        /* 0x04: the actor's point at 0x68 */
     Vec3 position;    /* 0x10: the actor's position */
     fx32 standoff;    /* 0x1c */
-    Vec3 centre;      /* 0x20: the middle of the side pushed */
+    Vec3 center;      /* 0x20: the middle of the side pushed */
     Vec3 destination; /* 0x2c: where the actor is to stand */
     s16 facing;       /* 0x38 */
     u8 pad_3a[2];
@@ -29,7 +29,7 @@ typedef struct RoomPush {
 
 int RoomPushes_Allowed(void);
 int RoomPushes_Enabled(void);
-int RoomPushes_Record(RoomPush *pushes, s32 object, Vec3 *from, Vec3 *position, s32 standoff, Vec3 *centre, Vec3 *destination,
+int RoomPushes_Record(RoomPush *pushes, s32 object, Vec3 *from, Vec3 *position, s32 standoff, Vec3 *center, Vec3 *destination,
                       short facing, s32 side);
 void RoomPushes_Reset(RoomPush *pushes);
 RoomPush *RoomPushes_Destruct(RoomPush *pushes);
@@ -60,13 +60,13 @@ RoomPush *RoomPushes_Records(void);
 int RoomPushes_Facing(RoomPush *push);
 u32 RoomPushes_Side(RoomPush *push);
 Vec3 *RoomPushes_Destination(RoomPush *push);
-Vec3 *RoomPushes_Centre(RoomPush *push);
+Vec3 *RoomPushes_Center(RoomPush *push);
 u32 RoomPushes_Standoff(RoomPush *push);
 fx32 RoomPushes_Moved(RoomPush *push);
 Vec3 *RoomPushes_Position(RoomPush *push);
 Vec3 *RoomPushes_From(RoomPush *push);
 u32 RoomPushes_Object(RoomPush *push);
-void RoomPushes_Set(RoomPush *push, s32 object, Vec3 *from, Vec3 *position, s32 standoff, Vec3 *centre, Vec3 *destination,
+void RoomPushes_Set(RoomPush *push, s32 object, Vec3 *from, Vec3 *position, s32 standoff, Vec3 *center, Vec3 *destination,
                     short facing, s32 side);
 RoomPush *RoomPushes_Clear(RoomPush *push);
 void RoomPushes_DestructOne(void *push);

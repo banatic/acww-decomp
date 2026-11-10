@@ -86,7 +86,7 @@ static_assert(sizeof(Gatekeeper2) == 0x714, "the size func_ov004_022258c4 alloca
 #define GATEKEEPER2_LINE_NEWEST 0x30
 #define GATEKEEPER2_LINE_COPIED 0x18
 #define GATEKEEPER2_LINE_SWAPPED 0x19
-#define GATEKEEPER2_LINE_CANCELLED 1
+#define GATEKEEPER2_LINE_CANCELED 1
 #define GATEKEEPER2_NO_LINE 0xff
 
 /* The player record's flag set after the first talk with it. */
@@ -318,7 +318,7 @@ static unsigned int gk2_picked_design(u8 *record)
 void Gatekeeper2Talk_SwapDesign(Gatekeeper2Talk *talk)
 {
     if (!GroupParams_C4CIs1()) {
-        gk2_say(talk, GATEKEEPER2_LINE_CANCELLED);
+        gk2_say(talk, GATEKEEPER2_LINE_CANCELED);
         return;
     }
     u8 *record = PlayerRecords_Current();
@@ -356,7 +356,7 @@ CLEAN_AS(func_ov004_02224ff4, Gatekeeper2Talk_SwapDesign)
 void Gatekeeper2Talk_CopyDesign(Gatekeeper2Talk *talk)
 {
     if (!GroupParams_C4CIs1()) {
-        gk2_say(talk, GATEKEEPER2_LINE_CANCELLED);
+        gk2_say(talk, GATEKEEPER2_LINE_CANCELED);
         return;
     }
     u8 *record = PlayerRecords_Current();

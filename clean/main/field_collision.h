@@ -5,7 +5,7 @@
  * - a grid of up to 7 by 7 units around the path (data_021c4c7c), each unit with the height
  *   and attribute of its four sides from the unit's type (CollisionCell);
  * - walls (data_021c3bac): vertical segments seen from above, built where the sides of
- *   neighbouring units differ in height (cliffs), between neighbouring posts (fences) and by
+ *   neighboring units differ in height (cliffs), between neighboring posts (fences) and by
  *   other code;
  * - floors (data_021c4030): triangles over the units' tops;
  * - posts (data_021c4a34): upright cylinders asked of the map's post source unit by unit.

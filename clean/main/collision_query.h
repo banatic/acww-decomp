@@ -1,7 +1,7 @@
 /* Questions to the field's collision (field_collision.h): gathering the shapes in a box and
  * handing them to a visitor, moving an actor out of walls and onto the ground, a segment test
  * along a path, the ground's height and attribute under a point, posts, water around a point
- * and whether a step between neighbouring units is open.
+ * and whether a step between neighboring units is open.
  *
  * Positions are 20.12 fixed point and a unit is 2.0 wide (COLLISION_UNIT_SHIFT). */
 #ifndef CLEAN_MAIN_COLLISION_QUERY_H
@@ -70,7 +70,7 @@ int CollisionQuery_HasPostAt(int x, int z);
 int CollisionQuery_PostAt(int x, int z, fx32 *radius, fx32 *height, int *kind);
 int CollisionQuery_FloorHeight(int unused);
 int CollisionQuery_GroundY(const Vec3 *point, int *attr, int flags);
-int CollisionQuery_ClampToRect(Vec3 *point, fx32 inset, const Vec3 *centre, fx32 width, fx32 depth);
+int CollisionQuery_ClampToRect(Vec3 *point, fx32 inset, const Vec3 *center, fx32 width, fx32 depth);
 int CollisionQuery_Trace(CollisionTraceHit *result, Vec3 *end, const Vec3 *start, int flags);
 void CollisionQuery_Move(CollisionContacts *contacts, Vec3 *position, const Vec3 *previous, int facing, fx32 radius,
                          void *owner, int flags);

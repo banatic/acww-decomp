@@ -1,5 +1,5 @@
 /* Overlay 83 (the turtle as the judge of the town's gardens, turtle_gardens.h): its static
- * initialiser, run when the overlay is loaded, which fills in the table of his states
+ * initializer, run when the overlay is loaded, which fills in the table of his states
  * (data_ov083_02279360, TurtleGardens_SetState and TurtleGardens_Update): each state's entry
  * and update, copied from the overlay's constants (C++ pointers to member functions, which the
  * compiler does not fold into the table). */

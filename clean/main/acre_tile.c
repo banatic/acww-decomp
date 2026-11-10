@@ -570,35 +570,35 @@ void AcreTile_PositionInAcre(Vec3 *position, u32 acre_x, u32 acre_z, u32 x, u32 
 }
 CLEAN_AS(func_0204f778, AcreTile_PositionInAcre)
 
-/* func_0204f794: the centre of tile (x, z), at height 0. */
-void AcreTile_TileCentre(Vec3 *position, u32 x, u32 z)
+/* func_0204f794: the center of tile (x, z), at height 0. */
+void AcreTile_TileCenter(Vec3 *position, u32 x, u32 z)
 {
     position->x = (fx32) ((x << 13) + 0x1000);
     position->z = (fx32) ((z << 13) + 0x1000);
     position->y = 0;
 }
-CLEAN_AS(func_0204f794, AcreTile_TileCentre)
+CLEAN_AS(func_0204f794, AcreTile_TileCenter)
 
-/* func_0204f7ac: the centre of tile (x, z) of acre (acre_x, acre_z), at height 0. */
-void AcreTile_TileCentreInAcre(Vec3 *position, int acre_x, int acre_z, int x, int z)
+/* func_0204f7ac: the center of tile (x, z) of acre (acre_x, acre_z), at height 0. */
+void AcreTile_TileCenterInAcre(Vec3 *position, int acre_x, int acre_z, int x, int z)
 {
     int tile_x = 0;
     int tile_z = 0;
 
     AcreTile_TileOfAcre(&tile_x, &tile_z, acre_x, acre_z, x, z);
-    AcreTile_TileCentre(position, (u32) tile_x, (u32) tile_z);
+    AcreTile_TileCenter(position, (u32) tile_x, (u32) tile_z);
 }
-CLEAN_AS(func_0204f7ac, AcreTile_TileCentreInAcre)
+CLEAN_AS(func_0204f7ac, AcreTile_TileCenterInAcre)
 
-/* func_0204f7e0: the centre of the tile `from` is on, at the height of `from`.
- * QUIRK: the centre is written before the height is read, so with `from` the same vector as
+/* func_0204f7e0: the center of the tile `from` is on, at the height of `from`.
+ * QUIRK: the center is written before the height is read, so with `from` the same vector as
  * `position` the height becomes 0. */
-void AcreTile_SnapToTileCentre(Vec3 *position, const Vec3 *from)
+void AcreTile_SnapToTileCenter(Vec3 *position, const Vec3 *from)
 {
-    AcreTile_TileCentre(position, (u32) acre_tile_shift(from->x, 13), (u32) acre_tile_shift(from->z, 13));
+    AcreTile_TileCenter(position, (u32) acre_tile_shift(from->x, 13), (u32) acre_tile_shift(from->z, 13));
     position->y = from->y;
 }
-CLEAN_AS(func_0204f7e0, AcreTile_SnapToTileCentre)
+CLEAN_AS(func_0204f7e0, AcreTile_SnapToTileCenter)
 
 /* func_0204f800: tile (offset_x, offset_z) of acre (acre_x, acre_z), numbered across the map. */
 void AcreTile_TileOfAcre(int *x, int *z, int acre_x, int acre_z, int offset_x, int offset_z)

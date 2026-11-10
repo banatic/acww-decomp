@@ -4,7 +4,7 @@
  * scene object (main's villager_scene_slots.h).
  *
  * Beyond the base class's members it holds the item it wants (0x898, 0xfff1 for none), the
- * centre of that item's object (0x89c) and the object's number in the room's list of objects
+ * center of that item's object (0x89c) and the object's number in the room's list of objects
  * (0x8a8, -1 after it is bought), the numbers of the last 100 objects it chose (0x8ac, the
  * newest last, 0xff when cleared), its state and the state before (0x910, 0x914), its talk
  * scene (0x918, a town villager's talk scene with a pointer back to it, the price and a step to
@@ -73,7 +73,7 @@ typedef struct FleaMarketBuyer {
     u8 base[FLEA_MARKET_BUYER_BASE_SIZE]; /* 0x000: the town villager scene object */
     u16 item;                             /* 0x898: the item it wants, 0xfff1 for none */
     u8 unk_89a[2];                        /* 0x89a */
-    Vec3 target;                          /* 0x89c: the centre of the item's object */
+    Vec3 target;                          /* 0x89c: the center of the item's object */
     s32 object;                           /* 0x8a8: the object's number, -1 for none */
     u8 recent[FLEA_MARKET_BUYER_RECENT];  /* 0x8ac: the numbers of the objects it chose */
     s32 state;                            /* 0x910 */

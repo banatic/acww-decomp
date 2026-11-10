@@ -240,8 +240,8 @@ unsigned int HostPicker_FriendList(HostPicker *self)
 }
 CLEAN_AS(func_ov140_0229a15c, HostPicker_FriendList)
 
-/* func_ov140_0229a164: each row's colour at fade step `step` of 5 (5: shown, 0: gone): from
- * colour 8 of the rows' palette for a full town, 14 for the others. */
+/* func_ov140_0229a164: each row's color at fade step `step` of 5 (5: shown, 0: gone): from
+ * color 8 of the rows' palette for a full town, 14 for the others. */
 void HostPicker_FadeRows(HostPicker *self, int step)
 {
     for (int row = 0; row < HOST_PICKER_ROWS; row++) {
@@ -550,11 +550,11 @@ void HostPicker_NextPage(HostPicker *self)
 }
 CLEAN_AS(func_ov140_0229a6dc, HostPicker_NextPage)
 
-/* func_ov140_0229a73c: cancelled: the button pressed, and after five frames (sub state 5) the
+/* func_ov140_0229a73c: canceled: the button pressed, and after five frames (sub state 5) the
  * wipe out (state 3); sound 0x28. */
 void HostPicker_Cancel(HostPicker *self)
 {
-    HostPicker_SetFlags(self, HOST_PICKER_FLAG_CANCELLED);
+    HostPicker_SetFlags(self, HOST_PICKER_FLAG_CANCELED);
     self->cancel_palette = HOST_PICKER_PAL_PRESSED;
     self->steps = HOST_PICKER_FADE_STEPS;
     MenuScene_SetState(host_scene(self), HOST_PICKER_STATE_START_WIPE_OUT);
@@ -566,7 +566,7 @@ CLEAN_AS(func_ov140_0229a73c, HostPicker_Cancel)
 /* func_ov140_0229a774: confirmed: as HostPicker_Cancel with the confirm button; sound 0x27. */
 void HostPicker_Confirm(HostPicker *self)
 {
-    HostPicker_ClearFlags(self, HOST_PICKER_FLAG_CANCELLED);
+    HostPicker_ClearFlags(self, HOST_PICKER_FLAG_CANCELED);
     self->confirm_palette = HOST_PICKER_PAL_PRESSED;
     self->steps = HOST_PICKER_FADE_STEPS;
     MenuScene_SetState(host_scene(self), HOST_PICKER_STATE_START_WIPE_OUT);
@@ -782,7 +782,7 @@ void HostPicker_BrowseByTouch(HostPicker *self)
 CLEAN_AS(func_ov140_0229aa4c, HostPicker_BrowseByTouch)
 
 /* func_ov140_0229ab28: the hosts read again: when their number changed, it is drawn and the
- * rows filled again; when only a row's entries changed, the rows' colours are set again. */
+ * rows filled again; when only a row's entries changed, the rows' colors are set again. */
 void HostPicker_RefreshHosts(HostPicker *self)
 {
     int count = HostPicker_CountHosts(self);
@@ -797,7 +797,7 @@ void HostPicker_RefreshHosts(HostPicker *self)
 }
 CLEAN_AS(func_ov140_0229ab28, HostPicker_RefreshHosts)
 
-/* func_ov140_0229ab70: the rows' OBJ files loaded, and the panel's text colours. */
+/* func_ov140_0229ab70: the rows' OBJ files loaded, and the panel's text colors. */
 void HostPicker_LoadObjFiles(HostPicker *self)
 {
     ResRows_LoadObjFiles(&self->rows);
@@ -979,7 +979,7 @@ CLEAN_AS(func_ov140_0229ae44, HostPicker_StartSetup)
  * the confirm button's palette does not let happen. */
 int HostPicker_End(HostPicker *self)
 {
-    if (HostPicker_TestFlags(self, HOST_PICKER_FLAG_CANCELLED) != 0) {
+    if (HostPicker_TestFlags(self, HOST_PICKER_FLAG_CANCELED) != 0) {
         GroupParams_SetC4C(0);
     } else {
         GroupParams_SetC4C(1);

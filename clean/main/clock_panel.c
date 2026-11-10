@@ -237,7 +237,7 @@ void ClockPanel_BlinkColon(ClockPanel *panel)
 }
 CLEAN_AS(func_0208d560, ClockPanel_BlinkColon)
 
-/* func_0208d594: the minutes written, padded with zeros, and their box redrawn, centred, once
+/* func_0208d594: the minutes written, padded with zeros, and their box redrawn, centered, once
  * changed. */
 void ClockPanel_RedrawMinutes(ClockPanel *panel)
 {
@@ -252,7 +252,7 @@ void ClockPanel_RedrawMinutes(ClockPanel *panel)
 CLEAN_AS(func_0208d594, ClockPanel_RedrawMinutes)
 
 /* func_0208d5ec: the hour of the half day written, padded with zeros, and its box redrawn,
- * centred, once changed.
+ * centered, once changed.
  * QUIRK: noon and midnight show as 00. */
 void ClockPanel_RedrawHour(ClockPanel *panel)
 {
@@ -270,7 +270,7 @@ void ClockPanel_RedrawHour(ClockPanel *panel)
 }
 CLEAN_AS(func_0208d5ec, ClockPanel_RedrawHour)
 
-/* func_0208d650: "AM" or "PM" (from hour 12) handed to its box, redrawn centred, once
+/* func_0208d650: "AM" or "PM" (from hour 12) handed to its box, redrawn centered, once
  * changed. */
 void ClockPanel_RedrawAmPm(ClockPanel *panel)
 {
@@ -285,7 +285,7 @@ void ClockPanel_RedrawAmPm(ClockPanel *panel)
 }
 CLEAN_AS(func_0208d650, ClockPanel_RedrawAmPm)
 
-/* func_0208d69c: the weekday's character handed to its box, redrawn centred, once changed.
+/* func_0208d69c: the weekday's character handed to its box, redrawn centered, once changed.
  * QUIRK: the weekday indexes data_020d0aac unchecked (the clock gives 0-6). */
 void ClockPanel_RedrawWeekday(ClockPanel *panel)
 {
@@ -360,7 +360,7 @@ void ClockPanel_FreeTextBoxes(ClockPanel *panel)
 CLEAN_AS(func_0208d7b8, ClockPanel_FreeTextBoxes)
 
 /* func_0208d824: the colon's box made (from tile 0x8c, or 0xd8 in a room), unless there is
- * one: the colon centred, then cleared (the blink draws it). */
+ * one: the colon centered, then cleared (the blink draws it). */
 void ClockPanel_OpenColonBox(ClockPanel *panel)
 {
     if (panel->colon_box != NULL) {

@@ -199,7 +199,7 @@ CLEAN_AS(func_020802ec, VillagerMemory_NameFor)
 
 /* func_02080330: whether villager A ranks above villager B: A has a valid NpcId and B has not,
  * or by the first of these that differs: A knows more players; A has what func_02080cf0 looks
- * for and B has not; A is fonder of its favourite player; A's nearest memory date is fewer
+ * for and B has not; A is fonder of its favorite player; A's nearest memory date is fewer
  * minutes from `now`. 0 on a tie or with A's NpcId not valid. */
 int VillagerMemory_RanksAbove(u8 *villager_a, u8 *villager_b, const DateTime *now)
 {

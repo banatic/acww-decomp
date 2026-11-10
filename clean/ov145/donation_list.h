@@ -16,7 +16,7 @@
  * - A handle on a track at the right (a push button, ov002/push_button.h) scrolls the list
  *   when there are more than 8 rows: dragged, by touching the track, or held with A and moved
  *   with up and down.
- * - Choosing another tab fades the list's text colour out, changes the list and fades it back
+ * - Choosing another tab fades the list's text color out, changes the list and fades it back
  *   in (DonationList_StepFade).
  * - The panel's button 6 (ov002/button_panel.h, layout 5 with message 0x65) or B closes the
  *   scene; it tells main so with GroupParams_SetC4C(1) and the dispatcher's mode 0x44.
@@ -61,8 +61,8 @@ enum DonationListFlag {
     DONATION_FLAG_LIST_DIRTY = 0x8   /* `list_screen` to be queued for layer 4, until it is */
 };
 
-/* The fade of the list's text colour (`fade_mode`); `fade` goes from 3 (the colour of the
- * file) to 0 (its colour 7) and back. */
+/* The fade of the list's text color (`fade_mode`); `fade` goes from 3 (the color of the
+ * file) to 0 (its color 7) and back. */
 enum DonationListFade {
     DONATION_FADE_NONE = 0,
     DONATION_FADE_OUT = 1, /* down to 0, then the selected tab is shown */
@@ -151,7 +151,7 @@ typedef struct DonationList {
     u16 list_screen[DONATION_SCREEN_ENTRIES];  /* 0x14c6: layer 4's */
     u16 frame_screen[DONATION_SCREEN_ENTRIES]; /* 0x1cc6: "a_bg.bsc", layer 6's */
     u16 palette_file[0x10];                    /* 0x24c6: "bg_3.bpl" */
-    u16 palette[0x10];                         /* 0x24e6: its copy, colour 15 faded */
+    u16 palette[0x10];                         /* 0x24e6: its copy, color 15 faded */
     u8 pad_2506[2];
 } DonationList;
 
@@ -161,7 +161,7 @@ void DonationList_ClearFlags(DonationList *self, unsigned short flags);
 void DonationList_SetFlags(DonationList *self, unsigned short flags);
 int DonationList_TestFlags(DonationList *self, int flags);
 void DonationList_StepFade(DonationList *self);
-void DonationList_BlendTextColour(DonationList *self, int level);
+void DonationList_BlendTextColor(DonationList *self, int level);
 int DonationList_MoveCursor(DonationList *self, u32 keys);
 int DonationList_TabAtTouch(DonationList *self, int x, int y);
 int DonationList_Choose(DonationList *self, unsigned int place);

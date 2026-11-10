@@ -3,10 +3,10 @@
  * has been given (main/museum_record.h, items 0x12e8 + kind) swimming in the tanks of one of
  * its two rooms, the process's parameter saying which (data_ov004_022593a0):
  *
- *   0  the river room: kinds 0-34, in two tanks (centres data_ov004_022593dc and
+ *   0  the river room: kinds 0-34, in two tanks (centers data_ov004_022593dc and
  *      data_ov004_022593c4, 17.75 by 5.75); kinds below 17 and kind 25 in the first; five
  *      rocks the fish swim round;
- *   1  the sea room: kinds 35-55, in one tank (centre data_ov004_022593dc, 38.0 by 4.86; each
+ *   1  the sea room: kinds 35-55, in one tank (center data_ov004_022593dc, 38.0 by 4.86; each
  *      fish keeps to 26.0, 38.0 or 42.0 of its width); four rocks, and a body of another
  *      kind.
  *

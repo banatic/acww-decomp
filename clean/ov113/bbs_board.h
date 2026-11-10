@@ -9,7 +9,7 @@
  * - a post is shown as its date ("20YY" and "MMDD" in full-width digits), its number and its six
  *   lines of text drawn into characters of BG 3 (BbsBoard_ShowPost); showing it marks it read by
  *   the current player (BbsPost_MarkRead), and a mark on the board says whether it was;
- * - the posts' tabs (one OBJ a post, the oldest first, centred) and two arrows are drawn as OBJs
+ * - the posts' tabs (one OBJ a post, the oldest first, centered) and two arrows are drawn as OBJs
  *   over the board (BbsBoard_Draw).
  *
  * The cursor (`cursor`, BbsBoardCursor) is one of the four buttons at the bottom, the two arrows
@@ -111,7 +111,7 @@ typedef struct BbsBoard {
     u8 cursor;                                                 /* 0x009b: BbsBoardCursor */
     u8 return_sub_state;                                       /* 0x009c: the sub state the glide goes back to */
     u8 posts;                                                  /* 0x009d: Bbs_CountTownPosts */
-    u8 tabs_x;                                                 /* 0x009e: (15 - posts) * 4, the tabs centred */
+    u8 tabs_x;                                                 /* 0x009e: (15 - posts) * 4, the tabs centered */
     u8 pad_9f;                                                 /* 0x009f */
     u16 screen[BBS_BOARD_SCREEN_SIZE / 2];                     /* 0x00a0: "menu/bbs/b_bbs.bsc" */
     u8 line_chars[BBS_BOARD_LINES][BBS_BOARD_LINE_CHARS_SIZE]; /* 0x08a0: characters 0x11-0x100 */

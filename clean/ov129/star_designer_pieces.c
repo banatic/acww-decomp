@@ -191,7 +191,7 @@ CLEAN_AS(func_ov129_0229b9d8, StarDesigner_TouchFirst)
 /* The marks of the walk over the pieces left in StarDesigner_TakeOffPiece. */
 enum {
     STAR_DESIGNER_WALK_UNSEEN = 0,
-    STAR_DESIGNER_WALK_NEXT = 1, /* reached, its neighbours not yet looked at */
+    STAR_DESIGNER_WALK_NEXT = 1, /* reached, its neighbors not yet looked at */
     STAR_DESIGNER_WALK_DONE = 2,
     STAR_DESIGNER_WALK_EMPTY = 3 /* an empty slot */
 };
@@ -514,7 +514,7 @@ CLEAN_AS(func_ov129_0229bf88, StarDesigner_MarkDrawn)
 
 /* func_ov129_0229bfbc: the constellation of GroupParams' argument taken: when it exists its
  * pieces and name, the pieces mode with the end of the line at the first star of its first
- * piece, and the view put on that star (its tile's centre, in whole 4 pixels); else no piece,
+ * piece, and the view put on that star (its tile's center, in whole 4 pixels); else no piece,
  * an empty name and the empty mode. Its pieces marked drawn. */
 void StarDesigner_LoadConstellation(StarDesigner *self)
 {

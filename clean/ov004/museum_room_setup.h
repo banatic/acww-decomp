@@ -79,7 +79,7 @@ unsigned char MuseumSetupSpot_Kind(const MuseumSetupSpot *spot);
 u32 MuseumSetupSpot_FaceAngle(const MuseumSetupSpot *spot);
 int MuseumSetupSpot_Yaw(const MuseumSetupSpot *spot);
 
-/* A spot as the overlay's data describes it (0x18 bytes): the static initialiser builds each
+/* A spot as the overlay's data describes it (0x18 bytes): the static initializer builds each
  * spot from one (MuseumSetupSpot_Construct). `directions` has a bit for each quarter turn
  * (bit i for the yaw i * 0x4000) from which the spot is faced. */
 typedef struct MuseumSetupSpotSource {

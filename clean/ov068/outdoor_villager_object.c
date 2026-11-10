@@ -36,7 +36,7 @@
 
 /* The class's vtable. */
 extern const u8 data_ov068_022771c0[];
-/* Behaviour 0's draw hook (OutdoorVillagerObject_DrawWithItem), set when it starts. */
+/* Behavior 0's draw hook (OutdoorVillagerObject_DrawWithItem), set when it starts. */
 extern const MemberPointer data_ov068_02276eb0;
 /* The countdown its effect gets when the player swings item 0x1376 or 0x1377 at the villager
  * the state table names at 0x160 (600). */
@@ -88,7 +88,7 @@ extern Mtx43 data_021cfe68;
 #define OBJECT_NO_HANDLE (-1)
 #define OBJECT_NO_MINUTE 0xff
 
-/* The behaviours it starts with, and the statuses that give them. */
+/* The behaviors it starts with, and the statuses that give them. */
 #define OBJECT_DO_WALK 0
 #define OBJECT_DO_IN 3
 #define OBJECT_DO_12 12
@@ -107,9 +107,9 @@ static u32 *object_word(void *object, u32 offset)
     return (u32 *) (void *) object_at(object, offset);
 }
 
-static OutdoorVillagerBehaviour *object_behaviour(u8 *villager)
+static OutdoorVillagerBehavior *object_behavior(u8 *villager)
 {
-    return (OutdoorVillagerBehaviour *) (void *) object_at(villager, OUTDOOR_VILLAGER_BEHAVIOUR);
+    return (OutdoorVillagerBehavior *) (void *) object_at(villager, OUTDOOR_VILLAGER_BEHAVIOR);
 }
 
 static OutdoorVillagerEffect *object_effect(u8 *villager)
@@ -151,7 +151,7 @@ static u8 *object_record(u8 *villager)
 }
 
 /* func_ov068_0226cee0 (slot 0x68): a frame: the push count, the tally of its state entry (held
- * still while its action is busy), its behaviour, its effect, its mood and its watch; the byte
+ * still while its action is busy), its behavior, its effect, its mood and its watch; the byte
  * at 0xa05 cleared; 1. */
 int OutdoorVillagerObject_Frame(u8 *villager)
 {
@@ -160,7 +160,7 @@ int OutdoorVillagerObject_Frame(u8 *villager)
     if (tally != NULL) {
         VillagerTally_Tick(tally, SceneAction_IsBusy(object_action(villager)));
     }
-    OutdoorVillagerBehaviour_Tick(object_behaviour(villager), villager);
+    OutdoorVillagerBehavior_Tick(object_behavior(villager), villager);
     OutdoorVillagerEffect_Tick(object_effect(villager), villager);
     VillagerMood_Update((VillagerMood *) (void *) object_at(villager, OUTDOOR_VILLAGER_MOOD), villager);
     OutdoorVillagerWatch_Update((OutdoorVillagerWatch *) (void *) object_at(villager, OUTDOOR_VILLAGER_WATCH), villager);
@@ -274,7 +274,7 @@ CLEAN_AS(func_ov068_0226d664, OutdoorVillagerObject_TakeCountdown)
  * items 0x1376 and 0x1377: its record's byte 0x1e halved (when it has a record; the record is
  * asked for twice); then, for the villager the state table names at 0x160, its effect stopped
  * with a countdown of data_ov068_0227672c and 1; otherwise, remembering the player, the byte at
- * 0xa05 set (behaviour 19 follows). 0 for other items and then. */
+ * 0xa05 set (behavior 19 follows). 0 for other items and then. */
 int OutdoorVillagerObject_OnItemSwung(u8 *villager, u16 *item)
 {
     u16 swung = *item;
@@ -333,7 +333,7 @@ int OutdoorVillagerObject_Draw(u8 *villager)
 }
 CLEAN_AS(func_ov068_0226d770, OutdoorVillagerObject_Draw)
 
-/* func_ov068_0226d808 (behaviour 0's draw hook): its model matrix made the current one, the
+/* func_ov068_0226d808 (behavior 0's draw hook): its model matrix made the current one, the
  * object drawn (SceneObject_Draw) and then its held item put in its hand; whether it was
  * drawn. */
 int OutdoorVillagerObject_DrawWithItem(u8 *villager)
@@ -348,8 +348,8 @@ int OutdoorVillagerObject_DrawWithItem(u8 *villager)
 CLEAN_AS(func_ov068_0226d808, OutdoorVillagerObject_DrawWithItem)
 
 /* func_ov068_0226d850 (slot 0x00): the start. After the town villager's
- * (VillagerSceneObject_Start; 0 when it fails): behaviour 0's draw hook, the watch held on the
- * player, the held item's first check, the first behaviour by its town record (the header),
+ * (VillagerSceneObject_Start; 0 when it fails): behavior 0's draw hook, the watch held on the
+ * player, the held item's first check, the first behavior by its town record (the header),
  * and its effect set up; 1. The town record is taken before the town villager's start. */
 int OutdoorVillagerObject_Start(u8 *villager)
 {
@@ -357,28 +357,28 @@ int OutdoorVillagerObject_Start(u8 *villager)
     if (VillagerSceneObject_Start(villager) == 0) {
         return 0;
     }
-    OutdoorVillagerBehaviour *behaviour = object_behaviour(villager);
+    OutdoorVillagerBehavior *behavior = object_behavior(villager);
     *(MemberPointer *) (void *) object_at(villager, OBJECT_DRAW_HOOK) = data_ov068_02276eb0;
     OutdoorVillagerWatch_HoldOnPlayer((OutdoorVillagerWatch *) (void *) object_at(villager, OUTDOOR_VILLAGER_WATCH), villager);
     int named = VillagerState_BirthdayGreeter();
-    OutdoorVillagerWalks_InitItemCheck(behaviour);
+    OutdoorVillagerWalks_InitItemCheck(behavior);
     if (named == VillagerStatus_Index(record)) {
-        OutdoorVillagerBehaviour_Start(behaviour, villager, OBJECT_DO_GREETER);
+        OutdoorVillagerBehavior_Start(behavior, villager, OBJECT_DO_GREETER);
     } else if (VillagerState_BirthdayVillager() == VillagerStatus_Index(record)) {
-        OutdoorVillagerBehaviour_Start(behaviour, villager, OBJECT_DO_12);
+        OutdoorVillagerBehavior_Start(behavior, villager, OBJECT_DO_12);
     } else {
         int status = VillagerStatus_Get(record);
         if (status == OBJECT_STATUS_WALK) {
-            OutdoorVillagerBehaviour_Start(behaviour, villager, OBJECT_DO_WALK);
+            OutdoorVillagerBehavior_Start(behavior, villager, OBJECT_DO_WALK);
             u16 item;
             VillagerSceneHeld_Item(&item, villager);
             if (item != ITEM_CODE_NONE) {
                 OutdoorVillagerObject_ShowHeldItem(villager);
             }
         } else if (status >= OBJECT_STATUS_12_FIRST && status <= OBJECT_STATUS_12_LAST) {
-            OutdoorVillagerBehaviour_Start(behaviour, villager, OBJECT_DO_12);
+            OutdoorVillagerBehavior_Start(behavior, villager, OBJECT_DO_12);
         } else {
-            OutdoorVillagerBehaviour_Start(behaviour, villager, OBJECT_DO_IN);
+            OutdoorVillagerBehavior_Start(behavior, villager, OBJECT_DO_IN);
         }
     }
     OutdoorVillagerEffect_Init(object_effect(villager));
@@ -435,7 +435,7 @@ CLEAN_AS(func_ov068_0226da28, OutdoorVillagerObject_IsLinked)
 
 /* func_ov068_0226da64 (made by the profile record data_ov068_022771a0): the object, zeroed on
  * the auxiliary heap, made as a town villager and given this class's vtable and its members:
- * the watch, the behaviour, the held item link and the effect. Null when the heap has no
+ * the watch, the behavior, the held item link and the effect. Null when the heap has no
  * room. */
 u8 *OutdoorVillagerObject_New(void)
 {
@@ -446,7 +446,7 @@ u8 *OutdoorVillagerObject_New(void)
     VillagerSceneObject_Construct(villager);
     *(const u8 **) (void *) villager = data_ov068_022771c0;
     OutdoorVillagerWatch_Construct((OutdoorVillagerWatch *) (void *) object_at(villager, OUTDOOR_VILLAGER_WATCH));
-    OutdoorVillagerBehaviour_Construct(object_behaviour(villager));
+    OutdoorVillagerBehavior_Construct(object_behavior(villager));
     HeldItemLink_Construct(object_link(villager));
     OutdoorVillagerEffect_Construct(object_effect(villager));
     return villager;

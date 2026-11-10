@@ -155,15 +155,15 @@ void SceneExit_Clear(SceneExit *exit)
 }
 CLEAN_AS(func_020b5e88, SceneExit_Clear)
 
-/* func_020b5fc8: where to stand at the door of exit `index`: the centre of the tile `from` is
+/* func_020b5fc8: where to stand at the door of exit `index`: the center of the tile `from` is
  * on, at the height of `from`, but along the way the door faces (z for facings 0 and 0x8000, x
  * for 0x4000 and 0xc000) `from`'s own coordinate. Without such an exit, `from` itself and 0.
- * QUIRK: with `point` the same vector as `from`, the coordinate kept is the tile centre's. */
+ * QUIRK: with `point` the same vector as `from`, the coordinate kept is the tile center's. */
 int SceneExit_DoorPoint(const SceneExit *entry, int index, Vec3 *point, const Vec3 *from)
 {
     int kind;
     s16 facing;
-    Vec3 centre;
+    Vec3 center;
 
     if (SceneExit_DoorInfo(entry, index, &kind, &facing) == 0) {
         point->x = from->x;
@@ -171,10 +171,10 @@ int SceneExit_DoorPoint(const SceneExit *entry, int index, Vec3 *point, const Ve
         point->z = from->z;
         return 0;
     }
-    AcreTile_SnapToTileCentre(&centre, from);
-    fx32 z = centre.z;
+    AcreTile_SnapToTileCenter(&center, from);
+    fx32 z = center.z;
     fx32 y = from->y;
-    fx32 x = centre.x;
+    fx32 x = center.x;
     point->x = x;
     point->y = y;
     point->z = z;

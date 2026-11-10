@@ -37,11 +37,11 @@ typedef struct NearSpotTile {
  *   a column (starting at that same column, one more to the side each step) from `from`'s row
  *   to 4 tiles to +z, one more each step up to the map's last row;
  * each picking one of its tiles at random. When both found one, either at random
- * (func_020644cc(10)); else the one that found. The spot is set to that tile's centre with a
+ * (func_020644cc(10)); else the one that found. The spot is set to that tile's center with a
  * random quarter turn and marked found; without a map or a tile the found mark is cleared.
  * Whether a tile was found.
  * BUG: in the ROM, a search not made on the first step (the first row already past the map's
- * last row, or the first column off the map) leaves its result an uninitialised stack word,
+ * last row, or the first column off the map) leaves its result an uninitialized stack word,
  * and a nonzero one would pick tile (0, 0) at once. Here it counts as nothing found. */
 int NearSpot_Pick(NearSpot *spot, const Position *from, int side)
 {
@@ -64,7 +64,7 @@ int NearSpot_Pick(NearSpot *spot, const Position *from, int side)
     int row_z = from_z + NEAR_SPOT_FIRST_ROW;
     int column_x = row_end_x;
     int column_end_z = from_z + NEAR_SPOT_FIRST_COLUMN_END;
-    Vec3 centre = {0, 0, 0};
+    Vec3 center = {0, 0, 0};
     u16 row_bits[NEAR_SPOT_BIT_WORDS];
     u16 column_bits[NEAR_SPOT_BIT_WORDS];
     int row_found = 0;
@@ -107,8 +107,8 @@ int NearSpot_Pick(NearSpot *spot, const Position *from, int side)
         NearSpot_ClearFound(spot);
         return 0;
     }
-    AcreTile_TileCentre(&centre, (u32) picked->x, (u32) picked->z);
-    NearSpot_SetFromPosition(spot, &centre);
+    AcreTile_TileCenter(&center, (u32) picked->x, (u32) picked->z);
+    NearSpot_SetFromPosition(spot, &center);
     u32 facing = MainRandom_Below(4) & 3;
     spot->flags = (u8) ((spot->flags & ~NEAR_SPOT_FACING_MASK) | (facing << NEAR_SPOT_FACING_SHIFT));
     NearSpot_SetFound(spot);

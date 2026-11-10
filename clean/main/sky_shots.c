@@ -496,17 +496,17 @@ SkyShotRequest *SkyShots_ConstructRequest(SkyShotRequest *request)
 CLEAN_AS(func_020bec04, SkyShots_ConstructRequest)
 
 /* func_020bf308: whether a running shot that can hit is in the box of `width` by `height`
- * (scaled by the object's scale) centred `offset_y` (scaled) below the object; each such shot
+ * (scaled by the object's scale) centered `offset_y` (scaled) below the object; each such shot
  * is marked hit. A shot reaches 1.0 around its point, and below it by its speed. */
 int SkyShots_HitsBox(SkyObject *object, fx32 width, fx32 height, fx32 offset_y)
 {
     fx32 half_width = FX_MulFunc(width, object->scale_x) / 2;
     fx32 half_height = FX_MulFunc(height, object->scale_y) / 2;
-    fx32 centre_y = object->position.y + FX_MulFunc(offset_y, object->scale_y);
+    fx32 center_y = object->position.y + FX_MulFunc(offset_y, object->scale_y);
     fx32 left = object->position.x - half_width;
     fx32 right = object->position.x + half_width;
-    fx32 top = centre_y - half_height;
-    fx32 bottom = centre_y + half_height;
+    fx32 top = center_y - half_height;
+    fx32 bottom = center_y + half_height;
     int hit = 0;
     for (int i = 0; i < SKY_SHOTS_PLAYERS * 3; i++) {
         SkyObjectBody *shot = SkyObject_Body(&data_021f9a3c[i]);

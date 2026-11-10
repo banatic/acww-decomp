@@ -19,7 +19,7 @@ extern const u32 data_020e5944[]; /* LayerTaskPair's */
 /* LayerLoad.layer while there is no load. */
 #define LAYER_LOAD_NO_LAYER 0xff
 
-/* The 16-colour characters one scan line stands for (as a shift). */
+/* The 16-color characters one scan line stands for (as a shift). */
 #define LAYER_LOAD_CHARS_LINE_SHIFT 6
 
 typedef void LayerTaskReset(LayerTask *task);

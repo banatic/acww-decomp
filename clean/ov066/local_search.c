@@ -140,7 +140,7 @@ CLEAN_AS(func_ov066_0226768c, LocalSearch_EndScan)
 
 /* func_ov066_022676a0: WM_StartScan's callback, once per channel scanned: a parent found is
  * listed, then the next channel is scanned while the search is on; once it is off the list's
- * expiry alarms are cancelled and the scan ends. A WM error stops the library. */
+ * expiry alarms are canceled and the scan ends. A WM error stops the library. */
 void LocalSearch_OnScan(LocalScanResult *result)
 {
     if (LocalWireless_CheckReset()) {
@@ -224,7 +224,7 @@ int LocalSearch_AcceptParent(LocalScanResult *parent, LocalGameHeader *header)
 }
 CLEAN_AS(func_ov066_0226783c, LocalSearch_AcceptParent)
 
-/* func_ov066_02267908: the search ends now: the session told, the delayed stop cancelled. */
+/* func_ov066_02267908: the search ends now: the session told, the delayed stop canceled. */
 void LocalSearch_StopNow(void)
 {
     data_ov066_0226bdf4->flags |= LOCAL_SESSION_SEARCH_STOPPED;
@@ -306,7 +306,7 @@ void LocalSearch_SetScanParam(void)
 CLEAN_AS(func_ov066_02267b58, LocalSearch_SetScanParam)
 
 /* func_ov066_02267be0: the search is off (the scan ends after the channel being scanned) and
- * its timeout cancelled. */
+ * its timeout canceled. */
 void LocalSearch_Stop(void)
 {
     data_ov066_0226bdf0->flags &= ~LOCAL_SEARCH_ACTIVE;
@@ -384,7 +384,7 @@ void LocalSearch_SetFilter(u32 filter)
 CLEAN_AS(func_ov066_02267e00, LocalSearch_SetFilter)
 
 /* func_ov066_02267e28: the search freed: its parent lists (last first), its buffers, its alarms
- * cancelled. */
+ * canceled. */
 void LocalSearch_Destroy(void)
 {
     for (int i = data_ov066_0226bdec->channel_count - 1; i >= 0; i--) {
@@ -451,7 +451,7 @@ void LocalSearch_RenewExpiry(LocalParentList *list, int milliseconds)
 }
 CLEAN_AS(func_ov066_0226a2e8, LocalSearch_RenewExpiry)
 
-/* func_ov066_0226a3b0: `list` emptied: its alarms cancelled, its parents zeroed and the zeros
+/* func_ov066_0226a3b0: `list` emptied: its alarms canceled, its parents zeroed and the zeros
  * stored from the cache to memory. */
 void LocalSearch_ClearList(LocalParentList *list)
 {
@@ -462,7 +462,7 @@ void LocalSearch_ClearList(LocalParentList *list)
 }
 CLEAN_AS(func_ov066_0226a3b0, LocalSearch_ClearList)
 
-/* func_ov066_0226a404: the expiry alarms of `list` cancelled, by their tag. */
+/* func_ov066_0226a404: the expiry alarms of `list` canceled, by their tag. */
 void LocalSearch_CancelExpiry(LocalParentList *list)
 {
     OS_CancelAlarms(list->tag + LOCAL_LIST_ALARM_TAG);
@@ -573,7 +573,7 @@ int LocalSearch_ListParent(LocalParentList *list, int lifetime, const u8 *mac, u
 }
 CLEAN_AS(func_ov066_0226a494, LocalSearch_ListParent)
 
-/* func_ov066_0226a7d8: `list` freed: emptied to no capacity, its alarms cancelled, its alarms
+/* func_ov066_0226a7d8: `list` freed: emptied to no capacity, its alarms canceled, its alarms
  * and parents handed back. */
 void LocalSearch_FreeList(LocalParentList *list)
 {

@@ -30,7 +30,7 @@ void MysteryCatRecord_SetChecksum(MysteryCatRecord *record, u16 checksum);
 int MysteryCatRecord_IsInUse(const MysteryCatRecord *record);
 u8 MysteryCatRecord_Impression(const MysteryCatRecord *record);
 
-/* The record's first bytes are a design (design.h): a blank one is all colour 15 with
+/* The record's first bytes are a design (design.h): a blank one is all color 15 with
  * palette 0. */
 struct Design;
 

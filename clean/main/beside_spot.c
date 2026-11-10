@@ -27,7 +27,7 @@ static int beside_spot_side(const u8 *spot)
 }
 
 /* func_02087a78: the side and the facing picked if they were not yet; the position set to the
- * centre of the tile at the side's offset from the request's position (at height 0), and the
+ * center of the tile at the side's offset from the request's position (at height 0), and the
  * angle: facing the request's position once 5 of spaceship part 0x1568 were counted, else 0 when the
  * count has its mark, else the quarter turn picked. */
 void BesideSpot_Place(u8 *spot, Vec3 *position, u16 *angle_y, const SpawnerRequest *request)
@@ -37,7 +37,7 @@ void BesideSpot_Place(u8 *spot, Vec3 *position, u16 *angle_y, const SpawnerReque
     }
     const BesideSpotOffset *offset = &data_020d06ec[beside_spot_side(spot)];
     Vec3 beside = {request->position.x + offset->x, 0, request->position.z + offset->z};
-    AcreTile_SnapToTileCentre(position, &beside);
+    AcreTile_SnapToTileCenter(position, &beside);
 
     if (SpaceshipParts_Get(data_021ebcd2) >= BESIDE_SPOT_SPACESHIP_PARTS_FACE) {
         *angle_y = (u16) data_020d06e4[beside_spot_side(spot)];

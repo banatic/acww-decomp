@@ -7,7 +7,7 @@
  *
  *   - for each snowman map object (0xb001-0xb003, map_code.h) standing in the town's 4 x 4
  *     inner acres, the snowman's two balls (group 2 + 2n the head, 3 + 2n the body) at the
- *     centre of its tile, when main still records snowman n (snowmen.h); a snowman object main
+ *     center of its tile, when main still records snowman n (snowmen.h); a snowman object main
  *     no longer records is taken off the map;
  *   - the two loose balls (groups 0 and 1), in the snow season, in the town itself (scene 0),
  *     when no snowman was built today and fewer than three are recorded: at the points main

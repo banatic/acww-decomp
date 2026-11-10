@@ -36,7 +36,7 @@ typedef struct SceneClaimExit {
     u8 scene; /* 0x00: where the exit leads */
     u8 pad_01[3];
     Vec3 position;  /* 0x04: where the player stands to take it */
-    Vec3 next_tile; /* 0x10: the player's x, the z of the centre of the tile after the
+    Vec3 next_tile; /* 0x10: the player's x, the z of the center of the tile after the
                      * player's, height 0 */
     u16 angle;      /* 0x1c: the angle the player takes it at */
     u8 exit;        /* 0x1e: its number in the exit table; 0xff for none */

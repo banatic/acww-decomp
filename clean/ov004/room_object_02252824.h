@@ -1,5 +1,5 @@
 /* A class of overlay 4's room objects (vtable 0x02252824, receiver part 0x022528d0, 0x848 bytes)
- * that shows its switch through its material colour animation (RoomObject.anims, ROOM_ANIM_MATERIAL,
+ * that shows its switch through its material color animation (RoomObject.anims, ROOM_ANIM_MATERIAL,
  * of variant 0). Its state (RoomObject02252824.state) runs through tables of member pointers
  * (member_pointer.h):
  *

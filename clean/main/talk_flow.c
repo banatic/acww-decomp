@@ -506,11 +506,11 @@ void TalkFlow_End(TalkObject *talk)
 }
 CLEAN_AS(func_02067b3c, TalkFlow_End)
 
-/* func_02067b54: the walk goes on with the next message: the walker's colour reset, the texts
+/* func_02067b54: the walk goes on with the next message: the walker's color reset, the texts
  * loaded from the villager and the others cleared, and a new page. */
 void TalkFlow_NextMessage(TalkObject *talk)
 {
-    TalkTags_ResetColour(&talk->walker);
+    TalkTags_ResetColor(&talk->walker);
     TalkObject_ClearRandomNpc(talk);
     TalkObject_ClearOtherPlayer(talk);
     TalkObject_ClearCatchphrase(talk);

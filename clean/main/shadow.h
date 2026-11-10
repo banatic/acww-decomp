@@ -11,7 +11,7 @@
  * obj_sdw_tr), running back from the object along -z and leaning across with the time of day
  * (ShadowLight_Update). Five strips exist, set up together (ObjShadow_LoadAll).
  *
- * Both fade with the light: ShadowLight_Update sets the alpha of both kinds from the colour of
+ * Both fade with the light: ShadowLight_Update sets the alpha of both kinds from the color of
  * the light and the scene's base value, at most 31. */
 #ifndef CLEAN_MAIN_SHADOW_H
 #define CLEAN_MAIN_SHADOW_H

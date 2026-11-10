@@ -100,13 +100,13 @@ void BuildingShapes_Load(void)
 }
 CLEAN_AS(func_020b3bd4, BuildingShapes_Load)
 
-/* func_020b3c58: the rectangle around the shape's 'S' tiles, as its centre and its size in
- * units of position (each tile reaching half a tile either side of its centre). Without 'S'
+/* func_020b3c58: the rectangle around the shape's 'S' tiles, as its center and its size in
+ * units of position (each tile reaching half a tile either side of its center). Without 'S'
  * tiles it is the building's own tile.
  * QUIRK: with 'S' tiles the smallest offset starts at 1 and the largest at -1 rather than at
  * the first tile's, so on each axis the smallest is never above 1 and the largest never below
  * -1, whatever the tiles. */
-void BuildingShapes_Bounds(BuildingShapeEntry *shape, int *centre_x, int *centre_z, int *width, int *depth)
+void BuildingShapes_Bounds(BuildingShapeEntry *shape, int *center_x, int *center_z, int *width, int *depth)
 {
     int min_x = 0;
     int max_x = 0;
@@ -145,8 +145,8 @@ void BuildingShapes_Bounds(BuildingShapeEntry *shape, int *centre_x, int *centre
     int left = min_x * BUILDING_SHAPES_TILE - BUILDING_SHAPES_HALF_TILE;
     int far = max_z * BUILDING_SHAPES_TILE + BUILDING_SHAPES_HALF_TILE;
     int near = min_z * BUILDING_SHAPES_TILE - BUILDING_SHAPES_HALF_TILE;
-    *centre_x = building_shapes_half(right + left);
-    *centre_z = building_shapes_half(far + near);
+    *center_x = building_shapes_half(right + left);
+    *center_z = building_shapes_half(far + near);
     *width = building_shapes_abs(right - left);
     *depth = building_shapes_abs(far - near);
 }

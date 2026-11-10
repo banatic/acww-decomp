@@ -35,7 +35,7 @@ extern const u8 data_ov003_02236b88[];
 extern const u8 data_ov003_02236b1c[];
 /* The second start's set by group. */
 extern const int data_ov003_022368ec[];
-/* The emitter's distance from the tile's centre and its radius, by group and stage. */
+/* The emitter's distance from the tile's center and its radius, by group and stage. */
 extern const int data_ov003_02236bb8[][4];
 extern const int data_ov003_02236be8[][4];
 /* The looks: by group, motion, stage and which part (GrowthPart.first), each level NULL for
@@ -71,9 +71,9 @@ CLEAN_AS(func_ov003_02223c58, GrowthPart_InitAll)
 
 /* func_ov003_02223c7c: the first part of a growth model of `mode` at `stage` (the code `item`
  * at `tile`; `count`: the times the model started parts before): a free part (none: NULL)
- * takes the group and set of the code (GrowthPart_Choose), the tile's centre, its motion by
+ * takes the group and set of the code (GrowthPart_Choose), the tile's center, its motion by
  * mode (GROWTH_PART_SWING after the first time); when the table has a look for it, the set
- * starts at the tile's centre with the set-ups of data_ov003_0223a1b8, else the part is free
+ * starts at the tile's center with the set-ups of data_ov003_0223a1b8, else the part is free
  * again. */
 GrowthPart *GrowthPart_StartFirst(GrowthParts *parts, int mode, int stage, const u16 *item, const TileChangesTile *tile,
                                   int count)
@@ -135,7 +135,7 @@ CLEAN_AS(func_ov003_02223d14, GrowthPart_StartSecond)
  * 0x26-0x2e and code 0x67 group 0 with the tile's parity, set 0x22 (0x24 when
  * data_ov003_02236b88 marks the parity and the foliage period of the year); the lines 0x5d-0x65 and codes
  * 0x6b and 0x6d group 1, variant 3, set 0x25; the lines 0xc8-0xd3 group 2, variant 3, set
- * 0x27; any other code group 0, variant 2, set 0x22. `position` becomes the tile's centre. */
+ * 0x27; any other code group 0, variant 2, set 0x22. `position` becomes the tile's center. */
 void GrowthPart_Choose(GrowthParts *parts, GrowthPart *part, int *group, int *set, Vec3 *position, const u16 *item,
                        const TileChangesTile *tile)
 {
@@ -161,7 +161,7 @@ void GrowthPart_Choose(GrowthParts *parts, GrowthPart *part, int *group, int *se
         part->variant = 2;
         *set = GROWTH_PART_SET_TREE;
     }
-    AcreTile_TileCentre(position, (u32) tile->x, (u32) tile->z);
+    AcreTile_TileCenter(position, (u32) tile->x, (u32) tile->z);
 }
 CLEAN_AS(func_ov003_02223dc8, GrowthPart_Choose)
 

@@ -37,7 +37,7 @@ extern Heap *data_021fbe94;
 /* The touch, in pixels of the sub screen (main's bytes). */
 extern u8 data_021f6c58, data_021f6c54;
 
-/* The OBJs are drawn on the sub screen, 0x80 and 0x60 being its centre. */
+/* The OBJs are drawn on the sub screen, 0x80 and 0x60 being its center. */
 #define SOFT_KEYBOARD_SCREEN_SUB 1
 #define SOFT_KEYBOARD_TOUCH_X() ((int) data_021f6c58 - 0x80)
 #define SOFT_KEYBOARD_TOUCH_Y() ((int) data_021f6c54 - 0x60)

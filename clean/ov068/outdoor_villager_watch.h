@@ -7,7 +7,7 @@
  * the watch keeps. Looking at the player and failing to see it, the villager looks for an
  * insect within 0x5000 of it, then a fish shadow; it follows that thing's point while the
  * thing is still there (its kind unchanged) and within its look's range, else it looks at the
- * player again. When something else takes the look (its kind changes) or a behaviour holds the
+ * player again. When something else takes the look (its kind changes) or a behavior holds the
  * watch (OutdoorVillagerWatch_Hold), the watch stops until OutdoorVillagerWatch_LookAtPlayer. */
 #ifndef CLEAN_OV068_OUTDOOR_VILLAGER_WATCH_H
 #define CLEAN_OV068_OUTDOOR_VILLAGER_WATCH_H

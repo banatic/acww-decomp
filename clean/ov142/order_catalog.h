@@ -98,7 +98,7 @@ enum OrderCatalogPlace {
     ORDER_CATALOG_PLACE_NONE = 0x19
 };
 
-/* The fade of the rows' text (colour 15 of the rows' palettes, towards colour 8) on a change of
+/* The fade of the rows' text (colour 15 of the rows' palettes, towards color 8) on a change of
  * category (`fade_state`). */
 enum OrderCatalogFade {
     ORDER_CATALOG_FADE_NONE = 0,

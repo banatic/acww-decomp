@@ -3,7 +3,7 @@
  * Main keeps the three snowmen of the town (data_021f3b56, a SnowmenRecord each, handed to
  * these functions as `records`) and the two loose balls' positions and sizes from one visit to
  * the next (data_021f4ae8, Snowmen_LooseBalls). A snowman stands on the town's map as a map
- * object (func_0204bb54 recognises it, func_0204bb2c gives its number) in one of the 4 x 4
+ * object (func_0204bb54 recognizes it, func_0204bb2c gives its number) in one of the 4 x 4
  * inner acres.
  *
  * A snowman is recorded when a ball is put on another (Snowmen_Add): the day it was built (the

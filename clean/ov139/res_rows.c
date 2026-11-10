@@ -58,7 +58,7 @@ extern Heap *data_021fbe94; /* the current heap */
 
 extern void MIi_CpuCopy16(const void *source, void *destination, u32 size);
 
-/* The rows' colours: row N in colour 14 - N, the background in 15; a colour of 0xff for a row
+/* The rows' colors: row N in color 14 - N, the background in 15; a color of 0xff for a row
  * asks for the usual 15 on 14. */
 #define RES_ROWS_ROW_COLOR(row) ((u8) (14 - (row)))
 #define RES_ROWS_BACKGROUND_COLOR 15
@@ -79,8 +79,8 @@ static int res_rows_div(int numerator, int divisor)
     return numerator / divisor;
 }
 
-/* A label's box opened on the block's layer at `chars`, `cells` wide, in `color` on colour 15
- * (or the usual 15 on 14), and shown centred. */
+/* A label's box opened on the block's layer at `chars`, `cells` wide, in `color` on color 15
+ * (or the usual 15 on 14), and shown centered. */
 static void res_rows_show_label(ResRows *self, TextLabel *label, int chars, int cells, int color)
 {
     int text_color = 0xf;
@@ -190,7 +190,7 @@ void ResRows_ReleaseLabels(ResRows *self)
 }
 CLEAN_AS(func_ov139_02299770, ResRows_ReleaseLabels)
 
-/* func_ov139_02299798: a row emptied, in its colour. */
+/* func_ov139_02299798: a row emptied, in its color. */
 void ResRows_ClearRow(ResRows *self, int row)
 {
     u8 color = RES_ROWS_ROW_COLOR(row);
@@ -201,7 +201,7 @@ void ResRows_ClearRow(ResRows *self, int row)
 CLEAN_AS(func_ov139_02299798, ResRows_ClearRow)
 
 /* func_ov139_022997c0: a row set from its two names (six characters each, one after the
- * other), in its colour. */
+ * other), in its color. */
 void ResRows_SetRow(ResRows *self, int row, const u16 *names)
 {
     u8 color = RES_ROWS_ROW_COLOR(row);
@@ -213,7 +213,7 @@ CLEAN_AS(func_ov139_022997c0, ResRows_SetRow)
 
 /* func_ov139_022997f0: the three button captions on the sub screen's OBJs: menu messages 0x65
  * "Quit" (from character 0x93), 0xc2 "Decide" (0x8d) and 0xc1 "Other" (0x99), 6 cells each,
- * centred. */
+ * centered. */
 void ResRows_MakeButtonCaptions(ResRows *self)
 {
     static const struct {
@@ -230,8 +230,8 @@ void ResRows_MakeButtonCaptions(ResRows *self)
 }
 CLEAN_AS(func_ov139_022997f0, ResRows_MakeButtonCaptions)
 
-/* func_ov139_02299888: a row's colour (14 - `row`) made `step` of `steps` of the way from
- * colour 15 to colour `color` of the file's palette, each 5-bit channel rounded down (in a
+/* func_ov139_02299888: a row's color (14 - `row`) made `step` of `steps` of the way from
+ * color 15 to color `color` of the file's palette, each 5-bit channel rounded down (in a
  * byte), and the palette queued.
  * REQUIRES: `row` is 0-14 and `color` 0-15 (the game passes rows 0-5); others reach past the
  * palettes as in the game. */
@@ -262,7 +262,7 @@ void ResRows_LoadObjFiles(ResRows *self)
 }
 CLEAN_AS(func_ov139_02299964, ResRows_LoadObjFiles)
 
-/* func_ov139_022999c4: the six rows emptied, in colour 14. */
+/* func_ov139_022999c4: the six rows emptied, in color 14. */
 void ResRows_ClearRows(ResRows *self)
 {
     for (int i = 0; i < RES_ROWS_ROWS; i++) {

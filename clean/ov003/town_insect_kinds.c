@@ -536,7 +536,7 @@ short TownInsectKind_RandomAngle(void)
 }
 CLEAN_AS(func_ov003_02230cc0, TownInsectKind_RandomAngle)
 
-/* func_ov003_02230ce8: an insect begins its behaviour. Unless let go or hidden, it is shown,
+/* func_ov003_02230ce8: an insect begins its behavior. Unless let go or hidden, it is shown,
  * turned to `angle_y`, its point (TownInsect.target) is where it was, and its y becomes `height`
  * sixteenths of 1.0, over the ground's word 0x3c (CollisionGround.limit) when `on_ground`. Then:
  * its angle about x, its byte 0x255 at `reached` (what byte 0x254 must reach), its reach

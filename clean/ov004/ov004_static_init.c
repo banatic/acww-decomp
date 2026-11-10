@@ -1,4 +1,4 @@
-/* Overlay 4's static initialisers (ov004_static_init.h). */
+/* Overlay 4's static initializers (ov004_static_init.h). */
 #include "ov004_static_init.h"
 
 #include "autoload_2/vector.h"
@@ -16,7 +16,7 @@
 #include "room_pushes.h"
 #include "room_preview.h"
 
-/* ---- What the initialisers share */
+/* ---- What the initializers share */
 
 /* The record __register_global_object links an object into, so that its destructor runs when
  * the overlay goes. */
@@ -56,7 +56,7 @@ static void ov004_init_copy(MemberPointer *table, const MemberPointer *const *co
 }
 
 /* An entry of a talk's steps (cafe_master.h's CafeMasterTalkStep, flea_market_buyer.h's
- * FleaMarketBuyerTalkStep): a member pointer and a flag of its own, which the initialiser
+ * FleaMarketBuyerTalkStep): a member pointer and a flag of its own, which the initializer
  * leaves as it is. */
 typedef struct Ov004InitTalkStep {
     MemberPointer run;
@@ -72,33 +72,33 @@ static void ov004_init_copy_talk(Ov004InitTalkStep *table, const MemberPointer *
     }
 }
 
-/* A colour of four 5-bit components (the fourth always 31). */
-typedef struct Ov004InitColour {
+/* A color of four 5-bit components (the fourth always 31). */
+typedef struct Ov004InitColor {
     u8 c0;
     u8 c1;
     u8 c2;
     u8 c3;
-} Ov004InitColour;
+} Ov004InitColor;
 
-static void ov004_init_colour(Ov004InitColour *colour, u8 c0, u8 c1, u8 c2, u8 c3)
+static void ov004_init_color(Ov004InitColor *color, u8 c0, u8 c1, u8 c2, u8 c3)
 {
-    colour->c0 = c0;
-    colour->c1 = c1;
-    colour->c2 = c2;
-    colour->c3 = c3;
+    color->c0 = c0;
+    color->c1 = c1;
+    color->c2 = c2;
+    color->c3 = c3;
 }
 
-/* The six colours several source files define for themselves: red, blue, yellow, green, cyan
- * and grey, in that order. */
-static void ov004_init_colours(Ov004InitColour *red, Ov004InitColour *blue, Ov004InitColour *yellow, Ov004InitColour *green,
-                               Ov004InitColour *cyan, Ov004InitColour *grey)
+/* The six colors several source files define for themselves: red, blue, yellow, green, cyan
+ * and gray, in that order. */
+static void ov004_init_colors(Ov004InitColor *red, Ov004InitColor *blue, Ov004InitColor *yellow, Ov004InitColor *green,
+                              Ov004InitColor *cyan, Ov004InitColor *gray)
 {
-    ov004_init_colour(red, 31, 20, 20, 31);
-    ov004_init_colour(blue, 20, 20, 31, 31);
-    ov004_init_colour(yellow, 31, 31, 20, 31);
-    ov004_init_colour(green, 20, 31, 20, 31);
-    ov004_init_colour(cyan, 20, 31, 31, 31);
-    ov004_init_colour(grey, 20, 24, 24, 31);
+    ov004_init_color(red, 31, 20, 20, 31);
+    ov004_init_color(blue, 20, 20, 31, 31);
+    ov004_init_color(yellow, 31, 31, 20, 31);
+    ov004_init_color(green, 20, 31, 20, 31);
+    ov004_init_color(cyan, 20, 31, 31, 31);
+    ov004_init_color(gray, 20, 24, 24, 31);
 }
 
 /* A point set and registered with an empty destructor. */
@@ -125,9 +125,9 @@ static void ov004_init_points(const Ov004InitPoint *points, int count)
     }
 }
 
-/* ---- The initialisers, in address order */
+/* ---- The initializers, in address order */
 
-extern Ov004InitColour data_ov004_02256c4c, data_ov004_02256c6c, data_ov004_02256c7c, data_ov004_02256c48, data_ov004_02256c5c,
+extern Ov004InitColor data_ov004_02256c4c, data_ov004_02256c6c, data_ov004_02256c7c, data_ov004_02256c48, data_ov004_02256c5c,
     data_ov004_02256c58;
 extern Vec3 data_ov004_02256ecc, data_ov004_02256ed8, data_ov004_02256ee4, data_ov004_02256ef0, data_ov004_02256efc,
     data_ov004_02256f08, data_ov004_02256f14, data_ov004_02256f20, data_ov004_02256f2c, data_ov004_02256f38,
@@ -136,7 +136,7 @@ extern Ov004InitRecord data_ov004_02256cfc, data_ov004_02256d20, data_ov004_0225
     data_ov004_02256d44, data_ov004_02256ce4, data_ov004_02256cf0, data_ov004_02256d74, data_ov004_02256d80,
     data_ov004_02256d8c, data_ov004_02256d98;
 
-/* __sinit_ov004_0224de7c: the six colours of its source file and twelve points of the ground
+/* __sinit_ov004_0224de7c: the six colors of its source file and twelve points of the ground
  * plane, each registered with an empty destructor: the corners of the square of side 2.0
  * about the origin (twice), two more at x 3.0, and the corners of the square of side 4.0. */
 void Ov004Init_Corners(void)
@@ -155,8 +155,8 @@ void Ov004Init_Corners(void)
         {&data_ov004_02256f44, 0x2000, 0x2000, &data_ov004_02256d8c},
         {&data_ov004_02256f50, 0x2000, -0x2000, &data_ov004_02256d98},
     };
-    ov004_init_colours(&data_ov004_02256c4c, &data_ov004_02256c6c, &data_ov004_02256c7c, &data_ov004_02256c48,
-                       &data_ov004_02256c5c, &data_ov004_02256c58);
+    ov004_init_colors(&data_ov004_02256c4c, &data_ov004_02256c6c, &data_ov004_02256c7c, &data_ov004_02256c48,
+                      &data_ov004_02256c5c, &data_ov004_02256c58);
     ov004_init_points(points, 12);
 }
 CLEAN_AS(__sinit_ov004_0224de7c, Ov004Init_Corners)
@@ -188,49 +188,49 @@ void Ov004Init_MusicPlayer(void)
 }
 CLEAN_AS(__sinit_ov004_0224e058, Ov004Init_MusicPlayer)
 
-extern Ov004InitColour data_ov004_022577bc, data_ov004_022577c4, data_ov004_022577c8, data_ov004_022577b0, data_ov004_022577c0,
+extern Ov004InitColor data_ov004_022577bc, data_ov004_022577c4, data_ov004_022577c8, data_ov004_022577b0, data_ov004_022577c0,
     data_ov004_022577b4;
 
-/* __sinit_ov004_0224e168: the six colours of its source file. */
-void Ov004Init_Colours022577b0(void)
+/* __sinit_ov004_0224e168: the six colors of its source file. */
+void Ov004Init_Colors022577b0(void)
 {
-    ov004_init_colours(&data_ov004_022577bc, &data_ov004_022577c4, &data_ov004_022577c8, &data_ov004_022577b0,
-                       &data_ov004_022577c0, &data_ov004_022577b4);
+    ov004_init_colors(&data_ov004_022577bc, &data_ov004_022577c4, &data_ov004_022577c8, &data_ov004_022577b0,
+                      &data_ov004_022577c0, &data_ov004_022577b4);
 }
-CLEAN_AS(__sinit_ov004_0224e168, Ov004Init_Colours022577b0)
+CLEAN_AS(__sinit_ov004_0224e168, Ov004Init_Colors022577b0)
 
-extern Ov004InitColour data_ov004_02257934, data_ov004_02257924, data_ov004_0225792c, data_ov004_0225791c, data_ov004_02257910,
+extern Ov004InitColor data_ov004_02257934, data_ov004_02257924, data_ov004_0225792c, data_ov004_0225791c, data_ov004_02257910,
     data_ov004_02257920;
 
-/* __sinit_ov004_0224e1c4: the six colours of its source file. */
-void Ov004Init_Colours02257910(void)
+/* __sinit_ov004_0224e1c4: the six colors of its source file. */
+void Ov004Init_Colors02257910(void)
 {
-    ov004_init_colours(&data_ov004_02257934, &data_ov004_02257924, &data_ov004_0225792c, &data_ov004_0225791c,
-                       &data_ov004_02257910, &data_ov004_02257920);
+    ov004_init_colors(&data_ov004_02257934, &data_ov004_02257924, &data_ov004_0225792c, &data_ov004_0225791c,
+                      &data_ov004_02257910, &data_ov004_02257920);
 }
-CLEAN_AS(__sinit_ov004_0224e1c4, Ov004Init_Colours02257910)
+CLEAN_AS(__sinit_ov004_0224e1c4, Ov004Init_Colors02257910)
 
-extern Ov004InitColour data_ov004_02257a00, data_ov004_02257a1c, data_ov004_02257a04, data_ov004_022579fc, data_ov004_02257a0c,
+extern Ov004InitColor data_ov004_02257a00, data_ov004_02257a1c, data_ov004_02257a04, data_ov004_022579fc, data_ov004_02257a0c,
     data_ov004_02257a10;
 
-/* __sinit_ov004_0224e220: the six colours of its source file. */
-void Ov004Init_Colours022579fc(void)
+/* __sinit_ov004_0224e220: the six colors of its source file. */
+void Ov004Init_Colors022579fc(void)
 {
-    ov004_init_colours(&data_ov004_02257a00, &data_ov004_02257a1c, &data_ov004_02257a04, &data_ov004_022579fc,
-                       &data_ov004_02257a0c, &data_ov004_02257a10);
+    ov004_init_colors(&data_ov004_02257a00, &data_ov004_02257a1c, &data_ov004_02257a04, &data_ov004_022579fc,
+                      &data_ov004_02257a0c, &data_ov004_02257a10);
 }
-CLEAN_AS(__sinit_ov004_0224e220, Ov004Init_Colours022579fc)
+CLEAN_AS(__sinit_ov004_0224e220, Ov004Init_Colors022579fc)
 
-extern Ov004InitColour data_ov004_02257bc8, data_ov004_02257bd8, data_ov004_02257bbc, data_ov004_02257bc0, data_ov004_02257bcc,
+extern Ov004InitColor data_ov004_02257bc8, data_ov004_02257bd8, data_ov004_02257bbc, data_ov004_02257bc0, data_ov004_02257bcc,
     data_ov004_02257bd4;
 
-/* __sinit_ov004_0224e27c: the six colours of its source file. */
-void Ov004Init_Colours02257bbc(void)
+/* __sinit_ov004_0224e27c: the six colors of its source file. */
+void Ov004Init_Colors02257bbc(void)
 {
-    ov004_init_colours(&data_ov004_02257bc8, &data_ov004_02257bd8, &data_ov004_02257bbc, &data_ov004_02257bc0,
-                       &data_ov004_02257bcc, &data_ov004_02257bd4);
+    ov004_init_colors(&data_ov004_02257bc8, &data_ov004_02257bd8, &data_ov004_02257bbc, &data_ov004_02257bc0,
+                      &data_ov004_02257bcc, &data_ov004_02257bd4);
 }
-CLEAN_AS(__sinit_ov004_0224e27c, Ov004Init_Colours02257bbc)
+CLEAN_AS(__sinit_ov004_0224e27c, Ov004Init_Colors02257bbc)
 
 /* The room villager's member functions (room_villager.c) and the tiles a quarter turn moves it
  * by. */
@@ -333,16 +333,16 @@ int Ov004Init_Shop3Villager(void)
 }
 CLEAN_AS(__sinit_ov004_0224e5b0, Ov004Init_Shop3Villager)
 
-extern Ov004InitColour data_ov004_02257f78, data_ov004_02257f80, data_ov004_02257f88, data_ov004_02257f84, data_ov004_02257f94,
+extern Ov004InitColor data_ov004_02257f78, data_ov004_02257f80, data_ov004_02257f88, data_ov004_02257f84, data_ov004_02257f94,
     data_ov004_02257f98;
 
-/* __sinit_ov004_0224e60c: the six colours of its source file. */
-void Ov004Init_Colours02257f78(void)
+/* __sinit_ov004_0224e60c: the six colors of its source file. */
+void Ov004Init_Colors02257f78(void)
 {
-    ov004_init_colours(&data_ov004_02257f78, &data_ov004_02257f80, &data_ov004_02257f88, &data_ov004_02257f84,
-                       &data_ov004_02257f94, &data_ov004_02257f98);
+    ov004_init_colors(&data_ov004_02257f78, &data_ov004_02257f80, &data_ov004_02257f88, &data_ov004_02257f84,
+                      &data_ov004_02257f94, &data_ov004_02257f98);
 }
-CLEAN_AS(__sinit_ov004_0224e60c, Ov004Init_Colours02257f78)
+CLEAN_AS(__sinit_ov004_0224e60c, Ov004Init_Colors02257f78)
 
 /* The tailor sister's member functions (tailor_sister.c). */
 #define OV004_INIT_TAILOR_SISTER_FNS 14
@@ -429,16 +429,16 @@ int Ov004Init_TtiNpc(void)
 }
 CLEAN_AS(__sinit_ov004_0224e968, Ov004Init_TtiNpc)
 
-extern Ov004InitColour data_ov004_02258288, data_ov004_0225828c, data_ov004_02258280, data_ov004_02258284, data_ov004_02258290,
+extern Ov004InitColor data_ov004_02258288, data_ov004_0225828c, data_ov004_02258280, data_ov004_02258284, data_ov004_02258290,
     data_ov004_02258278;
 
-/* __sinit_ov004_0224e9a8: the six colours of its source file. */
-void Ov004Init_Colours02258278(void)
+/* __sinit_ov004_0224e9a8: the six colors of its source file. */
+void Ov004Init_Colors02258278(void)
 {
-    ov004_init_colours(&data_ov004_02258288, &data_ov004_0225828c, &data_ov004_02258280, &data_ov004_02258284,
-                       &data_ov004_02258290, &data_ov004_02258278);
+    ov004_init_colors(&data_ov004_02258288, &data_ov004_0225828c, &data_ov004_02258280, &data_ov004_02258284,
+                      &data_ov004_02258290, &data_ov004_02258278);
 }
-CLEAN_AS(__sinit_ov004_0224e9a8, Ov004Init_Colours02258278)
+CLEAN_AS(__sinit_ov004_0224e9a8, Ov004Init_Colors02258278)
 
 /* The cafe's points (cafe_props.c). */
 extern Vec3 data_ov004_0225836c, data_ov004_02258384, data_ov004_0225839c, data_ov004_02258318, data_ov004_02258330,
@@ -458,27 +458,27 @@ void Ov004Init_CafePoints(void)
 }
 CLEAN_AS(__sinit_ov004_0224ea04, Ov004Init_CafePoints)
 
-extern Ov004InitColour data_ov004_02258448, data_ov004_02258458, data_ov004_02258454, data_ov004_0225845c, data_ov004_02258450,
+extern Ov004InitColor data_ov004_02258448, data_ov004_02258458, data_ov004_02258454, data_ov004_0225845c, data_ov004_02258450,
     data_ov004_0225844c;
 
-/* __sinit_ov004_0224eaf8: the six colours of its source file. */
-void Ov004Init_Colours02258448(void)
+/* __sinit_ov004_0224eaf8: the six colors of its source file. */
+void Ov004Init_Colors02258448(void)
 {
-    ov004_init_colours(&data_ov004_02258448, &data_ov004_02258458, &data_ov004_02258454, &data_ov004_0225845c,
-                       &data_ov004_02258450, &data_ov004_0225844c);
+    ov004_init_colors(&data_ov004_02258448, &data_ov004_02258458, &data_ov004_02258454, &data_ov004_0225845c,
+                      &data_ov004_02258450, &data_ov004_0225844c);
 }
-CLEAN_AS(__sinit_ov004_0224eaf8, Ov004Init_Colours02258448)
+CLEAN_AS(__sinit_ov004_0224eaf8, Ov004Init_Colors02258448)
 
-extern Ov004InitColour data_ov004_022584b0, data_ov004_022584a4, data_ov004_022584a0, data_ov004_022584ac, data_ov004_0225849c,
+extern Ov004InitColor data_ov004_022584b0, data_ov004_022584a4, data_ov004_022584a0, data_ov004_022584ac, data_ov004_0225849c,
     data_ov004_0225848c;
 
-/* __sinit_ov004_0224eb54: the six colours of its source file. */
-void Ov004Init_Colours0225848c(void)
+/* __sinit_ov004_0224eb54: the six colors of its source file. */
+void Ov004Init_Colors0225848c(void)
 {
-    ov004_init_colours(&data_ov004_022584b0, &data_ov004_022584a4, &data_ov004_022584a0, &data_ov004_022584ac,
-                       &data_ov004_0225849c, &data_ov004_0225848c);
+    ov004_init_colors(&data_ov004_022584b0, &data_ov004_022584a4, &data_ov004_022584a0, &data_ov004_022584ac,
+                      &data_ov004_0225849c, &data_ov004_0225848c);
 }
-CLEAN_AS(__sinit_ov004_0224eb54, Ov004Init_Colours0225848c)
+CLEAN_AS(__sinit_ov004_0224eb54, Ov004Init_Colors0225848c)
 
 /* The tailor's cloth model (tailor_object.c) and the game's destructor of it
  * (ClothTexture_Destruct). */
@@ -496,7 +496,7 @@ CLEAN_AS(__sinit_ov004_0224ebb0, Ov004Init_TailorCloth)
 
 /* The telephone's states (rmo_telephone.c): a member pointer each. */
 #define OV004_INIT_TELEPHONE_FNS 30
-extern Ov004InitColour data_ov004_022588d4, data_ov004_022588c4, data_ov004_022588cc, data_ov004_022588c0, data_ov004_022588bc,
+extern Ov004InitColor data_ov004_022588d4, data_ov004_022588c4, data_ov004_022588cc, data_ov004_022588c0, data_ov004_022588bc,
     data_ov004_022588d0;
 extern MemberPointer data_ov004_022588d8[OV004_INIT_TELEPHONE_FNS];
 extern const MemberPointer data_ov004_0225587c, data_ov004_02255874, data_ov004_02255854, data_ov004_0225585c,
@@ -507,7 +507,7 @@ extern const MemberPointer data_ov004_0225587c, data_ov004_02255874, data_ov004_
     data_ov004_022557bc, data_ov004_022557cc, data_ov004_022557d4, data_ov004_022557ec, data_ov004_02255804,
     data_ov004_02255824;
 
-/* __sinit_ov004_0224ebd8: the six colours of its source file and the telephone's states'
+/* __sinit_ov004_0224ebd8: the six colors of its source file and the telephone's states'
  * member functions. */
 void Ov004Init_Telephone(void)
 {
@@ -518,8 +518,8 @@ void Ov004Init_Telephone(void)
         &data_ov004_022557e4, &data_ov004_022557f4, &data_ov004_022557fc, &data_ov004_0225580c, &data_ov004_02255844,
         &data_ov004_0225584c, &data_ov004_02255864, &data_ov004_0225588c, &data_ov004_022558a4, &data_ov004_022557bc,
         &data_ov004_022557cc, &data_ov004_022557d4, &data_ov004_022557ec, &data_ov004_02255804, &data_ov004_02255824};
-    ov004_init_colours(&data_ov004_022588d4, &data_ov004_022588c4, &data_ov004_022588cc, &data_ov004_022588c0,
-                       &data_ov004_022588bc, &data_ov004_022588d0);
+    ov004_init_colors(&data_ov004_022588d4, &data_ov004_022588c4, &data_ov004_022588cc, &data_ov004_022588c0,
+                      &data_ov004_022588bc, &data_ov004_022588d0);
     ov004_init_copy(data_ov004_022588d8, fns, OV004_INIT_TELEPHONE_FNS);
 }
 CLEAN_AS(__sinit_ov004_0224ebd8, Ov004Init_Telephone)
@@ -776,7 +776,7 @@ CLEAN_AS(__sinit_ov004_0224f970, Ov004Init_RoomExits)
 
 /* The views of the cafe's show (room_camera.c) and the game's empty destructor of a view
  * (CarpetTexture_Destruct). */
-extern Ov004InitColour data_ov004_0225ffe4, data_ov004_0225ffd4, data_ov004_0225ffd0, data_ov004_0225ffe0, data_ov004_0225ffd8,
+extern Ov004InitColor data_ov004_0225ffe4, data_ov004_0225ffd4, data_ov004_0225ffd0, data_ov004_0225ffe0, data_ov004_0225ffd8,
     data_ov004_0225ffdc;
 extern CameraView data_ov004_022569ac, data_ov004_022569cc, data_ov004_0225698c;
 extern Ov004InitRecord data_ov004_0225fff4, data_ov004_02260000, data_ov004_0225ffe8;
@@ -795,13 +795,13 @@ static void ov004_init_view(CameraView *view, Ov004InitRecord *record, fx32 seco
     view->second_offset.z = second_z;
 }
 
-/* __sinit_ov004_0224fa44: the six colours of its source file and the show's three views, each
+/* __sinit_ov004_0224fa44: the six colors of its source file and the show's three views, each
  * with the offset (0, 1.88, 0.94) and the second offset at height 0.125: the wide one at
  * (19.375, 23.375), the close one at (16.25, 18.69) and the show's own at (15.35, 18.46). */
 void Ov004Init_RoomCamera(void)
 {
-    ov004_init_colours(&data_ov004_0225ffe4, &data_ov004_0225ffd4, &data_ov004_0225ffd0, &data_ov004_0225ffe0,
-                       &data_ov004_0225ffd8, &data_ov004_0225ffdc);
+    ov004_init_colors(&data_ov004_0225ffe4, &data_ov004_0225ffd4, &data_ov004_0225ffd0, &data_ov004_0225ffe0,
+                      &data_ov004_0225ffd8, &data_ov004_0225ffdc);
     ov004_init_view(&data_ov004_022569ac, &data_ov004_0225fff4, 0x13600, 0x17600);
     ov004_init_view(&data_ov004_022569cc, &data_ov004_02260000, 0x10400, 0x12b00);
     ov004_init_view(&data_ov004_0225698c, &data_ov004_0225ffe8, 0xf5ad, 0x12757);

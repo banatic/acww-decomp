@@ -1,6 +1,6 @@
 /* What a frame's update does to each particle (particle.h): the animations of its scale,
- * colour, alpha and texture, run on its rate (0 to 255 through its life or its loop), and the
- * behaviours, which add to the frame's acceleration or move it directly. */
+ * color, alpha and texture, run on its rate (0 to 255 through its life or its loop), and the
+ * behaviors, which add to the frame's acceleration or move it directly. */
 #include "particle.h"
 
 #include <stddef.h>
@@ -52,7 +52,7 @@ void ParticleAnim_Alpha(Particle *ptcl, const ParticleResource *res, int rate)
 }
 CLEAN_AS(func_020ff0fc, ParticleAnim_Alpha)
 
-/* The colour `steps` of `length` of the way from `from` to `to`, each of red, green and blue
+/* The color `steps` of `length` of the way from `from` to `to`, each of red, green and blue
  * apart; just `to` when the animation does not blend.
  * QUIRK: the channels are or-ed together unmasked, as the ROM does; out of the rates the game
  * gives they stay within 0 to 31. */
@@ -71,8 +71,8 @@ static u16 blend(u16 from, u16 to, s32 steps, s32 length, int blends)
     return (u16) rgb;
 }
 
-/* func_020ff1d8: the particle's colour animation: the start colour until `in`, then to the
- * header's colour by `peak`, then to the end colour by `out`, then the end colour.
+/* func_020ff1d8: the particle's color animation: the start color until `in`, then to the
+ * header's color by `peak`, then to the end color by `out`, then the end color.
  * REQUIRES: the animation is halfword-aligned, as every part of the file is (the ARM9 reads
  * a halfword at an odd address from the even one below). */
 void ParticleAnim_Color(Particle *ptcl, const ParticleResource *res, int rate)
@@ -126,7 +126,7 @@ void ParticleAnim_ChildAlpha(Particle *ptcl, const ParticleResource *res, int ra
 }
 CLEAN_AS(func_020feff4, ParticleAnim_ChildAlpha)
 
-/* --- Behaviours --- */
+/* --- Behaviors --- */
 
 /* func_020ff434: the particle drawn towards the target by `strength` (1.0: all the way) of
  * the distance each frame. */
@@ -176,7 +176,7 @@ void ParticleBehavior_Collision(const ParticleCollision *data, Particle *ptcl, V
 CLEAN_AS(func_020ff4c8, ParticleBehavior_Collision)
 
 /* func_020ff5e4: the particle's place (from its emitter) turned about X, Y or Z by the
- * behaviour's angle each frame.
+ * behavior's angle each frame.
  * BUG: for another axis the matrix is left unset, and the place is multiplied by whatever
  * the stack held. */
 void ParticleBehavior_Spin(const ParticleSpin *data, Particle *ptcl, Vec3 *acc, ParticleEmitter *emitter)

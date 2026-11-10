@@ -13,7 +13,7 @@
 
 /* One copy of the firmware's user settings; the first 0x74 bytes are the SDK's owner info. */
 typedef struct UserSettingsPage {
-    u8 unk_00[6];       /* version, favourite colour, birthday */
+    u8 unk_00[6];       /* version, favorite color, birthday */
     u16 nickname[10];   /* 0x06 */
     u8 nickname_length; /* 0x1a: a 16-bit field, of which only the low byte is read */
     u8 unk_1b;

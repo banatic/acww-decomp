@@ -35,7 +35,7 @@ typedef struct ByteSet {
 } ByteSet;
 
 /* A sound played at a point (RoomSound_PlayAtB and RoomSound_PlayAt play one while
- * `joined`, RoomSound_Stop stops it); the point is the object's centre, kept each frame. */
+ * `joined`, RoomSound_Stop stops it); the point is the object's center, kept each frame. */
 typedef struct RoomSound {
     u8 unk_00[0x1c];
     u8 joined; /* 0x1c: it joined the room's sound list (RoomSound_Start) */

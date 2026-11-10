@@ -7,7 +7,7 @@
  * (LabelBox_NewInVram) on the view's layer:
  *
  *   - the greeting (tiles 0x75 on): the letter's ten greeting characters with the addressee's
- *     name put in at the letter's name position, the name marked in its own colour;
+ *     name put in at the letter's name position, the name marked in its own color;
  *   - the signature (tiles 0x180 on), drawn against the right edge;
  *   - four lines of the body (tiles 0x9d, 0xc5, 0xed and 0x115 on): the body's 64 characters
  *     broken into lines of at most 40 characters and 160 pixels (LetterView_BreakLines).
@@ -15,8 +15,8 @@
  * The text layer's screen comes from "menu/letter/b_ltr_a_bg.bsc"; the paper's picture is loaded
  * by Paper_LoadBackground (ov002/paper.h).
  *
- * A line keeps one marked range (`mark_first`, `mark_count`, in colour 14 on 13, or 11 on 0
- * when `mark_style` is set) and, on the greeting, the name's range (colour 12 on 0). Changing a
+ * A line keeps one marked range (`mark_first`, `mark_count`, in color 14 on 13, or 11 on 0
+ * when `mark_style` is set) and, on the greeting, the name's range (color 12 on 0). Changing a
  * line sets `dirty`; LetterLine_Show then opens its box if needed and asks for a redraw.
  *
  * A wide text class of 40 characters (vtable data_020df270, 0x60 bytes) carries the 16-bit

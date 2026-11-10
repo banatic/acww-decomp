@@ -783,7 +783,7 @@ CLEAN_AS(func_0200f434, FieldActor_FollowReportedTo)
 int FieldActor_FollowReportedToTile(FieldActor *actor, const int *tile)
 {
     Vec3 point;
-    AcreTile_TileCentre(&point, (u32) tile[0], (u32) tile[1]);
+    AcreTile_TileCenter(&point, (u32) tile[0], (u32) tile[1]);
     return FieldActor_FollowReportedTo(actor, &point);
 }
 CLEAN_AS(func_0200f530, FieldActor_FollowReportedToTile)
@@ -1022,7 +1022,7 @@ void FieldActor_TileAhead(Vec3 *out, FieldActor *actor)
 {
     Vec3 ahead;
     FieldActor_PointAheadOfSelf(&ahead, actor);
-    AcreTile_SnapToTileCentre(out, &ahead);
+    AcreTile_SnapToTileCenter(out, &ahead);
 }
 CLEAN_AS(func_0200fa8c, FieldActor_TileAhead)
 

@@ -1,9 +1,9 @@
 /* A message's INF1 entry as the talks keep it (12 bytes, the layout of bmg_file.h's BmgEntry:
  * the text's offset, then the message's attributes). TalkObject keeps the entry of the message
  * it shows at 0x14ac (TalkObject_LoadMessage copies BmgFile_Entry into it, TalkObject_BeginMessage
- * and its neighbours read it), TalkAnswers one per answer and the picked answer's at 0x354
+ * and its neighbors read it), TalkAnswers one per answer and the picked answer's at 0x354
  * (TalkAnswers_PickByLevel copies one of the candidates into it). The first attribute is the
- * message's kind, 0 to 24, which picks per kind whether the text is centred, the writing speed
+ * message's kind, 0 to 24, which picks per kind whether the text is centered, the writing speed
  * and the window (data_020d1d0c, data_020d1ca8, data_020d1c44); the others are the change to the
  * villager's fondness, the values the receiver is told as the message begins and ends (or the
  * answer picked), the message that follows and the message's sound. */
@@ -24,7 +24,7 @@ typedef struct MessageEntry {
     u8 unk_0b;
 } MessageEntry;
 
-int MessageEntry_CentredOfKind(MessageEntry *record);
+int MessageEntry_CenteredOfKind(MessageEntry *record);
 void *MessageEntry_SpeedOfKind(MessageEntry *record);
 int MessageEntry_WindowOfKind(MessageEntry *record);
 void MessageEntry_GetNext(u8 *out, MessageEntry *record);

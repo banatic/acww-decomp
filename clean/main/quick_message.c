@@ -727,7 +727,7 @@ void QuickMessage_DismissSlot(QuickMessageBoard *board, int slot)
 }
 CLEAN_AS(func_02039668, QuickMessage_DismissSlot)
 
-/* func_020396d0: the colour of slot `slot`'s balloon: the slot, slot 0's for slot 4 (no
+/* func_020396d0: the color of slot `slot`'s balloon: the slot, slot 0's for slot 4 (no
  * slot). */
 int QuickMessage_SlotColor(int unused, int slot)
 {
@@ -888,7 +888,7 @@ CLEAN_AS(func_020398e8, QuickMessage_Post)
 #define BALLOON_APPEAR_SOUND 0x3f /* when another system's balloon appears */
 #define BALLOON_PALETTE_BASE 5
 
-/* The text boxes' tiles and colours. */
+/* The text boxes' tiles and colors. */
 #define TEXT_BOX_FIRST_TILE 0xc0
 #define TEXT_BOX_TILE_STRIDE 64
 #define TEXT_BOX_CELLS 20
@@ -960,7 +960,7 @@ void QuickMessage_BalloonFreeTextBox(QuickMessageBalloon *balloon)
 CLEAN_AS(func_0203990c, QuickMessage_BalloonFreeTextBox)
 
 /* func_02039928: unless it has one, a text box for the message, drawn into the objects' tiles
- * of both screens (only the main screen's while data_021c8c9c is set) in colour 0xd on 0xf,
+ * of both screens (only the main screen's while data_021c8c9c is set) in color 0xd on 0xf,
  * each frame by the text process; its drawing asked for. None when the boxes' heap is full. */
 void QuickMessage_BalloonOpenTextBox(QuickMessageBalloon *balloon)
 {
@@ -1020,7 +1020,7 @@ CLEAN_AS(func_020399e4, QuickMessage_BalloonOpenNameBox)
 
 /* func_02039a94: the tag and the balloon put on the frames as wide as the name and the
  * message, in whole tiles. The name is pushed to the right end of its tiles; this system's own
- * message is centred in its tiles, the others' start at the left.
+ * message is centered in its tiles, the others' start at the left.
  * REQUIRES: the message's text box exists (QuickMessage_BalloonOpenTextBox just made it); the
  * original measures it without looking, so a full boxes' heap would read address 0. */
 void QuickMessage_BalloonFitFrames(QuickMessageBalloon *balloon)
@@ -1274,7 +1274,7 @@ void QuickMessage_BalloonSetUp(QuickMessageBalloon *balloon, int position, int t
 }
 CLEAN_AS(func_02039efc, QuickMessage_BalloonSetUp)
 
-/* func_02039f0c: the player's name and the message copied in, the palette of colour `color`
+/* func_02039f0c: the player's name and the message copied in, the palette of color `color`
  * chosen. */
 void QuickMessage_BalloonSetMessage(QuickMessageBalloon *balloon, void *name, void *text, int color)
 {

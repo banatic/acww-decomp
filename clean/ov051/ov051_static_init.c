@@ -1,6 +1,6 @@
-/* Overlay 51's static initialiser, run when the overlay is loaded: the table of member
+/* Overlay 51's static initializer, run when the overlay is loaded: the table of member
  * functions the taxi driver's states (taxi_driver.h) dispatch through, copied from the
- * overlay's constants (the compiler cannot place member pointers in initialised data). */
+ * overlay's constants (the compiler cannot place member pointers in initialized data). */
 #include "clean.h"
 #include "taxi_driver.h"
 #include "types.h"

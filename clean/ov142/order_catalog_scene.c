@@ -106,7 +106,7 @@ OrderCatalog *OrderCatalog_Delete(OrderCatalog *self)
 }
 CLEAN_AS(func_ov142_022995f0, OrderCatalog_Delete)
 
-/* func_ov142_0229b804: the panel's text colours, and the OBJ characters (0xc0-0x11f from
+/* func_ov142_0229b804: the panel's text colors, and the OBJ characters (0xc0-0x11f from
  * "obj0.bch", 0x120-0x17f from "obj1.bch") and OBJ palettes 4-9 from the scenes' heap. */
 void OrderCatalog_LoadObjGraphics(OrderCatalog *self)
 {
@@ -317,7 +317,7 @@ void OrderCatalog_StartWipeOut(OrderCatalog *self)
 CLEAN_AS(func_ov142_0229bc64, OrderCatalog_StartWipeOut)
 
 /* func_ov142_0229bc9c (state 1): the first time, the scene drawn, the "Bells" unit (message 0xb8 at
- * (0x16d, 4), colour 15) and the price's place shown; the wipe in stepped, and at its end the
+ * (0x16d, 4), color 15) and the price's place shown; the wipe in stepped, and at its end the
  * catalog (phase 2). The layers follow the wipe. */
 void OrderCatalog_WipeIn(OrderCatalog *self)
 {

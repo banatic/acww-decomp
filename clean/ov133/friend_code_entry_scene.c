@@ -320,7 +320,7 @@ void FriendCodeEntry_BrowseByTouch(FriendCodeEntry *self)
 CLEAN_AS(func_ov133_0229bf88, FriendCodeEntry_BrowseByTouch)
 
 /* func_ov133_0229c050: overlay 130's graphics (7) loaded and the title opened: message 0xd7 in
- * the label, its box in style 8, shown centred; the panel's text colours. */
+ * the label, its box in style 8, shown centered; the panel's text colors. */
 void FriendCodeEntry_OpenTitle(FriendCodeEntry *self)
 {
     BankPad_LoadPicture(7);
@@ -543,7 +543,7 @@ CLEAN_AS(func_ov133_0229c404, FriendCodeEntry_RunInteractive)
 /* func_ov133_0229c420: the sub state's function (FriendCodeEntrySubState) through the table of
  * member functions, filled once from its constants. Before it, the menu close's delay is
  * counted; when the menu is asked to close in a sub state of the input (0-3, 7-9), the input is
- * cancelled: the pointer hidden, the wipe out (state 3, phase 1), the menu closed (tab 7) and a
+ * canceled: the pointer hidden, the wipe out (state 3, phase 1), the menu closed (tab 7) and a
  * friend being added cleared from the roster.
  * REQUIRES: the sub state is below 13; the game reads past the table for others. */
 void FriendCodeEntry_RunSubState(FriendCodeEntry *self)

@@ -3,7 +3,7 @@
 
 #define GRID DIFF_SCRATCH
 
-/* A grid with some tiles marked, and a tile in it or one step outside it, as the neighbour
+/* A grid with some tiles marked, and a tile in it or one step outside it, as the neighbor
  * tests ask for (-1 arrives as 0xffffffff). */
 static void grid_and_tile(DiffRng *rng, uint32_t args[4])
 {

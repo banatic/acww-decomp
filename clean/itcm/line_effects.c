@@ -31,7 +31,7 @@ static_assert(offsetof(LineShiftOwner, shift_index) == 0x51c, "the shift's index
 #define REG_DB_BG3Y REG32(0x0400103c)
 #define REG_DB_BLDCNT REG16(0x04001050)
 #define REG_DB_BLDALPHA REG16(0x04001052)
-#define REG_BACKDROP REG16(0x05000000)    /* the main screen's palette colour 0 */
+#define REG_BACKDROP REG16(0x05000000)    /* the main screen's palette color 0 */
 #define REG_DB_BACKDROP REG16(0x05000400) /* the sub screen's */
 
 #define DISPSTAT_IN_HBLANK 0x0002
@@ -115,7 +115,7 @@ static u16 line_blend_alpha(int line)
 }
 
 /* func_01ffcd50: the gradient screen's HBlank function on the main screen. The sub screen's
- * backdrop is set to the gradient's top colour on each line.
+ * backdrop is set to the gradient's top color on each line.
  * HW: VCOUNT is read first; then the sub screen's backdrop, the main backdrop, BG3PA, BG3X,
  * BG3Y, DISPCNT (read and written) with BLDCNT, and BLDALPHA are written in this order. */
 void LineFx_GradientMain(void)
@@ -139,7 +139,7 @@ void LineFx_GradientMain(void)
 CLEAN_AS(func_01ffcd50, LineFx_GradientMain)
 
 /* func_01ffceb8: the gradient screen's HBlank function on the sub screen. The main screen's
- * backdrop is set to the gradient's bottom colour on each line.
+ * backdrop is set to the gradient's bottom color on each line.
  * QUIRK: background 3's X and Y are written with their low 16 bits only (the main screen's get
  * all 32), and only background 1 is hidden near the bottom.
  * HW: VCOUNT is read first; then the sub screen's backdrop, the main backdrop, DB_BG3PA,

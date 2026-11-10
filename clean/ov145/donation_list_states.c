@@ -372,7 +372,7 @@ void DonationList_LoadBackground(DonationList *self)
 CLEAN_AS(func_ov145_0229a6c8, DonationList_LoadBackground)
 
 /* func_ov145_0229a778: the sub engine's background mode 0; layer 6 at priority 1 and layer 4 at
- * 2, both with control 0 (size 0, 16 colours, characters at 0). */
+ * 2, both with control 0 (size 0, 16 colors, characters at 0). */
 void DonationList_SetUpLayers(void)
 {
     DisplayShadow_SetSubBgMode(0);
@@ -433,7 +433,7 @@ void DonationList_TearDown(DonationList *self)
 }
 CLEAN_AS(func_ov145_0229a844, DonationList_TearDown)
 
-/* func_ov145_0229a884: the scene's setup: no flags, tab 0, no row shown, the text colour at
+/* func_ov145_0229a884: the scene's setup: no flags, tab 0, no row shown, the text color at
  * full and no fade; the lists gathered from the museum's record (the fossils, the paintings,
  * the fish, the insects) and the handle at rest. */
 void DonationList_SetUp(DonationList *self)

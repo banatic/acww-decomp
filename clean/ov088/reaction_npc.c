@@ -492,7 +492,7 @@ int ReactionNpc_SidePoint(ReactionNpc *npc, Vec3 *out, const Vec3 *offset)
 CLEAN_AS(func_ov088_02279574, ReactionNpc_SidePoint)
 
 /* func_ov088_022795b0: up to six tries at a point 12.0 from it in a random direction (the
- * game's first random generator), put at its tile's centre: the first whose tile is clear
+ * game's first random generator), put at its tile's center: the first whose tile is clear
  * (TownTile_IsClearAt) gives `*x` and `*z`. Whether one did. */
 int ReactionNpc_PickWalkPoint(ReactionNpc *npc, fx32 *x, fx32 *z)
 {
@@ -502,7 +502,7 @@ int ReactionNpc_PickWalkPoint(ReactionNpc *npc, fx32 *x, fx32 *z)
         int index = (angle >> 4) * 2;
         point.x = FX_MulFunc(RNPC_WALK_DISTANCE, FX_SinCosTable_[index]) + rnpc_position(npc)->x;
         point.z = FX_MulFunc(RNPC_WALK_DISTANCE, FX_SinCosTable_[index + 1]) + rnpc_position(npc)->z;
-        AcreTile_SnapToTileCentre(&point, &point);
+        AcreTile_SnapToTileCenter(&point, &point);
         if (TownTile_IsClearAt(&point, NULL)) {
             *x = point.x;
             *z = point.z;

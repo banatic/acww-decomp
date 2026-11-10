@@ -1,4 +1,4 @@
-/* Overlay 86 (the turtle, turtle_countdown.h): its static initialiser, run when the overlay is loaded,
+/* Overlay 86 (the turtle, turtle_countdown.h): its static initializer, run when the overlay is loaded,
  * which fills in the table of the turtle's states (data_ov086_02279480, TurtleCountdown_SetState and
  * TurtleCountdown_Update): each state's entry and update, copied from the overlay's constants (C++
  * pointers to member functions, which the compiler does not fold into the table). */

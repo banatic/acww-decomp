@@ -9,7 +9,7 @@
  *   sub screen's BG1 by 16 pixels a row, nine rows built at a time from the row screens of
  *   "b_bg.bsc" (`row_screens`) into `list_screen`, each row's name in one of nine labels;
  * - the row of the song the room plays now (`playing`, HouseRecord_CurrentSong) and the row
- *   chosen (`selected`) are coloured; three buttons on the left (BG3, "a_bg.bsc" in
+ *   chosen (`selected`) are colored; three buttons on the left (BG3, "a_bg.bsc" in
  *   `buttons_screen`) play or stop the chosen song (the parent is given the song by
  *   GroupParams_SetItem), store a song (the scene closes into mode 0x23, overlay 109, which adds
  *   one) and take the chosen song out into the pockets (HouseRecord_RemoveSong); the panel's
@@ -31,7 +31,7 @@
 
 #define MUSIC_LIST_SONGS 70 /* the song items 0x1323-0x1368 */
 #define MUSIC_LIST_FIRST_SONG 0x1323
-#define MUSIC_LIST_ROWS 9          /* rows built and labelled at a time */
+#define MUSIC_LIST_ROWS 9          /* rows built and labeled at a time */
 #define MUSIC_LIST_ROWS_SHOWN 8    /* rows that fit on the screen */
 #define MUSIC_LIST_ROW_HEIGHT 0x10 /* pixels */
 #define MUSIC_LIST_KNOB_MAX 0x78   /* the knob's travel */
@@ -42,7 +42,7 @@
 enum MusicListFlag {
     MUSIC_LIST_FLAG_DRAWN = 0x0001,         /* set up: drawn (MusicList_Draw) */
     MUSIC_LIST_FLAG_BUTTONS_DIRTY = 0x0002, /* `buttons_screen` changed: queued at the frame's end */
-    MUSIC_LIST_FLAG_LABELS_DIRTY = 0x0004,  /* the list scrolled: the rows labelled at the frame's end */
+    MUSIC_LIST_FLAG_LABELS_DIRTY = 0x0004,  /* the list scrolled: the rows labeled at the frame's end */
     MUSIC_LIST_FLAG_LIST_DIRTY = 0x0008,    /* the list's rows coloured and queued at the frame's end */
     MUSIC_LIST_FLAG_TAKEN_OUT = 0x0010,     /* a song was taken out: the cursor stays where it was */
     MUSIC_LIST_FLAG_STORE = 0x0020          /* the scene closes into the store screen (mode 0x23) */

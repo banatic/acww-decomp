@@ -749,7 +749,7 @@ void PhoneClock_BrowseByTouch(PhoneClock *self)
 CLEAN_AS(func_ov135_0229cf3c, PhoneClock_BrowseByTouch)
 
 /* func_ov135_0229cff0: the scene's graphics: overlay 134's object's (ClockSetter_LoadSprites) and the
- * panel's text colours. */
+ * panel's text colors. */
 void PhoneClock_LoadGraphics(PhoneClock *self)
 {
     ClockSetter_LoadSprites(&self->editor);

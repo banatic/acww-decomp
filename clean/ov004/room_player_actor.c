@@ -133,7 +133,7 @@ int RoomPlayerActor_RequestPickUp(void)
 CLEAN_AS(func_ov004_0222befc, RoomPlayerActor_RequestPickUp)
 
 /* func_ov004_0222bf20: this console's actor asked for state 0x7a (a new head kind and hair
- * colour, the old head taken off first). */
+ * color, the old head taken off first). */
 int RoomPlayerActor_RequestHairOff(const u8 *kind, const u8 *hair_color)
 {
     FieldActor *actor = SessionPlayers_FieldActor(RPA_OWN);
@@ -292,7 +292,7 @@ CLEAN_AS(func_ov004_0222c14c, RoomPlayerActor_RequestPlaceApproach)
 /* func_ov004_0222c1b0: this console's actor's head item and part C taken off (`on` 0) or put
  * back on (`on` nonzero) from its record; the actor's flag 12 says they are off. When they are
  * already as asked nothing happens; else the flag changes, the head is asked for with the
- * record's head kind and hair colour (and the face), and when that was taken part C too.
+ * record's head kind and hair color (and the face), and when that was taken part C too.
  * Whether there is an actor. */
 int RoomPlayerActor_SwitchHeadwear(int on)
 {

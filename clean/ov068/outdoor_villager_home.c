@@ -1,4 +1,4 @@
-/* Behaviours 2, 3, 4 and 12 of a villager out walking in the town: its house
+/* Behaviors 2, 3, 4 and 12 of a villager out walking in the town: its house
  * (outdoor_villager_home.h). */
 #include "outdoor_villager_home.h"
 
@@ -43,7 +43,7 @@ extern Vec3 data_021fbee8;
  * (nothing without a held item). */
 void OutdoorVillagerObject_ShowHeldItem(u8 *villager);
 
-/* The draw hook behaviour 4 sets (OutdoorVillagerObject_DrawWithItem: the villager drawn with its held item
+/* The draw hook behavior 4 sets (OutdoorVillagerObject_DrawWithItem: the villager drawn with its held item
  * link). */
 extern const MemberPointer data_ov068_02276f50;
 
@@ -72,7 +72,7 @@ extern const MemberPointer data_ov068_02277120, data_ov068_02277150, data_ov068_
 #define HOME_LOCAL 0x563      /* u8: not shared with a session */
 #define HOME_DRAW_HOOK 0x8b0  /* MemberPointer: called to draw in place of the plain joints */
 #define HOME_ITEM_SHOWN 0x9f0 /* u8: set while the held item is out */
-/* The parts of the behaviour member read here besides outdoor_villager.h's. */
+/* The parts of the behavior member read here besides outdoor_villager.h's. */
 #define HOME_ITEM_CHECK 0x34 /* s16: frames to the next look at the held item (walks.h) */
 #define HOME_WALKER 0x3c     /* PathWalker */
 #define HOME_RAISE 0xf8      /* s32: frames to the next raise of the record's byte 0x1e */
@@ -88,8 +88,8 @@ extern const MemberPointer data_ov068_02277120, data_ov068_02277150, data_ov068_
 #define HOME_ANIM_OUT 0x3d
 #define HOME_ANIM_MODE 1
 #define HOME_ANIM_OUT_WORD 1
-#define HOME_DRAW_STEP 0x400 /* how far a frame it is drawn to the tile's centre going in */
-#define HOME_OUT_STEP 0x1000 /* how far south of the tile's centre it starts coming out */
+#define HOME_DRAW_STEP 0x400 /* how far a frame it is drawn to the tile's center going in */
+#define HOME_OUT_STEP 0x1000 /* how far south of the tile's center it starts coming out */
 #define HOME_COLLIDER 0xd00
 #define HOME_ITEM_DELAY 300 /* frames added to the held item's check when it comes out with one */
 #define HOME_WAIT_BASE 600
@@ -100,7 +100,7 @@ extern const MemberPointer data_ov068_02277120, data_ov068_02277150, data_ov068_
 #define HOME_STATE_IN 0
 #define HOME_STATE_OUT 1
 
-/* Behaviours started here. */
+/* Behaviors started here. */
 #define HOME_DO_WALK 0
 #define HOME_DO_IN 3
 #define HOME_DO_OUT 4
@@ -136,12 +136,12 @@ static Footsteps *home_footsteps(u8 *villager)
     return (Footsteps *) (void *) home_at(villager, OUTDOOR_VILLAGER_FOOTSTEPS);
 }
 
-static PathWalker *home_walker(OutdoorVillagerBehaviour *self)
+static PathWalker *home_walker(OutdoorVillagerBehavior *self)
 {
     return (PathWalker *) (void *) home_at(self, HOME_WALKER);
 }
 
-static s32 *home_raise(OutdoorVillagerBehaviour *self)
+static s32 *home_raise(OutdoorVillagerBehavior *self)
 {
     return (s32 *) (void *) home_at(self, HOME_RAISE);
 }
@@ -184,7 +184,7 @@ static void home_settle(u8 *villager)
 }
 
 /* A step of an update's table run (when it is in the table). */
-static void home_run_step(MemberPointer *table, int count, OutdoorVillagerBehaviour *self, u8 *villager)
+static void home_run_step(MemberPointer *table, int count, OutdoorVillagerBehavior *self, u8 *villager)
 {
     if (self->step < count) {
         const MemberPointer *member = &table[self->step];
@@ -199,10 +199,10 @@ static s32 home_wait(void)
     return (s32) MainRandom_Below(HOME_WAIT_SPREAD) + HOME_WAIT_BASE;
 }
 
-/* ---- Behaviour 4: coming out of the house */
+/* ---- Behavior 4: coming out of the house */
 
-/* _ZN18Obj_ov068_022771c019func_ov068_0226b080Ei: behaviour 4's update: Open4, Leave4. */
-int OutdoorVillagerHome_Update4(OutdoorVillagerBehaviour *self, u8 *villager)
+/* _ZN18Obj_ov068_022771c019func_ov068_0226b080Ei: behavior 4's update: Open4, Leave4. */
+int OutdoorVillagerHome_Update4(OutdoorVillagerBehavior *self, u8 *villager)
 {
     static const MemberPointer *const steps[2] = {
         &data_ov068_02276e78, /* OutdoorVillagerHome_Open4 */
@@ -215,10 +215,10 @@ int OutdoorVillagerHome_Update4(OutdoorVillagerBehaviour *self, u8 *villager)
 CLEAN_AS(_ZN18Obj_ov068_022771c019func_ov068_0226b080Ei, OutdoorVillagerHome_Update4)
 
 /* func_ov068_0226b0ec: during animation 0x3d: once it is done, its shadow on, its collider
- * 0xd00, no longer held; with a held item behaviour 15 (behaviour 0 to resume) and the held
- * item's check put off 300 frames, else behaviour 0. Until then its footsteps at frames 13,
+ * 0xd00, no longer held; with a held item behavior 15 (behavior 0 to resume) and the held
+ * item's check put off 300 frames, else behavior 0. Until then its footsteps at frames 13,
  * 17, 23, 28, 37 and 40. */
-void OutdoorVillagerHome_Leave4(OutdoorVillagerBehaviour *self, u8 *villager)
+void OutdoorVillagerHome_Leave4(OutdoorVillagerBehavior *self, u8 *villager)
 {
     if (SpeakerAnim_Number(home_anim(villager), 0) != HOME_ANIM_OUT) {
         return;
@@ -244,12 +244,12 @@ void OutdoorVillagerHome_Leave4(OutdoorVillagerBehaviour *self, u8 *villager)
     u16 item;
     VillagerSceneHeld_Item(&item, villager);
     if (item != ITEM_CODE_NONE) {
-        OutdoorVillagerBehaviour_Start(self, villager, HOME_DO_ITEM_OUT);
-        OutdoorVillagerBehaviour_SetResume(self, HOME_DO_WALK);
+        OutdoorVillagerBehavior_Start(self, villager, HOME_DO_ITEM_OUT);
+        OutdoorVillagerBehavior_SetResume(self, HOME_DO_WALK);
         s16 *check = (s16 *) (void *) home_at(self, HOME_ITEM_CHECK);
         *check = (s16) (*check + HOME_ITEM_DELAY);
     } else {
-        OutdoorVillagerBehaviour_Start(self, villager, HOME_DO_WALK);
+        OutdoorVillagerBehavior_Start(self, villager, HOME_DO_WALK);
     }
 }
 CLEAN_AS(func_ov068_0226b0ec, OutdoorVillagerHome_Leave4)
@@ -258,7 +258,7 @@ CLEAN_AS(func_ov068_0226b0ec, OutdoorVillagerHome_Leave4)
  * 1), the draw hook data_ov068_02276f50, its state entry's state 1 and byte 0x01 cleared, the
  * object enabled and posed, its collider 0; step 1.
  * REQUIRES: its record has a state entry. */
-void OutdoorVillagerHome_Open4(OutdoorVillagerBehaviour *self, u8 *villager)
+void OutdoorVillagerHome_Open4(OutdoorVillagerBehavior *self, u8 *villager)
 {
     u8 *record = home_record(villager);
     VillagerState *entry = VillagerStatus_StateEntry(record);
@@ -277,16 +277,16 @@ void OutdoorVillagerHome_Open4(OutdoorVillagerBehaviour *self, u8 *villager)
 }
 CLEAN_AS(func_ov068_0226b1d0, OutdoorVillagerHome_Open4)
 
-/* func_ov068_0226b260: behaviour 4's start: a running act's effects reset, the watch held on
- * nothing, the villager put 0x1000 south of the centre of the tile in front of its house, facing
+/* func_ov068_0226b260: behavior 4's start: a running act's effects reset, the watch held on
+ * nothing, the villager put 0x1000 south of the center of the tile in front of its house, facing
  * and walking at angle 0 (its mover too), its last position the same; the byte at 0x838 set,
  * held, the raise timer off (-1), the held item not shown, its mood's sounds off. */
-int OutdoorVillagerHome_Start4(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerHome_Start4(OutdoorVillagerBehavior *self, u8 *villager)
 {
     VillagerPlot *home = VillagerHome_Tile(home_record(villager));
     OutdoorVillagerObject_ResetActEffects(villager);
     home_hold_nothing(villager);
-    AcreTile_TileCentre(home_position(villager), home->x, (u32) home->z + 1);
+    AcreTile_TileCenter(home_position(villager), home->x, (u32) home->z + 1);
     *(s16 *) (void *) home_at(villager, HOME_ANGLE) = 0;
     *(s16 *) (void *) home_at(villager, HOME_WALK_ANGLE) = 0;
     SceneMover_SetAngle((SceneMover *) (void *) home_at(villager, HOME_MOVER), 0);
@@ -302,10 +302,10 @@ int OutdoorVillagerHome_Start4(OutdoorVillagerBehaviour *self, u8 *villager)
 }
 CLEAN_AS(func_ov068_0226b260, OutdoorVillagerHome_Start4)
 
-/* ---- Behaviour 12: staying in for good */
+/* ---- Behavior 12: staying in for good */
 
-/* _ZN18Obj_ov068_022771c019func_ov068_0226b330Ei: behaviour 12's update: Begin12, Hide12. */
-int OutdoorVillagerHome_Update12(OutdoorVillagerBehaviour *self, u8 *villager)
+/* _ZN18Obj_ov068_022771c019func_ov068_0226b330Ei: behavior 12's update: Begin12, Hide12. */
+int OutdoorVillagerHome_Update12(OutdoorVillagerBehavior *self, u8 *villager)
 {
     static const MemberPointer *const steps[2] = {
         &data_ov068_02276f70, /* OutdoorVillagerHome_Begin12 */
@@ -318,7 +318,7 @@ int OutdoorVillagerHome_Update12(OutdoorVillagerBehaviour *self, u8 *villager)
 CLEAN_AS(_ZN18Obj_ov068_022771c019func_ov068_0226b330Ei, OutdoorVillagerHome_Update12)
 
 /* func_ov068_0226b39c: the villager disabled; step 2 (nothing more). */
-void OutdoorVillagerHome_Hide12(OutdoorVillagerBehaviour *self, u8 *villager)
+void OutdoorVillagerHome_Hide12(OutdoorVillagerBehavior *self, u8 *villager)
 {
     *home_at(villager, HOME_ENABLED) = 0;
     self->step = 2;
@@ -326,19 +326,19 @@ void OutdoorVillagerHome_Hide12(OutdoorVillagerBehaviour *self, u8 *villager)
 CLEAN_AS(func_ov068_0226b39c, OutdoorVillagerHome_Hide12)
 
 /* func_ov068_0226b3ac: step 1. */
-void OutdoorVillagerHome_Begin12(OutdoorVillagerBehaviour *self, u8 *villager)
+void OutdoorVillagerHome_Begin12(OutdoorVillagerBehavior *self, u8 *villager)
 {
     (void) villager;
     self->step = 1;
 }
 CLEAN_AS(func_ov068_0226b3ac, OutdoorVillagerHome_Begin12)
 
-/* func_ov068_0226b3b4: behaviour 12's start: it stands, the watch held on nothing; its state
+/* func_ov068_0226b3b4: behavior 12's start: it stands, the watch held on nothing; its state
  * entry's state 0 when it reads 1, the entry's flag 1 cleared; the byte at 0x838 set, unposed
- * and not shared; put at the centre of its house's own tile, its last position the same; the
+ * and not shared; put at the center of its house's own tile, its last position the same; the
  * held item not shown, its mood's sounds off.
  * REQUIRES: its record has a state entry. */
-int OutdoorVillagerHome_Start12(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerHome_Start12(OutdoorVillagerBehavior *self, u8 *villager)
 {
     (void) self;
     u8 *record = home_record(villager);
@@ -353,7 +353,7 @@ int OutdoorVillagerHome_Start12(OutdoorVillagerBehaviour *self, u8 *villager)
     VillagerSceneObject_SetByte838(villager);
     *home_at(villager, HOME_POSED) = 0;
     *home_at(villager, HOME_LOCAL) = 1;
-    AcreTile_TileCentre(home_position(villager), home->x, home->z);
+    AcreTile_TileCenter(home_position(villager), home->x, home->z);
     home_settle(villager);
     *home_at(villager, HOME_ITEM_SHOWN) = 0;
     VillagerMood_SoundsOff(home_mood(villager));
@@ -361,10 +361,10 @@ int OutdoorVillagerHome_Start12(OutdoorVillagerBehaviour *self, u8 *villager)
 }
 CLEAN_AS(func_ov068_0226b3b4, OutdoorVillagerHome_Start12)
 
-/* ---- Behaviour 3: in the house */
+/* ---- Behavior 3: in the house */
 
-/* _ZN18Obj_ov068_022771c019func_ov068_0226b48cEi: behaviour 3's update: Begin3, Stay3. */
-int OutdoorVillagerHome_Update3(OutdoorVillagerBehaviour *self, u8 *villager)
+/* _ZN18Obj_ov068_022771c019func_ov068_0226b48cEi: behavior 3's update: Begin3, Stay3. */
+int OutdoorVillagerHome_Update3(OutdoorVillagerBehavior *self, u8 *villager)
 {
     static const MemberPointer *const steps[2] = {
         &data_ov068_02276f90, /* OutdoorVillagerHome_Begin3 */
@@ -378,13 +378,13 @@ CLEAN_AS(_ZN18Obj_ov068_022771c019func_ov068_0226b48cEi, OutdoorVillagerHome_Upd
 
 /* func_ov068_0226b4f8: the villager disabled. Asleep (status 2), once its sleep time is over
  * it wakes (byte 0x01 cleared, the wait 600 to 639, when it has a state entry) and comes out;
- * awake, it comes out when the wait is out. Coming out on screen: behaviour 4 with its walker
+ * awake, it comes out when the wait is out. Coming out on screen: behavior 4 with its walker
  * reset, unless this console's player is within 0x6000 (then it stays); off screen: its state
- * entry's state 1 and byte 0x01 cleared, put at the centre of the tile in front of its house
- * (its last position the same), its walker reset, behaviour 0, and its held item shown.
+ * entry's state 1 and byte 0x01 cleared, put at the center of the tile in front of its house
+ * (its last position the same), its walker reset, behavior 0, and its held item shown.
  * While it stays, every 900 frames its record's byte 0x1e rises.
  * REQUIRES: coming out off screen, its record has a state entry. */
-void OutdoorVillagerHome_Stay3(OutdoorVillagerBehaviour *self, u8 *villager)
+void OutdoorVillagerHome_Stay3(OutdoorVillagerBehavior *self, u8 *villager)
 {
     u8 *record = home_record(villager);
     int out = 0;
@@ -415,7 +415,7 @@ void OutdoorVillagerHome_Stay3(OutdoorVillagerBehaviour *self, u8 *villager)
         u8 *player = (u8 *) (uintptr_t) SessionPlayers_ActorHandle(OUTDOOR_VILLAGER_PLAYER_ACTOR);
         if (SceneObject_IsNear(villager, player, HOME_PLAYER_NEAR) == 0) {
             PathWalker_Init(home_walker(self));
-            OutdoorVillagerBehaviour_Start(self, villager, HOME_DO_OUT);
+            OutdoorVillagerBehavior_Start(self, villager, HOME_DO_OUT);
         }
         return;
     }
@@ -423,10 +423,10 @@ void OutdoorVillagerHome_Stay3(OutdoorVillagerBehaviour *self, u8 *villager)
     VillagerPlot *home = VillagerHome_Tile(record);
     VillagerState_SetState(entry, HOME_STATE_OUT);
     VillagerState_SetPlace(entry, 0);
-    AcreTile_TileCentre(home_position(villager), home->x, (u32) home->z + 1);
+    AcreTile_TileCenter(home_position(villager), home->x, (u32) home->z + 1);
     home_settle(villager);
     PathWalker_Init(home_walker(self));
-    OutdoorVillagerBehaviour_Start(self, villager, HOME_DO_WALK);
+    OutdoorVillagerBehavior_Start(self, villager, HOME_DO_WALK);
     u16 item;
     VillagerSceneHeld_Item(&item, villager);
     if (item != ITEM_CODE_NONE) {
@@ -436,20 +436,20 @@ void OutdoorVillagerHome_Stay3(OutdoorVillagerBehaviour *self, u8 *villager)
 CLEAN_AS(func_ov068_0226b4f8, OutdoorVillagerHome_Stay3)
 
 /* func_ov068_0226b640: step 1. */
-void OutdoorVillagerHome_Begin3(OutdoorVillagerBehaviour *self, u8 *villager)
+void OutdoorVillagerHome_Begin3(OutdoorVillagerBehavior *self, u8 *villager)
 {
     (void) villager;
     self->step = 1;
 }
 CLEAN_AS(func_ov068_0226b640, OutdoorVillagerHome_Begin3)
 
-/* func_ov068_0226b648: behaviour 3's start: a running act's effects reset, the watch held on
+/* func_ov068_0226b648: behavior 3's start: a running act's effects reset, the watch held on
  * nothing, it stands; its state entry's state 0 and flag 1 cleared, asleep (byte 0x01 2) at
  * its sleep time unless the current player is in Nook's job (flag 1), else awake (0); its furniture's items
  * stored, the byte at 0x838 set; the wait 600 to 639 frames, unposed, the raise timer 900, its
  * mood's sounds off and the held item not shown.
  * REQUIRES: its record has a state entry. */
-int OutdoorVillagerHome_Start3(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerHome_Start3(OutdoorVillagerBehavior *self, u8 *villager)
 {
     u8 *current = PlayerRecords_Current();
     int flag_1 = current != NULL ? PlayerRecord_TestFlag(current, PLAYER_FLAG_NOOK_JOB) : 0;
@@ -476,11 +476,11 @@ int OutdoorVillagerHome_Start3(OutdoorVillagerBehaviour *self, u8 *villager)
 }
 CLEAN_AS(func_ov068_0226b648, OutdoorVillagerHome_Start3)
 
-/* ---- Behaviour 2: going into the house */
+/* ---- Behavior 2: going into the house */
 
-/* _ZN18Obj_ov068_022771c019func_ov068_0226b74cEi: behaviour 2's update: AfterTurn2,
+/* _ZN18Obj_ov068_022771c019func_ov068_0226b74cEi: behavior 2's update: AfterTurn2,
  * AfterWalk2, Enter2. */
-int OutdoorVillagerHome_Update2(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerHome_Update2(OutdoorVillagerBehavior *self, u8 *villager)
 {
     static const MemberPointer *const steps[3] = {
         &data_ov068_02277120, /* OutdoorVillagerHome_AfterTurn2 */
@@ -493,18 +493,18 @@ int OutdoorVillagerHome_Update2(OutdoorVillagerBehaviour *self, u8 *villager)
 }
 CLEAN_AS(_ZN18Obj_ov068_022771c019func_ov068_0226b74cEi, OutdoorVillagerHome_Update2)
 
-/* func_ov068_0226b7c8: during animation 0x3b: once it is done, behaviour 3. Else the villager
- * drawn to the centre of the tile in front of its house by 0x400 along x and z, and during the
+/* func_ov068_0226b7c8: during animation 0x3b: once it is done, behavior 3. Else the villager
+ * drawn to the center of the tile in front of its house by 0x400 along x and z, and during the
  * animation its footsteps at frames 8, 12, 22, 27 and 34. */
-void OutdoorVillagerHome_Enter2(OutdoorVillagerBehaviour *self, u8 *villager)
+void OutdoorVillagerHome_Enter2(OutdoorVillagerBehavior *self, u8 *villager)
 {
     if (SpeakerAnim_Number(home_anim(villager), 0) == HOME_ANIM_IN && SceneMotion_IsDone(home_motion(villager)) != 0) {
-        OutdoorVillagerBehaviour_Start(self, villager, HOME_DO_IN);
+        OutdoorVillagerBehavior_Start(self, villager, HOME_DO_IN);
         return;
     }
     VillagerPlot *home = VillagerHome_Tile(home_record(villager));
     Vec3 door;
-    AcreTile_TileCentre(&door, home->x, (u32) home->z + 1);
+    AcreTile_TileCenter(&door, home->x, (u32) home->z + 1);
     Vec3 *position = home_position(villager);
     Approach_S32Again((int *) (void *) &position->x, door.x, HOME_DRAW_STEP);
     Approach_S32Again((int *) (void *) &position->z, door.z, HOME_DRAW_STEP);
@@ -526,7 +526,7 @@ CLEAN_AS(func_ov068_0226b7c8, OutdoorVillagerHome_Enter2)
 
 /* Once the motion of `kind` is done and the house lets the villager in: animation 0x3b
  * (priority 2), its shadow off; step 2. */
-static void home_go_in(OutdoorVillagerBehaviour *self, u8 *villager, int kind)
+static void home_go_in(OutdoorVillagerBehavior *self, u8 *villager, int kind)
 {
     if (SceneMotion_Kind(home_motion(villager)) != kind || SceneMotion_IsDone(home_motion(villager)) == 0) {
         return;
@@ -542,7 +542,7 @@ static void home_go_in(OutdoorVillagerBehaviour *self, u8 *villager, int kind)
 
 /* func_ov068_0226b88c: once a walk (motion kind 1) is done and the house lets the villager in,
  * animation 0x3b; step 2. QUIRK: its home's tile is read and not used. */
-void OutdoorVillagerHome_AfterWalk2(OutdoorVillagerBehaviour *self, u8 *villager)
+void OutdoorVillagerHome_AfterWalk2(OutdoorVillagerBehavior *self, u8 *villager)
 {
     home_go_in(self, villager, HOME_MOTION_WALK);
 }
@@ -550,16 +550,16 @@ CLEAN_AS(func_ov068_0226b88c, OutdoorVillagerHome_AfterWalk2)
 
 /* func_ov068_0226b904: once the turn (motion kind 3) is done and the house lets the villager
  * in, animation 0x3b; step 2. QUIRK: its home's tile is read and not used. */
-void OutdoorVillagerHome_AfterTurn2(OutdoorVillagerBehaviour *self, u8 *villager)
+void OutdoorVillagerHome_AfterTurn2(OutdoorVillagerBehavior *self, u8 *villager)
 {
     home_go_in(self, villager, HOME_MOTION_TURN);
 }
 CLEAN_AS(func_ov068_0226b904, OutdoorVillagerHome_AfterTurn2)
 
-/* func_ov068_0226b97c: behaviour 2's start: a running act's effects reset, the watch held on
+/* func_ov068_0226b97c: behavior 2's start: a running act's effects reset, the watch held on
  * nothing, a turn to face the house (motion kind 3, priority 2, angle -0x8000); held, the byte
  * at 0x838 set and its mood's sounds off. */
-int OutdoorVillagerHome_Start2(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerHome_Start2(OutdoorVillagerBehavior *self, u8 *villager)
 {
     (void) self;
     OutdoorVillagerObject_ResetActEffects(villager);

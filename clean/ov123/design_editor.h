@@ -1,6 +1,6 @@
 /* The scene of overlay 123 (vtable 0x0229d024, include/cpp/ov123/Obj_ov123_0229d024.h; constructor
  * DesignEditor_New, 0x51fc bytes): the design editor, a menu scene (ov002/menu_scene.h) that
- * edits one 32x32 design of 16-colour pixels (main/design.h) on the touch screen, as the evidence
+ * edits one 32x32 design of 16-color pixels (main/design.h) on the touch screen, as the evidence
  * says:
  *
  * - overlay 92's dispatcher opens it (as overlay group 0x0d) for its modes 2 and 3
@@ -13,7 +13,7 @@
  * - the canvas is the design shown four times bigger at (0x40, 8) of the touch screen
  *   (0x80 x 0x80 pixels), drawn as characters of layer 6 (DesignEditor_ZoomPixels);
  * - beside it are the tools (DesignEditorTool), a palette button, a button for layer 3
- *   (DesignEditor_ToggleLayer3) and the row of the palette's fifteen colours; the pen picks
+ *   (DesignEditor_ToggleLayer3) and the row of the palette's fifteen colors; the pen picks
  *   them, and the d-pad walks them with a cursor sprite (`key_place`, DesignEditorPlace);
  * - the drawing keeps two copies of the pixels: a stroke first copies the current one to the
  *   other and draws on that (DesignEditor_Snapshot), so tool 5 swaps back to the copy before
@@ -47,7 +47,7 @@ enum DesignEditorFlag {
     DESIGN_EDITOR_FLAG_SHAPE = 0x100,           /* a line, rectangle or ellipse is being dragged out */
     DESIGN_EDITOR_FLAG_PLACE_AT_ONCE = 0x200,   /* the cursor sprite jumps to its place, once */
     DESIGN_EDITOR_FLAG_DIM_LATER = 0x400,       /* the screen is dimmed once the layers have slid up for the question */
-    DESIGN_EDITOR_FLAG_PICKING = 0x800,         /* the colour under the key cursor is being picked (B held) */
+    DESIGN_EDITOR_FLAG_PICKING = 0x800,         /* the color under the key cursor is being picked (B held) */
     DESIGN_EDITOR_FLAG_STROKE = 0x1000,         /* the pen is drawing on the canvas */
     DESIGN_EDITOR_FLAG_PRESSED = 0x2000,        /* the button under the pen was pressed; not again until it moves */
     DESIGN_EDITOR_FLAG_UNDONE = 0x4000,         /* the last stroke was undone (the next undo redoes it) */
@@ -72,7 +72,7 @@ enum DesignEditorTool {
     DESIGN_EDITOR_TOOL_LINE = 8,
     DESIGN_EDITOR_TOOL_FILL = 9,     /* a flood fill */
     DESIGN_EDITOR_TOOL_PATTERN = 10, /* the whole design painted through a one-bit pattern */
-    DESIGN_EDITOR_TOOL_CLEAR = 11,   /* the whole design one colour */
+    DESIGN_EDITOR_TOOL_CLEAR = 11,   /* the whole design one color */
     DESIGN_EDITOR_TOOL_DOTS = 3,     /* in DesignEditor_PaintBrush: the shape's preview dots */
     DESIGN_EDITOR_NO_TOOL = 0x22
 };
@@ -80,10 +80,10 @@ enum DesignEditorTool {
 /* What a place under the pen or the key cursor stands for (`command`, `hover`, `key_place`):
  * the tools 0-0x0b (DesignEditorTool), then: */
 enum DesignEditorPlace {
-    DESIGN_EDITOR_PLACE_PALETTE = 0x0c,  /* the next palette */
-    DESIGN_EDITOR_PLACE_LAYER3 = 0x0d,   /* layer 3 shown or hidden */
-    DESIGN_EDITOR_PLACE_COLOUR_1 = 0x0e, /* 0x0e-0x1c: the colours 1-15 */
-    DESIGN_EDITOR_PLACE_COLOUR_15 = 0x1c,
+    DESIGN_EDITOR_PLACE_PALETTE = 0x0c, /* the next palette */
+    DESIGN_EDITOR_PLACE_LAYER3 = 0x0d,  /* layer 3 shown or hidden */
+    DESIGN_EDITOR_PLACE_COLOR_1 = 0x0e, /* 0x0e-0x1c: the colors 1-15 */
+    DESIGN_EDITOR_PLACE_COLOR_15 = 0x1c,
     DESIGN_EDITOR_PLACE_SAVE = 0x1d, /* the panel's button 9: save */
     DESIGN_EDITOR_PLACE_QUIT = 0x1e, /* the panel's button 8: quit without saving */
     DESIGN_EDITOR_PLACE_YES = 0x1f,  /* the question's "yes" (button 3): the editor ends */
@@ -94,9 +94,9 @@ enum DesignEditorPlace {
 
 /* Which part the d-pad walks (`key_mode`). */
 enum DesignEditorKeyMode {
-    DESIGN_EDITOR_KEYS_PLACES = 0,  /* the tools, buttons and colours */
-    DESIGN_EDITOR_KEYS_COLOURS = 1, /* the colours, from the places' Y (Y again goes to the canvas) */
-    DESIGN_EDITOR_KEYS_CANVAS = 2   /* a cursor on the canvas's pixels */
+    DESIGN_EDITOR_KEYS_PLACES = 0, /* the tools, buttons and colors */
+    DESIGN_EDITOR_KEYS_COLORS = 1, /* the colors, from the places' Y (Y again goes to the canvas) */
+    DESIGN_EDITOR_KEYS_CANVAS = 2  /* a cursor on the canvas's pixels */
 };
 
 /* The sub states, run from the table of DesignEditor_RunSubState (MenuScene_SetSubState). */
@@ -153,8 +153,8 @@ typedef struct DesignEditor {
     u32 flags;                                  /* 0x009c: DesignEditorFlag */
     u8 return_sub_state;                        /* 0x00a0: the sub state after the cursor sprite stops */
     u8 palette;                                 /* 0x00a1: the design's palette, 0-15 */
-    u8 colour;                                  /* 0x00a2: the colour drawn, 1-15 */
-    u8 colour_x;                                /* 0x00a3: (colour - 1) * 12, the colour marker's x */
+    u8 color;                                   /* 0x00a2: the color drawn, 1-15 */
+    u8 color_x;                                 /* 0x00a3: (color - 1) * 12, the color marker's x */
     u8 tool;                                    /* 0x00a4: DesignEditorTool */
     u8 command;                                 /* 0x00a5: the place pressed (DesignEditor_RunCommand) */
     u8 lit_place;                               /* 0x00a6: the place shown lit (DesignEditor_LightPlace) */
@@ -215,7 +215,7 @@ void DesignEditor_SelectTool(DesignEditor *self, unsigned char tool);
 void DesignEditor_QueueScreen(DesignEditor *self);
 void DesignEditor_SetPlacePalette(DesignEditor *self, unsigned int place, unsigned int palette);
 void DesignEditor_SetPalette(DesignEditor *self, int palette);
-void DesignEditor_SetColour(DesignEditor *self, unsigned char colour);
+void DesignEditor_SetColor(DesignEditor *self, unsigned char color);
 int DesignEditor_QueuePalette(DesignEditor *self);
 void DesignEditor_Refresh(DesignEditor *self);
 void DesignEditor_QueueZoomedChars(DesignEditor *self);

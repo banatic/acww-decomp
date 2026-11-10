@@ -110,7 +110,7 @@ u8 *PlayerRecord_ReactionSlots(u8 *record);
  *           shown behind the menus (menu_backdrop.h; 0xfff1: none)
  *   0x2412  the date the sun level was last stored, packed (PlayerRecordSunDate)
  *   0x243c  the face (bits 0-3) and the head's kind (bits 4-7)
- *   0x243d  the hair colour (bits 0-2), the sun level (bits 3-5) and the day's luck the
+ *   0x243d  the hair color (bits 0-2), the sun level (bits 3-5) and the day's luck the
  *           fortune teller read (bits 6-7: ov045 FORTUNE_TELLER_LUCK_*, cleared each new day)
  * Flag 0 of the record (stung by bees) adds 0x10 to the face (FieldActor_RecordFace). */
 

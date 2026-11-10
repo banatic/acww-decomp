@@ -14,8 +14,8 @@
 /* The texts after a tag start this many bytes after it, and each takes this many bytes more
  * than its length. */
 #define MESSAGE_TAG_TEXT_GAP 2
-/* The bytes between two ready-made colour tags in data_020d1d70. */
-#define MESSAGE_TAG_COLOUR_TAG_STRIDE 10
+/* The bytes between two ready-made color tags in data_020d1d70. */
+#define MESSAGE_TAG_COLOR_TAG_STRIDE 10
 /* The bytes of a message part (message_receiver.h). */
 #define MESSAGE_TAG_PART_SIZE 0x5c
 
@@ -23,9 +23,9 @@ static_assert(offsetof(MessageTag, size) == 0x08, "size");
 static_assert(offsetof(MessageTag, params) == 0x0c, "params");
 static_assert(offsetof(MessageTagText, length) == 0x04, "text length");
 
-/* The ready-made 0xff/0 tags: the head 1a 00 08 ff 00 00, the parameters (the colour and 0),
+/* The ready-made 0xff/0 tags: the head 1a 00 08 ff 00 00, the parameters (the color and 0),
  * then two bytes of padding. */
-extern const u8 data_020d1d70[][MESSAGE_TAG_COLOUR_TAG_STRIDE];
+extern const u8 data_020d1d70[][MESSAGE_TAG_COLOR_TAG_STRIDE];
 
 static const u8 *message_tag_params(const MessageTag *tag)
 {
@@ -38,25 +38,25 @@ static int message_tag_end(const MessageTag *tag)
     return (int) ((uintptr_t) tag->params + tag->size);
 }
 
-/* func_020a82f8: the address of the ready-made tag of `colour`. */
-int MessageTag_ColourTag(int colour)
+/* func_020a82f8: the address of the ready-made tag of `color`. */
+int MessageTag_ColorTag(int color)
 {
-    return (int) (uintptr_t) data_020d1d70[colour];
+    return (int) (uintptr_t) data_020d1d70[color];
 }
-CLEAN_AS(func_020a82f8, MessageTag_ColourTag)
+CLEAN_AS(func_020a82f8, MessageTag_ColorTag)
 
-/* func_020a8308: the colour of a 0xff/0 tag, its first byte.
- * QUIRK: colour 6 reads as 5 (the ready-made tag of 6 is that of 5 too). */
-unsigned char MessageTag_Colour(MessageTag *tag)
+/* func_020a8308: the color of a 0xff/0 tag, its first byte.
+ * QUIRK: color 6 reads as 5 (the ready-made tag of 6 is that of 5 too). */
+unsigned char MessageTag_Color(MessageTag *tag)
 {
-    u8 colour;
-    MessageTag_GetFirstByte(tag, &colour);
-    if (colour == 6) {
-        colour = 5;
+    u8 color;
+    MessageTag_GetFirstByte(tag, &color);
+    if (color == 6) {
+        color = 5;
     }
-    return colour;
+    return color;
 }
-CLEAN_AS(func_020a8308, MessageTag_Colour)
+CLEAN_AS(func_020a8308, MessageTag_Color)
 
 /* func_020a8328: the first parameter byte, the address of the tag's end and that of the
  * parameters after the first. */

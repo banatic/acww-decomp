@@ -34,7 +34,7 @@ CLEAN_AS(func_02087864, TownSpot_Set)
 
 /* func_0208786c: with a town map, one of its inner acres (the border acres left out) that has
  * tiles func_02088024 accepts, at random, and one of those tiles at random
- * (TownSpot_PickTileInAcre): the spot is set to its centre. Whether one was found.
+ * (TownSpot_PickTileInAcre): the spot is set to its center. Whether one was found.
  * REQUIRES: the map has at most 4 rows of inner acres (the town has 4); with more, the ROM's
  * code writes past its mask. A column past the 8th is never picked (its bit is lost).
  * BUG: had TownSpot_PickTileInAcre found no tile, the spot would be set from a position never
@@ -81,7 +81,7 @@ int TownSpot_PickRandom(TownSpot *spot)
 }
 CLEAN_AS(func_0208786c, TownSpot_PickRandom)
 
-/* func_02087950: one of the acre's tiles that func_02088024 accepts, at random: its centre
+/* func_02087950: one of the acre's tiles that func_02088024 accepts, at random: its center
  * into `position`. Whether there was one. `spot` is not read. */
 int TownSpot_PickTileInAcre(TownSpot *spot, Vec3 *position, const TownSpotAcre *acre, AcreMap *map)
 {
@@ -110,7 +110,7 @@ int TownSpot_PickTileInAcre(TownSpot *spot, Vec3 *position, const TownSpotAcre *
                 continue;
             }
             if (pick == 0) {
-                AcreTile_TileCentre(position, (u32) (first_x + x), (u32) (first_z + z));
+                AcreTile_TileCenter(position, (u32) (first_x + x), (u32) (first_z + z));
                 return 1;
             }
             pick--;

@@ -1,5 +1,5 @@
 /* Overlay 82 (the turtle as the insect contest's host, turtle_insects.h): its static
- * initialiser, run when the overlay is loaded, which fills in the table of his states
+ * initializer, run when the overlay is loaded, which fills in the table of his states
  * (data_ov082_02279914, TurtleInsects_SetState and TurtleInsects_Update): each state's entry
  * and update, copied from the overlay's constants (C++ pointers to member functions, which the
  * compiler does not fold into the table). */

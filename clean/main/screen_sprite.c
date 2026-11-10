@@ -22,7 +22,7 @@ int ScreenSprite_X(ScreenSprite *sprite)
 }
 CLEAN_AS(func_0208aef0, ScreenSprite_X)
 
-/* func_0208aef4 (vtable slot 4): placed at (x, y) from the screen's centre. The original
+/* func_0208aef4 (vtable slot 4): placed at (x, y) from the screen's center. The original
  * declares both as byte pointers; they are plain numbers. */
 void ScreenSprite_SetPlace(ScreenSprite *sprite, u32 x, u32 y)
 {
@@ -54,7 +54,7 @@ void ScreenSprite_Destruct(ScreenSprite *sprite)
 }
 CLEAN_AS(func_0208af24, ScreenSprite_Destruct)
 
-/* func_0208af30: the constructor: at the screen's centre. */
+/* func_0208af30: the constructor: at the screen's center. */
 void ScreenSprite_Construct(ScreenSprite *sprite)
 {
     sprite->vtable = data_020e20c8;

@@ -1,4 +1,4 @@
-/* The field actor's looks (field_actor.h): what its player's record says of them, the colour
+/* The field actor's looks (field_actor.h): what its player's record says of them, the color
  * palettes, the clothes, the head (part B) and the accessory, and the sun level faded by the days
  * since it was last stored.
  *
@@ -108,7 +108,7 @@ CLEAN_AS(func_020100d0, FieldActor_CopyTexture)
 /* ---- The head (part B at 0x428, with its models at 0x38c and 0x464) */
 
 /* func_020100e8: asks for the head to change to `item` (the head's item, ITEM_CODE_NONE for none),
- * its kind when the item does not set one, the hair colour, and whether the face's textures
+ * its kind when the item does not set one, the hair color, and whether the face's textures
  * are copied onto it; 1 when it was taken, 0 while another change is under way. */
 int FieldActor_RequestHead(FieldActor *actor, const u16 *item, u8 kind, u8 hair_color, u8 with_face)
 {
@@ -136,7 +136,7 @@ CLEAN_AS(func_02010134, FieldActor_PollHead)
 
 /* func_02010160: applies a pending change of the head. The item (none with flag 0xc) and the
  * kind choose the head's models (func_0205e708, also given func_02011340's flag), which are
- * loaded with the item (func_0205e348); the palettes are set for the hair colour and the sun
+ * loaded with the item (func_0205e348); the palettes are set for the hair color and the sun
  * level (FieldActor_SunLevel without storing). The face's "e.0" and "m.0" go onto the first
  * model's texture when asked for; "skin_pl" and "hair_pl" onto it, and "skin_pl" onto the
  * second model's when there is one. The head and its two models are then rebuilt. Without the
@@ -309,7 +309,7 @@ CLEAN_AS(func_02010680, FieldActor_SetCloth)
 /* func_020106a8: the palettes' two entries. The skin's is the sun level plus 8 times a base
  * that grows with the face (FieldActor_RecordFace: 1 below 8, 9 below 0x10, 0x11 below 0x18,
  * else 0x19; 0x10 less with the record's flag 0); it is set (func_0205f874) below 0x80. The
- * hair's is the sun level plus 8 times the hair colour plus 0x80; it is set (func_0205f848)
+ * hair's is the sun level plus 8 times the hair color plus 0x80; it is set (func_0205f848)
  * from 0x80 to 0xbf. */
 void FieldActor_SetPalettes(FieldActor *actor, int hair_color, int sun_level)
 {
@@ -465,7 +465,7 @@ unsigned int FieldActor_RecordSunLevel(FieldActor *actor)
 }
 CLEAN_AS(func_020112bc, FieldActor_RecordSunLevel)
 
-/* func_020112d0: the hair colour (bits 0-2 of the record's byte 0x243d), the index of the
+/* func_020112d0: the hair color (bits 0-2 of the record's byte 0x243d), the index of the
  * "hair_pl" palette.
  * REQUIRES: the actor's player has a record (without one, the byte at 0x243d is read). */
 unsigned int FieldActor_RecordHairColor(FieldActor *actor)

@@ -35,14 +35,14 @@
 #define GX_VRAM_TEX_BC 6       /* VRAM banks B and C for textures */
 #define GX_VRAM_TEXPLTT_F 0x10 /* bank F for texture palettes */
 
-/* The toon table: 32 colours. */
+/* The toon table: 32 colors. */
 typedef struct ToonTable {
     u16 colors[32];
 } ToonTable;
 
 static_assert(sizeof(ToonTable) == 0x40, "ToonTable layout");
 
-extern u16 data_0213feac;             /* the clear colour */
+extern u16 data_0213feac;             /* the clear color */
 extern int data_0213feb0;             /* the clear depth */
 extern Mtx43 data_0213fee4;           /* the view matrix */
 extern Mtx43 data_0213feb4;           /* its inverse */
@@ -63,14 +63,14 @@ extern void GX_SetBankForTex(int banks);
 extern void GX_SetBankForTexPltt(int banks);
 extern void OS_EnableDTCM(void);
 
-/* func_02002e14: the clear colour and depth, transparent, with the opaque polygon ID and fog. */
+/* func_02002e14: the clear color and depth, transparent, with the opaque polygon ID and fog. */
 void Display3D_ApplyClearColor(void)
 {
     G3X_SetClearColor(data_0213feac, 0, (u32) data_0213feb0, POLYGON_ID_OPAQUE, 1);
 }
 CLEAN_AS(func_02002e14, Display3D_ApplyClearColor)
 
-/* func_02002e3c: the colour Display3D_ApplyClearColor clears to. */
+/* func_02002e3c: the color Display3D_ApplyClearColor clears to. */
 void Display3D_SetClearColor(u16 color)
 {
     data_0213feac = color;
@@ -135,11 +135,11 @@ void Display3D_Init(void)
 }
 CLEAN_AS(func_02002ee8, Display3D_Init)
 
-/* func_02002f68: initialise the 3D engine and NitroSystem's G3D: toon shading, anti-aliasing
+/* func_02002f68: initialize the 3D engine and NitroSystem's G3D: toon shading, anti-aliasing
  * and alpha blending without edge marking, the whole screen as the viewport, a perspective
  * projection (half the vertical field of view 20 degrees, aspect 4:3, near 1, far 1000) stored
  * in matrix stack slot 0, manual translucent sorting with W-buffering, the toon table, and a
- * black clear (stored as colour 0, depth 0x7fff for Display3D_ApplyClearColor).
+ * black clear (stored as color 0, depth 0x7fff for Display3D_ApplyClearColor).
  * HW: in this order. */
 void Display3D_InitEngine(void)
 {

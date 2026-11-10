@@ -1,4 +1,4 @@
-/* Overlay 79's static initialiser, run when the overlay is loaded: the six colours its source
+/* Overlay 79's static initializer, run when the overlay is loaded: the six colors its source
  * file defines for itself, the table of the walrus's states (walrus.h) filled from the
  * overlay's constants, and the two points beside him he steps aside to (objects
  * registered for destruction with a destructor that does nothing). */
@@ -8,25 +8,25 @@
 #include "ov004/member_pointer.h"
 #include "types.h"
 
-/* A colour of four 5-bit components (the fourth always 31). */
-typedef struct WalrusInitColour {
+/* A color of four 5-bit components (the fourth always 31). */
+typedef struct WalrusInitColor {
     u8 c0;
     u8 c1;
     u8 c2;
     u8 c3;
-} WalrusInitColour;
+} WalrusInitColor;
 
-static void walrus_init_colour(WalrusInitColour *colour, u8 c0, u8 c1, u8 c2, u8 c3)
+static void walrus_init_color(WalrusInitColor *color, u8 c0, u8 c1, u8 c2, u8 c3)
 {
-    colour->c0 = c0;
-    colour->c1 = c1;
-    colour->c2 = c2;
-    colour->c3 = c3;
+    color->c0 = c0;
+    color->c1 = c1;
+    color->c2 = c2;
+    color->c3 = c3;
 }
 
-/* Red, blue, yellow, green, cyan and grey. */
-extern WalrusInitColour data_ov079_0227a1c0, data_ov079_0227a1cc, data_ov079_0227a1d4, data_ov079_0227a1d8,
-    data_ov079_0227a1c8, data_ov079_0227a1d0;
+/* Red, blue, yellow, green, cyan and gray. */
+extern WalrusInitColor data_ov079_0227a1c0, data_ov079_0227a1cc, data_ov079_0227a1d4, data_ov079_0227a1d8, data_ov079_0227a1c8,
+    data_ov079_0227a1d0;
 
 /* The constants of the states' table: each state's entry, then its run; WALRUS_DONE has no
  * entry. */
@@ -50,7 +50,7 @@ extern void func_020012dc(void *object);
 extern Vec3 data_ov079_0227a1f4[2];
 extern WalrusInitRecord data_ov079_0227a1dc, data_ov079_0227a1e8;
 
-/* __sinit_ov079_02279e74: the colours, the states' table in order, then each point set and
+/* __sinit_ov079_02279e74: the colors, the states' table in order, then each point set and
  * registered. */
 void WalrusInit_Tables(void)
 {
@@ -62,12 +62,12 @@ void WalrusInit_Tables(void)
         &data_ov079_02279fd8, &data_ov079_02279fd0, /* WALRUS_TALK */
     };
 
-    walrus_init_colour(&data_ov079_0227a1c0, 31, 20, 20, 31);
-    walrus_init_colour(&data_ov079_0227a1cc, 20, 20, 31, 31);
-    walrus_init_colour(&data_ov079_0227a1d4, 31, 31, 20, 31);
-    walrus_init_colour(&data_ov079_0227a1d8, 20, 31, 20, 31);
-    walrus_init_colour(&data_ov079_0227a1c8, 20, 31, 31, 31);
-    walrus_init_colour(&data_ov079_0227a1d0, 20, 24, 24, 31);
+    walrus_init_color(&data_ov079_0227a1c0, 31, 20, 20, 31);
+    walrus_init_color(&data_ov079_0227a1cc, 20, 20, 31, 31);
+    walrus_init_color(&data_ov079_0227a1d4, 31, 31, 20, 31);
+    walrus_init_color(&data_ov079_0227a1d8, 20, 31, 20, 31);
+    walrus_init_color(&data_ov079_0227a1c8, 20, 31, 31, 31);
+    walrus_init_color(&data_ov079_0227a1d0, 20, 24, 24, 31);
     for (int i = 0; i < WALRUS_STATES; i++) {
         data_ov079_0227a224[i].enter = *states[2 * i];
         data_ov079_0227a224[i].run = *states[2 * i + 1];

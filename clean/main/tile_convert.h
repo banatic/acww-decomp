@@ -1,4 +1,4 @@
-/* Converting 16-colour images between character order (each 8x8 character's 8 lines of 4
+/* Converting 16-color images between character order (each 8x8 character's 8 lines of 4
  * bytes in a row) and bitmap order (whole pixel lines). One u32 is one character line. */
 #ifndef CLEAN_MAIN_TILE_CONVERT_H
 #define CLEAN_MAIN_TILE_CONVERT_H

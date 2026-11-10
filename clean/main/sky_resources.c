@@ -32,8 +32,8 @@ typedef struct SkyMoonPalettePath {
 extern const SkyResourceFile data_020d2bac[];
 extern const SkySlotLayout data_020d26a0[];
 extern const char *const data_020d22d8[];              /* the cell files' paths */
-extern const u8 data_020d2324[SKY_PALETTES_OVERRIDES]; /* per override: OBJ palette << 4 | colour */
-extern const u16 data_020d22c0;                        /* an override's colour before it is set */
+extern const u8 data_020d2324[SKY_PALETTES_OVERRIDES]; /* per override: OBJ palette << 4 | color */
+extern const u16 data_020d22c0;                        /* an override's color before it is set */
 extern const SkyPalettePath data_020e6100;             /* "/sky/a_sky_obj_ncl.bin" */
 extern const SkyMoonPalettePath data_020e6168;         /* "/sky/a_sky_moon_obj_ncl.bin" */
 extern SkyPalettes data_021fba00;                      /* the objects' palettes */
@@ -184,7 +184,7 @@ void SkyPalettes_Load(SkyPalettes *palettes, SkyFiles *files, unsigned int resou
 }
 CLEAN_AS(func_020bed64, SkyPalettes_Load)
 
-/* func_020bedf4: the constructor: no variant, no override (their colours data_020d22c0), the
+/* func_020bedf4: the constructor: no variant, no override (their colors data_020d22c0), the
  * OBJ palettes unknown, the palette being loaded cleared. */
 SkyPalettes *SkyPalettes_Construct(SkyPalettes *palettes)
 {

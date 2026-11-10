@@ -129,7 +129,7 @@ extern const Vec3 data_021c67d0;
 extern s32 data_020c8120;
 
 /* The points beside it it steps aside to (0.5 to +x or -x, 1.0 ahead), filled by its static
- * initialiser. */
+ * initializer. */
 extern Vec3 data_ov078_02279c30;
 extern Vec3 data_ov078_02279c3c;
 
@@ -595,7 +595,7 @@ int Camel_PointAside(Camel *self, Vec3 *out, const Vec3 *offset)
 CLEAN_AS(func_ov078_02279460, Camel_PointAside)
 
 /* func_ov078_0227949c: up to six tries at a point 12.0 from it in a random direction, put on
- * its tile's centre (AcreTile_SnapToTileCentre); the first that is clear (TownTile_IsClearAt)
+ * its tile's center (AcreTile_SnapToTileCenter); the first that is clear (TownTile_IsClearAt)
  * given in `x` and `z`. Whether one was. Each try starts from what the last left in the
  * point. */
 int Camel_RandomPointNear(Camel *self, fx32 *x, fx32 *z)
@@ -606,7 +606,7 @@ int Camel_RandomPointNear(Camel *self, fx32 *x, fx32 *z)
         unsigned int index = (unsigned int) ((u16) Random_Next(&data_021cb5a0) >> 4) * 2;
         point.x = FX_MulFunc(CAMEL_POINT_DISTANCE, FX_SinCosTable_[index]) + self->position.x;
         point.z = FX_MulFunc(CAMEL_POINT_DISTANCE, FX_SinCosTable_[index + 1]) + self->position.z;
-        AcreTile_SnapToTileCentre(&point, &point);
+        AcreTile_SnapToTileCenter(&point, &point);
         if (TownTile_IsClearAt(&point, NULL) != 0) {
             *x = point.x;
             *z = point.z;
@@ -629,12 +629,12 @@ int Camel_NearCamera(Camel *self)
 }
 CLEAN_AS(func_ov078_0227952c, Camel_NearCamera)
 
-/* func_ov078_02279564: whether `point` is less than 16.0 from `centre` either way in x, less
+/* func_ov078_02279564: whether `point` is less than 16.0 from `center` either way in x, less
  * than 26.0 from it to -z and less than 10.0 to +z. */
-int Camel_InBox(int unused, const Vec3 *centre, const Vec3 *point)
+int Camel_InBox(int unused, const Vec3 *center, const Vec3 *point)
 {
     (void) unused;
-    return point->x > centre->x - CAMEL_NEAR_X && point->x < centre->x + CAMEL_NEAR_X &&
-           point->z > centre->z - CAMEL_NEAR_Z_BEHIND && point->z < centre->z + CAMEL_NEAR_Z_AHEAD;
+    return point->x > center->x - CAMEL_NEAR_X && point->x < center->x + CAMEL_NEAR_X &&
+           point->z > center->z - CAMEL_NEAR_Z_BEHIND && point->z < center->z + CAMEL_NEAR_Z_AHEAD;
 }
 CLEAN_AS(func_ov078_02279564, Camel_InBox)

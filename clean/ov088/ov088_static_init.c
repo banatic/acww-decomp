@@ -1,7 +1,7 @@
-/* Overlay 88's static initialiser, run when the overlay is loaded: colours its source files
+/* Overlay 88's static initializer, run when the overlay is loaded: colors its source files
  * define for themselves, the tables of member functions its character (reaction_npc.h) and its
  * talk scene (reaction_npc_talk.h) dispatch through, copied from the overlay's constants (the
- * compiler cannot place member pointers in initialised data), and the two points beside its
+ * compiler cannot place member pointers in initialized data), and the two points beside its
  * way it steps to, registered for destruction like static C++ objects. */
 #include <stdint.h>
 
@@ -12,13 +12,13 @@
 #include "reaction_npc_talk.h"
 #include "types.h"
 
-/* A colour of four 5-bit components (the fourth always 31). */
-typedef struct ReactionNpcInitColour {
+/* A color of four 5-bit components (the fourth always 31). */
+typedef struct ReactionNpcInitColor {
     u8 c0;
     u8 c1;
     u8 c2;
     u8 c3;
-} ReactionNpcInitColour;
+} ReactionNpcInitColor;
 
 /* The record __register_global_object links an object into, so that its destructor runs when
  * the overlay goes. */
@@ -28,8 +28,8 @@ typedef struct ReactionNpcInitRecord {
     void *object;
 } ReactionNpcInitRecord;
 
-/* The six colours: red, blue, yellow, green, cyan and grey. */
-extern ReactionNpcInitColour data_ov088_02279df4, data_ov088_02279de8, data_ov088_02279de4, data_ov088_02279de0,
+/* The six colors: red, blue, yellow, green, cyan and gray. */
+extern ReactionNpcInitColor data_ov088_02279df4, data_ov088_02279de8, data_ov088_02279de4, data_ov088_02279de0,
     data_ov088_02279df0, data_ov088_02279dec;
 /* The null member pointer (the C++ runtime's), the talk scene's steps' functions and the
  * states' functions. */
@@ -47,12 +47,12 @@ extern void __register_global_object(void *object, void *destruct, void *record)
 /* The destructor of a point: nothing (the game's function is handed on). */
 extern void func_020012dc(void *object);
 
-static void rnpc_init_colour(ReactionNpcInitColour *colour, u8 c0, u8 c1, u8 c2, u8 c3)
+static void rnpc_init_color(ReactionNpcInitColor *color, u8 c0, u8 c1, u8 c2, u8 c3)
 {
-    colour->c0 = c0;
-    colour->c1 = c1;
-    colour->c2 = c2;
-    colour->c3 = c3;
+    color->c0 = c0;
+    color->c1 = c1;
+    color->c2 = c2;
+    color->c3 = c3;
 }
 
 static void rnpc_init_point(Vec3 *point, fx32 x, ReactionNpcInitRecord *record)
@@ -63,7 +63,7 @@ static void rnpc_init_point(Vec3 *point, fx32 x, ReactionNpcInitRecord *record)
     __register_global_object(point, (void *) (uintptr_t) func_020012dc, record);
 }
 
-/* __sinit_ov088_022799c4: the colours; the talk scene's five steps (step 0 has no function);
+/* __sinit_ov088_022799c4: the colors; the talk scene's five steps (step 0 has no function);
  * the five states' entries and updates, in order (state 1's entry is step 0's, the null
  * member pointer, read back); the points (0.5, 0, 1.0) and (-0.5, 0, 1.0), each registered. */
 void ReactionNpcInit_Tables(void)
@@ -71,12 +71,12 @@ void ReactionNpcInit_Tables(void)
     static const MemberPointer *const steps[REACTION_NPC_STEPS] = {
         &__ptmf_null, &data_ov088_02279b78, &data_ov088_02279bb0, &data_ov088_02279b88, &data_ov088_02279b98,
     };
-    rnpc_init_colour(&data_ov088_02279df4, 31, 20, 20, 31);
-    rnpc_init_colour(&data_ov088_02279de8, 20, 20, 31, 31);
-    rnpc_init_colour(&data_ov088_02279de4, 31, 31, 20, 31);
-    rnpc_init_colour(&data_ov088_02279de0, 20, 31, 20, 31);
-    rnpc_init_colour(&data_ov088_02279df0, 20, 31, 31, 31);
-    rnpc_init_colour(&data_ov088_02279dec, 20, 24, 24, 31);
+    rnpc_init_color(&data_ov088_02279df4, 31, 20, 20, 31);
+    rnpc_init_color(&data_ov088_02279de8, 20, 20, 31, 31);
+    rnpc_init_color(&data_ov088_02279de4, 31, 31, 20, 31);
+    rnpc_init_color(&data_ov088_02279de0, 20, 31, 20, 31);
+    rnpc_init_color(&data_ov088_02279df0, 20, 31, 31, 31);
+    rnpc_init_color(&data_ov088_02279dec, 20, 24, 24, 31);
     for (int i = 0; i < REACTION_NPC_STEPS; i++) {
         data_ov088_02279c14[i].run = *steps[i];
     }

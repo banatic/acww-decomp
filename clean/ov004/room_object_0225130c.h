@@ -1,5 +1,5 @@
 /* A class of overlay 4's room objects (vtable 0x0225130c, receiver part 0x022513b8, 0x848
- * bytes) that keeps sound 0x42a playing at its centre and runs through five states, entered
+ * bytes) that keeps sound 0x42a playing at its center and runs through five states, entered
  * through vtable slot 0x70 and dispatched through tables of member pointers (member_pointer.h):
  *
  * - off: the switch off; touching it (a change of the switch pending) requests starting;

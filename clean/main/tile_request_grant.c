@@ -27,11 +27,11 @@ extern NetSession *data_020ccf94;
 extern TileChanges data_021c7880;
 extern TileChange data_021c7884[TILE_CHANGES_COUNT];
 
-/* The neighbours of a tile, each a byte: x + 8 in the high four bits, z + 8 in the low. */
+/* The neighbors of a tile, each a byte: x + 8 in the high four bits, z + 8 in the low. */
 extern const u8 data_020ca640[9];
-/* The neighbour (of data_020ca640) each drop starts from. */
+/* The neighbor (of data_020ca640) each drop starts from. */
 extern const int data_020ca67c[];
-/* For each drop, the eight neighbours of its first tile (of data_020ca640) to try in turn. */
+/* For each drop, the eight neighbors of its first tile (of data_020ca640) to try in turn. */
 extern const int data_020cb488[][8];
 /* The item a grown code of each line of eight (MapItem_EightLine) drops. */
 extern const u16 data_020ca670[];
@@ -85,10 +85,10 @@ static TileRequestTile tile_request_grant_tile_of(u16 packed)
     return tile;
 }
 
-/* The neighbour `neighbour` (of data_020ca640) of a packed tile. */
-static TileRequestTile tile_request_grant_near(u16 packed, int neighbour)
+/* The neighbor `neighbor` (of data_020ca640) of a packed tile. */
+static TileRequestTile tile_request_grant_near(u16 packed, int neighbor)
 {
-    u8 offset = data_020ca640[neighbour];
+    u8 offset = data_020ca640[neighbor];
     TileRequestTile tile = {(packed >> 8) + ((offset >> 4) - 8), (packed & 0xff) + ((offset & 0xf) - 8)};
     return tile;
 }
@@ -382,9 +382,9 @@ void TileRequestGrant_DropOne(TileRequestAnswer *answer, const TileRequestMessag
         ItemList_Destruct(drawer);
     }
     u16 packed = request->tile;
-    Vec3 centre;
-    AcreTile_TileCentre(&centre, (u32) (packed >> 8), (u32) (packed & 0xff));
-    int side = GrowthModel_PlayerSide(slot, &centre);
+    Vec3 center;
+    AcreTile_TileCenter(&center, (u32) (packed >> 8), (u32) (packed & 0xff));
+    int side = GrowthModel_PlayerSide(slot, &center);
     TileRequestTile at = tile_request_grant_near(answer->tile, data_020ca67c[side]);
     if (TileRequestGrant_FindDropTile(answer, &at, side, town) != 0) {
         TileRequestTile to = at;
@@ -398,7 +398,7 @@ void TileRequestGrant_DropOne(TileRequestAnswer *answer, const TileRequestMessag
 CLEAN_AS(func_02045440, TileRequestGrant_DropOne)
 
 /* func_0204558c: the item of a grown `code` (TileRequestGrant_DropItemOf) dropped three times
- * (twice for 0xcc) on tiles around the answer's tile, each from its own neighbour; the tiles
+ * (twice for 0xcc) on tiles around the answer's tile, each from its own neighbor; the tiles
  * (or none) and the item go to the answer. */
 void TileRequestGrant_DropMany(TileRequestAnswer *answer, int slot, int code)
 {
@@ -438,7 +438,7 @@ u16 TileRequestGrant_DropItemOf(int unused, int code)
 }
 CLEAN_AS(func_02045670, TileRequestGrant_DropItemOf)
 
-/* func_020456b0: from `tile`, the first of the eight neighbours data_020cb488 gives for drop
+/* func_020456b0: from `tile`, the first of the eight neighbors data_020cb488 gives for drop
  * `index` that is empty, allowed (AcreTile_UnitByte04) and has no change under way in layer 0;
  * it goes to `tile`, 1. When there is none, 0.
  * QUIRK: then `tile` still moves to the first of the eight. */
@@ -619,15 +619,15 @@ int TileRequestGrant_NoOtherNearFor(const TileRequestTile *tile, int slot)
 }
 CLEAN_AS(func_02045aa4, TileRequestGrant_NoOtherNearFor)
 
-/* func_02045ac4: whether no player's actor but `skip`'s stands within 1.0 of the tile's centre
+/* func_02045ac4: whether no player's actor but `skip`'s stands within 1.0 of the tile's center
  * (always when not linked). */
 int TileRequestGrant_NoOneNear(const TileRequestTile *tile, int skip)
 {
     if (!Session_IsLinked(data_020ccf94)) {
         return 1;
     }
-    Vec3 centre;
-    AcreTile_TileCentre(&centre, (u32) tile->x, (u32) tile->z);
+    Vec3 center;
+    AcreTile_TileCenter(&center, (u32) tile->x, (u32) tile->z);
     for (int i = 0; i < TILE_REQUEST_GRANT_PLAYERS; i++) {
         if (i == skip) {
             continue;
@@ -636,8 +636,8 @@ int TileRequestGrant_NoOneNear(const TileRequestTile *tile, int skip)
         if (actor == NULL) {
             continue;
         }
-        fx32 dx = tile_request_grant_sub(centre.x, actor->position.x);
-        fx32 dz = tile_request_grant_sub(centre.z, actor->position.z);
+        fx32 dx = tile_request_grant_sub(center.x, actor->position.x);
+        fx32 dz = tile_request_grant_sub(center.z, actor->position.z);
         fx32 x2 = FX_MulFunc(dx, dx);
         fx32 z2 = FX_MulFunc(dz, dz);
         if (tile_request_grant_add(x2, z2) < TILE_REQUEST_GRANT_NEAR) {

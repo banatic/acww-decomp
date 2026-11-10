@@ -33,7 +33,7 @@ static_assert(offsetof(PagedChoice, page_label) == 0x26c && offsetof(PagedChoice
 static_assert(offsetof(PagedChoice, codes) == 0x3cc, "choice codes");
 static_assert(offsetof(PagedChoice, priority) == 0x10 && offsetof(PagedChoice, screen_file) == 0x24, "choice setup");
 static_assert(offsetof(PagedChoice, window_delay) == 0x21 && offsetof(PagedChoice, window) == 0x2e4, "choice window");
-static_assert(offsetof(PagedChoiceRow, first_tile) == 0x6c && offsetof(PagedChoiceRow, colour_39) == 0x70, "choice row");
+static_assert(offsetof(PagedChoiceRow, first_tile) == 0x6c && offsetof(PagedChoiceRow, color_39) == 0x70, "choice row");
 static_assert(offsetof(ChoiceEntries, text_rows) == 0x0a, "choice entries");
 
 /* The full-width slash (U+FF0F), between the page and the page count. */
@@ -372,7 +372,7 @@ int ChoiceEntries_Add(ChoiceEntries *entries, u8 id, u8 value)
 }
 CLEAN_AS(func_ov002_02208d4c, ChoiceEntries_Add)
 
-/* func_ov002_02208d74: draws the rows in their own colours, then hands each row shown to
+/* func_ov002_02208d74: draws the rows in their own colors, then hands each row shown to
  * func_02070a04 with 1, or 0 for the first row when it is set apart. */
 void PagedChoice_RefreshRows(PagedChoice *choice)
 {
@@ -386,7 +386,7 @@ void PagedChoice_RefreshRows(PagedChoice *choice)
 }
 CLEAN_AS(func_ov002_02208d74, PagedChoice_RefreshRows)
 
-/* func_ov002_02208dd0: draws all five rows in their own colours. */
+/* func_ov002_02208dd0: draws all five rows in their own colors. */
 void PagedChoice_DrawRows(PagedChoice *choice)
 {
     int i;
@@ -420,7 +420,7 @@ CLEAN_AS(func_ov002_02208e18, PagedChoice_IsIdle)
 #define PLAYERS 4
 #define VILLAGERS 8
 #define PAGE_TABLE_PAGES 5
-#define PICK_COLOUR 15
+#define PICK_COLOR 15
 #define ROW_CELLS 13     /* the width of a row's text box, in cells */
 #define ROW_TILES 0x1a   /* the character tiles a row's text box takes */
 #define FRAME_COLUMNS 13 /* the text width the screen file's frame is drawn for */
@@ -685,7 +685,7 @@ void PagedChoice_PickRowWithSound(PagedChoice *choice, int row, int sound)
 }
 CLEAN_AS(func_ov002_02209114, PagedChoice_PickRowWithSound)
 
-/* func_ov002_0220914c: has `row` drawn once in the pick colour and starts the delay: 2
+/* func_ov002_0220914c: has `row` drawn once in the pick color and starts the delay: 2
  * frames while state flag 2 is set, else 5. */
 void PagedChoice_Highlight(PagedChoice *choice, u8 row)
 {
@@ -724,7 +724,7 @@ void PagedChoice_Draw(PagedChoice *choice)
 CLEAN_AS(func_ov002_0220919c, PagedChoice_Draw)
 
 /* func_ov002_022091cc: a frame of the window. The rows' text boxes are freed (a highlighted
- * row gets one again, in the pick colour), then the request is taken:
+ * row gets one again, in the pick color), then the request is taken:
  * - open: a closed window starts opening and draws its rows; one opening drops the request;
  *   a shown one starts closing and keeps the request, to open again once closed;
  * - close: a shown window starts closing; one popping open is hidden at once; others drop it.
@@ -736,7 +736,7 @@ void PagedChoice_Update(PagedChoice *choice)
         PagedChoiceRow *row = row_at(choice, choice->highlighted);
 
         PagedChoice_ClearFlags(choice, CHOICE_FLAG_HIGHLIGHT);
-        ChoiceRow_Draw(row, PICK_COLOUR);
+        ChoiceRow_Draw(row, PICK_COLOR);
         TextLabel_Show(&row->label, 0, 1);
     }
 
@@ -1035,8 +1035,8 @@ void PagedChoice_RequestOpen(PagedChoice *choice, int wipe)
 }
 CLEAN_AS(func_ov002_0220970c, PagedChoice_RequestOpen)
 
-/* func_ov002_02209740: shows page `page` (its low byte), places the window centred 12 pixels
- * above the screen's centre and asks to open. */
+/* func_ov002_02209740: shows page `page` (its low byte), places the window centered 12 pixels
+ * above the screen's center and asks to open. */
 void PagedChoice_OpenPageCentered(PagedChoice *choice, int page, int wipe)
 {
     u8 shown = (u8) page;
@@ -1111,7 +1111,7 @@ void PagedChoice_Scroll(PagedChoice *choice, int x, int y)
 CLEAN_AS(func_ov002_02209868, PagedChoice_Scroll)
 
 /* func_ov002_02209874: places the window above a sliding window of main's (whose place counts
- * from the screen's centre): centred over it 2 pixels to the left, the centre first moved so
+ * from the screen's center): centered over it 2 pixels to the left, the center first moved so
  * that the other window would lie within the screen; its bottom at the other's y, or its top
  * 16 pixels below that y when the top would be above 10. */
 void PagedChoice_PlaceAboveWindow(PagedChoice *choice, void *window)
@@ -1189,7 +1189,7 @@ void PagedChoice_PlaceBeside(PagedChoice *choice, int x, int y)
 }
 CLEAN_AS(func_ov002_02209910, PagedChoice_PlaceBeside)
 
-/* func_ov002_02209954: places the window centred on (x, y) counted from the screen's centre.
+/* func_ov002_02209954: places the window centered on (x, y) counted from the screen's center.
  * Not kept on the screen. */
 void PagedChoice_PlaceCentered(PagedChoice *choice, int x, int y)
 {
@@ -1291,25 +1291,25 @@ PagedChoice *PagedChoice_Construct(PagedChoice *choice)
 CLEAN_AS(func_ov002_02209b14, PagedChoice_Construct)
 
 /* func_ov002_02209b6c */
-void ChoiceRow_SetLayer(PagedChoiceRow *row, u8 layer, u16 first_tile, u8 colour, u8 colour_39)
+void ChoiceRow_SetLayer(PagedChoiceRow *row, u8 layer, u16 first_tile, u8 color, u8 color_39)
 {
     row->layer = layer;
     row->first_tile = first_tile;
-    row->colour = colour;
-    row->colour_39 = colour_39;
+    row->color = color;
+    row->color_39 = color_39;
 }
 CLEAN_AS(func_ov002_02209b6c, ChoiceRow_SetLayer)
 
-/* func_ov002_02209b94: opens the row's text box, 13 cells wide, in `colour` (its low four
- * bits), or in the row's own colour when `colour` is negative. */
-void ChoiceRow_Draw(PagedChoiceRow *row, int colour)
+/* func_ov002_02209b94: opens the row's text box, 13 cells wide, in `color` (its low four
+ * bits), or in the row's own color when `color` is negative. */
+void ChoiceRow_Draw(PagedChoiceRow *row, int color)
 {
-    u8 drawn = row->colour;
+    u8 drawn = row->color;
 
-    if (colour >= 0) {
-        drawn = (u8) (colour & 0xf);
+    if (color >= 0) {
+        drawn = (u8) (color & 0xf);
     }
-    TextLabel_OpenStyledBox2(&row->label, row->layer, row->first_tile, ROW_CELLS, drawn, row->colour_39, 0);
+    TextLabel_OpenStyledBox2(&row->label, row->layer, row->first_tile, ROW_CELLS, drawn, row->color_39, 0);
 }
 CLEAN_AS(func_ov002_02209b94, ChoiceRow_Draw)
 
@@ -1332,15 +1332,15 @@ PagedChoiceRow *ChoiceRow_Destroy(PagedChoiceRow *row)
 }
 CLEAN_AS(func_ov002_02209bf0, ChoiceRow_Destroy)
 
-/* func_ov002_02209c08: an empty label drawn on layer 3 from tile 0 in colours 1 and 9. */
+/* func_ov002_02209c08: an empty label drawn on layer 3 from tile 0 in colors 1 and 9. */
 PagedChoiceRow *ChoiceRow_Construct(PagedChoiceRow *row)
 {
     TextLabel_ConstructCopy(&row->label);
     row->label.vtable = (const TextVtable *) (const void *) data_ov002_0220bba8;
     row->layer = 3;
     row->first_tile = 0;
-    row->colour = 1;
-    row->colour_39 = 9;
+    row->color = 1;
+    row->color_39 = 9;
     return row;
 }
 CLEAN_AS(func_ov002_02209c08, ChoiceRow_Construct)

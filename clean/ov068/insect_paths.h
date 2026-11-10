@@ -1,5 +1,5 @@
 /* Moves of the town's insects (ov003/town_insect.h) that overlay 68 holds, called from the
- * behaviours of their kinds in overlay 3 (ov003/town_insect_kinds.h):
+ * behaviors of their kinds in overlay 3 (ov003/town_insect_kinds.h):
  *
  * - wandering and fleeing (InsectPath_Wander, InsectPath_FleeFrom) and going to a spot
  *   to settle on (InsectPath_FindSpot, InsectPath_GoToSpot): a flower of the town's
@@ -43,7 +43,7 @@ void InsectPath_CircleOrLeave(TownInsect *insect);
 void InsectPath_Flap(Vec3 *scale, TownInsectModel *model, int turned);
 void InsectPath_Chase(TownInsect *insect);
 
-/* The behaviours of more kinds, run from their groups' updates in overlay 3:
+/* The behaviors of more kinds, run from their groups' updates in overlay 3:
  *
  * - kinds 0xb and 0x3a once more: action 4 (InsectPath_StartGrow) leaves it a speck facing the
  *   player, and action 2 (InsectPath_Grow) grows it and lowers it to 2.5 before the chase

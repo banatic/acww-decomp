@@ -38,7 +38,7 @@ typedef struct CollisionBox {
     struct CollisionBox *next;                         /* 0x2c: the next box of the list */
     Vec3 corners[COLLISION_BOX_CORNERS];               /* 0x30: side n goes from corner n to n + 1 */
     CollisionPoint side_normal[COLLISION_BOX_CORNERS]; /* 0x60: the outward normal of side n */
-    Vec3 centre;                                       /* 0x80: the middle of the corners' bounds */
+    Vec3 center;                                       /* 0x80: the middle of the corners' bounds */
     Vec3 half;                                         /* 0x8c: half the size of those bounds */
     u8 active;                                         /* 0x98: set by CollisionBox_Init */
     u8 unk_99[3];
@@ -46,9 +46,9 @@ typedef struct CollisionBox {
 
 void CollisionBox_KeepMin(Vec3 *bound, const Vec3 *point);
 void CollisionBox_KeepMax(Vec3 *bound, const Vec3 *point);
-void CollisionBox_GatherAll(void *list, const Vec3 *centre, const Vec3 *half, CollisionWallList *walls,
+void CollisionBox_GatherAll(void *list, const Vec3 *center, const Vec3 *half, CollisionWallList *walls,
                             CollisionFloorList *floors, int flags, int pass);
-int CollisionBox_SideOutside(const Vec3 *centre, const Vec3 *half, const Vec3 *start, const Vec3 *end);
+int CollisionBox_SideOutside(const Vec3 *center, const Vec3 *half, const Vec3 *start, const Vec3 *end);
 int CollisionBox_Remove(CollisionBox *box);
 int CollisionBox_Add(CollisionBox *box, fx32 width, fx32 depth, fx32 height, const Vec3 *position, s16 angle,
                      const Vec3 *scale);

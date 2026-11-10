@@ -1,4 +1,4 @@
-/* Overlay 47 (the museum's owl, owl.h): its static initialiser, run when the overlay is loaded,
+/* Overlay 47 (the museum's owl, owl.h): its static initializer, run when the overlay is loaded,
  * which fills in the table of the owl's states (data_ov047_02263048, Owl_SetState and
  * Owl_Update): each state's entry and update, copied from the overlay's constants (C++ pointers
  * to member functions, which the compiler does not fold into the table). */

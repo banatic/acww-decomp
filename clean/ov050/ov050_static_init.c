@@ -1,6 +1,6 @@
-/* Overlay 50's static initialiser, run when the overlay is loaded: the table of member
+/* Overlay 50's static initializer, run when the overlay is loaded: the table of member
  * functions the clerks' states dispatch through (nook_clerk.h), copied from the overlay's
- * constants (the compiler cannot place member pointers in initialised data). */
+ * constants (the compiler cannot place member pointers in initialized data). */
 #include "clean.h"
 #include "nook_clerk.h"
 #include "types.h"

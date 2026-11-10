@@ -197,7 +197,7 @@ static int holds_fish(const Obj020dd33c *obj)
     return obj->item >= OBJ_020DD33C_FISH_FIRST && obj->item <= OBJ_020DD33C_FISH_LAST;
 }
 
-/* The target: the tile centre 0x2000 in front of the first actor, or the fixed point `fixed`
+/* The target: the tile center 0x2000 in front of the first actor, or the fixed point `fixed`
  * in scene 0x10, raised by 0x1000. `fixed` is made once (its guard `made`, registered with the
  * C++ runtime under `record`). */
 static void target_drop_tile(Obj020dd33c *obj, u32 *made, Vec3 *fixed, u8 *record)
@@ -215,7 +215,7 @@ static void target_drop_tile(Obj020dd33c *obj, u32 *made, Vec3 *fixed, u8 *recor
     } else {
         Vec_RotateY(&ahead, obj->actors[0]->angle[1]);
         VEC_Add(&ahead, &obj->actors[0]->position, &ahead);
-        AcreTile_SnapToTileCentre(&obj->target, &ahead);
+        AcreTile_SnapToTileCenter(&obj->target, &ahead);
     }
     obj->target.y += 0x1000;
 }

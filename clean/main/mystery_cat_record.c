@@ -48,7 +48,7 @@ CLEAN_AS(func_020881f0, MysteryCatRecord_Impression)
 
 static_assert(sizeof(Design) == offsetof(MysteryCatRecord, checksum), "record design");
 
-#define MYSTERY_CAT_RECORD_BLANK_COLOUR 0xf
+#define MYSTERY_CAT_RECORD_BLANK_COLOR 0xf
 #define MYSTERY_CAT_RECORD_BLANK_PALETTE 0
 
 /* func_020881fc */
@@ -79,11 +79,11 @@ Design *MysteryCatRecord_Design(MysteryCatRecord *record)
 }
 CLEAN_AS(func_02088220, MysteryCatRecord_Design)
 
-/* func_02088224: the design blanked: every pixel colour 15, then palette 0. The design is
+/* func_02088224: the design blanked: every pixel color 15, then palette 0. The design is
  * asked for once for each. */
 void MysteryCatRecord_ClearDesign(MysteryCatRecord *record)
 {
-    Design_Fill((unsigned int *) (void *) MysteryCatRecord_Design(record)->pixels, MYSTERY_CAT_RECORD_BLANK_COLOUR);
+    Design_Fill((unsigned int *) (void *) MysteryCatRecord_Design(record)->pixels, MYSTERY_CAT_RECORD_BLANK_COLOR);
     Design *design = MysteryCatRecord_Design(record);
     DesignInfo_SetPalette((DesignInfo *) (uintptr_t) Design_Info((unsigned int) (uintptr_t) design),
                           MYSTERY_CAT_RECORD_BLANK_PALETTE);

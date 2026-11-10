@@ -40,7 +40,7 @@ extern int NNS_G3dGetVisAnmSet(u32 file);
 extern int func_02107b44(int set, int index);
 extern int func_02107b80(int set, int index);
 extern int func_02107cf0(int set, int index);
-extern void NNS_G3dMdlSetMdlEmi(int model, int material, unsigned short colour);
+extern void NNS_G3dMdlSetMdlEmi(int model, int material, unsigned short color);
 
 /* The C++ runtime's array helpers, and the classes' constructors and destructors given to them. */
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
@@ -127,7 +127,7 @@ void EffectModels_ReleaseCopy(EffectModel *copy)
 CLEAN_AS(func_02090418, EffectModels_ReleaseCopy)
 
 /* func_02090424: a playing copy drawn: its point bent over the globe, turned by the bend about
- * X, then by its own angles (Z, Y, X order) and scaled; lit by the scene's emission colour. */
+ * X, then by its own angles (Z, Y, X order) and scaled; lit by the scene's emission color. */
 void EffectModels_DrawCopy(EffectModel *copy)
 {
     EffectKindsModelTransform *transform = &copy->transform;
@@ -145,7 +145,7 @@ void EffectModels_DrawCopy(EffectModel *copy)
     Mtx43_Scale(&data_021fbe48, transform->scale.x, transform->scale.y, transform->scale.z);
     memcpy(animated->object.unk_64, &data_021fbe48, sizeof(Mtx43));
     AnimatedModel_Draw(animated, NULL);
-    NNS_G3dMdlSetMdlEmi((int) (uintptr_t) animated->object.model, 0, (unsigned short) SceneLights_EmissionColour());
+    NNS_G3dMdlSetMdlEmi((int) (uintptr_t) animated->object.model, 0, (unsigned short) SceneLights_EmissionColor());
 }
 CLEAN_AS(func_02090424, EffectModels_DrawCopy)
 

@@ -76,9 +76,9 @@ extern u8 data_ov004_02256ccc[];
 /* The function-local statics of RoomObject_ListCells. */
 extern u32 data_ov004_02256c78;
 extern u32 data_ov004_02256c54;
-extern Vec3 data_ov004_02256e10[2]; /* the centres of the two cells: (0, 0, 0) and (CELL, 0, 0) */
+extern Vec3 data_ov004_02256e10[2]; /* the centers of the two cells: (0, 0, 0) and (CELL, 0, 0) */
 extern Vec3 data_ov004_02256e1c;    /* the second of them */
-extern Vec3 data_ov004_02256c9c;    /* the centre of one cell: (0, 0, 0) */
+extern Vec3 data_ov004_02256c9c;    /* the center of one cell: (0, 0, 0) */
 extern u8 data_ov004_02256e04[];
 extern u8 data_ov004_02256d14[];
 extern u8 data_ov004_02256c90[];
@@ -443,8 +443,8 @@ void RoomObject_ListCells(RoomObject *object, CellList *cells, Vec3 *offset, int
                 data_021fbe48 = object->base_matrix;
             }
             for (int i = 0; i < 2; i++) {
-                Vec3 centre = data_ov004_02256e10[i];
-                MTX_MultVec43(&centre, &data_021fbe48, &point);
+                Vec3 center = data_ov004_02256e10[i];
+                MTX_MultVec43(&center, &data_021fbe48, &point);
                 Position_Tile(&x, &y, (const Position *) (const void *) &point);
                 CellList_Add(cells, x, y);
             }

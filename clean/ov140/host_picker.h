@@ -50,12 +50,12 @@ enum HostPickerPlace {
 
 /* In `flags`. */
 enum HostPickerFlag {
-    HOST_PICKER_FLAG_DRAWN = 0x01,     /* the scene is drawn (HostPicker_Draw) */
-    HOST_PICKER_FLAG_CANCELLED = 0x02, /* the scene ends without a friend picked */
-    HOST_PICKER_FLAG_SCREEN = 0x04,    /* `screen` changed: it is queued to layer 6 */
-    HOST_PICKER_FLAG_SELECTED = 0x08,  /* a row was just selected: the cursor goes on to confirm */
-    HOST_PICKER_FLAG_SILENT = 0x10,    /* the next glide of the cursor makes no sound */
-    HOST_PICKER_FLAG_PAGING = 0x20     /* the page changes: the rows' icons are not drawn */
+    HOST_PICKER_FLAG_DRAWN = 0x01,    /* the scene is drawn (HostPicker_Draw) */
+    HOST_PICKER_FLAG_CANCELED = 0x02, /* the scene ends without a friend picked */
+    HOST_PICKER_FLAG_SCREEN = 0x04,   /* `screen` changed: it is queued to layer 6 */
+    HOST_PICKER_FLAG_SELECTED = 0x08, /* a row was just selected: the cursor goes on to confirm */
+    HOST_PICKER_FLAG_SILENT = 0x10,   /* the next glide of the cursor makes no sound */
+    HOST_PICKER_FLAG_PAGING = 0x20    /* the page changes: the rows' icons are not drawn */
 };
 
 /* The states, run from the table of HostPicker_RunState (MenuScene_SetState). */

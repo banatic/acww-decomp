@@ -18,7 +18,7 @@ extern const u8 data_ov002_0220ba54[]; /* by press step: how far the button has 
 extern void func_02088df8(int a0, const PanelCell *cell, int x, int y, int palette, int priority, int scale_x, int scale_y,
                           int rotation, int a9, int a10, int a11);
 
-/* The screen's centre, where (0, 0) of PanelSprite_Draw is. */
+/* The screen's center, where (0, 0) of PanelSprite_Draw is. */
 #define CENTER_X 0x80
 #define CENTER_Y 0x60
 /* How far the shadow lies under the button. */
@@ -66,7 +66,7 @@ void PanelSprite_SetObjWindow(PanelSprite *sprite)
 }
 CLEAN_AS(func_ov002_0220b15c, PanelSprite_SetObjWindow)
 
-/* func_ov002_0220b168: one step of a press: the first turns the text to its pressed colour;
+/* func_ov002_0220b168: one step of a press: the first turns the text to its pressed color;
  * each moves the button one step down. Returns 1 while it moved, 0 once it is down. */
 int PanelSprite_StepPress(PanelSprite *sprite)
 {
@@ -81,7 +81,7 @@ int PanelSprite_StepPress(PanelSprite *sprite)
 }
 CLEAN_AS(func_ov002_0220b168, PanelSprite_StepPress)
 
-/* func_ov002_0220b1a4: draws the button at (x, y) from the screen's centre, sunk as deep as the
+/* func_ov002_0220b1a4: draws the button at (x, y) from the screen's center, sunk as deep as the
  * press has gone: the cells (in palette 2 with PANEL_SPRITE_PALETTE2), once more into the OBJ
  * window with PANEL_SPRITE_OBJ_WINDOW, then the shadow unless the sprite is flat or the button is down. */
 void PanelSprite_Draw(PanelSprite *sprite, int x, int y, int priority)
@@ -144,8 +144,8 @@ int PanelSprite_HasFlags(PanelSprite *sprite, int mask)
 }
 CLEAN_AS(func_ov002_0220b2bc, PanelSprite_HasFlags)
 
-/* func_ov002_0220b2d0: writes the message into the first cell's tiles, centred, in the two
- * colours given (the box's colours 0x38 and 0x39). */
+/* func_ov002_0220b2d0: writes the message into the first cell's tiles, centered, in the two
+ * colors given (the box's colors 0x38 and 0x39). */
 void PanelSprite_ShowText(PanelSprite *sprite, int color_38, int color_39)
 {
     TextLabel_LoadMenuMessage(label_of(sprite), (char) sprite->message);
@@ -173,7 +173,7 @@ void PanelSprite_Show(PanelSprite *sprite, int message)
 }
 CLEAN_AS(func_ov002_0220b338, PanelSprite_Show)
 
-/* func_ov002_0220b358: the message (kept as a byte), written in the normal colour. */
+/* func_ov002_0220b358: the message (kept as a byte), written in the normal color. */
 void PanelSprite_SetMessage(PanelSprite *sprite, int message)
 {
     sprite->message = (u8) message;

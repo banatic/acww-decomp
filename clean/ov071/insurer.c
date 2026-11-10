@@ -507,7 +507,7 @@ int Insurer_RandomSpot(Insurer *insurer, int *x, int *z)
         u32 index = (((u32) Random_Next(&data_021cb5a0) & 0xffff) >> 4) * 2;
         spot.x = ins_add(FX_MulFunc(INS_SPOT_DISTANCE, FX_SinCosTable_[index]), self->position.x);
         spot.z = ins_add(FX_MulFunc(INS_SPOT_DISTANCE, FX_SinCosTable_[index + 1]), self->position.z);
-        AcreTile_SnapToTileCentre(&spot, &spot);
+        AcreTile_SnapToTileCenter(&spot, &spot);
         if (TownTile_IsClearAt(&spot, NULL) != 0) {
             *x = spot.x;
             *z = spot.z;
@@ -721,22 +721,22 @@ int Insurer_InView(Insurer *insurer, int wide)
 }
 CLEAN_AS(func_ov071_02279c18, Insurer_InView)
 
-/* func_ov071_02279c54: whether `point` is strictly inside the box around `centre`: with `wide`
+/* func_ov071_02279c54: whether `point` is strictly inside the box around `center`: with `wide`
  * 0, x within 8.0 and z from 12.0 behind to 6.0 in front; else x within 16.0 and z from 26.0
  * behind to 10.0 in front. */
-int Insurer_InBox(int unused, const Vec3 *centre, const Vec3 *point, int wide)
+int Insurer_InBox(int unused, const Vec3 *center, const Vec3 *point, int wide)
 {
     (void) unused;
     fx32 half_x = wide == 0 ? 0x8000 : 0x10000;
     fx32 back = wide == 0 ? 0xc000 : 0x1a000;
     fx32 front = wide == 0 ? 0x6000 : 0xa000;
-    if (!(point->x > ins_sub(centre->x, half_x) && point->x < ins_add(centre->x, half_x))) {
+    if (!(point->x > ins_sub(center->x, half_x) && point->x < ins_add(center->x, half_x))) {
         return 0;
     }
-    if (!(point->z > ins_sub(centre->z, back))) {
+    if (!(point->z > ins_sub(center->z, back))) {
         return 0;
     }
-    return point->z < ins_add(centre->z, front);
+    return point->z < ins_add(center->z, front);
 }
 CLEAN_AS(func_ov071_02279c54, Insurer_InBox)
 

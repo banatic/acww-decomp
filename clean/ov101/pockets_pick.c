@@ -1368,7 +1368,7 @@ void PocketsPick_IdleByTouch(PocketsPick *self)
 CLEAN_AS(func_ov101_0229d7c0, PocketsPick_IdleByTouch)
 
 /* func_ov101_0229d850: the wallet's object files loaded (its answer unused) and the panel's text
- * colours. */
+ * colors. */
 void PocketsPick_LoadWalletAndPanel(PocketsPick *self)
 {
     PocketsWallet_LoadObjFiles(&self->wallet);
@@ -1504,7 +1504,7 @@ void PocketsPick_WipeIn(PocketsPick *self)
 }
 CLEAN_AS(func_ov101_0229da98, PocketsPick_WipeIn)
 
-/* func_ov101_0229dad4 (state 1): the wallet's files and the panel's colours loaded, the panel's
+/* func_ov101_0229dad4 (state 1): the wallet's files and the panel's colors loaded, the panel's
  * layout 5 (message 0x65), the grid's pockets loaded and the slots that may not be picked dimmed,
  * the letters loaded and dimmed (states mask 0xf), layer 6 shown and wiping in (state 2); the
  * scene and its objects drawn. */

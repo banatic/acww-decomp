@@ -1,13 +1,13 @@
 /* The page a talk's window shows (0x490 bytes, at the talk's 0x684; func_0206c368 builds it):
  * the message text walked so far, kept as bytes (each 16-bit character low byte first, and the
- * colour tags whole), and up to three lines, each drawn by a label box of its own
+ * color tags whole), and up to three lines, each drawn by a label box of its own
  * (label_box.h) drawn into the main screen's tiles from 0x11, 0x39 and 0x61, 20 tiles wide and
  * 2 high.
  *
  * The talk's tag walker (talk_tags.h) puts the characters in (TalkPage_PutChar) and begins a
  * line at each newline (TalkPage_BeginLine); a line written to is marked, and each frame the
  * marked lines are handed to their boxes and redrawn (TalkPage_Update). A line can be
- * centred: then its start in the box is measured with the measurer at 0x43c (class
+ * centered: then its start in the box is measured with the measurer at 0x43c (class
  * data_020def7c, a text walker set as the walker of a box of its own, which handles the tags a
  * line may hold the way the talk shows them). */
 #ifndef CLEAN_MAIN_TALK_PAGE_H
@@ -21,7 +21,7 @@
 #define TALK_PAGE_TEXT_SIZE 0x400
 #define TALK_PAGE_LINES 3
 
-/* The measurer of the centred lines (class data_020def7c, 0x54 bytes). */
+/* The measurer of the centered lines (class data_020def7c, 0x54 bytes). */
 typedef struct TalkPageMeasurer {
     TextWalker walker; /* 0x00 */
     u8 *talk;          /* 0x2c: the talk (0x1e9c bytes) */
@@ -37,11 +37,11 @@ typedef struct TalkPage {
     u32 used;                        /* 0x400: the bytes of `text` written */
     u32 line_start[TALK_PAGE_LINES]; /* 0x404: the address in `text` each line begins at */
     u32 lines;                       /* 0x410: the lines begun */
-    u32 colour[TALK_PAGE_LINES];     /* 0x414: each line's colour (a 0xff/0 tag's) */
+    u32 color[TALK_PAGE_LINES];      /* 0x414: each line's colour (a 0xff/0 tag's) */
     LabelBox *box[TALK_PAGE_LINES];  /* 0x420: or NULL */
     u32 offset[TALK_PAGE_LINES];     /* 0x42c: where each line starts in its box, in pixels */
     u8 dirty[TALK_PAGE_LINES];       /* 0x438: the line was written to since it was drawn */
-    u8 centred;                      /* 0x43b: the lines begun are centred */
+    u8 centered;                     /* 0x43b: the lines begun are centered */
     TalkPageMeasurer measurer;       /* 0x43c */
 } TalkPage;
 
@@ -51,14 +51,14 @@ void TalkPage_Update(TalkPage *page);
 void TalkPage_ClearBoxes(TalkPage *page);
 void TalkPage_FreeBoxes(TalkPage *page);
 void TalkPage_NewBoxes(TalkPage *page);
-void TalkPage_SetCentred(TalkPage *page, unsigned char centred);
-void TalkPage_SetColourOfNewLines(TalkPage *page, int colour);
+void TalkPage_SetCentered(TalkPage *page, unsigned char centered);
+void TalkPage_SetColorOfNewLines(TalkPage *page, int color);
 void TalkPage_BeginLine(TalkPage *page, int position);
 void TalkPage_PutTag(TalkPage *page, MessageTag *tag);
 int TalkPage_PutChar(TalkPage *page, int character);
 int TalkPage_PutBytes(TalkPage *page, const char *bytes, unsigned int count);
-void TalkPage_SetColours(TalkPage *page, int colour);
-void TalkPage_Clear(TalkPage *page, int colour);
+void TalkPage_SetColors(TalkPage *page, int color);
+void TalkPage_Clear(TalkPage *page, int color);
 void TalkPage_ClearPlain(TalkPage *page);
 TalkPage *TalkPage_Destruct(TalkPage *page);
 TalkPage *TalkPage_Construct(TalkPage *page, u8 *talk);
@@ -73,7 +73,7 @@ void TalkPageMeasurer_Value0(TalkPageMeasurer *measurer);
 
 /* ---- The rest of the measurer's handlers, and its tables of them by the tag's kind. The
  * measurer walks the texts the talk's tag walker (talk_tags.h) walks in place of a tag, without
- * the colour tags around names, so that a centred line is measured as it will be shown. Its
+ * the color tags around names, so that a centered line is measured as it will be shown. Its
  * table by group (TalkPageMeasurer_DispatchTag) holds group 0 (TalkPageMeasurer_DispatchGroup0), group 1
  * (TalkPageMeasurer_DispatchGroup1), group 2 (TalkPageMeasurer_SkipTexts), group 4
  * (TalkPageMeasurer_DispatchGroup4), group 11 (TalkPageMeasurer_DispatchGroup11) and group 0xff
@@ -162,7 +162,7 @@ void TalkPageMeasurer_OnTag(TalkPageMeasurer *measurer, int position);
 void TalkPageMeasurer_OnCharacter(TalkPageMeasurer *measurer, int character);
 void TalkPageMeasurer_OnEnd(TalkPageMeasurer *measurer);
 void TalkPageMeasurer_OnText(TalkPageMeasurer *measurer);
-int TalkPageMeasurer_Measure(TalkPageMeasurer *measurer, int characters, int centred);
+int TalkPageMeasurer_Measure(TalkPageMeasurer *measurer, int characters, int centered);
 TalkPageMeasurer *TalkPageMeasurer_Delete(TalkPageMeasurer *measurer);
 TalkPageMeasurer *TalkPageMeasurer_Destruct(TalkPageMeasurer *measurer);
 TalkPageMeasurer *TalkPageMeasurer_Construct(TalkPageMeasurer *measurer, u8 *talk);

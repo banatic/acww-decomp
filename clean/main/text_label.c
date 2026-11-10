@@ -268,7 +268,7 @@ void TextLabel_Show(TextLabel *label, int center, int underline)
 CLEAN_AS(func_02070a04, TextLabel_Show)
 
 /* func_02070a54: replace the label's box with one in RAM (LabelBox_New, `cells` across, 2 rows)
- * that draws at once, in the two colours given. */
+ * that draws at once, in the two colors given. */
 void TextLabel_OpenBox(TextLabel *label, int ram, int cells, int color_38, u8 color_39)
 {
     if (label->box != NULL) {
@@ -284,7 +284,7 @@ void TextLabel_OpenBox(TextLabel *label, int ram, int cells, int color_38, u8 co
 CLEAN_AS(func_02070a54, TextLabel_OpenBox)
 
 /* func_02070a98: replace the label's box with one in VRAM (LabelBox_NewInVram, from
- * `first_tile`, `cells` across, 1 row) on the display layer `layer` in the two colours, with
+ * `first_tile`, `cells` across, 1 row) on the display layer `layer` in the two colors, with
  * the font data_021c828c. QUIRK: the last argument is not read.
  * REQUIRES: the box is allocated; the original writes the font to address 0x28 otherwise. */
 void TextLabel_OpenStyledBox(TextLabel *label, int layer, int first_tile, int cells, u8 color_38, u8 color_39, int unused)
@@ -315,7 +315,7 @@ void TextLabel_OpenStyledBox2(TextLabel *label, int layer, int first_tile, int c
 }
 CLEAN_AS(func_02070adc, TextLabel_OpenStyledBox2)
 
-/* func_02070b24: give the box the display layer (its plane and screen) and the two colours.
+/* func_02070b24: give the box the display layer (its plane and screen) and the two colors.
  * QUIRK: the layer's plane is looked up (DisplayLayer_PlaneNumber) even when there is no box. */
 void TextLabel_SetStyle(TextLabel *label, int layer, char color_38, char color_39)
 {

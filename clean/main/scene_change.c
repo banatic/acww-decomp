@@ -1,4 +1,4 @@
-/* The process between scenes and its neighbours' destructors (scene_change.h). */
+/* The process between scenes and its neighbors' destructors (scene_change.h). */
 #include "scene_change.h"
 
 #include "clean.h"

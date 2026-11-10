@@ -4,7 +4,7 @@
  * textures and animations shared by every acre.
  *
  * Each archive holds the model ("bmd0"), the acre data ("bcl0"), "bsd0", optional joint,
- * material colour and texture coordinate animations ("bca0", "bma0", "bta0") and a list of marks
+ * material color and texture coordinate animations ("bca0", "bma0", "bta0") and a list of marks
  * ("mgt0": a count, then entries of a kind and a position in the acre). Models 0x1000-0x1fff
  * also have a texture of their own, "/bg/t<model / 16>/<model>.nsbtx". */
 #ifndef CLEAN_MAIN_BG_MODELS_H
@@ -26,7 +26,7 @@ typedef struct BgModel {
     u8 *data;         /* 0x0c: "bcl0", BG_MODEL_DATA_SIZE bytes of acre data */
     u8 *bsd;          /* 0x10: "bsd0" */
     u8 *joint_anim;   /* 0x14: the first animation of "bca0", when there is one */
-    u8 *colour_anim;  /* 0x18: the same of "bma0" */
+    u8 *color_anim;   /* 0x18: the same of "bma0" */
     u8 *texture_anim; /* 0x1c: the same of "bta0" */
     void *texture;    /* 0x20: the model's own texture (models 0x1000-0x1fff) */
     u32 archive_size; /* 0x24 */
@@ -48,7 +48,7 @@ typedef struct BgModels {
     u32 heap_size;           /* 0x61c: the background heap's size in bytes */
     u32 unk_620[4];          /* only cleared */
     void *ground_texture;    /* 0x630: "/bg/ct<n>/grd_set<n><season>.nsbtx" */
-    u8 *ground_colour_anim;  /* 0x634: of "grd_set.nsbma" */
+    u8 *ground_color_anim;   /* 0x634: of "grd_set.nsbma" */
     u8 *ground_texture_anim; /* 0x638: of "grd_set.nsbta" */
     u8 *river_pattern_anim;  /* 0x63c: of "riv.nsbtp" */
     void *river_texture;     /* 0x640: "riv_itp.nsbtx" */
@@ -71,7 +71,7 @@ u32 BgModels_BebPatternAnim(const BgModels *self);
 u32 BgModels_RiverTexture(const BgModels *self);
 int BgModels_RiverPatternAnim(const BgModels *self);
 u32 BgModels_GroundTextureAnim(const BgModels *self);
-u32 BgModels_GroundColourAnim(const BgModels *self);
+u32 BgModels_GroundColorAnim(const BgModels *self);
 u32 BgModels_GroundTexture(const BgModels *self);
 int BgModels_Release(BgModels *self);
 BgModel *BgModels_Load(BgModels *self, int key);

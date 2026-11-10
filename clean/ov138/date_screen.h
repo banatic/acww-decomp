@@ -10,7 +10,7 @@
  *   are its fields 0-2, and touching or picking one opens the list of its values;
  * - the panel's buttons 6 and 7 (ov002/button_panel.h, layout 6) confirm and cancel: confirming
  *   copies the panel's date into main's date and time (Global021cfc98_CopyIn) and tells main a
- *   date was set (GroupParams_SetC4C(1)); cancelling tells it none was (0).
+ *   date was set (GroupParams_SetC4C(1)); canceling tells it none was (0).
  *
  * The cursor (`cursor`, DateScreenPlace) is a Glider0 sprite that points at a field, at a
  * button, or, while a field's list is open (DATE_SCREEN_FLAG_LIST), at the list's cursor row.

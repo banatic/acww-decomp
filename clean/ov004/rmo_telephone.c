@@ -60,12 +60,12 @@ static_assert(offsetof(TalkObject, next_state) == 0x08, "talk next state");
 /* Its receiver's vtable slot 0x08: the reset (talk_receiver.h). */
 #define RMO_TELEPHONE_RECEIVER_SLOT_RESET 0x08
 
-/* State 14's messages in "sp_etc_sequence1": the time set or the setting cancelled (by
+/* State 14's messages in "sp_etc_sequence1": the time set or the setting canceled (by
  * GroupParams_C4CIs1); the attic, the scene after which it goes on to state 12 instead of 4 (the
  * telephone that answers the pen itself, states 7 to 14); the group of the clock's screen, which
  * state 13 opens. */
 #define RMO_TELEPHONE_MESSAGE_TIME_SET 0x10
-#define RMO_TELEPHONE_MESSAGE_TIME_CANCELLED 0x18
+#define RMO_TELEPHONE_MESSAGE_TIME_CANCELED 0x18
 #define RMO_TELEPHONE_SCENE_ATTIC 6
 #define RMO_TELEPHONE_SCREEN_GROUP_CLOCK 0x30
 
@@ -178,7 +178,7 @@ void RmoTelephone_UpdateState14(RmoTelephone *self)
         TalkObject *talk = TalkObject_Get(RMO_TELEPHONE_TALK);
         u8 message = RMO_TELEPHONE_MESSAGE_TIME_SET;
         if (!GroupParams_C4CIs1()) {
-            message = RMO_TELEPHONE_MESSAGE_TIME_CANCELLED;
+            message = RMO_TELEPHONE_MESSAGE_TIME_CANCELED;
         }
         TalkObject_SetMessage(talk, &message, data_ov004_022558ac);
         talk->next_state = TALK_OBJECT_OPENING;
@@ -290,7 +290,7 @@ typedef struct RmoTelephoneState {
 #define RMO_TELEPHONE_OWN_PLAYER SESSION_PLAYERS_OWN
 
 /* The state block's flags: 0, the attic telephone's introduction has been given; 0x13 and 0x14,
- * the options its talk sets: no art catalogue and no downloads. */
+ * the options its talk sets: no art catalog and no downloads. */
 #define RMO_TELEPHONE_FLAG_ATTIC_INTRO_SHOWN 0
 #define RMO_TELEPHONE_FLAG_NO_ART_CAT 0x13
 #define RMO_TELEPHONE_FLAG_NO_DOWNLOADS 0x14

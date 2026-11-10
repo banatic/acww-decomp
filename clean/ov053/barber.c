@@ -478,7 +478,7 @@ int Barber_EnterSendBack(Barber *barber)
 CLEAN_AS(func_ov053_02260cf0, Barber_EnterSendBack)
 
 /* func_ov053_02260d00 (state 8's update): once the cut's frames have run out, the topic cut and
- * it talks. With 85 frames left this console's player's field actor takes the style and colour
+ * it talks. With 85 frames left this console's player's field actor takes the style and color
  * picked, overlay 4's machine runs (BarberMachine_Run) and its sound 0x41 plays. Once its
  * animation is the cut's and its motion is done, it stands (priority 1). 1. */
 int Barber_UpdateCut(Barber *barber)
@@ -488,9 +488,9 @@ int Barber_UpdateCut(Barber *barber)
         Barber_SetState(barber, BARBER_STATE_TALK);
     }
     if (barber->cut_countdown == BARBER_CUT_HAIR_AT) {
-        u8 colour = barber->talk.colour;
+        u8 color = barber->talk.color;
         u8 style = barber->talk.style;
-        RoomPlayerActor_RequestHairOff(&style, &colour);
+        RoomPlayerActor_RequestHairOff(&style, &color);
         BarberMachine_Run();
         SoundEmitter_Play((SoundEmitter *) (void *) barber_part(barber, BARBER_EMITTER), BARBER_CUT_SOUND,
                           BARBER_CUT_SOUND_VOLUME, 0);

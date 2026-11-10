@@ -1,12 +1,12 @@
 /* The town's sky (data_021f75b0): clouds on background 3 seen in perspective, a gradient of
- * colours behind them, the stars on background 1 and the weather that picks the clouds
- * ("/sky/..." files) and the colours.
+ * colors behind them, the stars on background 1 and the weather that picks the clouds
+ * ("/sky/..." files) and the colors.
  *
  * The weather is a level from 0 to 4 (the cloud screens "b", "f", "c", "r" and "h"); 3 and 4
  * bring rain, or snow in the coldest periods of the year (Sky_FallingKindOf). It follows a
  * pattern of 24 hours (data_020d28ac, one row per pattern of the day, a column per hour from
  * 6:00) and changes one level at a time: the clouds of the change are drawn row by row over the
- * old ones while the colours fade towards the next level (`fade` 0 to 0x20), then the next
+ * old ones while the colors fade towards the next level (`fade` 0 to 0x20), then the next
  * level's clouds are drawn row by row (Sky_StepChange). A row of the cloud map is replaced only
  * when it is just out of view. When the sky is not drawn the change is only timed
  * (Sky_StepChangeHidden).
@@ -18,7 +18,7 @@
  *
  * The process that runs it (vtable data_020e69a4, block_020ba298.h) loads the sky and draws it
  * only when data_020e54a8 was 0 at its creation (data_021f6cd8); otherwise only the weather and
- * colours are kept. */
+ * colors are kept. */
 #ifndef CLEAN_MAIN_SKY_H
 #define CLEAN_MAIN_SKY_H
 
@@ -42,7 +42,7 @@ enum SkyDirection {
 enum SkyStep {
     SKY_STEP_IDLE = 0,
     SKY_STEP_START = 1,  /* the change's clouds loaded */
-    SKY_STEP_FADE = 2,   /* the change's clouds drawn row by row, the colours faded */
+    SKY_STEP_FADE = 2,   /* the change's clouds drawn row by row, the colors faded */
     SKY_STEP_LOAD = 3,   /* the next level's clouds loaded */
     SKY_STEP_FINISH = 4, /* the next level's clouds drawn row by row */
 };
@@ -70,7 +70,7 @@ enum SkyCloudScreen {
 #define SKY_CHANGE_FRAMES 0x2a8
 #define SKY_FADE_STEPS 0x20
 
-/* A palette of the sky (16 colours): colours 4 and 5 are the gradient's top and bottom. */
+/* A palette of the sky (16 colors): colors 4 and 5 are the gradient's top and bottom. */
 typedef struct SkyPalette {
     u16 colors[4];
     u16 gradient_top;    /* 0x08 */
@@ -85,14 +85,14 @@ typedef struct Sky {
     u32 shown;                          /* 0x0004: which set of line tables is shown */
     LineAffine clouds[2][SCREEN_LINES]; /* 0x0008: background 3 of each line */
     s32 cloud_scroll;                   /* 0x1208: 8.8 pixels, below 0x10000 */
-    s32 fade;                           /* 0x120c: 0 to SKY_FADE_STEPS: of the colours */
+    s32 fade;                           /* 0x120c: 0 to SKY_FADE_STEPS: of the colors */
     u16 blend_alpha[2][SCREEN_LINES];   /* 0x1210: BLDALPHA of each line */
     u8 unk_1510[4];                     /* 0x1510 */
     s32 shift[2];                       /* 0x1514: the lines' shift, one per set */
     u32 shift_index;                    /* 0x151c: the one used */
     u32 changing;                       /* 0x1520: a change of weather is under way */
     s32 weather;                        /* 0x1524: the level */
-    s32 next_weather;                   /* 0x1528: the level the colours fade to */
+    s32 next_weather;                   /* 0x1528: the level the colors fade to */
     s32 target_weather;                 /* 0x152c: the level asked for, -1: none */
     u32 direction;                      /* 0x1530: SKY_DIRECTION_... */
     s32 precipitation;                  /* 0x1534: SKY_FALLING_... */

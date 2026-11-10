@@ -217,7 +217,7 @@ CLEAN_AS(func_020aaa74, TalkSlider_GrabbedByTouch)
 /* ---- The slider's frame, its labels and its life */
 
 /* The labels: the five answers' texts beside the track, in VRAM from the first tile of their
- * row, 13 tiles wide and 2 high, layer 1, on the main screen, in colour (row + 1) on
+ * row, 13 tiles wide and 2 high, layer 1, on the main screen, in color (row + 1) on
  * background 0xe. */
 #define TALK_SLIDER_LABEL_CELLS 0xd
 #define TALK_SLIDER_LABEL_ROWS 2

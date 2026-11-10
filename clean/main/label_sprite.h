@@ -4,10 +4,10 @@
  * it, and main's func_020ac0ac keeps one.
  *
  * Its kind (0 or 1) picks its animations (from the entry of data_020d0b74 on), the VRAM tiles of
- * its text box (data_020d0b7c) and the OBJ colour its text is drawn in (data_020d0b78: colour 14
- * or 15 of OBJ palette 0). That colour is loaded into both engines' OBJ palettes from the
- * sprite's own `colour` whenever it differs from the one last loaded for the kind
- * (data_021d361c), so the text turns another colour while the sprite is pressed.
+ * its text box (data_020d0b7c) and the OBJ color its text is drawn in (data_020d0b78: color 14
+ * or 15 of OBJ palette 0). That color is loaded into both engines' OBJ palettes from the
+ * sprite's own `color` whenever it differs from the one last loaded for the kind
+ * (data_021d361c), so the text turns another color while the sprite is pressed.
  *
  * Its state picks the pair of animations of the table data_020d6fcc (the kind's entry plus
  * data_020d0b94's, the second the next entry), both held on their last frame: state 0 is not
@@ -31,7 +31,7 @@
 enum LabelSpriteState {
     LABEL_SPRITE_HIDDEN = 0,
     LABEL_SPRITE_STILL = 1,
-    LABEL_SPRITE_PRESSED = 2, /* the text in the pressed colour; LabelSprite_Travel measures it
+    LABEL_SPRITE_PRESSED = 2, /* the text in the pressed color; LabelSprite_Travel measures it
                                * from the first frame */
     LABEL_SPRITE_PLAY_B = 3,  /* and this one back to the first frame */
 };
@@ -58,15 +58,15 @@ typedef struct LabelSprite {
     int state;            /* 0x44: LabelSpriteState */
     LabelBox *box;        /* 0x48: the text's box, or NULL */
     LabelSpriteText text; /* 0x4c */
-    u16 colour;           /* 0x70: the text's colour (BGR555) */
+    u16 color;            /* 0x70: the text's color (BGR555) */
     u8 on_main;           /* 0x72: drawn on the main screen, else on the sub screen */
     u8 window;            /* 0x73: also drawn as OBJ window */
     u8 hide_second;       /* 0x74: the second animation not drawn */
-    u8 colour_dirty;      /* 0x75: `colour` to be loaded at the next draw */
+    u8 color_dirty;       /* 0x75: `color` to be loaded at the next draw */
     u8 pad_76[2];
 } LabelSprite;
 
-void LabelSprite_UploadColour(LabelSprite *sprite);
+void LabelSprite_UploadColor(LabelSprite *sprite);
 void LabelSprite_FreeBox(LabelSprite *sprite);
 void LabelSprite_OpenBox(LabelSprite *sprite);
 int LabelSprite_IsDone(LabelSprite *sprite);

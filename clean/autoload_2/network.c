@@ -178,12 +178,12 @@ extern void func_ov065_02277e7c(u8 max_entry, void (*connected)(int, int), void 
 extern void *func_ov065_0227ed18(void (*sent)(int, int));
 extern void *func_ov065_0227ed04(void (*received)(int, int, int));
 extern void func_ov065_02277d38(void (*closed)(int, int, int, int, int, void *), void *argument);
-extern void func_020ed6ac(u32 result, int local, int is_server, int cancelled, int peer, void *argument);
+extern void func_020ed6ac(u32 result, int local, int is_server, int canceled, int peer, void *argument);
 extern void func_020ed5f8(int result, int argument);
 extern void func_020ed5f4(void);
 extern void func_020ed68c(int size, int peer);
 extern void func_020ed658(int peer, int buffer, int size);
-extern void func_020ed6a8(int status, int local, int cancelled, int peer, int connection, void *argument);
+extern void func_020ed6a8(int status, int local, int canceled, int peer, int connection, void *argument);
 extern void func_ov065_0227e67c(void);
 extern void func_ov065_022784a0(void);
 
@@ -1786,10 +1786,10 @@ CLEAN_AS(func_020ed540, Wfc_OnFriendsUpdated)
 void Wfc_OnNewClient(void) {}
 CLEAN_AS(func_020ed5f4, Wfc_OnNewClient)
 
-/* func_020ed5f8: a client joined the game hosted (no error, not cancelled): the time noted. */
-void Wfc_OnClientJoined(int error, int cancelled)
+/* func_020ed5f8: a client joined the game hosted (no error, not canceled): the time noted. */
+void Wfc_OnClientJoined(int error, int canceled)
 {
-    if (error != 0 || cancelled != 0) {
+    if (error != 0 || canceled != 0) {
         return;
     }
     data_021fbf34 = now_ms();
@@ -1814,11 +1814,11 @@ void Wfc_OnSent(int size, int aid)
 CLEAN_AS(func_020ed68c, Wfc_OnSent)
 
 /* func_020ed6a8: a connection closed; nothing to do. */
-void Wfc_OnClosed(int error, int local, int cancelled, int aid, int index, void *argument)
+void Wfc_OnClosed(int error, int local, int canceled, int aid, int index, void *argument)
 {
     (void) error;
     (void) local;
-    (void) cancelled;
+    (void) canceled;
     (void) aid;
     (void) index;
     (void) argument;
@@ -1827,11 +1827,11 @@ CLEAN_AS(func_020ed6a8, Wfc_OnClosed)
 
 /* func_020ed6ac: the friend's game was joined (result 0): the wait in Wfc_UpdateConnection
  * ends. */
-void Wfc_OnJoined(u32 result, int local, int is_server, int cancelled, int aid, void *argument)
+void Wfc_OnJoined(u32 result, int local, int is_server, int canceled, int aid, void *argument)
 {
     (void) local;
     (void) is_server;
-    (void) cancelled;
+    (void) canceled;
     (void) aid;
     (void) argument;
     if (result == 0) {

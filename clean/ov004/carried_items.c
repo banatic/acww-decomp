@@ -121,7 +121,7 @@ int CarriedItems_PickUp(CarriedItems *items, RoomObject *object)
             ItemCode *item = item_on_cell(map, x, y);
             if (item != NULL && ItemCode_IsKind1(item)) {
                 Vec3 point;
-                AcreTile_TileCentre(&point, (unsigned int) x, (unsigned int) y);
+                AcreTile_TileCenter(&point, (unsigned int) x, (unsigned int) y);
                 point.y = object->top_height;
                 Vec3 local;
                 MTX_MultVec43(&point, &data_021fbe48, &local);

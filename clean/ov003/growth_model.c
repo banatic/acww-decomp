@@ -49,7 +49,7 @@ extern NetSession *data_020ccf94;
 extern u8 data_ov003_0223cfa0[];
 /* The joint animation files' paths, by mode and stage (NULL for none). */
 extern const char *const data_ov003_0223bcc4[GROWTH_MODEL_MODES][GROWTH_MODEL_STAGES];
-/* The offsets from a tile's centre where drops start: [0] and [1] for the one-drop codes by
+/* The offsets from a tile's center where drops start: [0] and [1] for the one-drop codes by
  * side (GrowthModel_PlayerSide), [0] (three) and [2] (two) for the three-drop ones. */
 extern const Vec3 *const data_ov003_02239f5c[3];
 /* The item the three-drop codes drop, by line (MapItem_EightLine). */
@@ -60,8 +60,8 @@ extern Mtx43 data_021fbe48;
 /* The first joint animation of a file, as NitroSystem finds it. */
 extern void *NNS_G3dGetJntAnmSet(u8 *file);
 extern u8 *func_02107b44(void *set, u32 index);
-/* NitroSystem: the emission colour of material `material` of a model. */
-extern void NNS_G3dMdlSetMdlEmi(u8 *model, int material, unsigned short colour);
+/* NitroSystem: the emission color of material `material` of a model. */
+extern void NNS_G3dMdlSetMdlEmi(u8 *model, int material, unsigned short color);
 /* Two settings of all a model's materials: a value 0-31 (the fade's whole part), and a
  * polygon ID. */
 extern void func_0210744c(u8 *model, int value);
@@ -189,7 +189,7 @@ CLEAN_AS(func_ov003_02222c68, GrowthModel_Reset)
 
 /* func_ov003_02222cac: the model starts at `tile` for `player`: the joint animation of `mode`
  * and `stage` from the start at speed 1.0, once unless the mode is 2 (attached again when the
- * model had been released); at the tile's centre, faded in fully, no parts yet; then
+ * model had been released); at the tile's center, faded in fully, no parts yet; then
  * GrowthModel_Hit.
  * QUIRK: the town's map is asked for first and not used. */
 void GrowthModel_Start(GrowthModel *model, int player, const TileChangesTile *tile, int mode, int stage, int quiet)
@@ -203,9 +203,9 @@ void GrowthModel_Start(GrowthModel *model, int player, const TileChangesTile *ti
     model->mode = mode;
     model->player = player;
     model->tile = *tile;
-    Vec3 centre;
-    AcreTile_TileCentre(&centre, (u32) tile->x, (u32) tile->z);
-    model->position = centre;
+    Vec3 center;
+    AcreTile_TileCenter(&center, (u32) tile->x, (u32) tile->z);
+    model->position = center;
     model->fade = 0x1f000;
     model->parts = 0;
     GrowthModel_Hit(model, quiet);
@@ -273,11 +273,11 @@ void GrowthModel_DropOne(u16 *code, int slot, const TileChangesTile *tile)
         offsets = data_ov003_02239f5c[1];
         sideways = id == 0x6a;
     }
-    Vec3 centre;
-    AcreTile_TileCentre(&centre, (u32) tile->x, (u32) tile->z);
-    const Vec3 *offset = offsets + GrowthModel_PlayerSide(slot, &centre);
+    Vec3 center;
+    AcreTile_TileCenter(&center, (u32) tile->x, (u32) tile->z);
+    const Vec3 *offset = offsets + GrowthModel_PlayerSide(slot, &center);
     const TileChange *change = (const TileChange *) (uintptr_t) TileChanges_At(index);
-    Vec3 from = {centre.x + offset->x, centre.y + offset->y, centre.z + offset->z};
+    Vec3 from = {center.x + offset->x, center.y + offset->y, center.z + offset->z};
     u16 packed = change->tile;
     TileChangesTile to = {packed >> 8, packed & 0xff};
     if (!sideways) {
@@ -289,7 +289,7 @@ void GrowthModel_DropOne(u16 *code, int slot, const TileChangesTile *tile)
 CLEAN_AS(func_ov003_02222e24, GrowthModel_DropOne)
 
 /* func_ov003_02222f0c: unless the session is linked or flag 1 of the current player record is
- * set, item 0x1569 falls as a kind 7 event from the tile's centre plus the offset of the
+ * set, item 0x1569 falls as a kind 7 event from the tile's center plus the offset of the
  * player's side of table [0]. */
 void GrowthModel_DropBeehive(int slot, const TileChangesTile *tile)
 {
@@ -299,25 +299,25 @@ void GrowthModel_DropBeehive(int slot, const TileChangesTile *tile)
     if (PlayerRecord_TestFlag(PlayerRecords_Current(), PLAYER_FLAG_NOOK_JOB) != 0) {
         return;
     }
-    Vec3 centre;
-    AcreTile_TileCentre(&centre, (u32) tile->x, (u32) tile->z);
-    const Vec3 *offset = &data_ov003_02239f5c[0][GrowthModel_PlayerSide(slot, &centre)];
+    Vec3 center;
+    AcreTile_TileCenter(&center, (u32) tile->x, (u32) tile->z);
+    const Vec3 *offset = &data_ov003_02239f5c[0][GrowthModel_PlayerSide(slot, &center)];
     Vec3 from;
-    Vec_Add(&from, &centre, offset);
+    Vec_Add(&from, &center, offset);
     TileChangesTile at = *tile;
     TileEvent_StartBeehiveFall(slot, 0x1569, &at, &from);
 }
 CLEAN_AS(func_ov003_02222f0c, GrowthModel_DropBeehive)
 
-/* func_ov003_02222f8c: drops fall as kind 5 events from the tile's centre plus each offset of a
+/* func_ov003_02222f8c: drops fall as kind 5 events from the tile's center plus each offset of a
  * table: code 0xcc two of item 0x1548 (table [2]), 0x5b three of 0x14b8, other codes three of
  * the item of their line (data_ov003_02236688). Drop i goes to the tile of the tile change of
  * `slot` tagged i, with angle 0; without one, to the tile under its start, with angle 1; its
  * extra is i. */
 void GrowthModel_DropThree(u16 *code, int slot, const TileChangesTile *tile)
 {
-    Vec3 centre;
-    AcreTile_TileCentre(&centre, (u32) tile->x, (u32) tile->z);
+    Vec3 center;
+    AcreTile_TileCenter(&center, (u32) tile->x, (u32) tile->z);
 
     const Vec3 *offset;
     int count;
@@ -343,7 +343,7 @@ void GrowthModel_DropThree(u16 *code, int slot, const TileChangesTile *tile)
     int to[2] = {0, 0};
     for (int i = 0; i < count; i++, offset++) {
         int index = TileChanges_FindByTag((u8) slot, (u8) i);
-        Vec3 from = {centre.x + offset->x, centre.y + offset->y, centre.z + offset->z};
+        Vec3 from = {center.x + offset->x, center.y + offset->y, center.z + offset->z};
         int unplaced;
         if (index >= 0) {
             const TileChange *change = (const TileChange *) (uintptr_t) TileChanges_At(index);
@@ -438,7 +438,7 @@ void GrowthModel_Release(GrowthModel *model)
 CLEAN_AS(func_ov003_022231e8, GrowthModel_Release)
 
 /* func_ov003_02223208: a playing model drawn at its position bent over the globe, turned by the
- * bend about X; lit by the scene's emission colour. */
+ * bend about X; lit by the scene's emission color. */
 void GrowthModel_Draw(GrowthModel *model)
 {
     if (model->state != 1) {
@@ -451,7 +451,7 @@ void GrowthModel_Draw(GrowthModel *model)
     Mtx43_RotateX(&data_021fbe48, tilt);
     memcpy(animated->object.unk_64, &data_021fbe48, sizeof(Mtx43));
     AnimatedModel_Draw(animated, NULL);
-    NNS_G3dMdlSetMdlEmi(animated->object.model, 0, (unsigned short) SceneLights_EmissionColour());
+    NNS_G3dMdlSetMdlEmi(animated->object.model, 0, (unsigned short) SceneLights_EmissionColor());
 }
 CLEAN_AS(func_ov003_02223208, GrowthModel_Draw)
 
@@ -961,7 +961,7 @@ void GrowthModel_RequestHit(int player, const TileChangesTile *tile, int mode)
 CLEAN_AS(func_ov003_02224384, GrowthModel_RequestHit)
 
 /* func_ov003_022243d0: 1 when a model can show at `tile`: the process lives, the town's map
- * has a code there that a model shows (not at stage 0) and the tile's centre is not past the
+ * has a code there that a model shows (not at stage 0) and the tile's center is not past the
  * camera's goal (CameraControl_IsPastGoalZ). Otherwise 0, and what the player's tile changes
  * meant happens without a model: on the town's map, for a grown code of the lines 0x2f-0x5b
  * and 0xc8-0xcf the slot's tile changes tagged 0-2 are finished, for the codes 0x66-0x68 and
@@ -974,9 +974,9 @@ int GrowthModel_CanShow(int player, const TileChangesTile *tile)
         if (map != NULL) {
             u16 *item = growth_model_item(map, tile->x, tile->z);
             if (item != NULL && growth_model_shown_code(*item) && !MapItem_IsStage0(item)) {
-                Vec3 centre;
-                AcreTile_TileCentre(&centre, (u32) tile->x, (u32) tile->z);
-                if (CameraControl_IsPastGoalZ(&centre, 0x2000, 0x2000) == 0) {
+                Vec3 center;
+                AcreTile_TileCenter(&center, (u32) tile->x, (u32) tile->z);
+                if (CameraControl_IsPastGoalZ(&center, 0x2000, 0x2000) == 0) {
                     shown = 1;
                 }
             }

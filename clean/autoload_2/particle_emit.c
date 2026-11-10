@@ -1,5 +1,5 @@
 /* Giving off particles and their children (particle.h): where each starts, by the resource's
- * emission shape, and its first velocity, scale, colour, angle, life and texture. */
+ * emission shape, and its first velocity, scale, color, angle, life and texture. */
 #include "particle.h"
 
 #include <stddef.h>
@@ -266,9 +266,9 @@ static int shape_uses_axes(u32 shape)
 
 /* func_020fded0: the emitter gives off its count of particles (with the fraction carried from
  * the last time), taken from `free_particles` while there are any. Each starts at its place by
- * the shape, moving away from the emitter's centre (or round the cylinder, or a random way
- * from the centre itself) and along the axis, each speed more or less a random part; at the
- * emitter's scale more or less a random part, the header's colour (or a random one of the animation's three), the
+ * the shape, moving away from the emitter's center (or round the cylinder, or a random way
+ * from the center itself) and along the axis, each speed more or less a random part; at the
+ * emitter's scale more or less a random part, the header's color (or a random one of the animation's three), the
  * emitter's alpha, a life less a random part, and the resource's texture.
  * QUIRK: an animated texture's random start texture is taken by a remainder by the frame
  * count, 0 for a count of 0 (the ROM's division); the loop's and the life's factors are
@@ -377,7 +377,7 @@ CLEAN_AS(func_020fded0, Particle_Emit)
 
 /* func_020fdc08: the particle gives off its children, taken from `free_particles` while there
  * are any: at its place, with its velocity times the child part's ratio and a random push, a
- * part of its scale, its colour or the child part's, its alpha, its angle (and turning) as
+ * part of its scale, its color or the child part's, its alpha, its angle (and turning) as
  * the child part says, and the child part's life and texture.
  * QUIRK: the loop's and the life's factors are worked out from the parent's life; the
  * children's own animations go by their age over their life instead. A rotation type of 3

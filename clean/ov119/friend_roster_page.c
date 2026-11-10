@@ -73,7 +73,7 @@ enum FriendRosterIcon {
 #define FRIEND_ROSTER_BLANK_DIGIT 10
 #define FRIEND_ROSTER_HEADER_LINES 3
 
-/* A label's text box opened (style, first tile, width in cells, colour 15) and shown. */
+/* A label's text box opened (style, first tile, width in cells, color 15) and shown. */
 static void fr_open_label(TextLabel *label, int style, int first_tile, int cells, int center)
 {
     TextLabel_OpenStyledBox2(label, style, first_tile, cells, 0xf, 0, 0);
@@ -401,9 +401,9 @@ void FriendRoster_DrawPlayerRows(FriendRoster *self)
 CLEAN_AS(func_ov119_0229aacc, FriendRoster_DrawPlayerRows)
 
 /* func_ov119_0229ae84: the palettes at fade `level` (clamped to 0-5), queued from now on: the
- * copies made from the loaded ones, then BG colours 2-5 and 15 and OBJ colours 1-3 and 15
- * blended toward their palette's colour 14 (FriendRoster_BlendColour; 5 is as loaded, 0 is
- * colour 14). */
+ * copies made from the loaded ones, then BG colors 2-5 and 15 and OBJ colors 1-3 and 15
+ * blended toward their palette's color 14 (FriendRoster_BlendColor; 5 is as loaded, 0 is
+ * color 14). */
 void FriendRoster_Fade(FriendRoster *self, int level)
 {
     int unused = (int) (uintptr_t) self;
@@ -417,16 +417,16 @@ void FriendRoster_Fade(FriendRoster *self, int level)
     MIi_CpuCopy16(self->bg_palette, self->bg_faded, sizeof(self->bg_faded));
     for (int i = 2; i <= 5; i++) {
         self->bg_faded[i] =
-            FriendRoster_BlendColour(unused, self->bg_palette[i], self->bg_palette[14], level, FRIEND_ROSTER_FADE_STEPS);
+            FriendRoster_BlendColor(unused, self->bg_palette[i], self->bg_palette[14], level, FRIEND_ROSTER_FADE_STEPS);
     }
     self->bg_faded[15] =
-        FriendRoster_BlendColour(unused, self->bg_palette[15], self->bg_palette[14], level, FRIEND_ROSTER_FADE_STEPS);
+        FriendRoster_BlendColor(unused, self->bg_palette[15], self->bg_palette[14], level, FRIEND_ROSTER_FADE_STEPS);
     for (int i = 1; i <= 3; i++) {
         self->obj_faded[i] =
-            FriendRoster_BlendColour(unused, self->obj_palette[i], self->obj_palette[14], level, FRIEND_ROSTER_FADE_STEPS);
+            FriendRoster_BlendColor(unused, self->obj_palette[i], self->obj_palette[14], level, FRIEND_ROSTER_FADE_STEPS);
     }
     self->obj_faded[15] =
-        FriendRoster_BlendColour(unused, self->obj_faded[15], self->obj_palette[14], level, FRIEND_ROSTER_FADE_STEPS);
+        FriendRoster_BlendColor(unused, self->obj_faded[15], self->obj_palette[14], level, FRIEND_ROSTER_FADE_STEPS);
 }
 CLEAN_AS(func_ov119_0229ae84, FriendRoster_Fade)
 
@@ -435,18 +435,18 @@ static int fr_blend_channel(int a, int b, int weight, int total)
     return (u8) fr_div(a * weight + b * (total - weight), total);
 }
 
-/* func_ov119_0229af64: the BGR555 `colour` blended toward `toward`, `weight` parts of `total`
- * the colour's, channel by channel; each channel's result is kept to 8 bits before it is
+/* func_ov119_0229af64: the BGR555 `color` blended toward `toward`, `weight` parts of `total`
+ * the color's, channel by channel; each channel's result is kept to 8 bits before it is
  * packed. */
-u16 FriendRoster_BlendColour(int unused, int colour, int toward, int weight, int total)
+u16 FriendRoster_BlendColor(int unused, int color, int toward, int weight, int total)
 {
     (void) unused;
-    int b = fr_blend_channel((u8) (colour & 0x1f), (u8) (toward & 0x1f), weight, total);
-    int g = fr_blend_channel((u8) ((colour & 0x3e0) >> 5), (u8) ((toward & 0x3e0) >> 5), weight, total);
-    int r = fr_blend_channel((u8) ((colour & 0x7c00) >> 10), (u8) ((toward & 0x7c00) >> 10), weight, total);
+    int b = fr_blend_channel((u8) (color & 0x1f), (u8) (toward & 0x1f), weight, total);
+    int g = fr_blend_channel((u8) ((color & 0x3e0) >> 5), (u8) ((toward & 0x3e0) >> 5), weight, total);
+    int r = fr_blend_channel((u8) ((color & 0x7c00) >> 10), (u8) ((toward & 0x7c00) >> 10), weight, total);
     return (u16) (b | (g << 5) | (r << 10));
 }
-CLEAN_AS(func_ov119_0229af64, FriendRoster_BlendColour)
+CLEAN_AS(func_ov119_0229af64, FriendRoster_BlendColor)
 
 /* func_ov119_0229b00c: the graphics of a frame: the blink stepped; rows' palettes asked for set
  * the texts of a friends' page in palette 3 and the picked row's in 4, and the map queued; the
@@ -480,7 +480,7 @@ void FriendRoster_UpdateGraphics(FriendRoster *self)
 }
 CLEAN_AS(func_ov119_0229b00c, FriendRoster_UpdateGraphics)
 
-/* func_ov119_0229bacc: the page's title, message `message` centred at tile 0x160. */
+/* func_ov119_0229bacc: the page's title, message `message` centered at tile 0x160. */
 void FriendRoster_ShowPageTitle(FriendRoster *self, int message)
 {
     TextLabel *label = FriendRoster_NextLabel(self);
@@ -489,7 +489,7 @@ void FriendRoster_ShowPageTitle(FriendRoster *self, int message)
 }
 CLEAN_AS(func_ov119_0229bacc, FriendRoster_ShowPageTitle)
 
-/* func_ov119_0229bb0c: the scene's title, message 0xd6 centred at tile 0xca. */
+/* func_ov119_0229bb0c: the scene's title, message 0xd6 centered at tile 0xca. */
 void FriendRoster_ShowTitle(FriendRoster *self)
 {
     TextLabel *label = FriendRoster_NextLabel(self);

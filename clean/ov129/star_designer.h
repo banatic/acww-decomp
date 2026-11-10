@@ -66,7 +66,7 @@ enum StarDesignerFlag {
     STAR_DESIGNER_FLAG_FREE = 0x02,      /* the keys move a free pointer over the sky */
     STAR_DESIGNER_FLAG_QUITTING = 0x04,  /* the question asked is "quit" (else "done") */
     STAR_DESIGNER_FLAG_PANEL = 0x08,     /* the panel drawn */
-    STAR_DESIGNER_FLAG_CENTRE = 0x10,    /* the scope's centre drawn */
+    STAR_DESIGNER_FLAG_CENTER = 0x10,    /* the scope's center drawn */
     STAR_DESIGNER_FLAG_SCROLL_SE = 0x20, /* the scrolling sound plays */
     STAR_DESIGNER_FLAG_SCROLLED = 0x40,  /* the view was scrolled this frame */
     STAR_DESIGNER_FLAG_END_MARK = 0x80   /* the end of the line marked */

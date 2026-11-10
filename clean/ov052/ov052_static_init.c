@@ -1,4 +1,4 @@
-/* Overlay 52 (the fox in his tent, fox_tent.h): its static initialiser, run when the overlay is
+/* Overlay 52 (the fox in his tent, fox_tent.h): its static initializer, run when the overlay is
  * loaded, which fills in the table of the fox's states (data_ov052_02262000, FoxTent_SetState
  * and FoxTent_Update): each state's entry and update, copied from the overlay's constants (C++
  * pointers to member functions, which the compiler does not fold into the table). */

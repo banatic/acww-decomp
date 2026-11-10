@@ -141,36 +141,36 @@ void OrderCatalog_StepFade(OrderCatalog *self)
 }
 CLEAN_AS(func_ov142_0229967c, OrderCatalog_StepFade)
 
-/* func_ov142_022996f0: the rows' two palettes copied and their colour 15 blended towards colour
- * 8 by `step` (3 the colour itself, 0 colour 8), then queued as layer 4's palettes 3 and 4. */
+/* func_ov142_022996f0: the rows' two palettes copied and their color 15 blended towards color
+ * 8 by `step` (3 the color itself, 0 color 8), then queued as layer 4's palettes 3 and 4. */
 void OrderCatalog_ApplyFade(OrderCatalog *self, u32 step)
 {
     MIi_CpuCopy16(self->row_palette, self->row_palette_shown, 0x20);
     MIi_CpuCopy16(self->picked_palette, self->picked_palette_shown, 0x20);
-    self->row_palette_shown[15] = OrderCatalog_BlendColour(self, self->row_palette[15], self->row_palette[8], (int) step);
+    self->row_palette_shown[15] = OrderCatalog_BlendColor(self, self->row_palette[15], self->row_palette[8], (int) step);
     self->picked_palette_shown[15] =
-        OrderCatalog_BlendColour(self, self->picked_palette[15], self->picked_palette[8], (int) step);
+        OrderCatalog_BlendColor(self, self->picked_palette[15], self->picked_palette[8], (int) step);
     LayerTask_QueuePalette(&self->tasks[ORDER_CATALOG_TASK_ROW_PALETTE], (int) (uintptr_t) self->row_palette_shown, 4, 3);
     LayerTask_QueuePalette(&self->tasks[ORDER_CATALOG_TASK_PICKED_PALETTE], (int) (uintptr_t) self->picked_palette_shown, 4,
                            4);
 }
 CLEAN_AS(func_ov142_022996f0, OrderCatalog_ApplyFade)
 
-/* func_ov142_02299794: the 15-bit colours `colour` and `faded` blended by `step` thirds of
- * `colour`: each component (colour's * step + faded's * (3 - step)) / 3 (BGR555: red in the
+/* func_ov142_02299794: the 15-bit colors `color` and `faded` blended by `step` thirds of
+ * `color`: each component (color's * step + faded's * (3 - step)) / 3 (BGR555: red in the
  * low bits).
  * QUIRK: each component is kept to 8 bits before it is put in place, so a step outside 0-3
  * spills into the next component (the game passes 0-3). */
-u16 OrderCatalog_BlendColour(void *self, u16 colour, u16 faded, int step)
+u16 OrderCatalog_BlendColor(void *self, u16 color, u16 faded, int step)
 {
     (void) self;
     int rest = 3 - step;
-    u8 red = (u8) (((colour & 0x1f) * step + (faded & 0x1f) * rest) / 3);
-    u8 green = (u8) ((((colour >> 5) & 0x1f) * step + ((faded >> 5) & 0x1f) * rest) / 3);
-    u8 blue = (u8) ((((colour >> 10) & 0x1f) * step + ((faded >> 10) & 0x1f) * rest) / 3);
+    u8 red = (u8) (((color & 0x1f) * step + (faded & 0x1f) * rest) / 3);
+    u8 green = (u8) ((((color >> 5) & 0x1f) * step + ((faded >> 5) & 0x1f) * rest) / 3);
+    u8 blue = (u8) ((((color >> 10) & 0x1f) * step + ((faded >> 10) & 0x1f) * rest) / 3);
     return (u16) (red | (green << 5) | (blue << 10));
 }
-CLEAN_AS(func_ov142_02299794, OrderCatalog_BlendColour)
+CLEAN_AS(func_ov142_02299794, OrderCatalog_BlendColor)
 
 /* func_ov142_02299830 (an arrow held): the list scrolled by a row towards the held arrow (to the
  * row's edge first when between rows), within its range. When it moved: the scroll set, made
@@ -819,21 +819,21 @@ void OrderCatalog_ClearPriceLabel(OrderCatalog *self)
 }
 CLEAN_AS(func_ov142_0229abfc, OrderCatalog_ClearPriceLabel)
 
-/* func_ov142_0229ac38: message 0x53 at the price's place, centred. */
+/* func_ov142_0229ac38: message 0x53 at the price's place, centered. */
 void OrderCatalog_ShowNotOrderable(OrderCatalog *self)
 {
     OrderCatalog_ShowMessage(self, ORDER_CATALOG_MESSAGE_NOT_ORDERABLE, ORDER_CATALOG_PRICE_X, ORDER_CATALOG_PRICE_Y, 14, 1);
 }
 CLEAN_AS(func_ov142_0229ac38, OrderCatalog_ShowNotOrderable)
 
-/* func_ov142_0229ac58: message `message` of the menu's messages at (x, y) in style 6, colours
- * `colour` and 4, centred or from the left. */
-void OrderCatalog_ShowMessage(OrderCatalog *self, int message, int x, int y, u8 colour, int centred)
+/* func_ov142_0229ac58: message `message` of the menu's messages at (x, y) in style 6, colors
+ * `color` and 4, centered or from the left. */
+void OrderCatalog_ShowMessage(OrderCatalog *self, int message, int x, int y, u8 color, int centered)
 {
     TextLabel *label = OrderCatalog_NextLabel(self);
     TextLabel_LoadMenuMessage(label, (char) message);
-    TextLabel_OpenStyledBox2(label, 6, x, y, colour, 4, 0);
-    TextLabel_Show(label, centred, 0);
+    TextLabel_OpenStyledBox2(label, 6, x, y, color, 4, 0);
+    TextLabel_Show(label, centered, 0);
 }
 CLEAN_AS(func_ov142_0229ac58, OrderCatalog_ShowMessage)
 

@@ -176,11 +176,11 @@ void PushBox_OnSideHit(PushBox *box, CollisionWall *side, PushingActor *actor, f
 
     CollisionPoint middle;
     CollisionWall_GetMiddle(&middle, side);
-    Vec3 centre;
-    centre.z = middle.z + FX_MulFunc(side->segment.normal.z, standoff);
-    centre.x = middle.x + FX_MulFunc(side->segment.normal.x, standoff);
-    centre.y = 0;
-    Vec3 destination = centre;
+    Vec3 center;
+    center.z = middle.z + FX_MulFunc(side->segment.normal.z, standoff);
+    center.x = middle.x + FX_MulFunc(side->segment.normal.x, standoff);
+    center.y = 0;
+    Vec3 destination = center;
     if (length > LONG_SIDE) {
         if (along < ONE) {
             CollisionPoint direction;
@@ -204,15 +204,15 @@ void PushBox_OnSideHit(PushBox *box, CollisionWall *side, PushingActor *actor, f
     int index = RoomObjects_IndexOf(RoomObjects_Table(), box->owner);
     s16 relative = (s16) (angle - box->owner->angle);
     if (RoomObject_Layer(box->owner) == LAYER_ON_TOP) {
-        Vec3 owner_centre;
-        RoomObject_Centre(box->owner, &owner_centre);
-        RoomObject *below = RoomObjects_GridObjectAtPoint(RoomObjects_Grid(), &owner_centre, LAYER_FLOOR);
+        Vec3 owner_center;
+        RoomObject_Center(box->owner, &owner_center);
+        RoomObject *below = RoomObjects_GridObjectAtPoint(RoomObjects_Grid(), &owner_center, LAYER_FLOOR);
         if (below != NULL) {
             relative = (s16) (angle - below->angle - Mount_Angle(&box->owner->mount));
         }
     }
     int pushed_side = Angle_Side(relative);
-    RoomPushes_Record(RoomPushes_Records(), index, &actor->unk_68, &actor->position, standoff, &centre, &destination,
+    RoomPushes_Record(RoomPushes_Records(), index, &actor->unk_68, &actor->position, standoff, &center, &destination,
                       (s16) facing, pushed_side);
 }
 CLEAN_AS(func_ov004_0220dd80, PushBox_OnSideHit)

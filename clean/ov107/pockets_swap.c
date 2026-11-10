@@ -296,15 +296,15 @@ int PocketsSwap_OwnSlot(PocketsSwap *self)
 }
 CLEAN_AS(func_ov107_0229c354, PocketsSwap_OwnSlot)
 
-/* func_ov107_0229c378 (sub state 0x17): the player asked to go to the centre of the tile
+/* func_ov107_0229c378 (sub state 0x17): the player asked to go to the center of the tile
  * (`tile_x`, `tile_z`) with the item given up (FieldActor_PlayerRequestState61); once accepted,
  * the item got takes its place and sub state 0x14 waits for the player. */
 void PocketsSwap_SendPlayerToTile(PocketsSwap *self)
 {
-    Vec3 centre;
-    AcreTile_TileCentre(&centre, (u32) self->tile_x, (u32) self->tile_z);
+    Vec3 center;
+    AcreTile_TileCenter(&center, (u32) self->tile_x, (u32) self->tile_z);
     u16 item = (u16) PocketsSwap_PlaceItem(self, self->slot);
-    if (FieldActor_PlayerRequestState61(&centre, &item) != 0) {
+    if (FieldActor_PlayerRequestState61(&center, &item) != 0) {
         PocketsSwap_TakeNewItem(self);
         MenuScene_SetSubState(psw_scene(self), POCKETS_SWAP_SUB_FINISH_PLAYER);
     }
@@ -687,7 +687,7 @@ void PocketsSwap_Finish(PocketsSwap *self)
 }
 CLEAN_AS(func_ov107_0229cb3c, PocketsSwap_Finish)
 
-/* func_ov107_0229cb78: the choice cancelled: action 4, the cursor sprite placed at the cursor,
+/* func_ov107_0229cb78: the choice canceled: action 4, the cursor sprite placed at the cursor,
  * the choice asked to close, sub state 0x0d. */
 void PocketsSwap_CancelChoice(PocketsSwap *self)
 {
@@ -772,7 +772,7 @@ void PocketsSwap_PointAtFirstRow(PocketsSwap *self)
 }
 CLEAN_AS(func_ov107_0229cd1c, PocketsSwap_PointAtFirstRow)
 
-/* func_ov107_0229cd68: the choice cancelled from the keys: action 4, its last row picked (with
+/* func_ov107_0229cd68: the choice canceled from the keys: action 4, its last row picked (with
  * its sound), the cursor sprite on it running animation 8 from its end, sub state 0x0c. */
 void PocketsSwap_PointAtLastRow(PocketsSwap *self)
 {
@@ -1478,7 +1478,7 @@ void PocketsSwap_IdleByTouch(PocketsSwap *self)
 }
 CLEAN_AS(func_ov107_0229daa4, PocketsSwap_IdleByTouch)
 
-/* func_ov107_0229db24: the wallet's object files and the panel's text colours loaded. */
+/* func_ov107_0229db24: the wallet's object files and the panel's text colors loaded. */
 void PocketsSwap_LoadObjFiles(PocketsSwap *self)
 {
     PocketsWallet_LoadObjFiles(&self->wallet);

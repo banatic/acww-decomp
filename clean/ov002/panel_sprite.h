@@ -6,7 +6,7 @@
  * The cells form the button; one of them, `shadow_cell`, is drawn again 3 pixels lower and to
  * the right in palette 1, under the button. Pressing the button sinks it by 2, then 3 pixels
  * (the table data_ov002_0220ba54) until it lies on its shadow, which is then no longer drawn;
- * the text turns from colour 15 to colour 14 as the press starts. */
+ * the text turns from color 15 to color 14 as the press starts. */
 #ifndef CLEAN_OV002_PANEL_SPRITE_H
 #define CLEAN_OV002_PANEL_SPRITE_H
 
@@ -29,7 +29,7 @@ enum PanelSpriteFlag {
     PANEL_SPRITE_PALETTE2 = 4 /* the cells are drawn in palette 2 */
 };
 
-/* The text's colours, the two entries func_ov002_0220af94 loads. */
+/* The text's colors, the two entries func_ov002_0220af94 loads. */
 #define PANEL_TEXT_COLOR 0xf
 #define PANEL_TEXT_COLOR_PRESSED 0xe
 

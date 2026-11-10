@@ -65,7 +65,7 @@ extern void *func_02070be8(void *label);
 #define STAFF_ROLL_SLOT_FIRST_TILE 0x11
 #define STAFF_ROLL_SLOT_TILES 0x10
 #define STAFF_ROLL_SLOT_CELLS 0x10
-#define STAFF_ROLL_TEXT_COLOUR 1
+#define STAFF_ROLL_TEXT_COLOR 1
 
 /* A row of a map, in bytes. */
 #define STAFF_ROLL_ROW_BYTES (STAFF_ROLL_MAP_COLUMNS * 2)
@@ -292,7 +292,7 @@ static void staff_roll_add_heading(StaffRoll *self, int layer, StaffRollScreen *
     TextLabel *label = StaffRoll_NextLabel(self);
     TextBase_SetLine((TextBase *) (void *) label, chars);
     TextLabel_OpenStyledBox(label, layer, screen->slot * STAFF_ROLL_SLOT_TILES + STAFF_ROLL_SLOT_FIRST_TILE,
-                            STAFF_ROLL_SLOT_CELLS, STAFF_ROLL_TEXT_COLOUR, 0, 0);
+                            STAFF_ROLL_SLOT_CELLS, STAFF_ROLL_TEXT_COLOR, 0, 0);
     TextLabel_Show(label, 0, 0);
     screen->slot++;
     screen->line++;
@@ -356,7 +356,7 @@ void StaffRoll_LayOutRow(StaffRoll *self, int layer, StaffRollScreen *screen)
     TextLabel *label = StaffRoll_NextLabel(self);
     TextBase_SetLine((TextBase *) (void *) label, chars);
     TextLabel_OpenStyledBox2(label, layer, (screen->slot - 2) * STAFF_ROLL_SLOT_TILES + STAFF_ROLL_SLOT_FIRST_TILE,
-                             STAFF_ROLL_SLOT_CELLS, STAFF_ROLL_TEXT_COLOUR, 0, 0);
+                             STAFF_ROLL_SLOT_CELLS, STAFF_ROLL_TEXT_COLOR, 0, 0);
     TextLabel_ShowRightAligned(label);
     screen->line++;
 }

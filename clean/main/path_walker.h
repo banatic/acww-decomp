@@ -6,7 +6,7 @@
  * the paths. The steps along each direction are the table at data_021c172c (four pairs x, z).
  * Tiles are 0x2000 units of position wide (Position_Tile), acres 16 tiles.
  *
- * The walker's behaviour is a table of C++ pointers to member functions (`table` at 0x28):
+ * The walker's behavior is a table of C++ pointers to member functions (`table` at 0x28):
  * whether it has arrived, and the step run each frame for each state (0 or 1) and phase (0 to
  * 2; 2 once arrived). The functions here are the ones the tables name: the steps, the checks of
  * arrival, and the choice of a goal (a tile picked at random in an acre).
@@ -94,8 +94,8 @@ void PathWalker_PickOtherFront(PathWalkerTile *out, int self, int position, void
 int PathWalker_InFlaggedAcre(void *self, const Vec3 *position);
 void PathWalker_PickInFlaggedAcre(PathWalkerTile *out, PathWalker *self);
 int PathWalker_PlaceAtRandom(PathWalker *self, Vec3 *position);
-int PathWalker_StepToNeighbour(PathWalker *self, Vec3 *position);
-int PathWalker_StepToNeighbourOn(PathWalker *self, Vec3 *position, PathWalkerMap *map);
+int PathWalker_StepToNeighbor(PathWalker *self, Vec3 *position);
+int PathWalker_StepToNeighborOn(PathWalker *self, Vec3 *position, PathWalkerMap *map);
 int PathWalker_StepAlong(PathWalker *self, Vec3 *position);
 int PathWalker_StepAlongOn(PathWalker *self, Vec3 *position, PathWalkerMap *map);
 int PathWalker_StepToPath(PathWalker *self, Vec3 *position);
@@ -120,7 +120,7 @@ int PathWalker_Arrived(PathWalker *self, const Vec3 *position);
 #define PATH_WALKER_KINDS 7
 
 int PathWalker_FindWayToPath(PathWalker *self, u32 *stop, const Vec3 *position);
-int PathWalker_StepToClearNeighbour(PathWalker *self, Vec3 *position, PathWalkerMap *map);
+int PathWalker_StepToClearNeighbor(PathWalker *self, Vec3 *position, PathWalkerMap *map);
 int PathWalker_SearchLine(PathWalker *self, Vec3 *point, const PathWalkerTile *from, const PathWalkerTile *step, int count,
                           const PathWalkerTile *limit, int check_ground, PathWalkerMap *map);
 int PathWalker_IsWalking(const PathWalker *self);

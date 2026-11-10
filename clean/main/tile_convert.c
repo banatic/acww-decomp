@@ -1,4 +1,4 @@
-/* Converting 16-colour images between character and bitmap order (tile_convert.h).
+/* Converting 16-color images between character and bitmap order (tile_convert.h).
  *
  * An image is `width` characters wide and `height` characters tall. In character order its
  * characters follow each other row by row; in bitmap order its pixel lines do. A sheet is an

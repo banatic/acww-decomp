@@ -10,7 +10,7 @@
  *   is one of 0x1188 to 0x11a7; the node hook turns the clock's hands (nodes "kh_j" and
  *   "km_j"), keeps where the hour hand's node is, and where node "hasu1" is (at height
  *   0x3700);
- * - the diffuse colour of material "wd", from the sky (RoomShell_WdDiffuse);
+ * - the diffuse color of material "wd", from the sky (RoomShell_WdDiffuse);
  * - the boards of the room (obj_etc_board, room_etc_board.h) made from the scene's map
  *   (RoomShell_SpawnBoards);
  * - the wallpaper's and the carpet's two item codes, a fallback code while there is none. */

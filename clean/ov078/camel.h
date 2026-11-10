@@ -95,9 +95,9 @@ int Camel_StepAside(Camel *self);
 int Camel_PointAside(Camel *self, Vec3 *out, const Vec3 *offset);
 int Camel_RandomPointNear(Camel *self, fx32 *x, fx32 *z);
 int Camel_NearCamera(Camel *self);
-int Camel_InBox(int unused, const Vec3 *centre, const Vec3 *point);
+int Camel_InBox(int unused, const Vec3 *center, const Vec3 *point);
 
-/* The overlay's static initialiser (ov078_static_init.c). */
+/* The overlay's static initializer (ov078_static_init.c). */
 void CamelInit_Tables(void);
 
 #endif

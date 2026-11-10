@@ -651,7 +651,7 @@ void BirthdayScreen_FieldsByTouch(BirthdayScreen *self)
 }
 CLEAN_AS(func_ov137_0229cdf4, BirthdayScreen_FieldsByTouch)
 
-/* func_ov137_0229ce70: the picker's characters and the panel's text colours loaded. */
+/* func_ov137_0229ce70: the picker's characters and the panel's text colors loaded. */
 void BirthdayScreen_LoadGraphics(BirthdayScreen *self)
 {
     ClockSetter_LoadSprites(&self->picker);

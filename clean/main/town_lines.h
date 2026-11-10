@@ -4,14 +4,14 @@
  * 0xc8), counted off its acre's quarter. Before the codes move on (TownGrowth_Advance,
  * town_growth.h), on the whole map:
  * - TownLines_CheckGround: each stage-0 code goes back unless its tile's unit has word 6 of 1
- *   and none of its eight neighbours holds a grown line code, an occupied tile, a short line's
+ *   and none of its eight neighbors holds a grown line code, an occupied tile, a short line's
  *   code or a rock (TownLines_HasRoom); line 0x5d's only in the first 48 rows, line 0xc8's only
  *   from row 64 on;
- * - TownLines_ThinNeighbours: on three spaced patterns of tiles (one tile in four of each row),
- *   each stage-0 code makes its stage-0 neighbours go back;
+ * - TownLines_ThinNeighbors: on three spaced patterns of tiles (one tile in four of each row),
+ *   each stage-0 code makes its stage-0 neighbors go back;
  * - TownLines_ThinCrowded: each stage-0 code with eight or more line codes within three tiles
  *   goes back.
- * A neighbour is one of the eight tiles around (data_020ca5d4) inside the map
+ * A neighbor is one of the eight tiles around (data_020ca5d4) inside the map
  * (TownLines_VisitAround). */
 #ifndef CLEAN_MAIN_TOWN_LINES_H
 #define CLEAN_MAIN_TOWN_LINES_H
@@ -25,12 +25,12 @@
 #define TOWN_LINES_BEFORE_5D 0x5c
 #define TOWN_LINES_BEFORE_C8 0xc7
 
-/* What TownLines_VisitAround hands each neighbour `near` of `tile` (with the map's `size`);
+/* What TownLines_VisitAround hands each neighbor `near` of `tile` (with the map's `size`);
  * non-zero stops the visit. The game's are func_02049f74, func_02049fbc and func_02049bc4. */
 typedef int (*TownLinesVisit)(AcreMap *map, TownGrowthTiles *near, TownGrowthTiles *tile, TownGrowthTiles *size);
 
 void TownLines_ThinCrowded(TownDay *town, AcreMap *map, const TownGrowthTiles *size);
-void TownLines_ThinNeighbours(TownDay *town, AcreMap *map, const TownGrowthTiles *size);
+void TownLines_ThinNeighbors(TownDay *town, AcreMap *map, const TownGrowthTiles *size);
 int TownLines_PutBackAround(TownDay *town, AcreMap *map, const TownGrowthTiles *size, const TownGrowthTiles *tile);
 void TownLines_CheckGround(TownDay *town, AcreMap *map, const TownGrowthTiles *size);
 void TownLines_CheckC8(TownDay *town, AcreMap *map, u16 *code, const TownGrowthTiles *size, int x, int z);

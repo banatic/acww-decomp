@@ -1303,8 +1303,8 @@ void MyDesigns_LoadDesignObjs(MyDesigns *self)
     for (u8 i = 0; i < MY_DESIGNS_COUNT; i++) {
         unsigned int design = (unsigned int) PlayerDesigns_InOrder(designs, i);
         DesignInfo *info = (DesignInfo *) (uintptr_t) Design_Info(design);
-        const void *colours = (const void *) (uintptr_t) (u32) DesignInfo_PaletteColours(info);
-        MIi_CpuCopy16(colours, palettes + i * 0x10, 0x20);
+        const void *colors = (const void *) (uintptr_t) (u32) DesignInfo_PaletteColors(info);
+        MIi_CpuCopy16(colors, palettes + i * 0x10, 0x20);
     }
     RomFile_Read(data_ov121_0229c420, palettes + MY_DESIGNS_COUNT * 0x10, 0x20);
     DisplayLayer_LoadPalettes((u8 *) palettes, LAYER_SUB_OBJ, 4, 4, 0xc);

@@ -294,7 +294,7 @@ CLEAN_AS(func_ov098_022a2a0c, PocketsTown_ActionPlant)
 void PocketsTown_StartFillHole(PocketsScreen *self)
 {
     Vec3 point;
-    AcreTile_TileCentre(&point, (int) self->tile_x, (int) self->tile_z);
+    AcreTile_TileCenter(&point, (int) self->tile_x, (int) self->tile_z);
     u16 item = PocketsScreen_PlaceItem(self, self->slot);
     if (FieldActor_PlayerRequestState61(&point, &item) != 0) {
         PocketsScreen_EmptyPlace(self, self->slot);
@@ -374,7 +374,7 @@ int PocketsTown_FindHoleAhead(PocketsScreen *self)
 }
 CLEAN_AS(func_ov098_022a2bfc, PocketsTown_FindHoleAhead)
 
-/* func_ov098_022a2cd8: the step to the neighbouring tile in the direction of `angle` (16
+/* func_ov098_022a2cd8: the step to the neighboring tile in the direction of `angle` (16
  * sectors of 0x1000, from its bits 12-15): sector 0 is +z, 4 is +x, 8 is -z, 12 is -x, and each
  * diagonal takes the two sectors around it. The table is a static of the function, filled on
  * the first call (bit 0 of data_ov098_022a3260 says it was). */

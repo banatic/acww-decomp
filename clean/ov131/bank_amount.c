@@ -54,7 +54,7 @@ extern u8 data_021ebcd4[];
 #define BANK_AMOUNT_WIPE_MARGIN 0x30
 
 /* What main is told of the entry (GroupParams_SetC4C). */
-#define BANK_AMOUNT_OUTCOME_CANCELLED 0
+#define BANK_AMOUNT_OUTCOME_CANCELED 0
 #define BANK_AMOUNT_OUTCOME_DONE 1
 
 /* The tables of member functions (ov004/member_pointer.h): the guards, the tables and their
@@ -328,19 +328,19 @@ CLEAN_AS(func_ov131_0229aff8, BankAmount_PlaceCursor)
 
 /* --- The panel's buttons --- */
 
-/* func_ov131_0229b04c: cancelled: sound 0x2a, main told so, the cancel button's press played
+/* func_ov131_0229b04c: canceled: sound 0x2a, main told so, the cancel button's press played
  * (sub state 7) before the scene finishes (state 2). */
 void BankAmount_Cancel(BankAmount *self)
 {
     SoundSys_PlaySe(BANK_AMOUNT_SE_CANCEL);
-    GroupParams_SetC4C(BANK_AMOUNT_OUTCOME_CANCELLED);
+    GroupParams_SetC4C(BANK_AMOUNT_OUTCOME_CANCELED);
     ButtonPanel_Select(&self->panel, BANK_AMOUNT_BUTTON_CANCEL);
     MenuScene_SetState(scene_of(self), BANK_AMOUNT_STATE_FINISH);
     MenuScene_SetSubState(scene_of(self), BANK_AMOUNT_SUB_PANEL_PRESS);
 }
 CLEAN_AS(func_ov131_0229b04c, BankAmount_Cancel)
 
-/* func_ov131_0229b07c: OK, unless it is greyed (the amount is 0; then 0): its press played (sub
+/* func_ov131_0229b07c: OK, unless it is grayed (the amount is 0; then 0): its press played (sub
  * state 7) before the scene finishes (state 2), main told it is done and given the amount, and
  * the bells moved. */
 int BankAmount_Confirm(BankAmount *self)
@@ -436,7 +436,7 @@ CLEAN_AS(func_ov131_0229b1c8, BankAmount_WaitCursorRelease)
 
 /* func_ov131_0229b1f0 (sub state 4): when the cursor's animation is over, the key under it acts:
  * a key of the keypad is pressed and repeats while A is held (sub state 6); OK confirms (when
- * greyed, back to the buttons, sub state 2, after the cursor's third animation); cancel
+ * grayed, back to the buttons, sub state 2, after the cursor's third animation); cancel
  * cancels. */
 void BankAmount_KeyPress(BankAmount *self)
 {
@@ -540,7 +540,7 @@ CLEAN_AS(func_ov131_0229b338, BankAmount_Touch)
 
 /* --- The screens and the frames --- */
 
-/* func_ov131_0229b3d4: the pad's teller and message, and the panel's text colours. */
+/* func_ov131_0229b3d4: the pad's teller and message, and the panel's text colors. */
 void BankAmount_LoadTexts(BankAmount *self)
 {
     BankPad_ShowMessage(&self->pad);
@@ -556,7 +556,7 @@ void BankAmount_LoadPad(BankAmount *self)
 CLEAN_AS(func_ov131_0229b3f4, BankAmount_LoadPad)
 
 /* func_ov131_0229b404: the sub screen in background mode 0, the pad's two layers at priority 2,
- * both in their first size with 16 colours from characters 0. */
+ * both in their first size with 16 colors from characters 0. */
 void BankAmount_SetUpLayers(void)
 {
     DisplayShadow_SetSubBgMode(0);
@@ -567,7 +567,7 @@ void BankAmount_SetUpLayers(void)
 }
 CLEAN_AS(func_ov131_0229b404, BankAmount_SetUpLayers)
 
-/* func_ov131_0229b43c: a frame's end: the pad's changed screens loaded, and OK greyed while the
+/* func_ov131_0229b43c: a frame's end: the pad's changed screens loaded, and OK grayed while the
  * amount is 0. */
 void BankAmount_EndFrame(BankAmount *self)
 {

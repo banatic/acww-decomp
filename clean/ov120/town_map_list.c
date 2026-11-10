@@ -69,8 +69,8 @@ extern void MIi_CpuClear16(u16 value, void *destination, u32 size);
 #define TOWN_MAP_MARK_REACH 8  /* a mark is touched less than this far from its place */
 
 /* The map cursor's place when its mark has none. */
-#define TOWN_MAP_CENTRE_X 0x58
-#define TOWN_MAP_CENTRE_Y 0x70
+#define TOWN_MAP_CENTER_X 0x58
+#define TOWN_MAP_CENTER_Y 0x70
 
 /* The mark of `index`; TOWN_MAP_NONE is the padding after the marks. */
 static TownMapMark *town_map_mark(TownMap *self, int index)
@@ -79,7 +79,7 @@ static TownMapMark *town_map_mark(TownMap *self, int index)
 }
 
 /* func_ov120_0229a45c: the map cursor at the mark of the row under the cursor, or at the map's
- * centre when that mark is not on it.
+ * center when that mark is not on it.
  * QUIRK: the row's target is computed in a byte (`first_row` is 0xff until the list is made);
  * a row with no mark gives mark TOWN_MAP_NONE, read from the padding after the marks (zero), so
  * the cursor goes to (0, 0). */
@@ -89,8 +89,8 @@ void TownMap_MapCursorFromRow(TownMap *self)
     const TownMapMark *mark = town_map_mark(self, TownMap_MarkOfTarget(self, target));
 
     if (mark->kind == TOWN_MAP_KIND_NONE) {
-        self->map_x = TOWN_MAP_CENTRE_X;
-        self->map_y = TOWN_MAP_CENTRE_Y;
+        self->map_x = TOWN_MAP_CENTER_X;
+        self->map_y = TOWN_MAP_CENTER_Y;
     } else {
         self->map_x = mark->x;
         self->map_y = mark->y;
@@ -594,7 +594,7 @@ u8 *TownMap_Rows(TownMap *self)
 CLEAN_AS(func_ov120_0229b188, TownMap_Rows)
 
 /* func_ov120_0229b1b0: the list shown made again: its screen, its labels, the knob shown (and
- * the bar coloured on the map's screen) when it scrolls, the picked row highlighted. */
+ * the bar colored on the map's screen) when it scrolls, the picked row highlighted. */
 void TownMap_ShowList(TownMap *self)
 {
     int bar_palette;

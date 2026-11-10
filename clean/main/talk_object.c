@@ -44,7 +44,7 @@ static_assert(offsetof(TalkObject, run) == 0x149c, "talk run");
 static_assert(offsetof(TalkObject, receiver) == 0x14a8, "talk receiver");
 static_assert(offsetof(TalkObject, parts) == 0x14b8, "talk parts");
 static_assert(offsetof(TalkObject, values) == 0x18ac, "talk values");
-static_assert(offsetof(TalkObject, value_colours) == 0x1a1c, "talk value kinds");
+static_assert(offsetof(TalkObject, value_colors) == 0x1a1c, "talk value kinds");
 static_assert(offsetof(TalkObject, voice) == 0x1a2c, "talk voice");
 static_assert(offsetof(TalkObject, particles) == 0x1a58, "talk particles");
 static_assert(offsetof(TalkObject, year) == 0x1a64, "talk year");
@@ -236,7 +236,7 @@ CLEAN_AS(func_02067e68, TalkObject_TakeInputMode)
 
 /* func_02067e84: the name plate's palette set by the speaker (no villager talked to, the
  * speaker's style 1, or another), and the speaker's name made again. */
-void TalkObject_ColourNamePlate(TalkObject *talk)
+void TalkObject_ColorNamePlate(TalkObject *talk)
 {
     TalkReceiver *receiver = talk->receiver;
     const u8 *vtable = *(const u8 *const *) (const void *) receiver;
@@ -261,7 +261,7 @@ void TalkObject_ColourNamePlate(TalkObject *talk)
     TalkObject_FreeNameBox(talk);
     TalkObject_MakeNameBox(talk);
 }
-CLEAN_AS(func_02067e84, TalkObject_ColourNamePlate)
+CLEAN_AS(func_02067e84, TalkObject_ColorNamePlate)
 
 /* func_02067f28: a shake of the window asked for (TalkObject_Shake runs it).
  * QUIRK: the amplitude falls by 1.5 times `fall` a frame (rounded down). */
@@ -535,12 +535,12 @@ void TalkObject_OpenChoices(TalkObject *talk, int later)
 }
 CLEAN_AS(func_02068388, TalkObject_OpenChoices)
 
-/* func_020683b4: value `index` a message's tags put in: a copy of `text`, and the colour it is
+/* func_020683b4: value `index` a message's tags put in: a copy of `text`, and the color it is
  * drawn in. */
-void TalkObject_SetValue(TalkObject *talk, int index, TextBase *text, int colour)
+void TalkObject_SetValue(TalkObject *talk, int index, TextBase *text, int color)
 {
     TextBase_Copy((TextBase *) (void *) &talk->values[index], text);
-    talk->value_colours[index] = colour;
+    talk->value_colors[index] = color;
 }
 CLEAN_AS(func_020683b4, TalkObject_SetValue)
 
@@ -711,7 +711,7 @@ TalkObject *TalkObject_Construct(TalkObject *talk)
     VillagerMemoryLabel_Construct(&talk->greeting);
     talk->unk_1e74 = 0;
     talk->unk_1e75 = 0;
-    talk->other_colour = 0;
+    talk->other_color = 0;
     talk->message = data_021f43f8;
     talk->go_on = 0;
     talk->held = 0;
@@ -759,15 +759,15 @@ extern StateBlock data_021dc7a8;
 #define TALK_OBJECT_MESSAGE_SOUNDS 2
 
 /* The speaker's name box: its first VRAM tile and its size in tiles, its screens, background
- * and text colours. */
+ * and text colors. */
 #define TALK_OBJECT_NAME_TILE 0x89
 #define TALK_OBJECT_NAME_CELLS 8
 #define TALK_OBJECT_NAME_ROWS 2
 #define TALK_OBJECT_NAME_SCREENS 2
 #define TALK_OBJECT_NAME_BACKGROUND 0x0e
-#define TALK_OBJECT_NAME_COLOUR 2
+#define TALK_OBJECT_NAME_COLOR 2
 
-/* The colour a cleared value gets (TalkObject.value_colours). */
+/* The color a cleared value gets (TalkObject.value_colors). */
 #define TALK_OBJECT_VALUE_CLEARED 7
 
 /* The size of the walker TalkObject_RunAnswerText builds on its stack. */
@@ -932,7 +932,7 @@ void TalkObject_RunAnswerText(TalkObject *talk)
 CLEAN_AS(func_020673e0, TalkObject_RunAnswerText)
 
 /* func_0206741c: the message begins: the receiver to be told of its beginning and its end,
- * no answer to tell; the page centred for the kinds of message that are (the entry's kind),
+ * no answer to tell; the page centered for the kinds of message that are (the entry's kind),
  * the walker's speed and the voice's muting by the kind; the message that follows (the
  * entry's byte 8) set, of no file; the receiver told the beginning, the message's sound
  * played, and the walk started over the file's text. */
@@ -943,7 +943,7 @@ void TalkObject_BeginMessage(TalkObject *talk)
     talk->unk_1e95 = 1;
     talk->unk_1e94 = 1;
     talk->unk_1e96 = 0;
-    TalkPage_SetCentred(&talk->page, MessageEntry_CentredOfKind(&talk->entry) == 1);
+    TalkPage_SetCentered(&talk->page, MessageEntry_CenteredOfKind(&talk->entry) == 1);
     int speed = (int) (uintptr_t) MessageEntry_SpeedOfKind(&talk->entry);
     TalkTags_SetSpeed(&talk->walker, speed);
     talk->voice.unk_1c = speed == 1;
@@ -1021,7 +1021,7 @@ void TalkObject_FreeNameBox(TalkObject *talk)
 CLEAN_AS(func_020675c0, TalkObject_FreeNameBox)
 
 /* func_020675e0: the speaker's name box made in VRAM (when there is room) with the speaker's
- * name, centred and drawn. */
+ * name, centered and drawn. */
 void TalkObject_MakeNameBox(TalkObject *talk)
 {
     talk->name_box = LabelBox_NewInVram(TALK_OBJECT_NAME_TILE, TALK_OBJECT_NAME_CELLS, TALK_OBJECT_NAME_ROWS);
@@ -1033,7 +1033,7 @@ void TalkObject_MakeNameBox(TalkObject *talk)
     TalkReceiverName *speaker = TalkReceiver_SpeakerName(talk->receiver);
     talk->name_box->base.text = talk_object_chars(speaker);
     TextDraw_Center(&talk->name_box->base);
-    talk->name_box->base.color = TALK_OBJECT_NAME_COLOUR;
+    talk->name_box->base.color = TALK_OBJECT_NAME_COLOR;
     TextDraw_RequestDraw(&talk->name_box->base);
 }
 CLEAN_AS(func_020675e0, TalkObject_MakeNameBox)
@@ -1191,7 +1191,7 @@ void TalkObject_ClearBoom(TalkObject *talk)
 CLEAN_AS(func_0206785c, TalkObject_ClearBoom)
 
 /* func_0206786c: another resident's player name, loaded once until cleared (byte 0x1e75);
- * without one, another villager's name (then `other_colour` set), and 0 without a villager
+ * without one, another villager's name (then `other_color` set), and 0 without a villager
  * either.
  * QUIRK: once tried, it answers 1 until cleared, even when nothing was loaded. */
 int TalkObject_LoadOtherPlayer(TalkObject *talk)
@@ -1206,7 +1206,7 @@ int TalkObject_LoadOtherPlayer(TalkObject *talk)
         u8 *villager = talk_object_villager(talk);
         if (villager != NULL) {
             VillagerNames_FormatOther(villager, (char *) (void *) &talk->other_player);
-            talk->other_colour = 1;
+            talk->other_color = 1;
         } else {
             loaded = 0;
         }
@@ -1220,7 +1220,7 @@ CLEAN_AS(func_0206786c, TalkObject_LoadOtherPlayer)
 void TalkObject_ClearOtherPlayer(TalkObject *talk)
 {
     talk->unk_1e75 = 0;
-    talk->other_colour = 0;
+    talk->other_color = 0;
     TextBase_Clear(&talk->other_player);
 }
 CLEAN_AS(func_020678d4, TalkObject_ClearOtherPlayer)
@@ -1353,7 +1353,7 @@ void TalkObject_ClearValues(TalkObject *talk)
 {
     for (int i = 0; i < TALK_OBJECT_VALUES; i++) {
         MessagePart_Clear(&talk->values[i]);
-        talk->value_colours[i] = TALK_OBJECT_VALUE_CLEARED;
+        talk->value_colors[i] = TALK_OBJECT_VALUE_CLEARED;
     }
 }
 CLEAN_AS(func_02067ac0, TalkObject_ClearValues)

@@ -1,4 +1,4 @@
-/* The 3D engine's set-up: the start-up state, the clear colour and depth, the toon table, the
+/* The 3D engine's set-up: the start-up state, the clear color and depth, the toon table, the
  * per-frame reset and the view (camera) matrix with its inverse. */
 #ifndef CLEAN_MAIN_DISPLAY_3D_H
 #define CLEAN_MAIN_DISPLAY_3D_H

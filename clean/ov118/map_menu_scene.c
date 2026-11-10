@@ -220,7 +220,7 @@ void MapMenu_LoadBgFiles(MapMenu *self)
 }
 CLEAN_AS(func_ov118_0229be8c, MapMenu_LoadBgFiles)
 
-/* func_ov118_0229bf3c: both layers at priority 2, with the first size and 16 colours. */
+/* func_ov118_0229bf3c: both layers at priority 2, with the first size and 16 colors. */
 void MapMenu_SetUpLayers(void)
 {
     DisplayLayer_SetPriority(MAP_MENU_LAYER_MAP, 2);
@@ -570,7 +570,7 @@ int MapMenu_RunState(MapMenu *self)
 }
 CLEAN_AS(_ZN18Obj_ov118_0229cc0819func_ov118_0229c63cEv, MapMenu_RunState)
 
-/* The cells at the screen's centre, lowered by the wipe, priority 2, unscaled. */
+/* The cells at the screen's center, lowered by the wipe, priority 2, unscaled. */
 static void map_menu_draw_cells(const OamEntry *cells, int y, int palette)
 {
     OamBuffer_DrawCell(1, cells, 0x80, y, palette, 2, 0x1000, 0x1000, 0, -1, 0, 0);

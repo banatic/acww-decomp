@@ -71,7 +71,7 @@ int Turtle_EnterStand(Turtle *self);
 void Turtle_SetState(Turtle *self, int state);
 int Turtle_Update(Turtle *self);
 
-/* The overlay's static initialiser (ov080_static_init.c). */
+/* The overlay's static initializer (ov080_static_init.c). */
 int TurtleInit_Tables(void);
 
 #endif

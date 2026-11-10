@@ -32,8 +32,8 @@ static_assert(sizeof(ScreenTransitionFunctions) == 0x10, "ScreenTransitionFuncti
 #define BGCNT_KEEP 0x0043  /* the priority and the mosaic (the character base is cleared) */
 #define BG2CNT_MAIN 0x0600 /* screen base 6, priority 0 */
 #define BG2CNT_SUB 0x0e04  /* screen base 0xe, character base 1, priority 0 */
-#define BLACK 0x8000       /* a colour of the clear backgrounds */
-#define TILE_COLOUR_1 0x1111
+#define BLACK 0x8000       /* a color of the clear backgrounds */
+#define TILE_COLOR_1 0x1111
 
 #define PLANE_BG2 0x04
 #define PLANE_OBJ 0x10
@@ -45,7 +45,7 @@ static_assert(sizeof(ScreenTransitionFunctions) == 0x10, "ScreenTransitionFuncti
 #define SCREEN_HEIGHT 192
 #define CIRCLE_MAX_RADIUS 160     /* the half diagonal of the screen, near enough */
 #define WINDOW_SPAN_ALL 0x00ff    /* window 0 from x 0 to 255 */
-#define WINDOW_SPAN_NONE 0x8080   /* an empty window at the centre */
+#define WINDOW_SPAN_NONE 0x8080   /* an empty window at the center */
 #define CIRCLE_HALF_WIDTH 0x80000 /* 128 in fixed point: wider than half the screen */
 
 extern void MIi_CpuClear16(u16 value, void *destination, u32 size);
@@ -81,21 +81,21 @@ static s32 asr(s32 value, int bits)
 }
 
 /* Background 2 of both engines made a clear black layer: its control set, its map cleared,
- * its first tile all colour 1 and the palette's colours 0 and 1 black; then shown.
+ * its first tile all color 1 and the palette's colors 0 and 1 black; then shown.
  * HW: each control register read, written, read and written again. */
 static void clear_bg2(void)
 {
     REG_BG2CNT &= (u16) ~BGCNT_PRIORITY;
     REG_BG2CNT = (u16) ((REG_BG2CNT & BGCNT_KEEP) | BG2CNT_MAIN);
     MIi_CpuClear16(0, G2_GetBG2ScrPtr(), 0x800);
-    MIi_CpuClear16(TILE_COLOUR_1, G2_GetBG2CharPtr(), 0x20);
+    MIi_CpuClear16(TILE_COLOR_1, G2_GetBG2CharPtr(), 0x20);
     MIi_CpuClear16(BLACK, (void *) (uintptr_t) PALETTE_MAIN, 4);
     DisplayShadow_ShowMainPlanes(PLANE_BG2);
 
     REG_DB_BG2CNT &= (u16) ~BGCNT_PRIORITY;
     REG_DB_BG2CNT = (u16) ((REG_DB_BG2CNT & BGCNT_KEEP) | BG2CNT_SUB);
     MIi_CpuClear16(0, G2S_GetBG2ScrPtr(), 0x800);
-    MIi_CpuClear16(TILE_COLOUR_1, G2S_GetBG2CharPtr(), 0x20);
+    MIi_CpuClear16(TILE_COLOR_1, G2S_GetBG2CharPtr(), 0x20);
     MIi_CpuClear16(BLACK, (void *) (uintptr_t) PALETTE_SUB, 4);
     DisplayShadow_ShowSubPlanes(PLANE_BG2);
 }
@@ -314,7 +314,7 @@ void ScreenTransitionCircle_Apply(void)
 CLEAN_AS(func_02041e0c, ScreenTransitionCircle_Apply)
 
 /* func_02041e48: the circle's lines written: for each line of the top half the span of window 0
- * across the circle of radius (0x1000 - cover) * 160 >> 12 around the screen's centre (an
+ * across the circle of radius (0x1000 - cover) * 160 >> 12 around the screen's center (an
  * empty span above it, the whole line where the circle is wider than the screen). Shown
  * (cover 0) the table written spans every line; closed (0x1000) both tables are empty. */
 void ScreenTransitionCircle_Update(void)
@@ -334,7 +334,7 @@ void ScreenTransitionCircle_Update(void)
     s32 radius = asr((s32) ((u32) (SCREEN_TRANSITION_COVERED - cover) * CIRCLE_MAX_RADIUS), 12);
     s32 radius_squared = (s32) ((u32) radius * (u32) radius << 12);
     for (int i = 0; i < SCREEN_TRANSITION_LINES; i++) {
-        int above = SCREEN_TRANSITION_LINES - i; /* the lines above the centre */
+        int above = SCREEN_TRANSITION_LINES - i; /* the lines above the center */
         if (above > radius) {
             *line = WINDOW_SPAN_NONE;
         } else {

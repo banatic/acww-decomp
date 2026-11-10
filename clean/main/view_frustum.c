@@ -52,7 +52,7 @@ int ViewFrustum_Depth(ViewFrustum *frustum, const Mtx43 *view, const Vec3 *point
 CLEAN_AS(func_0203a7b8, ViewFrustum_Depth)
 
 /* func_0203a89c: the side planes from the field of view and aspect ratio: each normal is the
- * cross product of two neighbouring corners of the near rectangle, normalized. */
+ * cross product of two neighboring corners of the near rectangle, normalized. */
 void ViewFrustum_ComputePlanes(ViewFrustum *frustum)
 {
     int index = frustum->half_fov >> 4;

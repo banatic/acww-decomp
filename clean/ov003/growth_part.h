@@ -38,7 +38,7 @@ typedef struct GrowthPart {
     s8 frames;     /* 0x0e: frames followed (GrowthPart_FollowAging) */
     u8 mode;       /* 0x0f: the growth model's mode */
     int variant;   /* 0x10: the tile's parity for trees, 3 for groups 1 and 2, 2 otherwise */
-    Vec3 position; /* 0x14: the tile's centre */
+    Vec3 position; /* 0x14: the tile's center */
 } GrowthPart;
 
 typedef struct GrowthParts {

@@ -42,7 +42,7 @@ extern PadState data_021fbe40;
 #define TOWN_LIST_SOUND_QUIT 0x28
 #define TOWN_LIST_SOUND_OK 0x27
 
-/* The palette entry the rows' colours fade towards, and the frames before the scene closes. */
+/* The palette entry the rows' colors fade towards, and the frames before the scene closes. */
 #define TOWN_LIST_FADE_INDEX 14
 #define TOWN_LIST_CLOSE_FRAMES 5
 
@@ -111,12 +111,12 @@ int TownList_TestFlags(TownList *self, unsigned int flags)
 CLEAN_AS(func_ov141_02299f7c, TownList_TestFlags)
 
 /* func_ov141_02299f94: `row` picked (-1 for none); whether that changed the row picked. The
- * OK button is greyed while none is. */
+ * OK button is grayed while none is. */
 int TownList_SetPicked(TownList *self, int row)
 {
     int changed = self->picked != row;
     self->picked = row;
-    self->ok_palette = row == -1 ? TOWN_LIST_BUTTON_GREY : TOWN_LIST_BUTTON_NORMAL;
+    self->ok_palette = row == -1 ? TOWN_LIST_BUTTON_GRAY : TOWN_LIST_BUTTON_NORMAL;
     return changed;
 }
 CLEAN_AS(func_ov141_02299f94, TownList_SetPicked)

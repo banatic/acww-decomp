@@ -124,17 +124,17 @@ int RoomObject_IsUnplaced(const RoomObject *object)
 CLEAN_AS(func_ov004_0220e5c8, RoomObject_IsUnplaced)
 
 /* func_ov004_0220e5dc: the effect of RoomObject_Effect3dAt halfway between corner `corner`
- * (RoomObject_Corner) and the centre of the object, at the object's height. */
+ * (RoomObject_Corner) and the center of the object, at the object's height. */
 void RoomObject_EffectNearCorner(RoomObject *object, int corner)
 {
     Vec3 at_corner;
-    Vec3 centre;
+    Vec3 center;
     RoomObject_Corner(object, &at_corner, corner);
-    RoomObject_Centre(object, &centre);
+    RoomObject_Center(object, &center);
     Vec3 point;
-    point.x = shift_right(at_corner.x + centre.x, 1);
+    point.x = shift_right(at_corner.x + center.x, 1);
     point.y = object->position.y;
-    point.z = shift_right(at_corner.z + centre.z, 1);
+    point.z = shift_right(at_corner.z + center.z, 1);
     RoomObject_Effect3dAt(object, &point);
 }
 CLEAN_AS(func_ov004_0220e5dc, RoomObject_EffectNearCorner)
@@ -148,21 +148,21 @@ int RoomObject_Effect3dAt(RoomObject *object, const Vec3 *point)
 }
 CLEAN_AS(func_ov004_0220e61c, RoomObject_Effect3dAt)
 
-/* func_ov004_0220e640: a roach (RoomEffect_SpawnRoach) at the object's centre, running away from
+/* func_ov004_0220e640: a roach (RoomEffect_SpawnRoach) at the object's center, running away from
  * the player; 0 without a player. */
-int RoomObject_RoachFromCentre(RoomObject *object)
+int RoomObject_RoachFromCenter(RoomObject *object)
 {
     Vec3 *player = PlayerActorOps_StartPosition(SESSION_PLAYERS_OWN);
     if (player == NULL) {
         return 0;
     }
-    Vec3 centre;
-    RoomObject_Centre(object, &centre);
-    return RoomEffect_SpawnRoach(&centre, Vec_YawTo(&centre, player));
+    Vec3 center;
+    RoomObject_Center(object, &center);
+    return RoomEffect_SpawnRoach(&center, Vec_YawTo(&center, player));
 }
-CLEAN_AS(func_ov004_0220e640, RoomObject_RoachFromCentre)
+CLEAN_AS(func_ov004_0220e640, RoomObject_RoachFromCenter)
 
-/* func_ov004_0220e674: a roach (RoomEffect_SpawnRoach) at the centre of the object's cell farthest
+/* func_ov004_0220e674: a roach (RoomEffect_SpawnRoach) at the center of the object's cell farthest
  * from the player (nearest unless `farthest`), running away from the player.
  * QUIRK: the farthest cell is searched from distance 0 and the nearest from data_020ca0ec, by
  * strict comparisons: on equal distances the first cell wins. */
@@ -182,9 +182,9 @@ void RoomObject_RoachFromCell(RoomObject *object, int farthest)
     for (unsigned long i = 0; i < CellList_Count(&cells); i++) {
         int x = CellList_At(&cells, (int) i)->x;
         int y = CellList_At(&cells, (int) i)->y;
-        Vec3 centre;
-        AcreTile_TileCentre(&centre, (unsigned int) x, (unsigned int) y);
-        fx32 distance = Vec_DistanceXZ(player, &centre);
+        Vec3 center;
+        AcreTile_TileCenter(&center, (unsigned int) x, (unsigned int) y);
+        fx32 distance = Vec_DistanceXZ(player, &center);
         if (distance > far_distance) {
             far_index = (int) i;
             far_distance = distance;
@@ -198,9 +198,9 @@ void RoomObject_RoachFromCell(RoomObject *object, int farthest)
     if (chosen != -1) {
         int x = CellList_At(&cells, chosen)->x;
         int y = CellList_At(&cells, chosen)->y;
-        Vec3 centre;
-        AcreTile_TileCentre(&centre, (unsigned int) x, (unsigned int) y);
-        RoomEffect_SpawnRoach(&centre, Vec_YawTo(&centre, player));
+        Vec3 center;
+        AcreTile_TileCenter(&center, (unsigned int) x, (unsigned int) y);
+        RoomEffect_SpawnRoach(&center, Vec_YawTo(&center, player));
     }
     CellList_Destruct(&cells);
 }

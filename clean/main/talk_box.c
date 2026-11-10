@@ -35,13 +35,13 @@ extern const u8 data_020cce90[];
 #define TALK_BOX_SCREEN_SIZE 0x800
 #define TALK_BOX_PALETTE_SIZE 0x180
 #define TALK_BOX_CHARACTERS_SIZE 0x2800
-/* The palette is uploaded from its second colour on: colour 0 of BG palette 0 is the
+/* The palette is uploaded from its second color on: color 0 of BG palette 0 is the
  * backdrop. */
 #define TALK_BOX_PALETTE_SKIP 2
 
-/* The text colour that is drawn as colour 3 (the same as colour 2). */
-#define TALK_BOX_COLOUR_ALIAS 9
-#define TALK_BOX_COLOUR_ALIASED 2
+/* The text color that is drawn as color 3 (the same as color 2). */
+#define TALK_BOX_COLOR_ALIAS 9
+#define TALK_BOX_COLOR_ALIASED 2
 
 /* The arrow and the spinner placed from the box's place. */
 #define TALK_BOX_ARROW_X 0x55
@@ -99,17 +99,17 @@ static void talk_box_call_arrow(TalkBox *box, int slot)
     ((TalkBoxArrowSlot *) (uintptr_t) box->arrow.vtable[slot])(&box->arrow);
 }
 
-/* func_02068bc8: the colour a text of colour `colour` is drawn with: one more, colour 9
- * drawn as colour 2 is.
+/* func_02068bc8: the color a text of color `color` is drawn with: one more, color 9
+ * drawn as color 2 is.
  * QUIRK: the result is truncated to a byte. */
-u8 TalkBox_TextColour(int colour)
+u8 TalkBox_TextColor(int color)
 {
-    if (colour == TALK_BOX_COLOUR_ALIAS) {
-        colour = TALK_BOX_COLOUR_ALIASED;
+    if (color == TALK_BOX_COLOR_ALIAS) {
+        color = TALK_BOX_COLOR_ALIASED;
     }
-    return (u8) (colour + 1);
+    return (u8) (color + 1);
 }
-CLEAN_AS(func_02068bc8, TalkBox_TextColour)
+CLEAN_AS(func_02068bc8, TalkBox_TextColor)
 
 /* func_02068bd8: the spinner drawn. */
 int TalkBox_DrawSpinner(TalkBox *box)
@@ -264,7 +264,7 @@ void TalkBox_Show(void)
 }
 CLEAN_AS(func_02068d98, TalkBox_Show)
 
-/* func_02068db0: the palette (from its second colour), the characters and the screen
+/* func_02068db0: the palette (from its second color), the characters and the screen
  * uploaded to BG2 of the main screen, each flushed from the cache first. */
 void TalkBox_Upload(TalkBox *box)
 {
@@ -311,7 +311,7 @@ CLEAN_AS(func_02068e44, TalkBox_FreeFiles)
 
 /* func_02068e78: the box's files read, stopping at the first that fails (0 then, else 1).
  * A talk of kind 0 with a named speaker gets the screen with the name plate, the plate
- * coloured for the speaker; any other the screen without it, its text area coloured by the
+ * colored for the speaker; any other the screen without it, its text area colored by the
  * kind. */
 int TalkBox_Load(TalkBox *box, int kind, int nameless, int style, u8 no_villager)
 {
@@ -328,9 +328,9 @@ int TalkBox_Load(TalkBox *box, int kind, int nameless, int style, u8 no_villager
         return 0;
     }
     if (with_plate) {
-        TalkBox_ColourPlate(box, style, no_villager);
+        TalkBox_ColorPlate(box, style, no_villager);
     } else {
-        TalkBox_ColourText(box, kind);
+        TalkBox_ColorText(box, kind);
     }
     return 1;
 }
@@ -339,7 +339,7 @@ CLEAN_AS(func_02068e78, TalkBox_Load)
 /* func_02068ee4: the text area of the screen given the palette data_020cce90 holds for
  * `kind`.
  * REQUIRES: `kind` indexes data_020cce90. */
-void TalkBox_ColourText(TalkBox *box, int kind)
+void TalkBox_ColorText(TalkBox *box, int kind)
 {
     for (int row = TALK_BOX_TEXT_TOP; row <= TALK_BOX_TEXT_BOTTOM; row++) {
         for (int column = TALK_BOX_TEXT_LEFT; column <= TALK_BOX_TEXT_RIGHT; column++) {
@@ -349,11 +349,11 @@ void TalkBox_ColourText(TalkBox *box, int kind)
         }
     }
 }
-CLEAN_AS(func_02068ee4, TalkBox_ColourText)
+CLEAN_AS(func_02068ee4, TalkBox_ColorText)
 
 /* func_02068f2c: the name plate's entries of palette 1 given palette 11 when the talk has no
  * villager, else palette 2 when the speaker has a style; left as they are otherwise. */
-void TalkBox_ColourPlate(TalkBox *box, int style, int no_villager)
+void TalkBox_ColorPlate(TalkBox *box, int style, int no_villager)
 {
     u16 palette;
     if (no_villager) {
@@ -372,7 +372,7 @@ void TalkBox_ColourPlate(TalkBox *box, int style, int no_villager)
         }
     }
 }
-CLEAN_AS(func_02068f2c, TalkBox_ColourPlate)
+CLEAN_AS(func_02068f2c, TalkBox_ColorPlate)
 
 /* func_02068fa0: the first 0x2800 bytes of a_mes_bg_ncg.bin read into a new block of the
  * current heap kept in `characters`. Returns 1 when the file opened, the block was had, the

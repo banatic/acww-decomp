@@ -31,7 +31,7 @@ static_assert(offsetof(TownObjectActor, pivot) == 0xc4, "pivot");
 static_assert(offsetof(TownObjectActor, pitch) == 0xd0, "pitch");
 static_assert(offsetof(TownObjectActor, exit_step) == 0x234, "exit step");
 static_assert(offsetof(TownObjectActor, model_slot) == 0x292, "model slot");
-static_assert(offsetof(TownObjectActor, bounds_centre) == 0x294, "bounds centre");
+static_assert(offsetof(TownObjectActor, bounds_center) == 0x294, "bounds centre");
 static_assert(offsetof(TownObjectActor, bounds_width) == 0x2a0, "bounds width");
 static_assert(offsetof(TownObjectActor, bounds_depth) == 0x2a4, "bounds depth");
 static_assert(sizeof(AnimatedModel) >= 0xb4 && offsetof(AnimatedModel, object) == 0, "animated model");
@@ -336,7 +336,7 @@ void TownObjectActor_StartModel(TownObjectActor *actor)
 }
 CLEAN_AS(func_ov009_02264e98, TownObjectActor_StartModel)
 
-/* func_ov009_02264f68: its box for the camera, from its building's shape: the shape's centre
+/* func_ov009_02264f68: its box for the camera, from its building's shape: the shape's center
  * added to its position in x and z, and the shape's width and depth. Left alone without the
  * building's files. */
 void TownObjectActor_SetBounds(TownObjectActor *actor)
@@ -345,9 +345,9 @@ void TownObjectActor_SetBounds(TownObjectActor *actor)
     if (files == NULL) {
         return;
     }
-    actor->bounds_centre.x = actor->position.x + files->centre_x;
-    actor->bounds_centre.y = actor->position.y;
-    actor->bounds_centre.z = actor->position.z + files->centre_z;
+    actor->bounds_center.x = actor->position.x + files->center_x;
+    actor->bounds_center.y = actor->position.y;
+    actor->bounds_center.z = actor->position.z + files->center_z;
     actor->bounds_width = files->width;
     actor->bounds_depth = files->depth;
 }
@@ -390,7 +390,7 @@ int TownObjectActor_CanDraw(TownObjectActor *actor)
         return 0;
     }
     if (life_code_is(life_code(actor), TOWN_OBJECT_ACTOR_CODE_ALWAYS_DRAWN) ||
-        CameraControl_IsPastGoalZ(&actor->bounds_centre, actor->bounds_width, actor->bounds_depth) == 0) {
+        CameraControl_IsPastGoalZ(&actor->bounds_center, actor->bounds_width, actor->bounds_depth) == 0) {
         if (life_call_int(actor, TOWN_OBJECT_ACTOR_LIFE_SLOT_DRAWS) != 0) {
             TownObjectActor_DrawModel(actor);
         }

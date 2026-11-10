@@ -63,14 +63,14 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 /* The frames before the ended scene wipes out, when it ends by a choice of the player's. */
 #define PUBLIC_BOX_CLOSE_DELAY 5
 
-/* The end place's label: a text box of style 4 at tile 0x1ca, 6 cells, colour 15 (lit) or 1 and
+/* The end place's label: a text box of style 4 at tile 0x1ca, 6 cells, color 15 (lit) or 1 and
  * 9, with menu message 0x88. */
 #define PUBLIC_BOX_LABEL_STYLE 4
 #define PUBLIC_BOX_LABEL_TILE 0x1ca
 #define PUBLIC_BOX_LABEL_CELLS 6
-#define PUBLIC_BOX_LABEL_COLOUR_LIT 15
-#define PUBLIC_BOX_LABEL_COLOUR_DIM 1
-#define PUBLIC_BOX_LABEL_COLOUR_39 9
+#define PUBLIC_BOX_LABEL_COLOR_LIT 15
+#define PUBLIC_BOX_LABEL_COLOR_DIM 1
+#define PUBLIC_BOX_LABEL_COLOR_39 9
 #define PUBLIC_BOX_LABEL_MESSAGE 0x88
 
 /* The end place's x and y (PublicBox_PlaceX, PublicBox_PlaceY). */
@@ -306,10 +306,10 @@ CLEAN_AS(func_ov110_0229c3b8, PublicBox_Finish)
 /* func_ov110_0229c4f8: the end place's label opened in the next label and shown, lit or not. */
 void PublicBox_ShowDoneLabel(PublicBox *self, int lit)
 {
-    int colour = lit != 0 ? PUBLIC_BOX_LABEL_COLOUR_LIT : PUBLIC_BOX_LABEL_COLOUR_DIM;
+    int color = lit != 0 ? PUBLIC_BOX_LABEL_COLOR_LIT : PUBLIC_BOX_LABEL_COLOR_DIM;
     TextLabel *label = PublicBox_NextLabel(self);
-    TextLabel_OpenStyledBox2(label, PUBLIC_BOX_LABEL_STYLE, PUBLIC_BOX_LABEL_TILE, PUBLIC_BOX_LABEL_CELLS, (u8) colour,
-                             PUBLIC_BOX_LABEL_COLOUR_39, 0);
+    TextLabel_OpenStyledBox2(label, PUBLIC_BOX_LABEL_STYLE, PUBLIC_BOX_LABEL_TILE, PUBLIC_BOX_LABEL_CELLS, (u8) color,
+                             PUBLIC_BOX_LABEL_COLOR_39, 0);
     TextLabel_LoadMenuMessage(label, (char) PUBLIC_BOX_LABEL_MESSAGE);
     TextLabel_Show(label, 1, 1);
 }

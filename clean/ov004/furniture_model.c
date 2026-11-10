@@ -41,7 +41,7 @@ extern void *data_021fbe94;
 extern const char data_ov004_0224ff90[];
 extern const char *data_ov004_0224fd4c;
 extern const char data_ov004_0224ff94[]; /* bca: joints */
-extern const char data_ov004_0224ffa4[]; /* bma: material colours */
+extern const char data_ov004_0224ffa4[]; /* bma: material colors */
 extern const char data_ov004_0224ffb4[]; /* bva: visibility */
 extern const char data_ov004_0224ffc4[]; /* bta: texture coordinates */
 extern const char data_ov004_0224ffd4[]; /* btp: texture patterns */

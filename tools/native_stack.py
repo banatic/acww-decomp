@@ -355,9 +355,9 @@ SOURCES = {
     'main/func_02032eb8': 'b09ec08556e42ed5f2e51d7080a9b6df27e0411aaa3660162d1df47000c8a5e5',
 }
 CONSUMER = 'ov004/func_ov004_0223df88'
-# The insect room's three cases (func_ov004_0223f218) are collision boxes whose centres it
+# The insect room's three cases (func_ov004_0223f218) are collision boxes whose centers it
 # sets x and z of and leaves y as the ROM's stack held it, at body SP + 0x18 (0x18-0x3c, below
-# the first box at + 0x3c): the same uninitialized-centre reuse as the house's consumer.
+# the first box at + 0x3c): the same uninitialized-center reuse as the house's consumer.
 INSECT_ROOM = 'ov004/func_ov004_0223f218'
 # 0220dd8a stores incoming r3 at SP+0x14 before the first call. Apply the
 # same spill to Native and Clean entries; its value comes from their input.
@@ -372,32 +372,32 @@ SPILLS = {('ov004', 0x0220dd80): (3, 0x14)}
 ARG_PUSHES = {('main', 0x020853b0): 0x10, ('main', 0x02085278): 0x10}
 
 
-# The Clean consumer (HouseRoach_Move) zero-fills the centres; the ROM leaves their Y words
+# The Clean consumer (HouseRoach_Move) zero-fills the centers; the ROM leaves their Y words
 # as the stack held them. The mixed Native/Clean build compiles a copy that keeps the four
-# centres at the same guest slot as the Native consumer, so they read the same residue.
+# centers at the same guest slot as the Native consumer, so they read the same residue.
 CLEAN_SOURCE = 'clean/ov004/house_roach.c'
-CLEAN_SHA = 'ff6c1eb8594f61cdd35d211d96050b5336c5a3c2e6f11b6a363a71e7d5f3c14b'
-# The Clean insect room (InsectRoom_Update) sets the cases' centres' y to 0 (its BUG: note); the
-# copy keeps the centres at the Native one's guest slot instead.
+CLEAN_SHA = 'd5e8271b240f542f25f215258590107fe23a29d8281517d4c92375196678ea03'
+# The Clean insect room (InsectRoom_Update) sets the cases' centers' y to 0 (its BUG: note); the
+# copy keeps the centers at the Native one's guest slot instead.
 CLEAN_INSECT_ROOM = 'clean/ov004/museum_insects.c'
-CLEAN_INSECT_ROOM_SHA = '97bd0c2c326c73246bfa3dc14e61bb7e8c25049e3771570ab8ab157389fa1d9f'
+CLEAN_INSECT_ROOM_SHA = 'e240535e4acfffbca462b5acefb27e8f1cd4d4938d6da46f5b5753623cc7efda'
 # The Clean versions of the cue's functions and of the room object's matrix (CUE_EDITS): the
 # Clean sources keep 0 where the ROM reads its stack (their BUG: notes); the mixed Native/Clean
 # build compiles copies with the Native ones' guest slots and registers.
 CLEAN_CUE_SHA = {
     'clean/autoload_2/music_cue.c': '5e0d82994301bbde71bb4747d619c4a7ebf8558c757f9285fc36420a0c6a9dd1',
     'clean/main/sound.c': '5e1a5a3c835991fafa2653e4bfbfb467083efbe85e4251438f99f617d87b534e',
-    'clean/ov004/room_object_body.c': '4642ea976fa8b6a3aca2c15e2abc98615fe086e704fdca755537371f78bbe1a2',
-    'clean/main/talk_object.c': '693c3471789317034f5d8af572e415b4e695a3bfc542a251a593892defad9495',
+    'clean/ov004/room_object_body.c': '9f309e277896aed6dd6b1c0000926626d6038d3005a1b76f4779f1b25d4131c1',
+    'clean/main/talk_object.c': '2bbcbca756aa6ceb3edb1372086917fcb01a39980e34227b711e8e6f289a72a7',
     'clean/main/villager_talk_offers.c': '29f2afd26a82d13b3f06fe941d78e621113fe8998b4734d9d855a46d384b9686',
     'clean/autoload_2/matrix.c': '6e4e1fe2d50a238897e20e224004b63f073337a296a08fa10158644c8527cf18',
-    'clean/main/field_collision.c': '23dec6ad713aa63364295e6cea52f4eb9c58f3f09b1e5e5c2243a139b56c9545',
-    'clean/main/collision_query.c': '7f281301b19e981d27c27db7f3d5106c934170c84ebe83c3f53b8cbe612899f5',
+    'clean/main/field_collision.c': 'bc3ed2a011b00d6b5315755cfbdf6f730b234969c829b73a35617f46247edfcc',
+    'clean/main/collision_query.c': '706feacacf73be2a78970010810f1e67de4a2d7fb53ae028d5627cd210341ae8',
     'clean/main/collision_segment.c': '5519edaa81cb8a78eaa0b1177fce67f278e5b5695f8533c34b87ade7a3e8027d',
     'clean/main/villager_talk.c': 'c93580638d5ec2c6c742b3013047ffd7bdaae8a3fd02d2c09f109b12a90a553e',
     'clean/main/villager_talk_replies.c': '355632ac0c99be54eca2e71e8cd1914ccf088c5a9bc2925db0d29911d69b7197',
-    'clean/ov094/pockets_grid.c': '2c1e2ee8980fef142b69706b9da81cd88710c68d8baee7c3c10af6013f58c513',
-    'clean/ov004/push_box.c': '7a3464385bff4588f7aad11452e78ed5283edd2ff6d409d3e7a3188a519b8d52',
+    'clean/ov094/pockets_grid.c': '9168b5cdea74ade5f31071496bde9375460a2b989c87171afe2ed590bed3c8cc',
+    'clean/ov004/push_box.c': 'fb3aeb338e82291f1f8a48a855d1ffbc6e065f2d65525e18b7b5e5132c995ec5',
 }
 CLEAN_CUE_EDITS: dict[str, tuple[tuple[str, str], ...]] = {
     'clean/autoload_2/music_cue.c': (
@@ -886,15 +886,15 @@ def clean_copy(text: str, relative: str = CLEAN_SOURCE) -> str:
         return '\n'.join(['#include "native_guest.h"', edit(text, CLEAN_CUE_EDITS[relative], relative)])
     if hashlib.sha256(text.encode()).hexdigest() != CLEAN_SHA:
         raise ValueError(f'Clean stack source changed; repeat the stack effect audit: {CLEAN_SOURCE}')
-    declaration = '    Vec3 centres[HOUSE_ROACH_KEEP_OUT_BOXES] = {{0, 0, 0}};'
-    # after the four box constructors, before any centre is set (as in the Native consumer)
+    declaration = '    Vec3 centers[HOUSE_ROACH_KEEP_OUT_BOXES] = {{0, 0, 0}};'
+    # after the four box constructors, before any center is set (as in the Native consumer)
     use = '\n'.join(['        CollisionBox_Construct(&boxes[i]);', '    }',
                      '    Vec3 *position = &roach->actor.position;'])
     assert text.count(declaration) == text.count(use) == 1
-    text = text.replace(declaration, '    Vec3 *centres;')
+    text = text.replace(declaration, '    Vec3 *centers;')
     slot = '\n'.join([
-        '    _Static_assert(HOUSE_ROACH_KEEP_OUT_BOXES == 4 && sizeof(Vec3) == 12, "house centre storage");',
-        '    centres = (Vec3 *) (uintptr_t) native_guest_stack_slot(0x0223df88u, 0x28u, sizeof(Vec3) * 4);',
+        '    _Static_assert(HOUSE_ROACH_KEEP_OUT_BOXES == 4 && sizeof(Vec3) == 12, "house center storage");',
+        '    centers = (Vec3 *) (uintptr_t) native_guest_stack_slot(0x0223df88u, 0x28u, sizeof(Vec3) * 4);',
         '    Vec3 *position'])
     text = text.replace(use, use.replace('    Vec3 *position', slot))
     return '\n'.join(['#include "native_guest.h"', text])
@@ -903,16 +903,16 @@ def clean_copy(text: str, relative: str = CLEAN_SOURCE) -> str:
 def clean_insect_room_copy(text: str) -> str:
     if hashlib.sha256(text.encode()).hexdigest() != CLEAN_INSECT_ROOM_SHA:
         raise ValueError(f'Clean stack source changed; repeat the stack effect audit: {CLEAN_INSECT_ROOM}')
-    # after the three box constructors, before any centre is set (as in the Native consumer)
+    # after the three box constructors, before any center is set (as in the Native consumer)
     use = '    CollisionBox_Construct(&boxes[2]);\n'
-    centre = '        Vec3 centre = {cases[i].x, 0, cases[i].z};\n'
-    call = 'INSECT_CASE_HEIGHT, &centre, 0, NULL);'
-    assert text.count(use) == text.count(centre) == text.count(call) == 1
+    center = '        Vec3 center = {cases[i].x, 0, cases[i].z};\n'
+    call = 'INSECT_CASE_HEIGHT, &center, 0, NULL);'
+    assert text.count(use) == text.count(center) == text.count(call) == 1
     text = text.replace(use, use + '\n'.join([
-        '    _Static_assert(sizeof(Vec3) == 12, "insect room centre storage");',
-        '    Vec3 *centres = (Vec3 *) (uintptr_t) native_guest_stack_slot(0x0223f218u, 0x18u, sizeof(Vec3) * 3);', '']))
-    text = text.replace(centre, '        centres[i].x = cases[i].x;\n        centres[i].z = cases[i].z;\n')
-    text = text.replace(call, 'INSECT_CASE_HEIGHT, &centres[i], 0, NULL);')
+        '    _Static_assert(sizeof(Vec3) == 12, "insect room center storage");',
+        '    Vec3 *centers = (Vec3 *) (uintptr_t) native_guest_stack_slot(0x0223f218u, 0x18u, sizeof(Vec3) * 3);', '']))
+    text = text.replace(center, '        centers[i].x = cases[i].x;\n        centers[i].z = cases[i].z;\n')
+    text = text.replace(call, 'INSECT_CASE_HEIGHT, &centers[i], 0, NULL);')
     return '\n'.join(['#include "native_guest.h"', text])
 
 

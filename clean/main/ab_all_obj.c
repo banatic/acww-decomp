@@ -11,8 +11,8 @@
 static_assert(offsetof(AbAllObj, palettes) == 0x48, "AbAllObj layout");
 static_assert(offsetof(AbAllObj, chars) == 0x4c, "AbAllObj layout");
 
-#define CHARS_SIZE 0x1000  /* 128 16-colour characters */
-#define PALETTES_SIZE 0x80 /* 4 16-colour palettes */
+#define CHARS_SIZE 0x1000  /* 128 16-color characters */
+#define PALETTES_SIZE 0x80 /* 4 16-color palettes */
 
 extern const char data_020d7204[]; /* "/ab_all/ab_all_obj_ncg.bin" */
 extern const char data_020d7220[]; /* "/ab_all/ab_all_obj_ncl.bin" */

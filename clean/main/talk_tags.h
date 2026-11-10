@@ -6,7 +6,7 @@
  * - group 4 (func_0206b228): texts walked in place of the tag: the talk's parts 0 to 10 (kinds
  *   15 to 25, as in the message reader), its four names (kinds 26 to 29), and texts loaded
  *   from the villager talked to or about (kinds 11 to 14 and 30 to 34): each name between two
- *   colour tags (MessageTag_ColourTag), its last Hangul syllable kept for the particles after
+ *   color tags (MessageTag_ColorTag), its last Hangul syllable kept for the particles after
  *   it;
  * - group 5 kind 5: the four choices of the slider window (talk_windows.h);
  * - group 6 (func_0206b04c): branches: the receiver is told the branch and its number of
@@ -38,7 +38,7 @@ typedef struct TalkTagsWalker {
     s32 unk_50;         /* 0x50 */
     s32 unk_54;         /* 0x54 */
     s32 unk_58;         /* 0x58 */
-    s32 text_colour;    /* 0x5c: the running text colour, restored after a name or value */
+    s32 text_color;     /* 0x5c: the running text color, restored after a name or value */
     u8 unk_60[0x3c];    /* 0x60 */
     u8 unk_9c[0x3c];    /* 0x9c */
     u8 choices_shown;   /* 0xd8: set while the slider tag waits to open its window */
@@ -259,7 +259,7 @@ void TalkTags_OnTag(TalkTagsWalker *walker, int position);
 void TalkTags_OnCharacter(TalkTagsWalker *walker, int character);
 void TalkTags_OnEnd(TalkTagsWalker *walker);
 void TalkTags_OnText(TalkTagsWalker *walker);
-void TalkTags_ResetColour(TalkTagsWalker *walker);
+void TalkTags_ResetColor(TalkTagsWalker *walker);
 void TalkTags_ClearHurry(TalkTagsWalker *walker);
 void TalkTags_Hurry(TalkTagsWalker *walker);
 void TalkTags_SetSpeed(TalkTagsWalker *walker, int speed);
@@ -270,7 +270,7 @@ TalkTagsWalker *TalkTags_Construct(TalkTagsWalker *walker, u8 *talk, void *page)
 
 /* Tags 0xff/0 and 0xff/2, and group 11 from kind 8 on. */
 void TalkTags_StartSpans(TalkTagsWalker *walker);
-void TalkTags_ChangeColour(TalkTagsWalker *walker);
+void TalkTags_ChangeColor(TalkTagsWalker *walker);
 void TalkTags_PutParticle(TalkTagsWalker *walker);
 void TalkTags_NoteValue3(TalkTagsWalker *walker);
 void TalkTags_NoteValue2(TalkTagsWalker *walker);

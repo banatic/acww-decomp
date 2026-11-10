@@ -50,12 +50,12 @@ typedef struct RoomScoreSource {
     const u32 *vtable;
 } RoomScoreSource;
 
-/* A room's feng shui: the pieces of a colour counted along three of its sides
+/* A room's feng shui: the pieces of a color counted along three of its sides
  * (RoomScore_CountFengShui). */
 typedef struct RoomScoreFengShui {
-    u8 yellow_west; /* colour 1 (yellow), in the two columns of the least x */
-    u8 green_south; /* colour 4 (green), in the two rows of the greatest z */
-    u8 red_east;    /* colour 2 (red), in the two columns of the greatest x */
+    u8 yellow_west; /* color 1 (yellow), in the two columns of the least x */
+    u8 green_south; /* color 4 (green), in the two rows of the greatest z */
+    u8 red_east;    /* color 2 (red), in the two columns of the greatest x */
 } RoomScoreFengShui;
 
 /* The bonuses RoomScore_Total reports (its `bonuses`, and RoomScore_SetBonusFlags). */
@@ -128,6 +128,6 @@ int RoomScore_HouseFengShui(void);
 /* room_score_mail.c */
 int RoomScoreMail_SendWelcome(void);
 void RoomScoreMail_SendPrize(RoomScoreRoom *room, int total);
-int RoomScoreMail_SendJudgement(RoomScoreRoom *room, int message, int total, int group, int theme);
+int RoomScoreMail_SendJudgment(RoomScoreRoom *room, int message, int total, int group, int theme);
 
 #endif

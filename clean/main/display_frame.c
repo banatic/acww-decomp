@@ -120,7 +120,7 @@ void DisplayFrame_ReleaseVram(void)
 CLEAN_AS(func_02053fdc, DisplayFrame_ReleaseVram)
 
 /* func_0205401c: the display's work right after the VBlank: which engine is on top, the OBJ
- * attributes into the OAM, the screen transition, the 3D clear colour, the 2D registers, the
+ * attributes into the OAM, the screen transition, the 3D clear color, the 2D registers, the
  * scene's hook, then the 2D registers marked as changed.
  * QUIRK: the swap flag is shifted into bit 15 and cut to 16 bits, so only its bit 0 counts.
  * HW: POWCNT1 is read once and written once, before the rest. */
@@ -187,7 +187,7 @@ CLEAN_AS(func_020540c0, DisplayFrame_ResetState)
 
 /* func_020540e4: the display's set-up at start-up: its state, the screen transition, both 2D
  * engines and the 3D engine on, VRAM cleared through the LCDC, every OBJ hidden, the main
- * engine's palettes black, the 3D set-up and the backdrop colour.
+ * engine's palettes black, the 3D set-up and the backdrop color.
  * QUIRK: the clear covers the LCDC addresses of banks A-D and the first 16 KiB of E's, though
  * D is not mapped there; F-I are mapped and not cleared.
  * HW: in this order. */

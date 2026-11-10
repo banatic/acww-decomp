@@ -26,7 +26,7 @@ static_assert(sizeof(RoomObject0225130c) == 0x848, "the size RoomObject0225130c_
 #define ANIM_MODE_3 3       /* the animations' mode 3 */
 #define KEEP_FRAME 0xffff   /* RoomObject_PlayAnimsFrom: each animation keeps its frame */
 #define SLOT_70_VALUE 0xff  /* the second argument given with a state (vtable slot 0x70) */
-#define RUNNING_SOUND 0x42a /* the sound kept playing at its centre */
+#define RUNNING_SOUND 0x42a /* the sound kept playing at its center */
 #define TICK_FRAME 0x14     /* the joint animation's frame where the sound's variable changes */
 
 /* The state tables (member_pointer.h): their guards, the tables and their constants. */
@@ -52,7 +52,7 @@ static void room_object0225130c_switch_to(RoomObject0225130c *object, int state)
     object->base.vtable->vfunc_70(&object->base, state, SLOT_70_VALUE);
 }
 
-/* Keeps the running sound playing at the object's centre (unless placement_mode is 2). */
+/* Keeps the running sound playing at the object's center (unless placement_mode is 2). */
 static void room_object0225130c_keep_sound(RoomObject0225130c *object)
 {
     if (!RoomObject_IsUnplaced(&object->base)) {

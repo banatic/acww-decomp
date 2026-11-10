@@ -27,15 +27,15 @@ extern void *data_020db76c;
 extern void *data_020db768;
 /* The set-up function of effects 0x76-0x78 and 0x94. */
 extern void *data_020e25d4;
-/* The colour of the second effect for each kind: of the wilted and watered flowers, else. */
+/* The color of the second effect for each kind: of the wilted and watered flowers, else. */
 extern const u16 *const data_020db770[];
 extern const u16 *const data_020db7a8[];
-/* The effect colour of the first effect for each flower kind and colour. */
+/* The effect color of the first effect for each flower kind and color. */
 extern const u16 *const data_020db78c[];
 
 #define TILE_EFFECTS_BRUSH_RANGE 80
 #define TILE_EFFECTS_BRUSH_FIRST_ONLY 70 /* of 80: mode 1 */
-#define TILE_EFFECTS_SKY_LIGHT 3         /* the sky's light the colours are tinted by */
+#define TILE_EFFECTS_SKY_LIGHT 3         /* the sky's light the colors are tinted by */
 #define TILE_EFFECTS_TURNED_AXIS_X 0x400
 #define TILE_EFFECTS_TURNED_AXIS_Y 0x1000
 #define TILE_EFFECTS_EMIT_INTERVAL 2
@@ -115,16 +115,16 @@ void TileEffects_StartFor(u16 *code, const TileEffectsTile *tile, int mode)
 }
 CLEAN_AS(func_02044958, TileEffects_StartFor)
 
-/* func_020449ac: effect 0x94 at the tile's centre, for code 0xe2. */
+/* func_020449ac: effect 0x94 at the tile's center, for code 0xe2. */
 void TileEffects_StartE2(const TileEffectsTile *tile)
 {
-    Vec3 centre;
-    AcreTile_TileCentre(&centre, (u32) tile->x, (u32) tile->z);
-    EffectSystem_StartSet(0x94, &centre, NULL, &data_020e25d4);
+    Vec3 center;
+    AcreTile_TileCenter(&center, (u32) tile->x, (u32) tile->z);
+    EffectSystem_StartSet(0x94, &center, NULL, &data_020e25d4);
 }
 CLEAN_AS(func_020449ac, TileEffects_StartE2)
 
-/* func_020449d4: the effect of the codes drawn as grass, 0x1f-0x24, at the tile's centre: 0x77
+/* func_020449d4: the effect of the codes drawn as grass, 0x1f-0x24, at the tile's center: 0x77
  * for the clover 0x1f, 0x78 for the four-leaf clover 0x20, else (the weeds) 0x76. */
 void TileEffects_StartGrass(const u16 *code, const TileEffectsTile *tile)
 {
@@ -140,9 +140,9 @@ void TileEffects_StartGrass(const u16 *code, const TileEffectsTile *tile)
             id = 0x76;
             break;
     }
-    Vec3 centre;
-    AcreTile_TileCentre(&centre, (u32) tile->x, (u32) tile->z);
-    EffectSystem_StartSet(id, &centre, NULL, &data_020e25d4);
+    Vec3 center;
+    AcreTile_TileCenter(&center, (u32) tile->x, (u32) tile->z);
+    EffectSystem_StartSet(id, &center, NULL, &data_020e25d4);
 }
 CLEAN_AS(func_020449d4, TileEffects_StartGrass)
 
@@ -154,7 +154,7 @@ void TileEffects_StartTurned(u16 *code, const TileEffectsTile *tile, int angle, 
 }
 CLEAN_AS(func_02044a14, TileEffects_StartTurned)
 
-/* func_02044a30: the two effects of `code` at the tile's centre, by its kind: 0x44 and
+/* func_02044a30: the two effects of `code` at the tile's center, by its kind: 0x44 and
  * 0x6a (kind 0), 0x42 and 0x68 (1), 0x3e and 0x64 (2), 0x40 and 0x66 for 0x1c and 0xa5
  * else 0x43 and 0x69 (3), 0x41 and 0x67 (4), 0x3f and 0x65 (5), 0x63 and 0x65 (6). The source
  * is set first (data_021c77a0), the second effect left out in mode 1.
@@ -207,25 +207,25 @@ void TileEffects_Start(u16 *code, const TileEffectsTile *tile, int angle, int mo
             break;
     }
 
-    Vec3 centre;
-    AcreTile_TileCentre(&centre, (u32) tile->x, (u32) tile->z);
+    Vec3 center;
+    AcreTile_TileCenter(&center, (u32) tile->x, (u32) tile->z);
     u32 now = *code;
     int families = 0;
-    int colour = 0;
+    int color = 0;
     if (tile_effects_in_range(now, 0x6e, 0xa5)) {
         /* The wilted and watered flowers, the codes after them (0x88, 0xa4, 0xa5) and 0x89. */
         families = 1;
     } else {
-        colour = (u8) TownFamily_Colour(code);
+        color = (u8) TownFamily_Color(code);
     }
-    Vec3 place = centre;
-    TileEffects_SetSource(&data_021c77a0, mode, (u8) kind, (u8) colour, (u8) families, &place, (s16) angle);
+    Vec3 place = center;
+    TileEffects_SetSource(&data_021c77a0, mode, (u8) kind, (u8) color, (u8) families, &place, (s16) angle);
     if (first < 0) {
         return;
     }
-    EffectSystem_StartSet(first, &centre, NULL, &data_020db76c);
+    EffectSystem_StartSet(first, &center, NULL, &data_020db76c);
     if (mode != TILE_EFFECTS_MODE_FIRST) {
-        EffectSystem_StartSet(second, &centre, NULL, &data_020db768);
+        EffectSystem_StartSet(second, &center, NULL, &data_020db768);
     }
 }
 CLEAN_AS(func_02044a30, TileEffects_Start)
@@ -242,7 +242,7 @@ static u16 tile_effects_tint(u16 light, u16 tint)
     return (u16) color;
 }
 
-/* The emitter at the source's place (and its resource's own offset), its colour the sky's light
+/* The emitter at the source's place (and its resource's own offset), its color the sky's light
  * tinted by `tint`; in mode 2 its axis (0x400, 0x1000, 0) turned about Y by the source's angle,
  * when that leaves it of some length. */
 static void tile_effects_place(ParticleEmitter *emitter, u16 tint, int first)
@@ -279,21 +279,21 @@ void TileEffects_SetUpSecond(ParticleEmitter *emitter)
 CLEAN_AS(func_02044b88, TileEffects_SetUpSecond)
 
 /* func_02044cc4: an emitter of the first effect set up, its tint from data_020db78c by the
- * kind and the colour; in mode 1 it gives off particles every other frame. */
+ * kind and the color; in mode 1 it gives off particles every other frame. */
 void TileEffects_SetUpFirst(ParticleEmitter *emitter)
 {
     const TileEffectsSource *source = &data_021c77a0;
-    tile_effects_place(emitter, data_020db78c[source->kind][source->colour], 1);
+    tile_effects_place(emitter, data_020db78c[source->kind][source->color], 1);
 }
 CLEAN_AS(func_02044cc4, TileEffects_SetUpFirst)
 
 /* func_02044df8: the source of the effects about to start. */
-void TileEffects_SetSource(TileEffectsSource *source, int mode, u8 kind, u8 colour, u8 families, const Vec3 *position,
+void TileEffects_SetSource(TileEffectsSource *source, int mode, u8 kind, u8 color, u8 families, const Vec3 *position,
                            s16 angle)
 {
     source->mode = (u32) mode;
     source->kind = kind;
-    source->colour = colour;
+    source->color = color;
     source->families = families;
     source->position.x = position->x;
     source->position.y = position->y;

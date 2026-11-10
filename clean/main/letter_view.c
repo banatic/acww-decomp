@@ -39,7 +39,7 @@ extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)
 
 extern int func_02051c8c_unk(u16 *text, int max); /* the characters before a 0, at most max */
 
-/* The colours of a line's marks (text, background). */
+/* The colors of a line's marks (text, background). */
 #define MARK_COLOR 0xe
 #define MARK_BACKGROUND 0xd
 #define MARK_STYLED_COLOR 0xb

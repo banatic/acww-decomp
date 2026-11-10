@@ -1,4 +1,4 @@
-/* Overlay 76 (the otter, otter.h): its static initialiser, run when the overlay is loaded,
+/* Overlay 76 (the otter, otter.h): its static initializer, run when the overlay is loaded,
  * which fills in the table of the otter's states (data_ov076_0227988c, Otter_SetState and
  * Otter_Update): each state's entry and update, copied from the overlay's constants (C++
  * pointers to member functions, which the compiler does not fold into the table). */

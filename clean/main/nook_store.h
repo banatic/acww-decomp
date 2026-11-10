@@ -19,7 +19,7 @@
  *
  * Bits 0-4 of `bits` hold an hour (17 to 20) set on one day in fourteen at random: from it until
  * 23:00 func_020afb90 answers 1; 0 for none. Bits 5-8 count on through the 16 roof paints
- * 0x1521-0x1530 (item_info names them by their colours; ov050 sells them with "st_roof_paint"),
+ * 0x1521-0x1530 (item_info names them by their colors; ov050 sells them with "st_roof_paint"),
  * the next of which each restock at level 3 may sell. */
 #ifndef CLEAN_MAIN_NOOK_STORE_H
 #define CLEAN_MAIN_NOOK_STORE_H

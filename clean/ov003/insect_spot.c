@@ -48,7 +48,7 @@ static int insect_spot_code_is_flower(u16 code)
 
 /* func_ov003_02224768: on the town's map (else 0), of the 9 x 9 tiles around the tile of `from`
  * (nearest first, data_ov003_02236ca0) the first holding a flower code whose kind
- * (TownFamily_Kind) has its bit set in `lines`: `target` becomes that tile's centre and the
+ * (TownFamily_Kind) has its bit set in `lines`: `target` becomes that tile's center and the
  * answer is 1; 0 when there is none. */
 int InsectSpot_NearFlower(Vec3 *target, const Vec3 *from, int lines)
 {
@@ -70,7 +70,7 @@ int InsectSpot_NearFlower(Vec3 *target, const Vec3 *from, int lines)
             continue;
         }
         if (((lines >> TownFamily_Kind(item)) & 1) != 0) {
-            AcreTile_TileCentre(target, (u32) tile_x, (u32) tile_z);
+            AcreTile_TileCenter(target, (u32) tile_x, (u32) tile_z);
             return 1;
         }
     }

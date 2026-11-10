@@ -1,4 +1,4 @@
-/* Overlay 73's static initialiser, run when the overlay is loaded: the six colours its source
+/* Overlay 73's static initializer, run when the overlay is loaded: the six colors its source
  * file defines for itself, the table of its character's states (boar.h) filled from the
  * overlay's constants, and the two points beside the character it steps aside to (objects
  * registered for destruction with a destructor that does nothing). */
@@ -8,24 +8,24 @@
 #include "ov004/member_pointer.h"
 #include "types.h"
 
-/* A colour of four 5-bit components (the fourth always 31). */
-typedef struct BoarInitColour {
+/* A color of four 5-bit components (the fourth always 31). */
+typedef struct BoarInitColor {
     u8 c0;
     u8 c1;
     u8 c2;
     u8 c3;
-} BoarInitColour;
+} BoarInitColor;
 
-static void boar_init_colour(BoarInitColour *colour, u8 c0, u8 c1, u8 c2, u8 c3)
+static void boar_init_color(BoarInitColor *color, u8 c0, u8 c1, u8 c2, u8 c3)
 {
-    colour->c0 = c0;
-    colour->c1 = c1;
-    colour->c2 = c2;
-    colour->c3 = c3;
+    color->c0 = c0;
+    color->c1 = c1;
+    color->c2 = c2;
+    color->c3 = c3;
 }
 
-/* Red, blue, yellow, green, cyan and grey. */
-extern BoarInitColour data_ov073_02279bc4, data_ov073_02279bd8, data_ov073_02279bcc, data_ov073_02279bd4, data_ov073_02279bc0,
+/* Red, blue, yellow, green, cyan and gray. */
+extern BoarInitColor data_ov073_02279bc4, data_ov073_02279bd8, data_ov073_02279bcc, data_ov073_02279bd4, data_ov073_02279bc0,
     data_ov073_02279bc8;
 
 /* The constants of the states' table: each state's entry, then its run; BOAR_DONE has no
@@ -50,7 +50,7 @@ extern void func_020012dc(void *object);
 extern Vec3 data_ov073_02279bfc[2];
 extern BoarInitRecord data_ov073_02279be4, data_ov073_02279bf0;
 
-/* __sinit_ov073_0227985c: the colours, the states' table in order, then each point set and
+/* __sinit_ov073_0227985c: the colors, the states' table in order, then each point set and
  * registered. */
 void BoarInit_Tables(void)
 {
@@ -62,12 +62,12 @@ void BoarInit_Tables(void)
         &data_ov073_022799d8, &data_ov073_022799d0, /* BOAR_TALK */
     };
 
-    boar_init_colour(&data_ov073_02279bc4, 31, 20, 20, 31);
-    boar_init_colour(&data_ov073_02279bd8, 20, 20, 31, 31);
-    boar_init_colour(&data_ov073_02279bcc, 31, 31, 20, 31);
-    boar_init_colour(&data_ov073_02279bd4, 20, 31, 20, 31);
-    boar_init_colour(&data_ov073_02279bc0, 20, 31, 31, 31);
-    boar_init_colour(&data_ov073_02279bc8, 20, 24, 24, 31);
+    boar_init_color(&data_ov073_02279bc4, 31, 20, 20, 31);
+    boar_init_color(&data_ov073_02279bd8, 20, 20, 31, 31);
+    boar_init_color(&data_ov073_02279bcc, 31, 31, 20, 31);
+    boar_init_color(&data_ov073_02279bd4, 20, 31, 20, 31);
+    boar_init_color(&data_ov073_02279bc0, 20, 31, 31, 31);
+    boar_init_color(&data_ov073_02279bc8, 20, 24, 24, 31);
     for (int i = 0; i < BOAR_STATES; i++) {
         data_ov073_02279c14[i].enter = *states[2 * i];
         data_ov073_02279c14[i].run = *states[2 * i + 1];

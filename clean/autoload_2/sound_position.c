@@ -42,8 +42,8 @@ extern u32 func_020f5c50(SoundParams *params);
 /* The listener sits 12 units behind the camera's origin in Z (modes 0 and 1). */
 #define LISTENER_Z (12 * FX32_ONE)
 /* Mode 2 measures from (128, 80), with X counted in eighths and Y in quarters. */
-#define FLAT_CENTRE_X (128 * FX32_ONE)
-#define FLAT_CENTRE_Y (80 * FX32_ONE)
+#define FLAT_CENTER_X (128 * FX32_ONE)
+#define FLAT_CENTER_Y (80 * FX32_ONE)
 
 static fx32 add32(fx32 a, fx32 b)
 {
@@ -291,8 +291,8 @@ int SoundPosition_Distance(const Vec3 *pos, int mode)
             z = add32(pos->z, LISTENER_Z);
             return FX_Sqrt(add32(fx_square(pos->y), fx_square(z))) >> 12;
         case 2:
-            x = sub32(pos->x, FLAT_CENTRE_X) >> 3;
-            y = sub32(pos->y, FLAT_CENTRE_Y) >> 2;
+            x = sub32(pos->x, FLAT_CENTER_X) >> 3;
+            y = sub32(pos->y, FLAT_CENTER_Y) >> 2;
             return FX_Sqrt(add32(fx_square(x), fx_square(y))) >> 12;
         default:
             return (int) (uintptr_t) pos;

@@ -95,9 +95,9 @@ int Walrus_StepAside(Walrus *self);
 int Walrus_PointAside(Walrus *self, Vec3 *out, const Vec3 *offset);
 int Walrus_RandomPointNear(Walrus *self, fx32 *x, fx32 *z);
 int Walrus_NearCamera(Walrus *self);
-int Walrus_InBox(int unused, const Vec3 *centre, const Vec3 *point);
+int Walrus_InBox(int unused, const Vec3 *center, const Vec3 *point);
 
-/* The overlay's static initialiser (ov079_static_init.c). */
+/* The overlay's static initializer (ov079_static_init.c). */
 void WalrusInit_Tables(void);
 
 #endif

@@ -5,8 +5,8 @@
  * Each frame (TalkChoiceCursor_Update), while no answer is picked: a press of the input not in
  * use switches to it; else with the touch screen an answer's row is touched to pick it, and
  * with the buttons up and down move the cursor (repeating while held, wrapping at both ends),
- * A picks the answer under it and B moves it to the cancelling answer, which is picked on the
- * next frame. A pick plays the answer's sound, or the cancel sound for the cancelling answer. */
+ * A picks the answer under it and B moves it to the canceling answer, which is picked on the
+ * next frame. A pick plays the answer's sound, or the cancel sound for the canceling answer. */
 #ifndef CLEAN_MAIN_TALK_CHOICE_CURSOR_H
 #define CLEAN_MAIN_TALK_CHOICE_CURSOR_H
 
@@ -23,7 +23,7 @@ typedef struct TalkChoiceCursor {
     struct LabelBox *labels[TALK_CHOICE_CURSOR_LABELS]; /* 0x08: the answers' labels, or NULL */
     u32 label_cells;                                    /* 0x1c: the widest label, in tiles */
     struct TalkAnswers *answers;                        /* 0x20 */
-    s32 cancel_frames; /* 0x24: B was pressed: the frames until the cancelling answer is picked */
+    s32 cancel_frames; /* 0x24: B was pressed: the frames until the canceling answer is picked */
     s32 repeat_frames; /* 0x28: until the held direction moves the cursor again */
     s32 direction;     /* 0x2c: -1 up, 1 down, 0 while neither is held */
 } TalkChoiceCursor;

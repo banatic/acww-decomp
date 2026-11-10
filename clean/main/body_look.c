@@ -185,7 +185,7 @@ void BodyLook_AllocEntries(BodyLookTable *table)
 }
 CLEAN_AS(func_0205d12c, BodyLook_AllocEntries)
 
-/* func_0205d19c: the table's destructor (registered by its static initialiser): the VRAM
+/* func_0205d19c: the table's destructor (registered by its static initializer): the VRAM
  * regions destroyed. Returns the table. */
 BodyLookTable *BodyLook_DestructTable(BodyLookTable *table)
 {

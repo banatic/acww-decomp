@@ -1,4 +1,4 @@
-/* The motions the museum's insects share (museum_insects.h): the kinds' initialisers start one
+/* The motions the museum's insects share (museum_insects.h): the kinds' initializers start one
  * (InsectMotion_Start) and their frame functions run one each frame (InsectMotion_Update*).
  *
  * A motion is a state machine on MuseumInsect.mode: MUSEUM_INSECT_MODE_REST (25) waits out

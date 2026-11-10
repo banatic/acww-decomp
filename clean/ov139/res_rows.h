@@ -5,8 +5,8 @@
  * It begins with a message window of ov002's (ov002/message_window.h) and keeps twenty text
  * labels for six rows of two columns (each row's two six-character names: the first through
  * menu message 0x66, the second as it is) and three button captions (menu messages 0x65 Quit, 0xc2 Decide, 0xc1 Other).
- * Row N is written in colour 14 - N of the background's palette 7 ("menu/res/bg7.bpl"), which
- * ResRows_FadeRow blends towards colour 15 and a layer task queues when it changed. Overlay
+ * Row N is written in color 14 - N of the background's palette 7 ("menu/res/bg7.bpl"), which
+ * ResRows_FadeRow blends towards color 15 and a layer task queues when it changed. Overlay
  * 140 fills the rows from a list of 32 entries of 0x23 bytes, six a page. */
 #ifndef CLEAN_OV139_RES_ROWS_H
 #define CLEAN_OV139_RES_ROWS_H
@@ -31,7 +31,7 @@ typedef struct ResRows {
     TextLabel labels[RES_ROWS_LABELS]; /* 0x0cc */
     LayerTask palette_task;            /* 0x93c: `palette` to the layer's palette 7 */
     u16 palette_file[RES_ROWS_COLORS]; /* 0x960: "menu/res/bg7.bpl" */
-    u16 palette[RES_ROWS_COLORS];      /* 0x980: its copy, the rows' colours faded */
+    u16 palette[RES_ROWS_COLORS];      /* 0x980: its copy, the rows' colors faded */
     u16 flags;                         /* 0x9a0: ResRowsFlag */
     u8 layer;                          /* 0x9a2: the background layer of the labels and palette */
     u8 label_count;                    /* 0x9a3: the labels taken (ResRows_TakeLabel) */

@@ -3,7 +3,7 @@
  * scene's map (data_021c80bc) bent round the globe (main/globe.h), with what goes with them:
  *
  *   - one ground model per acre (TownGroundAcre): the acre's background model with the ground's
- *     texture (or the model's own), the ground's material colour and texture coordinate
+ *     texture (or the model's own), the ground's material color and texture coordinate
  *     animations, placed at the acre's x and turned round the drum by its z. In an acre whose
  *     kind has flag 8, the material "m_grd_beA" gets a hook that hands its texture's scroll to
  *     the collision map (CollisionMap_SetValue134) once a frame;
@@ -31,7 +31,7 @@
 #include "main/tex_slot_anim.h"
 #include "types.h"
 
-/* The ground's two animations of a model: material colours ("grd_set.nsbma") and texture
+/* The ground's two animations of a model: material colors ("grd_set.nsbma") and texture
  * coordinates ("grd_set.nsbta"). */
 #define TOWN_GROUND_ANIMS 2
 
@@ -52,7 +52,7 @@ typedef struct TownGroundAcre {
 /* The model of unit type 0x6f or 0x70 (0xf4 bytes). */
 typedef struct TownGroundUnit {
     ModelObject model; /* 0x00 */
-    Vec3 position;     /* 0x9c: the tile's centre */
+    Vec3 position;     /* 0x9c: the tile's center */
     s16 angle;         /* 0xa8: its turn round the drum (Globe_BendFar) */
     u8 pad_aa[2];
     int acre_x;                         /* 0xac: TOWN_GROUND_UNIT_NONE without a model */

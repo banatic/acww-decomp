@@ -21,7 +21,7 @@ extern TextFont data_021c8230;    /* the font a box starts with */
 extern void *func_02137550(void *dst, u32 size); /* clears size bytes */
 
 /* func_02050cb4: the constructor of a box drawn into RAM at `ram_dest`. The box starts empty
- * with the font data_021c8230, layer 5, colours 1 and 15, `cells` tiles wide and `rows` high;
+ * with the font data_021c8230, layer 5, colors 1 and 15, `cells` tiles wide and `rows` high;
  * the 8 bytes at 0x08 are copied from a buffer func_02137550 cleared. Fields 0x14, 0x3e-0x3f
  * and 0x76-0x77 are left as they were. */
 TextDrawBox *TextBoxBase_Construct(TextDrawBox *box, int ram_dest, int cells, int rows)

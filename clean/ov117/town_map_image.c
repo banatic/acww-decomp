@@ -183,10 +183,10 @@ TownMapImage *TownMapImage_Construct(TownMapImage *image)
 CLEAN_AS(func_ov117_02299b08, TownMapImage_Construct)
 
 /* func_ov117_02299b40: the acre (column, row) inside the town's border drawn into a cleared
- * block: its 16 x 16 units of the town's collision map, each 2 x 2 pixels of the four colours
- * of the unit's type (left top, right top, left bottom, right bottom), in 16-colour characters
- * of 8 x 8 pixels, two pixels to a byte (the left one in the low half). A unit with no colours
- * leaves its pixels as they were: the colours are ORed into the block. */
+ * block: its 16 x 16 units of the town's collision map, each 2 x 2 pixels of the four colors
+ * of the unit's type (left top, right top, left bottom, right bottom), in 16-color characters
+ * of 8 x 8 pixels, two pixels to a byte (the left one in the low half). A unit with no colors
+ * leaves its pixels as they were: the colors are ORed into the block. */
 void TownMapImage_DrawBlock(u8 *pixels, int column, int row)
 {
     CollisionMap_Select(TOWN_MAP_IMAGE_COLLISION_TOWN);
@@ -199,14 +199,14 @@ void TownMapImage_DrawBlock(u8 *pixels, int column, int row)
                 unsigned int y = char_row * 8 + py;
                 for (unsigned int px = 0; px < 8; px++) {
                     unsigned int x = char_column * 8 + px;
-                    u8 colours[4];
+                    u8 colors[4];
                     u8 value = 0;
-                    if (UnitTypeInfo_Bytes18At(colours, (int) (unit_x0 + (x >> 1)), (int) (unit_z0 + (y >> 1)))) {
+                    if (UnitTypeInfo_Bytes18At(colors, (int) (unit_x0 + (x >> 1)), (int) (unit_z0 + (y >> 1)))) {
                         int top = (y & 1) == 0;
                         if ((x & 1) == 0) {
-                            value = (u8) ((top ? colours[0] : colours[2]) & 0xf);
+                            value = (u8) ((top ? colors[0] : colors[2]) & 0xf);
                         } else {
-                            value = (u8) (((top ? colours[1] : colours[3]) & 0xf) << 4);
+                            value = (u8) (((top ? colors[1] : colors[3]) & 0xf) << 4);
                         }
                     }
                     pixels[n >> 1] |= value;
@@ -267,22 +267,22 @@ void TownMapMarkers_Copy(TownMapMarker *from, TownMapMarker *to)
 CLEAN_AS(func_ov117_02299ca4, TownMapMarkers_Copy)
 
 /* A tile (x, z) of the town map as a place on the picture: the middle of its 2 x 2 pixels,
- * moved by the centre of the shape of the building `code` when it has one (in 1/2048 tile). */
+ * moved by the center of the shape of the building `code` when it has one (in 1/2048 tile). */
 static void tile_to_picture(int *x, int *z, u16 *code)
 {
     *x = *x * 2 + 1;
     *z = *z * 2 + 1;
     BuildingShapeEntry *shape = BuildingShapes_Of(code);
     if (shape != NULL) {
-        int centre_x, centre_z, width, depth;
-        BuildingShapes_Bounds(shape, &centre_x, &centre_z, &width, &depth);
-        *x += centre_x >> 11;
-        *z += centre_z >> 11;
+        int center_x, center_z, width, depth;
+        BuildingShapes_Bounds(shape, &center_x, &center_z, &width, &depth);
+        *x += center_x >> 11;
+        *z += center_z >> 11;
     }
 }
 
 /* The marker `index` put on the first item of codes first-last of the town map with any of
- * `flags`, moved by the centre of its building's shape: the shape of the code found on its tile
+ * `flags`, moved by the center of its building's shape: the shape of the code found on its tile
  * when `code_on_tile`, else of `first`. Nothing when there is no such item. */
 static void mark_building(TownMapMarker *markers, AcreMap *map, int index, u16 *first, u16 *last, int flags, int code_on_tile)
 {

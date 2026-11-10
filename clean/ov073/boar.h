@@ -92,9 +92,9 @@ int Boar_StepAside(Boar *self);
 int Boar_PointAside(Boar *self, Vec3 *out, const Vec3 *offset);
 int Boar_RandomPointNear(Boar *self, fx32 *x, fx32 *z);
 int Boar_NearCamera(Boar *self);
-int Boar_InBox(int unused, const Vec3 *centre, const Vec3 *point);
+int Boar_InBox(int unused, const Vec3 *center, const Vec3 *point);
 
-/* The overlay's static initialiser (ov073_static_init.c). */
+/* The overlay's static initializer (ov073_static_init.c). */
 void BoarInit_Tables(void);
 
 #endif

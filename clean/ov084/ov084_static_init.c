@@ -1,4 +1,4 @@
-/* Overlay 84 (the turtle, turtle_fireworks.h): its static initialiser, run when the overlay is loaded,
+/* Overlay 84 (the turtle, turtle_fireworks.h): its static initializer, run when the overlay is loaded,
  * which fills in the table of the turtle's states (data_ov084_022795a0, TurtleFireworks_SetState and
  * TurtleFireworks_Update): each state's entry and update, copied from the overlay's constants (C++
  * pointers to member functions, which the compiler does not fold into the table). */

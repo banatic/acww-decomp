@@ -31,16 +31,16 @@
 
 static_assert(offsetof(OutdoorVillagerEffect, countdown) == 0x02, "countdown");
 static_assert(sizeof(OutdoorVillagerEffect) == 0x04, "effect size");
-static_assert(offsetof(OutdoorVillagerBehaviour, current) == 0x10, "current");
-static_assert(offsetof(OutdoorVillagerBehaviour, resume) == 0x18, "resume");
-static_assert(offsetof(OutdoorVillagerBehaviour, step) == 0x1c, "step");
-static_assert(offsetof(OutdoorVillagerBehaviour, wait) == 0x20, "wait");
-static_assert(offsetof(OutdoorVillagerBehaviour, cooldown) == 0x24, "cooldown");
-static_assert(offsetof(OutdoorVillagerBehaviour, net_hits) == 0x38, "net hits 0x38");
-static_assert(offsetof(OutdoorVillagerBehaviour, net_hits_timer) == 0x3a, "net hits timer 0x3a");
-static_assert(offsetof(OutdoorVillagerBehaviour, shown) == 0xe0, "shown");
-static_assert(offsetof(OutdoorVillagerBehaviour, call_cooldown) == 0xf4, "0xf4");
-static_assert(sizeof(OutdoorVillagerBehaviour) == 0xfc, "behaviour size");
+static_assert(offsetof(OutdoorVillagerBehavior, current) == 0x10, "current");
+static_assert(offsetof(OutdoorVillagerBehavior, resume) == 0x18, "resume");
+static_assert(offsetof(OutdoorVillagerBehavior, step) == 0x1c, "step");
+static_assert(offsetof(OutdoorVillagerBehavior, wait) == 0x20, "wait");
+static_assert(offsetof(OutdoorVillagerBehavior, cooldown) == 0x24, "cooldown");
+static_assert(offsetof(OutdoorVillagerBehavior, net_hits) == 0x38, "net hits 0x38");
+static_assert(offsetof(OutdoorVillagerBehavior, net_hits_timer) == 0x3a, "net hits timer 0x3a");
+static_assert(offsetof(OutdoorVillagerBehavior, shown) == 0xe0, "shown");
+static_assert(offsetof(OutdoorVillagerBehavior, call_cooldown) == 0xf4, "0xf4");
+static_assert(sizeof(OutdoorVillagerBehavior) == 0xfc, "behaviour size");
 
 /* The class's vtable. */
 extern const u8 data_ov068_022771c0[];
@@ -77,9 +77,9 @@ static u32 *ov_word(void *object, u32 offset)
     return (u32 *) (void *) ov_at(object, offset);
 }
 
-static OutdoorVillagerBehaviour *ov_behaviour(u8 *object)
+static OutdoorVillagerBehavior *ov_behavior(u8 *object)
 {
-    return (OutdoorVillagerBehaviour *) (void *) ov_at(object, OUTDOOR_VILLAGER_BEHAVIOUR);
+    return (OutdoorVillagerBehavior *) (void *) ov_at(object, OUTDOOR_VILLAGER_BEHAVIOR);
 }
 
 static SceneBase *ov_talk(u8 *object)
@@ -115,7 +115,7 @@ u8 *OutdoorVillager_Destruct(u8 *object)
     *(const u8 **) (void *) object = data_ov068_022771c0;
     OutdoorVillagerEffect_Destruct((OutdoorVillagerEffect *) (void *) ov_at(object, OUTDOOR_VILLAGER_EFFECT));
     HeldItemLink_Destruct((HeldItemLink *) (void *) ov_at(object, OUTDOOR_VILLAGER_LINK));
-    OutdoorVillagerBehaviour_Destruct(ov_behaviour(object));
+    OutdoorVillagerBehavior_Destruct(ov_behavior(object));
     OutdoorVillagerWatch_Destruct((OutdoorVillagerWatch *) (void *) ov_at(object, OUTDOOR_VILLAGER_WATCH));
     VillagerSceneObject_DestructBody(object);
     return object;
@@ -134,41 +134,41 @@ CLEAN_AS(func_ov068_0226682c, OutdoorVillager_Delete)
 /* ---- The talks and the pairing */
 
 /* func_ov068_02266cf4 (slot 0x90): told a talk it was in ended: its mood applied, the saved
- * behaviour resumed (else behaviour 0), unpaired, and the pairing's cooldown started. */
+ * behavior resumed (else behavior 0), unpaired, and the pairing's cooldown started. */
 void OutdoorVillager_OnTalkEnd(u8 *object)
 {
-    OutdoorVillagerBehaviour *behaviour = ov_behaviour(object);
+    OutdoorVillagerBehavior *behavior = ov_behavior(object);
     VillagerMood_Apply((VillagerMood *) (void *) ov_at(object, OUTDOOR_VILLAGER_MOOD));
-    if (OutdoorVillagerBehaviour_Resume(behaviour, object) == 0) {
-        OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_DEFAULT);
+    if (OutdoorVillagerBehavior_Resume(behavior, object) == 0) {
+        OutdoorVillagerBehavior_Start(behavior, object, OUTDOOR_VILLAGER_DO_DEFAULT);
     }
     VillagerSceneObject_SetWord644((u32 *) (void *) object, 0);
     VillagerSceneObject_SetByte648(object, 0);
-    OutdoorVillagerWalks_StartCooldown(behaviour);
+    OutdoorVillagerWalks_StartCooldown(behavior);
 }
 CLEAN_AS(func_ov068_02266cf4, OutdoorVillager_OnTalkEnd)
 
-/* func_ov068_02266d40 (slot 0x8c): told it joined a talk as a speaker: behaviour 10. */
+/* func_ov068_02266d40 (slot 0x8c): told it joined a talk as a speaker: behavior 10. */
 void OutdoorVillager_OnSpeakerJoined(u8 *object)
 {
-    OutdoorVillagerBehaviour_Start(ov_behaviour(object), object, OUTDOOR_VILLAGER_DO_SPEAKER);
+    OutdoorVillagerBehavior_Start(ov_behavior(object), object, OUTDOOR_VILLAGER_DO_SPEAKER);
 }
 CLEAN_AS(func_ov068_02266d40, OutdoorVillager_OnSpeakerJoined)
 
 /* func_ov068_02266d54 (slot 0xbc): when paired, the pairing ends: a running act's effects
- * reset (OutdoorVillagerObject_ResetActEffects), the saved behaviour resumed (else behaviour 0), the cooldown
+ * reset (OutdoorVillagerObject_ResetActEffects), the saved behavior resumed (else behavior 0), the cooldown
  * started, and unpaired; 1. Unpaired already: 0. */
 int OutdoorVillager_Unpair(u8 *object)
 {
-    OutdoorVillagerBehaviour *behaviour = ov_behaviour(object);
+    OutdoorVillagerBehavior *behavior = ov_behavior(object);
     if (VillagerSceneObject_HasWord644(object) == 0) {
         return 0;
     }
     OutdoorVillagerObject_ResetActEffects(object);
-    if (OutdoorVillagerBehaviour_Resume(behaviour, object) == 0) {
-        OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_DEFAULT);
+    if (OutdoorVillagerBehavior_Resume(behavior, object) == 0) {
+        OutdoorVillagerBehavior_Start(behavior, object, OUTDOOR_VILLAGER_DO_DEFAULT);
     }
-    OutdoorVillagerWalks_StartCooldown(behaviour);
+    OutdoorVillagerWalks_StartCooldown(behavior);
     VillagerSceneObject_SetWord644((u32 *) (void *) object, 0);
     VillagerSceneObject_SetByte648(object, 0);
     return 1;
@@ -176,25 +176,25 @@ int OutdoorVillager_Unpair(u8 *object)
 CLEAN_AS(func_ov068_02266d54, OutdoorVillager_Unpair)
 
 /* func_ov068_02266da8 (slot 0xb8): paired with `partner` when its slot 0xb4 agrees: the
- * partner kept at 0x644, the byte at 0x648 set, the behaviour running saved to resume and
- * behaviour 9 started; whether it was. */
+ * partner kept at 0x644, the byte at 0x648 set, the behavior running saved to resume and
+ * behavior 9 started; whether it was. */
 int OutdoorVillager_Pair(u8 *object, u8 *partner)
 {
-    OutdoorVillagerBehaviour *behaviour = ov_behaviour(object);
+    OutdoorVillagerBehavior *behavior = ov_behavior(object);
     if (((int (*)(u8 *)) ov_slot(object, OUTDOOR_VILLAGER_SLOT_CAN_PAIR))(object) == 0) {
         return 0;
     }
     VillagerSceneObject_SetWord644((u32 *) (void *) object, (u32) (uintptr_t) partner);
     VillagerSceneObject_SetByte648(object, 1);
-    OutdoorVillagerBehaviour_SaveResume(behaviour);
-    OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_PAIRED);
+    OutdoorVillagerBehavior_SaveResume(behavior);
+    OutdoorVillagerBehavior_Start(behavior, object, OUTDOOR_VILLAGER_DO_PAIRED);
     return 1;
 }
 CLEAN_AS(func_ov068_02266da8, OutdoorVillager_Pair)
 
 /* func_ov068_02266df4 (slot 0xb4): whether it may be paired: with a memory of this console's
  * player (OutdoorVillagerRecords_MemoryOfPlayer) that is in use, or without one while the player is not within
- * 0x6000 of it; and its action idle, behaviour 0 running with the cooldown out, not paired,
+ * 0x6000 of it; and its action idle, behavior 0 running with the cooldown out, not paired,
  * and no town event (11) when it started.
  * QUIRK: with a current player record the memory is looked up a second time. */
 int OutdoorVillager_CanPair(u8 *object)
@@ -213,7 +213,7 @@ int OutdoorVillager_CanPair(u8 *object)
     if (SceneAction_IsBusy((const SceneAction *) (void *) ov_at(object, OUTDOOR_VILLAGER_ACTION)) != 0) {
         return 0;
     }
-    if (OutdoorVillagerBehaviour_IsIdle(ov_behaviour(object)) == 0) {
+    if (OutdoorVillagerBehavior_IsIdle(ov_behavior(object)) == 0) {
         return 0;
     }
     if (VillagerSceneObject_HasWord644(object) != 0) {
@@ -225,7 +225,7 @@ CLEAN_AS(func_ov068_02266df4, OutdoorVillager_CanPair)
 
 /* ---- The events */
 
-/* The lines of its next talk when an event starts: paired, behaviour 7 running, the byte at
+/* The lines of its next talk when an event starts: paired, behavior 7 running, the byte at
  * 0xa04 set, else by the town event when it started (none: 0). */
 static u32 ov_lines_for_event(u8 *object)
 {
@@ -246,47 +246,47 @@ static void ov_start_talk(u8 *object, u32 lines)
 }
 
 /* After an event that kept it at reaction 0: it stands at the middle of its home's tile,
- * then behaviour 12 (for the villager VillagerState_BirthdayVillager names or a status of 3 to
+ * then behavior 12 (for the villager VillagerState_BirthdayVillager names or a status of 3 to
  * 7) or 3. */
 static void ov_ended_greeting(u8 *object)
 {
-    OutdoorVillagerBehaviour *behaviour = ov_behaviour(object);
+    OutdoorVillagerBehavior *behavior = ov_behavior(object);
     int status = VillagerStatus_Get(ov_record(object));
     VillagerPlot *home = VillagerHome_Tile(ov_record(object));
     Vec3 *position = (Vec3 *) (void *) ov_at(object, OUTDOOR_VILLAGER_POSITION);
     Vec3 *last = (Vec3 *) (void *) ov_at(object, OUTDOOR_VILLAGER_LAST_POSITION);
-    AcreTile_TileCentre(position, home->x, home->z);
+    AcreTile_TileCenter(position, home->x, home->z);
     last->x = position->x;
     last->y = position->y;
     last->z = position->z;
     int named = VillagerState_BirthdayVillager();
     if (named == VillagerStatus_Index(ov_record(object)) || (unsigned int) (status - 3) <= 4) {
-        OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_12);
+        OutdoorVillagerBehavior_Start(behavior, object, OUTDOOR_VILLAGER_DO_12);
     } else {
-        OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_3);
+        OutdoorVillagerBehavior_Start(behavior, object, OUTDOOR_VILLAGER_DO_3);
     }
 }
 
 /* func_ov068_02266f44 (slot 0x4c): told of an event (`participant` is the base class's), then
  * the base class's slot (SceneObject_Vfunc4c):
  * - 3, an event starts: the participant kept at 0x560; the lines of the talk to come: paired
- *   (the partner is kept at 0x9f8 and told it joined as a speaker, its slot 0x8c), behaviour 7
+ *   (the partner is kept at 0x9f8 and told it joined as a speaker, its slot 0x8c), behavior 7
  *   running, the byte at 0xa04 set, else by the town event (ov_lines_for_event); with the
- *   default lines the tally of its record's state entry counts one; behaviour 8;
- * - 1: by the reaction, its lines and behaviour (0: 0xd and 14, 1: 0xf and 20, 2: 0x10 and
- *   22, else the lines kept and behaviour 5); the talk starts with them;
+ *   default lines the tally of its record's state entry counts one; behavior 8;
+ * - 1: by the reaction, its lines and behavior (0: 0xd and 14, 1: 0xf and 20, 2: 0x10 and
+ *   22, else the lines kept and behavior 5); the talk starts with them;
  * - 0: the participant kept, the talk starts with the lines kept (the partner as its second
- *   speaker), behaviour 5; after lines 2 the record's byte 0x1e is cleared; partner and lines
+ *   speaker), behavior 5; after lines 2 the record's byte 0x1e is cleared; partner and lines
  *   forgotten;
- * - 5: the participant kept, the behaviour running saved to resume, behaviour 6;
- * - 8, the event ended: by the reaction: 0, home (ov_ended_greeting); 2, behaviour 0;
- *   either then reaction none; otherwise behaviour 18 with the byte at 0xa04 set, else the
- *   saved behaviour (or 0) and the record's tally started; then the object's approach set
+ * - 5: the participant kept, the behavior running saved to resume, behavior 6;
+ * - 8, the event ended: by the reaction: 0, home (ov_ended_greeting); 2, behavior 0;
+ *   either then reaction none; otherwise behavior 18 with the byte at 0xa04 set, else the
+ *   saved behavior (or 0) and the record's tally started; then the object's approach set
  *   back (SceneObjectBase_DefaultApproach) and the record's byte 0x1e lowered by 3;
- * - 4, refused: behaviour 18 with the byte at 0xa04 set, else the saved behaviour (or 0). */
+ * - 4, refused: behavior 18 with the byte at 0xa04 set, else the saved behavior (or 0). */
 void OutdoorVillager_OnEvent(u8 *object, int code, int participant)
 {
-    OutdoorVillagerBehaviour *behaviour = ov_behaviour(object);
+    OutdoorVillagerBehavior *behavior = ov_behavior(object);
     u32 *lines = ov_word(object, OUTDOOR_VILLAGER_LINES);
     u32 *partner = ov_word(object, OUTDOOR_VILLAGER_PARTNER);
     u32 *reaction = ov_word(object, OUTDOOR_VILLAGER_REACTION);
@@ -300,7 +300,7 @@ void OutdoorVillager_OnEvent(u8 *object, int code, int participant)
                 *partner = VillagerSceneObject_Word644((u32 *) (void *) object);
                 u8 *other = (u8 *) (uintptr_t) *partner;
                 ((void (*)(u8 *)) ov_slot(other, OUTDOOR_VILLAGER_SLOT_SPEAKER_JOINED))(other);
-            } else if (OutdoorVillagerWalks_IsDoing(behaviour, OUTDOOR_VILLAGER_DO_7) != 0) {
+            } else if (OutdoorVillagerWalks_IsDoing(behavior, OUTDOOR_VILLAGER_DO_7) != 0) {
                 *lines = OUTDOOR_VILLAGER_LINES_DOING_7;
             } else if (*in_pitfall != 0) {
                 *lines = OUTDOOR_VILLAGER_LINES_IN_PITFALL;
@@ -313,7 +313,7 @@ void OutdoorVillager_OnEvent(u8 *object, int code, int participant)
                     VillagerTally_Count(tally);
                 }
             }
-            OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_STARTS);
+            OutdoorVillagerBehavior_Start(behavior, object, OUTDOOR_VILLAGER_DO_STARTS);
             break;
         case OUTDOOR_VILLAGER_EVENT_1: {
             int next = OUTDOOR_VILLAGER_DO_TALK;
@@ -334,7 +334,7 @@ void OutdoorVillager_OnEvent(u8 *object, int code, int participant)
                     break;
             }
             ov_start_talk(object, *lines);
-            OutdoorVillagerBehaviour_Start(behaviour, object, next);
+            OutdoorVillagerBehavior_Start(behavior, object, next);
             break;
         }
         case OUTDOOR_VILLAGER_EVENT_0:
@@ -343,7 +343,7 @@ void OutdoorVillager_OnEvent(u8 *object, int code, int participant)
             if (*partner != 0) {
                 SceneBase_SetSecondSpeaker(ov_talk(object), (u8 *) (uintptr_t) *partner);
             }
-            OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_TALK);
+            OutdoorVillagerBehavior_Start(behavior, object, OUTDOOR_VILLAGER_DO_TALK);
             if (*lines == OUTDOOR_VILLAGER_LINES_DOING_7 && ov_record(object) != NULL) {
                 VillagerEntry_ClearByte1e(ov_record(object));
             }
@@ -352,21 +352,21 @@ void OutdoorVillager_OnEvent(u8 *object, int code, int participant)
             break;
         case OUTDOOR_VILLAGER_EVENT_5:
             *ov_at(object, OUTDOOR_VILLAGER_PARTICIPANT) = (u8) participant;
-            OutdoorVillagerBehaviour_SaveResume(behaviour);
-            OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_6);
+            OutdoorVillagerBehavior_SaveResume(behavior);
+            OutdoorVillagerBehavior_Start(behavior, object, OUTDOOR_VILLAGER_DO_6);
             break;
         case OUTDOOR_VILLAGER_EVENT_ENDED:
             if (*reaction == OUTDOOR_VILLAGER_REACTION_GREETER) {
                 ov_ended_greeting(object);
                 *reaction = OUTDOOR_VILLAGER_REACTION_NONE;
             } else if (*reaction == OUTDOOR_VILLAGER_REACTION_PUSHED) {
-                OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_DEFAULT);
+                OutdoorVillagerBehavior_Start(behavior, object, OUTDOOR_VILLAGER_DO_DEFAULT);
                 *reaction = OUTDOOR_VILLAGER_REACTION_NONE;
             } else if (*in_pitfall != 0) {
-                OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_CLIMB_OUT);
+                OutdoorVillagerBehavior_Start(behavior, object, OUTDOOR_VILLAGER_DO_CLIMB_OUT);
             } else {
-                if (OutdoorVillagerBehaviour_Resume(behaviour, object) == 0) {
-                    OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_DEFAULT);
+                if (OutdoorVillagerBehavior_Resume(behavior, object) == 0) {
+                    OutdoorVillagerBehavior_Start(behavior, object, OUTDOOR_VILLAGER_DO_DEFAULT);
                 }
                 VillagerTally *tally = OutdoorVillagerRecords_Tally(object);
                 if (tally != NULL) {
@@ -380,9 +380,9 @@ void OutdoorVillager_OnEvent(u8 *object, int code, int participant)
             break;
         case OUTDOOR_VILLAGER_EVENT_REFUSED:
             if (*in_pitfall != 0) {
-                OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_CLIMB_OUT);
-            } else if (OutdoorVillagerBehaviour_Resume(behaviour, object) == 0) {
-                OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_DEFAULT);
+                OutdoorVillagerBehavior_Start(behavior, object, OUTDOOR_VILLAGER_DO_CLIMB_OUT);
+            } else if (OutdoorVillagerBehavior_Resume(behavior, object) == 0) {
+                OutdoorVillagerBehavior_Start(behavior, object, OUTDOOR_VILLAGER_DO_DEFAULT);
             }
             break;
         default:
@@ -394,7 +394,7 @@ CLEAN_AS(func_ov068_02266f44, OutdoorVillager_OnEvent)
 
 /* func_ov068_022672a0 (slot 0x54): whether `other` may start an event with it from a
  * distance: its slot 0x48 agrees (OutdoorVillager_MayAct), the byte at 0x838 is clear,
- * behaviour 0 runs, the mood (byte 0x18) of its record's state entry is 0 or 1, `other` is not
+ * behavior 0 runs, the mood (byte 0x18) of its record's state entry is 0 or 1, `other` is not
  * within 0x5000 but within 0xe000, and it faces `other` within data_ov068_02278260 either way
  * (SceneObjectBase_Faces). The state byte is read first. */
 int OutdoorVillager_Ask54(u8 *object, u8 *other)
@@ -407,7 +407,7 @@ int OutdoorVillager_Ask54(u8 *object, u8 *other)
     if (VillagerSceneObject_HasByte838(object) != 0) {
         return 0;
     }
-    if (OutdoorVillagerWalks_IsDoing(ov_behaviour(object), OUTDOOR_VILLAGER_DO_DEFAULT) == 0) {
+    if (OutdoorVillagerWalks_IsDoing(ov_behavior(object), OUTDOOR_VILLAGER_DO_DEFAULT) == 0) {
         return 0;
     }
     if (level > 1) {

@@ -1,5 +1,5 @@
 /* The music list of overlay 144 (music_list.h): its flags, the list's scroll and the rows it
- * builds, colours and labels, the songs it gathers, the three buttons' faces and the scroll
+ * builds, colors and labels, the songs it gathers, the three buttons' faces and the scroll
  * bar's knob. */
 #include "music_list.h"
 
@@ -109,7 +109,7 @@ void MusicList_ScrollToRow(MusicList *self, int row)
 }
 CLEAN_AS(func_ov144_02299694, MusicList_ScrollToRow)
 
-/* func_ov144_02299b48: `row` chosen (MUSIC_LIST_NO_ROW for none): the rows coloured again and
+/* func_ov144_02299b48: `row` chosen (MUSIC_LIST_NO_ROW for none): the rows colored again and
  * the buttons' faces refreshed. Whether the choice changed. */
 int MusicList_Select(MusicList *self, int row)
 {
@@ -200,7 +200,7 @@ void MusicList_StepScroll(MusicList *self)
 }
 CLEAN_AS(func_ov144_02299cc4, MusicList_StepScroll)
 
-/* func_ov144_02299d3c: the rows coloured: all in palette 4, then the playing row 9 and the chosen
+/* func_ov144_02299d3c: the rows colored: all in palette 4, then the playing row 9 and the chosen
  * one 5 (10 when they are the same); the list's screen queued for the sub screen's BG1, which
  * clears MUSIC_LIST_FLAG_LIST_DIRTY once the task took it. */
 void MusicList_ColorRows(MusicList *self)
@@ -258,7 +258,7 @@ void MusicList_BuildRows(MusicList *self)
 CLEAN_AS(func_ov144_02299df4, MusicList_BuildRows)
 
 /* func_ov144_02299e6c: the list scrolled to `scroll` pixels: the sub screen's BG1 scrolled (0x18
- * less), the top row kept, the rows built again and labelled at the frame's end. */
+ * less), the top row kept, the rows built again and labeled at the frame's end. */
 void MusicList_ScrollTo(MusicList *self, int scroll)
 {
     self->scroll = scroll;
@@ -281,9 +281,9 @@ void MusicList_SetUpScroll(MusicList *self)
 }
 CLEAN_AS(func_ov144_02299ea8, MusicList_SetUpScroll)
 
-/* func_ov144_02299ed4: at the frame's end, what changed sent on: the rows coloured and queued,
+/* func_ov144_02299ed4: at the frame's end, what changed sent on: the rows colored and queued,
  * the buttons' screen queued for the sub screen's BG3 (the flag kept until the task takes it),
- * the rows labelled. */
+ * the rows labeled. */
 void MusicList_FlushScreens(MusicList *self)
 {
     if (MusicList_TestFlags(self, MUSIC_LIST_FLAG_LIST_DIRTY)) {
@@ -302,8 +302,8 @@ void MusicList_FlushScreens(MusicList *self)
 }
 CLEAN_AS(func_ov144_02299ed4, MusicList_FlushScreens)
 
-/* func_ov144_02299f44: the nine rows from the top labelled with their songs' names, each in the
- * label of its screen row % 9 (layer 4, 0x184 + 0x1a per label and 0xd, colours 0xf and 7): a
+/* func_ov144_02299f44: the nine rows from the top labeled with their songs' names, each in the
+ * label of its screen row % 9 (layer 4, 0x184 + 0x1a per label and 0xd, colors 0xf and 7): a
  * row past the list gets no song and an empty label; a row whose song the label already shows
  * is left as it is. */
 void MusicList_LabelRows(MusicList *self)

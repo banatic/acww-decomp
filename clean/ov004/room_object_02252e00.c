@@ -18,7 +18,7 @@ static_assert(sizeof(RoomObject02252e00) == 0x848, "the size RoomObject02252e00_
 #define ANIM_MODE_ONCE 1   /* the animations stop at the end */
 #define SLOT_70_VALUE 0xff /* the second argument given with a state (vtable slot 0x70) */
 
-/* The furniture numbers (RoomObject_Number) with their own behaviour. */
+/* The furniture numbers (RoomObject_Number) with their own behavior. */
 #define FURNITURE_RESTARTS_1 0xb9
 #define FURNITURE_RESTARTS_2 0xba
 #define FURNITURE_0207 0x207

@@ -29,7 +29,7 @@ static_assert(offsetof(TownInsect, unk_257) == 0x257, "byte 0x257");
 
 #define INSECT_PATH_PLAYER 4
 #define INSECT_PATH_OPAQUE 0x1f      /* a model's full alpha */
-#define INSECT_PATH_CALM 0x13        /* TOWN_INSECT_ACTION_CALM: its usual behaviour */
+#define INSECT_PATH_CALM 0x13        /* TOWN_INSECT_ACTION_CALM: its usual behavior */
 #define INSECT_PATH_ALARMED 0x14     /* TownInsect.unk_254 from which kinds 0x36 and 0x37 act */
 #define INSECT_PATH_TURN_LIMIT 0x38e /* the most a spot turns it in a frame (5 degrees) */
 
@@ -650,7 +650,7 @@ void InsectPath_Chase(TownInsect *insect)
 }
 CLEAN_AS(func_ov068_02270b00, InsectPath_Chase)
 
-/* ---- The behaviours of more kinds (insect_paths.h) */
+/* ---- The behaviors of more kinds (insect_paths.h) */
 
 #include "autoload_2/fx_math.h"
 #include "main/actor.h"
@@ -939,11 +939,11 @@ void InsectPath_RollSnowball(TownInsect *insect)
         insect_rest(insect);
         return;
     }
-    const Vec3 *centre = &ball->position;
+    const Vec3 *center = &ball->position;
     fx32 ring = Snowman_Size(ball);
-    s16 round = Vec_YawTo(centre, position);
+    s16 round = Vec_YawTo(center, position);
     s16 facing = round;
-    Vec3 point = *centre;
+    Vec3 point = *center;
     if ((data_ov068_022786c4 & 1) == 0) {
         int largest = Snowman_MaxSize();
         data_ov068_022786c0 = largest - Snowman_MinSize();
@@ -1042,7 +1042,7 @@ CLEAN_AS(func_ov068_02271398, InsectPath_Roam)
  * for none; with one, *tile's x and z are its tile numbers.
  * QUIRK: the first tile found is taken only when it lies no farther north than the insect;
  * after that any nearer one.
- * BUG: the middle of the tile is worked out (AcreTile_TileCentre) and dropped: *tile gets the
+ * BUG: the middle of the tile is worked out (AcreTile_TileCenter) and dropped: *tile gets the
  * tile's numbers, which InsectPath_ToBuilding then heads for as a point near the map's corner.
  * BUGFIX gives the middle instead. */
 int InsectPath_NearestBuildingTile(TownInsect *insect, Vec3 *tile)
@@ -1052,7 +1052,7 @@ int InsectPath_NearestBuildingTile(TownInsect *insect, Vec3 *tile)
     int best_z = 0;
     int x = 0;
     int z = 0;
-    Vec3 centre = {-1, 0, -1};
+    Vec3 center = {-1, 0, -1};
     Position_Tile(&x, &z, (const Position *) (const void *) &insect->position);
     Vec3 here = {x, 0, z};
     for (u32 i = 0; i < INSECT_PATH_BUILDINGS; i++) {
@@ -1091,10 +1091,10 @@ int InsectPath_NearestBuildingTile(TownInsect *insect, Vec3 *tile)
         }
     }
     if (best >= 0) {
-        AcreTile_TileCentre(&centre, (u32) best_x, (u32) best_z);
+        AcreTile_TileCenter(&center, (u32) best_x, (u32) best_z);
 #ifdef BUGFIX
-        tile->x = centre.x;
-        tile->z = centre.z;
+        tile->x = center.x;
+        tile->z = center.z;
 #else
         tile->x = best_x;
         tile->z = best_z;
@@ -1371,7 +1371,7 @@ int InsectPath_FindPerch(TownInsect *insect)
             } else {
                 continue;
             }
-            AcreTile_TileCentre(perch, i, j);
+            AcreTile_TileCenter(perch, i, j);
             if (on_plot) {
                 perch->z += 0x59a;
             }

@@ -20,7 +20,7 @@
 /* A record of always.bin. */
 typedef struct FurnitureAlways {
     u8 series;     /* 0x00: its series or set (0-11 the ten-piece series, st_furniture_taste) */
-    u8 color_a;    /* 0x01: its two colours, 1-11 and 12 colourful (0 none) */
+    u8 color_a;    /* 0x01: its two colors, 1-11 and 12 colorful (0 none) */
     u8 color_b;    /* 0x02 */
     u8 theme;      /* 0x03: 0 instrument, 1 painting, 2 model, 3 plant, 4 none */
     u8 list_group; /* 0x04: the item list group (ItemInfoAlways.list_group) */

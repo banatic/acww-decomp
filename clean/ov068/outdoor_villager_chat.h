@@ -1,4 +1,4 @@
-/* Behaviour 9 of a villager out walking in the town (its behaviour member at 0x8b8,
+/* Behavior 9 of a villager out walking in the town (its behavior member at 0x8b8,
  * outdoor_villager.h): paired with another villager (OutdoorVillager_Pair, the partner at its
  * word 0x644), the two chat, and the chat may end with one of seven exchanges.
  *
@@ -6,9 +6,9 @@
  * update's steps (a table of member pointers filled once, as outdoor_villager_acts.h says):
  * - 0: once the turn is done it stands and the chat lasts by the pair's tier (the wait from
  *   data_ov068_022767b8: 240, 160, 100, 60, 60 frames; 100 past the table); while turning,
- *   the byte at 0xa05 parts the pair and starts behaviour 19.
+ *   the byte at 0xa05 parts the pair and starts behavior 19.
  * - 1, the chat: both play acts of the table data_ov068_0227679c now and then while the wait
- *   runs; the byte at 0xa05 parts the pair (behaviour 19). It ends early (step 3) when this
+ *   runs; the byte at 0xa05 parts the pair (behavior 19). It ends early (step 3) when this
  *   console's player comes within 0x6000 of the pair and is unknown to one of them (a stranger
  *   breaks it up), when the pair gets on badly (tier 4) with the player that near (both
  *   moods then asked for 2), or when they are no longer within 0x3c00 of each other. At the
@@ -18,7 +18,7 @@
  * - 2: once the speaker's motion of kind 20 (it shows a held item, SceneMotion_RequestKind20)
  *   is done, both moods applied.
  * - 3: the partner told the pairing ends (its vtable slot 0xbc, OutdoorVillager_Unpair); when
- *   it agrees, this one is unpaired too, resumes its saved behaviour (else 0) and its
+ *   it agrees, this one is unpaired too, resumes its saved behavior (else 0) and its
  *   pairing's cooldown starts.
  *
  * The exchanges are tried in random order by weight (data_ov068_02276794: 15, 10, 15, 20, 10,
@@ -37,21 +37,21 @@
 #include "outdoor_villager.h"
 #include "types.h"
 
-int OutdoorVillagerChat_Update9(OutdoorVillagerBehaviour *self, u8 *villager);
-void OutdoorVillagerChat_End9(OutdoorVillagerBehaviour *self, u8 *villager);
-void OutdoorVillagerChat_Show9(OutdoorVillagerBehaviour *self, u8 *villager);
-void OutdoorVillagerChat_Exchange(OutdoorVillagerBehaviour *self, u8 *villager);
-void OutdoorVillagerChat_Talk9(OutdoorVillagerBehaviour *self, u8 *villager);
-int OutdoorVillagerChat_BadPairNear(OutdoorVillagerBehaviour *self, u8 *villager, int distance);
-int OutdoorVillagerChat_StrangerNear(OutdoorVillagerBehaviour *self, u8 *villager, int distance);
-int OutdoorVillagerChat_PlayerDistance(OutdoorVillagerBehaviour *self, u8 *villager);
-int OutdoorVillagerChat_PartnerClose(OutdoorVillagerBehaviour *self, u8 *villager);
-void OutdoorVillagerChat_Turn9(OutdoorVillagerBehaviour *self, u8 *villager);
-int OutdoorVillagerChat_Start9(OutdoorVillagerBehaviour *self, u8 *villager);
-int OutdoorVillagerChat_NewDesign(OutdoorVillagerBehaviour *self, u8 *villager);
-int OutdoorVillagerChat_DefaultCatchphrase(OutdoorVillagerBehaviour *self, u8 *villager);
-int OutdoorVillagerChat_DefaultClothes(OutdoorVillagerBehaviour *self, u8 *villager);
-int OutdoorVillagerChat_PassDesign(OutdoorVillagerBehaviour *self, u8 *villager);
-int OutdoorVillagerChat_PassCatchphrase(OutdoorVillagerBehaviour *self, u8 *villager);
+int OutdoorVillagerChat_Update9(OutdoorVillagerBehavior *self, u8 *villager);
+void OutdoorVillagerChat_End9(OutdoorVillagerBehavior *self, u8 *villager);
+void OutdoorVillagerChat_Show9(OutdoorVillagerBehavior *self, u8 *villager);
+void OutdoorVillagerChat_Exchange(OutdoorVillagerBehavior *self, u8 *villager);
+void OutdoorVillagerChat_Talk9(OutdoorVillagerBehavior *self, u8 *villager);
+int OutdoorVillagerChat_BadPairNear(OutdoorVillagerBehavior *self, u8 *villager, int distance);
+int OutdoorVillagerChat_StrangerNear(OutdoorVillagerBehavior *self, u8 *villager, int distance);
+int OutdoorVillagerChat_PlayerDistance(OutdoorVillagerBehavior *self, u8 *villager);
+int OutdoorVillagerChat_PartnerClose(OutdoorVillagerBehavior *self, u8 *villager);
+void OutdoorVillagerChat_Turn9(OutdoorVillagerBehavior *self, u8 *villager);
+int OutdoorVillagerChat_Start9(OutdoorVillagerBehavior *self, u8 *villager);
+int OutdoorVillagerChat_NewDesign(OutdoorVillagerBehavior *self, u8 *villager);
+int OutdoorVillagerChat_DefaultCatchphrase(OutdoorVillagerBehavior *self, u8 *villager);
+int OutdoorVillagerChat_DefaultClothes(OutdoorVillagerBehavior *self, u8 *villager);
+int OutdoorVillagerChat_PassDesign(OutdoorVillagerBehavior *self, u8 *villager);
+int OutdoorVillagerChat_PassCatchphrase(OutdoorVillagerBehavior *self, u8 *villager);
 
 #endif

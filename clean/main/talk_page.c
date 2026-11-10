@@ -18,7 +18,7 @@ static_assert(offsetof(TalkPage, used) == 0x400, "page used");
 static_assert(offsetof(TalkPage, lines) == 0x410, "page lines");
 static_assert(offsetof(TalkPage, box) == 0x420, "page box");
 static_assert(offsetof(TalkPage, dirty) == 0x438, "page dirty");
-static_assert(offsetof(TalkPage, centred) == 0x43b, "page centred");
+static_assert(offsetof(TalkPage, centered) == 0x43b, "page centred");
 static_assert(offsetof(TalkPage, measurer) == 0x43c, "page measurer");
 static_assert(sizeof(TalkPage) == 0x490, "page");
 static_assert(offsetof(TalkPageMeasurer, talk) == 0x2c, "measurer talk");
@@ -26,7 +26,7 @@ static_assert(offsetof(TalkPageMeasurer, tag) == 0x34, "measurer tag");
 static_assert(offsetof(TalkPageMeasurer, return_at) == 0x48, "measurer return_at");
 static_assert(sizeof(TalkPageMeasurer) == 0x54, "measurer");
 
-/* The boxes of the lines: their first tiles, size and colours. */
+/* The boxes of the lines: their first tiles, size and colors. */
 #define TALK_PAGE_FIRST_TILE 0x11
 #define TALK_PAGE_TILES_PER_LINE 0x28
 #define TALK_PAGE_BOX_CELLS 0x14
@@ -68,7 +68,7 @@ static u32 *talk_page_word(TalkPage *page, u32 offset)
     return (u32 *) (void *) ((u8 *) page + offset);
 }
 
-/* func_0206c05c: each marked line handed to its box (its start, its colour, where it starts
+/* func_0206c05c: each marked line handed to its box (its start, its color, where it starts
  * in the box) and redrawn; the box of the line after the last begun told where the text so far
  * ends. */
 void TalkPage_Update(TalkPage *page)
@@ -82,7 +82,7 @@ void TalkPage_Update(TalkPage *page)
         box->text = (const char *) (uintptr_t) *talk_page_word(page, offsetof(TalkPage, line_start) + 4 * i);
         box->unk_14 = 0;
         box->offset = *talk_page_word(page, offsetof(TalkPage, offset) + 4 * i);
-        box->color = TalkBox_TextColour((int) *talk_page_word(page, offsetof(TalkPage, colour) + 4 * i));
+        box->color = TalkBox_TextColor((int) *talk_page_word(page, offsetof(TalkPage, color) + 4 * i));
         TextDraw_RequestDraw(box);
         *dirty = 0;
     }
@@ -138,20 +138,20 @@ void TalkPage_NewBoxes(TalkPage *page)
 CLEAN_AS(func_0206c154, TalkPage_NewBoxes)
 
 /* func_0206c19c */
-void TalkPage_SetCentred(TalkPage *page, unsigned char centred)
+void TalkPage_SetCentered(TalkPage *page, unsigned char centered)
 {
-    page->centred = centred;
+    page->centered = centered;
 }
-CLEAN_AS(func_0206c19c, TalkPage_SetCentred)
+CLEAN_AS(func_0206c19c, TalkPage_SetCentered)
 
-/* func_0206c1a8: the colour of the lines not begun yet. */
-void TalkPage_SetColourOfNewLines(TalkPage *page, int colour)
+/* func_0206c1a8: the color of the lines not begun yet. */
+void TalkPage_SetColorOfNewLines(TalkPage *page, int color)
 {
     for (u32 i = page->lines; i < TALK_PAGE_LINES; i++) {
-        page->colour[i] = (u32) colour;
+        page->color[i] = (u32) color;
     }
 }
-CLEAN_AS(func_0206c1a8, TalkPage_SetColourOfNewLines)
+CLEAN_AS(func_0206c1a8, TalkPage_SetColorOfNewLines)
 
 /* func_0206c1cc: a line begun where the text so far ends, unless there are three; its start in
  * its box measured from `position` (the message's characters it shows). */
@@ -160,7 +160,7 @@ void TalkPage_BeginLine(TalkPage *page, int position)
     if (page->lines >= TALK_PAGE_LINES) {
         return;
     }
-    page->offset[page->lines] = (u32) TalkPageMeasurer_Measure(&page->measurer, position, page->centred);
+    page->offset[page->lines] = (u32) TalkPageMeasurer_Measure(&page->measurer, position, page->centered);
     u32 line = page->lines;
     page->lines = line + 1;
     page->line_start[line] = (u32) (uintptr_t) page + page->used;
@@ -210,17 +210,17 @@ int TalkPage_PutBytes(TalkPage *page, const char *bytes, unsigned int count)
 }
 CLEAN_AS(func_0206c278, TalkPage_PutBytes)
 
-/* func_0206c2c4: the colour of every line. */
-void TalkPage_SetColours(TalkPage *page, int colour)
+/* func_0206c2c4: the color of every line. */
+void TalkPage_SetColors(TalkPage *page, int color)
 {
     for (u32 i = 0; i < TALK_PAGE_LINES; i++) {
-        page->colour[i] = (u32) colour;
+        page->color[i] = (u32) color;
     }
 }
-CLEAN_AS(func_0206c2c4, TalkPage_SetColours)
+CLEAN_AS(func_0206c2c4, TalkPage_SetColors)
 
-/* func_0206c2e4: the page emptied, its lines in `colour`. */
-void TalkPage_Clear(TalkPage *page, int colour)
+/* func_0206c2e4: the page emptied, its lines in `color`. */
+void TalkPage_Clear(TalkPage *page, int color)
 {
     page->used = 0;
     MI_CpuFill8(page->text, 0, TALK_PAGE_TEXT_SIZE);
@@ -230,11 +230,11 @@ void TalkPage_Clear(TalkPage *page, int colour)
         page->offset[i] = 0;
     }
     page->lines = 0;
-    TalkPage_SetColours(page, colour);
+    TalkPage_SetColors(page, color);
 }
 CLEAN_AS(func_0206c2e4, TalkPage_Clear)
 
-/* func_0206c340: emptied, its lines in colour 0. */
+/* func_0206c340: emptied, its lines in color 0. */
 void TalkPage_ClearPlain(TalkPage *page)
 {
     TalkPage_Clear(page, 0);
@@ -250,12 +250,12 @@ TalkPage *TalkPage_Destruct(TalkPage *page)
 }
 CLEAN_AS(func_0206c34c, TalkPage_Destruct)
 
-/* func_0206c368: an empty page of `talk`, not centred, without boxes. */
+/* func_0206c368: an empty page of `talk`, not centered, without boxes. */
 TalkPage *TalkPage_Construct(TalkPage *page, u8 *talk)
 {
     page->used = 0;
     page->lines = 0;
-    page->centred = 0;
+    page->centered = 0;
     TalkPageMeasurer_Construct(&page->measurer, talk);
     TalkPage_ClearPlain(page);
     for (u32 i = 0; i < TALK_PAGE_LINES; i++) {
@@ -1116,13 +1116,13 @@ void TalkPageMeasurer_OnText(TalkPageMeasurer *measurer)
 }
 CLEAN_AS(func_0206d54c, TalkPageMeasurer_OnText)
 
-/* func_0206d56c: where a line of the message text at `characters` starts in a box when centred,
- * in pixels: measured by giving the text to the measurer's box and centring it there (the box
- * is left without a text). 0 when `centred` is 0 or there is no box. */
-int TalkPageMeasurer_Measure(TalkPageMeasurer *measurer, int characters, int centred)
+/* func_0206d56c: where a line of the message text at `characters` starts in a box when centered,
+ * in pixels: measured by giving the text to the measurer's box and centering it there (the box
+ * is left without a text). 0 when `centered` is 0 or there is no box. */
+int TalkPageMeasurer_Measure(TalkPageMeasurer *measurer, int characters, int centered)
 {
     int start = 0;
-    if (centred && measurer->box != NULL) {
+    if (centered && measurer->box != NULL) {
         measurer->box->base.text = (const char *) (uintptr_t) characters;
         TextDraw_Center(&measurer->box->base);
         start = (int) measurer->box->base.offset;

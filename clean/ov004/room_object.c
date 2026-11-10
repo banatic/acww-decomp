@@ -144,12 +144,12 @@ static int shrink(RoomObject *object)
     return object->scale_x == 0;
 }
 
-/* The effect at the object's centre, in the second frame of shrinking. */
+/* The effect at the object's center, in the second frame of shrinking. */
 static void shrink_effect(RoomObject *object)
 {
-    Vec3 centre;
-    RoomObject_Centre(object, &centre);
-    RoomObject_Effect3dAt(object, &centre);
+    Vec3 center;
+    RoomObject_Center(object, &center);
+    RoomObject_Effect3dAt(object, &center);
 }
 
 /* func_ov004_0220c5cc (update of ROOM_OBJECT_SHRINK): once shrunk, ROOM_OBJECT_SHRUNK. */
@@ -186,15 +186,15 @@ void RoomObject_UpdateVanish(RoomObject *object)
 CLEAN_AS(func_ov004_0220c648, RoomObject_UpdateVanish)
 
 /* func_ov004_0220c6b8 (entry of ROOM_OBJECT_VANISH): tells the object, then an effect at its
- * centre and a sound. */
+ * center and a sound. */
 int RoomObject_EnterVanish(RoomObject *object)
 {
-    Vec3 centre;
+    Vec3 center;
 
     object->vtable->vfunc_90(object);
     object->state_frames = 0;
-    RoomObject_Centre(object, &centre);
-    RoomObjects_SetVanishPoint(&centre);
+    RoomObject_Center(object, &center);
+    RoomObjects_SetVanishPoint(&center);
     PlayerActors_OwnPlaySound(SOUND_VANISH);
     return 1;
 }
@@ -350,9 +350,9 @@ void RoomObject_UpdateAppear(RoomObject *object)
             PlayerActors_OwnPlaySound(SOUND_APPEAR);
         }
         if (object->timer == 15) {
-            Vec3 centre;
-            RoomObject_Centre(object, &centre);
-            RoomObject_Effect3dAt(object, &centre);
+            Vec3 center;
+            RoomObject_Center(object, &center);
+            RoomObject_Effect3dAt(object, &center);
         }
         return;
     }
@@ -394,7 +394,7 @@ CLEAN_AS(func_ov004_0220c9fc, RoomObject_UpdateAppear)
 
 /* func_ov004_0220cb68 (entry of ROOM_OBJECT_APPEAR): scale 0, the wobble's start, and when
  * SessionPlayers_ActorOf(SESSION_PLAYERS_OWN) says so, whatever DroppedItems_DropFromLocalPlayer does at 0x800 above the object's
- * centre (on the floor when layer is 0, else at the height RoomObjects_HeightAtPoint gives) with
+ * center (on the floor when layer is 0, else at the height RoomObjects_HeightAtPoint gives) with
  * the value ItemCode_MakeFurniture makes of number; its result decides. */
 int RoomObject_EnterAppear(RoomObject *object)
 {
@@ -408,16 +408,16 @@ int RoomObject_EnterAppear(RoomObject *object)
     object->wobble_amplitude = 0x800;
 
     if (SessionPlayers_ActorOf(SESSION_PLAYERS_OWN)) {
-        Vec3 centre;
-        RoomObject_Centre(object, &centre);
+        Vec3 center;
+        RoomObject_Center(object, &center);
         if (object->layer == 0) {
-            centre.y = 0;
+            center.y = 0;
         } else {
-            centre.y = RoomObjects_HeightAtPoint(&centre);
+            center.y = RoomObjects_HeightAtPoint(&center);
         }
-        centre.y += 0x800;
+        center.y += 0x800;
         u16 code = ItemCode_MakeFurniture(object->number, 0);
-        return DroppedItems_DropFromLocalPlayer(&code, &centre);
+        return DroppedItems_DropFromLocalPlayer(&code, &center);
     }
     return 1;
 }

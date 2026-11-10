@@ -57,7 +57,7 @@ CLEAN_AS(func_ov004_0223c72c, RoomPushes_Enabled)
 
 /* func_ov004_0223c758: records a push of the object of index `object` (not -1) in the record
  * of its layer (RoomObject_Layer, its low bit); whether the object was there. */
-int RoomPushes_Record(RoomPush *pushes, s32 object, Vec3 *from, Vec3 *position, s32 standoff, Vec3 *centre, Vec3 *destination,
+int RoomPushes_Record(RoomPush *pushes, s32 object, Vec3 *from, Vec3 *position, s32 standoff, Vec3 *center, Vec3 *destination,
                       short facing, s32 side)
 {
     if (object == ROOM_PUSH_NO_OBJECT) {
@@ -67,7 +67,7 @@ int RoomPushes_Record(RoomPush *pushes, s32 object, Vec3 *from, Vec3 *position, 
     if (pushed == NULL) {
         return 0;
     }
-    RoomPushes_Set(&pushes[RoomObject_Layer(pushed) & 1], object, from, position, standoff, centre, destination, facing, side);
+    RoomPushes_Set(&pushes[RoomObject_Layer(pushed) & 1], object, from, position, standoff, center, destination, facing, side);
     return 1;
 }
 CLEAN_AS(func_ov004_0223c758, RoomPushes_Record)
@@ -342,11 +342,11 @@ Vec3 *RoomPushes_Destination(RoomPush *push)
 CLEAN_AS(func_ov004_0223cb24, RoomPushes_Destination)
 
 /* func_ov004_0223cb28 */
-Vec3 *RoomPushes_Centre(RoomPush *push)
+Vec3 *RoomPushes_Center(RoomPush *push)
 {
-    return &push->centre;
+    return &push->center;
 }
-CLEAN_AS(func_ov004_0223cb28, RoomPushes_Centre)
+CLEAN_AS(func_ov004_0223cb28, RoomPushes_Center)
 
 /* func_ov004_0223cb2c */
 u32 RoomPushes_Standoff(RoomPush *push)
@@ -388,7 +388,7 @@ CLEAN_AS(func_ov004_0223cb5c, RoomPushes_Object)
 
 /* func_ov004_0223cb60: fills in `push`, unless `object` is ROOM_PUSH_NO_OBJECT (then it is left
  * as it was). The vectors are copied a field at a time, in this order. */
-void RoomPushes_Set(RoomPush *push, s32 object, Vec3 *from, Vec3 *position, s32 standoff, Vec3 *centre, Vec3 *destination,
+void RoomPushes_Set(RoomPush *push, s32 object, Vec3 *from, Vec3 *position, s32 standoff, Vec3 *center, Vec3 *destination,
                     short facing, s32 side)
 {
     if (object == ROOM_PUSH_NO_OBJECT) {
@@ -402,9 +402,9 @@ void RoomPushes_Set(RoomPush *push, s32 object, Vec3 *from, Vec3 *position, s32 
     push->position.y = position->y;
     push->position.z = position->z;
     push->standoff = standoff;
-    push->centre.x = centre->x;
-    push->centre.y = centre->y;
-    push->centre.z = centre->z;
+    push->center.x = center->x;
+    push->center.y = center->y;
+    push->center.z = center->z;
     push->destination.x = destination->x;
     push->destination.y = destination->y;
     push->destination.z = destination->z;
@@ -425,9 +425,9 @@ RoomPush *RoomPushes_Clear(RoomPush *push)
     push->position.y = 0;
     push->position.z = 0;
     push->standoff = 0;
-    push->centre.x = 0;
-    push->centre.y = 0;
-    push->centre.z = 0;
+    push->center.x = 0;
+    push->center.y = 0;
+    push->center.z = 0;
     push->destination.x = 0;
     push->destination.y = 0;
     push->destination.z = 0;

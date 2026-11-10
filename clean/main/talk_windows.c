@@ -289,7 +289,7 @@ void TalkSliderWindow_StartOpening(TalkSliderWindow *self)
     self->offset_x = GameVariables_Tweak(TALK_WINDOW_TWEAK_OPENING, 4) + 5;
     self->offset_y = GameVariables_Tweak(TALK_WINDOW_TWEAK_OPENING, 5) - 5;
     MesBg_SetScroll((MesBg *) (void *) self->window, self->offset_x, self->offset_y + 4);
-    MesBg_ResetLineColours((MesBg *) (void *) self->window);
+    MesBg_ResetLineColors((MesBg *) (void *) self->window);
     SoundSys_PlaySe(TALK_WINDOW_SE_OPEN);
 }
 CLEAN_AS(func_020aa09c, TalkSliderWindow_StartOpening)
@@ -326,11 +326,11 @@ int TalkSliderWindow_IsClosed(TalkSliderWindow *self)
 }
 CLEAN_AS(func_020aa170, TalkSliderWindow_IsClosed)
 
-/* func_020aa180 (slot 3): the message window drawn and its colours uploaded. */
+/* func_020aa180 (slot 3): the message window drawn and its colors uploaded. */
 void TalkSliderWindow_Draw(TalkSliderWindow *self)
 {
     talk_window_call(self->window, TALK_WINDOW_MESSAGE_SLOT_DRAW);
-    MesBg_UploadColours((MesBg *) (void *) self->window);
+    MesBg_UploadColors((MesBg *) (void *) self->window);
 }
 CLEAN_AS(func_020aa180, TalkSliderWindow_Draw)
 
@@ -537,7 +537,7 @@ void TalkChoiceWindow_StartOpening(TalkChoiceWindow *self)
     self->offset_x = GameVariables_Tweak(TALK_WINDOW_TWEAK_OPENING, 4) + 5;
     self->offset_y = GameVariables_Tweak(TALK_WINDOW_TWEAK_OPENING, 5) - 5;
     MesBg_SetScroll((MesBg *) (void *) self->window, self->offset_x, self->offset_y);
-    MesBg_ResetLineColours((MesBg *) (void *) self->window);
+    MesBg_ResetLineColors((MesBg *) (void *) self->window);
 }
 CLEAN_AS(func_020aa5d0, TalkChoiceWindow_StartOpening)
 
@@ -572,11 +572,11 @@ int TalkChoiceWindow_IsClosed(TalkChoiceWindow *self)
 }
 CLEAN_AS(func_020aa688, TalkChoiceWindow_IsClosed)
 
-/* func_020aa698 (slot 3): the message window drawn and its colours uploaded. */
+/* func_020aa698 (slot 3): the message window drawn and its colors uploaded. */
 void TalkChoiceWindow_Draw(TalkChoiceWindow *self)
 {
     talk_window_call(self->window, TALK_WINDOW_MESSAGE_SLOT_DRAW);
-    MesBg_UploadColours((MesBg *) (void *) self->window);
+    MesBg_UploadColors((MesBg *) (void *) self->window);
 }
 CLEAN_AS(func_020aa698, TalkChoiceWindow_Draw)
 

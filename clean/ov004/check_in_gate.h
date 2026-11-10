@@ -4,7 +4,7 @@
  * data_ov004_0225827c points to the last one started.
  *
  * Its model takes the field's ground texture first, then its own; the lights of seven
- * materials ("m_grd_clf" and others) are set to the overlay's light mask, and the colour of
+ * materials ("m_grd_clf" and others) are set to the overlay's light mask, and the color of
  * three materials ("m_lt", "m_ltdoor", "m_open") follows the time of day while it is drawn, from
  * a table of 24 hours (data_ov004_02247784) blended by the minute. It plays a joint animation
  * and a material animation (at 0x290) together, and stands in two fixed collision boxes.
@@ -25,7 +25,7 @@
 #include "rmo_object.h"
 #include "types.h"
 
-#define CHECK_IN_GATE_LIGHTS 3 /* the materials whose colour follows the time of day */
+#define CHECK_IN_GATE_LIGHTS 3 /* the materials whose color follows the time of day */
 #define CHECK_IN_GATE_BOXES 2
 
 typedef struct CheckInGate {

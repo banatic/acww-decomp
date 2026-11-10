@@ -3,7 +3,7 @@
  * player's, data_020c75c4). Each buffer holds a skin palette file of func_0205f970 bytes
  * followed by a hair palette file of func_0205f96c bytes, both read from "/PPal/" ("/PPal/
  * <index / 32>/<index>.nsbtx"); FieldActor_SetPalettes picks the files from the face, the
- * hair colour and the sun level. */
+ * hair color and the sun level. */
 #ifndef CLEAN_MAIN_ACTOR_PALETTES_H
 #define CLEAN_MAIN_ACTOR_PALETTES_H
 

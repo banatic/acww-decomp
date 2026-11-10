@@ -555,10 +555,10 @@ int InsectRoom_Update(InsectRoom *self)
     const InsectRoomCase *cases = self->base.param == 0 ? room0 : room1;
     u8 count = self->base.param == 0 ? 3 : 2;
     for (u8 i = 0; i < count; i++) {
-        Vec3 centre = {cases[i].x, 0, cases[i].z};
+        Vec3 center = {cases[i].x, 0, cases[i].z};
         fx32 width = cases[i].wide ? INSECT_CASE_LONG : INSECT_CASE_SHORT;
         fx32 depth = cases[i].wide ? INSECT_CASE_SHORT : INSECT_CASE_LONG;
-        added[i] = (u8) CollisionBox_Add(&boxes[i], width, depth, INSECT_CASE_HEIGHT, &centre, 0, NULL);
+        added[i] = (u8) CollisionBox_Add(&boxes[i], width, depth, INSECT_CASE_HEIGHT, &center, 0, NULL);
     }
     data_ov004_02259a24++;
     InsectRoom_EnterBodies(self);
@@ -793,7 +793,7 @@ static int insect_room_load_texture_anim(MuseumInsect *insect, Heap *heap)
 /* func_ov004_0223f6dc: a loading insect's files from its entry of the room's model pool: its
  * model (nothing more when it is missing), then its animation (kinds 35 and 56 keep theirs on
  * the current heap, for the room to free), started at speed 1 (0 for kinds 9 and 53); kind 24
- * also needs its texture animation. When all is there, its kind's initialiser runs, its sound
+ * also needs its texture animation. When all is there, its kind's initializer runs, its sound
  * starts, its kind's frame function is taken and it is shown. */
 void InsectRoom_LoadInsect(InsectRoom *self, MuseumInsect *insect)
 {
@@ -967,10 +967,10 @@ CLEAN_AS(func_ov004_0223fad0, InsectRoom_PlaceInsect)
 extern MuseumInsect *func_ov004_0223ecc8(MuseumInsect *self);
 
 /* func_ov004_0224519c: the static table's destructor (registered by the overlay's static
- * initialiser): each entry destructed, the last first (MuseumInsect_Destruct, handed to
+ * initializer): each entry destructed, the last first (MuseumInsect_Destruct, handed to
  * __cxa_vec_cleanup as the game's).
  * QUIRK: it gives back what __cxa_vec_cleanup leaves, the first entry's destructor's result:
- * the table's address. `object` is the null the initialiser registered it with. */
+ * the table's address. `object` is the null the initializer registered it with. */
 int InsectRoom_DestructTable(void *object)
 {
     (void) object;

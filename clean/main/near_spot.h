@@ -1,5 +1,5 @@
 /* A spot near a position (part 0x24 of the object at data_021d27ac, block_021d27ac.h): the
- * centre of a tile picked at random near a position (NearSpot_Pick, called by func_020be784)
+ * center of a tile picked at random near a position (NearSpot_Pick, called by func_020be784)
  * among the tiles TownSpot_TileSuits accepts, with a quarter turn to face. The spawner's
  * placer Spawner_PlaceFromPart24 puts the actor there; the spawner clears the "served" bit
  * when it is created and sets it when it serves an entry. */

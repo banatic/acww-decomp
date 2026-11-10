@@ -179,7 +179,7 @@ CLEAN_AS(func_020ba9d8, SkyProcess_Execute)
 
 /* func_020baa28 (vtable slot 0): the creation. The sky is drawn when data_020e54a8 is 0: its
  * objects' files read, the sky shown on the sub screen, its objects started and its line
- * handler added (Sky_Frame each frame); otherwise only the colours are loaded and the handler
+ * handler added (Sky_Frame each frame); otherwise only the colors are loaded and the handler
  * runs Sky_FrameHidden. The sound starts when the handler was added; its answer. */
 int SkyProcess_Create(SkyProcess *process)
 {

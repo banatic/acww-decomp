@@ -5,7 +5,7 @@
  * Every player owns a slice of LocalRelay.slice_size bytes in each MP turn. A block the game
  * sends (LocalRelay_SendBlock) is cut into fragments that fit a slice, the first carrying the
  * AIDs it is for and its size. A child sends its fragment to the parent after each MP
- * acknowledgement; the parent collects the fragments of every player, its own included, and at
+ * acknowledgment; the parent collects the fragments of every player, its own included, and at
  * the end of each MP turn sends them to all the children as one relay packet with a 4-bit
  * sequence number. Every player, the parent too, takes each slice of a relay packet as a
  * fragment from that AID and fills the receive buffer the game gave for it
@@ -65,12 +65,12 @@ typedef struct LocalRelayFragment {
     u16 size_high;
 } LocalRelayFragment;
 
-/* LocalRelayFragment.flags: its kind, whether it ends its block, and an acknowledgement or a
+/* LocalRelayFragment.flags: its kind, whether it ends its block, and an acknowledgment or a
  * request with the sequence number of a relay packet in the high four bits. */
 #define LOCAL_FRAGMENT_KIND 0x3
 #define LOCAL_FRAGMENT_FIRST 0    /* the first fragment of a block */
 #define LOCAL_FRAGMENT_NEXT 1     /* a later one */
-#define LOCAL_FRAGMENT_ACK_ONLY 2 /* no data: an acknowledgement alone */
+#define LOCAL_FRAGMENT_ACK_ONLY 2 /* no data: an acknowledgment alone */
 #define LOCAL_FRAGMENT_RESEND 3   /* no data: the relay packet of the high bits is asked again */
 #define LOCAL_FRAGMENT_LAST 0x4   /* the fragment ends its block */
 #define LOCAL_FRAGMENT_ACK 0x8    /* the relay packet of the high bits was received */

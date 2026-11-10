@@ -1,5 +1,5 @@
 /* Drawing particles with the 3D engine's geometry commands (particle.h): the texture, then
- * for each particle its polygon attributes, its matrix, its colour and one quad.
+ * for each particle its polygon attributes, its matrix, its color and one quad.
  *
  * HW: every function here writes the geometry engine's command registers, whose order is the
  * order of the commands. */
@@ -175,7 +175,7 @@ void ParticleDraw_BindTexture(const ParticleTexture *texture)
         particle_bits(param, PARTICLE_TEX_SIZE_S_SHIFT, 4) << 20 | particle_bits(param, PARTICLE_TEX_SIZE_T_SHIFT, 4) << 23 |
         particle_bits(param, PARTICLE_TEX_REPEAT_SHIFT, 2) << 16 | particle_bits(param, PARTICLE_TEX_FLIP_SHIFT, 2) << 18 |
         particle_bits(param, PARTICLE_TEX_COLOR0_SHIFT, 1) << 29;
-    /* Four-colour palettes are addressed in 8 bytes, the others in 16. */
+    /* Four-color palettes are addressed in 8 bytes, the others in 16. */
     REG_TEXPLTT_BASE = texture->palette_addr >> (format == PARTICLE_TEX_FORMAT_PLTT4 ? 3 : 4);
     REG_MTX_MODE = MTX_MODE_TEXTURE;
     REG_MTX_IDENTITY = 0;
@@ -357,7 +357,7 @@ void ParticleDraw_Stretched(ParticleSystem *sys, Particle *ptcl, ParticleDrawCal
 CLEAN_AS(func_020fc8c4, ParticleDraw_Stretched)
 
 /* A particle drawn facing the camera, turned by its rotation about the line of sight.
- * REQUIRES: the draw callback leaves the colours as they are (the parent's version reads them
+ * REQUIRES: the draw callback leaves the colors as they are (the parent's version reads them
  * before calling it, the child's after). */
 static void draw_billboard(ParticleSystem *sys, Particle *ptcl, ParticleDrawCallback callback, int child)
 {

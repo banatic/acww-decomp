@@ -9,7 +9,7 @@
 extern MemberPointer data_021c1d54[], data_021c1d6c[], data_021c1e14[], data_021c1f04[], data_021c1fe4[], data_021c2044[],
     data_021c219c[], data_021c222c[], data_021c22d4[], data_021c2394[], data_021c2454[], data_021c252c[], data_021c2704[],
     data_021c283c[], data_021c29d4[];
-/* The overlay's tables, as its static initialiser fills them. */
+/* The overlay's tables, as its static initializer fills them. */
 extern const MemberPointer data_ov069_02268304[], data_ov069_0226831c[], data_ov069_02268334[], data_ov069_02268364[],
     data_ov069_022683ac[], data_ov069_0226840c[], data_ov069_0226846c[], data_ov069_022684fc[], data_ov069_022685a4[],
     data_ov069_02268664[], data_ov069_02268724[], data_ov069_022687fc[], data_ov069_022688d4[], data_ov069_02268a0c[],

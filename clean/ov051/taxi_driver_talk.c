@@ -387,7 +387,7 @@ void TaxiDriverTalk_OnLineEnded(TaxiDriverTalk *talk)
 CLEAN_AS(_ZN18Obj_ov051_0226180419func_ov051_02260928Ev, TaxiDriverTalk_OnLineEnded)
 
 /* func_ov051_02260b60 (the lines 0x25 and 0x26): starting a new player or a new town, the
- * current player's face, hair colour, head and clothes from its points and gender: the face is
+ * current player's face, hair color, head and clothes from its points and gender: the face is
  * data_ov051_022614cc's for the points and the gender (8 more for girls), the rest
  * main's looks of that face and gender (data_020d19d0). Then the talk is given the message
  * data_021f43e8 (with no file name) and the driver leaves (state 4).

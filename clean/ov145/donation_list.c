@@ -1,5 +1,5 @@
 /* The museum donation list of overlay 145 (donation_list.h): its destructors, its flags, the
- * fade of the text colour, the cursor, the tabs, the list's rows and its scrolling. */
+ * fade of the text color, the cursor, the tabs, the list's rows and its scrolling. */
 #include "donation_list.h"
 
 #include <assert.h>
@@ -74,12 +74,12 @@ extern void MIi_CpuClear16(u16 value, void *destination, u32 size);
 /* The frame: layer 6. */
 #define DONATION_FRAME_LAYER 6
 
-/* The colours of the text that blend: from colour 7 of the file (level 0) to its colour 15
- * (DONATION_FADE_FULL), into colour 15. */
-#define DONATION_COLOUR_FROM 7
-#define DONATION_COLOUR_TO 15
+/* The colors of the text that blend: from color 7 of the file (level 0) to its color 15
+ * (DONATION_FADE_FULL), into color 15. */
+#define DONATION_COLOR_FROM 7
+#define DONATION_COLOR_TO 15
 
-/* The tabs' place: centred at x 0x94 - 36 * tab, y 0xad; touched in 32 pixels from x
+/* The tabs' place: centered at x 0x94 - 36 * tab, y 0xad; touched in 32 pixels from x
  * 0x84 - 36 * tab and in y 0x9d-0xbc. */
 #define DONATION_TAB_X 0x94
 #define DONATION_TAB_Y 0xad
@@ -115,7 +115,7 @@ extern void MIi_CpuClear16(u16 value, void *destination, u32 size);
 #define DONATION_GIVER_BASE 0xf4
 #define DONATION_GIVER_STEP 0x10
 #define DONATION_GIVER_WIDTH 8
-#define DONATION_TEXT_COLOUR 0xf
+#define DONATION_TEXT_COLOR 0xf
 #define DONATION_TEXT_SHADOW 7
 #define DONATION_NO_GIVER_MESSAGE 0xcc
 
@@ -193,7 +193,7 @@ CLEAN_AS(func_ov145_02299668, DonationList_TestFlags)
 /* func_ov145_0229967c: a frame of the fade (DonationListFade). Fading out, the level goes down
  * a step a frame; at 0 the fade turns to fading in and the selected tab is shown. Fading in, it
  * goes up to DONATION_FADE_FULL, where the fade ends (that frame blends nothing). Every other
- * frame of a fade blends the colour at the level.
+ * frame of a fade blends the color at the level.
  * QUIRK: a fade mode above 2 blends every frame and never ends; the game sets none. */
 void DonationList_StepFade(DonationList *self)
 {
@@ -219,42 +219,42 @@ void DonationList_StepFade(DonationList *self)
         default:
             break;
     }
-    DonationList_BlendTextColour(self, self->fade);
+    DonationList_BlendTextColor(self, self->fade);
 }
 CLEAN_AS(func_ov145_0229967c, DonationList_StepFade)
 
-/* The red, green and blue (0-31) of a BGR555 colour. */
-static int colour_red(u16 colour)
+/* The red, green and blue (0-31) of a BGR555 color. */
+static int color_red(u16 color)
 {
-    return colour & 0x1f;
+    return color & 0x1f;
 }
 
-static int colour_green(u16 colour)
+static int color_green(u16 color)
 {
-    return (colour & 0x3e0) >> 5;
+    return (color & 0x3e0) >> 5;
 }
 
-static int colour_blue(u16 colour)
+static int color_blue(u16 color)
 {
-    return (colour & 0x7c00) >> 10;
+    return (color & 0x7c00) >> 10;
 }
 
-/* func_ov145_022996f0: the file's palette copied to `palette` (MIi_CpuCopy16), its colour 15
- * made the blend of the file's colours 7 and 15 at `level` thirds of the way to 15 (each
+/* func_ov145_022996f0: the file's palette copied to `palette` (MIi_CpuCopy16), its color 15
+ * made the blend of the file's colors 7 and 15 at `level` thirds of the way to 15 (each
  * channel truncated to 8 bits), and the palette queued for layer 4's palette 3. */
-void DonationList_BlendTextColour(DonationList *self, int level)
+void DonationList_BlendTextColor(DonationList *self, int level)
 {
     MIi_CpuCopy16(self->palette_file, self->palette, sizeof(self->palette));
-    u16 from = self->palette_file[DONATION_COLOUR_FROM];
-    u16 to = self->palette_file[DONATION_COLOUR_TO];
+    u16 from = self->palette_file[DONATION_COLOR_FROM];
+    u16 to = self->palette_file[DONATION_COLOR_TO];
     int rest = DONATION_FADE_FULL - level;
-    u8 red = (u8) ((colour_red(to) * level + colour_red(from) * rest) / DONATION_FADE_FULL);
-    u8 green = (u8) ((colour_green(to) * level + colour_green(from) * rest) / DONATION_FADE_FULL);
-    u8 blue = (u8) ((colour_blue(to) * level + colour_blue(from) * rest) / DONATION_FADE_FULL);
-    self->palette[DONATION_COLOUR_TO] = (u16) (red | (green << 5) | (blue << 10));
+    u8 red = (u8) ((color_red(to) * level + color_red(from) * rest) / DONATION_FADE_FULL);
+    u8 green = (u8) ((color_green(to) * level + color_green(from) * rest) / DONATION_FADE_FULL);
+    u8 blue = (u8) ((color_blue(to) * level + color_blue(from) * rest) / DONATION_FADE_FULL);
+    self->palette[DONATION_COLOR_TO] = (u16) (red | (green << 5) | (blue << 10));
     LayerTask_QueuePalette(&self->palette_task, (int) (uintptr_t) self->palette, DONATION_LIST_LAYER, DONATION_TEXT_PALETTE);
 }
-CLEAN_AS(func_ov145_022996f0, DonationList_BlendTextColour)
+CLEAN_AS(func_ov145_022996f0, DonationList_BlendTextColor)
 
 /* func_ov145_022997d0: the cursor moved by the keys the repeat took (`keys`). On a tab, left
  * goes to the next tab (up to 3), right to the one before or from tab 0 to the close button, and
@@ -503,10 +503,10 @@ CLEAN_AS(func_ov145_02299bd0, DonationList_UploadPending)
 static void donation_open_row(TextLabel *name, TextLabel *giver, int place)
 {
     TextLabel_OpenStyledBox2(name, DONATION_TEXT_LAYER, place * DONATION_NAME_STEP + DONATION_NAME_BASE, DONATION_NAME_WIDTH,
-                             DONATION_TEXT_COLOUR, DONATION_TEXT_SHADOW, 0);
+                             DONATION_TEXT_COLOR, DONATION_TEXT_SHADOW, 0);
     TextLabel_Show(name, 0, 0);
     TextLabel_OpenStyledBox2(giver, DONATION_TEXT_LAYER, place * DONATION_GIVER_STEP + DONATION_GIVER_BASE,
-                             DONATION_GIVER_WIDTH, DONATION_TEXT_COLOUR, DONATION_TEXT_SHADOW, 0);
+                             DONATION_GIVER_WIDTH, DONATION_TEXT_COLOR, DONATION_TEXT_SHADOW, 0);
     TextLabel_Show(giver, 0, 0);
 }
 

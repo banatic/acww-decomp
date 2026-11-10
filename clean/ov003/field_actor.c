@@ -1971,7 +1971,7 @@ void FieldActor_EnterState73(FieldActor *actor, const StateRequest *request, int
     u8 z = request->payload[1];
     Vec3 point;
 
-    AcreTile_TileCentre(&point, x, z);
+    AcreTile_TileCenter(&point, x, z);
     actor->work.s73.x = point.x;
     actor->work.s73.z = point.z;
     actor->work.s73.effect = -1;
@@ -3099,7 +3099,7 @@ int FieldActor_RequestState67(FieldActor *actor, const Vec3 *at, int priority, i
     Vec3 middle;
 
     begin_request(&request, 0x67, priority, arg);
-    AcreTile_SnapToTileCentre(&middle, at);
+    AcreTile_SnapToTileCenter(&middle, at);
     Vec3 copy = middle;
     State67_CopyPoint((Vec3 *) (void *) request.payload, &copy);
     return finish_request(actor, &request);
@@ -3214,7 +3214,7 @@ void FieldActor_EnterState66(FieldActor *actor, const StateRequest *request, int
     int next = args->next;
     Vec3 point;
 
-    AcreTile_TileCentre(&point, (u32) x, (u32) z);
+    AcreTile_TileCenter(&point, (u32) x, (u32) z);
     s16 yaw = Math_Atan2(sub32(point.x, actor->position.x), sub32(point.z, actor->position.z));
     Vec3 copy = point;
     State66Work_Set(&actor->work.s66, (u8) next, (u16) yaw, &copy);
@@ -3753,7 +3753,7 @@ void FieldActor_EnterState62(FieldActor *actor, const StateRequest *request, int
     u8 kind = args->kind;
     Vec3 point;
 
-    AcreTile_TileCentre(&point, args->x, args->z);
+    AcreTile_TileCenter(&point, args->x, args->z);
     work->item = args->item;
     work->kind = kind;
     work->point = point;
@@ -3857,7 +3857,7 @@ void FieldActor_EnterState61(FieldActor *actor, const StateRequest *request, int
     u8 z = args->z;
     Vec3 point;
 
-    AcreTile_TileCentre(&point, x, z);
+    AcreTile_TileCenter(&point, x, z);
     u16 item = args->item;
     if (kind == 2) {
         if (is_local_player(actor)) {
@@ -4331,7 +4331,7 @@ void FieldActor_State5fMessage(FieldActor *actor, int arg)
     u8 kind;
     SavedItemTile_Get(&actor->saved.item_tile, tile, &item, &kind);
     Vec3 point;
-    AcreTile_TileCentre(&point, tile[0], tile[1]);
+    AcreTile_TileCenter(&point, tile[0], tile[1]);
     FieldActor_RequestState5f(actor, &point, item, kind, 6, (s16) arg);
 }
 CLEAN_AS(func_ov003_022115a4, FieldActor_State5fMessage)
@@ -5046,7 +5046,7 @@ int FieldActor_ActAt(FieldActor *actor, Vec3 *point, u8 use_point)
     if (use_point) {
         copy_point(&at, point);
     } else {
-        AcreTile_TileCentre(&at, work->x, work->z);
+        AcreTile_TileCenter(&at, work->x, work->z);
         if (work->has_target == 0) {
             first_look = TRUE;
             use_point = 1;
@@ -5105,7 +5105,7 @@ CLEAN_AS(func_ov003_02212574, FieldActor_ActAt)
 void FieldActor_ContactState5aTile(FieldActor *actor)
 {
     Vec3 middle;
-    AcreTile_TileCentre(&middle, actor->work.s5a.x, actor->work.s5a.z);
+    AcreTile_TileCenter(&middle, actor->work.s5a.x, actor->work.s5a.z);
     FieldActor_SetContactBSized(actor, &middle, 0xf33, 0x1000);
     FieldBody_Enter((FieldBody *) actor->unk_1c4);
 }
@@ -5322,7 +5322,7 @@ void FieldActor_EnterState59(FieldActor *actor, const StateRequest *request, int
     State59Saved_Set(&actor->saved.s59, x, z, fixed);
     FieldActor_PlayAnimationOnce(actor, 0x49, 3, 0);
     Vec3 point;
-    AcreTile_TileCentre(&point, (u32) x, (u32) z);
+    AcreTile_TileCenter(&point, (u32) x, (u32) z);
     if (fixed == 0) {
         /* QUIRK: the speed is taken as it is: a negative one adds nothing, and one within 0x171
          * of -0x80000000 wraps round to a large positive one. */
@@ -5339,7 +5339,7 @@ void FieldActor_EnterState59(FieldActor *actor, const StateRequest *request, int
         Vec3 end;
         FieldActor_PointAhead(&end, actor, &actor->position, (const u16 *) &actor->yaw, &distance);
         point = end;
-        AcreTile_SnapToTileCentre(&point, &point);
+        AcreTile_SnapToTileCenter(&point, &point);
     }
     s16 yaw = Math_Atan2(sub32(point.x, actor->start_position.x), sub32(point.z, actor->start_position.z));
     Vec3 copy = point;
@@ -6470,7 +6470,7 @@ int FieldActor_ClassifyState56(FieldActor *actor, const u8 *has_insect, const Ve
             return *has_insect ? 1 : 2;
         }
         FieldActor_PointAhead(&ahead, actor, &actor->position, (const u16 *) &actor->yaw, &data_ov003_0223811c);
-        AcreTile_SnapToTileCentre(&ahead, &ahead);
+        AcreTile_SnapToTileCenter(&ahead, &ahead);
         if (CollisionQuery_GroundY(&ahead, &surface, 0x19) >= 0x400) {
             stop_state56(actor);
             if (*has_insect && FieldActor_State56Reaches(actor, &ahead, insect, insect_flag)) {
@@ -6481,7 +6481,7 @@ int FieldActor_ClassifyState56(FieldActor *actor, const u8 *has_insect, const Ve
     } else if (anim_passed(actor, 3)) {
         if (*has_insect) {
             FieldActor_PointAhead(&ahead, actor, &actor->position, (const u16 *) &actor->yaw, &data_ov003_02238120);
-            AcreTile_SnapToTileCentre(&ahead, &ahead);
+            AcreTile_SnapToTileCenter(&ahead, &ahead);
             if (CollisionQuery_GroundY(&ahead, &surface, 0x19) >= 0x400) {
                 return FieldActor_State56Reaches(actor, &ahead, insect, insect_flag) ? 1 : 2;
             }
@@ -8187,7 +8187,7 @@ void FieldActor_ActState4a(FieldActor *actor)
     u8 x = work->x;
     u8 z = work->z;
     Vec3 point;
-    AcreTile_TileCentre(&point, x, z);
+    AcreTile_TileCenter(&point, x, z);
     s16 angle = (s16) (actor->yaw + 0x2000);
     EffectSystem_StartKind(2, &point, &angle, 0);
 
@@ -10256,7 +10256,7 @@ void FieldActor_EnterState17(FieldActor *actor, const StateRequest *request, int
     const TileArgs *args = (const TileArgs *) (const void *) request->payload;
     Vec3 point;
 
-    AcreTile_TileCentre(&point, args->x, args->z);
+    AcreTile_TileCenter(&point, args->x, args->z);
     copy_point(&actor->work.s17.point, &point);
     actor->work.s17.unk_0c = 0;
     FieldActor_PlayAnimationOnce(actor, 0x14, 3, 0);
@@ -11169,10 +11169,10 @@ int FieldActor_PlayerFramesToActOnTile(const Vec3 *point, int player)
     int left = 0;
     Vec3 at = {0, 0, 0};
     if (actor->state == 0x49) {
-        AcreTile_TileCentre(&at, actor->work.s49.x, actor->work.s49.z);
+        AcreTile_TileCenter(&at, actor->work.s49.x, actor->work.s49.z);
         left = 8 - frame;
     } else if (actor->state == 0x5d) {
-        AcreTile_TileCentre(&at, actor->work.s5d.x, actor->work.s5d.z);
+        AcreTile_TileCenter(&at, actor->work.s5d.x, actor->work.s5d.z);
         left = 5 - frame;
     }
     if (left > 0 && FieldActor_SameTile(point, &at)) {

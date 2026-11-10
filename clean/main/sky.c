@@ -60,7 +60,7 @@ static_assert(sizeof(SkyPalette) == 0x20, "a palette");
 #define REG_DB_BG3X REG32(0x04001038)
 #define REG_DB_BG3Y REG32(0x0400103c)
 #define REG_DB_BLDCNT REG16(0x04001050)
-#define REG_BACKDROP REG16(0x05000000)    /* the main screen's palette colour 0 */
+#define REG_BACKDROP REG16(0x05000000)    /* the main screen's palette color 0 */
 #define REG_DB_BACKDROP REG16(0x05000400) /* the sub screen's */
 
 #define DISPCNT_BG1 0x0200
@@ -249,7 +249,7 @@ unsigned short Sky_StarsX(void)
 }
 CLEAN_AS(func_020ba494, Sky_StarsX)
 
-/* func_020ba4a0: the palette shown: the mix during a change of colours, else the level's. */
+/* func_020ba4a0: the palette shown: the mix during a change of colors, else the level's. */
 SkyPalette *Sky_ShownPalette(void)
 {
     if (data_021f75b0.next_weather != data_021f75b0.weather) {
@@ -321,7 +321,7 @@ static int is_daytime(void)
 /* func_020ba540: the sky shown on `screen`: background mode 1 there, the stars shown at night
  * only, the objects and the clouds shown, backgrounds 1 (the stars, priority 3) and 3 (the
  * clouds, priority 2) set up, and its HBlank and VBlank functions asked for. Its clouds, stars
- * and colours are loaded unless it is already set up on the sub screen; 1 when they were.
+ * and colors are loaded unless it is already set up on the sub screen; 1 when they were.
  * The player's Z is taken as the clouds' reference in any case.
  * HW: each BGCNT is read and written in this order. */
 int Sky_ShowOn(int screen)
@@ -417,7 +417,7 @@ CLEAN_AS(func_020ba6f4, Sky_LoadStars)
 
 /* func_020ba78c: the rows of the change's cloud screen already drawn over the old clouds,
  * drawn again on `screen`'s layer; 1 when there are none or they were.
- * Once the colours are the level's (`next_weather` is `weather`), the rows not yet replaced by
+ * Once the colors are the level's (`next_weather` is `weather`), the rows not yet replaced by
  * the level's clouds are the ones drawn, from the change's screen up or down to the level
  * during SKY_STEP_LOAD and SKY_STEP_FINISH.
  * QUIRK: the change's screen is loaded again into change_screen_data, from the kind the
@@ -471,7 +471,7 @@ int Sky_ReloadChangeRows(int screen)
 }
 CLEAN_AS(func_020ba78c, Sky_ReloadChangeRows)
 
-/* func_020ba86c: the colours and the level's clouds on `screen`: the colour tables and
+/* func_020ba86c: the colors and the level's clouds on `screen`: the color tables and
  * palettes, the clouds' characters and screen; 1 when all loaded. */
 int Sky_LoadClouds(int screen)
 {
@@ -496,7 +496,7 @@ int Sky_LoadClouds(int screen)
 CLEAN_AS(func_020ba86c, Sky_LoadClouds)
 
 /* func_020baad8: the frame function while the sky is not drawn: the change of weather timed
- * (unless state flag 1 is set), then the colours worked out. */
+ * (unless state flag 1 is set), then the colors worked out. */
 void Sky_FrameHidden(void)
 {
     u32 seconds, fade;
@@ -509,7 +509,7 @@ void Sky_FrameHidden(void)
 CLEAN_AS(func_020baad8, Sky_FrameHidden)
 
 /* func_020bab04: the frame function while the sky is drawn: the gradient, and unless state flag
- * 1 is set the clouds and the change of weather; the colours; with a field camera the shift the
+ * 1 is set the clouds and the change of weather; the colors; with a field camera the shift the
  * other set's lines will use (from the state flags' value and the camera's); the stars'
  * height.
  * REQUIRES: shift_index is 0 or 1. */
@@ -531,7 +531,7 @@ void Sky_Frame(void)
 CLEAN_AS(func_020bab04, Sky_Frame)
 
 /* func_020bab74: the VBlank function of the main screen without the sky: the sub screen's
- * backdrop the gradient's top colour, the main one the last line's colour of the first table,
+ * backdrop the gradient's top colour, the main one the last line's color of the first table,
  * backgrounds 1 and 3 off.
  * HW: the sub backdrop, the main backdrop, then DISPCNT read and written. */
 void Sky_VBlankOff(void)
@@ -557,7 +557,7 @@ static u16 stars_scroll_y(int shift)
 }
 
 /* func_020babb4: the VBlank function of the sky on the main screen: both backdrops the
- * gradient's top colour; background 3 set for the first line; the stars hidden by day; past
+ * gradient's top color; background 3 set for the first line; the stars hidden by day; past
  * line LINE_HIDE_BG3 of the shift the clouds and stars hidden, past LINE_HIDE_BG1 the stars; the
  * blending; the stars' scroll; window 0 covering the lines the shift leaves to the sky.
  * REQUIRES: shift_index and shown are 0 or 1.
@@ -618,7 +618,7 @@ void Sky_VBlankMain(void)
 CLEAN_AS(func_020babb4, Sky_VBlankMain)
 
 /* func_020bad44: the VBlank function of the sky on the sub screen: its backdrop the gradient's
- * top colour, the main screen's its bottom colour; background 3 set for the first line; the
+ * top color, the main screen's its bottom color; background 3 set for the first line; the
  * stars hidden by day (the display copy left alone while state flag 1 is set); the blending;
  * the stars' scroll.
  * REQUIRES: shift_index and shown are 0 or 1.
@@ -753,14 +753,14 @@ void Sky_UpdateClouds(void)
 }
 CLEAN_AS(func_020bae60, Sky_UpdateClouds)
 
-/* A colour component's mix: `a` weighted by 0x100 - t, `b` by t. */
+/* A color component's mix: `a` weighted by 0x100 - t, `b` by t. */
 static u16 mix(int a, int b, int t)
 {
     return (u16) ((a * (0x100 - t) + b * t) >> 8);
 }
 
-/* func_020bb090: the backdrop gradient of the set not shown, which is then shown: the top colour
- * down to top_line, the bottom colour from bottom_line, a mix of the two between.
+/* func_020bb090: the backdrop gradient of the set not shown, which is then shown: the top color
+ * down to top_line, the bottom color from bottom_line, a mix of the two between.
  * REQUIRES: data_021f6f70.shown is 0 or 1. */
 void Sky_UpdateGradient(void)
 {
@@ -790,7 +790,7 @@ void Sky_UpdateGradient(void)
 }
 CLEAN_AS(func_020bb090, Sky_UpdateGradient)
 
-/* func_020bb18c: an end of the gradient (0 the top, 1 the bottom): its colour and line. */
+/* func_020bb18c: an end of the gradient (0 the top, 1 the bottom): its color and line. */
 void Sky_SetGradientEnd(LineGradient *gradient, int end, unsigned short color, unsigned int line)
 {
     *(u16 *) ((uintptr_t) &gradient->top_color + (u32) end * 2) = color;
@@ -891,7 +891,7 @@ void Sky_HiddenLoad(Sky *sky)
 }
 CLEAN_AS(func_020bb2ec, Sky_HiddenLoad)
 
-/* func_020bb30c: SKY_STEP_FADE while hidden: the colours faded over SKY_CHANGE_FRAMES frames,
+/* func_020bb30c: SKY_STEP_FADE while hidden: the colors faded over SKY_CHANGE_FRAMES frames,
  * then the next level is the level. */
 void Sky_HiddenFade(Sky *sky)
 {
@@ -982,7 +982,7 @@ void Sky_ChangeLoad(Sky *sky)
 CLEAN_AS(func_020bb480, Sky_ChangeLoad)
 
 /* func_020bb4e0: SKY_STEP_FADE while drawn: the change's clouds drawn, a row when it is out of
- * view, and the colours faded a step a row; after the last row the next level is the level,
+ * view, and the colors faded a step a row; after the last row the next level is the level,
  * with the cloud variant drawn for the change. */
 void Sky_ChangeFade(Sky *sky)
 {
@@ -1050,7 +1050,7 @@ int Sky_LoadCloudScreen(Sky *sky, u8 **data, u32 *size, int kind, int weather)
 }
 CLEAN_AS(func_020bb608, Sky_LoadCloudScreen)
 
-/* func_020bb66c: the clouds' characters of `weather` (16 to 47, 256 colours) on `layer`; 1 when
+/* func_020bb66c: the clouds' characters of `weather` (16 to 47, 256 colors) on `layer`; 1 when
  * loaded. */
 int Sky_LoadCloudChars(Sky *sky, int weather, int layer)
 {
@@ -1177,8 +1177,8 @@ int Sky_FallingKindOf(Sky *sky, int weather)
 }
 CLEAN_AS(func_020bb830, Sky_FallingKindOf)
 
-/* func_020bb89c: the colour tables and the three palette buffers; then the palette loaded on
- * `screen` when the sky is drawn, else only the colours worked out; 1 when all done. */
+/* func_020bb89c: the color tables and the three palette buffers; then the palette loaded on
+ * `screen` when the sky is drawn, else only the colors worked out; 1 when all done. */
 int Sky_LoadColors(int screen)
 {
     if (!Sky_LoadHourColors() || !Sky_AllocPalettes(data_021f75b0.palettes)) {
@@ -1220,9 +1220,9 @@ void Sky_Reset(Sky *sky)
 }
 CLEAN_AS(func_020bb8e0, Sky_Reset)
 
-/* The sky's colours of the hour: each level's hour colours (two sets of two half-days of 12
+/* The sky's colours of the hour: each level's hour colors (two sets of two half-days of 12
  * palettes, files of data_020e5fe0) mixed between this hour and the next by the minute, then
- * between the level and the next level by the fade; the light colours, light levels and fog
+ * between the level and the next level by the fade; the light colors, light levels and fog
  * offset of the 3D scene mixed the same way from the tables of each level. */
 
 #include "autoload_2/fx_math.h"
@@ -1230,20 +1230,20 @@ CLEAN_AS(func_020bb8e0, Sky_Reset)
 #include "scene_display.h"
 
 #define SKY_WEIGHT_ONE 0x1000      /* the weights are fractions of 0x1000 */
-#define SKY_MIXED_COLORS 6         /* the palette colours mixed: 0 to 5 */
-#define SKY_HALF_DAY_HOURS 12      /* palettes of a half-day's colour table */
+#define SKY_MIXED_COLORS 6         /* the palette colors mixed: 0 to 5 */
+#define SKY_HALF_DAY_HOURS 12      /* palettes of a half-day's color table */
 #define SKY_HOUR_PALETTE_SIZE 0x20 /* bytes of a palette in it */
 #define SKY_LIGHT_COLORS 4
 #define SKY_LIGHT_LEVELS 2
 #define SKY_CLEAR_DEPTH 0x1c2
 #define SKY_RAIN_ANGLE_RANGE 0x2aaa /* a sixth of a turn */
 
-extern const char *const data_020e5fe0[2][2];       /* the hour colour files */
-extern const s32 data_020d2364[SKY_WEATHER_LEVELS]; /* the set of hour colours per level */
-extern const u16 *const *const data_020e6084[];     /* per level: 4 light colours per hour */
+extern const char *const data_020e5fe0[2][2];       /* the hour color files */
+extern const s32 data_020d2364[SKY_WEATHER_LEVELS]; /* the set of hour colors per level */
+extern const u16 *const *const data_020e6084[];     /* per level: 4 light colors per hour */
 extern const u16 *const data_020e6098[];            /* per level: the fog offset per hour */
 extern const u8 *const *const data_020e60c0[];      /* per level: 2 light levels per hour */
-extern u16 data_021f6cf0[SKY_LIGHT_COLORS];         /* the light colours of now */
+extern u16 data_021f6cf0[SKY_LIGHT_COLORS];         /* the light colors of now */
 extern u8 data_021f6cf8[SKY_LIGHT_LEVELS];          /* the light levels of now */
 extern void NNS_G3dGlbMaterialColorSpecEmi(int specular, unsigned short emission, int shininess);
 
@@ -1276,7 +1276,7 @@ Sky *Sky_Construct(Sky *sky)
 }
 CLEAN_AS(func_020bb99c, Sky_Construct)
 
-/* The palette of `hour` (0 to 23) in the hour colours of level `weather`.
+/* The palette of `hour` (0 to 23) in the hour colors of level `weather`.
  * REQUIRES: weather is a level. */
 static const SkyPalette *hour_palette(int weather, int hour)
 {
@@ -1286,8 +1286,8 @@ static const SkyPalette *hour_palette(int weather, int hour)
     return (const SkyPalette *) (const void *) (table + (hour - half * SKY_HALF_DAY_HOURS) * SKY_HOUR_PALETTE_SIZE);
 }
 
-/* func_020bba14: the palettes of now: the level's (this hour's colours towards the next hour's
- * by the minute), during a change of colours the next level's and the mix of the two by the
+/* func_020bba14: the palettes of now: the level's (this hour's colors towards the next hour's
+ * by the minute), during a change of colors the next level's and the mix of the two by the
  * fade; the gradient's ends from the palette shown (the top at line 0, the bottom at line
  * 0xc0); then the light of the 3D scene.
  * REQUIRES: weather and next_weather are levels. */
@@ -1319,8 +1319,8 @@ void Sky_UpdateColors(void)
 }
 CLEAN_AS(func_020bba14, Sky_UpdateColors)
 
-/* func_020bbb20: the colours of now worked out, and the palette shown (the mix during a change
- * of colours, else the level's) loaded as colours 1 on `screen`'s layer; its answer. */
+/* func_020bbb20: the colors of now worked out, and the palette shown (the mix during a change
+ * of colors, else the level's) loaded as colours 1 on `screen`'s layer; its answer. */
 int Sky_LoadPalette(int screen)
 {
     Sky_UpdateColors();
@@ -1330,8 +1330,8 @@ int Sky_LoadPalette(int screen)
 }
 CLEAN_AS(func_020bbb20, Sky_LoadPalette)
 
-/* func_020bbb6c: the weights of the colours' mixes: the minute's in its hour (minute / 60 of
- * SKY_WEIGHT_ONE, rounded down) and, during a change of colours, the fade's. */
+/* func_020bbb6c: the weights of the colors' mixes: the minute's in its hour (minute / 60 of
+ * SKY_WEIGHT_ONE, rounded down) and, during a change of colors, the fade's. */
 void Sky_ColorWeights(Sky *sky, u32 *minute_weight, u32 *fade_weight)
 {
     Time now;
@@ -1345,7 +1345,7 @@ void Sky_ColorWeights(Sky *sky, u32 *minute_weight, u32 *fade_weight)
 }
 CLEAN_AS(func_020bbb6c, Sky_ColorWeights)
 
-/* func_020bbbc0: colours 0 to 5 of a palette mixed from two (`weight` of the second). */
+/* func_020bbbc0: colors 0 to 5 of a palette mixed from two (`weight` of the second). */
 void Sky_MixPalette(SkyPalette *dst, const SkyPalette *a, const SkyPalette *b, int weight)
 {
     u16 *to = (u16 *) (void *) dst;
@@ -1357,14 +1357,14 @@ void Sky_MixPalette(SkyPalette *dst, const SkyPalette *a, const SkyPalette *b, i
 }
 CLEAN_AS(func_020bbbc0, Sky_MixPalette)
 
-/* A component of an RGB555 colour mixed, cut to its 5 bits and put back in its place. */
+/* A component of an RGB555 color mixed, cut to its 5 bits and put back in its place. */
 static u16 mix_component(u16 a, u16 b, int shift, int weight)
 {
     int value = ((a >> shift) & 0x1f) * (SKY_WEIGHT_ONE - weight) + ((b >> shift) & 0x1f) * weight;
     return (u16) (((value >> 12) & 0x1f) << shift);
 }
 
-/* func_020bbbf0: an RGB555 colour mixed from two (`weight` of the second, of SKY_WEIGHT_ONE),
+/* func_020bbbf0: an RGB555 color mixed from two (`weight` of the second, of SKY_WEIGHT_ONE),
  * its top bit cleared. */
 void Sky_MixColor(u16 *dst, const u16 *a, const u16 *b, int weight)
 {
@@ -1409,7 +1409,7 @@ int Sky_AllocPalettes(SkyPalette **palettes)
 }
 CLEAN_AS(func_020bbcfc, Sky_AllocPalettes)
 
-/* func_020bbd30: the four hour colour tables read, each allocated on its first use; 0 when one
+/* func_020bbd30: the four hour color tables read, each allocated on its first use; 0 when one
  * could not be. */
 int Sky_LoadHourColors(void)
 {
@@ -1440,7 +1440,7 @@ unsigned char Sky_LightLevel(int index)
 }
 CLEAN_AS(func_020bbef4, Sky_LightLevel)
 
-/* func_020bbf00: a light colour of now (2: the 3D materials' emission).
+/* func_020bbf00: a light color of now (2: the 3D materials' emission).
  * The address is computed as the ARM does, whatever the index. */
 short Sky_LightColor(int index)
 {
@@ -1448,9 +1448,9 @@ short Sky_LightColor(int index)
 }
 CLEAN_AS(func_020bbf00, Sky_LightColor)
 
-/* func_020bbf0c: the 3D scene's light of now: the light colours, light levels and fog offset
+/* func_020bbf0c: the 3D scene's light of now: the light colors, light levels and fog offset
  * mixed between this hour and the next; when the sky is drawn no fog, the clear depth
- * SKY_CLEAR_DEPTH and the clear colour the gradient's bottom; the materials' emission. */
+ * SKY_CLEAR_DEPTH and the clear color the gradient's bottom; the materials' emission. */
 void Sky_UpdateLight(int minute_weight, int fade_weight)
 {
     Time now;
@@ -1465,7 +1465,7 @@ void Sky_UpdateLight(int minute_weight, int fade_weight)
         Display3D_SetClearDepth(SKY_CLEAR_DEPTH);
         Display3D_SetClearColor(data_021f6f70.bottom_color);
     }
-    NNS_G3dGlbMaterialColorSpecEmi(0, (u16) SceneLights_EmissionColour(), 0);
+    NNS_G3dGlbMaterialColorSpecEmi(0, (u16) SceneLights_EmissionColor(), 0);
 }
 CLEAN_AS(func_020bbf0c, Sky_UpdateLight)
 
@@ -1486,7 +1486,7 @@ static int light_level_mix(int weather, int index, unsigned int hour, unsigned i
 }
 
 /* func_020bbf9c: the two light levels of now: the level's mixed between this hour and the next
- * by the minute, during a change of colours mixed with the next level's by the fade.
+ * by the minute, during a change of colors mixed with the next level's by the fade.
  * QUIRK: the hour mixes of a change are cut to 16 bits before the fade's mix. */
 void Sky_MixLightLevels(int minute_weight, int fade_weight, unsigned int hour, unsigned int next_hour)
 {
@@ -1515,7 +1515,7 @@ static unsigned int fog_offset_mix(int weather, unsigned int hour, unsigned int 
 }
 
 /* func_020bc078: the fog offset of now: the level's mixed between this hour and the next by the
- * minute, during a change of colours mixed with the next level's by the fade. */
+ * minute, during a change of colors mixed with the next level's by the fade. */
 void Sky_MixFogOffset(unsigned int minute_weight, unsigned int fade_weight, unsigned int hour, unsigned int next_hour)
 {
     const Sky *sky = &data_021f75b0;
@@ -1529,8 +1529,8 @@ void Sky_MixFogOffset(unsigned int minute_weight, unsigned int fade_weight, unsi
 }
 CLEAN_AS(func_020bc078, Sky_MixFogOffset)
 
-/* func_020bc110: the four light colours of now: the level's mixed between this hour and the
- * next by the minute, during a change of colours mixed with the next level's by the fade.
+/* func_020bc110: the four light colors of now: the level's mixed between this hour and the
+ * next by the minute, during a change of colors mixed with the next level's by the fade.
  * REQUIRES: weather and next_weather are levels, the hours 0 to 23. */
 void Sky_MixLightColors(int minute_weight, int fade_weight, int hour, int next_hour)
 {

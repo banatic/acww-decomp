@@ -3,10 +3,10 @@
  * (fader.h). As the fader's level rises from 0 to 1.0:
  *
  * - the lamps, up to three materials named "lp_m0", "lp_m1" and "lp_m2", glow: their emission
- *   colour goes from the scene's ambient material colour towards white, while the model's
- *   other materials take the ambient colour as theirs (at level 0 emission is turned off);
+ *   color goes from the scene's ambient material colour towards white, while the model's
+ *   other materials take the ambient color as theirs (at level 0 emission is turned off);
  * - the window, the material "m_window", goes from nearly clear (alpha 1) to opaque (30);
- * - the door, the material "m_door", gets a warm diffuse colour, up to red 31, green 27 and
+ * - the door, the material "m_door", gets a warm diffuse color, up to red 31, green 27 and
  *   blue 13.
  *
  * A material the model lacks is -1 and left alone. The lamps are a small C++ object with a
@@ -50,7 +50,7 @@ void BuildingLights_Bind(BuildingLights *lights, BuildingLightsModel *model, int
 BuildingLights *BuildingLights_Destruct(BuildingLights *lights);
 BuildingLights *BuildingLights_Construct(BuildingLights *lights);
 char *BuildingLights_LampName(BuildingLightsLamps *lamps, int index);
-int BuildingLights_BaseColour(void);
+int BuildingLights_BaseColor(void);
 void BuildingLights_ShowLamps(BuildingLightsLamps *lamps, BuildingLightsModel *model, int level);
 int BuildingLights_IsLamp(const BuildingLightsLamps *lamps, int material);
 void BuildingLights_BindLamps(BuildingLightsLamps *lamps, BuildingLightsModel *model);

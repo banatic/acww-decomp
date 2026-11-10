@@ -537,7 +537,7 @@ int Snowman_PlaceObjectNearby(int number, Vec3 *position, u16 *replaced)
     int count = 0;
     for (int i = 0; i < 8; i++) {
         Vec3 point;
-        AcreTile_TileCentre(&point, (u32) (x + data_ov003_0223660c[i].x), (u32) (z + data_ov003_0223660c[i].z));
+        AcreTile_TileCenter(&point, (u32) (x + data_ov003_0223660c[i].x), (u32) (z + data_ov003_0223660c[i].z));
         if (Snowman_CanStandAt(&point)) {
             usable |= (u8) (1 << i);
             count++;
@@ -552,7 +552,7 @@ int Snowman_PlaceObjectNearby(int number, Vec3 *position, u16 *replaced)
         if ((usable >> i) & 1) {
             if (seen == chosen) {
                 Vec3 point;
-                AcreTile_TileCentre(&point, (u32) (x + data_ov003_0223660c[i].x), (u32) (z + data_ov003_0223660c[i].z));
+                AcreTile_TileCenter(&point, (u32) (x + data_ov003_0223660c[i].x), (u32) (z + data_ov003_0223660c[i].z));
                 return Snowman_PlaceObject(number, &point, replaced) != 0;
             }
             seen++;

@@ -198,7 +198,7 @@ CLEAN_AS(func_02089cc0, FieldBody_TouchedWith)
  * and overlap, both upright and in the ground plane, is told of it: each is marked touched and
  * notes the other (a passive body only when this overlap is at least its deepest so far), and
  * each one's slot 2 is called with the other's kind, index and flags. Unless either is passive
- * or both are fixed, they are then pushed apart along the line between their centres by the
+ * or both are fixed, they are then pushed apart along the line between their centers by the
  * overlap: all of it onto the one that is not fixed, else shared, each moving by the other's
  * weight's part of half of it. The list is walked by its head, which ends empty.
  *

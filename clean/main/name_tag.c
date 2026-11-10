@@ -28,14 +28,14 @@ extern const CellAnimData data_020d5b3c[];
 extern const int data_020d0ac8[];
 #define NAME_TAG_DEFAULT_ANIM 10
 
-/* The colour kind 4 loads into the OBJ palettes: colour 14 of palette 5. */
+/* The color kind 4 loads into the OBJ palettes: color 14 of palette 5. */
 extern const u16 data_020d0adc;
 extern void GX_LoadOBJPltt(const void *src, u32 offset, u32 size);
-#define NAME_TAG_FIXED_COLOUR_OFFSET 0xbc
-#define NAME_TAG_FIXED_COLOUR_SIZE 2
+#define NAME_TAG_FIXED_COLOR_OFFSET 0xbc
+#define NAME_TAG_FIXED_COLOR_SIZE 2
 
 /* The text box: 20 tiles by 2 on OBJs of the main screen, at VRAM tile 0xc0 + 0x40 * kind (kind 4
- * at 0x1c8), in colour 0xd on background 0xf (0xe for kind 4). */
+ * at 0x1c8), in color 0xd on background 0xf (0xe for kind 4). */
 #define NAME_TAG_BOX_CELLS 0x14
 #define NAME_TAG_BOX_ROWS 2
 #define NAME_TAG_BOX_TILE 0xc0
@@ -102,7 +102,7 @@ void NameTag_OpenBox(NameTag *tag)
 CLEAN_AS(func_0208e05c, NameTag_OpenBox)
 
 /* func_0208e0dc: the tag sized to its name: the frame of the animation as many tiles wide as the
- * text (the last frame when the text is wider, the first for an empty text), the text centred in
+ * text (the last frame when the text is wider, the first for an empty text), the text centered in
  * those tiles, and the tag shifted for that frame. */
 void NameTag_LayOut(NameTag *tag)
 {
@@ -204,7 +204,7 @@ void NameTag_EnterAppearing(NameTag *tag)
 }
 CLEAN_AS(func_0208e200, NameTag_EnterAppearing)
 
-/* func_0208e214 (state 0): once asked to show, the box made (kind 4 loading its colour first),
+/* func_0208e214 (state 0): once asked to show, the box made (kind 4 loading its color first),
  * the tag laid out, and appearing. */
 void NameTag_StepHidden(NameTag *tag)
 {
@@ -212,7 +212,7 @@ void NameTag_StepHidden(NameTag *tag)
         return;
     }
     if (tag->kind == NAME_TAG_KIND_FIXED) {
-        NameTag_LoadFixedColour();
+        NameTag_LoadFixedColor();
     }
     NameTag_OpenBox(tag);
     NameTag_LayOut(tag);
@@ -229,11 +229,11 @@ void NameTag_EnterHidden(NameTag *tag)
 CLEAN_AS(func_0208e240, NameTag_EnterHidden)
 
 /* func_0208e24c: kind 4's colour loaded into the main screen's OBJ palettes. */
-void NameTag_LoadFixedColour(void)
+void NameTag_LoadFixedColor(void)
 {
-    GX_LoadOBJPltt(&data_020d0adc, NAME_TAG_FIXED_COLOUR_OFFSET, NAME_TAG_FIXED_COLOUR_SIZE);
+    GX_LoadOBJPltt(&data_020d0adc, NAME_TAG_FIXED_COLOR_OFFSET, NAME_TAG_FIXED_COLOR_SIZE);
 }
-CLEAN_AS(func_0208e24c, NameTag_LoadFixedColour)
+CLEAN_AS(func_0208e24c, NameTag_LoadFixedColor)
 
 /* func_0208e260: no longer asked to show, unless hidden; whether it was not hidden.
  * QUIRK: the result is 1 or 0 in a pointer, as the matching source declares it. */

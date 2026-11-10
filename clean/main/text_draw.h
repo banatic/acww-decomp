@@ -3,13 +3,13 @@
  *
  * A box (TextDrawBox, 0x7c bytes, class data_020dcf28: its constructors are in text_box.h) is
  * `cells` 8-pixel tiles wide and `rows` tiles high. Its text is drawn one strip of 8 pixel rows
- * at a time (TextDraw_Draw): the strip is cleared to the background colour in the 32-tile buffer
+ * at a time (TextDraw_Draw): the strip is cleared to the background color in the 32-tile buffer
  * data_021c8344 (4 bits per pixel), the derived class's layout (vtable slot 2) calls
  * TextDraw_DrawChar for each character, and the strip is sent to its destination
  * (TextDraw_UploadStrip): the tiles of BG0-BG3 or of the objects on the main screen, the sub
  * screen or both (through GX_Load...Char, from `first_tile` on), or a buffer in RAM.
  *
- * Two ranges of characters (by their index in the text) can be marked with colours of their
+ * Two ranges of characters (by their index in the text) can be marked with colors of their
  * own; the gap left between glyphs is painted with the mark's background too.
  *
  * Boxes are allocated in an expanded heap of 0x1800 bytes (data_021c8194) and kept in a list
@@ -38,7 +38,7 @@ enum TextDrawUpdate {
     TEXT_DRAW_AT_ONCE = 2,
 };
 
-/* A marked range of characters and its colours. */
+/* A marked range of characters and its colors. */
 typedef struct TextDrawMarkColors {
     u8 color;
     u8 background;
@@ -63,7 +63,7 @@ typedef struct TextDrawBox {
     s32 layer;                         /* 0x2c: 0-3 BG0-BG3, 4 objects (the GX_Load...Char tables' index) */
     u32 offset;                        /* 0x30: where the text starts, in pixels */
     u32 spacing;                       /* 0x34: pixels between glyphs */
-    u8 color;                          /* 0x38: the text's colour */
+    u8 color;                          /* 0x38: the text's color */
     u8 background;                     /* 0x39 */
     TextDrawMarkColors mark_colors[2]; /* 0x3a */
     u8 pad_3e[2];
@@ -80,7 +80,7 @@ typedef struct TextDrawBox {
     u32 pen;                    /* 0x68: x of the next glyph, in pixels */
     u32 strip_y;                /* 0x6c: the first pixel row of the strip */
     u32 dest_offset;            /* 0x70: the strip's offset in the destination, in bytes */
-    u8 start_color;             /* 0x74: the colour each strip starts with */
+    u8 start_color;             /* 0x74: the color each strip starts with */
     u8 last_strip;              /* 0x75 */
     u8 pad_76[2];
     u32 char_index; /* 0x78: of the character being drawn */

@@ -27,7 +27,7 @@
  * A cut costs 3,000 bells (line 8): once paid, the flag 7 of the block 0x021d27ac is set until
  * the cut's last line (0xe or 0x37), which also sets the daily bit 0x13. The player picks a
  * style (lines 0x2f to 0x36, by the player's byte 0x1c; lines 0x17 and 0x18 switch to the other
- * set of styles) and a colour (lines 9 to 0xb and 0x38). */
+ * set of styles) and a color (lines 9 to 0xb and 0x38). */
 #ifndef CLEAN_OV053_BARBER_TALK_H
 #define CLEAN_OV053_BARBER_TALK_H
 
@@ -63,9 +63,9 @@ typedef struct BarberTalk {
     u8 other_styles;      /* 0xb8: the styles offered are the other set's (line 0x17) */
     u8 pages;             /* 0xb9: the pages of the cut's last line gone on in the window */
     u8 style;             /* 0xba: the hair style picked */
-    u8 colour;            /* 0xbb: the hair colour picked */
+    u8 color;             /* 0xbb: the hair color picked */
     u8 old_style;         /* 0xbc: the player's hair style when the cut was paid for */
-    u8 old_colour;        /* 0xbd: and its colour */
+    u8 old_color;         /* 0xbd: and its color */
     u8 unk_be[2];         /* 0xbe */
 } BarberTalk;
 
@@ -83,7 +83,7 @@ void *BarberTalk_Construct(void *talk);
 void BarberTalk_Begin(BarberTalk *talk, struct Barber *owner);
 u32 BarberTalk_Topic(BarberTalk *talk);
 void BarberTalk_SetTopic(BarberTalk *talk, u32 topic);
-u8 BarberTalk_Colour(BarberTalk *talk);
+u8 BarberTalk_Color(BarberTalk *talk);
 u8 BarberTalk_Style(BarberTalk *talk);
 
 /* Its lines and answers (barber_talk.c). */

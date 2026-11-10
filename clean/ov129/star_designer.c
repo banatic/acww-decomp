@@ -158,7 +158,7 @@ int StarDesigner_TestFlags(StarDesigner *self, unsigned short mask)
 CLEAN_AS(func_ov129_0229b7ec, StarDesigner_TestFlags)
 
 /* func_ov129_0229d110: the sky loaded to sub BG0 and the scope to sub BG3, the twinkling started
- * on sub BG0, the scope's OBJs loaded; the panel's colours and its usual layout, "done" enabled
+ * on sub BG0, the scope's OBJs loaded; the panel's colors and its usual layout, "done" enabled
  * only with pieces drawn. */
 void StarDesigner_LoadLayers(StarDesigner *self)
 {
@@ -226,7 +226,7 @@ void StarDesigner_BeginInteractive(StarDesigner *self)
 }
 CLEAN_AS(func_ov129_0229d24c, StarDesigner_BeginInteractive)
 
-/* func_ov129_0229d268: the screen ends: the twinkling cancelled, the view's task ended, the
+/* func_ov129_0229d268: the screen ends: the twinkling canceled, the view's task ended, the
  * panel's texts closed, the player's state 10 asked for, the music faded back in and the
  * inventory's characters 0-0x10 loaded back to sub BG0. */
 void StarDesigner_TearDown(StarDesigner *self)
@@ -241,7 +241,7 @@ void StarDesigner_TearDown(StarDesigner *self)
 CLEAN_AS(func_ov129_0229d268, StarDesigner_TearDown)
 
 /* func_ov129_0229d2d0: the scene's values set up: no flag, the view reset, the free pointer at
- * the screen's centre, the key cursor on "done", nothing pointed at or flashed; every piece
+ * the screen's center, the key cursor on "done", nothing pointed at or flashed; every piece
  * free, then the other constellations' taken, nothing under the pointer, no end, and the
  * constellation loaded. The player held at a fixed point and the music's tracks set. */
 void StarDesigner_SetUp(StarDesigner *self)
@@ -304,14 +304,14 @@ unsigned char *StarDesigner_EnterAnswerPen(StarDesigner *self)
 CLEAN_AS(func_ov129_0229d3e0, StarDesigner_EnterAnswerPen)
 
 /* func_ov129_0229d3f8 (state 11): the panel's wipe back in; at its end back to the drawing
- * (phase 2) with the centre drawn and the pieces painted with the open ones. Both offsets
+ * (phase 2) with the center drawn and the pieces painted with the open ones. Both offsets
  * follow the wipe. */
 void StarDesigner_StateBackWipeIn(StarDesigner *self)
 {
     if (MenuScene_StepWipeBack(star_designer_base(self), 0) != 0) {
         MenuScene_SetPhase(star_designer_base(self), STAR_DESIGNER_PHASE_INTERACTIVE);
         StarDesigner_EnterDrawing(self);
-        StarDesigner_SetFlags(self, STAR_DESIGNER_FLAG_CENTRE);
+        StarDesigner_SetFlags(self, STAR_DESIGNER_FLAG_CENTER);
         StarDesigner_Refresh(self, 1);
     }
     self->panel_offset = MenuScene_WipeOffsetY(star_designer_base(self));
@@ -455,13 +455,13 @@ void StarDesigner_StateClose(StarDesigner *self)
 CLEAN_AS(func_ov129_0229d654, StarDesigner_StateClose)
 
 /* func_ov129_0229d69c (state 1): the wipe in; at its end on to the drawing (phase 2) with the
- * centre drawn, the pieces painted with the open ones and the window off. */
+ * center drawn, the pieces painted with the open ones and the window off. */
 void StarDesigner_StateWipeIn(StarDesigner *self)
 {
     if (MenuScene_StepWipeBack(star_designer_base(self), 0) != 0) {
         MenuScene_SetPhase(star_designer_base(self), STAR_DESIGNER_PHASE_INTERACTIVE);
         StarDesigner_EnterDrawing(self);
-        StarDesigner_SetFlags(self, STAR_DESIGNER_FLAG_CENTRE);
+        StarDesigner_SetFlags(self, STAR_DESIGNER_FLAG_CENTER);
         StarDesigner_Refresh(self, 1);
         DisplayShadow_DisableSubWindows(WINDOW_1);
     } else {
@@ -569,8 +569,8 @@ int StarDesigner_Draw(StarDesigner *self)
         ButtonPanel_Draw(&self->panel, self->panel_offset);
     }
     if (StateFlags_Test2() != 0) {
-        if (StarDesigner_TestFlags(self, STAR_DESIGNER_FLAG_CENTRE) != 0) {
-            StarScope_DrawCentre(&self->scope, 0);
+        if (StarDesigner_TestFlags(self, STAR_DESIGNER_FLAG_CENTER) != 0) {
+            StarScope_DrawCenter(&self->scope, 0);
         }
     }
     if (StarDesigner_TestFlags(self, STAR_DESIGNER_FLAG_ARROWS) != 0) {

@@ -1,6 +1,6 @@
 /* A sprite with a text of "2d_menu" on it that the menu scenes use as a button (at 0x3bc in
  * ov091's scene; overlays 091 and 096-106 keep one, and the paged choice one as its page
- * label): an object of main's labelled sprite class (vtable 0x020e23a0, constructor
+ * label): an object of main's labeled sprite class (vtable 0x020e23a0, constructor
  * func_0208f58c, destructor func_0208f46c) under ov002's base class (vtable 0x0220bd90,
  * constructor LabelButtonBase_Construct, destructor LabelButtonBase_Destruct), whose own vtable
  * slot 4 places it by screen coordinates (LabelButton_SetPlace). Slot 2 is main's draw (func_0208f288), slot 3
@@ -18,7 +18,7 @@
 
 typedef struct LabelButton {
     const void *vtable; /* data_ov002_0220bd58, data_ov002_0220bd74 or data_ov002_0220bd90 */
-    /* main's labelled sprite */
+    /* main's labeled sprite */
     s32 x;           /* 0x04: its place (func_0208aef0) */
     s32 y;           /* 0x08: (func_0208aeec) */
     s32 offset_x;    /* 0x0c: (func_0208f210 sets both) */

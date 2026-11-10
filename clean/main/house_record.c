@@ -545,7 +545,7 @@ int HouseRecord_PlaceOnMap(int size)
 CLEAN_AS(func_02061008, HouseRecord_PlaceOnMap)
 
 /* func_0206108c: a new house: each room set up, size 0, no song, and the look (and the look
- * shown) the console owner's favourite colour; no look ordered.
+ * shown) the console owner's favorite color; no look ordered.
  * QUIRK: the size ordered is left as it was. */
 void HouseRecord_Init(HouseRecord *house)
 {

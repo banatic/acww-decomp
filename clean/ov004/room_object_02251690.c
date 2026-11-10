@@ -47,7 +47,7 @@ int RoomObject02251690_Stop(RoomObject02251690 *object)
 CLEAN_AS(func_ov004_022132a4, RoomObject02251690_Stop)
 
 /* func_ov004_022132bc (vtable slot 0x84, each frame while appearing or vanishing, and called by
- * the update): the sequence follows a copy of the object's centre. */
+ * the update): the sequence follows a copy of the object's center. */
 int RoomObject02251690_Follow(RoomObject02251690 *object)
 {
     Vec3 position = object->base.sound.position;

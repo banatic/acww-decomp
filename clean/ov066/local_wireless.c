@@ -331,7 +331,7 @@ void LocalWireless_StepReset(void)
 CLEAN_AS(func_ov066_02266e64, LocalWireless_StepReset)
 
 /* func_ov066_02266e70: the next step towards the request, by the state. A request that needs
- * WM initialised fails in states 0 and 1; in state 9, and after an error, WM is reset. */
+ * WM initialized fails in states 0 and 1; in state 9, and after an error, WM is reset. */
 void LocalWireless_Step(void)
 {
     switch (data_ov066_0226bdec->state) {

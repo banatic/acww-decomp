@@ -56,7 +56,7 @@ typedef struct WindowShadow {
 /* data_0213fe74 */
 typedef struct DisplayShadow {
     u32 sub_bg3_affine[4];  /* the end of data_0213fe64, the sub screen's background 3's
-                               BgAffineShadow: its centre x, y and its x, y */
+                               BgAffineShadow: its center x, y and its x, y */
     u8 affine_bgs;          /* 0x10: AffineBgs: which backgrounds the modes make affine */
     u8 scroll_dirty;        /* 0x11: scrolling and affine parameters to write */
     u16 window_dirty;       /* 0x12: WindowDirty */
@@ -104,7 +104,7 @@ enum AffineBgs { AFFINE_MAIN_BG2 = 1 << 0, AFFINE_MAIN_BG3 = 1 << 1, AFFINE_SUB_
 
 enum Windows { WINDOW_0 = 1 << 0, WINDOW_1 = 1 << 1, WINDOW_OBJ = 1 << 2 };
 
-/* The PLANES bits write a window's planes with the colour effects enabled inside it, the
+/* The PLANES bits write a window's planes with the color effects enabled inside it, the
  * PLANES_PLAIN ones without; the RECT bits its rectangle. */
 enum WindowDirty {
     DIRTY_MAIN_WIN0_PLANES = 1 << 0,

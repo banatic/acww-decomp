@@ -71,8 +71,8 @@ void ScenePathStep_Choose(Vec3 *out, u8 *object, const Vec3 *target)
     scene_path_step_copy(out, target);
     int paths_here = AcreTile_PathDirectionsAt(map, position);
     int paths_there = AcreTile_PathDirectionsAt(map, target);
-    AcreTile_SnapToTileCentre(&tile, position);
-    AcreTile_SnapToTileCentre(&target_tile, target); /* not used further */
+    AcreTile_SnapToTileCenter(&tile, position);
+    AcreTile_SnapToTileCenter(&target_tile, target); /* not used further */
     tile.y = 0;
     target_tile.y = 0;
 
@@ -125,7 +125,7 @@ void ScenePathStep_Choose(Vec3 *out, u8 *object, const Vec3 *target)
                 continue;
             }
             Vec3 player_tile;
-            AcreTile_SnapToTileCentre(&player_tile, player);
+            AcreTile_SnapToTileCenter(&player_tile, player);
             player_tile.y = 0;
             scene_path_step_copy(&players[slot], &player_tile);
         }

@@ -82,7 +82,7 @@ static_assert(sizeof(CheckInGate) == 0x498, "the size CheckInGate_Create allocat
 /* POLYGON_ATTR's lights (bits 0-3). */
 #define CHECK_IN_GATE_POLYGON_LIGHTS 0xfu
 
-/* The material hook: the hours of the colour table, the result's colour and alpha bits, and
+/* The material hook: the hours of the color table, the result's color and alpha bits, and
  * the render state's flag it clears (bit 8 of NNSG3dRS's flag). */
 #define CHECK_IN_GATE_HOURS 24
 #define CHECK_IN_GATE_MINUTES 60
@@ -95,7 +95,7 @@ static_assert(sizeof(CheckInGate) == 0x498, "the size CheckInGate_Create allocat
 /* The vtable slot that enters a state (CheckInGate_SetState). */
 #define CHECK_IN_GATE_SLOT_SET_STATE 0x60
 
-/* An hour of the colour table: the colour's channels (0-31) and the two alpha scales (1.0 is
+/* An hour of the color table: the color's channels (0-31) and the two alpha scales (1.0 is
  * 0x1000) for "m_lt" and for the other two materials. */
 typedef struct CheckInGateHour {
     u8 red;
@@ -362,12 +362,12 @@ static s32 check_in_gate_blend(s32 from, s32 to, fx32 t)
     return (s32) sum >> 12;
 }
 
-/* func_ov004_0222d32c (the material hook): for "m_lt", "m_ltdoor" and "m_open", the colour of
- * the hour and the next blended by the minute becomes the material's diffuse colour, and its
+/* func_ov004_0222d32c (the material hook): for "m_lt", "m_ltdoor" and "m_open", the color of
+ * the hour and the next blended by the minute becomes the material's diffuse color, and its
  * alpha is scaled by the blended alpha scale of "m_lt" or of the other two (31 at most);
  * the render state's flag 8 is cleared.
  * QUIRK: a channel is truncated to 8 bits, not 5, before it is shifted into place, so one over
- * 31 runs into the next (the table's never are); the colour is truncated to 16 bits and its
+ * 31 runs into the next (the table's never are); the color is truncated to 16 bits and its
  * bit 15 still reaches the result's word. */
 void CheckInGate_MaterialHook(CheckInGate *self, int material, G3dRenderState *state)
 {
@@ -381,7 +381,7 @@ void CheckInGate_MaterialHook(CheckInGate *self, int material, G3dRenderState *s
     u8 red = (u8) check_in_gate_blend(current->red, next->red, t);
     u8 green = (u8) check_in_gate_blend(current->green, next->green, t);
     u8 blue = (u8) check_in_gate_blend(current->blue, next->blue, t);
-    u16 colour = (u16) ((u32) red | (u32) green << 5 | (u32) blue << 10);
+    u16 color = (u16) ((u32) red | (u32) green << 5 | (u32) blue << 10);
     fx32 other_alpha = check_in_gate_blend(current->other_alpha, next->other_alpha, t);
     fx32 first_alpha = check_in_gate_blend(current->first_alpha, next->first_alpha, t);
 
@@ -395,7 +395,7 @@ void CheckInGate_MaterialHook(CheckInGate *self, int material, G3dRenderState *s
     state->material->polygon_attr |= alpha << CHECK_IN_GATE_ALPHA_SHIFT;
     state->flags &= ~CHECK_IN_GATE_RENDER_FLAG_8;
     state->material->diffuse &= ~CHECK_IN_GATE_DIFFUSE_MASK;
-    state->material->diffuse |= colour;
+    state->material->diffuse |= color;
 }
 CLEAN_AS(func_ov004_0222d32c, CheckInGate_MaterialHook)
 

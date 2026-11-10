@@ -513,7 +513,7 @@ void BankMenu_BrowseByTouch(BankMenu *self)
 }
 CLEAN_AS(func_ov132_0229b340, BankMenu_BrowseByTouch)
 
-/* func_ov132_0229b3cc: the panel's text colours loaded. */
+/* func_ov132_0229b3cc: the panel's text colors loaded. */
 void BankMenu_LoadPanelColors(BankMenu *self)
 {
     ButtonPanel_LoadTextColors(&self->panel);
@@ -648,7 +648,7 @@ void BankMenu_WipeIn(BankMenu *self)
 }
 CLEAN_AS(func_ov132_0229b608, BankMenu_WipeIn)
 
-/* func_ov132_0229b630 (state 0): the layers set up, the screens and the panel's colours loaded,
+/* func_ov132_0229b630 (state 0): the layers set up, the screens and the panel's colors loaded,
  * the wipe in started covered on window 2 (layers 2 and 8, 4 frames, margin 0x30), layers 6 and
  * 4 shown and following it, the scene drawn, the panel in layout 5 with message 0x65; state 1. */
 void BankMenu_StartWipeIn(BankMenu *self)

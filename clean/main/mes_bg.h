@@ -1,6 +1,6 @@
 /* The background of a message window kind (class vtable 0x020e3fb4, constructor func_020ac9a4):
  * a BG screen of 0x800 bytes read from /a_mes/a_mes1a_bg_nsc.bin into the current heap, five
- * background palette colours uploaded at colour 0x41 when marked (func_020ac3f8) and the
+ * background palette colors uploaded at color 0x41 when marked (func_020ac3f8) and the
  * window's scrolling. Two classes derive from it (vtables 0x020e3fe4 and 0x020e3ffc); both hold
  * a MesBgMarker at 0x20, and the first also a MesBgSlider at 0xe4.
  *
@@ -19,17 +19,17 @@
 #include "types.h"
 
 #define MES_BG_SCREEN_SIZE 0x800
-#define MES_BG_COLOURS 5
+#define MES_BG_COLORS 5
 
 /* The slider's level runs from 0 (the knob at the bottom of the track) to 0x1000 (the top). */
 #define MES_BG_SLIDER_LEVEL_TOP 0x1000
 #define MES_BG_SLIDER_TRACK 32 /* pixels */
 
 typedef struct MesBg {
-    const void *vtable;          /* data_020e3fb4, or a derived class's */
-    u8 *screen;                  /* 0x04: MES_BG_SCREEN_SIZE bytes from the heap, or NULL */
-    u16 colours[MES_BG_COLOURS]; /* 0x08 */
-    u8 colours_dirty;            /* 0x12: upload `colours` on the next frame */
+    const void *vtable;        /* data_020e3fb4, or a derived class's */
+    u8 *screen;                /* 0x04: MES_BG_SCREEN_SIZE bytes from the heap, or NULL */
+    u16 colors[MES_BG_COLORS]; /* 0x08 */
+    u8 colors_dirty;           /* 0x12: upload `colors` on the next frame */
     u8 pad_13;
     s32 columns;   /* 0x14: the window's width in 8-pixel columns */
     s16 scroll_x;  /* 0x18 */
@@ -103,17 +103,17 @@ MesBgSlider *MesBgSlider_Delete(MesBgSlider *slider);
 MesBgSlider *MesBgSlider_Destruct(MesBgSlider *slider);
 MesBgSlider *MesBgSlider_Construct(MesBgSlider *slider);
 
-/* The window's own functions: the line at a point, the labels' tiles, the lines' colours, its
- * place, its plane (main BG1) hidden and shown, its colours and screen uploaded, its width, its
+/* The window's own functions: the line at a point, the labels' tiles, the lines' colors, its
+ * place, its plane (main BG1) hidden and shown, its colors and screen uploaded, its width, its
  * frame cut to its lines and width, and the screen loaded and freed. */
 int MesBg_LineAt(MesBg *bg, int x, int y);
 int MesBg_LabelTile(int line, int lines);
-void MesBg_HighlightLine(MesBg *bg, int line, u16 colour);
-void MesBg_ResetLineColours(MesBg *bg);
+void MesBg_HighlightLine(MesBg *bg, int line, u16 color);
+void MesBg_ResetLineColors(MesBg *bg);
 void MesBg_SetScroll(MesBg *bg, int x, int y);
 void MesBg_Hide(MesBg *bg);
 void MesBg_Show(MesBg *bg);
-void MesBg_UploadColours(MesBg *bg);
+void MesBg_UploadColors(MesBg *bg);
 void MesBg_UploadScreen(MesBg *bg);
 void MesBg_SetBgControl(MesBg *bg);
 void MesBg_SetColumns(MesBg *bg, int columns);

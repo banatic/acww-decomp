@@ -307,8 +307,8 @@ int MissingNpc2_SidePoint(MissingNpc2 *self, Vec3 *out, const Vec3 *offset)
 CLEAN_AS(func_020c3060, MissingNpc2_SidePoint)
 
 /* func_020c309c: up to six tries at a point 0xc000 away at a random angle, taken to its tile's
- * centre; the first clear one's x and z given (1), else 0.
- * QUIRK: each try's height is the one the tile centre of the try before gave. */
+ * center; the first clear one's x and z given (1), else 0.
+ * QUIRK: each try's height is the one the tile center of the try before gave. */
 int MissingNpc2_PickWanderPoint(MissingNpc2 *self, fx32 *x, fx32 *z)
 {
     Vec3 point = {0, 0, 0};
@@ -316,7 +316,7 @@ int MissingNpc2_PickWanderPoint(MissingNpc2 *self, fx32 *x, fx32 *z)
         u32 index = (Random_Next(&data_021cb5a0) & 0xffff) >> 4;
         point.x = missing_npc2_add(FX_MulFunc(MISSING_NPC2_WANDER_RADIUS, FX_SinCosTable_[index * 2]), self->position.x);
         point.z = missing_npc2_add(FX_MulFunc(MISSING_NPC2_WANDER_RADIUS, FX_SinCosTable_[index * 2 + 1]), self->position.z);
-        AcreTile_SnapToTileCentre(&point, &point);
+        AcreTile_SnapToTileCenter(&point, &point);
         if (TownTile_IsClearAt(&point, NULL)) {
             *x = point.x;
             *z = point.z;

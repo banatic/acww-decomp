@@ -493,7 +493,7 @@ int TownPelican_SidePoint(TownPelican *pelican, Vec3 *out, const Vec3 *offset)
 CLEAN_AS(func_ov075_02279208, TownPelican_SidePoint)
 
 /* func_ov075_02279244: up to six tries at a point 12.0 from him in a random direction (the
- * game's first random generator), put at its tile's centre: the first whose tile is clear
+ * game's first random generator), put at its tile's center: the first whose tile is clear
  * (TownTile_IsClearAt) gives `*x` and `*z`. Whether one did. */
 int TownPelican_PickWalkPoint(TownPelican *pelican, fx32 *x, fx32 *z)
 {
@@ -503,7 +503,7 @@ int TownPelican_PickWalkPoint(TownPelican *pelican, fx32 *x, fx32 *z)
         int index = (angle >> 4) * 2;
         point.x = FX_MulFunc(TPEL_WALK_DISTANCE, FX_SinCosTable_[index]) + tpel_position(pelican)->x;
         point.z = FX_MulFunc(TPEL_WALK_DISTANCE, FX_SinCosTable_[index + 1]) + tpel_position(pelican)->z;
-        AcreTile_SnapToTileCentre(&point, &point);
+        AcreTile_SnapToTileCenter(&point, &point);
         if (TownTile_IsClearAt(&point, NULL)) {
             *x = point.x;
             *z = point.z;

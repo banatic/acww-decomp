@@ -70,13 +70,13 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 #define CURSOR_ANIM_SWAP 6
 #define CURSOR_ANIM_LAST_ROW 8
 
-/* The closing labels: a text box of style 4 at a tile, 6 cells, colour 15 (lit) or 1 and 9, with
+/* The closing labels: a text box of style 4 at a tile, 6 cells, color 15 (lit) or 1 and 9, with
  * a message of the menu archive. */
 #define LABEL_STYLE 4
 #define LABEL_CELLS 6
-#define LABEL_COLOUR_LIT 15
-#define LABEL_COLOUR_DIM 1
-#define LABEL_COLOUR_39 9
+#define LABEL_COLOR_LIT 15
+#define LABEL_COLOR_DIM 1
+#define LABEL_COLOR_39 9
 #define CANCEL_LABEL_TILE 0x1d6
 #define CANCEL_LABEL_MESSAGE 101
 #define CONFIRM_LABEL_TILE 0x1ca
@@ -321,9 +321,9 @@ CLEAN_AS(func_ov100_0229c4ec, PocketsBox_Cancel)
 /* Opens the next label's box at `tile` and shows menu message `message` in it. */
 static void show_label(PocketsBox *self, int lit, int tile, int message)
 {
-    int colour = lit ? LABEL_COLOUR_LIT : LABEL_COLOUR_DIM;
+    int color = lit ? LABEL_COLOR_LIT : LABEL_COLOR_DIM;
     TextLabel *label = PocketsBox_NextLabel(self);
-    TextLabel_OpenStyledBox2(label, LABEL_STYLE, tile, LABEL_CELLS, (u8) colour, LABEL_COLOUR_39, 0);
+    TextLabel_OpenStyledBox2(label, LABEL_STYLE, tile, LABEL_CELLS, (u8) color, LABEL_COLOR_39, 0);
     TextLabel_LoadMenuMessage(label, (char) message);
     TextLabel_Show(label, 1, 1);
 }

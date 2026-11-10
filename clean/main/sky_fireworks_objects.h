@@ -9,8 +9,8 @@
  * objects of the show at that point: the looks two and one below its own, the second with bit
  * 30 of its parameter (a large shell: look 0 and look 1 with bit 30, both large). The other
  * looks are bursts: animated once, sized each frame from a table by the animation's frame, and
- * the burst without bit 30 tints two of the overridable colours (SkyPalettes_SetOverride) from
- * its place's colours, fading over frames 16 to 26, flickering from frame 11; bit 29 of its
+ * the burst without bit 30 tints two of the overridable colors (SkyPalettes_SetOverride) from
+ * its place's colors, fading over frames 16 to 26, flickering from frame 11; bit 29 of its
  * parameter is set at frame 29 (SkyFireworks_PlaceFreeForLarge reads it).
  *
  * Every one is placed on the sky shifted by the camera (SkyFireworksObject_PlaceShifted): sideways
@@ -25,7 +25,7 @@
 #include "types.h"
 
 #define SKY_FIREWORKS_OBJECT_ANIMATION_FIRST 0x1d /* the animation of look 0 */
-#define SKY_FIREWORKS_PARAM_SECOND 0x40000000u    /* the second object of a burst: it sets no colours */
+#define SKY_FIREWORKS_PARAM_SECOND 0x40000000u    /* the second object of a burst: it sets no colors */
 #define SKY_FIREWORKS_OBJECT_NO_COLOR 15          /* SkyFireworksObject_ColorIndex: none */
 
 /* The words at 0x60 of an object of the show. */
@@ -37,7 +37,7 @@ typedef struct SkyFireworksObjectVars {
     fx32 base_y; /* 0x70 */
 } SkyFireworksObjectVars;
 
-/* An entry of data_020d2344: a place's colours, fading from one to the other. */
+/* An entry of data_020d2344: a place's colors, fading from one to the other. */
 typedef struct SkyFireworksColors {
     u16 from;
     u16 to;

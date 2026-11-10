@@ -146,7 +146,7 @@ static void affine_params(OamAffine *params, const OamEntry *obj, int index, fx3
 
 /* Writes an OBJ's attributes into `entry`: `mode` holds the affine mode and flips for the
  * first word; the affine index goes in only when `mode` is exactly an affine mode, and the
- * 256-colour bit only when the OBJ mode is not bitmap. */
+ * 256-color bit only when the OBJ mode is not bitmap. */
 static void put_obj(OamEntry *entry, const OamEntry *obj, u32 mode, int affine_index, int mode_bits, int x, int y, int palette,
                     int priority)
 {
@@ -291,7 +291,7 @@ int OamBuffer_ShapeWidth(int shape, int size)
 CLEAN_AS(func_02088de8, OamBuffer_ShapeWidth)
 
 /* func_02088df8: the cell's OBJs drawn round (x, y), scaled by `scale_x` and `scale_y` and
- * turned by `angle` about each OBJ's own centre, until the copy is full. A palette or priority
+ * turned by `angle` about each OBJ's own center, until the copy is full. A palette or priority
  * of -1 keeps the OBJ's own; an `obj_mode` above 0 replaces the OBJ mode; `flip_h` and `flip_v`
  * add the flips. OBJs off the screen or without a free affine group are left out.
  *
@@ -413,7 +413,7 @@ CLEAN_AS(func_02088df8, OamBuffer_DrawCell)
  * `angle`; the entry written, or NULL when the copy is full, the OBJ is off the screen or no
  * affine group is free. A palette or priority of -1 keeps the OBJ's own.
  *
- * Turned, the OBJ's place is turned about its centre: with `rounded`, through FX_MulFunc and
+ * Turned, the OBJ's place is turned about its center: with `rounded`, through FX_MulFunc and
  * rounded away from zero; else by plain products, rounded down. Scaled or turned, an OBJ of
  * affine mode 1 keeps its size and any other is drawn double-size (its box twice as large and
  * its corner moved back by half its size), and the screen test of a turned one takes the

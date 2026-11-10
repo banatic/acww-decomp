@@ -317,7 +317,7 @@ void WfcHostList_HidePointer(WfcHostList *self)
 CLEAN_AS(func_ov146_0229a578, WfcHostList_HidePointer)
 
 /* func_ov146_0229a59c: the pointer's y for the cursor: a row's, by the target's part of a row;
- * the buttons' 0xad; the knob's face; else the screen's centre. */
+ * the buttons' 0xad; the knob's face; else the screen's center. */
 unsigned int WfcHostList_PointerY(WfcHostList *self)
 {
     unsigned int cursor = self->cursor;
@@ -337,7 +337,7 @@ unsigned int WfcHostList_PointerY(WfcHostList *self)
 CLEAN_AS(func_ov146_0229a59c, WfcHostList_PointerY)
 
 /* func_ov146_0229a5e8: the pointer's x for the cursor: the rows' 0x1c, the quit button's 0x47,
- * the go button's 0x99, the knob's face; else the screen's centre. */
+ * the go button's 0x99, the knob's face; else the screen's center. */
 int WfcHostList_PointerX(WfcHostList *self)
 {
     unsigned int cursor = self->cursor;

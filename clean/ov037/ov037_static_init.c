@@ -1,5 +1,5 @@
 /* Overlay 37: the data of scene 0x2e (data_020e5688 names each scene's overlay), a room, so
- * loaded with overlay 4 (data_020e5538). Its one function is its static initialiser, run when
+ * loaded with overlay 4 (data_020e5538). Its one function is its static initializer, run when
  * the overlay is loaded, which fills in the scene's exits (scene_exit.h), each made by
  * SceneExit_Init and registered for destruction. */
 #include "clean.h"

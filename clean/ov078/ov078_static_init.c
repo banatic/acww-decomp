@@ -1,4 +1,4 @@
-/* Overlay 78's static initialiser, run when the overlay is loaded: the six colours its source
+/* Overlay 78's static initializer, run when the overlay is loaded: the six colors its source
  * file defines for itself, the table of the camel's states (camel.h) filled from the overlay's
  * constants, and the two points beside her she steps aside to (objects registered for
  * destruction with a destructor that does nothing). */
@@ -10,24 +10,24 @@
 #include "ov004/member_pointer.h"
 #include "types.h"
 
-/* A colour of four 5-bit components (the fourth always 31). */
-typedef struct CamelInitColour {
+/* A color of four 5-bit components (the fourth always 31). */
+typedef struct CamelInitColor {
     u8 c0;
     u8 c1;
     u8 c2;
     u8 c3;
-} CamelInitColour;
+} CamelInitColor;
 
-static void camel_init_colour(CamelInitColour *colour, u8 c0, u8 c1, u8 c2, u8 c3)
+static void camel_init_color(CamelInitColor *color, u8 c0, u8 c1, u8 c2, u8 c3)
 {
-    colour->c0 = c0;
-    colour->c1 = c1;
-    colour->c2 = c2;
-    colour->c3 = c3;
+    color->c0 = c0;
+    color->c1 = c1;
+    color->c2 = c2;
+    color->c3 = c3;
 }
 
-/* Red, blue, yellow, green, cyan and grey. */
-extern CamelInitColour data_ov078_02279c04, data_ov078_02279c10, data_ov078_02279c14, data_ov078_02279c08, data_ov078_02279c0c,
+/* Red, blue, yellow, green, cyan and gray. */
+extern CamelInitColor data_ov078_02279c04, data_ov078_02279c10, data_ov078_02279c14, data_ov078_02279c08, data_ov078_02279c0c,
     data_ov078_02279c00;
 
 /* The constants of the states' table: each state's entry, then its run; CAMEL_DONE has no
@@ -52,7 +52,7 @@ extern void func_020012dc(void *object);
 extern Vec3 data_ov078_02279c30, data_ov078_02279c3c;
 extern CamelInitRecord data_ov078_02279c18, data_ov078_02279c24;
 
-/* __sinit_ov078_022798ac: the colours, the states' table in order, then each point set and
+/* __sinit_ov078_022798ac: the colors, the states' table in order, then each point set and
  * registered. */
 void CamelInit_Tables(void)
 {
@@ -64,12 +64,12 @@ void CamelInit_Tables(void)
         &data_ov078_02279a28, &data_ov078_02279a30, /* CAMEL_TALK */
     };
 
-    camel_init_colour(&data_ov078_02279c04, 31, 20, 20, 31);
-    camel_init_colour(&data_ov078_02279c10, 20, 20, 31, 31);
-    camel_init_colour(&data_ov078_02279c14, 31, 31, 20, 31);
-    camel_init_colour(&data_ov078_02279c08, 20, 31, 20, 31);
-    camel_init_colour(&data_ov078_02279c0c, 20, 31, 31, 31);
-    camel_init_colour(&data_ov078_02279c00, 20, 24, 24, 31);
+    camel_init_color(&data_ov078_02279c04, 31, 20, 20, 31);
+    camel_init_color(&data_ov078_02279c10, 20, 20, 31, 31);
+    camel_init_color(&data_ov078_02279c14, 31, 31, 20, 31);
+    camel_init_color(&data_ov078_02279c08, 20, 31, 20, 31);
+    camel_init_color(&data_ov078_02279c0c, 20, 31, 31, 31);
+    camel_init_color(&data_ov078_02279c00, 20, 24, 24, 31);
     for (int i = 0; i < CAMEL_STATES; i++) {
         data_ov078_02279c48[i].enter = *states[2 * i];
         data_ov078_02279c48[i].run = *states[2 * i + 1];

@@ -746,7 +746,7 @@ extern const MemberPointer data_ov004_02253798;
 #define BIRTHDAY_GUEST_ROOM_TILES 16
 
 /* func_ov004_0221e080: every tile of the room whose code (layer 0) is furniture or a cell a piece
- * of furniture covers (ItemCode_IsF031OrFurniture) loses its path directions, and its neighbours
+ * of furniture covers (ItemCode_IsF031OrFurniture) loses its path directions, and its neighbors
  * their way to it. With no acre in the map (no width, no height or no records) the tiles are
  * asked of a null acre. The guest is not read. */
 void BirthdayGuest_UnlinkFurnitureTiles(BirthdayGuest *guest)
@@ -852,7 +852,7 @@ static int bg_goal_tile(int x, int z, int from_x, int from_z)
 }
 
 /* func_ov004_0221e1e0 (also the birthday villager's): a goal for a walk from `from`: `goal` is
- * the centre of a tile drawn at random (MainRandom_Below) among the tiles of rows 0-13 that may
+ * the center of a tile drawn at random (MainRandom_Below) among the tiles of rows 0-13 that may
  * be one (bg_goal_tile), counted first and then walked to again in the same order; the
  * direction to it is given back, or `yaw` when that is less than 0x2000 off. With no such tile
  * `goal` is `from` and `yaw` is given back. */
@@ -884,7 +884,7 @@ int BirthdayGuest_PickGoal(Vec3 *goal, Vec3 *from, int yaw)
                 continue;
             }
             if (seen == target) {
-                AcreTile_TileCentre(goal, (u32) x, (u32) z);
+                AcreTile_TileCenter(goal, (u32) x, (u32) z);
                 int to_goal = Math_Atan2(goal->x - from->x, goal->z - from->z);
                 if (Math_AbsDiff16(yaw, to_goal) < BIRTHDAY_GUEST_GOAL_ANGLE) {
                     return yaw;

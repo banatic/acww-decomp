@@ -7,7 +7,7 @@
  *   family B, the wilted flowers:   0x6e-0x73, 0x74-0x79, 0x7a-0x7f, 0x80-0x87
  *   family C, the watered flowers:  0x8a-0x8f, 0x90-0x95, 0x96-0x9b, 0x9c-0xa3
  *
- * The four lines are the tulips, pansies, cosmos and roses, one code per colour: family A's
+ * The four lines are the tulips, pansies, cosmos and roses, one code per color: family A's
  * codes are the outdoor forms of the flower items 0x1408-0x1419 and 0x1483-0x148a
  * (item_form.h). After the lines: 0x1a the lily of the valley, 0x1c the gold rose (in the rose
  * line), 0x1d the dandelion, 0x1e the dandelion puff it turns into (the outdoor form of item

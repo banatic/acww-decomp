@@ -1,8 +1,8 @@
 /* HBlank functions of line handlers (interrupts.h): each changes display registers for the
  * line about to be drawn.
  *
- * The gradient screen (set up by func_020ba540 on either screen) colours the backdrop of each
- * line from a gradient between two colours (func_020bb090 computes it into the table not
+ * The gradient screen (set up by func_020ba540 on either screen) colors the backdrop of each
+ * line from a gradient between two colors (func_020bb090 computes it into the table not
  * shown, then shows it), and moves background 3 (its affine X, Y and horizontal scale) and the
  * blending of each line from tables of their own, also two of each. Near the bottom it hides
  * background 1, on the main screen background 3 too. A shift of the lines read
@@ -14,12 +14,12 @@
 
 #define SCREEN_LINES 192
 
-/* data_021f6f70: the backdrop colours. */
+/* data_021f6f70: the backdrop colors. */
 typedef struct LineGradient {
     u32 shown;                   /* which of the two tables is shown */
     u16 colors[2][SCREEN_LINES]; /* 0x004 */
-    u16 top_color;               /* 0x304: the colour down to `top_line` */
-    u16 bottom_color;            /* 0x306: the colour from `bottom_line` on */
+    u16 top_color;               /* 0x304: the color down to `top_line` */
+    u16 bottom_color;            /* 0x306: the color from `bottom_line` on */
     int top_line;                /* 0x308 */
     int bottom_line;             /* 0x30c */
 } LineGradient;

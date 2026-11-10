@@ -1,5 +1,5 @@
 /* A spot in the middle of the town (part 0x0c of the object at data_021d27ac,
- * block_021d27ac.h): the centre of a tile picked at random among the tiles TownSpot_TileSuits
+ * block_021d27ac.h): the center of a tile picked at random among the tiles TownSpot_TileSuits
  * accepts in the town's middle 2 x 2 acres (MiddleSpot_Pick, from the spawner's update while
  * this console is in the session), and a mark the main module's func_020c1904 sets and
  * func_020c1904 and func_020c2098 clear (in scene 0) and MiddleSpot_Pick clears;

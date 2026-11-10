@@ -1100,7 +1100,7 @@ void SongPockets_IdleByTouch(SongPockets *self)
 CLEAN_AS(func_ov109_0229d368, SongPockets_IdleByTouch)
 
 /* func_ov109_0229d3e8: a step of the wallet display's loads (its answer unused) and the
- * panel's text colours. */
+ * panel's text colors. */
 void SongPockets_LoadGraphics(SongPockets *self)
 {
     PocketsWallet_LoadObjFiles(&self->wallet);

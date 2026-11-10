@@ -1,6 +1,6 @@
 /* One bit for each of the 16 x 16 tiles of an acre. func_02084e90 builds one: a bit for each
  * tile whose item is 0xfff1 (nothing there) and that passes a further test, then clears the
- * bits that have no marked neighbour in the rows 0-13. */
+ * bits that have no marked neighbor in the rows 0-13. */
 #ifndef CLEAN_MAIN_TILE_GRID_H
 #define CLEAN_MAIN_TILE_GRID_H
 

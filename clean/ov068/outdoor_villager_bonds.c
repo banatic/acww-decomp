@@ -39,7 +39,7 @@ extern const u8 data_ov068_02276728[2];
 #define BONDS_SHOP_DESIGNS 8
 #define BONDS_NO_FONDNESS (-128) /* the fondness of a villager without a memory of the player */
 #define BONDS_UNKNOWN_TIER 2     /* the tier given for a tier out of range */
-#define BONDS_DONE_STEP 3        /* behaviour 9's step that ends the chat */
+#define BONDS_DONE_STEP 3        /* behavior 9's step that ends the chat */
 #define BONDS_GOOD_MOOD 1
 #define BONDS_GOOD_MOOD_UNITS 2
 #define BONDS_BAD_MOOD_UNITS 2
@@ -69,7 +69,7 @@ static void bonds_learn(u8 *first, u8 *second)
 /* func_ov068_0226aad4: the exchange that only learns. The pair sorted, the second learns from
  * the first, gossip lowers the bond of two others, and both moods are asked for (0, 0) and
  * applied; the chat ends (step 3). Always 1. */
-int OutdoorVillagerBonds_Learn(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerBonds_Learn(OutdoorVillagerBehavior *self, u8 *villager)
 {
     u8 *partner = bonds_partner(villager);
     u8 *first = NULL;
@@ -90,7 +90,7 @@ CLEAN_AS(func_ov068_0226aad4, OutdoorVillagerBonds_Learn)
  * the second learns from the first, gossip changes the bond of two others; then by their tier (taken from the
  * records read first): 0 or 1 both moods asked for (1, 2) and applied, 3 or 4 one of the moods
  * 2 and 3 for each (2 units, applied), 2 nothing. The chat ends (step 3). Always 1. */
-int OutdoorVillagerBonds_TalkOfBond(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerBonds_TalkOfBond(OutdoorVillagerBehavior *self, u8 *villager)
 {
     u8 *partner = bonds_partner(villager);
     u8 *mine = bonds_record(villager);
@@ -123,7 +123,7 @@ CLEAN_AS(func_ov068_0226ab58, OutdoorVillagerBonds_TalkOfBond)
 
 /* func_ov068_0226ac40: one of the shop's eight designs drawn at random among those that are not
  * `design` (all of them when `design` is null); null when none is left. */
-u8 *OutdoorVillagerBonds_DrawShopDesign(OutdoorVillagerBehaviour *self, u8 *design)
+u8 *OutdoorVillagerBonds_DrawShopDesign(OutdoorVillagerBehavior *self, u8 *design)
 {
     (void) self;
     unsigned int designs = (unsigned int) (uintptr_t) data_021ed278;
@@ -152,7 +152,7 @@ CLEAN_AS(func_ov068_0226ac40, OutdoorVillagerBonds_DrawShopDesign)
  * player, -128 without one), when they are as fond the order drawn at random (one time in two
  * swapped). Without a current player (or one not set) they stay in order. Whether they were
  * swapped. */
-int OutdoorVillagerBonds_Sort(OutdoorVillagerBehaviour *self, u8 **first, u8 **second, u8 *a, u8 *b)
+int OutdoorVillagerBonds_Sort(OutdoorVillagerBehavior *self, u8 **first, u8 **second, u8 *a, u8 *b)
 {
     (void) self;
     DesignCreator *player = NULL;
@@ -188,7 +188,7 @@ CLEAN_AS(func_ov068_0226aca8, OutdoorVillagerBonds_Sort)
 
 /* func_ov068_0226ad44: one mood of `moods` drawn (of the first `count`) and asked for with
  * `units` (0 units for mood 0), applied when `apply`. */
-void OutdoorVillagerBonds_AskMoodOf(OutdoorVillagerBehaviour *self, u8 *villager, const u8 *moods, int count, u8 units,
+void OutdoorVillagerBonds_AskMoodOf(OutdoorVillagerBehavior *self, u8 *villager, const u8 *moods, int count, u8 units,
                                     u8 apply)
 {
     u8 mood = moods[MainRandom_Below(count)];
@@ -201,7 +201,7 @@ CLEAN_AS(func_ov068_0226ad44, OutdoorVillagerBonds_AskMoodOf)
 
 /* func_ov068_0226ad78: the villager's mood (0x83c) asked for `which` with `units`, then applied
  * when `apply`. */
-void OutdoorVillagerBonds_AskMood(OutdoorVillagerBehaviour *self, u8 *villager, int which, int units, u8 apply)
+void OutdoorVillagerBonds_AskMood(OutdoorVillagerBehavior *self, u8 *villager, int which, int units, u8 apply)
 {
     (void) self;
     VillagerMood *mood = (VillagerMood *) (void *) (villager + OUTDOOR_VILLAGER_MOOD);
@@ -215,7 +215,7 @@ CLEAN_AS(func_ov068_0226ad78, OutdoorVillagerBonds_AskMood)
 /* func_ov068_0226ada8: gossip: two villagers of the town drawn at random (the second other
  * than the first) get their bond changed by `amounts` at their tier. Nothing when the town has
  * no villager to draw. */
-void OutdoorVillagerBonds_ChangeOthers(OutdoorVillagerBehaviour *self, u8 *villager, const s8 *amounts)
+void OutdoorVillagerBonds_ChangeOthers(OutdoorVillagerBehavior *self, u8 *villager, const s8 *amounts)
 {
     (void) villager;
     VillagerTown *town = &data_021e5a2c;
@@ -236,7 +236,7 @@ CLEAN_AS(func_ov068_0226ada8, OutdoorVillagerBonds_ChangeOthers)
 
 /* func_ov068_0226ae00: the villager and its partner (the word at 0x644) get their bond changed
  * by `amounts` at their tier. */
-void OutdoorVillagerBonds_ChangePair(OutdoorVillagerBehaviour *self, u8 *villager, const s8 *amounts)
+void OutdoorVillagerBonds_ChangePair(OutdoorVillagerBehavior *self, u8 *villager, const s8 *amounts)
 {
     u8 *partner = bonds_partner(villager);
     u8 *mine = bonds_record(villager);
@@ -249,7 +249,7 @@ CLEAN_AS(func_ov068_0226ae00, OutdoorVillagerBonds_ChangePair)
 
 /* func_ov068_0226ae48: the bond of villagers `a` and `b` changed by the amount of `amounts` at
  * their tier (none for a tier of 5 or more). */
-void OutdoorVillagerBonds_Change(OutdoorVillagerBehaviour *self, const NpcId *a, const NpcId *b, const s8 *amounts)
+void OutdoorVillagerBonds_Change(OutdoorVillagerBehavior *self, const NpcId *a, const NpcId *b, const s8 *amounts)
 {
     (void) self;
     int tier = OutdoorVillagerBonds_Tier(a, b);
@@ -260,7 +260,7 @@ void OutdoorVillagerBonds_Change(OutdoorVillagerBehaviour *self, const NpcId *a,
 CLEAN_AS(func_ov068_0226ae48, OutdoorVillagerBonds_Change)
 
 /* func_ov068_0226ae80: the tier of the villager and its partner (the word at 0x644). */
-int OutdoorVillagerBonds_PairTier(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerBonds_PairTier(OutdoorVillagerBehavior *self, u8 *villager)
 {
     (void) self;
     u8 *partner = bonds_partner(villager);

@@ -127,9 +127,9 @@ static void try_turned(u32 *out, int x, int z, int side, int number, u8 layer, c
     for (u32 i = 0; i < count; i++) {
         int cell_x = x + ItemFootprint_Cell(&footprint, i)->x;
         int cell_z = z + ItemFootprint_Cell(&footprint, i)->y;
-        Vec3 centre;
-        AcreTile_TileCentre(&centre, (u32) cell_x, (u32) cell_z);
-        VEC_Add(&middle, &centre, &middle);
+        Vec3 center;
+        AcreTile_TileCenter(&center, (u32) cell_x, (u32) cell_z);
+        VEC_Add(&middle, &center, &middle);
     }
     Vec_Divide(&middle, (fx32) (count << 12));
     Vec3 delta;
@@ -151,7 +151,7 @@ static void try_turned(u32 *out, int x, int z, int side, int number, u8 layer, c
  * covering the actor's cell; the first that fits (RoomPlacement_TryAt) is taken. A piece two
  * cells long that would turn its back on the actor is tried once turned about (try_turned),
  * which replaces the placement when it fits.
- * QUIRK: the cell centre of each cell tried is worked out and not used; the first call fills in
+ * QUIRK: the cell center of each cell tried is worked out and not used; the first call fills in
  * the four corners. */
 int RoomPlacement_Find(u32 *out, ItemCode *item, const Vec3 *position, int angle, int mode)
 {
@@ -188,8 +188,8 @@ int RoomPlacement_Find(u32 *out, ItemCode *item, const Vec3 *position, int angle
             if (!RoomObjects_CellAhead(&near_x, &near_z, position, angle, (int) pass)) {
                 continue;
             }
-            Vec3 near_centre;
-            AcreTile_TileCentre(&near_centre, (u32) near_x, (u32) near_z);
+            Vec3 near_center;
+            AcreTile_TileCenter(&near_center, (u32) near_x, (u32) near_z);
             for (int turn = 0; turn < 4; turn++) {
                 int side = (facing_actor + data_ov004_02247cdc[turn]) & 3;
                 u32 tries = shape == SHAPE_TWO_BY_TWO ? 4 : 1;

@@ -22,7 +22,7 @@ int RoomObject_Check0221134c(RoomObject *object);
 int RoomObject_IsUnplaced(const RoomObject *object);
 void RoomObject_EffectNearCorner(RoomObject *object, int corner);
 int RoomObject_Effect3dAt(RoomObject *object, const Vec3 *point);
-int RoomObject_RoachFromCentre(RoomObject *object);
+int RoomObject_RoachFromCenter(RoomObject *object);
 void RoomObject_RoachFromCell(RoomObject *object, int farthest);
 int RoomEffect_SpawnRoach(Vec3 *point, int angle);
 int RoomObject_FindFurnitureCell(RoomObject *object, int *x, int *y, Vec3 *offset, s16 turn);

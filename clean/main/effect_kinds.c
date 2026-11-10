@@ -153,7 +153,7 @@ void EffectKinds_PlaceKind35A(EffectKindsInstance *instance)
 CLEAN_AS(func_02092e5c, EffectKinds_PlaceKind35A)
 
 /* func_02092e74: the instance's emitter placed with its axis forward (turned by the place's
- * angle), then its emission interval and its speeds away from its centre and along its axis
+ * angle), then its emission interval and its speeds away from its center and along its axis
  * set. */
 void EffectKinds_PlaceWithSpeeds(EffectKindsInstance *instance, char interval, fx32 speed, fx32 axis_speed)
 {
@@ -207,12 +207,12 @@ void EffectKinds_StartKind32(int kind, const Vec3 *position, const s16 *angle, c
 CLEAN_AS(func_02092f20, EffectKinds_StartKind32)
 
 /* func_02092f48: kind 0x32's first emitter set up at its place, its colour the sky's light
- * colour 3 instead of the tint. */
+ * color 3 instead of the tint. */
 void EffectKinds_SetUpKind32(ParticleEmitter *emitter)
 {
     EffectPlaces_SetUp(emitter);
-    /* QUIRK: each of the colour's components is scaled by white's (c * 31 / 31), which leaves
-     * the light colour as it is, its top bit too. */
+    /* QUIRK: each of the color's components is scaled by white's (c * 31 / 31), which leaves
+     * the light color as it is, its top bit too. */
     emitter->color = (u16) Sky_LightColor(EFFECT_KINDS_LIGHT_COLOR);
 }
 CLEAN_AS(func_02092f48, EffectKinds_SetUpKind32)

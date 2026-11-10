@@ -435,7 +435,7 @@ CLEAN_AS(func_020992f0, PlayerRecord_ReactionSlots)
 /* Byte 0x243c: the face and the head's kind. */
 #define LOOKS_FACE_MASK 0x0f
 #define LOOKS_HEAD_KIND_SHIFT 4
-/* Byte 0x243d: the hair colour, the sun level and the day's state. */
+/* Byte 0x243d: the hair color, the sun level and the day's state. */
 #define LOOKS_HAIR_COLOR_MASK 0x07
 #define LOOKS_SUN_LEVEL_SHIFT 3
 #define LOOKS_SUN_LEVEL_MASK 0x38
@@ -894,7 +894,7 @@ u32 PlayerRecord_SunLevel(u8 *record)
 }
 CLEAN_AS(func_020997d0, PlayerRecord_SunLevel)
 
-/* func_020997e0: the hair colour, 0-7. */
+/* func_020997e0: the hair color, 0-7. */
 void PlayerRecord_SetHairColor(u8 *record, int color)
 {
     u8 *looks = &record[RECORD_LOOKS_2];

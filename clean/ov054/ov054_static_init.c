@@ -1,7 +1,7 @@
-/* Overlay 54's static initialiser, run when the overlay is loaded: the tables of member
+/* Overlay 54's static initializer, run when the overlay is loaded: the tables of member
  * functions the post office clerk (post_clerk.h) and her talk scene (post_clerk_talk.h)
  * dispatch through, copied from the overlay's constants (the compiler cannot place member
- * pointers in initialised data). */
+ * pointers in initialized data). */
 #include "clean.h"
 #include "post_clerk.h"
 #include "post_clerk_talk.h"

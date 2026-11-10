@@ -166,7 +166,7 @@ typedef struct TownObjectActor {
     u8 area_count;
     u8 unk_291;
     u16 model_slot;     /* main's model pool slot (model_pool.h) */
-    Vec3 bounds_centre; /* the centre of its shape (TownObjectActor_SetBounds) */
+    Vec3 bounds_center; /* the center of its shape (TownObjectActor_SetBounds) */
     fx32 bounds_width;
     fx32 bounds_depth;
     Vec3 talk_point; /* the stand point moved back by 4.0 along z (vtable slot 0x50) */

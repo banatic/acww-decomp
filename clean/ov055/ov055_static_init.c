@@ -1,4 +1,4 @@
-/* Overlay 55 (the exchange character, xct_exchange.h): its static initialiser, run when the
+/* Overlay 55 (the exchange character, xct_exchange.h): its static initializer, run when the
  * overlay is loaded, which fills in the functions of his talk's steps (data_ov055_02260f0c,
  * xct_exchange_talk.h) and of his states (data_ov055_02261084, XctExchange_SetState and
  * XctExchange_Update), copied from the overlay's constants (C++ pointers to member functions,

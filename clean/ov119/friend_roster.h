@@ -222,7 +222,7 @@ void FriendRoster_ShowHeader(FriendRoster *self);
 void FriendRoster_DrawOwnInfo(FriendRoster *self);
 void FriendRoster_DrawPlayerRows(FriendRoster *self);
 void FriendRoster_Fade(FriendRoster *self, int level);
-u16 FriendRoster_BlendColour(int unused, int colour, int toward, int weight, int total);
+u16 FriendRoster_BlendColor(int unused, int color, int toward, int weight, int total);
 void FriendRoster_UpdateGraphics(FriendRoster *self);
 void FriendRoster_ShowPageTitle(FriendRoster *self, int message);
 void FriendRoster_ShowTitle(FriendRoster *self);

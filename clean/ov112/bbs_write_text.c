@@ -73,7 +73,7 @@ extern int func_02051c8c_unk(u16 *text, int max);
 #define BBS_WRITE_LINE_FIRST_CHAR 17
 #define BBS_WRITE_LINE_LAST_CHAR 0x100
 
-/* The marked characters' colours (TextLabel_SetMark). */
+/* The marked characters' colors (TextLabel_SetMark). */
 #define BBS_WRITE_MARK_A 13
 #define BBS_WRITE_MARK_B 14
 
@@ -204,7 +204,7 @@ void BbsWrite_BeginDim(BbsWriteScene *self)
 }
 CLEAN_AS(func_ov112_0229f078, BbsWrite_BeginDim)
 
-/* func_ov112_0229f0b4: line label `line` given a box in style 4 (colours 15 and 10) that draws
+/* func_ov112_0229f0b4: line label `line` given a box in style 4 (colors 15 and 10) that draws
  * from character `first_char` of the text's layer, and shown. REQUIRES: line below 6 (the
  * game passes 0-2). */
 void BbsWrite_OpenDateLabel(BbsWriteScene *self, int line, int first_char, int p3, int p4)
@@ -866,7 +866,7 @@ void BbsWrite_ShowMark(BbsWriteScene *self)
 CLEAN_AS(func_ov112_0229fcd4, BbsWrite_ShowMark)
 
 /* func_ov112_0229fd20: the text broken into its lines again and each line label set from its
- * line and drawn into its characters (colours 0xe and 0xd). Lines after the first show their
+ * line and drawn into its characters (colors 0xe and 0xd). Lines after the first show their
  * newline marks and the last line its end mark (an empty last line shows the end mark alone),
  * unless BBS_WRITE_FLAG_10 or the question is up. Then the mark shown, the lines to be shown
  * at the frame's end, the keyboard's keys brought up to date. */

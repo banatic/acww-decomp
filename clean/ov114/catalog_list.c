@@ -416,7 +416,7 @@ int CatalogList_CursorY(CatalogList *self)
 CLEAN_AS(func_ov114_0229c628, CatalogList_CursorY)
 
 /* func_ov114_0229c690: the cursor's x: the bar's place's (MenuTabs_TabX), the handle's face, the
- * table's, or an entry's centre in the row as it is drawn once the scroll left is done. */
+ * table's, or an entry's center in the row as it is drawn once the scroll left is done. */
 int CatalogList_CursorX(CatalogList *self)
 {
     if (CatalogList_TabUnderCursor(self) != -1) {
@@ -448,7 +448,7 @@ CLEAN_AS(func_ov114_0229c6f8, CatalogList_Select)
  * picture not fully shown fades in by 4 a frame (layer C shown as it starts); once at 12 or more
  * the sub engine's blending is switched off (each frame). Another entry picked: the picture fades
  * out by 4 a frame, layer C hidden at the end, then the picked entry is shown. A change of fade
- * fades colour 2 of the palette with it.
+ * fades color 2 of the palette with it.
  * QUIRK: the fade stops at 12, not 16; only CatalogList_HoldPicture sets 16. */
 void CatalogList_UpdatePicture(CatalogList *self)
 {
@@ -708,8 +708,8 @@ void CatalogList_DrawEntries(CatalogList *self, int y)
 CLEAN_AS(func_ov114_0229cbe4, CatalogList_DrawEntries)
 
 /* func_ov114_0229ccc0: entry `entry`'s name (its item's, NameText_SetItem; empty for
- * CATALOG_LIST_NONE) in the next label, opened at (0xa1, 0xd) in colours 1 and 3 on layer A
- * and centred. Nothing for a kind other than the two. */
+ * CATALOG_LIST_NONE) in the next label, opened at (0xa1, 0xd) in colors 1 and 3 on layer A
+ * and centered. Nothing for a kind other than the two. */
 void CatalogList_ShowName(CatalogList *self, u16 entry)
 {
     NameText name;
@@ -784,8 +784,8 @@ void CatalogList_EndIconTasks(CatalogList *self)
 }
 CLEAN_AS(func_ov114_0229cde4, CatalogList_EndIconTasks)
 
-/* func_ov114_0229ce18: colour 2 of the palette faded from the file's colour 3 (step 0) to its
- * colour 2 (step `steps`), each component on its own; queued again. */
+/* func_ov114_0229ce18: color 2 of the palette faded from the file's color 3 (step 0) to its
+ * color 2 (step `steps`), each component on its own; queued again. */
 void CatalogList_FadePalette(CatalogList *self, int step, int steps)
 {
     u16 from = self->palette_file[3];
@@ -832,8 +832,8 @@ int CatalogList_NextPage(CatalogList *self)
 CLEAN_AS(func_ov114_0229cf18, CatalogList_NextPage)
 
 /* func_ov114_0229cf58: the page's three lines of the description in the next three labels (an
- * empty one for a line the message lacks), opened in colours 2 and 3 on layer A at 0xbb, 0xd5
- * and 0xef (by 0xd), not centred; each page arrow in palette 5, or 4 when there is no page its
+ * empty one for a line the message lacks), opened in colors 2 and 3 on layer A at 0xbb, 0xd5
+ * and 0xef (by 0xd), not centered; each page arrow in palette 5, or 4 when there is no page its
  * way. */
 void CatalogList_ShowPage(CatalogList *self)
 {

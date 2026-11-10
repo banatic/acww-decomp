@@ -22,7 +22,7 @@ static_assert(offsetof(TownObjectActorShadowFile, entries) == 4, "shadow entries
 static_assert(offsetof(TownObjectActorFiles, lit_texture) == 0x18, "files lit texture");
 static_assert(offsetof(TownObjectActorFiles, srt_anims) == 0x20, "files srt anims");
 static_assert(offsetof(TownObjectActorFiles, pattern_anims) == 0x30, "files pattern anims");
-static_assert(offsetof(TownObjectActorFiles, centre_x) == 0x40, "files bounds");
+static_assert(offsetof(TownObjectActorFiles, center_x) == 0x40, "files bounds");
 static_assert(sizeof(TownObjectActorFiles) == 0x50, "files size");
 static_assert(sizeof(ObjShadow) == 0x34, "shadow size");
 
@@ -57,14 +57,14 @@ extern const char data_ov009_02265af0[]; /* "/str/arc/%d/str%d%c.arc" */
 extern char data_ov009_02265b94[0x20];
 extern char data_ov009_02265b74[0x20];
 extern char data_ov009_02265b54[0x20];
-/* The six colours of four 5-bit components several source files define for themselves. */
-typedef struct TownObjectActorColour {
+/* The six colors of four 5-bit components several source files define for themselves. */
+typedef struct TownObjectActorColor {
     u8 c0;
     u8 c1;
     u8 c2;
     u8 c3;
-} TownObjectActorColour;
-extern TownObjectActorColour data_ov009_02265b3c, data_ov009_02265b20, data_ov009_02265b34, data_ov009_02265b30,
+} TownObjectActorColor;
+extern TownObjectActorColor data_ov009_02265b3c, data_ov009_02265b20, data_ov009_02265b34, data_ov009_02265b30,
     data_ov009_02265b40, data_ov009_02265b38;
 /* The records' constructor and destructor and the table's, as the game is handed them. */
 extern void func_ov009_02265634(void *files);
@@ -224,7 +224,7 @@ int TownObjectActorFiles_Load(TownObjectActor *actor, const char *archive, const
     }
     BuildingShapeEntry *shape = BuildingShapes_Of(&actor->code);
     if (shape != NULL) {
-        BuildingShapes_Bounds(shape, &files->centre_x, &files->centre_z, &files->width, &files->depth);
+        BuildingShapes_Bounds(shape, &files->center_x, &files->center_z, &files->width, &files->depth);
     }
     if (archive != NULL) {
         void *data = RomFile_Load(archive, data_021c9b1c, TOWN_OBJECT_ACTOR_FILES_ALIGN, NULL);
@@ -435,8 +435,8 @@ void TownObjectActorFiles_Construct(TownObjectActorFiles *files)
     for (int i = 0; i < 3; i++) {
         files->joint_anims[i] = NULL;
     }
-    files->centre_x = 0;
-    files->centre_z = 0;
+    files->center_x = 0;
+    files->center_z = 0;
     files->width = 0;
     files->depth = 0;
     for (int i = 0; i < TOWN_OBJECT_ACTOR_FILES_ANIMS; i++) {
@@ -452,25 +452,25 @@ void TownObjectActorFiles_DestroyAll(void)
 }
 CLEAN_AS(func_ov009_0226569c, TownObjectActorFiles_DestroyAll)
 
-static void files_colour(TownObjectActorColour *colour, u8 c0, u8 c1, u8 c2, u8 c3)
+static void files_color(TownObjectActorColor *color, u8 c0, u8 c1, u8 c2, u8 c3)
 {
-    colour->c0 = c0;
-    colour->c1 = c1;
-    colour->c2 = c2;
-    colour->c3 = c3;
+    color->c0 = c0;
+    color->c1 = c1;
+    color->c2 = c2;
+    color->c3 = c3;
 }
 
-/* __sinit_ov009_022656f4: overlay 9's static initialiser: the six colours (red, blue, yellow,
- * green, cyan and grey, which nothing here reads), then the table of records built and its
+/* __sinit_ov009_022656f4: overlay 9's static initializer: the six colors (red, blue, yellow,
+ * green, cyan and gray, which nothing here reads), then the table of records built and its
  * destructor registered for when the overlay goes. */
 void TownObjectActorFiles_StaticInit(void)
 {
-    files_colour(&data_ov009_02265b3c, 31, 20, 20, 31);
-    files_colour(&data_ov009_02265b20, 20, 20, 31, 31);
-    files_colour(&data_ov009_02265b34, 31, 31, 20, 31);
-    files_colour(&data_ov009_02265b30, 20, 31, 20, 31);
-    files_colour(&data_ov009_02265b40, 20, 31, 31, 31);
-    files_colour(&data_ov009_02265b38, 20, 24, 24, 31);
+    files_color(&data_ov009_02265b3c, 31, 20, 20, 31);
+    files_color(&data_ov009_02265b20, 20, 20, 31, 31);
+    files_color(&data_ov009_02265b34, 31, 31, 20, 31);
+    files_color(&data_ov009_02265b30, 20, 31, 20, 31);
+    files_color(&data_ov009_02265b40, 20, 31, 31, 31);
+    files_color(&data_ov009_02265b38, 20, 24, 24, 31);
     __cxa_vec_ctor(data_ov009_02265cb4, TOWN_OBJECT_ACTOR_FILES_COUNT, sizeof(TownObjectActorFiles), func_ov009_02265634,
                    func_ov009_02265630);
     __register_global_object(NULL, (void *) (uintptr_t) func_ov009_0226569c, data_ov009_02265b48);

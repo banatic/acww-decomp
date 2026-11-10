@@ -2,9 +2,9 @@
  *
  * It crosses the sky over those nine hours (SkyMoon_Position): from x 272 to x -16, along an
  * arc from y 60 that is highest (y 44) at 23:30, its place taken again every 128 frames (by
- * data_021fbdd0, the frames drawn). It tints the overridable colours 10 to 14 of the objects'
+ * data_021fbdd0, the frames drawn). It tints the overridable colors 10 to 14 of the objects'
  * palettes (SkyPalettes_SetOverride): each is mixed from the moon palettes of the hour and of
- * the next by the minute, between the palettes' colours 11 to 15 (a clear sky) and 3 to 7
+ * the next by the minute, between the palettes' colors 11 to 15 (a clear sky) and 3 to 7
  * (rain), by how clear the sky is: 1.0 at weather levels below 3, else 0, eased towards that
  * by 1/16 every 128 frames once the moon is up. */
 #ifndef CLEAN_MAIN_SKY_MOON_H
@@ -15,8 +15,8 @@
 #include "sky_objects.h"
 #include "types.h"
 
-#define SKY_MOON_COLORS 5       /* the overridable colours it tints */
-#define SKY_MOON_FIRST_COLOR 10 /* from colour 10 */
+#define SKY_MOON_COLORS 5       /* the overridable colors it tints */
+#define SKY_MOON_FIRST_COLOR 10 /* from color 10 */
 
 /* The words at 0x60 of the moon. */
 typedef struct SkyMoonVars {
@@ -32,7 +32,7 @@ typedef struct SkyMoonPalette {
     u16 colors[16];
 } SkyMoonPalette;
 
-#define SKY_MOON_RAIN_COLOR 3   /* the palette's colours 3 to 7: in rain */
+#define SKY_MOON_RAIN_COLOR 3   /* the palette's colors 3 to 7: in rain */
 #define SKY_MOON_CLEAR_COLOR 11 /* 11 to 15: under a clear sky */
 
 void SkyMoon_TakeDown(SkyObject *object);

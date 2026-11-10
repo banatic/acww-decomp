@@ -58,7 +58,7 @@ extern const OamEntry data_ov090_02299880[MENU_TABS_OBJS];
 #define MENU_TABS_LAST_CHAR 0xbf
 #define MENU_TABS_LOWER_ROW_CHARS 0x20  /* a tab's lower row, in characters */
 #define MENU_TABS_LOWER_ROW_BYTES 0x400 /* and in the tabs' file */
-#define MENU_TABS_TAB_BYTES 0x60        /* three 16-colour characters */
+#define MENU_TABS_TAB_BYTES 0x60        /* three 16-color characters */
 
 /* The heap the bar's palette file is read with. */
 extern Heap *data_021fbe94;

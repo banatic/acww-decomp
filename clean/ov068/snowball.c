@@ -27,7 +27,7 @@
 #define SNOWBALL_DROP_FRAMES 0x368 /* u8: frames of the slow start of a fall (state 1) */
 #define SNOWBALL_MOTION 0x36c      /* fx32[2]: the x velocity and the z move of the last frame */
 #define SNOWBALL_TARGET 0x37c      /* Vec3: where it goes (states 5, 7, 8 and 10) */
-#define SNOWBALL_CENTRE 0x388      /* Vec3: the middle of the tile it sinks into (state 4) */
+#define SNOWBALL_CENTER 0x388      /* Vec3: the middle of the tile it sinks into (state 4) */
 #define SNOWBALL_WOBBLE 0x396      /* s16: the angle of its swaying */
 #define SNOWBALL_TIMER 0x398       /* u8: frames left of shaking */
 #define SNOWBALL_FRAMES 0x399      /* u8: frames of a move to the target */
@@ -110,9 +110,9 @@ static Vec3 *ball_target(Snowman *ball)
     return (Vec3 *) (void *) ball_at(ball, SNOWBALL_TARGET);
 }
 
-static Vec3 *ball_centre(Snowman *ball)
+static Vec3 *ball_center(Snowman *ball)
 {
-    return (Vec3 *) (void *) ball_at(ball, SNOWBALL_CENTRE);
+    return (Vec3 *) (void *) ball_at(ball, SNOWBALL_CENTER);
 }
 
 static s16 *ball_wobble(Snowman *ball)
@@ -336,7 +336,7 @@ int Snowball_EnterJumpOn(Snowman *ball)
 {
     ball_layer_0(ball);
     Snowman *body = Snowman_OtherRollable(ball);
-    AcreTile_SnapToTileCentre(ball_target(ball), &body->position);
+    AcreTile_SnapToTileCenter(ball_target(ball), &body->position);
     int body_size = body->size;
     int head_size = ball->size;
     ball_target(ball)->y += 2 * body_size - shift_right(body_size, 3) - shift_right(head_size, 3) - 0x400;
@@ -386,7 +386,7 @@ CLEAN_AS(func_ov068_0226effc, Snowball_UpdateSettleBody)
 int Snowball_EnterSettleBody(Snowman *ball)
 {
     ball_layer_0(ball);
-    AcreTile_SnapToTileCentre(ball_target(ball), &ball->position);
+    AcreTile_SnapToTileCenter(ball_target(ball), &ball->position);
     ball_forget(ball);
     ball_aim(ball);
     *ball_frames(ball) = 0;
@@ -483,13 +483,13 @@ void Snowball_UpdateSink(Snowman *ball)
 {
     ball->last_size = ball->size;
     Vec3 way;
-    Vec_Subtract(&way, ball_centre(ball), &ball->position);
+    Vec_Subtract(&way, ball_center(ball), &ball->position);
     Vec_NormalizeNonZero(&way);
     Vec_Scale(&way, SNOWBALL_SINK_STEP);
     ball->position.x += way.x;
     ball->position.z += way.z;
     Snowball_Fall(ball);
-    fx32 distance = Vec_DistanceXZ(&ball->position, ball_centre(ball));
+    fx32 distance = Vec_DistanceXZ(&ball->position, ball_center(ball));
     fx32 lowest = 0;
     if (distance < 0x1000) {
         lowest = -((0x1000 - distance) / 5);
@@ -507,7 +507,7 @@ CLEAN_AS(func_ov068_0226f3b0, Snowball_UpdateSink)
 int Snowball_EnterSink(Snowman *ball)
 {
     ball_layer_0(ball);
-    AcreTile_SnapToTileCentre(ball_centre(ball), &ball->position);
+    AcreTile_SnapToTileCenter(ball_center(ball), &ball->position);
     ball_forget(ball);
     return 1;
 }
@@ -732,7 +732,7 @@ void Snowball_UpdateLoose(Snowman *ball)
 
     if (map != NULL) {
         Vec3 middle;
-        AcreTile_SnapToTileCentre(&middle, &ball->position);
+        AcreTile_SnapToTileCenter(&middle, &ball->position);
         u16 *item = AcreTile_ItemAt(map, &ball->position, 0);
         if (item != NULL && *item >= SNOWBALL_SINK_ITEM_FIRST && *item <= SNOWBALL_SINK_ITEM_LAST &&
             Vec_DistanceXZ(&middle, &ball->position) < 0x1000) {

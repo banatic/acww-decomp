@@ -158,7 +158,7 @@ CLEAN_AS(func_ov128_0229b8d4, StarView_ChangeName)
 
 /* func_ov128_0229b90c: the wanted constellation's panel risen (hidden for none). A name other
  * than the one held is made again: the constellation's name, trimmed, with the suffix, in a box
- * of sub OBJ characters from 0xc6 as wide as the text (at least 2 cells), centred. */
+ * of sub OBJ characters from 0xc6 as wide as the text (at least 2 cells), centered. */
 void StarView_ApplyName(StarView *self)
 {
     if (self->wanted == STAR_VIEW_NONE) {

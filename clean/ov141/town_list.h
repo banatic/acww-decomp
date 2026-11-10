@@ -51,10 +51,10 @@ enum TownListFlag {
                                          * (TownList_EaseTo) */
 };
 
-/* The palettes of the buttons (`quit_palette`, `ok_palette`): as drawn, greyed (no row picked:
+/* The palettes of the buttons (`quit_palette`, `ok_palette`): as drawn, grayed (no row picked:
  * the OK button does nothing) and pressed. */
 #define TOWN_LIST_BUTTON_NORMAL 8
-#define TOWN_LIST_BUTTON_GREY 9
+#define TOWN_LIST_BUTTON_GRAY 9
 #define TOWN_LIST_BUTTON_PRESSED 10
 
 /* The states of a row (`row_state`). */
@@ -99,7 +99,7 @@ typedef struct TownList {
     MenuScene base;                               /* 0x0000 */
     u8 rows[0x9a4];                               /* 0x0094: overlay 139's object (constructor
                                                        * func_ov139_02299b54): the rows' texts
-                                                       * and colours, and the cells drawn */
+                                                       * and colors, and the cells drawn */
     Glider cursor_sprite;                         /* 0x0a38: a Glider0 */
     ButtonPanel panel;                            /* 0x0a9c */
     LayerTask screen_task;                        /* 0x0c68: `screen` to layer 6 */

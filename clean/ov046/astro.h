@@ -91,7 +91,7 @@ int Astro_EnterIdle(Astro *self);
 void Astro_SetState(Astro *self, unsigned int state);
 int Astro_Update(Astro *self);
 
-/* The overlay's static initialiser (astro_static_init.c). */
+/* The overlay's static initializer (astro_static_init.c). */
 void AstroInit_Tables(void);
 
 #endif

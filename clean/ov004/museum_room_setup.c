@@ -402,7 +402,7 @@ void MuseumSetupSpot_Init(MuseumSetupSpot *spot, const Vec3 *position, int direc
 }
 CLEAN_AS(func_ov004_02245590, MuseumSetupSpot_Init)
 
-/* func_ov004_02245648: a spot's destructor (the static initialiser registers it): nothing. */
+/* func_ov004_02245648: a spot's destructor (the static initializer registers it): nothing. */
 void MuseumSetupSpot_Destruct(MuseumSetupSpot *spot)
 {
     (void) spot;

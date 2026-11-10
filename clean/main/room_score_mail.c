@@ -1,5 +1,5 @@
 /* The "ev_happyroom" letters about the score of the player's house (room_score.h): the first
- * one, the judgement after each week, and the prizes of the totals 70000, 100000 and 150000. */
+ * one, the judgment after each week, and the prizes of the totals 70000, 100000 and 150000. */
 #include "room_score.h"
 
 #include "clean.h"
@@ -24,16 +24,16 @@
 /* The first letter's message. */
 #define ROOM_SCORE_MAIL_WELCOME 0x1b
 /* The game variable (bank 0) that, when set, has the house judged whatever the week
- * (room_score.c) and the judgement sent to every player. */
+ * (room_score.c) and the judgment sent to every player. */
 #define ROOM_SCORE_MAIL_VARIABLE_JUDGE_ANYWAY 0x22
-/* The text slots of the judgement: the total, the group, the theme. */
+/* The text slots of the judgment: the total, the group, the theme. */
 #define ROOM_SCORE_MAIL_SLOT_TOTAL 1
 #define ROOM_SCORE_MAIL_SLOT_GROUP 2
 #define ROOM_SCORE_MAIL_SLOT_THEME 3
 #define ROOM_SCORE_MAIL_THEMES 4
 #define ROOM_SCORE_MAIL_TOTAL_DIGITS 10
 
-/* The text objects of the judgement: a group's name (func_02062f64) and a label
+/* The text objects of the judgment: a group's name (func_02062f64) and a label
  * (func_020a8228). */
 typedef struct RoomScoreMailGroupName {
     u32 words[0x28 / 4];
@@ -45,7 +45,7 @@ typedef struct RoomScoreMailLabel {
 extern const char data_020dd3d8[]; /* "ev_happyroom" */
 extern const char data_020dd3e8[]; /* "st_furniture_letter" */
 /* The letters' kind bytes (2) and papers (0x1f): the first letter's, the prizes', the
- * judgement's. */
+ * judgment's. */
 extern u8 data_020dd388[], data_020dd398[];
 extern u8 data_020dd38c[], data_020dd394[];
 extern u8 data_020dd390[], data_020dd384[];
@@ -82,7 +82,7 @@ CLEAN_AS(func_0205a2f0, RoomScoreMail_SendWelcome)
  * first letter and whose mailbox is not full, posted or held at the post office; then its
  * flag is set. `room` is not used.
  * QUIRK: only the first prize not sent is looked at; a total that reaches a later one waits
- * for the next judgement. */
+ * for the next judgment. */
 void RoomScoreMail_SendPrize(RoomScoreRoom *room, int total)
 {
     (void) room;
@@ -134,11 +134,11 @@ void RoomScoreMail_SendPrize(RoomScoreRoom *room, int total)
 }
 CLEAN_AS(func_0205a41c, RoomScoreMail_SendPrize)
 
-/* func_0205a554: the judgement, message `message`, with the total, the name of group `group`
+/* func_0205a554: the judgment, message `message`, with the total, the name of group `group`
  * and, for a theme below 4, its word of "st_furniture_letter" as its texts, posted to each
  * player of the town who has had the first letter (to every player while game variable 0x22
  * is set). 0 when the total could not be written. `room` is not used. */
-int RoomScoreMail_SendJudgement(RoomScoreRoom *room, int message, int total, int group, int theme)
+int RoomScoreMail_SendJudgment(RoomScoreRoom *room, int message, int total, int group, int theme)
 {
     (void) room;
     MessageText46 total_text;
@@ -179,4 +179,4 @@ int RoomScoreMail_SendJudgement(RoomScoreRoom *room, int message, int total, int
     MessageText46_Destruct(&total_text);
     return 1;
 }
-CLEAN_AS(func_0205a554, RoomScoreMail_SendJudgement)
+CLEAN_AS(func_0205a554, RoomScoreMail_SendJudgment)

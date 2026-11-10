@@ -228,7 +228,7 @@ void PocketsGrid_DrawPlace(PocketsGrid *grid, const OamEntry *obj, int place, in
 }
 CLEAN_AS(func_ov094_0229a530, PocketsGrid_DrawPlace)
 
-/* func_ov094_0229a600: data_ov094_0229bfa0 centred on (x, y). */
+/* func_ov094_0229a600: data_ov094_0229bfa0 centered on (x, y). */
 int PocketsGrid_DrawLowered(PocketsGrid *grid, int x, int y)
 {
     return OamBuffer_DrawObjAffine(OAM_BUFFER_SCREEN_SUB, &data_ov094_0229bfa0, x - POCKETS_GRID_OBJ_MARGIN,
@@ -236,7 +236,7 @@ int PocketsGrid_DrawLowered(PocketsGrid *grid, int x, int y)
 }
 CLEAN_AS(func_ov094_0229a600, PocketsGrid_DrawLowered)
 
-/* func_ov094_0229a634: data_ov094_0229bf98 centred on (x, y), in `palette` (-1: its own). */
+/* func_ov094_0229a634: data_ov094_0229bf98 centered on (x, y), in `palette` (-1: its own). */
 void PocketsGrid_DrawSurround(PocketsGrid *grid, int x, int y, int palette)
 {
     OamBuffer_DrawObjAffine(OAM_BUFFER_SCREEN_SUB, &data_ov094_0229bf98, x - POCKETS_GRID_OBJ_MARGIN,
@@ -244,7 +244,7 @@ void PocketsGrid_DrawSurround(PocketsGrid *grid, int x, int y, int palette)
 }
 CLEAN_AS(func_ov094_0229a634, PocketsGrid_DrawSurround)
 
-/* func_ov094_0229a668: data_ov094_0229bfa8 centred on (x, y). */
+/* func_ov094_0229a668: data_ov094_0229bfa8 centered on (x, y). */
 int PocketsGrid_DrawMark(PocketsGrid *grid, int x, int y)
 {
     return OamBuffer_DrawObjAffine(OAM_BUFFER_SCREEN_SUB, &data_ov094_0229bfa8, x - POCKETS_GRID_OBJ_MARGIN,

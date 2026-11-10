@@ -14,8 +14,8 @@ extern const u8 data_020ca5d4[8]; /* the eight tiles around one: 0x10 * (8 - dx)
 extern const int data_020cb4e8[0x1b];
 /* The same for the further days. */
 extern const int data_020cb554[0x1b];
-/* The codes two flowers make, by their kind and lower colour, then by the higher. */
-extern const TownFamilyCrosses *const data_020db7c4[][TOWN_FAMILY_COLOURS];
+/* The codes two flowers make, by their kind and lower color, then by the higher. */
+extern const TownFamilyCrosses *const data_020db7c4[][TOWN_FAMILY_COLORS];
 
 #define TOWN_FAMILY_WILT 0x6e    /* added to a flower (or 0x1a) to make it wilted */
 #define TOWN_FAMILY_WATERED 0x8a /* taken off a watered flower to make it a flower again */
@@ -193,19 +193,19 @@ int TownFamily_PutOnFree(AcreMap *map, const TownGrowthTiles *tile, const TownGr
 CLEAN_AS(func_02049ca0, TownFamily_PutOnFree)
 
 /* func_02049d04: the code two flowers of a kind make: drawn from the list data_020db7c4 gives for
- * the kind of `code` and the two codes' colours (lower, then higher), each entry by its chance in
+ * the kind of `code` and the two codes' colors (lower, then higher), each entry by its chance in
  * 100; 0xfff1 when the draw goes past the list or there is none. */
 int TownFamily_DrawCross(const u16 *code, const u16 *mate)
 {
     int left = (int) MainRandom_Below(100);
     int made = ACRE_MAP_ITEM_NONE;
     int kind = TownFamily_Kind(code);
-    int low = TownFamily_Colour(code);
-    int high = TownFamily_Colour(mate);
+    int low = TownFamily_Color(code);
+    int high = TownFamily_Color(mate);
     if (low > high) {
-        int colour = low;
+        int color = low;
         low = high;
-        high = colour;
+        high = color;
     }
     const TownFamilyCrosses *list = &data_020db7c4[kind][low][high];
     const TownFamilyCross *entry = list->entries;
@@ -222,61 +222,61 @@ int TownFamily_DrawCross(const u16 *code, const u16 *mate)
 }
 CLEAN_AS(func_02049d04, TownFamily_DrawCross)
 
-/* func_02049d78: the code's colour in its kind (TownFamily_Kind), from 1; 1 for a code that is
+/* func_02049d78: the code's color in its kind (TownFamily_Kind), from 1; 1 for a code that is
  * not a tulip, pansy, cosmos or rose. */
-int TownFamily_Colour(const u16 *code)
+int TownFamily_Color(const u16 *code)
 {
     u16 now = *code;
-    int colour = 1;
+    int color = 1;
     if (now <= 0x19 || now == 0x1c) {
         switch (TownFamily_Kind(code)) {
             case 0:
-                colour = *code + 1;
+                color = *code + 1;
                 break;
             case 1:
-                colour = *code - 0x05;
+                color = *code - 0x05;
                 break;
             case 2:
-                colour = *code - 0x0b;
+                color = *code - 0x0b;
                 break;
             case 3:
-                colour = *code == 0x1c ? 9 : *code - 0x11;
+                color = *code == 0x1c ? 9 : *code - 0x11;
                 break;
         }
     } else if (TownAcreCount_IsWateredFlower(now)) {
         switch (TownFamily_Kind(code)) {
             case 0:
-                colour = *code - 0x89;
+                color = *code - 0x89;
                 break;
             case 1:
-                colour = *code - 0x8f;
+                color = *code - 0x8f;
                 break;
             case 2:
-                colour = *code - 0x95;
+                color = *code - 0x95;
                 break;
             case 3:
-                colour = *code == TOWN_FAMILY_WATERED_GOLD_ROSE ? 7 : *code - 0x9b;
+                color = *code == TOWN_FAMILY_WATERED_GOLD_ROSE ? 7 : *code - 0x9b;
                 break;
         }
     } else if (TownAcreCount_IsWiltedFlower(now)) {
         switch (TownFamily_Kind(code)) {
             case 0:
-                colour = *code - 0x6d;
+                color = *code - 0x6d;
                 break;
             case 1:
-                colour = *code - 0x73;
+                color = *code - 0x73;
                 break;
             case 2:
-                colour = *code - 0x79;
+                color = *code - 0x79;
                 break;
             case 3:
-                colour = *code - 0x7f;
+                color = *code - 0x7f;
                 break;
         }
     }
-    return colour;
+    return color;
 }
-CLEAN_AS(func_02049d78, TownFamily_Colour)
+CLEAN_AS(func_02049d78, TownFamily_Color)
 
 /* func_02049ec4: the kind of flower of the code (0-3, the tulips, pansies, cosmos and roses:
  * 0x00 / 0x6e / 0x8a, 0x06 / 0x74 / 0x90, 0x0c / 0x7a / 0x96, 0x12 / 0x80 / 0x9c and 0x1c,

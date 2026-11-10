@@ -1,6 +1,6 @@
 /* Overlay 5: the data of scenes 0x00 and 0x31 (data_020e5688 names each scene's overlay), scenes
  * outdoors, so loaded with overlay 3 (data_020e5538). Its one function is its static
- * initialiser, run when the overlay is loaded, which fills in the count of the step of the
+ * initializer, run when the overlay is loaded, which fills in the count of the step of the
  * scene's setup (scene_setup.h) that makes overlay 3's shared objects, copied from overlay 3's
  * constant (the compiler cannot fold another overlay's constant). */
 #include "clean.h"

@@ -14,7 +14,7 @@
 
 /* A sphere of the list (0x28 bytes): the pick's sphere, then the list's own fields. */
 typedef struct CatchSphere {
-    TouchPickSphere sphere;   /* its centre in the drawn world, its index */
+    TouchPickSphere sphere;   /* its center in the drawn world, its index */
     struct CatchSphere *next; /* 0x1c */
     u8 in_reach;              /* 0x20: the last sweep reached it */
     u8 unk_21[3];
@@ -22,7 +22,7 @@ typedef struct CatchSphere {
 } CatchSphere;
 
 int CatchSphere_FindAlong(const Vec3 *from, const Vec3 *to, fx32 radius, u8 *index, int unused);
-void CatchSphere_Add(CatchSphere *sphere, Vec3 *centre, fx32 reach, fx32 radius, u8 index);
+void CatchSphere_Add(CatchSphere *sphere, Vec3 *center, fx32 reach, fx32 radius, u8 index);
 int CatchSphere_Destruct(CatchSphere *sphere);
 CatchSphere *CatchSphere_Construct(CatchSphere *sphere);
 

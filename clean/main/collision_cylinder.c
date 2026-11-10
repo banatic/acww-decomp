@@ -45,7 +45,7 @@ static void path_point(Vec3 *point, const Vec3 *from, const Vec3 *direction, fx3
  * (the nearer) and `t[1]`; 0 when the path has no length across the axis or misses. */
 static int side_crossings(const CollisionCylinder *cylinder, const Vec3 *from, const Vec3 *to, Vec3 *direction, fx32 t[2])
 {
-    Vec3 centre = cylinder->base;
+    Vec3 center = cylinder->base;
     fx32 radius = cylinder->radius;
     Vec_Subtract(direction, to, from);
 
@@ -55,8 +55,8 @@ static int side_crossings(const CollisionCylinder *cylinder, const Vec3 *from, c
     if (abs_fx(a) < COLLISION_EPSILON) {
         return 0;
     }
-    fx32 off_x = from->x - centre.x;
-    fx32 off_z = from->z - centre.z;
+    fx32 off_x = from->x - center.x;
+    fx32 off_z = from->z - center.z;
     fx32 b = FX_MulFunc(direction->x, off_x);
     b += FX_MulFunc(direction->z, off_z);
     b = shift_left(FX_Div(b, a), 1);

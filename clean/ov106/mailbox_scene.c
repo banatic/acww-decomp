@@ -202,7 +202,7 @@ CLEAN_AS(func_ov106_0229c418, MailboxScene_CloseOnRequest)
 void MailboxScene_PressLabelButton(MailboxScene *self)
 {
     MenuScene_SetSubState(mbx_scene(self), 0x22);
-    /* The button's base is main's labelled sprite (label_button.h). */
+    /* The button's base is main's labeled sprite (label_button.h). */
     LabelSprite_SetState((LabelSprite *) (void *) &self->button, 2);
     SoundSys_PlaySe(0x29);
 }
@@ -2133,7 +2133,7 @@ void MailboxScene_IdleByTouch(MailboxScene *self)
 CLEAN_AS(func_ov106_0229e7e0, MailboxScene_IdleByTouch)
 
 /* func_ov106_0229e860: a step of the wallet display's setup (its answer unused), the panel's
- * text colours loaded and its layout 5 with message 0x88. */
+ * text colors loaded and its layout 5 with message 0x88. */
 void MailboxScene_PreparePanel(MailboxScene *self)
 {
     PocketsWallet_LoadObjFiles(&self->wallet);
@@ -2596,7 +2596,7 @@ int MailboxScene_Draw(MailboxScene *self)
     }
     if (MailboxScene_TestFlags(self, MAILBOX_SCENE_FLAG_LETTER_SHOWN) != 0) {
         int y = MenuScene_WipeOffsetY(mbx_scene(self));
-        /* The button's base is main's labelled sprite (label_button.h). */
+        /* The button's base is main's labeled sprite (label_button.h). */
         LabelSprite_SetOffset((LabelSprite *) (void *) &self->button, 0, y);
         mbx_draw_member(&self->button);
     }

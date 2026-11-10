@@ -532,7 +532,7 @@ void FieldActor_TakeRemoteAction(FieldActor *actor)
         sub = action.sub;
     }
     Vec3 point;
-    AcreTile_TileCentre(&point, (u32) x, (u32) z);
+    AcreTile_TileCenter(&point, (u32) x, (u32) z);
 
     switch (type) {
         case 17:
@@ -3301,7 +3301,7 @@ void FieldActor_EnterState1a(FieldActor *actor, const StateRequest *request, int
     work->x = x;
     work->z = z;
     work->flag = flag;
-    AcreTile_TileCentre(&actor->unk_824, x, z);
+    AcreTile_TileCenter(&actor->unk_824, x, z);
     set_factors(actor, FX32_ONE);
 
     u16 item;
@@ -3728,7 +3728,7 @@ void FieldActor_EnterState19(FieldActor *actor, const StateRequest *request, int
     u8 request_flag = args->flag;
 
     if (number < 0) {
-        AcreTile_TileCentre(&actor->unk_824, x, z);
+        AcreTile_TileCenter(&actor->unk_824, x, z);
         set_factors(actor, FX32_ONE);
         u16 item;
         if (item_is_nothing(&requested)) {
@@ -4104,7 +4104,7 @@ void FieldActor_EnterState18(FieldActor *actor, const StateRequest *request, int
     u32 tile[2] = {x, z};
     FieldActor_SetSaved18((State18Saved *) actor->saved.packed, tile, (u32) number);
     if (number < 0) {
-        AcreTile_TileCentre(&actor->unk_824, x, z);
+        AcreTile_TileCenter(&actor->unk_824, x, z);
         set_factors(actor, FX32_ONE);
         actor->unk_822 = *AcreTile_ItemAt(data_021c80bc, &actor->unk_824, 0);
         actor->item = actor->unk_822;

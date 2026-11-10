@@ -44,7 +44,7 @@ extern int data_021dc580;
 extern u32 data_021dc584;
 extern TownGeneratorCell data_021dc58c;
 extern u8 data_021dc594[];
-/* The four neighbours TownGenerator_PlaceBeside tries, built on first use, and their guard. */
+/* The four neighbors TownGenerator_PlaceBeside tries, built on first use, and their guard. */
 extern u32 data_021dc588;
 extern s16 data_021dc5a0[4][2];
 /* The six models of which the town must use one. */
@@ -254,7 +254,7 @@ CLEAN_AS(func_0209c988, TownGenerator_PlaceSpecials)
 
 /* func_0209ca6c: kind `kind` put on one of the acres of kind 9 next to (left, right, below or
  * above) the first inner acre, row by row, of kind `beside`, drawn at random. Whether it was put.
- * QUIRK: the four neighbours are a function-local static table, built (without registration for
+ * QUIRK: the four neighbors are a function-local static table, built (without registration for
  * destruction) on the first call that finds the acre. */
 int TownGenerator_PlaceBeside(TownGenerator *generator, int beside, int kind)
 {
@@ -278,10 +278,10 @@ int TownGenerator_PlaceBeside(TownGenerator *generator, int beside, int kind)
     }
 
     if ((data_021dc588 & 1) == 0) {
-        static const s16 neighbours[4][2] = {{-1, 0}, {1, 0}, {0, 1}, {0, -1}};
+        static const s16 neighbors[4][2] = {{-1, 0}, {1, 0}, {0, 1}, {0, -1}};
         for (int i = 0; i < 4; i++) {
-            data_021dc5a0[i][0] = neighbours[i][0];
-            data_021dc5a0[i][1] = neighbours[i][1];
+            data_021dc5a0[i][0] = neighbors[i][0];
+            data_021dc5a0[i][1] = neighbors[i][1];
         }
         data_021dc588 |= 1;
     }

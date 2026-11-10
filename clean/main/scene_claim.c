@@ -2,7 +2,7 @@
 #include "scene_claim.h"
 
 #include "clean.h"
-#include "main/acre_tile.h" /* AcreTile_SnapToTileCentre */
+#include "main/acre_tile.h" /* AcreTile_SnapToTileCenter */
 #include "session.h"
 #include "scene_exit.h"
 #include "scene_query.h"
@@ -174,10 +174,10 @@ int SceneClaim_TakeExit(int exit)
         SceneClaimExit_SetPosition(&data_021dc6e8, &from);
         SceneClaimExit_SetAngle(&data_021dc6e8, player_angle);
     }
-    /* The tile after the player's along z; AcreTile_SnapToTileCentre leaves the height 0. */
+    /* The tile after the player's along z; AcreTile_SnapToTileCenter leaves the height 0. */
     Vec3 next_tile = from;
     next_tile.z = from.z + TILE_SIZE;
-    AcreTile_SnapToTileCentre(&next_tile, &next_tile);
+    AcreTile_SnapToTileCenter(&next_tile, &next_tile);
     next_tile.x = from.x;
     SceneClaimExit_SetNextTile(&data_021dc6e8, &next_tile);
 

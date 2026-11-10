@@ -3,10 +3,10 @@
  *   0x44  the actor fades in (its models' alpha up to 31 by 6 a frame) while its animation
  *         plays, with footsteps at frames 1, 6, 12 and 20; at its end it nudges one thing and
  *         state 2 is asked for;
- *   0x7a  the head's kind is cleared (from frame 3; the hair colour kept), then state 0x7b;
+ *   0x7a  the head's kind is cleared (from frame 3; the hair color kept), then state 0x7b;
  *   0x7b  an animation, then state 0x7c with the same two bytes;
  *   0x7c  an effect at frame 10; from frame 11 the head takes the request's kind and hair
- *         colour, which go into the player's record; at its end, the stick pushed towards where
+ *         color, which go into the player's record; at its end, the stick pushed towards where
  *         the actor faces asks for state 0x2c. On leaving, this console's actor sends both to the session;
  *   0x7d  the telephone picked up: this console's actor stands at the tile ahead moved 2.0
  *         in z, at yaw 0x8000, while the telephone's animation plays from its start; then
@@ -28,7 +28,7 @@
 struct FieldActor;
 struct StateRequest;
 
-/* The work at 0x7d4 of states 0x7a to 0x7c: the head's kind and hair colour asked for. */
+/* The work at 0x7d4 of states 0x7a to 0x7c: the head's kind and hair color asked for. */
 typedef struct FieldActorHairWork {
     u8 kind;
     u8 hair_color;

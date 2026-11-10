@@ -64,7 +64,7 @@ typedef struct G3dJointResult {
 /* NNSG3dMatAnmResult. */
 typedef struct G3dMaterialResult {
     u32 flags;           /* 0x00: the texture matrix's flags (NNS_G3D_MATANM_RESULTFLAG_*) */
-    u32 diffuse;         /* 0x04: DIF_AMB, the diffuse colour in bits 0-14 */
+    u32 diffuse;         /* 0x04: DIF_AMB, the diffuse color in bits 0-14 */
     u32 specular;        /* 0x08: SPE_EMI */
     u32 polygon_attr;    /* 0x0c: POLYGON_ATTR, the alpha in bits 16-20 */
     u32 texture_image;   /* 0x10: TEXIMAGE_PARAM */

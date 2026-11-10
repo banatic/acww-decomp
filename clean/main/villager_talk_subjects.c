@@ -404,7 +404,7 @@ int VillagerTalkSubjects_SayHolding8a68(VillagerTalk *talk)
 CLEAN_AS(func_020228e4, VillagerTalkSubjects_SayHolding8a68)
 
 /* func_02022938: while the villager holds nothing or an umbrella (0x1380-0x139f), the line
- * of the set at 0x020c8d28 for mode 3, and the villager's favourite style in slot 5. */
+ * of the set at 0x020c8d28 for mode 3, and the villager's favorite style in slot 5. */
 int VillagerTalkSubjects_SayHoldingStyle(VillagerTalk *talk)
 {
     if (!subjects_holds_none_or_umbrella(subjects_held(talk))) {

@@ -46,7 +46,7 @@ typedef struct FieldCameraSwayStage {
 typedef struct FieldCameraTour {
     s16 wait;           /* 0x00 (0x21c): frames before the next stop once arrived */
     s16 stop;           /* 0x02: 0-6 */
-    Vec3 base;          /* 0x04: the centre of the stop's building's tile */
+    Vec3 base;          /* 0x04: the center of the stop's building's tile */
     const Vec3 *offset; /* 0x10: from it to the point looked at */
     int speed;          /* 0x14: the most the point moves in a frame (fx32), rising to 0x100 */
 } FieldCameraTour;

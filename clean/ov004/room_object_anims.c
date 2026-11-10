@@ -238,7 +238,7 @@ void RoomObject_LoadAnims(RoomObject *object, int variant, u8 mode, int speed, u
 CLEAN_AS(func_ov004_0221041c, RoomObject_LoadAnims)
 
 /* func_ov004_0221062c: the frame count of the first animation of `variant` the archive has, in
- * the order joints, material colours, texture coordinates, texture patterns, visibility; 0
+ * the order joints, material colors, texture coordinates, texture patterns, visibility; 0
  * without any. */
 u16 RoomObject_AnimFrames(RoomObject *object, int variant)
 {
@@ -262,7 +262,7 @@ u16 RoomObject_AnimFrames(RoomObject *object, int variant)
 }
 CLEAN_AS(func_ov004_0221062c, RoomObject_AnimFrames)
 
-/* Plays `sound` at the object's centre (RoomSound_PlayAtB) unless it is no sound. */
+/* Plays `sound` at the object's center (RoomSound_PlayAtB) unless it is no sound. */
 static int play_sound(RoomObject *object, int sound)
 {
     if (sound != data_ov004_0224fd38) {

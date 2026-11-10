@@ -10,7 +10,7 @@
  *   collection holds: overlay 109 adds one, overlay 144 takes one out.
  * - The word at 0x15a0 holds the house's size (0-6), the size ordered (the next extension,
  *   built on the next new day), the look shown and the look of the house (0-15, the roof's
- *   colour; at first the console owner's favourite colour), the look ordered with the
+ *   color; at first the console owner's favorite color), the look ordered with the
  *   extension, which rooms have their lights on, and in its top byte the house's cockroach
  *   count (0-10): the days of an absence past six raise it, and the indoor overlay (4) reads it
  *   and writes it back (house_roaches.h).

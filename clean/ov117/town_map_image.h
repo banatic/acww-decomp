@@ -3,8 +3,8 @@
  *
  * The picture (TownMapImage, 0x2066 bytes from the current heap, kept at data_ov117_0229a320
  * while it is built) is the 4 x 4 acres inside the town's border, each a block of 4 x 4
- * 16-colour characters (512 bytes, 32 x 32 pixels): each tile of an acre is 2 x 2 pixels, the
- * four colours its unit's type gives (UnitTypeInfo_Bytes18At). Then 17 markers, each a place
+ * 16-color characters (512 bytes, 32 x 32 pixels): each tile of an acre is 2 x 2 pixels, the
+ * four colors its unit's type gives (UnitTypeInfo_Bytes18At). Then 17 markers, each a place
  * on the picture and a kind:
  *
  * - 0-2: the spots found in acres of flag 4 (CollisionQuery_FindSpotInBlock), whose kind is the

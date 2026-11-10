@@ -1,4 +1,4 @@
-/* Behaviours 0, 1 and 5 of a villager out walking in the town, the choice of what it does
+/* Behaviors 0, 1 and 5 of a villager out walking in the town, the choice of what it does
  * next and its walker (outdoor_villager_walks.h). */
 #include "outdoor_villager_walks.h"
 
@@ -70,27 +70,27 @@ extern AcreMap *data_021c80bc;
 /* A null member pointer (the C++ runtime's). */
 extern const MemberPointer __ptmf_null;
 
-/* The count at 0xa06 at which behaviour 21 takes over (100). */
+/* The count at 0xa06 at which behavior 21 takes over (100). */
 extern s16 data_ov068_02276724[];
 /* The walker's kinds drawn when it has none to go to (0, 2 and 4). */
 extern const s32 data_ov068_022767ac[3];
 /* The frames before a villager may be paired again (1200). */
 extern const u32 data_ov068_0227673c;
-/* Behaviour 1's tables of catches (VillagerErrandCatch_Update). */
+/* Behavior 1's tables of catches (VillagerErrandCatch_Update). */
 extern const u8 data_ov068_0227677c[];
 extern const u8 data_ov068_02276734[];
-/* Behaviour 0's draw hook (OutdoorVillagerObject_DrawWithItem: drawn with its held item link). */
+/* Behavior 0's draw hook (OutdoorVillagerObject_DrawWithItem: drawn with its held item link). */
 extern const MemberPointer data_ov068_022770a8;
 
-/* Behaviour 5's update's step table (filled once, bit 0 of its guard), and the member pointers
+/* Behavior 5's update's step table (filled once, bit 0 of its guard), and the member pointers
  * it is filled from. */
 extern u32 data_ov068_0227829c;
 extern MemberPointer data_ov068_0227831c[2];
 extern const MemberPointer data_ov068_02276e98, data_ov068_02276f20;
 
-/* The behaviour member's and the villager's functions used here (outdoor_villager.h has more). */
-/* Whether behaviour 7 calls this console's player over. */
-int OutdoorVillagerBehaviour_CallsPlayer(OutdoorVillagerBehaviour *self, u8 *villager);
+/* The behavior member's and the villager's functions used here (outdoor_villager.h has more). */
+/* Whether behavior 7 calls this console's player over. */
+int OutdoorVillagerBehavior_CallsPlayer(OutdoorVillagerBehavior *self, u8 *villager);
 /* Once a minute of the clock, in a contest, a catch drawn that may beat the event's winner's. */
 void OutdoorVillagerRecords_EachMinute(u8 *villager);
 /* The activity of the moment of its state entry redrawn (byte 0x1c). */
@@ -109,12 +109,12 @@ void OutdoorVillagerRecords_RedrawActivity(u8 *villager);
 #define WALKS_IN_PITFALL 0xa04
 #define WALKS_NETTED 0xa05
 #define WALKS_TOWN_RECORD 0x830 /* u8 *: its town record */
-/* The parts of the behaviour member read here besides outdoor_villager.h's. */
+/* The parts of the behavior member read here besides outdoor_villager.h's. */
 #define WALKS_ITEM_CHECK 0x34  /* s16: frames to the next redraw of the activity of the moment */
 #define WALKS_ITEM_HOLD 0x36   /* s16: while it and the check run, only the weather counts */
 #define WALKS_WALKER 0x3c      /* PathWalker */
 #define WALKS_WALK_TIME 0xd8   /* s16: frames left of the walker's walk, -1 before it starts */
-#define WALKS_STEP_TIME 0xda   /* s16: frames to behaviour 1's next step */
+#define WALKS_STEP_TIME 0xda   /* s16: frames to behavior 1's next step */
 #define WALKS_PAUSE 0xdc       /* s16: frames it stands watching */
 #define WALKS_PAUSE_AGAIN 0xde /* s16: frames before it may stop to watch again */
 #define WALKS_RAISE 0xf8       /* s32: frames to the next raise of the record's byte 0x1e */
@@ -158,7 +158,7 @@ void OutdoorVillagerRecords_RedrawActivity(u8 *villager);
 #define WALKS_WALKER_NONE 7
 #define WALKS_TALK_STEP_DONE 1
 
-/* Behaviours started here. */
+/* Behaviors started here. */
 #define WALKS_DO_WALK 0
 #define WALKS_DO_OFF_SCREEN 1
 #define WALKS_DO_GO_IN 2
@@ -223,7 +223,7 @@ static Footsteps *walks_footsteps(u8 *villager)
     return (Footsteps *) (void *) walks_at(villager, OUTDOOR_VILLAGER_FOOTSTEPS);
 }
 
-static PathWalker *walks_walker(OutdoorVillagerBehaviour *self)
+static PathWalker *walks_walker(OutdoorVillagerBehavior *self)
 {
     return (PathWalker *) (void *) walks_at(self, WALKS_WALKER);
 }
@@ -255,7 +255,7 @@ static void walks_hold(u8 *villager, int kind)
 }
 
 /* The walker started afresh (state `state`), its walk's time unset. */
-static void walks_restart(OutdoorVillagerBehaviour *self, int state, u8 *villager)
+static void walks_restart(OutdoorVillagerBehavior *self, int state, u8 *villager)
 {
     OutdoorVillagerWalks_StartWalker(self, state, villager);
     *walks_half(self, WALKS_WALK_TIME) = WALKS_STATE_UNSET;
@@ -263,7 +263,7 @@ static void walks_restart(OutdoorVillagerBehaviour *self, int state, u8 *village
 }
 
 /* A walker's step from the villager's position; the walk's time starts on its first step. */
-static void walks_step(OutdoorVillagerBehaviour *self, Vec3 *point)
+static void walks_step(OutdoorVillagerBehavior *self, Vec3 *point)
 {
     if (PathWalker_Step(walks_walker(self), point) != 0 && *walks_half(self, WALKS_WALK_TIME) == WALKS_STATE_UNSET) {
         *walks_half(self, WALKS_WALK_TIME) = WALKS_WALK_FRAMES;
@@ -317,17 +317,17 @@ static int walks_is_umbrella(u16 item)
     return item >= WALKS_UMBRELLA_FIRST && item <= WALKS_UMBRELLA_LAST;
 }
 
-/* Behaviour `index` started, the one to resume `resume`. */
-static void walks_start_then(OutdoorVillagerBehaviour *self, u8 *villager, int index, int resume)
+/* Behavior `index` started, the one to resume `resume`. */
+static void walks_start_then(OutdoorVillagerBehavior *self, u8 *villager, int index, int resume)
 {
-    OutdoorVillagerBehaviour_Start(self, villager, index);
-    OutdoorVillagerBehaviour_SetResume(self, resume);
+    OutdoorVillagerBehavior_Start(self, villager, index);
+    OutdoorVillagerBehavior_SetResume(self, resume);
 }
 
-/* ---- Behaviour 5: its talk */
+/* ---- Behavior 5: its talk */
 
-/* _ZN18Obj_ov068_022771c019func_ov068_0226af00Ei: behaviour 5's update: End5, Idle5. */
-int OutdoorVillagerWalks_Update5(OutdoorVillagerBehaviour *self, u8 *villager)
+/* _ZN18Obj_ov068_022771c019func_ov068_0226af00Ei: behavior 5's update: End5, Idle5. */
+int OutdoorVillagerWalks_Update5(OutdoorVillagerBehavior *self, u8 *villager)
 {
     static const MemberPointer *const steps[2] = {
         &data_ov068_02276e98, /* OutdoorVillagerWalks_End5 */
@@ -344,7 +344,7 @@ int OutdoorVillagerWalks_Update5(OutdoorVillagerBehaviour *self, u8 *villager)
 CLEAN_AS(_ZN18Obj_ov068_022771c019func_ov068_0226af00Ei, OutdoorVillagerWalks_Update5)
 
 /* func_ov068_0226af6c: nothing (after the talk). */
-void OutdoorVillagerWalks_Idle5(OutdoorVillagerBehaviour *self, u8 *villager)
+void OutdoorVillagerWalks_Idle5(OutdoorVillagerBehavior *self, u8 *villager)
 {
     (void) self;
     (void) villager;
@@ -353,7 +353,7 @@ CLEAN_AS(func_ov068_0226af6c, OutdoorVillagerWalks_Idle5)
 
 /* func_ov068_0226af70: once its action is no longer busy: its mood applied, the object event
  * finished, unpaired; step 1. */
-void OutdoorVillagerWalks_End5(OutdoorVillagerBehaviour *self, u8 *villager)
+void OutdoorVillagerWalks_End5(OutdoorVillagerBehavior *self, u8 *villager)
 {
     if (SceneAction_IsBusy(walks_action(villager)) != 0) {
         return;
@@ -366,11 +366,11 @@ void OutdoorVillagerWalks_End5(OutdoorVillagerBehaviour *self, u8 *villager)
 }
 CLEAN_AS(func_ov068_0226af70, OutdoorVillagerWalks_End5)
 
-/* func_ov068_0226afb8: behaviour 5's start: a running act's effects reset and its last motion
+/* func_ov068_0226afb8: behavior 5's start: a running act's effects reset and its last motion
  * number cleared. Paired: it talks (motion reset). With the byte at 0xa04: it talks where it
  * is, the watch held on this console's player. Else the watch held on the player and it turns
  * to the object its talk's motion names (angle 0 without one) and talks. Always 1. */
-int OutdoorVillagerWalks_Start5(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerWalks_Start5(OutdoorVillagerBehavior *self, u8 *villager)
 {
     (void) self;
     OutdoorVillagerObject_ResetActEffects(villager);
@@ -395,17 +395,17 @@ int OutdoorVillagerWalks_Start5(OutdoorVillagerBehaviour *self, u8 *villager)
 }
 CLEAN_AS(func_ov068_0226afb8, OutdoorVillagerWalks_Start5)
 
-/* ---- Behaviour 1: off screen */
+/* ---- Behavior 1: off screen */
 
-/* func_ov068_0226ba10: behaviour 1's update. Back on screen: behaviour 0. Else it may catch
+/* func_ov068_0226ba10: behavior 1's update. Back on screen: behavior 0. Else it may catch
  * (VillagerErrandCatch_Update), in a contest a catch drawn once a minute (OutdoorVillagerRecords_EachMinute), and every
  * 900 frames its record's byte 0x1e rises. A walker that stopped or ran out of time starts
- * afresh (state 1). While it walks: at its door, behaviour 3; unless going home, it turns home
+ * afresh (state 1). While it walks: at its door, behavior 3; unless going home, it turns home
  * when it is time (TimeToGoHome); every 40 frames a step of the walker. Always 1. */
-int OutdoorVillagerWalks_Update1(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerWalks_Update1(OutdoorVillagerBehavior *self, u8 *villager)
 {
     if (OutdoorVillagerWalks_OnScreen(self, villager) != 0) {
-        OutdoorVillagerBehaviour_Start(self, villager, WALKS_DO_WALK);
+        OutdoorVillagerBehavior_Start(self, villager, WALKS_DO_WALK);
         return 1;
     }
     VillagerErrandCatch_Update(villager, (int) (uintptr_t) data_ov068_0227677c, (int) (uintptr_t) data_ov068_02276734, 1);
@@ -423,7 +423,7 @@ int OutdoorVillagerWalks_Update1(OutdoorVillagerBehaviour *self, u8 *villager)
         return 1;
     }
     if (OutdoorVillagerWalks_AtHome(self, villager) != 0) {
-        OutdoorVillagerBehaviour_Start(self, villager, WALKS_DO_IN);
+        OutdoorVillagerBehavior_Start(self, villager, WALKS_DO_IN);
         return 1;
     }
     if (PathWalker_Kind(walks_walker(self)) != WALKS_WALKER_HOME && OutdoorVillagerWalks_TimeToGoHome(self, villager) != 0) {
@@ -439,11 +439,11 @@ int OutdoorVillagerWalks_Update1(OutdoorVillagerBehaviour *self, u8 *villager)
 }
 CLEAN_AS(func_ov068_0226ba10, OutdoorVillagerWalks_Update1)
 
-/* func_ov068_0226bb3c: behaviour 1's start: a running act's effects reset, the watch held on
+/* func_ov068_0226bb3c: behavior 1's start: a running act's effects reset, the watch held on
  * nothing, it stands; the wait 0, no draw hook, no footsteps, the step time 0 and the raise
  * timer 900; a walker that walks goes on in state 1, else it starts afresh (state 1); the
  * held item not shown, its mood's sounds off. */
-int OutdoorVillagerWalks_Start1(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerWalks_Start1(OutdoorVillagerBehavior *self, u8 *villager)
 {
     OutdoorVillagerObject_ResetActEffects(villager);
     walks_hold(villager, 0);
@@ -464,7 +464,7 @@ int OutdoorVillagerWalks_Start1(OutdoorVillagerBehaviour *self, u8 *villager)
 }
 CLEAN_AS(func_ov068_0226bb3c, OutdoorVillagerWalks_Start1)
 
-/* ---- Behaviour 0: walking about */
+/* ---- Behavior 0: walking about */
 
 /* Once the motion is done: the pause to watch ends unless the watch still follows an insect
  * or a fish shadow it has seen for 15 frames or more and still sees; while it stands paused,
@@ -473,7 +473,7 @@ CLEAN_AS(func_ov068_0226bb3c, OutdoorVillagerWalks_Start1)
  * clear) within a quarter turn of its facing, else kind 4 turning first, and the wait 0x100
  * or 0x128. It stands rather than cross the line between the player and an object event's
  * object near (0xc000). */
-static void walks_after_motion(OutdoorVillagerBehaviour *self, u8 *villager)
+static void walks_after_motion(OutdoorVillagerBehavior *self, u8 *villager)
 {
     SceneMotion *motion = walks_motion(villager);
     s16 *pause = walks_half(self, WALKS_PAUSE);
@@ -531,7 +531,7 @@ static void walks_after_motion(OutdoorVillagerBehaviour *self, u8 *villager)
  * follows an insect or a fish shadow it has seen for more than 15 frames; when it walks into
  * the line between the player and an object event's object near (0x8000); when its mover's
  * end is more than a quarter turn from its facing. */
-static void walks_while_walking(OutdoorVillagerBehaviour *self, u8 *villager)
+static void walks_while_walking(OutdoorVillagerBehavior *self, u8 *villager)
 {
     SceneMotion *motion = walks_motion(villager);
     if (*walks_word(villager, WALKS_SPEED) == 0) {
@@ -564,12 +564,12 @@ static void walks_while_walking(OutdoorVillagerBehaviour *self, u8 *villager)
     }
 }
 
-/* func_ov068_0226bc1c: behaviour 0's update: off screen, behaviour 1; else unless the choice
- * starts another behaviour, its walk (walks_after_motion, walks_while_walking). Always 0. */
-int OutdoorVillagerWalks_Update0(OutdoorVillagerBehaviour *self, u8 *villager)
+/* func_ov068_0226bc1c: behavior 0's update: off screen, behavior 1; else unless the choice
+ * starts another behavior, its walk (walks_after_motion, walks_while_walking). Always 0. */
+int OutdoorVillagerWalks_Update0(OutdoorVillagerBehavior *self, u8 *villager)
 {
     if (OutdoorVillagerWalks_OnScreen(self, villager) == 0) {
-        OutdoorVillagerBehaviour_Start(self, villager, WALKS_DO_OFF_SCREEN);
+        OutdoorVillagerBehavior_Start(self, villager, WALKS_DO_OFF_SCREEN);
         return 0;
     }
     if (OutdoorVillagerWalks_Choose(self, villager) != 0) {
@@ -585,12 +585,12 @@ int OutdoorVillagerWalks_Update0(OutdoorVillagerBehaviour *self, u8 *villager)
 CLEAN_AS(func_ov068_0226bc1c, OutdoorVillagerWalks_Update0)
 
 /* func_ov068_0226befc: what the villager does next, the first that applies: at its door going
- * home, behaviour 2 (16 first, 2 to resume, with a held item); on a marked pitfall seed (0x1566), 17; the
- * count at 0xa06 at its limit, 21; the byte at 0xa05, 19; behaviour 7's call, 7; a pairing
+ * home, behavior 2 (16 first, 2 to resume, with a held item); on a marked pitfall seed (0x1566), 17; the
+ * count at 0xa06 at its limit, 21; the byte at 0xa05, 19; behavior 7's call, 7; a pairing
  * (TryPair starts 9); its effect's countdown, 11; a change of its held item (ChangeHeldItem
  * starts 15 or 16); the player showing an insect or a fish, 23; moving, a step aside
  * (StepAside). Whether one applied. */
-int OutdoorVillagerWalks_Choose(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerWalks_Choose(OutdoorVillagerBehavior *self, u8 *villager)
 {
     if (OutdoorVillagerWalks_AtHome(self, villager) != 0) {
         u16 item;
@@ -598,38 +598,38 @@ int OutdoorVillagerWalks_Choose(OutdoorVillagerBehaviour *self, u8 *villager)
         if (item != ITEM_CODE_NONE) {
             walks_start_then(self, villager, WALKS_DO_ITEM_AWAY, WALKS_DO_GO_IN);
         } else {
-            OutdoorVillagerBehaviour_Start(self, villager, WALKS_DO_GO_IN);
+            OutdoorVillagerBehavior_Start(self, villager, WALKS_DO_GO_IN);
         }
         return 1;
     }
     if (OutdoorVillagerWalks_OnPitfall(self, villager) != 0) {
-        OutdoorVillagerBehaviour_Start(self, villager, WALKS_DO_PITFALL);
+        OutdoorVillagerBehavior_Start(self, villager, WALKS_DO_PITFALL);
         return 1;
     }
     if (*(const u16 *) (const void *) walks_at(villager, OUTDOOR_VILLAGER_PUSHED_FRAMES) >= data_ov068_02276724[0]) {
-        OutdoorVillagerBehaviour_Start(self, villager, WALKS_DO_PUSHED);
+        OutdoorVillagerBehavior_Start(self, villager, WALKS_DO_PUSHED);
         return 1;
     }
     if (OutdoorVillagerWalks_WasNetted(self, villager) != 0) {
-        OutdoorVillagerBehaviour_Start(self, villager, WALKS_DO_NETTED);
+        OutdoorVillagerBehavior_Start(self, villager, WALKS_DO_NETTED);
         return 1;
     }
-    if (OutdoorVillagerBehaviour_CallsPlayer(self, villager) != 0) {
-        OutdoorVillagerBehaviour_Start(self, villager, WALKS_DO_CALL);
+    if (OutdoorVillagerBehavior_CallsPlayer(self, villager) != 0) {
+        OutdoorVillagerBehavior_Start(self, villager, WALKS_DO_CALL);
         return 1;
     }
     if (OutdoorVillagerWalks_TryPair(self, villager) != 0) {
         return 1;
     }
     if (OutdoorVillagerEffect_Countdown((OutdoorVillagerEffect *) (void *) walks_at(villager, OUTDOOR_VILLAGER_EFFECT)) != 0) {
-        OutdoorVillagerBehaviour_Start(self, villager, WALKS_DO_FLEAS_GONE);
+        OutdoorVillagerBehavior_Start(self, villager, WALKS_DO_FLEAS_GONE);
         return 1;
     }
     if (OutdoorVillagerWalks_ChangeHeldItem(self, villager) != 0) {
         return 1;
     }
     if (OutdoorVillagerWalks_WatchShown(self, villager) != 0) {
-        OutdoorVillagerBehaviour_Start(self, villager, WALKS_DO_SHOWN);
+        OutdoorVillagerBehavior_Start(self, villager, WALKS_DO_SHOWN);
         return 1;
     }
     if (*walks_word(villager, WALKS_SPEED) != 0 && OutdoorVillagerWalks_StepAside(self, villager) != 0) {
@@ -639,10 +639,10 @@ int OutdoorVillagerWalks_Choose(OutdoorVillagerBehaviour *self, u8 *villager)
 }
 CLEAN_AS(func_ov068_0226befc, OutdoorVillagerWalks_Choose)
 
-/* func_ov068_0226c034: whether to watch what this console's player shows (behaviour 23): not
+/* func_ov068_0226c034: whether to watch what this console's player shows (behavior 23): not
  * yet shown (`shown`), the mood (byte 0x18) of its state entry 0 or 1, the player showing an insect or a
  * fish, its look on the player, the player within 0x6000, seen and looked at. */
-int OutdoorVillagerWalks_WatchShown(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerWalks_WatchShown(OutdoorVillagerBehavior *self, u8 *villager)
 {
     u8 status = OutdoorVillagerRecords_Mood(villager);
     if (self->shown != 0 || status > WALKS_SHOWN_STATUS_MAX) {
@@ -666,7 +666,7 @@ CLEAN_AS(func_ov068_0226c034, OutdoorVillagerWalks_WatchShown)
 
 /* func_ov068_0226c0a4: whether this console's player shows an insect (0x12b0 to 0x12e7) or a
  * fish (0x12e8 to 0x131f). */
-int OutdoorVillagerWalks_PlayerShowsCatch(OutdoorVillagerBehaviour *self)
+int OutdoorVillagerWalks_PlayerShowsCatch(OutdoorVillagerBehavior *self)
 {
     (void) self;
     u32 item = FieldActor_PlayerShownItem();
@@ -674,8 +674,8 @@ int OutdoorVillagerWalks_PlayerShowsCatch(OutdoorVillagerBehaviour *self)
 }
 CLEAN_AS(func_ov068_0226c0a4, OutdoorVillagerWalks_PlayerShowsCatch)
 
-/* func_ov068_0226c0e0: whether the byte at 0xa05 is set (behaviour 19). */
-int OutdoorVillagerWalks_WasNetted(OutdoorVillagerBehaviour *self, u8 *villager)
+/* func_ov068_0226c0e0: whether the byte at 0xa05 is set (behavior 19). */
+int OutdoorVillagerWalks_WasNetted(OutdoorVillagerBehavior *self, u8 *villager)
 {
     (void) self;
     return villager[WALKS_NETTED] != 0;
@@ -683,9 +683,9 @@ int OutdoorVillagerWalks_WasNetted(OutdoorVillagerBehaviour *self, u8 *villager)
 CLEAN_AS(func_ov068_0226c0e0, OutdoorVillagerWalks_WasNetted)
 
 /* func_ov068_0226c0f4: whether the villager stands on a marked pitfall seed, 0x1566 (TileMarked),
- * within 0xb00 of its tile's centre, and a request of the tile (TileRequests_AskMarkedPitfall,
+ * within 0xb00 of its tile's center, and a request of the tile (TileRequests_AskMarkedPitfall,
  * with its person index) answers 1 at once (the request then released). */
-int OutdoorVillagerWalks_OnPitfall(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerWalks_OnPitfall(OutdoorVillagerBehavior *self, u8 *villager)
 {
     Vec3 *position = walks_position(villager);
     int result = 0;
@@ -694,9 +694,9 @@ int OutdoorVillagerWalks_OnPitfall(OutdoorVillagerBehaviour *self, u8 *villager)
     if (OutdoorVillagerWalks_TileMarked(self, &tile) == 0) {
         return 0;
     }
-    Vec3 centre;
-    AcreTile_SnapToTileCentre(&centre, position);
-    if (Vec_DistanceXZ(&centre, position) > WALKS_MARKED_NEAR) {
+    Vec3 center;
+    AcreTile_SnapToTileCenter(&center, position);
+    if (Vec_DistanceXZ(&center, position) > WALKS_MARKED_NEAR) {
         return 0;
     }
     TileRequestTile asked = tile;
@@ -713,7 +713,7 @@ CLEAN_AS(func_ov068_0226c0f4, OutdoorVillagerWalks_OnPitfall)
 
 /* func_ov068_0226c170: whether the town's tile holds a pitfall seed (0x1566), marked (AcreTile_IsMarked);
  * 0 without the town's map or the tile. */
-int OutdoorVillagerWalks_TileMarked(OutdoorVillagerBehaviour *self, TileRequestTile *tile)
+int OutdoorVillagerWalks_TileMarked(OutdoorVillagerBehavior *self, TileRequestTile *tile)
 {
     (void) self;
     AcreMap *map = data_021c80bc;
@@ -733,12 +733,12 @@ CLEAN_AS(func_ov068_0226c170, OutdoorVillagerWalks_TileMarked)
 /* func_ov068_0226c1dc: a change of the held item, while the villager stands after a motion.
  * Unless both the check (0x34) and the hold (0x36) run: when the check is out the kind of the
  * moment is redrawn (and the check set to 12000); with no item it takes the kind's item, or
- * its umbrella when rain falls and the kind gives none or item 0x1378 (behaviour 15, then 0);
- * with an umbrella and no rain, or an item not the kind's, it puts it away (behaviour 16, then
+ * its umbrella when rain falls and the kind gives none or item 0x1378 (behavior 15, then 0);
+ * with an umbrella and no rain, or an item not the kind's, it puts it away (behavior 16, then
  * 0, the hold 300). While both run only the weather counts: no item in rain, its umbrella
  * out; an umbrella (or item 0x1378) without (or with) rain, or an item not the kind's, away.
- * Whether it started a behaviour. */
-int OutdoorVillagerWalks_ChangeHeldItem(OutdoorVillagerBehaviour *self, u8 *villager)
+ * Whether it started a behavior. */
+int OutdoorVillagerWalks_ChangeHeldItem(OutdoorVillagerBehavior *self, u8 *villager)
 {
     SceneMotion *motion = walks_motion(villager);
     if (SceneMotion_Kind(motion) != WALKS_MOTION_STAND || SceneMotion_IsDone(motion) == 0) {
@@ -844,9 +844,9 @@ CLEAN_AS(func_ov068_0226c1dc, OutdoorVillagerWalks_ChangeHeldItem)
 
 /* func_ov068_0226c520: one time in five, when the villager may pair (its vtable slot 0xb4) and
  * a villager near and in view (FindPartner) pairs with it (that one's slot 0xb8): it is
- * paired with that one (the byte at 0x648 cleared), its behaviour saved to resume and
- * behaviour 9 started. Whether it paired. */
-int OutdoorVillagerWalks_TryPair(OutdoorVillagerBehaviour *self, u8 *villager)
+ * paired with that one (the byte at 0x648 cleared), its behavior saved to resume and
+ * behavior 9 started. Whether it paired. */
+int OutdoorVillagerWalks_TryPair(OutdoorVillagerBehavior *self, u8 *villager)
 {
     if (MainRandom_Below(WALKS_PAIR_ONE_IN) != 0) {
         return 0;
@@ -863,9 +863,9 @@ int OutdoorVillagerWalks_TryPair(OutdoorVillagerBehaviour *self, u8 *villager)
     }
     VillagerSceneObject_SetWord644((u32 *) (void *) villager, (u32) (uintptr_t) partner);
     VillagerSceneObject_SetByte648(villager, 0);
-    OutdoorVillagerBehaviour_SaveResume(self);
-    OutdoorVillagerBehaviour_Start((OutdoorVillagerBehaviour *) (void *) walks_at(villager, OUTDOOR_VILLAGER_BEHAVIOUR),
-                                   villager, WALKS_DO_PAIRED);
+    OutdoorVillagerBehavior_SaveResume(self);
+    OutdoorVillagerBehavior_Start((OutdoorVillagerBehavior *) (void *) walks_at(villager, OUTDOOR_VILLAGER_BEHAVIOR), villager,
+                                  WALKS_DO_PAIRED);
     return 1;
 }
 CLEAN_AS(func_ov068_0226c520, OutdoorVillagerWalks_TryPair)
@@ -873,7 +873,7 @@ CLEAN_AS(func_ov068_0226c520, OutdoorVillagerWalks_TryPair)
 /* func_ov068_0226c58c: the first of the eight villager objects (Actors_SlotE) with a town
  * record that is not the same villager (head and number), within 0x3000 and within
  * data_020c80f0 either way of its facing (SceneLook_Within); null when none. */
-u8 *OutdoorVillagerWalks_FindPartner(OutdoorVillagerBehaviour *self, u8 *villager)
+u8 *OutdoorVillagerWalks_FindPartner(OutdoorVillagerBehavior *self, u8 *villager)
 {
     (void) self;
     Vec3 *position = walks_position(villager);
@@ -910,7 +910,7 @@ CLEAN_AS(func_ov068_0226c58c, OutdoorVillagerWalks_FindPartner)
 /* func_ov068_0226c63c: while its mover has not reached its end: blocked ahead with no free point
  * aside, it stands (1); a free point aside becomes the mover's end. Once it has reached it,
  * the end put back at the start when they differ. Whether it stood. */
-int OutdoorVillagerWalks_StepAside(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerWalks_StepAside(OutdoorVillagerBehavior *self, u8 *villager)
 {
     (void) self;
     SceneMover *mover = (SceneMover *) (void *) walks_at(villager, WALKS_MOVER);
@@ -940,7 +940,7 @@ CLEAN_AS(func_ov068_0226c63c, OutdoorVillagerWalks_StepAside)
  * out of time starts afresh (state 0); `point` is the villager's position stepped by the
  * walker (the walk's time 6000 from its first step). Always 1.
  * REQUIRES: a villager with a record has a state entry. */
-int OutdoorVillagerWalks_StepWalker(OutdoorVillagerBehaviour *self, Vec3 *point, u8 *villager)
+int OutdoorVillagerWalks_StepWalker(OutdoorVillagerBehavior *self, Vec3 *point, u8 *villager)
 {
     if (walks_record(villager) != NULL && walks_flag_1(walks_record(villager)) &&
         PathWalker_Kind(walks_walker(self)) != WALKS_WALKER_HOME) {
@@ -963,7 +963,7 @@ CLEAN_AS(func_ov068_0226c6ac, OutdoorVillagerWalks_StepWalker)
  * of the point half their distance beyond the player (the player's position plus half of the
  * player's position less the object's).
  * QUIRK: that point is beyond the player, not between the two. */
-int OutdoorVillagerWalks_NearEvent(OutdoorVillagerBehaviour *self, const Vec3 *point, fx32 range)
+int OutdoorVillagerWalks_NearEvent(OutdoorVillagerBehavior *self, const Vec3 *point, fx32 range)
 {
     (void) self;
     if (EventQueue_IsObjectEvent() == 0) {
@@ -989,7 +989,7 @@ CLEAN_AS(func_ov068_0226c754, OutdoorVillagerWalks_NearEvent)
 
 /* func_ov068_0226c7bc: whether the way from `from` to `to` crosses the line between the player
  * and the event's object (CrossesEvent). */
-int OutdoorVillagerWalks_CrossesEventTo(OutdoorVillagerBehaviour *self, const Vec3 *to, const Vec3 *from)
+int OutdoorVillagerWalks_CrossesEventTo(OutdoorVillagerBehavior *self, const Vec3 *to, const Vec3 *from)
 {
     Vec3 direction;
     Vec_Subtract(&direction, to, from);
@@ -999,7 +999,7 @@ CLEAN_AS(func_ov068_0226c7bc, OutdoorVillagerWalks_CrossesEventTo)
 
 /* func_ov068_0226c7dc: while the villager moves (its speed not 0), whether the way ahead of
  * it (its walking angle) crosses the line between the player and the event's object. */
-int OutdoorVillagerWalks_CrossesEventAhead(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerWalks_CrossesEventAhead(OutdoorVillagerBehavior *self, u8 *villager)
 {
     if (*walks_word(villager, WALKS_SPEED) == 0) {
         return 0;
@@ -1021,7 +1021,7 @@ static fx32 walks_cross(const Vec3 *a, const Vec3 *b)
 /* func_ov068_0226c820: during an object event with both the player and the event's object,
  * and a `direction` that is not 0, whether the player and the object are not on the same side
  * of the line from `from` along `direction` (the products of the crosses not above 0). */
-int OutdoorVillagerWalks_CrossesEvent(OutdoorVillagerBehaviour *self, const Vec3 *from, const Vec3 *direction)
+int OutdoorVillagerWalks_CrossesEvent(OutdoorVillagerBehavior *self, const Vec3 *from, const Vec3 *direction)
 {
     (void) self;
     if (EventQueue_IsObjectEvent() == 0) {
@@ -1046,15 +1046,15 @@ int OutdoorVillagerWalks_CrossesEvent(OutdoorVillagerBehaviour *self, const Vec3
 CLEAN_AS(func_ov068_0226c820, OutdoorVillagerWalks_CrossesEvent)
 
 /* func_ov068_0226c8b0: whether the walker walks home (kind 3) and the villager is within 0x800
- * of the centre of the tile in front of its house. */
-int OutdoorVillagerWalks_AtHome(OutdoorVillagerBehaviour *self, u8 *villager)
+ * of the center of the tile in front of its house. */
+int OutdoorVillagerWalks_AtHome(OutdoorVillagerBehavior *self, u8 *villager)
 {
     if (PathWalker_IsWalking(walks_walker(self)) == 0 || PathWalker_Kind(walks_walker(self)) != WALKS_WALKER_HOME) {
         return 0;
     }
     VillagerPlot *home = VillagerHome_Tile(walks_record(villager));
     Vec3 door;
-    AcreTile_TileCentre(&door, home->x, (u32) home->z + 1);
+    AcreTile_TileCenter(&door, home->x, (u32) home->z + 1);
     return Vec_DistanceXZ(&door, walks_position(villager)) < WALKS_HOME_NEAR;
 }
 CLEAN_AS(func_ov068_0226c8b0, OutdoorVillagerWalks_AtHome)
@@ -1062,7 +1062,7 @@ CLEAN_AS(func_ov068_0226c8b0, OutdoorVillagerWalks_AtHome)
 /* func_ov068_0226c910: whether it is time to go home: its state entry's flag 1, or its sleep
  * time (VillagerEntry_IsSleepTime) unless the current player still works for Nook (flag 1).
  * REQUIRES: its record has a state entry. */
-int OutdoorVillagerWalks_TimeToGoHome(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerWalks_TimeToGoHome(OutdoorVillagerBehavior *self, u8 *villager)
 {
     (void) self;
     int nook_job = walks_player_in_nook_job();
@@ -1082,7 +1082,7 @@ CLEAN_AS(func_ov068_0226c910, OutdoorVillagerWalks_TimeToGoHome)
  * (NpcLookup_IsInNightWindow) unless the current player still works for Nook (flag 1); 6 for the kind of the
  * moment 6; else drawn (DrawWalkKind).
  * REQUIRES: a villager with a record has a state entry. */
-void OutdoorVillagerWalks_StartWalker(OutdoorVillagerBehaviour *self, int state, u8 *villager)
+void OutdoorVillagerWalks_StartWalker(OutdoorVillagerBehavior *self, int state, u8 *villager)
 {
     u8 *record = walks_record(villager);
     int kind = WALKS_WALKER_NONE;
@@ -1110,7 +1110,7 @@ CLEAN_AS(func_ov068_0226c964, OutdoorVillagerWalks_StartWalker)
 /* func_ov068_0226ca2c: a walk kind drawn of data_ov068_022767ac (of the first two while the
  * walker walks, else of the three); when it is the walker's own, the next one (round to the
  * first). */
-int OutdoorVillagerWalks_DrawWalkKind(OutdoorVillagerBehaviour *self)
+int OutdoorVillagerWalks_DrawWalkKind(OutdoorVillagerBehavior *self)
 {
     PathWalker *walker = walks_walker(self);
     int index = (int) MainRandom_Below(PathWalker_IsWalking(walker) != 0 ? 2 : 3);
@@ -1122,9 +1122,9 @@ int OutdoorVillagerWalks_DrawWalkKind(OutdoorVillagerBehaviour *self)
 }
 CLEAN_AS(func_ov068_0226ca2c, OutdoorVillagerWalks_DrawWalkKind)
 
-/* func_ov068_0226ca74: whether the villager is within the box (the behaviour member's first
+/* func_ov068_0226ca74: whether the villager is within the box (the behavior member's first
  * four words) around the camera's target; 0 without a camera. */
-int OutdoorVillagerWalks_OnScreen(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerWalks_OnScreen(OutdoorVillagerBehavior *self, u8 *villager)
 {
     if (data_021c67a4 == NULL) {
         return 0;
@@ -1145,26 +1145,26 @@ static fx32 walks_sub(fx32 a, fx32 b)
     return (fx32) ((u32) a - (u32) b);
 }
 
-/* func_ov068_0226caac: whether `point` is strictly inside the box around `centre`: x between
- * centre - left and centre + right, z between centre - back and centre + front. */
-int OutdoorVillagerWalks_InBox(const OutdoorVillagerWalksBox *box, const Vec3 *centre, const Vec3 *point)
+/* func_ov068_0226caac: whether `point` is strictly inside the box around `center`: x between
+ * center - left and center + right, z between center - back and center + front. */
+int OutdoorVillagerWalks_InBox(const OutdoorVillagerWalksBox *box, const Vec3 *center, const Vec3 *point)
 {
-    if (!(point->x > walks_sub(centre->x, box->left) && point->x < walks_add(centre->x, box->right))) {
+    if (!(point->x > walks_sub(center->x, box->left) && point->x < walks_add(center->x, box->right))) {
         return 0;
     }
-    if (!(point->z > walks_sub(centre->z, box->back))) {
+    if (!(point->z > walks_sub(center->z, box->back))) {
         return 0;
     }
-    return point->z < walks_add(centre->z, box->front);
+    return point->z < walks_add(center->z, box->front);
 }
 CLEAN_AS(func_ov068_0226caac, OutdoorVillagerWalks_InBox)
 
-/* func_ov068_0226cb00: behaviour 0's start: a running act's effects reset, the draw hook
+/* func_ov068_0226cb00: behavior 0's start: a running act's effects reset, the draw hook
  * data_ov068_022770a8, it stands, its footsteps on, the watch on this console's player; a
  * walker that walks goes on in state 0, else it starts afresh (state 0); the byte at 0x838
  * cleared, enabled and posed, the raise timer off (-1), the held item shown and its mood's
  * sounds on. */
-int OutdoorVillagerWalks_Start0(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerWalks_Start0(OutdoorVillagerBehavior *self, u8 *villager)
 {
     OutdoorVillagerObject_ResetActEffects(villager);
     *(MemberPointer *) (void *) walks_at(villager, WALKS_DRAW_HOOK) = data_ov068_022770a8;
@@ -1187,22 +1187,22 @@ int OutdoorVillagerWalks_Start0(OutdoorVillagerBehaviour *self, u8 *villager)
 CLEAN_AS(func_ov068_0226cb00, OutdoorVillagerWalks_Start0)
 
 /* func_ov068_0226cbc8: the held item's first check in 0 to 5999 frames, no hold (-1). */
-void OutdoorVillagerWalks_InitItemCheck(OutdoorVillagerBehaviour *self)
+void OutdoorVillagerWalks_InitItemCheck(OutdoorVillagerBehavior *self)
 {
     *walks_half(self, WALKS_ITEM_CHECK) = (s16) MainRandom_Below(WALKS_ITEM_FIRST_FRAMES);
     *walks_half(self, WALKS_ITEM_HOLD) = -1;
 }
 CLEAN_AS(func_ov068_0226cbc8, OutdoorVillagerWalks_InitItemCheck)
 
-/* func_ov068_0226cbe4: whether behaviour `index` runs. */
-int OutdoorVillagerWalks_IsDoing(OutdoorVillagerBehaviour *self, int index)
+/* func_ov068_0226cbe4: whether behavior `index` runs. */
+int OutdoorVillagerWalks_IsDoing(OutdoorVillagerBehavior *self, int index)
 {
     return self->current == index;
 }
 CLEAN_AS(func_ov068_0226cbe4, OutdoorVillagerWalks_IsDoing)
 
 /* func_ov068_0226cbf4: the pairing's cooldown started (data_ov068_0227673c, 1200 frames). */
-void OutdoorVillagerWalks_StartCooldown(OutdoorVillagerBehaviour *self)
+void OutdoorVillagerWalks_StartCooldown(OutdoorVillagerBehavior *self)
 {
     self->cooldown = (s32) data_ov068_0227673c;
 }

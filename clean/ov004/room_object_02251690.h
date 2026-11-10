@@ -2,7 +2,7 @@
  * bytes) that plays a sequence (main/sound.h's SoundSeq, at 0x844): each time vtable slot 0x70
  * is called it starts the sound at 2 of the furniture's row (FurnitureSounds_Sound1), when there
  * is one. Touching it (a change of the switch pending) requests that again for the object at
- * its cell; every frame the sequence follows the object's centre, and vtable slot 0x0c stops
+ * its cell; every frame the sequence follows the object's center, and vtable slot 0x0c stops
  * it. */
 #ifndef CLEAN_OV004_ROOM_OBJECT_02251690_H
 #define CLEAN_OV004_ROOM_OBJECT_02251690_H

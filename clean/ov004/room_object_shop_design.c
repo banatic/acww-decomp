@@ -55,15 +55,15 @@ CLEAN_AS(func_ov004_02213984, ShopDesignObject_Vfunc0c)
 
 /* func_ov004_022139a8 (vtable slot 0x80, each frame while neither appearing nor vanishing):
  * while the emitter is in use, plays sound 0x50 when the shop's design changed since the last
- * frame (forgetting that it did), and keeps the emitter at the object's centre. */
+ * frame (forgetting that it did), and keeps the emitter at the object's center. */
 int ShopDesignObject_Update(ShopDesignObject *object)
 {
     if (object->has_sound != 0) {
-        Vec3 centre = object->base.sound.position;
+        Vec3 center = object->base.sound.position;
         if (DesignManager_TakeShopChanged(shop_design_object_designs(), object->design)) {
             SoundEmitter_PlayB(shop_design_object_emitter(object), SHOP_DESIGN_SOUND, SHOP_DESIGN_VOLUME, 0);
         }
-        SoundEmitter_UpdateAtB(shop_design_object_emitter(object), &centre);
+        SoundEmitter_UpdateAtB(shop_design_object_emitter(object), &center);
     }
     return 1;
 }

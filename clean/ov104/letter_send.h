@@ -13,7 +13,7 @@
  *   columns of 5) and one place below each (LetterSendPlace); letters are picked up, held and
  *   put down as in overlay 106;
  * - its setup (LetterSend_SetUp) empties `outbox` and copies the carried letters into
- *   `carried_copy` (LetterSend_SaveCarried); cancelling (panel button 7, LetterSend_Cancel)
+ *   `carried_copy` (LetterSend_SaveCarried); canceling (panel button 7, LetterSend_Cancel)
  *   puts that copy back (LetterSend_RestoreCarried);
  * - posting (panel button 9, LetterSend_Post) hands the letters of `outbox` on: to the post
  *   office (Mail_HoldAtPostOffice), straight to a villager (Mail_GiveToVillager) or a mailbox of
@@ -48,8 +48,8 @@ enum LetterSendFlag {
     LETTER_SEND_FLAG_WRAPPED_LEFT = 0x10,     /* the cursor sprite's x is a screen width (256) less */
     LETTER_SEND_FLAG_WRAPPED_RIGHT = 0x20,    /* the cursor sprite's x is a screen width more */
     LETTER_SEND_FLAG_HELD_HIDDEN = 0x40,      /* the held letter is not drawn (LetterSend_DrawHeld) */
-    LETTER_SEND_FLAG_READ = 0x100,            /* set by action 1, cleared by posting and cancelling */
-    LETTER_SEND_FLAG_CANCELLED = 0x400,       /* the scene ends without posting (LetterSend_Cancel) */
+    LETTER_SEND_FLAG_READ = 0x100,            /* set by action 1, cleared by posting and canceling */
+    LETTER_SEND_FLAG_CANCELED = 0x400,        /* the scene ends without posting (LetterSend_Cancel) */
     LETTER_SEND_FLAG_LINKED = 0x800,          /* posting with consoles linked (LetterSend_BeginLinkedPost) */
     LETTER_SEND_FLAG_SENDING = 0x1000,        /* letters are being sent to the host, one a frame at most */
     LETTER_SEND_FLAG_AWAITING_REPLY = 0x2000, /* a letter was sent; the host's reply is awaited */

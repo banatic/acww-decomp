@@ -309,13 +309,13 @@ static void fmb_turn_and_talk(FleaMarketBuyer *buyer, int keep_camera)
     SceneAction_RequestTurnAndTalk(fmb_action_of(buyer), 0, angle, keep_camera);
 }
 
-/* The room's object of `number` becomes the item it wants: its item (facing side 0), its centre and
+/* The room's object of `number` becomes the item it wants: its item (facing side 0), its center and
  * the reach of its shape; the number is remembered among its last chosen. */
 static void fmb_choose(FleaMarketBuyer *buyer, int number)
 {
     RoomObject *object = RoomObjects_At(RoomObjects_Table(), number);
     buyer->item = ItemCode_MakeFurniture(RoomObject_Number(object), 0);
-    RoomObject_Centre(object, &buyer->target);
+    RoomObject_Center(object, &buyer->target);
     FleaMarketBuyer_SetReach(buyer, object);
     FleaMarketBuyer_Remember(buyer, (u8) number);
     buyer->object = number;
@@ -1014,7 +1014,7 @@ int FleaMarketBuyer_EnterBye(FleaMarketBuyer *buyer)
 CLEAN_AS(func_ov004_02220ea8, FleaMarketBuyer_EnterBye)
 
 /* func_ov004_02220ee0 (state 5's update): nothing more when it asks to leave. It steps along the
- * paths to the item's centre, running when farther than its reach and 0x1000 (a walk becomes a
+ * paths to the item's center, running when farther than its reach and 0x1000 (a walk becomes a
  * run and a run a walk); within its reach or with no step to take it browses (state 3). Then the
  * object on the tile 0x2000 ahead of it, first on layer 1 then on layer 0, becomes the item
  * when it may buy it. 1. */
@@ -1079,7 +1079,7 @@ int FleaMarketBuyer_UpdateFace(FleaMarketBuyer *buyer)
 }
 CLEAN_AS(func_ov004_022210fc, FleaMarketBuyer_UpdateFace)
 
-/* func_ov004_02221138 (state 4's entry): a turn to the item's centre. 1.
+/* func_ov004_02221138 (state 4's entry): a turn to the item's center. 1.
  * QUIRK: its distance to the item and its step towards it are worked out and not used. */
 int FleaMarketBuyer_EnterFace(FleaMarketBuyer *buyer)
 {
@@ -1398,7 +1398,7 @@ static int fmb_player_known(FleaMarketBuyer *buyer, DesignCreator *player)
 }
 
 /* func_ov004_02221658 (vtable slot 0x00, its start): the town villager's start; then no item is
- * wanted, its footsteps are on, the item's centre is its position, its reach 0x3000, its recent
+ * wanted, its footsteps are on, the item's center is its position, its reach 0x3000, its recent
  * objects cleared and its look locked. When the previous scene is one SceneQuery_Is31 names, or
  * the current player is known to it (fmb_player_known), it is in the room already: the room's
  * objects are counted, the town's extra visitors set, the collision map's claim set to 0, the

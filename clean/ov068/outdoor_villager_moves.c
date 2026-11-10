@@ -1,4 +1,4 @@
-/* Behaviours 6, 7, 8, 10, 11, 13, 14, 15 and 16 of a villager out walking in the town
+/* Behaviors 6, 7, 8, 10, 11, 13, 14, 15 and 16 of a villager out walking in the town
  * (outdoor_villager_moves.h). */
 #include "outdoor_villager_moves.h"
 
@@ -47,13 +47,13 @@ extern fx32 data_020c814c;
 extern Vec3 data_021fbee8;
 /* The town's map (acre_map.h), or null. */
 extern AcreMap *data_021c80bc;
-/* The count at 0xa06 at which behaviour 21 takes over (100). */
+/* The count at 0xa06 at which behavior 21 takes over (100). */
 extern s16 data_ov068_02276724[];
 /* A copy of data_020c80f0 made when the overlay starts: how far either way from facing the
- * player behaviour 7 counts as facing it. */
+ * player behavior 7 counts as facing it. */
 extern s16 data_ov068_02278264;
 
-/* Behaviour 7's calls at frame 9 of animation 0xdf: an effect kind and a sound (less 0x84). */
+/* Behavior 7's calls at frame 9 of animation 0xdf: an effect kind and a sound (less 0x84). */
 typedef struct MovesCall {
     u16 effect;
     u8 sound;
@@ -92,7 +92,7 @@ extern const MemberPointer data_ov068_02277090, data_ov068_022770a0;
 #define MOVES_MOVER 0x350      /* SceneMover */
 #define MOVES_ITEM_SHOWN 0x9f0 /* u8: set while the held item is out */
 #define MOVES_NETTED 0xa05     /* u8: read through func_ov068_0226c0e0 */
-/* The parts of the behaviour member read here besides outdoor_villager.h's (behaviour 7). */
+/* The parts of the behavior member read here besides outdoor_villager.h's (behavior 7). */
 #define MOVES_TARGET 0xe4 /* u8 *: this console's player's object */
 #define MOVES_START 0xe8  /* Vec3: where the villager started */
 
@@ -107,9 +107,9 @@ extern const MemberPointer data_ov068_02277090, data_ov068_022770a0;
 #define MOVES_SOUND_VOLUME 0x7f
 #define MOVES_SCALE_STEP 0x249
 #define MOVES_FRAMES_200 200
-#define MOVES_GIVE_UP_FRAMES 1200 /* `call_cooldown` when behaviour 7 gives up */
+#define MOVES_GIVE_UP_FRAMES 1200 /* `call_cooldown` when behavior 7 gives up */
 
-/* Behaviours 15 and 16 (an umbrella opened and closed): the umbrellas. */
+/* Behaviors 15 and 16 (an umbrella opened and closed): the umbrellas. */
 #define MOVES_UMBRELLA_FIRST 0x1380
 #define MOVES_UMBRELLA_LAST 0x139f
 #define MOVES_ANIM_ITEM 0xcd
@@ -127,7 +127,7 @@ extern const MemberPointer data_ov068_02277090, data_ov068_022770a0;
 #define MOVES_ITEM_FRAMES 0x9c
 #define MOVES_FRAMES_BACKWARDS (FRAME_CTRL_ONCE | FRAME_CTRL_REVERSE)
 
-/* Behaviours 13 and 14: the place 0x2000 along x the other way and 0x8000 along z from a
+/* Behaviors 13 and 14: the place 0x2000 along x the other way and 0x8000 along z from a
  * point. */
 #define MOVES_PLACE_DX (-0x2000)
 #define MOVES_PLACE_DZ 0x8000
@@ -137,7 +137,7 @@ extern const MemberPointer data_ov068_02277090, data_ov068_022770a0;
 #define MOVES_MUSIC_GREETER_VALUE 0xf
 #define MOVES_PLAYER_FLAG_GREETER 0x1d
 
-/* Behaviour 7. */
+/* Behavior 7. */
 #define MOVES_ANIM_7 0xdf
 #define MOVES_FRAME_CALL 9
 #define MOVES_CALL_SOUND_BASE 0x84
@@ -212,7 +212,7 @@ static u8 *moves_record(u8 *villager)
 }
 
 /* The step `step` of an update's table run (when it is in the table). */
-static void moves_run_step(MemberPointer *table, int count, OutdoorVillagerBehaviour *self, u8 *villager)
+static void moves_run_step(MemberPointer *table, int count, OutdoorVillagerBehavior *self, u8 *villager)
 {
     if (self->step < count) {
         const MemberPointer *member = &table[self->step];
@@ -240,18 +240,18 @@ static int moves_done(u8 *villager, int kind)
     return SceneMotion_Kind(moves_motion(villager)) == kind && SceneMotion_IsDone(moves_motion(villager)) != 0;
 }
 
-/* The behaviour saved to resume started, else behaviour 0. */
-static void moves_resume(OutdoorVillagerBehaviour *self, u8 *villager)
+/* The behavior saved to resume started, else behavior 0. */
+static void moves_resume(OutdoorVillagerBehavior *self, u8 *villager)
 {
-    if (OutdoorVillagerBehaviour_Resume(self, villager) == 0) {
-        OutdoorVillagerBehaviour_Start(self, villager, OUTDOOR_VILLAGER_DO_DEFAULT);
+    if (OutdoorVillagerBehavior_Resume(self, villager) == 0) {
+        OutdoorVillagerBehavior_Start(self, villager, OUTDOOR_VILLAGER_DO_DEFAULT);
     }
 }
 
-/* ---- Behaviour 16: the held item put away */
+/* ---- Behavior 16: the held item put away */
 
-/* _ZN18Obj_ov068_022771c019func_ov068_022685d0Ei: behaviour 16's update: Shrink16, Close16. */
-int OutdoorVillagerMoves_Update16(OutdoorVillagerBehaviour *self, u8 *villager)
+/* _ZN18Obj_ov068_022771c019func_ov068_022685d0Ei: behavior 16's update: Shrink16, Close16. */
+int OutdoorVillagerMoves_Update16(OutdoorVillagerBehavior *self, u8 *villager)
 {
     static const MemberPointer *const steps[2] = {
         &data_ov068_02276fb8, /* OutdoorVillagerMoves_Shrink16 */
@@ -263,10 +263,10 @@ int OutdoorVillagerMoves_Update16(OutdoorVillagerBehaviour *self, u8 *villager)
 }
 CLEAN_AS(_ZN18Obj_ov068_022771c019func_ov068_022685d0Ei, OutdoorVillagerMoves_Update16)
 
-/* func_ov068_0226863c: during animation 0xcd: once it is done, step 2 and the saved behaviour
- * resumed (else behaviour 0); until then, at frame 5 the link takes no item (pose 0) and the
+/* func_ov068_0226863c: during animation 0xcd: once it is done, step 2 and the saved behavior
+ * resumed (else behavior 0); until then, at frame 5 the link takes no item (pose 0) and the
  * byte at 0x9f0 is cleared. */
-void OutdoorVillagerMoves_Close16(OutdoorVillagerBehaviour *self, u8 *villager)
+void OutdoorVillagerMoves_Close16(OutdoorVillagerBehavior *self, u8 *villager)
 {
     if (SpeakerAnim_Number(moves_anim(villager), 0) != MOVES_ANIM_ITEM) {
         return;
@@ -283,9 +283,9 @@ void OutdoorVillagerMoves_Close16(OutdoorVillagerBehaviour *self, u8 *villager)
 CLEAN_AS(func_ov068_0226863c, OutdoorVillagerMoves_Close16)
 
 /* func_ov068_022686c4: during animation 0xd6: once it is done, the link takes no item (pose
- * 0), step 2 and the saved behaviour resumed (else behaviour 0); until then the held item's
+ * 0), step 2 and the saved behavior resumed (else behavior 0); until then the held item's
  * scale goes down by 0x249, to 0. */
-void OutdoorVillagerMoves_Shrink16(OutdoorVillagerBehaviour *self, u8 *villager)
+void OutdoorVillagerMoves_Shrink16(OutdoorVillagerBehavior *self, u8 *villager)
 {
     if (SpeakerAnim_Number(moves_anim(villager), 0) != MOVES_ANIM_NO_ITEM) {
         return;
@@ -308,14 +308,14 @@ void OutdoorVillagerMoves_Shrink16(OutdoorVillagerBehaviour *self, u8 *villager)
 }
 CLEAN_AS(func_ov068_022686c4, OutdoorVillagerMoves_Shrink16)
 
-/* func_ov068_02268758: behaviour 16's start: the villager's held item read, a running act's
+/* func_ov068_02268758: behavior 16's start: the villager's held item read, a running act's
  * effects reset (OutdoorVillagerObject_ResetActEffects), the watch held on nothing. With an item of 0x1380 to
  * 0x139f: animation 0xcd (mode 3), the link takes the item, its action 0x26, the item's own
  * animation played backwards from its last frame (when the link has a record), scale 1.0,
  * sound 0x858, step 1. Else animation 0xd6, the link takes the item, scale 1.0, the byte at
  * 0x9f0 set, step 0. Then the byte at 0x838 set, sound 0x4f, the villager's held item none
  * and its mood's sounds off. */
-int OutdoorVillagerMoves_Start16(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerMoves_Start16(OutdoorVillagerBehavior *self, u8 *villager)
 {
     u16 item;
     VillagerSceneHeld_Item(&item, villager);
@@ -353,10 +353,10 @@ int OutdoorVillagerMoves_Start16(OutdoorVillagerBehaviour *self, u8 *villager)
 }
 CLEAN_AS(func_ov068_02268758, OutdoorVillagerMoves_Start16)
 
-/* ---- Behaviour 15: the held item brought out */
+/* ---- Behavior 15: the held item brought out */
 
-/* _ZN18Obj_ov068_022771c019func_ov068_022688d0Ei: behaviour 15's update: Grow15, Open15. */
-int OutdoorVillagerMoves_Update15(OutdoorVillagerBehaviour *self, u8 *villager)
+/* _ZN18Obj_ov068_022771c019func_ov068_022688d0Ei: behavior 15's update: Grow15, Open15. */
+int OutdoorVillagerMoves_Update15(OutdoorVillagerBehavior *self, u8 *villager)
 {
     static const MemberPointer *const steps[2] = {
         &data_ov068_02276f18, /* OutdoorVillagerMoves_Grow15 */
@@ -369,9 +369,9 @@ int OutdoorVillagerMoves_Update15(OutdoorVillagerBehaviour *self, u8 *villager)
 CLEAN_AS(_ZN18Obj_ov068_022771c019func_ov068_022688d0Ei, OutdoorVillagerMoves_Update15)
 
 /* func_ov068_0226893c: during animation 0xcd: once it is done, the held item's pose 0 (with
- * 7), step 2 and the saved behaviour resumed (else behaviour 0); until then, at frame 7 the
+ * 7), step 2 and the saved behavior resumed (else behavior 0); until then, at frame 7 the
  * byte at 0x9f0 is set and sound 0x857 plays. */
-void OutdoorVillagerMoves_Open15(OutdoorVillagerBehaviour *self, u8 *villager)
+void OutdoorVillagerMoves_Open15(OutdoorVillagerBehavior *self, u8 *villager)
 {
     if (SpeakerAnim_Number(moves_anim(villager), 0) != MOVES_ANIM_ITEM) {
         return;
@@ -387,10 +387,10 @@ void OutdoorVillagerMoves_Open15(OutdoorVillagerBehaviour *self, u8 *villager)
 }
 CLEAN_AS(func_ov068_0226893c, OutdoorVillagerMoves_Open15)
 
-/* func_ov068_022689d4: during animation 0xd6: once it is done, step 2 and the saved behaviour
- * resumed (else behaviour 0); until frame 8 the held item's scale goes up by 0x249, to 1.0,
+/* func_ov068_022689d4: during animation 0xd6: once it is done, step 2 and the saved behavior
+ * resumed (else behavior 0); until frame 8 the held item's scale goes up by 0x249, to 1.0,
  * with the held item's pose 0 (with 7) at frame 7. */
-void OutdoorVillagerMoves_Grow15(OutdoorVillagerBehaviour *self, u8 *villager)
+void OutdoorVillagerMoves_Grow15(OutdoorVillagerBehavior *self, u8 *villager)
 {
     if (SpeakerAnim_Number(moves_anim(villager), 0) != MOVES_ANIM_NO_ITEM) {
         return;
@@ -417,13 +417,13 @@ void OutdoorVillagerMoves_Grow15(OutdoorVillagerBehaviour *self, u8 *villager)
 }
 CLEAN_AS(func_ov068_022689d4, OutdoorVillagerMoves_Grow15)
 
-/* func_ov068_02268a84: behaviour 15's start: the villager's held item read, a running act's
+/* func_ov068_02268a84: behavior 15's start: the villager's held item read, a running act's
  * effects reset (OutdoorVillagerObject_ResetActEffects), the watch held on nothing. With an item of 0x1380 to
  * 0x139f: animation 0xcd, the link takes the item, its action 0x26 (with the motions' word and
  * 1), scale 1.0, the byte at 0x9f0 cleared, step 1. Else animation 0xd6 (mode 3), the link
  * takes the item, scale 0, the byte at 0x9f0 set, step 0. Then the byte at 0x838 set, sound
  * 0x4f and its mood's sounds off. */
-int OutdoorVillagerMoves_Start15(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerMoves_Start15(OutdoorVillagerBehavior *self, u8 *villager)
 {
     u16 item;
     VillagerSceneHeld_Item(&item, villager);
@@ -452,11 +452,11 @@ int OutdoorVillagerMoves_Start15(OutdoorVillagerBehaviour *self, u8 *villager)
 }
 CLEAN_AS(func_ov068_02268a84, OutdoorVillagerMoves_Start15)
 
-/* ---- Behaviour 14: the birthday greeter's talk, then off */
+/* ---- Behavior 14: the birthday greeter's talk, then off */
 
-/* _ZN18Obj_ov068_022771c019func_ov068_02268bb4Ei: behaviour 14's update: TalkGreeted,
+/* _ZN18Obj_ov068_022771c019func_ov068_02268bb4Ei: behavior 14's update: TalkGreeted,
  * WalkGreeted, ArriveGreeted. */
-int OutdoorVillagerMoves_UpdateGreeted(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerMoves_UpdateGreeted(OutdoorVillagerBehavior *self, u8 *villager)
 {
     static const MemberPointer *const steps[3] = {
         &data_ov068_02276ea0, /* OutdoorVillagerMoves_TalkGreeted */
@@ -471,7 +471,7 @@ CLEAN_AS(_ZN18Obj_ov068_022771c019func_ov068_02268bb4Ei, OutdoorVillagerMoves_Up
 
 /* func_ov068_02268c30: once the walk (kind 2) is done or the wait is out: its event finished,
  * it stands, the event queue's flag 0x20 cleared; step 3. */
-void OutdoorVillagerMoves_ArriveGreeted(OutdoorVillagerBehaviour *self, u8 *villager)
+void OutdoorVillagerMoves_ArriveGreeted(OutdoorVillagerBehavior *self, u8 *villager)
 {
     if (moves_done(villager, MOVES_MOTION_WALK) || self->wait == 0) {
         EventQueue_FinishObjectEvent(villager);
@@ -484,7 +484,7 @@ CLEAN_AS(func_ov068_02268c30, OutdoorVillagerMoves_ArriveGreeted)
 
 /* func_ov068_02268c84: once the turn (kind 3) is done, a walk (kind 2) to its place moved by
  * (-0x2000, +0x8000), a wait of 200 frames; step 2. */
-void OutdoorVillagerMoves_WalkGreeted(OutdoorVillagerBehaviour *self, u8 *villager)
+void OutdoorVillagerMoves_WalkGreeted(OutdoorVillagerBehavior *self, u8 *villager)
 {
     if (!moves_done(villager, MOVES_MOTION_TURN)) {
         return;
@@ -500,7 +500,7 @@ CLEAN_AS(func_ov068_02268c84, OutdoorVillagerMoves_WalkGreeted)
 
 /* func_ov068_02268d04: once the action (the talk) ends, the camera's mode reset and a turn to
  * angle 0; step 1. */
-void OutdoorVillagerMoves_TalkGreeted(OutdoorVillagerBehaviour *self, u8 *villager)
+void OutdoorVillagerMoves_TalkGreeted(OutdoorVillagerBehavior *self, u8 *villager)
 {
     if (SceneAction_IsBusy(moves_action(villager)) != 0) {
         return;
@@ -511,10 +511,10 @@ void OutdoorVillagerMoves_TalkGreeted(OutdoorVillagerBehaviour *self, u8 *villag
 }
 CLEAN_AS(func_ov068_02268d04, OutdoorVillagerMoves_TalkGreeted)
 
-/* func_ov068_02268d54: behaviour 14's start: a turn to the object of its talk (its motion
+/* func_ov068_02268d54: behavior 14's start: a turn to the object of its talk (its motion
  * argument; angle 0 without one) and the talk, keeping the camera; footsteps on and the watch
  * held on the player before the request; its mood's sounds off; step 0. */
-int OutdoorVillagerMoves_StartGreeted(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerMoves_StartGreeted(OutdoorVillagerBehavior *self, u8 *villager)
 {
     int target = SceneBase_MotionArg((SceneBase *) (void *) moves_at(villager, OUTDOOR_VILLAGER_TALK));
     int angle = 0;
@@ -530,11 +530,11 @@ int OutdoorVillagerMoves_StartGreeted(OutdoorVillagerBehaviour *self, u8 *villag
 }
 CLEAN_AS(func_ov068_02268d54, OutdoorVillagerMoves_StartGreeted)
 
-/* ---- Behaviour 13: the birthday greeter at the player's house */
+/* ---- Behavior 13: the birthday greeter at the player's house */
 
-/* func_ov068_02268ddc: behaviour 13's update: event kind 6 asked for and flag 0x1d of the
+/* func_ov068_02268ddc: behavior 13's update: event kind 6 asked for and flag 0x1d of the
  * player actor 4 set, each frame. */
-int OutdoorVillagerMoves_UpdateGreeter(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerMoves_UpdateGreeter(OutdoorVillagerBehavior *self, u8 *villager)
 {
     (void) self;
     EventQueue_RequestKind6(villager, 0);
@@ -543,13 +543,13 @@ int OutdoorVillagerMoves_UpdateGreeter(OutdoorVillagerBehaviour *self, u8 *villa
 }
 CLEAN_AS(func_ov068_02268ddc, OutdoorVillagerMoves_UpdateGreeter)
 
-/* func_ov068_02268df8: behaviour 13's start: with the town's map and an item of 0x5014 to
+/* func_ov068_02268df8: behavior 13's start: with the town's map and an item of 0x5014 to
  * 0x501a on it (AcreTile_FindItemAllFlags, flags 1), the villager is put at the item's place
  * moved by (-0x2000, +0x8000) at height 0 (its last place too), facing the item, its mover
  * turned the same way. Then reaction 0, it stands, the watch held on the player, music value
  * 0x12, the state table's index at 0x16c set to -1, its mood's sounds off and the event
  * queue's flag 0x20 set. */
-int OutdoorVillagerMoves_StartGreeter(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerMoves_StartGreeter(OutdoorVillagerBehavior *self, u8 *villager)
 {
     (void) self;
     AcreMap *map = data_021c80bc;
@@ -582,11 +582,11 @@ int OutdoorVillagerMoves_StartGreeter(OutdoorVillagerBehaviour *self, u8 *villag
 }
 CLEAN_AS(func_ov068_02268df8, OutdoorVillagerMoves_StartGreeter)
 
-/* ---- Behaviour 11: its fleas netted off */
+/* ---- Behavior 11: its fleas netted off */
 
-/* _ZN18Obj_ov068_022771c019func_ov068_02268f40Ei: behaviour 11's update: TurnFleasGone,
+/* _ZN18Obj_ov068_022771c019func_ov068_02268f40Ei: behavior 11's update: TurnFleasGone,
  * WatchFleasGone. */
-int OutdoorVillagerMoves_UpdateFleasGone(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerMoves_UpdateFleasGone(OutdoorVillagerBehavior *self, u8 *villager)
 {
     static const MemberPointer *const steps[2] = {
         &data_ov068_02276f60, /* OutdoorVillagerMoves_TurnFleasGone */
@@ -598,26 +598,26 @@ int OutdoorVillagerMoves_UpdateFleasGone(OutdoorVillagerBehaviour *self, u8 *vil
 }
 CLEAN_AS(_ZN18Obj_ov068_022771c019func_ov068_02268f40Ei, OutdoorVillagerMoves_UpdateFleasGone)
 
-/* func_ov068_02268fac: once the effect's countdown is out, step 2 and behaviour 0; else with
- * the count at 0xa06 at its limit, behaviour 21, or with the byte at 0xa05 set, behaviour 19,
+/* func_ov068_02268fac: once the effect's countdown is out, step 2 and behavior 0; else with
+ * the count at 0xa06 at its limit, behavior 21, or with the byte at 0xa05 set, behavior 19,
  * the countdown cleared first. */
-void OutdoorVillagerMoves_WatchFleasGone(OutdoorVillagerBehaviour *self, u8 *villager)
+void OutdoorVillagerMoves_WatchFleasGone(OutdoorVillagerBehavior *self, u8 *villager)
 {
     if (OutdoorVillagerEffect_Countdown(moves_effect(villager)) == 0) {
         self->step = 2;
-        OutdoorVillagerBehaviour_Start(self, villager, OUTDOOR_VILLAGER_DO_DEFAULT);
+        OutdoorVillagerBehavior_Start(self, villager, OUTDOOR_VILLAGER_DO_DEFAULT);
     } else if (*(const u16 *) (const void *) moves_at(villager, OUTDOOR_VILLAGER_PUSHED_FRAMES) >= data_ov068_02276724[0]) {
         OutdoorVillagerEffect_SetCountdown(moves_effect(villager), 0);
-        OutdoorVillagerBehaviour_Start(self, villager, 21);
+        OutdoorVillagerBehavior_Start(self, villager, 21);
     } else if (OutdoorVillagerWalks_WasNetted(self, villager) != 0) {
         OutdoorVillagerEffect_SetCountdown(moves_effect(villager), 0);
-        OutdoorVillagerBehaviour_Start(self, villager, 19);
+        OutdoorVillagerBehavior_Start(self, villager, 19);
     }
 }
 CLEAN_AS(func_ov068_02268fac, OutdoorVillagerMoves_WatchFleasGone)
 
 /* func_ov068_02269028: once the turn (kind 3) is done, it stands; step 1. */
-void OutdoorVillagerMoves_TurnFleasGone(OutdoorVillagerBehaviour *self, u8 *villager)
+void OutdoorVillagerMoves_TurnFleasGone(OutdoorVillagerBehavior *self, u8 *villager)
 {
     if (moves_done(villager, MOVES_MOTION_TURN)) {
         SceneMotion_RequestStand(moves_motion(villager), MOVES_PRIORITY, data_020c80f8);
@@ -626,10 +626,10 @@ void OutdoorVillagerMoves_TurnFleasGone(OutdoorVillagerBehaviour *self, u8 *vill
 }
 CLEAN_AS(func_ov068_02269028, OutdoorVillagerMoves_TurnFleasGone)
 
-/* func_ov068_0226906c: behaviour 11's start: a running act's effects reset
+/* func_ov068_0226906c: behavior 11's start: a running act's effects reset
  * (OutdoorVillagerObject_ResetActEffects) after the angle to this console's player is taken, a turn to it, the
  * watch held on the player, the byte at 0x838 cleared and its mood's sounds on. */
-int OutdoorVillagerMoves_StartFleasGone(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerMoves_StartFleasGone(OutdoorVillagerBehavior *self, u8 *villager)
 {
     (void) self;
     int angle = (int) (intptr_t) SceneObject_YawToActor(villager, OUTDOOR_VILLAGER_PLAYER_ACTOR);
@@ -642,18 +642,18 @@ int OutdoorVillagerMoves_StartFleasGone(OutdoorVillagerBehaviour *self, u8 *vill
 }
 CLEAN_AS(func_ov068_0226906c, OutdoorVillagerMoves_StartFleasGone)
 
-/* ---- Behaviour 10 */
+/* ---- Behavior 10 */
 
-/* func_ov068_022690f4: behaviour 10's update: nothing. */
+/* func_ov068_022690f4: behavior 10's update: nothing. */
 int OutdoorVillagerMoves_Update10(void)
 {
     return 0;
 }
 CLEAN_AS(func_ov068_022690f4, OutdoorVillagerMoves_Update10)
 
-/* func_ov068_022690f8: behaviour 10's start: a running act's effects reset
+/* func_ov068_022690f8: behavior 10's start: a running act's effects reset
  * (OutdoorVillagerObject_ResetActEffects), it stands (priority 2) and the byte at 0x838 is set. */
-int OutdoorVillagerMoves_Start10(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerMoves_Start10(OutdoorVillagerBehavior *self, u8 *villager)
 {
     (void) self;
     OutdoorVillagerObject_ResetActEffects(villager);
@@ -663,10 +663,10 @@ int OutdoorVillagerMoves_Start10(OutdoorVillagerBehaviour *self, u8 *villager)
 }
 CLEAN_AS(func_ov068_022690f8, OutdoorVillagerMoves_Start10)
 
-/* ---- Behaviour 8 */
+/* ---- Behavior 8 */
 
-/* _ZN18Obj_ov068_022771c019func_ov068_02269128Ei: behaviour 8's update: Turn8. */
-int OutdoorVillagerMoves_Update8(OutdoorVillagerBehaviour *self, u8 *villager)
+/* _ZN18Obj_ov068_022771c019func_ov068_02269128Ei: behavior 8's update: Turn8. */
+int OutdoorVillagerMoves_Update8(OutdoorVillagerBehavior *self, u8 *villager)
 {
     static const MemberPointer *const steps[1] = {
         &data_ov068_02276e48, /* OutdoorVillagerMoves_Turn8 */
@@ -678,7 +678,7 @@ int OutdoorVillagerMoves_Update8(OutdoorVillagerBehaviour *self, u8 *villager)
 CLEAN_AS(_ZN18Obj_ov068_022771c019func_ov068_02269128Ei, OutdoorVillagerMoves_Update8)
 
 /* func_ov068_0226918c: once the turn (kind 3) is done, it stands (priority 2); step 1. */
-void OutdoorVillagerMoves_Turn8(OutdoorVillagerBehaviour *self, u8 *villager)
+void OutdoorVillagerMoves_Turn8(OutdoorVillagerBehavior *self, u8 *villager)
 {
     if (moves_done(villager, MOVES_MOTION_TURN)) {
         SceneMotion_RequestStand(moves_motion(villager), MOVES_PRIORITY_HIGH, data_020c80f8);
@@ -687,11 +687,11 @@ void OutdoorVillagerMoves_Turn8(OutdoorVillagerBehaviour *self, u8 *villager)
 }
 CLEAN_AS(func_ov068_0226918c, OutdoorVillagerMoves_Turn8)
 
-/* func_ov068_022691d0: behaviour 8's start: a running act's effects reset
+/* func_ov068_022691d0: behavior 8's start: a running act's effects reset
  * (OutdoorVillagerObject_ResetActEffects); paired, with a reaction other than none or with the byte at 0xa04
  * set, step 1 (nothing more); else a turn (priority 2) to the event's participant (the byte at
  * 0x560) with the watch held on the player, step 0. */
-int OutdoorVillagerMoves_Start8(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerMoves_Start8(OutdoorVillagerBehavior *self, u8 *villager)
 {
     OutdoorVillagerObject_ResetActEffects(villager);
     if (VillagerSceneObject_HasWord644(villager) != 0 ||
@@ -709,18 +709,18 @@ int OutdoorVillagerMoves_Start8(OutdoorVillagerBehaviour *self, u8 *villager)
 }
 CLEAN_AS(func_ov068_022691d0, OutdoorVillagerMoves_Start8)
 
-/* ---- Behaviour 7: coming up to this console's player */
+/* ---- Behavior 7: coming up to this console's player */
 
-static u8 *moves_target(OutdoorVillagerBehaviour *self)
+static u8 *moves_target(OutdoorVillagerBehavior *self)
 {
     return *(u8 **) (void *) moves_at(self, MOVES_TARGET);
 }
 
-/* Gives up: behaviour 0, `call_cooldown` 1200, and its record's byte 0x1e lowered by 1
+/* Gives up: behavior 0, `call_cooldown` 1200, and its record's byte 0x1e lowered by 1
  * (`halve` 0) or halved. Its record is asked for twice. */
-static void moves_give_up(OutdoorVillagerBehaviour *self, u8 *villager, int halve)
+static void moves_give_up(OutdoorVillagerBehavior *self, u8 *villager, int halve)
 {
-    OutdoorVillagerBehaviour_Start(self, villager, OUTDOOR_VILLAGER_DO_DEFAULT);
+    OutdoorVillagerBehavior_Start(self, villager, OUTDOOR_VILLAGER_DO_DEFAULT);
     self->call_cooldown = MOVES_GIVE_UP_FRAMES;
     if (moves_record(villager) != NULL) {
         if (halve) {
@@ -731,23 +731,23 @@ static void moves_give_up(OutdoorVillagerBehaviour *self, u8 *villager, int halv
     }
 }
 
-/* Behaviour 21 when the count at 0xa06 is at its limit, else 19 when the byte at 0xa05 is set;
+/* Behavior 21 when the count at 0xa06 is at its limit, else 19 when the byte at 0xa05 is set;
  * whether either started. */
-static int moves_taken_over(OutdoorVillagerBehaviour *self, u8 *villager)
+static int moves_taken_over(OutdoorVillagerBehavior *self, u8 *villager)
 {
     if (*(const u16 *) (const void *) moves_at(villager, OUTDOOR_VILLAGER_PUSHED_FRAMES) >= data_ov068_02276724[0]) {
-        OutdoorVillagerBehaviour_Start(self, villager, 21);
+        OutdoorVillagerBehavior_Start(self, villager, 21);
         return 1;
     }
     if (OutdoorVillagerWalks_WasNetted(self, villager) != 0) {
-        OutdoorVillagerBehaviour_Start(self, villager, 19);
+        OutdoorVillagerBehavior_Start(self, villager, 19);
         return 1;
     }
     return 0;
 }
 
 /* The greeting (motion kind 11), step 2, a wait of 200 frames. */
-static void moves_greet(OutdoorVillagerBehaviour *self, u8 *villager)
+static void moves_greet(OutdoorVillagerBehavior *self, u8 *villager)
 {
     moves_request(villager, MOVES_MOTION_GREET, MOVES_PRIORITY, 0, 0, 0);
     self->step = 2;
@@ -755,7 +755,7 @@ static void moves_greet(OutdoorVillagerBehaviour *self, u8 *villager)
 }
 
 /* A walk (kind 2) to the player's place, step 1, a wait of 200 frames. */
-static void moves_walk_to_player(OutdoorVillagerBehaviour *self, u8 *villager)
+static void moves_walk_to_player(OutdoorVillagerBehavior *self, u8 *villager)
 {
     const Vec3 *at = (const Vec3 *) (const void *) moves_at(moves_target(self), OUTDOOR_VILLAGER_POSITION);
     moves_request(villager, MOVES_MOTION_WALK, MOVES_PRIORITY, at->x, at->z, 0);
@@ -763,9 +763,9 @@ static void moves_walk_to_player(OutdoorVillagerBehaviour *self, u8 *villager)
     self->wait = MOVES_FRAMES_200;
 }
 
-/* _ZN18Obj_ov068_022771c019func_ov068_02269278Ei: behaviour 7's update: Call7, Walk7, Near7,
+/* _ZN18Obj_ov068_022771c019func_ov068_02269278Ei: behavior 7's update: Call7, Walk7, Near7,
  * Turn7, Wait7. */
-int OutdoorVillagerMoves_Update7(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerMoves_Update7(OutdoorVillagerBehavior *self, u8 *villager)
 {
     static const MemberPointer *const steps[5] = {
         &data_ov068_022770b0, /* OutdoorVillagerMoves_Call7 */
@@ -780,10 +780,10 @@ int OutdoorVillagerMoves_Update7(OutdoorVillagerBehaviour *self, u8 *villager)
 }
 CLEAN_AS(_ZN18Obj_ov068_022771c019func_ov068_02269278Ei, OutdoorVillagerMoves_Update7)
 
-/* func_ov068_02269314: standing after a turn: unless behaviours 21 or 19 take over or the wait
+/* func_ov068_02269314: standing after a turn: unless behaviors 21 or 19 take over or the wait
  * runs: the greeting when the player is in reach (0x3000), else, once standing (kind 0) and
  * done, a walk to the player. */
-void OutdoorVillagerMoves_Wait7(OutdoorVillagerBehaviour *self, u8 *villager)
+void OutdoorVillagerMoves_Wait7(OutdoorVillagerBehavior *self, u8 *villager)
 {
     if (moves_taken_over(self, villager)) {
         return;
@@ -806,23 +806,23 @@ void OutdoorVillagerMoves_Wait7(OutdoorVillagerBehaviour *self, u8 *villager)
 CLEAN_AS(func_ov068_02269314, OutdoorVillagerMoves_Wait7)
 
 /* func_ov068_022693f0: once the turn (kind 3) is done, it stands and waits 10 frames (step
- * 4); until then behaviour 19 when the byte at 0xa05 is set. */
-void OutdoorVillagerMoves_Turn7(OutdoorVillagerBehaviour *self, u8 *villager)
+ * 4); until then behavior 19 when the byte at 0xa05 is set. */
+void OutdoorVillagerMoves_Turn7(OutdoorVillagerBehavior *self, u8 *villager)
 {
     if (moves_done(villager, MOVES_MOTION_TURN)) {
         SceneMotion_RequestStand(moves_motion(villager), MOVES_PRIORITY, data_020c80f8);
         self->step = 4;
         self->wait = MOVES_TURN_WAIT;
     } else if (OutdoorVillagerWalks_WasNetted(self, villager) != 0) {
-        OutdoorVillagerBehaviour_Start(self, villager, 19);
+        OutdoorVillagerBehavior_Start(self, villager, 19);
     }
 }
 CLEAN_AS(func_ov068_022693f0, OutdoorVillagerMoves_Turn7)
 
 /* func_ov068_02269450: by the player: the player gone, it gives up (byte 0x1e lowered); the
- * player out of reach (0x5000) or not faced, a turn to it (step 3); else behaviours 21 or 19
+ * player out of reach (0x5000) or not faced, a turn to it (step 3); else behaviors 21 or 19
  * may take over, and once the wait is out it gives up (byte 0x1e halved). */
-void OutdoorVillagerMoves_Near7(OutdoorVillagerBehaviour *self, u8 *villager)
+void OutdoorVillagerMoves_Near7(OutdoorVillagerBehavior *self, u8 *villager)
 {
     if (moves_target(self) == NULL) {
         moves_give_up(self, villager, 0);
@@ -845,10 +845,10 @@ void OutdoorVillagerMoves_Near7(OutdoorVillagerBehaviour *self, u8 *villager)
 CLEAN_AS(func_ov068_02269450, OutdoorVillagerMoves_Near7)
 
 /* func_ov068_02269548: walking to the player: the player gone, it gives up (byte 0x1e
- * lowered); in reach (0x3000), the greeting; else behaviours 21 or 19 may take over; once
+ * lowered); in reach (0x3000), the greeting; else behaviors 21 or 19 may take over; once
  * the wait is out, or when it has gone 0xc000 from where it started, it gives up (byte 0x1e
  * halved); else its mover's start point is set to the player's place. */
-void OutdoorVillagerMoves_Walk7(OutdoorVillagerBehaviour *self, u8 *villager)
+void OutdoorVillagerMoves_Walk7(OutdoorVillagerBehavior *self, u8 *villager)
 {
     SceneMover *mover = (SceneMover *) (void *) moves_at(villager, MOVES_MOVER);
     if (moves_target(self) == NULL) {
@@ -874,7 +874,7 @@ CLEAN_AS(func_ov068_02269548, OutdoorVillagerMoves_Walk7)
  * Once animation 0xdf is done, the greeting when the player is in reach (0x3000), else a walk
  * to the player. Until then, at its frame 9, one of the two calls at random: its effect at
  * joint 16 (with the villager's angle) and its sound. */
-void OutdoorVillagerMoves_Call7(OutdoorVillagerBehaviour *self, u8 *villager)
+void OutdoorVillagerMoves_Call7(OutdoorVillagerBehavior *self, u8 *villager)
 {
     if (moves_target(self) == NULL) {
         moves_give_up(self, villager, 0);
@@ -904,7 +904,7 @@ CLEAN_AS(func_ov068_02269684, OutdoorVillagerMoves_Call7)
 
 /* func_ov068_022697cc: whether the player's object is within `range` of the villager and
  * within data_ov068_02278264 either way of where the villager faces. */
-int OutdoorVillagerMoves_PlayerInReach(OutdoorVillagerBehaviour *self, u8 *villager, int range)
+int OutdoorVillagerMoves_PlayerInReach(OutdoorVillagerBehavior *self, u8 *villager, int range)
 {
     if (SceneObject_DistanceTo(villager, moves_target(self)) > range) {
         return 0;
@@ -915,16 +915,16 @@ int OutdoorVillagerMoves_PlayerInReach(OutdoorVillagerBehaviour *self, u8 *villa
 CLEAN_AS(func_ov068_022697cc, OutdoorVillagerMoves_PlayerInReach)
 
 /* func_ov068_02269814: whether the villager is within 0xc000 of where it started. */
-int OutdoorVillagerMoves_NearStart(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerMoves_NearStart(OutdoorVillagerBehavior *self, u8 *villager)
 {
     return Vec_Distance(moves_position(villager), (const Vec3 *) (const void *) moves_at(self, MOVES_START)) <= MOVES_WANDER;
 }
 CLEAN_AS(func_ov068_02269814, OutdoorVillagerMoves_NearStart)
 
-/* func_ov068_0226983c: behaviour 7's start: a running act's effects reset
+/* func_ov068_0226983c: behavior 7's start: a running act's effects reset
  * (OutdoorVillagerObject_ResetActEffects), the player's object (field actor 4) and its own place kept,
  * animation 0xdf, the watch held on the player, step 0 and the byte at 0x838 cleared. */
-int OutdoorVillagerMoves_Start7(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerMoves_Start7(OutdoorVillagerBehavior *self, u8 *villager)
 {
     OutdoorVillagerObject_ResetActEffects(villager);
     *(int *) (void *) moves_at(self, MOVES_TARGET) = SessionPlayers_ActorHandle(OUTDOOR_VILLAGER_PLAYER_ACTOR);
@@ -937,10 +937,10 @@ int OutdoorVillagerMoves_Start7(OutdoorVillagerBehaviour *self, u8 *villager)
 }
 CLEAN_AS(func_ov068_0226983c, OutdoorVillagerMoves_Start7)
 
-/* ---- Behaviour 6: a gesture */
+/* ---- Behavior 6: a gesture */
 
-/* _ZN18Obj_ov068_022771c019func_ov068_022698d4Ei: behaviour 6's update: Wait6, Idle6. */
-int OutdoorVillagerMoves_Update6(OutdoorVillagerBehaviour *self, u8 *villager)
+/* _ZN18Obj_ov068_022771c019func_ov068_022698d4Ei: behavior 6's update: Wait6, Idle6. */
+int OutdoorVillagerMoves_Update6(OutdoorVillagerBehavior *self, u8 *villager)
 {
     static const MemberPointer *const steps[2] = {
         &data_ov068_02277090, /* OutdoorVillagerMoves_Wait6 */
@@ -953,33 +953,33 @@ int OutdoorVillagerMoves_Update6(OutdoorVillagerBehaviour *self, u8 *villager)
 CLEAN_AS(_ZN18Obj_ov068_022771c019func_ov068_022698d4Ei, OutdoorVillagerMoves_Update6)
 
 /* func_ov068_02269940: nothing. */
-void OutdoorVillagerMoves_Idle6(OutdoorVillagerBehaviour *self, u8 *villager)
+void OutdoorVillagerMoves_Idle6(OutdoorVillagerBehavior *self, u8 *villager)
 {
     (void) self;
     (void) villager;
 }
 CLEAN_AS(func_ov068_02269940, OutdoorVillagerMoves_Idle6)
 
-/* func_ov068_02269944: once the action ends, its event finished and behaviour 0 the one to
+/* func_ov068_02269944: once the action ends, its event finished and behavior 0 the one to
  * resume; step 1. */
-void OutdoorVillagerMoves_Wait6(OutdoorVillagerBehaviour *self, u8 *villager)
+void OutdoorVillagerMoves_Wait6(OutdoorVillagerBehavior *self, u8 *villager)
 {
     if (SceneAction_IsBusy(moves_action(villager)) != 0) {
         return;
     }
     EventQueue_FinishObjectEvent(villager);
-    OutdoorVillagerBehaviour_SetResume(self, OUTDOOR_VILLAGER_DO_DEFAULT);
+    OutdoorVillagerBehavior_SetResume(self, OUTDOOR_VILLAGER_DO_DEFAULT);
     self->step = 1;
 }
 CLEAN_AS(func_ov068_02269944, OutdoorVillagerMoves_Wait6)
 
-/* func_ov068_02269978: behaviour 6's start: the gesture (its action's motion 7) by its fondness
+/* func_ov068_02269978: behavior 6's start: the gesture (its action's motion 7) by its fondness
  * for this console's player (its memory of the player, 0 without one) and its personality
  * (of its town record's NpcId): with a fondness of 0 or more, 1 for personalities 0 and 3,
  * else 0; below 0, 2 for 0 and 3, 3 for 1 and 4, else 4. It turns to the player's object (angle 0
  * without one). A running act's effects are reset (OutdoorVillagerObject_ResetActEffects) and the player's field
  * actor asked for state 0x11 before the request; then the watch held on the player. */
-int OutdoorVillagerMoves_Start6(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerMoves_Start6(OutdoorVillagerBehavior *self, u8 *villager)
 {
     (void) self;
     int player = SessionPlayers_ActorHandle(OUTDOOR_VILLAGER_PLAYER_ACTOR);

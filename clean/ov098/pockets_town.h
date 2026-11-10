@@ -18,7 +18,7 @@
 #include "ov096/pockets_screen.h"
 #include "types.h"
 
-/* One step on the town's tile grid: the neighbouring tile in one of 16 directions. */
+/* One step on the town's tile grid: the neighboring tile in one of 16 directions. */
 typedef struct PocketsTownStep {
     s32 dx;
     s32 dz;

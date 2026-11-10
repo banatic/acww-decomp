@@ -1318,7 +1318,7 @@ static void lp_scroll_scene_layer(LetterPick *self)
 }
 
 /* func_ov108_0229d82c: a step of the wallet display's setup (its answer unused) and the panel's
- * text colours loaded. */
+ * text colors loaded. */
 void LetterPick_PreparePanel(LetterPick *self)
 {
     PocketsWallet_LoadObjFiles(&self->wallet);

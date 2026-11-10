@@ -7,7 +7,7 @@
  * sets running during a cut.
  *
  * Its talk scene (BarberTalk, barber_talk.h, vtable data_ov053_02261b08, at 0x658) sells the
- * cut: the hair style and colour the player picks are applied to the player's field actor
+ * cut: the hair style and color the player picks are applied to the player's field actor
  * when she cuts.
  *
  * Its states (Barber.state, BARBER_STATE_*) are a table of C++ pointers to member functions

@@ -6,7 +6,7 @@
  *   0  a fade from or to black (the master brightness)
  *   1  the same from or to white
  *   2  a circle (window 0 of both engines, set a line at a time from the HBlank) that grows
- *      from or shrinks to the screen's centre, background 2 (black) covering the rest
+ *      from or shrinks to the screen's center, background 2 (black) covering the rest
  *   3  none: the screen is shown or closed at once
  *
  * `cover` goes from 0x1000 (closed) to 0 (shown) when opening and back when closing, by `speed`

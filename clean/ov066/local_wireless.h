@@ -17,8 +17,8 @@
  * call that reaches them; 5 to 11 from the code that sets them. */
 enum LocalState {
     LOCAL_STATE_NONE = 0,            /* shut down (LocalWireless_ShutDown) */
-    LOCAL_STATE_SET_UP = 1,          /* the control block is set up, WM not initialised */
-    LOCAL_STATE_WM_READY = 2,        /* WM initialised and disabled (WM_Disable) */
+    LOCAL_STATE_SET_UP = 1,          /* the control block is set up, WM not initialized */
+    LOCAL_STATE_WM_READY = 2,        /* WM initialized and disabled (WM_Disable) */
     LOCAL_STATE_WM_STOP = 3,         /* WM enabled, its radio off (WM_Enable, WM_PowerOff) */
     LOCAL_STATE_WM_IDLE = 4,         /* the radio on (WM_PowerOn, WM_Reset, WM_EndScan) */
     LOCAL_STATE_MEASURING = 5,       /* measuring the channels before starting a parent */
@@ -146,7 +146,7 @@ typedef struct LocalSession {
     u8 unk_9a[2];
     u32 (*reset_data)(void); /* called when the MP communication starts or ends */
     void (*on_mp_end)(void); /* on WM's MP end indication */
-    void (*on_mp_ack)(void); /* on WM's MP acknowledgement indication */
+    void (*on_mp_ack)(void); /* on WM's MP acknowledgment indication */
     void (*unk_a8)(void);
     /* sends one of the library's messages to the AIDs of `to` (a bitmap); `on_sent` follows */
     void (*send_message)(void *buffer, u32 size, u32 to, void (*on_sent)(void *));

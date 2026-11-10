@@ -79,7 +79,7 @@ int Gull_CountDown(Gull *self, s32 *counter);
 void Gull_SetState(Gull *self, int state);
 int Gull_Update(Gull *self);
 
-/* The overlay's static initialiser (ov072_static_init.c). */
+/* The overlay's static initializer (ov072_static_init.c). */
 void GullInit_Tables(void);
 
 #endif

@@ -723,7 +723,7 @@ CLEAN_AS(func_ov126_022a0978, KeyboardEntry_UpdateKeys)
 /* --- The panel's buttons pressed --- */
 
 /* func_ov126_022a0a50: B with nothing to delete: with the two buttons it presses cancel, with
- * the cancelling button that one (the pointer hidden first); else a buzz. 1 when pressed. */
+ * the canceling button that one (the pointer hidden first); else a buzz. 1 when pressed. */
 int KeyboardEntry_NothingToDelete(KeyboardEntry *self)
 {
     switch (self->panel_kind) {
@@ -760,7 +760,7 @@ int KeyboardEntry_PressOk(KeyboardEntry *self)
 }
 CLEAN_AS(func_ov126_022a0a90, KeyboardEntry_PressOk)
 
-/* func_ov126_022a0ae0: the panel's OK button (cancelling with the cancelling kind) or its cancel
+/* func_ov126_022a0ae0: the panel's OK button (canceling with the canceling kind) or its cancel
  * button selected, with its sound; its press then plays (KEYBOARD_ENTRY_SUB_PANEL_PRESS) and the
  * input finishes (KEYBOARD_ENTRY_STATE_FINISH). */
 void KeyboardEntry_PressButton(KeyboardEntry *self, int cancel)
@@ -768,23 +768,23 @@ void KeyboardEntry_PressButton(KeyboardEntry *self, int cancel)
     if (cancel == 0) {
         ButtonPanel_Select(&self->panel, KEYBOARD_ENTRY_BUTTON_OK);
         if (self->panel_kind == KEYBOARD_ENTRY_PANEL_CANCEL) {
-            KeyboardEntry_SetFlags(self, KEYBOARD_ENTRY_FLAG_CANCELLED);
+            KeyboardEntry_SetFlags(self, KEYBOARD_ENTRY_FLAG_CANCELED);
         } else {
-            KeyboardEntry_ClearFlags(self, KEYBOARD_ENTRY_FLAG_CANCELLED);
+            KeyboardEntry_ClearFlags(self, KEYBOARD_ENTRY_FLAG_CANCELED);
         }
     } else {
         ButtonPanel_Select(&self->panel, KEYBOARD_ENTRY_BUTTON_CANCEL);
-        KeyboardEntry_SetFlags(self, KEYBOARD_ENTRY_FLAG_CANCELLED);
+        KeyboardEntry_SetFlags(self, KEYBOARD_ENTRY_FLAG_CANCELED);
     }
     if (KeyboardEntry_TestFlags(self, KEYBOARD_ENTRY_FLAG_NEW_FRIEND) != 0) {
-        if (KeyboardEntry_TestFlags(self, KEYBOARD_ENTRY_FLAG_CANCELLED) != 0) {
+        if (KeyboardEntry_TestFlags(self, KEYBOARD_ENTRY_FLAG_CANCELED) != 0) {
             SoundSys_PlaySe(KEYBOARD_ENTRY_SE_CANCEL_FRIEND);
         } else if (GroupParams_Mode() == KEYBOARD_ENTRY_MODE_NEW_FRIEND_TOWN) {
             SoundSys_PlaySe(KEYBOARD_ENTRY_SE_OK);
         } else {
             SoundSys_PlaySe(KEYBOARD_ENTRY_SE_OK_FRIEND);
         }
-    } else if (KeyboardEntry_TestFlags(self, KEYBOARD_ENTRY_FLAG_CANCELLED) != 0) {
+    } else if (KeyboardEntry_TestFlags(self, KEYBOARD_ENTRY_FLAG_CANCELED) != 0) {
         SoundSys_PlaySe(KEYBOARD_ENTRY_SE_CANCEL);
     } else {
         SoundSys_PlaySe(KEYBOARD_ENTRY_SE_OK);

@@ -1,4 +1,4 @@
-/* Behaviour 9 of a villager out walking in the town: the chat of a pair of villagers and its
+/* Behavior 9 of a villager out walking in the town: the chat of a pair of villagers and its
  * exchanges (outdoor_villager_chat.h). */
 #include "outdoor_villager_chat.h"
 
@@ -69,7 +69,7 @@ extern const u8 data_ov068_02276744[];
 extern const u8 data_ov068_02276754[];
 extern const u8 data_ov068_0227678c[];
 
-/* The behaviour member's and the villager's functions used here (outdoor_villager.h has more). */
+/* The behavior member's and the villager's functions used here (outdoor_villager.h has more). */
 
 /* The update's step table and the exchanges' table (each filled once, bit 0 of its guard), and
  * the member pointers they are filled from. */
@@ -95,7 +95,7 @@ extern const MemberPointer data_ov068_02276fb0, data_ov068_02276fc0, data_ov068_
 #define CHAT_MOTION_SHOW 20
 #define CHAT_PRIORITY 1
 #define CHAT_ANIM_FLAGS 0x19c /* u8: the body animation's FrameCtrl flags */
-#define CHAT_SPEAKER 0x28     /* u8 *: the villager who shows its new item, in the behaviour */
+#define CHAT_SPEAKER 0x28     /* u8 *: the villager who shows its new item, in the behavior */
 /* Clothes of codes 0x12a8 to 0x12af are a design. */
 #define CHAT_DESIGN_CLOTHES_FIRST 0x12a8
 #define CHAT_DESIGN_CLOTHES_LAST 0x12af
@@ -125,7 +125,7 @@ static u8 *chat_partner(u8 *villager)
     return (u8 *) (uintptr_t) VillagerSceneObject_Word644((u32 *) (void *) villager);
 }
 
-static u8 **chat_speaker(OutdoorVillagerBehaviour *self)
+static u8 **chat_speaker(OutdoorVillagerBehavior *self)
 {
     return (u8 **) (void *) chat_at(self, CHAT_SPEAKER);
 }
@@ -150,17 +150,17 @@ static int chat_unpair(u8 *partner)
     return ((int (*)(u8 *)) chat_slot(partner, 0xbc))(partner);
 }
 
-/* This one unpaired after its partner was: behaviour 19 and the pairing's cooldown. */
-static void chat_part_for_19(OutdoorVillagerBehaviour *self, u8 *villager)
+/* This one unpaired after its partner was: behavior 19 and the pairing's cooldown. */
+static void chat_part_for_19(OutdoorVillagerBehavior *self, u8 *villager)
 {
     VillagerSceneObject_SetWord644((u32 *) (void *) villager, 0);
     VillagerSceneObject_SetByte648(villager, 0);
-    OutdoorVillagerBehaviour_Start(self, villager, CHAT_DO_19);
+    OutdoorVillagerBehavior_Start(self, villager, CHAT_DO_19);
     OutdoorVillagerWalks_StartCooldown(self);
 }
 
 /* The chat stopped: the byte at 0x838 set for both; step 3. */
-static void chat_stop(OutdoorVillagerBehaviour *self, u8 *villager, u8 *partner)
+static void chat_stop(OutdoorVillagerBehavior *self, u8 *villager, u8 *partner)
 {
     VillagerSceneObject_SetByte838(villager);
     if (partner != NULL) {
@@ -219,7 +219,7 @@ static void chat_end_act(u8 *villager)
 }
 
 /* One time in 32 while at least 20 frames of the chat are left, an act of the table. */
-static void chat_maybe_act(OutdoorVillagerBehaviour *self, u8 *villager)
+static void chat_maybe_act(OutdoorVillagerBehavior *self, u8 *villager)
 {
     if (self->wait >= CHAT_ACT_FRAMES && MainRandom_Below(CHAT_ACT_ONE_IN) == 0) {
         u8 act = data_ov068_0227679c[MainRandom_Below(8)];
@@ -227,8 +227,8 @@ static void chat_maybe_act(OutdoorVillagerBehaviour *self, u8 *villager)
     }
 }
 
-/* func_ov068_02269a54: behaviour 9's update: Turn9, Talk9, Show9, End9. */
-int OutdoorVillagerChat_Update9(OutdoorVillagerBehaviour *self, u8 *villager)
+/* func_ov068_02269a54: behavior 9's update: Turn9, Talk9, Show9, End9. */
+int OutdoorVillagerChat_Update9(OutdoorVillagerBehavior *self, u8 *villager)
 {
     static const MemberPointer *const steps[4] = {
         &data_ov068_02277048, /* OutdoorVillagerChat_Turn9 */
@@ -247,8 +247,8 @@ int OutdoorVillagerChat_Update9(OutdoorVillagerBehaviour *self, u8 *villager)
 CLEAN_AS(func_ov068_02269a54, OutdoorVillagerChat_Update9)
 
 /* func_ov068_02269ae4: the partner told the pairing ends; when it was paired, this one is
- * unpaired, resumes its saved behaviour (else 0) and its pairing's cooldown starts. */
-void OutdoorVillagerChat_End9(OutdoorVillagerBehaviour *self, u8 *villager)
+ * unpaired, resumes its saved behavior (else 0) and its pairing's cooldown starts. */
+void OutdoorVillagerChat_End9(OutdoorVillagerBehavior *self, u8 *villager)
 {
     u8 *partner = chat_partner(villager);
     if (partner == NULL || chat_unpair(partner) == 0) {
@@ -256,8 +256,8 @@ void OutdoorVillagerChat_End9(OutdoorVillagerBehaviour *self, u8 *villager)
     }
     VillagerSceneObject_SetWord644((u32 *) (void *) villager, 0);
     VillagerSceneObject_SetByte648(villager, 0);
-    if (OutdoorVillagerBehaviour_Resume(self, villager) == 0) {
-        OutdoorVillagerBehaviour_Start(self, villager, OUTDOOR_VILLAGER_DO_DEFAULT);
+    if (OutdoorVillagerBehavior_Resume(self, villager) == 0) {
+        OutdoorVillagerBehavior_Start(self, villager, OUTDOOR_VILLAGER_DO_DEFAULT);
     }
     OutdoorVillagerWalks_StartCooldown(self);
 }
@@ -265,7 +265,7 @@ CLEAN_AS(func_ov068_02269ae4, OutdoorVillagerChat_End9)
 
 /* func_ov068_02269b38: once the speaker's motion of kind 20 is done, the moods of the villager
  * and its partner applied; step 3. */
-void OutdoorVillagerChat_Show9(OutdoorVillagerBehaviour *self, u8 *villager)
+void OutdoorVillagerChat_Show9(OutdoorVillagerBehavior *self, u8 *villager)
 {
     u8 *speaker = *chat_speaker(self);
     if (SceneMotion_Kind(chat_motion(speaker)) != CHAT_MOTION_SHOW) {
@@ -284,7 +284,7 @@ CLEAN_AS(func_ov068_02269b38, OutdoorVillagerChat_Show9)
  * for both, then the exchanges drawn by weight (InsectDraw_PickByWeights on a copy of
  * data_ov068_02276794) and tried, each one's weight cleared once it was tried and did not
  * happen, until one happens; after seven draws without one, step 3. */
-void OutdoorVillagerChat_Exchange(OutdoorVillagerBehaviour *self, u8 *villager)
+void OutdoorVillagerChat_Exchange(OutdoorVillagerBehavior *self, u8 *villager)
 {
     static const MemberPointer *const exchanges[CHAT_EXCHANGES] = {
         &data_ov068_02276fb0, /* func_ov068_0226ab58: how the pair gets on */
@@ -326,7 +326,7 @@ CLEAN_AS(_ZN18Obj_ov068_022771c019func_ov068_02269b88Ei, OutdoorVillagerChat_Exc
  * one asking) it only ends its acts.
  * QUIRK: whether the partner is ready (its motion done) is judged with this villager's act,
  * not the partner's. */
-void OutdoorVillagerChat_Talk9(OutdoorVillagerBehaviour *self, u8 *villager)
+void OutdoorVillagerChat_Talk9(OutdoorVillagerBehavior *self, u8 *villager)
 {
     u8 *partner = chat_partner(villager);
     if (OutdoorVillagerWalks_WasNetted(self, villager) != 0 && VillagerSceneObject_HasByte838(villager) == 0 &&
@@ -402,7 +402,7 @@ CLEAN_AS(_ZN18Obj_ov068_022771c019func_ov068_02269c88Ei, OutdoorVillagerChat_Tal
 
 /* func_ov068_02269fd4: whether the pair gets on badly (VillagerPair_TierOf of their records,
  * 4: no tier or not both of the town) and `distance` (to the player) is under 0x6000. */
-int OutdoorVillagerChat_BadPairNear(OutdoorVillagerBehaviour *self, u8 *villager, int distance)
+int OutdoorVillagerChat_BadPairNear(OutdoorVillagerBehavior *self, u8 *villager, int distance)
 {
     (void) self;
     u8 *partner = chat_partner(villager);
@@ -418,7 +418,7 @@ CLEAN_AS(func_ov068_02269fd4, OutdoorVillagerChat_BadPairNear)
 /* func_ov068_0226a020: whether a current player is set (PlayerId_IsSet), one of the pair has no
  * memory of it, and `distance` is under 0x6000.
  * QUIRK: the current player record is asked for twice. */
-int OutdoorVillagerChat_StrangerNear(OutdoorVillagerBehaviour *self, u8 *villager, int distance)
+int OutdoorVillagerChat_StrangerNear(OutdoorVillagerBehavior *self, u8 *villager, int distance)
 {
     (void) self;
     DesignCreator *player = NULL;
@@ -440,7 +440,7 @@ CLEAN_AS(func_ov068_0226a020, OutdoorVillagerChat_StrangerNear)
 
 /* func_ov068_0226a098: the distance from this console's player's object to the nearer of the
  * pair; 0 without the player or a partner. */
-int OutdoorVillagerChat_PlayerDistance(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerChat_PlayerDistance(OutdoorVillagerBehavior *self, u8 *villager)
 {
     (void) self;
     int player = SessionPlayers_ActorHandle(OUTDOOR_VILLAGER_PLAYER_ACTOR);
@@ -457,7 +457,7 @@ CLEAN_AS(func_ov068_0226a098, OutdoorVillagerChat_PlayerDistance)
 
 /* func_ov068_0226a0dc: whether the partner is within 0x3c00 of the villager on the ground
  * plane (and not at its very place). */
-int OutdoorVillagerChat_PartnerClose(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerChat_PartnerClose(OutdoorVillagerBehavior *self, u8 *villager)
 {
     (void) self;
     u8 *partner = chat_partner(villager);
@@ -472,8 +472,8 @@ CLEAN_AS(func_ov068_0226a0dc, OutdoorVillagerChat_PartnerClose)
 
 /* func_ov068_0226a114: once the turn (kind 3) is done, it stands and the chat's wait is set by
  * the pair's tier; step 1. Until then, with the byte at 0xa05 set, the partner told the
- * pairing ends and, when it was paired, this one goes to behaviour 19. */
-void OutdoorVillagerChat_Turn9(OutdoorVillagerBehaviour *self, u8 *villager)
+ * pairing ends and, when it was paired, this one goes to behavior 19. */
+void OutdoorVillagerChat_Turn9(OutdoorVillagerBehavior *self, u8 *villager)
 {
     SceneMotion *motion = chat_motion(villager);
     if (SceneMotion_Kind(motion) == CHAT_MOTION_TURN && SceneMotion_IsDone(motion) != 0) {
@@ -492,11 +492,11 @@ void OutdoorVillagerChat_Turn9(OutdoorVillagerBehaviour *self, u8 *villager)
 }
 CLEAN_AS(func_ov068_0226a114, OutdoorVillagerChat_Turn9)
 
-/* func_ov068_0226a1b8: behaviour 9's start: a turn to the partner (the angle taken before a
+/* func_ov068_0226a1b8: behavior 9's start: a turn to the partner (the angle taken before a
  * running act's effects are reset, OutdoorVillagerObject_ResetActEffects), the watch on the partner (kind 2),
  * step 0, the byte at 0x838 cleared, its mood asked for (0, 0, applied) and its mood's sounds
  * on. */
-int OutdoorVillagerChat_Start9(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerChat_Start9(OutdoorVillagerBehavior *self, u8 *villager)
 {
     u8 *partner = chat_partner(villager);
     int angle = SceneObject_YawTo(villager, partner);
@@ -520,7 +520,7 @@ CLEAN_AS(func_ov068_0226a1b8, OutdoorVillagerChat_Start9)
  * (OutdoorVillagerBonds_ChangePair), the speaker's
  * mood asked for (1, 2), the design copied onto the first's and its clothes set to it
  * (0x12a8), and the speaker shows it (kind 20); step 2. */
-int OutdoorVillagerChat_NewDesign(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerChat_NewDesign(OutdoorVillagerBehavior *self, u8 *villager)
 {
     u8 *partner = chat_partner(villager);
     u8 *first = NULL;
@@ -555,7 +555,7 @@ CLEAN_AS(func_ov068_0226a260, OutdoorVillagerChat_NewDesign)
 /* func_ov068_0226a3e0: the second's catchphrase back to its own default (its NpcId's number's,
  * NpcLookup_CatchphraseToWide, when there is one), after it learns from the first and, as
  * gossip, two other villagers' bond is changed (OutdoorVillagerBonds_ChangeOthers); both moods asked for from data_ov068_02276738; step 3. */
-int OutdoorVillagerChat_DefaultCatchphrase(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerChat_DefaultCatchphrase(OutdoorVillagerBehavior *self, u8 *villager)
 {
     u8 *partner = chat_partner(villager);
     u8 *first = NULL;
@@ -586,7 +586,7 @@ CLEAN_AS(func_ov068_0226a3e0, OutdoorVillagerChat_DefaultCatchphrase)
  * villagers' bond changed (OutdoorVillagerBonds_ChangeOthers), both moods asked for
  * (data_ov068_02276730, not applied), its clothes set and the speaker shows them (kind 20),
  * step 2; else both moods asked for and applied, step 3. */
-int OutdoorVillagerChat_DefaultClothes(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerChat_DefaultClothes(OutdoorVillagerBehavior *self, u8 *villager)
 {
     u8 *first = NULL;
     u8 *second = NULL;
@@ -643,7 +643,7 @@ CLEAN_AS(func_ov068_0226a49c, OutdoorVillagerChat_DefaultClothes)
  * Given to the second: both moods
  * asked for (1, 2), the speaker (here the second) shows it (kind 20), step 2; else both moods
  * asked for and applied, step 3. */
-int OutdoorVillagerChat_PassDesign(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerChat_PassDesign(OutdoorVillagerBehavior *self, u8 *villager)
 {
     u8 *partner = chat_partner(villager);
     u8 *first = NULL;
@@ -716,7 +716,7 @@ CLEAN_AS(func_ov068_0226a618, OutdoorVillagerChat_PassDesign)
  * saying it), or nobody. The second learns from the first, as gossip two other villagers'
  * bond is changed (OutdoorVillagerBonds_ChangeOthers), both
  * moods asked for (1, 2, applied); step 3. */
-int OutdoorVillagerChat_PassCatchphrase(OutdoorVillagerBehaviour *self, u8 *villager)
+int OutdoorVillagerChat_PassCatchphrase(OutdoorVillagerBehavior *self, u8 *villager)
 {
     u8 *partner = chat_partner(villager);
     u8 *first = NULL;

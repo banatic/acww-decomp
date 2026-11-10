@@ -53,7 +53,7 @@ static void *town_list_rows(TownList *self)
     return self->rows;
 }
 
-/* func_ov141_0229a834: overlay 139's OBJ graphics and the panel's text colours loaded. */
+/* func_ov141_0229a834: overlay 139's OBJ graphics and the panel's text colors loaded. */
 void TownList_LoadPanelGraphics(TownList *self)
 {
     ResRows_LoadObjFiles(town_list_rows(self));

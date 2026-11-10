@@ -36,7 +36,7 @@ extern u8 data_ov127_0229b6f4[];
 /* A nudge's steps back (StarScope_StepNudge), from the last. */
 extern const s32 data_ov127_0229a0fc[2];
 
-/* The scrolling sound's pan by arrow; the OBJs of a star's mark, the screen's centre and the
+/* The scrolling sound's pan by arrow; the OBJs of a star's mark, the screen's center and the
  * four arrows, and where the arrows sit round the middle (in steps of a quarter of the spread). */
 extern const u8 data_ov127_0229b5e0[STAR_SCOPE_ARROWS];
 extern const OamEntry data_ov127_0229b5e4;
@@ -339,7 +339,7 @@ void StarScope_StepGlide(StarScope *scope)
 }
 CLEAN_AS(func_ov127_022998b4, StarScope_StepGlide)
 
-/* func_ov127_022999c0: the view to glide to centre the sky's point (`x`, `y`) of the screen at
+/* func_ov127_022999c0: the view to glide to center the sky's point (`x`, `y`) of the screen at
  * scroll 0 (its y kept to -24-84). */
 void StarScope_GlideTo(StarScope *scope, int x, int y)
 {
@@ -394,7 +394,7 @@ int StarScope_SkyCellAt(StarScope *scope, int x, int y, int *column, int *row)
 }
 CLEAN_AS(func_ov127_02299a50, StarScope_SkyCellAt)
 
-/* func_ov127_02299a94: the view put to centre the sky's point (`x`, `y`) of the screen at
+/* func_ov127_02299a94: the view put to center the sky's point (`x`, `y`) of the screen at
  * scroll 0, its y then kept to -24-84 (a vertical scroll by 0). */
 void StarScope_LookAt(StarScope *scope, int x, int y)
 {
@@ -563,13 +563,13 @@ int StarScope_DrawStarMark(StarScope *scope, int star)
 }
 CLEAN_AS(func_ov127_02299d64, StarScope_DrawStarMark)
 
-/* func_ov127_02299dc0: the screen's centre mark drawn, moved down by `y` (priority 1). */
-void StarScope_DrawCentre(StarScope *scope, int y)
+/* func_ov127_02299dc0: the screen's center mark drawn, moved down by `y` (priority 1). */
+void StarScope_DrawCenter(StarScope *scope, int y)
 {
     (void) scope;
     OamBuffer_DrawObjAffine(1, &data_ov127_0229b5ec, STAR_SCOPE_MIDDLE_X, y + STAR_SCOPE_MIDDLE_Y, -1, 1, NULL);
 }
-CLEAN_AS(func_ov127_02299dc0, StarScope_DrawCentre)
+CLEAN_AS(func_ov127_02299dc0, StarScope_DrawCenter)
 
 /* func_ov127_02299de8: the four arrows drawn round the screen's middle, each a quarter of
  * `spread` from it its own way, in `palette` (palette 7 for the arrow drawn pressed); then no

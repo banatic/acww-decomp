@@ -12,7 +12,7 @@
  * The sound mode (`mode`) is set when the talk's window has opened (TalkVoice_Start) and
  * taken back when it closes (TalkVoice_Stop): `forced_mode` when set, else 1 for a talk of
  * kind 3, else the speaker's kind (the receiver's vtable slot 0x6c), and only when the player's options
- * let the speaker be heard. A text of colour 9 switches mode 0 to mode 4 while it lasts. */
+ * let the speaker be heard. A text of color 9 switches mode 0 to mode 4 while it lasts. */
 #ifndef CLEAN_MAIN_TALK_VOICE_H
 #define CLEAN_MAIN_TALK_VOICE_H
 
@@ -42,11 +42,11 @@ typedef struct TalkVoice {
     u8 pad_1f;
     s32 forced_mode; /* 0x20: TALK_VOICE_NO_MODE, or the mode TalkVoice_Start sets */
     s32 mode;        /* 0x24: the sound mode in use, or TALK_VOICE_NO_MODE */
-    s32 colour;      /* 0x28: the colour of the text shown (tag 0xff/0) */
+    s32 color;       /* 0x28: the color of the text shown (tag 0xff/0) */
 } TalkVoice;
 
 void TalkVoice_Nothing(TalkVoice *voice);
-void TalkVoice_FollowColour(TalkVoice *voice);
+void TalkVoice_FollowColor(TalkVoice *voice);
 u8 TalkVoice_VillagerKind(TalkVoice *voice);
 u8 TalkVoice_Style(TalkVoice *voice);
 void TalkVoice_Stop(TalkVoice *voice);

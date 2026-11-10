@@ -112,7 +112,7 @@ int Insurer_UpdateTalkEnds(Insurer *insurer);
 int Insurer_EnterTalkEnds(void);
 int Insurer_CountDown(int unused, int *counter);
 int Insurer_InView(Insurer *insurer, int wide);
-int Insurer_InBox(int unused, const Vec3 *centre, const Vec3 *point, int wide);
+int Insurer_InBox(int unused, const Vec3 *center, const Vec3 *point, int wide);
 void Insurer_SetState(Insurer *insurer, int state);
 int Insurer_Update(Insurer *insurer);
 int Insurer_SecondAnimation(void);

@@ -1,12 +1,12 @@
 /* What the room's televisions show (the member at 0x64 of the room, data_ov004_022595c0; tv.h
- * draws it): the programme of the weekly schedule at the time of day, or, when none is on, a
+ * draws it): the program of the weekly schedule at the time of day, or, when none is on, a
  * weather forecast. Each is a texture pattern animation ("/ftr/tv/prog/tv_program%d" or
  * "/ftr/tv/weather/tv_xx", .nsbtx and .nsbtp) copied into the slot "tv.0"/"tv_pl" of the TV's
  * texture ("/ftr/tv/tv.nsbtx", copied once into the room's heap).
  *
  * Two screens take turns: a new picture is loaded into the screen not shown, which then is
  * shown. Each screen has a frame heap of its own for its files. When the room plays the TV's
- * sound (data_ov004_022595b8), a sound object of the programme's kind (the channel, 0xff for
+ * sound (data_ov004_022595b8), a sound object of the program's kind (the channel, 0xff for
  * the forecast) is made on a heap of the broadcast's whenever the picture changes. */
 #ifndef CLEAN_OV004_TV_BROADCAST_H
 #define CLEAN_OV004_TV_BROADCAST_H
@@ -18,7 +18,7 @@
 #include "types.h"
 
 /* TvScreen.channel for the forecast, and what TvBroadcast_ScheduledChannel gives when the
- * schedule has no programme on. */
+ * schedule has no program on. */
 #define TV_CHANNEL_FORECAST 0xff
 #define TV_SCREEN_COUNT 2
 
@@ -47,7 +47,7 @@ typedef struct TvScreen {
     G3dResTex *source; /* 0x08: the picture's textures */
     const u8 *anim;    /* 0x0c: the picture's texture pattern animation */
     TexSlotAnim slot;  /* 0x10 */
-    int channel;       /* 0xa0: the programme shown, TV_CHANNEL_FORECAST, or -1 for none */
+    int channel;       /* 0xa0: the program shown, TV_CHANNEL_FORECAST, or -1 for none */
     s16 forecast;      /* 0xa4: the forecast shown (enum TvForecast), or -1 */
     u16 loops;         /* 0xa6: the times the animation passed its frame 0, up to 0xffff */
 } TvScreen;
@@ -61,7 +61,7 @@ typedef struct TvBroadcast {
     SoundObject *sound;                /* 0x15c */
 } TvBroadcast;
 
-/* One programme of a day's schedule, from its start time on. */
+/* One program of a day's schedule, from its start time on. */
 typedef struct TvScheduleEntry {
     u8 channel;
     u8 hour;

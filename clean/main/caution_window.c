@@ -134,7 +134,7 @@ typedef struct CautionWindowNumber {
 #define CAUTION_WINDOW_CELLS 0x20
 #define CAUTION_WINDOW_ROWS 2
 #define CAUTION_WINDOW_BOX_STYLE 5
-#define CAUTION_WINDOW_SECONDS_WIDTH 0x12 /* the seconds are centred in 18 pixels */
+#define CAUTION_WINDOW_SECONDS_WIDTH 0x12 /* the seconds are centered in 18 pixels */
 
 /* The text of a label or of a number text: its vtable slot 0x0c. */
 static const char *caution_window_text(void *object)
@@ -145,7 +145,7 @@ static const char *caution_window_text(void *object)
     return ((CautionWindowTextMethod) (uintptr_t) method)(object);
 }
 
-/* A box set up to draw `text` once into its RAM buffer, the text's colour 0 on colour 1. */
+/* A box set up to draw `text` once into its RAM buffer, the text's color 0 on color 1. */
 static void caution_window_box_text(TextDrawBox *box, void *text_object)
 {
     box->layer = CAUTION_WINDOW_BOX_STYLE;
@@ -461,7 +461,7 @@ void CautionWindow_ComposeLine(CautionWindow *self, int line, int with_code)
 }
 CLEAN_AS(func_02038444, CautionWindow_ComposeLine)
 
-/* func_020384f8: the seconds (written in format 2) drawn over the bitmap in `chars`, centred in 18
+/* func_020384f8: the seconds (written in format 2) drawn over the bitmap in `chars`, centered in 18
  * pixels from `x` past the line's text. */
 void CautionWindow_DrawSeconds(CautionWindow *self, void *chars, int x)
 {
@@ -486,7 +486,7 @@ void CautionWindow_DrawSeconds(CautionWindow *self, void *chars, int x)
 }
 CLEAN_AS(func_020384f8, CautionWindow_DrawSeconds)
 
-/* func_0203859c: line_text drawn centred into the bitmap (through a buffer from the back of
+/* func_0203859c: line_text drawn centered into the bitmap (through a buffer from the back of
  * the current heap), with the seconds after it when it has them. */
 void CautionWindow_DrawLine(CautionWindow *self)
 {
@@ -512,7 +512,7 @@ void CautionWindow_DrawLine(CautionWindow *self)
 }
 CLEAN_AS(func_0203859c, CautionWindow_DrawLine)
 
-/* func_0203864c: the bitmap filled with colour 1 and copied into all four parts. */
+/* func_0203864c: the bitmap filled with color 1 and copied into all four parts. */
 void CautionWindow_ClearTexture(CautionWindow *self)
 {
     MI_CpuFill8(self->bitmap, 0x11, CAUTION_WINDOW_BITMAP_SIZE);
@@ -750,7 +750,7 @@ CautionWindow *CautionWindow_Destruct(CautionWindow *self)
 CLEAN_AS(func_02038a90, CautionWindow_Destruct)
 
 /* func_02038acc: the constructor: the model and the copy constructed, the state and the saved
- * registers 0, the labels empty and the bitmap filled with colour 1. */
+ * registers 0, the labels empty and the bitmap filled with color 1. */
 CautionWindow *CautionWindow_Construct(CautionWindow *self)
 {
     self->vtable = data_020da520;

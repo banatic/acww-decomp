@@ -22,7 +22,7 @@ typedef struct LayerLoad {
     union {
         struct {
             u32 data_first; /* 0x08: the first character at `data` */
-            u32 first;      /* 0x0c: the characters loaded, from 16-colour character units */
+            u32 first;      /* 0x0c: the characters loaded, from 16-color character units */
             u32 last;       /* 0x10 */
         } chars;
         struct {

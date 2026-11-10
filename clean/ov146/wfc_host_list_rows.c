@@ -37,7 +37,7 @@ extern void __register_global_object(void *object, void *destruct, void *record)
 
 /* The menu message of a row's town ("menu" messages, its part 0 the town's name), and the
  * labels' place in the rows: the town's at tile 0x11e + 0x14 * slot (10 cells), the name's at
- * 0x1d2 + 16 * slot (8 cells), in colour 14 - slot. */
+ * 0x1d2 + 16 * slot (8 cells), in color 14 - slot. */
 #define WFC_HOST_LIST_TOWN_MESSAGE 0x66
 #define WFC_HOST_LIST_NAME_LENGTH 6
 #define WFC_HOST_LIST_TOWN_OFFSET 0x10 /* in a friend's status data */
@@ -52,12 +52,12 @@ extern void __register_global_object(void *object, void *destruct, void *record)
 #define WFC_HOST_LIST_SCREEN_LINE 0x20 /* tiles */
 #define WFC_HOST_LIST_ROW_TILES (2 * WFC_HOST_LIST_SCREEN_LINE)
 
-/* The colours the rows' shades lead to: 14 for a game with room, 7 for a full one; colour 15 is
+/* The colors the rows' shades lead to: 14 for a game with room, 7 for a full one; color 15 is
  * where they start. */
 #define WFC_HOST_LIST_COLOR_OPEN 14
 #define WFC_HOST_LIST_COLOR_FULL 7
 #define WFC_HOST_LIST_COLOR_BACK 15
-#define WFC_HOST_LIST_SHADE_FULL 0x40 /* in `row_shade`: shaded toward the full colour */
+#define WFC_HOST_LIST_SHADE_FULL 0x40 /* in `row_shade`: shaded toward the full color */
 
 static DualCellSprite *wfc_host_list_knob_cells(WfcHostList *self)
 {
@@ -76,8 +76,8 @@ static const FriendStatus *wfc_host_list_live(FriendList *list, int index)
 /* --- The rows' shades --- */
 
 /* func_ov146_02299684: each row slot showing a friend shaded by the friend's fade, toward the
- * full colour when the friend's game has its four entries, else toward the open one; a slot's
- * palette colour is made again only when its shade changed. */
+ * full color when the friend's game has its four entries, else toward the open one; a slot's
+ * palette color is made again only when its shade changed. */
 void WfcHostList_ShadeRows(WfcHostList *self)
 {
     for (int slot = 0; slot < WFC_HOST_LIST_ROWS; slot++) {
@@ -103,8 +103,8 @@ void WfcHostList_ShadeRows(WfcHostList *self)
 }
 CLEAN_AS(func_ov146_02299684, WfcHostList_ShadeRows)
 
-/* func_ov146_022996f4: colour 14 - `slot` of the shaded palette made `fade` twentieths of the
- * way from colour 15 to colour `color` of "bg7.bpl", by channel (each truncated to 8 bits),
+/* func_ov146_022996f4: color 14 - `slot` of the shaded palette made `fade` twentieths of the
+ * way from color 15 to color `color` of "bg7.bpl", by channel (each truncated to 8 bits),
  * and the palette to be queued.
  * QUIRK: the shade's index, 14 - `slot`, is taken modulo 256.
  * REQUIRES: `color` below 16 and `slot` 0-14, as the game passes them. */
@@ -208,7 +208,7 @@ void WfcHostList_ReleaseKnob(WfcHostList *self)
 }
 CLEAN_AS(func_ov146_02299c34, WfcHostList_ReleaseKnob)
 
-/* func_ov146_02299c44: the knob to the pen's y: with `approach`, its centre (y less 0x40) is
+/* func_ov146_02299c44: the knob to the pen's y: with `approach`, its center (y less 0x40) is
  * approached by at most 8; else it follows the drag (y plus the drag's offset) at once; within
  * 0-0x50 either way. The scroll follows at once, the knob is placed, and the scroll cues each
  * time the knob has moved 4 or more since it last did. */
@@ -377,7 +377,7 @@ CLEAN_AS(func_ov146_02299f08, WfcHostList_RefreshList)
  * hosting there fades in (to 20) when the scene has it as hosting, else its status is copied
  * and its fade starts from 0; a friend the scene has as hosting who no longer is fades out, and
  * at 0 the scene's status is cleared. When the count of friends hosting changed, it is shown
- * in full-width digits (one or two) in a label (layer 8, tile 0x1f4, 2 cells, colours 9 and
+ * in full-width digits (one or two) in a label (layer 8, tile 0x1f4, 2 cells, colors 9 and
  * 0). */
 void WfcHostList_UpdateHosts(WfcHostList *self)
 {
@@ -465,8 +465,8 @@ void WfcHostList_ShowButtonCaptionsOnce(WfcHostList *self)
 }
 CLEAN_AS(func_ov146_0229a17c, WfcHostList_ShowButtonCaptionsOnce)
 
-/* A button caption: menu message `message` in a label on layer 8 at tile `tile` (6 cells, colours 15 and
- * 0), centred. */
+/* A button caption: menu message `message` in a label on layer 8 at tile `tile` (6 cells, colors 15 and
+ * 0), centered. */
 static void wfc_host_list_show_caption(WfcHostList *self, int message, int tile)
 {
     TextLabel *label = WfcHostList_TakeLabel(self);

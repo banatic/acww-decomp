@@ -1,4 +1,4 @@
-/* main's labelled sprite (label_sprite.h). */
+/* main's labeled sprite (label_sprite.h). */
 #include "label_sprite.h"
 
 #include "autoload_2/heap.h" /* Heap_OperatorDeleteB */
@@ -10,8 +10,8 @@
 static_assert(offsetof(LabelSpriteText, chars) == 0x12 && sizeof(LabelSpriteText) == 0x24, "LabelSpriteText");
 static_assert(offsetof(LabelSprite, palette) == 0x14 && offsetof(LabelSprite, first) == 0x1c, "LabelSprite");
 static_assert(offsetof(LabelSprite, second) == 0x30 && offsetof(LabelSprite, state) == 0x44, "LabelSprite");
-static_assert(offsetof(LabelSprite, text) == 0x4c && offsetof(LabelSprite, colour) == 0x70, "LabelSprite");
-static_assert(offsetof(LabelSprite, colour_dirty) == 0x75 && sizeof(LabelSprite) == 0x78, "LabelSprite");
+static_assert(offsetof(LabelSprite, text) == 0x4c && offsetof(LabelSprite, color) == 0x70, "LabelSprite");
+static_assert(offsetof(LabelSprite, color_dirty) == 0x75 && sizeof(LabelSprite) == 0x78, "LabelSprite");
 
 /* The vtables of the sprite and of its text. */
 extern const u32 data_020e23a0[];
@@ -24,24 +24,24 @@ extern const u8 data_020d0b74[];  /* by kind */
 extern const int data_020d0b94[]; /* by state */
 extern const int data_020d0b84[]; /* by state */
 
-/* By kind: the text box's first VRAM tile, and the OBJ colour (of palette 0) its text is drawn
+/* By kind: the text box's first VRAM tile, and the OBJ color (of palette 0) its text is drawn
  * in. */
 extern const int data_020d0b7c[];
 extern const u8 data_020d0b78[];
 
-/* The colour last loaded into each kind's OBJ colour. */
+/* The color last loaded into each kind's OBJ color. */
 extern u16 data_021d361c[];
 
 extern void DC_FlushRange(const void *start, u32 size);
 extern void GX_LoadOBJPltt(const void *src, u32 offset, u32 size);
 extern void GXS_LoadOBJPltt(const void *src, u32 offset, u32 size);
 
-/* The text's colour, normally and while pressed. */
-#define LABEL_SPRITE_COLOUR 0x50c0
-#define LABEL_SPRITE_COLOUR_PRESSED 0x7d5f
-#define LABEL_SPRITE_COLOUR_SIZE 2
+/* The text's color, normally and while pressed. */
+#define LABEL_SPRITE_COLOR 0x50c0
+#define LABEL_SPRITE_COLOR_PRESSED 0x7d5f
+#define LABEL_SPRITE_COLOR_SIZE 2
 
-/* The text box: 6 tiles by 2 of OBJ tiles, its text centred, on a clear background. */
+/* The text box: 6 tiles by 2 of OBJ tiles, its text centered, on a clear background. */
 #define LABEL_SPRITE_BOX_CELLS 6
 #define LABEL_SPRITE_BOX_ROWS 2
 #define LABEL_SPRITE_BOX_LAYER_OBJECTS 4
@@ -58,23 +58,23 @@ static u32 label_sprite_text_chars(LabelSprite *sprite)
 
 /* func_0208ef7c: the text's colour loaded into the OBJ colour of the sprite's kind on both
  * engines, when it changed or differs from what was last loaded there.
- * HW: the colour is flushed from the data cache before it is loaded. */
-void LabelSprite_UploadColour(LabelSprite *sprite)
+ * HW: the color is flushed from the data cache before it is loaded. */
+void LabelSprite_UploadColor(LabelSprite *sprite)
 {
-    if (sprite->colour_dirty == 0 && sprite->colour != data_021d361c[sprite->kind]) {
-        sprite->colour_dirty = 1;
+    if (sprite->color_dirty == 0 && sprite->color != data_021d361c[sprite->kind]) {
+        sprite->color_dirty = 1;
     }
-    if (sprite->colour_dirty == 0) {
+    if (sprite->color_dirty == 0) {
         return;
     }
-    u32 offset = (u32) data_020d0b78[sprite->kind] * LABEL_SPRITE_COLOUR_SIZE;
-    DC_FlushRange(&sprite->colour, LABEL_SPRITE_COLOUR_SIZE);
-    GX_LoadOBJPltt(&sprite->colour, offset, LABEL_SPRITE_COLOUR_SIZE);
-    GXS_LoadOBJPltt(&sprite->colour, offset, LABEL_SPRITE_COLOUR_SIZE);
-    data_021d361c[sprite->kind] = sprite->colour;
-    sprite->colour_dirty = 0;
+    u32 offset = (u32) data_020d0b78[sprite->kind] * LABEL_SPRITE_COLOR_SIZE;
+    DC_FlushRange(&sprite->color, LABEL_SPRITE_COLOR_SIZE);
+    GX_LoadOBJPltt(&sprite->color, offset, LABEL_SPRITE_COLOR_SIZE);
+    GXS_LoadOBJPltt(&sprite->color, offset, LABEL_SPRITE_COLOR_SIZE);
+    data_021d361c[sprite->kind] = sprite->color;
+    sprite->color_dirty = 0;
 }
-CLEAN_AS(func_0208ef7c, LabelSprite_UploadColour)
+CLEAN_AS(func_0208ef7c, LabelSprite_UploadColor)
 
 /* func_0208effc: the text box freed, if there is one. */
 void LabelSprite_FreeBox(LabelSprite *sprite)
@@ -86,9 +86,9 @@ void LabelSprite_FreeBox(LabelSprite *sprite)
 }
 CLEAN_AS(func_0208effc, LabelSprite_FreeBox)
 
-/* func_0208f014: the text box made, unless there is one, and the text handed to it, centred,
+/* func_0208f014: the text box made, unless there is one, and the text handed to it, centered,
  * to be drawn in the kind's colour (on the main screen's OBJ tiles when the sprite is on the
- * main screen); the colour loaded at the next draw. Nothing when the boxes' heap is full. */
+ * main screen); the color loaded at the next draw. Nothing when the boxes' heap is full. */
 void LabelSprite_OpenBox(LabelSprite *sprite)
 {
     if (sprite->box != NULL) {
@@ -108,7 +108,7 @@ void LabelSprite_OpenBox(LabelSprite *sprite)
     sprite->box->base.background = LABEL_SPRITE_BOX_BACKGROUND;
     sprite->box->base.color = data_020d0b78[sprite->kind];
     TextDraw_RequestDraw(&sprite->box->base);
-    sprite->colour_dirty = 1;
+    sprite->color_dirty = 1;
 }
 CLEAN_AS(func_0208f014, LabelSprite_OpenBox)
 
@@ -128,7 +128,7 @@ int LabelSprite_State(LabelSprite *sprite)
 CLEAN_AS(func_0208f0c0, LabelSprite_State)
 
 /* func_0208f0c4: the state's animations started, stopped (speed 0) in the still state. Hidden,
- * the text box is freed; otherwise it is made and the text's colour set for the state.
+ * the text box is freed; otherwise it is made and the text's color set for the state.
  * REQUIRES: `state` is 0-3 and the kind 0 or 1 (the ROM reads its tables unchecked). */
 void LabelSprite_SetState(LabelSprite *sprite, int state)
 {
@@ -154,8 +154,8 @@ void LabelSprite_SetState(LabelSprite *sprite, int state)
         return;
     }
     LabelSprite_OpenBox(sprite);
-    sprite->colour = sprite->state == LABEL_SPRITE_PRESSED ? LABEL_SPRITE_COLOUR_PRESSED : LABEL_SPRITE_COLOUR;
-    sprite->colour_dirty = 1;
+    sprite->color = sprite->state == LABEL_SPRITE_PRESSED ? LABEL_SPRITE_COLOR_PRESSED : LABEL_SPRITE_COLOR;
+    sprite->color_dirty = 1;
 }
 CLEAN_AS(func_0208f0c4, LabelSprite_SetState)
 
@@ -190,8 +190,8 @@ void LabelSprite_SetOffset(LabelSprite *sprite, int x, int y)
 }
 CLEAN_AS(func_0208f210, LabelSprite_SetOffset)
 
-/* func_0208f218: the text copied in; when the box is made, handed to it again, centred and
- * redrawn, and the colour loaded at the next draw. */
+/* func_0208f218: the text copied in; when the box is made, handed to it again, centered and
+ * redrawn, and the color loaded at the next draw. */
 void LabelSprite_SetText(LabelSprite *sprite, TextBase *text)
 {
     TextBase_Copy((TextBase *) &sprite->text, text);
@@ -202,7 +202,7 @@ void LabelSprite_SetText(LabelSprite *sprite, TextBase *text)
     box->base.text = (const char *) (uintptr_t) label_sprite_text_chars(sprite);
     TextDraw_Center(&sprite->box->base);
     TextDraw_RequestDraw(&sprite->box->base);
-    sprite->colour_dirty = 1;
+    sprite->color_dirty = 1;
 }
 CLEAN_AS(func_0208f218, LabelSprite_SetText)
 
@@ -247,7 +247,7 @@ static void label_sprite_draw_cell(LabelSprite *sprite, const OamEntry *cell, u3
 /* func_0208f288 (vtable slot 2): unless hidden, both cells drawn at the place plus the offset
  * and each frame's own offset (the second unless hidden by `hide_second`; the first in its
  * palette), on the main or the sub screen, then again as OBJ window when `window` is set.
- * Then, hidden or not, the text's colour loaded when it changed. */
+ * Then, hidden or not, the text's color loaded when it changed. */
 void LabelSprite_Draw(LabelSprite *sprite)
 {
     if (sprite->state != LABEL_SPRITE_HIDDEN) {
@@ -276,7 +276,7 @@ void LabelSprite_Draw(LabelSprite *sprite)
             }
         }
     }
-    LabelSprite_UploadColour(sprite);
+    LabelSprite_UploadColor(sprite);
 }
 CLEAN_AS(func_0208f288, LabelSprite_Draw)
 
@@ -328,11 +328,11 @@ static void label_sprite_construct(LabelSprite *sprite, u8 on_main, int kind)
     sprite->state = LABEL_SPRITE_HIDDEN;
     sprite->box = NULL;
     LabelSprite_TextConstruct(&sprite->text);
-    sprite->colour = LABEL_SPRITE_COLOUR;
+    sprite->color = LABEL_SPRITE_COLOR;
     sprite->on_main = on_main;
     sprite->window = 0;
     sprite->hide_second = 0;
-    sprite->colour_dirty = 0;
+    sprite->color_dirty = 0;
     LabelSprite_SetState(sprite, LABEL_SPRITE_HIDDEN);
 }
 

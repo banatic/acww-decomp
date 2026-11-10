@@ -166,13 +166,13 @@ CLEAN_AS(func_ov004_0220d3b8, NodePair_Construct)
 
 /* ---- The glows (0x748, and sets of three in derived classes) ---- */
 
-#define WHITE_COMPONENT (31 << 12)  /* a colour component's maximum, in 20.12 fixed point */
+#define WHITE_COMPONENT (31 << 12)  /* a color component's maximum, in 20.12 fixed point */
 #define G3D_MATERIAL_EMISSION 0x400 /* the material flag NNSi_G3dModifyMatFlag turns */
 
 /* The names of a set's three materials ("mn_m", "mn_m0" and "mn_m1"). */
 extern const char *const data_ov004_0224fdf8[3];
 
-/* NitroSDK's G3D global state; the word at 0x18 holds the material colours, the ambient one
+/* NitroSDK's G3D global state; the word at 0x18 holds the material colors, the ambient one
  * (5 bits each of red, green and blue) in its high half. */
 extern const u32 data_027e0148[];
 
@@ -182,7 +182,7 @@ extern int func_ov004_0220d258(int glow);
 extern char *func_ov004_0220d268(char *glow);
 
 extern void NNSi_G3dModifyMatFlag(G3dModel *model, int on, int flag);
-extern void NNS_G3dMdlSetMdlEmi(G3dModel *model, int material, int colour);
+extern void NNS_G3dMdlSetMdlEmi(G3dModel *model, int material, int color);
 
 /* func_ov004_0220d030: each glow's frame, once the set is bound. */
 void GlowSet_Update(GlowSet *set)
@@ -237,16 +237,16 @@ GlowSet *GlowSet_Construct(GlowSet *set)
 }
 CLEAN_AS(func_ov004_0220d110, GlowSet_Construct)
 
-/* func_ov004_0220d140: the colour the glow starts from, the scene's ambient material colour. */
-int Glow_BaseColour(void)
+/* func_ov004_0220d140: the color the glow starts from, the scene's ambient material color. */
+int Glow_BaseColor(void)
 {
     return (int) (data_027e0148[6] >> 16);
 }
-CLEAN_AS(func_ov004_0220d140, Glow_BaseColour)
+CLEAN_AS(func_ov004_0220d140, Glow_BaseColor)
 
 /* func_ov004_0220d150: the fader's frame; while its level is not 0, the glowing material's
- * emission is the base colour brought towards white by the level (blue, red, then green) and the
- * other materials' emission the base colour; at level 0 the emission is turned off. */
+ * emission is the base color brought towards white by the level (blue, red, then green) and the
+ * other materials' emission the base color; at level 0 the emission is turned off. */
 void Glow_Update(Glow *glow)
 {
     if (glow->material == -1) {
@@ -259,7 +259,7 @@ void Glow_Update(Glow *glow)
         return;
     }
     NNSi_G3dModifyMatFlag(glow->model, 1, G3D_MATERIAL_EMISSION);
-    int base = Glow_BaseColour();
+    int base = Glow_BaseColor();
     int blue = Fader_Mix(level, ((base >> 10) & 0x1f) << 12, WHITE_COMPONENT);
     int red = Fader_Mix(level, (base & 0x1f) << 12, WHITE_COMPONENT);
     int green = Fader_Mix(level, ((base >> 5) & 0x1f) << 12, WHITE_COMPONENT);
@@ -325,7 +325,7 @@ extern int MTX_Inverse43(const Mtx43 *mtx, Mtx43 *inverse);
 extern void MTX_MultVec43(const Vec3 *vector, const Mtx43 *mtx, Vec3 *out);
 
 /* func_ov004_0220d3c8: the object on the floor (layer 0) at cell (x, y), as a parent: its index
- * among the room's objects, the top of the cell's centre in its space, and `facing` relative to
+ * among the room's objects, the top of the cell's center in its space, and `facing` relative to
  * its angle. Whether there is one (with an index). */
 int Mount_Locate(int *parent, Vec3 *offset, s16 *angle, int x, int y, s16 facing)
 {
@@ -334,13 +334,13 @@ int Mount_Locate(int *parent, Vec3 *offset, s16 *angle, int x, int y, s16 facing
     if (below == NULL || index == -1) {
         return 0;
     }
-    Vec3 centre;
-    AcreTile_TileCentre(&centre, (unsigned int) x, (unsigned int) y);
-    centre.y = below->top_height;
+    Vec3 center;
+    AcreTile_TileCenter(&center, (unsigned int) x, (unsigned int) y);
+    center.y = below->top_height;
     RoomObject_BuildMatrix(below, NULL, 0);
     MTX_Inverse43(&data_021fbe48, &data_021fbe48);
     Vec3 local;
-    MTX_MultVec43(&centre, &data_021fbe48, &local);
+    MTX_MultVec43(&center, &data_021fbe48, &local);
     *parent = index;
     *offset = local;
     *angle = (s16) (facing - below->angle);

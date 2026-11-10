@@ -1,4 +1,4 @@
-/* Overlay 3's static initialisers (ov003_static_init.h). */
+/* Overlay 3's static initializers (ov003_static_init.h). */
 #include "ov003_static_init.h"
 
 #include "autoload_2/vector.h"
@@ -12,7 +12,7 @@
 #include "tile_event.h"
 #include "town_insect.h"
 
-/* ---- What the initialisers share */
+/* ---- What the initializers share */
 
 /* The record __register_global_object links an object into, so that its destructor runs when
  * the overlay goes. */
@@ -43,33 +43,33 @@ static void ov003_init_copy(MemberPointer *table, const MemberPointer *const *co
     }
 }
 
-/* A colour of four 5-bit components (the fourth always 31). */
-typedef struct Ov003InitColour {
+/* A color of four 5-bit components (the fourth always 31). */
+typedef struct Ov003InitColor {
     u8 c0;
     u8 c1;
     u8 c2;
     u8 c3;
-} Ov003InitColour;
+} Ov003InitColor;
 
-static void ov003_init_colour(Ov003InitColour *colour, u8 c0, u8 c1, u8 c2, u8 c3)
+static void ov003_init_color(Ov003InitColor *color, u8 c0, u8 c1, u8 c2, u8 c3)
 {
-    colour->c0 = c0;
-    colour->c1 = c1;
-    colour->c2 = c2;
-    colour->c3 = c3;
+    color->c0 = c0;
+    color->c1 = c1;
+    color->c2 = c2;
+    color->c3 = c3;
 }
 
-/* The six colours several source files define for themselves: red, blue, yellow, green, cyan
- * and grey, in that order. */
-static void ov003_init_colours(Ov003InitColour *red, Ov003InitColour *blue, Ov003InitColour *yellow, Ov003InitColour *green,
-                               Ov003InitColour *cyan, Ov003InitColour *grey)
+/* The six colors several source files define for themselves: red, blue, yellow, green, cyan
+ * and gray, in that order. */
+static void ov003_init_colors(Ov003InitColor *red, Ov003InitColor *blue, Ov003InitColor *yellow, Ov003InitColor *green,
+                              Ov003InitColor *cyan, Ov003InitColor *gray)
 {
-    ov003_init_colour(red, 31, 20, 20, 31);
-    ov003_init_colour(blue, 20, 20, 31, 31);
-    ov003_init_colour(yellow, 31, 31, 20, 31);
-    ov003_init_colour(green, 20, 31, 20, 31);
-    ov003_init_colour(cyan, 20, 31, 31, 31);
-    ov003_init_colour(grey, 20, 24, 24, 31);
+    ov003_init_color(red, 31, 20, 20, 31);
+    ov003_init_color(blue, 20, 20, 31, 31);
+    ov003_init_color(yellow, 31, 31, 20, 31);
+    ov003_init_color(green, 20, 31, 20, 31);
+    ov003_init_color(cyan, 20, 31, 31, 31);
+    ov003_init_color(gray, 20, 24, 24, 31);
 }
 
 /* The destructor of objects with nothing to destruct (TrivialObject_Destruct) and of a scene
@@ -77,84 +77,84 @@ static void ov003_init_colours(Ov003InitColour *red, Ov003InitColour *blue, Ov00
 extern void func_020012dc(void *object);
 extern void func_020b649c(void *object);
 
-/* ---- The initialisers, in address order */
+/* ---- The initializers, in address order */
 
-extern Ov003InitColour data_ov003_0223c5c0, data_ov003_0223c5a4, data_ov003_0223c5a8, data_ov003_0223c5b0, data_ov003_0223c5ac,
+extern Ov003InitColor data_ov003_0223c5c0, data_ov003_0223c5a4, data_ov003_0223c5a8, data_ov003_0223c5b0, data_ov003_0223c5ac,
     data_ov003_0223c5b4;
 
-/* __sinit_ov003_0223728c: the six colours of its source file. */
-void Ov003Init_Colours0223c5a4(void)
+/* __sinit_ov003_0223728c: the six colors of its source file. */
+void Ov003Init_Colors0223c5a4(void)
 {
-    ov003_init_colours(&data_ov003_0223c5c0, &data_ov003_0223c5a4, &data_ov003_0223c5a8, &data_ov003_0223c5b0,
-                       &data_ov003_0223c5ac, &data_ov003_0223c5b4);
+    ov003_init_colors(&data_ov003_0223c5c0, &data_ov003_0223c5a4, &data_ov003_0223c5a8, &data_ov003_0223c5b0,
+                      &data_ov003_0223c5ac, &data_ov003_0223c5b4);
 }
-CLEAN_AS(__sinit_ov003_0223728c, Ov003Init_Colours0223c5a4)
+CLEAN_AS(__sinit_ov003_0223728c, Ov003Init_Colors0223c5a4)
 
-extern Ov003InitColour data_ov003_0223c750, data_ov003_0223c740, data_ov003_0223c744, data_ov003_0223c73c, data_ov003_0223c738,
+extern Ov003InitColor data_ov003_0223c750, data_ov003_0223c740, data_ov003_0223c744, data_ov003_0223c73c, data_ov003_0223c738,
     data_ov003_0223c734;
 
-/* __sinit_ov003_022372e8: the six colours of its source file. */
-void Ov003Init_Colours0223c734(void)
+/* __sinit_ov003_022372e8: the six colors of its source file. */
+void Ov003Init_Colors0223c734(void)
 {
-    ov003_init_colours(&data_ov003_0223c750, &data_ov003_0223c740, &data_ov003_0223c744, &data_ov003_0223c73c,
-                       &data_ov003_0223c738, &data_ov003_0223c734);
+    ov003_init_colors(&data_ov003_0223c750, &data_ov003_0223c740, &data_ov003_0223c744, &data_ov003_0223c73c,
+                      &data_ov003_0223c738, &data_ov003_0223c734);
 }
-CLEAN_AS(__sinit_ov003_022372e8, Ov003Init_Colours0223c734)
+CLEAN_AS(__sinit_ov003_022372e8, Ov003Init_Colors0223c734)
 
-extern Ov003InitColour data_ov003_0223c784, data_ov003_0223c7a0, data_ov003_0223c78c, data_ov003_0223c798, data_ov003_0223c79c,
+extern Ov003InitColor data_ov003_0223c784, data_ov003_0223c7a0, data_ov003_0223c78c, data_ov003_0223c798, data_ov003_0223c79c,
     data_ov003_0223c788;
 
-/* __sinit_ov003_02237344: the six colours of its source file. */
-void Ov003Init_Colours0223c784(void)
+/* __sinit_ov003_02237344: the six colors of its source file. */
+void Ov003Init_Colors0223c784(void)
 {
-    ov003_init_colours(&data_ov003_0223c784, &data_ov003_0223c7a0, &data_ov003_0223c78c, &data_ov003_0223c798,
-                       &data_ov003_0223c79c, &data_ov003_0223c788);
+    ov003_init_colors(&data_ov003_0223c784, &data_ov003_0223c7a0, &data_ov003_0223c78c, &data_ov003_0223c798,
+                      &data_ov003_0223c79c, &data_ov003_0223c788);
 }
-CLEAN_AS(__sinit_ov003_02237344, Ov003Init_Colours0223c784)
+CLEAN_AS(__sinit_ov003_02237344, Ov003Init_Colors0223c784)
 
-extern Ov003InitColour data_ov003_0223c9c0, data_ov003_0223c9bc, data_ov003_0223c9d0, data_ov003_0223c9d4, data_ov003_0223c9cc,
+extern Ov003InitColor data_ov003_0223c9c0, data_ov003_0223c9bc, data_ov003_0223c9d0, data_ov003_0223c9d4, data_ov003_0223c9cc,
     data_ov003_0223c9c8;
 
-/* __sinit_ov003_022373a0: the six colours of its source file. */
-void Ov003Init_Colours0223c9bc(void)
+/* __sinit_ov003_022373a0: the six colors of its source file. */
+void Ov003Init_Colors0223c9bc(void)
 {
-    ov003_init_colours(&data_ov003_0223c9c0, &data_ov003_0223c9bc, &data_ov003_0223c9d0, &data_ov003_0223c9d4,
-                       &data_ov003_0223c9cc, &data_ov003_0223c9c8);
+    ov003_init_colors(&data_ov003_0223c9c0, &data_ov003_0223c9bc, &data_ov003_0223c9d0, &data_ov003_0223c9d4,
+                      &data_ov003_0223c9cc, &data_ov003_0223c9c8);
 }
-CLEAN_AS(__sinit_ov003_022373a0, Ov003Init_Colours0223c9bc)
+CLEAN_AS(__sinit_ov003_022373a0, Ov003Init_Colors0223c9bc)
 
-extern Ov003InitColour data_ov003_0223caa0, data_ov003_0223cab4, data_ov003_0223cab0, data_ov003_0223caac, data_ov003_0223caa8,
+extern Ov003InitColor data_ov003_0223caa0, data_ov003_0223cab4, data_ov003_0223cab0, data_ov003_0223caac, data_ov003_0223caa8,
     data_ov003_0223caa4;
 
-/* __sinit_ov003_022373fc: the six colours of its source file. */
-void Ov003Init_Colours0223caa0(void)
+/* __sinit_ov003_022373fc: the six colors of its source file. */
+void Ov003Init_Colors0223caa0(void)
 {
-    ov003_init_colours(&data_ov003_0223caa0, &data_ov003_0223cab4, &data_ov003_0223cab0, &data_ov003_0223caac,
-                       &data_ov003_0223caa8, &data_ov003_0223caa4);
+    ov003_init_colors(&data_ov003_0223caa0, &data_ov003_0223cab4, &data_ov003_0223cab0, &data_ov003_0223caac,
+                      &data_ov003_0223caa8, &data_ov003_0223caa4);
 }
-CLEAN_AS(__sinit_ov003_022373fc, Ov003Init_Colours0223caa0)
+CLEAN_AS(__sinit_ov003_022373fc, Ov003Init_Colors0223caa0)
 
-extern Ov003InitColour data_ov003_0223cab8, data_ov003_0223cabc, data_ov003_0223cac8, data_ov003_0223cac4, data_ov003_0223cac0,
+extern Ov003InitColor data_ov003_0223cab8, data_ov003_0223cabc, data_ov003_0223cac8, data_ov003_0223cac4, data_ov003_0223cac0,
     data_ov003_0223cacc;
 
-/* __sinit_ov003_02237458: the six colours of its source file. */
-void Ov003Init_Colours0223cab8(void)
+/* __sinit_ov003_02237458: the six colors of its source file. */
+void Ov003Init_Colors0223cab8(void)
 {
-    ov003_init_colours(&data_ov003_0223cab8, &data_ov003_0223cabc, &data_ov003_0223cac8, &data_ov003_0223cac4,
-                       &data_ov003_0223cac0, &data_ov003_0223cacc);
+    ov003_init_colors(&data_ov003_0223cab8, &data_ov003_0223cabc, &data_ov003_0223cac8, &data_ov003_0223cac4,
+                      &data_ov003_0223cac0, &data_ov003_0223cacc);
 }
-CLEAN_AS(__sinit_ov003_02237458, Ov003Init_Colours0223cab8)
+CLEAN_AS(__sinit_ov003_02237458, Ov003Init_Colors0223cab8)
 
-extern Ov003InitColour data_ov003_0223cae4, data_ov003_0223cae8, data_ov003_0223cad8, data_ov003_0223cae0, data_ov003_0223cadc,
+extern Ov003InitColor data_ov003_0223cae4, data_ov003_0223cae8, data_ov003_0223cad8, data_ov003_0223cae0, data_ov003_0223cadc,
     data_ov003_0223caec;
 
-/* __sinit_ov003_022374b4: the six colours of its source file. */
-void Ov003Init_Colours0223cad8(void)
+/* __sinit_ov003_022374b4: the six colors of its source file. */
+void Ov003Init_Colors0223cad8(void)
 {
-    ov003_init_colours(&data_ov003_0223cae4, &data_ov003_0223cae8, &data_ov003_0223cad8, &data_ov003_0223cae0,
-                       &data_ov003_0223cadc, &data_ov003_0223caec);
+    ov003_init_colors(&data_ov003_0223cae4, &data_ov003_0223cae8, &data_ov003_0223cad8, &data_ov003_0223cae0,
+                      &data_ov003_0223cadc, &data_ov003_0223caec);
 }
-CLEAN_AS(__sinit_ov003_022374b4, Ov003Init_Colours0223cad8)
+CLEAN_AS(__sinit_ov003_022374b4, Ov003Init_Colors0223cad8)
 
 /* The ways out of the town (21 SceneExits) and the point (16.0, 0.125, 29.0) all but the last
  * put the player at, with their records. */
@@ -265,7 +265,7 @@ CLEAN_AS(__sinit_ov003_02237aa4, Ov003Init_TileEvents)
 #define OV003_INIT_BOTTLE_STATES 3
 #define OV003_INIT_PLAYER_FISH_STATES 5
 #define OV003_INIT_SWIM_PAIRS 4
-#define OV003_INIT_SWIM_BEHAVIOURS 6
+#define OV003_INIT_SWIM_BEHAVIORS 6
 #define OV003_INIT_HOOK_STATES 7
 #define OV003_INIT_SHADOW_STATE_FNS 10
 extern AcreMap *data_021c80bc;
@@ -289,12 +289,12 @@ extern void func_ov003_0222c3d0(void *bottle); /* ThrownBottle_Destruct */
 extern void func_ov003_0222c454(void *object); /* ThrownBottle_DestroyAll */
 
 /* The member functions of the bottles' states (thrown_bottle.c), the players' fish's states
- * (player_fish.c), the swim and hook updates' pairs, the swim behaviours and the hook states
+ * (player_fish.c), the swim and hook updates' pairs, the swim behaviors and the hook states
  * (fish_shadow_swim.c) and the shadows' states' entries and updates (fish_shadow.c). */
 extern MemberPointer data_ov003_0225f100[OV003_INIT_BOTTLE_STATES];
 extern MemberPointer data_ov003_0225f138[OV003_INIT_PLAYER_FISH_STATES];
 extern MemberPointer data_ov003_0225f118[OV003_INIT_SWIM_PAIRS];
-extern MemberPointer data_ov003_0225f160[OV003_INIT_SWIM_BEHAVIOURS];
+extern MemberPointer data_ov003_0225f160[OV003_INIT_SWIM_BEHAVIORS];
 extern MemberPointer data_ov003_0225f190[OV003_INIT_HOOK_STATES];
 extern MemberPointer data_ov003_0225f1d0[OV003_INIT_SHADOW_STATE_FNS];
 extern const MemberPointer data_ov003_0223bee0, data_ov003_0223bea8, data_ov003_0223bee8;
@@ -345,7 +345,7 @@ void Ov003Init_Fish(void)
         &data_ov003_0223be48,
         &data_ov003_0223be40,
     };
-    static const MemberPointer *const swim_fns[OV003_INIT_SWIM_BEHAVIOURS] = {
+    static const MemberPointer *const swim_fns[OV003_INIT_SWIM_BEHAVIORS] = {
         &data_ov003_0223be30, &data_ov003_0223be28, &data_ov003_0223be20,
         &data_ov003_0223bdf8, &data_ov003_0223be08, &data_ov003_0223be10,
     };
@@ -378,7 +378,7 @@ void Ov003Init_Fish(void)
     }
     ov003_init_copy(data_ov003_0225f138, player_fish_fns, OV003_INIT_PLAYER_FISH_STATES);
     ov003_init_copy(data_ov003_0225f118, swim_pairs, OV003_INIT_SWIM_PAIRS);
-    ov003_init_copy(data_ov003_0225f160, swim_fns, OV003_INIT_SWIM_BEHAVIOURS);
+    ov003_init_copy(data_ov003_0225f160, swim_fns, OV003_INIT_SWIM_BEHAVIORS);
     ov003_init_copy(data_ov003_0225f190, hook_fns, OV003_INIT_HOOK_STATES);
     ov003_init_copy(data_ov003_0225f1d0, shadow_fns, OV003_INIT_SHADOW_STATE_FNS);
 }
@@ -432,13 +432,13 @@ void Ov003Init_SessionObjects(void)
 }
 CLEAN_AS(__sinit_ov003_02237ee8, Ov003Init_SessionObjects)
 
-extern Ov003InitColour data_ov003_02262d88, data_ov003_02262d84, data_ov003_02262d80, data_ov003_02262d7c, data_ov003_02262d78,
+extern Ov003InitColor data_ov003_02262d88, data_ov003_02262d84, data_ov003_02262d80, data_ov003_02262d7c, data_ov003_02262d78,
     data_ov003_02262d8c;
 
-/* __sinit_ov003_02237f20: the six colours of its source file. */
-void Ov003Init_Colours02262d78(void)
+/* __sinit_ov003_02237f20: the six colors of its source file. */
+void Ov003Init_Colors02262d78(void)
 {
-    ov003_init_colours(&data_ov003_02262d88, &data_ov003_02262d84, &data_ov003_02262d80, &data_ov003_02262d7c,
-                       &data_ov003_02262d78, &data_ov003_02262d8c);
+    ov003_init_colors(&data_ov003_02262d88, &data_ov003_02262d84, &data_ov003_02262d80, &data_ov003_02262d7c,
+                      &data_ov003_02262d78, &data_ov003_02262d8c);
 }
-CLEAN_AS(__sinit_ov003_02237f20, Ov003Init_Colours02262d78)
+CLEAN_AS(__sinit_ov003_02237f20, Ov003Init_Colors02262d78)

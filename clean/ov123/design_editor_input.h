@@ -9,7 +9,7 @@
 
 void DesignEditor_FollowPen(DesignEditor *self);
 void DesignEditor_BeginPenDraw(DesignEditor *self);
-int DesignEditor_ColourByShoulders(DesignEditor *self);
+int DesignEditor_ColorByShoulders(DesignEditor *self);
 int DesignEditor_MoveCanvasCursor(DesignEditor *self, int keys, int quiet);
 int DesignEditor_MovePlaceCursor(DesignEditor *self, int keys);
 void DesignEditor_GlideToPlace(DesignEditor *self);
@@ -21,7 +21,7 @@ unsigned char DesignEditor_PlaceY(DesignEditor *self);
 unsigned char DesignEditor_PlaceX(DesignEditor *self);
 void DesignEditor_PlaceCursorSprite(DesignEditor *self);
 void DesignEditor_FinishShape(DesignEditor *self);
-void DesignEditor_PickColour(DesignEditor *self);
+void DesignEditor_PickColor(DesignEditor *self);
 void DesignEditor_DrawShape(DesignEditor *self);
 void DesignEditor_PressCanvasByKeys(DesignEditor *self);
 void DesignEditor_PressCanvasByTouch(DesignEditor *self);

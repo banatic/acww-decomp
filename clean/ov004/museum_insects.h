@@ -5,11 +5,11 @@
  *
  * There are 56 kinds (0-55) and a 57th, 56, shown with kind 35 when that one is (its own model
  * and animation, bug62 beside kind 35's bug61). Each shown insect takes one of 32 entries of a
- * static table (data_ov004_02259a34, MuseumInsect), made by the overlay's static initialiser:
+ * static table (data_ov004_02259a34, MuseumInsect), made by the overlay's static initializer:
  * off, loading (InsectRoom_LoadInsect, the next frame: the model "/insect/<tens>1/bug<kind>"
  * from an entry of the room's model pool and its animation, joints or visibility by the table
  * data_ov004_02256308) and shown (InsectRoom_UpdateInsect: its kind's own frame function, then
- * its body on the field, its sound and its matrix). Each kind has an initialiser and a frame
+ * its body on the field, its sound and its matrix). Each kind has an initializer and a frame
  * function in the table data_ov004_022563ec; those of this file are the InsectKind_* ones.
  *
  * Each insect is placed at its kind's spot (InsectRoom_PlaceInsect) and is "awake" or not by

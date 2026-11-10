@@ -33,7 +33,7 @@ static TownGrowthTiles town_growth_map_tiles(const AcreMap *map)
 }
 
 /* func_020486d8: in each inner acre, one chance in five that one of its flower codes, drawn
- * at random, is handed to func_02049944 with its neighbours (func_02049bc4). */
+ * at random, is handed to func_02049944 with its neighbors (func_02049bc4). */
 void TownGrowth_BreedFlowers(TownDay *town, AcreMap *map, int wide, int high)
 {
     (void) town;
@@ -171,7 +171,7 @@ void TownGrowth_Day(TownDay *town, AcreMap *map, int wide, int high)
     TownGrowthTiles copy = size;
     TownLines_CheckGround(town, map, &copy);
     copy = size;
-    TownLines_ThinNeighbours(town, map, &copy);
+    TownLines_ThinNeighbors(town, map, &copy);
     copy = size;
     TownLines_ThinCrowded(town, map, &copy);
     TownGrowth_Thin(town, map, wide, high);

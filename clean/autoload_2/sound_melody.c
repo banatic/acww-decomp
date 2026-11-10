@@ -190,7 +190,7 @@ void MelodySeq_ReadVariables(MelodySeq *seq)
 CLEAN_AS(func_020f6194, MelodySeq_ReadVariables)
 
 /* func_020f61e4: the frame's update, the notes taking the volume and pan of `pos` (NULL: full
- * volume, centre). Until the variables are read, sequence 0 is played and they are read.
+ * volume, center). Until the variables are read, sequence 0 is played and they are read.
  * Then a note's end is looked at once it has lasted its frames, and on each beat the next
  * step plays and the note length is worked out from the beat's.
  * REQUIRES: the current scene's sound object exists and has the beat part (SoundScene10). */

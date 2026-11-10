@@ -106,7 +106,7 @@ void DesignEditor_FollowPen(DesignEditor *self)
             DesignEditor_SetFlags(self, DESIGN_EDITOR_FLAG_PEN_MOVED);
         }
         if (self->pen_px != old_px || self->pen_py != old_py) {
-            if (DesignEditor_Line(self, self->pen_px, self->pen_py, old_px, old_py, self->colour, self->tool) != 0) {
+            if (DesignEditor_Line(self, self->pen_px, self->pen_py, old_px, old_py, self->color, self->tool) != 0) {
                 SoundSys_PlaySe(0x861);
             }
             DesignEditor_SetFlags(self, DESIGN_EDITOR_FLAG_DIRTY);
@@ -154,24 +154,24 @@ void DesignEditor_BeginPenDraw(DesignEditor *self)
 }
 CLEAN_AS(func_ov123_02299878, DesignEditor_BeginPenDraw)
 
-/* func_ov123_022998c0: L pressed takes the colour before (15 after 1), R the next (1 after 15).
+/* func_ov123_022998c0: L pressed takes the color before (15 after 1), R the next (1 after 15).
  * Answers 1 when either was pressed. */
-int DesignEditor_ColourByShoulders(DesignEditor *self)
+int DesignEditor_ColorByShoulders(DesignEditor *self)
 {
     u16 pressed = data_021fbe40.pressed;
     if (pressed & DESIGN_EDITOR_PAD_L) {
-        u8 colour = self->colour;
-        DesignEditor_SetColour(self, colour > 1 ? (u8) (colour - 1) : 15);
+        u8 color = self->color;
+        DesignEditor_SetColor(self, color > 1 ? (u8) (color - 1) : 15);
         return 1;
     }
     if (pressed & DESIGN_EDITOR_PAD_R) {
-        u8 colour = self->colour;
-        DesignEditor_SetColour(self, colour < 15 ? (u8) (colour + 1) : 1);
+        u8 color = self->color;
+        DesignEditor_SetColor(self, color < 15 ? (u8) (color + 1) : 1);
         return 1;
     }
     return 0;
 }
-CLEAN_AS(func_ov123_022998c0, DesignEditor_ColourByShoulders)
+CLEAN_AS(func_ov123_022998c0, DesignEditor_ColorByShoulders)
 
 /* func_ov123_022999b0: the canvas cursor moved by the d-pad held (one pixel, within the
  * design); left before right and up before down win. A move waits for `key_delay`: a press
@@ -238,9 +238,9 @@ int DesignEditor_MoveCanvasCursor(DesignEditor *self, int keys, int quiet)
 CLEAN_AS(func_ov123_022999b0, DesignEditor_MoveCanvasCursor)
 
 /* func_ov123_02299adc: the key cursor moved among the places by the keys that fired: up from
- * the panel's save or quit button goes to tool 5 (from the places) or the colours; else left
+ * the panel's save or quit button goes to tool 5 (from the places) or the colors; else left
  * and right by their tables, then up and down by theirs (when left and right did nothing, or
- * from a tool). A move within the colours' row jumps the cursor sprite (sound 0x869). Answers 1
+ * from a tool). A move within the colors' row jumps the cursor sprite (sound 0x869). Answers 1
  * when it moved. */
 int DesignEditor_MovePlaceCursor(DesignEditor *self, int keys)
 {
@@ -274,8 +274,8 @@ int DesignEditor_MovePlaceCursor(DesignEditor *self, int keys)
     if (from == to) {
         return 0;
     }
-    if (to >= DESIGN_EDITOR_PLACE_COLOUR_1 && to <= DESIGN_EDITOR_PLACE_COLOUR_15 && from >= DESIGN_EDITOR_PLACE_COLOUR_1 &&
-        from <= DESIGN_EDITOR_PLACE_COLOUR_15) {
+    if (to >= DESIGN_EDITOR_PLACE_COLOR_1 && to <= DESIGN_EDITOR_PLACE_COLOR_15 && from >= DESIGN_EDITOR_PLACE_COLOR_1 &&
+        from <= DESIGN_EDITOR_PLACE_COLOR_15) {
         DesignEditor_SetFlags(self, DESIGN_EDITOR_FLAG_PLACE_AT_ONCE);
         SoundSys_PlaySe(0x869);
     }
@@ -380,14 +380,14 @@ void DesignEditor_FinishShape(DesignEditor *self)
 }
 CLEAN_AS(func_ov123_02299ea8, DesignEditor_FinishShape)
 
-/* func_ov123_0229a340: the colour of the pixel under the canvas cursor taken. */
-void DesignEditor_PickColour(DesignEditor *self)
+/* func_ov123_0229a340: the color of the pixel under the canvas cursor taken. */
+void DesignEditor_PickColor(DesignEditor *self)
 {
-    DesignEditor_SetColour(self, DesignEditor_PixelAt(self, self->cursor_px, self->cursor_py));
+    DesignEditor_SetColor(self, DesignEditor_PixelAt(self, self->cursor_px, self->cursor_py));
 }
-CLEAN_AS(func_ov123_0229a340, DesignEditor_PickColour)
+CLEAN_AS(func_ov123_0229a340, DesignEditor_PickColor)
 
-/* func_ov123_0229a364: the dragged shape drawn in the colour, after a snapshot (sound 0x867):
+/* func_ov123_0229a364: the dragged shape drawn in the color, after a snapshot (sound 0x867):
  * a line from its start to the pen (pen 1), or the box between them's rectangle or ellipse;
  * nothing without a shape or with another tool. */
 void DesignEditor_DrawShape(DesignEditor *self)
@@ -423,13 +423,13 @@ void DesignEditor_DrawShape(DesignEditor *self)
     }
     switch (self->tool) {
         case DESIGN_EDITOR_TOOL_LINE:
-            DesignEditor_Line(self, start_px, start_py, pen_px, pen_py, self->colour, DESIGN_EDITOR_TOOL_PEN_1);
+            DesignEditor_Line(self, start_px, start_py, pen_px, pen_py, self->color, DESIGN_EDITOR_TOOL_PEN_1);
             break;
         case DESIGN_EDITOR_TOOL_RECTANGLE:
-            DesignEditor_Rectangle(self, (u8) left, (u8) top, (unsigned int) right, (unsigned int) bottom, self->colour);
+            DesignEditor_Rectangle(self, (u8) left, (u8) top, (unsigned int) right, (unsigned int) bottom, self->color);
             break;
         case DESIGN_EDITOR_TOOL_ELLIPSE:
-            DesignEditor_Ellipse(self, left, top, right, (u8) bottom, self->colour, 0);
+            DesignEditor_Ellipse(self, left, top, right, (u8) bottom, self->color, 0);
             break;
     }
     DesignEditor_SetFlags(self, DESIGN_EDITOR_FLAG_DIRTY);
@@ -483,15 +483,15 @@ void DesignEditor_PressCanvasByTouch(DesignEditor *self)
 }
 CLEAN_AS(func_ov123_0229a4bc, DesignEditor_PressCanvasByTouch)
 
-/* func_ov123_0229a538: the tool used at pixel (px, py) in the colour: a pen's dab, a stamp
+/* func_ov123_0229a538: the tool used at pixel (px, py) in the color: a pen's dab, a stamp
  * (sound 0x867), or the fill, the pattern or the clear (sound 0x867 first). */
 void DesignEditor_UseTool(DesignEditor *self, int px, int py)
 {
     u8 tool = self->tool;
     if (tool <= DESIGN_EDITOR_TOOL_PEN_3) {
-        DesignEditor_PaintBrush(self, (u8) px, (u8) py, self->colour, tool, 1);
+        DesignEditor_PaintBrush(self, (u8) px, (u8) py, self->color, tool, 1);
     } else if (tool >= DESIGN_EDITOR_TOOL_STAMP_0 && tool <= DESIGN_EDITOR_TOOL_STAMP_1) {
-        DesignEditor_Stamp(self, px, py, self->colour, tool - DESIGN_EDITOR_TOOL_STAMP_0);
+        DesignEditor_Stamp(self, px, py, self->color, tool - DESIGN_EDITOR_TOOL_STAMP_0);
         SoundSys_PlaySe(0x867);
     } else {
         if (tool >= DESIGN_EDITOR_TOOL_FILL && tool <= DESIGN_EDITOR_TOOL_CLEAR) {
@@ -499,13 +499,13 @@ void DesignEditor_UseTool(DesignEditor *self, int px, int py)
         }
         switch (self->tool) {
             case DESIGN_EDITOR_TOOL_FILL:
-                DesignEditor_Fill(self, (u8) px, (u8) py, self->colour);
+                DesignEditor_Fill(self, (u8) px, (u8) py, self->color);
                 break;
             case DESIGN_EDITOR_TOOL_CLEAR:
-                DesignEditor_Clear(self, self->colour);
+                DesignEditor_Clear(self, self->color);
                 break;
             case DESIGN_EDITOR_TOOL_PATTERN:
-                DesignEditor_PaintPattern(self, self->colour);
+                DesignEditor_PaintPattern(self, self->color);
                 break;
         }
     }
@@ -578,7 +578,7 @@ static void de_answer_yes(DesignEditor *self)
 }
 
 /* func_ov123_0229ae84: the place in `command` pressed: the panel's save or quit button, a tool
- * chosen, the next palette (lit, sound 0x868), the undo (lit), a colour (sound 0x86a), layer 3
+ * chosen, the next palette (lit, sound 0x868), the undo (lit), a color (sound 0x86a), layer 3
  * shown or hidden, the question's "yes" (de_answer_yes) or "no" (back to editing with the key
  * cursor on the button asked from). */
 void DesignEditor_RunCommand(DesignEditor *self)
@@ -607,8 +607,8 @@ void DesignEditor_RunCommand(DesignEditor *self)
         DesignEditor_Undo(self);
         return;
     }
-    if (command >= DESIGN_EDITOR_PLACE_COLOUR_1 && command <= DESIGN_EDITOR_PLACE_COLOUR_15) {
-        DesignEditor_SetColour(self, (u8) (command - (DESIGN_EDITOR_PLACE_COLOUR_1 - 1)));
+    if (command >= DESIGN_EDITOR_PLACE_COLOR_1 && command <= DESIGN_EDITOR_PLACE_COLOR_15) {
+        DesignEditor_SetColor(self, (u8) (command - (DESIGN_EDITOR_PLACE_COLOR_1 - 1)));
         SoundSys_PlaySe(0x86a);
         return;
     }
@@ -641,7 +641,7 @@ CLEAN_AS(func_ov123_0229afa8, DesignEditor_PlaceUnderPen)
 
 /* func_ov123_0229afc0: the place at screen point (x, y) (DesignEditorPlace): the panel's save
  * and quit buttons, the layer 3 button, the canvas, the two columns of tools (six rows, the
- * second column from tool 6), the palette button, the row of colours (12 pixels each); else
+ * second column from tool 6), the palette button, the row of colors (12 pixels each); else
  * none. */
 int DesignEditor_PlaceAt(DesignEditor *self, int x, int y)
 {
@@ -681,7 +681,7 @@ int DesignEditor_PlaceAt(DesignEditor *self, int x, int y)
         return DESIGN_EDITOR_PLACE_PALETTE;
     }
     if (x >= 8 && x < 0xbc && y >= 0x94 && y <= 0xa4) {
-        return (u8) ((x - 8) / 12 + DESIGN_EDITOR_PLACE_COLOUR_1);
+        return (u8) ((x - 8) / 12 + DESIGN_EDITOR_PLACE_COLOR_1);
     }
     return DESIGN_EDITOR_NO_PLACE;
 }
@@ -881,7 +881,7 @@ void DesignEditor_PanelByKeys(DesignEditor *self)
 }
 CLEAN_AS(func_ov123_0229b7e4, DesignEditor_PanelByKeys)
 
-/* func_ov123_0229b89c (sub state 7): a colour picked under the canvas cursor while B is held;
+/* func_ov123_0229b89c (sub state 7): a color picked under the canvas cursor while B is held;
  * let go, picking ends (sound 0x86d). */
 void DesignEditor_PickByKeys(DesignEditor *self)
 {
@@ -893,7 +893,7 @@ void DesignEditor_PickByKeys(DesignEditor *self)
     }
     int keys = (int) MenuScene_LatchRepeatedKeys(de_scene(self));
     if (DesignEditor_MoveCanvasCursor(self, keys, 0) != 0) {
-        DesignEditor_PickColour(self);
+        DesignEditor_PickColor(self);
     }
 }
 CLEAN_AS(func_ov123_0229b89c, DesignEditor_PickByKeys)
@@ -956,7 +956,7 @@ void DesignEditor_DrawByKeys(DesignEditor *self)
     int keys = (int) MenuScene_LatchRepeatedKeys(de_scene(self));
     int running = 0;
     if (DesignEditor_MoveCanvasCursor(self, keys, 1) != 0) {
-        DesignEditor_PaintBrush(self, self->cursor_px, self->cursor_py, self->colour, self->tool, 1);
+        DesignEditor_PaintBrush(self, self->cursor_px, self->cursor_py, self->color, self->tool, 1);
         DesignEditor_SetFlags(self, DESIGN_EDITOR_FLAG_DIRTY);
         SoundSys_PlaySe(0x861);
         if (self->key_delay == 0) {
@@ -978,8 +978,8 @@ void DesignEditor_DrawByKeys(DesignEditor *self)
 CLEAN_AS(func_ov123_0229b9bc, DesignEditor_DrawByKeys)
 
 /* func_ov123_0229baa4 (sub state 4): the canvas by the keys: a touch turns to touch; the cursor
- * moves; A uses the tool; B picks colours while held (sub state 7); Y leaves the canvas for the
- * place it came from (sound 0x864); L and R change the colour; X shows or hides layer 3; START
+ * moves; A uses the tool; B picks colors while held (sub state 7); Y leaves the canvas for the
+ * place it came from (sound 0x864); L and R change the color; X shows or hides layer 3; START
  * asks to save. */
 void DesignEditor_CanvasByKeys(DesignEditor *self)
 {
@@ -995,7 +995,7 @@ void DesignEditor_CanvasByKeys(DesignEditor *self)
     }
     if (pressed & DESIGN_EDITOR_PAD_B) {
         DesignEditor_SetFlags(self, DESIGN_EDITOR_FLAG_PICKING);
-        DesignEditor_PickColour(self);
+        DesignEditor_PickColor(self);
         MenuScene_SetSubState(de_scene(self), DESIGN_EDITOR_SUB_PICK);
         return;
     }
@@ -1006,7 +1006,7 @@ void DesignEditor_CanvasByKeys(DesignEditor *self)
         DesignEditor_EnterIdle(self);
         return;
     }
-    if (DesignEditor_ColourByShoulders(self) != 0) {
+    if (DesignEditor_ColorByShoulders(self) != 0) {
         return;
     }
     pressed = data_021fbe40.pressed;
@@ -1023,8 +1023,8 @@ CLEAN_AS(func_ov123_0229baa4, DesignEditor_CanvasByKeys)
 
 /* func_ov123_0229bb74 (sub state 3): the places by the keys: a touch turns to touch; the key
  * cursor moves (remembered while on the places); A presses at it; Y goes from the places to the
- * colours (on the colour drawn) and from the colours to the canvas (sound 0x864); L and R change
- * the colour; X shows or hides layer 3; B asks to quit and START to save. */
+ * colors (on the color drawn) and from the colors to the canvas (sound 0x864); L and R change
+ * the color; X shows or hides layer 3; B asks to quit and START to save. */
 void DesignEditor_PlacesByKeys(DesignEditor *self)
 {
     if (MenuScene_TakeTouch(de_scene(self)) != 0) {
@@ -1046,15 +1046,15 @@ void DesignEditor_PlacesByKeys(DesignEditor *self)
     if (pressed & DESIGN_EDITOR_PAD_Y) {
         SoundSys_PlaySe(0x864);
         if (self->key_mode == DESIGN_EDITOR_KEYS_PLACES) {
-            self->key_mode = DESIGN_EDITOR_KEYS_COLOURS;
-            self->key_place = (u8) (self->colour + (DESIGN_EDITOR_PLACE_COLOUR_1 - 1));
+            self->key_mode = DESIGN_EDITOR_KEYS_COLORS;
+            self->key_place = (u8) (self->color + (DESIGN_EDITOR_PLACE_COLOR_1 - 1));
         } else {
             self->key_mode = DESIGN_EDITOR_KEYS_CANVAS;
         }
         DesignEditor_EnterIdle(self);
         return;
     }
-    if (DesignEditor_ColourByShoulders(self) != 0) {
+    if (DesignEditor_ColorByShoulders(self) != 0) {
         return;
     }
     pressed = data_021fbe40.pressed;

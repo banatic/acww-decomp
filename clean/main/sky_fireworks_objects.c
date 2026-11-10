@@ -25,7 +25,7 @@ static_assert(sizeof(SkyFireworksColors) == 4, "a place's colours");
 #define SKY_FIREWORKS_OBJECT_LARGE_SOURCE 1 /* the sound source of a large one; a place's: 2 + place */
 #define SKY_FIREWORKS_OBJECT_LARGE_RADIUS 4
 #define SKY_FIREWORKS_OBJECT_MARK_FRAME 0x1d /* the frame a burst sets data_020d2eec's bit */
-#define SKY_FIREWORKS_OBJECT_FADE_START 0x10 /* a burst's colours fade over frames 16 to 26 */
+#define SKY_FIREWORKS_OBJECT_FADE_START 0x10 /* a burst's colors fade over frames 16 to 26 */
 #define SKY_FIREWORKS_OBJECT_FADE_END 0x1b
 #define SKY_FIREWORKS_OBJECT_FLICKER 0xb        /* and flicker from frame 11 */
 #define SKY_FIREWORKS_OBJECT_FIRST_FRAMES 0x24  /* the last entry of the first table of a burst's sizes */
@@ -70,7 +70,7 @@ static int sky_fireworks_object_place(u32 param)
     return (int) ((param & SKY_FIREWORKS_PARAM_PLACE) >> 8);
 }
 
-/* func_020bfcd8: an object of the show taken down; a burst that sets colours clears them. */
+/* func_020bfcd8: an object of the show taken down; a burst that sets colors clears them. */
 void SkyFireworksObject_TakeDown(SkyObject *object)
 {
     if (!sky_fireworks_object_is_shell(SkyObject_Body(object)->animation) &&
@@ -140,8 +140,8 @@ void SkyFireworksObject_ShellRun(SkyObject *object)
 }
 CLEAN_AS(func_020bfd1c, SkyFireworksObject_ShellRun)
 
-/* func_020bfe6c: a frame of a burst: done once its animation is (clearing the colours it set);
- * until then sized by its frame, placed, and its colours set. At frame 29 it gets bit 29. */
+/* func_020bfe6c: a frame of a burst: done once its animation is (clearing the colors it set);
+ * until then sized by its frame, placed, and its colors set. At frame 29 it gets bit 29. */
 void SkyFireworksObject_BurstRun(SkyObject *object)
 {
     SkyObjectBody *body = SkyObject_Body(object);
@@ -294,7 +294,7 @@ fx32 SkyFireworksObject_RiseDistance(fx32 unused, int frames)
 }
 CLEAN_AS(func_020c00f8, SkyFireworksObject_RiseDistance)
 
-/* func_020c00fc: the two colours a burst sets, cleared. */
+/* func_020c00fc: the two colors a burst sets, cleared. */
 void SkyFireworksObject_ClearColors(SkyObject *object)
 {
     u32 param = sky_fireworks_object_vars(object)->param;
@@ -309,7 +309,7 @@ void SkyFireworksObject_ClearColors(SkyObject *object)
 }
 CLEAN_AS(func_020c00fc, SkyFireworksObject_ClearColors)
 
-/* A 5-bit component of a colour as a fixed-point number. */
+/* A 5-bit component of a color as a fixed-point number. */
 static fx32 sky_fireworks_object_component(u16 color, int shift)
 {
     return (fx32) (((u32) (color >> shift) & 0x1f) << 12);
@@ -322,7 +322,7 @@ static u32 sky_fireworks_object_round(fx32 value)
     return rounded > 0x1f ? 0x1f : rounded;
 }
 
-/* func_020c013c: a burst's two colours set: its place's colour, faded from the first to the
+/* func_020c013c: a burst's two colours set: its place's color, faded from the first to the
  * second over frames 16 to 26 (the second's alone from frame 27); both at full brightness until
  * frame 11, then one at full and the other at half, swapped every two frames; its slot's
  * resource reloaded.
@@ -428,7 +428,7 @@ void SkyFireworksObject_PlaceShifted(Vec3 *position, fx32 x, fx32 y, int large)
 }
 CLEAN_AS(func_020c0324, SkyFireworksObject_PlaceShifted)
 
-/* func_020c03f4: the first of the two overridable colours of a burst: a large one's 0, a
+/* func_020c03f4: the first of the two overridable colors of a burst: a large one's 0, a
  * place's 2, 4, 6 or 8, else none (15). */
 int SkyFireworksObject_ColorIndex(int place, int large)
 {

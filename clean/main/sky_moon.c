@@ -23,7 +23,7 @@ static_assert(sizeof(SkyMoonPalette) == 0x20, "a palette");
 extern Sky data_021f75b0;
 extern SkyPalettes data_021fba00;            /* the objects' palettes (0x2eb8 of the objects) */
 extern const SkyMoonPalette data_021fb8bc[]; /* the moon's palettes, from 19:00 */
-extern u16 data_021f6cfc[SKY_MOON_COLORS];   /* the colours mixed */
+extern u16 data_021f6cfc[SKY_MOON_COLORS];   /* the colors mixed */
 extern int data_021fbdd0;                    /* the frames drawn */
 
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
@@ -49,7 +49,7 @@ static void sky_moon_override_colors(void)
     }
 }
 
-/* func_020c0b1c: the moon taken down: its colours cleared. */
+/* func_020c0b1c: the moon taken down: its colors cleared. */
 void SkyMoon_TakeDown(SkyObject *object)
 {
     SkyMoon_ClearColors();
@@ -58,7 +58,7 @@ void SkyMoon_TakeDown(SkyObject *object)
 CLEAN_AS(func_020c0b1c, SkyMoon_TakeDown)
 
 /* func_020c0b30: a frame of the moon: every 128 frames its place taken again (done once the
- * night is over) and its colours. */
+ * night is over) and its colors. */
 void SkyMoon_Run(SkyObject *object)
 {
     if ((data_021fbdd0 & SKY_MOON_FRAMES_MASK) != 0) {
@@ -71,7 +71,7 @@ void SkyMoon_Run(SkyObject *object)
 }
 CLEAN_AS(func_020c0b30, SkyMoon_Run)
 
-/* func_020c0b60: the moon set up at its place for the time, with its colours; by day it is
+/* func_020c0b60: the moon set up at its place for the time, with its colors; by day it is
  * done at once. */
 void SkyMoon_SetUp(SkyObject *object)
 {
@@ -96,7 +96,7 @@ void SkyMoon_ClearColors(void)
 CLEAN_AS(func_020c0b88, SkyMoon_ClearColors)
 
 /* func_020c0bac: how clear the sky is eased towards the weather it is changing to, and the
- * moon's colours mixed and given to the palettes. */
+ * moon's colors mixed and given to the palettes. */
 void SkyMoon_RefreshColors(SkyObject *object)
 {
     SkyMoon_EaseClear(object);
@@ -105,7 +105,7 @@ void SkyMoon_RefreshColors(SkyObject *object)
 }
 CLEAN_AS(func_020c0bac, SkyMoon_RefreshColors)
 
-/* func_020c0be4: how clear the sky is set from the weather, and the moon's colours mixed and
+/* func_020c0be4: how clear the sky is set from the weather, and the moon's colors mixed and
  * given to the palettes. */
 void SkyMoon_StartColors(SkyObject *object)
 {
@@ -133,7 +133,7 @@ void SkyMoon_SetClear(SkyObject *object)
 }
 CLEAN_AS(func_020c0c58, SkyMoon_SetClear)
 
-/* A component of two colours mixed: `a` by 1 - f and `b` by f. */
+/* A component of two colors mixed: `a` by 1 - f and `b` by f. */
 static fx32 sky_moon_mix(u32 a, u32 b, fx32 f, fx32 rest)
 {
     fx32 first = FX_MulFunc((fx32) (a << 12), rest);
@@ -141,7 +141,7 @@ static fx32 sky_moon_mix(u32 a, u32 b, fx32 f, fx32 rest)
 }
 
 /* func_020c0c78: the moon's five colours: each mixed from this hour's palette and the next's
- * by the minute, for a clear sky (colours 11 to 15) and for rain (3 to 7), and those two by
+ * by the minute, for a clear sky (colors 11 to 15) and for rain (3 to 7), and those two by
  * how clear the sky is.
  * QUIRK: by day (4:00 to 18:59) the palettes read would be past the moon's, as the original
  * reads them; the moon only runs at night. */

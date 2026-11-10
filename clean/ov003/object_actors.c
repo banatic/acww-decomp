@@ -316,19 +316,19 @@ int ObjectActors_RetypeShape(ObjectActors *self, u16 *code, int x, int z)
 }
 CLEAN_AS(func_ov003_0222040c, ObjectActors_RetypeShape)
 
-/* func_ov003_02220460: spawns the town object actor of object `*code` at the centre of tile (x, z):
+/* func_ov003_02220460: spawns the town object actor of object `*code` at the center of tile (x, z):
  * actor profile from the object's record (TownObjects_RecordCode), the code as its parameter.
  * When it spawned and `stamp` is set, the object is also put down on the scene's map at the
  * tile (AcreTile_StampBuildingNoting, not handed back here) and its shape's tiles retyped in
  * the collision map. 1 when the actor spawned, else 0. */
 int ObjectActors_Place(ObjectActors *self, u16 *code, int x, int z, u8 stamp)
 {
-    Vec3 centre = {0, 0, 0};
+    Vec3 center = {0, 0, 0};
     TownObjectActorRecord record;
 
-    AcreTile_TileCentre(&centre, (u32) x, (u32) z);
+    AcreTile_TileCenter(&center, (u32) x, (u32) z);
     TownObjects_CopyRecord(&record, object_actors_record(*code));
-    if (Actor_Spawn(TownObjects_RecordCode(&record), *code, &centre, NULL, NULL) == 0) {
+    if (Actor_Spawn(TownObjects_RecordCode(&record), *code, &center, NULL, NULL) == 0) {
         TownObjects_DestroyRecord(&record);
         return 0;
     }

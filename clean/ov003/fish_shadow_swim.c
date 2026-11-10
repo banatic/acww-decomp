@@ -1,5 +1,5 @@
 /* How the fish shadows swim (fish_shadow.h): free in the water by their swimming state
- * (FishShadow.behaviour), and on a fishing float by their hook state (FishShadow.hook_state),
+ * (FishShadow.behavior), and on a fishing float by their hook state (FishShadow.hook_state),
  * from the tables of member functions data_ov003_0225f160 and data_ov003_0225f190. Which of
  * the two runs is picked by FishShadow.hooked from the pairs in data_ov003_0225f118: the first
  * of a pair while the shadow appears (state 2, FishShadow_StepAppearing), the second once it is
@@ -56,7 +56,7 @@ typedef struct FishSwimStepPair {
 #define FISH_SWIM_SPEED 0x19a         /* its cruising speed, 0.1 a frame */
 #define FISH_SWIM_FROG_KIND 0xb       /* the frog (item 0x12f3), the only kind that hears the player (FishShadowSense) */
 
-/* FishShadow.behaviour: the swimming states. */
+/* FishShadow.behavior: the swimming states. */
 #define FISH_SWIM_START 0
 #define FISH_SWIM_SPEED_UP 1
 #define FISH_SWIM_CRUISE 2 /* FISH_SHADOW_CRUISE */
@@ -677,7 +677,7 @@ void FishShadowSwim_Drift(FishShadow *fish)
     FishShadow_SetAnimSpeed(fish, 10);
     FishShadow_Drift(&fish->position, 0x40);
     if (FishShadow_Random(0, 100) == 1 || fish->unk_13c > 100) {
-        fish->behaviour = FISH_SWIM_START;
+        fish->behavior = FISH_SWIM_START;
     }
 }
 CLEAN_AS(func_ov003_0222b8bc, FishShadowSwim_Drift)
@@ -695,7 +695,7 @@ void FishShadowSwim_SlowDown(FishShadow *fish)
     }
     if (speed <= 0) {
         fish->unk_13c = 0;
-        fish->behaviour = FISH_SWIM_DRIFT;
+        fish->behavior = FISH_SWIM_DRIFT;
     }
 }
 CLEAN_AS(func_ov003_0222b8fc, FishShadowSwim_SlowDown)
@@ -710,7 +710,7 @@ void FishShadowSwim_Cruise(FishShadow *fish)
     fish->unk_140 = (s16) (fish->unk_140 - 1);
     if (fish->unk_140 == 0) {
         fish->unk_13c = 0;
-        fish->behaviour = FISH_SWIM_SLOW_DOWN;
+        fish->behavior = FISH_SWIM_SLOW_DOWN;
     }
 }
 CLEAN_AS(func_ov003_0222b960, FishShadowSwim_Cruise)
@@ -727,7 +727,7 @@ void FishShadowSwim_SpeedUp(FishShadow *fish)
         FishShadow_SetAnimSpeed(fish, 0x10);
     }
     if (speed > FISH_SWIM_SPEED) {
-        fish->behaviour = FISH_SWIM_CRUISE;
+        fish->behavior = FISH_SWIM_CRUISE;
     }
 }
 CLEAN_AS(func_ov003_0222b9b4, FishShadowSwim_SpeedUp)
@@ -742,7 +742,7 @@ void FishShadowSwim_Start(FishShadow *fish)
     fish->unk_140 = (u8) FishShadow_Random(1, 3);
     fish->wobble = (s16) FishShadow_RandomSigned(0xaaa, 0x2000);
     fish->unk_210 = FishShadow_RandomSigned(0, 2) != 0;
-    fish->behaviour = FISH_SWIM_SPEED_UP;
+    fish->behavior = FISH_SWIM_SPEED_UP;
 }
 CLEAN_AS(func_ov003_0222ba8c, FishShadowSwim_Start)
 
@@ -768,8 +768,8 @@ void FishShadowSwim_Update(FishShadow *fish)
     if (fish->kind == FISH_SWIM_FROG_KIND) {
         FishShadowSense_Step(&fish->sense, fish);
     }
-    MemberPointer_CallVoid(fish_swim_member(data_ov003_0225f160, fish->behaviour), fish);
-    int blocked = fish->behaviour == FISH_SWIM_FLEE ? 0 : FishShadow_CheckMove(fish);
+    MemberPointer_CallVoid(fish_swim_member(data_ov003_0225f160, fish->behavior), fish);
+    int blocked = fish->behavior == FISH_SWIM_FLEE ? 0 : FishShadow_CheckMove(fish);
     switch (blocked) {
         case 0:
             fish->unk_201 = 0;
@@ -780,22 +780,22 @@ void FishShadowSwim_Update(FishShadow *fish)
             break;
         case 2:
         case 4:
-            if (fish->behaviour == FISH_SWIM_SPEED_UP) {
+            if (fish->behavior == FISH_SWIM_SPEED_UP) {
                 fish_swim_turn(fish, FISH_SWIM_TURN);
             }
             break;
         case 6:
-            if (fish->behaviour != FISH_SWIM_DRIFT && (fish->yaw < 0x3556 || fish->yaw > 0x4aaa)) {
+            if (fish->behavior != FISH_SWIM_DRIFT && (fish->yaw < 0x3556 || fish->yaw > 0x4aaa)) {
                 fish->yaw = (s16) (fish->yaw - FISH_SWIM_EDGE_TURN);
             }
             break;
         case 7:
-            if (fish->behaviour != FISH_SWIM_DRIFT && (fish->yaw > -0x3556 || fish->yaw < -0x4aaa)) {
+            if (fish->behavior != FISH_SWIM_DRIFT && (fish->yaw > -0x3556 || fish->yaw < -0x4aaa)) {
                 fish->yaw = (s16) (fish->yaw + FISH_SWIM_EDGE_TURN);
             }
             break;
         case 5:
-            if (fish->behaviour == FISH_SWIM_SPEED_UP || fish->behaviour == FISH_SWIM_CRUISE) {
+            if (fish->behavior == FISH_SWIM_SPEED_UP || fish->behavior == FISH_SWIM_CRUISE) {
                 int facing = fish->yaw < 0 ? -fish->yaw : fish->yaw;
                 if (facing < 0x7556) {
                     fish_swim_turn(fish, FISH_SWIM_EDGE_TURN);
@@ -804,7 +804,7 @@ void FishShadowSwim_Update(FishShadow *fish)
             break;
     }
     fish->unk_13c++;
-    if (fish->hook_state != FISH_SHADOW_HOOK_DROPPED && fish->behaviour != FISH_SWIM_FLEE) {
+    if (fish->hook_state != FISH_SHADOW_HOOK_DROPPED && fish->behavior != FISH_SWIM_FLEE) {
         if (FishShadow_TryBite(fish) != 0) {
             fish->unk_13c = 0;
             fish->hook_state = FISH_HOOK_WAIT;
@@ -844,7 +844,7 @@ CLEAN_AS(func_ov003_0222bb0c, FishShadowSwim_Update)
 void FishShadowSwim_StepAppearing(FishShadow *fish)
 {
     fish->position = fish->placed_at;
-    MemberPointer_CallVoid(fish_swim_member(data_ov003_0225f160, fish->behaviour), fish);
+    MemberPointer_CallVoid(fish_swim_member(data_ov003_0225f160, fish->behavior), fish);
     int blocked = FishShadow_CheckMove(fish);
     if (blocked != 0 && blocked != 5) {
         if (fish->group_state == FISH_SHADOW_IN_GROUP0) {

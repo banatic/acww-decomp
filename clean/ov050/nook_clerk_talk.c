@@ -435,7 +435,7 @@ void NookClerkTalk_OnDatedAnswer(NookClerkTalk *talk)
 }
 CLEAN_AS(func_ov050_02260f28, NookClerkTalk_OnDatedAnswer)
 
-/* func_ov050_02261040 (the answer at line 0x46): unless cancelled (answer 4), the paint of row
+/* func_ov050_02261040 (the answer at line 0x46): unless canceled (answer 4), the paint of row
  * 3 picked and line 0x48. */
 void NookClerkTalk_OnAnswerPaintRow3(NookClerkTalk *talk, int answer)
 {
@@ -1631,8 +1631,8 @@ CLEAN_AS(func_ov050_02263084, NookClerkTalk_JobLine0d)
 
 /* func_ov050_0226310c (vtable slot 0x8c, type 0xc): the errand's object and a free pocket slot
  * asked for first (not used); not without the uniform. While the pockets still hold one of the
- * job's items (the item 0x151d, or for one of three colours the items 0x14fe, 0x1504, 0x150a and
- * 0x1510 plus the colour, looked for in that order), line 0xf plus the job talk's step, then
+ * job's items (the item 0x151d, or for one of three colors the items 0x14fe, 0x1504, 0x150a and
+ * 0x1510 plus the color, looked for in that order), line 0xf plus the job talk's step, then
  * step 1. With none left the talk is at step 1; when the player's record has the flag 0xa, every
  * villager remembers the player and a birthday is set, the errand's object goes to step 1 and
  * line 0x1a; else 0x11. */
@@ -1645,9 +1645,9 @@ void NookClerkTalk_JobLine0c(NookClerkTalk *talk, NookClerkLine *out)
     if (NookClerkTalk_JobNotInUniform(talk, out) != 0) {
         return;
     }
-    for (int colour = 0; colour < 3; colour++) {
-        u16 items[5] = {0x151d, (u16) (0x14fe + colour), (u16) (0x1504 + colour), (u16) (0x150a + colour),
-                        (u16) (0x1510 + colour)};
+    for (int color = 0; color < 3; color++) {
+        u16 items[5] = {0x151d, (u16) (0x14fe + color), (u16) (0x1504 + color), (u16) (0x150a + color),
+                        (u16) (0x1510 + color)};
         for (int i = 0; i < 5; i++) {
             if (CurrentPockets_FindItem(&items[i]) >= 0) {
                 out->message = (u8) (talk->owner->job_step + 0xf);
@@ -1746,7 +1746,7 @@ int NookClerkTalk_JobNotInUniform(void *talk, NookClerkLine *out)
 CLEAN_AS(func_ov050_02263394, NookClerkTalk_JobNotInUniform)
 
 /* func_ov050_02263408: the job's items given (state 0): one of the items 0x14fe, 0x1504, 0x150a
- * and 0x1510 each in a colour drawn at random (0 to 2), three of the item 0x151d, and the item
+ * and 0x1510 each in a color drawn at random (0 to 2), three of the item 0x151d, and the item
  * 0x151d shown. */
 void NookClerkTalk_JobGiveItems(NookClerkTalk *talk)
 {

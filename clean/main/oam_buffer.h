@@ -26,7 +26,7 @@
 
 /* An OBJ: of the OAM, or of a cell. */
 typedef struct OamEntry {
-    u16 attr0;  /* y (0-7), affine mode (8-9), OBJ mode (10-11), mosaic (12), 256 colours (13), shape (14-15) */
+    u16 attr0;  /* y (0-7), affine mode (8-9), OBJ mode (10-11), mosaic (12), 256 colors (13), shape (14-15) */
     u16 attr1;  /* x (0-8), affine index (9-13) or flips (12-13), size (14-15) */
     u16 attr2;  /* tile (0-9), priority (10-11), palette (12-15) */
     u16 affine; /* an affine parameter; in a cell, OAM_BUFFER_CELL_LAST on its last OBJ */

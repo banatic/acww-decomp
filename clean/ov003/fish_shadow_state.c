@@ -430,7 +430,7 @@ static int fish_state_unit_fits(unsigned int ground, int x, int z, int first_z)
  * Then a unit of the acre picked at random of those of the ground's kind (units of group 2 for
  * the grounds 0 and 1, the same in the acre's first three rows for 2, type 7 for 3, group 1 or
  * 2 for 4, group 1 for 5 and 6), in `unit_x` and `unit_z`: none when there is none, or when the
- * unit's centre is in view of the camera (both -1, and 0). 0 also while there is no camera.
+ * unit's center is in view of the camera (both -1, and 0). 0 also while there is no camera.
  * QUIRK: the picked acre and unit are read as signed bytes. */
 int FishShadow_FindSpot(FishShadowProcess *self, int *unit_x, int *unit_z, int *acre_x, int *acre_z, unsigned int ground,
                         int group, FishShadow *skip)
@@ -443,7 +443,7 @@ int FishShadow_FindSpot(FishShadowProcess *self, int *unit_x, int *unit_z, int *
     }
     Vec3 camera = data_021c67d0;
     Vec3 camera_tile;
-    AcreTile_SnapToTileCentre(&camera_tile, &camera);
+    AcreTile_SnapToTileCenter(&camera_tile, &camera);
     if (!FishShadow_ListAcres(self, acres, &acre_count, ground)) {
         return 0;
     }
@@ -484,9 +484,9 @@ int FishShadow_FindSpot(FishShadowProcess *self, int *unit_x, int *unit_z, int *
     pick = (s16) FishShadow_Random(0, (u16) count);
     int spot_z = units[pick].z;
     int spot_x = units[pick].x;
-    Vec3 centre;
-    AcreTile_TileCentre(&centre, (u32) spot_x, (u32) spot_z);
-    if (FishShadow_InBox(&centre, &camera_tile, FISH_STATE_VIEW_X, FISH_STATE_VIEW_AHEAD, FISH_STATE_VIEW_BEHIND)) {
+    Vec3 center;
+    AcreTile_TileCenter(&center, (u32) spot_x, (u32) spot_z);
+    if (FishShadow_InBox(&center, &camera_tile, FISH_STATE_VIEW_X, FISH_STATE_VIEW_AHEAD, FISH_STATE_VIEW_BEHIND)) {
         *unit_x = -1;
         *unit_z = -1;
         return 0;
@@ -554,7 +554,7 @@ CLEAN_AS(func_ov003_02227cec, FishShadow_ListAcres)
  * picked for the group's place now (CreatureTable_PickNow; none: the shadow found no place,
  * group state 5 or 6), a place for it (FishShadow_FindSpot; none: it waits again, 3 or 4) and
  * the kind allowed (FishShadow_KindAllowed; else nothing changes). Placed, it is at the unit's
- * centre at the surface, facing -z, of that kind and ground, in the group, in state
+ * center at the surface, facing -z, of that kind and ground, in the group, in state
  * FISH_SHADOW_PLACED, swimming state 0, its acre kept, no timer. Whether it was placed. */
 int FishShadow_Place(FishShadowProcess *self, FishShadow *fish, int group)
 {
@@ -584,7 +584,7 @@ int FishShadow_Place(FishShadowProcess *self, FishShadow *fish, int group)
         return 0;
     }
     Vec3 at;
-    AcreTile_TileCentre(&at, (u32) unit_x, (u32) unit_z);
+    AcreTile_TileCenter(&at, (u32) unit_x, (u32) unit_z);
     at.y = FISH_STATE_SURFACE_Y;
     fish->kind = (s8) kind;
     fish->has_fin = kind >= FISH_STATE_FIN_FIRST && kind <= FISH_STATE_FIN_LAST;
@@ -594,7 +594,7 @@ int FishShadow_Place(FishShadowProcess *self, FishShadow *fish, int group)
     fish->placed_at = at;
     fish->group_state = (u8) group;
     fish->state = FISH_SHADOW_PLACED;
-    fish->behaviour = 0;
+    fish->behavior = 0;
     fish->last_position = at;
     fish->acre_x = acre_x;
     fish->acre_z = acre_z;
@@ -652,7 +652,7 @@ void FishShadow_CheckInView(FishShadowProcess *self, FishShadow *fish, int index
     if (FishShadow_InBox(&fish->position, &camera, FISH_STATE_VIEW_X, FISH_STATE_VIEW_AHEAD, FISH_STATE_VIEW_BEHIND)) {
         return;
     }
-    if (fish->behaviour == FISH_SHADOW_FLEEING || fish->hook_state == FISH_SHADOW_HOOK_FLEEING) {
+    if (fish->behavior == FISH_SHADOW_FLEEING || fish->hook_state == FISH_SHADOW_HOOK_FLEEING) {
         if (fish->has_fin) {
             FishShadow_ReleaseFin(self);
         }
@@ -686,12 +686,12 @@ int FishShadow_Flee(FishShadow *fish, const Vec3 *from)
     if (fish == NULL) {
         return 0;
     }
-    if (fish->behaviour == FISH_SHADOW_FLEEING || fish->hook_state == FISH_SHADOW_HOOK_FLEEING ||
+    if (fish->behavior == FISH_SHADOW_FLEEING || fish->hook_state == FISH_SHADOW_HOOK_FLEEING ||
         fish->state != FISH_SHADOW_SHOWN) {
         return 0;
     }
     if (fish->hooked == 0) {
-        fish->behaviour = FISH_SHADOW_FLEEING;
+        fish->behavior = FISH_SHADOW_FLEEING;
     } else {
         fish->hook_state = FISH_SHADOW_HOOK_FLEEING;
     }
@@ -1073,7 +1073,7 @@ void FishShadow_UpdateAppearing(FishShadowProcess *self, FishShadow *fish)
         return;
     }
     FishShadow_StepAppearing(fish);
-    if (fish->unk_201 > 3 || fish->behaviour == 3) {
+    if (fish->unk_201 > 3 || fish->behavior == 3) {
         fish->state = FISH_SHADOW_SHOWN;
         fish->alpha = FISH_STATE_ALPHA_FULL;
         fish->unk_201 = 0;

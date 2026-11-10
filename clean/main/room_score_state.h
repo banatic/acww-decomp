@@ -1,9 +1,9 @@
-/* What the room score (room_score.h) keeps between its judgements: the date the house's rooms
+/* What the room score (room_score.h) keeps between its judgments: the date the house's rooms
  * were last judged, a Date in the state block (at 0x173c8, data_021f3b70), and the
  * destructors of its tables, which have nothing to do.
  *
  * The game's day starts at 6:00: before that hour the date judged is the day before. The
- * letters about the rooms are sent once a week: when the last judgement was before the Sunday
+ * letters about the rooms are sent once a week: when the last judgment was before the Sunday
  * that starts the clock's week (RoomScoreState_WeekPassed). */
 #ifndef CLEAN_MAIN_ROOM_SCORE_STATE_H
 #define CLEAN_MAIN_ROOM_SCORE_STATE_H

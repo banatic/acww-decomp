@@ -61,7 +61,7 @@ extern void *data_021c67a4;      /* the field camera, or null */
 extern const Vec3 data_021c67d0; /* the point it looks at */
 extern Mtx43 data_021fbe48;      /* the matrix being built */
 
-extern void NNS_G3dMdlSetMdlEmi(u8 *model, int material, unsigned short colour);
+extern void NNS_G3dMdlSetMdlEmi(u8 *model, int material, unsigned short color);
 
 #define ICON_MODELS_TILE 0x2000
 /* The tiles drawn round the focus: 8 each way. */
@@ -115,7 +115,7 @@ int IconModels_Draw(IconModels *self)
 }
 CLEAN_AS(func_ov004_02233c44, IconModels_Draw)
 
-/* An item lying at the tile centre `at` on `layer`, drawn on what stands there when it is of
+/* An item lying at the tile center `at` on `layer`, drawn on what stands there when it is of
  * the kind drawn on the map. */
 static void icon_models_draw_tile_item(IconModels *self, AcreMap *map, const Vec3 *at, int layer)
 {
@@ -141,12 +141,12 @@ void IconModels_DrawMapItems(IconModels *self, AcreMap *map)
         return;
     }
     Vec3 focus = data_021c67d0;
-    Vec3 centre;
-    AcreTile_SnapToTileCentre(&centre, &focus);
-    Vec3 row = {centre.x + ICON_MODELS_REACH * ICON_MODELS_TILE, 0, centre.z + ICON_MODELS_REACH * ICON_MODELS_TILE};
+    Vec3 center;
+    AcreTile_SnapToTileCenter(&center, &focus);
+    Vec3 row = {center.x + ICON_MODELS_REACH * ICON_MODELS_TILE, 0, center.z + ICON_MODELS_REACH * ICON_MODELS_TILE};
     for (int i = ICON_MODELS_REACH; i >= -ICON_MODELS_REACH; i--) {
         Vec3 at;
-        AcreTile_SnapToTileCentre(&at, &row);
+        AcreTile_SnapToTileCenter(&at, &row);
         Vec3 bent;
         int angle = Globe_BendFar(&bent, &at);
         Mtx43_Translation(&data_021fbe48, bent.x, bent.y, bent.z);
@@ -192,7 +192,7 @@ ModelObject *IconModels_DrawLook(IconModels *self, int look, const Vec3 *positio
 CLEAN_AS(func_ov004_02233e18, IconModels_DrawLook)
 
 /* func_ov004_02233eb8: a model drawn with `matrix` as its base matrix, then its first
- * material's emission set to the scene's light colour. */
+ * material's emission set to the scene's light color. */
 void IconModels_DrawModel(IconModels *self, ModelObject *model, Mtx43 matrix)
 {
     (void) self;
@@ -201,8 +201,8 @@ void IconModels_DrawModel(IconModels *self, ModelObject *model, Mtx43 matrix)
     }
     memcpy(model->unk_64, &matrix, sizeof matrix);
     ModelObject_DrawShapes(model, NULL);
-    u16 colour = (u16) SceneLights_EmissionColour();
-    NNS_G3dMdlSetMdlEmi(model->model, 0, colour);
+    u16 color = (u16) SceneLights_EmissionColor();
+    NNS_G3dMdlSetMdlEmi(model->model, 0, color);
 }
 CLEAN_AS(func_ov004_02233eb8, IconModels_DrawModel)
 

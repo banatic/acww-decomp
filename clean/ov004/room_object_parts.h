@@ -5,7 +5,7 @@
  *   touching the object toggles and that is applied when the class is ready; it is kept in the
  *   town's map record for the object's cell;
  * - two nodes of the object's model (0x742), the ones named "kh_j" and "km_j";
- * - a glow (0x748): a material of the model whose emission colour fades towards white, and in
+ * - a glow (0x748): a material of the model whose emission color fades towards white, and in
  *   some derived classes a set of three of them;
  * - a mount (0x17c): the object another object stands on, by its index among the room's
  *   objects, with the position and angle relative to it;
@@ -76,7 +76,7 @@ typedef struct Mount {
  * func_021077e8 reads. The comments say who uses them. */
 typedef struct AnimSet {
     u32 anim_00[2]; /* joints ("bca"); applied to the model at 0x538 (AnimatedModel_Start) */
-    u32 anim_08[2]; /* material colours ("bma"); given to the animation at 0x7c4 */
+    u32 anim_08[2]; /* material colors ("bma"); given to the animation at 0x7c4 */
     u32 anim_10[2]; /* visibility ("bva"); given to the animation at 0x824 */
     u32 anim_18[2]; /* texture coordinates ("bta"); given to the animation at 0x7e4 */
     u32 anim_20[2]; /* texture patterns ("btp"); given to the animation at 0x804 */
@@ -102,7 +102,7 @@ int GlowSet_Switch(GlowSet *set, int on, int fade, int flash);
 int GlowSet_Bind(GlowSet *set, G3dModel *model, int on);
 GlowSet *GlowSet_Destruct(GlowSet *set);
 GlowSet *GlowSet_Construct(GlowSet *set);
-int Glow_BaseColour(void);
+int Glow_BaseColor(void);
 void Glow_Update(Glow *glow);
 int Glow_Switch(Glow *glow, int on, int fade, int flash);
 int Glow_Bind(Glow *glow, G3dModel *model, const char *name, int on);

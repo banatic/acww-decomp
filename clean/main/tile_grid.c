@@ -1,4 +1,4 @@
-/* A bit per tile of an acre. Coordinates are unsigned so that the neighbours of an edge tile
+/* A bit per tile of an acre. Coordinates are unsigned so that the neighbors of an edge tile
  * (x - 1 at x = 0) fall outside the grid and read as unmarked, as the callers rely on. */
 #include "tile_grid.h"
 #include "clean.h"
@@ -61,7 +61,7 @@ extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 
 /* func_02084e90: the grid of the first acre of the scene's map: every tile whose item is
  * ACRE_MAP_ITEM_NONE and whose ground is at height 0 is marked, then each marked tile of the
- * rows 0-13 without a marked neighbour is unmarked. 0, with the grid cleared, when there is no
+ * rows 0-13 without a marked neighbor is unmarked. 0, with the grid cleared, when there is no
  * map or no acre. */
 int TileGrid_Build(TileGrid *grid)
 {
@@ -78,7 +78,7 @@ int TileGrid_Build(TileGrid *grid)
         for (u32 x = 0; x < TILE_GRID_SIZE; x++) {
             Vec3 position;
             CollisionGround ground;
-            AcreTile_TileCentre(&position, x, z);
+            AcreTile_TileCenter(&position, x, z);
             CollisionGround_Init(&ground, &position, 0, 0);
             if (*item == ACRE_MAP_ITEM_NONE && CollisionGround_Height(&ground, 1) == 0) {
                 TileGrid_Mark(grid, x, z);

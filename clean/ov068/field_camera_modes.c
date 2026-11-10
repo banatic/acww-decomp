@@ -278,9 +278,9 @@ void FieldCameraModes_TourFrame(CameraControl *camera)
                 last = range[1];
             } while (AcreTile_FindItemAllFlags(map, &acre_x, &acre_z, &x, &z, &first, &last, data_ov068_022767cc[tour->stop],
                                                0) == 0);
-            Vec3 centre;
-            AcreTile_TileCentreInAcre(&centre, acre_x, acre_z, x, z);
-            tour->base = centre;
+            Vec3 center;
+            AcreTile_TileCenterInAcre(&center, acre_x, acre_z, x, z);
+            tour->base = center;
             tour->offset = data_ov068_022772f0[tour->stop] + round;
             tour->speed = 0;
         }
@@ -291,7 +291,7 @@ CLEAN_AS(func_ov068_0226de04, FieldCameraModes_TourFrame)
 
 /* func_ov068_0226e008: mode 8's start: preset 0 and timing 0, the move taken to its end, the
  * first stop with its wait of 60 frames; with a map where the structure of items 0x5014 to
- * 0x501a is found in an acre of flag 1, the point followed at its tile's centre and the first
+ * 0x501a is found in an acre of flag 1, the point followed at its tile's center and the first
  * stop's offset; then the base is the point followed, the point followed moves on by the
  * offset, and the speed is 0; 1.
  * BUG: without a map or that structure the offset is whatever the camera's mode data held.
@@ -312,10 +312,10 @@ int FieldCameraModes_TourStart(CameraControl *camera)
     if (map != NULL) {
         u16 range[2] = {TOUR_FIRST_STOP_FIRST, TOUR_FIRST_STOP_LAST};
         if (AcreTile_FindItemAllFlags(map, &acre_x, &acre_z, &x, &z, &range[0], &range[1], TOUR_FIRST_STOP_FLAGS, 0) == 1) {
-            Vec3 centre;
-            AcreTile_TileCentreInAcre(&centre, acre_x, acre_z, x, z);
+            Vec3 center;
+            AcreTile_TileCenterInAcre(&center, acre_x, acre_z, x, z);
             tour->offset = data_ov068_022772f0[0];
-            camera->goal.second_offset = centre;
+            camera->goal.second_offset = center;
         }
     }
     tour->base = camera->goal.second_offset;

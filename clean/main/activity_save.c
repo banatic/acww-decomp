@@ -316,16 +316,16 @@ static void end_link(Activity *activity)
  *
  * From `first` (five steps): ACTIVITY_ANSWER_END sent (by the host to `aids`, by a guest to
  * the host) and the library ready to send; the host then waits for every guest's
- * acknowledgement, a guest for the host's answer and its own acknowledgement sent
+ * acknowledgment, a guest for the host's answer and its own acknowledgment sent
  * (SystemPacket_SendActivityPlayerF4); the link ended (a guest once the library can send);
  * with `show_message`, message 10 of "sp_etc_sequence2"; then first + 5, the caller's.
  *
  * From `second` (after the first chain's step of this call): ACTIVITY_ANSWER_END sent by the
- * host, an acknowledgement by a guest; the library ready to send; the host waits for every
- * guest's acknowledgement; the link ended; with `show_message`, message 11; then, once talk 0
+ * host, an acknowledgment by a guest; the library ready to send; the host waits for every
+ * guest's acknowledgment; the link ended; with `show_message`, message 11; then, once talk 0
  * is closed, the library's shutdown routine (func_02116a1c), each call.
  * QUIRK: not every step checks the link against `aids`: the host's waits for the
- * acknowledgements check it only against the guests that have not acknowledged, and the host's
+ * acknowledgments check it only against the guests that have not acknowledged, and the host's
  * fourth step, a guest's third step of the second chain and the message steps not at all. */
 int ActivitySave_EndSteps(Activity *activity, u8 *step, int first, int second, int aids, u8 show_message)
 {

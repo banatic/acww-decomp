@@ -27,8 +27,8 @@
 static_assert(sizeof(SceneBase) == 0x80, "scene base");
 static_assert(offsetof(BarberTalk, topic) == 0xb0 && offsetof(BarberTalk, owner) == 0xb4, "BarberTalk");
 static_assert(offsetof(BarberTalk, other_styles) == 0xb8 && offsetof(BarberTalk, pages) == 0xb9, "BarberTalk");
-static_assert(offsetof(BarberTalk, style) == 0xba && offsetof(BarberTalk, colour) == 0xbb, "BarberTalk");
-static_assert(offsetof(BarberTalk, old_style) == 0xbc && offsetof(BarberTalk, old_colour) == 0xbd, "BarberTalk");
+static_assert(offsetof(BarberTalk, style) == 0xba && offsetof(BarberTalk, color) == 0xbb, "BarberTalk");
+static_assert(offsetof(BarberTalk, old_style) == 0xbc && offsetof(BarberTalk, old_color) == 0xbd, "BarberTalk");
 static_assert(sizeof(BarberTalk) == 0xc0, "BarberTalk");
 static_assert(sizeof(BarberTalkStart) == 8, "a topic's line");
 
@@ -40,7 +40,7 @@ extern const char *const data_ov053_02261980;
  * of the guard says it was). */
 extern BarberTalkStart data_ov053_02261a90[BARBER_TOPICS];
 extern u32 data_ov053_02261c60;
-/* The colours of the two menus of colours, by answer: {0, 3, 5, 7} and {1, 4, 2, 6}. */
+/* The colors of the two menus of colors, by answer: {0, 3, 5, 7} and {1, 4, 2, 6}. */
 extern const u8 data_ov053_022617c0[];
 extern const u8 data_ov053_022617c4[];
 /* The style of each line 0x2f to 0x36, two a line: by the player's byte 0x1c. */
@@ -78,7 +78,7 @@ extern u8 data_021f43e8;
 #define BARBER_LINE_PRICE 8
 #define BARBER_LINE_PAID 0x3c
 #define BARBER_LINE_NO_MONEY 0x3f
-#define BARBER_LINE_COLOUR_PICKED 0xc
+#define BARBER_LINE_COLOR_PICKED 0xc
 #define BARBER_LINE_CUT_DONE 0xd
 #define BARBER_LINE_NEW_HAIR 0xe
 #define BARBER_LINE_SAME_HAIR 0x37
@@ -173,12 +173,12 @@ void BarberTalk_SetTopic(BarberTalk *talk, u32 topic)
 }
 CLEAN_AS(func_ov053_02260bb0, BarberTalk_SetTopic)
 
-/* func_ov053_02261514: the hair colour picked. */
-u8 BarberTalk_Colour(BarberTalk *talk)
+/* func_ov053_02261514: the hair color picked. */
+u8 BarberTalk_Color(BarberTalk *talk)
 {
-    return talk->colour;
+    return talk->color;
 }
-CLEAN_AS(func_ov053_02261514, BarberTalk_Colour)
+CLEAN_AS(func_ov053_02261514, BarberTalk_Color)
 
 /* func_ov053_0226151c: the hair style picked. */
 u8 BarberTalk_Style(BarberTalk *talk)
@@ -211,10 +211,10 @@ CLEAN_AS(func_ov053_0226075c, BarberTalk_ChairLine)
  * - 1, 2 and 4: the first answer shows the screen's panels (ScreenPanels_Request) and the price
  *   (line 8);
  * - 8, the price: the first answer, when the owner can pay 3,000 bells, takes them, notes the
- *   cut as paid (the flag 7 of the block 0x021d27ac), clears the style and colour picked and
- *   keeps the player's hair style and colour: line 0x3c; when it cannot, line 0x3f;
- * - 9 and 10, and 11 and 0x38: an answer but the fifth picks the colour of the first or the
- *   second menu of colours: line 0xc.
+ *   cut as paid (the flag 7 of the block 0x021d27ac), clears the style and color picked and
+ *   keeps the player's hair style and color: line 0x3c; when it cannot, line 0x3f;
+ * - 9 and 10, and 11 and 0x38: an answer but the fifth picks the color of the first or the
+ *   second menu of colors: line 0xc.
  * QUIRK: the current player's record is fetched first even when not used. */
 void BarberTalk_OnAnswer(BarberTalk *talk)
 {
@@ -240,9 +240,9 @@ void BarberTalk_OnAnswer(BarberTalk *talk)
                     line = BARBER_LINE_PAID;
                     Block021d27ac_SetFlag(barber_talk_flags(), BARBER_TALK_FLAG_PAID);
                     talk->style = 0;
-                    talk->colour = 0;
+                    talk->color = 0;
                     talk->old_style = (u8) PlayerRecord_HeadKind(record);
-                    talk->old_colour = (u8) PlayerRecord_HairColor(record);
+                    talk->old_color = (u8) PlayerRecord_HairColor(record);
                 } else {
                     line = BARBER_LINE_NO_MONEY;
                 }
@@ -251,15 +251,15 @@ void BarberTalk_OnAnswer(BarberTalk *talk)
         case 9:
         case 10:
             if (answer != BARBER_TALK_NO_ANSWER) {
-                talk->colour = data_ov053_022617c4[answer];
-                line = BARBER_LINE_COLOUR_PICKED;
+                talk->color = data_ov053_022617c4[answer];
+                line = BARBER_LINE_COLOR_PICKED;
             }
             break;
         case 11:
         case 0x38:
             if (answer != BARBER_TALK_NO_ANSWER) {
-                talk->colour = data_ov053_022617c0[answer];
-                line = BARBER_LINE_COLOUR_PICKED;
+                talk->color = data_ov053_022617c0[answer];
+                line = BARBER_LINE_COLOR_PICKED;
             }
             break;
         default:
@@ -272,7 +272,7 @@ void BarberTalk_OnAnswer(BarberTalk *talk)
 CLEAN_AS(func_ov053_02260790, BarberTalk_OnAnswer)
 
 /* func_ov053_02260894 (vtable slot 0x14, a line ended), by the line shown:
- * - 0xd, the cut done: line 0x37 when the style and colour picked are the player's old ones,
+ * - 0xd, the cut done: line 0x37 when the style and color picked are the player's old ones,
  *   else 0xe; no page of it gone on yet;
  * - 0x17 and 0x18: the styles offered become the other set's, or the player's own;
  * - 0x2f to 0x36: the line's style picked, of the set by the player's byte 0x1c (the other set
@@ -294,7 +294,7 @@ void BarberTalk_OnLineEnded(BarberTalk *talk)
 
     switch (shown) {
         case BARBER_LINE_CUT_DONE:
-            if (talk->style == talk->old_style && talk->colour == talk->old_colour) {
+            if (talk->style == talk->old_style && talk->color == talk->old_color) {
                 line = BARBER_LINE_SAME_HAIR;
             } else {
                 line = BARBER_LINE_NEW_HAIR;
@@ -349,11 +349,11 @@ void BarberTalk_OnLineEnded(BarberTalk *talk)
 }
 CLEAN_AS(func_ov053_02260894, BarberTalk_OnLineEnded)
 
-/* func_ov053_022609fc (vtable slot 0x70, the talk closes): after line 0xc (a colour picked) the
+/* func_ov053_022609fc (vtable slot 0x70, the talk closes): after line 0xc (a color picked) the
  * music's priority 0xe gets the value 0x46 at once. */
 void BarberTalk_OnClose(BarberTalk *talk)
 {
-    if (barber_talk_shown(talk) == BARBER_LINE_COLOUR_PICKED) {
+    if (barber_talk_shown(talk) == BARBER_LINE_COLOR_PICKED) {
         Music_AddValue(BARBER_TALK_MUSIC_PRIORITY, BARBER_TALK_MUSIC_VALUE, 0);
     }
 }

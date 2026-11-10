@@ -27,7 +27,7 @@ extern u8 data_021f6c54; /* and its y */
 #define KEYBOARD_ENTRY_SE_MOVE 0x0b   /* the text cursor moved by the d-pad */
 #define KEYBOARD_ENTRY_SE_MARK 0x15   /* the marked range changed */
 #define KEYBOARD_ENTRY_SE_OK 0x27     /* the panel's buttons, by KEYBOARD_ENTRY_FLAG_NEW_FRIEND and */
-#define KEYBOARD_ENTRY_SE_CANCEL 0x28 /* KEYBOARD_ENTRY_FLAG_CANCELLED */
+#define KEYBOARD_ENTRY_SE_CANCEL 0x28 /* KEYBOARD_ENTRY_FLAG_CANCELED */
 #define KEYBOARD_ENTRY_SE_OK_FRIEND 0x29
 #define KEYBOARD_ENTRY_SE_CANCEL_FRIEND 0x2a
 #define KEYBOARD_ENTRY_SE_BUZZ 0x34   /* nothing could be done */

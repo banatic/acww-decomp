@@ -1,6 +1,6 @@
 /* Overlay 71's static initialiser, run when the overlay is loaded: the insurance seller's
  * half-angle of "ahead", copied from main's; his table of states (insurer.h), copied from the
- * overlay's constants (the compiler cannot place member pointers in initialised data); and the
+ * overlay's constants (the compiler cannot place member pointers in initialized data); and the
  * two offsets his probe tries (Vec3 objects), each registered for destruction. */
 #include "autoload_2/vector.h"
 #include "clean.h"

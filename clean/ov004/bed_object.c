@@ -518,14 +518,14 @@ CLEAN_AS(func_ov004_02217d98, BedObject_EnterWait)
 
 /* func_ov004_02217da8 (update of MOVE_PLAYER): sends the player to the entry's point with the
  * entry's angle, facing the object; waits once the player goes.
- * BUG: without an entry for the object, RoomPushes_Facing and RoomPushes_Centre are handed
+ * BUG: without an entry for the object, RoomPushes_Facing and RoomPushes_Center are handed
  * NULL and the point is read from near address 0; kept. */
 void BedObject_UpdateMovePlayer(BedObject *object)
 {
     void *entry = entry_of(object);
     s16 angle = (s16) RoomPushes_Facing(entry);
-    Vec3 *point = RoomPushes_Centre(entry);
-    if (RoomPlayerActor_RequestPlaceApproach(&point->x, &RoomPushes_Centre(entry)->z, &angle, facing(object), 1) != 0) {
+    Vec3 *point = RoomPushes_Center(entry);
+    if (RoomPlayerActor_RequestPlaceApproach(&point->x, &RoomPushes_Center(entry)->z, &angle, facing(object), 1) != 0) {
         switch_to(object, BED_OBJECT_WAIT);
     }
 }
@@ -603,9 +603,9 @@ void BedObject_UpdatePushed(BedObject *object)
         Vec3 first;
         Vec3 second;
         Cell *cell = BedObject_CellAt(cells, 0);
-        AcreTile_TileCentre(&first, cell->x, cell->y);
+        AcreTile_TileCenter(&first, cell->x, cell->y);
         cell = BedObject_CellAt(cells, 1);
-        AcreTile_TileCentre(&second, cell->x, cell->y);
+        AcreTile_TileCenter(&second, cell->x, cell->y);
         Vec3 at = player->position;
         fx32 to_first = Vec_DistanceXZ(&at, &first);
         fx32 to_second = Vec_DistanceXZ(&at, &second);
@@ -613,8 +613,8 @@ void BedObject_UpdatePushed(BedObject *object)
         if (BedObject_CellIsFree(&chosen)) {
             Vec3 ahead = {0, 0, STEP};
             Vec_RotateY(&ahead, RoomPushes_Facing(entry));
-            fx32 z = ahead.z + RoomPushes_Centre(entry)->z;
-            Vec3 probe = {ahead.x + RoomPushes_Centre(entry)->x, 0, z};
+            fx32 z = ahead.z + RoomPushes_Center(entry)->z;
+            Vec3 probe = {ahead.x + RoomPushes_Center(entry)->x, 0, z};
             if (Actors_NoneNear(&probe, PLAYER_REACH, NPC_REACH, PLAYER_RADIUS, 0)) {
                 if (object->push_frames < PUSH_FRAMES) {
                     counted = 1;
@@ -622,8 +622,8 @@ void BedObject_UpdatePushed(BedObject *object)
                 }
                 if (RoomPushes_Moved(entry) > MOVED_ENOUGH && object->push_frames >= PUSH_FRAMES) {
                     s16 angle = (s16) RoomPushes_Facing(entry);
-                    Vec3 *point = RoomPushes_Centre(entry);
-                    RoomPlayerActor_RequestPlaceApproach(&point->x, &RoomPushes_Centre(entry)->z, &angle, facing(object), 0);
+                    Vec3 *point = RoomPushes_Center(entry);
+                    RoomPlayerActor_RequestPlaceApproach(&point->x, &RoomPushes_Center(entry)->z, &angle, facing(object), 0);
                     object->push_frames = 0;
                 }
             }

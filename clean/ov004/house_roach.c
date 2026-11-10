@@ -566,18 +566,18 @@ void HouseRoach_StepAppearing(HouseRoach *roach)
 CLEAN_AS(func_ov004_0223df48, HouseRoach_StepAppearing)
 
 /* func_ov004_0223df88: its move: the room's keep-out boxes are put in the collision for the
- * frame (four in room 0 of the house, one in each of rooms 1 to 4: centred at points scaled by
+ * frame (four in room 0 of the house, one in each of rooms 1 to 4: centered at points scaled by
  * one half, 1.0 high, four wide along X or along Z), it runs unless standing
  * (HouseRoach_Run), moves (Actor_Move, by its body's push) and is held by the room's
  * collision; then the boxes are taken out.
  * QUIRK: the collision is given its heading from before HouseRoach_Run turned it.
- * BUG: the boxes' centres have no height in the ROM (whatever the stack held); 0 here.
+ * BUG: the boxes' centers have no height in the ROM (whatever the stack held); 0 here.
  * REQUIRES: the scene is a room of the house (else the ROM's code reads one box it never
  * set). */
 void HouseRoach_Move(HouseRoach *roach)
 {
     CollisionBox boxes[HOUSE_ROACH_KEEP_OUT_BOXES];
-    Vec3 centres[HOUSE_ROACH_KEEP_OUT_BOXES] = {{0, 0, 0}};
+    Vec3 centers[HOUSE_ROACH_KEEP_OUT_BOXES] = {{0, 0, 0}};
     u8 along_x[HOUSE_ROACH_KEEP_OUT_BOXES] = {0};
     u8 added[HOUSE_ROACH_KEEP_OUT_BOXES];
     for (int i = 0; i < HOUSE_ROACH_KEEP_OUT_BOXES; i++) {
@@ -590,33 +590,33 @@ void HouseRoach_Move(HouseRoach *roach)
     switch (SceneKinds_CurrentHouseRoomIndex()) {
         case 1:
         case 4:
-            centres[0].x = FX_MulFunc(0x20000, scale);
-            centres[0].z = FX_MulFunc(0x39000, scale);
+            centers[0].x = FX_MulFunc(0x20000, scale);
+            centers[0].z = FX_MulFunc(0x39000, scale);
             along_x[0] = 1;
             break;
         case 2:
-            centres[0].x = FX_MulFunc(0x13000, scale);
-            centres[0].z = FX_MulFunc(0x35000, scale);
+            centers[0].x = FX_MulFunc(0x13000, scale);
+            centers[0].z = FX_MulFunc(0x35000, scale);
             along_x[0] = 0;
             break;
         case 3:
-            centres[0].x = FX_MulFunc(0x2c000, scale);
-            centres[0].z = FX_MulFunc(0x37000, scale);
+            centers[0].x = FX_MulFunc(0x2c000, scale);
+            centers[0].z = FX_MulFunc(0x37000, scale);
             along_x[0] = 0;
             break;
         case 0:
             count = 4;
-            centres[0].x = FX_MulFunc(0xf000, scale);
-            centres[0].z = FX_MulFunc(0x34000, scale);
+            centers[0].x = FX_MulFunc(0xf000, scale);
+            centers[0].z = FX_MulFunc(0x34000, scale);
             along_x[0] = 0;
-            centres[1].x = FX_MulFunc(0x31000, scale);
-            centres[1].z = FX_MulFunc(0x34000, scale);
+            centers[1].x = FX_MulFunc(0x31000, scale);
+            centers[1].z = FX_MulFunc(0x34000, scale);
             along_x[1] = 0;
-            centres[2].x = FX_MulFunc(0x20000, scale);
-            centres[2].z = FX_MulFunc(0x39000, scale);
+            centers[2].x = FX_MulFunc(0x20000, scale);
+            centers[2].z = FX_MulFunc(0x39000, scale);
             along_x[2] = 1;
-            centres[3].x = FX_MulFunc(0x20000, scale);
-            centres[3].z = FX_MulFunc(0x17000, scale);
+            centers[3].x = FX_MulFunc(0x20000, scale);
+            centers[3].z = FX_MulFunc(0x17000, scale);
             along_x[3] = 1;
             break;
     }
@@ -624,11 +624,11 @@ void HouseRoach_Move(HouseRoach *roach)
         if (along_x[i]) {
             fx32 width = FX_MulFunc(0x4000, HOUSE_ROACH_ONE);
             added[i] = (u8) CollisionBox_Add(&boxes[i], width, HOUSE_ROACH_ONE, FX_MulFunc(0xa000, HOUSE_ROACH_ONE),
-                                             &centres[i], 0, NULL);
+                                             &centers[i], 0, NULL);
         } else {
             fx32 depth = FX_MulFunc(0x4000, HOUSE_ROACH_ONE);
             added[i] = (u8) CollisionBox_Add(&boxes[i], HOUSE_ROACH_ONE, depth, FX_MulFunc(0xa000, HOUSE_ROACH_ONE),
-                                             &centres[i], 0, NULL);
+                                             &centers[i], 0, NULL);
         }
     }
     if (roach->state != HOUSE_ROACH_STAND) {

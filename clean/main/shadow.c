@@ -257,12 +257,12 @@ void CharaShadow_Unload(void)
 CLEAN_AS(func_020ace0c, CharaShadow_Unload)
 
 /* func_020ace24: before the frame's shadows: the polygon IDs start again at 1, and the model's
- * material takes the light's colour as its diffuse colour. */
+ * material takes the light's color as its diffuse color. */
 void CharaShadow_BeginFrame(void)
 {
     data_020e40e0 = CHARA_SHADOW_ID_FIRST;
-    u16 colour = (u16) SceneLights_EmissionColour();
-    NNS_G3dMdlSetMdlDiff(data_021f472c.model, 0, colour);
+    u16 color = (u16) SceneLights_EmissionColor();
+    NNS_G3dMdlSetMdlDiff(data_021f472c.model, 0, color);
 }
 CLEAN_AS(func_020ace24, CharaShadow_BeginFrame)
 
@@ -383,7 +383,7 @@ void ObjShadow_Draw(ObjShadow *shadow, const Vec3 *pos)
             point->y = arm_asr(point->y, (u32) shift);
             point->z = arm_asr(point->z, (u32) shift);
         }
-        reg_write(REG_COLOR, (u16) SceneLights_EmissionColour());
+        reg_write(REG_COLOR, (u16) SceneLights_EmissionColor());
 
         u32 t = texcoord(shadow->row_t[i]);
         reg_write(REG_TEXCOORD, texcoord(shadow->s_left) | (t << 16));
@@ -589,7 +589,7 @@ CLEAN_AS(func_020ad3a0, ObjShadow_FreeAll)
 /* func_020ad408: once a frame: the lean of the object shadows by the time of day (the minutes
  * since the last 6 o'clock, over 12 hours, from -1 to 1), the object shadows' matrix (the view's
  * scaled by 32) and its normalized rows, and the alpha of both kinds of shadow: the scene's
- * base (func_020655c4) plus up to 16 for a brighter colour from func_0206586c (the sum of its
+ * base (func_020655c4) plus up to 16 for a brighter color from func_0206586c (the sum of its
  * channels over 93), at most 31.
  * QUIRK: the lean is multiplied by 1 (FX_MulFunc), and the alpha's sum cut to 8 bits before
  * the cap. */
@@ -605,8 +605,8 @@ void ShadowLight_Update(void)
     MTX_Concat43(&data_021fbe48, &data_0213fee4, &data_021f486c);
     ShadowLight_NormalizeRows((const Vec3 *) &data_021f486c, data_021f4848);
 
-    u16 colour = (u16) SceneLights_FlashColour();
-    u8 channels = (u8) ((colour & 0x1f) + ((colour >> 5) & 0x1f) + ((colour >> 10) & 0x1f));
+    u16 color = (u16) SceneLights_FlashColor();
+    u8 channels = (u8) ((color & 0x1f) + ((color >> 5) & 0x1f) + ((color >> 10) & 0x1f));
     u8 extra = (u8) (FX_MulFunc(16 << 12, FX_Div(channels << 12, 93 << 12)) >> 12);
     u8 alpha = (u8) (SceneLights_LightLevel(0) + extra);
     if (alpha > SHADOW_ALPHA_MAX) {
@@ -666,7 +666,7 @@ void ObjShadow_LoadAll(int load)
         texture->image_param |= (u32) entry->flip << 18;
         texture->image_param |= (u32) entry->repeat << 16;
         texture->format = (*image >> 26) & 7;
-        if (texture->format != 2) { /* palettes of 4 colours count in 8 bytes, others 16 */
+        if (texture->format != 2) { /* palettes of 4 colors count in 8 bytes, others 16 */
             texture->palette_base >>= 1;
         }
         texture->width = (u16) (1 << (((*image >> 20) & 7) + 3));

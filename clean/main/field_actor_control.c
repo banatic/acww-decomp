@@ -269,7 +269,7 @@ void FieldActor_ReadControl(FieldActor *actor)
                 case 0xa:
                     if (pen_came_down()) {
                         aimed = 1;
-                        AcreTile_SnapToTileCentre(&pick, &pick);
+                        AcreTile_SnapToTileCenter(&pick, &pick);
                         aim = pick;
                     }
                     FIELD_ACTOR_PICK_EXTRA(actor) = pick_extra;
@@ -406,7 +406,7 @@ s16 FieldActor_PushYaw(FieldActor *actor)
 CLEAN_AS(func_0200dc48, FieldActor_PushYaw)
 
 /* func_0200dc10: where the push points from the body's yaw, by func_02064558: 0 ahead, 1 to
- * the positive side, 2 behind, 3 to the negative side (quarter turns centred on each). */
+ * the positive side, 2 behind, 3 to the negative side (quarter turns centered on each). */
 int FieldActor_PushQuadrant(FieldActor *actor)
 {
     s16 relative = (s16) (FieldActor_PushYaw(actor) - actor->yaw);

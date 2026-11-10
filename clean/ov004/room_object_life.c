@@ -71,7 +71,7 @@ extern void func_ov004_0220e4d4(void *anim);
  * carries. A preview (RoomObject_IsUnplaced) is drawn with every light white and carries
  * nothing. Whether it was drawn.
  * REQUIRES: whether it is a preview does not change while its model is drawn (the ROM would
- * then put back light colours it never saved). */
+ * then put back light colors it never saved). */
 int RoomObject_Draw(RoomObject *object)
 {
     if (!Actor_CanDraw((Actor *) object)) {
@@ -117,7 +117,7 @@ int RoomObject_Vfunc80(void)
 CLEAN_AS(func_ov004_02210ab8, RoomObject_Vfunc80)
 
 /* _ZN10RoomObject19func_ov004_02210abcEv (vtable slot 0x18, each frame): its sound follows its
- * centre, then the state's update, the box, touch pick and matrices. While neither appearing nor
+ * center, then the state's update, the box, touch pick and matrices. While neither appearing nor
  * vanishing the class's slot 0x80 runs (after RoomObject_Lookup020537a8's lookup when unk_780 is 0);
  * otherwise slot 0x84 runs and a switch that was asked to change is put back (Switch_Toggle
  * with the change shown). Then, except for a preview, the light, the switch and the touch picks of
@@ -125,10 +125,10 @@ CLEAN_AS(func_ov004_02210ab8, RoomObject_Vfunc80)
 int RoomObject_Update(RoomObject *object)
 {
     if (!RoomObject_IsUnplaced(object)) {
-        Vec3 centre;
+        Vec3 center;
         RoomSound_Start(&object->sound);
-        RoomObject_Centre(object, &centre);
-        object->sound.position = centre;
+        RoomObject_Center(object, &center);
+        object->sound.position = center;
     }
     RoomObject_UpdateState(object);
     RoomObject_UpdateBoxAndPick(object);

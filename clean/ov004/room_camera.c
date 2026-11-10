@@ -28,7 +28,7 @@ extern const Vec3 data_ov004_0224de70;
 
 /* The show's views and timings: the view the show sets the camera at, the wide goal it then
  * moves to over 1080 frames (and goes to over 60 when the mode starts), and the close goal it
- * moves to over 2000 (the offsets are set by the overlay's static initialiser). */
+ * moves to over 2000 (the offsets are set by the overlay's static initializer). */
 extern CameraView data_ov004_0225698c; /* yaw 0x1b00, pitch 0x1000, distance 9.44 */
 extern CameraView data_ov004_022569ac; /* pitch 0x1100, distance 20.06 */
 extern CameraView data_ov004_022569cc; /* pitch -0x200, distance 6.63 */

@@ -47,7 +47,7 @@ extern Vec3 data_ov004_022593c4;
 /* What each kind is like. */
 extern const AquariumFishInfo data_ov004_02247924[];
 /* The member functions run for the fish's states, filled by the overlay's static
- * initialiser. */
+ * initializer. */
 extern const MemberPointer data_ov004_0225940c[3];
 /* The formats of the fish's file names: the model below kind 10 and from it, the animations
  * likewise. */
@@ -209,9 +209,9 @@ void Aquarium_KeepInTank(MuseumAquarium *self, AquariumFish **slot, int kind)
         before[end][0] = point->x;
         before[end][1] = point->z;
         if (data_ov004_022593a0 == AQUARIUM_RIVER_ROOM) {
-            const Vec3 *centre =
+            const Vec3 *center =
                 kind < FIRST_SECOND_TANK_KIND || kind == KIND_FISH_25 ? &data_ov004_022593dc : &data_ov004_022593c4;
-            CollisionQuery_ClampToRect(point, margin, centre, RIVER_TANK_WIDTH, RIVER_TANK_DEPTH);
+            CollisionQuery_ClampToRect(point, margin, center, RIVER_TANK_WIDTH, RIVER_TANK_DEPTH);
         } else {
             static const fx32 widths[3] = {0x1a000, 0x26000, 0x2a000};
             if (fish->area < 3 &&
@@ -559,7 +559,7 @@ static int aquarium_finish_create(MuseumAquarium *self, int kind)
 }
 
 /* func_ov004_02234c64: the sea room's fish (kinds 35-55) made, each of its class, with their
- * animations, then placed; the tank's centre (17.0, 0, about 19.43). 0 when one fails. */
+ * animations, then placed; the tank's center (17.0, 0, about 19.43). 0 when one fails. */
 int Aquarium_CreateSeaFish(MuseumAquarium *self)
 {
     data_ov004_022593a4 = AQUARIUM_RIVER_FISH;
@@ -635,7 +635,7 @@ int Aquarium_CreateSeaFish(MuseumAquarium *self)
 CLEAN_AS(func_ov004_02234c64, Aquarium_CreateSeaFish)
 
 /* func_ov004_02234eac: the river room's fish (kinds 0-34) made, each of its class, with their
- * animations, then placed; the first tank's centre (17.0, 0, 21.0). 0 when one fails. */
+ * animations, then placed; the first tank's center (17.0, 0, 21.0). 0 when one fails. */
 int Aquarium_CreateRiverFish(MuseumAquarium *self)
 {
     data_ov004_022593a4 = 0;

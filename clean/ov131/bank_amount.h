@@ -9,7 +9,7 @@
  *   are "menu/bank/...";
  * - the pad's keys are touched with the pen, or pointed at with a cursor sprite (a Glider0 at
  *   0x94) moved by the d-pad and pressed with A (B clears, then cancels; START confirms);
- * - the panel (at 0xf8) has the buttons OK (6, greyed while the amount is 0) and cancel (7);
+ * - the panel (at 0xf8) has the buttons OK (6, grayed while the amount is 0) and cancel (7);
  * - on OK main is told so (GroupParams_SetC4C(1)) and given the amount (GroupParams_SetC78) and
  *   the bells are moved (BankAmount_Apply); on cancel it is told 0. Then the scene wipes out and
  *   tells the dispatcher it closes (MENU_DISPATCH_MODE_CLOSE). */

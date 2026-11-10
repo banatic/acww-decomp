@@ -72,12 +72,12 @@ int DroppedItems_DropFrom(int player, int item, const Vec3 *from, const Vec3 *to
 }
 CLEAN_AS(func_ov004_0223356c, DroppedItems_DropFrom)
 
-/* func_ov004_022335b8: an item dropped by `player` from `from` onto the centre of `tile`
+/* func_ov004_022335b8: an item dropped by `player` from `from` onto the center of `tile`
  * (on top of what stands there for a layer other than 0); whether a place was free. */
 int DroppedItems_DropOnTile(int player, int item, const TileChangesTile *tile, const Vec3 *from, u8 layer)
 {
     Vec3 to;
-    AcreTile_TileCentre(&to, (u32) tile->x, (u32) tile->z);
+    AcreTile_TileCenter(&to, (u32) tile->x, (u32) tile->z);
     if (layer != 0) {
         to.y = RoomObjects_HeightAtCell(tile->x, tile->z);
     }
@@ -225,11 +225,11 @@ CLEAN_AS(func_ov004_0223383c, DroppedItem_Fly)
 /* func_ov004_02233918: the flight from `from` to `to` (rising at 1.5 over 12 frames when `to`
  * is above the ground, else at 1.0 over 9), flat to start with; thrown with a sound unless
  * the item is of kind 3 or 4.
- * QUIRK: the centre of `tile` is worked out and not used. */
+ * QUIRK: the center of `tile` is worked out and not used. */
 void DroppedItem_Launch(DroppedItem *drop, const TileChangesTile *tile, const Vec3 *from, const Vec3 *to, u16 item)
 {
-    Vec3 centre;
-    AcreTile_TileCentre(&centre, (u32) tile->x, (u32) tile->z);
+    Vec3 center;
+    AcreTile_TileCenter(&center, (u32) tile->x, (u32) tile->z);
     if (to->y == 0) {
         fx32 z = (to->z - from->z) / FLIGHT_FRAMES;
         drop->velocity.x = (to->x - from->x) / FLIGHT_FRAMES;

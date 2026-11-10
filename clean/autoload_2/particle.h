@@ -1,4 +1,4 @@
-/* The particle system (NitroSystem's SPL library, as its layout and behaviours show): a
+/* The particle system (NitroSystem's SPL library, as its layout and behaviors show): a
  * manager holds emitters, each made from a resource of the particle file, and the emitters give
  * off particles, which a frame's update moves and ages and a frame's draw sends to the 3D engine.
  *
@@ -6,12 +6,12 @@
  *   takes particles from the manager's free list and gives them back when they are older than
  *   their life. Each particle may give off child particles of its own (the resource's child
  *   part), which live in a second list of the emitter.
- * - A resource is a header (ParticleHeader) and the parts its flags announce: scale, colour,
- *   alpha and texture animations, the child part, and up to six behaviours (gravity, random
+ * - A resource is a header (ParticleHeader) and the parts its flags announce: scale, color,
+ *   alpha and texture animations, the child part, and up to six behaviors (gravity, random
  *   push, magnet, spin, collision plane, convergence) run on each particle every update.
  * - Particles are drawn as billboards, as billboards stretched along their velocity, or as
  *   polygons turned by one of the rotation functions of a table; each sets the polygon's
- *   attributes, matrix and colour and draws one textured quad.
+ *   attributes, matrix and color and draws one textured quad.
  *
  * Positions are in 20.12 fixed point; angles are 16-bit fractions of a turn. */
 #ifndef CLEAN_AUTOLOAD_2_PARTICLE_H
@@ -94,7 +94,7 @@ typedef struct ParticleHeader {
     fx32 length;          /* 0x18 */
     ParticleVec16 axis;   /* 0x1c */
     u16 color;            /* 0x22 */
-    fx32 speed;           /* 0x24: the first speed away from the emitter's centre */
+    fx32 speed;           /* 0x24: the first speed away from the emitter's center */
     fx32 axis_speed;      /* 0x28: the first speed along the emitter's axis */
     fx32 base_scale;      /* 0x2c */
     fx16 aspect;          /* 0x30: X's scale over Y's */
@@ -114,7 +114,7 @@ typedef struct ParticleHeader {
     u8 texture;           /* 0x43 */
     u32 misc;             /* 0x44: PARTICLE_*_SHIFT */
     u32 tex_flip;         /* 0x48: bit 0 flips S, bit 1 T */
-    fx16 polygon_x;       /* 0x4c: the polygon's centre */
+    fx16 polygon_x;       /* 0x4c: the polygon's center */
     fx16 polygon_y;       /* 0x4e */
     u8 draw_flags;        /* 0x50 */
     u8 pad_51[3];         /* 0x51 */
@@ -131,7 +131,7 @@ typedef struct ParticleScaleAnim {
     u16 pad_0a;
 } ParticleScaleAnim;
 
-/* A colour animation: start, the header's colour from `peak`, end from `out`. */
+/* A color animation: start, the header's color from `peak`, end from `out`. */
 typedef struct ParticleColorAnim {
     u16 start; /* 0x00 */
     u16 end;   /* 0x02 */
@@ -139,7 +139,7 @@ typedef struct ParticleColorAnim {
     u8 peak;   /* 0x05 */
     u8 out;    /* 0x06 */
     u8 pad_07;
-    u16 flags; /* 0x08: bit 0 a random one of the three colours instead, bit 1 loop, bit 2 blend */
+    u16 flags; /* 0x08: bit 0 a random one of the three colors instead, bit 1 loop, bit 2 blend */
     u16 pad_0a;
 } ParticleColorAnim;
 
@@ -162,7 +162,7 @@ typedef struct ParticleTexAnim {
 } ParticleTexAnim;
 
 /* ParticleChild.flags */
-#define PARTICLE_CHILD_BEHAVIORS (1u << 0) /* the parent's behaviours run on the children */
+#define PARTICLE_CHILD_BEHAVIORS (1u << 0) /* the parent's behaviors run on the children */
 #define PARTICLE_CHILD_SCALE_ANIM (1u << 1)
 #define PARTICLE_CHILD_ALPHA_ANIM (1u << 2)
 #define PARTICLE_CHILD_ROTATION_SHIFT 3 /* 2 bits: 0 none, 1 the parent's angle, 2 and turning */
@@ -191,7 +191,7 @@ typedef struct ParticleChild {
 struct Particle;
 struct ParticleEmitter;
 
-/* A behaviour, called for each particle with the frame's acceleration to add to. */
+/* A behavior, called for each particle with the frame's acceleration to add to. */
 typedef void (*ParticleBehaviorFn)(const void *data, struct Particle *ptcl, Vec3 *acc, struct ParticleEmitter *emitter);
 typedef struct ParticleBehavior {
     ParticleBehaviorFn fn; /* 0x00: one of the game's six */
@@ -240,12 +240,12 @@ typedef struct ParticleResource {
 } ParticleResource;
 
 /* ParticleTexFile.param and ParticleTexture.param */
-#define PARTICLE_TEX_FORMAT_MASK 0xfu   /* GXTexFmt: 2 four-colour, 5 4x4 compressed */
+#define PARTICLE_TEX_FORMAT_MASK 0xfu   /* GXTexFmt: 2 four-color, 5 4x4 compressed */
 #define PARTICLE_TEX_SIZE_S_SHIFT 4     /* 4 bits: 8 << n texels */
 #define PARTICLE_TEX_SIZE_T_SHIFT 8     /* 4 bits */
 #define PARTICLE_TEX_REPEAT_SHIFT 12    /* 2 bits */
 #define PARTICLE_TEX_FLIP_SHIFT 14      /* 2 bits */
-#define PARTICLE_TEX_COLOR0_SHIFT 16    /* 1 bit: palette colour 0 is transparent */
+#define PARTICLE_TEX_COLOR0_SHIFT 16    /* 1 bit: palette color 0 is transparent */
 #define PARTICLE_TEX_SHARED (1u << 17)  /* the image of another texture of the file */
 #define PARTICLE_TEX_SHARED_ID_SHIFT 18 /* 8 bits: that texture */
 #define PARTICLE_TEX_FORMAT_PLTT4 2

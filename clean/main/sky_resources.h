@@ -12,7 +12,7 @@
  *   0x94); with the sky on the sub screen, to the sub engine's OBJ VRAM too.
  * - The palettes: both palette files are read once (SkyFiles_ReadPalettes). A resource's
  *   palette is loaded (SkyPalettes_Load) unless the OBJ palette already holds it
- *   (SkyPalettes_IsLoaded). Up to 15 colours can be overridden (SkyPalettes_SetOverride); an
+ *   (SkyPalettes_IsLoaded). Up to 15 colors can be overridden (SkyPalettes_SetOverride); an
  *   OBJ palette loaded with an override is not remembered, so it is loaded again each time. */
 #ifndef CLEAN_MAIN_SKY_RESOURCES_H
 #define CLEAN_MAIN_SKY_RESOURCES_H
@@ -22,7 +22,7 @@
 
 #define SKY_RESOURCE_NO_TILE 0xffff   /* SkyResourceFile.top_tile, bottom_tile: no such rows */
 #define SKY_PALETTES_FIRST 12         /* the first OBJ palette the objects use */
-#define SKY_PALETTES_OVERRIDES 15     /* colours that can be overridden */
+#define SKY_PALETTES_OVERRIDES 15     /* colors that can be overridden */
 #define SKY_PALETTES_VARIANTS 5       /* SkyPalettes.variant: 0 to 4 */
 #define SKY_RESOURCE_VARIANT_FIRST 31 /* resources 31 and 32 use the palette plus the variant */
 #define SKY_FILES_ROWS 8              /* rows of a resource's cells: four top, four bottom */
@@ -65,7 +65,7 @@ typedef struct SkyPalettes {
     s32 variant;                           /* 0x00: of resources 31 and 32's palette */
     s8 loaded[4];                          /* 0x04: the palette in OBJ palettes 12 to 15, -1: unknown */
     u16 override_mask;                     /* 0x08: the overrides set */
-    u16 overrides[SKY_PALETTES_OVERRIDES]; /* 0x0a: their colours (data_020d2324 says where) */
+    u16 overrides[SKY_PALETTES_OVERRIDES]; /* 0x0a: their colors (data_020d2324 says where) */
     u16 colors[16];                        /* 0x28: a palette as it is loaded */
 } SkyPalettes;
 

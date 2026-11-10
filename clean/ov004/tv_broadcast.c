@@ -41,7 +41,7 @@ extern const char *const data_ov004_02255fe4[TV_FORECAST_COUNT];
 /* Byte 3 of this state picks the forecast by its low 5 bits (what sets it is not known
  * here). */
 extern const u8 data_021f3b28[];
-/* "/ftr/tv/tv.nsbtx"; the programmes' and forecasts' files ("/ftr/tv/prog/tv_program%d.nsbtx"
+/* "/ftr/tv/tv.nsbtx"; the programs' and forecasts' files ("/ftr/tv/prog/tv_program%d.nsbtx"
  * and ".nsbtp", "/ftr/tv/weather/%s.nsbtx" and ".nsbtp"); the slot's texture and palette,
  * "tv.0" and "tv_pl". */
 extern const char data_ov004_02256060[];
@@ -191,7 +191,7 @@ int TvBroadcast_IsSnowSeason(void)
 }
 CLEAN_AS(func_ov004_0223a8f0, TvBroadcast_IsSnowSeason)
 
-/* func_ov004_0223a968: the channel of today's last programme that has started by now, or
+/* func_ov004_0223a968: the channel of today's last program that has started by now, or
  * TV_CHANNEL_FORECAST when none has. */
 int TvBroadcast_ScheduledChannel(TvBroadcast *tv)
 {
@@ -219,7 +219,7 @@ void TvBroadcast_UpdateScreen(TvBroadcast *tv)
 }
 CLEAN_AS(func_ov004_0223a9b8, TvBroadcast_UpdateScreen)
 
-/* func_ov004_0223a9e0 (each frame): when the schedule's programme, or without one the
+/* func_ov004_0223a9e0 (each frame): when the schedule's program, or without one the
  * forecast, is not the one shown, it is shown and the room told. */
 void TvBroadcast_FollowSchedule(TvBroadcast *tv)
 {
@@ -323,7 +323,7 @@ unsigned short TvScreen_Loops(TvScreen *screen)
 }
 CLEAN_AS(func_ov004_0223abe8, TvScreen_Loops)
 
-/* func_ov004_0223abf0: the forecast shown, or -1 when a programme is. */
+/* func_ov004_0223abf0: the forecast shown, or -1 when a program is. */
 int TvScreen_Forecast(TvScreen *screen)
 {
     if (TvScreen_Channel(screen) == TV_CHANNEL_FORECAST) {
@@ -380,9 +380,9 @@ void TvScreen_Clear(TvScreen *screen)
 }
 CLEAN_AS(func_ov004_0223ac7c, TvScreen_Clear)
 
-/* func_ov004_0223ac98: the programme `channel`, or for TV_CHANNEL_FORECAST the picture of
+/* func_ov004_0223ac98: the program `channel`, or for TV_CHANNEL_FORECAST the picture of
  * `forecast`, loaded on the screen's heap and its animation started into the TV's slot. Whether
- * it started; then the screen keeps the channel, the forecast (-1 for a programme) and no
+ * it started; then the screen keeps the channel, the forecast (-1 for a program) and no
  * loops.
  * QUIRK: the files' loads are not checked; what a failed one gives is handed on. */
 int TvScreen_Load(TvScreen *screen, int channel, int forecast)

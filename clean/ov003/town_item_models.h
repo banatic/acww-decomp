@@ -7,9 +7,9 @@
  * kinds 1, 3 and 4 by the holder its traits name (ItemTraits_Look, the pointers at 0x50), at
  * most 252 tiles; then the tile events and the growth models. A model is drawn in a matrix
  * built from its tile's centre bent over the globe (Globe_BendFar), with the scene's emission
- * colour.
+ * color.
  *
- * The holders: the flowers and watered flowers (by kind and colour) at 0x1590; the wilted
+ * The holders: the flowers and watered flowers (by kind and color) at 0x1590; the wilted
  * flowers by kind; the growth lines at 0x174 (by the tile's parity, or the eight-code lines),
  * 0xc6c and 0x11e8, by stage, with the fruit the grown ones carry drawn as items; the code
  * 0x6d's three frames at 0x1014; others one or two each, or through pointers at 0x3060, 0x46f4

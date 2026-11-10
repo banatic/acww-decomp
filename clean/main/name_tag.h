@@ -28,7 +28,7 @@ enum NameTagState {
     NAME_TAG_HIDING = 3,
 };
 
-/* The kind with the fixed place, its own palette colour and VRAM tiles. */
+/* The kind with the fixed place, its own palette color and VRAM tiles. */
 #define NAME_TAG_KIND_FIXED 4
 
 /* The name: a message label of the quick messages (quick_message.c, vtable data_020da640). */
@@ -67,7 +67,7 @@ void NameTag_StepAppearing(NameTag *tag);
 void NameTag_EnterAppearing(NameTag *tag);
 void NameTag_StepHidden(NameTag *tag);
 void NameTag_EnterHidden(NameTag *tag);
-void NameTag_LoadFixedColour(void);
+void NameTag_LoadFixedColor(void);
 void *NameTag_Hide(NameTag *tag);
 int NameTag_Show(NameTag *tag);
 void *NameTag_SetText(NameTag *tag, TextBase *text);

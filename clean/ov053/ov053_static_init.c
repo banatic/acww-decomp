@@ -1,4 +1,4 @@
-/* Overlay 53 (the barber, barber.h): its static initialiser, run when the overlay is loaded,
+/* Overlay 53 (the barber, barber.h): its static initializer, run when the overlay is loaded,
  * which fills in the table of the barber's states (data_ov053_02261c64, Barber_SetState and
  * Barber_Update): each state's entry and update, copied from the overlay's constants (C++
  * pointers to member functions, which the compiler does not fold into the table). */

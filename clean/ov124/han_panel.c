@@ -50,7 +50,7 @@ extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)
 #define SIGN_TEXT_CELLS 0xe
 #define SIGN_SHADOW_CELL 2
 
-/* The OBJs: on the sub screen, from its centre, at priority 2, unscaled. */
+/* The OBJs: on the sub screen, from its center, at priority 2, unscaled. */
 #define OBJ_SCREEN 1
 #define OBJ_CENTER_X 0x80
 #define OBJ_CENTER_Y 0x60
@@ -294,7 +294,7 @@ void HanPanel_ShowText(HanPanel *self)
 }
 CLEAN_AS(func_ov124_0229f2e4, HanPanel_ShowText)
 
-/* func_ov124_0229f320: the label's box opened in style 3 (colours 4 and 1, 0x11 wide) with a
+/* func_ov124_0229f320: the label's box opened in style 3 (colors 4 and 1, 0x11 wide) with a
  * height by the text's style: 0xd, 8, 0x14, 5 or 0xa for styles 0-4.
  * REQUIRES: the style is 0-4 (HanPanel_TextStyle answers 0, 1 or 3); the ROM passes an unset
  * height for others. */
@@ -318,7 +318,7 @@ CLEAN_AS(func_ov124_0229f378, HanPanel_LoadStyledBackground)
 
 /* func_ov124_0229f398: the background loaded into `layer` with screen 5, "menu/han/b_bg.bsc"
  * loaded into `second_layer`, and the label given a message of "2d_menu" by the mode (0x3a for
- * modes not listed), opened with `layer` as its style and shown centred.
+ * modes not listed), opened with `layer` as its style and shown centered.
  * QUIRK: the box's style is the layer number the caller passes. */
 void HanPanel_ShowModeMessage(HanPanel *self, int layer, int second_layer)
 {

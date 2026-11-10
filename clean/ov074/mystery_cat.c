@@ -568,7 +568,7 @@ int MysteryCat_SidePoint(MysteryCat *cat, Vec3 *out, const Vec3 *offset)
 CLEAN_AS(func_ov074_0227959c, MysteryCat_SidePoint)
 
 /* func_ov074_022795d8: up to six tries at a point 12.0 from her in a random direction (the
- * game's first random generator), put at its tile's centre: the first whose tile is clear
+ * game's first random generator), put at its tile's center: the first whose tile is clear
  * (TownTile_IsClearAt) gives `*x` and `*z`. Whether one did. */
 int MysteryCat_PickWalkPoint(MysteryCat *cat, fx32 *x, fx32 *z)
 {
@@ -578,7 +578,7 @@ int MysteryCat_PickWalkPoint(MysteryCat *cat, fx32 *x, fx32 *z)
         int index = (angle >> 4) * 2;
         point.x = FX_MulFunc(MCAT_WALK_DISTANCE, FX_SinCosTable_[index]) + mcat_position(cat)->x;
         point.z = FX_MulFunc(MCAT_WALK_DISTANCE, FX_SinCosTable_[index + 1]) + mcat_position(cat)->z;
-        AcreTile_SnapToTileCentre(&point, &point);
+        AcreTile_SnapToTileCenter(&point, &point);
         if (TownTile_IsClearAt(&point, NULL)) {
             *x = point.x;
             *z = point.z;

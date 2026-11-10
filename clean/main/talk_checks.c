@@ -69,7 +69,7 @@ CLEAN_AS(func_0202ea80, TalkChecks_TestSetDailyBit)
 
 /* func_0202eac8: the scene's menu (SceneBase_TalkChoices) offers `count` choices, choice i the
  * message `messages[i]` (one byte, on the stack, with the data byte 0xff); `cancel` is the
- * choice for cancelling. The menu is used without a check that the scene has one. */
+ * choice for canceling. The menu is used without a check that the scene has one. */
 void TalkChecks_OfferMessages(SceneBase *scene, const u8 *messages, int count, int cancel)
 {
     void *menu = (void *) (uintptr_t) SceneBase_TalkChoices(scene);

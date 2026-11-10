@@ -374,7 +374,7 @@ CLEAN_AS(func_02096484, SessionPlayers_WriteItemKind)
  * state; without the actor, the state byte 0x94 (no state). SessionRecord_Size(id) bytes are
  * copied into `record`.
  * BUG: without the actor only the state byte is set, and the rest of the record is copied from
- * uninitialised stack bytes; the state byte is left so too when the actor's state is not found
+ * uninitialized stack bytes; the state byte is left so too when the actor's state is not found
  * (which does not happen for this system's player). */
 void SessionPlayers_WriteStateRecord(u8 *record, int id)
 {

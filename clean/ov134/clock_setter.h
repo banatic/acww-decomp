@@ -67,14 +67,14 @@ enum ClockSetterFlag {
 
 /* The steps of the list (`list_state`): opening, open, and closing. */
 enum ClockSetterListState {
-    CLOCK_SETTER_LIST_SHOW = 0,      /* ClockSetter_OpenListStep: the list layer is shown */
-    CLOCK_SETTER_LIST_GROW = 1,      /* its window grows to the full list */
-    CLOCK_SETTER_LIST_FADE_IN = 2,   /* its palette's last colour fades in */
-    CLOCK_SETTER_LIST_PICKED = 3,    /* ClockSetter_PickRow: a row was picked */
-    CLOCK_SETTER_LIST_CANCELLED = 4, /* ClockSetter_CancelList */
-    CLOCK_SETTER_LIST_FADE_OUT = 5,  /* ClockSetter_CloseListStep: the colour fades out */
-    CLOCK_SETTER_LIST_SHRINK = 6,    /* the window shrinks onto the field */
-    CLOCK_SETTER_LIST_SPIN = 7,      /* the hands spin to the picked time */
+    CLOCK_SETTER_LIST_SHOW = 0,     /* ClockSetter_OpenListStep: the list layer is shown */
+    CLOCK_SETTER_LIST_GROW = 1,     /* its window grows to the full list */
+    CLOCK_SETTER_LIST_FADE_IN = 2,  /* its palette's last color fades in */
+    CLOCK_SETTER_LIST_PICKED = 3,   /* ClockSetter_PickRow: a row was picked */
+    CLOCK_SETTER_LIST_CANCELED = 4, /* ClockSetter_CancelList */
+    CLOCK_SETTER_LIST_FADE_OUT = 5, /* ClockSetter_CloseListStep: the color fades out */
+    CLOCK_SETTER_LIST_SHRINK = 6,   /* the window shrinks onto the field */
+    CLOCK_SETTER_LIST_SPIN = 7,     /* the hands spin to the picked time */
     CLOCK_SETTER_LIST_DONE = 8
 };
 
@@ -174,7 +174,7 @@ typedef struct ClockSetter {
     u16 list_map[CLOCK_SETTER_MAP_ENTRIES];       /* 0x1870: list_base fitted to the open field */
     u16 list_map_shown[CLOCK_SETTER_MAP_ENTRIES]; /* 0x2070: list_map with the rows drawn in */
     u16 palette[16];                              /* 0x2870: the list's palette (b_tim_bg_9.bpl) */
-    u16 palette_shown[16];                        /* 0x2890: with its last colour faded */
+    u16 palette_shown[16];                        /* 0x2890: with its last color faded */
 } ClockSetter;
 
 /* clock_setter.c */

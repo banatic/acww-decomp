@@ -35,15 +35,15 @@ extern const Vec3 data_021c67d0;
 extern Mtx43 data_021fbe48;
 /* The fruit item of the eight-code lines, by line (MapItem_EightLine). */
 extern const u16 data_ov003_0223667c[];
-/* The offsets from a tile's centre of the three fruit of an eight-code line or code 0x69, and of
+/* The offsets from a tile's center of the three fruit of an eight-code line or code 0x69, and of
  * the two of a grown code of 0xc8-0xcf. */
 extern const Vec3 data_ov003_02236b64[3];
 extern const Vec3 data_ov003_02236b4c[2];
 
 /* NitroSystem: two settings of all a model's materials: a value 0-31 (the alpha), and the
- * emission colour. */
+ * emission color. */
 extern void func_0210744c(u8 *model, int value);
-extern void func_02107524(u8 *model, u16 colour);
+extern void func_02107524(u8 *model, u16 color);
 
 /* The process's words outside the parts tile_event.h names. */
 #define TOWN_ITEM_MODELS_ITEM_HOLDERS 0x0050 /* the holders of items, by ItemTraits_Look */
@@ -261,7 +261,7 @@ static void town_item_draw_map_code(TileEventProcess *process, AcreMap *map, con
 
 /* func_ov003_022249cc: with the field camera, the tiles around the field's point drawn: rows
  * of 19 tiles from 9 tiles to its larger x to 9 to its smaller, from 4 rows to its larger z to
- * 14 to its smaller, each row in the matrix of its first tile's centre bent over the globe (the
+ * 14 to its smaller, each row in the matrix of its first tile's center bent over the globe (the
  * translation's x moved a tile per tile). A code of a growth model that is past stage 0 and
  * whose tile is past the camera's goal is not drawn; other codes of kind 0 when near enough
  * (town_item_in_reach) by the drawer of their set; codes of kinds 1, 3 and 4 by their item's
@@ -273,19 +273,19 @@ void TownItemModels_DrawAround(TileEventProcess *process, AcreMap *map)
         return;
     }
     Vec3 field_point = data_021c67d0;
-    Vec3 centre;
-    AcreTile_SnapToTileCentre(&centre, &field_point);
-    int centre_x;
-    int centre_z;
-    Position_Tile(&centre_x, &centre_z, (const Position *) (const void *) &centre);
-    Vec3 row = {centre.x + 0x12000, 0, centre.z + 0x8000};
+    Vec3 center;
+    AcreTile_SnapToTileCenter(&center, &field_point);
+    int center_x;
+    int center_z;
+    Position_Tile(&center_x, &center_z, (const Position *) (const void *) &center);
+    Vec3 row = {center.x + 0x12000, 0, center.z + 0x8000};
     int counted = 0;
     for (int dz = 4; dz >= -14; row.z -= TOWN_ITEM_MODELS_TILE, dz--) {
         Vec3 point;
-        AcreTile_SnapToTileCentre(&point, &row);
+        AcreTile_SnapToTileCenter(&point, &row);
         town_item_place(&point);
         Mtx43 matrix = data_021fbe48;
-        int ahead = point.z - centre.z;
+        int ahead = point.z - center.z;
         for (int dx = 9; dx >= -9; matrix.m[3][0] -= TOWN_ITEM_MODELS_TILE, point.x -= TOWN_ITEM_MODELS_TILE, dx--) {
             u16 *tile = AcreTile_ItemAt(map, &point, 0);
             if (tile == NULL) {
@@ -295,8 +295,8 @@ void TownItemModels_DrawAround(TileEventProcess *process, AcreMap *map)
                 CameraControl_IsPastGoalZ(&point, 0x2000, 0x2000) != 0) {
                 continue;
             }
-            int x = centre_x + dx;
-            int z = centre_z + dz;
+            int x = center_x + dx;
+            int z = center_z + dz;
             u16 code = *tile;
             switch ((code & 0xf000) >> 12) {
                 case 0:
@@ -328,7 +328,7 @@ void TownItemModels_DrawAround(TileEventProcess *process, AcreMap *map)
 CLEAN_AS(func_ov003_022249cc, TownItemModels_DrawAround)
 
 /* func_ov003_022251a4: a holder (none: nothing) drawn in `matrix` (its shapes only), then lit by
- * the scene's emission colour. */
+ * the scene's emission color. */
 void TownItemModels_Draw(TileEventProcess *process, ModelObject *model, Mtx43 matrix)
 {
     (void) process;
@@ -337,7 +337,7 @@ void TownItemModels_Draw(TileEventProcess *process, ModelObject *model, Mtx43 ma
     }
     memcpy(model->unk_64, &matrix, sizeof(Mtx43));
     ModelObject_DrawShapes(model, NULL);
-    func_02107524(model->model, (u16) SceneLights_EmissionColour());
+    func_02107524(model->model, (u16) SceneLights_EmissionColor());
 }
 CLEAN_AS(func_ov003_022251a4, TownItemModels_Draw)
 
@@ -452,13 +452,13 @@ ModelObject *TownItemModels_DrawWiltedOrWateredFlower(TileEventProcess *process,
 CLEAN_AS(func_ov003_02225538, TownItemModels_DrawWiltedOrWateredFlower)
 
 /* func_ov003_02225598: the flowers (and, through TownItemModels_DrawCode, the watered flowers):
- * the holder of the code's kind and colour
- * (TownFamily_Kind, TownFamily_Colour) at 0x1590 (lines 4 and 5 run on into the holders at
+ * the holder of the code's kind and color
+ * (TownFamily_Kind, TownFamily_Color) at 0x1590 (lines 4 and 5 run on into the holders at
  * 0x2df0). */
 ModelObject *TownItemModels_DrawFlower(TileEventProcess *process, const u16 *code, Mtx43 matrix)
 {
     int line = TownFamily_Kind(code);
-    int stage = TownFamily_Colour(code);
+    int stage = TownFamily_Color(code);
     ModelObject *model = town_item_model(process->models_1590, line * TOWN_ITEM_MODELS_PER_LINE + stage);
     TownItemModels_Draw(process, model, matrix);
     return model;

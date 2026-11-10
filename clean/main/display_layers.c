@@ -7,8 +7,8 @@
 
 #define REG16(addr) (*(volatile u16 *) (addr))
 
-#define CHAR_UNIT 32    /* a 16-colour character; a 256-colour one is two */
-#define PALETTE_SIZE 32 /* 16 colours */
+#define CHAR_UNIT 32    /* a 16-color character; a 256-color one is two */
+#define PALETTE_SIZE 32 /* 16 colors */
 #define ALIGN_BACK -4   /* allocate from the heap's end */
 #define LAYER_COUNT 9
 
@@ -121,8 +121,8 @@ void DisplayLayer_SetScroll(unsigned int layer, int x, int y)
 }
 CLEAN_AS(func_0200284c, DisplayLayer_SetScroll)
 
-/* func_020028bc: a background layer's screen size (BGxCNT's bits 14-15), colour mode (1 for
- * 256 colours) and character base block, with the screen at the layer's fixed base block and
+/* func_020028bc: a background layer's screen size (BGxCNT's bits 14-15), color mode (1 for
+ * 256 colors) and character base block, with the screen at the layer's fixed base block and
  * no wrap-around; the priority and the mosaic bit are kept. Other layers do nothing.
  * QUIRK: the values are not masked to their fields. */
 void DisplayLayer_SetBgControl(unsigned int layer, int size, int colors_256, int char_base)
@@ -152,7 +152,7 @@ void DisplayLayer_SetPriority(int layer, int priority)
 }
 CLEAN_AS(func_020029e8, DisplayLayer_SetPriority)
 
-/* func_02002a88: load characters `first` to `last` (16-colour units) of a layer, from `data`
+/* func_02002a88: load characters `first` to `last` (16-color units) of a layer, from `data`
  * holding the characters from `data_first` on; returns 1. */
 int DisplayLayer_LoadChars(u32 data, int layer, u32 data_first, u32 first, u32 last)
 {
@@ -225,9 +225,9 @@ int DisplayLayer_LoadScreen(void *data, int layer, int size, int offset)
 }
 CLEAN_AS(func_02002b40, DisplayLayer_LoadScreen)
 
-/* func_02002bd0: load 16-colour palettes `first` to `last` of a layer's screen, from `data`
+/* func_02002bd0: load 16-color palettes `first` to `last` of a layer's screen, from `data`
  * holding the palettes from `data_first` on; returns 1.
- * QUIRK: for the backgrounds, a load starting at palette 0 leaves out its colour 0, the
+ * QUIRK: for the backgrounds, a load starting at palette 0 leaves out its color 0, the
  * backdrop. */
 int DisplayLayer_LoadPalettes(u8 *data, unsigned int layer, int data_first, int first, u8 last)
 {
@@ -256,7 +256,7 @@ int DisplayLayer_LoadPalettes(u8 *data, unsigned int layer, int data_first, int 
 }
 CLEAN_AS(func_02002bd0, DisplayLayer_LoadPalettes)
 
-/* func_02002c4c: as DisplayLayer_LoadCharsFromFile, counting in 256-colour characters. */
+/* func_02002c4c: as DisplayLayer_LoadCharsFromFile, counting in 256-color characters. */
 int DisplayLayer_LoadChars256FromFile(const char *path, Heap *heap, int layer, int file_first, int first, int last)
 {
     return DisplayLayer_LoadCharsFromFile(path, heap, layer, file_first * 2, first * 2, last * 2 + 1);

@@ -288,7 +288,7 @@ void Nvram_Init(void)
 }
 CLEAN_AS(func_02001268, Nvram_Init)
 
-/* func_020012bc: the start-up hook (NitroStartUp): initialise the OS, then load the owner's
+/* func_020012bc: the start-up hook (NitroStartUp): initialize the OS, then load the owner's
  * settings. */
 void UserSettings_StartUp(void)
 {

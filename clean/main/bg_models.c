@@ -117,7 +117,7 @@ static void clear_slots(BgModels *self)
         model->data = NULL;
         model->bsd = NULL;
         model->joint_anim = NULL;
-        model->colour_anim = NULL;
+        model->color_anim = NULL;
         model->texture_anim = NULL;
         model->texture = NULL;
         model->marks = NULL;
@@ -191,11 +191,11 @@ u32 BgModels_GroundTextureAnim(const BgModels *self)
 CLEAN_AS(func_0203757c, BgModels_GroundTextureAnim)
 
 /* func_02037588 */
-u32 BgModels_GroundColourAnim(const BgModels *self)
+u32 BgModels_GroundColorAnim(const BgModels *self)
 {
-    return (u32) (uintptr_t) self->ground_colour_anim;
+    return (u32) (uintptr_t) self->ground_color_anim;
 }
-CLEAN_AS(func_02037588, BgModels_GroundColourAnim)
+CLEAN_AS(func_02037588, BgModels_GroundColorAnim)
 
 /* func_02037594 */
 u32 BgModels_GroundTexture(const BgModels *self)
@@ -254,7 +254,7 @@ BgModel *BgModels_Load(BgModels *self, int key)
                 model->joint_anim = func_02107b44(NNS_G3dGetJntAnmSet(file), 0);
             }
             if ((file = NNS_FndGetArchiveFileByName(data_020da3d4)) != NULL) {
-                model->colour_anim = func_02107b80(NNS_G3dGetMatCAnmSet(file), 0);
+                model->color_anim = func_02107b80(NNS_G3dGetMatCAnmSet(file), 0);
             }
             if ((file = NNS_FndGetArchiveFileByName(data_020da3e4)) != NULL) {
                 model->texture_anim = func_02107bbc(NNS_G3dGetTexSRTAnmSet(file), 0);
@@ -358,7 +358,7 @@ void BgModels_LoadGroundAnims(BgModels *self)
     if (NNS_FndMountArchive(&archive, data_020da390, BgModels_LoadFile(data_020da418, NULL)) == 0) {
         return;
     }
-    self->ground_colour_anim = func_02107b80(NNS_G3dGetMatCAnmSet(NNS_FndGetArchiveFileByName(data_020da428)), 0);
+    self->ground_color_anim = func_02107b80(NNS_G3dGetMatCAnmSet(NNS_FndGetArchiveFileByName(data_020da428)), 0);
     self->ground_texture_anim = func_02107bbc(NNS_G3dGetTexSRTAnmSet(NNS_FndGetArchiveFileByName(data_020da43c)), 0);
     self->river_pattern_anim = func_02107bf8(NNS_G3dGetTexPatAnmSet(NNS_FndGetArchiveFileByName(data_020da450)), 0);
     self->river_texture = func_021077e8(NNS_FndGetArchiveFileByName(data_020da460));
@@ -436,7 +436,7 @@ void BgModels_Clear(BgModels *self)
 {
     clear_slots(self);
     self->ground_texture = NULL;
-    self->ground_colour_anim = NULL;
+    self->ground_color_anim = NULL;
     self->ground_texture_anim = NULL;
     self->river_pattern_anim = NULL;
     self->river_texture = NULL;

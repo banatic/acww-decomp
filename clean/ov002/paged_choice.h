@@ -53,7 +53,7 @@ enum PagedChoiceFlag {
     CHOICE_FLAG_OBJECTS = 0x01,   /* the page label and the window are drawn (PagedChoice_Draw) */
     CHOICE_FLAG_WIPE_OPEN = 0x02, /* the next opening is a wipe (PagedChoice_SetState) */
     CHOICE_FLAG_WIPE_SHUT = 0x04, /* the next closing is a wipe; deciding a code sets it */
-    CHOICE_FLAG_HIGHLIGHT = 0x08, /* row `highlighted` is to be drawn once in colour 15 */
+    CHOICE_FLAG_HIGHLIGHT = 0x08, /* row `highlighted` is to be drawn once in color 15 */
     CHOICE_FLAG_QUIET = 0x10,     /* the next close request plays no sound */
     CHOICE_FLAG_FIRST_ROW = 0x20  /* the first row is set apart (PagedChoice_RefreshRows) */
 };
@@ -64,8 +64,8 @@ typedef struct PagedChoiceRow {
     TextLabel label;
     u16 first_tile; /* 0x6c: the box's first character tile */
     u8 layer;       /* 0x6e: the text layer; PagedChoice_Init gives the choice's */
-    u8 colour;      /* 0x6f: the palette it is drawn with */
-    u8 colour_39;   /* 0x70: the box's second colour */
+    u8 color;       /* 0x6f: the palette it is drawn with */
+    u8 color_39;    /* 0x70: the box's second color */
     u8 pad_71[3];
 } PagedChoiceRow;
 
@@ -174,8 +174,8 @@ void PagedChoice_Init(PagedChoice *choice, u8 layer, int priority, const char *s
 PagedChoice *PagedChoice_Delete(PagedChoice *choice);
 PagedChoice *PagedChoice_Destroy(PagedChoice *choice);
 PagedChoice *PagedChoice_Construct(PagedChoice *choice);
-void ChoiceRow_SetLayer(PagedChoiceRow *row, u8 layer, u16 first_tile, u8 colour, u8 colour_39);
-void ChoiceRow_Draw(PagedChoiceRow *row, int colour);
+void ChoiceRow_SetLayer(PagedChoiceRow *row, u8 layer, u16 first_tile, u8 color, u8 color_39);
+void ChoiceRow_Draw(PagedChoiceRow *row, int color);
 PagedChoiceRow *ChoiceRow_Delete(PagedChoiceRow *row);
 PagedChoiceRow *ChoiceRow_Destroy(PagedChoiceRow *row);
 PagedChoiceRow *ChoiceRow_Construct(PagedChoiceRow *row);

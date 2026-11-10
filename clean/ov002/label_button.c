@@ -260,7 +260,7 @@ LabelButton *LabelButtonBase_Destroy(LabelButton *button)
 }
 CLEAN_AS(func_ov002_0220b680, LabelButtonBase_Destroy)
 
-/* func_ov002_0220b698: constructs main's labelled sprite with `kind` and `param`, then makes
+/* func_ov002_0220b698: constructs main's labeled sprite with `kind` and `param`, then makes
  * it a base class button. */
 LabelButton *LabelButtonBase_Construct(LabelButton *button, char kind, int param)
 {

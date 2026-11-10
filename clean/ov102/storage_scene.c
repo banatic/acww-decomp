@@ -88,7 +88,7 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 /* The sounds of the scene (main/sound.h). */
 #define STORAGE_SOUND_CLOSE 0x27
 
-/* The close button's label ("Close"): style 4, at (0x1d6, 6), colour 15 when highlighted (else 1) and 9, message
+/* The close button's label ("Close"): style 4, at (0x1d6, 6), color 15 when highlighted (else 1) and 9, message
  * 0x88 of the menu's messages. */
 #define STORAGE_CLOSE_LABEL_STYLE 4
 #define STORAGE_CLOSE_LABEL_FIRST_TILE 0x1d6
@@ -298,7 +298,7 @@ void StorageScene_SaveAndClose(StorageScene *self, int with_delay)
 CLEAN_AS(func_ov102_0229c460, StorageScene_SaveAndClose)
 
 /* func_ov102_0229c4c0: the close button's label ("Close") shown this frame in the next label: style 4 at (0x1d6, 6) in
- * colours 15 (highlighted) or 1 and 9, message 0x88. */
+ * colors 15 (highlighted) or 1 and 9, message 0x88. */
 void StorageScene_ShowCloseLabel(StorageScene *self, int highlighted)
 {
     int color = highlighted ? 15 : 1;

@@ -86,7 +86,7 @@ typedef struct CatalogList {
     CatalogText description;                        /* 0x0808 */
     LayerTask palette_task;                         /* 0x0924: `palette` to layer A */
     u16 palette_file[0x10];                         /* 0x0948: "menu/fish/bg4.bpl" */
-    u16 palette[0x10];                              /* 0x0968: its copy, colour 2 faded */
+    u16 palette[0x10];                              /* 0x0968: its copy, color 2 faded */
     u8 icon_chars[CATALOG_LIST_IN_VIEW][0x80];      /* 0x0988: an icon's two rows of 0x40 */
     LayerTaskPair icon_tasks[CATALOG_LIST_IN_VIEW]; /* 0x0e08 */
     CatalogListEntry entries[CATALOG_LIST_IN_VIEW]; /* 0x1000 */

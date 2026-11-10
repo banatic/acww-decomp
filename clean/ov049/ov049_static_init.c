@@ -1,6 +1,6 @@
-/* Overlay 49's static initialiser, run when the overlay is loaded: the tables of member
+/* Overlay 49's static initializer, run when the overlay is loaded: the tables of member
  * functions Mabel (mabel.h) and her talk scene (mabel_talk.h) dispatch through, copied from
- * the overlay's constants (the compiler cannot place member pointers in initialised data). */
+ * the overlay's constants (the compiler cannot place member pointers in initialized data). */
 #include "clean.h"
 #include "mabel.h"
 #include "mabel_talk.h"

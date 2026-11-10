@@ -131,7 +131,7 @@ static int fars_request(FieldActor *actor, int state, int priority, int arg)
     return queued;
 }
 
-/* A request for `state` carrying the head's kind and hair colour; whether it was queued. */
+/* A request for `state` carrying the head's kind and hair color; whether it was queued. */
 static int fars_request_hair(FieldActor *actor, int state, int kind, int hair_color, int priority, s16 arg)
 {
     StateRequest request;
@@ -219,7 +219,7 @@ CLEAN_AS(func_ov004_02227254, FieldActorRoomStates_UpdateHairOff)
 
 /* func_ov004_02227268: once the animation is over, state 0x7b is asked for with the work's two
  * bytes (priority 6). Before, from frame 3, while the record gives the head a kind, the head
- * is asked to change to its item with kind 0 and the record's hair colour; once taken, the
+ * is asked to change to its item with kind 0 and the record's hair color; once taken, the
  * record's head kind is 0 too. */
 void FieldActorRoomStates_StepHairOff(FieldActor *actor)
 {
@@ -261,7 +261,7 @@ void FieldActorRoomStates_EnterHairOff(FieldActor *actor, const StateRequest *re
 }
 CLEAN_AS(func_ov004_022272f4, FieldActorRoomStates_EnterHairOff)
 
-/* func_ov004_02227324: state 0x7a asked for with the head's kind and hair colour; whether it
+/* func_ov004_02227324: state 0x7a asked for with the head's kind and hair color; whether it
  * was queued. */
 int FieldActorRoomStates_RequestHairOff(FieldActor *actor, int kind, int hair_color, int priority, s16 arg)
 {
@@ -308,7 +308,7 @@ void FieldActorRoomStates_EnterHairWait(FieldActor *actor, const StateRequest *r
 }
 CLEAN_AS(func_ov004_022271e0, FieldActorRoomStates_EnterHairWait)
 
-/* func_ov004_02227210: state 0x7b asked for with the head's kind and hair colour; whether it
+/* func_ov004_02227210: state 0x7b asked for with the head's kind and hair color; whether it
  * was queued. */
 int FieldActorRoomStates_RequestHairWait(FieldActor *actor, int kind, int hair_color, int priority, s16 arg)
 {
@@ -368,7 +368,7 @@ void FieldActorRoomStates_StepHairOn(FieldActor *actor)
 CLEAN_AS(func_ov004_02227038, FieldActorRoomStates_StepHairOn)
 
 /* func_ov004_022270d0 (state 0x7c's exit): this console's actor sends its record's head kind
- * and hair colour to the session (FieldActorRooms_SendPair). */
+ * and hair color to the session (FieldActorRooms_SendPair). */
 void FieldActorRoomStates_LeaveHairOn(FieldActor *actor)
 {
     if (!fars_is_local(actor)) {
@@ -399,7 +399,7 @@ void FieldActorRoomStates_EnterHairOn(FieldActor *actor, const StateRequest *req
 }
 CLEAN_AS(func_ov004_02227118, FieldActorRoomStates_EnterHairOn)
 
-/* func_ov004_0222714c: state 0x7c asked for with the head's kind and hair colour; whether it
+/* func_ov004_0222714c: state 0x7c asked for with the head's kind and hair color; whether it
  * was queued. */
 int FieldActorRoomStates_RequestHairOn(FieldActor *actor, int kind, int hair_color, int priority, s16 arg)
 {

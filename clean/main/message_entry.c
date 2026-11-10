@@ -8,7 +8,7 @@ static_assert(sizeof(MessageEntry) == 0x0c, "record");
 
 #define MESSAGE_ENTRY_SIZE 0x0c
 
-/* Per kind: 1 when the text is centred (TalkObject_BeginMessage). */
+/* Per kind: 1 when the text is centered (TalkObject_BeginMessage). */
 extern const s32 data_020d1d0c[];
 /* Per kind: the writing speed, 0, 1 or 2 (TalkObject_BeginMessage, TalkTags_SetSpeed). */
 extern void *const data_020d1ca8[];
@@ -18,11 +18,11 @@ extern const s32 data_020d1c44[];
 extern void MI_CpuFill8(void *dst, int value, unsigned int size);
 
 /* func_020a8248 */
-int MessageEntry_CentredOfKind(MessageEntry *record)
+int MessageEntry_CenteredOfKind(MessageEntry *record)
 {
     return data_020d1d0c[MessageEntry_Kind(record)];
 }
-CLEAN_AS(func_020a8248, MessageEntry_CentredOfKind)
+CLEAN_AS(func_020a8248, MessageEntry_CenteredOfKind)
 
 /* func_020a8260 */
 void *MessageEntry_SpeedOfKind(MessageEntry *record)

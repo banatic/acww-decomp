@@ -277,7 +277,7 @@ int ClockSetter_SpinHandsHome(ClockSetter *self)
 }
 CLEAN_AS(func_ov134_0229b014, ClockSetter_SpinHandsHome)
 
-/* func_ov134_0229b034: the pen let go of a hand: the fields coloured normally, and when the
+/* func_ov134_0229b034: the pen let go of a hand: the fields colored normally, and when the
  * drag went past a bound the hands' target set to the value (the bound) on the near side of
  * where they are, with the spin's sound; 1 then. */
 int ClockSetter_ReleaseHand(ClockSetter *self)

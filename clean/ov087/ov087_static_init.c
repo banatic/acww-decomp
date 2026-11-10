@@ -1,6 +1,6 @@
-/* Overlay 87's static initialiser, run when the overlay is loaded: the table of states of its
+/* Overlay 87's static initializer, run when the overlay is loaded: the table of states of its
  * character (acorn_npc.h), copied from the overlay's constants (the compiler cannot place
- * member pointers in initialised data). */
+ * member pointers in initialized data). */
 #include <stdint.h>
 
 #include "acorn_npc.h"

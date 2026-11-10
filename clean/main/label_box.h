@@ -5,8 +5,8 @@
  * LabelBox_Measure) walks the box's text with its walker (data_021f44dc when it has none),
  * which hands the box each character, the start and the end of the text and each tag: drawn
  * (TextDraw_BeginStrip, TextDraw_DrawChar, TextDraw_UploadStrip) or measured
- * (TextDraw_BeginMeasure, TextDraw_MeasureChar), and while drawing a colour tag (0xff/0)
- * changes the text's colour.
+ * (TextDraw_BeginMeasure, TextDraw_MeasureChar), and while drawing a color tag (0xff/0)
+ * changes the text's color.
  *
  * The boxes are allocated in the text heap (data_021c8194) and kept in its list
  * (data_021c81bc), drawing into RAM (LabelBox_New) or into VRAM tiles (LabelBox_NewInVram). */

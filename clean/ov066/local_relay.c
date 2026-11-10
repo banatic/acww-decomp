@@ -199,7 +199,7 @@ void LocalRelay_OnData(LocalPortEvent *event)
 CLEAN_AS(func_ov066_0226ab28, LocalRelay_OnData)
 
 /* func_ov066_0226ac68: as the parent, `length` bytes of `packet` from the child `aid`. An
- * acknowledgement marks the relay packet it names as received by that child; a request to
+ * acknowledgment marks the relay packet it names as received by that child; a request to
  * send one again starts the resending from it (unless one is under way); a fragment is
  * collected in the child's slice of its next collecting node. */
 void LocalRelay_OnChildPacket(int aid, u8 *packet, int length)
@@ -286,7 +286,7 @@ int LocalRelay_SendToPort(int port, const void *data, u32 size, u32 to, void (*c
 CLEAN_AS(func_ov066_0226ae50, LocalRelay_SendToPort)
 
 /* func_ov066_0226aeb8: the session's handler of a child gone: no relay packet waits for its
- * acknowledgement any more. */
+ * acknowledgment any more. */
 void LocalRelay_ForgetPeer(int aid)
 {
     u16 keep = (u16) ~arm_bit((u32) aid);
@@ -353,7 +353,7 @@ CLEAN_AS(func_ov066_0226af3c, LocalRelay_OnMpEnd)
 /* func_ov066_0226b088: the relay packet `relay` built from the slices collected in
  * `collected`, packed in AID order after a header with the next sequence number; the AIDs
  * still collecting into that node move on, the node is emptied, and the packet waits for the
- * acknowledgement of every child that greeted the parent. The parent then delivers it to
+ * acknowledgment of every child that greeted the parent. The parent then delivers it to
  * itself. FALSE, with nothing done, when no slice was collected. */
 int LocalRelay_Collect(LocalRelayNode *relay, LocalRelayNode *collected)
 {
@@ -465,7 +465,7 @@ CLEAN_AS(func_ov066_0226b27c, LocalRelay_ReceiveFragment)
 /* func_ov066_0226b3d0: a child's packet to the parent, at the cursor of its packets: a request
  * for the relay packet it missed, or else the next fragment of its block (unless two are
  * pending, the last is out or it saw a gap this turn). The oldest relay packet it has not
- * acknowledged yet is acknowledged in it, as an acknowledgement alone when there is nothing
+ * acknowledged yet is acknowledged in it, as an acknowledgment alone when there is nothing
  * else. A packet is sent to the parent and the cursor moves on; the gap is then forgotten. */
 void LocalRelay_SendFromChild(void)
 {
@@ -713,7 +713,7 @@ int LocalRelay_Start(LocalRelayParams *params)
 }
 CLEAN_AS(func_ov066_0226b9b8, LocalRelay_Start)
 
-/* func_ov066_0226bb7c: `count` nodes from `node` on emptied (size and acknowledgements). */
+/* func_ov066_0226bb7c: `count` nodes from `node` on emptied (size and acknowledgments). */
 void LocalRelay_ClearRing(LocalRelayNode *node, int count)
 {
     for (u16 i = 0; i < count; i++) {

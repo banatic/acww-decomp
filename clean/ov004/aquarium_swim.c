@@ -20,7 +20,7 @@ static_assert(offsetof(AquariumFish, model.frames.frame) == 0x108, "fish anim fr
 
 /* What each kind is like (museum_aquarium.c). */
 extern const AquariumFishInfo data_ov004_02247924[];
-/* The river room's tanks' centres: the first (also the sea room's only one) and the second. */
+/* The river room's tanks' centers: the first (also the sea room's only one) and the second. */
 extern Vec3 data_ov004_022593dc;
 extern Vec3 data_ov004_022593c4;
 /* The game's main random generator. */
@@ -138,15 +138,15 @@ CLEAN_AS(func_ov004_022394ac, AquariumSwim_RandomUnits)
 
 /* A climbing or diving fish levels off once it slows down, or once it reaches its top
  * (climbing) or its bottom (diving). */
-static void aquarium_swim_check_levelling(AquariumFish *fish)
+static void aquarium_swim_check_leveling(AquariumFish *fish)
 {
     if (fish->mode == AQUARIUM_MODE_SLOW_DOWN) {
-        fish->levelling = 1;
+        fish->leveling = 1;
         return;
     }
     int vertical = fish->vertical;
     if ((vertical == 1 && fish->position.y == fish->top) || (vertical == -1 && fish->position.y == fish->bottom)) {
-        fish->levelling = 1;
+        fish->leveling = 1;
     }
 }
 
@@ -158,13 +158,13 @@ static int aquarium_swim_keeps_pitch(const AquariumFish *fish)
 
 /* func_ov004_02239524: the fish's pitch eases (a quarter of what is left, at most 0x186 a frame)
  * towards `most` tilted the way it climbs or dives, then levels off (a third a frame) once
- * aquarium_swim_check_levelling says so; not while fleeing or setting off. */
+ * aquarium_swim_check_leveling says so; not while fleeing or setting off. */
 void AquariumSwim_TiltEased(AquariumFish *fish, int most)
 {
     if (aquarium_swim_keeps_pitch(fish)) {
         return;
     }
-    if (fish->levelling) {
+    if (fish->leveling) {
         if (fish->pitch == 0) {
             return;
         }
@@ -172,13 +172,13 @@ void AquariumSwim_TiltEased(AquariumFish *fish, int most)
         return;
     }
     Approach_DivideS16(&fish->pitch, (s16) aquarium_swim_mul(aquarium_swim_neg(most), fish->vertical), 4, TILT_STEP);
-    aquarium_swim_check_levelling(fish);
+    aquarium_swim_check_leveling(fish);
 }
 CLEAN_AS(func_ov004_02239524, AquariumSwim_TiltEased)
 
 /* func_ov004_022395d0: the fish's pitch is its tilt steps times its speed (by `rate`, in
  * thousandths of a unit), against the way it climbs or dives, kept within `most`. The steps
- * grow each frame until it levels off (aquarium_swim_check_levelling), then shrink while it is
+ * grow each frame until it levels off (aquarium_swim_check_leveling), then shrink while it is
  * still tilted; not while fleeing or setting off. */
 void AquariumSwim_TiltBySpeed(AquariumFish *fish, int most, int rate)
 {
@@ -192,14 +192,14 @@ void AquariumSwim_TiltBySpeed(AquariumFish *fish, int most, int rate)
     } else if (fish->pitch >= most) {
         fish->pitch = (s16) most;
     }
-    if (fish->levelling) {
+    if (fish->leveling) {
         if (fish->pitch == 0) {
             return;
         }
         fish->pitch_steps = aquarium_swim_add(fish->pitch_steps, -1);
     } else {
         fish->pitch_steps = aquarium_swim_add(fish->pitch_steps, 1);
-        aquarium_swim_check_levelling(fish);
+        aquarium_swim_check_leveling(fish);
     }
 }
 CLEAN_AS(func_ov004_022395d0, AquariumSwim_TiltBySpeed)

@@ -96,7 +96,7 @@ enum LinkStateHostPhase {
     LINK_STATE_HOST_ASK = 0,     /* the other slots to be asked */
     LINK_STATE_HOST_COLLECT = 1, /* their answers awaited */
     LINK_STATE_HOST_GO = 2,      /* carried out: the other slots awaited */
-    LINK_STATE_HOST_CANCEL = 3,  /* cancelled: the other slots awaited */
+    LINK_STATE_HOST_CANCEL = 3,  /* canceled: the other slots awaited */
     LINK_STATE_HOST_IDLE = 4,
 };
 

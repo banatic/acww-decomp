@@ -15,7 +15,7 @@ static_assert(sizeof(MesChoiceWindow) == 0x78, "mes choice window");
 /* The class's vtable. */
 extern const u8 data_020e3ffc[];
 
-/* The colours of the chosen line, frame by frame, and how many frames it flashes. */
+/* The colors of the chosen line, frame by frame, and how many frames it flashes. */
 extern const u16 data_020d1de8[];
 #define MES_CHOICE_WINDOW_FLASH_FRAMES 5
 
@@ -48,16 +48,16 @@ void MesChoiceWindow_SetButtons(MesChoiceWindow *self, u8 buttons, int sound)
 }
 CLEAN_AS(func_020ac11c, MesChoiceWindow_SetButtons)
 
-/* func_020ac198: one frame of the chosen line's flash: the line in this frame's colour and the
- * others' colours 0. Returns whether the flash has had all its frames.
+/* func_020ac198: one frame of the chosen line's flash: the line in this frame's color and the
+ * others' colors 0. Returns whether the flash has had all its frames.
  * REQUIRES: the flash restarted (MesChoiceWindow_ResetFlash) before it, as the game does: the
  * table is read at the frame count as it is. */
 int MesChoiceWindow_FlashChoice(MesChoiceWindow *self, int line)
 {
-    u16 colour = data_020d1de8[self->flash_frame];
+    u16 color = data_020d1de8[self->flash_frame];
     self->flash_frame++;
     int done = self->flash_frame >= MES_CHOICE_WINDOW_FLASH_FRAMES;
-    MesBg_HighlightLine(&self->bg, line, colour);
+    MesBg_HighlightLine(&self->bg, line, color);
     return done;
 }
 CLEAN_AS(func_020ac198, MesChoiceWindow_FlashChoice)

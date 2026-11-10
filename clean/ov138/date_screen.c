@@ -351,7 +351,7 @@ void DateScreen_OpenList(DateScreen *self, int field)
 }
 CLEAN_AS(func_ov138_0229c924, DateScreen_OpenList)
 
-/* func_ov138_0229c950: cancelled: the cancel button pressed on the panel, the scene's wipe out
+/* func_ov138_0229c950: canceled: the cancel button pressed on the panel, the scene's wipe out
  * to come (state 2) once the press is over (sub state 11); main told no date was set. */
 void DateScreen_Cancel(DateScreen *self)
 {
@@ -680,7 +680,7 @@ void DateScreen_BrowseByTouch(DateScreen *self)
 }
 CLEAN_AS(func_ov138_0229ce68, DateScreen_BrowseByTouch)
 
-/* func_ov138_0229cefc: the clock setter's sprites loaded, and the panel's text colours. */
+/* func_ov138_0229cefc: the clock setter's sprites loaded, and the panel's text colors. */
 void DateScreen_LoadSprites(DateScreen *self)
 {
     ClockSetter_LoadSprites(&self->clock);

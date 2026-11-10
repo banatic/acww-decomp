@@ -1,5 +1,5 @@
 /* Overlay 81 (the turtle as the fishing tourney's host, turtle_fishing.h): its static
- * initialiser, run when the overlay is loaded, which fills in the table of his states
+ * initializer, run when the overlay is loaded, which fills in the table of his states
  * (data_ov081_022798b4, TurtleFishing_SetState and TurtleFishing_Update): each state's entry
  * and update, copied from the overlay's constants (C++ pointers to member functions, which the
  * compiler does not fold into the table). */

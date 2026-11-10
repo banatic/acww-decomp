@@ -73,7 +73,7 @@ CLEAN_AS(func_020493d4, TownLines_ThinCrowded)
 /* func_02049638: on each of three patterns (every fourth tile of a row, from the x
  * data_020cac3c gives for even and odd rows), each stage-0 code makes the stage-0 codes around
  * it go back (TownLines_PutBackAround). */
-void TownLines_ThinNeighbours(TownDay *town, AcreMap *map, const TownGrowthTiles *size)
+void TownLines_ThinNeighbors(TownDay *town, AcreMap *map, const TownGrowthTiles *size)
 {
     for (int pattern = 0; pattern < TOWN_LINES_PATTERNS; pattern++) {
         const int *first = data_020cac3c[pattern];
@@ -90,7 +90,7 @@ void TownLines_ThinNeighbours(TownDay *town, AcreMap *map, const TownGrowthTiles
         }
     }
 }
-CLEAN_AS(func_02049638, TownLines_ThinNeighbours)
+CLEAN_AS(func_02049638, TownLines_ThinNeighbors)
 
 /* func_020496cc: the stage-0 codes around `tile` gone back (func_02049f74 on each; 0). */
 int TownLines_PutBackAround(TownDay *town, AcreMap *map, const TownGrowthTiles *size, const TownGrowthTiles *tile)

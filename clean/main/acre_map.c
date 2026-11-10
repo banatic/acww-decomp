@@ -437,7 +437,7 @@ CLEAN_AS(func_0204df54, AcreMap_InitRoom)
 
 /* ---- buildings on a map ---- */
 
-/* func_0204df68: whether the map holds building 0x5020; its tile's centre goes to `position`
+/* func_0204df68: whether the map holds building 0x5020; its tile's center goes to `position`
  * (a Vec3). */
 int AcreMap_FindSpaceship(int map, int position)
 {
@@ -558,7 +558,7 @@ void AcreMap_FindBuildingPoint(u16 *out, void *map, int *position, int *tile_x, 
 CLEAN_AS(func_0204e204, AcreMap_FindBuildingPoint)
 
 /* func_0204e328: finds a tile whose item is in [first, last] and passes `flags`
- * (func_0204f3e4): the tile to (*tile_x, *tile_z), the centre of the tile to `position` (a
+ * (func_0204f3e4): the tile to (*tile_x, *tile_z), the center of the tile to `position` (a
  * Vec3), and its item (layer 0) to *out; empty when there is none, then nothing else is
  * written. */
 void AcreMap_FindItem(u16 *out, void *map, u32 position, int *tile_x, int *tile_z, u16 first, u16 last, u32 flags)
@@ -571,7 +571,7 @@ void AcreMap_FindItem(u16 *out, void *map, u32 position, int *tile_x, int *tile_
 
     if (AcreTile_FindItemAnyFlag(map, &acre_x, &acre_z, &x, &z, &range[0], &range[1], flags, 0)) {
         AcreTile_TileOfAcre(tile_x, tile_z, acre_x, acre_z, x, z);
-        AcreTile_TileCentre((Vec3 *) (uintptr_t) position, *tile_x, *tile_z);
+        AcreTile_TileCenter((Vec3 *) (uintptr_t) position, *tile_x, *tile_z);
         int found_x = *tile_x;
         int found_z = *tile_z;
         u16 *item =

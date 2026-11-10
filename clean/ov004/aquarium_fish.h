@@ -112,7 +112,7 @@ typedef struct AquariumFish {
     int pitch_steps;  /* 0x23c: how far its pitch has been tilted */
     u8 unk_240[0xc];  /* 0x240 */
     s16 flee_yaw;     /* 0x24c: the way it flees (mode 1) */
-    u8 levelling;     /* 0x24e: its pitch goes back to level */
+    u8 leveling;      /* 0x24e: its pitch goes back to level */
     u8 unk_24f[3];    /* 0x24f */
     u8 last_focus;    /* 0x252: the focus it last reacted to */
     u8 startled;      /* 0x253: it was startled by a tap on the glass */

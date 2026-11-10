@@ -154,7 +154,7 @@ void RoomObject_BindModel(RoomObject *object)
 CLEAN_AS(func_ov004_0220f484, RoomObject_BindModel)
 
 /* func_ov004_0220f52c: sets the object up once from its placement word: its position (the
- * centre of its cell, at the height RoomObjects_HeightAtPoint finds), angle, number (at most
+ * center of its cell, at the height RoomObjects_HeightAtPoint finds), angle, number (at most
  * LAST_NUMBER), layer, and the furniture's values from the main program's tables; then its
  * matrices, switch, place on the map, first state, box and touch pick. A preview instead stands 4
  * units from data_021c67b8 towards data_021c67d0, at a quarter of its size, and the angles it
@@ -168,7 +168,7 @@ void RoomObject_SetUp(RoomObject *object)
     }
     u32 word = object->placement;
     if (!RoomObject_IsUnplaced(object)) {
-        AcreTile_TileCentreInAcre(&object->position, 0, 0, (int) PLACE_X(word), (int) PLACE_Y(word));
+        AcreTile_TileCenterInAcre(&object->position, 0, 0, (int) PLACE_X(word), (int) PLACE_Y(word));
         object->position.y = RoomObjects_HeightAtPoint(&object->position);
         set_scale(object, ONE);
         object->unk_15c = ONE;
@@ -255,7 +255,7 @@ void RoomObject_PickItemsOnTop(RoomObject *object)
                                              y & (BLOCK_CELLS - 1), LAYER_ON_TOP);
         if (item != NULL && ItemCode_IsKind1(item)) {
             Vec3 point;
-            AcreTile_TileCentre(&point, (unsigned int) x, (unsigned int) y);
+            AcreTile_TileCenter(&point, (unsigned int) x, (unsigned int) y);
             point.y = RoomObjects_HeightAtCell(x, y);
             TouchPick_SetCylinderAndAdd((TouchPick *) (uintptr_t) SceneQuery_FieldObject(), &object->item_picks[i], &point,
                                         0xccd, 0x100, 0xa, 0xff);
@@ -283,12 +283,12 @@ void RoomObject_UpdateBoxAndPick(RoomObject *object)
     RoomObject_Size(object, &size);
     Vec3 scale;
     set_vec(&scale, object->unk_15c, object->unk_15c, object->unk_15c);
-    Vec3 centre;
-    RoomObject_Centre(object, &centre);
+    Vec3 center;
+    RoomObject_Center(object, &center);
     int shown = 0;
     if (!object->unk_78c) {
         if (object->push_box.base.active) {
-            shown = CollisionBox_Place(&object->push_box.base, &centre, object->angle, &scale);
+            shown = CollisionBox_Place(&object->push_box.base, &center, object->angle, &scale);
         } else {
             shown = 1;
         }
@@ -298,7 +298,7 @@ void RoomObject_UpdateBoxAndPick(RoomObject *object)
     if (shown) {
         u8 index = (u8) RoomObjects_IndexOf(RoomObjects_Table(), object);
         int flags = pick_kind();
-        TouchPick_SetBoxAndAdd((TouchPick *) (uintptr_t) SceneQuery_FieldObject(), object->pick_box, &centre, size.x, size.z,
+        TouchPick_SetBoxAndAdd((TouchPick *) (uintptr_t) SceneQuery_FieldObject(), object->pick_box, &center, size.x, size.z,
                                size.y, object->angle, flags, index);
     } else {
         TouchPick_AddFaces((TouchPick *) (uintptr_t) SceneQuery_FieldObject(), object->pick_box);
@@ -328,19 +328,19 @@ void RoomObject_SetUpBoxAndPick(RoomObject *object)
     RoomObject_Size(object, &size);
     Vec3 scale;
     set_vec(&scale, object->unk_15c, object->unk_15c, object->unk_15c);
-    Vec3 centre;
-    RoomObject_Centre(object, &centre);
+    Vec3 center;
+    RoomObject_Center(object, &center);
     if (!object->unk_78c) {
         PushBox_SetOwner(&object->push_box, object);
         void *objects = RoomObjects_Table();
         (void) RoomObjects_At(objects, Mount_Parent(&object->mount));
-        CollisionBox_Add(&object->push_box.base, size.x, size.z, BOX_HEIGHT, &centre, object->angle, &scale);
+        CollisionBox_Add(&object->push_box.base, size.x, size.z, BOX_HEIGHT, &center, object->angle, &scale);
     }
     u8 index = (u8) RoomObjects_IndexOf(RoomObjects_Table(), object);
     size.x = FX_MulFunc(size.x, PICK_SHRINK);
     size.z = FX_MulFunc(size.z, PICK_SHRINK);
     int flags = pick_kind();
-    TouchPick_SetBoxAndAdd((TouchPick *) (uintptr_t) SceneQuery_FieldObject(), object->pick_box, &centre, size.x, size.z,
+    TouchPick_SetBoxAndAdd((TouchPick *) (uintptr_t) SceneQuery_FieldObject(), object->pick_box, &center, size.x, size.z,
                            size.y, object->angle, flags, index);
 }
 CLEAN_AS(func_ov004_0220f9c8, RoomObject_SetUpBoxAndPick)
@@ -477,7 +477,7 @@ CLEAN_AS(func_ov004_0220fde0, RoomObject_Number)
 
 /* func_ov004_0220fefc: the middle of the object's four corners.
  * QUIRK: each coordinate of the sum is halved twice by a shift, rounding down. */
-void RoomObject_Centre(RoomObject *object, Vec3 *centre)
+void RoomObject_Center(RoomObject *object, Vec3 *center)
 {
     Vec3 sum;
     set_vec(&sum, 0, 0, 0);
@@ -489,9 +489,9 @@ void RoomObject_Centre(RoomObject *object, Vec3 *centre)
     sum.x = shift_right(sum.x, 2);
     sum.y = shift_right(sum.y, 2);
     sum.z = shift_right(sum.z, 2);
-    *centre = sum;
+    *center = sum;
 }
-CLEAN_AS(func_ov004_0220fefc, RoomObject_Centre)
+CLEAN_AS(func_ov004_0220fefc, RoomObject_Center)
 
 /* func_ov004_0220ff4c: corner `index` (0 to 3, wrapping) of the object's footprint, in the
  * world. */
@@ -612,7 +612,7 @@ void RoomObject_Vfunc14(RoomObject *object, int mode)
             } else {
                 RoomObject_TakeOffMap(object, 1, 0);
             }
-            RoomObject_RoachFromCentre(object);
+            RoomObject_RoachFromCenter(object);
         }
         RoomObjects_Remove(RoomObjects_Table(), object);
     }
@@ -643,7 +643,7 @@ unsigned int Placement_Number(unsigned int placement)
 CLEAN_AS(func_ov004_02211388, Placement_Number)
 
 /* func_ov004_02211394: a placement word from its fields, each cut to its width.
- * BUG: the word is built in an uninitialised stack word and bits 29-31 are never set, so the
+ * BUG: the word is built in an uninitialized stack word and bits 29-31 are never set, so the
  * ROM returns whatever they held; here they are 0. Nothing reads them (room_object_body.h).
  * The ROM also sets a 5-bit field to 1 in the following stack word, which is not returned. */
 int Placement_Make(int x, int y, int number, int side, u8 on_top, int mode)

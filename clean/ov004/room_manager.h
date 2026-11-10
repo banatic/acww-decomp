@@ -28,7 +28,7 @@ typedef struct RoomManager {
     TvBroadcast tv;                    /* 0x064 */
     u8 mover[ROOM_MANAGER_MOVER_SIZE]; /* 0x1c4: a FurnitureMover */
     u8 unk_2a8[8];                     /* 0x2a8 */
-    u8 broadcast_changed;              /* 0x2b0: set when the TV shows a new programme or forecast */
+    u8 broadcast_changed;              /* 0x2b0: set when the TV shows a new program or forecast */
 } RoomManager;
 
 FurnitureMover *RoomManager_Mover(void);

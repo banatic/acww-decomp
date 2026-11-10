@@ -45,7 +45,7 @@ void BackupCard_InitGame(void)
 }
 CLEAN_AS(func_02050b78, BackupCard_InitGame)
 
-/* func_02050b94: initialises the card library when it is not yet, identifies the save memory
+/* func_02050b94: initializes the card library when it is not yet, identifies the save memory
  * as `type` under a lock of its own and keeps its size. `name` is not used.
  * QUIRK: the lock id is used without checking that one was given (BACKUP_CARD_NO_LOCK). */
 void BackupCard_Init(BackupCard *card, int type, const void *name)
@@ -90,7 +90,7 @@ void BackupCard_Finish(BackupCard *card)
 }
 CLEAN_AS(func_02050948, BackupCard_Finish)
 
-/* func_020508a0: on the way out, a request of the game's record still under way is cancelled
+/* func_020508a0: on the way out, a request of the game's record still under way is canceled
  * and waited for, at most about 0.1 s; then its lock is given back.
  * HW: the wait reads the tick counter.
  * QUIRK: the record keeps the lock id it gave back. */

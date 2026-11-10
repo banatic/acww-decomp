@@ -184,7 +184,7 @@ static void flip(s16 *coord)
 }
 
 /* func_020fb640: `emitter` made afresh from `resource` at `pos` (from the resource's base
- * position), with the resource's values; its own collision height none, its colour white;
+ * position), with the resource's values; its own collision height none, its color white;
  * its texture coordinates 1 << repeat, negative when flipped. */
 void ParticleEmitter_Init(ParticleEmitter *emitter, const ParticleResource *resource, const Vec3 *pos)
 {
@@ -299,7 +299,7 @@ static void move_particle(Particle *ptcl, const ParticleEmitter *emitter, const 
     ptcl->position.z = particle_add(ptcl->position.z, particle_add(ptcl->velocity.z, emitter->velocity.z));
 }
 
-/* The resource's behaviours, each given the particle and the acceleration to add to. */
+/* The resource's behaviors, each given the particle and the acceleration to add to. */
 static void run_behaviors(const ParticleResource *res, int count, Particle *ptcl, Vec3 *acc, ParticleEmitter *emitter)
 {
     for (int i = 0; i < count; i++) {
@@ -327,7 +327,7 @@ typedef struct AnimStep {
 /* func_020fadf8: the frame's update of an emitter. The emitter's callback is told before (0)
  * and after (1). Once started and within its life it gives off particles every `interval`
  * frames; then each particle runs its animations, follows the emitter if the resource says so,
- * runs the behaviours, moves, gives off its children when due, takes a polygon ID and ages;
+ * runs the behaviors, moves, gives off its children when due, takes a polygon ID and ages;
  * then each child the same, with the child part's two animations. The emitter ages last.
  * QUIRK: an interval of 0 counts as 1 (the ROM's remainder by 0 is 0). */
 void ParticleSys_UpdateEmitter(ParticleSystem *sys, ParticleEmitter *emitter)
@@ -694,7 +694,7 @@ static const u8 *take(const u8 *file, u32 *offset, u32 size)
 #define TEX_ANIM_SIZE 0xc
 #define CHILD_SIZE 0x14
 
-/* The behaviours, in their order in the file: flag, function and size. */
+/* The behaviors, in their order in the file: flag, function and size. */
 static const struct {
     u32 flag;
     ParticleBehaviorFn fn;
@@ -706,7 +706,7 @@ static const struct {
 };
 
 /* func_020fa564: the resources read from the start of the particle file's resources: each a
- * header and the parts its flags announce, its behaviours in a table allocated for them (the
+ * header and the parts its flags announce, its behaviors in a table allocated for them (the
  * game's six functions, each with its part of the file). */
 void ParticleSys_LoadResources(ParticleSystem *sys, const u8 *file)
 {

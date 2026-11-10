@@ -684,7 +684,7 @@ void TimeScreen_FieldsByTouch(TimeScreen *self)
 }
 CLEAN_AS(func_ov136_0229ce7c, TimeScreen_FieldsByTouch)
 
-/* func_ov136_0229cf14: the picker's characters and the panel's text colours loaded. */
+/* func_ov136_0229cf14: the picker's characters and the panel's text colors loaded. */
 void TimeScreen_LoadGraphics(TimeScreen *self)
 {
     ClockSetter_LoadSprites(&self->picker);

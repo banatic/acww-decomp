@@ -177,7 +177,7 @@ int CollisionMap_UnclaimedObjectAt(int x, int z)
 }
 CLEAN_AS(func_020308a4, CollisionMap_UnclaimedObjectAt)
 
-/* func_020308e0: unit (x, z) gets no path directions, and its four neighbours lose the one
+/* func_020308e0: unit (x, z) gets no path directions, and its four neighbors lose the one
  * pointing at it (north, south, west, then east). */
 void CollisionMap_UnlinkPathUnit(int x, int z)
 {

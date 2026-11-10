@@ -16,9 +16,9 @@ static_assert(sizeof(LabelBox) == 0x84, "label box");
 #define LABEL_BOX_SLOT_DESTRUCT 0
 #define LABEL_BOX_SLOT_MEASURE 3
 
-/* A colour tag: group 0xff, kind 0. */
+/* A color tag: group 0xff, kind 0. */
 #define LABEL_BOX_GROUP_FORMAT 0xff
-#define LABEL_BOX_KIND_COLOUR 0
+#define LABEL_BOX_KIND_COLOR 0
 
 /* The box LabelBox_CharsWidth measures with: from VRAM tile 0, 1 tile wide, 2 high. */
 #define LABEL_BOX_MEASURE_TILE 0
@@ -73,7 +73,7 @@ void LabelBox_Draw(LabelBox *box)
 }
 CLEAN_AS(func_020a8e04, LabelBox_Draw)
 
-/* func_020a8e4c: while drawing, a colour tag at `position` sets the text's colour. */
+/* func_020a8e4c: while drawing, a color tag at `position` sets the text's color. */
 void LabelBox_OnTag(LabelBox *box, int position)
 {
     if (box->mode != LABEL_BOX_DRAW) {
@@ -82,8 +82,8 @@ void LabelBox_OnTag(LabelBox *box, int position)
     MessageTag tag;
     MessageTag_Construct(&tag);
     MessageTag_Read(&tag, position);
-    if (tag.group == LABEL_BOX_GROUP_FORMAT && tag.kind == LABEL_BOX_KIND_COLOUR) {
-        box->base.color = TalkBox_TextColour(MessageTag_Colour(&tag));
+    if (tag.group == LABEL_BOX_GROUP_FORMAT && tag.kind == LABEL_BOX_KIND_COLOR) {
+        box->base.color = TalkBox_TextColor(MessageTag_Color(&tag));
     }
 }
 CLEAN_AS(func_020a8e4c, LabelBox_OnTag)

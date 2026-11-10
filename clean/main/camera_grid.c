@@ -15,7 +15,7 @@ static_assert(offsetof(CameraGrid, buttons) == 0x0c && offsetof(CameraGrid, stat
 static_assert(offsetof(CameraGrid, cursor) == 0xc4 && offsetof(CameraGrid, chosen) == 0xd0, "CameraGrid");
 static_assert(offsetof(CameraGrid, asked_open) == 0xd4 && sizeof(CameraGrid) == 0xd8, "CameraGrid");
 
-/* A button's place in the grid, -1 to 1 from the centre. */
+/* A button's place in the grid, -1 to 1 from the center. */
 typedef struct CameraGridPlace {
     s8 column;
     s8 row;
@@ -353,7 +353,7 @@ void CameraGrid_RestartButtons(CameraGrid *grid)
 }
 CLEAN_AS(func_0208c668, CameraGrid_RestartButtons)
 
-/* func_0208c688: not asked to open, the cursor and the chosen button on the centre, closed. */
+/* func_0208c688: not asked to open, the cursor and the chosen button on the center, closed. */
 void CameraGrid_Reset(CameraGrid *grid)
 {
     grid->asked_open = 0;
@@ -429,7 +429,7 @@ CameraGrid *CameraGrid_Destruct(CameraGrid *grid)
 }
 CLEAN_AS(func_0208c804, CameraGrid_Destruct)
 
-/* func_0208c834: the constructor: closed, not asked to open, the cursor on the centre. */
+/* func_0208c834: the constructor: closed, not asked to open, the cursor on the center. */
 CameraGrid *CameraGrid_Construct(CameraGrid *grid)
 {
     ScreenSprite_Construct(&grid->base);

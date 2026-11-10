@@ -1,6 +1,6 @@
 /* Overlay 69's static initialiser, run when main's startup loads the overlay
  * (villager_line_tables.h): fifteen tables of line members filled from the overlay's
- * constants (the compiler cannot place member pointers in initialised data), a null member
+ * constants (the compiler cannot place member pointers in initialized data), a null member
  * where a table has none, then copied into main's. */
 #include <stdint.h>
 

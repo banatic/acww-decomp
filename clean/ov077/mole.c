@@ -479,7 +479,7 @@ CLEAN_AS(func_ov077_02279068, Mole_EnterRise)
 
 /* func_ov077_022790c4 (MOLE_WAIT's run): without the player's actor he is deleted. Else his
  * animation is held at frame 0 and he faces the player; when the player's tile, from the
- * building's, is one of (0, 3), (-1, 3), (-1, 2), (1, 3) and (1, 2), he is put on the centre of
+ * building's, is one of (0, 3), (-1, 3), (-1, 2), (1, 3) and (1, 2), he is put on the center of
  * the tile (2, 2) from the building's for the first three, (-2, 2) for the others, and asks for
  * an event (kind 7, EventQueue_RequestKind7). 1.
  * The two tables of tiles are constructed in the overlay's .bss the first time (each guarded by
@@ -525,7 +525,7 @@ int Mole_UpdateWait(Mole *mole)
             continue;
         }
         const MoleTile *side = i <= MOLE_LAST_LEFT_APPROACH ? &right : &left;
-        AcreTile_TileCentre(mole_position(mole), (u32) (side->x + mole->building_x), (u32) (side->z + mole->building_z));
+        AcreTile_TileCenter(mole_position(mole), (u32) (side->x + mole->building_x), (u32) (side->z + mole->building_z));
         EventQueue_RequestKind7(mole, 0);
     }
     return 1;

@@ -1,5 +1,5 @@
 /* A room object's body (room_object.h): setting it up from the word it was placed with, its
- * matrices, size, corners and centre, the box it pushes back with and its shadows, binding its
+ * matrices, size, corners and center, the box it pushes back with and its shadows, binding its
  * model, and the base class's small virtual functions.
  *
  * The placement word (RoomObject.placement): the cell within its block (bits 0-3 and 4-7), the
@@ -29,7 +29,7 @@ int RoomObject_ToggleSwitch(RoomObject *object);
 int RoomObject_Vfunc74(void);
 int RoomObject_SetUnk77c(RoomObject *object, int unused, int value);
 int RoomObject_Number(RoomObject *object);
-void RoomObject_Centre(RoomObject *object, Vec3 *centre);
+void RoomObject_Center(RoomObject *object, Vec3 *center);
 void RoomObject_Corner(RoomObject *object, Vec3 *corner, int index);
 void RoomObject_ToWorld(RoomObject *object, Vec3 *out, const Vec3 *point);
 int RoomObject_Lookup020537a8(RoomObject *object);

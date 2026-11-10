@@ -4,17 +4,17 @@
  *
  * - up to three lights of the scene (SceneLight), set up from the scene's set (func_02065a7c):
  *   lights of kinds 0-2 turn with the time of day (SceneLight_SunAngle), lights of kinds 3 and
- *   4 are lamps whose colour goes from an unlit to a lit colour as their fader rises, and
+ *   4 are lamps whose color goes from an unlit to a lit color as their fader rises, and
  *   kind 5 is a warm glow that brightens with its fader. The lamps are switched by requests
  *   (SceneLights_RequestOn, SceneLights_RequestOff): request 0 for kinds 3 and 4, request 1
- *   for kind 5. Other kinds take a colour of the sky's light of now (Sky_LightColor);
+ *   for kind 5. Other kinds take a color of the sky's light of now (Sky_LightColor);
  * - a flash on light 2 (SceneFlash): a thunderbolt's white flash, with its thunder heard about
- *   45 frames later, or a firework's coloured one (SceneLights_StartFlash);
- * - the ambient colour (from Sky_LightColor(3), brighter or white in some rooms) and the
- *   materials' emission colour (SceneLights_EmissionColour).
+ *   45 frames later, or a firework's colored one (SceneLights_StartFlash);
+ * - the ambient color (from Sky_LightColor(3), brighter or white in some rooms) and the
+ *   materials' emission color (SceneLights_EmissionColor).
  *
  * The scene's light kind (data_020ccc48, by scene) decides the rest: kind 0 has every light
- * follow the camera with the sky's colour, kinds 2 and 3 mix the emission colour with the
+ * follow the camera with the sky's color, kinds 2 and 3 mix the emission color with the
  * lamp's fader and light their materials with light 0 only. */
 #ifndef CLEAN_MAIN_SCENE_LIGHTS_H
 #define CLEAN_MAIN_SCENE_LIGHTS_H
@@ -40,7 +40,7 @@ enum SceneLightKind {
     SCENE_LIGHT_SUN_A = 0, /* kinds 0-2 turn about Y with the time of day */
     SCENE_LIGHT_SUN_B = 1,
     SCENE_LIGHT_SUN_C = 2,
-    SCENE_LIGHT_SWITCHED_LAMP = 3, /* a lamp whose colour the switch's mode can override */
+    SCENE_LIGHT_SWITCHED_LAMP = 3, /* a lamp whose color the switch's mode can override */
     SCENE_LIGHT_LAMP = 4,
     SCENE_LIGHT_GLOW = 5,
 };
@@ -67,11 +67,11 @@ typedef struct SceneLight {
     s32 light;        /* 0x04: the hardware light (0-3) */
     Time time_offset; /* 0x08: added to the clock for a sun light's angle */
     u16 unk_0a;
-    s32 colour_index;    /* 0x0c: Sky_LightColor's index for the colour of other kinds */
+    s32 color_index;     /* 0x0c: Sky_LightColor's index for the color of other kinds */
     s16 angle_x;         /* 0x10: the turn about X */
     s16 angle_y;         /* 0x12: the turn about Y of the kinds that do not follow the time */
     SceneLightSwitch sw; /* 0x14 */
-    u16 colour;          /* 0x34 */
+    u16 color;           /* 0x34 */
     u16 unk_36;
     Vec3 direction; /* 0x38 */
 } SceneLight;
@@ -90,7 +90,7 @@ enum SceneFlashTimerState {
 /* The flash, on light 2 (0x44 bytes). */
 typedef struct SceneFlash {
     s32 kind; /* SceneFlashKind */
-    u16 colour;
+    u16 color;
     u16 unk_06;
     Vec3 direction;                             /* 0x08 */
     s32 state;                                  /* 0x14: SceneFlashState */
@@ -100,7 +100,7 @@ typedef struct SceneFlash {
     SceneFlashTimer timers[SCENE_FLASH_TIMERS]; /* 0x24 */
 } SceneFlash;
 
-/* The flash's kind: thunder, a firework's colour (1-8) or none. */
+/* The flash's kind: thunder, a firework's color (1-8) or none. */
 enum SceneFlashKind {
     SCENE_FLASH_THUNDER = 0,
     SCENE_FLASH_FIREWORK_FIRST = 1,
@@ -121,9 +121,9 @@ typedef struct SceneLights {
     SceneLight lights[SCENE_LIGHTS_MAX]; /* 0x58 */
     SceneFlash flash;                    /* 0x124 */
     u16 ambient;                         /* 0x168 */
-    u16 lamp_lit;                        /* 0x16a: the lamps' colours */
+    u16 lamp_lit;                        /* 0x16a: the lamps' colors */
     u16 lamp_unlit;                      /* 0x16c */
-    u16 emission_lit;                    /* 0x16e: the materials' emission colours */
+    u16 emission_lit;                    /* 0x16e: the materials' emission colors */
     u16 emission_unlit;                  /* 0x170 */
     u16 unk_172;
     const Fader *fader; /* 0x174: the lamp's fader the emission follows */
@@ -162,9 +162,9 @@ void SceneLights_RequestOn(int index, int duration, int mode);
 void SceneLight_Draw(SceneLight *light, const SceneLightsRotation *rotation);
 void SceneLight_Run(SceneLight *light);
 void SceneLight_Update(SceneLight *light);
-void SceneLight_GlowColour(SceneLight *light);
-void SceneLight_LampColour(SceneLight *light);
-void SceneLight_SwitchedLampColour(SceneLight *light);
+void SceneLight_GlowColor(SceneLight *light);
+void SceneLight_LampColor(SceneLight *light);
+void SceneLight_SwitchedLampColor(SceneLight *light);
 void SceneLight_FollowCamera(SceneLight *light);
 void SceneLight_Rotate(SceneLight *light, Vec3 *v);
 void SceneLights_ClampDirection(Vec3 *v, Vec3 *out);
@@ -191,10 +191,10 @@ void SceneFlashTimer_Delete(SceneFlashTimer *timer);
 void SceneFlashTimer_Run(SceneFlashTimer *timer);
 void SceneFlashTimer_Clear(SceneFlashTimer *timer);
 unsigned int SceneLights_LightLevel(unsigned int index);
-short SceneLights_EmissionColour(void);
+short SceneLights_EmissionColor(void);
 void SceneLights_UpdateAmbient(SceneLights *self);
-short SceneLights_AmbientColour(void);
-short SceneLights_FlashColour(void);
+short SceneLights_AmbientColor(void);
+short SceneLights_FlashColor(void);
 int SceneLights_RoomMaterialLights(void);
 int SceneLights_MaterialLights(void);
 void SceneLights_NormalizeRows(const SceneLightsRotation *src, SceneLightsRotation *dst);
@@ -209,7 +209,7 @@ typedef struct SceneLightDef {
     s32 light;
     Time time_offset; /* 0x08 */
     u16 unk_0a;       /* not copied */
-    s32 colour_index; /* 0x0c */
+    s32 color_index;  /* 0x0c */
     s16 angle_x;      /* 0x10 */
     s16 angle_y;      /* 0x12 */
 } SceneLightDef;

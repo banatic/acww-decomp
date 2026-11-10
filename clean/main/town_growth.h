@@ -13,7 +13,7 @@
  * acres while fewer than two acres hold 0x66 or 0x6a, and n = 2 in each acre without one.
  *
  * Over up to 60 days, each inner acre has one chance in five a day of a flower code (0x00-
- * 0x19) drawn at random being handed to func_02049944 with func_02049bc4 (its neighbours). */
+ * 0x19) drawn at random being handed to func_02049944 with func_02049bc4 (its neighbors). */
 #ifndef CLEAN_MAIN_TOWN_GROWTH_H
 #define CLEAN_MAIN_TOWN_GROWTH_H
 

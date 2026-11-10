@@ -1,11 +1,11 @@
-/* Overlay 68's static initialisers (ov068_static_init.h). */
+/* Overlay 68's static initializers (ov068_static_init.h). */
 #include "ov068_static_init.h"
 
 #include "clean.h"
 #include "ov004/member_pointer.h"
 #include "types.h"
 
-/* ---- What the initialisers share */
+/* ---- What the initializers share */
 
 /* `count` member pointers copied from the overlay's constants, in order. */
 static void ov068_init_copy(MemberPointer *table, const MemberPointer *const *constants, int count)
@@ -15,33 +15,33 @@ static void ov068_init_copy(MemberPointer *table, const MemberPointer *const *co
     }
 }
 
-/* A colour of four 5-bit components (the fourth always 31). */
-typedef struct Ov068InitColour {
+/* A color of four 5-bit components (the fourth always 31). */
+typedef struct Ov068InitColor {
     u8 c0;
     u8 c1;
     u8 c2;
     u8 c3;
-} Ov068InitColour;
+} Ov068InitColor;
 
-static void ov068_init_colour(Ov068InitColour *colour, u8 c0, u8 c1, u8 c2, u8 c3)
+static void ov068_init_color(Ov068InitColor *color, u8 c0, u8 c1, u8 c2, u8 c3)
 {
-    colour->c0 = c0;
-    colour->c1 = c1;
-    colour->c2 = c2;
-    colour->c3 = c3;
+    color->c0 = c0;
+    color->c1 = c1;
+    color->c2 = c2;
+    color->c3 = c3;
 }
 
-/* The six colours several source files define for themselves: red, blue, yellow, green, cyan
- * and grey, in that order. */
-static void ov068_init_colours(Ov068InitColour *red, Ov068InitColour *blue, Ov068InitColour *yellow, Ov068InitColour *green,
-                               Ov068InitColour *cyan, Ov068InitColour *grey)
+/* The six colors several source files define for themselves: red, blue, yellow, green, cyan
+ * and gray, in that order. */
+static void ov068_init_colors(Ov068InitColor *red, Ov068InitColor *blue, Ov068InitColor *yellow, Ov068InitColor *green,
+                              Ov068InitColor *cyan, Ov068InitColor *gray)
 {
-    ov068_init_colour(red, 31, 20, 20, 31);
-    ov068_init_colour(blue, 20, 20, 31, 31);
-    ov068_init_colour(yellow, 31, 31, 20, 31);
-    ov068_init_colour(green, 20, 31, 20, 31);
-    ov068_init_colour(cyan, 20, 31, 31, 31);
-    ov068_init_colour(grey, 20, 24, 24, 31);
+    ov068_init_color(red, 31, 20, 20, 31);
+    ov068_init_color(blue, 20, 20, 31, 31);
+    ov068_init_color(yellow, 31, 31, 20, 31);
+    ov068_init_color(green, 20, 31, 20, 31);
+    ov068_init_color(cyan, 20, 31, 31, 31);
+    ov068_init_color(gray, 20, 24, 24, 31);
 }
 
 /* A row of a scene's steps: the member function and whether it runs each frame (the flag is
@@ -57,9 +57,9 @@ static_assert(sizeof(Ov068InitStep) == 0xc, "step row");
 /* The null member pointer (the C++ runtime's). */
 extern const MemberPointer __ptmf_null;
 
-/* ---- The initialisers, in address order */
+/* ---- The initializers, in address order */
 
-/* The outdoor villager's behaviours (outdoor_villager_behaviour.h): 24 rows of a start and an
+/* The outdoor villager's behaviors (outdoor_villager_behavior.h): 24 rows of a start and an
  * update, i.e. 48 member pointers. */
 extern MemberPointer data_ov068_02278484[48];
 extern const MemberPointer data_ov068_02276e58, data_ov068_02276e70, data_ov068_02276ea8, data_ov068_02276eb8,
@@ -79,8 +79,8 @@ extern s16 data_ov068_02278264, data_ov068_02278260;
 extern s16 data_020c80f0;
 extern s16 data_020ca4cc;
 
-/* __sinit_ov068_02276800: the outdoor villager's behaviour table, then its two angles. */
-void Ov068Init_OutdoorVillagerBehaviours(void)
+/* __sinit_ov068_02276800: the outdoor villager's behavior table, then its two angles. */
+void Ov068Init_OutdoorVillagerBehaviors(void)
 {
     static const MemberPointer *const constants[48] = {
         &data_ov068_02276eb8, &data_ov068_02276ea8, &data_ov068_02276ed0, &data_ov068_02276ec8, &data_ov068_02276ed8,
@@ -98,18 +98,18 @@ void Ov068Init_OutdoorVillagerBehaviours(void)
     data_ov068_02278264 = data_020c80f0;
     data_ov068_02278260 = data_020ca4cc;
 }
-CLEAN_AS(__sinit_ov068_02276800, Ov068Init_OutdoorVillagerBehaviours)
+CLEAN_AS(__sinit_ov068_02276800, Ov068Init_OutdoorVillagerBehaviors)
 
-extern Ov068InitColour data_ov068_02278614, data_ov068_02278610, data_ov068_02278604, data_ov068_02278608, data_ov068_02278618,
+extern Ov068InitColor data_ov068_02278614, data_ov068_02278610, data_ov068_02278604, data_ov068_02278608, data_ov068_02278618,
     data_ov068_0227860c;
 
-/* __sinit_ov068_02276ad8: the six colours of its source file. */
-void Ov068Init_Colours02278604(void)
+/* __sinit_ov068_02276ad8: the six colors of its source file. */
+void Ov068Init_Colors02278604(void)
 {
-    ov068_init_colours(&data_ov068_02278614, &data_ov068_02278610, &data_ov068_02278604, &data_ov068_02278608,
-                       &data_ov068_02278618, &data_ov068_0227860c);
+    ov068_init_colors(&data_ov068_02278614, &data_ov068_02278610, &data_ov068_02278604, &data_ov068_02278608,
+                      &data_ov068_02278618, &data_ov068_0227860c);
 }
-CLEAN_AS(__sinit_ov068_02276ad8, Ov068Init_Colours02278604)
+CLEAN_AS(__sinit_ov068_02276ad8, Ov068Init_Colors02278604)
 
 /* Tom Nook in the town (town_nook.h): his scene's two steps, and his six states' starts and
  * updates. */
@@ -135,16 +135,16 @@ int Ov068Init_TownNookTables(void)
 }
 CLEAN_AS(__sinit_ov068_02276b34, Ov068Init_TownNookTables)
 
-extern Ov068InitColour data_ov068_022786d0, data_ov068_022786d8, data_ov068_022786e4, data_ov068_022786e0, data_ov068_022786d4,
+extern Ov068InitColor data_ov068_022786d0, data_ov068_022786d8, data_ov068_022786e4, data_ov068_022786e0, data_ov068_022786d4,
     data_ov068_022786dc;
 
-/* __sinit_ov068_02276c08: the six colours of its source file. */
-void Ov068Init_Colours022786d0(void)
+/* __sinit_ov068_02276c08: the six colors of its source file. */
+void Ov068Init_Colors022786d0(void)
 {
-    ov068_init_colours(&data_ov068_022786d0, &data_ov068_022786d8, &data_ov068_022786e4, &data_ov068_022786e0,
-                       &data_ov068_022786d4, &data_ov068_022786dc);
+    ov068_init_colors(&data_ov068_022786d0, &data_ov068_022786d8, &data_ov068_022786e4, &data_ov068_022786e0,
+                      &data_ov068_022786d4, &data_ov068_022786dc);
 }
-CLEAN_AS(__sinit_ov068_02276c08, Ov068Init_Colours022786d0)
+CLEAN_AS(__sinit_ov068_02276c08, Ov068Init_Colors022786d0)
 
 /* The cafe guest (cafe_guest.h): its scene's six steps, and its five states' starts and
  * updates. */
@@ -175,24 +175,24 @@ int Ov068Init_CafeGuestTables(void)
 }
 CLEAN_AS(__sinit_ov068_02276c64, Ov068Init_CafeGuestTables)
 
-extern Ov068InitColour data_ov068_022788a8, data_ov068_022788a4, data_ov068_02278894, data_ov068_022788ac, data_ov068_02278898,
+extern Ov068InitColor data_ov068_022788a8, data_ov068_022788a4, data_ov068_02278894, data_ov068_022788ac, data_ov068_02278898,
     data_ov068_0227889c;
 
-/* __sinit_ov068_02276d54: the six colours of its source file. */
-void Ov068Init_Colours02278894(void)
+/* __sinit_ov068_02276d54: the six colors of its source file. */
+void Ov068Init_Colors02278894(void)
 {
-    ov068_init_colours(&data_ov068_022788a8, &data_ov068_022788a4, &data_ov068_02278894, &data_ov068_022788ac,
-                       &data_ov068_02278898, &data_ov068_0227889c);
+    ov068_init_colors(&data_ov068_022788a8, &data_ov068_022788a4, &data_ov068_02278894, &data_ov068_022788ac,
+                      &data_ov068_02278898, &data_ov068_0227889c);
 }
-CLEAN_AS(__sinit_ov068_02276d54, Ov068Init_Colours02278894)
+CLEAN_AS(__sinit_ov068_02276d54, Ov068Init_Colors02278894)
 
-extern Ov068InitColour data_ov068_022788e8, data_ov068_022788d8, data_ov068_022788f0, data_ov068_022788e0, data_ov068_022788dc,
+extern Ov068InitColor data_ov068_022788e8, data_ov068_022788d8, data_ov068_022788f0, data_ov068_022788e0, data_ov068_022788dc,
     data_ov068_022788e4;
 
-/* __sinit_ov068_02276db0: the six colours of its source file. */
-void Ov068Init_Colours022788d8(void)
+/* __sinit_ov068_02276db0: the six colors of its source file. */
+void Ov068Init_Colors022788d8(void)
 {
-    ov068_init_colours(&data_ov068_022788e8, &data_ov068_022788d8, &data_ov068_022788f0, &data_ov068_022788e0,
-                       &data_ov068_022788dc, &data_ov068_022788e4);
+    ov068_init_colors(&data_ov068_022788e8, &data_ov068_022788d8, &data_ov068_022788f0, &data_ov068_022788e0,
+                      &data_ov068_022788dc, &data_ov068_022788e4);
 }
-CLEAN_AS(__sinit_ov068_02276db0, Ov068Init_Colours022788d8)
+CLEAN_AS(__sinit_ov068_02276db0, Ov068Init_Colors022788d8)

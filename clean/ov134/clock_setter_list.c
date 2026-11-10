@@ -524,7 +524,7 @@ int ClockSetter_AboveMax(ClockSetter *self, int value, unsigned int field)
 CLEAN_AS(func_ov134_02299cb8, ClockSetter_AboveMax)
 
 /* func_ov134_02299d10: the picked row written into the list's field. The day is cut to the
- * month's length; a date field recolours the weekday. In mode 1 an hour that crosses min_hour
+ * month's length; a date field recolors the weekday. In mode 1 an hour that crosses min_hour
  * moves the date a day (back when it comes up to min_hour from below, on when it goes below).
  * Then the value is kept within `min` and `max` when they bound it, and the labels of what
  * changed are drawn again. For the hour or the minute the answer is whether it changed, with
@@ -756,9 +756,9 @@ int ClockSetter_TouchList(ClockSetter *self, int x, int y)
 CLEAN_AS(func_ov134_0229a1f0, ClockSetter_TouchList)
 
 /* func_ov134_0229a24c: a step of the list's closing (after ClockSetter_PickRow or
- * ClockSetter_CancelList); 1 once it is done. The marker of a picked row is chosen, the colour
+ * ClockSetter_CancelList); 1 once it is done. The marker of a picked row is chosen, the color
  * fades out, the window closes onto the field, then the list layer is hidden, the field's
- * button coloured back, and a pick is written (ClockSetter_CommitPick): when the hour or minute
+ * button colored back, and a pick is written (ClockSetter_CommitPick): when the hour or minute
  * changed the hands spin to it with their sound, and the focus moves to the next field. */
 int ClockSetter_CloseListStep(ClockSetter *self)
 {
@@ -771,7 +771,7 @@ int ClockSetter_CloseListStep(ClockSetter *self)
                 self->marker_cell = data_ov134_0229c03c;
             }
             break;
-        case CLOCK_SETTER_LIST_CANCELLED:
+        case CLOCK_SETTER_LIST_CANCELED:
             self->list_state = CLOCK_SETTER_LIST_FADE_OUT;
             break;
         case CLOCK_SETTER_LIST_FADE_OUT:
@@ -839,7 +839,7 @@ static void list_window_planes(ClockSetter *self)
 void ClockSetter_CancelList(ClockSetter *self)
 {
     SoundSys_PlaySe(CLOCK_SETTER_SE_CANCEL);
-    self->list_state = CLOCK_SETTER_LIST_CANCELLED;
+    self->list_state = CLOCK_SETTER_LIST_CANCELED;
     self->fade = 3;
     list_window_planes(self);
     ClockSetter_ClearFlags(self, CLOCK_SETTER_FLAG_THUMB_SHOWN);
@@ -898,7 +898,7 @@ CLEAN_AS(func_ov134_0229a44c, ClockSetter_TouchRow)
 
 /* func_ov134_0229a4e4: a step of the list's opening (after ClockSetter_OpenList); 1 once it is
  * open. The list layer is shown in a window that grows to the whole list; then the thumb is
- * shown on the bar right of the field and the colour fades in. */
+ * shown on the bar right of the field and the color fades in. */
 int ClockSetter_OpenListStep(ClockSetter *self)
 {
     switch (self->list_state) {
@@ -931,7 +931,7 @@ int ClockSetter_OpenListStep(ClockSetter *self)
             }
             break;
         case CLOCK_SETTER_LIST_PICKED:
-        case CLOCK_SETTER_LIST_CANCELLED:
+        case CLOCK_SETTER_LIST_CANCELED:
         case CLOCK_SETTER_LIST_FADE_OUT:
         case CLOCK_SETTER_LIST_SHRINK:
         case CLOCK_SETTER_LIST_SPIN:
@@ -947,7 +947,7 @@ CLEAN_AS(func_ov134_0229a4e4, ClockSetter_OpenListStep)
  * shows it): its screen fitted to the field's width (the columns left of it outside, a border
  * on the last of them), its rows (the month's length for the day), scrolled to put the value's
  * row at the field, the cursor on that row, the field's button and focus, the list's title,
- * edges and the window round the field, and the colour faded out. */
+ * edges and the window round the field, and the color faded out. */
 void ClockSetter_OpenList(ClockSetter *self, int field)
 {
     SoundSys_PlaySe(CLOCK_SETTER_SE_OPEN);

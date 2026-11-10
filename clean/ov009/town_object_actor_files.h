@@ -46,8 +46,8 @@ typedef struct TownObjectActorFiles {
     TownObjectActorShadowFile *shadows;                 /* 0x1c: "bshadow0" */
     void *srt_anims[TOWN_OBJECT_ACTOR_FILES_ANIMS];     /* 0x20: "bta0" to "bta3" */
     void *pattern_anims[TOWN_OBJECT_ACTOR_FILES_ANIMS]; /* 0x30: "btp0" to "btp3" */
-    int centre_x;                                       /* 0x40: its shape's (BuildingShapes_Bounds) */
-    int centre_z;
+    int center_x;                                       /* 0x40: its shape's (BuildingShapes_Bounds) */
+    int center_z;
     int width;
     int depth;
 } TownObjectActorFiles;

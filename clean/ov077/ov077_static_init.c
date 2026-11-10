@@ -1,6 +1,6 @@
 /* Overlay 77's static initialiser, run when the overlay is loaded: the functions of the mole's
  * talk sequences (mole_talk.h) and of his states (mole.h), copied from the overlay's constants
- * (the compiler cannot place member pointers in initialised data). */
+ * (the compiler cannot place member pointers in initialized data). */
 #include <stdint.h>
 
 #include "clean.h"

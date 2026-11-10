@@ -347,7 +347,7 @@ void PocketsLetters_DrawPlace(PocketsLetters *letters, const Letter *letter, int
 }
 CLEAN_AS(func_ov094_0229b3f0, PocketsLetters_DrawPlace)
 
-/* func_ov094_0229b4c0: data_ov094_0229c124 centred on (x, y). */
+/* func_ov094_0229b4c0: data_ov094_0229c124 centered on (x, y). */
 void PocketsLetters_DrawLowered(PocketsLetters *letters, int x, int y, const OamAffine *params)
 {
     OamBuffer_DrawObjAffine(OAM_BUFFER_SCREEN_SUB, &data_ov094_0229c124, x - POCKETS_LETTERS_OBJ_MARGIN,
@@ -355,7 +355,7 @@ void PocketsLetters_DrawLowered(PocketsLetters *letters, int x, int y, const Oam
 }
 CLEAN_AS(func_ov094_0229b4c0, PocketsLetters_DrawLowered)
 
-/* func_ov094_0229b4f0: data_ov094_0229c11c centred on (x, y), in `palette` (-1: its own). */
+/* func_ov094_0229b4f0: data_ov094_0229c11c centered on (x, y), in `palette` (-1: its own). */
 void PocketsLetters_DrawSurround(PocketsLetters *letters, int x, int y, int palette, const OamAffine *params)
 {
     OamBuffer_DrawObjAffine(OAM_BUFFER_SCREEN_SUB, &data_ov094_0229c11c, x - POCKETS_LETTERS_OBJ_MARGIN,
@@ -363,7 +363,7 @@ void PocketsLetters_DrawSurround(PocketsLetters *letters, int x, int y, int pale
 }
 CLEAN_AS(func_ov094_0229b4f0, PocketsLetters_DrawSurround)
 
-/* func_ov094_0229b520: data_ov094_0229c12c centred on (x, y). */
+/* func_ov094_0229b520: data_ov094_0229c12c centered on (x, y). */
 int PocketsLetters_DrawMark(PocketsLetters *letters, int x, int y)
 {
     return OamBuffer_DrawObjAffine(OAM_BUFFER_SCREEN_SUB, &data_ov094_0229c12c, x - POCKETS_LETTERS_OBJ_MARGIN,

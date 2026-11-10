@@ -1,4 +1,4 @@
-/* A test the game's node callbacks of 3D models (func_02054394 and its neighbours) start with,
+/* A test the game's node callbacks of 3D models (func_02054394 and its neighbors) start with,
  * on NitroSystem's G3D render state (NNSG3dRS). */
 #ifndef CLEAN_ITCM_NODE_HOOK_H
 #define CLEAN_ITCM_NODE_HOOK_H

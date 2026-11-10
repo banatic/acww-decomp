@@ -352,7 +352,7 @@ void MabelTalk_Buy(MabelTalk *talk)
 CLEAN_AS(func_ov049_02260ac4, MabelTalk_Buy)
 
 /* func_ov049_02260b20: the answers of `choices` offered (messages of "sp_npc_ysister" with
- * the attribute 6), the answer `cancel` the one cancelling, and the choices opened. */
+ * the attribute 6), the answer `cancel` the one canceling, and the choices opened. */
 void MabelTalk_OfferChoices(MabelTalk *talk, const MabelTalkChoices *choices, int cancel)
 {
     TalkObject *object = mtalk_object(talk);
@@ -877,7 +877,7 @@ void MabelTalk_OpenShowDesign(MabelTalk *talk)
 CLEAN_AS(func_ov049_02261a48, MabelTalk_OpenShowDesign)
 
 /* func_ov049_02261a6c (the end of line 0x28, an item's price): the answers for the item's
- * class offered, the last one cancelling: clothes, hats, accessories (buy, try on, no) or
+ * class offered, the last one canceling: clothes, hats, accessories (buy, try on, no) or
  * umbrellas (buy, no); nothing for another item. */
 void MabelTalk_OfferItemChoices(MabelTalk *talk)
 {

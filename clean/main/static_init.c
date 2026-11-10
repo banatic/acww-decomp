@@ -1,4 +1,4 @@
-/* The main program's static initialisers (static_init.h). */
+/* The main program's static initializers (static_init.h). */
 #include "static_init.h"
 
 #include "a_mes_obj.h"
@@ -132,7 +132,7 @@
 #include "session_players.h"
 #include "town_acre_count.h"
 
-/* ---- What the initialisers share */
+/* ---- What the initializers share */
 
 /* The record __register_global_object links an object into, so that its destructor runs at
  * exit (one per object, in the program's .bss). */
@@ -169,33 +169,33 @@ static void static_init_copy(MemberPointer *table, const MemberPointer *const *c
     }
 }
 
-/* Six colours of four 5-bit components (the fourth always 31), which several source files
+/* Six colors of four 5-bit components (the fourth always 31), which several source files
  * define for themselves. */
-typedef struct StaticInitColour {
+typedef struct StaticInitColor {
     u8 c0;
     u8 c1;
     u8 c2;
     u8 c3;
-} StaticInitColour;
+} StaticInitColor;
 
-static void static_init_colour(StaticInitColour *colour, u8 c0, u8 c1, u8 c2, u8 c3)
+static void static_init_color(StaticInitColor *color, u8 c0, u8 c1, u8 c2, u8 c3)
 {
-    colour->c0 = c0;
-    colour->c1 = c1;
-    colour->c2 = c2;
-    colour->c3 = c3;
+    color->c0 = c0;
+    color->c1 = c1;
+    color->c2 = c2;
+    color->c3 = c3;
 }
 
-/* Red, blue, yellow, green, cyan and grey, in that order. */
-static void static_init_colours(StaticInitColour *red, StaticInitColour *blue, StaticInitColour *yellow,
-                                StaticInitColour *green, StaticInitColour *cyan, StaticInitColour *grey)
+/* Red, blue, yellow, green, cyan and gray, in that order. */
+static void static_init_colors(StaticInitColor *red, StaticInitColor *blue, StaticInitColor *yellow, StaticInitColor *green,
+                               StaticInitColor *cyan, StaticInitColor *gray)
 {
-    static_init_colour(red, 31, 20, 20, 31);
-    static_init_colour(blue, 20, 20, 31, 31);
-    static_init_colour(yellow, 31, 31, 20, 31);
-    static_init_colour(green, 20, 31, 20, 31);
-    static_init_colour(cyan, 20, 31, 31, 31);
-    static_init_colour(grey, 20, 24, 24, 31);
+    static_init_color(red, 31, 20, 20, 31);
+    static_init_color(blue, 20, 20, 31, 31);
+    static_init_color(yellow, 31, 31, 20, 31);
+    static_init_color(green, 20, 31, 20, 31);
+    static_init_color(cyan, 20, 31, 31, 31);
+    static_init_color(gray, 20, 24, 24, 31);
 }
 
 static void static_init_vec(Vec3 *v, fx32 x, fx32 y, fx32 z)
@@ -210,7 +210,7 @@ static void static_init_vec(Vec3 *v, fx32 x, fx32 y, fx32 z)
 extern void func_020012dc(void *object);
 extern void func_020051b0(void *item);
 
-/* ---- The initialisers, in address order */
+/* ---- The initializers, in address order */
 
 extern AbAllObj data_0213ff20;
 extern StaticInitRecord data_0213ff14;
@@ -448,15 +448,15 @@ void StaticInit_CollisionWorld(void)
 }
 CLEAN_AS(__sinit_020c4af0, StaticInit_CollisionWorld)
 
-extern StaticInitColour data_021c513c, data_021c5134, data_021c5138, data_021c5150, data_021c514c, data_021c5148;
+extern StaticInitColor data_021c513c, data_021c5134, data_021c5138, data_021c5150, data_021c514c, data_021c5148;
 extern Block021c5160 data_021c5160;
 extern StaticInitRecord data_021c5154;
 extern void func_020348c4(void *block); /* Block021c5160_Destroy */
 
-/* __sinit_020c4bdc: the six colours of its source file and the object of block_02034858.h. */
+/* __sinit_020c4bdc: the six colors of its source file and the object of block_02034858.h. */
 void StaticInit_Block021c5160(void)
 {
-    static_init_colours(&data_021c513c, &data_021c5134, &data_021c5138, &data_021c5150, &data_021c514c, &data_021c5148);
+    static_init_colors(&data_021c513c, &data_021c5134, &data_021c5138, &data_021c5150, &data_021c514c, &data_021c5148);
     Block021c5160_Construct(&data_021c5160);
     static_init_register(&data_021c5160, func_020348c4, &data_021c5154);
 }
@@ -523,7 +523,7 @@ void StaticInit_CautionWindow(void)
 }
 CLEAN_AS(__sinit_020c4cfc, StaticInit_CautionWindow)
 
-extern StaticInitColour data_021c6794, data_021c67a8, data_021c6798, data_021c6790, data_021c678c, data_021c67a0;
+extern StaticInitColor data_021c6794, data_021c67a8, data_021c6798, data_021c6790, data_021c678c, data_021c67a0;
 /* The camera's eye, point looked at, goal view and a point (camera_view.c, camera_control.c). */
 extern Vec3 data_021c67b8;
 extern Vec3 data_021c67d0;
@@ -541,7 +541,7 @@ extern const MemberPointer data_020da744, data_020da82c, data_020da824, data_020
     data_020da7d4, data_020da83c, data_020da85c, data_020da72c, data_020da724, data_020da78c, data_020da77c, data_020da75c,
     data_020da7b4, data_020da7dc, data_020da86c, data_020da71c;
 
-/* __sinit_020c4d74: the six colours of its source file, the camera's vectors and view (with
+/* __sinit_020c4d74: the six colors of its source file, the camera's vectors and view (with
  * empty destructors) and its modes' member functions. */
 void StaticInit_CameraView(void)
 {
@@ -553,7 +553,7 @@ void StaticInit_CameraView(void)
         &data_020da784, &data_020da7bc, &data_020da7d4, &data_020da83c, &data_020da85c, &data_020da72c, &data_020da724,
         &data_020da78c, &data_020da77c, &data_020da75c, &data_020da7b4, &data_020da7dc, &data_020da86c, &data_020da71c,
     };
-    static_init_colours(&data_021c6794, &data_021c67a8, &data_021c6798, &data_021c6790, &data_021c678c, &data_021c67a0);
+    static_init_colors(&data_021c6794, &data_021c67a8, &data_021c6798, &data_021c6790, &data_021c678c, &data_021c67a0);
     static_init_register(&data_021c67b8, func_020012dc, &data_021c67ac);
     static_init_register(&data_021c67d0, func_020012dc, &data_021c67c4);
     static_init_register(data_021c6800, func_0203cb30, &data_021c67dc);
@@ -1123,14 +1123,14 @@ void StaticInit_ItemInfo(void)
 }
 CLEAN_AS(__sinit_020c5aa0, StaticInit_ItemInfo)
 
-extern StaticInitColour data_021cd878, data_021cd874, data_021cd870, data_021cd868, data_021cd86c, data_021cd860;
+extern StaticInitColor data_021cd878, data_021cd874, data_021cd870, data_021cd868, data_021cd86c, data_021cd860;
 
-/* __sinit_020c5ae4: the six colours of its source file. */
-void StaticInit_Colours5ae4(void)
+/* __sinit_020c5ae4: the six colors of its source file. */
+void StaticInit_Colors5ae4(void)
 {
-    static_init_colours(&data_021cd878, &data_021cd874, &data_021cd870, &data_021cd868, &data_021cd86c, &data_021cd860);
+    static_init_colors(&data_021cd878, &data_021cd874, &data_021cd870, &data_021cd868, &data_021cd86c, &data_021cd860);
 }
-CLEAN_AS(__sinit_020c5ae4, StaticInit_Colours5ae4)
+CLEAN_AS(__sinit_020c5ae4, StaticInit_Colors5ae4)
 
 /* Three text objects, each a text base (text_base.c) given its class's vtable, with their
  * records, constructors and destructors. */
@@ -1153,19 +1153,19 @@ void StaticInit_Texts5b40(void)
 }
 CLEAN_AS(__sinit_020c5b40, StaticInit_Texts5b40)
 
-extern StaticInitColour data_021cfb84, data_021cfb8c, data_021cfb74, data_021cfb70, data_021cfb78, data_021cfb7c;
+extern StaticInitColor data_021cfb84, data_021cfb8c, data_021cfb74, data_021cfb70, data_021cfb78, data_021cfb7c;
 extern Random data_021cfb80;
 extern StaticInitRecord data_021cfba0;
 
-/* __sinit_020c5ba0: the six colours of its source file, and its random numbers seeded with 1
+/* __sinit_020c5ba0: the six colors of its source file, and its random numbers seeded with 1
  * (MainRandom_Destruct as their destructor). */
-void StaticInit_Colours5ba0(void)
+void StaticInit_Colors5ba0(void)
 {
-    static_init_colours(&data_021cfb84, &data_021cfb8c, &data_021cfb74, &data_021cfb70, &data_021cfb78, &data_021cfb7c);
+    static_init_colors(&data_021cfb84, &data_021cfb8c, &data_021cfb74, &data_021cfb70, &data_021cfb78, &data_021cfb7c);
     Random_Init(&data_021cfb80, 1);
     static_init_register(&data_021cfb80, func_0206154c, &data_021cfba0);
 }
-CLEAN_AS(__sinit_020c5ba0, StaticInit_Colours5ba0)
+CLEAN_AS(__sinit_020c5ba0, StaticInit_Colors5ba0)
 
 /* The town tune's melody set (MelodySet, town_tune.h); it has no constructor. */
 extern u8 data_021cfbcc[];
@@ -1307,7 +1307,7 @@ extern void func_02082bc0(void *table); /* ActorEntries_DestructTable */
 
 static_assert(sizeof(ActorEntry) == 8, "ActorEntry");
 
-/* __sinit___sinit_020c5e30.cpp (the initialiser of a C++ source file): the actors' table,
+/* __sinit___sinit_020c5e30.cpp (the initializer of a C++ source file): the actors' table,
  * both arrays of entries constructed by __cxa_vec_ctor, then the table registered. Its symbol
  * has a '.' in it, so it is registered with CLEAN_AS_SYMBOL. */
 void StaticInit_ActorTable(void)
@@ -1405,9 +1405,9 @@ CLEAN_AS(__sinit_020c5f70, StaticInit_Spawner)
 /* The tiles around a tile the event winners' code checks (event_winner.c): the eight next to
  * it, and the fourteen around a house (columns -3 and 2 and row 2), and the object of
  * block_021d27ac.h. */
-#define STATIC_INIT_NEIGHBOURS 8
+#define STATIC_INIT_NEIGHBORS 8
 #define STATIC_INIT_HOUSE_RING 14
-extern EventWinnerTile data_021d27e0[STATIC_INIT_NEIGHBOURS];
+extern EventWinnerTile data_021d27e0[STATIC_INIT_NEIGHBORS];
 extern EventWinnerTile data_021d2820[STATIC_INIT_HOUSE_RING];
 extern Block021d27ac data_021d27ac;
 extern StaticInitRecord data_021d27a0;
@@ -1912,14 +1912,14 @@ void StaticInit_SceneObjects(void)
 }
 CLEAN_AS(__sinit_020c6e38, StaticInit_SceneObjects)
 
-extern StaticInitColour data_021f6acc, data_021f6aec, data_021f6ae8, data_021f6ae4, data_021f6ae0, data_021f6adc;
+extern StaticInitColor data_021f6acc, data_021f6aec, data_021f6ae8, data_021f6ae4, data_021f6ae0, data_021f6adc;
 
-/* __sinit_020c6ed8: the six colours of its source file. */
-void StaticInit_Colours6ed8(void)
+/* __sinit_020c6ed8: the six colors of its source file. */
+void StaticInit_Colors6ed8(void)
 {
-    static_init_colours(&data_021f6acc, &data_021f6aec, &data_021f6ae8, &data_021f6ae4, &data_021f6ae0, &data_021f6adc);
+    static_init_colors(&data_021f6acc, &data_021f6aec, &data_021f6ae8, &data_021f6ae4, &data_021f6ae0, &data_021f6adc);
 }
-CLEAN_AS(__sinit_020c6ed8, StaticInit_Colours6ed8)
+CLEAN_AS(__sinit_020c6ed8, StaticInit_Colors6ed8)
 
 extern FieldLabel data_021f6b20;
 extern StaticInitRecord data_021f6af4;
@@ -1975,13 +1975,13 @@ CLEAN_AS(__sinit_020c6f74, StaticInit_Sky)
 
 /* The first missing villager's colours and its states' entries and updates (missing_npc1.c). */
 #define STATIC_INIT_MISSING1_FNS (MISSING_NPC1_STATES * 2)
-extern StaticInitColour data_021fbbf4, data_021fbbe8, data_021fbbec, data_021fbbe4, data_021fbbf8, data_021fbbf0;
+extern StaticInitColor data_021fbbf4, data_021fbbe8, data_021fbbec, data_021fbbe4, data_021fbbf8, data_021fbbf0;
 extern MemberPointer data_021fbbfc[STATIC_INIT_MISSING1_FNS];
 extern const MemberPointer data_020e7b64, data_020e7b5c, data_020e7ae4, data_020e7aec, data_020e7b44, data_020e7b3c,
     data_020e7b34, data_020e7b14, data_020e7b24, data_020e7b2c, data_020e7b4c, data_020e7b54, data_020e7b04, data_020e7adc,
     data_020e7af4, data_020e7afc, data_020e7b0c, data_020e7b1c;
 
-/* __sinit_020c6fe8: the six colours of missing_npc1.c and its states' member functions. */
+/* __sinit_020c6fe8: the six colors of missing_npc1.c and its states' member functions. */
 void StaticInit_MissingNpc1(void)
 {
     static const MemberPointer *const state_fns[STATIC_INIT_MISSING1_FNS] = {
@@ -1989,7 +1989,7 @@ void StaticInit_MissingNpc1(void)
         &data_020e7b34, &data_020e7b14, &data_020e7b24, &data_020e7b2c, &data_020e7b4c, &data_020e7b54,
         &data_020e7b04, &data_020e7adc, &data_020e7af4, &data_020e7afc, &data_020e7b0c, &data_020e7b1c,
     };
-    static_init_colours(&data_021fbbf4, &data_021fbbe8, &data_021fbbec, &data_021fbbe4, &data_021fbbf8, &data_021fbbf0);
+    static_init_colors(&data_021fbbf4, &data_021fbbe8, &data_021fbbec, &data_021fbbe4, &data_021fbbf8, &data_021fbbf0);
     static_init_copy(data_021fbbfc, state_fns, STATIC_INIT_MISSING1_FNS);
 }
 CLEAN_AS(__sinit_020c6fe8, StaticInit_MissingNpc1)
@@ -2000,7 +2000,7 @@ CLEAN_AS(__sinit_020c6fe8, StaticInit_MissingNpc1)
 #define STATIC_INIT_MISSING2_FNS (MISSING_NPC2_STATES * 2)
 #define STATIC_INIT_MISSING2_FIRST 16
 #define STATIC_INIT_MISSING2_LAST (STATIC_INIT_MISSING2_FNS - STATIC_INIT_MISSING2_FIRST)
-extern StaticInitColour data_021fbc98, data_021fbca4, data_021fbc9c, data_021fbc8c, data_021fbc90, data_021fbc94;
+extern StaticInitColor data_021fbc98, data_021fbca4, data_021fbc9c, data_021fbc8c, data_021fbc90, data_021fbc94;
 extern MemberPointer data_021fbcd8[STATIC_INIT_MISSING2_FIRST];
 extern MemberPointer data_021fbd58[STATIC_INIT_MISSING2_LAST];
 extern Vec3 data_021fbcc0[2];
@@ -2009,7 +2009,7 @@ extern const MemberPointer data_020e7d78, data_020e7d80, data_020e7da8, data_020
     data_020e7d88, data_020e7d18, data_020e7d30, data_020e7d38, data_020e7d68, data_020e7d40, data_020e7d48, data_020e7d50,
     data_020e7d58, data_020e7d60, data_020e7d70, data_020e7d90, data_020e7d28, data_020e7d10;
 
-/* __sinit_020c714c: the six colours of missing_npc2.c, its states' member functions, and its
+/* __sinit_020c714c: the six colors of missing_npc2.c, its states' member functions, and its
  * two side points, each registered with an empty destructor. */
 void StaticInit_MissingNpc2(void)
 {
@@ -2024,7 +2024,7 @@ void StaticInit_MissingNpc2(void)
         &data_020e7d28,
         &data_020e7d10,
     };
-    static_init_colours(&data_021fbc98, &data_021fbca4, &data_021fbc9c, &data_021fbc8c, &data_021fbc90, &data_021fbc94);
+    static_init_colors(&data_021fbc98, &data_021fbca4, &data_021fbc9c, &data_021fbc8c, &data_021fbc90, &data_021fbc94);
     static_init_copy(data_021fbcd8, first_fns, STATIC_INIT_MISSING2_FIRST);
     static_init_copy(data_021fbd58, last_fns, STATIC_INIT_MISSING2_LAST);
     static_init_vec(&data_021fbcc0[0], 0x800, 0, 0x1000);

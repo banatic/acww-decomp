@@ -1,5 +1,5 @@
 /* Moving a value towards a target a step at a time, the way the game animates positions,
- * angles, colours and timers: by a fixed step that stops on the target, by a fraction of the
+ * angles, colors and timers: by a fixed step that stops on the target, by a fraction of the
  * distance left, and the same for points. Also the counters that run down to zero and two
  * small comparisons the same callers use. */
 #ifndef CLEAN_AUTOLOAD_2_APPROACH_H

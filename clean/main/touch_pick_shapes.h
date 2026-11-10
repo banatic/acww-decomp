@@ -41,7 +41,7 @@ typedef struct TouchPickFace {
 
 /* A sphere that can be picked (0x1c bytes). */
 typedef struct TouchPickSphere {
-    Vec3 centre; /* in the drawn world */
+    Vec3 center; /* in the drawn world */
     fx32 radius; /* 0x0c */
     u8 index;    /* 0x10 */
     u8 unk_11[3];
@@ -93,9 +93,9 @@ int TouchPick_AddFace(TouchPick *pick, TouchPickFace *face);
 int TouchPick_SetCylinderAndAdd(TouchPick *pick, TouchPickCylinder *cylinder, Vec3 *base, fx32 radius, fx32 height, int kind,
                                 u8 index);
 int TouchPick_AddCylinder(TouchPick *pick, TouchPickCylinder *cylinder);
-void TouchPick_SetSphereAndAdd(TouchPick *pick, TouchPickSphere *sphere, Vec3 *centre, fx32 radius, int kind, u8 index);
+void TouchPick_SetSphereAndAdd(TouchPick *pick, TouchPickSphere *sphere, Vec3 *center, fx32 radius, int kind, u8 index);
 int TouchPick_AddSphere(TouchPick *pick, TouchPickSphere *sphere);
-int TouchPick_SetBoxAndAdd(TouchPick *pick, TouchPickFace *faces, Vec3 *centre, fx32 width, fx32 depth, fx32 height, s16 angle,
+int TouchPick_SetBoxAndAdd(TouchPick *pick, TouchPickFace *faces, Vec3 *center, fx32 width, fx32 depth, fx32 height, s16 angle,
                            int kind, u8 index);
 int TouchPick_AddFaces(TouchPick *pick, TouchPickFace *faces);
 TouchPick *TouchPick_Construct(TouchPick *pick);
@@ -106,8 +106,8 @@ void TouchPick_Reset(TouchPick *pick, u8 pen_down);
 int TouchPickCylinder_Set(TouchPickCylinder *cylinder, Vec3 *base, fx32 radius, fx32 height, int kind, u8 index);
 TouchPickCylinder *TouchPickCylinder_Destruct(TouchPickCylinder *cylinder);
 TouchPickCylinder *TouchPickCylinder_Construct(TouchPickCylinder *cylinder);
-int TouchPickSphere_Set(TouchPickSphere *sphere, Vec3 *centre, fx32 radius, int kind, u8 index);
-void TouchPickSphere_SetAtMapPoint(TouchPickSphere *sphere, Vec3 *centre, u32 radius, u32 kind, u8 index);
+int TouchPickSphere_Set(TouchPickSphere *sphere, Vec3 *center, fx32 radius, int kind, u8 index);
+void TouchPickSphere_SetAtMapPoint(TouchPickSphere *sphere, Vec3 *center, u32 radius, u32 kind, u8 index);
 TouchPickSphere *TouchPickSphere_Destruct(TouchPickSphere *sphere);
 TouchPickSphere *TouchPickSphere_Destruct2(TouchPickSphere *sphere);
 TouchPickSphere *TouchPickSphere_Construct(TouchPickSphere *sphere);
@@ -116,7 +116,7 @@ int TouchPickFace_Set(TouchPickFace *face, Vec3 *a, Vec3 *b, Vec3 *c, int kind, 
 int TouchPickFace_SetAtMapPoints(TouchPickFace *face, Vec3 *a, Vec3 *b, Vec3 *c, int kind, u8 index);
 TouchPickFace *TouchPickFace_Destruct(TouchPickFace *face);
 TouchPickFace *TouchPickFace_Construct(TouchPickFace *face);
-u8 TouchPickFaces_SetBox(TouchPickFace *faces, Vec3 *centre, fx32 width, fx32 depth, fx32 height, int angle, int kind,
+u8 TouchPickFaces_SetBox(TouchPickFace *faces, Vec3 *center, fx32 width, fx32 depth, fx32 height, int angle, int kind,
                          int index);
 TouchPickFace *TouchPickFaces_DestructBox(TouchPickFace *faces);
 TouchPickFace *TouchPickFaces_ConstructBox(TouchPickFace *faces);

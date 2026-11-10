@@ -1,4 +1,4 @@
-/* Overlay 80 (the turtle, turtle.h): its static initialiser, run when the overlay is loaded,
+/* Overlay 80 (the turtle, turtle.h): its static initializer, run when the overlay is loaded,
  * which fills in the table of the turtle's states (data_ov080_022793e0, Turtle_SetState and
  * Turtle_Update): each state's entry and run, copied from the overlay's constants (C++
  * pointers to member functions, which the compiler does not fold into the table). */

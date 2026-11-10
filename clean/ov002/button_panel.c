@@ -186,7 +186,7 @@ CLEAN_AS(func_ov002_0220a8dc, ButtonPanel_SetWindowFlag5b)
 
 /* The panel's class. */
 extern const u8 data_ov002_0220bd08[];  /* the panel's vtable */
-extern const u16 data_ov002_0220ba58[]; /* the two text colours, 14 and 15 */
+extern const u16 data_ov002_0220ba58[]; /* the two text colors, 14 and 15 */
 extern void GXS_LoadOBJPltt(const void *src, u32 offset, u32 size);
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
@@ -491,7 +491,7 @@ void ButtonPanel_CloseTexts(ButtonPanel *panel)
 }
 CLEAN_AS(func_ov002_0220af74, ButtonPanel_CloseTexts)
 
-/* func_ov002_0220af94: loads the sprites' two text colours into entries 14 and 15 of the sub
+/* func_ov002_0220af94: loads the sprites' two text colors into entries 14 and 15 of the sub
  * screen's first sprite palette. The panel is not read. */
 void ButtonPanel_LoadTextColors(ButtonPanel *panel)
 {

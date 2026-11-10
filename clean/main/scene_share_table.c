@@ -329,7 +329,7 @@ void SceneShareTable_PlaceVillagersAtHome(void)
         }
         Vec3 position = {0, 0, 0};
         const VillagerPlot *home = VillagerHome_Tile(villager);
-        AcreTile_TileCentre(&position, (u32) (home->x + SCENE_SHARE_TABLE_DOOR_X), (u32) (home->z + SCENE_SHARE_TABLE_DOOR_Z));
+        AcreTile_TileCenter(&position, (u32) (home->x + SCENE_SHARE_TABLE_DOOR_X), (u32) (home->z + SCENE_SHARE_TABLE_DOOR_Z));
         PackedBytes_PackPoint(entry->place, position.x, position.z);
         PackedBytes_JoinScene(&entry->scene, 0, 0);
         entry->in_use = 1;

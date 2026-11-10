@@ -380,7 +380,7 @@ void Glider_PlaceAt(Glider *glider, int x, int y)
 }
 CLEAN_AS(func_ov002_0220a0b4, Glider_PlaceAt)
 
-/* func_ov002_0220a0e0: the sprite's offset for the pixel (x, y), from the screen's centre. */
+/* func_ov002_0220a0e0: the sprite's offset for the pixel (x, y), from the screen's center. */
 void Glider_SetCenter(Glider *glider, int x, int y)
 {
     CellLayerSprite_SetOffset((CellLayerSprite *) (void *) glider, sub32(x, SCREEN_CENTER_X), sub32(y, SCREEN_CENTER_Y));

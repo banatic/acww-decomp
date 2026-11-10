@@ -77,7 +77,7 @@ extern u64 OS_GetTick(void);
 #define CATCH_PANEL_UNIT 0
 #define CATCH_PANEL_HALF_WIDTH 1
 
-/* The text boxes: their first VRAM tile (outdoors, in a room), size and colour, on OBJs of the
+/* The text boxes: their first VRAM tile (outdoors, in a room), size and color, on OBJs of the
  * main screen. */
 #define CATCH_PANEL_BOX_LAYER_OBJECTS 4
 #define CATCH_PANEL_BOX_BACKGROUND 0
@@ -230,7 +230,7 @@ void CatchPanel_UpdateTime(CatchPanel *panel)
 }
 CLEAN_AS(func_0208c978, CatchPanel_UpdateTime)
 
-/* func_0208cb28: the insects' number written and its box redrawn, centred, once it changed. */
+/* func_0208cb28: the insects' number written and its box redrawn, centered, once it changed. */
 void CatchPanel_RedrawInsects(CatchPanel *panel)
 {
     if (panel->insects_changed == 0 || panel->insects_box == NULL) {

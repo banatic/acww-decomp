@@ -20,7 +20,7 @@
  * A record's kind is the insect's (the item 0x12b0 + kind, 0-0x37), or one of the stand-ins
  * 0x39 (a firefly, kind 0x25, taken up into the hand; it carries its glow, effect 0x3a), 0x3a the wasps (caught as a wasp,
  * kind 0xb) and 0x3b the ants (caught as an ant, kind 0x18). Its state (TOWN_INSECT_STATE_*) picks what the process's update does with it; its
- * action (TOWN_INSECT_ACTION_*) is the step of its own behaviour, run by functions of the kind
+ * action (TOWN_INSECT_ACTION_*) is the step of its own behavior, run by functions of the kind
  * from the table data_ov003_0223c2ac.
  *
  * The town insects are placed from a frame counter of the process (TownInsect_UpdatePlacing): every

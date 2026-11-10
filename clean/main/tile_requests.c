@@ -44,7 +44,7 @@ extern u8 data_021c779c[]; /* the town's object */
 extern NetSession *data_020ccf94;
 extern u8 data_020e54a8; /* 0 outdoors, 1 in a room */
 
-/* The neighbours of a tile, each a byte: x + 8 in the high four bits, z + 8 in the low. */
+/* The neighbors of a tile, each a byte: x + 8 in the high four bits, z + 8 in the low. */
 extern const u8 data_020ca5d4[8];
 extern const u8 data_020ca634[];
 /* For each facing (func_020644e4), nine entries of data_020ca634: the tiles to try for a drop,
@@ -291,7 +291,7 @@ int TileRequests_DropBagAt(TileRequestsRock *rock, AcreMap *map, const TileReque
 }
 CLEAN_AS(func_02042d14, TileRequests_DropBagAt)
 
-/* func_02042d94: the bag dropped on the first of the rock's eight neighbours (data_020ca5d4)
+/* func_02042d94: the bag dropped on the first of the rock's eight neighbors (data_020ca5d4)
  * inside the town that takes it. */
 void TileRequests_DropBag(TileRequestsRock *rock, const TileRequestTile *tile)
 {
@@ -484,9 +484,9 @@ void TileRequests_ChangeCodesAround(int player, const TileRequestTile *tile)
         }
     }
     if (found && !Session_IsLinked(data_020ccf94)) {
-        Vec3 centre;
-        AcreTile_TileCentre(&centre, (u32) tile->x, (u32) tile->z);
-        VillagerEvent_Watered(&centre);
+        Vec3 center;
+        AcreTile_TileCenter(&center, (u32) tile->x, (u32) tile->z);
+        VillagerEvent_Watered(&center);
     }
 }
 CLEAN_AS(func_02042ff8, TileRequests_ChangeCodesAround)

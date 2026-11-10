@@ -61,8 +61,8 @@ static fx32 collision_query_abs(fx32 value)
     return value < 0 ? -value : value;
 }
 
-/* The centre of unit `unit` on its axis. */
-static fx32 collision_query_unit_centre(int unit)
+/* The center of unit `unit` on its axis. */
+static fx32 collision_query_unit_center(int unit)
 {
     return (fx32) (((u32) unit << COLLISION_UNIT_SHIFT) + COLLISION_HALF_UNIT);
 }
@@ -80,7 +80,7 @@ void CollisionQuery_Gather(const Vec3 *min, const Vec3 *max, CollisionVisitor *v
     int all = (flags & COLLISION_QUERY_ALL) ? 1 : 0;
     Vec3 low;
     Vec3 high;
-    Vec3 centre;
+    Vec3 center;
     Vec3 half;
 
     Vec_Subtract(&low, min, &data_021c31a0);
@@ -90,10 +90,10 @@ void CollisionQuery_Gather(const Vec3 *min, const Vec3 *max, CollisionVisitor *v
     int x1 = high.x >> COLLISION_UNIT_SHIFT;
     int z1 = high.z >> COLLISION_UNIT_SHIFT;
 
-    Vec_Add(&centre, &low, &high);
-    centre.x >>= 1;
-    centre.y >>= 1;
-    centre.z >>= 1;
+    Vec_Add(&center, &low, &high);
+    center.x >>= 1;
+    center.y >>= 1;
+    center.z >>= 1;
     Vec_Subtract(&half, &high, &low);
     half.x >>= 1;
     half.y >>= 1;
@@ -109,8 +109,8 @@ void CollisionQuery_Gather(const Vec3 *min, const Vec3 *max, CollisionVisitor *v
         CollisionPosts_Gather(&world->posts, CollisionPostSource_Current(), x0, x1, z0, z1, all);
     }
     if ((flags & COLLISION_QUERY_NO_LISTED) == 0) {
-        CollisionBox_GatherAll(&world->unk_1a90, &centre, &half, &world->walls, &world->floors, flags, 0);
-        CollisionBox_GatherAll(&world->unk_1a90, &centre, &half, &world->walls, &world->floors, flags, 1);
+        CollisionBox_GatherAll(&world->unk_1a90, &center, &half, &world->walls, &world->floors, flags, 0);
+        CollisionBox_GatherAll(&world->unk_1a90, &center, &half, &world->walls, &world->floors, flags, 1);
     }
     if ((flags & (COLLISION_QUERY_WALLS | COLLISION_QUERY_ALL)) != 0) {
         if ((flags & COLLISION_QUERY_NO_FENCES) == 0) {
@@ -212,15 +212,15 @@ int CollisionQuery_GroundY(const Vec3 *point, int *attr, int flags)
 CLEAN_AS(func_020310d0, CollisionQuery_GroundY)
 
 /* func_02031168: keeps `point` (X and Z) `inset` inside the rectangle of `width` by `depth`
- * centred on `centre`; whether it moved. */
-int CollisionQuery_ClampToRect(Vec3 *point, fx32 inset, const Vec3 *centre, fx32 width, fx32 depth)
+ * centered on `center`; whether it moved. */
+int CollisionQuery_ClampToRect(Vec3 *point, fx32 inset, const Vec3 *center, fx32 width, fx32 depth)
 {
     fx32 half_width = width >> 1;
     fx32 half_depth = depth >> 1;
-    fx32 low_x = inset + (centre->x - half_width);
-    fx32 high_x = (centre->x + half_width) - inset;
-    fx32 low_z = inset + (centre->z - half_depth);
-    fx32 high_z = (centre->z + half_depth) - inset;
+    fx32 low_x = inset + (center->x - half_width);
+    fx32 high_x = (center->x + half_width) - inset;
+    fx32 low_z = inset + (center->z - half_depth);
+    fx32 high_z = (center->z + half_depth) - inset;
     int moved = 0;
 
     if (point->x < low_x) {
@@ -472,11 +472,11 @@ CLEAN_AS(func_02031650, CollisionQuery_FindWaterAlong)
  * then the limit of the ground at `point` goes to `surface` unless it is NULL. */
 int CollisionQuery_IsWaterAround(const Vec3 *point, fx32 radius, fx32 *surface, int mode)
 {
-    CollisionGround centre;
+    CollisionGround center;
 
-    CollisionGround_Init(&centre, point, 0, mode);
-    if (centre.unk_30 == 0) {
-        CollisionGround_Destroy(&centre);
+    CollisionGround_Init(&center, point, 0, mode);
+    if (center.unk_30 == 0) {
+        CollisionGround_Destroy(&center);
         return 0;
     }
     const Vec3 offsets[8] = {
@@ -491,16 +491,16 @@ int CollisionQuery_IsWaterAround(const Vec3 *point, fx32 radius, fx32 *surface, 
         CollisionGround_Init(&around, &near, 0, mode);
         if (around.unk_30 == 0) {
             CollisionGround_Destroy(&around);
-            CollisionGround_Destroy(&centre);
+            CollisionGround_Destroy(&center);
             return 0;
         }
-        limit = centre.limit;
+        limit = center.limit;
         CollisionGround_Destroy(&around);
     }
     if (surface != NULL) {
         *surface = limit;
     }
-    CollisionGround_Destroy(&centre);
+    CollisionGround_Destroy(&center);
     return 1;
 }
 CLEAN_AS(func_020316fc, CollisionQuery_IsWaterAround)
@@ -514,11 +514,11 @@ static int collision_query_is_level(const Vec3 *point)
            cell.side_height[0] == cell.side_height[3];
 }
 
-/* func_020317c4: whether a step from unit (from_x, from_z) to the neighbouring or same unit
+/* func_020317c4: whether a step from unit (from_x, from_z) to the neighboring or same unit
  * (x, z) is open: the target's byte 4 must be set (and with `strict` its byte 0x17 clear); a
  * straight step needs ground at height 0 there; a diagonal one needs that and one of the two
  * units beside the diagonal (the one on the target's X first) at height 0 and level. Units
- * further apart than one on either axis are not neighbours (0). */
+ * further apart than one on either axis are not neighbors (0). */
 int CollisionQuery_CanStep(int from_x, int from_z, int x, int z, u8 strict)
 {
     int dx = from_x - x;
@@ -543,8 +543,8 @@ int CollisionQuery_CanStep(int from_x, int from_z, int x, int z, u8 strict)
         return 0;
     }
 
-    Vec3 from_point = {collision_query_unit_centre(from_x), 0, collision_query_unit_centre(from_z)};
-    Vec3 to_point = {collision_query_unit_centre(x), 0, collision_query_unit_centre(z)};
+    Vec3 from_point = {collision_query_unit_center(from_x), 0, collision_query_unit_center(from_z)};
+    Vec3 to_point = {collision_query_unit_center(x), 0, collision_query_unit_center(z)};
     int steps = dx + dz;
     int target_y = CollisionQuery_GroundY(&to_point, NULL, COLLISION_QUERY_STEP_FLAGS);
     if (steps == 1) {

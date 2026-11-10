@@ -49,7 +49,7 @@ extern void *NNS_G3dGetJntAnmSet(void *file);
 extern void *NNS_G3dGetMatCAnmSet(void *file);
 extern void *NNS_G3dGetTexSRTAnmSet(void *file);
 extern void *func_02107b44(void *set, int index); /* animation `index` of a joint animation set */
-extern void *func_02107b80(void *set, int index); /* ... of a material colour animation set */
+extern void *func_02107b80(void *set, int index); /* ... of a material color animation set */
 extern void *func_02107bbc(void *set, int index); /* ... of a texture SRT animation set */
 extern int NNS_G3dBindMdlTex(u8 *model, void *texture);
 extern int NNS_G3dBindMdlPltt(u8 *model, void *texture);

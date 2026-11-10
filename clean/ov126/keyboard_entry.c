@@ -205,7 +205,7 @@ void KeyboardEntry_CommitConstellation(KeyboardEntry *self)
 {
     int number = GroupParams_Arg();
     if (Constellations_NameTaken(self->text, number)) {
-        GroupParams_SetC4C(KEYBOARD_ENTRY_OUTCOME_CANCELLED);
+        GroupParams_SetC4C(KEYBOARD_ENTRY_OUTCOME_CANCELED);
     }
     Constellations_SetName(self->text, number);
 }
@@ -253,7 +253,7 @@ static void keyboard_entry_check_message(KeyboardEntry *self, const char *archiv
     int number = GroupParams_Arg();
     TextLabel_LoadMessage(&label, (char *) (uintptr_t) archive, (char) number);
     if (TextLabel_EqualsTrimmed(&label, self->text, self->max_chars) == 0) {
-        GroupParams_SetC4C(KEYBOARD_ENTRY_OUTCOME_CANCELLED);
+        GroupParams_SetC4C(KEYBOARD_ENTRY_OUTCOME_CANCELED);
     }
     TextLabel_Destruct(&label);
 }
@@ -286,7 +286,7 @@ void KeyboardEntry_FindSong(KeyboardEntry *self)
             return;
         }
     }
-    GroupParams_SetC4C(KEYBOARD_ENTRY_OUTCOME_CANCELLED);
+    GroupParams_SetC4C(KEYBOARD_ENTRY_OUTCOME_CANCELED);
     TextLabel_Destruct(&label);
     NameText_Destruct(&name);
 }

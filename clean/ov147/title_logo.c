@@ -19,7 +19,7 @@
 #define TITLE_LOGO_FIRST_CHAR 0x140
 #define TITLE_LOGO_LAST_CHAR 0x2ff
 #define TITLE_LOGO_CHARS (TITLE_LOGO_LAST_CHAR - TITLE_LOGO_FIRST_CHAR + 1) /* 448 */
-#define TITLE_LOGO_CHAR_WORDS 8                                             /* a 16-colour character */
+#define TITLE_LOGO_CHAR_WORDS 8                                             /* a 16-color character */
 #define TITLE_LOGO_CHARS_SIZE 0x3800
 #define TITLE_LOGO_SCREEN_SIZE 0x800
 #define TITLE_LOGO_BLANK_CHAR 0x10 /* a character of the screen left as it is */

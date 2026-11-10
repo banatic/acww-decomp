@@ -211,7 +211,7 @@ CLEAN_AS(func_ov103_0229c2f4, CarriedLetters_TestFlags)
 void CarriedLetters_PressLabelButton(CarriedLetters *self)
 {
     MenuScene_SetSubState(carried_scene(self), CARRIED_LETTERS_SUB_LABEL_PRESSED);
-    /* The button's base is main's labelled sprite (label_button.h). */
+    /* The button's base is main's labeled sprite (label_button.h). */
     LabelSprite_SetState((LabelSprite *) (void *) &self->button, 2);
 }
 CLEAN_AS(func_ov103_0229c30c, CarriedLetters_PressLabelButton)
@@ -1659,7 +1659,7 @@ int CarriedLetters_Draw(CarriedLetters *self)
     }
     if (CarriedLetters_TestFlags(self, CARRIED_LETTERS_FLAG_LETTER_SHOWN) != 0) {
         int y = MenuScene_WipeOffsetY(carried_scene(self));
-        /* The button's base is main's labelled sprite (label_button.h). */
+        /* The button's base is main's labeled sprite (label_button.h). */
         LabelSprite_SetOffset((LabelSprite *) (void *) &self->button, 0, y);
         carried_draw_member(&self->button);
     }

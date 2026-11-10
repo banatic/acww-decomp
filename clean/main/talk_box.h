@@ -3,7 +3,7 @@
  *
  * - Its background comes from /a_mes/: the screen (a_mes0a_bg_nsc.bin with the speaker's name
  *   plate, a_mes0b_bg_nsc.bin without), the palette (a_mes_bg_ncl.bin) and the characters
- *   (a_mes_bg_ncg.bin), read into the current heap (TalkBox_Load), recoloured by the talk's
+ *   (a_mes_bg_ncg.bin), read into the current heap (TalkBox_Load), recolored by the talk's
  *   kind or the speaker, uploaded to BG2 (TalkBox_Upload) and freed again (TalkBox_FreeFiles).
  *   BG2 is scrolled by the box's place, and window 0 of the main screen follows it
  *   (TalkBox_SetPlace).
@@ -43,7 +43,7 @@ typedef struct TalkBox {
     s32 spinner_hold;     /* 0x7c: TALK_BOX_SPINNING, or the frames left after the spinner stopped */
 } TalkBox;
 
-u8 TalkBox_TextColour(int colour);
+u8 TalkBox_TextColor(int color);
 int TalkBox_DrawSpinner(TalkBox *box);
 void TalkBox_UpdateSpinner(TalkBox *box);
 void TalkBox_StopSpinner(TalkBox *box);
@@ -66,8 +66,8 @@ void TalkBox_Upload(TalkBox *box);
 void TalkBox_SetUpBg2(void);
 void TalkBox_FreeFiles(TalkBox *box);
 int TalkBox_Load(TalkBox *box, int kind, int nameless, int style, u8 no_villager);
-void TalkBox_ColourText(TalkBox *box, int kind);
-void TalkBox_ColourPlate(TalkBox *box, int style, int no_villager);
+void TalkBox_ColorText(TalkBox *box, int kind);
+void TalkBox_ColorPlate(TalkBox *box, int style, int no_villager);
 int TalkBox_LoadCharacters(TalkBox *box, void *file);
 int TalkBox_LoadPalette(TalkBox *box, void *file);
 int TalkBox_LoadScreen(TalkBox *box, void *file, int with_plate);

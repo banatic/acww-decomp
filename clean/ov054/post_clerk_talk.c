@@ -192,7 +192,7 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 #define POST_CLERK_LINE_NO_MOVE_TARGET 0x37 /* no town to move to found or joined */
 #define POST_CLERK_LINE_MOVE_TO_NEW 0x38
 #define POST_CLERK_LINE_MOVE_TO_TOWN 0x39 /* a town found, its name in part 8 */
-#define POST_CLERK_LINE_MOVE_CANCELLED 0x3a
+#define POST_CLERK_LINE_MOVE_CANCELED 0x3a
 #define POST_CLERK_LINE_MOVE_SAVED 0x3c
 #define POST_CLERK_LINE_ERRAND_TAKEN 0x50
 #define POST_CLERK_LINE_ERRAND_NONE 0x51
@@ -650,7 +650,7 @@ void PostClerkTalk_OnMenuAnswer(PostClerkTalk *talk, unsigned int arg)
 CLEAN_AS(_ZN18Obj_ov054_0226300419func_ov054_022608acEj, PostClerkTalk_OnMenuAnswer)
 
 /* func_ov054_02260a88 (at the end of the lines 0, 0x52, 0x53, 0x56): the menu offered, its last
- * answer the one cancelling, and the choices opened:
+ * answer the one canceling, and the choices opened:
  * - linked, and this system not the host: menu 2 (the letters and goodbye);
  * - with a loan owed and the current player's flag 1 clear: the loan's menu (4 with a slot in
  *   the session, else 1);
@@ -807,7 +807,7 @@ void PostClerkTalk_OnOwnAnswer(PostClerkTalk *talk, unsigned int arg)
         case POST_CLERK_LINE_MOVE_TO_TOWN:
             if (answer == 1) {
                 PostClerkTalk_EndMove(talk);
-                line = POST_CLERK_LINE_MOVE_CANCELLED;
+                line = POST_CLERK_LINE_MOVE_CANCELED;
             }
             break;
         default:

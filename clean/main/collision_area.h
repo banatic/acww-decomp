@@ -16,8 +16,8 @@
 typedef struct CollisionArea {
     CollisionTriangle triangle;
     struct CollisionArea *next; /* 0x38: the next area of the list */
-    Vec3 centre;                /* 0x3c: the middle of the bounds of its corners */
-    fx32 reach_squared;         /* 0x48: the square of how far from `centre` it is told of actors */
+    Vec3 center;                /* 0x3c: the middle of the bounds of its corners */
+    fx32 reach_squared;         /* 0x48: the square of how far from `center` it is told of actors */
 } CollisionArea;
 
 /* The methods of an area: the triangle's four (collision_triangle.h), then what an actor of
@@ -34,7 +34,7 @@ void CollisionArea_ClearList(void *list);
 void CollisionArea_ListDestruct(void *list);
 void CollisionArea_ListConstruct(void *list);
 void CollisionArea_Set(CollisionArea *area, const Vec3 *a, const Vec3 *b, const Vec3 *c, fx32 reach);
-Vec3 *CollisionArea_Centre(CollisionArea *area);
+Vec3 *CollisionArea_Center(CollisionArea *area);
 void CollisionArea_Reset(CollisionArea *area);
 CollisionArea *CollisionArea_Construct(CollisionArea *area);
 

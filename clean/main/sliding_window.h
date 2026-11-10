@@ -5,7 +5,7 @@
  * (field_label_window.h) derive from it.
  *
  * It derives from main's screen sprite base (vtable data_020e20c8), whose place is kept relative
- * to the screen's centre (0x80, 0x60). Its states, stepped by its update (func_0208aaa0):
+ * to the screen's center (0x80, 0x60). Its states, stepped by its update (func_0208aaa0):
  * - closed: asked to open (SlidingWindow_RequestOpen), it makes the text boxes of its lines,
  *   picks the body frame that fits the wider line and starts opening;
  * - opening: three frames (one when `instant`), sliding into its place;
@@ -58,7 +58,7 @@ typedef struct SlidingWindow {
     u8 instant;         /* 0x59: opens and closes without sliding */
     u8 slide_y_flipped; /* 0x5a: the slide goes the other way in y */
     u8 show_extra;      /* 0x5b: `extra` is drawn */
-    u8 center_text;     /* 0x5c: the lines are centred in the window */
+    u8 center_text;     /* 0x5c: the lines are centered in the window */
     u8 pad_5d[3];
     SlidingWindowText lines[2]; /* 0x60 */
     TextDrawBox *boxes[2];      /* 0xc0: the lines' text boxes while not closed */

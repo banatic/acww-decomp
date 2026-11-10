@@ -224,7 +224,7 @@ CLEAN_AS(func_020668d4, TalkReceiver_SpeakerName)
 
 /* func_020668d8: the speaker named `name` with `style` for the next line; when the talk is
  * neither closed nor gone (states 0 and 5, read before the name is set), its name plate is
- * recoloured and the name box remade (TalkObject_ColourNamePlate) and the voice switched to the
+ * recolored and the name box remade (TalkObject_ColorNamePlate) and the voice switched to the
  * new speaker's mode (TalkVoice_TakeSpeakerMode).
  * REQUIRES: the receiver has a talk. */
 void TalkReceiver_NextSpeaker(TalkReceiver *receiver, TextBase *name, int style)
@@ -232,7 +232,7 @@ void TalkReceiver_NextSpeaker(TalkReceiver *receiver, TextBase *name, int style)
     s32 state = receiver->talk->state;
     TalkReceiver_SetSpeakerText(receiver, name, style);
     if (state != TALK_OBJECT_CLOSED && state != TALK_OBJECT_GONE) {
-        TalkObject_ColourNamePlate(receiver->talk);
+        TalkObject_ColorNamePlate(receiver->talk);
         TalkVoice_TakeSpeakerMode(&receiver->talk->voice);
     }
 }

@@ -59,11 +59,11 @@ unsigned int Design_Info(unsigned int design)
 }
 CLEAN_AS(func_02072d4c, Design_Info)
 
-/* func_02072d58: paints a design's pixels all with one colour (0-15).
+/* func_02072d58: paints a design's pixels all with one color (0-15).
  * REQUIRES: the pixels are word aligned (they always are). */
-void Design_Fill(unsigned int *pixels, unsigned int colour)
+void Design_Fill(unsigned int *pixels, unsigned int color)
 {
-    u8 two_pixels = (u8) (colour | (colour << 4));
+    u8 two_pixels = (u8) (color | (color << 4));
     unsigned int word = 0x01010101u * two_pixels;
     for (unsigned int i = 0; i < DESIGN_PIXELS_SIZE / 4; i++) {
         pixels[i] = word;
@@ -222,13 +222,13 @@ unsigned char DesignInfo_Palette(DesignInfo *info)
 }
 CLEAN_AS(func_02072f74, DesignInfo_Palette)
 
-/* func_02072f88: the 16 colours of the design's palette. */
-int DesignInfo_PaletteColours(DesignInfo *info)
+/* func_02072f88: the 16 colors of the design's palette. */
+int DesignInfo_PaletteColors(DesignInfo *info)
 {
     DesignManager *manager = (DesignManager *) (uintptr_t) DesignManager_Get();
     return (int) DesignManager_Palette(manager, DesignInfo_Palette(info));
 }
-CLEAN_AS(func_02072f88, DesignInfo_PaletteColours)
+CLEAN_AS(func_02072f88, DesignInfo_PaletteColors)
 
 /* func_02072fac */
 int DesignInfo_Destruct(DesignInfo *info)

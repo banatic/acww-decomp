@@ -34,7 +34,7 @@ static_assert(offsetof(AquariumKind40, own.held) == 0x258, "kind 40 held");
 /* What each kind is like, and the fish by kind (museum_aquarium.c). */
 extern const AquariumFishInfo data_ov004_02247924[];
 extern AquariumFish *data_ov004_022594d4[AQUARIUM_FISH_KINDS];
-/* The river room's second tank's centre. */
+/* The river room's second tank's center. */
 extern Vec3 data_ov004_022593c4;
 /* The member functions of the modes, and of kind 30's states. */
 extern const MemberPointer data_ov004_0225949c[7];

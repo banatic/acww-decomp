@@ -140,7 +140,7 @@ void *ClothTexture_Image(DesignModel *file)
 CLEAN_AS(func_0203cfe4, ClothTexture_Image)
 
 /* func_0203cff8: the file of the first piece of clothing read into `file`, then (unless
- * `design` is NULL) the design's pixels and palette's colours copied over its image and
+ * `design` is NULL) the design's pixels and palette's colors copied over its image and
  * palette. 0 when the file could not be read. */
 int ClothTexture_SetDesign(DesignModel *file, Design *design)
 {
@@ -155,9 +155,9 @@ int ClothTexture_SetDesign(DesignModel *file, Design *design)
     void *pixels = Design_Pixels(design);
     MI_CpuCopy8(pixels, ClothTexture_Image(file), DESIGN_PIXELS_SIZE);
 
-    void *colours =
-        as_pointer((unsigned int) DesignInfo_PaletteColours(as_pointer(Design_Info((unsigned int) (uintptr_t) design))));
-    MI_CpuCopy8(colours, ClothTexture_Palette(file), DESIGN_PALETTE_SIZE);
+    void *colors =
+        as_pointer((unsigned int) DesignInfo_PaletteColors(as_pointer(Design_Info((unsigned int) (uintptr_t) design))));
+    MI_CpuCopy8(colors, ClothTexture_Palette(file), DESIGN_PALETTE_SIZE);
     return 1;
 }
 CLEAN_AS(func_0203cff8, ClothTexture_SetDesign)

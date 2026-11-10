@@ -1,6 +1,6 @@
 /* The program's start-up, before the game's first scene.
  *
- * NitroSDK calls NitroStartUp (Startup_Begin) before main: it initialises the OS, gives VRAM
+ * NitroSDK calls NitroStartUp (Startup_Begin) before main: it initializes the OS, gives VRAM
  * bank D to the ARM7 for the wireless library and waits for that library to start
  * (Startup_OnWirelessStarted raises the flag it waits on), sets the top of the main arena,
  * starts the file system, fills the overlays' memory with traps and creates the root heap.

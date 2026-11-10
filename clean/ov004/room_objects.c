@@ -67,7 +67,7 @@ extern u32 data_ov004_022595d0;
 extern FootprintCell data_ov004_022596d4[16];
 extern const s8 data_ov004_02247ce0[4];
 
-/* The greatest distance from a position to the centre of the cell ahead, by layer. */
+/* The greatest distance from a position to the center of the cell ahead, by layer. */
 extern const fx32 data_ov004_02247cec[2];
 
 /* Where the last object taken away stands (RoomObjects_SetVanishPoint). */
@@ -228,7 +228,7 @@ int RoomObjects_IsIdleAndBare(RoomObject *object)
 }
 CLEAN_AS(func_ov004_0223ba9c, RoomObjects_IsIdleAndBare)
 
-/* func_ov004_0223bac8: keeps where an object taken away stands (its centre, from the object's
+/* func_ov004_0223bac8: keeps where an object taken away stands (its center, from the object's
  * own code as it starts to vanish). */
 void RoomObjects_SetVanishPoint(const Vec3 *point)
 {
@@ -349,9 +349,9 @@ int RoomObjects_FindAhead(int *x, int *z, const Vec3 *position, int angle, ItemC
             if (!RoomObjects_CellAhead(&cell_x, &cell_z, position, angle, pass)) {
                 continue;
             }
-            Vec3 centre;
-            AcreTile_TileCentre(&centre, (u32) cell_x, (u32) cell_z);
-            if (Vec_DistanceXZ(position, &centre) > data_ov004_02247cec[layer & 1]) {
+            Vec3 center;
+            AcreTile_TileCenter(&center, (u32) cell_x, (u32) cell_z);
+            if (Vec_DistanceXZ(position, &center) > data_ov004_02247cec[layer & 1]) {
                 continue;
             }
             RoomObject *object = RoomObjects_GridObjectAt(RoomObjects_Grid(), cell_x, cell_z, (u8) layer);
@@ -643,7 +643,7 @@ fx32 RoomObjects_HeightAtPoint(const Vec3 *point)
 CLEAN_AS(func_ov004_0223c5a4, RoomObjects_HeightAtPoint)
 
 /* func_ov004_0223c5b8: the height of cell (x, z): with an object on the floor there, its height
- * (with its top height unless unk_78c is 1); else the ground's at the cell's centre. */
+ * (with its top height unless unk_78c is 1); else the ground's at the cell's center. */
 fx32 RoomObjects_HeightAtCell(int x, int z)
 {
     RoomObject *object = RoomObjects_GridObjectAt(RoomObjects_Grid(), x, z, ROOM_OBJECTS_LAYER_FLOOR);
@@ -653,12 +653,12 @@ fx32 RoomObjects_HeightAtCell(int x, int z)
         }
         return object->top_height + object->position.y;
     }
-    Vec3 centre;
-    centre.x = (fx32) ((u32) x << CELL_SHIFT) + HALF_CELL;
-    centre.y = 0;
-    centre.z = (fx32) ((u32) z << CELL_SHIFT) + HALF_CELL;
+    Vec3 center;
+    center.x = (fx32) ((u32) x << CELL_SHIFT) + HALF_CELL;
+    center.y = 0;
+    center.z = (fx32) ((u32) z << CELL_SHIFT) + HALF_CELL;
     CollisionGround ground;
-    CollisionGround_Init(&ground, &centre, 0, 0);
+    CollisionGround_Init(&ground, &center, 0, 0);
     fx32 height = CollisionGround_Height(&ground, 0);
     CollisionGround_Destroy(&ground);
     return height;

@@ -509,7 +509,7 @@ void TouchPick_Update(TouchPick *pick, u8 pen_x, u8 pen_y, int pen_down)
         CollisionLine_Construct((CollisionLine *) &segment, &from, &to);
         if (CollisionSphere_HitLine((CollisionSphere *) sphere, &out, (CollisionLine *) &segment)) {
             Vec3 map;
-            Globe_Unbend(&map, &sphere->centre);
+            Globe_Unbend(&map, &sphere->center);
             pick->point = map;
             pick->kind = (u8) sphere->kind;
             pick->index = sphere->index;
@@ -561,9 +561,9 @@ int TouchPick_AddCylinder(TouchPick *pick, TouchPickCylinder *cylinder)
 CLEAN_AS(func_020b7d6c, TouchPick_AddCylinder)
 
 /* func_020b7d84: sets `sphere` round a map point and adds it. */
-void TouchPick_SetSphereAndAdd(TouchPick *pick, TouchPickSphere *sphere, Vec3 *centre, fx32 radius, int kind, u8 index)
+void TouchPick_SetSphereAndAdd(TouchPick *pick, TouchPickSphere *sphere, Vec3 *center, fx32 radius, int kind, u8 index)
 {
-    TouchPickSphere_SetAtMapPoint(sphere, centre, (u32) radius, (u32) kind, index);
+    TouchPickSphere_SetAtMapPoint(sphere, center, (u32) radius, (u32) kind, index);
     TouchPick_AddSphere(pick, sphere);
 }
 CLEAN_AS(func_020b7d84, TouchPick_SetSphereAndAdd)
@@ -578,10 +578,10 @@ int TouchPick_AddSphere(TouchPick *pick, TouchPickSphere *sphere)
 CLEAN_AS(func_020b7db0, TouchPick_AddSphere)
 
 /* func_020b7dc8: sets the ten faces of a box (TouchPickFaces_SetBox) and adds them; 1. */
-int TouchPick_SetBoxAndAdd(TouchPick *pick, TouchPickFace *faces, Vec3 *centre, fx32 width, fx32 depth, fx32 height, s16 angle,
+int TouchPick_SetBoxAndAdd(TouchPick *pick, TouchPickFace *faces, Vec3 *center, fx32 width, fx32 depth, fx32 height, s16 angle,
                            int kind, u8 index)
 {
-    TouchPickFaces_SetBox(faces, centre, width, depth, height, angle, kind, index);
+    TouchPickFaces_SetBox(faces, center, width, depth, height, angle, kind, index);
     return TouchPick_AddFaces(pick, faces);
 }
 CLEAN_AS(func_020b7dc8, TouchPick_SetBoxAndAdd)
@@ -677,20 +677,20 @@ TouchPickCylinder *TouchPickCylinder_Construct(TouchPickCylinder *cylinder)
 CLEAN_AS(func_020b7ee8, TouchPickCylinder_Construct)
 
 /* func_020b7f04: sets a sphere round a point of the drawn world; 1. */
-int TouchPickSphere_Set(TouchPickSphere *sphere, Vec3 *centre, fx32 radius, int kind, u8 index)
+int TouchPickSphere_Set(TouchPickSphere *sphere, Vec3 *center, fx32 radius, int kind, u8 index)
 {
     sphere->kind = kind;
     sphere->index = index;
-    CollisionSphere_Set((CollisionSphere *) sphere, centre, radius);
+    CollisionSphere_Set((CollisionSphere *) sphere, center, radius);
     return 1;
 }
 CLEAN_AS(func_020b7f04, TouchPickSphere_Set)
 
 /* func_020b7f24: sets a sphere round a map point. */
-void TouchPickSphere_SetAtMapPoint(TouchPickSphere *sphere, Vec3 *centre, u32 radius, u32 kind, u8 index)
+void TouchPickSphere_SetAtMapPoint(TouchPickSphere *sphere, Vec3 *center, u32 radius, u32 kind, u8 index)
 {
     Vec3 drawn;
-    Globe_Bend(&drawn, centre);
+    Globe_Bend(&drawn, center);
     TouchPickSphere_Set(sphere, &drawn, (fx32) radius, (int) kind, index);
 }
 CLEAN_AS(func_020b7f24, TouchPickSphere_SetAtMapPoint)
@@ -782,9 +782,9 @@ TouchPickFace *TouchPickFace_Construct(TouchPickFace *face)
 CLEAN_AS(func_020b8038, TouchPickFace_Construct)
 
 /* func_020b8060: the ten faces of a box `width` by `depth` (on X and Z before turning by
- * `angle` about Y) and `height` tall, standing on the map point `centre`: two for the top and
+ * `angle` about Y) and `height` tall, standing on the map point `center`: two for the top and
  * two for each side, facing out. QUIRK: always true, whether the faces could be set or not. */
-u8 TouchPickFaces_SetBox(TouchPickFace *faces, Vec3 *centre, fx32 width, fx32 depth, fx32 height, int angle, int kind,
+u8 TouchPickFaces_SetBox(TouchPickFace *faces, Vec3 *center, fx32 width, fx32 depth, fx32 height, int angle, int kind,
                          int index)
 {
     /* 0-3 the bottom corners, 4-7 the top ones above them. */
@@ -809,9 +809,9 @@ u8 TouchPickFaces_SetBox(TouchPickFace *faces, Vec3 *centre, fx32 width, fx32 de
         }
     }
     for (int i = 0; i < 8; i++) {
-        v[i].x += centre->x;
-        v[i].z += centre->z;
-        v[i].y = i < 4 ? centre->y : centre->y + height;
+        v[i].x += center->x;
+        v[i].z += center->z;
+        v[i].y = i < 4 ? center->y : center->y + height;
     }
 
     static const u8 triangles[TOUCH_PICK_BOX_FACES][3] = {

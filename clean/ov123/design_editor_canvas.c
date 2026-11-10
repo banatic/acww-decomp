@@ -38,9 +38,9 @@ static u32 *de_row(DesignEditor *self, int py)
     return DesignEditor_Pixels(self) + py * 4;
 }
 
-/* func_ov123_0229a5cc: stamp `stamp` (0 or 1) put down in `colour` with its pixel (7, 8) at
+/* func_ov123_0229a5cc: stamp `stamp` (0 or 1) put down in `color` with its pixel (7, 8) at
  * (px, py); every set bit paints one pixel (DesignEditor_SetPixel drops those outside). */
-void DesignEditor_Stamp(DesignEditor *self, int px, int py, int colour, int stamp)
+void DesignEditor_Stamp(DesignEditor *self, int px, int py, int color, int stamp)
 {
     const u16 *rows = data_ov123_0229cf8c[stamp];
     int y = py - 8;
@@ -49,7 +49,7 @@ void DesignEditor_Stamp(DesignEditor *self, int px, int py, int colour, int stam
         int x = px - 7;
         for (int column = 0; column < 16; column++) {
             if (mask & rows[row]) {
-                DesignEditor_SetPixel(self, (u8) x, (u8) y, colour);
+                DesignEditor_SetPixel(self, (u8) x, (u8) y, color);
             }
             mask >>= 1;
             x++;
@@ -60,26 +60,26 @@ void DesignEditor_Stamp(DesignEditor *self, int px, int py, int colour, int stam
 CLEAN_AS(func_ov123_0229a5cc, DesignEditor_Stamp)
 
 /* func_ov123_0229a63c: a word of pixels with the nibbles that are 1 in `mask` set to
- * `colour`. */
-unsigned int DesignEditor_PaintWord(unsigned int unused, unsigned int word, unsigned int mask, unsigned int colour)
+ * `color`. */
+unsigned int DesignEditor_PaintWord(unsigned int unused, unsigned int word, unsigned int mask, unsigned int color)
 {
     (void) unused;
-    return (word & ~(mask * 15)) | (mask * colour);
+    return (word & ~(mask * 15)) | (mask * color);
 }
 CLEAN_AS(func_ov123_0229a63c, DesignEditor_PaintWord)
 
-/* func_ov123_0229a654: a flood fill of the pixels of (px, py)'s colour that touch it, with
- * `colour`, nothing when it already has that colour. The fill takes runs of a row from its
- * queue: a run whose left pixel already has the new colour is skipped; else it is stretched
- * left and right over the old colour, painted, and every run of the old colour in the rows
+/* func_ov123_0229a654: a flood fill of the pixels of (px, py)'s color that touch it, with
+ * `color`, nothing when it already has that color. The fill takes runs of a row from its
+ * queue: a run whose left pixel already has the new color is skipped; else it is stretched
+ * left and right over the old color, painted, and every run of the old color in the rows
  * above and below between its ends is queued.
  * QUIRK: the queue holds 64 runs and wraps without a check; a design whose fill queues more
  * at once overwrites the oldest. */
-void DesignEditor_Fill(DesignEditor *self, u8 px, u8 py, int colour)
+void DesignEditor_Fill(DesignEditor *self, u8 px, u8 py, int color)
 {
     DesignEditor_Pixels(self);
     int old = DesignEditor_PixelAt(self, px, py);
-    if (old == colour) {
+    if (old == color) {
         return;
     }
     if ((data_ov123_0229d2e4 & 1) == 0) {
@@ -96,13 +96,13 @@ void DesignEditor_Fill(DesignEditor *self, u8 px, u8 py, int colour)
         int right_end = data_ov123_0229d3b4[head].right;
         int y = data_ov123_0229d3b4[head].y;
         head = (head + 1) & mask;
-        if (colour == DesignEditor_PixelAt(self, (u8) x, (u8) y)) {
+        if (color == DesignEditor_PixelAt(self, (u8) x, (u8) y)) {
             continue;
         }
         int left = DesignEditor_RunLeft(self, x, y, old);
         int right = DesignEditor_RunRight(self, right_end, y, old);
         for (int i = left; i <= right; i++) {
-            DesignEditor_SetPixel(self, (u8) i, (u8) y, colour);
+            DesignEditor_SetPixel(self, (u8) i, (u8) y, color);
         }
         /* the rows above and below, in that order */
         for (int side = 0; side < 2; side++) {
@@ -137,9 +137,9 @@ void DesignEditor_Fill(DesignEditor *self, u8 px, u8 py, int colour)
 }
 CLEAN_AS(func_ov123_0229a654, DesignEditor_Fill)
 
-/* func_ov123_0229a7d4: the last x of row `py` from px on whose pixels have `colour`, going
+/* func_ov123_0229a7d4: the last x of row `py` from px on whose pixels have `color`, going
  * right: px when the next one differs, 31 at the end of the row (and for px 31 or more). */
-int DesignEditor_RunRight(DesignEditor *self, int px, int py, int colour)
+int DesignEditor_RunRight(DesignEditor *self, int px, int py, int color)
 {
     if (px >= 31) {
         return 31;
@@ -148,7 +148,7 @@ int DesignEditor_RunRight(DesignEditor *self, int px, int py, int colour)
     const u32 *word = de_row(self, py) + (x >> 3);
     int shift = (x & 7) * 4;
     while (x <= 31) {
-        if (colour != (int) ((*word >> shift) & 0xf)) {
+        if (color != (int) ((*word >> shift) & 0xf)) {
             return x - 1;
         }
         shift += 4;
@@ -162,9 +162,9 @@ int DesignEditor_RunRight(DesignEditor *self, int px, int py, int colour)
 }
 CLEAN_AS(func_ov123_0229a7d4, DesignEditor_RunRight)
 
-/* func_ov123_0229a82c: the first x of row `py` up to px whose pixels have `colour`, going
+/* func_ov123_0229a82c: the first x of row `py` up to px whose pixels have `color`, going
  * left: px when the one before differs, 0 at the start of the row (and for px 0 or less). */
-int DesignEditor_RunLeft(DesignEditor *self, int px, int py, int colour)
+int DesignEditor_RunLeft(DesignEditor *self, int px, int py, int color)
 {
     if (px <= 0) {
         return 0;
@@ -173,7 +173,7 @@ int DesignEditor_RunLeft(DesignEditor *self, int px, int py, int colour)
     const u32 *word = de_row(self, py) + (x >> 3);
     int shift = (x & 7) * 4;
     while (x >= 0) {
-        if (colour != (int) ((*word >> shift) & 0xf)) {
+        if (color != (int) ((*word >> shift) & 0xf)) {
             return x + 1;
         }
         shift -= 4;
@@ -188,13 +188,13 @@ int DesignEditor_RunLeft(DesignEditor *self, int px, int py, int colour)
 CLEAN_AS(func_ov123_0229a82c, DesignEditor_RunLeft)
 
 /* func_ov123_0229a884: the first x from `left` to `right` of row `py` whose pixel has
- * `colour`, or -1. */
-int DesignEditor_FindInRow(DesignEditor *self, int left, int right, int py, int colour)
+ * `color`, or -1. */
+int DesignEditor_FindInRow(DesignEditor *self, int left, int right, int py, int color)
 {
     const u32 *word = de_row(self, py) + (left >> 3);
     int shift = (left & 7) * 4;
     for (int x = left; x <= right; x++) {
-        if (colour == (int) ((*word >> shift) & 0xf)) {
+        if (color == (int) ((*word >> shift) & 0xf)) {
             return x;
         }
         shift += 4;
@@ -207,7 +207,7 @@ int DesignEditor_FindInRow(DesignEditor *self, int left, int right, int py, int 
 }
 CLEAN_AS(func_ov123_0229a884, DesignEditor_FindInRow)
 
-/* func_ov123_0229a8dc: the colour of pixel (px, py); 1 outside the design. */
+/* func_ov123_0229a8dc: the color of pixel (px, py); 1 outside the design. */
 unsigned char DesignEditor_PixelAt(DesignEditor *self, unsigned int px, unsigned int py)
 {
     if (px >= DESIGN_EDITOR_SIZE || py >= DESIGN_EDITOR_SIZE) {
@@ -218,18 +218,18 @@ unsigned char DesignEditor_PixelAt(DesignEditor *self, unsigned int px, unsigned
 }
 CLEAN_AS(func_ov123_0229a8dc, DesignEditor_PixelAt)
 
-/* func_ov123_0229a918: the whole design painted with `colour` through the pattern, its sixteen
+/* func_ov123_0229a918: the whole design painted with `color` through the pattern, its sixteen
  * rows twice, each row's two words for the left half and again for the right. */
-void DesignEditor_PaintPattern(DesignEditor *self, int colour)
+void DesignEditor_PaintPattern(DesignEditor *self, int color)
 {
     u32 *p = DesignEditor_Pixels(self);
     for (int pass = 0; pass < 2; pass++) {
         const u32 *q = data_ov123_0229cb2c;
         for (int row = 0; row < 16; row++) {
-            p[0] = DesignEditor_PaintWord((unsigned int) (uintptr_t) self, p[0], q[0], (unsigned int) colour);
-            p[1] = DesignEditor_PaintWord((unsigned int) (uintptr_t) self, p[1], q[1], (unsigned int) colour);
-            p[2] = DesignEditor_PaintWord((unsigned int) (uintptr_t) self, p[2], q[0], (unsigned int) colour);
-            p[3] = DesignEditor_PaintWord((unsigned int) (uintptr_t) self, p[3], q[1], (unsigned int) colour);
+            p[0] = DesignEditor_PaintWord((unsigned int) (uintptr_t) self, p[0], q[0], (unsigned int) color);
+            p[1] = DesignEditor_PaintWord((unsigned int) (uintptr_t) self, p[1], q[1], (unsigned int) color);
+            p[2] = DesignEditor_PaintWord((unsigned int) (uintptr_t) self, p[2], q[0], (unsigned int) color);
+            p[3] = DesignEditor_PaintWord((unsigned int) (uintptr_t) self, p[3], q[1], (unsigned int) color);
             p += 4;
             q += 2;
         }
@@ -237,12 +237,12 @@ void DesignEditor_PaintPattern(DesignEditor *self, int colour)
 }
 CLEAN_AS(func_ov123_0229a918, DesignEditor_PaintPattern)
 
-/* func_ov123_0229a988: every pixel of the design `colour` (its low four bits repeated in each
+/* func_ov123_0229a988: every pixel of the design `color` (its low four bits repeated in each
  * nibble). */
-void DesignEditor_Clear(DesignEditor *self, int colour)
+void DesignEditor_Clear(DesignEditor *self, int color)
 {
     u32 *p = DesignEditor_Pixels(self);
-    u32 word = (u32) colour * 0x11111111u;
+    u32 word = (u32) color * 0x11111111u;
     for (int row = 0; row < DESIGN_EDITOR_SIZE; row++) {
         p[0] = word;
         p[1] = word;
@@ -253,11 +253,11 @@ void DesignEditor_Clear(DesignEditor *self, int colour)
 }
 CLEAN_AS(func_ov123_0229a988, DesignEditor_Clear)
 
-/* func_ov123_0229a9b0: an ellipse in `colour` inside the box from (left, top) to (right,
+/* func_ov123_0229a9b0: an ellipse in `color` inside the box from (left, top) to (right,
  * bottom): from the angle 0 to a quarter turn in steps that shrink with its size, the four
  * points of each angle (`filled` 0), or the two rows between them (else). An even width or
  * height puts the right or lower points one further. */
-void DesignEditor_Ellipse(DesignEditor *self, int left, int top, int right, unsigned char bottom, int colour, int filled)
+void DesignEditor_Ellipse(DesignEditor *self, int left, int top, int right, unsigned char bottom, int color, int filled)
 {
     int width = right - left;
     int height = bottom - top;
@@ -283,37 +283,37 @@ void DesignEditor_Ellipse(DesignEditor *self, int left, int top, int right, unsi
             int lower = odd_h + (cy + dy);
             int end = odd_w + (cx + dx);
             for (int x = cx - dx; x <= end; x++) {
-                DesignEditor_SetPixel(self, (u8) x, (u8) upper, colour);
-                DesignEditor_SetPixel(self, (u8) x, (u8) lower, colour);
+                DesignEditor_SetPixel(self, (u8) x, (u8) upper, color);
+                DesignEditor_SetPixel(self, (u8) x, (u8) lower, color);
             }
         } else {
             int x_right = odd_w + (cx + dx);
             int y_lower = odd_h + (cy + dy);
-            DesignEditor_SetPixel(self, (u8) x_right, (u8) y_lower, colour);
+            DesignEditor_SetPixel(self, (u8) x_right, (u8) y_lower, color);
             int y_upper = cy - dy;
-            DesignEditor_SetPixel(self, (u8) x_right, (u8) y_upper, colour);
+            DesignEditor_SetPixel(self, (u8) x_right, (u8) y_upper, color);
             int x_left = cx - dx;
-            DesignEditor_SetPixel(self, (u8) x_left, (u8) y_lower, colour);
-            DesignEditor_SetPixel(self, (u8) x_left, (u8) y_upper, colour);
+            DesignEditor_SetPixel(self, (u8) x_left, (u8) y_lower, color);
+            DesignEditor_SetPixel(self, (u8) x_left, (u8) y_upper, color);
         }
     }
 }
 CLEAN_AS(func_ov123_0229a9b0, DesignEditor_Ellipse)
 
-/* func_ov123_0229ab18: a rectangle's outline in `colour` from (left, top) to (right, bottom):
+/* func_ov123_0229ab18: a rectangle's outline in `color` from (left, top) to (right, bottom):
  * the top and bottom rows, then the left and right columns.
  * The matching source declares the first parameter (the editor) unsigned char; the ROM's code
  * passes it on whole, as this does. */
 void DesignEditor_Rectangle(DesignEditor *self, unsigned char left, unsigned char top, unsigned int right, unsigned int bottom,
-                            int colour)
+                            int color)
 {
     for (u8 x = left; x <= right; x++) {
-        DesignEditor_SetPixel(self, x, top, colour);
-        DesignEditor_SetPixel(self, x, (int) bottom, colour);
+        DesignEditor_SetPixel(self, x, top, color);
+        DesignEditor_SetPixel(self, x, (int) bottom, color);
     }
     for (u8 y = top; y <= bottom; y++) {
-        DesignEditor_SetPixel(self, left, y, colour);
-        DesignEditor_SetPixel(self, (int) right, y, colour);
+        DesignEditor_SetPixel(self, left, y, color);
+        DesignEditor_SetPixel(self, (int) right, y, color);
     }
 }
 CLEAN_AS(func_ov123_0229ab18, DesignEditor_Rectangle)
@@ -321,7 +321,7 @@ CLEAN_AS(func_ov123_0229ab18, DesignEditor_Rectangle)
 /* func_ov123_0229ab80: a line from (x0, y0) to (x1, y1) by Bresenham's steps, each point
  * painted with DesignEditor_PaintBrush (`brush` the tool, 3 for preview dots). Answers 1 when
  * any pixel changed. */
-int DesignEditor_Line(DesignEditor *self, unsigned int x0, unsigned int y0, unsigned int x1, unsigned char y1, int colour,
+int DesignEditor_Line(DesignEditor *self, unsigned int x0, unsigned int y0, unsigned int x1, unsigned char y1, int color,
                       int brush)
 {
     int changed = 0;
@@ -348,7 +348,7 @@ int DesignEditor_Line(DesignEditor *self, unsigned int x0, unsigned int y0, unsi
     if (dx >= dy) {
         int error = -dx;
         for (int i = 0; i <= dx; i++) {
-            changed |= DesignEditor_PaintBrush(self, (u8) x, (u8) y, colour, brush, 0);
+            changed |= DesignEditor_PaintBrush(self, (u8) x, (u8) y, color, brush, 0);
             x += (unsigned int) step_x;
             error += dy * 2;
             if (error >= 0) {
@@ -359,7 +359,7 @@ int DesignEditor_Line(DesignEditor *self, unsigned int x0, unsigned int y0, unsi
     } else {
         int error = -dy;
         for (int i = 0; i <= dy; i++) {
-            changed |= DesignEditor_PaintBrush(self, (u8) x, (u8) y, colour, brush, 0);
+            changed |= DesignEditor_PaintBrush(self, (u8) x, (u8) y, color, brush, 0);
             y += (unsigned int) step_y;
             error += dx * 2;
             if (error >= 0) {
@@ -376,7 +376,7 @@ CLEAN_AS(func_ov123_0229ab80, DesignEditor_Line)
  * left, above and up-left; pen 3 the nine around it, row by row; 3 only a preview dot
  * (DESIGN_EDITOR_TOOL_DOTS). Answers 1 when a pixel changed; 0 for any other brush. The last
  * parameter is not read. */
-int DesignEditor_PaintBrush(DesignEditor *self, u8 px, u8 py, int colour, int brush, int unused)
+int DesignEditor_PaintBrush(DesignEditor *self, u8 px, u8 py, int color, int brush, int unused)
 {
     (void) unused;
     int changed = 0;
@@ -389,24 +389,24 @@ int DesignEditor_PaintBrush(DesignEditor *self, u8 px, u8 py, int colour, int br
     u8 down = (u8) (py + 1);
     switch (brush) {
         case DESIGN_EDITOR_TOOL_PEN_1:
-            changed |= DesignEditor_SetPixel(self, px, py, colour);
+            changed |= DesignEditor_SetPixel(self, px, py, color);
             break;
         case DESIGN_EDITOR_TOOL_PEN_2:
-            changed |= DesignEditor_SetPixel(self, px, py, colour);
-            changed |= DesignEditor_SetPixel(self, left, py, colour);
-            changed |= DesignEditor_SetPixel(self, px, up, colour);
-            changed |= DesignEditor_SetPixel(self, left, up, colour);
+            changed |= DesignEditor_SetPixel(self, px, py, color);
+            changed |= DesignEditor_SetPixel(self, left, py, color);
+            changed |= DesignEditor_SetPixel(self, px, up, color);
+            changed |= DesignEditor_SetPixel(self, left, up, color);
             break;
         case DESIGN_EDITOR_TOOL_PEN_3:
-            changed |= DesignEditor_SetPixel(self, left, up, colour);
-            changed |= DesignEditor_SetPixel(self, px, up, colour);
-            changed |= DesignEditor_SetPixel(self, right, up, colour);
-            changed |= DesignEditor_SetPixel(self, left, py, colour);
-            changed |= DesignEditor_SetPixel(self, px, py, colour);
-            changed |= DesignEditor_SetPixel(self, right, py, colour);
-            changed |= DesignEditor_SetPixel(self, left, down, colour);
-            changed |= DesignEditor_SetPixel(self, px, down, colour);
-            changed |= DesignEditor_SetPixel(self, right, down, colour);
+            changed |= DesignEditor_SetPixel(self, left, up, color);
+            changed |= DesignEditor_SetPixel(self, px, up, color);
+            changed |= DesignEditor_SetPixel(self, right, up, color);
+            changed |= DesignEditor_SetPixel(self, left, py, color);
+            changed |= DesignEditor_SetPixel(self, px, py, color);
+            changed |= DesignEditor_SetPixel(self, right, py, color);
+            changed |= DesignEditor_SetPixel(self, left, down, color);
+            changed |= DesignEditor_SetPixel(self, px, down, color);
+            changed |= DesignEditor_SetPixel(self, right, down, color);
             break;
         case DESIGN_EDITOR_TOOL_DOTS:
             DesignEditor_DrawPreviewDot(self, px, py);
@@ -416,10 +416,10 @@ int DesignEditor_PaintBrush(DesignEditor *self, u8 px, u8 py, int colour, int br
 }
 CLEAN_AS(func_ov123_0229ac80, DesignEditor_PaintBrush)
 
-/* func_ov123_0229adc8: pixel (px, py) set to `colour`; answers 1 when it changed, 0 when it
+/* func_ov123_0229adc8: pixel (px, py) set to `color`; answers 1 when it changed, 0 when it
  * already had it or is outside the design. The word is written twice: cleared, then or-ed.
- * QUIRK: `colour` is not masked; one above 15 also sets bits of the pixels to its right. */
-int DesignEditor_SetPixel(DesignEditor *self, int px, int py, int colour)
+ * QUIRK: `color` is not masked; one above 15 also sets bits of the pixels to its right. */
+int DesignEditor_SetPixel(DesignEditor *self, int px, int py, int color)
 {
     if ((unsigned int) px >= DESIGN_EDITOR_SIZE || (unsigned int) py >= DESIGN_EDITOR_SIZE) {
         return 0;
@@ -429,11 +429,11 @@ int DesignEditor_SetPixel(DesignEditor *self, int px, int py, int colour)
     u32 *word = &row[px >> 3];
     u32 mask = 0xfu << shift;
     u32 data = *word;
-    if (((data & mask) >> shift) == (u32) colour) {
+    if (((data & mask) >> shift) == (u32) color) {
         return 0;
     }
     *word = data & ~mask;
-    *word |= (u32) colour << shift;
+    *word |= (u32) color << shift;
     return 1;
 }
 CLEAN_AS(func_ov123_0229adc8, DesignEditor_SetPixel)

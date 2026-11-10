@@ -72,10 +72,10 @@ extern unsigned short func_02090f88(Vec3 *out, Vec3 position);
 #define EFFECT_SYSTEM_RESOURCES 0x20      /* and where they start */
 
 /* ParticleHeader.draw_flags: how an emitter is tinted (EffectSystem_TintEmitter). */
-#define EFFECT_SYSTEM_TINTED 0x80          /* by the scene's ambient colour, times one of: */
-#define EFFECT_SYSTEM_TINT_SEASON 0x40     /* the season's colour */
+#define EFFECT_SYSTEM_TINTED 0x80          /* by the scene's ambient color, times one of: */
+#define EFFECT_SYSTEM_TINT_SEASON 0x40     /* the season's color */
 #define EFFECT_SYSTEM_TINT_OWN_PERIOD 0x20 /* the period's colour of the emitter's table */
-#define EFFECT_SYSTEM_TINT_PERIOD 0x08     /* the period's colour */
+#define EFFECT_SYSTEM_TINT_PERIOD 0x08     /* the period's color */
 #define EFFECT_SYSTEM_WHITE 0x7fff
 
 /* The process's destructor, without freeing it. */
@@ -477,7 +477,7 @@ void EffectSystem_PlaceEmitter(ParticleEmitter *emitter)
 }
 CLEAN_AS(func_02090d70, EffectSystem_PlaceEmitter)
 
-/* func_02090db0: an emitter whose resource asks for it tinted: the scene's ambient colour,
+/* func_02090db0: an emitter whose resource asks for it tinted: the scene's ambient color,
  * each of red, green and blue times the tint's (of 31); the ambient colour's top bit kept. */
 void EffectSystem_TintEmitter(ParticleEmitter *emitter)
 {
@@ -491,7 +491,7 @@ void EffectSystem_TintEmitter(ParticleEmitter *emitter)
     if ((flags & EFFECT_SYSTEM_TINTED) == 0) {
         return;
     }
-    ambient = (u16) SceneLights_AmbientColour();
+    ambient = (u16) SceneLights_AmbientColor();
     if ((flags & EFFECT_SYSTEM_TINT_SEASON) != 0) {
         tint = Season_Color();
     } else if ((flags & EFFECT_SYSTEM_TINT_OWN_PERIOD) != 0) {

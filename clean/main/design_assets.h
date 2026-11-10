@@ -14,7 +14,7 @@
 #include "types.h"
 
 #define DESIGN_PALETTES 16
-#define DESIGN_PALETTE_SIZE 0x20 /* 16 colours */
+#define DESIGN_PALETTE_SIZE 0x20 /* 16 colors */
 #define DESIGN_PLAYERS 4
 
 /* The palettes, read from one file; each points into it. */

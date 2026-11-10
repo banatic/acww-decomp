@@ -24,7 +24,7 @@ static_assert(offsetof(FishShadow, slot) == 0x7c && offsetof(FishShadow, state) 
 static_assert(offsetof(FishShadow, unk_84) == 0x84 && offsetof(FishShadow, position) == 0x120, "FishShadow");
 static_assert(offsetof(FishShadow, yaw) == 0x138 && offsetof(FishShadow, unk_140) == 0x140, "FishShadow");
 static_assert(offsetof(FishShadow, model) == 0x144 && offsetof(FishShadow, group_state) == 0x1fc, "FishShadow");
-static_assert(offsetof(FishShadow, behaviour) == 0x200 && offsetof(FishShadow, effect) == 0x204, "FishShadow");
+static_assert(offsetof(FishShadow, behavior) == 0x200 && offsetof(FishShadow, effect) == 0x204, "FishShadow");
 static_assert(offsetof(FishShadow, acre_x) == 0x208 && offsetof(FishShadow, respawn) == 0x212, "FishShadow");
 static_assert(offsetof(FishShadow, last_position) == 0x218 && offsetof(FishShadow, hook_state) == 0x224, "FishShadow");
 static_assert(offsetof(FishShadow, player) == 0x227 && offsetof(FishShadow, fishing_float) == 0x22c, "FishShadow");
@@ -868,8 +868,8 @@ int FishShadow_TryBite(FishShadow *fish)
         int reach = (data_ov003_0223c014[fish->size].reach << 12) / 100;
         Vec3 float_at = fishing_float->position;
         if (FishShadow_SplashRecent() && FishShadow_InBox(&fish->position, &float_at, reach, reach, reach)) {
-            if (fish->behaviour != FISH_SHADOW_CRUISE) {
-                fish->behaviour = FISH_SHADOW_CRUISE;
+            if (fish->behavior != FISH_SHADOW_CRUISE) {
+                fish->behavior = FISH_SHADOW_CRUISE;
             }
             fish->yaw = (s16) (fish->yaw + (s16) FishShadow_RandomSigned(0x5000, 0x7fff));
             fish->unk_140 = 0x14;

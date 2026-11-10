@@ -1,4 +1,4 @@
-/* The 3D scene's lights, the flash and the ambient colour (scene_lights.h). */
+/* The 3D scene's lights, the flash and the ambient color (scene_lights.h). */
 #include "scene_lights.h"
 
 #include "clean.h"
@@ -24,7 +24,7 @@ extern SceneLightRequests data_021cd87c;
 /* The scene's light kind and preset, by scene. */
 extern const u8 data_020ccc48[];
 extern const SceneLightsPreset data_020ccc7c[];
-/* The fireworks' colours, by kind - 1. */
+/* The fireworks' colors, by kind - 1. */
 extern const u16 data_020ccb98[];
 /* The thunder's sound, by the timer's state (only state 0 is read): in scenes 0 and 0x31, and
  * in the others. */
@@ -49,7 +49,7 @@ extern void VEC_Normalize(const Vec3 *src, Vec3 *dst);
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
 extern void G3_MultMtx33(const SceneLightsRotation *m);
 extern void NNS_G3dGlbLightVector(int light, s16 x, s16 y, s16 z);
-extern void NNS_G3dGlbLightColor(int light, u16 colour);
+extern void NNS_G3dGlbLightColor(int light, u16 color);
 
 #define REG32(address) (*(volatile u32 *) (uintptr_t) (address))
 #define REG_MTX_MODE 0x04000440u
@@ -74,16 +74,16 @@ extern void NNS_G3dGlbLightColor(int light, u16 colour);
 #define SCENE_FLASH_THUNDER_STEP 0x800
 #define SCENE_FLASH_THUNDER_FALL (-0x333)
 #define SCENE_FLASH_THUNDER_DELAY 180 /* counted down four times a frame (SceneFlash_RunTimers) */
-#define SCENE_FLASH_THUNDER_GREY 9    /* the thunder's grey at full level, per channel */
+#define SCENE_FLASH_THUNDER_GRAY 9    /* the thunder's gray at full level, per channel */
 
-/* --- Colours (GXRgb: red in bits 0-4, green 5-9, blue 10-14) --- */
+/* --- Colors (GXRgb: red in bits 0-4, green 5-9, blue 10-14) --- */
 
 #define CHANNEL_MAX 0x1f
-#define COLOUR_ALPHA 0x8000
+#define COLOR_ALPHA 0x8000
 
-static int channel(u16 colour, int shift)
+static int channel(u16 color, int shift)
 {
-    return (colour >> shift) & CHANNEL_MAX;
+    return (color >> shift) & CHANNEL_MAX;
 }
 
 /* The channels put together; like the game's, a channel outside 0-31 spills into the others. */
@@ -93,7 +93,7 @@ static u16 rgb(int red, int green, int blue)
 }
 
 /* `from` brought towards `to` by `t` (0 to 1.0), channel by channel. */
-static u16 mix_colour(u16 from, u16 to, int t)
+static u16 mix_color(u16 from, u16 to, int t)
 {
     int red = channel(from, 0) + (((channel(to, 0) - channel(from, 0)) * t) >> 12);
     int green = channel(from, 5) + (((channel(to, 5) - channel(from, 5)) * t) >> 12);
@@ -102,9 +102,9 @@ static u16 mix_colour(u16 from, u16 to, int t)
 }
 
 /* Each channel scaled by `level` (0 to 1.0). */
-static u16 scale_colour(u16 colour, int level)
+static u16 scale_color(u16 color, int level)
 {
-    return rgb((channel(colour, 0) * level) >> 12, (channel(colour, 5) * level) >> 12, (channel(colour, 10) * level) >> 12);
+    return rgb((channel(color, 0) * level) >> 12, (channel(color, 5) * level) >> 12, (channel(color, 10) * level) >> 12);
 }
 
 static int brighter(int value)
@@ -113,10 +113,10 @@ static int brighter(int value)
 }
 
 /* Red and green up by 10 and blue by 7, at most 31 each; the top bit is kept. */
-static u16 brighten(u16 colour)
+static u16 brighten(u16 color)
 {
-    return (u16) ((colour & COLOUR_ALPHA) | rgb(brighter(channel(colour, 0) + 10), brighter(channel(colour, 5) + 10),
-                                                brighter(channel(colour, 10) + 7)));
+    return (u16) ((color & COLOR_ALPHA) |
+                  rgb(brighter(channel(color, 0) + 10), brighter(channel(color, 5) + 10), brighter(channel(color, 10) + 7)));
 }
 
 static int shl(int value, int count)
@@ -194,7 +194,7 @@ void SceneLights_RequestOn(int index, int duration, int mode)
 CLEAN_AS(func_02064db8, SceneLights_RequestOn)
 
 /* func_02064ddc: the light set on the hardware: its direction turned by `rotation` (the
- * position and vector matrices made the rotation) and its colour.
+ * position and vector matrices made the rotation) and its color.
  * HW: the matrix mode is set before the identity is loaded and the rotation multiplied. */
 void SceneLight_Draw(SceneLight *light, const SceneLightsRotation *rotation)
 {
@@ -203,14 +203,14 @@ void SceneLight_Draw(SceneLight *light, const SceneLightsRotation *rotation)
     REG32(REG_MTX_IDENTITY) = 0;
     G3_MultMtx33(rotation);
     NNS_G3dGlbLightVector(id, (s16) light->direction.x, (s16) light->direction.y, (s16) light->direction.z);
-    NNS_G3dGlbLightColor(id, light->colour);
+    NNS_G3dGlbLightColor(id, light->color);
 }
 CLEAN_AS(func_02064ddc, SceneLight_Draw)
 
 /* func_02064e28: a frame of a light. In a scene whose lights follow the camera, only that
  * (SceneLight_FollowCamera). Else a lamp whose request changed is switched: a fade over its
  * duration (modes 0 and 3), a flash on (mode 1) or at once (the others, and mode 1 off); then
- * its fader runs and its colour and direction are updated. */
+ * its fader runs and its color and direction are updated. */
 void SceneLight_Run(SceneLight *light)
 {
     if (data_021cd864->kind == SCENE_LIGHTS_FOLLOW_CAMERA) {
@@ -250,8 +250,8 @@ void SceneLight_Run(SceneLight *light)
 }
 CLEAN_AS(func_02064e28, SceneLight_Run)
 
-/* func_02064ef8: the light's colour and direction: a lamp or glow shines down (its colour from
- * its fader), any other light along -Z with a colour of the sky's light of now; then the
+/* func_02064ef8: the light's color and direction: a lamp or glow shines down (its color from
+ * its fader), any other light along -Z with a color of the sky's light of now; then the
  * direction is turned (SceneLight_Rotate) and kept under 1.0. */
 void SceneLight_Update(SceneLight *light)
 {
@@ -259,19 +259,19 @@ void SceneLight_Update(SceneLight *light)
 
     switch (light->kind) {
         case SCENE_LIGHT_SWITCHED_LAMP:
-            SceneLight_SwitchedLampColour(light);
+            SceneLight_SwitchedLampColor(light);
             set_vec(&direction, 0, -FX32_ONE, 0);
             break;
         case SCENE_LIGHT_LAMP:
-            SceneLight_LampColour(light);
+            SceneLight_LampColor(light);
             set_vec(&direction, 0, -FX32_ONE, 0);
             break;
         case SCENE_LIGHT_GLOW:
-            SceneLight_GlowColour(light);
+            SceneLight_GlowColor(light);
             set_vec(&direction, 0, -FX32_ONE, 0);
             break;
         default:
-            light->colour = (u16) Sky_LightColor(light->colour_index);
+            light->color = (u16) Sky_LightColor(light->color_index);
             set_vec(&direction, 0, 0, -FX32_ONE);
             break;
     }
@@ -282,43 +282,43 @@ CLEAN_AS(func_02064ef8, SceneLight_Update)
 
 /* func_02064f84: a glow's colour by its fader's level: red 25, green 20 and blue 15 at level 0,
  * up by 4, 9 and 16 at 1.0. */
-void SceneLight_GlowColour(SceneLight *light)
+void SceneLight_GlowColor(SceneLight *light)
 {
     int level = Fader_Level(&light->sw.fader);
     int blue = (shl(level, 4) >> 12) + 15;
     int red = (shl(level, 2) >> 12) + 25;
     int green = ((9 * level) >> 12) + 20;
-    light->colour = rgb(red, green, blue);
+    light->color = rgb(red, green, blue);
 }
-CLEAN_AS(func_02064f84, SceneLight_GlowColour)
+CLEAN_AS(func_02064f84, SceneLight_GlowColor)
 
-/* func_02064fb4: a lamp's colour: the scene's unlit lamp colour brought towards the lit one by
+/* func_02064fb4: a lamp's colour: the scene's unlit lamp color brought towards the lit one by
  * its fader's level. */
-void SceneLight_LampColour(SceneLight *light)
+void SceneLight_LampColor(SceneLight *light)
 {
     int level = Fader_Level(&light->sw.fader);
     SceneLights *lights = data_021cd864;
-    light->colour = mix_colour(lights->lamp_unlit, lights->lamp_lit, level);
+    light->color = mix_color(lights->lamp_unlit, lights->lamp_lit, level);
 }
-CLEAN_AS(func_02064fb4, SceneLight_LampColour)
+CLEAN_AS(func_02064fb4, SceneLight_LampColor)
 
-/* func_02065020: as SceneLight_LampColour, but an unlit lamp in a mode other than 0 is black
+/* func_02065020: as SceneLight_LampColor, but an unlit lamp in a mode other than 0 is black
  * and a lit one in mode 2 is red 16, green 16 and blue 13. */
-void SceneLight_SwitchedLampColour(SceneLight *light)
+void SceneLight_SwitchedLampColor(SceneLight *light)
 {
     int level = Fader_Level(&light->sw.fader);
     SceneLights *lights = data_021cd864;
-    u16 colour = mix_colour(lights->lamp_unlit, lights->lamp_lit, level);
+    u16 color = mix_color(lights->lamp_unlit, lights->lamp_lit, level);
     if (light->sw.on == 0) {
         if (light->sw.mode != 0) {
-            colour = 0;
+            color = 0;
         }
     } else if (light->sw.mode == 2) {
-        colour = rgb(16, 16, 13);
+        color = rgb(16, 16, 13);
     }
-    light->colour = colour;
+    light->color = color;
 }
-CLEAN_AS(func_02065020, SceneLight_SwitchedLampColour)
+CLEAN_AS(func_02065020, SceneLight_SwitchedLampColor)
 
 /* func_020650ac: a light that follows the camera: along -Z turned as usual, then about X by
  * the camera's angle over the ground (when there is a camera), with a colour of the sky's
@@ -332,7 +332,7 @@ void SceneLight_FollowCamera(SceneLight *light)
     if (data_021c67a4 != NULL) {
         Vec_RotateX(&direction, CameraControl_GroundAngle(data_021c67a4));
     }
-    light->colour = (u16) Sky_LightColor(light->colour_index);
+    light->color = (u16) Sky_LightColor(light->color_index);
     SceneLights_ClampDirection(&direction, &light->direction);
 }
 CLEAN_AS(func_020650ac, SceneLight_FollowCamera)
@@ -442,7 +442,7 @@ void SceneLights_StartFlash(int kind)
 CLEAN_AS(func_02065268, SceneLights_StartFlash)
 
 /* func_02065284: a frame of a firework's flash, shining down: the level rises to 1.0, then
- * falls back to 0, where the flash ends (kind none, idle); the colour is the firework's
+ * falls back to 0, where the flash ends (kind none, idle); the color is the firework's
  * (data_020ccb98) scaled by the level. The table's address is computed as the ARM does,
  * whatever the kind. */
 void SceneFlash_RunFirework(SceneFlash *flash)
@@ -462,8 +462,8 @@ void SceneFlash_RunFirework(SceneFlash *flash)
     }
 
     if (flash->kind != SCENE_FLASH_NONE) {
-        u16 colour = *(const u16 *) ((uintptr_t) data_020ccb98 + (u32) (flash->kind - 1) * 2);
-        flash->colour = scale_colour(colour, flash->level);
+        u16 color = *(const u16 *) ((uintptr_t) data_020ccb98 + (u32) (flash->kind - 1) * 2);
+        flash->color = scale_color(color, flash->level);
     }
 }
 CLEAN_AS(func_02065284, SceneFlash_RunFirework)
@@ -471,7 +471,7 @@ CLEAN_AS(func_02065284, SceneFlash_RunFirework)
 /* func_0206531c: a firework's flash started: black, rising from 0. */
 void SceneFlash_StartFirework(SceneFlash *flash)
 {
-    flash->colour = 0;
+    flash->color = 0;
     flash->state = SCENE_FLASH_RUNNING;
     flash->level = 0;
     flash->step = SCENE_FLASH_FIREWORK_STEP;
@@ -494,7 +494,7 @@ void SceneFlash_Firework(SceneFlash *flash)
 CLEAN_AS(func_02065334, SceneFlash_Firework)
 
 /* func_02065354: a frame of a thunderbolt's flash, shining down: as a firework's, but faster
- * (the step is cleared at the end) and grey, up to 9 in each channel. */
+ * (the step is cleared at the end) and gray, up to 9 in each channel. */
 void SceneFlash_RunThunder(SceneFlash *flash)
 {
     set_vec(&flash->direction, 0, -FX32_ONE, 0);
@@ -512,8 +512,8 @@ void SceneFlash_RunThunder(SceneFlash *flash)
         flash->state = SCENE_FLASH_IDLE;
     }
 
-    int grey = (SCENE_FLASH_THUNDER_GREY * flash->level) >> 12;
-    flash->colour = rgb(grey, grey, grey);
+    int gray = (SCENE_FLASH_THUNDER_GRAY * flash->level) >> 12;
+    flash->color = rgb(gray, gray, gray);
 }
 CLEAN_AS(func_02065354, SceneFlash_RunThunder)
 
@@ -521,7 +521,7 @@ CLEAN_AS(func_02065354, SceneFlash_RunThunder)
  * to be heard after a delay. */
 void SceneFlash_StartThunder(SceneFlash *flash)
 {
-    flash->colour = 0;
+    flash->color = 0;
     flash->state = SCENE_FLASH_RUNNING;
     flash->level = 0;
     flash->step = SCENE_FLASH_THUNDER_STEP;
@@ -560,7 +560,7 @@ void SceneFlash_Draw(SceneFlash *flash, const SceneLightsRotation *rotation)
         REG32(REG_MTX_IDENTITY) = 0;
         G3_MultMtx33(rotation);
         NNS_G3dGlbLightVector(SCENE_FLASH_LIGHT, (s16) flash->direction.x, (s16) flash->direction.y, (s16) flash->direction.z);
-        NNS_G3dGlbLightColor(SCENE_FLASH_LIGHT, flash->colour);
+        NNS_G3dGlbLightColor(SCENE_FLASH_LIGHT, flash->color);
     } else {
         NNS_G3dGlbLightColor(SCENE_FLASH_LIGHT, 0);
     }
@@ -703,10 +703,10 @@ unsigned int SceneLights_LightLevel(unsigned int index)
 }
 CLEAN_AS(func_020655c4, SceneLights_LightLevel)
 
-/* func_02065604: the materials' emission colour: in a lamp-lit room the unlit colour brought
+/* func_02065604: the materials' emission color: in a lamp-lit room the unlit color brought
  * towards the lit one by the lamp's fader, elsewhere the sky's (Sky_LightColor(2)); 0 without
  * the process. */
-short SceneLights_EmissionColour(void)
+short SceneLights_EmissionColor(void)
 {
     SceneLights *lights = data_021cd864;
     if (lights == NULL) {
@@ -716,60 +716,60 @@ short SceneLights_EmissionColour(void)
         case SCENE_LIGHTS_LAMP_ROOM:
         case SCENE_LIGHTS_LAMP_ROOM_B: {
             int level = Fader_Level(lights->fader);
-            return (short) mix_colour(lights->emission_unlit, lights->emission_lit, level);
+            return (short) mix_color(lights->emission_unlit, lights->emission_lit, level);
         }
         default:
             return Sky_LightColor(SCENE_LIGHTS_SKY_EMISSION);
     }
 }
-CLEAN_AS(func_02065604, SceneLights_EmissionColour)
+CLEAN_AS(func_02065604, SceneLights_EmissionColor)
 
-/* func_020656ac: the ambient colour: the sky's (Sky_LightColor(3)), brighter in a house's room
+/* func_020656ac: the ambient color: the sky's (Sky_LightColor(3)), brighter in a house's room
  * while its third light is on; in another room brighter in scene 0x0b, as it is in scenes 0x27
  * and 0x28, white in the others. */
 void SceneLights_UpdateAmbient(SceneLights *self)
 {
-    u16 colour = (u16) Sky_LightColor(SCENE_LIGHTS_SKY_AMBIENT);
+    u16 color = (u16) Sky_LightColor(SCENE_LIGHTS_SKY_AMBIENT);
 
     if (SceneKinds_CurrentIsHouseRoom() != 0) {
         if (self->lights[2].sw.on != 0) {
-            colour = brighten(colour);
+            color = brighten(color);
         }
     } else if (data_020e54a8 == SCENE_LIGHTS_IN_A_ROOM) {
         switch (SceneQuery_Current()) {
             case SCENE_LIGHTS_BRIGHT_ROOM:
-                colour = brighten(colour);
+                color = brighten(color);
                 break;
             case SCENE_LIGHTS_ROOM_AS_SKY_A:
             case SCENE_LIGHTS_ROOM_AS_SKY_B:
                 break;
             default:
-                colour = (u16) ((colour & COLOUR_ALPHA) | rgb(CHANNEL_MAX, CHANNEL_MAX, CHANNEL_MAX));
+                color = (u16) ((color & COLOR_ALPHA) | rgb(CHANNEL_MAX, CHANNEL_MAX, CHANNEL_MAX));
                 break;
         }
     }
-    self->ambient = colour;
+    self->ambient = color;
 }
 CLEAN_AS(func_020656ac, SceneLights_UpdateAmbient)
 
-/* func_02065858: the ambient colour.
+/* func_02065858: the ambient color.
  * REQUIRES: the process exists. */
-short SceneLights_AmbientColour(void)
+short SceneLights_AmbientColor(void)
 {
     return (short) data_021cd864->ambient;
 }
-CLEAN_AS(func_02065858, SceneLights_AmbientColour)
+CLEAN_AS(func_02065858, SceneLights_AmbientColor)
 
-/* func_0206586c: the flash's colour; 0 with no flash or without the process. */
-short SceneLights_FlashColour(void)
+/* func_0206586c: the flash's color; 0 with no flash or without the process. */
+short SceneLights_FlashColor(void)
 {
     SceneLights *lights = data_021cd864;
     if (lights != NULL && lights->flash.kind != SCENE_FLASH_NONE) {
-        return (short) lights->flash.colour;
+        return (short) lights->flash.color;
     }
     return 0;
 }
-CLEAN_AS(func_0206586c, SceneLights_FlashColour)
+CLEAN_AS(func_0206586c, SceneLights_FlashColor)
 
 /* The lights a lit material uses in the current scene: light 0 only in a lamp-lit room, else
  * all four. */
@@ -832,7 +832,7 @@ int SceneLights_Draw(SceneLights *self)
 }
 CLEAN_AS(func_02065938, SceneLights_Draw)
 
-/* func_02065980 (vtable slot 6): a frame: each light, the flash and the ambient colour. */
+/* func_02065980 (vtable slot 6): a frame: each light, the flash and the ambient color. */
 int SceneLights_Execute(SceneLights *self)
 {
     for (int i = 0; i < self->count; i++) {
@@ -845,8 +845,8 @@ int SceneLights_Execute(SceneLights *self)
 CLEAN_AS(func_02065980, SceneLights_Execute)
 
 /* func_020659b8 (vtable slot 0): the creation: the process made data_021cd864, the scene's
- * light kind and preset taken (scene 0x21 has colours of its own, with unlit colours; the
- * others' unlit colours are black), the lights set up and run once, and no flash. */
+ * light kind and preset taken (scene 0x21 has colors of its own, with unlit colors; the
+ * others' unlit colors are black), the lights set up and run once, and no flash. */
 int SceneLights_Create(SceneLights *self)
 {
     data_021cd864 = self;
@@ -913,7 +913,7 @@ void SceneLights_SetUp(SceneLights *self)
         light->kind = def->kind;
         light->light = def->light;
         light->time_offset = def->time_offset;
-        light->colour_index = def->colour_index;
+        light->color_index = def->color_index;
         light->angle_x = def->angle_x;
         light->angle_y = def->angle_y;
         switch (def->kind) {

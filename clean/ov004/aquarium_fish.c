@@ -291,7 +291,7 @@ static_assert(offsetof(AquariumFish, glass_step) == 0x200, "fish glass step");
 static_assert(offsetof(AquariumFish, cruise_frames) == 0x202, "fish cruise frames");
 static_assert(offsetof(AquariumFish, pitch_steps) == 0x23c, "fish pitch steps");
 static_assert(offsetof(AquariumFish, flee_yaw) == 0x24c, "fish flee yaw");
-static_assert(offsetof(AquariumFish, levelling) == 0x24e, "fish levelling");
+static_assert(offsetof(AquariumFish, leveling) == 0x24e, "fish levelling");
 static_assert(offsetof(AquariumFish, last_focus) == 0x252, "fish last focus");
 static_assert(offsetof(AquariumFish, unk_255) == 0x255, "fish class bytes");
 
@@ -704,7 +704,7 @@ void AquariumFish_ModeNewCourse(AquariumFish *fish)
     fish->rest_frames = (u8) AquariumSwim_Random(fish->swim_204[3], fish->swim_204[2]);
     fish->pitch_steps = 0;
     aquarium_fish_choose_vertical(fish);
-    fish->levelling = 0;
+    fish->leveling = 0;
     fish->mode = AQUARIUM_MODE_SPEED_UP;
     fish->turning = 1;
 }

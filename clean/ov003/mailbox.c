@@ -675,9 +675,9 @@ int Mailbox_SetUp(Mailbox *mailbox)
     }
 
     u8 index = (u8) ObjectActors_IndexOf((TownObjectActor *) mailbox);
-    Vec3 centre = actor->position;
-    centre.y += MAILBOX_SPHERE_HEIGHT;
-    TouchPick_SetSphereAndAdd((TouchPick *) (intptr_t) SceneQuery_FieldObject(), mailbox_sphere(mailbox), &centre,
+    Vec3 center = actor->position;
+    center.y += MAILBOX_SPHERE_HEIGHT;
+    TouchPick_SetSphereAndAdd((TouchPick *) (intptr_t) SceneQuery_FieldObject(), mailbox_sphere(mailbox), &center,
                               MAILBOX_SPHERE_RADIUS, MAILBOX_SPHERE_KIND, index);
 
     mailbox->moves_on = 1;

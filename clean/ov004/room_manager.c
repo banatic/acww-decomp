@@ -66,7 +66,7 @@ static_assert(offsetof(RoomObject, sound.position) == 0x7b8, "object's sound poi
 extern u8 data_ov004_022595b8;
 /* The room's shared frame counter, counted 0 to 0x27 by the room's update. */
 extern u16 data_ov004_022595bc;
-/* The square of an acre's depth (set by the overlay's static initialisation): an object
+/* The square of an acre's depth (set by the overlay's static initialization): an object
  * farther from the player is never the nearest. */
 extern s32 data_ov004_022595d8;
 /* The point the TV's sound plays at when no TV is near. */

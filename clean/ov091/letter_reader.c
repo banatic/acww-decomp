@@ -72,7 +72,7 @@ static MusicVolume *letter_reader_music_volume(void)
     return (MusicVolume *) (void *) (data_021c526c + 0x1c4);
 }
 
-/* The button's and the cursor's bases are main's labelled sprite and cell layer sprite
+/* The button's and the cursor's bases are main's labeled sprite and cell layer sprite
  * (label_button.h, glide.h). */
 static LabelSprite *letter_reader_button_sprite(LetterReader *self)
 {

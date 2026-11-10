@@ -23,7 +23,7 @@ static_assert(sizeof(TalkChoiceCursor) == 0x30, "talk choice cursor");
 #define TALK_CHOICE_CURSOR_REPEAT_FIRST 9
 #define TALK_CHOICE_CURSOR_REPEAT_NEXT 3
 
-/* The sounds: the cursor moved, the cancelling answer picked, and the answers' own. */
+/* The sounds: the cursor moved, the canceling answer picked, and the answers' own. */
 #define TALK_CHOICE_CURSOR_SE_MOVE 0x0b
 #define TALK_CHOICE_CURSOR_SE_CANCEL 0x2a
 #define TALK_CHOICE_CURSOR_SE_ANSWER 0x29
@@ -32,7 +32,7 @@ static_assert(sizeof(TalkChoiceCursor) == 0x30, "talk choice cursor");
 #define TALK_CHOICE_CURSOR_SE_ANSWER_3 0x6c
 
 /* The labels: in VRAM from the first tile of their row, 13 tiles wide and 2 high, layer 1, on
- * the main screen, in colour (row + 1) on background 0xe, underlined. */
+ * the main screen, in color (row + 1) on background 0xe, underlined. */
 #define TALK_CHOICE_CURSOR_LABEL_CELLS 0xd
 #define TALK_CHOICE_CURSOR_LABEL_ROWS 2
 #define TALK_CHOICE_CURSOR_LABEL_LAYER 1
@@ -57,8 +57,8 @@ void TalkChoiceCursor_PlayAnswerSound(TalkChoiceCursor *cursor)
 CLEAN_AS(func_020aaee8, TalkChoiceCursor_PlayAnswerSound)
 
 /* func_020aaf20 (with the buttons): 1 when an answer is picked, the one under the cursor.
- * After B the cancelling answer is picked when its frames run out; else A picks the answer
- * under the cursor; B (when there is a cancelling answer) puts the cursor on it, holding the
+ * After B the canceling answer is picked when its frames run out; else A picks the answer
+ * under the cursor; B (when there is a canceling answer) puts the cursor on it, holding the
  * controls until it is picked; else up and down move the cursor: at once when first pressed,
  * then while held after 9 frames and every 3, the controls held meanwhile.
  * QUIRK: the pad is read directly, not through menu_input.h, so a control held with the
@@ -140,7 +140,7 @@ int TalkChoiceCursor_StepButtons(TalkChoiceCursor *cursor)
 CLEAN_AS(func_020aaf20, TalkChoiceCursor_StepButtons)
 
 /* func_020ab0a4 (with the touch screen): 1 when an answer's row is touched; the cursor is put
- * on it and its sound played (the cancel sound for the cancelling answer). */
+ * on it and its sound played (the cancel sound for the canceling answer). */
 int TalkChoiceCursor_StepTouch(TalkChoiceCursor *cursor)
 {
     int x;

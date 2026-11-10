@@ -117,7 +117,7 @@ static int fr_pen_pressed(void)
 
 /* ---- The choices */
 
-/* func_ov119_0229a4e4: the menu asked to close while a choice is up: the choice cancelled, the
+/* func_ov119_0229a4e4: the menu asked to close while a choice is up: the choice canceled, the
  * cursor sprite hidden, the choice closed, sub state 0x0c (which runs the cancel once it is
  * idle). */
 void FriendRoster_CancelChoiceOnClose(FriendRoster *self)

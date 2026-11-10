@@ -202,13 +202,13 @@ CLEAN_AS(func_02083cec, Spawner_DestructDelete)
  * angle (only the angle about Y, angle[1], is ever set) and answers 1, or 0 when it found no
  * place and set nothing. */
 
-/* func_02083d1c: the tile centre nearest to the request's position moved 0x4000 to -x and 0x6000
+/* func_02083d1c: the tile center nearest to the request's position moved 0x4000 to -x and 0x6000
  * to +z, facing angle 0. */
 int Spawner_PlaceOffRequest(Spawner *self, Vec3 *position, u16 *angle, const SpawnerRequest *request)
 {
     (void) self;
     Vec3 near = {request->position.x - 0x4000, 0, request->position.z + 0x6000};
-    AcreTile_SnapToTileCentre(position, &near);
+    AcreTile_SnapToTileCenter(position, &near);
     angle[1] = 0;
     return 1;
 }
@@ -244,7 +244,7 @@ int Spawner_PlaceFromPart24(Spawner *self, Vec3 *position, u16 *angle)
 }
 CLEAN_AS(func_02083da4, Spawner_PlaceFromPart24)
 
-/* func_02083dcc: the centre of a random tile func_02031a48 accepts, from the first 32 found in
+/* func_02083dcc: the center of a random tile func_02031a48 accepts, from the first 32 found in
  * the acres with any of the flags 0x7f000 and flag 8, row by row; 0 outdoors when there is no
  * map or no such tile, and always 0 in a room (nothing set). */
 int Spawner_PlaceOnRandomTile(Spawner *self, Vec3 *position)
@@ -295,7 +295,7 @@ int Spawner_PlaceOnRandomTile(Spawner *self, Vec3 *position)
         return 0;
     }
     const SpawnerTile *tile = &data_021d222c[MainRandom_Below(found)];
-    AcreTile_TileCentre(position, (u32) tile->x, (u32) tile->z);
+    AcreTile_TileCenter(position, (u32) tile->x, (u32) tile->z);
     return 1;
 }
 CLEAN_AS(func_02083dcc, Spawner_PlaceOnRandomTile)
@@ -430,7 +430,7 @@ void Spawner_UpdatePartCInSession(Spawner *self)
 }
 CLEAN_AS(func_02084210, Spawner_UpdatePartCInSession)
 
-/* func_02084260 (placer): outdoors where part 0x0c says; in a room 0x1000 to +x of the centre
+/* func_02084260 (placer): outdoors where part 0x0c says; in a room 0x1000 to +x of the center
  * of tile (6, 17). */
 int Spawner_PlaceFromPartCOrRoom(Spawner *self, Vec3 *position)
 {
@@ -439,7 +439,7 @@ int Spawner_PlaceFromPartCOrRoom(Spawner *self, Vec3 *position)
         MiddleSpot_ToPosition((const MiddleSpot *) (void *) Block021d27ac_Part0c(Block021d27ac_Get()), position);
         return 1;
     }
-    AcreTile_TileCentre(position, 6, 0x11);
+    AcreTile_TileCenter(position, 6, 0x11);
     position->x += 0x1000;
     return 1;
 }
@@ -501,7 +501,7 @@ int Spawner_CheckD002In(int check_mode)
 }
 CLEAN_AS(func_02084388, Spawner_CheckD002In)
 
-/* func_02084418 (placer): outdoors, 0x4000 to +x and +z of the centre of the first tile with
+/* func_02084418 (placer): outdoors, 0x4000 to +x and +z of the center of the first tile with
  * flag 1 holding a building 0x5014-0x501a, facing angle 0xc000; 0 without a map or such a
  * tile, and in a room. */
 int Spawner_PlaceBeforePlayerHouse(Spawner *self, Vec3 *position, s16 *angle)
@@ -520,7 +520,7 @@ int Spawner_PlaceBeforePlayerHouse(Spawner *self, Vec3 *position, s16 *angle)
     if (AcreTile_FindItemAllFlags(map, &acre_x, &acre_z, &x, &z, &first, &last, TILE_FLAG_1, 0) == 0) {
         return 0;
     }
-    AcreTile_TileCentreInAcre(position, acre_x, acre_z, x, z);
+    AcreTile_TileCenterInAcre(position, acre_x, acre_z, x, z);
     position->x += 0x4000;
     position->z += 0x4000;
     angle[1] = (s16) ANGLE_THREE_QUARTERS;
@@ -594,7 +594,7 @@ static int find_building(AcreMap *map, u16 *first, u16 *last, int flags, int *ti
     return 1;
 }
 
-/* func_02084598 (placer): the centre of the tile two to +x and two to +z of a building
+/* func_02084598 (placer): the center of the tile two to +x and two to +z of a building
  * 0x5014-0x501a (in a tile with flag 1), facing a random angle; 0 without a map or such a
  * tile. */
 int Spawner_PlaceBesidePlayerHouse(Spawner *self, Vec3 *position, s16 *angle)
@@ -607,13 +607,13 @@ int Spawner_PlaceBesidePlayerHouse(Spawner *self, Vec3 *position, s16 *angle)
     if (map == NULL || !find_building(map, &first, &last, TILE_FLAG_1, &x, &z)) {
         return 0;
     }
-    AcreTile_TileCentre(position, (u32) (x + 2), (u32) (z + 2));
+    AcreTile_TileCenter(position, (u32) (x + 2), (u32) (z + 2));
     angle[1] = (s16) MainRandom_Below(RANDOM_ANGLE_BOUND);
     return 1;
 }
 CLEAN_AS(func_02084598, Spawner_PlaceBesidePlayerHouse)
 
-/* func_02084630 (placer): the centre of the tile two to -x and three to +z of building 0x5000
+/* func_02084630 (placer): the center of the tile two to -x and three to +z of building 0x5000
  * (in a tile with flag 0x200), facing a random angle; 0 without a map or such a tile. */
 int Spawner_PlaceBesideTownHall(Spawner *self, Vec3 *position, s16 *angle)
 {
@@ -624,7 +624,7 @@ int Spawner_PlaceBesideTownHall(Spawner *self, Vec3 *position, s16 *angle)
     if (map == NULL || !find_building(map, &building, &building, TILE_FLAG_200, &x, &z)) {
         return 0;
     }
-    AcreTile_TileCentre(position, (u32) (x - 2), (u32) (z + 3));
+    AcreTile_TileCenter(position, (u32) (x - 2), (u32) (z + 3));
     angle[1] = (s16) MainRandom_Below(RANDOM_ANGLE_BOUND);
     return 1;
 }
@@ -764,7 +764,7 @@ int Spawner_CheckD019(void)
 }
 CLEAN_AS(func_0208496c, Spawner_CheckD019)
 
-/* func_020849e8 (placer): outdoors, 0x4000 to +z of the centre of the first tile with flag 1
+/* func_020849e8 (placer): outdoors, 0x4000 to +z of the center of the first tile with flag 1
  * holding a building 0x5014-0x501a; 0 without a map or such a tile, and in a room. */
 int Spawner_PlaceInFrontOfPlayerHouse(Spawner *self, Vec3 *position)
 {
@@ -782,7 +782,7 @@ int Spawner_PlaceInFrontOfPlayerHouse(Spawner *self, Vec3 *position)
     if (AcreTile_FindItemAllFlags(map, &acre_x, &acre_z, &x, &z, &first, &last, TILE_FLAG_1, 0) == 0) {
         return 0;
     }
-    AcreTile_TileCentreInAcre(position, acre_x, acre_z, x, z);
+    AcreTile_TileCenterInAcre(position, acre_x, acre_z, x, z);
     position->z += 0x4000;
     return 1;
 }
@@ -1104,11 +1104,11 @@ static s16 spawner_random_quarter(void)
     return (s16) (u16) (MainRandom_Below(4) << 14);
 }
 
-/* The centre of the tile before the villager's house's door. */
+/* The center of the tile before the villager's house's door. */
 static void spawner_at_door(u8 *villager, Vec3 *position)
 {
     const VillagerPlot *home = VillagerHome_Tile(villager);
-    AcreTile_TileCentre(position, (u32) (home->x + SPAWNER_DOOR_X), (u32) (home->z + SPAWNER_DOOR_Z));
+    AcreTile_TileCenter(position, (u32) (home->x + SPAWNER_DOOR_X), (u32) (home->z + SPAWNER_DOOR_Z));
 }
 
 /* The x and z of an entry's place. */
@@ -1524,7 +1524,7 @@ int Spawner_EventOn(u32 event, const DateTime *when)
 CLEAN_AS(func_02085d2c, Spawner_EventOn)
 
 /* func_02085d6c: a random free tile of the grid in the spawner's part 0x50 (TileGrid_Build),
- * of rows 0-13 (rows 14 and 15 are unmarked first), its centre into `position`. 0 when the
+ * of rows 0-13 (rows 14 and 15 are unmarked first), its center into `position`. 0 when the
  * grid cannot be built or has no free tile. */
 int Spawner_PlaceOnFreeTile(Spawner *self, Vec3 *position)
 {
@@ -1554,7 +1554,7 @@ int Spawner_PlaceOnFreeTile(Spawner *self, Vec3 *position)
                 continue;
             }
             if (pick == 0) {
-                AcreTile_TileCentre(position, x, z);
+                AcreTile_TileCenter(position, x, z);
                 return 1;
             }
             pick--;

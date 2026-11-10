@@ -135,7 +135,7 @@ static Mtx43 *town_ground_matrix(ModelObject *model)
 static void town_ground_start_anims(ModelAnim *anims, u8 *model, ModelObject *object)
 {
     if (ModelAnim_AllocMaterialAnim(&anims[0], model, data_021c9b24)) {
-        const u8 *file = (const u8 *) (uintptr_t) BgModels_GroundColourAnim(town_ground_bg_models());
+        const u8 *file = (const u8 *) (uintptr_t) BgModels_GroundColorAnim(town_ground_bg_models());
         ModelAnim_Start(&anims[0], file, 0, TOWN_GROUND_ANIM_SPEED, 0);
         ModelAnim_Attach(&anims[0], ModelObject_RenderObject(object));
     }
@@ -657,9 +657,9 @@ int TownGround_SetUp(TownGround *ground)
                     AcreTile_TileOfAcre(&map_x, &map_z, (int) x, (int) z, tile_x, tile_z);
                     int kind = UnitTypeInfo_Kind6fAt(map_x, map_z);
                     if (kind != UNIT_TYPE_INFO_NO_KIND) {
-                        Vec3 centre = {0, 0, 0};
-                        AcreTile_TileCentreInAcre(&centre, (int) x, (int) z, tile_x, tile_z);
-                        TownGroundUnit_SetUp(&ground->unit, &centre, kind);
+                        Vec3 center = {0, 0, 0};
+                        AcreTile_TileCenterInAcre(&center, (int) x, (int) z, tile_x, tile_z);
+                        TownGroundUnit_SetUp(&ground->unit, &center, kind);
                     }
                 }
             }

@@ -19,11 +19,11 @@ extern const u8 data_020da234[];
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
 
 /* func_02032610: tells each area of the list whose reach covers `position` (the squared
- * distance from its centre at most its reach_squared) that `owner` of `radius` is there. */
+ * distance from its center at most its reach_squared) that `owner` of `radius` is there. */
 void CollisionArea_TellNear(const Vec3 *position, fx32 radius, void *owner)
 {
     for (CollisionArea *area = data_021c30e0; area != NULL; area = area->next) {
-        s64 distance_squared = Vec_DistanceSquared(&area->centre, position);
+        s64 distance_squared = Vec_DistanceSquared(&area->center, position);
         if ((s64) area->reach_squared >= distance_squared) {
             const CollisionAreaVtable *vtable = (const CollisionAreaVtable *) area->triangle.vtable;
             vtable->touch(area, position, owner, radius);
@@ -88,7 +88,7 @@ void CollisionArea_ListConstruct(void *list)
 CLEAN_AS(func_020326c0, CollisionArea_ListConstruct)
 
 /* func_020326c4: makes `area` the triangle `a`, `b`, `c` with its normal from its corners
- * (CollisionTriangle_CornerNormal), its centre the middle of the corners' bounds and its reach
+ * (CollisionTriangle_CornerNormal), its center the middle of the corners' bounds and its reach
  * `reach`. */
 void CollisionArea_Set(CollisionArea *area, const Vec3 *a, const Vec3 *b, const Vec3 *c, fx32 reach)
 {
@@ -100,9 +100,9 @@ void CollisionArea_Set(CollisionArea *area, const Vec3 *a, const Vec3 *b, const 
     CollisionBox_KeepMin(&min, b);
     CollisionBox_KeepMax(&max, c);
     CollisionBox_KeepMin(&min, c);
-    area->centre.x = (min.x + max.x) >> 1;
-    area->centre.y = (min.y + max.y) >> 1;
-    area->centre.z = (min.z + max.z) >> 1;
+    area->center.x = (min.x + max.x) >> 1;
+    area->center.y = (min.y + max.y) >> 1;
+    area->center.z = (min.z + max.z) >> 1;
 
     Vec3 normal;
     CollisionTriangle_CornerNormal(&normal, a, b, c);
@@ -110,21 +110,21 @@ void CollisionArea_Set(CollisionArea *area, const Vec3 *a, const Vec3 *b, const 
 }
 CLEAN_AS(func_020326c4, CollisionArea_Set)
 
-/* func_02032754: the area's centre. */
-Vec3 *CollisionArea_Centre(CollisionArea *area)
+/* func_02032754: the area's center. */
+Vec3 *CollisionArea_Center(CollisionArea *area)
 {
-    return &area->centre;
+    return &area->center;
 }
-CLEAN_AS(func_02032754, CollisionArea_Centre)
+CLEAN_AS(func_02032754, CollisionArea_Center)
 
-/* func_02032758: out of any list, no reach, centred at 0. */
+/* func_02032758: out of any list, no reach, centered at 0. */
 void CollisionArea_Reset(CollisionArea *area)
 {
     area->next = NULL;
     area->reach_squared = 0;
-    area->centre.x = 0;
-    area->centre.y = 0;
-    area->centre.z = 0;
+    area->center.x = 0;
+    area->center.y = 0;
+    area->center.z = 0;
 }
 CLEAN_AS(func_02032758, CollisionArea_Reset)
 

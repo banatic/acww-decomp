@@ -4,7 +4,7 @@
  * finished then (TileChanges_FinishAtTile), so the item appears on the map.
  *
  * Fifteen of them (data_ov004_02258af4, a C++ array built and destroyed by the overlay's
- * static initialiser), three for each player; the process of the items' models (icon_models.h)
+ * static initializer), three for each player; the process of the items' models (icon_models.h)
  * moves and draws them each frame. */
 #ifndef CLEAN_OV004_DROPPED_ITEMS_H
 #define CLEAN_OV004_DROPPED_ITEMS_H

@@ -4,7 +4,7 @@
 #include "autoload_2/vector.h"
 #include "clean.h"
 #include "main/acre_map.h"    /* AcreMap_Town */
-#include "main/acre_tile.h"   /* AcreTile_ItemInAcre, AcreTile_TileCentreInAcre */
+#include "main/acre_tile.h"   /* AcreTile_ItemInAcre, AcreTile_TileCenterInAcre */
 #include "main/actor_table.h" /* Position_Tile */
 #include "main/main_random.h"
 #include "main/map_code.h"
@@ -115,7 +115,7 @@ void TownTileMask_MarkAround(u16 *mask, int x, int z, int radius, u8 up, u8 down
 CLEAN_AS(func_ov003_0222c4b8, TownTileMask_MarkAround)
 
 /* func_ov003_0222c68c: a free tile of an acre's 16 `rows` picked at random (the n-th clear bit,
- * row by row, n below `bound`): the centre of that tile of acre (*acre_x + 1, *acre_z + 1) is
+ * row by row, n below `bound`): the center of that tile of acre (*acre_x + 1, *acre_z + 1) is
  * written back to *acre_x and *acre_z (its x and z). Nothing changes when there are no more than
  * n free tiles.
  * REQUIRES: `rows` is halfword aligned. */
@@ -125,10 +125,10 @@ void TownTileMask_PickFree(int bound, u16 *rows, int *acre_x, int *acre_z)
     for (int row = 0; row < TOWN_TILE_MASK_TILES; row++) {
         for (int column = 0; column < TOWN_TILE_MASK_TILES; column++) {
             if (((rows[row] >> column) & 1) == 0 && left-- == 0) {
-                Vec3 centre;
-                AcreTile_TileCentreInAcre(&centre, *acre_x + 1, *acre_z + 1, column, row);
-                *acre_x = centre.x;
-                *acre_z = centre.z;
+                Vec3 center;
+                AcreTile_TileCenterInAcre(&center, *acre_x + 1, *acre_z + 1, column, row);
+                *acre_x = center.x;
+                *acre_z = center.z;
                 return;
             }
         }

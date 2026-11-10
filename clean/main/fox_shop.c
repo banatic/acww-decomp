@@ -142,7 +142,7 @@ static void fox_draw(u16 *out, int group)
 }
 
 /* func_020ae03c: new items, none sold. The first is of group 0x26 with a chance of 50% plus a
- * tenth of the feng shui of the house's five rooms summed over its three colours
+ * tenth of the feng shui of the house's five rooms summed over its three colors
  * (RoomScore_HouseFengShui), else of group 0x27; each other one of group 5 with a chance of
  * 50% plus a tenth of two of those sums, else of group 0. Then they are put in one of six
  * orders at random.

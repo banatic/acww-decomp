@@ -1,4 +1,4 @@
-/* How a chat between two villagers out walking in the town (behaviour 9,
+/* How a chat between two villagers out walking in the town (behavior 9,
  * outdoor_villager_chat.h) changes the town: the bonds of the town's pairs of villagers (the
  * town's table, main's villager_pairs.h), the moods of the two, and the order the pair is
  * taken in. Also two of the chat's seven exchanges, the ones that only touch bonds and moods.
@@ -27,17 +27,17 @@
 /* The amounts of a bond change: one for each tier, 0 to 4. */
 #define OUTDOOR_VILLAGER_BONDS_TIERS 5
 
-int OutdoorVillagerBonds_TalkOfBond(OutdoorVillagerBehaviour *self, u8 *villager);
-int OutdoorVillagerBonds_Learn(OutdoorVillagerBehaviour *self, u8 *villager);
-u8 *OutdoorVillagerBonds_DrawShopDesign(OutdoorVillagerBehaviour *self, u8 *design);
-int OutdoorVillagerBonds_Sort(OutdoorVillagerBehaviour *self, u8 **first, u8 **second, u8 *a, u8 *b);
-void OutdoorVillagerBonds_AskMoodOf(OutdoorVillagerBehaviour *self, u8 *villager, const u8 *moods, int count, u8 units,
+int OutdoorVillagerBonds_TalkOfBond(OutdoorVillagerBehavior *self, u8 *villager);
+int OutdoorVillagerBonds_Learn(OutdoorVillagerBehavior *self, u8 *villager);
+u8 *OutdoorVillagerBonds_DrawShopDesign(OutdoorVillagerBehavior *self, u8 *design);
+int OutdoorVillagerBonds_Sort(OutdoorVillagerBehavior *self, u8 **first, u8 **second, u8 *a, u8 *b);
+void OutdoorVillagerBonds_AskMoodOf(OutdoorVillagerBehavior *self, u8 *villager, const u8 *moods, int count, u8 units,
                                     u8 apply);
-void OutdoorVillagerBonds_AskMood(OutdoorVillagerBehaviour *self, u8 *villager, int which, int units, u8 apply);
-void OutdoorVillagerBonds_ChangeOthers(OutdoorVillagerBehaviour *self, u8 *villager, const s8 *amounts);
-void OutdoorVillagerBonds_ChangePair(OutdoorVillagerBehaviour *self, u8 *villager, const s8 *amounts);
-void OutdoorVillagerBonds_Change(OutdoorVillagerBehaviour *self, const NpcId *a, const NpcId *b, const s8 *amounts);
-int OutdoorVillagerBonds_PairTier(OutdoorVillagerBehaviour *self, u8 *villager);
+void OutdoorVillagerBonds_AskMood(OutdoorVillagerBehavior *self, u8 *villager, int which, int units, u8 apply);
+void OutdoorVillagerBonds_ChangeOthers(OutdoorVillagerBehavior *self, u8 *villager, const s8 *amounts);
+void OutdoorVillagerBonds_ChangePair(OutdoorVillagerBehavior *self, u8 *villager, const s8 *amounts);
+void OutdoorVillagerBonds_Change(OutdoorVillagerBehavior *self, const NpcId *a, const NpcId *b, const s8 *amounts);
+int OutdoorVillagerBonds_PairTier(OutdoorVillagerBehavior *self, u8 *villager);
 int OutdoorVillagerBonds_Tier(const NpcId *a, const NpcId *b);
 
 #endif

@@ -37,7 +37,7 @@
 /* GroupParams' modes the scene is opened in: overlay 90's tabs 13 and 14. */
 enum FriendCodeEntryMode {
     FRIEND_CODE_MODE_CHANGE = 0x0d, /* the code of a friend of the roster: back to the roster (tab 6) */
-    FRIEND_CODE_MODE_NEW = 0x0e     /* a friend being added: cleared when cancelled; on confirm the
+    FRIEND_CODE_MODE_NEW = 0x0e     /* a friend being added: cleared when canceled; on confirm the
                                      * friend's name entry (tab 12, overlay 126) follows */
 };
 
@@ -71,7 +71,7 @@ enum FriendCodeEntryFlag {
     FRIEND_CODE_FLAG_KEYPAD_DIRTY = 0x02, /* the keypad's screen is to be loaded to its layer */
     FRIEND_CODE_FLAG_CODE_DIRTY = 0x04,   /* the code's screen is to be loaded to its layer */
     FRIEND_CODE_FLAG_DIGITS = 0x08,       /* the digits changed: their characters are to be written */
-    FRIEND_CODE_FLAG_CURSOR = 0x10        /* the cursor or the mark moved: the mark's colours too */
+    FRIEND_CODE_FLAG_CURSOR = 0x10        /* the cursor or the mark moved: the mark's colors too */
 };
 
 /* The states (MenuScene.state), run by FriendCodeEntry_RunState. */
@@ -140,13 +140,13 @@ void FriendCodeEntry_SetFlags(FriendCodeEntry *self, u16 flags);
 int FriendCodeEntry_TestFlags(FriendCodeEntry *self, unsigned int flags);
 void FriendCodeEntry_UnlightKey(FriendCodeEntry *self, int key);
 void FriendCodeEntry_LightKey(FriendCodeEntry *self, int key);
-void FriendCodeEntry_ColourKey(FriendCodeEntry *self, int key, int palette);
+void FriendCodeEntry_ColorKey(FriendCodeEntry *self, int key, int palette);
 void FriendCodeEntry_UnlightKeypad(FriendCodeEntry *self);
 int FriendCodeEntry_RepeatDue(FriendCodeEntry *self);
 void FriendCodeEntry_StopRepeat(FriendCodeEntry *self);
 int FriendCodeEntry_PressKey(FriendCodeEntry *self);
 void FriendCodeEntry_UpdateScreens(FriendCodeEntry *self);
-void FriendCodeEntry_ColourMark(FriendCodeEntry *self);
+void FriendCodeEntry_ColorMark(FriendCodeEntry *self);
 void FriendCodeEntry_WriteDigits(FriendCodeEntry *self);
 int FriendCodeEntry_DigitCount(FriendCodeEntry *self);
 int FriendCodeEntry_InsertDigit(FriendCodeEntry *self, u8 digit);

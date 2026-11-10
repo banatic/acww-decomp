@@ -1,6 +1,6 @@
 /* Overlay 29: the data of scenes 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18 and 0x19
  * (data_020e5688 names each scene's overlay), rooms, so loaded with overlay 4 (data_020e5538).
- * Its one function is its static initialiser, run when the overlay is loaded, which fills in the
+ * Its one function is its static initializer, run when the overlay is loaded, which fills in the
  * count of the step of the scene's setup (scene_setup.h) that makes overlay 4's shared objects,
  * copied from overlay 4's constant (the compiler cannot fold another overlay's constant); the
  * scene's exits (scene_exit.h), each made by SceneExit_Init and registered for destruction. */

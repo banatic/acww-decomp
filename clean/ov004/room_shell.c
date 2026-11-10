@@ -133,10 +133,10 @@ int RoomShell_RunMaterialHook(G3dRenderState *state)
 }
 CLEAN_AS(func_ov004_02231b78, RoomShell_RunMaterialHook)
 
-/* A 15-bit colour's channel: 5 bits at `shift`. */
-static int room_shell_channel(u16 colour, int shift)
+/* A 15-bit color's channel: 5 bits at `shift`. */
+static int room_shell_channel(u16 color, int shift)
 {
-    return (colour >> shift) & 0x1f;
+    return (color >> shift) & 0x1f;
 }
 
 static int room_shell_clamp_channel(int value)
@@ -151,7 +151,7 @@ static int room_shell_clamp_channel(int value)
 }
 
 /* func_ov004_02231b98: material "wd"'s diffuse colour: the shown sky palette's lower gradient
- * colour with a third of the sky's light colour 0 added to each channel (at most 31), its top
+ * color with a third of the sky's light color 0 added to each channel (at most 31), its top
  * bit kept; 0xffff (as a short, -1) without a palette. */
 short RoomShell_WdDiffuse(RoomShell *self)
 {
@@ -161,11 +161,11 @@ short RoomShell_WdDiffuse(RoomShell *self)
         return -1;
     }
     u16 light = (u16) Sky_LightColor(0);
-    u16 colour = palette->gradient_bottom;
-    int r = room_shell_channel(colour, 0) + room_shell_channel(light, 0) / 3;
-    int g = room_shell_channel(colour, 5) + room_shell_channel(light, 5) / 3;
-    int b = room_shell_channel(colour, 10) + room_shell_channel(light, 10) / 3;
-    u16 result = (u16) ((colour & 0x8000) | (room_shell_clamp_channel(b) << 10) | (room_shell_clamp_channel(g) << 5) |
+    u16 color = palette->gradient_bottom;
+    int r = room_shell_channel(color, 0) + room_shell_channel(light, 0) / 3;
+    int g = room_shell_channel(color, 5) + room_shell_channel(light, 5) / 3;
+    int b = room_shell_channel(color, 10) + room_shell_channel(light, 10) / 3;
+    u16 result = (u16) ((color & 0x8000) | (room_shell_clamp_channel(b) << 10) | (room_shell_clamp_channel(g) << 5) |
                         room_shell_clamp_channel(r));
     return (short) result;
 }
@@ -770,14 +770,14 @@ int RoomShell_Release(RoomShell *self)
 CLEAN_AS(func_ov004_02232f24, RoomShell_Release)
 
 /* func_ov004_02232f8c (vtable slot 9, the drawing): the shadows' light and frame begun,
- * material "wd" given its colour from the sky (RoomShell_WdDiffuse), the model drawn. */
+ * material "wd" given its color from the sky (RoomShell_WdDiffuse), the model drawn. */
 int RoomShell_Draw(RoomShell *self)
 {
     ShadowLight_Update();
     CharaShadow_BeginFrame();
     if (self->wd_material != -1) {
-        u16 colour = (u16) RoomShell_WdDiffuse(self);
-        NNS_G3dMdlSetMdlDiff(self->model.object.model, self->wd_material, colour);
+        u16 color = (u16) RoomShell_WdDiffuse(self);
+        NNS_G3dMdlSetMdlDiff(self->model.object.model, self->wd_material, color);
     }
     AnimatedModel_Draw(room_shell_animated(self), NULL);
     return 1;

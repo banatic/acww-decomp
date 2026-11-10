@@ -14,11 +14,11 @@ static_assert(offsetof(BuildingLights, window) == 0x34, "window");
 static_assert(sizeof(BuildingLights) == 0x38, "the member at 0x1f4 of a town object actor");
 static_assert(offsetof(BuildingLightsModel, material_count) == 0x18, "material count");
 
-/* NitroSDK's material flag for the emission colour (NNS_G3D_MATFLAG_EMISSION). */
+/* NitroSDK's material flag for the emission color (NNS_G3D_MATFLAG_EMISSION). */
 #define BUILDING_LIGHTS_EMISSION 0x400
-/* White, as a 5-bit colour component in 20.12 fixed point. */
+/* White, as a 5-bit color component in 20.12 fixed point. */
 #define BUILDING_LIGHTS_WHITE_COMPONENT 0x1f000
-/* The window's alpha at full level, less the 1 it keeps at level 0, and the door's colour. */
+/* The window's alpha at full level, less the 1 it keeps at level 0, and the door's color. */
 #define BUILDING_LIGHTS_WINDOW_ALPHA 29
 #define BUILDING_LIGHTS_DOOR_RED 31
 #define BUILDING_LIGHTS_DOOR_GREEN 27
@@ -32,19 +32,19 @@ extern const char data_020e50f4[];
 extern const char data_020e50fc[];
 extern const char data_020e5108[];
 
-/* NitroSDK's G3D global state; the word at 0x18 holds the material colours, the ambient one
+/* NitroSDK's G3D global state; the word at 0x18 holds the material colors, the ambient one
  * (5 bits each of red, green and blue) in its high half. */
 extern const u32 data_027e0148[];
 
 extern void NNSi_G3dModifyMatFlag(BuildingLightsModel *model, int on, int flag);
-extern void NNS_G3dMdlSetMdlEmi(BuildingLightsModel *model, int material, int colour);
+extern void NNS_G3dMdlSetMdlEmi(BuildingLightsModel *model, int material, int color);
 extern void NNS_G3dMdlSetMdlAlpha(BuildingLightsModel *model, int material, int alpha);
-extern void NNS_G3dMdlSetMdlDiff(BuildingLightsModel *model, int material, int colour);
+extern void NNS_G3dMdlSetMdlDiff(BuildingLightsModel *model, int material, int color);
 
 typedef char *BuildingLightsNameLamp(BuildingLightsLamps *lamps, int index);
 
-/* The 5 bits of a colour component that `level` (20.12) holds: bits 12-16. Only these bits
- * reach the colour, so it does not matter how the ARM shifts a negative value. */
+/* The 5 bits of a color component that `level` (20.12) holds: bits 12-16. Only these bits
+ * reach the color, so it does not matter how the ARM shifts a negative value. */
 static u32 building_lights_component(int level, u32 scale)
 {
     return ((u32) level * scale) >> 12;
@@ -131,16 +131,16 @@ char *BuildingLights_LampName(BuildingLightsLamps *lamps, int index)
 }
 CLEAN_AS(func_020b3408, BuildingLights_LampName)
 
-/* func_020b3428: the colour the lamps start from, the scene's ambient material colour. */
-int BuildingLights_BaseColour(void)
+/* func_020b3428: the color the lamps start from, the scene's ambient material color. */
+int BuildingLights_BaseColor(void)
 {
     return (int) (data_027e0148[6] >> 16);
 }
-CLEAN_AS(func_020b3428, BuildingLights_BaseColour)
+CLEAN_AS(func_020b3428, BuildingLights_BaseColor)
 
-/* func_020b3438: while `level` is not 0, the lamps' emission is the base colour brought
+/* func_020b3438: while `level` is not 0, the lamps' emission is the base color brought
  * towards white by the level (blue, red, then green) and the other materials' emission the
- * base colour; at level 0 the emission is turned off. */
+ * base color; at level 0 the emission is turned off. */
 void BuildingLights_ShowLamps(BuildingLightsLamps *lamps, BuildingLightsModel *model, int level)
 {
     if (level == 0) {
@@ -148,7 +148,7 @@ void BuildingLights_ShowLamps(BuildingLightsLamps *lamps, BuildingLightsModel *m
         return;
     }
     NNSi_G3dModifyMatFlag(model, 1, BUILDING_LIGHTS_EMISSION);
-    int base = BuildingLights_BaseColour();
+    int base = BuildingLights_BaseColor();
     int blue = Fader_Mix(level, ((base >> 10) & 0x1f) << 12, BUILDING_LIGHTS_WHITE_COMPONENT);
     int red = Fader_Mix(level, (base & 0x1f) << 12, BUILDING_LIGHTS_WHITE_COMPONENT);
     int green = Fader_Mix(level, ((base >> 5) & 0x1f) << 12, BUILDING_LIGHTS_WHITE_COMPONENT);
@@ -240,7 +240,7 @@ void BuildingLights_ConstructWindow(s8 *window)
 }
 CLEAN_AS(func_020b35e0, BuildingLights_ConstructWindow)
 
-/* func_020b35e8: the door's diffuse colour, black at level 0 up to (31, 27, 13) at 1.0. */
+/* func_020b35e8: the door's diffuse color, black at level 0 up to (31, 27, 13) at 1.0. */
 void BuildingLights_ShowDoor(s8 *door, BuildingLightsModel *model, int level)
 {
     s8 material = *door;

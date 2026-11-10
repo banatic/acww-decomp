@@ -766,7 +766,7 @@ void FieldActorRoomStates2_EnterTakeItem(FieldActor *actor, const StateRequest *
     work->number = number;
     int x = args->x;
     int z = args->z;
-    AcreTile_TileCentre(&actor->unk_824, (u32) x, (u32) z);
+    AcreTile_TileCenter(&actor->unk_824, (u32) x, (u32) z);
     actor->unk_824.y = RoomObjects_HeightAtPoint(&actor->unk_824);
     fars2_set_factors(actor, 0x1000);
     if (number < 0) {

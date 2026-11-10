@@ -323,21 +323,21 @@ void StarDesigner_AnswerYes(StarDesigner *self)
 CLEAN_AS(func_ov129_0229c684, StarDesigner_AnswerYes)
 
 /* func_ov129_0229c758: "quit" pressed: the quit question asked next
- * (STAR_DESIGNER_STATE_ASK_START), the centre and the end mark no more drawn; heard. */
+ * (STAR_DESIGNER_STATE_ASK_START), the center and the end mark no more drawn; heard. */
 void StarDesigner_PressQuit(StarDesigner *self)
 {
     StarDesigner_SetFlags(self, STAR_DESIGNER_FLAG_QUITTING);
     ButtonPanel_Select(&self->panel, STAR_DESIGNER_BUTTON_QUIT);
     MenuScene_SetState(star_designer_scene(self), STAR_DESIGNER_STATE_ASK_START);
     MenuScene_SetSubState(star_designer_scene(self), STAR_DESIGNER_SUB_BUTTON);
-    StarDesigner_ClearFlags(self, STAR_DESIGNER_FLAG_CENTRE);
+    StarDesigner_ClearFlags(self, STAR_DESIGNER_FLAG_CENTER);
     SoundSys_PlaySe(STAR_DESIGNER_SE_CANCEL);
     StarDesigner_ClearFlags(self, STAR_DESIGNER_FLAG_END_MARK);
 }
 CLEAN_AS(func_ov129_0229c758, StarDesigner_PressQuit)
 
-/* func_ov129_0229c79c: "done" pressed: the done question asked next, the centre no more drawn,
- * the pieces painted without the open ones and the view glided to the constellation's centre
+/* func_ov129_0229c79c: "done" pressed: the done question asked next, the center no more drawn,
+ * the pieces painted without the open ones and the view glided to the constellation's center
  * (in whole 4 pixels); heard, and the end mark no more drawn. */
 void StarDesigner_PressDone(StarDesigner *self)
 {
@@ -348,7 +348,7 @@ void StarDesigner_PressDone(StarDesigner *self)
     ButtonPanel_Select(&self->panel, STAR_DESIGNER_BUTTON_DONE);
     MenuScene_SetState(star_designer_scene(self), STAR_DESIGNER_STATE_ASK_START);
     MenuScene_SetSubState(star_designer_scene(self), STAR_DESIGNER_SUB_BUTTON);
-    StarDesigner_ClearFlags(self, STAR_DESIGNER_FLAG_CENTRE);
+    StarDesigner_ClearFlags(self, STAR_DESIGNER_FLAG_CENTER);
     StarDesigner_Refresh(self, 0);
     Constellations_Center(self->pieces, &x, &y);
     x &= 0xfffc;

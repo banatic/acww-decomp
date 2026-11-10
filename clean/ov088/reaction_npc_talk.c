@@ -35,7 +35,7 @@ extern const u8 data_ov088_02279c58[];
 extern const char data_ov088_02279d98[];
 extern const char data_ov088_02279da8[];
 extern const char data_ov088_02279db4[];
-/* The scene's steps (filled at start-up by __sinit_ov088_022799c4, the flags initialised). */
+/* The scene's steps (filled at start-up by __sinit_ov088_022799c4, the flags initialized). */
 extern ReactionNpcTalkStep data_ov088_02279c14[REACTION_NPC_STEPS];
 
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);

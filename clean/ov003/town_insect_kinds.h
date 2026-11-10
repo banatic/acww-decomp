@@ -5,7 +5,7 @@
  *
  * The start functions set the insect up through TownInsectKind_Begin, which most kinds reach
  * through a helper of their group. The update functions only pass the insect on to the
- * behaviour of their group, further on in overlay 3.
+ * behavior of their group, further on in overlay 3.
  *
  *   kinds                                          start                      update
  *   0-7                                            TownInsectKind_Start00To07 -> 02234b80

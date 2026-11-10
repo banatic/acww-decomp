@@ -1,7 +1,7 @@
 /* The window the camera tab opens (camera_tab.h, its member at 0x28): a sprite (vtable
  * data_020e2250, 0xd8 bytes, derived from main's screen sprite base, screen_sprite.h) of nine
  * buttons in a 3 by 3 grid on the touch screen, each choosing one of the field camera's preset
- * views (CameraControl_SelectPreset, camera_control.h): the centre button the middle view, the
+ * views (CameraControl_SelectPreset, camera_control.h): the center button the middle view, the
  * others the view of their column (left to right) and row (top to bottom).
  *
  * The cursor moves by the d-pad while the buttons are chosen (MenuInput_UsesButtons), one step
@@ -35,7 +35,7 @@ typedef struct CameraGrid {
     ScreenSprite base;                     /* vtable data_020e2250 */
     CellAnim buttons[CAMERA_GRID_BUTTONS]; /* 0x0c: one animation a button */
     int state;                             /* 0xc0: CameraGridState */
-    u32 cursor;                            /* 0xc4: the button at the cursor (0 the centre) */
+    u32 cursor;                            /* 0xc4: the button at the cursor (0 the center) */
     int column;                            /* 0xc8: the cursor's column, -1 to 1 */
     int row;                               /* 0xcc: the cursor's row, -1 to 1 */
     u32 chosen;                            /* 0xd0: the button whose preset was selected last */

@@ -34,7 +34,7 @@ typedef struct QuickMessageBalloon {
     s32 x; /* 0x04: the sprite base's place (func_0208aef0, func_0208aeec) */
     s32 y;
     s32 position;      /* 0x0c: 0 for this system's own balloon */
-    s32 palette;       /* 0x10: the slot's colour + 5 */
+    s32 palette;       /* 0x10: the slot's color + 5 */
     s32 tag_anim;      /* 0x14: entry of data_020d5b3c for the name tag */
     s32 frame_anim;    /* 0x18: entry of data_020d5b3c for the balloon */
     CellAnim tag;      /* 0x1c: the name tag's frames, one for each width in tiles */

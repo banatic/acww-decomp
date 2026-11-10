@@ -125,7 +125,7 @@ CLEAN_AS(func_02051f4c, RoomSync_ToggleSwitchAtPoint)
 /* func_02051f74: toggles the switch of the object at cell (x, y) of `layer`: at once
  * (RoomSync_ToggleAt) unless the session is linked and func_020a7278 says 0; then the object
  * there, if any, is held still (unk_77d) and message 29 goes to the systems in this scene.
- * BUG: the message's halfword is built in an uninitialised stack slot and its bit 15 is never
+ * BUG: the message's halfword is built in an uninitialized stack slot and its bit 15 is never
  * set, so the ROM sends what it held; here it is 0. The receiver does not read it. */
 void RoomSync_ToggleSwitchAt(u32 scene, u32 x, u32 y, u32 layer)
 {
@@ -179,7 +179,7 @@ CLEAN_AS(func_020520a0, RoomSync_SendLit)
 
 /* func_02052118: puts the item `code` on top at cell (x, y) of the scene's map and, with
  * `send` on a linked session, sends it as message 26.
- * BUG: the message's word is built in an uninitialised stack slot and its bits 24-31 are never
+ * BUG: the message's word is built in an uninitialized stack slot and its bits 24-31 are never
  * set, so the ROM sends what they held; here they are 0. The receiver does not read them. */
 void RoomSync_PutItem(int scene, int x, int y, u16 *code, u8 send_it)
 {
@@ -198,7 +198,7 @@ CLEAN_AS(func_02052118, RoomSync_PutItem)
  * set to `on` in the scene's RoomCells, and for a step item that is on its step forgotten. The
  * first cell that cannot be emptied ends it. With `send` on a linked session it goes out as
  * message 27.
- * BUG: the message's word is built in an uninitialised stack slot and its bits 27-31 are never
+ * BUG: the message's word is built in an uninitialized stack slot and its bits 27-31 are never
  * set, so the ROM sends what they held; here they are 0. The receiver does not read them. */
 void RoomSync_TakeFurniture(int scene, int x, int y, int layer, int on, u16 *code, int with_top, u8 send_it)
 {
@@ -250,7 +250,7 @@ CLEAN_AS(func_020521d8, RoomSync_TakeFurniture)
  * switch set to `on` in the scene's RoomCells, and with `keeps_step` while on, `step` kept at
  * its own cell. The first cell that cannot be set ends it. With `send` on a linked session it
  * goes out as message 28.
- * BUG: the message's word is built in an uninitialised stack slot and its bit 31 is never set,
+ * BUG: the message's word is built in an uninitialized stack slot and its bit 31 is never set,
  * so the ROM sends what it held; here it is 0. The receiver does not read it. */
 void RoomSync_PutFurniture(int scene, int x, int y, int layer, int on, int keeps_step, int step, u16 *code, u8 send_it)
 {

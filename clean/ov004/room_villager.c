@@ -97,7 +97,7 @@ extern u16 data_020c80f8;
 extern NetSession *data_020ccf94;
 /* The vtable of the class. */
 extern const u8 data_ov004_022539cc[];
-/* The table of the machine's states (filled by the overlay's static initialiser from the
+/* The table of the machine's states (filled by the overlay's static initializer from the
  * member pointers data_ov004_022539a4 to data_ov004_0225394c). */
 extern RoomVillagerStep data_ov004_02257cb8[ROOM_VILLAGER_STATES];
 /* The member pointers to RoomVillager_Draw (its start, and state 0's entry). */
@@ -117,7 +117,7 @@ typedef struct RoomVillagerTileStep {
 } RoomVillagerTileStep;
 
 /* A tile's step ahead by the quarter faced: (0, 1), (1, 0), (0, -1), (-1, 0) (the overlay's
- * static initialiser fills them). */
+ * static initializer fills them). */
 extern RoomVillagerTileStep data_ov004_02257c98[4];
 /* The tables VillagerErrandCatch_Update is given. */
 extern u8 data_ov004_022476cc;
@@ -538,10 +538,10 @@ int RoomVillager_FindStepAhead(RoomVillagerMachine *machine, int *x, int *z, Roo
     if (!marked) {
         return 0;
     }
-    Vec3 centre = {0, 0, 0};
-    AcreTile_TileCentre(&centre, (u32) to_x, (u32) to_z);
-    *x = centre.x;
-    *z = centre.z;
+    Vec3 center = {0, 0, 0};
+    AcreTile_TileCenter(&center, (u32) to_x, (u32) to_z);
+    *x = center.x;
+    *z = center.z;
     return 1;
 }
 CLEAN_AS(func_ov004_0221ea98, RoomVillager_FindStepAhead)

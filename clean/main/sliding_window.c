@@ -121,7 +121,7 @@ void SlidingWindow_MakeBoxes(SlidingWindow *window)
 CLEAN_AS(func_0208a510, SlidingWindow_MakeBoxes)
 
 /* func_0208a664: both animations put on the frame that fits the wider line (one frame per
- * 8-pixel tile, within the body's frames), and the lines centred in it when `center_text` is
+ * 8-pixel tile, within the body's frames), and the lines centered in it when `center_text` is
  * set, else started at its left. */
 void SlidingWindow_FitText(SlidingWindow *window)
 {

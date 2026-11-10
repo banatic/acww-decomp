@@ -8,7 +8,7 @@
  * starts its animations from frame 0 and hands it to a set-up function, which places it (the
  * EffectKindsModelTransform at its start). Each frame the playing copies step their animations,
  * and stop once the joints' animation has run out; drawn, a copy stands at its point bent over
- * the globe, turned and scaled, lit with the scene's emission colour. */
+ * the globe, turned and scaled, lit with the scene's emission color. */
 #ifndef CLEAN_MAIN_EFFECT_MODELS_H
 #define CLEAN_MAIN_EFFECT_MODELS_H
 

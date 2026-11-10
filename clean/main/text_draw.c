@@ -21,7 +21,7 @@ static_assert(offsetof(TextDrawBox, start_color) == 0x74, "TextDrawBox start_col
 static_assert(offsetof(TextDrawBox, char_index) == 0x78, "TextDrawBox char_index");
 static_assert(sizeof(TextDrawBox) == 0x7c, "TextDrawBox size");
 
-/* The strip buffer: 32 tiles of 8x8 pixels at 4 bits per pixel, a pixel's two neighbours in a
+/* The strip buffer: 32 tiles of 8x8 pixels at 4 bits per pixel, a pixel's two neighbors in a
  * byte (the even x in the low half). */
 #define STRIP_TILES 32
 #define TILE_BYTES 32
@@ -97,8 +97,8 @@ static u32 measure(TextDrawBox *box)
     return ((BoxMeasure *) box_slot(box, BOX_SLOT_MEASURE))(box);
 }
 
-/* Pixel (x, y) of the strip set to `color`; nothing past the strip's 32 tiles. QUIRK: a colour
- * above 15 spills into the neighbouring pixel when set in the low half of a byte, and loses its
+/* Pixel (x, y) of the strip set to `color`; nothing past the strip's 32 tiles. QUIRK: a color
+ * above 15 spills into the neighboring pixel when set in the low half of a byte, and loses its
  * high bits in the high half. */
 static void put_pixel(u32 x, u32 y, u8 color)
 {
@@ -171,7 +171,7 @@ unsigned char TextDraw_BackgroundColor(TextDrawBox *box)
 }
 CLEAN_AS(func_02050e74, TextDraw_BackgroundColor)
 
-/* func_02050ea8: the colour of the character being drawn, the same way. */
+/* func_02050ea8: the color of the character being drawn, the same way. */
 unsigned char TextDraw_TextColor(TextDrawBox *box)
 {
     if (TextDraw_InMark1(box)) {
@@ -199,7 +199,7 @@ int TextDraw_InMark1(TextDrawBox *box)
 }
 CLEAN_AS(func_02050ef4, TextDraw_InMark1)
 
-/* func_02050f0c: the box's rows filled with its background colour at the destination, over
+/* func_02050f0c: the box's rows filled with its background color at the destination, over
  * `clear_cells` tiles (all its width when 0; at most a strip). In RAM the rows start at
  * `ram_dest`; in VRAM at `first_tile`, or at offset 0 when it is -1. */
 void TextDraw_ClearRows(TextDrawBox *box)
@@ -223,7 +223,7 @@ void TextDraw_ClearRows(TextDrawBox *box)
 }
 CLEAN_AS(func_02050f0c, TextDraw_ClearRows)
 
-/* func_02050fc8: the underline from x `start` to the pen, in the text's colour. */
+/* func_02050fc8: the underline from x `start` to the pen, in the text's color. */
 void TextDraw_Underline(TextDrawBox *box, unsigned int start)
 {
     u8 color = TextDraw_TextColor(box);
@@ -252,7 +252,7 @@ void TextDraw_FillSpacing(TextDrawBox *box)
 CLEAN_AS(func_02051034, TextDraw_FillSpacing)
 
 /* func_020510c8: the strip's rows of glyph `glyph` drawn at the pen: its bitmap read from the
- * font's image file, the set pixels in the text's colour; the clear ones are painted with the
+ * font's image file, the set pixels in the text's color; the clear ones are painted with the
  * background only in a mark. Only the glyph's own width is drawn; returns it.
  * QUIRK: a glyph of the fallback font (top bit) is read from this font's image file, at the
  * index without the top bit.
@@ -299,7 +299,7 @@ CLEAN_AS(func_020510c8, TextDraw_DrawGlyph)
 
 /* func_020511f8: the strip sent to its destination (at most 0x400 bytes of it, the box's width).
  * With `merge`, a pixel of the RAM destination is replaced only when it is the background
- * colour (each half of a byte on its own, the high half first). */
+ * color (each half of a byte on its own, the high half first). */
 void TextDraw_UploadStrip(TextDrawBox *box)
 {
     u32 size = box->row_bytes;
@@ -350,7 +350,7 @@ void TextDraw_DrawChar(TextDrawBox *box, int code)
 }
 CLEAN_AS(func_020512d4, TextDraw_DrawChar)
 
-/* func_02051340: a strip begun: cleared to the background, the colour put back, the pen at the
+/* func_02051340: a strip begun: cleared to the background, the color put back, the pen at the
  * text's start. */
 void TextDraw_BeginStrip(TextDrawBox *box)
 {

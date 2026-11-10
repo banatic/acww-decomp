@@ -371,9 +371,9 @@ void DesignTextures_Build(DesignManager *manager)
             u8 *image = ClothTexture_Image(copy);
             memcpy(image, Design_Pixels(as_pointer((unsigned int) design)), DESIGN_PIXELS_SIZE);
             u16 *palette = as_pointer((unsigned int) ClothTexture_Palette(copy));
-            u16 *colours = as_pointer((unsigned int) DesignInfo_PaletteColours(
+            u16 *colors = as_pointer((unsigned int) DesignInfo_PaletteColors(
                 (DesignInfo *) (uintptr_t) ((int) Design_Info((unsigned int) design))));
-            memcpy(palette, colours, DESIGN_PALETTE_SIZE);
+            memcpy(palette, colors, DESIGN_PALETTE_SIZE);
             make_texture(copy, &handles[i]);
         }
     }

@@ -6,13 +6,13 @@
  * player swung at it, 0x68 the frame (called first in each frame), 0xa8 whether its state
  * entry is linked, 0xb0 its effect's countdown taken.
  *
- * Starting, it takes its first behaviour by its town record: 13 for the villager the state
+ * Starting, it takes its first behavior by its town record: 13 for the villager the state
  * table names at 0x16c, 12 for the one named at 0x162 and for a status of 3 to 7, 0 (with its
  * held item shown, when it has one) for a status of 0, else 3 (in its house).
  *
  * Each frame: the push count (to 100 at the byte 0xa06, while this console's player walks into
  * it within about 70 degrees of straight at it, and the villager is shown, posed, enabled,
- * idle and remembers the player), the tally of its state entry, its behaviour, its effect, its
+ * idle and remembers the player), the tally of its state entry, its behavior, its effect, its
  * mood and its watch, and the byte 0xa05 cleared. */
 #ifndef CLEAN_OV068_OUTDOOR_VILLAGER_OBJECT_H
 #define CLEAN_OV068_OUTDOOR_VILLAGER_OBJECT_H

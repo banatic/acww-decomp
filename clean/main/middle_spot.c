@@ -58,7 +58,7 @@ CLEAN_AS(func_02087f4c, MiddleSpot_SetFromPosition)
 
 /* func_02087f58: with a town map, the tiles of the town's middle 32 x 32 tiles that
  * TownSpot_TileSuits accepts noted in data_021d2890 (cleared first), row by row, and one of
- * them picked at random: the spot set to its centre. The spot is left where it was when there
+ * them picked at random: the spot set to its center. The spot is left where it was when there
  * is no map or no such tile. The mark is cleared in every case. */
 void MiddleSpot_Pick(MiddleSpot *spot)
 {
@@ -87,9 +87,9 @@ void MiddleSpot_Pick(MiddleSpot *spot)
                         continue;
                     }
                     if (pick == 0) {
-                        Vec3 centre;
-                        AcreTile_TileCentre(&centre, (u32) (first_x + x), (u32) (first_z + z));
-                        MiddleSpot_SetFromPosition(spot, &centre);
+                        Vec3 center;
+                        AcreTile_TileCenter(&center, (u32) (first_x + x), (u32) (first_z + z));
+                        MiddleSpot_SetFromPosition(spot, &center);
                         found = 1;
                         break;
                     }

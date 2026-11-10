@@ -103,8 +103,8 @@ extern void *func_02033ca8(void *floor);
 extern void *func_02033100(void *post);
 extern void *func_020330e8(void *post);
 
-/* The centre of unit `unit` on its axis. */
-static fx32 collision_unit_centre(int unit)
+/* The center of unit `unit` on its axis. */
+static fx32 collision_unit_center(int unit)
 {
     return (fx32) (((u32) unit << COLLISION_UNIT_SHIFT) + COLLISION_HALF_UNIT);
 }
@@ -361,7 +361,7 @@ CLEAN_AS(func_02032aa8, CollisionPushOut_Walls)
 
 /* ---- Posts */
 
-/* func_02032d48: fences between every post and the neighbouring posts (CollisionPost_AddFence
+/* func_02032d48: fences between every post and the neighboring posts (CollisionPost_AddFence
  * for every ordered pair, a post with itself included). */
 void CollisionPosts_AddFences(CollisionPostList *posts, CollisionWallList *walls)
 {
@@ -378,7 +378,7 @@ void CollisionPosts_AddFences(CollisionPostList *posts, CollisionWallList *walls
 CLEAN_AS(func_02032d48, CollisionPosts_AddFences)
 
 /* func_02032d8c: the posts of the units x0..x1 by z0..z1 (rows of Z, X increasing). Where the
- * source names a post, it is added at the unit's centre with its radius, height and attribute,
+ * source names a post, it is added at the unit's center with its radius, height and attribute,
  * as kind 2 when the source says 2 and kind 1 otherwise; a kind 2 post is skipped unless `all`.
  * With `all`, a unit without one may hold one of the extra posts (radius by its age, height
  * 1.0, kind 2, attribute 2). */
@@ -388,7 +388,7 @@ void CollisionPosts_Gather(CollisionPostList *posts, CollisionPostSource *source
     int z;
 
     for (z = z0; z <= z1; z++) {
-        fx32 centre_z = collision_unit_centre(z);
+        fx32 center_z = collision_unit_center(z);
         for (x = x0; x <= x1; x++) {
             fx32 radius;
             fx32 height;
@@ -399,9 +399,9 @@ void CollisionPosts_Gather(CollisionPostList *posts, CollisionPostSource *source
                 if (kind == COLLISION_KIND_2 && !all) {
                     continue;
                 }
-                at.x = collision_unit_centre(x);
+                at.x = collision_unit_center(x);
                 at.y = 0;
-                at.z = centre_z;
+                at.z = center_z;
                 CollisionPosts_Add(posts, &at, radius, height, kind == COLLISION_KIND_2 ? COLLISION_KIND_2 : COLLISION_KIND_1,
                                    kind);
             } else {
@@ -413,9 +413,9 @@ void CollisionPosts_Gather(CollisionPostList *posts, CollisionPostSource *source
                 if (extra == 0) {
                     continue;
                 }
-                at.x = collision_unit_centre(x);
+                at.x = collision_unit_center(x);
                 at.y = 0;
-                at.z = centre_z;
+                at.z = center_z;
                 CollisionPosts_Add(posts, &at, extra, 0x1000, COLLISION_KIND_2, 2);
             }
         }
@@ -628,8 +628,8 @@ void CollisionWalls_AddCliffs(CollisionWallList *walls, CollisionCellGrid *grid,
             }
             east = CollisionCellGrid_Get(grid, x + 1, z);
             south = CollisionCellGrid_Get(grid, x, z + 1);
-            cx = collision_unit_centre(x);
-            cz = collision_unit_centre(z);
+            cx = collision_unit_center(x);
+            cz = collision_unit_center(z);
 
             if (east != NULL && cell->side_height[COLLISION_EAST] != east->side_height[COLLISION_WEST]) {
                 const CollisionPoint *plus_x =
@@ -885,7 +885,7 @@ static void collision_set(Vec3 *v, fx32 x, fx32 y, fx32 z)
 
 /* func_02033a5c: the floor triangles of the grid's units x0..x1 by z0..z1 (rows of Z, X
  * increasing): a flat unit is two triangles at its north side's height; another is four
- * meeting at its centre, each at the height of its side (north, west, south, east), with that
+ * meeting at its center, each at the height of its side (north, west, south, east), with that
  * side's attribute. */
 void CollisionFloors_AddCells(CollisionFloorList *floors, CollisionCellGrid *grid, int x0, int x1, int z0, int z1)
 {
@@ -893,7 +893,7 @@ void CollisionFloors_AddCells(CollisionFloorList *floors, CollisionCellGrid *gri
     int z;
 
     for (z = z0; z <= z1; z++) {
-        fx32 cz = collision_unit_centre(z);
+        fx32 cz = collision_unit_center(z);
         for (x = x0; x <= x1; x++) {
             CollisionCell *cell = CollisionCellGrid_Get(grid, x, z);
             fx32 cx;
@@ -910,7 +910,7 @@ void CollisionFloors_AddCells(CollisionFloorList *floors, CollisionCellGrid *gri
             if (cell == NULL) {
                 continue;
             }
-            cx = collision_unit_centre(x);
+            cx = collision_unit_center(x);
             east = cx + 0x1000;
             west = cx - 0x1000;
             south = cz + 0x1000;
@@ -1184,7 +1184,7 @@ fx32 CollisionGround_Limit(const CollisionGround *ground)
 CLEAN_AS(func_0203419c, CollisionGround_Limit)
 
 /* func_020341c8: the ground's height; `with_post` adds the height main's tables give the
- * unit's post (kind other than 2) when the point is within its radius of the unit's centre. */
+ * unit's post (kind other than 2) when the point is within its radius of the unit's center. */
 fx32 CollisionGround_Height(const CollisionGround *ground, int with_post)
 {
     int radius;
@@ -1196,12 +1196,12 @@ fx32 CollisionGround_Height(const CollisionGround *ground, int with_post)
     }
     if (CollisionQuery_PostAt(ground->unit_x, ground->unit_z, (fx32 *) &radius, (fx32 *) &height, &kind) != 0 &&
         kind != COLLISION_KIND_2) {
-        Vec3 centre;
+        Vec3 center;
         s64 distance;
-        centre.x = collision_unit_centre(ground->unit_x);
-        centre.y = 0;
-        centre.z = collision_unit_centre(ground->unit_z);
-        distance = Vec_DistanceSquaredXZ(&centre, &ground->position);
+        center.x = collision_unit_center(ground->unit_x);
+        center.y = 0;
+        center.z = collision_unit_center(ground->unit_z);
+        distance = Vec_DistanceSquaredXZ(&center, &ground->position);
         if ((s64) FX_MulFunc(radius, radius) >= distance) {
             return ground->height + height;
         }
@@ -1217,14 +1217,14 @@ void CollisionGround_Destroy(CollisionGround *ground)
 }
 CLEAN_AS(func_0203423c, CollisionGround_Destroy)
 
-/* func_02034240: the ground at the centre of unit (x, z). */
+/* func_02034240: the ground at the center of unit (x, z). */
 int CollisionGround_InitAtUnit(CollisionGround *ground, int x, int z, int alternate, int mode)
 {
     Vec3 at;
 
-    at.x = collision_unit_centre(x);
+    at.x = collision_unit_center(x);
     at.y = 0;
-    at.z = collision_unit_centre(z);
+    at.z = collision_unit_center(z);
     CollisionGround_Query(ground, &at, alternate, mode);
     return (int) (uintptr_t) ground;
 }

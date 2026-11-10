@@ -518,12 +518,12 @@ int LetterSend_HasLetterToSelf(LetterSendScene *self, const Letter *letters)
 }
 CLEAN_AS(func_ov104_0229c9c4, LetterSend_HasLetterToSelf)
 
-/* func_ov104_0229c9fc (panel button 7): sound 0x28, LETTER_SEND_FLAG_CANCELLED, the button
+/* func_ov104_0229c9fc (panel button 7): sound 0x28, LETTER_SEND_FLAG_CANCELED, the button
  * selected, sub state 0x1b and state 4. */
 void LetterSend_Cancel(LetterSendScene *self)
 {
     SoundSys_PlaySe(LETTER_SEND_SE_CANCEL);
-    LetterSend_SetFlags(self, LETTER_SEND_FLAG_CANCELLED);
+    LetterSend_SetFlags(self, LETTER_SEND_FLAG_CANCELED);
     ButtonPanel_Select(&self->panel, LETTER_SEND_BUTTON_CANCEL);
     MenuScene_SetSubState(lsend_scene(self), 0x1b);
     self->base.state = LETTER_SEND_STATE_START_WIPE_OUT;
@@ -537,7 +537,7 @@ CLEAN_AS(func_ov104_0229c9fc, LetterSend_Cancel)
 void LetterSend_Post(LetterSendScene *self)
 {
     SoundSys_PlaySe(LETTER_SEND_SE_POST);
-    LetterSend_ClearFlags(self, LETTER_SEND_FLAG_CANCELLED);
+    LetterSend_ClearFlags(self, LETTER_SEND_FLAG_CANCELED);
     ButtonPanel_Select(&self->panel, LETTER_SEND_BUTTON_POST);
     MenuScene_SetSubState(lsend_scene(self), 0x1b);
     self->base.state = LETTER_SEND_STATE_START_WIPE_OUT;
@@ -614,7 +614,7 @@ CLEAN_AS(func_ov104_0229cb78, LetterSend_DiscardSlotLetter)
 void LetterSend_PressLabelButton(LetterSendScene *self)
 {
     MenuScene_SetSubState(lsend_scene(self), 0x1a);
-    /* The button's base is main's labelled sprite (label_button.h). */
+    /* The button's base is main's labeled sprite (label_button.h). */
     LabelSprite_SetState((LabelSprite *) (void *) &self->button, 2);
     SoundSys_PlaySe(LETTER_SEND_SE_LABEL);
 }
@@ -2160,7 +2160,7 @@ CLEAN_AS(func_ov104_0229e864, LetterSend_IdleByTouch)
 #define LETTER_SEND_PANEL_MESSAGE 0x65
 
 /* func_ov104_0229e8f8: a step of the wallet display's setup (its answer unused), the panel's
- * text colours loaded and its layout 6 with message 0x65. */
+ * text colors loaded and its layout 6 with message 0x65. */
 void LetterSend_PreparePanel(LetterSendScene *self)
 {
     PocketsWallet_LoadObjFiles(&self->wallet);
@@ -2544,7 +2544,7 @@ CLEAN_AS(func_ov104_0229eee4, LetterSend_Update)
 
 /* func_ov104_0229eef8 (vtable slot 0x5c, phase 5): the scene's end, by how it ended. Answers 1.
  *
- * - Cancelled: the carried letters as they were (LetterSend_RestoreCarried), main told nothing
+ * - Canceled: the carried letters as they were (LetterSend_RestoreCarried), main told nothing
  *   changed (GroupParams_SetC4C(0)).
  * - Linked: while letters are still being sent nothing happens (and the scene is not deleted);
  *   after, main told whether anything was posted, the letters not taken back with the carried
@@ -2561,7 +2561,7 @@ CLEAN_AS(func_ov104_0229eee4, LetterSend_Update)
  * Then (but for the linked wait) Mail_Nothing and the scene asks to be deleted. */
 int LetterSend_End(LetterSendScene *self)
 {
-    if (LetterSend_TestFlags(self, LETTER_SEND_FLAG_CANCELLED) != 0) {
+    if (LetterSend_TestFlags(self, LETTER_SEND_FLAG_CANCELED) != 0) {
         LetterSend_RestoreCarried(self);
         GroupParams_SetC4C(0);
     } else if (LetterSend_TestFlags(self, LETTER_SEND_FLAG_LINKED) != 0) {
@@ -2696,7 +2696,7 @@ int LetterSend_Draw(LetterSendScene *self)
     }
     if (LetterSend_TestFlags(self, LETTER_SEND_FLAG_LETTER_SHOWN) != 0) {
         int y = MenuScene_WipeOffsetY(lsend_scene(self));
-        /* The button's base is main's labelled sprite (label_button.h). */
+        /* The button's base is main's labeled sprite (label_button.h). */
         LabelSprite_SetOffset((LabelSprite *) (void *) &self->button, 0, y);
         lsend_draw_member(&self->button);
     }

@@ -285,7 +285,7 @@ void DesignPicker_PlaceSpriteAtCursor(DesignPicker *self)
 }
 CLEAN_AS(func_ov125_0229f994, DesignPicker_PlaceSpriteAtCursor)
 
-/* func_ov125_0229f9c8: the choice cancelled: the other row's action, its last row picked (with
+/* func_ov125_0229f9c8: the choice canceled: the other row's action, its last row picked (with
  * the sound), the cursor sprite put there and its animation 8 run to its end; then the choice
  * closes (sub state 8). */
 void DesignPicker_CancelChoice(DesignPicker *self)
@@ -773,7 +773,7 @@ void DesignPicker_BrowseByTouch(DesignPicker *self)
 CLEAN_AS(func_ov125_022a02b4, DesignPicker_BrowseByTouch)
 
 /* func_ov125_022a0334: the scene's graphics: the designs, overlay 124's title (4) and the
- * panel's text colours. */
+ * panel's text colors. */
 void DesignPicker_LoadGraphics(DesignPicker *self)
 {
     DesignPicker_LoadDesigns();
@@ -785,7 +785,7 @@ CLEAN_AS(func_ov125_022a0334, DesignPicker_LoadGraphics)
 /* func_ov125_022a0358: the current player's designs, in their order, loaded into the OBJs: the
  * pixels of each made into four by four characters (TileConvert_BitmapToSheet, design n at
  * character n * 4 of the sheet) in a block from the back of the scenes' heap, loaded as OBJ
- * characters 0xc0-0x13f; then each design's 16 colours copied into a second block, loaded as
+ * characters 0xc0-0x13f; then each design's 16 colors copied into a second block, loaded as
  * OBJ palettes 5-12. */
 void DesignPicker_LoadDesigns(void)
 {
@@ -804,7 +804,7 @@ void DesignPicker_LoadDesigns(void)
     for (int i = 0; i < DESIGN_PICKER_DESIGNS; i++) {
         unsigned int design = (unsigned int) PlayerDesigns_InOrder(designs, i);
         DesignInfo *info = (DesignInfo *) (uintptr_t) Design_Info(design);
-        MIi_CpuCopy16((const void *) (uintptr_t) (u32) DesignInfo_PaletteColours(info), palettes + offset, 0x20);
+        MIi_CpuCopy16((const void *) (uintptr_t) (u32) DesignInfo_PaletteColors(info), palettes + offset, 0x20);
         offset += 0x10;
     }
     DisplayLayer_LoadPalettes((u8 *) palettes, 8, 5, 5, 0xc);

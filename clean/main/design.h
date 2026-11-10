@@ -2,7 +2,7 @@
  * one by kind and index, copying and swapping them (and telling the other players of a
  * multiplayer session), and the designs' item codes taken away when a player leaves.
  *
- * A design is 0x200 bytes of 16-colour pixels in bitmap order, then its information: who made
+ * A design is 0x200 bytes of 16-color pixels in bitmap order, then its information: who made
  * it, its title, and its palette (one of 16 in "/menu/desi/b_myd_ten0_obj.bpl", design_assets.h).
  * A design is named by a kind (DesignKind) and an index in that kind's set. */
 #ifndef CLEAN_MAIN_DESIGN_H

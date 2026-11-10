@@ -679,8 +679,8 @@ int MissingNpc1_EnterLost(MissingNpc1 *self)
 CLEAN_AS(func_020c2098, MissingNpc1_EnterLost)
 
 /* func_020c2104: following the player. With a current player:
- * - it becomes solid once in front of the gate (in the town: its tile's centre further along
- *   z than the gate's point) or, in scene 0xb, once before the centre of tile (6, 15);
+ * - it becomes solid once in front of the gate (in the town: its tile's center further along
+ *   z than the gate's point) or, in scene 0xb, once before the center of tile (6, 15);
  * - with the player's actor present: in the town (or in scene 0xc while the child was not
  *   escorted to the paired town), while walking (motion kind 2): farther than 0x6000 from the player it is lost
  *   (MISSING_NPC1_LOST); moving no more than 0x29 a frame or blocked ahead for 40 frames, it
@@ -698,7 +698,7 @@ int MissingNpc1_UpdateFollow(MissingNpc1 *self)
         Vec3 gate = {0, 0, 0};
         Vec3 here;
         missing_npc1_gate(&gate);
-        AcreTile_SnapToTileCentre(&here, &self->position);
+        AcreTile_SnapToTileCenter(&here, &self->position);
         if (here.z > gate.z) {
             self->solid = 1;
         }
@@ -706,8 +706,8 @@ int MissingNpc1_UpdateFollow(MissingNpc1 *self)
     if (self->solid == 0 && SceneQuery_Current() == MISSING_NPC1_SCENE_B) {
         Vec3 here;
         Vec3 tile;
-        AcreTile_SnapToTileCentre(&here, &self->position);
-        AcreTile_TileCentre(&tile, 6, 0xf);
+        AcreTile_SnapToTileCenter(&here, &self->position);
+        AcreTile_TileCenter(&tile, 6, 0xf);
         if (here.z < tile.z) {
             self->solid = 1;
         }
@@ -864,7 +864,7 @@ int MissingNpc1_UpdateAnim53(MissingNpc1 *self)
 }
 CLEAN_AS(func_020c24d8, MissingNpc1_UpdateAnim53)
 
-/* func_020c2588: held, looking ahead, animation 0x53; when its tile's centre is behind the
+/* func_020c2588: held, looking ahead, animation 0x53; when its tile's center is behind the
  * gate's point and within 0x4000 of it along x, it is put 0x1000 in front of the gate. Then it
  * is solid. Always 1. */
 int MissingNpc1_EnterAnim53(MissingNpc1 *self)
@@ -875,7 +875,7 @@ int MissingNpc1_EnterAnim53(MissingNpc1 *self)
     Vec3 gate = {0, 0, 0};
     Vec3 here;
     missing_npc1_gate(&gate);
-    AcreTile_SnapToTileCentre(&here, &self->position);
+    AcreTile_SnapToTileCenter(&here, &self->position);
     if (here.z < gate.z && here.x >= missing_npc1_add(gate.x, -MISSING_NPC1_GATE_HALF_WIDTH) &&
         here.x <= missing_npc1_add(gate.x, MISSING_NPC1_GATE_HALF_WIDTH)) {
         self->position.z = missing_npc1_add(gate.z, MISSING_NPC1_GATE_FRONT);
@@ -1015,7 +1015,7 @@ CLEAN_AS(func_020c2868, MissingNpc1_Leave)
 
 /* func_020c2898 (slot 0x00): unless the base class refuses to start, it becomes the one that
  * exists, without an effect, and starts by the scene:
- * - the town: put at its tile's centre (moved a tile along x and z when there is a building
+ * - the town: put at its tile's center (moved a tile along x and z when there is a building
  *   0x5000 above it, after the tile is checked clear); with the middle spot marked, after scene
  *   0xb it stands a tile before the gate and follows ("following", not solid), else
  *   MISSING_NPC1_ANIM_53 with the topic "marked"; unmarked, MISSING_NPC1_ANIM_53 with the topic
@@ -1035,7 +1035,7 @@ int MissingNpc1_Start(MissingNpc1 *self)
     u8 *record = PlayerRecords_Current();
 
     if (SceneQuery_Current() == MISSING_NPC1_SCENE_TOWN) {
-        AcreTile_SnapToTileCentre(&self->position, &self->position);
+        AcreTile_SnapToTileCenter(&self->position, &self->position);
         if (TownTile_FindItem5000AboveAt(&self->position, 1, NULL, NULL)) {
             TownTile_IsClearAt(&self->position, NULL);
             self->position.x = missing_npc1_add(self->position.x, MISSING_NPC1_TILE);

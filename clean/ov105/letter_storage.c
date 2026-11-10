@@ -344,7 +344,7 @@ CLEAN_AS(func_ov105_0229c6a0, LetterStorage_DiscardSlotLetter)
 void LetterStorage_PressLabelButton(LetterStorage *self)
 {
     MenuScene_SetSubState(scene_of(self), 0x1a);
-    /* The button's base is main's labelled sprite (label_button.h). */
+    /* The button's base is main's labeled sprite (label_button.h). */
     LabelSprite_SetState((LabelSprite *) (void *) &self->button, 2);
     SoundSys_PlaySe(0x29);
 }
@@ -2175,7 +2175,7 @@ void LetterStorage_IdleByTouch(LetterStorage *self)
 CLEAN_AS(func_ov105_0229e90c, LetterStorage_IdleByTouch)
 
 /* func_ov105_0229e9a4: a step of the wallet display's setup (its answer unused), the panel's
- * text colours loaded and its layout 5 with message 0x21. */
+ * text colors loaded and its layout 5 with message 0x21. */
 void LetterStorage_PreparePanel(LetterStorage *self)
 {
     PocketsWallet_LoadObjFiles((PocketsWallet *) (void *) self->wallet);
@@ -2758,7 +2758,7 @@ int LetterStorage_Draw(LetterStorage *self)
     }
     if (LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_LETTER_SHOWN) != 0) {
         int y = MenuScene_WipeOffsetY(scene_of(self));
-        /* The button's base is main's labelled sprite (label_button.h). */
+        /* The button's base is main's labeled sprite (label_button.h). */
         LabelSprite_SetOffset((LabelSprite *) (void *) &self->button, 0, y);
         draw_member(&self->button);
     }

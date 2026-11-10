@@ -54,11 +54,11 @@ class NativeStackTests(unittest.TestCase):
     def test_clean_consumer_copy(self):
         text = (C.ROOT / native_stack.CLEAN_SOURCE).read_bytes().decode()
         copy = native_stack.clean_copy(text)
-        self.assertNotIn('Vec3 centres[HOUSE_ROACH_KEEP_OUT_BOXES] = {{0, 0, 0}};', copy)
-        self.assertIn('    Vec3 *centres;', copy)
+        self.assertNotIn('Vec3 centers[HOUSE_ROACH_KEEP_OUT_BOXES] = {{0, 0, 0}};', copy)
+        self.assertIn('    Vec3 *centers;', copy)
         slot = copy.index('native_guest_stack_slot(0x0223df88u, 0x28u, sizeof(Vec3) * 4)')
         self.assertLess(copy.index('CollisionBox_Construct(&boxes[i]);'), slot)
-        self.assertLess(slot, copy.index('centres[0].x'))
+        self.assertLess(slot, copy.index('centers[0].x'))
         with self.assertRaises(ValueError):
             native_stack.clean_copy(text + '\n')
 
@@ -77,11 +77,11 @@ class NativeStackTests(unittest.TestCase):
     def test_clean_insect_room_copy(self):
         text = (C.ROOT / native_stack.CLEAN_INSECT_ROOM).read_bytes().decode()
         copy = native_stack.clean_copy(text, native_stack.CLEAN_INSECT_ROOM)
-        self.assertNotIn('Vec3 centre = {cases[i].x, 0, cases[i].z};', copy)
+        self.assertNotIn('Vec3 center = {cases[i].x, 0, cases[i].z};', copy)
         slot = copy.index('native_guest_stack_slot(0x0223f218u, 0x18u, sizeof(Vec3) * 3)')
         self.assertLess(copy.index('CollisionBox_Construct(&boxes[2]);'), slot)
-        self.assertLess(slot, copy.index('centres[i].x = cases[i].x;'))
-        self.assertIn('INSECT_CASE_HEIGHT, &centres[i], 0, NULL);', copy)
+        self.assertLess(slot, copy.index('centers[i].x = cases[i].x;'))
+        self.assertIn('INSECT_CASE_HEIGHT, &centers[i], 0, NULL);', copy)
         with self.assertRaises(ValueError):
             native_stack.clean_copy(text + '\n', native_stack.CLEAN_INSECT_ROOM)
 

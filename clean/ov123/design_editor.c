@@ -93,10 +93,10 @@ extern const OamEntry data_ov123_0229cf08;            /* a preview dot */
 extern OamEntry data_ov123_0229cf20;                  /* a box's corner, flipped by the corner */
 extern const u16 data_ov123_0229cea0[4];              /* the corner's flips, in the field at attr1 bit 9 */
 extern const OamEntry *const data_ov123_0229cfec[13]; /* the canvas cursor of each tool, or NULL */
-extern const OamEntry data_ov123_0229ce90[];          /* the canvas cursor while picking a colour */
+extern const OamEntry data_ov123_0229ce90[];          /* the canvas cursor while picking a color */
 extern const OamEntry data_ov123_0229ce88;            /* drawn with the keys in use */
 extern const OamEntry data_ov123_0229cf7c[];
-extern const OamEntry data_ov123_0229cfcc[];         /* the colour's marker, at its x */
+extern const OamEntry data_ov123_0229cfcc[];         /* the color's marker, at its x */
 extern const OamEntry data_ov123_0229cea8[];         /* the palette's number box for palettes 0-8 */
 extern const OamEntry data_ov123_0229cf6c[];         /* and for 9-15 */
 extern const OamEntry *const data_ov123_0229cf60[3]; /* the key mode's sign */
@@ -427,7 +427,7 @@ int DesignEditor_DrawMarker(DesignEditor *self, int px, int py)
 CLEAN_AS(func_ov123_0229a094, DesignEditor_DrawMarker)
 
 /* func_ov123_0229a0cc: the canvas cursor of the tool at pixel (px, py) (the picker's while a
- * colour is picked; two pixels up and left for pen 2), when the tool has one. */
+ * color is picked; two pixels up and left for pen 2), when the tool has one. */
 void DesignEditor_DrawToolCursor(DesignEditor *self, int px, int py)
 {
     int x = DesignEditor_ScreenX(self, px);
@@ -552,7 +552,7 @@ void DesignEditor_SetPlacePalette(DesignEditor *self, unsigned int place, unsign
 }
 CLEAN_AS(func_ov123_0229a2f8, DesignEditor_SetPlacePalette)
 
-/* func_ov123_0229b0dc: the design's palette set to `palette` (0-15), its colours queued for the
+/* func_ov123_0229b0dc: the design's palette set to `palette` (0-15), its colors queued for the
  * canvas, and its number shown (1-16, a space or "1" before the last digit, in wide digits). */
 void DesignEditor_SetPalette(DesignEditor *self, int palette)
 {
@@ -570,20 +570,20 @@ void DesignEditor_SetPalette(DesignEditor *self, int palette)
 }
 CLEAN_AS(func_ov123_0229b0dc, DesignEditor_SetPalette)
 
-/* func_ov123_0229b160: the colour drawn (1-15) and its marker's x. */
-void DesignEditor_SetColour(DesignEditor *self, unsigned char colour)
+/* func_ov123_0229b160: the color drawn (1-15) and its marker's x. */
+void DesignEditor_SetColor(DesignEditor *self, unsigned char color)
 {
-    self->colour = colour;
-    self->colour_x = (u8) ((colour - 1) * 12);
+    self->color = color;
+    self->color_x = (u8) ((color - 1) * 12);
 }
-CLEAN_AS(func_ov123_0229b160, DesignEditor_SetColour)
+CLEAN_AS(func_ov123_0229b160, DesignEditor_SetColor)
 
 /* func_ov123_0229b174: the design palette's colours queued as layer 6's palette 14. */
 int DesignEditor_QueuePalette(DesignEditor *self)
 {
     DesignManager *manager = (DesignManager *) (uintptr_t) DesignManager_Get();
-    int colours = (int) DesignManager_Palette(manager, self->palette);
-    return LayerTask_QueuePalette(de_task(self, 0), colours, DESIGN_EDITOR_LAYER_CANVAS, 0xe);
+    int colors = (int) DesignManager_Palette(manager, self->palette);
+    return LayerTask_QueuePalette(de_task(self, 0), colors, DESIGN_EDITOR_LAYER_CANVAS, 0xe);
 }
 CLEAN_AS(func_ov123_0229b174, DesignEditor_QueuePalette)
 
@@ -793,12 +793,12 @@ void DesignEditor_TearDown(DesignEditor *self)
 }
 CLEAN_AS(func_ov123_0229bfac, DesignEditor_TearDown)
 
-/* func_ov123_0229bfe0: the editor's fields at its start: colour 1, no flags, nothing lit, the
+/* func_ov123_0229bfe0: the editor's fields at its start: color 1, no flags, nothing lit, the
  * key cursor on the first place and the canvas cursor at (16, 16); main's byte 0xc4c cleared and
  * the player asked into state 5. */
 void DesignEditor_Reset(DesignEditor *self)
 {
-    DesignEditor_SetColour(self, 1);
+    DesignEditor_SetColor(self, 1);
     self->flags = 0;
     self->lit_place = DESIGN_EDITOR_NO_PLACE;
     DesignEditor_UnlightPlace(self);
@@ -1140,7 +1140,7 @@ CLEAN_AS(func_ov123_0229c650, DesignEditor_RunState)
 /* func_ov123_0229c754 (vtable slot 0x24): the scene's sprites. With the keys in use
  * (StateFlags_Test2): on the canvas the tool's cursor (none while a shape is dragged out), else
  * the cursor sprite. The shape's preview, the panel at the wipe's y. While the scene is drawn,
- * at the layers' offset plus the wipe's y: the colour's marker and the palette number's box,
+ * at the layers' offset plus the wipe's y: the color's marker and the palette number's box,
  * and with the keys in use two more sprites and the key mode's sign. Answers 1. */
 int DesignEditor_Draw(DesignEditor *self)
 {
@@ -1164,7 +1164,7 @@ int DesignEditor_Draw(DesignEditor *self)
                                     DESIGN_EDITOR_KEEP, NULL);
             de_draw_cell(data_ov123_0229cf7c, 0x80, y, DESIGN_EDITOR_KEEP);
         }
-        de_draw_cell(data_ov123_0229cfcc, self->colour_x + 0x80, y, 2);
+        de_draw_cell(data_ov123_0229cfcc, self->color_x + 0x80, y, 2);
         if (self->palette < 9) {
             de_draw_cell(data_ov123_0229cea8, 0x80, y, 2);
         } else {

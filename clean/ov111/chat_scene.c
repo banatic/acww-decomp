@@ -1039,7 +1039,7 @@ void ChatScene_RedrawLine(ChatScene *self)
 CLEAN_AS(func_ov111_0229fd08, ChatScene_RedrawLine)
 
 /* func_ov111_0229fd58: the text box made when the scene has none: 21 tiles by 2 from VRAM
- * tile 0x13d, on the sub screen's BG0, colour 1 on 2, the marked range in colour 2 on 1. */
+ * tile 0x13d, on the sub screen's BG0, color 1 on 2, the marked range in color 2 on 1. */
 void ChatScene_EnsureBox(ChatScene *self)
 {
     if (self->box != NULL) {

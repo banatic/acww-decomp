@@ -61,7 +61,7 @@ enum DebugScreenState {
 
 #define OS_PROCMODE_SYS 0x1f
 #define ROW 32                /* characters per row of a screen */
-#define PALETTE_13 0xd000     /* the text colours: palettes 13-15 are loaded from the font's */
+#define PALETTE_13 0xd000     /* the text colors: palettes 13-15 are loaded from the font's */
 #define BLANK_PAIR 0x007f007f /* two blank characters */
 
 /* NitroSDK's OSThread, as far as the screen reads it. */

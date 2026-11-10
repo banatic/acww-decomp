@@ -1,4 +1,4 @@
-/* What the room score keeps between its judgements (room_score_state.h). */
+/* What the room score keeps between its judgments (room_score_state.h). */
 #include "room_score_state.h"
 
 #include "clean.h"

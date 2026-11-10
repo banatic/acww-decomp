@@ -167,25 +167,25 @@ int FriendCodeEntry_TestFlags(FriendCodeEntry *self, unsigned int flags)
 }
 CLEAN_AS(func_ov133_0229ad88, FriendCodeEntry_TestFlags)
 
-/* func_ov133_0229ad9c: key `key` in its own colours: the delete and clear keys', or a digit's. */
+/* func_ov133_0229ad9c: key `key` in its own colors: the delete and clear keys', or a digit's. */
 void FriendCodeEntry_UnlightKey(FriendCodeEntry *self, int key)
 {
     int special = (u8) (key - FRIEND_CODE_KEY_DELETE) <= FRIEND_CODE_KEY_CLEAR - FRIEND_CODE_KEY_DELETE;
-    FriendCodeEntry_ColourKey(self, key, special ? FRIEND_CODE_PALETTE_SPECIAL_KEY : FRIEND_CODE_PALETTE_DIGIT_KEY);
+    FriendCodeEntry_ColorKey(self, key, special ? FRIEND_CODE_PALETTE_SPECIAL_KEY : FRIEND_CODE_PALETTE_DIGIT_KEY);
 }
 CLEAN_AS(func_ov133_0229ad9c, FriendCodeEntry_UnlightKey)
 
 /* func_ov133_0229adb8: key `key` lit. */
 void FriendCodeEntry_LightKey(FriendCodeEntry *self, int key)
 {
-    FriendCodeEntry_ColourKey(self, key, FRIEND_CODE_PALETTE_LIT_KEY);
+    FriendCodeEntry_ColorKey(self, key, FRIEND_CODE_PALETTE_LIT_KEY);
 }
 CLEAN_AS(func_ov133_0229adb8, FriendCodeEntry_LightKey)
 
 /* func_ov133_0229adc4: key `key`'s place on the keypad's screen in palette `palette` (the first
  * column's keys are a character wider), the screen to be loaded.
  * REQUIRES: 0 <= key <= 11; the game reads its tables on for others. */
-void FriendCodeEntry_ColourKey(FriendCodeEntry *self, int key, int palette)
+void FriendCodeEntry_ColorKey(FriendCodeEntry *self, int key, int palette)
 {
     int column = key % 3;
     int left = data_ov133_0229c79c[column];
@@ -194,7 +194,7 @@ void FriendCodeEntry_ColourKey(FriendCodeEntry *self, int key, int palette)
     ScreenMap_SetPalette(self->keypad_screen, left, top, right, top + 1, (u32) palette);
     FriendCodeEntry_SetFlags(self, FRIEND_CODE_FLAG_KEYPAD_DIRTY);
 }
-CLEAN_AS(func_ov133_0229adc4, FriendCodeEntry_ColourKey)
+CLEAN_AS(func_ov133_0229adc4, FriendCodeEntry_ColorKey)
 
 /* func_ov133_0229ae1c: no key lit: the keypad in the digits' palette, then the clear and delete
  * keys in their own. */
@@ -244,7 +244,7 @@ int FriendCodeEntry_PressKey(FriendCodeEntry *self)
 CLEAN_AS(func_ov133_0229ae94, FriendCodeEntry_PressKey)
 
 /* func_ov133_0229aed4: the frame's end for the screens: changed digits written, a moved cursor's
- * mark coloured (each then loads the code's screen); a screen to be loaded queued to its layer
+ * mark colored (each then loads the code's screen); a screen to be loaded queued to its layer
  * (the keypad's to 4, the code's to 6), its flag cleared once the queue took it. */
 void FriendCodeEntry_UpdateScreens(FriendCodeEntry *self)
 {
@@ -254,7 +254,7 @@ void FriendCodeEntry_UpdateScreens(FriendCodeEntry *self)
         FriendCodeEntry_SetFlags(self, FRIEND_CODE_FLAG_CODE_DIRTY);
     }
     if (FriendCodeEntry_TestFlags(self, FRIEND_CODE_FLAG_CURSOR)) {
-        FriendCodeEntry_ColourMark(self);
+        FriendCodeEntry_ColorMark(self);
         FriendCodeEntry_ClearFlags(self, FRIEND_CODE_FLAG_CURSOR);
         FriendCodeEntry_SetFlags(self, FRIEND_CODE_FLAG_CODE_DIRTY);
     }
@@ -274,7 +274,7 @@ CLEAN_AS(func_ov133_0229aed4, FriendCodeEntry_UpdateScreens)
 /* func_ov133_0229af90: the code's row (rows 7 and 8, columns 4-27, two a digit) in its palette,
  * then the marked digits, from the lower end of the mark to before the higher, in the marked
  * palette. */
-void FriendCodeEntry_ColourMark(FriendCodeEntry *self)
+void FriendCodeEntry_ColorMark(FriendCodeEntry *self)
 {
     ScreenMap_SetPalette(self->code_screen, 4, 7, 0x1b, 8, FRIEND_CODE_PALETTE_CODE);
     int from = self->mark_from;
@@ -286,7 +286,7 @@ void FriendCodeEntry_ColourMark(FriendCodeEntry *self)
     int high = to > from ? to : from;
     ScreenMap_SetPalette(self->code_screen, low * 2 + 4, 7, high * 2 + 3, 8, FRIEND_CODE_PALETTE_MARKED);
 }
-CLEAN_AS(func_ov133_0229af90, FriendCodeEntry_ColourMark)
+CLEAN_AS(func_ov133_0229af90, FriendCodeEntry_ColorMark)
 
 /* A character of the screen given `character`, its flips and palette kept. QUIRK: the game ORs
  * the whole value in, so a character past 0x3ff (digit bytes above 0xde) spills into them. */
@@ -535,7 +535,7 @@ CLEAN_AS(func_ov133_0229b3f8, FriendCodeEntry_UseKey)
 
 /* func_ov133_0229b44c: A at the pointer's key. A key of the keypad is pressed: 1 when it may
  * repeat (sub state 7), else 2. The code's row: 0. OK: the code confirmed when the button is
- * enabled (1, else 0). Back: cancelled (1). */
+ * enabled (1, else 0). Back: canceled (1). */
 int FriendCodeEntry_PressSelected(FriendCodeEntry *self)
 {
     u8 key = self->key;
@@ -563,7 +563,7 @@ int FriendCodeEntry_PressSelected(FriendCodeEntry *self)
 }
 CLEAN_AS(func_ov133_0229b44c, FriendCodeEntry_PressSelected)
 
-/* func_ov133_0229b4b0: cancelled: main told so (GroupParams_SetC4C(0)), the back button
+/* func_ov133_0229b4b0: canceled: main told so (GroupParams_SetC4C(0)), the back button
  * pressed, the scene wiping out after the press (state 3, sub state 10), the menu back at the
  * roster, a friend being added cleared; the sound. */
 void FriendCodeEntry_Cancel(FriendCodeEntry *self)

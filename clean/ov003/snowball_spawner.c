@@ -35,7 +35,7 @@ extern NetSession *data_020ccf94;
 extern const u32 data_ov003_0223c550[];
 extern const u32 data_020da13c[];
 
-/* func_ov003_02236274: the balls of each snowman standing in the inner acres made at the centre
+/* func_ov003_02236274: the balls of each snowman standing in the inner acres made at the center
  * of its tile, the head first; a snowman object main no longer records is replaced by the empty
  * tile. */
 void SnowballSpawner_SpawnSnowmen(SnowballSpawner *self)
@@ -64,10 +64,10 @@ void SnowballSpawner_SpawnSnowmen(SnowballSpawner *self)
                         continue;
                     }
                     int head = number * 2 + SNOWBALL_SPAWNER_FIRST_SNOWMAN_GROUP;
-                    Vec3 centre;
-                    AcreTile_TileCentreInAcre(&centre, (int) acre_x, (int) acre_z, x, z);
-                    Actor_Spawn(SNOWBALL_SPAWNER_ACTOR, head, &centre, NULL, self);
-                    Actor_Spawn(SNOWBALL_SPAWNER_ACTOR, head + 1, &centre, NULL, self);
+                    Vec3 center;
+                    AcreTile_TileCenterInAcre(&center, (int) acre_x, (int) acre_z, x, z);
+                    Actor_Spawn(SNOWBALL_SPAWNER_ACTOR, head, &center, NULL, self);
+                    Actor_Spawn(SNOWBALL_SPAWNER_ACTOR, head + 1, &center, NULL, self);
                 }
             }
         }

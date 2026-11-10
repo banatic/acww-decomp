@@ -33,7 +33,7 @@ extern NetSession *data_020ccf94; /* the link with other players */
 #define HOUSE_ROACH_PROFILE 0xc0
 #define HOUSE_ROACH_FLOOR_GROUP 0x1f
 #define HOUSE_ROACH_GONE 0xffff
-#define HOUSE_ROACH_HEIGHT 0x200 /* above the floor cell's centre */
+#define HOUSE_ROACH_HEIGHT 0x200 /* above the floor cell's center */
 #define HOUSE_ROACHES_MAX_ROWS 33
 #define HOUSE_ROACHES_FAR 0x0fffffff
 
@@ -93,7 +93,7 @@ static int floor_cell_empty(AcreMap *map, int x, int z)
 
 /* func_ov004_0223e618: the empty floor cells of the room are noted, row by row, then up to
  * three cockroaches (while fewer are out than the count) let out on cells picked at random
- * among them, each cell once, 0x200 above its centre, the process their parent.
+ * among them, each cell once, 0x200 above its center, the process their parent.
  * QUIRK: the number of empty cells is counted in a byte; a cockroach with no cell left (none
  * picked) is let out at the origin.
  * REQUIRES: the room's map exists and is at most 33 cells high (the ROM's code tests the map
@@ -127,7 +127,7 @@ int HouseRoaches_SpawnOnFloor(Process *self)
                 }
                 if (pick == 0) {
                     empty[z] -= bit(x);
-                    AcreTile_TileCentre(&position, (u32) x, (u32) z);
+                    AcreTile_TileCenter(&position, (u32) x, (u32) z);
                     position.y = HOUSE_ROACH_HEIGHT;
                     found = 1;
                     break;

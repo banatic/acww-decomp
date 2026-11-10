@@ -38,7 +38,7 @@ extern VillagerTown data_021e5a2c; /* the town's villagers */
 extern u32 data_021dc7a8[];        /* the state block */
 extern u8 data_021dc7bc[];         /* the four players' records */
 
-/* The eight neighbours EventWinner_IsNearAttr4 looks at and the 14 tiles around a house
+/* The eight neighbors EventWinner_IsNearAttr4 looks at and the 14 tiles around a house
  * EventWinner_ScoreAroundHome counts, as offsets in tiles. */
 extern const EventWinnerTile data_021d27e0[8];
 extern const EventWinnerTile data_021d2820[14];

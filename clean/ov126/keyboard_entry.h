@@ -13,7 +13,7 @@
  * - the keyboard is at 0x19c (as in overlay 122's letter writing, ov122/letter_write_scene.h,
  *   whose keyboard calls this scene shares), a pointer sprite (a Glider0) points at a key or at
  *   the text cursor, and the panel's buttons 6 and 7 end the input (KeyboardEntryPanelKind);
- * - when it ends without being cancelled, main is told so (GroupParams_SetC4C(1)), the text is
+ * - when it ends without being canceled, main is told so (GroupParams_SetC4C(1)), the text is
  *   committed and handed to main (GroupParams_SetText); the friend modes tell overlay 90's menu
  *   the friend roster changed (MenuTabs_MarkRosterChanged).
  *
@@ -59,7 +59,7 @@ enum KeyboardEntryMode {
 
 /* What main is told of the input (GroupParams_SetC4C). */
 enum KeyboardEntryOutcome {
-    KEYBOARD_ENTRY_OUTCOME_CANCELLED = 0, /* or the text did not match, or the name is taken */
+    KEYBOARD_ENTRY_OUTCOME_CANCELED = 0, /* or the text did not match, or the name is taken */
     KEYBOARD_ENTRY_OUTCOME_DONE = 1,
     KEYBOARD_ENTRY_OUTCOME_NAME_TAKEN = 2 /* another player of the town has the name */
 };
@@ -72,7 +72,7 @@ enum KeyboardEntryFlag {
     KEYBOARD_ENTRY_FLAG_COPIED = 0x0008,          /* `clipboard` holds copied text: the paste key is enabled */
     KEYBOARD_ENTRY_FLAG_FIELD_SHOWN = 0x0010,     /* the field was shown this frame (KeyboardEntry_ShowField) */
     KEYBOARD_ENTRY_FLAG_NEW_FRIEND = 0x0020,      /* modes 0x19 and 0x1b: other sounds for the panel's buttons */
-    KEYBOARD_ENTRY_FLAG_CANCELLED = 0x0040,       /* the input ends cancelled */
+    KEYBOARD_ENTRY_FLAG_CANCELED = 0x0040,        /* the input ends canceled */
     KEYBOARD_ENTRY_FLAG_POINTER_ON_TEXT = 0x0080, /* the pointer is at the text cursor, not at a key */
     KEYBOARD_ENTRY_FLAG_HINT = 0x0100             /* modes 0x10, 0x12, 0x18 and 0x19: a hint message and a
                                                    * cell after the text are shown */

@@ -166,7 +166,7 @@ void TuneEditor_StepPlace(TuneEditor *self, int *place, int step)
 CLEAN_AS(func_ov143_022996a4, TuneEditor_StepPlace)
 
 /* func_ov143_022996ec: the labels opened: notes 0-12 with the note names in turn, notes 13 and
- * 14, then the "erase all" caption's (message 0x8d, style 8 at its OBJ tile, colour 8). */
+ * 14, then the "erase all" caption's (message 0x8d, style 8 at its OBJ tile, color 8). */
 void TuneEditor_OpenLabels(TuneEditor *self)
 {
     u8 message = TUNE_EDITOR_MESSAGE_NOTE_0;
@@ -188,7 +188,7 @@ void TuneEditor_OpenLabels(TuneEditor *self)
 CLEAN_AS(func_ov143_022996ec, TuneEditor_OpenLabels)
 
 /* func_ov143_02299768: the next label opened with menu message `message` into the characters
- * of note `note`'s first OBJ (style 8, colour 3). */
+ * of note `note`'s first OBJ (style 8, color 3). */
 void TuneEditor_OpenNoteLabel(TuneEditor *self, int message, int note)
 {
     const OamEntry *objs = data_ov143_0229b178[note];

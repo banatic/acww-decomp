@@ -63,7 +63,7 @@ void LocalSession_OnRadioOn(void)
 }
 CLEAN_AS(func_ov066_02269a14, LocalSession_OnRadioOn)
 
-/* func_ov066_02269aa4: with WM initialised and disabled (LOCAL_STATE_WM_READY), WM finished
+/* func_ov066_02269aa4: with WM initialized and disabled (LOCAL_STATE_WM_READY), WM finished
  * (WM_Finish) and, if it agreed, the search and the session freed with its buffers; the state
  * goes back to LOCAL_STATE_SET_UP. In any other state the library stops on
  * LOCAL_ERROR_WRONG_STATE. */
@@ -110,7 +110,7 @@ void LocalSession_Create(void)
 }
 CLEAN_AS(func_ov066_02269b88, LocalSession_Create)
 
-/* func_ov066_02269c28: with WM initialised, the session's buffers allocated (all aligned to the
+/* func_ov066_02269c28: with WM initialized, the session's buffers allocated (all aligned to the
  * cache's 32 bytes): the parent parameters, the beacon's game info (its header alone at first),
  * the MP receive and send buffers, each large enough for a parent and for a child, and the
  * library's message buffer. Then the search is created, the MAC address read and the random

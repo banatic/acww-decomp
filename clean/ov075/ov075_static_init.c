@@ -1,7 +1,7 @@
-/* Overlay 75's static initialiser, run when the overlay is loaded: colours its source files
+/* Overlay 75's static initializer, run when the overlay is loaded: colors its source files
  * define for themselves, the tables of member functions the town pelican (town_pelican.h) and
  * his talk scene (town_pelican_talk.h) dispatch through, copied from the overlay's constants
- * (the compiler cannot place member pointers in initialised data), and the two points beside
+ * (the compiler cannot place member pointers in initialized data), and the two points beside
  * his way he steps to, registered for destruction like static C++ objects. */
 #include "autoload_2/vector.h"
 #include "clean.h"
@@ -9,13 +9,13 @@
 #include "town_pelican_talk.h"
 #include "types.h"
 
-/* A colour of four 5-bit components (the fourth always 31). */
-typedef struct TownPelicanInitColour {
+/* A color of four 5-bit components (the fourth always 31). */
+typedef struct TownPelicanInitColor {
     u8 c0;
     u8 c1;
     u8 c2;
     u8 c3;
-} TownPelicanInitColour;
+} TownPelicanInitColor;
 
 /* The record __register_global_object links an object into, so that its destructor runs when
  * the overlay goes. */
@@ -25,8 +25,8 @@ typedef struct TownPelicanInitRecord {
     void *object;
 } TownPelicanInitRecord;
 
-/* The six colours: red, blue, yellow, green, cyan and grey. */
-extern TownPelicanInitColour data_ov075_02279acc, data_ov075_02279ad4, data_ov075_02279ad0, data_ov075_02279ac4,
+/* The six colors: red, blue, yellow, green, cyan and gray. */
+extern TownPelicanInitColor data_ov075_02279acc, data_ov075_02279ad4, data_ov075_02279ad0, data_ov075_02279ac4,
     data_ov075_02279ac8, data_ov075_02279ac0;
 /* The null member pointer (the C++ runtime's). */
 extern const MemberPointer __ptmf_null;
@@ -47,12 +47,12 @@ extern void __register_global_object(void *object, void *destruct, void *record)
 /* The destructor of a point: nothing (the game's function is handed on). */
 extern void func_020012dc(void *object);
 
-static void tpel_init_colour(TownPelicanInitColour *colour, u8 c0, u8 c1, u8 c2, u8 c3)
+static void tpel_init_color(TownPelicanInitColor *color, u8 c0, u8 c1, u8 c2, u8 c3)
 {
-    colour->c0 = c0;
-    colour->c1 = c1;
-    colour->c2 = c2;
-    colour->c3 = c3;
+    color->c0 = c0;
+    color->c1 = c1;
+    color->c2 = c2;
+    color->c3 = c3;
 }
 
 static void tpel_init_point(Vec3 *point, fx32 x, TownPelicanInitRecord *record)
@@ -63,7 +63,7 @@ static void tpel_init_point(Vec3 *point, fx32 x, TownPelicanInitRecord *record)
     __register_global_object(point, (void *) (uintptr_t) func_020012dc, record);
 }
 
-/* __sinit_ov075_02279724: the colours; the two sequences' functions; the six states' entries
+/* __sinit_ov075_02279724: the colors; the two sequences' functions; the six states' entries
  * and updates, in order (state 3's entry is read back from sequence 0's function, the null one); the
  * points (0.5, 0, 1.0) and (-0.5, 0, 1.0), each registered. */
 void TownPelicanInit_Tables(void)
@@ -83,12 +83,12 @@ void TownPelicanInit_Tables(void)
         &data_ov075_022798e8, /* 5: wander */
     };
 
-    tpel_init_colour(&data_ov075_02279acc, 31, 20, 20, 31);
-    tpel_init_colour(&data_ov075_02279ad4, 20, 20, 31, 31);
-    tpel_init_colour(&data_ov075_02279ad0, 31, 31, 20, 31);
-    tpel_init_colour(&data_ov075_02279ac4, 20, 31, 20, 31);
-    tpel_init_colour(&data_ov075_02279ac8, 20, 31, 31, 31);
-    tpel_init_colour(&data_ov075_02279ac0, 20, 24, 24, 31);
+    tpel_init_color(&data_ov075_02279acc, 31, 20, 20, 31);
+    tpel_init_color(&data_ov075_02279ad4, 20, 20, 31, 31);
+    tpel_init_color(&data_ov075_02279ad0, 31, 31, 20, 31);
+    tpel_init_color(&data_ov075_02279ac4, 20, 31, 20, 31);
+    tpel_init_color(&data_ov075_02279ac8, 20, 31, 31, 31);
+    tpel_init_color(&data_ov075_02279ac0, 20, 24, 24, 31);
     data_ov075_02279930[TOWN_PELICAN_TALK_SEQUENCE_NONE].run = __ptmf_null;
     data_ov075_02279930[TOWN_PELICAN_TALK_SEQUENCE_WAKE].run = data_ov075_022798c0;
     for (int i = 0; i < TOWN_PELICAN_STATES; i++) {

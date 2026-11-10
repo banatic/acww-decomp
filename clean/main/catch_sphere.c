@@ -46,7 +46,7 @@ int CatchSphere_FindAlong(const Vec3 *from, const Vec3 *to, fx32 radius, u8 *ind
         sphere->in_reach = 0;
         fx32 limit = FX_MulFunc(radius + sphere->reach, radius + sphere->reach);
         for (int i = 0; i < CATCH_SPHERE_SWEEP_POINTS; i++) {
-            if ((s64) limit >= Vec_DistanceSquared(&points[i], &sphere->sphere.centre)) {
+            if ((s64) limit >= Vec_DistanceSquared(&points[i], &sphere->sphere.center)) {
                 sphere->in_reach = 1;
                 found = 1;
                 if (index != NULL) {
@@ -61,14 +61,14 @@ int CatchSphere_FindAlong(const Vec3 *from, const Vec3 *to, fx32 radius, u8 *ind
 CLEAN_AS(func_020899a8, CatchSphere_FindAlong)
 
 /* func_02089aa8: the sphere put at the head of the list, not reached, with its reach, and
- * registered with the pen's pick round map point `centre`, of `radius`, kind 4 and `index`. */
-void CatchSphere_Add(CatchSphere *sphere, Vec3 *centre, fx32 reach, fx32 radius, u8 index)
+ * registered with the pen's pick round map point `center`, of `radius`, kind 4 and `index`. */
+void CatchSphere_Add(CatchSphere *sphere, Vec3 *center, fx32 reach, fx32 radius, u8 index)
 {
     sphere->next = data_021d3124;
     data_021d3124 = sphere;
     sphere->in_reach = 0;
     sphere->reach = reach;
-    TouchPick_SetSphereAndAdd((TouchPick *) (intptr_t) SceneQuery_FieldObject(), &sphere->sphere, centre, radius,
+    TouchPick_SetSphereAndAdd((TouchPick *) (intptr_t) SceneQuery_FieldObject(), &sphere->sphere, center, radius,
                               CATCH_SPHERE_PICK_KIND, index);
 }
 CLEAN_AS(func_02089aa8, CatchSphere_Add)

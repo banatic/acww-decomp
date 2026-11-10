@@ -45,7 +45,7 @@ static_assert(sizeof(RoomScoreRoom) == 0x14, "RoomScoreRoom size");
 /* The five rooms of the player's house. */
 #define ROOM_SCORE_HOUSE_ROOMS 5
 /* The game variable (bank 0) that, when set, has the house judged whatever the week and the
- * judgement sent to every player (room_score_mail.c). */
+ * judgment sent to every player (room_score_mail.c). */
 #define ROOM_SCORE_VARIABLE_JUDGE_ANYWAY 0x22
 
 /* Each group's best score of the rooms, by group. */
@@ -722,12 +722,12 @@ static u16 kind0_flag(u32 score)
 
 /* func_0205b270: the score of rooms `first_index` to `first_index + count - 1` of `source`,
  * each measured into `room` (its bounds, wallpaper and carpet): the furniture's points, the
- * feng shui, the colours, the eras' and feels' shares (*first, *second), the collections
+ * feng shui, the colors, the eras' and feels' shares (*first, *second), the collections
  * (*theme), less the penalty, plus each group's best (data_021c9854), 5000 when one group has all four
  * categories (1000 when the rooms have them only together), and 7777 for each special item;
  * never below 0. `*bonuses` gets the bonuses found (ROOM_SCORE_*), and a random group of kind
  * 0 with a best is kept, as one of kind 1 over 3000.
- * With `judge`, when a week has passed since the last judgement (or game variable 0x22 is
+ * With `judge`, when a week has passed since the last judgment (or game variable 0x22 is
  * set): the total and the letter's bonuses (with higher thresholds and the two penalties) are
  * kept (RoomScore_SetTotal, RoomScore_SetBonusFlags), and a letter picked: when there is no
  * bonus or by an even chance, by the total (message 0 for none, the house's value + 1 up to
@@ -956,7 +956,7 @@ int RoomScore_Total(RoomScoreRoom *room, u16 *bonuses, int *theme, int *first, i
     }
     /* Messages 11-13 tell of the kind 0 bonuses. */
     u32 group = (u32) message - 11 > 2 ? kind1_group : kind0_group;
-    if (RoomScoreMail_SendJudgement(room, message, total, (int) group, *theme) != 0) {
+    if (RoomScoreMail_SendJudgment(room, message, total, (int) group, *theme) != 0) {
         RoomScoreMail_SendPrize(room, total);
         RoomScoreState_SetJudgeDate((Date *) (void *) data_021f3b70);
     }
@@ -1216,7 +1216,7 @@ CLEAN_AS(func_0205bbe8, RoomScore_ConstructSource)
 /* ---- The feng shui */
 
 /* func_0205bbf4: the feng shui of the room of `map` counted: in its two columns of the least x
- * (west) the yellow pieces (colour 1), in its two rows of the greatest z (south) the green ones
+ * (west) the yellow pieces (color 1), in its two rows of the greatest z (south) the green ones
  * (4), in its two columns of the greatest x (east) the red ones (2). */
 void RoomScore_CountFengShui(RoomScoreFengShui *edges, AcreMap *map)
 {

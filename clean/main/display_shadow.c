@@ -29,7 +29,7 @@ extern DisplayShadow data_0213fe74;
 extern WindowBlendShadow data_0213fe94;
 extern ScrollBlockShadow data_0213fdf4;
 extern BgAffineShadow data_0213fe64; /* the sub screen's background 3; its last 16 bytes are DisplayShadow's first */
-extern u16 data_0213fdf0;            /* the backdrop colour of both screens */
+extern u16 data_0213fdf0;            /* the backdrop color of both screens */
 
 extern void G2x_SetBGyAffine_(u32 reg, const BgAffineMtx *mtx, s32 center_x, s32 center_y, s32 x, s32 y);
 extern void G2x_SetBlendAlpha_(u32 reg, int planes, int second_planes, int ev, int second_ev);
@@ -378,7 +378,7 @@ void DisplayShadow_SetMainOutsidePlanes(u8 planes)
 }
 CLEAN_AS(func_02001d1c, DisplayShadow_SetMainOutsidePlanes)
 
-/* func_02001d28: write the sub screen's window 1 planes on the next flush, with the colour
+/* func_02001d28: write the sub screen's window 1 planes on the next flush, with the color
  * effects enabled inside the window when `effects` is nonzero. */
 void DisplayShadow_MarkSubWindow1Planes(unsigned int effects)
 {
@@ -409,7 +409,7 @@ void DisplayShadow_SetSubWindow0Planes(s8 planes, int effects)
 }
 CLEAN_AS(func_02001d74, DisplayShadow_SetSubWindow0Planes)
 
-/* func_02001d88: the main screen's window 1 planes, always with the colour effects. */
+/* func_02001d88: the main screen's window 1 planes, always with the color effects. */
 void DisplayShadow_SetMainWindow1Planes(u8 planes)
 {
     data_0213fe94.main_win1_planes = planes;
@@ -499,7 +499,7 @@ void DisplayShadow_ResetWindow(WindowShadow *window)
 }
 CLEAN_AS(func_02001e94, DisplayShadow_ResetWindow)
 
-/* func_02001ea8: the identity matrix, centre and position 0. */
+/* func_02001ea8: the identity matrix, center and position 0. */
 void DisplayShadow_ResetAffine(BgAffineShadow *affine)
 {
     affine->mtx.m00 = FX32_ONE;
@@ -564,7 +564,7 @@ static void write_bg_affine(int affine, u32 affine_reg, u32 offset_reg, const Bg
     }
 }
 
-/* One half of WININ or WINOUT: the planes, and the colour effects bit when `effects`.
+/* One half of WININ or WINOUT: the planes, and the color effects bit when `effects`.
  * QUIRK: the planes are not masked to their 6 bits. */
 static void write_window_planes(u32 reg, int shift, u8 planes, int effects)
 {
@@ -685,7 +685,7 @@ CLEAN_AS(func_02001ecc, DisplayShadow_Flush)
 
 /* func_02002354: write the parts of the copy that have no marks, every frame: both screens'
  * background modes (the main screen's background 0 showing the 3D), visible planes, enabled
- * windows, the planes outside the windows (with the colour effects) and inside the OBJ window
+ * windows, the planes outside the windows (with the color effects) and inside the OBJ window
  * (without).
  * QUIRK: no value is masked to its field: planes above 0x1f reach the windows' bits until
  * those are written, and windows above 7 reach DISPCNT's bits 16 and up.
@@ -762,7 +762,7 @@ void DisplayShadow_Reset(void)
 }
 CLEAN_AS(func_0200240c, DisplayShadow_Reset)
 
-/* func_020024cc: colour 0 of both screens' background palettes, the backdrop. */
+/* func_020024cc: color 0 of both screens' background palettes, the backdrop. */
 void Display_LoadBackdropColor(void)
 {
     GX_LoadBGPltt(&data_0213fdf0, 0, sizeof(u16));

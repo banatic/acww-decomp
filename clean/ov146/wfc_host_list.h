@@ -19,8 +19,8 @@
  * The list scrolls by `scroll` pixels (0-0x1a0, 16 per row, 7 rows on screen) toward
  * `scroll_target`; the scroll bar's knob (`knob_button`) stands at `knob` (0-0x50). The rows'
  * screen is built in `rows_screen` from 7 row slots of the base screen (`screen`): the friend of
- * row r is shown in slot r % 7, whose labels have colour 14 - slot and whose palette colour 14 -
- * slot is shaded from colour 15 toward colour 14 (joinable) or 7 (full) as the friend's `fade`
+ * row r is shown in slot r % 7, whose labels have color 14 - slot and whose palette color 14 -
+ * slot is shaded from color 15 toward color 14 (joinable) or 7 (full) as the friend's `fade`
  * counts to 20 (WfcHostList_ShadeRows). A friend who stops hosting fades out before leaving the
  * list. The pointer (`pointer`, a Glider0 of ov002/glide.h) stands at the cursor (`cursor`) with
  * the buttons; the pen touches the rows, the buttons and the bar. */

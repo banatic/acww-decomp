@@ -77,7 +77,7 @@ static int keyboard_entry_is_friend_mode(unsigned int mode)
 /* --- The screens --- */
 
 /* func_ov126_022a12d4: the keyboard's files and the field's, the palettes of "menu/han/obj.bpl"
- * on the sub screen's objects, the panel's text colours; with the hint, its message (0x80 for
+ * on the sub screen's objects, the panel's text colors; with the hint, its message (0x80 for
  * a constellation, else 0x66, after main's message part 0 is set from an empty label) opened in
  * its box and shown. */
 void KeyboardEntry_LoadField(KeyboardEntry *self)
@@ -118,7 +118,7 @@ void KeyboardEntry_LoadScreens(KeyboardEntry *self)
 CLEAN_AS(func_ov126_022a1394, KeyboardEntry_LoadScreens)
 
 /* func_ov126_022a13fc: the sub screen in background mode 0, background 1 at priority 3 and
- * background 3 at priority 2, both in their first size with 16 colours from characters 0. */
+ * background 3 at priority 2, both in their first size with 16 colors from characters 0. */
 void KeyboardEntry_SetUpLayers(void)
 {
     DisplayShadow_SetSubBgMode(0);
@@ -318,14 +318,14 @@ void KeyboardEntry_AskWipeIn(KeyboardEntry *self)
 CLEAN_AS(func_ov126_022a1748, KeyboardEntry_AskWipeIn)
 
 /* func_ov126_022a176c (KEYBOARD_ENTRY_STATE_ASK_WIPE_OUT): the panel wipes out; then the question
- * (layout 9 with message 0x87 when cancelling, else 0x22) wipes in (state 8). */
+ * (layout 9 with message 0x87 when canceling, else 0x22) wipes in (state 8). */
 void KeyboardEntry_AskWipeOut(KeyboardEntry *self)
 {
     if (MenuScene_StepWipe(keyboard_entry_scene(self), -1) == 0) {
         return;
     }
     MenuScene_StartWipeCovered(keyboard_entry_scene(self), 0, 0);
-    if (KeyboardEntry_TestFlags(self, KEYBOARD_ENTRY_FLAG_CANCELLED) != 0) {
+    if (KeyboardEntry_TestFlags(self, KEYBOARD_ENTRY_FLAG_CANCELED) != 0) {
         ButtonPanel_SetLayout9(&self->panel, 0x87);
     } else {
         ButtonPanel_SetLayout9(&self->panel, 0x22);
@@ -344,7 +344,7 @@ CLEAN_AS(func_ov126_022a17bc, KeyboardEntry_StartAsk)
 
 /* func_ov126_022a17d8 (KEYBOARD_ENTRY_STATE_WIPE_OUT): the scene wipes out, backgrounds 1 and 3
  * following; when done they are hidden, the scene no longer drawn, phase 5 (the end), and main
- * told the outcome: cancelled (0), or done (1) with the text committed and handed to main; the
+ * told the outcome: canceled (0), or done (1) with the text committed and handed to main; the
  * friend modes but 0x1b tell the menu the roster changed. */
 void KeyboardEntry_WipeOut(KeyboardEntry *self)
 {
@@ -356,8 +356,8 @@ void KeyboardEntry_WipeOut(KeyboardEntry *self)
     DisplayLayer_HideAndResetScroll(KEYBOARD_ENTRY_LAYER);
     KeyboardEntry_ClearFlags(self, KEYBOARD_ENTRY_FLAG_DRAWN);
     MenuScene_SetPhase(keyboard_entry_scene(self), KEYBOARD_ENTRY_PHASE_END);
-    if (KeyboardEntry_TestFlags(self, KEYBOARD_ENTRY_FLAG_CANCELLED)) {
-        GroupParams_SetC4C(KEYBOARD_ENTRY_OUTCOME_CANCELLED);
+    if (KeyboardEntry_TestFlags(self, KEYBOARD_ENTRY_FLAG_CANCELED)) {
+        GroupParams_SetC4C(KEYBOARD_ENTRY_OUTCOME_CANCELED);
         return;
     }
     GroupParams_SetC4C(KEYBOARD_ENTRY_OUTCOME_DONE);
@@ -388,8 +388,8 @@ CLEAN_AS(func_ov126_022a185c, KeyboardEntry_AddFriend)
 
 /* func_ov126_022a18ac (KEYBOARD_ENTRY_STATE_FINISH): the text cursor hidden and the parent told
  * what comes next. The friend modes switch overlay 90's menu to a tab: 6 (for 0x18 and 0x1a, and
- * 0x19 when not cancelled, with state flag 0x200 set unless cancelled), 12 (0x19 cancelled), 10 or
- * 14 (0x1b, done or cancelled); a friend added (0x19) while the session's own slot is taken and
+ * 0x19 when not canceled, with state flag 0x200 set unless canceled), 12 (0x19 canceled), 10 or
+ * 14 (0x1b, done or canceled); a friend added (0x19) while the session's own slot is taken and
  * the network is in mode 3 or 4 goes to the connection first (state 4). Overlay 92's dispatcher
  * is told the scene closes. Then the scene wipes out on window 2 (state 5). */
 void KeyboardEntry_Finish(KeyboardEntry *self)
@@ -402,12 +402,12 @@ void KeyboardEntry_Finish(KeyboardEntry *self)
             case KEYBOARD_ENTRY_MODE_FRIEND_TOWN:
             case KEYBOARD_ENTRY_MODE_FRIEND_NAME:
                 MenuTabs_SelectTab(menu, KEYBOARD_ENTRY_TAB_6);
-                if (KeyboardEntry_TestFlags(self, KEYBOARD_ENTRY_FLAG_CANCELLED) == 0) {
+                if (KeyboardEntry_TestFlags(self, KEYBOARD_ENTRY_FLAG_CANCELED) == 0) {
                     StateFlags_Set200();
                 }
                 break;
             case KEYBOARD_ENTRY_MODE_NEW_FRIEND_TOWN:
-                if (KeyboardEntry_TestFlags(self, KEYBOARD_ENTRY_FLAG_CANCELLED) != 0) {
+                if (KeyboardEntry_TestFlags(self, KEYBOARD_ENTRY_FLAG_CANCELED) != 0) {
                     MenuTabs_SelectTab(menu, KEYBOARD_ENTRY_TAB_12);
                     break;
                 }
@@ -423,7 +423,7 @@ void KeyboardEntry_Finish(KeyboardEntry *self)
                 }
                 break;
             case KEYBOARD_ENTRY_MODE_NEW_FRIEND_NAME:
-                if (KeyboardEntry_TestFlags(self, KEYBOARD_ENTRY_FLAG_CANCELLED) != 0) {
+                if (KeyboardEntry_TestFlags(self, KEYBOARD_ENTRY_FLAG_CANCELED) != 0) {
                     MenuTabs_SelectTab(menu, KEYBOARD_ENTRY_TAB_14);
                 } else {
                     MenuTabs_SelectTab(menu, KEYBOARD_ENTRY_TAB_10);
@@ -506,7 +506,7 @@ CLEAN_AS(func_ov126_022a1a68, KeyboardEntry_Slot54)
 
 /* Obj_ov126_022a20c8::func_ov126_022a1a6c (vtable slot 0x50, phase 2): a frame of the input. The
  * menu close's delay is counted first; when the menu is asked to close in a friend mode, in a sub
- * state other than the question's (3, 5), the glide (8) and 15 and 16, the input ends cancelled:
+ * state other than the question's (3, 5), the glide (8) and 15 and 16, the input ends canceled:
  * the cursor hidden, the pointer hidden, the menu closed (tab 7), the scene wiping out on window
  * 2 (state 5, phase 1), and a friend being added cleared from the roster. Then the frame's start,
  * its sub state and its end. Answers 1. */
@@ -532,7 +532,7 @@ int KeyboardEntry_RunInput(KeyboardEntry *self)
                     KeyboardEntry_ClearFlags(self, KEYBOARD_ENTRY_FLAG_CURSOR_SHOWN);
                     KeyboardEntry_HidePointer(self);
                     MenuTabs_SelectTab((MenuTabs *) (void *) keyboard_entry_parent(self), KEYBOARD_ENTRY_TAB_CLOSE);
-                    KeyboardEntry_SetFlags(self, KEYBOARD_ENTRY_FLAG_CANCELLED);
+                    KeyboardEntry_SetFlags(self, KEYBOARD_ENTRY_FLAG_CANCELED);
                     MenuScene_StartWipeOnWindow2(keyboard_entry_scene(self), 10, 0, 0, KEYBOARD_ENTRY_WIPE_MARGIN);
                     KeyboardEntry_ScrollWipe(self);
                     MenuScene_SetState(keyboard_entry_scene(self), KEYBOARD_ENTRY_STATE_WIPE_OUT);

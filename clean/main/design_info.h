@@ -23,7 +23,7 @@ typedef struct DesignTitleWide {
 
 void Design_Assign(Design *dst, const Design *src);
 unsigned int Design_Info(unsigned int design);
-void Design_Fill(unsigned int *pixels, unsigned int colour);
+void Design_Fill(unsigned int *pixels, unsigned int color);
 void Design_SetPixels(Design *design, const void *pixels);
 void *Design_Pixels(Design *design);
 Design *Design_Destruct(Design *design);
@@ -42,7 +42,7 @@ void DesignInfo_SetCreator(DesignInfo *info, DesignCreator *creator);
 void DesignInfo_SetCreatorLocal(DesignInfo *info);
 void DesignInfo_SetPalette(DesignInfo *info, int palette);
 unsigned char DesignInfo_Palette(DesignInfo *info);
-int DesignInfo_PaletteColours(DesignInfo *info);
+int DesignInfo_PaletteColors(DesignInfo *info);
 int DesignInfo_Destruct(DesignInfo *info);
 int DesignInfo_Construct(DesignInfo *info);
 int DesignInfo_Equals(DesignInfo *a, DesignInfo *b);

@@ -683,7 +683,7 @@ void EventSchedule_Destruct(EventSchedule *schedule)
 }
 CLEAN_AS(func_02041294, EventSchedule_Destruct)
 
-/* func_02041298 (from the state block's static initialiser): no week drawn. */
+/* func_02041298 (from the state block's static initializer): no week drawn. */
 void EventSchedule_ClearWeek(EventSchedule *schedule)
 {
     schedule->week = (DateTime){0};

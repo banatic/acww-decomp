@@ -12,7 +12,7 @@ static_assert(offsetof(OutdoorVillagerWatch, kind) == 0x08, "kind");
 static_assert(offsetof(OutdoorVillagerWatch, slot) == 0x0c, "slot");
 static_assert(offsetof(OutdoorVillagerWatch, thing) == 0x10, "thing");
 static_assert(offsetof(OutdoorVillagerWatch, seen) == 0x14, "seen");
-static_assert(sizeof(OutdoorVillagerWatch) <= OUTDOOR_VILLAGER_BEHAVIOUR - OUTDOOR_VILLAGER_WATCH, "size");
+static_assert(sizeof(OutdoorVillagerWatch) <= OUTDOOR_VILLAGER_BEHAVIOR - OUTDOOR_VILLAGER_WATCH, "size");
 
 /* The range of its looks and the point a look at the player is given. */
 extern fx32 data_020c814c;

@@ -37,7 +37,7 @@ static int single_burst(int sound)
     return sound >= 0x3f9 && sound <= 0x3fc;
 }
 
-/* Plays `sound` at the object's centre unless it is no sound. */
+/* Plays `sound` at the object's center unless it is no sound. */
 static void play(PeriodicRoomObject *object, int sound)
 {
     if (sound != data_ov004_0224fd38) {

@@ -14,7 +14,7 @@
 #include "oam_buffer.h"
 #include "screen_sprite.h"
 
-static_assert(offsetof(MesBg, colours_dirty) == 0x12, "MesBg layout");
+static_assert(offsetof(MesBg, colors_dirty) == 0x12, "MesBg layout");
 static_assert(offsetof(MesBg, lines) == 0x1e, "MesBg layout");
 static_assert(sizeof(MesBg) == 0x20, "MesBg layout");
 static_assert(offsetof(MesBgMarker, unk_28) == 0x28, "MesBgMarker layout");
@@ -90,14 +90,14 @@ void MesBg_Construct(MesBg *bg)
 {
     bg->vtable = data_020e3fb4;
     bg->screen = NULL;
-    bg->colours_dirty = 0;
+    bg->colors_dirty = 0;
     bg->columns = 0;
     bg->scroll_x = 0;
     bg->scroll_y = 0;
     bg->lines_top = 0;
     bg->lines = 0;
-    for (int i = 0; i < MES_BG_COLOURS; i++) {
-        bg->colours[i] = 0;
+    for (int i = 0; i < MES_BG_COLORS; i++) {
+        bg->colors[i] = 0;
     }
 }
 CLEAN_AS(func_020ac9a4, MesBg_Construct)
@@ -289,7 +289,7 @@ MesBgSlider *MesBgSlider_Construct(MesBgSlider *slider)
 }
 CLEAN_AS(func_020acb94, MesBgSlider_Construct)
 
-/* ---- The window's screen, lines and colours */
+/* ---- The window's screen, lines and colors */
 
 /* The screen is 32 entries of 2 bytes per row. The frame in the file spans columns 15 to 31 of
  * rows 9 to 20: a border row, five lines of two rows each (rows 10 to 19), a border row. A
@@ -318,16 +318,16 @@ extern const u8 data_020d1dd4[]; /* 2 lines: places 0, 4 */
 extern const u8 data_020d1dd8[]; /* 3 lines: places 0, 3, 4 */
 extern const u8 data_020d1ddc[]; /* 4 lines: places 0, 2, 3, 4 */
 
-/* The lines' colours: background colours 0x41 to 0x45 (byte 0x82 of the palette). */
-#define MES_BG_COLOURS_OFFSET 0x82
-#define MES_BG_LINE_COLOUR 12
+/* The lines' colors: background colors 0x41 to 0x45 (byte 0x82 of the palette). */
+#define MES_BG_COLORS_OFFSET 0x82
+#define MES_BG_LINE_COLOR 12
 
 /* Main BG1's control register. */
 #define MES_BG_REG_BG1CNT (*(volatile u16 *) 0x0400000a)
 #define MES_BG_BGCNT_PRIORITY 0x0003
 #define MES_BG_BGCNT_MOSAIC 0x0040
 #define MES_BG_BGCNT_KEEP 0x0043   /* priority and mosaic */
-#define MES_BG_BGCNT_SCREEN 0x0500 /* screen base 5, character base 0, 32x32, 16 colours */
+#define MES_BG_BGCNT_SCREEN 0x0500 /* screen base 5, character base 0, 32x32, 16 colors */
 #define MES_BG_PLANE_BG1 2
 
 #define MES_BG_FILE_SIZE 0x4c /* NitroSDK's FSFile */
@@ -416,26 +416,26 @@ int MesBg_LabelTile(int line, int lines)
 }
 CLEAN_AS(func_020ac318, MesBg_LabelTile)
 
-/* func_020ac358: line `line` in `colour`, the other lines' colours 0; uploaded with the next
+/* func_020ac358: line `line` in `color`, the other lines' colors 0; uploaded with the next
  * draw. */
-void MesBg_HighlightLine(MesBg *bg, int line, u16 colour)
+void MesBg_HighlightLine(MesBg *bg, int line, u16 color)
 {
-    for (int i = 0; i < MES_BG_COLOURS; i++) {
-        bg->colours[i] = i == line ? colour : 0;
+    for (int i = 0; i < MES_BG_COLORS; i++) {
+        bg->colors[i] = i == line ? color : 0;
     }
-    bg->colours_dirty = 1;
+    bg->colors_dirty = 1;
 }
 CLEAN_AS(func_020ac358, MesBg_HighlightLine)
 
-/* func_020ac384: every line in the usual colour; uploaded with the next draw. */
-void MesBg_ResetLineColours(MesBg *bg)
+/* func_020ac384: every line in the usual color; uploaded with the next draw. */
+void MesBg_ResetLineColors(MesBg *bg)
 {
-    for (int i = 0; i < MES_BG_COLOURS; i++) {
-        bg->colours[i] = MES_BG_LINE_COLOUR;
+    for (int i = 0; i < MES_BG_COLORS; i++) {
+        bg->colors[i] = MES_BG_LINE_COLOR;
     }
-    bg->colours_dirty = 1;
+    bg->colors_dirty = 1;
 }
-CLEAN_AS(func_020ac384, MesBg_ResetLineColours)
+CLEAN_AS(func_020ac384, MesBg_ResetLineColors)
 
 /* func_020ac39c: main BG1 scrolled to (x, y) from the window's place in the file, x less 8 per
  * column the window is narrower than the frame (GameVariables_Tweak adds 0 to both terms), and
@@ -472,17 +472,17 @@ void MesBg_Show(MesBg *bg)
 }
 CLEAN_AS(func_020ac3ec, MesBg_Show)
 
-/* func_020ac3f8: the lines' colours uploaded to the background palette when they changed. */
-void MesBg_UploadColours(MesBg *bg)
+/* func_020ac3f8: the lines' colors uploaded to the background palette when they changed. */
+void MesBg_UploadColors(MesBg *bg)
 {
-    if (bg->colours_dirty == 0) {
+    if (bg->colors_dirty == 0) {
         return;
     }
-    DC_FlushRange(bg->colours, sizeof bg->colours);
-    GX_LoadBGPltt(bg->colours, MES_BG_COLOURS_OFFSET, sizeof bg->colours);
-    bg->colours_dirty = 0;
+    DC_FlushRange(bg->colors, sizeof bg->colors);
+    GX_LoadBGPltt(bg->colors, MES_BG_COLORS_OFFSET, sizeof bg->colors);
+    bg->colors_dirty = 0;
 }
-CLEAN_AS(func_020ac3f8, MesBg_UploadColours)
+CLEAN_AS(func_020ac3f8, MesBg_UploadColors)
 
 /* func_020ac424: the screen uploaded as main BG1's (the game does it while the screen is
  * loaded). */

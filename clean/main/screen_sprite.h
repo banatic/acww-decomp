@@ -1,6 +1,6 @@
 /* main's screen sprite base (vtable data_020e20c8, 0xc bytes): the base class of the sprites drawn
  * over a screen, CellPairSprite (cell_pair_sprite.h) and SlidingWindow (sliding_window.h)
- * among them. It keeps a place relative to the screen's centre (0x80, 0x60); vtable slot 4
+ * among them. It keeps a place relative to the screen's center (0x80, 0x60); vtable slot 4
  * (ScreenSprite_SetPlace) moves it there. */
 #ifndef CLEAN_MAIN_SCREEN_SPRITE_H
 #define CLEAN_MAIN_SCREEN_SPRITE_H

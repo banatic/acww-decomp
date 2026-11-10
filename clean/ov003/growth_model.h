@@ -39,7 +39,7 @@ typedef struct GrowthModel {
     int player;              /* 0x004: the session slot whose request started it */
     u8 model[0xb4];          /* 0x008: an animated model (animated_model.h, without the blend) */
     u8 unk_0bc[4];           /* 0x0bc */
-    Vec3 position;           /* 0x0c0: the tile's centre */
+    Vec3 position;           /* 0x0c0: the tile's center */
     TileChangesTile tile;    /* 0x0cc: -1, -1 when free */
     int mode;                /* 0x0d4: 0-7; 8 once its files were released */
     fx32 fade;               /* 0x0d8: 31.0 at the start; modes 4-7 lower it */

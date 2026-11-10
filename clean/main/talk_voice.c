@@ -14,7 +14,7 @@ static_assert(offsetof(TalkVoice, chars) == 0x08, "voice chars");
 static_assert(offsetof(TalkVoice, count) == 0x10, "voice count");
 static_assert(offsetof(TalkVoice, unk_1c) == 0x1c, "voice 1c");
 static_assert(offsetof(TalkVoice, forced_mode) == 0x20, "voice forced mode");
-static_assert(offsetof(TalkVoice, colour) == 0x28, "voice colour");
+static_assert(offsetof(TalkVoice, color) == 0x28, "voice colour");
 static_assert(sizeof(TalkVoice) == 0x2c, "voice");
 
 /* The class's vtable: the destructor and the deleting destructor. */
@@ -26,9 +26,9 @@ extern const u8 data_020cce7c[];
 /* The kind of the sounds by the villager's mood (state byte 0x18). */
 extern const u8 data_020cce88[];
 
-/* A colour of text, and the talk's kind, that change the sound mode. */
-#define TALK_VOICE_COLOUR_SWITCH 9
-#define TALK_VOICE_COLOUR_MUTE 4
+/* A color of text, and the talk's kind, that change the sound mode. */
+#define TALK_VOICE_COLOR_SWITCH 9
+#define TALK_VOICE_COLOR_MUTE 4
 #define TALK_VOICE_KIND_FIXED 3
 /* The kinds of talk that take the player's sound setting as it is. */
 #define TALK_VOICE_KIND_PLAIN 0
@@ -60,17 +60,17 @@ void TalkVoice_Nothing(TalkVoice *voice)
 }
 CLEAN_AS(func_020688dc, TalkVoice_Nothing)
 
-/* func_020688e0: a text of colour 9 switches mode 0 to mode 4; once it ends, mode 4 goes
+/* func_020688e0: a text of color 9 switches mode 0 to mode 4; once it ends, mode 4 goes
  * back to the receiver's mode. */
-void TalkVoice_FollowColour(TalkVoice *voice)
+void TalkVoice_FollowColor(TalkVoice *voice)
 {
     int mode = TALK_VOICE_NO_MODE;
     if (voice->mode == 0) {
-        if (voice->colour == TALK_VOICE_COLOUR_SWITCH) {
+        if (voice->color == TALK_VOICE_COLOR_SWITCH) {
             mode = 4;
         }
     } else if (voice->mode == 4) {
-        if (voice->colour != TALK_VOICE_COLOUR_SWITCH) {
+        if (voice->color != TALK_VOICE_COLOR_SWITCH) {
             mode = talk_voice_ask_receiver(voice, TALK_VOICE_SLOT_MODE);
         }
     }
@@ -78,7 +78,7 @@ void TalkVoice_FollowColour(TalkVoice *voice)
         TalkVoice_ChangeMode(voice, mode);
     }
 }
-CLEAN_AS(func_020688e0, TalkVoice_FollowColour)
+CLEAN_AS(func_020688e0, TalkVoice_FollowColor)
 
 /* func_02068924: the kind of the sounds: data_020cce88 by the mood (state byte 0x18) of the villager
  * talked to; the table's first without a villager or its state. */
@@ -97,7 +97,7 @@ u8 TalkVoice_VillagerKind(TalkVoice *voice)
 CLEAN_AS(func_02068924, TalkVoice_VillagerKind)
 
 /* func_02068958: the style of the sounds: data_020cce7c by the player's sound setting, where
- * setting 0 counts as 1 for a talk whose kind is neither 0 nor 3 or whose text has colour 4. */
+ * setting 0 counts as 1 for a talk whose kind is neither 0 nor 3 or whose text has color 4. */
 u8 TalkVoice_Style(TalkVoice *voice)
 {
     int setting = PlayerOptions_CurrentVoice();
@@ -106,7 +106,7 @@ u8 TalkVoice_Style(TalkVoice *voice)
     if (kind != TALK_VOICE_KIND_PLAIN && kind != TALK_VOICE_KIND_PLAIN2 && setting == 0) {
         index = 1;
     }
-    if (voice->colour == TALK_VOICE_COLOUR_MUTE && setting == 0) {
+    if (voice->color == TALK_VOICE_COLOR_MUTE && setting == 0) {
         index = 1;
     }
     return data_020cce7c[index];
@@ -160,12 +160,12 @@ static int talk_voice_is_said(u16 character)
 }
 
 /* func_02068a04: each frame while the talk shows its message: the mode follows the text's
- * colour, then (unless no sound is wanted) the characters' sound plays and the talk is told
+ * color, then (unless no sound is wanted) the characters' sound plays and the talk is told
  * whether the speaker says any of them; a pause stops the mouth.
  * REQUIRES: `count` 0 to 2 (TalkVoice_PushChar keeps it there). */
 void TalkVoice_Update(TalkVoice *voice)
 {
-    TalkVoice_FollowColour(voice);
+    TalkVoice_FollowColor(voice);
     TalkVoice_Nothing(voice);
     if (voice->unk_1c == 0 && voice->instant == 0) {
         int style = TalkVoice_Style(voice);
@@ -180,7 +180,7 @@ void TalkVoice_Update(TalkVoice *voice)
                 SoundSys_Speak(style, kind, voice->chars[0], voice->chars[1]);
             }
         }
-        if (voice->colour != TALK_VOICE_COLOUR_MUTE) {
+        if (voice->color != TALK_VOICE_COLOR_MUTE) {
             for (int i = 0; i < voice->count; i++) {
                 if (talk_voice_is_said(voice->chars[i])) {
                     said = 1;
@@ -248,7 +248,7 @@ TalkVoice *TalkVoice_Construct(TalkVoice *voice, struct TalkObject *talk)
     voice->paused = 0;
     voice->forced_mode = TALK_VOICE_NO_MODE;
     voice->mode = TALK_VOICE_NO_MODE;
-    voice->colour = 0;
+    voice->color = 0;
     TalkVoice_Clear(voice, 1);
     return voice;
 }

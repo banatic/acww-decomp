@@ -36,7 +36,7 @@ typedef struct BuildingShapeTriangle {
 void *BuildingShapes_Of(u16 *code);
 void BuildingShapes_Free(void);
 void BuildingShapes_Load(void);
-void BuildingShapes_Bounds(BuildingShapeEntry *shape, int *centre_x, int *centre_z, int *width, int *depth);
+void BuildingShapes_Bounds(BuildingShapeEntry *shape, int *center_x, int *center_z, int *width, int *depth);
 int BuildingShapes_Triangle(BuildingShapeEntry *shape, Vec3 *a, Vec3 *b, Vec3 *c, u32 index);
 int BuildingShapes_TriangleCount(BuildingShapeEntry *shape);
 int BuildingShapes_STile(BuildingShapeEntry *shape, int *value, int *x, int *z, unsigned int index);

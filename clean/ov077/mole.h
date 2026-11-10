@@ -107,7 +107,7 @@ int Mole_EnterTalk(Mole *mole);
 int Mole_UpdateState0(void);
 int Mole_EnterState0(void);
 
-/* The overlay's static initialiser (ov077_static_init.c). */
+/* The overlay's static initializer (ov077_static_init.c). */
 int MoleInit_Tables(void);
 
 #endif

@@ -1950,7 +1950,7 @@ CLEAN_AS(func_ov003_0222ef80, TownInsect_CheckTarget)
  * (TownInsectTables_PublishRecord answered).
  * QUIRK: sending an id (bit 4 set) ends the loop, so the insects after it wait a frame.
  * REQUIRES: whether this system is in the session does not change during the loop (the original
- * reads the message's kind uninitialised otherwise). */
+ * reads the message's kind uninitialized otherwise). */
 void TownInsect_UpdateStates(TownInsectProcess *process)
 {
     TownInsect *insect = data_ov003_022617bc;
@@ -2363,14 +2363,14 @@ void TownInsect_Run(TownInsectProcess *process, TownInsect *insect, int index, i
                 insect->unk_21c = 1;
             }
             u32 id = (u32) index | town_insect_shl(1, mode + 3);
-            Vec3 centre = insect->position;
+            Vec3 center = insect->position;
             if (insect->kind == 0x35) {
                 u32 frame = ((u32) insect->model.frames.frame << 4) >> 16;
                 if (frame >= 30 && frame < 40) {
-                    centre.y -= 0x1800;
+                    center.y -= 0x1800;
                 }
             }
-            CatchSphere_Add(&insect->sphere, &centre, town_insect_kind_info(kind)->unk_4, 0xd48, (u8) id);
+            CatchSphere_Add(&insect->sphere, &center, town_insect_kind_info(kind)->unk_4, 0xd48, (u8) id);
         }
         if (town_insect_kind_visibility(kind) == 0) {
             AnimatedModel_StepFrames(town_insect_animated(insect));

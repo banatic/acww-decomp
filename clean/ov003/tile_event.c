@@ -52,7 +52,7 @@ extern NetSession *data_020ccf94;
 /* The vtables: the process class's and the process's. */
 extern const u32 data_020da13c[];
 extern const u32 data_ov003_0223bc7c[];
-/* The tile and its eight neighbours, each a byte: x + 8 in the high nibble, z + 8 in the low. */
+/* The tile and its eight neighbors, each a byte: x + 8 in the high nibble, z + 8 in the low. */
 extern const u8 data_ov003_02236670[9];
 
 /* The array helper and what it is handed: the game's own model object destructor. */
@@ -124,7 +124,7 @@ void TileEvent_StartKindD(int player, int id, const TileChangesTile *tile, const
 }
 CLEAN_AS(func_ov003_02220bb0, TileEvent_StartKindD)
 
-/* func_ov003_02220bf0: on the town's map, of `tile` and its eight neighbours (in the order of
+/* func_ov003_02220bf0: on the town's map, of `tile` and its eight neighbors (in the order of
  * data_ov003_02236670) the first that is empty and has no tile change in layer 0
  * (TileChanges_FindAt) ends the search: when the town map's unit byte 4 there is set, `tile`
  * becomes it and the answer is 0. 2 otherwise, also without a town map. */
@@ -173,9 +173,9 @@ int TileEvent_StartKindC(int variant, int x)
         point.x = actor->position.x + ((int) ((u32) x << 12) >> 4);
         Position_Tile(&tile[0], &tile[1], (const Position *) (const void *) &point);
         tile[1] = tile[1] / 16 * 16 + 1;
-        Vec3 centre;
-        AcreTile_TileCentre(&centre, (u32) tile[0], (u32) tile[1]);
-        point.z = centre.z;
+        Vec3 center;
+        AcreTile_TileCenter(&center, (u32) tile[0], (u32) tile[1]);
+        point.z = center.z;
     }
     point.y = 0xa000;
     int id = variant == 0 ? 0x156b : 0x137b;
@@ -186,20 +186,20 @@ int TileEvent_StartKindC(int variant, int x)
 }
 CLEAN_AS(func_ov003_02220c8c, TileEvent_StartKindC)
 
-/* func_ov003_02220d50: kind 0xb with `id` at `tile` and its centre; its angle is the eighth of
+/* func_ov003_02220d50: kind 0xb with `id` at `tile` and its center; its angle is the eighth of
  * the turn player 4's actor faces (AngleSector_Eight) as an angle, 0 without that actor. */
 void TileEvent_StartKindB(int player, int id, const TileChangesTile *tile)
 {
-    Vec3 centre;
+    Vec3 center;
     int angle = 0;
 
-    AcreTile_TileCentre(&centre, (u32) tile->x, (u32) tile->z);
+    AcreTile_TileCenter(&center, (u32) tile->x, (u32) tile->z);
     Actor *actor = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
     if (actor != NULL) {
         /* The sector's three low bits as the top of a 16-bit angle, sign-extended. */
         angle = (s16) (u16) ((AngleSector_Eight(actor->angle[1]) & 7) << 13);
     }
-    int point[3] = {centre.x, centre.y, centre.z};
+    int point[3] = {center.x, center.y, center.z};
     int at[2] = {tile->x, tile->z};
     TileEvent_Start(data_ov003_0223cfe4, player, at, point, TILE_EVENT_KIND_B, id, angle, 0);
 }
@@ -446,10 +446,10 @@ static void tile_event_place(TileEventEntry *entry, const Vec3 *from)
     entry->position.z = from->z;
 }
 
-/* The centre of `tile`, at the height of the ground. */
-static void tile_event_centre(Vec3 *centre, const TileChangesTile *tile)
+/* The center of `tile`, at the height of the ground. */
+static void tile_event_center(Vec3 *center, const TileChangesTile *tile)
 {
-    AcreTile_TileCentre(centre, (u32) tile->x, (u32) tile->z);
+    AcreTile_TileCenter(center, (u32) tile->x, (u32) tile->z);
 }
 
 /* An entry made free: the fields TileEvent_Clear and TileEvent_End set. */
@@ -743,12 +743,12 @@ void TileEvent_InitAll(TileEventEntry *entries)
 }
 CLEAN_AS(func_ov003_02221a38, TileEvent_InitAll)
 
-/* func_ov003_02221a64: kind 0xe's start: at the tile's centre, its code 0xfc or 0xfd by the
+/* func_ov003_02221a64: kind 0xe's start: at the tile's center, its code 0xfc or 0xfd by the
  * town map's unit byte 9 there, scale 1.0, still; the tile emptied on the map, and the item of
  * the tile change at the tile in layer 0 made 0xfff1. */
 void TileEvent_InitKind14(TileEventEntry *entry, const TileChangesTile *tile, struct AcreMap *map)
 {
-    tile_event_centre(&entry->position, tile);
+    tile_event_center(&entry->position, tile);
     entry->id = AcreTile_UnitByte09(map, tile->x, tile->z) == 0 ? TILE_EVENT_ID_UNIT_0 : TILE_EVENT_ID_UNIT_SET;
     tile_event_set_scale(entry, FX32_ONE, FX32_ONE, FX32_ONE);
     tile_event_stop(entry);
@@ -767,7 +767,7 @@ CLEAN_AS(func_ov003_02221a64, TileEvent_InitKind14)
  *   0x45 and 0x4a and effect model 2 start at the point on the limit (data_ov003_0223cf88), it
  *   sinks 2.0 and waits 12 frames (Block020ba298_SetByte7Or8(1)); then
  *   Block020ba298_SetByte6, the player faces it, and it ends without finishing its change;
- * - else: falling to the ground (height 0), then thrown up (1.0) towards the centre of a free
+ * - else: falling to the ground (height 0), then thrown up (1.0) towards the center of a free
  *   tile around (TileEvent_FindFreeTileAround, in 8 frames; Block020ba298_SetByte7Or8(0)),
  *   falling with gravity 0.25 per frame; on the ground again Block020ba298_SetByte6, and when a
  *   tile was found its code is put there (item 0x137b, the golden slingshot, also sets flag 0x30
@@ -807,10 +807,10 @@ void TileEvent_StepKind12(TileEventEntry *entry)
         if (entry->position.y < 0) {
             entry->position.y = 0;
             entry->counter = (s16) TileEvent_FindFreeTileAround(&entry->tile);
-            Vec3 centre;
-            tile_event_centre(&centre, &entry->tile);
-            fx32 dz = (centre.z - entry->position.z) / 8;
-            entry->velocity.x = (centre.x - entry->position.x) / 8;
+            Vec3 center;
+            tile_event_center(&center, &entry->tile);
+            fx32 dz = (center.z - entry->position.z) / 8;
+            entry->velocity.x = (center.x - entry->position.x) / 8;
             entry->velocity.y = FX32_ONE;
             entry->velocity.z = dz;
             entry->state = 1;
@@ -901,11 +901,11 @@ void TileEvent_StepKind10(TileEventEntry *entry)
 }
 CLEAN_AS(func_ov003_02221d64, TileEvent_StepKind10)
 
-/* func_ov003_02221da0: kind 0xa's start: at the tile's centre, scale 1.0, still; the tile
+/* func_ov003_02221da0: kind 0xa's start: at the tile's center, scale 1.0, still; the tile
  * change let go at once (TileEvent_LetGoChange). */
 void TileEvent_InitKind10(TileEventEntry *entry, const TileChangesTile *tile)
 {
-    tile_event_centre(&entry->position, tile);
+    tile_event_center(&entry->position, tile);
     tile_event_set_scale(entry, FX32_ONE, FX32_ONE, FX32_ONE);
     tile_event_stop(entry);
     TileEvent_LetGoChange(entry);
@@ -942,15 +942,15 @@ void TileEvent_StepKind9(TileEventEntry *entry)
 }
 CLEAN_AS(func_ov003_02221dd0, TileEvent_StepKind9)
 
-/* func_ov003_02221e78: kind 9's start: from `from`, thrown up (1.0) towards the tile's centre in
+/* func_ov003_02221e78: kind 9's start: from `from`, thrown up (1.0) towards the tile's center in
  * 8 frames, its scale's x and z 0; it will not finish its tile change; sound 0x74 for items
  * 0x1492-0x14fd (bells), else 0x75. */
 void TileEvent_InitKind9(TileEventEntry *entry, const TileChangesTile *tile, const Vec3 *from, u16 id)
 {
-    Vec3 centre;
-    tile_event_centre(&centre, tile);
-    fx32 dz = (centre.z - from->z) / 8;
-    entry->velocity.x = (centre.x - from->x) / 8;
+    Vec3 center;
+    tile_event_center(&center, tile);
+    fx32 dz = (center.z - from->z) / 8;
+    entry->velocity.x = (center.x - from->x) / 8;
     entry->velocity.y = FX32_ONE;
     entry->velocity.z = dz;
     tile_event_place(entry, from);
@@ -972,12 +972,12 @@ void TileEvent_StepKind8(TileEventEntry *entry)
 }
 CLEAN_AS(func_ov003_02221f14, TileEvent_StepKind8)
 
-/* func_ov003_02221f50: kind 8's start: at the tile's centre, thrown up (1.0) and 0.25 a frame
+/* func_ov003_02221f50: kind 8's start: at the tile's center, thrown up (1.0) and 0.25 a frame
  * along `angle` (x by its sine, z by its cosine), scale 1.0; it will not finish its tile change;
  * the tile emptied on the map. */
 void TileEvent_InitKind8(TileEventEntry *entry, const TileChangesTile *tile, int angle)
 {
-    tile_event_centre(&entry->position, tile);
+    tile_event_center(&entry->position, tile);
     entry->velocity.x = (tile_event_sin((u16) angle) * 0x400) >> 12;
     entry->velocity.y = FX32_ONE;
     entry->velocity.z = (tile_event_cos((u16) angle) * 0x400) >> 12;
@@ -1067,16 +1067,16 @@ void TileEvent_StepKind6(TileEventEntry *entry)
 }
 CLEAN_AS(func_ov003_022220f4, TileEvent_StepKind6)
 
-/* func_ov003_0222214c: kind 6's start: from `from`, moving to the tile's centre at height 0 in
+/* func_ov003_0222214c: kind 6's start: from `from`, moving to the tile's center at height 0 in
  * 30 frames, scale 1.0; with `angle` set the tile change is let go at once (never: kind 6 is
  * always started with angle 0); sound 0x7eb. */
 void TileEvent_InitKind6(TileEventEntry *entry, const TileChangesTile *tile, const Vec3 *from)
 {
-    Vec3 centre;
-    tile_event_centre(&centre, tile);
-    fx32 dz = (centre.z - from->z) / 30;
+    Vec3 center;
+    tile_event_center(&center, tile);
+    fx32 dz = (center.z - from->z) / 30;
     fx32 dy = -(from->y / 30);
-    fx32 dx = (centre.x - from->x) / 30;
+    fx32 dx = (center.x - from->x) / 30;
     entry->velocity.x = dx;
     entry->velocity.y = dy;
     entry->velocity.z = dz;
@@ -1090,7 +1090,7 @@ void TileEvent_InitKind6(TileEventEntry *entry, const TileChangesTile *tile, con
 CLEAN_AS(func_ov003_0222214c, TileEvent_InitKind6)
 
 /* func_ov003_022221cc: kind 5's step: it falls; the first time on the ground it is thrown up
- * (1.0) towards the tile's centre in 8 frames, with sound 0x70 for the bells (items 0x1492-0x14fd); the
+ * (1.0) towards the tile's center in 8 frames, with sound 0x70 for the bells (items 0x1492-0x14fd); the
  * second time it stops and ends. */
 void TileEvent_StepKind5(TileEventEntry *entry)
 {
@@ -1098,10 +1098,10 @@ void TileEvent_StepKind5(TileEventEntry *entry)
         return;
     }
     if (entry->state == 0) {
-        Vec3 centre;
-        tile_event_centre(&centre, &entry->tile);
-        fx32 dz = (centre.z - entry->position.z) / 8;
-        entry->velocity.x = (centre.x - entry->position.x) / 8;
+        Vec3 center;
+        tile_event_center(&center, &entry->tile);
+        fx32 dz = (center.z - entry->position.z) / 8;
+        entry->velocity.x = (center.x - entry->position.x) / 8;
         entry->velocity.y = FX32_ONE;
         entry->velocity.z = dz;
         entry->state = 1;
@@ -1151,11 +1151,11 @@ void TileEvent_StepKind4(TileEventEntry *entry)
 }
 CLEAN_AS(func_ov003_02222318, TileEvent_StepKind4)
 
-/* func_ov003_02222360: kind 4's start: at the tile's centre, scale 0; sound 0x7f0 for codes
+/* func_ov003_02222360: kind 4's start: at the tile's center, scale 0; sound 0x7f0 for codes
  * 0xa7-0xc6, else 0x813. */
 void TileEvent_InitKind4(TileEventEntry *entry, const TileChangesTile *tile)
 {
-    tile_event_centre(&entry->position, tile);
+    tile_event_center(&entry->position, tile);
     tile_event_set_scale(entry, 0, 0, 0);
     int sound = entry->id >= 0xa7 && entry->id <= 0xc6 ? 0x7f0 : 0x813;
     SoundEmitter_PlayB(tile_event_sound(entry), sound, TILE_EVENT_VOLUME, 0);
@@ -1198,7 +1198,7 @@ CLEAN_AS(func_ov003_022223bc, TileEvent_StepKind3)
  * the tile change. */
 void TileEvent_InitKind3(TileEventEntry *entry, const TileChangesTile *tile, struct AcreMap *map)
 {
-    tile_event_centre(&entry->position, tile);
+    tile_event_center(&entry->position, tile);
     entry->id = AcreTile_UnitByte09(map, tile->x, tile->z) == 0 ? TILE_EVENT_ID_UNIT_0 : TILE_EVENT_ID_UNIT_SET;
     tile_event_set_scale(entry, FX32_ONE, FX32_ONE, FX32_ONE);
     tile_event_stop(entry);
@@ -1206,11 +1206,11 @@ void TileEvent_InitKind3(TileEventEntry *entry, const TileChangesTile *tile, str
 }
 CLEAN_AS(func_ov003_0222250c, TileEvent_InitKind3)
 
-/* func_ov003_02222560: kind 2's start: at the tile's centre, its scale's x and z 0, still; its
+/* func_ov003_02222560: kind 2's start: at the tile's center, its scale's x and z 0, still; its
  * tile change will be released rather than finished. */
 void TileEvent_InitKind2(TileEventEntry *entry, const TileChangesTile *tile)
 {
-    tile_event_centre(&entry->position, tile);
+    tile_event_center(&entry->position, tile);
     tile_event_set_scale(entry, 0, FX32_ONE, 0);
     tile_event_stop(entry);
     entry->finish_change = 0;
@@ -1238,7 +1238,7 @@ CLEAN_AS(func_ov003_02222598, TileEvent_StepKind1)
  * change will be released rather than finished. A marked tile is then emptied on the map. */
 void TileEvent_InitKind1(TileEventEntry *entry, const TileChangesTile *tile, struct AcreMap *map, int extra)
 {
-    tile_event_centre(&entry->position, tile);
+    tile_event_center(&entry->position, tile);
     tile_event_set_scale(entry, 0, FX32_ONE, 0);
     tile_event_stop(entry);
 
@@ -1300,14 +1300,14 @@ void TileEvent_StepKind0(TileEventEntry *entry)
 CLEAN_AS(func_ov003_022226c8, TileEvent_StepKind0)
 
 /* func_ov003_02222798: kinds 0 and 0xd's start: from `from`, thrown up (1.0) towards the tile's
- * centre in 9 frames, its scale's x and z 0. Sound: for the bells (items 0x1492-0x14fd) 0x74 (kind 0xd:
+ * center in 9 frames, its scale's x and z 0. Sound: for the bells (items 0x1492-0x14fd) 0x74 (kind 0xd:
  * 0x815 from item 0x149b on, else none), for other codes 0x75. */
 void TileEvent_InitKind0(TileEventEntry *entry, const TileChangesTile *tile, const Vec3 *from)
 {
-    Vec3 centre;
-    tile_event_centre(&centre, tile);
-    fx32 dz = (centre.z - from->z) / 9;
-    entry->velocity.x = (centre.x - from->x) / 9;
+    Vec3 center;
+    tile_event_center(&center, tile);
+    fx32 dz = (center.z - from->z) / 9;
+    entry->velocity.x = (center.x - from->x) / 9;
     entry->velocity.y = FX32_ONE;
     entry->velocity.z = dz;
     tile_event_place(entry, from);
@@ -1476,7 +1476,7 @@ CLEAN_AS(func_ov003_02224140, TileEvent_SetTownItem)
 
 /* func_ov003_022241a4: for this console's session slot: with a tile change tagged 4, kind 0xb
  * with its item at `tile` (TileEvent_StartKindB); with one tagged 3, kind 0xd with its item at
- * its own tile, from the centre of `tile` (TileEvent_StartKindD). */
+ * its own tile, from the center of `tile` (TileEvent_StartKindD). */
 void TileEvent_StartFromChanges(const TileChangesTile *tile)
 {
     int slot = data_020ccf94->local_slot;
@@ -1489,11 +1489,11 @@ void TileEvent_StartFromChanges(const TileChangesTile *tile)
     index = TileChanges_FindByTag((u8) slot, 3);
     if (index >= 0) {
         const TileChange *change = (const TileChange *) (uintptr_t) TileChanges_At(index);
-        Vec3 centre;
-        AcreTile_TileCentre(&centre, (u32) tile->x, (u32) tile->z);
+        Vec3 center;
+        AcreTile_TileCenter(&center, (u32) tile->x, (u32) tile->z);
         u16 packed = change->tile;
         TileChangesTile to = {packed >> 8, packed & 0xff};
-        Vec3 from = centre;
+        Vec3 from = center;
         TileEvent_StartKindD(slot, change->item, &to, &from);
     }
 }

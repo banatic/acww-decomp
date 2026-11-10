@@ -1,5 +1,5 @@
 /* The clock setter of overlay 134 (clock_setter.h): its flags, the layout of the fields and their
- * colours, the labels that show the values, its graphics, its frame and its setup. */
+ * colors, the labels that show the values, its graphics, its frame and its setup. */
 #include "clock_setter.h"
 
 #include <stddef.h>
@@ -97,7 +97,7 @@ extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 extern void MIi_CpuCopy16(const void *src, void *dst, u32 size);
 
-/* The list's palette queued with its last colour faded (ClockSetter_FadeListColor). */
+/* The list's palette queued with its last color faded (ClockSetter_FadeListColor). */
 #define CLOCK_SETTER_LIST_PALETTE 9
 
 /* The palettes of the cells drawn: a focused field's, the weekday's on a Sunday and otherwise,
@@ -165,7 +165,7 @@ int ClockSetter_TestFlags(ClockSetter *self, u32 flags)
 }
 CLEAN_AS(func_ov134_022995c0, ClockSetter_TestFlags)
 
-/* func_ov134_022995d4: the list's palette queued with its last colour (15) blended from colour
+/* func_ov134_022995d4: the list's palette queued with its last color (15) blended from color
  * 14 (step 0) to its own (step 3), a third of the way for each step. */
 void ClockSetter_FadeListColor(ClockSetter *self, int step)
 {
@@ -183,7 +183,7 @@ void ClockSetter_FadeListColor(ClockSetter *self, int step)
 CLEAN_AS(func_ov134_022995d4, ClockSetter_FadeListColor)
 
 /* func_ov134_0229a868: the focus moved to `field` (CLOCK_SETTER_NO_FIELD for none): the field
- * that had it and the one that has it are coloured again. */
+ * that had it and the one that has it are colored again. */
 void ClockSetter_SetFocus(ClockSetter *self, int field)
 {
     u8 before = self->focus;
@@ -207,7 +207,7 @@ u8 ClockSetter_Focus(ClockSetter *self)
 }
 CLEAN_AS(func_ov134_0229a8a0, ClockSetter_Focus)
 
-/* func_ov134_0229a8a8: each field's highlight counted down; one that runs out is coloured
+/* func_ov134_0229a8a8: each field's highlight counted down; one that runs out is colored
  * normally again. */
 void ClockSetter_TickBlinks(ClockSetter *self)
 {
@@ -222,7 +222,7 @@ void ClockSetter_TickBlinks(ClockSetter *self)
 }
 CLEAN_AS(func_ov134_0229a8a8, ClockSetter_TickBlinks)
 
-/* func_ov134_0229a8e8: every field coloured normally, the highlights stopped. */
+/* func_ov134_0229a8e8: every field colored normally, the highlights stopped. */
 void ClockSetter_ResetFieldColors(ClockSetter *self)
 {
     for (int field = 0; field < CLOCK_SETTER_FIELDS; field++) {
@@ -253,7 +253,7 @@ CLEAN_AS(func_ov134_0229a918, ClockSetter_ColorFieldButton)
 
 /* func_ov134_0229a96c: the field's tiles set to `palette`, as the mode and the field have it:
  * mode 1 leaves the year alone and dims the month, the day and the weekday (normal to
- * PAL_DIM, focus to PAL_DIM_FOCUS); mode 2 colours only the month and the day. The weekday in
+ * PAL_DIM, focus to PAL_DIM_FOCUS); mode 2 colors only the month and the day. The weekday in
  * the normal palette turns PAL_SUNDAY on a Sunday (CLOCK_SETTER_FLAG_SUNDAY follows), and the
  * focused field in the normal palette turns PAL_FOCUS. */
 void ClockSetter_ColorField(ClockSetter *self, int field, int palette)
@@ -750,7 +750,7 @@ CLEAN_AS(func_ov134_0229ba10, ClockSetter_DrawLabels)
 
 /* func_ov134_0229baec: the background's characters (0x10-0x80) and palettes 1-10, the mode's
  * palettes 1-2, the backdrop's screen, all on the base layer; then the mode's fields' screen,
- * coloured normally, the list's screen and the list's palette, read into the panel. */
+ * colored normally, the list's screen and the list's palette, read into the panel. */
 int ClockSetter_LoadBackground(ClockSetter *self)
 {
     Heap *heap = data_021fbe94;

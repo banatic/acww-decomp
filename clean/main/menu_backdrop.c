@@ -85,13 +85,13 @@ extern void func_0206f38c(void);
 #define SCREEN_RIGHT 0xff
 #define SCREEN_BOTTOM 0xc0
 
-/* The clothing's picture: 4 by 4 characters of 4 bits, and its 16 colours. */
+/* The clothing's picture: 4 by 4 characters of 4 bits, and its 16 colors. */
 #define CLOTHING_CHARS_SIZE 0x200
 #define CLOTHING_PALETTE_SIZE 0x20
 #define CLOTHING_MODEL_SIZE 0x2c4
 #define CLOTHING_FIRST 0x11a8
 #define CLOTHING_LAST 0x12af
-#define PALETTE_COLOURS 16
+#define PALETTE_COLORS 16
 
 static BOOL outdoors(void)
 {
@@ -136,18 +136,18 @@ void MenuBackdrop_Hold(unsigned char mask)
 }
 CLEAN_AS(func_0206eb0c, MenuBackdrop_Hold)
 
-/* func_0206eb1c: colours 1 to 15 of `source` made halfway to white in `lightened` (each
+/* func_0206eb1c: colors 1 to 15 of `source` made halfway to white in `lightened` (each
  * component (c + 31) / 2).
- * QUIRK: colour 0 of the source is cleared, and that of `lightened` is left as it was; bit 15
- * of a colour is dropped. */
+ * QUIRK: color 0 of the source is cleared, and that of `lightened` is left as it was; bit 15
+ * of a color is dropped. */
 void MenuBackdrop_LightenPalette(u16 *source, u16 *lightened)
 {
     source[0] = 0;
-    for (int i = 1; i < PALETTE_COLOURS; i++) {
-        u16 colour = source[i];
-        u16 red = (u16) (((colour & 0x1f) + 0x1f) >> 1);
-        u16 green = (u16) ((((colour >> 5) & 0x1f) + 0x1f) >> 1);
-        u16 blue = (u16) ((((colour >> 10) & 0x1f) + 0x1f) >> 1);
+    for (int i = 1; i < PALETTE_COLORS; i++) {
+        u16 color = source[i];
+        u16 red = (u16) (((color & 0x1f) + 0x1f) >> 1);
+        u16 green = (u16) ((((color >> 5) & 0x1f) + 0x1f) >> 1);
+        u16 blue = (u16) ((((color >> 10) & 0x1f) + 0x1f) >> 1);
         lightened[i] = (u16) (red | (green << 5) | (blue << 10));
     }
 }
