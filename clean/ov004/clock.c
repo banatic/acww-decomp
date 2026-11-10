@@ -42,15 +42,15 @@ extern const u8 data_ov004_02251d98[];
 extern const u8 data_ov004_02251e44[];
 
 /* The joint animation of the furniture's archive, variant 0. */
-static const AnimFile *Clock_joint_file(Clock *clock)
+static const AnimFile *clock_joint_file(Clock *clock)
 {
     return (const AnimFile *) (uintptr_t) (u32) AnimSet_Anim00(FurnitureModel_Anims(&clock->base.model_files), 0);
 }
 
 /* One strike: the joint animation played once from the start. */
-static void Clock_play_strike(Clock *clock)
+static void clock_play_strike(Clock *clock)
 {
-    AnimatedModel_Start(&clock->base.model, (const u8 *) Clock_joint_file(clock), ANIM_MODE_ONCE, FX32_ONE, 0, 0);
+    AnimatedModel_Start(&clock->base.model, (const u8 *) clock_joint_file(clock), ANIM_MODE_ONCE, FX32_ONE, 0, 0);
 }
 
 /* func_ov004_022168d8: marks the clock as the nearest striking clock to the player, for this
@@ -90,7 +90,7 @@ CLEAN_AS(func_ov004_022168f8, Clock_Vfunc0C)
  * the areas RoomObjects_InShop names) starts the strikes of the hour, 12 for 0; in mode 2 one
  * strike at once. While strikes are left each frame plays the strike sound and advances the
  * animation; at its end the next strike starts, and the count goes down (not in mode 2). */
-static void Clock_strike(Clock *clock)
+static void clock_strike(Clock *clock)
 {
     RoomObject *base = &clock->base;
     if (!RoomObject_IsUnplaced(base) && clock->strikes >= 0 && clock->strikes != clock->last_strikes &&
@@ -109,7 +109,7 @@ static void Clock_strike(Clock *clock)
             if (!RoomObject_IsUnplaced(base)) {
                 RoomSound_PlayAt(&base->sound, STRIKE_SOUND, &base->sound.position);
             }
-            Clock_play_strike(clock);
+            clock_play_strike(clock);
         }
     } else if (clock->strikes > 0) {
         if (!RoomObject_IsUnplaced(base)) {
@@ -117,7 +117,7 @@ static void Clock_strike(Clock *clock)
         }
         AnimatedModel_Update(&base->model);
         if (FrameCtrl_IsDone(&base->model.frames)) {
-            Clock_play_strike(clock);
+            clock_play_strike(clock);
             if (!RoomObject_IsUnplaced(base)) {
                 clock->strikes--;
             }
@@ -138,7 +138,7 @@ int Clock_Update(Clock *clock)
     clock->last_time = clock->time;
     Calendar_Now(&clock->time);
     if (base->unk_780 == KIND_STRIKING) {
-        Clock_strike(clock);
+        clock_strike(clock);
     } else if (base->unk_780 == KIND_ANIMATED) {
         RoomObject_AdvanceAnims(base);
     }
@@ -160,11 +160,11 @@ int Clock_Update(Clock *clock)
 CLEAN_AS(func_ov004_022168fc, Clock_Update)
 
 /* Binds the joint animation to the model and plays it by `mode` from the start. */
-static void Clock_bind_joints(Clock *clock, int entry, int mode)
+static void clock_bind_joints(Clock *clock, int entry, int mode)
 {
     AnimatedModel *model = &clock->base.model;
     if (AnimatedModel_LoadAnim(model, (Heap *) (uintptr_t) ModelPoolEntry_Heap((void *) (uintptr_t) (u32) entry)) != 0) {
-        AnimatedModel_Start(model, (const u8 *) Clock_joint_file(clock), mode, FX32_ONE, 0, 0);
+        AnimatedModel_Start(model, (const u8 *) clock_joint_file(clock), mode, FX32_ONE, 0, 0);
         AnimatedModel_Attach(model);
     }
 }
@@ -180,9 +180,9 @@ int Clock_Start(Clock *clock)
     clock->time = clock->last_time;
     clock->strikes = NO_STRIKES;
     if (base->unk_780 == KIND_STRIKING) {
-        Clock_bind_joints(clock, entry, ANIM_MODE_ONCE);
+        clock_bind_joints(clock, entry, ANIM_MODE_ONCE);
     } else if (base->unk_780 == KIND_SHARED) {
-        Clock_bind_joints(clock, entry, ANIM_MODE_LOOP);
+        clock_bind_joints(clock, entry, ANIM_MODE_LOOP);
     } else if (base->unk_780 == KIND_ANIMATED) {
         RoomObject_LoadAnims(base, 0, ANIM_MODE_LOOP, FX32_ONE, 0);
     }
@@ -190,7 +190,7 @@ int Clock_Start(Clock *clock)
 }
 CLEAN_AS(func_ov004_02216aec, Clock_Start)
 
-static void Clock_set_vtables(Clock *clock)
+static void clock_set_vtables(Clock *clock)
 {
     clock->base.vtable = (const RoomObjectVtable *) data_ov004_02251d98;
     clock->base.receiver_vtable = data_ov004_02251e44;
@@ -199,7 +199,7 @@ static void Clock_set_vtables(Clock *clock)
 /* func_ov004_02216bd0 (the deleting destructor, vtable slot 0x44) */
 Clock *Clock_Delete(Clock *clock)
 {
-    Clock_set_vtables(clock);
+    clock_set_vtables(clock);
     RoomObject_DestructBase(&clock->base);
     RoomObject_Free(clock);
     return clock;
@@ -209,7 +209,7 @@ CLEAN_AS(func_ov004_02216bd0, Clock_Delete)
 /* func_ov004_02216bfc (the destructor, vtable slot 0x40) */
 Clock *Clock_Destroy(Clock *clock)
 {
-    Clock_set_vtables(clock);
+    clock_set_vtables(clock);
     RoomObject_DestructBase(&clock->base);
     return clock;
 }
@@ -220,7 +220,7 @@ CLEAN_AS(func_ov004_02216bfc, Clock_Destroy)
 Clock *Clock_Construct(Clock *clock)
 {
     RoomObject_ConstructBase(&clock->base);
-    Clock_set_vtables(clock);
+    clock_set_vtables(clock);
     return clock;
 }
 CLEAN_AS(func_ov004_02216c20, Clock_Construct)
@@ -238,7 +238,7 @@ CLEAN_AS(func_ov004_02216c44, Clock_Create)
 /* The receiver part (at 0xec, RoomObject.receiver_vtable) enters Clock's functions
  * through its vtable with these: each moves the pointer back to the object and goes on with the
  * object's function. */
-static Clock *Clock_from_receiver(void *receiver)
+static Clock *clock_from_receiver(void *receiver)
 {
     return (Clock *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
 }
@@ -246,13 +246,13 @@ static Clock *Clock_from_receiver(void *receiver)
 /* func_ov004_0221a7cc: the deleting destructor, entered from the receiver part. */
 Clock *ClockReceiver_Delete(void *receiver)
 {
-    return Clock_Delete(Clock_from_receiver(receiver));
+    return Clock_Delete(clock_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_02251d98D0Ev, ClockReceiver_Delete)
 
 /* func_ov004_0221a7e8: the destructor, entered from the receiver part. */
 Clock *ClockReceiver_Destroy(void *receiver)
 {
-    return Clock_Destroy(Clock_from_receiver(receiver));
+    return Clock_Destroy(clock_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_02251d98D1Ev, ClockReceiver_Destroy)

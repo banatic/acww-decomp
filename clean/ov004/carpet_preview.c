@@ -63,7 +63,7 @@ int CarpetPreview_Start(CarpetPreview *object)
 }
 CLEAN_AS(func_ov004_02212794, CarpetPreview_Start)
 
-static void CarpetPreview_set_vtables(CarpetPreview *object)
+static void carpet_preview_set_vtables(CarpetPreview *object)
 {
     object->base.vtable = (const RoomObjectVtable *) data_ov004_02250e5c;
     object->base.receiver_vtable = data_ov004_02250f08;
@@ -73,7 +73,7 @@ static void CarpetPreview_set_vtables(CarpetPreview *object)
  * QUIRK: the material texture binding at 0x848 the constructor built is not taken down. */
 CarpetPreview *CarpetPreview_Delete(CarpetPreview *object)
 {
-    CarpetPreview_set_vtables(object);
+    carpet_preview_set_vtables(object);
     RoomObject_DestructBase(&object->base);
     RoomObject_Free(object);
     return object;
@@ -83,7 +83,7 @@ CLEAN_AS(func_ov004_02212820, CarpetPreview_Delete)
 /* func_ov004_0221284c (the destructor, vtable slot 0x40); the same QUIRK. */
 CarpetPreview *CarpetPreview_Destroy(CarpetPreview *object)
 {
-    CarpetPreview_set_vtables(object);
+    carpet_preview_set_vtables(object);
     RoomObject_DestructBase(&object->base);
     return object;
 }
@@ -94,7 +94,7 @@ CLEAN_AS(func_ov004_0221284c, CarpetPreview_Destroy)
 CarpetPreview *CarpetPreview_Construct(CarpetPreview *object)
 {
     RoomObject_ConstructBase(&object->base);
-    CarpetPreview_set_vtables(object);
+    carpet_preview_set_vtables(object);
     VramCopyMaterial_Construct(&object->material_texture);
     return object;
 }
@@ -113,7 +113,7 @@ CLEAN_AS(func_ov004_022128a0, CarpetPreview_Create)
 /* The receiver part (at 0xec, RoomObject.receiver_vtable) enters CarpetPreview's destructors through
  * its vtable with these: each moves the pointer back to the object and goes on with the
  * object's function. */
-static CarpetPreview *CarpetPreview_from_receiver(void *receiver)
+static CarpetPreview *carpet_preview_from_receiver(void *receiver)
 {
     return (CarpetPreview *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
 }
@@ -121,13 +121,13 @@ static CarpetPreview *CarpetPreview_from_receiver(void *receiver)
 /* func_ov004_0221ab84: the deleting destructor, entered from the receiver part. */
 CarpetPreview *CarpetPreviewReceiver_Delete(void *receiver)
 {
-    return CarpetPreview_Delete(CarpetPreview_from_receiver(receiver));
+    return CarpetPreview_Delete(carpet_preview_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_02250e5cD0Ev, CarpetPreviewReceiver_Delete)
 
 /* func_ov004_0221aba0: the destructor, entered from the receiver part. */
 CarpetPreview *CarpetPreviewReceiver_Destroy(void *receiver)
 {
-    return CarpetPreview_Destroy(CarpetPreview_from_receiver(receiver));
+    return CarpetPreview_Destroy(carpet_preview_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_02250e5cD1Ev, CarpetPreviewReceiver_Destroy)

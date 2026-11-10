@@ -74,45 +74,45 @@ extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 #define TILE_REQUESTS_MARK_EDGE 16
 
 /* An arithmetic shift right, as the ARM's. */
-static int TileRequests_ShiftRight(int value, int shift)
+static int tile_requests_shift_right(int value, int shift)
 {
     return value >= 0 ? value >> shift : ~(~value >> shift);
 }
 
 /* The code on the tile (x, z) of `map` (layer 0 or 1), or NULL. */
-static u16 *TileRequests_CodeAt(AcreMap *map, int x, int z, u8 layer)
+static u16 *tile_requests_code_at(AcreMap *map, int x, int z, u8 layer)
 {
-    return AcreTile_ItemInAcre(map, (u32) TileRequests_ShiftRight(x, 4), (u32) TileRequests_ShiftRight(z, 4), x & 0xf, z & 0xf,
-                               layer);
+    return AcreTile_ItemInAcre(map, (u32) tile_requests_shift_right(x, 4), (u32) tile_requests_shift_right(z, 4), x & 0xf,
+                               z & 0xf, layer);
 }
 
-static int TileRequests_InRange(u32 code, u32 first, u32 last)
+static int tile_requests_in_range(u32 code, u32 first, u32 last)
 {
     return code >= first && code <= last;
 }
 
 /* The flowers of map_item.h, with 0x1c. */
-static int TileRequests_IsFlower(u32 code)
+static int tile_requests_is_flower(u32 code)
 {
-    return code <= 0x05 || TileRequests_InRange(code, 0x06, 0x0b) || TileRequests_InRange(code, 0x0c, 0x11) ||
-           TileRequests_InRange(code, 0x12, 0x19) || code == 0x1c;
+    return code <= 0x05 || tile_requests_in_range(code, 0x06, 0x0b) || tile_requests_in_range(code, 0x0c, 0x11) ||
+           tile_requests_in_range(code, 0x12, 0x19) || code == 0x1c;
 }
 
 /* The wilted flowers. */
-static int TileRequests_IsWiltedFlower(u32 code)
+static int tile_requests_is_wilted_flower(u32 code)
 {
-    return TileRequests_InRange(code, 0x6e, 0x73) || TileRequests_InRange(code, 0x74, 0x79) ||
-           TileRequests_InRange(code, 0x7a, 0x7f) || TileRequests_InRange(code, 0x80, 0x87);
+    return tile_requests_in_range(code, 0x6e, 0x73) || tile_requests_in_range(code, 0x74, 0x79) ||
+           tile_requests_in_range(code, 0x7a, 0x7f) || tile_requests_in_range(code, 0x80, 0x87);
 }
 
 /* The watered flowers, with 0xa5. */
-static int TileRequests_IsWateredFlower(u32 code)
+static int tile_requests_is_watered_flower(u32 code)
 {
-    return TileRequests_InRange(code, 0x8a, 0x8f) || TileRequests_InRange(code, 0x90, 0x95) ||
-           TileRequests_InRange(code, 0x96, 0x9b) || TileRequests_InRange(code, 0x9c, 0xa3) || code == 0xa5;
+    return tile_requests_in_range(code, 0x8a, 0x8f) || tile_requests_in_range(code, 0x90, 0x95) ||
+           tile_requests_in_range(code, 0x96, 0x9b) || tile_requests_in_range(code, 0x9c, 0xa3) || code == 0xa5;
 }
 
-static TileRequestTile TileRequests_TileOf(u16 packed)
+static TileRequestTile tile_requests_tile_of(u16 packed)
 {
     TileRequestTile tile = {packed >> 8, packed & 0xff};
     return tile;
@@ -147,12 +147,12 @@ void TileRequests_ReceiveAction(const TileRequestsActionMessage *message)
     int kind = message->bits >> 3;
     TileRequestsAction *action = &data_021c7788[slot];
     if (action->kind != 0) {
-        TileRequestTile old = TileRequests_TileOf(action->tile);
+        TileRequestTile old = tile_requests_tile_of(action->tile);
         TileChanges_LetGoAt((const TileChangesTile *) &old, 0);
         if ((message->bits & 1) == 1) {
             for (int i = 0; i < 3; i++) {
                 if (message->extra_tiles[i] != TILE_REQUESTS_NO_TILE) {
-                    TileRequestTile extra = TileRequests_TileOf(message->extra_tiles[i]);
+                    TileRequestTile extra = tile_requests_tile_of(message->extra_tiles[i]);
                     TileChanges_LetGoAt((const TileChangesTile *) &extra, 0);
                 }
             }
@@ -162,7 +162,7 @@ void TileRequests_ReceiveAction(const TileRequestsActionMessage *message)
     action->tile = message->tile;
     action->sub = (message->bits2 >> 5) & 3;
 
-    TileRequestTile tile = TileRequests_TileOf(message->tile);
+    TileRequestTile tile = tile_requests_tile_of(message->tile);
     TileRequestsActor *player;
     Vec3 position;
     switch (kind) {
@@ -224,10 +224,10 @@ CLEAN_AS(func_02042c40, TileRequests_ClearMarks)
 
 /* Where a tile's mark is: four tiles to a byte, the first in bits 0-1. A tile outside the inner
  * 64 x 64 tiles uses the bits of the first. */
-static u8 *TileRequests_MarkAt(TileRequests *requests, const TileRequestTile *tile, int *shift)
+static u8 *tile_requests_mark_at(TileRequests *requests, const TileRequestTile *tile, int *shift)
 {
     int x = tile->x;
-    int index = TileRequests_ShiftRight(x - TILE_REQUESTS_MARK_EDGE, 2) + (tile->z - TILE_REQUESTS_MARK_EDGE) * 16;
+    int index = tile_requests_shift_right(x - TILE_REQUESTS_MARK_EDGE, 2) + (tile->z - TILE_REQUESTS_MARK_EDGE) * 16;
     *shift = (x & 3) * 2;
     if (index < 0 || index >= TILE_REQUESTS_MARK_BYTES) {
         index = 0;
@@ -241,7 +241,7 @@ static u8 *TileRequests_MarkAt(TileRequests *requests, const TileRequestTile *ti
 void TileRequests_SetMark(TileRequests *requests, const TileRequestTile *tile, int value)
 {
     int shift;
-    u8 *mark = TileRequests_MarkAt(requests, tile, &shift);
+    u8 *mark = tile_requests_mark_at(requests, tile, &shift);
     *mark = (u8) ((u32) value << shift | (*mark & ~(3u << shift)));
 }
 CLEAN_AS(func_02042c58, TileRequests_SetMark)
@@ -250,7 +250,7 @@ CLEAN_AS(func_02042c58, TileRequests_SetMark)
 int TileRequests_Mark(TileRequests *requests, const TileRequestTile *tile)
 {
     int shift;
-    const u8 *mark = TileRequests_MarkAt(requests, tile, &shift);
+    const u8 *mark = tile_requests_mark_at(requests, tile, &shift);
     return (*mark >> shift) & 3;
 }
 CLEAN_AS(func_02042c9c, TileRequests_Mark)
@@ -278,7 +278,7 @@ CLEAN_AS(func_02042ce8, TileRequests_Reset)
  * and AcreTile_UnitByte04 allows it; whether it was. */
 int TileRequests_DropBagAt(TileRequestsRock *rock, AcreMap *map, const TileRequestTile *tile)
 {
-    u16 *code = TileRequests_CodeAt(map, tile->x, tile->z, 0);
+    u16 *code = tile_requests_code_at(map, tile->x, tile->z, 0);
     if (code == NULL || *code != ITEM_CODE_NONE) {
         return 0;
     }
@@ -359,7 +359,7 @@ void TileRequests_RockUpdate(TileRequestsRock *rock)
     AcreMap *town = (AcreMap *) (uintptr_t) AcreMap_Town();
     rock->timer = -1;
     if (town != NULL) {
-        u16 *on_map = TileRequests_CodeAt(town, tile.x, tile.z, 0);
+        u16 *on_map = tile_requests_code_at(town, tile.x, tile.z, 0);
         if (on_map != NULL) {
             code = (u16) ((*on_map - TILE_REQUESTS_MONEY_ROCK) % TILE_REQUESTS_ROCKS + TILE_REQUESTS_ROCK);
         }
@@ -468,7 +468,7 @@ void TileRequests_ChangeCodesAround(int player, const TileRequestTile *tile)
         if (TileChanges_FindAt((const TileChangesTile *) &at, 0) >= 0) {
             continue;
         }
-        u16 *code = TileRequests_CodeAt(town, x, z, 0);
+        u16 *code = tile_requests_code_at(town, x, z, 0);
         if (code == NULL) {
             continue;
         }
@@ -478,7 +478,7 @@ void TileRequests_ChangeCodesAround(int player, const TileRequestTile *tile)
             LinkedMapItems_Set((u8) x, (u8) z, SceneQuery_Current(), changed, 0);
         }
         u32 now = *code;
-        if (TileRequests_IsFlower(now) || TileRequests_IsWateredFlower(now) || TileRequests_IsWiltedFlower(now) ||
+        if (tile_requests_is_flower(now) || tile_requests_is_watered_flower(now) || tile_requests_is_wilted_flower(now) ||
             now == 0x1a || now == 0x88 || now == 0xa4 || now == 0x1d || now == 0x1e) {
             found = 1;
         }
@@ -523,8 +523,8 @@ int TileRequests_Carry(int index)
                                                request->layer) != 0;
             }
             u32 item = request->item;
-            if (TileRequests_IsFlower(item) || TileRequests_IsWateredFlower(item) || item == 0x1a || item == 0xa4 ||
-                item == 0x1d || TileRequests_InRange(item, 0xa7, 0xc6) || item == 0x1e) {
+            if (tile_requests_is_flower(item) || tile_requests_is_watered_flower(item) || item == 0x1a || item == 0xa4 ||
+                item == 0x1d || tile_requests_in_range(item, 0xa7, 0xc6) || item == 0x1e) {
                 return TileEvent_StartKind4(request->player, request->item, (const TileChangesTile *) &tile) != 0;
             }
             position = self->position;
@@ -590,7 +590,7 @@ CLEAN_AS(func_02043368, TileRequests_FindDropTile)
  * allows it with its flag, 0x18 on a tile whose AcreTile_UnitWord06Capped is 0 or 1. */
 u16 *TileRequests_DropTileFor(int kind, AcreMap *map, int x, int z, const TileRequestTile *from)
 {
-    u16 *code = TileRequests_CodeAt(map, x, z, 0);
+    u16 *code = tile_requests_code_at(map, x, z, 0);
     if (code == NULL) {
         return NULL;
     }
@@ -661,7 +661,7 @@ int TileRequests_AskAtHeldTile(int slot, int item)
     if (record == NULL) {
         return TILE_REQUESTS_NONE;
     }
-    TileRequestTile tile = TileRequests_TileOf(*record);
+    TileRequestTile tile = tile_requests_tile_of(*record);
     return TileRequests_Add(data_021c7c48.requests, slot, TILE_REQUEST_HELD_TILE, &tile, (u16) item, (u16) item, 0, 0, 0, -1);
 }
 CLEAN_AS(func_020435a0, TileRequests_AskAtHeldTile)
@@ -669,7 +669,7 @@ CLEAN_AS(func_020435a0, TileRequests_AskAtHeldTile)
 /* func_020435fc: `item` put down: kind 0x1a for 0xa7-0xc6, else 0x10. */
 int TileRequests_AskDrop(int slot, u16 item)
 {
-    int kind = TileRequests_InRange(item, 0xa7, 0xc6) ? TILE_REQUEST_DROP_A7 : TILE_REQUEST_DROP;
+    int kind = tile_requests_in_range(item, 0xa7, 0xc6) ? TILE_REQUEST_DROP_A7 : TILE_REQUEST_DROP;
     return TileRequests_AskPut(slot, kind, item);
 }
 CLEAN_AS(func_020435fc, TileRequests_AskDrop)
@@ -715,7 +715,7 @@ int TileRequests_Answer(u32 index)
     if (map == NULL) {
         return 0;
     }
-    u16 *code = TileRequests_CodeAt(map, request->tile.x, request->tile.z, 0);
+    u16 *code = tile_requests_code_at(map, request->tile.x, request->tile.z, 0);
     if (code == NULL) {
         return 0;
     }
@@ -729,7 +729,7 @@ int TileRequests_Answer(u32 index)
                             int shown = request->tile_item;
                             u16 item = request->item;
                             if (MapItem_IsStage0(&item)) {
-                                if (TileRequests_InRange(item, 0x2f, 0x56)) {
+                                if (tile_requests_in_range(item, 0x2f, 0x56)) {
                                     shown = data_020ca664[MapItem_EightLine(&item)];
                                 } else if (request->item == 0xc8) {
                                     shown = 0x1548;
@@ -770,7 +770,7 @@ CLEAN_AS(func_020436a8, TileRequests_Answer)
 /* A request of kind 0x19 for the tile of the town holding the pitfall seed (item 0x1566) with AcreTile_IsMarked:
  * code 0xfd when AcreTile_UnitByte09 is set there, else 0xfc. Only in scene 0; -1 when not
  * made. `player` is asked for after AcreTile_IsMarked (func_02044858) when `for_player`. */
-static int TileRequests_AskMarked(int player, int for_player, const TileRequestTile *tile, s8 unk_1e)
+static int tile_requests_ask_marked(int player, int for_player, const TileRequestTile *tile, s8 unk_1e)
 {
     if (SceneQuery_CurrentIs0() == 0) {
         return TILE_REQUESTS_NONE;
@@ -779,7 +779,7 @@ static int TileRequests_AskMarked(int player, int for_player, const TileRequestT
     if (town == NULL) {
         return TILE_REQUESTS_NONE;
     }
-    u16 *code = TileRequests_CodeAt(town, tile->x, tile->z, 0);
+    u16 *code = tile_requests_code_at(town, tile->x, tile->z, 0);
     if (code == NULL || *code != TILE_REQUESTS_PITFALL_SEED) {
         return TILE_REQUESTS_NONE;
     }
@@ -793,18 +793,18 @@ static int TileRequests_AskMarked(int player, int for_player, const TileRequestT
                             unk_1e);
 }
 
-/* func_02043830: TileRequests_AskMarked for slot 0, `unk_1e` kept in the request. */
+/* func_02043830: tile_requests_ask_marked for slot 0, `unk_1e` kept in the request. */
 int TileRequests_AskMarkedPitfall(int unk_1e, const TileRequestTile *tile)
 {
-    return TileRequests_AskMarked(0, 0, tile, (s8) unk_1e);
+    return tile_requests_ask_marked(0, 0, tile, (s8) unk_1e);
 }
 CLEAN_AS(func_02043830, TileRequests_AskMarkedPitfall)
 
-/* func_020438dc: TileRequests_AskMarked for `player`'s slot. */
+/* func_020438dc: tile_requests_ask_marked for `player`'s slot. */
 int TileRequests_AskMarkedPitfallFor(int player, const TileRequestTile *tile, int unused)
 {
     (void) unused;
-    return TileRequests_AskMarked(player, 1, tile, -1);
+    return tile_requests_ask_marked(player, 1, tile, -1);
 }
 CLEAN_AS(func_020438dc, TileRequests_AskMarkedPitfallFor)
 
@@ -825,11 +825,11 @@ int TileRequests_AskFcFd(int slot, const TileRequestTile *tile, int mode)
     if (map == NULL) {
         return TILE_REQUESTS_NONE;
     }
-    u16 *code = TileRequests_CodeAt(map, tile->x, tile->z, 0);
+    u16 *code = tile_requests_code_at(map, tile->x, tile->z, 0);
     if (code == NULL) {
         return TILE_REQUESTS_NONE;
     }
-    if (!TileRequests_InRange(*code, 0xfc, 0xfd) || mode == 2) {
+    if (!tile_requests_in_range(*code, 0xfc, 0xfd) || mode == 2) {
         return TILE_REQUESTS_NONE;
     }
     TileRequestTile at = *tile;
@@ -855,7 +855,7 @@ int TileRequests_AskPile(int slot, const TileRequestTile *tile)
     if (map == NULL) {
         return TILE_REQUESTS_NONE;
     }
-    u16 *code = TileRequests_CodeAt(map, tile->x, tile->z, 0);
+    u16 *code = tile_requests_code_at(map, tile->x, tile->z, 0);
     if (code == NULL) {
         return TILE_REQUESTS_NONE;
     }
@@ -865,7 +865,7 @@ int TileRequests_AskPile(int slot, const TileRequestTile *tile)
         pile = *code;
         layer = 0;
     } else {
-        u16 *second = TileRequests_CodeAt(map, tile->x, tile->z, 1);
+        u16 *second = tile_requests_code_at(map, tile->x, tile->z, 1);
         if (second == NULL || (*second & 0xf000) >> 12 != 1) {
             return TILE_REQUESTS_NONE;
         }
@@ -888,7 +888,7 @@ int TileRequests_AskInTown(int slot, const TileRequestTile *tile)
     if (map == NULL) {
         return TILE_REQUESTS_NONE;
     }
-    u16 *on_map = TileRequests_CodeAt(map, tile->x, tile->z, 0);
+    u16 *on_map = tile_requests_code_at(map, tile->x, tile->z, 0);
     if (on_map == NULL) {
         return TILE_REQUESTS_NONE;
     }
@@ -897,19 +897,19 @@ int TileRequests_AskInTown(int slot, const TileRequestTile *tile)
     int kind = 0;
     if (code == ITEM_CODE_NONE) {
         kind = 0;
-    } else if (TileRequests_InRange(code, 0x21, 0x24) || code == 0x1f) {
+    } else if (tile_requests_in_range(code, 0x21, 0x24) || code == 0x1f) {
         kind = TILE_REQUEST_PULL;
     } else if (high == 1) {
         if (AcreTile_IsMarked(map, tile->x, tile->z) == 0) {
             kind = TILE_REQUEST_TAKE;
         }
-    } else if (TileRequests_IsFlower(code) || code == 0x1a || code == 0x1d || code == 0x1e) {
+    } else if (tile_requests_is_flower(code) || code == 0x1a || code == 0x1d || code == 0x1e) {
         kind = TILE_REQUEST_TAKE;
     } else if ((high == 3 || high == 4) && AcreTile_IsMarked(map, tile->x, tile->z) == 0) {
         kind = TILE_REQUEST_TAKE;
-    } else if (TileRequests_InRange(code, 0xa7, 0xc6)) {
+    } else if (tile_requests_in_range(code, 0xa7, 0xc6)) {
         kind = TILE_REQUEST_TAKE;
-    } else if (TileRequests_IsWiltedFlower(code) || TileRequests_IsWateredFlower(code) || code == 0x88 || code == 0xa4) {
+    } else if (tile_requests_is_wilted_flower(code) || tile_requests_is_watered_flower(code) || code == 0x88 || code == 0xa4) {
         kind = TILE_REQUEST_PULL;
     } else if (code == 0x20) {
         kind = TILE_REQUEST_TAKE_CLOVER;
@@ -952,7 +952,7 @@ int TileRequests_AskAtHeldTileOp(int slot, int operation, int arg, int item)
     if (record == NULL) {
         return TILE_REQUESTS_NONE;
     }
-    TileRequestTile tile = TileRequests_TileOf(*record);
+    TileRequestTile tile = tile_requests_tile_of(*record);
     return TileRequests_AskOp(slot, &tile, operation, arg, (u16) item);
 }
 CLEAN_AS(func_02043d34, TileRequests_AskAtHeldTileOp)
@@ -987,33 +987,33 @@ extern const u16 data_020ca64c[];
 #define TILE_REQUESTS_BAG_CHANCE_MAX 100
 
 /* The codes of the growth lines and 0x66-0x6d (MapItem_Grows). */
-static int TileRequests_IsGrowthCode(u32 code)
+static int tile_requests_is_growth_code(u32 code)
 {
-    return TileRequests_InRange(code, 0x26, 0x2a) || TileRequests_InRange(code, 0x5d, 0x61) ||
-           TileRequests_InRange(code, 0x2f, 0x56) || TileRequests_InRange(code, 0x57, 0x5b) ||
-           TileRequests_InRange(code, 0x66, 0x6d) || TileRequests_InRange(code, 0xc8, 0xcf);
+    return tile_requests_in_range(code, 0x26, 0x2a) || tile_requests_in_range(code, 0x5d, 0x61) ||
+           tile_requests_in_range(code, 0x2f, 0x56) || tile_requests_in_range(code, 0x57, 0x5b) ||
+           tile_requests_in_range(code, 0x66, 0x6d) || tile_requests_in_range(code, 0xc8, 0xcf);
 }
 
 /* The codes of the four short lines. */
-static int TileRequests_IsShortLineCode(u32 code)
+static int tile_requests_is_short_line_code(u32 code)
 {
-    return TileRequests_InRange(code, 0x2b, 0x2e) || TileRequests_InRange(code, 0xff, 0x102) ||
-           TileRequests_InRange(code, 0x62, 0x65) || TileRequests_InRange(code, 0xd0, 0xd3);
+    return tile_requests_in_range(code, 0x2b, 0x2e) || tile_requests_in_range(code, 0xff, 0x102) ||
+           tile_requests_in_range(code, 0x62, 0x65) || tile_requests_in_range(code, 0xd0, 0xd3);
 }
 
 /* The bare code at `stage` (from 0) of a growth line code: on the line 0x27 for the lines
  * 0x26-0x2a and 0x57-0x5b and the codes 0x66-0x69, else on the line 0x5e. */
-static u16 TileRequests_BareCode(u32 code, int stage)
+static u16 tile_requests_bare_code(u32 code, int stage)
 {
-    if (TileRequests_InRange(code, 0x26, 0x2a) || TileRequests_InRange(code, 0x57, 0x5b) ||
-        TileRequests_InRange(code, 0x66, 0x69)) {
+    if (tile_requests_in_range(code, 0x26, 0x2a) || tile_requests_in_range(code, 0x57, 0x5b) ||
+        tile_requests_in_range(code, 0x66, 0x69)) {
         return (u16) (stage + 0x27);
     }
     return (u16) (stage + 0x5e);
 }
 
 /* The money rock codes 0xe8-0xfb come five to each player's number. */
-static int TileRequests_IsOwnMoneyRock(const u16 *code)
+static int tile_requests_is_own_money_rock(const u16 *code)
 {
     return (*code - TILE_REQUESTS_MONEY_ROCK) / TILE_REQUESTS_ROCKS == PlayerRecords_CurrentNumber();
 }
@@ -1027,7 +1027,7 @@ int TileRequests_AskOp(int slot, const TileRequestTile *tile, int operation, int
     if (town == NULL) {
         return TILE_REQUESTS_NONE;
     }
-    u16 *code = TileRequests_CodeAt(town, tile->x, tile->z, 0);
+    u16 *code = tile_requests_code_at(town, tile->x, tile->z, 0);
     if (code == NULL) {
         return TILE_REQUESTS_NONE;
     }
@@ -1101,35 +1101,35 @@ int TileRequests_AskHole(int slot, AcreMap *town, const u16 *code, const TileReq
             default:
                 break;
         }
-    } else if (TileRequests_InRange(now, TILE_REQUESTS_ROCK, TILE_REQUESTS_MONEY_ROCK - 1)) {
+    } else if (tile_requests_in_range(now, TILE_REQUESTS_ROCK, TILE_REQUESTS_MONEY_ROCK - 1)) {
         kind = 0xd;
         ask_item = (u16) now;
-    } else if (TileRequests_InRange(now, TILE_REQUESTS_MONEY_ROCK, 0xfb)) {
+    } else if (tile_requests_in_range(now, TILE_REQUESTS_MONEY_ROCK, 0xfb)) {
         kind = 0xc;
         ask_item = (u16) now;
-        if (!Session_IsLinked(data_020ccf94) && TileRequests_IsOwnMoneyRock(code)) {
+        if (!Session_IsLinked(data_020ccf94) && tile_requests_is_own_money_rock(code)) {
             kind = 0xe;
         }
-    } else if (TileRequests_InRange(now, 0xfc, 0xfd)) {
+    } else if (tile_requests_in_range(now, 0xfc, 0xfd)) {
         ask_item = item;
         ask_code = item;
         kind = TILE_REQUEST_KIND_13;
         if (item != ITEM_CODE_NONE) {
             TileRequests_HoleCodes(slot, &ask_item, &ask_code, &unchanged, item);
         }
-    } else if (TileRequests_IsShortLineCode(now)) {
+    } else if (tile_requests_is_short_line_code(now)) {
         kind = 0xb;
     } else if (TownLines_IsGrownOrOccupied(code) != 0 || now == 0x1b || now == 0x89) {
         kind = 0xc;
         ask_item = (u16) now;
-    } else if (now == 0x25 || now == 0x5c || now == 0xc7 || (TileRequests_IsGrowthCode(now) && MapItem_IsStage0(code))) {
+    } else if (now == 0x25 || now == 0x5c || now == 0xc7 || (tile_requests_is_growth_code(now) && MapItem_IsStage0(code))) {
         kind = 0xb;
-    } else if (MapItem_IsAnyFlower(code) || TileRequests_InRange(now, 0x21, 0x24) || TileRequests_InRange(now, 0x1f, 0x20) ||
-               now == 0xe2) {
+    } else if (MapItem_IsAnyFlower(code) || tile_requests_in_range(now, 0x21, 0x24) ||
+               tile_requests_in_range(now, 0x1f, 0x20) || now == 0xe2) {
         kind = 8;
-    } else if (AcreTile_IsMarked(town, tile->x, tile->z) != 0 || TileRequests_InRange(now, 0xd4, 0xe1)) {
+    } else if (AcreTile_IsMarked(town, tile->x, tile->z) != 0 || tile_requests_in_range(now, 0xd4, 0xe1)) {
         kind = TILE_REQUEST_KIND_9;
-        ask_code = (u16) (now + (TileRequests_InRange(now, 0xd4, 0xda) ? 0x1467 : 0x1460));
+        ask_code = (u16) (now + (tile_requests_in_range(now, 0xd4, 0xda) ? 0x1467 : 0x1460));
     } else {
         int high = (int) (now & 0xf000) >> 12;
         if (high == 1 || high == 3 || high == 4) {
@@ -1162,7 +1162,7 @@ int TileRequests_AskHit(int slot, const u16 *code, const TileRequestTile *tile, 
     u16 ask_item = *code;
     u32 now = *code;
 
-    if (TileRequests_IsGrowthCode(now) && MapItem_IsStage0(code) == 0) {
+    if (tile_requests_is_growth_code(now) && MapItem_IsStage0(code) == 0) {
         int stage = MapItem_GrowthStage(code) - 1;
         kind = 6;
         TileRequestTile at = *tile;
@@ -1170,35 +1170,35 @@ int TileRequests_AskHit(int slot, const u16 *code, const TileRequestTile *tile, 
         if (arg != 2) {
             now = *code;
             if (hits >= data_020caaf8[stage]) {
-                if (TileRequests_InRange(now, 0xc8, 0xcf)) {
+                if (tile_requests_in_range(now, 0xc8, 0xcf)) {
                     ask_item = (u16) (stage + 0xd0);
-                } else if (TileRequests_InRange(now, 0x5d, 0x61) || now == 0x6d) {
+                } else if (tile_requests_in_range(now, 0x5d, 0x61) || now == 0x6d) {
                     ask_item = (u16) (stage + 0x62);
-                } else if (TileRequests_InRange(now, 0x2f, 0x56)) {
+                } else if (tile_requests_in_range(now, 0x2f, 0x56)) {
                     ask_item = (u16) (stage + 0xff);
                 } else {
                     ask_item = (u16) (stage + 0x2b);
                 }
             } else {
-                ask_item = TileRequests_BareCode(now, stage);
+                ask_item = tile_requests_bare_code(now, stage);
                 if (now == 0x67 || now == 0x6b) {
                     if (TileRequests_ItemDropAllowed() != 0) {
                         kind = 7;
                     } else {
                         ask_item = *code;
                     }
-                } else if (TileRequests_InRange(now, 0x2f, 0x56) || TileRequests_InRange(now, 0xc8, 0xcf)) {
+                } else if (tile_requests_in_range(now, 0x2f, 0x56) || tile_requests_in_range(now, 0xc8, 0xcf)) {
                     ask_item = MapItem_IsGrown(code) ? (u16) (*code + 1) : *code;
                 } else if (now == 0x6d) {
                     ask_item = (u16) now;
                 }
             }
         }
-    } else if (TileRequests_InRange(now, TILE_REQUESTS_ROCK, TILE_REQUESTS_MONEY_ROCK - 1)) {
+    } else if (tile_requests_in_range(now, TILE_REQUESTS_ROCK, TILE_REQUESTS_MONEY_ROCK - 1)) {
         kind = 0xd;
-    } else if (TileRequests_InRange(now, TILE_REQUESTS_MONEY_ROCK, 0xfb)) {
+    } else if (tile_requests_in_range(now, TILE_REQUESTS_MONEY_ROCK, 0xfb)) {
         kind = 0xc;
-        if (!Session_IsLinked(data_020ccf94) && TileRequests_IsOwnMoneyRock(code) && arg != 2) {
+        if (!Session_IsLinked(data_020ccf94) && tile_requests_is_own_money_rock(code) && arg != 2) {
             kind = 0xe;
         }
     } else {
@@ -1232,7 +1232,7 @@ CLEAN_AS(func_02044168, TileRequests_AskHit)
  * codes. */
 int TileRequests_AskStrip(int slot, const u16 *code, const TileRequestTile *tile, int arg)
 {
-    if (!TileRequests_IsGrowthCode(*code)) {
+    if (!tile_requests_is_growth_code(*code)) {
         return TILE_REQUESTS_NONE;
     }
     if (MapItem_IsStage0(code) != 0 || MapItem_IsStage1(code) != 0) {
@@ -1241,16 +1241,16 @@ int TileRequests_AskStrip(int slot, const u16 *code, const TileRequestTile *tile
     int kind = 1;
     int stage = MapItem_GrowthStage(code) - 1;
     u32 now = *code;
-    u16 ask_item = TileRequests_BareCode(now, stage);
+    u16 ask_item = tile_requests_bare_code(now, stage);
     if (now == 0x67 || now == 0x6b) {
         if (TileRequests_ItemDropAllowed() != 0) {
             kind = 2;
         } else {
             ask_item = *code;
         }
-    } else if (TileRequests_InRange(now, 0x2f, 0x56) || TileRequests_InRange(now, 0xc8, 0xcf)) {
+    } else if (tile_requests_in_range(now, 0x2f, 0x56) || tile_requests_in_range(now, 0xc8, 0xcf)) {
         ask_item = MapItem_IsGrown(code) ? (u16) (*code + 1) : *code;
-    } else if (TileRequests_InRange(now, 0x57, 0x5b)) {
+    } else if (tile_requests_in_range(now, 0x57, 0x5b)) {
         if (MapItem_IsGrown(code) == 0) {
             ask_item = *code;
         }
@@ -1319,13 +1319,13 @@ CLEAN_AS(func_0204457c, TileRequests_HoleCodes)
 int TileRequests_SplitItem(u16 *item, u16 *tile_item, u16 code)
 {
     u16 copy = code;
-    if (TileRequests_InRange(code, 0x1408, 0x1428)) {
+    if (tile_requests_in_range(code, 0x1408, 0x1428)) {
         *item = (u16) (code - 0x1408);
-    } else if (TileRequests_InRange(code, 0x1471, 0x1491)) {
+    } else if (tile_requests_in_range(code, 0x1471, 0x1491)) {
         *item = (u16) (code - 0x1471);
     } else if (code == 0x137c) {
         *item = 0x1e;
-    } else if (TileRequests_InRange(code, 0x14fe, 0x1517)) {
+    } else if (tile_requests_in_range(code, 0x14fe, 0x1517)) {
         *item = (u16) (code - 0x14fe);
         *tile_item = (u16) (code - 0x14fe + 0x1408);
     } else if (code == 0x151d) {
@@ -1335,8 +1335,8 @@ int TileRequests_SplitItem(u16 *item, u16 *tile_item, u16 code)
         *item = 0x5d;
         *tile_item = 0x5d;
     } else if (MapItem_IsStage0(&copy)) {
-        *item = TileRequests_InRange(copy, 0xc8, 0xcf) ? 0xc8 : 0x26;
-    } else if (TileRequests_InRange(copy, 0x1518, 0x151c)) {
+        *item = tile_requests_in_range(copy, 0xc8, 0xcf) ? 0xc8 : 0x26;
+    } else if (tile_requests_in_range(copy, 0x1518, 0x151c)) {
         *item = data_020ca64c[copy - 0x1518];
     } else if (code == 0x1548) {
         *item = 0xc8;
@@ -1360,7 +1360,7 @@ void TileRequests_BagCodes(u16 *item, u8 *unchanged, u16 put)
         return;
     }
     u16 bag = put;
-    if (!TileRequests_InRange(bag, TILE_REQUESTS_BAG_FIRST, TILE_REQUESTS_BAG_LAST)) {
+    if (!tile_requests_in_range(bag, TILE_REQUESTS_BAG_FIRST, TILE_REQUESTS_BAG_LAST)) {
         return;
     }
     *item = TILE_REQUESTS_BAG_CODE;

@@ -11,7 +11,7 @@ extern const u32 data_ov004_02255bd4[];
 extern const u32 data_020da13c[];
 
 /* The model set taken down, then the base. */
-static void IconModels_destruct_members(IconModels *self)
+static void icon_models_destruct_members(IconModels *self)
 {
     self->base.vtable = data_ov004_02255bd4;
     ModelSet_Destruct(&self->set);
@@ -22,7 +22,7 @@ static void IconModels_destruct_members(IconModels *self)
 /* func_ov004_02233508 (the destructor, vtable slot 0x40) */
 IconModels *IconModels_Destruct(IconModels *self)
 {
-    IconModels_destruct_members(self);
+    icon_models_destruct_members(self);
     return self;
 }
 CLEAN_AS(func_ov004_02233508, IconModels_Destruct)
@@ -30,7 +30,7 @@ CLEAN_AS(func_ov004_02233508, IconModels_Destruct)
 /* func_ov004_02233538 (the deleting destructor, vtable slot 0x44) */
 IconModels *IconModels_Delete(IconModels *self)
 {
-    IconModels_destruct_members(self);
+    icon_models_destruct_members(self);
     Heap_FreeAux(self);
     return self;
 }
@@ -117,7 +117,7 @@ CLEAN_AS(func_ov004_02233c44, IconModels_Draw)
 
 /* An item lying at the tile centre `at` on `layer`, drawn on what stands there when it is of
  * the kind drawn on the map. */
-static void IconModels_draw_tile_item(IconModels *self, AcreMap *map, const Vec3 *at, int layer)
+static void icon_models_draw_tile_item(IconModels *self, AcreMap *map, const Vec3 *at, int layer)
 {
     u16 *code = AcreTile_ItemAt(map, at, layer);
     if (code == NULL || ((*code & 0xf000) >> 12) != ICON_MODELS_MAP_KIND) {
@@ -152,8 +152,8 @@ void IconModels_DrawMapItems(IconModels *self, AcreMap *map)
         Mtx43_Translation(&data_021fbe48, bent.x, bent.y, bent.z);
         Mtx43_RotateX(&data_021fbe48, angle);
         for (int j = ICON_MODELS_REACH; j >= -ICON_MODELS_REACH; j--) {
-            IconModels_draw_tile_item(self, map, &at, 0);
-            IconModels_draw_tile_item(self, map, &at, 1);
+            icon_models_draw_tile_item(self, map, &at, 0);
+            icon_models_draw_tile_item(self, map, &at, 1);
             at.x -= ICON_MODELS_TILE;
         }
         row.z -= ICON_MODELS_TILE;

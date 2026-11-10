@@ -19,35 +19,35 @@ extern TileChanges data_021c7880;
 extern TileChange data_021c7884[TILE_CHANGES_COUNT]; /* data_021c7880.changes */
 extern NetSession *data_020ccf94;
 
-static int TileChanges_Slot(const TileChange *change)
+static int tile_changes_slot(const TileChange *change)
 {
     return change->who & TILE_CHANGE_SLOT_MASK;
 }
 
-static int TileChanges_Kind(const TileChange *change)
+static int tile_changes_kind(const TileChange *change)
 {
     return change->who >> TILE_CHANGE_KIND_SHIFT;
 }
 
-static int TileChanges_IsHeld(const TileChange *change)
+static int tile_changes_is_held(const TileChange *change)
 {
     return (change->state & TILE_CHANGE_HELD) != 0;
 }
 
-static int TileChanges_Layer(const TileChange *change)
+static int tile_changes_layer(const TileChange *change)
 {
     return (change->flags & TILE_CHANGE_LAYER) != 0;
 }
 
 /* Whether the change is at the tile. */
-static int TileChanges_IsAt(const TileChange *change, const TileChangesTile *tile)
+static int tile_changes_is_at(const TileChange *change, const TileChangesTile *tile)
 {
     u16 at = change->tile;
     return tile->x == (at >> 8) && tile->z == (at & 0xff);
 }
 
 /* The kinds of change that stay when let go of. */
-static int TileChanges_Stays(int kind)
+static int tile_changes_stays(int kind)
 {
     return kind == 4 || kind == 10 || kind == 22 || kind == 25;
 }
@@ -69,7 +69,7 @@ u16 *TileChanges_HeldTileOf(int slot)
     }
     for (int i = 0; i < TILE_CHANGES_COUNT; i++) {
         TileChange *change = &data_021c7884[i];
-        if (slot == TileChanges_Slot(change) && TileChanges_IsHeld(change)) {
+        if (slot == tile_changes_slot(change) && tile_changes_is_held(change)) {
             return &change->tile;
         }
     }
@@ -92,7 +92,7 @@ int TileChanges_FindByTag(int slot, int tag)
     }
     for (int i = 0; i < TILE_CHANGES_COUNT; i++) {
         const TileChange *change = &data_021c7884[i];
-        if (slot == TileChanges_Slot(change) && tag == ((change->state >> TILE_CHANGE_TAG_SHIFT) & 7)) {
+        if (slot == tile_changes_slot(change) && tag == ((change->state >> TILE_CHANGE_TAG_SHIFT) & 7)) {
             return i;
         }
     }
@@ -106,7 +106,7 @@ int TileChanges_FindHeld(int slot)
     slot &= 3;
     for (int i = 0; i < TILE_CHANGES_COUNT; i++) {
         const TileChange *change = &data_021c7884[i];
-        if (slot == TileChanges_Slot(change) && TileChanges_IsHeld(change)) {
+        if (slot == tile_changes_slot(change) && tile_changes_is_held(change)) {
             return i;
         }
     }
@@ -136,8 +136,8 @@ int TileChanges_FindOwnAt(u32 slot, const TileChangesTile *tile, u32 layer)
 {
     for (int i = 0; i < TILE_CHANGES_COUNT; i++) {
         const TileChange *change = &data_021c7884[i];
-        if (slot == (u32) TileChanges_Slot(change) && TileChanges_IsAt(change, tile) &&
-            layer == (u32) TileChanges_Layer(change)) {
+        if (slot == (u32) tile_changes_slot(change) && tile_changes_is_at(change, tile) &&
+            layer == (u32) tile_changes_layer(change)) {
             return i;
         }
     }
@@ -150,7 +150,7 @@ int TileChanges_FindAt(const TileChangesTile *tile, int layer)
 {
     for (int i = 0; i < TILE_CHANGES_COUNT; i++) {
         const TileChange *change = &data_021c7884[i];
-        if (TileChanges_IsAt(change, tile) && layer == TileChanges_Layer(change)) {
+        if (tile_changes_is_at(change, tile) && layer == tile_changes_layer(change)) {
             return i;
         }
     }
@@ -201,7 +201,7 @@ void TileChanges_Release(TileChange *change)
 {
     for (int i = 0; i < TILE_CHANGES_COUNT; i++) {
         TileChange *other = &data_021c7884[i];
-        if (TileChanges_Slot(other) == TileChanges_Slot(change) && TileChanges_IsHeld(other)) {
+        if (tile_changes_slot(other) == tile_changes_slot(change) && tile_changes_is_held(other)) {
             other->state &= (u8) ~TILE_CHANGE_HELD;
         }
     }
@@ -233,10 +233,10 @@ void TileChanges_LetGoAt(const TileChangesTile *tile, int layer)
     TileChange *change = &data_021c7884[index];
     u16 packed = change->tile;
     TileChangesTile on = {packed >> 8, packed & 0xff};
-    if (TileEvent_EndAt(TileChanges_Slot(change), &on) != 0) {
+    if (TileEvent_EndAt(tile_changes_slot(change), &on) != 0) {
         return;
     }
-    if (TileChanges_Stays(TileChanges_Kind(change))) {
+    if (tile_changes_stays(tile_changes_kind(change))) {
         TileChanges_Release(change);
     } else {
         TileChanges_Finish(change);
@@ -253,7 +253,7 @@ void TileChanges_FinishOwnAt(const TileChangesTile *tile, int slot, int layer)
     if (index < 0) {
         return;
     }
-    if ((slot & 3) == TileChanges_Slot(&data_021c7884[index])) {
+    if ((slot & 3) == tile_changes_slot(&data_021c7884[index])) {
         TileChanges_Finish(&data_021c7884[index]);
     }
 }
@@ -304,15 +304,15 @@ int TileChanges_Replace(int slot, const TileChangesTile *tile, u32 item, int cod
         return TileChanges_PutNew(slot, tile, (int) item, code, kind, mark, unk_20, tag, layer, number);
     }
     TileChange *change = &data_021c7884[index];
-    if (!TileChanges_IsHeld(change)) {
-        switch (TileChanges_Kind(change)) {
+    if (!tile_changes_is_held(change)) {
+        switch (tile_changes_kind(change)) {
             case 1:
             case 2:
             case 6:
             case 7: {
                 u16 old_code = change->unk_0c;
                 TileChangesTile at = *tile;
-                GrowthModel_Drop(&old_code, TileChanges_Slot(change), &at);
+                GrowthModel_Drop(&old_code, tile_changes_slot(change), &at);
                 break;
             }
         }
@@ -333,7 +333,7 @@ int TileChanges_Put(int slot, const TileChangesTile *tile, u32 item, u32 code, u
         return TileChanges_PutNew(slot, tile, (int) item, (int) code, kind, mark, unk_20, tag, layer, number);
     }
     const TileChange *change = &data_021c7884[index];
-    if ((slot & 3) == TileChanges_Slot(change) && TileChanges_IsHeld(change)) {
+    if ((slot & 3) == tile_changes_slot(change) && tile_changes_is_held(change)) {
         TileChanges_FillAt((u32) index, (u32) slot, tile, item, (u16) code, kind, mark, unk_20, tag, layer, number);
         return 1;
     }
@@ -367,7 +367,7 @@ int TileChanges_MakeRoomAt(const TileChangesTile *tile)
         return 1;
     }
     const TileChange *change = (const TileChange *) (uintptr_t) TileChanges_At(index);
-    if (TileChanges_Kind(change) != TILE_REQUEST_DROP_A7) {
+    if (tile_changes_kind(change) != TILE_REQUEST_DROP_A7) {
         return 0;
     }
     TileChanges_FinishAt(index);
@@ -391,7 +391,7 @@ void TileChanges_Done(TileChange *change)
     if (change->tile == TILE_CHANGES_NO_TILE) {
         return;
     }
-    if (TileChanges_Stays(TileChanges_Kind(change))) {
+    if (tile_changes_stays(tile_changes_kind(change))) {
         TileChanges_Free(change);
     } else {
         TileChanges_Finish(change);
@@ -411,7 +411,7 @@ CLEAN_AS(func_02046224, TileChanges_InitRecord)
  * its item and the mark 1. The other kinds are finished. */
 void TileChanges_LetGo(TileChange *change)
 {
-    switch (TileChanges_Kind(change)) {
+    switch (tile_changes_kind(change)) {
         case 4:
         case 22:
         case 25:
@@ -433,24 +433,24 @@ void TileChanges_LetGo(TileChange *change)
 }
 CLEAN_AS(func_0204622c, TileChanges_LetGo)
 
-static int TileChanges_InRange(unsigned int code, unsigned int first, unsigned int last)
+static int tile_changes_in_range(unsigned int code, unsigned int first, unsigned int last)
 {
     return code >= first && code <= last;
 }
 
 /* Whether a put item does not stay on a tile of this code: the flowers (and 0x1a, 0x1c, 0x1d),
  * the watered flowers (and 0xa4, 0xa5), and the growth lines (map_item.h). */
-static int TileChanges_CodeTakesNoItem(unsigned int code)
+static int tile_changes_code_takes_no_item(unsigned int code)
 {
-    return code <= 0x19 || code == 0x1c || TileChanges_InRange(code, 0x8a, 0xa3) || code == 0xa5 || code == 0x1a ||
-           code == 0xa4 || code == 0x1d || TileChanges_InRange(code, 0x26, 0x2a) || TileChanges_InRange(code, 0x5d, 0x61) ||
-           TileChanges_InRange(code, 0x2f, 0x5b) || TileChanges_InRange(code, 0x66, 0x6d) ||
-           TileChanges_InRange(code, 0xc8, 0xcf);
+    return code <= 0x19 || code == 0x1c || tile_changes_in_range(code, 0x8a, 0xa3) || code == 0xa5 || code == 0x1a ||
+           code == 0xa4 || code == 0x1d || tile_changes_in_range(code, 0x26, 0x2a) ||
+           tile_changes_in_range(code, 0x5d, 0x61) || tile_changes_in_range(code, 0x2f, 0x5b) ||
+           tile_changes_in_range(code, 0x66, 0x6d) || tile_changes_in_range(code, 0xc8, 0xcf);
 }
 
 /* The code on the tile (x, z) of the town's map (its first layer), or NULL outside scene 0 or
  * without the map. */
-static const u16 *TileChanges_TownCodeAt(int x, int z)
+static const u16 *tile_changes_town_code_at(int x, int z)
 {
     if (SceneQuery_CurrentIs0() == 0) {
         return NULL;
@@ -464,7 +464,7 @@ static const u16 *TileChanges_TownCodeAt(int x, int z)
 
 /* func_0204629c: a change finished. In scene 0 with the town's map, by its kind:
  * - 0x12 (the held change of its slot freed first), 0x11, 0x13, 0x18 and 0x1a: the mark
- *   stays (as 1) only when the tile's code takes items (TileChanges_CodeTakesNoItem);
+ *   stays (as 1) only when the tile's code takes items (tile_changes_code_takes_no_item);
  * - 6 and 7: unless bits 5-6 of `state` are 2, the tile's request mark (TileRequests_SetMark)
  *   set to the change's mark + 1;
  * - 10: the mark kept;
@@ -475,18 +475,18 @@ void TileChanges_Finish(TileChange *change)
     int mark = 0;
     int x = change->tile >> 8;
     int z = change->tile & 0xff;
-    const u16 *code = TileChanges_TownCodeAt(x, z);
+    const u16 *code = tile_changes_town_code_at(x, z);
     if (code != NULL) {
-        switch (TileChanges_Kind(change)) {
+        switch (tile_changes_kind(change)) {
             case TILE_REQUEST_DROP_HELD:
-                TileChanges_FreeHeld(TileChanges_Slot(change));
+                TileChanges_FreeHeld(tile_changes_slot(change));
                 /* fall through */
             case TILE_REQUEST_HELD_TILE:
             case TILE_REQUEST_KIND_13:
             case TILE_REQUEST_SPLIT_DROP:
             case TILE_REQUEST_DROP_A7:
                 /* read after TileChanges_FreeHeld, which may have freed this very change */
-                if (!TileChanges_CodeTakesNoItem(*code) && (change->state & TILE_CHANGE_MARK_MASK) != 0) {
+                if (!tile_changes_code_takes_no_item(*code) && (change->state & TILE_CHANGE_MARK_MASK) != 0) {
                     mark = 1;
                 }
                 break;
@@ -538,7 +538,7 @@ void TileChanges_Report(TileChange *change)
         TileEvent_SetTownItem(x, z, change->item, change->state & TILE_CHANGE_MARK_MASK);
         TileChanges_NoteItem(change);
     } else {
-        DroppedItems_PutOnMap(x, z, change->item, TileChanges_Layer(change));
+        DroppedItems_PutOnMap(x, z, change->item, tile_changes_layer(change));
     }
 }
 CLEAN_AS(func_020464d4, TileChanges_Report)

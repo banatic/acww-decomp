@@ -41,7 +41,7 @@ extern void MTX_RotY33_(Mtx33 *mtx, fx32 sin, fx32 cos);
 extern void MTX_Concat33(const Mtx33 *a, const Mtx33 *b, Mtx33 *out);
 
 /* An arithmetic shift right, for negative values too. */
-static s32 Compass_shift_right(s32 value, int bits)
+static s32 compass_shift_right(s32 value, int bits)
 {
     return value >= 0 ? value >> bits : ~(~value >> bits);
 }
@@ -58,7 +58,7 @@ void Compass_NeedleHook(Compass *compass, int node, G3dRenderState *state)
     G3dJointResult *joint = state->joint;
     /* The deflection as a 16-bit angle: its fraction of a turn (FX_Div by 360) times 0x10000. */
     fx32 turns = FX_MulFunc(FX_Div(compass->deflection, COMPASS_DEGREES_360), 0x10000000);
-    s32 deflection = Compass_shift_right((s32) ((u32) turns << 4), 16);
+    s32 deflection = compass_shift_right((s32) ((u32) turns << 4), 16);
     u16 angle;
     int parent = RoomObject_MountParent(&compass->base);
     if (parent != 0) {
@@ -150,7 +150,7 @@ int Compass_Start(Compass *compass)
 }
 CLEAN_AS(func_ov004_022138c0, Compass_Start)
 
-static void Compass_set_vtables(Compass *compass)
+static void compass_set_vtables(Compass *compass)
 {
     compass->base.vtable = (const RoomObjectVtable *) data_ov004_02251c6c;
     compass->base.receiver_vtable = data_ov004_02251d18;
@@ -159,7 +159,7 @@ static void Compass_set_vtables(Compass *compass)
 /* func_ov004_022138e8 (the deleting destructor, vtable slot 0x44) */
 Compass *Compass_Delete(Compass *compass)
 {
-    Compass_set_vtables(compass);
+    compass_set_vtables(compass);
     RoomObject_DestructBase(&compass->base);
     RoomObject_Free(compass);
     return compass;
@@ -169,7 +169,7 @@ CLEAN_AS(func_ov004_022138e8, Compass_Delete)
 /* func_ov004_02213914 (the destructor, vtable slot 0x40) */
 Compass *Compass_Destroy(Compass *compass)
 {
-    Compass_set_vtables(compass);
+    compass_set_vtables(compass);
     RoomObject_DestructBase(&compass->base);
     return compass;
 }
@@ -180,7 +180,7 @@ CLEAN_AS(func_ov004_02213914, Compass_Destroy)
 Compass *Compass_Construct(Compass *compass)
 {
     RoomObject_ConstructBase(&compass->base);
-    Compass_set_vtables(compass);
+    compass_set_vtables(compass);
     compass->needle = COMPASS_NO_NODE;
     return compass;
 }
@@ -199,7 +199,7 @@ CLEAN_AS(func_ov004_02213968, Compass_Create)
 /* The receiver part (at 0xec, RoomObject.receiver_vtable) enters Compass's functions
  * through its vtable with these: each moves the pointer back to the object and goes on with the
  * object's function. */
-static Compass *Compass_from_receiver(void *receiver)
+static Compass *compass_from_receiver(void *receiver)
 {
     return (Compass *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
 }
@@ -207,13 +207,13 @@ static Compass *Compass_from_receiver(void *receiver)
 /* func_ov004_0221aa34: the deleting destructor, entered from the receiver part. */
 Compass *CompassReceiver_Delete(void *receiver)
 {
-    return Compass_Delete(Compass_from_receiver(receiver));
+    return Compass_Delete(compass_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_02251c6cD0Ev, CompassReceiver_Delete)
 
 /* func_ov004_0221aa50: the destructor, entered from the receiver part. */
 Compass *CompassReceiver_Destroy(void *receiver)
 {
-    return Compass_Destroy(Compass_from_receiver(receiver));
+    return Compass_Destroy(compass_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_02251c6cD1Ev, CompassReceiver_Destroy)

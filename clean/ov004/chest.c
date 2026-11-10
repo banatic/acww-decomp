@@ -88,7 +88,7 @@ extern const MemberPointer data_ov004_022505b8, data_ov004_022505d8, data_ov004_
 extern void *data_021c80bc;
 
 /* The receiver part as C++ converts a pointer to the chest to it: NULL stays NULL. */
-static void *Chest_receiver(Chest *chest)
+static void *chest_receiver(Chest *chest)
 {
     return chest != NULL ? (u8 *) chest + RECEIVER_OFFSET : NULL;
 }
@@ -100,37 +100,37 @@ static s32 shift_right(s32 value, int bits)
 }
 
 /* Vtable slot 0x70 (Chest_EnterLid): enters lid state `state`. */
-static void Chest_switch_to(Chest *chest, int state)
+static void chest_switch_to(Chest *chest, int state)
 {
     chest->base.vtable->vfunc_70(&chest->base, state, SLOT_70_VALUE);
 }
 
 /* Requests lid state `state` for the object's cell (RoomSync_SetState); its answer. */
-static int Chest_request(Chest *chest, int state)
+static int chest_request(Chest *chest, int state)
 {
     return RoomSync_SetState(&chest->base, state, SLOT_70_VALUE, 1);
 }
 
 /* Whether the link the receiver is attached to is there and open, or there and closed. */
-static int Chest_link_open(Chest *chest)
+static int chest_link_open(Chest *chest)
 {
     return chest->base.link != NULL && chest->base.link->state != 0;
 }
 
-static int Chest_link_closed(Chest *chest)
+static int chest_link_closed(Chest *chest)
 {
     return chest->base.link != NULL && chest->base.link->state == 0;
 }
 
 /* The common entry of CHEST_MENU_CLOSE and CHEST_TALK_CLOSE: message 0x2f for a chest with an
  * index (refused when it is not sent), then the lid closing requested. */
-static int Chest_close(Chest *chest)
+static int chest_close(Chest *chest)
 {
     int index = Chest_Index(chest);
     if (index != NO_CHEST && RoomPlayerActor_RequestChestClose(&index) == 0) {
         return 0;
     }
-    return Chest_request(chest, CHEST_LID_CLOSING);
+    return chest_request(chest, CHEST_LID_CLOSING);
 }
 
 /* The common entry of CHEST_MENU_ANNOUNCE and CHEST_TALK_ANNOUNCE: for a chest with an index,
@@ -138,7 +138,7 @@ static int Chest_close(Chest *chest)
  * no index).
  * BUG: without an entry for the chest, RoomPushes_Facing and RoomPushes_Destination are handed
  * NULL and the values are read from near address 0; kept. */
-static int Chest_announce(Chest *chest)
+static int chest_announce(Chest *chest)
 {
     void *entry = RoomPushes_FindObject(RoomPushes_Records(), &chest->base);
     int index = Chest_Index(chest);
@@ -152,7 +152,7 @@ static int Chest_announce(Chest *chest)
 
 /* The common update of CHEST_MENU_ANNOUNCE and CHEST_TALK_ANNOUNCE: `next` for a chest without
  * an index, else once RoomPlayerActor_TestFlag2 says so. */
-static void Chest_wait_announce(Chest *chest, int next)
+static void chest_wait_announce(Chest *chest, int next)
 {
     if (Chest_Index(chest) == NO_CHEST) {
         Chest_EnterTalkStep(chest, next);
@@ -167,7 +167,7 @@ static void Chest_wait_announce(Chest *chest, int next)
 void Chest_UpdateTalkClose(Chest *chest)
 {
     if (chest->lid == CHEST_LID_CLOSED) {
-        SceneObjectBase_ReleaseReceiver(&chest->base.scene, Chest_receiver(chest));
+        SceneObjectBase_ReleaseReceiver(&chest->base.scene, chest_receiver(chest));
         EventQueue_FinishObjectEvent(chest);
     }
 }
@@ -176,14 +176,14 @@ CLEAN_AS(_ZN18Obj_ov004_0225211c19func_ov004_02216c60Ev, Chest_UpdateTalkClose)
 /* func_ov004_02216c8c (entry of CHEST_TALK_CLOSE): message 0x2f, then the lid closing. */
 int Chest_EnterTalkClose(Chest *chest)
 {
-    return Chest_close(chest);
+    return chest_close(chest);
 }
 CLEAN_AS(func_ov004_02216c8c, Chest_EnterTalkClose)
 
 /* func_ov004_02216cd0 (update of CHEST_TALK_END): on once the link has closed. */
 void Chest_UpdateTalkEnd(Chest *chest)
 {
-    if (Chest_link_closed(chest)) {
+    if (chest_link_closed(chest)) {
         Chest_EnterTalkStep(chest, CHEST_TALK_CLOSE);
     }
 }
@@ -200,14 +200,14 @@ CLEAN_AS(func_ov004_02216cf4, Chest_EnterTalkEnd)
 /* func_ov004_02216cf8 (update of CHEST_TALK): on once the link has opened. */
 void Chest_UpdateTalk(Chest *chest)
 {
-    if (Chest_link_open(chest)) {
+    if (chest_link_open(chest)) {
         Chest_EnterTalkStep(chest, CHEST_TALK_END);
     }
 }
 CLEAN_AS(func_ov004_02216cf8, Chest_UpdateTalk)
 
 /* The item on cell (x, y) of the scene's map, layer 0. */
-static u16 *Chest_item_on_cell(void *map, s32 x, s32 y)
+static u16 *chest_item_on_cell(void *map, s32 x, s32 y)
 {
     return AcreTile_ItemInAcre(map, shift_right(x, 4), shift_right(y, 4), x & (BLOCK_CELLS - 1), y & (BLOCK_CELLS - 1), 0);
 }
@@ -220,7 +220,7 @@ static u16 *Chest_item_on_cell(void *map, s32 x, s32 y)
 int Chest_EnterTalk(Chest *chest)
 {
     RoomObject *base = &chest->base;
-    SceneObjectBase_TakeReceiver(&chest->base.scene, Chest_receiver(chest));
+    SceneObjectBase_TakeReceiver(&chest->base.scene, chest_receiver(chest));
     base->link->next_state = 1;
     MessageReceiver_SetName(&base->receiver.base, data_ov004_02253200);
     int number = RoomObject_Number(base);
@@ -233,7 +233,7 @@ int Chest_EnterTalk(Chest *chest)
         for (unsigned long i = 0; i < CellList_Count(&cells); i++) {
             s32 x = CellList_At(&cells, (int) i)->x;
             s32 y = CellList_At(&cells, (int) i)->y;
-            u16 *item = Chest_item_on_cell(map, x, y);
+            u16 *item = chest_item_on_cell(map, x, y);
             if (item != NULL && ItemCode_IsFurniture(item) != 0) {
                 line = (line + x + y * BLOCK_CELLS) & (LINE_COUNT - 1);
                 break;
@@ -258,21 +258,21 @@ CLEAN_AS(func_ov004_02216df0, Chest_UpdateTalkOpen)
 /* func_ov004_02216e0c (entry of CHEST_TALK_OPEN): the lid opening requested; its answer. */
 int Chest_EnterTalkOpen(Chest *chest)
 {
-    return Chest_request(chest, CHEST_LID_OPENING);
+    return chest_request(chest, CHEST_LID_OPENING);
 }
 CLEAN_AS(func_ov004_02216e0c, Chest_EnterTalkOpen)
 
 /* func_ov004_02216e20 (update of CHEST_TALK_ANNOUNCE): opens once the message is through. */
 void Chest_UpdateTalkAnnounce(Chest *chest)
 {
-    Chest_wait_announce(chest, CHEST_TALK_OPEN);
+    chest_wait_announce(chest, CHEST_TALK_OPEN);
 }
 CLEAN_AS(func_ov004_02216e20, Chest_UpdateTalkAnnounce)
 
 /* func_ov004_02216e50 (entry of CHEST_TALK_ANNOUNCE): message 0x2d; never refused. */
 int Chest_EnterTalkAnnounce(Chest *chest)
 {
-    Chest_announce(chest);
+    chest_announce(chest);
     return 1;
 }
 CLEAN_AS(func_ov004_02216e50, Chest_EnterTalkAnnounce)
@@ -305,7 +305,7 @@ CLEAN_AS(func_ov004_02216eb8, Chest_UpdateMenuClose)
 /* func_ov004_02216ed4 (entry of CHEST_MENU_CLOSE): message 0x2f, then the lid closing. */
 int Chest_EnterMenuClose(Chest *chest)
 {
-    return Chest_close(chest);
+    return chest_close(chest);
 }
 CLEAN_AS(func_ov004_02216ed4, Chest_EnterMenuClose)
 
@@ -342,14 +342,14 @@ CLEAN_AS(func_ov004_02216f50, Chest_UpdateMenuOpen)
 /* func_ov004_02216f6c (entry of CHEST_MENU_OPEN): the lid opening requested; its answer. */
 int Chest_EnterMenuOpen(Chest *chest)
 {
-    return Chest_request(chest, CHEST_LID_OPENING);
+    return chest_request(chest, CHEST_LID_OPENING);
 }
 CLEAN_AS(func_ov004_02216f6c, Chest_EnterMenuOpen)
 
 /* func_ov004_02216f80 (update of CHEST_MENU_ANNOUNCE): opens once the message is through. */
 void Chest_UpdateMenuAnnounce(Chest *chest)
 {
-    Chest_wait_announce(chest, CHEST_MENU_OPEN);
+    chest_wait_announce(chest, CHEST_MENU_OPEN);
 }
 CLEAN_AS(func_ov004_02216f80, Chest_UpdateMenuAnnounce)
 
@@ -357,7 +357,7 @@ CLEAN_AS(func_ov004_02216f80, Chest_UpdateMenuAnnounce)
  * sent. */
 int Chest_EnterMenuAnnounce(Chest *chest)
 {
-    return Chest_announce(chest) != 0 ? 1 : 0;
+    return chest_announce(chest) != 0 ? 1 : 0;
 }
 CLEAN_AS(func_ov004_02216fb0, Chest_EnterMenuAnnounce)
 
@@ -484,7 +484,7 @@ void Chest_UpdateLidClosing(Chest *chest)
 {
     ByteSet_SetValue(&chest->base.node_set, 1);
     if (RoomObject_AdvanceAnims(&chest->base) != 0) {
-        Chest_switch_to(chest, CHEST_LID_CLOSED);
+        chest_switch_to(chest, CHEST_LID_CLOSED);
     }
 }
 CLEAN_AS(func_ov004_022172ac, Chest_UpdateLidClosing)
@@ -512,7 +512,7 @@ void Chest_UpdateLidOpen(Chest *chest)
 {
     ByteSet_SetValue(&chest->base.node_set, 1);
     if (RoomObject_IsUnplaced(&chest->base)) {
-        Chest_switch_to(chest, CHEST_LID_CLOSING);
+        chest_switch_to(chest, CHEST_LID_CLOSING);
     }
 }
 CLEAN_AS(func_ov004_02217330, Chest_UpdateLidOpen)
@@ -538,7 +538,7 @@ void Chest_UpdateLidOpening(Chest *chest)
 {
     ByteSet_SetValue(&chest->base.node_set, 1);
     if (RoomObject_AdvanceAnims(&chest->base) != 0) {
-        Chest_switch_to(chest, CHEST_LID_OPEN);
+        chest_switch_to(chest, CHEST_LID_OPEN);
     }
 }
 CLEAN_AS(func_ov004_022173b8, Chest_UpdateLidOpening)
@@ -557,7 +557,7 @@ CLEAN_AS(func_ov004_022173e8, Chest_EnterLidOpening)
 
 /* Whether a cell one step in front of each of the chest's cells holds something; it is turned
  * back on when one does. */
-static int Chest_front_blocked(Chest *chest)
+static int chest_front_blocked(Chest *chest)
 {
     RoomObject *base = &chest->base;
     CellList cells;
@@ -590,13 +590,13 @@ void Chest_UpdateLidClosed(Chest *chest)
     ByteSet_SetValue(&base->node_set, 0);
     void *entry = RoomPushes_FindObject(RoomPushes_Records(), &chest->base);
     if (Switch_IsPending(&base->on_switch) && entry != NULL && RoomPushes_Side(entry) == 0) {
-        if (base->unk_780 == KIND_0B && Chest_front_blocked(chest)) {
+        if (base->unk_780 == KIND_0B && chest_front_blocked(chest)) {
             return;
         }
         EventQueue_RequestKind6(chest, 0);
         PlayerActorOps_SetOwnFlag17();
     } else if (RoomObject_IsUnplaced(base)) {
-        Chest_switch_to(chest, CHEST_LID_OPENING);
+        chest_switch_to(chest, CHEST_LID_OPENING);
     }
 }
 CLEAN_AS(func_ov004_02217420, Chest_UpdateLidClosed)
@@ -707,16 +707,16 @@ int Chest_Start(Chest *chest)
         RoomObject_LoadAnims(base, 0, ANIM_MODE_3, FX32_ONE, 0);
     }
     if (Switch_Value(&base->on_switch) != 0 || RoomObjects_InShop() != 0) {
-        Chest_switch_to(chest, CHEST_LID_CLOSED);
+        chest_switch_to(chest, CHEST_LID_CLOSED);
     } else {
-        Chest_switch_to(chest, CHEST_LID_OPEN);
+        chest_switch_to(chest, CHEST_LID_OPEN);
     }
     Chest_EnterTalkStep(chest, CHEST_TALK_NONE);
     return 1;
 }
 CLEAN_AS(func_ov004_02217700, Chest_Start)
 
-static void Chest_set_vtables(Chest *chest)
+static void chest_set_vtables(Chest *chest)
 {
     chest->base.vtable = (const RoomObjectVtable *) data_ov004_0225211c;
     chest->base.receiver_vtable = data_ov004_022521c8;
@@ -725,7 +725,7 @@ static void Chest_set_vtables(Chest *chest)
 /* func_ov004_022177a0 (the deleting destructor, vtable slot 0x44) */
 Chest *Chest_Delete(Chest *chest)
 {
-    Chest_set_vtables(chest);
+    chest_set_vtables(chest);
     Glow_Destruct(&chest->unk_844);
     RoomObject_DestructBase(&chest->base);
     RoomObject_Free(chest);
@@ -736,7 +736,7 @@ CLEAN_AS(func_ov004_022177a0, Chest_Delete)
 /* func_ov004_022177d8 (the destructor, vtable slot 0x40) */
 Chest *Chest_Destroy(Chest *chest)
 {
-    Chest_set_vtables(chest);
+    chest_set_vtables(chest);
     Glow_Destruct(&chest->unk_844);
     RoomObject_DestructBase(&chest->base);
     return chest;
@@ -748,7 +748,7 @@ CLEAN_AS(func_ov004_022177d8, Chest_Destroy)
 Chest *Chest_Construct(Chest *chest)
 {
     RoomObject_ConstructBase(&chest->base);
-    Chest_set_vtables(chest);
+    chest_set_vtables(chest);
     Glow_Construct(&chest->unk_844);
     chest->lid = CHEST_LID_CLOSED;
     return chest;
@@ -768,7 +768,7 @@ CLEAN_AS(func_ov004_02217848, Chest_Create)
 /* The receiver part (at 0xec, RoomObject.receiver_vtable) enters Chest's functions
  * through its vtable with these: each moves the pointer back to the object and goes on with the
  * object's function. */
-static Chest *Chest_from_receiver(void *receiver)
+static Chest *chest_from_receiver(void *receiver)
 {
     return (Chest *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
 }
@@ -776,13 +776,13 @@ static Chest *Chest_from_receiver(void *receiver)
 /* func_ov004_0221a794: the deleting destructor, entered from the receiver part. */
 Chest *ChestReceiver_Delete(void *receiver)
 {
-    return Chest_Delete(Chest_from_receiver(receiver));
+    return Chest_Delete(chest_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_0225211cD0Ev, ChestReceiver_Delete)
 
 /* func_ov004_0221a7b0: the destructor, entered from the receiver part. */
 Chest *ChestReceiver_Destroy(void *receiver)
 {
-    return Chest_Destroy(Chest_from_receiver(receiver));
+    return Chest_Destroy(chest_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_0225211cD1Ev, ChestReceiver_Destroy)

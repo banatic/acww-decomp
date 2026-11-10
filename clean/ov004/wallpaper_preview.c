@@ -63,7 +63,7 @@ int WallpaperPreview_Start(WallpaperPreview *object)
 }
 CLEAN_AS(func_ov004_022128ec, WallpaperPreview_Start)
 
-static void WallpaperPreview_set_vtables(WallpaperPreview *object)
+static void wallpaper_preview_set_vtables(WallpaperPreview *object)
 {
     object->base.vtable = (const RoomObjectVtable *) data_ov004_022511e0;
     object->base.receiver_vtable = data_ov004_0225128c;
@@ -73,7 +73,7 @@ static void WallpaperPreview_set_vtables(WallpaperPreview *object)
  * QUIRK: the material texture binding at 0x848 the constructor built is not taken down. */
 WallpaperPreview *WallpaperPreview_Delete(WallpaperPreview *object)
 {
-    WallpaperPreview_set_vtables(object);
+    wallpaper_preview_set_vtables(object);
     RoomObject_DestructBase(&object->base);
     RoomObject_Free(object);
     return object;
@@ -83,7 +83,7 @@ CLEAN_AS(func_ov004_02212978, WallpaperPreview_Delete)
 /* func_ov004_022129a4 (the destructor, vtable slot 0x40); the same QUIRK. */
 WallpaperPreview *WallpaperPreview_Destroy(WallpaperPreview *object)
 {
-    WallpaperPreview_set_vtables(object);
+    wallpaper_preview_set_vtables(object);
     RoomObject_DestructBase(&object->base);
     return object;
 }
@@ -94,7 +94,7 @@ CLEAN_AS(func_ov004_022129a4, WallpaperPreview_Destroy)
 WallpaperPreview *WallpaperPreview_Construct(WallpaperPreview *object)
 {
     RoomObject_ConstructBase(&object->base);
-    WallpaperPreview_set_vtables(object);
+    wallpaper_preview_set_vtables(object);
     VramCopyMaterial_Construct(&object->material_texture);
     return object;
 }
@@ -113,7 +113,7 @@ CLEAN_AS(func_ov004_022129f8, WallpaperPreview_Create)
 /* The receiver part (at 0xec, RoomObject.receiver_vtable) enters WallpaperPreview's functions
  * through its vtable with these: each moves the pointer back to the object and goes on with the
  * object's function. */
-static WallpaperPreview *WallpaperPreview_from_receiver(void *receiver)
+static WallpaperPreview *wallpaper_preview_from_receiver(void *receiver)
 {
     return (WallpaperPreview *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
 }
@@ -121,13 +121,13 @@ static WallpaperPreview *WallpaperPreview_from_receiver(void *receiver)
 /* func_ov004_0221ab4c: the deleting destructor, entered from the receiver part. */
 WallpaperPreview *WallpaperPreviewReceiver_Delete(void *receiver)
 {
-    return WallpaperPreview_Delete(WallpaperPreview_from_receiver(receiver));
+    return WallpaperPreview_Delete(wallpaper_preview_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_022511e0D0Ev, WallpaperPreviewReceiver_Delete)
 
 /* func_ov004_0221ab68: the destructor, entered from the receiver part. */
 WallpaperPreview *WallpaperPreviewReceiver_Destroy(void *receiver)
 {
-    return WallpaperPreview_Destroy(WallpaperPreview_from_receiver(receiver));
+    return WallpaperPreview_Destroy(wallpaper_preview_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_022511e0D1Ev, WallpaperPreviewReceiver_Destroy)

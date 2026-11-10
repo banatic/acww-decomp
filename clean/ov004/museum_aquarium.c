@@ -112,23 +112,23 @@ extern void func_0205c8a8(void);
 #define SEA_PUSH_SHARE 0x866
 #define MOST_ROCK_PUSH 143
 
-static TouchPick *Aquarium_pick(void)
+static TouchPick *aquarium_pick(void)
 {
     return (TouchPick *) (intptr_t) SceneQuery_FieldObject();
 }
 
-static Heap *Aquarium_entry_heap(ModelPoolEntry *entry)
+static Heap *aquarium_entry_heap(ModelPoolEntry *entry)
 {
     return (Heap *) (intptr_t) ModelPoolEntry_Heap(entry);
 }
 
 /* The fish's own virtual functions: slot 0 sets it up, slot 1 runs its frame. */
-static void AquariumFish_call(AquariumFish *fish, int slot)
+static void aquarium_fish_call(AquariumFish *fish, int slot)
 {
     ((void (*)(AquariumFish *))(uintptr_t) fish->vtable[slot])(fish);
 }
 
-static Vec3 *Aquarium_fish_field(AquariumFish *fish, u32 offset)
+static Vec3 *aquarium_fish_field(AquariumFish *fish, u32 offset)
 {
     return (Vec3 *) ((u8 *) fish + offset);
 }
@@ -150,7 +150,7 @@ void Aquarium_ApplyLargerShift(MuseumAquarium *self, fx32 *coordinate, fx32 head
 CLEAN_AS(func_ov004_02234024, Aquarium_ApplyLargerShift)
 
 /* The body of a fish set for this frame. */
-static void Aquarium_set_fish_body(AquariumFish *fish, const Vec3 *point, fx32 radius, fx32 height, int touches, int kind,
+static void aquarium_set_fish_body(AquariumFish *fish, const Vec3 *point, fx32 radius, fx32 height, int touches, int kind,
                                    fx32 weight)
 {
     FieldPointBody_Set(&fish->body.base, point, radius, height, FISH_BODY_FLAGS, touches, FISH_BODY_KIND, (u8) kind, weight);
@@ -175,22 +175,22 @@ void Aquarium_KeepInTank(MuseumAquarium *self, AquariumFish **slot, int kind)
     }
     fx32 height = (fx32) info->body_height << 5;
     if (data_ov004_022593a0 == AQUARIUM_RIVER_ROOM) {
-        Aquarium_set_fish_body(fish, &fish->position, length, height, FISH_BODY_TOUCHES, kind, weight);
+        aquarium_set_fish_body(fish, &fish->position, length, height, FISH_BODY_TOUCHES, kind, weight);
     } else if (data_ov004_022593a0 == AQUARIUM_SEA_ROOM) {
         if (kind == KIND_FISH_36) {
             if (data_ov004_022593b4 != NULL) {
-                Aquarium_set_fish_body(fish, Aquarium_fish_field(data_ov004_022593b4, 0x26c), length, height,
+                aquarium_set_fish_body(fish, aquarium_fish_field(data_ov004_022593b4, 0x26c), length, height,
                                        FISH_BODY_TOUCHES_SEA, kind, weight);
             }
         } else if (kind == KIND_FISH_35) {
             if (data_ov004_022593b8 != NULL) {
-                Aquarium_set_fish_body(fish, Aquarium_fish_field(data_ov004_022593b8, 0x264), length, height,
+                aquarium_set_fish_body(fish, aquarium_fish_field(data_ov004_022593b8, 0x264), length, height,
                                        FISH_BODY_TOUCHES_SEA, kind, weight);
             }
         } else if (kind == KIND_FISH_38) {
-            Aquarium_set_fish_body(fish, &fish->position, length, height, FISH_BODY_TOUCHES, kind, weight);
+            aquarium_set_fish_body(fish, &fish->position, length, height, FISH_BODY_TOUCHES, kind, weight);
         } else {
-            Aquarium_set_fish_body(fish, &fish->position, length, height, FISH_BODY_TOUCHES_SEA, kind, weight);
+            aquarium_set_fish_body(fish, &fish->position, length, height, FISH_BODY_TOUCHES_SEA, kind, weight);
         }
     }
     FieldBody_Enter(&fish->body.base.body);
@@ -229,7 +229,7 @@ void Aquarium_KeepInTank(MuseumAquarium *self, AquariumFish **slot, int kind)
 CLEAN_AS(func_ov004_0223405c, Aquarium_KeepInTank)
 
 /* The fish of `kind` in the record. */
-static int Aquarium_given(int kind)
+static int aquarium_given(int kind)
 {
     u16 item = (u32) kind < AQUARIUM_FISH_KINDS ? (u16) (0x12e8 + kind) : 0x12e8;
     return MuseumRecord_IsGiven(&data_021f38f8, &item);
@@ -237,7 +237,7 @@ static int Aquarium_given(int kind)
 
 /* A placed fish at its height, its previous position the same, its size from the table; then
  * shown. */
-static void Aquarium_finish_place(MuseumAquarium *self, AquariumFish *fish, int kind)
+static void aquarium_finish_place(MuseumAquarium *self, AquariumFish *fish, int kind)
 {
     const AquariumFishInfo *info = &data_ov004_02247924[kind];
     fish->position.y = ((fx32) info->depth << 6) - FX32_ONE;
@@ -251,7 +251,7 @@ static void Aquarium_finish_place(MuseumAquarium *self, AquariumFish *fish, int 
 void Aquarium_PlaceSeaFish(MuseumAquarium *self)
 {
     for (int kind = data_ov004_022593a4; kind < (int) data_ov004_02255c30; kind++) {
-        if (!Aquarium_given(kind)) {
+        if (!aquarium_given(kind)) {
             continue;
         }
         AquariumFish *fish = data_ov004_022594d4[kind];
@@ -279,7 +279,7 @@ void Aquarium_PlaceSeaFish(MuseumAquarium *self)
                 fish->position.x = AquariumSwim_RandomUnits(5, 30);
                 break;
         }
-        Aquarium_finish_place(self, fish, kind);
+        aquarium_finish_place(self, fish, kind);
     }
 }
 CLEAN_AS(func_ov004_02234418, Aquarium_PlaceSeaFish)
@@ -289,7 +289,7 @@ CLEAN_AS(func_ov004_02234418, Aquarium_PlaceSeaFish)
 void Aquarium_PlaceRiverFish(MuseumAquarium *self)
 {
     for (int kind = data_ov004_022593a4; kind < (int) data_ov004_02255c30; kind++) {
-        if (!Aquarium_given(kind)) {
+        if (!aquarium_given(kind)) {
             continue;
         }
         AquariumFish *fish = data_ov004_022594d4[kind];
@@ -306,7 +306,7 @@ void Aquarium_PlaceRiverFish(MuseumAquarium *self)
             fish->position.x = AquariumSwim_RandomUnits(9, 26);
             fish->position.z = AquariumSwim_RandomUnits(19, 24);
         }
-        Aquarium_finish_place(self, fish, kind);
+        aquarium_finish_place(self, fish, kind);
     }
 }
 CLEAN_AS(func_ov004_02234570, Aquarium_PlaceRiverFish)
@@ -343,7 +343,7 @@ int Aquarium_Draw(MuseumAquarium *self)
         if (fish->index == KIND_FISH_11) {
             Aquarium_SetFishMatrix(self, slot);
         } else if (fish->index == KIND_FISH_36 && data_ov004_022593b4 != NULL) {
-            scale = *Aquarium_fish_field(data_ov004_022593b4, 0x258);
+            scale = *aquarium_fish_field(data_ov004_022593b4, 0x258);
         }
         AnimatedModel_Draw(&(*slot)->model, &scale);
     }
@@ -381,10 +381,10 @@ int Aquarium_LoadFish(MuseumAquarium *self, AquariumFish **slot, int kind)
     }
     fish->yaw = AquariumSwim_RandomAngle(0x168, 0);
     fish->target_yaw = fish->yaw;
-    AquariumFish_call(fish, 0);
+    aquarium_fish_call(fish, 0);
     AnimatedModel *model = &fish->model;
     ModelObject_SetModel(&model->object, (u8 *) (intptr_t) ModelPoolFiles_Model(files), NULL);
-    Heap *heap = Aquarium_entry_heap(entry);
+    Heap *heap = aquarium_entry_heap(entry);
     if (fish->anims[0] == NULL) {
         Aquarium_ReleaseFish(self, kind);
         return 0;
@@ -395,7 +395,7 @@ int Aquarium_LoadFish(MuseumAquarium *self, AquariumFish **slot, int kind)
     }
     AnimatedModel_Start(model, track, FISH_ANIM_FLAGS, FX32_ONE, FISH_ANIM_START, FISH_ANIM_FRAMES);
     AnimatedModel_Attach(model);
-    ModelObject_AllocJointResults(&model->object, Aquarium_entry_heap(entry));
+    ModelObject_AllocJointResults(&model->object, aquarium_entry_heap(entry));
     fish->state = AQUARIUM_FISH_SHOWN;
     fish->focus = (u8) fish->index;
     Aquarium_SetFishMatrix(self, slot);
@@ -428,10 +428,10 @@ int Aquarium_Update(MuseumAquarium *self)
 {
     u8 room = data_ov004_022593a0;
     if (room == AQUARIUM_RIVER_ROOM) {
-        TouchPick_AddFaces(Aquarium_pick(), self->glass[0]);
-        TouchPick_AddFaces(Aquarium_pick(), self->glass[1]);
+        TouchPick_AddFaces(aquarium_pick(), self->glass[0]);
+        TouchPick_AddFaces(aquarium_pick(), self->glass[1]);
     } else if (room == AQUARIUM_SEA_ROOM) {
-        TouchPick_AddFaces(Aquarium_pick(), self->glass[0]);
+        TouchPick_AddFaces(aquarium_pick(), self->glass[0]);
     }
     for (int kind = data_ov004_02255c30 - 1; kind >= data_ov004_022593a4; kind--) {
         AquariumFish **slot = &data_ov004_022594d4[kind];
@@ -445,7 +445,7 @@ int Aquarium_Update(MuseumAquarium *self)
 CLEAN_AS(func_ov004_02234a04, Aquarium_Update)
 
 /* A fish's push from the bodies it touched, as much of it as it follows. */
-static fx32 Aquarium_push_share(fx32 push, fx32 share)
+static fx32 aquarium_push_share(fx32 push, fx32 share)
 {
     return FX_MulFunc(push, share);
 }
@@ -459,8 +459,8 @@ void Aquarium_SwimFish(MuseumAquarium *self, AquariumFish **slot, int kind)
     AquariumFish *fish = *slot;
     FieldBody *body = &fish->body.base.body;
     if (data_ov004_022593a0 == AQUARIUM_RIVER_ROOM) {
-        fx32 x = Aquarium_push_share(body->push.x, RIVER_PUSH_SHARE);
-        fx32 z = Aquarium_push_share(body->push.z, RIVER_PUSH_SHARE);
+        fx32 x = aquarium_push_share(body->push.x, RIVER_PUSH_SHARE);
+        fx32 z = aquarium_push_share(body->push.z, RIVER_PUSH_SHARE);
         if (body->touched) {
             if (body->touch_index >= FIRST_ROCK_INDEX) {
                 if ((x < 0 ? -x : x) > MOST_ROCK_PUSH) {
@@ -474,14 +474,14 @@ void Aquarium_SwimFish(MuseumAquarium *self, AquariumFish **slot, int kind)
             fish->position.z += z;
         }
     } else if (data_ov004_022593a0 == AQUARIUM_SEA_ROOM) {
-        fx32 x = Aquarium_push_share(body->push.x, SEA_PUSH_SHARE);
-        fx32 z = Aquarium_push_share(body->push.z, SEA_PUSH_SHARE);
+        fx32 x = aquarium_push_share(body->push.x, SEA_PUSH_SHARE);
+        fx32 z = aquarium_push_share(body->push.z, SEA_PUSH_SHARE);
         if (body->touched) {
             fish->position.x += x;
             fish->position.z += z;
         }
     }
-    AquariumFish_call(*slot, 1);
+    aquarium_fish_call(*slot, 1);
     AquariumFish_ClearMeetings(*slot);
     Aquarium_KeepInTank(self, slot, kind);
     Aquarium_SetFishMatrix(self, slot);
@@ -532,7 +532,7 @@ int Aquarium_LoadFishAnims(MuseumAquarium *self, AquariumFish **slot, int kind, 
 CLEAN_AS(func_ov004_02234be0, Aquarium_LoadFishAnims)
 
 /* A fish of `size` bytes from `heap` put in the table at `kind` (NULL when there is no room). */
-static void *Aquarium_alloc(Heap *heap, int kind, int size)
+static void *aquarium_alloc(Heap *heap, int kind, int size)
 {
     data_ov004_022594d4[kind] = Heap_Alloc(heap, size);
     return data_ov004_022594d4[kind];
@@ -540,7 +540,7 @@ static void *Aquarium_alloc(Heap *heap, int kind, int size)
 
 /* After a fish is made: those of three animations note it, and their animations are loaded.
  * 0 when the fish or its animations are missing (the fish is then released). */
-static int Aquarium_finish_create(MuseumAquarium *self, int kind)
+static int aquarium_finish_create(MuseumAquarium *self, int kind)
 {
     AquariumFish **slot = &data_ov004_022594d4[kind];
     if (*slot == NULL) {
@@ -572,60 +572,60 @@ int Aquarium_CreateSeaFish(MuseumAquarium *self)
         void *fish;
         switch (kind) {
             case 36:
-                if ((fish = Aquarium_alloc(heap, kind, 0x28c)) != NULL) {
+                if ((fish = aquarium_alloc(heap, kind, 0x28c)) != NULL) {
                     AquariumKind36_Construct(fish);
                 }
                 break;
             case 50:
             case 51:
-                if ((fish = Aquarium_alloc(heap, kind, 0x258)) != NULL) {
+                if ((fish = aquarium_alloc(heap, kind, 0x258)) != NULL) {
                     AquariumNonstopFish_Construct(fish);
                 }
                 break;
             case 52:
             case 53:
             case 54:
-                if ((fish = Aquarium_alloc(heap, kind, 0x258)) != NULL) {
+                if ((fish = aquarium_alloc(heap, kind, 0x258)) != NULL) {
                     AquariumLaneFish_Construct(fish);
                 }
                 break;
             case 35:
-                if ((fish = Aquarium_alloc(heap, kind, 0x278)) != NULL) {
+                if ((fish = aquarium_alloc(heap, kind, 0x278)) != NULL) {
                     AquariumKind35_Construct(fish);
                 }
                 break;
             case 37:
-                if ((fish = Aquarium_alloc(heap, kind, 0x26c)) != NULL) {
+                if ((fish = aquarium_alloc(heap, kind, 0x26c)) != NULL) {
                     AquariumKind37_Construct(fish);
                 }
                 break;
             case 40:
-                if ((fish = Aquarium_alloc(heap, kind, 0x25c)) != NULL) {
+                if ((fish = aquarium_alloc(heap, kind, 0x25c)) != NULL) {
                     AquariumKind40_Construct(fish);
                 }
                 break;
             case 38:
-                if ((fish = Aquarium_alloc(heap, kind, 0x27c)) != NULL) {
+                if ((fish = aquarium_alloc(heap, kind, 0x27c)) != NULL) {
                     AquariumHomeFish_Construct(fish);
                 }
                 break;
             case 47:
-                if ((fish = Aquarium_alloc(heap, kind, 0x258)) != NULL) {
+                if ((fish = aquarium_alloc(heap, kind, 0x258)) != NULL) {
                     AquariumKind47_Construct(fish);
                 }
                 break;
             case 48:
-                if ((fish = Aquarium_alloc(heap, kind, 0x1fc)) != NULL) {
+                if ((fish = aquarium_alloc(heap, kind, 0x1fc)) != NULL) {
                     AquariumKind48_Construct(fish);
                 }
                 break;
             default:
-                if ((fish = Aquarium_alloc(heap, kind, 0x258)) != NULL) {
+                if ((fish = aquarium_alloc(heap, kind, 0x258)) != NULL) {
                     AquariumSwimmer_Construct(fish);
                 }
                 break;
         }
-        if (!Aquarium_finish_create(self, kind)) {
+        if (!aquarium_finish_create(self, kind)) {
             return 0;
         }
     }
@@ -648,43 +648,43 @@ int Aquarium_CreateRiverFish(MuseumAquarium *self)
         void *fish;
         switch (kind) {
             case 11:
-                if ((fish = Aquarium_alloc(heap, kind, 0x214)) != NULL) {
+                if ((fish = aquarium_alloc(heap, kind, 0x214)) != NULL) {
                     AquariumKind11_Construct(fish);
                 }
                 break;
             case 15:
-                if ((fish = Aquarium_alloc(heap, kind, 0x210)) != NULL) {
+                if ((fish = aquarium_alloc(heap, kind, 0x210)) != NULL) {
                     AquariumKind15_Construct(fish);
                 }
                 break;
             case 12:
-                if ((fish = Aquarium_alloc(heap, kind, 0x27c)) != NULL) {
+                if ((fish = aquarium_alloc(heap, kind, 0x27c)) != NULL) {
                     AquariumHomeFish_Construct(fish);
                 }
                 break;
             case 10:
-                if ((fish = Aquarium_alloc(heap, kind, 0x220)) != NULL) {
+                if ((fish = aquarium_alloc(heap, kind, 0x220)) != NULL) {
                     AquariumKind10_Construct(fish);
                 }
                 break;
             case 30:
-                if ((fish = Aquarium_alloc(heap, kind, 0x25c)) != NULL) {
+                if ((fish = aquarium_alloc(heap, kind, 0x25c)) != NULL) {
                     AquariumKind30_Construct(fish);
                 }
                 break;
             case 5:
             case 6:
-                if ((fish = Aquarium_alloc(heap, kind, 0x25c)) != NULL) {
+                if ((fish = aquarium_alloc(heap, kind, 0x25c)) != NULL) {
                     AquariumRisingFish_Construct(fish);
                 }
                 break;
             default:
-                if ((fish = Aquarium_alloc(heap, kind, 0x258)) != NULL) {
+                if ((fish = aquarium_alloc(heap, kind, 0x258)) != NULL) {
                     AquariumSwimmer_Construct(fish);
                 }
                 break;
         }
-        if (!Aquarium_finish_create(self, kind)) {
+        if (!aquarium_finish_create(self, kind)) {
             return 0;
         }
     }
@@ -693,7 +693,7 @@ int Aquarium_CreateRiverFish(MuseumAquarium *self)
 }
 CLEAN_AS(func_ov004_02234eac, Aquarium_CreateRiverFish)
 
-static void Aquarium_set_rock(AquariumRock *rock, fx32 x, fx32 y, fx32 z, fx32 radius, fx32 height)
+static void aquarium_set_rock(AquariumRock *rock, fx32 x, fx32 y, fx32 z, fx32 radius, fx32 height)
 {
     rock->point.x = x;
     rock->point.y = y;
@@ -710,26 +710,26 @@ int Aquarium_Init(MuseumAquarium *self)
     ModelPool_Create(&self->pool, 0x38, 0x800, 0x80, 0xc00, func_0205c8c4, func_0205c8a8, NULL);
     data_ov004_022593a0 = (u8) self->base.param;
     if (data_ov004_022593a0 == AQUARIUM_RIVER_ROOM) {
-        Aquarium_set_rock(&self->rocks[0], 0xc000, 0x700, 0x5600, 0x1000, 0x800);
-        Aquarium_set_rock(&self->rocks[1], 0x15200, 0x700, 0x6200, 0x1000, 0xd00);
-        Aquarium_set_rock(&self->rocks[2], 0x9c00, 0x700, 0x14b00, 0xa00, 0xa00);
-        Aquarium_set_rock(&self->rocks[3], 0x15900, 0x700, 0x13900, 0x1000, 0x800);
-        Aquarium_set_rock(&self->rocks[4], 0x14c00, 0x700, 0x14a00, 0x700, 0x700);
+        aquarium_set_rock(&self->rocks[0], 0xc000, 0x700, 0x5600, 0x1000, 0x800);
+        aquarium_set_rock(&self->rocks[1], 0x15200, 0x700, 0x6200, 0x1000, 0xd00);
+        aquarium_set_rock(&self->rocks[2], 0x9c00, 0x700, 0x14b00, 0xa00, 0xa00);
+        aquarium_set_rock(&self->rocks[3], 0x15900, 0x700, 0x13900, 0x1000, 0x800);
+        aquarium_set_rock(&self->rocks[4], 0x14c00, 0x700, 0x14a00, 0x700, 0x700);
         data_ov004_02255c34 = 5;
         Aquarium_CreateRiverFish(self);
-        TouchPick_SetBoxAndAdd(Aquarium_pick(), self->glass[0], &data_ov004_022593dc, RIVER_TANK_WIDTH, RIVER_TANK_DEPTH,
+        TouchPick_SetBoxAndAdd(aquarium_pick(), self->glass[0], &data_ov004_022593dc, RIVER_TANK_WIDTH, RIVER_TANK_DEPTH,
                                TANK_HEIGHT, 0, GLASS_KIND, 0);
-        TouchPick_SetBoxAndAdd(Aquarium_pick(), self->glass[1], &data_ov004_022593c4, RIVER_TANK_WIDTH, RIVER_TANK_DEPTH,
+        TouchPick_SetBoxAndAdd(aquarium_pick(), self->glass[1], &data_ov004_022593c4, RIVER_TANK_WIDTH, RIVER_TANK_DEPTH,
                                TANK_HEIGHT, 0, GLASS_KIND, 1);
     } else {
-        Aquarium_set_rock(&self->rocks[0], 0x8b00, -0xd00, 0x13e00, 0x800, 0x1200);
-        Aquarium_set_rock(&self->rocks[1], 0x9e00, -0xd00, 0x14700, 0x1100, 0x1500);
-        Aquarium_set_rock(&self->rocks[2], 0x12f00, -0xd00, 0x13d00, 0xa00, 0xd00);
-        Aquarium_set_rock(&self->rocks[3], 0x16e00, -0xd00, 0x13100, 0x1200, 0x1400);
+        aquarium_set_rock(&self->rocks[0], 0x8b00, -0xd00, 0x13e00, 0x800, 0x1200);
+        aquarium_set_rock(&self->rocks[1], 0x9e00, -0xd00, 0x14700, 0x1100, 0x1500);
+        aquarium_set_rock(&self->rocks[2], 0x12f00, -0xd00, 0x13d00, 0xa00, 0xd00);
+        aquarium_set_rock(&self->rocks[3], 0x16e00, -0xd00, 0x13100, 0x1200, 0x1400);
         data_ov004_02255c34 = 4;
-        Aquarium_set_rock(&self->rocks[AQUARIUM_EXTRA_ROCK], 0x9e00, -0xd00, 0x14700, 0xc00, 0x2000);
+        aquarium_set_rock(&self->rocks[AQUARIUM_EXTRA_ROCK], 0x9e00, -0xd00, 0x14700, 0xc00, 0x2000);
         Aquarium_CreateSeaFish(self);
-        TouchPick_SetBoxAndAdd(Aquarium_pick(), self->glass[0], &data_ov004_022593dc, SEA_TANK_WIDTH, SEA_TANK_DEPTH,
+        TouchPick_SetBoxAndAdd(aquarium_pick(), self->glass[0], &data_ov004_022593dc, SEA_TANK_WIDTH, SEA_TANK_DEPTH,
                                TANK_HEIGHT, 0, GLASS_KIND, 0);
     }
     SoundSys_StartOnHandle38(AQUARIUM_SOUND);

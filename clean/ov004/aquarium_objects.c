@@ -75,12 +75,12 @@ extern const u32 data_0213f020[];
 #define KIND36_LEAST_SCALE 0xccd
 
 /* A rock's body is a fish's body (0x50 bytes) of no fish. */
-static AquariumFishBody *AquariumObjects_rock_body(AquariumRock *rock)
+static AquariumFishBody *aquarium_objects_rock_body(AquariumRock *rock)
 {
     return (AquariumFishBody *) (void *) rock;
 }
 
-static AquariumFish *AquariumObjects_swimmer_base(AquariumFish *fish, const u32 *vtable)
+static AquariumFish *aquarium_objects_swimmer_base(AquariumFish *fish, const u32 *vtable)
 {
     AquariumSwimmer_ConstructBase(fish);
     fish->vtable = vtable;
@@ -92,18 +92,18 @@ static AquariumFish *AquariumObjects_swimmer_base(AquariumFish *fish, const u32 
 /* func_ov004_02239c5c: a rock's destructor: its body's. The rock, as a number. */
 int AquariumRock_Destruct(AquariumRock *rock)
 {
-    AquariumFishBody_Destruct(AquariumObjects_rock_body(rock));
+    AquariumFishBody_Destruct(aquarium_objects_rock_body(rock));
     return (int) (intptr_t) rock;
 }
 CLEAN_AS(func_ov004_02239c5c, AquariumRock_Destruct)
 
 /* The aquarium's destructor, but for the process base's. */
-static void Aquarium_destruct_own(MuseumAquarium *self)
+static void aquarium_destruct_own(MuseumAquarium *self)
 {
     self->base.vtable = data_ov004_02255ebc;
     ModelPool_Destruct(&self->pool);
     __cxa_vec_cleanup(self->glass, AQUARIUM_TANKS, sizeof(self->glass[0]), func_020b82d0);
-    AquariumFishBody_Destruct(AquariumObjects_rock_body(&self->rocks[AQUARIUM_EXTRA_ROCK]));
+    AquariumFishBody_Destruct(aquarium_objects_rock_body(&self->rocks[AQUARIUM_EXTRA_ROCK]));
     __cxa_vec_cleanup(self->rocks, AQUARIUM_ROCKS, sizeof(AquariumRock), func_ov004_02239c5c);
     self->base.vtable = data_020da13c;
     Process_Destruct(&self->base);
@@ -113,7 +113,7 @@ static void Aquarium_destruct_own(MuseumAquarium *self)
  * freed (Heap_FreeAux). */
 MuseumAquarium *Aquarium_DestructFree(MuseumAquarium *self)
 {
-    Aquarium_destruct_own(self);
+    aquarium_destruct_own(self);
     Heap_FreeAux(self);
     return self;
 }
@@ -123,7 +123,7 @@ CLEAN_AS(func_ov004_02239c6c, Aquarium_DestructFree)
  * glass of both tanks, the rocks (the extra one first), then the process base. */
 MuseumAquarium *Aquarium_Destruct(MuseumAquarium *self)
 {
-    Aquarium_destruct_own(self);
+    aquarium_destruct_own(self);
     return self;
 }
 CLEAN_AS(func_ov004_02239cd4, Aquarium_Destruct)
@@ -136,7 +136,7 @@ MuseumAquarium *Aquarium_Construct(MuseumAquarium *self)
     self->base.vtable = data_020da13c;
     self->base.vtable = data_ov004_02255ebc;
     __cxa_vec_ctor(self->rocks, AQUARIUM_ROCKS, sizeof(AquariumRock), func_ov004_02239da8, func_ov004_02239c5c);
-    AquariumFishBody_Construct(AquariumObjects_rock_body(&self->rocks[AQUARIUM_EXTRA_ROCK]));
+    AquariumFishBody_Construct(aquarium_objects_rock_body(&self->rocks[AQUARIUM_EXTRA_ROCK]));
     __cxa_vec_ctor(self->glass, AQUARIUM_TANKS, sizeof(self->glass[0]), func_020b82ec, func_020b82d0);
     ModelPool_Init(&self->pool);
     return self;
@@ -146,7 +146,7 @@ CLEAN_AS(func_ov004_02239d34, Aquarium_Construct)
 /* func_ov004_02239da8: a rock's constructor: its body's. The rock, as a number. */
 int AquariumRock_Construct(AquariumRock *rock)
 {
-    AquariumFishBody_Construct(AquariumObjects_rock_body(rock));
+    AquariumFishBody_Construct(aquarium_objects_rock_body(rock));
     return (int) (intptr_t) rock;
 }
 CLEAN_AS(func_ov004_02239da8, AquariumRock_Construct)
@@ -205,7 +205,7 @@ CLEAN_AS(func_ov004_02239e28, AquariumKind47_Destruct)
 /* func_ov004_02239e40: its mode does not run yet. */
 AquariumKind47 *AquariumKind47_Construct(AquariumKind47 *fish)
 {
-    AquariumObjects_swimmer_base(&fish->base, data_ov004_02255e5c);
+    aquarium_objects_swimmer_base(&fish->base, data_ov004_02255e5c);
     fish->own.may_swim = 0;
     return fish;
 }
@@ -235,7 +235,7 @@ CLEAN_AS(func_ov004_02239e84, AquariumHomeFish_Destruct)
 /* func_ov004_02239e9c: its own fields are left for its set-up. */
 AquariumHomeFish *AquariumHomeFish_Construct(AquariumHomeFish *fish)
 {
-    AquariumObjects_swimmer_base(&fish->base, data_ov004_02255d3c);
+    aquarium_objects_swimmer_base(&fish->base, data_ov004_02255d3c);
     return fish;
 }
 CLEAN_AS(func_ov004_02239e9c, AquariumHomeFish_Construct)
@@ -264,7 +264,7 @@ CLEAN_AS(func_ov004_02239ed4, AquariumRisingFish_Destruct)
 /* func_ov004_02239eec: swimming on, not rising, its climb set upwards. */
 AquariumRisingFish *AquariumRisingFish_Construct(AquariumRisingFish *fish)
 {
-    AquariumObjects_swimmer_base(&fish->base, data_ov004_02255d54);
+    aquarium_objects_swimmer_base(&fish->base, data_ov004_02255d54);
     fish->own.stage = 0;
     fish->own.frames_up = 0;
     fish->own.rising = 0;
@@ -298,7 +298,7 @@ CLEAN_AS(func_ov004_02239f50, AquariumKind30_Destruct)
 /* func_ov004_02239f68: wandering, its snap waiting. */
 AquariumKind30 *AquariumKind30_Construct(AquariumKind30 *fish)
 {
-    AquariumObjects_swimmer_base(&fish->base, data_ov004_02255d9c);
+    aquarium_objects_swimmer_base(&fish->base, data_ov004_02255d9c);
     fish->own.state = AQUARIUM_KIND30_WANDER;
     fish->own.snap = AQUARIUM_SNAP_WAIT;
     fish->own.count = 0;
@@ -330,7 +330,7 @@ CLEAN_AS(func_ov004_02239fbc, AquariumKind40_Destruct)
 /* func_ov004_02239fd4: calm and untouched. */
 AquariumKind40 *AquariumKind40_Construct(AquariumKind40 *fish)
 {
-    AquariumObjects_swimmer_base(&fish->base, data_ov004_02255dcc);
+    aquarium_objects_swimmer_base(&fish->base, data_ov004_02255dcc);
     fish->own.touched = 0;
     fish->own.phase = AQUARIUM_KIND40_CALM;
     fish->own.held = 0;
@@ -394,7 +394,7 @@ CLEAN_AS(func_ov004_0223a084, AquariumKind37_Destruct)
  * rocking down. */
 AquariumKind37 *AquariumKind37_Construct(AquariumKind37 *fish)
 {
-    AquariumObjects_swimmer_base(&fish->base, data_ov004_02255de4);
+    aquarium_objects_swimmer_base(&fish->base, data_ov004_02255de4);
     fish->own.climb = AQUARIUM_CLIMB_COAST;
     fish->climber.own.climb_frames = 0;
     fish->base.speed = KIND37_SPEED;
@@ -428,7 +428,7 @@ CLEAN_AS(func_ov004_0223a0fc, AquariumKind35_Destruct)
  * rocking down. */
 AquariumKind35 *AquariumKind35_Construct(AquariumKind35 *fish)
 {
-    AquariumObjects_swimmer_base(&fish->base, data_ov004_02255dfc);
+    aquarium_objects_swimmer_base(&fish->base, data_ov004_02255dfc);
     fish->own.climb = AQUARIUM_CLIMB_COAST;
     fish->climber.own.climb_frames = 0;
     fish->base.speed = KIND35_SPEED;
@@ -526,7 +526,7 @@ CLEAN_AS(func_ov004_0223a244, AquariumLaneFish_Destruct)
 /* func_ov004_0223a25c */
 AquariumLaneFish *AquariumLaneFish_Construct(AquariumLaneFish *fish)
 {
-    AquariumObjects_swimmer_base(&fish->base, data_ov004_02255d6c);
+    aquarium_objects_swimmer_base(&fish->base, data_ov004_02255d6c);
     fish->own.unk_255 = 0;
     fish->own.unk_256 = 0;
     return fish;
@@ -557,7 +557,7 @@ CLEAN_AS(func_ov004_0223a2a8, AquariumNonstopFish_Destruct)
 /* func_ov004_0223a2c0 */
 AquariumFish *AquariumNonstopFish_Construct(AquariumFish *fish)
 {
-    AquariumObjects_swimmer_base(fish, data_ov004_02255d84);
+    aquarium_objects_swimmer_base(fish, data_ov004_02255d84);
     ((AquariumSwimmerFields *) fish)->own.unk_238 = 0;
     return fish;
 }
@@ -588,7 +588,7 @@ CLEAN_AS(func_ov004_0223a304, AquariumKind36_Destruct)
  * pulsing by 0x14 a frame down to 0.8, its pitch rocking down. */
 AquariumKind36 *AquariumKind36_Construct(AquariumKind36 *fish)
 {
-    AquariumObjects_swimmer_base(&fish->base, data_ov004_02255e14);
+    aquarium_objects_swimmer_base(&fish->base, data_ov004_02255e14);
     fish->own.climb = AQUARIUM_CLIMB_COAST;
     fish->climber.own.climb_frames = 0;
     fish->base.speed = KIND36_SPEED;
@@ -630,7 +630,7 @@ AquariumFish *AquariumSwimmer_Destruct(AquariumFish *fish)
 CLEAN_AS(func_ov004_0223a3ac, AquariumSwimmer_Destruct)
 
 /* A swimmer starts setting off on a new course, not bending nor turning from the glass. */
-static AquariumFish *AquariumSwimmer_construct(AquariumFish *fish)
+static AquariumFish *aquarium_swimmer_construct(AquariumFish *fish)
 {
     AquariumFish_Construct(fish);
     fish->vtable = data_ov004_02255ea4;
@@ -654,21 +654,21 @@ static AquariumFish *AquariumSwimmer_construct(AquariumFish *fish)
 /* func_ov004_0223a3c4: the constructor the aquarium runs. */
 AquariumFish *AquariumSwimmer_Construct(AquariumFish *fish)
 {
-    return AquariumSwimmer_construct(fish);
+    return aquarium_swimmer_construct(fish);
 }
 CLEAN_AS(func_ov004_0223a3c4, AquariumSwimmer_Construct)
 
 /* func_ov004_0223a458: the constructor its derived classes run, the same. */
 AquariumFish *AquariumSwimmer_ConstructBase(AquariumFish *fish)
 {
-    return AquariumSwimmer_construct(fish);
+    return aquarium_swimmer_construct(fish);
 }
 CLEAN_AS(func_ov004_0223a458, AquariumSwimmer_ConstructBase)
 
 /* ---- AquariumFish */
 
 /* The destructor: the ends, the model's files, its pool entry, the model and the body. */
-static void AquariumFish_destruct(AquariumFish *fish)
+static void aquarium_fish_destruct(AquariumFish *fish)
 {
     fish->vtable = data_ov004_02255db4;
     __cxa_vec_cleanup(fish->ends, 2, sizeof(Vec3), func_020012dc);
@@ -681,7 +681,7 @@ static void AquariumFish_destruct(AquariumFish *fish)
 /* func_ov004_0223a4ec: the destructor its derived classes run. */
 AquariumFish *AquariumFish_DestructBase(AquariumFish *fish)
 {
-    AquariumFish_destruct(fish);
+    aquarium_fish_destruct(fish);
     return fish;
 }
 CLEAN_AS(func_ov004_0223a4ec, AquariumFish_DestructBase)
@@ -689,7 +689,7 @@ CLEAN_AS(func_ov004_0223a4ec, AquariumFish_DestructBase)
 /* func_ov004_0223a53c */
 AquariumFish *AquariumFish_Delete(AquariumFish *fish)
 {
-    AquariumFish_destruct(fish);
+    aquarium_fish_destruct(fish);
     Heap_OperatorDeleteB(fish);
     return fish;
 }
@@ -698,7 +698,7 @@ CLEAN_AS(func_ov004_0223a53c, AquariumFish_Delete)
 /* func_ov004_0223a594 */
 AquariumFish *AquariumFish_Destruct(AquariumFish *fish)
 {
-    AquariumFish_destruct(fish);
+    aquarium_fish_destruct(fish);
     return fish;
 }
 CLEAN_AS(func_ov004_0223a594, AquariumFish_Destruct)

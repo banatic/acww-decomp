@@ -12,7 +12,7 @@ extern LineHandler *data_021c9aa8;
 extern LineHandler *data_021c9aac;
 
 /* A game function at a DS address, called with nothing. */
-static void LineHandlers_Call(u32 function)
+static void line_handlers_call(u32 function)
 {
     ((void (*)(void))(uintptr_t) function)();
 }
@@ -79,7 +79,7 @@ void LineHandlers_RunVBlank(void)
     for (LineHandler *handler = data_021c9aa8; handler != NULL; handler = handler->next) {
         if (handler->state == LINE_HANDLER_ACTIVE || handler->state == LINE_HANDLER_CHANGE) {
             if (handler->vblank_function != 0) {
-                LineHandlers_Call(handler->vblank_function);
+                line_handlers_call(handler->vblank_function);
             }
         }
     }
@@ -96,18 +96,18 @@ void LineHandlers_RunFrame(void)
             handler->state = LINE_HANDLER_ACTIVE;
             handler->hblank_function = handler->next_hblank_function;
             if (handler->vblank_function != 0) {
-                LineHandlers_Call(handler->vblank_function);
+                line_handlers_call(handler->vblank_function);
             }
         }
         if (handler->frame_function != 0) {
-            LineHandlers_Call(handler->frame_function);
+            line_handlers_call(handler->frame_function);
         }
         if (handler->state == LINE_HANDLER_CHANGE) {
             handler->state = LINE_HANDLER_ACTIVE;
             handler->hblank_function = handler->next_hblank_function;
             handler->vblank_function = handler->next_vblank_function;
             if (handler->vblank_function != 0) {
-                LineHandlers_Call(handler->vblank_function);
+                line_handlers_call(handler->vblank_function);
             }
         }
     }

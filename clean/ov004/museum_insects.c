@@ -200,7 +200,7 @@ ModelAnim *InsectAnim_Construct(ModelAnim *self)
 CLEAN_AS(func_ov004_0223eb04, InsectAnim_Construct)
 
 /* The room's members taken down. */
-static void InsectRoom_destruct_members(InsectRoom *self)
+static void insect_room_destruct_members(InsectRoom *self)
 {
     self->base.vtable = data_ov004_022562c0;
     ModelPool_Destruct(&self->pool);
@@ -212,7 +212,7 @@ static void InsectRoom_destruct_members(InsectRoom *self)
 /* func_ov004_0223eb1c (the room's deleting destructor) */
 InsectRoom *InsectRoom_Delete(InsectRoom *self)
 {
-    InsectRoom_destruct_members(self);
+    insect_room_destruct_members(self);
     Heap_FreeAux(self);
     return self;
 }
@@ -221,7 +221,7 @@ CLEAN_AS(func_ov004_0223eb1c, InsectRoom_Delete)
 /* func_ov004_0223eb64 (the room's destructor) */
 InsectRoom *InsectRoom_Destruct(InsectRoom *self)
 {
-    InsectRoom_destruct_members(self);
+    insect_room_destruct_members(self);
     return self;
 }
 CLEAN_AS(func_ov004_0223eb64, InsectRoom_Destruct)
@@ -316,7 +316,7 @@ CLEAN_AS(func_ov004_0223ed30, MuseumInsect_Construct)
 
 /* The entry of `kind` that is not off, its index noted in `found`; once noted, that entry.
  * QUIRK: the noted entry is not looked at again. */
-static MuseumInsect *InsectRoom_find(s8 *found, int kind)
+static MuseumInsect *insect_room_find(s8 *found, int kind)
 {
     if (*found >= 0) {
         return &data_ov004_02259a34[*found];
@@ -331,17 +331,17 @@ static MuseumInsect *InsectRoom_find(s8 *found, int kind)
     return NULL;
 }
 
-/* func_ov004_0223edd8: kind 56's entry (InsectRoom_find), or NULL. */
+/* func_ov004_0223edd8: kind 56's entry (insect_room_find), or NULL. */
 MuseumInsect *InsectRoom_FindDungBall(void)
 {
-    return InsectRoom_find(&data_ov004_02256290, MUSEUM_INSECT_DUNG_BALL);
+    return insect_room_find(&data_ov004_02256290, MUSEUM_INSECT_DUNG_BALL);
 }
 CLEAN_AS(func_ov004_0223edd8, InsectRoom_FindDungBall)
 
-/* func_ov004_0223ee38: kind 55's entry (InsectRoom_find), or NULL. */
+/* func_ov004_0223ee38: kind 55's entry (insect_room_find), or NULL. */
 MuseumInsect *InsectRoom_FindPairSecond(void)
 {
-    return InsectRoom_find(&data_ov004_0225628c, MUSEUM_INSECT_PAIR_SECOND);
+    return insect_room_find(&data_ov004_0225628c, MUSEUM_INSECT_PAIR_SECOND);
 }
 CLEAN_AS(func_ov004_0223ee38, InsectRoom_FindPairSecond)
 
@@ -627,7 +627,7 @@ CLEAN_AS(func_ov004_0223f398, InsectRoom_IsSolid)
 
 /* The flags of a solid insect's body: higher for kinds 14, 15, 26 and 32, and for kinds 0-7,
  * 10, 37 and 51 out of mode 0. */
-static int InsectRoom_body_flags(const MuseumInsect *insect, int kind)
+static int insect_room_body_flags(const MuseumInsect *insect, int kind)
 {
     switch (kind) {
         case 14:
@@ -697,7 +697,7 @@ void InsectRoom_UpdateInsect(InsectRoom *self, MuseumInsect *insect)
             flags = INSECT_BODY_FLAGS_DUNG_BALL;
             height = INSECT_DUNG_BALL_HEIGHT;
         } else {
-            flags = InsectRoom_body_flags(insect, kind);
+            flags = insect_room_body_flags(insect, kind);
             height = kind_info(kind)->size;
         }
         CollisionQuery_Move(&insect->contacts, position, &previous, insect->yaw, kind_info(kind)->size, NULL,
@@ -741,7 +741,7 @@ void InsectRoom_KeepInBounds(InsectRoom *self, MuseumInsect *insect, const Vec3 
 CLEAN_AS(func_ov004_0223f69c, InsectRoom_KeepInBounds)
 
 /* An insect's file name without its extension. */
-static void InsectRoom_file_name(char *name, MuseumInsect *insect, int kind)
+static void insect_room_file_name(char *name, MuseumInsect *insect, int kind)
 {
     if (kind == KIND_37 && !insect->awake) {
         CLib_SPrintf(name, data_ov004_022565b4);
@@ -770,7 +770,7 @@ static void InsectRoom_file_name(char *name, MuseumInsect *insect, int kind)
 }
 
 /* Kind 24's texture animation loaded and played on its model; whether it was. */
-static int InsectRoom_load_texture_anim(MuseumInsect *insect, Heap *heap)
+static int insect_room_load_texture_anim(MuseumInsect *insect, Heap *heap)
 {
     char path[33];
     CLib_SPrintf(path, data_ov004_022566a0, KIND_24_FILE);
@@ -803,7 +803,7 @@ void InsectRoom_LoadInsect(InsectRoom *self, MuseumInsect *insect)
     func_02137550(name, sizeof(name));
     func_02137550(path, sizeof(path));
     int kind = insect->kind;
-    InsectRoom_file_name(name, insect, kind);
+    insect_room_file_name(name, insect, kind);
     CLib_SPrintf(path, data_ov004_0225667c, name);
     if (!RomFile_Exists(path)) {
         return;
@@ -844,7 +844,7 @@ void InsectRoom_LoadInsect(InsectRoom *self, MuseumInsect *insect)
     }
     int ready = 1;
     if (kind == KIND_24) {
-        ready = InsectRoom_load_texture_anim(insect, heap);
+        ready = insect_room_load_texture_anim(insect, heap);
     }
     if (ready) {
         data_ov004_022563ec[kind].init(insect);

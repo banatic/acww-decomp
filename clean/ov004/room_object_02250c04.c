@@ -27,7 +27,7 @@ extern const u8 data_ov004_02250cb0[];
 /* Plays the animations of variant 0 once from the start (`forward`), else in mode 3 from the
  * last frame of `joints`; the sound at 2 first, whether it played added to `played`.
  * QUIRK: for a file without frames mode 3 starts from 0xffff. */
-static void RoomObject02250c04_play(RoomObject02250c04 *object, int forward, const AnimFile *joints, int *played)
+static void room_object02250c04_play(RoomObject02250c04 *object, int forward, const AnimFile *joints, int *played)
 {
     if (RoomObject_PlaySound1(&object->base) != 0) {
         *played = 1;
@@ -60,9 +60,9 @@ void RoomObject02250c04_OnMoveStart(RoomObject02250c04 *object, int ahead)
             backward_side = 0;
         }
         if (RoomPushes_Side(entry) == forward_side) {
-            RoomObject02250c04_play(object, ahead != 0, joints, &played);
+            room_object02250c04_play(object, ahead != 0, joints, &played);
         } else if (RoomPushes_Side(entry) == backward_side) {
-            RoomObject02250c04_play(object, ahead == 0, joints, &played);
+            room_object02250c04_play(object, ahead == 0, joints, &played);
         }
     }
     if (played == 0) {
@@ -99,7 +99,7 @@ int RoomObject02250c04_Start(RoomObject02250c04 *object)
 }
 CLEAN_AS(func_ov004_022156b0, RoomObject02250c04_Start)
 
-static void RoomObject02250c04_set_vtables(RoomObject02250c04 *object)
+static void room_object02250c04_set_vtables(RoomObject02250c04 *object)
 {
     object->base.vtable = (const RoomObjectVtable *) data_ov004_02250c04;
     object->base.receiver_vtable = data_ov004_02250cb0;
@@ -108,7 +108,7 @@ static void RoomObject02250c04_set_vtables(RoomObject02250c04 *object)
 /* func_ov004_022156c8 (the deleting destructor, vtable slot 0x44) */
 RoomObject02250c04 *RoomObject02250c04_Delete(RoomObject02250c04 *object)
 {
-    RoomObject02250c04_set_vtables(object);
+    room_object02250c04_set_vtables(object);
     RoomObject_DestructBase(&object->base);
     RoomObject_Free(object);
     return object;
@@ -118,7 +118,7 @@ CLEAN_AS(func_ov004_022156c8, RoomObject02250c04_Delete)
 /* func_ov004_022156f4 (the destructor, vtable slot 0x40) */
 RoomObject02250c04 *RoomObject02250c04_Destroy(RoomObject02250c04 *object)
 {
-    RoomObject02250c04_set_vtables(object);
+    room_object02250c04_set_vtables(object);
     RoomObject_DestructBase(&object->base);
     return object;
 }
@@ -128,7 +128,7 @@ CLEAN_AS(func_ov004_022156f4, RoomObject02250c04_Destroy)
 RoomObject02250c04 *RoomObject02250c04_Construct(RoomObject02250c04 *object)
 {
     RoomObject_ConstructBase(&object->base);
-    RoomObject02250c04_set_vtables(object);
+    room_object02250c04_set_vtables(object);
     return object;
 }
 CLEAN_AS(func_ov004_02215718, RoomObject02250c04_Construct)
@@ -146,7 +146,7 @@ CLEAN_AS(func_ov004_0221573c, RoomObject02250c04_Create)
 /* The receiver part (at 0xec, RoomObject.receiver_vtable) enters RoomObject02250c04's functions
  * through its vtable with these: each moves the pointer back to the object and goes on with the
  * object's function. */
-static RoomObject02250c04 *RoomObject02250c04_from_receiver(void *receiver)
+static RoomObject02250c04 *room_object02250c04_from_receiver(void *receiver)
 {
     return (RoomObject02250c04 *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
 }
@@ -154,13 +154,13 @@ static RoomObject02250c04 *RoomObject02250c04_from_receiver(void *receiver)
 /* func_ov004_0221a8ac: the deleting destructor, entered from the receiver part. */
 RoomObject02250c04 *RoomObject02250c04Receiver_Delete(void *receiver)
 {
-    return RoomObject02250c04_Delete(RoomObject02250c04_from_receiver(receiver));
+    return RoomObject02250c04_Delete(room_object02250c04_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_02250c04D0Ev, RoomObject02250c04Receiver_Delete)
 
 /* func_ov004_0221a8c8: the destructor, entered from the receiver part. */
 RoomObject02250c04 *RoomObject02250c04Receiver_Destroy(void *receiver)
 {
-    return RoomObject02250c04_Destroy(RoomObject02250c04_from_receiver(receiver));
+    return RoomObject02250c04_Destroy(room_object02250c04_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_02250c04D1Ev, RoomObject02250c04Receiver_Destroy)

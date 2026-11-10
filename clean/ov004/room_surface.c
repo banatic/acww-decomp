@@ -51,13 +51,13 @@ extern const char data_ov004_02255b24[]; /* "dummy_floor_pl" */
 extern const char data_ov004_02255b34[]; /* "dummy_wall" */
 extern const char data_ov004_02255b40[]; /* "dummy_wall_pl" */
 
-static int RoomSurface_in(ItemCode code, ItemCode first, ItemCode last)
+static int room_surface_in(ItemCode code, ItemCode first, ItemCode last)
 {
     return code >= first && code <= last;
 }
 
 /* Whether `item` is the part's item: by furniture number for a furniture code. */
-static int RoomSurface_same_item(const ItemCode *shown, const ItemCode *item)
+static int room_surface_same_item(const ItemCode *shown, const ItemCode *item)
 {
     if (ItemCode_IsFurniture(shown)) {
         int mine = ItemCode_FurnitureNumber(shown);
@@ -67,7 +67,7 @@ static int RoomSurface_same_item(const ItemCode *shown, const ItemCode *item)
 }
 
 /* A player's design's texture (the item says whose and which), from the design manager. */
-static G3dResTex *RoomSurface_design_texture(const ItemCode *item)
+static G3dResTex *room_surface_design_texture(const ItemCode *item)
 {
     int player = ItemGroup_DesignPlayer(item);
     int slot = ItemGroup_DesignSlot(item);
@@ -76,7 +76,7 @@ static G3dResTex *RoomSurface_design_texture(const ItemCode *item)
 }
 
 /* The house room shown, NULL outside the house or without a record. */
-static HouseRoom *RoomSurface_house_room(void)
+static HouseRoom *room_surface_house_room(void)
 {
     if (!SceneKinds_CurrentIsHouseRoom()) {
         return NULL;
@@ -93,7 +93,7 @@ CLEAN_AS(func_ov004_02232508, RoomCarpet_End)
 
 /* The item taken: the shown one kept as replaced, `*item` shown (read again), the house room's
  * record and the scene's carpet given it. */
-static void RoomCarpet_take(RoomCarpet *self, const ItemCode *item, int mode)
+static void room_carpet_take(RoomCarpet *self, const ItemCode *item, int mode)
 {
     self->replaced = self->code;
     self->code = *item;
@@ -113,14 +113,14 @@ int RoomCarpet_Set(RoomCarpet *self, ItemCode *item, u8 *model, int mode)
     if (G3dRes_MaterialIndex(model, data_ov004_02255a80) == -1) {
         return 0;
     }
-    if (RoomSurface_same_item(&self->code, item) && self->mode == mode) {
+    if (room_surface_same_item(&self->code, item) && self->mode == mode) {
         self->mode = mode;
-        RoomCarpet_take(self, item, mode);
+        room_carpet_take(self, item, mode);
         return 1;
     }
 
     ItemCode code = *item;
-    if (RoomSurface_in(code, ROOM_SURFACE_CARPET_FIRST, ROOM_SURFACE_CARPET_LAST)) {
+    if (room_surface_in(code, ROOM_SURFACE_CARPET_FIRST, ROOM_SURFACE_CARPET_LAST)) {
         if (!CarpetTexture_Load(self->file, item)) {
             return 0;
         }
@@ -130,11 +130,11 @@ int RoomCarpet_Set(RoomCarpet *self, ItemCode *item, u8 *model, int mode)
         if (!VramCopyMaterial_Queue(&self->copy, model, data_ov004_02255a80, CarpetTexture_Textures(self->file), 0, 0)) {
             return 0;
         }
-        RoomCarpet_take(self, item, mode);
+        room_carpet_take(self, item, mode);
         return 1;
     }
-    if (RoomSurface_in(code, ROOM_SURFACE_DESIGN_FIRST, ROOM_SURFACE_DESIGN_LAST)) {
-        MaterialBind_Set(&self->bind, RoomSurface_design_texture(item), 0, 0);
+    if (room_surface_in(code, ROOM_SURFACE_DESIGN_FIRST, ROOM_SURFACE_DESIGN_LAST)) {
+        MaterialBind_Set(&self->bind, room_surface_design_texture(item), 0, 0);
         self->replaced = self->code;
         self->code = *item;
         self->mode = mode;
@@ -151,7 +151,7 @@ CLEAN_AS(func_ov004_02232514, RoomCarpet_Set)
 void RoomCarpet_Record(RoomCarpet *self, const ItemCode *code, int mode)
 {
     (void) self;
-    HouseRoom *room = RoomSurface_house_room();
+    HouseRoom *room = room_surface_house_room();
     if (room != NULL) {
         HouseRecord_RoomSetCarpet(room, code, mode);
     }
@@ -231,7 +231,7 @@ void RoomWallpaper_End(RoomWallpaper *self)
 }
 CLEAN_AS(func_ov004_02232794, RoomWallpaper_End)
 
-static void RoomWallpaper_take(RoomWallpaper *self, const ItemCode *item, int mode)
+static void room_wallpaper_take(RoomWallpaper *self, const ItemCode *item, int mode)
 {
     self->replaced = self->code;
     self->code = *item;
@@ -247,14 +247,14 @@ int RoomWallpaper_Set(RoomWallpaper *self, ItemCode *item, u8 *model, int mode)
     if (G3dRes_MaterialIndex(model, data_ov004_02255a84) == -1) {
         return 0;
     }
-    if (RoomSurface_same_item(&self->code, item) && self->mode == mode) {
+    if (room_surface_same_item(&self->code, item) && self->mode == mode) {
         self->mode = mode;
-        RoomWallpaper_take(self, item, mode);
+        room_wallpaper_take(self, item, mode);
         return 1;
     }
 
     ItemCode code = *item;
-    if (RoomSurface_in(code, ROOM_SURFACE_WALLPAPER_FIRST, ROOM_SURFACE_WALLPAPER_LAST)) {
+    if (room_surface_in(code, ROOM_SURFACE_WALLPAPER_FIRST, ROOM_SURFACE_WALLPAPER_LAST)) {
         if (!WallpaperFile_Load(self->file, item)) {
             return 0;
         }
@@ -265,11 +265,11 @@ int RoomWallpaper_Set(RoomWallpaper *self, ItemCode *item, u8 *model, int mode)
         if (!VramCopyMaterial_Queue(&self->copy, model, data_ov004_02255a84, textures, 0, 0)) {
             return 0;
         }
-        RoomWallpaper_take(self, item, mode);
+        room_wallpaper_take(self, item, mode);
         return 1;
     }
-    if (RoomSurface_in(code, ROOM_SURFACE_DESIGN_FIRST, ROOM_SURFACE_DESIGN_LAST)) {
-        MaterialBind_Set(&self->bind, RoomSurface_design_texture(item), 0, 0);
+    if (room_surface_in(code, ROOM_SURFACE_DESIGN_FIRST, ROOM_SURFACE_DESIGN_LAST)) {
+        MaterialBind_Set(&self->bind, room_surface_design_texture(item), 0, 0);
         self->replaced = self->code;
         self->code = *item;
         self->mode = mode;
@@ -286,7 +286,7 @@ CLEAN_AS(func_ov004_022327a0, RoomWallpaper_Set)
 void RoomWallpaper_Record(RoomWallpaper *self, const ItemCode *code, int mode)
 {
     (void) self;
-    HouseRoom *room = RoomSurface_house_room();
+    HouseRoom *room = room_surface_house_room();
     if (room != NULL) {
         HouseRecord_RoomSetWallpaper(room, code, mode);
     }

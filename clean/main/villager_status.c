@@ -29,21 +29,21 @@
 extern u8 data_021e5a2c[];        /* the town's villagers (VillagerTown) */
 extern NetSession *data_020ccf94; /* the session */
 
-static VillagerTown *VillagerStatus_Town(void)
+static VillagerTown *villager_status_town(void)
 {
     return (VillagerTown *) (void *) data_021e5a2c;
 }
 
 /* The same villager: the first halfword, the 12 bytes after it and the number agree (the
  * personality is not compared). */
-static int VillagerStatus_SameNpc(const NpcId *a, const NpcId *b)
+static int villager_status_same_npc(const NpcId *a, const NpcId *b)
 {
     return a->town.number == b->town.number && memcmp(a->town.name, b->town.name, sizeof(a->town.name)) == 0 &&
            a->number == b->number;
 }
 
 /* The mode of the villager's record, for a villager with a valid NpcId; -1 without one. */
-static int VillagerStatus_Mode(u8 *villager)
+static int villager_status_mode(u8 *villager)
 {
     if (!NpcId_IsValid(TownVillager_NpcId(villager))) {
         return -1;
@@ -66,13 +66,13 @@ u8 VillagerStatus_Came(u8 *villager)
 CLEAN_AS(func_0207ef48, VillagerStatus_Came)
 
 /* Whether one of the two NpcIds of `block` is `npc`, when the block's object holds something. */
-static int VillagerStatus_BlockNames(u8 *block, const NpcId *npc)
+static int villager_status_block_names(u8 *block, const NpcId *npc)
 {
     if (!VillagerErrand_IsInUse((VillagerErrand *) (void *) VillagerPartBlock_Errand((VillagerPartBlock *) (void *) block))) {
         return 0;
     }
-    return VillagerStatus_SameNpc(VillagerPartBlock_Npc((VillagerPartBlock *) (void *) block, 0), npc) ||
-           VillagerStatus_SameNpc(VillagerPartBlock_Npc((VillagerPartBlock *) (void *) block, 1), npc);
+    return villager_status_same_npc(VillagerPartBlock_Npc((VillagerPartBlock *) (void *) block, 0), npc) ||
+           villager_status_same_npc(VillagerPartBlock_Npc((VillagerPartBlock *) (void *) block, 1), npc);
 }
 
 /* func_0207ef54: whether the part of a player's record (PlayerRecord_VillagerPart) holds the
@@ -86,7 +86,7 @@ int VillagerStatus_PlayerHolds(u8 *villager, u8 *part)
     }
     u8 *first = (u8 *) (VillagerPart_Block((VillagerPart *) (void *) part, 0));
     u8 *second = (u8 *) (VillagerPart_Block((VillagerPart *) (void *) part, 1));
-    return VillagerStatus_BlockNames(first, npc) || VillagerStatus_BlockNames(second, npc) ||
+    return villager_status_block_names(first, npc) || villager_status_block_names(second, npc) ||
            VillagerPart_IsSecondPick((VillagerPart *) (void *) part, npc) ||
            VillagerHouseVisit_IsFrom((VillagerHouseVisit *) (void *) (part + VILLAGER_STATUS_PART_HOUSE_VISIT), npc);
 }
@@ -106,21 +106,21 @@ CLEAN_AS(func_0207f074, VillagerStatus_IsFree)
 /* func_0207f0c0: the villager has a valid NpcId and its record is in mode 11. */
 int VillagerStatus_IsMode11(u8 *villager)
 {
-    return VillagerStatus_Mode(villager) == VILLAGER_MODE_11;
+    return villager_status_mode(villager) == VILLAGER_MODE_11;
 }
 CLEAN_AS(func_0207f0c0, VillagerStatus_IsMode11)
 
 /* func_0207f0f0: the villager has a valid NpcId and has just moved in (mode 10). */
 int VillagerStatus_IsArrived(u8 *villager)
 {
-    return VillagerStatus_Mode(villager) == VILLAGER_MODE_ARRIVED;
+    return villager_status_mode(villager) == VILLAGER_MODE_ARRIVED;
 }
 CLEAN_AS(func_0207f0f0, VillagerStatus_IsArrived)
 
 /* func_0207f120: the villager has a valid NpcId and is about to leave (mode 9). */
 int VillagerStatus_IsLeaving(u8 *villager)
 {
-    return VillagerStatus_Mode(villager) == VILLAGER_MODE_LEAVING;
+    return villager_status_mode(villager) == VILLAGER_MODE_LEAVING;
 }
 CLEAN_AS(func_0207f120, VillagerStatus_IsLeaving)
 
@@ -169,7 +169,7 @@ int VillagerStatus_Exists(void *villager)
 CLEAN_AS(func_0207f1d4, VillagerStatus_Exists)
 
 /* 1, or 2 when the entry's place is asleep (2). */
-static int VillagerStatus_HomeOrAsleep(const VillagerState *entry)
+static int villager_status_home_or_asleep(const VillagerState *entry)
 {
     return VillagerState_LinkedPlace(entry) == 2 ? VILLAGER_STATUS_ASLEEP : VILLAGER_STATUS_HOME;
 }
@@ -182,11 +182,11 @@ int VillagerStatus_Get(u8 *villager)
     }
     VillagerState *entry = VillagerStatus_StateEntry(villager);
     if (Session_IsSlotTaken(data_020ccf94, data_020ccf94->local_slot)) {
-        return VillagerStatus_HomeOrAsleep(entry);
+        return villager_status_home_or_asleep(entry);
     }
     int state = VillagerState_LinkedState(entry);
     if (state == 0) {
-        return VillagerStatus_HomeOrAsleep(entry);
+        return villager_status_home_or_asleep(entry);
     }
     if (state >= 2 && state <= 6) {
         return VILLAGER_STATUS_STATE_2 + (state - 2);
@@ -214,7 +214,7 @@ CLEAN_AS(func_0207f294, VillagerStatus_Index)
  * QUIRK: the original first tests the town's address for null, which it never is. */
 int VillagerStatus_FindIndex(u8 *villager)
 {
-    return VillagerRoster_IndexOf(VillagerStatus_Town(), TownVillager_NpcId(villager));
+    return VillagerRoster_IndexOf(villager_status_town(), TownVillager_NpcId(villager));
 }
 CLEAN_AS(func_0207f29c, VillagerStatus_FindIndex)
 

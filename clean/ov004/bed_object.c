@@ -964,7 +964,7 @@ int BedObject_IsPastPushed(BedObject *object)
 }
 CLEAN_AS(func_ov004_0221876c, BedObject_IsPastPushed)
 
-static void BedObject_set_vtables(BedObject *object)
+static void bed_object_set_vtables(BedObject *object)
 {
     object->base.vtable = (const RoomObjectVtable *) data_ov004_02253058;
     object->base.receiver_vtable = data_ov004_02253104;
@@ -974,7 +974,7 @@ static void BedObject_set_vtables(BedObject *object)
  * the base class's, and the memory given back. */
 BedObject *BedObject_Delete(BedObject *object)
 {
-    BedObject_set_vtables(object);
+    bed_object_set_vtables(object);
     GlowSet_Destruct(&object->glows);
     RoomObject_DestructBase(&object->base);
     RoomObject_Free(object);
@@ -986,7 +986,7 @@ CLEAN_AS(func_ov004_02218780, BedObject_Delete)
  * class's. */
 BedObject *BedObject_Destroy(BedObject *object)
 {
-    BedObject_set_vtables(object);
+    bed_object_set_vtables(object);
     GlowSet_Destruct(&object->glows);
     RoomObject_DestructBase(&object->base);
     return object;
@@ -998,7 +998,7 @@ CLEAN_AS(func_ov004_022187b8, BedObject_Destroy)
 BedObject *BedObject_Construct(BedObject *object)
 {
     RoomObject_ConstructBase(&object->base);
-    BedObject_set_vtables(object);
+    bed_object_set_vtables(object);
     object->item = ITEM_CODE_NONE;
     GlowSet_Construct(&object->glows);
     return object;
@@ -1018,7 +1018,7 @@ CLEAN_AS(func_ov004_0221882c, BedObject_Create)
 /* The receiver part (at 0xec, RoomObject.receiver_vtable) enters BedObject's functions
  * through its vtable with these: each moves the pointer back to the object and goes on with the
  * object's function. */
-static BedObject *BedObject_from_receiver(void *receiver)
+static BedObject *bed_object_from_receiver(void *receiver)
 {
     return (BedObject *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
 }
@@ -1026,27 +1026,27 @@ static BedObject *BedObject_from_receiver(void *receiver)
 /* func_ov004_0221a724: the deleting destructor, entered from the receiver part. */
 BedObject *BedObjectReceiver_Delete(void *receiver)
 {
-    return BedObject_Delete(BedObject_from_receiver(receiver));
+    return BedObject_Delete(bed_object_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_02253058D0Ev, BedObjectReceiver_Delete)
 
 /* func_ov004_0221a740: BedObject_OnChoice, entered from the receiver part. */
 void BedObjectReceiver_OnChoice(void *receiver)
 {
-    BedObject_OnChoice(BedObject_from_receiver(receiver));
+    BedObject_OnChoice(bed_object_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_0225305817vfunc_02066994_18Ev, BedObjectReceiver_OnChoice)
 
 /* func_ov004_0221a75c: BedObject_OnTalkStep, entered from the receiver part. */
 void BedObjectReceiver_OnTalkStep(void *receiver)
 {
-    BedObject_OnTalkStep(BedObject_from_receiver(receiver));
+    BedObject_OnTalkStep(bed_object_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_0225305817vfunc_02066994_14Ev, BedObjectReceiver_OnTalkStep)
 
 /* func_ov004_0221a778: the destructor, entered from the receiver part. */
 BedObject *BedObjectReceiver_Destroy(void *receiver)
 {
-    return BedObject_Destroy(BedObject_from_receiver(receiver));
+    return BedObject_Destroy(bed_object_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_02253058D1Ev, BedObjectReceiver_Destroy)

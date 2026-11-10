@@ -42,7 +42,7 @@ extern const u8 data_ov004_02251b40[];
 extern const u8 data_ov004_02251bec[];
 
 /* The receiver part as C++ converts a pointer to the bromide to it: NULL stays NULL. */
-static void *Bromide_receiver(Bromide *bromide)
+static void *bromide_receiver(Bromide *bromide)
 {
     return bromide != NULL ? (u8 *) bromide + BROMIDE_RECEIVER_OFFSET : NULL;
 }
@@ -53,7 +53,7 @@ static void *Bromide_receiver(Bromide *bromide)
 void Bromide_UpdateTalkEnd(Bromide *bromide)
 {
     if (bromide->base.link != NULL && bromide->base.link->state == 0) {
-        SceneObjectBase_ReleaseReceiver(&bromide->base.scene, Bromide_receiver(bromide));
+        SceneObjectBase_ReleaseReceiver(&bromide->base.scene, bromide_receiver(bromide));
         EventQueue_FinishObjectEvent(bromide);
     }
 }
@@ -83,7 +83,7 @@ CLEAN_AS(func_ov004_0221342c, Bromide_UpdateTalk)
  * REQUIRES: the receiver has a link once SceneObjectBase_TakeReceiver has taken it. */
 int Bromide_EnterTalk(Bromide *bromide)
 {
-    SceneObjectBase_TakeReceiver(&bromide->base.scene, Bromide_receiver(bromide));
+    SceneObjectBase_TakeReceiver(&bromide->base.scene, bromide_receiver(bromide));
     bromide->base.link->next_state = 1;
     u16 item = ItemCode_MakeFurniture(RoomObject_Number(&bromide->base), 0);
     int photo = BROMIDE_NO_PHOTO;
@@ -206,7 +206,7 @@ int Bromide_Start(void)
 }
 CLEAN_AS(func_ov004_02213664, Bromide_Start)
 
-static void Bromide_set_vtables(Bromide *bromide)
+static void bromide_set_vtables(Bromide *bromide)
 {
     bromide->base.vtable = (const RoomObjectVtable *) data_ov004_02251b40;
     bromide->base.receiver_vtable = data_ov004_02251bec;
@@ -215,7 +215,7 @@ static void Bromide_set_vtables(Bromide *bromide)
 /* func_ov004_02213668 (the deleting destructor, vtable slot 0x44) */
 Bromide *Bromide_Delete(Bromide *bromide)
 {
-    Bromide_set_vtables(bromide);
+    bromide_set_vtables(bromide);
     RoomObject_DestructBase(&bromide->base);
     RoomObject_Free(bromide);
     return bromide;
@@ -225,7 +225,7 @@ CLEAN_AS(func_ov004_02213668, Bromide_Delete)
 /* func_ov004_02213694 (the destructor, vtable slot 0x40) */
 Bromide *Bromide_Destroy(Bromide *bromide)
 {
-    Bromide_set_vtables(bromide);
+    bromide_set_vtables(bromide);
     RoomObject_DestructBase(&bromide->base);
     return bromide;
 }
@@ -235,7 +235,7 @@ CLEAN_AS(func_ov004_02213694, Bromide_Destroy)
 Bromide *Bromide_Construct(Bromide *bromide)
 {
     RoomObject_ConstructBase(&bromide->base);
-    Bromide_set_vtables(bromide);
+    bromide_set_vtables(bromide);
     return bromide;
 }
 CLEAN_AS(func_ov004_022136b8, Bromide_Construct)
@@ -253,7 +253,7 @@ CLEAN_AS(func_ov004_022136dc, Bromide_Create)
 /* The receiver part (at 0xec, RoomObject.receiver_vtable) enters Bromide's functions
  * through its vtable with these: each moves the pointer back to the object and goes on with the
  * object's function. */
-static Bromide *Bromide_from_receiver(void *receiver)
+static Bromide *bromide_from_receiver(void *receiver)
 {
     return (Bromide *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
 }
@@ -261,13 +261,13 @@ static Bromide *Bromide_from_receiver(void *receiver)
 /* func_ov004_0221aa6c: the deleting destructor, entered from the receiver part. */
 Bromide *BromideReceiver_Delete(void *receiver)
 {
-    return Bromide_Delete(Bromide_from_receiver(receiver));
+    return Bromide_Delete(bromide_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_02251b40D0Ev, BromideReceiver_Delete)
 
 /* func_ov004_0221aa88: the destructor, entered from the receiver part. */
 Bromide *BromideReceiver_Destroy(void *receiver)
 {
-    return Bromide_Destroy(Bromide_from_receiver(receiver));
+    return Bromide_Destroy(bromide_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_02251b40D1Ev, BromideReceiver_Destroy)

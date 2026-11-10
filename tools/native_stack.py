@@ -376,11 +376,11 @@ ARG_PUSHES = {('main', 0x020853b0): 0x10, ('main', 0x02085278): 0x10}
 # as the stack held them. The mixed Native/Clean build compiles a copy that keeps the four
 # centres at the same guest slot as the Native consumer, so they read the same residue.
 CLEAN_SOURCE = 'clean/ov004/house_roach.c'
-CLEAN_SHA = '005b4f8131ad73a2db28c2a2e30f647067dae759a6b71cc4ca23d674c0541dc3'
+CLEAN_SHA = '55901f32464cc12e4c0b3d053b1d51faf93b06c69144983fa35de66b3128bceb'
 # The Clean insect room (InsectRoom_Update) sets the cases' centres' y to 0 (its BUG: note); the
 # copy keeps the centres at the Native one's guest slot instead.
 CLEAN_INSECT_ROOM = 'clean/ov004/museum_insects.c'
-CLEAN_INSECT_ROOM_SHA = '07356b2f5b1b211ddcf8f2b66fc9dd67318de0852c921b9512e40b2e86242664'
+CLEAN_INSECT_ROOM_SHA = '97bd0c2c326c73246bfa3dc14e61bb7e8c25049e3771570ab8ab157389fa1d9f'
 # The Clean versions of the cue's functions and of the room object's matrix (CUE_EDITS): the
 # Clean sources keep 0 where the ROM reads its stack (their BUG: notes); the mixed Native/Clean
 # build compiles copies with the Native ones' guest slots and registers.

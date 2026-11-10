@@ -92,7 +92,7 @@ extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 extern int func_ov004_02231b58(G3dRenderState *state);
 extern int func_ov004_02231b78(G3dRenderState *state);
 
-static void RoomShell_set_hook(G3dRenderState *state, int command, u32 hook, u8 timing)
+static void room_shell_set_hook(G3dRenderState *state, int command, u32 hook, u8 timing)
 {
     state->hooks[command] = hook;
     state->hook_timings[command] = timing;
@@ -102,14 +102,14 @@ static void RoomShell_set_hook(G3dRenderState *state, int command, u32 hook, u8 
  * and after nodes' descriptions. */
 void RoomShell_SetModelHooks(G3dRenderState *state)
 {
-    RoomShell_set_hook(state, G3D_COMMAND_MATERIAL, (u32) (uintptr_t) func_ov004_02231b78, G3D_TIMING_B);
-    RoomShell_set_hook(state, G3D_COMMAND_NODE_DESC, (u32) (uintptr_t) func_ov004_02231b58, G3D_TIMING_B);
+    room_shell_set_hook(state, G3D_COMMAND_MATERIAL, (u32) (uintptr_t) func_ov004_02231b78, G3D_TIMING_B);
+    room_shell_set_hook(state, G3D_COMMAND_NODE_DESC, (u32) (uintptr_t) func_ov004_02231b58, G3D_TIMING_B);
 }
 CLEAN_AS(func_ov004_02231b38, RoomShell_SetModelHooks)
 
 /* Sends the hook to vtable slot `slot` of the model's object with byte 1 of the command (its
  * node or material) and the state; its answer, or 0 without an object. */
-static int RoomShell_run_hook(G3dRenderState *state, int slot)
+static int room_shell_run_hook(G3dRenderState *state, int slot)
 {
     void *user = state->object->user;
     if (user == NULL) {
@@ -122,24 +122,24 @@ static int RoomShell_run_hook(G3dRenderState *state, int slot)
 /* func_ov004_02231b58: after a node's description, vtable slot 0x48 (RoomShell_NodeDescHook). */
 int RoomShell_RunNodeDescHook(G3dRenderState *state)
 {
-    return RoomShell_run_hook(state, ROOM_SHELL_SLOT_NODE_DESC_HOOK);
+    return room_shell_run_hook(state, ROOM_SHELL_SLOT_NODE_DESC_HOOK);
 }
 CLEAN_AS(func_ov004_02231b58, RoomShell_RunNodeDescHook)
 
 /* func_ov004_02231b78: a material's hook, vtable slot 0x4c (RoomShell_MaterialHook). */
 int RoomShell_RunMaterialHook(G3dRenderState *state)
 {
-    return RoomShell_run_hook(state, ROOM_SHELL_SLOT_MATERIAL_HOOK);
+    return room_shell_run_hook(state, ROOM_SHELL_SLOT_MATERIAL_HOOK);
 }
 CLEAN_AS(func_ov004_02231b78, RoomShell_RunMaterialHook)
 
 /* A 15-bit colour's channel: 5 bits at `shift`. */
-static int RoomShell_channel(u16 colour, int shift)
+static int room_shell_channel(u16 colour, int shift)
 {
     return (colour >> shift) & 0x1f;
 }
 
-static int RoomShell_clamp_channel(int value)
+static int room_shell_clamp_channel(int value)
 {
     if (value > 0x1f) {
         return 0x1f;
@@ -162,11 +162,11 @@ short RoomShell_WdDiffuse(RoomShell *self)
     }
     u16 light = (u16) Sky_LightColor(0);
     u16 colour = palette->gradient_bottom;
-    int r = RoomShell_channel(colour, 0) + RoomShell_channel(light, 0) / 3;
-    int g = RoomShell_channel(colour, 5) + RoomShell_channel(light, 5) / 3;
-    int b = RoomShell_channel(colour, 10) + RoomShell_channel(light, 10) / 3;
-    u16 result = (u16) ((colour & 0x8000) | (RoomShell_clamp_channel(b) << 10) | (RoomShell_clamp_channel(g) << 5) |
-                        RoomShell_clamp_channel(r));
+    int r = room_shell_channel(colour, 0) + room_shell_channel(light, 0) / 3;
+    int g = room_shell_channel(colour, 5) + room_shell_channel(light, 5) / 3;
+    int b = room_shell_channel(colour, 10) + room_shell_channel(light, 10) / 3;
+    u16 result = (u16) ((colour & 0x8000) | (room_shell_clamp_channel(b) << 10) | (room_shell_clamp_channel(g) << 5) |
+                        room_shell_clamp_channel(r));
     return (short) result;
 }
 CLEAN_AS(func_ov004_02231b98, RoomShell_WdDiffuse)
@@ -235,14 +235,14 @@ void RoomShell_SpawnBoards(RoomShell *self)
 CLEAN_AS(func_ov004_02231c7c, RoomShell_SpawnBoards)
 
 /* Whether the code is one the material hook sets up. */
-static int RoomShell_code_set_up(const u16 *code)
+static int room_shell_code_set_up(const u16 *code)
 {
     return *code >= ROOM_SHELL_CODE_FIRST && *code <= ROOM_SHELL_CODE_LAST;
 }
 
 /* The material record of `material` in the model's materials (NNSG3dResMat): the data word of
  * the dictionary's entry, an offset from the materials' start. */
-static const u8 *RoomShell_material_record(const u8 *materials, u32 material)
+static const u8 *room_shell_material_record(const u8 *materials, u32 material)
 {
     const u8 *dict = materials + 4;
     u16 entries = *(const u16 *) (const void *) (materials + 0x0a);
@@ -265,11 +265,11 @@ static const u8 *RoomShell_material_record(const u8 *materials, u32 material)
  * REQUIRES: the room's size is 4, 6 or 8. */
 void RoomShell_MaterialHook(RoomShell *self, u32 material, G3dRenderState *state)
 {
-    const u8 *record = RoomShell_material_record(state->materials, material);
+    const u8 *record = room_shell_material_record(state->materials, material);
     int wallpaper = material == (u32) (int) MaterialBind_Material(&self->wallpaper.bind);
     int carpet = material == (u32) (int) MaterialBind_Material(&self->carpet.bind);
-    if (!((wallpaper && RoomShell_code_set_up(RoomWallpaper_Code(&self->wallpaper))) ||
-          (carpet && RoomShell_code_set_up(RoomCarpet_Code(&self->carpet))))) {
+    if (!((wallpaper && room_shell_code_set_up(RoomWallpaper_Code(&self->wallpaper))) ||
+          (carpet && room_shell_code_set_up(RoomCarpet_Code(&self->carpet))))) {
         return;
     }
 
@@ -483,34 +483,34 @@ extern void func_020051b0(void *item);
 
 #define ROOM_SHELL_NOOK_SCENES 6
 
-static RoomWallpaper *RoomShell_wallpaper(RoomShell *self)
+static RoomWallpaper *room_shell_wallpaper(RoomShell *self)
 {
     return &self->wallpaper;
 }
 
-static RoomCarpet *RoomShell_carpet(RoomShell *self)
+static RoomCarpet *room_shell_carpet(RoomShell *self)
 {
     return &self->carpet;
 }
 
-static struct AnimatedModel *RoomShell_animated(RoomShell *self)
+static struct AnimatedModel *room_shell_animated(RoomShell *self)
 {
     return (struct AnimatedModel *) (void *) &self->model;
 }
 
-static struct ModelAnim *RoomShell_material_anim(RoomShell *self)
+static struct ModelAnim *room_shell_material_anim(RoomShell *self)
 {
     return (struct ModelAnim *) (void *) &self->material_anim;
 }
 
-static int RoomShell_in(ItemCode code, ItemCode first, ItemCode last)
+static int room_shell_in(ItemCode code, ItemCode first, ItemCode last)
 {
     return code >= first && code <= last;
 }
 
-static int RoomShell_is_design(ItemCode code)
+static int room_shell_is_design(ItemCode code)
 {
-    return RoomShell_in(code, ROOM_SHELL_CODE_FIRST, ROOM_SHELL_CODE_LAST);
+    return room_shell_in(code, ROOM_SHELL_CODE_FIRST, ROOM_SHELL_CODE_LAST);
 }
 
 /* func_ov004_02232104 (main/room_interior.c): the room's carpet changed to `*item` (a carpet or
@@ -519,19 +519,19 @@ static int RoomShell_is_design(ItemCode code)
 u16 *RoomShell_SetCarpet(u16 *item, int mode, int with_sound)
 {
     ItemCode code = *item;
-    if (!RoomShell_in(code, ROOM_SHELL_CARPET_FIRST, ROOM_SHELL_CARPET_LAST) && !RoomShell_is_design(code)) {
+    if (!room_shell_in(code, ROOM_SHELL_CARPET_FIRST, ROOM_SHELL_CARPET_LAST) && !room_shell_is_design(code)) {
         return data_ov004_022589ec;
     }
     RoomShell *self = data_ov004_022589fc;
-    if (self == NULL || !RoomCarpet_Set(RoomShell_carpet(self), item, self->model.object.model, mode)) {
+    if (self == NULL || !RoomCarpet_Set(room_shell_carpet(self), item, self->model.object.model, mode)) {
         return data_ov004_022589ec;
     }
     if (with_sound != 0 && SceneQuery_CurrentInNook()) {
         SoundSys_PlaySe(ROOM_SHELL_SE_CHANGE);
     }
-    ItemCode replaced = *RoomCarpet_Replaced(RoomShell_carpet(data_ov004_022589fc));
-    if (RoomShell_in(replaced, ROOM_SHELL_CARPET_FIRST, ROOM_SHELL_CARPET_LAST)) {
-        return RoomCarpet_Replaced(RoomShell_carpet(data_ov004_022589fc));
+    ItemCode replaced = *RoomCarpet_Replaced(room_shell_carpet(data_ov004_022589fc));
+    if (room_shell_in(replaced, ROOM_SHELL_CARPET_FIRST, ROOM_SHELL_CARPET_LAST)) {
+        return RoomCarpet_Replaced(room_shell_carpet(data_ov004_022589fc));
     }
     return data_ov004_022589ec;
 }
@@ -541,19 +541,19 @@ CLEAN_AS(func_ov004_02232104, RoomShell_SetCarpet)
 u16 *RoomShell_SetWallpaper(u16 *item, int mode, int with_sound)
 {
     ItemCode code = *item;
-    if (!RoomShell_in(code, ROOM_SHELL_WALLPAPER_FIRST, ROOM_SHELL_WALLPAPER_LAST) && !RoomShell_is_design(code)) {
+    if (!room_shell_in(code, ROOM_SHELL_WALLPAPER_FIRST, ROOM_SHELL_WALLPAPER_LAST) && !room_shell_is_design(code)) {
         return data_ov004_022589ec;
     }
     RoomShell *self = data_ov004_022589fc;
-    if (self == NULL || !RoomWallpaper_Set(RoomShell_wallpaper(self), item, self->model.object.model, mode)) {
+    if (self == NULL || !RoomWallpaper_Set(room_shell_wallpaper(self), item, self->model.object.model, mode)) {
         return data_ov004_022589ec;
     }
     if (with_sound != 0 && SceneQuery_CurrentInNook()) {
         SoundSys_PlaySe(ROOM_SHELL_SE_CHANGE);
     }
-    ItemCode replaced = *RoomWallpaper_Replaced(RoomShell_wallpaper(data_ov004_022589fc));
-    if (RoomShell_in(replaced, ROOM_SHELL_WALLPAPER_FIRST, ROOM_SHELL_WALLPAPER_LAST)) {
-        return RoomWallpaper_Replaced(RoomShell_wallpaper(data_ov004_022589fc));
+    ItemCode replaced = *RoomWallpaper_Replaced(room_shell_wallpaper(data_ov004_022589fc));
+    if (room_shell_in(replaced, ROOM_SHELL_WALLPAPER_FIRST, ROOM_SHELL_WALLPAPER_LAST)) {
+        return RoomWallpaper_Replaced(room_shell_wallpaper(data_ov004_022589fc));
     }
     return data_ov004_022589ec;
 }
@@ -567,7 +567,7 @@ void RoomShell_LightMaterials(RoomShell *self, u8 *model)
     u32 count = model[0x18];
     const u8 *materials = (const u8 *) (uintptr_t) ((uintptr_t) model + *(const u32 *) (const void *) (model + 8));
     for (u32 i = 0; i < count; i++) {
-        u32 *attributes = (u32 *) (uintptr_t) (RoomShell_material_record(materials, i) + 0xc);
+        u32 *attributes = (u32 *) (uintptr_t) (room_shell_material_record(materials, i) + 0xc);
         if ((*attributes & ROOM_SHELL_MATERIAL_LIGHTS) != 0) {
             *attributes &= ~ROOM_SHELL_MATERIAL_LIGHTS;
             *attributes |= (u32) SceneLights_RoomMaterialLights();
@@ -585,7 +585,7 @@ void RoomShell_ResetMatrix(RoomShell *self)
 CLEAN_AS(func_ov004_02232a68, RoomShell_ResetMatrix)
 
 /* The room's data of the map's first acre, NULL when the map has no acre. */
-static const RoomShellLayout *RoomShell_layout(void)
+static const RoomShellLayout *room_shell_layout(void)
 {
     AcreMap *map = data_021c80bc;
     if (map->acres_wide == 0 || map->acres_high == 0 || map->acres == NULL) {
@@ -600,20 +600,20 @@ static const RoomShellLayout *RoomShell_layout(void)
  * REQUIRES: the map has an acre (the ROM reads address 0x20 otherwise; Clean does nothing). */
 void RoomShell_LoadModel(RoomShell *self)
 {
-    const RoomShellLayout *layout = RoomShell_layout();
+    const RoomShellLayout *layout = room_shell_layout();
     if (layout == NULL) {
         return;
     }
-    struct AnimatedModel *animated = RoomShell_animated(self);
+    struct AnimatedModel *animated = room_shell_animated(self);
     ModelObject_SetModelTexture(&self->model.object, layout->model, layout->texture);
     if (layout->animation != NULL && AnimatedModel_LoadAnim(animated, data_021c9b24)) {
         AnimatedModel_Start(animated, layout->animation, 0, FX32_ONE, 0, 0);
         AnimatedModel_Attach(animated);
     }
     if (layout->material_anim != NULL &&
-        ModelAnim_AllocMaterialAnim(RoomShell_material_anim(self), self->model.object.model, data_021c9b24)) {
-        ModelAnim_Start(RoomShell_material_anim(self), layout->material_anim, 0, FX32_ONE, 0);
-        ModelAnim_Attach(RoomShell_material_anim(self), ModelObject_RenderObject(&self->model.object));
+        ModelAnim_AllocMaterialAnim(room_shell_material_anim(self), self->model.object.model, data_021c9b24)) {
+        ModelAnim_Start(room_shell_material_anim(self), layout->material_anim, 0, FX32_ONE, 0);
+        ModelAnim_Attach(room_shell_material_anim(self), ModelObject_RenderObject(&self->model.object));
     }
 }
 CLEAN_AS(func_ov004_02232a94, RoomShell_LoadModel)
@@ -624,12 +624,12 @@ CLEAN_AS(func_ov004_02232a94, RoomShell_LoadModel)
  * REQUIRES: the map has an acre (as RoomShell_LoadModel). */
 void RoomShell_LoadSurfaces(RoomShell *self)
 {
-    const RoomShellLayout *layout = RoomShell_layout();
+    const RoomShellLayout *layout = room_shell_layout();
     if (layout == NULL) {
         return;
     }
-    RoomWallpaper *wallpaper = RoomShell_wallpaper(self);
-    RoomCarpet *carpet = RoomShell_carpet(self);
+    RoomWallpaper *wallpaper = room_shell_wallpaper(self);
+    RoomCarpet *carpet = room_shell_carpet(self);
     RoomWallpaper_PickMaterial(wallpaper, self->model.object.model, layout->texture);
     RoomCarpet_PickMaterial(carpet, self->model.object.model, layout->texture);
 
@@ -638,10 +638,10 @@ void RoomShell_LoadSurfaces(RoomShell *self)
     int wallpaper_mode;
     int carpet_mode;
     RoomShell_SceneSurfaces(self, &wallpaper_code, &wallpaper_mode, &carpet_code, &carpet_mode);
-    if (RoomShell_is_design(wallpaper_code)) {
+    if (room_shell_is_design(wallpaper_code)) {
         RoomWallpaper_SetCode(wallpaper, ROOM_SHELL_WALLPAPER_UNDER_DESIGN, self->model.object.model, wallpaper_mode);
     }
-    if (RoomShell_is_design(carpet_code)) {
+    if (room_shell_is_design(carpet_code)) {
         RoomCarpet_SetCode(carpet, ROOM_SHELL_CARPET_UNDER_DESIGN, self->model.object.model, carpet_mode);
     }
     RoomWallpaper_Set(wallpaper, &wallpaper_code, self->model.object.model, wallpaper_mode);
@@ -650,7 +650,7 @@ void RoomShell_LoadSurfaces(RoomShell *self)
 CLEAN_AS(func_ov004_02232b48, RoomShell_LoadSurfaces)
 
 /* Nook's shops' own wallpaper and carpet of scene `slot`, the table built on first use. */
-static ItemCode RoomShell_nook_wallpaper(int slot)
+static ItemCode room_shell_nook_wallpaper(int slot)
 {
     static const ItemCode codes[ROOM_SHELL_NOOK_SCENES] = {0x1140, 0x1141, 0x1142, 0x1143, 0x1143, 0x1143};
     u8 *const records[ROOM_SHELL_NOOK_SCENES] = {data_ov004_02258ac0, data_ov004_02258ab4, data_ov004_02258a0c,
@@ -665,7 +665,7 @@ static ItemCode RoomShell_nook_wallpaper(int slot)
     return data_ov004_02258a6c[slot];
 }
 
-static ItemCode RoomShell_nook_carpet(int slot)
+static ItemCode room_shell_nook_carpet(int slot)
 {
     static const ItemCode codes[ROOM_SHELL_NOOK_SCENES] = {0x1184, 0x1185, 0x1186, 0x1187, 0x1187, 0x1187};
     u8 *const records[ROOM_SHELL_NOOK_SCENES] = {data_ov004_02258a78, data_ov004_02258aa8, data_ov004_02258acc,
@@ -722,16 +722,16 @@ void RoomShell_SceneSurfaces(RoomShell *self, u16 *wallpaper, int *wallpaper_mod
     }
     int slot = SceneQuery_IndexInNook(scene);
     ItemCode code = *RoomInterior_SceneWallpaper(scene);
-    if (RoomShell_in(code, ROOM_SHELL_WALLPAPER_FIRST, ROOM_SHELL_WALLPAPER_LAST)) {
+    if (room_shell_in(code, ROOM_SHELL_WALLPAPER_FIRST, ROOM_SHELL_WALLPAPER_LAST)) {
         *wallpaper = code;
     } else {
-        *wallpaper = RoomShell_nook_wallpaper(slot);
+        *wallpaper = room_shell_nook_wallpaper(slot);
     }
     code = *RoomInterior_SceneCarpet(scene);
-    if (RoomShell_in(code, ROOM_SHELL_CARPET_FIRST, ROOM_SHELL_CARPET_LAST)) {
+    if (room_shell_in(code, ROOM_SHELL_CARPET_FIRST, ROOM_SHELL_CARPET_LAST)) {
         *carpet = code;
     } else {
-        *carpet = RoomShell_nook_carpet(slot);
+        *carpet = room_shell_nook_carpet(slot);
     }
 }
 CLEAN_AS(func_ov004_02232c48, RoomShell_SceneSurfaces)
@@ -757,10 +757,10 @@ CLEAN_AS(func_ov004_02232edc, RoomShell_MeasureSize)
  * field, the render object released, the sound released; no room any more. Done. */
 int RoomShell_Release(RoomShell *self)
 {
-    RoomWallpaper_End(RoomShell_wallpaper(self));
+    RoomWallpaper_End(room_shell_wallpaper(self));
     RoomShellTouch_Remove(&self->touch);
     RoomShellBox_Remove(&self->box);
-    RoomCarpet_End(RoomShell_carpet(self));
+    RoomCarpet_End(room_shell_carpet(self));
     RoomShellBoxes_Remove(self->boxes);
     ModelObject_ReleaseRender(&self->model.object);
     data_ov004_022589fc = NULL;
@@ -779,7 +779,7 @@ int RoomShell_Draw(RoomShell *self)
         u16 colour = (u16) RoomShell_WdDiffuse(self);
         NNS_G3dMdlSetMdlDiff(self->model.object.model, self->wd_material, colour);
     }
-    AnimatedModel_Draw(RoomShell_animated(self), NULL);
+    AnimatedModel_Draw(room_shell_animated(self), NULL);
     return 1;
 }
 CLEAN_AS(func_ov004_02232f8c, RoomShell_Draw)
@@ -790,7 +790,7 @@ CLEAN_AS(func_ov004_02232f8c, RoomShell_Draw)
  * touch cylinder offered; the net's spheres cleared. Done. */
 int RoomShell_Execute(RoomShell *self)
 {
-    struct AnimatedModel *animated = RoomShell_animated(self);
+    struct AnimatedModel *animated = room_shell_animated(self);
     if (AnimatedModel_Anim(animated) != NULL) {
         AnimatedModel_StepFrames(animated);
     }
@@ -841,17 +841,17 @@ CLEAN_AS(func_ov004_02233084, RoomShell_Create)
 
 /* The members taken down, in reverse order of their construction, then the base.
  * QUIRK: the sound source is not taken down. */
-static void RoomShell_destruct_members(RoomShell *self)
+static void room_shell_destruct_members(RoomShell *self)
 {
     self->base.vtable = data_ov004_02255ac8;
     RoomShellTouch_Destruct(&self->touch);
     CollisionBox_Destruct(&self->box);
     RoomShellBoxes_Destruct(self->boxes);
-    RoomCarpet_Destruct(RoomShell_carpet(self));
-    RoomWallpaper_Destruct(RoomShell_wallpaper(self));
+    RoomCarpet_Destruct(room_shell_carpet(self));
+    RoomWallpaper_Destruct(room_shell_wallpaper(self));
     __cxa_vec_cleanup(&self->material_anim, 1, sizeof(RoomShellMaterialAnim),
                       (void (*)(void *))(uintptr_t) func_ov004_022324d8);
-    AnimatedModel_DestructComplete(RoomShell_animated(self));
+    AnimatedModel_DestructComplete(room_shell_animated(self));
     self->base.vtable = data_020da13c;
     Process_Destruct(&self->base);
 }
@@ -859,7 +859,7 @@ static void RoomShell_destruct_members(RoomShell *self)
 /* func_ov004_02233164 (the deleting destructor, vtable slot 0x44) */
 RoomShell *RoomShell_Delete(RoomShell *self)
 {
-    RoomShell_destruct_members(self);
+    room_shell_destruct_members(self);
     Heap_FreeAux(self);
     return self;
 }
@@ -868,7 +868,7 @@ CLEAN_AS(func_ov004_02233164, RoomShell_Delete)
 /* func_ov004_022331e8 (the destructor, vtable slot 0x40) */
 RoomShell *RoomShell_Destruct(RoomShell *self)
 {
-    RoomShell_destruct_members(self);
+    room_shell_destruct_members(self);
     return self;
 }
 CLEAN_AS(func_ov004_022331e8, RoomShell_Destruct)
@@ -880,11 +880,11 @@ RoomShell *RoomShell_Construct(RoomShell *self)
     Process_Construct(&self->base);
     self->base.vtable = data_020da13c;
     self->base.vtable = data_ov004_02255ac8;
-    AnimatedModel_Construct(RoomShell_animated(self));
+    AnimatedModel_Construct(room_shell_animated(self));
     __cxa_vec_ctor(&self->material_anim, 1, sizeof(RoomShellMaterialAnim), (void (*)(void *))(uintptr_t) func_ov004_022324f0,
                    (void (*)(void *))(uintptr_t) func_ov004_022324d8);
-    RoomWallpaper_Construct(RoomShell_wallpaper(self));
-    RoomCarpet_Construct(RoomShell_carpet(self));
+    RoomWallpaper_Construct(room_shell_wallpaper(self));
+    RoomCarpet_Construct(room_shell_carpet(self));
     RoomShellBoxes_Construct(self->boxes);
     CollisionBox_Construct(&self->box);
     RoomShellTouch_Construct(&self->touch);

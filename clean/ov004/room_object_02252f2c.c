@@ -42,13 +42,13 @@ extern const MemberPointer data_ov004_02250628, data_ov004_02250580;
 extern const u8 data_ov004_0224766c[ROOM_OBJECT_02252F2C_STATE_COUNT];
 
 /* Whether the joint animation's last step reached `frame`. */
-static int RoomObject02252f2c_joints_passed(RoomObject02252f2c *object, int frame)
+static int room_object02252f2c_joints_passed(RoomObject02252f2c *object, int frame)
 {
     return FrameCtrl_Passed(&object->base.model.frames, frame);
 }
 
 /* Sound `id` at the object's point, unless RoomObject.placement_mode is 2; whether it was played. */
-static int RoomObject02252f2c_play_sound(RoomObject02252f2c *object, int id)
+static int room_object02252f2c_play_sound(RoomObject02252f2c *object, int id)
 {
     RoomObject *base = &object->base;
     if (RoomObject_IsUnplaced(base)) {
@@ -164,24 +164,24 @@ int RoomObject02252f2c_Update(RoomObject02252f2c *object)
     RoomObject02252f2c_UpdateState(object);
     switch (RoomObject_Number(base)) {
         case FURNITURE_0123:
-            if (RoomObject02252f2c_play_sound(object, SOUND_0123)) {
-                if (RoomObject02252f2c_joints_passed(object, 0x43)) {
+            if (room_object02252f2c_play_sound(object, SOUND_0123)) {
+                if (room_object02252f2c_joints_passed(object, 0x43)) {
                     RoomSound_SetVariable(&base->sound, 1);
                 }
             }
             break;
         case FURNITURE_01FB:
-            if (RoomObject02252f2c_play_sound(object, SOUND_01FB)) {
-                if (RoomObject02252f2c_joints_passed(object, 4)) {
+            if (room_object02252f2c_play_sound(object, SOUND_01FB)) {
+                if (room_object02252f2c_joints_passed(object, 4)) {
                     RoomSound_SetVariable(&base->sound, 1);
-                } else if (RoomObject02252f2c_joints_passed(object, 0x16)) {
+                } else if (room_object02252f2c_joints_passed(object, 0x16)) {
                     RoomSound_SetVariable(&base->sound, 2);
                 }
             }
             break;
         case FURNITURE_01FC:
-            if (RoomObject02252f2c_play_sound(object, SOUND_01FC)) {
-                if (RoomObject02252f2c_joints_passed(object, 5) || RoomObject02252f2c_joints_passed(object, 0x12)) {
+            if (room_object02252f2c_play_sound(object, SOUND_01FC)) {
+                if (room_object02252f2c_joints_passed(object, 5) || room_object02252f2c_joints_passed(object, 0x12)) {
                     RoomSound_SetVariable(&base->sound, 1);
                 }
             }
@@ -227,7 +227,7 @@ CLEAN_AS(func_ov004_0221a420, RoomObject02252f2c_Start)
 extern const u8 data_ov004_02252f2c[];
 extern const u8 data_ov004_02252fd8[];
 
-static void RoomObject02252f2c_set_vtables(RoomObject02252f2c *object)
+static void room_object02252f2c_set_vtables(RoomObject02252f2c *object)
 {
     object->base.vtable = (const RoomObjectVtable *) (const void *) data_ov004_02252f2c;
     object->base.receiver_vtable = data_ov004_02252fd8;
@@ -237,7 +237,7 @@ static void RoomObject02252f2c_set_vtables(RoomObject02252f2c *object)
  * class's, the glows taken down, the base taken down and the block freed. */
 RoomObject02252f2c *RoomObject02252f2c_Delete(RoomObject02252f2c *object)
 {
-    RoomObject02252f2c_set_vtables(object);
+    room_object02252f2c_set_vtables(object);
     GlowSet_Destruct(&object->glows);
     RoomObject_DestructBase(&object->base);
     RoomObject_Free(object);
@@ -249,7 +249,7 @@ CLEAN_AS(func_ov004_0221a4ac, RoomObject02252f2c_Delete)
  * freeing the block. */
 RoomObject02252f2c *RoomObject02252f2c_Destroy(RoomObject02252f2c *object)
 {
-    RoomObject02252f2c_set_vtables(object);
+    room_object02252f2c_set_vtables(object);
     GlowSet_Destruct(&object->glows);
     RoomObject_DestructBase(&object->base);
     return object;
@@ -261,7 +261,7 @@ CLEAN_AS(func_ov004_0221a4e4, RoomObject02252f2c_Destroy)
 RoomObject02252f2c *RoomObject02252f2c_Construct(RoomObject02252f2c *object)
 {
     RoomObject_ConstructBase(&object->base);
-    RoomObject02252f2c_set_vtables(object);
+    room_object02252f2c_set_vtables(object);
     GlowSet_Construct(&object->glows);
     return object;
 }
@@ -280,7 +280,7 @@ CLEAN_AS(func_ov004_0221a548, RoomObject02252f2c_Create)
 /* The receiver part (at 0xec, RoomObject.receiver_vtable) enters RoomObject02252f2c's functions
  * through its vtable with these: each moves the pointer back to the object and goes on with the
  * object's function. */
-static RoomObject02252f2c *RoomObject02252f2c_from_receiver(void *receiver)
+static RoomObject02252f2c *room_object02252f2c_from_receiver(void *receiver)
 {
     return (RoomObject02252f2c *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
 }
@@ -288,13 +288,13 @@ static RoomObject02252f2c *RoomObject02252f2c_from_receiver(void *receiver)
 /* func_ov004_0221a564: the deleting destructor, entered from the receiver part. */
 RoomObject02252f2c *RoomObject02252f2cReceiver_Delete(void *receiver)
 {
-    return RoomObject02252f2c_Delete(RoomObject02252f2c_from_receiver(receiver));
+    return RoomObject02252f2c_Delete(room_object02252f2c_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_02252f2cD0Ev, RoomObject02252f2cReceiver_Delete)
 
 /* func_ov004_0221a580: the destructor, entered from the receiver part. */
 RoomObject02252f2c *RoomObject02252f2cReceiver_Destroy(void *receiver)
 {
-    return RoomObject02252f2c_Destroy(RoomObject02252f2c_from_receiver(receiver));
+    return RoomObject02252f2c_Destroy(room_object02252f2c_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_02252f2cD1Ev, RoomObject02252f2cReceiver_Destroy)

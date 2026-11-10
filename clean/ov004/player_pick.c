@@ -120,20 +120,20 @@ extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(v
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
 
 /* A sprite's (or tag's) vtable slot, called with the sprite. */
-static void PlayerPick_call_slot(void *sprite, int slot)
+static void player_pick_call_slot(void *sprite, int slot)
 {
     const u32 *vtable = *(const u32 *const *) sprite;
     ((void (*)(void *))(uintptr_t) vtable[slot])(sprite);
 }
 
 /* Whether the screen is shown (no transition goes on). */
-static int PlayerPick_screen_shown(void)
+static int player_pick_screen_shown(void)
 {
     return data_021c75b8 == SCREEN_TRANSITION_SHOWN;
 }
 
 /* A field actor's position, from its handle (0x5c past a handle of 0 when there is none). */
-static const Vec3 *PlayerPick_actor_position(int handle)
+static const Vec3 *player_pick_actor_position(int handle)
 {
     return (const Vec3 *) (uintptr_t) ((u32) handle + offsetof(Actor, position));
 }
@@ -151,7 +151,7 @@ void PlayerPick_PlaceCursor(PlayerPick *self)
         const u32 *vtable = *(const u32 *const *) (uintptr_t) phone;
         point = ((const Vec3 *(*) (void *) )(uintptr_t) vtable[PLAYER_PICK_PHONE_SLOT_POINT / 4])((void *) (uintptr_t) phone);
     } else {
-        point = PlayerPick_actor_position(SessionPlayers_ActorHandle(self->selection));
+        point = player_pick_actor_position(SessionPlayers_ActorHandle(self->selection));
     }
 
     int x;
@@ -165,11 +165,11 @@ void PlayerPick_PlaceCursor(PlayerPick *self)
         y += data_ov004_0224be14.y;
     }
 
-    if (PlayerPick_screen_shown() && self->state == PLAYER_PICK_BUTTONS && (self->cursor_x != x || self->cursor_y != y)) {
+    if (player_pick_screen_shown() && self->state == PLAYER_PICK_BUTTONS && (self->cursor_x != x || self->cursor_y != y)) {
         SoundSys_PlaySe(PLAYER_PICK_SE_MOVE);
     }
     CellLayerSprite_SetOffset(&self->cursor, x, y);
-    PlayerPick_call_slot(&self->cursor, PLAYER_PICK_SLOT_STEP);
+    player_pick_call_slot(&self->cursor, PLAYER_PICK_SLOT_STEP);
     self->cursor_x = x;
     self->cursor_y = y;
 }
@@ -188,7 +188,7 @@ void PlayerPick_PlaceTags(PlayerPick *self)
         if (handle == 0) {
             continue;
         }
-        Vec3 position = *PlayerPick_actor_position(handle);
+        Vec3 position = *player_pick_actor_position(handle);
         PlayerIdText name;
         PlayerIdText_Construct(&name);
         PlayerId_NameToText(PlayerRecord_Player(PlayerRecords_TownRecord(data_021dc7bc, i)), (TextBase *) (void *) &name);
@@ -200,13 +200,13 @@ void PlayerPick_PlaceTags(PlayerPick *self)
         NameTag *tag = &self->tags[i];
         NameTag_SetPlace(tag, x, y);
         NameTag_SetText(tag, (TextBase *) (void *) &name);
-        PlayerPick_call_slot(tag, PLAYER_PICK_SLOT_STEP);
+        player_pick_call_slot(tag, PLAYER_PICK_SLOT_STEP);
         PlayerIdText_Destruct(&name);
     }
     NameTag *fixed = &self->tags[NAME_TAG_KIND_FIXED];
     NameTag_SetPlace(fixed, data_ov004_0224be1c.x, data_ov004_0224be1c.y);
     NameTag_SetText(fixed, (TextBase *) (void *) &self->fixed);
-    PlayerPick_call_slot(fixed, PLAYER_PICK_SLOT_STEP);
+    player_pick_call_slot(fixed, PLAYER_PICK_SLOT_STEP);
 }
 CLEAN_AS(func_ov004_02245744, PlayerPick_PlaceTags)
 
@@ -303,7 +303,7 @@ CLEAN_AS(func_ov004_022458dc, PlayerPick_EnterPicked)
  * takes the picked player as the local player and goes to PLAYER_PICK_PICKED. */
 void PlayerPick_UpdateButtons(PlayerPick *self)
 {
-    if (!PlayerPick_screen_shown()) {
+    if (!player_pick_screen_shown()) {
         return;
     }
     NetSession *session = data_020ccf94;
@@ -424,7 +424,7 @@ CLEAN_AS(func_ov004_02245b8c, PlayerPick_EnterButtons)
  * the buttons and goes to PLAYER_PICK_BUTTONS. */
 void PlayerPick_UpdateTouch(PlayerPick *self)
 {
-    if (!PlayerPick_screen_shown()) {
+    if (!player_pick_screen_shown()) {
         return;
     }
     if (ControlModeIcon_IsTouch() != 0 && data_021f6c38 != 0 && data_021f6c34 != 0) {
@@ -498,9 +498,9 @@ CLEAN_AS(func_ov004_02245cf4, PlayerPick_EnterState)
 /* func_ov004_02245d30 (vtable slot 9, the drawing): the cursor drawn, then the tags. */
 int PlayerPick_Draw(PlayerPick *self)
 {
-    PlayerPick_call_slot(&self->cursor, PLAYER_PICK_SLOT_DRAW);
+    player_pick_call_slot(&self->cursor, PLAYER_PICK_SLOT_DRAW);
     for (u8 i = 0; i < PLAYER_PICK_TAGS; i++) {
-        PlayerPick_call_slot(&self->tags[i], PLAYER_PICK_SLOT_DRAW);
+        player_pick_call_slot(&self->tags[i], PLAYER_PICK_SLOT_DRAW);
     }
     return 1;
 }
@@ -582,7 +582,7 @@ CLEAN_AS(func_ov004_02245e18, PlayerPick_Create)
 
 /* The destructor's work: the fixed tag's text, the tags (last first) and the cursor
  * destructed, then the base process. */
-static void PlayerPick_destruct_members(PlayerPick *self)
+static void player_pick_destruct_members(PlayerPick *self)
 {
     self->base.vtable = data_ov004_0225684c;
     PlayerIdText_Destruct(&self->fixed);
@@ -595,7 +595,7 @@ static void PlayerPick_destruct_members(PlayerPick *self)
 /* func_ov004_02245ed8 (vtable slot 17): the destructor, and the process freed. */
 PlayerPick *PlayerPick_DestructFree(PlayerPick *self)
 {
-    PlayerPick_destruct_members(self);
+    player_pick_destruct_members(self);
     Heap_FreeAux(self);
     return self;
 }
@@ -604,7 +604,7 @@ CLEAN_AS(func_ov004_02245ed8, PlayerPick_DestructFree)
 /* func_ov004_02245f28 (vtable slot 16): the destructor. */
 PlayerPick *PlayerPick_Destruct(PlayerPick *self)
 {
-    PlayerPick_destruct_members(self);
+    player_pick_destruct_members(self);
     return self;
 }
 CLEAN_AS(func_ov004_02245f28, PlayerPick_Destruct)

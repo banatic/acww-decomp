@@ -76,14 +76,14 @@ extern void VEC_Subtract(const Vec3 *a, const Vec3 *b, Vec3 *difference);
 #define ROOM_CAMERA_SCENE_NOOK_4 0x1d
 #define ROOM_CAMERA_SCENE_NOOK_4_UP 0x1e
 
-static RoomCameraShow *RoomCamera_show(CameraControl *camera)
+static RoomCameraShow *room_camera_show(CameraControl *camera)
 {
     return (RoomCameraShow *) (void *) ((u8 *) camera + offsetof(CameraControl, mode_data));
 }
 
 /* The current view eased towards the goal and the camera placed at it around the point looked
  * at. */
-static void RoomCamera_place(CameraControl *camera)
+static void room_camera_place(CameraControl *camera)
 {
     CameraControl_Ease(camera);
     Vec3 target;
@@ -96,7 +96,7 @@ static void RoomCamera_place(CameraControl *camera)
 
 /* A 16-bit angle's size.
  * QUIRK: -0x8000 stays -0x8000. */
-static int RoomCamera_abs16(int angle)
+static int room_camera_abs16(int angle)
 {
     return angle < 0 ? (s16) -angle : angle;
 }
@@ -114,7 +114,7 @@ CLEAN_AS(func_ov004_02246a74, RoomCamera_ResetGoalNow)
  * restarted. */
 void RoomCamera_SetShowViews(CameraControl *camera)
 {
-    RoomCameraShow *show = RoomCamera_show(camera);
+    RoomCameraShow *show = room_camera_show(camera);
     show->turn = 0;
     show->spot = 0;
     show->moving = 2;
@@ -133,7 +133,7 @@ CLEAN_AS(func_ov004_02246a84, RoomCamera_SetShowViews)
  * keep them so). */
 void RoomCamera_PickShowSpot(CameraControl *camera)
 {
-    RoomCameraShow *show = RoomCamera_show(camera);
+    RoomCameraShow *show = room_camera_show(camera);
     show->turn = 0;
     if (MainRandom_Below(2) == 1) {
         show->spot = (s16) MainRandom_Below(show->choices - 2);
@@ -189,7 +189,7 @@ CLEAN_AS(func_ov004_02246c7c, RoomCamera_SetShowClose)
  * placed. */
 void RoomCamera_ShowFrame(CameraControl *camera)
 {
-    RoomCameraShow *show = RoomCamera_show(camera);
+    RoomCameraShow *show = room_camera_show(camera);
     if (show->moving == 1) {
         const RoomCameraSpot *spot = &data_ov004_022569ec[show->spot];
         Vec3 *second = &camera->goal.second_offset;
@@ -205,7 +205,7 @@ void RoomCamera_ShowFrame(CameraControl *camera)
         Vec_RotateY(&orbit, show->turn);
         VEC_Subtract(second, &orbit, second);
     }
-    RoomCamera_place(camera);
+    room_camera_place(camera);
 }
 CLEAN_AS(func_ov004_02246cf4, RoomCamera_ShowFrame)
 
@@ -213,7 +213,7 @@ CLEAN_AS(func_ov004_02246cf4, RoomCamera_ShowFrame)
  * flags cleared, the goal the wide view reached over 60 frames, the move restarted; 1. */
 int RoomCamera_ShowStart(CameraControl *camera)
 {
-    RoomCameraShow *show = RoomCamera_show(camera);
+    RoomCameraShow *show = room_camera_show(camera);
     show->turn = 0;
     show->spot = -1;
     show->moving = 0;
@@ -272,7 +272,7 @@ CLEAN_AS(func_ov004_02246ecc, RoomCamera_SetModeLookAt)
 void RoomCamera_LookAtFrame(CameraControl *camera)
 {
     camera->goal.second_offset = camera->look_at;
-    RoomCamera_place(camera);
+    room_camera_place(camera);
 }
 CLEAN_AS(func_ov004_02246ef4, RoomCamera_LookAtFrame)
 
@@ -304,7 +304,7 @@ CLEAN_AS(func_ov004_02246f90, RoomCamera_SetMode14)
 void RoomCamera_Mode15Frame(CameraControl *camera)
 {
     camera->goal.second_offset = data_ov004_0224de70;
-    RoomCamera_place(camera);
+    room_camera_place(camera);
 }
 CLEAN_AS(func_ov004_02246fa4, RoomCamera_Mode15Frame)
 
@@ -323,7 +323,7 @@ CLEAN_AS(func_ov004_02247008, RoomCamera_Mode15Start)
 void RoomCamera_Mode14Frame(CameraControl *camera)
 {
     camera->goal.second_offset = data_ov004_0224de64;
-    RoomCamera_place(camera);
+    room_camera_place(camera);
 }
 CLEAN_AS(func_ov004_02247028, RoomCamera_Mode14Frame)
 
@@ -356,7 +356,7 @@ void RoomCamera_BetweenFrame(CameraControl *camera)
         gap = -gap;
     }
     camera->goal.second_offset.z += gap >> 1;
-    RoomCamera_place(camera);
+    room_camera_place(camera);
 }
 CLEAN_AS(func_ov004_022470cc, RoomCamera_BetweenFrame)
 
@@ -391,7 +391,7 @@ CLEAN_AS(func_ov004_0224719c, RoomCamera_SetModeBetween)
 void RoomCamera_TryCarpetFrame(CameraControl *camera)
 {
     camera->goal.second_offset = (Vec3){0, 0, 0};
-    RoomCamera_place(camera);
+    room_camera_place(camera);
 }
 CLEAN_AS(func_ov004_022471d4, RoomCamera_TryCarpetFrame)
 
@@ -411,7 +411,7 @@ CLEAN_AS(func_ov004_02247238, RoomCamera_TryCarpetStart)
 void RoomCamera_TryWallpaperFrame(CameraControl *camera)
 {
     camera->goal.second_offset = (Vec3){0, 0, 0};
-    RoomCamera_place(camera);
+    room_camera_place(camera);
 }
 CLEAN_AS(func_ov004_02247260, RoomCamera_TryWallpaperFrame)
 
@@ -468,7 +468,7 @@ CLEAN_AS(func_ov004_0224732c, RoomCamera_NookShopSize)
 /* func_ov004_02247368: mode 10's frame: the camera placed. */
 void RoomCamera_Mode10Frame(CameraControl *camera)
 {
-    RoomCamera_place(camera);
+    room_camera_place(camera);
 }
 CLEAN_AS(func_ov004_02247368, RoomCamera_Mode10Frame)
 
@@ -531,7 +531,7 @@ void RoomCamera_FocusGoal(CameraControl *camera, CameraView *view)
     int edge = CameraControl_RoomEdgeX(camera, &view->second_offset);
     fx32 lateral = 0;
     int angle = Vec_YawTo(&view->second_offset, &target);
-    int ahead = ROOM_CAMERA_FOCUS_SPREAD - RoomCamera_abs16(angle);
+    int ahead = ROOM_CAMERA_FOCUS_SPREAD - room_camera_abs16(angle);
     if (ahead < 0) {
         ahead = 0;
     }
@@ -543,10 +543,10 @@ void RoomCamera_FocusGoal(CameraControl *camera, CameraView *view)
         if (camera->unk_1f6 == 3) {
             int side = angle > 0 ? 1 : 2;
             if (edge == 1 && side == 1) {
-                side = RoomCamera_abs16(angle) > ROOM_CAMERA_FOCUS_SIDE_LIMIT ? 0 : 2;
+                side = room_camera_abs16(angle) > ROOM_CAMERA_FOCUS_SIDE_LIMIT ? 0 : 2;
             }
             if (edge == 2 && side == 2) {
-                side = RoomCamera_abs16(angle) > ROOM_CAMERA_FOCUS_SIDE_LIMIT ? 0 : 1;
+                side = room_camera_abs16(angle) > ROOM_CAMERA_FOCUS_SIDE_LIMIT ? 0 : 1;
             }
             if (SceneQuery_Current() == ROOM_CAMERA_FOCUS_SCENE) {
                 side = 1;

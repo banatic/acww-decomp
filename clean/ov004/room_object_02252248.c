@@ -38,19 +38,19 @@ extern const u8 data_ov004_02252248[];
 extern const u8 data_ov004_022522f4[];
 
 /* Vtable slot 0x70: RoomObject02252248_EnterState for this class. */
-static void RoomObject02252248_switch_to(RoomObject02252248 *object, int state)
+static void room_object02252248_switch_to(RoomObject02252248 *object, int state)
 {
     object->base.vtable->vfunc_70(&object->base, state, SLOT_70_VALUE);
 }
 
 /* Touched (a change of the switch pending), `state` is requested for the object at its cell;
  * else with placement_mode at 2 it is entered at once. */
-static void RoomObject02252248_on_touch(RoomObject02252248 *object, int state)
+static void room_object02252248_on_touch(RoomObject02252248 *object, int state)
 {
     if (Switch_IsPending(&object->base.on_switch)) {
         RoomSync_RequestState(&object->base, state, SLOT_70_VALUE, 1);
     } else if (RoomObject_IsUnplaced(&object->base)) {
-        RoomObject02252248_switch_to(object, state);
+        room_object02252248_switch_to(object, state);
     }
 }
 
@@ -60,7 +60,7 @@ void RoomObject02252248_UpdateSwitchingOff(RoomObject02252248 *object)
 {
     Switch_Set(&object->base.on_switch, 0, 0);
     if (RoomObject_AdvanceAnims(&object->base)) {
-        RoomObject02252248_switch_to(object, ROOM_OBJECT_02252248_OFF);
+        room_object02252248_switch_to(object, ROOM_OBJECT_02252248_OFF);
     }
 }
 CLEAN_AS(func_ov004_02219368, RoomObject02252248_UpdateSwitchingOff)
@@ -79,7 +79,7 @@ CLEAN_AS(func_ov004_02219398, RoomObject02252248_EnterSwitchingOff)
 /* func_ov004_022193cc (update of ON): touched, it requests SWITCHING_OFF. */
 void RoomObject02252248_UpdateOn(RoomObject02252248 *object)
 {
-    RoomObject02252248_on_touch(object, ROOM_OBJECT_02252248_SWITCHING_OFF);
+    room_object02252248_on_touch(object, ROOM_OBJECT_02252248_SWITCHING_OFF);
 }
 CLEAN_AS(func_ov004_022193cc, RoomObject02252248_UpdateOn)
 
@@ -99,7 +99,7 @@ void RoomObject02252248_UpdateSwitchingOn(RoomObject02252248 *object)
 {
     Switch_Set(&object->base.on_switch, 1, 0);
     if (RoomObject_AdvanceAnims(&object->base)) {
-        RoomObject02252248_switch_to(object, ROOM_OBJECT_02252248_ON);
+        room_object02252248_switch_to(object, ROOM_OBJECT_02252248_ON);
     }
 }
 CLEAN_AS(func_ov004_02219438, RoomObject02252248_UpdateSwitchingOn)
@@ -118,7 +118,7 @@ CLEAN_AS(func_ov004_02219468, RoomObject02252248_EnterSwitchingOn)
 /* func_ov004_022194a0 (update of OFF): touched, it requests SWITCHING_ON. */
 void RoomObject02252248_UpdateOff(RoomObject02252248 *object)
 {
-    RoomObject02252248_on_touch(object, ROOM_OBJECT_02252248_SWITCHING_ON);
+    room_object02252248_on_touch(object, ROOM_OBJECT_02252248_SWITCHING_ON);
 }
 CLEAN_AS(func_ov004_022194a0, RoomObject02252248_UpdateOff)
 
@@ -204,15 +204,15 @@ int RoomObject02252248_Start(RoomObject02252248 *object)
 {
     RoomObject_LoadAnims(&object->base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
     if (Switch_Value(&object->base.on_switch) != 0 && RoomObjects_InShop() == 0) {
-        RoomObject02252248_switch_to(object, ROOM_OBJECT_02252248_ON);
+        room_object02252248_switch_to(object, ROOM_OBJECT_02252248_ON);
     } else {
-        RoomObject02252248_switch_to(object, ROOM_OBJECT_02252248_OFF);
+        room_object02252248_switch_to(object, ROOM_OBJECT_02252248_OFF);
     }
     return 1;
 }
 CLEAN_AS(func_ov004_02219668, RoomObject02252248_Start)
 
-static void RoomObject02252248_set_vtables(RoomObject02252248 *object)
+static void room_object02252248_set_vtables(RoomObject02252248 *object)
 {
     object->base.vtable = (const RoomObjectVtable *) data_ov004_02252248;
     object->base.receiver_vtable = data_ov004_022522f4;
@@ -221,7 +221,7 @@ static void RoomObject02252248_set_vtables(RoomObject02252248 *object)
 /* func_ov004_022196bc (the deleting destructor, vtable slot 0x44) */
 RoomObject02252248 *RoomObject02252248_Delete(RoomObject02252248 *object)
 {
-    RoomObject02252248_set_vtables(object);
+    room_object02252248_set_vtables(object);
     RoomObject_DestructBase(&object->base);
     RoomObject_Free(object);
     return object;
@@ -231,7 +231,7 @@ CLEAN_AS(func_ov004_022196bc, RoomObject02252248_Delete)
 /* func_ov004_022196e8 (the destructor, vtable slot 0x40) */
 RoomObject02252248 *RoomObject02252248_Destroy(RoomObject02252248 *object)
 {
-    RoomObject02252248_set_vtables(object);
+    room_object02252248_set_vtables(object);
     RoomObject_DestructBase(&object->base);
     return object;
 }
@@ -242,7 +242,7 @@ CLEAN_AS(func_ov004_022196e8, RoomObject02252248_Destroy)
 RoomObject02252248 *RoomObject02252248_Construct(RoomObject02252248 *object)
 {
     RoomObject_ConstructBase(&object->base);
-    RoomObject02252248_set_vtables(object);
+    room_object02252248_set_vtables(object);
     return object;
 }
 CLEAN_AS(func_ov004_0221970c, RoomObject02252248_Construct)
@@ -260,7 +260,7 @@ CLEAN_AS(func_ov004_02219730, RoomObject02252248_Create)
 /* The receiver part (at 0xec, RoomObject.receiver_vtable) enters RoomObject02252248's functions
  * through its vtable with these: each moves the pointer back to the object and goes on with the
  * object's function. */
-static RoomObject02252248 *RoomObject02252248_from_receiver(void *receiver)
+static RoomObject02252248 *room_object02252248_from_receiver(void *receiver)
 {
     return (RoomObject02252248 *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
 }
@@ -268,13 +268,13 @@ static RoomObject02252248 *RoomObject02252248_from_receiver(void *receiver)
 /* func_ov004_0221a644: the deleting destructor, entered from the receiver part. */
 RoomObject02252248 *RoomObject02252248Receiver_Delete(void *receiver)
 {
-    return RoomObject02252248_Delete(RoomObject02252248_from_receiver(receiver));
+    return RoomObject02252248_Delete(room_object02252248_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_02252248D0Ev, RoomObject02252248Receiver_Delete)
 
 /* func_ov004_0221a660: the destructor, entered from the receiver part. */
 RoomObject02252248 *RoomObject02252248Receiver_Destroy(void *receiver)
 {
-    return RoomObject02252248_Destroy(RoomObject02252248_from_receiver(receiver));
+    return RoomObject02252248_Destroy(room_object02252248_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_02252248D1Ev, RoomObject02252248Receiver_Destroy)

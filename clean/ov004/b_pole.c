@@ -22,7 +22,7 @@ extern Heap *data_021c9b24;
 
 /* The RMO family's base class (rmo_object.h). */
 
-static AnimatedModel *BPole_body(BPole *self)
+static AnimatedModel *b_pole_body(BPole *self)
 {
     return (AnimatedModel *) (void *) &self->base.body;
 }
@@ -38,7 +38,7 @@ CLEAN_AS(func_ov004_0222f368, BPole_Release)
 /* func_ov004_0222f378 (vtable slot 0x24) */
 int BPole_Draw(BPole *self)
 {
-    AnimatedModel_Draw(BPole_body(self), NULL);
+    AnimatedModel_Draw(b_pole_body(self), NULL);
     return 1;
 }
 CLEAN_AS(func_ov004_0222f378, BPole_Draw)
@@ -46,7 +46,7 @@ CLEAN_AS(func_ov004_0222f378, BPole_Draw)
 /* func_ov004_0222f38c (vtable slot 0x18): the animation steps. */
 int BPole_Update(BPole *self)
 {
-    AnimatedModel_StepFrames(BPole_body(self));
+    AnimatedModel_StepFrames(b_pole_body(self));
     return 1;
 }
 CLEAN_AS(func_ov004_0222f38c, BPole_Update)
@@ -57,9 +57,9 @@ int BPole_Start(BPole *self)
 {
     RmoObjectSlots_LoadNamed(&self->base, data_ov004_022552f8);
     if (RmoModel_JointAnim(&self->base.body_model, 0) != NULL &&
-        AnimatedModel_LoadAnim(BPole_body(self), data_021c9b24) != 0) {
-        AnimatedModel_Start(BPole_body(self), RmoModel_JointAnim(&self->base.body_model, 0), B_POLE_LOOP, FX32_ONE, 0, 0);
-        AnimatedModel_Attach(BPole_body(self));
+        AnimatedModel_LoadAnim(b_pole_body(self), data_021c9b24) != 0) {
+        AnimatedModel_Start(b_pole_body(self), RmoModel_JointAnim(&self->base.body_model, 0), B_POLE_LOOP, FX32_ONE, 0, 0);
+        AnimatedModel_Attach(b_pole_body(self));
     }
     return 1;
 }

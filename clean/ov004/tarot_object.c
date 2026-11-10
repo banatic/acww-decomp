@@ -80,18 +80,18 @@ extern void func_ov004_0222c394(void *texture); /* and destructor */
 extern int NNS_G3dBindMdlTex(u8 *model, void *texture);
 extern int NNS_G3dBindMdlPltt(u8 *model, void *texture);
 
-static AnimatedModel *TarotObject_animated(RmoAnimatedModel *model)
+static AnimatedModel *tarot_object_animated(RmoAnimatedModel *model)
 {
     return (AnimatedModel *) (void *) model;
 }
 
-static Mtx43 *TarotObject_matrix(RmoAnimatedModel *model)
+static Mtx43 *tarot_object_matrix(RmoAnimatedModel *model)
 {
     return (Mtx43 *) (void *) model->object.unk_64;
 }
 
 /* A frame position cut to its whole frames, as the game keeps them: 16 bits. */
-static fx32 TarotObject_whole(fx32 value)
+static fx32 tarot_object_whole(fx32 value)
 {
     return (fx32) ((u32) (u16) ((u32) value >> TAROT_OBJECT_FRAME_SHIFT) << TAROT_OBJECT_FRAME_SHIFT);
 }
@@ -194,8 +194,8 @@ int TarotObject_EnterState3(TarotObject *self)
     self->part_shown[0] = 1;
     self->part_shown[1] = 1;
     self->part_shown[2] = 1;
-    AnimatedModel_Start(TarotObject_animated(&self->parts[2]), RmoModel_JointAnim(&self->part_models[2], 1), TAROT_OBJECT_ONCE,
-                        FX32_ONE, 0, 0);
+    AnimatedModel_Start(tarot_object_animated(&self->parts[2]), RmoModel_JointAnim(&self->part_models[2], 1),
+                        TAROT_OBJECT_ONCE, FX32_ONE, 0, 0);
     ModelAnim_Start(&self->part1_anim, RmoModel_TextureAnim(&self->part_models[1], 1), TAROT_OBJECT_ONCE, FX32_ONE, 0);
     return 1;
 }
@@ -224,9 +224,9 @@ int TarotObject_EnterState2(TarotObject *self)
     self->part_shown[0] = 0;
     self->part_shown[1] = 1;
     self->part_shown[2] = 1;
-    self->parts[2].frames.frame = TarotObject_whole(self->parts[2].frames.end);
+    self->parts[2].frames.frame = tarot_object_whole(self->parts[2].frames.end);
     self->parts[2].frames.speed = 0;
-    self->part1_anim.ctrl.frame = TarotObject_whole(self->part1_anim.ctrl.end);
+    self->part1_anim.ctrl.frame = tarot_object_whole(self->part1_anim.ctrl.end);
     self->part1_anim.ctrl.speed = 0;
     return 1;
 }
@@ -256,8 +256,8 @@ int TarotObject_EnterState1(TarotObject *self)
     self->part_shown[0] = 0;
     self->part_shown[1] = 1;
     self->part_shown[2] = 0;
-    AnimatedModel_Start(TarotObject_animated(&self->parts[2]), RmoModel_JointAnim(&self->part_models[2], 0), TAROT_OBJECT_ONCE,
-                        FX32_ONE, 0, 0);
+    AnimatedModel_Start(tarot_object_animated(&self->parts[2]), RmoModel_JointAnim(&self->part_models[2], 0),
+                        TAROT_OBJECT_ONCE, FX32_ONE, 0, 0);
     ModelAnim_Start(&self->part1_anim, RmoModel_TextureAnim(&self->part_models[1], 0), TAROT_OBJECT_ONCE, FX32_ONE, 0);
     return 1;
 }
@@ -339,14 +339,14 @@ CLEAN_AS(func_ov004_022308a8, TarotObject_Release)
 void TarotObject_Draw(TarotObject *self)
 {
     data_021fbe48 = *(const Mtx43 *) (uintptr_t) FortuneTeller_CurrentMatrix();
-    *TarotObject_matrix(&self->base.body) = data_021fbe48;
-    *TarotObject_matrix(&self->parts[0]) = data_021fbe48;
+    *tarot_object_matrix(&self->base.body) = data_021fbe48;
+    *tarot_object_matrix(&self->parts[0]) = data_021fbe48;
     if (self->body_shown) {
-        AnimatedModel_Draw(TarotObject_animated(&self->base.body), NULL);
+        AnimatedModel_Draw(tarot_object_animated(&self->base.body), NULL);
     }
     for (int i = 0; i < TAROT_OBJECT_PARTS; i++) {
         if (self->part_shown[i]) {
-            AnimatedModel_Draw(TarotObject_animated(&self->parts[i]), NULL);
+            AnimatedModel_Draw(tarot_object_animated(&self->parts[i]), NULL);
         }
     }
 }
@@ -364,13 +364,13 @@ CLEAN_AS(func_ov004_02230978, TarotObject_Vfunc24)
  * (built in the scratch matrix data_021fbe48), then the state's update. */
 int TarotObject_Update(TarotObject *self)
 {
-    AnimatedModel_StepFrames(TarotObject_animated(&self->parts[2]));
+    AnimatedModel_StepFrames(tarot_object_animated(&self->parts[2]));
     FrameCtrl_Step(&self->part1_anim.ctrl);
     self->part1_anim.anim->frame = self->part1_anim.ctrl.frame;
     const Vec3 *position = &self->base.actor.position;
     Mtx43_Translation(&data_021fbe48, position->x, position->y, position->z);
-    *TarotObject_matrix(&self->parts[1]) = data_021fbe48;
-    *TarotObject_matrix(&self->parts[2]) = data_021fbe48;
+    *tarot_object_matrix(&self->parts[1]) = data_021fbe48;
+    *tarot_object_matrix(&self->parts[2]) = data_021fbe48;
     TarotObject_UpdateState(self);
     return 1;
 }
@@ -389,10 +389,10 @@ int TarotObject_Start(TarotObject *self)
     TarotObject_LoadPart(self, 1, data_ov004_02255744, data_ov004_0225575c);
     TarotObject_LoadPart(self, 2, data_ov004_02255778, data_ov004_02255790);
     if (RmoModel_JointAnim(&self->part_models[2], 0) != NULL &&
-        AnimatedModel_LoadAnim(TarotObject_animated(&self->parts[2]), data_021c9b24) != 0) {
-        AnimatedModel_Start(TarotObject_animated(&self->parts[2]), RmoModel_JointAnim(&self->part_models[2], 0),
+        AnimatedModel_LoadAnim(tarot_object_animated(&self->parts[2]), data_021c9b24) != 0) {
+        AnimatedModel_Start(tarot_object_animated(&self->parts[2]), RmoModel_JointAnim(&self->part_models[2], 0),
                             TAROT_OBJECT_ONCE, FX32_ONE, 0, 0);
-        AnimatedModel_Attach(TarotObject_animated(&self->parts[2]));
+        AnimatedModel_Attach(tarot_object_animated(&self->parts[2]));
         self->parts[2].frames.speed = 0;
     }
     if (ModelAnim_AllocMaterialAnim(&self->part1_anim, self->parts[1].object.model, data_021c9b24) != 0) {
@@ -406,7 +406,7 @@ int TarotObject_Start(TarotObject *self)
 CLEAN_AS(func_ov004_022309f8, TarotObject_Start)
 
 /* The parts' holders and part 1's texture animation taken down, then the base class. */
-static void TarotObject_destruct(TarotObject *self)
+static void tarot_object_destruct(TarotObject *self)
 {
     self->base.actor.vtable = data_ov004_02255674;
     ModelAnim_DestructComplete(&self->part1_anim);
@@ -419,7 +419,7 @@ static void TarotObject_destruct(TarotObject *self)
 /* func_ov004_02230b20 (the deleting destructor, vtable slot 0x44) */
 TarotObject *TarotObject_Delete(TarotObject *self)
 {
-    TarotObject_destruct(self);
+    tarot_object_destruct(self);
     Heap_FreeAux(self);
     return self;
 }
@@ -428,7 +428,7 @@ CLEAN_AS(func_ov004_02230b20, TarotObject_Delete)
 /* func_ov004_02230b90 (the destructor, vtable slot 0x40) */
 TarotObject *TarotObject_Destruct(TarotObject *self)
 {
-    TarotObject_destruct(self);
+    tarot_object_destruct(self);
     return self;
 }
 CLEAN_AS(func_ov004_02230b90, TarotObject_Destruct)

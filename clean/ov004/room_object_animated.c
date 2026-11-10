@@ -88,7 +88,7 @@ CLEAN_AS(func_ov004_02211660, AnimatedRoomObject_Create)
 /* The receiver part (at 0xec, RoomObject.receiver_vtable) enters AnimatedRoomObject's destructors through
  * its vtable with these: each moves the pointer back to the object and goes on with the
  * object's function. */
-static AnimatedRoomObject *AnimatedRoomObject_from_receiver(void *receiver)
+static AnimatedRoomObject *animated_room_object_from_receiver(void *receiver)
 {
     return (AnimatedRoomObject *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
 }
@@ -96,13 +96,13 @@ static AnimatedRoomObject *AnimatedRoomObject_from_receiver(void *receiver)
 /* func_ov004_0221acd4: the deleting destructor, entered from the receiver part. */
 AnimatedRoomObject *AnimatedRoomObjectReceiver_Delete(void *receiver)
 {
-    return AnimatedRoomObject_Delete(AnimatedRoomObject_from_receiver(receiver));
+    return AnimatedRoomObject_Delete(animated_room_object_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_022526f8D0Ev, AnimatedRoomObjectReceiver_Delete)
 
 /* func_ov004_0221acf0: the destructor, entered from the receiver part. */
 AnimatedRoomObject *AnimatedRoomObjectReceiver_Destroy(void *receiver)
 {
-    return AnimatedRoomObject_Destroy(AnimatedRoomObject_from_receiver(receiver));
+    return AnimatedRoomObject_Destroy(animated_room_object_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_022526f8D1Ev, AnimatedRoomObjectReceiver_Destroy)

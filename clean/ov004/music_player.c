@@ -96,13 +96,13 @@ extern u16 data_ov004_02256fec;
 extern int func_ov004_02211308(RoomObject *object);
 
 /* The receiver part as C++ converts a pointer to the player to it: NULL stays NULL. */
-static void *MusicPlayer_receiver(MusicPlayer *player)
+static void *music_player_receiver(MusicPlayer *player)
 {
     return player != NULL ? (u8 *) player + MUSIC_PLAYER_RECEIVER_OFFSET : NULL;
 }
 
 /* Touching it: the switch put back to `shown`, and the scene asked for an event. */
-static int MusicPlayer_touched(MusicPlayer *player, u8 shown)
+static int music_player_touched(MusicPlayer *player, u8 shown)
 {
     Switch_Set(&player->base.on_switch, shown, 0);
     EventQueue_RequestKind6(player, 0);
@@ -119,7 +119,7 @@ int MusicPlayer_UpdatePlaying(MusicPlayer *player)
     GlowSet_Switch(&player->glows, 1, 1, 0);
     RoomSound_UpdateVolumeAt(&player->base.sound, &player->base.sound.position);
     if (Switch_IsPending(&player->base.on_switch)) {
-        return MusicPlayer_touched(player, 1);
+        return music_player_touched(player, 1);
     }
     return 0;
 }
@@ -152,7 +152,7 @@ void MusicPlayer_UpdateStopped(MusicPlayer *player)
     }
     GlowSet_Switch(&player->glows, 0, 1, 0);
     if (Switch_IsPending(&player->base.on_switch)) {
-        MusicPlayer_touched(player, 0);
+        music_player_touched(player, 0);
     }
 }
 CLEAN_AS(func_ov004_0221605c, MusicPlayer_UpdateStopped)
@@ -225,7 +225,7 @@ CLEAN_AS(func_ov004_02216200, MusicPlayer_StateIsOn)
 void MusicPlayer_UpdateTalkEnd(MusicPlayer *player)
 {
     if (player->base.link != NULL && player->base.link->state == 0) {
-        SceneObjectBase_ReleaseReceiver(&player->base.scene, MusicPlayer_receiver(player));
+        SceneObjectBase_ReleaseReceiver(&player->base.scene, music_player_receiver(player));
         EventQueue_FinishObjectEvent(player);
     }
 }
@@ -249,7 +249,7 @@ void MusicPlayer_UpdateTalk(MusicPlayer *player)
 CLEAN_AS(func_ov004_02216248, MusicPlayer_UpdateTalk)
 
 /* The song's item handed to the link as text, the receiver told so. */
-static void MusicPlayer_tell_song(MusicPlayer *player, u16 *item)
+static void music_player_tell_song(MusicPlayer *player, u16 *item)
 {
     NameText text;
     NameText_ConstructItem(&text, item);
@@ -265,7 +265,7 @@ static void MusicPlayer_tell_song(MusicPlayer *player, u16 *item)
  * REQUIRES: the receiver has a link once SceneObjectBase_TakeReceiver has taken it. */
 int MusicPlayer_EnterTalk(MusicPlayer *player)
 {
-    SceneObjectBase_TakeReceiver(&player->base.scene, MusicPlayer_receiver(player));
+    SceneObjectBase_TakeReceiver(&player->base.scene, music_player_receiver(player));
     player->base.link->next_state = 1;
     MessageReceiver_SetName(&player->base.receiver.base, data_ov004_022531f0);
     if (SceneQuery_InVillagerHouse() != 0) {
@@ -275,11 +275,11 @@ int MusicPlayer_EnterTalk(MusicPlayer *player)
             song = (u32) VillagerStatus_Song(villager);
         }
         u16 item = song < SONG_COUNT ? (u16) (MUSIC_ITEM_FIRST + song) : MUSIC_ITEM_FIRST;
-        MusicPlayer_tell_song(player, &item);
+        music_player_tell_song(player, &item);
     } else {
         u16 *item = HouseRecord_CurrentSong();
         if (*item >= MUSIC_ITEM_FIRST && *item <= MUSIC_ITEM_LAST) {
-            MusicPlayer_tell_song(player, item);
+            music_player_tell_song(player, item);
         } else {
             player->base.receiver_state = SAYS_NO_SONG;
         }
@@ -486,7 +486,7 @@ int MusicPlayer_Update(MusicPlayer *player)
 CLEAN_AS(_ZN18Obj_ov004_022517bc19func_ov004_02216694Ev, MusicPlayer_Update)
 
 /* Vtable slot 0x70 (MusicPlayer_EnterState): requests state `state` with `song`. */
-static int MusicPlayer_request(MusicPlayer *player, int state, int song)
+static int music_player_request(MusicPlayer *player, int state, int song)
 {
     return player->base.vtable->vfunc_70(&player->base, state, song);
 }
@@ -518,27 +518,27 @@ int MusicPlayer_Start(MusicPlayer *player)
                 song = (u32) VillagerStatus_Song(villager);
             }
             if (data_ov004_02256fec >= MUSIC_ITEM_FIRST && data_ov004_02256fec <= MUSIC_ITEM_LAST) {
-                MusicPlayer_request(player, MUSIC_PLAYER_STOPPED, NO_VALUE);
-            } else if (MusicPlayer_request(player, MUSIC_PLAYER_PLAYING, (u8) song) != 0) {
+                music_player_request(player, MUSIC_PLAYER_STOPPED, NO_VALUE);
+            } else if (music_player_request(player, MUSIC_PLAYER_PLAYING, (u8) song) != 0) {
                 data_ov004_02256fec = song < SONG_COUNT ? (u16) (MUSIC_ITEM_FIRST + song) : MUSIC_ITEM_FIRST;
             }
         } else {
             u16 item = *HouseRecord_CurrentSong();
             if (item >= MUSIC_ITEM_FIRST && item <= MUSIC_ITEM_LAST) {
-                MusicPlayer_request(player, MUSIC_PLAYER_PLAYING, (u8) (item - MUSIC_ITEM_FIRST));
+                music_player_request(player, MUSIC_PLAYER_PLAYING, (u8) (item - MUSIC_ITEM_FIRST));
             } else {
                 HouseRecord_StopCurrentSong();
-                MusicPlayer_request(player, MUSIC_PLAYER_STOPPED, NO_VALUE);
+                music_player_request(player, MUSIC_PLAYER_STOPPED, NO_VALUE);
             }
         }
     } else {
-        MusicPlayer_request(player, MUSIC_PLAYER_STOPPED, NO_VALUE);
+        music_player_request(player, MUSIC_PLAYER_STOPPED, NO_VALUE);
     }
     return 1;
 }
 CLEAN_AS(func_ov004_022166b8, MusicPlayer_Start)
 
-static void MusicPlayer_set_vtables(MusicPlayer *player)
+static void music_player_set_vtables(MusicPlayer *player)
 {
     player->base.vtable = (const RoomObjectVtable *) data_ov004_022517bc;
     player->base.receiver_vtable = data_ov004_02251868;
@@ -547,7 +547,7 @@ static void MusicPlayer_set_vtables(MusicPlayer *player)
 /* func_ov004_02216820 (the deleting destructor, vtable slot 0x44) */
 MusicPlayer *MusicPlayer_Delete(MusicPlayer *player)
 {
-    MusicPlayer_set_vtables(player);
+    music_player_set_vtables(player);
     GlowSet_Destruct(&player->glows);
     RoomObject_DestructBase(&player->base);
     RoomObject_Free(player);
@@ -558,7 +558,7 @@ CLEAN_AS(func_ov004_02216820, MusicPlayer_Delete)
 /* func_ov004_02216858 (the destructor, vtable slot 0x40) */
 MusicPlayer *MusicPlayer_Destroy(MusicPlayer *player)
 {
-    MusicPlayer_set_vtables(player);
+    music_player_set_vtables(player);
     GlowSet_Destruct(&player->glows);
     RoomObject_DestructBase(&player->base);
     return player;
@@ -570,7 +570,7 @@ CLEAN_AS(func_ov004_02216858, MusicPlayer_Destroy)
 MusicPlayer *MusicPlayer_Construct(MusicPlayer *player)
 {
     RoomObject_ConstructBase(&player->base);
-    MusicPlayer_set_vtables(player);
+    music_player_set_vtables(player);
     GlowSet_Construct(&player->glows);
     return player;
 }
@@ -589,7 +589,7 @@ CLEAN_AS(func_ov004_022168bc, MusicPlayer_Create)
 /* The receiver part (at 0xec, RoomObject.receiver_vtable) enters MusicPlayer's functions
  * through its vtable with these: each moves the pointer back to the object and goes on with the
  * object's function. */
-static MusicPlayer *MusicPlayer_from_receiver(void *receiver)
+static MusicPlayer *music_player_from_receiver(void *receiver)
 {
     return (MusicPlayer *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
 }
@@ -597,13 +597,13 @@ static MusicPlayer *MusicPlayer_from_receiver(void *receiver)
 /* func_ov004_0221a804: the deleting destructor, entered from the receiver part. */
 MusicPlayer *MusicPlayerReceiver_Delete(void *receiver)
 {
-    return MusicPlayer_Delete(MusicPlayer_from_receiver(receiver));
+    return MusicPlayer_Delete(music_player_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_022517bcD0Ev, MusicPlayerReceiver_Delete)
 
 /* func_ov004_0221a820: the destructor, entered from the receiver part. */
 MusicPlayer *MusicPlayerReceiver_Destroy(void *receiver)
 {
-    return MusicPlayer_Destroy(MusicPlayer_from_receiver(receiver));
+    return MusicPlayer_Destroy(music_player_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_022517bcD1Ev, MusicPlayerReceiver_Destroy)

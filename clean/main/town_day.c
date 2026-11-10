@@ -94,18 +94,18 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 #define TOWN_DAY_EVENT_501E_END 0x62
 #define TOWN_DAY_EVENT_FREE 0x63
 
-static AcreMap *TownDay_Map(void)
+static AcreMap *town_day_map(void)
 {
     return (AcreMap *) (uintptr_t) AcreMap_Town();
 }
 
-static TownStartDay *TownDay_StartDayOf(StateBlock *block)
+static TownStartDay *town_day_start_day_of(StateBlock *block)
 {
     return (TownStartDay *) block->part_173dd;
 }
 
 /* The town's last day at 6:00, the time its next day starts from. */
-static void TownDay_StampTime(DateTime *when, const TownDayStamp *stamp)
+static void town_day_stamp_time(DateTime *when, const TownDayStamp *stamp)
 {
     *when = (DateTime){0};
     when->hour = TOWN_DAY_START_HOUR;
@@ -114,7 +114,7 @@ static void TownDay_StampTime(DateTime *when, const TownDayStamp *stamp)
     when->year = stamp->year;
 }
 
-static void TownDay_SetStamp(TownDayStamp *stamp, const DateTime *when)
+static void town_day_set_stamp(TownDayStamp *stamp, const DateTime *when)
 {
     stamp->year = when->year;
     stamp->month = when->month;
@@ -216,7 +216,7 @@ int TownDay_RafflesiaPosition(Vec3 *position)
     if (acre_x == TOWN_DAY_NO_TILE || acre_z == TOWN_DAY_NO_TILE || x == TOWN_DAY_NO_TILE || z == TOWN_DAY_NO_TILE) {
         return 0;
     }
-    if (TownDay_Map() == NULL) {
+    if (town_day_map() == NULL) {
         return 0;
     }
     AcreTile_PositionInAcre(position, (u32) (acre_x + 1), (u32) (acre_z + 1), (u32) x, (u32) z);
@@ -242,7 +242,7 @@ CLEAN_AS(func_02046784, TownDay_Acres18)
  * map. */
 int TownDay_Summarize(void)
 {
-    AcreMap *map = TownDay_Map();
+    AcreMap *map = town_day_map();
     if (map == NULL) {
         return TOWN_DAY_LINKED_SUMMARY;
     }
@@ -265,7 +265,7 @@ CLEAN_AS(func_020467ac, TownDay_Enter)
  * acres run, then the marks reset. */
 void TownDay_Refresh(void)
 {
-    AcreMap *map = TownDay_Map();
+    AcreMap *map = town_day_map();
     if (map == NULL) {
         return;
     }
@@ -287,7 +287,7 @@ CLEAN_AS(func_020467cc, TownDay_Refresh)
  * the money rock are then reset. */
 void TownDay_Load(void)
 {
-    AcreMap *map = TownDay_Map();
+    AcreMap *map = town_day_map();
     Clock_Refresh(NULL);
     if (map != NULL) {
         int wide = map->acres_wide - 2;
@@ -328,7 +328,7 @@ int TownDay_ClockWentBack(void)
     DateTime now = {0};
     DateTime last;
     DateTime_Now(&now);
-    TownDay_StampTime(&last, &data_021f39fc);
+    town_day_stamp_time(&last, &data_021f39fc);
     return DateTime_MinutesBetween(&now, &last) > 0;
 }
 CLEAN_AS(func_02046904, TownDay_ClockWentBack)
@@ -341,7 +341,7 @@ CLEAN_AS(func_02046904, TownDay_ClockWentBack)
  * REQUIRES: every inner acre of those rows has its codes (AcreTile_ItemInAcre is not NULL). */
 void TownDay_ListCode6d(void)
 {
-    AcreMap *map = TownDay_Map();
+    AcreMap *map = town_day_map();
     TownDay_ClearCode6d();
     if (map == NULL) {
         return;
@@ -374,7 +374,7 @@ void TownDay_OnClock(void)
         DateTime now = {0};
         DateTime last;
         DateTime_Now(&now);
-        TownDay_StampTime(&last, &data_021f39fc);
+        town_day_stamp_time(&last, &data_021f39fc);
         if (DateTime_MinutesBetween(&last, &now) / TOWN_DAY_MINUTES_PER_DAY >= 1) {
             EventAnnounce_Request(-1, 0x63, 0);
         }
@@ -398,7 +398,7 @@ void TownDay_Check(int loaded)
     DateTime now = {0};
     DateTime last;
     DateTime_Now(&now);
-    TownDay_StampTime(&last, &data_021f39fc);
+    town_day_stamp_time(&last, &data_021f39fc);
     int minutes = DateTime_MinutesBetween(&last, &now);
     int days = minutes / 60 / 24;
     TownDay_SetPeriod();
@@ -409,12 +409,12 @@ void TownDay_Check(int loaded)
     if (days >= 1) {
         int wet = SkyWeatherDay_LastWet();
         if (!loaded && (SceneQuery_CurrentIs0() != 0 || SceneQuery_CurrentIs31() != 0)) {
-            TownStartDay_Expire(TownDay_StartDayOf(&data_021dc7a8));
+            TownStartDay_Expire(town_day_start_day_of(&data_021dc7a8));
         }
         if (loaded || SceneQuery_CurrentIs0() != 0 || SceneQuery_CurrentIs31() != 0) {
             TownDay_Move(&last, &now, days, wet, loaded);
             DateTime_SubtractHours(&now, TOWN_DAY_START_HOUR);
-            TownDay_SetStamp(&data_021f39fc, &now);
+            town_day_set_stamp(&data_021f39fc, &now);
         }
     } else {
         if (loaded) {
@@ -430,7 +430,7 @@ void TownDay_Check(int loaded)
             RoomScore_DestructRoom(&house);
         }
         DateTime_SubtractHours(&now, TOWN_DAY_START_HOUR);
-        TownDay_SetStamp(&data_021f39fc, &now);
+        town_day_set_stamp(&data_021f39fc, &now);
     }
     TurnipPrices_Update(&data_021f3b0c, days);
     PlayerRecord_UpdateSinceLastPlay();
@@ -459,13 +459,13 @@ void TownDay_Move(const DateTime *from, const DateTime *to, int days, int wet, i
 }
 CLEAN_AS(func_02046bf4, TownDay_Move)
 
-static int TownDay_AtMost(int value, int most)
+static int town_day_at_most(int value, int most)
 {
     return value > most ? most : value;
 }
 
 /* Whether the foliage period of the year (Calendar_FoliagePeriodOf) is one of 0, 1, 2 and 0x16. */
-static int TownDay_QuietPeriod(int period)
+static int town_day_quiet_period(int period)
 {
     return period == 0 || period == 1 || period == 2 || period == 0x16;
 }
@@ -489,7 +489,7 @@ static int TownDay_QuietPeriod(int period)
  * The marks are cleared and func_020481a0 run in any case. */
 void TownDay_Pass(TownDay *town, const DateTime *from, const DateTime *to, int days, u8 wet, int loaded)
 {
-    AcreMap *map = TownDay_Map();
+    AcreMap *map = town_day_map();
     if (map != NULL) {
         int wide = map->acres_wide - 2;
         int high = map->acres_high - 2;
@@ -500,17 +500,17 @@ void TownDay_Pass(TownDay *town, const DateTime *from, const DateTime *to, int d
         TownAcreCount_SummarizeDay(&data_021c779c.acres, map, wide, high);
         TownRecord_CountPerfectDays((TownRecord *) (void *) &data_021f39fc, data_021c779c.acres.grade, days);
 
-        int grow_days = TownDay_AtMost(days, 5);
+        int grow_days = town_day_at_most(days, 5);
         for (int i = 0; i < grow_days; i++) {
             TownGrowth_Day(town, map, wide, high);
         }
 
         DateTime day = {0};
         MI_CpuCopy8(to, &day, sizeof day);
-        int year_days = TownDay_AtMost(days, 365);
+        int year_days = town_day_at_most(days, 365);
         DateTime_SubtractDays(&day, year_days);
         for (int i = 0; i < year_days; i++) {
-            int quiet = TownDay_QuietPeriod(Calendar_FoliagePeriodOf(&day));
+            int quiet = town_day_quiet_period(Calendar_FoliagePeriodOf(&day));
             TownSpawn_PutWeeds(town, map);
             if (!quiet && MainRandom_Below(100) < 50) {
                 TownSpawn_PutClover(town, map, wide, high);
@@ -520,16 +520,16 @@ void TownDay_Pass(TownDay *town, const DateTime *from, const DateTime *to, int d
 
         DateTime month_day = {0};
         MI_CpuCopy8(to, &month_day, sizeof month_day);
-        int month_days = TownDay_AtMost(days, 30);
+        int month_days = town_day_at_most(days, 30);
         DateTime_SubtractDays(&month_day, month_days);
         for (int i = 0; i < month_days; i++) {
-            if (!TownDay_QuietPeriod(Calendar_FoliagePeriodOf(&month_day)) && MainRandom_Below(100) < 20) {
+            if (!town_day_quiet_period(Calendar_FoliagePeriodOf(&month_day)) && MainRandom_Below(100) < 20) {
                 TownSpawn_PutDandelion(town, map, wide, high);
             }
             DateTime_AddDays(&month_day, 1);
         }
 
-        int long_days = TownDay_AtMost(days, 60);
+        int long_days = town_day_at_most(days, 60);
         TownFamily_FirstDay(town, map);
         TownGrowth_BreedFlowers(town, map, wide, high);
         TownSpawn_PutFlower(town, map, wide, high);
@@ -650,7 +650,7 @@ CLEAN_AS(func_0204762c, TownDay_StartNow)
  * set for now. */
 void TownDay_Start(TownDay *town, int loaded)
 {
-    AcreMap *map = TownDay_Map();
+    AcreMap *map = town_day_map();
     if (map == NULL) {
         return;
     }
@@ -684,7 +684,7 @@ void TownDay_UpdateEvents(TownDay *town, AcreMap *map, int wide, int high, const
     if (stamp->year != now.year || stamp->month != now.month || stamp->day != now.day) {
         TownDay_EndEvents(town, map, wide, high, &data_021dc7a8);
         TownDay_StartEvents(town, map, wide, high, today, loaded, &data_021dc7a8);
-        TownDay_SetStamp(stamp, &now);
+        town_day_set_stamp(stamp, &now);
     }
     TownDay_RemoveEventBuildings(town, loaded);
     TownDay_PutEventBuildings(town, &data_021dc7a8, loaded);
@@ -765,7 +765,7 @@ CLEAN_AS(func_02047854, TownDay_EndEvent)
 void TownDay_PutEventBuildings(TownDay *town, StateBlock *block, int loaded)
 {
     (void) town;
-    if (TownStartDay_IsSet(TownDay_StartDayOf(block))) {
+    if (TownStartDay_IsSet(town_day_start_day_of(block))) {
         return;
     }
     DateTime now = {0};
@@ -800,7 +800,7 @@ void TownDay_StartEvents(TownDay *town, AcreMap *map, int wide, int high, const 
     EventCalendarEvent *event = EventCalendar_Today();
     EventKey now;
     Clock_GetMonthDayHour((u8 *) &now);
-    int started = TownStartDay_IsSet(TownDay_StartDayOf(block));
+    int started = TownStartDay_IsSet(town_day_start_day_of(block));
     for (int i = 0; i < 7; i++, event++) {
         u16 id = event->id;
         if (id == TOWN_DAY_EVENT_FREE || event->start > now || event->end <= now) {

@@ -751,7 +751,7 @@ CLEAN_AS(func_ov004_0223e3ec, HouseRoach_FindVillager)
 
 /* The destructor: its members in the reverse order, then the actor's part (out of the actors'
  * list) and the process. */
-static void HouseRoach_destruct(HouseRoach *roach)
+static void house_roach_destruct(HouseRoach *roach)
 {
     roach->actor.vtable = data_ov004_0225622c;
     __cxa_vec_cleanup(roach->feelers_last, HOUSE_ROACH_FEELERS, sizeof(Vec3), func_020012dc);
@@ -768,7 +768,7 @@ static void HouseRoach_destruct(HouseRoach *roach)
 /* func_ov004_0223e418: the destructor that frees it. */
 HouseRoach *HouseRoach_Delete(HouseRoach *roach)
 {
-    HouseRoach_destruct(roach);
+    house_roach_destruct(roach);
     Heap_FreeAux(roach);
     return roach;
 }
@@ -777,7 +777,7 @@ CLEAN_AS(func_ov004_0223e418, HouseRoach_Delete)
 /* func_ov004_0223e4a0 */
 HouseRoach *HouseRoach_Destruct(HouseRoach *roach)
 {
-    HouseRoach_destruct(roach);
+    house_roach_destruct(roach);
     return roach;
 }
 CLEAN_AS(func_ov004_0223e4a0, HouseRoach_Destruct)

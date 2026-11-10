@@ -24,12 +24,12 @@
 
 extern NetSession *data_020ccf94; /* the session */
 
-static u16 *VillagerFurniture_Items(u8 *villager)
+static u16 *villager_furniture_items(u8 *villager)
 {
     return (u16 *) (void *) (villager + VILLAGER_FURNITURE_OFFSET);
 }
 
-static int VillagerFurniture_IsSlotCode(u16 code)
+static int villager_furniture_is_slot_code(u16 code)
 {
     return code >= VILLAGER_FURNITURE_SLOT_FIRST && code <= VILLAGER_FURNITURE_SLOT_LAST;
 }
@@ -68,7 +68,7 @@ int VillagerFurniture_IsMarkedAt(u8 *villager, const VillagerFurnitureTile *tile
 {
     int slot = VillagerFurniture_SlotAt(villager, tile, spots, count);
     return VillagerHouseItems_IsSlot(villager, (u32) slot) &&
-           VillagerFurniture_Items(villager)[slot] != VILLAGER_FURNITURE_NONE && VillagerEntry_IsItemMarked(villager, slot);
+           villager_furniture_items(villager)[slot] != VILLAGER_FURNITURE_NONE && VillagerEntry_IsItemMarked(villager, slot);
 }
 CLEAN_AS(func_0207f318, VillagerFurniture_IsMarkedAt)
 
@@ -80,7 +80,7 @@ int VillagerFurniture_TakeAt(u8 *villager, const VillagerFurnitureTile *tile, co
     if (!VillagerHouseItems_IsSlot(villager, (u32) slot)) {
         return 0;
     }
-    VillagerFurniture_Items(villager)[slot] = VILLAGER_FURNITURE_NONE;
+    villager_furniture_items(villager)[slot] = VILLAGER_FURNITURE_NONE;
     VillagerEntry_UnmarkItem(villager, slot);
     return 1;
 }
@@ -99,7 +99,7 @@ int VillagerFurniture_SlotAt(u8 *villager, const VillagerFurnitureTile *tile, co
             continue;
         }
         u16 code = spots[i].code;
-        if (VillagerFurniture_IsSlotCode(code)) {
+        if (villager_furniture_is_slot_code(code)) {
             return VillagerHouseItems_SlotOfCode(villager, &code);
         }
     }
@@ -161,7 +161,7 @@ void VillagerFurniture_FillTemplate(u8 *villager, u16 *codes)
     int moving = VillagerStatus_Stay(villager) != VILLAGER_STAY_RESIDENT;
     for (int i = 0; i < VILLAGER_FURNITURE_TEMPLATE_CODES; i++) {
         u16 *code = &codes[i];
-        if (!VillagerFurniture_IsSlotCode(*code)) {
+        if (!villager_furniture_is_slot_code(*code)) {
             continue;
         }
         int slot = VillagerHouseItems_SlotOfCode(villager, code);

@@ -46,13 +46,13 @@ extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 #define BOARD_NOTICES_BIRTHDAY_MESSAGE 0x1e /* and the two after it, one drawn */
 #define BOARD_NOTICES_NO_MESSAGE (-1)
 
-static BoardNoticesState *BoardNotices_State(StateBlock *block)
+static BoardNoticesState *board_notices_state(StateBlock *block)
 {
     return (BoardNoticesState *) block->part_17254;
 }
 
 /* A board day as a DateTime at 0:00:00. */
-static void BoardNotices_DayToDateTime(DateTime *when, const BoardNoticesDay *day)
+static void board_notices_day_to_date_time(DateTime *when, const BoardNoticesDay *day)
 {
     when->second = 0;
     when->minute = 0;
@@ -66,7 +66,7 @@ static void BoardNotices_DayToDateTime(DateTime *when, const BoardNoticesDay *da
 
 /* Whether more than one player lives in the town, or Process020dabc0_IsHeldBack does not hold
  * the notices back. */
-static int BoardNotices_MayPostEvents(StateBlock *block)
+static int board_notices_may_post_events(StateBlock *block)
 {
     return PlayerRecords_CountTown(block->players) > 1 || !Process020dabc0_IsHeldBack();
 }
@@ -74,11 +74,11 @@ static int BoardNotices_MayPostEvents(StateBlock *block)
 /* func_02042500: the board brought up to date: when a board day (from 6:00) began since the
  * last one seen, it becomes the last one and the notices of each day since are posted (the
  * pelican day first moved up to the first of them). On the same board day, the day's event
- * notices are posted if the board has had none yet and BoardNotices_MayPostEvents. */
+ * notices are posted if the board has had none yet and board_notices_may_post_events. */
 void BoardNotices_Update(void)
 {
     StateBlock *block = &data_021dc7a8;
-    BoardNoticesState *state = BoardNotices_State(block);
+    BoardNoticesState *state = board_notices_state(block);
     DateTime now = {0};
     DateTime_Now(&now);
     DateTime_SubtractHours(&now, BOARD_NOTICES_DAY_START_HOURS);
@@ -91,7 +91,7 @@ void BoardNotices_Update(void)
         int weekday = Calendar_Weekday(now.year, now.month, now.day);
         BoardNotices_CatchUpPelicanDay((int) (uintptr_t) data_021c7768, block, &now);
         BoardNotices_PostDays(data_021c7768, block, days, &now, weekday);
-    } else if (!state->events_posted && BoardNotices_MayPostEvents(block)) {
+    } else if (!state->events_posted && board_notices_may_post_events(block)) {
         BoardNotices_PostDayEvents((int) (uintptr_t) data_021c7768, block, &now);
     }
 }
@@ -99,19 +99,19 @@ CLEAN_AS(func_02042500, BoardNotices_Update)
 
 /* func_020425a8: the notices of `days` days from `first` (whose weekday is `weekday`): the
  * pelican notice on the pelican day (and the next pelican day drawn), the slogan on a Monday,
- * the events of each day once the board had its first notices (or BoardNotices_MayPostEvents,
+ * the events of each day once the board had its first notices (or board_notices_may_post_events,
  * asked once). */
 void BoardNotices_PostDays(void *unused, StateBlock *block, int days, const DateTime *first, int weekday)
 {
-    BoardNoticesState *state = BoardNotices_State(block);
+    BoardNoticesState *state = board_notices_state(block);
     DateTime pelican = {0};
     DateTime day = {0};
     DateTime copy;
     MI_CpuCopy8(first, &day, sizeof(DateTime));
-    int post_events = state->events_posted || BoardNotices_MayPostEvents(block);
+    int post_events = state->events_posted || board_notices_may_post_events(block);
 
     for (; days > 0; days--) {
-        BoardNotices_DayToDateTime(&pelican, &state->pelican_day);
+        board_notices_day_to_date_time(&pelican, &state->pelican_day);
         if (DateTime_DaysBetween(&day, &pelican) == 0) {
             MI_CpuCopy8(&pelican, &copy, sizeof(DateTime));
             BoardNotices_PostPelican(unused, block, &copy);
@@ -144,7 +144,7 @@ void BoardNotices_PostDayEvents(int unused, StateBlock *block, const DateTime *w
         MI_CpuCopy8(&day, &posted, sizeof(DateTime));
         BoardNotices_PostEvents(unused, events, &posted);
     }
-    BoardNotices_State(block)->events_posted = 1;
+    board_notices_state(block)->events_posted = 1;
 }
 CLEAN_AS(func_02042684, BoardNotices_PostDayEvents)
 
@@ -152,12 +152,12 @@ CLEAN_AS(func_02042684, BoardNotices_PostDayEvents)
 void BoardNotices_CatchUpPelicanDay(int unused, StateBlock *block, const DateTime *when)
 {
     (void) unused;
-    BoardNoticesState *state = BoardNotices_State(block);
+    BoardNoticesState *state = board_notices_state(block);
     DateTime pelican;
-    BoardNotices_DayToDateTime(&pelican, &state->pelican_day);
+    board_notices_day_to_date_time(&pelican, &state->pelican_day);
     while (DateTime_DaysBetween(when, &pelican) < 0) {
         TownRecord_DrawPelicanDay((TownRecord *) state, (const TownDayStamp *) &state->pelican_day);
-        BoardNotices_DayToDateTime(&pelican, &state->pelican_day);
+        board_notices_day_to_date_time(&pelican, &state->pelican_day);
     }
 }
 CLEAN_AS(func_020426d8, BoardNotices_CatchUpPelicanDay)
@@ -174,7 +174,7 @@ int BoardNotices_DaysSince(int unused, const BoardNoticesDay *last, const DateTi
         return 0;
     }
     DateTime from;
-    BoardNotices_DayToDateTime(&from, last);
+    board_notices_day_to_date_time(&from, last);
     int days = DateTime_DaysBetween(&from, now);
     if (days > BOARD_NOTICES_MAX_DAYS) {
         return BOARD_NOTICES_MAX_DAYS;
@@ -221,7 +221,7 @@ void BoardNotices_PostEvents(int unused, const EventCalendarEvent *events, const
 }
 CLEAN_AS(func_02042798, BoardNotices_PostEvents)
 
-/* The flags BoardNotices_PostDrawn packs: whole bytes of the most messages and one more flag
+/* The flags board_notices_post_drawn packs: whole bytes of the most messages and one more flag
  * (for BoardNotices_PostUnused's REQUIRES). */
 #define BOARD_NOTICES_DRAWN_FLAGS ((BOARD_NOTICES_SLOGAN_MESSAGES + 1 + 7) / 8 * 8)
 
@@ -234,7 +234,7 @@ CLEAN_AS(func_02042798, BoardNotices_PostEvents)
  * that word's bytes there too, so the town record gets the ROM's bits (BUGFIX: pack the `count`
  * flags only and keep the byte's other bits).
  * REQUIRES: called from BoardNotices_PostDays, as the ROM's code is. */
-static void BoardNotices_PostDrawn(void *unused, u8 *bits, int count, const char *archive, const DateTime *when, u32 residue)
+static void board_notices_post_drawn(void *unused, u8 *bits, int count, const char *archive, const DateTime *when, u32 residue)
 {
     u8 used[BOARD_NOTICES_DRAWN_FLAGS] = {0};
     DateTime copy;
@@ -263,18 +263,18 @@ static void BoardNotices_PostDrawn(void *unused, u8 *bits, int count, const char
 /* func_0204287c: the pelican notice of the day. */
 void BoardNotices_PostPelican(void *unused, StateBlock *block, const DateTime *when)
 {
-    BoardNoticesState *state = BoardNotices_State(block);
-    BoardNotices_PostDrawn(unused, state->pelican_used, BOARD_NOTICES_PELICAN_MESSAGES, data_020db870, when,
-                           (u32) (uintptr_t) &state->pelican_day);
+    BoardNoticesState *state = board_notices_state(block);
+    board_notices_post_drawn(unused, state->pelican_used, BOARD_NOTICES_PELICAN_MESSAGES, data_020db870, when,
+                             (u32) (uintptr_t) &state->pelican_day);
 }
 CLEAN_AS(func_0204287c, BoardNotices_PostPelican)
 
 /* func_020428e8: the slogan notice of the week. */
 void BoardNotices_PostSlogan(void *unused, StateBlock *block, const DateTime *when)
 {
-    BoardNoticesState *state = BoardNotices_State(block);
-    BoardNotices_PostDrawn(unused, state->slogan_used, BOARD_NOTICES_SLOGAN_MESSAGES, data_020db87c, when,
-                           (u32) (uintptr_t) &state->pelican_day);
+    BoardNoticesState *state = board_notices_state(block);
+    board_notices_post_drawn(unused, state->slogan_used, BOARD_NOTICES_SLOGAN_MESSAGES, data_020db87c, when,
+                             (u32) (uintptr_t) &state->pelican_day);
 }
 CLEAN_AS(func_020428e8, BoardNotices_PostSlogan)
 

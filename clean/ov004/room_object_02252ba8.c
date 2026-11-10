@@ -59,19 +59,19 @@ extern const u8 data_ov004_02252c54[];
 extern NetSession *data_020ccf94; /* the session */
 
 /* The mover's animation for the joints. */
-static const AnimFile *RoomObject02252ba8_mover_anim(void *mover)
+static const AnimFile *room_object02252ba8_mover_anim(void *mover)
 {
     return (const AnimFile *) (uintptr_t) (u32) FurnitureMover_IdleAnim(mover);
 }
 
 /* The joint animation of variant 0 of the furniture's archive. */
-static const AnimFile *RoomObject02252ba8_joint_anim(RoomObject02252ba8 *object)
+static const AnimFile *room_object02252ba8_joint_anim(RoomObject02252ba8 *object)
 {
     return (const AnimFile *) (uintptr_t) (u32) AnimSet_Anim00(FurnitureModel_Anims(&object->base.model_files), 0);
 }
 
 /* Hands a change of the switch on, from the object's position. */
-static void RoomObject02252ba8_hand_on(RoomObject02252ba8 *object)
+static void room_object02252ba8_hand_on(RoomObject02252ba8 *object)
 {
     int scene = SceneQuery_Current();
     RoomSync_ToggleSwitchAtPoint(scene, &object->base.position, RoomObject_Layer(&object->base));
@@ -85,13 +85,13 @@ void RoomObject02252ba8_UpdatePlaying(RoomObject02252ba8 *object)
 {
     int frame = RoomObject02252ba8_UpdateCue(object, &object->base.position);
     if (frame >= 0) {
-        AnimatedModel_Start(&object->base.model, (const u8 *) RoomObject02252ba8_joint_anim(object), ANIM_MODE_LOOP,
+        AnimatedModel_Start(&object->base.model, (const u8 *) room_object02252ba8_joint_anim(object), ANIM_MODE_LOOP,
                             frame & 0xfff, (u16) (frame >> 12), 0);
         AnimatedModel_Update(&object->base.model);
     }
     if (Switch_IsPending(&object->base.on_switch)) {
         Switch_Set(&object->base.on_switch, 1, 0);
-        RoomObject02252ba8_hand_on(object);
+        room_object02252ba8_hand_on(object);
     }
 }
 CLEAN_AS(func_ov004_02214c50, RoomObject02252ba8_UpdatePlaying)
@@ -102,7 +102,7 @@ int RoomObject02252ba8_EnterPlaying(RoomObject02252ba8 *object)
 {
     Switch_Set(&object->base.on_switch, 1, 0);
     RoomObject_PlayAnimsFrom(&object->base, 0, ANIM_MODE_LOOP, FX32_ONE, 0);
-    AnimatedModel_Start(&object->base.model, (const u8 *) RoomObject02252ba8_joint_anim(object), ANIM_MODE_LOOP, 0, 0, 0);
+    AnimatedModel_Start(&object->base.model, (const u8 *) room_object02252ba8_joint_anim(object), ANIM_MODE_LOOP, 0, 0, 0);
     return 1;
 }
 CLEAN_AS(func_ov004_02214cd8, RoomObject02252ba8_EnterPlaying)
@@ -127,18 +127,18 @@ void RoomObject02252ba8_UpdateStarting(RoomObject02252ba8 *object)
         int start = RoomObject02252ba8_CueStart(object);
         if (start >= 0) {
             object->countdown = (u16) start;
-            AnimatedModel_Play(&base->model, (const u8 *) RoomObject02252ba8_joint_anim(object), (u16) start, 0, 0, 0, 0);
+            AnimatedModel_Play(&base->model, (const u8 *) room_object02252ba8_joint_anim(object), (u16) start, 0, 0, 0, 0);
         }
     }
     if (Switch_IsPending(&base->on_switch)) {
         Switch_Set(&base->on_switch, 1, 0);
-        RoomObject02252ba8_hand_on(object);
+        room_object02252ba8_hand_on(object);
     }
 }
 CLEAN_AS(func_ov004_02214d34, RoomObject02252ba8_UpdateStarting)
 
 /* The end of each way into STARTING: the joints take `file` at frame 0, held, and advance. */
-static void RoomObject02252ba8_hold_joints(RoomObject02252ba8 *object, const AnimFile *file)
+static void room_object02252ba8_hold_joints(RoomObject02252ba8 *object, const AnimFile *file)
 {
     AnimatedModel_Start(&object->base.model, (const u8 *) file, ANIM_MODE_LOOP, 0, 0, 0);
     AnimatedModel_Update(&object->base.model);
@@ -171,26 +171,26 @@ int RoomObject02252ba8_EnterStarting(RoomObject02252ba8 *object)
             step = SoundCue_ReadVariable((char *) object->cue) & STEP_MASK;
             RoomCells_SetStep(x, y, (u8) step, SceneQuery_Current());
             base->unk_77C = (u8) step;
-            RoomObject02252ba8_hold_joints(object, RoomObject02252ba8_joint_anim(object));
+            room_object02252ba8_hold_joints(object, room_object02252ba8_joint_anim(object));
             object->countdown = 0;
         } else {
             RoomObject02252ba8_CueSetMode(object, CUE_WAIT);
             step = RoomCells_GetStep(x, y, SceneQuery_Current()) & STEP_MASK;
             RoomObject02252ba8_CueSetTarget(object, (u8) step);
             base->unk_77C = (u8) step;
-            RoomObject02252ba8_hold_joints(object, RoomObject02252ba8_mover_anim(RoomManager_Mover()));
+            room_object02252ba8_hold_joints(object, room_object02252ba8_mover_anim(RoomManager_Mover()));
         }
     } else if (Session_IsLinked(data_020ccf94) != 0 && base->vtable->vfunc_78(base) != NO_STEP) {
         RoomObject02252ba8_CueSetMode(object, CUE_PLAY);
         step = base->vtable->vfunc_78(base);
         RoomCells_SetStep(x, y, (u8) (step & STEP_MASK), SceneQuery_Current());
-        RoomObject02252ba8_hold_joints(object, RoomObject02252ba8_mover_anim(RoomManager_Mover()));
+        room_object02252ba8_hold_joints(object, room_object02252ba8_mover_anim(RoomManager_Mover()));
     } else {
         RoomObject02252ba8_CueSetMode(object, CUE_PLAY);
         step = RoomObject02252ba8_CueStep(object) & STEP_MASK;
         RoomCells_SetStep(x, y, (u8) step, SceneQuery_Current());
         base->unk_77C = (u8) step;
-        RoomObject02252ba8_hold_joints(object, RoomObject02252ba8_mover_anim(RoomManager_Mover()));
+        room_object02252ba8_hold_joints(object, room_object02252ba8_mover_anim(RoomManager_Mover()));
     }
     return 1;
 }
@@ -205,7 +205,7 @@ void RoomObject02252ba8_UpdateOff(RoomObject02252ba8 *object)
     AnimatedModel_Update(&object->base.model);
     if (Switch_IsPending(&object->base.on_switch)) {
         Switch_Set(&object->base.on_switch, 0, 0);
-        RoomObject02252ba8_hand_on(object);
+        room_object02252ba8_hand_on(object);
     }
 }
 CLEAN_AS(func_ov004_02214fc8, RoomObject02252ba8_UpdateOff)
@@ -225,7 +225,7 @@ int RoomObject02252ba8_EnterOff(RoomObject02252ba8 *object)
     RoomObject_PlaySound2(base);
     Switch_Set(&base->on_switch, 0, 0);
     if (RoomManager_Mover() != NULL) {
-        const AnimFile *file = RoomObject02252ba8_mover_anim(RoomManager_Mover());
+        const AnimFile *file = room_object02252ba8_mover_anim(RoomManager_Mover());
         if (base->unk_77E != 0) {
             AnimatedModel_Start(&base->model, (const u8 *) file, ANIM_MODE_LOOP, 0, 0, 0);
         } else {
@@ -439,7 +439,7 @@ int RoomObject02252ba8_Start(RoomObject02252ba8 *object)
         &base->model.object, (Heap *) (uintptr_t) ModelPoolEntry_Heap((void *) (uintptr_t) (u32) RoomObject_PoolEntry(base)));
     if (base->placement_mode == 1) {
         Switch_Set(&base->on_switch, 0, 0);
-        RoomObject02252ba8_hand_on(object);
+        room_object02252ba8_hand_on(object);
     } else if (RoomObject_IsUnplaced(base)) {
         base->vtable->vfunc_70(base, ROOM_OBJECT_02252BA8_OFF, SLOT_70_VALUE);
     } else if (Switch_Value(&base->on_switch) != 0) {
@@ -451,7 +451,7 @@ int RoomObject02252ba8_Start(RoomObject02252ba8 *object)
 }
 CLEAN_AS(func_ov004_02215394, RoomObject02252ba8_Start)
 
-static void RoomObject02252ba8_set_vtables(RoomObject02252ba8 *object)
+static void room_object02252ba8_set_vtables(RoomObject02252ba8 *object)
 {
     object->base.vtable = (const RoomObjectVtable *) data_ov004_02252ba8;
     object->base.receiver_vtable = data_ov004_02252c54;
@@ -461,7 +461,7 @@ static void RoomObject02252ba8_set_vtables(RoomObject02252ba8 *object)
  * QUIRK: the cue is not stopped here (vtable slot 0x0c does that). */
 RoomObject02252ba8 *RoomObject02252ba8_Delete(RoomObject02252ba8 *object)
 {
-    RoomObject02252ba8_set_vtables(object);
+    room_object02252ba8_set_vtables(object);
     RoomObject_DestructBase(&object->base);
     RoomObject_Free(object);
     return object;
@@ -471,7 +471,7 @@ CLEAN_AS(func_ov004_02215468, RoomObject02252ba8_Delete)
 /* func_ov004_02215494 (the destructor, vtable slot 0x40); the same QUIRK. */
 RoomObject02252ba8 *RoomObject02252ba8_Destroy(RoomObject02252ba8 *object)
 {
-    RoomObject02252ba8_set_vtables(object);
+    room_object02252ba8_set_vtables(object);
     RoomObject_DestructBase(&object->base);
     return object;
 }
@@ -482,7 +482,7 @@ CLEAN_AS(func_ov004_02215494, RoomObject02252ba8_Destroy)
 RoomObject02252ba8 *RoomObject02252ba8_Construct(RoomObject02252ba8 *object)
 {
     RoomObject_ConstructBase(&object->base);
-    RoomObject02252ba8_set_vtables(object);
+    room_object02252ba8_set_vtables(object);
     object->base.unk_77C = NO_STEP;
     return object;
 }
@@ -501,7 +501,7 @@ CLEAN_AS(func_ov004_022154e8, RoomObject02252ba8_Create)
 /* The receiver part (at 0xec, RoomObject.receiver_vtable) enters RoomObject02252ba8's functions
  * through its vtable with these: each moves the pointer back to the object and goes on with the
  * object's function. */
-static RoomObject02252ba8 *RoomObject02252ba8_from_receiver(void *receiver)
+static RoomObject02252ba8 *room_object02252ba8_from_receiver(void *receiver)
 {
     return (RoomObject02252ba8 *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
 }
@@ -509,13 +509,13 @@ static RoomObject02252ba8 *RoomObject02252ba8_from_receiver(void *receiver)
 /* func_ov004_0221a8e4: the deleting destructor, entered from the receiver part. */
 RoomObject02252ba8 *RoomObject02252ba8Receiver_Delete(void *receiver)
 {
-    return RoomObject02252ba8_Delete(RoomObject02252ba8_from_receiver(receiver));
+    return RoomObject02252ba8_Delete(room_object02252ba8_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_02252ba8D0Ev, RoomObject02252ba8Receiver_Delete)
 
 /* func_ov004_0221a900: the destructor, entered from the receiver part. */
 RoomObject02252ba8 *RoomObject02252ba8Receiver_Destroy(void *receiver)
 {
-    return RoomObject02252ba8_Destroy(RoomObject02252ba8_from_receiver(receiver));
+    return RoomObject02252ba8_Destroy(room_object02252ba8_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_02252ba8D1Ev, RoomObject02252ba8Receiver_Destroy)

@@ -43,28 +43,28 @@ extern const u8 data_ov004_02252824[];
 extern const u8 data_ov004_022528d0[];
 
 /* Vtable slot 0x70: RoomObject02252824_EnterState for this class. */
-static void RoomObject02252824_switch_to(RoomObject02252824 *object, int state)
+static void room_object02252824_switch_to(RoomObject02252824 *object, int state)
 {
     object->base.vtable->vfunc_70(&object->base, state, SLOT_70_VALUE);
 }
 
-static AnimSet *RoomObject02252824_anims(RoomObject02252824 *object)
+static AnimSet *room_object02252824_anims(RoomObject02252824 *object)
 {
     return FurnitureModel_Anims(&object->base.model_files);
 }
 
-static const AnimFile *RoomObject02252824_file(int address)
+static const AnimFile *room_object02252824_file(int address)
 {
     return (const AnimFile *) (uintptr_t) (u32) address;
 }
 
-static FurnitureAnim *RoomObject02252824_material(RoomObject02252824 *object)
+static FurnitureAnim *room_object02252824_material(RoomObject02252824 *object)
 {
     return &object->base.anims[ROOM_ANIM_MATERIAL];
 }
 
 /* Advances a bound animation, giving its frame to its target; whether it is at its end. */
-static int RoomObject02252824_advance(FurnitureAnim *anim)
+static int room_object02252824_advance(FurnitureAnim *anim)
 {
     FrameCtrl_Step(&anim->base.ctrl);
     anim->base.anim->frame = anim->base.ctrl.frame;
@@ -73,15 +73,15 @@ static int RoomObject02252824_advance(FurnitureAnim *anim)
 
 /* The common update of TURNING_ON and TURNING_OFF: the material animation advanced while it is
  * bound; then `next` once it has ended, or at once when it is not bound. */
-static void RoomObject02252824_run_material(RoomObject02252824 *object, int next)
+static void room_object02252824_run_material(RoomObject02252824 *object, int next)
 {
-    FurnitureAnim *anim = RoomObject02252824_material(object);
+    FurnitureAnim *anim = room_object02252824_material(object);
     if (FurnitureAnim_Target(anim) != NULL) {
-        if (RoomObject02252824_advance(anim) != 0) {
-            RoomObject02252824_switch_to(object, next);
+        if (room_object02252824_advance(anim) != 0) {
+            room_object02252824_switch_to(object, next);
         }
     } else {
-        RoomObject02252824_switch_to(object, next);
+        room_object02252824_switch_to(object, next);
     }
 }
 
@@ -90,7 +90,7 @@ static void RoomObject02252824_run_material(RoomObject02252824 *object, int next
 void RoomObject02252824_UpdateTurningOff(RoomObject02252824 *object)
 {
     Switch_Set(&object->base.on_switch, 0, 0);
-    RoomObject02252824_run_material(object, ROOM_OBJECT_02252824_OFF);
+    room_object02252824_run_material(object, ROOM_OBJECT_02252824_OFF);
 }
 CLEAN_AS(func_ov004_02214474, RoomObject02252824_UpdateTurningOff)
 
@@ -100,9 +100,9 @@ CLEAN_AS(func_ov004_02214474, RoomObject02252824_UpdateTurningOff)
 int RoomObject02252824_EnterTurningOff(RoomObject02252824 *object)
 {
     Switch_Set(&object->base.on_switch, 0, 0);
-    if (AnimSet_Anim08(RoomObject02252824_anims(object), 0)) {
-        const AnimFile *file = RoomObject02252824_file(AnimSet_Anim08(RoomObject02252824_anims(object), 0));
-        FurnitureAnim *anim = RoomObject02252824_material(object);
+    if (AnimSet_Anim08(room_object02252824_anims(object), 0)) {
+        const AnimFile *file = room_object02252824_file(AnimSet_Anim08(room_object02252824_anims(object), 0));
+        FurnitureAnim *anim = room_object02252824_material(object);
         if (FurnitureAnim_Target(anim) != NULL) {
             ModelAnim_Restart(&anim->base, ModelObject_RenderObject(&object->base.model.object), (const u8 *) file,
                               ANIM_MODE_3, FX32_ONE, (u16) (file->frames - 1));
@@ -132,9 +132,9 @@ CLEAN_AS(func_ov004_02214568, RoomObject02252824_UpdateOn)
 int RoomObject02252824_EnterOn(RoomObject02252824 *object)
 {
     Switch_Set(&object->base.on_switch, 1, 0);
-    if (AnimSet_Anim08(RoomObject02252824_anims(object), 0)) {
-        const AnimFile *file = RoomObject02252824_file(AnimSet_Anim08(RoomObject02252824_anims(object), 0));
-        ModelAnim_Restart(&RoomObject02252824_material(object)->base, ModelObject_RenderObject(&object->base.model.object),
+    if (AnimSet_Anim08(room_object02252824_anims(object), 0)) {
+        const AnimFile *file = room_object02252824_file(AnimSet_Anim08(room_object02252824_anims(object), 0));
+        ModelAnim_Restart(&room_object02252824_material(object)->base, ModelObject_RenderObject(&object->base.model.object),
                           (const u8 *) file, ANIM_MODE_ONCE, FX32_ONE, (u16) (file->frames - 1));
     }
     return 1;
@@ -147,7 +147,7 @@ void RoomObject02252824_UpdateTurningOn(RoomObject02252824 *object)
 {
     Switch_Set(&object->base.on_switch, 1, 0);
     RoomObject_PlaySound0(&object->base);
-    RoomObject02252824_run_material(object, ROOM_OBJECT_02252824_ON);
+    room_object02252824_run_material(object, ROOM_OBJECT_02252824_ON);
 }
 CLEAN_AS(func_ov004_02214610, RoomObject02252824_UpdateTurningOn)
 
@@ -156,9 +156,9 @@ CLEAN_AS(func_ov004_02214610, RoomObject02252824_UpdateTurningOn)
 int RoomObject02252824_EnterTurningOn(RoomObject02252824 *object)
 {
     Switch_Set(&object->base.on_switch, 1, 0);
-    if (AnimSet_Anim08(RoomObject02252824_anims(object), 0)) {
-        const AnimFile *file = RoomObject02252824_file(AnimSet_Anim08(RoomObject02252824_anims(object), 0));
-        FurnitureAnim *anim = RoomObject02252824_material(object);
+    if (AnimSet_Anim08(room_object02252824_anims(object), 0)) {
+        const AnimFile *file = room_object02252824_file(AnimSet_Anim08(room_object02252824_anims(object), 0));
+        FurnitureAnim *anim = room_object02252824_material(object);
         if (FurnitureAnim_Target(anim) != NULL) {
             ModelAnim_Restart(&anim->base, ModelObject_RenderObject(&object->base.model.object), (const u8 *) file,
                               ANIM_MODE_ONCE, FX32_ONE, 0);
@@ -184,9 +184,9 @@ CLEAN_AS(func_ov004_02214704, RoomObject02252824_UpdateOff)
 int RoomObject02252824_EnterOff(RoomObject02252824 *object)
 {
     Switch_Set(&object->base.on_switch, 0, 0);
-    if (AnimSet_Anim08(RoomObject02252824_anims(object), 0)) {
-        const AnimFile *file = RoomObject02252824_file(AnimSet_Anim08(RoomObject02252824_anims(object), 0));
-        ModelAnim_Restart(&RoomObject02252824_material(object)->base, ModelObject_RenderObject(&object->base.model.object),
+    if (AnimSet_Anim08(room_object02252824_anims(object), 0)) {
+        const AnimFile *file = room_object02252824_file(AnimSet_Anim08(room_object02252824_anims(object), 0));
+        ModelAnim_Restart(&room_object02252824_material(object)->base, ModelObject_RenderObject(&object->base.model.object),
                           (const u8 *) file, ANIM_MODE_3, FX32_ONE, 0);
     }
     return 1;
@@ -280,64 +280,64 @@ int RoomObject02252824_Start(RoomObject02252824 *object)
 {
     RoomObject *base = &object->base;
     void *entry = (void *) (uintptr_t) (u32) RoomObject_PoolEntry(base);
-    if (AnimSet_Anim10(RoomObject02252824_anims(object), 0)) {
+    if (AnimSet_Anim10(room_object02252824_anims(object), 0)) {
         FurnitureAnim *anim = &base->anims[ROOM_ANIM_VISIBILITY];
         G3dModel *resource = base->model_resource;
         if (ModelAnim_AllocJointAnim(&anim->base, (u8 *) resource, (Heap *) (uintptr_t) ModelPoolEntry_Heap(entry))) {
             ModelAnim_Start(&anim->base,
-                            (const u8 *) RoomObject02252824_file(AnimSet_Anim10(RoomObject02252824_anims(object), 0)),
+                            (const u8 *) room_object02252824_file(AnimSet_Anim10(room_object02252824_anims(object), 0)),
                             ANIM_MODE_LOOP, FX32_ONE, 0);
             ModelAnim_Attach(&anim->base, ModelObject_RenderObject(&base->model.object));
         }
     }
-    if (AnimSet_Anim18(RoomObject02252824_anims(object), 0)) {
+    if (AnimSet_Anim18(room_object02252824_anims(object), 0)) {
         FurnitureAnim *anim = &base->anims[ROOM_ANIM_TEXCOORD];
         G3dModel *resource = base->model_resource;
         if (ModelAnim_AllocMaterialAnim(&anim->base, (u8 *) resource, (Heap *) (uintptr_t) ModelPoolEntry_Heap(entry))) {
             ModelAnim_Start(&anim->base,
-                            (const u8 *) RoomObject02252824_file(AnimSet_Anim18(RoomObject02252824_anims(object), 0)),
+                            (const u8 *) room_object02252824_file(AnimSet_Anim18(room_object02252824_anims(object), 0)),
                             ANIM_MODE_LOOP, FX32_ONE, 0);
             ModelAnim_Attach(&anim->base, ModelObject_RenderObject(&base->model.object));
         }
     }
-    if (AnimSet_Anim00(RoomObject02252824_anims(object), 0)) {
+    if (AnimSet_Anim00(room_object02252824_anims(object), 0)) {
         if (AnimatedModel_LoadAnim(&base->model, (Heap *) (uintptr_t) ModelPoolEntry_Heap(entry))) {
             AnimatedModel_Start(&base->model,
-                                (const u8 *) RoomObject02252824_file(AnimSet_Anim00(RoomObject02252824_anims(object), 0)),
+                                (const u8 *) room_object02252824_file(AnimSet_Anim00(room_object02252824_anims(object), 0)),
                                 ANIM_MODE_LOOP, FX32_ONE, 0, 0);
             AnimatedModel_Attach(&base->model);
         }
     }
-    if (AnimSet_Anim20(RoomObject02252824_anims(object), 0)) {
+    if (AnimSet_Anim20(room_object02252824_anims(object), 0)) {
         FurnitureAnim *anim = &base->anims[ROOM_ANIM_PATTERN];
         G3dModel *resource = base->model_resource;
         if (ModelAnim_AllocMaterialAnim(&anim->base, (u8 *) resource, (Heap *) (uintptr_t) ModelPoolEntry_Heap(entry))) {
-            const AnimFile *file = RoomObject02252824_file(AnimSet_Anim20(RoomObject02252824_anims(object), 0));
+            const AnimFile *file = room_object02252824_file(AnimSet_Anim20(room_object02252824_anims(object), 0));
             ModelAnim_StartTextured(&anim->base, (const u8 *) file, FurnitureModel_Texture(&base->model_files), ANIM_MODE_LOOP,
                                     FX32_ONE, 0);
             ModelAnim_Attach(&anim->base, ModelObject_RenderObject(&base->model.object));
         }
     }
-    if (AnimSet_Anim08(RoomObject02252824_anims(object), 0)) {
+    if (AnimSet_Anim08(room_object02252824_anims(object), 0)) {
         FurnitureAnim *anim = &base->anims[ROOM_ANIM_MATERIAL];
         G3dModel *resource = base->model_resource;
         if (ModelAnim_AllocMaterialAnim(&anim->base, (u8 *) resource, (Heap *) (uintptr_t) ModelPoolEntry_Heap(entry))) {
             ModelAnim_Start(&anim->base,
-                            (const u8 *) RoomObject02252824_file(AnimSet_Anim08(RoomObject02252824_anims(object), 0)),
+                            (const u8 *) room_object02252824_file(AnimSet_Anim08(room_object02252824_anims(object), 0)),
                             ANIM_MODE_3, FX32_ONE, 0);
             ModelAnim_Attach(&anim->base, ModelObject_RenderObject(&base->model.object));
         }
     }
     if (Switch_Value(&base->on_switch) != 0 && RoomObjects_InShop() == 0) {
-        RoomObject02252824_switch_to(object, ROOM_OBJECT_02252824_ON);
+        room_object02252824_switch_to(object, ROOM_OBJECT_02252824_ON);
     } else {
-        RoomObject02252824_switch_to(object, ROOM_OBJECT_02252824_OFF);
+        room_object02252824_switch_to(object, ROOM_OBJECT_02252824_OFF);
     }
     return 1;
 }
 CLEAN_AS(func_ov004_02214988, RoomObject02252824_Start)
 
-static void RoomObject02252824_set_vtables(RoomObject02252824 *object)
+static void room_object02252824_set_vtables(RoomObject02252824 *object)
 {
     object->base.vtable = (const RoomObjectVtable *) data_ov004_02252824;
     object->base.receiver_vtable = data_ov004_022528d0;
@@ -346,7 +346,7 @@ static void RoomObject02252824_set_vtables(RoomObject02252824 *object)
 /* func_ov004_02214bc0 (the deleting destructor, vtable slot 0x44). */
 RoomObject02252824 *RoomObject02252824_Delete(RoomObject02252824 *object)
 {
-    RoomObject02252824_set_vtables(object);
+    room_object02252824_set_vtables(object);
     RoomObject_DestructBase(&object->base);
     RoomObject_Free(object);
     return object;
@@ -356,7 +356,7 @@ CLEAN_AS(func_ov004_02214bc0, RoomObject02252824_Delete)
 /* func_ov004_02214bec (the destructor, vtable slot 0x40). */
 RoomObject02252824 *RoomObject02252824_Destroy(RoomObject02252824 *object)
 {
-    RoomObject02252824_set_vtables(object);
+    room_object02252824_set_vtables(object);
     RoomObject_DestructBase(&object->base);
     return object;
 }
@@ -367,7 +367,7 @@ CLEAN_AS(func_ov004_02214bec, RoomObject02252824_Destroy)
 RoomObject02252824 *RoomObject02252824_Construct(RoomObject02252824 *object)
 {
     RoomObject_ConstructBase(&object->base);
-    RoomObject02252824_set_vtables(object);
+    room_object02252824_set_vtables(object);
     return object;
 }
 CLEAN_AS(func_ov004_02214c10, RoomObject02252824_Construct)
@@ -385,7 +385,7 @@ CLEAN_AS(func_ov004_02214c34, RoomObject02252824_Create)
 /* The receiver part (at 0xec, RoomObject.receiver_vtable) enters RoomObject02252824's functions
  * through its vtable with these: each moves the pointer back to the object and goes on with the
  * object's function. */
-static RoomObject02252824 *RoomObject02252824_from_receiver(void *receiver)
+static RoomObject02252824 *room_object02252824_from_receiver(void *receiver)
 {
     return (RoomObject02252824 *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
 }
@@ -393,13 +393,13 @@ static RoomObject02252824 *RoomObject02252824_from_receiver(void *receiver)
 /* func_ov004_0221a91c: the deleting destructor, entered from the receiver part. */
 RoomObject02252824 *RoomObject02252824Receiver_Delete(void *receiver)
 {
-    return RoomObject02252824_Delete(RoomObject02252824_from_receiver(receiver));
+    return RoomObject02252824_Delete(room_object02252824_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_02252824D0Ev, RoomObject02252824Receiver_Delete)
 
 /* func_ov004_0221a938: the destructor, entered from the receiver part. */
 RoomObject02252824 *RoomObject02252824Receiver_Destroy(void *receiver)
 {
-    return RoomObject02252824_Destroy(RoomObject02252824_from_receiver(receiver));
+    return RoomObject02252824_Destroy(room_object02252824_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_02252824D1Ev, RoomObject02252824Receiver_Destroy)

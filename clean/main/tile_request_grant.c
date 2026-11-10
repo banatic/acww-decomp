@@ -50,43 +50,43 @@ extern fx32 FX_MulFunc(fx32 a, fx32 b);
 #define TILE_REQUEST_GRANT_PLAYERS 4
 #define TILE_REQUEST_GRANT_TRIES 8
 
-static int TileRequestGrant_InRange(u32 code, u32 first, u32 last)
+static int tile_request_grant_in_range(u32 code, u32 first, u32 last)
 {
     return code >= first && code <= last;
 }
 
 /* An arithmetic shift right, as the ARM's. */
-static int TileRequestGrant_ShiftRight(int value, int shift)
+static int tile_request_grant_shift_right(int value, int shift)
 {
     return value >= 0 ? value >> shift : ~(~value >> shift);
 }
 
 /* The ARM's 32-bit sum and difference. */
-static s32 TileRequestGrant_Add(s32 a, s32 b)
+static s32 tile_request_grant_add(s32 a, s32 b)
 {
     return (s32) ((u32) a + (u32) b);
 }
 
-static s32 TileRequestGrant_Sub(s32 a, s32 b)
+static s32 tile_request_grant_sub(s32 a, s32 b)
 {
     return (s32) ((u32) a - (u32) b);
 }
 
 /* The code on the tile (x, z) of `map` (layer 0), or NULL. */
-static u16 *TileRequestGrant_CodeAt(AcreMap *map, int x, int z)
+static u16 *tile_request_grant_code_at(AcreMap *map, int x, int z)
 {
-    return AcreTile_ItemInAcre(map, (u32) TileRequestGrant_ShiftRight(x, 4), (u32) TileRequestGrant_ShiftRight(z, 4), x & 0xf,
-                               z & 0xf, 0);
+    return AcreTile_ItemInAcre(map, (u32) tile_request_grant_shift_right(x, 4), (u32) tile_request_grant_shift_right(z, 4),
+                               x & 0xf, z & 0xf, 0);
 }
 
-static TileRequestTile TileRequestGrant_TileOf(u16 packed)
+static TileRequestTile tile_request_grant_tile_of(u16 packed)
 {
     TileRequestTile tile = {packed >> 8, packed & 0xff};
     return tile;
 }
 
 /* The neighbour `neighbour` (of data_020ca640) of a packed tile. */
-static TileRequestTile TileRequestGrant_Near(u16 packed, int neighbour)
+static TileRequestTile tile_request_grant_near(u16 packed, int neighbour)
 {
     u8 offset = data_020ca640[neighbour];
     TileRequestTile tile = {(packed >> 8) + ((offset >> 4) - 8), (packed & 0xff) + ((offset & 0xf) - 8)};
@@ -95,30 +95,30 @@ static TileRequestTile TileRequestGrant_Near(u16 packed, int neighbour)
 
 /* Drop `index`'s tile noted in the answer, its high byte (x) written first as the original
  * does. */
-static void TileRequestGrant_SetExtraTile(TileRequestAnswer *answer, int index, const TileRequestTile *tile)
+static void tile_request_grant_set_extra_tile(TileRequestAnswer *answer, int index, const TileRequestTile *tile)
 {
     u8 *bytes = (u8 *) &answer->extra_tiles[index];
     bytes[1] = (u8) tile->x;
     bytes[0] = (u8) tile->z;
 }
 
-static int TileRequestGrant_AnswerKind(const TileRequestAnswer *answer)
+static int tile_request_grant_answer_kind(const TileRequestAnswer *answer)
 {
     return answer->who >> 3;
 }
 
-static int TileRequestGrant_AnswerSlot(const TileRequestAnswer *answer)
+static int tile_request_grant_answer_slot(const TileRequestAnswer *answer)
 {
     return (answer->who >> 1) & 3;
 }
 
-static int TileRequestGrant_AnswerLayer(const TileRequestAnswer *answer)
+static int tile_request_grant_answer_layer(const TileRequestAnswer *answer)
 {
     return answer->what >> 7;
 }
 
 /* The kinds of request with nothing put on the map: 0xc, 0xd, 0xf (changes around) and 0x17. */
-static int TileRequestGrant_PutsNothing(int kind)
+static int tile_request_grant_puts_nothing(int kind)
 {
     return kind == 0xc || kind == 0xd || kind == TILE_REQUEST_CHANGE_AROUND || kind == 0x17;
 }
@@ -132,7 +132,7 @@ static int TileRequestGrant_PutsNothing(int kind)
 void TileRequestGrant_ReceiveAnswer(const TileRequestAnswer *answer, int scene)
 {
     int granted = (answer->what & TILE_REQUEST_ANSWER_GRANTED) != 0;
-    if (data_020ccf94->local_slot == TileRequestGrant_AnswerSlot(answer)) {
+    if (data_020ccf94->local_slot == tile_request_grant_answer_slot(answer)) {
         TileRequest *request = &data_021c7c48.requests[answer->what & 3];
         if (!granted) {
             request->state = TILE_REQUEST_REFUSED;
@@ -165,7 +165,7 @@ CLEAN_AS(func_02044e28, TileRequestGrant_ReceiveAnswer)
  * QUIRK: the extra tiles are not checked for 0xffff (none) here. */
 void TileRequestGrant_PutOnScene(const TileRequestAnswer *answer, int scene)
 {
-    if (TileRequestGrant_PutsNothing(TileRequestGrant_AnswerKind(answer))) {
+    if (tile_request_grant_puts_nothing(tile_request_grant_answer_kind(answer))) {
         return;
     }
     TownTilePut_OnScene(scene, answer->tile >> 8, answer->tile & 0xff, answer->item, (answer->what >> 3) & 3);
@@ -186,15 +186,15 @@ void TileRequestGrant_LetGo(const TileRequestAnswer *answer)
 {
     int x = answer->tile >> 8;
     int z = answer->tile & 0xff;
-    if (TileRequestGrant_PutsNothing(TileRequestGrant_AnswerKind(answer))) {
+    if (tile_request_grant_puts_nothing(tile_request_grant_answer_kind(answer))) {
         return;
     }
     AcreMap *map = data_021c80bc;
     if (map != NULL) {
-        TileRequestGrant_CodeAt(map, x, z);
+        tile_request_grant_code_at(map, x, z);
     }
     TileChangesTile tile = {x, z};
-    TileChanges_LetGoAt(&tile, TileRequestGrant_AnswerLayer(answer));
+    TileChanges_LetGoAt(&tile, tile_request_grant_answer_layer(answer));
     if ((answer->who & TILE_REQUEST_ANSWER_EXTRAS) == 0) {
         return;
     }
@@ -202,7 +202,7 @@ void TileRequestGrant_LetGo(const TileRequestAnswer *answer)
         u16 extra = answer->extra_tiles[i];
         if (extra != TILE_CHANGES_NO_TILE) {
             TileChangesTile at = {extra >> 8, extra & 0xff};
-            TileChanges_LetGoAt(&at, TileRequestGrant_AnswerLayer(answer));
+            TileChanges_LetGoAt(&at, tile_request_grant_answer_layer(answer));
         }
     }
 }
@@ -218,23 +218,23 @@ void TileRequestGrant_Apply(const TileRequestAnswer *answer)
 {
     int x = answer->tile >> 8;
     int z = answer->tile & 0xff;
-    int kind = TileRequestGrant_AnswerKind(answer);
-    if (TileRequestGrant_PutsNothing(kind)) {
+    int kind = tile_request_grant_answer_kind(answer);
+    if (tile_request_grant_puts_nothing(kind)) {
         return;
     }
     if (kind == TILE_REQUEST_SPLIT_DROP || kind == TILE_REQUEST_DROP_A7) {
         TileRequestTile shown = {x, z};
-        TileEvent_StartKind4(TileRequestGrant_AnswerSlot(answer), answer->item, (const TileChangesTile *) &shown);
+        TileEvent_StartKind4(tile_request_grant_answer_slot(answer), answer->item, (const TileChangesTile *) &shown);
     }
     u16 code = ITEM_CODE_NONE;
     AcreMap *map = data_021c80bc;
     if (map != NULL) {
-        code = *TileRequestGrant_CodeAt(map, x, z);
+        code = *tile_request_grant_code_at(map, x, z);
     }
     TileRequestTile tile = {x, z};
-    TileChanges_Replace(TileRequestGrant_AnswerSlot(answer), (const TileChangesTile *) &tile, answer->item, code, (u8) kind,
+    TileChanges_Replace(tile_request_grant_answer_slot(answer), (const TileChangesTile *) &tile, answer->item, code, (u8) kind,
                         (answer->what >> 3) & 3, (answer->what >> 5) & 3, TILE_REQUEST_GRANT_PLACE,
-                        (u8) TileRequestGrant_AnswerLayer(answer), -1);
+                        (u8) tile_request_grant_answer_layer(answer), -1);
     if ((answer->who & TILE_REQUEST_ANSWER_EXTRAS) == 0) {
         return;
     }
@@ -242,9 +242,9 @@ void TileRequestGrant_Apply(const TileRequestAnswer *answer)
     for (int i = 0; i < 3; i++) {
         u16 extra = answer->extra_tiles[i];
         if (extra != TILE_CHANGES_NO_TILE) {
-            TileRequestTile at = TileRequestGrant_TileOf(extra);
-            TileChanges_Replace(TileRequestGrant_AnswerSlot(answer), (const TileChangesTile *) &at, dropped, ITEM_CODE_NONE, 0,
-                                0, 0, (u8) i, (u8) TileRequestGrant_AnswerLayer(answer), -1);
+            TileRequestTile at = tile_request_grant_tile_of(extra);
+            TileChanges_Replace(tile_request_grant_answer_slot(answer), (const TileChangesTile *) &at, dropped, ITEM_CODE_NONE,
+                                0, 0, 0, (u8) i, (u8) tile_request_grant_answer_layer(answer), -1);
         }
     }
 }
@@ -269,10 +269,10 @@ void TileRequestGrant_Answer(const TileRequestMessage *request, int granted, int
     for (int i = 0; i < 3; i++) {
         answer.extra_tiles[i] = TILE_CHANGES_NO_TILE;
     }
-    TileRequestTile tile = TileRequestGrant_TileOf(answer.tile);
+    TileRequestTile tile = tile_request_grant_tile_of(answer.tile);
     u8 unk_1d = (answer.what >> 3) & 3;
     u8 unk_20 = (answer.what >> 5) & 3;
-    u8 layer = (u8) TileRequestGrant_AnswerLayer(&answer);
+    u8 layer = (u8) tile_request_grant_answer_layer(&answer);
 
     if (granted != 0) {
         TileRequestTile at = tile;
@@ -337,8 +337,8 @@ int TileRequestGrant_Drops(TileRequestAnswer *answer, const TileRequestMessage *
         answer->extra_tiles[i] = TILE_CHANGES_NO_TILE;
     }
     u16 code = request->code;
-    if (TileRequestGrant_InRange(code, 0x2f, 0x56) || TileRequestGrant_InRange(code, 0xc8, 0xcf) ||
-        TileRequestGrant_InRange(code, 0x57, 0x5b)) {
+    if (tile_request_grant_in_range(code, 0x2f, 0x56) || tile_request_grant_in_range(code, 0xc8, 0xcf) ||
+        tile_request_grant_in_range(code, 0x57, 0x5b)) {
         if (MapItem_IsGrown(&code) == 0) {
             return 0;
         }
@@ -352,7 +352,7 @@ int TileRequestGrant_Drops(TileRequestAnswer *answer, const TileRequestMessage *
         TileRequestGrant_DropOne(answer, request, slot);
         return 1;
     }
-    if (TileRequestGrant_InRange(code, 0x66, 0x68) || TileRequestGrant_InRange(code, 0x6a, 0x6c)) {
+    if (tile_request_grant_in_range(code, 0x66, 0x68) || tile_request_grant_in_range(code, 0x6a, 0x6c)) {
         TileRequestGrant_DropOne(answer, request, slot);
         return 1;
     }
@@ -372,8 +372,8 @@ void TileRequestGrant_DropOne(TileRequestAnswer *answer, const TileRequestMessag
     }
     u16 item = TILE_REQUEST_GRANT_BAG;
     u16 code = request->code;
-    if ((TileRequestGrant_InRange(code, 0x66, 0x68) || TileRequestGrant_InRange(code, 0x6a, 0x6c)) && request->code != 0x68 &&
-        request->code != 0x6c) {
+    if ((tile_request_grant_in_range(code, 0x66, 0x68) || tile_request_grant_in_range(code, 0x6a, 0x6c)) &&
+        request->code != 0x68 && request->code != 0x6c) {
         int drawer[2];
         u16 drawn;
         ItemList_Construct((ItemList *) drawer, 0, 0);
@@ -385,11 +385,11 @@ void TileRequestGrant_DropOne(TileRequestAnswer *answer, const TileRequestMessag
     Vec3 centre;
     AcreTile_TileCentre(&centre, (u32) (packed >> 8), (u32) (packed & 0xff));
     int side = GrowthModel_PlayerSide(slot, &centre);
-    TileRequestTile at = TileRequestGrant_Near(answer->tile, data_020ca67c[side]);
+    TileRequestTile at = tile_request_grant_near(answer->tile, data_020ca67c[side]);
     if (TileRequestGrant_FindDropTile(answer, &at, side, town) != 0) {
         TileRequestTile to = at;
         TileChanges_Put((u8) slot, (const TileChangesTile *) &to, item, ITEM_CODE_NONE, 0, 0, 0, 0, 0, -1);
-        TileRequestGrant_SetExtraTile(answer, 0, &at);
+        tile_request_grant_set_extra_tile(answer, 0, &at);
     } else {
         answer->extra_tiles[0] = TILE_CHANGES_NO_TILE;
     }
@@ -409,11 +409,11 @@ void TileRequestGrant_DropMany(TileRequestAnswer *answer, int slot, int code)
     int count = code == 0xcc ? 2 : 3;
     u16 item = TileRequestGrant_DropItemOf((int) (uintptr_t) answer, code);
     for (int i = 0; i < count; i++) {
-        TileRequestTile at = TileRequestGrant_Near(answer->tile, data_020ca67c[i]);
+        TileRequestTile at = tile_request_grant_near(answer->tile, data_020ca67c[i]);
         if (TileRequestGrant_FindDropTile(answer, &at, i, town) != 0) {
             TileRequestTile to = at;
             TileChanges_Put((u8) slot, (const TileChangesTile *) &to, item, ITEM_CODE_NONE, 0, 0, 0, (u8) i, 0, -1);
-            TileRequestGrant_SetExtraTile(answer, i, &at);
+            tile_request_grant_set_extra_tile(answer, i, &at);
         } else {
             answer->extra_tiles[i] = TILE_CHANGES_NO_TILE;
         }
@@ -450,7 +450,7 @@ int TileRequestGrant_FindDropTile(void *unused, TileRequestTile *tile, int index
         u8 offset = data_020ca640[order[i]];
         int x = tile->x + ((offset >> 4) - 8);
         int z = tile->z + ((offset & 0xf) - 8);
-        u16 *code = TileRequestGrant_CodeAt(town, x, z);
+        u16 *code = tile_request_grant_code_at(town, x, z);
         if (code == NULL || *code != ITEM_CODE_NONE) {
             continue;
         }
@@ -489,7 +489,7 @@ void TileRequestGrant_Submit(u8 index, int unk_20)
     }
     int x = request->tile.x;
     int z = request->tile.z;
-    u16 *code = TileRequestGrant_CodeAt(map, x, z);
+    u16 *code = tile_request_grant_code_at(map, x, z);
     if (code == NULL) {
         request->state = TILE_REQUEST_REFUSED;
         return;
@@ -548,7 +548,7 @@ int TileRequestGrant_Prepare(TileRequestMessage *message, const TileRequest *req
     u16 item = message->item;
     switch (message->what & TILE_REQUEST_MESSAGE_KIND_MASK) {
         case TILE_REQUEST_KIND_13:
-            if (TileRequestGrant_InRange(item, 0x1518, 0x151c)) {
+            if (tile_request_grant_in_range(item, 0x1518, 0x151c)) {
                 message->item = data_020ca658[item - 0x1518];
             } else if (item == 0x1548) {
                 message->item = 0xc8;
@@ -636,11 +636,11 @@ int TileRequestGrant_NoOneNear(const TileRequestTile *tile, int skip)
         if (actor == NULL) {
             continue;
         }
-        fx32 dx = TileRequestGrant_Sub(centre.x, actor->position.x);
-        fx32 dz = TileRequestGrant_Sub(centre.z, actor->position.z);
+        fx32 dx = tile_request_grant_sub(centre.x, actor->position.x);
+        fx32 dz = tile_request_grant_sub(centre.z, actor->position.z);
         fx32 x2 = FX_MulFunc(dx, dx);
         fx32 z2 = FX_MulFunc(dz, dz);
-        if (TileRequestGrant_Add(x2, z2) < TILE_REQUEST_GRANT_NEAR) {
+        if (tile_request_grant_add(x2, z2) < TILE_REQUEST_GRANT_NEAR) {
             return 0;
         }
     }

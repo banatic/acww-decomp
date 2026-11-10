@@ -33,12 +33,12 @@ extern const char data_ov004_022531c8[];
 extern const u8 data_ov004_02251ec4[];
 extern const u8 data_ov004_02251f70[];
 
-static SoundEmitter *ShopDesignObject_emitter(ShopDesignObject *object)
+static SoundEmitter *shop_design_object_emitter(ShopDesignObject *object)
 {
     return (SoundEmitter *) (void *) object->emitter;
 }
 
-static DesignManager *ShopDesignObject_designs(void)
+static DesignManager *shop_design_object_designs(void)
 {
     return (DesignManager *) (uintptr_t) DesignManager_Get();
 }
@@ -47,7 +47,7 @@ static DesignManager *ShopDesignObject_designs(void)
 int ShopDesignObject_Vfunc0C(ShopDesignObject *object)
 {
     if (object->has_sound != 0) {
-        SoundEmitter_FinishB(ShopDesignObject_emitter(object));
+        SoundEmitter_FinishB(shop_design_object_emitter(object));
     }
     return 1;
 }
@@ -60,10 +60,10 @@ int ShopDesignObject_Update(ShopDesignObject *object)
 {
     if (object->has_sound != 0) {
         Vec3 centre = object->base.sound.position;
-        if (DesignManager_TakeShopChanged(ShopDesignObject_designs(), object->design)) {
-            SoundEmitter_PlayB(ShopDesignObject_emitter(object), SHOP_DESIGN_SOUND, SHOP_DESIGN_VOLUME, 0);
+        if (DesignManager_TakeShopChanged(shop_design_object_designs(), object->design)) {
+            SoundEmitter_PlayB(shop_design_object_emitter(object), SHOP_DESIGN_SOUND, SHOP_DESIGN_VOLUME, 0);
         }
-        SoundEmitter_UpdateAtB(ShopDesignObject_emitter(object), &centre);
+        SoundEmitter_UpdateAtB(shop_design_object_emitter(object), &centre);
     }
     return 1;
 }
@@ -81,20 +81,20 @@ int ShopDesignObject_Start(ShopDesignObject *object)
         return 0;
     }
     object->design = ((item - SHOP_DESIGN_ITEM_FIRST) >> 2) & SHOP_DESIGNS_MASK;
-    int texture = DesignManager_ShopTexture(ShopDesignObject_designs(), (u8) object->design);
+    int texture = DesignManager_ShopTexture(shop_design_object_designs(), (u8) object->design);
     if (texture == 0) {
         return 0;
     }
     MaterialBind_BindByIndex((u8 *) object->base.model_resource, data_ov004_022531c8, (G3dResTex *) (uintptr_t) texture, 0, 0);
     if (object->has_sound == 0) {
-        SoundEmitter_ResetB(ShopDesignObject_emitter(object));
+        SoundEmitter_ResetB(shop_design_object_emitter(object));
         object->has_sound = 1;
     }
     return 1;
 }
 CLEAN_AS(func_ov004_02213a08, ShopDesignObject_Start)
 
-static void ShopDesignObject_set_vtables(ShopDesignObject *object)
+static void shop_design_object_set_vtables(ShopDesignObject *object)
 {
     object->base.vtable = (const RoomObjectVtable *) data_ov004_02251ec4;
     object->base.receiver_vtable = data_ov004_02251f70;
@@ -104,7 +104,7 @@ static void ShopDesignObject_set_vtables(ShopDesignObject *object)
  * then the base class's. */
 ShopDesignObject *ShopDesignObject_Delete(ShopDesignObject *object)
 {
-    ShopDesignObject_set_vtables(object);
+    shop_design_object_set_vtables(object);
     SoundEmitterClass_DestructBaseB((SoundEmitterObject *) (void *) object->emitter);
     RoomObject_DestructBase(&object->base);
     RoomObject_Free(object);
@@ -115,7 +115,7 @@ CLEAN_AS(func_ov004_02213ab8, ShopDesignObject_Delete)
 /* func_ov004_02213af0 (the destructor, vtable slot 0x40) */
 ShopDesignObject *ShopDesignObject_Destroy(ShopDesignObject *object)
 {
-    ShopDesignObject_set_vtables(object);
+    shop_design_object_set_vtables(object);
     SoundEmitterClass_DestructBaseB((SoundEmitterObject *) (void *) object->emitter);
     RoomObject_DestructBase(&object->base);
     return object;
@@ -127,7 +127,7 @@ CLEAN_AS(func_ov004_02213af0, ShopDesignObject_Destroy)
 ShopDesignObject *ShopDesignObject_Construct(ShopDesignObject *object)
 {
     RoomObject_ConstructBase(&object->base);
-    ShopDesignObject_set_vtables(object);
+    shop_design_object_set_vtables(object);
     SoundEmitterClass_ConstructBaseB((SoundEmitterObject *) (void *) object->emitter);
     return object;
 }
@@ -146,7 +146,7 @@ CLEAN_AS(func_ov004_02213b54, ShopDesignObject_Create)
 /* The receiver part (at 0xec, RoomObject.receiver_vtable) enters ShopDesignObject's functions
  * through its vtable with these: each moves the pointer back to the object and goes on with the
  * object's function. */
-static ShopDesignObject *ShopDesignObject_from_receiver(void *receiver)
+static ShopDesignObject *shop_design_object_from_receiver(void *receiver)
 {
     return (ShopDesignObject *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
 }
@@ -154,13 +154,13 @@ static ShopDesignObject *ShopDesignObject_from_receiver(void *receiver)
 /* func_ov004_0221a9fc: the deleting destructor, entered from the receiver part. */
 ShopDesignObject *ShopDesignObjectReceiver_Delete(void *receiver)
 {
-    return ShopDesignObject_Delete(ShopDesignObject_from_receiver(receiver));
+    return ShopDesignObject_Delete(shop_design_object_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_02251ec4D0Ev, ShopDesignObjectReceiver_Delete)
 
 /* func_ov004_0221aa18: the destructor, entered from the receiver part. */
 ShopDesignObject *ShopDesignObjectReceiver_Destroy(void *receiver)
 {
-    return ShopDesignObject_Destroy(ShopDesignObject_from_receiver(receiver));
+    return ShopDesignObject_Destroy(shop_design_object_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_02251ec4D1Ev, ShopDesignObjectReceiver_Destroy)

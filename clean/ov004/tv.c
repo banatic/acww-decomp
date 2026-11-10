@@ -61,27 +61,27 @@ extern const char data_ov004_022531e0[];
 extern const char data_ov004_022531e8[];
 
 /* Vtable slot 0x70: the class's EnterState. */
-static void Tv_switch_to(Tv *tv, int state)
+static void tv_switch_to(Tv *tv, int state)
 {
     tv->base.vtable->vfunc_70(&tv->base, state, SLOT_70_VALUE);
 }
 
 /* The glow bound to the screen's material, on as the switch is; then the "on" state when the
  * switch is on and RoomObjects_InShop says no, else the "off" one. */
-static void Tv_bind_and_enter(Tv *tv, int on_state, int off_state)
+static void tv_bind_and_enter(Tv *tv, int on_state, int off_state)
 {
     int on = Switch_Value(&tv->base.on_switch);
     Glow_Bind(&tv->screen, tv->base.model_resource, data_ov004_022531d8, on);
     if (Switch_Value(&tv->base.on_switch) != 0 && RoomObjects_InShop() == 0) {
-        Tv_switch_to(tv, on_state);
+        tv_switch_to(tv, on_state);
     } else {
-        Tv_switch_to(tv, off_state);
+        tv_switch_to(tv, off_state);
     }
 }
 
 /* What every state of TvAnimated sets on entry: the switch (shown at once), the glow towards
  * it and the screen. */
-static void TvAnimated_show(TvAnimated *tv, int on)
+static void tv_animated_show(TvAnimated *tv, int on)
 {
     Switch_Set(&tv->base.base.on_switch, (u8) on, 0);
     Glow_Switch(&tv->base.screen, on, 1, 0);
@@ -94,7 +94,7 @@ void TvAnimated_UpdateTurningOff(TvAnimated *tv)
 {
     Switch_Set(&tv->base.base.on_switch, 0, 0);
     if (RoomObject_AdvanceAnims(&tv->base.base) != 0) {
-        Tv_switch_to(&tv->base, TV_ANIMATED_OFF);
+        tv_switch_to(&tv->base, TV_ANIMATED_OFF);
     }
 }
 CLEAN_AS(func_ov004_02215758, TvAnimated_UpdateTurningOff)
@@ -103,7 +103,7 @@ CLEAN_AS(func_ov004_02215758, TvAnimated_UpdateTurningOff)
  * mode 3 from their last frame, and the sound at 4. */
 int TvAnimated_EnterTurningOff(TvAnimated *tv)
 {
-    TvAnimated_show(tv, 0);
+    tv_animated_show(tv, 0);
     RoomObject_PlayAnimsFromEnd(&tv->base.base, 0, ANIM_MODE_3, FX32_ONE);
     RoomObject_PlaySound2(&tv->base.base);
     return 1;
@@ -125,7 +125,7 @@ CLEAN_AS(func_ov004_022157d4, TvAnimated_UpdateOn)
  * their last frame (so held there). */
 int TvAnimated_EnterOn(TvAnimated *tv)
 {
-    TvAnimated_show(tv, 1);
+    tv_animated_show(tv, 1);
     RoomObject_PlayAnimsFromEnd(&tv->base.base, 0, ANIM_MODE_ONCE, FX32_ONE);
     return 1;
 }
@@ -137,7 +137,7 @@ void TvAnimated_UpdateTurningOn(TvAnimated *tv)
 {
     Switch_Set(&tv->base.base.on_switch, 1, 0);
     if (RoomObject_AdvanceAnims(&tv->base.base) != 0) {
-        Tv_switch_to(&tv->base, TV_ANIMATED_ON);
+        tv_switch_to(&tv->base, TV_ANIMATED_ON);
     }
 }
 CLEAN_AS(func_ov004_02215844, TvAnimated_UpdateTurningOn)
@@ -146,7 +146,7 @@ CLEAN_AS(func_ov004_02215844, TvAnimated_UpdateTurningOn)
  * from the start, and the sound at 2. */
 int TvAnimated_EnterTurningOn(TvAnimated *tv)
 {
-    TvAnimated_show(tv, 1);
+    tv_animated_show(tv, 1);
     RoomObject_PlayAnimsFrom(&tv->base.base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
     RoomObject_PlaySound1(&tv->base.base);
     return 1;
@@ -167,7 +167,7 @@ CLEAN_AS(func_ov004_022158c8, TvAnimated_UpdateOff)
  * from frame 0. */
 int TvAnimated_EnterOff(TvAnimated *tv)
 {
-    TvAnimated_show(tv, 0);
+    tv_animated_show(tv, 0);
     RoomObject_PlayAnimsFrom(&tv->base.base, 0, ANIM_MODE_3, FX32_ONE, 0);
     return 1;
 }
@@ -246,12 +246,12 @@ CLEAN_AS(_ZN18Obj_ov004_02250f8819func_ov004_02215a80Ev, TvAnimated_Update)
 int TvAnimated_Start(TvAnimated *tv)
 {
     RoomObject_LoadAnims(&tv->base.base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
-    Tv_bind_and_enter(&tv->base, TV_ANIMATED_ON, TV_ANIMATED_OFF);
+    tv_bind_and_enter(&tv->base, TV_ANIMATED_ON, TV_ANIMATED_OFF);
     return 1;
 }
 CLEAN_AS(func_ov004_02215aa0, TvAnimated_Start)
 
-static void TvAnimated_set_vtables(TvAnimated *tv)
+static void tv_animated_set_vtables(TvAnimated *tv)
 {
     tv->base.base.vtable = (const RoomObjectVtable *) data_ov004_02250f88;
     tv->base.base.receiver_vtable = data_ov004_02251034;
@@ -260,7 +260,7 @@ static void TvAnimated_set_vtables(TvAnimated *tv)
 /* func_ov004_02215b18 (the deleting destructor, vtable slot 0x44) */
 TvAnimated *TvAnimated_Delete(TvAnimated *tv)
 {
-    TvAnimated_set_vtables(tv);
+    tv_animated_set_vtables(tv);
     Tv_DestroyBase(&tv->base);
     RoomObject_Free(tv);
     return tv;
@@ -270,7 +270,7 @@ CLEAN_AS(func_ov004_02215b18, TvAnimated_Delete)
 /* func_ov004_02215b44 (the destructor, vtable slot 0x40) */
 TvAnimated *TvAnimated_Destroy(TvAnimated *tv)
 {
-    TvAnimated_set_vtables(tv);
+    tv_animated_set_vtables(tv);
     Tv_DestroyBase(&tv->base);
     return tv;
 }
@@ -281,7 +281,7 @@ CLEAN_AS(func_ov004_02215b44, TvAnimated_Destroy)
 TvAnimated *TvAnimated_Construct(TvAnimated *tv)
 {
     Tv_ConstructBase(&tv->base);
-    TvAnimated_set_vtables(tv);
+    tv_animated_set_vtables(tv);
     return tv;
 }
 CLEAN_AS(func_ov004_02215b68, TvAnimated_Construct)
@@ -435,21 +435,21 @@ CLEAN_AS(_ZN18Obj_ov004_0225143819func_ov004_02215de0Ev, Tv_Update)
  * the switch is on and RoomObjects_InShop says no, else TV_OFF; done at once. */
 int Tv_Start(Tv *tv)
 {
-    Tv_bind_and_enter(tv, TV_ON, TV_OFF);
+    tv_bind_and_enter(tv, TV_ON, TV_OFF);
     return 1;
 }
 CLEAN_AS(func_ov004_02215e08, Tv_Start)
 
-static void Tv_set_vtables(Tv *tv)
+static void tv_set_vtables(Tv *tv)
 {
     tv->base.vtable = (const RoomObjectVtable *) data_ov004_02251438;
     tv->base.receiver_vtable = data_ov004_022514e4;
 }
 
 /* Taking a TV down: its vtables, the glow, then the base. */
-static Tv *Tv_take_down(Tv *tv)
+static Tv *tv_take_down(Tv *tv)
 {
-    Tv_set_vtables(tv);
+    tv_set_vtables(tv);
     Glow_Destruct(&tv->screen);
     RoomObject_DestructBase(&tv->base);
     return tv;
@@ -457,10 +457,10 @@ static Tv *Tv_take_down(Tv *tv)
 
 /* Building one: the base, its vtables, then the glow. Its state is left as the allocation
  * zeroed it (TV_OFF). */
-static Tv *Tv_build(Tv *tv)
+static Tv *tv_build(Tv *tv)
 {
     RoomObject_ConstructBase(&tv->base);
-    Tv_set_vtables(tv);
+    tv_set_vtables(tv);
     Glow_Construct(&tv->screen);
     return tv;
 }
@@ -468,14 +468,14 @@ static Tv *Tv_build(Tv *tv)
 /* func_ov004_02215e70 (the destructor TvAnimated's call). */
 Tv *Tv_DestroyBase(Tv *tv)
 {
-    return Tv_take_down(tv);
+    return tv_take_down(tv);
 }
 CLEAN_AS(func_ov004_02215e70, Tv_DestroyBase)
 
 /* func_ov004_02215ea4 (the deleting destructor, vtable slot 0x44) */
 Tv *Tv_Delete(Tv *tv)
 {
-    Tv_take_down(tv);
+    tv_take_down(tv);
     RoomObject_Free(tv);
     return tv;
 }
@@ -484,21 +484,21 @@ CLEAN_AS(func_ov004_02215ea4, Tv_Delete)
 /* func_ov004_02215edc (the destructor, vtable slot 0x40; the same as Tv_DestroyBase) */
 Tv *Tv_Destroy(Tv *tv)
 {
-    return Tv_take_down(tv);
+    return tv_take_down(tv);
 }
 CLEAN_AS(func_ov004_02215edc, Tv_Destroy)
 
 /* func_ov004_02215f10 (the constructor Tv_Create calls) */
 Tv *Tv_Construct(Tv *tv)
 {
-    return Tv_build(tv);
+    return tv_build(tv);
 }
 CLEAN_AS(func_ov004_02215f10, Tv_Construct)
 
 /* func_ov004_02215f40 (the constructor TvAnimated's calls; the same as Tv_Construct) */
 Tv *Tv_ConstructBase(Tv *tv)
 {
-    return Tv_build(tv);
+    return tv_build(tv);
 }
 CLEAN_AS(func_ov004_02215f40, Tv_ConstructBase)
 
@@ -515,7 +515,7 @@ CLEAN_AS(func_ov004_02215f70, Tv_Create)
 /* The receiver part (at 0xec, RoomObject.receiver_vtable) enters Tv's functions
  * through its vtable with these: each moves the pointer back to the object and goes on with the
  * object's function. */
-static Tv *Tv_from_receiver(void *receiver)
+static Tv *tv_from_receiver(void *receiver)
 {
     return (Tv *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
 }
@@ -523,21 +523,21 @@ static Tv *Tv_from_receiver(void *receiver)
 /* func_ov004_0221a83c: the deleting destructor, entered from the receiver part. */
 Tv *TvReceiver_Delete(void *receiver)
 {
-    return Tv_Delete(Tv_from_receiver(receiver));
+    return Tv_Delete(tv_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_02251438D0Ev, TvReceiver_Delete)
 
 /* func_ov004_0221a858: the destructor, entered from the receiver part. */
 Tv *TvReceiver_Destroy(void *receiver)
 {
-    return Tv_Destroy(Tv_from_receiver(receiver));
+    return Tv_Destroy(tv_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_02251438D1Ev, TvReceiver_Destroy)
 
 /* The receiver part (at 0xec, RoomObject.receiver_vtable) enters TvAnimated's functions
  * through its vtable with these: each moves the pointer back to the object and goes on with the
  * object's function. */
-static TvAnimated *TvAnimated_from_receiver(void *receiver)
+static TvAnimated *tv_animated_from_receiver(void *receiver)
 {
     return (TvAnimated *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
 }
@@ -545,13 +545,13 @@ static TvAnimated *TvAnimated_from_receiver(void *receiver)
 /* func_ov004_0221a874: the deleting destructor, entered from the receiver part. */
 TvAnimated *TvAnimatedReceiver_Delete(void *receiver)
 {
-    return TvAnimated_Delete(TvAnimated_from_receiver(receiver));
+    return TvAnimated_Delete(tv_animated_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_02250f88D0Ev, TvAnimatedReceiver_Delete)
 
 /* func_ov004_0221a890: the destructor, entered from the receiver part. */
 TvAnimated *TvAnimatedReceiver_Destroy(void *receiver)
 {
-    return TvAnimated_Destroy(TvAnimated_from_receiver(receiver));
+    return TvAnimated_Destroy(tv_animated_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_02250f88D1Ev, TvAnimatedReceiver_Destroy)

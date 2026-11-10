@@ -12,13 +12,13 @@ extern u8 data_021e5a2c[]; /* the town's villagers (VillagerTown) */
 
 extern void *func_02137550(void *dst, u32 size); /* clears size bytes */
 
-static VillagerTown *VillagerNames_Town(void)
+static VillagerTown *villager_names_town(void)
 {
     return (VillagerTown *) (void *) data_021e5a2c;
 }
 
 /* The name of `other` into `dst`, when there is such a villager and its NpcId is valid. */
-static void VillagerNames_Format(const u8 *other, char *dst)
+static void villager_names_format(const u8 *other, char *dst)
 {
     if (other != NULL && NpcId_IsValid(TownVillager_NpcId((u8 *) other))) {
         NpcId_FormatName(TownVillager_NpcId((u8 *) other), dst);
@@ -32,20 +32,20 @@ void VillagerNames_FormatOther(u8 *villager, char *dst)
     const NpcId *excluded[1];
     func_02137550(excluded, sizeof(excluded));
     excluded[0] = TownVillager_NpcId(villager);
-    VillagerNames_Format(VillagerRoster_PickAny(VillagerNames_Town(), excluded, 1), dst);
+    villager_names_format(VillagerRoster_PickAny(villager_names_town(), excluded, 1), dst);
 }
 CLEAN_AS(func_0207ee78, VillagerNames_FormatOther)
 
 /* func_0207eec4: the name of the villager `villager` gets on worst with. */
 void VillagerNames_FormatWorstMatch(u8 *villager, char *dst)
 {
-    VillagerNames_Format(VillagerPair_WorstFor(VillagerNames_Town(), villager), dst);
+    villager_names_format(VillagerPair_WorstFor(villager_names_town(), villager), dst);
 }
 CLEAN_AS(func_0207eec4, VillagerNames_FormatWorstMatch)
 
 /* func_0207ef00: the name of the villager `villager` gets on best with. */
 void VillagerNames_FormatBestMatch(u8 *villager, char *dst)
 {
-    VillagerNames_Format(VillagerPair_BestFor(VillagerNames_Town(), villager), dst);
+    villager_names_format(VillagerPair_BestFor(villager_names_town(), villager), dst);
 }
 CLEAN_AS(func_0207ef00, VillagerNames_FormatBestMatch)

@@ -69,24 +69,24 @@ extern u32 data_020cd418;
 extern u8 data_020e54a8;          /* 0: NpcLookup_FourUnlessSlotTaken counts the blocks, else the scene's counts */
 extern NetSession *data_020ccf94; /* the session */
 
-static u32 SceneHeaps_AlignTo(u32 size, u32 align)
+static u32 scene_heaps_align_to(u32 size, u32 align)
 {
     return (size + align - 1) & ~(align - 1);
 }
 
-static u32 SceneHeaps_Align4(u32 size)
+static u32 scene_heaps_align4(u32 size)
 {
-    return SceneHeaps_AlignTo(size, 4);
+    return scene_heaps_align_to(size, 4);
 }
 
 /* What a unit of `size` bytes made like a frame heap takes. */
-static u32 SceneHeaps_FrameUnit(u32 size)
+static u32 scene_heaps_frame_unit(u32 size)
 {
-    return SceneHeaps_Align4(SceneHeaps_Align4(size) + SCENE_HEAPS_FRAME_HEAP_COST);
+    return scene_heaps_align4(scene_heaps_align4(size) + SCENE_HEAPS_FRAME_HEAP_COST);
 }
 
 /* A frame heap of `size` bytes from `parent`. */
-static Heap *SceneHeaps_NewFrameHeap(u32 size, Heap *parent)
+static Heap *scene_heaps_new_frame_heap(u32 size, Heap *parent)
 {
     return FrameHeap_Create((int) size, parent);
 }
@@ -94,7 +94,7 @@ static Heap *SceneHeaps_NewFrameHeap(u32 size, Heap *parent)
 /* The blocks counted as ResourcePools_BlockCreate counts them before the scene's heaps: while
  * data_020e54a8 is 0 NpcLookup_FourUnlessSlotTaken, else the scene's first count less its
  * second. */
-static u32 SceneHeaps_BlockCount(void)
+static u32 scene_heaps_block_count(void)
 {
     if (data_020e54a8 == 0) {
         return (u32) NpcLookup_FourUnlessSlotTaken();
@@ -104,14 +104,14 @@ static u32 SceneHeaps_BlockCount(void)
 }
 
 /* The scene's first count and its count of heaps. */
-static u32 SceneHeaps_SceneCount(void)
+static u32 scene_heaps_scene_count(void)
 {
     u32 first = SceneTables_FirstCount(SceneQuery_Current());
     return first + (u32) ResourcePools_SceneHeapCount();
 }
 
 /* The session's number of players. */
-static u32 SceneHeaps_Players(void)
+static u32 scene_heaps_players(void)
 {
     return data_020ccf94->player_count;
 }
@@ -129,7 +129,7 @@ CLEAN_AS(func_0205c0f0, SceneHeaps_DestroyAcreRooms)
 /* func_0205c10c: room for the rooms' acre data, as one frame heap. */
 void SceneHeaps_CreateAcreRooms(Heap *parent)
 {
-    data_021c9b34 = SceneHeaps_NewFrameHeap(SceneHeaps_FrameUnit(data_020c9fcc), parent);
+    data_021c9b34 = scene_heaps_new_frame_heap(scene_heaps_frame_unit(data_020c9fcc), parent);
 }
 CLEAN_AS(func_0205c10c, SceneHeaps_CreateAcreRooms)
 
@@ -144,7 +144,7 @@ CLEAN_AS(func_0205c13c, SceneHeaps_DestroyAcreTown)
 /* func_0205c158: room for the town's acre data, as one frame heap. */
 void SceneHeaps_CreateAcreTown(Heap *parent)
 {
-    data_021c9ab0 = SceneHeaps_NewFrameHeap(SceneHeaps_FrameUnit(data_020c9fd0), parent);
+    data_021c9ab0 = scene_heaps_new_frame_heap(scene_heaps_frame_unit(data_020c9fd0), parent);
 }
 CLEAN_AS(func_0205c158, SceneHeaps_CreateAcreTown)
 
@@ -162,9 +162,9 @@ CLEAN_AS(func_0205c188, SceneHeaps_DestroyFieldActors)
  * rounded up to their alignment. */
 void SceneHeaps_CreateFieldActors(unsigned int parent)
 {
-    u32 actor = SceneHeaps_Align4((u32) PlayerActors_FieldActorSize());
+    u32 actor = scene_heaps_align4((u32) PlayerActors_FieldActorSize());
     u32 align = (u32) PlayerActors_FieldActorAlignment();
-    u32 size = (actor + SceneHeaps_AlignTo(SCENE_HEAPS_EXP_BLOCK_COST, align)) * SCENE_HEAPS_FIELD_ACTORS;
+    u32 size = (actor + scene_heaps_align_to(SCENE_HEAPS_EXP_BLOCK_COST, align)) * SCENE_HEAPS_FIELD_ACTORS;
     data_021c9ab4 = ExpHeap_Create((int) size, (Heap *) (uintptr_t) parent);
 }
 CLEAN_AS(func_0205c1a4, SceneHeaps_CreateFieldActors)
@@ -186,12 +186,12 @@ CLEAN_AS(func_0205c1e0, SceneHeaps_DestroyUnits)
  * made only when that is not 0. The unit heap (it stays as it was when nothing is made). */
 unsigned int SceneHeaps_CreateUnits(Heap *parent)
 {
-    u32 blocks = SceneHeaps_BlockCount();
+    u32 blocks = scene_heaps_block_count();
     u32 heaps = (u32) ResourcePools_SceneHeapCount();
-    u32 size = SceneHeaps_FrameUnit((u32) ResourcePools_UnitSize2BCC()) * blocks;
-    size += SceneHeaps_FrameUnit((u32) ResourcePools_UnitSize31EC()) * heaps;
+    u32 size = scene_heaps_frame_unit((u32) ResourcePools_UnitSize2BCC()) * blocks;
+    size += scene_heaps_frame_unit((u32) ResourcePools_UnitSize31EC()) * heaps;
     if (size != 0) {
-        data_021c9ab8 = SceneHeaps_NewFrameHeap(size, parent);
+        data_021c9ab8 = scene_heaps_new_frame_heap(size, parent);
     }
     return (unsigned int) (uintptr_t) data_021c9ab8;
 }
@@ -206,17 +206,17 @@ void SceneHeaps_DestroyHeap4Pool(void)
 CLEAN_AS(func_0205c284, SceneHeaps_DestroyHeap4Pool)
 
 /* A pool heap's frame heap of `size` bytes aligned to `align`, with its cost. */
-static u32 SceneHeaps_PoolHeapUnit(u32 size, u32 align)
+static u32 scene_heaps_pool_heap_unit(u32 size, u32 align)
 {
-    return SceneHeaps_AlignTo(SceneHeaps_AlignTo(size, align) + SCENE_HEAPS_FRAME_HEAP_COST, align);
+    return scene_heaps_align_to(scene_heaps_align_to(size, align) + SCENE_HEAPS_FRAME_HEAP_COST, align);
 }
 
 /* func_0205c2a0: room for a heap4 heap for each of the scene's heaps; the new heap. */
 unsigned int SceneHeaps_CreateHeap4Pool(Heap *parent)
 {
     u32 count = (u32) ResourcePools_SceneHeapCount();
-    u32 size = SceneHeaps_PoolHeapUnit(data_020cd414, data_020cd410) * count;
-    data_021c9abc = SceneHeaps_NewFrameHeap(size, parent);
+    u32 size = scene_heaps_pool_heap_unit(data_020cd414, data_020cd410) * count;
+    data_021c9abc = scene_heaps_new_frame_heap(size, parent);
     return (unsigned int) (uintptr_t) data_021c9abc;
 }
 CLEAN_AS(func_0205c2a0, SceneHeaps_CreateHeap4Pool)
@@ -232,8 +232,8 @@ CLEAN_AS(func_0205c2e4, SceneHeaps_DestroyHeap8Pool)
 /* func_0205c300: room for the eight heap8 heaps; the new heap. */
 unsigned int SceneHeaps_CreateHeap8Pool(Heap *parent)
 {
-    u32 size = SceneHeaps_PoolHeapUnit(data_020cd420, data_020cd41c) * SCENE_HEAPS_HEAP8_COUNT;
-    data_021c9ac0 = SceneHeaps_NewFrameHeap(size, parent);
+    u32 size = scene_heaps_pool_heap_unit(data_020cd420, data_020cd41c) * SCENE_HEAPS_HEAP8_COUNT;
+    data_021c9ac0 = scene_heaps_new_frame_heap(size, parent);
     return (unsigned int) (uintptr_t) data_021c9ac0;
 }
 CLEAN_AS(func_0205c300, SceneHeaps_CreateHeap8Pool)
@@ -250,10 +250,10 @@ CLEAN_AS(func_0205c340, SceneHeaps_DestroyBlockPool)
  * are allocated from a frame heap); the new heap. */
 unsigned int SceneHeaps_CreateBlockPool(Heap *parent)
 {
-    u32 count = SceneHeaps_BlockCount();
+    u32 count = scene_heaps_block_count();
     count += (u32) ResourcePools_SceneHeapCount();
-    u32 size = SceneHeaps_Align4(data_020cd418) * count;
-    data_021c9ac4 = SceneHeaps_NewFrameHeap(size, parent);
+    u32 size = scene_heaps_align4(data_020cd418) * count;
+    data_021c9ac4 = scene_heaps_new_frame_heap(size, parent);
     return (unsigned int) (uintptr_t) data_021c9ac4;
 }
 CLEAN_AS(func_0205c35c, SceneHeaps_CreateBlockPool)
@@ -272,9 +272,9 @@ CLEAN_AS(func_0205c3c8, SceneHeaps_Destroy021c9ac8)
  * of its heaps. */
 void SceneHeaps_Create021c9ac8(Heap *parent)
 {
-    u32 unit = SceneHeaps_Align4((u32) FishingFloatPool_ModelFileSize());
-    u32 count = SceneHeaps_SceneCount();
-    data_021c9ac8 = SceneHeaps_NewFrameHeap(unit * count, parent);
+    u32 unit = scene_heaps_align4((u32) FishingFloatPool_ModelFileSize());
+    u32 count = scene_heaps_scene_count();
+    data_021c9ac8 = scene_heaps_new_frame_heap(unit * count, parent);
 }
 CLEAN_AS(func_0205c3e4, SceneHeaps_Create021c9ac8)
 
@@ -290,9 +290,9 @@ CLEAN_AS(func_0205c424, SceneHeaps_Destroy021c9acc)
  * each of its heaps; the new heap. */
 unsigned int SceneHeaps_Create021c9acc(Heap *parent)
 {
-    u32 unit = SceneHeaps_FrameUnit((u32) HeldItemPool_HeapSize());
-    u32 count = SceneHeaps_SceneCount();
-    data_021c9acc = SceneHeaps_NewFrameHeap(unit * count, parent);
+    u32 unit = scene_heaps_frame_unit((u32) HeldItemPool_HeapSize());
+    u32 count = scene_heaps_scene_count();
+    data_021c9acc = scene_heaps_new_frame_heap(unit * count, parent);
     return (unsigned int) (uintptr_t) data_021c9acc;
 }
 CLEAN_AS(func_0205c440, SceneHeaps_Create021c9acc)
@@ -308,9 +308,9 @@ CLEAN_AS(func_0205c488, SceneHeaps_Destroy021c9ad0)
 /* func_0205c4a4: room for a frame heap of func_0205f800 bytes for each player; the new heap. */
 unsigned int SceneHeaps_Create021c9ad0(Heap *parent)
 {
-    u32 players = SceneHeaps_Players();
-    u32 unit = SceneHeaps_FrameUnit((u32) BodyAnimHeaps_HeapSize());
-    data_021c9ad0 = SceneHeaps_NewFrameHeap(unit * players, parent);
+    u32 players = scene_heaps_players();
+    u32 unit = scene_heaps_frame_unit((u32) BodyAnimHeaps_HeapSize());
+    data_021c9ad0 = scene_heaps_new_frame_heap(unit * players, parent);
     return (unsigned int) (uintptr_t) data_021c9ad0;
 }
 CLEAN_AS(func_0205c4a4, SceneHeaps_Create021c9ad0)
@@ -327,9 +327,9 @@ CLEAN_AS(func_0205c4e0, SceneHeaps_Destroy021c9ad4)
  * each of its heaps; the new heap. */
 unsigned int SceneHeaps_Create021c9ad4(Heap *parent)
 {
-    u32 unit = SceneHeaps_FrameUnit((u32) FaceAnimHeaps_HeapSize());
-    u32 count = SceneHeaps_SceneCount();
-    data_021c9ad4 = SceneHeaps_NewFrameHeap(unit * count, parent);
+    u32 unit = scene_heaps_frame_unit((u32) FaceAnimHeaps_HeapSize());
+    u32 count = scene_heaps_scene_count();
+    data_021c9ad4 = scene_heaps_new_frame_heap(unit * count, parent);
     return (unsigned int) (uintptr_t) data_021c9ad4;
 }
 CLEAN_AS(func_0205c4fc, SceneHeaps_Create021c9ad4)
@@ -346,9 +346,9 @@ CLEAN_AS(func_0205c544, SceneHeaps_Destroy021c9ad8)
  * of its heaps. */
 void SceneHeaps_Create021c9ad8(Heap *parent)
 {
-    u32 unit = SceneHeaps_Align4((u32) HeldItemPool_ModelFileSize());
-    u32 count = SceneHeaps_SceneCount();
-    data_021c9ad8 = SceneHeaps_NewFrameHeap(unit * count, parent);
+    u32 unit = scene_heaps_align4((u32) HeldItemPool_ModelFileSize());
+    u32 count = scene_heaps_scene_count();
+    data_021c9ad8 = scene_heaps_new_frame_heap(unit * count, parent);
 }
 CLEAN_AS(func_0205c560, SceneHeaps_Create021c9ad8)
 
@@ -363,9 +363,9 @@ CLEAN_AS(func_0205c5a0, SceneHeaps_Destroy021c9adc)
 /* func_0205c5bc: room for a unit of func_0205e0b0 bytes for each player; the new heap. */
 unsigned int SceneHeaps_Create021c9adc(Heap *parent)
 {
-    u32 players = SceneHeaps_Players();
-    u32 unit = SceneHeaps_Align4((u32) AccessoryLook_FileSize());
-    data_021c9adc = SceneHeaps_NewFrameHeap(unit * players, parent);
+    u32 players = scene_heaps_players();
+    u32 unit = scene_heaps_align4((u32) AccessoryLook_FileSize());
+    data_021c9adc = scene_heaps_new_frame_heap(unit * players, parent);
     return (unsigned int) (uintptr_t) data_021c9adc;
 }
 CLEAN_AS(func_0205c5bc, SceneHeaps_Create021c9adc)
@@ -381,9 +381,9 @@ CLEAN_AS(func_0205c5f4, SceneHeaps_Destroy021c9ae0)
 /* func_0205c610: func_0205f958 bytes for each player, not rounded; the new heap. */
 unsigned int SceneHeaps_Create021c9ae0(Heap *parent)
 {
-    u32 players = SceneHeaps_Players();
+    u32 players = scene_heaps_players();
     u32 unit = (u32) ActorPalettes_BufferSize();
-    data_021c9ae0 = SceneHeaps_NewFrameHeap(unit * players, parent);
+    data_021c9ae0 = scene_heaps_new_frame_heap(unit * players, parent);
     return (unsigned int) (uintptr_t) data_021c9ae0;
 }
 CLEAN_AS(func_0205c610, SceneHeaps_Create021c9ae0)
@@ -399,9 +399,9 @@ CLEAN_AS(func_0205c640, SceneHeaps_Destroy021c9ae4)
 /* func_0205c65c: room for a unit of func_0205e700 bytes for each player; the new heap. */
 unsigned int SceneHeaps_Create021c9ae4(Heap *parent)
 {
-    u32 players = SceneHeaps_Players();
-    u32 unit = SceneHeaps_Align4((u32) HeadLook_BlockSize());
-    data_021c9ae4 = SceneHeaps_NewFrameHeap(unit * players, parent);
+    u32 players = scene_heaps_players();
+    u32 unit = scene_heaps_align4((u32) HeadLook_BlockSize());
+    data_021c9ae4 = scene_heaps_new_frame_heap(unit * players, parent);
     return (unsigned int) (uintptr_t) data_021c9ae4;
 }
 CLEAN_AS(func_0205c65c, SceneHeaps_Create021c9ae4)
@@ -417,9 +417,9 @@ CLEAN_AS(func_0205c694, SceneHeaps_Destroy021c9ae8)
 /* func_0205c6b0: room for a unit of func_0205d208 bytes for each player; the new heap. */
 unsigned int SceneHeaps_Create021c9ae8(Heap *parent)
 {
-    u32 players = SceneHeaps_Players();
-    u32 unit = SceneHeaps_Align4((u32) BodyLook_FileSize());
-    data_021c9ae8 = SceneHeaps_NewFrameHeap(unit * players, parent);
+    u32 players = scene_heaps_players();
+    u32 unit = scene_heaps_align4((u32) BodyLook_FileSize());
+    data_021c9ae8 = scene_heaps_new_frame_heap(unit * players, parent);
     return (unsigned int) (uintptr_t) data_021c9ae8;
 }
 CLEAN_AS(func_0205c6b0, SceneHeaps_Create021c9ae8)
@@ -436,9 +436,9 @@ CLEAN_AS(func_0205c6e8, SceneHeaps_Destroy021c9aec)
  * of its heaps. */
 void SceneHeaps_Create021c9aec(Heap *parent)
 {
-    u32 unit = SceneHeaps_Align4((u32) FaceAnimSlots_BlockSize());
-    u32 count = SceneHeaps_SceneCount();
-    data_021c9aec = SceneHeaps_NewFrameHeap(unit * count, parent);
+    u32 unit = scene_heaps_align4((u32) FaceAnimSlots_BlockSize());
+    u32 count = scene_heaps_scene_count();
+    data_021c9aec = scene_heaps_new_frame_heap(unit * count, parent);
 }
 CLEAN_AS(func_0205c704, SceneHeaps_Create021c9aec)
 
@@ -453,9 +453,9 @@ CLEAN_AS(func_0205c744, SceneHeaps_Destroy021c9af0)
 /* func_0205c760: room for a unit of func_0205dd58 bytes for each player; the new heap. */
 unsigned int SceneHeaps_Create021c9af0(Heap *parent)
 {
-    u32 players = SceneHeaps_Players();
-    u32 unit = SceneHeaps_Align4((u32) FaceTexture_FileSize());
-    data_021c9af0 = SceneHeaps_NewFrameHeap(unit * players, parent);
+    u32 players = scene_heaps_players();
+    u32 unit = scene_heaps_align4((u32) FaceTexture_FileSize());
+    data_021c9af0 = scene_heaps_new_frame_heap(unit * players, parent);
     return (unsigned int) (uintptr_t) data_021c9af0;
 }
 CLEAN_AS(func_0205c760, SceneHeaps_Create021c9af0)
@@ -472,9 +472,9 @@ CLEAN_AS(func_0205c798, SceneHeaps_DestroyClothTextures)
  * heaps and one more. */
 void SceneHeaps_CreateClothTextures(Heap *parent)
 {
-    u32 unit = SceneHeaps_Align4((u32) ClothTexture_Size());
-    u32 count = SceneHeaps_SceneCount() + 1;
-    data_021c9af4 = SceneHeaps_NewFrameHeap(unit * count, parent);
+    u32 unit = scene_heaps_align4((u32) ClothTexture_Size());
+    u32 count = scene_heaps_scene_count() + 1;
+    data_021c9af4 = scene_heaps_new_frame_heap(unit * count, parent);
 }
 CLEAN_AS(func_0205c7b4, SceneHeaps_CreateClothTextures)
 
@@ -492,7 +492,7 @@ CLEAN_AS(func_0205c7f8, SceneHeaps_Destroy021c9af8)
  * `shared` + `rest`, and one of func_0205cf34 bytes for each of `rest`. */
 void SceneHeaps_Create021c9af8(Heap *parent)
 {
-    u32 players = SceneHeaps_Players();
+    u32 players = scene_heaps_players();
     u32 shared = SceneTables_SecondCount(SceneQuery_Current());
     if (players < shared) {
         shared = players;
@@ -500,11 +500,11 @@ void SceneHeaps_Create021c9af8(Heap *parent)
     u32 at_least_one = shared != 0 ? shared : 1;
     u32 first = SceneTables_FirstCount(SceneQuery_Current());
     u32 rest = (u32) ResourcePools_SceneHeapCount() + first - at_least_one;
-    u32 a = SceneHeaps_Align4((u32) AnimSlots_BodyBlockSize());
-    u32 b = SceneHeaps_Align4((u32) AnimSlots_HeldBlockSize());
-    u32 c = SceneHeaps_Align4((u32) AnimSlots_LastBlockSize());
+    u32 a = scene_heaps_align4((u32) AnimSlots_BodyBlockSize());
+    u32 b = scene_heaps_align4((u32) AnimSlots_HeldBlockSize());
+    u32 c = scene_heaps_align4((u32) AnimSlots_LastBlockSize());
     u32 size = a * (shared + rest) + b * (shared + rest) + c * rest;
-    data_021c9af8 = SceneHeaps_NewFrameHeap(size, parent);
+    data_021c9af8 = scene_heaps_new_frame_heap(size, parent);
 }
 CLEAN_AS(func_0205c814, SceneHeaps_Create021c9af8)
 

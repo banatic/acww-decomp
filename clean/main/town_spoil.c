@@ -14,13 +14,13 @@ extern u16 data_021f3a86[]; /* the town's item list B */
 #define TOWN_SPOIL_PLAYERS 4
 #define TOWN_SPOIL_POCKET_SLOTS 15
 
-static int TownSpoil_Spoils(unsigned int item)
+static int town_spoil_spoils(unsigned int item)
 {
     return item >= TOWN_SPOIL_FIRST && item <= TOWN_SPOIL_LAST;
 }
 
 /* The spoiled item for a counted one. */
-static u16 TownSpoil_Spoiled(unsigned int item)
+static u16 town_spoil_spoiled(unsigned int item)
 {
     return (u16) (TOWN_SPOIL_SPOILED + (item - TOWN_SPOIL_FIRST));
 }
@@ -34,8 +34,8 @@ void TownSpoil_All(TownDay *town)
     TownSpoil_Rooms((int) (uintptr_t) town);
     TownSpoil_RecycleBin();
     for (int i = 0; i < TOWN_SPOIL_LIST_PLACES; i++) {
-        if (TownSpoil_Spoils(data_021f3a68[i])) {
-            data_021f3a68[i] = TownSpoil_Spoiled(data_021f3a68[i]);
+        if (town_spoil_spoils(data_021f3a68[i])) {
+            data_021f3a68[i] = town_spoil_spoiled(data_021f3a68[i]);
         }
     }
 }
@@ -45,8 +45,8 @@ CLEAN_AS(func_02046c2c, TownSpoil_All)
 void TownSpoil_RecycleBin(void)
 {
     for (int i = 0; i < TOWN_SPOIL_LIST_PLACES; i++) {
-        if (TownSpoil_Spoils(data_021f3a86[i])) {
-            data_021f3a86[i] = TownSpoil_Spoiled(data_021f3a86[i]);
+        if (town_spoil_spoils(data_021f3a86[i])) {
+            data_021f3a86[i] = town_spoil_spoiled(data_021f3a86[i]);
         }
     }
 }
@@ -79,8 +79,8 @@ void TownSpoil_Pockets(void)
         for (int slot = 0; slot < TOWN_SPOIL_POCKET_SLOTS; slot++) {
             PlayerPockets *pockets = PlayerRecord_Pockets(record);
             const u16 *item = PlayerPockets_Slot(pockets, slot);
-            if (item != NULL && TownSpoil_Spoils(*item)) {
-                u16 spoiled = TownSpoil_Spoiled(*item);
+            if (item != NULL && town_spoil_spoils(*item)) {
+                u16 spoiled = town_spoil_spoiled(*item);
                 PlayerPockets_SetSlot(pockets, &spoiled, slot, 0);
             }
         }
@@ -101,8 +101,8 @@ void TownSpoil_Map(int unused, AcreMap *map)
         for (int z = 0; z < high; z++) {
             for (int x = 0; x < wide; x++) {
                 const u16 *item = AcreTile_ItemInAcre(map, (u32) (x >> 4), (u32) (z >> 4), x & 15, z & 15, layer);
-                if (item != NULL && TownSpoil_Spoils(*item)) {
-                    u16 spoiled = TownSpoil_Spoiled(*item);
+                if (item != NULL && town_spoil_spoils(*item)) {
+                    u16 spoiled = town_spoil_spoiled(*item);
                     AcreTile_SetItem(map, &spoiled, x, z, layer);
                 }
             }

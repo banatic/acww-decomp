@@ -36,7 +36,7 @@ extern const u8 data_ov004_02251610[];
 
 extern NetSession *data_020ccf94; /* the session */
 
-static PlayerPockets *RoomObject02251564_pockets(u8 *player)
+static PlayerPockets *room_object02251564_pockets(u8 *player)
 {
     return PlayerRecord_Pockets(player);
 }
@@ -56,9 +56,9 @@ int RoomObject02251564_EnterUsed(RoomObject02251564 *object)
     RoomObject_PlaySound1(&object->base);
     if (object->base.unk_77C == data_020ccf94->local_player) {
         u8 *player = PlayerRecords_Current();
-        if (player != NULL && PlayerPockets_Bells(RoomObject02251564_pockets(player), 0) > 0) {
-            PlayerPockets *pockets = RoomObject02251564_pockets(player);
-            int bells = PlayerPockets_Bells(RoomObject02251564_pockets(player), 0);
+        if (player != NULL && PlayerPockets_Bells(room_object02251564_pockets(player), 0) > 0) {
+            PlayerPockets *pockets = room_object02251564_pockets(player);
+            int bells = PlayerPockets_Bells(room_object02251564_pockets(player), 0);
             PlayerPockets_SetBells(pockets, bells - 1, 0);
         }
     }
@@ -145,7 +145,7 @@ int RoomObject02251564_Start(RoomObject02251564 *object)
 }
 CLEAN_AS(func_ov004_022131c8, RoomObject02251564_Start)
 
-static void RoomObject02251564_set_vtables(RoomObject02251564 *object)
+static void room_object02251564_set_vtables(RoomObject02251564 *object)
 {
     object->base.vtable = (const RoomObjectVtable *) data_ov004_02251564;
     object->base.receiver_vtable = data_ov004_02251610;
@@ -154,7 +154,7 @@ static void RoomObject02251564_set_vtables(RoomObject02251564 *object)
 /* func_ov004_022131e0 (the deleting destructor, vtable slot 0x44) */
 RoomObject02251564 *RoomObject02251564_Delete(RoomObject02251564 *object)
 {
-    RoomObject02251564_set_vtables(object);
+    room_object02251564_set_vtables(object);
     RoomObject_DestructBase(&object->base);
     RoomObject_Free(object);
     return object;
@@ -164,7 +164,7 @@ CLEAN_AS(func_ov004_022131e0, RoomObject02251564_Delete)
 /* func_ov004_0221320c (the destructor, vtable slot 0x40) */
 RoomObject02251564 *RoomObject02251564_Destroy(RoomObject02251564 *object)
 {
-    RoomObject02251564_set_vtables(object);
+    room_object02251564_set_vtables(object);
     RoomObject_DestructBase(&object->base);
     return object;
 }
@@ -175,7 +175,7 @@ CLEAN_AS(func_ov004_0221320c, RoomObject02251564_Destroy)
 RoomObject02251564 *RoomObject02251564_Construct(RoomObject02251564 *object)
 {
     RoomObject_ConstructBase(&object->base);
-    RoomObject02251564_set_vtables(object);
+    room_object02251564_set_vtables(object);
     return object;
 }
 CLEAN_AS(func_ov004_02213230, RoomObject02251564_Construct)
@@ -193,7 +193,7 @@ CLEAN_AS(func_ov004_02213254, RoomObject02251564_Create)
 /* The receiver part (at 0xec, RoomObject.receiver_vtable) enters RoomObject02251564's functions
  * through its vtable with these: each moves the pointer back to the object and goes on with the
  * object's function. */
-static RoomObject02251564 *RoomObject02251564_from_receiver(void *receiver)
+static RoomObject02251564 *room_object02251564_from_receiver(void *receiver)
 {
     return (RoomObject02251564 *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
 }
@@ -201,13 +201,13 @@ static RoomObject02251564 *RoomObject02251564_from_receiver(void *receiver)
 /* func_ov004_0221aadc: the deleting destructor, entered from the receiver part. */
 RoomObject02251564 *RoomObject02251564Receiver_Delete(void *receiver)
 {
-    return RoomObject02251564_Delete(RoomObject02251564_from_receiver(receiver));
+    return RoomObject02251564_Delete(room_object02251564_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_02251564D0Ev, RoomObject02251564Receiver_Delete)
 
 /* func_ov004_0221aaf8: the destructor, entered from the receiver part. */
 RoomObject02251564 *RoomObject02251564Receiver_Destroy(void *receiver)
 {
-    return RoomObject02251564_Destroy(RoomObject02251564_from_receiver(receiver));
+    return RoomObject02251564_Destroy(room_object02251564_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_02251564D1Ev, RoomObject02251564Receiver_Destroy)

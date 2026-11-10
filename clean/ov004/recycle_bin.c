@@ -107,30 +107,30 @@ extern const MemberPointer data_ov004_02255380, data_ov004_02255378, data_ov004_
 
 /* The RMO family's base class (rmo_object.h). */
 
-static AnimatedModel *RecycleBin_body(RecycleBin *self)
+static AnimatedModel *recycle_bin_body(RecycleBin *self)
 {
     return (AnimatedModel *) (void *) &self->base.body;
 }
 
 /* The lid's state byte, and the sound source after it. */
-static u8 *RecycleBin_lid(RecycleBin *self)
+static u8 *recycle_bin_lid(RecycleBin *self)
 {
     return &self->base.unk_24c[0];
 }
 
-static void *RecycleBin_sound_source(RecycleBin *self)
+static void *recycle_bin_sound_source(RecycleBin *self)
 {
     return &self->base.unk_24c[4];
 }
 
 /* The receiver part as C++ converts a pointer to the box to it: NULL stays NULL. */
-static TalkReceiver *RecycleBin_receiver(RecycleBin *self)
+static TalkReceiver *recycle_bin_receiver(RecycleBin *self)
 {
     return self != NULL ? &self->receiver : NULL;
 }
 
 /* Vtable slot 0x60 (RecycleBin_SetLid for this class), called through the vtable. */
-static int RecycleBin_call_set_lid(RecycleBin *self, u32 lid)
+static int recycle_bin_call_set_lid(RecycleBin *self, u32 lid)
 {
     const u32 *vtable = self->base.actor.vtable;
     return ((int (*)(RecycleBin *, u32))(uintptr_t) vtable[RECYCLE_BIN_SLOT_SET_LID / 4])(self, lid);
@@ -183,7 +183,7 @@ CLEAN_AS(func_ov004_0222f4f8, RecycleBin_OnTalkIgnored)
  * go on. The state stays until the scene sets another. */
 void RecycleBin_UpdateCloseLid(RecycleBin *self)
 {
-    if (*RecycleBin_lid(self) == RECYCLE_BIN_LID_CLOSED) {
+    if (*recycle_bin_lid(self) == RECYCLE_BIN_LID_CLOSED) {
         EventQueue_FinishObjectEvent(self);
     }
 }
@@ -219,7 +219,7 @@ CLEAN_AS(func_ov004_0222f54c, RecycleBin_EnterScreen)
 /* func_ov004_0222f568 (update of RECYCLE_BIN_OPEN_LID): on once the lid is open. */
 void RecycleBin_UpdateOpenLid(RecycleBin *self)
 {
-    if (*RecycleBin_lid(self) == RECYCLE_BIN_LID_OPEN) {
+    if (*recycle_bin_lid(self) == RECYCLE_BIN_LID_OPEN) {
         RecycleBin_EnterState(self, RECYCLE_BIN_SCREEN);
     }
 }
@@ -239,7 +239,7 @@ void RecycleBin_UpdateTalkEnd(RecycleBin *self)
 {
     TalkObject *talk = self->receiver.talk;
     if (talk != NULL && talk->state == TALK_OBJECT_CLOSED) {
-        SceneObjectBase_ReleaseReceiver((SceneObjectBase *) (void *) self, RecycleBin_receiver(self));
+        SceneObjectBase_ReleaseReceiver((SceneObjectBase *) (void *) self, recycle_bin_receiver(self));
         RecycleBin_EnterState(self, RECYCLE_BIN_OPEN_LID);
     }
 }
@@ -268,7 +268,7 @@ CLEAN_AS(func_ov004_0222f5cc, RecycleBin_UpdateTalk)
  * REQUIRES: the receiver has a talk once SceneObjectBase_TakeReceiver has taken it. */
 int RecycleBin_EnterTalk(RecycleBin *self)
 {
-    SceneObjectBase_TakeReceiver((SceneObjectBase *) (void *) self, RecycleBin_receiver(self));
+    SceneObjectBase_TakeReceiver((SceneObjectBase *) (void *) self, recycle_bin_receiver(self));
     MessageReceiver_SetName(&self->receiver.base, data_ov004_02255304);
     self->receiver.base.message = 0;
     self->receiver.talk->next_state = RECYCLE_BIN_TALK_OPEN;
@@ -337,9 +337,9 @@ CLEAN_AS(func_ov004_0222f6e8, RecycleBin_EnterState)
 void RecycleBin_UpdateClosing(RecycleBin *self)
 {
     if (FrameCtrl_IsDone(&self->base.body.frames)) {
-        RecycleBin_call_set_lid(self, RECYCLE_BIN_LID_CLOSED);
+        recycle_bin_call_set_lid(self, RECYCLE_BIN_LID_CLOSED);
     } else {
-        AnimatedModel_StepFrames(RecycleBin_body(self));
+        AnimatedModel_StepFrames(recycle_bin_body(self));
     }
 }
 CLEAN_AS(func_ov004_0222f7a0, RecycleBin_UpdateClosing)
@@ -348,9 +348,9 @@ CLEAN_AS(func_ov004_0222f7a0, RecycleBin_UpdateClosing)
  * sound. */
 int RecycleBin_EnterClosing(RecycleBin *self)
 {
-    AnimatedModel_Start(RecycleBin_body(self), RmoModel_JointAnim(&self->base.body_model, RECYCLE_BIN_ANIM_CLOSING),
+    AnimatedModel_Start(recycle_bin_body(self), RmoModel_JointAnim(&self->base.body_model, RECYCLE_BIN_ANIM_CLOSING),
                         RECYCLE_BIN_PLAY_ONCE, FX32_ONE, 0, 0);
-    RmoSound_Play(RecycleBin_sound_source(self), RECYCLE_BIN_SOUND_CLOSING);
+    RmoSound_Play(recycle_bin_sound_source(self), RECYCLE_BIN_SOUND_CLOSING);
     return 1;
 }
 CLEAN_AS(func_ov004_0222f7d0, RecycleBin_EnterClosing)
@@ -366,7 +366,7 @@ CLEAN_AS(func_ov004_0222f818, RecycleBin_UpdateOpen)
  * (the lid open), without sound; nothing steps it in this state. */
 int RecycleBin_EnterOpen(RecycleBin *self)
 {
-    AnimatedModel_Start(RecycleBin_body(self), RmoModel_JointAnim(&self->base.body_model, RECYCLE_BIN_ANIM_CLOSING),
+    AnimatedModel_Start(recycle_bin_body(self), RmoModel_JointAnim(&self->base.body_model, RECYCLE_BIN_ANIM_CLOSING),
                         RECYCLE_BIN_PLAY_ONCE, FX32_ONE, 0, 0);
     return 1;
 }
@@ -377,9 +377,9 @@ CLEAN_AS(func_ov004_0222f81c, RecycleBin_EnterOpen)
 void RecycleBin_UpdateOpening(RecycleBin *self)
 {
     if (FrameCtrl_IsDone(&self->base.body.frames)) {
-        RecycleBin_call_set_lid(self, RECYCLE_BIN_LID_OPEN);
+        recycle_bin_call_set_lid(self, RECYCLE_BIN_LID_OPEN);
     } else {
-        AnimatedModel_StepFrames(RecycleBin_body(self));
+        AnimatedModel_StepFrames(recycle_bin_body(self));
     }
 }
 CLEAN_AS(func_ov004_0222f854, RecycleBin_UpdateOpening)
@@ -388,9 +388,9 @@ CLEAN_AS(func_ov004_0222f854, RecycleBin_UpdateOpening)
  * sound. */
 int RecycleBin_EnterOpening(RecycleBin *self)
 {
-    AnimatedModel_Start(RecycleBin_body(self), RmoModel_JointAnim(&self->base.body_model, RECYCLE_BIN_ANIM_OPENING),
+    AnimatedModel_Start(recycle_bin_body(self), RmoModel_JointAnim(&self->base.body_model, RECYCLE_BIN_ANIM_OPENING),
                         RECYCLE_BIN_PLAY_ONCE, FX32_ONE, 0, 0);
-    RmoSound_Play(RecycleBin_sound_source(self), RECYCLE_BIN_SOUND_OPENING);
+    RmoSound_Play(recycle_bin_sound_source(self), RECYCLE_BIN_SOUND_OPENING);
     return 1;
 }
 CLEAN_AS(func_ov004_0222f884, RecycleBin_EnterOpening)
@@ -406,7 +406,7 @@ CLEAN_AS(func_ov004_0222f8cc, RecycleBin_UpdateClosed)
  * frame (the lid closed), without sound. */
 int RecycleBin_EnterClosed(RecycleBin *self)
 {
-    AnimatedModel_Start(RecycleBin_body(self), RmoModel_JointAnim(&self->base.body_model, RECYCLE_BIN_ANIM_OPENING),
+    AnimatedModel_Start(recycle_bin_body(self), RmoModel_JointAnim(&self->base.body_model, RECYCLE_BIN_ANIM_OPENING),
                         RECYCLE_BIN_PLAY_ONCE, FX32_ONE, 0, 0);
     return 1;
 }
@@ -423,7 +423,7 @@ void RecycleBin_UpdateLid(RecycleBin *self)
         &data_ov004_02255358, /* RecycleBin_UpdateClosing */
     };
     MemberTable_InitOnce(&data_ov004_02258498, data_ov004_022584d4, updates, RECYCLE_BIN_LID_COUNT);
-    u8 lid = *RecycleBin_lid(self);
+    u8 lid = *recycle_bin_lid(self);
     if (lid < RECYCLE_BIN_LID_COUNT) {
         MemberPointer_CallVoid(&data_ov004_022584d4[lid], self);
     }
@@ -443,7 +443,7 @@ int RecycleBin_SetLid(RecycleBin *self, u32 lid)
     MemberTable_InitOnce(&data_ov004_022584a8, data_ov004_022584b4, entries, RECYCLE_BIN_LID_COUNT);
     if (lid < RECYCLE_BIN_LID_COUNT && MemberPointer_CallInt(&data_ov004_022584b4[lid], self) != 0 &&
         RmoObjectSlots_SetSharedValue(&self->base, lid) != 0) {
-        *RecycleBin_lid(self) = (u8) lid;
+        *recycle_bin_lid(self) = (u8) lid;
         return 1;
     }
     return 0;
@@ -494,7 +494,7 @@ CLEAN_AS(func_ov004_0222fab0, RecycleBin_Release)
 /* func_ov004_0222fad0 (vtable slot 0x24) */
 int RecycleBin_Draw(RecycleBin *self)
 {
-    AnimatedModel_Draw(RecycleBin_body(self), NULL);
+    AnimatedModel_Draw(recycle_bin_body(self), NULL);
     return 1;
 }
 CLEAN_AS(func_ov004_0222fad0, RecycleBin_Draw)
@@ -521,18 +521,18 @@ int RecycleBin_Start(RecycleBin *self)
     RmoObjectSlots_LoadNamed(&self->base, data_ov004_022554cc);
     RecycleBin_AddBox(self);
     if (RmoModel_JointAnim(&self->base.body_model, RECYCLE_BIN_ANIM_OPENING) != NULL &&
-        AnimatedModel_LoadAnim(RecycleBin_body(self), data_021c9b24) != 0) {
-        AnimatedModel_Start(RecycleBin_body(self), RmoModel_JointAnim(&self->base.body_model, RECYCLE_BIN_ANIM_OPENING),
+        AnimatedModel_LoadAnim(recycle_bin_body(self), data_021c9b24) != 0) {
+        AnimatedModel_Start(recycle_bin_body(self), RmoModel_JointAnim(&self->base.body_model, RECYCLE_BIN_ANIM_OPENING),
                             RECYCLE_BIN_PLAY_ONCE, FX32_ONE, 0, 0);
-        AnimatedModel_Attach(RecycleBin_body(self));
+        AnimatedModel_Attach(recycle_bin_body(self));
     }
     RecycleBin_EnterState(self, RECYCLE_BIN_IDLE);
-    RecycleBin_call_set_lid(self, (u32) RmoObjectSlots_SharedValue(&self->base));
+    recycle_bin_call_set_lid(self, (u32) RmoObjectSlots_SharedValue(&self->base));
     return 1;
 }
 CLEAN_AS(func_ov004_0222fb0c, RecycleBin_Start)
 
-static void RecycleBin_set_vtables(RecycleBin *self)
+static void recycle_bin_set_vtables(RecycleBin *self)
 {
     self->base.actor.vtable = data_ov004_022553d8;
     self->receiver.base.vtable = data_ov004_02255454;
@@ -541,7 +541,7 @@ static void RecycleBin_set_vtables(RecycleBin *self)
 /* func_ov004_0222fba4 (the deleting destructor, vtable slot 0x44) */
 RecycleBin *RecycleBin_Delete(RecycleBin *self)
 {
-    RecycleBin_set_vtables(self);
+    recycle_bin_set_vtables(self);
     TouchPickFaces_DestructBox(self->pick_faces);
     CollisionBox_Destruct(&self->box);
     TalkReceiver_Destruct(&self->receiver);
@@ -554,7 +554,7 @@ CLEAN_AS(func_ov004_0222fba4, RecycleBin_Delete)
 /* func_ov004_0222fbf4 (the destructor, vtable slot 0x40) */
 RecycleBin *RecycleBin_Destruct(RecycleBin *self)
 {
-    RecycleBin_set_vtables(self);
+    recycle_bin_set_vtables(self);
     TouchPickFaces_DestructBox(self->pick_faces);
     CollisionBox_Destruct(&self->box);
     TalkReceiver_Destruct(&self->receiver);
@@ -568,7 +568,7 @@ RecycleBin *RecycleBin_Construct(RecycleBin *self)
 {
     RmoObjectBase_Construct(&self->base);
     TalkReceiver_ConstructBase(&self->receiver);
-    RecycleBin_set_vtables(self);
+    recycle_bin_set_vtables(self);
     CollisionBox_Construct(&self->box);
     TouchPickFaces_ConstructBox(self->pick_faces);
     return self;
@@ -594,7 +594,7 @@ CLEAN_AS(func_ov004_0222fc90, RecycleBin_Create)
 
 /* The receiver part (at 0x290) enters RecycleBin's functions through its vtable with these: each
  * moves the pointer back to the object and goes on with the object's function. */
-static RecycleBin *RecycleBin_from_receiver(void *receiver)
+static RecycleBin *recycle_bin_from_receiver(void *receiver)
 {
     return (RecycleBin *) (void *) ((u8 *) receiver - offsetof(RecycleBin, receiver));
 }
@@ -602,34 +602,34 @@ static RecycleBin *RecycleBin_from_receiver(void *receiver)
 /* func_ov004_0222fcac: the deleting destructor, entered from the receiver part. */
 RecycleBin *RecycleBinReceiver_Delete(void *receiver)
 {
-    return RecycleBin_Delete(RecycleBin_from_receiver(receiver));
+    return RecycleBin_Delete(recycle_bin_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn656_N18Obj_ov004_022553d8D0Ev, RecycleBinReceiver_Delete)
 
 /* func_ov004_0222fcc8: receiver slot 0x18 (RecycleBin_OnAnswer). */
 void RecycleBinReceiver_OnAnswer(void *receiver)
 {
-    RecycleBin_OnAnswer(RecycleBin_from_receiver(receiver));
+    RecycleBin_OnAnswer(recycle_bin_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn656_N18Obj_ov004_022553d817vfunc_02066994_18Ev, RecycleBinReceiver_OnAnswer)
 
 /* func_ov004_0222fce4: receiver slot 0x14 (RecycleBin_AfterMessage). */
 void RecycleBinReceiver_AfterMessage(void *receiver)
 {
-    RecycleBin_AfterMessage(RecycleBin_from_receiver(receiver));
+    RecycleBin_AfterMessage(recycle_bin_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn656_N18Obj_ov004_022553d817vfunc_02066994_14Ev, RecycleBinReceiver_AfterMessage)
 
 /* func_ov004_0222fd00: receiver slot 0x10 (RecycleBin_OnTalkIgnored). */
 void RecycleBinReceiver_OnTalkIgnored(void *receiver)
 {
-    RecycleBin_OnTalkIgnored(RecycleBin_from_receiver(receiver));
+    RecycleBin_OnTalkIgnored(recycle_bin_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn656_N18Obj_ov004_022553d817vfunc_02066994_10Ev, RecycleBinReceiver_OnTalkIgnored)
 
 /* func_ov004_0222fd1c: the destructor, entered from the receiver part. */
 RecycleBin *RecycleBinReceiver_Destruct(void *receiver)
 {
-    return RecycleBin_Destruct(RecycleBin_from_receiver(receiver));
+    return RecycleBin_Destruct(recycle_bin_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn656_N18Obj_ov004_022553d8D1Ev, RecycleBinReceiver_Destruct)

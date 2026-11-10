@@ -29,7 +29,7 @@ extern const u8 data_ov004_022478f0[];
 #define INDOOR_COUNTDOWN_SECONDS_PER_HOUR 3600u
 #define INDOOR_COUNTDOWN_SECONDS_PER_MINUTE 60u
 
-static void IndoorCountdown_play(const IndoorCountdown *self, int number)
+static void indoor_countdown_play(const IndoorCountdown *self, int number)
 {
     if (self->silent == 0) {
         SoundSys_PlaySe(number);
@@ -59,14 +59,14 @@ int IndoorCountdown_Execute(IndoorCountdown *self)
         self->digit = (u8) (seconds % 10);
         if (self->digit != self->last_digit && hours == 0) {
             if (minutes == 1 && seconds == 0) {
-                IndoorCountdown_play(self, INDOOR_COUNTDOWN_SE_SECOND);
+                indoor_countdown_play(self, INDOOR_COUNTDOWN_SE_SECOND);
             } else if (minutes == 0) {
                 if (seconds == 0) {
-                    IndoorCountdown_play(self, INDOOR_COUNTDOWN_SE_NEW_YEAR);
+                    indoor_countdown_play(self, INDOOR_COUNTDOWN_SE_NEW_YEAR);
                 } else if (seconds <= INDOOR_COUNTDOWN_LAST_SECONDS) {
-                    IndoorCountdown_play(self, INDOOR_COUNTDOWN_SE_LAST_TEN);
+                    indoor_countdown_play(self, INDOOR_COUNTDOWN_SE_LAST_TEN);
                 } else {
-                    IndoorCountdown_play(self, INDOOR_COUNTDOWN_SE_SECOND);
+                    indoor_countdown_play(self, INDOOR_COUNTDOWN_SE_SECOND);
                 }
             }
             self->silent = 0;

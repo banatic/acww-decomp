@@ -51,13 +51,13 @@ extern const u8 data_ov004_02252374[];
 extern const u8 data_ov004_02252420[];
 
 /* Vtable slot 0x70: RoomObject02252374_EnterState for this class. */
-static void RoomObject02252374_switch_to(RoomObject02252374 *object, int state)
+static void room_object02252374_switch_to(RoomObject02252374 *object, int state)
 {
     object->base.vtable->vfunc_70(&object->base, state, SLOT_70_VALUE);
 }
 
 /* The texture file of the furniture's archive. */
-static void *RoomObject02252374_texture_file(RoomObject02252374 *object)
+static void *room_object02252374_texture_file(RoomObject02252374 *object)
 {
     return (void *) (uintptr_t) AnimSet_File28(FurnitureModel_Anims(&object->base.model_files));
 }
@@ -74,11 +74,11 @@ CLEAN_AS(func_ov004_02213d70, RoomObject02252374_UpdateOff)
 int RoomObject02252374_EnterOff(RoomObject02252374 *object)
 {
     Switch_Set(&object->base.on_switch, 0, 0);
-    int tex_index = G3dRes_TextureIndex(RoomObject02252374_texture_file(object), data_ov004_022531d4);
-    int plt_index = G3dRes_PaletteIndex(RoomObject02252374_texture_file(object), data_ov004_022531d4);
+    int tex_index = G3dRes_TextureIndex(room_object02252374_texture_file(object), data_ov004_022531d4);
+    int plt_index = G3dRes_PaletteIndex(room_object02252374_texture_file(object), data_ov004_022531d4);
     G3dModel *model = object->base.model_resource;
     if (VramCopyMaterial_Queue(&object->material_texture, (const u8 *) model, data_ov004_022531c8,
-                               RoomObject02252374_texture_file(object), tex_index, plt_index) != 0) {
+                               room_object02252374_texture_file(object), tex_index, plt_index) != 0) {
         object->unk_870 = 0;
     }
     return 1;
@@ -205,18 +205,18 @@ int RoomObject02252374_Start(RoomObject02252374 *object)
         object->item_model = Heap_Alloc(heap, sizeof(DesignModel));
         ClothTexture_Load(object->item_model, &shown, NULL);
         if (Switch_Value(&object->base.on_switch) != 0) {
-            RoomObject02252374_switch_to(object, ROOM_OBJECT_02252374_ON);
+            room_object02252374_switch_to(object, ROOM_OBJECT_02252374_ON);
         } else {
-            RoomObject02252374_switch_to(object, ROOM_OBJECT_02252374_OFF);
+            room_object02252374_switch_to(object, ROOM_OBJECT_02252374_OFF);
         }
     }
-    RoomObject02252374_switch_to(object, ROOM_OBJECT_02252374_ON);
+    room_object02252374_switch_to(object, ROOM_OBJECT_02252374_ON);
     object->starting = 0;
     return 1;
 }
 CLEAN_AS(func_ov004_02213fb8, RoomObject02252374_Start)
 
-static void RoomObject02252374_set_vtables(RoomObject02252374 *object)
+static void room_object02252374_set_vtables(RoomObject02252374 *object)
 {
     object->base.vtable = (const RoomObjectVtable *) data_ov004_02252374;
     object->base.receiver_vtable = data_ov004_02252420;
@@ -226,7 +226,7 @@ static void RoomObject02252374_set_vtables(RoomObject02252374 *object)
  * QUIRK: neither the item model nor the material texture binding is taken down. */
 RoomObject02252374 *RoomObject02252374_Delete(RoomObject02252374 *object)
 {
-    RoomObject02252374_set_vtables(object);
+    room_object02252374_set_vtables(object);
     RoomObject_DestructBase(&object->base);
     RoomObject_Free(object);
     return object;
@@ -236,7 +236,7 @@ CLEAN_AS(func_ov004_02214070, RoomObject02252374_Delete)
 /* func_ov004_0221409c (the destructor, vtable slot 0x40); the same QUIRK. */
 RoomObject02252374 *RoomObject02252374_Destroy(RoomObject02252374 *object)
 {
-    RoomObject02252374_set_vtables(object);
+    room_object02252374_set_vtables(object);
     RoomObject_DestructBase(&object->base);
     return object;
 }
@@ -247,7 +247,7 @@ CLEAN_AS(func_ov004_0221409c, RoomObject02252374_Destroy)
 RoomObject02252374 *RoomObject02252374_Construct(RoomObject02252374 *object)
 {
     RoomObject_ConstructBase(&object->base);
-    RoomObject02252374_set_vtables(object);
+    room_object02252374_set_vtables(object);
     VramCopyMaterial_Construct(&object->material_texture);
     object->item_model = NULL;
     object->unk_871 = 0;
@@ -269,7 +269,7 @@ CLEAN_AS(func_ov004_02214110, RoomObject02252374_Create)
 /* The receiver part (at 0xec, RoomObject.receiver_vtable) enters RoomObject02252374's functions
  * through its vtable with these: each moves the pointer back to the object and goes on with the
  * object's function. */
-static RoomObject02252374 *RoomObject02252374_from_receiver(void *receiver)
+static RoomObject02252374 *room_object02252374_from_receiver(void *receiver)
 {
     return (RoomObject02252374 *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
 }
@@ -277,13 +277,13 @@ static RoomObject02252374 *RoomObject02252374_from_receiver(void *receiver)
 /* func_ov004_0221a98c: the deleting destructor, entered from the receiver part. */
 RoomObject02252374 *RoomObject02252374Receiver_Delete(void *receiver)
 {
-    return RoomObject02252374_Delete(RoomObject02252374_from_receiver(receiver));
+    return RoomObject02252374_Delete(room_object02252374_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_02252374D0Ev, RoomObject02252374Receiver_Delete)
 
 /* func_ov004_0221a9a8: the destructor, entered from the receiver part. */
 RoomObject02252374 *RoomObject02252374Receiver_Destroy(void *receiver)
 {
-    return RoomObject02252374_Destroy(RoomObject02252374_from_receiver(receiver));
+    return RoomObject02252374_Destroy(room_object02252374_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_02252374D1Ev, RoomObject02252374Receiver_Destroy)

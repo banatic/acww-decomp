@@ -64,7 +64,7 @@ extern void __register_global_object(void *object, void *destruct, void *record)
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
 
-static TouchPick *RoomShellTouch_pick(void)
+static TouchPick *room_shell_touch_pick(void)
 {
     return (TouchPick *) (intptr_t) SceneQuery_FieldObject();
 }
@@ -81,7 +81,7 @@ CLEAN_AS(func_ov004_0223226c, RoomShellTouch_Remove)
 int RoomShellTouch_Offer(RoomShellTouch *self)
 {
     if (self->enabled != 0) {
-        return TouchPick_AddCylinder(RoomShellTouch_pick(), &self->cylinder);
+        return TouchPick_AddCylinder(room_shell_touch_pick(), &self->cylinder);
     }
     return 0;
 }
@@ -96,7 +96,7 @@ void RoomShellTouch_Init(RoomShellTouch *self)
     }
     if (self->enabled != 0) {
         Vec3 base = {ROOM_SHELL_TOUCH_X, 0, ROOM_SHELL_TOUCH_Z};
-        TouchPick_SetCylinderAndAdd(RoomShellTouch_pick(), &self->cylinder, &base, ROOM_SHELL_TOUCH_RADIUS,
+        TouchPick_SetCylinderAndAdd(room_shell_touch_pick(), &self->cylinder, &base, ROOM_SHELL_TOUCH_RADIUS,
                                     ROOM_SHELL_TOUCH_HEIGHT, ROOM_SHELL_TOUCH_KIND, ROOM_SHELL_TOUCH_INDEX);
     }
 }
@@ -206,7 +206,7 @@ CollisionBox *RoomShellBoxes_Construct(CollisionBox *boxes)
 CLEAN_AS(func_ov004_0223248c, RoomShellBoxes_Construct)
 
 /* The animation the object starts with. */
-static ModelAnim *RoomShellMaterialAnim_base(RoomShellMaterialAnim *anim)
+static ModelAnim *room_shell_material_anim_base(RoomShellMaterialAnim *anim)
 {
     return (ModelAnim *) (void *) anim;
 }
@@ -222,7 +222,7 @@ CLEAN_AS(func_ov004_022324b4, RoomShellMaterialAnim_Anim)
 RoomShellMaterialAnim *RoomShellMaterialAnim_Delete(RoomShellMaterialAnim *anim)
 {
     anim->ctrl.vtable = data_ov004_02255ab8;
-    ModelAnim_Destruct(RoomShellMaterialAnim_base(anim));
+    ModelAnim_Destruct(room_shell_material_anim_base(anim));
     Heap_OperatorDeleteB(anim);
     return anim;
 }
@@ -232,7 +232,7 @@ CLEAN_AS(func_ov004_022324b8, RoomShellMaterialAnim_Delete)
 RoomShellMaterialAnim *RoomShellMaterialAnim_Destruct(RoomShellMaterialAnim *anim)
 {
     anim->ctrl.vtable = data_ov004_02255ab8;
-    ModelAnim_Destruct(RoomShellMaterialAnim_base(anim));
+    ModelAnim_Destruct(room_shell_material_anim_base(anim));
     return anim;
 }
 CLEAN_AS(func_ov004_022324d8, RoomShellMaterialAnim_Destruct)
@@ -240,7 +240,7 @@ CLEAN_AS(func_ov004_022324d8, RoomShellMaterialAnim_Destruct)
 /* func_ov004_022324f0 (the constructor) */
 RoomShellMaterialAnim *RoomShellMaterialAnim_Construct(RoomShellMaterialAnim *anim)
 {
-    ModelAnim_ConstructBase(RoomShellMaterialAnim_base(anim));
+    ModelAnim_ConstructBase(room_shell_material_anim_base(anim));
     anim->ctrl.vtable = data_ov004_02255ab8;
     return anim;
 }

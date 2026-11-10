@@ -87,7 +87,7 @@ extern void func_020051b0(void *item);
 
 /* Whether `item` is the code `code`: for a furniture code, the same furniture number (the
  * item's read first). */
-static int ShopDisplay_is_code(u16 *item, u16 code)
+static int shop_display_is_code(u16 *item, u16 code)
 {
     if (ItemCode_IsFurniture(item)) {
         u16 other = code;
@@ -102,28 +102,28 @@ typedef u16 *(*ShopDisplayItemOf)(u32 index, u16 *out);
 
 /* Each of a list's `count` entries taken out (into an empty code), and put on a tile of the
  * item's kind when both what it shows and the item are not empty. */
-static void ShopDisplay_place_all(ShopDisplay *self, u32 count, ShopDisplayItemOf item_of)
+static void shop_display_place_all(ShopDisplay *self, u32 count, ShopDisplayItemOf item_of)
 {
     for (u32 i = 0; i < count; ++i) {
         u16 item = ITEM_CODE_NONE;
         u16 *shown = item_of(i, &item);
-        if (!ShopDisplay_is_code(shown, ITEM_CODE_NONE) && !ShopDisplay_is_code(&item, ITEM_CODE_NONE)) {
+        if (!shop_display_is_code(shown, ITEM_CODE_NONE) && !shop_display_is_code(&item, ITEM_CODE_NONE)) {
             ShopDisplay_PlaceItem(self, shown, ShopDisplay_SpotKind(&item));
         }
     }
 }
 
-static u16 *ShopDisplay_fox_item(u32 index, u16 *out)
+static u16 *shop_display_fox_item(u32 index, u16 *out)
 {
     return FoxShop_Item(&data_021f3b30, (int) index, out);
 }
 
-static u16 *ShopDisplay_tailor_item(u32 index, u16 *out)
+static u16 *shop_display_tailor_item(u32 index, u16 *out)
 {
     return TailorStock_Item(&data_021f3b44, index, out);
 }
 
-static u16 *ShopDisplay_nook_item(u32 index, u16 *out)
+static u16 *shop_display_nook_item(u32 index, u16 *out)
 {
     return NookStore_Item(&data_021f395c, index, out);
 }
@@ -153,7 +153,7 @@ CLEAN_AS(func_ov004_02246000, ShopDisplay_StockFox)
 /* func_ov004_02246010: the fox's three items put out. */
 void ShopDisplay_PlaceFox(ShopDisplay *self)
 {
-    ShopDisplay_place_all(self, FOX_SHOP_ITEMS, ShopDisplay_fox_item);
+    shop_display_place_all(self, FOX_SHOP_ITEMS, shop_display_fox_item);
 }
 CLEAN_AS(func_ov004_02246010, ShopDisplay_PlaceFox)
 
@@ -187,7 +187,7 @@ CLEAN_AS(func_ov004_022460d0, ShopDisplay_StockTailor)
 /* func_ov004_022461c4: the tailor's six items put out. */
 void ShopDisplay_PlaceTailorStock(ShopDisplay *self)
 {
-    ShopDisplay_place_all(self, TAILOR_STOCK_ITEMS, ShopDisplay_tailor_item);
+    shop_display_place_all(self, TAILOR_STOCK_ITEMS, shop_display_tailor_item);
 }
 CLEAN_AS(func_ov004_022461c4, ShopDisplay_PlaceTailorStock)
 
@@ -274,7 +274,7 @@ u16 *ShopDisplay_ItemAt(int x, int z)
     int acre_z = z >> 4;
     u16 *item = AcreTile_ItemInAcre(data_021c80bc, (u32) acre_x, (u32) acre_z, x - (acre_x << 4), z - (acre_z << 4),
                                     SHOP_DISPLAY_LAYER);
-    if (item == NULL || ShopDisplay_is_code(item, ITEM_CODE_NONE)) {
+    if (item == NULL || shop_display_is_code(item, ITEM_CODE_NONE)) {
         return &data_ov004_0225ff04;
     }
     if (ItemCode_IsF031OrFurniture(item)) {
@@ -292,7 +292,7 @@ u16 *ShopDisplay_ItemAt(int x, int z)
             return &data_ov004_0225ff08;
         }
     } else if (ItemCode_IsKind1(item)) {
-        if (!ShopDisplay_is_code(item, SHOP_DISPLAY_SOLD_OUT_SIGN) && ShopDisplay_IsOnSale(item)) {
+        if (!shop_display_is_code(item, SHOP_DISPLAY_SOLD_OUT_SIGN) && ShopDisplay_IsOnSale(item)) {
             return item;
         }
     }
@@ -332,7 +332,7 @@ CLEAN_AS(func_ov004_0224657c, ShopDisplay_StockNook)
 /* func_ov004_02246598: Nook's store's 37 places put out. */
 void ShopDisplay_PlaceNook(ShopDisplay *self)
 {
-    ShopDisplay_place_all(self, NOOK_STORE_PLACES, ShopDisplay_nook_item);
+    shop_display_place_all(self, NOOK_STORE_PLACES, shop_display_nook_item);
 }
 CLEAN_AS(func_ov004_02246598, ShopDisplay_PlaceNook)
 
@@ -352,7 +352,7 @@ int ShopDisplay_PlaceItem(ShopDisplay *self, u16 *item, int kind)
             int acre_z = z >> 4;
             u16 *tile =
                 AcreTile_ItemInAcre(map, (u32) acre_x, (u32) acre_z, x - (acre_x << 4), z - (acre_z << 4), SHOP_DISPLAY_LAYER);
-            if (tile == NULL || !ShopDisplay_is_code(tile, ITEM_CODE_NONE) || kind != layout[z * SHOP_DISPLAY_COLUMNS + x]) {
+            if (tile == NULL || !shop_display_is_code(tile, ITEM_CODE_NONE) || kind != layout[z * SHOP_DISPLAY_COLUMNS + x]) {
                 continue;
             }
             if (AcreTile_SetItem(map, item, x, z, SHOP_DISPLAY_LAYER)) {

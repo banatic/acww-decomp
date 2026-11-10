@@ -40,19 +40,19 @@ extern const u16 *const data_020db78c[];
 #define TILE_EFFECTS_TURNED_AXIS_Y 0x1000
 #define TILE_EFFECTS_EMIT_INTERVAL 2
 
-static int TileEffects_InRange(u32 code, u32 first, u32 last)
+static int tile_effects_in_range(u32 code, u32 first, u32 last)
 {
     return code >= first && code <= last;
 }
 
 /* The ARM's 32-bit sum. */
-static s32 TileEffects_Add(s32 a, s32 b)
+static s32 tile_effects_add(s32 a, s32 b)
 {
     return (s32) ((u32) a + (u32) b);
 }
 
 /* The code on a tile of the town, or NULL. */
-static u16 *TileEffects_TownCode(const TileEffectsTile *tile)
+static u16 *tile_effects_town_code(const TileEffectsTile *tile)
 {
     AcreMap *town = (AcreMap *) (uintptr_t) AcreMap_Town();
     if (town == NULL) {
@@ -77,7 +77,7 @@ CLEAN_AS(func_0204489c, TileEffects_Strike)
  * below 80 is below 70, else 0. */
 void TileEffects_Brush(const TileEffectsTile *tile)
 {
-    u16 *code = TileEffects_TownCode(tile);
+    u16 *code = tile_effects_town_code(tile);
     if (code == NULL) {
         return;
     }
@@ -91,7 +91,7 @@ CLEAN_AS(func_020448b8, TileEffects_Brush)
 /* func_02044910: the effects of the code on a tile of the town. */
 void TileEffects_StartAt(const TileEffectsTile *tile, int mode)
 {
-    u16 *code = TileEffects_TownCode(tile);
+    u16 *code = tile_effects_town_code(tile);
     if (code == NULL) {
         return;
     }
@@ -212,7 +212,7 @@ void TileEffects_Start(u16 *code, const TileEffectsTile *tile, int angle, int mo
     u32 now = *code;
     int families = 0;
     int colour = 0;
-    if (TileEffects_InRange(now, 0x6e, 0xa5)) {
+    if (tile_effects_in_range(now, 0x6e, 0xa5)) {
         /* The wilted and watered flowers, the codes after them (0x88, 0xa4, 0xa5) and 0x89. */
         families = 1;
     } else {
@@ -232,7 +232,7 @@ CLEAN_AS(func_02044a30, TileEffects_Start)
 
 /* The sky's light tinted by `tint`: each of the three 5-bit channels the product of both over
  * 31, the top bit the light's. */
-static u16 TileEffects_Tint(u16 light, u16 tint)
+static u16 tile_effects_tint(u16 light, u16 tint)
 {
     u32 color = light;
     for (int shift = 0; shift <= 10; shift += 5) {
@@ -245,14 +245,14 @@ static u16 TileEffects_Tint(u16 light, u16 tint)
 /* The emitter at the source's place (and its resource's own offset), its colour the sky's light
  * tinted by `tint`; in mode 2 its axis (0x400, 0x1000, 0) turned about Y by the source's angle,
  * when that leaves it of some length. */
-static void TileEffects_Place(ParticleEmitter *emitter, u16 tint, int first)
+static void tile_effects_place(ParticleEmitter *emitter, u16 tint, int first)
 {
     const TileEffectsSource *source = &data_021c77a0;
     const Vec3 *offset = &emitter->resource->header->base_pos;
-    emitter->position.x = TileEffects_Add(source->position.x, offset->x);
-    emitter->position.y = TileEffects_Add(source->position.y, offset->y);
-    emitter->position.z = TileEffects_Add(source->position.z, offset->z);
-    emitter->color = TileEffects_Tint((u16) Sky_LightColor(TILE_EFFECTS_SKY_LIGHT), tint);
+    emitter->position.x = tile_effects_add(source->position.x, offset->x);
+    emitter->position.y = tile_effects_add(source->position.y, offset->y);
+    emitter->position.z = tile_effects_add(source->position.z, offset->z);
+    emitter->color = tile_effects_tint((u16) Sky_LightColor(TILE_EFFECTS_SKY_LIGHT), tint);
     if (first && source->mode == TILE_EFFECTS_MODE_FIRST) {
         /* The low byte of misc: the frames between emissions. */
         ((u8 *) &emitter->misc)[0] = TILE_EFFECTS_EMIT_INTERVAL;
@@ -274,7 +274,7 @@ void TileEffects_SetUpSecond(ParticleEmitter *emitter)
 {
     const TileEffectsSource *source = &data_021c77a0;
     u16 tint = source->families != 0 ? *data_020db770[source->kind] : *data_020db7a8[source->kind];
-    TileEffects_Place(emitter, tint, 0);
+    tile_effects_place(emitter, tint, 0);
 }
 CLEAN_AS(func_02044b88, TileEffects_SetUpSecond)
 
@@ -283,7 +283,7 @@ CLEAN_AS(func_02044b88, TileEffects_SetUpSecond)
 void TileEffects_SetUpFirst(ParticleEmitter *emitter)
 {
     const TileEffectsSource *source = &data_021c77a0;
-    TileEffects_Place(emitter, data_020db78c[source->kind][source->colour], 1);
+    tile_effects_place(emitter, data_020db78c[source->kind][source->colour], 1);
 }
 CLEAN_AS(func_02044cc4, TileEffects_SetUpFirst)
 

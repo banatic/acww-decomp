@@ -34,13 +34,13 @@ extern const u8 data_ov004_02247668[ROOM_OBJECT_02251A14_STATE_COUNT];
 extern const u8 data_ov004_02251a14[];
 extern const u8 data_ov004_02251ac0[];
 
-static int RoomObject02251a14_request(RoomObject02251a14 *object, int state)
+static int room_object02251a14_request(RoomObject02251a14 *object, int state)
 {
     return RoomSync_RequestState(&object->base, state, SLOT_70_VALUE, 1);
 }
 
 /* Vtable slot 0x70: RoomObject02251a14_EnterState for this class. */
-static void RoomObject02251a14_switch_to(RoomObject02251a14 *object, int state)
+static void room_object02251a14_switch_to(RoomObject02251a14 *object, int state)
 {
     object->base.vtable->vfunc_70(&object->base, state, SLOT_70_VALUE);
 }
@@ -53,7 +53,7 @@ int RoomObject02251a14_UpdateOn(RoomObject02251a14 *object)
     RoomObject_Lookup020537a8(&object->base);
     RoomObject_PlaySound0(&object->base);
     if (Switch_IsPending(&object->base.on_switch)) {
-        return RoomObject02251a14_request(object, ROOM_OBJECT_02251A14_OFF);
+        return room_object02251a14_request(object, ROOM_OBJECT_02251A14_OFF);
     }
     return 0;
 }
@@ -74,7 +74,7 @@ CLEAN_AS(func_ov004_02219b70, RoomObject02251a14_EnterOn)
 void RoomObject02251a14_UpdateOff(RoomObject02251a14 *object)
 {
     if (Switch_IsPending(&object->base.on_switch)) {
-        RoomObject02251a14_request(object, ROOM_OBJECT_02251A14_ON);
+        room_object02251a14_request(object, ROOM_OBJECT_02251A14_ON);
     }
 }
 CLEAN_AS(func_ov004_02219ba4, RoomObject02251a14_UpdateOff)
@@ -161,15 +161,15 @@ int RoomObject02251a14_Start(RoomObject02251a14 *object)
     RoomObject_LoadAnims(base, 0, ANIM_MODE_LOOP, FX32_ONE, 0);
     GlowSet_Bind(&object->glows, base->model_resource, Switch_Value(&base->on_switch));
     if (Switch_Value(&base->on_switch) != 0 && RoomObjects_InShop() == 0) {
-        RoomObject02251a14_switch_to(object, ROOM_OBJECT_02251A14_ON);
+        room_object02251a14_switch_to(object, ROOM_OBJECT_02251A14_ON);
     } else {
-        RoomObject02251a14_switch_to(object, ROOM_OBJECT_02251A14_OFF);
+        room_object02251a14_switch_to(object, ROOM_OBJECT_02251A14_OFF);
     }
     return 1;
 }
 CLEAN_AS(func_ov004_02219d28, RoomObject02251a14_Start)
 
-static void RoomObject02251a14_set_vtables(RoomObject02251a14 *object)
+static void room_object02251a14_set_vtables(RoomObject02251a14 *object)
 {
     object->base.vtable = (const RoomObjectVtable *) data_ov004_02251a14;
     object->base.receiver_vtable = data_ov004_02251ac0;
@@ -178,7 +178,7 @@ static void RoomObject02251a14_set_vtables(RoomObject02251a14 *object)
 /* func_ov004_02219d9c (the deleting destructor, vtable slot 0x44) */
 RoomObject02251a14 *RoomObject02251a14_Delete(RoomObject02251a14 *object)
 {
-    RoomObject02251a14_set_vtables(object);
+    room_object02251a14_set_vtables(object);
     GlowSet_Destruct(&object->glows);
     RoomObject_DestructBase(&object->base);
     RoomObject_Free(object);
@@ -189,7 +189,7 @@ CLEAN_AS(func_ov004_02219d9c, RoomObject02251a14_Delete)
 /* func_ov004_02219dd4 (the destructor, vtable slot 0x40) */
 RoomObject02251a14 *RoomObject02251a14_Destroy(RoomObject02251a14 *object)
 {
-    RoomObject02251a14_set_vtables(object);
+    room_object02251a14_set_vtables(object);
     GlowSet_Destruct(&object->glows);
     RoomObject_DestructBase(&object->base);
     return object;
@@ -201,7 +201,7 @@ CLEAN_AS(func_ov004_02219dd4, RoomObject02251a14_Destroy)
 RoomObject02251a14 *RoomObject02251a14_Construct(RoomObject02251a14 *object)
 {
     RoomObject_ConstructBase(&object->base);
-    RoomObject02251a14_set_vtables(object);
+    room_object02251a14_set_vtables(object);
     GlowSet_Construct(&object->glows);
     return object;
 }
@@ -220,7 +220,7 @@ CLEAN_AS(func_ov004_02219e38, RoomObject02251a14_Create)
 /* The receiver part (at 0xec, RoomObject.receiver_vtable) enters RoomObject02251a14's functions
  * through its vtable with these: each moves the pointer back to the object and goes on with the
  * object's function. */
-static RoomObject02251a14 *RoomObject02251a14_from_receiver(void *receiver)
+static RoomObject02251a14 *room_object02251a14_from_receiver(void *receiver)
 {
     return (RoomObject02251a14 *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
 }
@@ -228,13 +228,13 @@ static RoomObject02251a14 *RoomObject02251a14_from_receiver(void *receiver)
 /* func_ov004_0221a5d4: the deleting destructor, entered from the receiver part. */
 RoomObject02251a14 *RoomObject02251a14Receiver_Delete(void *receiver)
 {
-    return RoomObject02251a14_Delete(RoomObject02251a14_from_receiver(receiver));
+    return RoomObject02251a14_Delete(room_object02251a14_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_02251a14D0Ev, RoomObject02251a14Receiver_Delete)
 
 /* func_ov004_0221a5f0: the destructor, entered from the receiver part. */
 RoomObject02251a14 *RoomObject02251a14Receiver_Destroy(void *receiver)
 {
-    return RoomObject02251a14_Destroy(RoomObject02251a14_from_receiver(receiver));
+    return RoomObject02251a14_Destroy(room_object02251a14_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_02251a14D1Ev, RoomObject02251a14Receiver_Destroy)

@@ -77,13 +77,13 @@ CLEAN_AS(func_0207e720, VillagerImpression_IsRaining)
 
 /* ---- The player's looks */
 
-static int VillagerImpression_InRange(u16 code, u16 first, u16 last)
+static int villager_impression_in_range(u16 code, u16 first, u16 last)
 {
     return code >= first && code <= last;
 }
 
 /* Whether the head's item is `wanted`, whatever side it faces for a code of kind 3 or 4. */
-static int VillagerImpression_HeadIs(u8 *record, u16 wanted)
+static int villager_impression_head_is(u8 *record, u16 wanted)
 {
     u16 *head = PlayerRecord_HeadItem(record);
     if (ItemCode_IsFurniture(head)) {
@@ -97,7 +97,7 @@ static int VillagerImpression_HeadIs(u8 *record, u16 wanted)
  * 0x1380-0x139f and 0x13a0-0x13a7). */
 int VillagerImpression_HeldUmbrella(u8 *record)
 {
-    return VillagerImpression_InRange(*PlayerRecord_HeldItem(record), 0x1380, 0x13a7);
+    return villager_impression_in_range(*PlayerRecord_HeldItem(record), 0x1380, 0x13a7);
 }
 CLEAN_AS(func_0207e738, VillagerImpression_HeldUmbrella)
 
@@ -107,113 +107,113 @@ CLEAN_AS(func_0207e738, VillagerImpression_HeldUmbrella)
 int VillagerImpression_HasFlower(u8 *record)
 {
     return *PlayerRecord_HeldItem(record) == 0x137c ||
-           VillagerImpression_InRange(*PlayerRecord_HeadItem(record), 0x1408, 0x1428) ||
-           VillagerImpression_InRange(*PlayerRecord_AccessoryItem(record), 0x1471, 0x1491);
+           villager_impression_in_range(*PlayerRecord_HeadItem(record), 0x1408, 0x1428) ||
+           villager_impression_in_range(*PlayerRecord_AccessoryItem(record), 0x1471, 0x1491);
 }
 CLEAN_AS(func_0207e780, VillagerImpression_HasFlower)
 
 /* func_0207e7fc */
 int VillagerImpression_HeadIs1406(u8 *record)
 {
-    return VillagerImpression_HeadIs(record, 0x1406);
+    return villager_impression_head_is(record, 0x1406);
 }
 CLEAN_AS(func_0207e7fc, VillagerImpression_HeadIs1406)
 
 /* func_0207e848 */
 int VillagerImpression_HeadIs13E4(u8 *record)
 {
-    return VillagerImpression_HeadIs(record, 0x13e4);
+    return villager_impression_head_is(record, 0x13e4);
 }
 CLEAN_AS(func_0207e848, VillagerImpression_HeadIs13E4)
 
 /* func_0207e894 */
 int VillagerImpression_HeadIs13E3(u8 *record)
 {
-    return VillagerImpression_HeadIs(record, 0x13e3);
+    return villager_impression_head_is(record, 0x13e3);
 }
 CLEAN_AS(func_0207e894, VillagerImpression_HeadIs13E3)
 
 /* func_0207e8e0 */
 int VillagerImpression_HeadIs13F5(u8 *record)
 {
-    return VillagerImpression_HeadIs(record, 0x13f5);
+    return villager_impression_head_is(record, 0x13f5);
 }
 CLEAN_AS(func_0207e8e0, VillagerImpression_HeadIs13F5)
 
 /* func_0207e92c */
 int VillagerImpression_HeadIs13EA(u8 *record)
 {
-    return VillagerImpression_HeadIs(record, 0x13ea);
+    return villager_impression_head_is(record, 0x13ea);
 }
 CLEAN_AS(func_0207e92c, VillagerImpression_HeadIs13EA)
 
 /* func_0207e978 */
 int VillagerImpression_HeadIs13E6(u8 *record)
 {
-    return VillagerImpression_HeadIs(record, 0x13e6);
+    return villager_impression_head_is(record, 0x13e6);
 }
 CLEAN_AS(func_0207e978, VillagerImpression_HeadIs13E6)
 
 /* func_0207e9c4 */
 int VillagerImpression_HeadIs1405(u8 *record)
 {
-    return VillagerImpression_HeadIs(record, 0x1405);
+    return villager_impression_head_is(record, 0x1405);
 }
 CLEAN_AS(func_0207e9c4, VillagerImpression_HeadIs1405)
 
 /* func_0207ea10 */
 int VillagerImpression_HeadIs13BC(u8 *record)
 {
-    return VillagerImpression_HeadIs(record, 0x13bc);
+    return villager_impression_head_is(record, 0x13bc);
 }
 CLEAN_AS(func_0207ea10, VillagerImpression_HeadIs13BC)
 
 /* func_0207ea5c */
 int VillagerImpression_HeadIs13A8(u8 *record)
 {
-    return VillagerImpression_HeadIs(record, 0x13a8);
+    return villager_impression_head_is(record, 0x13a8);
 }
 CLEAN_AS(func_0207ea5c, VillagerImpression_HeadIs13A8)
 
 /* func_0207eaa8 */
 int VillagerImpression_HeadIs13B2(u8 *record)
 {
-    return VillagerImpression_HeadIs(record, 0x13b2);
+    return villager_impression_head_is(record, 0x13b2);
 }
 CLEAN_AS(func_0207eaa8, VillagerImpression_HeadIs13B2)
 
 /* func_0207eaf4 */
 int VillagerImpression_HeadIs13C1(u8 *record)
 {
-    return VillagerImpression_HeadIs(record, 0x13c1);
+    return villager_impression_head_is(record, 0x13c1);
 }
 CLEAN_AS(func_0207eaf4, VillagerImpression_HeadIs13C1)
 
 /* func_0207eb40: the held item is a watering can, 0x1378 or 0x1379. */
 int VillagerImpression_HeldWateringCan(u8 *record)
 {
-    return VillagerImpression_InRange(*PlayerRecord_HeldItem(record), 0x1378, 0x1379);
+    return villager_impression_in_range(*PlayerRecord_HeldItem(record), 0x1378, 0x1379);
 }
 CLEAN_AS(func_0207eb40, VillagerImpression_HeldWateringCan)
 
 /* func_0207eb7c: the held item is a rod, 0x1374 or 0x1375. */
 int VillagerImpression_HeldRod(u8 *record)
 {
-    return VillagerImpression_InRange(*PlayerRecord_HeldItem(record), 0x1374, 0x1375);
+    return villager_impression_in_range(*PlayerRecord_HeldItem(record), 0x1374, 0x1375);
 }
 CLEAN_AS(func_0207eb7c, VillagerImpression_HeldRod)
 
 /* func_0207ebb8: the held item is an axe, one of 0x136b-0x1373. */
 int VillagerImpression_HeldAxe(u8 *record)
 {
-    return VillagerImpression_InRange(*PlayerRecord_HeldItem(record), 0x136b, 0x1373);
+    return villager_impression_in_range(*PlayerRecord_HeldItem(record), 0x136b, 0x1373);
 }
 CLEAN_AS(func_0207ebb8, VillagerImpression_HeldAxe)
 
 /* func_0207ebf8: the held item is a net, 0x1376 or 0x1377. */
 int VillagerImpression_HeldNet(u8 *record)
 {
-    return VillagerImpression_InRange(*PlayerRecord_HeldItem(record), 0x1376, 0x1377);
+    return villager_impression_in_range(*PlayerRecord_HeldItem(record), 0x1376, 0x1377);
 }
 CLEAN_AS(func_0207ebf8, VillagerImpression_HeldNet)
 
@@ -255,19 +255,19 @@ CLEAN_AS(func_0207ec68, VillagerImpression_FewVillagers)
 
 /* The acre a tile coordinate is in, rounded down for negative coordinates as the ARM's
  * arithmetic shift does. The tile within the acre is then the low four bits. */
-static int VillagerImpression_AcreOf(int tile)
+static int villager_impression_acre_of(int tile)
 {
     return tile >= 0 ? tile / VILLAGER_IMPRESSION_ACRE_TILES : -1 - (-1 - tile) / VILLAGER_IMPRESSION_ACRE_TILES;
 }
 
 /* The flowers and the codes after them (0x00-0x1a, 0x1c, 0x1d), the watered flowers and the
  * codes after them (0x8a-0xa5) (map_item.h). */
-static int VillagerImpression_IsBloomingFlower(u16 code)
+static int villager_impression_is_blooming_flower(u16 code)
 {
     return code <= 0x1a || code == 0x1c || code == 0x1d || (code >= 0x8a && code <= 0xa5);
 }
 
-static int VillagerImpression_IsWeed(u16 code)
+static int villager_impression_is_weed(u16 code)
 {
     return code >= 0x21 && code <= 0x24;
 }
@@ -275,7 +275,7 @@ static int VillagerImpression_IsWeed(u16 code)
 /* Whether at least `needed` of the nine tiles around the player (row by row, from the one
  * above and to the left) hold a code `wanted` takes, on the town map's layer 0. 0 when not in
  * the town (data_020e54a8), without the player's actor or without a map. */
-static int VillagerImpression_CountNear(int (*wanted)(u16 code), int needed)
+static int villager_impression_count_near(int (*wanted)(u16 code), int needed)
 {
     const int *position = (const int *) PlayerActorOps_StartPosition(SESSION_PLAYERS_OWN);
     if (data_020e54a8 != 0 || position == NULL) {
@@ -291,8 +291,8 @@ static int VillagerImpression_CountNear(int (*wanted)(u16 code), int needed)
     Position_Tile(&px, &pz, (const Position *) position);
     for (int z = pz - 1; z <= pz + 1; z++) {
         for (int x = px - 1; x <= px + 1; x++) {
-            int acre_x = VillagerImpression_AcreOf(x);
-            int acre_z = VillagerImpression_AcreOf(z);
+            int acre_x = villager_impression_acre_of(x);
+            int acre_z = villager_impression_acre_of(z);
             u16 *code = AcreTile_ItemInAcre(map, (u32) acre_x, (u32) acre_z, x - acre_x * VILLAGER_IMPRESSION_ACRE_TILES,
                                             z - acre_z * VILLAGER_IMPRESSION_ACRE_TILES, 0);
             if (code != NULL && wanted(*code)) {
@@ -310,7 +310,7 @@ static int VillagerImpression_CountNear(int (*wanted)(u16 code), int needed)
  * watered flowers or one after them. */
 int VillagerImpression_NearFlowers(void)
 {
-    return VillagerImpression_CountNear(VillagerImpression_IsBloomingFlower, VILLAGER_IMPRESSION_NEAR_FLOWERS);
+    return villager_impression_count_near(villager_impression_is_blooming_flower, VILLAGER_IMPRESSION_NEAR_FLOWERS);
 }
 CLEAN_AS(func_0207ec84, VillagerImpression_NearFlowers)
 
@@ -318,7 +318,7 @@ CLEAN_AS(func_0207ec84, VillagerImpression_NearFlowers)
  * 0x21-0x24). */
 int VillagerImpression_NearWeeds(void)
 {
-    return VillagerImpression_CountNear(VillagerImpression_IsWeed, VILLAGER_IMPRESSION_NEAR_WEEDS);
+    return villager_impression_count_near(villager_impression_is_weed, VILLAGER_IMPRESSION_NEAR_WEEDS);
 }
 CLEAN_AS(func_0207edcc, VillagerImpression_NearWeeds)
 

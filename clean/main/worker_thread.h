@@ -27,7 +27,7 @@ typedef struct WorkerThreadOwner {
 void WorkerThread_Release(void);
 void WorkerThread_Stop(WorkerThread *job);
 
-/* The words after the thread (WorkerThread.unk_c0, WorkerThread_Context): who started it and the
+/* The words after the thread (WorkerThread.unk_c0, worker_thread_context): who started it and the
  * job's arguments, then its stack between two guard words. */
 #define WORKER_THREAD_STACK_SIZE 0x1000
 #define WORKER_THREAD_PRIORITY 0x1e

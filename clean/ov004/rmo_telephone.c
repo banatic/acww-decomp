@@ -75,26 +75,26 @@ extern RmoTelephone *data_ov004_022588c8;
 /* "sp_etc_sequence1", the message file. */
 extern const char data_ov004_022558ac[];
 
-static AnimatedModel *RmoTelephone_body(RmoTelephone *self)
+static AnimatedModel *rmo_telephone_body(RmoTelephone *self)
 {
     return (AnimatedModel *) (void *) &self->base.body;
 }
 
 /* The receiver part as C++ converts a pointer to the object to it: NULL stays NULL. */
-static TalkReceiver *RmoTelephone_receiver(RmoTelephone *self)
+static TalkReceiver *rmo_telephone_receiver(RmoTelephone *self)
 {
     return self != NULL ? &self->receiver : NULL;
 }
 
 /* The body's first joint animation started played once with `flags` from whole frame `start`. */
-static void RmoTelephone_play(RmoTelephone *self, int flags, u16 start)
+static void rmo_telephone_play(RmoTelephone *self, int flags, u16 start)
 {
-    AnimatedModel_Start(RmoTelephone_body(self), RmoModel_JointAnim(&self->base.body_model, 0), flags, FX32_ONE, start, 0);
+    AnimatedModel_Start(rmo_telephone_body(self), RmoModel_JointAnim(&self->base.body_model, 0), flags, FX32_ONE, start, 0);
 }
 
 /* The body's frame count as whole frames: the frame its animation ends at. QUIRK: cut to 16
  * bits. */
-static u16 RmoTelephone_last_frame(const RmoTelephone *self)
+static u16 rmo_telephone_last_frame(const RmoTelephone *self)
 {
     return (u16) ((u32) self->base.body.frames.end >> RMO_TELEPHONE_FRAME_SHIFT);
 }
@@ -105,7 +105,7 @@ void RmoTelephone_PlayFromEnd(void)
 {
     RmoTelephone *self = data_ov004_022588c8;
     if (self != NULL) {
-        RmoTelephone_play(self, FRAME_CTRL_ONCE, RmoTelephone_last_frame(self));
+        rmo_telephone_play(self, FRAME_CTRL_ONCE, rmo_telephone_last_frame(self));
     }
 }
 CLEAN_AS(func_ov004_02230c98, RmoTelephone_PlayFromEnd)
@@ -116,7 +116,7 @@ void RmoTelephone_PlayBackFromEnd(void)
 {
     RmoTelephone *self = data_ov004_022588c8;
     if (self != NULL) {
-        RmoTelephone_play(self, FRAME_CTRL_ONCE | FRAME_CTRL_REVERSE, RmoTelephone_last_frame(self));
+        rmo_telephone_play(self, FRAME_CTRL_ONCE | FRAME_CTRL_REVERSE, rmo_telephone_last_frame(self));
     }
 }
 CLEAN_AS(func_ov004_02230ce4, RmoTelephone_PlayBackFromEnd)
@@ -127,7 +127,7 @@ void RmoTelephone_PlayFromStart(void)
 {
     RmoTelephone *self = data_ov004_022588c8;
     if (self != NULL) {
-        RmoTelephone_play(self, FRAME_CTRL_ONCE, 0);
+        rmo_telephone_play(self, FRAME_CTRL_ONCE, 0);
     }
 }
 CLEAN_AS(func_ov004_02230d30, RmoTelephone_PlayFromStart)
@@ -164,7 +164,7 @@ void RmoTelephone_StartTalk(RmoTelephone *self, const char *name, u8 message)
     ((void (*)(TalkReceiver *))(uintptr_t) vtable[RMO_TELEPHONE_RECEIVER_SLOT_RESET / 4])(&self->receiver);
     MessageReceiver_SetName(&self->receiver.base, name);
     self->receiver.base.message = message;
-    TalkObject_AttachReceiver(talk, RmoTelephone_receiver(self));
+    TalkObject_AttachReceiver(talk, rmo_telephone_receiver(self));
     talk->next_state = TALK_OBJECT_OPENING;
 }
 CLEAN_AS(func_ov004_02230db8, RmoTelephone_StartTalk)
@@ -212,7 +212,7 @@ CLEAN_AS(func_ov004_02230e90, RmoTelephone_EnterState13)
 
 /* The talk's end: once talk 0 has closed, its receiver let go, the object no longer holds it,
  * and state 7. */
-static void RmoTelephone_end_talk(RmoTelephone *self)
+static void rmo_telephone_end_talk(RmoTelephone *self)
 {
     TalkObject *talk = TalkObject_Get(RMO_TELEPHONE_TALK);
     if (talk->state == TALK_OBJECT_CLOSED) {
@@ -225,7 +225,7 @@ static void RmoTelephone_end_talk(RmoTelephone *self)
 /* func_ov004_02230e94 (update of state 12) */
 void RmoTelephone_UpdateState12(RmoTelephone *self)
 {
-    RmoTelephone_end_talk(self);
+    rmo_telephone_end_talk(self);
 }
 CLEAN_AS(func_ov004_02230e94, RmoTelephone_UpdateState12)
 
@@ -236,7 +236,7 @@ CLEAN_AS(func_ov004_02230ec0, RmoTelephone_EnterState12)
 /* func_ov004_02230ec4 (update of state 11) */
 void RmoTelephone_UpdateState11(RmoTelephone *self)
 {
-    RmoTelephone_end_talk(self);
+    rmo_telephone_end_talk(self);
 }
 CLEAN_AS(func_ov004_02230ec4, RmoTelephone_UpdateState11)
 
@@ -377,27 +377,27 @@ extern u8 data_021f43f8;
 
 /* The RMO family's base class (rmo_object.h). */
 
-static void *RmoTelephone_sound_source(RmoTelephone *self)
+static void *rmo_telephone_sound_source(RmoTelephone *self)
 {
     return &self->base.unk_24c[4];
 }
 
-static TouchPickSphere *RmoTelephone_touch_sphere(RmoTelephone *self)
+static TouchPickSphere *rmo_telephone_touch_sphere(RmoTelephone *self)
 {
     return (TouchPickSphere *) (void *) self->unk_61c;
 }
 
-static TalkObject *RmoTelephone_talk(RmoTelephone *self)
+static TalkObject *rmo_telephone_talk(RmoTelephone *self)
 {
     return (TalkObject *) (void *) self->receiver.talk;
 }
 
-static TouchPick *RmoTelephone_field_pick(void)
+static TouchPick *rmo_telephone_field_pick(void)
 {
     return (TouchPick *) (intptr_t) SceneQuery_FieldObject();
 }
 
-static int RmoTelephone_screen_shown(void)
+static int rmo_telephone_screen_shown(void)
 {
     return data_021c75b8 == SCREEN_TRANSITION_SHOWN;
 }
@@ -416,7 +416,7 @@ CLEAN_AS(func_ov004_02230f18, RmoTelephone_EnterState10)
  * talk no longer held, and state 7. */
 void RmoTelephone_UpdateState9(RmoTelephone *self)
 {
-    RmoTelephone_end_talk(self);
+    rmo_telephone_end_talk(self);
 }
 CLEAN_AS(func_ov004_02230f38, RmoTelephone_UpdateState9)
 
@@ -430,7 +430,7 @@ CLEAN_AS(func_ov004_02230f64, RmoTelephone_EnterState9)
 /* func_ov004_02230f74 (update of state 8): state 9 once the screen is shown. */
 void RmoTelephone_UpdateState8(RmoTelephone *self)
 {
-    if (RmoTelephone_screen_shown()) {
+    if (rmo_telephone_screen_shown()) {
         RmoTelephone_EnterState(self, RMO_TELEPHONE_STATE_9);
     }
 }
@@ -454,10 +454,10 @@ void RmoTelephone_UpdateState7(RmoTelephone *self)
     u32 kind;
     u8 index;
 
-    if (!RmoTelephone_screen_shown()) {
+    if (!rmo_telephone_screen_shown()) {
         return;
     }
-    TouchPick_AddFaces(RmoTelephone_field_pick(), self->pick_faces);
+    TouchPick_AddFaces(rmo_telephone_field_pick(), self->pick_faces);
     if (SceneQuery_Current() == RMO_TELEPHONE_SCENE_ATTIC && data_020ccf94->local_player != RMO_TELEPHONE_OWN_PLAYER) {
         return;
     }
@@ -467,7 +467,7 @@ void RmoTelephone_UpdateState7(RmoTelephone *self)
     if (data_021f6c38 == 0 || data_021f6c34 == 0) {
         return;
     }
-    if (TouchPick_GetPick(RmoTelephone_field_pick(), &point, &kind, &index) == 0) {
+    if (TouchPick_GetPick(rmo_telephone_field_pick(), &point, &kind, &index) == 0) {
         return;
     }
     if (kind == RMO_TELEPHONE_PICK_KIND) {
@@ -493,7 +493,7 @@ CLEAN_AS(func_ov004_02231044, RmoTelephone_EnterState6)
 void RmoTelephone_UpdateState5(RmoTelephone *self)
 {
     if (FrameCtrl_IsDone(&self->base.body.frames)) {
-        SceneObjectBase_ReleaseReceiver((SceneObjectBase *) (void *) self, RmoTelephone_receiver(self));
+        SceneObjectBase_ReleaseReceiver((SceneObjectBase *) (void *) self, rmo_telephone_receiver(self));
         EventQueue_FinishObjectEvent(self);
         RmoTelephone_EnterState(self, RMO_TELEPHONE_STATE_6);
     }
@@ -505,12 +505,12 @@ CLEAN_AS(func_ov004_02231048, RmoTelephone_UpdateState5)
 int RmoTelephone_EnterState5(RmoTelephone *self)
 {
     RoomPlayerActor_RequestHangUp();
-    return RmoSound_Play(RmoTelephone_sound_source(self), RMO_TELEPHONE_SOUND_5);
+    return RmoSound_Play(rmo_telephone_sound_source(self), RMO_TELEPHONE_SOUND_5);
 }
 CLEAN_AS(func_ov004_02231084, RmoTelephone_EnterState5)
 
 /* State 5 once its receiver's talk has closed. */
-static void RmoTelephone_after_talk(RmoTelephone *self)
+static void rmo_telephone_after_talk(RmoTelephone *self)
 {
     TalkObject *talk = self->receiver.talk;
     if (talk != NULL && talk->state == TALK_OBJECT_CLOSED) {
@@ -521,7 +521,7 @@ static void RmoTelephone_after_talk(RmoTelephone *self)
 /* func_ov004_022310a4 (update of state 4) */
 void RmoTelephone_UpdateState4(RmoTelephone *self)
 {
-    RmoTelephone_after_talk(self);
+    rmo_telephone_after_talk(self);
 }
 CLEAN_AS(func_ov004_022310a4, RmoTelephone_UpdateState4)
 
@@ -532,7 +532,7 @@ CLEAN_AS(func_ov004_022310c8, RmoTelephone_EnterState4)
 /* func_ov004_022310cc (update of state 3) */
 void RmoTelephone_UpdateState3(RmoTelephone *self)
 {
-    RmoTelephone_after_talk(self);
+    rmo_telephone_after_talk(self);
 }
 CLEAN_AS(func_ov004_022310cc, RmoTelephone_UpdateState3)
 
@@ -555,7 +555,7 @@ CLEAN_AS(func_ov004_022310f4, RmoTelephone_UpdateState2)
  * REQUIRES: the receiver has a talk once SceneObjectBase_TakeReceiver has taken it. */
 void RmoTelephone_EnterState2(RmoTelephone *self)
 {
-    SceneObjectBase_TakeReceiver((SceneObjectBase *) (void *) self, RmoTelephone_receiver(self));
+    SceneObjectBase_TakeReceiver((SceneObjectBase *) (void *) self, rmo_telephone_receiver(self));
     MessageReceiver_SetName(&self->receiver.base, data_ov004_022557b8);
     if (Session_IsLinked(data_020ccf94)) {
         self->receiver.base.message = RMO_TELEPHONE_MESSAGE_LINKED;
@@ -580,12 +580,12 @@ CLEAN_AS(func_ov004_02231178, RmoTelephone_UpdateState1)
 int RmoTelephone_EnterState1(RmoTelephone *self)
 {
     RoomPlayerActor_RequestPickUp();
-    return RmoSound_Play(RmoTelephone_sound_source(self), RMO_TELEPHONE_SOUND_1);
+    return RmoSound_Play(rmo_telephone_sound_source(self), RMO_TELEPHONE_SOUND_1);
 }
 CLEAN_AS(func_ov004_0223119c, RmoTelephone_EnterState1)
 
 /* Vtable slot 0x48 (RmoTelephone_MayAct for this class), called through the vtable. */
-static int RmoTelephone_call_may_act(RmoTelephone *self, Actor *other)
+static int rmo_telephone_call_may_act(RmoTelephone *self, Actor *other)
 {
     const u32 *vtable = self->base.actor.vtable;
     return ((int (*)(RmoTelephone *, Actor *))(uintptr_t) vtable[RMO_TELEPHONE_SLOT_MAY_ACT / 4])(self, other);
@@ -596,14 +596,14 @@ static int RmoTelephone_call_may_act(RmoTelephone *self, Actor *other)
  * for; else its pick faces added to the field object's picks for this frame. */
 void RmoTelephone_UpdateState0(RmoTelephone *self)
 {
-    int picked = TouchPick_ObjectOnPenDown(RmoTelephone_field_pick(), NULL, NULL);
+    int picked = TouchPick_ObjectOnPenDown(rmo_telephone_field_pick(), NULL, NULL);
     void *own = SessionPlayers_ActorOf(RMO_TELEPHONE_OWN_PLAYER);
     if (picked != 0 && own != NULL && picked == (int) (intptr_t) own &&
-        RmoTelephone_call_may_act(self, (Actor *) (intptr_t) SessionPlayers_ActorHandle(RMO_TELEPHONE_OWN_PLAYER)) != 0) {
+        rmo_telephone_call_may_act(self, (Actor *) (intptr_t) SessionPlayers_ActorHandle(RMO_TELEPHONE_OWN_PLAYER)) != 0) {
         EventQueue_RequestKind6(self, 0);
         return;
     }
-    TouchPick_AddFaces(RmoTelephone_field_pick(), self->pick_faces);
+    TouchPick_AddFaces(rmo_telephone_field_pick(), self->pick_faces);
 }
 CLEAN_AS(func_ov004_022311bc, RmoTelephone_UpdateState0)
 
@@ -625,7 +625,7 @@ void RmoTelephone_EnterState(RmoTelephone *self, int state)
 CLEAN_AS(func_ov004_0223121c, RmoTelephone_EnterState)
 
 /* Asks state block flag `flag`. */
-static int RmoTelephone_flag(u32 flag)
+static int rmo_telephone_flag(u32 flag)
 {
     return StateBlock_TestFlag(data_021dc7a8, flag);
 }
@@ -647,7 +647,7 @@ static int RmoTelephone_flag(u32 flag)
  * REQUIRES: for messages 0xe and 0x1f the answer has a row in the table (0 to 3). */
 void RmoTelephone_OnAnswer(RmoTelephone *self)
 {
-    TalkObject *talk = RmoTelephone_talk(self);
+    TalkObject *talk = rmo_telephone_talk(self);
     unsigned int choice = TalkAnswers_Picked(TalkObject_Answers(talk));
     int next = 0;
 
@@ -660,16 +660,16 @@ void RmoTelephone_OnAnswer(RmoTelephone *self)
                 next = data_ov004_022478c8[choice];
             }
             if (next == RMO_TELEPHONE_MESSAGE_ASK_ART_CAT) {
-                if (RmoTelephone_flag(RMO_TELEPHONE_FLAG_NO_ART_CAT) && RmoTelephone_flag(RMO_TELEPHONE_FLAG_NO_DOWNLOADS)) {
+                if (rmo_telephone_flag(RMO_TELEPHONE_FLAG_NO_ART_CAT) && rmo_telephone_flag(RMO_TELEPHONE_FLAG_NO_DOWNLOADS)) {
                     next = RMO_TELEPHONE_MESSAGE_FLAGS_BOTH;
-                } else if (!RmoTelephone_flag(RMO_TELEPHONE_FLAG_NO_ART_CAT) &&
-                           RmoTelephone_flag(RMO_TELEPHONE_FLAG_NO_DOWNLOADS)) {
+                } else if (!rmo_telephone_flag(RMO_TELEPHONE_FLAG_NO_ART_CAT) &&
+                           rmo_telephone_flag(RMO_TELEPHONE_FLAG_NO_DOWNLOADS)) {
                     next = RMO_TELEPHONE_MESSAGE_FLAGS_14;
-                } else if (RmoTelephone_flag(RMO_TELEPHONE_FLAG_NO_ART_CAT) &&
-                           !RmoTelephone_flag(RMO_TELEPHONE_FLAG_NO_DOWNLOADS)) {
+                } else if (rmo_telephone_flag(RMO_TELEPHONE_FLAG_NO_ART_CAT) &&
+                           !rmo_telephone_flag(RMO_TELEPHONE_FLAG_NO_DOWNLOADS)) {
                     next = RMO_TELEPHONE_MESSAGE_FLAGS_13;
-                } else if (!RmoTelephone_flag(RMO_TELEPHONE_FLAG_NO_ART_CAT) &&
-                           !RmoTelephone_flag(RMO_TELEPHONE_FLAG_NO_DOWNLOADS)) {
+                } else if (!rmo_telephone_flag(RMO_TELEPHONE_FLAG_NO_ART_CAT) &&
+                           !rmo_telephone_flag(RMO_TELEPHONE_FLAG_NO_DOWNLOADS)) {
                     next = RMO_TELEPHONE_MESSAGE_FLAGS_NONE;
                 }
             }
@@ -734,7 +734,7 @@ CLEAN_AS(func_ov004_02231258, RmoTelephone_OnAnswer)
  * kind 3 for answers 0x14 and 0x15), B picking `cancel` (-1: none), and opens its choices. */
 void RmoTelephone_OfferAnswers(RmoTelephone *self, const RmoTelephoneAnswers *answers, int cancel)
 {
-    TalkObject *talk = RmoTelephone_talk(self);
+    TalkObject *talk = rmo_telephone_talk(self);
     TalkAnswers *offered = TalkObject_Answers(talk);
     const u8 *messages = answers->messages;
     int count = answers->count;
@@ -758,7 +758,7 @@ CLEAN_AS(func_ov004_02231454, RmoTelephone_OfferAnswers)
  * and enters state 13, 0x20 ends the voice's forced mode, 0x2a to 0x2c its kind's override. */
 void RmoTelephone_AfterMessage(RmoTelephone *self)
 {
-    TalkObject *talk = RmoTelephone_talk(self);
+    TalkObject *talk = rmo_telephone_talk(self);
     switch (self->receiver.base.message) {
         case RMO_TELEPHONE_MESSAGE_STEREO:
             RmoTelephone_OfferAnswers(self, &data_ov004_022558e8, -1);
@@ -791,7 +791,7 @@ CLEAN_AS(func_ov004_022314dc, RmoTelephone_AfterMessage)
  * forces the voice's mode 0, messages 0x2a to 0x2c override its kind with 0. */
 void RmoTelephone_OnMessageBegun(RmoTelephone *self)
 {
-    TalkObject *talk = RmoTelephone_talk(self);
+    TalkObject *talk = rmo_telephone_talk(self);
     switch (self->receiver.base.message) {
         case RMO_TELEPHONE_MESSAGE_MENU:
             TalkVoice_SetForcedMode(&talk->voice, 0);
@@ -854,7 +854,7 @@ CLEAN_AS(func_ov004_02231674, RmoTelephone_Release)
 /* func_ov004_02231690 (vtable slot 0x24) */
 int RmoTelephone_Draw(RmoTelephone *self)
 {
-    AnimatedModel_Draw(RmoTelephone_body(self), NULL);
+    AnimatedModel_Draw(rmo_telephone_body(self), NULL);
     return 1;
 }
 CLEAN_AS(func_ov004_02231690, RmoTelephone_Draw)
@@ -868,7 +868,7 @@ int RmoTelephone_Update(RmoTelephone *self)
     if (row->update.function != 0) {
         MemberPointer_CallVoid(&row->update, self);
     }
-    AnimatedModel_StepFrames(RmoTelephone_body(self));
+    AnimatedModel_StepFrames(rmo_telephone_body(self));
     return 1;
 }
 CLEAN_AS(func_ov004_022316a4, RmoTelephone_Update)
@@ -885,11 +885,11 @@ int RmoTelephone_Start(RmoTelephone *self)
     SceneObjectBase_SetId((SceneObjectBase *) (void *) self, 0);
     RmoObjectSlots_Load(&self->base, data_ov004_022559ec, data_ov004_02255a08);
     if (RmoModel_JointAnim(&self->base.body_model, 0) != NULL &&
-        AnimatedModel_LoadAnim(RmoTelephone_body(self), data_021c9b24) != 0) {
-        RmoTelephone_play(self, FRAME_CTRL_ONCE | FRAME_CTRL_REVERSE, 0);
-        AnimatedModel_Attach(RmoTelephone_body(self));
+        AnimatedModel_LoadAnim(rmo_telephone_body(self), data_021c9b24) != 0) {
+        rmo_telephone_play(self, FRAME_CTRL_ONCE | FRAME_CTRL_REVERSE, 0);
+        AnimatedModel_Attach(rmo_telephone_body(self));
     }
-    TouchPick_SetBoxAndAdd(RmoTelephone_field_pick(), self->pick_faces, &position, RMO_TELEPHONE_SIZE, RMO_TELEPHONE_SIZE,
+    TouchPick_SetBoxAndAdd(rmo_telephone_field_pick(), self->pick_faces, &position, RMO_TELEPHONE_SIZE, RMO_TELEPHONE_SIZE,
                            RMO_TELEPHONE_SIZE, 0, RMO_TELEPHONE_PICK_KIND, RMO_TELEPHONE_PICK_INDEX);
     if (SceneQuery_Current() == RMO_TELEPHONE_SCENE_ATTIC) {
         if (!StateBlock_TestFlag(data_021dc7a8, RMO_TELEPHONE_FLAG_ATTIC_INTRO_SHOWN)) {
@@ -905,17 +905,17 @@ int RmoTelephone_Start(RmoTelephone *self)
 }
 CLEAN_AS(func_ov004_022316f4, RmoTelephone_Start)
 
-static void RmoTelephone_set_vtables(RmoTelephone *self)
+static void rmo_telephone_set_vtables(RmoTelephone *self)
 {
     self->base.actor.vtable = data_ov004_022558f8;
     self->receiver.base.vtable = data_ov004_02255974;
 }
 
 /* Its parts taken down, the base class last. */
-static void RmoTelephone_destruct_parts(RmoTelephone *self)
+static void rmo_telephone_destruct_parts(RmoTelephone *self)
 {
-    RmoTelephone_set_vtables(self);
-    TouchPickSphere_Destruct2(RmoTelephone_touch_sphere(self));
+    rmo_telephone_set_vtables(self);
+    TouchPickSphere_Destruct2(rmo_telephone_touch_sphere(self));
     TouchPickFaces_DestructBox(self->pick_faces);
     CollisionBox_Destruct(&self->box);
     TalkReceiver_Destruct(&self->receiver);
@@ -925,7 +925,7 @@ static void RmoTelephone_destruct_parts(RmoTelephone *self)
 /* func_ov004_022317f4 (the deleting destructor, vtable slot 0x44) */
 RmoTelephone *RmoTelephone_Delete(RmoTelephone *self)
 {
-    RmoTelephone_destruct_parts(self);
+    rmo_telephone_destruct_parts(self);
     Heap_FreeAux(self);
     return self;
 }
@@ -934,7 +934,7 @@ CLEAN_AS(func_ov004_022317f4, RmoTelephone_Delete)
 /* func_ov004_02231850 (the destructor, vtable slot 0x40) */
 RmoTelephone *RmoTelephone_Destruct(RmoTelephone *self)
 {
-    RmoTelephone_destruct_parts(self);
+    rmo_telephone_destruct_parts(self);
     return self;
 }
 CLEAN_AS(func_ov004_02231850, RmoTelephone_Destruct)
@@ -944,10 +944,10 @@ RmoTelephone *RmoTelephone_Construct(RmoTelephone *self)
 {
     RmoObjectBase_Construct(&self->base);
     TalkReceiver_ConstructBase(&self->receiver);
-    RmoTelephone_set_vtables(self);
+    rmo_telephone_set_vtables(self);
     CollisionBox_Construct(&self->box);
     TouchPickFaces_ConstructBox(self->pick_faces);
-    TouchPickSphere_Construct(RmoTelephone_touch_sphere(self));
+    TouchPickSphere_Construct(rmo_telephone_touch_sphere(self));
     return self;
 }
 CLEAN_AS(func_ov004_022318a4, RmoTelephone_Construct)
@@ -971,7 +971,7 @@ CLEAN_AS(func_ov004_02231904, RmoTelephone_Create)
 
 /* The receiver part (at 0x290) enters the object's functions through its vtable with these:
  * each moves the pointer back to the object and goes on with the object's function. */
-static RmoTelephone *RmoTelephone_from_receiver(void *receiver)
+static RmoTelephone *rmo_telephone_from_receiver(void *receiver)
 {
     return (RmoTelephone *) (void *) ((u8 *) receiver - offsetof(RmoTelephone, receiver));
 }
@@ -979,34 +979,34 @@ static RmoTelephone *RmoTelephone_from_receiver(void *receiver)
 /* func_ov004_02231920: the deleting destructor, entered from the receiver part. */
 RmoTelephone *RmoTelephoneReceiver_Delete(void *receiver)
 {
-    return RmoTelephone_Delete(RmoTelephone_from_receiver(receiver));
+    return RmoTelephone_Delete(rmo_telephone_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn656_N18Obj_ov004_022558f8D0Ev, RmoTelephoneReceiver_Delete)
 
 /* func_ov004_0223193c: receiver slot 0x18 (RmoTelephone_OnAnswer). */
 void RmoTelephoneReceiver_OnAnswer(void *receiver)
 {
-    RmoTelephone_OnAnswer(RmoTelephone_from_receiver(receiver));
+    RmoTelephone_OnAnswer(rmo_telephone_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn656_N18Obj_ov004_022558f817vfunc_02066994_18Ev, RmoTelephoneReceiver_OnAnswer)
 
 /* func_ov004_02231958: receiver slot 0x14 (RmoTelephone_AfterMessage). */
 void RmoTelephoneReceiver_AfterMessage(void *receiver)
 {
-    RmoTelephone_AfterMessage(RmoTelephone_from_receiver(receiver));
+    RmoTelephone_AfterMessage(rmo_telephone_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn656_N18Obj_ov004_022558f817vfunc_02066994_14Ev, RmoTelephoneReceiver_AfterMessage)
 
 /* func_ov004_02231974: receiver slot 0x10 (RmoTelephone_OnMessageBegun). */
 void RmoTelephoneReceiver_OnMessageBegun(void *receiver)
 {
-    RmoTelephone_OnMessageBegun(RmoTelephone_from_receiver(receiver));
+    RmoTelephone_OnMessageBegun(rmo_telephone_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn656_N18Obj_ov004_022558f817vfunc_02066994_10Ev, RmoTelephoneReceiver_OnMessageBegun)
 
 /* func_ov004_02231990: the destructor, entered from the receiver part. */
 RmoTelephone *RmoTelephoneReceiver_Destruct(void *receiver)
 {
-    return RmoTelephone_Destruct(RmoTelephone_from_receiver(receiver));
+    return RmoTelephone_Destruct(rmo_telephone_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn656_N18Obj_ov004_022558f8D1Ev, RmoTelephoneReceiver_Destruct)

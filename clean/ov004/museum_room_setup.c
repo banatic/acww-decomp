@@ -92,7 +92,7 @@ void MuseumSetupPlain_New(void)
 CLEAN_AS(func_ov004_02245214, MuseumSetupPlain_New)
 
 /* Class 82's two item codes, built and registered the first time. */
-static void MuseumSetupFossils_init_codes(void)
+static void museum_setup_fossils_init_codes(void)
 {
     if ((data_ov004_0225f53c & 1) == 0) {
         data_ov004_0225f538 = MUSEUM_SETUP_STAND_IN;
@@ -121,7 +121,7 @@ int MuseumSetupFossils_ClearMissing(void)
             if (MuseumRecord_IsGiven(&data_021f38f8, item)) {
                 continue;
             }
-            MuseumSetupFossils_init_codes();
+            museum_setup_fossils_init_codes();
             u16 code;
             if (FurnitureInfo_ItemShape(item) == 0) {
                 code = data_ov004_0225f538;

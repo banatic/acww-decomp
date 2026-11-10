@@ -23,7 +23,7 @@ extern Heap *data_021c9b28;
 extern char SDK_OVERLAY_ov093_ID;
 
 /* Whether the object exists. */
-static int StaffRollOverlay_exists(void)
+static int staff_roll_overlay_exists(void)
 {
     return (data_ov004_0225ff50 & 1) != 0;
 }
@@ -31,7 +31,7 @@ static int StaffRollOverlay_exists(void)
 /* func_ov004_02246900: whether the show has ended; 0 without the object. */
 int StaffRollOverlay_HasEnded(void)
 {
-    if (StaffRollOverlay_exists()) {
+    if (staff_roll_overlay_exists()) {
         return StaffRoll_HasEnded(data_ov004_0225ff54);
     }
     return 0;
@@ -41,7 +41,7 @@ CLEAN_AS(func_ov004_02246900, StaffRollOverlay_HasEnded)
 /* func_ov004_0224692c: the roll's switch to its logo (its state 4). */
 void StaffRollOverlay_ShowLogo(void)
 {
-    if (StaffRollOverlay_exists()) {
+    if (staff_roll_overlay_exists()) {
         StaffRoll_ShowLogo(data_ov004_0225ff54);
     }
 }
@@ -50,7 +50,7 @@ CLEAN_AS(func_ov004_0224692c, StaffRollOverlay_ShowLogo)
 /* func_ov004_02246954: the roll restarted at `speed` (0x125c when it is not positive). */
 void StaffRollOverlay_Restart(int speed)
 {
-    if (StaffRollOverlay_exists()) {
+    if (staff_roll_overlay_exists()) {
         if (speed <= 0) {
             speed = STAFF_ROLL_OVERLAY_DEFAULT_SPEED;
         }
@@ -63,7 +63,7 @@ CLEAN_AS(func_ov004_02246954, StaffRollOverlay_Restart)
  * 93 released; then marked as gone. */
 void StaffRollOverlay_Close(void)
 {
-    if (StaffRollOverlay_exists()) {
+    if (staff_roll_overlay_exists()) {
         StaffRoll_Close(data_ov004_0225ff54);
         Heap *heap = data_021c9b28;
         StaffRoll_Destruct(data_ov004_0225ff54);
@@ -78,7 +78,7 @@ CLEAN_AS(func_ov004_02246988, StaffRollOverlay_Close)
 /* func_ov004_022469dc: the object's two buffers uploaded when due. */
 void StaffRollOverlay_Upload(void)
 {
-    if (StaffRollOverlay_exists()) {
+    if (staff_roll_overlay_exists()) {
         StaffRoll_Upload(data_ov004_0225ff54);
     }
 }
@@ -87,7 +87,7 @@ CLEAN_AS(func_ov004_022469dc, StaffRollOverlay_Upload)
 /* func_ov004_02246a04: the object's update. */
 void StaffRollOverlay_Update(void)
 {
-    if (StaffRollOverlay_exists()) {
+    if (staff_roll_overlay_exists()) {
         StaffRoll_Update(data_ov004_0225ff54);
     }
 }

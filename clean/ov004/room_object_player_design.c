@@ -90,7 +90,7 @@ int PlayerDesignObject_Start(PlayerDesignObject *object)
 }
 CLEAN_AS(func_ov004_02213b90, PlayerDesignObject_Start)
 
-static void PlayerDesignObject_set_vtables(PlayerDesignObject *object)
+static void player_design_object_set_vtables(PlayerDesignObject *object)
 {
     object->base.vtable = (const RoomObjectVtable *) data_ov004_02251ff0;
     object->base.receiver_vtable = data_ov004_0225209c;
@@ -99,7 +99,7 @@ static void PlayerDesignObject_set_vtables(PlayerDesignObject *object)
 /* func_ov004_02213ce0 (the deleting destructor, vtable slot 0x44) */
 PlayerDesignObject *PlayerDesignObject_Delete(PlayerDesignObject *object)
 {
-    PlayerDesignObject_set_vtables(object);
+    player_design_object_set_vtables(object);
     RoomObject_DestructBase(&object->base);
     RoomObject_Free(object);
     return object;
@@ -109,7 +109,7 @@ CLEAN_AS(func_ov004_02213ce0, PlayerDesignObject_Delete)
 /* func_ov004_02213d0c (the destructor, vtable slot 0x40) */
 PlayerDesignObject *PlayerDesignObject_Destroy(PlayerDesignObject *object)
 {
-    PlayerDesignObject_set_vtables(object);
+    player_design_object_set_vtables(object);
     RoomObject_DestructBase(&object->base);
     return object;
 }
@@ -120,7 +120,7 @@ CLEAN_AS(func_ov004_02213d0c, PlayerDesignObject_Destroy)
 PlayerDesignObject *PlayerDesignObject_Construct(PlayerDesignObject *object)
 {
     RoomObject_ConstructBase(&object->base);
-    PlayerDesignObject_set_vtables(object);
+    player_design_object_set_vtables(object);
     return object;
 }
 CLEAN_AS(func_ov004_02213d30, PlayerDesignObject_Construct)
@@ -138,7 +138,7 @@ CLEAN_AS(func_ov004_02213d54, PlayerDesignObject_Create)
 /* The receiver part (at 0xec, RoomObject.receiver_vtable) enters PlayerDesignObject's functions
  * through its vtable with these: each moves the pointer back to the object and goes on with the
  * object's function. */
-static PlayerDesignObject *PlayerDesignObject_from_receiver(void *receiver)
+static PlayerDesignObject *player_design_object_from_receiver(void *receiver)
 {
     return (PlayerDesignObject *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
 }
@@ -146,13 +146,13 @@ static PlayerDesignObject *PlayerDesignObject_from_receiver(void *receiver)
 /* func_ov004_0221a9c4: the deleting destructor, entered from the receiver part. */
 PlayerDesignObject *PlayerDesignObjectReceiver_Delete(void *receiver)
 {
-    return PlayerDesignObject_Delete(PlayerDesignObject_from_receiver(receiver));
+    return PlayerDesignObject_Delete(player_design_object_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_02251ff0D0Ev, PlayerDesignObjectReceiver_Delete)
 
 /* func_ov004_0221a9e0: the destructor, entered from the receiver part. */
 PlayerDesignObject *PlayerDesignObjectReceiver_Destroy(void *receiver)
 {
-    return PlayerDesignObject_Destroy(PlayerDesignObject_from_receiver(receiver));
+    return PlayerDesignObject_Destroy(player_design_object_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_02251ff0D1Ev, PlayerDesignObjectReceiver_Destroy)

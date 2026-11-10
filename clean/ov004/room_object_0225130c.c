@@ -47,13 +47,13 @@ extern const u8 data_ov004_0225130c[];
 extern const u8 data_ov004_022513b8[];
 
 /* Vtable slot 0x70: RoomObject0225130c_EnterState for this class. */
-static void RoomObject0225130c_switch_to(RoomObject0225130c *object, int state)
+static void room_object0225130c_switch_to(RoomObject0225130c *object, int state)
 {
     object->base.vtable->vfunc_70(&object->base, state, SLOT_70_VALUE);
 }
 
 /* Keeps the running sound playing at the object's centre (unless placement_mode is 2). */
-static void RoomObject0225130c_keep_sound(RoomObject0225130c *object)
+static void room_object0225130c_keep_sound(RoomObject0225130c *object)
 {
     if (!RoomObject_IsUnplaced(&object->base)) {
         RoomSound_PlayAt(&object->base.sound, RUNNING_SOUND, &object->base.sound.position);
@@ -62,7 +62,7 @@ static void RoomObject0225130c_keep_sound(RoomObject0225130c *object)
 
 /* At frame 0 of the joint animation the sound's variable is set to 1; at frame 0x14 to 1 and 2
  * in turn (unless placement_mode is 2). */
-static void RoomObject0225130c_tick(RoomObject0225130c *object)
+static void room_object0225130c_tick(RoomObject0225130c *object)
 {
     if (RoomObject_IsUnplaced(&object->base)) {
         return;
@@ -88,7 +88,7 @@ void RoomObject0225130c_UpdateSettling(RoomObject0225130c *object)
     }
     Switch_Set(&object->base.on_switch, 0, 0);
     if (RoomObject_AdvanceAnims(&object->base)) {
-        RoomObject0225130c_switch_to(object, ROOM_OBJECT_0225130C_OFF);
+        room_object0225130c_switch_to(object, ROOM_OBJECT_0225130C_OFF);
     }
 }
 CLEAN_AS(func_ov004_02212a14, RoomObject0225130c_UpdateSettling)
@@ -108,11 +108,11 @@ CLEAN_AS(func_ov004_02212a84, RoomObject0225130c_EnterSettling)
  * the joint animation goes; settling once the animations end. */
 void RoomObject0225130c_UpdateStopping(RoomObject0225130c *object)
 {
-    RoomObject0225130c_keep_sound(object);
+    room_object0225130c_keep_sound(object);
     Switch_Set(&object->base.on_switch, 0, 0);
-    RoomObject0225130c_tick(object);
+    room_object0225130c_tick(object);
     if (RoomObject_AdvanceAnims(&object->base)) {
-        RoomObject0225130c_switch_to(object, ROOM_OBJECT_0225130C_SETTLING);
+        room_object0225130c_switch_to(object, ROOM_OBJECT_0225130C_SETTLING);
     }
 }
 CLEAN_AS(func_ov004_02212ab8, RoomObject0225130c_UpdateStopping)
@@ -132,9 +132,9 @@ CLEAN_AS(func_ov004_02212b70, RoomObject0225130c_EnterStopping)
  * the joint animation goes; touched, it requests STOPPING. */
 void RoomObject0225130c_UpdateRunning(RoomObject0225130c *object)
 {
-    RoomObject0225130c_keep_sound(object);
+    room_object0225130c_keep_sound(object);
     RoomObject_AdvanceAnims(&object->base);
-    RoomObject0225130c_tick(object);
+    room_object0225130c_tick(object);
     if (Switch_IsPending(&object->base.on_switch)) {
         RoomSync_RequestState(&object->base, ROOM_OBJECT_0225130C_STOPPING, SLOT_70_VALUE, 1);
     }
@@ -155,10 +155,10 @@ CLEAN_AS(func_ov004_02212c64, RoomObject0225130c_EnterRunning)
  * animations end. */
 void RoomObject0225130c_UpdateStarting(RoomObject0225130c *object)
 {
-    RoomObject0225130c_keep_sound(object);
+    room_object0225130c_keep_sound(object);
     Switch_Set(&object->base.on_switch, 1, 0);
     if (RoomObject_AdvanceAnims(&object->base)) {
-        RoomObject0225130c_switch_to(object, ROOM_OBJECT_0225130C_RUNNING);
+        room_object0225130c_switch_to(object, ROOM_OBJECT_0225130C_RUNNING);
     }
 }
 CLEAN_AS(func_ov004_02212c90, RoomObject0225130c_UpdateStarting)
@@ -279,15 +279,15 @@ int RoomObject0225130c_Start(RoomObject0225130c *object)
     object->unbound = 0;
     RoomObject_LoadAnims(&object->base, 0, ANIM_MODE_ONCE, FX32_ONE, 0);
     if (Switch_Value(&object->base.on_switch) != 0 && !RoomObjects_InShop()) {
-        RoomObject0225130c_switch_to(object, ROOM_OBJECT_0225130C_RUNNING);
+        room_object0225130c_switch_to(object, ROOM_OBJECT_0225130C_RUNNING);
     } else {
-        RoomObject0225130c_switch_to(object, ROOM_OBJECT_0225130C_OFF);
+        room_object0225130c_switch_to(object, ROOM_OBJECT_0225130C_OFF);
     }
     return 1;
 }
 CLEAN_AS(func_ov004_02212f1c, RoomObject0225130c_Start)
 
-static void RoomObject0225130c_set_vtables(RoomObject0225130c *object)
+static void room_object0225130c_set_vtables(RoomObject0225130c *object)
 {
     object->base.vtable = (const RoomObjectVtable *) data_ov004_0225130c;
     object->base.receiver_vtable = data_ov004_022513b8;
@@ -296,7 +296,7 @@ static void RoomObject0225130c_set_vtables(RoomObject0225130c *object)
 /* func_ov004_02212f78 (the deleting destructor, vtable slot 0x44) */
 RoomObject0225130c *RoomObject0225130c_Delete(RoomObject0225130c *object)
 {
-    RoomObject0225130c_set_vtables(object);
+    room_object0225130c_set_vtables(object);
     RoomObject_DestructBase(&object->base);
     RoomObject_Free(object);
     return object;
@@ -306,7 +306,7 @@ CLEAN_AS(func_ov004_02212f78, RoomObject0225130c_Delete)
 /* func_ov004_02212fa4 (the destructor, vtable slot 0x40) */
 RoomObject0225130c *RoomObject0225130c_Destroy(RoomObject0225130c *object)
 {
-    RoomObject0225130c_set_vtables(object);
+    room_object0225130c_set_vtables(object);
     RoomObject_DestructBase(&object->base);
     return object;
 }
@@ -317,7 +317,7 @@ CLEAN_AS(func_ov004_02212fa4, RoomObject0225130c_Destroy)
 RoomObject0225130c *RoomObject0225130c_Construct(RoomObject0225130c *object)
 {
     RoomObject_ConstructBase(&object->base);
-    RoomObject0225130c_set_vtables(object);
+    room_object0225130c_set_vtables(object);
     return object;
 }
 CLEAN_AS(func_ov004_02212fc8, RoomObject0225130c_Construct)
@@ -335,7 +335,7 @@ CLEAN_AS(func_ov004_02212fec, RoomObject0225130c_Create)
 /* The receiver part (at 0xec, RoomObject.receiver_vtable) enters RoomObject0225130c's functions
  * through its vtable with these: each moves the pointer back to the object and goes on with the
  * object's function. */
-static RoomObject0225130c *RoomObject0225130c_from_receiver(void *receiver)
+static RoomObject0225130c *room_object0225130c_from_receiver(void *receiver)
 {
     return (RoomObject0225130c *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
 }
@@ -343,13 +343,13 @@ static RoomObject0225130c *RoomObject0225130c_from_receiver(void *receiver)
 /* func_ov004_0221ab14: the deleting destructor, entered from the receiver part. */
 RoomObject0225130c *RoomObject0225130cReceiver_Delete(void *receiver)
 {
-    return RoomObject0225130c_Delete(RoomObject0225130c_from_receiver(receiver));
+    return RoomObject0225130c_Delete(room_object0225130c_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_0225130cD0Ev, RoomObject0225130cReceiver_Delete)
 
 /* func_ov004_0221ab30: the destructor, entered from the receiver part. */
 RoomObject0225130c *RoomObject0225130cReceiver_Destroy(void *receiver)
 {
-    return RoomObject0225130c_Destroy(RoomObject0225130c_from_receiver(receiver));
+    return RoomObject0225130c_Destroy(room_object0225130c_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_0225130cD1Ev, RoomObject0225130cReceiver_Destroy)

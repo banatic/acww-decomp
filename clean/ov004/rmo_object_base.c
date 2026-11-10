@@ -20,36 +20,36 @@ static_assert(offsetof(RoomObject, state_number) == 0xea, "state number");
 /* The class's vtable. */
 extern const u8 data_ov004_02254b28[];
 
-static void *RmoObjectBase_sound_source(RmoObject *self)
+static void *rmo_object_base_sound_source(RmoObject *self)
 {
     return (u8 *) self + RMO_OBJECT_BASE_SOUND_SOURCE;
 }
 
-static SceneObjectBase *RmoObjectBase_scene_object(RmoObject *self)
+static SceneObjectBase *rmo_object_base_scene_object(RmoObject *self)
 {
     return (SceneObjectBase *) (void *) self;
 }
 
-static AnimatedModel *RmoObjectBase_body(RmoObject *self)
+static AnimatedModel *rmo_object_base_body(RmoObject *self)
 {
     return (AnimatedModel *) (void *) &self->body;
 }
 
 /* The parts taken down in the reverse of their construction, the scene object last. */
-static void RmoObjectBase_take_down(RmoObject *self)
+static void rmo_object_base_take_down(RmoObject *self)
 {
     self->actor.vtable = data_ov004_02254b28;
-    RmoSound_Destruct(RmoObjectBase_sound_source(self));
+    RmoSound_Destruct(rmo_object_base_sound_source(self));
     RmoTexture_Destruct(&self->body_texture);
     RmoModel_Destruct(&self->body_model);
-    AnimatedModel_DestructComplete(RmoObjectBase_body(self));
-    SceneObjectBase_DestructBase(RmoObjectBase_scene_object(self));
+    AnimatedModel_DestructComplete(rmo_object_base_body(self));
+    SceneObjectBase_DestructBase(rmo_object_base_scene_object(self));
 }
 
 /* func_ov004_0222c7e8 (the deleting destructor, vtable slot 0x44): taken down and freed. */
 RmoObject *RmoObjectBase_Delete(RmoObject *self)
 {
-    RmoObjectBase_take_down(self);
+    rmo_object_base_take_down(self);
     Heap_FreeAux(self);
     return self;
 }
@@ -58,7 +58,7 @@ CLEAN_AS(func_ov004_0222c7e8, RmoObjectBase_Delete)
 /* func_ov004_0222c834 (the destructor, vtable slot 0x40) */
 RmoObject *RmoObjectBase_Destruct(RmoObject *self)
 {
-    RmoObjectBase_take_down(self);
+    rmo_object_base_take_down(self);
     return self;
 }
 CLEAN_AS(func_ov004_0222c834, RmoObjectBase_Destruct)
@@ -67,12 +67,12 @@ CLEAN_AS(func_ov004_0222c834, RmoObjectBase_Destruct)
  * the object starts without a number among the room objects' shared values. */
 RmoObject *RmoObjectBase_Construct(RmoObject *self)
 {
-    SceneObjectBase_Construct(RmoObjectBase_scene_object(self));
+    SceneObjectBase_Construct(rmo_object_base_scene_object(self));
     self->actor.vtable = data_ov004_02254b28;
-    AnimatedModel_Construct(RmoObjectBase_body(self));
+    AnimatedModel_Construct(rmo_object_base_body(self));
     RmoModel_Construct(&self->body_model);
     RmoTexture_Construct(&self->body_texture);
-    RmoSound_Construct(RmoObjectBase_sound_source(self));
+    RmoSound_Construct(rmo_object_base_sound_source(self));
     ((RoomObject *) (void *) self)->state_number = ROOM_OBJECT_STATE_NONE;
     return self;
 }

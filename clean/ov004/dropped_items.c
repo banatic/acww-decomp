@@ -57,7 +57,7 @@ extern void func_ov004_02233ff4(void *drop);
 /* The kinds of item (the top four bits of its code). */
 #define ITEM_KIND(code) (((code) & 0xf000) >> 12)
 
-static SoundEmitter *DroppedItem_sound(DroppedItem *drop)
+static SoundEmitter *dropped_item_sound(DroppedItem *drop)
 {
     return (SoundEmitter *) drop->sound;
 }
@@ -116,7 +116,7 @@ void DroppedItems_Release(DroppedItem *items)
         if (drop->state != DROPPED_ITEM_FREE) {
             DroppedItem_Finish(drop);
         }
-        SoundEmitter_FinishB(DroppedItem_sound(drop));
+        SoundEmitter_FinishB(dropped_item_sound(drop));
     }
 }
 CLEAN_AS(func_ov004_022336c4, DroppedItems_Release)
@@ -166,7 +166,7 @@ void DroppedItems_Update(DroppedItem *items)
             DroppedItem_Fly(drop);
         }
         Vec3 position = drop->position;
-        SoundEmitter_UpdateAtB(DroppedItem_sound(drop), &position);
+        SoundEmitter_UpdateAtB(dropped_item_sound(drop), &position);
     }
 }
 CLEAN_AS(func_ov004_022337ac, DroppedItems_Update)
@@ -180,7 +180,7 @@ void DroppedItems_Reset(DroppedItem *items)
         drop->state = DROPPED_ITEM_FREE;
         drop->item = DROPPED_ITEM_NONE;
         drop->item_0a = DROPPED_ITEM_NONE;
-        SoundEmitter_ResetB(DroppedItem_sound(drop));
+        SoundEmitter_ResetB(dropped_item_sound(drop));
     }
 }
 CLEAN_AS(func_ov004_0223380c, DroppedItems_Reset)
@@ -204,7 +204,7 @@ void DroppedItem_Fly(DroppedItem *drop)
     if (drop->bounces < 2) {
         u16 item = drop->item_0a;
         if (item >= BELL_BAG_FIRST && item <= BELL_BAG_LAST) {
-            SoundEmitter_PlayB(DroppedItem_sound(drop), SOUND_LANDING, SOUND_VOLUME, 0);
+            SoundEmitter_PlayB(dropped_item_sound(drop), SOUND_LANDING, SOUND_VOLUME, 0);
         }
     }
     drop->position.y = drop->target.y;
@@ -253,7 +253,7 @@ void DroppedItem_Launch(DroppedItem *drop, const TileChangesTile *tile, const Ve
             drop->unk_8e = 0;
             break;
         default:
-            SoundEmitter_PlayB(DroppedItem_sound(drop), SOUND_THROWN, SOUND_VOLUME, 0);
+            SoundEmitter_PlayB(dropped_item_sound(drop), SOUND_THROWN, SOUND_VOLUME, 0);
             break;
     }
 }

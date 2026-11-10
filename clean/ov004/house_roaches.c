@@ -169,7 +169,7 @@ int HouseRoaches_SpawnAt(const Vec3 *point, const s16 *angle)
 CLEAN_AS(func_ov004_0223e7b4, HouseRoaches_SpawnAt)
 
 /* Whether the process has anything to do: in a room of the house, outside a link. */
-static int HouseRoaches_active(void)
+static int house_roaches_active(void)
 {
     return SceneKinds_CurrentIsHouseRoom() && !Session_IsLinked(data_020ccf94);
 }
@@ -178,7 +178,7 @@ static int HouseRoaches_active(void)
  * the first cockroaches let out when there are any. */
 int HouseRoaches_Init(Process *self)
 {
-    if (!HouseRoaches_active()) {
+    if (!house_roaches_active()) {
         return 1;
     }
     data_ov004_02259a10 = self;
@@ -201,7 +201,7 @@ CLEAN_AS(func_ov004_0223e834, HouseRoaches_Init)
 int HouseRoaches_Update(Process *self)
 {
     (void) self;
-    if (!HouseRoaches_active()) {
+    if (!house_roaches_active()) {
         return 1;
     }
     u8 asking = 0; /* by bit of the slot; 0xff when one sounds already */
@@ -258,7 +258,7 @@ CLEAN_AS(func_ov004_0223e878, HouseRoaches_Update)
  * record, and the process forgotten. */
 int HouseRoaches_Release(void)
 {
-    if (!HouseRoaches_active()) {
+    if (!house_roaches_active()) {
         return 1;
     }
     HouseRecord_SetRoaches(&data_021ebcd4, data_ov004_02259a0c);

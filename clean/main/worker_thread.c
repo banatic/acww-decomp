@@ -67,7 +67,7 @@ extern void func_020424b4(void *argument);
 #define WORKER_THREAD_OS_STATE 0x64
 #define WORKER_THREAD_OS_TERMINATED 2
 
-static WorkerThreadContext *WorkerThread_Context(WorkerThread *job)
+static WorkerThreadContext *worker_thread_context(WorkerThread *job)
 {
     return (WorkerThreadContext *) job->unk_c0;
 }
@@ -106,7 +106,7 @@ CLEAN_AS(func_02042324, WorkerThread_StartJob)
  * job's thread for the time it runs; WorkerThread_Run gives it back. 0 when not ready. */
 int WorkerThread_Start(WorkerThread *job)
 {
-    WorkerThreadContext *context = WorkerThread_Context(job);
+    WorkerThreadContext *context = worker_thread_context(job);
     if (!job->ready) {
         return 0;
     }
@@ -139,7 +139,7 @@ CLEAN_AS(func_020423ec, WorkerThread_SetDays)
  * start. */
 void WorkerThread_SetJobDays(WorkerThread *job, const DateTime *from, const DateTime *to, int days, u8 mode)
 {
-    WorkerThreadContext *context = WorkerThread_Context(job);
+    WorkerThreadContext *context = worker_thread_context(job);
     MI_CpuCopy8(from, &context->days.from, sizeof(DateTime));
     MI_CpuCopy8(to, &context->days.to, sizeof(DateTime));
     context->days.days = days;
@@ -180,7 +180,7 @@ void WorkerThread_Run(void *argument)
     DC_FlushAll();
     WorkerThread *job = data_021c779c.job;
     TownDay_Pass((TownDay *) &data_021c779c, &days->from, &days->to, (u32) days->days, days->mode, 1);
-    WorkerThreadContext *context = WorkerThread_Context(job);
+    WorkerThreadContext *context = worker_thread_context(job);
     Heap_SetThreadHeap(context->caller, context->heap);
     job->done = 1;
     OS_ExitThread();

@@ -26,7 +26,7 @@ extern int func_02049bc4(AcreMap *map, TownGrowthTiles *near, TownGrowthTiles *t
 #define TOWN_GROWTH_ACRE_TILES 256
 
 /* The map's size in tiles. */
-static TownGrowthTiles TownGrowth_MapTiles(const AcreMap *map)
+static TownGrowthTiles town_growth_map_tiles(const AcreMap *map)
 {
     TownGrowthTiles size = {map->acres_wide * 16, map->acres_high * 16};
     return size;
@@ -56,7 +56,7 @@ void TownGrowth_BreedFlowers(TownDay *town, AcreMap *map, int wide, int high)
             }
             if (count > 0) {
                 int pick = (int) MainRandom_Below(count);
-                TownGrowthTiles size = TownGrowth_MapTiles(map);
+                TownGrowthTiles size = town_growth_map_tiles(map);
                 TownGrowthTiles tile = tiles[pick];
                 TownLines_VisitAround(map, &size, &tile, func_02049bc4);
             }
@@ -167,7 +167,7 @@ CLEAN_AS(func_02048bc0, TownGrowth_ChangeLastStage)
  * codes moved on. */
 void TownGrowth_Day(TownDay *town, AcreMap *map, int wide, int high)
 {
-    TownGrowthTiles size = TownGrowth_MapTiles(map);
+    TownGrowthTiles size = town_growth_map_tiles(map);
     TownGrowthTiles copy = size;
     TownLines_CheckGround(town, map, &copy);
     copy = size;
@@ -182,7 +182,7 @@ CLEAN_AS(func_02048fdc, TownGrowth_Day)
 
 /* Whether a code is one of the growth lines' (map_item.h): 0x26-0x2a, 0x2f-0x5b, 0x5d-0x61,
  * 0x66-0x6d and 0xc8-0xcf. */
-static int TownGrowth_IsLineCode(unsigned int code)
+static int town_growth_is_line_code(unsigned int code)
 {
     return (code >= 0x26 && code <= 0x2a) || (code >= 0x5d && code <= 0x61) || (code >= 0x2f && code <= 0x56) ||
            (code >= 0x57 && code <= 0x5b) || (code >= 0x66 && code <= 0x68) || code == 0x69 ||
@@ -197,7 +197,7 @@ void TownGrowth_Advance(TownDay *town, AcreMap *map, const TownGrowthTiles *size
     for (int z = 0; z < size->z; z++) {
         for (int x = 0; x < size->x; x++) {
             u16 *code = TownAcreCount_CodeAt(map, x, z);
-            if (code != NULL && TownGrowth_IsLineCode(*code)) {
+            if (code != NULL && town_growth_is_line_code(*code)) {
                 TownLines_Advance(map, code, x, z);
             }
         }

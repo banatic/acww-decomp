@@ -158,27 +158,27 @@ extern void func_ov004_0222da90(G3dRenderState *state);
 extern void func_ov004_0222daa0(G3dRenderState *state);
 extern void func_020012dc(void *object); /* TrivialObject_Destruct */
 
-static AnimatedModel *CheckInGate_body(CheckInGate *self)
+static AnimatedModel *check_in_gate_body(CheckInGate *self)
 {
     return (AnimatedModel *) (void *) &self->base.body;
 }
 
-static u8 *CheckInGate_state(CheckInGate *self)
+static u8 *check_in_gate_state(CheckInGate *self)
 {
     return &self->base.unk_24c[0];
 }
 
 /* Vtable slot 0x60 (CheckInGate_SetState for this class), called through the vtable. */
-static int CheckInGate_call_set_state(CheckInGate *self, unsigned int state)
+static int check_in_gate_call_set_state(CheckInGate *self, unsigned int state)
 {
     const u32 *vtable = self->base.actor.vtable;
     return ((int (*)(CheckInGate *, unsigned int))(uintptr_t) vtable[CHECK_IN_GATE_SLOT_SET_STATE / 4])(self, state);
 }
 
 /* Joint and material animation `index` from their start, with the same flags. */
-static void CheckInGate_play(CheckInGate *self, int index, int flags)
+static void check_in_gate_play(CheckInGate *self, int index, int flags)
 {
-    AnimatedModel_Start(CheckInGate_body(self), RmoModel_JointAnim(&self->base.body_model, index), flags, FX32_ONE, 0, 0);
+    AnimatedModel_Start(check_in_gate_body(self), RmoModel_JointAnim(&self->base.body_model, index), flags, FX32_ONE, 0, 0);
     G3dRenderObject *render = ModelObject_RenderObject(&self->base.body.object);
     const u8 *material_anim = RmoModel_MaterialAnim(&self->base.body_model, index);
     ModelAnim_Restart(&self->material_anim, render, material_anim, flags, FX32_ONE, 0);
@@ -186,23 +186,23 @@ static void CheckInGate_play(CheckInGate *self, int index, int flags)
 
 /* Both animations step, and the material animation's object shows its frame.
  * REQUIRES: the material animation was allocated (its object is not NULL). */
-static void CheckInGate_step(CheckInGate *self)
+static void check_in_gate_step(CheckInGate *self)
 {
-    AnimatedModel_StepFrames(CheckInGate_body(self));
+    AnimatedModel_StepFrames(check_in_gate_body(self));
     FrameCtrl_Step(&self->material_anim.ctrl);
     self->material_anim.anim->frame = self->material_anim.ctrl.frame;
 }
 
 /* The opening's or closing's step: the door eased towards `target`, then `next` once the joint
  * animation has run out, or `late_sound` when it passes frame 0x3a. */
-static void CheckInGate_move(CheckInGate *self, fx32 target, unsigned int next, int late_sound)
+static void check_in_gate_move(CheckInGate *self, fx32 target, unsigned int next, int late_sound)
 {
-    CheckInGate_step(self);
+    check_in_gate_step(self);
     int offset = self->door_offset;
     Approach_EaseS32(&offset, target, CHECK_IN_GATE_DOOR_RATE, CHECK_IN_GATE_DOOR_MAX_STEP);
     CheckInGate_SetDoor(self, offset);
     if (FrameCtrl_IsDone(&self->base.body.frames)) {
-        CheckInGate_call_set_state(self, next);
+        check_in_gate_call_set_state(self, next);
     } else if (FrameCtrl_Passed(&self->base.body.frames, CHECK_IN_GATE_LATE_SOUND_FRAME)) {
         SoundSys_PlaySe(late_sound);
     }
@@ -211,7 +211,7 @@ static void CheckInGate_move(CheckInGate *self, fx32 target, unsigned int next, 
 /* func_ov004_0222ce1c (update of CHECK_IN_GATE_CLOSING) */
 void CheckInGate_UpdateClosing(CheckInGate *self)
 {
-    CheckInGate_move(self, CHECK_IN_GATE_DOOR_CLOSED, CHECK_IN_GATE_CLOSED, CHECK_IN_GATE_SOUND_CLOSING_LATE);
+    check_in_gate_move(self, CHECK_IN_GATE_DOOR_CLOSED, CHECK_IN_GATE_CLOSED, CHECK_IN_GATE_SOUND_CLOSING_LATE);
 }
 CLEAN_AS(func_ov004_0222ce1c, CheckInGate_UpdateClosing)
 
@@ -219,7 +219,7 @@ CLEAN_AS(func_ov004_0222ce1c, CheckInGate_UpdateClosing)
  * sound. */
 int CheckInGate_EnterClosing(CheckInGate *self)
 {
-    CheckInGate_play(self, CHECK_IN_GATE_ANIM_CLOSING, CHECK_IN_GATE_PLAY_ONCE);
+    check_in_gate_play(self, CHECK_IN_GATE_ANIM_CLOSING, CHECK_IN_GATE_PLAY_ONCE);
     SoundSys_PlaySe(CHECK_IN_GATE_SOUND_CLOSING);
     return 1;
 }
@@ -229,7 +229,7 @@ CLEAN_AS(func_ov004_0222cea8, CheckInGate_EnterClosing)
  * scene 11. */
 void CheckInGate_UpdateOpen(CheckInGate *self)
 {
-    CheckInGate_step(self);
+    check_in_gate_step(self);
     if (SceneQuery_Current() == CHECK_IN_GATE_SCENE_11) {
         CheckInGate_SetDoor(self, CHECK_IN_GATE_DOOR_OPEN);
     }
@@ -239,7 +239,7 @@ CLEAN_AS(func_ov004_0222cf18, CheckInGate_UpdateOpen)
 /* func_ov004_0222cf5c (entry of CHECK_IN_GATE_OPEN): the open animations looped. */
 int CheckInGate_EnterOpen(CheckInGate *self)
 {
-    CheckInGate_play(self, CHECK_IN_GATE_ANIM_OPEN, CHECK_IN_GATE_LOOP);
+    check_in_gate_play(self, CHECK_IN_GATE_ANIM_OPEN, CHECK_IN_GATE_LOOP);
     return 1;
 }
 CLEAN_AS(func_ov004_0222cf5c, CheckInGate_EnterOpen)
@@ -247,7 +247,7 @@ CLEAN_AS(func_ov004_0222cf5c, CheckInGate_EnterOpen)
 /* func_ov004_0222cfbc (update of CHECK_IN_GATE_OPENING) */
 void CheckInGate_UpdateOpening(CheckInGate *self)
 {
-    CheckInGate_move(self, CHECK_IN_GATE_DOOR_OPEN, CHECK_IN_GATE_OPEN, CHECK_IN_GATE_SOUND_OPENING_LATE);
+    check_in_gate_move(self, CHECK_IN_GATE_DOOR_OPEN, CHECK_IN_GATE_OPEN, CHECK_IN_GATE_SOUND_OPENING_LATE);
 }
 CLEAN_AS(func_ov004_0222cfbc, CheckInGate_UpdateOpening)
 
@@ -255,7 +255,7 @@ CLEAN_AS(func_ov004_0222cfbc, CheckInGate_UpdateOpening)
  * sound. */
 int CheckInGate_EnterOpening(CheckInGate *self)
 {
-    CheckInGate_play(self, CHECK_IN_GATE_ANIM_OPENING, CHECK_IN_GATE_PLAY_ONCE);
+    check_in_gate_play(self, CHECK_IN_GATE_ANIM_OPENING, CHECK_IN_GATE_PLAY_ONCE);
     SoundSys_PlaySe(CHECK_IN_GATE_SOUND_OPENING);
     return 1;
 }
@@ -264,7 +264,7 @@ CLEAN_AS(func_ov004_0222d04c, CheckInGate_EnterOpening)
 /* func_ov004_0222d0bc (update of CHECK_IN_GATE_CLOSED): the door's wall stands closed. */
 void CheckInGate_UpdateClosed(CheckInGate *self)
 {
-    CheckInGate_step(self);
+    check_in_gate_step(self);
     CheckInGate_SetDoor(self, CHECK_IN_GATE_DOOR_CLOSED);
 }
 CLEAN_AS(func_ov004_0222d0bc, CheckInGate_UpdateClosed)
@@ -272,7 +272,7 @@ CLEAN_AS(func_ov004_0222d0bc, CheckInGate_UpdateClosed)
 /* func_ov004_0222d0f4 (entry of CHECK_IN_GATE_CLOSED): the closed animations looped. */
 int CheckInGate_EnterClosed(CheckInGate *self)
 {
-    CheckInGate_play(self, CHECK_IN_GATE_ANIM_CLOSED, CHECK_IN_GATE_LOOP);
+    check_in_gate_play(self, CHECK_IN_GATE_ANIM_CLOSED, CHECK_IN_GATE_LOOP);
     return 1;
 }
 CLEAN_AS(func_ov004_0222d0f4, CheckInGate_EnterClosed)
@@ -288,7 +288,7 @@ void CheckInGate_UpdateState(CheckInGate *self)
         &data_ov004_02254dac, /* CheckInGate_UpdateClosing */
     };
     MemberTable_InitOnce(&data_ov004_02258270, data_ov004_022582cc, updates, CHECK_IN_GATE_STATE_COUNT);
-    u8 state = *CheckInGate_state(self);
+    u8 state = *check_in_gate_state(self);
     if (state < CHECK_IN_GATE_STATE_COUNT) {
         MemberPointer_CallVoid(&data_ov004_022582cc[state], self);
     }
@@ -307,7 +307,7 @@ int CheckInGate_SetState(CheckInGate *self, unsigned int state)
     };
     MemberTable_InitOnce(&data_ov004_02258274, data_ov004_022582ec, entries, CHECK_IN_GATE_STATE_COUNT);
     if (state < CHECK_IN_GATE_STATE_COUNT && MemberPointer_CallInt(&data_ov004_022582ec[state], self) != 0) {
-        *CheckInGate_state(self) = (u8) state;
+        *check_in_gate_state(self) = (u8) state;
         return 1;
     }
     return 0;
@@ -356,7 +356,7 @@ CLEAN_AS(func_ov004_0222d320, CheckInGate_ClearDoor)
 
 /* (1.0 - t) * from + t * to, in 20.12 fixed point.
  * QUIRK: the products and the sum wrap at 32 bits, as the ROM's multiplications do. */
-static s32 CheckInGate_blend(s32 from, s32 to, fx32 t)
+static s32 check_in_gate_blend(s32 from, s32 to, fx32 t)
 {
     u32 sum = ((u32) FX32_ONE - (u32) t) * (u32) from + (u32) t * (u32) to;
     return (s32) sum >> 12;
@@ -378,12 +378,12 @@ void CheckInGate_MaterialHook(CheckInGate *self, int material, G3dRenderState *s
     const CheckInGateHour *next = &data_ov004_02247784[(u8) ((hour + 1) % CHECK_IN_GATE_HOURS)];
     const CheckInGateHour *current = &data_ov004_02247784[(u8) (hour % CHECK_IN_GATE_HOURS)];
 
-    u8 red = (u8) CheckInGate_blend(current->red, next->red, t);
-    u8 green = (u8) CheckInGate_blend(current->green, next->green, t);
-    u8 blue = (u8) CheckInGate_blend(current->blue, next->blue, t);
+    u8 red = (u8) check_in_gate_blend(current->red, next->red, t);
+    u8 green = (u8) check_in_gate_blend(current->green, next->green, t);
+    u8 blue = (u8) check_in_gate_blend(current->blue, next->blue, t);
     u16 colour = (u16) ((u32) red | (u32) green << 5 | (u32) blue << 10);
-    fx32 other_alpha = CheckInGate_blend(current->other_alpha, next->other_alpha, t);
-    fx32 first_alpha = CheckInGate_blend(current->first_alpha, next->first_alpha, t);
+    fx32 other_alpha = check_in_gate_blend(current->other_alpha, next->other_alpha, t);
+    fx32 first_alpha = check_in_gate_blend(current->first_alpha, next->first_alpha, t);
 
     if (material != self->light_materials[0] && material != self->light_materials[1] && material != self->light_materials[2]) {
         return;
@@ -402,7 +402,7 @@ CLEAN_AS(func_ov004_0222d32c, CheckInGate_MaterialHook)
 /* func_ov004_0222d4d4: whether the last one started is open. */
 int CheckInGate_IsOpen(void)
 {
-    return data_ov004_0225827c != NULL && *CheckInGate_state(data_ov004_0225827c) == CHECK_IN_GATE_OPEN;
+    return data_ov004_0225827c != NULL && *check_in_gate_state(data_ov004_0225827c) == CHECK_IN_GATE_OPEN;
 }
 CLEAN_AS(func_ov004_0222d4d4, CheckInGate_IsOpen)
 
@@ -412,7 +412,7 @@ int CheckInGate_Close(void)
 {
     CheckInGate *gate = data_ov004_0225827c;
     if (gate != NULL) {
-        return CheckInGate_call_set_state(gate, CHECK_IN_GATE_CLOSING);
+        return check_in_gate_call_set_state(gate, CHECK_IN_GATE_CLOSING);
     }
     return 0;
 }
@@ -424,7 +424,7 @@ int CheckInGate_Open(void)
 {
     CheckInGate *gate = data_ov004_0225827c;
     if (gate != NULL) {
-        return CheckInGate_call_set_state(gate, CHECK_IN_GATE_OPENING);
+        return check_in_gate_call_set_state(gate, CHECK_IN_GATE_OPENING);
     }
     return 0;
 }
@@ -456,12 +456,12 @@ CLEAN_AS(func_ov004_0222d548, CheckInGate_StartMaterialAnim)
 int CheckInGate_StartJointAnim(CheckInGate *self)
 {
     if (RmoModel_JointAnim(&self->base.body_model, 0) == NULL ||
-        AnimatedModel_LoadAnim(CheckInGate_body(self), data_021c9b24) == 0) {
+        AnimatedModel_LoadAnim(check_in_gate_body(self), data_021c9b24) == 0) {
         return 0;
     }
-    AnimatedModel_Start(CheckInGate_body(self), RmoModel_JointAnim(&self->base.body_model, 0), CHECK_IN_GATE_LOOP, FX32_ONE, 0,
-                        0);
-    AnimatedModel_Attach(CheckInGate_body(self));
+    AnimatedModel_Start(check_in_gate_body(self), RmoModel_JointAnim(&self->base.body_model, 0), CHECK_IN_GATE_LOOP, FX32_ONE,
+                        0, 0);
+    AnimatedModel_Attach(check_in_gate_body(self));
     return 1;
 }
 CLEAN_AS(func_ov004_0222d5c0, CheckInGate_StartJointAnim)
@@ -532,7 +532,7 @@ CLEAN_AS(func_ov004_0222d71c, CheckInGate_Release)
 /* func_ov004_0222d760 (vtable slot 0x24) */
 int CheckInGate_Draw(CheckInGate *self)
 {
-    AnimatedModel_Draw(CheckInGate_body(self), NULL);
+    AnimatedModel_Draw(check_in_gate_body(self), NULL);
     return 1;
 }
 CLEAN_AS(func_ov004_0222d760, CheckInGate_Draw)
@@ -550,7 +550,7 @@ CLEAN_AS(_ZN18Obj_ov004_02254e4c19func_ov004_0222d774Ev, CheckInGate_Update)
 
 /* A fixed box's point, built once as a function-local static and registered for destruction
  * (TrivialObject_Destruct, which does nothing). */
-static void CheckInGate_point_once(u32 *guard, Vec3 *point, u8 *record, fx32 x)
+static void check_in_gate_point_once(u32 *guard, Vec3 *point, u8 *record, fx32 x)
 {
     if ((*guard & 1) == 0) {
         point->x = x;
@@ -586,29 +586,29 @@ int CheckInGate_Start(CheckInGate *self)
     switch (SceneQuery_Current()) {
         case CHECK_IN_GATE_SCENE_11:
             if (Session_IsSlotTaken(data_020ccf94, data_020ccf94->local_slot)) {
-                CheckInGate_call_set_state(self, CHECK_IN_GATE_OPEN);
+                check_in_gate_call_set_state(self, CHECK_IN_GATE_OPEN);
             } else {
-                CheckInGate_call_set_state(self, CHECK_IN_GATE_CLOSED);
+                check_in_gate_call_set_state(self, CHECK_IN_GATE_CLOSED);
             }
             break;
         case CHECK_IN_GATE_SCENE_12:
             if (Block021d27acPart20_Kind(part) == CHECK_IN_GATE_PART20_KIND_CLOSED) {
-                CheckInGate_call_set_state(self, CHECK_IN_GATE_CLOSED);
+                check_in_gate_call_set_state(self, CHECK_IN_GATE_CLOSED);
             } else {
-                CheckInGate_call_set_state(self, CHECK_IN_GATE_OPEN);
+                check_in_gate_call_set_state(self, CHECK_IN_GATE_OPEN);
             }
             break;
         case CHECK_IN_GATE_SCENE_13:
         case CHECK_IN_GATE_SCENE_14:
         case CHECK_IN_GATE_SCENE_47:
-            CheckInGate_call_set_state(self, CHECK_IN_GATE_OPEN);
+            check_in_gate_call_set_state(self, CHECK_IN_GATE_OPEN);
             break;
     }
 
     CheckInGate_SetCurrent(self);
     self->door_offset = CHECK_IN_GATE_DOOR_UNSET;
-    CheckInGate_point_once(&data_ov004_02258298, &data_ov004_022582a8, data_ov004_0225829c, CHECK_IN_GATE_BOX0_X);
-    CheckInGate_point_once(&data_ov004_02258294, &data_ov004_022582c0, data_ov004_022582b4, CHECK_IN_GATE_BOX1_X);
+    check_in_gate_point_once(&data_ov004_02258298, &data_ov004_022582a8, data_ov004_0225829c, CHECK_IN_GATE_BOX0_X);
+    check_in_gate_point_once(&data_ov004_02258294, &data_ov004_022582c0, data_ov004_022582b4, CHECK_IN_GATE_BOX1_X);
     CollisionBox_Add(&self->boxes[0], CHECK_IN_GATE_BOX_WIDTH, CHECK_IN_GATE_BOX_DEPTH, CHECK_IN_GATE_BOX_HEIGHT,
                      &data_ov004_022582a8, 0, NULL);
     CollisionBox_Add(&self->boxes[1], CHECK_IN_GATE_BOX_WIDTH, CHECK_IN_GATE_BOX_DEPTH, CHECK_IN_GATE_BOX_HEIGHT,
@@ -618,7 +618,7 @@ int CheckInGate_Start(CheckInGate *self)
 CLEAN_AS(func_ov004_0222d790, CheckInGate_Start)
 
 /* The parts taken down in the reverse of their construction. */
-static void CheckInGate_take_down(CheckInGate *self)
+static void check_in_gate_take_down(CheckInGate *self)
 {
     self->base.actor.vtable = data_ov004_02254e4c;
     CollisionBox_Destruct(&self->boxes[1]);
@@ -631,7 +631,7 @@ static void CheckInGate_take_down(CheckInGate *self)
 /* func_ov004_0222d9ac (the deleting destructor, vtable slot 0x44) */
 CheckInGate *CheckInGate_Delete(CheckInGate *self)
 {
-    CheckInGate_take_down(self);
+    check_in_gate_take_down(self);
     Heap_FreeAux(self);
     return self;
 }
@@ -640,7 +640,7 @@ CLEAN_AS(func_ov004_0222d9ac, CheckInGate_Delete)
 /* func_ov004_0222d9fc (the destructor, vtable slot 0x40) */
 CheckInGate *CheckInGate_Destruct(CheckInGate *self)
 {
-    CheckInGate_take_down(self);
+    check_in_gate_take_down(self);
     return self;
 }
 CLEAN_AS(func_ov004_0222d9fc, CheckInGate_Destruct)

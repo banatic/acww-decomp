@@ -38,7 +38,7 @@ extern AcreMap *data_021c80bc; /* the map of the scene shown, or NULL */
 extern const u32 data_ov004_02255a38[];
 extern const u32 data_020da13c[];
 
-static void RoomPlayerBeds_init_tiles(void)
+static void room_player_beds_init_tiles(void)
 {
     static const RoomPlayerBedsTile tiles[ROOM_PLAYER_BEDS_PLAYERS] = {{6, 9}, {9, 9}, {6, 12}, {9, 12}};
     if ((data_ov004_022589c8 & 1) == 0) {
@@ -50,7 +50,7 @@ static void RoomPlayerBeds_init_tiles(void)
 }
 
 /* Whether `item` is empty: for a furniture code, whether its furniture number is that of 0xfff1. */
-static int RoomPlayerBeds_is_empty(const ItemCode *item)
+static int room_player_beds_is_empty(const ItemCode *item)
 {
     if (ItemCode_IsFurniture(item)) {
         ItemCode none = ITEM_CODE_NONE;
@@ -65,7 +65,7 @@ static int RoomPlayerBeds_is_empty(const ItemCode *item)
  * tile left for a wide item on the left half). */
 void RoomPlayerBeds_Place(void)
 {
-    RoomPlayerBeds_init_tiles();
+    room_player_beds_init_tiles();
     AcreMap *map = data_021c80bc;
     if (map == NULL) {
         return;
@@ -78,7 +78,7 @@ void RoomPlayerBeds_Place(void)
         int x = data_ov004_022589cc[player].x;
         int z = data_ov004_022589cc[player].z;
         ItemCode item = *PlayerRecord_Bed(record);
-        if (RoomPlayerBeds_is_empty(&item)) {
+        if (room_player_beds_is_empty(&item)) {
             continue;
         }
         ItemCode_SetSide(&item, ROOM_PLAYER_BEDS_SIDE);

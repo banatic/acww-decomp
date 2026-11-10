@@ -64,7 +64,7 @@ CLEAN_AS(func_ov004_022188b4, RoomObject02252cd4_Vfunc0C)
 
 /* Kind 0x2c: the node set's value 0, or 1 while a player stands on one of its cells (each such
  * player also advancing the animations and playing sound 0). */
-static void RoomObject02252cd4_update_stood_on(RoomObject02252cd4 *object)
+static void room_object02252cd4_update_stood_on(RoomObject02252cd4 *object)
 {
     RoomObject *base = &object->base;
     ByteSet_SetValue(&base->node_set, 0);
@@ -94,7 +94,7 @@ static void RoomObject02252cd4_update_stood_on(RoomObject02252cd4 *object)
 /* Whether the side pushed of the entry (RoomPushes_Side) lets the player be sent, and the action
  * it is sent with: side 0 (action 0); for kind 0x26 also side 3 (action 1) and side 1 (action
  * 2). The entry's side is read again for each comparison. */
-static int RoomObject02252cd4_entry_ready(RoomObject02252cd4 *object, void *entry, u8 *action)
+static int room_object02252cd4_entry_ready(RoomObject02252cd4 *object, void *entry, u8 *action)
 {
     *action = 0;
     if (object->base.unk_780 != KIND_26) {
@@ -125,7 +125,7 @@ int RoomObject02252cd4_Update(RoomObject02252cd4 *object)
 {
     RoomObject *base = &object->base;
     if (base->unk_780 == KIND_2C) {
-        RoomObject02252cd4_update_stood_on(object);
+        room_object02252cd4_update_stood_on(object);
     } else if (base->unk_780 == KIND_9) {
         RoomObject_AdvanceAnims(base);
         RoomObject_PlaySound0(base);
@@ -134,7 +134,7 @@ int RoomObject02252cd4_Update(RoomObject02252cd4 *object)
     void *entry = RoomPushes_FindObject(RoomPushes_Records(), &object->base);
     if (entry != NULL && RoomPushes_Allowed() != 0) {
         u8 action;
-        if (RoomObject02252cd4_entry_ready(object, entry, &action)) {
+        if (room_object02252cd4_entry_ready(object, entry, &action)) {
             Vec3 point;
             RoomObject02252cd4_ProbePoint(object, &point, entry);
             if (Actors_NoneNear(&point, PLAYER_REACH, NPC_REACH, PLAYER_RADIUS, 0)) {
@@ -169,7 +169,7 @@ int RoomObject02252cd4_Start(RoomObject02252cd4 *object)
 }
 CLEAN_AS(func_ov004_02218a5c, RoomObject02252cd4_Start)
 
-static void RoomObject02252cd4_set_vtables(RoomObject02252cd4 *object)
+static void room_object02252cd4_set_vtables(RoomObject02252cd4 *object)
 {
     object->base.vtable = (const RoomObjectVtable *) data_ov004_02252cd4;
     object->base.receiver_vtable = data_ov004_02252d80;
@@ -178,7 +178,7 @@ static void RoomObject02252cd4_set_vtables(RoomObject02252cd4 *object)
 /* func_ov004_02218a9c (the deleting destructor, vtable slot 0x44) */
 RoomObject02252cd4 *RoomObject02252cd4_Delete(RoomObject02252cd4 *object)
 {
-    RoomObject02252cd4_set_vtables(object);
+    room_object02252cd4_set_vtables(object);
     RoomObject_DestructBase(&object->base);
     RoomObject_Free(object);
     return object;
@@ -188,7 +188,7 @@ CLEAN_AS(func_ov004_02218a9c, RoomObject02252cd4_Delete)
 /* func_ov004_02218ac8 (the destructor, vtable slot 0x40) */
 RoomObject02252cd4 *RoomObject02252cd4_Destroy(RoomObject02252cd4 *object)
 {
-    RoomObject02252cd4_set_vtables(object);
+    room_object02252cd4_set_vtables(object);
     RoomObject_DestructBase(&object->base);
     return object;
 }
@@ -199,7 +199,7 @@ CLEAN_AS(func_ov004_02218ac8, RoomObject02252cd4_Destroy)
 RoomObject02252cd4 *RoomObject02252cd4_Construct(RoomObject02252cd4 *object)
 {
     RoomObject_ConstructBase(&object->base);
-    RoomObject02252cd4_set_vtables(object);
+    room_object02252cd4_set_vtables(object);
     return object;
 }
 CLEAN_AS(func_ov004_02218aec, RoomObject02252cd4_Construct)
@@ -217,7 +217,7 @@ CLEAN_AS(func_ov004_02218b10, RoomObject02252cd4_Create)
 /* The receiver part (at 0xec, RoomObject.receiver_vtable) enters RoomObject02252cd4's functions
  * through its vtable with these: each moves the pointer back to the object and goes on with the
  * object's function. */
-static RoomObject02252cd4 *RoomObject02252cd4_from_receiver(void *receiver)
+static RoomObject02252cd4 *room_object02252cd4_from_receiver(void *receiver)
 {
     return (RoomObject02252cd4 *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
 }
@@ -225,13 +225,13 @@ static RoomObject02252cd4 *RoomObject02252cd4_from_receiver(void *receiver)
 /* func_ov004_0221a6ec: the deleting destructor, entered from the receiver part. */
 RoomObject02252cd4 *RoomObject02252cd4Receiver_Delete(void *receiver)
 {
-    return RoomObject02252cd4_Delete(RoomObject02252cd4_from_receiver(receiver));
+    return RoomObject02252cd4_Delete(room_object02252cd4_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_02252cd4D0Ev, RoomObject02252cd4Receiver_Delete)
 
 /* func_ov004_0221a708: the destructor, entered from the receiver part. */
 RoomObject02252cd4 *RoomObject02252cd4Receiver_Destroy(void *receiver)
 {
-    return RoomObject02252cd4_Destroy(RoomObject02252cd4_from_receiver(receiver));
+    return RoomObject02252cd4_Destroy(room_object02252cd4_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_02252cd4D1Ev, RoomObject02252cd4Receiver_Destroy)

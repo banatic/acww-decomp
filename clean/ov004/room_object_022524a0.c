@@ -38,7 +38,7 @@ extern Mtx43 data_021fbe48;
 
 extern void MTX_MultVec43(const Vec3 *vector, const Mtx43 *mtx, Vec3 *out);
 
-static void RoomObject022524a0_set_vtables(RoomObject022524a0 *object)
+static void room_object022524a0_set_vtables(RoomObject022524a0 *object)
 {
     object->base.vtable = (const RoomObjectVtable *) data_ov004_022524a0;
     object->base.receiver_vtable = data_ov004_0225254c;
@@ -181,7 +181,7 @@ CLEAN_AS(func_ov004_022143b8, RoomObject022524a0_Start)
 /* func_ov004_022143e4 (the deleting destructor, vtable slot 0x44). */
 RoomObject022524a0 *RoomObject022524a0_Delete(RoomObject022524a0 *object)
 {
-    RoomObject022524a0_set_vtables(object);
+    room_object022524a0_set_vtables(object);
     RoomObject_DestructBase(&object->base);
     RoomObject_Free(object);
     return object;
@@ -191,7 +191,7 @@ CLEAN_AS(func_ov004_022143e4, RoomObject022524a0_Delete)
 /* func_ov004_02214410 (the destructor, vtable slot 0x40). */
 RoomObject022524a0 *RoomObject022524a0_Destroy(RoomObject022524a0 *object)
 {
-    RoomObject022524a0_set_vtables(object);
+    room_object022524a0_set_vtables(object);
     RoomObject_DestructBase(&object->base);
     return object;
 }
@@ -202,7 +202,7 @@ CLEAN_AS(func_ov004_02214410, RoomObject022524a0_Destroy)
 RoomObject022524a0 *RoomObject022524a0_Construct(RoomObject022524a0 *object)
 {
     RoomObject_ConstructBase(&object->base);
-    RoomObject022524a0_set_vtables(object);
+    room_object022524a0_set_vtables(object);
     return object;
 }
 CLEAN_AS(func_ov004_02214434, RoomObject022524a0_Construct)
@@ -220,7 +220,7 @@ CLEAN_AS(func_ov004_02214458, RoomObject022524a0_Create)
 /* The receiver part (at 0xec, RoomObject.receiver_vtable) enters RoomObject022524a0's functions
  * through its vtable with these: each moves the pointer back to the object and goes on with the
  * object's function. */
-static RoomObject022524a0 *RoomObject022524a0_from_receiver(void *receiver)
+static RoomObject022524a0 *room_object022524a0_from_receiver(void *receiver)
 {
     return (RoomObject022524a0 *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
 }
@@ -228,13 +228,13 @@ static RoomObject022524a0 *RoomObject022524a0_from_receiver(void *receiver)
 /* func_ov004_0221a954: the deleting destructor, entered from the receiver part. */
 RoomObject022524a0 *RoomObject022524a0Receiver_Delete(void *receiver)
 {
-    return RoomObject022524a0_Delete(RoomObject022524a0_from_receiver(receiver));
+    return RoomObject022524a0_Delete(room_object022524a0_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_022524a0D0Ev, RoomObject022524a0Receiver_Delete)
 
 /* func_ov004_0221a970: the destructor, entered from the receiver part. */
 RoomObject022524a0 *RoomObject022524a0Receiver_Destroy(void *receiver)
 {
-    return RoomObject022524a0_Destroy(RoomObject022524a0_from_receiver(receiver));
+    return RoomObject022524a0_Destroy(room_object022524a0_from_receiver(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_022524a0D1Ev, RoomObject022524a0Receiver_Destroy)

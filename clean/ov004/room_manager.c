@@ -464,7 +464,7 @@ int RoomManager_Init(RoomManager *room)
 CLEAN_AS(func_ov004_0223d434, RoomManager_Init)
 
 /* The destructor: the members in the reverse order, then the process. */
-static void RoomManager_destruct(RoomManager *room)
+static void room_manager_destruct(RoomManager *room)
 {
     room->process.vtable = data_ov004_02256018;
     FurnitureMover_Destruct((FurnitureMover *) (void *) room->mover);
@@ -477,7 +477,7 @@ static void RoomManager_destruct(RoomManager *room)
 /* func_ov004_0223d52c: the destructor that frees the room. */
 RoomManager *RoomManager_Delete(RoomManager *room)
 {
-    RoomManager_destruct(room);
+    room_manager_destruct(room);
     Heap_FreeAux(room);
     return room;
 }
@@ -486,7 +486,7 @@ CLEAN_AS(func_ov004_0223d52c, RoomManager_Delete)
 /* func_ov004_0223d570 */
 RoomManager *RoomManager_Destruct(RoomManager *room)
 {
-    RoomManager_destruct(room);
+    room_manager_destruct(room);
     return room;
 }
 CLEAN_AS(func_ov004_0223d570, RoomManager_Destruct)

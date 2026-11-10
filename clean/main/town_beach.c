@@ -27,7 +27,7 @@ typedef struct TownBeachActor {
 #define TOWN_BEACH_PLAYERS 4
 #define TOWN_BEACH_ACRE_SHIFT 17 /* a position's acre (in the map) */
 
-static AcreMap *TownBeach_Map(void)
+static AcreMap *town_beach_map(void)
 {
     return (AcreMap *) (uintptr_t) AcreMap_Town();
 }
@@ -37,7 +37,7 @@ static AcreMap *TownBeach_Map(void)
 int TownBeach_PutBottle(int town)
 {
     u32 acre_x = MainRandom_Below(TOWN_BEACH_ACRE_ROW);
-    AcreMap *map = TownBeach_Map();
+    AcreMap *map = town_beach_map();
     for (int i = 0; i < 4; i++) {
         if (TownPlace_PutInAcre((void *) (uintptr_t) town, map, (int) acre_x + 1, TOWN_BEACH_ACRE_ROW, BOTTLE_ITEM,
                                 func_02048e34, 0) != 0) {
@@ -77,7 +77,7 @@ void TownBeach_Update(int town)
 CLEAN_AS(func_02046f7c, TownBeach_Update)
 
 /* Whether the time is a new one, with the minutes ending in 3. */
-static int TownBeach_IsWashTime(Time now)
+static int town_beach_is_wash_time(Time now)
 {
     const Time *last = &data_021c779c.beach_time;
     if (now.minute == last->minute && now.hour == last->hour) {
@@ -99,7 +99,7 @@ void TownBeach_UpdateLinked(int town)
         return;
     }
     Calendar_Now(&at.now);
-    if (!TownBeach_IsWashTime(at.now)) {
+    if (!town_beach_is_wash_time(at.now)) {
         return;
     }
     int on_beach = 0;
@@ -118,7 +118,7 @@ void TownBeach_UpdateLinked(int town)
         }
     }
     if (!on_beach) {
-        AcreMap *map = TownBeach_Map();
+        AcreMap *map = town_beach_map();
         int acre_x = (int) MainRandom_Below(TOWN_BEACH_ACRE_ROW);
         TownBeach_WashUp(town, map, acre_x);
     }
@@ -133,12 +133,12 @@ void TownBeach_UpdateAlone(int town)
 {
     Time now;
     Calendar_Now(&now);
-    if (!TownBeach_IsWashTime(now)) {
+    if (!town_beach_is_wash_time(now)) {
         return;
     }
     const TownBeachActor *actor = SessionPlayers_ActorOf(SESSION_PLAYERS_OWN);
     if (actor != NULL) {
-        AcreMap *map = TownBeach_Map();
+        AcreMap *map = town_beach_map();
         int acre_x = (int) MainRandom_Below(TOWN_BEACH_ACRE_ROW);
         int on_x = actor->x >> TOWN_BEACH_ACRE_SHIFT;
         int on_z = actor->z >> TOWN_BEACH_ACRE_SHIFT;

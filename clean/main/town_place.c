@@ -76,7 +76,7 @@ int TownPlace_ListFree(TownDay *town, TownPlaceTile *tiles, AcreMap *map, int ac
 CLEAN_AS(func_02048db8, TownPlace_ListFree)
 
 /* Whether the two tiles below (x, z) hold codes, none of them one func_0204a034 picks out. */
-static int TownPlace_AreTwoBelowClear(AcreMap *map, int x, int z)
+static int town_place_are_two_below_clear(AcreMap *map, int x, int z)
 {
     for (int below = 1; below <= 2; below++) {
         const u16 *code = TownAcreCount_CodeAt(map, x, z + below);
@@ -109,7 +109,7 @@ int TownPlace_TestByte09Low(AcreMap *map, int x, int z)
     if (value != 0 && value != 1) {
         return 0;
     }
-    return TownPlace_AreTwoBelowClear(map, x, z);
+    return town_place_are_two_below_clear(map, x, z);
 }
 CLEAN_AS(func_02048e54, TownPlace_TestByte09Low)
 
@@ -128,7 +128,7 @@ int TownPlace_TestWord06PositiveClear(AcreMap *map, int x, int z)
     if (TownPlace_TestWord06Positive(map, x, z) == 0) {
         return 0;
     }
-    return TownPlace_AreTwoBelowClear(map, x, z);
+    return town_place_are_two_below_clear(map, x, z);
 }
 CLEAN_AS(func_02048ee4, TownPlace_TestWord06PositiveClear)
 
@@ -145,6 +145,6 @@ int TownPlace_TestByte08Clear(AcreMap *map, int x, int z)
     if (AcreTile_UnitByte08(map, x, z) == 0) {
         return 0;
     }
-    return TownPlace_AreTwoBelowClear(map, x, z);
+    return town_place_are_two_below_clear(map, x, z);
 }
 CLEAN_AS(func_02048f6c, TownPlace_TestByte08Clear)
