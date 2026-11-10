@@ -6,7 +6,7 @@
 #include "autoload_2/heap.h"
 #include "autoload_2/matrix.h"
 #include "clean.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/globe.h"
 #include "main/model_object.h"
 #include "main/rom_file.h"

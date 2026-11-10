@@ -4,7 +4,7 @@
 #include "autoload_2/heap.h"
 #include "clean.h"
 #include "main/animated_model.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/g3d_resource.h"
 #include "main/model_object.h"
 #include "main/sound.h"

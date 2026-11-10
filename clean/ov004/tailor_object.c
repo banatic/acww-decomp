@@ -10,7 +10,7 @@
 #include "main/animated_model.h"
 #include "main/date_random.h"
 #include "main/ease_curve.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/item_lists.h"
 #include "main/item_texture.h"
 #include "main/model_object.h"

@@ -7,7 +7,7 @@
 #include "autoload_2/matrix.h"
 #include "clean.h"
 #include "main/animated_model.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/model_object.h"
 #include "member_pointer.h"
 #include "ov004/rmo_model.h"

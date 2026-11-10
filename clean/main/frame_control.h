@@ -1,7 +1,7 @@
 /* Animation frame counters: a frame position stepped by a speed, looping or stopping at the
  * ends, and a weight that ramps from 0 to 1. */
-#ifndef CLEAN_MAIN_FRAME_CTRL_H
-#define CLEAN_MAIN_FRAME_CTRL_H
+#ifndef CLEAN_MAIN_FRAME_CONTROL_H
+#define CLEAN_MAIN_FRAME_CONTROL_H
 
 #include "types.h"
 

@@ -13,7 +13,7 @@
 #include "main/effect_system.h"
 #include "main/event_queue.h"
 #include "main/footsteps.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/held_item_link.h"
 #include "main/item_code.h"
 #include "main/main_random.h"

@@ -12,7 +12,7 @@
 #include "main/collision_query.h"
 #include "main/effect_system.h"
 #include "main/field_collision.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/link_global.h"
 #include "main/main_random.h"
 #include "main/model_pool.h"

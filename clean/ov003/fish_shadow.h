@@ -36,7 +36,7 @@
 #include "main/animated_model.h"
 #include "main/field_collision.h"
 #include "main/fishing_float.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/model_anim.h"
 #include "main/model_object.h"
 #include "main/model_pool.h"

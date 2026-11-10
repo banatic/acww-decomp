@@ -14,7 +14,7 @@
 #include "main/trivial_object.h" /* TrivialObject_Destruct */
 #include "main/animated_model.h"
 #include "main/c_library.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/link_scene.h"
 #include "main/message_receiver.h"
 #include "main/model_anim.h"

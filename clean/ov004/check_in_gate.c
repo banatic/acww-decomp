@@ -11,7 +11,7 @@
 #include "main/block_021d27ac.h"
 #include "main/block_021d27ac_parts.h"
 #include "main/calendar.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/g3d_resource.h"
 #include "main/model_object.h"
 #include "main/scene_query.h"

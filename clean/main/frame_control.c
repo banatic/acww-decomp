@@ -1,5 +1,5 @@
 /* Animation frame counters. */
-#include "frame_ctrl.h"
+#include "frame_control.h"
 #include "clean.h"
 
 #include <assert.h>

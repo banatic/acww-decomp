@@ -15,7 +15,7 @@
 #include "main/field_actor_parts.h"
 #include "main/field_collision.h"
 #include "main/field_body.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/layered_model.h"
 #include "main/message_receiver.h"
 #include "main/music_queue.h"

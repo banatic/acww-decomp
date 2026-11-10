@@ -19,7 +19,7 @@
 #include "face_anim_slots.h"
 #include "face_anim_timer.h"
 #include "face_texture.h"
-#include "frame_ctrl.h"
+#include "frame_control.h"
 #include "held_item_pool.h"
 #include "item_code.h"
 #include "layered_model.h"

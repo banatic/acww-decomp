@@ -7,7 +7,7 @@
 #include "main/actor.h"
 #include "main/animated_model.h"
 #include "main/event_queue.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/item_code.h"
 #include "main/player_actor_ops.h"
 #include "main/player_record.h"

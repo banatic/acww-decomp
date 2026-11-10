@@ -1,5 +1,5 @@
-/* The process class with vtable 0x020e2fe8 (obj_020e2fe8.h). */
-#include "obj_020e2fe8.h"
+/* The process class with vtable 0x020e2fe8 (player_report_process.h). */
+#include "player_report_process.h"
 
 #include "autoload_2/heap.h"
 #include "clean.h"

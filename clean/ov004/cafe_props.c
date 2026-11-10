@@ -9,7 +9,7 @@
 #include "main/animated_model.h"
 #include "main/camera_control.h"
 #include "main/effect_system.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/model_object.h"
 #include "main/music_queue.h"
 #include "main/sound.h"

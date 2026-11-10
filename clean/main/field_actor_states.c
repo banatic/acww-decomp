@@ -49,7 +49,7 @@
 #include "face_texture.h"
 #include "field_label.h"
 #include "fishing_float.h"
-#include "frame_ctrl.h"
+#include "frame_control.h"
 #include "globe.h"
 #include "held_item.h"
 #include "layered_model.h"

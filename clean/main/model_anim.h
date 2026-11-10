@@ -1,5 +1,5 @@
 /* One animation of a model resource (a C++ class of main, vtable data_020dd154, 0x20 bytes): a
- * frame control (frame_ctrl.h, the class it extends) and NitroSystem's animation object
+ * frame control (frame_control.h, the class it extends) and NitroSystem's animation object
  * (NNSG3dAnmObj) for the model. The object is allocated for a kind of animation (joints or
  * materials), started from an animation file at a frame, and attached to a render object
  * (NNSG3dRenderObj) to play on it. Its owners copy the frame control's frame into the object.
@@ -11,7 +11,7 @@
 #include "main/g3d_render.h"
 #include "autoload_2/heap.h"
 #include "main/animated_model.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/model_object.h"
 #include "types.h"
 

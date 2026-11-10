@@ -8,7 +8,7 @@
 #include "main/sound_emitter.h" /* SoundEmitter_FinishB, _StopB, _UpdateAtB, _PlayB */
 #include "animated_model.h"
 #include "c_library.h"
-#include "frame_ctrl.h"
+#include "frame_control.h"
 #include "globe.h"
 #include "model_object.h"
 #include "model_pool.h"

@@ -1,5 +1,5 @@
 /* A texture pattern animation played by copying texture images in VRAM (a C++ class of main,
- * vtable data_020dd164, 0x2c bytes, extending the frame control of frame_ctrl.h). Scene
+ * vtable data_020dd164, 0x2c bytes, extending the frame control of frame_control.h). Scene
  * objects' faces use it (scene_face.h).
  *
  * The animation (NitroSystem's NNSG3dResTexPatAnm) gives, for each material it animates, a
@@ -12,7 +12,7 @@
 #define CLEAN_MAIN_TEX_PATTERN_ANIM_H
 
 #include "autoload_2/heap.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/model_loader.h"
 #include "types.h"
 

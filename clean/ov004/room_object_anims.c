@@ -10,7 +10,7 @@
 #include "room_object_parts.h"
 #include "furniture_sounds.h"
 #include "main/animated_model.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/item_info.h"
 #include "main/model_anim.h"
 #include "main/model_object.h"

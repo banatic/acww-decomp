@@ -11,7 +11,7 @@
 #include "room_object_parts.h"
 #include "main/animated_model.h"
 #include "main/calendar.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/model_pool.h"
 #include "room_manager.h"
 #include "room_objects.h"

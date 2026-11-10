@@ -5,7 +5,7 @@
 #include "main/calendar.h"
 #include "main/date_time.h"
 #include "main/field_actor.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/session_players.h"
 
 static_assert(offsetof(FieldActor, position) == 0x5c, "position");

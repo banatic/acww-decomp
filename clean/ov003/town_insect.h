@@ -38,7 +38,7 @@
 #include "main/animated_model.h"
 #include "main/catch_sphere.h"
 #include "main/field_collision.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/model_anim.h"
 #include "main/model_pool.h"
 #include "main/sound_emitter.h"

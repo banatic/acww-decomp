@@ -13,7 +13,7 @@
 #include "main/g3d_render.h"
 #include "autoload_2/vector.h"
 #include "itcm/node_hook.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/model_matrix.h"
 #include "main/model_object.h"
 #include "types.h"
@@ -27,7 +27,7 @@ typedef struct AnimatedModelAnim {
     struct AnimatedModelAnim *next; /* 0x10: the next of the render object's list */
 } AnimatedModelAnim;
 
-/* A blend from a node's pose to its animation's (the Ramp of frame_ctrl.h with its class's
+/* A blend from a node's pose to its animation's (the Ramp of frame_control.h with its class's
  * vtable). */
 typedef struct AnimatedModelRamp {
     const void *vtable;

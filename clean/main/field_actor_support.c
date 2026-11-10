@@ -26,7 +26,7 @@
 #include "date_time.h"
 #include "effect_system.h"
 #include "event_queue.h"
-#include "frame_ctrl.h"
+#include "frame_control.h"
 #include "game_variables.h"
 #include "globe.h"
 #include "ground_sound.h"

@@ -6,7 +6,7 @@
 #include "clean.h"
 #include "main/animated_model.h"    /* AnimatedModel_Start, AnimatedModel_StepFrames */
 #include "main/event_queue.h"       /* EventQueue_RequestKind6, EventQueue_TestFlag8 */
-#include "main/frame_ctrl.h"        /* FrameControl_IsDone, FrameControl_Passed */
+#include "main/frame_control.h"     /* FrameControl_IsDone, FrameControl_Passed */
 #include "main/item_code.h"         /* ItemCode_IsFurniture, ItemCode_FurnitureNumber */
 #include "main/map_code.h"          /* MapCode_IsStore */
 #include "main/player_actor_ops.h"  /* PlayerActorOps_TestFlag */

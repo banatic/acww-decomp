@@ -11,7 +11,7 @@
 #include "main/event_queue.h"
 #include "main/field_actor.h"
 #include "main/field_actor_parts.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/group_params.h"
 #include "main/held_item.h"
 #include "main/item_code.h"

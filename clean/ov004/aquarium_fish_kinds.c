@@ -8,7 +8,7 @@
 #include "main/actor.h"
 #include "main/collision_query.h"
 #include "main/field_body.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/model_object.h"
 #include "main/player_actor_ops.h"
 #include "main/session_players.h"

@@ -5,7 +5,7 @@
 #include "clean.h"
 #include "sound_emitter.h"
 #include "effect_system.h"
-#include "frame_ctrl.h"
+#include "frame_control.h"
 #include "ground_sound.h"
 #include "scene_mover.h"
 

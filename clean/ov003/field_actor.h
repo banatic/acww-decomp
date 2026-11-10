@@ -56,7 +56,7 @@
 
 #include "autoload_2/approach.h" /* Vec3 */
 #include "autoload_2/matrix.h"   /* Mtx43 */
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "types.h"
 
 /* A request for a state, as the queue at 0x934 in the actor copies it (0x1c bytes). */

@@ -11,7 +11,7 @@
 #include "main/camera_control.h"
 #include "main/camera_view.h" /* CameraControl_GroundAngle, CameraControl_TargetAcre */
 #include "main/collision_map.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/g3d_resource.h"
 #include "main/globe.h"
 #include "main/shadow.h"

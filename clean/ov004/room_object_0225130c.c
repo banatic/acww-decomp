@@ -10,7 +10,7 @@
 #include "room_object_life.h"
 #include "room_object_methods.h"
 #include "room_object_parts.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/room_sync.h"
 #include "room_objects.h"
 #include "room_sound.h"

@@ -37,7 +37,7 @@
 #include "main/field_collision.h"
 #include "main/fish_disp.h"
 #include "main/fishing_float.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/globe.h"
 #include "main/held_item.h"
 #include "main/item_code.h"

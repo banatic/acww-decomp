@@ -16,7 +16,7 @@
 #include "main/model_matrix.h"
 #include "animated_model.h"
 #include "collision_query.h"
-#include "glasses_look.h"
+#include "accessory_look.h"
 #include "globe.h"
 #include "head_look.h"
 #include "held_item.h"

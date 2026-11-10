@@ -7,8 +7,8 @@
  *
  * A worn item gives the kind: items 0x1431 to 0x1470 kinds 0 to 63 (AccessoryLook_FirstKind),
  * items 0x1471 to 0x1491 kinds 64 to 74 (AccessoryLook_SecondKind). */
-#ifndef CLEAN_MAIN_GLASSES_LOOK_H
-#define CLEAN_MAIN_GLASSES_LOOK_H
+#ifndef CLEAN_MAIN_ACCESSORY_LOOK_H
+#define CLEAN_MAIN_ACCESSORY_LOOK_H
 
 #include "main/model_loader.h"
 #include "main/vram_region.h"

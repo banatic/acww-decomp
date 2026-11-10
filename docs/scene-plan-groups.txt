@@ -783,7 +783,7 @@ match: main/a_mes_obj:AMesObj_Destruct main/ab_all_obj:AbAllObj_Destruct
   main/field_label:FieldLabel_Destroy main/field_label_window:FieldLabelWindow_Delete
   main/field_label_window:FieldLabelWindow_Destroy main/fishing_float:FishingFloatPool_Destruct
   main/fox_shop:FoxPassword_Destruct main/fox_shop:FoxShop_Destruct
-  main/furniture_info:FurnitureFiles_Destruct main/glasses_look:AccessoryLook_DestructTable
+  main/furniture_info:FurnitureFiles_Destruct main/accessory_look:AccessoryLook_DestructTable
   main/global_021cfc98:Global021cfc98_Destruct main/global_021dc5b0:Global021dc5b0_Destruct
   main/globe:Globe_DestructView main/head_look:HeadLook_DestructTable
   main/held_item_pool:HeldItemPool_Destruct main/house_looks:HouseLooks_Destruct
@@ -1124,7 +1124,7 @@ match: autoload_2/sound_emitter_class:SoundEmitterClass_Destruct2Delete
   main/constellations:ConstellationsLabel_Delete
   main/constellations:ConstellationsWideName_Delete
   main/dual_cell_sprite:DualCellSprite_Delete main/field_actor:FieldActorReceiver_Delete
-  main/fox_shop:FoxShopText_Delete main/frame_ctrl:FrameControl_Delete
+  main/fox_shop:FoxShopText_Delete main/frame_control:FrameControl_Delete
   main/joint_blend:JointBlend_Delete main/label_box:LabelBox_Delete
   main/label_sprite:LabelSprite_Delete main/label_sprite:LabelSprite_TextDelete
   main/layered_model:LayeredModel_DeleteAFromFrames main/layered_model:LayeredModel_DeleteAFromRamp

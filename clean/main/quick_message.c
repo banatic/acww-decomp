@@ -25,7 +25,7 @@
 #include "player_records.h"
 #include "scene_query.h"
 #include "screen_sprite.h"
-#include "slots.h"
+#include "quick_message_slots.h"
 #include "state_flags.h"
 #include "text_base.h"
 

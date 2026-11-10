@@ -10,7 +10,7 @@
 #include "main/field_actor.h"
 #include "main/field_actor_parts.h"
 #include "main/field_body.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/game_variables.h"
 #include "main/packed_bytes.h"
 #include "main/place_claim.h"

@@ -9,7 +9,7 @@
  *                                              ItemGroup_HeadA, ItemGroup_IsHeadA
  *   0x13c8-0x1407  worn on the head, the second model (64)
  *                                              ItemGroup_IsHeadB
- *   0x1431-0x1470  worn as the accessory (64; glasses_look.h)
+ *   0x1431-0x1470  worn as the accessory (64; accessory_look.h)
  *                                              ItemGroup_Accessory, ItemGroup_IsAccessory
  *
  * Each test also has a form that answers nothing (ItemGroup_Test...). */
@@ -54,7 +54,7 @@ void ItemGroup_TestIsHeadB(const u16 *code);
  *                                              ItemGroup_HeadFlower, ItemGroup_IsHeadFlower,
  *                                              ItemGroup_HeadFlowerIndex
  *   0x1471-0x1491  flowers worn in the mouth as the accessory (the roses and the gold rose),
- *                  the second of a pair (33; glasses_look.h; the unused entries of both
+ *                  the second of a pair (33; accessory_look.h; the unused entries of both
  *                  groups are named "wilted flower" in the item names)
  *                                              ItemGroup_MouthFlower, ItemGroup_IsMouthFlower,
  *                                              ItemGroup_MouthFlowerIndex

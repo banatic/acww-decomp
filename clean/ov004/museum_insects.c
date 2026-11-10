@@ -12,7 +12,7 @@
 #include "main/calendar.h"
 #include "main/collision_box.h"
 #include "main/collision_query.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/globe.h"
 #include "main/museum_record.h"
 #include "main/rom_file.h"

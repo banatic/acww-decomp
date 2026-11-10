@@ -52,7 +52,7 @@
 #include "fishing_float.h"
 #include "fox_shop.h"
 #include "furniture_info.h"
-#include "glasses_look.h"
+#include "accessory_look.h"
 #include "global_021dc5b0.h"
 #include "globe.h"
 #include "head_look.h"
@@ -1016,7 +1016,7 @@ extern AccessoryLookTable data_021c9e68;
 extern StaticInitRecord data_021c9e48;
 extern void func_0205e018(void *table); /* AccessoryLook_DestructTable */
 
-/* __sinit_020c58f8: the glasses' looks (glasses_look.h). */
+/* __sinit_020c58f8: the glasses' looks (accessory_look.h). */
 void StaticInit_AccessoryLook(void)
 {
     AccessoryLook_ConstructTable(&data_021c9e68);

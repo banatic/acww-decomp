@@ -1,4 +1,4 @@
-#include "../../../clean/main/frame_ctrl.h"
+#include "../../../clean/main/frame_control.h"
 #include "diffcheck.h"
 
 #define CTRL DIFF_SCRATCH

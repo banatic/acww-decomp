@@ -25,7 +25,7 @@
 #include "face_anim_slots.h"
 #include "face_texture.h"
 #include "g3d_tex_copy.h"
-#include "glasses_look.h"
+#include "accessory_look.h"
 #include "head_look.h"
 #include "item_texture.h"
 #include "item_traits.h"

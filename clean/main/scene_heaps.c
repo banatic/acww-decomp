@@ -16,7 +16,7 @@
 #include "face_anim_slots.h"
 #include "face_texture.h"
 #include "fishing_float.h"
-#include "glasses_look.h"
+#include "accessory_look.h"
 #include "head_look.h"
 #include "held_item_pool.h"
 #include "player_actors.h"

@@ -1,5 +1,5 @@
 /* A texture pattern animation played by copying textures into one texture slot (a C++ class of
- * main, vtable data_020dd194, 0x90 bytes, extending the frame control of frame_ctrl.h). The
+ * main, vtable data_020dd194, 0x90 bytes, extending the frame control of frame_control.h). The
  * slot is a texture and a palette, named, of a texture resource in VRAM (the target); for the
  * whole frame the frame control is at, the animation (NitroSystem's NNSG3dResTexPatAnm, its
  * first material) names a texture and a palette of a source texture resource in main memory,
@@ -9,7 +9,7 @@
 #ifndef CLEAN_MAIN_TEX_SLOT_ANIM_H
 #define CLEAN_MAIN_TEX_SLOT_ANIM_H
 
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/g3d_resource.h"
 #include "main/tex_upload.h"
 #include "types.h"

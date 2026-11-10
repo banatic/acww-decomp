@@ -5,7 +5,7 @@
 #include "main/c_library.h"
 #include "main/calendar.h"
 #include "main/date_time.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/model_cache.h"
 #include "main/rom_file.h"
 #include "main/vram_region.h"

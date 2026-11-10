@@ -5,7 +5,7 @@
 
 #include "clean.h"
 #include "main/c_library.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/item_code.h"
 #include "main/model_object.h"
 #include "main/rom_file.h"

@@ -1,5 +1,5 @@
 /* The blend of a joint from the pose it had to its new animation's (a C++ class of main,
- * vtable data_020dd174, 0x3c bytes; the Ramp of frame_ctrl.h with the pose). The animated and
+ * vtable data_020dd174, 0x3c bytes; the Ramp of frame_control.h with the pose). The animated and
  * layered models (animated_model.h, layered_model.h) keep one per animation: while its weight
  * ramps from 0 to 1.0, the node callback before a node records the node's pose
  * (JointBlend_RecordPose) and the one after it mixes that pose into the node's new transform

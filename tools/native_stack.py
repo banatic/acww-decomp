@@ -380,7 +380,7 @@ CLEAN_SHA = '9973a381646ac313e81df9a0a12a2dca2c55b7582020b45ff497afff50bc17b5'
 # The Clean insect room (InsectRoom_Update) sets the cases' centers' y to 0 (its BUG: note); the
 # copy keeps the centers at the Native one's guest slot instead.
 CLEAN_INSECT_ROOM = 'clean/ov004/museum_insects.c'
-CLEAN_INSECT_ROOM_SHA = '40a484c9d47bedaed4a7f28d62ff442cca7b26937f5d8864e5c50d7bd5c37cbe'
+CLEAN_INSECT_ROOM_SHA = 'ca9f3758620301c1749b074805494fd59a6d51b32a15619e7864299c61f9e62e'
 # The Clean versions of the cue's functions and of the room object's matrix (CUE_EDITS): the
 # Clean sources keep 0 where the ROM reads its stack (their BUG: notes); the mixed Native/Clean
 # build compiles copies with the Native ones' guest slots and registers.

@@ -6,7 +6,7 @@
 #include "autoload_2/approach.h"
 #include "clean.h"
 #include "furniture_model.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "member_pointer.h"
 #include "room_object_anims.h"
 #include "room_object_body.h"

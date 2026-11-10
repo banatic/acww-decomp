@@ -7,7 +7,7 @@
 #include "autoload_2/vector.h"
 #include "clean.h"
 #include "cloth_slots.h"
-#include "frame_ctrl.h"
+#include "frame_control.h"
 #include "g3d_resource.h"
 #include "item_code.h"
 #include "model_loader.h"

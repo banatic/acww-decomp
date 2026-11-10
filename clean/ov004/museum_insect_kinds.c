@@ -3,7 +3,7 @@
 
 #include "clean.h"
 #include "main/animated_model.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/main_random.h"
 #include "main/model_pool.h"
 #include "museum_insect_motions.h"

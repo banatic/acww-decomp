@@ -12,7 +12,7 @@
 #ifndef CLEAN_MAIN_SCENE_FACE_H
 #define CLEAN_MAIN_SCENE_FACE_H
 
-#include "frame_ctrl.h"
+#include "frame_control.h"
 #include "types.h"
 
 /* An animation number of none, and the defaults that replace it. */

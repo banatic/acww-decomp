@@ -1,5 +1,5 @@
-/* An object's four slots: see slots.h. */
-#include "slots.h"
+/* An object's four slots: see quick_message_slots.h. */
+#include "quick_message_slots.h"
 
 #include <assert.h>
 #include <stddef.h>

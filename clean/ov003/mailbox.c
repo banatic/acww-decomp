@@ -27,7 +27,7 @@
 #include "ov003/field_actor.h"
 #include "main/animated_model.h"
 #include "main/event_queue.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "object_actors.h"
 #include "ov009/town_object_actor.h"
 #include "ov009/town_object_actor_files.h"

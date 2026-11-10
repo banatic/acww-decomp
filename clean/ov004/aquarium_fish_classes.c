@@ -8,7 +8,7 @@
 #include "autoload_2/approach.h"
 #include "autoload_2/matrix.h"
 #include "clean.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/model_object.h"
 #include "member_pointer.h"
 

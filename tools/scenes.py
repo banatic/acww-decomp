@@ -233,7 +233,7 @@ SAVES = {
     # main/house_record.h, 0)
     "loan-paid": [(HELD, "<H", 0x1374), (MONEY, "<I", 30000), (0xF52C + 0x1590, "<I", 0)],
     # nothing held; pockets 0-5: items worn on the head of each model group (main/item_group.h:
-    # 0x13a8, 0x13c8 and 0x1408) and of the accessory (0x1431, 0x1471; main/glasses_look.h), and 0x13c3
+    # 0x13a8, 0x13c8 and 0x1408) and of the accessory (0x1431, 0x1471; main/accessory_look.h), and 0x13c3
     "wear": [(HELD, "<H", 0xFFF1)] + [(POCKETS + 2 * i, "<H", item) for i, item in
                                        enumerate((0x13A8, 0x13C8, 0x1408, 0x1431, 0x1471, 0x13C3))],
     # the wallet full (99,999 bells) and the savings account at its most (999,999,999 bells, the

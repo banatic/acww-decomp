@@ -1,5 +1,5 @@
-/* The field actors' accessory, the "/PGls/" models (glasses_look.h). */
-#include "glasses_look.h"
+/* The field actors' accessory, the "/PGls/" models (accessory_look.h). */
+#include "accessory_look.h"
 
 #include "clean.h"
 #include "scene_heaps.h"

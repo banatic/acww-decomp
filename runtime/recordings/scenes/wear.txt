@@ -3,7 +3,7 @@
 # Save: wear (nothing held; items worn on the head of each model group and of part C in pockets
 # 0-5). Y at 2760 opens the pockets; the pen holds each item 40 frames and drags it onto the
 # player (151,60), one every 214 frames from 2998: two hats, a third (main/head_look.c), glasses
-# and a second pair (main/glasses_look.c), then pocket 5's item, refused while the glasses are
+# and a second pair (main/accessory_look.c), then pocket 5's item, refused while the glasses are
 # worn (ov096/pockets_screen.c PocketsScreen_RefuseRecordSlot); the message touched away, the
 # glasses dragged back to a pocket and the item worn; Y twice closes the page.
 0 - -

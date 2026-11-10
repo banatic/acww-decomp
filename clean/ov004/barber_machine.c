@@ -6,7 +6,7 @@
 #include "autoload_2/heap.h"
 #include "clean.h"
 #include "main/animated_model.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/room_object_state.h"
 #include "member_pointer.h"
 #include "rmo_object_base.h"

@@ -28,7 +28,7 @@
 #include "field_collision.h"
 #include "field_label.h"
 #include "fishing_float.h"
-#include "glasses_look.h"
+#include "accessory_look.h"
 #include "head_look.h"
 #include "held_item.h"
 #include "layered_model.h"

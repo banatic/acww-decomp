@@ -4,7 +4,7 @@
 #include "autoload_2/heap.h"
 #include "clean.h"
 #include "animated_model.h"
-#include "frame_ctrl.h"
+#include "frame_control.h"
 #include "joint_blend.h"
 #include "model_anim.h"
 

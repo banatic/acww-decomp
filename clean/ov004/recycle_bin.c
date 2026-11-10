@@ -9,7 +9,7 @@
 #include "clean.h"
 #include "main/animated_model.h"
 #include "main/event_queue.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/group_params.h"
 #include "main/room_object_state.h"
 #include "main/scene_object_base.h"

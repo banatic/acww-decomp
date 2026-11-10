@@ -10,7 +10,7 @@
 #include "main/actor.h"
 #include "main/camera_control.h"
 #include "main/event_queue.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/game_variables.h"
 #include "main/link_global.h"
 #include "main/main_random.h"

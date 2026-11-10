@@ -11,7 +11,7 @@
 #include "main/sound.h"    /* SoundSys_PlaySe */
 #include "ov004/member_pointer.h"
 #include "main/date_time.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/g3d_resource.h"
 #include "main/model_anim.h"
 #include "main/model_object.h"

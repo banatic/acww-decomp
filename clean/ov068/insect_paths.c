@@ -10,7 +10,7 @@
 #include "main/acre_map.h"
 #include "main/acre_tile.h"
 #include "main/actor_table.h" /* Position_Tile */
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/main_random.h"
 #include "main/model_pool.h"
 #include "main/overlay_groups.h"

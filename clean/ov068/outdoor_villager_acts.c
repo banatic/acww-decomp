@@ -10,7 +10,7 @@
 #include "main/event_queue.h"
 #include "main/field_collision.h"
 #include "main/footsteps.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/held_item_link.h"
 #include "main/obj_020d8c64.h"
 #include "main/scene_action.h"

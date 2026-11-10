@@ -9,7 +9,7 @@
 #include "main/collision_query.h"
 #include "main/field_body.h"
 #include "main/field_collision.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/main_random.h"
 
 static_assert(offsetof(AquariumSwimmer, bend.bending) == 0x22e, "swimmer bending");

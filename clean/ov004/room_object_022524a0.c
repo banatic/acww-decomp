@@ -11,7 +11,7 @@
 #include "room_object_parts.h"
 #include "main/animated_model.h"
 #include "main/field_collision.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/room_sync.h"
 
 static_assert(offsetof(RoomObject022524a0, state) == 0x844, "state");

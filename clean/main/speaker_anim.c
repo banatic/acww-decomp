@@ -8,7 +8,7 @@
 #include "anim_slots.h"
 #include "anim_tables.h"
 #include "animated_model.h"
-#include "frame_ctrl.h"
+#include "frame_control.h"
 #include "held_item_pool.h"
 #include "item_traits.h"
 #include "layered_model.h"

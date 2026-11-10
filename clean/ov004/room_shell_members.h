@@ -13,7 +13,7 @@
 #define CLEAN_OV004_ROOM_SHELL_MEMBERS_H
 
 #include "main/collision_box.h"
-#include "main/frame_ctrl.h"
+#include "main/frame_control.h"
 #include "main/model_object.h"
 #include "main/touch_pick_shapes.h"
 #include "types.h"

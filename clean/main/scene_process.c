@@ -41,7 +41,7 @@
 #include "face_texture.h"
 #include "field_body.h"
 #include "fishing_float.h"
-#include "glasses_look.h"
+#include "accessory_look.h"
 #include "head_look.h"
 #include "held_item_pool.h"
 #include "item_info.h"
