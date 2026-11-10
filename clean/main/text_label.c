@@ -37,12 +37,12 @@ extern TextFont data_021c82e8;         /* the other font TextLabel_OpenStyledBox
 
 extern int func_02051c8c_unk(u16 *text, int max); /* the 16-bit characters before a 0, at most max */
 
-typedef char *(*TextBufferMethod)(void *self);
+typedef char *(*TextBufferMethodFn)(void *self);
 
 /* The object's characters, through its vtable. */
 static const char *buffer_of(TextLabel *label)
 {
-    return ((TextBufferMethod) (uintptr_t) label->vtable->buffer)(label);
+    return ((TextBufferMethodFn) (uintptr_t) label->vtable->buffer)(label);
 }
 
 /* ---- Wide text */

@@ -981,7 +981,7 @@ int TownInsect_HeldFromMatrix(int player, short *scale, Mtx43 *matrix, int end)
             if (insect->state == TOWN_INSECT_STATE_ACTIVE) {
                 TownInsectModel *model = &insect->model;
                 if (kind == 0x14 && (u16) (model->frames.frame >> 12) == 0) {
-                    FrameCtrl_Init(&model->frames, 4, 1, 0x1000, 0);
+                    FrameControl_Init(&model->frames, 4, 1, 0x1000, 0);
                     model->frames.frame = 0x4000;
                 } else if (kind == 0xa || kind == 0xb) {
                     AnimatedModel_SetFrame((AnimatedModel *) model, (u16) (model->frames.frame >> 12) == 0 ? 1 : 0);
@@ -990,7 +990,7 @@ int TownInsect_HeldFromMatrix(int player, short *scale, Mtx43 *matrix, int end)
                     if (frames == 0xe && (u16) (model->frames.frame >> 12) == 0xd) {
                         model->frames.frame = 0xa000;
                     } else if (frames != 0xe) {
-                        FrameCtrl_Init(&model->frames, 0xe, 0, 0x1000, 0xa);
+                        FrameControl_Init(&model->frames, 0xe, 0, 0x1000, 0xa);
                     }
                 }
             }
@@ -2375,7 +2375,7 @@ void TownInsect_Run(TownInsectProcess *process, TownInsect *insect, int index, i
         if (town_insect_kind_visibility(kind) == 0) {
             AnimatedModel_StepFrames(town_insect_animated(insect));
             if (kind == TOWN_INSECT_KIND_WASPS || kind == TOWN_INSECT_KIND_ANTS) {
-                FrameCtrl_Step(&insect->anim.ctrl);
+                FrameControl_Step(&insect->anim.ctrl);
                 insect->anim.anim->frame = insect->anim.ctrl.frame;
             }
         }
@@ -2515,7 +2515,7 @@ void TownInsect_Load(TownInsectProcess *process, TownInsect *insect, int pool)
     AnimatedModel_Start(model, anim, 0, speed, 0, 0);
     AnimatedModel_Attach(model);
     if (kind == 9) {
-        FrameCtrl_Init(&insect->model.frames, 9, FRAME_CTRL_ONCE, 0, 9);
+        FrameControl_Init(&insect->model.frames, 9, FRAME_CONTROL_ONCE, 0, 9);
     }
     if (kind == TOWN_INSECT_KIND_WASPS || kind == TOWN_INSECT_KIND_ANTS) {
         CLib_SPrintf(path, data_ov003_0223c528, kind);

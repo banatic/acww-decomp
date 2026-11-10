@@ -624,7 +624,7 @@ int VillagerTalkTopics_HasItem(u8 *villager, VillagerMemory *memory)
 CLEAN_AS(func_02021ae4, VillagerTalkTopics_HasItem)
 
 /* The memory picked by `test`, and its town put into the talk's slot 9. */
-static int topics_pick_town(VillagerTalk *talk, VillagerMemory **list, int count, VillagerTalkTopicsTest test)
+static int topics_pick_town(VillagerTalk *talk, VillagerMemory **list, int count, VillagerTalkTopicsTestFn test)
 {
     int memory = VillagerTalkTopics_PickRandom(topics_record(talk), list, count, test);
     if (memory != 0) {
@@ -755,7 +755,7 @@ CLEAN_AS(func_02021d60, VillagerTalkTopics_HoldsLetter)
 
 /* The memory picked by `test`: its town into the talk's slot 9 and the days since the player
  * was met into slot 0. */
-static int topics_pick_days(VillagerTalk *talk, VillagerMemory **list, int count, VillagerTalkTopicsTest test)
+static int topics_pick_days(VillagerTalk *talk, VillagerMemory **list, int count, VillagerTalkTopicsTestFn test)
 {
     int memory = topics_pick_town(talk, list, count, test);
     if (memory != 0) {
@@ -813,7 +813,7 @@ CLEAN_AS(func_02021e68, VillagerTalkTopics_DaysSinceMet)
 /* func_02021ea8: one of the memories of the list (0 for none) that `test` passes (answers 1)
  * drawn at random; 0 when none passes.
  * REQUIRES: count is at most 8 (the original marks the passing ones in 8 bytes of its stack). */
-int VillagerTalkTopics_PickRandom(u8 *villager, VillagerMemory **list, int count, VillagerTalkTopicsTest test)
+int VillagerTalkTopics_PickRandom(u8 *villager, VillagerMemory **list, int count, VillagerTalkTopicsTestFn test)
 {
     u8 passed[VILLAGER_TALK_TOPICS_MEMORIES];
     int found = 0;

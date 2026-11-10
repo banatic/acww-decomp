@@ -18,8 +18,8 @@ extern u32 OSiHeapInfo[SESSION_SLOTS];
 extern u32 data_021c72d4;
 
 /* A handler of message 23, by payload byte 0. */
-typedef void ObjectClaimHandler(const u8 *payload, int slot);
-extern ObjectClaimHandler *const data_020dab98[];
+typedef void ObjectClaimHandlerFn(const u8 *payload, int slot);
+extern ObjectClaimHandlerFn *const data_020dab98[];
 
 /* The id in payload bytes 1-4 (little-endian). */
 static u32 payload_id(const u8 *payload)
@@ -39,13 +39,13 @@ static void put_id(u8 *payload, u32 id)
 /* `object` told of `code` (its vtable slot 0x4c), for `participant`. */
 static void tell(SceneObjectBase *object, int code, u8 participant)
 {
-    ((SceneObjectBaseOnEvent *) SceneObjectBase_Slot(object, SCENE_OBJECT_BASE_SLOT_ON_EVENT))(object, code, participant);
+    ((SceneObjectBaseOnEventFn *) SceneObjectBase_Slot(object, SCENE_OBJECT_BASE_SLOT_ON_EVENT))(object, code, participant);
 }
 
 /* The object's question in vtable slot `offset` about `player`. */
 static int ask(SceneObjectBase *object, u32 offset, int player)
 {
-    return ((SceneObjectBaseAsk *) SceneObjectBase_Slot(object, offset))(object, (SceneObjectBase *) (uintptr_t) player);
+    return ((SceneObjectBaseAskFn *) SceneObjectBase_Slot(object, offset))(object, (SceneObjectBase *) (uintptr_t) player);
 }
 
 /* ---- Received ---- */

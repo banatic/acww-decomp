@@ -109,7 +109,7 @@ static void aquarium_classes_run_mode(AquariumFish *fish)
     MemberPointer_CallVoid(&data_ov004_0225949c[fish->mode], fish);
 }
 
-/* The last frame of the fish's animation, less 1, as FrameCtrl_Passed takes it. */
+/* The last frame of the fish's animation, less 1, as FrameControl_Passed takes it. */
 static u16 aquarium_classes_before_last_frame(const AquariumFish *fish)
 {
     u32 frames = ((u32) fish->model.frames.end << 4) >> 16;
@@ -222,7 +222,7 @@ void AquariumKind35_Swim(AquariumKind35 *fish)
     switch (fish->own.climb) {
         case AQUARIUM_CLIMB_COAST:
             if (AquariumSwim_Random(0, 100) <= 1 || base->position.y >= 0x2b33) {
-                if (FrameCtrl_Passed(&base->model.frames, 1)) {
+                if (FrameControl_Passed(&base->model.frames, 1)) {
                     aquarium_climber_set(&fish->climber, AQUARIUM_CLIMB_SINK);
                 }
             } else if (AquariumSwim_Random(0, 100) <= 30) {
@@ -366,12 +366,12 @@ CLEAN_AS(func_ov004_022385dc, AquariumKind15_SetUp)
 void AquariumKind11_PlayLoops(AquariumKind11 *fish)
 {
     AquariumFish *base = &fish->base;
-    if (FrameCtrl_Passed(&base->model.frames, 1)) {
+    if (FrameControl_Passed(&base->model.frames, 1)) {
         SoundSource_PlayHeld(&fish->own.sound, KIND11_SOUND);
         fish->own.loops_done++;
     }
     if (fish->own.loops_done >= fish->own.loops &&
-        FrameCtrl_Passed(&base->model.frames, aquarium_classes_before_last_frame(base))) {
+        FrameControl_Passed(&base->model.frames, aquarium_classes_before_last_frame(base))) {
         fish->own.state = AQUARIUM_KIND11_WAIT;
         base->timer = 0;
         base->model.frames.frame = 0;
@@ -809,7 +809,7 @@ void AquariumKind36_Swim(AquariumKind36 *fish)
     switch (fish->own.climb) {
         case AQUARIUM_CLIMB_COAST:
             if (AquariumSwim_Random(0, 250) <= 1 || base->position.y >= 0x2b33) {
-                if (FrameCtrl_Passed(&base->model.frames, 1)) {
+                if (FrameControl_Passed(&base->model.frames, 1)) {
                     aquarium_climber_set(&fish->climber, AQUARIUM_CLIMB_SINK);
                 }
             } else if (base->position.y == base->previous.y) {

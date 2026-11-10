@@ -49,8 +49,8 @@ extern u8 data_021fbddc; /* the pen went down or up this frame */
 #define SLOT_DRAW 2
 #define SLOT_RESET 2
 
-typedef void PopupMethod(Popup *popup);
-typedef void ReceiverMethod(TalkReceiver *receiver);
+typedef void PopupMethodFn(Popup *popup);
+typedef void ReceiverMethodFn(TalkReceiver *receiver);
 
 /* The function in vtable slot `slot` of an object whose first word is its vtable. */
 static uintptr_t virtual_slot(const void *vtable, int slot)
@@ -60,7 +60,7 @@ static uintptr_t virtual_slot(const void *vtable, int slot)
 
 static void draw_popup(ErrorMessage *error)
 {
-    ((PopupMethod *) virtual_slot(error->popup.vtable, SLOT_DRAW))(&error->popup);
+    ((PopupMethodFn *) virtual_slot(error->popup.vtable, SLOT_DRAW))(&error->popup);
 }
 
 /* The popup as main's sliding window, which it is. */
@@ -220,7 +220,7 @@ void ErrorMessage_StartTalk(ErrorMessage *error, const u8 *message, int flag)
     TalkObject *talk = TalkObject_Get(ERROR_TALK);
     TalkReceiver *receiver = &error->receiver;
 
-    ((ReceiverMethod *) virtual_slot(receiver->base.vtable, SLOT_RESET))(receiver);
+    ((ReceiverMethodFn *) virtual_slot(receiver->base.vtable, SLOT_RESET))(receiver);
     MessageReceiver_SetName(&receiver->base, data_ov002_0220bea0);
     receiver->base.message = *message;
     TalkObject_AttachReceiver(talk, receiver);

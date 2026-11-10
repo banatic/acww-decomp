@@ -102,7 +102,7 @@ extern const MemberPointer data_ov047_02262b18, data_ov047_02262b10, data_ov047_
 #define OWL_LINE_FOSSIL_KIND 0x50
 #define OWL_LINE_FOSSIL_KIND_LAST 0x67
 
-/* The states of the pockets' tests (PocketPredicate's second argument) they answer in. */
+/* The states of the pockets' tests (PocketPredicateFn's second argument) they answer in. */
 #define OWL_POCKET_STATE_PLAIN 0
 #define OWL_POCKET_STATE_ERRAND 2
 /* The mode of the screen of the pockets with a test, and the screens. */

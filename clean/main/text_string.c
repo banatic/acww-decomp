@@ -12,19 +12,19 @@ extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 /* The wide space, trimmed like the space 0x20. */
 #define WIDE_SPACE 0x3000
 
-typedef int TextCapacity(TextObject *text);
-typedef void *TextBuffer(TextObject *text);
+typedef int TextCapacityFn(TextObject *text);
+typedef void *TextBufferFn(TextObject *text);
 
 /* The text's capacity, in its own characters (vtable slot 2). */
 static int capacity_of(TextObject *text)
 {
-    return ((TextCapacity *) (uintptr_t) text->vtable->capacity)(text);
+    return ((TextCapacityFn *) (uintptr_t) text->vtable->capacity)(text);
 }
 
 /* The address of its characters (vtable slot 3). */
 static void *buffer_of(TextObject *text)
 {
-    return ((TextBuffer *) (uintptr_t) text->vtable->buffer)(text);
+    return ((TextBufferFn *) (uintptr_t) text->vtable->buffer)(text);
 }
 
 /* func_0205182c: the wide text's characters copied into `count` 16-bit characters, the rest

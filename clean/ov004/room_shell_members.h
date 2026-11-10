@@ -30,13 +30,13 @@ typedef struct RoomShellAnimObject {
 /* An animated model (animated_model.h) without the blended model's part. */
 typedef struct RoomShellModel {
     ModelObject object;        /* 0x00: object.unk_64 is the model's base matrix (a Mtx43) */
-    FrameCtrl frames;          /* 0x9c */
+    FrameControl frames;       /* 0x9c */
     RoomShellAnimObject *anim; /* 0xb4: its joint animation's object */
 } RoomShellModel;
 
 /* A ModelAnim: a frame control and its animation object for a model. */
 typedef struct RoomShellMaterialAnim {
-    FrameCtrl ctrl;            /* 0x00: its vtable is the class's */
+    FrameControl ctrl;         /* 0x00: its vtable is the class's */
     RoomShellAnimObject *anim; /* 0x18: NULL until allocated */
     u8 *model;                 /* 0x1c */
 } RoomShellMaterialAnim;

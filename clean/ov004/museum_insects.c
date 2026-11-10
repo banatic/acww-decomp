@@ -708,7 +708,7 @@ void InsectRoom_UpdateInsect(InsectRoom *self, MuseumInsect *insect)
     if (kind_info(kind)->visibility_anim == 0) {
         AnimatedModel_StepFrames(insect_model(insect));
         if (kind == KIND_24) {
-            FrameCtrl_Step(&insect->anim.ctrl);
+            FrameControl_Step(&insect->anim.ctrl);
             insect->anim.anim->frame = insect->anim.ctrl.frame;
         }
     }

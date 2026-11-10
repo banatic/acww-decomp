@@ -67,9 +67,9 @@ static void room_object0225130c_tick(RoomObject0225130c *object)
     if (RoomObject_IsUnplaced(&object->base)) {
         return;
     }
-    if (FrameCtrl_Passed(&object->base.model.frames, 0)) {
+    if (FrameControl_Passed(&object->base.model.frames, 0)) {
         RoomSound_SetVariable(&object->base.sound, 1);
-    } else if (FrameCtrl_Passed(&object->base.model.frames, ROOM_OBJECT_0225130C_TICK_FRAME)) {
+    } else if (FrameControl_Passed(&object->base.model.frames, ROOM_OBJECT_0225130C_TICK_FRAME)) {
         RoomSound_SetVariable(&object->base.sound, (object->ticks & 1) != 0 ? 2 : 1);
         object->ticks++;
     }

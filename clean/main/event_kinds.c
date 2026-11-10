@@ -29,8 +29,8 @@ static SceneObjectBase *find(u32 id)
 /* `object` told of an event (its vtable slot 0x4c), for this console's player. */
 static void tell(SceneObjectBase *object, int code)
 {
-    ((SceneObjectBaseOnEvent *) SceneObjectBase_Slot(object, SCENE_OBJECT_BASE_SLOT_ON_EVENT))(object, code,
-                                                                                               EVENT_KIND_THIS_PLAYER);
+    ((SceneObjectBaseOnEventFn *) SceneObjectBase_Slot(object, SCENE_OBJECT_BASE_SLOT_ON_EVENT))(object, code,
+                                                                                                 EVENT_KIND_THIS_PLAYER);
 }
 
 /* ---- The places a kind has nothing to do in ---- */
@@ -405,7 +405,7 @@ int EventKind_TakeAct(EventQueueEntry *event)
         }
         event->second_id = SceneObjectBase_Id(found);
     } else if (!SceneObjectBase_CanAct(target, actor)) {
-        if (!((SceneObjectBaseAsk *) SceneObjectBase_Slot(target, SCENE_OBJECT_BASE_SLOT_ASK_54))(target, actor)) {
+        if (!((SceneObjectBaseAskFn *) SceneObjectBase_Slot(target, SCENE_OBJECT_BASE_SLOT_ASK_54))(target, actor)) {
             return 0;
         }
         event->step_17 = EVENT_KIND_ACT_ASK_54;
@@ -475,8 +475,8 @@ int EventKind_ClaimPerson(EventQueueEntry *event)
             if (Session_IsLinked(data_020ccf94)) {
                 SceneObjectBase *person = find(event->second_id);
                 if (SceneObjectBase_IsPerson(person) && event->step_17 == EVENT_KIND_ACT_KIND_6_7) {
-                    SceneObjectBaseAsk *ask =
-                        (SceneObjectBaseAsk *) SceneObjectBase_Slot(person, SCENE_OBJECT_BASE_SLOT_ASK_58);
+                    SceneObjectBaseAskFn *ask =
+                        (SceneObjectBaseAskFn *) SceneObjectBase_Slot(person, SCENE_OBJECT_BASE_SLOT_ASK_58);
                     if (!ask(person, SessionPlayers_ActorOf(SESSION_PLAYERS_OWN))) {
                         return 0;
                     }

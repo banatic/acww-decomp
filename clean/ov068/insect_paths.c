@@ -289,7 +289,7 @@ int InsectPath_GoForPlayer(TownInsect *insect, int mode, const Vec3 *player, s16
                 if (FieldActor_PlayerRequestState6d(insect->kind == INSECT_PATH_KIND_SCORPION) != 0) {
                     insect->action = INSECT_PATH_CALM;
                     insect->unk_24c = 1;
-                    FrameCtrl_Init(&insect->model.frames, 0, 2, 0x1000, frame_number(insect->model.frames.frame));
+                    FrameControl_Init(&insect->model.frames, 0, 2, 0x1000, frame_number(insect->model.frames.frame));
                 } else {
                     int t = *hop;
                     if (t > 0 && insect->kind == INSECT_PATH_KIND_TARANTULA) {
@@ -344,7 +344,7 @@ CLEAN_AS(func_ov068_02270328, InsectPath_GoForPlayer)
 int InsectPath_TurnToPlayer(TownInsect *insect, int mode, const Vec3 *player)
 {
     Vec3 *position = &insect->position;
-    FrameCtrl *frames = &insect->model.frames;
+    FrameControl *frames = &insect->model.frames;
     int timer = insect->timer;
     s16 angle = insect->angle_y;
     s16 *seen = &insect->unk_23e;
@@ -384,9 +384,9 @@ int InsectPath_TurnToPlayer(TownInsect *insect, int mode, const Vec3 *player)
     }
     u16 frame = frame_number(frames->frame);
     if (frame < 4 && end < 0xb) {
-        FrameCtrl_Init(frames, 0xb, 1, 0x1000, 4);
+        FrameControl_Init(frames, 0xb, 1, 0x1000, 4);
     } else if (end == 0xb && frame == 0xa) {
-        FrameCtrl_Init(frames, 0xe, 0, 0x1000, 0xa);
+        FrameControl_Init(frames, 0xe, 0, 0x1000, 0xa);
     }
     return 1;
 }
@@ -554,22 +554,22 @@ CLEAN_AS(func_ov068_02270890, InsectPath_CircleOrLeave)
  * a smaller turn stretches it and plays frames 0x2e with flags 3 past frame 0x2d, else 1. */
 void InsectPath_Flap(Vec3 *scale, TownInsectModel *model, int turned)
 {
-    FrameCtrl *frames = &model->frames;
+    FrameControl *frames = &model->frames;
     s16 frame = (s16) frame_number(frames->frame);
     int size = turned < 0 ? -turned : turned;
     if (size > INSECT_PATH_TURN_LIMIT) {
         InsectPath_StretchScale(scale, 0);
         if (turned > 0) {
-            FrameCtrl_Init(frames, 0, 3, 0x4000, (u16) frame);
+            FrameControl_Init(frames, 0, 3, 0x4000, (u16) frame);
         } else {
-            FrameCtrl_Init(frames, 0x5a, 1, 0x4000, (u16) frame);
+            FrameControl_Init(frames, 0x5a, 1, 0x4000, (u16) frame);
         }
     } else {
         InsectPath_StretchScale(scale, 1);
         if (frame > 0x2d) {
-            FrameCtrl_Init(frames, 0x2e, 3, 0x4000, (u16) frame);
+            FrameControl_Init(frames, 0x2e, 3, 0x4000, (u16) frame);
         } else {
-            FrameCtrl_Init(frames, 0x2e, 1, 0x4000, (u16) frame);
+            FrameControl_Init(frames, 0x2e, 1, 0x4000, (u16) frame);
         }
     }
 }

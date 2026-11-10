@@ -360,7 +360,7 @@ void TvScreen_Update(TvScreen *screen)
 {
     if (screen->source != NULL && screen->anim != NULL) {
         TexSlotAnim_Update(&screen->slot);
-        if (FrameCtrl_Passed(&screen->slot.ctrl, 0)) {
+        if (FrameControl_Passed(&screen->slot.ctrl, 0)) {
             int loops = screen->loops + 1;
             screen->loops = (u16) (loops > LOOPS_MAX ? LOOPS_MAX : loops);
         }

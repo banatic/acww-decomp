@@ -71,7 +71,7 @@ extern u8 data_021f4ba0[];
 extern void __register_global_object(void *object, void *destruct, void *record);
 extern void func_020051b0(void *item); /* the item code's destructor (does nothing) */
 
-typedef int TownObjectsSetMode(void *actor, unsigned int mode);
+typedef int TownObjectsSetModeFn(void *actor, unsigned int mode);
 
 /* The visit record of index `index`, as the ARM addresses it (an index of -1 is the byte
  * before the table). */
@@ -120,11 +120,11 @@ static int town_objects_acre_of(int tile)
 }
 
 /* The town object actor's function that sets its mode. */
-static TownObjectsSetMode *town_objects_set_mode(const void *actor)
+static TownObjectsSetModeFn *town_objects_set_mode(const void *actor)
 {
     u32 vtable = *(const u32 *) actor;
     u32 function = *(const u32 *) (uintptr_t) (vtable + TOWN_OBJECTS_SET_MODE_SLOT);
-    return (TownObjectsSetMode *) (uintptr_t) function;
+    return (TownObjectsSetModeFn *) (uintptr_t) function;
 }
 
 /* ---- The objects' footprints on the town's map */
@@ -593,13 +593,13 @@ extern void *func_ov003_02220294(const Vec3 *position);
 #define TOWN_OBJECTS_VALUE_SLOT 0x64
 #define TOWN_OBJECTS_VALUE_OFFSET 4
 
-typedef void *TownObjectsValueOf(void *actor);
+typedef void *TownObjectsValueOfFn(void *actor);
 
-static TownObjectsValueOf *town_objects_value_of(const void *actor)
+static TownObjectsValueOfFn *town_objects_value_of(const void *actor)
 {
     u32 vtable = *(const u32 *) actor;
     u32 function = *(const u32 *) (uintptr_t) (vtable + TOWN_OBJECTS_VALUE_SLOT);
-    return (TownObjectsValueOf *) (uintptr_t) function;
+    return (TownObjectsValueOfFn *) (uintptr_t) function;
 }
 
 /* func_020b29c0: in mode 0, for the town object actor near `position` whose record's byte 2 is 1,

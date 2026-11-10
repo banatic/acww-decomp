@@ -28,7 +28,7 @@ extern void func_02064120(void *order);
 /* The chances of the random place are out of this. */
 #define ITEM_GROUP_ORDER_CHANCES 100
 
-typedef u32 ItemGroupOrderBelow(DateRandom *source, u32 bound);
+typedef u32 ItemGroupOrderBelowFn(DateRandom *source, u32 bound);
 
 static u8 house_tenth(void)
 {
@@ -117,7 +117,7 @@ int ItemGroupOrder_PickGroup(u8 *order, int place, DateRandom *source)
             if (source == NULL) {
                 source = &clock;
             }
-            u32 roll = ((ItemGroupOrderBelow *) (uintptr_t) source->vtable->below)(source, ITEM_GROUP_ORDER_CHANCES);
+            u32 roll = ((ItemGroupOrderBelowFn *) (uintptr_t) source->vtable->below)(source, ITEM_GROUP_ORDER_CHANCES);
             int picked;
             if (roll < first) {
                 picked = ItemGroupOrder_PickGroup(order, ITEM_GROUP_ORDER_FIRST, source);

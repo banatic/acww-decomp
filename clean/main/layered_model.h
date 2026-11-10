@@ -24,11 +24,11 @@
 typedef struct LayeredModel {
     AnimatedModel base;        /* 0x00: the blended model; its animation is the base one */
     AnimatedModelAnim *anim_a; /* 0xf4 */
-    FrameCtrl frames_a;        /* 0xf8 */
+    FrameControl frames_a;     /* 0xf8 */
     AnimatedModelRamp ramp_a;  /* 0x110 */
     u32 nodes_a[2];            /* 0x14c: nodes 0-31, then 32-63 */
     AnimatedModelAnim *anim_b; /* 0x154 */
-    FrameCtrl frames_b;        /* 0x158 */
+    FrameControl frames_b;     /* 0x158 */
     AnimatedModelRamp ramp_b;  /* 0x170 */
     u32 nodes_b[2];            /* 0x1ac */
 } LayeredModel;
@@ -78,12 +78,12 @@ LayeredModel *LayeredModel_DeleteA(LayeredModel *model);
 LayeredModel *LayeredModel_DestructAComplete(LayeredModel *model);
 LayeredModel *LayeredModel_ConstructA(LayeredModel *model);
 LayeredModel *LayeredModel_ConstructABase(LayeredModel *model);
-LayeredModel *LayeredModel_DeleteAFromFrames(FrameCtrl *frames);
-LayeredModel *LayeredModel_DestructAFromFrames(FrameCtrl *frames);
+LayeredModel *LayeredModel_DeleteAFromFrames(FrameControl *frames);
+LayeredModel *LayeredModel_DestructAFromFrames(FrameControl *frames);
 LayeredModel *LayeredModel_DeleteAFromRamp(AnimatedModelRamp *ramp);
 LayeredModel *LayeredModel_DestructAFromRamp(AnimatedModelRamp *ramp);
-LayeredModel *LayeredModel_DeleteBFromFrames(FrameCtrl *frames);
-LayeredModel *LayeredModel_DestructBFromFrames(FrameCtrl *frames);
+LayeredModel *LayeredModel_DeleteBFromFrames(FrameControl *frames);
+LayeredModel *LayeredModel_DestructBFromFrames(FrameControl *frames);
 LayeredModel *LayeredModel_DeleteBFromRamp(AnimatedModelRamp *ramp);
 LayeredModel *LayeredModel_DestructBFromRamp(AnimatedModelRamp *ramp);
 

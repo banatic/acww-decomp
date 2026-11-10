@@ -65,9 +65,9 @@ int Local_Call02269638(const void *data, u32 length);
 void Wfc_Call022784a0(void);
 
 /* What the game is handed data received from a peer with: the peer's AID, the data, its size. */
-typedef void ReceiveHandler(int aid, char *buffer, unsigned int size);
+typedef void ReceiveHandlerFn(int aid, char *buffer, unsigned int size);
 /* Called once a block of the send queue was sent. */
-typedef void SentCallback(void *argument);
+typedef void SentCallbackFn(void *argument);
 
 int Net_ErrorDetail(void);
 int Net_Error(void);
@@ -86,8 +86,8 @@ int Wfc_GetLinkLevel(void);
 int Local_GetLinkLevel(void);
 void Net_Init(int game_code, int game_id, int local_argument, u64 timeout_ticks, u8 players, void *(*alloc)(int, int),
               void (*free)(void *));
-void Wfc_SetUp(int mode, ReceiveHandler *on_received, void (*on_deleted)(int index), u8 *user_block, FriendList *friends);
-void Local_SetUp(int mode, ReceiveHandler *on_received);
+void Wfc_SetUp(int mode, ReceiveHandlerFn *on_received, void (*on_deleted)(int index), u8 *user_block, FriendList *friends);
+void Local_SetUp(int mode, ReceiveHandlerFn *on_received);
 int Net_UpdateConnection(void);
 int Local_IsConnected(void);
 int Wfc_UpdateConnection(void);
@@ -95,15 +95,15 @@ void Wfc_BlockNewClients(void);
 void Wfc_Process(void);
 void Wfc_UpdateConnectBlock(void);
 void Wfc_PingNext(void);
-int Net_SendBlocks(const void *buffer1, int size1, int to1, SentCallback *sent1, const void *buffer2, int size2, u16 to2,
-                   SentCallback *sent2, const void *buffer3, int size3, u16 to3, SentCallback *sent3);
+int Net_SendBlocks(const void *buffer1, int size1, int to1, SentCallbackFn *sent1, const void *buffer2, int size2, u16 to2,
+                   SentCallbackFn *sent2, const void *buffer3, int size3, u16 to3, SentCallbackFn *sent3);
 int Net_CanSend(void);
 int Wfc_CanSendToAll(void);
 int Net_IsSendQueueIdle(u32 ready);
-int Net_QueueSend(const void *buffer, int size, int to, SentCallback *sent);
-int Wfc_QueueSend(const void *buffer, int size, u32 to, SentCallback *sent);
-int Local_QueueSend(const void *buffer, int size, int to, SentCallback *sent);
-int Net_Enqueue(const void *buffer, u32 size, u16 to, SentCallback *sent);
+int Net_QueueSend(const void *buffer, int size, int to, SentCallbackFn *sent);
+int Wfc_QueueSend(const void *buffer, int size, u32 to, SentCallbackFn *sent);
+int Local_QueueSend(const void *buffer, int size, int to, SentCallbackFn *sent);
+int Net_Enqueue(const void *buffer, u32 size, u16 to, SentCallbackFn *sent);
 void Net_ClearSendQueue(void);
 void Net_OnBlockSent(void *argument);
 int Net_SendNext(void);

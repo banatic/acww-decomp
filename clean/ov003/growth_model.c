@@ -500,7 +500,7 @@ void GrowthModel_Update(GrowthModel *model)
     AnimatedModel *animated = growth_model_animated(model);
     if (model->state == 1) {
         AnimatedModel_StepFrames(animated);
-        if (FrameCtrl_IsDone(&animated->frames)) {
+        if (FrameControl_IsDone(&animated->frames)) {
             GrowthModel_Reset(model);
         } else {
             int start_parts = 0;
@@ -561,7 +561,7 @@ void GrowthModel_Update(GrowthModel *model)
         Vec3 at = model->position;
         SoundEmitter_UpdateAtB(&model->sound, &at);
     }
-    animated->frames.flags = FRAME_CTRL_ONCE;
+    animated->frames.flags = FRAME_CONTROL_ONCE;
 }
 CLEAN_AS(func_ov003_02223274, GrowthModel_Update)
 

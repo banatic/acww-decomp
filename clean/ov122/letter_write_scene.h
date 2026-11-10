@@ -170,7 +170,7 @@ typedef struct LetterWriteScene {
     LetterView view;                                   /* 0x3ce8 */
     PushButton scroll_button;                          /* 0x4010 */
     Glider pointer;                                    /* 0x4058: a Glider0 */
-    MailMsgText filter_text;                           /* 0x40bc: the 8-bit text the taboo filter reads */
+    MailMessageText filter_text;                       /* 0x40bc: the 8-bit text the taboo filter reads */
     LetterBodyText filter_wide;                        /* 0x4150: a text carried through it */
     u16 shown_header[LETTER_WRITE_SHOWN_HEADER_CHARS]; /* 0x41e0: the header as the view shows it */
     u16 clipboard[LETTER_BODY_CHARS];                  /* 0x4230: the text copied (LetterWrite_Copy) */

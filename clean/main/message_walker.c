@@ -44,8 +44,8 @@ static_assert(sizeof(MessageWalkRun) == 0x0c, "walk run");
 
 extern const u8 data_020e3e24[]; /* the class's vtable */
 
-typedef void MessageWalkerSlot(MessageWalker *walker);
-typedef void MessageWalkerSlotArg(MessageWalker *walker, int value);
+typedef void MessageWalkerSlotFn(MessageWalker *walker);
+typedef void MessageWalkerSlotArgFn(MessageWalker *walker, int value);
 
 /* The address of a walker's vtable slot. */
 static uintptr_t message_walker_slot(const MessageWalker *walker, int slot)
@@ -90,7 +90,7 @@ CLEAN_AS(func_020a9334, MessageWalker_Enter)
 void MessageWalker_Start(MessageWalker *walker, int text)
 {
     walker->position = (u32) text;
-    ((MessageWalkerSlot *) message_walker_slot(walker, MESSAGE_WALKER_SLOT_ON_TEXT))(walker);
+    ((MessageWalkerSlotFn *) message_walker_slot(walker, MESSAGE_WALKER_SLOT_ON_TEXT))(walker);
 }
 CLEAN_AS(func_020a9354, MessageWalker_Start)
 
@@ -104,7 +104,7 @@ int MessageWalker_Step(MessageWalker *walker, int stop_at_newline)
 
     if (character == 0 || (stop_at_newline != 0 && character == MESSAGE_WALKER_NEWLINE)) {
         if (MessageWalkerStack_IsEmpty(message_walker_stack(walker))) {
-            ((MessageWalkerSlot *) message_walker_slot(walker, MESSAGE_WALKER_SLOT_ON_END))(walker);
+            ((MessageWalkerSlotFn *) message_walker_slot(walker, MESSAGE_WALKER_SLOT_ON_END))(walker);
             return 0;
         }
         MessageWalker_Return(walker);
@@ -112,7 +112,7 @@ int MessageWalker_Step(MessageWalker *walker, int stop_at_newline)
         MessageWalker_PassTag(walker);
     } else {
         walker->position += 2;
-        ((MessageWalkerSlotArg *) message_walker_slot(walker, MESSAGE_WALKER_SLOT_ON_CHARACTER))(walker, character);
+        ((MessageWalkerSlotArgFn *) message_walker_slot(walker, MESSAGE_WALKER_SLOT_ON_CHARACTER))(walker, character);
     }
     return 1;
 }
@@ -139,7 +139,7 @@ void MessageWalker_PassTag(MessageWalker *walker)
 {
     u32 tag = walker->position;
     walker->position = tag + ((const u8 *) (uintptr_t) tag)[MESSAGE_WALKER_TAG_SIZE_BYTE];
-    ((MessageWalkerSlotArg *) message_walker_slot(walker, MESSAGE_WALKER_SLOT_ON_TAG))(walker, (int) tag);
+    ((MessageWalkerSlotArgFn *) message_walker_slot(walker, MESSAGE_WALKER_SLOT_ON_TAG))(walker, (int) tag);
 }
 CLEAN_AS(func_020a93f4, MessageWalker_PassTag)
 

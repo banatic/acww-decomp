@@ -599,7 +599,7 @@ CLEAN_AS(func_ov049_02261160, MabelTalk_OnDramaAnswer)
 void MabelTalk_OnAnswerErrand(MabelTalk *talk, int answer)
 {
     if (answer == 0) {
-        SceneCommand_SetPocketPredicate(mtalk_scene(talk), (PocketPredicate) (uintptr_t) func_ov049_02261224,
+        SceneCommand_SetPocketPredicate(mtalk_scene(talk), (PocketPredicateFn) (uintptr_t) func_ov049_02261224,
                                         MABEL_TALK_POCKET_ARG, 0);
         SceneCommand_RequestScreen(mtalk_scene(talk), MABEL_TALK_SCREEN_POCKETS);
         MabelTalk_SetSequence(talk, MABEL_TALK_SEQUENCE_ERRAND);

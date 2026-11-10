@@ -11,7 +11,7 @@
 #include "types.h"
 
 #define MAIL_SUPER_TEXT_CAPACITY 22
-#define MAIL_MSG_TEXT_CAPACITY 130
+#define MAIL_MESSAGE_TEXT_CAPACITY 130
 #define MAIL_PS_TEXT_CAPACITY 34
 
 typedef struct MailSuperText {
@@ -21,12 +21,12 @@ typedef struct MailSuperText {
     char text[MAIL_SUPER_TEXT_CAPACITY];
 } MailSuperText;
 
-typedef struct MailMsgText {
+typedef struct MailMessageText {
     const TextVtable *vtable; /* 0x00: data_020df210 */
     u32 length;               /* 0x04: the text base's */
     u8 attributes[0x0a];      /* 0x08: the text base's */
-    char text[MAIL_MSG_TEXT_CAPACITY];
-} MailMsgText;
+    char text[MAIL_MESSAGE_TEXT_CAPACITY];
+} MailMessageText;
 
 typedef struct MailPsText {
     const TextVtable *vtable; /* 0x00: data_020df228 */
@@ -41,11 +41,11 @@ MailPsText *MailPsText_Delete(MailPsText *text);
 MailPsText *MailPsText_Destruct(MailPsText *text);
 MailPsText *MailPsText_Construct(MailPsText *text);
 
-int MailMsgText_Buffer(int text);
-int MailMsgText_Capacity(void);
-MailMsgText *MailMsgText_Delete(MailMsgText *text);
-MailMsgText *MailMsgText_Destruct(MailMsgText *text);
-MailMsgText *MailMsgText_Construct(MailMsgText *text);
+int MailMessageText_Buffer(int text);
+int MailMessageText_Capacity(void);
+MailMessageText *MailMessageText_Delete(MailMessageText *text);
+MailMessageText *MailMessageText_Destruct(MailMessageText *text);
+MailMessageText *MailMessageText_Construct(MailMessageText *text);
 
 int MailSuperText_Buffer(int text);
 int MailSuperText_Capacity(void);

@@ -33,7 +33,7 @@ static_assert(offsetof(FieldActor, request_priority) == 0x7fc, "request_priority
 void FieldActor_StepState88(FieldActor *actor)
 {
     FieldActor_UpdateBody(actor);
-    if (FrameCtrl_Passed(&actor->anim, FIELD_ACTOR_87_STEP_88) != 0) {
+    if (FrameControl_Passed(&actor->anim, FIELD_ACTOR_87_STEP_88) != 0) {
         FieldActor_PlayFootstep(actor);
     }
 }
@@ -43,7 +43,7 @@ CLEAN_AS(func_ov068_02271e24, FieldActor_StepState88)
  * state 1 (priority 9). */
 void FieldActor_EndState88(FieldActor *actor)
 {
-    if (FrameCtrl_IsDone(&actor->anim) != 0) {
+    if (FrameControl_IsDone(&actor->anim) != 0) {
         actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
         FieldActor_RequestState1(actor, 9, FIELD_ACTOR_87_NO_ARG);
     }
@@ -110,7 +110,7 @@ CLEAN_AS(func_ov068_02271e98, FieldActor_RequestState88)
 void FieldActor_StepState87(FieldActor *actor)
 {
     FieldActor_UpdateBody(actor);
-    if (FrameCtrl_Passed(&actor->anim, FIELD_ACTOR_87_STEP_87) != 0) {
+    if (FrameControl_Passed(&actor->anim, FIELD_ACTOR_87_STEP_87) != 0) {
         FieldActor_PlayFootstep(actor);
     }
 }
@@ -120,7 +120,7 @@ CLEAN_AS(func_ov068_02271f28, FieldActor_StepState87)
  * state 0x10 (no frames, priority 5) and the player's sun flags are cleared. */
 void FieldActor_EndState87(FieldActor *actor)
 {
-    if (FrameCtrl_IsDone(&actor->anim) != 0) {
+    if (FrameControl_IsDone(&actor->anim) != 0) {
         actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
         FieldActor_RequestState10(actor, 0, 5, FIELD_ACTOR_87_NO_ARG);
         *SessionPlayers_SunFlags() = 0;

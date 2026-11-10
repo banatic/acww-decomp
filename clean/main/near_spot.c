@@ -119,7 +119,7 @@ CLEAN_AS(func_02087b8c, NearSpot_Pick)
 /* func_02087d00: of the tiles `first` to `last` (either way round) of a row or column, the
  * ones `test` accepts noted in `bits` (`words` halfwords of 16 bits, cleared first; the search
  * stops when they are full), and one of them picked at random into `*out`. Whether one was. */
-int NearSpot_PickInRange(int *out, NearSpotTest *test, int fixed, int first, int last, AcreMap *map, u16 *bits, int words)
+int NearSpot_PickInRange(int *out, NearSpotTestFn *test, int fixed, int first, int last, AcreMap *map, u16 *bits, int words)
 {
     int count = 0;
     int word = 0;

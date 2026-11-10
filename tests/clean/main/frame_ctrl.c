@@ -6,9 +6,9 @@
 /* where the caller leaves a fifth argument */
 #define STACK_ARGS DIFF_STACK_ARGS
 
-static FrameCtrl *ctrl_at(uint32_t address)
+static FrameControl *ctrl_at(uint32_t address)
 {
-    return (FrameCtrl *) (uintptr_t) address;
+    return (FrameControl *) (uintptr_t) address;
 }
 
 /* Speeds the game uses (1, 2 and 4 frames a step) and slower or faster ones in between,
@@ -33,7 +33,7 @@ static fx32 random_position(DiffRng *rng, fx32 end)
  * one sequence length. */
 static void a_counter(DiffRng *rng, uint32_t args[4])
 {
-    FrameCtrl *c = ctrl_at(CTRL);
+    FrameControl *c = ctrl_at(CTRL);
     int frames = diff_range(rng, 0, 3) == 0 ? diff_range(rng, 1, 4) : diff_range(rng, 1, 300);
     c->vtable = (const void *) (uintptr_t) 0x020dd184u;
     c->end = frames << 12;
@@ -74,17 +74,17 @@ static void a_counter(DiffRng *rng, uint32_t args[4])
 
 static uint32_t passed(const uint32_t args[4])
 {
-    return (uint32_t) FrameCtrl_Passed(ctrl_at(args[0]), (int) args[1]);
+    return (uint32_t) FrameControl_Passed(ctrl_at(args[0]), (int) args[1]);
 }
 
 static uint32_t is_done(const uint32_t args[4])
 {
-    return (uint32_t) FrameCtrl_IsDone(ctrl_at(args[0]));
+    return (uint32_t) FrameControl_IsDone(ctrl_at(args[0]));
 }
 
 static uint32_t step(const uint32_t args[4])
 {
-    FrameCtrl_Step(ctrl_at(args[0]));
+    FrameControl_Step(ctrl_at(args[0]));
     return 0;
 }
 
@@ -101,7 +101,7 @@ static void init_args(DiffRng *rng, uint32_t args[4])
 
 static uint32_t init(const uint32_t args[4])
 {
-    FrameCtrl_Init(ctrl_at(args[0]), args[1], (u8) args[2], (fx32) args[3], (u16) diff_stack[0]);
+    FrameControl_Init(ctrl_at(args[0]), args[1], (u8) args[2], (fx32) args[3], (u16) diff_stack[0]);
     return 0;
 }
 

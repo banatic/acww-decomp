@@ -105,15 +105,15 @@ void EffectModels_StartCopy(EffectModel *copy, EffectModelGroup *group, void (*s
     transform->rotation[1] = 0;
     transform->rotation[2] = 0;
 
-    AnimatedModel_Start(effect_models_animated(copy), effect_models_joint_anim(group->files[0]), FRAME_CTRL_ONCE,
+    AnimatedModel_Start(effect_models_animated(copy), effect_models_joint_anim(group->files[0]), FRAME_CONTROL_ONCE,
                         EFFECT_MODELS_SPEED, 0, 0);
     if (copy->anim_used[EFFECT_MODELS_MATERIALS] != 0) {
-        ModelAnim_Start(&copy->anims[EFFECT_MODELS_MATERIALS], effect_models_material_anim(group->files[1]), FRAME_CTRL_ONCE,
-                        EFFECT_MODELS_SPEED, 0);
+        ModelAnim_Start(&copy->anims[EFFECT_MODELS_MATERIALS], effect_models_material_anim(group->files[1]),
+                        FRAME_CONTROL_ONCE, EFFECT_MODELS_SPEED, 0);
     }
     if (copy->anim_used[EFFECT_MODELS_VISIBILITY] != 0) {
         ModelAnim_Start(&copy->anims[EFFECT_MODELS_VISIBILITY], effect_models_visibility_anim(group->files[2]),
-                        FRAME_CTRL_ONCE, EFFECT_MODELS_SPEED, 0);
+                        FRAME_CONTROL_ONCE, EFFECT_MODELS_SPEED, 0);
     }
     setup(copy);
 }
@@ -162,11 +162,11 @@ void EffectModels_StepCopy(EffectModel *copy)
     AnimatedModel_StepFrames(animated);
     for (i = EFFECT_MODELS_MATERIALS; i < EFFECT_MODELS_ANIMS; i++) {
         if (copy->anim_used[i] != 0) {
-            FrameCtrl_Step(&copy->anims[i].ctrl);
+            FrameControl_Step(&copy->anims[i].ctrl);
             copy->anims[i].anim->frame = copy->anims[i].ctrl.frame;
         }
     }
-    if (FrameCtrl_IsDone(&animated->frames)) {
+    if (FrameControl_IsDone(&animated->frames)) {
         copy->transform.unk_00 = 0;
     }
 }
@@ -188,7 +188,7 @@ void EffectModels_LoadCopy(EffectModel *copy, EffectModelGroup *group)
     if (files[0] != NULL) {
         ModelObject_AllocJointResults(&animated->object, data_021d52c8);
         AnimatedModel_LoadAnim(animated, data_021d52c8);
-        AnimatedModel_Start(animated, effect_models_joint_anim(files[0]), FRAME_CTRL_ONCE, EFFECT_MODELS_SPEED, 0, 0);
+        AnimatedModel_Start(animated, effect_models_joint_anim(files[0]), FRAME_CONTROL_ONCE, EFFECT_MODELS_SPEED, 0, 0);
         AnimatedModel_Attach(animated);
     }
 
@@ -196,7 +196,7 @@ void EffectModels_LoadCopy(EffectModel *copy, EffectModelGroup *group)
         ModelAnim *anim = &copy->anims[EFFECT_MODELS_MATERIALS];
         copy->anim_used[EFFECT_MODELS_MATERIALS] = 1;
         ModelAnim_AllocMaterialAnim(anim, animated->object.model, data_021d52c8);
-        ModelAnim_Start(anim, effect_models_material_anim(files[1]), FRAME_CTRL_ONCE, EFFECT_MODELS_SPEED, 0);
+        ModelAnim_Start(anim, effect_models_material_anim(files[1]), FRAME_CONTROL_ONCE, EFFECT_MODELS_SPEED, 0);
         ModelAnim_Attach(anim, ModelObject_RenderObject(&animated->object));
     } else {
         copy->anim_used[EFFECT_MODELS_MATERIALS] = 0;
@@ -206,7 +206,7 @@ void EffectModels_LoadCopy(EffectModel *copy, EffectModelGroup *group)
         ModelAnim *anim = &copy->anims[EFFECT_MODELS_VISIBILITY];
         copy->anim_used[EFFECT_MODELS_VISIBILITY] = 1;
         ModelAnim_AllocJointAnim(anim, animated->object.model, data_021d52c8);
-        ModelAnim_Start(anim, effect_models_visibility_anim(files[2]), FRAME_CTRL_ONCE, EFFECT_MODELS_SPEED, 0);
+        ModelAnim_Start(anim, effect_models_visibility_anim(files[2]), FRAME_CONTROL_ONCE, EFFECT_MODELS_SPEED, 0);
         ModelAnim_Attach(anim, ModelObject_RenderObject(&animated->object));
     } else {
         copy->anim_used[EFFECT_MODELS_VISIBILITY] = 0;

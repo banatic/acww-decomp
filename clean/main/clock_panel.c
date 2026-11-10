@@ -610,14 +610,14 @@ void ClockPanel_CallDraw(ClockPanel *panel)
 }
 CLEAN_AS(func_0208dd40, ClockPanel_CallDraw)
 
-typedef void *ClockPanelSlot(ClockPanel *panel);
+typedef void *ClockPanelSlotFn(ClockPanel *panel);
 
 /* func_0208dd50: the class's update (vtable slot 3).
  * QUIRK: the result is whatever the slot leaves; ClockPanel_Update returns nothing, and the
  * caller (ScreenPanels_Update) ignores it. */
 void *ClockPanel_CallUpdate(ClockPanel *panel)
 {
-    return ((ClockPanelSlot *) (uintptr_t) panel->base.vtable[CLOCK_PANEL_SLOT_UPDATE])(panel);
+    return ((ClockPanelSlotFn *) (uintptr_t) panel->base.vtable[CLOCK_PANEL_SLOT_UPDATE])(panel);
 }
 CLEAN_AS(func_0208dd50, ClockPanel_CallUpdate)
 

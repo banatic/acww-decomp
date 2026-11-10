@@ -115,14 +115,14 @@ CLEAN_AS(func_020ff8ec, ParticleList_Push)
 
 /* func_020fa090: `emitter` moved to `offset` from its resource's base position, and made to
  * give off its particles at once. */
-void ParticleSys_EmitAt(ParticleSystem *sys, ParticleEmitter *emitter, const Vec3 *offset)
+void ParticleSystem_EmitAt(ParticleSystem *sys, ParticleEmitter *emitter, const Vec3 *offset)
 {
     emitter->position.x = particle_add(offset->x, emitter->resource->header->base_pos.x);
     emitter->position.y = particle_add(offset->y, emitter->resource->header->base_pos.y);
     emitter->position.z = particle_add(offset->z, emitter->resource->header->base_pos.z);
-    ParticleSys_EmitFrom(emitter, &sys->free_particles);
+    ParticleSystem_EmitFrom(emitter, &sys->free_particles);
 }
-CLEAN_AS(func_020fa090, ParticleSys_EmitAt)
+CLEAN_AS(func_020fa090, ParticleSystem_EmitAt)
 
 /* A free emitter made from resource `resource` at `pos`, handed to `init` when there is one,
  * and put in the manager's list. NULL without a free emitter, and for a self-maintaining
@@ -149,20 +149,20 @@ static ParticleEmitter *create_emitter(ParticleSystem *sys, int resource, const 
 
 /* func_020fa0fc: an emitter of resource `resource` at the origin, given to `init` (a function
  * of the game's) before it starts. */
-ParticleEmitter *ParticleSys_CreateEmitterWith(ParticleSystem *sys, int resource, void (*init)(ParticleEmitter *emitter))
+ParticleEmitter *ParticleSystem_CreateEmitterWith(ParticleSystem *sys, int resource, void (*init)(ParticleEmitter *emitter))
 {
     Vec3 origin = {0, 0, 0};
 
     return create_emitter(sys, resource, &origin, init);
 }
-CLEAN_AS(func_020fa0fc, ParticleSys_CreateEmitterWith)
+CLEAN_AS(func_020fa0fc, ParticleSystem_CreateEmitterWith)
 
 /* func_020fa190: an emitter of resource `resource` at `pos`. */
-ParticleEmitter *ParticleSys_CreateEmitterAt(ParticleSystem *sys, int resource, const Vec3 *pos)
+ParticleEmitter *ParticleSystem_CreateEmitterAt(ParticleSystem *sys, int resource, const Vec3 *pos)
 {
     return create_emitter(sys, resource, pos, NULL);
 }
-CLEAN_AS(func_020fa190, ParticleSys_CreateEmitterAt)
+CLEAN_AS(func_020fa190, ParticleSystem_CreateEmitterAt)
 
 /* The emitter's resource's header, read afresh: the emitter's fields are written between the
  * reads, in the ROM's order, so the result is the ROM's even for a header that overlaps them. */
@@ -253,11 +253,11 @@ void ParticleEmitter_Init(ParticleEmitter *emitter, const ParticleResource *reso
 CLEAN_AS(func_020fb640, ParticleEmitter_Init)
 
 /* func_020fabdc: the emitter gives off its particles, taken from `free_particles`. */
-void ParticleSys_EmitFrom(ParticleEmitter *emitter, ParticleList *free_particles)
+void ParticleSystem_EmitFrom(ParticleEmitter *emitter, ParticleList *free_particles)
 {
     Particle_Emit(emitter, free_particles);
 }
-CLEAN_AS(func_020fabdc, ParticleSys_EmitFrom)
+CLEAN_AS(func_020fabdc, ParticleSystem_EmitFrom)
 
 /* --- The frame's update --- */
 
@@ -331,7 +331,7 @@ typedef struct AnimStep {
  * runs the behaviors, moves, gives off its children when due, takes a polygon ID and ages;
  * then each child the same, with the child part's two animations. The emitter ages last.
  * QUIRK: an interval of 0 counts as 1 (the ROM's remainder by 0 is 0). */
-void ParticleSys_UpdateEmitter(ParticleSystem *sys, ParticleEmitter *emitter)
+void ParticleSystem_UpdateEmitter(ParticleSystem *sys, ParticleEmitter *emitter)
 {
     const ParticleResource *res = emitter->resource;
     const ParticleChild *child = res->child;
@@ -446,14 +446,14 @@ void ParticleSys_UpdateEmitter(ParticleSystem *sys, ParticleEmitter *emitter)
         emitter->callback(emitter, 1);
     }
 }
-CLEAN_AS(func_020fadf8, ParticleSys_UpdateEmitter)
+CLEAN_AS(func_020fadf8, ParticleSystem_UpdateEmitter)
 
 /* func_020fa270: the frame's update of every emitter. One starts once older than its start
  * delay (its age then counts from 0); one not paused is updated every frame, or every other
  * frame when it has an update cycle (1 on even frames, 2 on odd ones); one that is ending, or
  * self-maintaining and older than its life, goes back to the free list once its particles and
  * children are all gone. */
-void ParticleSys_Update(ParticleSystem *sys)
+void ParticleSystem_Update(ParticleSystem *sys)
 {
     ParticleLink *node = sys->emitters.first;
 
@@ -470,7 +470,7 @@ void ParticleSys_Update(ParticleSystem *sys)
         if (!(emitter->state & PARTICLE_EMITTER_NO_UPDATE)) {
             u32 cycle = particle_bits(emitter->misc, PARTICLE_EMITTER_UPDATE_CYCLE_SHIFT, 3);
             if (cycle == 0 || data_021fd274 == cycle - 1) {
-                ParticleSys_UpdateEmitter(sys, emitter);
+                ParticleSystem_UpdateEmitter(sys, emitter);
             }
         }
 
@@ -489,7 +489,7 @@ void ParticleSys_Update(ParticleSystem *sys)
         data_021fd274 = 0;
     }
 }
-CLEAN_AS(func_020fa270, ParticleSys_Update)
+CLEAN_AS(func_020fa270, ParticleSystem_Update)
 
 /* --- The frame's draw --- */
 
@@ -497,45 +497,45 @@ CLEAN_AS(func_020fa270, ParticleSys_Update)
  * (the game's) is asked about each particle's place.
  * HW: alpha blending is turned on in DISP3DCNT first; the acknowledge bits are written 0, so
  * left as they are. */
-void ParticleSys_Draw(ParticleSystem *sys, const Mtx43 *view, ParticleDrawCallback callback)
+void ParticleSystem_Draw(ParticleSystem *sys, const Mtx43 *view, ParticleDrawCallbackFn callback)
 {
     REG_DISP3DCNT = (u16) ((REG_DISP3DCNT & ~DISP3DCNT_ACKNOWLEDGE) | DISP3DCNT_ALPHA_BLEND);
     sys->view = view;
     for (ParticleLink *node = sys->emitters.first; node != NULL; node = node->next) {
         sys->emitter = (ParticleEmitter *) node;
         if (!(sys->emitter->state & PARTICLE_EMITTER_HIDDEN)) {
-            ParticleSys_DrawEmitter(sys, callback);
+            ParticleSystem_DrawEmitter(sys, callback);
         }
     }
 }
-CLEAN_AS(func_020fa204, ParticleSys_Draw)
+CLEAN_AS(func_020fa204, ParticleSystem_Draw)
 
 /* func_020fabe8: the emitter being drawn: its particles and its children, the children first
  * when the resource says so; the particles not when it hides them. */
-void ParticleSys_DrawEmitter(ParticleSystem *sys, ParticleDrawCallback callback)
+void ParticleSystem_DrawEmitter(ParticleSystem *sys, ParticleDrawCallbackFn callback)
 {
     const ParticleHeader *header = sys->emitter->resource->header;
 
     if (header->flags & PARTICLE_CHILDREN_FIRST) {
-        ParticleSys_DrawChildren(sys, callback);
+        ParticleSystem_DrawChildren(sys, callback);
         if (!(header->flags & PARTICLE_HIDE_PARENTS)) {
-            ParticleSys_DrawParents(sys, callback);
+            ParticleSystem_DrawParents(sys, callback);
         }
     } else {
         if (!(header->flags & PARTICLE_HIDE_PARENTS)) {
-            ParticleSys_DrawParents(sys, callback);
+            ParticleSystem_DrawParents(sys, callback);
         }
-        ParticleSys_DrawChildren(sys, callback);
+        ParticleSystem_DrawChildren(sys, callback);
     }
 }
-CLEAN_AS(func_020fabe8, ParticleSys_DrawEmitter)
+CLEAN_AS(func_020fabe8, ParticleSystem_DrawEmitter)
 
-typedef void (*ParticleDrawFn)(ParticleSystem *sys, Particle *ptcl, ParticleDrawCallback callback);
+typedef void (*ParticleDrawFn)(ParticleSystem *sys, Particle *ptcl, ParticleDrawCallbackFn callback);
 
 /* func_020fac60: the children of the emitter being drawn, with the child part's texture and
  * way of drawing. REQUIRES: a draw type of 0 to 2 (for 3 the ROM calls address 0 for each
  * child). */
-void ParticleSys_DrawChildren(ParticleSystem *sys, ParticleDrawCallback callback)
+void ParticleSystem_DrawChildren(ParticleSystem *sys, ParticleDrawCallbackFn callback)
 {
     ParticleEmitter *emitter = sys->emitter;
     const ParticleResource *res = emitter->resource;
@@ -562,12 +562,12 @@ void ParticleSys_DrawChildren(ParticleSystem *sys, ParticleDrawCallback callback
         draw(sys, (Particle *) node, callback);
     }
 }
-CLEAN_AS(func_020fac60, ParticleSys_DrawChildren)
+CLEAN_AS(func_020fac60, ParticleSystem_DrawChildren)
 
 /* func_020fad1c: the particles of the emitter being drawn, with the resource's texture, or
  * each its own when the resource animates them, and its way of drawing. REQUIRES: a draw type
  * of 0 to 2, as above. */
-void ParticleSys_DrawParents(ParticleSystem *sys, ParticleDrawCallback callback)
+void ParticleSystem_DrawParents(ParticleSystem *sys, ParticleDrawCallbackFn callback)
 {
     ParticleEmitter *emitter = sys->emitter;
     const ParticleHeader *header = emitter->resource->header;
@@ -604,28 +604,28 @@ void ParticleSys_DrawParents(ParticleSystem *sys, ParticleDrawCallback callback)
         draw(sys, ptcl, callback);
     }
 }
-CLEAN_AS(func_020fad1c, ParticleSys_DrawParents)
+CLEAN_AS(func_020fad1c, ParticleSystem_DrawParents)
 
 /* --- Creation and the file --- */
 
 /* func_020fab6c: `size` bytes of palette VRAM from NitroSystem's default allocator; the
  * address. */
-int ParticleSys_AllocPaletteVram(int size, int four_colors)
+int ParticleSystem_AllocPaletteVram(int size, int four_colors)
 {
     return (int) ((NNS_GfdDefaultFuncAllocPlttVram((u32) size, four_colors, 0) & 0xffff) << 3);
 }
-CLEAN_AS(func_020fab6c, ParticleSys_AllocPaletteVram)
+CLEAN_AS(func_020fab6c, ParticleSystem_AllocPaletteVram)
 
 /* func_020faba4: `size` bytes of texture VRAM, the same way. */
-int ParticleSys_AllocTextureVram(int size, int compressed)
+int ParticleSystem_AllocTextureVram(int size, int compressed)
 {
     return (int) ((NNS_GfdDefaultFuncAllocTexVram((u32) size, compressed, 0) & 0xffff) << 3);
 }
-CLEAN_AS(func_020faba4, ParticleSys_AllocTextureVram)
+CLEAN_AS(func_020faba4, ParticleSystem_AllocTextureVram)
 
 /* func_020fa3e4: each texture's palette loaded into palette VRAM where `alloc` (the game's)
  * puts it; a texture without a palette has address 0. 1. */
-int ParticleSys_UploadPalettesWith(ParticleSystem *sys, u32 (*alloc)(u32 size, int four_colors))
+int ParticleSystem_UploadPalettesWith(ParticleSystem *sys, u32 (*alloc)(u32 size, int four_colors))
 {
     GX_BeginLoadTexPltt();
     for (int i = 0; i < sys->texture_count; i++) {
@@ -642,11 +642,11 @@ int ParticleSys_UploadPalettesWith(ParticleSystem *sys, u32 (*alloc)(u32 size, i
     GX_EndLoadTexPltt();
     return 1;
 }
-CLEAN_AS(func_020fa3e4, ParticleSys_UploadPalettesWith)
+CLEAN_AS(func_020fa3e4, ParticleSystem_UploadPalettesWith)
 
 /* func_020fa498: each texture's image loaded into texture VRAM where `alloc` (the game's)
  * puts it; a shared texture takes the address of the one it shares (loaded before it). 1. */
-int ParticleSys_UploadTexturesWith(ParticleSystem *sys, u32 (*alloc)(u32 size, int compressed))
+int ParticleSystem_UploadTexturesWith(ParticleSystem *sys, u32 (*alloc)(u32 size, int compressed))
 {
     GX_BeginLoadTex();
     for (int i = 0; i < sys->texture_count; i++) {
@@ -664,21 +664,21 @@ int ParticleSys_UploadTexturesWith(ParticleSystem *sys, u32 (*alloc)(u32 size, i
     GX_EndLoadTex();
     return 1;
 }
-CLEAN_AS(func_020fa498, ParticleSys_UploadTexturesWith)
+CLEAN_AS(func_020fa498, ParticleSystem_UploadTexturesWith)
 
 /* func_020fa3bc: the palettes loaded with the default allocator. */
-int ParticleSys_UploadPalettes(ParticleSystem *sys)
+int ParticleSystem_UploadPalettes(ParticleSystem *sys)
 {
-    return ParticleSys_UploadPalettesWith(sys, (u32 (*)(u32, int)) func_020fab6c);
+    return ParticleSystem_UploadPalettesWith(sys, (u32 (*)(u32, int)) func_020fab6c);
 }
-CLEAN_AS(func_020fa3bc, ParticleSys_UploadPalettes)
+CLEAN_AS(func_020fa3bc, ParticleSystem_UploadPalettes)
 
 /* func_020fa3d0: the textures loaded with the default allocator. */
-int ParticleSys_UploadTextures(ParticleSystem *sys)
+int ParticleSystem_UploadTextures(ParticleSystem *sys)
 {
-    return ParticleSys_UploadTexturesWith(sys, (u32 (*)(u32, int)) func_020faba4);
+    return ParticleSystem_UploadTexturesWith(sys, (u32 (*)(u32, int)) func_020faba4);
 }
-CLEAN_AS(func_020fa3d0, ParticleSys_UploadTextures)
+CLEAN_AS(func_020fa3d0, ParticleSystem_UploadTextures)
 
 /* `size` bytes of the file at `*offset`, which moves past them. */
 static const u8 *take(const u8 *file, u32 *offset, u32 size)
@@ -709,7 +709,7 @@ static const struct {
 /* func_020fa564: the resources read from the start of the particle file's resources: each a
  * header and the parts its flags announce, its behaviors in a table allocated for them (the
  * game's six functions, each with its part of the file). */
-void ParticleSys_LoadResources(ParticleSystem *sys, const u8 *file)
+void ParticleSystem_LoadResources(ParticleSystem *sys, const u8 *file)
 {
     u32 offset = 0;
 
@@ -750,11 +750,11 @@ void ParticleSys_LoadResources(ParticleSystem *sys, const u8 *file)
         }
     }
 }
-CLEAN_AS(func_020fa564, ParticleSys_LoadResources)
+CLEAN_AS(func_020fa564, ParticleSystem_LoadResources)
 
 /* func_020fa820: the counts of resources and textures read from the file's header, and the
  * textures, which follow the resources, each with its size from its parameters. */
-void ParticleSys_LoadTextures(ParticleSystem *sys, const ParticleFile *file)
+void ParticleSystem_LoadTextures(ParticleSystem *sys, const ParticleFile *file)
 {
     const u8 *bytes = (const u8 *) file;
     u32 offset = sizeof(ParticleFile);
@@ -790,7 +790,7 @@ void ParticleSys_LoadTextures(ParticleSystem *sys, const ParticleFile *file)
         offset += tex->size;
     }
 }
-CLEAN_AS(func_020fa820, ParticleSys_LoadTextures)
+CLEAN_AS(func_020fa820, ParticleSystem_LoadTextures)
 
 /* Room for `count` records of `size` bytes from `alloc`, cleared, each put in `list`. */
 static void fill_free_list(void *(*alloc)(u32 size), ParticleList *list, int count, u32 size)
@@ -807,8 +807,8 @@ static void fill_free_list(void *(*alloc)(u32 size), ParticleList *list, int cou
 /* func_020fa9f4: a manager made with `alloc` (the game's), with room for `max_emitters`
  * emitters and `max_particles` particles in its free lists; particles take polygon IDs from
  * `min_id` to `max_id` in turn, or `fixed_id` for the resources that say so. */
-ParticleSystem *ParticleSys_Create(void *(*alloc)(u32 size), int max_emitters, int max_particles, int fixed_id, u16 min_id,
-                                   u16 max_id)
+ParticleSystem *ParticleSystem_Create(void *(*alloc)(u32 size), int max_emitters, int max_particles, int fixed_id, u16 min_id,
+                                      u16 max_id)
 {
     ParticleSystem *sys = alloc(sizeof(ParticleSystem));
 
@@ -822,4 +822,4 @@ ParticleSystem *ParticleSys_Create(void *(*alloc)(u32 size), int max_emitters, i
     fill_free_list(alloc, &sys->free_particles, max_particles, sizeof(Particle));
     return sys;
 }
-CLEAN_AS(func_020fa9f4, ParticleSys_Create)
+CLEAN_AS(func_020fa9f4, ParticleSystem_Create)

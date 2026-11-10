@@ -102,7 +102,7 @@ extern const Vec3 data_021fbee8;
 /* The tables of the event checks: Spawner_CheckEvents3e's four events with the conditions
  * data_020d0654 (only the third, func_02083f40, is set), Spawner_CheckEvent45's one event. */
 extern const SpawnerEvent data_020d0684[];
-extern SpawnerCondition *const data_020d0654[];
+extern SpawnerConditionFn *const data_020d0654[];
 extern const SpawnerEvent data_020d064c[];
 /* Spawner_CheckEvents06a4In's eight events and the event each needs going on. */
 extern const SpawnerEvent data_020d06a4[];
@@ -336,7 +336,7 @@ CLEAN_AS(func_02083f84, Spawner_CheckEvents3e)
  * its condition (if `conditions` and the event's one are set) holds; 0 while the last of the
  * bytes at data_021f3b85 is set, the player is in Nook's job (flag 1), either arrival flag is set, this console
  * is in the session, or the check mode forbids it. */
-int Spawner_CheckEvents(const SpawnerEvent *events, SpawnerCondition *const *conditions, int count, int check_mode)
+int Spawner_CheckEvents(const SpawnerEvent *events, SpawnerConditionFn *const *conditions, int count, int check_mode)
 {
     int held = TownStartDay_IsSet((TownStartDay *) (void *) data_021f3b85);
     if (!mode_allows(check_mode) || held != 0 || Spawner_PlayerInNookJob() || Spawner_ArrivalPending() || in_session()) {

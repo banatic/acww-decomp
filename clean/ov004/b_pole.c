@@ -10,7 +10,7 @@
 
 static_assert(sizeof(BPole) == 0x290, "the size BPole_Create allocates");
 
-#define B_POLE_LOOP 0 /* FrameCtrlFlags: the animation starts over at its end */
+#define B_POLE_LOOP 0 /* FrameControlFlags: the animation starts over at its end */
 
 /* The class's vtable. */
 extern const u8 data_ov004_02255290[];

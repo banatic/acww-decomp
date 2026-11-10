@@ -505,7 +505,7 @@ void TurtleFishingTalk_OnLineEnded(TurtleFishingTalk *talk)
         }
         case TURTLE_FISHING_TALK_LINE_SHOW_FISH:
             SceneCommand_SetPocketPredicate(turtle_fishing_talk_scene(talk),
-                                            (PocketPredicate) (void (*)(void)) func_ov081_02279124,
+                                            (PocketPredicateFn) (void (*)(void)) func_ov081_02279124,
                                             TURTLE_FISHING_TALK_POCKETS_ARG, 1);
             SceneCommand_RequestScreen(turtle_fishing_talk_scene(talk), TURTLE_FISHING_TALK_POCKETS_SCREEN);
             TurtleFishingTalk_SetAfterCommand(talk, TURTLE_FISHING_TALK_AFTER_POCKETS);

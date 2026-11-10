@@ -6,7 +6,7 @@
 #include "clean.h"
 #include "main/animated_model.h"    /* AnimatedModel_Start, AnimatedModel_StepFrames */
 #include "main/event_queue.h"       /* EventQueue_RequestKind6, EventQueue_TestFlag8 */
-#include "main/frame_ctrl.h"        /* FrameCtrl_IsDone, FrameCtrl_Passed */
+#include "main/frame_ctrl.h"        /* FrameControl_IsDone, FrameControl_Passed */
 #include "main/item_code.h"         /* ItemCode_IsFurniture, ItemCode_FurnitureNumber */
 #include "main/map_code.h"          /* MapCode_IsStore */
 #include "main/player_actor_ops.h"  /* PlayerActorOps_TestFlag */
@@ -128,7 +128,7 @@ static int mode_start_anim(TownObjectActor *actor, u32 slot, int flags)
 static int mode_step(TownObjectActor *actor)
 {
     AnimatedModel_StepFrames(mode_model(actor));
-    return FrameCtrl_IsDone(&mode_model(actor)->frames);
+    return FrameControl_IsDone(&mode_model(actor)->frames);
 }
 
 /* _ZN18Obj_ov009_022658dc19func_ov009_02263ab0Ev (run of mode 4): the wait counted down, the
@@ -188,9 +188,9 @@ static void mode_run_with_sounds(TownObjectActor *actor, int frame_a, int frame_
 {
     if (mode_step(actor)) {
         mode_set(actor, 0);
-    } else if (FrameCtrl_Passed(&mode_model(actor)->frames, frame_a)) {
+    } else if (FrameControl_Passed(&mode_model(actor)->frames, frame_a)) {
         TownObjectActorSound_Play(&actor->sound, TOWN_OBJECT_ACTOR_SOUND_MODE_FRAME_A);
-    } else if (FrameCtrl_Passed(&mode_model(actor)->frames, frame_b)) {
+    } else if (FrameControl_Passed(&mode_model(actor)->frames, frame_b)) {
         TownObjectActorSound_Play(&actor->sound, TOWN_OBJECT_ACTOR_SOUND_MODE_FRAME_B);
     }
 }

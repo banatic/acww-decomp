@@ -6,5 +6,5 @@ arm 02114c6c 021cfb98  # OS_SleepThread(the main loop's queue)
 call 5401 0229d929 023754bc 0 0 0 0229d928 1c04b510  # ov110 PublicBox_RunActionWhenIdle (this: an object of vtable 0229ecb8)
 vcall 5401 023754bc 58 023754bc 0 0 0 0229ecb8  # ov110 PublicBox_Phase4Idle (slot 22)
 vcall 5401 023754bc 54 023754bc 0 0 0 0229ecb8  # ov110 PublicBox_Phase3Idle (slot 21)
-call 5401 0220b681 02377a00 0 0 0 0220b680 1c04b510  # ov002 LabelButtonBase_Destroy (this: an object of vtable 0220bd74)
+call 5401 0220b681 02377a00 0 0 0 0220b680 1c04b510  # ov002 LabelButtonBase_DestructCopy (this: an object of vtable 0220bd74)
 end

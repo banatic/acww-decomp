@@ -44,7 +44,7 @@ extern const u8 data_ov004_0224766c[ROOM_OBJECT_02252F2C_STATE_COUNT];
 /* Whether the joint animation's last step reached `frame`. */
 static int room_object02252f2c_joints_passed(RoomObject02252f2c *object, int frame)
 {
-    return FrameCtrl_Passed(&object->base.model.frames, frame);
+    return FrameControl_Passed(&object->base.model.frames, frame);
 }
 
 /* Sound `id` at the object's point, unless RoomObject.placement_mode is 2; whether it was played. */

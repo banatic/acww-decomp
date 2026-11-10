@@ -16,7 +16,7 @@
 
 #include "types.h"
 
-typedef void SystemPacketHandler(u8 *payload, u32 length, int sender);
+typedef void SystemPacketHandlerFn(u8 *payload, u32 length, int sender);
 
 #define SYSTEM_PACKET_CHUNK 0xffb /* the data bytes of a chunk: a block less the kind and the offset */
 

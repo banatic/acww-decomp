@@ -298,7 +298,7 @@ CLEAN_AS(func_ov003_0221cb30, CountdownDigit_Construct)
 /* The board's animation goes on, and its frame to where it goes. */
 static void countdown_board_animate(CountdownBoard *board)
 {
-    FrameCtrl_Step((FrameCtrl *) &board->anim);
+    FrameControl_Step((FrameControl *) &board->anim);
     *board->anim.target = board->anim.frame;
 }
 

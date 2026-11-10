@@ -651,7 +651,7 @@ CLEAN_AS(func_ov050_02261480, NookClerkTalk_OnAnswerConvert)
 void NookClerkTalk_OnAnswerErrand(NookClerkTalk *talk, int answer)
 {
     if (answer == 0) {
-        SceneCommand_SetPocketPredicate(ntalk_scene(talk), (PocketPredicate) (uintptr_t) func_ov050_022637c0, 13, 0);
+        SceneCommand_SetPocketPredicate(ntalk_scene(talk), (PocketPredicateFn) (uintptr_t) func_ov050_022637c0, 13, 0);
         SceneCommand_RequestScreen(ntalk_scene(talk), SCENE_COMMAND_SCREEN_POCKETS);
         NookClerkTalk_SetSequence(talk, NOOK_CLERK_SEQUENCE_ERRAND);
     } else {

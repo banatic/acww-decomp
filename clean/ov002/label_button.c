@@ -40,8 +40,8 @@ extern u8 data_021f6c5c; /* the touch's y */
 #define SLOT_STEP 3
 #define SLOT_SET_PLACE 4
 
-typedef void ButtonMethod(LabelButton *button);
-typedef void ButtonPlaceMethod(LabelButton *button, int x, int y);
+typedef void ButtonMethodFn(LabelButton *button);
+typedef void ButtonPlaceMethodFn(LabelButton *button, int x, int y);
 
 /* The function in vtable slot `slot` of the button. */
 static uintptr_t virtual_slot(const LabelButton *button, int slot)
@@ -51,7 +51,7 @@ static uintptr_t virtual_slot(const LabelButton *button, int slot)
 
 static void step(LabelButton *button)
 {
-    ((ButtonMethod *) virtual_slot(button, SLOT_STEP))(button);
+    ((ButtonMethodFn *) virtual_slot(button, SLOT_STEP))(button);
 }
 
 /* func_ov002_0220b3f0 (vtable entry 1): destructs and frees the button. */
@@ -128,7 +128,7 @@ CLEAN_AS(func_ov002_0220b498, LabelButton_IsTouched)
 void LabelButton_ShowAt(LabelButton *button, int message, int x, int y)
 {
     LabelButton_SetMessage(button, message);
-    ((ButtonPlaceMethod *) virtual_slot(button, SLOT_SET_PLACE))(button, x, y);
+    ((ButtonPlaceMethodFn *) virtual_slot(button, SLOT_SET_PLACE))(button, x, y);
     LabelSprite_SetOffset((LabelSprite *) (void *) button, 0, 0);
     LabelSprite_ShowSecond((LabelSprite *) (void *) button);
     LabelSprite_SetState((LabelSprite *) (void *) button, ANIM_SHOWN);
@@ -252,13 +252,13 @@ CLEAN_AS(func_ov002_0220b660, LabelButtonBase_Delete)
 
 /* func_ov002_0220b680 (vtable entry 0).
  * QUIRK: the same code as LabelButtonBase_Destruct, a second copy in the ROM. */
-LabelButton *LabelButtonBase_Destroy(LabelButton *button)
+LabelButton *LabelButtonBase_DestructCopy(LabelButton *button)
 {
     button->vtable = data_ov002_0220bd90;
     LabelSprite_DestructCopy((LabelSprite *) (void *) button);
     return button;
 }
-CLEAN_AS(func_ov002_0220b680, LabelButtonBase_Destroy)
+CLEAN_AS(func_ov002_0220b680, LabelButtonBase_DestructCopy)
 
 /* func_ov002_0220b698: constructs main's labeled sprite with `kind` and `param`, then makes
  * it a base class button. */

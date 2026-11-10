@@ -104,7 +104,7 @@ static void letter_write_destroy_members(LetterWriteScene *self)
     ButtonPanel_Destroy(&self->panel);
     PagedChoice_Destroy(letter_write_choice(self));
     LetterBodyText_Destruct(&self->filter_wide);
-    MailMsgText_Destruct(&self->filter_text);
+    MailMessageText_Destruct(&self->filter_text);
     Glider0_Destroy(&self->pointer);
     PushButton_Destroy(&self->scroll_button);
     LetterView_Destruct(&self->view);
@@ -3051,7 +3051,7 @@ LetterWriteScene *LetterWrite_New(void)
     LetterView_Construct(&self->view);
     PushButton_Construct(&self->scroll_button);
     Glider0_Construct(&self->pointer);
-    MailMsgText_Construct(&self->filter_text);
+    MailMessageText_Construct(&self->filter_text);
     LetterBodyText_Construct(&self->filter_wide);
     PagedChoice_Construct(letter_write_choice(self));
     ButtonPanel_Construct(&self->panel);

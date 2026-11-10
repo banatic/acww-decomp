@@ -13,13 +13,13 @@
 typedef struct VillagerTown VillagerTown;
 
 /* What VillagerPair_Pick asks of a score: whether `score` beats `best`. */
-typedef int (*VillagerPairBetter)(int best, int score);
+typedef int (*VillagerPairBetterFn)(int best, int score);
 
 u8 *VillagerPair_WorstFor(VillagerTown *town, u8 *villager);
 u8 *VillagerPair_BestFor(VillagerTown *town, u8 *villager);
 int VillagerPair_IsLower(int best, int score);
 int VillagerPair_IsHigher(int best, int score);
-u8 *VillagerPair_Pick(VillagerTown *town, u8 *villager, VillagerPairBetter *better, int start);
+u8 *VillagerPair_Pick(VillagerTown *town, u8 *villager, VillagerPairBetterFn *better, int start);
 void VillagerPair_AddBond(VillagerTown *town, const NpcId *first, const NpcId *second, int amount);
 int VillagerPair_TierOf(VillagerTown *town, u8 *first, u8 *second);
 int VillagerPair_Tier(VillagerTown *town, int first, int second);

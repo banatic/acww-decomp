@@ -1146,7 +1146,7 @@ void StaticInit_Texts5b40(void)
 {
     MailSuperText_Construct((MailSuperText *) (void *) data_021cd8c4);
     static_init_register(data_021cd8c4, func_0206dae0, &data_021cd8a0);
-    MailMsgText_Construct((MailMsgText *) (void *) data_021cd9b0);
+    MailMessageText_Construct((MailMessageText *) (void *) data_021cd9b0);
     static_init_register(data_021cd9b0, func_0206da80, &data_021cd8b8);
     MailPsText_Construct((MailPsText *) (void *) data_021cd8ec);
     static_init_register(data_021cd8ec, func_0206da20, &data_021cd894);

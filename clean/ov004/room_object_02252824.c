@@ -66,9 +66,9 @@ static FurnitureAnim *room_object02252824_material(RoomObject02252824 *object)
 /* Advances a bound animation, giving its frame to its target; whether it is at its end. */
 static int room_object02252824_advance(FurnitureAnim *anim)
 {
-    FrameCtrl_Step(&anim->base.ctrl);
+    FrameControl_Step(&anim->base.ctrl);
     anim->base.anim->frame = anim->base.ctrl.frame;
-    return FrameCtrl_IsDone(&anim->base.ctrl);
+    return FrameControl_IsDone(&anim->base.ctrl);
 }
 
 /* The common update of TURNING_ON and TURNING_OFF: the material animation advanced while it is
@@ -263,7 +263,7 @@ int RoomObject02252824_Update(RoomObject02252824 *object)
     for (int i = 0; i < 3; i++) {
         FurnitureAnim *anim = &object->base.anims[others[i]];
         if (FurnitureAnim_Target(anim) != NULL) {
-            FrameCtrl_Step(&anim->base.ctrl);
+            FrameControl_Step(&anim->base.ctrl);
             anim->base.anim->frame = anim->base.ctrl.frame;
         }
     }

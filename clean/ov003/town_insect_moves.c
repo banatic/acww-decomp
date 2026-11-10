@@ -70,7 +70,7 @@ static u16 town_insect_moves_frame_count(const TownInsect *insect)
 
 static void town_insect_moves_play(TownInsect *insect, u32 frames, u8 flags, u32 speed, u16 start)
 {
-    FrameCtrl_Init(&insect->model.frames, frames, flags, speed, start);
+    FrameControl_Init(&insect->model.frames, frames, flags, speed, start);
 }
 
 static void town_insect_moves_set_frame(TownInsect *insect, int frame)
@@ -328,21 +328,21 @@ void TownInsectMove_WatchPlayer(TownInsect *insect, u16 *frames)
     s8 kind = insect->kind;
     if (town_insect_moves_kind_e_or_f(kind)) {
         if (alarm > 0x14) {
-            town_insect_moves_play(insect, 9, FRAME_CTRL_ONCE, 0x1000, town_insect_moves_frame(insect));
+            town_insect_moves_play(insect, 9, FRAME_CONTROL_ONCE, 0x1000, town_insect_moves_frame(insect));
             insect->unk_252 = 0x3c;
         } else if (insect->unk_252 != 0) {
             insect->unk_252--;
         } else if (distance < insect->reach) {
             u16 frame = town_insect_moves_frame(insect);
             if (frame == 0) {
-                town_insect_moves_play(insect, 4, FRAME_CTRL_ONCE, 0x1000, 0);
+                town_insect_moves_play(insect, 4, FRAME_CONTROL_ONCE, 0x1000, 0);
             } else if (frame > 4) {
-                town_insect_moves_play(insect, 4, FRAME_CTRL_ONCE | FRAME_CTRL_REVERSE, 0x1000, frame);
+                town_insect_moves_play(insect, 4, FRAME_CONTROL_ONCE | FRAME_CONTROL_REVERSE, 0x1000, frame);
             }
         } else {
             u16 frame = town_insect_moves_frame(insect);
             if (frame != 0) {
-                town_insect_moves_play(insect, 0, FRAME_CTRL_ONCE | FRAME_CTRL_REVERSE, 0x1000, frame);
+                town_insect_moves_play(insect, 0, FRAME_CONTROL_ONCE | FRAME_CONTROL_REVERSE, 0x1000, frame);
             }
         }
         return;
@@ -490,7 +490,7 @@ void TownInsectMove_CheckStartle(TownInsect *insect, short *frames)
     } else if (insect->kind == 0x14) {
         if (alarm * 2 >= reached || insect->unk_252 != 0) {
             if (town_insect_moves_frame(insect) == 0) {
-                town_insect_moves_play(insect, 4, FRAME_CTRL_ONCE, 0x1000, 0);
+                town_insect_moves_play(insect, 4, FRAME_CONTROL_ONCE, 0x1000, 0);
                 insect->unk_252 = 0x3c;
             } else if (insect->unk_252 != 0) {
                 insect->unk_252--;
@@ -498,7 +498,7 @@ void TownInsectMove_CheckStartle(TownInsect *insect, short *frames)
         } else {
             u16 frame = town_insect_moves_frame(insect);
             if (frame != 0 || town_insect_moves_frame_count(insect) != 0) {
-                town_insect_moves_play(insect, 0, FRAME_CTRL_ONCE | FRAME_CTRL_REVERSE, 0x1000, frame);
+                town_insect_moves_play(insect, 0, FRAME_CONTROL_ONCE | FRAME_CONTROL_REVERSE, 0x1000, frame);
             }
         }
     }
@@ -740,11 +740,11 @@ void TownInsectMove_Rest(TownInsect *insect, short *frames)
     if (insect->kind == 9) {
         u32 frame = town_insect_moves_frame(insect);
         if (frame == 0xd || frame < 9) {
-            town_insect_moves_play(insect, 9, FRAME_CTRL_ONCE, 0, 9);
+            town_insect_moves_play(insect, 9, FRAME_CONTROL_ONCE, 0, 9);
         }
         if (*frames > 0x50) {
             if (chance > 0x5c && frame < 0xa) {
-                town_insect_moves_play(insect, 0xe, FRAME_CTRL_ONCE, 0x1000, 9);
+                town_insect_moves_play(insect, 0xe, FRAME_CONTROL_ONCE, 0x1000, 9);
             }
             if (*frames > 0xa0) {
                 *frames = 0;
@@ -881,17 +881,17 @@ void TownInsectMove_Update35(TownInsect *insect)
             if (InsectPath_Sway(insect) != 0) {
                 insect->angle_y = 0;
                 insect->action = 2;
-                town_insect_moves_play(insect, 0x39, FRAME_CTRL_ONCE, 0x1000, 0x20);
+                town_insect_moves_play(insect, 0x39, FRAME_CONTROL_ONCE, 0x1000, 0x20);
             }
             break;
         case 0x13:
             if (InsectPath_KnockedAside(insect) != 0) {
                 insect->action = 1;
                 insect->unk_254 = 0;
-                town_insect_moves_play(insect, 0x21, FRAME_CTRL_ONCE, 0x1000, 0);
+                town_insect_moves_play(insect, 0x21, FRAME_CONTROL_ONCE, 0x1000, 0);
                 NNS_G3dMdlSetMdlAlpha(town_insect_moves_model(insect), 0, 0x1f);
             } else {
-                insect->model.frames.flags = FRAME_CTRL_ONCE;
+                insect->model.frames.flags = FRAME_CONTROL_ONCE;
             }
             break;
         default:
@@ -1111,7 +1111,7 @@ void TownInsectMove_Update36(TownInsect *insect)
             if (insect->kind == 0x37 && heard == 0) {
                 u32 frame = town_insect_moves_frame(insect);
                 if (frame > 3) {
-                    town_insect_moves_play(insect, 3, FRAME_CTRL_ONCE | FRAME_CTRL_REVERSE, 0x1000, (u16) frame);
+                    town_insect_moves_play(insect, 3, FRAME_CONTROL_ONCE | FRAME_CONTROL_REVERSE, 0x1000, (u16) frame);
                 } else if (frame == 3) {
                     town_insect_moves_play(insect, 3, 0, 0x1000, 0);
                 }

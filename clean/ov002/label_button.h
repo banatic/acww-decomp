@@ -51,7 +51,7 @@ int LabelButton_AnchorX(LabelButton *button, int anchor);
 void LabelButton_SetPlace(LabelButton *button, int x, int y);
 LabelButton *LabelButtonBase_Destruct(LabelButton *button);
 LabelButton *LabelButtonBase_Delete(LabelButton *button);
-LabelButton *LabelButtonBase_Destroy(LabelButton *button);
+LabelButton *LabelButtonBase_DestructCopy(LabelButton *button);
 LabelButton *LabelButtonBase_Construct(LabelButton *button, char kind, int param);
 
 #endif

@@ -94,7 +94,7 @@ extern const MemberPointer data_ov068_02276fb0, data_ov068_02276fc0, data_ov068_
 #define CHAT_MOTION_ACT 8
 #define CHAT_MOTION_SHOW 20
 #define CHAT_PRIORITY 1
-#define CHAT_ANIM_FLAGS 0x19c /* u8: the body animation's FrameCtrl flags */
+#define CHAT_ANIM_FLAGS 0x19c /* u8: the body animation's FrameControl flags */
 #define CHAT_SPEAKER 0x28     /* u8 *: the villager who shows its new item, in the behavior */
 /* Clothes of codes 0x12a8 to 0x12af are a design. */
 #define CHAT_DESIGN_CLOTHES_FIRST 0x12a8

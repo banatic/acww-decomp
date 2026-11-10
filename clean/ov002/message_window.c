@@ -22,8 +22,8 @@ extern const u8 data_ov002_0220bdac[]; /* the window's vtable */
 #define SLOT_UPDATE 3
 #define SLOT_SET_PLACE 4
 
-typedef void WindowMethod(MessageWindow *window);
-typedef void WindowPlaceMethod(MessageWindow *window, int x, int y);
+typedef void WindowMethodFn(MessageWindow *window);
+typedef void WindowPlaceMethodFn(MessageWindow *window, int x, int y);
 
 /* The function in vtable slot `slot` of the window. */
 static uintptr_t virtual_slot(const MessageWindow *window, int slot)
@@ -33,7 +33,7 @@ static uintptr_t virtual_slot(const MessageWindow *window, int slot)
 
 static void update(MessageWindow *window)
 {
-    ((WindowMethod *) virtual_slot(window, SLOT_UPDATE))(window);
+    ((WindowMethodFn *) virtual_slot(window, SLOT_UPDATE))(window);
 }
 
 /* func_ov002_0220b04c: asks the window to close when it is open, and updates it twice. */
@@ -51,7 +51,7 @@ void MessageWindow_Open(MessageWindow *window, int message, int x, int y)
 {
     TextLabel label;
 
-    ((WindowPlaceMethod *) virtual_slot(window, SLOT_SET_PLACE))(window, x, y);
+    ((WindowPlaceMethodFn *) virtual_slot(window, SLOT_SET_PLACE))(window, x, y);
     SlidingWindow_SetPlace((SlidingWindow *) (void *) window, 0, 0);
     TextLabel_Construct(&label);
     TextLabel_LoadMenuMessage(&label, (char) message);

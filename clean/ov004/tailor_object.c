@@ -79,7 +79,7 @@ static_assert(offsetof(RmoObject, body.object.model) == 0x148, "body model resou
 static_assert(sizeof(DatedRandom) == 0x0c, "DatedRandom size");
 static_assert(sizeof(ItemList) == 0x08, "ItemList size");
 
-#define TAILOR_OBJECT_LOOP 0 /* FrameCtrlFlags: the animations start over at their end */
+#define TAILOR_OBJECT_LOOP 0 /* FrameControlFlags: the animations start over at their end */
 
 /* The vtable slot that enters a state (TailorObject_SetState for this class). */
 #define TAILOR_OBJECT_SLOT_SET_STATE 0x60
@@ -334,7 +334,7 @@ int TailorObject_Update(TailorObject *self)
 {
     AnimatedModel_StepFrames(tailor_object_body(self));
     AnimatedModel_StepFrames(tailor_object_part(self));
-    FrameCtrl_Step(&self->body_anim.ctrl);
+    FrameControl_Step(&self->body_anim.ctrl);
     self->body_anim.anim->frame = self->body_anim.ctrl.frame;
     const Vec3 *position = &self->base.actor.position;
     Mtx43_Translation(&data_021fbe48, position->x, position->y, position->z);

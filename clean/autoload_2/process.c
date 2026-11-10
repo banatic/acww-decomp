@@ -92,10 +92,10 @@ extern MemberFn data_0213e7a4;
 
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 
-typedef int ProcessMethod(Process *self);
-typedef void ProcessProcedure(Process *self);
-typedef s16 StepRun(StepList *list, int step);
-typedef void StepUndo(StepList *list, int step);
+typedef int ProcessMethodFn(Process *self);
+typedef void ProcessProcedureFn(Process *self);
+typedef s16 StepRunFn(StepList *list, int step);
+typedef void StepUndoFn(StepList *list, int step);
 
 /* The function in vtable slot `slot` of an object whose first word is its vtable. */
 static uintptr_t virtual_slot(const void *object, int slot)
@@ -266,7 +266,7 @@ static int fill_heap(Process *self, Heap *heap)
     if (pad_first) {
         Heap_AllocBlock(heap, 0x10, 0x10);
     }
-    int ok = ((ProcessMethod *) virtual_slot(self, SLOT_FILL_HEAP))(self);
+    int ok = ((ProcessMethodFn *) virtual_slot(self, SLOT_FILL_HEAP))(self);
     if (!pad_first && Heap_AllocBlock(heap, 0x10, 0x10) == NULL) {
         ok = FALSE;
     }
@@ -366,7 +366,7 @@ int Process_CreateFittedHeap(Process *self, u32 size, Heap *parent)
         if ((uintptr_t) lower < (uintptr_t) heap) {
             Heap_Destroy(heap);
             heap = NULL;
-            int ok = ((ProcessMethod *) virtual_slot(self, SLOT_FILL_HEAP))(self);
+            int ok = ((ProcessMethodFn *) virtual_slot(self, SLOT_FILL_HEAP))(self);
             Heap_PopThreadHeap();
             if (!ok) {
                 Heap_Destroy(lower);
@@ -447,7 +447,7 @@ void Process_RequestDelete(Process *self)
         return;
     }
     self->delete_requested = TRUE;
-    ((ProcessProcedure *) virtual_slot(self, SLOT_ON_DELETE_REQUESTED))(self);
+    ((ProcessProcedureFn *) virtual_slot(self, SLOT_ON_DELETE_REQUESTED))(self);
 }
 CLEAN_AS(func_020ee470, Process_RequestDelete)
 
@@ -484,7 +484,7 @@ void Process_AfterDelete(Process *self, int outcome)
     if (self == NULL) {
         return;
     }
-    ((ProcessProcedure *) virtual_slot(self, SLOT_DESTRUCT_FREE))(self);
+    ((ProcessProcedureFn *) virtual_slot(self, SLOT_DESTRUCT_FREE))(self);
 }
 CLEAN_AS(func_020ee4d8, Process_AfterDelete)
 
@@ -748,7 +748,7 @@ s16 StepList_Run(StepList *list, int all)
         return PROCESS_STEPS_DONE;
     }
     while (list->steps[list->index] != 0) {
-        list->state = ((StepRun *) virtual_slot(list, 2))(list, list->steps[list->index]);
+        list->state = ((StepRunFn *) virtual_slot(list, 2))(list, list->steps[list->index]);
         if (list->state != PROCESS_STEPS_DONE) {
             break;
         }
@@ -769,7 +769,7 @@ void StepList_Undo(StepList *list)
         return;
     }
     for (list->index--; list->index >= 0; list->index--) {
-        ((StepUndo *) virtual_slot(list, 3))(list, list->steps[list->index]);
+        ((StepUndoFn *) virtual_slot(list, 3))(list, list->steps[list->index]);
     }
 }
 CLEAN_AS(func_020eebb4, StepList_Undo)

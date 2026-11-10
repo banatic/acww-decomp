@@ -47,7 +47,7 @@ static OverlayGroupsOwner *owner_of(MenuScene *scene)
 /* The game's memset (autoload_2, ARM), called by its address: in the PC build the name memset
  * is the C library's, which the PC's own start-up code uses. */
 #define GAME_MEMSET 0x0212a00cu
-typedef void *(*MemsetFunction)(void *dest, int value, u32 size);
+typedef void *(*MemsetFn)(void *dest, int value, u32 size);
 
 /* func_ov002_02207e80 */
 void MenuScene_ScrollWipe(MenuScene *scene, int layer, int x, int y)
@@ -166,7 +166,7 @@ void *MenuScene_Alloc(int size)
     if (block == NULL) {
         return NULL;
     }
-    ((MemsetFunction) (uintptr_t) GAME_MEMSET)(block, 0, (u32) size);
+    ((MemsetFn) (uintptr_t) GAME_MEMSET)(block, 0, (u32) size);
     return block;
 }
 CLEAN_AS(func_ov002_02207f80, MenuScene_Alloc)
@@ -301,7 +301,7 @@ extern const MemberFunction data_ov002_0220bae4; /* slot 0x4c */
 extern u32 data_ov002_0220bec0;                  /* bit 0: the table is filled */
 extern MemberFunction data_ov002_0220bec4[MENU_SCENE_PHASES];
 
-typedef int (*MenuSceneMethod)(void *self);
+typedef int (*MenuSceneMethodFn)(void *self);
 
 /* Calls `member` on `object` as mwccarm does. */
 static void call_member(const MemberFunction *member, u8 *object)
@@ -312,7 +312,7 @@ static void call_member(const MemberFunction *member, u8 *object)
         u32 vtable = *(const u32 *) self;
         function = *(const u32 *) (uintptr_t) (vtable + function);
     }
-    ((MenuSceneMethod) (uintptr_t) function)(self);
+    ((MenuSceneMethodFn) (uintptr_t) function)(self);
 }
 
 /* func_ov002_022080a8 (vtable slot 0x18): a frame of the scene: the key repeat, then the

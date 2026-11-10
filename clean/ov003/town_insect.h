@@ -95,7 +95,7 @@ typedef struct TownInsectModel {
     u8 unk_00[0x64];
     Mtx43 matrix;            /* 0x64: where it is drawn */
     u8 unk_94[8];            /* 0x94 */
-    FrameCtrl frames;        /* 0x9c */
+    FrameControl frames;     /* 0x9c */
     AnimatedModelAnim *anim; /* 0xb4 */
 } TownInsectModel;
 

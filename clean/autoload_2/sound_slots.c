@@ -27,9 +27,9 @@ typedef struct SoundSeqParam {
 } SoundSeqParam;
 
 /* The hooks SoundParams_Get asks (Sound_SetDistanceHook, Sound_SetVolumeHook, Sound_SetPanHook). */
-extern SoundHook data_021fd19c;
-extern SoundHook data_021fd1a4;
-extern SoundHook data_021fd1a0;
+extern SoundHookFn data_021fd19c;
+extern SoundHookFn data_021fd1a4;
+extern SoundHookFn data_021fd1a0;
 /* The sound group the game opens (func_020f4220); slots are set up only while it is open. */
 extern SoundGroup data_021fd054;
 /* The tracks the slots change: 0-3 (0x000f). */
@@ -479,21 +479,21 @@ void SoundParams_Get(SoundParams *params)
 CLEAN_AS(func_020efa6c, SoundParams_Get)
 
 /* func_020efb34: the volume hook (NULL: none). */
-void Sound_SetVolumeHook(SoundHook hook)
+void Sound_SetVolumeHook(SoundHookFn hook)
 {
     data_021fd1a4 = hook;
 }
 CLEAN_AS(func_020efb34, Sound_SetVolumeHook)
 
 /* func_020efb44: the hook giving SoundParams.distance (NULL: none). */
-void Sound_SetDistanceHook(SoundHook hook)
+void Sound_SetDistanceHook(SoundHookFn hook)
 {
     data_021fd19c = hook;
 }
 CLEAN_AS(func_020efb44, Sound_SetDistanceHook)
 
 /* func_020efb54: the pan hook (NULL: none). */
-void Sound_SetPanHook(SoundHook hook)
+void Sound_SetPanHook(SoundHookFn hook)
 {
     data_021fd1a0 = hook;
 }

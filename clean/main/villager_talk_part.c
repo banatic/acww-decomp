@@ -952,7 +952,7 @@ void VillagerTalkPart_AskPocketsByType(VillagerTalk *talk)
 {
     switch (part_type(talk)) {
         case VILLAGER_TALK_PART_TYPE_ITEM:
-            SceneCommand_SetPocketPredicate(&talk->scene, (PocketPredicate) (void (*)(void)) func_02027d38, 13, 0);
+            SceneCommand_SetPocketPredicate(&talk->scene, (PocketPredicateFn) (void (*)(void)) func_02027d38, 13, 0);
             SceneCommand_RequestScreen(&talk->scene, SCENE_COMMAND_SCREEN_POCKETS);
             VillagerTalkScene_SetCommandEnd(talk, data_020d8dc8);
             break;

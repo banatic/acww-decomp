@@ -33,7 +33,7 @@
 
 /* NitroSDK's table of sines and cosines, a pair for each 16th of an angle step. */
 extern const fx16 FX_SinCosTable_[];
-/* The polygons' rotation functions by type: ParticleDraw_RotY and ParticleDraw_RotDiagonal.
+/* The polygons' rotation functions by type: ParticleDraw_RotateY and ParticleDraw_RotateDiagonal.
  * REQUIRES: a type of 0 or 1 (the table has two entries; 2 and 3 read the words after it, the
  * up vector of particle_emit.c, as addresses). And the quad functions: QuadXY, QuadXZ. */
 extern void (*const data_0213f268[4])(fx32 sine, fx32 cosine, Mtx43 *mtx);
@@ -189,7 +189,7 @@ CLEAN_AS(func_020fb8e8, ParticleDraw_BindTexture)
 /* A particle drawn as a polygon: turned by the rotation function of its type and scaled, at
  * its place in the camera's view. The child's and the parent's differ in the type they take
  * (the child part's or the header's), the order of rotation and scale, and the quad. */
-static void draw_polygon(ParticleSystem *sys, Particle *ptcl, ParticleDrawCallback callback, int child)
+static void draw_polygon(ParticleSystem *sys, Particle *ptcl, ParticleDrawCallbackFn callback, int child)
 {
     const ParticleEmitter *emitter = sys->emitter;
     const ParticleResource *res = emitter->resource;
@@ -247,14 +247,14 @@ static void draw_polygon(ParticleSystem *sys, Particle *ptcl, ParticleDrawCallba
 }
 
 /* func_020fb9d4: a child drawn as a polygon (it takes the parent's scale settings). */
-void ParticleDraw_ChildPolygon(ParticleSystem *sys, Particle *ptcl, ParticleDrawCallback callback)
+void ParticleDraw_ChildPolygon(ParticleSystem *sys, Particle *ptcl, ParticleDrawCallbackFn callback)
 {
     draw_polygon(sys, ptcl, callback, 1);
 }
 CLEAN_AS(func_020fb9d4, ParticleDraw_ChildPolygon)
 
 /* func_020fbda4: a particle drawn as a polygon. */
-void ParticleDraw_Polygon(ParticleSystem *sys, Particle *ptcl, ParticleDrawCallback callback)
+void ParticleDraw_Polygon(ParticleSystem *sys, Particle *ptcl, ParticleDrawCallbackFn callback)
 {
     draw_polygon(sys, ptcl, callback, 0);
 }
@@ -263,7 +263,7 @@ CLEAN_AS(func_020fbda4, ParticleDraw_Polygon)
 /* A particle drawn facing the camera and stretched along its velocity as the camera sees it:
  * longer the more the velocity crosses the line of sight. Nothing is drawn (after the polygon
  * attributes) when the velocity is along the line of sight. */
-static void draw_stretched(ParticleSystem *sys, Particle *ptcl, ParticleDrawCallback callback, int child)
+static void draw_stretched(ParticleSystem *sys, Particle *ptcl, ParticleDrawCallbackFn callback, int child)
 {
     const Mtx43 *view = sys->view;
     const ParticleEmitter *emitter = sys->emitter;
@@ -343,14 +343,14 @@ static void draw_stretched(ParticleSystem *sys, Particle *ptcl, ParticleDrawCall
 }
 
 /* func_020fc174: a child drawn stretched along its velocity. */
-void ParticleDraw_ChildStretched(ParticleSystem *sys, Particle *ptcl, ParticleDrawCallback callback)
+void ParticleDraw_ChildStretched(ParticleSystem *sys, Particle *ptcl, ParticleDrawCallbackFn callback)
 {
     draw_stretched(sys, ptcl, callback, 1);
 }
 CLEAN_AS(func_020fc174, ParticleDraw_ChildStretched)
 
 /* func_020fc8c4: a particle drawn stretched along its velocity. */
-void ParticleDraw_Stretched(ParticleSystem *sys, Particle *ptcl, ParticleDrawCallback callback)
+void ParticleDraw_Stretched(ParticleSystem *sys, Particle *ptcl, ParticleDrawCallbackFn callback)
 {
     draw_stretched(sys, ptcl, callback, 0);
 }
@@ -359,7 +359,7 @@ CLEAN_AS(func_020fc8c4, ParticleDraw_Stretched)
 /* A particle drawn facing the camera, turned by its rotation about the line of sight.
  * REQUIRES: the draw callback leaves the colors as they are (the parent's version reads them
  * before calling it, the child's after). */
-static void draw_billboard(ParticleSystem *sys, Particle *ptcl, ParticleDrawCallback callback, int child)
+static void draw_billboard(ParticleSystem *sys, Particle *ptcl, ParticleDrawCallbackFn callback, int child)
 {
     const ParticleEmitter *emitter = sys->emitter;
     const ParticleHeader *header = emitter->resource->header;
@@ -414,21 +414,21 @@ static void draw_billboard(ParticleSystem *sys, Particle *ptcl, ParticleDrawCall
 }
 
 /* func_020fd01c: a child drawn as a billboard. */
-void ParticleDraw_ChildBillboard(ParticleSystem *sys, Particle *ptcl, ParticleDrawCallback callback)
+void ParticleDraw_ChildBillboard(ParticleSystem *sys, Particle *ptcl, ParticleDrawCallbackFn callback)
 {
     draw_billboard(sys, ptcl, callback, 1);
 }
 CLEAN_AS(func_020fd01c, ParticleDraw_ChildBillboard)
 
 /* func_020fd4e0: a particle drawn as a billboard. */
-void ParticleDraw_Billboard(ParticleSystem *sys, Particle *ptcl, ParticleDrawCallback callback)
+void ParticleDraw_Billboard(ParticleSystem *sys, Particle *ptcl, ParticleDrawCallbackFn callback)
 {
     draw_billboard(sys, ptcl, callback, 0);
 }
 CLEAN_AS(func_020fd4e0, ParticleDraw_Billboard)
 
 /* func_020fd9a4: a rotation about Y by the angle of `sine` and `cosine`, with no translation. */
-void ParticleDraw_RotY(fx32 sine, fx32 cosine, Mtx43 *mtx)
+void ParticleDraw_RotateY(fx32 sine, fx32 cosine, Mtx43 *mtx)
 {
     mtx->m[0][0] = cosine;
     mtx->m[0][1] = 0;
@@ -443,11 +443,11 @@ void ParticleDraw_RotY(fx32 sine, fx32 cosine, Mtx43 *mtx)
     mtx->m[3][1] = 0;
     mtx->m[3][2] = 0;
 }
-CLEAN_AS(func_020fd9a4, ParticleDraw_RotY)
+CLEAN_AS(func_020fd9a4, ParticleDraw_RotateY)
 
 /* func_020fd9e4: a rotation about the diagonal (1, 1, 1) by the angle of `sine` and `cosine`
  * (0x555 is 1/3, 0x93d 1/sqrt(3)), with no translation. */
-void ParticleDraw_RotDiagonal(fx32 sine, fx32 cosine, Mtx43 *mtx)
+void ParticleDraw_RotateDiagonal(fx32 sine, fx32 cosine, Mtx43 *mtx)
 {
     fx32 a = particle_fx_mul(particle_sub(0x1000, cosine), 0x555);
     fx32 b = particle_fx_mul(sine, 0x93d);
@@ -468,7 +468,7 @@ void ParticleDraw_RotDiagonal(fx32 sine, fx32 cosine, Mtx43 *mtx)
     mtx->m[3][1] = 0;
     mtx->m[3][2] = 0;
 }
-CLEAN_AS(func_020fd9e4, ParticleDraw_RotDiagonal)
+CLEAN_AS(func_020fd9e4, ParticleDraw_RotateDiagonal)
 
 /* A texture coordinate command: S and T in 12.4. */
 static void g3_texcoord(fx32 s, fx32 t)

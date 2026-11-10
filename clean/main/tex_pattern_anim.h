@@ -38,7 +38,7 @@ typedef struct TexPatternAnimEntry {
 } TexPatternAnimEntry;
 
 typedef struct TexPatternAnim {
-    FrameCtrl ctrl;               /* 0x00: its vtable is the class's */
+    FrameControl ctrl;            /* 0x00: its vtable is the class's */
     u8 *model;                    /* 0x18: the model resource (NNSG3dResMdl) */
     void *texture;                /* 0x1c: the texture resource the images are taken from */
     const u8 *anim;               /* 0x20: the animation (NNSG3dResTexPatAnm) */

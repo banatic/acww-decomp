@@ -34,9 +34,9 @@ extern LocalControl *data_ov066_0226bdec;
 /* The session. */
 extern LocalSession *data_ov066_0226bdf4;
 /* The game's allocator, free function and error handler (LocalWireless_Init). */
-extern LocalAllocator *data_ov066_0226bde8;
-extern LocalFree *data_ov066_0226bde4;
-extern LocalErrorHandler *data_ov066_0226bde0;
+extern LocalAllocatorFn *data_ov066_0226bde8;
+extern LocalFreeFn *data_ov066_0226bde4;
+extern LocalErrorHandlerFn *data_ov066_0226bde0;
 /* WM_Enable, WM_Disable, WM_PowerOn and WM_PowerOff, by LocalWireless_CallWm's index. */
 extern int (*data_ov066_0226bdc0[4])(void (*callback)(void *));
 
@@ -53,7 +53,7 @@ extern u32 OS_DisableInterrupts(void);
 extern u32 OS_RestoreInterrupts(u32 state);
 
 /* func_ov066_022667e0: `handler` set as the event handler; FALSE without a control block. */
-int LocalWireless_SetEventHandler(LocalEventHandler *handler)
+int LocalWireless_SetEventHandler(LocalEventHandlerFn *handler)
 {
     if (data_ov066_0226bdec == NULL) {
         return FALSE;
@@ -529,7 +529,7 @@ CLEAN_AS(func_ov066_0226727c, LocalWireless_StepReady)
  * being carried out (that one then goes on towards the new target). FALSE without a control
  * block, for a request past the last or for the one already asked for.
  * QUIRK: compared signed, so a negative request is taken. */
-int LocalWireless_Request(int request, LocalDoneHandler *on_done, void *argument)
+int LocalWireless_Request(int request, LocalDoneHandlerFn *on_done, void *argument)
 {
     if (data_ov066_0226bdec == NULL) {
         return FALSE;
@@ -602,7 +602,7 @@ CLEAN_AS(func_ov066_02267404, LocalWireless_ShutDown)
  * REQUIRES: the allocator gives the control block.
  * BUG: when no channel is allowed, the freed control block stays in data_ov066_0226bdec, so
  * every later call takes the library as set up. */
-int LocalWireless_Init(int wm_dma, LocalAllocator *alloc, LocalFree *release, LocalErrorHandler *on_error)
+int LocalWireless_Init(int wm_dma, LocalAllocatorFn *alloc, LocalFreeFn *release, LocalErrorHandlerFn *on_error)
 {
     if (data_ov066_0226bdec != NULL) {
         return FALSE;
@@ -669,7 +669,7 @@ CLEAN_AS(func_ov066_0226760c, LocalWireless_State)
 
 /* func_ov066_02267fe8: `handler` set as the handler of the data received, with the interrupts
  * disabled; nothing without a session. */
-void LocalWireless_SetReceiveHandler(LocalReceiveHandler *handler)
+void LocalWireless_SetReceiveHandler(LocalReceiveHandlerFn *handler)
 {
     if (data_ov066_0226bdf4 == NULL) {
         return;

@@ -43,14 +43,14 @@ extern const u8 data_020cce88[];
 #define TALK_VOICE_SLOT_VILLAGER 0x68
 #define TALK_VOICE_SLOT_MODE 0x6c
 
-typedef int TalkVoiceSlot(void *receiver);
+typedef int TalkVoiceSlotFn(void *receiver);
 
 static int talk_voice_ask_receiver(TalkVoice *voice, u32 slot)
 {
     void *receiver = voice->talk->receiver;
     const u8 *vtable = *(const u8 *const *) receiver;
     u32 function = *(const u32 *) (const void *) (vtable + slot);
-    return ((TalkVoiceSlot *) (uintptr_t) function)(receiver);
+    return ((TalkVoiceSlotFn *) (uintptr_t) function)(receiver);
 }
 
 /* func_020688dc: nothing. */

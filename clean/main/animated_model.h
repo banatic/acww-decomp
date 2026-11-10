@@ -38,7 +38,7 @@ typedef struct AnimatedModelRamp {
 
 typedef struct AnimatedModel {
     ModelObject object;      /* 0x00 */
-    FrameCtrl frames;        /* 0x9c */
+    FrameControl frames;     /* 0x9c */
     AnimatedModelAnim *anim; /* 0xb4 */
     AnimatedModelRamp ramp;  /* 0xb8: the blended model's */
 } AnimatedModel;
@@ -80,10 +80,10 @@ AnimatedModel *AnimatedModel_Delete(AnimatedModel *model);
 AnimatedModel *AnimatedModel_DestructComplete(AnimatedModel *model);
 AnimatedModel *AnimatedModel_Construct(AnimatedModel *model);
 AnimatedModel *AnimatedModel_ConstructBase(AnimatedModel *model);
-AnimatedModel *AnimatedModel_DeleteFromFrames(FrameCtrl *frames);
-AnimatedModel *AnimatedModel_DestructCompleteFromFrames(FrameCtrl *frames);
-AnimatedModel *AnimatedModel_DeleteBlendedFromFrames(FrameCtrl *frames);
-AnimatedModel *AnimatedModel_DestructBlendedFromFrames(FrameCtrl *frames);
+AnimatedModel *AnimatedModel_DeleteFromFrames(FrameControl *frames);
+AnimatedModel *AnimatedModel_DestructCompleteFromFrames(FrameControl *frames);
+AnimatedModel *AnimatedModel_DeleteBlendedFromFrames(FrameControl *frames);
+AnimatedModel *AnimatedModel_DestructBlendedFromFrames(FrameControl *frames);
 AnimatedModel *AnimatedModel_DeleteBlendedFromRamp(AnimatedModelRamp *ramp);
 AnimatedModel *AnimatedModel_DestructBlendedFromRamp(AnimatedModelRamp *ramp);
 

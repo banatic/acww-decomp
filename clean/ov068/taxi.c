@@ -33,8 +33,8 @@ static_assert(offsetof(Taxi, alpha) == 0x59a, "alpha");
 static_assert(offsetof(Taxi, materials) == 0x59c, "materials");
 static_assert(sizeof(Taxi) == 0x5a4, "the size func_ov068_02273904 allocates");
 
-#define TAXI_LOOP 0 /* FrameCtrlFlags: the animation starts over at its end */
-#define TAXI_ONCE FRAME_CTRL_ONCE
+#define TAXI_LOOP 0 /* FrameControlFlags: the animation starts over at its end */
+#define TAXI_ONCE FRAME_CONTROL_ONCE
 #define TAXI_RAIN_ALPHA 31 /* the rain materials' alpha in state 0 */
 #define TAXI_RAIN_STEP 3   /* state 1: frames per step of the alpha */
 #define TAXI_SOUND_A 0x884 /* the sounds that run while it exists */
@@ -165,9 +165,9 @@ CLEAN_AS(func_ov068_02273144, Taxi_EnterRainEnds)
  * animation passes frame 0, else sound 0x887 when it passes frame 0x1c. */
 void Taxi_PlaySounds(Taxi *self)
 {
-    if (FrameCtrl_Passed(&self->base.body.frames, 0)) {
+    if (FrameControl_Passed(&self->base.body.frames, 0)) {
         SoundSys_PlaySe(TAXI_SOUND_FRAME_0);
-    } else if (FrameCtrl_Passed(&self->base.body.frames, TAXI_SOUND_FRAME)) {
+    } else if (FrameControl_Passed(&self->base.body.frames, TAXI_SOUND_FRAME)) {
         SoundSys_PlaySe(TAXI_SOUND_FRAME_1C);
     }
 }
@@ -321,10 +321,10 @@ static int handle_anim(int speaker_anim)
 int Taxi_Update(Taxi *self)
 {
     Taxi_UpdateState(self);
-    FrameCtrl_Step(&self->texture_anim.ctrl);
+    FrameControl_Step(&self->texture_anim.ctrl);
     self->texture_anim.anim->frame = self->texture_anim.ctrl.frame;
     AnimatedModel_StepFrames(animated(&self->base.body));
-    FrameCtrl_Step(&self->material_anim.ctrl);
+    FrameControl_Step(&self->material_anim.ctrl);
     self->material_anim.anim->frame = self->material_anim.ctrl.frame;
     if (self->figure_plays != 0) {
         AnimatedModel_StepFrames(animated(&self->figure));

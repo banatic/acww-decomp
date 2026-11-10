@@ -53,7 +53,7 @@ typedef struct BodyNode {
 } BodyNode;
 static_assert(offsetof(BodyNode, next) == 0x38, "BodyNode");
 
-typedef Vec3 *(*BodyPositionMethod)(BodyNode *body);
+typedef Vec3 *(*BodyPositionMethodFn)(BodyNode *body);
 
 /* A cylinder of the collision code (func_02030678, 0x14 bytes). */
 typedef struct TouchPickTestCylinder {
@@ -479,7 +479,7 @@ void TouchPick_Update(TouchPick *pick, u8 pen_x, u8 pen_y, int pen_down)
 
     for (BodyNode *body = data_021d3120; body != NULL; body = body->next) {
         if (TouchPick_KindPickable(body->kind)) {
-            BodyPositionMethod position_of = (BodyPositionMethod) (uintptr_t) body->vtable[0];
+            BodyPositionMethodFn position_of = (BodyPositionMethodFn) (uintptr_t) body->vtable[0];
             if (TouchPick_SegmentHitsCylinder(&to, &from, position_of(body), body->radius, body->height)) {
                 pick->point = *position_of(body);
                 pick->kind = body->kind;

@@ -41,7 +41,7 @@ extern void NNS_G3dMdlSetMdlEmi(BuildingLightsModel *model, int material, int co
 extern void NNS_G3dMdlSetMdlAlpha(BuildingLightsModel *model, int material, int alpha);
 extern void NNS_G3dMdlSetMdlDiff(BuildingLightsModel *model, int material, int color);
 
-typedef char *BuildingLightsNameLamp(BuildingLightsLamps *lamps, int index);
+typedef char *BuildingLightsNameLampFn(BuildingLightsLamps *lamps, int index);
 
 /* The 5 bits of a color component that `level` (20.12) holds: bits 12-16. Only these bits
  * reach the color, so it does not matter how the ARM shifts a negative value. */
@@ -51,10 +51,10 @@ static u32 building_lights_component(int level, u32 scale)
 }
 
 /* The lamps' function that names lamp `index` (the vtable's first slot, func_020b3408). */
-static BuildingLightsNameLamp *building_lights_name_lamp(const BuildingLightsLamps *lamps)
+static BuildingLightsNameLampFn *building_lights_name_lamp(const BuildingLightsLamps *lamps)
 {
     u32 function = *(const u32 *) lamps->vtable;
-    return (BuildingLightsNameLamp *) (uintptr_t) function;
+    return (BuildingLightsNameLampFn *) (uintptr_t) function;
 }
 
 /* func_020b3310: whether the fader's level is above 0 (1 or 0). */

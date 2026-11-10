@@ -97,11 +97,11 @@ static u16 *tile_item(AcreMap *map, u32 x, u32 z, u8 layer)
 }
 
 /* What a scan does with each item it finds. */
-typedef void (*RoomScoreVisit)(void *context, u16 *item, u32 x, u32 z);
+typedef void (*RoomScoreVisitFn)(void *context, u16 *item, u32 x, u32 z);
 
 /* `visit` for each item of the square (x from `left` to `right`, z from `top` to `bottom`),
  * layer by layer, row by row. The bounds compare unsigned, as the original's do. */
-static void scan_square(AcreMap *map, u32 left, u32 top, u32 right, u32 bottom, RoomScoreVisit visit, void *context)
+static void scan_square(AcreMap *map, u32 left, u32 top, u32 right, u32 bottom, RoomScoreVisitFn visit, void *context)
 {
     for (u8 layer = 0; layer < ROOM_SCORE_LAYERS; layer++) {
         for (u32 z = top; z <= bottom; z++) {
@@ -115,7 +115,7 @@ static void scan_square(AcreMap *map, u32 left, u32 top, u32 right, u32 bottom, 
     }
 }
 
-static void scan_room(const RoomScoreRoom *room, AcreMap *map, RoomScoreVisit visit, void *context)
+static void scan_room(const RoomScoreRoom *room, AcreMap *map, RoomScoreVisitFn visit, void *context)
 {
     scan_square(map, (u32) room->left, (u32) room->top, (u32) room->right, (u32) room->bottom, visit, context);
 }
@@ -687,8 +687,8 @@ int RoomScore_Kind0Sets(RoomScoreRoom *room, AcreMap *map, u32 *most)
 CLEAN_AS(func_0205affc, RoomScore_Kind0Sets)
 
 /* The slots of a RoomScoreSource's vtable. */
-typedef u32 (*RoomScoreMapMethod)(RoomScoreSource *source, int index);
-typedef void (*RoomScoreItemMethod)(u16 *out, RoomScoreSource *source, int index);
+typedef u32 (*RoomScoreMapMethodFn)(RoomScoreSource *source, int index);
+typedef void (*RoomScoreItemMethodFn)(u16 *out, RoomScoreSource *source, int index);
 #define ROOM_SCORE_SLOT_MAP 0
 #define ROOM_SCORE_SLOT_WALLPAPER 1
 #define ROOM_SCORE_SLOT_CARPET 2
@@ -761,11 +761,11 @@ int RoomScore_Total(RoomScoreRoom *room, u16 *bonuses, int *theme, int *first, i
     for (int i = 0; i < count; i++) {
         int index = first_index + i;
         const u32 *vtable = source->vtable;
-        AcreMap *map = (AcreMap *) (uintptr_t) ((RoomScoreMapMethod) (uintptr_t) vtable[ROOM_SCORE_SLOT_MAP])(source, index);
+        AcreMap *map = (AcreMap *) (uintptr_t) ((RoomScoreMapMethodFn) (uintptr_t) vtable[ROOM_SCORE_SLOT_MAP])(source, index);
         u16 design;
-        ((RoomScoreItemMethod) (uintptr_t) source->vtable[ROOM_SCORE_SLOT_WALLPAPER])(&design, source, index);
+        ((RoomScoreItemMethodFn) (uintptr_t) source->vtable[ROOM_SCORE_SLOT_WALLPAPER])(&design, source, index);
         room->wallpaper = design;
-        ((RoomScoreItemMethod) (uintptr_t) source->vtable[ROOM_SCORE_SLOT_CARPET])(&design, source, index);
+        ((RoomScoreItemMethodFn) (uintptr_t) source->vtable[ROOM_SCORE_SLOT_CARPET])(&design, source, index);
         room->carpet = design;
         RoomScore_Bounds(&room->left, &room->right, &room->top, &room->bottom, map);
 

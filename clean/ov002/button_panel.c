@@ -216,7 +216,7 @@ extern const PanelCell data_ov002_0220be68[]; /* 12 wide, shadow 3 */
  * ignore. */
 #define LAYOUT_RESULT 0x1c8
 
-typedef void WindowMethod(MessageWindow *window);
+typedef void WindowMethodFn(MessageWindow *window);
 
 /* Sprite `index` shows `message` in `cells`. */
 static void show_sprite(ButtonPanel *panel, int index, const PanelCell *cells, u8 text_cells, u8 shadow_cell, int message)
@@ -400,7 +400,7 @@ static void draw_window(ButtonPanel *panel, int dy)
 {
     SlidingWindow_SetPlace((SlidingWindow *) (void *) &panel->window, 0, dy);
     const u32 *vtable = panel->window.vtable;
-    ((WindowMethod *) (uintptr_t) vtable[WINDOW_SLOT_DRAW])(&panel->window);
+    ((WindowMethodFn *) (uintptr_t) vtable[WINDOW_SLOT_DRAW])(&panel->window);
 }
 
 static void draw_sprite(ButtonPanel *panel, int index, int x, int y)

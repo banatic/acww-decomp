@@ -20,7 +20,7 @@ static_assert(offsetof(TransferTask, lines) == 0x0f, "TransferTask");
 extern List data_021f6c98; /* the main loop's queue */
 extern List data_021f6ca0; /* the VBlank's */
 
-typedef int TransferTaskRun(TransferTask *task);
+typedef int TransferTaskRunFn(TransferTask *task);
 
 static TransferTask *task_of(ListNode *node)
 {
@@ -44,7 +44,7 @@ static void run_queue(List *queue, int last_line)
             break;
         }
         if (task->state == TRANSFER_TASK_QUEUED) {
-            TransferTaskRun *run = (TransferTaskRun *) (uintptr_t) task->vtable[TRANSFER_TASK_SLOT_RUN];
+            TransferTaskRunFn *run = (TransferTaskRunFn *) (uintptr_t) task->vtable[TRANSFER_TASK_SLOT_RUN];
             if (run(task) != 0) {
                 task->state = TRANSFER_TASK_DONE;
             }

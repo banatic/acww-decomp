@@ -98,8 +98,8 @@ extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 /* The other form of a character (itself when it has none). */
 extern int func_02050bdc_unk(int character);
 
-typedef int MailTextObjectFunction(const void *object);
-typedef void MailTextDecoderHandler(MailTextDecoder *decoder);
+typedef int MailTextObjectFn(const void *object);
+typedef void MailTextDecoderHandlerFn(MailTextDecoder *decoder);
 
 /* A constructor or destructor of the game, as the array functions take it. */
 static void (*mail_text_function(void *(*function)(void *) ))(void *)
@@ -111,7 +111,7 @@ static void (*mail_text_function(void *(*function)(void *) ))(void *)
 static int mail_text_virtual(const void *object, int slot)
 {
     const u32 *vtable = *(const u32 *const *) object;
-    MailTextObjectFunction *function = (MailTextObjectFunction *) (uintptr_t) vtable[slot];
+    MailTextObjectFn *function = (MailTextObjectFn *) (uintptr_t) vtable[slot];
     return function(object);
 }
 
@@ -585,7 +585,7 @@ CLEAN_AS(func_0203dc24, MailTextDecoder_WantsMore)
 /* The handler of the tag just read, or NULL when it has none. The ROM picks it as a C++ member
  * pointer from the constants data_020da924, data_020da92c and data_020da934, which name these
  * functions directly (no virtual call, no adjustment). The part test is asked only for group 4. */
-static MailTextDecoderHandler *mail_text_handler(MailTextDecoder *decoder)
+static MailTextDecoderHandlerFn *mail_text_handler(MailTextDecoder *decoder)
 {
     u32 group = decoder->tag.group;
 
@@ -606,7 +606,7 @@ static MailTextDecoderHandler *mail_text_handler(MailTextDecoder *decoder)
 void MailTextDecoder_OnTag(MailTextDecoder *decoder, int position)
 {
     MessageTag_Read(&decoder->tag, position);
-    MailTextDecoderHandler *handler = mail_text_handler(decoder);
+    MailTextDecoderHandlerFn *handler = mail_text_handler(decoder);
     if (handler != NULL) {
         handler(decoder);
     } else {

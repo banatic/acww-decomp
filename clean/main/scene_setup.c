@@ -21,8 +21,8 @@ static_assert(offsetof(SceneSetupEnd, param) == 6, "scene setup end");
 static_assert(offsetof(SceneSetup, end) == 8, "scene setup");
 
 /* Each step kind's function. */
-typedef int (*SceneSetupStepFunc)(SceneSetupStep *step, u8 *item, u64 start);
-extern const SceneSetupStepFunc data_020e41ec[];
+typedef int (*SceneSetupStepFn)(SceneSetupStep *step, u8 *item, u64 start);
+extern const SceneSetupStepFn data_020e41ec[];
 
 /* The parent of the objects made here. */
 extern int data_021f42f4;
@@ -108,7 +108,7 @@ int SceneSetup_RunSteps(SceneSetupSteps *steps, u8 *step, u8 *item, u64 start)
     int i = step != NULL ? *step : 0;
     SceneSetupStep *current = steps->steps + i;
     while (i < (int) steps->count) {
-        SceneSetupStepFunc run = data_020e41ec[current->kind];
+        SceneSetupStepFn run = data_020e41ec[current->kind];
         if (run != NULL && run(current, item, start) == 0) {
             return 0;
         }

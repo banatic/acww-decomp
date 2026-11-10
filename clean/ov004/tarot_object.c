@@ -29,7 +29,7 @@ static_assert(sizeof(TarotObject) == 0x6dc, "the size TarotObject_Create allocat
 static_assert(offsetof(TarotObject, parts[1].object.model) == 0x3a4, "part 1 model resource");
 static_assert(offsetof(TarotObject, parts[2].frames) == 0x49c, "part 2 frames");
 
-#define TAROT_OBJECT_ONCE FRAME_CTRL_ONCE /* the animations stop at their end */
+#define TAROT_OBJECT_ONCE FRAME_CONTROL_ONCE /* the animations stop at their end */
 #define TAROT_OBJECT_FRAME_SHIFT 12
 
 /* The frames of overlay 45's object's animation at which the updates show and hide. */
@@ -180,7 +180,7 @@ void TarotObject_UpdateState3(TarotObject *self)
     if (FortuneTeller_CurrentFrame() == TAROT_OBJECT_STATE3_HIDE_BODY_FRAME) {
         self->body_shown = 0;
     }
-    if (FrameCtrl_IsDone(&self->parts[2].frames)) {
+    if (FrameControl_IsDone(&self->parts[2].frames)) {
         TarotObject_SetState(self, TAROT_OBJECT_IDLE);
     }
 }
@@ -365,7 +365,7 @@ CLEAN_AS(func_ov004_02230978, TarotObject_Vfunc24)
 int TarotObject_Update(TarotObject *self)
 {
     AnimatedModel_StepFrames(tarot_object_animated(&self->parts[2]));
-    FrameCtrl_Step(&self->part1_anim.ctrl);
+    FrameControl_Step(&self->part1_anim.ctrl);
     self->part1_anim.anim->frame = self->part1_anim.ctrl.frame;
     const Vec3 *position = &self->base.actor.position;
     Mtx43_Translation(&data_021fbe48, position->x, position->y, position->z);

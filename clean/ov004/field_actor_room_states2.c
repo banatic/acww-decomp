@@ -310,7 +310,7 @@ CLEAN_AS(func_ov004_0222ad28, FieldActorRoomStates2_UpdateTakePlace)
  * (priority 6) and what it answered; 0 before. */
 int FieldActorRoomStates2_EndTakePlace(FieldActor *actor)
 {
-    if (!FrameCtrl_IsDone(&actor->anim)) {
+    if (!FrameControl_IsDone(&actor->anim)) {
         return 0;
     }
     return FieldActorPlaceStates_RequestStay(actor, fars2_take_place_of(actor)->kind, FARS2_PRIORITY, FARS2_NO_ARG);
@@ -322,7 +322,7 @@ CLEAN_AS(func_ov004_0222ad48, FieldActorRoomStates2_EndTakePlace)
 void FieldActorRoomStates2_SoundTakePlace(FieldActor *actor)
 {
     FieldActor_UpdateBody(actor);
-    if (!FrameCtrl_Passed(&actor->anim, 0xd)) {
+    if (!FrameControl_Passed(&actor->anim, 0xd)) {
         return;
     }
     if (data_020e54a8 == 1) {
@@ -566,7 +566,7 @@ void FieldActorRoomStates2_RunTakeItem(FieldActor *actor)
     FieldActorTakeItemWork *work = fars2_take_item_of(actor);
     switch (work->step) {
         case FARS2_TAKE_WAIT: {
-            if (!FrameCtrl_IsDone(&actor->anim)) {
+            if (!FrameControl_IsDone(&actor->anim)) {
                 break;
             }
             if (CurrentPockets_FreeSlot() == -1 && !fars2_is_no_item(&actor->item)) {
@@ -721,7 +721,7 @@ void FieldActorRoomStates2_WaitTakeItem(FieldActor *actor)
         return;
     }
     if (work->verdict == FARS2_VERDICT_REFUSED) {
-        if (FrameCtrl_Passed(&actor->anim, 7)) {
+        if (FrameControl_Passed(&actor->anim, 7)) {
             fars2_end(actor);
             return;
         }
@@ -857,7 +857,7 @@ CLEAN_AS(func_ov004_0222a28c, FieldActorRoomStates2_UpdateFurnitureReach)
 void FieldActorRoomStates2_RunFurnitureReach(FieldActor *actor)
 {
     FieldActorFurnitureReachWork *work = fars2_reach_of(actor);
-    if (FrameCtrl_IsDone(&actor->anim) && actor->position.x == work->x && actor->position.z == work->z &&
+    if (FrameControl_IsDone(&actor->anim) && actor->position.x == work->x && actor->position.z == work->z &&
         work->yaw == actor->yaw) {
         FieldActorRoomStates2_RequestFurnitureHold(actor, 1, 0, FARS2_FURNITURE_PRIORITY, FARS2_NO_ARG);
         return;
@@ -867,7 +867,7 @@ void FieldActorRoomStates2_RunFurnitureReach(FieldActor *actor)
     }
     if (work->toggled == 0) {
         work->toggled = 1;
-        if (!FrameCtrl_IsDone(&actor->anim)) {
+        if (!FrameControl_IsDone(&actor->anim)) {
             RoomPushes_ToggleSwitch(RoomPushes_Records());
         }
     } else {
@@ -1164,10 +1164,10 @@ CLEAN_AS(func_ov004_02229d5c, FieldActorRoomStates2_UpdateFurnitureTurn)
 void FieldActorRoomStates2_RunFurnitureTurn(FieldActor *actor)
 {
     u8 *released = &actor->work.bytes[0];
-    if (actor->anim.flags != (FRAME_CTRL_ONCE | FRAME_CTRL_REVERSE)) {
-        if (FrameCtrl_IsDone(&actor->anim)) {
-            FrameCtrl_Init(&actor->anim, 0, FRAME_CTRL_ONCE | FRAME_CTRL_REVERSE, 0x1000,
-                           (u16) fars2_whole_frames(actor->anim.end));
+    if (actor->anim.flags != (FRAME_CONTROL_ONCE | FRAME_CONTROL_REVERSE)) {
+        if (FrameControl_IsDone(&actor->anim)) {
+            FrameControl_Init(&actor->anim, 0, FRAME_CONTROL_ONCE | FRAME_CONTROL_REVERSE, 0x1000,
+                              (u16) fars2_whole_frames(actor->anim.end));
         }
         return;
     }
@@ -1178,7 +1178,7 @@ void FieldActorRoomStates2_RunFurnitureTurn(FieldActor *actor)
     int quadrant = FieldActor_PushQuadrant(actor);
     if (*released != 0 && (int) FieldActor_Push(actor) > FARS2_PUSH_TURN_DONE && (quadrant == 3 || quadrant == 1)) {
         FieldActorRoomStates2_RequestFurnitureHold(actor, 1, 1, FARS2_FURNITURE_PRIORITY, FARS2_NO_ARG);
-    } else if (FrameCtrl_IsDone(&actor->anim)) {
+    } else if (FrameControl_IsDone(&actor->anim)) {
         if (FIELD_ACTOR_HOLD(actor) != 0) {
             FieldActorRoomStates2_RequestFurnitureHold(actor, 0, 1, FARS2_FURNITURE_PRIORITY, FARS2_NO_ARG);
         } else {

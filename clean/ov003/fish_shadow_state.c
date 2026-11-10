@@ -988,7 +988,7 @@ void FishShadow_MoveFin(FishShadowProcess *self, FishShadow *fish)
     FishShadow_PlaceModel(self, &fish->position, &fin->model.object, yaw);
     AnimatedModel_StepFrames(fish_state_model(&fish->model));
     AnimatedModel_StepFrames(fish_state_model(&fin->model));
-    FrameCtrl_Step(&fin->anim.ctrl);
+    FrameControl_Step(&fin->anim.ctrl);
     fin->anim.anim->frame = fin->anim.ctrl.frame;
 }
 CLEAN_AS(func_ov003_022286f4, FishShadow_MoveFin)

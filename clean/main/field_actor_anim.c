@@ -141,7 +141,7 @@ CLEAN_AS(func_02010934, FieldActor_RestartAnimation)
  * (the held item's over `held_blend`). */
 void FieldActor_PlayAnimationOnce(FieldActor *actor, int animation, int blend, u16 held_blend)
 {
-    FieldActor_PlayAnimation(actor, animation, blend, FRAME_CTRL_ONCE, FX32_ONE, 0, held_blend, ANIM_RESOURCE_BY_NUMBER);
+    FieldActor_PlayAnimation(actor, animation, blend, FRAME_CONTROL_ONCE, FX32_ONE, 0, held_blend, ANIM_RESOURCE_BY_NUMBER);
 }
 CLEAN_AS(func_020109a0, FieldActor_PlayAnimationOnce)
 
@@ -161,7 +161,7 @@ void FieldActor_PlayAnimationLoop(FieldActor *actor, int animation, int blend, i
 CLEAN_AS(func_020109fc, FieldActor_PlayAnimationLoop)
 
 /* func_02010a24: plays `animation` with the body resource `resource` (or the number's, from
- * ANIM_RESOURCE_BY_NUMBER up), blended over `blend` frames, with the FrameCtrl `flags`, `speed`
+ * ANIM_RESOURCE_BY_NUMBER up), blended over `blend` frames, with the FrameControl `flags`, `speed`
  * and `start` frame. After animation ANIM_NO_BLEND_AFTER there is no blending. The body's
  * animation starts unless animation 0 is asked for while 0 plays, from frame 0, blended, and by
  * number; then it runs on. The held item follows over `held_blend` frames, and so do the face
@@ -306,7 +306,7 @@ void FieldActor_StepFaceAnimA(FieldActor *actor)
     if (number == FACE_ANIM_NONE) {
         return;
     }
-    if (number != 0 || FrameCtrl_Passed((const FrameCtrl *) (void *) anim, 0) == 0 ||
+    if (number != 0 || FrameControl_Passed((const FrameControl *) (void *) anim, 0) == 0 ||
         FaceAnimTimer_Step((FaceAnimTimer *) (void *) field_actor_anim_at(actor, FIELD_ACTOR_FACE_ANIM_TIMER)) != 0) {
         TexPatternAnim_Step((TexPatternAnim *) (void *) anim);
     }

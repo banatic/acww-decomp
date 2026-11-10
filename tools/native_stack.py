@@ -380,7 +380,7 @@ CLEAN_SHA = '9973a381646ac313e81df9a0a12a2dca2c55b7582020b45ff497afff50bc17b5'
 # The Clean insect room (InsectRoom_Update) sets the cases' centers' y to 0 (its BUG: note); the
 # copy keeps the centers at the Native one's guest slot instead.
 CLEAN_INSECT_ROOM = 'clean/ov004/museum_insects.c'
-CLEAN_INSECT_ROOM_SHA = 'e240535e4acfffbca462b5acefb27e8f1cd4d4938d6da46f5b5753623cc7efda'
+CLEAN_INSECT_ROOM_SHA = '40a484c9d47bedaed4a7f28d62ff442cca7b26937f5d8864e5c50d7bd5c37cbe'
 # The Clean versions of the cue's functions and of the room object's matrix (CUE_EDITS): the
 # Clean sources keep 0 where the ROM reads its stack (their BUG: notes); the mixed Native/Clean
 # build compiles copies with the Native ones' guest slots and registers.
@@ -388,13 +388,13 @@ CLEAN_CUE_SHA = {
     'clean/autoload_2/music_cue.c': '5e0d82994301bbde71bb4747d619c4a7ebf8558c757f9285fc36420a0c6a9dd1',
     'clean/main/sound.c': '5e1a5a3c835991fafa2653e4bfbfb467083efbe85e4251438f99f617d87b534e',
     'clean/ov004/room_object_body.c': '9f309e277896aed6dd6b1c0000926626d6038d3005a1b76f4779f1b25d4131c1',
-    'clean/main/talk_object.c': '2bbcbca756aa6ceb3edb1372086917fcb01a39980e34227b711e8e6f289a72a7',
+    'clean/main/talk_object.c': '4c1c6a84effa03142ceb8806237aa1b9b06bde18bb36b03c757ece9668f41516',
     'clean/main/villager_talk_offers.c': '29f2afd26a82d13b3f06fe941d78e621113fe8998b4734d9d855a46d384b9686',
     'clean/autoload_2/matrix.c': '6e4e1fe2d50a238897e20e224004b63f073337a296a08fa10158644c8527cf18',
     'clean/main/field_collision.c': 'b777eecdcc3564a556506c6959e3a8896f11c51a419c83ec0ca6d420fc9dc935',
     'clean/main/collision_query.c': '51e3eb08fea6814224afc39821fb0dc8577f080cd63710e6001784143f8d77d3',
     'clean/main/collision_segment.c': '5519edaa81cb8a78eaa0b1177fce67f278e5b5695f8533c34b87ade7a3e8027d',
-    'clean/main/villager_talk.c': 'c93580638d5ec2c6c742b3013047ffd7bdaae8a3fd02d2c09f109b12a90a553e',
+    'clean/main/villager_talk.c': 'a74af83438fd189abe5da9ac839eee382a9fc3152b38b7ea9a4bfb348a0dd9f2',
     'clean/main/villager_talk_replies.c': '355632ac0c99be54eca2e71e8cd1914ccf088c5a9bc2925db0d29911d69b7197',
     'clean/ov094/pockets_grid.c': '26c6d78a9e8ec6fce8ac2e4ebe8712e629546a5a5138838daa131eaf1538b64f',
     'clean/ov004/push_box.c': 'fb3aeb338e82291f1f8a48a855d1ffbc6e065f2d65525e18b7b5e5132c995ec5',

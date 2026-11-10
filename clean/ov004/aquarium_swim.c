@@ -89,7 +89,7 @@ static fx32 aquarium_swim_cos(int angle)
     return FX_SinCosTable_[((u16) angle >> 4) * 2 + 1];
 }
 
-/* The last frame of the fish's animation, less 1, as FrameCtrl_Passed takes it. */
+/* The last frame of the fish's animation, less 1, as FrameControl_Passed takes it. */
 static u16 aquarium_swim_before_last_frame(const AquariumFish *fish)
 {
     u32 frames = ((u32) fish->model.frames.end << 4) >> 16;
@@ -293,7 +293,7 @@ int AquariumSwim_EndBend(AquariumFish *fish)
 {
     if (fish->three_anims != 0 && ((AquariumSwimmer *) fish)->bend.bending != 0) {
         u32 last = ((u32) fish->model.frames.end << 4) >> 16;
-        if (FrameCtrl_Passed(&fish->model.frames, (int) last)) {
+        if (FrameControl_Passed(&fish->model.frames, (int) last)) {
             AquariumSwim_Straighten(fish);
             return 1;
         }
@@ -305,7 +305,7 @@ CLEAN_AS(func_ov004_02239858, AquariumSwim_EndBend)
 /* Once the fish's animation passes `frame`, it goes back to the frame before. */
 static void aquarium_swim_hold(AquariumFish *fish, int frame)
 {
-    if (FrameCtrl_Passed(&fish->model.frames, frame)) {
+    if (FrameControl_Passed(&fish->model.frames, frame)) {
         fish->model.frames.frame = (fx32) ((u32) (u16) (frame - 1) << 12);
     }
 }
@@ -320,7 +320,7 @@ void AquariumSwim_Bend(AquariumFish *fish, int frame)
         aquarium_swim_hold(fish, frame);
         return;
     }
-    if (FrameCtrl_Passed(&fish->model.frames, aquarium_swim_before_last_frame(fish))) {
+    if (FrameControl_Passed(&fish->model.frames, aquarium_swim_before_last_frame(fish))) {
         AquariumSwim_PlayAnim(fish, frame == AQUARIUM_BEND_LEFT ? 2 : 1);
         swimmer->bend.bending = 1;
     }

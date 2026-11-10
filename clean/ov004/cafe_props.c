@@ -45,9 +45,9 @@ static_assert(sizeof(CafeProps) == 0xf44, "the size CafeProps_Create allocates")
 #define CAFE_PROPS_MUSIC_FIRST 99 /* the musics whose beat the cup and part 0 follow */
 #define MUSIC_LAST 171
 #define RECORD_STOPPED 1 /* byte 3 of the sound's entry while it does not play */
-#define PLAY_LOOP 0      /* FrameCtrlFlags */
-#define PLAY_ONCE FRAME_CTRL_ONCE
-#define PLAY_BACKWARDS (FRAME_CTRL_ONCE | FRAME_CTRL_REVERSE)
+#define PLAY_LOOP 0      /* FrameControlFlags */
+#define PLAY_ONCE FRAME_CONTROL_ONCE
+#define PLAY_BACKWARDS (FRAME_CONTROL_ONCE | FRAME_CONTROL_REVERSE)
 
 /* The master's animations (CafeMaster_AnimNumber). */
 #define MASTER_ANIM_F2 0xf2
@@ -182,7 +182,7 @@ static int plays(RmoAnimatedModel *model, RmoModel *source, int anim)
 /* Whether `model` plays joint animation `anim` of `source` and it has run out. */
 static int played(RmoAnimatedModel *model, RmoModel *source, int anim)
 {
-    return plays(model, source, anim) && FrameCtrl_IsDone(&model->frames);
+    return plays(model, source, anim) && FrameControl_IsDone(&model->frames);
 }
 
 /* func_ov004_0222db58: whether part 1's animation 12 has run out. */

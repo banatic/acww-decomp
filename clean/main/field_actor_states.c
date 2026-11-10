@@ -593,7 +593,7 @@ void FieldActor_TakeRemoteAction(FieldActor *actor)
                 Position_Tile(&found[0], &found[1], (const Position *) &at);
                 if (found[0] == x && found[1] == z) {
                     actor->work.s68.then_69 = 1;
-                    actor->anim.flags = FRAME_CTRL_ONCE;
+                    actor->anim.flags = FRAME_CONTROL_ONCE;
                     return;
                 }
             }
@@ -980,7 +980,7 @@ CLEAN_AS(func_020083bc, FieldActor_UpdateState86)
  * follows. */
 void FieldActor_EndState86(FieldActor *actor)
 {
-    if (FrameCtrl_IsDone(&actor->anim)) {
+    if (FrameControl_IsDone(&actor->anim)) {
         actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
         FieldActor_RequestState5(actor, 3, 5, -1);
     }
@@ -1037,7 +1037,7 @@ void FieldActor_EndState85(FieldActor *actor)
     if (!FieldActor_TurnToZero(actor, 0x800)) {
         return;
     }
-    if (!FrameCtrl_IsDone(&actor->anim)) {
+    if (!FrameControl_IsDone(&actor->anim)) {
         return;
     }
     if (actor->animation == 0x7e) {
@@ -1262,7 +1262,7 @@ CLEAN_AS(func_02008934, FieldActor_RequestState84)
 
 /* ---- The states below: what they share */
 
-extern int func_02056f28(const FrameCtrl *ctrl, int frame);
+extern int func_02056f28(const FrameControl *ctrl, int frame);
 /* A sound effect played on the sound system (data_021fd1bc). */
 extern u8 data_021fd1bc[];
 extern int FX_MulFunc(int a, int b);
@@ -1341,7 +1341,7 @@ CLEAN_AS(func_020089b0, FieldActor_EndState83)
 void FieldActor_RunState83(FieldActor *actor)
 {
     FieldActor_UpdateBody(actor);
-    if (FrameCtrl_Passed(&actor->anim, 1)) {
+    if (FrameControl_Passed(&actor->anim, 1)) {
         if (is_local_player(actor)) {
             SoundSystem_PlayEffect((SoundSystem *) (void *) data_021fd1bc, 0x79);
         } else {
@@ -1402,7 +1402,7 @@ void FieldActor_RunState79(FieldActor *actor)
 {
     u8 *step = &actor->work.bytes[0];
     if (actor->animation == 0x76) {
-        if (FrameCtrl_IsDone(&actor->anim)) {
+        if (FrameControl_IsDone(&actor->anim)) {
             FieldActor_PlayAnimationLoop(actor, 0x77, 0, 0);
             if (!is_local_player(actor)) {
                 *step = 3;
@@ -1508,7 +1508,7 @@ CLEAN_AS(func_02008c8c, FieldActor_UpdateState77)
 /* func_02008cac: at the animation's end the bar drops and func_0200d4e8 (3) moves on. */
 void FieldActor_EndState77(FieldActor *actor)
 {
-    if (FrameCtrl_IsDone(&actor->anim)) {
+    if (FrameControl_IsDone(&actor->anim)) {
         drop_priority(actor);
         FieldActor_RequestState2(actor, 3, 1, -1);
     }
@@ -1704,20 +1704,20 @@ void FieldActor_RunState76(FieldActor *actor)
     int start_frame;
     switch (actor->animation) {
         case 0x87:
-            if (FrameCtrl_IsDone(&actor->anim)) {
+            if (FrameControl_IsDone(&actor->anim)) {
                 FieldActor_PlayAnimationOnce(actor, 0x88, 0, 0);
                 HeldItem_Act(actor->held, 0xa, 0, 1);
             }
             return;
         case 0x89:
-            if (FrameCtrl_IsDone(&actor->anim)) {
+            if (FrameControl_IsDone(&actor->anim)) {
                 FieldActor_PlayAnimationOnce(actor, 0x8a, 0, 0);
                 HeldItem_Act(actor->held, 0x20, 0, 1);
             }
             return;
         case 0x86:
             start_frame = 0x19;
-            if (is_local_player(actor) && FrameCtrl_Passed(&actor->anim, 0xc)) {
+            if (is_local_player(actor) && FrameControl_Passed(&actor->anim, 0xc)) {
                 CameraControl_SetMode4();
             }
             break;
@@ -2333,7 +2333,7 @@ void FieldActor_RunState3f(FieldActor *actor)
         default:
             break;
     }
-    if (FrameCtrl_IsDone(&actor->anim)) {
+    if (FrameControl_IsDone(&actor->anim)) {
         state3f_end(actor, work);
     }
 }
@@ -2425,7 +2425,7 @@ CLEAN_AS(func_02009d74, FieldActor_UpdateState35)
  * (0x1373, 0x1375, 0x1377), and func_02057cb8 runs. */
 void FieldActor_EndState35(FieldActor *actor)
 {
-    if (!FrameCtrl_IsDone(&actor->anim)) {
+    if (!FrameControl_IsDone(&actor->anim)) {
         return;
     }
     drop_priority(actor);
@@ -2491,7 +2491,7 @@ CLEAN_AS(func_02009e88, FieldActor_UpdateState34)
  * for. */
 void FieldActor_EndState34(FieldActor *actor)
 {
-    if (FrameCtrl_IsDone(&actor->anim) && Obj020dd33c_Stage() == 5) {
+    if (FrameControl_IsDone(&actor->anim) && Obj020dd33c_Stage() == 5) {
         FieldActor_RequestState35(actor, 6, -1);
     }
 }
@@ -2548,7 +2548,7 @@ CLEAN_AS(func_02009f2c, FieldActor_UpdateState33)
  * state 0x34 is asked for unless func_02057bf0 (3) says so. */
 void FieldActor_EndState33(FieldActor *actor)
 {
-    if (!FrameCtrl_IsDone(&actor->anim)) {
+    if (!FrameControl_IsDone(&actor->anim)) {
         return;
     }
     if (!Obj020dd33c_IsLead(actor)) {
@@ -2810,7 +2810,7 @@ CLEAN_AS(func_0200a338, FieldActor_UpdateState30)
 /* func_0200a354: at the animation's end state 0x31 is asked for. */
 void FieldActor_EndState30(FieldActor *actor)
 {
-    if (FrameCtrl_IsDone(&actor->anim)) {
+    if (FrameControl_IsDone(&actor->anim)) {
         FieldActor_RequestState31(actor, 6, -1);
     }
 }
@@ -2819,7 +2819,7 @@ CLEAN_AS(func_0200a354, FieldActor_EndState30)
 /* func_0200a37c: sound 0x63 at frame 8 of the animation, before FieldActor_UpdateBody. */
 void FieldActor_RunState30(FieldActor *actor)
 {
-    if (FrameCtrl_Passed(&actor->anim, 8)) {
+    if (FrameControl_Passed(&actor->anim, 8)) {
         FieldActor_PlaySound(actor, 0x63);
     }
     FieldActor_UpdateBody(actor);
@@ -3144,7 +3144,7 @@ CLEAN_AS(func_0200a764, FieldActor_FinishState1a)
 /* func_0200a7e8: another console's actor ends state 0x1a at frame 6 of the animation. */
 void FieldActor_EndState1a(FieldActor *actor)
 {
-    if (FrameCtrl_Passed(&actor->anim, 6)) {
+    if (FrameControl_Passed(&actor->anim, 6)) {
         FieldActor_FinishState1a(actor);
     }
 }
@@ -3168,10 +3168,10 @@ void FieldActor_RunState1a(FieldActor *actor)
     State1aWork *work = state1a_work(actor);
     switch (work->step) {
         case 0:
-            if (FrameCtrl_Passed(&actor->anim, 1)) {
+            if (FrameControl_Passed(&actor->anim, 1)) {
                 CameraControl_SetMode4();
             }
-            if (FrameCtrl_Passed(&actor->anim, 6)) {
+            if (FrameControl_Passed(&actor->anim, 6)) {
                 state1a_act_on_tile(work);
                 FieldActor_ClearFlag(actor, 0x1c);
                 if (data_020e54a8 == 0) {
@@ -3416,7 +3416,7 @@ CLEAN_AS(func_0200ad8c, FieldActor_UpdateState19)
  * 0x12 and 0xd are cleared and the held item takes pose 0 for tool 4. */
 void FieldActor_EndState19(FieldActor *actor)
 {
-    if (!FrameCtrl_IsDone(&actor->anim)) {
+    if (!FrameControl_IsDone(&actor->anim)) {
         return;
     }
     if (actor->animation == 0x16 || actor->animation == 0x18) {
@@ -3490,7 +3490,7 @@ void FieldActor_RunState19(FieldActor *actor, u8 *step, int flag)
 {
     switch (*step) {
         case 0:
-            if (!FrameCtrl_IsDone(&actor->anim)) {
+            if (!FrameControl_IsDone(&actor->anim)) {
                 break;
             }
             if (actor->item == 0x1520) {
@@ -3661,7 +3661,7 @@ CLEAN_AS(func_0200b218, FieldActor_ScaleState19)
 void FieldActor_SoundState19(FieldActor *actor)
 {
     FieldActor_UpdateBody(actor);
-    if (actor->animation == 0x16 && FrameCtrl_Passed(&actor->anim, 9)) {
+    if (actor->animation == 0x16 && FrameControl_Passed(&actor->anim, 9)) {
         FieldActor_PlaySound(actor, 0x4f);
     }
 }
@@ -4196,7 +4196,7 @@ CLEAN_AS(func_0200be18, FieldActor_UpdateState15)
  * it was queued, 0 before the end. */
 int FieldActor_EndState15(FieldActor *actor)
 {
-    if (!FrameCtrl_IsDone(&actor->anim)) {
+    if (!FrameControl_IsDone(&actor->anim)) {
         return 0;
     }
     return FieldActor_RequestState10(actor, 5, 5, -1);
@@ -4208,7 +4208,7 @@ CLEAN_AS(func_0200be34, FieldActor_EndState15)
 void FieldActor_RunState15(FieldActor *actor)
 {
     FieldActor_UpdateBody(actor);
-    if (FrameCtrl_Passed(&actor->anim, 6)) {
+    if (FrameControl_Passed(&actor->anim, 6)) {
         EffectSystem_StartKind(0x50, &actor->effect_point, NULL, 0);
         FieldActor_PlaySound(actor, 0x68);
     }
@@ -4310,7 +4310,7 @@ void FieldActor_UpdateState14(FieldActor *actor)
 }
 CLEAN_AS(func_0200bef0, FieldActor_UpdateState14)
 
-/* func_0200bf10: the count runs down; while a looping animation plays (no FrameCtrl flags), at
+/* func_0200bf10: the count runs down; while a looping animation plays (no FrameControl flags), at
  * 0 state 5 is asked for (priority 5) with the kind's frames. */
 void FieldActor_EndState14(FieldActor *actor)
 {
@@ -4334,7 +4334,7 @@ void FieldActor_RunState14(FieldActor *actor)
     ActEffects_Update(effects_of(actor), &actor->effect_point, actor->yaw, AnimSlots_SlotResource(actor->unk_700),
                       (u16) anim_frame(actor));
     FieldActor_UpdateBody(actor);
-    if (!FrameCtrl_IsDone(&actor->anim)) {
+    if (!FrameControl_IsDone(&actor->anim)) {
         return;
     }
     const State14Record *record = FIELD_ACTOR_RECORD(actor);
@@ -4433,7 +4433,7 @@ CLEAN_AS(func_0200c120, FieldActor_UpdateState13)
  * priority 5). */
 void FieldActor_EndState13(FieldActor *actor)
 {
-    if (FrameCtrl_IsDone(&actor->anim)) {
+    if (FrameControl_IsDone(&actor->anim)) {
         drop_priority(actor);
         FieldActor_RequestState5(actor, 7, 5, -1);
     }
@@ -4489,8 +4489,8 @@ typedef struct AimedObject {
 /* The buttons. */
 extern PadState data_021fbe40;
 
-typedef int (*FieldActorTargetMethod)(void *object);
-typedef const Vec3 *(*FieldActorPointMethod)(void *object);
+typedef int (*FieldActorTargetMethodFn)(void *object);
+typedef const Vec3 *(*FieldActorPointMethodFn)(void *object);
 
 /* The virtual function at `offset` in the C++ object's vtable. */
 static u32 virtual_at(const void *object, u32 offset)
@@ -4535,7 +4535,7 @@ void FieldActor_CheckState10Target(FieldActor *actor)
     if (other == NULL) {
         return;
     }
-    FieldActorTargetMethod method = (FieldActorTargetMethod) (uintptr_t) virtual_at(other, 0xa0);
+    FieldActorTargetMethodFn method = (FieldActorTargetMethodFn) (uintptr_t) virtual_at(other, 0xa0);
     if (method(other) != -1) {
         FieldActor_RequestState15(actor, 5, -1);
     }
@@ -4553,7 +4553,7 @@ void FieldActor_FaceState10Target(FieldActor *actor)
     if (target == NULL) {
         return;
     }
-    FieldActorPointMethod point_of = (FieldActorPointMethod) (uintptr_t) virtual_at(target, 0x50);
+    FieldActorPointMethodFn point_of = (FieldActorPointMethodFn) (uintptr_t) virtual_at(target, 0x50);
     const Vec3 *at = point_of(target);
     s16 toward = Math_Atan2(sub32(at->x, actor->position.x), sub32(at->z, actor->position.z));
     s16 yaw = actor->yaw;
@@ -4566,7 +4566,7 @@ CLEAN_AS(func_0200c2c8, FieldActor_FaceState10Target)
 void FieldActor_RunState10(FieldActor *actor)
 {
     FieldActor_UpdateBody(actor);
-    if (FrameCtrl_IsDone(&actor->anim)) {
+    if (FrameControl_IsDone(&actor->anim)) {
         FieldActor_PlayAnimationLoop(actor, 0, 3, 0);
     }
 }
@@ -4696,7 +4696,7 @@ CLEAN_AS(func_0200c3f4, FieldActor_UpdateState7)
  * frames, priority 5), or func_02095bdc runs. */
 void FieldActor_EndState7(FieldActor *actor)
 {
-    if (!FrameCtrl_IsDone(&actor->anim)) {
+    if (!FrameControl_IsDone(&actor->anim)) {
         return;
     }
     drop_priority(actor);
@@ -4738,7 +4738,7 @@ CLEAN_AS(func_0200c47c, FieldActor_TurnState7)
 void FieldActor_RunState7(FieldActor *actor)
 {
     FieldActor_ClearFlag(actor, 0xf);
-    if (!FrameCtrl_Passed(&actor->anim, 8)) {
+    if (!FrameControl_Passed(&actor->anim, 8)) {
         return;
     }
     FieldActor_SetFlag(actor, 0xf);
@@ -4822,11 +4822,11 @@ CLEAN_AS(func_0200c610, FieldActor_ApplyState7Kind0)
 void FieldActor_EffectsState7(FieldActor *actor)
 {
     FieldActor_UpdateBody(actor);
-    if (FrameCtrl_Passed(&actor->anim, 0xd)) {
+    if (FrameControl_Passed(&actor->anim, 0xd)) {
         EffectSystem_StartKind(0x22, &actor->position, NULL, 0);
         return;
     }
-    if (!FrameCtrl_Passed(&actor->anim, 3)) {
+    if (!FrameControl_Passed(&actor->anim, 3)) {
         return;
     }
     s16 yaw = actor->yaw;
@@ -5336,9 +5336,9 @@ void FieldActor_MoveState3(FieldActor *actor)
     int anim_speed = FX_MulFunc(speed, 0x3ae1);
     if (anim_speed <= actor->anim.end) {
         actor->anim.speed = anim_speed;
-        FrameCtrl *held_anim = (FrameCtrl *) ((u8 *) HeldItem_Model(actor->held) + 0x9c);
+        FrameControl *held_anim = (FrameControl *) ((u8 *) HeldItem_Model(actor->held) + 0x9c);
         if (anim_speed <= held_anim->end) {
-            held_anim = (FrameCtrl *) ((u8 *) HeldItem_Model(actor->held) + 0x9c);
+            held_anim = (FrameControl *) ((u8 *) HeldItem_Model(actor->held) + 0x9c);
             held_anim->speed = anim_speed;
         }
     }

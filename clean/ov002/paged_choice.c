@@ -41,7 +41,7 @@ extern const u16 data_ov002_0220ba50[];
 
 #define FULLWIDTH_ZERO 0xff10
 
-typedef void (*LabelMethod)(void *self);
+typedef void (*LabelMethodFn)(void *self);
 
 static int add32(int a, int b)
 {
@@ -272,7 +272,7 @@ void PagedChoice_ShowPage(PagedChoice *choice, const u8 *page)
     LabelSprite_SetText((LabelSprite *) (void *) choice->page_label, (TextBase *) (void *) text);
     {
         u32 vtable = *(const u32 *) (const void *) choice->page_label;
-        ((LabelMethod) (uintptr_t) *(const u32 *) (uintptr_t) (vtable + 0x0c))(choice->page_label);
+        ((LabelMethodFn) (uintptr_t) *(const u32 *) (uintptr_t) (vtable + 0x0c))(choice->page_label);
     }
     choice->page = *page;
     TextLabel_Destruct((TextLabel *) (void *) digit);
@@ -452,8 +452,8 @@ extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(v
 extern void *func_ov002_02209bf0(void *row); /* ChoiceRow_Destroy, for the array */
 extern void *func_ov002_02209c08(void *row); /* ChoiceRow_Construct, for the array */
 
-typedef void (*ObjectMethod)(void *self);
-typedef void (*ObjectMethod2)(void *self, int a, int b);
+typedef void (*ObjectMethodFn)(void *self);
+typedef void (*ObjectMethod2Fn)(void *self, int a, int b);
 
 /* The virtual function at `offset` in the object's vtable. */
 static u32 virtual_at(const void *object, u32 offset)
@@ -717,8 +717,8 @@ CLEAN_AS(func_ov002_02209178, PagedChoice_Dismiss)
 void PagedChoice_Draw(PagedChoice *choice)
 {
     if (PagedChoice_TestFlags(choice, CHOICE_FLAG_OBJECTS)) {
-        ((ObjectMethod) (uintptr_t) virtual_at(choice->page_label, 0x08))(choice->page_label);
-        ((ObjectMethod) (uintptr_t) virtual_at(choice->window, 0x08))(choice->window);
+        ((ObjectMethodFn) (uintptr_t) virtual_at(choice->page_label, 0x08))(choice->page_label);
+        ((ObjectMethodFn) (uintptr_t) virtual_at(choice->window, 0x08))(choice->window);
     }
 }
 CLEAN_AS(func_ov002_0220919c, PagedChoice_Draw)
@@ -1238,7 +1238,7 @@ void PagedChoice_Init(PagedChoice *choice, u8 layer, int priority, const char *s
         tile = (u16) (tile + ROW_TILES);
     }
 
-    ((ObjectMethod2) (uintptr_t) virtual_at(choice->page_label, 0x10))(choice->page_label, 0x60, 0x8c);
+    ((ObjectMethod2Fn) (uintptr_t) virtual_at(choice->page_label, 0x10))(choice->page_label, 0x60, 0x8c);
     LabelSprite_SetOffset((LabelSprite *) (void *) choice->page_label, 0, 0);
     LabelSprite_HideSecond((LabelSprite *) (void *) choice->page_label);
     LabelSprite_SetWindow((LabelSprite *) (void *) choice->page_label);

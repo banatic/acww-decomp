@@ -73,7 +73,7 @@ typedef struct Spawner {
 } Spawner;
 
 /* A condition of the tables of Spawner_CheckEvents. */
-typedef int SpawnerCondition(void);
+typedef int SpawnerConditionFn(void);
 
 Spawner *Spawner_Destruct(Spawner *self);
 Spawner *Spawner_DestructDelete(Spawner *self);
@@ -85,7 +85,7 @@ int Spawner_PlaceOnRandomTile(Spawner *self, Vec3 *position);
 int Spawner_PlayerLacksFlag18(void);
 void Spawner_CheckEvent45(void);
 void Spawner_CheckEvents3e(void);
-int Spawner_CheckEvents(const SpawnerEvent *events, SpawnerCondition *const *conditions, int count, int check_mode);
+int Spawner_CheckEvents(const SpawnerEvent *events, SpawnerConditionFn *const *conditions, int count, int check_mode);
 int Spawner_CheckD020(void);
 int Spawner_CheckD020In(int check_mode);
 int Spawner_PlaceFromPartC(Spawner *self, Vec3 *position);

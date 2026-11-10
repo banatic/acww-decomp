@@ -25,7 +25,7 @@ static void *pockets_of(int player)
 }
 
 /* func_0206f9d8: the slots the predicate accepts, one bit each (bit n for slot n). */
-u16 Pockets_Select(PocketPredicate predicate)
+u16 Pockets_Select(PocketPredicateFn predicate)
 {
     int player = (int) (uintptr_t) PlayerRecords_Current();
     u16 *items = PlayerPockets_Slot(pockets_of(player), 0);

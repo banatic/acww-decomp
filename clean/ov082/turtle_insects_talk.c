@@ -516,7 +516,7 @@ void TurtleInsectsTalk_OnLineEnded(TurtleInsectsTalk *talk)
         }
         case TURTLE_INSECTS_TALK_LINE_SHOW_INSECT:
             SceneCommand_SetPocketPredicate(turtle_insects_talk_scene(talk),
-                                            (PocketPredicate) (void (*)(void)) func_ov082_02279168,
+                                            (PocketPredicateFn) (void (*)(void)) func_ov082_02279168,
                                             TURTLE_INSECTS_TALK_POCKETS_ARG, 1);
             SceneCommand_RequestScreen(turtle_insects_talk_scene(talk), TURTLE_INSECTS_TALK_POCKETS_SCREEN);
             TurtleInsectsTalk_SetAfterCommand(talk, TURTLE_INSECTS_TALK_AFTER_POCKETS);

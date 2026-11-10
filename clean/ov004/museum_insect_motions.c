@@ -61,7 +61,7 @@ static unsigned int insect_motion_end(const MuseumInsect *insect)
 
 static void insect_motion_play(MuseumInsect *insect, u32 frames, u8 flags, u32 speed, u16 start)
 {
-    FrameCtrl_Init(&insect->model.frames, frames, flags, speed, start);
+    FrameControl_Init(&insect->model.frames, frames, flags, speed, start);
 }
 
 static void insect_motion_set_frame(MuseumInsect *insect, int frame)
@@ -199,22 +199,22 @@ void InsectMotion_ReactToPlayer(MuseumInsect *insect, short *frames)
             insect->mode = MUSEUM_INSECT_MODE_REST;
         }
         if (alarm > 20) {
-            insect_motion_play(insect, 9, FRAME_CTRL_ONCE, 0x1000, (u16) insect_motion_frame(insect));
+            insect_motion_play(insect, 9, FRAME_CONTROL_ONCE, 0x1000, (u16) insect_motion_frame(insect));
             insect->unk_50 = 60;
         } else if (insect->unk_50) {
             insect->unk_50--;
         } else if (sighting.distance < insect->sight) {
             unsigned int frame = insect_motion_frame(insect);
             if (frame == 0) {
-                insect_motion_play(insect, 4, FRAME_CTRL_ONCE, 0x1000, 0);
+                insect_motion_play(insect, 4, FRAME_CONTROL_ONCE, 0x1000, 0);
                 insect->unk_50 = 60;
             } else if (frame > 4) {
-                insect_motion_play(insect, 4, FRAME_CTRL_ONCE | FRAME_CTRL_REVERSE, 0x1000, (u16) frame);
+                insect_motion_play(insect, 4, FRAME_CONTROL_ONCE | FRAME_CONTROL_REVERSE, 0x1000, (u16) frame);
             }
         } else {
             unsigned int frame = insect_motion_frame(insect);
             if (frame != 0) {
-                insect_motion_play(insect, 0, FRAME_CTRL_ONCE | FRAME_CTRL_REVERSE, 0x1000, (u16) frame);
+                insect_motion_play(insect, 0, FRAME_CONTROL_ONCE | FRAME_CONTROL_REVERSE, 0x1000, (u16) frame);
             }
         }
     } else if (insect->kind == 26) {
@@ -288,7 +288,7 @@ void InsectMotion_UpdateWatcher(MuseumInsect *insect)
     if (insect->kind == 20) {
         if (insect->alarm >= insect->alarm_threshold || insect->unk_50 != 0) {
             if (insect_motion_frame(insect) == 0) {
-                insect_motion_play(insect, 4, FRAME_CTRL_ONCE, 0x1000, 0);
+                insect_motion_play(insect, 4, FRAME_CONTROL_ONCE, 0x1000, 0);
                 insect->unk_50 = 60;
             } else if (insect->unk_50 != 0) {
                 insect->unk_50--;
@@ -296,7 +296,7 @@ void InsectMotion_UpdateWatcher(MuseumInsect *insect)
         } else {
             u16 frame = (u16) (insect->model.frames.frame >> 12);
             if (frame != 0 || insect_motion_end(insect) != 0) {
-                insect_motion_play(insect, 0, FRAME_CTRL_ONCE | FRAME_CTRL_REVERSE, 0x1000, frame);
+                insect_motion_play(insect, 0, FRAME_CONTROL_ONCE | FRAME_CONTROL_REVERSE, 0x1000, frame);
             }
         }
     }
@@ -409,12 +409,12 @@ void InsectMotion_IdleKind9(MuseumInsect *insect)
 {
     unsigned int frame = insect_motion_frame(insect);
     if (frame == 13 || frame < 9) {
-        insect_motion_play(insect, 9, FRAME_CTRL_ONCE, 0, 9);
+        insect_motion_play(insect, 9, FRAME_CONTROL_ONCE, 0, 9);
     }
     u8 clock = data_ov004_02259a24;
     if (clock > 80 && (insect->awake || clock % 5 == 0)) {
         if (insect_motion_random(100) > 92 && frame < 10) {
-            insect_motion_play(insect, 14, FRAME_CTRL_ONCE, 0x1000, 9);
+            insect_motion_play(insect, 14, FRAME_CONTROL_ONCE, 0x1000, 9);
         }
     }
 }
@@ -520,7 +520,7 @@ void InsectMotion_UpdateKind53(MuseumInsect *insect)
             if (InsectMotion_Swing(insect, &insect->unk_168) && *wait <= 0) {
                 insect->yaw = 0;
                 insect->mode = 2;
-                insect_motion_play(insect, 57, FRAME_CTRL_ONCE, 0x1000, 32);
+                insect_motion_play(insect, 57, FRAME_CONTROL_ONCE, 0x1000, 32);
             } else {
                 --*wait;
             }
@@ -532,11 +532,11 @@ void InsectMotion_UpdateKind53(MuseumInsect *insect)
                 } else {
                     insect->mode = 1;
                     insect->alarm = 0;
-                    insect_motion_play(insect, 33, FRAME_CTRL_ONCE, 0x1000, 0);
+                    insect_motion_play(insect, 33, FRAME_CONTROL_ONCE, 0x1000, 0);
                     insect_motion_set_alpha(insect, 31);
                 }
             } else {
-                insect->model.frames.flags = FRAME_CTRL_ONCE;
+                insect->model.frames.flags = FRAME_CONTROL_ONCE;
             }
             break;
     }
@@ -790,7 +790,7 @@ int InsectMotion_FacePlayer(MuseumInsect *insect)
         u16 end = (u16) (insect->model.frames.end >> 12);
         u16 frame = (u16) insect_motion_frame(insect);
         if (end < 11 && frame <= 2) {
-            insect_motion_play(insect, 11, FRAME_CTRL_ONCE, 0x1000, 3);
+            insect_motion_play(insect, 11, FRAME_CONTROL_ONCE, 0x1000, 3);
         } else if (end < 14 && frame < 10) {
             insect_motion_play(insect, 14, 0, 0x1000, 10);
         } else if (frame == 13 && end > 10) {
@@ -1080,7 +1080,7 @@ int InsectMotion_PairChoose(MuseumInsect *insect)
         u16 end = (u16) (insect->model.frames.end >> 12);
         u16 frame = (u16) insect_motion_frame(insect);
         if (end < 11 && frame <= 2) {
-            insect_motion_play(insect, 11, FRAME_CTRL_ONCE, 0x1000, 3);
+            insect_motion_play(insect, 11, FRAME_CONTROL_ONCE, 0x1000, 3);
         } else if (end < 14 && frame < 11) {
             insect_motion_play(insect, 14, 0, 0x1000, 10);
         } else if (end > 11 && frame == 13) {
@@ -1171,7 +1171,7 @@ void InsectMotion_UpdatePair(MuseumInsect *insect)
         if (insect->kind == MUSEUM_INSECT_PAIR_SECOND) {
             unsigned int frame = insect_motion_frame(insect);
             if (frame > 3) {
-                insect_motion_play(insect, 3, FRAME_CTRL_ONCE | FRAME_CTRL_REVERSE, 0x1000, (u16) frame);
+                insect_motion_play(insect, 3, FRAME_CONTROL_ONCE | FRAME_CONTROL_REVERSE, 0x1000, (u16) frame);
             } else if (frame == 3) {
                 insect_motion_play(insect, 3, 0, 0x1000, 0);
             }
@@ -1284,7 +1284,7 @@ void InsectMotion_UpdateHovering(MuseumInsect *insect)
         insect->unk_168 = 0;
     } else if ((int) data_ov004_02259a24 % 40 == 0) {
         if (insect_motion_random(100) > 80) {
-            insect_motion_play(insect, 8, FRAME_CTRL_ONCE, 0x1000, 0);
+            insect_motion_play(insect, 8, FRAME_CONTROL_ONCE, 0x1000, 0);
         }
     }
 }
@@ -2658,10 +2658,10 @@ void InsectMotion_Perched(MuseumInsect *insect)
                 insect_motion_set_frame(insect, 0);
             }
         } else if (insect_motion_end(insect) < 12) {
-            insect_motion_play(insect, 17, FRAME_CTRL_ONCE, 0x1000, 9);
+            insect_motion_play(insect, 17, FRAME_CONTROL_ONCE, 0x1000, 9);
         } else if (insect_motion_frame(insect) == 16) {
             if ((insect->awake || data_ov004_02259a24 % 10 == 0) && insect_motion_random(100) > 95) {
-                insect_motion_play(insect, 17, FRAME_CTRL_ONCE, 0x1000, 9);
+                insect_motion_play(insect, 17, FRAME_CONTROL_ONCE, 0x1000, 9);
             }
         }
         return;

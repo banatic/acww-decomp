@@ -179,7 +179,7 @@ CLEAN_AS(func_02049878, TownLines_HasRoom)
 /* func_02049944: each of the eight tiles around `tile` (data_020ca5d4, in its order) inside the
  * map's `size` handed to `visit` with copies of the tile and the size, until an answer is not
  * 0; the last answer (0 for none). */
-int TownLines_VisitAround(AcreMap *map, const TownGrowthTiles *size, const TownGrowthTiles *tile, TownLinesVisit visit)
+int TownLines_VisitAround(AcreMap *map, const TownGrowthTiles *size, const TownGrowthTiles *tile, TownLinesVisitFn visit)
 {
     int answer = 0;
     for (int i = 0; i < TOWN_LINES_AROUND; i++) {

@@ -71,7 +71,7 @@ extern void *func_020f3cd4(void *sound);
 extern void *func_020f3dc4(void *sound);
 extern void *func_020f3f88(void *sound);
 
-typedef void *(*SceneSoundConstructor)(void *sound);
+typedef void *(*SceneSoundConstructorFn)(void *sound);
 
 /* func_020045ac: slot 9 (vtable offset 0x24). */
 void SceneSound_Vfunc24(int value)
@@ -128,7 +128,7 @@ void SceneSound_Delete(void)
 CLEAN_AS(func_020046c4, SceneSound_Delete)
 
 /* A new object of `size` bytes made by `construct`, or NULL when there is no memory. */
-static SceneSound *make(u32 size, SceneSoundConstructor construct)
+static SceneSound *make(u32 size, SceneSoundConstructorFn construct)
 {
     void *memory = Heap_OperatorNewB(size);
     if (memory != NULL) {

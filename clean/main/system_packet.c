@@ -73,8 +73,8 @@ enum {
 };
 #define NO_REQUEST 3 /* NetSession.mode_request without a request */
 
-extern NetSession *data_020ccf94;                  /* the session */
-extern SystemPacketHandler *const data_020ccff0[]; /* the handlers, by kind */
+extern NetSession *data_020ccf94;                    /* the session */
+extern SystemPacketHandlerFn *const data_020ccff0[]; /* the handlers, by kind */
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 

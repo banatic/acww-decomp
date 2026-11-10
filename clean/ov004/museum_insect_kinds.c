@@ -125,7 +125,7 @@ void InsectKind_Init55(MuseumInsect *insect)
     short yaw = InsectMotion_RandomYaw();
     InsectMotion_Start(insect, 0x50, 0x50, 0, yaw, 0, 5);
     insect->way = 0;
-    FrameCtrl_Init(&insect->model.frames, 3, 0, 0x1000, 0);
+    FrameControl_Init(&insect->model.frames, 3, 0, 0x1000, 0);
     insect_kind_room_bounds(insect);
     insect->timer = insect_kind_pair_rest(insect);
 }
@@ -540,7 +540,7 @@ CLEAN_AS(func_ov004_02240ab8, InsectKind_Frame16)
 void InsectKind_Init9(MuseumInsect *insect)
 {
     InsectKind_StartTilted(insect, 0x96, 0x46);
-    FrameCtrl_Init(&insect->model.frames, (u16) ((u32) insect->model.frames.end >> 12), FRAME_CTRL_ONCE, 0x1000, 0);
+    FrameControl_Init(&insect->model.frames, (u16) ((u32) insect->model.frames.end >> 12), FRAME_CONTROL_ONCE, 0x1000, 0);
 }
 CLEAN_AS(func_ov004_02240ac0, InsectKind_Init9)
 
@@ -715,7 +715,7 @@ void InsectKind_Init8(MuseumInsect *insect)
     insect->level = 0;
     insect->anchor = insect->position;
     if (!insect->awake) {
-        FrameCtrl_Init(&insect->model.frames, 8, FRAME_CTRL_ONCE, 0x1000, 0);
+        FrameControl_Init(&insect->model.frames, 8, FRAME_CONTROL_ONCE, 0x1000, 0);
     }
 }
 CLEAN_AS(func_ov004_02240c94, InsectKind_Init8)
@@ -804,7 +804,7 @@ void InsectKind_StartAtHeight(MuseumInsect *insect, int a, int b, int height, in
     if (!insect->awake) {
         insect->mode = INSECT_MOTION_PERCH;
         if (insect->kind != 10 && insect->kind != 51) {
-            FrameCtrl_Init(&insect->model.frames, 17, FRAME_CTRL_ONCE, 0x1000, 9);
+            FrameControl_Init(&insect->model.frames, 17, FRAME_CONTROL_ONCE, 0x1000, 9);
         } else {
             AnimatedModel_SetFrame((AnimatedModel *) (void *) &insect->model, 0);
         }

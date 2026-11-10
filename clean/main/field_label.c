@@ -363,7 +363,7 @@ typedef struct FieldLabelTalk {
 #define FIELD_LABEL_WINDOW_SLOT_DRAW 2
 #define FIELD_LABEL_WINDOW_SLOT_UPDATE 3
 
-typedef void FieldLabelWindowMethod(FieldLabelWindow *window);
+typedef void FieldLabelWindowMethodFn(FieldLabelWindow *window);
 
 static FieldLabelWindow *label_window(FieldLabel *label)
 {
@@ -374,7 +374,7 @@ static void call_window(FieldLabel *label, int slot)
 {
     FieldLabelWindow *window = label_window(label);
 
-    ((FieldLabelWindowMethod *) (uintptr_t) window->vtable[slot])(window);
+    ((FieldLabelWindowMethodFn *) (uintptr_t) window->vtable[slot])(window);
 }
 
 /* The object's first word: its vtable. */

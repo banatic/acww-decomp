@@ -292,7 +292,7 @@ int EffectSystem_StartInstance(EffectSystemInstance *instance, int resource, con
                                const EffectSystemKeptSetup *setup, EffectSystemInstanceTag tag)
 {
     (void) angle;
-    instance->emitter = ParticleSys_CreateEmitterAt(data_021d52c4->particles, resource, position);
+    instance->emitter = ParticleSystem_CreateEmitterAt(data_021d52c4->particles, resource, position);
     if (instance->emitter == NULL) {
         return 0;
     }
@@ -386,7 +386,7 @@ CLEAN_AS(func_02090ac4, EffectSystem_StartKeptSet)
  * ROM writes through the list's first link unchecked). */
 static void effect_system_emit_shared(ParticleEmitter *emitter, const Vec3 *position, const s16 *angle)
 {
-    ParticleSys_EmitAt(data_021d52c4->particles, emitter, position);
+    ParticleSystem_EmitAt(data_021d52c4->particles, emitter, position);
     if (angle != NULL) {
         ((Particle *) (void *) emitter->particles.first)->rotation = (u16) angle[0];
     }
@@ -418,8 +418,8 @@ int EffectSystem_StartSet(int set, const Vec3 *position, const s16 *angle, void 
         for (i = 0; i < count; i++) {
             ParticleEmitter *emitter = (ParticleEmitter *) (uintptr_t) EffectSystem_FindShared(shared, *resources);
             if (emitter == NULL) {
-                emitter = ParticleSys_CreateEmitterWith(data_021d52c4->particles, *resources,
-                                                        (void (*)(ParticleEmitter *))(uintptr_t) *setups);
+                emitter = ParticleSystem_CreateEmitterWith(data_021d52c4->particles, *resources,
+                                                           (void (*)(ParticleEmitter *))(uintptr_t) *setups);
                 if (emitter != NULL && EffectSystem_AddShared(shared, *resources, emitter) != 0) {
                     emitter->state |= PARTICLE_EMITTER_NO_EMISSION;
                     effect_system_emit_shared(emitter, position, angle);
@@ -432,8 +432,8 @@ int EffectSystem_StartSet(int set, const Vec3 *position, const s16 *angle, void 
         }
     } else {
         for (i = 0; i < count; i++) {
-            ParticleSys_CreateEmitterWith(data_021d52c4->particles, *resources,
-                                          (void (*)(ParticleEmitter *))(uintptr_t) *setups);
+            ParticleSystem_CreateEmitterWith(data_021d52c4->particles, *resources,
+                                             (void (*)(ParticleEmitter *))(uintptr_t) *setups);
             resources++;
             setups++;
         }
@@ -555,7 +555,7 @@ CLEAN_AS(func_02090ef4, EffectSystem_Remove)
  * globe, then the models. */
 int EffectSystem_Draw(EffectSystem *system)
 {
-    ParticleSys_Draw(system->particles, &data_0213fee4, (ParticleDrawCallback) (uintptr_t) func_02090f88);
+    ParticleSystem_Draw(system->particles, &data_0213fee4, (ParticleDrawCallbackFn) (uintptr_t) func_02090f88);
     EffectModels_DrawAll(system->models);
     return 1;
 }
@@ -575,7 +575,7 @@ int EffectSystem_Execute(EffectSystem *system)
 {
     EffectSystem_FollowInstances(&system->instances);
     EffectModels_StepAll(system->models);
-    ParticleSys_Update(system->particles);
+    ParticleSystem_Update(system->particles);
     return 1;
 }
 CLEAN_AS(func_02090fac, EffectSystem_Execute)
@@ -597,9 +597,9 @@ int EffectSystem_Create(EffectSystem *system)
     data_021d52d0 = Heap_AllocCurrent(EFFECT_SYSTEM_HEAP_SIZE);
     if (data_021d52d0 != NULL) {
         data_021d52cc = NNS_FndCreateFrmHeapEx(data_021d52d0, EFFECT_SYSTEM_HEAP_SIZE, 0);
-        system->particles = ParticleSys_Create((void *(*) (u32))(uintptr_t) func_02091140, EFFECT_SYSTEM_MAX_EMITTERS,
-                                               EFFECT_SYSTEM_MAX_PARTICLES, EFFECT_SYSTEM_FIXED_ID, EFFECT_SYSTEM_MIN_ID,
-                                               EFFECT_SYSTEM_MAX_ID);
+        system->particles = ParticleSystem_Create((void *(*) (u32))(uintptr_t) func_02091140, EFFECT_SYSTEM_MAX_EMITTERS,
+                                                  EFFECT_SYSTEM_MAX_PARTICLES, EFFECT_SYSTEM_FIXED_ID, EFFECT_SYSTEM_MIN_ID,
+                                                  EFFECT_SYSTEM_MAX_ID);
 #ifdef BUGFIX
         if (system->particles != NULL) {
             system->particles->polygon_attr = EFFECT_SYSTEM_POLYGON_ATTR;
@@ -610,11 +610,11 @@ int EffectSystem_Create(EffectSystem *system)
         if (system->particles != NULL) {
             u8 *file = EffectSystem_LoadFile(system);
             if (file != NULL) {
-                ParticleSys_LoadTextures(system->particles, (const ParticleFile *) (const void *) file);
+                ParticleSystem_LoadTextures(system->particles, (const ParticleFile *) (const void *) file);
                 if (EffectSystem_UploadTextures(system) != 0) {
                     const u8 *resources = (const u8 *) (uintptr_t) EffectSystem_CopyResources(system, file);
                     if (resources != NULL) {
-                        ParticleSys_LoadResources(system->particles, resources);
+                        ParticleSystem_LoadResources(system->particles, resources);
                         ok = 1;
                     }
                 }
@@ -653,7 +653,7 @@ CLEAN_AS(func_020910e4, EffectSystem_CopyResources)
 /* func_0209110c: the particles' textures, then their palettes, put in VRAM; 1 when both were. */
 int EffectSystem_UploadTextures(EffectSystem *system)
 {
-    if (ParticleSys_UploadTextures(system->particles) != 0 && ParticleSys_UploadPalettes(system->particles) != 0) {
+    if (ParticleSystem_UploadTextures(system->particles) != 0 && ParticleSystem_UploadPalettes(system->particles) != 0) {
         return 1;
     }
     return 0;

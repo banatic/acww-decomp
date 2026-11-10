@@ -71,7 +71,7 @@ static_assert(offsetof(AnimatedModel, frames) == 0x9c, "model frames");
 extern s16 data_ov068_022786c8;
 extern StateBlock data_021dc7a8;
 
-typedef int (*Sequence4Slot)(Sequence4 *actor);
+typedef int (*Sequence4SlotFn)(Sequence4 *actor);
 
 static void set_state(Sequence4 *actor, int state)
 {
@@ -85,7 +85,7 @@ static AnimatedModel *sequence4_model(Sequence4 *actor)
 
 static int animation_done(Sequence4 *actor)
 {
-    return FrameCtrl_IsDone(&sequence4_model(actor)->frames) != 0;
+    return FrameControl_IsDone(&sequence4_model(actor)->frames) != 0;
 }
 
 static void step_animation(Sequence4 *actor)
@@ -102,7 +102,7 @@ static void start_animation(Sequence4 *actor, int file)
 /* Its vtable slot `offset`, called virtually. */
 static int call_slot(Sequence4 *actor, int offset)
 {
-    Sequence4Slot slot = (Sequence4Slot) (uintptr_t) *(const u32 *) ((const u8 *) actor->base.vtable + offset);
+    Sequence4SlotFn slot = (Sequence4SlotFn) (uintptr_t) *(const u32 *) ((const u8 *) actor->base.vtable + offset);
     return slot(actor);
 }
 

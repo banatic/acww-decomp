@@ -19,9 +19,9 @@
 #define SYSTEM_COMMAND_HEADER_SIZE 3
 
 /* A section's handler: its data and the data's length. */
-typedef void SystemCommandHandler(u8 *data, u16 length);
+typedef void SystemCommandHandlerFn(u8 *data, u16 length);
 /* A section's writer: appends the section's data to the share block. */
-typedef void SystemCommandWriter(int slot);
+typedef void SystemCommandWriterFn(int slot);
 
 void SystemCommand_RunList(u8 *list, u32 length);
 int SystemCommand_BuildList(int slot);

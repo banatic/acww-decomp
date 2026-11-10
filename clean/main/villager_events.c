@@ -49,7 +49,7 @@ typedef struct VillagerEventActor {
 
 /* The vtable slot (0xa8) of the actor's method that says whether it is there to look at. */
 #define VILLAGER_EVENT_ACTOR_PRESENT_SLOT 0xa8
-typedef int (*VillagerEventPresentMethod)(VillagerEventActor *actor);
+typedef int (*VillagerEventPresentMethodFn)(VillagerEventActor *actor);
 
 extern NetSession *data_020ccf94;        /* the game's session */
 extern u8 data_021e5a2c[];               /* the town's eight villagers, 0x7ec bytes each */
@@ -222,7 +222,7 @@ int VillagerEvent_ActorInBox(const u16 *code, int min_x, int max_x, int min_z, i
         return 0;
     }
     u32 method = *(const u32 *) (uintptr_t) (actor->vtable + VILLAGER_EVENT_ACTOR_PRESENT_SLOT);
-    if (((VillagerEventPresentMethod) (uintptr_t) method)(actor) == 0) {
+    if (((VillagerEventPresentMethodFn) (uintptr_t) method)(actor) == 0) {
         return 0;
     }
     const Vec3 *at = &actor->position;

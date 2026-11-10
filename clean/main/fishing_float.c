@@ -91,10 +91,10 @@ static_assert(offsetof(FishingFloatPool, owner) == 0x750, "FishingFloatPool.owne
 
 /* The method at slot 0x5c (word 23) of an actor's vtable: its hold point written to `out`
  * (not 0), or 0 when it has none. */
-typedef int (*FishingFloatHoldPoint)(Actor *actor, Vec3 *out);
+typedef int (*FishingFloatHoldPointFn)(Actor *actor, Vec3 *out);
 #define FISHING_FLOAT_SLOT_HOLD_POINT 23
 
-typedef void (*FishingFloatStep)(void *self);
+typedef void (*FishingFloatStepFn)(void *self);
 
 extern FishingFloatPool data_021cad80;               /* the pool */
 extern MemberFn data_021cad30[FISHING_FLOAT_STATES]; /* the states' step functions */
@@ -456,7 +456,7 @@ static void fishing_float_call_member(const MemberFn *fn, void *object)
         uintptr_t vtable = *(const u32 *) self;
         target = *(const u32 *) (vtable + fn->ptr);
     }
-    ((FishingFloatStep) target)((void *) self);
+    ((FishingFloatStepFn) target)((void *) self);
 }
 
 /* func_02060214: once a frame: its texture taken to VRAM until it is there, a frame counted,
@@ -479,7 +479,7 @@ static void fishing_float_target_hold_point(FishingFloat *self)
 {
     Actor *holder = self->holder;
     const u32 *vtable = (const u32 *) holder->vtable;
-    if (((FishingFloatHoldPoint) (uintptr_t) vtable[FISHING_FLOAT_SLOT_HOLD_POINT])(holder, &self->target) == 0) {
+    if (((FishingFloatHoldPointFn) (uintptr_t) vtable[FISHING_FLOAT_SLOT_HOLD_POINT])(holder, &self->target) == 0) {
         self->target = holder->position;
     }
 }

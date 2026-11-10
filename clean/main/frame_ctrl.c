@@ -11,7 +11,7 @@
  * when `start` is 0xffff (the callers that play backwards pass that).
  * QUIRK: the frame count is shifted into 20.12 without a check, so counts of 0x80000 and more
  * wrap; the game's sequences are a few hundred frames. */
-void FrameCtrl_Init(FrameCtrl *ctrl, u32 frames, u8 flags, u32 speed, u16 start)
+void FrameControl_Init(FrameControl *ctrl, u32 frames, u8 flags, u32 speed, u16 start)
 {
     if (start == 0xffff) {
         start = (u16) (frames - 1);
@@ -22,12 +22,12 @@ void FrameCtrl_Init(FrameCtrl *ctrl, u32 frames, u8 flags, u32 speed, u16 start)
     ctrl->speed = (fx32) speed;
     ctrl->flags = flags;
 }
-CLEAN_AS(func_02056fcc, FrameCtrl_Init)
+CLEAN_AS(func_02056fcc, FrameControl_Init)
 
 /* func_02056f28: did the last step reach whole frame `frame`? Moving forwards that is the
  * range (previous, frame], backwards [frame, previous), and a step that wrapped round the end
  * covers the two pieces outside the range it skipped. */
-BOOL FrameCtrl_Passed(const FrameCtrl *ctrl, int frame)
+BOOL FrameControl_Passed(const FrameControl *ctrl, int frame)
 {
     fx32 at = (fx32) ((u32) frame << 12);
     fx32 now = ctrl->frame;
@@ -42,7 +42,7 @@ BOOL FrameCtrl_Passed(const FrameCtrl *ctrl, int frame)
         return now == frame;
 #endif
     }
-    if (ctrl->flags & FRAME_CTRL_REVERSE) {
+    if (ctrl->flags & FRAME_CONTROL_REVERSE) {
         if (before > now) {
             return at >= now && at < before;
         }
@@ -53,34 +53,34 @@ BOOL FrameCtrl_Passed(const FrameCtrl *ctrl, int frame)
     }
     return !(at <= before && at > now);
 }
-CLEAN_AS(func_02056f28, FrameCtrl_Passed)
+CLEAN_AS(func_02056f28, FrameControl_Passed)
 
 /* func_02056f94: has a sequence that plays once reached its end? Looping sequences never do.
  * QUIRK: only the exact flag values 1 and 3 count, so another bit set in the flags makes a
  * sequence that plays once never finish. */
-BOOL FrameCtrl_IsDone(const FrameCtrl *ctrl)
+BOOL FrameControl_IsDone(const FrameControl *ctrl)
 {
     switch (ctrl->flags) {
-        case FRAME_CTRL_ONCE:
+        case FRAME_CONTROL_ONCE:
             return ctrl->frame >= ctrl->end - ONE_FRAME;
-        case FRAME_CTRL_ONCE | FRAME_CTRL_REVERSE:
+        case FRAME_CONTROL_ONCE | FRAME_CONTROL_REVERSE:
             return ctrl->frame == 0;
         default:
             return FALSE;
     }
 }
-CLEAN_AS(func_02056f94, FrameCtrl_IsDone)
+CLEAN_AS(func_02056f94, FrameControl_IsDone)
 
 /* func_02056ffc: move by one step of the speed, starting again at the other end of a looping
  * sequence and stopping on the first or last frame of one that plays once. */
-void FrameCtrl_Step(FrameCtrl *ctrl)
+void FrameControl_Step(FrameControl *ctrl)
 {
     fx32 frame = ctrl->frame;
     ctrl->previous = frame;
-    if (ctrl->flags & FRAME_CTRL_REVERSE) {
+    if (ctrl->flags & FRAME_CONTROL_REVERSE) {
         if (frame >= ctrl->speed) {
             frame -= ctrl->speed;
-        } else if (ctrl->flags & FRAME_CTRL_ONCE) {
+        } else if (ctrl->flags & FRAME_CONTROL_ONCE) {
             frame = 0;
         } else {
             frame += ctrl->end - ctrl->speed;
@@ -88,7 +88,7 @@ void FrameCtrl_Step(FrameCtrl *ctrl)
     } else {
         frame += ctrl->speed;
         if (frame >= ctrl->end) {
-            if (ctrl->flags & FRAME_CTRL_ONCE) {
+            if (ctrl->flags & FRAME_CONTROL_ONCE) {
                 frame = ctrl->end - ONE_FRAME;
             } else {
                 frame -= ctrl->end;
@@ -97,7 +97,7 @@ void FrameCtrl_Step(FrameCtrl *ctrl)
     }
     ctrl->frame = frame;
 }
-CLEAN_AS(func_02056ffc, FrameCtrl_Step)
+CLEAN_AS(func_02056ffc, FrameControl_Step)
 
 /* func_02056e84: one step of the weight; TRUE once it is 1.0, including when it was never
  * started (a rate of 0). */
@@ -116,7 +116,7 @@ BOOL Ramp_Step(Ramp *ramp)
 }
 CLEAN_AS(func_02056e84, Ramp_Step)
 
-static_assert(sizeof(FrameCtrl) == 0x18 && offsetof(FrameCtrl, flags) == 0x14, "FrameCtrl layout");
+static_assert(sizeof(FrameControl) == 0x18 && offsetof(FrameControl, flags) == 0x14, "FrameControl layout");
 static_assert(offsetof(Ramp, weight) == 0x34 && offsetof(Ramp, rate) == 0x38, "Ramp layout");
 
 #include "autoload_2/heap.h"
@@ -128,7 +128,7 @@ extern const u8 data_020dd184[];
 
 /* func_02056e60: the weight set to 0 and stepped to 1.0 over `frames` steps (Ramp_Step); with
  * 0 frames no ramp runs (Ramp_Step answers TRUE at once).
- * QUIRK: the frame count is shifted into 20.12 without a check, as in FrameCtrl_Init. */
+ * QUIRK: the frame count is shifted into 20.12 without a check, as in FrameControl_Init. */
 void Ramp_Start(Ramp *ramp, u32 frames)
 {
     ramp->weight = 0;
@@ -141,25 +141,25 @@ void Ramp_Start(Ramp *ramp, u32 frames)
 CLEAN_AS(func_02056e60, Ramp_Start)
 
 /* func_02057054: the frame control's destructor. */
-void FrameCtrl_Destruct(FrameCtrl *ctrl)
+void FrameControl_Destruct(FrameControl *ctrl)
 {
     ctrl->vtable = data_020dd184;
 }
-CLEAN_AS(func_02057054, FrameCtrl_Destruct)
+CLEAN_AS(func_02057054, FrameControl_Destruct)
 
 /* func_02057060: its deleting destructor (the vtable's second entry). */
-FrameCtrl *FrameCtrl_Delete(FrameCtrl *ctrl)
+FrameControl *FrameControl_Delete(FrameControl *ctrl)
 {
     ctrl->vtable = data_020dd184;
     Heap_OperatorDeleteB(ctrl);
     return ctrl;
 }
-CLEAN_AS(func_02057060, FrameCtrl_Delete)
+CLEAN_AS(func_02057060, FrameControl_Delete)
 
 /* func_02057078: the frame control's destructor as the classes that contain one call it: the
- * same as FrameCtrl_Destruct. */
-void FrameCtrl_DestructComplete(FrameCtrl *ctrl)
+ * same as FrameControl_Destruct. */
+void FrameControl_DestructComplete(FrameControl *ctrl)
 {
     ctrl->vtable = data_020dd184;
 }
-CLEAN_AS(func_02057078, FrameCtrl_DestructComplete)
+CLEAN_AS(func_02057078, FrameControl_DestructComplete)

@@ -61,8 +61,8 @@ extern void FS_InitFile(void *fs_file);
 extern int FS_OpenFile(void *fs_file, const char *path);
 extern int FS_CloseFile(void *fs_file);
 
-typedef int BmgFileBuffer(BmgFile *file);
-typedef unsigned int BmgFileBufferSize(BmgFile *file);
+typedef int BmgFileBufferFn(BmgFile *file);
+typedef unsigned int BmgFileBufferSizeFn(BmgFile *file);
 
 /* The address of a file's vtable slot. */
 static uintptr_t bmg_file_slot(const BmgFile *file, int slot)
@@ -91,8 +91,8 @@ CLEAN_AS(func_020a9530, BmgFile_Entry)
  * fits; 1. */
 int BmgFile_ReadText(BmgFile *file)
 {
-    int buffer = ((BmgFileBuffer *) bmg_file_slot(file, BMG_FILE_SLOT_BUFFER))(file);
-    unsigned int capacity = ((BmgFileBufferSize *) bmg_file_slot(file, BMG_FILE_SLOT_BUFFER_SIZE))(file);
+    int buffer = ((BmgFileBufferFn *) bmg_file_slot(file, BMG_FILE_SLOT_BUFFER))(file);
+    unsigned int capacity = ((BmgFileBufferSizeFn *) bmg_file_slot(file, BMG_FILE_SLOT_BUFFER_SIZE))(file);
     u32 text = file->text_offset + BMG_DATA_HEAD;
     u32 size = capacity < file->text_size ? capacity : file->text_size;
     u32 data = data_021f4458.size + BMG_INFO_OFFSET;

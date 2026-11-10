@@ -7,13 +7,13 @@
 
 static_assert(offsetof(MailSuperText, text) == 0x12, "super characters");
 static_assert(sizeof(MailSuperText) == 0x28, "super");
-static_assert(offsetof(MailMsgText, text) == 0x12, "msg characters");
+static_assert(offsetof(MailMessageText, text) == 0x12, "msg characters");
 static_assert(offsetof(MailPsText, text) == 0x12, "ps characters");
 static_assert(sizeof(MailPsText) == 0x34, "ps");
 
 /* The classes' vtables. */
 extern const TextVtable data_020df228; /* MailPsText */
-extern const TextVtable data_020df210; /* MailMsgText */
+extern const TextVtable data_020df210; /* MailMessageText */
 extern const TextVtable data_020df240; /* MailSuperText */
 
 /* The destructor's work: the class's vtable, then the 8-bit text base's destructor. */
@@ -73,46 +73,46 @@ MailPsText *MailPsText_Construct(MailPsText *text)
 }
 CLEAN_AS(func_0206da38, MailPsText_Construct)
 
-/* ---- MailMsgText */
+/* ---- MailMessageText */
 
 /* func_0206da58 (vtable slot 3): the address of the characters. */
-int MailMsgText_Buffer(int text)
+int MailMessageText_Buffer(int text)
 {
-    return text + (int) offsetof(MailMsgText, text);
+    return text + (int) offsetof(MailMessageText, text);
 }
-CLEAN_AS(func_0206da58, MailMsgText_Buffer)
+CLEAN_AS(func_0206da58, MailMessageText_Buffer)
 
 /* func_0206da5c (vtable slot 2): the capacity. */
-int MailMsgText_Capacity(void)
+int MailMessageText_Capacity(void)
 {
-    return MAIL_MSG_TEXT_CAPACITY;
+    return MAIL_MESSAGE_TEXT_CAPACITY;
 }
-CLEAN_AS(func_0206da5c, MailMsgText_Capacity)
+CLEAN_AS(func_0206da5c, MailMessageText_Capacity)
 
-/* func_0206da60 (vtable slot 1): destroyed (MailMsgText_Destruct) and freed. */
-MailMsgText *MailMsgText_Delete(MailMsgText *text)
+/* func_0206da60 (vtable slot 1): destroyed (MailMessageText_Destruct) and freed. */
+MailMessageText *MailMessageText_Delete(MailMessageText *text)
 {
     mail_part_text_destroy(text, &data_020df210);
     Heap_OperatorDeleteB(text);
     return text;
 }
-CLEAN_AS(func_0206da60, MailMsgText_Delete)
+CLEAN_AS(func_0206da60, MailMessageText_Delete)
 
 /* func_0206da80 (vtable slot 0): the destructor. */
-MailMsgText *MailMsgText_Destruct(MailMsgText *text)
+MailMessageText *MailMessageText_Destruct(MailMessageText *text)
 {
     mail_part_text_destroy(text, &data_020df210);
     return text;
 }
-CLEAN_AS(func_0206da80, MailMsgText_Destruct)
+CLEAN_AS(func_0206da80, MailMessageText_Destruct)
 
 /* func_0206da98: an empty text. */
-MailMsgText *MailMsgText_Construct(MailMsgText *text)
+MailMessageText *MailMessageText_Construct(MailMessageText *text)
 {
     mail_part_text_build(text, &data_020df210);
     return text;
 }
-CLEAN_AS(func_0206da98, MailMsgText_Construct)
+CLEAN_AS(func_0206da98, MailMessageText_Construct)
 
 /* ---- MailSuperText */
 

@@ -87,7 +87,7 @@ static u32 field_actor_motion_virtual(const void *object, u32 offset)
     return *(const u32 *) (uintptr_t) (vtable + offset);
 }
 
-typedef int (*FieldActorPickedMethod)(void *object, FieldActor *actor);
+typedef int (*FieldActorPickedMethodFn)(void *object, FieldActor *actor);
 
 /* ---- Acting with the tool */
 
@@ -152,7 +152,7 @@ int FieldActor_TryAct(FieldActor *actor)
             return 1;
         } else {
             void *object = FIELD_ACTOR_FIELD(actor, void *, 0x13c);
-            FieldActorPickedMethod method = (FieldActorPickedMethod) (uintptr_t) field_actor_motion_virtual(object, 0x54);
+            FieldActorPickedMethodFn method = (FieldActorPickedMethodFn) (uintptr_t) field_actor_motion_virtual(object, 0x54);
             if (method(object, actor)) {
                 return 1;
             }

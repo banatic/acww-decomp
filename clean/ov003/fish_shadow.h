@@ -107,7 +107,7 @@ typedef struct FishShadowSense {
  * the animation (func_02055210 constructs these 0xb8 bytes, AnimatedModel's first part). */
 typedef struct FishShadowModel {
     ModelObject object;      /* 0x00 */
-    FrameCtrl frames;        /* 0x9c */
+    FrameControl frames;     /* 0x9c */
     AnimatedModelAnim *anim; /* 0xb4 */
 } FishShadowModel;
 

@@ -71,7 +71,7 @@ void TownInsectKind_Start37(TownInsect *insect)
 {
     TownInsectKind_Begin(insect, 0, 0x64, 0x50, 0, 0, 0, 0, 5, 0);
     insect->unk_24c = 0;
-    FrameCtrl_Init(&insect->model.frames, 3, 0, 0x1000, 0);
+    FrameControl_Init(&insect->model.frames, 3, 0, 0x1000, 0);
 }
 CLEAN_AS(func_ov003_022301e8, TownInsectKind_Start37)
 
@@ -225,7 +225,7 @@ void TownInsectKind_StartInArea(TownInsect *insect)
         case 0xe:
         case 0xf:
             TownInsectKind_BeginInArea(insect, 0x96, 0x32, 0x18, 0x71c);
-            FrameCtrl_Init(&insect->model.frames, 0, FRAME_CTRL_ONCE | FRAME_CTRL_REVERSE, 0x1000, 1);
+            FrameControl_Init(&insect->model.frames, 0, FRAME_CONTROL_ONCE | FRAME_CONTROL_REVERSE, 0x1000, 1);
             break;
         default:
             break;
@@ -380,7 +380,7 @@ void TownInsectKind_StartLeaning(TownInsect *insect)
             insect->unk_257 = 0xa;
             /* the whole frames of the frame count, as 16 bits */
             u32 last = ((u32) insect->model.frames.end << 4) >> 16;
-            FrameCtrl_Init(&insect->model.frames, last, FRAME_CTRL_ONCE, 0x1000, 0);
+            FrameControl_Init(&insect->model.frames, last, FRAME_CONTROL_ONCE, 0x1000, 0);
             break;
         }
         case 0x14:

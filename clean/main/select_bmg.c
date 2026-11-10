@@ -17,8 +17,8 @@ extern const u8 data_020e3f9c[]; /* the 72-character text */
 /* The answers' message file (built by __sinit_020c6c54). */
 extern SelectBmg data_021f4670;
 
-typedef char *(*SelectBmgTextChars)(SelectBmgText *text);
-typedef int (*SelectBmgTextCapacity)(SelectBmgText *text);
+typedef char *(*SelectBmgTextCharsFn)(SelectBmgText *text);
+typedef int (*SelectBmgTextCapacityFn)(SelectBmgText *text);
 
 /* func_020ab83c: message `*index` of the message file at `path` read into the characters of
  * `text` (at most its capacity in bytes), and the message's INF1 entry copied into `record`.
@@ -28,8 +28,8 @@ typedef int (*SelectBmgTextCapacity)(SelectBmgText *text);
  * message is looked for and the entry (as it is then) copied either way. */
 int SelectBmg_LoadText(SelectBmgText *text, const char *path, const u8 *index, MessageEntry *record)
 {
-    char *chars = ((SelectBmgTextChars) (uintptr_t) text->vtable->buffer)(text);
-    int capacity = ((SelectBmgTextCapacity) (uintptr_t) text->vtable->capacity)(text);
+    char *chars = ((SelectBmgTextCharsFn) (uintptr_t) text->vtable->buffer)(text);
+    int capacity = ((SelectBmgTextCapacityFn) (uintptr_t) text->vtable->capacity)(text);
     SelectBmg_SetBuffer(&data_021f4670, (u8 *) chars, (u32) capacity);
     BmgFile_Open(&data_021f4670.file, path);
     int loaded = BmgFile_LoadMessage(&data_021f4670.file, index);

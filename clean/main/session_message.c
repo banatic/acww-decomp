@@ -57,11 +57,11 @@
 #define OBJECT_FISH_FIRST 0x12e8 /* the fish, for an object of type 1 */
 #define OBJECT_FISH_LAST 0x131f
 
-typedef void SessionMessageHandler(int size, int kind, u8 scene, u32 slot);
+typedef void SessionMessageHandlerFn(int size, int kind, u8 scene, u32 slot);
 
-extern NetSession *data_020ccf94;                    /* the session */
-extern SessionMessageHandler *const data_020cd0dc[]; /* the handlers, by number */
-extern u8 data_021e5a2c[];                           /* the villagers (0x7ec bytes each) */
+extern NetSession *data_020ccf94;                      /* the session */
+extern SessionMessageHandlerFn *const data_020cd0dc[]; /* the handlers, by number */
+extern u8 data_021e5a2c[];                             /* the villagers (0x7ec bytes each) */
 extern const char data_021dc7aa[];
 
 /* func_02076168: hands a message to handler `handler` with its payload as the read cursor.

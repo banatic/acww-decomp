@@ -98,7 +98,7 @@ static void kinds_run_mode(AquariumFish *fish)
     MemberPointer_CallVoid(&data_ov004_0225949c[fish->mode], fish);
 }
 
-/* The last frame of the fish's animation, less `back`, as FrameCtrl_Passed takes it. */
+/* The last frame of the fish's animation, less `back`, as FrameControl_Passed takes it. */
 static u16 kinds_last_frame(AquariumFish *fish, int back)
 {
     u32 frames = ((u32) fish->model.frames.end << 4) >> 16;
@@ -210,13 +210,13 @@ static void aquarium_kind47_back_to_first(AquariumKind47 *fish)
 void AquariumKind47_Swim(AquariumKind47 *fish)
 {
     AquariumFish *base = &fish->base;
-    if (!fish->own.second_anim && FrameCtrl_Passed(&base->model.frames, kinds_last_frame(base, 1))) {
+    if (!fish->own.second_anim && FrameControl_Passed(&base->model.frames, kinds_last_frame(base, 1))) {
         fish->own.second_anim = 1;
         AquariumSwim_PlayAnim(base, 1);
     }
     if (base->mode == AQUARIUM_MODE_NEW_COURSE) {
         fish->own.may_swim = 0;
-        if (FrameCtrl_Passed(&base->model.frames, kinds_last_frame(base, 1))) {
+        if (FrameControl_Passed(&base->model.frames, kinds_last_frame(base, 1))) {
             aquarium_kind47_back_to_first(fish);
         }
     } else if (fish->own.may_swim == 0) {
@@ -924,7 +924,7 @@ void AquariumKind40_Swim(AquariumKind40 *fish)
             if (base->body.base.body.touched) {
                 fish->own.touched = 1;
             }
-            if (fish->own.touched && FrameCtrl_Passed(&base->model.frames, last)) {
+            if (fish->own.touched && FrameControl_Passed(&base->model.frames, last)) {
                 fish->own.phase = AQUARIUM_KIND40_START;
                 base->top_speed = kinds_shl(base->top_speed, 1);
                 AquariumSwim_PlayAnim(base, 1);
@@ -932,7 +932,7 @@ void AquariumKind40_Swim(AquariumKind40 *fish)
             }
             break;
         case AQUARIUM_KIND40_START:
-            if (FrameCtrl_Passed(&base->model.frames, last)) {
+            if (FrameControl_Passed(&base->model.frames, last)) {
                 fish->own.hold_frames = (u8) AquariumSwim_Random(60, 80);
                 fish->own.held = 0;
                 fish->own.phase = AQUARIUM_KIND40_HOLD;
@@ -941,7 +941,7 @@ void AquariumKind40_Swim(AquariumKind40 *fish)
             break;
         case AQUARIUM_KIND40_HOLD:
             if (fish->own.held > fish->own.hold_frames) {
-                if (FrameCtrl_Passed(&base->model.frames, last)) {
+                if (FrameControl_Passed(&base->model.frames, last)) {
                     fish->own.phase = AQUARIUM_KIND40_END;
                     base->top_speed >>= 1;
                     AquariumSwim_PlayAnim(base, 3);
@@ -951,7 +951,7 @@ void AquariumKind40_Swim(AquariumKind40 *fish)
             }
             break;
         case AQUARIUM_KIND40_END:
-            if (FrameCtrl_Passed(&base->model.frames, last)) {
+            if (FrameControl_Passed(&base->model.frames, last)) {
                 fish->own.phase = AQUARIUM_KIND40_CALM;
                 AquariumSwim_PlayAnim(base, 0);
             }

@@ -32,7 +32,7 @@ enum RoomObjectsPointState {
 };
 
 /* A test of a room object the game hands to the queries below (a function of the game's). */
-typedef int (*RoomObjectsTest)(RoomObject *object);
+typedef int (*RoomObjectsTestFn)(RoomObject *object);
 
 int RoomObjects_Stub0223b334(Vec3 *position, s16 angle);
 int RoomObjects_Stub0223b338(Vec3 *position, s16 angle);
@@ -54,9 +54,9 @@ int RoomObjects_FindAhead(int *x, int *z, const Vec3 *position, int angle, ItemC
 int RoomObjects_InShop(void);
 int RoomObjects_Capacity(void);
 int RoomObjects_PickUnk778(int key);
-RoomObject *RoomObjects_PickOn(RoomObjectsTest test, int pending);
-int RoomObjects_CountOn(RoomObjectsTest test);
-void RoomObjects_SetSwitches(int value, RoomObjectsTest test, int pending);
+RoomObject *RoomObjects_PickOn(RoomObjectsTestFn test, int pending);
+int RoomObjects_CountOn(RoomObjectsTestFn test);
+void RoomObjects_SetSwitches(int value, RoomObjectsTestFn test, int pending);
 int RoomObjects_SyncKind3aOn(void);
 int RoomObjects_IsFreeAt270(Vec3 *position, int angle);
 int RoomObjects_IsFreeAt90(Vec3 *position, int angle);

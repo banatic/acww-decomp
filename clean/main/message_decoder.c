@@ -44,13 +44,13 @@ extern const s32 data_020e5294[MESSAGE_DECODER_BAD_STARTS];
 /* The other form of a character (itself when it has none). */
 extern int func_02050bdc_unk(int character);
 
-typedef int MessageDecoderCharactersFunction(const void *object);
+typedef int MessageDecoderCharactersFn(const void *object);
 
 /* The characters of a text object, through its vtable (slot 3), as an address. */
 static int message_decoder_characters(const void *object)
 {
     const u32 *vtable = *(const u32 *const *) object;
-    MessageDecoderCharactersFunction *characters = (MessageDecoderCharactersFunction *) (uintptr_t) vtable[3];
+    MessageDecoderCharactersFn *characters = (MessageDecoderCharactersFn *) (uintptr_t) vtable[3];
     return characters(object);
 }
 
@@ -330,8 +330,8 @@ extern const u8 data_020e3e68[];
 /* The deleting destructors' delete (autoload_2/heap.h). */
 void Heap_OperatorDeleteB(void *block);
 
-typedef void MessageDecoderHandler(MessageDecoder *decoder);
-typedef int MessageDecoderBufferFunction(void *file);
+typedef void MessageDecoderHandlerFn(MessageDecoder *decoder);
+typedef int MessageDecoderBufferFn(void *file);
 
 /* The tags' groups and kinds that have a handler. */
 #define MESSAGE_DECODER_GROUP_SOURCE 0x00
@@ -344,7 +344,7 @@ typedef int MessageDecoderBufferFunction(void *file);
 /* The handler of the tag just read, or NULL when it has none. The ROM picks it as a C++ member
  * pointer from the constants at data_020e5134-data_020e518c, which all name these functions
  * directly (no virtual call, no adjustment). The group 4 test is asked only for group 4. */
-static MessageDecoderHandler *message_decoder_handler(MessageDecoder *decoder)
+static MessageDecoderHandlerFn *message_decoder_handler(MessageDecoder *decoder)
 {
     u32 kind = decoder->tag.kind;
 
@@ -387,7 +387,7 @@ static MessageDecoderHandler *message_decoder_handler(MessageDecoder *decoder)
 void MessageDecoder_OnTag(MessageDecoder *decoder, int position)
 {
     MessageTag_Read(&decoder->tag, position);
-    MessageDecoderHandler *handler = message_decoder_handler(decoder);
+    MessageDecoderHandlerFn *handler = message_decoder_handler(decoder);
     if (handler != NULL) {
         handler(decoder);
     } else {
@@ -432,8 +432,7 @@ static int message_decoder_file_buffer(MessageReader *reader)
 {
     void *file = reader->file;
     const u32 *vtable = *(const u32 *const *) file;
-    MessageDecoderBufferFunction *buffer =
-        (MessageDecoderBufferFunction *) (uintptr_t) vtable[MESSAGE_DECODER_FILE_BUFFER_SLOT];
+    MessageDecoderBufferFn *buffer = (MessageDecoderBufferFn *) (uintptr_t) vtable[MESSAGE_DECODER_FILE_BUFFER_SLOT];
     return buffer(file);
 }
 

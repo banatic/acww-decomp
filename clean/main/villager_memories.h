@@ -55,7 +55,7 @@ static_assert(sizeof(VillagerMemory) == 0x80, "a memory is 0x80 bytes");
 
 /* What the game's tests of a memory's player look like: the player, this town, the town's
  * players (data_021dc7bc). */
-typedef int (*VillagerMemoryTest)(void *player, void *town, void *players);
+typedef int (*VillagerMemoryTestFn)(void *player, void *town, void *players);
 
 void VillagerMemory_SetGreeting(u8 *villager, const u16 *text, int length, const DesignCreator *player);
 int VillagerMemory_GetGreeting(u8 *villager, void *text, const DesignCreator *player);
@@ -75,7 +75,7 @@ int VillagerMemory_OtherTownIndex(u8 *villager);
 int VillagerMemory_IsOtherTown(void *player, void *town, void *players);
 int VillagerMemory_FormerPlayerIndex(u8 *villager);
 int VillagerMemory_IsFormerPlayer(u16 *player, u16 *town, void *players);
-int VillagerMemory_PickToReplace(VillagerMemory *memories, VillagerMemoryTest test);
+int VillagerMemory_PickToReplace(VillagerMemory *memories, VillagerMemoryTestFn test);
 int VillagerMemory_NearestMinutes(u8 *villager, const DateTime *now);
 int VillagerMemory_MostFond(u8 *villager);
 int VillagerMemory_IndexOfPlayer(u8 *villager, const DesignCreator *player);

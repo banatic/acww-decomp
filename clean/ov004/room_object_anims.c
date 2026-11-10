@@ -88,23 +88,23 @@ CLEAN_AS(func_ov004_0220ffa4, RoomObject_PoolEntry)
 
 /* func_ov004_0220ffbc: advances the model's joint animation (when the model has one,
  * AnimatedModel_Anim) and the bound ones of RoomObject.anims, each of those giving its frame to its
- * target; whether all of them are at their end (FrameCtrl_IsDone). */
+ * target; whether all of them are at their end (FrameControl_IsDone). */
 int RoomObject_AdvanceAnims(RoomObject *object)
 {
     int anims_ended = 1;
     int joints_ended = 1;
     if (AnimatedModel_Anim(&object->model) != 0) {
         AnimatedModel_Update(&object->model);
-        if (FrameCtrl_IsDone(&object->model.frames) == 0) {
+        if (FrameControl_IsDone(&object->model.frames) == 0) {
             joints_ended = 0;
         }
     }
     for (int i = 0; i < 4; i++) {
         FurnitureAnim *anim = &object->anims[i];
         if (FurnitureAnim_Target(anim) != NULL) {
-            FrameCtrl_Step(&anim->base.ctrl);
+            FrameControl_Step(&anim->base.ctrl);
             anim->base.anim->frame = anim->base.ctrl.frame;
-            if (FrameCtrl_IsDone(&anim->base.ctrl) == 0) {
+            if (FrameControl_IsDone(&anim->base.ctrl) == 0) {
                 anims_ended = 0;
             }
         }

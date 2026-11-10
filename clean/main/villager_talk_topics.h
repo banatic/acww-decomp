@@ -24,7 +24,7 @@
 #define VILLAGER_TALK_TOPICS_COUNT 14
 
 /* A test of a memory: 1 when it passes. */
-typedef int (*VillagerTalkTopicsTest)(u8 *villager, VillagerMemory *memory);
+typedef int (*VillagerTalkTopicsTestFn)(u8 *villager, VillagerMemory *memory);
 
 void VillagerTalkTopics_Line(VillagerTalk *talk, VillagerTalkLine *out);
 int VillagerTalkTopics_FillSlots(VillagerTalk *talk);
@@ -55,7 +55,7 @@ int VillagerTalkTopics_IsUnfond(int unused, VillagerMemory *memory);
 int VillagerTalkTopics_PickFond(VillagerTalk *talk, VillagerMemory **list, int count);
 int VillagerTalkTopics_IsFond(int unused, VillagerMemory *memory);
 int VillagerTalkTopics_DaysSinceMet(VillagerMemory *memory);
-int VillagerTalkTopics_PickRandom(u8 *villager, VillagerMemory **list, int count, VillagerTalkTopicsTest test);
+int VillagerTalkTopics_PickRandom(u8 *villager, VillagerMemory **list, int count, VillagerTalkTopicsTestFn test);
 int VillagerTalkTopics_SayGiftItem(VillagerTalk *talk);
 int VillagerTalkTopics_SayByTown(VillagerTalk *talk);
 int VillagerTalkTopics_SayByAcre(VillagerTalk *talk);

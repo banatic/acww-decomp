@@ -973,13 +973,13 @@ CLEAN_AS(func_0200f888, FieldActor_PlayFootstep)
  * animation 2, effect 0 facing back) and the footstep sound. */
 void FieldActor_Footfall(FieldActor *actor)
 {
-    if (!FrameCtrl_Passed(&actor->anim, 1) && !FrameCtrl_Passed(&actor->anim, 9)) {
+    if (!FrameControl_Passed(&actor->anim, 1) && !FrameControl_Passed(&actor->anim, 9)) {
         return;
     }
     s16 ahead = actor->yaw;
     s16 back = (s16) (ahead + 0x8000);
     Vec3 at;
-    if (FrameCtrl_Passed(&actor->anim, 9)) {
+    if (FrameControl_Passed(&actor->anim, 9)) {
         at = FIELD_ACTOR_FIELD(actor, Vec3, FIELD_ACTOR_POINT_JOINT_7);
     } else {
         at = FIELD_ACTOR_FIELD(actor, Vec3, FIELD_ACTOR_POINT_JOINT_4);

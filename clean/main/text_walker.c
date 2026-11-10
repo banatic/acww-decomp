@@ -32,8 +32,8 @@ extern const u8 data_020e3de4[]; /* the text walker's vtable */
 extern const u8 data_020e3e04[]; /* the text copier's */
 extern const u8 data_020e3dc4[]; /* the box walker's */
 
-typedef void TextWalkerOnEnd(void *walker);
-typedef int TextWalkerWantsMore(void *walker);
+typedef void TextWalkerOnEndFn(void *walker);
+typedef int TextWalkerWantsMoreFn(void *walker);
 
 /* The address of a walker's vtable slot. */
 static uintptr_t text_walker_slot(const MessageWalker *walker, int slot)
@@ -291,7 +291,7 @@ int TextWalker_RunTo(TextWalker *walker, int end)
 {
     for (;;) {
         if (walker->base.position == (u32) end) {
-            ((TextWalkerOnEnd *) text_walker_slot(&walker->base, TEXT_WALKER_SLOT_ON_END))(walker);
+            ((TextWalkerOnEndFn *) text_walker_slot(&walker->base, TEXT_WALKER_SLOT_ON_END))(walker);
             break;
         }
         if (!MessageWalker_Step((MessageWalker *) walker, walker->stop_at_newline)) {
@@ -348,10 +348,10 @@ int TextWalker_Run(MessageWalker *walker, int end)
 {
     do {
         if (walker->position == (u32) end) {
-            ((TextWalkerOnEnd *) text_walker_slot(walker, TEXT_WALKER_SLOT_ON_END))(walker);
+            ((TextWalkerOnEndFn *) text_walker_slot(walker, TEXT_WALKER_SLOT_ON_END))(walker);
             return 0;
         }
-        if (((TextWalkerWantsMore *) text_walker_slot(walker, TEXT_WALKER_SLOT_WANTS_MORE))(walker) == 0) {
+        if (((TextWalkerWantsMoreFn *) text_walker_slot(walker, TEXT_WALKER_SLOT_WANTS_MORE))(walker) == 0) {
             return (int) walker->position;
         }
     } while (MessageWalker_Step(walker, 0) != 0);

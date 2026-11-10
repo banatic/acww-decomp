@@ -97,7 +97,7 @@ static void mailbox_play_from_end(Mailbox *mailbox, unsigned int slot, int mode)
  * REQUIRES: the pattern is bound (it has a target). */
 static void mailbox_advance_pattern(Mailbox *mailbox)
 {
-    FrameCtrl_Step((FrameCtrl *) &mailbox->pattern);
+    FrameControl_Step((FrameControl *) &mailbox->pattern);
     *mailbox->pattern.target = mailbox->pattern.frame;
 }
 
@@ -105,7 +105,7 @@ static void mailbox_advance_pattern(Mailbox *mailbox)
  * end. */
 static int mailbox_anim_done(Mailbox *mailbox)
 {
-    return Mailbox_MovesOn(mailbox) != 0 && FrameCtrl_IsDone((const FrameCtrl *) mailbox->model_frames) != 0;
+    return Mailbox_MovesOn(mailbox) != 0 && FrameControl_IsDone((const FrameControl *) mailbox->model_frames) != 0;
 }
 
 /* func_ov003_0221de58 (run of MAILBOX_EMPTYING): moves on to MAILBOX_EMPTY once A is at its
@@ -277,7 +277,7 @@ void Mailbox_RunMode(Mailbox *mailbox)
     if (mailbox->mode < MAILBOX_MODES) {
         MemberPointer_CallVoid(&data_ov003_0223ca68[mailbox->mode], mailbox);
     }
-    if (FrameCtrl_Passed((const FrameCtrl *) &mailbox->pattern, MAILBOX_PATTERN_SOUND_FRAME)) {
+    if (FrameControl_Passed((const FrameControl *) &mailbox->pattern, MAILBOX_PATTERN_SOUND_FRAME)) {
         TownObjectActorSound_Play((TownObjectActorSound *) mailbox->sound, MAILBOX_SE_PATTERN);
     }
 }

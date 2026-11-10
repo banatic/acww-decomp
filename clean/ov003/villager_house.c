@@ -346,7 +346,7 @@ int VillagerHouse_Update(VillagerHouse *house)
     if (HouseXFiles_Loaded(HouseFiles_XFiles())) {
         house->x_model.matrix = house->matrix;
         if (!(house->flags_235 & 1)) {
-            FrameCtrl_Step((FrameCtrl *) &house->x_anim);
+            FrameControl_Step((FrameControl *) &house->x_anim);
             *house->x_anim.target = house->x_anim.frame;
         }
     }

@@ -117,7 +117,7 @@ CLEAN_AS(func_ov066_02268268, LocalJoin_NextTurn)
 /* func_ov066_022682ec: the listed `parent` chosen (one of LOCAL_GAME_BD8A or LOCAL_GAME_2348)
  * and LOCAL_REQUEST_CHILD asked for, with `on_done` and `argument`; FALSE for NULL, a parent
  * not listed or of another id. */
-int LocalJoin_Select(LocalParent *parent, LocalDoneHandler *on_done, void *argument)
+int LocalJoin_Select(LocalParent *parent, LocalDoneHandlerFn *on_done, void *argument)
 {
     if (parent == NULL || parent->state == 0) {
         return FALSE;

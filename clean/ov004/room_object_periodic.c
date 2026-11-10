@@ -123,8 +123,8 @@ int PeriodicRoomObject_Update(PeriodicRoomObject *object)
         update_wait(object, sound, 0);
     } else if (object->phase <= PERIODIC_BURST_3) {
         /* the joint animation's last step, before this frame's */
-        const FrameCtrl *joints = &object->base.model.frames;
-        if (sound == SOUND_TICK && FrameCtrl_Passed(joints, ROOM_OBJECT_PERIODIC_TICK_FRAME)) {
+        const FrameControl *joints = &object->base.model.frames;
+        if (sound == SOUND_TICK && FrameControl_Passed(joints, ROOM_OBJECT_PERIODIC_TICK_FRAME)) {
             play(object, sound);
         }
         if (advance(object)) {

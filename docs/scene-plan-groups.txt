@@ -16,7 +16,7 @@ match: autoload_2/input:Pad_Update autoload_2/particle_draw:ParticleDraw_Billboa
   autoload_2/particle_draw:ParticleDraw_BindTexture
   autoload_2/particle_draw:ParticleDraw_ChildBillboard autoload_2/particle_draw:ParticleDraw_Polygon
   autoload_2/particle_draw:ParticleDraw_QuadXY autoload_2/particle_draw:ParticleDraw_QuadXZ
-  autoload_2/particle_draw:ParticleDraw_Stretched autoload_2/particle_system:ParticleSys_Draw
+  autoload_2/particle_draw:ParticleDraw_Stretched autoload_2/particle_system:ParticleSystem_Draw
   autoload_2/vector:Math_InitSqrt autoload_2/vector:Math_SqrtRounded itcm/interrupts:Irq_HBlank
   itcm/line_effects:LineFx_GradientMain itcm/line_effects:LineFx_GradientSub
   itcm/line_effects:LineFx_Window1Edge main/board_notices:BoardNotices_PostDays
@@ -1124,7 +1124,7 @@ match: autoload_2/sound_emitter_class:SoundEmitterClass_Destruct2Delete
   main/constellations:ConstellationsLabel_Delete
   main/constellations:ConstellationsWideName_Delete
   main/dual_cell_sprite:DualCellSprite_Delete main/field_actor:FieldActorReceiver_Delete
-  main/fox_shop:FoxShopText_Delete main/frame_ctrl:FrameCtrl_Delete
+  main/fox_shop:FoxShopText_Delete main/frame_ctrl:FrameControl_Delete
   main/joint_blend:JointBlend_Delete main/label_box:LabelBox_Delete
   main/label_sprite:LabelSprite_Delete main/label_sprite:LabelSprite_TextDelete
   main/layered_model:LayeredModel_DeleteAFromFrames main/layered_model:LayeredModel_DeleteAFromRamp
@@ -1132,7 +1132,7 @@ match: autoload_2/sound_emitter_class:SoundEmitterClass_Destruct2Delete
   main/layered_model:LayeredModel_DeleteBFromRamp main/letter:LetterBodyText_Delete
   main/letter:Letter_Delete main/letter_grade:LetterGradeMessage_Delete
   main/letter_grade:LetterGradeWide_Delete main/letter_view:LetterLine_Delete
-  main/letter_view:LetterWideText_Delete main/mail_part_texts:MailMsgText_Delete
+  main/letter_view:LetterWideText_Delete main/mail_part_texts:MailMessageText_Delete
   main/mail_part_texts:MailPsText_Delete main/mail_part_texts:MailSuperText_Delete
   main/mail_particles:MailParticles_Delete main/mail_text:MailTextDecoder_Delete
   main/mail_text:MailTextFile_Delete main/mail_text:MailTextRequest_Delete
@@ -1300,7 +1300,7 @@ match: autoload_2/sound_emitter_class:SoundEmitterClass_Destruct2
   main/sound_emitter:SoundEmitter_Destruct main/talk_windows:TalkWindow_Destruct
   main/text_base:TextBase_DestructSlot main/text_base:TextBase_WideDestructSlot
   main/text_box:TextBoxBase_DestructSlot main/text_walker:TextWalker_DestructSlot
-  ov002/glide:Glider_DestroyVirtual ov002/label_button:LabelButtonBase_Destroy
+  ov002/glide:Glider_DestroyVirtual ov002/label_button:LabelButtonBase_DestructCopy
   ov002/wipe:Progress_DestroyBase ov003/checkpoint:Checkpoint_ReceiverDestroy
   ov003/countdown:CountdownBoard_ReceiverDestroy ov003/countdown:CountdownDigit_ReceiverDestroy
   ov003/villager_nameplate:VillagerNameplate_ReceiverDestroy ov003/fish_shadow:FishFinAnim_Destruct

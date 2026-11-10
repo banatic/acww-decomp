@@ -182,7 +182,7 @@ CLEAN_AS(func_ov004_02227368, FieldActorRoomStates_UpdateFadeIn)
  * actor, else what finishing the event answered. */
 int FieldActorRoomStates_EndFadeIn(FieldActor *actor)
 {
-    if (!FrameCtrl_IsDone(&actor->anim)) {
+    if (!FrameControl_IsDone(&actor->anim)) {
         return 0;
     }
     FieldActor_NudgeOne(actor);
@@ -200,8 +200,8 @@ CLEAN_AS(func_ov004_0222738c, FieldActorRoomStates_EndFadeIn)
 void FieldActorRoomStates_FadeInSteps(FieldActor *actor)
 {
     FieldActor_UpdateBody(actor);
-    if (FrameCtrl_Passed(&actor->anim, 1) || FrameCtrl_Passed(&actor->anim, 6) || FrameCtrl_Passed(&actor->anim, 12) ||
-        FrameCtrl_Passed(&actor->anim, 20)) {
+    if (FrameControl_Passed(&actor->anim, 1) || FrameControl_Passed(&actor->anim, 6) ||
+        FrameControl_Passed(&actor->anim, 12) || FrameControl_Passed(&actor->anim, 20)) {
         FieldActor_PlayFootstep(actor);
     }
 }
@@ -223,7 +223,7 @@ CLEAN_AS(func_ov004_02227254, FieldActorRoomStates_UpdateHairOff)
  * record's head kind is 0 too. */
 void FieldActorRoomStates_StepHairOff(FieldActor *actor)
 {
-    if (FrameCtrl_IsDone(&actor->anim)) {
+    if (FrameControl_IsDone(&actor->anim)) {
         FieldActorHairWork *work = fars_hair_of(actor);
         FieldActorRoomStates_RequestHairWait(actor, work->kind, work->hair_color, FARS_PRIORITY, FARS_NO_ARG);
         return;
@@ -283,7 +283,7 @@ CLEAN_AS(func_ov004_02227190, FieldActorRoomStates_UpdateHairWait)
  * bytes (priority 6). */
 void FieldActorRoomStates_EndHairWait(FieldActor *actor)
 {
-    if (FrameCtrl_IsDone(&actor->anim)) {
+    if (FrameControl_IsDone(&actor->anim)) {
         FieldActorHairWork *work = fars_hair_of(actor);
         FieldActorRoomStates_RequestHairOn(actor, work->kind, work->hair_color, FARS_PRIORITY, FARS_NO_ARG);
     }
@@ -330,7 +330,7 @@ CLEAN_AS(func_ov004_02226fdc, FieldActorRoomStates_UpdateHairOn)
  * the actor faces, state 0x2c is asked for (priority 6). */
 void FieldActorRoomStates_EndHairOn(FieldActor *actor)
 {
-    if (!FrameCtrl_IsDone(&actor->anim)) {
+    if (!FrameControl_IsDone(&actor->anim)) {
         return;
     }
     if ((int) FieldActor_Push(actor) <= 0) {
@@ -348,7 +348,7 @@ CLEAN_AS(func_ov004_02226ff0, FieldActorRoomStates_EndHairOn)
 void FieldActorRoomStates_StepHairOn(FieldActor *actor)
 {
     FieldActor_UpdateBody(actor);
-    if (FrameCtrl_Passed(&actor->anim, FARS_HAIR_EFFECT_FRAME)) {
+    if (FrameControl_Passed(&actor->anim, FARS_HAIR_EFFECT_FRAME)) {
         EffectSystem_StartSet(FARS_HAIR_EFFECT_SET, &actor->effect_point, NULL, &data_020e25d4);
     }
     if (fars_whole_frames(actor->anim.frame) < FARS_HAIR_ON_FRAME) {
@@ -423,7 +423,7 @@ CLEAN_AS(func_ov004_02226eb0, FieldActorRoomStates_UpdatePickUp)
 /* func_ov004_02226ed0: once the animation is over, state 0x7e is asked for (priority 6). */
 void FieldActorRoomStates_EndPickUp(FieldActor *actor)
 {
-    if (FrameCtrl_IsDone(&actor->anim)) {
+    if (FrameControl_IsDone(&actor->anim)) {
         FieldActorRoomStates_RequestOnPhone(actor, FARS_PRIORITY, FARS_NO_ARG);
     }
 }
@@ -536,7 +536,7 @@ CLEAN_AS(func_ov004_02226d4c, FieldActorRoomStates_UpdateHangUp)
  * value and state 2 is asked for (3, priority 1). */
 void FieldActorRoomStates_EndHangUp(FieldActor *actor)
 {
-    if (FrameCtrl_IsDone(&actor->anim)) {
+    if (FrameControl_IsDone(&actor->anim)) {
         actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
         FieldActor_RequestState2(actor, FARS_END_STATE2_ARG, FARS_END_PRIORITY, FARS_NO_ARG);
     }
@@ -560,7 +560,7 @@ void FieldActorRoomStates_EnterHangUp(FieldActor *actor, const StateRequest *req
     (void) previous;
     FieldActor_PlayAnimationOnce(actor, FARS_ANIM_PICK_UP, FARS_BLEND, 0);
     unsigned int frames = fars_whole_frames(actor->anim.end);
-    FrameCtrl_Init(&actor->anim, frames, FARS_HANG_UP_FLAGS, FARS_HANG_UP_SPEED, (u16) (frames - 1));
+    FrameControl_Init(&actor->anim, frames, FARS_HANG_UP_FLAGS, FARS_HANG_UP_SPEED, (u16) (frames - 1));
     (void) RmoTelephone_Current();
     RmoTelephone_PlayBackwardsFromEnd();
 }
@@ -587,7 +587,7 @@ CLEAN_AS(func_ov004_02226c80, FieldActorRoomStates_UpdateDrinkCoffee)
  * blend); after 0x97 the actor stays; after 0x98 state 0x28 is asked for with 0 (priority 6). */
 void FieldActorRoomStates_StepDrinkCoffee(FieldActor *actor)
 {
-    if (!FrameCtrl_IsDone(&actor->anim)) {
+    if (!FrameControl_IsDone(&actor->anim)) {
         return;
     }
     switch (actor->animation) {
@@ -752,8 +752,8 @@ static SceneExit *fars_exits(void)
 /* A footstep as the animation passes frame 1, 6, 11 or 16. */
 static void fars_steps(FieldActor *actor)
 {
-    if (FrameCtrl_Passed(&actor->anim, 1) || FrameCtrl_Passed(&actor->anim, 6) || FrameCtrl_Passed(&actor->anim, 11) ||
-        FrameCtrl_Passed(&actor->anim, 16)) {
+    if (FrameControl_Passed(&actor->anim, 1) || FrameControl_Passed(&actor->anim, 6) ||
+        FrameControl_Passed(&actor->anim, 11) || FrameControl_Passed(&actor->anim, 16)) {
         FieldActor_PlayFootstep(actor);
     }
 }
@@ -794,7 +794,7 @@ static void fars_follow_exit(FieldActor *actor, int moved, int animation, int st
 static void fars_play_backwards(FieldActor *actor)
 {
     unsigned int frames = fars_whole_frames(actor->anim.end);
-    FrameCtrl_Init(&actor->anim, frames, FARS_BACK_FLAGS, FARS_BACK_SPEED, (u16) (frames - 1));
+    FrameControl_Init(&actor->anim, frames, FARS_BACK_FLAGS, FARS_BACK_SPEED, (u16) (frames - 1));
 }
 
 /* The state's bar for requests at its end value, and state 0x10 asked for (3, priority 5). */
@@ -850,7 +850,7 @@ CLEAN_AS(func_ov004_022274a0, FieldActorRoomStates_UpdateFadeIn43)
  * actor, else what finishing the event answered. */
 int FieldActorRoomStates_EndFadeIn43(FieldActor *actor)
 {
-    if (!FrameCtrl_IsDone(&actor->anim)) {
+    if (!FrameControl_IsDone(&actor->anim)) {
         return 0;
     }
     FieldActor_NudgeOne(actor);
@@ -868,8 +868,8 @@ CLEAN_AS(func_ov004_022274c4, FieldActorRoomStates_EndFadeIn43)
 void FieldActorRoomStates_FadeIn43Steps(FieldActor *actor)
 {
     FieldActor_UpdateBody(actor);
-    if (FrameCtrl_Passed(&actor->anim, 1) || FrameCtrl_Passed(&actor->anim, 6) || FrameCtrl_Passed(&actor->anim, 12) ||
-        FrameCtrl_Passed(&actor->anim, 20)) {
+    if (FrameControl_Passed(&actor->anim, 1) || FrameControl_Passed(&actor->anim, 6) ||
+        FrameControl_Passed(&actor->anim, 12) || FrameControl_Passed(&actor->anim, 20)) {
         FieldActor_PlayFootstep(actor);
     }
 }
@@ -1348,7 +1348,7 @@ CLEAN_AS(func_ov004_02227f08, FieldActorRoomStates_UpdateItemBack)
  * 0x8eb becomes 4; the object is finished. */
 void FieldActorRoomStates_EndItemBack(FieldActor *actor)
 {
-    if (!FrameCtrl_IsDone(&actor->anim)) {
+    if (!FrameControl_IsDone(&actor->anim)) {
         return;
     }
     fars_end_item(actor);
@@ -1406,7 +1406,7 @@ CLEAN_AS(func_ov004_0222801c, FieldActorRoomStates_UpdateItemOut)
  * value and state 0x10 is asked for (3, priority 5). */
 void FieldActorRoomStates_EndItemOut(FieldActor *actor)
 {
-    if (FrameCtrl_IsDone(&actor->anim)) {
+    if (FrameControl_IsDone(&actor->anim)) {
         fars_end_item(actor);
     }
 }
@@ -1416,7 +1416,7 @@ CLEAN_AS(func_ov004_02228038, FieldActorRoomStates_EndItemOut)
  * updated. */
 void FieldActorRoomStates_ItemOutSounds(FieldActor *actor)
 {
-    if (FrameCtrl_Passed(&actor->anim, FARS_ITEM_OUT_LATE_FRAME) && SceneQuery_Current() == FARS_ITEM_SCENE) {
+    if (FrameControl_Passed(&actor->anim, FARS_ITEM_OUT_LATE_FRAME) && SceneQuery_Current() == FARS_ITEM_SCENE) {
         FieldActor_PlaySound(actor, FARS_ITEM_OUT_LATE_SOUND);
     }
     FieldActor_UpdateBody(actor);
@@ -1494,7 +1494,7 @@ CLEAN_AS(func_ov004_02228170, FieldActorRoomStates_UpdateChestClose)
  * its end value. */
 void FieldActorRoomStates_EndChestClose(FieldActor *actor)
 {
-    if (!FrameCtrl_IsDone(&actor->anim)) {
+    if (!FrameControl_IsDone(&actor->anim)) {
         return;
     }
     FieldActor_PlayAnimationLoop(actor, FARS_ANIM_STAND, FARS_BLEND, FARS_BLEND);
@@ -1773,7 +1773,7 @@ CLEAN_AS(func_ov004_02228410, FieldActorRoomStates_UpdateChestApproach)
 void FieldActorRoomStates_EndChestApproach(FieldActor *actor)
 {
     int animation = actor->animation;
-    if (animation == FARS_ANIM_1A || animation == FARS_ANIM_STAND || !FrameCtrl_IsDone(&actor->anim)) {
+    if (animation == FARS_ANIM_1A || animation == FARS_ANIM_STAND || !FrameControl_IsDone(&actor->anim)) {
         return;
     }
     FieldActor_ClearFlag(actor, FARS_CHEST_APPROACH_FLAG);
@@ -1832,7 +1832,7 @@ void FieldActorRoomStates_EnterChestApproach(FieldActor *actor, const StateReque
     char index = (char) args->index;
     FieldActorRoomStates_SetChestApproachWork(fars_chest_approach_of(actor), index, args->x, args->z, args->yaw);
     FieldActorRoomStates_PutChestApproachSaved(actor->saved.packed, index, args->x, args->z, args->yaw);
-    actor->anim.flags = FRAME_CTRL_ONCE;
+    actor->anim.flags = FRAME_CONTROL_ONCE;
 }
 CLEAN_AS(func_ov004_02228570, FieldActorRoomStates_EnterChestApproach)
 
@@ -1907,7 +1907,7 @@ CLEAN_AS(func_ov004_02228690, FieldActorRoomStates_UpdateSpotStepOff)
  * value and state 2 is asked for (0, priority 1). */
 void FieldActorRoomStates_EndSpotStepOff(FieldActor *actor)
 {
-    if (FrameCtrl_IsDone(&actor->anim)) {
+    if (FrameControl_IsDone(&actor->anim)) {
         actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
         FieldActor_RequestState2(actor, FARS_STEP_OFF_STATE2_ARG, FARS_END_PRIORITY, FARS_NO_ARG);
     }
@@ -1933,7 +1933,7 @@ CLEAN_AS(func_ov004_022286e8, FieldActorRoomStates_ContactSpotStepOff)
 int FieldActorRoomStates_StepSpotStepOff(FieldActor *actor)
 {
     FieldActor_UpdateBody(actor);
-    if (!FrameCtrl_Passed(&actor->anim, FARS_SPOT_STEP_OFF_SOUND_FRAME)) {
+    if (!FrameControl_Passed(&actor->anim, FARS_SPOT_STEP_OFF_SOUND_FRAME)) {
         return 0;
     }
     return FieldActor_PlaySound(actor, FARS_SPOT_STEP_OFF_SOUND);
@@ -2136,7 +2136,7 @@ static s16 *fars_turn_yaw_of(FieldActor *actor)
 /* At the end of a turn's animation state 0x2c is asked for (priority 6). */
 static void fars_end_turn(FieldActor *actor)
 {
-    if (FrameCtrl_IsDone(&actor->anim)) {
+    if (FrameControl_IsDone(&actor->anim)) {
         FieldActorRoomStates_RequestSpotStepOff(actor, FARS_PRIORITY, FARS_NO_ARG);
     }
 }
@@ -2387,7 +2387,7 @@ CLEAN_AS(func_ov004_02228e38, FieldActorRoomStates_UpdateSpotEnter)
 /* func_ov004_02228e58: once the animation is over, state 0x28 is asked for (0, priority 6). */
 void FieldActorRoomStates_EndSpotEnter(FieldActor *actor)
 {
-    if (FrameCtrl_IsDone(&actor->anim)) {
+    if (FrameControl_IsDone(&actor->anim)) {
         FieldActorRoomStates_RequestSpotStay(actor, FARS_SPOT_STAY_AFTER_ENTER, FARS_PRIORITY, FARS_NO_ARG);
     }
 }
@@ -2398,7 +2398,7 @@ CLEAN_AS(func_ov004_02228e58, FieldActorRoomStates_EndSpotEnter)
 void FieldActorRoomStates_StepSpotEnter(FieldActor *actor)
 {
     FieldActor_UpdateBody(actor);
-    if (FrameCtrl_Passed(&actor->anim, FARS_SPOT_ENTER_SOUND_FRAME) && fars_in_room()) {
+    if (FrameControl_Passed(&actor->anim, FARS_SPOT_ENTER_SOUND_FRAME) && fars_in_room()) {
         const FieldActorSpotEnter *work = fars_spot_enter_of(actor);
         Vec3 point = {work->x, actor->position.y, work->z};
         RoomPointSound_Play1(&point);
@@ -2554,7 +2554,7 @@ CLEAN_AS(func_ov004_02229078, FieldActorRoomStates_PutSpotEnterArgs)
 static void fars_step_spot_enter(FieldActor *actor)
 {
     FieldActor_UpdateBody(actor);
-    if (FrameCtrl_Passed(&actor->anim, FARS_SPOT_ENTER_SOUND_FRAME) && fars_in_room()) {
+    if (FrameControl_Passed(&actor->anim, FARS_SPOT_ENTER_SOUND_FRAME) && fars_in_room()) {
         const FieldActorSpotEnter *work = fars_spot_enter_of(actor);
         Vec3 point = {work->x, actor->position.y, work->z};
         RoomPointSound_Play1(&point);
@@ -2564,7 +2564,7 @@ static void fars_step_spot_enter(FieldActor *actor)
 /* The end of states 0x26 and 0x25: once the animation is over, state 0x28 (0, priority 6). */
 static void fars_end_spot_enter(FieldActor *actor)
 {
-    if (FrameCtrl_IsDone(&actor->anim)) {
+    if (FrameControl_IsDone(&actor->anim)) {
         FieldActorRoomStates_RequestSpotStay(actor, FARS_SPOT_STAY_AFTER_ENTER, FARS_PRIORITY, FARS_NO_ARG);
     }
 }
@@ -3019,7 +3019,7 @@ static FieldActorObjectMove *fars_object_move_of(FieldActor *actor)
  * 1). */
 static void fars_end_object_step(FieldActor *actor)
 {
-    if (!FrameCtrl_IsDone(&actor->anim)) {
+    if (!FrameControl_IsDone(&actor->anim)) {
         return;
     }
     actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
@@ -3038,7 +3038,7 @@ static void fars_end_object_step(FieldActor *actor)
  * for (0, 1, priority 5). */
 static void fars_run_object_move(FieldActor *actor, int pull)
 {
-    if (!FrameCtrl_IsDone(&actor->anim)) {
+    if (!FrameControl_IsDone(&actor->anim)) {
         return;
     }
     if (!fars_is_local(actor)) {

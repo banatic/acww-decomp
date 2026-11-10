@@ -123,7 +123,7 @@ extern u32 data_021dc7a8[];
 extern const u32 data_020c8e98[3];
 
 /* The predicates this file hands to the game (the game's own functions; the first returns a
- * halfword where PocketPredicate has an int, which the ARM caller reads alike). */
+ * halfword where PocketPredicateFn has an int, which the ARM caller reads alike). */
 extern u16 func_0201f520(u16 *item, int state);
 extern int func_0201f550(u16 *item);
 
@@ -496,7 +496,7 @@ CLEAN_AS(func_0201f094, VillagerTalk_TakePocketOrSay)
  * func_0201f520, with 13, staying on the line), then data_020d8e28 at the command's end. */
 void VillagerTalk_AskPocketAcorn(VillagerTalk *talk)
 {
-    SceneCommand_SetPocketPredicate(&talk->scene, (PocketPredicate) (void (*)(void)) func_0201f520, 13, 1);
+    SceneCommand_SetPocketPredicate(&talk->scene, (PocketPredicateFn) (void (*)(void)) func_0201f520, 13, 1);
     SceneCommand_RequestScreen(&talk->scene, SCENE_COMMAND_SCREEN_POCKETS);
     VillagerTalkScene_SetCommandEnd(talk, data_020d8e28);
 }

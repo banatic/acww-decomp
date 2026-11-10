@@ -55,7 +55,7 @@ static_assert(sizeof(Design) == DESIGN_SIZE, "design");
 #define MESSAGE_SWAP (1u << 28)
 
 /* What a lookup of the kind table answers with: the design's address, or 0. */
-typedef int (*DesignLookup)(int index);
+typedef int (*DesignLookupFn)(int index);
 
 /* The multiplayer session; only the slot of this system is read here. */
 typedef struct Session {
@@ -160,7 +160,7 @@ int Design_Find(int kind, int index)
     if (kind >= DESIGN_KINDS) {
         return 0;
     }
-    return ((DesignLookup) (uintptr_t) data_020ccf6c[kind])(index);
+    return ((DesignLookupFn) (uintptr_t) data_020ccf6c[kind])(index);
 }
 CLEAN_AS(func_02071604, Design_Find)
 

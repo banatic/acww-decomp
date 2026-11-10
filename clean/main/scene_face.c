@@ -64,7 +64,7 @@ void SceneFace_Step(SceneFace *self, u8 *object)
         return;
     }
 
-    if (self->anim_a_number != 0 || !FrameCtrl_Passed(&self->anim_a.ctrl, 0) ||
+    if (self->anim_a_number != 0 || !FrameControl_Passed(&self->anim_a.ctrl, 0) ||
         FaceAnimTimer_Step((FaceAnimTimer *) (void *) self->timer) != 0) {
         TexPatternAnim_Step((TexPatternAnim *) &self->anim_a);
     }
@@ -237,14 +237,14 @@ CLEAN_AS(func_0201a1d4, SceneFace_PlayB)
 
 /* func_0201a234: whether the second animation's cycle is over: for a talking animation as
  * SceneFace_TalkCycleEnded says of its whole frame and frame count, else at the end of an
- * animation that plays once (FrameCtrl_IsDone). */
+ * animation that plays once (FrameControl_IsDone). */
 int SceneFace_TalkCycleDone(SceneFace *self)
 {
     if (SceneFace_IsTalkAnim(self, self->anim_b_number)) {
         return SceneFace_TalkCycleEnded(self, self->talk_variant, scene_face_whole(self->anim_b.ctrl.frame),
                                         scene_face_whole(self->anim_b.ctrl.end));
     }
-    return FrameCtrl_IsDone(&self->anim_b.ctrl) ? 1 : 0;
+    return FrameControl_IsDone(&self->anim_b.ctrl) ? 1 : 0;
 }
 CLEAN_AS(func_0201a234, SceneFace_TalkCycleDone)
 

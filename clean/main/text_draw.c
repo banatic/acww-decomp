@@ -81,10 +81,10 @@ extern void NNS_FndInitList(void *list, u16 link_offset);
 extern int FS_SeekFile(void *file, u32 offset, int origin);
 extern int FS_ReadFile(void *file, void *dst, u32 size);
 
-typedef void TileLoader(const void *src, u32 offset, u32 size);
-typedef void *BoxDestruct(TextDrawBox *box);
-typedef void BoxDrawStrip(TextDrawBox *box);
-typedef u32 BoxMeasure(TextDrawBox *box);
+typedef void TileLoaderFn(const void *src, u32 offset, u32 size);
+typedef void *BoxDestructFn(TextDrawBox *box);
+typedef void BoxDrawStripFn(TextDrawBox *box);
+typedef u32 BoxMeasureFn(TextDrawBox *box);
 
 static uintptr_t box_slot(const TextDrawBox *box, int slot)
 {
@@ -94,7 +94,7 @@ static uintptr_t box_slot(const TextDrawBox *box, int slot)
 /* The width of the box's text, in pixels (vtable slot 3). */
 static u32 measure(TextDrawBox *box)
 {
-    return ((BoxMeasure *) box_slot(box, BOX_SLOT_MEASURE))(box);
+    return ((BoxMeasureFn *) box_slot(box, BOX_SLOT_MEASURE))(box);
 }
 
 /* Pixel (x, y) of the strip set to `color`; nothing past the strip's 32 tiles. QUIRK: a color
@@ -118,10 +118,10 @@ static void put_pixel(u32 x, u32 y, u8 color)
 static void load_tiles(TextDrawBox *box, u32 offset, u32 size)
 {
     if (box->screens == TEXT_DRAW_TO_MAIN || box->screens == TEXT_DRAW_TO_BOTH) {
-        ((TileLoader *) (uintptr_t) data_020cb920[box->layer])(data_021c8344, offset, size);
+        ((TileLoaderFn *) (uintptr_t) data_020cb920[box->layer])(data_021c8344, offset, size);
     }
     if (box->screens == TEXT_DRAW_TO_SUB || box->screens == TEXT_DRAW_TO_BOTH) {
-        ((TileLoader *) (uintptr_t) data_020cb938[box->layer])(data_021c8344, offset, size);
+        ((TileLoaderFn *) (uintptr_t) data_020cb938[box->layer])(data_021c8344, offset, size);
     }
 }
 
@@ -144,7 +144,7 @@ void TextDraw_FreeBoxes(void)
 
     while ((box = NNS_FndGetNextListObject(data_021c81bc, NULL)) != NULL) {
         NNS_FndRemoveListObject(data_021c81bc, box);
-        ((BoxDestruct *) box_slot(box, BOX_SLOT_DESTRUCT))(box);
+        ((BoxDestructFn *) box_slot(box, BOX_SLOT_DESTRUCT))(box);
         Heap_Free(data_021c8194, box);
     }
 }
@@ -381,7 +381,7 @@ void TextDraw_Draw(TextDrawBox *box)
     for (box->strip_y = 0; box->strip_y < font_height && box->strip_y < box_height; box->strip_y += STRIP_HEIGHT) {
         u32 next = box->strip_y + STRIP_HEIGHT;
         box->last_strip = next >= font_height || next >= box_height;
-        ((BoxDrawStrip *) box_slot(box, BOX_SLOT_DRAW_STRIP))(box);
+        ((BoxDrawStripFn *) box_slot(box, BOX_SLOT_DRAW_STRIP))(box);
         box->dest_offset += row_stride(box);
     }
 }

@@ -27,7 +27,7 @@
 
 /* What TownLines_VisitAround hands each neighbor `near` of `tile` (with the map's `size`);
  * non-zero stops the visit. The game's are func_02049f74, func_02049fbc and func_02049bc4. */
-typedef int (*TownLinesVisit)(AcreMap *map, TownGrowthTiles *near, TownGrowthTiles *tile, TownGrowthTiles *size);
+typedef int (*TownLinesVisitFn)(AcreMap *map, TownGrowthTiles *near, TownGrowthTiles *tile, TownGrowthTiles *size);
 
 void TownLines_ThinCrowded(TownDay *town, AcreMap *map, const TownGrowthTiles *size);
 void TownLines_ThinNeighbors(TownDay *town, AcreMap *map, const TownGrowthTiles *size);
@@ -37,7 +37,7 @@ void TownLines_CheckC8(TownDay *town, AcreMap *map, u16 *code, const TownGrowthT
 void TownLines_Check5d(TownDay *town, AcreMap *map, u16 *code, const TownGrowthTiles *size, int x, int z);
 void TownLines_CheckTile(TownDay *town, AcreMap *map, u16 *code, const TownGrowthTiles *size, int x, int z);
 int TownLines_HasRoom(TownDay *town, AcreMap *map, const TownGrowthTiles *size, const TownGrowthTiles *tile);
-int TownLines_VisitAround(AcreMap *map, const TownGrowthTiles *size, const TownGrowthTiles *tile, TownLinesVisit visit);
+int TownLines_VisitAround(AcreMap *map, const TownGrowthTiles *size, const TownGrowthTiles *tile, TownLinesVisitFn visit);
 int TownLines_PutBackStage0(AcreMap *map, const TownGrowthTiles *near);
 int TownLines_BlocksAt(AcreMap *map, const TownGrowthTiles *near);
 int TownLines_IsGrownOrRock(const u16 *code);

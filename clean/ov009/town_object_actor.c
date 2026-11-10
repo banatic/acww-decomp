@@ -151,23 +151,23 @@ static uintptr_t town_object_actor_slot(const TownObjectActor *actor, u32 offset
     return *(const u32 *) ((const u8 *) actor->vtable + offset);
 }
 
-typedef int (*TownObjectActorIntSlot)(TownObjectActor *actor);
-typedef void (*TownObjectActorVoidSlot)(TownObjectActor *actor);
-typedef int (*TownObjectActorModeSlot)(TownObjectActor *actor, int mode);
+typedef int (*TownObjectActorIntSlotFn)(TownObjectActor *actor);
+typedef void (*TownObjectActorVoidSlotFn)(TownObjectActor *actor);
+typedef int (*TownObjectActorModeSlotFn)(TownObjectActor *actor, int mode);
 
 static int town_object_actor_call_int(TownObjectActor *actor, u32 offset)
 {
-    return ((TownObjectActorIntSlot) town_object_actor_slot(actor, offset))(actor);
+    return ((TownObjectActorIntSlotFn) town_object_actor_slot(actor, offset))(actor);
 }
 
 static void town_object_actor_call_void(TownObjectActor *actor, u32 offset)
 {
-    ((TownObjectActorVoidSlot) town_object_actor_slot(actor, offset))(actor);
+    ((TownObjectActorVoidSlotFn) town_object_actor_slot(actor, offset))(actor);
 }
 
 static int town_object_actor_set_mode(TownObjectActor *actor, int mode)
 {
-    return ((TownObjectActorModeSlot) town_object_actor_slot(actor, SLOT_SET_MODE))(actor, mode);
+    return ((TownObjectActorModeSlotFn) town_object_actor_slot(actor, SLOT_SET_MODE))(actor, mode);
 }
 
 /* The object's record: the code's, or the first for a code out of range. */

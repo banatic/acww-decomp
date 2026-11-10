@@ -262,7 +262,7 @@ CLEAN_AS(func_02059674, Obj020dd33c_SetMoving)
 /* The method at slot 0x5c (word 23) of an actor's vtable: the point it holds things at,
  * written to `out` (for the scene objects, a joint's point; nothing written while that is the
  * origin). */
-typedef void (*Obj020dd33cHoldMethod)(Actor *actor, Vec3 *out);
+typedef void (*Obj020dd33cHoldMethodFn)(Actor *actor, Vec3 *out);
 #define OBJ_020DD33C_SLOT_HOLD_POINT 23
 
 /* func_0205967c: into `out`, the first actor's hold point; nothing without a first actor. */
@@ -271,7 +271,7 @@ void Obj020dd33c_HoldPoint(Obj020dd33c *obj, Vec3 *out)
     Actor *actor = obj->actors[0];
     if (actor != NULL) {
         const u32 *vtable = (const u32 *) actor->vtable;
-        ((Obj020dd33cHoldMethod) (uintptr_t) vtable[OBJ_020DD33C_SLOT_HOLD_POINT])(actor, out);
+        ((Obj020dd33cHoldMethodFn) (uintptr_t) vtable[OBJ_020DD33C_SLOT_HOLD_POINT])(actor, out);
     }
 }
 CLEAN_AS(func_0205967c, Obj020dd33c_HoldPoint)

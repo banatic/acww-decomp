@@ -19,13 +19,13 @@ extern const u8 data_020de62c[]; /* the 8-bit name's vtable */
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
-typedef int NameTextCapacity(void *text);
+typedef int NameTextCapacityFn(void *text);
 
 /* A text's capacity, through its vtable (slot 2). */
 static int name_texts_capacity(void *text)
 {
     const TextVtable *vtable = *(const TextVtable *const *) text;
-    return ((NameTextCapacity *) (uintptr_t) vtable->capacity)(text);
+    return ((NameTextCapacityFn *) (uintptr_t) vtable->capacity)(text);
 }
 
 /* ---- the wide name */

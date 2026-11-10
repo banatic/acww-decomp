@@ -29,7 +29,7 @@ static_assert(offsetof(RecycleBin, state) == 0x61c, "state");
 static_assert(sizeof(RecycleBin) == 0x620, "the size RecycleBin_Create allocates");
 static_assert(offsetof(Actor, angle) == 0x8c, "angle");
 
-#define RECYCLE_BIN_PLAY_ONCE FRAME_CTRL_ONCE
+#define RECYCLE_BIN_PLAY_ONCE FRAME_CONTROL_ONCE
 
 /* The joint animations: the lid opening (its first frame: closed) and closing (its first
  * frame: open). */
@@ -336,7 +336,7 @@ CLEAN_AS(func_ov004_0222f6e8, RecycleBin_EnterState)
  * else the animation steps. */
 void RecycleBin_UpdateClosing(RecycleBin *self)
 {
-    if (FrameCtrl_IsDone(&self->base.body.frames)) {
+    if (FrameControl_IsDone(&self->base.body.frames)) {
         recycle_bin_call_set_lid(self, RECYCLE_BIN_LID_CLOSED);
     } else {
         AnimatedModel_StepFrames(recycle_bin_body(self));
@@ -376,7 +376,7 @@ CLEAN_AS(func_ov004_0222f81c, RecycleBin_EnterOpen)
  * else the animation steps. */
 void RecycleBin_UpdateOpening(RecycleBin *self)
 {
-    if (FrameCtrl_IsDone(&self->base.body.frames)) {
+    if (FrameControl_IsDone(&self->base.body.frames)) {
         recycle_bin_call_set_lid(self, RECYCLE_BIN_LID_OPEN);
     } else {
         AnimatedModel_StepFrames(recycle_bin_body(self));

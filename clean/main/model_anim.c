@@ -33,7 +33,7 @@ static u16 file_frames(const u8 *file)
 
 /* The frame control's constructor, as the class's constructors have it inline: frame 0, a
  * speed of one frame a step. */
-static void construct_frame_ctrl(FrameCtrl *ctrl)
+static void construct_frame_control(FrameControl *ctrl)
 {
     ctrl->vtable = data_020dd184;
     ctrl->frame = 0;
@@ -90,14 +90,14 @@ void ModelAnim_Start(ModelAnim *anim, const u8 *file, int flags, fx32 speed, u16
 }
 CLEAN_AS(func_02056478, ModelAnim_Start)
 
-/* func_02056498: the frame control set to the file's frame count with `flags` (FrameCtrlFlags,
- * the low byte kept), `speed` and `start` (FrameCtrl_Init), the animation object made to play
+/* func_02056498: the frame control set to the file's frame count with `flags` (FrameControlFlags,
+ * the low byte kept), `speed` and `start` (FrameControl_Init), the animation object made to play
  * `file` on the model with `texture`, and its frame set to `start`.
  * QUIRK: a `start` of 0xffff makes the frame control start at the last frame, but the object's
  * frame is still set to frame 0xffff, until its owner copies the frame control's into it. */
 void ModelAnim_Init(ModelAnim *anim, const u8 *file, void *texture, int flags, fx32 speed, u16 start)
 {
-    FrameCtrl_Init(&anim->ctrl, file_frames(file), (u8) flags, (u32) speed, start);
+    FrameControl_Init(&anim->ctrl, file_frames(file), (u8) flags, (u32) speed, start);
     NNS_G3dAnmObjInit(anim->anim, file, anim->model, texture);
     anim->anim->frame = (fx32) start << 12;
 }
@@ -147,7 +147,7 @@ CLEAN_AS(func_02056548, ModelAnim_AllocAnmObj)
 ModelAnim *ModelAnim_Destruct(ModelAnim *anim)
 {
     anim->ctrl.vtable = data_020dd154;
-    FrameCtrl_Destruct(&anim->ctrl);
+    FrameControl_Destruct(&anim->ctrl);
     return anim;
 }
 CLEAN_AS(func_02056578, ModelAnim_Destruct)
@@ -156,7 +156,7 @@ CLEAN_AS(func_02056578, ModelAnim_Destruct)
 ModelAnim *ModelAnim_Delete(ModelAnim *anim)
 {
     anim->ctrl.vtable = data_020dd154;
-    FrameCtrl_Destruct(&anim->ctrl);
+    FrameControl_Destruct(&anim->ctrl);
     Heap_OperatorDeleteB(anim);
     return anim;
 }
@@ -167,7 +167,7 @@ CLEAN_AS(func_02056590, ModelAnim_Delete)
 ModelAnim *ModelAnim_DestructComplete(ModelAnim *anim)
 {
     anim->ctrl.vtable = data_020dd154;
-    FrameCtrl_Destruct(&anim->ctrl);
+    FrameControl_Destruct(&anim->ctrl);
     return anim;
 }
 CLEAN_AS(func_020565b0, ModelAnim_DestructComplete)
@@ -175,7 +175,7 @@ CLEAN_AS(func_020565b0, ModelAnim_DestructComplete)
 /* func_020565c8: the constructor: the frame control's, then no object and no model. */
 void ModelAnim_Construct(ModelAnim *anim)
 {
-    construct_frame_ctrl(&anim->ctrl);
+    construct_frame_control(&anim->ctrl);
     anim->ctrl.vtable = data_020dd154;
     anim->model = NULL;
     anim->anim = NULL;
@@ -185,7 +185,7 @@ CLEAN_AS(func_020565c8, ModelAnim_Construct)
 /* func_020565ec: the base constructor, the same as ModelAnim_Construct. */
 void ModelAnim_ConstructBase(ModelAnim *anim)
 {
-    construct_frame_ctrl(&anim->ctrl);
+    construct_frame_control(&anim->ctrl);
     anim->ctrl.vtable = data_020dd154;
     anim->model = NULL;
     anim->anim = NULL;

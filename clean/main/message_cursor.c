@@ -30,13 +30,13 @@ extern const u8 data_020e5254[]; /* the cursor's */
 /* Clears `size` bytes; text: raw characters appended. */
 extern void *func_02137550(void *dst, u32 size);
 
-typedef int MessageCursorCharactersFunction(const void *object);
+typedef int MessageCursorCharactersFn(const void *object);
 
 /* The characters of a text object, through its vtable (slot 3), as an address. */
 static int message_cursor_characters(const void *object)
 {
     const u32 *vtable = *(const u32 *const *) object;
-    MessageCursorCharactersFunction *characters = (MessageCursorCharactersFunction *) (uintptr_t) vtable[3];
+    MessageCursorCharactersFn *characters = (MessageCursorCharactersFn *) (uintptr_t) vtable[3];
     return characters(object);
 }
 

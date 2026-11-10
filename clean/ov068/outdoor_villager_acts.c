@@ -671,7 +671,7 @@ CLEAN_AS(_ZN18Obj_ov068_022771c019func_ov068_02267f84Ei, OutdoorVillagerActs_Upd
 
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
 
-/* The villager's body animation's frames (a FrameCtrl: its speed at 0x198, its flags at
+/* The villager's body animation's frames (a FrameControl: its speed at 0x198, its flags at
  * 0x19c). */
 #define ACTS_ANIM_CTRL 0x188
 #define ACTS_ANIM_SPEED 0x198
@@ -721,9 +721,9 @@ static SoundEmitter *acts_emitter(u8 *villager)
     return (SoundEmitter *) (void *) acts_at(villager, OUTDOOR_VILLAGER_EMITTER);
 }
 
-static FrameCtrl *acts_anim_ctrl(u8 *villager)
+static FrameControl *acts_anim_ctrl(u8 *villager)
 {
-    return (FrameCtrl *) (void *) acts_at(villager, ACTS_ANIM_CTRL);
+    return (FrameControl *) (void *) acts_at(villager, ACTS_ANIM_CTRL);
 }
 
 /* func_ov068_02268020: behavior 17's last step and behaviour 18's only one: once animation
@@ -837,7 +837,7 @@ void OutdoorVillagerActs_EnterPitfall(OutdoorVillagerBehavior *self, u8 *village
     if (SpeakerAnim_Number(acts_anim(villager), 0) != ACTS_ANIM_PITFALL_STEP) {
         return;
     }
-    if (FrameCtrl_IsDone(acts_anim_ctrl(villager)) == 0) {
+    if (FrameControl_IsDone(acts_anim_ctrl(villager)) == 0) {
         return;
     }
     u16 word = data_020c80f8;
@@ -874,11 +874,11 @@ void OutdoorVillagerActs_StepOntoPitfall(OutdoorVillagerBehavior *self, u8 *vill
     AcreTile_SnapToTileCenter(&center, position);
     OutdoorVillagerActs_Approach(&position->x, center.x, ACTS_APPROACH_RATE, ACTS_APPROACH_MOST, ACTS_APPROACH_LEAST);
     OutdoorVillagerActs_Approach(&position->z, center.z, ACTS_APPROACH_RATE, ACTS_APPROACH_MOST, ACTS_APPROACH_LEAST);
-    acts_anim_ctrl(villager)->flags = FRAME_CTRL_ONCE;
+    acts_anim_ctrl(villager)->flags = FRAME_CONTROL_ONCE;
     if (position->x != center.x || position->z != center.z) {
         return;
     }
-    if (FrameCtrl_IsDone(acts_anim_ctrl(villager)) != 0) {
+    if (FrameControl_IsDone(acts_anim_ctrl(villager)) != 0) {
         OutdoorVillagerActs_EnterPitfall(self, villager);
     } else {
         self->step = 1;

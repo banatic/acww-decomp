@@ -567,7 +567,7 @@ int VillagerTalk_ShowLetter(VillagerTalk *talk)
 
         NpcId *npc = TownVillager_NpcId(villager_talk_record(talk));
         MailSuperText_Construct((MailSuperText *) part1);
-        MailMsgText_Construct((MailMsgText *) part2);
+        MailMessageText_Construct((MailMessageText *) part2);
         MailPsText_Construct((MailPsText *) part3);
         int number = 0;
         letter = data_021c2604;
@@ -584,7 +584,7 @@ int VillagerTalk_ShowLetter(VillagerTalk *talk)
                                    (void *) (uintptr_t) part3, result, data_020d8d1c, (const NpcId *) (uintptr_t) npc,
                                    (const NpcId *) (uintptr_t) npc);
         MailPsText_Destruct((MailPsText *) part3);
-        MailMsgText_Destruct((MailMsgText *) part2);
+        MailMessageText_Destruct((MailMessageText *) part2);
         MailSuperText_Destruct((MailSuperText *) part1);
     }
     SceneCommand_SetScreenPointer(villager_talk_scene(talk), (int) (uintptr_t) letter, 0);

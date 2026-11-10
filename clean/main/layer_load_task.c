@@ -22,12 +22,12 @@ extern const u32 data_020e5944[]; /* LayerTaskPair's */
 /* The 16-color characters one scan line stands for (as a shift). */
 #define LAYER_LOAD_CHARS_LINE_SHIFT 6
 
-typedef void LayerTaskReset(LayerTask *task);
+typedef void LayerTaskResetFn(LayerTask *task);
 
 /* The task's reset through its vtable (LayerTask_Reset or LayerTask_ResetPair). */
 static void reset_virtual(LayerTask *task)
 {
-    LayerTaskReset *reset = (LayerTaskReset *) (uintptr_t) task->base.vtable[TRANSFER_TASK_SLOT_RESET];
+    LayerTaskResetFn *reset = (LayerTaskResetFn *) (uintptr_t) task->base.vtable[TRANSFER_TASK_SLOT_RESET];
     reset(task);
 }
 

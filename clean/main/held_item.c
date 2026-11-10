@@ -147,7 +147,7 @@ void HeldItem_Update(HeldItemObject *held)
             AnimatedModel_Update(
                 (AnimatedModel *) (uintptr_t) HeldItemPool_Model((HeldItemPool *) (void *) data_021ca16c, index));
             if (kind == HELD_ITEM_TEXTURE_ANIMATED) {
-                FrameCtrl_Step(&held->anim.ctrl);
+                FrameControl_Step(&held->anim.ctrl);
                 held->anim.anim->frame = held->anim.ctrl.frame;
             }
         }

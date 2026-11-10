@@ -188,7 +188,7 @@ CLEAN_AS(func_020164a0, SpeakerAnim_Number)
 int SpeakerAnim_BodyAtEnd(SpeakerAnim *anim, u8 *object)
 {
     (void) anim;
-    return FrameCtrl_IsDone((const FrameCtrl *) (void *) (object + SPEAKER_ANIM_OBJECT_BODY)) != 0;
+    return FrameControl_IsDone((const FrameControl *) (void *) (object + SPEAKER_ANIM_OBJECT_BODY)) != 0;
 }
 CLEAN_AS(func_020164cc, SpeakerAnim_BodyAtEnd)
 

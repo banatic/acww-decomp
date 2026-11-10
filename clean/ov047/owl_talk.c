@@ -412,7 +412,8 @@ void OwlTalk_OnAnswerErrand(OwlTalk *talk, int answer)
 {
     if (answer == 0) {
         SceneCommandScene *scene = (SceneCommandScene *) (void *) talk;
-        SceneCommand_SetPocketPredicate(scene, (PocketPredicate) (void (*)(void)) func_ov047_02261ae8, OWL_TALK_POCKET_ARG, 0);
+        SceneCommand_SetPocketPredicate(scene, (PocketPredicateFn) (void (*)(void)) func_ov047_02261ae8, OWL_TALK_POCKET_ARG,
+                                        0);
         SceneCommand_RequestScreen(scene, OWL_TALK_SCREEN_POCKETS);
         OwlTalk_SetAfter(talk, OWL_TALK_AFTER_TAKE_ERRAND);
     } else if (owl_talk_given_flag()) {

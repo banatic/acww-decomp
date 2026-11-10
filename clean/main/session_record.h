@@ -20,10 +20,10 @@
 #include "types.h"
 
 /* A record's writer: fills `record` from `object`, as `mode` says. */
-typedef void SessionRecordWriter(u8 *record, void *object, int mode);
+typedef void SessionRecordWriterFn(u8 *record, void *object, int mode);
 
 /* A record's filler, called when the table is made. */
-typedef void SessionRecordFiller(u8 *record);
+typedef void SessionRecordFillerFn(u8 *record);
 
 /* The point records 0-3 are written from. */
 typedef struct SessionRecordPoint {

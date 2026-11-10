@@ -14,12 +14,12 @@
 #define RECORD_TABLE_SIZE 0x6a0
 #define RECORD_TABLE_ALIGN 4
 
-extern NetSession *data_020ccf94;                  /* the session */
-extern SessionRecordWriter *const data_020cd2f4[]; /* the writers, by record id */
+extern NetSession *data_020ccf94;                    /* the session */
+extern SessionRecordWriterFn *const data_020cd2f4[]; /* the writers, by record id */
 
-extern SessionRecordFiller *const data_020cd1dc[]; /* the fillers, by record id */
-extern const u16 data_020cd050[];                  /* each record's offset in the table */
-extern const u8 data_020ccfa8[];                   /* each record's size */
+extern SessionRecordFillerFn *const data_020cd1dc[]; /* the fillers, by record id */
+extern const u16 data_020cd050[];                    /* each record's offset in the table */
+extern const u8 data_020ccfa8[];                     /* each record's size */
 
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
@@ -688,7 +688,7 @@ CLEAN_AS(func_02077588, SessionRecord_PackPoint)
  * REQUIRES: 0 <= id < SESSION_RECORDS. */
 void SessionRecord_Fill(int id)
 {
-    SessionRecordFiller *fill = data_020cd1dc[id];
+    SessionRecordFillerFn *fill = data_020cd1dc[id];
     if (fill != NULL) {
         fill(Session_Record(data_020ccf94, id));
     }

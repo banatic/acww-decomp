@@ -65,7 +65,7 @@ int TexSlotAnim_Update(TexSlotAnim *self)
     int palette;
 
     self->previous_texture = self->texture;
-    FrameCtrl_Step(&self->ctrl);
+    FrameControl_Step(&self->ctrl);
     TexSlotAnim_CurrentIndices(self, &texture, &palette);
     if (self->texture == texture || self->palette_only != 0) {
         texture = TEX_SLOT_ANIM_NONE;
@@ -101,7 +101,7 @@ int TexSlotAnim_Start(TexSlotAnim *self, G3dResTex *target, const char *texture_
     self->target = target;
     self->source = source;
     self->anim = anim;
-    FrameCtrl_Init(&self->ctrl, *(const u16 *) (const void *) (anim + ANIM_FRAMES), 0, ONE_FRAME, 0);
+    FrameControl_Init(&self->ctrl, *(const u16 *) (const void *) (anim + ANIM_FRAMES), 0, ONE_FRAME, 0);
     TexSlotAnim_Update(self);
     return 1;
 }
@@ -127,7 +127,7 @@ static void destruct(TexSlotAnim *self)
     TexSlotName_Destruct(&self->palette_name);
     TexSlotName_Destruct(&self->texture_name);
     TexUpload_Destruct(&self->upload);
-    FrameCtrl_Destruct(&self->ctrl);
+    FrameControl_Destruct(&self->ctrl);
 }
 
 /* func_02057658: the deleting destructor (the vtable's second entry). */

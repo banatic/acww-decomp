@@ -66,7 +66,7 @@ void RoomObject02252e00_UpdatePlaying(RoomObject02252e00 *object)
     } else {
         RoomObject_PlaySound0(base);
     }
-    if (RoomObject_Number(base) == FURNITURE_0207 && FrameCtrl_Passed(&base->model.frames, FURNITURE_0207_SOUND_FRAME)) {
+    if (RoomObject_Number(base) == FURNITURE_0207 && FrameControl_Passed(&base->model.frames, FURNITURE_0207_SOUND_FRAME)) {
         RoomObject_PlaySound2(base);
     }
 }

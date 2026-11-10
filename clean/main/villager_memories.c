@@ -351,7 +351,7 @@ CLEAN_AS(func_02080578, VillagerMemory_IsFormerPlayer)
  * and its players) to take over: one with bit 0 of its flags clear over one with it set, then
  * the one the villager is least fond of, then the one with the earliest date; -1 for none, or
  * when this town is not set. */
-int VillagerMemory_PickToReplace(VillagerMemory *memories, VillagerMemoryTest test)
+int VillagerMemory_PickToReplace(VillagerMemory *memories, VillagerMemoryTestFn test)
 {
     int best = VILLAGER_MEMORY_NONE;
     if (!TownName_IsSet((const u16 *) &data_021dc7aa)) {

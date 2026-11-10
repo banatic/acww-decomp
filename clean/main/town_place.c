@@ -14,7 +14,7 @@ extern NetSession *data_020ccf94;
 
 /* func_02048cb8: the item put on a free tile of acre (acre_x, acre_z) that `test` accepts,
  * marked or not; whether there was one. */
-int TownPlace_PutInAcre(TownDay *town, AcreMap *map, int acre_x, int acre_z, u16 item, TownPlaceTest test, int marked)
+int TownPlace_PutInAcre(TownDay *town, AcreMap *map, int acre_x, int acre_z, u16 item, TownPlaceTestFn test, int marked)
 {
     TownPlaceTile tiles[TOWN_PLACE_ACRE_TILES];
     int count = TownPlace_ListFree(town, tiles, map, acre_x, acre_z, test);
@@ -51,7 +51,7 @@ CLEAN_AS(func_02048d2c, TownPlace_PutOneOf)
 
 /* func_02048db8: the free tiles (code 0xfff1) of acre (acre_x, acre_z) that `test` accepts,
  * written to `tiles` row by row; their number. */
-int TownPlace_ListFree(TownDay *town, TownPlaceTile *tiles, AcreMap *map, int acre_x, int acre_z, TownPlaceTest test)
+int TownPlace_ListFree(TownDay *town, TownPlaceTile *tiles, AcreMap *map, int acre_x, int acre_z, TownPlaceTestFn test)
 {
     (void) town;
     int count = 0;

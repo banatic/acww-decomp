@@ -310,13 +310,13 @@ void AnimatedModel_Attach(AnimatedModel *model)
 CLEAN_AS(func_02055050, AnimatedModel_Attach)
 
 /* func_02055060: the animation object plays `file` from frame `start` for `frames` frames (0:
- * the file's count for the flags), stepped by `speed` with the FrameCtrlFlags `flags`. */
+ * the file's count for the flags), stepped by `speed` with the FrameControlFlags `flags`. */
 void AnimatedModel_Start(AnimatedModel *model, const u8 *file, int flags, fx32 speed, u16 start, u16 frames)
 {
     if (frames == 0) {
         frames = AnimatedModel_FrameCount(flags, file);
     }
-    FrameCtrl_Init(&model->frames, frames, flags, speed, start);
+    FrameControl_Init(&model->frames, frames, flags, speed, start);
     NNS_G3dAnmObjInit(model->anim, file, model->object.model, NULL);
     model->anim->frame = model->frames.frame;
 }
@@ -367,7 +367,7 @@ CLEAN_AS(func_0205510c, AnimatedModel_Draw)
 /* func_02055124: one step of the frame control, whose frame the animation object takes. */
 void AnimatedModel_StepFrames(AnimatedModel *model)
 {
-    FrameCtrl_Step(&model->frames);
+    FrameControl_Step(&model->frames);
     model->anim->frame = model->frames.frame;
 }
 CLEAN_AS(func_02055124, AnimatedModel_StepFrames)
@@ -390,7 +390,7 @@ static void destruct_animated(AnimatedModel *model)
 {
     model->object.vtable = data_020dd05c;
     model->frames.vtable = data_020dd06c;
-    FrameCtrl_Destruct(&model->frames);
+    FrameControl_Destruct(&model->frames);
     ModelObject_Destruct(&model->object);
 }
 
@@ -451,7 +451,7 @@ CLEAN_AS(func_02055260, AnimatedModel_ConstructBase)
 
 /* _ZThn156_N12Obj_020dd05cD0Ev (func_020557c4): the deleting destructor reached through the
  * frame control part's vtable, with the part's address. */
-AnimatedModel *AnimatedModel_DeleteFromFrames(FrameCtrl *frames)
+AnimatedModel *AnimatedModel_DeleteFromFrames(FrameControl *frames)
 {
     return AnimatedModel_Delete((AnimatedModel *) ((uintptr_t) frames - offsetof(AnimatedModel, frames)));
 }
@@ -459,7 +459,7 @@ CLEAN_AS(_ZThn156_N12Obj_020dd05cD0Ev, AnimatedModel_DeleteFromFrames)
 
 /* The destructors reached through the vtables of the frame control part (at 0x9c) and the Ramp
  * part (at 0xb8), with the part's address. */
-static AnimatedModel *from_frames(FrameCtrl *frames)
+static AnimatedModel *from_frames(FrameControl *frames)
 {
     return (AnimatedModel *) ((uintptr_t) frames - offsetof(AnimatedModel, frames));
 }
@@ -470,21 +470,21 @@ static AnimatedModel *from_ramp(AnimatedModelRamp *ramp)
 }
 
 /* _ZThn156_N12Obj_020dd05cD1Ev (func_020557e0): the animated model's complete destructor. */
-AnimatedModel *AnimatedModel_DestructCompleteFromFrames(FrameCtrl *frames)
+AnimatedModel *AnimatedModel_DestructCompleteFromFrames(FrameControl *frames)
 {
     return AnimatedModel_DestructComplete(from_frames(frames));
 }
 CLEAN_AS(_ZThn156_N12Obj_020dd05cD1Ev, AnimatedModel_DestructCompleteFromFrames)
 
 /* _ZThn156_N12Obj_020dd0dcD0Ev (func_020557fc): the blended model's deleting destructor. */
-AnimatedModel *AnimatedModel_DeleteBlendedFromFrames(FrameCtrl *frames)
+AnimatedModel *AnimatedModel_DeleteBlendedFromFrames(FrameControl *frames)
 {
     return AnimatedModel_DeleteBlended(from_frames(frames));
 }
 CLEAN_AS(_ZThn156_N12Obj_020dd0dcD0Ev, AnimatedModel_DeleteBlendedFromFrames)
 
 /* _ZThn156_N12Obj_020dd0dcD1Ev (func_02055818): the blended model's complete destructor. */
-AnimatedModel *AnimatedModel_DestructBlendedFromFrames(FrameCtrl *frames)
+AnimatedModel *AnimatedModel_DestructBlendedFromFrames(FrameControl *frames)
 {
     return AnimatedModel_DestructBlendedComplete(from_frames(frames));
 }

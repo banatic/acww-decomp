@@ -28,21 +28,21 @@ extern TextCopier data_021f450c;
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
-typedef int TextBaseCapacity(void *text);
-typedef void *TextBaseBuffer(void *text);
+typedef int TextBaseCapacityFn(void *text);
+typedef void *TextBaseBufferFn(void *text);
 
 /* A text's capacity, in its own characters (vtable slot 2). */
 static int text_base_capacity(void *text)
 {
     const TextVtable *vtable = *(const TextVtable *const *) text;
-    return ((TextBaseCapacity *) (uintptr_t) vtable->capacity)(text);
+    return ((TextBaseCapacityFn *) (uintptr_t) vtable->capacity)(text);
 }
 
 /* The address of its characters (vtable slot 3). */
 static void *text_base_buffer(void *text)
 {
     const TextVtable *vtable = *(const TextVtable *const *) text;
-    return ((TextBaseBuffer *) (uintptr_t) vtable->buffer)(text);
+    return ((TextBaseBufferFn *) (uintptr_t) vtable->buffer)(text);
 }
 
 /* The copier run over `chars` into `text` (TextCopier_Start's arguments), its result. */

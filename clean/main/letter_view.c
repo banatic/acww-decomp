@@ -57,7 +57,7 @@ extern int func_02051c8c_unk(u16 *text, int max); /* the characters before a 0, 
 #define BODY_MAX_CHARS 40
 #define BODY_WIDTH 160
 
-typedef int LetterLineBuffer(int line);
+typedef int LetterLineBufferFn(int line);
 
 /* ---- The wide text (its constructor and destructor are inline in the view's functions) */
 
@@ -87,7 +87,7 @@ void LetterLine_Show(LetterLine *line, int align_right)
         return;
     }
     line->dirty = 0;
-    LetterLineBuffer *buffer = (LetterLineBuffer *) (uintptr_t) line->vtable->buffer;
+    LetterLineBufferFn *buffer = (LetterLineBufferFn *) (uintptr_t) line->vtable->buffer;
     line->box->base.text = (const char *) (uintptr_t) buffer((int) (uintptr_t) line);
     if (align_right) {
         TextDraw_AlignRight(&line->box->base);

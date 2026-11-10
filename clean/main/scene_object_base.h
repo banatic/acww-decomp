@@ -68,9 +68,9 @@ typedef struct SceneObjectBase {
 #define SCENE_OBJECT_BASE_SLOT_ASK_54 0x54
 #define SCENE_OBJECT_BASE_SLOT_ASK_58 0x58
 
-typedef int SceneObjectBaseAsk(SceneObjectBase *object, SceneObjectBase *other);
-typedef void SceneObjectBaseOnEvent(SceneObjectBase *object, int event, int participant);
-typedef Vec3 *SceneObjectBaseReachPoint(SceneObjectBase *object);
+typedef int SceneObjectBaseAskFn(SceneObjectBase *object, SceneObjectBase *other);
+typedef void SceneObjectBaseOnEventFn(SceneObjectBase *object, int event, int participant);
+typedef Vec3 *SceneObjectBaseReachPointFn(SceneObjectBase *object);
 
 /* The function in the vtable slot at `offset` of `object`. */
 static inline uintptr_t SceneObjectBase_Slot(const SceneObjectBase *object, u32 offset)

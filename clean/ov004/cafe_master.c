@@ -134,7 +134,7 @@ static_assert(offsetof(CafeMaster, look_timer) == 0x778, "look timer");
 static_assert(offsetof(CafeMaster, talk_frames) == 0x77c, "talk frames");
 static_assert(offsetof(CafeMaster, on_beat) == 0x77e, "on beat");
 static_assert(sizeof(CafeMaster) == 0x780, "the size func_ov004_02224c68 allocates");
-static_assert(0xec + offsetof(LayeredModel, base.frames) + offsetof(FrameCtrl, frame) == CAFE_MASTER_MODEL_FRAME,
+static_assert(0xec + offsetof(LayeredModel, base.frames) + offsetof(FrameControl, frame) == CAFE_MASTER_MODEL_FRAME,
               "model frame");
 
 /* The other parts of the special character's scene object used here, by place (main's

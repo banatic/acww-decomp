@@ -151,7 +151,7 @@ static void town_ground_start_anims(ModelAnim *anims, u8 *model, ModelObject *ob
 static void town_ground_step_anims(ModelAnim *anims)
 {
     for (int i = 0; i < TOWN_GROUND_ANIMS; i++) {
-        FrameCtrl_Step(&anims[i].ctrl);
+        FrameControl_Step(&anims[i].ctrl);
         anims[i].anim->frame = anims[i].ctrl.frame;
     }
 }

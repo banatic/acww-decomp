@@ -105,7 +105,7 @@ void RmoTelephone_PlayFromEnd(void)
 {
     RmoTelephone *self = data_ov004_022588c8;
     if (self != NULL) {
-        rmo_telephone_play(self, FRAME_CTRL_ONCE, rmo_telephone_last_frame(self));
+        rmo_telephone_play(self, FRAME_CONTROL_ONCE, rmo_telephone_last_frame(self));
     }
 }
 CLEAN_AS(func_ov004_02230c98, RmoTelephone_PlayFromEnd)
@@ -116,7 +116,7 @@ void RmoTelephone_PlayBackwardsFromEnd(void)
 {
     RmoTelephone *self = data_ov004_022588c8;
     if (self != NULL) {
-        rmo_telephone_play(self, FRAME_CTRL_ONCE | FRAME_CTRL_REVERSE, rmo_telephone_last_frame(self));
+        rmo_telephone_play(self, FRAME_CONTROL_ONCE | FRAME_CONTROL_REVERSE, rmo_telephone_last_frame(self));
     }
 }
 CLEAN_AS(func_ov004_02230ce4, RmoTelephone_PlayBackwardsFromEnd)
@@ -127,7 +127,7 @@ void RmoTelephone_PlayFromStart(void)
 {
     RmoTelephone *self = data_ov004_022588c8;
     if (self != NULL) {
-        rmo_telephone_play(self, FRAME_CTRL_ONCE, 0);
+        rmo_telephone_play(self, FRAME_CONTROL_ONCE, 0);
     }
 }
 CLEAN_AS(func_ov004_02230d30, RmoTelephone_PlayFromStart)
@@ -492,7 +492,7 @@ CLEAN_AS(func_ov004_02231044, RmoTelephone_EnterState6)
  * handed back, the event finished and state 6. */
 void RmoTelephone_UpdateState5(RmoTelephone *self)
 {
-    if (FrameCtrl_IsDone(&self->base.body.frames)) {
+    if (FrameControl_IsDone(&self->base.body.frames)) {
         SceneObjectBase_ReleaseReceiver((SceneObjectBase *) (void *) self, rmo_telephone_receiver(self));
         EventQueue_FinishObjectEvent(self);
         RmoTelephone_EnterState(self, RMO_TELEPHONE_STATE_6);
@@ -569,7 +569,7 @@ CLEAN_AS(func_ov004_02231118, RmoTelephone_EnterState2)
 /* func_ov004_02231178 (update of state 1): state 2 once the body's animation has run out. */
 void RmoTelephone_UpdateState1(RmoTelephone *self)
 {
-    if (FrameCtrl_IsDone(&self->base.body.frames)) {
+    if (FrameControl_IsDone(&self->base.body.frames)) {
         RmoTelephone_EnterState(self, RMO_TELEPHONE_STATE_2);
     }
 }
@@ -886,7 +886,7 @@ int RmoTelephone_Start(RmoTelephone *self)
     RmoObjectSlots_Load(&self->base, data_ov004_022559ec, data_ov004_02255a08);
     if (RmoModel_JointAnim(&self->base.body_model, 0) != NULL &&
         AnimatedModel_LoadAnim(rmo_telephone_body(self), data_021c9b24) != 0) {
-        rmo_telephone_play(self, FRAME_CTRL_ONCE | FRAME_CTRL_REVERSE, 0);
+        rmo_telephone_play(self, FRAME_CONTROL_ONCE | FRAME_CONTROL_REVERSE, 0);
         AnimatedModel_Attach(rmo_telephone_body(self));
     }
     TouchPick_SetBoxAndAdd(rmo_telephone_field_pick(), self->pick_faces, &position, RMO_TELEPHONE_SIZE, RMO_TELEPHONE_SIZE,

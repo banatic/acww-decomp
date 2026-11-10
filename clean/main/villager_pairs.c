@@ -23,7 +23,7 @@ extern int func_0207ba30(int best, int score);
 /* func_0207b9e4: the villager that gets on worst with `villager` (VillagerPair_Pick). */
 u8 *VillagerPair_WorstFor(VillagerTown *town, u8 *villager)
 {
-    VillagerPairBetter better = func_0207ba24;
+    VillagerPairBetterFn better = func_0207ba24;
     return VillagerPair_Pick(town, villager, &better, INT32_MAX);
 }
 CLEAN_AS(func_0207b9e4, VillagerPair_WorstFor)
@@ -31,7 +31,7 @@ CLEAN_AS(func_0207b9e4, VillagerPair_WorstFor)
 /* func_0207ba04: the villager that gets on best with `villager` (VillagerPair_Pick). */
 u8 *VillagerPair_BestFor(VillagerTown *town, u8 *villager)
 {
-    VillagerPairBetter better = func_0207ba30;
+    VillagerPairBetterFn better = func_0207ba30;
     return VillagerPair_Pick(town, villager, &better, INT32_MIN);
 }
 CLEAN_AS(func_0207ba04, VillagerPair_BestFor)
@@ -54,7 +54,7 @@ CLEAN_AS(func_0207ba30, VillagerPair_IsHigher)
  * (VillagerBond_Compatibility) `better` finds best, starting from `start`. A later villager of
  * the same score takes the place of the one found with one chance in two. NULL when there is
  * none, or `villager` is not one of the town's. */
-u8 *VillagerPair_Pick(VillagerTown *town, u8 *villager, VillagerPairBetter *better, int start)
+u8 *VillagerPair_Pick(VillagerTown *town, u8 *villager, VillagerPairBetterFn *better, int start)
 {
     int index = VillagerRoster_IndexOf(town, TownVillager_NpcId(villager));
     u8 *chosen = NULL;

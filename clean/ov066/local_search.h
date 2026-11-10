@@ -110,7 +110,7 @@ typedef struct LocalSearch {
 #define LOCAL_SEARCH_ACTIVE 0x2   /* scanning one channel after the other */
 
 /* A filter's prototype (LocalSearch.filter): TRUE to list the parent. */
-typedef int LocalParentFilter(LocalScanResult *parent);
+typedef int LocalParentFilterFn(LocalScanResult *parent);
 
 u16 LocalSearch_ParentState(LocalParent *parent);
 void *LocalSearch_ParentData(LocalParent *parent);

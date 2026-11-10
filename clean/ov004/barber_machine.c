@@ -19,7 +19,7 @@ static_assert(offsetof(BarberMachine, box) == 0x2d8, "box");
 static_assert(offsetof(BarberMachine, shared_run) == 0x374, "shared run");
 static_assert(sizeof(BarberMachine) == 0x378, "the size BarberMachine_Create allocates");
 
-#define BARBER_MACHINE_PLAY_ONCE FRAME_CTRL_ONCE
+#define BARBER_MACHINE_PLAY_ONCE FRAME_CONTROL_ONCE
 
 /* The joint animation of each part of a run. */
 #define BARBER_MACHINE_ANIM_STARTING 0
@@ -95,7 +95,7 @@ static void barber_machine_play(BarberMachine *self, int index)
  * is BarberMachine_Run's; until then the animation steps. */
 static void barber_machine_play_on(BarberMachine *self, unsigned char next)
 {
-    if (FrameCtrl_IsDone(&self->base.body.frames)) {
+    if (FrameControl_IsDone(&self->base.body.frames)) {
         if (self->shared_run == 0) {
             barber_machine_call_set_state(self, next);
             return;
@@ -141,7 +141,7 @@ CLEAN_AS(func_ov004_0222c904, BarberMachine_AddBox)
  * out, else the animation steps. */
 void BarberMachine_UpdateStopping(BarberMachine *self)
 {
-    if (FrameCtrl_IsDone(&self->base.body.frames)) {
+    if (FrameControl_IsDone(&self->base.body.frames)) {
         barber_machine_call_set_state(self, BARBER_MACHINE_REST);
     } else {
         AnimatedModel_StepFrames(barber_machine_body(self));

@@ -140,14 +140,14 @@ CLEAN_AS(func_02056730, TexPatternAnim_Update)
 /* func_02056778: one step of the frame control, then the textures updated. */
 void TexPatternAnim_Step(TexPatternAnim *self)
 {
-    FrameCtrl_Step(&self->ctrl);
+    FrameControl_Step(&self->ctrl);
     TexPatternAnim_Update(self);
 }
 CLEAN_AS(func_02056778, TexPatternAnim_Step)
 
 /* func_0205678c: the first animation of `anim_file` played: each of its materials found in the
  * model by name, nothing shown yet, and the frame control started with `frames` frames (0: the
- * animation's own count), `flags`, `speed` and `start` (FrameCtrl_Init).
+ * animation's own count), `flags`, `speed` and `start` (FrameControl_Init).
  * REQUIRES: the animation has no more materials than the entries made by TexPatternAnim_Load;
  * the ones past them are written after the entries. */
 void TexPatternAnim_Start(TexPatternAnim *self, void *anim_file, int start, int frames, u8 flags, fx32 speed)
@@ -167,7 +167,7 @@ void TexPatternAnim_Start(TexPatternAnim *self, void *anim_file, int start, int 
         entry->texture = TEX_PATTERN_ANIM_NONE;
         entry->frame = TEX_PATTERN_ANIM_NO_FRAME;
     }
-    FrameCtrl_Init(&self->ctrl, (u32) frames, flags, (u32) speed, (u16) start);
+    FrameControl_Init(&self->ctrl, (u32) frames, flags, (u32) speed, (u16) start);
 }
 CLEAN_AS(func_0205678c, TexPatternAnim_Start)
 
@@ -221,7 +221,7 @@ CLEAN_AS(func_020568dc, TexPatternAnim_Clear)
 TexPatternAnim *TexPatternAnim_Delete(TexPatternAnim *self)
 {
     self->ctrl.vtable = data_020dd164;
-    FrameCtrl_Destruct(&self->ctrl);
+    FrameControl_Destruct(&self->ctrl);
     Heap_OperatorDeleteB(self);
     return self;
 }
@@ -231,7 +231,7 @@ CLEAN_AS(func_020568f0, TexPatternAnim_Delete)
 TexPatternAnim *TexPatternAnim_Destruct(TexPatternAnim *self)
 {
     self->ctrl.vtable = data_020dd164;
-    FrameCtrl_Destruct(&self->ctrl);
+    FrameControl_Destruct(&self->ctrl);
     return self;
 }
 CLEAN_AS(func_02056910, TexPatternAnim_Destruct)

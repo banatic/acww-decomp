@@ -74,12 +74,12 @@ enum LocalEventKind {
     LOCAL_EVENT_ENDED = 2,
 };
 
-typedef void LocalDoneHandler(void *argument);
-typedef void LocalEventHandler(u8 *event);
-typedef void LocalErrorHandler(int code);
-typedef void LocalReceiveHandler(int aid, char *data, unsigned int size);
-typedef void *LocalAllocator(int size, int align);
-typedef void LocalFree(void *block);
+typedef void LocalDoneHandlerFn(void *argument);
+typedef void LocalEventHandlerFn(u8 *event);
+typedef void LocalErrorHandlerFn(int code);
+typedef void LocalReceiveHandlerFn(int aid, char *data, unsigned int size);
+typedef void *LocalAllocatorFn(int size, int align);
+typedef void LocalFreeFn(void *block);
 
 /* The control block (data_ov066_0226bdec), allocated by LocalWireless_Init. */
 typedef struct LocalControl {
@@ -108,9 +108,9 @@ typedef struct LocalControl {
     u8 unk_26[2];
     u32 ggid; /* the parents' game group id (LOCAL_FLAG_MATCH_GGID) */
     u8 unk_2c[4];
-    LocalDoneHandler *on_done; /* called once the request is reached */
+    LocalDoneHandlerFn *on_done; /* called once the request is reached */
     void *on_done_argument;
-    LocalEventHandler *on_event;
+    LocalEventHandlerFn *on_event;
     u32 flags; /* LOCAL_FLAG_ */
 } LocalControl;
 
@@ -152,7 +152,7 @@ typedef struct LocalSession {
     void (*send_message)(void *buffer, u32 size, u32 to, void (*on_sent)(void *));
     int (*send)(const void *buffer, u32 size, int to, void (*on_sent)(void *)); /* the game's data */
     int (*can_send)(void);
-    LocalReceiveHandler *on_received;
+    LocalReceiveHandlerFn *on_received;
     void (*on_peer_left)(int aid); /* told of a child gone while others remain */
     u32 flags;                     /* LOCAL_SESSION_ */
 } LocalSession;
@@ -210,7 +210,7 @@ typedef struct LocalWmResult {
 #define LOCAL_WM_STATE_MP_IND 12
 #define LOCAL_WM_STATE_MPACK_IND 13
 
-int LocalWireless_SetEventHandler(LocalEventHandler *handler);
+int LocalWireless_SetEventHandler(LocalEventHandlerFn *handler);
 void LocalWireless_PostEvent(u8 kind, u8 aid);
 void LocalWireless_DispatchEvent(u8 *event);
 void LocalWireless_Fail(int code);
@@ -240,13 +240,13 @@ void LocalWireless_StepParentStarting(void);
 void LocalWireless_StepIdle(void);
 void LocalWireless_StepStop(void);
 void LocalWireless_StepReady(void);
-int LocalWireless_Request(int request, LocalDoneHandler *on_done, void *argument);
+int LocalWireless_Request(int request, LocalDoneHandlerFn *on_done, void *argument);
 int LocalWireless_IsRequestDone(void);
 int LocalWireless_ShutDown(void);
-int LocalWireless_Init(int wm_dma, LocalAllocator *alloc, LocalFree *release, LocalErrorHandler *on_error);
+int LocalWireless_Init(int wm_dma, LocalAllocatorFn *alloc, LocalFreeFn *release, LocalErrorHandlerFn *on_error);
 void LocalWireless_ResetControl(u8 wm_dma);
 int LocalWireless_State(void);
-void LocalWireless_SetReceiveHandler(LocalReceiveHandler *handler);
+void LocalWireless_SetReceiveHandler(LocalReceiveHandlerFn *handler);
 int LocalWireless_IsMacSet(const u8 *mac);
 
 #endif

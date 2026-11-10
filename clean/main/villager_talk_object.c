@@ -842,7 +842,7 @@ void VillagerTalkObject_TakePocket9200(VillagerTalk *talk)
 CLEAN_AS(func_02024f40, VillagerTalkObject_TakePocket9200)
 
 /* The pockets screen asked for the items `predicate` accepts. */
-static void object_ask_predicate(VillagerTalk *talk, PocketPredicate predicate)
+static void object_ask_predicate(VillagerTalk *talk, PocketPredicateFn predicate)
 {
     SceneCommand_SetPocketPredicate(&talk->scene, predicate, VILLAGER_TALK_OBJECT_POCKET_ARG, 1);
 }

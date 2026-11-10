@@ -363,7 +363,7 @@ typedef struct ParticleEmitter {
 
 /* The draw callback: given the particle's place (twice: by address and by value), the angle
  * a tilted particle turns by. */
-typedef fx32 (*ParticleDrawCallback)(Vec3 *pos, Vec3 value);
+typedef fx32 (*ParticleDrawCallbackFn)(Vec3 *pos, Vec3 value);
 
 typedef struct ParticleSystem {
     void *(*alloc)(u32 size);    /* 0x00 */
@@ -485,39 +485,39 @@ static inline s32 particle_random_around(s32 value, int amount)
 ParticleLink *ParticleList_Remove(ParticleList *list, ParticleLink *node);
 ParticleLink *ParticleList_Pop(ParticleList *list);
 void ParticleList_Push(ParticleList *list, ParticleLink *node);
-void ParticleSys_EmitAt(ParticleSystem *sys, ParticleEmitter *emitter, const Vec3 *offset);
-ParticleEmitter *ParticleSys_CreateEmitterWith(ParticleSystem *sys, int resource, void (*init)(ParticleEmitter *emitter));
-ParticleEmitter *ParticleSys_CreateEmitterAt(ParticleSystem *sys, int resource, const Vec3 *pos);
-void ParticleSys_Draw(ParticleSystem *sys, const Mtx43 *view, ParticleDrawCallback callback);
-void ParticleSys_Update(ParticleSystem *sys);
-int ParticleSys_UploadPalettes(ParticleSystem *sys);
-int ParticleSys_UploadTextures(ParticleSystem *sys);
-int ParticleSys_UploadPalettesWith(ParticleSystem *sys, u32 (*alloc)(u32 size, int four_colors));
-int ParticleSys_UploadTexturesWith(ParticleSystem *sys, u32 (*alloc)(u32 size, int compressed));
-void ParticleSys_LoadResources(ParticleSystem *sys, const u8 *file);
-void ParticleSys_LoadTextures(ParticleSystem *sys, const ParticleFile *file);
-ParticleSystem *ParticleSys_Create(void *(*alloc)(u32 size), int max_emitters, int max_particles, int fixed_id, u16 min_id,
-                                   u16 max_id);
-int ParticleSys_AllocPaletteVram(int size, int four_colors);
-int ParticleSys_AllocTextureVram(int size, int compressed);
-void ParticleSys_EmitFrom(ParticleEmitter *emitter, ParticleList *free_particles);
-void ParticleSys_DrawEmitter(ParticleSystem *sys, ParticleDrawCallback callback);
-void ParticleSys_DrawChildren(ParticleSystem *sys, ParticleDrawCallback callback);
-void ParticleSys_DrawParents(ParticleSystem *sys, ParticleDrawCallback callback);
-void ParticleSys_UpdateEmitter(ParticleSystem *sys, ParticleEmitter *emitter);
+void ParticleSystem_EmitAt(ParticleSystem *sys, ParticleEmitter *emitter, const Vec3 *offset);
+ParticleEmitter *ParticleSystem_CreateEmitterWith(ParticleSystem *sys, int resource, void (*init)(ParticleEmitter *emitter));
+ParticleEmitter *ParticleSystem_CreateEmitterAt(ParticleSystem *sys, int resource, const Vec3 *pos);
+void ParticleSystem_Draw(ParticleSystem *sys, const Mtx43 *view, ParticleDrawCallbackFn callback);
+void ParticleSystem_Update(ParticleSystem *sys);
+int ParticleSystem_UploadPalettes(ParticleSystem *sys);
+int ParticleSystem_UploadTextures(ParticleSystem *sys);
+int ParticleSystem_UploadPalettesWith(ParticleSystem *sys, u32 (*alloc)(u32 size, int four_colors));
+int ParticleSystem_UploadTexturesWith(ParticleSystem *sys, u32 (*alloc)(u32 size, int compressed));
+void ParticleSystem_LoadResources(ParticleSystem *sys, const u8 *file);
+void ParticleSystem_LoadTextures(ParticleSystem *sys, const ParticleFile *file);
+ParticleSystem *ParticleSystem_Create(void *(*alloc)(u32 size), int max_emitters, int max_particles, int fixed_id, u16 min_id,
+                                      u16 max_id);
+int ParticleSystem_AllocPaletteVram(int size, int four_colors);
+int ParticleSystem_AllocTextureVram(int size, int compressed);
+void ParticleSystem_EmitFrom(ParticleEmitter *emitter, ParticleList *free_particles);
+void ParticleSystem_DrawEmitter(ParticleSystem *sys, ParticleDrawCallbackFn callback);
+void ParticleSystem_DrawChildren(ParticleSystem *sys, ParticleDrawCallbackFn callback);
+void ParticleSystem_DrawParents(ParticleSystem *sys, ParticleDrawCallbackFn callback);
+void ParticleSystem_UpdateEmitter(ParticleSystem *sys, ParticleEmitter *emitter);
 void ParticleEmitter_Init(ParticleEmitter *emitter, const ParticleResource *resource, const Vec3 *pos);
 
 /* particle_draw.c */
 void ParticleDraw_NoTexture(const ParticleTexture *texture);
 void ParticleDraw_BindTexture(const ParticleTexture *texture);
-void ParticleDraw_ChildPolygon(ParticleSystem *sys, Particle *ptcl, ParticleDrawCallback callback);
-void ParticleDraw_Polygon(ParticleSystem *sys, Particle *ptcl, ParticleDrawCallback callback);
-void ParticleDraw_ChildStretched(ParticleSystem *sys, Particle *ptcl, ParticleDrawCallback callback);
-void ParticleDraw_Stretched(ParticleSystem *sys, Particle *ptcl, ParticleDrawCallback callback);
-void ParticleDraw_ChildBillboard(ParticleSystem *sys, Particle *ptcl, ParticleDrawCallback callback);
-void ParticleDraw_Billboard(ParticleSystem *sys, Particle *ptcl, ParticleDrawCallback callback);
-void ParticleDraw_RotY(fx32 sine, fx32 cosine, Mtx43 *mtx);
-void ParticleDraw_RotDiagonal(fx32 sine, fx32 cosine, Mtx43 *mtx);
+void ParticleDraw_ChildPolygon(ParticleSystem *sys, Particle *ptcl, ParticleDrawCallbackFn callback);
+void ParticleDraw_Polygon(ParticleSystem *sys, Particle *ptcl, ParticleDrawCallbackFn callback);
+void ParticleDraw_ChildStretched(ParticleSystem *sys, Particle *ptcl, ParticleDrawCallbackFn callback);
+void ParticleDraw_Stretched(ParticleSystem *sys, Particle *ptcl, ParticleDrawCallbackFn callback);
+void ParticleDraw_ChildBillboard(ParticleSystem *sys, Particle *ptcl, ParticleDrawCallbackFn callback);
+void ParticleDraw_Billboard(ParticleSystem *sys, Particle *ptcl, ParticleDrawCallbackFn callback);
+void ParticleDraw_RotateY(fx32 sine, fx32 cosine, Mtx43 *mtx);
+void ParticleDraw_RotateDiagonal(fx32 sine, fx32 cosine, Mtx43 *mtx);
 void ParticleDraw_QuadXZ(fx32 s, fx32 t, fx32 x, fx32 z);
 void ParticleDraw_QuadXY(fx32 s, fx32 t, fx32 x, fx32 y);
 

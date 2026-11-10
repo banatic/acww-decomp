@@ -442,7 +442,7 @@ CLEAN_AS(func_ov004_0223c144, RoomObjects_PickUnk778)
  * set off (Switch_Set with `pending`) and it is given; NULL for none.
  * QUIRK: with a NULL test RoomObjects_CountOn counts every object, switched on or not, so the
  * pick may fall past the last one switched on, and then none is given. */
-RoomObject *RoomObjects_PickOn(RoomObjectsTest test, int pending)
+RoomObject *RoomObjects_PickOn(RoomObjectsTestFn test, int pending)
 {
     int count = RoomObjects_CountOn(test);
     if (count == 0) {
@@ -473,7 +473,7 @@ CLEAN_AS(func_ov004_0223c1ec, RoomObjects_PickOn)
 
 /* func_ov004_0223c264: the objects `test` accepts whose switch is wanted on.
  * QUIRK: with a NULL test every object counts, its switch not looked at. */
-int RoomObjects_CountOn(RoomObjectsTest test)
+int RoomObjects_CountOn(RoomObjectsTestFn test)
 {
     unsigned int count = 0;
     for (unsigned int i = 0; i < (unsigned int) RoomObjects_Capacity(); i++) {
@@ -491,7 +491,7 @@ CLEAN_AS(func_ov004_0223c264, RoomObjects_CountOn)
 
 /* func_ov004_0223c2b4: sets the switch of every object `test` accepts (any, for NULL) whose
  * switch is not wanted at `value` already (Switch_Set with `pending`). */
-void RoomObjects_SetSwitches(int value, RoomObjectsTest test, int pending)
+void RoomObjects_SetSwitches(int value, RoomObjectsTestFn test, int pending)
 {
     for (unsigned int i = 0; i < (unsigned int) RoomObjects_Capacity(); i++) {
         RoomObject *object = object_of(i);

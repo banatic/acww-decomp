@@ -75,7 +75,7 @@ static void zero_translation(G3dRenderState *state)
 }
 
 /* The frame control's whole frame, as the start of a sequence. */
-static u16 whole_frame(const FrameCtrl *ctrl)
+static u16 whole_frame(const FrameControl *ctrl)
 {
     return (u16) ((u32) ctrl->frame >> 12);
 }
@@ -129,7 +129,7 @@ CLEAN_AS(func_020541e8, LayeredModel_StartBFromBase)
 /* func_02054230: whether layer B's sequence, played once, has reached its end. */
 int LayeredModel_IsBDone(LayeredModel *model)
 {
-    return FrameCtrl_IsDone(&model->frames_b);
+    return FrameControl_IsDone(&model->frames_b);
 }
 CLEAN_AS(func_02054230, LayeredModel_IsBDone)
 
@@ -143,7 +143,7 @@ void LayeredModel_PlayB(LayeredModel *model, const void *file, int blend, int fl
     if (frames == 0) {
         frames = AnimatedModel_FrameCount(flags, file);
     }
-    FrameCtrl_Init(&model->frames_b, frames, flags, speed, start);
+    FrameControl_Init(&model->frames_b, frames, flags, speed, start);
     NNS_G3dAnmObjInit(model->anim_b, file, model->base.object.model, NULL);
     if (release) {
         model->base.object.flags |= LAYERED_MODEL_RELEASE_B;
@@ -173,7 +173,7 @@ void LayeredModel_UpdateB(LayeredModel *model)
         LayeredModel_ClearNodesB(model);
         model->base.object.flags &= (u16) ~LAYERED_MODEL_RELEASE_B;
     }
-    FrameCtrl_Step(&model->frames_b);
+    FrameControl_Step(&model->frames_b);
     model->anim_b->frame = model->frames_b.frame;
 }
 CLEAN_AS(func_020542e0, LayeredModel_UpdateB)
@@ -295,7 +295,7 @@ static void destruct_b(LayeredModel *model)
     model->base.frames.vtable = data_020dd08c;
     model->base.ramp.vtable = data_020dd09c;
     JointBlend_DestructComplete((JointBlend *) &model->ramp_b);
-    FrameCtrl_DestructComplete(&model->frames_b);
+    FrameControl_DestructComplete(&model->frames_b);
     LayeredModel_DestructA(model);
 }
 
@@ -386,7 +386,7 @@ void LayeredModel_PlayA(LayeredModel *model, const void *file, int blend, int fl
     if (frames == 0) {
         frames = AnimatedModel_FrameCount(flags, file);
     }
-    FrameCtrl_Init(&model->frames_a, frames, flags, speed, start);
+    FrameControl_Init(&model->frames_a, frames, flags, speed, start);
     NNS_G3dAnmObjInit(model->anim_a, file, model->base.object.model, NULL);
     if (release) {
         model->base.object.flags |= LAYERED_MODEL_RELEASE_A;
@@ -425,7 +425,7 @@ void LayeredModel_UpdateA(LayeredModel *model)
         LayeredModel_ClearNodesA(model);
         model->base.object.flags &= (u16) ~LAYERED_MODEL_RELEASE_A;
     }
-    FrameCtrl_Step(&model->frames_a);
+    FrameControl_Step(&model->frames_a);
     model->anim_a->frame = model->frames_a.frame;
 }
 CLEAN_AS(func_02054860, LayeredModel_UpdateA)
@@ -542,7 +542,7 @@ static void destruct_a(LayeredModel *model)
     model->base.frames.vtable = data_020dd0bc;
     model->base.ramp.vtable = data_020dd0cc;
     JointBlend_DestructComplete((JointBlend *) &model->ramp_a);
-    FrameCtrl_DestructComplete(&model->frames_a);
+    FrameControl_DestructComplete(&model->frames_a);
     AnimatedModel_DestructBlended(&model->base);
 }
 
@@ -608,7 +608,7 @@ CLEAN_AS(func_02054c2c, LayeredModel_ConstructABase)
 
 /* The destructors reached through the vtables of the base frame control part (at 0x9c) and the
  * base Ramp part (at 0xb8), with the part's address. */
-static LayeredModel *from_base_frames(FrameCtrl *frames)
+static LayeredModel *from_base_frames(FrameControl *frames)
 {
     return (LayeredModel *) ((uintptr_t) frames - offsetof(LayeredModel, base.frames));
 }
@@ -620,14 +620,14 @@ static LayeredModel *from_base_ramp(AnimatedModelRamp *ramp)
 
 /* _ZThn156_N12Obj_020dd0acD0Ev (func_0205586c): the deleting destructor of the class with
  * layer A. */
-LayeredModel *LayeredModel_DeleteAFromFrames(FrameCtrl *frames)
+LayeredModel *LayeredModel_DeleteAFromFrames(FrameControl *frames)
 {
     return LayeredModel_DeleteA(from_base_frames(frames));
 }
 CLEAN_AS(_ZThn156_N12Obj_020dd0acD0Ev, LayeredModel_DeleteAFromFrames)
 
 /* _ZThn156_N12Obj_020dd0acD1Ev (func_02055888): its complete destructor. */
-LayeredModel *LayeredModel_DestructAFromFrames(FrameCtrl *frames)
+LayeredModel *LayeredModel_DestructAFromFrames(FrameControl *frames)
 {
     return LayeredModel_DestructAComplete(from_base_frames(frames));
 }
@@ -649,14 +649,14 @@ CLEAN_AS(_ZThn184_N12Obj_020dd0acD1Ev, LayeredModel_DestructAFromRamp)
 
 /* _ZThn156_N12Obj_020dd07cD0Ev (func_020558dc): the deleting destructor of the class with both
  * layers. */
-LayeredModel *LayeredModel_DeleteBFromFrames(FrameCtrl *frames)
+LayeredModel *LayeredModel_DeleteBFromFrames(FrameControl *frames)
 {
     return LayeredModel_DeleteB(from_base_frames(frames));
 }
 CLEAN_AS(_ZThn156_N12Obj_020dd07cD0Ev, LayeredModel_DeleteBFromFrames)
 
 /* _ZThn156_N12Obj_020dd07cD1Ev (func_020558f8): its complete destructor. */
-LayeredModel *LayeredModel_DestructBFromFrames(FrameCtrl *frames)
+LayeredModel *LayeredModel_DestructBFromFrames(FrameControl *frames)
 {
     return LayeredModel_DestructB(from_base_frames(frames));
 }

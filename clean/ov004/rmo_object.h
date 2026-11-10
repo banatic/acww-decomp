@@ -33,7 +33,7 @@ typedef struct RmoTexture {
  * size these objects embed it with. */
 typedef struct RmoAnimatedModel {
     ModelObject object;      /* 0x00: object.unk_64 is the model's base matrix (a Mtx43) */
-    FrameCtrl frames;        /* 0x9c */
+    FrameControl frames;     /* 0x9c */
     AnimatedModelAnim *anim; /* 0xb4 */
 } RmoAnimatedModel;
 

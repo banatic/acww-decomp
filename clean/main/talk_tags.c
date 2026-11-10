@@ -134,10 +134,10 @@ static TalkObject *talk_tags_object(TalkTagsWalker *walker)
     return (TalkObject *) (void *) walker->talk;
 }
 
-typedef void TalkTagsSlot(void *receiver);
-typedef void *TalkTagsPointerSlot(void *receiver);
-typedef void TalkTagsBranchSlot(void *receiver, int kind, int choices);
-typedef int TalkTagsCharactersFunction(const void *object);
+typedef void TalkTagsSlotFn(void *receiver);
+typedef void *TalkTagsPointerSlotFn(void *receiver);
+typedef void TalkTagsBranchSlotFn(void *receiver, int kind, int choices);
+typedef int TalkTagsCharactersFn(const void *object);
 
 static u8 *talk_tags_at(TalkTagsWalker *walker, u32 offset)
 {
@@ -165,26 +165,26 @@ static void talk_tags_scene_move(TalkTagsWalker *walker, u32 slot)
 {
     void *receiver = talk_tags_receiver(walker);
     MessageTag_Destruct(&walker->tag);
-    ((TalkTagsSlot *) (uintptr_t) talk_tags_slot(receiver, slot))(receiver);
+    ((TalkTagsSlotFn *) (uintptr_t) talk_tags_slot(receiver, slot))(receiver);
 }
 
 /* The receiver is told the branch and its number of choices; answers the receiver. */
 static void *talk_tags_branch(TalkTagsWalker *walker, int kind, int choices)
 {
     void *receiver = talk_tags_receiver(walker);
-    ((TalkTagsBranchSlot *) (uintptr_t) talk_tags_slot(receiver, TALK_TAGS_SLOT_BRANCH))(receiver, kind, choices);
+    ((TalkTagsBranchSlotFn *) (uintptr_t) talk_tags_slot(receiver, TALK_TAGS_SLOT_BRANCH))(receiver, kind, choices);
     return receiver;
 }
 
 static u8 *talk_tags_villager(void *receiver)
 {
-    return (u8 *) ((TalkTagsPointerSlot *) (uintptr_t) talk_tags_slot(receiver, TALK_TAGS_SLOT_VILLAGER))(receiver);
+    return (u8 *) ((TalkTagsPointerSlotFn *) (uintptr_t) talk_tags_slot(receiver, TALK_TAGS_SLOT_VILLAGER))(receiver);
 }
 
 /* The characters of a text object (its vtable's slot 3), as an address. */
 static int talk_tags_characters(const void *object)
 {
-    return ((TalkTagsCharactersFunction *) (uintptr_t) talk_tags_slot(object, 0x0c))(object);
+    return ((TalkTagsCharactersFn *) (uintptr_t) talk_tags_slot(object, 0x0c))(object);
 }
 
 /* The talk goes on with `message`. */
@@ -292,7 +292,7 @@ void *TalkTags_LookAtSecond(TalkTagsWalker *walker)
 {
     void *receiver = talk_tags_receiver(walker);
     MessageTag_Destruct(&walker->tag);
-    return ((TalkTagsPointerSlot *) (uintptr_t) talk_tags_slot(receiver, TALK_TAGS_SLOT_LOOK_SECOND))(receiver);
+    return ((TalkTagsPointerSlotFn *) (uintptr_t) talk_tags_slot(receiver, TALK_TAGS_SLOT_LOOK_SECOND))(receiver);
 }
 CLEAN_AS(func_02069554, TalkTags_LookAtSecond)
 
@@ -928,13 +928,13 @@ extern u32 data_021cda74;
 extern MemberPointer data_021cdad4[3];
 extern const MemberPointer data_020dec64, data_020deca4;
 
-typedef void *TalkTagsTextFunction(TalkObject *talk);
-typedef void TalkTagsIntSlot(void *receiver, int value);
+typedef void *TalkTagsTextFn(TalkObject *talk);
+typedef void TalkTagsIntSlotFn(void *receiver, int value);
 
 /* The receiver's slot `slot` handed `value`. */
 static void talk_tags_tell(void *receiver, u32 slot, int value)
 {
-    ((TalkTagsIntSlot *) (uintptr_t) talk_tags_slot(receiver, slot))(receiver, value);
+    ((TalkTagsIntSlotFn *) (uintptr_t) talk_tags_slot(receiver, slot))(receiver, value);
 }
 
 /* The receiver's slot `slot` handed the tag's first byte. */
@@ -956,7 +956,7 @@ static void talk_tags_tell_1c(TalkTagsWalker *walker, int value)
 
 /* The text `text` sets in the talk walked in place of the tag, without colors; it is set
  * again for its last syllable, and the particles' ro_after_rieul set. */
-static void talk_tags_put_set_text(TalkTagsWalker *walker, TalkTagsTextFunction *text)
+static void talk_tags_put_set_text(TalkTagsWalker *walker, TalkTagsTextFn *text)
 {
     MessageWalker_Enter(&walker->base, talk_tags_characters(text(talk_tags_talk(walker))));
     MailParticles_TakeLastSyllable((MailTextParticles *) (void *) talk_tags_at(walker, TALK_TAGS_PARTICLES),

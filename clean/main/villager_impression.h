@@ -15,12 +15,12 @@
 #define VILLAGER_IMPRESSION_COUNT 0x58 /* also what is given for none */
 #define VILLAGER_IMPRESSION_ANY_GENDER 2
 
-typedef int (*VillagerImpressionTest)(u8 *record, int fondness, int mood);
+typedef int (*VillagerImpressionTestFn)(u8 *record, int fondness, int mood);
 
 typedef struct VillagerImpressionRule {
     s8 gender; /* 0x00: the player's gender, or VILLAGER_IMPRESSION_ANY_GENDER */
     u8 unused_01[3];
-    VillagerImpressionTest test; /* 0x04: a function of the game */
+    VillagerImpressionTestFn test; /* 0x04: a function of the game */
 } VillagerImpressionRule;
 
 void VillagerImpression_LoadText(u8 *villager, int label, u8 *record);

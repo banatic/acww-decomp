@@ -22,23 +22,23 @@ extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
 
 /* The vtable's slots. */
-typedef const Vec3 *(*FieldBodyPositionMethod)(FieldBody *body);
-typedef int (*FieldBodyIdentityMethod)(FieldBody *body);
-typedef void (*FieldBodyTouchMethod)(FieldBody *body, u8 kind, u8 index, u32 flags);
+typedef const Vec3 *(*FieldBodyPositionMethodFn)(FieldBody *body);
+typedef int (*FieldBodyIdentityMethodFn)(FieldBody *body);
+typedef void (*FieldBodyTouchMethodFn)(FieldBody *body, u8 kind, u8 index, u32 flags);
 
 static const Vec3 *position_of(FieldBody *body)
 {
-    return ((FieldBodyPositionMethod) (uintptr_t) body->vtable[0])(body);
+    return ((FieldBodyPositionMethodFn) (uintptr_t) body->vtable[0])(body);
 }
 
 static int identity_of(FieldBody *body)
 {
-    return ((FieldBodyIdentityMethod) (uintptr_t) body->vtable[1])(body);
+    return ((FieldBodyIdentityMethodFn) (uintptr_t) body->vtable[1])(body);
 }
 
 static void touch(FieldBody *body, u8 kind, u8 index, u32 flags)
 {
-    ((FieldBodyTouchMethod) (uintptr_t) body->vtable[2])(body, kind, index, flags);
+    ((FieldBodyTouchMethodFn) (uintptr_t) body->vtable[2])(body, kind, index, flags);
 }
 
 /* `body` notes that it touched `other`. */

@@ -421,9 +421,9 @@ extern u32 data_021cda48;
 extern MemberPointer data_021cdeec[17];
 extern const MemberPointer data_020de86c, data_020deb64;
 
-typedef int TalkPageCharactersFunction(const void *object);
-typedef int TalkPageLoadFunction(u8 *talk);
-typedef void *TalkPageTextFunction(u8 *talk);
+typedef int TalkPageCharactersFn(const void *object);
+typedef int TalkPageLoadFn(u8 *talk);
+typedef void *TalkPageTextFn(u8 *talk);
 
 static u8 *talk_page_talk_at(TalkPageMeasurer *measurer, u32 offset)
 {
@@ -440,7 +440,7 @@ static int talk_page_characters(const void *object)
 {
     const u8 *vtable = *(const u8 *const *) object;
     u32 code = *(const u32 *) (const void *) (vtable + TALK_PAGE_SLOT_CHARACTERS);
-    return ((TalkPageCharactersFunction *) (uintptr_t) code)(object);
+    return ((TalkPageCharactersFn *) (uintptr_t) code)(object);
 }
 
 /* The text object `text` walked in place of the tag, its last syllable kept for the particles,
@@ -455,8 +455,7 @@ static void talk_page_measurer_walk(TalkPageMeasurer *measurer, u32 text, s32 ro
 }
 
 /* A text `load` loads into the talk (whether it could is not looked at), walked as above. */
-static void talk_page_measurer_walk_loaded(TalkPageMeasurer *measurer, TalkPageLoadFunction *load, u32 text,
-                                           s32 ro_after_rieul)
+static void talk_page_measurer_walk_loaded(TalkPageMeasurer *measurer, TalkPageLoadFn *load, u32 text, s32 ro_after_rieul)
 {
     load(measurer->talk);
     talk_page_measurer_walk(measurer, text, ro_after_rieul);
@@ -464,7 +463,7 @@ static void talk_page_measurer_walk_loaded(TalkPageMeasurer *measurer, TalkPageL
 
 /* The text `text` sets in the talk (it is set twice, as the ROM does) walked in place of the
  * tag, its last syllable kept, and ro_after_rieul set. */
-static void talk_page_measurer_walk_set_text(TalkPageMeasurer *measurer, TalkPageTextFunction *text)
+static void talk_page_measurer_walk_set_text(TalkPageMeasurer *measurer, TalkPageTextFn *text)
 {
     MessageWalker_Enter(&measurer->walker.base, talk_page_characters(text(measurer->talk)));
     MailParticles_TakeLastSyllable(talk_page_particles(measurer),

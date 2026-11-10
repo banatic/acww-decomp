@@ -98,11 +98,11 @@ static int shop_display_is_code(u16 *item, u16 code)
 }
 
 /* A list's accessor: what its entry `index` shows (or a marker), the entry's item in `out`. */
-typedef u16 *(*ShopDisplayItemOf)(u32 index, u16 *out);
+typedef u16 *(*ShopDisplayItemOfFn)(u32 index, u16 *out);
 
 /* Each of a list's `count` entries taken out (into an empty code), and put on a tile of the
  * item's kind when both what it shows and the item are not empty. */
-static void shop_display_place_all(ShopDisplay *self, u32 count, ShopDisplayItemOf item_of)
+static void shop_display_place_all(ShopDisplay *self, u32 count, ShopDisplayItemOfFn item_of)
 {
     for (u32 i = 0; i < count; ++i) {
         u16 item = ITEM_CODE_NONE;

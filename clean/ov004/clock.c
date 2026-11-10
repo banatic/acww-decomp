@@ -116,7 +116,7 @@ static void clock_strike(Clock *clock)
             RoomSound_PlayAt(&base->sound, STRIKE_SOUND, &base->sound.position);
         }
         AnimatedModel_Update(&base->model);
-        if (FrameCtrl_IsDone(&base->model.frames)) {
+        if (FrameControl_IsDone(&base->model.frames)) {
             clock_play_strike(clock);
             if (!RoomObject_IsUnplaced(base)) {
                 clock->strikes--;

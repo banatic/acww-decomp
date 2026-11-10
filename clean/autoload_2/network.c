@@ -135,8 +135,8 @@ extern int DWCi_Acc_IsDirty(void *user_data);
 extern int DWCi_GetProfileIDFromList(int index);
 extern int DWCi_GetFriendListIndex(int profile_id);
 /* A GET's callback: the reply and its length, the result (0: success) and the argument. */
-typedef void GetCallback(const void *reply, int length, int result, void *argument);
-extern int DWC_GetGHTTPData(const char *url, GetCallback *callback, void *argument);
+typedef void GetCallbackFn(const void *reply, int length, int result, void *argument);
+extern int DWC_GetGHTTPData(const char *url, GetCallbackFn *callback, void *argument);
 extern int DWC_PostGHTTPData(const char *url, void *post, void (*callback)(void), void *argument);
 extern int func_0210101c(const void *a, const void *b);
 extern int func_021012c4(void *data);
@@ -164,8 +164,8 @@ extern int func_ov065_02277148(const void *src, u32 length, char *dst, int capac
 /* A POST's form: made empty, then each field added. */
 extern int func_ov065_0227f6b0(void *post);
 extern int func_ov065_0227f6a4(void *post, const char *name, const char *value);
-extern GetCallback func_020ed194;
-extern GetCallback func_020ed320;
+extern GetCallbackFn func_020ed194;
+extern GetCallbackFn func_020ed320;
 extern void func_020ed3c0(void);
 /* Joining and hosting: by their arguments DWC_ConnectToGameServerAsync (the friend's index)
  * and DWC_SetupGameServer (the number of players), each with a callback for the connection
@@ -681,7 +681,7 @@ typedef struct SendSlot {
     u32 size;
     u16 to;
     u16 pad;
-    SentCallback *sent;
+    SentCallbackFn *sent;
 } SendSlot;
 static_assert(sizeof(SendSlot) == 0x10, "a send slot");
 #define SEND_SLOT_COUNT 16
@@ -694,7 +694,7 @@ extern u32 data_021fbf18;
 
 /* What the game is handed data received from a peer with (Net_DispatchReceived). The name is
  * NitroSDK's but does not fit the use. */
-extern ReceiveHandler *CTRDGi_WriteAgbFlashSectorAsync;
+extern ReceiveHandlerFn *CTRDGi_WriteAgbFlashSectorAsync;
 /* What the game is told a friend was deleted with (func_020ed440), or NULL. */
 extern void (*data_021fbf30)(int index);
 
@@ -798,7 +798,7 @@ extern void func_020ed3d4(int result, int profile_id, int argument);
 extern void func_020ed144(u16 latency, int aid);
 extern int func_020edab8(int unused, int size, int align);
 extern void func_020edaa8(int unused, int block);
-extern GetCallback func_020ed370;
+extern GetCallbackFn func_020ed370;
 
 extern void func_020ed6e8(u8 *event);
 extern void func_020ed6c4(int aid, char *buffer, unsigned int size);
@@ -1072,7 +1072,7 @@ CLEAN_AS(func_020ece54, Net_Init)
  * at +0x20) and the friend list. The stages at their start, GETs allowed and POSTs held back
  * until the login (data_0213e6bc), no request buffers, the pings and the friends' statuses
  * cleared. */
-void Wfc_SetUp(int mode, ReceiveHandler *on_received, void (*on_deleted)(int index), u8 *user_block, FriendList *friends)
+void Wfc_SetUp(int mode, ReceiveHandlerFn *on_received, void (*on_deleted)(int index), u8 *user_block, FriendList *friends)
 {
     data_021fbef8 = (u8) mode;
     CTRDGi_WriteAgbFlashSectorAsync = on_received;
@@ -1101,7 +1101,7 @@ CLEAN_AS(func_020ecba8, Wfc_SetUp)
 
 /* func_020ecce4: the local library started in `mode` (parent or child) with the game's handler
  * for data received. */
-void Local_SetUp(int mode, ReceiveHandler *on_received)
+void Local_SetUp(int mode, ReceiveHandlerFn *on_received)
 {
     LocalParameters parameters;
     CTRDGi_WriteAgbFlashSectorAsync = on_received;
@@ -1279,8 +1279,8 @@ CLEAN_AS(func_020ed03c, Wfc_PingNext)
  * callback for when it was sent; a block without a buffer, size or AID is skipped), when the
  * connection is up and nothing is waiting to be sent. TRUE when one was queued and the first
  * started; when it could not start the queue is emptied. */
-int Net_SendBlocks(const void *buffer1, int size1, int to1, SentCallback *sent1, const void *buffer2, int size2, u16 to2,
-                   SentCallback *sent2, const void *buffer3, int size3, u16 to3, SentCallback *sent3)
+int Net_SendBlocks(const void *buffer1, int size1, int to1, SentCallbackFn *sent1, const void *buffer2, int size2, u16 to2,
+                   SentCallbackFn *sent2, const void *buffer3, int size3, u16 to3, SentCallbackFn *sent3)
 {
     if (!Net_UpdateConnection() || !Net_CanSend()) {
         return FALSE;
@@ -1352,7 +1352,7 @@ int Net_IsSendQueueIdle(u32 ready)
 CLEAN_AS(func_020ec040, Net_IsSendQueueIdle)
 
 /* func_020ed73c: a block queued for the library in use; TRUE when it was. */
-int Net_QueueSend(const void *buffer, int size, int to, SentCallback *sent)
+int Net_QueueSend(const void *buffer, int size, int to, SentCallbackFn *sent)
 {
     if (is_local(data_021fbef8)) {
         return Local_QueueSend(buffer, size, to, sent);
@@ -1367,7 +1367,7 @@ CLEAN_AS(func_020ed73c, Net_QueueSend)
 /* func_020ed79c: the block queued once for each AID of the mask `to` (AIDs 0 to 15); FALSE
  * without a buffer, size or AID, or when the queue is full.
  * QUIRK: the blocks queued before the queue was found full stay queued. */
-int Wfc_QueueSend(const void *buffer, int size, u32 to, SentCallback *sent)
+int Wfc_QueueSend(const void *buffer, int size, u32 to, SentCallbackFn *sent)
 {
     if (buffer == NULL || size == 0 || to == 0) {
         return FALSE;
@@ -1382,7 +1382,7 @@ int Wfc_QueueSend(const void *buffer, int size, u32 to, SentCallback *sent)
 CLEAN_AS(func_020ed79c, Wfc_QueueSend)
 
 /* func_020ed834: the block queued once, for all the AIDs of `to`. */
-int Local_QueueSend(const void *buffer, int size, int to, SentCallback *sent)
+int Local_QueueSend(const void *buffer, int size, int to, SentCallbackFn *sent)
 {
     if (buffer == NULL || size == 0 || to == 0) {
         return FALSE;
@@ -1393,7 +1393,7 @@ CLEAN_AS(func_020ed834, Local_QueueSend)
 
 /* func_020ed874: the block put in the first free slot and the slot's index sent to the queue;
  * FALSE when every slot is taken. */
-int Net_Enqueue(const void *buffer, u32 size, u16 to, SentCallback *sent)
+int Net_Enqueue(const void *buffer, u32 size, u16 to, SentCallbackFn *sent)
 {
     for (u32 i = 0; i < SEND_SLOT_COUNT; i++) {
         SendSlot *slot = &data_021fc120[i];

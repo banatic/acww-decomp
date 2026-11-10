@@ -107,7 +107,7 @@ typedef struct SoundParams {
     s32 unk_20;
 } SoundParams;
 
-typedef u32 (*SoundHook)(SoundParams *params);
+typedef u32 (*SoundHookFn)(SoundParams *params);
 
 /* A level moving to a target, in 1/4096ths. */
 typedef struct SoundFader {
@@ -226,8 +226,8 @@ void SoundSlot_SetVolumePitch(SoundSlot *slot, unsigned char volume, unsigned sh
 void SoundSlot_Init(SoundSlot *slot);
 
 void SoundParams_Get(SoundParams *params);
-void Sound_SetVolumeHook(SoundHook hook);
-void Sound_SetDistanceHook(SoundHook hook);
-void Sound_SetPanHook(SoundHook hook);
+void Sound_SetVolumeHook(SoundHookFn hook);
+void Sound_SetDistanceHook(SoundHookFn hook);
+void Sound_SetPanHook(SoundHookFn hook);
 
 #endif

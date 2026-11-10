@@ -79,8 +79,8 @@ static inline Actor *FieldActor_Base(FieldActor *actor)
 
 /* The animations (field_actor_anim.c): the parts that give the body's animations (0x700) and
  * those of the held item (0x701), the held item's animation (0x708), the flags the body's
- * animation was started with (0x70c, FrameCtrlFlags), and the face's two animations at 0x710
- * and 0x73c (each an object with a FrameCtrl at its start) with the number each plays (0x76c,
+ * animation was started with (0x70c, FrameControlFlags), and the face's two animations at 0x710
+ * and 0x73c (each an object with a FrameControl at its start) with the number each plays (0x76c,
  * 0x770; FACE_ANIM_NONE for none) and the timer at 0x768 that lets the first one run on. */
 #define FIELD_ACTOR_BODY_ANIM_SET 0x700
 #define FIELD_ACTOR_HELD_ANIM_SET 0x701

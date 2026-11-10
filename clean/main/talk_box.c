@@ -92,11 +92,11 @@ extern const u8 data_020cce90[];
 #define TALK_BOX_PLATE_NO_VILLAGER 0xb000
 #define TALK_BOX_PLATE_STYLED 0x2000
 
-typedef void TalkBoxArrowSlot(CellPairSprite *arrow);
+typedef void TalkBoxArrowSlotFn(CellPairSprite *arrow);
 
 static void talk_box_call_arrow(TalkBox *box, int slot)
 {
-    ((TalkBoxArrowSlot *) (uintptr_t) box->arrow.vtable[slot])(&box->arrow);
+    ((TalkBoxArrowSlotFn *) (uintptr_t) box->arrow.vtable[slot])(&box->arrow);
 }
 
 /* func_02068bc8: the color a text of color `color` is drawn with: one more, color 9

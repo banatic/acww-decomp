@@ -54,15 +54,15 @@
 
 /* The values of the commands, at 0x68 of the scene (offsets in the scene in brackets). */
 typedef struct SceneCommandParams {
-    u32 screen;                       /* 0x00 (0x68) */
-    s32 screen_a;                     /* 0x04 (0x6c): func_0206f7dc's arguments */
-    s32 screen_b;                     /* 0x08 (0x70) */
-    u32 group_12_pointer;             /* 0x0c (0x74): the address group 12 is opened with */
-    PocketPredicate pocket_predicate; /* 0x10 (0x78): picks the pockets, or null */
-    u16 pocket_mask;                  /* 0x14 (0x7c): the pockets without a predicate */
-    u16 item;                         /* 0x16 (0x7e): an item code, 0xfff1 for none */
-    u32 motion_a;                     /* 0x18 (0x80) */
-    u8 pocket_arg;                    /* 0x1c (0x84) */
+    u32 screen;                         /* 0x00 (0x68) */
+    s32 screen_a;                       /* 0x04 (0x6c): func_0206f7dc's arguments */
+    s32 screen_b;                       /* 0x08 (0x70) */
+    u32 group_12_pointer;               /* 0x0c (0x74): the address group 12 is opened with */
+    PocketPredicateFn pocket_predicate; /* 0x10 (0x78): picks the pockets, or null */
+    u16 pocket_mask;                    /* 0x14 (0x7c): the pockets without a predicate */
+    u16 item;                           /* 0x16 (0x7e): an item code, 0xfff1 for none */
+    u32 motion_a;                       /* 0x18 (0x80) */
+    u8 pocket_arg;                      /* 0x1c (0x84) */
     u8 unk_1d;
     u8 mode;         /* 0x1e (0x86): the mode group 9 is opened in */
     u8 mode_arg;     /* 0x1f (0x87) */
@@ -147,7 +147,7 @@ void SceneCommand_SetScreenPointer(SceneCommandScene *scene, int pointer, int st
 void SceneCommand_SetScreenArgs(SceneCommandScene *scene, s32 a, s32 b, int stay_on_line);
 void SceneCommand_SetScreenModeArg(SceneCommandScene *scene, u8 mode, u8 arg, u8 stay_on_line);
 void SceneCommand_SetScreenMode(SceneCommandScene *scene, char mode, char stay_on_line);
-void SceneCommand_SetPocketPredicate(SceneCommandScene *scene, PocketPredicate predicate, u8 arg, u8 stay_on_line);
+void SceneCommand_SetPocketPredicate(SceneCommandScene *scene, PocketPredicateFn predicate, u8 arg, u8 stay_on_line);
 void SceneCommand_SetPocketMask(SceneCommandScene *scene, u16 mask, u8 arg, u8 stay_on_line);
 int SceneCommand_RequestScreen(SceneCommandScene *scene, int screen);
 void SceneCommand_Ended(SceneCommandScene *scene, int command);

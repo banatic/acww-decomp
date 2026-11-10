@@ -119,7 +119,7 @@ extern void *func_020684b0(void *talk);
 /* The speaker's style whose name plate takes data_020ccf54. */
 #define TALK_OBJECT_STYLE_1 1
 
-typedef int TalkObjectSlot(void *receiver);
+typedef int TalkObjectSlotFn(void *receiver);
 
 static s16 talk_object_cos(u16 angle)
 {
@@ -241,7 +241,7 @@ void TalkObject_ColorNamePlate(TalkObject *talk)
     TalkReceiver *receiver = talk->receiver;
     const u8 *vtable = *(const u8 *const *) (const void *) receiver;
     u32 function = *(const u32 *) (const void *) (vtable + TALK_OBJECT_SLOT_VILLAGER);
-    int no_villager = ((TalkObjectSlot *) (uintptr_t) function)(receiver) == 0;
+    int no_villager = ((TalkObjectSlotFn *) (uintptr_t) function)(receiver) == 0;
     int style = TalkReceiver_SpeakerStyle(talk->receiver);
     u16 *screen = G2_GetBG2ScrPtr();
     u16 palette;

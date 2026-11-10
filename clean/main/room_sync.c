@@ -413,8 +413,8 @@ void RoomSync_ToggleAt(int scene, int x, int y, int layer, u8 flag)
         return;
     }
     if (Switch_Value(&object->on_switch) == 0) {
-        if (RoomObjects_CountOn((RoomObjectsTest) func_ov004_02211280) >= LIGHTS_ON_MAX) {
-            RoomObject *other = RoomObjects_PickOn((RoomObjectsTest) func_ov004_02211280, 0);
+        if (RoomObjects_CountOn((RoomObjectsTestFn) func_ov004_02211280) >= LIGHTS_ON_MAX) {
+            RoomObject *other = RoomObjects_PickOn((RoomObjectsTestFn) func_ov004_02211280, 0);
             if (other != NULL) {
                 RoomSync_SetState(other, 0, ROOM_SYNC_NO_VALUE, flag);
             }

@@ -122,10 +122,10 @@ extern const MemberPointer data_ov068_02277090, data_ov068_022770a0;
 #define MOVES_FRAME_CLOSE 5
 #define MOVES_POSE_ITEM 7
 #define MOVES_POSE_ARG 3
-/* An item's own animation (at 0x9c of the held item's record, a FrameCtrl): played backwards
+/* An item's own animation (at 0x9c of the held item's record, a FrameControl): played backwards
  * from its last frame, to its first. */
 #define MOVES_ITEM_FRAMES 0x9c
-#define MOVES_FRAMES_BACKWARDS (FRAME_CTRL_ONCE | FRAME_CTRL_REVERSE)
+#define MOVES_FRAMES_BACKWARDS (FRAME_CONTROL_ONCE | FRAME_CONTROL_REVERSE)
 
 /* Behaviors 13 and 14: the place 0x2000 along x the other way and 0x8000 along z from a
  * point. */
@@ -329,9 +329,9 @@ int OutdoorVillagerMoves_Start16(OutdoorVillagerBehavior *self, u8 *villager)
         int record = HeldItemLink_Model(moves_link(villager));
         if (record != 0) {
             u8 *frames = (u8 *) (uintptr_t) (u32) record + MOVES_ITEM_FRAMES;
-            u32 end = (u32) ((FrameCtrl *) (void *) frames)->end;
+            u32 end = (u32) ((FrameControl *) (void *) frames)->end;
             u32 whole = (end << 4) >> 16;
-            FrameCtrl_Init((FrameCtrl *) (void *) frames, whole, MOVES_FRAMES_BACKWARDS, FX32_ONE, (u16) (whole - 1));
+            FrameControl_Init((FrameControl *) (void *) frames, whole, MOVES_FRAMES_BACKWARDS, FX32_ONE, (u16) (whole - 1));
         }
         HeldItemLink_SetScale(moves_link(villager), FX32_ONE);
         SoundEmitter_Play(moves_emitter(villager), MOVES_SOUND_CLOSE, MOVES_SOUND_VOLUME, 0);

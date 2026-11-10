@@ -1,4 +1,4 @@
-# the insect catalog's phases 3 and 4 and its destructor of slot 16 (ov116 InsectCatalog_Phase3, _Phase4, _Destroy): on a live object of its class, while ov116 (not the fish list's ov115, at the same address) is loaded; at the end of frames of insect-keys
+# the insect catalog's phases 3 and 4 and its destructor of slot 16 (ov116 InsectCatalog_Phase3, _Phase4, _DestructCopy): on a live object of its class, while ov116 (not the fish list's ov115, at the same address) is loaded; at the end of frames of insect-keys
 scene insect-keys
 frames 4710
 ram 2600

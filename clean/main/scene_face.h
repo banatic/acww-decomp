@@ -26,7 +26,7 @@
 
 /* An animation of the face (0x2c bytes): its frame control first. */
 typedef struct SceneFaceAnim {
-    FrameCtrl ctrl;
+    FrameControl ctrl;
     u8 unk_18[0x14];
 } SceneFaceAnim;
 

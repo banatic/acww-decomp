@@ -49,7 +49,7 @@ void OwlTalk_TakeFossil(OwlTalk *talk);
 void OwlTalk_NextLine(OwlTalk *talk);
 void OwlTalk_TakeOffered(OwlTalk *talk);
 
-/* The tests of the items the pockets offer (PocketPredicate). */
+/* The tests of the items the pockets offer (PocketPredicateFn). */
 u16 OwlTalk_IsErrandItem(u16 *item, int state);
 int OwlTalk_IsFossilToAssess(u16 *item, int state);
 int OwlTalk_IsMuseumItem(u16 *item, int state);

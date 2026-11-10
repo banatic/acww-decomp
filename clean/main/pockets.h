@@ -11,9 +11,9 @@
 #define POCKET_SLOTS 15
 
 /* Asked of each slot by Pockets_Select: its code and its state. */
-typedef int (*PocketPredicate)(u16 *item, int state);
+typedef int (*PocketPredicateFn)(u16 *item, int state);
 
-u16 Pockets_Select(PocketPredicate predicate);
+u16 Pockets_Select(PocketPredicateFn predicate);
 void Pockets_ReplaceInCopy(u16 item, u16 replacement);
 void Pockets_ConvertListed(int convert);
 u16 *Pockets_List(void);

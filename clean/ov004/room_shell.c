@@ -796,7 +796,7 @@ int RoomShell_Execute(RoomShell *self)
     }
     RoomShellMaterialAnim *anim = &self->material_anim;
     if (RoomShellMaterialAnim_Anim(anim) != 0) {
-        FrameCtrl_Step(&anim->ctrl);
+        FrameControl_Step(&anim->ctrl);
         anim->anim->frame = anim->ctrl.frame;
     }
     if (self->hour_hand_position.x != 0) {

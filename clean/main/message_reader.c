@@ -55,7 +55,7 @@ extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 /* What a character may also be written as (the game's call leaves `wanted` in r1 too, unread). */
 extern int func_02050bdc_unk(int character);
 
-typedef int MessageRequestFolderFunction(MessageRequest *request);
+typedef int MessageRequestFolderFn(MessageRequest *request);
 
 static void (*message_reader_function(void *(*function)(void *) ))(void *)
 {
@@ -66,7 +66,7 @@ static void (*message_reader_function(void *(*function)(void *) ))(void *)
 static const char *message_request_folder(MessageRequest *request)
 {
     const u32 *vtable = (const u32 *) request->vtable;
-    MessageRequestFolderFunction *folder = (MessageRequestFolderFunction *) (uintptr_t) vtable[3];
+    MessageRequestFolderFn *folder = (MessageRequestFolderFn *) (uintptr_t) vtable[3];
     return (const char *) (uintptr_t) folder(request);
 }
 

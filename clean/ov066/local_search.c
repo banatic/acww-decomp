@@ -220,7 +220,7 @@ int LocalSearch_AcceptParent(LocalScanResult *parent, LocalGameHeader *header)
     if (data_ov066_0226bdf0->filter == 0) {
         return TRUE;
     }
-    return ((LocalParentFilter *) (uintptr_t) data_ov066_0226bdf0->filter)(parent);
+    return ((LocalParentFilterFn *) (uintptr_t) data_ov066_0226bdf0->filter)(parent);
 }
 CLEAN_AS(func_ov066_0226783c, LocalSearch_AcceptParent)
 

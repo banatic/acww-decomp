@@ -59,46 +59,46 @@ extern void func_020051b0(void *item);
 /* The pile ItemLists_PileCode makes: a full one. */
 #define ITEM_LISTS_PILE_COUNT 4
 
-typedef u16 ItemListsCode(int number);
-typedef int ItemListsOfItem(u16 *item);
-typedef u32 DateRandomBelow(DateRandom *self, u32 bound);
-typedef int DateRandomValue(DateRandom *self);
+typedef u16 ItemListsCodeFn(int number);
+typedef int ItemListsOfItemFn(u16 *item);
+typedef u32 DateRandomBelowFn(DateRandom *self, u32 bound);
+typedef int DateRandomValueFn(DateRandom *self);
 
 /* The kind's entries, through their DS addresses. */
 static u16 kind_code(const ItemListsKind *kind, int number)
 {
-    return ((ItemListsCode *) (uintptr_t) kind->code)(number);
+    return ((ItemListsCodeFn *) (uintptr_t) kind->code)(number);
 }
 
 static int kind_season(const ItemListsKind *kind, u16 *item)
 {
-    return ((ItemListsOfItem *) (uintptr_t) kind->season)(item);
+    return ((ItemListsOfItemFn *) (uintptr_t) kind->season)(item);
 }
 
 static int kind_group(const ItemListsKind *kind, u16 *item)
 {
-    return ((ItemListsOfItem *) (uintptr_t) kind->group)(item);
+    return ((ItemListsOfItemFn *) (uintptr_t) kind->group)(item);
 }
 
 static int kind_accepts(const ItemListsKind *kind, u16 *item)
 {
-    return ((ItemListsOfItem *) (uintptr_t) kind->accepts)(item);
+    return ((ItemListsOfItemFn *) (uintptr_t) kind->accepts)(item);
 }
 
 /* The date source's entries (date_random.h). */
 static u32 source_below(DateRandom *source, u32 bound)
 {
-    return ((DateRandomBelow *) (uintptr_t) source->vtable->below)(source, bound);
+    return ((DateRandomBelowFn *) (uintptr_t) source->vtable->below)(source, bound);
 }
 
 static int source_month(DateRandom *source)
 {
-    return ((DateRandomValue *) (uintptr_t) source->vtable->month)(source);
+    return ((DateRandomValueFn *) (uintptr_t) source->vtable->month)(source);
 }
 
 static int source_day(DateRandom *source)
 {
-    return ((DateRandomValue *) (uintptr_t) source->vtable->day)(source);
+    return ((DateRandomValueFn *) (uintptr_t) source->vtable->day)(source);
 }
 
 /* Whether two codes are the same item: by their furniture numbers when `a` is

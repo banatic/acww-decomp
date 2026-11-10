@@ -314,13 +314,13 @@ int FishShadowHook_StepPull(FishShadow *fish)
     int turn = fish->size >= 3 ? 0x1000 : 0x1249;
     int angle;
     if (fish->pull_left) {
-        if (FrameCtrl_Passed(&fish->model.frames, 4)) {
+        if (FrameControl_Passed(&fish->model.frames, 4)) {
             fish->model.frames.frame = 0x3000;
         }
         fish->yaw = (s16) (fish->yaw + turn);
         angle = (s16) (fish->yaw - 0x4000);
     } else {
-        if (FrameCtrl_Passed(&fish->model.frames, 0xb)) {
+        if (FrameControl_Passed(&fish->model.frames, 0xb)) {
             fish->model.frames.frame = 0xa000;
         }
         fish->yaw = (s16) (fish->yaw - turn);

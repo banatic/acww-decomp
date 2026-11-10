@@ -72,11 +72,11 @@ extern fx32 FX_MulFunc(fx32 a, fx32 b);
 #define SLOT_DRAW 2
 #define SLOT_UPDATE 3
 
-typedef void BellsPanelMethod(BellsPanel *panel);
+typedef void BellsPanelMethodFn(BellsPanel *panel);
 
 static void call_slot(BellsPanel *panel, int slot)
 {
-    ((BellsPanelMethod *) (uintptr_t) panel->base.vtable[slot])(panel);
+    ((BellsPanelMethodFn *) (uintptr_t) panel->base.vtable[slot])(panel);
 }
 
 /* func_0208b648 */

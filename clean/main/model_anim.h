@@ -16,7 +16,7 @@
 #include "types.h"
 
 typedef struct ModelAnim {
-    FrameCtrl ctrl;          /* 0x00: its vtable is the class's */
+    FrameControl ctrl;       /* 0x00: its vtable is the class's */
     AnimatedModelAnim *anim; /* 0x18: NULL until allocated */
     u8 *model;               /* 0x1c: the model resource it was allocated for */
 } ModelAnim;

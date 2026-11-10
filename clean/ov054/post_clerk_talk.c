@@ -752,7 +752,7 @@ void PostClerkTalk_OnOwnAnswer(PostClerkTalk *talk, unsigned int arg)
     switch (pct_shown(talk)) {
         case POST_CLERK_LINE_ERRAND:
             if (answer == 0) {
-                SceneCommand_SetPocketPredicate(pct_scene(talk), (PocketPredicate) (void (*)(void)) func_ov054_02261850,
+                SceneCommand_SetPocketPredicate(pct_scene(talk), (PocketPredicateFn) (void (*)(void)) func_ov054_02261850,
                                                 POST_CLERK_TALK_POCKET_ARG, 0);
                 SceneCommand_RequestScreen(pct_scene(talk), POST_CLERK_TALK_SCREEN_POCKETS);
                 PostClerkTalk_SetStep(talk, POST_CLERK_TALK_STEP_ERRAND);

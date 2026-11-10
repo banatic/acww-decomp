@@ -33,9 +33,9 @@ extern u8 data_021c81bc[];        /* the list of boxes (an NNSFndList) */
 extern void NNS_FndAppendListObject(void *list, void *object);
 extern void NNS_FndRemoveListObject(void *list, void *object);
 
-typedef void *LabelBoxDestruct(void *box);
-typedef int LabelBoxMeasure(void *box);
-typedef void *TextBufferFunction(void *text);
+typedef void *LabelBoxDestructFn(void *box);
+typedef int LabelBoxMeasureFn(void *box);
+typedef void *TextBufferFn(void *text);
 
 static uintptr_t label_box_slot(const LabelBox *box, int slot)
 {
@@ -172,7 +172,7 @@ CLEAN_AS(func_020a8f50, LabelBox_ConstructInVram)
 /* func_020a8f74: the width of a text's characters, in pixels. */
 int LabelBox_TextWidth(TextBase *text)
 {
-    void *chars = ((TextBufferFunction *) (uintptr_t) text->vtable->buffer)(text);
+    void *chars = ((TextBufferFn *) (uintptr_t) text->vtable->buffer)(text);
     return LabelBox_CharsWidth((int) (uintptr_t) chars);
 }
 CLEAN_AS(func_020a8f74, LabelBox_TextWidth)
@@ -185,7 +185,7 @@ int LabelBox_CharsWidth(int chars)
     LabelBox *box = LabelBox_NewInVram(LABEL_BOX_MEASURE_TILE, LABEL_BOX_MEASURE_CELLS, LABEL_BOX_MEASURE_ROWS);
     if (box != NULL) {
         box->base.text = (const char *) (uintptr_t) chars;
-        width = ((LabelBoxMeasure *) label_box_slot(box, LABEL_BOX_SLOT_MEASURE))(box);
+        width = ((LabelBoxMeasureFn *) label_box_slot(box, LABEL_BOX_SLOT_MEASURE))(box);
     }
     LabelBox_Free(box);
     return width;
@@ -197,7 +197,7 @@ void LabelBox_Free(LabelBox *box)
 {
     if (box != NULL) {
         NNS_FndRemoveListObject(data_021c81bc, box);
-        ((LabelBoxDestruct *) label_box_slot(box, LABEL_BOX_SLOT_DESTRUCT))(box);
+        ((LabelBoxDestructFn *) label_box_slot(box, LABEL_BOX_SLOT_DESTRUCT))(box);
         Heap_Free(data_021c8194, box);
     }
 }

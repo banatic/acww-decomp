@@ -236,7 +236,7 @@ int FurnitureMover_Step(FurnitureMover *mover, FurnitureMoveFlag *flag, Vec3 *po
     position->x = mover->position.x;
     position->y = mover->position.y;
     position->z = mover->position.z;
-    if (FrameCtrl_IsDone(&mover->model.frames)) {
+    if (FrameControl_IsDone(&mover->model.frames)) {
         flag->moving = 0;
         mover->moving = flag->moving;
         return 1;

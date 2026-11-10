@@ -112,7 +112,7 @@ typedef struct SnowmanNameText {
     u8 unk_04[0x114];
 } SnowmanNameText;
 
-typedef const char *(*SnowmanTextBuffer)(void *text);
+typedef const char *(*SnowmanTextBufferFn)(void *text);
 
 /* The receiver part as C++ converts a pointer to the snowman to it: NULL stays NULL. */
 static void *snowman_receiver(Snowman *snowman)
@@ -172,7 +172,7 @@ int SnowmanTalk_EnterOpen(Snowman *snowman)
     SnowmanNameText name;
     MessageText256_Construct((MessageText256 *) &name);
     MessageReader_LoadMessage(&name, (unsigned char *) &number, data_ov003_0223839c);
-    const char *text = ((SnowmanTextBuffer) (uintptr_t) name.vtable->buffer)(&name);
+    const char *text = ((SnowmanTextBufferFn) (uintptr_t) name.vtable->buffer)(&name);
     TalkReceiver_SetSpeaker((TalkReceiver *) &snowman->receiver_vtable, text, 0);
     snowman->flags &= (u16) ~SNOWMAN_FLAG_FIRST_TALK;
     MessageText256_Destruct((MessageText256 *) &name);

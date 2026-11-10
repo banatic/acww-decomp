@@ -360,7 +360,7 @@ int FishDisp_Execute(FishDisp *disp)
                     if (model->play_sound) {
                         Vec3 at = model->position;
                         SoundEmitter_UpdateAtB((SoundEmitter *) model, &at);
-                        if (FrameCtrl_Passed((const FrameCtrl *) (void *) model->object.frames, 1) != 0) {
+                        if (FrameControl_Passed((const FrameControl *) (void *) model->object.frames, 1) != 0) {
                             SoundEmitter_PlayB((SoundEmitter *) model, 0x84d, 0x7f, 0);
                         }
                     }
@@ -482,7 +482,7 @@ int FishDisp_ModelPassedFrame(int index, int frame)
     if (model->kind < 0 || model->kind >= FISH_DISP_FISH_KINDS) {
         return 0;
     }
-    return FrameCtrl_Passed((const FrameCtrl *) (void *) model->object.frames, frame) != 0;
+    return FrameControl_Passed((const FrameControl *) (void *) model->object.frames, frame) != 0;
 }
 CLEAN_AS(func_0204fd6c, FishDisp_ModelPassedFrame)
 

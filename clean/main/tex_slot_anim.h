@@ -26,7 +26,7 @@ typedef struct TexSlotName {
 } TexSlotName;
 
 typedef struct TexSlotAnim {
-    FrameCtrl ctrl;           /* 0x00: its vtable is the class's */
+    FrameControl ctrl;        /* 0x00: its vtable is the class's */
     TexUpload upload;         /* 0x18 */
     G3dResTex *target;        /* 0x50: the texture resource in VRAM holding the slot */
     TexSlotName texture_name; /* 0x54: the slot's texture */

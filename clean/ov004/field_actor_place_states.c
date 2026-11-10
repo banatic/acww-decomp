@@ -281,7 +281,7 @@ CLEAN_AS(func_ov004_0222b288, FieldActorPlaceStates_UpdateStep)
  * queued, the byte at 0x8ea is cleared. */
 void FieldActorPlaceStates_EndStep(FieldActor *actor)
 {
-    if (FrameCtrl_IsDone(&actor->anim) && FieldActorPlaceStates_RequestStay(actor, 0, FAPS_PRIORITY, FAPS_NO_ARG)) {
+    if (FrameControl_IsDone(&actor->anim) && FieldActorPlaceStates_RequestStay(actor, 0, FAPS_PRIORITY, FAPS_NO_ARG)) {
         FIELD_ACTOR_UNK_8EA(actor) = 0;
     }
 }
@@ -383,7 +383,7 @@ CLEAN_AS(func_ov004_0222b42c, FieldActorPlaceStates_UpdateRefused)
 /* func_ov004_0222b440: once the animation is over state 8 is asked for (kind 0, priority 6). */
 void FieldActorPlaceStates_EndRefused(FieldActor *actor)
 {
-    if (FrameCtrl_IsDone(&actor->anim)) {
+    if (FrameControl_IsDone(&actor->anim)) {
         FieldActorPlaceStates_RequestStay(actor, 0, FAPS_PRIORITY, FAPS_NO_ARG);
     }
 }
@@ -578,7 +578,7 @@ CLEAN_AS(func_ov004_0222b6ec, FieldActorPlaceStates_UpdateOff)
  * its flags 0 once the date has passed (FieldActor_SunDatePassed), else 17. */
 void FieldActorPlaceStates_EndOff(FieldActor *actor)
 {
-    if (!FrameCtrl_IsDone(&actor->anim)) {
+    if (!FrameControl_IsDone(&actor->anim)) {
         return;
     }
     actor->request_priority = FieldActor_StateEndPriority(actor, actor->state);
@@ -617,7 +617,7 @@ CLEAN_AS(func_ov004_0222b7e4, FieldActorPlaceStates_ContactOff)
 void FieldActorPlaceStates_StepOff(FieldActor *actor)
 {
     FieldActor_UpdateBody(actor);
-    if (FrameCtrl_Passed(&actor->anim, FAPS_OFF_SOUND_FRAME)) {
+    if (FrameControl_Passed(&actor->anim, FAPS_OFF_SOUND_FRAME)) {
         FieldActor_PlaySound(actor, FAPS_SOUND_OFF);
         if (faps_is_local(actor)) {
             PlaceClaim_ReleaseSlot0();

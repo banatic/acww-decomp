@@ -31,7 +31,7 @@ typedef struct LocalConnectResult {
 void LocalJoin_StepAuto(void);
 int LocalJoin_ConnectToBest(void);
 void LocalJoin_NextTurn(void);
-int LocalJoin_Select(LocalParent *parent, LocalDoneHandler *on_done, void *argument);
+int LocalJoin_Select(LocalParent *parent, LocalDoneHandlerFn *on_done, void *argument);
 int LocalJoin_CompareMac(const u8 *a, const u8 *b);
 void LocalJoin_OnRetryReset(LocalWmResult *result);
 void LocalJoin_OnDisconnect(LocalWmResult *result);

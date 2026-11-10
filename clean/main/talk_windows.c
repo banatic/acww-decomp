@@ -56,8 +56,8 @@ extern u32 data_021f45a4;
 extern MemberPointer data_021f45f0[4];
 extern const MemberPointer data_020e3f3c, data_020e3f34, data_020e3f24, data_020e3f2c;
 
-typedef void TalkWindowCall(void *object);
-typedef int TalkWindowQuery(void *object);
+typedef void TalkWindowCallFn(void *object);
+typedef int TalkWindowQueryFn(void *object);
 
 /* The address in vtable slot `slot` of an object whose first word is its vtable. */
 static uintptr_t talk_window_slot(const void *object, int slot)
@@ -67,12 +67,12 @@ static uintptr_t talk_window_slot(const void *object, int slot)
 
 static void talk_window_call(void *object, int slot)
 {
-    ((TalkWindowCall *) talk_window_slot(object, slot))(object);
+    ((TalkWindowCallFn *) talk_window_slot(object, slot))(object);
 }
 
 static int talk_window_query(void *object, int slot)
 {
-    return ((TalkWindowQuery *) talk_window_slot(object, slot))(object);
+    return ((TalkWindowQueryFn *) talk_window_slot(object, slot))(object);
 }
 
 /* ---- The pair */

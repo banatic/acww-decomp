@@ -26,7 +26,7 @@ static_assert(offsetof(SceneObjectBase, flags) == 0xe8, "SceneObjectBase layout"
 /* The point `object` is reached at (vtable slot 0x50). */
 static Vec3 *reach_point(SceneObjectBase *object)
 {
-    return ((SceneObjectBaseReachPoint *) SceneObjectBase_Slot(object, SCENE_OBJECT_BASE_SLOT_REACH_POINT))(object);
+    return ((SceneObjectBaseReachPointFn *) SceneObjectBase_Slot(object, SCENE_OBJECT_BASE_SLOT_REACH_POINT))(object);
 }
 
 /* ---- Flags (0xe8) ---- */
@@ -176,7 +176,7 @@ int SceneObjectBase_CanAct(SceneObjectBase *target, SceneObjectBase *actor)
     if (!SceneObjectBase_Faces(target, actor, (s16) -half_angle, half_angle)) {
         return 0;
     }
-    return ((SceneObjectBaseAsk *) SceneObjectBase_Slot(target, SCENE_OBJECT_BASE_SLOT_MAY_ACT))(target, actor);
+    return ((SceneObjectBaseAskFn *) SceneObjectBase_Slot(target, SCENE_OBJECT_BASE_SLOT_MAY_ACT))(target, actor);
 }
 CLEAN_AS(func_0203ee34, SceneObjectBase_CanAct)
 

@@ -23,7 +23,7 @@ extern const u8 data_020e3e68[];
 /* The receiver's vtable slot told the tag's byte. */
 #define TALK_PICK_SCAN_SLOT_RECEIVER 0x64
 
-typedef void TalkPickScanSlot(void *receiver, u8 value);
+typedef void TalkPickScanSlotFn(void *receiver, u8 value);
 
 /* func_02069168: the first parameter byte of the tag met handed to the talk's receiver (its
  * vtable slot 0x64).
@@ -35,7 +35,7 @@ void TalkPickScan_TellReceiver(TalkPickScan *scan)
     void *receiver = scan->talk->receiver;
     const u8 *vtable = *(const u8 *const *) receiver;
     u32 function = *(const u32 *) (const void *) (vtable + TALK_PICK_SCAN_SLOT_RECEIVER);
-    ((TalkPickScanSlot *) (uintptr_t) function)(receiver, value);
+    ((TalkPickScanSlotFn *) (uintptr_t) function)(receiver, value);
 }
 CLEAN_AS(func_02069168, TalkPickScan_TellReceiver)
 

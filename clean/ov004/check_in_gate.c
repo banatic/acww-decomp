@@ -34,7 +34,7 @@ static_assert(offsetof(CheckInGate, door_offset) == 0x494, "door offset");
 static_assert(sizeof(CheckInGate) == 0x498, "the size CheckInGate_Create allocates");
 
 #define CHECK_IN_GATE_LOOP 0
-#define CHECK_IN_GATE_PLAY_ONCE FRAME_CTRL_ONCE
+#define CHECK_IN_GATE_PLAY_ONCE FRAME_CONTROL_ONCE
 
 /* The joint and material animation each state plays (the same index of both). */
 #define CHECK_IN_GATE_ANIM_CLOSED 0
@@ -189,7 +189,7 @@ static void check_in_gate_play(CheckInGate *self, int index, int flags)
 static void check_in_gate_step(CheckInGate *self)
 {
     AnimatedModel_StepFrames(check_in_gate_body(self));
-    FrameCtrl_Step(&self->material_anim.ctrl);
+    FrameControl_Step(&self->material_anim.ctrl);
     self->material_anim.anim->frame = self->material_anim.ctrl.frame;
 }
 
@@ -201,9 +201,9 @@ static void check_in_gate_move(CheckInGate *self, fx32 target, unsigned int next
     int offset = self->door_offset;
     Approach_EaseS32(&offset, target, CHECK_IN_GATE_DOOR_RATE, CHECK_IN_GATE_DOOR_MAX_STEP);
     CheckInGate_SetDoor(self, offset);
-    if (FrameCtrl_IsDone(&self->base.body.frames)) {
+    if (FrameControl_IsDone(&self->base.body.frames)) {
         check_in_gate_call_set_state(self, next);
-    } else if (FrameCtrl_Passed(&self->base.body.frames, CHECK_IN_GATE_LATE_SOUND_FRAME)) {
+    } else if (FrameControl_Passed(&self->base.body.frames, CHECK_IN_GATE_LATE_SOUND_FRAME)) {
         SoundSys_PlaySe(late_sound);
     }
 }

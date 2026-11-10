@@ -49,7 +49,7 @@ static void room_object022524a0_set_vtables(RoomObject022524a0 *object)
 int RoomObject022524a0_UpdatePlaying(RoomObject022524a0 *object)
 {
     AnimatedModel_Update(&object->base.model);
-    if (FrameCtrl_IsDone(&object->base.model.frames) == 0) {
+    if (FrameControl_IsDone(&object->base.model.frames) == 0) {
         return 0;
     }
     return RoomSync_SetState(&object->base, ROOM_OBJECT_022524A0_IDLE, SLOT_70_VALUE, 1);

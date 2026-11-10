@@ -805,7 +805,7 @@ CLEAN_AS(func_020157c8, SceneCommand_SetScreenMode)
 
 /* func_020157d4: the values of screen 0 picking the pockets with a predicate, and
  * `stay_on_line`; the item is cleared to none. */
-void SceneCommand_SetPocketPredicate(SceneCommandScene *scene, PocketPredicate predicate, u8 arg, u8 stay_on_line)
+void SceneCommand_SetPocketPredicate(SceneCommandScene *scene, PocketPredicateFn predicate, u8 arg, u8 stay_on_line)
 {
     scene->params.pocket_mask = 0;
     scene->params.pocket_predicate = predicate;

@@ -63,7 +63,7 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 /* The handlers by type (PLAYER_MESSAGE_TYPES of them), as DS addresses. */
 extern const u32 data_020df6bc[];
 
-typedef void (*PlayerMessageHandler)(const u8 *message, int player);
+typedef void (*PlayerMessageHandlerFn)(const u8 *message, int player);
 
 static void *mode_object(void)
 {
@@ -276,7 +276,7 @@ CLEAN_AS(func_0207072c, PlayerMessages_BbsPost)
  * checked; one of PLAYER_MESSAGE_TYPES or more calls whatever word follows the table. */
 void PlayerMessages_Dispatch(const u8 *message, int player)
 {
-    ((PlayerMessageHandler) (uintptr_t) data_020df6bc[message[0]])(message, player);
+    ((PlayerMessageHandlerFn) (uintptr_t) data_020df6bc[message[0]])(message, player);
 }
 CLEAN_AS(func_02070760, PlayerMessages_Dispatch)
 

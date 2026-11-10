@@ -112,9 +112,9 @@ static int it_owner_word(const InsurerTalk *talk)
     return (int) (u32) (uintptr_t) talk->owner;
 }
 
-static PocketPredicate it_claim_test(void)
+static PocketPredicateFn it_claim_test(void)
 {
-    return (PocketPredicate) (void (*)(void)) func_ov071_022790f0;
+    return (PocketPredicateFn) (void (*)(void)) func_ov071_022790f0;
 }
 
 /* Whether `item` is "nothing": a furniture code is compared by its furniture number. */

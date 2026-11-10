@@ -20,9 +20,9 @@
 
 static_assert(sizeof(VillagerErrand) == 12, "size");
 
-extern NetSession *data_020ccf94;                   /* the session */
-extern SystemCommandWriter *const data_020ccf98[];  /* the section writers, by opcode */
-extern SystemCommandHandler *const data_020ccfa0[]; /* the section handlers, by opcode */
+extern NetSession *data_020ccf94;                     /* the session */
+extern SystemCommandWriterFn *const data_020ccf98[];  /* the section writers, by opcode */
+extern SystemCommandHandlerFn *const data_020ccfa0[]; /* the section handlers, by opcode */
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 

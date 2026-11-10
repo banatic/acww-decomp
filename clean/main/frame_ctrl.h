@@ -5,21 +5,21 @@
 
 #include "types.h"
 
-enum FrameCtrlFlags {
-    FRAME_CTRL_ONCE = 1 << 0,    /* stop at the end instead of starting again */
-    FRAME_CTRL_REVERSE = 1 << 1, /* count down from the end towards frame 0 */
+enum FrameControlFlags {
+    FRAME_CONTROL_ONCE = 1 << 0,    /* stop at the end instead of starting again */
+    FRAME_CONTROL_REVERSE = 1 << 1, /* count down from the end towards frame 0 */
 };
 
 /* A frame position in a sequence of `end` frames, all in 20.12 fixed point. The game embeds it
  * in its animated objects (at 0x2d0 in the actors, for one); the first word is the C++ vtable. */
-typedef struct FrameCtrl {
+typedef struct FrameControl {
     const void *vtable;
     fx32 end;      /* the frame count */
     fx32 frame;    /* where the sequence is now */
     fx32 previous; /* where it was before the last step */
     fx32 speed;    /* frames per step */
-    u8 flags;      /* FrameCtrlFlags */
-} FrameCtrl;
+    u8 flags;      /* FrameControlFlags */
+} FrameControl;
 
 /* A weight stepped from 0 to 1.0 (0x1000) at a fixed rate; the object around it has another
  * vtable and data the steps do not touch. */
@@ -29,14 +29,14 @@ typedef struct Ramp {
     fx32 rate; /* 0 once the weight has reached 1.0 */
 } Ramp;
 
-void FrameCtrl_Init(FrameCtrl *ctrl, u32 frames, u8 flags, u32 speed, u16 start);
-BOOL FrameCtrl_Passed(const FrameCtrl *ctrl, int frame);
-BOOL FrameCtrl_IsDone(const FrameCtrl *ctrl);
-void FrameCtrl_Step(FrameCtrl *ctrl);
+void FrameControl_Init(FrameControl *ctrl, u32 frames, u8 flags, u32 speed, u16 start);
+BOOL FrameControl_Passed(const FrameControl *ctrl, int frame);
+BOOL FrameControl_IsDone(const FrameControl *ctrl);
+void FrameControl_Step(FrameControl *ctrl);
 BOOL Ramp_Step(Ramp *ramp);
 void Ramp_Start(Ramp *ramp, u32 frames);
-void FrameCtrl_Destruct(FrameCtrl *ctrl);
-FrameCtrl *FrameCtrl_Delete(FrameCtrl *ctrl);
-void FrameCtrl_DestructComplete(FrameCtrl *ctrl);
+void FrameControl_Destruct(FrameControl *ctrl);
+FrameControl *FrameControl_Delete(FrameControl *ctrl);
+void FrameControl_DestructComplete(FrameControl *ctrl);
 
 #endif

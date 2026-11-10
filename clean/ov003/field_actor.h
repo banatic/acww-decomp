@@ -556,7 +556,7 @@ typedef struct FieldActor {
     u8 unk_234[0x298 - 0x234]; /* an object func_02054860 updates (to 0x2d0) */
     FieldActorBlock48 unk_298; /* kept across func_0200ee40 by state 0x5f */
     u8 unk_2c8[0x2d0 - 0x2c8];
-    FrameCtrl anim; /* the body's animation */
+    FrameControl anim; /* the body's animation */
     u8 unk_2e8[0x45c - 0x2e8];
     s16 head_pitch;
     s16 head_yaw; /* relative to the body */

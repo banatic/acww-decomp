@@ -73,8 +73,8 @@ void Footsteps_Update(Footsteps *steps, void *object)
                                    (const s16 *) &mark, 0);
         } else {
             void *animation = footsteps_part(object, FOOTSTEPS_OBJECT_BODY_ANIM);
-            int on_a = FrameCtrl_Passed(animation, FOOTSTEPS_FRAME_A);
-            int on_b = FrameCtrl_Passed(animation, FOOTSTEPS_FRAME_B);
+            int on_a = FrameControl_Passed(animation, FOOTSTEPS_FRAME_A);
+            int on_b = FrameControl_Passed(animation, FOOTSTEPS_FRAME_B);
             if (on_a != 0 || on_b != 0) {
                 const Vec3 *foot =
                     (const Vec3 *) footsteps_part(object, on_a != 0 ? FOOTSTEPS_OBJECT_FOOT_A : FOOTSTEPS_OBJECT_FOOT_B);
