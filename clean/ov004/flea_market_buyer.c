@@ -1209,7 +1209,7 @@ CLEAN_AS(func_ov004_0222136c, FleaMarketBuyer_EnterStepIn)
 
 /* The functions of its states (filled at start-up by __sinit_ov004_0224e484): 0 to 7, and 8
  * right after them (data_ov004_02257f10). */
-extern FleaMarketBuyerStep data_ov004_02257e90[FLEA_MARKET_BUYER_STATES];
+extern FleaMarketBuyerStep data_ov004_02257e90[FLEA_MARKET_BUYER_STATE_COUNT];
 
 /* Its town record, through its vtable slot 0x64. */
 static u8 *fmb_record_virtual(FleaMarketBuyer *buyer)

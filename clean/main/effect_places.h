@@ -23,7 +23,7 @@ void EffectPlaces_FollowDefault(EffectKindsInstance *instance);
 void EffectPlaces_PlaceDefault(EffectKindsInstance *instance);
 int EffectPlaces_Follow(EffectKindsInstance *instance, const Vec3 *offset, const Vec3 *axis);
 void EffectPlaces_Place(EffectKindsInstance *instance, const Vec3 *offset, const Vec3 *axis);
-int EffectPlaces_CountDown(EffectKindsInstance *instance);
+int EffectPlaces_Tick(EffectKindsInstance *instance);
 void EffectPlaces_EndHandle(int handle);
 int EffectPlaces_StartOneShot(int set, int kind, const Vec3 *position, const s16 *angle, const s16 *extra,
                               void *const *setups);

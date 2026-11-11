@@ -40,12 +40,12 @@ typedef struct HouseRecordOwnerInfo {
     u16 comment_length;
 } HouseRecordOwnerInfo;
 
-extern HouseRecord data_021ebcd4;                   /* the house */
-extern u8 data_021ed268[HOUSE_RECORD_SONG_BYTES];   /* its songs (data_021ebcd4.songs) */
-extern StateBlock data_021dc7a8;                    /* the state block */
-extern const int data_020cc9d0[HOUSE_RECORD_SIZES]; /* the loan of the extension from each size */
-extern const u16 data_020cc9c0[HOUSE_RECORD_SIZES]; /* a model number by size */
-extern const u16 data_020cc9ec[];                   /* the rooms' models: 5 by size */
+extern HouseRecord data_021ebcd4;                        /* the house */
+extern u8 data_021ed268[HOUSE_RECORD_SONG_BYTES];        /* its songs (data_021ebcd4.songs) */
+extern StateBlock data_021dc7a8;                         /* the state block */
+extern const int data_020cc9d0[HOUSE_RECORD_SIZE_COUNT]; /* the loan of the extension from each size */
+extern const u16 data_020cc9c0[HOUSE_RECORD_SIZE_COUNT]; /* a model number by size */
+extern const u16 data_020cc9ec[];                        /* the rooms' models: 5 by size */
 /* The code of no song HouseRecord_Song answers for a scene without a room: a function-local
  * static of the original, set up the first time (bit 0 of its guard) and registered for
  * destruction with the item code's destructor. */
@@ -95,7 +95,7 @@ CLEAN_AS(func_02060984, HouseRecord_RemoveSong)
 /* func_020609bc: bit `song` of the songs cleared; nothing past the songs. */
 void HouseRecord_ClearSongBit(u8 *songs, unsigned int song)
 {
-    if (song < HOUSE_RECORD_SONGS) {
+    if (song < HOUSE_RECORD_SONG_COUNT) {
         songs[song >> 3] &= (u8) ~(1u << (song & 7));
     }
 }
@@ -113,7 +113,7 @@ CLEAN_AS(func_020609dc, HouseRecord_AddSong)
 /* func_02060a14: bit `song` of the songs set; nothing past the songs. */
 void HouseRecord_SetSongBit(u8 *songs, unsigned int song)
 {
-    if (song < HOUSE_RECORD_SONGS) {
+    if (song < HOUSE_RECORD_SONG_COUNT) {
         songs[song >> 3] |= (u8) (1u << (song & 7));
     }
 }
@@ -132,7 +132,7 @@ CLEAN_AS(func_02060a34, HouseRecord_HasSong)
 /* func_02060a70: whether bit `song` of the songs is set; 0 past the songs. */
 int HouseRecord_TestSongBit(const u8 *songs, unsigned int song)
 {
-    if (song < HOUSE_RECORD_SONGS) {
+    if (song < HOUSE_RECORD_SONG_COUNT) {
         return (songs[song >> 3] >> (song & 7)) & 1;
     }
     return 0;
@@ -169,7 +169,7 @@ int HouseRecord_SongPlayedElsewhere(int scene, const u16 *song)
     if (room == NULL) {
         return 0;
     }
-    for (int i = 0; i < HOUSE_RECORD_ROOMS; i++) {
+    for (int i = 0; i < HOUSE_RECORD_ROOM_COUNT; i++) {
         HouseRoom *other = HouseRecord_Room(house, i);
         if (other != room && *HouseRecord_RoomSong(other) == *song) {
             return 1;
@@ -308,7 +308,7 @@ void HouseRecord_TakeNextLoan(HouseRecord *house)
         return;
     }
     unsigned int size = HouseRecord_Size(house);
-    if (size >= HOUSE_RECORD_SIZES) {
+    if (size >= HOUSE_RECORD_SIZE_COUNT) {
         return;
     }
     HouseRecord_SetLoan(house, data_020cc9d0[size]);
@@ -366,7 +366,7 @@ unsigned short HouseRecord_SizeModel(void *unused)
 {
     (void) unused;
     int size = (int) HouseRecord_Size(&data_021ebcd4);
-    if (size < HOUSE_RECORD_SIZES) {
+    if (size < HOUSE_RECORD_SIZE_COUNT) {
         return data_020cc9c0[size];
     }
     return HOUSE_RECORD_NO_SIZE_MODEL;
@@ -384,10 +384,10 @@ unsigned short HouseRecord_RoomModel(int unused, int room)
         return HOUSE_RECORD_NO_ROOM_MODEL;
     }
     int size = (int) HouseRecord_Size(&data_021ebcd4);
-    if (size >= HOUSE_RECORD_SIZES) {
+    if (size >= HOUSE_RECORD_SIZE_COUNT) {
         return HOUSE_RECORD_NO_ROOM_MODEL;
     }
-    return data_020cc9ec[size * HOUSE_RECORD_ROOMS + room];
+    return data_020cc9ec[size * HOUSE_RECORD_ROOM_COUNT + room];
 }
 CLEAN_AS(func_02060da8, HouseRecord_RoomModel)
 
@@ -479,7 +479,7 @@ CLEAN_AS(func_02060f04, HouseRecord_RoomOfScene)
 /* func_02060f30: whether `room` is one of the five. */
 int HouseRecord_IsRoom(int room)
 {
-    return room >= 0 && room < HOUSE_RECORD_ROOMS;
+    return room >= 0 && room < HOUSE_RECORD_ROOM_COUNT;
 }
 CLEAN_AS(func_02060f30, HouseRecord_IsRoom)
 
@@ -551,7 +551,7 @@ void HouseRecord_Init(HouseRecord *house)
 {
     HouseRecordOwnerInfo info;
 
-    for (int i = 0; i < HOUSE_RECORD_ROOMS; i++) {
+    for (int i = 0; i < HOUSE_RECORD_ROOM_COUNT; i++) {
         HouseRecord_RoomInit(&house->rooms[i], i);
     }
     house_record_set_field(house, HOUSE_RECORD_SIZE_SHIFT, HOUSE_RECORD_SIZE_MASK, 0);
@@ -568,7 +568,7 @@ CLEAN_AS(func_0206108c, HouseRecord_Init)
 HouseRecord *HouseRecord_Destruct(HouseRecord *house)
 {
     HouseRecord_DestructSongs((int) (uintptr_t) house->songs);
-    __cxa_vec_cleanup(house->rooms, HOUSE_RECORD_ROOMS, sizeof(HouseRoom), (void (*)(void *))(uintptr_t) func_02061444);
+    __cxa_vec_cleanup(house->rooms, HOUSE_RECORD_ROOM_COUNT, sizeof(HouseRoom), (void (*)(void *))(uintptr_t) func_02061444);
     return house;
 }
 CLEAN_AS(func_02061118, HouseRecord_Destruct)
@@ -576,7 +576,7 @@ CLEAN_AS(func_02061118, HouseRecord_Destruct)
 /* func_02061144: the constructor: the rooms, then the songs. Returns the house. */
 HouseRecord *HouseRecord_Construct(HouseRecord *house)
 {
-    __cxa_vec_ctor(house->rooms, HOUSE_RECORD_ROOMS, sizeof(HouseRoom), (void (*)(void *))(uintptr_t) func_02061470,
+    __cxa_vec_ctor(house->rooms, HOUSE_RECORD_ROOM_COUNT, sizeof(HouseRoom), (void (*)(void *))(uintptr_t) func_02061470,
                    (void (*)(void *))(uintptr_t) func_02061444);
     HouseRecord_ConstructSongs(house->songs);
     return house;
@@ -696,8 +696,8 @@ void HouseRecord_RoomInit(HouseRoom *room, int index)
     RoomCells_Reset((RoomCells *) room->cells);
 
     if ((data_021cb500 & 1) == 0) {
-        u8 *records[HOUSE_RECORD_ROOMS] = {data_021cb570, data_021cb594, data_021cb588, data_021cb57c, data_021cb51c};
-        for (int i = 0; i < HOUSE_RECORD_ROOMS; i++) {
+        u8 *records[HOUSE_RECORD_ROOM_COUNT] = {data_021cb570, data_021cb594, data_021cb588, data_021cb57c, data_021cb51c};
+        for (int i = 0; i < HOUSE_RECORD_ROOM_COUNT; i++) {
             data_021cb504[i] = HOUSE_ROOM_FIRST_WALLPAPER;
             __register_global_object(&data_021cb504[i], (void *) (uintptr_t) func_020051b0, records[i]);
         }
@@ -706,8 +706,8 @@ void HouseRecord_RoomInit(HouseRoom *room, int index)
     room->wallpaper = data_021cb504[index];
 
     if ((data_021cb4f8 & 1) == 0) {
-        u8 *records[HOUSE_RECORD_ROOMS] = {data_021cb528, data_021cb534, data_021cb540, data_021cb54c, data_021cb558};
-        for (int i = 0; i < HOUSE_RECORD_ROOMS; i++) {
+        u8 *records[HOUSE_RECORD_ROOM_COUNT] = {data_021cb528, data_021cb534, data_021cb540, data_021cb54c, data_021cb558};
+        for (int i = 0; i < HOUSE_RECORD_ROOM_COUNT; i++) {
             data_021cb510[i] = HOUSE_ROOM_FIRST_CARPET;
             __register_global_object(&data_021cb510[i], (void *) (uintptr_t) func_020051b0, records[i]);
         }

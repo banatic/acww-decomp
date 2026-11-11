@@ -277,8 +277,8 @@ CLEAN_AS(_ZN18Obj_ov141_0229af4819func_ov141_0229aba4Ev, TownList_RunInteractive
  * constants. */
 extern u32 data_ov141_0229afe0; /* the sub states' guard */
 extern u32 data_ov141_0229afe4; /* the states' guard */
-extern MemberPointer data_ov141_0229afe8[TOWN_LIST_STATES];
-extern MemberPointer data_ov141_0229b010[TOWN_LIST_SUB_STATES];
+extern MemberPointer data_ov141_0229afe8[TOWN_LIST_STATE_COUNT];
+extern MemberPointer data_ov141_0229b010[TOWN_LIST_SUB_STATE_COUNT];
 extern const MemberPointer data_ov141_0229aee8, data_ov141_0229aef0, data_ov141_0229aef8, data_ov141_0229af00,
     data_ov141_0229af08, data_ov141_0229af10, data_ov141_0229af18, data_ov141_0229af20, data_ov141_0229af28,
     data_ov141_0229af30, data_ov141_0229af38;
@@ -288,11 +288,11 @@ extern const MemberPointer data_ov141_0229aee8, data_ov141_0229aef0, data_ov141_
  * REQUIRES: the sub state is below 6; the game reads past the table for others. */
 void TownList_RunSubState(TownList *self)
 {
-    static const MemberPointer *const sub_states[TOWN_LIST_SUB_STATES] = {
+    static const MemberPointer *const sub_states[TOWN_LIST_SUB_STATE_COUNT] = {
         &data_ov141_0229af00, &data_ov141_0229af08, &data_ov141_0229aef8,
         &data_ov141_0229aef0, &data_ov141_0229aee8, &data_ov141_0229af10,
     };
-    MemberTable_InitOnce(&data_ov141_0229afe0, data_ov141_0229b010, sub_states, TOWN_LIST_SUB_STATES);
+    MemberTable_InitOnce(&data_ov141_0229afe0, data_ov141_0229b010, sub_states, TOWN_LIST_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov141_0229b010[self->base.sub_state], self);
 }
 CLEAN_AS(_ZN18Obj_ov141_0229af4819func_ov141_0229abc0Ev, TownList_RunSubState)
@@ -303,10 +303,10 @@ CLEAN_AS(_ZN18Obj_ov141_0229af4819func_ov141_0229abc0Ev, TownList_RunSubState)
  * REQUIRES: the state is below 5; the game reads past the table for others. */
 int TownList_RunState(TownList *self)
 {
-    static const MemberPointer *const states[TOWN_LIST_STATES] = {
+    static const MemberPointer *const states[TOWN_LIST_STATE_COUNT] = {
         &data_ov141_0229af18, &data_ov141_0229af38, &data_ov141_0229af30, &data_ov141_0229af28, &data_ov141_0229af20,
     };
-    MemberTable_InitOnce(&data_ov141_0229afe4, data_ov141_0229afe8, states, TOWN_LIST_STATES);
+    MemberTable_InitOnce(&data_ov141_0229afe4, data_ov141_0229afe8, states, TOWN_LIST_STATE_COUNT);
     TownList_BeginFrame(self);
     MemberPointer_CallVoid(&data_ov141_0229afe8[self->base.state], self);
     TownList_EndFrame(self);

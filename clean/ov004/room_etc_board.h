@@ -25,7 +25,7 @@
 #include "main/touch_pick_shapes.h"
 #include "types.h"
 
-enum RoomEtcBoardState { ROOM_ETC_BOARD_IDLE, ROOM_ETC_BOARD_WAITING, ROOM_ETC_BOARD_OPEN, ROOM_ETC_BOARD_STATES };
+enum RoomEtcBoardState { ROOM_ETC_BOARD_IDLE, ROOM_ETC_BOARD_WAITING, ROOM_ETC_BOARD_OPEN, ROOM_ETC_BOARD_STATE_COUNT };
 
 #define ROOM_ETC_BOARD_MAX 64
 /* RoomEtcBoard.index of a board that is in no entry of the table. */

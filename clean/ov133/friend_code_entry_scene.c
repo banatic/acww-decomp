@@ -57,8 +57,8 @@ extern TextLabel *func_02070be8(TextLabel *label);
  * constants. */
 extern u32 data_ov133_0229c9a0; /* the states' guard */
 extern u32 data_ov133_0229c9a4; /* the sub states' guard */
-extern MemberPointer data_ov133_0229c9a8[FRIEND_CODE_STATES];
-extern MemberPointer data_ov133_0229c9d0[FRIEND_CODE_SUB_STATES];
+extern MemberPointer data_ov133_0229c9a8[FRIEND_CODE_STATE_COUNT];
+extern MemberPointer data_ov133_0229c9d0[FRIEND_CODE_SUB_STATE_COUNT];
 extern const MemberPointer data_ov133_0229c860, data_ov133_0229c870, data_ov133_0229c878, data_ov133_0229c888,
     data_ov133_0229c890, data_ov133_0229c898, data_ov133_0229c8a0, data_ov133_0229c8a8, data_ov133_0229c8b0,
     data_ov133_0229c8b8, data_ov133_0229c8c0, data_ov133_0229c8c8, data_ov133_0229c8d0, data_ov133_0229c8d8,
@@ -138,7 +138,7 @@ void FriendCodeEntry_FollowButtonPress(FriendCodeEntry *self)
         }
     } else {
         FriendCodeEntry_HidePointer(self);
-        MenuScene_SetPhase(friend_code_scene_of(self), FRIEND_CODE_PHASE_STATES);
+        MenuScene_SetPhase(friend_code_scene_of(self), FRIEND_CODE_PHASE_STATE_COUNT);
     }
 }
 CLEAN_AS(func_ov133_0229bc64, FriendCodeEntry_FollowButtonPress)
@@ -548,12 +548,12 @@ CLEAN_AS(func_ov133_0229c404, FriendCodeEntry_RunInteractive)
  * REQUIRES: the sub state is below 13; the game reads past the table for others. */
 void FriendCodeEntry_RunSubState(FriendCodeEntry *self)
 {
-    static const MemberPointer *const sub_states[FRIEND_CODE_SUB_STATES] = {
+    static const MemberPointer *const sub_states[FRIEND_CODE_SUB_STATE_COUNT] = {
         &data_ov133_0229c8f0, &data_ov133_0229c8e8, &data_ov133_0229c8e0, &data_ov133_0229c8d8, &data_ov133_0229c8d0,
         &data_ov133_0229c888, &data_ov133_0229c8c0, &data_ov133_0229c8b8, &data_ov133_0229c8b0, &data_ov133_0229c8a8,
         &data_ov133_0229c8f8, &data_ov133_0229c898, &data_ov133_0229c890,
     };
-    MemberTable_InitOnce(&data_ov133_0229c9a4, data_ov133_0229c9d0, sub_states, FRIEND_CODE_SUB_STATES);
+    MemberTable_InitOnce(&data_ov133_0229c9a4, data_ov133_0229c9d0, sub_states, FRIEND_CODE_SUB_STATE_COUNT);
     StateFlags_CountMenuCloseDelay();
     if (StateFlags_MenuCloseAsked()) {
         switch (self->base.sub_state) {
@@ -570,7 +570,7 @@ void FriendCodeEntry_RunSubState(FriendCodeEntry *self)
                 if (GroupParams_Mode() == FRIEND_CODE_MODE_NEW) {
                     WifiFriend_Clear(FriendCodeEntry_Friend(self));
                 }
-                MenuScene_SetPhase(friend_code_scene_of(self), FRIEND_CODE_PHASE_STATES);
+                MenuScene_SetPhase(friend_code_scene_of(self), FRIEND_CODE_PHASE_STATE_COUNT);
                 break;
             default:
                 break;
@@ -586,10 +586,10 @@ CLEAN_AS(func_ov133_0229c420, FriendCodeEntry_RunSubState)
  * REQUIRES: the state is below 5; the game reads past the table for others. */
 int FriendCodeEntry_RunState(FriendCodeEntry *self)
 {
-    static const MemberPointer *const states[FRIEND_CODE_STATES] = {
+    static const MemberPointer *const states[FRIEND_CODE_STATE_COUNT] = {
         &data_ov133_0229c878, &data_ov133_0229c8a0, &data_ov133_0229c870, &data_ov133_0229c8c8, &data_ov133_0229c860,
     };
-    MemberTable_InitOnce(&data_ov133_0229c9a0, data_ov133_0229c9a8, states, FRIEND_CODE_STATES);
+    MemberTable_InitOnce(&data_ov133_0229c9a0, data_ov133_0229c9a8, states, FRIEND_CODE_STATE_COUNT);
     FriendCodeEntry_BeginFrame(self);
     MemberPointer_CallVoid(&data_ov133_0229c9a8[self->base.state], self);
     FriendCodeEntry_EndFrame(self);
@@ -637,7 +637,7 @@ int FriendCodeEntry_Start(FriendCodeEntry *self)
 {
     FriendCodeEntry_SetUp(self);
     MenuScene_SetState(friend_code_scene_of(self), FRIEND_CODE_STATE_LOAD);
-    MenuScene_SetPhase(friend_code_scene_of(self), FRIEND_CODE_PHASE_STATES);
+    MenuScene_SetPhase(friend_code_scene_of(self), FRIEND_CODE_PHASE_STATE_COUNT);
     return 1;
 }
 CLEAN_AS(func_ov133_0229c6ec, FriendCodeEntry_Start)

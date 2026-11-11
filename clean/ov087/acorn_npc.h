@@ -43,7 +43,7 @@ typedef struct AcornNpc {
     AcornNpcTalk talk;            /* 0x658 */
 } AcornNpc;
 
-enum AcornNpcState { ACORN_NPC_STAND = 0, ACORN_NPC_TALKING = 1, ACORN_NPC_TALKED = 2, ACORN_NPC_STATES = 3 };
+enum AcornNpcState { ACORN_NPC_STAND = 0, ACORN_NPC_TALKING = 1, ACORN_NPC_TALKED = 2, ACORN_NPC_STATE_COUNT = 3 };
 
 /* A state's functions in data_ov087_022795c0. */
 typedef struct AcornNpcStep {

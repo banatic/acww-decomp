@@ -126,11 +126,11 @@ extern const Vec3 data_021c67d0;
 /* The entry machine's tables (member_pointer.h): their guards, the tables and their
  * constants. */
 extern u32 data_ov009_02265b28;
-extern MemberPointer data_ov009_02265c6c[TOWN_OBJECT_ACTOR_STATES];
+extern MemberPointer data_ov009_02265c6c[TOWN_OBJECT_ACTOR_STATE_COUNT];
 extern const MemberPointer data_ov009_02265810, data_ov009_022657c8, data_ov009_022657d8, data_ov009_022657e0,
     data_ov009_02265840, data_ov009_02265850, data_ov009_022657b8, data_ov009_022657a8, data_ov009_022657d0;
 extern u32 data_ov009_02265b2c;
-extern MemberPointer data_ov009_02265c24[TOWN_OBJECT_ACTOR_STATES];
+extern MemberPointer data_ov009_02265c24[TOWN_OBJECT_ACTOR_STATE_COUNT];
 extern const MemberPointer data_ov009_022657c0, data_ov009_022657f8, data_ov009_022657f0, data_ov009_02265898,
     data_ov009_02265808, data_ov009_02265820, data_ov009_02265828, data_ov009_02265848, data_ov009_02265888;
 
@@ -890,7 +890,7 @@ CLEAN_AS(func_ov009_022638cc, TownObjectActor_EnterIdle)
  * REQUIRES: the state is not negative (TownObjectActor_SetState only sets 0 to 8). */
 void TownObjectActor_UpdateState(TownObjectActor *actor)
 {
-    static const MemberPointer *const updates[TOWN_OBJECT_ACTOR_STATES] = {
+    static const MemberPointer *const updates[TOWN_OBJECT_ACTOR_STATE_COUNT] = {
         &data_ov009_02265810, /* TownObjectActor_UpdateIdle */
         &data_ov009_022657c8, /* TownObjectActor_UpdateVisit */
         &data_ov009_022657d8, /* TownObjectActor_UpdateTalk */
@@ -901,8 +901,8 @@ void TownObjectActor_UpdateState(TownObjectActor *actor)
         &data_ov009_022657a8, /* TownObjectActor_UpdateLeaveAgain */
         &data_ov009_022657d0, /* TownObjectActor_UpdateWalkAgain */
     };
-    MemberTable_InitOnce(&data_ov009_02265b28, data_ov009_02265c6c, updates, TOWN_OBJECT_ACTOR_STATES);
-    if (actor->state < TOWN_OBJECT_ACTOR_STATES) {
+    MemberTable_InitOnce(&data_ov009_02265b28, data_ov009_02265c6c, updates, TOWN_OBJECT_ACTOR_STATE_COUNT);
+    if (actor->state < TOWN_OBJECT_ACTOR_STATE_COUNT) {
         MemberPointer_CallVoid(&data_ov009_02265c6c[actor->state], actor);
     }
 }
@@ -913,7 +913,7 @@ CLEAN_AS(_ZN18Obj_ov009_022658dc19func_ov009_022638d0Ev, TownObjectActor_UpdateS
  * REQUIRES: `state` is not negative. */
 int TownObjectActor_SetState(TownObjectActor *actor, int state)
 {
-    static const MemberPointer *const entries[TOWN_OBJECT_ACTOR_STATES] = {
+    static const MemberPointer *const entries[TOWN_OBJECT_ACTOR_STATE_COUNT] = {
         &data_ov009_022657c0, /* TownObjectActor_EnterIdle */
         &data_ov009_022657f8, /* TownObjectActor_EnterVisit */
         &data_ov009_022657f0, /* TownObjectActor_EnterTalk */
@@ -924,8 +924,8 @@ int TownObjectActor_SetState(TownObjectActor *actor, int state)
         &data_ov009_02265848, /* TownObjectActor_EnterLeaveAgain */
         &data_ov009_02265888, /* TownObjectActor_EnterWalkAgain */
     };
-    MemberTable_InitOnce(&data_ov009_02265b2c, data_ov009_02265c24, entries, TOWN_OBJECT_ACTOR_STATES);
-    if (state < TOWN_OBJECT_ACTOR_STATES && MemberPointer_CallInt(&data_ov009_02265c24[state], actor) != 0) {
+    MemberTable_InitOnce(&data_ov009_02265b2c, data_ov009_02265c24, entries, TOWN_OBJECT_ACTOR_STATE_COUNT);
+    if (state < TOWN_OBJECT_ACTOR_STATE_COUNT && MemberPointer_CallInt(&data_ov009_02265c24[state], actor) != 0) {
         actor->state = state;
         return 1;
     }

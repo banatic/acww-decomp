@@ -803,7 +803,7 @@ void DesignEditor_WaitPanelPress(DesignEditor *self)
         }
     } else {
         DesignEditor_HideCursor(self);
-        MenuScene_SetPhase(de_scene(self), DESIGN_EDITOR_PHASE_STATES);
+        MenuScene_SetPhase(de_scene(self), DESIGN_EDITOR_PHASE_STATE_COUNT);
     }
 }
 CLEAN_AS(func_ov123_0229b6e8, DesignEditor_WaitPanelPress)

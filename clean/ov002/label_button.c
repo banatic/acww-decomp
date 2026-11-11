@@ -32,7 +32,7 @@ extern u8 data_021f6c5c; /* the touch's y */
 #define ANIM_SHOWN 1
 #define ANIM_PRESSED 2
 
-/* The screen's centre, (0, 0) of main's places. */
+/* The screen's center, (0, 0) of main's places. */
 #define CENTER_X 0x80
 #define CENTER_Y 0x60
 

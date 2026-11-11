@@ -300,7 +300,7 @@ void LocalRelay_ForgetPeer(int aid)
 }
 CLEAN_AS(func_ov066_0226aeb8, LocalRelay_ForgetPeer)
 
-/* func_ov066_0226af04: the session's MP acknowledgement handler (a child's): its next packet
+/* func_ov066_0226af04: the session's MP acknowledgment handler (a child's): its next packet
  * sent, unless two are still being sent. */
 void LocalRelay_OnMpAck(void)
 {

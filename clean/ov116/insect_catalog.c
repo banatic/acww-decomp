@@ -55,8 +55,8 @@ extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)
  * constants they are filled from. */
 extern u32 data_ov116_0229e920; /* the sub states' guard */
 extern u32 data_ov116_0229e924; /* the states' guard */
-extern MemberPointer data_ov116_0229e948[CATALOG_SCENE_SUB_STATES];
-extern MemberPointer data_ov116_0229e928[CATALOG_SCENE_STATES];
+extern MemberPointer data_ov116_0229e948[CATALOG_SCENE_SUB_STATE_COUNT];
+extern MemberPointer data_ov116_0229e928[CATALOG_SCENE_STATE_COUNT];
 extern const MemberPointer data_ov116_0229e880; /* InsectCatalog_IdleByTouch */
 extern const MemberPointer data_ov116_0229e878; /* InsectCatalog_DragByTouch */
 extern const MemberPointer data_ov116_0229e870; /* InsectCatalog_IdleByKeys */
@@ -580,7 +580,7 @@ int InsectCatalog_SelectTab(CatalogScene *self, int tab)
     }
     MenuTabs_SelectTab(menu, (u8) tab);
     self->base.state = CATALOG_SCENE_STATE_START_WIPE_OUT;
-    MenuScene_SetPhase(scene_of(self), CATALOG_SCENE_PHASE_STATES);
+    MenuScene_SetPhase(scene_of(self), CATALOG_SCENE_PHASE_STATE_COUNT);
     return 1;
 }
 CLEAN_AS(func_ov116_0229e4cc, InsectCatalog_SelectTab)
@@ -659,11 +659,11 @@ CLEAN_AS(_ZN18Obj_ov116_0229e8b819func_ov116_0229e5bcEv, InsectCatalog_RunIntera
  * REQUIRES: the sub state is below 9; the game reads past the table for others. */
 void InsectCatalog_RunSubState(CatalogScene *self)
 {
-    static const MemberPointer *const sub_states[CATALOG_SCENE_SUB_STATES] = {
+    static const MemberPointer *const sub_states[CATALOG_SCENE_SUB_STATE_COUNT] = {
         &data_ov116_0229e880, &data_ov116_0229e878, &data_ov116_0229e870, &data_ov116_0229e860, &data_ov116_0229e888,
         &data_ov116_0229e890, &data_ov116_0229e850, &data_ov116_0229e848, &data_ov116_0229e8a0,
     };
-    MemberTable_InitOnce(&data_ov116_0229e920, data_ov116_0229e948, sub_states, CATALOG_SCENE_SUB_STATES);
+    MemberTable_InitOnce(&data_ov116_0229e920, data_ov116_0229e948, sub_states, CATALOG_SCENE_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov116_0229e948[self->base.sub_state], self);
 }
 CLEAN_AS(_ZN18Obj_ov116_0229e8b819func_ov116_0229e5e8Ev, InsectCatalog_RunSubState)
@@ -674,13 +674,13 @@ CLEAN_AS(_ZN18Obj_ov116_0229e8b819func_ov116_0229e5e8Ev, InsectCatalog_RunSubSta
  * REQUIRES: the state is below 4; the game reads past the table for others. */
 int InsectCatalog_RunState(CatalogScene *self)
 {
-    static const MemberPointer *const states[CATALOG_SCENE_STATES] = {
+    static const MemberPointer *const states[CATALOG_SCENE_STATE_COUNT] = {
         &data_ov116_0229e840,
         &data_ov116_0229e8a8,
         &data_ov116_0229e868,
         &data_ov116_0229e898,
     };
-    MemberTable_InitOnce(&data_ov116_0229e924, data_ov116_0229e928, states, CATALOG_SCENE_STATES);
+    MemberTable_InitOnce(&data_ov116_0229e924, data_ov116_0229e928, states, CATALOG_SCENE_STATE_COUNT);
     InsectCatalog_BeginFrame(self);
     MemberPointer_CallVoid(&data_ov116_0229e928[self->base.state], self);
     InsectCatalog_EndFrame(self);
@@ -723,7 +723,7 @@ int InsectCatalog_Start(CatalogScene *self)
 {
     InsectCatalog_Init(self);
     MenuScene_SetState(scene_of(self), CATALOG_SCENE_STATE_SETUP);
-    MenuScene_SetPhase(scene_of(self), CATALOG_SCENE_PHASE_STATES);
+    MenuScene_SetPhase(scene_of(self), CATALOG_SCENE_PHASE_STATE_COUNT);
     return 1;
 }
 CLEAN_AS(func_ov116_0229e7c0, InsectCatalog_Start)

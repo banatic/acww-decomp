@@ -26,7 +26,7 @@
 static_assert(offsetof(TalkTagsWalker, talk) == 0x24, "walker talk");
 static_assert(offsetof(TalkTagsWalker, state) == 0x30, "walker state");
 static_assert(offsetof(TalkTagsWalker, tag) == 0x38, "walker tag");
-static_assert(offsetof(TalkTagsWalker, text_color) == 0x5c, "walker colour");
+static_assert(offsetof(TalkTagsWalker, text_color) == 0x5c, "walker color");
 static_assert(offsetof(TalkTagsWalker, choices_shown) == 0xd8, "walker choices");
 static_assert(offsetof(TalkTagsWalker, convert_next) == 0xd9, "walker convert");
 static_assert(offsetof(TalkTagsWalker, unk_e0) == 0xe0, "walker e0");
@@ -1864,7 +1864,7 @@ void TalkTags_OnText(TalkTagsWalker *walker)
 }
 CLEAN_AS(func_0206bca8, TalkTags_OnText)
 
-/* func_0206bd14: the walker's text colour and the talk's back to 0. */
+/* func_0206bd14: the walker's text color and the talk's back to 0. */
 void TalkTags_ResetColor(TalkTagsWalker *walker)
 {
     walker->text_color = 0;

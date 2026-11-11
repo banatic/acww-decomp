@@ -114,7 +114,7 @@ void VillagerState_SetHeldItem(VillagerState *entry, const u16 *item);
 u16 *VillagerState_HeldItem(VillagerState *entry);
 void VillagerState_DoubleByte1e(VillagerState *entry);
 void VillagerState_SetFlag1OutsideHouse(VillagerState *entry);
-void VillagerState_CountDownMood(VillagerState *entry);
+void VillagerState_TickMood(VillagerState *entry);
 int VillagerState_MoodFrames(const VillagerState *entry);
 void VillagerState_SetMoodFrames(VillagerState *entry, int counter);
 void VillagerState_AddMoodFrames(VillagerState *entry, int amount);

@@ -1,4 +1,4 @@
-/* The main program's static initialisers (the compiler's __sinit functions, one for each source
+/* The main program's static initializers (the compiler's __sinit functions, one for each source
  * file that has global objects): the ROM's start-up code runs them once, in address order,
  * before the game starts. Each builds its file's global objects (their constructors run), hands
  * each object that has a destructor to __register_global_object (with the record that links it

@@ -60,8 +60,8 @@ extern const char data_ov111_022a1080[]; /* "menu/chat2/b_cht.bch" */
  * constants they are filled from. */
 extern u32 data_ov111_022a10a0; /* the sub states' guard */
 extern u32 data_ov111_022a10a4; /* the states' guard */
-extern MemberPointer data_ov111_022a10a8[CHAT_SCENE_STATES];
-extern MemberPointer data_ov111_022a10d8[CHAT_SCENE_SUB_STATES];
+extern MemberPointer data_ov111_022a10a8[CHAT_SCENE_STATE_COUNT];
+extern MemberPointer data_ov111_022a10d8[CHAT_SCENE_SUB_STATE_COUNT];
 extern const MemberPointer data_ov111_022a0ec0; /* ChatScene_WipeOut */
 extern const MemberPointer data_ov111_022a0ec8; /* ChatScene_UpdateError */
 extern const MemberPointer data_ov111_022a0ed0; /* ChatScene_StartWipeOut */
@@ -1696,7 +1696,7 @@ int ChatScene_SwitchTab(ChatScene *self, int tab, int keep_line)
     MenuTabs_SelectTab((MenuTabs *) (void *) parent, (u8) tab);
     ChatScene_HidePointer(self);
     self->base.state = CHAT_SCENE_STATE_LEAVE;
-    MenuScene_SetPhase(chat_scene(self), CHAT_SCENE_PHASE_STATES);
+    MenuScene_SetPhase(chat_scene(self), CHAT_SCENE_PHASE_STATE_COUNT);
     if (tab == MENU_TAB_CLOSE) {
         ChatScene_SetFlags(self, CHAT_SCENE_FLAG_CLOSING);
     }
@@ -1816,13 +1816,13 @@ CLEAN_AS(_ZN18Obj_ov111_022a100819func_ov111_022a0ba0Ev, ChatScene_RunInteractiv
  * REQUIRES: the sub state is below 16; the game reads past the table for others. */
 void ChatScene_RunSubState(ChatScene *self)
 {
-    static const MemberPointer *const sub_states[CHAT_SCENE_SUB_STATES] = {
+    static const MemberPointer *const sub_states[CHAT_SCENE_SUB_STATE_COUNT] = {
         &data_ov111_022a0f60, &data_ov111_022a0f58, &data_ov111_022a0f50, &data_ov111_022a0f48,
         &data_ov111_022a0f40, &data_ov111_022a0ef0, &data_ov111_022a0f30, &data_ov111_022a0f28,
         &data_ov111_022a0ee8, &data_ov111_022a0f20, &data_ov111_022a0f10, &data_ov111_022a0f08,
         &data_ov111_022a0f70, &data_ov111_022a0f00, &data_ov111_022a0ef8, &data_ov111_022a0ec8,
     };
-    MemberTable_InitOnce(&data_ov111_022a10a0, data_ov111_022a10d8, sub_states, CHAT_SCENE_SUB_STATES);
+    MemberTable_InitOnce(&data_ov111_022a10a0, data_ov111_022a10d8, sub_states, CHAT_SCENE_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov111_022a10d8[self->base.sub_state], self);
 }
 CLEAN_AS(_ZN18Obj_ov111_022a100819func_ov111_022a0bccEv, ChatScene_RunSubState)
@@ -1833,11 +1833,11 @@ CLEAN_AS(_ZN18Obj_ov111_022a100819func_ov111_022a0bccEv, ChatScene_RunSubState)
  * REQUIRES: the state is below 6; the game reads past the table for others. */
 int ChatScene_RunState(ChatScene *self)
 {
-    static const MemberPointer *const states[CHAT_SCENE_STATES] = {
+    static const MemberPointer *const states[CHAT_SCENE_STATE_COUNT] = {
         &data_ov111_022a0f38, &data_ov111_022a0f18, &data_ov111_022a0f68,
         &data_ov111_022a0ed8, &data_ov111_022a0ed0, &data_ov111_022a0ec0,
     };
-    MemberTable_InitOnce(&data_ov111_022a10a4, data_ov111_022a10a8, states, CHAT_SCENE_STATES);
+    MemberTable_InitOnce(&data_ov111_022a10a4, data_ov111_022a10a8, states, CHAT_SCENE_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov111_022a10a8[self->base.state], self);
     return 1;
 }
@@ -1873,7 +1873,7 @@ int ChatScene_Start(ChatScene *self)
 {
     ChatScene_SetUp(self);
     MenuScene_SetState(chat_scene(self), CHAT_SCENE_STATE_LOAD_KEYBOARD);
-    MenuScene_SetPhase(chat_scene(self), CHAT_SCENE_PHASE_STATES);
+    MenuScene_SetPhase(chat_scene(self), CHAT_SCENE_PHASE_STATE_COUNT);
     return 1;
 }
 CLEAN_AS(func_ov111_022a0de8, ChatScene_Start)

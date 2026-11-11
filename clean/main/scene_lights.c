@@ -280,7 +280,7 @@ void SceneLight_Update(SceneLight *light)
 }
 CLEAN_AS(func_02064ef8, SceneLight_Update)
 
-/* func_02064f84: a glow's colour by its fader's level: red 25, green 20 and blue 15 at level 0,
+/* func_02064f84: a glow's color by its fader's level: red 25, green 20 and blue 15 at level 0,
  * up by 4, 9 and 16 at 1.0. */
 void SceneLight_GlowColor(SceneLight *light)
 {
@@ -292,7 +292,7 @@ void SceneLight_GlowColor(SceneLight *light)
 }
 CLEAN_AS(func_02064f84, SceneLight_GlowColor)
 
-/* func_02064fb4: a lamp's colour: the scene's unlit lamp color brought towards the lit one by
+/* func_02064fb4: a lamp's color: the scene's unlit lamp color brought towards the lit one by
  * its fader's level. */
 void SceneLight_LampColor(SceneLight *light)
 {
@@ -321,7 +321,7 @@ void SceneLight_SwitchedLampColor(SceneLight *light)
 CLEAN_AS(func_02065020, SceneLight_SwitchedLampColor)
 
 /* func_020650ac: a light that follows the camera: along -Z turned as usual, then about X by
- * the camera's angle over the ground (when there is a camera), with a colour of the sky's
+ * the camera's angle over the ground (when there is a camera), with a color of the sky's
  * light of now. */
 void SceneLight_FollowCamera(SceneLight *light)
 {

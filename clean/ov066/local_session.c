@@ -90,7 +90,7 @@ void LocalSession_Destroy(void)
 CLEAN_AS(func_ov066_02269aa4, LocalSession_Destroy)
 
 /* func_ov066_02269b88: the session allocated, unless there is one, with WM's work buffer (aligned
- * to the cache's 32 bytes), and WM initialised on the control block's DMA channel; when it is,
+ * to the cache's 32 bytes), and WM initialized on the control block's DMA channel; when it is,
  * the session's buffers follow (LocalSession_AllocBuffers).
  * BUG: when WM_Init fails, the work buffer is freed but the session keeps it and stays
  * allocated, its other fields unset.

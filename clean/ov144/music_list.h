@@ -43,7 +43,7 @@ enum MusicListFlag {
     MUSIC_LIST_FLAG_DRAWN = 0x0001,         /* set up: drawn (MusicList_Draw) */
     MUSIC_LIST_FLAG_BUTTONS_DIRTY = 0x0002, /* `buttons_screen` changed: queued at the frame's end */
     MUSIC_LIST_FLAG_LABELS_DIRTY = 0x0004,  /* the list scrolled: the rows labeled at the frame's end */
-    MUSIC_LIST_FLAG_LIST_DIRTY = 0x0008,    /* the list's rows coloured and queued at the frame's end */
+    MUSIC_LIST_FLAG_LIST_DIRTY = 0x0008,    /* the list's rows colored and queued at the frame's end */
     MUSIC_LIST_FLAG_TAKEN_OUT = 0x0010,     /* a song was taken out: the cursor stays where it was */
     MUSIC_LIST_FLAG_STORE = 0x0020          /* the scene closes into the store screen (mode 0x23) */
 };
@@ -64,7 +64,7 @@ enum MusicListPlace {
  * the vtable's slot 0x48 + 4n). */
 enum MusicListPhase {
     MUSIC_LIST_PHASE_WAIT = 0,        /* the base's wait */
-    MUSIC_LIST_PHASE_STATES = 1,      /* MusicList_RunState */
+    MUSIC_LIST_PHASE_STATE_COUNT = 1, /* MusicList_RunState */
     MUSIC_LIST_PHASE_INTERACTIVE = 2, /* MusicList_RunInteractive */
     MUSIC_LIST_PHASE_END = 5          /* MusicList_End */
 };
@@ -75,7 +75,7 @@ enum MusicListState {
     MUSIC_LIST_STATE_WIPE_IN = 1,  /* MusicList_WipeIn */
     MUSIC_LIST_STATE_CLOSE = 2,    /* MusicList_StartClose */
     MUSIC_LIST_STATE_WIPE_OUT = 3, /* MusicList_WipeOut */
-    MUSIC_LIST_STATES = 4
+    MUSIC_LIST_STATE_COUNT = 4
 };
 
 /* The sub states (MenuScene.sub_state), run by MusicList_RunSubState. */
@@ -93,7 +93,7 @@ enum MusicListSubState {
     MUSIC_LIST_SUB_TAKE_OUT = 10,       /* MusicList_FinishTakeOut */
     MUSIC_LIST_SUB_CLOSE_DELAY = 11,    /* MusicList_CloseDelay */
     MUSIC_LIST_SUB_ERROR = 12,          /* MusicList_ErrorWait */
-    MUSIC_LIST_SUB_STATES = 13
+    MUSIC_LIST_SUB_STATE_COUNT = 13
 };
 
 typedef struct MusicList {

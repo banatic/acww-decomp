@@ -41,7 +41,7 @@ extern AquariumFish *data_ov004_022594d4[AQUARIUM_FISH_KINDS];
 extern AquariumFish *data_ov004_022593ac;
 extern AquariumFish *data_ov004_022593b4;
 extern AquariumFish *data_ov004_022593b8;
-/* The tanks' centres: the first (the sea room's only one) and the river room's second. */
+/* The tanks' centers: the first (the sea room's only one) and the river room's second. */
 extern Vec3 data_ov004_022593dc;
 extern Vec3 data_ov004_022593c4;
 /* What each kind is like. */

@@ -154,7 +154,7 @@ CLEAN_AS(func_ov002_02209d7c, Glide_Y)
 
 /* The width of the screen in 1/16 pixels: glides wrap around it horizontally. */
 #define GLIDE_WRAP_WIDTH 0x1000
-/* The screen's centre, from which a Glider's place is its sprite's offset. */
+/* The screen's center, from which a Glider's place is its sprite's offset. */
 #define SCREEN_CENTER_X 0x80
 #define SCREEN_CENTER_Y 0x60
 /* Glider_DrawWrapped: a sprite drawn right of this x is drawn again one screen to the left. */

@@ -32,7 +32,7 @@ typedef struct EventWinnerTile {
 
 /* An item's kind for the judging (EventWinner_ItemKind): items 0-26 are kinds 0-26 and items
  * 28-30 kinds 27-29; item 27 and the rest count for nothing. */
-#define EVENT_WINNER_ITEM_KINDS 30
+#define EVENT_WINNER_ITEM_KIND_COUNT 30
 
 void EventWinner_JudgeGardens(EventWinner *record);
 int EventWinner_ScoreAroundPlayerHouse(EventWinner *record, AcreMap *map);

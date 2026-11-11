@@ -63,7 +63,7 @@ static_assert(0xec + offsetof(LayeredModel, base.frames) + offsetof(FrameControl
 /* The started one, or null. */
 extern TtiNpc *data_ov004_02258200;
 /* The functions of its states (filled at start-up by __sinit_ov004_0224e968). */
-extern TtiNpcStep data_ov004_02258204[TTI_NPC_STATES];
+extern TtiNpcStep data_ov004_02258204[TTI_NPC_STATE_COUNT];
 /* The vtables of the class and of a class it derives from. */
 extern const u8 data_ov004_02254a38[];
 extern const u8 data_020da088[];

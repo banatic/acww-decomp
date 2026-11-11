@@ -43,8 +43,8 @@ extern int **func_02070be8(void *label);
  * constants. */
 extern u32 data_ov126_022a21a0; /* the sub states' guard */
 extern u32 data_ov126_022a21a4; /* the states' guard */
-extern MemberPointer data_ov126_022a21a8[KEYBOARD_ENTRY_STATES];
-extern MemberPointer data_ov126_022a2208[KEYBOARD_ENTRY_SUB_STATES];
+extern MemberPointer data_ov126_022a21a8[KEYBOARD_ENTRY_STATE_COUNT];
+extern MemberPointer data_ov126_022a2208[KEYBOARD_ENTRY_SUB_STATE_COUNT];
 extern const MemberPointer data_ov126_022a1fc8, data_ov126_022a1fd0, data_ov126_022a1fd8, data_ov126_022a1fe0,
     data_ov126_022a1fe8, data_ov126_022a1ff0, data_ov126_022a1ff8, data_ov126_022a2000, data_ov126_022a2008,
     data_ov126_022a2010, data_ov126_022a2018, data_ov126_022a2020, data_ov126_022a2028, data_ov126_022a2030,
@@ -536,7 +536,7 @@ int KeyboardEntry_RunInput(KeyboardEntry *self)
                     MenuScene_StartWipeOnWindow2(keyboard_entry_scene(self), 10, 0, 0, KEYBOARD_ENTRY_WIPE_MARGIN);
                     KeyboardEntry_ScrollWipe(self);
                     MenuScene_SetState(keyboard_entry_scene(self), KEYBOARD_ENTRY_STATE_WIPE_OUT);
-                    MenuScene_SetPhase(keyboard_entry_scene(self), KEYBOARD_ENTRY_PHASE_STATES);
+                    MenuScene_SetPhase(keyboard_entry_scene(self), KEYBOARD_ENTRY_PHASE_STATE_COUNT);
                     if (mode == KEYBOARD_ENTRY_MODE_NEW_FRIEND_TOWN || mode == KEYBOARD_ENTRY_MODE_NEW_FRIEND_NAME) {
                         WifiFriend_Clear(KeyboardEntry_Friend());
                     }
@@ -558,13 +558,13 @@ CLEAN_AS(_ZN18Obj_ov126_022a20c819func_ov126_022a1a6cEv, KeyboardEntry_RunInput)
  * REQUIRES: the sub state is below 17; the game reads past the table for others. */
 void KeyboardEntry_RunSubState(KeyboardEntry *self)
 {
-    static const MemberPointer *const sub_states[KEYBOARD_ENTRY_SUB_STATES] = {
+    static const MemberPointer *const sub_states[KEYBOARD_ENTRY_SUB_STATE_COUNT] = {
         &data_ov126_022a1ff0, &data_ov126_022a2038, &data_ov126_022a2028, &data_ov126_022a2040, &data_ov126_022a2020,
         &data_ov126_022a2018, &data_ov126_022a2010, &data_ov126_022a2008, &data_ov126_022a2000, &data_ov126_022a2048,
         &data_ov126_022a1fc8, &data_ov126_022a2030, &data_ov126_022a1fe8, &data_ov126_022a1fd8, &data_ov126_022a1fd0,
         &data_ov126_022a1ff8, &data_ov126_022a1fe0,
     };
-    MemberTable_InitOnce(&data_ov126_022a21a0, data_ov126_022a2208, sub_states, KEYBOARD_ENTRY_SUB_STATES);
+    MemberTable_InitOnce(&data_ov126_022a21a0, data_ov126_022a2208, sub_states, KEYBOARD_ENTRY_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov126_022a2208[self->base.sub_state], self);
 }
 CLEAN_AS(_ZN18Obj_ov126_022a20c819func_ov126_022a1b4cEv, KeyboardEntry_RunSubState)
@@ -575,12 +575,12 @@ CLEAN_AS(_ZN18Obj_ov126_022a20c819func_ov126_022a1b4cEv, KeyboardEntry_RunSubSta
  * REQUIRES: the state is below 12; the game reads past the table for others. */
 int KeyboardEntry_RunState(KeyboardEntry *self)
 {
-    static const MemberPointer *const states[KEYBOARD_ENTRY_STATES] = {
+    static const MemberPointer *const states[KEYBOARD_ENTRY_STATE_COUNT] = {
         &data_ov126_022a20a8, &data_ov126_022a20a0, &data_ov126_022a2098, &data_ov126_022a2090,
         &data_ov126_022a2088, &data_ov126_022a2080, &data_ov126_022a2078, &data_ov126_022a2070,
         &data_ov126_022a2068, &data_ov126_022a2060, &data_ov126_022a2058, &data_ov126_022a2050,
     };
-    MemberTable_InitOnce(&data_ov126_022a21a4, data_ov126_022a21a8, states, KEYBOARD_ENTRY_STATES);
+    MemberTable_InitOnce(&data_ov126_022a21a4, data_ov126_022a21a8, states, KEYBOARD_ENTRY_STATE_COUNT);
     KeyboardEntry_BeginFrame(self);
     MemberPointer_CallVoid(&data_ov126_022a21a8[self->base.state], self);
     KeyboardEntry_EndFrame(self);

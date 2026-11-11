@@ -166,7 +166,7 @@ typedef struct MissingNpc1StateFns {
     MemberFn enter;
     MemberFn update;
 } MissingNpc1StateFns;
-extern MissingNpc1StateFns data_021fbbfc[MISSING_NPC1_STATES];
+extern MissingNpc1StateFns data_021fbbfc[MISSING_NPC1_STATE_COUNT];
 /* The one that exists, or null. */
 extern MissingNpc1 *data_021fbbe0;
 

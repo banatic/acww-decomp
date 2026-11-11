@@ -56,23 +56,23 @@ typedef struct Tone {
 } Tone;
 
 /* What a pattern does not set. */
-static const Tone TONE_FLAT = {0, 0x7f};
+static const Tone tone_flat = {0, 0x7f};
 
-static const Tone PATTERN_0[4] = {{-0x40, 0x50}, {0x80, 0x6e}, {0x40, 0x64}, {0x40, 0x69}};
+static const Tone pattern_0[4] = {{-0x40, 0x50}, {0x80, 0x6e}, {0x40, 0x64}, {0x40, 0x69}};
 
-static const Tone PATTERN_1[16] = {
+static const Tone pattern_1[16] = {
     {0xf0, 0x7d}, {0xb4, 0x6e}, {0x96, 0x5a}, {-0x4d, 0x69}, {0xbe, 0x7d}, {0x78, 0x6e}, {0x5a, 0x5a}, {-0x4d, 0x69},
     {0xf0, 0x7d}, {0xb4, 0x6e}, {0x96, 0x5a}, {-0x4d, 0x69}, {0xbe, 0x7d}, {0x78, 0x6e}, {0x5a, 0x5a}, {-0x4d, 0x69},
 };
-static const Tone PATTERN_1_LATER = {-0x4d, 0x69};
+static const Tone pattern_1_later = {-0x4d, 0x69};
 
-static const Tone PATTERN_3[16] = {
+static const Tone pattern_3[16] = {
     {0x5a, 0x69}, {0x1e, 0x5a}, {0, 0x46}, {-0xe3, 0x55}, {0x28, 0x69}, {-0x1e, 0x5a}, {-0x3c, 0x46}, {-0xe3, 0x55},
     {0x5a, 0x69}, {0x1e, 0x5a}, {0, 0x46}, {-0xe3, 0x55}, {0x28, 0x69}, {-0x1e, 0x5a}, {-0x3c, 0x46}, {-0xe3, 0x55},
 };
-static const Tone PATTERN_3_LATER = {-0xe3, 0x55};
+static const Tone pattern_3_later = {-0xe3, 0x55};
 
-static const Tone PATTERN_4[16] = {
+static const Tone pattern_4[16] = {
     {0x80, 0x4b},  {0x100, 0x5f}, {0x1c0, 0x7d}, {0x140, 0x69}, {0xc0, 0x55}, {0x80, 0x4b},  {0x40, 0x41}, {0x80, 0x4b},
     {0x1c0, 0x7d}, {0x140, 0x69}, {0xc0, 0x55},  {0x40, 0x41},  {0x80, 0x4b}, {0x140, 0x69}, {0x80, 0x4b}, {0x140, 0x69},
 };
@@ -132,17 +132,17 @@ void Voice_Speak(SoundSystem *system, int action, int pattern, unsigned short ch
             } else {
                 unsigned step = data_021fd1b0;
                 int spaces_before_restart = 0;
-                Tone tone = TONE_FLAT;
+                Tone tone = tone_flat;
                 int sequence = 0;
 
                 switch (pattern) {
                     case 0:
                         spaces_before_restart = 1;
-                        tone = tone_at(PATTERN_0, 4, step, TONE_FLAT);
+                        tone = tone_at(pattern_0, 4, step, tone_flat);
                         break;
                     case 1:
                         spaces_before_restart = 1;
-                        tone = tone_at(PATTERN_1, 16, step, PATTERN_1_LATER);
+                        tone = tone_at(pattern_1, 16, step, pattern_1_later);
                         break;
                     case 2:
                         /* A falling line, starting higher every other time. */
@@ -160,11 +160,11 @@ void Voice_Speak(SoundSystem *system, int action, int pattern, unsigned short ch
                         break;
                     case 3:
                         spaces_before_restart = 1;
-                        tone = tone_at(PATTERN_3, 16, step, PATTERN_3_LATER);
+                        tone = tone_at(pattern_3, 16, step, pattern_3_later);
                         break;
                     case 4:
                         spaces_before_restart = 2;
-                        tone = tone_at(PATTERN_4, 16, step, TONE_FLAT);
+                        tone = tone_at(pattern_4, 16, step, tone_flat);
                         break;
                 }
 
@@ -251,13 +251,13 @@ CLEAN_AS(func_020efc74, Voice_Speak)
 /* The vowel classes of the 21 Hangul medials, by the kana vowel they are voiced with. */
 enum { V_A, V_I, V_U, V_E, V_O };
 
-static const u8 MEDIAL_VOWEL[MEDIALS] = {
+static const u8 medial_vowel[MEDIALS] = {
     V_A, V_A, V_A, V_E, V_O, V_E, V_O, V_E, V_O, V_A, V_E, /* a ae ya yae eo e yeo ye o wa wae */
     V_E, V_O, V_U, V_O, V_E, V_I, V_U, V_U, V_I, V_I,      /* oe yo u wo we wi yu eu ui i */
 };
 
 /* The samples of each of the 19 initials, by vowel class (a i u e o). */
-static const u8 INITIAL_ROW[19][5] = {
+static const u8 initial_row[19][5] = {
     {0x2e, 0x2f, 0x30, 0x31, 0x32}, /* g: ga row */
     {0x06, 0x07, 0x08, 0x09, 0x0a}, /* kk: ka row */
     {0x15, 0x16, 0x17, 0x18, 0x19}, /* n: na row */
@@ -308,7 +308,7 @@ int Voice_SampleOfSyllable(SoundSystem *system, int ch)
                 return 0x2c;
         }
     }
-    return INITIAL_ROW[initial][MEDIAL_VOWEL[medial]];
+    return initial_row[initial][medial_vowel[medial]];
 }
 CLEAN_AS(func_020f0444, Voice_SampleOfSyllable)
 

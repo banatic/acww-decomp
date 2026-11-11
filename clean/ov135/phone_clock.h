@@ -25,9 +25,9 @@
 
 /* The places of the cursor (`cursor`). */
 enum PhoneClockPlace {
-    PHONE_CLOCK_FIELDS = 5, /* 0-4: the fields */
-    PHONE_CLOCK_SET = 5,    /* the panel's button 6 */
-    PHONE_CLOCK_CANCEL = 6, /* the panel's button 7 */
+    PHONE_CLOCK_FIELD_COUNT = 5, /* 0-4: the fields */
+    PHONE_CLOCK_SET = 5,         /* the panel's button 6 */
+    PHONE_CLOCK_CANCEL = 6,      /* the panel's button 7 */
     PHONE_CLOCK_PLACES = 7
 };
 
@@ -44,7 +44,7 @@ enum PhoneClockState {
     PHONE_CLOCK_STATE_WIPE_IN = 1,        /* PhoneClock_WipeIn */
     PHONE_CLOCK_STATE_START_WIPE_OUT = 2, /* PhoneClock_StartWipeOut */
     PHONE_CLOCK_STATE_WIPE_OUT = 3,       /* PhoneClock_WipeOut */
-    PHONE_CLOCK_STATES = 4
+    PHONE_CLOCK_STATE_COUNT = 4
 };
 
 /* The sub states, run from the table of PhoneClock_RunSubState (MenuScene_SetSubState). */
@@ -65,7 +65,7 @@ enum PhoneClockSubState {
     PHONE_CLOCK_SUB_PANEL_PRESSED = 13, /* PhoneClock_FollowPanelPress */
     PHONE_CLOCK_SUB_FIELD_OPEN = 14,    /* PhoneClock_WaitFieldOpen */
     PHONE_CLOCK_SUB_FIELD_CLOSE = 15,   /* PhoneClock_WaitFieldClosed */
-    PHONE_CLOCK_SUB_STATES = 16
+    PHONE_CLOCK_SUB_STATE_COUNT = 16
 };
 
 typedef struct PhoneClock {

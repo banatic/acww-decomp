@@ -9,7 +9,7 @@
 #include "types.h"
 
 /* The table of the otter's states. */
-extern OtterStep data_ov076_0227988c[OTTER_STATES];
+extern OtterStep data_ov076_0227988c[OTTER_STATE_COUNT];
 /* The null member pointer (state 2 has no entry), and each state's entry and update. */
 extern const MemberPointer __ptmf_null;
 extern const MemberPointer data_ov076_02279680, data_ov076_02279690, data_ov076_02279698, data_ov076_022796a0,
@@ -20,7 +20,7 @@ extern const MemberPointer data_ov076_02279680, data_ov076_02279690, data_ov076_
  * address of the table. */
 int Ov076Init_OtterStates(void)
 {
-    static const MemberPointer *const steps[2 * OTTER_STATES] = {
+    static const MemberPointer *const steps[2 * OTTER_STATE_COUNT] = {
         &data_ov076_022796c8, &data_ov076_022796d8, /* 0: Otter_EnterStand, Otter_UpdateStand */
         &data_ov076_022796d0, &data_ov076_022796a8, /* 1: Otter_EnterTalk, Otter_UpdateTalk */
         &__ptmf_null,         &data_ov076_022796c0, /* 2: none, Otter_UpdateTalked */
@@ -28,7 +28,7 @@ int Ov076Init_OtterStates(void)
         &data_ov076_022796b0, &data_ov076_022796a0, /* 4: Otter_EnterDive, Otter_UpdateDive */
         &data_ov076_02279690, &data_ov076_02279698, /* 5: Otter_EnterGone, Otter_UpdateGone */
     };
-    for (int i = 0; i < OTTER_STATES; i++) {
+    for (int i = 0; i < OTTER_STATE_COUNT; i++) {
         data_ov076_0227988c[i].enter = *steps[2 * i];
         data_ov076_0227988c[i].update = *steps[2 * i + 1];
     }

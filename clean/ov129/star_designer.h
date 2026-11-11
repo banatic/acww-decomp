@@ -105,7 +105,7 @@ enum StarDesignerState {
     STAR_DESIGNER_STATE_BACK_WIPE_OUT = 9, /* StarDesigner_StateBackWipeOut */
     STAR_DESIGNER_STATE_BACK_SHOW = 10,    /* StarDesigner_StateBackShow */
     STAR_DESIGNER_STATE_BACK_WIPE_IN = 11, /* StarDesigner_StateBackWipeIn */
-    STAR_DESIGNER_STATES = 12
+    STAR_DESIGNER_STATE_COUNT = 12
 };
 
 /* The sub states (phase 2, StarDesigner_RunSubState). */
@@ -125,14 +125,14 @@ enum StarDesignerSubState {
     STAR_DESIGNER_SUB_ANSWER_KEYS = 12,  /* StarDesigner_SubAnswerKeys */
     STAR_DESIGNER_SUB_ANSWER_PRESS = 13, /* StarDesigner_SubAnswerPress */
     STAR_DESIGNER_SUB_ERROR = 14,        /* StarDesigner_SubError */
-    STAR_DESIGNER_SUB_STATES = 15
+    STAR_DESIGNER_SUB_STATE_COUNT = 15
 };
 
 /* The phases set (MenuScene_Update runs phase 0 by the vtable's slot 0x48, 1 by 0x4c, 2 by
  * 0x50 and 5 by 0x5c). */
 enum StarDesignerPhase {
     STAR_DESIGNER_PHASE_WAIT = 0,        /* the base's MenuScene_Wait */
-    STAR_DESIGNER_PHASE_STATES = 1,      /* StarDesigner_RunState */
+    STAR_DESIGNER_PHASE_STATE_COUNT = 1, /* StarDesigner_RunState */
     STAR_DESIGNER_PHASE_INTERACTIVE = 2, /* StarDesigner_RunInteractive */
     STAR_DESIGNER_PHASE_DELETE = 5       /* StarDesigner_RequestDelete */
 };

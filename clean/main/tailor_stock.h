@@ -17,7 +17,7 @@
 
 typedef struct TailorStock {
     u16 items[TAILOR_STOCK_ITEMS];
-    Date stocked; /* 0x0c: the day of the stock; `unused` 1 asks for a restock */
+    Date stocked; /* 0x0c: the day of the stock; `extra` 1 asks for a restock */
     u8 sold[1];   /* 0x10: a bit for each item */
 } TailorStock;
 

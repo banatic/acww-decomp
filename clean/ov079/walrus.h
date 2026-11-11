@@ -37,7 +37,7 @@
 #define WALRUS_WANDER 2
 #define WALRUS_STAND 3
 #define WALRUS_TALK 4
-#define WALRUS_STATES 5
+#define WALRUS_STATE_COUNT 5
 
 typedef struct Walrus {
     u8 unk_000[0x5c];  /* the scene object (special_scene_object.h, scene_object.h) */
@@ -61,7 +61,7 @@ typedef struct WalrusStateRow {
     MemberPointer enter;
     MemberPointer run;
 } WalrusStateRow;
-extern WalrusStateRow data_ov079_0227a224[WALRUS_STATES];
+extern WalrusStateRow data_ov079_0227a224[WALRUS_STATE_COUNT];
 
 /* The object's life and vtable slots. */
 Walrus *Walrus_Destruct(Walrus *self);

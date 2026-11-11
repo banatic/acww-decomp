@@ -60,8 +60,8 @@ extern const char data_ov119_0229cfe0[];
  * table also names the sub states' table's later part, at 0x0229d0b0) and their constants. */
 extern u32 data_ov119_0229d000; /* the sub states' guard */
 extern u32 data_ov119_0229d004; /* the states' guard */
-extern MemberPointer data_ov119_0229d008[FRIEND_ROSTER_STATES];
-extern MemberPointer data_ov119_0229d030[FRIEND_ROSTER_SUB_STATES];
+extern MemberPointer data_ov119_0229d008[FRIEND_ROSTER_STATE_COUNT];
+extern MemberPointer data_ov119_0229d030[FRIEND_ROSTER_SUB_STATE_COUNT];
 extern const MemberPointer data_ov119_0229cbe0, data_ov119_0229cbf0, data_ov119_0229cbf8, data_ov119_0229cc00,
     data_ov119_0229cc08, data_ov119_0229cc10, data_ov119_0229cc18, data_ov119_0229cc20, data_ov119_0229cc28,
     data_ov119_0229cc38, data_ov119_0229cc40, data_ov119_0229cc48, data_ov119_0229cc50, data_ov119_0229cc58,
@@ -510,13 +510,13 @@ CLEAN_AS(_ZN18Obj_ov119_0229cea019func_ov119_0229c730Ev, FriendRoster_RunInterac
  * REQUIRES: the sub state is below 0x12; the game reads past the table for others. */
 void FriendRoster_RunSubState(FriendRoster *self)
 {
-    static const MemberPointer *const sub_states[FRIEND_ROSTER_SUB_STATES] = {
+    static const MemberPointer *const sub_states[FRIEND_ROSTER_SUB_STATE_COUNT] = {
         &data_ov119_0229cc68, &data_ov119_0229cc08, &data_ov119_0229cc48, &data_ov119_0229cc50, &data_ov119_0229cc00,
         &data_ov119_0229cc10, &data_ov119_0229cc70, &data_ov119_0229cbe0, &data_ov119_0229cc28, &data_ov119_0229cc20,
         &data_ov119_0229cc78, &data_ov119_0229cc60, &data_ov119_0229cbf8, &data_ov119_0229cc58, &data_ov119_0229cc38,
         &data_ov119_0229cbf0, &data_ov119_0229cc18, &data_ov119_0229cc40,
     };
-    MemberTable_InitOnce(&data_ov119_0229d000, data_ov119_0229d030, sub_states, FRIEND_ROSTER_SUB_STATES);
+    MemberTable_InitOnce(&data_ov119_0229d000, data_ov119_0229d030, sub_states, FRIEND_ROSTER_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov119_0229d030[self->base.sub_state], self);
 }
 CLEAN_AS(_ZN18Obj_ov119_0229cea019func_ov119_0229c75cEv, FriendRoster_RunSubState)
@@ -527,10 +527,10 @@ CLEAN_AS(_ZN18Obj_ov119_0229cea019func_ov119_0229c75cEv, FriendRoster_RunSubStat
  * REQUIRES: the state is below 5; the game reads past the table for others. */
 int FriendRoster_RunState(FriendRoster *self)
 {
-    static const MemberPointer *const states[FRIEND_ROSTER_STATES] = {
+    static const MemberPointer *const states[FRIEND_ROSTER_STATE_COUNT] = {
         &data_ov119_0229cca0, &data_ov119_0229cc98, &data_ov119_0229cc90, &data_ov119_0229cc88, &data_ov119_0229cc80,
     };
-    MemberTable_InitOnce(&data_ov119_0229d004, data_ov119_0229d008, states, FRIEND_ROSTER_STATES);
+    MemberTable_InitOnce(&data_ov119_0229d004, data_ov119_0229d008, states, FRIEND_ROSTER_STATE_COUNT);
     FriendRoster_BeginFrame(self);
     MemberPointer_CallVoid(&data_ov119_0229d008[self->base.state], self);
     FriendRoster_EndFrame(self);
@@ -611,7 +611,7 @@ int FriendRoster_Start(FriendRoster *self)
 {
     FriendRoster_SetUp(self);
     MenuScene_SetState(fr_scene(self), FRIEND_ROSTER_STATE_LOAD);
-    MenuScene_SetPhase(fr_scene(self), FRIEND_ROSTER_PHASE_STATES);
+    MenuScene_SetPhase(fr_scene(self), FRIEND_ROSTER_PHASE_STATE_COUNT);
     return 1;
 }
 CLEAN_AS(func_ov119_0229cb14, FriendRoster_Start)

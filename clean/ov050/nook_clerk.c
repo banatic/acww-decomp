@@ -211,7 +211,7 @@ extern const u8 data_020da088[];
 extern const char *const data_ov050_0226585c[NOOK_CLERK_LOOKS];
 extern const char *const data_ov050_02265848[NOOK_CLERK_LOOKS];
 /* The functions of the states (filled at start-up by __sinit_ov050_0226520c). */
-extern NookClerkStep data_ov050_02265f08[NOOK_CLERK_STATES];
+extern NookClerkStep data_ov050_02265f08[NOOK_CLERK_STATE_COUNT];
 /* The talk modes of an item on display by class (NOOK_CLERK_ROW_*): Tom Nook's, a twin's. */
 extern const s32 data_ov050_022650e4[NOOK_CLERK_ROWS][2];
 /* Three points of the store: the player at work goes toward the door past (13.0, 8.0); the

@@ -48,7 +48,7 @@ typedef struct FleaMarketVillagerStep {
     MemberPointer update; /* 0x08: int (villager) */
 } FleaMarketVillagerStep;
 
-#define FLEA_MARKET_VILLAGER_STATES 8
+#define FLEA_MARKET_VILLAGER_STATE_COUNT 8
 
 /* Its talk scene (0x1ac bytes, vtable data_ov004_02253b24). */
 typedef struct FleaMarketTalk {

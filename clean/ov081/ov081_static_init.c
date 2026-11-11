@@ -10,7 +10,7 @@
 #include "types.h"
 
 /* The table of his states. */
-extern TurtleFishingStep data_ov081_022798b4[TURTLE_FISHING_STATES];
+extern TurtleFishingStep data_ov081_022798b4[TURTLE_FISHING_STATE_COUNT];
 /* The null member pointer (state 2 has no entry), and each state's entry and update. */
 extern const MemberPointer __ptmf_null;
 extern const MemberPointer data_ov081_022796a0, data_ov081_022796b8, data_ov081_022796c0, data_ov081_022796c8,
@@ -20,12 +20,12 @@ extern const MemberPointer data_ov081_022796a0, data_ov081_022796b8, data_ov081_
  * of the table. */
 int Ov081Init_TurtleFishingStates(void)
 {
-    static const MemberPointer *const steps[2 * TURTLE_FISHING_STATES] = {
+    static const MemberPointer *const steps[2 * TURTLE_FISHING_STATE_COUNT] = {
         &data_ov081_022796a0, &data_ov081_022796b8, /* 0: TurtleFishing_EnterStand, TurtleFishing_UpdateStand */
         &data_ov081_022796d0, &data_ov081_022796c8, /* 1: TurtleFishing_EnterTalk, TurtleFishing_UpdateTalk */
         &__ptmf_null,         &data_ov081_022796c0, /* 2: none, TurtleFishing_UpdateTalked */
     };
-    for (int i = 0; i < TURTLE_FISHING_STATES; i++) {
+    for (int i = 0; i < TURTLE_FISHING_STATE_COUNT; i++) {
         data_ov081_022798b4[i].enter = *steps[2 * i];
         data_ov081_022798b4[i].update = *steps[2 * i + 1];
     }

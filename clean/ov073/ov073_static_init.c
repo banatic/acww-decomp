@@ -54,7 +54,7 @@ extern BoarInitRecord data_ov073_02279be4, data_ov073_02279bf0;
  * registered. */
 void BoarInit_Tables(void)
 {
-    static const MemberPointer *const states[2 * BOAR_STATES] = {
+    static const MemberPointer *const states[2 * BOAR_STATE_COUNT] = {
         &data_ov073_022799c8, &data_ov073_022799e0, /* BOAR_FINISH: Boar_EnterFinish, Boar_UpdateFinish */
         &__ptmf_null,         &data_ov073_022799e8, /* BOAR_DONE: no entry, Boar_UpdateDone */
         &data_ov073_022799f0, &data_ov073_022799f8, /* BOAR_WANDER */
@@ -68,7 +68,7 @@ void BoarInit_Tables(void)
     boar_init_color(&data_ov073_02279bd4, 20, 31, 20, 31);
     boar_init_color(&data_ov073_02279bc0, 20, 31, 31, 31);
     boar_init_color(&data_ov073_02279bc8, 20, 24, 24, 31);
-    for (int i = 0; i < BOAR_STATES; i++) {
+    for (int i = 0; i < BOAR_STATE_COUNT; i++) {
         data_ov073_02279c14[i].enter = *states[2 * i];
         data_ov073_02279c14[i].run = *states[2 * i + 1];
     }

@@ -31,7 +31,7 @@
 #define TURTLE_STAND 0
 #define TURTLE_TALK 1
 #define TURTLE_TALKED 2
-#define TURTLE_STATES 3
+#define TURTLE_STATE_COUNT 3
 
 /* The size of the special character's scene object he derives from, as far as it is used. */
 #define TURTLE_BASE_SIZE 0x654
@@ -48,7 +48,7 @@ typedef struct TurtleStateRow {
     MemberPointer enter;
     MemberPointer run;
 } TurtleStateRow;
-extern TurtleStateRow data_ov080_022793e0[TURTLE_STATES];
+extern TurtleStateRow data_ov080_022793e0[TURTLE_STATE_COUNT];
 
 /* The object's life and vtable slots. */
 Turtle *Turtle_Destruct(Turtle *self);

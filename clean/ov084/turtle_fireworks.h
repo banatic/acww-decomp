@@ -55,7 +55,7 @@ enum TurtleFireworksState {
     TURTLE_FIREWORKS_STAND = 0,
     TURTLE_FIREWORKS_TALKING = 1,
     TURTLE_FIREWORKS_TALKED = 2,
-    TURTLE_FIREWORKS_STATES = 3
+    TURTLE_FIREWORKS_STATE_COUNT = 3
 };
 
 /* A state's functions in data_ov084_022795a0. */

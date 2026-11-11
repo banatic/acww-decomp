@@ -99,7 +99,7 @@ extern const u8 data_ov068_02277e50[];
 extern const u8 data_ov068_02277dc0[];
 /* The scene's steps and the guest's states. */
 extern CafeGuestStep data_ov068_02277d70[CAFE_GUEST_STEPS];
-extern CafeGuestStateFns data_ov068_02278840[CAFE_GUEST_STATES];
+extern CafeGuestStateFns data_ov068_02278840[CAFE_GUEST_STATE_COUNT];
 /* By kind: the message file, the person code, the model's and the texture's file names. */
 extern const char *const data_ov068_02277ca4[CAFE_GUEST_KINDS];
 extern const u16 data_ov068_022767ec[CAFE_GUEST_KINDS];
@@ -1017,10 +1017,10 @@ int CafeGuest_UpdatePlay(CafeGuest *self)
 }
 CLEAN_AS(func_ov068_02274734, CafeGuest_UpdatePlay)
 
-/* func_ov068_02274790 (start of CAFE_GUEST_PLAY): animation 0x102, overlay 4's
+/* func_ov068_02274790 (entry of CAFE_GUEST_PLAY): animation 0x102, overlay 4's
  * RoomCamera_SetModeShow, the guest looks ahead and talks (keeping the camera), and value 0xf is
  * added to the music of priority 0x10. */
-int CafeGuest_StartPlay(CafeGuest *self)
+int CafeGuest_EnterPlay(CafeGuest *self)
 {
     SceneMotion_RequestAnimation(guest_motion(self), 1, CAFE_GUEST_ANIM_TALK, 0, data_020c80f8, 0);
     RoomCamera_SetModeShow();
@@ -1030,7 +1030,7 @@ int CafeGuest_StartPlay(CafeGuest *self)
     Music_SetNoHourTune();
     return 1;
 }
-CLEAN_AS(func_ov068_02274790, CafeGuest_StartPlay)
+CLEAN_AS(func_ov068_02274790, CafeGuest_EnterPlay)
 
 /* func_ov068_02274810 (update of CAFE_GUEST_SEATED): once the player is in state 0x28,
  * CAFE_GUEST_PLAY. */
@@ -1043,12 +1043,12 @@ int CafeGuest_UpdateSeated(CafeGuest *self)
 }
 CLEAN_AS(func_ov068_02274810, CafeGuest_UpdateSeated)
 
-/* func_ov068_02274830 (start of CAFE_GUEST_SEATED) */
-int CafeGuest_StartSeated(void)
+/* func_ov068_02274830 (entry of CAFE_GUEST_SEATED) */
+int CafeGuest_EnterSeated(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov068_02274830, CafeGuest_StartSeated)
+CLEAN_AS(func_ov068_02274830, CafeGuest_EnterSeated)
 
 /* func_ov068_02274834 (update of CAFE_GUEST_DONE) */
 int CafeGuest_UpdateDone(void)
@@ -1057,12 +1057,12 @@ int CafeGuest_UpdateDone(void)
 }
 CLEAN_AS(func_ov068_02274834, CafeGuest_UpdateDone)
 
-/* func_ov068_02274838 (start of CAFE_GUEST_DONE) */
-int CafeGuest_StartDone(void)
+/* func_ov068_02274838 (entry of CAFE_GUEST_DONE) */
+int CafeGuest_EnterDone(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov068_02274838, CafeGuest_StartDone)
+CLEAN_AS(func_ov068_02274838, CafeGuest_EnterDone)
 
 /* func_ov068_0227483c (update of CAFE_GUEST_TALK): once its talk has ended, its event is
  * finished and CAFE_GUEST_DONE.
@@ -1080,9 +1080,9 @@ int CafeGuest_UpdateTalk(CafeGuest *self)
 }
 CLEAN_AS(func_ov068_0227483c, CafeGuest_UpdateTalk)
 
-/* func_ov068_02274878 (start of CAFE_GUEST_TALK): kind 7 takes animation 0x102; the guest looks
+/* func_ov068_02274878 (entry of CAFE_GUEST_TALK): kind 7 takes animation 0x102; the guest looks
  * at the player (look kind 4) and talks. */
-int CafeGuest_StartTalk(CafeGuest *self)
+int CafeGuest_EnterTalk(CafeGuest *self)
 {
     if (self->kind == CAFE_GUEST_KIND_MUSIC) {
         SceneMotion_RequestAnimation(guest_motion(self), 1, CAFE_GUEST_ANIM_TALK, 0, data_020c80f8, 0);
@@ -1091,7 +1091,7 @@ int CafeGuest_StartTalk(CafeGuest *self)
     SceneAction_RequestTalk(guest_action(self), 0, 0);
     return 1;
 }
-CLEAN_AS(func_ov068_02274878, CafeGuest_StartTalk)
+CLEAN_AS(func_ov068_02274878, CafeGuest_EnterTalk)
 
 /* func_ov068_022748f0 (update of CAFE_GUEST_WAIT): kind 8 (none) is deleted; kind 7 waits for
  * the player at its seat; the others show parts 6 and 7 of the cafe master's cup (cafe_props.h),
@@ -1115,9 +1115,9 @@ int CafeGuest_UpdateWait(CafeGuest *self)
 }
 CLEAN_AS(func_ov068_022748f0, CafeGuest_UpdateWait)
 
-/* func_ov068_0227492c (start of CAFE_GUEST_WAIT): kind 7 looks about (look kind 0, within view),
+/* func_ov068_0227492c (entry of CAFE_GUEST_WAIT): kind 7 looks about (look kind 0, within view),
  * takes animation 0x105 and looks up; the others look about with look kind 1. */
-int CafeGuest_StartWait(CafeGuest *self)
+int CafeGuest_EnterWait(CafeGuest *self)
 {
     if (self->kind == CAFE_GUEST_KIND_MUSIC) {
         SceneLook_Request(guest_look(self), 0, 0, 0, &data_021fbee8, GUEST_PLAYER, data_020c814c, 1);
@@ -1128,7 +1128,7 @@ int CafeGuest_StartWait(CafeGuest *self)
     }
     return 1;
 }
-CLEAN_AS(func_ov068_0227492c, CafeGuest_StartWait)
+CLEAN_AS(func_ov068_0227492c, CafeGuest_EnterWait)
 
 /* func_ov068_022749dc: the state's start run (when it has one); unless it answers 0 the state
  * is taken.

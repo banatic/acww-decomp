@@ -95,7 +95,7 @@ extern const u8 data_ov085_022794f0[];
 extern const u8 data_020d8c64[];
 extern const u8 data_020da088[];
 /* His states' functions (filled at start-up by __sinit_ov085_02279368). */
-extern TurtleSnowFestivalStep data_ov085_022795e0[TURTLE_SNOW_FESTIVAL_STATES];
+extern TurtleSnowFestivalStep data_ov085_022795e0[TURTLE_SNOW_FESTIVAL_STATE_COUNT];
 /* His model's and texture's file names: "npc_sp/model/ttl.nsbmd", "npc_sp/model/ttl_tex.nsbtx". */
 extern const char data_ov085_02279408[];
 extern const char data_ov085_02279438[];

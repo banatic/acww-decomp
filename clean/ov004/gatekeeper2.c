@@ -117,7 +117,7 @@ extern const u8 data_ov004_02254888[];
 /* The functions of its talk scene's tasks (filled at start-up by __sinit_ov004_0224e85c); the
  * flags that say which run at each step are in the overlay's .bss, so all are 0 and every task
  * runs when a command ends. */
-extern Gatekeeper2TalkStep data_ov004_02258160[GATEKEEPER2_TALK_STATES];
+extern Gatekeeper2TalkStep data_ov004_02258160[GATEKEEPER2_TALK_STATE_COUNT];
 /* Its message file's name, "sp_npc_gatekeeper2" (an address). */
 extern const u32 data_ov004_02254794;
 /* The session of the multiplayer game. */
@@ -620,7 +620,7 @@ static_assert(sizeof(Gatekeeper2Step) == 0x10, "a state's functions");
 #define GATEKEEPER2_SHARED_SCENE 0xb
 
 /* The functions of its states (filled at start-up by __sinit_ov004_0224e85c). */
-extern Gatekeeper2Step data_ov004_02258190[GATEKEEPER2_STATES];
+extern Gatekeeper2Step data_ov004_02258190[GATEKEEPER2_STATE_COUNT];
 /* The addresses of its model's and texture's file names, "npc_sp/model/pla.nsbmd" and
  * "npc_sp/model/pla_tex.nsbtx". */
 extern const u32 data_ov004_0225478c;

@@ -36,7 +36,7 @@ extern const u32 data_020da13c[];
 extern const u32 data_020e3758[];
 
 /* Each state's entry and update (filled at start-up, __sinit_020c66e0). */
-extern StartMenuStateFns data_021f3ba4[START_MENU_STATES];
+extern StartMenuStateFns data_021f3ba4[START_MENU_STATE_COUNT];
 
 extern const char data_020e37d0[]; /* "sp_etc_sequence2" */
 extern const char data_020e37e4[]; /* "sp_etc_sequence4" */

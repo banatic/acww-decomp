@@ -1548,7 +1548,7 @@ CLEAN_AS(func_ov106_0229dd44, MailboxScene_RunActionWhenIdle)
  * state 0x18. */
 void MailboxScene_CloseChoice(MailboxScene *self)
 {
-    if (PagedChoice_CountDown(mbx_choice(self)) != 0) {
+    if (PagedChoice_Tick(mbx_choice(self)) != 0) {
         PagedChoice_RequestClose(mbx_choice(self), 0);
         Popup_Hide(&self->popup, 1);
         if (CellLayerSprite_AnimNumber(mbx_cursor_cells(self)) != 0) {
@@ -2044,8 +2044,8 @@ extern void func_02066694(void *letter);
  * 0x0229f920). */
 extern u32 data_ov106_0229f7c0; /* the states' guard */
 extern u32 data_ov106_0229f7c4; /* the sub states' guard */
-extern MemberPointer data_ov106_0229f7c8[MAILBOX_SCENE_STATES];
-extern MemberPointer data_ov106_0229f820[MAILBOX_SCENE_SUB_STATES];
+extern MemberPointer data_ov106_0229f7c8[MAILBOX_SCENE_STATE_COUNT];
+extern MemberPointer data_ov106_0229f820[MAILBOX_SCENE_SUB_STATE_COUNT];
 extern const MemberPointer data_ov106_0229f548, data_ov106_0229f550, data_ov106_0229f558, data_ov106_0229f560,
     data_ov106_0229f568, data_ov106_0229f570, data_ov106_0229f578, data_ov106_0229f580, data_ov106_0229f588,
     data_ov106_0229f590, data_ov106_0229f598, data_ov106_0229f5a0, data_ov106_0229f5a8, data_ov106_0229f5b0,
@@ -2535,7 +2535,7 @@ CLEAN_AS(_ZN18Obj_ov106_0229f6e019func_ov106_0229ef30Ev, MailboxScene_RunInterac
  * REQUIRES: the sub state is below 0x27; the game reads past the table for others. */
 void MailboxScene_RunSubState(MailboxScene *self)
 {
-    static const MemberPointer *const sub_states[MAILBOX_SCENE_SUB_STATES] = {
+    static const MemberPointer *const sub_states[MAILBOX_SCENE_SUB_STATE_COUNT] = {
         &data_ov106_0229f670, &data_ov106_0229f668, &data_ov106_0229f5c0, &data_ov106_0229f658, &data_ov106_0229f650,
         &data_ov106_0229f648, &data_ov106_0229f640, &data_ov106_0229f638, &data_ov106_0229f630, &data_ov106_0229f5a0,
         &data_ov106_0229f5a8, &data_ov106_0229f618, &data_ov106_0229f610, &data_ov106_0229f608, &data_ov106_0229f600,
@@ -2545,7 +2545,7 @@ void MailboxScene_RunSubState(MailboxScene *self)
         &data_ov106_0229f580, &data_ov106_0229f5d0, &data_ov106_0229f548, &data_ov106_0229f560, &data_ov106_0229f628,
         &data_ov106_0229f558, &data_ov106_0229f550, &data_ov106_0229f578, &data_ov106_0229f660,
     };
-    MemberTable_InitOnce(&data_ov106_0229f7c4, data_ov106_0229f820, sub_states, MAILBOX_SCENE_SUB_STATES);
+    MemberTable_InitOnce(&data_ov106_0229f7c4, data_ov106_0229f820, sub_states, MAILBOX_SCENE_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov106_0229f820[self->base.sub_state], self);
 }
 CLEAN_AS(_ZN18Obj_ov106_0229f6e019func_ov106_0229ef8cEv, MailboxScene_RunSubState)
@@ -2556,12 +2556,12 @@ CLEAN_AS(_ZN18Obj_ov106_0229f6e019func_ov106_0229ef8cEv, MailboxScene_RunSubStat
  * REQUIRES: the state is below 0x0b; the game reads past the table for others. */
 int MailboxScene_RunState(MailboxScene *self)
 {
-    static const MemberPointer *const states[MAILBOX_SCENE_STATES] = {
+    static const MemberPointer *const states[MAILBOX_SCENE_STATE_COUNT] = {
         &data_ov106_0229f678, &data_ov106_0229f6d0, &data_ov106_0229f6c8, &data_ov106_0229f6c0,
         &data_ov106_0229f6b8, &data_ov106_0229f6b0, &data_ov106_0229f6a8, &data_ov106_0229f6a0,
         &data_ov106_0229f698, &data_ov106_0229f690, &data_ov106_0229f688,
     };
-    MemberTable_InitOnce(&data_ov106_0229f7c0, data_ov106_0229f7c8, states, MAILBOX_SCENE_STATES);
+    MemberTable_InitOnce(&data_ov106_0229f7c0, data_ov106_0229f7c8, states, MAILBOX_SCENE_STATE_COUNT);
     MailboxScene_BeginFrame(self);
     MemberPointer_CallVoid(&data_ov106_0229f7c8[self->base.state], self);
     MailboxScene_EndFrame(self);

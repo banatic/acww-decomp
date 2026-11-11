@@ -187,7 +187,7 @@ extern const u8 data_020da088[];
 extern const char data_ov049_022632d8[];
 extern const char data_ov049_02263308[];
 /* The functions of her states (filled at start-up by __sinit_ov049_02262e14). */
-extern MabelStep data_ov049_02263640[MABEL_STATES];
+extern MabelStep data_ov049_02263640[MABEL_STATE_COUNT];
 /* The word her motion requests carry, and the angle off the player she turns beyond when
  * linked. */
 extern u16 data_020c80f8;

@@ -70,7 +70,7 @@ enum NookClerkState {
     NOOK_CLERK_STATE_APPROACH = 16,
     NOOK_CLERK_STATE_LEAD = 17,
     NOOK_CLERK_STATE_TURN_ASK = 18,
-    NOOK_CLERK_STATES = 19
+    NOOK_CLERK_STATE_COUNT = 19
 };
 
 /* A state's functions in data_ov050_02265f08. */

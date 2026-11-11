@@ -1,5 +1,5 @@
 /* The friend code entry of overlay 133 (friend_code_entry.h): its destructors and flags, the
- * keypad's colours, the code's digits and their editing, the checks of a confirmed code, the
+ * keypad's colors, the code's digits and their editing, the checks of a confirmed code, the
  * pointer sprite and the error message. */
 #include "friend_code_entry.h"
 

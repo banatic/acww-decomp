@@ -82,8 +82,8 @@ extern void G2x_SetBlendBrightnessExt_(u32 reg, u32 planes, u32 second_planes, u
  * constants they are filled from. */
 extern u32 data_ov113_0229ad60; /* the states' guard */
 extern u32 data_ov113_0229ad64; /* the sub states' guard */
-extern MemberPointer data_ov113_0229ad68[BBS_BOARD_SUB_STATES];
-extern MemberPointer data_ov113_0229ad90[BBS_BOARD_STATES];
+extern MemberPointer data_ov113_0229ad68[BBS_BOARD_SUB_STATE_COUNT];
+extern MemberPointer data_ov113_0229ad90[BBS_BOARD_STATE_COUNT];
 extern const MemberPointer data_ov113_0229ab80; /* BbsBoard_Open */
 extern const MemberPointer data_ov113_0229ab90; /* BbsBoard_WaitGlide */
 extern const MemberPointer data_ov113_0229ab98; /* BbsBoard_UpdateKeys */
@@ -392,7 +392,7 @@ CLEAN_AS(func_ov113_02299a80, BbsBoard_CountPosts)
 static int bbs_turn(BbsBoard *self)
 {
     self->base.state = BBS_BOARD_STATE_TURN;
-    MenuScene_SetPhase(bbs_scene(self), BBS_BOARD_PHASE_STATES);
+    MenuScene_SetPhase(bbs_scene(self), BBS_BOARD_PHASE_STATE_COUNT);
     return 1;
 }
 
@@ -418,7 +418,7 @@ int BbsBoard_RunAction(BbsBoard *self)
             }
             BbsBoard_LightCursor(self, 1);
             self->base.state = BBS_BOARD_STATE_CLOSE;
-            MenuScene_SetPhase(bbs_scene(self), BBS_BOARD_PHASE_STATES);
+            MenuScene_SetPhase(bbs_scene(self), BBS_BOARD_PHASE_STATE_COUNT);
             if (self->cursor == BBS_BOARD_CURSOR_QUIT) {
                 MenuDispatch_SetMode((MenuDispatch *) (void *) bbs_parent(self), MENU_DISPATCH_MODE_END, 0);
                 bbs_play(BBS_BOARD_SE_QUIT);
@@ -1094,7 +1094,7 @@ CLEAN_AS(func_ov113_0229a7a8, BbsBoard_Phase3)
  * REQUIRES: the sub state is below 5; the game reads past the table for others. */
 int BbsBoard_RunInteractive(BbsBoard *self)
 {
-    static const MemberPointer *const sub_states[BBS_BOARD_SUB_STATES] = {
+    static const MemberPointer *const sub_states[BBS_BOARD_SUB_STATE_COUNT] = {
         &data_ov113_0229abe8, &data_ov113_0229ab98, &data_ov113_0229ab90, &data_ov113_0229abb0, &data_ov113_0229abf0,
     };
     StateFlags_CountMenuCloseDelay();
@@ -1108,7 +1108,7 @@ int BbsBoard_RunInteractive(BbsBoard *self)
         }
     }
     BbsBoard_BeginFrame(self);
-    MemberTable_InitOnce(&data_ov113_0229ad64, data_ov113_0229ad68, sub_states, BBS_BOARD_SUB_STATES);
+    MemberTable_InitOnce(&data_ov113_0229ad64, data_ov113_0229ad68, sub_states, BBS_BOARD_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov113_0229ad68[self->base.sub_state], self);
     BbsBoard_EndFrame(self);
     return 1;
@@ -1121,11 +1121,11 @@ CLEAN_AS(func_ov113_0229a7ac, BbsBoard_RunInteractive)
  * REQUIRES: the state is below 9; the game reads past the table for others. */
 int BbsBoard_RunState(BbsBoard *self)
 {
-    static const MemberPointer *const states[BBS_BOARD_STATES] = {
+    static const MemberPointer *const states[BBS_BOARD_STATE_COUNT] = {
         &data_ov113_0229ab80, &data_ov113_0229aba0, &data_ov113_0229aba8, &data_ov113_0229abe0, &data_ov113_0229abd8,
         &data_ov113_0229abd0, &data_ov113_0229abc8, &data_ov113_0229abc0, &data_ov113_0229abb8,
     };
-    MemberTable_InitOnce(&data_ov113_0229ad60, data_ov113_0229ad90, states, BBS_BOARD_STATES);
+    MemberTable_InitOnce(&data_ov113_0229ad60, data_ov113_0229ad90, states, BBS_BOARD_STATE_COUNT);
     BbsBoard_BeginFrameBody(self);
     MemberPointer_CallVoid(&data_ov113_0229ad90[self->base.state], self);
     BbsBoard_QueueScreen(self);
@@ -1193,7 +1193,7 @@ int BbsBoard_Start(BbsBoard *self)
     G2x_SetBlendBrightnessExt_(BBS_BOARD_REG_BLDCNT, 0x1f, 0x20, 0x10, 0x10, 0);
     BbsBoard_SetUp(self);
     MenuScene_SetState(bbs_scene(self), BBS_BOARD_STATE_OPEN);
-    MenuScene_SetPhase(bbs_scene(self), BBS_BOARD_PHASE_STATES);
+    MenuScene_SetPhase(bbs_scene(self), BBS_BOARD_PHASE_STATE_COUNT);
     return 1;
 }
 CLEAN_AS(func_ov113_0229aaa8, BbsBoard_Start)

@@ -147,7 +147,7 @@ typedef struct FleaMarketBuyerStep {
 } FleaMarketBuyerStep;
 
 /* Its states: 0 to 8. */
-#define FLEA_MARKET_BUYER_STATES 9
+#define FLEA_MARKET_BUYER_STATE_COUNT 9
 
 int FleaMarketBuyer_UpdateGreet(FleaMarketBuyer *buyer);
 int FleaMarketBuyer_EnterGreet(FleaMarketBuyer *buyer);

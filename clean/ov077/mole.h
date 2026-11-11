@@ -69,14 +69,14 @@ typedef struct Mole {
 #define MOLE_WAIT 3
 #define MOLE_RISE 4
 #define MOLE_SINK 5
-#define MOLE_STATES 6
+#define MOLE_STATE_COUNT 6
 
 /* A state's functions in data_ov077_022799a0. */
 typedef struct MoleStep {
     MemberPointer enter; /* 0x00: int (him); the state is taken unless it answers 0 */
     MemberPointer run;   /* 0x08: int (him) */
 } MoleStep;
-extern MoleStep data_ov077_022799a0[MOLE_STATES];
+extern MoleStep data_ov077_022799a0[MOLE_STATE_COUNT];
 
 /* His object. */
 Mole *Mole_Destruct(Mole *mole);

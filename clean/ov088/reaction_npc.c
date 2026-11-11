@@ -137,7 +137,7 @@ extern const u8 data_ov088_02279cec[];
 extern const u8 data_020d8c64[];
 extern const u8 data_020da088[];
 /* Its states' functions (filled at start-up by __sinit_ov088_022799c4). */
-extern ReactionNpcStep data_ov088_02279e28[REACTION_NPC_STATES];
+extern ReactionNpcStep data_ov088_02279e28[REACTION_NPC_STATE_COUNT];
 /* The points beside the way ahead it steps to when the probe ahead is blocked: (0.5, 0, 1.0)
  * and (-0.5, 0, 1.0), set at start-up. */
 extern Vec3 data_ov088_02279e10[2];

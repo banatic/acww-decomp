@@ -60,7 +60,7 @@ enum TurtleGardensState {
     TURTLE_GARDENS_STAND = 0,
     TURTLE_GARDENS_TALK = 1,
     TURTLE_GARDENS_TALKED = 2,
-    TURTLE_GARDENS_STATES = 3
+    TURTLE_GARDENS_STATE_COUNT = 3
 };
 
 /* A state's functions in data_ov083_02279360. */
@@ -81,7 +81,7 @@ int TurtleGardens_TextureName(void);
 int TurtleGardens_Start(TurtleGardens *turtle);
 int TurtleGardens_Init(TurtleGardens *turtle);
 void *TurtleGardens_Create(void);
-int TurtleGardens_CountDown(TurtleGardens *turtle, s32 *counter);
+int TurtleGardens_Tick(TurtleGardens *turtle, s32 *counter);
 
 /* His states. */
 int TurtleGardens_EnterStand(TurtleGardens *turtle);

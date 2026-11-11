@@ -51,7 +51,7 @@
 #define FISHING_FLOAT_REEL 7
 #define FISHING_FLOAT_REEL_HIGH 8
 #define FISHING_FLOAT_PELLET_SHOT 9
-#define FISHING_FLOAT_STATES 10
+#define FISHING_FLOAT_STATE_COUNT 10
 
 /* FishingFloat.ripple and .player for none. */
 #define FISHING_FLOAT_NO_EFFECT (-1)

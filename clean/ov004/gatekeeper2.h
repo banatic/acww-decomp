@@ -42,7 +42,7 @@ enum Gatekeeper2State {
     GATEKEEPER2_AWAIT = 4,
     GATEKEEPER2_OTHER = 5,
     GATEKEEPER2_PAUSED = 6,
-    GATEKEEPER2_STATES = 7
+    GATEKEEPER2_STATE_COUNT = 7
 };
 
 /* The tasks of its talk scene (Gatekeeper2Talk.state), run when a command of the scene ends. */
@@ -51,7 +51,7 @@ enum Gatekeeper2TalkState {
     GATEKEEPER2_TALK_COPY_DESIGN = 1, /* func_ov004_0222511c */
     GATEKEEPER2_TALK_SWAP_DESIGN = 2, /* func_ov004_02224ff4 */
     GATEKEEPER2_TALK_NAME_ITEM = 3,   /* func_ov004_02224f98 */
-    GATEKEEPER2_TALK_STATES = 4
+    GATEKEEPER2_TALK_STATE_COUNT = 4
 };
 
 struct Gatekeeper2;

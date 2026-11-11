@@ -45,7 +45,7 @@
 
 #define FISH_SHADOW_COUNT 6
 #define FISH_SHADOW_GROUP_SIZE 3 /* shadows 0-2 are of group 0, 3-5 of group 1 */
-#define FISH_SHADOW_STATES 5
+#define FISH_SHADOW_STATE_COUNT 5
 #define FISH_SHADOW_PLAYER_FISH_COUNT 4
 
 /* FishShadow.state. The drawing and fleeing ask for state 3. */

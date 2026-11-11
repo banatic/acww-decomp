@@ -229,7 +229,7 @@ void SongPockets_CloseWithoutSong(SongPockets *self)
 {
     GroupParams_SetC4C(0);
     self->base.state = SONG_POCKETS_STATE_START_WIPE_OUT;
-    MenuScene_SetPhase(scene_of(self), SONG_POCKETS_PHASE_STATES);
+    MenuScene_SetPhase(scene_of(self), SONG_POCKETS_PHASE_STATE_COUNT);
     Popup_Hide(&self->popup, 1);
     SongPockets_HideCursorSprite(self);
 }
@@ -253,7 +253,7 @@ void SongPockets_CloseWithSong(SongPockets *self)
     GroupParams_SetArg(self->slot);
     GroupParams_SetC4C(1);
     self->base.state = SONG_POCKETS_STATE_START_WIPE_OUT;
-    MenuScene_SetPhase(scene_of(self), SONG_POCKETS_PHASE_STATES);
+    MenuScene_SetPhase(scene_of(self), SONG_POCKETS_PHASE_STATE_COUNT);
     Popup_Hide(&self->popup, 1);
     SongPockets_HideCursorSprite(self);
 }
@@ -701,8 +701,8 @@ extern u8 data_021fbddc; /* the pen went down or up this frame */
  * constants they are filled from. */
 extern u32 data_ov109_0229dc40; /* the states' guard */
 extern u32 data_ov109_0229dc44; /* the sub states' guard */
-extern MemberPointer data_ov109_0229dc48[SONG_POCKETS_STATES];
-extern MemberPointer data_ov109_0229dc70[SONG_POCKETS_SUB_STATES];
+extern MemberPointer data_ov109_0229dc48[SONG_POCKETS_STATE_COUNT];
+extern MemberPointer data_ov109_0229dc70[SONG_POCKETS_SUB_STATE_COUNT];
 extern const MemberPointer data_ov109_0229db28, data_ov109_0229db30, data_ov109_0229db38, data_ov109_0229db40,
     data_ov109_0229db48, data_ov109_0229db50, data_ov109_0229db58, data_ov109_0229db60, data_ov109_0229db68,
     data_ov109_0229db70, data_ov109_0229db78, data_ov109_0229db80, data_ov109_0229db88, data_ov109_0229db90,
@@ -848,7 +848,7 @@ CLEAN_AS(func_ov109_0229cea8, SongPockets_RunActionWhenIdle)
  * cursor and sub state 0x0d. */
 void SongPockets_CloseChoice(SongPockets *self)
 {
-    if (PagedChoice_CountDown(choice_of(self)) == 0) {
+    if (PagedChoice_Tick(choice_of(self)) == 0) {
         return;
     }
     PagedChoice_RequestClose(choice_of(self), 0);
@@ -1324,13 +1324,13 @@ CLEAN_AS(func_ov109_0229d764, SongPockets_RunInteractive)
  * REQUIRES: the sub state is below 16; the game reads past the table for others. */
 void SongPockets_RunSubState(SongPockets *self)
 {
-    static const MemberPointer *const sub_states[SONG_POCKETS_SUB_STATES] = {
+    static const MemberPointer *const sub_states[SONG_POCKETS_SUB_STATE_COUNT] = {
         &data_ov109_0229db98, &data_ov109_0229db90, &data_ov109_0229db48, &data_ov109_0229db80,
         &data_ov109_0229db78, &data_ov109_0229db70, &data_ov109_0229db68, &data_ov109_0229db60,
         &data_ov109_0229db58, &data_ov109_0229db50, &data_ov109_0229db40, &data_ov109_0229db88,
         &data_ov109_0229db38, &data_ov109_0229db30, &data_ov109_0229db28, &data_ov109_0229dba0,
     };
-    MemberTable_InitOnce(&data_ov109_0229dc44, data_ov109_0229dc70, sub_states, SONG_POCKETS_SUB_STATES);
+    MemberTable_InitOnce(&data_ov109_0229dc44, data_ov109_0229dc70, sub_states, SONG_POCKETS_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov109_0229dc70[self->base.sub_state], self);
 }
 CLEAN_AS(func_ov109_0229d7b4, SongPockets_RunSubState)
@@ -1341,10 +1341,10 @@ CLEAN_AS(func_ov109_0229d7b4, SongPockets_RunSubState)
  * REQUIRES: the state is below 5; the game reads past the table for others. */
 int SongPockets_RunState(SongPockets *self)
 {
-    static const MemberPointer *const states[SONG_POCKETS_STATES] = {
+    static const MemberPointer *const states[SONG_POCKETS_STATE_COUNT] = {
         &data_ov109_0229dba8, &data_ov109_0229dbc8, &data_ov109_0229dbc0, &data_ov109_0229dbb8, &data_ov109_0229dbb0,
     };
-    MemberTable_InitOnce(&data_ov109_0229dc40, data_ov109_0229dc48, states, SONG_POCKETS_STATES);
+    MemberTable_InitOnce(&data_ov109_0229dc40, data_ov109_0229dc48, states, SONG_POCKETS_STATE_COUNT);
     SongPockets_BeginFrame(self);
     MemberPointer_CallVoid(&data_ov109_0229dc48[self->base.state], self);
     SongPockets_EndFrame(self);

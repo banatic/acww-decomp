@@ -67,8 +67,8 @@ extern void MIi_CpuCopy16(const void *source, void *destination, u32 size);
  * constants they are filled from. */
 extern u32 data_ov146_0229b784; /* the states' guard */
 extern u32 data_ov146_0229b788; /* the sub states' guard */
-extern MemberPointer data_ov146_0229b7c4[WFC_HOST_LIST_STATES];
-extern MemberPointer data_ov146_0229b804[WFC_HOST_LIST_SUB_STATES];
+extern MemberPointer data_ov146_0229b7c4[WFC_HOST_LIST_STATE_COUNT];
+extern MemberPointer data_ov146_0229b804[WFC_HOST_LIST_SUB_STATE_COUNT];
 extern const MemberPointer data_ov146_0229b400, data_ov146_0229b408, data_ov146_0229b410, data_ov146_0229b428,
     data_ov146_0229b430, data_ov146_0229b438, data_ov146_0229b440, data_ov146_0229b448, data_ov146_0229b450,
     data_ov146_0229b458, data_ov146_0229b470, data_ov146_0229b478, data_ov146_0229b480, data_ov146_0229b488;
@@ -433,11 +433,11 @@ CLEAN_AS(_ZN18Obj_ov146_0229b68019func_ov146_0229af10Ev, WfcHostList_RunInteract
  * REQUIRES: the sub state is below 10; the game reads past the table for others. */
 void WfcHostList_RunSubState(WfcHostList *self)
 {
-    static const MemberPointer *const sub_states[WFC_HOST_LIST_SUB_STATES] = {
+    static const MemberPointer *const sub_states[WFC_HOST_LIST_SUB_STATE_COUNT] = {
         &data_ov146_0229b478, &data_ov146_0229b440, &data_ov146_0229b450, &data_ov146_0229b458, &data_ov146_0229b448,
         &data_ov146_0229b408, &data_ov146_0229b438, &data_ov146_0229b400, &data_ov146_0229b428, &data_ov146_0229b470,
     };
-    MemberTable_InitOnce(&data_ov146_0229b788, data_ov146_0229b804, sub_states, WFC_HOST_LIST_SUB_STATES);
+    MemberTable_InitOnce(&data_ov146_0229b788, data_ov146_0229b804, sub_states, WFC_HOST_LIST_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov146_0229b804[self->base.sub_state], self);
 }
 CLEAN_AS(_ZN18Obj_ov146_0229b68019func_ov146_0229af2cEv, WfcHostList_RunSubState)
@@ -448,13 +448,13 @@ CLEAN_AS(_ZN18Obj_ov146_0229b68019func_ov146_0229af2cEv, WfcHostList_RunSubState
  * REQUIRES: the state is below 4; the game reads past the table for others. */
 int WfcHostList_RunState(WfcHostList *self)
 {
-    static const MemberPointer *const states[WFC_HOST_LIST_STATES] = {
+    static const MemberPointer *const states[WFC_HOST_LIST_STATE_COUNT] = {
         &data_ov146_0229b410,
         &data_ov146_0229b430,
         &data_ov146_0229b488,
         &data_ov146_0229b480,
     };
-    MemberTable_InitOnce(&data_ov146_0229b784, data_ov146_0229b7c4, states, WFC_HOST_LIST_STATES);
+    MemberTable_InitOnce(&data_ov146_0229b784, data_ov146_0229b7c4, states, WFC_HOST_LIST_STATE_COUNT);
     WfcHostList_BeginFrame(self);
     MemberPointer_CallVoid(&data_ov146_0229b7c4[self->base.state], self);
     WfcHostList_UpdateList(self);

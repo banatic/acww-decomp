@@ -38,7 +38,7 @@ extern const MemberPointer data_ov088_02279b78, data_ov088_02279bb0, data_ov088_
 extern const MemberPointer data_ov088_02279ba8, data_ov088_02279bb8, data_ov088_02279b80, data_ov088_02279b60,
     data_ov088_02279b68, data_ov088_02279b70, data_ov088_02279bc0, data_ov088_02279b90, data_ov088_02279ba0;
 extern ReactionNpcTalkStep data_ov088_02279c14[REACTION_NPC_STEPS];
-extern ReactionNpcStep data_ov088_02279e28[REACTION_NPC_STATES];
+extern ReactionNpcStep data_ov088_02279e28[REACTION_NPC_STATE_COUNT];
 /* The points beside its way, and their records. */
 extern Vec3 data_ov088_02279e10[2];
 extern ReactionNpcInitRecord data_ov088_02279df8, data_ov088_02279e04;
@@ -80,14 +80,14 @@ void ReactionNpcInit_Tables(void)
     for (int i = 0; i < REACTION_NPC_STEPS; i++) {
         data_ov088_02279c14[i].run = *steps[i];
     }
-    const MemberPointer *const states[2 * REACTION_NPC_STATES] = {
+    const MemberPointer *const states[2 * REACTION_NPC_STATE_COUNT] = {
         &data_ov088_02279ba8,        &data_ov088_02279bb8, /* 0: talk end */
         &data_ov088_02279c14[0].run, &data_ov088_02279b80, /* 1: talked */
         &data_ov088_02279b60,        &data_ov088_02279b68, /* 2: wander */
         &data_ov088_02279b70,        &data_ov088_02279bc0, /* 3: wait */
         &data_ov088_02279b90,        &data_ov088_02279ba0, /* 4: talk */
     };
-    for (int i = 0; i < REACTION_NPC_STATES; i++) {
+    for (int i = 0; i < REACTION_NPC_STATE_COUNT; i++) {
         data_ov088_02279e28[i].enter = *states[2 * i];
         data_ov088_02279e28[i].update = *states[2 * i + 1];
     }

@@ -51,7 +51,7 @@ enum WfcHostListFlag {
  * the vtable's slot 0x48 + 4n). */
 enum WfcHostListPhase {
     WFC_HOST_LIST_PHASE_WAIT = 0,        /* the base's wait */
-    WFC_HOST_LIST_PHASE_STATES = 1,      /* WfcHostList_RunState */
+    WFC_HOST_LIST_PHASE_STATE_COUNT = 1, /* WfcHostList_RunState */
     WFC_HOST_LIST_PHASE_INTERACTIVE = 2, /* WfcHostList_RunInteractive */
     WFC_HOST_LIST_PHASE_END = 5          /* WfcHostList_End */
 };
@@ -63,7 +63,7 @@ enum WfcHostListState {
     WFC_HOST_LIST_STATE_WIPE_IN = 1,        /* WfcHostList_WipeIn: then the input */
     WFC_HOST_LIST_STATE_CLOSE = 2,          /* WfcHostList_StartWipeOut */
     WFC_HOST_LIST_STATE_CLOSE_WIPE_OUT = 3, /* WfcHostList_WipeOut: then the scene ends */
-    WFC_HOST_LIST_STATES = 4
+    WFC_HOST_LIST_STATE_COUNT = 4
 };
 
 /* The scene's sub states (MenuScene.sub_state), each run by its handler of the table of
@@ -81,7 +81,7 @@ enum WfcHostListSubState {
     WFC_HOST_LIST_SUB_POINTER_RELEASE = 8, /* WfcHostList_RunPointerRelease: the pointer's release plays, then
                                           * `return_sub_state` */
     WFC_HOST_LIST_SUB_CLOSE_DELAY = 9,     /* WfcHostList_RunCloseDelay: a few frames, then the states */
-    WFC_HOST_LIST_SUB_STATES = 10
+    WFC_HOST_LIST_SUB_STATE_COUNT = 10
 };
 
 /* What the cursor stands at (`cursor`). */

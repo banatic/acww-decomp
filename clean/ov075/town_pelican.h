@@ -69,7 +69,7 @@ enum TownPelicanState {
     TOWN_PELICAN_TALKED = 3,
     TOWN_PELICAN_HIDDEN = 4,
     TOWN_PELICAN_WANDER = 5,
-    TOWN_PELICAN_STATES = 6
+    TOWN_PELICAN_STATE_COUNT = 6
 };
 
 /* A state's functions in data_ov075_02279b08. */

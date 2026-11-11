@@ -59,7 +59,7 @@ static_assert(sizeof(Shop3Villager) == 0xa44, "the size func_ov004_02221b68 allo
 extern const u8 data_ov004_02253fd4[];
 extern const u8 data_ov004_02253f44[];
 /* The functions of its states (filled at start-up by __sinit_ov004_0224e5b0). */
-extern Shop3VillagerStep data_ov004_02257f48[SHOP3_VILLAGER_STATES];
+extern Shop3VillagerStep data_ov004_02257f48[SHOP3_VILLAGER_STATE_COUNT];
 /* The word its motion requests carry. */
 extern u16 data_020c80f8;
 /* The message file "ai_shop3", and the text its name for the villager is written in. */

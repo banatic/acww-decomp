@@ -123,7 +123,7 @@ typedef struct TownInsect {
     u16 slot;           /* 0x230: its entry of a model pool */
     s16 timer;          /* 0x232 */
     s16 leave_frames;   /* 0x234: a town insect's frames left out of view before it leaves */
-    s16 out_of_view;    /* 0x236: kinds 0x36 and 0x37: counted down out of view (TownInsect_CountDown) */
+    s16 out_of_view;    /* 0x236: kinds 0x36 and 0x37: counted down out of view (TownInsect_Tick) */
     s16 angle_x;        /* 0x238 */
     s16 angle_y;        /* 0x23a */
     s16 angle_z;        /* 0x23c */
@@ -236,7 +236,7 @@ void TownInsect_CheckNear(int unused, TownInsect *insect);
 
 int TownInsect_ProcessUpdate(TownInsectProcess *process);
 void TownInsect_Run(TownInsectProcess *process, TownInsect *insect, int index, int mode);
-void TownInsect_CountDown(int unused, TownInsect *insect);
+void TownInsect_Tick(int unused, TownInsect *insect);
 void TownInsect_Load(TownInsectProcess *process, TownInsect *insect, int pool);
 int TownInsect_ProcessSetUp(TownInsectProcess *process);
 void TownInsect_Remove(TownInsectProcess *process, TownInsect *insect, int mode);

@@ -813,7 +813,7 @@ CLEAN_AS(func_ov119_0229bd64, FriendRoster_RunActionWhenIdle)
  * the sprite hidden if it shows anything, sub state 0x0c. */
 void FriendRoster_CloseChoice(FriendRoster *self)
 {
-    if (PagedChoice_CountDown(fr_choice(self))) {
+    if (PagedChoice_Tick(fr_choice(self))) {
         PagedChoice_RequestClose(fr_choice(self), 0);
         if (CellLayerSprite_AnimNumber(fr_sprite_cells(self))) {
             FriendRoster_HideCursorSprite(self);
@@ -1046,7 +1046,7 @@ int FriendRoster_SelectTab(FriendRoster *self, int tab)
     }
     MenuTabs_SelectTab(menu, (u8) tab);
     self->base.state = FRIEND_ROSTER_STATE_WIPE_OUT;
-    MenuScene_SetPhase(fr_scene(self), FRIEND_ROSTER_PHASE_STATES);
+    MenuScene_SetPhase(fr_scene(self), FRIEND_ROSTER_PHASE_STATE_COUNT);
     return 1;
 }
 CLEAN_AS(func_ov119_0229c608, FriendRoster_SelectTab)

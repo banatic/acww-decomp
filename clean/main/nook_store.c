@@ -515,7 +515,7 @@ void NookStore_SetStockDate(NookStore *store, const DateTime *when)
 }
 CLEAN_AS(func_020af298, NookStore_SetStockDate)
 
-/* func_020af2d0: whether the stock is not of `when`'s date (always, when `unused` is set). */
+/* func_020af2d0: whether the stock is not of `when`'s date (always, when `extra` is set). */
 int NookStore_StockDateDiffers(NookStore *store, const DateTime *when)
 {
     DateTime copy;

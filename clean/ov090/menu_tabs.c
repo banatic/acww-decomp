@@ -84,8 +84,8 @@ extern u8 data_020e54a8;
  * constants they are filled from. */
 extern u32 data_ov090_02299964; /* the states' guard */
 extern u32 data_ov090_02299968; /* the sub states' guard */
-extern MemberPointer data_ov090_0229996c[MENU_TABS_STATES];
-extern MemberPointer data_ov090_02299984[MENU_TABS_SUB_STATES];
+extern MemberPointer data_ov090_0229996c[MENU_TABS_STATE_COUNT];
+extern MemberPointer data_ov090_02299984[MENU_TABS_SUB_STATE_COUNT];
 extern const MemberPointer data_ov090_022997e8; /* MenuTabs_SetUp */
 extern const MemberPointer data_ov090_022997f0; /* MenuTabs_Idle */
 extern const MemberPointer data_ov090_022997f8; /* MenuTabs_UpdateError */
@@ -397,7 +397,7 @@ CLEAN_AS(func_ov090_02299348, MenuTabs_Idle)
 void MenuTabs_Close(MenuTabs *self)
 {
     self->base.state = MENU_TABS_STATE_HIDE;
-    MenuScene_SetPhase(menu_tabs_scene(self), MENU_SCENE_PHASE_STATES);
+    MenuScene_SetPhase(menu_tabs_scene(self), MENU_SCENE_PHASE_STATE_COUNT);
     DisplayShadow_SetSubBgMode(1);
 }
 CLEAN_AS(func_ov090_0229934c, MenuTabs_Close)
@@ -482,12 +482,12 @@ CLEAN_AS(func_ov090_0229946c, MenuTabs_Phase3)
  * REQUIRES: the sub state is below 3; the game reads past the table for others. */
 int MenuTabs_RunInteractive(MenuTabs *self)
 {
-    static const MemberPointer *const sub_states[MENU_TABS_SUB_STATES] = {
+    static const MemberPointer *const sub_states[MENU_TABS_SUB_STATE_COUNT] = {
         &data_ov090_022997f0,
         &data_ov090_02299800,
         &data_ov090_022997f8,
     };
-    MemberTable_InitOnce(&data_ov090_02299968, data_ov090_02299984, sub_states, MENU_TABS_SUB_STATES);
+    MemberTable_InitOnce(&data_ov090_02299968, data_ov090_02299984, sub_states, MENU_TABS_SUB_STATE_COUNT);
     MenuTabs_EndTasks(self);
 
     if (self->roster == MENU_TABS_ROSTER_WRITE) {
@@ -542,12 +542,12 @@ CLEAN_AS(_ZN18Obj_ov090_0229982019func_ov090_02299470Ev, MenuTabs_RunInteractive
  * REQUIRES: the state is below 3; the game reads past the table for others. */
 int MenuTabs_RunState(MenuTabs *self)
 {
-    static const MemberPointer *const states[MENU_TABS_STATES] = {
+    static const MemberPointer *const states[MENU_TABS_STATE_COUNT] = {
         &data_ov090_022997e8,
         &data_ov090_02299810,
         &data_ov090_02299808,
     };
-    MemberTable_InitOnce(&data_ov090_02299964, data_ov090_0229996c, states, MENU_TABS_STATES);
+    MemberTable_InitOnce(&data_ov090_02299964, data_ov090_0229996c, states, MENU_TABS_STATE_COUNT);
     MenuTabs_EndTasks(self);
     MemberPointer_CallVoid(&data_ov090_0229996c[self->base.state], self);
     return 1;

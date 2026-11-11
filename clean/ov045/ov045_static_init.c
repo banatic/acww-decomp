@@ -15,13 +15,13 @@ extern FortuneTellerTalkStep data_ov045_022615a4[FORTUNE_TELLER_TALK_SEQUENCES];
 /* Her states: each one's entry, then its update. */
 extern const MemberPointer data_ov045_022613b4, data_ov045_022613c4, data_ov045_0226138c, data_ov045_02261384,
     data_ov045_02261394, data_ov045_022613bc, data_ov045_0226139c, data_ov045_022613ac;
-extern FortuneTellerStep data_ov045_022615bc[FORTUNE_TELLER_STATES];
+extern FortuneTellerStep data_ov045_022615bc[FORTUNE_TELLER_STATE_COUNT];
 
 /* __sinit_ov045_022612d8: the two sequences' functions, then the entries and updates of the
  * four states, in order. The address of the states' table. */
 int FortuneTellerInit_Tables(void)
 {
-    static const MemberPointer *const states[2 * FORTUNE_TELLER_STATES] = {
+    static const MemberPointer *const states[2 * FORTUNE_TELLER_STATE_COUNT] = {
         &data_ov045_022613b4, &data_ov045_022613c4, /* 0: sit */
         &data_ov045_0226138c, &data_ov045_02261384, /* 1: talk */
         &data_ov045_02261394, &data_ov045_022613bc, /* 2: talked */
@@ -29,7 +29,7 @@ int FortuneTellerInit_Tables(void)
     };
     data_ov045_022615a4[FORTUNE_TELLER_TALK_SEQUENCE_NONE].run = __ptmf_null;
     data_ov045_022615a4[FORTUNE_TELLER_TALK_SEQUENCE_TAKE_NAME].run = data_ov045_022613a4;
-    for (int i = 0; i < FORTUNE_TELLER_STATES; i++) {
+    for (int i = 0; i < FORTUNE_TELLER_STATE_COUNT; i++) {
         data_ov045_022615bc[i].enter = *states[2 * i];
         data_ov045_022615bc[i].update = *states[2 * i + 1];
     }

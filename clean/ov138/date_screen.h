@@ -47,7 +47,7 @@ enum DateScreenState {
     DATE_SCREEN_STATE_WIPE_IN = 1,        /* DateScreen_WipeIn */
     DATE_SCREEN_STATE_START_WIPE_OUT = 2, /* DateScreen_StartWipeOut */
     DATE_SCREEN_STATE_WIPE_OUT = 3,       /* DateScreen_WipeOut */
-    DATE_SCREEN_STATES = 4
+    DATE_SCREEN_STATE_COUNT = 4
 };
 
 /* The sub states, run from the table of DateScreen_RunSubState (MenuScene_SetSubState). */
@@ -66,7 +66,7 @@ enum DateScreenSubState {
     DATE_SCREEN_SUB_PANEL_PRESSED = 11, /* DateScreen_FollowPanelPress */
     DATE_SCREEN_SUB_LIST_OPENING = 12,  /* DateScreen_WaitListOpen */
     DATE_SCREEN_SUB_LIST_CLOSING = 13,  /* DateScreen_WaitListClose */
-    DATE_SCREEN_SUB_STATES = 14
+    DATE_SCREEN_SUB_STATE_COUNT = 14
 };
 
 typedef struct DateScreen {

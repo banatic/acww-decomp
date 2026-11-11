@@ -1146,7 +1146,7 @@ int Spawner_Execute(void)
         if (Actors_GetE(&person) != NULL || VillagerState_Mood(state) == 0) {
             continue;
         }
-        VillagerState_CountDownMood(state);
+        VillagerState_TickMood(state);
         if (VillagerState_MoodFrames(state) == 0) {
             VillagerState_SetMood(state, 0);
         }

@@ -24,7 +24,7 @@
 #define THROWN_BOTTLE_NONE 0
 #define THROWN_BOTTLE_FLYING 1
 #define THROWN_BOTTLE_FLOATING 2
-#define THROWN_BOTTLE_STATES 3
+#define THROWN_BOTTLE_STATE_COUNT 3
 
 typedef struct ThrownBottle {
     CollisionContacts contacts; /* 0x00 */

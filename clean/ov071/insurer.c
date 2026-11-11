@@ -136,7 +136,7 @@ extern const u8 data_ov071_0227a278[];
 extern const u8 data_020d8c64[];
 extern const u8 data_020da088[];
 /* His states' functions (filled at start-up by __sinit_ov071_02279fd4). */
-extern InsurerStep data_ov071_0227a3a4[INSURER_STATES];
+extern InsurerStep data_ov071_0227a3a4[INSURER_STATE_COUNT];
 /* The table of the chase's steps (a function-local static, filled once from three constants;
  * bit 0 of data_ov071_0227a348 says it was). */
 extern u32 data_ov071_0227a348;
@@ -410,13 +410,13 @@ static void ins_check_move(Insurer *insurer)
  * the wide view, while he has a speed, he waits (state 4). 0. */
 int Insurer_UpdateWander(Insurer *insurer)
 {
-    if (Insurer_CountDown((int) (u32) (uintptr_t) insurer, &insurer->rest) == 0 &&
+    if (Insurer_Tick((int) (u32) (uintptr_t) insurer, &insurer->rest) == 0 &&
         TalkChecks_TestSetDailyBit(INS_DAILY_PITCHED, 0) == 0 && Insurer_InView(insurer, 0) != 0 &&
         Insurer_PlayerAhead(insurer, INS_FAR) != 0) {
         Insurer_SetState(insurer, INSURER_CHASE);
         return 1;
     }
-    Insurer_CountDown((int) (u32) (uintptr_t) insurer, &insurer->timer);
+    Insurer_Tick((int) (u32) (uintptr_t) insurer, &insurer->timer);
     if (Insurer_InView(insurer, 1) != 0) {
         if (Insurer_StepAsideIfMoving(insurer) == 0) {
             if (SceneMotion_IsDone(ins_motion(insurer)) != 0) {
@@ -496,7 +496,7 @@ int Insurer_ProbePoint(Insurer *insurer, Vec3 *out, int offset)
 CLEAN_AS(func_ov071_02279694, Insurer_ProbePoint)
 
 /* func_ov071_022796d0: a random clear spot 12.0 from him: up to six tries of a random angle (by
- * the main random generator), the point snapped to its tile's centre and asked of the town's
+ * the main random generator), the point snapped to its tile's center and asked of the town's
  * tiles (TownTile_IsClearAt); its x and z, when one is clear. Whether one was. The height of the
  * point is 0 at first and whatever the snapping leaves it after. */
 int Insurer_RandomSpot(Insurer *insurer, int *x, int *z)
@@ -584,7 +584,7 @@ void Insurer_ChaseWait(Insurer *insurer)
 {
     if (insurer->player == 0) {
         Insurer_SetState(insurer, INSURER_WANDER);
-    } else if (Insurer_CountDown((int) (u32) (uintptr_t) insurer, &insurer->timer) == 0) {
+    } else if (Insurer_Tick((int) (u32) (uintptr_t) insurer, &insurer->timer) == 0) {
         int angle = SceneObject_YawTo(insurer->base, ins_player(insurer));
         ins_move(insurer, INS_MOTION_TURN, 0, 0, (s16) angle);
         insurer->rest = INS_REST_FRAMES;
@@ -601,7 +601,7 @@ CLEAN_AS(func_ov071_022798f8, Insurer_ChaseWait)
  * the player; else, and once the frames are over, he rests 200 frames and wanders (state 3). */
 void Insurer_ChaseRun(Insurer *insurer)
 {
-    if (Insurer_CountDown((int) (u32) (uintptr_t) insurer, &insurer->timer) != 0 && insurer->player != 0) {
+    if (Insurer_Tick((int) (u32) (uintptr_t) insurer, &insurer->timer) != 0 && insurer->player != 0) {
         if (Insurer_PlayerAhead(insurer, INS_CLOSE) != 0) {
             ins_greet(insurer);
             insurer->timer = INS_WAIT_FRAMES;
@@ -699,7 +699,7 @@ int Insurer_EnterTalkEnds(void)
 CLEAN_AS(func_ov071_02279c04, Insurer_EnterTalkEnds)
 
 /* func_ov071_02279c08: `counter` counted down unless it is 0; what it is now. */
-int Insurer_CountDown(int unused, int *counter)
+int Insurer_Tick(int unused, int *counter)
 {
     (void) unused;
     if (*counter != 0) {
@@ -707,7 +707,7 @@ int Insurer_CountDown(int unused, int *counter)
     }
     return *counter;
 }
-CLEAN_AS(func_ov071_02279c08, Insurer_CountDown)
+CLEAN_AS(func_ov071_02279c08, Insurer_Tick)
 
 /* func_ov071_02279c18: whether he stands in the box around the point the field camera looks
  * at (Insurer_InBox; `wide` 0 the near one, else the wide one); 0 without a camera. */

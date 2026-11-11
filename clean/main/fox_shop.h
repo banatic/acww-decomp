@@ -24,8 +24,8 @@
 
 #include "types.h"
 
-#define FOX_SHOP_ITEMS 3
-#define FOX_PASSWORDS 32
+#define FOX_SHOP_ITEM_COUNT 3
+#define FOX_PASSWORD_COUNT 32
 #define FOX_PASSWORD_NONE (-1)
 
 typedef struct FoxPassword {
@@ -36,7 +36,7 @@ typedef struct FoxPassword {
 } FoxPassword;
 
 typedef struct FoxShop {
-    u16 items[FOX_SHOP_ITEMS];
+    u16 items[FOX_SHOP_ITEM_COUNT];
     u8 unk_06[2];
     FoxPassword password; /* 0x08 */
     u8 sold[1];           /* 0x10: a bit for each item */

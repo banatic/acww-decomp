@@ -13,18 +13,18 @@
 extern const MemberPointer data_ov087_022793c8, data_ov087_022793e0, data_ov087_022793e8, data_ov087_022793d8,
     data_ov087_022793d0;
 extern const MemberPointer __ptmf_null;
-extern AcornNpcStep data_ov087_022795c0[ACORN_NPC_STATES];
+extern AcornNpcStep data_ov087_022795c0[ACORN_NPC_STATE_COUNT];
 
 /* __sinit_ov087_02279354: the entries and updates of the three states, in order. The table's
  * address (the value left in the result register). */
 int AcornNpcInit_Tables(void)
 {
-    static const MemberPointer *const states[2 * ACORN_NPC_STATES] = {
+    static const MemberPointer *const states[2 * ACORN_NPC_STATE_COUNT] = {
         &data_ov087_022793c8, &data_ov087_022793e0, /* 0: stand */
         &data_ov087_022793e8, &data_ov087_022793d8, /* 1: talk */
         &__ptmf_null,         &data_ov087_022793d0, /* 2: talked */
     };
-    for (int i = 0; i < ACORN_NPC_STATES; i++) {
+    for (int i = 0; i < ACORN_NPC_STATE_COUNT; i++) {
         data_ov087_022795c0[i].enter = *states[2 * i];
         data_ov087_022795c0[i].update = *states[2 * i + 1];
     }

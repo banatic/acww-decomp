@@ -258,7 +258,7 @@ static BOOL is_net(u16 item)
     return item == 0x1376 || item == 0x1377;
 }
 
-static const Vec3 ORIGIN = {0, 0, 0};
+static const Vec3 zero_point = {0, 0, 0};
 
 /* Builds a request for `state` and queues it; whether it was queued.
  * BUG: the bytes of the request nothing sets (the two after `arg`, and the payload past
@@ -323,7 +323,7 @@ int FieldActor_UseTool(FieldActor *actor, int tool, Vec3 *point)
             FieldActor_RequestState46(actor, 6, -1);
             return 1;
         case 3:
-            if (Vec_Equal(point, &ORIGIN)) {
+            if (Vec_Equal(point, &zero_point)) {
                 *point = actor->position;
             }
             if (FieldActor_PointsAhead(actor, &ahead, point)) {
@@ -353,7 +353,7 @@ int FieldActor_UseTool(FieldActor *actor, int tool, Vec3 *point)
             return 1;
         case 0:
         case 10:
-            if (Vec_Equal(point, &ORIGIN)) {
+            if (Vec_Equal(point, &zero_point)) {
                 FieldActor_TileAhead(&tile, actor);
                 *point = tile;
             }
@@ -393,7 +393,7 @@ int FieldActor_TryTool(FieldActor *actor)
     Vec3 point;
 
     if (actor->unk_140 != 0) {
-        point = ORIGIN;
+        point = zero_point;
         if (FieldActor_UseTool(actor, tool, &point)) {
             return 1;
         }
@@ -420,7 +420,7 @@ int FieldActor_TryTool(FieldActor *actor)
             break;
         case 2:
             if (tool == 4) {
-                point = ORIGIN;
+                point = zero_point;
                 if (FieldActor_UseTool(actor, tool, &point)) {
                     return 1;
                 }
@@ -436,7 +436,7 @@ int FieldActor_TryTool(FieldActor *actor)
         Position_Tile(&x, &z, (const Position *) &actor->aim_point);
         u16 *object = map_object_at(x, z);
         if (object != NULL && is_flower_object(*object)) {
-            point = ORIGIN;
+            point = zero_point;
             if (FieldActor_UseTool(actor, tool, &point)) {
                 return 1;
             }
@@ -461,7 +461,7 @@ int FieldActor_TryTool(FieldActor *actor)
             }
             Vec3 saved = actor->aim_point;
             actor->aim_point = ahead;
-            point = ORIGIN;
+            point = zero_point;
             int started = FieldActor_UseTool(actor, tool, &point);
             actor->aim_point = saved;
             if (started) {
@@ -470,7 +470,7 @@ int FieldActor_TryTool(FieldActor *actor)
             goto last;
         }
         case 5:
-            point = ORIGIN;
+            point = zero_point;
             if (FieldActor_UseTool(actor, tool, &point)) {
                 return 1;
             }
@@ -10115,7 +10115,7 @@ static_assert(offsetof(FieldActor, work.s17.unk_0c) == 0x7e0, "state 0x17 byte")
 static_assert(offsetof(FieldActor, work.s16.outcome) == 0x7d6, "state 0x16 outcome");
 
 /* Where effect 0x2d starts for the map objects 0x21 to 0x24, from their point. */
-static const Vec3 STATE17_OFFSETS[4] = {
+static const Vec3 state17_offsets[4] = {
     {0, 0, -0x800},
     {-0x800, 0, 0},
     {0x800, 0, 0xc00},
@@ -10154,7 +10154,7 @@ CLEAN_AS(func_ov003_02218960, FieldActor_EndState17)
 
 /* func_ov003_022189d8: acts on the map object at the work's point, whose code was noted on
  * entering (FieldActor.item): 0x1f and 0x20 start effects 0x2e and 0x2f there, 0x21 to 0x24
- * effect 0x2d a little off it (STATE17_OFFSETS), all turned by the actor's yaw; the codes of
+ * effect 0x2d a little off it (state17_offsets), all turned by the actor's yaw; the codes of
  * the wilted and watered flowers and those after them (0x6e-0xa5) start effect 0x54
  * (func_02091230) and go to func_02044a14 with the tile, the yaw and 2, with sound 0x7d8. Sound
  * 0x7d8 also follows 0x1f and 0x20, 0x7ec the codes 0x21 to 0x24; then func_02045f08 runs on
@@ -10180,7 +10180,7 @@ void FieldActor_ActState17(FieldActor *actor)
         case 0x22:
         case 0x23:
         case 0x24:
-            VEC_Add(&at, &STATE17_OFFSETS[actor->item - 0x21], &at);
+            VEC_Add(&at, &state17_offsets[actor->item - 0x21], &at);
             EffectSystem_StartKind(0x2d, &at, &yaw, 0);
             break;
         default:

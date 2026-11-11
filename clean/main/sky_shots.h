@@ -45,7 +45,7 @@ enum SkyShotsHitState {
     SKY_SHOTS_HIT_LOOK_7 = 7, /* func_020beb20 */
     SKY_SHOTS_HIT_FALL_8 = 8, /* func_020beb14 */
     SKY_SHOTS_HIT_END_9 = 9,
-    SKY_SHOTS_HIT_STATES = 10,
+    SKY_SHOTS_HIT_STATE_COUNT = 10,
 };
 
 /* The hit (0x24 bytes, at 0x2fa8 of the objects). */

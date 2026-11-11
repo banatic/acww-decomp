@@ -41,7 +41,7 @@ typedef struct NookUpgrade {
 typedef struct NookStore {
     u32 spent;                             /* what has been spent here, capped by the level's cap */
     u16 items[NOOK_STORE_PLACES];          /* 0x04 */
-    Date stocked;                          /* 0x4e: the day of the stock; `unused` 1 asks for a restock */
+    Date stocked;                          /* 0x4e: the day of the stock; `extra` 1 asks for a restock */
     Date bonus_day;                        /* 0x52 */
     NookUpgrade upgrade;                   /* 0x56 */
     u16 bits;                              /* 0x5a: the hour (bits 0-4), the next roof paint (5-8), the level (9-10) */

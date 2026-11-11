@@ -462,8 +462,8 @@ CLEAN_AS(func_ov136_0229cab4, TimeScreen_AfterPress)
  * constants. */
 extern u32 data_ov136_0229d580; /* the states' guard */
 extern u32 data_ov136_0229d584; /* the sub states' guard */
-extern MemberPointer data_ov136_0229d588[TIME_SCREEN_STATES];
-extern MemberPointer data_ov136_0229d5a8[TIME_SCREEN_SUB_STATES];
+extern MemberPointer data_ov136_0229d588[TIME_SCREEN_STATE_COUNT];
+extern MemberPointer data_ov136_0229d5a8[TIME_SCREEN_SUB_STATE_COUNT];
 extern const MemberPointer data_ov136_0229d460, data_ov136_0229d468, data_ov136_0229d470, data_ov136_0229d478,
     data_ov136_0229d480, data_ov136_0229d488, data_ov136_0229d490, data_ov136_0229d498, data_ov136_0229d4a0,
     data_ov136_0229d4a8, data_ov136_0229d4b0, data_ov136_0229d4b8, data_ov136_0229d4c0, data_ov136_0229d4c8,
@@ -863,13 +863,13 @@ CLEAN_AS(func_ov136_0229d168, TimeScreen_RunInteractive)
  * REQUIRES: the sub state is below 16; the game reads past the table for others. */
 void TimeScreen_RunSubState(TimeScreen *self)
 {
-    static const MemberPointer *const sub_states[TIME_SCREEN_SUB_STATES] = {
+    static const MemberPointer *const sub_states[TIME_SCREEN_SUB_STATE_COUNT] = {
         &data_ov136_0229d4e8, &data_ov136_0229d4e0, &data_ov136_0229d4d8, &data_ov136_0229d4d0,
         &data_ov136_0229d4c8, &data_ov136_0229d4a0, &data_ov136_0229d4b0, &data_ov136_0229d4b8,
         &data_ov136_0229d4c0, &data_ov136_0229d4f8, &data_ov136_0229d498, &data_ov136_0229d490,
         &data_ov136_0229d488, &data_ov136_0229d480, &data_ov136_0229d478, &data_ov136_0229d4a8,
     };
-    MemberTable_InitOnce(&data_ov136_0229d584, data_ov136_0229d5a8, sub_states, TIME_SCREEN_SUB_STATES);
+    MemberTable_InitOnce(&data_ov136_0229d584, data_ov136_0229d5a8, sub_states, TIME_SCREEN_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov136_0229d5a8[self->base.sub_state], self);
 }
 CLEAN_AS(func_ov136_0229d184, TimeScreen_RunSubState)
@@ -880,13 +880,13 @@ CLEAN_AS(func_ov136_0229d184, TimeScreen_RunSubState)
  * REQUIRES: the state is below 4; the game reads past the table for others. */
 int TimeScreen_RunState(TimeScreen *self)
 {
-    static const MemberPointer *const states[TIME_SCREEN_STATES] = {
+    static const MemberPointer *const states[TIME_SCREEN_STATE_COUNT] = {
         &data_ov136_0229d468,
         &data_ov136_0229d460,
         &data_ov136_0229d470,
         &data_ov136_0229d500,
     };
-    MemberTable_InitOnce(&data_ov136_0229d580, data_ov136_0229d588, states, TIME_SCREEN_STATES);
+    MemberTable_InitOnce(&data_ov136_0229d580, data_ov136_0229d588, states, TIME_SCREEN_STATE_COUNT);
     TimeScreen_BeginFrame(self);
     MemberPointer_CallVoid(&data_ov136_0229d588[self->base.state], self);
     TimeScreen_EndFrame(self);

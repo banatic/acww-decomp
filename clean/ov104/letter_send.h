@@ -337,10 +337,10 @@ enum LetterSendState {
     LETTER_SEND_STATE_LETTER_WIPE_IN = 0x08,        /* LetterSend_LetterWipeIn */
     LETTER_SEND_STATE_START_LETTER_WIPE_OUT = 0x09, /* LetterSend_StartLetterWipeOut */
     LETTER_SEND_STATE_LETTER_WIPE_OUT = 0x0a,       /* LetterSend_LetterWipeOut */
-    LETTER_SEND_STATES = 0x0b
+    LETTER_SEND_STATE_COUNT = 0x0b
 };
 
-#define LETTER_SEND_SUB_STATES 0x1d
+#define LETTER_SEND_SUB_STATE_COUNT 0x1d
 
 void LetterSend_EndFrame(LetterSendScene *self);
 void LetterSend_BeginFrame(LetterSendScene *self);

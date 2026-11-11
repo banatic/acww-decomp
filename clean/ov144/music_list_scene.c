@@ -65,8 +65,8 @@ extern u8 data_021f6c54;
  * once from the constants after them) and their guards. */
 extern u32 data_ov144_0229b500; /* the states' guard */
 extern u32 data_ov144_0229b504; /* the sub states' guard */
-extern MemberPointer data_ov144_0229b508[MUSIC_LIST_STATES];
-extern MemberPointer data_ov144_0229b528[MUSIC_LIST_SUB_STATES];
+extern MemberPointer data_ov144_0229b508[MUSIC_LIST_STATE_COUNT];
+extern MemberPointer data_ov144_0229b528[MUSIC_LIST_SUB_STATE_COUNT];
 extern const MemberPointer data_ov144_0229b328, data_ov144_0229b330, data_ov144_0229b338, data_ov144_0229b340,
     data_ov144_0229b348, data_ov144_0229b350, data_ov144_0229b358, data_ov144_0229b360, data_ov144_0229b368,
     data_ov144_0229b370, data_ov144_0229b378, data_ov144_0229b380, data_ov144_0229b388, data_ov144_0229b390,
@@ -132,7 +132,7 @@ void MusicList_CloseDelay(MusicList *self)
         self->delay--;
     } else {
         MusicList_HidePointer(self);
-        MenuScene_SetPhase(music_list_scene(self), MUSIC_LIST_PHASE_STATES);
+        MenuScene_SetPhase(music_list_scene(self), MUSIC_LIST_PHASE_STATE_COUNT);
     }
 }
 CLEAN_AS(func_ov144_0229a868, MusicList_CloseDelay)
@@ -182,7 +182,7 @@ void MusicList_PanelPress(MusicList *self)
         }
     } else {
         MusicList_HidePointer(self);
-        MenuScene_SetPhase(music_list_scene(self), MUSIC_LIST_PHASE_STATES);
+        MenuScene_SetPhase(music_list_scene(self), MUSIC_LIST_PHASE_STATE_COUNT);
     }
 }
 CLEAN_AS(func_ov144_0229a948, MusicList_PanelPress)
@@ -341,7 +341,7 @@ CLEAN_AS(func_ov144_0229ab88, MusicList_TouchInput)
 
 /* --- Graphics and the frame --- */
 
-/* func_ov144_0229ac40: the panel's text colours, then the sub screen's OBJ characters 0xc0-0x120
+/* func_ov144_0229ac40: the panel's text colors, then the sub screen's OBJ characters 0xc0-0x120
  * and palettes 4-5 from "menu/music/obj.bch" and "obj.bpl". */
 void MusicList_LoadObjGraphics(MusicList *self)
 {
@@ -558,7 +558,7 @@ int MusicList_RunInteractive(MusicList *self)
             case MUSIC_LIST_SUB_KNOB_KEYS:
                 MusicList_HidePointer(self);
                 MusicList_CloseByPanel(self);
-                MenuScene_SetPhase(music_list_scene(self), MUSIC_LIST_PHASE_STATES);
+                MenuScene_SetPhase(music_list_scene(self), MUSIC_LIST_PHASE_STATE_COUNT);
                 break;
             default:
                 break;
@@ -576,12 +576,12 @@ CLEAN_AS(_ZN18Obj_ov144_0229b3f819func_ov144_0229afccEv, MusicList_RunInteractiv
  * REQUIRES: the sub state is below 13; the game reads past the table for others. */
 void MusicList_RunSubState(MusicList *self)
 {
-    static const MemberPointer *const sub_states[MUSIC_LIST_SUB_STATES] = {
+    static const MemberPointer *const sub_states[MUSIC_LIST_SUB_STATE_COUNT] = {
         &data_ov144_0229b348, &data_ov144_0229b378, &data_ov144_0229b370, &data_ov144_0229b368, &data_ov144_0229b360,
         &data_ov144_0229b388, &data_ov144_0229b328, &data_ov144_0229b390, &data_ov144_0229b380, &data_ov144_0229b338,
         &data_ov144_0229b330, &data_ov144_0229b358, &data_ov144_0229b340,
     };
-    MemberTable_InitOnce(&data_ov144_0229b504, data_ov144_0229b528, sub_states, MUSIC_LIST_SUB_STATES);
+    MemberTable_InitOnce(&data_ov144_0229b504, data_ov144_0229b528, sub_states, MUSIC_LIST_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov144_0229b528[self->base.sub_state], self);
 }
 CLEAN_AS(_ZN18Obj_ov144_0229b3f819func_ov144_0229b02cEv, MusicList_RunSubState)
@@ -592,13 +592,13 @@ CLEAN_AS(_ZN18Obj_ov144_0229b3f819func_ov144_0229b02cEv, MusicList_RunSubState)
  * REQUIRES: the state is below 4; the game reads past the table for others. */
 int MusicList_RunState(MusicList *self)
 {
-    static const MemberPointer *const states[MUSIC_LIST_STATES] = {
+    static const MemberPointer *const states[MUSIC_LIST_STATE_COUNT] = {
         &data_ov144_0229b3a0,
         &data_ov144_0229b3a8,
         &data_ov144_0229b350,
         &data_ov144_0229b398,
     };
-    MemberTable_InitOnce(&data_ov144_0229b500, data_ov144_0229b508, states, MUSIC_LIST_STATES);
+    MemberTable_InitOnce(&data_ov144_0229b500, data_ov144_0229b508, states, MUSIC_LIST_STATE_COUNT);
     MusicList_StartFrame(self);
     MemberPointer_CallVoid(&data_ov144_0229b508[self->base.state], self);
     MusicList_EndFrame(self);

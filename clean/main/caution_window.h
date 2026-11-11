@@ -38,7 +38,7 @@ enum CautionWindowState {
     CAUTION_WINDOW_SHUTDOWN = 5,
     CAUTION_WINDOW_LAST_MESSAGE = 6,
     CAUTION_WINDOW_END = 7,
-    CAUTION_WINDOW_STATES = 8
+    CAUTION_WINDOW_STATE_COUNT = 8
 };
 
 typedef struct CautionWindow {

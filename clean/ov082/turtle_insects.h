@@ -59,7 +59,7 @@ enum TurtleInsectsState {
     TURTLE_INSECTS_STAND = 0,
     TURTLE_INSECTS_TALK = 1,
     TURTLE_INSECTS_TALKED = 2,
-    TURTLE_INSECTS_STATES = 3
+    TURTLE_INSECTS_STATE_COUNT = 3
 };
 
 /* A state's functions in data_ov082_02279914. */

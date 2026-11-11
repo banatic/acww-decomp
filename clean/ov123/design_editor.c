@@ -105,8 +105,8 @@ extern const OamEntry *const data_ov123_0229cf60[3]; /* the key mode's sign */
  * constants they are filled from. */
 extern u32 data_ov123_0229d2e0; /* the sub states' guard */
 extern u32 data_ov123_0229d2e8; /* the states' guard */
-extern MemberPointer data_ov123_0229d34c[DESIGN_EDITOR_SUB_STATES];
-extern MemberPointer data_ov123_0229d2ec[DESIGN_EDITOR_STATES];
+extern MemberPointer data_ov123_0229d34c[DESIGN_EDITOR_SUB_STATE_COUNT];
+extern MemberPointer data_ov123_0229d2ec[DESIGN_EDITOR_STATE_COUNT];
 extern const MemberPointer data_ov123_0229cf28, data_ov123_0229ce50, data_ov123_0229cf30, data_ov123_0229ce98,
     data_ov123_0229ced0, data_ov123_0229cf00, data_ov123_0229cef8, data_ov123_0229cef0, data_ov123_0229cee8,
     data_ov123_0229cf10, data_ov123_0229cee0, data_ov123_0229ce68, data_ov123_0229ce78;
@@ -578,7 +578,7 @@ void DesignEditor_SetColor(DesignEditor *self, unsigned char color)
 }
 CLEAN_AS(func_ov123_0229b160, DesignEditor_SetColor)
 
-/* func_ov123_0229b174: the design palette's colours queued as layer 6's palette 14. */
+/* func_ov123_0229b174: the design palette's colors queued as layer 6's palette 14. */
 int DesignEditor_QueuePalette(DesignEditor *self)
 {
     DesignManager *manager = (DesignManager *) (uintptr_t) DesignManager_Global();
@@ -1108,12 +1108,12 @@ CLEAN_AS(_ZN18Obj_ov123_0229d02419func_ov123_0229c530Ev, DesignEditor_RunInterac
  * REQUIRES: the sub state is below 0x0d; the game reads past the table for others. */
 void DesignEditor_RunSubState(DesignEditor *self)
 {
-    static const MemberPointer *const sub_states[DESIGN_EDITOR_SUB_STATES] = {
+    static const MemberPointer *const sub_states[DESIGN_EDITOR_SUB_STATE_COUNT] = {
         &data_ov123_0229cf28, &data_ov123_0229ce50, &data_ov123_0229cf30, &data_ov123_0229ce98, &data_ov123_0229ced0,
         &data_ov123_0229cf00, &data_ov123_0229cef8, &data_ov123_0229cef0, &data_ov123_0229cee8, &data_ov123_0229cf10,
         &data_ov123_0229cee0, &data_ov123_0229ce68, &data_ov123_0229ce78,
     };
-    MemberTable_InitOnce(&data_ov123_0229d2e0, data_ov123_0229d34c, sub_states, DESIGN_EDITOR_SUB_STATES);
+    MemberTable_InitOnce(&data_ov123_0229d2e0, data_ov123_0229d34c, sub_states, DESIGN_EDITOR_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov123_0229d34c[self->base.sub_state], self);
 }
 CLEAN_AS(_ZN18Obj_ov123_0229d02419func_ov123_0229c54cEv, DesignEditor_RunSubState)
@@ -1124,12 +1124,12 @@ CLEAN_AS(_ZN18Obj_ov123_0229d02419func_ov123_0229c54cEv, DesignEditor_RunSubStat
  * REQUIRES: the state is below 0x0c; the game reads past the table for others. */
 int DesignEditor_RunState(DesignEditor *self)
 {
-    static const MemberPointer *const states[DESIGN_EDITOR_STATES] = {
+    static const MemberPointer *const states[DESIGN_EDITOR_STATE_COUNT] = {
         &data_ov123_0229ce70, &data_ov123_0229ce80, &data_ov123_0229ced8, &data_ov123_0229ce48,
         &data_ov123_0229ce58, &data_ov123_0229cf38, &data_ov123_0229cec0, &data_ov123_0229ce40,
         &data_ov123_0229cf58, &data_ov123_0229cf50, &data_ov123_0229cf48, &data_ov123_0229cf40,
     };
-    MemberTable_InitOnce(&data_ov123_0229d2e8, data_ov123_0229d2ec, states, DESIGN_EDITOR_STATES);
+    MemberTable_InitOnce(&data_ov123_0229d2e8, data_ov123_0229d2ec, states, DESIGN_EDITOR_STATE_COUNT);
     DesignEditor_BeginFrame(self);
     MemberPointer_CallVoid(&data_ov123_0229d2ec[self->base.state], self);
     DesignEditor_EndFrame(self);

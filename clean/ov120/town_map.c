@@ -46,7 +46,7 @@ extern const u8 data_ov120_0229c650[];
 /* The phases the scene sets (MenuScene_Update runs phase 1 by the vtable's slot 0x4c, 2 by
  * 0x50, 3 by 0x54, 4 by 0x58 and 5 by 0x5c). */
 enum TownMapPhase {
-    TOWN_MAP_PHASE_STATES = 1,      /* TownMap_RunState */
+    TOWN_MAP_PHASE_STATE_COUNT = 1, /* TownMap_RunState */
     TOWN_MAP_PHASE_INTERACTIVE = 2, /* TownMap_RunInteractive */
     TOWN_MAP_PHASE_DELETE = 5       /* TownMap_RequestDelete */
 };
@@ -65,8 +65,8 @@ extern ScenePlace data_021f69b8; /* the marked place */
  * constants they are filled from. */
 extern u32 data_ov120_0229c784; /* the states' guard */
 extern u32 data_ov120_0229c788; /* the sub states' guard */
-extern MemberPointer data_ov120_0229c798[TOWN_MAP_STATES];
-extern MemberPointer data_ov120_0229c7d0[TOWN_MAP_SUB_STATES];
+extern MemberPointer data_ov120_0229c798[TOWN_MAP_STATE_COUNT];
+extern MemberPointer data_ov120_0229c7d0[TOWN_MAP_SUB_STATE_COUNT];
 extern const MemberPointer data_ov120_0229c520; /* TownMap_SubPress */
 extern const MemberPointer data_ov120_0229c528; /* TownMap_StateStartWipeIn */
 extern const MemberPointer data_ov120_0229c530; /* TownMap_SubKnobPress */
@@ -776,7 +776,7 @@ void TownMap_TearDown(TownMap *self)
 CLEAN_AS(func_ov120_0229bc54, TownMap_TearDown)
 
 /* func_ov120_0229bc74: the scene's values set up: the list at its top, nothing picked, the
- * map cursor at the map's centre, the lists built, the player's mark at the player's place
+ * map cursor at the map's center, the lists built, the player's mark at the player's place
  * (outdoors the place of PlayerActorOps_StartPosition(SESSION_PLAYERS_OWN); in a room the marked place's), the
  * knob at rest. The mark is 8 pixels left of and 13 below the place's whole x and z. */
 void TownMap_SetUp(TownMap *self)
@@ -938,7 +938,7 @@ int TownMap_RequestClose(TownMap *self)
 {
     MenuDispatch_SetMode(town_map_parent(self), MENU_DISPATCH_MODE_CLOSE, 1);
     self->base.state = TOWN_MAP_STATE_CLOSE;
-    MenuScene_SetPhase(town_map_scene(self), TOWN_MAP_PHASE_STATES);
+    MenuScene_SetPhase(town_map_scene(self), TOWN_MAP_PHASE_STATE_COUNT);
     return 1;
 }
 CLEAN_AS(func_ov120_0229bfe8, TownMap_RequestClose)
@@ -981,11 +981,11 @@ CLEAN_AS(func_ov120_0229c028, TownMap_RunInteractive)
  * REQUIRES: the sub state is below 10; the game reads past the table for others. */
 void TownMap_RunSubState(TownMap *self)
 {
-    static const MemberPointer *const sub_states[TOWN_MAP_SUB_STATES] = {
+    static const MemberPointer *const sub_states[TOWN_MAP_SUB_STATE_COUNT] = {
         &data_ov120_0229c568, &data_ov120_0229c578, &data_ov120_0229c5a0, &data_ov120_0229c560, &data_ov120_0229c520,
         &data_ov120_0229c550, &data_ov120_0229c530, &data_ov120_0229c538, &data_ov120_0229c540, &data_ov120_0229c570,
     };
-    MemberTable_InitOnce(&data_ov120_0229c788, data_ov120_0229c7d0, sub_states, TOWN_MAP_SUB_STATES);
+    MemberTable_InitOnce(&data_ov120_0229c788, data_ov120_0229c7d0, sub_states, TOWN_MAP_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov120_0229c7d0[self->base.sub_state], self);
 }
 CLEAN_AS(func_ov120_0229c044, TownMap_RunSubState)
@@ -996,11 +996,11 @@ CLEAN_AS(func_ov120_0229c044, TownMap_RunSubState)
  * REQUIRES: the state is below 7; the game reads past the table for others. */
 int TownMap_RunState(TownMap *self)
 {
-    static const MemberPointer *const states[TOWN_MAP_STATES] = {
+    static const MemberPointer *const states[TOWN_MAP_STATE_COUNT] = {
         &data_ov120_0229c5a8, &data_ov120_0229c5b0, &data_ov120_0229c548, &data_ov120_0229c528,
         &data_ov120_0229c598, &data_ov120_0229c590, &data_ov120_0229c588,
     };
-    MemberTable_InitOnce(&data_ov120_0229c784, data_ov120_0229c798, states, TOWN_MAP_STATES);
+    MemberTable_InitOnce(&data_ov120_0229c784, data_ov120_0229c798, states, TOWN_MAP_STATE_COUNT);
     TownMap_BeginFrame(self);
     MemberPointer_CallVoid(&data_ov120_0229c798[self->base.state], self);
     TownMap_UpdateScreens(self);
@@ -1088,7 +1088,7 @@ int TownMap_Start(TownMap *self)
 {
     TownMap_SetUp(self);
     MenuScene_SetState(town_map_scene(self), TOWN_MAP_STATE_LOAD_BG);
-    MenuScene_SetPhase(town_map_scene(self), TOWN_MAP_PHASE_STATES);
+    MenuScene_SetPhase(town_map_scene(self), TOWN_MAP_PHASE_STATE_COUNT);
     return 1;
 }
 CLEAN_AS(func_ov120_0229c43c, TownMap_Start)

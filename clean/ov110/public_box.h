@@ -96,7 +96,7 @@ enum PublicBoxState {
     PUBLIC_BOX_STATE_START_WIPE_OUT = 4,   /* PublicBox_StartWipeOut */
     PUBLIC_BOX_STATE_BOX_WIPE_OUT = 5,     /* PublicBox_BoxWipeOut */
     PUBLIC_BOX_STATE_POCKETS_WIPE_OUT = 6, /* PublicBox_PocketsWipeOut */
-    PUBLIC_BOX_STATES = 7
+    PUBLIC_BOX_STATE_COUNT = 7
 };
 
 /* The sub states, run from the table of PublicBox_RunSubState (MenuScene_SetSubState), named by
@@ -124,7 +124,7 @@ enum PublicBoxSubState {
     PUBLIC_BOX_SUB_CHOICE_RUN = 0x13,     /* PublicBox_RunActionWhenIdle */
     PUBLIC_BOX_SUB_ERROR = 0x14,          /* PublicBox_WaitError */
     PUBLIC_BOX_SUB_CLOSED = 0x15,         /* PublicBox_WaitClosed */
-    PUBLIC_BOX_SUB_STATES = 0x16
+    PUBLIC_BOX_SUB_STATE_COUNT = 0x16
 };
 
 /* The phases MenuScene_Update runs (as ov092/menu_dispatch.h has them): 0 the base's wait
@@ -132,7 +132,7 @@ enum PublicBoxSubState {
  * 0x58), 5 the end (0x5c). */
 enum PublicBoxPhase {
     PUBLIC_BOX_PHASE_WAIT = 0,
-    PUBLIC_BOX_PHASE_STATES = 1,      /* PublicBox_RunState */
+    PUBLIC_BOX_PHASE_STATE_COUNT = 1, /* PublicBox_RunState */
     PUBLIC_BOX_PHASE_INTERACTIVE = 2, /* PublicBox_RunInteractive */
     PUBLIC_BOX_PHASE_END = 5          /* PublicBox_End */
 };

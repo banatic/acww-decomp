@@ -44,14 +44,14 @@ extern SkyObjectSounds data_021fbb14; /* the sounds of the sky's objects */
 extern StateBlock data_021dc7a8;
 extern u8 data_021ebcd2[]; /* SpaceshipParts */
 extern u32 data_021f6cc4;  /* SkyShots_RunHit's table was filled */
-extern MemberPointer data_021f6d48[SKY_SHOTS_HIT_STATES];
+extern MemberPointer data_021f6d48[SKY_SHOTS_HIT_STATE_COUNT];
 extern const MemberPointer __ptmf_null;
 extern const MemberPointer data_020e5af8, data_020e5ac0, data_020e5a00, data_020e5bd0, data_020e5ce8, data_020e5a68,
     data_020e59a0, data_020e5988, data_020e5be0;
 
 extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 
-static const MemberPointer *const sky_shots_hit_constants[SKY_SHOTS_HIT_STATES] = {
+static const MemberPointer *const sky_shots_hit_constants[SKY_SHOTS_HIT_STATE_COUNT] = {
     &__ptmf_null,   &data_020e5af8, &data_020e5ac0, &data_020e5a00, &data_020e5bd0,
     &data_020e5ce8, &data_020e5a68, &data_020e59a0, &data_020e5988, &data_020e5be0,
 };
@@ -334,7 +334,7 @@ CLEAN_AS(func_020be9f8, SkyShots_CountHit)
  * REQUIRES: the state is 0 to 9. */
 void SkyShots_RunHit(SkyShotsHit *hit)
 {
-    MemberTable_InitOnce(&data_021f6cc4, data_021f6d48, sky_shots_hit_constants, SKY_SHOTS_HIT_STATES);
+    MemberTable_InitOnce(&data_021f6cc4, data_021f6d48, sky_shots_hit_constants, SKY_SHOTS_HIT_STATE_COUNT);
     MemberPointer member = data_021f6d48[hit->state];
     if (member.function != 0) {
         MemberPointer_CallVoid(&member, hit);

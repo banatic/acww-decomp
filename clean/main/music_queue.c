@@ -265,7 +265,7 @@ void MusicQueue_Tick(MusicQueue *queue)
 
     for (i = 0; i < count; i++) {
         MusicRequest *request = &queue->requests[i];
-        if (MusicRequest_CountDown(request) != 0) {
+        if (MusicRequest_Tick(request) != 0) {
             request->done = 1;
         }
         if (i != 0 && request->head_only != 0) {

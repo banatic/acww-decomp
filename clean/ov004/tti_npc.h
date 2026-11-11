@@ -17,7 +17,7 @@
 #include "member_pointer.h"
 #include "types.h"
 
-enum TtiNpcState { TTI_NPC_STAND = 0, TTI_NPC_GESTURE = 1, TTI_NPC_STATES = 2 };
+enum TtiNpcState { TTI_NPC_STAND = 0, TTI_NPC_GESTURE = 1, TTI_NPC_STATE_COUNT = 2 };
 
 /* A state's functions in data_ov004_02258204. */
 typedef struct TtiNpcStep {

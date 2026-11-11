@@ -330,10 +330,10 @@ enum LetterStorageState {
     LETTER_STORAGE_STATE_PROMPT_CLOSE_WIPE = 0x13,     /* LetterStorage_PromptCloseWipe */
     LETTER_STORAGE_STATE_RESTORE_PANEL = 0x14,         /* LetterStorage_RestorePanel */
     LETTER_STORAGE_STATE_PANEL_WIPE_IN = 0x15,         /* LetterStorage_PanelWipeIn */
-    LETTER_STORAGE_STATES = 0x16
+    LETTER_STORAGE_STATE_COUNT = 0x16
 };
 
-#define LETTER_STORAGE_SUB_STATES 0x20
+#define LETTER_STORAGE_SUB_STATE_COUNT 0x20
 
 void LetterStorage_WatchChoiceTouch(LetterStorage *self);
 void LetterStorage_HoldTouchOnPlace(LetterStorage *self);

@@ -21,7 +21,7 @@ extern const MemberPointer data_ov054_02262d48, data_ov054_02262d90, data_ov054_
     data_ov054_02262e10, data_ov054_02262e98, data_ov054_02262e28, data_ov054_02262e88, data_ov054_02262e30,
     data_ov054_02262e78, data_ov054_02262e50, data_ov054_02262e60, data_ov054_02262e68, data_ov054_02262e70,
     data_ov054_02262e80, data_ov054_02262ea0, data_ov054_02262eb0, data_ov054_02262e38, data_ov054_02262d38;
-extern PostClerkStep data_ov054_022632dc[POST_CLERK_STATES];
+extern PostClerkStep data_ov054_022632dc[POST_CLERK_STATE_COUNT];
 
 /* __sinit_ov054_02262a70: the sixteen steps' functions, then the entries and updates of the
  * twelve states, in order. */
@@ -44,7 +44,7 @@ void Ov054Init_PostClerkTables(void)
         &data_ov054_02262da0, /* 14: PostClerkTalk_AskJob1f */
         &data_ov054_02262d40, /* 15: PostClerkTalk_AwaitJob1f */
     };
-    static const MemberPointer *const states[2 * POST_CLERK_STATES] = {
+    static const MemberPointer *const states[2 * POST_CLERK_STATE_COUNT] = {
         &data_ov054_02262d48, &data_ov054_02262d90, /* 0: greet */
         &data_ov054_02262ed8, &data_ov054_02262d70, /* 1: call over */
         &data_ov054_02262d78, &data_ov054_02262d80, /* 2: stand */
@@ -62,7 +62,7 @@ void Ov054Init_PostClerkTables(void)
     for (int i = 1; i < POST_CLERK_TALK_STEPS; i++) {
         data_ov054_02263140[i].run = *steps[i - 1];
     }
-    for (int i = 0; i < POST_CLERK_STATES; i++) {
+    for (int i = 0; i < POST_CLERK_STATE_COUNT; i++) {
         data_ov054_022632dc[i].enter = *states[2 * i];
         data_ov054_022632dc[i].update = *states[2 * i + 1];
     }

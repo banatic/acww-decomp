@@ -21,8 +21,8 @@ extern const MemberPointer data_ov049_02263140, data_ov049_02263148, data_ov049_
     data_ov049_022631e8, data_ov049_022631e0, data_ov049_022631d8, data_ov049_022630f0, data_ov049_022631c8,
     data_ov049_022630e8, data_ov049_022631b8, data_ov049_022630e0, data_ov049_022631a8, data_ov049_022630d8,
     data_ov049_022630d0, data_ov049_022630b0, data_ov049_02263188;
-extern MabelStep data_ov049_02263640[MABEL_STATES];
-extern MabelStep data_ov049_022636c0[MABEL_STATES / 2];
+extern MabelStep data_ov049_02263640[MABEL_STATE_COUNT];
+extern MabelStep data_ov049_022636c0[MABEL_STATE_COUNT / 2];
 
 /* __sinit_ov049_02262e14: the nine sequences' functions, then the entries and updates of the
  * sixteen states, in order. The address of the states' second half. */
@@ -39,7 +39,7 @@ int MabelInit_Tables(void)
         &data_ov049_02263290, /* 8: MabelTalk_EndTryOn */
         &data_ov049_02263150, /* 9: MabelTalk_TakeErrand */
     };
-    static const MemberPointer *const states[2 * MABEL_STATES] = {
+    static const MemberPointer *const states[2 * MABEL_STATE_COUNT] = {
         &data_ov049_02263140, &data_ov049_02263148, /* 0: greet */
         &data_ov049_02263170, &data_ov049_02263268, /* 1: stand */
         &data_ov049_02263260, &data_ov049_02263190, /* 2: turn */
@@ -62,7 +62,7 @@ int MabelInit_Tables(void)
     for (int i = 1; i < MABEL_TALK_SEQUENCES; i++) {
         data_ov049_022633b0[i].run = *sequences[i - 1];
     }
-    for (int i = 0; i < MABEL_STATES; i++) {
+    for (int i = 0; i < MABEL_STATE_COUNT; i++) {
         data_ov049_02263640[i].enter = *states[2 * i];
         data_ov049_02263640[i].update = *states[2 * i + 1];
     }

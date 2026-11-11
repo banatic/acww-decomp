@@ -274,7 +274,7 @@ static_assert(0xec + offsetof(LayeredModel, base.frames) + offsetof(FrameControl
 
 /* The functions of his states and of his talk scene's sequences (both filled at start-up by
  * __sinit_ov004_0224e734). */
-extern CafeMasterStep data_ov004_022580e0[CAFE_MASTER_STATES];
+extern CafeMasterStep data_ov004_022580e0[CAFE_MASTER_STATE_COUNT];
 extern CafeMasterTalkStep data_ov004_02254618[CAFE_MASTER_TALK_SEQUENCES];
 /* The vtable of his talk scene, and of a class he derives from. */
 extern const u8 data_ov004_02254650[];

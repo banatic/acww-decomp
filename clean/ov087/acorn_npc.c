@@ -87,7 +87,7 @@ extern const u8 data_ov087_022794ec[];
 extern const u8 data_020d8c64[];
 extern const u8 data_020da088[];
 /* Its states' functions (filled at start-up by __sinit_ov087_02279354). */
-extern AcornNpcStep data_ov087_022795c0[ACORN_NPC_STATES];
+extern AcornNpcStep data_ov087_022795c0[ACORN_NPC_STATE_COUNT];
 /* Its model's and texture's file names: "npc_sp/model/dnk.nsbmd", "npc_sp/model/dnk_tex.nsbtx". */
 extern const char data_ov087_02279408[];
 extern const char data_ov087_02279438[];

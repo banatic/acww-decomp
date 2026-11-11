@@ -50,7 +50,7 @@ enum BankAmountState {
     BANK_AMOUNT_STATE_WIPE_IN = 1,  /* BankAmount_WipeIn: then the input */
     BANK_AMOUNT_STATE_FINISH = 2,   /* BankAmount_Finish: the dispatcher told, the wipe out */
     BANK_AMOUNT_STATE_WIPE_OUT = 3, /* BankAmount_WipeOut: then the end (phase 5) */
-    BANK_AMOUNT_STATES = 4
+    BANK_AMOUNT_STATE_COUNT = 4
 };
 
 enum BankAmountSubState {
@@ -62,7 +62,7 @@ enum BankAmountSubState {
     BANK_AMOUNT_SUB_CURSOR_RELEASE = 5, /* BankAmount_WaitCursorRelease: then `return_sub_state` */
     BANK_AMOUNT_SUB_KEY_HELD = 6,       /* BankAmount_KeyHeld: a key held by A repeats */
     BANK_AMOUNT_SUB_PANEL_PRESS = 7,    /* BankAmount_PanelPress: a button's press plays, then phase 1 */
-    BANK_AMOUNT_SUB_STATES = 8
+    BANK_AMOUNT_SUB_STATE_COUNT = 8
 };
 
 /* The phases the scene sets (MenuScene.phase): 0 runs the base's wait (vtable slot 0x48), 1 the
@@ -70,7 +70,7 @@ enum BankAmountSubState {
  * the end (slot 0x5c, BankAmount_End). */
 enum BankAmountPhase {
     BANK_AMOUNT_PHASE_WAIT = 0,
-    BANK_AMOUNT_PHASE_STATES = 1,
+    BANK_AMOUNT_PHASE_STATE_COUNT = 1,
     BANK_AMOUNT_PHASE_INPUT = 2,
     BANK_AMOUNT_PHASE_END = 5
 };

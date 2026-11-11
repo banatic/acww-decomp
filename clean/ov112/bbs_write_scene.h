@@ -58,7 +58,7 @@ enum BbsWriteFlag {
  * the vtable's slot 0x48, 1 by 0x4c, 2 by 0x50 and 5 by 0x5c). */
 enum BbsWritePhase {
     BBS_WRITE_PHASE_WAIT = 0,        /* the base's wait */
-    BBS_WRITE_PHASE_STATES = 1,      /* BbsWrite_RunState */
+    BBS_WRITE_PHASE_STATE_COUNT = 1, /* BbsWrite_RunState */
     BBS_WRITE_PHASE_INTERACTIVE = 2, /* BbsWrite_RunInteractive */
     BBS_WRITE_PHASE_END = 5          /* BbsWrite_End */
 };
@@ -80,7 +80,7 @@ enum BbsWriteState {
     BBS_WRITE_STATE_FINISH_WIPE_OUT = 11,  /* BbsWrite_FinishWipeOut */
     BBS_WRITE_STATE_CLOSE = 12,            /* BbsWrite_StartCloseWipeOut: main closes the menu */
     BBS_WRITE_STATE_CLOSE_WIPE_OUT = 13,   /* BbsWrite_CloseWipeOut */
-    BBS_WRITE_STATES = 14
+    BBS_WRITE_STATE_COUNT = 14
 };
 
 /* The scene's sub states (MenuScene.sub_state), each run by its handler of the table of
@@ -110,7 +110,7 @@ enum BbsWriteSubState {
     BBS_WRITE_SUB_PANEL_PRESSED = 20,    /* BbsWrite_RunPanelPressed: the pointer's press plays, then the answer */
     BBS_WRITE_SUB_BUTTON = 21,           /* BbsWrite_RunButton: a button of the panel pressed */
     BBS_WRITE_SUB_ERROR = 22,            /* BbsWrite_RunError: an error message, then the input; not set here */
-    BBS_WRITE_SUB_STATES = 23
+    BBS_WRITE_SUB_STATE_COUNT = 23
 };
 
 /* The codes of the keyboard's keys (func_ov095_0229c448) the scene acts on; others are

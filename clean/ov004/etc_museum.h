@@ -37,7 +37,7 @@
 #include "main/touch_pick_shapes.h"
 #include "types.h"
 
-enum EtcMuseumState { ETC_MUSEUM_IDLE, ETC_MUSEUM_TALK, ETC_MUSEUM_OPEN, ETC_MUSEUM_LONE_TALK, ETC_MUSEUM_STATES };
+enum EtcMuseumState { ETC_MUSEUM_IDLE, ETC_MUSEUM_TALK, ETC_MUSEUM_OPEN, ETC_MUSEUM_LONE_TALK, ETC_MUSEUM_STATE_COUNT };
 
 /* EtcMuseum.kind */
 enum EtcMuseumKind {

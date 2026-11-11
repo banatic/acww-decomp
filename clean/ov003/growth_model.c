@@ -252,7 +252,7 @@ void GrowthModel_Drop(u16 *code, int slot, const TileChangesTile *tile)
 CLEAN_AS(func_ov003_02222d8c, GrowthModel_Drop)
 
 /* func_ov003_02222e24: with a tile change of `slot` tagged 0 (TileChanges_FindByTag), its item
- * falls from the tile's centre plus the offset of the player's side (GrowthModel_PlayerSide)
+ * falls from the tile's center plus the offset of the player's side (GrowthModel_PlayerSide)
  * of table [0] for codes 0x66-0x68, [1] for 0x6a-0x6c, to that change's tile: as kind 6 for
  * codes 0x66 and 0x6a, else kind 5.
  * REQUIRES: `code` is one of 0x66-0x68 and 0x6a-0x6c (as GrowthModel_Drop hands it); for other

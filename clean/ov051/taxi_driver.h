@@ -67,7 +67,7 @@ enum TaxiDriverState {
     TAXI_DRIVER_DONE = 2,
     TAXI_DRIVER_ARRIVE = 3,
     TAXI_DRIVER_LEAVE = 4,
-    TAXI_DRIVER_STATES = 5
+    TAXI_DRIVER_STATE_COUNT = 5
 };
 
 /* A state's functions in data_ov051_02261ba8. */

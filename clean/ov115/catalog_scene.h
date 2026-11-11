@@ -37,7 +37,7 @@ enum CatalogSceneState {
     CATALOG_SCENE_STATE_WIPE_IN = 1,        /* _WipeIn */
     CATALOG_SCENE_STATE_START_WIPE_OUT = 2, /* _StartWipeOut (set by _SelectTab) */
     CATALOG_SCENE_STATE_WIPE_OUT = 3,       /* _WipeOut */
-    CATALOG_SCENE_STATES = 4
+    CATALOG_SCENE_STATE_COUNT = 4
 };
 
 /* The sub states (MenuScene.sub_state, run in phase 2 by the scene's RunSubState). */
@@ -51,13 +51,13 @@ enum CatalogSceneSubState {
     CATALOG_SCENE_SUB_SCROLL_START = 6, /* _StartScrollByKeys */
     CATALOG_SCENE_SUB_SCROLL_HOLD = 7,  /* _ScrollWhileHeld */
     CATALOG_SCENE_SUB_SCROLL_END = 8,   /* _EndScrollByKeys */
-    CATALOG_SCENE_SUB_STATES = 9
+    CATALOG_SCENE_SUB_STATE_COUNT = 9
 };
 
 /* The phases the scene sets (MenuScene.phase; MenuScene_Update runs phase 0 by the vtable's
  * slot 0x48, 1 by 0x4c, 2 by 0x50, 3 by 0x54, 4 by 0x58 and 5 by 0x5c). */
 enum CatalogScenePhase {
-    CATALOG_SCENE_PHASE_STATES = 1,      /* the states */
+    CATALOG_SCENE_PHASE_STATE_COUNT = 1, /* the states */
     CATALOG_SCENE_PHASE_INTERACTIVE = 2, /* the sub states */
     CATALOG_SCENE_PHASE_DELETE = 5       /* the scene asks to be deleted */
 };

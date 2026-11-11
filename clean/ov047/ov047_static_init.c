@@ -7,7 +7,7 @@
 #include "types.h"
 
 /* The table of the owl's states. */
-extern OwlStep data_ov047_02263048[OWL_STATES];
+extern OwlStep data_ov047_02263048[OWL_STATE_COUNT];
 /* The null member pointer (state 4 has no entry). */
 extern const MemberPointer __ptmf_null;
 /* Each state's entry, then its update. */
@@ -19,7 +19,7 @@ extern const MemberPointer data_ov047_022629d8, data_ov047_02262970, data_ov047_
 /* __sinit_ov047_02262838: the entries and updates of the owl's nine states, in order. */
 void Ov047Init_OwlStates(void)
 {
-    static const MemberPointer *const steps[2 * OWL_STATES] = {
+    static const MemberPointer *const steps[2 * OWL_STATE_COUNT] = {
         &data_ov047_022629d8, &data_ov047_02262970, /* 0: Owl_EnterStand, Owl_UpdateStand */
         &data_ov047_022629e0, &data_ov047_02262978, /* 1: Owl_EnterTurnBack, Owl_UpdateTurnBack */
         &data_ov047_022629a8, &data_ov047_02262b30, /* 2: Owl_EnterAsleep, Owl_UpdateAsleep */
@@ -30,7 +30,7 @@ void Ov047Init_OwlStates(void)
         &data_ov047_02262b80, &data_ov047_02262b78, /* 7: Owl_EnterOther, Owl_UpdateOther */
         &data_ov047_02262b70, &data_ov047_02262b68, /* 8: Owl_EnterPaused, Owl_UpdatePaused */
     };
-    for (int i = 0; i < OWL_STATES; i++) {
+    for (int i = 0; i < OWL_STATE_COUNT; i++) {
         data_ov047_02263048[i].enter = *steps[2 * i];
         data_ov047_02263048[i].update = *steps[2 * i + 1];
     }

@@ -423,7 +423,7 @@ CLEAN_AS(func_ov128_0229be44, StarView_EnterTouch)
 void StarView_SubButton(StarView *self)
 {
     if (PanelSprite_StepPress(&self->button) == 0) {
-        MenuScene_SetPhase(star_view_scene(self), STAR_VIEW_PHASE_STATES);
+        MenuScene_SetPhase(star_view_scene(self), STAR_VIEW_PHASE_STATE_COUNT);
     }
 }
 CLEAN_AS(func_ov128_0229be5c, StarView_SubButton)

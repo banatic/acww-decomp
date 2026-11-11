@@ -30,8 +30,8 @@ extern u8 *data_021c526c;
  * constants they are filled from. */
 extern u32 data_ov092_02299580; /* the states' guard */
 extern u32 data_ov092_02299584; /* the sub states' guard */
-extern MemberPointer data_ov092_02299588[MENU_DISPATCH_STATES];
-extern MemberPointer data_ov092_02299590[MENU_DISPATCH_SUB_STATES];
+extern MemberPointer data_ov092_02299588[MENU_DISPATCH_STATE_COUNT];
+extern MemberPointer data_ov092_02299590[MENU_DISPATCH_SUB_STATE_COUNT];
 extern const MemberPointer data_ov092_022994e8; /* MenuDispatch_Idle */
 extern const MemberPointer data_ov092_022994f0; /* MenuDispatch_Open */
 extern const MemberPointer data_ov092_022994f8; /* MenuDispatch_RequestGroup */
@@ -299,11 +299,11 @@ CLEAN_AS(func_ov092_02299394, MenuDispatch_Phase3)
  * REQUIRES: the sub state is below 2; the game reads past the table for others. */
 int MenuDispatch_RunInteractive(MenuDispatch *self)
 {
-    static const MemberPointer *const sub_states[MENU_DISPATCH_SUB_STATES] = {
+    static const MemberPointer *const sub_states[MENU_DISPATCH_SUB_STATE_COUNT] = {
         &data_ov092_022994e8,
         &data_ov092_022994f8,
     };
-    MemberTable_InitOnce(&data_ov092_02299584, data_ov092_02299590, sub_states, MENU_DISPATCH_SUB_STATES);
+    MemberTable_InitOnce(&data_ov092_02299584, data_ov092_02299590, sub_states, MENU_DISPATCH_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov092_02299590[self->base.sub_state], self);
     return 1;
 }
@@ -314,10 +314,10 @@ CLEAN_AS(func_ov092_02299398, MenuDispatch_RunInteractive)
  * REQUIRES: the state is 0; the game reads past the table for others. */
 int MenuDispatch_RunState(MenuDispatch *self)
 {
-    static const MemberPointer *const states[MENU_DISPATCH_STATES] = {
+    static const MemberPointer *const states[MENU_DISPATCH_STATE_COUNT] = {
         &data_ov092_022994f0,
     };
-    MemberTable_InitOnce(&data_ov092_02299580, data_ov092_02299588, states, MENU_DISPATCH_STATES);
+    MemberTable_InitOnce(&data_ov092_02299580, data_ov092_02299588, states, MENU_DISPATCH_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov092_02299588[self->base.state], self);
     return 1;
 }

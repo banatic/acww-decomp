@@ -258,7 +258,7 @@ void TuneEditor_FollowPanelPress(TuneEditor *self)
         Glider_PlaceAt(&self->cursor_sprite, frame + (x - 6), frame + y);
     } else {
         TuneEditor_HideCursorSprite(self);
-        MenuScene_SetPhase(tune_scene(self), TUNE_EDITOR_PHASE_STATES);
+        MenuScene_SetPhase(tune_scene(self), TUNE_EDITOR_PHASE_STATE_COUNT);
     }
 }
 CLEAN_AS(func_ov143_0229a374, TuneEditor_FollowPanelPress)
@@ -506,7 +506,7 @@ void TuneEditor_BrowseByTouch(TuneEditor *self)
 }
 CLEAN_AS(func_ov143_0229a76c, TuneEditor_BrowseByTouch)
 
-/* func_ov143_0229a7fc: the panel's text colours, the notes' OBJ characters (0xc0-0xff and
+/* func_ov143_0229a7fc: the panel's text colors, the notes' OBJ characters (0xc0-0xff and
  * 0x140-0x1bf) and OBJ palettes 4-13 loaded. */
 void TuneEditor_LoadPanelGraphics(TuneEditor *self)
 {
@@ -754,8 +754,8 @@ CLEAN_AS(_ZN18Obj_ov143_0229b1c019func_ov143_0229abf4Ev, TuneEditor_RunInteracti
  * constants. */
 extern u32 data_ov143_0229b2c0; /* the states' guard */
 extern u32 data_ov143_0229b2c4; /* the sub states' guard */
-extern MemberPointer data_ov143_0229b2c8[TUNE_EDITOR_STATES];
-extern MemberPointer data_ov143_0229b308[TUNE_EDITOR_SUB_STATES];
+extern MemberPointer data_ov143_0229b2c8[TUNE_EDITOR_STATE_COUNT];
+extern MemberPointer data_ov143_0229b308[TUNE_EDITOR_SUB_STATE_COUNT];
 extern const MemberPointer data_ov143_0229af00, data_ov143_0229af10, data_ov143_0229af18, data_ov143_0229af20,
     data_ov143_0229af28, data_ov143_0229af30, data_ov143_0229af38, data_ov143_0229af40, data_ov143_0229af48,
     data_ov143_0229af50, data_ov143_0229af60, data_ov143_0229af68, data_ov143_0229af70, data_ov143_0229af78,
@@ -766,12 +766,12 @@ extern const MemberPointer data_ov143_0229af00, data_ov143_0229af10, data_ov143_
  * REQUIRES: the sub state is below 11; the game reads past the table for others. */
 void TuneEditor_RunSubState(TuneEditor *self)
 {
-    static const MemberPointer *const sub_states[TUNE_EDITOR_SUB_STATES] = {
+    static const MemberPointer *const sub_states[TUNE_EDITOR_SUB_STATE_COUNT] = {
         &data_ov143_0229af98, &data_ov143_0229af80, &data_ov143_0229af18, &data_ov143_0229af10,
         &data_ov143_0229af48, &data_ov143_0229af40, &data_ov143_0229af28, &data_ov143_0229af20,
         &data_ov143_0229af78, &data_ov143_0229af38, &data_ov143_0229af50,
     };
-    MemberTable_InitOnce(&data_ov143_0229b2c4, data_ov143_0229b308, sub_states, TUNE_EDITOR_SUB_STATES);
+    MemberTable_InitOnce(&data_ov143_0229b2c4, data_ov143_0229b308, sub_states, TUNE_EDITOR_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov143_0229b308[self->base.sub_state], self);
 }
 CLEAN_AS(_ZN18Obj_ov143_0229b1c019func_ov143_0229ac10Ev, TuneEditor_RunSubState)
@@ -782,11 +782,11 @@ CLEAN_AS(_ZN18Obj_ov143_0229b1c019func_ov143_0229ac10Ev, TuneEditor_RunSubState)
  * REQUIRES: the state is below 8; the game reads past the table for others. */
 int TuneEditor_RunState(TuneEditor *self)
 {
-    static const MemberPointer *const states[TUNE_EDITOR_STATES] = {
+    static const MemberPointer *const states[TUNE_EDITOR_STATE_COUNT] = {
         &data_ov143_0229af88, &data_ov143_0229af00, &data_ov143_0229afa8, &data_ov143_0229afa0,
         &data_ov143_0229af60, &data_ov143_0229af68, &data_ov143_0229af70, &data_ov143_0229af30,
     };
-    MemberTable_InitOnce(&data_ov143_0229b2c0, data_ov143_0229b2c8, states, TUNE_EDITOR_STATES);
+    MemberTable_InitOnce(&data_ov143_0229b2c0, data_ov143_0229b2c8, states, TUNE_EDITOR_STATE_COUNT);
     TuneEditor_BeginFrame(self);
     MemberPointer_CallVoid(&data_ov143_0229b2c8[self->base.state], self);
     TuneEditor_EndFrame(self);

@@ -31,7 +31,7 @@ static_assert(offsetof(TownObjectActor, pivot) == 0xc4, "pivot");
 static_assert(offsetof(TownObjectActor, pitch) == 0xd0, "pitch");
 static_assert(offsetof(TownObjectActor, exit_step) == 0x234, "exit step");
 static_assert(offsetof(TownObjectActor, model_slot) == 0x292, "model slot");
-static_assert(offsetof(TownObjectActor, bounds_center) == 0x294, "bounds centre");
+static_assert(offsetof(TownObjectActor, bounds_center) == 0x294, "bounds center");
 static_assert(offsetof(TownObjectActor, bounds_width) == 0x2a0, "bounds width");
 static_assert(offsetof(TownObjectActor, bounds_depth) == 0x2a4, "bounds depth");
 static_assert(sizeof(AnimatedModel) >= 0xb4 && offsetof(AnimatedModel, object) == 0, "animated model");

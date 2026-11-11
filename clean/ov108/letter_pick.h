@@ -99,7 +99,7 @@ enum LetterPickSubState {
     LETTER_PICK_SUB_CHOICE_RUN = 0x15,      /* LetterPick_RunActionWhenIdle */
     LETTER_PICK_SUB_ERROR = 0x16,           /* LetterPick_WaitError */
     LETTER_PICK_SUB_PANEL_PRESSED = 0x17,   /* LetterPick_FollowPanelPress */
-    LETTER_PICK_SUB_STATES = 0x18
+    LETTER_PICK_SUB_STATE_COUNT = 0x18
 };
 
 /* The states, run from the table of LetterPick_RunState (MenuScene_SetState). */
@@ -109,14 +109,14 @@ enum LetterPickState {
     LETTER_PICK_STATE_SCENE_WIPE_IN = 0x02,  /* LetterPick_SceneWipeIn */
     LETTER_PICK_STATE_START_WIPE_OUT = 0x03, /* LetterPick_StartWipeOut */
     LETTER_PICK_STATE_SCENE_WIPE_OUT = 0x04, /* LetterPick_SceneWipeOut */
-    LETTER_PICK_STATES = 0x05
+    LETTER_PICK_STATE_COUNT = 0x05
 };
 
 /* The phases the scene sets (MenuScene.phase): menu_scene.c's MenuScene_Update runs phase 0 by
  * the vtable's slot 0x48, 1 by 0x4c, 2 by 0x50, 3 by 0x54, 4 by 0x58 and 5 by 0x5c. */
 enum LetterPickPhase {
     LETTER_PICK_PHASE_WAIT = 0,        /* the base's wait */
-    LETTER_PICK_PHASE_STATES = 1,      /* LetterPick_RunState */
+    LETTER_PICK_PHASE_STATE_COUNT = 1, /* LetterPick_RunState */
     LETTER_PICK_PHASE_INTERACTIVE = 2, /* LetterPick_RunInteractive */
     LETTER_PICK_PHASE_END = 5          /* LetterPick_End */
 };

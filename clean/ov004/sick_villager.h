@@ -44,7 +44,7 @@ enum SickVillagerState {
     SICK_VILLAGER_ASK = 5,
     SICK_VILLAGER_POCKETS = 6,
     SICK_VILLAGER_BACK = 7,
-    SICK_VILLAGER_STATES = 8
+    SICK_VILLAGER_STATE_COUNT = 8
 };
 
 struct SickVillager;

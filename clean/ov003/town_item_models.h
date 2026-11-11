@@ -6,7 +6,7 @@
  * drawer of its set into the process's model holders (TownItemModels_DrawCode*), each item of
  * kinds 1, 3 and 4 by the holder its traits name (ItemTraits_Look, the pointers at 0x50), at
  * most 252 tiles; then the tile events and the growth models. A model is drawn in a matrix
- * built from its tile's centre bent over the globe (Globe_BendFar), with the scene's emission
+ * built from its tile's center bent over the globe (Globe_BendFar), with the scene's emission
  * color.
  *
  * The holders: the flowers and watered flowers (by kind and color) at 0x1590; the wilted

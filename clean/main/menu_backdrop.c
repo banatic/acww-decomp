@@ -21,7 +21,7 @@
 #include "tile_convert.h"
 
 /* The steps' handlers, by MenuBackdropState (the game's functions). */
-extern const u32 data_020df2a4[MENU_BACKDROP_STATES];
+extern const u32 data_020df2a4[MENU_BACKDROP_STATE_COUNT];
 
 extern u8 data_021cfc0c;          /* the holds */
 extern u8 data_021cfc10;          /* the picture's style */

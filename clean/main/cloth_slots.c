@@ -289,7 +289,7 @@ void ClothSlots_AllocFiles(ClothSlots *slots)
 }
 CLEAN_AS(func_0205d5f0, ClothSlots_AllocFiles)
 
-/* func_0205d690: the pool's destructor (registered by its static initialiser): the pool's own
+/* func_0205d690: the pool's destructor (registered by its static initializer): the pool's own
  * slot byte, then the items. Returns the pool. */
 ClothSlots *ClothSlots_Destruct(ClothSlots *slots)
 {

@@ -110,7 +110,7 @@ extern const u8 data_020da088[];
 /* The one started last (not cleared when it leaves). */
 extern TaxiDriver *data_ov051_02261b80;
 /* Its states' functions (filled at start-up by __sinit_ov051_0226150c). */
-extern TaxiDriverStep data_ov051_02261ba8[TAXI_DRIVER_STATES];
+extern TaxiDriverStep data_ov051_02261ba8[TAXI_DRIVER_STATE_COUNT];
 /* Its model's and texture's file names: "npc_sp/model/wip.nsbmd", "npc_sp/model/wip_tex.nsbtx". */
 extern const char data_ov051_022617b0[];
 extern const char data_ov051_022617e0[];

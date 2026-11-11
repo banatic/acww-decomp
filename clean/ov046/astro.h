@@ -35,7 +35,7 @@
 #define ASTRO_ASLEEP 2
 #define ASTRO_TALK 3
 #define ASTRO_TALKED 4
-#define ASTRO_STATES 5
+#define ASTRO_STATE_COUNT 5
 
 typedef struct Astro {
     u8 unk_000[0x8e];  /* the scene object (special_scene_object.h, scene_object.h) */
@@ -61,7 +61,7 @@ typedef struct AstroStateRow {
     MemberPointer enter;
     MemberPointer run;
 } AstroStateRow;
-extern AstroStateRow data_ov046_0226248c[ASTRO_STATES];
+extern AstroStateRow data_ov046_0226248c[ASTRO_STATE_COUNT];
 
 /* The object's life and vtable slots. */
 Astro *Astro_Destruct(Astro *self);

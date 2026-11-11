@@ -935,8 +935,8 @@ CLEAN_AS(func_ov135_0229d24c, PhoneClock_RunInteractive)
  * constants. */
 extern u32 data_ov135_0229d680; /* the states' guard */
 extern u32 data_ov135_0229d684; /* the sub states' guard */
-extern MemberPointer data_ov135_0229d688[PHONE_CLOCK_STATES];
-extern MemberPointer data_ov135_0229d6a8[PHONE_CLOCK_SUB_STATES];
+extern MemberPointer data_ov135_0229d688[PHONE_CLOCK_STATE_COUNT];
+extern MemberPointer data_ov135_0229d6a8[PHONE_CLOCK_SUB_STATE_COUNT];
 extern const MemberPointer data_ov135_0229d560, data_ov135_0229d568, data_ov135_0229d570, data_ov135_0229d578,
     data_ov135_0229d580, data_ov135_0229d588, data_ov135_0229d590, data_ov135_0229d598, data_ov135_0229d5a0,
     data_ov135_0229d5a8, data_ov135_0229d5b0, data_ov135_0229d5b8, data_ov135_0229d5c0, data_ov135_0229d5c8,
@@ -948,13 +948,13 @@ extern const MemberPointer data_ov135_0229d560, data_ov135_0229d568, data_ov135_
  * REQUIRES: the sub state is below 16; the game reads past the table for others. */
 void PhoneClock_RunSubState(PhoneClock *self)
 {
-    static const MemberPointer *const sub_states[PHONE_CLOCK_SUB_STATES] = {
+    static const MemberPointer *const sub_states[PHONE_CLOCK_SUB_STATE_COUNT] = {
         &data_ov135_0229d5e8, &data_ov135_0229d5e0, &data_ov135_0229d5d8, &data_ov135_0229d5d0,
         &data_ov135_0229d5c8, &data_ov135_0229d5a0, &data_ov135_0229d5b0, &data_ov135_0229d5b8,
         &data_ov135_0229d5c0, &data_ov135_0229d5f8, &data_ov135_0229d598, &data_ov135_0229d590,
         &data_ov135_0229d588, &data_ov135_0229d580, &data_ov135_0229d578, &data_ov135_0229d5a8,
     };
-    MemberTable_InitOnce(&data_ov135_0229d684, data_ov135_0229d6a8, sub_states, PHONE_CLOCK_SUB_STATES);
+    MemberTable_InitOnce(&data_ov135_0229d684, data_ov135_0229d6a8, sub_states, PHONE_CLOCK_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov135_0229d6a8[self->base.sub_state], self);
 }
 CLEAN_AS(func_ov135_0229d268, PhoneClock_RunSubState)
@@ -965,13 +965,13 @@ CLEAN_AS(func_ov135_0229d268, PhoneClock_RunSubState)
  * REQUIRES: the state is below 4; the game reads past the table for others. */
 int PhoneClock_RunState(PhoneClock *self)
 {
-    static const MemberPointer *const states[PHONE_CLOCK_STATES] = {
+    static const MemberPointer *const states[PHONE_CLOCK_STATE_COUNT] = {
         &data_ov135_0229d568,
         &data_ov135_0229d560,
         &data_ov135_0229d570,
         &data_ov135_0229d600,
     };
-    MemberTable_InitOnce(&data_ov135_0229d680, data_ov135_0229d688, states, PHONE_CLOCK_STATES);
+    MemberTable_InitOnce(&data_ov135_0229d680, data_ov135_0229d688, states, PHONE_CLOCK_STATE_COUNT);
     PhoneClock_BeginFrame(self);
     MemberPointer_CallVoid(&data_ov135_0229d688[self->base.state], self);
     PhoneClock_EndFrame(self);

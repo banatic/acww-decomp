@@ -2292,7 +2292,7 @@ CLEAN_AS(func_ov003_0222f67c, TownInsect_ProcessUpdate)
 
 /* func_ov003_0222f6b0: an active insect's frame, `index` its index in the table of `mode`
  * (TOWN_INSECT_MODE_*). It counts as in view when within the camera's box, or in a session when
- * a player's box holds it. Out of view its timers run down (TownInsect_CountDown). A town insect
+ * a player's box holds it. Out of view its timers run down (TownInsect_Tick). A town insect
  * outside a session (or holding the scene) stays 1200 frames while in view; out of view that
  * many frames run down and then it leaves.
  *
@@ -2314,7 +2314,7 @@ void TownInsect_Run(TownInsectProcess *process, TownInsect *insect, int index, i
         in_view = 1;
     }
     if (in_view == 0) {
-        TownInsect_CountDown((int) (uintptr_t) process, insect);
+        TownInsect_Tick((int) (uintptr_t) process, insect);
     }
     if (mode == TOWN_INSECT_MODE_TOWN && (linked == 0 || LinkGlobal_HoldsScene() != 0)) {
         if (in_view != 0) {
@@ -2395,7 +2395,7 @@ CLEAN_AS(func_ov003_0222f6b0, TownInsect_Run)
  * kind 0x1e in actions 4, 5 and 0x11 while its timer is above 5, kind 0x31 in actions 4, 5, 7
  * and 0x11 while it is above 0, kinds 0x36 and 0x37 with the word 0x236 at 1-300 while it is
  * above 31. Nothing without an update function. */
-void TownInsect_CountDown(int unused, TownInsect *insect)
+void TownInsect_Tick(int unused, TownInsect *insect)
 {
     (void) unused;
     if (insect->unk_170 == 0) {
@@ -2435,7 +2435,7 @@ void TownInsect_CountDown(int unused, TownInsect *insect)
             break;
     }
 }
-CLEAN_AS(func_ov003_0222f958, TownInsect_CountDown)
+CLEAN_AS(func_ov003_0222f958, TownInsect_Tick)
 
 /* func_ov003_0222fa20: an insect of TOWN_INSECT_STATE_LOADING loaded into the process's model pool
  * `pool` (0 the town's, 1 the event's, else the held insects'), and started. Its kind (0-0x3b)

@@ -97,7 +97,7 @@ void LetterLine_Show(LetterLine *line, int align_right)
 CLEAN_AS(func_0206dbd8, LetterLine_Show)
 
 /* func_0206dc1c: unless open, the box allocated in the line's VRAM tiles and set up: the
- * layer's background, its screen, colour 15 on 0, and the line's two marks. */
+ * layer's background, its screen, color 15 on 0, and the line's two marks. */
 void LetterLine_OpenBox(LetterLine *line)
 {
     if (line->box != NULL) {

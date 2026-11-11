@@ -130,7 +130,7 @@ enum MapMenuState {
     MAP_MENU_STATE_WIPE_IN = 6,    /* MapMenu_StateWipeIn */
     MAP_MENU_STATE_LEAVE = 7,      /* MapMenu_StateLeave */
     MAP_MENU_STATE_WIPE_OUT = 8,   /* MapMenu_StateWipeOut */
-    MAP_MENU_STATES = 9
+    MAP_MENU_STATE_COUNT = 9
 };
 
 /* The sub states (MenuScene.sub_state), run by MapMenu_RunSubState in phase 2. */
@@ -146,14 +146,14 @@ enum MapMenuSubState {
     MAP_MENU_SUB_KNOB_HELD = 8,    /* MapMenu_SubKnobHeld */
     MAP_MENU_SUB_KNOB_RELEASE = 9, /* MapMenu_SubKnobRelease */
     MAP_MENU_SUB_POINTER = 10,     /* MapMenu_SubPointer */
-    MAP_MENU_SUB_STATES = 11
+    MAP_MENU_SUB_STATE_COUNT = 11
 };
 
 /* The phases the menu sets (MenuScene.phase; the base's update runs phase 0 by the vtable's
  * slot 0x48, 1 by 0x4c, 2 by 0x50 and 5 by 0x5c). */
 enum MapMenuPhase {
     MAP_MENU_PHASE_WAIT = 0,
-    MAP_MENU_PHASE_STATES = 1,      /* MapMenu_RunState */
+    MAP_MENU_PHASE_STATE_COUNT = 1, /* MapMenu_RunState */
     MAP_MENU_PHASE_INTERACTIVE = 2, /* MapMenu_RunInteractive */
     MAP_MENU_PHASE_DELETE = 5       /* MapMenu_RequestDelete */
 };

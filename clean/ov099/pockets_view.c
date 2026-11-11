@@ -1009,7 +1009,7 @@ CLEAN_AS(func_ov099_0229d1a0, PocketsView_RunActionWhenIdle)
  * state 0x13. */
 void PocketsView_CloseChoice(PocketsView *self)
 {
-    if (PagedChoice_CountDown(choice_of(self)) == 0) {
+    if (PagedChoice_Tick(choice_of(self)) == 0) {
         return;
     }
     PagedChoice_RequestClose(choice_of(self), 0);
@@ -1241,7 +1241,7 @@ void PocketsView_IdleByKeys(PocketsView *self)
     }
     if (data_021fbe40.pressed & PAD_Y) {
         self->base.state = STATE_START_WIPE_OUT;
-        MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_STATES);
+        MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_STATE_COUNT);
         Popup_Hide(&self->popup, 1);
         PocketsView_HideCursorSprite(self);
     } else {

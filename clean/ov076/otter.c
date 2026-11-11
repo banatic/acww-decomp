@@ -124,7 +124,7 @@ extern const u8 data_020da088[];
 extern const char data_ov076_022796f0[];
 extern const char data_ov076_02279720[];
 /* The functions of his states (filled at start-up by __sinit_ov076_022795ac). */
-extern OtterStep data_ov076_0227988c[OTTER_STATES];
+extern OtterStep data_ov076_0227988c[OTTER_STATE_COUNT];
 /* The word his motion requests carry, the origin (0, 0, 0), and the range of a look. */
 extern u16 data_020c80f8;
 extern Vec3 data_021fbee8;

@@ -12,7 +12,7 @@
 
 /* The tables. */
 extern XctExchangeTalkStep data_ov055_02260f0c[XCT_EXCHANGE_TALK_STEPS];
-extern XctExchangeStep data_ov055_02261084[XCT_EXCHANGE_STATES];
+extern XctExchangeStep data_ov055_02261084[XCT_EXCHANGE_STATE_COUNT];
 /* The null member pointer, and each step's and state's functions. */
 extern const MemberPointer __ptmf_null;
 extern const MemberPointer data_ov055_02260e64, data_ov055_02260e6c, data_ov055_02260e74, data_ov055_02260e7c,

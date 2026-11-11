@@ -21,7 +21,7 @@ enum StartMenuState {
     START_MENU_LEAVE = 3,  /* once the talk closed, the exit set to scene 46 */
     START_MENU_WAIT_2 = 4, /* local status 2 sent; waiting for the session's answer */
     START_MENU_WAIT_3 = 5, /* local status 3 sent; waiting for the session's answer */
-    START_MENU_STATES
+    START_MENU_STATE_COUNT
 };
 
 /* The first words of a talk (func_020682e0 gives one). */

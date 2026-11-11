@@ -40,7 +40,7 @@
 #include "types.h"
 
 #define CAFE_PROPS_PARTS 9
-#define CAFE_PROPS_STATES 10
+#define CAFE_PROPS_STATE_COUNT 10
 #define CAFE_PROPS_EFFECT_PARTS 2 /* parts 4 and 6 */
 
 typedef struct CafeProps {

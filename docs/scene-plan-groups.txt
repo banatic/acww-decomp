@@ -153,7 +153,7 @@ match: autoload_2/network:Wfc_CountFriends main/activity_link_jobs:ActivityLinkJ
   ov141/town_list:TownList_ActOnPress ov141/town_list:TownList_AfterWipeIn
   ov141/town_list:TownList_BeforeWipeOut ov141/town_list:TownList_BrowseByKeys
   ov141/town_list:TownList_BrowseByTouch ov141/town_list:TownList_ClearFlags
-  ov141/town_list:TownList_Confirm ov141/town_list:TownList_CountDownToClose
+  ov141/town_list:TownList_Confirm ov141/town_list:TownList_TickToClose
   ov141/town_list:TownList_CursorSpriteX ov141/town_list:TownList_CursorSpriteY
   ov141/town_list:TownList_Delete ov141/town_list:TownList_Destruct ov141/town_list:TownList_EaseTo
   ov141/town_list:TownList_FindParent ov141/town_list:TownList_FreeRow

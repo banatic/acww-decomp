@@ -89,7 +89,7 @@ enum PocketsPickState {
     PICK_STATE_WIPE_IN = 2,        /* PocketsPick_WipeIn */
     PICK_STATE_START_WIPE_OUT = 3, /* PocketsPick_StartWipeOut */
     PICK_STATE_WIPE_OUT = 4,       /* PocketsPick_WipeOut */
-    PICK_STATES = 5
+    PICK_STATE_COUNT = 5
 };
 
 /* The sub states, run from the table of PocketsPick_RunSubState (MenuScene_SetSubState). */
@@ -118,7 +118,7 @@ enum PocketsPickSubState {
     PICK_SUB_CHOICE_CLOSING = 0x15,  /* PocketsPick_RunActionWhenIdle */
     PICK_SUB_ERROR = 0x16,           /* PocketsPick_WaitError; not set by this overlay */
     PICK_SUB_CLOSE_PRESSED = 0x17,   /* PocketsPick_FollowClosePress */
-    PICK_SUB_STATES = 0x18
+    PICK_SUB_STATE_COUNT = 0x18
 };
 
 typedef struct PocketsPick {

@@ -18,7 +18,7 @@ static_assert(offsetof(TalkPage, used) == 0x400, "page used");
 static_assert(offsetof(TalkPage, lines) == 0x410, "page lines");
 static_assert(offsetof(TalkPage, box) == 0x420, "page box");
 static_assert(offsetof(TalkPage, dirty) == 0x438, "page dirty");
-static_assert(offsetof(TalkPage, centered) == 0x43b, "page centred");
+static_assert(offsetof(TalkPage, centered) == 0x43b, "page centerd");
 static_assert(offsetof(TalkPage, measurer) == 0x43c, "page measurer");
 static_assert(sizeof(TalkPage) == 0x490, "page");
 static_assert(offsetof(TalkPageMeasurer, talk) == 0x2c, "measurer talk");

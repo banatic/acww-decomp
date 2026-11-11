@@ -118,7 +118,7 @@ enum KeyboardEntryState {
     KEYBOARD_ENTRY_STATE_BACK = 9,           /* KeyboardEntry_StartBack: from the question */
     KEYBOARD_ENTRY_STATE_BACK_WIPE_OUT = 10, /* KeyboardEntry_BackWipeOut: the panel set again */
     KEYBOARD_ENTRY_STATE_BACK_WIPE_IN = 11,  /* KeyboardEntry_BackWipeIn: then the input */
-    KEYBOARD_ENTRY_STATES = 12
+    KEYBOARD_ENTRY_STATE_COUNT = 12
 };
 
 enum KeyboardEntrySubState {
@@ -139,7 +139,7 @@ enum KeyboardEntrySubState {
     KEYBOARD_ENTRY_SUB_WHILE_R = 14,       /* KeyboardEntry_WhileR: until R is let go */
     KEYBOARD_ENTRY_SUB_PANEL_PRESS = 15,   /* KeyboardEntry_PanelPress: a button's press plays, then phase 1 */
     KEYBOARD_ENTRY_SUB_ERROR = 16,         /* KeyboardEntry_Error: an error message, then the input */
-    KEYBOARD_ENTRY_SUB_STATES = 17
+    KEYBOARD_ENTRY_SUB_STATE_COUNT = 17
 };
 
 /* The phases the scene sets (MenuScene.phase): 0 runs the base's wait (vtable slot 0x48), 1 the
@@ -147,7 +147,7 @@ enum KeyboardEntrySubState {
  * and 5 the end (slot 0x5c, KeyboardEntry_End). */
 enum KeyboardEntryPhase {
     KEYBOARD_ENTRY_PHASE_WAIT = 0,
-    KEYBOARD_ENTRY_PHASE_STATES = 1,
+    KEYBOARD_ENTRY_PHASE_STATE_COUNT = 1,
     KEYBOARD_ENTRY_PHASE_INPUT = 2,
     KEYBOARD_ENTRY_PHASE_END = 5
 };

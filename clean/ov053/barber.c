@@ -153,7 +153,7 @@ extern const u8 data_020da088[];
 extern const char data_ov053_02261a44[];
 extern const char data_ov053_02261a74[];
 /* The functions of its states (filled at start-up by __sinit_ov053_0226182c). */
-extern BarberStep data_ov053_02261c64[BARBER_STATES];
+extern BarberStep data_ov053_02261c64[BARBER_STATE_COUNT];
 /* The line past which the player walks to the door (its z, 29.0; the point is (11.0, 0, 29.0)). */
 extern const Vec3 data_ov053_022617c8;
 /* The point the player is walked back to: (16.0, 0, 27.0). */

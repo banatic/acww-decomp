@@ -127,7 +127,7 @@ void TailorStock_SetStockDate(TailorStock *list, const DateTime *when)
 }
 CLEAN_AS(func_020ae900, TailorStock_SetStockDate)
 
-/* func_020ae92c: whether the stock is not of `when`'s date (always, when `unused` is set). */
+/* func_020ae92c: whether the stock is not of `when`'s date (always, when `extra` is set). */
 int TailorStock_StockDateDiffers(TailorStock *list, const DateTime *when)
 {
     DateTime copy;

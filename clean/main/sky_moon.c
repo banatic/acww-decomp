@@ -41,7 +41,7 @@ static fx32 sky_moon_clear_for(s32 weather)
     return weather != SKY_WEATHER_RAIN && weather != SKY_WEATHER_HEAVY_RAIN ? 0x1000 : 0;
 }
 
-/* The moon's colours given to the objects' palettes. */
+/* The moon's colors given to the objects' palettes. */
 static void sky_moon_override_colors(void)
 {
     for (u32 i = 0; i < SKY_MOON_COLORS; i++) {
@@ -86,7 +86,7 @@ void SkyMoon_SetUp(SkyObject *object)
 }
 CLEAN_AS(func_020c0b60, SkyMoon_SetUp)
 
-/* func_020c0b88: the moon's colours cleared from the objects' palettes. */
+/* func_020c0b88: the moon's colors cleared from the objects' palettes. */
 void SkyMoon_ClearColors(void)
 {
     for (u32 i = 0; i < SKY_MOON_COLORS; i++) {
@@ -140,7 +140,7 @@ static fx32 sky_moon_mix(u32 a, u32 b, fx32 f, fx32 rest)
     return first + FX_MulFunc((fx32) (b << 12), f);
 }
 
-/* func_020c0c78: the moon's five colours: each mixed from this hour's palette and the next's
+/* func_020c0c78: the moon's five colors: each mixed from this hour's palette and the next's
  * by the minute, for a clear sky (colors 11 to 15) and for rain (3 to 7), and those two by
  * how clear the sky is.
  * QUIRK: by day (4:00 to 18:59) the palettes read would be past the moon's, as the original

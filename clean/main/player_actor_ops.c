@@ -239,7 +239,7 @@ CLEAN_AS(func_02095578, PlayerActorOps_SetStung)
 
 /* func_020955e0: puts on `item` as player `player`'s clothes (part 0), the accessory (1) or head item
  * (2): in the record, then on the actor (the cloth set and bound, or the part asked for, the
- * head with the record's head kind and hair colour); whether both exist and the actor's looks
+ * head with the record's head kind and hair color); whether both exist and the actor's looks
  * were not fixed by its animation. Another part changes nothing but answers the same. */
 int PlayerActorOps_SetWorn(u16 *item, int part, int player)
 {

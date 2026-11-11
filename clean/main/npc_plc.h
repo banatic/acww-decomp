@@ -84,7 +84,7 @@ void NpcPlcTalk_LineBySet(NpcPlcTalk *talk, NpcPlcLine *line);
 void NpcPlcTalk_Line0(NpcPlcTalk *talk, NpcPlcLine *line);
 
 /* The number of its states. */
-#define NPC_PLC_STATES 4
+#define NPC_PLC_STATE_COUNT 4
 
 /* The state machine, its life and its files. */
 int NpcPlc_EnterIdle(NpcPlc *self);

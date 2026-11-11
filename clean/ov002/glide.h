@@ -6,7 +6,7 @@
  * (vtable 0x0220bc6c, 1; overlays 091 and 113).
  *
  * Each frame the update (vtable slot 3) steps the glide and makes its place the sprite's offset
- * from the screen's centre (0x80, 0x60). The class's draw (slot 2) is main's, func_0208e600;
+ * from the screen's center (0x80, 0x60). The class's draw (slot 2) is main's, func_0208e600;
  * Glider_DrawWrapped also draws a glider near the right edge again 256 pixels to the left.
  *
  * A Glide (vtable 0x0220bc40) holds a place in 1/16 pixels and moves it to a target in a

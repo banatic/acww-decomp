@@ -37,7 +37,7 @@
 #define CAMEL_WANDER 2
 #define CAMEL_STAND 3
 #define CAMEL_TALK 4
-#define CAMEL_STATES 5
+#define CAMEL_STATE_COUNT 5
 
 typedef struct Camel {
     u8 unk_000[0x5c];  /* the scene object (special_scene_object.h, scene_object.h) */
@@ -61,7 +61,7 @@ typedef struct CamelStateRow {
     MemberPointer enter;
     MemberPointer run;
 } CamelStateRow;
-extern CamelStateRow data_ov078_02279c48[CAMEL_STATES];
+extern CamelStateRow data_ov078_02279c48[CAMEL_STATE_COUNT];
 
 /* The object's life and vtable slots. */
 Camel *Camel_Destruct(Camel *self);

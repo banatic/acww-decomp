@@ -3096,7 +3096,7 @@ What reading the Clean code found about the groups above; counts are of function
   written only by RoomVillagerMachine_SetState (machine->state); its 13 calls, decoded from ov004
   with the state in r2 (w44-wt5/blscan.py; ov004's own calls are not in its relocations), take
   the constants 0-4, but RoomVillagerMachine_TakeNext's, which passes the machine's next state
-  only when it is below 5; the next state is written only with 5 (ROOM_VILLAGER_STATES, by the
+  only when it is below 5; the next state is written only with 5 (ROOM_VILLAGER_STATE_COUNT, by the
   machine's constructor and RoomVillagerMachine_ClearNext), so TakeNext never sets a state and
   never calls ClearNext, its only caller.
 - Release (4) is given only in RoomVillager_OnEvent's talk branch for a participant that is
@@ -3641,7 +3641,7 @@ What reading the Clean code found about the groups above; counts are of function
   _UpdateStand, _Start and the follow of states 3 and 4). w52-wt5/cls/classify.py --raw with
   RAN_EXTRA=cls/ran-extra.txt and EXTRA='*': both CONDITION:value; calibration: 0 run functions
   cut off.
-- Gained little: Gull_CountDown runs once Gulliver is set up again with the count of his parts at
+- Gained little: Gull_Tick runs once Gulliver is set up again with the count of his parts at
   5 (save gull-parts, six parts in the pockets, all taken at once; the house entered and left after
   gulliver), but that scene's 25,245 frames leave a crossings trace the 32-bit Windows run cannot
   read back; pressing A faster through his waking talks did not wake him (the count got no mark).
@@ -3687,7 +3687,7 @@ What reading the Clean code found about the groups above; counts are of function
   pockets (VillagerTalkRequest_OfferAccept, _LineFull): scene letter-full. Row 4's member for
   event 10 (VillagerTalkRequest_Nothing) is not run: no message of q/full holds an event in its
   INF entry (w53-wt5/ev10.py).
-- Gull_CountDown runs from the boot when the save has the crashed spaceship's building 0x5020
+- Gull_Tick runs from the boot when the save has the crashed spaceship's building 0x5020
   in place on sky-ship's day of event 0x44 and the count of his parts at 5 with its mark (0x0d at
   0xf52a): the beside spot puts him there and Gull_Start finds the five counted, so GULL_IDLE
   counts down to his first act: scene gull-wait (save gull-wait), 3,201 frames in place of the

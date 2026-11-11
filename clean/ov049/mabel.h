@@ -58,7 +58,7 @@ enum MabelState {
     MABEL_STATE_APPROACH = 13,
     MABEL_STATE_SPEAKER = 14,
     MABEL_STATE_TURN_ASK = 15,
-    MABEL_STATES = 16
+    MABEL_STATE_COUNT = 16
 };
 
 /* A state's functions in data_ov049_02263640. */

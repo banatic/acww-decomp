@@ -654,7 +654,7 @@ extern AcreMap *data_021c80bc;
 /* The current heap. */
 extern Heap *data_021fbe94;
 /* Its states' functions (filled at start-up from the overlay's constants). */
-extern FleaMarketVillagerStep data_ov004_02257d58[FLEA_MARKET_VILLAGER_STATES];
+extern FleaMarketVillagerStep data_ov004_02257d58[FLEA_MARKET_VILLAGER_STATE_COUNT];
 
 static Actor *fm_actor_of(FleaMarketVillager *villager)
 {

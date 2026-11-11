@@ -69,7 +69,7 @@ enum OtterState {
     OTTER_TURN = 3,
     OTTER_DIVE = 4,
     OTTER_GONE = 5,
-    OTTER_STATES = 6
+    OTTER_STATE_COUNT = 6
 };
 
 /* A state's functions in data_ov076_0227988c. */

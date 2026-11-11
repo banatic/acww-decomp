@@ -27,7 +27,7 @@ typedef struct MenuSceneLink {
  * ov092/menu_dispatch.h). What phases 3 and 4 are for is not known. */
 enum MenuScenePhase {
     MENU_SCENE_PHASE_WAIT = 0,        /* slot 0x48: MenuScene_Wait */
-    MENU_SCENE_PHASE_STATES = 1,      /* slot 0x4c: the scene's own state table */
+    MENU_SCENE_PHASE_STATE_COUNT = 1, /* slot 0x4c: the scene's own state table */
     MENU_SCENE_PHASE_INTERACTIVE = 2, /* slot 0x50 */
     MENU_SCENE_PHASE_3 = 3,           /* slot 0x54 */
     MENU_SCENE_PHASE_4 = 4,           /* slot 0x58 */

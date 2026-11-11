@@ -103,13 +103,13 @@ extern const u32 data_020c7e48[]; /* FieldActor_EnterState: nonzero holds anothe
 
 /* The state tables: their guards, the tables and the constants they are filled from. */
 extern u32 data_021c0004;
-extern MemberPointer data_021c04b0[FIELD_ACTOR_STATES]; /* updates */
+extern MemberPointer data_021c04b0[FIELD_ACTOR_STATE_COUNT]; /* updates */
 extern u32 data_021bfff8;
-extern MemberPointer data_021c0948[FIELD_ACTOR_STATES]; /* message handlers */
+extern MemberPointer data_021c0948[FIELD_ACTOR_STATE_COUNT]; /* message handlers */
 extern u32 data_021c0000;
-extern MemberPointer data_021c0de0[FIELD_ACTOR_STATES]; /* entry functions */
+extern MemberPointer data_021c0de0[FIELD_ACTOR_STATE_COUNT]; /* entry functions */
 extern u32 data_021bfffc;
-extern MemberPointer data_021c0018[FIELD_ACTOR_STATES]; /* exit functions */
+extern MemberPointer data_021c0018[FIELD_ACTOR_STATE_COUNT]; /* exit functions */
 extern const MemberPointer __ptmf_null;
 
 extern const MemberPointer data_020d7314, data_020d731c, data_020d7324, data_020d732c, data_020d7334, data_020d733c,
@@ -175,7 +175,7 @@ extern const MemberPointer data_020d7314, data_020d731c, data_020d7324, data_020
     data_020d8214, data_020d821c, data_020d8224, data_020d822c, data_020d8234, data_020d823c, data_020d8244, data_020d824c,
     data_020d8254, data_020d825c, data_020d8264, data_020d826c, data_020d8274, data_020d827c, data_020d8284, data_020d828c;
 
-static const MemberPointer *const update_constants[FIELD_ACTOR_STATES] = {
+static const MemberPointer *const update_constants[FIELD_ACTOR_STATE_COUNT] = {
     &data_020d7bf4, &data_020d7be4, &data_020d7494, &data_020d7704, &data_020d76fc, &data_020d76f4, &data_020d76ec,
     &data_020d76e4, &data_020d76dc, &data_020d76d4, &data_020d765c, &data_020d76c4, &data_020d76bc, &data_020d76b4,
     &data_020d7684, &data_020d769c, &data_020d76a4, &data_020d7a4c, &data_020d8054, &data_020d7ac4, &data_020d7a7c,
@@ -199,7 +199,7 @@ static const MemberPointer *const update_constants[FIELD_ACTOR_STATES] = {
     &data_020d75dc, &data_020d735c, &data_020d7384, &data_020d73a4, &data_020d7474, &data_020d7734, &data_020d7a6c,
 };
 
-static const MemberPointer *const message_constants[FIELD_ACTOR_STATES] = {
+static const MemberPointer *const message_constants[FIELD_ACTOR_STATE_COUNT] = {
     &data_020d7bdc, &data_020d770c, &data_020d748c, &data_020d7bc4, &data_020d7bbc, &data_020d7bb4, &data_020d7bac,
     &data_020d7ba4, &data_020d7b9c, &data_020d7b94, &data_020d7b8c, &data_020d7b84, &data_020d7b7c, &data_020d7b74,
     &data_020d7b6c, &data_020d7b64, &data_020d7b5c, &data_020d7b54, &data_020d76cc, &data_020d7b44, &data_020d7b3c,
@@ -223,7 +223,7 @@ static const MemberPointer *const message_constants[FIELD_ACTOR_STATES] = {
     &data_020d777c, &data_020d7774, &data_020d776c, &data_020d7764, &data_020d775c, &data_020d7754, &data_020d774c,
 };
 
-static const MemberPointer *const entry_constants[FIELD_ACTOR_STATES] = {
+static const MemberPointer *const entry_constants[FIELD_ACTOR_STATE_COUNT] = {
     &data_020d808c, &data_020d8084, &data_020d807c, &data_020d8074, &data_020d806c, &data_020d8064, &data_020d805c,
     &data_020d794c, &data_020d75cc, &data_020d8044, &data_020d803c, &data_020d8034, &data_020d802c, &data_020d8024,
     &data_020d801c, &data_020d8014, &data_020d800c, &data_020d8004, &data_020d7ffc, &data_020d7ff4, &data_020d7fec,
@@ -247,7 +247,7 @@ static const MemberPointer *const entry_constants[FIELD_ACTOR_STATES] = {
     &data_020d773c, &data_020d7c24, &data_020d7c1c, &data_020d772c, &data_020d74bc, &data_020d7c04, &data_020d7bfc,
 };
 
-static const MemberPointer *const exit_constants[FIELD_ACTOR_STATES] = {
+static const MemberPointer *const exit_constants[FIELD_ACTOR_STATE_COUNT] = {
     &data_020d8264, &data_020d826c, &data_020d8244, &__ptmf_null,   &data_020d823c, &__ptmf_null,   &data_020d8234,
     &data_020d822c, &data_020d8224, &__ptmf_null,   &data_020d821c, &__ptmf_null,   &__ptmf_null,   &data_020d8214,
     &data_020d820c, &data_020d8204, &__ptmf_null,   &__ptmf_null,   &__ptmf_null,   &__ptmf_null,   &data_020d81fc,
@@ -373,7 +373,7 @@ void FieldActor_RunFrame(FieldActor *actor)
     HeldItem_Update((HeldItemObject *) (void *) actor->held);
     FIELD_ACTOR_SOUND_POINT(actor) = (Vec3){0, 0, 0};
 
-    MemberTable_InitOnce(&data_021c0004, data_021c04b0, update_constants, FIELD_ACTOR_STATES);
+    MemberTable_InitOnce(&data_021c0004, data_021c04b0, update_constants, FIELD_ACTOR_STATE_COUNT);
     MemberPointer update = data_021c04b0[actor->state];
     FieldActor_StepFaceAnims(actor);
     FieldActor_CallUpdate(&update, actor);
@@ -696,11 +696,11 @@ void FieldActor_FollowRemoteState(FieldActor *actor)
     int state;
 
     if (!SessionPlayers_State(&state, -1, actor->player)) {
-        FIELD_ACTOR_REMOTE_STATE(actor) = FIELD_ACTOR_STATES;
+        FIELD_ACTOR_REMOTE_STATE(actor) = FIELD_ACTOR_STATE_COUNT;
         return;
     }
-    if (state >= FIELD_ACTOR_STATES) {
-        FIELD_ACTOR_REMOTE_STATE(actor) = FIELD_ACTOR_STATES;
+    if (state >= FIELD_ACTOR_STATE_COUNT) {
+        FIELD_ACTOR_REMOTE_STATE(actor) = FIELD_ACTOR_STATE_COUNT;
         return;
     }
     if (FieldActor_TestFlag(actor, 0x12)) {
@@ -730,7 +730,7 @@ void FieldActor_FollowRemoteState(FieldActor *actor)
     if (actor->unk_c84 >= 0 && FIELD_ACTOR_ENTERED_STATE(actor) == state && sequence == actor->unk_c84) {
         return;
     }
-    MemberTable_InitOnce(&data_021bfff8, data_021c0948, message_constants, FIELD_ACTOR_STATES);
+    MemberTable_InitOnce(&data_021bfff8, data_021c0948, message_constants, FIELD_ACTOR_STATE_COUNT);
     FieldActor_CallWithInt(&data_021c0948[state], actor, sequence);
 }
 CLEAN_AS(func_020069f0, FieldActor_FollowRemoteState)
@@ -744,7 +744,7 @@ CLEAN_AS(func_020069f0, FieldActor_FollowRemoteState)
  * priority, and flag 0x12 holds another console's actor in a state whose word is set. */
 void FieldActor_EnterState(FieldActor *actor, const StateRequest *request)
 {
-    MemberTable_InitOnce(&data_021c0000, data_021c0de0, entry_constants, FIELD_ACTOR_STATES);
+    MemberTable_InitOnce(&data_021c0000, data_021c0de0, entry_constants, FIELD_ACTOR_STATE_COUNT);
     int state = request->state;
     s16 sequence = request->arg;
     MemberPointer entry = data_021c0de0[state];
@@ -814,7 +814,7 @@ CLEAN_AS(func_02007d2c, FieldActor_ClearWork)
  * flag 0x1c is cleared. */
 void FieldActor_LeaveState(FieldActor *actor, int next)
 {
-    MemberTable_InitOnce(&data_021bfffc, data_021c0018, exit_constants, FIELD_ACTOR_STATES);
+    MemberTable_InitOnce(&data_021bfffc, data_021c0018, exit_constants, FIELD_ACTOR_STATE_COUNT);
     MemberPointer exit = data_021c0018[actor->state];
     if (exit.function != 0) {
         FieldActor_CallWithInt(&exit, actor, next);
@@ -5298,12 +5298,12 @@ CLEAN_AS(func_0200cce8, FieldActor_RunState3)
 void FieldActor_LeanState3(FieldActor *actor)
 {
     if (actor->animation != 2) {
-        FieldActor_EaseLeanForState(actor, FIELD_ACTOR_STATES, 1);
+        FieldActor_EaseLeanForState(actor, FIELD_ACTOR_STATE_COUNT, 1);
         return;
     }
     int over = FieldActor_Base(actor)->speed - SPEED_RUN;
     if (over < 0) {
-        FieldActor_EaseLeanForState(actor, FIELD_ACTOR_STATES, 1);
+        FieldActor_EaseLeanForState(actor, FIELD_ACTOR_STATE_COUNT, 1);
     }
     fx32 fraction = FX_Div(over, SPEED_MAX - SPEED_RUN);
     fx32 lean = FX_MulFunc(0xc17000, fraction);

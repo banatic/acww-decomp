@@ -9,7 +9,7 @@
 #include "scene_lights.h"
 
 static_assert(sizeof(SkyFireworksObjectVars) == 0x14, "the words at 0x60");
-static_assert(sizeof(SkyFireworksColors) == 4, "a place's colours");
+static_assert(sizeof(SkyFireworksColors) == 4, "a place's colors");
 
 #define SKY_FIREWORKS_OBJECT_PRIORITY 2
 #define SKY_FIREWORKS_OBJECT_SCREEN_BOTTOM 0xc0000 /* y 192: the bottom of the screen */
@@ -322,7 +322,7 @@ static u32 sky_fireworks_object_round(fx32 value)
     return rounded > 0x1f ? 0x1f : rounded;
 }
 
-/* func_020c013c: a burst's two colours set: its place's color, faded from the first to the
+/* func_020c013c: a burst's two colors set: its place's color, faded from the first to the
  * second over frames 16 to 26 (the second's alone from frame 27); both at full brightness until
  * frame 11, then one at full and the other at half, swapped every two frames; its slot's
  * resource reloaded.

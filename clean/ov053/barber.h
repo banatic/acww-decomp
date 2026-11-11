@@ -49,7 +49,7 @@ enum BarberState {
     BARBER_STATE_CUT = 8,
     BARBER_STATE_SEND_BACK = 9,
     BARBER_STATE_PAUSED = 10,
-    BARBER_STATES = 11
+    BARBER_STATE_COUNT = 11
 };
 
 /* A state's functions in data_ov053_02261c64. */

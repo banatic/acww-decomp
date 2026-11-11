@@ -959,7 +959,7 @@ CLEAN_AS(func_ov142_0229b700, OrderCatalog_BrowseByTouch)
 /* The table of member functions of the sub states (ov004/member_pointer.h): its guard, the
  * table and its constants. */
 extern u32 data_ov142_0229c5e8;
-extern MemberPointer data_ov142_0229c650[ORDER_CATALOG_SUB_STATES];
+extern MemberPointer data_ov142_0229c650[ORDER_CATALOG_SUB_STATE_COUNT];
 extern const MemberPointer data_ov142_0229c2a8, data_ov142_0229c2b0, data_ov142_0229c2b8, data_ov142_0229c2c0,
     data_ov142_0229c2d0, data_ov142_0229c2d8, data_ov142_0229c2e0, data_ov142_0229c2e8, data_ov142_0229c2f0,
     data_ov142_0229c2f8, data_ov142_0229c300, data_ov142_0229c308, data_ov142_0229c310, data_ov142_0229c320;
@@ -969,12 +969,12 @@ extern const MemberPointer data_ov142_0229c2a8, data_ov142_0229c2b0, data_ov142_
  * REQUIRES: the sub state is below 14; the game reads past the table for others. */
 void OrderCatalog_RunSubState(OrderCatalog *self)
 {
-    static const MemberPointer *const sub_states[ORDER_CATALOG_SUB_STATES] = {
+    static const MemberPointer *const sub_states[ORDER_CATALOG_SUB_STATE_COUNT] = {
         &data_ov142_0229c310, &data_ov142_0229c308, &data_ov142_0229c2b8, &data_ov142_0229c300, &data_ov142_0229c2b0,
         &data_ov142_0229c2e8, &data_ov142_0229c2e0, &data_ov142_0229c2d8, &data_ov142_0229c2d0, &data_ov142_0229c320,
         &data_ov142_0229c2c0, &data_ov142_0229c2f8, &data_ov142_0229c2f0, &data_ov142_0229c2a8,
     };
-    MemberTable_InitOnce(&data_ov142_0229c5e8, data_ov142_0229c650, sub_states, ORDER_CATALOG_SUB_STATES);
+    MemberTable_InitOnce(&data_ov142_0229c5e8, data_ov142_0229c650, sub_states, ORDER_CATALOG_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov142_0229c650[self->base.sub_state], self);
 }
 CLEAN_AS(_ZN18Obj_ov142_0229c3e819func_ov142_0229bd90Ev, OrderCatalog_RunSubState)

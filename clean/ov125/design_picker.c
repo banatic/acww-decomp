@@ -601,7 +601,7 @@ CLEAN_AS(func_ov125_0229ff60, DesignPicker_RunActionWhenIdle)
  * and the cursor sprite (when it shows) put back at the cursor (sub state 9). */
 void DesignPicker_CloseChoice(DesignPicker *self)
 {
-    if (PagedChoice_CountDown(picker_choice(self)) == 0) {
+    if (PagedChoice_Tick(picker_choice(self)) == 0) {
         return;
     }
     PagedChoice_RequestClose(picker_choice(self), 0);
@@ -1015,8 +1015,8 @@ CLEAN_AS(_ZN18Obj_ov125_022a0ab819func_ov125_022a06f8Ev, DesignPicker_RunInterac
  * constants. */
 extern u32 data_ov125_022a0b20; /* the states' guard */
 extern u32 data_ov125_022a0b24; /* the sub states' guard */
-extern MemberPointer data_ov125_022a0b28[DESIGN_PICKER_STATES];
-extern MemberPointer data_ov125_022a0b50[DESIGN_PICKER_SUB_STATES];
+extern MemberPointer data_ov125_022a0b28[DESIGN_PICKER_STATE_COUNT];
+extern MemberPointer data_ov125_022a0b50[DESIGN_PICKER_SUB_STATE_COUNT];
 extern const MemberPointer data_ov125_022a0a20, data_ov125_022a0a30, data_ov125_022a0a38, data_ov125_022a0a40,
     data_ov125_022a0a48, data_ov125_022a0a50, data_ov125_022a0a58, data_ov125_022a0a60, data_ov125_022a0a68,
     data_ov125_022a0a70, data_ov125_022a0a78, data_ov125_022a0a80, data_ov125_022a0a90, data_ov125_022a0a98,
@@ -1027,12 +1027,12 @@ extern const MemberPointer data_ov125_022a0a20, data_ov125_022a0a30, data_ov125_
  * REQUIRES: the sub state is below 11; the game reads past the table for others. */
 void DesignPicker_RunSubState(DesignPicker *self)
 {
-    static const MemberPointer *const sub_states[DESIGN_PICKER_SUB_STATES] = {
+    static const MemberPointer *const sub_states[DESIGN_PICKER_SUB_STATE_COUNT] = {
         &data_ov125_022a0a48, &data_ov125_022a0a78, &data_ov125_022a0a70, &data_ov125_022a0a68,
         &data_ov125_022a0a30, &data_ov125_022a0a58, &data_ov125_022a0a50, &data_ov125_022a0a40,
         &data_ov125_022a0a80, &data_ov125_022a0a38, &data_ov125_022a0a60,
     };
-    MemberTable_InitOnce(&data_ov125_022a0b24, data_ov125_022a0b50, sub_states, DESIGN_PICKER_SUB_STATES);
+    MemberTable_InitOnce(&data_ov125_022a0b24, data_ov125_022a0b50, sub_states, DESIGN_PICKER_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov125_022a0b50[self->base.sub_state], self);
 }
 CLEAN_AS(_ZN18Obj_ov125_022a0ab819func_ov125_022a0714Ev, DesignPicker_RunSubState)
@@ -1043,10 +1043,10 @@ CLEAN_AS(_ZN18Obj_ov125_022a0ab819func_ov125_022a0714Ev, DesignPicker_RunSubStat
  * REQUIRES: the state is below 5; the game reads past the table for others. */
 int DesignPicker_RunState(DesignPicker *self)
 {
-    static const MemberPointer *const states[DESIGN_PICKER_STATES] = {
+    static const MemberPointer *const states[DESIGN_PICKER_STATE_COUNT] = {
         &data_ov125_022a0a90, &data_ov125_022a0a20, &data_ov125_022a0aa8, &data_ov125_022a0aa0, &data_ov125_022a0a98,
     };
-    MemberTable_InitOnce(&data_ov125_022a0b20, data_ov125_022a0b28, states, DESIGN_PICKER_STATES);
+    MemberTable_InitOnce(&data_ov125_022a0b20, data_ov125_022a0b28, states, DESIGN_PICKER_STATE_COUNT);
     DesignPicker_BeginFrame(self);
     MemberPointer_CallVoid(&data_ov125_022a0b28[self->base.state], self);
     DesignPicker_EndFrame(self);

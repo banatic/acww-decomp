@@ -110,9 +110,9 @@ extern const u8 data_ov004_022535e4[];
 /* The tables of its states' update and entry functions (filled once from the constants below,
  * bit 0 of the guards saying they were). */
 extern u32 data_ov004_02257a20;
-extern MemberPointer data_ov004_02257b4c[BIRTHDAY_VILLAGER_STATES];
+extern MemberPointer data_ov004_02257b4c[BIRTHDAY_VILLAGER_STATE_COUNT];
 extern u32 data_ov004_02257a14;
-extern MemberPointer data_ov004_02257adc[BIRTHDAY_VILLAGER_STATES];
+extern MemberPointer data_ov004_02257adc[BIRTHDAY_VILLAGER_STATE_COUNT];
 extern const MemberPointer data_ov004_022535a4, data_ov004_02253584, data_ov004_022535b4, data_ov004_022534f4,
     data_ov004_022534ec, data_ov004_022534e4, data_ov004_02253504, data_ov004_02253534, data_ov004_0225352c,
     data_ov004_0225357c, data_ov004_02253594, data_ov004_022534dc, data_ov004_0225350c, data_ov004_02253524;
@@ -648,7 +648,7 @@ CLEAN_AS(func_ov004_0221c6d4, BirthdayVillager_EnterWander)
  * table (filled once). */
 void BirthdayVillager_Update(BirthdayVillager *villager)
 {
-    static const MemberPointer *const updates[BIRTHDAY_VILLAGER_STATES] = {
+    static const MemberPointer *const updates[BIRTHDAY_VILLAGER_STATE_COUNT] = {
         &data_ov004_022535a4, /* BirthdayVillager_UpdateWander */
         &data_ov004_02253584, /* BirthdayVillager_UpdateFace */
         &data_ov004_022535b4, /* BirthdayVillager_UpdateActShort */
@@ -664,9 +664,9 @@ void BirthdayVillager_Update(BirthdayVillager *villager)
         &data_ov004_0225350c, /* BirthdayVillager_UpdateState12 */
         &data_ov004_02253524, /* BirthdayVillager_UpdateThanks */
     };
-    MemberTable_InitOnce(&data_ov004_02257a20, data_ov004_02257b4c, updates, BIRTHDAY_VILLAGER_STATES);
+    MemberTable_InitOnce(&data_ov004_02257a20, data_ov004_02257b4c, updates, BIRTHDAY_VILLAGER_STATE_COUNT);
     /* REQUIRES: state >= 0; the ROM's signed test lets a negative one index before the table */
-    if (villager->state >= 0 && villager->state < BIRTHDAY_VILLAGER_STATES) {
+    if (villager->state >= 0 && villager->state < BIRTHDAY_VILLAGER_STATE_COUNT) {
         MemberPointer_CallVoid(&data_ov004_02257b4c[villager->state], villager);
     }
 }
@@ -676,7 +676,7 @@ CLEAN_AS(_ZN18Obj_ov004_0225367419func_ov004_0221c72cEv, BirthdayVillager_Update
  * agrees; whether it did. States 14 and above do not exist. */
 int BirthdayVillager_SetState(BirthdayVillager *villager, int state)
 {
-    static const MemberPointer *const entries[BIRTHDAY_VILLAGER_STATES] = {
+    static const MemberPointer *const entries[BIRTHDAY_VILLAGER_STATE_COUNT] = {
         &data_ov004_0225358c, /* BirthdayVillager_EnterWander */
         &data_ov004_0225359c, /* BirthdayVillager_EnterFace */
         &data_ov004_022535ac, /* BirthdayVillager_EnterActShort */
@@ -692,10 +692,11 @@ int BirthdayVillager_SetState(BirthdayVillager *villager, int state)
         &data_ov004_02253514, /* BirthdayVillager_EnterState12 */
         &data_ov004_0225351c, /* BirthdayVillager_EnterThanks */
     };
-    MemberTable_InitOnce(&data_ov004_02257a14, data_ov004_02257adc, entries, BIRTHDAY_VILLAGER_STATES);
+    MemberTable_InitOnce(&data_ov004_02257a14, data_ov004_02257adc, entries, BIRTHDAY_VILLAGER_STATE_COUNT);
     /* REQUIRES: state >= 0 (the game passes 0 to 13); the ROM's signed test lets a negative one
      * index before the table */
-    if (state >= 0 && state < BIRTHDAY_VILLAGER_STATES && MemberPointer_CallInt(&data_ov004_02257adc[state], villager) != 0) {
+    if (state >= 0 && state < BIRTHDAY_VILLAGER_STATE_COUNT &&
+        MemberPointer_CallInt(&data_ov004_02257adc[state], villager) != 0) {
         villager->state = state;
         return 1;
     }

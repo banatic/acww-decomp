@@ -170,7 +170,7 @@ extern const u8 data_020da088[];
 extern const char *const data_ov054_02262df8[POST_CLERK_SPOTS];
 extern const char *const data_ov054_02262d28[POST_CLERK_SPOTS];
 /* The functions of her states (filled at start-up by __sinit_ov054_02262a70). */
-extern PostClerkStep data_ov054_022632dc[POST_CLERK_STATES];
+extern PostClerkStep data_ov054_022632dc[POST_CLERK_STATE_COUNT];
 /* The persons of the two clerks (0xd006 and 0xd007), the turn way of her mover to each place
  * behind the counter, the player's places before the counter and hers behind them. */
 extern const u16 data_ov054_02262990[2];

@@ -45,7 +45,7 @@ enum TimeScreenState {
     TIME_SCREEN_STATE_WIPE_IN = 1,        /* TimeScreen_WipeIn */
     TIME_SCREEN_STATE_START_WIPE_OUT = 2, /* TimeScreen_StartWipeOut */
     TIME_SCREEN_STATE_WIPE_OUT = 3,       /* TimeScreen_WipeOut */
-    TIME_SCREEN_STATES = 4
+    TIME_SCREEN_STATE_COUNT = 4
 };
 
 /* The sub states, run from the table of TimeScreen_RunSubState (MenuScene_SetSubState). */
@@ -66,7 +66,7 @@ enum TimeScreenSubState {
     TIME_SCREEN_SUB_OK_PRESSED = 13,   /* TimeScreen_FollowOkPress */
     TIME_SCREEN_SUB_LIST_OPEN = 14,    /* TimeScreen_WaitListOpen */
     TIME_SCREEN_SUB_LIST_CLOSE = 15,   /* TimeScreen_WaitListClosed */
-    TIME_SCREEN_SUB_STATES = 16
+    TIME_SCREEN_SUB_STATE_COUNT = 16
 };
 
 typedef struct TimeScreen {

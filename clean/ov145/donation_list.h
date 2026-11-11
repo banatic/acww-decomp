@@ -75,7 +75,7 @@ enum DonationListFade {
  * 0x48 + 4n). */
 enum DonationListPhase {
     DONATION_PHASE_WAIT = 0,        /* the base's wait */
-    DONATION_PHASE_STATES = 1,      /* DonationList_RunState */
+    DONATION_PHASE_STATE_COUNT = 1, /* DonationList_RunState */
     DONATION_PHASE_INTERACTIVE = 2, /* DonationList_RunInteractive */
     DONATION_PHASE_DELETE = 5       /* DonationList_RequestDelete */
 };
@@ -86,7 +86,7 @@ enum DonationListState {
     DONATION_STATE_WIPE_IN = 1,        /* DonationList_WipeIn */
     DONATION_STATE_START_WIPE_OUT = 2, /* DonationList_StartWipeOut */
     DONATION_STATE_WIPE_OUT = 3,       /* DonationList_WipeOut */
-    DONATION_STATES = 4
+    DONATION_STATE_COUNT = 4
 };
 
 /* The sub states (MenuScene.sub_state), run from the table of DonationList_RunSubState. */
@@ -101,7 +101,7 @@ enum DonationListSubState {
     DONATION_SUB_PRESS = 7,          /* DonationList_FinishPress */
     DONATION_SUB_RELEASE = 8,        /* DonationList_FinishRelease */
     DONATION_SUB_CLOSE_PRESS = 9,    /* DonationList_FinishClosePress */
-    DONATION_SUB_STATES = 10
+    DONATION_SUB_STATE_COUNT = 10
 };
 
 #define DONATION_PAINTINGS 20

@@ -115,7 +115,7 @@ enum MyDesignsSubState {
     MY_DESIGNS_SUB_CHANGE_WAIT = 18,      /* func_ov121_0229b09c: until the player is done */
     MY_DESIGNS_SUB_ERROR = 19,            /* func_ov121_0229b078: an error message */
     MY_DESIGNS_SUB_DROP_WAIT = 20,        /* func_ov121_0229b020: until the ground answers */
-    MY_DESIGNS_SUB_STATES = 21
+    MY_DESIGNS_SUB_STATE_COUNT = 21
 };
 
 /* The scene's states (MenuScene.state), run in phase 1 (MyDesigns_RunState). */
@@ -124,12 +124,12 @@ enum MyDesignsState {
     MY_DESIGNS_STATE_WIPE_IN = 1,  /* MyDesigns_WipeIn: then phase 2 */
     MY_DESIGNS_STATE_LEAVE = 2,    /* MyDesigns_StartWipeOut: the menu switched tabs */
     MY_DESIGNS_STATE_WIPE_OUT = 3, /* MyDesigns_WipeOut: then phase 5 */
-    MY_DESIGNS_STATES = 4
+    MY_DESIGNS_STATE_COUNT = 4
 };
 
 /* The phases the scene sets (MenuScene.phase; ov090/menu_tabs.h). */
 enum MyDesignsPhase {
-    MY_DESIGNS_PHASE_STATES = 1,      /* vtable slot 0x4c: MyDesigns_RunState */
+    MY_DESIGNS_PHASE_STATE_COUNT = 1, /* vtable slot 0x4c: MyDesigns_RunState */
     MY_DESIGNS_PHASE_INTERACTIVE = 2, /* vtable slot 0x50: MyDesigns_RunInteractive */
     MY_DESIGNS_PHASE_DELETE = 5       /* vtable slot 0x5c: MyDesigns_End */
 };

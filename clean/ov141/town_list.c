@@ -462,16 +462,16 @@ CLEAN_AS(func_ov141_0229a59c, TownList_ResumeByTouch)
 
 /* func_ov141_0229a5b4 (sub state 5): the frames counted down, then the cursor sprite hidden and
  * the states run again (phase 1: the wipe out). */
-void TownList_CountDownToClose(TownList *self)
+void TownList_TickToClose(TownList *self)
 {
     if (self->countdown != 0) {
         self->countdown--;
     } else {
         TownList_HideCursorSprite(self);
-        MenuScene_SetPhase(town_list_scene(self), TOWN_LIST_PHASE_STATES);
+        MenuScene_SetPhase(town_list_scene(self), TOWN_LIST_PHASE_STATE_COUNT);
     }
 }
-CLEAN_AS(func_ov141_0229a5b4, TownList_CountDownToClose)
+CLEAN_AS(func_ov141_0229a5b4, TownList_TickToClose)
 
 /* func_ov141_0229a5e0 (sub state 4): once the release animation ends the sprite is shown again
  * and the sub state it was in comes back; after a row was picked the cursor then goes to the OK

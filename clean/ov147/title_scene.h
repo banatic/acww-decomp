@@ -46,7 +46,7 @@ enum TitleSceneState {
     TITLE_STATE_EXIT_FIND_MOVER = 9,    /* TitleScene_EnterExitFindMover, TitleScene_ExitToFindMover */
     TITLE_STATE_EXIT_TAG_MODE = 10,     /* TitleScene_EnterExitTagMode, TitleScene_ExitToTagMode */
     TITLE_STATE_IDLE_RESTART = 11,      /* TitleScene_EnterIdleRestart, TitleScene_RestartTitle */
-    TITLE_STATES = 12
+    TITLE_STATE_COUNT = 12
 };
 
 /* The logo's steps (TitleScene.logo_state, TitleLogo_Update). */
@@ -72,7 +72,7 @@ enum TitleMesState {
     TITLE_MES_IDLE = 0,    /* TitleMes_RunIdle: nothing shown */
     TITLE_MES_WAITING = 1, /* TitleMes_RunWaiting: a few frames before it is shown */
     TITLE_MES_SHOWN = 2,   /* TitleMes_RunShown: blended in and out */
-    TITLE_MES_STATES = 3
+    TITLE_MES_STATE_COUNT = 3
 };
 
 /* TitleMes.shown and TitleMes.wanted: one of the two screens, or none. */

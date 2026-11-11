@@ -56,7 +56,7 @@ extern CamelInitRecord data_ov078_02279c18, data_ov078_02279c24;
  * registered. */
 void CamelInit_Tables(void)
 {
-    static const MemberPointer *const states[2 * CAMEL_STATES] = {
+    static const MemberPointer *const states[2 * CAMEL_STATE_COUNT] = {
         &data_ov078_02279a38, &data_ov078_02279a40, /* CAMEL_FINISH: Camel_EnterFinish, Camel_UpdateFinish */
         &__ptmf_null,         &data_ov078_02279a20, /* CAMEL_DONE: no entry, Camel_UpdateDone */
         &data_ov078_02279a00, &data_ov078_02279a08, /* CAMEL_WANDER */
@@ -70,7 +70,7 @@ void CamelInit_Tables(void)
     camel_init_color(&data_ov078_02279c08, 20, 31, 20, 31);
     camel_init_color(&data_ov078_02279c0c, 20, 31, 31, 31);
     camel_init_color(&data_ov078_02279c00, 20, 24, 24, 31);
-    for (int i = 0; i < CAMEL_STATES; i++) {
+    for (int i = 0; i < CAMEL_STATE_COUNT; i++) {
         data_ov078_02279c48[i].enter = *states[2 * i];
         data_ov078_02279c48[i].run = *states[2 * i + 1];
     }

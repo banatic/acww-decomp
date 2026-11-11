@@ -142,7 +142,7 @@ extern const u8 data_ov004_0225445c[];
 extern const u8 data_ov004_022543cc[];
 extern const u8 data_020da088[];
 /* The functions of its states (filled at start-up by __sinit_ov004_0224e668). */
-extern TailorSisterStep data_ov004_0225806c[TAILOR_SISTER_STATES];
+extern TailorSisterStep data_ov004_0225806c[TAILOR_SISTER_STATE_COUNT];
 /* Its model and texture file names. */
 extern const char data_ov004_02254378[];
 extern const char data_ov004_022543a8[];

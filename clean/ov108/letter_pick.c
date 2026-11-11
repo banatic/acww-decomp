@@ -42,7 +42,7 @@ extern const u8 data_ov108_0229e098[];
 #define LETTER_PICK_TEXT_CANCEL 0x02
 
 /* The letter states dimmed by the setup (ov094's POCKETS_LETTERS_DIM_WRITTEN | ..._RECEIVED). */
-#define LETTER_PICK_DIMMED_STATES 3
+#define LETTER_PICK_DIMMED_STATE_COUNT 3
 
 /* The panel's button below the letters. */
 #define LETTER_PICK_QUIT_BUTTON 9
@@ -576,7 +576,7 @@ CLEAN_AS(func_ov108_0229cb88, LetterPick_PlaceIsDimmed)
 void LetterPick_DimLetters(LetterPick *self)
 {
     PocketsGrid_DimPlaces(&self->grid, 0, 0xe);
-    PocketsLetters_DimByState(&self->letters, LETTER_PICK_DIMMED_STATES);
+    PocketsLetters_DimByState(&self->letters, LETTER_PICK_DIMMED_STATE_COUNT);
 }
 CLEAN_AS(func_ov108_0229cbbc, LetterPick_DimLetters)
 
@@ -711,7 +711,7 @@ void LetterPick_PickSlotLetter(LetterPick *self)
     GroupParams_SetArg((u8) (self->slot - LETTER_PICK_CARRIED_FIRST));
     GroupParams_SetC4C(1);
     self->base.state = LETTER_PICK_STATE_START_WIPE_OUT;
-    MenuScene_SetPhase(lp_scene(self), LETTER_PICK_PHASE_STATES);
+    MenuScene_SetPhase(lp_scene(self), LETTER_PICK_PHASE_STATE_COUNT);
     Popup_Hide(&self->popup, 1);
     LetterPick_HideCursorSprite(self);
 }
@@ -853,7 +853,7 @@ void LetterPick_FollowPanelPress(LetterPick *self)
     } else {
         GroupParams_SetC4C(0);
         self->base.state = LETTER_PICK_STATE_START_WIPE_OUT;
-        MenuScene_SetPhase(lp_scene(self), LETTER_PICK_PHASE_STATES);
+        MenuScene_SetPhase(lp_scene(self), LETTER_PICK_PHASE_STATE_COUNT);
         Popup_Hide(&self->popup, 1);
         LetterPick_HideCursorSprite(self);
     }
@@ -885,7 +885,7 @@ CLEAN_AS(func_ov108_0229d084, LetterPick_RunActionWhenIdle)
  * state 0x15. */
 void LetterPick_CloseChoice(LetterPick *self)
 {
-    if (PagedChoice_CountDown(lp_choice(self)) != 0) {
+    if (PagedChoice_Tick(lp_choice(self)) != 0) {
         PagedChoice_RequestClose(lp_choice(self), 0);
         Popup_Hide(&self->popup, 1);
         if (CellLayerSprite_AnimNumber(lp_cursor_cells(self)) != 0) {
@@ -1289,8 +1289,8 @@ CLEAN_AS(func_ov108_0229d7ac, LetterPick_IdleByTouch)
 /* The tables of member functions (member_pointer.h): the guards, the tables and their constants. */
 extern u32 data_ov108_0229e100; /* the states' guard */
 extern u32 data_ov108_0229e104; /* the sub states' guard */
-extern MemberPointer data_ov108_0229e108[LETTER_PICK_STATES];
-extern MemberPointer data_ov108_0229e130[LETTER_PICK_SUB_STATES];
+extern MemberPointer data_ov108_0229e108[LETTER_PICK_STATE_COUNT];
+extern MemberPointer data_ov108_0229e130[LETTER_PICK_SUB_STATE_COUNT];
 extern const MemberPointer data_ov108_0229dfa0, data_ov108_0229dfa8, data_ov108_0229dfb0, data_ov108_0229dfc0,
     data_ov108_0229dfc8, data_ov108_0229dfd0, data_ov108_0229dfd8, data_ov108_0229dfe0, data_ov108_0229dfe8,
     data_ov108_0229dff0, data_ov108_0229dff8, data_ov108_0229e000, data_ov108_0229e008, data_ov108_0229e010,
@@ -1523,14 +1523,14 @@ CLEAN_AS(func_ov108_0229db80, LetterPick_RunInteractive)
  * REQUIRES: the sub state is below 0x18; the game reads past the table for others. */
 void LetterPick_RunSubState(LetterPick *self)
 {
-    static const MemberPointer *const sub_states[LETTER_PICK_SUB_STATES] = {
+    static const MemberPointer *const sub_states[LETTER_PICK_SUB_STATE_COUNT] = {
         &data_ov108_0229e058, &data_ov108_0229e050, &data_ov108_0229e048, &data_ov108_0229e040, &data_ov108_0229e038,
         &data_ov108_0229e030, &data_ov108_0229e028, &data_ov108_0229e020, &data_ov108_0229e018, &data_ov108_0229e010,
         &data_ov108_0229dfc8, &data_ov108_0229e008, &data_ov108_0229dff8, &data_ov108_0229e068, &data_ov108_0229dfe8,
         &data_ov108_0229dfe0, &data_ov108_0229dfd8, &data_ov108_0229dfd0, &data_ov108_0229dfc0, &data_ov108_0229e060,
         &data_ov108_0229dff0, &data_ov108_0229dfb0, &data_ov108_0229dfa8, &data_ov108_0229e080,
     };
-    MemberTable_InitOnce(&data_ov108_0229e104, data_ov108_0229e130, sub_states, LETTER_PICK_SUB_STATES);
+    MemberTable_InitOnce(&data_ov108_0229e104, data_ov108_0229e130, sub_states, LETTER_PICK_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov108_0229e130[self->base.sub_state], self);
 }
 CLEAN_AS(func_ov108_0229db9c, LetterPick_RunSubState)
@@ -1541,10 +1541,10 @@ CLEAN_AS(func_ov108_0229db9c, LetterPick_RunSubState)
  * REQUIRES: the state is below 5; the game reads past the table for others. */
 int LetterPick_RunState(LetterPick *self)
 {
-    static const MemberPointer *const states[LETTER_PICK_STATES] = {
+    static const MemberPointer *const states[LETTER_PICK_STATE_COUNT] = {
         &data_ov108_0229dfa0, &data_ov108_0229e088, &data_ov108_0229e000, &data_ov108_0229e078, &data_ov108_0229e070,
     };
-    MemberTable_InitOnce(&data_ov108_0229e100, data_ov108_0229e108, states, LETTER_PICK_STATES);
+    MemberTable_InitOnce(&data_ov108_0229e100, data_ov108_0229e108, states, LETTER_PICK_STATE_COUNT);
     LetterPick_BeginFrame(self);
     MemberPointer_CallVoid(&data_ov108_0229e108[self->base.state], self);
     LetterPick_EndFrame(self);

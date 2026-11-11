@@ -64,7 +64,7 @@ enum BbsBoardState {
     BBS_BOARD_STATE_TURN_OUT = 6,   /* BbsBoard_TurnOut */
     BBS_BOARD_STATE_TURN_SHOW = 7,  /* BbsBoard_TurnShow */
     BBS_BOARD_STATE_TURN_IN = 8,    /* BbsBoard_TurnIn */
-    BBS_BOARD_STATES = 9
+    BBS_BOARD_STATE_COUNT = 9
 };
 
 enum BbsBoardSubState {
@@ -73,14 +73,14 @@ enum BbsBoardSubState {
     BBS_BOARD_SUB_GLIDE = 2,   /* BbsBoard_WaitGlide: the cursor glides, then back */
     BBS_BOARD_SUB_PRESS = 3,   /* BbsBoard_WaitPress: A was pressed */
     BBS_BOARD_SUB_RELEASE = 4, /* BbsBoard_WaitRelease */
-    BBS_BOARD_SUB_STATES = 5
+    BBS_BOARD_SUB_STATE_COUNT = 5
 };
 
 /* The phases the scene sets (MenuScene.phase; menu_scene.c's MenuScene_Update runs phase 0 by
  * the vtable's slot 0x48, 1 by 0x4c, 2 by 0x50 and 5 by 0x5c). */
 enum BbsBoardPhase {
     BBS_BOARD_PHASE_WAIT = 0,
-    BBS_BOARD_PHASE_STATES = 1,      /* BbsBoard_RunState */
+    BBS_BOARD_PHASE_STATE_COUNT = 1, /* BbsBoard_RunState */
     BBS_BOARD_PHASE_INTERACTIVE = 2, /* BbsBoard_RunInteractive */
     BBS_BOARD_PHASE_DELETE = 5       /* BbsBoard_RequestDelete */
 };

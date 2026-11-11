@@ -57,7 +57,7 @@ enum TownMapState {
     TOWN_MAP_STATE_WIPE_IN = 4,    /* TownMap_StateWipeIn */
     TOWN_MAP_STATE_CLOSE = 5,      /* TownMap_StateStartWipeOut */
     TOWN_MAP_STATE_WIPE_OUT = 6,   /* TownMap_StateWipeOut */
-    TOWN_MAP_STATES = 7
+    TOWN_MAP_STATE_COUNT = 7
 };
 
 enum TownMapSubState {
@@ -71,7 +71,7 @@ enum TownMapSubState {
     TOWN_MAP_SUB_KNOB_HOLD = 7,    /* TownMap_SubKnobHold: up and down scroll while A is held */
     TOWN_MAP_SUB_KNOB_RELEASE = 8, /* TownMap_SubKnobRelease */
     TOWN_MAP_SUB_ON_MAP = 9,       /* TownMap_SubOnMap: A, B, X or a touch closes */
-    TOWN_MAP_SUB_STATES = 10
+    TOWN_MAP_SUB_STATE_COUNT = 10
 };
 
 /* The places of the key cursor (`cursor`). */

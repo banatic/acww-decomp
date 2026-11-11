@@ -64,7 +64,7 @@ enum DesignPickerState {
     DESIGN_PICKER_STATE_WIPE_IN = 2,        /* DesignPicker_WipeIn */
     DESIGN_PICKER_STATE_START_WIPE_OUT = 3, /* DesignPicker_StartWipeOut */
     DESIGN_PICKER_STATE_WIPE_OUT = 4,       /* DesignPicker_WipeOut */
-    DESIGN_PICKER_STATES = 5
+    DESIGN_PICKER_STATE_COUNT = 5
 };
 
 /* The sub states, run from the table of DesignPicker_RunSubState (MenuScene_SetSubState). */
@@ -80,7 +80,7 @@ enum DesignPickerSubState {
     DESIGN_PICKER_SUB_CHOICE_CLOSE = 8,   /* DesignPicker_CloseChoice */
     DESIGN_PICKER_SUB_CHOICE_RUN = 9,     /* DesignPicker_RunActionWhenIdle */
     DESIGN_PICKER_SUB_PANEL_PRESSED = 10, /* DesignPicker_FollowQuitPress */
-    DESIGN_PICKER_SUB_STATES = 11
+    DESIGN_PICKER_SUB_STATE_COUNT = 11
 };
 
 typedef struct DesignPicker {

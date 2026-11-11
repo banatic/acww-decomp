@@ -7,12 +7,12 @@
 static_assert(offsetof(TextDrawBox, text) == 0x10, "box text");
 static_assert(offsetof(TextDrawBox, cells) == 0x20, "box cells");
 static_assert(offsetof(TextDrawBox, font) == 0x28, "box font");
-static_assert(offsetof(TextDrawBox, color) == 0x38, "box colour");
+static_assert(offsetof(TextDrawBox, color) == 0x38, "box color");
 static_assert(offsetof(TextDrawBox, marks) == 0x40, "box marks");
 static_assert(offsetof(TextDrawBox, screens) == 0x50, "box screens");
 static_assert(offsetof(TextDrawBox, pending) == 0x54, "box pending");
 static_assert(offsetof(TextDrawBox, row_bytes) == 0x60, "box row bytes");
-static_assert(offsetof(TextDrawBox, start_color) == 0x74, "box start colour");
+static_assert(offsetof(TextDrawBox, start_color) == 0x74, "box start color");
 static_assert(sizeof(TextDrawBox) == 0x7c, "box size");
 
 extern const u32 data_020dcf28[]; /* the class's vtable */

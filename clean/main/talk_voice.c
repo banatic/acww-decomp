@@ -14,7 +14,7 @@ static_assert(offsetof(TalkVoice, chars) == 0x08, "voice chars");
 static_assert(offsetof(TalkVoice, count) == 0x10, "voice count");
 static_assert(offsetof(TalkVoice, unk_1c) == 0x1c, "voice 1c");
 static_assert(offsetof(TalkVoice, forced_mode) == 0x20, "voice forced mode");
-static_assert(offsetof(TalkVoice, color) == 0x28, "voice colour");
+static_assert(offsetof(TalkVoice, color) == 0x28, "voice color");
 static_assert(sizeof(TalkVoice) == 0x2c, "voice");
 
 /* The class's vtable: the destructor and the deleting destructor. */

@@ -71,12 +71,12 @@ extern const u8 data_ov003_022386f4[];
 
 /* The machine's tables (member_pointer.h): their guards, the tables and their constants. */
 extern u32 data_ov003_0223c790;
-extern MemberPointer data_ov003_0223c7f4[FOX_STATES];
+extern MemberPointer data_ov003_0223c7f4[FOX_STATE_COUNT];
 extern const MemberPointer data_ov003_022385f0, data_ov003_02238590, data_ov003_02238598, data_ov003_022385a0,
     data_ov003_022385e0, data_ov003_02238600, data_ov003_02238570, data_ov003_02238588, data_ov003_022385a8,
     data_ov003_02238608;
 extern u32 data_ov003_0223c794;
-extern MemberPointer data_ov003_0223c7a4[FOX_STATES];
+extern MemberPointer data_ov003_0223c7a4[FOX_STATE_COUNT];
 extern const MemberPointer data_ov003_02238578, data_ov003_02238580, data_ov003_022385d8, data_ov003_022385d0,
     data_ov003_022385c8, data_ov003_022385c0, data_ov003_022385b0, data_ov003_022385b8, data_ov003_022385e8,
     data_ov003_022385f8;
@@ -371,7 +371,7 @@ CLEAN_AS(func_ov003_0221bec4, Fox_EnterIdle)
  * REQUIRES: the state is not negative (Fox_SetState only sets 0 to 9). */
 void Fox_UpdateState(Fox *fox)
 {
-    static const MemberPointer *const updates[FOX_STATES] = {
+    static const MemberPointer *const updates[FOX_STATE_COUNT] = {
         &data_ov003_022385f0, /* Fox_UpdateIdle */
         &data_ov003_02238590, /* Fox_UpdateVisit */
         &data_ov003_02238598, /* Fox_UpdateTalk */
@@ -383,8 +383,8 @@ void Fox_UpdateState(Fox *fox)
         &data_ov003_022385a8, /* Fox_UpdateWalk */
         &data_ov003_02238608, /* Fox_UpdateGone */
     };
-    MemberTable_InitOnce(&data_ov003_0223c790, data_ov003_0223c7f4, updates, FOX_STATES);
-    if (fox->state < FOX_STATES) {
+    MemberTable_InitOnce(&data_ov003_0223c790, data_ov003_0223c7f4, updates, FOX_STATE_COUNT);
+    if (fox->state < FOX_STATE_COUNT) {
         MemberPointer_CallVoid(&data_ov003_0223c7f4[fox->state], fox);
     }
 }
@@ -395,7 +395,7 @@ CLEAN_AS(func_ov003_0221bec8, Fox_UpdateState)
  * REQUIRES: `state` is not negative. */
 int Fox_SetState(Fox *fox, int state)
 {
-    static const MemberPointer *const entries[FOX_STATES] = {
+    static const MemberPointer *const entries[FOX_STATE_COUNT] = {
         &data_ov003_02238578, /* Fox_EnterIdle */
         &data_ov003_02238580, /* Fox_EnterVisit */
         &data_ov003_022385d8, /* Fox_EnterTalk */
@@ -407,8 +407,8 @@ int Fox_SetState(Fox *fox, int state)
         &data_ov003_022385e8, /* Fox_EnterWalk */
         &data_ov003_022385f8, /* Fox_EnterGone */
     };
-    MemberTable_InitOnce(&data_ov003_0223c794, data_ov003_0223c7a4, entries, FOX_STATES);
-    if (state < FOX_STATES && MemberPointer_CallInt(&data_ov003_0223c7a4[state], fox) != 0) {
+    MemberTable_InitOnce(&data_ov003_0223c794, data_ov003_0223c7a4, entries, FOX_STATE_COUNT);
+    if (state < FOX_STATE_COUNT && MemberPointer_CallInt(&data_ov003_0223c7a4[state], fox) != 0) {
         fox->state = state;
         return 1;
     }

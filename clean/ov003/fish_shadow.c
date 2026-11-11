@@ -76,7 +76,7 @@ extern FishShadow data_ov003_0225f76c[FISH_SHADOW_COUNT];
 extern FishFin data_ov003_0225f220;
 extern PlayerFish data_ov003_0225f4dc[FISH_SHADOW_PLAYER_FISH_COUNT];
 /* Each state's entry and update functions, member functions of the process. */
-extern MemberPointer data_ov003_0225f1d0[FISH_SHADOW_STATES][2];
+extern MemberPointer data_ov003_0225f1d0[FISH_SHADOW_STATE_COUNT][2];
 /* Frames since a float landed (FishShadow_NoteSplash), counted down. */
 extern u16 data_ov003_0225f0b8;
 extern const FishShadowSize data_ov003_0223c014[FISH_SHADOW_SIZES];
@@ -139,7 +139,7 @@ CLEAN_AS(func_ov003_02228a98, FishShadow_EnterNone)
  * entry function (data_ov003_0225f1d0) called, when it has one, with the shadow and `index`. */
 void FishShadow_SetState(FishShadowProcess *self, int state, FishShadow *fish, int index)
 {
-    if (state >= 0 && state < FISH_SHADOW_STATES) {
+    if (state >= 0 && state < FISH_SHADOW_STATE_COUNT) {
         fish->state = state;
         const MemberPointer *enter = &fish_shadow_state_fns(fish->state)[0];
         if (enter->function != 0) {

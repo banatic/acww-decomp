@@ -39,7 +39,7 @@ extern const char data_ov118_0229cce8[]; /* "menu/map/b_map_bg_1.bch" */
 extern const char data_ov118_0229cd00[]; /* "menu/map/b_map_a_bg.bsc" */
 extern const char data_ov118_0229cd18[]; /* "menu/map/b_map_b_bg.bsc" */
 
-/* The cells drawn at the screen's centre: the frame's OBJs, and the two list buttons. */
+/* The cells drawn at the screen's center: the frame's OBJs, and the two list buttons. */
 extern const OamEntry data_ov118_0229cbb0[];
 extern const OamEntry data_ov118_0229cb70[]; /* the places' button */
 extern const OamEntry data_ov118_0229cb90[]; /* the residents' button */
@@ -59,8 +59,8 @@ extern ScenePlace data_021f69b8;
  * constants they are filled from. */
 extern u32 data_ov118_0229cd40; /* the sub states' guard */
 extern u32 data_ov118_0229cd44; /* the states' guard */
-extern MemberPointer data_ov118_0229cd48[MAP_MENU_STATES];
-extern MemberPointer data_ov118_0229cd90[MAP_MENU_SUB_STATES];
+extern MemberPointer data_ov118_0229cd48[MAP_MENU_STATE_COUNT];
+extern MemberPointer data_ov118_0229cd90[MAP_MENU_SUB_STATE_COUNT];
 extern const MemberPointer data_ov118_0229cb10; /* MapMenu_SubTouch */
 extern const MemberPointer data_ov118_0229cb18; /* MapMenu_SubDragKnob */
 extern const MemberPointer data_ov118_0229caf8; /* MapMenu_SubTrack */
@@ -542,12 +542,12 @@ CLEAN_AS(_ZN18Obj_ov118_0229cc0819func_ov118_0229c528Ev, MapMenu_RunInteractive)
  * REQUIRES: the sub state is below 11; the game reads past the table for others. */
 void MapMenu_RunSubState(MapMenu *self)
 {
-    static const MemberPointer *const sub_states[MAP_MENU_SUB_STATES] = {
+    static const MemberPointer *const sub_states[MAP_MENU_SUB_STATE_COUNT] = {
         &data_ov118_0229cb10, &data_ov118_0229cb18, &data_ov118_0229caf8, &data_ov118_0229cb68,
         &data_ov118_0229cae8, &data_ov118_0229cac8, &data_ov118_0229cad0, &data_ov118_0229cb00,
         &data_ov118_0229cb08, &data_ov118_0229cb20, &data_ov118_0229caf0,
     };
-    MemberTable_InitOnce(&data_ov118_0229cd40, data_ov118_0229cd90, sub_states, MAP_MENU_SUB_STATES);
+    MemberTable_InitOnce(&data_ov118_0229cd40, data_ov118_0229cd90, sub_states, MAP_MENU_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov118_0229cd90[self->base.sub_state], self);
 }
 CLEAN_AS(_ZN18Obj_ov118_0229cc0819func_ov118_0229c554Ev, MapMenu_RunSubState)
@@ -558,11 +558,11 @@ CLEAN_AS(_ZN18Obj_ov118_0229cc0819func_ov118_0229c554Ev, MapMenu_RunSubState)
  * REQUIRES: the state is below 9; the game reads past the table for others. */
 int MapMenu_RunState(MapMenu *self)
 {
-    static const MemberPointer *const states[MAP_MENU_STATES] = {
+    static const MemberPointer *const states[MAP_MENU_STATE_COUNT] = {
         &data_ov118_0229cb60, &data_ov118_0229cb58, &data_ov118_0229cb50, &data_ov118_0229cb48, &data_ov118_0229cae0,
         &data_ov118_0229cb38, &data_ov118_0229cb30, &data_ov118_0229cb28, &data_ov118_0229cad8,
     };
-    MemberTable_InitOnce(&data_ov118_0229cd44, data_ov118_0229cd48, states, MAP_MENU_STATES);
+    MemberTable_InitOnce(&data_ov118_0229cd44, data_ov118_0229cd48, states, MAP_MENU_STATE_COUNT);
     MapMenu_BeginFrame(self);
     MemberPointer_CallVoid(&data_ov118_0229cd48[self->base.state], self);
     MapMenu_EndFrame(self);
@@ -664,7 +664,7 @@ int MapMenu_Start(MapMenu *self)
 {
     MapMenu_SetUp(self);
     MenuScene_SetState(map_menu_scene(self), MAP_MENU_STATE_LOAD);
-    MenuScene_SetPhase(map_menu_scene(self), MAP_MENU_PHASE_STATES);
+    MenuScene_SetPhase(map_menu_scene(self), MAP_MENU_PHASE_STATE_COUNT);
     return 1;
 }
 CLEAN_AS(func_ov118_0229c9c0, MapMenu_Start)

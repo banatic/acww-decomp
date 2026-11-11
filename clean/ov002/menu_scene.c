@@ -322,7 +322,7 @@ int MenuScene_Update(MenuScene *scene)
 {
     if (!(data_ov002_0220bec0 & 1)) {
         data_ov002_0220bec4[MENU_SCENE_PHASE_WAIT] = data_ov002_0220bad4;
-        data_ov002_0220bec4[MENU_SCENE_PHASE_STATES] = data_ov002_0220bae4;
+        data_ov002_0220bec4[MENU_SCENE_PHASE_STATE_COUNT] = data_ov002_0220bae4;
         data_ov002_0220bec4[MENU_SCENE_PHASE_INTERACTIVE] = data_ov002_0220bacc;
         data_ov002_0220bec4[MENU_SCENE_PHASE_3] = data_ov002_0220babc;
         data_ov002_0220bec4[MENU_SCENE_PHASE_4] = data_ov002_0220bac4;
@@ -376,7 +376,7 @@ CLEAN_AS(func_ov002_02208164, MenuScene_Phase1)
 int MenuScene_Wait(MenuScene *scene)
 {
     if (MenuBackdrop_IsUp()) {
-        MenuScene_SetPhase(scene, MENU_SCENE_PHASE_STATES);
+        MenuScene_SetPhase(scene, MENU_SCENE_PHASE_STATE_COUNT);
     }
     if (MenuBackdrop_IsClosed()) {
         MenuBackdrop_Reset();

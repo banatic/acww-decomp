@@ -103,7 +103,7 @@ enum PocketsSwapSubState {
     POCKETS_SWAP_SUB_DROP_CARRY = 0x15,      /* PocketsSwap_WaitDropCarried */
     POCKETS_SWAP_SUB_TILE_ANSWER = 0x16,     /* PocketsSwap_WaitTileAnswer */
     POCKETS_SWAP_SUB_TILE_PLAYER = 0x17,     /* PocketsSwap_SendPlayerToTile */
-    POCKETS_SWAP_SUB_STATES = 0x18
+    POCKETS_SWAP_SUB_STATE_COUNT = 0x18
 };
 
 /* The states, run from the table of PocketsSwap_RunState (MenuScene_SetState). */
@@ -113,14 +113,14 @@ enum PocketsSwapState {
     POCKETS_SWAP_STATE_WIPE_IN = 0x02,        /* PocketsSwap_WipeIn */
     POCKETS_SWAP_STATE_START_WIPE_OUT = 0x03, /* PocketsSwap_StartWipeOut */
     POCKETS_SWAP_STATE_WIPE_OUT = 0x04,       /* PocketsSwap_WipeOut */
-    POCKETS_SWAP_STATES = 0x05
+    POCKETS_SWAP_STATE_COUNT = 0x05
 };
 
 /* The phases the scene sets (ov092/menu_dispatch.h's mapping: phase 1 runs the states by the
  * vtable's slot 0x4c, 2 the interactive frame by 0x50, 5 the delete by 0x5c). */
 enum PocketsSwapPhase {
     POCKETS_SWAP_PHASE_START = 0,
-    POCKETS_SWAP_PHASE_STATES = 1,
+    POCKETS_SWAP_PHASE_STATE_COUNT = 1,
     POCKETS_SWAP_PHASE_INTERACTIVE = 2,
     POCKETS_SWAP_PHASE_DELETE = 5
 };

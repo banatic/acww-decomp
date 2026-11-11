@@ -95,7 +95,7 @@ enum PostClerkState {
     POST_CLERK_AWAIT = 9,
     POST_CLERK_OTHER = 10,
     POST_CLERK_PAUSED = 11,
-    POST_CLERK_STATES = 12
+    POST_CLERK_STATE_COUNT = 12
 };
 
 /* A state's functions in data_ov054_022632dc. */

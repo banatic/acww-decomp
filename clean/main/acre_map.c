@@ -506,7 +506,7 @@ int AcreMap_HasTownHall(int map, int position, int tile_x, int tile_z)
 CLEAN_AS(func_0204e188, AcreMap_HasTownHall)
 
 /* func_0204e204: finds a building in [first, last] (AcreMap_FindItem) and gives the point in
- * front of it: the tile's centre moved by the mean x and z of the corners of its shape's
+ * front of it: the tile's center moved by the mean x and z of the corners of its shape's
  * triangles and half a tile (0x1000) further along z, at the floor's height. *out is the
  * building's code, or
  * empty when there is none or it has no shape; then nothing else is written.

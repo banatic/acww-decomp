@@ -980,7 +980,7 @@ CLEAN_AS(func_ov048_022616b8, GatekeeperTalk_SetState)
 
 /* func_ov048_022616c0 (slot 0x84, a command of the scene ended): the state's function, when the
  * state is not a network state and has one.
- * REQUIRES: the state is below GATEKEEPER_TALK_STATES (the game's are). */
+ * REQUIRES: the state is below GATEKEEPER_TALK_STATE_COUNT (the game's are). */
 void GatekeeperTalk_RunTalkState(GatekeeperTalk *talk)
 {
     const GatekeeperTalkState *state = &data_ov048_02264344[talk->state];
@@ -993,7 +993,7 @@ CLEAN_AS(func_ov048_022616c0, GatekeeperTalk_RunTalkState)
 
 /* func_ov048_02261704 (slot 0x80, before each step of the scene): the state's function, when
  * the state is a network state and has one.
- * REQUIRES: the state is below GATEKEEPER_TALK_STATES (the game's are). */
+ * REQUIRES: the state is below GATEKEEPER_TALK_STATE_COUNT (the game's are). */
 void GatekeeperTalk_RunNetworkState(GatekeeperTalk *talk)
 {
     const GatekeeperTalkState *state = &data_ov048_02264344[talk->state];

@@ -13,7 +13,7 @@ static_assert(offsetof(SkyFiles, palettes) == 0x1048, "the palettes");
 static_assert(offsetof(SkyFiles, magic) == 0x1348, "the magic word");
 static_assert(sizeof(SkyFiles) == 0x134c, "the files");
 static_assert(offsetof(SkyPalettes, override_mask) == 0x08, "the overrides' mask");
-static_assert(offsetof(SkyPalettes, colors) == 0x28, "the colours");
+static_assert(offsetof(SkyPalettes, colors) == 0x28, "the colors");
 static_assert(sizeof(SkyPalettes) == 0x48, "the palettes");
 
 #define SKY_FILES_READ_PALETTES 14      /* of a_sky_obj_ncl.bin */

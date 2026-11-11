@@ -40,7 +40,7 @@ enum OwlState {
     OWL_STATE_AWAIT = 6,
     OWL_STATE_OTHER = 7,
     OWL_STATE_PAUSED = 8,
-    OWL_STATES = 9
+    OWL_STATE_COUNT = 9
 };
 
 /* A state's functions in data_ov047_02263048. */

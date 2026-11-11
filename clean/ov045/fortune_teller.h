@@ -75,7 +75,7 @@ enum FortuneTellerState {
     FORTUNE_TELLER_TALKING = 1,
     FORTUNE_TELLER_TALKED = 2,
     FORTUNE_TELLER_CLOSING = 3,
-    FORTUNE_TELLER_STATES = 4
+    FORTUNE_TELLER_STATE_COUNT = 4
 };
 
 /* A state's functions in data_ov045_022615bc. */

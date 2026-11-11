@@ -1076,7 +1076,7 @@ extern FishingFloatPool data_021cad80;
 extern StaticInitRecord data_021cad10;
 extern void func_02060844(void *pool); /* FishingFloatPool_Destruct */
 /* The fishing float's states' step functions (fishing_float.c). */
-extern MemberPointer data_021cad30[FISHING_FLOAT_STATES];
+extern MemberPointer data_021cad30[FISHING_FLOAT_STATE_COUNT];
 extern const MemberPointer data_020dd80c, data_020dd804, data_020dd7fc, data_020dd7f4, data_020dd7e4, data_020dd7ec,
     data_020dd7dc, data_020dd7d4, data_020dd7cc, data_020dd7c4;
 
@@ -1084,13 +1084,13 @@ extern const MemberPointer data_020dd80c, data_020dd804, data_020dd7fc, data_020
  * functions. */
 void StaticInit_FishingFloat(void)
 {
-    static const MemberPointer *const float_fns[FISHING_FLOAT_STATES] = {
+    static const MemberPointer *const float_fns[FISHING_FLOAT_STATE_COUNT] = {
         &data_020dd80c, &data_020dd804, &data_020dd7fc, &data_020dd7f4, &data_020dd7e4,
         &data_020dd7ec, &data_020dd7dc, &data_020dd7d4, &data_020dd7cc, &data_020dd7c4,
     };
     FishingFloatPool_Construct(&data_021cad80);
     static_init_register(&data_021cad80, func_02060844, &data_021cad10);
-    static_init_copy(data_021cad30, float_fns, FISHING_FLOAT_STATES);
+    static_init_copy(data_021cad30, float_fns, FISHING_FLOAT_STATE_COUNT);
 }
 CLEAN_AS(__sinit_020c59c0, StaticInit_FishingFloat)
 
@@ -1973,8 +1973,8 @@ void StaticInit_Sky(void)
 }
 CLEAN_AS(__sinit_020c6f74, StaticInit_Sky)
 
-/* The first missing villager's colours and its states' entries and updates (missing_npc1.c). */
-#define STATIC_INIT_MISSING1_FNS (MISSING_NPC1_STATES * 2)
+/* The first missing villager's colors and its states' entries and updates (missing_npc1.c). */
+#define STATIC_INIT_MISSING1_FNS (MISSING_NPC1_STATE_COUNT * 2)
 extern StaticInitColor data_021fbbf4, data_021fbbe8, data_021fbbec, data_021fbbe4, data_021fbbf8, data_021fbbf0;
 extern MemberPointer data_021fbbfc[STATIC_INIT_MISSING1_FNS];
 extern const MemberPointer data_020e7b64, data_020e7b5c, data_020e7ae4, data_020e7aec, data_020e7b44, data_020e7b3c,
@@ -1994,10 +1994,10 @@ void StaticInit_MissingNpc1(void)
 }
 CLEAN_AS(__sinit_020c6fe8, StaticInit_MissingNpc1)
 
-/* The second missing villager's colours, its states' entries and updates (missing_npc2.c: one
+/* The second missing villager's colors, its states' entries and updates (missing_npc2.c: one
  * table of 20 member pointers whose last four the ROM names data_021fbd58) and its two side
  * points (+-0.5, 0, 1.0). */
-#define STATIC_INIT_MISSING2_FNS (MISSING_NPC2_STATES * 2)
+#define STATIC_INIT_MISSING2_FNS (MISSING_NPC2_STATE_COUNT * 2)
 #define STATIC_INIT_MISSING2_FIRST 16
 #define STATIC_INIT_MISSING2_LAST (STATIC_INIT_MISSING2_FNS - STATIC_INIT_MISSING2_FIRST)
 extern StaticInitColor data_021fbc98, data_021fbca4, data_021fbc9c, data_021fbc8c, data_021fbc90, data_021fbc94;
@@ -2035,7 +2035,7 @@ void StaticInit_MissingNpc2(void)
 CLEAN_AS(__sinit_020c714c, StaticInit_MissingNpc2)
 
 /* The placing villager's states' entries and updates (npc_plc.c). */
-#define STATIC_INIT_NPC_PLC_FNS (NPC_PLC_STATES * 2)
+#define STATIC_INIT_NPC_PLC_FNS (NPC_PLC_STATE_COUNT * 2)
 extern MemberPointer data_021fbd90[STATIC_INIT_NPC_PLC_FNS];
 extern const MemberPointer data_020e7f78, data_020e7f90, data_020e7f50, data_020e7f58, data_020e7f70, data_020e7f60,
     data_020e7f80;

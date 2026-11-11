@@ -93,7 +93,7 @@ extern const MemberPointer data_ov068_02277020, data_ov068_02277050, data_ov068_
 #define ACTS_SOUND_CLIMB_OUT 0x7e9
 #define ACTS_SOUND_VOLUME 0x7f
 /* The object's flag an action holding it sets (0x4e8, main's scene_action.c SCENE_ACTION_HELD):
- * set from behavior 17's start, and by behaviour 18's, until the climb out ends. */
+ * set from behavior 17's start, and by behavior 18's, until the climb out ends. */
 #define ACTS_FLAG_HELD 2
 /* The effect handle when there is none (0xa00). */
 #define ACTS_NO_EFFECT (-1)
@@ -726,7 +726,7 @@ static FrameControl *acts_anim_ctrl(u8 *villager)
     return (FrameControl *) (void *) acts_at(villager, ACTS_ANIM_CTRL);
 }
 
-/* func_ov068_02268020: behavior 17's last step and behaviour 18's only one: once animation
+/* func_ov068_02268020: behavior 17's last step and behavior 18's only one: once animation
  * 0x12b or 0x12a is done, flag 2 at 0x4e8 cleared, step 5, the held item's pose 0 and
  * behavior 0.
  * QUIRK: the animation's number is asked for again when it is not 0x12b. */

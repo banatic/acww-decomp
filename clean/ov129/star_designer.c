@@ -41,8 +41,8 @@ extern const char data_ov129_0229dc98[]; /* menu/inventory/b_itm0.bch */
  * constants they are filled from. */
 extern u32 data_ov129_0229dcc8; /* the states' guard */
 extern u32 data_ov129_0229dcc4; /* the sub states' guard */
-extern MemberPointer data_ov129_0229dd24[STAR_DESIGNER_STATES];
-extern MemberPointer data_ov129_0229dd84[STAR_DESIGNER_SUB_STATES];
+extern MemberPointer data_ov129_0229dd24[STAR_DESIGNER_STATE_COUNT];
+extern MemberPointer data_ov129_0229dd84[STAR_DESIGNER_SUB_STATE_COUNT];
 extern const MemberPointer data_ov129_0229db58; /* StarDesigner_SubCursor */
 extern const MemberPointer data_ov129_0229db60; /* StarDesigner_SubNudgePen */
 extern const MemberPointer data_ov129_0229db68; /* StarDesigner_SubTouch */
@@ -528,12 +528,12 @@ CLEAN_AS(func_ov129_0229d764, StarDesigner_RunInteractive)
  * REQUIRES: the sub state is below 15; the game reads past the table for others. */
 void StarDesigner_RunSubState(StarDesigner *self)
 {
-    static const MemberPointer *const sub_states[STAR_DESIGNER_SUB_STATES] = {
+    static const MemberPointer *const sub_states[STAR_DESIGNER_SUB_STATE_COUNT] = {
         &data_ov129_0229db68, &data_ov129_0229dbd8, &data_ov129_0229db60, &data_ov129_0229dbc8, &data_ov129_0229db58,
         &data_ov129_0229db70, &data_ov129_0229db78, &data_ov129_0229dba8, &data_ov129_0229db80, &data_ov129_0229db88,
         &data_ov129_0229dbb0, &data_ov129_0229dbb8, &data_ov129_0229dbd0, &data_ov129_0229dbe0, &data_ov129_0229dbf0,
     };
-    MemberTable_InitOnce(&data_ov129_0229dcc4, data_ov129_0229dd84, sub_states, STAR_DESIGNER_SUB_STATES);
+    MemberTable_InitOnce(&data_ov129_0229dcc4, data_ov129_0229dd84, sub_states, STAR_DESIGNER_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov129_0229dd84[self->base.sub_state], self);
 }
 CLEAN_AS(func_ov129_0229d780, StarDesigner_RunSubState)
@@ -544,12 +544,12 @@ CLEAN_AS(func_ov129_0229d780, StarDesigner_RunSubState)
  * REQUIRES: the state is below 12; the game reads past the table for others. */
 int StarDesigner_RunState(StarDesigner *self)
 {
-    static const MemberPointer *const states[STAR_DESIGNER_STATES] = {
+    static const MemberPointer *const states[STAR_DESIGNER_STATE_COUNT] = {
         &data_ov129_0229dba0, &data_ov129_0229dbf8, &data_ov129_0229dc10, &data_ov129_0229db90,
         &data_ov129_0229db98, &data_ov129_0229dc28, &data_ov129_0229dc20, &data_ov129_0229dc18,
         &data_ov129_0229dbc0, &data_ov129_0229dc08, &data_ov129_0229dc00, &data_ov129_0229dbe8,
     };
-    MemberTable_InitOnce(&data_ov129_0229dcc8, data_ov129_0229dd24, states, STAR_DESIGNER_STATES);
+    MemberTable_InitOnce(&data_ov129_0229dcc8, data_ov129_0229dd24, states, STAR_DESIGNER_STATE_COUNT);
     StarDesigner_BeginFrame(self);
     MemberPointer_CallVoid(&data_ov129_0229dd24[self->base.state], self);
     StarDesigner_EndFrame(self);
@@ -558,7 +558,7 @@ int StarDesigner_RunState(StarDesigner *self)
 CLEAN_AS(func_ov129_0229d8a0, StarDesigner_RunState)
 
 /* func_ov129_0229d9a4 (vtable slot 0x24): the scene's draw: the pointer (by the keys only), the
- * panel, the scope's centre (by the keys only), the arrows at the wipe's offset and the end of
+ * panel, the scope's center (by the keys only), the arrows at the wipe's offset and the end of
  * the line's mark, each when its flag is set. Answers 1. */
 int StarDesigner_Draw(StarDesigner *self)
 {

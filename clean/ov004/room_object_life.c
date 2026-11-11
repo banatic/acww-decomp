@@ -47,7 +47,7 @@ extern const u8 data_ov004_0224ff18[];
 /* The pool the objects' slots are in (RoomObject.slot). */
 extern ModelPool data_ov004_02259698;
 
-/* NitroSystem's 3D state; the light colours (the hardware's LIGHT_COLOR command, the light's
+/* NitroSystem's 3D state; the light colors (the hardware's LIGHT_COLOR command, the light's
  * number in bits 30-31) are at 0xa8. */
 extern struct {
     u8 unk_00[0xa8];

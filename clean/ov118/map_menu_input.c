@@ -807,7 +807,7 @@ int MapMenu_SelectTab(MapMenu *self, int tab)
     }
     MenuTabs_SelectTab((MenuTabs *) (void *) parent, (u8) tab);
     self->base.state = MAP_MENU_STATE_LEAVE;
-    MenuScene_SetPhase(map_menu_scene(self), MAP_MENU_PHASE_STATES);
+    MenuScene_SetPhase(map_menu_scene(self), MAP_MENU_PHASE_STATE_COUNT);
     return 1;
 }
 CLEAN_AS(func_ov118_0229c438, MapMenu_SelectTab)

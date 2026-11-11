@@ -1,4 +1,4 @@
-/* main's labelled sprite (vtable data_020e23a0, 0x78 bytes, derived from main's screen sprite
+/* main's labeled sprite (vtable data_020e23a0, 0x78 bytes, derived from main's screen sprite
  * base, screen_sprite.h): two cell animations played together with a short text drawn over
  * them in a box of OBJ tiles. The menu scenes' label buttons (ov002/label_button.h) build on
  * it, and main's func_020ac0ac keeps one.

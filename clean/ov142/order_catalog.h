@@ -98,7 +98,7 @@ enum OrderCatalogPlace {
     ORDER_CATALOG_PLACE_NONE = 0x19
 };
 
-/* The fade of the rows' text (colour 15 of the rows' palettes, towards color 8) on a change of
+/* The fade of the rows' text (color 15 of the rows' palettes, towards color 8) on a change of
  * category (`fade_state`). */
 enum OrderCatalogFade {
     ORDER_CATALOG_FADE_NONE = 0,
@@ -116,7 +116,7 @@ enum OrderCatalogState {
     ORDER_CATALOG_STATE_CONFIRM_IN = 5,     /* OrderCatalog_PanelInToConfirm */
     ORDER_CATALOG_STATE_BACK_OUT = 6,       /* OrderCatalog_PanelOutToBrowse */
     ORDER_CATALOG_STATE_BACK_IN = 7,        /* OrderCatalog_PanelInToBrowse */
-    ORDER_CATALOG_STATES = 8
+    ORDER_CATALOG_STATE_COUNT = 8
 };
 
 /* The sub states, run from the table of OrderCatalog_RunSubState (MenuScene_SetSubState). */
@@ -135,7 +135,7 @@ enum OrderCatalogSubState {
     ORDER_CATALOG_SUB_TOUCH_CONFIRM = 11, /* OrderCatalog_ConfirmByTouch */
     ORDER_CATALOG_SUB_CONFIRM = 12,       /* OrderCatalog_ConfirmByKeys */
     ORDER_CATALOG_SUB_PANEL_PRESSED = 13, /* OrderCatalog_FollowPanelPress */
-    ORDER_CATALOG_SUB_STATES = 14
+    ORDER_CATALOG_SUB_STATE_COUNT = 14
 };
 
 typedef struct OrderCatalog {

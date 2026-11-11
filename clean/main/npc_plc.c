@@ -307,7 +307,7 @@ typedef struct NpcPlcStateFns {
     MemberPointer enter;
     MemberPointer update;
 } NpcPlcStateFns;
-extern NpcPlcStateFns data_021fbd90[NPC_PLC_STATES];
+extern NpcPlcStateFns data_021fbd90[NPC_PLC_STATE_COUNT];
 
 /* Its files' names: "npc_sp/model/plc.nsbmd" and "npc_sp/model/plc_tex.nsbtx". */
 extern const u32 data_020d3164[2];
@@ -324,7 +324,7 @@ CLEAN_AS(func_020c3d78, NpcPlc_EnterIdle)
 
 /* func_020c3dac: the state's entry run (when it has one); when it answers 1 (or there is
  * none) the state is taken.
- * REQUIRES: `state` is one of the NPC_PLC_STATES. */
+ * REQUIRES: `state` is one of the NPC_PLC_STATE_COUNT. */
 void NpcPlc_SetState(NpcPlc *self, int state)
 {
     const MemberPointer *enter = &data_021fbd90[state].enter;

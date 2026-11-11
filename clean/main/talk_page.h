@@ -37,7 +37,7 @@ typedef struct TalkPage {
     u32 used;                        /* 0x400: the bytes of `text` written */
     u32 line_start[TALK_PAGE_LINES]; /* 0x404: the address in `text` each line begins at */
     u32 lines;                       /* 0x410: the lines begun */
-    u32 color[TALK_PAGE_LINES];      /* 0x414: each line's colour (a 0xff/0 tag's) */
+    u32 color[TALK_PAGE_LINES];      /* 0x414: each line's color (a 0xff/0 tag's) */
     LabelBox *box[TALK_PAGE_LINES];  /* 0x420: or NULL */
     u32 offset[TALK_PAGE_LINES];     /* 0x42c: where each line starts in its box, in pixels */
     u8 dirty[TALK_PAGE_LINES];       /* 0x438: the line was written to since it was drawn */

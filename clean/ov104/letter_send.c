@@ -1609,7 +1609,7 @@ CLEAN_AS(func_ov104_0229dea0, LetterSend_RunActionWhenIdle)
  * state 0x18. */
 void LetterSend_CloseChoice(LetterSendScene *self)
 {
-    if (PagedChoice_CountDown(lsend_choice(self)) != 0) {
+    if (PagedChoice_Tick(lsend_choice(self)) != 0) {
         PagedChoice_RequestClose(lsend_choice(self), 0);
         Popup_Hide(&self->popup, 1);
         if (CellLayerSprite_AnimNumber(lsend_cursor_cells(self)) != 0) {
@@ -2225,8 +2225,8 @@ extern void func_02066694(void *letter);
  * data_ov104_0229f880). */
 extern u32 data_ov104_0229f7a0; /* the sub states' guard */
 extern u32 data_ov104_0229f7a4; /* the states' guard */
-extern MemberPointer data_ov104_0229f7a8[LETTER_SEND_STATES];
-extern MemberPointer data_ov104_0229f800[LETTER_SEND_SUB_STATES];
+extern MemberPointer data_ov104_0229f7a8[LETTER_SEND_STATE_COUNT];
+extern MemberPointer data_ov104_0229f800[LETTER_SEND_SUB_STATE_COUNT];
 extern const MemberPointer data_ov104_0229f588, data_ov104_0229f590, data_ov104_0229f598, data_ov104_0229f5a0,
     data_ov104_0229f5a8, data_ov104_0229f5b0, data_ov104_0229f5b8, data_ov104_0229f5c0, data_ov104_0229f5c8,
     data_ov104_0229f5d0, data_ov104_0229f5d8, data_ov104_0229f5e0, data_ov104_0229f5e8, data_ov104_0229f5f0,
@@ -2637,7 +2637,7 @@ CLEAN_AS(_ZN18Obj_ov104_0229f6d019func_ov104_0229f040Ev, LetterSend_RunInteracti
  * REQUIRES: the sub state is below 0x1d; the game reads past the table for others. */
 void LetterSend_RunSubState(LetterSendScene *self)
 {
-    static const MemberPointer *const sub_states[LETTER_SEND_SUB_STATES] = {
+    static const MemberPointer *const sub_states[LETTER_SEND_SUB_STATE_COUNT] = {
         &data_ov104_0229f5e0, &data_ov104_0229f658, &data_ov104_0229f650, &data_ov104_0229f648, &data_ov104_0229f640,
         &data_ov104_0229f638, &data_ov104_0229f630, &data_ov104_0229f628, &data_ov104_0229f620, &data_ov104_0229f618,
         &data_ov104_0229f610, &data_ov104_0229f608, &data_ov104_0229f600, &data_ov104_0229f5f8, &data_ov104_0229f5f0,
@@ -2645,7 +2645,7 @@ void LetterSend_RunSubState(LetterSendScene *self)
         &data_ov104_0229f5c0, &data_ov104_0229f5b8, &data_ov104_0229f5b0, &data_ov104_0229f5a0, &data_ov104_0229f5a8,
         &data_ov104_0229f598, &data_ov104_0229f590, &data_ov104_0229f588, &data_ov104_0229f660,
     };
-    MemberTable_InitOnce(&data_ov104_0229f7a0, data_ov104_0229f800, sub_states, LETTER_SEND_SUB_STATES);
+    MemberTable_InitOnce(&data_ov104_0229f7a0, data_ov104_0229f800, sub_states, LETTER_SEND_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov104_0229f800[self->base.sub_state], self);
 }
 CLEAN_AS(_ZN18Obj_ov104_0229f6d019func_ov104_0229f05cEv, LetterSend_RunSubState)
@@ -2656,12 +2656,12 @@ CLEAN_AS(_ZN18Obj_ov104_0229f6d019func_ov104_0229f05cEv, LetterSend_RunSubState)
  * REQUIRES: the state is below 0x0b; the game reads past the table for others. */
 int LetterSend_RunState(LetterSendScene *self)
 {
-    static const MemberPointer *const states[LETTER_SEND_STATES] = {
+    static const MemberPointer *const states[LETTER_SEND_STATE_COUNT] = {
         &data_ov104_0229f668, &data_ov104_0229f6c0, &data_ov104_0229f6b8, &data_ov104_0229f6b0,
         &data_ov104_0229f6a8, &data_ov104_0229f6a0, &data_ov104_0229f698, &data_ov104_0229f690,
         &data_ov104_0229f688, &data_ov104_0229f680, &data_ov104_0229f678,
     };
-    MemberTable_InitOnce(&data_ov104_0229f7a4, data_ov104_0229f7a8, states, LETTER_SEND_STATES);
+    MemberTable_InitOnce(&data_ov104_0229f7a4, data_ov104_0229f7a8, states, LETTER_SEND_STATE_COUNT);
     LetterSend_BeginFrame(self);
     MemberPointer_CallVoid(&data_ov104_0229f7a8[self->base.state], self);
     LetterSend_EndFrame(self);

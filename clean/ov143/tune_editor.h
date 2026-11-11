@@ -66,7 +66,7 @@ enum TuneEditorState {
     TUNE_EDITOR_STATE_ERASE_IN = 5,       /* TuneEditor_FadeInErase */
     TUNE_EDITOR_STATE_FROM_ERASE = 6,     /* TuneEditor_FadeFromErase */
     TUNE_EDITOR_STATE_EDIT_IN = 7,        /* TuneEditor_FadeInEdit */
-    TUNE_EDITOR_STATES = 8
+    TUNE_EDITOR_STATE_COUNT = 8
 };
 
 /* The sub states, run from the table of TuneEditor_RunSubState (MenuScene_SetSubState). */
@@ -82,13 +82,13 @@ enum TuneEditorSubState {
     TUNE_EDITOR_SUB_ERASE_KEYS = 8,  /* TuneEditor_EraseByKeys */
     TUNE_EDITOR_SUB_PANEL_PRESS = 9, /* TuneEditor_FollowPanelPress */
     TUNE_EDITOR_SUB_PLAYING = 10,    /* TuneEditor_FollowPlayback */
-    TUNE_EDITOR_SUB_STATES = 11
+    TUNE_EDITOR_SUB_STATE_COUNT = 11
 };
 
 /* The phases set (MenuScene_SetPhase): 0 waits (vtable slot 0x48), 1 runs the states (slot
  * 0x4c), 2 the sub states (slot 0x50) and 5 deletes the scene (slot 0x5c). */
 #define TUNE_EDITOR_PHASE_WAIT 0
-#define TUNE_EDITOR_PHASE_STATES 1
+#define TUNE_EDITOR_PHASE_STATE_COUNT 1
 #define TUNE_EDITOR_PHASE_INTERACTIVE 2
 #define TUNE_EDITOR_PHASE_DELETE 5
 

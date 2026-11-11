@@ -79,7 +79,7 @@ enum SongPocketsAction {
  * the vtable's slot 0x48, 1 by 0x4c, 2 by 0x50, 3 by 0x54, 4 by 0x58 and 5 by 0x5c). */
 enum SongPocketsPhase {
     SONG_POCKETS_PHASE_WAIT = 0,        /* the base's wait */
-    SONG_POCKETS_PHASE_STATES = 1,      /* SongPockets_RunState */
+    SONG_POCKETS_PHASE_STATE_COUNT = 1, /* SongPockets_RunState */
     SONG_POCKETS_PHASE_INTERACTIVE = 2, /* SongPockets_RunInteractive */
     SONG_POCKETS_PHASE_DELETE = 5       /* SongPockets_RequestDelete */
 };
@@ -91,7 +91,7 @@ enum SongPocketsState {
     SONG_POCKETS_STATE_WIPE_IN = 2,        /* SongPockets_WipeIn */
     SONG_POCKETS_STATE_START_WIPE_OUT = 3, /* SongPockets_StartWipeOut */
     SONG_POCKETS_STATE_WIPE_OUT = 4,       /* SongPockets_WipeOut */
-    SONG_POCKETS_STATES = 5
+    SONG_POCKETS_STATE_COUNT = 5
 };
 
 /* The sub states (MenuScene_SetSubState; the table of SongPockets_RunSubState). */
@@ -112,7 +112,7 @@ enum SongPocketsSubState {
     SONG_POCKETS_SUB_CHOICE_CLOSING = 0x0d,   /* SongPockets_RunActionWhenIdle */
     SONG_POCKETS_SUB_ERROR = 0x0e,            /* SongPockets_WaitError */
     SONG_POCKETS_SUB_PANEL_PRESS = 0x0f,      /* SongPockets_FollowPanelPress */
-    SONG_POCKETS_SUB_STATES = 0x10
+    SONG_POCKETS_SUB_STATE_COUNT = 0x10
 };
 
 typedef struct SongPockets {

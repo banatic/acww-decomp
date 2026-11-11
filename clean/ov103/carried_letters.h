@@ -83,7 +83,7 @@ enum CarriedLettersAction {
  * 0x4c, 2 by 0x50 and 5 by 0x5c, as ov092/menu_dispatch.h says). */
 enum CarriedLettersPhase {
     CARRIED_LETTERS_PHASE_WAIT = 0,
-    CARRIED_LETTERS_PHASE_STATES = 1,      /* CarriedLetters_RunState */
+    CARRIED_LETTERS_PHASE_STATE_COUNT = 1, /* CarriedLetters_RunState */
     CARRIED_LETTERS_PHASE_INTERACTIVE = 2, /* CarriedLetters_RunInteractive */
     CARRIED_LETTERS_PHASE_END = 5          /* CarriedLetters_End */
 };
@@ -99,7 +99,7 @@ enum CarriedLettersState {
     CARRIED_LETTERS_STATE_LETTER_WIPE_IN = 6,        /* CarriedLetters_LetterWipeIn */
     CARRIED_LETTERS_STATE_START_LETTER_WIPE_OUT = 7, /* CarriedLetters_StartLetterWipeOut */
     CARRIED_LETTERS_STATE_LETTER_WIPE_OUT = 8,       /* CarriedLetters_LetterWipeOut */
-    CARRIED_LETTERS_STATES = 9
+    CARRIED_LETTERS_STATE_COUNT = 9
 };
 
 /* The sub states, run from the table of CarriedLetters_RunSubState (MenuScene_SetSubState), named
@@ -130,7 +130,7 @@ enum CarriedLettersSubState {
     CARRIED_LETTERS_SUB_CHOICE_RUN = 0x16,      /* CarriedLetters_RunActionWhenIdle */
     CARRIED_LETTERS_SUB_ERROR = 0x17,           /* CarriedLetters_WaitError (no code sets it) */
     CARRIED_LETTERS_SUB_LABEL_PRESSED = 0x18,   /* CarriedLetters_FollowLabelPress */
-    CARRIED_LETTERS_SUB_STATES = 0x19
+    CARRIED_LETTERS_SUB_STATE_COUNT = 0x19
 };
 
 typedef struct CarriedLetters {

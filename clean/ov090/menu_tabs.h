@@ -68,14 +68,14 @@ enum MenuTabsState {
     MENU_TABS_STATE_SETUP = 0, /* MenuTabs_SetUp */
     MENU_TABS_STATE_SHOW = 1,  /* MenuTabs_Show */
     MENU_TABS_STATE_HIDE = 2,  /* MenuTabs_Hide */
-    MENU_TABS_STATES = 3
+    MENU_TABS_STATE_COUNT = 3
 };
 
 enum MenuTabsSubState {
     MENU_TABS_SUB_IDLE = 0,    /* MenuTabs_Idle */
     MENU_TABS_SUB_REQUEST = 1, /* MenuTabs_RequestTabGroup */
     MENU_TABS_SUB_ERROR = 2,   /* MenuTabs_UpdateError */
-    MENU_TABS_SUB_STATES = 3
+    MENU_TABS_SUB_STATE_COUNT = 3
 };
 
 #define MENU_TABS_TASKS 3

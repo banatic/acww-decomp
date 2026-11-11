@@ -39,7 +39,7 @@ enum StarViewState {
     STAR_VIEW_STATE_WIPE_IN = 1,        /* StarView_StateWipeIn */
     STAR_VIEW_STATE_START_WIPE_OUT = 2, /* StarView_StateStartWipeOut */
     STAR_VIEW_STATE_WIPE_OUT = 3,       /* StarView_StateWipeOut */
-    STAR_VIEW_STATES = 4
+    STAR_VIEW_STATE_COUNT = 4
 };
 
 enum StarViewSubState {
@@ -54,14 +54,14 @@ enum StarViewSubState {
     STAR_VIEW_SUB_PRESS = 8,     /* StarView_SubPress: the pointer's press plays */
     STAR_VIEW_SUB_RELEASE = 9,   /* StarView_SubRelease: the pointer's release plays */
     STAR_VIEW_SUB_BUTTON = 10,   /* StarView_SubButton: the button's press, then the close */
-    STAR_VIEW_SUB_STATES = 11
+    STAR_VIEW_SUB_STATE_COUNT = 11
 };
 
 /* The phases the scene sets (MenuScene_Update runs phase 0 by the vtable's slot 0x48, 1 by
  * 0x4c, 2 by 0x50, 3 by 0x54, 4 by 0x58 and 5 by 0x5c). */
 enum StarViewPhase {
     STAR_VIEW_PHASE_WAIT = 0,        /* the base's MenuScene_Wait, on to phase 1 */
-    STAR_VIEW_PHASE_STATES = 1,      /* StarView_RunState */
+    STAR_VIEW_PHASE_STATE_COUNT = 1, /* StarView_RunState */
     STAR_VIEW_PHASE_INTERACTIVE = 2, /* StarView_RunInteractive */
     STAR_VIEW_PHASE_DELETE = 5       /* StarView_RequestDelete */
 };

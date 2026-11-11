@@ -9,7 +9,7 @@
 #include "types.h"
 
 /* The table of the fox's states. */
-extern FoxTentStep data_ov052_02262000[FOX_TENT_STATES];
+extern FoxTentStep data_ov052_02262000[FOX_TENT_STATE_COUNT];
 /* Each state's entry, then its update. */
 extern const MemberPointer data_ov052_02261da0, data_ov052_02261da8, data_ov052_02261e08, data_ov052_02261e40,
     data_ov052_02261e48, data_ov052_02261de0, data_ov052_02261e38, data_ov052_02261e30, data_ov052_02261e28,
@@ -24,7 +24,7 @@ extern const MemberPointer data_ov052_02261da0, data_ov052_02261da8, data_ov052_
  * address of state 8's entry (where the compiler's second pointer into the table starts). */
 int Ov052Init_FoxTentStates(void)
 {
-    static const MemberPointer *const steps[2 * FOX_TENT_STATES] = {
+    static const MemberPointer *const steps[2 * FOX_TENT_STATE_COUNT] = {
         &data_ov052_02261da0, &data_ov052_02261da8, /* 0: FoxTent_EnterGreet, FoxTent_UpdateGreet */
         &data_ov052_02261e08, &data_ov052_02261e40, /* 1: FoxTent_EnterStand, FoxTent_UpdateStand */
         &data_ov052_02261e48, &data_ov052_02261de0, /* 2: FoxTent_EnterTurn, FoxTent_UpdateTurn */
@@ -37,7 +37,7 @@ int Ov052Init_FoxTentStates(void)
         &data_ov052_02261dd8, &data_ov052_02261dd0, /* 9: FoxTent_EnterCome, FoxTent_UpdateCome */
         &data_ov052_02261dc0, &data_ov052_02261e00, /* 10: FoxTent_EnterAtExit, FoxTent_UpdateAtExit */
     };
-    for (int i = 0; i < FOX_TENT_STATES; i++) {
+    for (int i = 0; i < FOX_TENT_STATE_COUNT; i++) {
         data_ov052_02262000[i].enter = *steps[2 * i];
         data_ov052_02262000[i].update = *steps[2 * i + 1];
     }

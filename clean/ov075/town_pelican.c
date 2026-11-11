@@ -132,7 +132,7 @@ extern const u8 data_ov075_022799fc[];
 extern const u8 data_020d8c64[];
 extern const u8 data_020da088[];
 /* His states' functions (filled at start-up by __sinit_ov075_02279724). */
-extern TownPelicanStep data_ov075_02279b08[TOWN_PELICAN_STATES];
+extern TownPelicanStep data_ov075_02279b08[TOWN_PELICAN_STATE_COUNT];
 /* The points beside the way ahead he steps to when the probe ahead is blocked: (0.5, 0, 1.0)
  * and (-0.5, 0, 1.0), set at start-up. */
 extern Vec3 data_ov075_02279af0[2];

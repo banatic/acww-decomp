@@ -703,8 +703,8 @@ CLEAN_AS(_ZN18Obj_ov132_0229b99019func_ov132_0229b6a4Ev, BankMenu_RunInteractive
  * constants. */
 extern u32 data_ov132_0229ba20; /* the sub states' guard */
 extern u32 data_ov132_0229ba24; /* the states' guard */
-extern MemberPointer data_ov132_0229ba48[BANK_MENU_SUB_STATES];
-extern MemberPointer data_ov132_0229ba28[BANK_MENU_STATES];
+extern MemberPointer data_ov132_0229ba48[BANK_MENU_SUB_STATE_COUNT];
+extern MemberPointer data_ov132_0229ba28[BANK_MENU_STATE_COUNT];
 extern const MemberPointer data_ov132_0229b920, data_ov132_0229b930, data_ov132_0229b938, data_ov132_0229b940,
     data_ov132_0229b948, data_ov132_0229b950, data_ov132_0229b958, data_ov132_0229b960, data_ov132_0229b968,
     data_ov132_0229b970, data_ov132_0229b978, data_ov132_0229b980;
@@ -714,11 +714,11 @@ extern const MemberPointer data_ov132_0229b920, data_ov132_0229b930, data_ov132_
  * REQUIRES: the sub state is below 8; the game reads past the table for others. */
 void BankMenu_RunSubState(BankMenu *self)
 {
-    static const MemberPointer *const sub_states[BANK_MENU_SUB_STATES] = {
+    static const MemberPointer *const sub_states[BANK_MENU_SUB_STATE_COUNT] = {
         &data_ov132_0229b968, &data_ov132_0229b960, &data_ov132_0229b958, &data_ov132_0229b950,
         &data_ov132_0229b940, &data_ov132_0229b970, &data_ov132_0229b978, &data_ov132_0229b930,
     };
-    MemberTable_InitOnce(&data_ov132_0229ba20, data_ov132_0229ba48, sub_states, BANK_MENU_SUB_STATES);
+    MemberTable_InitOnce(&data_ov132_0229ba20, data_ov132_0229ba48, sub_states, BANK_MENU_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov132_0229ba48[self->base.sub_state], self);
 }
 CLEAN_AS(_ZN18Obj_ov132_0229b99019func_ov132_0229b6c0Ev, BankMenu_RunSubState)
@@ -729,13 +729,13 @@ CLEAN_AS(_ZN18Obj_ov132_0229b99019func_ov132_0229b6c0Ev, BankMenu_RunSubState)
  * REQUIRES: the state is below 4; the game reads past the table for others. */
 int BankMenu_RunState(BankMenu *self)
 {
-    static const MemberPointer *const states[BANK_MENU_STATES] = {
+    static const MemberPointer *const states[BANK_MENU_STATE_COUNT] = {
         &data_ov132_0229b938,
         &data_ov132_0229b980,
         &data_ov132_0229b920,
         &data_ov132_0229b948,
     };
-    MemberTable_InitOnce(&data_ov132_0229ba24, data_ov132_0229ba28, states, BANK_MENU_STATES);
+    MemberTable_InitOnce(&data_ov132_0229ba24, data_ov132_0229ba28, states, BANK_MENU_STATE_COUNT);
     BankMenu_BeginFrame(self);
     MemberPointer_CallVoid(&data_ov132_0229ba28[self->base.state], self);
     BankMenu_EndFrame();

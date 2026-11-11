@@ -34,7 +34,7 @@
 #define BOAR_WANDER 2
 #define BOAR_STAND 3
 #define BOAR_TALK 4
-#define BOAR_STATES 5
+#define BOAR_STATE_COUNT 5
 
 typedef struct Boar {
     u8 unk_000[0x5c];  /* the scene object (special_scene_object.h, scene_object.h) */
@@ -58,7 +58,7 @@ typedef struct BoarStateRow {
     MemberPointer enter;
     MemberPointer run;
 } BoarStateRow;
-extern BoarStateRow data_ov073_02279c14[BOAR_STATES];
+extern BoarStateRow data_ov073_02279c14[BOAR_STATE_COUNT];
 
 /* The object's life and vtable slots. */
 Boar *Boar_Destruct(Boar *self);

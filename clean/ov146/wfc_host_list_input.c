@@ -451,7 +451,7 @@ void WfcHostList_RunCloseDelay(WfcHostList *self)
         return;
     }
     WfcHostList_HidePointer(self);
-    MenuScene_SetPhase(wfc_host_list_input_base(self), WFC_HOST_LIST_PHASE_STATES);
+    MenuScene_SetPhase(wfc_host_list_input_base(self), WFC_HOST_LIST_PHASE_STATE_COUNT);
 }
 CLEAN_AS(func_ov146_0229a778, WfcHostList_RunCloseDelay)
 

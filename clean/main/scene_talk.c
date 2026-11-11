@@ -20,7 +20,7 @@
 #define SCENE_TALK_SPEAKING 0x55
 #define SCENE_TALK_START_WITH_CAMERA 0xa4
 #define SCENE_TALK_STATE 0xac
-#define SCENE_TALK_STATES 3
+#define SCENE_TALK_STATE_COUNT 3
 
 /* The talk's words used here. */
 #define SCENE_TALK_TALK_STATE 4
@@ -66,14 +66,14 @@ static s32 *scene_talk_talk(void *scene)
  * from state 3 on. */
 int SceneTalk_Run(void *scene)
 {
-    static const MemberPointer *const states[SCENE_TALK_STATES] = {
+    static const MemberPointer *const states[SCENE_TALK_STATE_COUNT] = {
         &data_020d88f4, /* SceneTalk_Begin */
         &data_020d85f4, /* SceneTalk_LookAtNext */
         &data_020d8604, /* SceneTalk_PassTurn */
     };
-    MemberTable_InitOnce(&data_021c1510, data_021c1684, states, SCENE_TALK_STATES);
+    MemberTable_InitOnce(&data_021c1510, data_021c1684, states, SCENE_TALK_STATE_COUNT);
     u8 state = *scene_talk_part(scene, SCENE_TALK_STATE);
-    if (state < SCENE_TALK_STATES) {
+    if (state < SCENE_TALK_STATE_COUNT) {
         return MemberPointer_CallInt(&data_021c1684[state], scene);
     }
     return 0;

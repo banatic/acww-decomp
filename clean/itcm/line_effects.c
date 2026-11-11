@@ -7,8 +7,8 @@
 
 #include "clean.h"
 
-static_assert(offsetof(LineGradient, top_color) == 0x304, "the top colour");
-static_assert(offsetof(LineGradient, bottom_color) == 0x306, "the bottom colour");
+static_assert(offsetof(LineGradient, top_color) == 0x304, "the top color");
+static_assert(offsetof(LineGradient, bottom_color) == 0x306, "the bottom color");
 static_assert(sizeof(LineAffine) == 12, "a line's affine parameters");
 static_assert(offsetof(LineLayers, affine) == 0x8, "the affine tables");
 static_assert(offsetof(LineLayers, blend_alpha) == 0x1210, "the blending tables");

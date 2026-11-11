@@ -115,10 +115,10 @@ enum LetterWriteState {
     LETTER_WRITE_STATE_CHOICE = 12,           /* LetterWrite_OpenChoice: the choice opened */
     LETTER_WRITE_STATE_EXIT = 13,             /* LetterWrite_StartWipeOut (LetterWrite_ExitMenu) */
     LETTER_WRITE_STATE_WIPE_OUT = 14,         /* LetterWrite_StepWipeOut: the scene wiped out */
-    LETTER_WRITE_STATES = 15
+    LETTER_WRITE_STATE_COUNT = 15
 };
 
-#define LETTER_WRITE_SUB_STATES 0x1b
+#define LETTER_WRITE_SUB_STATE_COUNT 0x1b
 
 /* The codes of the keyboard's keys (SoftKeyboard_KeyCode) the scene acts on; others are
  * characters or the keyboard's own (SoftKeyboard_HandleCommand). */

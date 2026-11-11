@@ -153,7 +153,7 @@ CLEAN_AS(func_ov004_02246000, ShopDisplay_StockFox)
 /* func_ov004_02246010: the fox's three items put out. */
 void ShopDisplay_PlaceFox(ShopDisplay *self)
 {
-    shop_display_place_all(self, FOX_SHOP_ITEMS, shop_display_fox_item);
+    shop_display_place_all(self, FOX_SHOP_ITEM_COUNT, shop_display_fox_item);
 }
 CLEAN_AS(func_ov004_02246010, ShopDisplay_PlaceFox)
 

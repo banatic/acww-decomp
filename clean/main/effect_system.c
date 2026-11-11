@@ -74,7 +74,7 @@ extern unsigned short func_02090f88(Vec3 *out, Vec3 position);
 /* ParticleHeader.draw_flags: how an emitter is tinted (EffectSystem_TintEmitter). */
 #define EFFECT_SYSTEM_TINTED 0x80          /* by the scene's ambient color, times one of: */
 #define EFFECT_SYSTEM_TINT_SEASON 0x40     /* the season's color */
-#define EFFECT_SYSTEM_TINT_OWN_PERIOD 0x20 /* the period's colour of the emitter's table */
+#define EFFECT_SYSTEM_TINT_OWN_PERIOD 0x20 /* the period's color of the emitter's table */
 #define EFFECT_SYSTEM_TINT_PERIOD 0x08     /* the period's color */
 #define EFFECT_SYSTEM_WHITE 0x7fff
 
@@ -478,7 +478,7 @@ void EffectSystem_PlaceEmitter(ParticleEmitter *emitter)
 CLEAN_AS(func_02090d70, EffectSystem_PlaceEmitter)
 
 /* func_02090db0: an emitter whose resource asks for it tinted: the scene's ambient color,
- * each of red, green and blue times the tint's (of 31); the ambient colour's top bit kept. */
+ * each of red, green and blue times the tint's (of 31); the ambient color's top bit kept. */
 void EffectSystem_TintEmitter(ParticleEmitter *emitter)
 {
     u8 flags = emitter->resource->header->draw_flags;

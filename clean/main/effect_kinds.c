@@ -120,7 +120,7 @@ extern void VEC_Add(const Vec3 *a, const Vec3 *b, Vec3 *sum);
 #define EFFECT_KINDS_GROUND_16 0x16
 
 #define EFFECT_KINDS_NOT_STARTED 3
-#define EFFECT_KINDS_LIGHT_COLOR 3 /* the sky's light colour of kind 0x32's emitters */
+#define EFFECT_KINDS_LIGHT_COLOR 3 /* the sky's light color of kind 0x32's emitters */
 
 /* The ARM's 32-bit sum. */
 static fx32 effect_kinds_add(fx32 a, fx32 b)
@@ -206,7 +206,7 @@ void EffectKinds_StartKind32(int kind, const Vec3 *position, const s16 *angle, c
 }
 CLEAN_AS(func_02092f20, EffectKinds_StartKind32)
 
-/* func_02092f48: kind 0x32's first emitter set up at its place, its colour the sky's light
+/* func_02092f48: kind 0x32's first emitter set up at its place, its color the sky's light
  * color 3 instead of the tint. */
 void EffectKinds_SetUpKind32(ParticleEmitter *emitter)
 {

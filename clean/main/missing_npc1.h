@@ -39,7 +39,7 @@
 #define MISSING_NPC1_LOST 6        /* the player went too far: animations 0x122 and 0x123 */
 #define MISSING_NPC1_TALKED 7      /* nothing: after its talk */
 #define MISSING_NPC1_SCENE_2F 8    /* the scripted walk of scene 0x2f */
-#define MISSING_NPC1_STATES 9
+#define MISSING_NPC1_STATE_COUNT 9
 
 /* The topics of its talk (MissingNpc1Talk.topic): which lines it says. */
 #define MISSING_NPC1_TOPIC_FIRST 0     /* line 0; the player's flag 0x33 set */

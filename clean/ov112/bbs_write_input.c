@@ -159,7 +159,7 @@ void BbsWrite_CloseOnRequest(BbsWriteScene *self)
     BbsWrite_HidePointer(self);
     BbsWrite_ScrollTo(self, 0);
     MenuScene_SetState(bbs_write_scene(self), BBS_WRITE_STATE_CLOSE);
-    MenuScene_SetPhase(bbs_write_scene(self), BBS_WRITE_PHASE_STATES);
+    MenuScene_SetPhase(bbs_write_scene(self), BBS_WRITE_PHASE_STATE_COUNT);
     BbsWrite_SetFlags(self, BBS_WRITE_FLAG_QUITTING);
 }
 CLEAN_AS(func_ov112_0229ff5c, BbsWrite_CloseOnRequest)
@@ -590,7 +590,7 @@ void BbsWrite_RunButton(BbsWriteScene *self)
         }
     } else {
         BbsWrite_HidePointer(self);
-        MenuScene_SetPhase(bbs_write_scene(self), BBS_WRITE_PHASE_STATES);
+        MenuScene_SetPhase(bbs_write_scene(self), BBS_WRITE_PHASE_STATE_COUNT);
     }
 }
 CLEAN_AS(func_ov112_022a0798, BbsWrite_RunButton)

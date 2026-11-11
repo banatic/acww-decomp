@@ -61,8 +61,8 @@ extern u8 data_021ebcd4[];
  * constants. */
 extern u32 data_ov131_0229b960; /* the sub states' guard */
 extern u32 data_ov131_0229b964; /* the states' guard */
-extern MemberPointer data_ov131_0229b968[BANK_AMOUNT_STATES];
-extern MemberPointer data_ov131_0229b988[BANK_AMOUNT_SUB_STATES];
+extern MemberPointer data_ov131_0229b968[BANK_AMOUNT_STATE_COUNT];
+extern MemberPointer data_ov131_0229b988[BANK_AMOUNT_SUB_STATE_COUNT];
 extern const MemberPointer data_ov131_0229b880, data_ov131_0229b888, data_ov131_0229b898, data_ov131_0229b8a0,
     data_ov131_0229b8a8, data_ov131_0229b8b0, data_ov131_0229b8b8, data_ov131_0229b8c0, data_ov131_0229b8c8,
     data_ov131_0229b8d0, data_ov131_0229b8d8, data_ov131_0229b8e0;
@@ -404,7 +404,7 @@ void BankAmount_PanelPress(BankAmount *self)
         }
     } else {
         BankAmount_HideCursor(self);
-        MenuScene_SetPhase(scene_of(self), BANK_AMOUNT_PHASE_STATES);
+        MenuScene_SetPhase(scene_of(self), BANK_AMOUNT_PHASE_STATE_COUNT);
     }
 }
 CLEAN_AS(func_ov131_0229b124, BankAmount_PanelPress)
@@ -727,11 +727,11 @@ CLEAN_AS(_ZN18Obj_ov131_0229b8f019func_ov131_0229b628Ev, BankAmount_RunInput)
  * REQUIRES: the sub state is below 8; the game reads past the table for others. */
 void BankAmount_RunSubState(BankAmount *self)
 {
-    static const MemberPointer *const sub_states[BANK_AMOUNT_SUB_STATES] = {
+    static const MemberPointer *const sub_states[BANK_AMOUNT_SUB_STATE_COUNT] = {
         &data_ov131_0229b8b8, &data_ov131_0229b8b0, &data_ov131_0229b8a0, &data_ov131_0229b8c0,
         &data_ov131_0229b898, &data_ov131_0229b8c8, &data_ov131_0229b888, &data_ov131_0229b8e0,
     };
-    MemberTable_InitOnce(&data_ov131_0229b960, data_ov131_0229b988, sub_states, BANK_AMOUNT_SUB_STATES);
+    MemberTable_InitOnce(&data_ov131_0229b960, data_ov131_0229b988, sub_states, BANK_AMOUNT_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov131_0229b988[self->base.sub_state], self);
 }
 CLEAN_AS(_ZN18Obj_ov131_0229b8f019func_ov131_0229b644Ev, BankAmount_RunSubState)
@@ -742,13 +742,13 @@ CLEAN_AS(_ZN18Obj_ov131_0229b8f019func_ov131_0229b644Ev, BankAmount_RunSubState)
  * REQUIRES: the state is below 4; the game reads past the table for others. */
 int BankAmount_RunState(BankAmount *self)
 {
-    static const MemberPointer *const states[BANK_AMOUNT_STATES] = {
+    static const MemberPointer *const states[BANK_AMOUNT_STATE_COUNT] = {
         &data_ov131_0229b880,
         &data_ov131_0229b8a8,
         &data_ov131_0229b8d8,
         &data_ov131_0229b8d0,
     };
-    MemberTable_InitOnce(&data_ov131_0229b964, data_ov131_0229b968, states, BANK_AMOUNT_STATES);
+    MemberTable_InitOnce(&data_ov131_0229b964, data_ov131_0229b968, states, BANK_AMOUNT_STATE_COUNT);
     BankAmount_BeginFrame(self);
     MemberPointer_CallVoid(&data_ov131_0229b968[self->base.state], self);
     BankAmount_EndFrame(self);

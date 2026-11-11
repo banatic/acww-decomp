@@ -46,7 +46,7 @@ extern const char *const data_ov147_0229ac0c[TITLE_MES_SCREENS];
 /* The table of the steps' member functions (the overlay's .bss, filled once from the constants
  * after it) and its guard. */
 extern u32 data_ov147_022a2aac;
-extern MemberPointer data_ov147_022a2ab0[TITLE_MES_STATES];
+extern MemberPointer data_ov147_022a2ab0[TITLE_MES_STATE_COUNT];
 extern const MemberPointer data_ov147_0229ac04, data_ov147_0229abfc, data_ov147_0229abf4;
 
 extern const s16 FX_SinCosTable_[];
@@ -370,12 +370,12 @@ CLEAN_AS(func_ov147_0229a630, TitleMes_Request)
  * REQUIRES: the state is below 3; the game reads past the table for others. */
 void TitleMes_Update(TitleMes *self)
 {
-    static const MemberPointer *const steps[TITLE_MES_STATES] = {
+    static const MemberPointer *const steps[TITLE_MES_STATE_COUNT] = {
         &data_ov147_0229ac04, /* TitleMes_RunIdle */
         &data_ov147_0229abfc, /* TitleMes_RunWaiting */
         &data_ov147_0229abf4, /* TitleMes_RunShown */
     };
-    MemberTable_InitOnce(&data_ov147_022a2aac, data_ov147_022a2ab0, steps, TITLE_MES_STATES);
+    MemberTable_InitOnce(&data_ov147_022a2aac, data_ov147_022a2ab0, steps, TITLE_MES_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov147_022a2ab0[self->state], self);
 }
 CLEAN_AS(_ZN18Obj_ov147_0229ac1c19func_ov147_0229a634Ev, TitleMes_Update)

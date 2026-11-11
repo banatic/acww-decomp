@@ -246,7 +246,7 @@ static void tour_next_item(u16 *range, int *round)
  * stop's point (its base plus its offset). Arrived, and once its wait of 60 frames is out, the
  * tour goes on to the next stop (after the last, the first): with a map, the stop's item range
  * moves on (tour_next_item) until a structure of it is found in an acre of the stop's flags,
- * whose tile's centre is the new base, the stop's offset (by the round's place) the new offset,
+ * whose tile's center is the new base, the stop's offset (by the round's place) the new offset,
  * and the speed 0. Then the camera is placed.
  * QUIRK: with no structure of the range in the town the search goes on for ever (the houses'
  * and the round's ranges move on; the others are searched again unchanged). */

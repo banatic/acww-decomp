@@ -116,8 +116,8 @@ extern u32 data_ov107_0229e420; /* the actions' guard */
 extern u32 data_ov107_0229e424; /* the sub states' guard */
 extern u32 data_ov107_0229e428; /* the states' guard */
 extern MemberPointer data_ov107_0229e42c[POCKETS_SWAP_ACTION_CANCEL];
-extern MemberPointer data_ov107_0229e44c[POCKETS_SWAP_STATES];
-extern MemberPointer data_ov107_0229e474[POCKETS_SWAP_SUB_STATES];
+extern MemberPointer data_ov107_0229e44c[POCKETS_SWAP_STATE_COUNT];
+extern MemberPointer data_ov107_0229e474[POCKETS_SWAP_SUB_STATE_COUNT];
 extern const MemberPointer data_ov107_0229e2a0, data_ov107_0229e2a8, data_ov107_0229e2b0, data_ov107_0229e2b8,
     data_ov107_0229e2c8, data_ov107_0229e2d0, data_ov107_0229e2d8, data_ov107_0229e2e0, data_ov107_0229e2e8,
     data_ov107_0229e2f0, data_ov107_0229e2f8, data_ov107_0229e300, data_ov107_0229e308, data_ov107_0229e310,
@@ -681,7 +681,7 @@ void PocketsSwap_Finish(PocketsSwap *self)
     GroupParams_SetArg(self->slot);
     GroupParams_SetC4C(1);
     self->base.state = POCKETS_SWAP_STATE_START_WIPE_OUT;
-    MenuScene_SetPhase(psw_scene(self), POCKETS_SWAP_PHASE_STATES);
+    MenuScene_SetPhase(psw_scene(self), POCKETS_SWAP_PHASE_STATE_COUNT);
     Popup_Hide(&self->popup, 1);
     PocketsSwap_HideCursorSprite(self);
 }
@@ -1201,7 +1201,7 @@ void PocketsSwap_FollowPanelPress(PocketsSwap *self)
     }
     GroupParams_SetC4C(0);
     self->base.state = POCKETS_SWAP_STATE_START_WIPE_OUT;
-    MenuScene_SetPhase(psw_scene(self), POCKETS_SWAP_PHASE_STATES);
+    MenuScene_SetPhase(psw_scene(self), POCKETS_SWAP_PHASE_STATE_COUNT);
     Popup_Hide(&self->popup, 1);
     PocketsSwap_HideCursorSprite(self);
 }
@@ -1231,7 +1231,7 @@ CLEAN_AS(func_ov107_0229d614, PocketsSwap_RunActionWhenIdle)
  * the popup hidden, the cursor sprite (when shown) placed at the cursor, sub state 0x0d. */
 void PocketsSwap_CloseChoice(PocketsSwap *self)
 {
-    if (PagedChoice_CountDown(psw_choice(self)) == 0) {
+    if (PagedChoice_Tick(psw_choice(self)) == 0) {
         return;
     }
     PagedChoice_RequestClose(psw_choice(self), 0);
@@ -1686,14 +1686,14 @@ CLEAN_AS(func_ov107_0229de88, PocketsSwap_RunInteractive)
  * REQUIRES: the sub state is below 0x18; the game reads past the table for others. */
 void PocketsSwap_RunSubState(PocketsSwap *self)
 {
-    static const MemberPointer *const sub_states[POCKETS_SWAP_SUB_STATES] = {
+    static const MemberPointer *const sub_states[POCKETS_SWAP_SUB_STATE_COUNT] = {
         &data_ov107_0229e388, &data_ov107_0229e300, &data_ov107_0229e338, &data_ov107_0229e370, &data_ov107_0229e368,
         &data_ov107_0229e360, &data_ov107_0229e358, &data_ov107_0229e350, &data_ov107_0229e348, &data_ov107_0229e340,
         &data_ov107_0229e2d8, &data_ov107_0229e330, &data_ov107_0229e328, &data_ov107_0229e320, &data_ov107_0229e318,
         &data_ov107_0229e310, &data_ov107_0229e308, &data_ov107_0229e2f8, &data_ov107_0229e378, &data_ov107_0229e2f0,
         &data_ov107_0229e2e8, &data_ov107_0229e2e0, &data_ov107_0229e2a8, &data_ov107_0229e2d0,
     };
-    MemberTable_InitOnce(&data_ov107_0229e424, data_ov107_0229e474, sub_states, POCKETS_SWAP_SUB_STATES);
+    MemberTable_InitOnce(&data_ov107_0229e424, data_ov107_0229e474, sub_states, POCKETS_SWAP_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov107_0229e474[self->base.sub_state], self);
 }
 CLEAN_AS(func_ov107_0229dea4, PocketsSwap_RunSubState)
@@ -1704,10 +1704,10 @@ CLEAN_AS(func_ov107_0229dea4, PocketsSwap_RunSubState)
  * REQUIRES: the state is below 5; the game reads past the table for others. */
 int PocketsSwap_RunState(PocketsSwap *self)
 {
-    static const MemberPointer *const states[POCKETS_SWAP_STATES] = {
+    static const MemberPointer *const states[POCKETS_SWAP_STATE_COUNT] = {
         &data_ov107_0229e390, &data_ov107_0229e2b8, &data_ov107_0229e398, &data_ov107_0229e3a8, &data_ov107_0229e3a0,
     };
-    MemberTable_InitOnce(&data_ov107_0229e428, data_ov107_0229e44c, states, POCKETS_SWAP_STATES);
+    MemberTable_InitOnce(&data_ov107_0229e428, data_ov107_0229e44c, states, POCKETS_SWAP_STATE_COUNT);
     PocketsSwap_BeginFrame(self);
     MemberPointer_CallVoid(&data_ov107_0229e44c[self->base.state], self);
     PocketsSwap_EndFrame(self);

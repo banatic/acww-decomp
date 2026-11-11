@@ -95,10 +95,10 @@ extern const char data_ov003_0223839c[];
 
 /* The talk machine's tables (member_pointer.h): their guards, the tables and their constants. */
 extern u32 data_ov003_0223c61c;
-extern MemberPointer data_ov003_0223c63c[SNOWMAN_TALK_STATES];
+extern MemberPointer data_ov003_0223c63c[SNOWMAN_TALK_STATE_COUNT];
 extern const MemberPointer data_ov003_022381a8, data_ov003_02238168, data_ov003_022381f0;
 extern u32 data_ov003_0223c620;
-extern MemberPointer data_ov003_0223c624[SNOWMAN_TALK_STATES];
+extern MemberPointer data_ov003_0223c624[SNOWMAN_TALK_STATE_COUNT];
 extern const MemberPointer data_ov003_02238198, data_ov003_022381e8, data_ov003_02238180;
 
 extern fx32 FX_Div(fx32 numerator, fx32 denominator);
@@ -198,13 +198,13 @@ CLEAN_AS(func_ov003_02219f84, SnowmanTalk_EnterIdle)
  * REQUIRES: the state is not negative (SnowmanTalk_SetState only sets 0 to 2). */
 void SnowmanTalk_Update(Snowman *snowman)
 {
-    static const MemberPointer *const updates[SNOWMAN_TALK_STATES] = {
+    static const MemberPointer *const updates[SNOWMAN_TALK_STATE_COUNT] = {
         &data_ov003_022381a8, /* SnowmanTalk_UpdateIdle */
         &data_ov003_02238168, /* SnowmanTalk_UpdateOpen */
         &data_ov003_022381f0, /* SnowmanTalk_UpdateEnd */
     };
-    MemberTable_InitOnce(&data_ov003_0223c61c, data_ov003_0223c63c, updates, SNOWMAN_TALK_STATES);
-    if (snowman->talk_state < SNOWMAN_TALK_STATES) {
+    MemberTable_InitOnce(&data_ov003_0223c61c, data_ov003_0223c63c, updates, SNOWMAN_TALK_STATE_COUNT);
+    if (snowman->talk_state < SNOWMAN_TALK_STATE_COUNT) {
         MemberPointer_CallVoid(&data_ov003_0223c63c[snowman->talk_state], snowman);
     }
 }
@@ -215,13 +215,13 @@ CLEAN_AS(_ZN18Obj_ov003_022382ac19func_ov003_02219f88Ev, SnowmanTalk_Update)
  * REQUIRES: `state` is not negative. */
 int SnowmanTalk_SetState(Snowman *snowman, int state)
 {
-    static const MemberPointer *const entries[SNOWMAN_TALK_STATES] = {
+    static const MemberPointer *const entries[SNOWMAN_TALK_STATE_COUNT] = {
         &data_ov003_02238198, /* SnowmanTalk_EnterIdle */
         &data_ov003_022381e8, /* SnowmanTalk_EnterOpen */
         &data_ov003_02238180, /* SnowmanTalk_EnterEnd */
     };
-    MemberTable_InitOnce(&data_ov003_0223c620, data_ov003_0223c624, entries, SNOWMAN_TALK_STATES);
-    if (state < SNOWMAN_TALK_STATES && MemberPointer_CallInt(&data_ov003_0223c624[state], snowman) != 0) {
+    MemberTable_InitOnce(&data_ov003_0223c620, data_ov003_0223c624, entries, SNOWMAN_TALK_STATE_COUNT);
+    if (state < SNOWMAN_TALK_STATE_COUNT && MemberPointer_CallInt(&data_ov003_0223c624[state], snowman) != 0) {
         snowman->talk_state = state;
         return 1;
     }
@@ -268,12 +268,12 @@ CLEAN_AS(func_ov003_0221a0d4, SnowmanTalk_CanTalkTo)
 /* The tables of the first machine (member_pointer.h): their guards, the tables and their
  * constants. */
 extern u32 data_ov003_0223c614;
-extern MemberPointer data_ov003_0223c6c4[SNOWMAN_STATES];
+extern MemberPointer data_ov003_0223c6c4[SNOWMAN_STATE_COUNT];
 extern const MemberPointer data_ov003_02238218, data_ov003_02238210, data_ov003_022381a0, data_ov003_02238200,
     data_ov003_022381f8, data_ov003_02238170, data_ov003_02238178, data_ov003_022381e0, data_ov003_022381d8,
     data_ov003_022381d0, data_ov003_022381b8, data_ov003_022381c8, data_ov003_02238220, data_ov003_022381b0;
 extern u32 data_ov003_0223c618;
-extern MemberPointer data_ov003_0223c654[SNOWMAN_STATES];
+extern MemberPointer data_ov003_0223c654[SNOWMAN_STATE_COUNT];
 extern const MemberPointer data_ov003_022381c0, data_ov003_02238228, data_ov003_02238190, data_ov003_02238188,
     data_ov003_02238238, data_ov003_02238270, data_ov003_02238268, data_ov003_02238260, data_ov003_02238258,
     data_ov003_02238250, data_ov003_02238248, data_ov003_02238240, data_ov003_02238208, data_ov003_02238230;
@@ -428,7 +428,7 @@ CLEAN_AS(func_ov003_0221a228, Snowman_EnterBody)
  * table. REQUIRES: the state is not negative (Snowman_SetState only sets 0 to 13). */
 void Snowman_UpdateState(Snowman *snowman)
 {
-    static const MemberPointer *const updates[SNOWMAN_STATES] = {
+    static const MemberPointer *const updates[SNOWMAN_STATE_COUNT] = {
         &data_ov003_02238218, /* func_ov068_0226f854 */
         &data_ov003_02238210, /* func_ov068_0226f648 */
         &data_ov003_022381a0, /* func_ov068_0226f504 */
@@ -444,8 +444,8 @@ void Snowman_UpdateState(Snowman *snowman)
         &data_ov003_02238220, /* func_ov068_0226eca8 */
         &data_ov003_022381b0, /* func_ov068_0226ebc4 */
     };
-    MemberTable_InitOnce(&data_ov003_0223c614, data_ov003_0223c6c4, updates, SNOWMAN_STATES);
-    if (snowman->scene_state < SNOWMAN_STATES) {
+    MemberTable_InitOnce(&data_ov003_0223c614, data_ov003_0223c6c4, updates, SNOWMAN_STATE_COUNT);
+    if (snowman->scene_state < SNOWMAN_STATE_COUNT) {
         MemberPointer_CallVoid(&data_ov003_0223c6c4[snowman->scene_state], snowman);
     }
 }
@@ -456,7 +456,7 @@ CLEAN_AS(_ZN18Obj_ov003_022382ac19func_ov003_0221a244Ev, Snowman_UpdateState)
  * REQUIRES: `state` is not negative. */
 int Snowman_SetState(Snowman *snowman, int state)
 {
-    static const MemberPointer *const entries[SNOWMAN_STATES] = {
+    static const MemberPointer *const entries[SNOWMAN_STATE_COUNT] = {
         &data_ov003_022381c0, /* func_ov068_0226fc2c */
         &data_ov003_02238228, /* func_ov068_0226f730 */
         &data_ov003_02238190, /* func_ov068_0226f5cc */
@@ -472,8 +472,8 @@ int Snowman_SetState(Snowman *snowman, int state)
         &data_ov003_02238208, /* func_ov068_0226ed38 */
         &data_ov003_02238230, /* func_ov068_0226ec54 */
     };
-    MemberTable_InitOnce(&data_ov003_0223c618, data_ov003_0223c654, entries, SNOWMAN_STATES);
-    if (state < SNOWMAN_STATES && MemberPointer_CallInt(&data_ov003_0223c654[state], snowman) != 0) {
+    MemberTable_InitOnce(&data_ov003_0223c618, data_ov003_0223c654, entries, SNOWMAN_STATE_COUNT);
+    if (state < SNOWMAN_STATE_COUNT && MemberPointer_CallInt(&data_ov003_0223c654[state], snowman) != 0) {
         snowman->scene_state = state;
         return 1;
     }

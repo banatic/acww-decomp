@@ -36,7 +36,7 @@ enum PlayerPickState {
     PLAYER_PICK_TURN = 4,    /* 5 frames */
     PLAYER_PICK_ASK = 5,     /* activity job 3 asked for, until it is idle */
     PLAYER_PICK_LEAVE = 6,   /* the player walks off */
-    PLAYER_PICK_STATES = 7,
+    PLAYER_PICK_STATE_COUNT = 7,
 };
 
 typedef struct PlayerPick {

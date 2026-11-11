@@ -70,8 +70,8 @@ extern const u8 data_ov103_0229e2e0[];
  * constants (the symbol table also names the sub states' table's later part, at 0x0229e410). */
 extern u32 data_ov103_0229e340; /* the states' guard */
 extern u32 data_ov103_0229e344; /* the sub states' guard */
-extern MemberPointer data_ov103_0229e348[CARRIED_LETTERS_STATES];
-extern MemberPointer data_ov103_0229e390[CARRIED_LETTERS_SUB_STATES];
+extern MemberPointer data_ov103_0229e348[CARRIED_LETTERS_STATE_COUNT];
+extern MemberPointer data_ov103_0229e390[CARRIED_LETTERS_SUB_STATE_COUNT];
 extern const MemberPointer data_ov103_0229e1c0, data_ov103_0229e1c8, data_ov103_0229e1d0, data_ov103_0229e1e0,
     data_ov103_0229e1e8, data_ov103_0229e1f0, data_ov103_0229e1f8, data_ov103_0229e200, data_ov103_0229e208,
     data_ov103_0229e210, data_ov103_0229e218, data_ov103_0229e220, data_ov103_0229e228, data_ov103_0229e230,
@@ -220,7 +220,7 @@ CLEAN_AS(func_ov103_0229c30c, CarriedLetters_PressLabelButton)
 void CarriedLetters_RunActionRead(CarriedLetters *self)
 {
     MenuScene_SetState(carried_scene(self), CARRIED_LETTERS_STATE_START_WIPE_OUT);
-    MenuScene_SetPhase(carried_scene(self), CARRIED_LETTERS_PHASE_STATES);
+    MenuScene_SetPhase(carried_scene(self), CARRIED_LETTERS_PHASE_STATE_COUNT);
     CarriedLetters_SetFlags(self, CARRIED_LETTERS_FLAG_READ);
 }
 CLEAN_AS(func_ov103_0229c32c, CarriedLetters_RunActionRead)
@@ -909,7 +909,7 @@ void CarriedLetters_FollowLabelPress(CarriedLetters *self)
     } else {
         CarriedLetters_HideCursorSprite(self);
         MenuScene_SetState(carried_scene(self), CARRIED_LETTERS_STATE_START_LETTER_WIPE_OUT);
-        MenuScene_SetPhase(carried_scene(self), CARRIED_LETTERS_PHASE_STATES);
+        MenuScene_SetPhase(carried_scene(self), CARRIED_LETTERS_PHASE_STATE_COUNT);
     }
 }
 CLEAN_AS(func_ov103_0229d018, CarriedLetters_FollowLabelPress)
@@ -938,7 +938,7 @@ CLEAN_AS(func_ov103_0229d0b8, CarriedLetters_RunActionWhenIdle)
  * asked to close and the cursor sprite (when shown) put back at the cursor; sub state 0x16. */
 void CarriedLetters_CloseChoice(CarriedLetters *self)
 {
-    if (PagedChoice_CountDown(carried_choice(self)) != 0) {
+    if (PagedChoice_Tick(carried_choice(self)) != 0) {
         PagedChoice_RequestClose(carried_choice(self), 0);
         if (CellLayerSprite_AnimNumber(carried_cursor_cells(self)) != 0) {
             CarriedLetters_PlaceCursorSprite(self);
@@ -1209,7 +1209,7 @@ void CarriedLetters_BrowseByKeys(CarriedLetters *self)
     }
     if (pressed & CARRIED_LETTERS_PAD_Y) {
         self->base.state = CARRIED_LETTERS_STATE_START_WIPE_OUT;
-        MenuScene_SetPhase(carried_scene(self), CARRIED_LETTERS_PHASE_STATES);
+        MenuScene_SetPhase(carried_scene(self), CARRIED_LETTERS_PHASE_STATE_COUNT);
         Popup_Hide(&self->popup, 1);
         CarriedLetters_HideCursorSprite(self);
         CarriedLetters_ClearFlags(self, CARRIED_LETTERS_FLAG_READ);
@@ -1607,14 +1607,14 @@ CLEAN_AS(_ZN18Obj_ov103_0229e2e019func_ov103_0229dd44Ev, CarriedLetters_RunInter
  * REQUIRES: the sub state is below 0x19; the game reads past the table for others. */
 void CarriedLetters_RunSubState(CarriedLetters *self)
 {
-    static const MemberPointer *const sub_states[CARRIED_LETTERS_SUB_STATES] = {
+    static const MemberPointer *const sub_states[CARRIED_LETTERS_SUB_STATE_COUNT] = {
         &data_ov103_0229e280, &data_ov103_0229e278, &data_ov103_0229e270, &data_ov103_0229e268, &data_ov103_0229e260,
         &data_ov103_0229e258, &data_ov103_0229e250, &data_ov103_0229e248, &data_ov103_0229e240, &data_ov103_0229e238,
         &data_ov103_0229e230, &data_ov103_0229e1e8, &data_ov103_0229e228, &data_ov103_0229e290, &data_ov103_0229e210,
         &data_ov103_0229e208, &data_ov103_0229e200, &data_ov103_0229e1f8, &data_ov103_0229e1f0, &data_ov103_0229e1e0,
         &data_ov103_0229e288, &data_ov103_0229e218, &data_ov103_0229e1d0, &data_ov103_0229e1c8, &data_ov103_0229e2a0,
     };
-    MemberTable_InitOnce(&data_ov103_0229e344, data_ov103_0229e390, sub_states, CARRIED_LETTERS_SUB_STATES);
+    MemberTable_InitOnce(&data_ov103_0229e344, data_ov103_0229e390, sub_states, CARRIED_LETTERS_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov103_0229e390[self->base.sub_state], self);
 }
 CLEAN_AS(_ZN18Obj_ov103_0229e2e019func_ov103_0229dd60Ev, CarriedLetters_RunSubState)
@@ -1625,11 +1625,11 @@ CLEAN_AS(_ZN18Obj_ov103_0229e2e019func_ov103_0229dd60Ev, CarriedLetters_RunSubSt
  * REQUIRES: the state is below 9; the game reads past the table for others. */
 int CarriedLetters_RunState(CarriedLetters *self)
 {
-    static const MemberPointer *const states[CARRIED_LETTERS_STATES] = {
+    static const MemberPointer *const states[CARRIED_LETTERS_STATE_COUNT] = {
         &data_ov103_0229e1c0, &data_ov103_0229e2d0, &data_ov103_0229e2c8, &data_ov103_0229e2c0, &data_ov103_0229e2b8,
         &data_ov103_0229e2b0, &data_ov103_0229e2a8, &data_ov103_0229e220, &data_ov103_0229e298,
     };
-    MemberTable_InitOnce(&data_ov103_0229e340, data_ov103_0229e348, states, CARRIED_LETTERS_STATES);
+    MemberTable_InitOnce(&data_ov103_0229e340, data_ov103_0229e348, states, CARRIED_LETTERS_STATE_COUNT);
     CarriedLetters_BeginFrame(self);
     MemberPointer_CallVoid(&data_ov103_0229e348[self->base.state], self);
     CarriedLetters_EndFrame(self);

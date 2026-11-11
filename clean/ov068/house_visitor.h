@@ -53,7 +53,7 @@ enum HouseVisitorState {
     HOUSE_VISITOR_TURN = 8,
     HOUSE_VISITOR_TALK = 9,
     HOUSE_VISITOR_LEAVE = 10,
-    HOUSE_VISITOR_STATES = 11
+    HOUSE_VISITOR_STATE_COUNT = 11
 };
 
 /* How far the visit went (the low five bits of the visit's object). */

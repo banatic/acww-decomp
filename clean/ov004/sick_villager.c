@@ -131,9 +131,9 @@ extern const u8 data_ov004_02254148[];
 /* The tables of its states' update and entry functions (filled once from the constants below,
  * bit 0 of the guards saying they were). */
 extern u32 data_ov004_02257f8c;
-extern MemberPointer data_ov004_0225802c[SICK_VILLAGER_STATES];
+extern MemberPointer data_ov004_0225802c[SICK_VILLAGER_STATE_COUNT];
 extern u32 data_ov004_02257f90;
-extern MemberPointer data_ov004_02257fec[SICK_VILLAGER_STATES];
+extern MemberPointer data_ov004_02257fec[SICK_VILLAGER_STATE_COUNT];
 extern const MemberPointer data_ov004_022540b0, data_ov004_02254100, data_ov004_022540d8, data_ov004_02254108,
     data_ov004_02254120, data_ov004_022540a0, data_ov004_022540b8, data_ov004_022540c8;
 extern const MemberPointer data_ov004_022540f8, data_ov004_022540f0, data_ov004_022540d0, data_ov004_022540e0,
@@ -505,7 +505,7 @@ CLEAN_AS(func_ov004_02222098, SickVillager_EnterWander)
  * table (filled once). */
 void SickVillager_Update(SickVillager *villager)
 {
-    static const MemberPointer *const updates[SICK_VILLAGER_STATES] = {
+    static const MemberPointer *const updates[SICK_VILLAGER_STATE_COUNT] = {
         &data_ov004_022540b0, /* SickVillager_UpdateWander */
         &data_ov004_02254100, /* SickVillager_UpdateAct */
         &data_ov004_022540d8, /* SickVillager_UpdateHalt */
@@ -515,9 +515,9 @@ void SickVillager_Update(SickVillager *villager)
         &data_ov004_022540b8, /* SickVillager_UpdatePockets */
         &data_ov004_022540c8, /* SickVillager_UpdateBack */
     };
-    MemberTable_InitOnce(&data_ov004_02257f8c, data_ov004_0225802c, updates, SICK_VILLAGER_STATES);
+    MemberTable_InitOnce(&data_ov004_02257f8c, data_ov004_0225802c, updates, SICK_VILLAGER_STATE_COUNT);
     /* REQUIRES: state >= 0; the ROM's signed test lets a negative one index before the table */
-    if (villager->state >= 0 && villager->state < SICK_VILLAGER_STATES) {
+    if (villager->state >= 0 && villager->state < SICK_VILLAGER_STATE_COUNT) {
         MemberPointer_CallVoid(&data_ov004_0225802c[villager->state], villager);
     }
 }
@@ -527,7 +527,7 @@ CLEAN_AS(_ZN18Obj_ov004_022541d819func_ov004_022220b4Ev, SickVillager_Update)
  * agrees; whether it did. States 8 and above do not exist. */
 int SickVillager_SetState(SickVillager *villager, int state)
 {
-    static const MemberPointer *const entries[SICK_VILLAGER_STATES] = {
+    static const MemberPointer *const entries[SICK_VILLAGER_STATE_COUNT] = {
         &data_ov004_022540f8, /* SickVillager_EnterWander */
         &data_ov004_022540f0, /* SickVillager_EnterAct */
         &data_ov004_022540d0, /* SickVillager_EnterHalt */
@@ -537,10 +537,10 @@ int SickVillager_SetState(SickVillager *villager, int state)
         &data_ov004_02254118, /* SickVillager_EnterPockets */
         &data_ov004_022540c0, /* SickVillager_EnterBack */
     };
-    MemberTable_InitOnce(&data_ov004_02257f90, data_ov004_02257fec, entries, SICK_VILLAGER_STATES);
+    MemberTable_InitOnce(&data_ov004_02257f90, data_ov004_02257fec, entries, SICK_VILLAGER_STATE_COUNT);
     /* REQUIRES: state >= 0 (the game passes 0 to 7); the ROM's signed test lets a negative one
      * index before the table */
-    if (state >= 0 && state < SICK_VILLAGER_STATES && MemberPointer_CallInt(&data_ov004_02257fec[state], villager) != 0) {
+    if (state >= 0 && state < SICK_VILLAGER_STATE_COUNT && MemberPointer_CallInt(&data_ov004_02257fec[state], villager) != 0) {
         villager->state = state;
         return 1;
     }

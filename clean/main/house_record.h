@@ -24,10 +24,10 @@
 #include "acre_map.h" /* AcreMapSource */
 #include "types.h"
 
-#define HOUSE_RECORD_ROOMS 5
-#define HOUSE_RECORD_SIZES 7 /* sizes 0-6 */
+#define HOUSE_RECORD_ROOM_COUNT 5
+#define HOUSE_RECORD_SIZE_COUNT 7 /* sizes 0-6 */
 #define HOUSE_RECORD_LAST_SIZE 6
-#define HOUSE_RECORD_SONGS 70 /* the song items 0x1323-0x1368 */
+#define HOUSE_RECORD_SONG_COUNT 70 /* the song items 0x1323-0x1368 */
 #define HOUSE_RECORD_SONG_BYTES 9
 #define HOUSE_RECORD_SONG_FIRST 0x1323
 #define HOUSE_RECORD_SONG_LAST 0x1368
@@ -62,9 +62,9 @@ typedef struct HouseRoom {
 #define HOUSE_ROOM_CARPET_FLAG 0x02
 
 typedef struct HouseRecord {
-    HouseRoom rooms[HOUSE_RECORD_ROOMS]; /* 0x0000 */
-    int loan;                            /* 0x1590 */
-    u8 songs[HOUSE_RECORD_SONG_BYTES];   /* 0x1594: data_021ed268 */
+    HouseRoom rooms[HOUSE_RECORD_ROOM_COUNT]; /* 0x0000 */
+    int loan;                                 /* 0x1590 */
+    u8 songs[HOUSE_RECORD_SONG_BYTES];        /* 0x1594: data_021ed268 */
     u8 pad_159d[3];
     union {
         u32 word;

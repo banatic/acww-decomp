@@ -68,8 +68,8 @@ extern PadState data_021fbe40;
  * constants (the symbol table also names the sub states' table's later part, at 0x0229eee0). */
 extern u32 data_ov110_0229ee20; /* the states' guard */
 extern u32 data_ov110_0229ee24; /* the sub states' guard */
-extern MemberPointer data_ov110_0229ee28[PUBLIC_BOX_STATES];
-extern MemberPointer data_ov110_0229ee60[PUBLIC_BOX_SUB_STATES];
+extern MemberPointer data_ov110_0229ee28[PUBLIC_BOX_STATE_COUNT];
+extern MemberPointer data_ov110_0229ee60[PUBLIC_BOX_SUB_STATE_COUNT];
 extern const MemberPointer data_ov110_0229ebc0, data_ov110_0229ebc8, data_ov110_0229ebd8, data_ov110_0229ebe0,
     data_ov110_0229ebe8, data_ov110_0229ebf0, data_ov110_0229ebf8, data_ov110_0229ec00, data_ov110_0229ec08,
     data_ov110_0229ec10, data_ov110_0229ec18, data_ov110_0229ec20, data_ov110_0229ec28, data_ov110_0229ec30,
@@ -166,7 +166,7 @@ void PublicBox_WaitClosed(PublicBox *self)
         return;
     }
     self->base.state = PUBLIC_BOX_STATE_START_WIPE_OUT;
-    MenuScene_SetPhase(pbox_scene(self), PUBLIC_BOX_PHASE_STATES);
+    MenuScene_SetPhase(pbox_scene(self), PUBLIC_BOX_PHASE_STATE_COUNT);
     Popup_Hide(&self->popup, 0);
     PublicBox_HideCursorSprite(self);
 }
@@ -196,7 +196,7 @@ CLEAN_AS(func_ov110_0229d928, PublicBox_RunActionWhenIdle)
  * cursor sprite put back at the cursor unless hidden, and sub state 0x13. */
 void PublicBox_CloseChoice(PublicBox *self)
 {
-    if (PagedChoice_CountDown(pbox_choice(self))) {
+    if (PagedChoice_Tick(pbox_choice(self))) {
         PagedChoice_RequestClose(pbox_choice(self), 0);
         if (CellLayerSprite_AnimNumber(pbox_cursor_cells(self)) != 0) {
             PublicBox_PlaceCursorSprite(self);
@@ -943,14 +943,14 @@ CLEAN_AS(func_ov110_0229e7ac, PublicBox_CloseAsked)
  * REQUIRES: the sub state is below 0x16; the game reads past the table for others. */
 void PublicBox_RunSubState(PublicBox *self)
 {
-    static const MemberPointer *const sub_states[PUBLIC_BOX_SUB_STATES] = {
+    static const MemberPointer *const sub_states[PUBLIC_BOX_SUB_STATE_COUNT] = {
         &data_ov110_0229ec68, &data_ov110_0229ec60, &data_ov110_0229ec58, &data_ov110_0229ec50, &data_ov110_0229ec48,
         &data_ov110_0229ec40, &data_ov110_0229ec38, &data_ov110_0229ec30, &data_ov110_0229ebe8, &data_ov110_0229ec28,
         &data_ov110_0229ec18, &data_ov110_0229ec10, &data_ov110_0229ec78, &data_ov110_0229ec00, &data_ov110_0229ebf8,
         &data_ov110_0229ebf0, &data_ov110_0229ebe0, &data_ov110_0229ec70, &data_ov110_0229ebd8, &data_ov110_0229ec08,
         &data_ov110_0229ebc8, &data_ov110_0229eca0,
     };
-    MemberTable_InitOnce(&data_ov110_0229ee24, data_ov110_0229ee60, sub_states, PUBLIC_BOX_SUB_STATES);
+    MemberTable_InitOnce(&data_ov110_0229ee24, data_ov110_0229ee60, sub_states, PUBLIC_BOX_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov110_0229ee60[self->base.sub_state], self);
 }
 CLEAN_AS(_ZN18Obj_ov110_0229ecb819func_ov110_0229e7ccEv, PublicBox_RunSubState)
@@ -961,11 +961,11 @@ CLEAN_AS(_ZN18Obj_ov110_0229ecb819func_ov110_0229e7ccEv, PublicBox_RunSubState)
  * REQUIRES: the state is below 7; the game reads past the table for others. */
 int PublicBox_RunState(PublicBox *self)
 {
-    static const MemberPointer *const states[PUBLIC_BOX_STATES] = {
+    static const MemberPointer *const states[PUBLIC_BOX_STATE_COUNT] = {
         &data_ov110_0229ebc0, &data_ov110_0229eca8, &data_ov110_0229ec20, &data_ov110_0229ec98,
         &data_ov110_0229ec90, &data_ov110_0229ec88, &data_ov110_0229ec80,
     };
-    MemberTable_InitOnce(&data_ov110_0229ee20, data_ov110_0229ee28, states, PUBLIC_BOX_STATES);
+    MemberTable_InitOnce(&data_ov110_0229ee20, data_ov110_0229ee28, states, PUBLIC_BOX_STATE_COUNT);
     PublicBox_BeginFrame(self);
     MemberPointer_CallVoid(&data_ov110_0229ee28[self->base.state], self);
     PublicBox_EndFrame(self);

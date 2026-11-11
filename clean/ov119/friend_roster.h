@@ -105,7 +105,7 @@ enum FriendRosterSubState {
     FRIEND_ROSTER_SUB_FADE_IN = 0x0f,      /* FriendRoster_FadeIn */
     FRIEND_ROSTER_SUB_RETRY_SET = 0x10,    /* FriendRoster_RetrySetFriend */
     FRIEND_ROSTER_SUB_RETRY_DELETE = 0x11, /* FriendRoster_RetryDeleteFriend */
-    FRIEND_ROSTER_SUB_STATES = 0x12
+    FRIEND_ROSTER_SUB_STATE_COUNT = 0x12
 };
 
 /* The states (MenuScene.state), run by FriendRoster_RunState. */
@@ -115,7 +115,7 @@ enum FriendRosterState {
     FRIEND_ROSTER_STATE_WIPING_IN = 2,  /* FriendRoster_WipeIn */
     FRIEND_ROSTER_STATE_WIPE_OUT = 3,   /* FriendRoster_StartWipeOut; FriendRoster_SelectTab sets it */
     FRIEND_ROSTER_STATE_WIPING_OUT = 4, /* FriendRoster_WipeOut */
-    FRIEND_ROSTER_STATES = 5
+    FRIEND_ROSTER_STATE_COUNT = 5
 };
 
 /* The phases the scene sets (MenuScene.phase), as ov090's menu_tabs.h maps them: 0 the base's
@@ -123,7 +123,7 @@ enum FriendRosterState {
  * 3 and 4 nothing (0x54, 0x58), 5 FriendRoster_End (0x5c). */
 enum FriendRosterPhase {
     FRIEND_ROSTER_PHASE_WAIT = 0,
-    FRIEND_ROSTER_PHASE_STATES = 1,
+    FRIEND_ROSTER_PHASE_STATE_COUNT = 1,
     FRIEND_ROSTER_PHASE_INTERACTIVE = 2,
     FRIEND_ROSTER_PHASE_END = 5
 };

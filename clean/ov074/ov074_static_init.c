@@ -32,7 +32,7 @@ extern MysteryCatInitColor data_ov074_02279d44, data_ov074_02279d54, data_ov074_
 extern const MemberPointer __ptmf_null;
 extern const MemberPointer data_ov074_02279b98, data_ov074_02279b58, data_ov074_02279b60, data_ov074_02279b68,
     data_ov074_02279b70, data_ov074_02279b78, data_ov074_02279b80, data_ov074_02279b88, data_ov074_02279b48;
-extern MysteryCatStep data_ov074_02279d9c[MYSTERY_CAT_STATES];
+extern MysteryCatStep data_ov074_02279d9c[MYSTERY_CAT_STATE_COUNT];
 /* The points beside her way, and their records. */
 extern Vec3 data_ov074_02279d84[2];
 extern MysteryCatInitRecord data_ov074_02279d5c, data_ov074_02279d68;
@@ -61,7 +61,7 @@ static void mcat_init_point(Vec3 *point, fx32 x, MysteryCatInitRecord *record)
  * has no entry); the points (0.5, 0, 1.0) and (-0.5, 0, 1.0), each registered. */
 void MysteryCatInit_Tables(void)
 {
-    static const MemberPointer *const states[2 * MYSTERY_CAT_STATES] = {
+    static const MemberPointer *const states[2 * MYSTERY_CAT_STATE_COUNT] = {
         &data_ov074_02279b98, &data_ov074_02279b58, /* 0: talk end */
         &__ptmf_null,         &data_ov074_02279b60, /* 1: talked */
         &data_ov074_02279b68, &data_ov074_02279b70, /* 2: wander */
@@ -75,7 +75,7 @@ void MysteryCatInit_Tables(void)
     mcat_init_color(&data_ov074_02279d58, 20, 31, 20, 31);
     mcat_init_color(&data_ov074_02279d48, 20, 31, 31, 31);
     mcat_init_color(&data_ov074_02279d50, 20, 24, 24, 31);
-    for (int i = 0; i < MYSTERY_CAT_STATES; i++) {
+    for (int i = 0; i < MYSTERY_CAT_STATE_COUNT; i++) {
         data_ov074_02279d9c[i].enter = *states[2 * i];
         data_ov074_02279d9c[i].update = *states[2 * i + 1];
     }

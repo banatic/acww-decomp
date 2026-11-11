@@ -462,7 +462,7 @@ void InsectKind_Init27(MuseumInsect *insect)
 }
 CLEAN_AS(func_ov004_02240988, InsectKind_Init27)
 
-/* func_ov004_022409cc (kind 29's initialiser): the same as kind 27's. */
+/* func_ov004_022409cc (kind 29's initializer): the same as kind 27's. */
 void InsectKind_Init29(MuseumInsect *insect)
 {
     InsectKind_StartFacing(insect, 0x3c, 0x46, 6, 1);

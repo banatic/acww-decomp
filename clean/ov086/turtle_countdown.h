@@ -50,7 +50,7 @@ enum TurtleCountdownState {
     TURTLE_COUNTDOWN_STAND = 0,
     TURTLE_COUNTDOWN_TALKING = 1,
     TURTLE_COUNTDOWN_TALKED = 2,
-    TURTLE_COUNTDOWN_STATES = 3
+    TURTLE_COUNTDOWN_STATE_COUNT = 3
 };
 
 /* A state's functions in data_ov086_02279480. */

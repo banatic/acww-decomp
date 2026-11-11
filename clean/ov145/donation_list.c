@@ -106,7 +106,7 @@ extern void MIi_CpuClear16(u16 value, void *destination, u32 size);
 #define DONATION_SCROLL_STEP 4
 
 /* The row texts: the item's name in a box on layer 4 at 0x184 + 0x1a * place, 0xd wide; the
- * giver's at 0xf4 + 0x10 * place, 8 wide; colours 15 and 7. Message 0xcc of the menu's when
+ * giver's at 0xf4 + 0x10 * place, 8 wide; colors 15 and 7. Message 0xcc of the menu's when
  * the giver has no name to show. */
 #define DONATION_TEXT_LAYER 4
 #define DONATION_NAME_BASE 0x184

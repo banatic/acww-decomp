@@ -37,7 +37,7 @@ extern const MemberPointer data_ov072_022799c0, data_ov072_022799d0, data_ov072_
  * in order. */
 void GullInit_Tables(void)
 {
-    static const MemberPointer *const states[2 * GULL_STATES] = {
+    static const MemberPointer *const states[2 * GULL_STATE_COUNT] = {
         &data_ov072_022799d0, &data_ov072_022799d8, /* GULL_UNMET: Gull_EnterUnmet, Gull_UpdateUnmet */
         &data_ov072_022799e0, &data_ov072_022799e8, /* GULL_IDLE */
         &data_ov072_022799f0, &data_ov072_022799f8, /* GULL_TALK */
@@ -52,7 +52,7 @@ void GullInit_Tables(void)
     gull_init_color(&data_ov072_02279bc8, 20, 24, 24, 31);
     data_ov072_02279a24[GULL_TALK_STEP_NONE].run = __ptmf_null;
     data_ov072_02279a24[GULL_TALK_STEP_TURN_TO_PLAYER].run = data_ov072_022799c0;
-    for (int i = 0; i < GULL_STATES; i++) {
+    for (int i = 0; i < GULL_STATE_COUNT; i++) {
         data_ov072_02279bd8[i].enter = *states[2 * i];
         data_ov072_02279bd8[i].run = *states[2 * i + 1];
     }

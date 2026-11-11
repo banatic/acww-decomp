@@ -74,7 +74,7 @@ enum InsurerState {
     INSURER_WANDER = 3,
     INSURER_WAIT = 4,
     INSURER_TALKING = 5,
-    INSURER_STATES = 6
+    INSURER_STATE_COUNT = 6
 };
 
 /* The steps of the chase (Insurer.chase_step). */
@@ -110,7 +110,7 @@ int Insurer_UpdateTalking(void);
 int Insurer_EnterTalking(char *insurer);
 int Insurer_UpdateTalkEnds(Insurer *insurer);
 int Insurer_EnterTalkEnds(void);
-int Insurer_CountDown(int unused, int *counter);
+int Insurer_Tick(int unused, int *counter);
 int Insurer_InView(Insurer *insurer, int wide);
 int Insurer_InBox(int unused, const Vec3 *center, const Vec3 *point, int wide);
 void Insurer_SetState(Insurer *insurer, int state);

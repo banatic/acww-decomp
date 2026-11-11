@@ -53,7 +53,7 @@
 #define CAFE_GUEST_PLAY 2   /* talks while the music's show runs */
 #define CAFE_GUEST_SEATED 3 /* (after event 1) waits until the player is in state 0x28 */
 #define CAFE_GUEST_DONE 4   /* nothing */
-#define CAFE_GUEST_STATES 5
+#define CAFE_GUEST_STATE_COUNT 5
 
 /* Its scene's phases (CafeGuestScene.phase): the messages its talk starts with for kind 7. */
 #define CAFE_GUEST_PHASE_ASK 0      /* by the hour and what was said today */
@@ -148,15 +148,15 @@ CafeGuestScene *CafeGuestScene_Delete(CafeGuestScene *scene);
 CafeGuestScene *CafeGuestScene_Destruct(CafeGuestScene *scene);
 CafeGuestScene *CafeGuestScene_Construct(CafeGuestScene *scene);
 int CafeGuest_UpdatePlay(CafeGuest *self);
-int CafeGuest_StartPlay(CafeGuest *self);
+int CafeGuest_EnterPlay(CafeGuest *self);
 int CafeGuest_UpdateSeated(CafeGuest *self);
-int CafeGuest_StartSeated(void);
+int CafeGuest_EnterSeated(void);
 int CafeGuest_UpdateDone(void);
-int CafeGuest_StartDone(void);
+int CafeGuest_EnterDone(void);
 int CafeGuest_UpdateTalk(CafeGuest *self);
-int CafeGuest_StartTalk(CafeGuest *self);
+int CafeGuest_EnterTalk(CafeGuest *self);
 int CafeGuest_UpdateWait(CafeGuest *self);
-int CafeGuest_StartWait(CafeGuest *self);
+int CafeGuest_EnterWait(CafeGuest *self);
 void CafeGuest_SetState(CafeGuest *self, int state);
 int CafeGuest_Update(CafeGuest *self);
 unsigned int CafeGuest_ModelName(CafeGuest *self);

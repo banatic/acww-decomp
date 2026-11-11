@@ -71,8 +71,8 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
  * 0x0229eee0). */
 extern u32 data_ov100_0229ee20; /* the states' guard */
 extern u32 data_ov100_0229ee24; /* the sub states' guard */
-extern MemberPointer data_ov100_0229ee28[POCKETS_BOX_STATES];
-extern MemberPointer data_ov100_0229ee60[POCKETS_BOX_SUB_STATES];
+extern MemberPointer data_ov100_0229ee28[POCKETS_BOX_STATE_COUNT];
+extern MemberPointer data_ov100_0229ee60[POCKETS_BOX_SUB_STATE_COUNT];
 extern const MemberPointer data_ov100_0229ebc0, data_ov100_0229ebc8, data_ov100_0229ebd8, data_ov100_0229ebe0,
     data_ov100_0229ebe8, data_ov100_0229ebf0, data_ov100_0229ebf8, data_ov100_0229ec00, data_ov100_0229ec08,
     data_ov100_0229ec10, data_ov100_0229ec18, data_ov100_0229ec20, data_ov100_0229ec28, data_ov100_0229ec30,
@@ -359,7 +359,7 @@ CLEAN_AS(func_ov100_0229d9a0, PocketsBox_WaitChoiceClosed)
  * QUIRK: that answer is an address, returned as an int. */
 int PocketsBox_CloseChoice(PocketsBox *self)
 {
-    int counted = PagedChoice_CountDown(pbs_choice(self));
+    int counted = PagedChoice_Tick(pbs_choice(self));
     if (counted == 0) {
         return counted;
     }
@@ -1082,14 +1082,14 @@ CLEAN_AS(_ZN18Obj_ov100_0229ecb819func_ov100_0229e7b0Ev, PocketsBox_RunInteracti
  * REQUIRES: the sub state is below 0x16; the game reads past the table for others. */
 void PocketsBox_RunSubState(PocketsBox *self)
 {
-    static const MemberPointer *const sub_states[POCKETS_BOX_SUB_STATES] = {
+    static const MemberPointer *const sub_states[POCKETS_BOX_SUB_STATE_COUNT] = {
         &data_ov100_0229ec68, &data_ov100_0229ec60, &data_ov100_0229ec58, &data_ov100_0229ec50, &data_ov100_0229ec48,
         &data_ov100_0229ec40, &data_ov100_0229ec38, &data_ov100_0229ec30, &data_ov100_0229ebe8, &data_ov100_0229ec28,
         &data_ov100_0229ec18, &data_ov100_0229ec10, &data_ov100_0229ec78, &data_ov100_0229ec00, &data_ov100_0229ebf8,
         &data_ov100_0229ebf0, &data_ov100_0229ebe0, &data_ov100_0229ec70, &data_ov100_0229ebd8, &data_ov100_0229ec08,
         &data_ov100_0229ebc8, &data_ov100_0229eca0,
     };
-    MemberTable_InitOnce(&data_ov100_0229ee24, data_ov100_0229ee60, sub_states, POCKETS_BOX_SUB_STATES);
+    MemberTable_InitOnce(&data_ov100_0229ee24, data_ov100_0229ee60, sub_states, POCKETS_BOX_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov100_0229ee60[self->base.sub_state], self);
 }
 CLEAN_AS(_ZN18Obj_ov100_0229ecb819func_ov100_0229e7ccEv, PocketsBox_RunSubState)
@@ -1100,11 +1100,11 @@ CLEAN_AS(_ZN18Obj_ov100_0229ecb819func_ov100_0229e7ccEv, PocketsBox_RunSubState)
  * REQUIRES: the state is below 7; the game reads past the table for others. */
 int PocketsBox_RunState(PocketsBox *self)
 {
-    static const MemberPointer *const states[POCKETS_BOX_STATES] = {
+    static const MemberPointer *const states[POCKETS_BOX_STATE_COUNT] = {
         &data_ov100_0229ebc0, &data_ov100_0229eca8, &data_ov100_0229ec20, &data_ov100_0229ec98,
         &data_ov100_0229ec90, &data_ov100_0229ec88, &data_ov100_0229ec80,
     };
-    MemberTable_InitOnce(&data_ov100_0229ee20, data_ov100_0229ee28, states, POCKETS_BOX_STATES);
+    MemberTable_InitOnce(&data_ov100_0229ee20, data_ov100_0229ee28, states, POCKETS_BOX_STATE_COUNT);
     PocketsBox_BeginFrame(self);
     MemberPointer_CallVoid(&data_ov100_0229ee28[self->base.state], self);
     PocketsBox_EndFrame(self);

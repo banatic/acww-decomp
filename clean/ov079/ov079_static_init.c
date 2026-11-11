@@ -54,7 +54,7 @@ extern WalrusInitRecord data_ov079_0227a1dc, data_ov079_0227a1e8;
  * registered. */
 void WalrusInit_Tables(void)
 {
-    static const MemberPointer *const states[2 * WALRUS_STATES] = {
+    static const MemberPointer *const states[2 * WALRUS_STATE_COUNT] = {
         &data_ov079_0227a010, &data_ov079_02279fe8, /* WALRUS_FINISH: Walrus_EnterFinish, Walrus_UpdateFinish */
         &__ptmf_null,         &data_ov079_02279ff0, /* WALRUS_DONE: no entry, Walrus_UpdateDone */
         &data_ov079_02279ff8, &data_ov079_0227a000, /* WALRUS_WANDER */
@@ -68,7 +68,7 @@ void WalrusInit_Tables(void)
     walrus_init_color(&data_ov079_0227a1d8, 20, 31, 20, 31);
     walrus_init_color(&data_ov079_0227a1c8, 20, 31, 31, 31);
     walrus_init_color(&data_ov079_0227a1d0, 20, 24, 24, 31);
-    for (int i = 0; i < WALRUS_STATES; i++) {
+    for (int i = 0; i < WALRUS_STATE_COUNT; i++) {
         data_ov079_0227a224[i].enter = *states[2 * i];
         data_ov079_0227a224[i].run = *states[2 * i + 1];
     }

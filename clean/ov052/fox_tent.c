@@ -149,7 +149,7 @@ extern const u8 data_020da088[];
 extern const char data_ov052_02261e5c[];
 extern const char data_ov052_02261e8c[];
 /* The functions of his states (filled at start-up by __sinit_ov052_02261c48). */
-extern FoxTentStep data_ov052_02262000[FOX_TENT_STATES];
+extern FoxTentStep data_ov052_02262000[FOX_TENT_STATE_COUNT];
 /* The word his motion requests carry. */
 extern u16 data_020c80f8;
 /* The buttons, and the pen: it came down this frame when both bytes are set. */

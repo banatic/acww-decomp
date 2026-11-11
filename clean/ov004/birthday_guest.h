@@ -39,7 +39,7 @@ enum BirthdayGuestState {
     BIRTHDAY_GUEST_HALT = 4,
     BIRTHDAY_GUEST_TURN = 5,
     BIRTHDAY_GUEST_TALK = 6,
-    BIRTHDAY_GUEST_STATES = 7
+    BIRTHDAY_GUEST_STATE_COUNT = 7
 };
 
 struct BirthdayGuest;

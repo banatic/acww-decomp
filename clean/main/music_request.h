@@ -9,7 +9,7 @@
 /* The priority of a cleared request, below every one asked for. */
 #define MUSIC_REQUEST_CLEARED_PRIORITY 0x25
 
-int MusicRequest_CountDown(MusicRequest *request);
+int MusicRequest_Tick(MusicRequest *request);
 void MusicRequest_Copy(MusicRequest *to, const MusicRequest *from);
 void MusicRequest_Clear(MusicRequest *request);
 void MusicRequest_Destruct(MusicRequest *request);

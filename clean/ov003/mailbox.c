@@ -66,11 +66,11 @@ static_assert(offsetof(MailboxAnimFile, frames) == 0x04, "anim file frames");
 
 /* The mode tables (member_pointer.h): their guards, the tables and their constants. */
 extern u32 data_ov003_0223c9dc;
-extern MemberPointer data_ov003_0223ca68[MAILBOX_MODES];
+extern MemberPointer data_ov003_0223ca68[MAILBOX_MODE_COUNT];
 extern const MemberPointer data_ov003_022393ec, data_ov003_02239414, data_ov003_02239424, data_ov003_022393ac,
     data_ov003_022393dc, data_ov003_022393f4, data_ov003_02239464;
 extern u32 data_ov003_0223c9d8;
-extern MemberPointer data_ov003_0223ca30[MAILBOX_MODES];
+extern MemberPointer data_ov003_0223ca30[MAILBOX_MODE_COUNT];
 extern const MemberPointer data_ov003_022393fc, data_ov003_0223940c, data_ov003_0223945c, data_ov003_02239454,
     data_ov003_022393c4, data_ov003_022393bc, data_ov003_022393b4;
 
@@ -264,7 +264,7 @@ CLEAN_AS(func_ov003_0221e1f4, Mailbox_EnterEmpty)
  * when the pattern is at its frame 18. */
 void Mailbox_RunMode(Mailbox *mailbox)
 {
-    static const MemberPointer *const runs[MAILBOX_MODES] = {
+    static const MemberPointer *const runs[MAILBOX_MODE_COUNT] = {
         &data_ov003_022393ec, /* Mailbox_RunEmpty */
         &data_ov003_02239414, /* Mailbox_RunArriving */
         &data_ov003_02239424, /* Mailbox_RunFull */
@@ -273,8 +273,8 @@ void Mailbox_RunMode(Mailbox *mailbox)
         &data_ov003_022393f4, /* Mailbox_RunClosing */
         &data_ov003_02239464, /* Mailbox_RunEmptying */
     };
-    MemberTable_InitOnce(&data_ov003_0223c9dc, data_ov003_0223ca68, runs, MAILBOX_MODES);
-    if (mailbox->mode < MAILBOX_MODES) {
+    MemberTable_InitOnce(&data_ov003_0223c9dc, data_ov003_0223ca68, runs, MAILBOX_MODE_COUNT);
+    if (mailbox->mode < MAILBOX_MODE_COUNT) {
         MemberPointer_CallVoid(&data_ov003_0223ca68[mailbox->mode], mailbox);
     }
     if (FrameControl_Passed((const FrameControl *) &mailbox->pattern, MAILBOX_PATTERN_SOUND_FRAME)) {
@@ -287,7 +287,7 @@ CLEAN_AS(func_ov003_0221e254, Mailbox_RunMode)
  * and main takes it as the town object's mode; whether it did. */
 int Mailbox_SetMode(Mailbox *mailbox, unsigned int mode)
 {
-    static const MemberPointer *const entries[MAILBOX_MODES] = {
+    static const MemberPointer *const entries[MAILBOX_MODE_COUNT] = {
         &data_ov003_022393fc, /* Mailbox_EnterEmpty */
         &data_ov003_0223940c, /* Mailbox_EnterArriving */
         &data_ov003_0223945c, /* Mailbox_EnterFull */
@@ -296,8 +296,8 @@ int Mailbox_SetMode(Mailbox *mailbox, unsigned int mode)
         &data_ov003_022393bc, /* Mailbox_EnterClosing */
         &data_ov003_022393b4, /* Mailbox_EnterEmptying */
     };
-    MemberTable_InitOnce(&data_ov003_0223c9d8, data_ov003_0223ca30, entries, MAILBOX_MODES);
-    if (mode >= MAILBOX_MODES) {
+    MemberTable_InitOnce(&data_ov003_0223c9d8, data_ov003_0223ca30, entries, MAILBOX_MODE_COUNT);
+    if (mode >= MAILBOX_MODE_COUNT) {
         return 0;
     }
     if (MemberPointer_CallInt(&data_ov003_0223ca30[mode], mailbox) == 0) {
@@ -364,11 +364,11 @@ extern const u8 data_ov003_02239550[];
 /* The other machine's tables (member_pointer.h): their guards, the tables and their
  * constants. */
 extern u32 data_ov003_0223c9c4;
-extern MemberPointer data_ov003_0223ca08[MAILBOX_STATES];
+extern MemberPointer data_ov003_0223ca08[MAILBOX_STATE_COUNT];
 extern const MemberPointer data_ov003_0223941c, data_ov003_022393cc, data_ov003_022393d4, data_ov003_02239404,
     data_ov003_022393e4;
 extern u32 data_ov003_0223c9b8;
-extern MemberPointer data_ov003_0223c9e0[MAILBOX_STATES];
+extern MemberPointer data_ov003_0223c9e0[MAILBOX_STATE_COUNT];
 extern const MemberPointer data_ov003_0223942c, data_ov003_0223944c, data_ov003_02239444, data_ov003_0223943c,
     data_ov003_02239434;
 /* A matrix of main's the model's matrix is moved in. */
@@ -518,15 +518,15 @@ CLEAN_AS(func_ov003_0221e4e4, Mailbox_EnterIdle)
  * REQUIRES: the state is not negative (Mailbox_SetState only sets 0 to 4). */
 void Mailbox_RunState(Mailbox *mailbox)
 {
-    static const MemberPointer *const runs[MAILBOX_STATES] = {
+    static const MemberPointer *const runs[MAILBOX_STATE_COUNT] = {
         &data_ov003_0223941c, /* Mailbox_RunIdle */
         &data_ov003_022393cc, /* Mailbox_RunApproach */
         &data_ov003_022393d4, /* Mailbox_RunLetters */
         &data_ov003_02239404, /* Mailbox_RunReading */
         &data_ov003_022393e4, /* Mailbox_RunClose */
     };
-    MemberTable_InitOnce(&data_ov003_0223c9c4, data_ov003_0223ca08, runs, MAILBOX_STATES);
-    if (mailbox->state < MAILBOX_STATES) {
+    MemberTable_InitOnce(&data_ov003_0223c9c4, data_ov003_0223ca08, runs, MAILBOX_STATE_COUNT);
+    if (mailbox->state < MAILBOX_STATE_COUNT) {
         MemberPointer_CallVoid(&data_ov003_0223ca08[mailbox->state], mailbox);
     }
 }
@@ -537,15 +537,15 @@ CLEAN_AS(func_ov003_0221e4e8, Mailbox_RunState)
  * REQUIRES: `state` is not negative. */
 int Mailbox_SetState(Mailbox *mailbox, int state)
 {
-    static const MemberPointer *const entries[MAILBOX_STATES] = {
+    static const MemberPointer *const entries[MAILBOX_STATE_COUNT] = {
         &data_ov003_0223942c, /* Mailbox_EnterIdle */
         &data_ov003_0223944c, /* Mailbox_EnterApproach */
         &data_ov003_02239444, /* Mailbox_EnterLetters */
         &data_ov003_0223943c, /* Mailbox_EnterReading */
         &data_ov003_02239434, /* Mailbox_EnterClose */
     };
-    MemberTable_InitOnce(&data_ov003_0223c9b8, data_ov003_0223c9e0, entries, MAILBOX_STATES);
-    if (state < MAILBOX_STATES && MemberPointer_CallInt(&data_ov003_0223c9e0[state], mailbox) != 0) {
+    MemberTable_InitOnce(&data_ov003_0223c9b8, data_ov003_0223c9e0, entries, MAILBOX_STATE_COUNT);
+    if (state < MAILBOX_STATE_COUNT && MemberPointer_CallInt(&data_ov003_0223c9e0[state], mailbox) != 0) {
         mailbox->state = state;
         return 1;
     }

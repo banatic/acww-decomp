@@ -48,7 +48,7 @@ enum FoxState {
     FOX_LEAVE,
     FOX_WALK,
     FOX_GONE,
-    FOX_STATES
+    FOX_STATE_COUNT
 };
 
 /* What the receiver's link (Base_02066994's word at 0x40) points at. */

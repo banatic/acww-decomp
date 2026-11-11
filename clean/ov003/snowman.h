@@ -45,7 +45,7 @@ typedef struct SnowmanLink {
     int requested; /* set to 1 when a talk starts */
 } SnowmanLink;
 
-enum SnowmanTalkState { SNOWMAN_TALK_IDLE, SNOWMAN_TALK_OPEN, SNOWMAN_TALK_END, SNOWMAN_TALK_STATES };
+enum SnowmanTalkState { SNOWMAN_TALK_IDLE, SNOWMAN_TALK_OPEN, SNOWMAN_TALK_END, SNOWMAN_TALK_STATE_COUNT };
 
 /* The first machine's states that this overlay names; the others are overlay 68's. */
 enum SnowmanState {
@@ -54,7 +54,7 @@ enum SnowmanState {
     SNOWMAN_STATE_LOOSE_END = 7, /* the states below this are the loose ball's */
     SNOWMAN_STATE_BODY = 9,      /* a snowman's body */
     SNOWMAN_STATE_HEAD = 0xb,    /* a snowman's head, which can be talked to */
-    SNOWMAN_STATES = 14
+    SNOWMAN_STATE_COUNT = 14
 };
 
 /* Bits of Snowman.flags. */

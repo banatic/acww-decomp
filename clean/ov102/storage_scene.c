@@ -233,7 +233,7 @@ void StorageScene_ShowPage(StorageScene *self)
     Popup_Hide(&self->popup, 1);
     StorageScene_HideCursorSprite(self);
     self->base.state = STORAGE_SCENE_STATE_TURN_PAGE;
-    MenuScene_SetPhase(storage_base(self), STORAGE_SCENE_PHASE_STATES);
+    MenuScene_SetPhase(storage_base(self), STORAGE_SCENE_PHASE_STATE_COUNT);
     SoundSys_PlaySe(data_ov102_0229e95c[self->page]);
     StorageScene_SetFlags(self, STORAGE_SCENE_FLAG_HELD_HIDDEN);
 }
@@ -1319,7 +1319,7 @@ void StorageScene_WaitCloseDelay(StorageScene *self)
         return;
     }
     self->base.state = STORAGE_SCENE_STATE_START_WIPE_OUT;
-    MenuScene_SetPhase(storage_base(self), STORAGE_SCENE_PHASE_STATES);
+    MenuScene_SetPhase(storage_base(self), STORAGE_SCENE_PHASE_STATE_COUNT);
     Popup_Hide(&self->popup, 1);
     StorageScene_HideCursorSprite(self);
 }
@@ -1722,8 +1722,8 @@ CLEAN_AS(func_ov102_0229defc, StorageScene_IdleByTouch)
  * overlay's .bss) and the constants they are filled from. */
 extern u32 data_ov102_0229ebc0; /* the states' guard */
 extern u32 data_ov102_0229ebc4; /* the sub states' guard */
-extern MemberPointer data_ov102_0229ebc8[STORAGE_SCENE_STATES];
-extern MemberPointer data_ov102_0229ec18[STORAGE_SCENE_SUB_STATES];
+extern MemberPointer data_ov102_0229ebc8[STORAGE_SCENE_STATE_COUNT];
+extern MemberPointer data_ov102_0229ec18[STORAGE_SCENE_SUB_STATE_COUNT];
 extern const MemberPointer data_ov102_0229e980, data_ov102_0229e988, data_ov102_0229e990, data_ov102_0229e998,
     data_ov102_0229e9a0, data_ov102_0229e9a8, data_ov102_0229e9b0, data_ov102_0229e9b8, data_ov102_0229e9c0,
     data_ov102_0229e9c8, data_ov102_0229e9d0, data_ov102_0229e9d8, data_ov102_0229e9e0, data_ov102_0229e9f0,
@@ -2085,13 +2085,13 @@ CLEAN_AS(func_ov102_0229e560, StorageScene_RunInteractive)
  * REQUIRES: the sub state is below 0x10; the game reads past the table for others. */
 void StorageScene_RunSubState(StorageScene *self)
 {
-    static const MemberPointer *const sub_states[STORAGE_SCENE_SUB_STATES] = {
+    static const MemberPointer *const sub_states[STORAGE_SCENE_SUB_STATE_COUNT] = {
         &data_ov102_0229ea00, &data_ov102_0229e9f8, &data_ov102_0229e9f0, &data_ov102_0229e9a8,
         &data_ov102_0229e988, &data_ov102_0229e9d8, &data_ov102_0229e9d0, &data_ov102_0229e9c8,
         &data_ov102_0229e990, &data_ov102_0229ea10, &data_ov102_0229e9b0, &data_ov102_0229e9a0,
         &data_ov102_0229e9e0, &data_ov102_0229e998, &data_ov102_0229e980, &data_ov102_0229e9b8,
     };
-    MemberTable_InitOnce(&data_ov102_0229ebc4, data_ov102_0229ec18, sub_states, STORAGE_SCENE_SUB_STATES);
+    MemberTable_InitOnce(&data_ov102_0229ebc4, data_ov102_0229ec18, sub_states, STORAGE_SCENE_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov102_0229ec18[self->base.sub_state], self);
 }
 CLEAN_AS(func_ov102_0229e5b8, StorageScene_RunSubState)
@@ -2102,11 +2102,11 @@ CLEAN_AS(func_ov102_0229e5b8, StorageScene_RunSubState)
  * REQUIRES: the state is below 10; the game reads past the table for others. */
 int StorageScene_RunState(StorageScene *self)
 {
-    static const MemberPointer *const states[STORAGE_SCENE_STATES] = {
+    static const MemberPointer *const states[STORAGE_SCENE_STATE_COUNT] = {
         &data_ov102_0229ea08, &data_ov102_0229ea20, &data_ov102_0229ea50, &data_ov102_0229ea48, &data_ov102_0229ea40,
         &data_ov102_0229ea38, &data_ov102_0229ea30, &data_ov102_0229ea28, &data_ov102_0229e9c0, &data_ov102_0229ea18,
     };
-    MemberTable_InitOnce(&data_ov102_0229ebc0, data_ov102_0229ebc8, states, STORAGE_SCENE_STATES);
+    MemberTable_InitOnce(&data_ov102_0229ebc0, data_ov102_0229ebc8, states, STORAGE_SCENE_STATE_COUNT);
     StorageScene_BeginFrame(self);
     MemberPointer_CallVoid(&data_ov102_0229ebc8[self->base.state], self);
     StorageScene_EndFrame(self);

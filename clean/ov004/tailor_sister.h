@@ -46,7 +46,7 @@ enum TailorSisterState {
     TAILOR_SISTER_AWAIT = 4,
     TAILOR_SISTER_OTHER = 5,
     TAILOR_SISTER_PAUSED = 6,
-    TAILOR_SISTER_STATES = 7
+    TAILOR_SISTER_STATE_COUNT = 7
 };
 
 struct TailorSister;

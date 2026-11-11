@@ -46,7 +46,7 @@ enum BankMenuState {
     BANK_MENU_STATE_WIPE_IN = 1,        /* BankMenu_WipeIn */
     BANK_MENU_STATE_START_WIPE_OUT = 2, /* BankMenu_StartWipeOut */
     BANK_MENU_STATE_WIPE_OUT = 3,       /* BankMenu_WipeOut */
-    BANK_MENU_STATES = 4
+    BANK_MENU_STATE_COUNT = 4
 };
 
 /* The sub states, run from the table of BankMenu_RunSubState (MenuScene_SetSubState). */
@@ -59,7 +59,7 @@ enum BankMenuSubState {
     BANK_MENU_SUB_PANEL_PRESSED = 5, /* BankMenu_FollowQuitPress */
     BANK_MENU_SUB_LEAVE_DELAY = 6,   /* BankMenu_WaitToLeave */
     BANK_MENU_SUB_ERROR = 7,         /* BankMenu_WaitError */
-    BANK_MENU_SUB_STATES = 8
+    BANK_MENU_SUB_STATE_COUNT = 8
 };
 
 typedef struct BankMenu {

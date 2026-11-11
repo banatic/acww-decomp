@@ -195,7 +195,7 @@ void TownInsectKind_Update1e(TownInsect *insect)
 }
 CLEAN_AS(func_ov003_02230428, TownInsectKind_Update1e)
 
-/* func_ov003_02230430 (kinds 0x1e and 0x31's start): its timer at 360 (what TownInsect_CountDown
+/* func_ov003_02230430 (kinds 0x1e and 0x31's start): its timer at 360 (what TownInsect_Tick
  * runs down); placed, it fades out. */
 void TownInsectKind_Start1e(TownInsect *insect)
 {

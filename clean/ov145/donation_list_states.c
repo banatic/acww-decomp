@@ -52,8 +52,8 @@ extern u8 data_021fbddc; /* the pen went down or up this frame */
  * constants they are filled from. */
 extern u32 data_ov145_0229afa4; /* the sub states' guard */
 extern u32 data_ov145_0229afa8; /* the states' guard */
-extern MemberPointer data_ov145_0229afbc[DONATION_STATES];
-extern MemberPointer data_ov145_0229afdc[DONATION_SUB_STATES];
+extern MemberPointer data_ov145_0229afbc[DONATION_STATE_COUNT];
+extern MemberPointer data_ov145_0229afdc[DONATION_SUB_STATE_COUNT];
 extern const MemberPointer data_ov145_0229ad80; /* DonationList_WipeIn */
 extern const MemberPointer data_ov145_0229ad88; /* DonationList_FinishClosePress */
 extern const MemberPointer data_ov145_0229ad90; /* DonationList_FinishRelease */
@@ -180,7 +180,7 @@ void DonationList_FinishClosePress(DonationList *self)
         }
     } else {
         DonationList_HideCursorSprite(self);
-        MenuScene_SetPhase(donation_base(self), DONATION_PHASE_STATES);
+        MenuScene_SetPhase(donation_base(self), DONATION_PHASE_STATE_COUNT);
     }
 }
 CLEAN_AS(func_ov145_0229a370, DonationList_FinishClosePress)
@@ -344,7 +344,7 @@ void DonationList_IdleByTouch(DonationList *self)
 }
 CLEAN_AS(func_ov145_0229a5b0, DonationList_IdleByTouch)
 
-/* func_ov145_0229a678: the panel's text colours, and the OBJs' characters (file 0xc0-0x13f to
+/* func_ov145_0229a678: the panel's text colors, and the OBJs' characters (file 0xc0-0x13f to
  * 0xc0) and palettes (4-9). */
 void DonationList_LoadObjFiles(DonationList *self)
 {
@@ -559,11 +559,11 @@ CLEAN_AS(_ZN18Obj_ov145_0229ae0019func_ov145_0229aa48Ev, DonationList_RunInterac
  * REQUIRES: the sub state is below 10; the game reads past the table for others. */
 void DonationList_RunSubState(DonationList *self)
 {
-    static const MemberPointer *const sub_states[DONATION_SUB_STATES] = {
+    static const MemberPointer *const sub_states[DONATION_SUB_STATE_COUNT] = {
         &data_ov145_0229add0, &data_ov145_0229adc8, &data_ov145_0229adc0, &data_ov145_0229adb8, &data_ov145_0229adb0,
         &data_ov145_0229ada8, &data_ov145_0229ada0, &data_ov145_0229add8, &data_ov145_0229ad90, &data_ov145_0229ad88,
     };
-    MemberTable_InitOnce(&data_ov145_0229afa4, data_ov145_0229afdc, sub_states, DONATION_SUB_STATES);
+    MemberTable_InitOnce(&data_ov145_0229afa4, data_ov145_0229afdc, sub_states, DONATION_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov145_0229afdc[self->base.sub_state], self);
 }
 CLEAN_AS(_ZN18Obj_ov145_0229ae0019func_ov145_0229aa64Ev, DonationList_RunSubState)
@@ -574,13 +574,13 @@ CLEAN_AS(_ZN18Obj_ov145_0229ae0019func_ov145_0229aa64Ev, DonationList_RunSubStat
  * REQUIRES: the state is below 4; the game reads past the table for others. */
 int DonationList_RunState(DonationList *self)
 {
-    static const MemberPointer *const states[DONATION_STATES] = {
+    static const MemberPointer *const states[DONATION_STATE_COUNT] = {
         &data_ov145_0229ade0,
         &data_ov145_0229ad80,
         &data_ov145_0229adf0,
         &data_ov145_0229ade8,
     };
-    MemberTable_InitOnce(&data_ov145_0229afa8, data_ov145_0229afbc, states, DONATION_STATES);
+    MemberTable_InitOnce(&data_ov145_0229afa8, data_ov145_0229afbc, states, DONATION_STATE_COUNT);
     DonationList_BeginFrame(self);
     MemberPointer_CallVoid(&data_ov145_0229afbc[self->base.state], self);
     DonationList_EndFrame(self);

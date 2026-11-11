@@ -81,20 +81,20 @@ TownNookScene *TownNookScene_Construct(TownNookScene *scene);
 #define TOWN_NOOK_TURN 3
 #define TOWN_NOOK_LEAVE 4
 #define TOWN_NOOK_END 5
-#define TOWN_NOOK_STATES 6
+#define TOWN_NOOK_STATE_COUNT 6
 
 int TownNook_UpdateEnd(u8 *object);
-int TownNook_StartEnd(u8 *object);
+int TownNook_EnterEnd(u8 *object);
 int TownNook_UpdateLeave(u8 *object);
-int TownNook_StartLeave(u8 *object);
+int TownNook_EnterLeave(u8 *object);
 int TownNook_UpdateTurn(u8 *object);
-int TownNook_StartTurn(u8 *object);
+int TownNook_EnterTurn(u8 *object);
 int TownNook_UpdateCallPlayer(u8 *object);
-int TownNook_StartCallPlayer(void);
+int TownNook_EnterCallPlayer(void);
 int TownNook_UpdateTalk(u8 *object);
-int TownNook_StartTalk(u8 *object);
+int TownNook_EnterTalk(u8 *object);
 int TownNook_UpdateWait(u8 *object);
-int TownNook_StartWait(void);
+int TownNook_EnterWait(void);
 void TownNook_SetState(u8 *object, int state);
 int TownNook_Update(u8 *object);
 int TownNook_ModelName(void);

@@ -388,7 +388,7 @@ CLEAN_AS(_ZN18Obj_ov142_0229c3e819func_ov142_0229bd74Ev, OrderCatalog_RunInterac
 /* The table of member functions of the states (ov004/member_pointer.h): its guard, the table
  * and its constants. */
 extern u32 data_ov142_0229c5e0;
-extern MemberPointer data_ov142_0229c610[ORDER_CATALOG_STATES];
+extern MemberPointer data_ov142_0229c610[ORDER_CATALOG_STATE_COUNT];
 extern const MemberPointer data_ov142_0229c2a0, data_ov142_0229c318, data_ov142_0229c328, data_ov142_0229c330,
     data_ov142_0229c338, data_ov142_0229c340, data_ov142_0229c348, data_ov142_0229c350;
 
@@ -398,11 +398,11 @@ extern const MemberPointer data_ov142_0229c2a0, data_ov142_0229c318, data_ov142_
  * REQUIRES: the state is below 8; the game reads past the table for others. */
 int OrderCatalog_RunState(OrderCatalog *self)
 {
-    static const MemberPointer *const states[ORDER_CATALOG_STATES] = {
+    static const MemberPointer *const states[ORDER_CATALOG_STATE_COUNT] = {
         &data_ov142_0229c318, &data_ov142_0229c2a0, &data_ov142_0229c350, &data_ov142_0229c348,
         &data_ov142_0229c340, &data_ov142_0229c338, &data_ov142_0229c330, &data_ov142_0229c328,
     };
-    MemberTable_InitOnce(&data_ov142_0229c5e0, data_ov142_0229c610, states, ORDER_CATALOG_STATES);
+    MemberTable_InitOnce(&data_ov142_0229c5e0, data_ov142_0229c610, states, ORDER_CATALOG_STATE_COUNT);
     OrderCatalog_BeginFrame(self);
     MemberPointer_CallVoid(&data_ov142_0229c610[self->base.state], self);
     OrderCatalog_EndFrame(self);

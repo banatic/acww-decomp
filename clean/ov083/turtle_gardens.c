@@ -101,7 +101,7 @@ extern const u8 data_020da088[];
 extern const char data_ov083_022791a8[];
 extern const char data_ov083_022791d8[];
 /* The functions of his states (filled at start-up by __sinit_ov083_02279100). */
-extern TurtleGardensStep data_ov083_02279360[TURTLE_GARDENS_STATES];
+extern TurtleGardensStep data_ov083_02279360[TURTLE_GARDENS_STATE_COUNT];
 /* The town's record of the day's winner, the state block, and the word his motion requests
  * carry. */
 extern EventWinner data_021f3aa4;
@@ -302,7 +302,7 @@ CLEAN_AS(func_ov083_02278e64, TurtleGardens_EnterStand)
 
 /* func_ov083_02278e08: a count down by one unless it is 0; the count. The object is not
  * used. */
-int TurtleGardens_CountDown(TurtleGardens *turtle, s32 *counter)
+int TurtleGardens_Tick(TurtleGardens *turtle, s32 *counter)
 {
     (void) turtle;
     if (*counter != 0) {
@@ -310,14 +310,14 @@ int TurtleGardens_CountDown(TurtleGardens *turtle, s32 *counter)
     }
     return *counter;
 }
-CLEAN_AS(func_ov083_02278e08, TurtleGardens_CountDown)
+CLEAN_AS(func_ov083_02278e08, TurtleGardens_Tick)
 
 /* func_ov083_02278e18 (state 0's update): when his count down reaches 0 it starts again at 600
  * frames, the gardens are judged into the record of the day, which is then of the gardens, and
  * a winner is to be announced. 1. */
 int TurtleGardens_UpdateStand(TurtleGardens *turtle)
 {
-    if (TurtleGardens_CountDown(turtle, &turtle->countdown) != 0) {
+    if (TurtleGardens_Tick(turtle, &turtle->countdown) != 0) {
         return 1;
     }
     turtle->countdown = TURTLE_GARDENS_JUDGE_FRAMES;

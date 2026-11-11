@@ -1577,7 +1577,7 @@ CLEAN_AS(func_ov105_0229de74, LetterStorage_RunActionWhenIdle)
  * state 0x18. */
 void LetterStorage_CloseChoice(LetterStorage *self)
 {
-    if (PagedChoice_CountDown(choice_of(self)) != 0) {
+    if (PagedChoice_Tick(choice_of(self)) != 0) {
         PagedChoice_RequestClose(choice_of(self), 0);
         Popup_Hide(&self->popup, 1);
         if (CellLayerSprite_AnimNumber(cursor_cells(self)) != 0) {
@@ -2051,8 +2051,8 @@ extern void func_02066694(void *letter);
  * (the symbol table also names the second half of each table, at 0x0229fc28 and 0x0229fcd8). */
 extern u32 data_ov105_0229fba0; /* the sub states' guard */
 extern u32 data_ov105_0229fba4; /* the states' guard */
-extern MemberPointer data_ov105_0229fba8[LETTER_STORAGE_STATES];
-extern MemberPointer data_ov105_0229fc58[LETTER_STORAGE_SUB_STATES];
+extern MemberPointer data_ov105_0229fba8[LETTER_STORAGE_STATE_COUNT];
+extern MemberPointer data_ov105_0229fc58[LETTER_STORAGE_SUB_STATE_COUNT];
 extern const MemberPointer data_ov105_0229f880, data_ov105_0229f888, data_ov105_0229f898, data_ov105_0229f8a0,
     data_ov105_0229f8a8, data_ov105_0229f8b0, data_ov105_0229f8b8, data_ov105_0229f8c0, data_ov105_0229f8c8,
     data_ov105_0229f8d0, data_ov105_0229f8d8, data_ov105_0229f8e0, data_ov105_0229f8e8, data_ov105_0229f8f0,
@@ -2689,7 +2689,7 @@ CLEAN_AS(_ZN18Obj_ov105_0229fad019func_ov105_0229f240Ev, LetterStorage_RunIntera
  * REQUIRES: the sub state is below 0x20; the game reads past the table for others. */
 void LetterStorage_RunSubState(LetterStorage *self)
 {
-    static const MemberPointer *const sub_states[LETTER_STORAGE_SUB_STATES] = {
+    static const MemberPointer *const sub_states[LETTER_STORAGE_SUB_STATE_COUNT] = {
         &data_ov105_0229f990, &data_ov105_0229f988, &data_ov105_0229f980, &data_ov105_0229f978, &data_ov105_0229f970,
         &data_ov105_0229f968, &data_ov105_0229f8e0, &data_ov105_0229f880, &data_ov105_0229f950, &data_ov105_0229f948,
         &data_ov105_0229f940, &data_ov105_0229f938, &data_ov105_0229f930, &data_ov105_0229f928, &data_ov105_0229f920,
@@ -2698,7 +2698,7 @@ void LetterStorage_RunSubState(LetterStorage *self)
         &data_ov105_0229f8c8, &data_ov105_0229f8c0, &data_ov105_0229f888, &data_ov105_0229f8b0, &data_ov105_0229f8a8,
         &data_ov105_0229f8a0, &data_ov105_0229f960,
     };
-    MemberTable_InitOnce(&data_ov105_0229fba0, data_ov105_0229fc58, sub_states, LETTER_STORAGE_SUB_STATES);
+    MemberTable_InitOnce(&data_ov105_0229fba0, data_ov105_0229fc58, sub_states, LETTER_STORAGE_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov105_0229fc58[self->base.sub_state], self);
 }
 CLEAN_AS(_ZN18Obj_ov105_0229fad019func_ov105_0229f25cEv, LetterStorage_RunSubState)
@@ -2709,14 +2709,14 @@ CLEAN_AS(_ZN18Obj_ov105_0229fad019func_ov105_0229f25cEv, LetterStorage_RunSubSta
  * REQUIRES: the state is below 0x16; the game reads past the table for others. */
 int LetterStorage_RunState(LetterStorage *self)
 {
-    static const MemberPointer *const states[LETTER_STORAGE_STATES] = {
+    static const MemberPointer *const states[LETTER_STORAGE_STATE_COUNT] = {
         &data_ov105_0229f9a0, &data_ov105_0229f898, &data_ov105_0229f9d8, &data_ov105_0229fa38, &data_ov105_0229fa30,
         &data_ov105_0229fa28, &data_ov105_0229fa20, &data_ov105_0229fa18, &data_ov105_0229fa10, &data_ov105_0229fa08,
         &data_ov105_0229fa00, &data_ov105_0229f9f8, &data_ov105_0229f9f0, &data_ov105_0229f9e8, &data_ov105_0229f9e0,
         &data_ov105_0229f918, &data_ov105_0229f9d0, &data_ov105_0229f9c8, &data_ov105_0229f9c0, &data_ov105_0229f9b8,
         &data_ov105_0229f9b0, &data_ov105_0229f9a8,
     };
-    MemberTable_InitOnce(&data_ov105_0229fba4, data_ov105_0229fba8, states, LETTER_STORAGE_STATES);
+    MemberTable_InitOnce(&data_ov105_0229fba4, data_ov105_0229fba8, states, LETTER_STORAGE_STATE_COUNT);
     LetterStorage_BeginFrame(self);
     MemberPointer_CallVoid(&data_ov105_0229fba8[self->base.state], self);
     LetterStorage_EndFrame(self);

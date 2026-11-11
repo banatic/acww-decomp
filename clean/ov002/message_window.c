@@ -14,7 +14,7 @@ static_assert(sizeof(MessageWindow) == 0xcc, "message window");
 
 extern const u8 data_ov002_0220bdac[]; /* the window's vtable */
 
-/* The screen's centre, (0, 0) of main's places. */
+/* The screen's center, (0, 0) of main's places. */
 #define CENTER_X 0x80
 #define CENTER_Y 0x60
 

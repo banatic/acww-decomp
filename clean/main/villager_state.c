@@ -347,13 +347,13 @@ void VillagerState_SetFlag1OutsideHouse(VillagerState *entry)
 CLEAN_AS(func_02079478, VillagerState_SetFlag1OutsideHouse)
 
 /* func_02079494: one off the counter, which stops at 0. */
-void VillagerState_CountDownMood(VillagerState *entry)
+void VillagerState_TickMood(VillagerState *entry)
 {
     if (entry->mood_frames != 0) {
         entry->mood_frames--;
     }
 }
-CLEAN_AS(func_02079494, VillagerState_CountDownMood)
+CLEAN_AS(func_02079494, VillagerState_TickMood)
 
 /* func_020794a0 */
 int VillagerState_MoodFrames(const VillagerState *entry)

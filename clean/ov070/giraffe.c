@@ -78,7 +78,7 @@ extern const u8 data_ov070_02279e4c[];
 extern const u8 data_020d8c64[];
 extern const u8 data_020da088[];
 /* Her states' functions (filled at start-up by __sinit_ov070_02279c50). */
-extern GiraffeStep data_ov070_02279f24[GIRAFFE_STATES];
+extern GiraffeStep data_ov070_02279f24[GIRAFFE_STATE_COUNT];
 /* Her model's and texture's file names: "npc_sp/model/grf.nsbmd", "npc_sp/model/grf_tex.nsbtx". */
 extern const char data_ov070_02279d68[];
 extern const char data_ov070_02279d98[];

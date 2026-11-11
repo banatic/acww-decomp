@@ -8,7 +8,7 @@ static_assert(offsetof(MusicRequest, music_started) == 0x14, "request music star
 static_assert(offsetof(MusicRequest, timer) == 0x18, "request timer");
 
 /* func_02037458: a running timer counted down; whether it ran out this frame. */
-int MusicRequest_CountDown(MusicRequest *request)
+int MusicRequest_Tick(MusicRequest *request)
 {
     if (request->timer > 0) {
         request->timer--;
@@ -16,7 +16,7 @@ int MusicRequest_CountDown(MusicRequest *request)
     }
     return 0;
 }
-CLEAN_AS(func_02037458, MusicRequest_CountDown)
+CLEAN_AS(func_02037458, MusicRequest_Tick)
 
 /* func_02037470: `from` copied over `to`, which is cleared first. The bytes 0x06-0x07 and
  * 0x15-0x17 of `to` are left as they are. */

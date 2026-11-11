@@ -294,7 +294,7 @@ CLEAN_AS(func_ov096_0229c514, PocketsScreen_PressButton)
 void PocketsScreen_ActionReadLetter(PocketsScreen *self)
 {
     MenuScene_SetState(scene_of(self), 5);
-    MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_STATES);
+    MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_STATE_COUNT);
     PocketsScreen_SetFlags(self, POCKETS_FLAG_READ_LETTER);
     PocketsScreen_SlideOutTabs(self);
 }
@@ -3170,7 +3170,7 @@ void PocketsScreen_FollowButton(PocketsScreen *self)
     } else {
         PocketsScreen_HideCursorSprite(self);
         MenuScene_SetState(scene_of(self), 9);
-        MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_STATES);
+        MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_STATE_COUNT);
     }
 }
 CLEAN_AS(func_ov096_022a00b4, PocketsScreen_FollowButton)
@@ -3210,7 +3210,7 @@ CLEAN_AS(func_ov096_022a0170, PocketsScreen_CloseChoiceToAction)
  * whether it had run out. */
 int PocketsScreen_CloseChoice(PocketsScreen *self)
 {
-    if (PagedChoice_CountDown(choice_of(self)) == 0) {
+    if (PagedChoice_Tick(choice_of(self)) == 0) {
         return 0;
     }
     PagedChoice_RequestClose(choice_of(self), 0);
@@ -4445,7 +4445,7 @@ int PocketsScreen_SwitchTab(PocketsScreen *self, int tab)
     }
     MenuTabs_SelectTab((MenuTabs *) (void *) parent, (u8) tab);
     self->base.state = 5;
-    MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_STATES);
+    MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_STATE_COUNT);
     if (tab != POCKETS_TAB_CLOSE) {
         PocketsScreen_RequestSwitchOff(self);
     }
@@ -4651,7 +4651,7 @@ int PocketsScreen_Start(PocketsScreen *self)
 {
     PocketsScreen_SetUp(self);
     MenuScene_SetState(scene_of(self), 0);
-    MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_STATES);
+    MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_STATE_COUNT);
     return 1;
 }
 CLEAN_AS(func_ov096_022a1f84, PocketsScreen_Start)

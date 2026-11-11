@@ -630,7 +630,7 @@ int PagedChoice_MoveCursor(PagedChoice *choice, int keys, u8 *row, u8 first)
 CLEAN_AS(func_ov002_02209044, PagedChoice_MoveCursor)
 
 /* func_ov002_0220909c: counts the delay after a pick down; whether it had run out. */
-int PagedChoice_CountDown(PagedChoice *choice)
+int PagedChoice_Tick(PagedChoice *choice)
 {
     if (choice->delay != 0) {
         choice->delay--;
@@ -638,7 +638,7 @@ int PagedChoice_CountDown(PagedChoice *choice)
     }
     return 1;
 }
-CLEAN_AS(func_ov002_0220909c, PagedChoice_CountDown)
+CLEAN_AS(func_ov002_0220909c, PagedChoice_Tick)
 
 /* func_ov002_022090b0: picks `row` of the page shown: highlights it and decides its code
  * (PagedChoice_Decide, given the row's low byte), then sends command 0x2a when the code

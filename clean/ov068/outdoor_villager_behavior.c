@@ -12,7 +12,7 @@
 #include "main/villager_entry.h"
 #include "outdoor_villager_walks.h"
 
-static_assert(sizeof(OutdoorVillagerBehaviorRow) == 0x10, "behaviour row");
+static_assert(sizeof(OutdoorVillagerBehaviorRow) == 0x10, "behavior row");
 
 /* The behaviors (filled when the overlay starts). */
 extern OutdoorVillagerBehaviorRow data_ov068_02278484[OUTDOOR_VILLAGER_BEHAVIORS];
@@ -178,7 +178,7 @@ CLEAN_AS(func_ov068_0226cce8, OutdoorVillagerBehavior_Start)
  * an insect or a fish; the running behavior's update is called; then the countdowns run down:
  * the wait, the walks' four, the pairing's cooldown and `net_hits_timer`, and (only while the
  * villager's action is idle) `call_cooldown`, or once it is out the raise timer, and the held
- * item's check and hold; last behaviour 17's countdown.
+ * item's check and hold; last behavior 17's countdown.
  * REQUIRES: the running behavior's row has an update. */
 void OutdoorVillagerBehavior_Tick(OutdoorVillagerBehavior *self, u8 *villager)
 {

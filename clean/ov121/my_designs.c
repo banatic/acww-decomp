@@ -102,8 +102,8 @@ extern const char data_ov121_0229c468[]; /* "menu/desi/b_myd_a_bg.bsc" */
  * and their constants. */
 extern u32 data_ov121_0229c4a0; /* the sub states' guard */
 extern u32 data_ov121_0229c4a4; /* the states' guard */
-extern MemberPointer data_ov121_0229c4a8[MY_DESIGNS_STATES];
-extern MemberPointer data_ov121_0229c4c8[MY_DESIGNS_SUB_STATES];
+extern MemberPointer data_ov121_0229c4a8[MY_DESIGNS_STATE_COUNT];
+extern MemberPointer data_ov121_0229c4c8[MY_DESIGNS_SUB_STATE_COUNT];
 extern const MemberPointer data_ov121_0229c2a0, data_ov121_0229c2a8, data_ov121_0229c2b0, data_ov121_0229c2c8,
     data_ov121_0229c2d0, data_ov121_0229c2d8, data_ov121_0229c2e0, data_ov121_0229c2e8, data_ov121_0229c2f0,
     data_ov121_0229c2f8, data_ov121_0229c308, data_ov121_0229c310, data_ov121_0229c318, data_ov121_0229c320,
@@ -922,7 +922,7 @@ CLEAN_AS(func_ov121_0229b0e4, MyDesigns_WaitChoiceClosed)
  * MY_DESIGNS_SUB_CHOICE_CLOSING. */
 void MyDesigns_ChoicePicked(MyDesigns *self)
 {
-    if (PagedChoice_CountDown(choice(self)) == 0) {
+    if (PagedChoice_Tick(choice(self)) == 0) {
         return;
     }
     PagedChoice_RequestClose(choice(self), 0);
@@ -1497,7 +1497,7 @@ int MyDesigns_SwitchTab(MyDesigns *self, int tab)
     }
     MenuTabs_SelectTab(parent, (u8) tab);
     self->base.state = MY_DESIGNS_STATE_LEAVE;
-    MenuScene_SetPhase(scene(self), MY_DESIGNS_PHASE_STATES);
+    MenuScene_SetPhase(scene(self), MY_DESIGNS_PHASE_STATE_COUNT);
     Popup_Hide(&self->popup, 1);
     if (tab != MY_DESIGNS_TAB_CLOSE) {
         MyDesigns_RestoreCamera(self);
@@ -1587,14 +1587,14 @@ CLEAN_AS(_ZN18Obj_ov121_0229c3a819func_ov121_0229bd94Ev, MyDesigns_RunInteractiv
  * REQUIRES: the sub state is below 21; the game reads past the table for others. */
 void MyDesigns_RunSubState(MyDesigns *self)
 {
-    static const MemberPointer *const sub_states[MY_DESIGNS_SUB_STATES] = {
+    static const MemberPointer *const sub_states[MY_DESIGNS_SUB_STATE_COUNT] = {
         &data_ov121_0229c370, &data_ov121_0229c368, &data_ov121_0229c360, &data_ov121_0229c358, &data_ov121_0229c350,
         &data_ov121_0229c348, &data_ov121_0229c340, &data_ov121_0229c2d8, &data_ov121_0229c330, &data_ov121_0229c328,
         &data_ov121_0229c320, &data_ov121_0229c318, &data_ov121_0229c310, &data_ov121_0229c308, &data_ov121_0229c2c8,
         &data_ov121_0229c2f8, &data_ov121_0229c2f0, &data_ov121_0229c2e8, &data_ov121_0229c2e0, &data_ov121_0229c2b0,
         &data_ov121_0229c2d0,
     };
-    MemberTable_InitOnce(&data_ov121_0229c4a0, data_ov121_0229c4c8, sub_states, MY_DESIGNS_SUB_STATES);
+    MemberTable_InitOnce(&data_ov121_0229c4a0, data_ov121_0229c4c8, sub_states, MY_DESIGNS_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov121_0229c4c8[self->base.sub_state], self);
 }
 CLEAN_AS(_ZN18Obj_ov121_0229c3a819func_ov121_0229bdc0Ev, MyDesigns_RunSubState)
@@ -1605,13 +1605,13 @@ CLEAN_AS(_ZN18Obj_ov121_0229c3a819func_ov121_0229bdc0Ev, MyDesigns_RunSubState)
  * REQUIRES: the state is below 4; the game reads past the table for others. */
 int MyDesigns_RunState(MyDesigns *self)
 {
-    static const MemberPointer *const states[MY_DESIGNS_STATES] = {
+    static const MemberPointer *const states[MY_DESIGNS_STATE_COUNT] = {
         &data_ov121_0229c338,
         &data_ov121_0229c2a8,
         &data_ov121_0229c2a0,
         &data_ov121_0229c378,
     };
-    MemberTable_InitOnce(&data_ov121_0229c4a4, data_ov121_0229c4a8, states, MY_DESIGNS_STATES);
+    MemberTable_InitOnce(&data_ov121_0229c4a4, data_ov121_0229c4a8, states, MY_DESIGNS_STATE_COUNT);
     MyDesigns_Nothing(self);
     MemberPointer_CallVoid(&data_ov121_0229c4a8[self->base.state], self);
     MyDesigns_Update(self);
@@ -1688,7 +1688,7 @@ int MyDesigns_Begin(MyDesigns *self)
 {
     MyDesigns_SetUp(self);
     MenuScene_SetState(scene(self), MY_DESIGNS_STATE_START);
-    MenuScene_SetPhase(scene(self), MY_DESIGNS_PHASE_STATES);
+    MenuScene_SetPhase(scene(self), MY_DESIGNS_PHASE_STATE_COUNT);
     return 1;
 }
 CLEAN_AS(func_ov121_0229c17c, MyDesigns_Begin)

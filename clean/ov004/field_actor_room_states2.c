@@ -748,7 +748,7 @@ void FieldActorRoomStates2_TakeItemMessage(FieldActor *actor, int arg)
 CLEAN_AS(func_ov004_0222aa8c, FieldActorRoomStates2_TakeItemMessage)
 
 /* func_ov004_0222aa90 (state 0x1c's entry): the work gets the number (step and verdict 0); the
- * tile's centre goes to 0x824 at the height of the room's objects there, the factors are 1.0.
+ * tile's center goes to 0x824 at the height of the room's objects there, the factors are 1.0.
  * From the floor (a negative number) the item on layer 1 at that point becomes the actor's
  * (0x822 and 0x820); with none there the state ends at once. With full pockets in a house's
  * room and an item, the standing animation loops, the item becomes none and the talk follows

@@ -37,8 +37,8 @@ extern u8 *data_021c526c;
  * constants they are filled from. */
 extern u32 data_ov091_022995a0; /* the sub states' guard */
 extern u32 data_ov091_022995a4; /* the states' guard */
-extern MemberPointer data_ov091_022995a8[LETTER_READER_SUB_STATES];
-extern MemberPointer data_ov091_022995b8[LETTER_READER_STATES];
+extern MemberPointer data_ov091_022995a8[LETTER_READER_SUB_STATE_COUNT];
+extern MemberPointer data_ov091_022995b8[LETTER_READER_STATE_COUNT];
 extern const MemberPointer data_ov091_022994e0; /* LetterReader_ShowLetter */
 extern const MemberPointer data_ov091_022994e8; /* LetterReader_TouchInput */
 extern const MemberPointer data_ov091_022994f0; /* LetterReader_WipeIn */
@@ -152,7 +152,7 @@ void LetterReader_PadInput(LetterReader *self)
     if ((pressed & LETTER_READER_PAD_A) || (pressed & LETTER_READER_PAD_B)) {
         Glider_ShowSecondOfSet(&self->cursor);
         self->base.state = LETTER_READER_STATE_PRESS;
-        MenuScene_SetPhase(letter_reader_scene(self), MENU_SCENE_PHASE_STATES);
+        MenuScene_SetPhase(letter_reader_scene(self), MENU_SCENE_PHASE_STATE_COUNT);
     }
 }
 CLEAN_AS(func_ov091_02298fb4, LetterReader_PadInput)
@@ -168,7 +168,7 @@ void LetterReader_TouchInput(LetterReader *self)
     if (LabelButton_IsTouched(&self->button)) {
         LabelSprite_SetState(letter_reader_button_sprite(self), LETTER_READER_BUTTON_PRESSED);
         self->base.state = LETTER_READER_STATE_BUTTON;
-        MenuScene_SetPhase(letter_reader_scene(self), MENU_SCENE_PHASE_STATES);
+        MenuScene_SetPhase(letter_reader_scene(self), MENU_SCENE_PHASE_STATE_COUNT);
         SoundSys_PlaySe(0x27);
     }
 }
@@ -324,12 +324,12 @@ CLEAN_AS(func_ov091_022992f4, LetterReader_Phase3)
  * REQUIRES: the sub state is below 2; the game reads past the table for others. */
 int LetterReader_RunInteractive(LetterReader *self)
 {
-    static const MemberPointer *const sub_states[LETTER_READER_SUB_STATES] = {
+    static const MemberPointer *const sub_states[LETTER_READER_SUB_STATE_COUNT] = {
         &data_ov091_022994e8,
         &data_ov091_02299520,
     };
     LetterReader_BeginFrame();
-    MemberTable_InitOnce(&data_ov091_022995a0, data_ov091_022995a8, sub_states, LETTER_READER_SUB_STATES);
+    MemberTable_InitOnce(&data_ov091_022995a0, data_ov091_022995a8, sub_states, LETTER_READER_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov091_022995a8[self->base.sub_state], self);
     LetterReader_EndFrame();
     return 1;
@@ -342,11 +342,11 @@ CLEAN_AS(_ZN18Obj_ov091_0229953019func_ov091_022992f8Ev, LetterReader_RunInterac
  * REQUIRES: the state is below 6; the game reads past the table for others. */
 int LetterReader_RunState(LetterReader *self)
 {
-    static const MemberPointer *const states[LETTER_READER_STATES] = {
+    static const MemberPointer *const states[LETTER_READER_STATE_COUNT] = {
         &data_ov091_022994e0, &data_ov091_022994f0, &data_ov091_02299518,
         &data_ov091_02299510, &data_ov091_02299500, &data_ov091_02299508,
     };
-    MemberTable_InitOnce(&data_ov091_022995a4, data_ov091_022995b8, states, LETTER_READER_STATES);
+    MemberTable_InitOnce(&data_ov091_022995a4, data_ov091_022995b8, states, LETTER_READER_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov091_022995b8[self->base.state], self);
     return 1;
 }
@@ -384,7 +384,7 @@ int LetterReader_Start(LetterReader *self)
 {
     LetterReader_Init(self);
     MenuScene_SetState(letter_reader_scene(self), LETTER_READER_STATE_SHOW);
-    MenuScene_SetPhase(letter_reader_scene(self), MENU_SCENE_PHASE_STATES);
+    MenuScene_SetPhase(letter_reader_scene(self), MENU_SCENE_PHASE_STATE_COUNT);
     SoundSys_LowerMusic();
     return 1;
 }

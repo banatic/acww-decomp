@@ -100,7 +100,7 @@ void KeyboardEntry_PanelPress(KeyboardEntry *self)
         }
     } else {
         KeyboardEntry_HidePointer(self);
-        MenuScene_SetPhase(keyboard_entry_scene(self), KEYBOARD_ENTRY_PHASE_STATES);
+        MenuScene_SetPhase(keyboard_entry_scene(self), KEYBOARD_ENTRY_PHASE_STATE_COUNT);
     }
 }
 CLEAN_AS(func_ov126_022a0c64, KeyboardEntry_PanelPress)

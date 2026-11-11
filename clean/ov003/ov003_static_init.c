@@ -262,11 +262,11 @@ CLEAN_AS(__sinit_ov003_02237aa4, Ov003Init_TileEvents)
  * object at data_ov003_0225f0b4 with its copy of the scene's map, and the thrown bottles
  * (thrown_bottle.h); their records and the game's constructors and destructors. */
 #define OV003_INIT_FISH_SIZES 8
-#define OV003_INIT_BOTTLE_STATES 3
-#define OV003_INIT_PLAYER_FISH_STATES 5
+#define OV003_INIT_BOTTLE_STATE_COUNT 3
+#define OV003_INIT_PLAYER_FISH_STATE_COUNT 5
 #define OV003_INIT_SWIM_PAIRS 4
 #define OV003_INIT_SWIM_BEHAVIORS 6
-#define OV003_INIT_HOOK_STATES 7
+#define OV003_INIT_HOOK_STATE_COUNT 7
 #define OV003_INIT_SHADOW_STATE_FNS 10
 extern AcreMap *data_021c80bc;
 extern FishShadow data_ov003_0225f76c[FISH_SHADOW_COUNT];
@@ -291,11 +291,11 @@ extern void func_ov003_0222c454(void *object); /* ThrownBottle_DestroyAll */
 /* The member functions of the bottles' states (thrown_bottle.c), the players' fish's states
  * (player_fish.c), the swim and hook updates' pairs, the swim behaviors and the hook states
  * (fish_shadow_swim.c) and the shadows' states' entries and updates (fish_shadow.c). */
-extern MemberPointer data_ov003_0225f100[OV003_INIT_BOTTLE_STATES];
-extern MemberPointer data_ov003_0225f138[OV003_INIT_PLAYER_FISH_STATES];
+extern MemberPointer data_ov003_0225f100[OV003_INIT_BOTTLE_STATE_COUNT];
+extern MemberPointer data_ov003_0225f138[OV003_INIT_PLAYER_FISH_STATE_COUNT];
 extern MemberPointer data_ov003_0225f118[OV003_INIT_SWIM_PAIRS];
 extern MemberPointer data_ov003_0225f160[OV003_INIT_SWIM_BEHAVIORS];
-extern MemberPointer data_ov003_0225f190[OV003_INIT_HOOK_STATES];
+extern MemberPointer data_ov003_0225f190[OV003_INIT_HOOK_STATE_COUNT];
 extern MemberPointer data_ov003_0225f1d0[OV003_INIT_SHADOW_STATE_FNS];
 extern const MemberPointer data_ov003_0223bee0, data_ov003_0223bea8, data_ov003_0223bee8;
 extern const MemberPointer data_ov003_0223bdf0, data_ov003_0223bed0, data_ov003_0223bec8, data_ov003_0223bec0,
@@ -331,12 +331,12 @@ extern const Ov003InitFishScale data_ov003_0223bef0[OV003_INIT_FISH_SIZES];
  * pointers filled, and between the first two the size classes' scales. */
 void Ov003Init_Fish(void)
 {
-    static const MemberPointer *const bottle_fns[OV003_INIT_BOTTLE_STATES] = {
+    static const MemberPointer *const bottle_fns[OV003_INIT_BOTTLE_STATE_COUNT] = {
         &data_ov003_0223bee0,
         &data_ov003_0223bea8,
         &data_ov003_0223bee8,
     };
-    static const MemberPointer *const player_fish_fns[OV003_INIT_PLAYER_FISH_STATES] = {
+    static const MemberPointer *const player_fish_fns[OV003_INIT_PLAYER_FISH_STATE_COUNT] = {
         &data_ov003_0223bdf0, &data_ov003_0223bed0, &data_ov003_0223bec8, &data_ov003_0223bec0, &data_ov003_0223beb8,
     };
     static const MemberPointer *const swim_pairs[OV003_INIT_SWIM_PAIRS] = {
@@ -349,7 +349,7 @@ void Ov003Init_Fish(void)
         &data_ov003_0223be30, &data_ov003_0223be28, &data_ov003_0223be20,
         &data_ov003_0223bdf8, &data_ov003_0223be08, &data_ov003_0223be10,
     };
-    static const MemberPointer *const hook_fns[OV003_INIT_HOOK_STATES] = {
+    static const MemberPointer *const hook_fns[OV003_INIT_HOOK_STATE_COUNT] = {
         &data_ov003_0223be60, &data_ov003_0223be70, &data_ov003_0223be98, &data_ov003_0223bde0,
         &data_ov003_0223bed8, &data_ov003_0223be50, &data_ov003_0223be38,
     };
@@ -372,15 +372,15 @@ void Ov003Init_Fish(void)
     __cxa_vec_ctor(data_ov003_0225f35c, THROWN_BOTTLE_COUNT, sizeof(ThrownBottle), func_ov003_0222c3e0, func_ov003_0222c3d0);
     ov003_init_register(NULL, func_ov003_0222c454, &data_ov003_0225f0f4);
 
-    ov003_init_copy(data_ov003_0225f100, bottle_fns, OV003_INIT_BOTTLE_STATES);
+    ov003_init_copy(data_ov003_0225f100, bottle_fns, OV003_INIT_BOTTLE_STATE_COUNT);
     for (int i = 0; i < OV003_INIT_FISH_SIZES; i++) {
         data_ov003_0223c014[i].scale_x = data_ov003_0223bef0[i].x;
         data_ov003_0223c014[i].scale_z = data_ov003_0223bef0[i].z;
     }
-    ov003_init_copy(data_ov003_0225f138, player_fish_fns, OV003_INIT_PLAYER_FISH_STATES);
+    ov003_init_copy(data_ov003_0225f138, player_fish_fns, OV003_INIT_PLAYER_FISH_STATE_COUNT);
     ov003_init_copy(data_ov003_0225f118, swim_pairs, OV003_INIT_SWIM_PAIRS);
     ov003_init_copy(data_ov003_0225f160, swim_fns, OV003_INIT_SWIM_BEHAVIORS);
-    ov003_init_copy(data_ov003_0225f190, hook_fns, OV003_INIT_HOOK_STATES);
+    ov003_init_copy(data_ov003_0225f190, hook_fns, OV003_INIT_HOOK_STATE_COUNT);
     ov003_init_copy(data_ov003_0225f1d0, shadow_fns, OV003_INIT_SHADOW_STATE_FNS);
 }
 CLEAN_AS(__sinit_ov003_02237af4, Ov003Init_Fish)

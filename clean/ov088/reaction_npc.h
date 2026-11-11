@@ -73,7 +73,7 @@ enum ReactionNpcState {
     REACTION_NPC_WANDER = 2,
     REACTION_NPC_WAIT = 3,
     REACTION_NPC_TALK = 4,
-    REACTION_NPC_STATES = 5
+    REACTION_NPC_STATE_COUNT = 5
 };
 
 /* A state's functions in data_ov088_02279e28. */

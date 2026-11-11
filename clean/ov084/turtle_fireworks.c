@@ -90,7 +90,7 @@ extern const u8 data_ov084_022794ac[];
 extern const u8 data_020d8c64[];
 extern const u8 data_020da088[];
 /* His states' functions (filled at start-up by __sinit_ov084_0227931c). */
-extern TurtleFireworksStep data_ov084_022795a0[TURTLE_FIREWORKS_STATES];
+extern TurtleFireworksStep data_ov084_022795a0[TURTLE_FIREWORKS_STATE_COUNT];
 /* His model's and texture's file names: "npc_sp/model/ttl.nsbmd", "npc_sp/model/ttl_tex.nsbtx". */
 extern const char data_ov084_022793c8[];
 extern const char data_ov084_022793f8[];

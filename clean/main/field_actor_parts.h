@@ -21,7 +21,7 @@
 #include "types.h"
 
 /* The states, and the size of each state table. */
-#define FIELD_ACTOR_STATES 147
+#define FIELD_ACTOR_STATE_COUNT 147
 
 /* The field actor is an actor (main/actor.h): position, angles, velocity, pivot and pitch. */
 static inline Actor *FieldActor_Base(FieldActor *actor)

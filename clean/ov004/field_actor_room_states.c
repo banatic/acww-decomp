@@ -344,7 +344,7 @@ CLEAN_AS(func_ov004_02226ff0, FieldActorRoomStates_EndHairOn)
 
 /* func_ov004_02227038: the body updated; as the animation passes frame 10 the effect set 0x60
  * starts at the effect point; from frame 11, once, the head is asked to change to its item
- * with the work's kind and hair colour, and once taken both go into the player's record. */
+ * with the work's kind and hair color, and once taken both go into the player's record. */
 void FieldActorRoomStates_StepHairOn(FieldActor *actor)
 {
     FieldActor_UpdateBody(actor);

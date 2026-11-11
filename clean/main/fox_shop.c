@@ -56,7 +56,7 @@ extern u8 data_021f49e8;
 extern u16 data_021f49f4;
 extern u16 data_021f3aec[];
 /* The six orders the three items can be put in. */
-extern const u8 data_020d1e48[6 * FOX_SHOP_ITEMS];
+extern const u8 data_020d1e48[6 * FOX_SHOP_ITEM_COUNT];
 /* "sp_npc_foxmail", the letters' sender, and the two values func_02066024 takes with it. */
 extern const char data_020e419c[];
 extern const u8 data_020e4160[];
@@ -97,14 +97,14 @@ static int fox_same_item(u16 *item, u16 *other)
 /* func_020adf8c: the place of `item` among the items, or -1. */
 int FoxShop_FindItem(FoxShop *shop, u16 *item)
 {
-    return ShopStock_Find(item, shop->items, shop->sold, FOX_SHOP_ITEMS);
+    return ShopStock_Find(item, shop->items, shop->sold, FOX_SHOP_ITEM_COUNT);
 }
 CLEAN_AS(func_020adf8c, FoxShop_FindItem)
 
 /* func_020adfa4: item `index` (data_021f49f4 when sold); its code also in `out` unless NULL. */
 u16 *FoxShop_Item(FoxShop *shop, int index, u16 *out)
 {
-    return ShopStock_Item(index, shop->items, shop->sold, FOX_SHOP_ITEMS, out);
+    return ShopStock_Item(index, shop->items, shop->sold, FOX_SHOP_ITEM_COUNT, out);
 }
 CLEAN_AS(func_020adfa4, FoxShop_Item)
 
@@ -113,7 +113,7 @@ CLEAN_AS(func_020adfa4, FoxShop_Item)
  * stays sold (0). */
 int FoxShop_TakeItem(FoxShop *shop, u16 *item)
 {
-    for (unsigned i = 0; i < FOX_SHOP_ITEMS; i++) {
+    for (unsigned i = 0; i < FOX_SHOP_ITEM_COUNT; i++) {
         u16 *here = FoxShop_Item(shop, (int) i, NULL);
         if (fox_same_item(here, item)) {
             return FoxShop_MarkSold(shop, (int) i);
@@ -126,7 +126,7 @@ CLEAN_AS(func_020adfc0, FoxShop_TakeItem)
 /* func_020ae02c: marks item `index` sold; whether it was not yet. */
 int FoxShop_MarkSold(FoxShop *shop, int index)
 {
-    return ShopStock_MarkSold(index, FOX_SHOP_ITEMS, shop->sold);
+    return ShopStock_MarkSold(index, FOX_SHOP_ITEM_COUNT, shop->sold);
 }
 CLEAN_AS(func_020ae02c, FoxShop_MarkSold)
 
@@ -159,16 +159,16 @@ void FoxShop_Stock(u16 *items)
     int first = RoomScore_HouseRedEast();
     int second = RoomScore_HouseGreenSouth();
     chance = (unsigned) ((first + second) / 10 + 50);
-    for (unsigned i = 1; i < FOX_SHOP_ITEMS; i++) {
+    for (unsigned i = 1; i < FOX_SHOP_ITEM_COUNT; i++) {
         fox_pick(&items[i], MainRandom_Below(100) < chance ? 5 : 0);
     }
 
-    u16 drawn[FOX_SHOP_ITEMS];
-    for (unsigned i = 0; i < FOX_SHOP_ITEMS; i++) {
+    u16 drawn[FOX_SHOP_ITEM_COUNT];
+    for (unsigned i = 0; i < FOX_SHOP_ITEM_COUNT; i++) {
         drawn[i] = items[i];
     }
-    const u8 *order = &data_020d1e48[FOX_SHOP_ITEMS * MainRandom_Below(6)];
-    for (unsigned i = 0; i < FOX_SHOP_ITEMS; i++) {
+    const u8 *order = &data_020d1e48[FOX_SHOP_ITEM_COUNT * MainRandom_Below(6)];
+    for (unsigned i = 0; i < FOX_SHOP_ITEM_COUNT; i++) {
         items[i] = drawn[order[i]];
     }
 }
@@ -303,7 +303,7 @@ CLEAN_AS(func_020ae3bc, FoxShop_Init)
 /* func_020ae3c4: no items, none sold. */
 void FoxShop_ClearItems(FoxShop *shop)
 {
-    ShopStock_Clear(shop->items, shop->sold, FOX_SHOP_ITEMS);
+    ShopStock_Clear(shop->items, shop->sold, FOX_SHOP_ITEM_COUNT);
 }
 CLEAN_AS(func_020ae3c4, FoxShop_ClearItems)
 
@@ -319,7 +319,7 @@ CLEAN_AS(func_020ae3d4, FoxShop_Reset)
 FoxShop *FoxShop_Destruct(FoxShop *shop)
 {
     FoxPassword_Destruct(&shop->password);
-    __cxa_vec_cleanup(shop->items, FOX_SHOP_ITEMS, sizeof(u16), func_020051b0);
+    __cxa_vec_cleanup(shop->items, FOX_SHOP_ITEM_COUNT, sizeof(u16), func_020051b0);
     return shop;
 }
 CLEAN_AS(func_020ae3ec, FoxShop_Destruct)
@@ -327,7 +327,7 @@ CLEAN_AS(func_020ae3ec, FoxShop_Destruct)
 /* func_020ae410: the constructor. */
 FoxShop *FoxShop_Construct(FoxShop *shop)
 {
-    __cxa_vec_ctor(shop->items, FOX_SHOP_ITEMS, sizeof(u16), func_02034ce0, func_020051b0);
+    __cxa_vec_ctor(shop->items, FOX_SHOP_ITEM_COUNT, sizeof(u16), func_02034ce0, func_020051b0);
     FoxPassword_Construct(&shop->password);
     return shop;
 }
@@ -351,7 +351,7 @@ CLEAN_AS(func_020ae458, FoxPassword_IsUsed)
 int FoxPassword_CountUnused(FoxPassword *password)
 {
     int count = 0;
-    for (unsigned i = 0; i < FOX_PASSWORDS; i++) {
+    for (unsigned i = 0; i < FOX_PASSWORD_COUNT; i++) {
         if (FoxPassword_IsUsed(password, i) == 0) {
             count++;
         }
@@ -501,7 +501,7 @@ int FoxPassword_Pick(FoxPassword *password)
     }
     int pick = (int) MainRandom_Below(unused);
     int seen = 0;
-    for (unsigned i = 0; i < FOX_PASSWORDS; i++) {
+    for (unsigned i = 0; i < FOX_PASSWORD_COUNT; i++) {
         if (FoxPassword_IsUsed(password, i) != 0) {
             continue;
         }

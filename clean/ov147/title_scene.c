@@ -81,7 +81,7 @@ extern Obj021c526c *data_021c526c;
 
 /* The table of the states' {entry, frame} member functions (24 entries in the overlay's .bss,
  * of which the last eight are the symbol data_ov147_0229adcc), and its constants. */
-extern MemberPointer data_ov147_0229ad4c[2 * TITLE_STATES];
+extern MemberPointer data_ov147_0229ad4c[2 * TITLE_STATE_COUNT];
 extern MemberPointer data_ov147_0229adcc[8];
 extern const MemberPointer data_ov147_0229a954, data_ov147_0229a9a4, data_ov147_0229a95c, data_ov147_0229a9ec,
     data_ov147_0229a96c, data_ov147_0229a974, data_ov147_0229a97c, data_ov147_0229a94c, data_ov147_0229a98c,

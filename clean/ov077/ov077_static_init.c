@@ -1,4 +1,4 @@
-/* Overlay 77's static initialiser, run when the overlay is loaded: the functions of the mole's
+/* Overlay 77's static initializer, run when the overlay is loaded: the functions of the mole's
  * talk sequences (mole_talk.h) and of his states (mole.h), copied from the overlay's constants
  * (the compiler cannot place member pointers in initialized data). */
 #include <stdint.h>
@@ -27,7 +27,7 @@ int MoleInit_Tables(void)
         &data_ov077_0227973c, /* MoleTalk_AfterPhrase */
         &data_ov077_02279714, /* MoleTalk_Wait */
     };
-    static const MemberPointer *const states[2 * MOLE_STATES] = {
+    static const MemberPointer *const states[2 * MOLE_STATE_COUNT] = {
         &data_ov077_0227971c, &data_ov077_0227976c, /* MOLE_STATE_0 */
         &data_ov077_02279764, &data_ov077_02279744, /* MOLE_TALK */
         &data_ov077_02279754, &data_ov077_0227974c, /* MOLE_TALKED */
@@ -38,7 +38,7 @@ int MoleInit_Tables(void)
     for (int i = 0; i < MOLE_TALK_SEQUENCES; i++) {
         data_ov077_022797d0[i].run = *sequences[i];
     }
-    for (int i = 0; i < MOLE_STATES; i++) {
+    for (int i = 0; i < MOLE_STATE_COUNT; i++) {
         data_ov077_022799a0[i].enter = *states[2 * i];
         data_ov077_022799a0[i].run = *states[2 * i + 1];
     }

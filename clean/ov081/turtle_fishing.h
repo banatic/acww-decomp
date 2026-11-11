@@ -58,7 +58,7 @@ enum TurtleFishingState {
     TURTLE_FISHING_STAND = 0,
     TURTLE_FISHING_TALK = 1,
     TURTLE_FISHING_TALKED = 2,
-    TURTLE_FISHING_STATES = 3
+    TURTLE_FISHING_STATE_COUNT = 3
 };
 
 /* A state's functions in data_ov081_022798b4. */

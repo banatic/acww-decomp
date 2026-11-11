@@ -35,7 +35,7 @@ extern const MemberPointer data_ov046_02261ea8, data_ov046_02261fe0, data_ov046_
 /* __sinit_ov046_02261cac: the colors, then the states' table in order. */
 void AstroInit_Tables(void)
 {
-    static const MemberPointer *const states[2 * ASTRO_STATES] = {
+    static const MemberPointer *const states[2 * ASTRO_STATE_COUNT] = {
         &data_ov046_02261ea8, &data_ov046_02261fe0, /* ASTRO_IDLE: Astro_EnterIdle, Astro_UpdateIdle */
         &data_ov046_02261fd8, &data_ov046_02261fd0, /* ASTRO_TURN_BACK */
         &data_ov046_02261fc8, &data_ov046_02261fc0, /* ASTRO_ASLEEP */
@@ -49,7 +49,7 @@ void AstroInit_Tables(void)
     astro_init_color(&data_ov046_02262450, 20, 31, 20, 31);
     astro_init_color(&data_ov046_02262440, 20, 31, 31, 31);
     astro_init_color(&data_ov046_0226244c, 20, 24, 24, 31);
-    for (int i = 0; i < ASTRO_STATES; i++) {
+    for (int i = 0; i < ASTRO_STATE_COUNT; i++) {
         data_ov046_0226248c[i].enter = *states[2 * i];
         data_ov046_0226248c[i].run = *states[2 * i + 1];
     }

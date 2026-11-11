@@ -1,4 +1,4 @@
-/* Overlay 71's static initialiser, run when the overlay is loaded: the insurance seller's
+/* Overlay 71's static initializer, run when the overlay is loaded: the insurance seller's
  * half-angle of "ahead", copied from main's; his table of states (insurer.h), copied from the
  * overlay's constants (the compiler cannot place member pointers in initialized data); and the
  * two offsets his probe tries (Vec3 objects), each registered for destruction. */
@@ -18,7 +18,7 @@ extern const MemberPointer data_ov071_0227a120, data_ov071_0227a118, data_ov071_
     data_ov071_0227a108, data_ov071_0227a110, data_ov071_0227a128, data_ov071_0227a160, data_ov071_0227a138,
     data_ov071_0227a140, data_ov071_0227a148;
 extern const MemberPointer __ptmf_null;
-extern InsurerStep data_ov071_0227a3a4[INSURER_STATES];
+extern InsurerStep data_ov071_0227a3a4[INSURER_STATE_COUNT];
 
 /* The record __register_global_object links an object into, so that its destructor runs when
  * the overlay goes. */
@@ -50,7 +50,7 @@ static void insurer_init_offset(Vec3 *offset, fx32 x, InsurerInitRecord *record)
  * then the offsets (0.5, 0, 1.0) and (-0.5, 0, 1.0). */
 void InsurerInit_Tables(void)
 {
-    static const MemberPointer *const states[2 * INSURER_STATES] = {
+    static const MemberPointer *const states[2 * INSURER_STATE_COUNT] = {
         &data_ov071_0227a120, &data_ov071_0227a118, /* 0: the talk ends */
         &data_ov071_0227a100, &data_ov071_0227a178, /* 1: chase */
         &__ptmf_null,         &data_ov071_0227a108, /* 2: talked */
@@ -59,7 +59,7 @@ void InsurerInit_Tables(void)
         &data_ov071_0227a140, &data_ov071_0227a148, /* 5: talk */
     };
     data_ov071_0227a340 = data_020c80f0;
-    for (int i = 0; i < INSURER_STATES; i++) {
+    for (int i = 0; i < INSURER_STATE_COUNT; i++) {
         data_ov071_0227a3a4[i].enter = *states[2 * i];
         data_ov071_0227a3a4[i].update = *states[2 * i + 1];
     }

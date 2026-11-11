@@ -475,7 +475,7 @@ static_assert(sizeof(Sequence4) == 0x2e8, "the size Sequence4_New allocates");
 static_assert(offsetof(TownObjectActor, receiver_vtable) == 0xec, "receiver");
 static_assert(offsetof(TownObjectActor, message) == 0x10a, "message");
 
-#define SEQUENCE4_STATES 17
+#define SEQUENCE4_STATE_COUNT 17
 #define SEQUENCE4_RECEIVER_OFFSET 0xec
 #define SEQUENCE4_TALK 0          /* the talk object its talk runs on */
 #define SEQUENCE4_SPEAKER 0xd014  /* the speaker: special character 0x14 (npc_lookup.h) */
@@ -501,13 +501,13 @@ extern const char data_ov068_02277890[];
 /* The state tables (ov004/member_pointer.h): the updates' guard, table and constants, then the
  * entries'. */
 extern u32 data_ov068_022786cc;
-extern MemberPointer data_ov068_02278774[SEQUENCE4_STATES];
+extern MemberPointer data_ov068_02278774[SEQUENCE4_STATE_COUNT];
 extern const MemberPointer data_ov068_02277660, data_ov068_02277668, data_ov068_02277688, data_ov068_022776c8,
     data_ov068_02277708, data_ov068_02277720, data_ov068_02277640, data_ov068_02277638, data_ov068_02277628,
     data_ov068_02277648, data_ov068_02277680, data_ov068_02277678, data_ov068_022776d0, data_ov068_02277728,
     data_ov068_02277620, data_ov068_02277650, data_ov068_02277658;
 extern u32 data_ov068_022786e8;
-extern MemberPointer data_ov068_022786ec[SEQUENCE4_STATES];
+extern MemberPointer data_ov068_022786ec[SEQUENCE4_STATE_COUNT];
 extern const MemberPointer data_ov068_02277670, data_ov068_02277700, data_ov068_022776f8, data_ov068_022776f0,
     data_ov068_022776e8, data_ov068_022776d8, data_ov068_022776e0, data_ov068_02277710, data_ov068_02277718,
     data_ov068_022776c0, data_ov068_022776b8, data_ov068_022776b0, data_ov068_022776a8, data_ov068_022776a0,
@@ -655,7 +655,7 @@ CLEAN_AS(_ZN18Obj_ov068_0227775019func_ov068_02272900Ev, Sequence4_EnterState0)
  * and above do nothing. */
 void Sequence4_UpdateState(Sequence4 *actor)
 {
-    static const MemberPointer *const updates[SEQUENCE4_STATES] = {
+    static const MemberPointer *const updates[SEQUENCE4_STATE_COUNT] = {
         &data_ov068_02277660, /* Sequence4_UpdateState0 */
         &data_ov068_02277668, /* Sequence4_UpdateState1 */
         &data_ov068_02277688, /* Sequence4_UpdateState2 */
@@ -674,10 +674,10 @@ void Sequence4_UpdateState(Sequence4 *actor)
         &data_ov068_02277650, /* Sequence4_UpdateState15 */
         &data_ov068_02277658, /* Sequence4_UpdateState16 */
     };
-    MemberTable_InitOnce(&data_ov068_022786cc, data_ov068_02278774, updates, SEQUENCE4_STATES);
+    MemberTable_InitOnce(&data_ov068_022786cc, data_ov068_02278774, updates, SEQUENCE4_STATE_COUNT);
     /* REQUIRES: state >= 0 (the entries set 0 to 16); the ROM's signed test lets a negative one
      * index before the table */
-    if (actor->state >= 0 && actor->state < SEQUENCE4_STATES) {
+    if (actor->state >= 0 && actor->state < SEQUENCE4_STATE_COUNT) {
         MemberPointer_CallVoid(&data_ov068_02278774[actor->state], actor);
     }
 }
@@ -687,7 +687,7 @@ CLEAN_AS(_ZN18Obj_ov068_0227775019func_ov068_02272934Ev, Sequence4_UpdateState)
  * whether it did. States 17 and above do not exist. */
 int Sequence4_SetState(Sequence4 *actor, int state)
 {
-    static const MemberPointer *const entries[SEQUENCE4_STATES] = {
+    static const MemberPointer *const entries[SEQUENCE4_STATE_COUNT] = {
         &data_ov068_02277670, /* Sequence4_EnterState0 */
         &data_ov068_02277700, /* Sequence4_EnterState1 */
         &data_ov068_022776f8, /* Sequence4_EnterState2 */
@@ -706,10 +706,10 @@ int Sequence4_SetState(Sequence4 *actor, int state)
         &data_ov068_02277690, /* Sequence4_EnterState15 */
         &data_ov068_02277630, /* Sequence4_EnterState16 */
     };
-    MemberTable_InitOnce(&data_ov068_022786e8, data_ov068_022786ec, entries, SEQUENCE4_STATES);
+    MemberTable_InitOnce(&data_ov068_022786e8, data_ov068_022786ec, entries, SEQUENCE4_STATE_COUNT);
     /* REQUIRES: state >= 0 (the game passes 0 to 16); the ROM's signed test lets a negative one
      * index before the table */
-    if (state >= 0 && state < SEQUENCE4_STATES && MemberPointer_CallInt(&data_ov068_022786ec[state], actor) != 0) {
+    if (state >= 0 && state < SEQUENCE4_STATE_COUNT && MemberPointer_CallInt(&data_ov068_022786ec[state], actor) != 0) {
         actor->state = state;
         return 1;
     }

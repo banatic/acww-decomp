@@ -62,7 +62,7 @@ void MissingNpc2Talk_OnAnswer(void);
 #define MISSING_NPC2_TURN 5          /* a turn, then standing */
 #define MISSING_NPC2_SCENE_2F_EXIT 6 /* a turn and a walk to (0x10000, 0x1d000), then standing */
 #define MISSING_NPC2_TURN_AND_TALK 9 /* turns to the object its talk names and talks */
-#define MISSING_NPC2_STATES 10
+#define MISSING_NPC2_STATE_COUNT 10
 
 /* The topics of its talk (MissingNpc2Talk.topic): which lines it says. */
 #define MISSING_NPC2_TOPIC_FIRST 0 /* line 0; the player's flag 0x33 set */

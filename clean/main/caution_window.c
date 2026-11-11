@@ -94,7 +94,7 @@ extern Mtx43 data_021fbe48;
 /* The member function table of CautionWindow_Update (a function-local static): its guard, the
  * table and the constants it is filled from. */
 extern u32 data_021c593c;
-extern MemberPointer data_021c5990[CAUTION_WINDOW_STATES];
+extern MemberPointer data_021c5990[CAUTION_WINDOW_STATE_COUNT];
 extern const MemberPointer data_020da4e0, data_020da500, data_020da4d8, data_020da4e8, data_020da510, data_020da4f0,
     data_020da4f8, data_020da508;
 
@@ -595,7 +595,7 @@ CLEAN_AS(func_02038758, CautionWindow_Draw)
  * REQUIRES: the state is 0-7 (the ROM indexes its table unchecked). */
 void CautionWindow_Update(CautionWindow *self, unsigned char trouble)
 {
-    static const MemberPointer *const constants[CAUTION_WINDOW_STATES] = {
+    static const MemberPointer *const constants[CAUTION_WINDOW_STATE_COUNT] = {
         &data_020da4e0, /* CautionWindow_OffUpdate */
         &data_020da500, /* CautionWindow_IdleUpdate */
         &data_020da4d8, /* CautionWindow_DelayUpdate */
@@ -608,7 +608,7 @@ void CautionWindow_Update(CautionWindow *self, unsigned char trouble)
 
     self->trouble = trouble;
     CautionWindow_CheckNetError();
-    MemberTable_InitOnce(&data_021c593c, data_021c5990, constants, CAUTION_WINDOW_STATES);
+    MemberTable_InitOnce(&data_021c593c, data_021c5990, constants, CAUTION_WINDOW_STATE_COUNT);
     MemberPointer_CallVoid(&data_021c5990[self->state], self);
 }
 CLEAN_AS(func_02038828, CautionWindow_Update)

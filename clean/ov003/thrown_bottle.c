@@ -35,7 +35,7 @@ typedef void (*ThrownBottleStepFn)(void *self, ThrownBottle *bottle);
 
 extern ThrownBottle data_ov003_0225f35c[THROWN_BOTTLE_COUNT];
 /* Each state's step, member functions of the fish process taking the bottle. */
-extern MemberPointer data_ov003_0225f100[THROWN_BOTTLE_STATES];
+extern MemberPointer data_ov003_0225f100[THROWN_BOTTLE_STATE_COUNT];
 extern NetSession *data_020ccf94;
 /* The camera (itcm/camera.h) and the point it follows. */
 extern int data_021c67a4;

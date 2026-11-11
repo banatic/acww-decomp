@@ -292,7 +292,7 @@ CLEAN_AS(func_ov052_0226118c, FoxTent_CountUnused)
 int FoxTentTalk_ShopSoldOut(FoxTentTalk *talk)
 {
     (void) talk;
-    for (int i = 0; i < FOX_SHOP_ITEMS; i++) {
+    for (int i = 0; i < FOX_SHOP_ITEM_COUNT; i++) {
         u16 *item = FoxShop_Item(&data_021f3b30, i, NULL);
         int sold;
         if (ItemCode_IsFurniture(item)) {

@@ -21,7 +21,7 @@
 #include "ov004/rmo_object.h"
 #include "types.h"
 
-#define TAXI_STATES 3
+#define TAXI_STATE_COUNT 3
 
 typedef struct Taxi {
     RmoObject base;            /* 0x000: the car */

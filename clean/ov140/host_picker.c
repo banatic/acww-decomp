@@ -1020,8 +1020,8 @@ CLEAN_AS(_ZN18Obj_ov140_0229b40419func_ov140_0229aec0Ev, HostPicker_RunInteracti
  * constants. */
 extern u32 data_ov140_0229b5e0; /* the sub states' guard */
 extern u32 data_ov140_0229b5e4; /* the states' guard */
-extern MemberPointer data_ov140_0229b5e8[HOST_PICKER_STATES];
-extern MemberPointer data_ov140_0229b610[HOST_PICKER_SUB_STATES];
+extern MemberPointer data_ov140_0229b5e8[HOST_PICKER_STATE_COUNT];
+extern MemberPointer data_ov140_0229b610[HOST_PICKER_SUB_STATE_COUNT];
 extern const MemberPointer data_ov140_0229b308, data_ov140_0229b318, data_ov140_0229b320, data_ov140_0229b328,
     data_ov140_0229b330, data_ov140_0229b338, data_ov140_0229b348, data_ov140_0229b350, data_ov140_0229b358,
     data_ov140_0229b360, data_ov140_0229b368, data_ov140_0229b370, data_ov140_0229b378;
@@ -1031,11 +1031,11 @@ extern const MemberPointer data_ov140_0229b308, data_ov140_0229b318, data_ov140_
  * REQUIRES: the sub state is below 8; the game reads past the table for others. */
 void HostPicker_RunSubState(HostPicker *self)
 {
-    static const MemberPointer *const sub_states[HOST_PICKER_SUB_STATES] = {
+    static const MemberPointer *const sub_states[HOST_PICKER_SUB_STATE_COUNT] = {
         &data_ov140_0229b338, &data_ov140_0229b330, &data_ov140_0229b378, &data_ov140_0229b368,
         &data_ov140_0229b318, &data_ov140_0229b348, &data_ov140_0229b308, &data_ov140_0229b320,
     };
-    MemberTable_InitOnce(&data_ov140_0229b5e0, data_ov140_0229b610, sub_states, HOST_PICKER_SUB_STATES);
+    MemberTable_InitOnce(&data_ov140_0229b5e0, data_ov140_0229b610, sub_states, HOST_PICKER_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov140_0229b610[self->base.sub_state], self);
 }
 CLEAN_AS(_ZN18Obj_ov140_0229b40419func_ov140_0229aedcEv, HostPicker_RunSubState)
@@ -1046,10 +1046,10 @@ CLEAN_AS(_ZN18Obj_ov140_0229b40419func_ov140_0229aedcEv, HostPicker_RunSubState)
  * REQUIRES: the state is below 5; the game reads past the table for others. */
 int HostPicker_RunState(HostPicker *self)
 {
-    static const MemberPointer *const states[HOST_PICKER_STATES] = {
+    static const MemberPointer *const states[HOST_PICKER_STATE_COUNT] = {
         &data_ov140_0229b370, &data_ov140_0229b328, &data_ov140_0229b360, &data_ov140_0229b358, &data_ov140_0229b350,
     };
-    MemberTable_InitOnce(&data_ov140_0229b5e4, data_ov140_0229b5e8, states, HOST_PICKER_STATES);
+    MemberTable_InitOnce(&data_ov140_0229b5e4, data_ov140_0229b5e8, states, HOST_PICKER_STATE_COUNT);
     HostPicker_BeginFrame(self);
     MemberPointer_CallVoid(&data_ov140_0229b5e8[self->base.state], self);
     HostPicker_EndFrame(self);

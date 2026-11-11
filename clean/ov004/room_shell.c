@@ -150,7 +150,7 @@ static int room_shell_clamp_channel(int value)
     return value;
 }
 
-/* func_ov004_02231b98: material "wd"'s diffuse colour: the shown sky palette's lower gradient
+/* func_ov004_02231b98: material "wd"'s diffuse color: the shown sky palette's lower gradient
  * color with a third of the sky's light color 0 added to each channel (at most 31), its top
  * bit kept; 0xffff (as a short, -1) without a palette. */
 short RoomShell_WdDiffuse(RoomShell *self)

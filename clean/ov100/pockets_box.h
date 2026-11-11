@@ -91,7 +91,7 @@ enum PocketsBoxState {
     POCKETS_BOX_STATE_LEAVE = 4,           /* PocketsBox_Leave */
     POCKETS_BOX_STATE_LAYER4_WIPE_OUT = 5, /* PocketsBox_Layer4WipeOut */
     POCKETS_BOX_STATE_LAYER6_WIPE_OUT = 6, /* PocketsBox_Layer6WipeOut */
-    POCKETS_BOX_STATES = 7
+    POCKETS_BOX_STATE_COUNT = 7
 };
 
 /* The sub states (MenuScene.sub_state), run by PocketsBox_RunSubState in phase 2. */
@@ -118,7 +118,7 @@ enum PocketsBoxSubState {
     POCKETS_BOX_SUB_CHOICE_CLOSING = 0x13, /* PocketsBox_WaitChoiceClosed */
     POCKETS_BOX_SUB_ERROR = 0x14,          /* PocketsBox_WaitError */
     POCKETS_BOX_SUB_CLOSED = 0x15,         /* PocketsBox_WaitClosed */
-    POCKETS_BOX_SUB_STATES = 0x16
+    POCKETS_BOX_SUB_STATE_COUNT = 0x16
 };
 
 #define POCKETS_BOX_COLUMNS 5

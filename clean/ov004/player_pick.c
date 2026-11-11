@@ -90,7 +90,7 @@ typedef struct PlayerPickStateFns {
 } PlayerPickStateFns;
 
 /* The states' functions (filled by __sinit_ov004_0224f8a4). */
-extern PlayerPickStateFns data_ov004_0225fe94[PLAYER_PICK_STATES];
+extern PlayerPickStateFns data_ov004_0225fe94[PLAYER_PICK_STATE_COUNT];
 
 /* The cursor's offset over the telephone (-6, -14), the fixed tag's place (15, -92), the
  * cursor's offsets over each player and the tags' offsets from each player. */

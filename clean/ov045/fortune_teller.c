@@ -142,7 +142,7 @@ extern const u8 data_020da088[];
 /* The one that exists, from her start to her leaving. */
 extern FortuneTeller *data_ov045_022615a0;
 /* Her states' functions (filled at start-up by __sinit_ov045_022612d8). */
-extern FortuneTellerStep data_ov045_022615bc[FORTUNE_TELLER_STATES];
+extern FortuneTellerStep data_ov045_022615bc[FORTUNE_TELLER_STATE_COUNT];
 /* The cards that tell good luck and bad luck. */
 extern const FortuneTellerCard data_ov045_022611a8[FT_GOOD_CARDS];
 extern const FortuneTellerCard data_ov045_02261230[FT_BAD_CARDS];

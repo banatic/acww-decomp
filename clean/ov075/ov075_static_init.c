@@ -38,7 +38,7 @@ extern TownPelicanTalkStep data_ov075_02279930[TOWN_PELICAN_TALK_SEQUENCES];
 extern const MemberPointer data_ov075_022798d8, data_ov075_022798e0, data_ov075_022798f0, data_ov075_022798f8,
     data_ov075_022798c8, data_ov075_022798a0, data_ov075_022798a8, data_ov075_022798b0, data_ov075_022798b8,
     data_ov075_022798d0, data_ov075_022798e8;
-extern TownPelicanStep data_ov075_02279b08[TOWN_PELICAN_STATES];
+extern TownPelicanStep data_ov075_02279b08[TOWN_PELICAN_STATE_COUNT];
 /* The points beside his way, and their records. */
 extern Vec3 data_ov075_02279af0[2];
 extern TownPelicanInitRecord data_ov075_02279ad8, data_ov075_02279ae4;
@@ -68,7 +68,7 @@ static void tpel_init_point(Vec3 *point, fx32 x, TownPelicanInitRecord *record)
  * points (0.5, 0, 1.0) and (-0.5, 0, 1.0), each registered. */
 void TownPelicanInit_Tables(void)
 {
-    static const MemberPointer *const states[2 * TOWN_PELICAN_STATES] = {
+    static const MemberPointer *const states[2 * TOWN_PELICAN_STATE_COUNT] = {
         &data_ov075_022798d8,
         &data_ov075_022798e0, /* 0: rest */
         &data_ov075_022798f0,
@@ -91,7 +91,7 @@ void TownPelicanInit_Tables(void)
     tpel_init_color(&data_ov075_02279ac0, 20, 24, 24, 31);
     data_ov075_02279930[TOWN_PELICAN_TALK_SEQUENCE_NONE].run = __ptmf_null;
     data_ov075_02279930[TOWN_PELICAN_TALK_SEQUENCE_WAKE].run = data_ov075_022798c0;
-    for (int i = 0; i < TOWN_PELICAN_STATES; i++) {
+    for (int i = 0; i < TOWN_PELICAN_STATE_COUNT; i++) {
         data_ov075_02279b08[i].enter = *states[2 * i];
         data_ov075_02279b08[i].update = *states[2 * i + 1];
     }

@@ -139,7 +139,7 @@ int ChoiceRow_SetTextFrom(PagedChoiceRow *row, const void *source);
 int ChoiceRow_SetPlayerName(PagedChoiceRow *row, int player);
 int ChoiceRow_SetName(PagedChoiceRow *row, const void *name);
 int PagedChoice_MoveCursor(PagedChoice *choice, int keys, u8 *row, u8 first);
-int PagedChoice_CountDown(PagedChoice *choice);
+int PagedChoice_Tick(PagedChoice *choice);
 void PagedChoice_PickRow(PagedChoice *choice, int row);
 u8 PagedChoice_PickLastRow(PagedChoice *choice, int sound);
 void PagedChoice_PickRowWithSound(PagedChoice *choice, int row, int sound);

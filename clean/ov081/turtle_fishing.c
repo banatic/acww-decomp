@@ -105,7 +105,7 @@ extern const u8 data_020da088[];
 extern const char data_ov081_022796d8[];
 extern const char data_ov081_02279708[];
 /* The functions of his states (filled at start-up by __sinit_ov081_02279620). */
-extern TurtleFishingStep data_ov081_022798b4[TURTLE_FISHING_STATES];
+extern TurtleFishingStep data_ov081_022798b4[TURTLE_FISHING_STATE_COUNT];
 /* The town's record of the day's winner, its villagers, the state block, and the word his
  * motion requests carry. */
 extern EventWinner data_021f3aa4;

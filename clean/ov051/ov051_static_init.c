@@ -9,20 +9,20 @@
 extern const MemberPointer data_ov051_02261674, data_ov051_022615e4, data_ov051_02261694, data_ov051_0226176c,
     data_ov051_022615c4, data_ov051_022615f4, data_ov051_02261774, data_ov051_02261794, data_ov051_0226178c,
     data_ov051_02261784;
-extern TaxiDriverStep data_ov051_02261ba8[TAXI_DRIVER_STATES];
+extern TaxiDriverStep data_ov051_02261ba8[TAXI_DRIVER_STATE_COUNT];
 
 /* __sinit_ov051_0226150c: the entries and updates of the five states, in order. The address
  * of the states' table. */
 int TaxiDriverInit_Tables(void)
 {
-    static const MemberPointer *const states[2 * TAXI_DRIVER_STATES] = {
+    static const MemberPointer *const states[2 * TAXI_DRIVER_STATE_COUNT] = {
         &data_ov051_02261674, &data_ov051_022615e4, /* 0: wait */
         &data_ov051_02261694, &data_ov051_0226176c, /* 1: talk */
         &data_ov051_022615c4, &data_ov051_022615f4, /* 2: done */
         &data_ov051_02261774, &data_ov051_02261794, /* 3: arrive */
         &data_ov051_0226178c, &data_ov051_02261784, /* 4: leave */
     };
-    for (int i = 0; i < TAXI_DRIVER_STATES; i++) {
+    for (int i = 0; i < TAXI_DRIVER_STATE_COUNT; i++) {
         data_ov051_02261ba8[i].enter = *states[2 * i];
         data_ov051_02261ba8[i].update = *states[2 * i + 1];
     }

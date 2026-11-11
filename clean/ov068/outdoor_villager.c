@@ -40,7 +40,7 @@ static_assert(offsetof(OutdoorVillagerBehavior, net_hits) == 0x38, "net hits 0x3
 static_assert(offsetof(OutdoorVillagerBehavior, net_hits_timer) == 0x3a, "net hits timer 0x3a");
 static_assert(offsetof(OutdoorVillagerBehavior, shown) == 0xe0, "shown");
 static_assert(offsetof(OutdoorVillagerBehavior, call_cooldown) == 0xf4, "0xf4");
-static_assert(sizeof(OutdoorVillagerBehavior) == 0xfc, "behaviour size");
+static_assert(sizeof(OutdoorVillagerBehavior) == 0xfc, "behavior size");
 
 /* The class's vtable. */
 extern const u8 data_ov068_022771c0[];

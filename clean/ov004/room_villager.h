@@ -35,7 +35,7 @@ enum RoomVillagerState {
     ROOM_VILLAGER_TURN = 2,
     ROOM_VILLAGER_AWAIT = 3,
     ROOM_VILLAGER_RELEASE = 4,
-    ROOM_VILLAGER_STATES = 5 /* also "no next state" */
+    ROOM_VILLAGER_STATE_COUNT = 5 /* also "no next state" */
 };
 
 /* A state's functions. */
@@ -47,7 +47,7 @@ typedef struct RoomVillagerStep {
 typedef struct RoomVillagerMachine {
     s32 state;                    /* 0x00: enum RoomVillagerState */
     const RoomVillagerStep *step; /* 0x04: the state's entry of the table */
-    s32 next;                     /* 0x08: the state to take next, ROOM_VILLAGER_STATES for none */
+    s32 next;                     /* 0x08: the state to take next, ROOM_VILLAGER_STATE_COUNT for none */
     u8 phase;                     /* 0x0c: the step within the state, 0 on entry */
     u8 unk_0d[3];                 /* 0x0d */
     s32 timer;                    /* 0x10: frames, run down after each update */

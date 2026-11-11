@@ -99,7 +99,7 @@ extern NetSession *data_020ccf94;
 extern const u8 data_ov004_022539cc[];
 /* The table of the machine's states (filled by the overlay's static initializer from the
  * member pointers data_ov004_022539a4 to data_ov004_0225394c). */
-extern RoomVillagerStep data_ov004_02257cb8[ROOM_VILLAGER_STATES];
+extern RoomVillagerStep data_ov004_02257cb8[ROOM_VILLAGER_STATE_COUNT];
 /* The member pointers to RoomVillager_Draw (its start, and state 0's entry). */
 extern const MemberPointer data_ov004_02253954, data_ov004_0225395c;
 /* The steps of states 1 and 2: function-local tables filled once from the constants (bit 0 of
@@ -518,7 +518,7 @@ int RoomVillager_EnterWander(RoomVillagerMachine *machine, RoomVillager *village
 CLEAN_AS(func_ov004_0221ea40, RoomVillager_EnterWander)
 
 /* func_ov004_0221ea98: the tile one step ahead of it (by the quarter its yaw is in), when the
- * grid marks it (only rows 0-13 count while it stands in them): the tile's centre's x and z into
+ * grid marks it (only rows 0-13 count while it stands in them): the tile's center's x and z into
  * `x` and `z`; whether there was one. */
 int RoomVillager_FindStepAhead(RoomVillagerMachine *machine, int *x, int *z, RoomVillager *villager)
 {
@@ -552,7 +552,7 @@ CLEAN_AS(func_ov004_0221ea98, RoomVillager_FindStepAhead)
 int RoomVillagerMachine_TakeNext(RoomVillagerMachine *machine, RoomVillager *villager)
 {
     int next = machine->next;
-    if (next < ROOM_VILLAGER_STATES) {
+    if (next < ROOM_VILLAGER_STATE_COUNT) {
         RoomVillagerMachine_SetState(machine, villager, next);
         RoomVillagerMachine_ClearNext(machine);
         return 1;
@@ -564,7 +564,7 @@ CLEAN_AS(func_ov004_0221eb44, RoomVillagerMachine_TakeNext)
 /* func_ov004_0221eb64: no state asked for next. */
 void RoomVillagerMachine_ClearNext(RoomVillagerMachine *machine)
 {
-    machine->next = ROOM_VILLAGER_STATES;
+    machine->next = ROOM_VILLAGER_STATE_COUNT;
 }
 CLEAN_AS(func_ov004_0221eb64, RoomVillagerMachine_ClearNext)
 
@@ -573,7 +573,7 @@ CLEAN_AS(func_ov004_0221eb64, RoomVillagerMachine_ClearNext)
  * used). */
 void RoomVillagerMachine_SetState(RoomVillagerMachine *machine, RoomVillager *villager, int state)
 {
-    if (state < 0 || state >= ROOM_VILLAGER_STATES) {
+    if (state < 0 || state >= ROOM_VILLAGER_STATE_COUNT) {
         return;
     }
     machine->state = state;
@@ -608,7 +608,7 @@ CLEAN_AS(func_ov004_0221ebf4, RoomVillagerMachine_Destruct)
 /* func_ov004_0221ebf8: the machine's constructor: no next state, the timer 0. */
 void RoomVillagerMachine_Construct(RoomVillagerMachine *machine)
 {
-    machine->next = ROOM_VILLAGER_STATES;
+    machine->next = ROOM_VILLAGER_STATE_COUNT;
     machine->timer = 0;
 }
 CLEAN_AS(func_ov004_0221ebf8, RoomVillagerMachine_Construct)

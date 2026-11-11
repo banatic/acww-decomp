@@ -136,7 +136,7 @@ extern const u8 data_020da088[];
 extern const char data_ov047_02262bc0[];
 extern const char data_ov047_02262bf0[];
 /* The functions of its states (filled at start-up by __sinit_ov047_02262838). */
-extern OwlStep data_ov047_02263048[OWL_STATES];
+extern OwlStep data_ov047_02263048[OWL_STATE_COUNT];
 /* The word its motion requests carry. */
 extern u16 data_020c80f8;
 /* The look's point and range when it names neither. */

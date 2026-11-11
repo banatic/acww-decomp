@@ -18,12 +18,12 @@ extern const MemberPointer data_ov080_022791e0, data_ov080_022791e8, data_ov080_
  * address of the table. */
 int TurtleInit_Tables(void)
 {
-    static const MemberPointer *const states[2 * TURTLE_STATES] = {
+    static const MemberPointer *const states[2 * TURTLE_STATE_COUNT] = {
         &data_ov080_022791f8, &data_ov080_02279200, /* TURTLE_STAND: Turtle_EnterStand, Turtle_UpdateStand */
         &data_ov080_022791f0, &data_ov080_022791e8, /* TURTLE_TALK: Turtle_EnterTalk, Turtle_UpdateTalk */
         &__ptmf_null,         &data_ov080_022791e0, /* TURTLE_TALKED: none, Turtle_UpdateTalked */
     };
-    for (int i = 0; i < TURTLE_STATES; i++) {
+    for (int i = 0; i < TURTLE_STATE_COUNT; i++) {
         data_ov080_022793e0[i].enter = *states[2 * i];
         data_ov080_022793e0[i].run = *states[2 * i + 1];
     }

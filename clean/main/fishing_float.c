@@ -96,10 +96,10 @@ typedef int (*FishingFloatHoldPointFn)(Actor *actor, Vec3 *out);
 
 typedef void (*FishingFloatStepFn)(void *self);
 
-extern FishingFloatPool data_021cad80;               /* the pool */
-extern MemberFn data_021cad30[FISHING_FLOAT_STATES]; /* the states' step functions */
-extern Heap *data_021c9ac8;                          /* the model files' heap (SceneHeaps_Create021c9ac8) */
-extern NetSession *data_020ccf94;                    /* the session */
+extern FishingFloatPool data_021cad80;                    /* the pool */
+extern MemberFn data_021cad30[FISHING_FLOAT_STATE_COUNT]; /* the states' step functions */
+extern Heap *data_021c9ac8;                               /* the model files' heap (SceneHeaps_Create021c9ac8) */
+extern NetSession *data_020ccf94;                         /* the session */
 extern const fx16 FX_SinCosTable_[4096 * 2];
 
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
@@ -467,7 +467,7 @@ void FishingFloat_Update(FishingFloat *self)
     FishingFloatPool_UploadTexture(&data_021cad80, self->entry);
     self->frames++;
     self->landed = 0;
-    if (self->state >= FISHING_FLOAT_STATES) {
+    if (self->state >= FISHING_FLOAT_STATE_COUNT) {
         FishingFloat_SetState(self, FISHING_FLOAT_NONE);
     }
     fishing_float_call_member(&data_021cad30[self->state], self);

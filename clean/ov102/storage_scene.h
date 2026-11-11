@@ -86,7 +86,7 @@ enum StorageSceneHeldKind {
  * 1 by 0x4c, 2 by 0x50, 3 by 0x54, 4 by 0x58 and 5 by 0x5c). */
 enum StorageScenePhase {
     STORAGE_SCENE_PHASE_WAIT = 0,        /* the base's wait */
-    STORAGE_SCENE_PHASE_STATES = 1,      /* StorageScene_RunState */
+    STORAGE_SCENE_PHASE_STATE_COUNT = 1, /* StorageScene_RunState */
     STORAGE_SCENE_PHASE_INTERACTIVE = 2, /* StorageScene_RunInteractive */
     STORAGE_SCENE_PHASE_DELETE = 5       /* StorageScene_RequestDelete */
 };
@@ -103,7 +103,7 @@ enum StorageSceneState {
     STORAGE_SCENE_STATE_TURN_PAGE = 7,          /* StorageScene_TurnPage */
     STORAGE_SCENE_STATE_TURN_PAGE_WIPE_OUT = 8, /* StorageScene_TurnPageWipeOut */
     STORAGE_SCENE_STATE_TURN_PAGE_WIPE_IN = 9,  /* StorageScene_TurnPageWipeIn */
-    STORAGE_SCENE_STATES = 10
+    STORAGE_SCENE_STATE_COUNT = 10
 };
 
 /* The sub states (MenuScene.sub_state), run from the table of StorageScene_RunSubState. */
@@ -124,7 +124,7 @@ enum StorageSceneSubState {
     STORAGE_SCENE_SUB_HELD_GLIDE = 0x0d,    /* StorageScene_StepHeldGlide */
     STORAGE_SCENE_SUB_ERROR = 0x0e,         /* StorageScene_WaitError; not set by this overlay */
     STORAGE_SCENE_SUB_CLOSE_DELAY = 0x0f,   /* StorageScene_WaitCloseDelay */
-    STORAGE_SCENE_SUB_STATES = 0x10
+    STORAGE_SCENE_SUB_STATE_COUNT = 0x10
 };
 
 typedef struct StorageScene {

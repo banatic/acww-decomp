@@ -81,7 +81,7 @@ enum FriendCodeEntryState {
     FRIEND_CODE_STATE_WIPE_IN = 2,        /* FriendCodeEntry_WipeIn */
     FRIEND_CODE_STATE_START_WIPE_OUT = 3, /* FriendCodeEntry_StartWipeOut */
     FRIEND_CODE_STATE_WIPE_OUT = 4,       /* FriendCodeEntry_WipeOut */
-    FRIEND_CODE_STATES = 5
+    FRIEND_CODE_STATE_COUNT = 5
 };
 
 /* The sub states (MenuScene.sub_state), run by FriendCodeEntry_RunSubState. */
@@ -99,12 +99,12 @@ enum FriendCodeEntrySubState {
     FRIEND_CODE_SUB_BUTTON_PRESS = 10,   /* FriendCodeEntry_FollowButtonPress */
     FRIEND_CODE_SUB_ERROR = 11,          /* FriendCodeEntry_WaitError */
     FRIEND_CODE_SUB_SET_FRIEND = 12,     /* FriendCodeEntry_RetrySetFriend */
-    FRIEND_CODE_SUB_STATES = 13
+    FRIEND_CODE_SUB_STATE_COUNT = 13
 };
 
 /* The phases the scene sets (MenuScene.phase; the vtable's slot 0x48 + 4 * phase runs). */
 enum FriendCodeEntryPhase {
-    FRIEND_CODE_PHASE_STATES = 1,      /* FriendCodeEntry_RunState */
+    FRIEND_CODE_PHASE_STATE_COUNT = 1, /* FriendCodeEntry_RunState */
     FRIEND_CODE_PHASE_INTERACTIVE = 2, /* FriendCodeEntry_RunInteractive */
     FRIEND_CODE_PHASE_END = 5          /* FriendCodeEntry_End */
 };

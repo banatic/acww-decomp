@@ -40,8 +40,8 @@ extern Obj021c526c *data_021c526c;
  * constants they are filled from. */
 extern u32 data_ov128_0229cd40; /* the sub states' guard */
 extern u32 data_ov128_0229cd44; /* the states' guard */
-extern MemberPointer data_ov128_0229cd48[STAR_VIEW_STATES];
-extern MemberPointer data_ov128_0229cd68[STAR_VIEW_SUB_STATES];
+extern MemberPointer data_ov128_0229cd48[STAR_VIEW_STATE_COUNT];
+extern MemberPointer data_ov128_0229cd68[STAR_VIEW_SUB_STATE_COUNT];
 extern const MemberPointer data_ov128_0229c8c8; /* StarView_StateOpen */
 extern const MemberPointer data_ov128_0229c8d0; /* StarView_StateWipeOut */
 extern const MemberPointer data_ov128_0229c8d8; /* StarView_SubButton */
@@ -373,12 +373,12 @@ CLEAN_AS(_ZN18Obj_ov128_0229cbc019func_ov128_0229c5fcEv, StarView_RunInteractive
  * REQUIRES: the sub state is below 11; the game reads past the table for others. */
 void StarView_RunSubState(StarView *self)
 {
-    static const MemberPointer *const sub_states[STAR_VIEW_SUB_STATES] = {
+    static const MemberPointer *const sub_states[STAR_VIEW_SUB_STATE_COUNT] = {
         &data_ov128_0229c918, &data_ov128_0229c920, &data_ov128_0229c900, &data_ov128_0229c938,
         &data_ov128_0229c910, &data_ov128_0229c928, &data_ov128_0229c930, &data_ov128_0229c8f0,
         &data_ov128_0229c8e8, &data_ov128_0229c8e0, &data_ov128_0229c8d8,
     };
-    MemberTable_InitOnce(&data_ov128_0229cd40, data_ov128_0229cd68, sub_states, STAR_VIEW_SUB_STATES);
+    MemberTable_InitOnce(&data_ov128_0229cd40, data_ov128_0229cd68, sub_states, STAR_VIEW_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov128_0229cd68[self->base.sub_state], self);
 }
 CLEAN_AS(_ZN18Obj_ov128_0229cbc019func_ov128_0229c618Ev, StarView_RunSubState)
@@ -389,13 +389,13 @@ CLEAN_AS(_ZN18Obj_ov128_0229cbc019func_ov128_0229c618Ev, StarView_RunSubState)
  * REQUIRES: the state is below 4; the game reads past the table for others. */
 int StarView_RunState(StarView *self)
 {
-    static const MemberPointer *const states[STAR_VIEW_STATES] = {
+    static const MemberPointer *const states[STAR_VIEW_STATE_COUNT] = {
         &data_ov128_0229c8c8,
         &data_ov128_0229c908,
         &data_ov128_0229c940,
         &data_ov128_0229c8d0,
     };
-    MemberTable_InitOnce(&data_ov128_0229cd44, data_ov128_0229cd48, states, STAR_VIEW_STATES);
+    MemberTable_InitOnce(&data_ov128_0229cd44, data_ov128_0229cd48, states, STAR_VIEW_STATE_COUNT);
     StarView_BeginFrame(self);
     MemberPointer_CallVoid(&data_ov128_0229cd48[self->base.state], self);
     StarView_EndFrame(self);

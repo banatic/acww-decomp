@@ -17,7 +17,7 @@
 
 #include "types.h"
 
-enum BulletinBoardState { BULLETIN_BOARD_IDLE, BULLETIN_BOARD_OPENING, BULLETIN_BOARD_OPEN, BULLETIN_BOARD_STATES };
+enum BulletinBoardState { BULLETIN_BOARD_IDLE, BULLETIN_BOARD_OPENING, BULLETIN_BOARD_OPEN, BULLETIN_BOARD_STATE_COUNT };
 
 typedef struct BulletinBoard {
     const void *vtable; /* data_ov003_02238434 */

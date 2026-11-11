@@ -3,7 +3,7 @@
  * (fader.h). As the fader's level rises from 0 to 1.0:
  *
  * - the lamps, up to three materials named "lp_m0", "lp_m1" and "lp_m2", glow: their emission
- *   color goes from the scene's ambient material colour towards white, while the model's
+ *   color goes from the scene's ambient material color towards white, while the model's
  *   other materials take the ambient color as theirs (at level 0 emission is turned off);
  * - the window, the material "m_window", goes from nearly clear (alpha 1) to opaque (30);
  * - the door, the material "m_door", gets a warm diffuse color, up to red 31, green 27 and

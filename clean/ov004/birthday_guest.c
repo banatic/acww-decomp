@@ -95,9 +95,9 @@ extern const u8 data_ov004_022537d8[];
 /* The tables of its states' update and entry functions (filled once from the constants below,
  * bit 0 of the guards saying they were). */
 extern u32 data_ov004_02257bd0;
-extern MemberPointer data_ov004_02257c40[BIRTHDAY_GUEST_STATES];
+extern MemberPointer data_ov004_02257c40[BIRTHDAY_GUEST_STATE_COUNT];
 extern u32 data_ov004_02257bdc;
-extern MemberPointer data_ov004_02257c08[BIRTHDAY_GUEST_STATES];
+extern MemberPointer data_ov004_02257c08[BIRTHDAY_GUEST_STATE_COUNT];
 extern const MemberPointer data_ov004_02253750, data_ov004_02253790, data_ov004_02253788, data_ov004_022537b0,
     data_ov004_02253740, data_ov004_02253748, data_ov004_02253770;
 extern const MemberPointer data_ov004_02253768, data_ov004_02253778, data_ov004_02253780, data_ov004_022537a0,
@@ -524,7 +524,7 @@ CLEAN_AS(func_ov004_0221dc18, BirthdayGuest_EnterWander)
  * table (filled once). */
 void BirthdayGuest_Update(BirthdayGuest *guest)
 {
-    static const MemberPointer *const updates[BIRTHDAY_GUEST_STATES] = {
+    static const MemberPointer *const updates[BIRTHDAY_GUEST_STATE_COUNT] = {
         &data_ov004_02253750, /* BirthdayGuest_UpdateWander */
         &data_ov004_02253790, /* BirthdayGuest_UpdateFace */
         &data_ov004_02253788, /* BirthdayGuest_UpdateActShort */
@@ -533,9 +533,9 @@ void BirthdayGuest_Update(BirthdayGuest *guest)
         &data_ov004_02253748, /* BirthdayGuest_UpdateTurn */
         &data_ov004_02253770, /* BirthdayGuest_UpdateTalk */
     };
-    MemberTable_InitOnce(&data_ov004_02257bd0, data_ov004_02257c40, updates, BIRTHDAY_GUEST_STATES);
+    MemberTable_InitOnce(&data_ov004_02257bd0, data_ov004_02257c40, updates, BIRTHDAY_GUEST_STATE_COUNT);
     /* REQUIRES: state >= 0; the ROM's signed test lets a negative one index before the table */
-    if (guest->state >= 0 && guest->state < BIRTHDAY_GUEST_STATES) {
+    if (guest->state >= 0 && guest->state < BIRTHDAY_GUEST_STATE_COUNT) {
         MemberPointer_CallVoid(&data_ov004_02257c40[guest->state], guest);
     }
 }
@@ -545,7 +545,7 @@ CLEAN_AS(_ZN18Obj_ov004_0225386819func_ov004_0221dc70Ev, BirthdayGuest_Update)
  * agrees; whether it did. States 7 and above do not exist. */
 int BirthdayGuest_SetState(BirthdayGuest *guest, int state)
 {
-    static const MemberPointer *const entries[BIRTHDAY_GUEST_STATES] = {
+    static const MemberPointer *const entries[BIRTHDAY_GUEST_STATE_COUNT] = {
         &data_ov004_02253768, /* BirthdayGuest_EnterWander */
         &data_ov004_02253778, /* BirthdayGuest_EnterFace */
         &data_ov004_02253780, /* BirthdayGuest_EnterActShort */
@@ -554,10 +554,10 @@ int BirthdayGuest_SetState(BirthdayGuest *guest, int state)
         &data_ov004_02253760, /* BirthdayGuest_EnterTurn */
         &data_ov004_02253758, /* BirthdayGuest_EnterTalk */
     };
-    MemberTable_InitOnce(&data_ov004_02257bdc, data_ov004_02257c08, entries, BIRTHDAY_GUEST_STATES);
+    MemberTable_InitOnce(&data_ov004_02257bdc, data_ov004_02257c08, entries, BIRTHDAY_GUEST_STATE_COUNT);
     /* REQUIRES: state >= 0 (the game passes 0 to 6); the ROM's signed test lets a negative one
      * index before the table */
-    if (state >= 0 && state < BIRTHDAY_GUEST_STATES && MemberPointer_CallInt(&data_ov004_02257c08[state], guest) != 0) {
+    if (state >= 0 && state < BIRTHDAY_GUEST_STATE_COUNT && MemberPointer_CallInt(&data_ov004_02257c08[state], guest) != 0) {
         guest->state = state;
         return 1;
     }

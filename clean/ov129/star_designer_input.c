@@ -502,7 +502,7 @@ void StarDesigner_SubButton(StarDesigner *self)
         }
     } else {
         StarDesigner_HidePointer(self);
-        MenuScene_SetPhase(star_designer_scene(self), STAR_DESIGNER_PHASE_STATES);
+        MenuScene_SetPhase(star_designer_scene(self), STAR_DESIGNER_PHASE_STATE_COUNT);
     }
 }
 CLEAN_AS(func_ov129_0229ca70, StarDesigner_SubButton)

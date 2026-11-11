@@ -58,7 +58,7 @@ typedef struct Giraffe {
     u8 unk_739[3];                         /* 0x739 */
 } Giraffe;
 
-enum GiraffeState { GIRAFFE_STAND = 0, GIRAFFE_TALKING = 1, GIRAFFE_TALKED = 2, GIRAFFE_STATES = 3 };
+enum GiraffeState { GIRAFFE_STAND = 0, GIRAFFE_TALKING = 1, GIRAFFE_TALKED = 2, GIRAFFE_STATE_COUNT = 3 };
 
 /* A state's functions in data_ov070_02279f24. */
 typedef struct GiraffeStep {

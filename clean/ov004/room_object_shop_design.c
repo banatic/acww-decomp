@@ -17,7 +17,7 @@ static_assert(offsetof(ShopDesignObject, design) == 0x844, "design");
 static_assert(offsetof(ShopDesignObject, emitter) == 0x848, "emitter");
 static_assert(offsetof(ShopDesignObject, has_sound) == 0x888, "has sound");
 static_assert(sizeof(ShopDesignObject) == 0x88c, "the size ShopDesignObject_Create allocates");
-static_assert(offsetof(RoomObject, sound) == 0x798, "the object's centre is at 0x7b8");
+static_assert(offsetof(RoomObject, sound) == 0x798, "the object's center is at 0x7b8");
 
 #define SHOP_DESIGN_OBJECT_SIZE 0x88c
 #define SHOP_DESIGN_ITEM_FIRST 0x3e04 /* four codes (sides) a design */

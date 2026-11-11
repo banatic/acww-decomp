@@ -53,7 +53,7 @@ enum ChatSceneState {
     CHAT_SCENE_STATE_WIPE_IN = 3,       /* ChatScene_WipeIn: then the input (phase 2) */
     CHAT_SCENE_STATE_LEAVE = 4,         /* ChatScene_StartWipeOut: set by ChatScene_SwitchTab */
     CHAT_SCENE_STATE_WIPE_OUT = 5,      /* ChatScene_WipeOut: then phase 5 */
-    CHAT_SCENE_STATES = 6
+    CHAT_SCENE_STATE_COUNT = 6
 };
 
 /* The scene's sub states (MenuScene.sub_state), each run by its handler of the table of
@@ -75,14 +75,14 @@ enum ChatSceneSubState {
     CHAT_SCENE_SUB_SEND_IN = 13,       /* ChatScene_SendAnimIn: the send's look comes in */
     CHAT_SCENE_SUB_SEND_OUT = 14,      /* ChatScene_SendAnimOut: the message posted, the look goes */
     CHAT_SCENE_SUB_ERROR = 15,         /* ChatScene_UpdateError */
-    CHAT_SCENE_SUB_STATES = 16
+    CHAT_SCENE_SUB_STATE_COUNT = 16
 };
 
 /* The phases the scene sets (MenuScene.phase; menu_scene.c's MenuScene_Update runs phase 0 by
  * the vtable's slot 0x48, 1 by 0x4c, 2 by 0x50 and 5 by 0x5c). */
 enum ChatScenePhase {
     CHAT_SCENE_PHASE_WAIT = 0,
-    CHAT_SCENE_PHASE_STATES = 1,      /* ChatScene_RunState */
+    CHAT_SCENE_PHASE_STATE_COUNT = 1, /* ChatScene_RunState */
     CHAT_SCENE_PHASE_INTERACTIVE = 2, /* ChatScene_RunInteractive */
     CHAT_SCENE_PHASE_DELETE = 5       /* ChatScene_RequestDelete */
 };

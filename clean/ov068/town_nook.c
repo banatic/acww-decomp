@@ -434,7 +434,7 @@ typedef struct TownNookStateFns {
 
 static_assert(sizeof(TownNookStateFns) == 0x10, "state row");
 
-extern TownNookStateFns data_ov068_02278658[TOWN_NOOK_STATES];
+extern TownNookStateFns data_ov068_02278658[TOWN_NOOK_STATE_COUNT];
 /* The model and texture file names, one per look. */
 extern const char *const data_ov068_022773a8[NOOK_LOOKS];
 extern const char *const data_ov068_022773b8[NOOK_LOOKS];
@@ -490,13 +490,13 @@ int TownNook_UpdateEnd(u8 *object)
 }
 CLEAN_AS(func_ov068_0226e604, TownNook_UpdateEnd)
 
-/* func_ov068_0226e638 (start of TOWN_NOOK_END): 10 frames. */
-int TownNook_StartEnd(u8 *object)
+/* func_ov068_0226e638 (entry of TOWN_NOOK_END): 10 frames. */
+int TownNook_EnterEnd(u8 *object)
 {
     *nook_timer(object) = NOOK_END_FRAMES;
     return 1;
 }
-CLEAN_AS(func_ov068_0226e638, TownNook_StartEnd)
+CLEAN_AS(func_ov068_0226e638, TownNook_EnterEnd)
 
 /* func_ov068_0226e648 (update of TOWN_NOOK_LEAVE): once its walk is done or its timer runs out
  * (the walk is asked first, so the timer only counts while it walks), its event is finished
@@ -514,9 +514,9 @@ int TownNook_UpdateLeave(u8 *object)
 }
 CLEAN_AS(func_ov068_0226e648, TownNook_UpdateLeave)
 
-/* func_ov068_0226e688 (start of TOWN_NOOK_LEAVE): it walks (motion kind 2, priority 1) to 2.0
+/* func_ov068_0226e688 (entry of TOWN_NOOK_LEAVE): it walks (motion kind 2, priority 1) to 2.0
  * west and 10.0 south of where it stands (kept at 0x718), for at most 60 frames. */
-int TownNook_StartLeave(u8 *object)
+int TownNook_EnterLeave(u8 *object)
 {
     Vec3 *to = (Vec3 *) (void *) nook_at(object, NOOK_WALK_TO);
     *to = *(const Vec3 *) (const void *) nook_at(object, NOOK_POSITION);
@@ -527,7 +527,7 @@ int TownNook_StartLeave(u8 *object)
     *nook_timer(object) = NOOK_LEAVE_FRAMES;
     return 1;
 }
-CLEAN_AS(func_ov068_0226e688, TownNook_StartLeave)
+CLEAN_AS(func_ov068_0226e688, TownNook_EnterLeave)
 
 /* func_ov068_0226e708 (update of TOWN_NOOK_TURN): once the turn is done, TOWN_NOOK_LEAVE. */
 int TownNook_UpdateTurn(u8 *object)
@@ -540,13 +540,13 @@ int TownNook_UpdateTurn(u8 *object)
 }
 CLEAN_AS(func_ov068_0226e708, TownNook_UpdateTurn)
 
-/* func_ov068_0226e738 (start of TOWN_NOOK_TURN): a turn (motion kind 3, priority 1). */
-int TownNook_StartTurn(u8 *object)
+/* func_ov068_0226e738 (entry of TOWN_NOOK_TURN): a turn (motion kind 3, priority 1). */
+int TownNook_EnterTurn(u8 *object)
 {
     SceneMotion_Request(nook_motion(object), NOOK_MOTION_TURN, NOOK_MOTION_LEAVE_PRIORITY, 0, 0, 0, 0, 0, 0, data_020c80f8, 0);
     return 1;
 }
-CLEAN_AS(func_ov068_0226e738, TownNook_StartTurn)
+CLEAN_AS(func_ov068_0226e738, TownNook_EnterTurn)
 
 /* func_ov068_0226e76c (update of TOWN_NOOK_CALL_PLAYER): once the player is no longer busy, the
  * talk scene is reset (its vtable slot 0x08), given the player's object as its motion argument,
@@ -563,16 +563,16 @@ int TownNook_UpdateCallPlayer(u8 *object)
 }
 CLEAN_AS(func_ov068_0226e76c, TownNook_UpdateCallPlayer)
 
-/* func_ov068_0226e7ac (start of TOWN_NOOK_CALL_PLAYER): the player walks to 2.0 south of its
+/* func_ov068_0226e7ac (entry of TOWN_NOOK_CALL_PLAYER): the player walks to 2.0 south of its
  * starting point. */
-int TownNook_StartCallPlayer(void)
+int TownNook_EnterCallPlayer(void)
 {
     Vec3 point = *PlayerActorOps_StartPosition(NOOK_PLAYER);
     point.z += NOOK_PLAYER_STEP_Z;
     PlayerActorOps_MoveTo(&point, NOOK_PLAYER_ACCEL, NOOK_PLAYER);
     return 1;
 }
-CLEAN_AS(func_ov068_0226e7ac, TownNook_StartCallPlayer)
+CLEAN_AS(func_ov068_0226e7ac, TownNook_EnterCallPlayer)
 
 /* func_ov068_0226e7e4 (update of TOWN_NOOK_TALK): once its action has ended, the camera's mode
  * is reset, value 0x3c added to the music of priority 0x13, music 0x47 dropped, and
@@ -589,9 +589,9 @@ int TownNook_UpdateTalk(u8 *object)
 }
 CLEAN_AS(func_ov068_0226e7e4, TownNook_UpdateTalk)
 
-/* func_ov068_0226e81c (start of TOWN_NOOK_TALK): it turns to its talk scene's other speaker
+/* func_ov068_0226e81c (entry of TOWN_NOOK_TALK): it turns to its talk scene's other speaker
  * (angle 0 when there is none) and talks, without moving the camera. */
-int TownNook_StartTalk(u8 *object)
+int TownNook_EnterTalk(u8 *object)
 {
     int other = SceneBase_MotionArg(&nook_scene(object)->base);
     int angle = 0;
@@ -601,7 +601,7 @@ int TownNook_StartTalk(u8 *object)
     SceneAction_RequestTurnAndTalk(nook_action(object), 0, angle, 1);
     return 1;
 }
-CLEAN_AS(func_ov068_0226e81c, TownNook_StartTalk)
+CLEAN_AS(func_ov068_0226e81c, TownNook_EnterTalk)
 
 /* func_ov068_0226e854 (update of TOWN_NOOK_WAIT): once the event queue gives it an event of
  * kind 6, the player's flag 0x0e is set on. */
@@ -614,12 +614,12 @@ int TownNook_UpdateWait(u8 *object)
 }
 CLEAN_AS(func_ov068_0226e854, TownNook_UpdateWait)
 
-/* func_ov068_0226e874 (start of TOWN_NOOK_WAIT) */
-int TownNook_StartWait(void)
+/* func_ov068_0226e874 (entry of TOWN_NOOK_WAIT) */
+int TownNook_EnterWait(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov068_0226e874, TownNook_StartWait)
+CLEAN_AS(func_ov068_0226e874, TownNook_EnterWait)
 
 /* func_ov068_0226e878: the state's start run (when it has one); unless it answers 0 the state
  * is taken.

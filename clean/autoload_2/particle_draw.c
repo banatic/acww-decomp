@@ -135,7 +135,7 @@ static void particle_place(const ParticleHeader *header, const Particle *ptcl, V
     }
 }
 
-/* The particle's colour times the emitter's, each of red, green and blue out of 32. */
+/* The particle's color times the emitter's, each of red, green and blue out of 32. */
 static void set_color(const Particle *ptcl, const ParticleEmitter *emitter)
 {
     s32 p = ptcl->color;

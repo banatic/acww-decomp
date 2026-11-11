@@ -32,7 +32,7 @@
 #define GULL_IDLE 1
 #define GULL_TALK 2
 #define GULL_TALKED 3
-#define GULL_STATES 4
+#define GULL_STATE_COUNT 4
 
 typedef struct Gull {
     u8 unk_000[0x8e];  /* the scene object (special_scene_object.h, scene_object.h) */
@@ -54,7 +54,7 @@ typedef struct GullStateRow {
     MemberPointer enter;
     MemberPointer run;
 } GullStateRow;
-extern GullStateRow data_ov072_02279bd8[GULL_STATES];
+extern GullStateRow data_ov072_02279bd8[GULL_STATE_COUNT];
 
 /* The object's life and vtable slots. */
 Gull *Gull_Destruct(Gull *self);
@@ -75,7 +75,7 @@ int Gull_UpdateIdle(Gull *self);
 int Gull_EnterIdle(Gull *self);
 int Gull_UpdateUnmet(void);
 int Gull_EnterUnmet(Gull *self);
-int Gull_CountDown(Gull *self, s32 *counter);
+int Gull_Tick(Gull *self, s32 *counter);
 void Gull_SetState(Gull *self, int state);
 int Gull_Update(Gull *self);
 

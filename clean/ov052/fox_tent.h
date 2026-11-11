@@ -92,7 +92,7 @@ enum FoxTentState {
     FOX_TENT_PAUSED = 8,
     FOX_TENT_COME = 9,
     FOX_TENT_AT_EXIT = 10,
-    FOX_TENT_STATES = 11
+    FOX_TENT_STATE_COUNT = 11
 };
 
 /* A state's functions in data_ov052_02262000. */

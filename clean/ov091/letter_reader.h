@@ -24,14 +24,14 @@ enum LetterReaderState {
     LETTER_READER_STATE_BUTTON = 3,   /* LetterReader_WaitButton */
     LETTER_READER_STATE_CLOSE = 4,    /* LetterReader_StartWipeOut */
     LETTER_READER_STATE_WIPE_OUT = 5, /* LetterReader_WipeOut */
-    LETTER_READER_STATES = 6
+    LETTER_READER_STATE_COUNT = 6
 };
 
 /* The sub states (MenuScene.sub_state), run by LetterReader_RunInteractive. */
 enum LetterReaderSubState {
     LETTER_READER_SUB_TOUCH = 0, /* LetterReader_TouchInput */
     LETTER_READER_SUB_PAD = 1,   /* LetterReader_PadInput */
-    LETTER_READER_SUB_STATES = 2
+    LETTER_READER_SUB_STATE_COUNT = 2
 };
 
 typedef struct LetterReader {

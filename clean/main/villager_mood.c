@@ -146,7 +146,7 @@ void VillagerMood_Update(VillagerMood *mood, u8 *villager)
             mood->apply = 0;
             VillagerMood_ClearAsked(mood);
         }
-        VillagerState_CountDownMood(entry);
+        VillagerState_TickMood(entry);
         if (shown != VILLAGER_MOOD_NONE && VillagerState_MoodFrames(entry) == 0) {
             shown = VILLAGER_MOOD_NONE;
             VillagerState_SetMood(entry, shown);

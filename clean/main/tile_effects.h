@@ -5,7 +5,7 @@
  * A flower code (MapItem_IsAnyFlower) starts two effects at the tile's center, chosen
  * by the code's flower kind (TownFamily_Kind), unless the mode is 1 (only the first then). Their
  * set-up functions read what the effects are for from TileEffectsSource (data_021c77a0): the
- * place, the code's kind and colour, and the mode; they tint the emitter's color by the
+ * place, the code's kind and color, and the mode; they tint the emitter's color by the
  * sky's light and, in mode 2, turn its axis by the source's angle.
  *
  * TileEffects_Strike (mode 1) and TileEffects_Brush (mode 1 seven times in eight, else 0) start

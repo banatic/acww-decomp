@@ -38,7 +38,7 @@ enum MenuBackdropState {
     MENU_BACKDROP_RESTORE = 10,  /* waiting for the camera's previous mode */
     MENU_BACKDROP_WIPE_OUT = 11, /* sweeping the picture out */
     MENU_BACKDROP_CLOSED = 12,
-    MENU_BACKDROP_STATES = 13
+    MENU_BACKDROP_STATE_COUNT = 13
 };
 
 /* data_021cfc10: the picture's style. */

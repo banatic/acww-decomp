@@ -339,7 +339,7 @@ void TuneEditor_AskErase(TuneEditor *self)
     TuneEditor_SetErasePalette(self, 6);
     TuneEditor_HideCursorSprite(self);
     MenuScene_SetState(tune_scene(self), TUNE_EDITOR_STATE_TO_ERASE);
-    MenuScene_SetPhase(tune_scene(self), TUNE_EDITOR_PHASE_STATES);
+    MenuScene_SetPhase(tune_scene(self), TUNE_EDITOR_PHASE_STATE_COUNT);
     MenuScene_StartWipe(tune_scene(self), 0, 0);
 }
 CLEAN_AS(func_ov143_02299ad4, TuneEditor_AskErase)

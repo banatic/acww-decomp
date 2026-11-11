@@ -105,7 +105,7 @@ extern const u8 data_020da088[];
 extern const char data_ov055_02260ec0[];
 extern const char data_ov055_02260ef0[];
 /* The functions of his states (filled at start-up by __sinit_ov055_02260db4). */
-extern XctExchangeStep data_ov055_02261084[XCT_EXCHANGE_STATES];
+extern XctExchangeStep data_ov055_02261084[XCT_EXCHANGE_STATE_COUNT];
 /* Him, from his start to his leaving. */
 extern XctExchange *data_ov055_02261080;
 /* The slot of the library overlays, and the overlays it is given. */

@@ -25,7 +25,7 @@ enum Shop3VillagerState {
     SHOP3_VILLAGER_TALK = 0,
     SHOP3_VILLAGER_IDLE = 1,
     SHOP3_VILLAGER_STAND = 2,
-    SHOP3_VILLAGER_STATES = 3
+    SHOP3_VILLAGER_STATE_COUNT = 3
 };
 
 struct Shop3Villager;

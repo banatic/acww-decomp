@@ -56,7 +56,7 @@ enum CafeMasterState {
     CAFE_MASTER_AWAIT = 5,
     CAFE_MASTER_OTHER = 6,
     CAFE_MASTER_PAUSED = 7,
-    CAFE_MASTER_STATES = 8
+    CAFE_MASTER_STATE_COUNT = 8
 };
 
 /* The sequences of his talk scene (CafeMasterTalk.sequence). */

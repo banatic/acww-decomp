@@ -160,7 +160,7 @@ CLEAN_AS(func_ov003_02220bf0, TileEvent_FindFreeTileAround)
  * 0x156b for variant 0 else 0x137b. Its point: the position of player 4's actor moved by
  * `x` * 256 along x (zero without that actor), at height 0xa000; with the actor its tile is the
  * one of that point with z put on the first tile of its acre plus 1, and the point's z that
- * tile's centre's. (The sky shots of main.)
+ * tile's center's. (The sky shots of main.)
  * QUIRK: `x` is shifted left by 12 and back right by 4, so its top 12 bits are lost. */
 int TileEvent_StartKindC(int variant, int x)
 {

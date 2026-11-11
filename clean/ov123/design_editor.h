@@ -114,7 +114,7 @@ enum DesignEditorSubState {
     DESIGN_EDITOR_SUB_PRESS = 0x0a,       /* DesignEditor_PressAtCursor */
     DESIGN_EDITOR_SUB_PRESS_END = 0x0b,   /* DesignEditor_FinishPress */
     DESIGN_EDITOR_SUB_PANEL_PRESS = 0x0c, /* DesignEditor_WaitPanelPress */
-    DESIGN_EDITOR_SUB_STATES = 0x0d
+    DESIGN_EDITOR_SUB_STATE_COUNT = 0x0d
 };
 
 /* The states, run from the table of DesignEditor_RunState (MenuScene_SetState). States 6-8 ask
@@ -132,14 +132,14 @@ enum DesignEditorState {
     DESIGN_EDITOR_STATE_START_END_QUESTION = 0x09,    /* DesignEditor_StartEndQuestion */
     DESIGN_EDITOR_STATE_END_QUESTION_WIPE_OUT = 0x0a, /* DesignEditor_EndQuestionWipeOut */
     DESIGN_EDITOR_STATE_END_QUESTION_WIPE_IN = 0x0b,  /* DesignEditor_EndQuestionWipeIn */
-    DESIGN_EDITOR_STATES = 0x0c
+    DESIGN_EDITOR_STATE_COUNT = 0x0c
 };
 
 /* The phases set (MenuScene.phase; menu_scene.c's MenuScene_Update runs phase 0 by the vtable's
  * slot 0x48, 1 by 0x4c, 2 by 0x50 and 5 by 0x5c, as ov092/menu_dispatch.h says). */
 enum DesignEditorPhase {
     DESIGN_EDITOR_PHASE_WAIT = 0,        /* the base's wait */
-    DESIGN_EDITOR_PHASE_STATES = 1,      /* DesignEditor_RunState */
+    DESIGN_EDITOR_PHASE_STATE_COUNT = 1, /* DesignEditor_RunState */
     DESIGN_EDITOR_PHASE_INTERACTIVE = 2, /* DesignEditor_RunInteractive */
     DESIGN_EDITOR_PHASE_END = 5          /* DesignEditor_End */
 };

@@ -67,10 +67,10 @@ extern Heap *data_021c9b24;
 
 /* The state tables (ov004/member_pointer.h): their guards, the tables and their constants. */
 extern u32 data_ov068_02278804;
-extern MemberPointer data_ov068_02278808[TAXI_STATES];
+extern MemberPointer data_ov068_02278808[TAXI_STATE_COUNT];
 extern const MemberPointer data_ov068_022778bc, data_ov068_022778ac, data_ov068_022778b4;
 extern u32 data_ov068_02278800;
-extern MemberPointer data_ov068_02278820[TAXI_STATES];
+extern MemberPointer data_ov068_02278820[TAXI_STATE_COUNT];
 extern const MemberPointer data_ov068_022778a4, data_ov068_022778cc, data_ov068_022778c4;
 
 extern void NNS_G3dMdlSetMdlAlpha(u8 *model, int material, u8 alpha);
@@ -186,15 +186,15 @@ CLEAN_AS(func_ov068_02273198, Taxi_EnterRain)
  * and above do nothing. */
 void Taxi_UpdateState(Taxi *self)
 {
-    static const MemberPointer *const updates[TAXI_STATES] = {
+    static const MemberPointer *const updates[TAXI_STATE_COUNT] = {
         &data_ov068_022778bc, /* Taxi_PlaySounds */
         &data_ov068_022778ac, /* Taxi_UpdateRainEnds */
         &data_ov068_022778b4, /* Taxi_UpdateDry */
     };
-    MemberTable_InitOnce(&data_ov068_02278804, data_ov068_02278808, updates, TAXI_STATES);
+    MemberTable_InitOnce(&data_ov068_02278804, data_ov068_02278808, updates, TAXI_STATE_COUNT);
     /* REQUIRES: state >= 0 (the entries set 0 to 2); the ROM's signed test lets a negative one
      * index before the table */
-    if (self->state >= 0 && self->state < TAXI_STATES) {
+    if (self->state >= 0 && self->state < TAXI_STATE_COUNT) {
         MemberPointer_CallVoid(&data_ov068_02278808[self->state], self);
     }
 }
@@ -204,15 +204,15 @@ CLEAN_AS(func_ov068_022731b4, Taxi_UpdateState)
  * whether it did. States 3 and above do not exist. */
 int Taxi_SetState(Taxi *self, int state)
 {
-    static const MemberPointer *const entries[TAXI_STATES] = {
+    static const MemberPointer *const entries[TAXI_STATE_COUNT] = {
         &data_ov068_022778a4, /* Taxi_EnterRain */
         &data_ov068_022778cc, /* Taxi_EnterRainEnds */
         &data_ov068_022778c4, /* Taxi_EnterDry */
     };
-    MemberTable_InitOnce(&data_ov068_02278800, data_ov068_02278820, entries, TAXI_STATES);
+    MemberTable_InitOnce(&data_ov068_02278800, data_ov068_02278820, entries, TAXI_STATE_COUNT);
     /* REQUIRES: state >= 0 (the game passes 0 to 2); the ROM's signed test lets a negative one
      * index before the table */
-    if (state >= 0 && state < TAXI_STATES && MemberPointer_CallInt(&data_ov068_02278820[state], self) != 0) {
+    if (state >= 0 && state < TAXI_STATE_COUNT && MemberPointer_CallInt(&data_ov068_02278820[state], self) != 0) {
         self->state = state;
         return 1;
     }

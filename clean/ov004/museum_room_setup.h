@@ -10,7 +10,7 @@
  *
  * Their creation (slot 0, MuseumSetup_Create) makes the scene's obj_etc_museum spots from the
  * table data_ov004_0224b868 (one row of spots for each of the seven scenes; the spots are built
- * by the overlay's static initialiser), then calls the class's slot 18: nothing in classes 81
+ * by the overlay's static initializer), then calls the class's slot 18: nothing in classes 81
  * and 83; in class 82 (MuseumSetupFossils_ClearMissing) each item of the museum record's fossils
  * lying on the scene's acre (0, 0) that nobody has given is taken away: replaced by item 0x4a54
  * when its furniture shape is 0, else by the empty tile. Their execution (slot 6) is done at

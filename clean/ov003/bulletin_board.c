@@ -33,10 +33,10 @@ extern const u8 data_ov003_022384f8[];
 
 /* The machine's tables (member_pointer.h): their guards, the tables and their constants. */
 extern u32 data_ov003_0223c74c;
-extern MemberPointer data_ov003_0223c754[BULLETIN_BOARD_STATES];
+extern MemberPointer data_ov003_0223c754[BULLETIN_BOARD_STATE_COUNT];
 extern const MemberPointer data_ov003_022383e4, data_ov003_022383fc, data_ov003_0223840c;
 extern u32 data_ov003_0223c748;
-extern MemberPointer data_ov003_0223c76c[BULLETIN_BOARD_STATES];
+extern MemberPointer data_ov003_0223c76c[BULLETIN_BOARD_STATE_COUNT];
 extern const MemberPointer data_ov003_022383ec, data_ov003_022383f4, data_ov003_02238404;
 
 /* func_ov003_0221b7f0 (update of BULLETIN_BOARD_OPEN): once main can open a screen again, the
@@ -90,13 +90,13 @@ CLEAN_AS(func_ov003_0221b838, BulletinBoard_EnterIdle)
  * REQUIRES: the state is not negative (BulletinBoard_SetState only sets 0 to 2). */
 void BulletinBoard_UpdateState(BulletinBoard *object)
 {
-    static const MemberPointer *const updates[BULLETIN_BOARD_STATES] = {
+    static const MemberPointer *const updates[BULLETIN_BOARD_STATE_COUNT] = {
         &data_ov003_022383e4, /* BulletinBoard_UpdateIdle */
         &data_ov003_022383fc, /* BulletinBoard_UpdateOpening */
         &data_ov003_0223840c, /* BulletinBoard_UpdateOpen */
     };
-    MemberTable_InitOnce(&data_ov003_0223c74c, data_ov003_0223c754, updates, BULLETIN_BOARD_STATES);
-    if (object->state < BULLETIN_BOARD_STATES) {
+    MemberTable_InitOnce(&data_ov003_0223c74c, data_ov003_0223c754, updates, BULLETIN_BOARD_STATE_COUNT);
+    if (object->state < BULLETIN_BOARD_STATE_COUNT) {
         MemberPointer_CallVoid(&data_ov003_0223c754[object->state], object);
     }
 }
@@ -107,13 +107,13 @@ CLEAN_AS(func_ov003_0221b83c, BulletinBoard_UpdateState)
  * REQUIRES: `state` is not negative. */
 int BulletinBoard_SetState(BulletinBoard *object, int state)
 {
-    static const MemberPointer *const entries[BULLETIN_BOARD_STATES] = {
+    static const MemberPointer *const entries[BULLETIN_BOARD_STATE_COUNT] = {
         &data_ov003_022383ec, /* BulletinBoard_EnterIdle */
         &data_ov003_022383f4, /* BulletinBoard_EnterOpening */
         &data_ov003_02238404, /* BulletinBoard_EnterOpen */
     };
-    MemberTable_InitOnce(&data_ov003_0223c748, data_ov003_0223c76c, entries, BULLETIN_BOARD_STATES);
-    if (state < BULLETIN_BOARD_STATES && MemberPointer_CallInt(&data_ov003_0223c76c[state], object) != 0) {
+    MemberTable_InitOnce(&data_ov003_0223c748, data_ov003_0223c76c, entries, BULLETIN_BOARD_STATE_COUNT);
+    if (state < BULLETIN_BOARD_STATE_COUNT && MemberPointer_CallInt(&data_ov003_0223c76c[state], object) != 0) {
         object->state = state;
         return 1;
     }

@@ -52,8 +52,8 @@ extern PadState data_021fbe40;
  * entry (data_ov101_0229e190); it is one table of 24. */
 extern u32 data_ov101_0229e0e0; /* the states' guard */
 extern u32 data_ov101_0229e0e4; /* the sub states' guard */
-extern MemberPointer data_ov101_0229e0e8[PICK_STATES];
-extern MemberPointer data_ov101_0229e110[PICK_SUB_STATES];
+extern MemberPointer data_ov101_0229e0e8[PICK_STATE_COUNT];
+extern MemberPointer data_ov101_0229e110[PICK_SUB_STATE_COUNT];
 extern const MemberPointer data_ov101_0229df80, data_ov101_0229df88, data_ov101_0229df90, data_ov101_0229dfa0,
     data_ov101_0229dfa8, data_ov101_0229dfb0, data_ov101_0229dfb8, data_ov101_0229dfc0, data_ov101_0229dfc8,
     data_ov101_0229dfd0, data_ov101_0229dfd8, data_ov101_0229dfe0, data_ov101_0229dfe8, data_ov101_0229dff0,
@@ -64,7 +64,7 @@ extern const MemberPointer data_ov101_0229df80, data_ov101_0229df88, data_ov101_
 /* The menu scene's phases this scene sets (MenuScene_Update runs phase n by vtable slot
  * 0x48 + 4 * n, as ov092/menu_dispatch.h says). */
 #define PICK_PHASE_0 0           /* slot 0x48 */
-#define PICK_PHASE_STATES 1      /* slot 0x4c: PocketsPick_RunState */
+#define PICK_PHASE_STATE_COUNT 1 /* slot 0x4c: PocketsPick_RunState */
 #define PICK_PHASE_INTERACTIVE 2 /* slot 0x50: PocketsPick_RunInteractive */
 #define PICK_PHASE_DELETE 5      /* slot 0x5c: PocketsPick_RequestDelete */
 
@@ -199,7 +199,7 @@ static int pick_move_cursor_by_keys(PocketsPick *self)
 static void pick_close_scene(PocketsPick *self)
 {
     self->base.state = PICK_STATE_START_WIPE_OUT;
-    MenuScene_SetPhase(pick_scene(self), PICK_PHASE_STATES);
+    MenuScene_SetPhase(pick_scene(self), PICK_PHASE_STATE_COUNT);
     Popup_Hide(&self->popup, 1);
     PocketsPick_HideCursorSprite(self);
 }
@@ -990,7 +990,7 @@ CLEAN_AS(func_ov101_0229d088, PocketsPick_RunActionWhenIdle)
  * and sub state 0x15. */
 void PocketsPick_CloseChoice(PocketsPick *self)
 {
-    if (PagedChoice_CountDown(pick_choice(self)) == 0) {
+    if (PagedChoice_Tick(pick_choice(self)) == 0) {
         return;
     }
     PagedChoice_RequestClose(pick_choice(self), 0);
@@ -1574,14 +1574,14 @@ CLEAN_AS(_ZN18Obj_ov101_0229e07819func_ov101_0229db94Ev, PocketsPick_RunInteract
  * REQUIRES: the sub state is below 0x18; the game reads past the table for others. */
 void PocketsPick_RunSubState(PocketsPick *self)
 {
-    static const MemberPointer *const sub_states[PICK_SUB_STATES] = {
+    static const MemberPointer *const sub_states[PICK_SUB_STATE_COUNT] = {
         &data_ov101_0229e038, &data_ov101_0229e030, &data_ov101_0229e028, &data_ov101_0229e020, &data_ov101_0229e018,
         &data_ov101_0229e010, &data_ov101_0229e008, &data_ov101_0229e000, &data_ov101_0229dff8, &data_ov101_0229dff0,
         &data_ov101_0229dfa8, &data_ov101_0229dfe8, &data_ov101_0229dfd8, &data_ov101_0229e048, &data_ov101_0229dfc8,
         &data_ov101_0229dfc0, &data_ov101_0229dfb8, &data_ov101_0229dfb0, &data_ov101_0229dfa0, &data_ov101_0229e040,
         &data_ov101_0229dfd0, &data_ov101_0229df90, &data_ov101_0229df88, &data_ov101_0229e060,
     };
-    MemberTable_InitOnce(&data_ov101_0229e0e4, data_ov101_0229e110, sub_states, PICK_SUB_STATES);
+    MemberTable_InitOnce(&data_ov101_0229e0e4, data_ov101_0229e110, sub_states, PICK_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov101_0229e110[self->base.sub_state], self);
 }
 CLEAN_AS(_ZN18Obj_ov101_0229e07819func_ov101_0229dbb0Ev, PocketsPick_RunSubState)
@@ -1592,10 +1592,10 @@ CLEAN_AS(_ZN18Obj_ov101_0229e07819func_ov101_0229dbb0Ev, PocketsPick_RunSubState
  * REQUIRES: the state is below 5; the game reads past the table for others. */
 int PocketsPick_RunState(PocketsPick *self)
 {
-    static const MemberPointer *const states[PICK_STATES] = {
+    static const MemberPointer *const states[PICK_STATE_COUNT] = {
         &data_ov101_0229df80, &data_ov101_0229e068, &data_ov101_0229dfe0, &data_ov101_0229e058, &data_ov101_0229e050,
     };
-    MemberTable_InitOnce(&data_ov101_0229e0e0, data_ov101_0229e0e8, states, PICK_STATES);
+    MemberTable_InitOnce(&data_ov101_0229e0e0, data_ov101_0229e0e8, states, PICK_STATE_COUNT);
     PocketsPick_BeginFrame(self);
     MemberPointer_CallVoid(&data_ov101_0229e0e8[self->base.state], self);
     PocketsPick_EndFrame(self);

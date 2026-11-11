@@ -461,8 +461,8 @@ CLEAN_AS(func_ov137_0229cab8, BirthdayScreen_AfterPress)
  * constants. */
 extern u32 data_ov137_0229d4a0; /* the states' guard */
 extern u32 data_ov137_0229d4a4; /* the sub states' guard */
-extern MemberPointer data_ov137_0229d4a8[BIRTHDAY_SCREEN_STATES];
-extern MemberPointer data_ov137_0229d4c8[BIRTHDAY_SCREEN_SUB_STATES];
+extern MemberPointer data_ov137_0229d4a8[BIRTHDAY_SCREEN_STATE_COUNT];
+extern MemberPointer data_ov137_0229d4c8[BIRTHDAY_SCREEN_SUB_STATE_COUNT];
 extern const MemberPointer data_ov137_0229d3a0, data_ov137_0229d3a8, data_ov137_0229d3b0, data_ov137_0229d3b8,
     data_ov137_0229d3c0, data_ov137_0229d3c8, data_ov137_0229d3d0, data_ov137_0229d3d8, data_ov137_0229d3e0,
     data_ov137_0229d3e8, data_ov137_0229d3f0, data_ov137_0229d3f8, data_ov137_0229d400, data_ov137_0229d408,
@@ -830,12 +830,12 @@ CLEAN_AS(func_ov137_0229d0c4, BirthdayScreen_RunInteractive)
  * REQUIRES: the sub state is below 14; the game reads past the table for others. */
 void BirthdayScreen_RunSubState(BirthdayScreen *self)
 {
-    static const MemberPointer *const sub_states[BIRTHDAY_SCREEN_SUB_STATES] = {
+    static const MemberPointer *const sub_states[BIRTHDAY_SCREEN_SUB_STATE_COUNT] = {
         &data_ov137_0229d418, &data_ov137_0229d410, &data_ov137_0229d408, &data_ov137_0229d3e0, &data_ov137_0229d3f0,
         &data_ov137_0229d3f8, &data_ov137_0229d400, &data_ov137_0229d420, &data_ov137_0229d3d8, &data_ov137_0229d3d0,
         &data_ov137_0229d3c8, &data_ov137_0229d3c0, &data_ov137_0229d3b8, &data_ov137_0229d3e8,
     };
-    MemberTable_InitOnce(&data_ov137_0229d4a4, data_ov137_0229d4c8, sub_states, BIRTHDAY_SCREEN_SUB_STATES);
+    MemberTable_InitOnce(&data_ov137_0229d4a4, data_ov137_0229d4c8, sub_states, BIRTHDAY_SCREEN_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov137_0229d4c8[self->base.sub_state], self);
 }
 CLEAN_AS(func_ov137_0229d0e0, BirthdayScreen_RunSubState)
@@ -846,13 +846,13 @@ CLEAN_AS(func_ov137_0229d0e0, BirthdayScreen_RunSubState)
  * REQUIRES: the state is below 4; the game reads past the table for others. */
 int BirthdayScreen_RunState(BirthdayScreen *self)
 {
-    static const MemberPointer *const states[BIRTHDAY_SCREEN_STATES] = {
+    static const MemberPointer *const states[BIRTHDAY_SCREEN_STATE_COUNT] = {
         &data_ov137_0229d3a8,
         &data_ov137_0229d3a0,
         &data_ov137_0229d3b0,
         &data_ov137_0229d430,
     };
-    MemberTable_InitOnce(&data_ov137_0229d4a0, data_ov137_0229d4a8, states, BIRTHDAY_SCREEN_STATES);
+    MemberTable_InitOnce(&data_ov137_0229d4a0, data_ov137_0229d4a8, states, BIRTHDAY_SCREEN_STATE_COUNT);
     BirthdayScreen_BeginFrame(self);
     MemberPointer_CallVoid(&data_ov137_0229d4a8[self->base.state], self);
     BirthdayScreen_EndFrame(self);

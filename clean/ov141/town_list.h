@@ -74,7 +74,7 @@ enum TownListState {
     TOWN_LIST_STATE_WIPE_IN = 2,        /* TownList_WipeIn */
     TOWN_LIST_STATE_START_WIPE_OUT = 3, /* TownList_StartWipeOut */
     TOWN_LIST_STATE_WIPE_OUT = 4,       /* TownList_WipeOut */
-    TOWN_LIST_STATES = 5
+    TOWN_LIST_STATE_COUNT = 5
 };
 
 /* The sub states, run from the table of TownList_RunSubState (MenuScene_SetSubState). */
@@ -84,14 +84,14 @@ enum TownListSubState {
     TOWN_LIST_SUB_SPRITE_MOVE = 2, /* TownList_WaitCursorSprite */
     TOWN_LIST_SUB_A_PRESS = 3,     /* TownList_ActOnPress */
     TOWN_LIST_SUB_RELEASE = 4,     /* TownList_WaitRelease */
-    TOWN_LIST_SUB_CLOSING = 5,     /* TownList_CountDownToClose */
-    TOWN_LIST_SUB_STATES = 6
+    TOWN_LIST_SUB_CLOSING = 5,     /* TownList_TickToClose */
+    TOWN_LIST_SUB_STATE_COUNT = 6
 };
 
 /* The phases set (MenuScene_SetPhase): 0 waits (vtable slot 0x48), 1 runs the states (slot
  * 0x4c), 2 the sub states (slot 0x50) and 5 deletes the scene (slot 0x5c). */
 #define TOWN_LIST_PHASE_WAIT 0
-#define TOWN_LIST_PHASE_STATES 1
+#define TOWN_LIST_PHASE_STATE_COUNT 1
 #define TOWN_LIST_PHASE_INTERACTIVE 2
 #define TOWN_LIST_PHASE_DELETE 5
 
@@ -152,7 +152,7 @@ void TownList_Confirm(TownList *self);
 void TownList_Resume(TownList *self);
 void TownList_ResumeByKeys(TownList *self);
 void TownList_ResumeByTouch(TownList *self);
-void TownList_CountDownToClose(TownList *self);
+void TownList_TickToClose(TownList *self);
 void TownList_WaitRelease(TownList *self);
 void TownList_ActOnPress(TownList *self);
 void TownList_WaitCursorSprite(TownList *self);

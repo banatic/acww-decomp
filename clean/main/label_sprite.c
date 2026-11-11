@@ -56,7 +56,7 @@ static u32 label_sprite_text_chars(LabelSprite *sprite)
     return ((u32 (*)(LabelSpriteText *))(uintptr_t) sprite->text.vtable->buffer)(&sprite->text);
 }
 
-/* func_0208ef7c: the text's colour loaded into the OBJ colour of the sprite's kind on both
+/* func_0208ef7c: the text's color loaded into the OBJ color of the sprite's kind on both
  * engines, when it changed or differs from what was last loaded there.
  * HW: the color is flushed from the data cache before it is loaded. */
 void LabelSprite_UploadColor(LabelSprite *sprite)
@@ -87,7 +87,7 @@ void LabelSprite_FreeBox(LabelSprite *sprite)
 CLEAN_AS(func_0208effc, LabelSprite_FreeBox)
 
 /* func_0208f014: the text box made, unless there is one, and the text handed to it, centered,
- * to be drawn in the kind's colour (on the main screen's OBJ tiles when the sprite is on the
+ * to be drawn in the kind's color (on the main screen's OBJ tiles when the sprite is on the
  * main screen); the color loaded at the next draw. Nothing when the boxes' heap is full. */
 void LabelSprite_OpenBox(LabelSprite *sprite)
 {

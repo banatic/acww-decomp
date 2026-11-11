@@ -237,7 +237,7 @@ enum MailboxSceneSubState {
     MAILBOX_SCENE_SUB_TAKE_NEXT = 0x24,         /* MailboxScene_TakeNextLetter */
     MAILBOX_SCENE_SUB_TAKE_GLIDE = 0x25,        /* MailboxScene_StepTakenLetterGlide */
     MAILBOX_SCENE_SUB_DISCARD = 0x26,           /* MailboxScene_WaitDiscarded */
-    MAILBOX_SCENE_SUB_STATES = 0x27
+    MAILBOX_SCENE_SUB_STATE_COUNT = 0x27
 };
 
 u8 MailboxScene_LetterPlace(u8 unused, u8 index);
@@ -322,7 +322,7 @@ enum MailboxSceneState {
     MAILBOX_SCENE_STATE_LETTER_WIPE_IN = 0x08,        /* MailboxScene_LetterWipeIn */
     MAILBOX_SCENE_STATE_START_LETTER_WIPE_OUT = 0x09, /* MailboxScene_StartLetterWipeOut */
     MAILBOX_SCENE_STATE_LETTER_WIPE_OUT = 0x0a,       /* MailboxScene_LetterWipeOut */
-    MAILBOX_SCENE_STATES = 0x0b
+    MAILBOX_SCENE_STATE_COUNT = 0x0b
 };
 
 void MailboxScene_HoldTouchOnPlace(MailboxScene *self);

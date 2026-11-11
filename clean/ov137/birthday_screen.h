@@ -44,7 +44,7 @@ enum BirthdayScreenState {
     BIRTHDAY_SCREEN_STATE_WIPE_IN = 1,        /* BirthdayScreen_WipeIn */
     BIRTHDAY_SCREEN_STATE_START_WIPE_OUT = 2, /* BirthdayScreen_StartWipeOut */
     BIRTHDAY_SCREEN_STATE_WIPE_OUT = 3,       /* BirthdayScreen_WipeOut */
-    BIRTHDAY_SCREEN_STATES = 4
+    BIRTHDAY_SCREEN_STATE_COUNT = 4
 };
 
 /* The sub states, run from the table of BirthdayScreen_RunSubState (MenuScene_SetSubState). */
@@ -63,7 +63,7 @@ enum BirthdayScreenSubState {
     BIRTHDAY_SCREEN_SUB_OK_PRESSED = 11,   /* BirthdayScreen_FollowOkPress */
     BIRTHDAY_SCREEN_SUB_LIST_OPEN = 12,    /* BirthdayScreen_WaitListOpen */
     BIRTHDAY_SCREEN_SUB_LIST_CLOSE = 13,   /* BirthdayScreen_WaitListClosed */
-    BIRTHDAY_SCREEN_SUB_STATES = 14
+    BIRTHDAY_SCREEN_SUB_STATE_COUNT = 14
 };
 
 typedef struct BirthdayScreen {

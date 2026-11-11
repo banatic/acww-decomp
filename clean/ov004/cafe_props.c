@@ -99,12 +99,12 @@ extern Heap *data_021c9b24;
 
 /* The state tables (member_pointer.h): their guards, the tables and their constants. */
 extern u32 data_ov004_0225830c;
-extern MemberPointer data_ov004_022583f8[CAFE_PROPS_STATES];
+extern MemberPointer data_ov004_022583f8[CAFE_PROPS_STATE_COUNT];
 extern const MemberPointer data_ov004_02254f48, data_ov004_02254f40, data_ov004_02254f38, data_ov004_02254f30,
     data_ov004_02254f78, data_ov004_02254f28, data_ov004_02254f60, data_ov004_02254f18, data_ov004_02254f20,
     data_ov004_02254f58;
 extern u32 data_ov004_02258314;
-extern MemberPointer data_ov004_022583a8[CAFE_PROPS_STATES];
+extern MemberPointer data_ov004_022583a8[CAFE_PROPS_STATE_COUNT];
 extern const MemberPointer data_ov004_02254f08, data_ov004_02254fa0, data_ov004_02254f98, data_ov004_02254f90,
     data_ov004_02254f88, data_ov004_02254f80, data_ov004_02254f10, data_ov004_02254f68, data_ov004_02254f70,
     data_ov004_02254f50;
@@ -563,7 +563,7 @@ CLEAN_AS(func_ov004_0222e644, CafeProps_OnEnterState0)
 /* _ZN18Obj_ov004_02254fc819func_ov004_0222e65cEv: the state's update, through its table. */
 void CafeProps_UpdateState(CafeProps *self)
 {
-    static const MemberPointer *const updates[CAFE_PROPS_STATES] = {
+    static const MemberPointer *const updates[CAFE_PROPS_STATE_COUNT] = {
         &data_ov004_02254f48, /* CafeProps_UpdateState0 */
         &data_ov004_02254f40, /* CafeProps_UpdateState1 */
         &data_ov004_02254f38, /* CafeProps_UpdateState2 */
@@ -575,9 +575,9 @@ void CafeProps_UpdateState(CafeProps *self)
         &data_ov004_02254f20, /* CafeProps_UpdateState8 */
         &data_ov004_02254f58, /* CafeProps_UpdateState9 */
     };
-    MemberTable_InitOnce(&data_ov004_0225830c, data_ov004_022583f8, updates, CAFE_PROPS_STATES);
+    MemberTable_InitOnce(&data_ov004_0225830c, data_ov004_022583f8, updates, CAFE_PROPS_STATE_COUNT);
     /* REQUIRES: state >= 0; the ROM's signed test lets a negative one index before the table */
-    if (self->state >= 0 && self->state < CAFE_PROPS_STATES) {
+    if (self->state >= 0 && self->state < CAFE_PROPS_STATE_COUNT) {
         MemberPointer_CallVoid(&data_ov004_022583f8[self->state], self);
     }
 }
@@ -587,7 +587,7 @@ CLEAN_AS(_ZN18Obj_ov004_02254fc819func_ov004_0222e65cEv, CafeProps_UpdateState)
  * it did. States 10 and above do not exist. */
 int CafeProps_SetState(CafeProps *self, int state)
 {
-    static const MemberPointer *const entries[CAFE_PROPS_STATES] = {
+    static const MemberPointer *const entries[CAFE_PROPS_STATE_COUNT] = {
         &data_ov004_02254f08, /* CafeProps_OnEnterState0 */
         &data_ov004_02254fa0, /* CafeProps_OnEnterState1 */
         &data_ov004_02254f98, /* CafeProps_OnEnterState2 */
@@ -599,10 +599,10 @@ int CafeProps_SetState(CafeProps *self, int state)
         &data_ov004_02254f70, /* CafeProps_OnEnterState8 */
         &data_ov004_02254f50, /* CafeProps_OnEnterState9 */
     };
-    MemberTable_InitOnce(&data_ov004_02258314, data_ov004_022583a8, entries, CAFE_PROPS_STATES);
+    MemberTable_InitOnce(&data_ov004_02258314, data_ov004_022583a8, entries, CAFE_PROPS_STATE_COUNT);
     /* REQUIRES: state >= 0 (the game passes 0 to 9); the ROM's signed test lets a negative one
      * index before the table */
-    if (state >= 0 && state < CAFE_PROPS_STATES && MemberPointer_CallInt(&data_ov004_022583a8[state], self) != 0) {
+    if (state >= 0 && state < CAFE_PROPS_STATE_COUNT && MemberPointer_CallInt(&data_ov004_022583a8[state], self) != 0) {
         self->state = state;
         return 1;
     }

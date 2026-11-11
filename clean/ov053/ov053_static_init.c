@@ -9,7 +9,7 @@
 #include "types.h"
 
 /* The table of the barber's states. */
-extern BarberStep data_ov053_02261c64[BARBER_STATES];
+extern BarberStep data_ov053_02261c64[BARBER_STATE_COUNT];
 /* Each state's entry, then its update. */
 extern const MemberPointer data_ov053_02261a0c, data_ov053_02261984, data_ov053_02261994, data_ov053_02261a2c,
     data_ov053_02261a24, data_ov053_02261a1c, data_ov053_02261a14, data_ov053_022619ac, data_ov053_02261a04,
@@ -22,7 +22,7 @@ extern const MemberPointer data_ov053_02261a0c, data_ov053_02261984, data_ov053_
  * the register). */
 int Ov053Init_BarberStates(void)
 {
-    static const MemberPointer *const steps[2 * BARBER_STATES] = {
+    static const MemberPointer *const steps[2 * BARBER_STATE_COUNT] = {
         &data_ov053_02261a0c, &data_ov053_02261984, /* 0: Barber_EnterCall, Barber_UpdateCall */
         &data_ov053_02261994, &data_ov053_02261a2c, /* 1: Barber_EnterStand, Barber_UpdateStand */
         &data_ov053_02261a24, &data_ov053_02261a1c, /* 2: Barber_EnterTalk, Barber_UpdateTalk */
@@ -35,7 +35,7 @@ int Ov053Init_BarberStates(void)
         &data_ov053_022619b4, &data_ov053_0226198c, /* 9: Barber_EnterSendBack, Barber_UpdateSendBack */
         &data_ov053_0226199c, &data_ov053_022619cc, /* 10: Barber_EnterPaused, Barber_UpdatePaused */
     };
-    for (int i = 0; i < BARBER_STATES; i++) {
+    for (int i = 0; i < BARBER_STATE_COUNT; i++) {
         data_ov053_02261c64[i].enter = *steps[2 * i];
         data_ov053_02261c64[i].update = *steps[2 * i + 1];
     }

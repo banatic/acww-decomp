@@ -1111,8 +1111,8 @@ typedef struct GatekeeperStateRow {
     MemberPointer enter;
     MemberPointer run;
 } GatekeeperStateRow;
-#define GATEKEEPER_STATES 0x12
-extern GatekeeperStateRow data_ov048_022647a8[GATEKEEPER_STATES];
+#define GATEKEEPER_STATE_COUNT 0x12
+extern GatekeeperStateRow data_ov048_022647a8[GATEKEEPER_STATE_COUNT];
 
 /* func_ov048_022635f4: state `state` entered when its entry agrees (or it has none).
  * REQUIRES: `state` is below 0x12 (the game's are). */
@@ -1167,14 +1167,14 @@ extern const MemberPointer data_ov048_022640fc, data_ov048_022640f4, data_ov048_
  * then the entries and runs of its own 18 states, in order. */
 void Gatekeeper_InitTables(void)
 {
-    static const MemberPointer *const talk_states[GATEKEEPER_TALK_STATES] = {
+    static const MemberPointer *const talk_states[GATEKEEPER_TALK_STATE_COUNT] = {
         &__ptmf_null,         &data_ov048_02263eec, &data_ov048_02263dc4, &data_ov048_02263e04, &data_ov048_02264104,
         &data_ov048_02263f2c, &data_ov048_02263d4c, &data_ov048_02263f24, &data_ov048_02263d54, &data_ov048_02263de4,
         &data_ov048_02263ec4, &data_ov048_02264114, &data_ov048_02263e3c, &data_ov048_02263d7c, &data_ov048_02263d6c,
         &data_ov048_02263f04, &data_ov048_02264124, &data_ov048_02263d5c, &data_ov048_0226412c, &data_ov048_02263ef4,
         &data_ov048_0226411c, &data_ov048_02263ed4, &data_ov048_0226410c,
     };
-    static const MemberPointer *const states[2 * GATEKEEPER_STATES] = {
+    static const MemberPointer *const states[2 * GATEKEEPER_STATE_COUNT] = {
         &data_ov048_022640fc, &data_ov048_022640f4, /* 0 */
         &data_ov048_022640ec, &data_ov048_02263f4c, /* 1 */
         &data_ov048_022640dc, &data_ov048_02263f64, /* 2 */
@@ -1194,10 +1194,10 @@ void Gatekeeper_InitTables(void)
         &data_ov048_02263ffc, &data_ov048_02263ff4, /* 0x10 */
         &data_ov048_02263fec, &data_ov048_02263fe4, /* 0x11 */
     };
-    for (int i = 0; i < GATEKEEPER_TALK_STATES; i++) {
+    for (int i = 0; i < GATEKEEPER_TALK_STATE_COUNT; i++) {
         data_ov048_02264344[i].run = *talk_states[i];
     }
-    for (int i = 0; i < GATEKEEPER_STATES; i++) {
+    for (int i = 0; i < GATEKEEPER_STATE_COUNT; i++) {
         data_ov048_022647a8[i].enter = *states[2 * i];
         data_ov048_022647a8[i].run = *states[2 * i + 1];
     }

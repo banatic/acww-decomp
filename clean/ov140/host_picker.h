@@ -65,7 +65,7 @@ enum HostPickerState {
     HOST_PICKER_STATE_WIPE_IN = 2,        /* HostPicker_WipeIn */
     HOST_PICKER_STATE_START_WIPE_OUT = 3, /* HostPicker_StartWipeOut */
     HOST_PICKER_STATE_WIPE_OUT = 4,       /* HostPicker_WipeOut */
-    HOST_PICKER_STATES = 5
+    HOST_PICKER_STATE_COUNT = 5
 };
 
 /* The sub states, run from the table of HostPicker_RunSubState (MenuScene_SetSubState). */
@@ -78,7 +78,7 @@ enum HostPickerSubState {
     HOST_PICKER_SUB_CLOSING = 5,       /* HostPicker_WaitToClose */
     HOST_PICKER_SUB_PAGE_OUT = 6,      /* HostPicker_FadeRowsOut */
     HOST_PICKER_SUB_PAGE_IN = 7,       /* HostPicker_FadeRowsIn */
-    HOST_PICKER_SUB_STATES = 8
+    HOST_PICKER_SUB_STATE_COUNT = 8
 };
 
 typedef struct HostPicker {

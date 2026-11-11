@@ -357,7 +357,7 @@ int MesSliderWindow_OnSlider(MesSliderWindow *self)
 CLEAN_AS(func_020abce4, MesSliderWindow_OnSlider)
 
 /* func_020abcfc: the screen y of the bottom of the slider's track. The sprites are placed
- * relative to the screen's centre and the window's scroll. */
+ * relative to the screen's center and the window's scroll. */
 int MesSliderWindow_TrackBottomY(MesSliderWindow *self)
 {
     return MesBgSlider_TrackBottom(&self->slider) + SCREEN_SPRITE_CENTER_Y - self->bg.scroll_y;

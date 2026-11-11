@@ -86,7 +86,7 @@ static_assert(sizeof(Gull) == 0x724, "Gull");
 #define GULL_ACT_WAIT_RANGE 600
 #define GULL_ACT_FRAMES 0x7a
 
-/* What Gull_CountDown answers when the act has two frames left: the act is stopped then. */
+/* What Gull_Tick answers when the act has two frames left: the act is stopped then. */
 #define GULL_ACT_STOP_AT 2
 
 /* Its look's requests (scene_look.h): kind 1 once it was met, 0 before. */
@@ -344,7 +344,7 @@ int Gull_UpdateIdle(Gull *self)
     if (self->all_counted == 0) {
         return 1;
     }
-    if (Gull_CountDown(self, &self->act_frames) == GULL_ACT_STOP_AT) {
+    if (Gull_Tick(self, &self->act_frames) == GULL_ACT_STOP_AT) {
         SceneMotion_RequestAct(gull_motion(self), GULL_MOTION_PRIORITY, GULL_ACT_NONE, data_020c80f8);
         return 1;
     }
@@ -352,7 +352,7 @@ int Gull_UpdateIdle(Gull *self)
         SceneMotion_Request(gull_motion(self), GULL_MOTION_STAND, GULL_MOTION_PRIORITY, 0, 0, 0, 0, 0, 0, data_020c80f8, 0);
         return 1;
     }
-    if (Gull_CountDown(self, &self->act_wait) == 0) {
+    if (Gull_Tick(self, &self->act_wait) == 0) {
         unsigned int act = MainRandom_Below(GULL_ACTS);
         if (act < GULL_ACTS) {
             SceneMotion_RequestAct(gull_motion(self), GULL_MOTION_PRIORITY, GULL_ACT_FIRST + (int) act, data_020c80f8);
@@ -398,7 +398,7 @@ int Gull_EnterUnmet(Gull *self)
 CLEAN_AS(func_ov072_022795ac, Gull_EnterUnmet)
 
 /* func_ov072_02279618: `counter` one less unless it is 0; what it is now. */
-int Gull_CountDown(Gull *self, s32 *counter)
+int Gull_Tick(Gull *self, s32 *counter)
 {
     (void) self;
     if (*counter != 0) {
@@ -406,7 +406,7 @@ int Gull_CountDown(Gull *self, s32 *counter)
     }
     return *counter;
 }
-CLEAN_AS(func_ov072_02279618, Gull_CountDown)
+CLEAN_AS(func_ov072_02279618, Gull_Tick)
 
 /* func_ov072_02279628: state `state` entered when its entry agrees (or it has none).
  * REQUIRES: `state` is below 4 (the game's are). */

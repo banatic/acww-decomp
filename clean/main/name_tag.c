@@ -228,7 +228,7 @@ void NameTag_EnterHidden(NameTag *tag)
 }
 CLEAN_AS(func_0208e240, NameTag_EnterHidden)
 
-/* func_0208e24c: kind 4's colour loaded into the main screen's OBJ palettes. */
+/* func_0208e24c: kind 4's color loaded into the main screen's OBJ palettes. */
 void NameTag_LoadFixedColor(void)
 {
     GX_LoadOBJPltt(&data_020d0adc, NAME_TAG_FIXED_COLOR_OFFSET, NAME_TAG_FIXED_COLOR_SIZE);

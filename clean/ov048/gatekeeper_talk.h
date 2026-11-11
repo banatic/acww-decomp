@@ -58,7 +58,7 @@ struct Gatekeeper;
 #define GATEKEEPER_TALK_END_WFC 20
 #define GATEKEEPER_TALK_WAIT_MISSING_NPC 21
 #define GATEKEEPER_TALK_WAIT_JOB_13 22
-#define GATEKEEPER_TALK_STATES 23
+#define GATEKEEPER_TALK_STATE_COUNT 23
 
 /* A state: its function and whether it runs before the scene's steps (the table is filled by
  * __sinit_ov048_022639b0, Gatekeeper_InitTables). */
@@ -67,7 +67,7 @@ typedef struct GatekeeperTalkState {
     u8 network; /* run by slot 0x80 when set, by slot 0x84 when not */
     u8 unk_09[3];
 } GatekeeperTalkState;
-extern GatekeeperTalkState data_ov048_02264344[GATEKEEPER_TALK_STATES];
+extern GatekeeperTalkState data_ov048_02264344[GATEKEEPER_TALK_STATE_COUNT];
 
 /* The size of the data a parent of this game carries (Local_EntryData). */
 #define GATEKEEPER_PARENT_DATA_SIZE 0x1a

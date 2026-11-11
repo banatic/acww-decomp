@@ -84,7 +84,7 @@ extern const u8 data_ov086_0227938c[];
 extern const u8 data_020d8c64[];
 extern const u8 data_020da088[];
 /* His states' functions (filled at start-up by __sinit_ov086_022791f0). */
-extern TurtleCountdownStep data_ov086_02279480[TURTLE_COUNTDOWN_STATES];
+extern TurtleCountdownStep data_ov086_02279480[TURTLE_COUNTDOWN_STATE_COUNT];
 /* His model's and texture's file names: "npc_sp/model/ttl.nsbmd", "npc_sp/model/ttl_tex.nsbtx". */
 extern const char data_ov086_022792a8[];
 extern const char data_ov086_022792d8[];

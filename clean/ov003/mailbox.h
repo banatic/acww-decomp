@@ -38,7 +38,7 @@ enum MailboxMode {
     MAILBOX_OPEN,
     MAILBOX_CLOSING,
     MAILBOX_EMPTYING,
-    MAILBOX_MODES
+    MAILBOX_MODE_COUNT
 };
 
 /* An animation of main (Obj_020dd154, 0x20 bytes; destructor func_020565b0, constructor
@@ -122,7 +122,7 @@ enum MailboxState {
     MAILBOX_STATE_LETTERS,
     MAILBOX_STATE_READING,
     MAILBOX_STATE_CLOSE,
-    MAILBOX_STATES
+    MAILBOX_STATE_COUNT
 };
 
 struct Mtx43;

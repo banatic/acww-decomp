@@ -864,8 +864,8 @@ CLEAN_AS(_ZN18Obj_ov138_0229d4e019func_ov138_0229d150Ev, DateScreen_RunInteracti
  * constants. */
 extern u32 data_ov138_0229d540; /* the sub states' guard */
 extern u32 data_ov138_0229d544; /* the states' guard */
-extern MemberPointer data_ov138_0229d548[DATE_SCREEN_STATES];
-extern MemberPointer data_ov138_0229d568[DATE_SCREEN_SUB_STATES];
+extern MemberPointer data_ov138_0229d548[DATE_SCREEN_STATE_COUNT];
+extern MemberPointer data_ov138_0229d568[DATE_SCREEN_SUB_STATE_COUNT];
 extern const MemberPointer data_ov138_0229d440, data_ov138_0229d448, data_ov138_0229d450, data_ov138_0229d458,
     data_ov138_0229d460, data_ov138_0229d468, data_ov138_0229d470, data_ov138_0229d478, data_ov138_0229d480,
     data_ov138_0229d488, data_ov138_0229d490, data_ov138_0229d498, data_ov138_0229d4a0, data_ov138_0229d4a8,
@@ -876,12 +876,12 @@ extern const MemberPointer data_ov138_0229d440, data_ov138_0229d448, data_ov138_
  * REQUIRES: the sub state is below 14; the game reads past the table for others. */
 void DateScreen_RunSubState(DateScreen *self)
 {
-    static const MemberPointer *const sub_states[DATE_SCREEN_SUB_STATES] = {
+    static const MemberPointer *const sub_states[DATE_SCREEN_SUB_STATE_COUNT] = {
         &data_ov138_0229d4b8, &data_ov138_0229d4b0, &data_ov138_0229d4a8, &data_ov138_0229d480, &data_ov138_0229d490,
         &data_ov138_0229d498, &data_ov138_0229d4a0, &data_ov138_0229d4c0, &data_ov138_0229d478, &data_ov138_0229d470,
         &data_ov138_0229d468, &data_ov138_0229d460, &data_ov138_0229d458, &data_ov138_0229d488,
     };
-    MemberTable_InitOnce(&data_ov138_0229d540, data_ov138_0229d568, sub_states, DATE_SCREEN_SUB_STATES);
+    MemberTable_InitOnce(&data_ov138_0229d540, data_ov138_0229d568, sub_states, DATE_SCREEN_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov138_0229d568[self->base.sub_state], self);
 }
 CLEAN_AS(_ZN18Obj_ov138_0229d4e019func_ov138_0229d16cEv, DateScreen_RunSubState)
@@ -892,13 +892,13 @@ CLEAN_AS(_ZN18Obj_ov138_0229d4e019func_ov138_0229d16cEv, DateScreen_RunSubState)
  * REQUIRES: the state is below 4; the game reads past the table for others. */
 int DateScreen_RunState(DateScreen *self)
 {
-    static const MemberPointer *const states[DATE_SCREEN_STATES] = {
+    static const MemberPointer *const states[DATE_SCREEN_STATE_COUNT] = {
         &data_ov138_0229d448,
         &data_ov138_0229d440,
         &data_ov138_0229d450,
         &data_ov138_0229d4d0,
     };
-    MemberTable_InitOnce(&data_ov138_0229d544, data_ov138_0229d548, states, DATE_SCREEN_STATES);
+    MemberTable_InitOnce(&data_ov138_0229d544, data_ov138_0229d548, states, DATE_SCREEN_STATE_COUNT);
     DateScreen_BeginFrame(self);
     MemberPointer_CallVoid(&data_ov138_0229d548[self->base.state], self);
     DateScreen_EndFrame(self);

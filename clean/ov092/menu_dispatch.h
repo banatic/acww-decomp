@@ -30,13 +30,13 @@ enum MenuDispatchMode {
  * and 5 by 0x5c). */
 enum MenuDispatchState {
     MENU_DISPATCH_STATE_OPEN = 0, /* MenuDispatch_Open */
-    MENU_DISPATCH_STATES = 1
+    MENU_DISPATCH_STATE_COUNT = 1
 };
 
 enum MenuDispatchSubState {
     MENU_DISPATCH_SUB_IDLE = 0,    /* MenuDispatch_Idle */
     MENU_DISPATCH_SUB_REQUEST = 1, /* MenuDispatch_RequestGroup */
-    MENU_DISPATCH_SUB_STATES = 2
+    MENU_DISPATCH_SUB_STATE_COUNT = 2
 };
 
 typedef struct MenuDispatch {

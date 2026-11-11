@@ -246,7 +246,7 @@ int EventWinner_CountBits(u32 bits)
 }
 CLEAN_AS(func_020864cc, EventWinner_CountBits)
 
-/* func_020864f4: the item's kind (EVENT_WINNER_ITEM_KINDS) into `kind`; 0 and nothing written
+/* func_020864f4: the item's kind (EVENT_WINNER_ITEM_KIND_COUNT) into `kind`; 0 and nothing written
  * for an item without one. */
 int EventWinner_ItemKind(u32 *kind, const u16 *item)
 {

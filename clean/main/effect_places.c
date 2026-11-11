@@ -132,7 +132,7 @@ CLEAN_AS(func_02094c38, EffectPlaces_Place)
 /* func_02094c8c: as EffectPlaces_Follow without moving the emitter: while the instance's kept
  * place has a handle and frames left a counted frame is used up, else the place is cleared.
  * Whether it lasted. */
-int EffectPlaces_CountDown(EffectKindsInstance *instance)
+int EffectPlaces_Tick(EffectKindsInstance *instance)
 {
     EffectKindsPlace *place = &data_021d52d8[instance->slot];
     int lasts = 0;
@@ -148,7 +148,7 @@ int EffectPlaces_CountDown(EffectKindsInstance *instance)
     }
     return lasts;
 }
-CLEAN_AS(func_02094c8c, EffectPlaces_CountDown)
+CLEAN_AS(func_02094c8c, EffectPlaces_Tick)
 
 /* func_02094ce4: the kept places of handle `handle` given no frames left, which ends their
  * emitters' following at their next frame. */

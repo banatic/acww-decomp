@@ -73,7 +73,7 @@ typedef struct XctExchange {
     XctExchangePacket received;      /* 0x116c */
 } XctExchange;
 
-enum XctExchangeState { XCT_EXCHANGE_WAIT = 0, XCT_EXCHANGE_TALK = 1, XCT_EXCHANGE_DONE = 2, XCT_EXCHANGE_STATES = 3 };
+enum XctExchangeState { XCT_EXCHANGE_WAIT = 0, XCT_EXCHANGE_TALK = 1, XCT_EXCHANGE_DONE = 2, XCT_EXCHANGE_STATE_COUNT = 3 };
 
 /* A state's functions in data_ov055_02261084. */
 typedef struct XctExchangeStep {

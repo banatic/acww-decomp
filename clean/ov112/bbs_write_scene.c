@@ -60,8 +60,8 @@ extern int func_02051c8c_unk(u16 *text, int max);
  * .bss symbol data_ov112_022a22b8 (its entries 16-22). */
 extern u32 data_ov112_022a21c0; /* the states' guard */
 extern u32 data_ov112_022a21c4; /* the sub states' guard */
-extern MemberPointer data_ov112_022a21c8[BBS_WRITE_STATES];
-extern MemberPointer data_ov112_022a2238[BBS_WRITE_SUB_STATES];
+extern MemberPointer data_ov112_022a21c8[BBS_WRITE_STATE_COUNT];
+extern MemberPointer data_ov112_022a2238[BBS_WRITE_SUB_STATE_COUNT];
 extern const MemberPointer data_ov112_022a1f60, data_ov112_022a1f68, data_ov112_022a1f70, data_ov112_022a1f80,
     data_ov112_022a1f88, data_ov112_022a1f90, data_ov112_022a1f98, data_ov112_022a1fa0, data_ov112_022a1fa8,
     data_ov112_022a1fb0, data_ov112_022a1fb8, data_ov112_022a1fc0, data_ov112_022a1fc8, data_ov112_022a1fd0,
@@ -546,14 +546,14 @@ CLEAN_AS(func_ov112_022a1978, BbsWrite_RunInteractive)
  * REQUIRES: the sub state is below 23; the game reads past the table for others. */
 void BbsWrite_RunSubState(BbsWriteScene *self)
 {
-    static const MemberPointer *const sub_states[BBS_WRITE_SUB_STATES] = {
+    static const MemberPointer *const sub_states[BBS_WRITE_SUB_STATE_COUNT] = {
         &data_ov112_022a2010, &data_ov112_022a2008, &data_ov112_022a2000, &data_ov112_022a1ff8, &data_ov112_022a1f60,
         &data_ov112_022a1fe8, &data_ov112_022a1f90, &data_ov112_022a1fd8, &data_ov112_022a1fd0, &data_ov112_022a1f88,
         &data_ov112_022a1fc8, &data_ov112_022a1fb8, &data_ov112_022a2020, &data_ov112_022a1fa8, &data_ov112_022a1fa0,
         &data_ov112_022a1ff0, &data_ov112_022a1f68, &data_ov112_022a1f80, &data_ov112_022a2018, &data_ov112_022a1fb0,
         &data_ov112_022a1f70, &data_ov112_022a1f98, &data_ov112_022a2040,
     };
-    MemberTable_InitOnce(&data_ov112_022a21c4, data_ov112_022a2238, sub_states, BBS_WRITE_SUB_STATES);
+    MemberTable_InitOnce(&data_ov112_022a21c4, data_ov112_022a2238, sub_states, BBS_WRITE_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov112_022a2238[self->base.sub_state], self);
 }
 CLEAN_AS(func_ov112_022a19ec, BbsWrite_RunSubState)
@@ -564,12 +564,12 @@ CLEAN_AS(func_ov112_022a19ec, BbsWrite_RunSubState)
  * REQUIRES: the state is below 14; the game reads past the table for others. */
 int BbsWrite_RunState(BbsWriteScene *self)
 {
-    static const MemberPointer *const states[BBS_WRITE_STATES] = {
+    static const MemberPointer *const states[BBS_WRITE_STATE_COUNT] = {
         &data_ov112_022a2090, &data_ov112_022a2088, &data_ov112_022a1fe0, &data_ov112_022a2078, &data_ov112_022a2070,
         &data_ov112_022a2068, &data_ov112_022a2060, &data_ov112_022a2058, &data_ov112_022a2050, &data_ov112_022a2048,
         &data_ov112_022a1fc0, &data_ov112_022a2038, &data_ov112_022a2030, &data_ov112_022a2028,
     };
-    MemberTable_InitOnce(&data_ov112_022a21c0, data_ov112_022a21c8, states, BBS_WRITE_STATES);
+    MemberTable_InitOnce(&data_ov112_022a21c0, data_ov112_022a21c8, states, BBS_WRITE_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov112_022a21c8[self->base.state], self);
     return 1;
 }

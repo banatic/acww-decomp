@@ -67,7 +67,7 @@ enum MysteryCatState {
     MYSTERY_CAT_WANDER = 2,
     MYSTERY_CAT_WAIT = 3,
     MYSTERY_CAT_TALK = 4,
-    MYSTERY_CAT_STATES = 5
+    MYSTERY_CAT_STATE_COUNT = 5
 };
 
 /* A state's functions in data_ov074_02279d9c. */

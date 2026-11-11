@@ -1379,7 +1379,7 @@ CLEAN_AS(func_ov122_022a03b0, LetterWrite_RunChoiceClosing)
  * the choice closed. */
 void LetterWrite_RunChoicePicked(LetterWriteScene *self)
 {
-    if (PagedChoice_CountDown(letter_write_choice(self)) != 0) {
+    if (PagedChoice_Tick(letter_write_choice(self)) != 0) {
         PagedChoice_RequestClose(letter_write_choice(self), 0);
         MenuScene_SetSubState(letter_write_scene(self), LETTER_WRITE_SUB_CHOICE_CLOSING);
         LetterWrite_HidePointer(self);
@@ -2558,8 +2558,8 @@ extern void *func_02070c08(void *label);
  * data_ov122_022a28e0). */
 extern u32 data_ov122_022a27e0; /* the sub states' guard */
 extern u32 data_ov122_022a27e4; /* the states' guard */
-extern MemberPointer data_ov122_022a27e8[LETTER_WRITE_STATES];
-extern MemberPointer data_ov122_022a2860[LETTER_WRITE_SUB_STATES];
+extern MemberPointer data_ov122_022a27e8[LETTER_WRITE_STATE_COUNT];
+extern MemberPointer data_ov122_022a2860[LETTER_WRITE_SUB_STATE_COUNT];
 extern const MemberPointer data_ov122_022a25a0, data_ov122_022a25a8, data_ov122_022a25b8, data_ov122_022a25c0,
     data_ov122_022a25c8, data_ov122_022a25d0, data_ov122_022a25d8, data_ov122_022a25e0, data_ov122_022a25e8,
     data_ov122_022a25f0, data_ov122_022a25f8, data_ov122_022a2600, data_ov122_022a2608, data_ov122_022a2610,
@@ -2790,7 +2790,7 @@ void LetterWrite_ExitMenu(LetterWriteScene *self)
     LetterWrite_ScrollTo(self, 0);
     LetterWrite_ClearFlags(self, LETTER_WRITE_FLAG_CURSOR_SHOWN);
     self->base.state = LETTER_WRITE_STATE_EXIT;
-    MenuScene_SetPhase(letter_write_scene(self), MENU_SCENE_PHASE_STATES);
+    MenuScene_SetPhase(letter_write_scene(self), MENU_SCENE_PHASE_STATE_COUNT);
     LetterWrite_HidePointer(self);
     LetterWrite_FilterTaboo(self);
 }
@@ -2810,7 +2810,7 @@ int LetterWrite_SwitchTab(LetterWriteScene *self, int tab)
     MenuTabs_SelectTab((MenuTabs *) (void *) parent, (u8) tab);
     GroupParams_SetC50((char) kept);
     self->base.state = LETTER_WRITE_STATE_TAB_SWITCH;
-    MenuScene_SetPhase(letter_write_scene(self), MENU_SCENE_PHASE_STATES);
+    MenuScene_SetPhase(letter_write_scene(self), MENU_SCENE_PHASE_STATE_COUNT);
     return 1;
 }
 CLEAN_AS(func_ov122_022a1e40, LetterWrite_SwitchTab)
@@ -2893,7 +2893,7 @@ CLEAN_AS(_ZN18Obj_ov122_022a273819func_ov122_022a1f14Ev, LetterWrite_RunInteract
  * REQUIRES: the sub state is below 0x1b; the game reads past the table for others. */
 void LetterWrite_RunSubState(LetterWriteScene *self)
 {
-    static const MemberPointer *const sub_states[LETTER_WRITE_SUB_STATES] = {
+    static const MemberPointer *const sub_states[LETTER_WRITE_SUB_STATE_COUNT] = {
         &data_ov122_022a2670, &data_ov122_022a2678, &data_ov122_022a2668, &data_ov122_022a2660, &data_ov122_022a2658,
         &data_ov122_022a25e0, &data_ov122_022a2648, &data_ov122_022a25d8, &data_ov122_022a2638, &data_ov122_022a25d0,
         &data_ov122_022a2628, &data_ov122_022a2620, &data_ov122_022a2618, &data_ov122_022a25b8, &data_ov122_022a2608,
@@ -2901,7 +2901,7 @@ void LetterWrite_RunSubState(LetterWriteScene *self)
         &data_ov122_022a2640, &data_ov122_022a25a0, &data_ov122_022a25c8, &data_ov122_022a25c0, &data_ov122_022a25f8,
         &data_ov122_022a2600, &data_ov122_022a2650,
     };
-    MemberTable_InitOnce(&data_ov122_022a27e0, data_ov122_022a2860, sub_states, LETTER_WRITE_SUB_STATES);
+    MemberTable_InitOnce(&data_ov122_022a27e0, data_ov122_022a2860, sub_states, LETTER_WRITE_SUB_STATE_COUNT);
     MemberPointer_CallVoid(&data_ov122_022a2860[self->base.sub_state], self);
 }
 CLEAN_AS(_ZN18Obj_ov122_022a273819func_ov122_022a1f40Ev, LetterWrite_RunSubState)
@@ -2912,12 +2912,12 @@ CLEAN_AS(_ZN18Obj_ov122_022a273819func_ov122_022a1f40Ev, LetterWrite_RunSubState
  * REQUIRES: the state is below 0x0f; the game reads past the table for others. */
 int LetterWrite_RunState(LetterWriteScene *self)
 {
-    static const MemberPointer *const states[LETTER_WRITE_STATES] = {
+    static const MemberPointer *const states[LETTER_WRITE_STATE_COUNT] = {
         &data_ov122_022a26f0, &data_ov122_022a26f8, &data_ov122_022a2630, &data_ov122_022a26e8, &data_ov122_022a26e0,
         &data_ov122_022a26d8, &data_ov122_022a26d0, &data_ov122_022a26c8, &data_ov122_022a26c0, &data_ov122_022a26b8,
         &data_ov122_022a2610, &data_ov122_022a26a8, &data_ov122_022a26a0, &data_ov122_022a2698, &data_ov122_022a2690,
     };
-    MemberTable_InitOnce(&data_ov122_022a27e4, data_ov122_022a27e8, states, LETTER_WRITE_STATES);
+    MemberTable_InitOnce(&data_ov122_022a27e4, data_ov122_022a27e8, states, LETTER_WRITE_STATE_COUNT);
     LetterWrite_ClosePanelTexts(self);
     MemberPointer_CallVoid(&data_ov122_022a27e8[self->base.state], self);
     LetterWrite_Idle(self);
@@ -3027,7 +3027,7 @@ int LetterWrite_Begin(LetterWriteScene *self)
 {
     LetterWrite_SetUp(self);
     MenuScene_SetState(letter_write_scene(self), LETTER_WRITE_STATE_START);
-    MenuScene_SetPhase(letter_write_scene(self), MENU_SCENE_PHASE_STATES);
+    MenuScene_SetPhase(letter_write_scene(self), MENU_SCENE_PHASE_STATE_COUNT);
     return 1;
 }
 CLEAN_AS(func_ov122_022a249c, LetterWrite_Begin)

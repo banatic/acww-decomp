@@ -15,14 +15,14 @@ extern const MemberPointer data_ov050_022654b8, data_ov050_02265758, data_ov050_
     data_ov050_02265470, data_ov050_022657f0, data_ov050_022657e8, data_ov050_022657e0, data_ov050_02265738,
     data_ov050_02265748, data_ov050_022657c8, data_ov050_022657c0, data_ov050_022657b8, data_ov050_022657b0,
     data_ov050_022657a8, data_ov050_022657a0, data_ov050_02265798, data_ov050_02265790;
-extern NookClerkStep data_ov050_02265f08[NOOK_CLERK_STATES];
+extern NookClerkStep data_ov050_02265f08[NOOK_CLERK_STATE_COUNT];
 extern NookClerkStep data_ov050_02266008[3];
 
 /* __sinit_ov050_0226520c: the entries and updates of the nineteen states, in order. The address
  * of the table's last part. */
 int NookClerkInit_Tables(void)
 {
-    static const MemberPointer *const states[2 * NOOK_CLERK_STATES] = {
+    static const MemberPointer *const states[2 * NOOK_CLERK_STATE_COUNT] = {
         &data_ov050_022654b8, &data_ov050_02265758, /* 0: greet */
         &data_ov050_02265590, &data_ov050_02265460, /* 1: stand */
         &data_ov050_022654e0, &data_ov050_02265630, /* 2: turn */
@@ -44,7 +44,7 @@ int NookClerkInit_Tables(void)
         &data_ov050_02265798, &data_ov050_02265790, /* 18: turn, ask */
     };
 
-    for (int i = 0; i < NOOK_CLERK_STATES; i++) {
+    for (int i = 0; i < NOOK_CLERK_STATE_COUNT; i++) {
         data_ov050_02265f08[i].enter = *states[2 * i];
         data_ov050_02265f08[i].update = *states[2 * i + 1];
     }

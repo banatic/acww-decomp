@@ -133,9 +133,9 @@ extern const MemberPointer data_ov068_02278064;
 /* The tables of its states' update and entry functions (filled once from the constants below,
  * bit 0 of the guards saying they were). */
 extern u32 data_ov068_022788d4;
-extern MemberPointer data_ov068_02278948[HOUSE_VISITOR_STATES];
+extern MemberPointer data_ov068_02278948[HOUSE_VISITOR_STATE_COUNT];
 extern u32 data_ov068_022788f4;
-extern MemberPointer data_ov068_022789a0[HOUSE_VISITOR_STATES];
+extern MemberPointer data_ov068_022789a0[HOUSE_VISITOR_STATE_COUNT];
 extern const MemberPointer data_ov068_0227806c, data_ov068_02278054, data_ov068_02277fbc, data_ov068_02277fc4,
     data_ov068_02277fe4, data_ov068_02277ff4, data_ov068_0227800c, data_ov068_02278044, data_ov068_02278074,
     data_ov068_0227805c, data_ov068_02277fec;
@@ -747,7 +747,7 @@ CLEAN_AS(func_ov068_02275b1c, HouseVisitor_EnterOutside)
 /* func_ov068_02275b8c: the update of the current state, through its table (filled once). */
 void HouseVisitor_Update(HouseVisitor *visitor)
 {
-    static const MemberPointer *const updates[HOUSE_VISITOR_STATES] = {
+    static const MemberPointer *const updates[HOUSE_VISITOR_STATE_COUNT] = {
         &data_ov068_0227806c, /* HouseVisitor_UpdateOutside */
         &data_ov068_02278054, /* HouseVisitor_UpdateRing */
         &data_ov068_02277fbc, /* HouseVisitor_UpdateCalled */
@@ -760,9 +760,9 @@ void HouseVisitor_Update(HouseVisitor *visitor)
         &data_ov068_0227805c, /* HouseVisitor_UpdateTalk */
         &data_ov068_02277fec, /* HouseVisitor_UpdateLeave */
     };
-    MemberTable_InitOnce(&data_ov068_022788d4, data_ov068_02278948, updates, HOUSE_VISITOR_STATES);
+    MemberTable_InitOnce(&data_ov068_022788d4, data_ov068_02278948, updates, HOUSE_VISITOR_STATE_COUNT);
     /* REQUIRES: state >= 0; the ROM's signed test lets a negative one index before the table */
-    if (visitor->state >= 0 && visitor->state < HOUSE_VISITOR_STATES) {
+    if (visitor->state >= 0 && visitor->state < HOUSE_VISITOR_STATE_COUNT) {
         MemberPointer_CallVoid(&data_ov068_02278948[visitor->state], visitor);
     }
 }
@@ -772,7 +772,7 @@ CLEAN_AS(func_ov068_02275b8c, HouseVisitor_Update)
  * agrees; whether it did. States 11 and above do not exist. */
 int HouseVisitor_SetState(HouseVisitor *visitor, int state)
 {
-    static const MemberPointer *const entries[HOUSE_VISITOR_STATES] = {
+    static const MemberPointer *const entries[HOUSE_VISITOR_STATE_COUNT] = {
         &data_ov068_0227804c, /* HouseVisitor_EnterOutside */
         &data_ov068_02277fd4, /* HouseVisitor_EnterRing */
         &data_ov068_0227803c, /* HouseVisitor_EnterCalled */
@@ -785,10 +785,10 @@ int HouseVisitor_SetState(HouseVisitor *visitor, int state)
         &data_ov068_02278004, /* HouseVisitor_EnterTalk */
         &data_ov068_02278024, /* HouseVisitor_EnterLeave */
     };
-    MemberTable_InitOnce(&data_ov068_022788f4, data_ov068_022789a0, entries, HOUSE_VISITOR_STATES);
+    MemberTable_InitOnce(&data_ov068_022788f4, data_ov068_022789a0, entries, HOUSE_VISITOR_STATE_COUNT);
     /* REQUIRES: state >= 0 (the game passes 0 to 10); the ROM's signed test lets a negative one
      * index before the table */
-    if (state >= 0 && state < HOUSE_VISITOR_STATES && MemberPointer_CallInt(&data_ov068_022789a0[state], visitor) != 0) {
+    if (state >= 0 && state < HOUSE_VISITOR_STATE_COUNT && MemberPointer_CallInt(&data_ov068_022789a0[state], visitor) != 0) {
         visitor->state = state;
         return 1;
     }
