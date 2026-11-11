@@ -67,7 +67,7 @@ CLEAN_AS(func_0209bd98, VillagerModeRecord_KindItem)
  * `record`: ten times its weight (4.12 fixed point), as a byte, added to its score. */
 void VillagerModeRecord_LearnTop(VillagerModeRecord *record, const VillagerModeRecord *from, const s16 *weights)
 {
-    int kind = VillagerModeRecord_DrawTopKind(from->scores);
+    int kind = VillagerModeRecord_PickTopKind(from->scores);
     if (VillagerModeRecord_IsKindMode((u32) kind)) {
         int full = (weights[kind] * VILLAGER_MODE_RECORD_FULL_SCORE) >> VILLAGER_MODE_RECORD_FIXED_SHIFT;
         VillagerModeRecord_RaiseScore(record->scores, kind, (u8) full);
@@ -93,7 +93,7 @@ CLEAN_AS(func_0209bee8, VillagerModeRecord_AddCount)
 
 /* func_0209bf28: a day's draw of the scores: each score below 255 gets its weight times a
  * random number below 10 (4.12 fixed point, as a byte). Whether any score was below 255. */
-int VillagerModeRecord_DrawScores(VillagerModeRecord *record, const s16 *weights)
+int VillagerModeRecord_RollScores(VillagerModeRecord *record, const s16 *weights)
 {
     int any = 0;
     for (int kind = 0; kind < VILLAGER_MODE_KINDS; kind++) {
@@ -109,7 +109,7 @@ int VillagerModeRecord_DrawScores(VillagerModeRecord *record, const s16 *weights
     }
     return any;
 }
-CLEAN_AS(func_0209bf28, VillagerModeRecord_DrawScores)
+CLEAN_AS(func_0209bf28, VillagerModeRecord_RollScores)
 
 /* func_0209bf80: each count, times the kind's weight and multiplier (4.12 fixed point, as a
  * byte), added to the kind's score; then the counts cleared. */
@@ -173,7 +173,7 @@ int VillagerModeRecord_LeaveArrived(VillagerModeRecord *record, const DateTime *
                         DateTime_DaysBetween(&record->since, now) < 1)) {
         return VILLAGER_MODE_UNCHANGED;
     }
-    int kind = VillagerModeRecord_DrawTopKind(record->scores);
+    int kind = VillagerModeRecord_PickTopKind(record->scores);
     if (!VillagerModeRecord_IsKindMode((u32) kind)) {
         return VILLAGER_MODE_UNCHANGED;
     }
@@ -189,7 +189,7 @@ int VillagerModeRecord_LeaveMode11(VillagerModeRecord *record, const DateTime *n
     if (record->mode != VILLAGER_MODE_11 || now->day == record->since.day) {
         return VILLAGER_MODE_UNCHANGED;
     }
-    int kind = VillagerModeRecord_DrawTopKind(record->scores);
+    int kind = VillagerModeRecord_PickTopKind(record->scores);
     if (!VillagerModeRecord_IsKindMode((u32) kind)) {
         return VILLAGER_MODE_UNCHANGED;
     }
@@ -205,7 +205,7 @@ int VillagerModeRecord_LeaveNoHobby(VillagerModeRecord *record)
     if (record->mode != VILLAGER_MODE_NO_HOBBY) {
         return VILLAGER_MODE_UNCHANGED;
     }
-    int kind = VillagerModeRecord_DrawTopKind(record->scores);
+    int kind = VillagerModeRecord_PickTopKind(record->scores);
     if (!VillagerModeRecord_IsKindMode((u32) kind)) {
         return VILLAGER_MODE_UNCHANGED;
     }
@@ -222,7 +222,7 @@ int VillagerModeRecord_KeepKind(VillagerModeRecord *record)
     if (!VillagerModeRecord_IsKindMode(record->mode)) {
         return VILLAGER_MODE_UNCHANGED;
     }
-    int kind = VillagerModeRecord_DrawTopKind(record->scores);
+    int kind = VillagerModeRecord_PickTopKind(record->scores);
     if (!VillagerModeRecord_IsKindMode((u32) kind) ||
         VillagerModeRecord_KindByte(record->scores, (u8) kind) != VILLAGER_MODE_RECORD_SCORE_MAX) {
         return VILLAGER_MODE_UNCHANGED;
@@ -351,19 +351,19 @@ CLEAN_AS(func_0209c330, VillagerModeRecord_Mode)
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 
 /* func_0209c334: a new mode drawn for the record: its scores copied from `scores`, its mode one
- * of the highest of them (VillagerModeRecord_DrawTopKind), then, when `halve` is set, that
+ * of the highest of them (VillagerModeRecord_PickTopKind), then, when `halve` is set, that
  * kind's score cleared and every score halved; both dates set to now. */
-void VillagerModeRecord_Redraw(VillagerModeRecord *record, const u8 *scores, int halve)
+void VillagerModeRecord_Repick(VillagerModeRecord *record, const u8 *scores, int halve)
 {
     VillagerModeRecord_CopyKindBytes(record->scores, scores);
-    record->mode = (u8) VillagerModeRecord_DrawTopKind(record->scores);
+    record->mode = (u8) VillagerModeRecord_PickTopKind(record->scores);
     if (halve) {
         VillagerModeRecord_HalveScores(record->scores, record->mode);
     }
     DateTime_Now(&record->since);
     DateTime_Now(&record->counted);
 }
-CLEAN_AS(func_0209c334, VillagerModeRecord_Redraw)
+CLEAN_AS(func_0209c334, VillagerModeRecord_Repick)
 
 /* func_0209c370: whether the record is in use (its mode below VILLAGER_MODE_UNCHANGED). */
 unsigned int VillagerModeRecord_IsInUse(VillagerModeRecord *record)
@@ -468,7 +468,7 @@ CLEAN_AS(func_0209c470, VillagerModeRecord_HalveScores)
 
 /* func_0209c4a8: the kind of a highest score, picked at random (func_020644cc) among the kinds
  * that share it. */
-int VillagerModeRecord_DrawTopKind(const unsigned char *scores)
+int VillagerModeRecord_PickTopKind(const unsigned char *scores)
 {
     int top = -1;
     unsigned int tied = 0; /* bit k: kind k has the top score */
@@ -500,7 +500,7 @@ int VillagerModeRecord_DrawTopKind(const unsigned char *scores)
     }
     return result;
 }
-CLEAN_AS(func_0209c4a8, VillagerModeRecord_DrawTopKind)
+CLEAN_AS(func_0209c4a8, VillagerModeRecord_PickTopKind)
 
 /* func_0209c51c: eight bytes of a kind each copied from `from` to `to`. */
 void VillagerModeRecord_CopyKindBytes(unsigned char *to, const unsigned char *from)

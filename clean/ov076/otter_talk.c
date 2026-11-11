@@ -314,7 +314,7 @@ void OtterTalk_OnLineEnded(OtterTalk *talk)
                     ItemList list;
                     u16 drawn;
                     ItemList_Construct(&list, kind, OTTER_TALK_GIFT_GROUP);
-                    ItemLists_Draw(&drawn, &list, 0, 0, 1, 1, 0);
+                    ItemLists_Pick(&drawn, &list, 0, 0, 1, 1, 0);
                     talk->item = drawn;
                     ItemList_Destruct(&list);
                     otter_talk_hand_over(talk);

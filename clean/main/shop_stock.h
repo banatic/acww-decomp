@@ -16,7 +16,7 @@ u16 *ShopStock_Item(u32 place, u16 *items, u8 *sold, u32 count, u16 *out);
 int ShopStock_MarkSold(u32 place, u32 count, u8 *sold);
 int ShopStock_IsSold(u32 place, u32 count, u8 *sold);
 void ShopStock_Clear(u16 *items, u8 *sold, u32 count);
-void ShopStock_DrawCodes(u16 *items, u32 *next, int first, int range, u32 count, u32 size, u8 convert);
-void ShopStock_DrawLot(u16 *items, u32 *next, int kind, int group, u32 count, int size, u8 convert);
+void ShopStock_PickCodes(u16 *items, u32 *next, int first, int range, u32 count, u32 size, u8 convert);
+void ShopStock_PickLot(u16 *items, u32 *next, int kind, int group, u32 count, int size, u8 convert);
 
 #endif

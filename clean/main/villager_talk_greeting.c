@@ -531,7 +531,7 @@ void VillagerTalkGreeting_Line(VillagerTalk *talk, VillagerTalkLine *out)
         u16 item;
         texts = &data_020c8c70;
         ItemList_Construct((ItemList *) &list, 0, 0);
-        ItemLists_Draw(&item, (ItemList *) &list, 0, 0, 1, 1, 0);
+        ItemLists_Pick(&item, (ItemList *) &list, 0, 0, 1, 1, 0);
         talk->gift = item;
         ItemList_Destruct(&list);
         talk->gift_from_items = 0;

@@ -57,7 +57,7 @@ void TownBeach_Fill(TownDay *town, AcreMap *map)
     for (int acre_x = 0; acre_x < wide; acre_x++) {
         int missing = TOWN_BEACH_FILL - data_021c779c.acres.acres[acre_x][TOWN_DAY_BEACH_ROW].beach_items;
         for (; missing > 0; missing--) {
-            u16 item = (u16) TownBeach_DrawItem(town);
+            u16 item = (u16) TownBeach_PickItem(town);
             TownPlace_PutInAcre(town, map, acre_x + 1, TOWN_BEACH_ACRE_ROW, item, func_02048e34, 0);
         }
     }
@@ -156,14 +156,14 @@ void TownBeach_WashUp(int town, AcreMap *map, int acre_x)
 {
     TownAcreCount_CountInner(&data_021c779c.acres, map, acre_x, 3);
     if (data_021c779c.acres.acres[acre_x][TOWN_DAY_BEACH_ROW].beach_items < TOWN_BEACH_MOST) {
-        u16 item = (u16) TownBeach_DrawItem((TownDay *) (uintptr_t) town);
+        u16 item = (u16) TownBeach_PickItem((TownDay *) (uintptr_t) town);
         TownPlace_PutInAcre((void *) (uintptr_t) town, map, acre_x + 1, TOWN_BEACH_ACRE_ROW, item, func_02048e34, 0);
     }
 }
 CLEAN_AS(func_020470c0, TownBeach_WashUp)
 
 /* func_02047114: a beach item drawn by the weights of data_020cac9c. */
-int TownBeach_DrawItem(TownDay *town)
+int TownBeach_PickItem(TownDay *town)
 {
     (void) town;
     int left = (int) MainRandom_Below(100);
@@ -177,4 +177,4 @@ int TownBeach_DrawItem(TownDay *town)
     }
     return (u16) item;
 }
-CLEAN_AS(func_02047114, TownBeach_DrawItem)
+CLEAN_AS(func_02047114, TownBeach_PickItem)

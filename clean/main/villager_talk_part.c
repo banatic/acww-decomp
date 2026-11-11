@@ -29,7 +29,7 @@
 #include "item_traits.h"
 #include "letter.h"
 #include "main_random.h"
-#include "talk_item_draw.h"
+#include "talk_item_pick.h"
 #include "talk_object.h"
 #include "villager_talk_approach.h"
 #include "villager_talk_scene.h"
@@ -228,7 +228,7 @@ static PlayerPockets *part_pockets(void)
 
 /* The line of `texts` drawn for the personality of the talk's villager into the talk's text
  * and message. */
-static void part_draw(VillagerTalk *talk, const VillagerTalkPartTexts *texts)
+static void part_pick(VillagerTalk *talk, const VillagerTalkPartTexts *texts)
 {
     VillagerTalkScene_DrawLine(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE,
                                NpcId_Personality(TownVillager_NpcId(part_record(talk))), (int) texts->texts, texts->count, 0,
@@ -244,7 +244,7 @@ static void part_name(VillagerTalk *talk, VillagerTalkLine *out)
 
 static void part_line(VillagerTalk *talk, VillagerTalkLine *out, const VillagerTalkPartTexts *texts)
 {
-    part_draw(talk, texts);
+    part_pick(talk, texts);
     part_name(talk, out);
 }
 
@@ -252,7 +252,7 @@ static void part_line(VillagerTalk *talk, VillagerTalkLine *out, const VillagerT
 static void part_line_if(VillagerTalk *talk, VillagerTalkLine *out, const VillagerTalkPartTexts *texts)
 {
     if (texts != NULL) {
-        part_draw(talk, texts);
+        part_pick(talk, texts);
     }
     part_name(talk, out);
 }
@@ -333,10 +333,10 @@ static void part_bells_item(VillagerTalk *talk)
 }
 
 /* An item drawn by func_0202d5e4 as the item at 0x124. */
-static void part_drawn_item(VillagerTalk *talk)
+static void part_picked_item(VillagerTalk *talk)
 {
     u16 drawn;
-    TalkItemDraw_ThreeLists(&drawn, 0);
+    TalkItemPick_ThreeLists(&drawn, 0);
     talk->item = drawn;
 }
 
@@ -387,7 +387,7 @@ void VillagerTalkPart_LineByPlaceStep9cc0(VillagerTalk *talk, VillagerTalkLine *
         }
     }
     if (texts.texts != 0) {
-        part_draw(talk, &texts);
+        part_pick(talk, &texts);
     }
     part_name(talk, out);
 }
@@ -488,7 +488,7 @@ void VillagerTalkPart_LineReward8d98(VillagerTalk *talk, VillagerTalkLine *out)
     u8 reaction = part_reaction(talk);
     talk->item = ITEM_CODE_NONE;
     if (reaction == VILLAGER_TALK_PART_REACT_STYLE1) {
-        part_drawn_item(talk);
+        part_picked_item(talk);
     }
     if (talk->item == ITEM_CODE_NONE) {
         part_bells_item(talk);
@@ -509,7 +509,7 @@ void VillagerTalkPart_LineReward8da0(VillagerTalk *talk, VillagerTalkLine *out)
             part_villager_item(talk);
             break;
         case VILLAGER_TALK_PART_REACT_OTHER:
-            part_drawn_item(talk);
+            part_picked_item(talk);
             break;
         default:
             break;
@@ -530,14 +530,14 @@ void VillagerTalkPart_LineReward8da8(VillagerTalk *talk, VillagerTalkLine *out)
     talk->item = ITEM_CODE_NONE;
     switch (reaction) {
         case VILLAGER_TALK_PART_REACT_STYLE0:
-            part_drawn_item(talk);
+            part_picked_item(talk);
             break;
         case VILLAGER_TALK_PART_REACT_OTHER:
             part_villager_item(talk);
             break;
         default:
             if (part_villager_item(talk) == 0) {
-                part_drawn_item(talk);
+                part_picked_item(talk);
             }
             break;
     }
@@ -593,7 +593,7 @@ void VillagerTalkPart_StartByType(VillagerTalk *talk, int arg)
                 part_bells_item(talk);
             }
             if (talk->item == ITEM_CODE_NONE) {
-                part_drawn_item(talk);
+                part_picked_item(talk);
             }
             VillagerTalkPart_SayByPocketRoom(talk);
             break;
@@ -623,7 +623,7 @@ static void part_line_with_block(VillagerTalk *talk, VillagerTalkLine *out, cons
 {
     const VillagerTalkPartTexts *texts = part_texts_by_type(talk, for_10, for_19);
     if (part_block(talk) != NULL && texts != NULL) {
-        part_draw(talk, texts);
+        part_pick(talk, texts);
     }
     part_name(talk, out);
 }
@@ -1005,7 +1005,7 @@ void VillagerTalkPart_LinePutNames(VillagerTalk *talk, VillagerTalkLine *out)
 {
     const VillagerTalkPartTexts *texts = part_texts_by_type(talk, &data_020c8998, &data_020c8a40);
     if (texts != NULL) {
-        part_draw(talk, texts);
+        part_pick(talk, texts);
         if (part_block(talk) != NULL) {
             SceneBase_PutNpcName(part_base(talk), VillagerPartBlock_Npc(part_block(talk), 0), 0);
             SceneBase_PutNpcName(part_base(talk), VillagerPartBlock_Npc(part_block(talk), 1), 1);

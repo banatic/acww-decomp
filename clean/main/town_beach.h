@@ -1,6 +1,6 @@
 /* The items that wash up on the town's beach, the last row of inner acres (acre row 4).
  *
- * The items 0x1554-0x155c are drawn by the weights of data_020cac9c (TownBeach_DrawItem) and
+ * The items 0x1554-0x155c are drawn by the weights of data_020cac9c (TownBeach_PickItem) and
  * put on a free tile of a beach acre by func_02048cb8. When the town is loaded every beach
  * acre gets up to two (TownBeach_Fill); then once every ten minutes of the clock (the minutes
  * ending in 3), a beach acre drawn at random gets one more while it holds fewer than four,
@@ -27,6 +27,6 @@ void TownBeach_Update(int town);
 void TownBeach_UpdateLinked(int town);
 void TownBeach_UpdateAlone(int town);
 void TownBeach_WashUp(int town, AcreMap *map, int acre_x);
-int TownBeach_DrawItem(TownDay *town);
+int TownBeach_PickItem(TownDay *town);
 
 #endif

@@ -122,7 +122,7 @@ static int request_personality(VillagerTalk *talk)
 
 /* The line of group `group` of `texts` drawn for `personality` into the talk's text and
  * message. */
-static void request_draw(VillagerTalk *talk, int personality, const VillagerTalkRequestTexts *texts, int group)
+static void request_pick(VillagerTalk *talk, int personality, const VillagerTalkRequestTexts *texts, int group)
 {
     VillagerTalkScene_DrawLine(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE, personality, (int) texts->texts,
                                texts->count, group, 0);
@@ -155,7 +155,7 @@ static const VillagerTalkRequestTexts *request_texts_by_type(VillagerTalk *talk,
 static void request_line_if(VillagerTalk *talk, VillagerTalkLine *out, const VillagerTalkRequestTexts *texts)
 {
     if (texts != NULL) {
-        request_draw(talk, request_personality(talk), texts, 0);
+        request_pick(talk, request_personality(talk), texts, 0);
     }
     request_name(talk, out);
 }
@@ -169,7 +169,7 @@ void VillagerTalkRequest_LineOver(VillagerTalk *talk, VillagerTalkLine *out)
     if (texts != NULL) {
         int personality = request_personality(talk);
         int group = VillagerErrand_WaitPlace((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk));
-        request_draw(talk, personality, texts, group);
+        request_pick(talk, personality, texts, group);
         if (request_block(talk) != NULL) {
             SceneBase_PutNpcName(request_base(talk), VillagerPartBlock_Npc(request_block(talk), 0), 0);
             SceneBase_PutNpcName(request_base(talk), VillagerPartBlock_Npc(request_block(talk), 1), 1);
@@ -331,7 +331,7 @@ void VillagerTalkRequest_LineTime(VillagerTalk *talk, VillagerTalkLine *out)
     *place = (u8) MainRandom_Below(VILLAGER_TALK_REQUEST_WAITS);
     *request_byte(talk, VILLAGER_TALK_REQUEST_WAIT) = waits[*place];
     int personality = request_personality(talk);
-    request_draw(talk, personality, &data_020c8c28, *place);
+    request_pick(talk, personality, &data_020c8c28, *place);
     request_name(talk, out);
 }
 CLEAN_AS(func_020286f8, VillagerTalkRequest_LineTime)

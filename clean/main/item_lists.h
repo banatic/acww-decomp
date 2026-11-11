@@ -15,8 +15,8 @@
  * six orders (func_02063f94). When no item passes, any of the kind's items is drawn (unless a
  * record was given), and when that draw fails too, the kind's first item.
  *
- * ItemLists_DrawRange draws one code from a range of codes instead, by its own rules
- * (clothes of a style, groups 0x18 and 0x19 never), and ItemLists_DrawByGroup draws from
+ * ItemLists_PickRange draws one code from a range of codes instead, by its own rules
+ * (clothes of a style, groups 0x18 and 0x19 never), and ItemLists_PickByGroup draws from
  * kinds 0, 4 and 3 with groups 1-3 weighed by the town's values (func_02063f40).
  *
  * The draws take their random numbers from a date source (date_random.h); given none, they
@@ -55,16 +55,16 @@ enum ItemListsSeason {
 int ItemLists_IsFurnitureGroup4(u16 *item);
 int ItemLists_GroupOf(u16 *item, int raw);
 int ItemLists_KindOf(u16 *item);
-void ItemLists_DrawByGroup(u16 *out, int record, DateRandom *source);
-void ItemLists_DrawRange(u16 *out, int first, u32 count, u16 *drawn, u32 drawn_count, void *record, int in_record, int style,
+void ItemLists_PickByGroup(u16 *out, int record, DateRandom *source);
+void ItemLists_PickRange(u16 *out, int first, u32 count, u16 *drawn, u32 drawn_count, void *record, int in_record, int style,
                          DateRandom *source, int filter);
-int ItemLists_DrawRangeMany(u16 *items, unsigned int count, int first, int range, int record, int in_record, int style,
+int ItemLists_PickRangeMany(u16 *items, unsigned int count, int first, int range, int record, int in_record, int style,
                             int source, int filter);
 void ItemLists_DrawPlain(u32 out, ItemList *list);
-int ItemLists_DrawOne(int out, int count, int lists, int record, int source, unsigned char filter, int turn, int group_out);
-void ItemLists_Draw(unsigned short *out, ItemList *list, int record, int source, unsigned char filter, int turn,
+int ItemLists_PickOne(int out, int count, int lists, int record, int source, unsigned char filter, int turn, int group_out);
+void ItemLists_Pick(unsigned short *out, ItemList *list, int record, int source, unsigned char filter, int turn,
                     int group_out);
-int ItemLists_DrawMany(u16 *out, unsigned int count, ItemList *lists, int list_count, void *record, DateRandom *source,
+int ItemLists_PickMany(u16 *out, unsigned int count, ItemList *lists, int list_count, void *record, DateRandom *source,
                        int filter, int turn, int *group_out);
 int ItemLists_InRecord(int record, int item);
 int ItemLists_Season(int month, unsigned int day);

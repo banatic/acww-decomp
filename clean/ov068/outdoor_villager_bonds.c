@@ -123,7 +123,7 @@ CLEAN_AS(func_ov068_0226ab58, OutdoorVillagerBonds_TalkOfBond)
 
 /* func_ov068_0226ac40: one of the shop's eight designs drawn at random among those that are not
  * `design` (all of them when `design` is null); null when none is left. */
-u8 *OutdoorVillagerBonds_DrawShopDesign(OutdoorVillagerBehavior *self, u8 *design)
+u8 *OutdoorVillagerBonds_PickShopDesign(OutdoorVillagerBehavior *self, u8 *design)
 {
     (void) self;
     unsigned int designs = (unsigned int) (uintptr_t) data_021ed278;
@@ -145,7 +145,7 @@ u8 *OutdoorVillagerBonds_DrawShopDesign(OutdoorVillagerBehavior *self, u8 *desig
     }
     return NULL;
 }
-CLEAN_AS(func_ov068_0226ac40, OutdoorVillagerBonds_DrawShopDesign)
+CLEAN_AS(func_ov068_0226ac40, OutdoorVillagerBonds_PickShopDesign)
 
 /* func_ov068_0226aca8: the town records `a` and `b` sorted into `first` and `second`: the one
  * fonder of the current player first (VillagerMemoryEntry_Fondness of its memory of the

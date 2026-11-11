@@ -35,7 +35,7 @@
 #include "letter.h"
 #include "main_random.h"
 #include "player_id.h"
-#include "talk_item_draw.h"
+#include "talk_item_pick.h"
 #include "talk_object.h"
 #include "text_base.h"
 #include "town_name.h"
@@ -197,7 +197,7 @@ static SceneBase *topics_base(VillagerTalk *talk)
 
 /* The line drawn for the personality of the talk's villager into the talk's text and
  * message. */
-static void topics_draw(VillagerTalk *talk, u32 texts, int per_group, int group, int range)
+static void topics_pick(VillagerTalk *talk, u32 texts, int per_group, int group, int range)
 {
     VillagerTalkScene_DrawLine(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE,
                                NpcId_Personality(TownVillager_NpcId(topics_record(talk))), (int) texts, per_group, group,
@@ -223,7 +223,7 @@ void VillagerTalkTopics_Line(VillagerTalk *talk, VillagerTalkLine *out)
         said = VillagerTalkTopics_SayPlayerTalks(talk);
     }
     while (said == 0) {
-        int topic = VillagerTalkTopics_Draw(talk, data_021c1d34, VILLAGER_TALK_TOPICS_COUNT);
+        int topic = VillagerTalkTopics_Pick(talk, data_021c1d34, VILLAGER_TALK_TOPICS_COUNT);
         if (topic < 0 || topic >= VILLAGER_TALK_TOPICS_COUNT) {
             VillagerTalkSubjects_SayLast(talk);
             break;
@@ -250,7 +250,7 @@ CLEAN_AS(func_02021118, VillagerTalkTopics_FillSlots)
 
 /* func_0202114c: a topic drawn by the weights (func_0202d6e4), the last topic when all are
  * 0. */
-int VillagerTalkTopics_Draw(VillagerTalk *talk, const u8 *weights, int count)
+int VillagerTalkTopics_Pick(VillagerTalk *talk, const u8 *weights, int count)
 {
     (void) talk;
     int topic = InsectDraw_PickByWeights(weights, count);
@@ -259,7 +259,7 @@ int VillagerTalkTopics_Draw(VillagerTalk *talk, const u8 *weights, int count)
     }
     return topic;
 }
-CLEAN_AS(func_0202114c, VillagerTalkTopics_Draw)
+CLEAN_AS(func_0202114c, VillagerTalkTopics_Pick)
 
 /* func_02021168: a random bit drawn first; when the villager scene started in the town event
  * 10 and the bit is 0, a line of the set at 0x020c8b80 (its count the lines per group, group
@@ -270,7 +270,7 @@ int VillagerTalkTopics_SayEvent10(VillagerTalk *talk)
     if (VillagerSceneObject_Event(talk->villager) != VILLAGER_TALK_TOPICS_EVENT || bit != 0) {
         return 0;
     }
-    topics_draw(talk, data_020c8b80.texts, data_020c8b80.count, 0, 0);
+    topics_pick(talk, data_020c8b80.texts, data_020c8b80.count, 0, 0);
     return 1;
 }
 CLEAN_AS(func_02021168, VillagerTalkTopics_SayEvent10)
@@ -336,7 +336,7 @@ int VillagerTalkTopics_SayConstellation(VillagerTalk *talk)
     if (group == -1) {
         return 0;
     }
-    topics_draw(talk, data_020c8b98.texts, data_020c8b98.count, group, 0);
+    topics_pick(talk, data_020c8b98.texts, data_020c8b98.count, group, 0);
 
     ConstellationsWideName wide;
     ConstellationsLabel label;
@@ -376,7 +376,7 @@ int VillagerTalkTopics_SayDayEvent(VillagerTalk *talk)
         said = 1;
     }
     if (said) {
-        topics_draw(talk, data_020c8bb8.texts, per_group, group, 0);
+        topics_pick(talk, data_020c8bb8.texts, per_group, group, 0);
     }
     return said;
 }
@@ -419,7 +419,7 @@ int VillagerTalkTopics_SayDated(VillagerTalk *talk)
     if (chosen == NULL) {
         return 0;
     }
-    topics_draw(talk, chosen->texts, chosen->per_group, chosen->group, chosen->range);
+    topics_pick(talk, chosen->texts, chosen->per_group, chosen->group, chosen->range);
     return 1;
 }
 CLEAN_AS(func_020214e0, VillagerTalkTopics_SayDated)
@@ -593,7 +593,7 @@ int VillagerTalkTopics_SayOtherPlayer(VillagerTalk *talk)
         PlayerIdText_Destruct((PlayerIdText *) &text);
     }
     talk->letter_memory = chosen;
-    topics_draw(talk, data_020c8cb8.texts, data_020c8cb8.count, slot, 0);
+    topics_pick(talk, data_020c8cb8.texts, data_020c8cb8.count, slot, 0);
     talk->events[1] = data_020d90f8;
     talk->events[2] = data_020d90f0;
     return 1;
@@ -850,13 +850,13 @@ int VillagerTalkTopics_SayGiftItem(VillagerTalk *talk)
         return 0;
     }
     u16 item;
-    TalkItemDraw_OfKinds(&item);
+    TalkItemPick_OfKinds(&item);
     talk->item = item;
     if (talk->item == ITEM_CODE_NONE) {
         return 0;
     }
     SceneBase_PutItemName(topics_base(talk), (int) (uintptr_t) &talk->item, 0, 7);
-    topics_draw(talk, data_020c8c78.texts, data_020c8c78.count, 0, 0);
+    topics_pick(talk, data_020c8c78.texts, data_020c8c78.count, 0, 0);
     return 1;
 }
 CLEAN_AS(func_02021f1c, VillagerTalkTopics_SayGiftItem)
@@ -874,7 +874,7 @@ int VillagerTalkTopics_SayByTown(VillagerTalk *talk)
     if (whose >= 2) {
         whose = 1;
     }
-    topics_draw(talk, data_020c8ec4[whose].texts, data_020c8ec4[whose].count, 0, 0);
+    topics_pick(talk, data_020c8ec4[whose].texts, data_020c8ec4[whose].count, 0, 0);
     return 1;
 }
 CLEAN_AS(func_02021fb8, VillagerTalkTopics_SayByTown)
@@ -908,7 +908,7 @@ int VillagerTalkTopics_SayByAcre(VillagerTalk *talk)
             }
         }
     }
-    topics_draw(talk, data_020c8c50.texts, data_020c8c50.count, group, 0);
+    topics_pick(talk, data_020c8c50.texts, data_020c8c50.count, group, 0);
     return 1;
 }
 CLEAN_AS(func_02022034, VillagerTalkTopics_SayByAcre)
@@ -978,7 +978,7 @@ int VillagerTalkTopics_SayPair(VillagerTalk *talk)
             group_part = group[0] == 0 ? 1 : 2;
         }
     }
-    topics_draw(talk, data_020c8c98.texts, data_020c8c98.count, tier_part + group_part * 3, 0);
+    topics_pick(talk, data_020c8c98.texts, data_020c8c98.count, tier_part + group_part * 3, 0);
     return 1;
 }
 CLEAN_AS(func_0202213c, VillagerTalkTopics_SayPair)

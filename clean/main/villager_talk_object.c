@@ -33,7 +33,7 @@
 #include "item_lists.h"
 #include "item_traits.h"
 #include "main_random.h"
-#include "talk_item_draw.h"
+#include "talk_item_pick.h"
 #include "talk_object.h"
 #include "villager_talk_approach.h"
 #include "villager_talk_offers.h"
@@ -233,7 +233,7 @@ static int object_type(VillagerTalk *talk)
 
 /* The line drawn for the personality of the talk's villager into the talk's text and
  * message. */
-static void object_draw(VillagerTalk *talk, u32 texts, int per_group, int group, int range)
+static void object_pick(VillagerTalk *talk, u32 texts, int per_group, int group, int range)
 {
     VillagerTalkScene_DrawLine(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE,
                                NpcId_Personality(TownVillager_NpcId(object_record(talk))), (int) texts, per_group, group,
@@ -250,7 +250,7 @@ static void object_name(VillagerTalk *talk, VillagerTalkLine *out)
 /* A line of a text set (its count the lines per group, group 0) named in `out`. */
 static void object_line(VillagerTalk *talk, VillagerTalkLine *out, const VillagerTalkObjectTexts *texts)
 {
-    object_draw(talk, texts->texts, texts->count, 0, 0);
+    object_pick(talk, texts->texts, texts->count, 0, 0);
     object_name(talk, out);
 }
 
@@ -480,13 +480,13 @@ static void object_items_gift(VillagerTalk *talk, u8 *record, int random, int fr
 }
 
 /* A gift drawn for `arg` by func_0202d5cc for clothes, else by func_0202d5e4. */
-static void object_drawn_gift(VillagerTalk *talk, int clothes, int arg)
+static void object_picked_gift(VillagerTalk *talk, int clothes, int arg)
 {
     u16 item;
     if (clothes) {
-        TalkItemDraw_FourLists(&item, arg);
+        TalkItemPick_FourLists(&item, arg);
     } else {
-        TalkItemDraw_ThreeLists(&item, arg);
+        TalkItemPick_ThreeLists(&item, arg);
     }
     talk->gift = item;
 }
@@ -531,11 +531,11 @@ void VillagerTalkObject_GiveReward(VillagerTalk *talk)
                     object_items_gift(talk, record, 0, 1, 0, VILLAGER_TALK_OBJECT_BELLS_LATE);
                     break;
                 default:
-                    object_drawn_gift(talk, 0, (int) (uintptr_t) player);
+                    object_picked_gift(talk, 0, (int) (uintptr_t) player);
                     break;
             }
             if (talk->gift == ITEM_CODE_NONE) {
-                object_drawn_gift(talk, 0, 0);
+                object_picked_gift(talk, 0, 0);
             }
             break;
         case VILLAGER_TALK_OBJECT_TYPE_CLOTHES:
@@ -550,11 +550,11 @@ void VillagerTalkObject_GiveReward(VillagerTalk *talk)
                     object_items_gift(talk, record, 0, 1, 0, VILLAGER_TALK_OBJECT_BELLS_LATE);
                     break;
                 default:
-                    object_drawn_gift(talk, 1, (int) (uintptr_t) player);
+                    object_picked_gift(talk, 1, (int) (uintptr_t) player);
                     break;
             }
             if (talk->gift == ITEM_CODE_NONE) {
-                object_drawn_gift(talk, 1, 0);
+                object_picked_gift(talk, 1, 0);
             }
             break;
         case VILLAGER_TALK_OBJECT_TYPE_FURNITURE:
@@ -571,11 +571,11 @@ void VillagerTalkObject_GiveReward(VillagerTalk *talk)
                     object_items_gift(talk, record, 0, 1, 0, VILLAGER_TALK_OBJECT_BELLS_LATE);
                     break;
                 default:
-                    object_drawn_gift(talk, 0, (int) (uintptr_t) player);
+                    object_picked_gift(talk, 0, (int) (uintptr_t) player);
                     break;
             }
             if (talk->gift == ITEM_CODE_NONE) {
-                object_drawn_gift(talk, 0, 0);
+                object_picked_gift(talk, 0, 0);
             }
             break;
         default:
@@ -677,7 +677,7 @@ void VillagerTalkObject_LineByType9a9c(VillagerTalk *talk, VillagerTalkLine *out
             break;
     }
     object_next_line(talk);
-    object_draw(talk, texts.texts, texts.count, 0, 0);
+    object_pick(talk, texts.texts, texts.count, 0, 0);
     object_name(talk, out);
 }
 CLEAN_AS(func_02024b4c, VillagerTalkObject_LineByType9a9c)
@@ -694,7 +694,7 @@ void VillagerTalkObject_LineGroupByType(VillagerTalk *talk, VillagerTalkLine *ou
         range = 3;
     }
     object_next_line(talk);
-    object_draw(talk, (u32) (uintptr_t) texts, 3, 1, range);
+    object_pick(talk, (u32) (uintptr_t) texts, 3, 1, range);
     object_name(talk, out);
     talk->on_last_message = data_020d9180;
 }
@@ -1096,7 +1096,7 @@ void VillagerTalkObject_LineKeepItem8d58(VillagerTalk *talk, VillagerTalkLine *o
 {
     object_reward_and_keep(talk);
     const VillagerTalkObjectTexts *texts = object_texts_fish(talk, &data_020c8d58, &data_020c8ae8);
-    object_draw(talk, texts->texts, texts->count, talk->message, 0);
+    object_pick(talk, texts->texts, texts->count, talk->message, 0);
     object_name(talk, out);
     talk->sound = VILLAGER_TALK_OBJECT_SOUND_5F;
 }
@@ -1197,7 +1197,7 @@ void VillagerTalkObject_LineByStep9dd4(VillagerTalk *talk, VillagerTalkLine *out
         texts.texts = data_020d9dd4[step];
     }
     if (texts.texts != 0) {
-        object_draw(talk, texts.texts, texts.count, 0, 0);
+        object_pick(talk, texts.texts, texts.count, 0, 0);
     }
     object_name(talk, out);
 }
@@ -1226,7 +1226,7 @@ void VillagerTalkObject_LineByPlaceStep(VillagerTalk *talk, VillagerTalkLine *ou
         texts.texts = ((const u32 *) (uintptr_t) data_020d9d10[place])[step];
     }
     if (texts.texts != 0) {
-        object_draw(talk, texts.texts, texts.count, 0, 0);
+        object_pick(talk, texts.texts, texts.count, 0, 0);
     }
     object_name(talk, out);
 }
@@ -1450,13 +1450,13 @@ CLEAN_AS(func_02026268, VillagerTalkObject_FossilPart)
 /* func_020262fc: an item of 0x450c-0x45db drawn twice (func_02063414: once for no player, once
  * for the current player); the first when the second is not of the range, or half of the time
  * (a random number below 10 is even) when both are; the second when the first is not. */
-void VillagerTalkObject_DrawFossil(u16 *out, int unused_object, int unused_villager)
+void VillagerTalkObject_PickFossil(u16 *out, int unused_object, int unused_villager)
 {
     (void) unused_object;
     (void) unused_villager;
     u16 drawn[2];
-    ItemLists_DrawRange(&drawn[0], ITEM_ATTRIBUTES_FOSSIL_FIRST, ITEM_ATTRIBUTES_FOSSILS, 0, 0, NULL, 1, 0xa, 0, 1);
-    ItemLists_DrawRange(&drawn[1], ITEM_ATTRIBUTES_FOSSIL_FIRST, ITEM_ATTRIBUTES_FOSSILS, 0, 0, PlayerRecords_Current(), 0,
+    ItemLists_PickRange(&drawn[0], ITEM_ATTRIBUTES_FOSSIL_FIRST, ITEM_ATTRIBUTES_FOSSILS, 0, 0, NULL, 1, 0xa, 0, 1);
+    ItemLists_PickRange(&drawn[1], ITEM_ATTRIBUTES_FOSSIL_FIRST, ITEM_ATTRIBUTES_FOSSILS, 0, 0, PlayerRecords_Current(), 0,
                         0xa, 0, 1);
     *out = ITEM_CODE_NONE;
     if (drawn[0] >= ITEM_ATTRIBUTES_FOSSIL_FIRST && drawn[0] <= ITEM_ATTRIBUTES_FOSSIL_LAST) {
@@ -1470,7 +1470,7 @@ void VillagerTalkObject_DrawFossil(u16 *out, int unused_object, int unused_villa
         *out = drawn[1];
     }
 }
-CLEAN_AS(func_020262fc, VillagerTalkObject_DrawFossil)
+CLEAN_AS(func_020262fc, VillagerTalkObject_PickFossil)
 
 /* func_020263b0: an item picked by the game's function for `step` (data_020c8f7c, steps 0-6)
  * with the villager data's byte 0x29 and a copy of the villager's clothes, or 0xfff1 when there
@@ -1491,9 +1491,9 @@ CLEAN_AS(func_020263b0, VillagerTalkObject_PickClothesByStep)
 
 /* Clothes (0x11a8-0x12a7) drawn by func_02063414 for the current player with `which` (0 or 1)
  * and the byte at `data`. */
-static void object_draw_clothes(u16 *item, u8 *data, int clothes, u8 *player, int which)
+static void object_pick_clothes(u16 *item, u8 *data, int clothes, u8 *player, int which)
 {
-    ItemLists_DrawRange(item, VILLAGER_TALK_OBJECT_CLOTHES_FIRST, VILLAGER_TALK_OBJECT_CLOTHES_COUNT,
+    ItemLists_PickRange(item, VILLAGER_TALK_OBJECT_CLOTHES_FIRST, VILLAGER_TALK_OBJECT_CLOTHES_COUNT,
                         (u16 *) (uintptr_t) clothes, 1, player, which, *data, 0, 1);
 }
 
@@ -1503,10 +1503,10 @@ void VillagerTalkObject_DrawClothes(u16 *out, u8 *data, int clothes)
 {
     u16 drawn[2];
     *out = ITEM_CODE_NONE;
-    object_draw_clothes(&drawn[0], data, clothes, PlayerRecords_Current(), 0);
+    object_pick_clothes(&drawn[0], data, clothes, PlayerRecords_Current(), 0);
     *out = drawn[0];
     if (*out == ITEM_CODE_NONE) {
-        object_draw_clothes(&drawn[1], data, clothes, PlayerRecords_Current(), 1);
+        object_pick_clothes(&drawn[1], data, clothes, PlayerRecords_Current(), 1);
         *out = drawn[1];
     }
 }
@@ -1515,6 +1515,6 @@ CLEAN_AS(func_02026408, VillagerTalkObject_DrawClothes)
 /* func_02026484: clothes drawn for no player (func_02063414 with 0). */
 void VillagerTalkObject_DrawClothesAnyPlayer(u16 *out, u8 *data, int clothes)
 {
-    object_draw_clothes(out, data, clothes, NULL, 0);
+    object_pick_clothes(out, data, clothes, NULL, 0);
 }
 CLEAN_AS(func_02026484, VillagerTalkObject_DrawClothesAnyPlayer)

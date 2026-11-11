@@ -47,7 +47,7 @@ int VillagerLetter_Post(const char *name, int text, const void *player, const Np
 CLEAN_AS(func_0207d33c, VillagerLetter_Post)
 
 /* func_0207d3dc: the same, of four parts each drawn from `first` to `first + choices - 1`. */
-int VillagerLetter_PostDrawn(const char *name, int first, int choices, const void *player, const NpcId *npc, const u16 *item)
+int VillagerLetter_PostRandom(const char *name, int first, int choices, const void *player, const NpcId *npc, const u16 *item)
 {
     if (PlayerId_IsSet((DesignCreator *) player) == 0 || !NpcId_IsValid(npc)) {
         return 0;
@@ -64,4 +64,4 @@ int VillagerLetter_PostDrawn(const char *name, int first, int choices, const voi
                                   VILLAGER_LETTER_FROM_VILLAGER);
     return post_letter(&letter, item);
 }
-CLEAN_AS(func_0207d3dc, VillagerLetter_PostDrawn)
+CLEAN_AS(func_0207d3dc, VillagerLetter_PostRandom)

@@ -65,7 +65,7 @@ int MomLetters_SendBirthday(MomDate *date);
 void MomLetters_DailyCheck(MomDate *date, int days);
 u8 MomLetters_PaperForMonth(u32 month);
 u8 MomLetters_PaperFromSet(int set);
-int MomLetters_DrawPaper(int set, int month);
+int MomLetters_PickPaper(int set, int month);
 
 void MomLetterState_SetBirthdayYear(MomLetterState *state, u8 year);
 u8 MomLetterState_BirthdayYear(MomLetterState *state);

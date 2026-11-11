@@ -174,7 +174,7 @@ static void lines_say(VillagerTalk *talk, const MemberPointer *table, int next)
 
 /* The line drawn for the personality of the villager `record` into the talk's text and
  * message, which `out` then names. */
-static void lines_draw_for(VillagerTalk *talk, VillagerTalkLine *out, u8 *record, u32 texts, int per_group, int group,
+static void lines_pick_for(VillagerTalk *talk, VillagerTalkLine *out, u8 *record, u32 texts, int per_group, int group,
                            int range)
 {
     VillagerTalkScene_DrawLine(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE,
@@ -183,10 +183,10 @@ static void lines_draw_for(VillagerTalk *talk, VillagerTalkLine *out, u8 *record
     out->message = talk->message;
 }
 
-/* As lines_draw_for, for the talk's villager. */
-static void lines_draw(VillagerTalk *talk, VillagerTalkLine *out, u32 texts, int per_group, int group, int range)
+/* As lines_pick_for, for the talk's villager. */
+static void lines_pick(VillagerTalk *talk, VillagerTalkLine *out, u32 texts, int per_group, int group, int range)
 {
-    lines_draw_for(talk, out, lines_record(talk), texts, per_group, group, range);
+    lines_pick_for(talk, out, lines_record(talk), texts, per_group, group, range);
 }
 
 /* The player noted in the memory of the villager `record`. */
@@ -290,7 +290,7 @@ CLEAN_AS(func_0201e9f0, VillagerTalk_Say208c)
 /* func_0201ea44: a line of the set at 0x020c8d60 (group 0, its count the random range). */
 void VillagerTalk_Line8d60(VillagerTalk *talk, VillagerTalkLine *out)
 {
-    lines_draw(talk, out, data_020c8d60.texts, 1, 0, data_020c8d60.count);
+    lines_pick(talk, out, data_020c8d60.texts, 1, 0, data_020c8d60.count);
 }
 CLEAN_AS(func_0201ea44, VillagerTalk_Line8d60)
 
@@ -304,7 +304,7 @@ void VillagerTalk_Line8d60AboutNpc(VillagerTalk *talk, VillagerTalkLine *out)
     if (NpcId_IsValid(npc) != 0) {
         SceneBase_PutNpcName(lines_base(talk), npc, 1);
     }
-    lines_draw(talk, out, data_020c8d60.texts, 1, group, data_020c8d60.count);
+    lines_pick(talk, out, data_020c8d60.texts, 1, group, data_020c8d60.count);
 }
 CLEAN_AS(func_0201eaa8, VillagerTalk_Line8d60AboutNpc)
 
@@ -343,7 +343,7 @@ void VillagerTalk_Line8d60SinceEvent17(VillagerTalk *talk, VillagerTalkLine *out
         range = 2;
         group = 0x12;
     }
-    lines_draw(talk, out, data_020c8d60.texts, 1, group, range);
+    lines_pick(talk, out, data_020c8d60.texts, 1, group, range);
 }
 CLEAN_AS(func_0201eb5c, VillagerTalk_Line8d60SinceEvent17)
 
@@ -384,7 +384,7 @@ CLEAN_AS(func_0201ec58, VillagerTalk_LineRandom2044)
 /* func_0201ed68: group 15 of the set at 0x020c8ba0, the random part below 2. */
 void VillagerTalk_Line8ba0Group15(VillagerTalk *talk, VillagerTalkLine *out)
 {
-    lines_draw(talk, out, data_020c8ba0.texts, 1, 0xf, 2);
+    lines_pick(talk, out, data_020c8ba0.texts, 1, 0xf, 2);
 }
 CLEAN_AS(func_0201ed68, VillagerTalk_Line8ba0Group15)
 
@@ -418,7 +418,7 @@ void VillagerTalk_GiveForAcorn(VillagerTalk *talk)
         VillagerTalkLinesItemList list;
         u16 item;
         ItemList_Construct((ItemList *) &list, (int) data_020c8e98[kind], 0);
-        ItemLists_Draw(&item, (ItemList *) &list, 0, 0, 1, 1, 0);
+        ItemLists_Pick(&item, (ItemList *) &list, 0, 0, 1, 1, 0);
         talk->gift = item;
         ItemList_Destruct(&list);
     }
@@ -435,7 +435,7 @@ CLEAN_AS(func_0201edcc, VillagerTalk_GiveForAcorn)
 /* func_0201eed8: group 19 of the set at 0x020c8ba0, the random part below 2. */
 void VillagerTalk_Line8ba0Group19(VillagerTalk *talk, VillagerTalkLine *out)
 {
-    lines_draw(talk, out, data_020c8ba0.texts, 1, 0x13, 2);
+    lines_pick(talk, out, data_020c8ba0.texts, 1, 0x13, 2);
 }
 CLEAN_AS(func_0201eed8, VillagerTalk_Line8ba0Group19)
 
@@ -460,7 +460,7 @@ CLEAN_AS(func_0201ef3c, VillagerTalk_SayIfFond)
 /* func_0201efd4: group 17 of the set at 0x020c8ba0, the random part below 2. */
 void VillagerTalk_Line8ba0Group17(VillagerTalk *talk, VillagerTalkLine *out)
 {
-    lines_draw(talk, out, data_020c8ba0.texts, 1, 0x11, 2);
+    lines_pick(talk, out, data_020c8ba0.texts, 1, 0x11, 2);
 }
 CLEAN_AS(func_0201efd4, VillagerTalk_Line8ba0Group17)
 
@@ -522,7 +522,7 @@ CLEAN_AS(func_0201f180, VillagerTalk_OfferChoices5b)
 /* func_0201f1f0: group 13 of the set at 0x020c8ba0, the random part below 2. */
 void VillagerTalk_Line8ba0Group13(VillagerTalk *talk, VillagerTalkLine *out)
 {
-    lines_draw(talk, out, data_020c8ba0.texts, 1, 0xd, 2);
+    lines_pick(talk, out, data_020c8ba0.texts, 1, 0xd, 2);
 }
 CLEAN_AS(func_0201f1f0, VillagerTalk_Line8ba0Group13)
 
@@ -550,14 +550,14 @@ CLEAN_AS(func_0201f264, VillagerTalk_Say2574)
 /* func_0201f2b8: group 7 of the set at 0x020c8ba0. */
 void VillagerTalk_Line8ba0Group7(VillagerTalk *talk, VillagerTalkLine *out)
 {
-    lines_draw(talk, out, data_020c8ba0.texts, 1, 7, data_020c8ba0.count);
+    lines_pick(talk, out, data_020c8ba0.texts, 1, 7, data_020c8ba0.count);
 }
 CLEAN_AS(func_0201f2b8, VillagerTalk_Line8ba0Group7)
 
 /* func_0201f31c: group 10 of the set at 0x020c8ba0. */
 void VillagerTalk_Line8ba0Group10(VillagerTalk *talk, VillagerTalkLine *out)
 {
-    lines_draw(talk, out, data_020c8ba0.texts, 1, 10, data_020c8ba0.count);
+    lines_pick(talk, out, data_020c8ba0.texts, 1, 10, data_020c8ba0.count);
 }
 CLEAN_AS(func_0201f31c, VillagerTalk_Line8ba0Group10)
 
@@ -582,7 +582,7 @@ void VillagerTalk_Line8ba0SinceEvent16(VillagerTalk *talk, VillagerTalkLine *out
         range = 2;
         group = 5;
     }
-    lines_draw(talk, out, data_020c8ba0.texts, 1, group, range);
+    lines_pick(talk, out, data_020c8ba0.texts, 1, group, range);
 }
 CLEAN_AS(func_0201f380, VillagerTalk_Line8ba0SinceEvent16)
 
@@ -661,14 +661,14 @@ CLEAN_AS(func_0201f580, VillagerTalk_Say202c)
 /* func_0201f5d4: group 10 of the set at 0x020c8bd8. */
 void VillagerTalk_Line8bd8Group10(VillagerTalk *talk, VillagerTalkLine *out)
 {
-    lines_draw(talk, out, data_020c8bd8.texts, 1, 10, data_020c8bd8.count);
+    lines_pick(talk, out, data_020c8bd8.texts, 1, 10, data_020c8bd8.count);
 }
 CLEAN_AS(func_0201f5d4, VillagerTalk_Line8bd8Group10)
 
 /* func_0201f638: group 13 of the set at 0x020c8bd8. */
 void VillagerTalk_Line8bd8Group13(VillagerTalk *talk, VillagerTalkLine *out)
 {
-    lines_draw(talk, out, data_020c8bd8.texts, 1, 13, data_020c8bd8.count);
+    lines_pick(talk, out, data_020c8bd8.texts, 1, 13, data_020c8bd8.count);
 }
 CLEAN_AS(func_0201f638, VillagerTalk_Line8bd8Group13)
 
@@ -696,7 +696,7 @@ void VillagerTalk_Line8bd8SinceEvent14(VillagerTalk *talk, VillagerTalkLine *out
         range = 2;
         group = 8;
     }
-    lines_draw(talk, out, data_020c8bd8.texts, 1, group, range);
+    lines_pick(talk, out, data_020c8bd8.texts, 1, group, range);
 }
 CLEAN_AS(func_0201f69c, VillagerTalk_Line8bd8SinceEvent14)
 
@@ -777,7 +777,7 @@ static void lines_item_line(VillagerTalk *talk, VillagerTalkLine *out, u16 first
         SceneBase_PutItemName(lines_base(talk), (int) (uintptr_t) &item, 0, 7);
     }
 
-    lines_draw_for(talk, out, record, texts->texts, 1, group, texts->count);
+    lines_pick_for(talk, out, record, texts->texts, 1, group, texts->count);
     talk->on_last_message = *at_last;
 }
 
@@ -861,21 +861,21 @@ CLEAN_AS(func_0201fc5c, VillagerTalk_Say237c)
 /* func_0201fcb0: group 4 of the set at 0x020c8ce8, the random part below 3. */
 void VillagerTalk_Line8ce8Group4(VillagerTalk *talk, VillagerTalkLine *out)
 {
-    lines_draw(talk, out, data_020c8ce8.texts, 1, 4, 3);
+    lines_pick(talk, out, data_020c8ce8.texts, 1, 4, 3);
 }
 CLEAN_AS(func_0201fcb0, VillagerTalk_Line8ce8Group4)
 
 /* func_0201fd14: group 10 of the set at 0x020c8ce8. */
 void VillagerTalk_Line8ce8Group10(VillagerTalk *talk, VillagerTalkLine *out)
 {
-    lines_draw(talk, out, data_020c8ce8.texts, 1, 10, data_020c8ce8.count);
+    lines_pick(talk, out, data_020c8ce8.texts, 1, 10, data_020c8ce8.count);
 }
 CLEAN_AS(func_0201fd14, VillagerTalk_Line8ce8Group10)
 
 /* func_0201fd78: group 14 of the set at 0x020c8ce8. */
 void VillagerTalk_Line8ce8Group14(VillagerTalk *talk, VillagerTalkLine *out)
 {
-    lines_draw(talk, out, data_020c8ce8.texts, 1, 14, data_020c8ce8.count);
+    lines_pick(talk, out, data_020c8ce8.texts, 1, 14, data_020c8ce8.count);
 }
 CLEAN_AS(func_0201fd78, VillagerTalk_Line8ce8Group14)
 
@@ -907,7 +907,7 @@ CLEAN_AS(func_0201fe34, VillagerTalk_ShowText9430)
 /* func_0201fe6c: group 12 of the set at 0x020c8ce8. */
 void VillagerTalk_Line8ce8Group12(VillagerTalk *talk, VillagerTalkLine *out)
 {
-    lines_draw(talk, out, data_020c8ce8.texts, 1, 12, data_020c8ce8.count);
+    lines_pick(talk, out, data_020c8ce8.texts, 1, 12, data_020c8ce8.count);
 }
 CLEAN_AS(func_0201fe6c, VillagerTalk_Line8ce8Group12)
 
@@ -930,7 +930,7 @@ CLEAN_AS(func_0201fed0, VillagerTalk_OfferChoices5a)
 /* func_0201ff3c: group 7 of the set at 0x020c8ce8, the random part below 3. */
 void VillagerTalk_Line8ce8Group7(VillagerTalk *talk, VillagerTalkLine *out)
 {
-    lines_draw(talk, out, data_020c8ce8.texts, 1, 7, 3);
+    lines_pick(talk, out, data_020c8ce8.texts, 1, 7, 3);
 }
 CLEAN_AS(func_0201ff3c, VillagerTalk_Line8ce8Group7)
 
@@ -938,7 +938,7 @@ CLEAN_AS(func_0201ff3c, VillagerTalk_Line8ce8Group7)
  * one. */
 void VillagerTalk_Line8ce8Group2(VillagerTalk *talk, VillagerTalkLine *out)
 {
-    lines_draw(talk, out, data_020c8ce8.texts, 1, 2, data_020c8ce8.count);
+    lines_pick(talk, out, data_020c8ce8.texts, 1, 2, data_020c8ce8.count);
     if (talk->memory != NULL) {
         VillagerMemoryEntry_SetBit6(lines_memory(talk));
     }
@@ -984,7 +984,7 @@ CLEAN_AS(func_020200cc, VillagerTalk_ShowText9310)
 /* func_02020104: a line of the set at 0x020c8ce8, its count the lines per group, group 0. */
 void VillagerTalk_Line8ce8(VillagerTalk *talk, VillagerTalkLine *out)
 {
-    lines_draw(talk, out, data_020c8ce8.texts, data_020c8ce8.count, 0, 0);
+    lines_pick(talk, out, data_020c8ce8.texts, data_020c8ce8.count, 0, 0);
 }
 CLEAN_AS(func_02020104, VillagerTalk_Line8ce8)
 
@@ -1053,7 +1053,7 @@ void VillagerTalk_LineByCalendar(VillagerTalk *talk, VillagerTalkLine *out)
             }
             group += 3;
         }
-        lines_draw_for(talk, out, record, data_020c8c68.texts, data_020c8c68.count, (int) group, 0);
+        lines_pick_for(talk, out, record, data_020c8c68.texts, data_020c8c68.count, (int) group, 0);
     }
     talk->on_last_message = data_020d8e88;
 }

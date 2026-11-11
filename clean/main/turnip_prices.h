@@ -2,7 +2,7 @@
  *
  * On the week's first game day (a game day starts at 6:00) a buying price of 90-110 is drawn
  * for Sunday, morning and afternoon, and the twelve selling prices of Monday to Saturday follow
- * one of four patterns, each a share of the Sunday price (TurnipPrices_Draw):
+ * one of four patterns, each a share of the Sunday price (TurnipPrices_Roll):
  *
  * - random: highs of 0.8-1.4 and lows of 0.4-0.8 in a fixed order;
  * - big spike: falling from 0.79, then 1.4-2.0, 2.0-6.1 (the peak, which may pass 255 and is
@@ -44,16 +44,16 @@ void TurnipPrices_SetBought(TurnipPrices *prices, const DateTime *when);
 void TurnipPrices_ExpireBought(TurnipPrices *prices);
 void TurnipPrices_SetWeek(TurnipPrices *prices, const DateTime *when);
 void TurnipPrices_Update(TurnipPrices *prices, int unused);
-void TurnipPrices_RedrawIfClockMoved(TurnipPrices *prices);
+void TurnipPrices_RerollIfClockMoved(TurnipPrices *prices);
 int TurnipPrices_Current(TurnipPrices *prices);
-void TurnipPrices_Draw(TurnipPrices *prices, int falling);
-int TurnipPrices_DrawPeak(TurnipPrices *prices);
-void TurnipPrices_DrawSmallSpike(TurnipPrices *prices);
-int TurnipPrices_DrawNormal(TurnipPrices *prices);
-int TurnipPrices_DrawHigh(TurnipPrices *prices);
-int TurnipPrices_DrawLow(TurnipPrices *prices);
-void TurnipPrices_DrawFalling(TurnipPrices *prices, int start, int end);
-int TurnipPrices_DrawShare(TurnipPrices *prices, int share, int spread);
+void TurnipPrices_Roll(TurnipPrices *prices, int falling);
+int TurnipPrices_RollPeak(TurnipPrices *prices);
+void TurnipPrices_RollSmallSpike(TurnipPrices *prices);
+int TurnipPrices_RollNormal(TurnipPrices *prices);
+int TurnipPrices_RollHigh(TurnipPrices *prices);
+int TurnipPrices_RollLow(TurnipPrices *prices);
+void TurnipPrices_RollFalling(TurnipPrices *prices, int start, int end);
+int TurnipPrices_RollShare(TurnipPrices *prices, int share, int spread);
 void TurnipPrices_SetUp(TurnipPrices *prices);
 void TurnipPrices_Clear(TurnipPrices *prices);
 void TurnipPrices_Destruct(TurnipPrices *prices);

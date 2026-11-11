@@ -455,7 +455,7 @@ void StateBlock_StartMode2(StateBlock *block)
     StartKind_Clear();
     Sky_RedrawRainAngleForMode2();
     Block020ba298_SetByte9();
-    TurnipPrices_RedrawIfClockMoved((TurnipPrices *) (void *) block->part_17364);
+    TurnipPrices_RerollIfClockMoved((TurnipPrices *) (void *) block->part_17364);
     VillagerTown_PickBirthdayGreeter(villagers_of(block), NULL);
     VillagerRoster_UpdateOutdoors(villagers_of(block), 1);
     if (SceneQuery_Current() == SCENE_6 && VillagerState_BirthdayGreeter() == -1 &&

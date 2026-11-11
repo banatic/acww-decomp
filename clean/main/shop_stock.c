@@ -6,7 +6,7 @@
 #include "item_form.h"
 #include "item_lists.h"
 
-/* The draws of ShopStock_DrawCodes: the value func_020637d0 takes after its two zeros. */
+/* The draws of ShopStock_PickCodes: the value func_020637d0 takes after its two zeros. */
 #define SHOP_STOCK_CODES_MODE 10
 
 /* What a place past the stock reads as (0xfff1) and what a sold place reads as (0x1547). */
@@ -113,24 +113,24 @@ CLEAN_AS(func_020b00c8, ShopStock_Clear)
 /* func_020b00fc: `count` different codes from `first` up to first + range - 1 at the places
  * from `*next` on, as their room's codes when `convert` is set; `*next` moves past them.
  * `size` is not used. */
-void ShopStock_DrawCodes(u16 *items, u32 *next, int first, int range, u32 count, u32 size, u8 convert)
+void ShopStock_PickCodes(u16 *items, u32 *next, int first, int range, u32 count, u32 size, u8 convert)
 {
     (void) size;
     if (count == 0) {
         return;
     }
-    ItemLists_DrawRangeMany(&items[*next], count, first, range, 0, 0, SHOP_STOCK_CODES_MODE, (int) (uintptr_t) data_021f4a80,
+    ItemLists_PickRangeMany(&items[*next], count, first, range, 0, 0, SHOP_STOCK_CODES_MODE, (int) (uintptr_t) data_021f4a80,
                             0);
     if (convert != 0) {
         shop_stock_convert(items, next, count);
     }
     *next += count;
 }
-CLEAN_AS(func_020b00fc, ShopStock_DrawCodes)
+CLEAN_AS(func_020b00fc, ShopStock_PickCodes)
 
 /* func_020b0164: `count` items of the lot (kind, group) at the places from `*next` on, as
  * their room's codes when `convert` is set; `*next` moves past them. `size` is not used. */
-void ShopStock_DrawLot(u16 *items, u32 *next, int kind, int group, u32 count, int size, u8 convert)
+void ShopStock_PickLot(u16 *items, u32 *next, int kind, int group, u32 count, int size, u8 convert)
 {
     (void) size;
     if (count == 0) {
@@ -138,7 +138,7 @@ void ShopStock_DrawLot(u16 *items, u32 *next, int kind, int group, u32 count, in
     }
     ShopStockLot lot;
     ItemList_Construct((ItemList *) &lot, kind, group);
-    ItemLists_DrawOne((int) (uintptr_t) (&items[*next]), count, (int) (uintptr_t) &lot, 0, (int) (uintptr_t) data_021f4a80, 0,
+    ItemLists_PickOne((int) (uintptr_t) (&items[*next]), count, (int) (uintptr_t) &lot, 0, (int) (uintptr_t) data_021f4a80, 0,
                       1, 0);
     ItemList_Destruct(&lot);
     if (convert != 0) {
@@ -146,4 +146,4 @@ void ShopStock_DrawLot(u16 *items, u32 *next, int kind, int group, u32 count, in
     }
     *next += count;
 }
-CLEAN_AS(func_020b0164, ShopStock_DrawLot)
+CLEAN_AS(func_020b0164, ShopStock_PickLot)

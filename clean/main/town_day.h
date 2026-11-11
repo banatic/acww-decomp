@@ -138,7 +138,7 @@ void TownDay_StartAcornFestival(TownDay *town, AcreMap *map, EventCalendarEvent 
 void TownDay_DropAroundLines(TownDay *town, AcreMap *map, EventCalendarEvent *event, int wide, int high, const DateTime *today,
                              int loaded, int started, StateBlock *block);
 void TownDay_DropAroundLine(TownDay *town, AcreMap *map, int acre_x, int acre_z);
-u16 TownDay_DrawAcorn(TownDay *town);
+u16 TownDay_PickAcorn(TownDay *town);
 int TownDay_EventDays(TownDay *town, int event, const EventCalendarEvent *entry, const DateTime *today, int loaded,
                       int started, StateBlock *block);
 

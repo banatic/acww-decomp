@@ -62,7 +62,7 @@ CLEAN_AS(func_02086ed4, CafeGuests_Morning)
  *   night bit set for z 0-29 when Nook's store is at level 3, else cleared.
  *
  * The night bit is set on Saturday and Sunday. An afternoon equal to the noon becomes 0. */
-void CafeGuests_Draw(u8 *plan)
+void CafeGuests_RollPlan(u8 *plan)
 {
     cafe_guests_set(plan, CAFE_GUESTS_MORNING_MASK, CAFE_GUESTS_MORNING_SHIFT, MainRandom_Below(2));
     cafe_guests_set(plan, CAFE_GUESTS_NIGHT_MASK, CAFE_GUESTS_NIGHT_SHIFT, 1);
@@ -140,12 +140,12 @@ void CafeGuests_Draw(u8 *plan)
         cafe_guests_set(plan, CAFE_GUESTS_AFTERNOON_MASK, CAFE_GUESTS_AFTERNOON_SHIFT, 0);
     }
 }
-CLEAN_AS(func_02086ee8, CafeGuests_Draw)
+CLEAN_AS(func_02086ee8, CafeGuests_RollPlan)
 
 /* func_02087138: the town's setting up draws the first plan. */
 void CafeGuests_SetUp(u8 *plan)
 {
-    CafeGuests_Draw(plan);
+    CafeGuests_RollPlan(plan);
 }
 CLEAN_AS(func_02087138, CafeGuests_SetUp)
 

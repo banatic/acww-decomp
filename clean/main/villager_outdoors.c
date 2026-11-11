@@ -26,7 +26,7 @@
 #define VILLAGER_SIZE 0x7ec
 /* Where the town's villagers are found from the object func_0204c7c0 gives. */
 #define VILLAGER_OUTDOORS_VILLAGERS_FROM_0204C7C0 0x9284
-/* The candidates VillagerOutdoors_DrawRandom looks at, at most. */
+/* The candidates VillagerOutdoors_PickRandom looks at, at most. */
 #define VILLAGER_OUTDOORS_CANDIDATES 6
 /* The minutes after which the ones out are drawn again. */
 #define VILLAGER_OUTDOORS_DRAW_MINUTES 60
@@ -83,7 +83,7 @@ void VillagerOutdoors_Update(VillagerOutdoors *outdoors, u8 *villagers, int keep
     mark_all_absent(VillagerState_Table());
     DateTime_Now(&now);
     if (VillagerOutdoors_IsDue(outdoors, &now)) {
-        VillagerOutdoors_Draw(outdoors, villagers);
+        VillagerOutdoors_Pick(outdoors, villagers);
         if (keep_time != 0) {
             MI_CpuCopy8(&now, &outdoors->drawn_at, sizeof(DateTime));
         }
@@ -118,7 +118,7 @@ CLEAN_AS(func_02079d38, VillagerOutdoors_Restore)
  * ones are chosen to go out, up to the limit; the order is made again of the others (at home,
  * in their old order) followed by the chosen (out, in the order chosen, also in the outside
  * slots). */
-void VillagerOutdoors_Draw(VillagerOutdoors *outdoors, u8 *villagers)
+void VillagerOutdoors_Pick(VillagerOutdoors *outdoors, u8 *villagers)
 {
     VillagerStates *table = VillagerState_Table();
     int chosen_count = 0;
@@ -138,11 +138,11 @@ void VillagerOutdoors_Draw(VillagerOutdoors *outdoors, u8 *villagers)
     }
     VillagerOutdoors_ClearOutside(outdoors);
     VillagerOutdoors_TakeBirthdayGreeter(outdoors, chosen, &chosen_count, list, villagers);
-    VillagerOutdoors_DrawRandom(outdoors, (u8 *) chosen, &chosen_count, list, villagers, limit);
+    VillagerOutdoors_PickRandom(outdoors, (u8 *) chosen, &chosen_count, list, villagers, limit);
     VillagerOutdoors_KeepHome(outdoors, list, &placed, (u8 *) table);
     VillagerOutdoors_SendOut(outdoors, chosen, &placed, (u8 *) table, chosen_count);
 }
-CLEAN_AS(func_02079db8, VillagerOutdoors_Draw)
+CLEAN_AS(func_02079db8, VillagerOutdoors_Pick)
 
 /* func_02079e64: unless bit 1 of the current player's record is set, every villager whose
  * personality sleeps at `now` is asleep (state 0); an index without a villager is none. */
@@ -225,7 +225,7 @@ CLEAN_AS(func_02079fc8, VillagerOutdoors_KeepHome)
  * first six in the list that func_0207d6c4 accepts, leaving out the one the record at 0x3f90
  * names; each round one of those left is drawn, taken off the list and chosen.
  * QUIRK: the number of rounds is the number of candidates even when some are chosen already. */
-void VillagerOutdoors_DrawRandom(VillagerOutdoors *outdoors, u8 *chosen, int *count, s8 *list, u8 *villagers, int limit)
+void VillagerOutdoors_PickRandom(VillagerOutdoors *outdoors, u8 *chosen, int *count, s8 *list, u8 *villagers, int limit)
 {
     (void) outdoors;
     u8 candidates = 0;
@@ -263,7 +263,7 @@ void VillagerOutdoors_DrawRandom(VillagerOutdoors *outdoors, u8 *chosen, int *co
         left--;
     }
 }
-CLEAN_AS(func_0207a02c, VillagerOutdoors_DrawRandom)
+CLEAN_AS(func_0207a02c, VillagerOutdoors_PickRandom)
 
 static int is_all_zero(const DateTime *when)
 {
@@ -469,7 +469,7 @@ CLEAN_AS(func_0207a338, VillagerOutdoors_Construct)
  * none, then, for a player whose name is set, to a villager drawn from the ones that remember
  * the player and are out walking: they are drawn one by one in random order, and each is taken
  * with the flea's chance in 100 this month (VillagerOutdoors_FleaMonthChance) until one is. */
-void VillagerOutdoors_DrawFleaVillager(const u8 *villagers, const void *player)
+void VillagerOutdoors_PickFleaVillager(const u8 *villagers, const void *player)
 {
     VillagerState_Table()->flea_villager = VILLAGER_STATE_NONE;
     if (player == NULL || PlayerId_IsSet((DesignCreator *) player) == 0) {
@@ -505,7 +505,7 @@ void VillagerOutdoors_DrawFleaVillager(const u8 *villagers, const void *player)
         }
     }
 }
-CLEAN_AS(func_0207a340, VillagerOutdoors_DrawFleaVillager)
+CLEAN_AS(func_0207a340, VillagerOutdoors_PickFleaVillager)
 
 /* func_0207a404: the share of entry 0x30 in this month's table: its running total less the one
  * before it; 0 when the month has no table or no such entry. */

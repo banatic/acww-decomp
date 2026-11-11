@@ -131,12 +131,12 @@ int FoxShop_MarkSold(FoxShop *shop, int index)
 CLEAN_AS(func_020ae02c, FoxShop_MarkSold)
 
 /* One item drawn from `group` into `*out`. */
-static void fox_draw(u16 *out, int group)
+static void fox_pick(u16 *out, int group)
 {
     FoxItemLot lot;
     u16 item;
     ItemList_Construct((ItemList *) &lot, 0, group);
-    ItemLists_Draw(&item, (ItemList *) &lot, 0, 0, 0, 1, 0);
+    ItemLists_Pick(&item, (ItemList *) &lot, 0, 0, 0, 1, 0);
     *out = item;
     ItemList_Destruct(&lot);
 }
@@ -154,13 +154,13 @@ void FoxShop_Stock(u16 *items)
     FoxShop_ClearItems((FoxShop *) items);
 
     unsigned chance = (unsigned) RoomScore_HouseFengShui() / 10 + 50;
-    fox_draw(&items[0], MainRandom_Below(100) < chance ? 0x26 : 0x27);
+    fox_pick(&items[0], MainRandom_Below(100) < chance ? 0x26 : 0x27);
 
     int first = RoomScore_HouseRedEast();
     int second = RoomScore_HouseGreenSouth();
     chance = (unsigned) ((first + second) / 10 + 50);
     for (unsigned i = 1; i < FOX_SHOP_ITEMS; i++) {
-        fox_draw(&items[i], MainRandom_Below(100) < chance ? 5 : 0);
+        fox_pick(&items[i], MainRandom_Below(100) < chance ? 5 : 0);
     }
 
     u16 drawn[FOX_SHOP_ITEMS];

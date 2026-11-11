@@ -96,7 +96,7 @@ static_assert(sizeof(ItemList) == 0x08, "ItemList size");
 #define TAILOR_OBJECT_STOP_FRAMES 0x28000
 #define TAILOR_OBJECT_STOP_EASE 0xa000
 
-/* The cloth: an item of list kind 2, group 0, drawn filtered and turned (ItemLists_Draw); its
+/* The cloth: an item of list kind 2, group 0, drawn filtered and turned (ItemLists_Pick); its
  * texture goes over the part's material as texture 0 with palette 0. */
 #define TAILOR_OBJECT_CLOTH_KIND 2
 #define TAILOR_OBJECT_CLOTH_GROUP 0
@@ -391,7 +391,7 @@ int TailorObject_Start(TailorObject *self)
 
     DatedRandom_Construct(&random);
     ItemList_Construct(&list, TAILOR_OBJECT_CLOTH_KIND, TAILOR_OBJECT_CLOTH_GROUP);
-    ItemLists_Draw(&cloth, &list, 0, (int) (intptr_t) &random, TAILOR_OBJECT_CLOTH_FILTER, TAILOR_OBJECT_CLOTH_TURN, 0);
+    ItemLists_Pick(&cloth, &list, 0, (int) (intptr_t) &random, TAILOR_OBJECT_CLOTH_FILTER, TAILOR_OBJECT_CLOTH_TURN, 0);
     ItemList_Destruct(&list);
     ClothTexture_Load(&data_ov004_022585ac, &cloth, NULL);
     model = self->part.object.model;

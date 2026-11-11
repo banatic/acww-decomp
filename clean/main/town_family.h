@@ -25,7 +25,7 @@
 #include "town_growth.h"
 #include "types.h"
 
-/* An entry of the lists TownFamily_DrawCross draws from: its chance in 100 and its code. */
+/* An entry of the lists TownFamily_PickCross draws from: its chance in 100 and its code. */
 typedef struct TownFamilyCross {
     int chance;
     u16 code;
@@ -47,7 +47,7 @@ int TownFamily_Cross(AcreMap *map, TownGrowthTiles *near, TownGrowthTiles *tile,
 int TownFamily_PutAround(AcreMap *map, const TownGrowthTiles *size, const TownGrowthTiles *tile, int code);
 int TownFamily_PutOnFree(AcreMap *map, const TownGrowthTiles *tile, const TownGrowthTiles *from, const TownGrowthTiles *size,
                          u16 code);
-int TownFamily_DrawCross(const u16 *code, const u16 *mate);
+int TownFamily_PickCross(const u16 *code, const u16 *mate);
 int TownFamily_Color(const u16 *code);
 int TownFamily_Kind(const u16 *code);
 

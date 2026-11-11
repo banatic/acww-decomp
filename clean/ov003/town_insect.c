@@ -699,8 +699,8 @@ CLEAN_AS(func_ov003_0222d300, TownInsect_ClearFailed)
  * a level drawn below 100, and the first entry whose running weight is above it taken. Its
  * kind is written to *kind and 1 returned when it is not 0x30, is allowed
  * (TownInsect_KindAllowed) and does not keep away in this weather; 0 otherwise.
- * REQUIRES: `month` is 0-11 (TownInsect_DrawKindNow clamps it). */
-int TownInsect_DrawKind(int month, int time_slot, u8 *kind)
+ * REQUIRES: `month` is 0-11 (TownInsect_PickKindNow clamps it). */
+int TownInsect_PickKind(int month, int time_slot, u8 *kind)
 {
     u8 level = (u8) MainRandom_Below(100);
     const InsectDrawList *lists = data_020dded8[month];
@@ -724,7 +724,7 @@ int TownInsect_DrawKind(int month, int time_slot, u8 *kind)
     }
     return 0;
 }
-CLEAN_AS(func_ov003_0222d388, TownInsect_DrawKind)
+CLEAN_AS(func_ov003_0222d388, TownInsect_PickKind)
 
 /* func_ov003_0222d40c: whether insect `kind` may appear: always outside a session; in one, all
  * but kinds 8, 0xa, 0x19, 0x23, 0x30, 0x32, 0x33, 0x35-0x37, 0x3a and 0x3b. */
@@ -879,9 +879,9 @@ int TownInsect_TimeSlot(void)
 }
 CLEAN_AS(func_ov003_0222d6a8, TownInsect_TimeSlot)
 
-/* func_ov003_0222d6fc: an insect of this month and hour drawn into *kind (TownInsect_DrawKind);
+/* func_ov003_0222d6fc: an insect of this month and hour drawn into *kind (TownInsect_PickKind);
  * a month out of range counts as January. */
-int TownInsect_DrawKindNow(s8 *kind)
+int TownInsect_PickKindNow(s8 *kind)
 {
     u8 day_month[4];
     Clock_GetDayMonth(day_month);
@@ -889,9 +889,9 @@ int TownInsect_DrawKindNow(s8 *kind)
     if (month > 11) {
         month = 0;
     }
-    return TownInsect_DrawKind(month, TownInsect_TimeSlot(), (u8 *) kind) != 0;
+    return TownInsect_PickKind(month, TownInsect_TimeSlot(), (u8 *) kind) != 0;
 }
-CLEAN_AS(func_ov003_0222d6fc, TownInsect_DrawKindNow)
+CLEAN_AS(func_ov003_0222d6fc, TownInsect_PickKindNow)
 
 /* func_ov003_0222d738: whether `point` is on the tile of the point ahead of this console's
  * player, while the field actor keeps one (data_ov003_02260540). */
@@ -1037,7 +1037,7 @@ int TownInsect_PlaceNew(TownInsectProcess *process, int mode, s8 kind, int place
         }
         if (kind == 0x33) {
             placed = TownInsect_Place(process, kind, (u8) place, mode);
-        } else if (TownInsect_DrawKindNow(&kind) != 0) {
+        } else if (TownInsect_PickKindNow(&kind) != 0) {
             placed = TownInsect_Place(process, kind, InsectTables_Place((u8) kind), mode);
         }
         if (placed == 0 && kind != 0x33) {

@@ -94,7 +94,7 @@ int OutdoorVillagerBehavior_CallsPlayer(OutdoorVillagerBehavior *self, u8 *villa
 /* Once a minute of the clock, in a contest, a catch drawn that may beat the event's winner's. */
 void OutdoorVillagerRecords_EachMinute(u8 *villager);
 /* The activity of the moment of its state entry redrawn (byte 0x1c). */
-void OutdoorVillagerRecords_RedrawActivity(u8 *villager);
+void OutdoorVillagerRecords_RepickActivity(u8 *villager);
 
 /* The parts of the villager read here besides outdoor_villager.h's (main's scene_object.c). */
 #define WALKS_ANGLE 0x8e      /* s16: where it faces */
@@ -755,7 +755,7 @@ int OutdoorVillagerWalks_ChangeHeldItem(OutdoorVillagerBehavior *self, u8 *villa
 
     if (*check == 0 || *hold == 0) {
         if (*check == 0) {
-            OutdoorVillagerRecords_RedrawActivity(villager);
+            OutdoorVillagerRecords_RepickActivity(villager);
             kind = walks_kind(record, kind);
             *check = WALKS_ITEM_FRAMES;
         }
@@ -1101,7 +1101,7 @@ void OutdoorVillagerWalks_StartWalker(OutdoorVillagerBehavior *self, int state, 
         }
     }
     if (kind == WALKS_WALKER_NONE) {
-        kind = OutdoorVillagerWalks_DrawWalkKind(self);
+        kind = OutdoorVillagerWalks_PickWalkKind(self);
     }
     PathWalker_Start(walks_walker(self), walks_position(villager), (u32) kind, state, villager);
 }
@@ -1110,7 +1110,7 @@ CLEAN_AS(func_ov068_0226c964, OutdoorVillagerWalks_StartWalker)
 /* func_ov068_0226ca2c: a walk kind drawn of data_ov068_022767ac (of the first two while the
  * walker walks, else of the three); when it is the walker's own, the next one (round to the
  * first). */
-int OutdoorVillagerWalks_DrawWalkKind(OutdoorVillagerBehavior *self)
+int OutdoorVillagerWalks_PickWalkKind(OutdoorVillagerBehavior *self)
 {
     PathWalker *walker = walks_walker(self);
     int index = (int) MainRandom_Below(PathWalker_IsWalking(walker) != 0 ? 2 : 3);
@@ -1120,7 +1120,7 @@ int OutdoorVillagerWalks_DrawWalkKind(OutdoorVillagerBehavior *self)
     }
     return kind;
 }
-CLEAN_AS(func_ov068_0226ca2c, OutdoorVillagerWalks_DrawWalkKind)
+CLEAN_AS(func_ov068_0226ca2c, OutdoorVillagerWalks_PickWalkKind)
 
 /* func_ov068_0226ca74: whether the villager is within the box (the behavior member's first
  * four words) around the camera's target; 0 without a camera. */

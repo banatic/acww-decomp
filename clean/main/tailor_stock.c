@@ -49,7 +49,7 @@ CLEAN_AS(func_020ae794, TailorStock_StockDone)
 /* func_020ae798: one item of the lot (5, 0x1d). */
 void TailorStock_StockLot5(TailorStock *list, u32 *next)
 {
-    ShopStock_DrawLot(list->items, next, 5, 0x1d, 1, TAILOR_STOCK_DRAW_SIZE, 1);
+    ShopStock_PickLot(list->items, next, 5, 0x1d, 1, TAILOR_STOCK_DRAW_SIZE, 1);
 }
 CLEAN_AS(func_020ae798, TailorStock_StockLot5)
 
@@ -61,21 +61,21 @@ void TailorStock_StockLot6Or8(TailorStock *list, u32 *next)
     u32 second = ItemInfo_CountTailorHeadA();
     u32 draw = DatedRandom_Below((DatedRandom *) (void *) data_021f4a80, first + second);
     int kind = draw < ItemInfo_CountTailorHeadB() ? 6 : 8;
-    ShopStock_DrawLot(list->items, next, kind, 0x1d, 1, TAILOR_STOCK_DRAW_SIZE, 1);
+    ShopStock_PickLot(list->items, next, kind, 0x1d, 1, TAILOR_STOCK_DRAW_SIZE, 1);
 }
 CLEAN_AS(func_020ae7b4, TailorStock_StockLot6Or8)
 
 /* func_020ae814: three items of the lot (2, 0). */
 void TailorStock_StockLot2(TailorStock *list, u32 *next)
 {
-    ShopStock_DrawLot(list->items, next, 2, 0, 3, TAILOR_STOCK_DRAW_SIZE, 1);
+    ShopStock_PickLot(list->items, next, 2, 0, 3, TAILOR_STOCK_DRAW_SIZE, 1);
 }
 CLEAN_AS(func_020ae814, TailorStock_StockLot2)
 
 /* func_020ae834: one item of the lot (7, 0x1d). */
 void TailorStock_StockLot7(TailorStock *list, u32 *next)
 {
-    ShopStock_DrawLot(list->items, next, 7, 0x1d, 1, TAILOR_STOCK_DRAW_SIZE, 1);
+    ShopStock_PickLot(list->items, next, 7, 0x1d, 1, TAILOR_STOCK_DRAW_SIZE, 1);
 }
 CLEAN_AS(func_020ae834, TailorStock_StockLot7)
 

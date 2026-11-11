@@ -115,7 +115,7 @@ extern const MemberPointer data_ov047_02262b18, data_ov047_02262b10, data_ov047_
 #define OWL_PERCENT_FEW 0x1e000
 #define OWL_PERCENT_HALF 0x46000
 
-/* How ItemLists_DrawRange draws the fossil an assessed one becomes: from the record, style 10,
+/* How ItemLists_PickRange draws the fossil an assessed one becomes: from the record, style 10,
  * filtered. */
 #define OWL_DRAW_IN_RECORD 1
 #define OWL_DRAW_STYLE 10
@@ -356,14 +356,14 @@ void OwlTalk_EndAssess(OwlTalk *talk)
         u16 fossil;
         u16 other;
         PlayerRecord_SetFlag(PlayerRecords_Current(), OWL_DONATION_FLAG_ASSESSED);
-        ItemLists_DrawRange(&fossil, OWL_FOSSIL_FIRST, OWL_FOSSIL_CODES, NULL, 0, NULL, OWL_DRAW_IN_RECORD, OWL_DRAW_STYLE,
+        ItemLists_PickRange(&fossil, OWL_FOSSIL_FIRST, OWL_FOSSIL_CODES, NULL, 0, NULL, OWL_DRAW_IN_RECORD, OWL_DRAW_STYLE,
                             NULL, OWL_DRAW_FILTER);
         talk->item = fossil;
         if (talk->slot >= 0) {
             CurrentPockets_Set(&talk->item, 0, talk->slot);
         }
         SceneBase_PutItemName(&talk->base, (int) (uintptr_t) &talk->item, 0, OWL_ITEM_NAME_KIND);
-        ItemLists_DrawRange(&other, OWL_FOSSIL_FIRST, OWL_FOSSIL_CODES, &talk->item, 1, NULL, OWL_DRAW_IN_RECORD,
+        ItemLists_PickRange(&other, OWL_FOSSIL_FIRST, OWL_FOSSIL_CODES, &talk->item, 1, NULL, OWL_DRAW_IN_RECORD,
                             OWL_DRAW_STYLE, NULL, OWL_DRAW_FILTER);
         SceneBase_PutItemName(&talk->base, (int) (uintptr_t) &other, 1, OWL_ITEM_NAME_KIND);
     }

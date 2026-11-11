@@ -223,7 +223,7 @@ void VillagerMode_CatchUpScores(u8 *villager, const DateTime *now)
             DateTime_AddDays(&from, VILLAGER_MODE_SETTLE_OFFSET);
             draws = whole_days(DateTime_MinutesBetween(&from, now));
         }
-        while (draws > 0 && VillagerModeRecord_DrawScores(record, weights) != 0) {
+        while (draws > 0 && VillagerModeRecord_RollScores(record, weights) != 0) {
             draws--;
         }
         VillagerModeRecord_AddCountsToScores(record, weights);

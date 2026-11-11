@@ -50,7 +50,7 @@ void VillagerTalkPick_ClothesOfStyleMask(u16 *out, int mask, int count, u8 *play
     int style = VillagerRoster_PickBit((unsigned int) mask, count, VILLAGER_TALK_PICKS_STYLES);
     if (style != -1) {
         u16 drawn;
-        ItemLists_DrawRange(&drawn, VILLAGER_TALK_PICKS_CLOTHES_FIRST, VILLAGER_TALK_PICKS_CLOTHES_COUNT,
+        ItemLists_PickRange(&drawn, VILLAGER_TALK_PICKS_CLOTHES_FIRST, VILLAGER_TALK_PICKS_CLOTHES_COUNT,
                             (u16 *) (uintptr_t) clothes, 1, player, which, style, 0, 1);
         *out = drawn;
     }

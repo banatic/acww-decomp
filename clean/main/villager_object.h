@@ -48,7 +48,7 @@ typedef struct VillagerRecord {
 
 VillagerObject *VillagerObject_OfRecord(VillagerRecord *record);
 VillagerModeRecord *VillagerObject_RecordMode(VillagerRecord *record);
-void VillagerObject_DrawRecordMode(VillagerRecord *record, int a, int b);
+void VillagerObject_PickRecordMode(VillagerRecord *record, int a, int b);
 void VillagerObject_ClearRecord(VillagerRecord *record);
 VillagerRecord *VillagerObject_DestructRecord(VillagerRecord *record);
 VillagerRecord *VillagerObject_ConstructRecord(VillagerRecord *record);

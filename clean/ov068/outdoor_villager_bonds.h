@@ -29,7 +29,7 @@
 
 int OutdoorVillagerBonds_TalkOfBond(OutdoorVillagerBehavior *self, u8 *villager);
 int OutdoorVillagerBonds_Learn(OutdoorVillagerBehavior *self, u8 *villager);
-u8 *OutdoorVillagerBonds_DrawShopDesign(OutdoorVillagerBehavior *self, u8 *design);
+u8 *OutdoorVillagerBonds_PickShopDesign(OutdoorVillagerBehavior *self, u8 *design);
 int OutdoorVillagerBonds_Sort(OutdoorVillagerBehavior *self, u8 **first, u8 **second, u8 *a, u8 *b);
 void OutdoorVillagerBonds_AskMoodOf(OutdoorVillagerBehavior *self, u8 *villager, const u8 *moods, int count, u8 units,
                                     u8 apply);

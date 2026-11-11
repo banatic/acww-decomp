@@ -390,21 +390,21 @@ int CafeGuest_Kind(CafeGuest *self)
 }
 CLEAN_AS(func_ov068_02273974, CafeGuest_Kind)
 
-/* func_ov068_02273980: a song drawn (ItemLists_DrawRange) from those the current player's item
+/* func_ov068_02273980: a song drawn (ItemLists_PickRange) from those the current player's item
  * record does not have; when that gives none, from all of them. */
-unsigned short CafeGuest_DrawSong(void)
+unsigned short CafeGuest_PickSong(void)
 {
     u16 song;
     u16 again;
     u8 *record = PlayerRecords_Current();
-    ItemLists_DrawRange(&song, CAFE_GUEST_SONG_FIRST, CAFE_GUEST_SONGS, NULL, 0, record, 0, CAFE_GUEST_SONG_STYLE, NULL, 1);
+    ItemLists_PickRange(&song, CAFE_GUEST_SONG_FIRST, CAFE_GUEST_SONGS, NULL, 0, record, 0, CAFE_GUEST_SONG_STYLE, NULL, 1);
     if (song >= CAFE_GUEST_SONG_FIRST && song <= CAFE_GUEST_SONG_LAST) {
         return song;
     }
-    ItemLists_DrawRange(&again, CAFE_GUEST_SONG_FIRST, CAFE_GUEST_SONGS, NULL, 0, NULL, 1, CAFE_GUEST_SONG_STYLE, NULL, 1);
+    ItemLists_PickRange(&again, CAFE_GUEST_SONG_FIRST, CAFE_GUEST_SONGS, NULL, 0, NULL, 1, CAFE_GUEST_SONG_STYLE, NULL, 1);
     return again;
 }
-CLEAN_AS(func_ov068_02273980, CafeGuest_DrawSong)
+CLEAN_AS(func_ov068_02273980, CafeGuest_PickSong)
 
 /* func_ov068_022739f4 (kind 7's part of CAFE_GUEST_WAIT): once the player has agreed, when the
  * player is in state 37 on tile (9, 13) (its seat), an event of kind 7 is asked for. 1, or 0
@@ -675,7 +675,7 @@ void CafeGuestScene_TakeName(CafeGuestScene *scene)
         put_song_name(scene, 1);
     } else {
         owner->no_such_song = 1;
-        owner->song = CafeGuest_DrawSong();
+        owner->song = CafeGuest_PickSong();
     }
     u8 message = CAFE_GUEST_MESSAGE_TYPED;
     TalkObject_SetMessage(scene_talk(scene), &message, data_ov068_02277ca4[owner->kind]);
@@ -726,7 +726,7 @@ void CafeGuestScene_OnSongAnswer(CafeGuestScene *scene, int answer)
     } else {
         owner->names_song = 0;
         owner->no_such_song = 0;
-        owner->song = CafeGuest_DrawSong();
+        owner->song = CafeGuest_PickSong();
     }
 }
 CLEAN_AS(func_ov068_02274194, CafeGuestScene_OnSongAnswer)

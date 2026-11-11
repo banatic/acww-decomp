@@ -212,7 +212,7 @@ CLEAN_AS(func_0204cc24, TownRecord_ClearPelicanUsed)
 
 /* func_0204cc34: the next pelican day drawn after the day `from`: in the week after `from`'s
  * (weeks from Sunday), on its Sunday or one of Wednesday to Saturday. */
-void TownRecord_DrawPelicanDay(TownRecord *record, const TownDayStamp *from)
+void TownRecord_PickPelicanDay(TownRecord *record, const TownDayStamp *from)
 {
     int weekday = Calendar_Weekday(from->year, from->month, from->day);
     int extra;
@@ -230,7 +230,7 @@ void TownRecord_DrawPelicanDay(TownRecord *record, const TownDayStamp *from)
     record->pelican_day.month = when.month;
     record->pelican_day.day = when.day;
 }
-CLEAN_AS(func_0204cc34, TownRecord_DrawPelicanDay)
+CLEAN_AS(func_0204cc34, TownRecord_PickPelicanDay)
 
 /* The item code on tile (x, z) of the town's map (from 0, 0). */
 static u16 *town_record_tile(AcreMap *map, int x, int z)
@@ -346,7 +346,7 @@ void TownRecord_Start(TownRecord *record)
     Calendar_Today(&record->today);
     record->own_fruit = MainRandom_Below(TOWN_RECORD_FRUITS);
     Calendar_Weekday(record->today.year, record->today.month, record->today.day);
-    TownRecord_DrawPelicanDay(record, (const TownDayStamp *) (const void *) &record->today);
+    TownRecord_PickPelicanDay(record, (const TownDayStamp *) (const void *) &record->today);
     TownRecord_ClearPelicanUsed(record);
     TownRecord_ClearSloganUsed(record);
     TownRecord_PlantOwnFruit(record);

@@ -86,7 +86,7 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 #define POCKETS_SWAP_FISH_FIRST 0x12e8 /* 0x12e8 + a fish's kind */
 #define POCKETS_SWAP_FISH_LAST 0x131f
 #define POCKETS_SWAP_NO_STATE 0xf1       /* PocketsSwap_PlaceItemState off the grid */
-#define POCKETS_SWAP_ITEM_PRESENT 0x156b /* drawn again by CurrentPockets_DrawPresent */
+#define POCKETS_SWAP_ITEM_PRESENT 0x156b /* drawn again by CurrentPockets_PickPresent */
 
 /* The game's mode the scene was opened in (GroupParams_Mode). */
 #define POCKETS_SWAP_MODE_ITEM_29 0x29
@@ -644,7 +644,7 @@ void PocketsSwap_AddEntries(PocketsSwap *self)
 CLEAN_AS(func_ov107_0229c9e4, PocketsSwap_AddEntries)
 
 /* func_ov107_0229caa8: the item got (GroupParams_ItemC, in its carried form) put at `slot`: the
- * carried form of item 0x156b is drawn again (CurrentPockets_DrawPresent) and kept in state 1;
+ * carried form of item 0x156b is drawn again (CurrentPockets_PickPresent) and kept in state 1;
  * the carried form is marked in the current player's item record, and the item given up becomes
  * GroupParams_ItemC. */
 void PocketsSwap_TakeNewItem(PocketsSwap *self)
@@ -655,7 +655,7 @@ void PocketsSwap_TakeNewItem(PocketsSwap *self)
     int item = carried;
     int state = 0;
     if (item == POCKETS_SWAP_ITEM_PRESENT) {
-        item = CurrentPockets_DrawPresent();
+        item = CurrentPockets_PickPresent();
         state = 1;
     }
     ItemRecord *record = (ItemRecord *) PlayerRecord_ItemRecord(PlayerRecords_Current());

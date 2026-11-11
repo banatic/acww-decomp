@@ -235,7 +235,7 @@ CLEAN_AS(func_ov045_02260524, FortuneTeller_CardLuck)
 
 /* func_ov045_022605a4: a card drawn: one of 22, reversed or not (a coin), and the line that
  * shows it (one of two, by another coin) and the line of its meaning. */
-void FortuneTeller_DrawCard(FortuneTeller *teller)
+void FortuneTeller_PickCard(FortuneTeller *teller)
 {
     teller->card = (u8) MainRandom_Below(FT_CARDS);
     teller->reversed = MainRandom_Below(2) != 0 ? 1 : 0;
@@ -245,7 +245,7 @@ void FortuneTeller_DrawCard(FortuneTeller *teller)
     teller->result_message =
         (u8) (teller->card + FORTUNE_TELLER_LINE_MEANINGS + FORTUNE_TELLER_LINE_MEANINGS_REVERSED * teller->reversed);
 }
-CLEAN_AS(func_ov045_022605a4, FortuneTeller_DrawCard)
+CLEAN_AS(func_ov045_022605a4, FortuneTeller_PickCard)
 
 /* func_ov045_02260618: the whole frame of the current one's animation (her word at 0x190, cut
  * to 16 bits).

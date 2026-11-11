@@ -21,7 +21,7 @@ void OutdoorVillagerRecords_CatchInsect(u8 *villager, u8 *now);
 int OutdoorVillagerRecords_InContest(u8 *villager);
 void OutdoorVillagerRecords_RefreshItem(u8 *villager);
 void OutdoorVillagerRecords_CheckActivity(u8 *villager);
-void OutdoorVillagerRecords_RedrawActivity(u8 *villager);
+void OutdoorVillagerRecords_RepickActivity(u8 *villager);
 VillagerMemory *OutdoorVillagerRecords_MemoryOfPlayer(u8 *villager);
 
 #endif

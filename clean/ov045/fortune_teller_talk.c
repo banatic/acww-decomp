@@ -390,7 +390,7 @@ static void ftt_read_friendship(FortuneTeller *teller, u8 *record, int luck, Des
 
 /* func_ov045_02260978 (slot 0x14, a line ended), by the line shown:
  * - 0x09, 0x0b: the name screen asked for (mode 0x13, screen 2), sequence 1 to take the name;
- * - 0x0e: a card drawn (FortuneTeller_DrawCard), its line next;
+ * - 0x0e: a card drawn (FortuneTeller_PickCard), its line next;
  * - 0x10: 100 bells taken when the player can pay them; 0x16 next;
  * - 0x13: the owner closes (state 3);
  * - 0x18: 10,000 bells taken when the player can pay them, the current player's luck of the
@@ -415,7 +415,7 @@ void FortuneTellerTalk_OnLineEnded(FortuneTellerTalk *talk)
             FortuneTellerTalk_SetSequence(talk, FORTUNE_TELLER_TALK_SEQUENCE_TAKE_NAME);
             break;
         case FORTUNE_TELLER_LINE_DRAW:
-            FortuneTeller_DrawCard(talk->owner);
+            FortuneTeller_PickCard(talk->owner);
             next = talk->owner->card_message;
             break;
         case FORTUNE_TELLER_LINE_PAY:

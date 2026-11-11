@@ -33,7 +33,7 @@ typedef struct BottleState {
     u8 used[BOTTLE_USED_BYTES];
 } BottleState;
 
-int BottleMail_DrawMessage(BottleState *bottle);
+int BottleMail_PickMessage(BottleState *bottle);
 void BottleMail_ClearUsed(BottleState *bottle);
 int BottleMail_IsMessageUsed(BottleState *bottle, int message);
 void BottleMail_MarkMessageUsed(BottleState *bottle, int message);

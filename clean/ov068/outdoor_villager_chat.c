@@ -534,7 +534,7 @@ int OutdoorVillagerChat_NewDesign(OutdoorVillagerBehavior *self, u8 *villager)
     if (chat_wears_design(first)) {
         worn = TownVillager_Design(first);
     }
-    u8 *design = OutdoorVillagerBonds_DrawShopDesign(self, worn);
+    u8 *design = OutdoorVillagerBonds_PickShopDesign(self, worn);
     if (design == NULL) {
         return 0;
     }

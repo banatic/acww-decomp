@@ -14,7 +14,7 @@
  * reading of a villager's friendship asks for the villager's name on the name screen (screen 2 in mode 0x13) and
  * changes the villager's fondness for the player (+10 good, -3 bad).
  *
- * The cards: FortuneTeller_DrawCard picks one of 22, upright or reversed; its line shows it
+ * The cards: FortuneTeller_PickCard picks one of 22, upright or reversed; its line shows it
  * (FORTUNE_TELLER_LINE_CARDS + 2 * card + one of two, 44 more when reversed) and the next one
  * tells what it means (FORTUNE_TELLER_LINE_MEANINGS + card, 22 more when reversed), when the
  * reading takes effect.

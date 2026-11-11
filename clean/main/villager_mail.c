@@ -118,13 +118,13 @@ static Letter *villager_mail_held(u8 *villager)
 }
 
 /* An item drawn from item list `kind`, as the game does it: from a copy of the list. */
-static u16 villager_mail_draw(int kind)
+static u16 villager_mail_pick(int kind)
 {
     VillagerMailItemList list;
     ItemList_Construct((ItemList *) &list, kind, 0);
     VillagerMailItemList copy = list;
     u16 item;
-    ItemLists_Draw(&item, (ItemList *) &copy, 0, 0, 1, 1, 0);
+    ItemLists_Pick(&item, (ItemList *) &copy, 0, 0, 1, 1, 0);
     ItemList_Destruct(&copy);
     ItemList_Destruct(&list);
     return item;
@@ -330,7 +330,7 @@ void VillagerMail_SendBirthdayLetter(u8 *villager, u8 *record, const DateTime *t
     ItemList_Construct((ItemList *) &list, data_020cd448[MainRandom_Below(VILLAGER_MAIL_LETTER_TEXTS)], 0);
     VillagerMailItemList copy = list;
     u16 present;
-    ItemLists_Draw(&present, (ItemList *) &copy, 0, 0, 1, 1, 0);
+    ItemLists_Pick(&present, (ItemList *) &copy, 0, 0, 1, 1, 0);
     ItemList_Destruct(&copy);
     const u16 *item = present != ITEM_CODE_NONE ? &present : NULL;
     if (VillagerPost_Send(data_020e1988, (u8) MainRandom_Below(VILLAGER_MAIL_LETTER_TEXTS), player, npc, item,
@@ -387,22 +387,22 @@ void VillagerMail_Reply(u8 *villager, u8 *record, Letter *letter)
             int length = LetterGrade_BodyLength(letter);
             if (length <= VILLAGER_MAIL_SHORT_LETTER) {
                 if (MainRandom_Below(2) == 0) {
-                    present = villager_mail_draw(VILLAGER_MAIL_SHORT_LIST);
+                    present = villager_mail_pick(VILLAGER_MAIL_SHORT_LIST);
                 } else {
                     u16 drawn;
-                    ItemLists_DrawRange(&drawn, 0x1518, 5, 0, 0, 0, 1, 0xa, 0, 1);
+                    ItemLists_PickRange(&drawn, 0x1518, 5, 0, 0, 0, 1, 0xa, 0, 1);
                     present = drawn;
                 }
             } else if (length <= VILLAGER_MAIL_MIDDLE_LETTER) {
-                present = villager_mail_draw(VILLAGER_MAIL_MIDDLE_LIST);
+                present = villager_mail_pick(VILLAGER_MAIL_MIDDLE_LIST);
             } else {
-                present = villager_mail_draw(data_020cd43c[MainRandom_Below(VILLAGER_MAIL_LETTER_TEXTS)]);
+                present = villager_mail_pick(data_020cd43c[MainRandom_Below(VILLAGER_MAIL_LETTER_TEXTS)]);
             }
             if (present != ITEM_CODE_NONE) {
                 first = VILLAGER_MAIL_REPLY_PRESENT_FIRST;
             }
         }
-        VillagerLetter_PostDrawn(data_020e199c, first, VILLAGER_MAIL_REPLY_TEXTS, player, npc, &present);
+        VillagerLetter_PostRandom(data_020e199c, first, VILLAGER_MAIL_REPLY_TEXTS, player, npc, &present);
         if (memory != NULL) {
             int delta = Letter_Item(letter) != ITEM_CODE_NONE ? VILLAGER_MAIL_GIFT_FONDNESS : VILLAGER_MAIL_GOOD_FONDNESS;
             VillagerMemoryEntry_ChangeFondness(memory, delta);

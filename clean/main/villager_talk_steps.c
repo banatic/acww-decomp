@@ -30,7 +30,7 @@
 #include "villager_town.h"
 #include "global_021cfc98.h"
 #include "item_lists.h"
-#include "talk_item_draw.h"
+#include "talk_item_pick.h"
 #include "talk_object.h"
 #include "villager_talk_offers.h"
 #include "villager_talk_scene.h"
@@ -144,7 +144,7 @@ static u8 *steps_record(const VillagerTalk *talk)
 
 /* The line drawn for the personality of the talk's villager into the talk's text and
  * message. */
-static void steps_draw(VillagerTalk *talk, u32 texts, int per_group, int group, int range)
+static void steps_pick(VillagerTalk *talk, u32 texts, int per_group, int group, int range)
 {
     VillagerTalkScene_DrawLine(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE,
                                NpcId_Personality(TownVillager_NpcId(steps_record(talk))), (int) texts, per_group, group,
@@ -161,7 +161,7 @@ static void steps_name(VillagerTalk *talk, VillagerTalkLine *out)
 /* A line of a text set (its count the lines per group, group 0) named in `out`. */
 static void steps_line(VillagerTalk *talk, VillagerTalkLine *out, const VillagerTalkStepsTexts *texts)
 {
-    steps_draw(talk, texts->texts, texts->count, 0, 0);
+    steps_pick(talk, texts->texts, texts->count, 0, 0);
     steps_name(talk, out);
 }
 
@@ -349,7 +349,7 @@ CLEAN_AS(func_0202372c, VillagerTalkSteps_Line89b8)
  * random part. */
 void VillagerTalkSteps_Line89a8Group2(VillagerTalk *talk, VillagerTalkLine *out)
 {
-    steps_draw(talk, data_020c89a8.texts, data_020c89a8.count, 2, data_020c89a8.count);
+    steps_pick(talk, data_020c89a8.texts, data_020c89a8.count, 2, data_020c89a8.count);
     steps_name(talk, out);
 }
 CLEAN_AS(func_02023790, VillagerTalkSteps_Line89a8Group2)
@@ -366,7 +366,7 @@ CLEAN_AS(func_020237f4, VillagerTalkSteps_SayByFreePocket2fd4)
  * random part. */
 void VillagerTalkSteps_Line8aa8Group1(VillagerTalk *talk, VillagerTalkLine *out)
 {
-    steps_draw(talk, data_020c8aa8.texts, data_020c8aa8.count, 1, data_020c8aa8.count);
+    steps_pick(talk, data_020c8aa8.texts, data_020c8aa8.count, 1, data_020c8aa8.count);
     steps_name(talk, out);
 }
 CLEAN_AS(func_02023864, VillagerTalkSteps_Line8aa8Group1)
@@ -440,10 +440,10 @@ CLEAN_AS(func_02023a54, VillagerTalkSteps_GiveGiftToPockets)
 void VillagerTalkSteps_LineGift(VillagerTalk *talk, VillagerTalkLine *out)
 {
     u16 drawn[2];
-    TalkItemDraw_ThreeLists(&drawn[0], (int) (uintptr_t) PlayerRecords_Current());
+    TalkItemPick_ThreeLists(&drawn[0], (int) (uintptr_t) PlayerRecords_Current());
     talk->gift = drawn[0];
     if (talk->gift == ITEM_CODE_NONE) {
-        TalkItemDraw_ThreeLists(&drawn[1], 0);
+        TalkItemPick_ThreeLists(&drawn[1], 0);
         talk->gift = drawn[1];
     }
     if (talk->gift != ITEM_CODE_NONE) {
@@ -539,12 +539,12 @@ CLEAN_AS(func_02023ddc, VillagerTalkSteps_GiveByObjectType)
 
 /* An item drawn from the list of `kind` (group 0) as the gift at 0x19c, named in the talk's
  * slot 0, and the talk's object at 0x154 given the value 1 in its low bits. */
-static void steps_draw_gift(VillagerTalk *talk, int kind)
+static void steps_pick_gift(VillagerTalk *talk, int kind)
 {
     VillagerTalkStepsItemList list;
     u16 item;
     ItemList_Construct((ItemList *) &list, kind, 0);
-    ItemLists_Draw(&item, (ItemList *) &list, 0, 0, 1, 1, 0);
+    ItemLists_Pick(&item, (ItemList *) &list, 0, 0, 1, 1, 0);
     talk->gift = item;
     ItemList_Destruct(&list);
     SceneBase_PutItemName(steps_base(talk), (int) (uintptr_t) &talk->gift, 0, 7);
@@ -563,11 +563,11 @@ void VillagerTalkSteps_LineGiveByObjectType(VillagerTalk *talk, VillagerTalkLine
     switch (VillagerErrand_Type((VillagerErrand *) (uintptr_t) VillagerTalkScene_Errand(talk))) {
         case VILLAGER_TALK_STEPS_TYPE_14:
             talk->message = 0xa;
-            steps_draw_gift(talk, 0);
+            steps_pick_gift(talk, 0);
             break;
         case VILLAGER_TALK_STEPS_TYPE_16:
             talk->message = 0xc;
-            steps_draw_gift(talk, 3);
+            steps_pick_gift(talk, 3);
             break;
         case VILLAGER_TALK_STEPS_TYPE_17:
             if (talk->memory != NULL &&

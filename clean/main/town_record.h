@@ -57,7 +57,7 @@ void TownRecord_ClearEvents(void *record);
 int TownRecord_Event(int index);
 void TownRecord_ClearSloganUsed(TownRecord *record);
 void TownRecord_ClearPelicanUsed(TownRecord *record);
-void TownRecord_DrawPelicanDay(TownRecord *record, const TownDayStamp *from);
+void TownRecord_PickPelicanDay(TownRecord *record, const TownDayStamp *from);
 void TownRecord_EndLine5d(void *unused);
 void TownRecord_PlantOwnFruit(TownRecord *record);
 void TownRecord_PullBackDay(Date *day);

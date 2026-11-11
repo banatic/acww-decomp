@@ -237,7 +237,7 @@ void TownVillager_SetUp(u8 *villager, u32 number, int came, const TownName *town
         }
         VillagerFurniture_SetWallpaper(villager, data->wallpaper);
         VillagerFurniture_SetCarpet(villager, data->carpet);
-        VillagerObject_DrawRecordMode(town_villager_record(villager), (int) (uintptr_t) data->mode_scores, mode_draw);
+        VillagerObject_PickRecordMode(town_villager_record(villager), (int) (uintptr_t) data->mode_scores, mode_draw);
         int mode = VillagerModeRecord_Mode(VillagerObject_RecordMode(town_villager_record(villager)));
         VillagerFurniture_ResetForMode(villager, mode, 0);
         villager[TOWN_VILLAGER_NUMBER_7D8] = data->byte_2f;

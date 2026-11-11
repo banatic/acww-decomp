@@ -5,7 +5,7 @@
  * (SkyWeatherDay_Update), the patterns move on: a day later, today's is tomorrow's and a new
  * tomorrow is drawn; a day earlier, tomorrow's is today's and a new today is drawn; two days
  * or more either way, both are drawn. A pattern is drawn from the odds of the date's period of
- * the year (SkyWeatherDay_DrawPattern). The day's wet flag is then moved to data_021fbbd8
+ * the year (SkyWeatherDay_PickPattern). The day's wet flag is then moved to data_021fbbd8
  * (SkyWeatherDay_LastWet) and cleared. Today's pattern is 4 whenever the game is started
  * (StartKind_IsSet), this system's player has flag 1 or today has calendar event 9 or 10
  * listed, outside scene 0x3f. In a session nothing changes. */
@@ -20,7 +20,7 @@
 #define SKY_WEATHER_DAY_FORCED 4    /* today's pattern on the days that force one */
 
 unsigned char SkyWeatherDay_LastWet(void);
-int SkyWeatherDay_DrawPattern(SkyWeatherDay *day, const DateTime *date);
+int SkyWeatherDay_PickPattern(SkyWeatherDay *day, const DateTime *date);
 int SkyWeatherDay_Update(SkyWeatherDay *day, const DateTime *now);
 void SkyWeatherDay_Refresh(SkyWeatherDay *day);
 void SkyWeatherDay_SetToday(SkyWeatherDay *day);

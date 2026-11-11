@@ -23,7 +23,7 @@
 #include "villager_town.h"
 #include "item_traits.h"
 #include "main_random.h"
-#include "talk_item_draw.h"
+#include "talk_item_pick.h"
 #include "villager_talk_scene.h"
 
 /* The villager scene object's town record (town_villager.h), and its byte that picks the group
@@ -124,7 +124,7 @@ static int approach_mode(u8 *record)
 
 /* A line of `texts` (`per_group` lines a group, group `group`, the random part below `range`)
  * drawn for `personality` into the talk's text and message. */
-static void approach_draw(VillagerTalk *talk, int personality, u32 texts, int per_group, int group, int range)
+static void approach_pick(VillagerTalk *talk, int personality, u32 texts, int per_group, int group, int range)
 {
     VillagerTalkScene_DrawLine(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE, personality, (int) texts, per_group,
                                group, range);
@@ -133,7 +133,7 @@ static void approach_draw(VillagerTalk *talk, int personality, u32 texts, int pe
 /* A line of `texts` (its count the lines a group, group 0) for the villager's personality. */
 static void approach_say(VillagerTalk *talk, const VillagerTalkApproachTexts *texts)
 {
-    approach_draw(talk, approach_personality(approach_record(talk)), texts->texts, texts->count, 0, 0);
+    approach_pick(talk, approach_personality(approach_record(talk)), texts->texts, texts->count, 0, 0);
 }
 
 /* The gift at 0x19c: a random one of the villager's items (0x19e set), else when it has none
@@ -147,7 +147,7 @@ static void approach_gift_from_items(VillagerTalk *talk, u8 *record)
         talk->gift_from_items = 1;
     } else {
         u16 drawn;
-        TalkItemDraw_OfKinds(&drawn);
+        TalkItemPick_OfKinds(&drawn);
         talk->gift = drawn;
         talk->gift_from_items = 0;
     }
@@ -160,9 +160,9 @@ static int approach_player_bells(void)
 }
 
 /* func_0202afdc: the approach line. The table of the nine approaches filled once; the player
- * noted in the villager's memory; then approaches drawn by the weights (VillagerTalkTopics_Draw)
+ * noted in the villager's memory; then approaches drawn by the weights (VillagerTalkTopics_Pick)
  * and run until one applies, one that does not taking no further part. A draw outside the nine
- * runs one of the first two at random instead (VillagerTalkTopics_Draw gives none, and the
+ * runs one of the first two at random instead (VillagerTalkTopics_Pick gives none, and the
  * first approach always applies). `out` names the talk's text and message; the talk's slots 4
  * and 6 get random words of the archives 3 and 4, slot 0 the item at 0x124 and slots 1 and 2 the
  * gift at 0x19c (when there are), and the five members at 0x16c are set. */
@@ -179,7 +179,7 @@ void VillagerTalkApproach_Line(VillagerTalk *talk, VillagerTalkLine *out)
     VillagerTalkScene_NoteMemory(talk, &talk->memory, &talk->memory_index, approach_record(talk), 0);
     int applied = 0;
     while (applied == 0) {
-        int which = VillagerTalkTopics_Draw(talk, weights, VILLAGER_TALK_APPROACH_COUNT);
+        int which = VillagerTalkTopics_Pick(talk, weights, VILLAGER_TALK_APPROACH_COUNT);
         if (which >= 0 && which < VILLAGER_TALK_APPROACH_COUNT) {
             applied = MemberPointer_CallInt(&data_021c1f4c[which], talk);
             if (applied == 0) {
@@ -239,7 +239,7 @@ int VillagerTalkApproach_Sell(VillagerTalk *talk)
         return 0;
     }
 
-    approach_draw(talk, approach_personality(record), data_020c8be8.texts, data_020c8be8.count, 0, 0);
+    approach_pick(talk, approach_personality(record), data_020c8be8.texts, data_020c8be8.count, 0, 0);
     SceneBase_PutValue((SceneBase *) (void *) talk, talk->bells, 2, VILLAGER_TALK_APPROACH_BELLS_FORMAT, 0, 0);
     return 1;
 }
@@ -257,7 +257,7 @@ int VillagerTalkApproach_Trade(VillagerTalk *talk)
         return 0;
     }
     approach_gift_from_items(talk, record);
-    approach_draw(talk, approach_personality(record), data_020c8a30.texts, data_020c8a30.count, 0, 0);
+    approach_pick(talk, approach_personality(record), data_020c8a30.texts, data_020c8a30.count, 0, 0);
     return 1;
 }
 CLEAN_AS(func_0202b354, VillagerTalkApproach_Trade)
@@ -286,7 +286,7 @@ int VillagerTalkApproach_Buy(VillagerTalk *talk)
         return 0;
     }
 
-    approach_draw(talk, approach_personality(record), data_020c89a0.texts, data_020c89a0.count, 0, 0);
+    approach_pick(talk, approach_personality(record), data_020c89a0.texts, data_020c89a0.count, 0, 0);
     SceneBase_PutValue((SceneBase *) (void *) talk, talk->bells, 1, VILLAGER_TALK_APPROACH_BELLS_FORMAT, 0, 0);
     return 1;
 }
@@ -334,7 +334,7 @@ int VillagerTalkApproach_Present2(VillagerTalk *talk)
         return 0;
     }
     u16 item;
-    TalkItemDraw_OfKinds(&item);
+    TalkItemPick_OfKinds(&item);
     talk->gift = item;
     talk->gift_from_items = 0;
     approach_say(talk, &data_020c8ca8);
@@ -351,7 +351,7 @@ int VillagerTalkApproach_Present1(VillagerTalk *talk)
     }
     u8 *record = approach_record(talk);
     approach_gift_from_items(talk, record);
-    approach_draw(talk, approach_personality(record), data_020c89e8.texts, data_020c89e8.count, 0, 0);
+    approach_pick(talk, approach_personality(record), data_020c89e8.texts, data_020c89e8.count, 0, 0);
     return 1;
 }
 CLEAN_AS(func_0202b61c, VillagerTalkApproach_Present1)
@@ -371,7 +371,7 @@ int VillagerTalkApproach_Mail(VillagerTalk *talk)
         talk->letter_memory = (u32) VillagerTalkTopics_PickRandom(record, list, count, func_02021d60);
     }
     int none = talk->letter_memory == 0 ? 1 : 0;
-    approach_draw(talk, approach_personality(approach_record(talk)), data_020c89c8.texts, data_020c89c8.count, none, 0);
+    approach_pick(talk, approach_personality(approach_record(talk)), data_020c89c8.texts, data_020c89c8.count, none, 0);
     return 1;
 }
 CLEAN_AS(func_0202b6c8, VillagerTalkApproach_Mail)
@@ -389,7 +389,7 @@ int VillagerTalkApproach_Nickname(VillagerTalk *talk)
     if (VillagerTown_IsFarFromNicknameDate(&data_021e5a2c, &today) == 0) {
         return 0;
     }
-    approach_draw(talk, approach_personality(approach_record(talk)), data_020c8b20.texts, data_020c8b20.count, 0, 0);
+    approach_pick(talk, approach_personality(approach_record(talk)), data_020c8b20.texts, data_020c8b20.count, 0, 0);
     VillagerTalkScene_SetLines(talk, data_021c2794);
     return 1;
 }
@@ -419,7 +419,7 @@ int VillagerTalkApproach_Picture(VillagerTalk *talk)
             group = 3;
         }
     }
-    approach_draw(talk, approach_personality(approach_record(talk)), data_020c8b38.texts, data_020c8b38.count, group, 0);
+    approach_pick(talk, approach_personality(approach_record(talk)), data_020c8b38.texts, data_020c8b38.count, group, 0);
 
     unsigned int number = 0;
     if (NpcId_IsValid(TownVillager_NpcId(approach_record(talk))) != 0) {
@@ -438,7 +438,7 @@ int VillagerTalkApproach_Catchphrase(VillagerTalk *talk)
 {
     int personality = approach_personality(approach_record(talk));
     int group = talk->villager[VILLAGER_TALK_APPROACH_ASKS_GREETING] & 1;
-    approach_draw(talk, personality, data_020c8b18.texts, 9, group, data_020c8b18.count);
+    approach_pick(talk, personality, data_020c8b18.texts, 9, group, data_020c8b18.count);
     VillagerTalkScene_SetLines(talk, data_021c2704);
     return 1;
 }

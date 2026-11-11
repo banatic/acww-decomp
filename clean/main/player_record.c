@@ -240,8 +240,8 @@ void PlayerRecord_SendVillagerLetter(u8 *record)
 
     TownName_ToText((TownName *) (void *) villager->town, (TextBase *) &town);
     MailText_SetPartText(LETTER_ENTRY_TOWN, &town);
-    if (VillagerLetter_PostDrawn((const char *) data_020e3128, first, count, player,
-                                 (const NpcId *) (void *) villager->villager, &villager->item)) {
+    if (VillagerLetter_PostRandom((const char *) data_020e3128, first, count, player,
+                                  (const NpcId *) (void *) villager->villager, &villager->item)) {
         PlayerRecordVillager_Clear(villager);
     }
     MessagePart_Destruct((MessagePart *) &word);
@@ -615,15 +615,15 @@ CLEAN_AS(func_020993b4, PlayerRecord_ResetForNewTown)
 
 /* The item a pocket's delivery carpet (0x155f) or wallpaper (0x1560) turns into: one of
  * DELIVERY_DRAW_COUNT items from `first`, else, when none is drawn, one of item list `list_kind`. */
-static u16 player_record_draw_delivery(u8 *record, int first, int list_kind)
+static u16 player_record_pick_delivery(u8 *record, int first, int list_kind)
 {
     u16 item;
-    ItemLists_DrawRange(&item, first, DELIVERY_DRAW_COUNT, 0, 0, record, 1, 10, 0, 1);
+    ItemLists_PickRange(&item, first, DELIVERY_DRAW_COUNT, 0, 0, record, 1, 10, 0, 1);
     if (item == PLAYER_RECORD_NO_ITEM) {
         PlayerRecordItemList list;
         u16 drawn;
         ItemList_Construct((ItemList *) &list, list_kind, 0);
-        ItemLists_Draw(&drawn, (ItemList *) &list, 0, 0, 1, 1, 0);
+        ItemLists_Pick(&drawn, (ItemList *) &list, 0, 0, 1, 1, 0);
         item = drawn;
         ItemList_Destruct(&list);
     }
@@ -664,9 +664,9 @@ void PlayerRecord_OpenDeliveries(u8 *record)
 
         u16 item;
         if (is_a) {
-            item = player_record_draw_delivery(record, DELIVERY_WALLPAPER_FIRST, DELIVERY_WALLPAPER_LIST);
+            item = player_record_pick_delivery(record, DELIVERY_WALLPAPER_FIRST, DELIVERY_WALLPAPER_LIST);
         } else {
-            item = player_record_draw_delivery(record, DELIVERY_CARPET_FIRST, DELIVERY_CARPET_LIST);
+            item = player_record_pick_delivery(record, DELIVERY_CARPET_FIRST, DELIVERY_CARPET_LIST);
         }
 
         PlayerPockets_SetSlot(pockets, &item, i, SLOT_STATE_0);
@@ -1115,7 +1115,7 @@ int PlayerRecordVillager_Note(PlayerRecordVillager *villager, const NpcId *npc, 
         /* QUIRK: the item is drawn from a plain copy of the list, and both are destroyed. */
         PlayerRecordItemList copy = list;
         u16 drawn;
-        ItemLists_Draw(&drawn, (ItemList *) &copy, 0, 0, 1, 1, 0);
+        ItemLists_Pick(&drawn, (ItemList *) &copy, 0, 0, 1, 1, 0);
         present = drawn;
         ItemList_Destruct(&copy);
         ItemList_Destruct(&list);

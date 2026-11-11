@@ -418,7 +418,7 @@ static void turtle_fishing_talk_give_prize(TurtleFishingTalk *talk)
     ItemList list;
     u16 drawn;
     ItemList_Construct(&list, 0, 0);
-    ItemLists_Draw(&drawn, &list, 0, 0, 1, 1, 0);
+    ItemLists_Pick(&drawn, &list, 0, 0, 1, 1, 0);
     u16 prize = drawn;
     ItemList_Destruct(&list);
     SceneCommand_RequestMotion13(turtle_fishing_talk_scene(talk), &prize, 0, TURTLE_FISHING_TALK_MOTION_B, 0);

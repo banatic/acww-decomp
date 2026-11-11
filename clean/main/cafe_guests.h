@@ -1,5 +1,5 @@
 /* The cafe's guests of the day: one byte of the state block (0xf52b) drawn at random each day
- * (CafeGuests_Draw, from the town's setting up and its daily update) and read only by
+ * (CafeGuests_RollPlan, from the town's setting up and its daily update) and read only by
  * overlay 68's cafe guest (cafe_guest.h), which picks the special character sitting in the
  * cafe by it at set times of the day:
  *
@@ -27,7 +27,7 @@ int CafeGuests_Night(const u8 *plan);
 int CafeGuests_Afternoon(const u8 *plan);
 int CafeGuests_Noon(const u8 *plan);
 int CafeGuests_Morning(const u8 *plan);
-void CafeGuests_Draw(u8 *plan);
+void CafeGuests_RollPlan(u8 *plan);
 void CafeGuests_SetUp(u8 *plan);
 void CafeGuests_Clear(u8 *plan);
 void CafeGuests_Destruct(u8 *plan);

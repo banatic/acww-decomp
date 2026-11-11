@@ -12,10 +12,10 @@
 
 #define VILLAGER_LETTER_NAME_SIZE 0x28
 #define VILLAGER_LETTER_NO_ITEM 0xfff1
-/* The parts of a letter VillagerLetter_PostDrawn draws. */
+/* The parts of a letter VillagerLetter_PostRandom draws. */
 #define VILLAGER_LETTER_PARTS 4
 
 int VillagerLetter_Post(const char *name, int text, const void *player, const NpcId *npc, const u16 *item);
-int VillagerLetter_PostDrawn(const char *name, int first, int choices, const void *player, const NpcId *npc, const u16 *item);
+int VillagerLetter_PostRandom(const char *name, int first, int choices, const void *player, const NpcId *npc, const u16 *item);
 
 #endif

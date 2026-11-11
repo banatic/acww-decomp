@@ -37,12 +37,12 @@ typedef struct VillagerOutdoors {
 
 void VillagerOutdoors_Update(VillagerOutdoors *outdoors, u8 *villagers, int keep_time);
 void VillagerOutdoors_Restore(VillagerOutdoors *outdoors, u8 *villagers);
-void VillagerOutdoors_Draw(VillagerOutdoors *outdoors, u8 *villagers);
+void VillagerOutdoors_Pick(VillagerOutdoors *outdoors, u8 *villagers);
 void VillagerOutdoors_PutToSleep(VillagerOutdoors *outdoors, u8 *villagers, const DateTime *now);
 void VillagerOutdoors_TakeBirthdayGreeter(VillagerOutdoors *outdoors, s8 *chosen, int *count, s8 *list, u8 *villagers);
 void VillagerOutdoors_SendOut(VillagerOutdoors *outdoors, s8 *chosen, int *count, u8 *states, int chosen_count);
 void VillagerOutdoors_KeepHome(VillagerOutdoors *outdoors, s8 *list, int *count, u8 *states);
-void VillagerOutdoors_DrawRandom(VillagerOutdoors *outdoors, u8 *chosen, int *count, s8 *list, u8 *villagers, int limit);
+void VillagerOutdoors_PickRandom(VillagerOutdoors *outdoors, u8 *chosen, int *count, s8 *list, u8 *villagers, int limit);
 int VillagerOutdoors_IsDue(VillagerOutdoors *outdoors, const DateTime *now);
 void VillagerOutdoors_ClearTime(VillagerOutdoors *outdoors);
 void VillagerOutdoors_ListResidents(VillagerOutdoors *outdoors, u8 *villagers);
@@ -60,7 +60,7 @@ void VillagerOutdoors_ClearList(VillagerOutdoors *outdoors, s8 *list);
 void VillagerOutdoors_Init(VillagerOutdoors *outdoors);
 void VillagerOutdoors_Destruct(VillagerOutdoors *outdoors);
 void VillagerOutdoors_Construct(VillagerOutdoors *outdoors);
-void VillagerOutdoors_DrawFleaVillager(const u8 *villagers, const void *player);
+void VillagerOutdoors_PickFleaVillager(const u8 *villagers, const void *player);
 int VillagerOutdoors_FleaMonthChance(void);
 
 #endif

@@ -407,7 +407,7 @@ int GiraffeTalk_Dress(GiraffeTalk *talk)
     ItemList list;
     u16 drawn;
     ItemList_Construct(&list, GT_CLOTHES_KIND, special ? GT_CLOTHES_SPECIAL : GT_CLOTHES_OTHER);
-    ItemLists_Draw(&drawn, &list, 0, 0, 1, 1, 0);
+    ItemLists_Pick(&drawn, &list, 0, 0, 1, 1, 0);
     clothes = drawn;
     ItemList_Destruct(&list);
 

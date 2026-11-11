@@ -164,13 +164,13 @@ void NpcLetters_SendMissing(void)
     u8 message = (u8) MainRandom_Below(NPC_LETTERS_MISSING_MESSAGES);
     Date today;
     Calendar_Today(&today);
-    u8 paper = (u8) MomLetters_DrawPaper(NPC_LETTERS_MISSING_PAPER_SET, today.month);
+    u8 paper = (u8) MomLetters_PickPaper(NPC_LETTERS_MISSING_PAPER_SET, today.month);
     Letter_WriteSpecialToPlayer(&letter, &message, data_020e1ff0, data_020e1f58, &paper, PlayerRecord_Player(record));
 
     NpcLettersItemList list;
     u16 item;
     ItemList_Construct((ItemList *) &list, 0, NPC_LETTERS_MISSING_LIST_GROUP);
-    ItemLists_Draw(&item, (ItemList *) &list, 0, 0, 1, 1, 0);
+    ItemLists_Pick(&item, (ItemList *) &list, 0, 0, 1, 1, 0);
     Letter_SetItem(&letter, item, 1);
     ItemList_Destruct(&list);
 

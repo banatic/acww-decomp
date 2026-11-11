@@ -117,7 +117,7 @@ typedef struct CafeGuestTalkStart {
 CafeGuest *CafeGuest_Destruct(CafeGuest *self);
 CafeGuest *CafeGuest_Delete(CafeGuest *self);
 int CafeGuest_Kind(CafeGuest *self);
-unsigned short CafeGuest_DrawSong(void);
+unsigned short CafeGuest_PickSong(void);
 int CafeGuest_WaitForListener(CafeGuest *self);
 void CafeGuest_OnEvent(CafeGuest *self, int code);
 int CafeGuest_MayAct(CafeGuest *self);

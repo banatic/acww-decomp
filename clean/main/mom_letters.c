@@ -89,7 +89,7 @@ static u16 list_item(int kind)
     MomItemList list;
     u16 item;
     ItemList_Construct((ItemList *) &list, kind, 0);
-    ItemLists_Draw(&item, (ItemList *) &list, 0, 0, 1, 1, 0);
+    ItemLists_Pick(&item, (ItemList *) &list, 0, 0, 1, 1, 0);
     ItemList_Destruct(&list);
     return item;
 }
@@ -105,7 +105,7 @@ int MomLetters_Present(int letter)
             return list_item(PRESENT_LIST_A);
         case 0x4a: {
             u16 item;
-            ItemLists_DrawRange(&item, 0x1380, 0x20, 0, 0, 0, 1, 0xa, 0, 1);
+            ItemLists_PickRange(&item, 0x1380, 0x20, 0, 0, 0, 1, 0xa, 0, 1);
             return item;
         }
         case 0x1e:
@@ -173,7 +173,7 @@ int MomLetters_Send(int letter, int month)
     void *name = PlayerRecord_Player(PlayerRecords_Current());
     u8 message = MomLetters_GroupIndex(letter);
     u8 kind = letter == MOM_FATHERS_DAY ? LETTER_KIND_FATHERS_DAY : LETTER_KIND;
-    u8 paper = (u8) MomLetters_DrawPaper(PAPER_SET_MOM, month);
+    u8 paper = (u8) MomLetters_PickPaper(PAPER_SET_MOM, month);
     Letter_WriteSpecialToPlayer(&mail, &message, MomLetters_Template(letter), &kind, &paper, name);
     int item = MomLetters_Present(letter);
     if (item != ITEM_CODE_NONE) {
@@ -427,14 +427,14 @@ u8 MomLetters_PaperFromSet(int set)
 CLEAN_AS(func_0209765c, MomLetters_PaperFromSet)
 
 /* func_0209767c: three times in ten a paper of the season of `month`, else one of set `set`. */
-int MomLetters_DrawPaper(int set, int month)
+int MomLetters_PickPaper(int set, int month)
 {
     if (MainRandom_Below(10) < 3) {
         return MomLetters_PaperForMonth((u32) month);
     }
     return MomLetters_PaperFromSet(set);
 }
-CLEAN_AS(func_0209767c, MomLetters_DrawPaper)
+CLEAN_AS(func_0209767c, MomLetters_PickPaper)
 
 /* ---- The state in the player's record ---- */
 

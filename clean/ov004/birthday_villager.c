@@ -818,13 +818,13 @@ CLEAN_AS(func_ov004_0221cae4, BirthdayVillagerTalk_OnMessageBegun)
 #define BIRTHDAY_VILLAGER_FOND 0x40
 
 /* An item drawn from the list of `kind` (group 0). */
-static u16 draw_from_list(int kind)
+static u16 pick_from_list(int kind)
 {
     ItemList list;
     u16 item;
 
     ItemList_Construct(&list, kind, 0);
-    ItemLists_Draw(&item, &list, 0, 0, 1, 1, 0);
+    ItemLists_Pick(&item, &list, 0, 0, 1, 1, 0);
     u16 drawn = item;
     ItemList_Destruct(&list);
     return drawn;
@@ -836,18 +836,18 @@ static u16 draw_from_list(int kind)
 u16 BirthdayVillager_PickGift(int fondness)
 {
     if (fondness <= 0) {
-        return draw_from_list(1);
+        return pick_from_list(1);
     }
     if (fondness < BIRTHDAY_VILLAGER_FOND) {
         if (MainRandom_Below(2) == 0) {
-            return draw_from_list(0);
+            return pick_from_list(0);
         }
-        return draw_from_list(2);
+        return pick_from_list(2);
     }
     u16 item;
-    ItemLists_DrawByGroup(&item, (int) (uintptr_t) PlayerRecords_Current(), NULL);
+    ItemLists_PickByGroup(&item, (int) (uintptr_t) PlayerRecords_Current(), NULL);
     if (item == ITEM_CODE_NONE) {
-        return draw_from_list(0);
+        return pick_from_list(0);
     }
     return item;
 }

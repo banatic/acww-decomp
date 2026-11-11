@@ -34,7 +34,7 @@
  * showing an insect or a fish (23), and a step aside around what blocks it.
  *
  * The held item (OutdoorVillagerWalks_ChangeHeldItem), checked while it stands: every 12000
- * frames (the halfword at 0x34) the activity of the moment is redrawn (OutdoorVillagerRecords_RedrawActivity), and
+ * frames (the halfword at 0x34) the activity of the moment is redrawn (OutdoorVillagerRecords_RepickActivity), and
  * the item it should hold is the kind's (VillagerModeRecord_KindItem), its umbrella (items
  * 0x1380 to 0x139f, TownVillager_Umbrella) when rain falls and the kind has none or item
  * 0x1378; behavior 15 brings an item out, 16 puts one away. The halfword at 0x36 (300 after
@@ -81,7 +81,7 @@ int OutdoorVillagerWalks_CrossesEvent(OutdoorVillagerBehavior *self, const Vec3 
 int OutdoorVillagerWalks_AtHome(OutdoorVillagerBehavior *self, u8 *villager);
 int OutdoorVillagerWalks_TimeToGoHome(OutdoorVillagerBehavior *self, u8 *villager);
 void OutdoorVillagerWalks_StartWalker(OutdoorVillagerBehavior *self, int state, u8 *villager);
-int OutdoorVillagerWalks_DrawWalkKind(OutdoorVillagerBehavior *self);
+int OutdoorVillagerWalks_PickWalkKind(OutdoorVillagerBehavior *self);
 int OutdoorVillagerWalks_OnScreen(OutdoorVillagerBehavior *self, u8 *villager);
 int OutdoorVillagerWalks_InBox(const OutdoorVillagerWalksBox *box, const Vec3 *center, const Vec3 *point);
 int OutdoorVillagerWalks_Start0(OutdoorVillagerBehavior *self, u8 *villager);

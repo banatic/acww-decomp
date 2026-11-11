@@ -100,7 +100,7 @@ typedef struct FortuneTellerCard {
 FortuneTeller *FortuneTeller_Destruct(FortuneTeller *teller);
 void *FortuneTeller_Delete(void *teller);
 int FortuneTeller_CardLuck(FortuneTeller *teller);
-void FortuneTeller_DrawCard(FortuneTeller *teller);
+void FortuneTeller_PickCard(FortuneTeller *teller);
 unsigned int FortuneTeller_CurrentFrame(void);
 int FortuneTeller_CurrentMatrix(void);
 int FortuneTeller_BeforeSix(void);

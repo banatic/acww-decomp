@@ -178,11 +178,11 @@ static void nook_set_hour(NookStore *store, u32 hour)
 }
 
 /* An item of `lot` into `*item`: the draw takes a copy of the lot, destroyed after. */
-static void nook_draw(u16 *item, const NookItemLot *lot)
+static void nook_pick(u16 *item, const NookItemLot *lot)
 {
     NookItemLot copy = *lot;
     u16 drawn;
-    ItemLists_Draw(&drawn, (ItemList *) &copy, 0, (int) (uintptr_t) data_021f4a80, 0, 1, 0);
+    ItemLists_Pick(&drawn, (ItemList *) &copy, 0, (int) (uintptr_t) data_021f4a80, 0, 1, 0);
     *item = drawn;
     ItemList_Destruct(&copy);
 }
@@ -190,14 +190,14 @@ static void nook_draw(u16 *item, const NookItemLot *lot)
 /* func_020aeb6c: the medicine (0x155e). */
 void NookStore_StockMedicine(NookStore *store, u32 *next)
 {
-    ShopStock_DrawCodes(store->items, next, 0x155e, 1, (u32) NookStore_CountMedicine(), NOOK_SECTION_SIZE, 0);
+    ShopStock_PickCodes(store->items, next, 0x155e, 1, (u32) NookStore_CountMedicine(), NOOK_SECTION_SIZE, 0);
 }
 CLEAN_AS(func_020aeb6c, NookStore_StockMedicine)
 
 /* func_020aeb9c: the bottle letter (0x151f), from level 1 on. */
 void NookStore_StockBottleLetter(NookStore *store, u32 *next)
 {
-    ShopStock_DrawCodes(store->items, next, NOOK_BOTTLE_LETTER, 1, (u32) NookStore_CountBottleLetter(store), NOOK_SECTION_SIZE,
+    ShopStock_PickCodes(store->items, next, NOOK_BOTTLE_LETTER, 1, (u32) NookStore_CountBottleLetter(store), NOOK_SECTION_SIZE,
                         0);
 }
 CLEAN_AS(func_020aeb9c, NookStore_StockBottleLetter)
@@ -218,21 +218,21 @@ CLEAN_AS(func_020aebcc, NookStore_StockRoofPaints)
 /* func_020aec40: items of the lot (1, 0). */
 void NookStore_StockKind1(NookStore *store, u32 *next)
 {
-    ShopStock_DrawLot(store->items, next, 1, 0, (u32) NookStore_CountKind1(store), NOOK_SECTION_SIZE, 0);
+    ShopStock_PickLot(store->items, next, 1, 0, (u32) NookStore_CountKind1(store), NOOK_SECTION_SIZE, 0);
 }
 CLEAN_AS(func_020aec40, NookStore_StockKind1)
 
 /* func_020aec68: items of the lot (3, 0). */
 void NookStore_StockKind3(NookStore *store, u32 *next)
 {
-    ShopStock_DrawLot(store->items, next, 3, 0, NookStore_CountKind3(store), NOOK_SECTION_SIZE, 0);
+    ShopStock_PickLot(store->items, next, 3, 0, NookStore_CountKind3(store), NOOK_SECTION_SIZE, 0);
 }
 CLEAN_AS(func_020aec68, NookStore_StockKind3)
 
 /* func_020aec90: items of the lot (4, 0). */
 void NookStore_StockKind4(NookStore *store, u32 *next)
 {
-    ShopStock_DrawLot(store->items, next, 4, 0, NookStore_CountKind4(store), NOOK_SECTION_SIZE, 0);
+    ShopStock_PickLot(store->items, next, 4, 0, NookStore_CountKind4(store), NOOK_SECTION_SIZE, 0);
 }
 CLEAN_AS(func_020aec90, NookStore_StockKind4)
 
@@ -240,7 +240,7 @@ CLEAN_AS(func_020aec90, NookStore_StockKind4)
  * pair). */
 void NookStore_StockSaplings(NookStore *store, u32 *next)
 {
-    ShopStock_DrawCodes(store->items, next, 0x151d, 2, (u32) NookStore_CountSaplings(store), NOOK_SECTION_SIZE, 0);
+    ShopStock_PickCodes(store->items, next, 0x151d, 2, (u32) NookStore_CountSaplings(store), NOOK_SECTION_SIZE, 0);
 }
 CLEAN_AS(func_020aecb8, NookStore_StockSaplings)
 
@@ -248,7 +248,7 @@ CLEAN_AS(func_020aecb8, NookStore_StockSaplings)
 void NookStore_StockTwelve(NookStore *store, u32 *next)
 {
     u32 start = *next;
-    ShopStock_DrawCodes(store->items, next, 0, 12, NookStore_CountTwelve(store), NOOK_SECTION_SIZE, 0);
+    ShopStock_PickCodes(store->items, next, 0, 12, NookStore_CountTwelve(store), NOOK_SECTION_SIZE, 0);
     for (u32 i = start; i < start + NookStore_CountTwelve(store); i++) {
         store->items[i] = data_020d1e5c[store->items[i]];
     }
@@ -258,7 +258,7 @@ CLEAN_AS(func_020aece8, NookStore_StockTwelve)
 /* func_020aed38: items of the lot (0, 0). */
 void NookStore_StockKind0(NookStore *store, u32 *next)
 {
-    ShopStock_DrawLot(store->items, next, 0, 0, (u32) NookStore_CountKind0(store), NOOK_SECTION_SIZE, 0);
+    ShopStock_PickLot(store->items, next, 0, 0, (u32) NookStore_CountKind0(store), NOOK_SECTION_SIZE, 0);
 }
 CLEAN_AS(func_020aed38, NookStore_StockKind0)
 
@@ -281,7 +281,7 @@ void NookStore_StockTools(NookStore *store, u32 *next)
 
     int range = NookStore_Level(store) == 0 ? 4 : 7;
     u32 start = *next;
-    ShopStock_DrawCodes(store->items, next, 0, range, (u32) NookStore_CountTools(store), NOOK_SECTION_SIZE, 0);
+    ShopStock_PickCodes(store->items, next, 0, range, (u32) NookStore_CountTools(store), NOOK_SECTION_SIZE, 0);
 
     if (NookStore_Level(store) == 0) {
         int marks = 0;
@@ -595,7 +595,7 @@ static void nook_plan_extras(NookStore *store, const DateTime *now, int after_si
     for (u32 i = 0; i < NOOK_STORE_PLACES; i++) {
         u16 *item = &store->items[i];
         if (ItemCode_IsFurniture(item) != 0) {
-            nook_draw(item, &data_021f4a0c);
+            nook_pick(item, &data_021f4a0c);
             if (after_six) {
                 NookStore_PostSwapNotice(item);
             }
@@ -626,7 +626,7 @@ static void nook_december(NookStore *store, const DateTime *now)
             if (seen == 1) {
                 NookItemLot lot;
                 ItemList_Construct((ItemList *) &lot, 0, group);
-                nook_draw(&store->items[i], &lot);
+                nook_pick(&store->items[i], &lot);
                 ItemList_Destruct(&lot);
                 break;
             }

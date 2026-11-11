@@ -530,7 +530,7 @@ void SkyEvents_PostFlag32Letters(SkyObjects *objects)
                                     PlayerRecord_Player(record));
         ItemList_Construct((ItemList *) &list, 0, 4);
         copy = list;
-        ItemLists_Draw(&item, (ItemList *) &copy, 0, 0, 1, 1, 0);
+        ItemLists_Pick(&item, (ItemList *) &copy, 0, 0, 1, 1, 0);
         ItemList_Destruct(&copy);
         Letter_SetItem(&letter, item, 1);
         if (Mail_Post(&letter)) {

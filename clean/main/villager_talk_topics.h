@@ -28,7 +28,7 @@ typedef int (*VillagerTalkTopicsTestFn)(u8 *villager, VillagerMemory *memory);
 
 void VillagerTalkTopics_Line(VillagerTalk *talk, VillagerTalkLine *out);
 int VillagerTalkTopics_FillSlots(VillagerTalk *talk);
-int VillagerTalkTopics_Draw(VillagerTalk *talk, const u8 *weights, int count);
+int VillagerTalkTopics_Pick(VillagerTalk *talk, const u8 *weights, int count);
 int VillagerTalkTopics_SayEvent10(VillagerTalk *talk);
 int VillagerTalkTopics_SayPlayerTalks(VillagerTalk *talk);
 int VillagerTalkTopics_SayConstellation(VillagerTalk *talk);

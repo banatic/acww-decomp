@@ -174,13 +174,13 @@ CLEAN_AS(func_ov078_02278b00, CamelTalk_OnAnswer)
 
 /* The reward drawn from item list `kind`, group 0x23, kept in `slot` and its name put in the
  * talk's part `part`. */
-static void camel_draw_reward(CamelTalk *talk, int kind, int slot, int part)
+static void camel_pick_reward(CamelTalk *talk, int kind, int slot, int part)
 {
     ItemList list;
     u16 drawn;
 
     ItemList_Construct(&list, kind, CAMEL_REWARD_GROUP);
-    ItemLists_Draw(&drawn, &list, 0, 0, 1, 1, 0);
+    ItemLists_Pick(&drawn, &list, 0, 0, 1, 1, 0);
     talk->rewards[slot] = drawn;
     ItemList_Destruct(&list);
     SceneBase_PutItemName(&talk->scene, (int) (u32) (uintptr_t) &talk->rewards[slot], part, CAMEL_NAME_KIND_ITEM);
@@ -251,8 +251,8 @@ void CamelTalk_OnLineEnded(CamelTalk *talk)
             line = camel_hand_errand(talk, errand, &name);
             break;
         case CAMEL_LINE_REWARD_DRAW:
-            camel_draw_reward(talk, CAMEL_REWARD_KIND_FIRST, 0, 1);
-            camel_draw_reward(talk, CAMEL_REWARD_KIND_SECOND, 1, 2);
+            camel_pick_reward(talk, CAMEL_REWARD_KIND_FIRST, 0, 1);
+            camel_pick_reward(talk, CAMEL_REWARD_KIND_SECOND, 1, 2);
             line = CAMEL_LINE_REWARD_CHOICE;
             break;
         case CAMEL_LINE_REWARD_TAKEN:

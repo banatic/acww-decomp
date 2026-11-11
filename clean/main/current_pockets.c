@@ -183,13 +183,13 @@ int CurrentPockets_Receive(u16 *item)
 CLEAN_AS(func_0209a110, CurrentPockets_Receive)
 
 /* func_0209a14c: `*item` put in the slot: a present (0x156b) as an item drawn for it
- * (CurrentPockets_DrawPresent) in state 1 (wrapped), any other in its pocket form in state 0. */
+ * (CurrentPockets_PickPresent) in state 1 (wrapped), any other in its pocket form in state 0. */
 void CurrentPockets_ReceiveAt(u16 *item, u32 slot)
 {
     u16 given;
     int state = 0;
     if (*item == CURRENT_POCKETS_PRESENT) {
-        given = CurrentPockets_DrawPresent();
+        given = CurrentPockets_PickPresent();
         state = 1;
     } else {
         u16 carried;
@@ -201,16 +201,16 @@ void CurrentPockets_ReceiveAt(u16 *item, u32 slot)
 CLEAN_AS(func_0209a14c, CurrentPockets_ReceiveAt)
 
 /* func_0209a19c: the item inside a present: one drawn from item list 0, group 3. */
-u16 CurrentPockets_DrawPresent(void)
+u16 CurrentPockets_PickPresent(void)
 {
     u16 item;
     CurrentPocketsItemList list;
     ItemList_Construct((ItemList *) &list, CURRENT_POCKETS_DRAW_KIND, CURRENT_POCKETS_DRAW_GROUP);
-    ItemLists_Draw(&item, (ItemList *) &list, 0, 0, 1, 1, 0);
+    ItemLists_Pick(&item, (ItemList *) &list, 0, 0, 1, 1, 0);
     ItemList_Destruct(&list);
     return item;
 }
-CLEAN_AS(func_0209a19c, CurrentPockets_DrawPresent)
+CLEAN_AS(func_0209a19c, CurrentPockets_PickPresent)
 
 /* func_0209a1d0: the first empty letter place, or NULL. */
 Letter *CurrentPockets_FreeLetter(void)

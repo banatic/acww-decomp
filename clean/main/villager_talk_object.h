@@ -75,7 +75,7 @@ void VillagerTalkObject_PickByStep(u16 *out, VillagerTalk *talk, unsigned int st
 void VillagerTalkObject_FossilOfKind(u16 *out, VillagerObject *object, u8 *villager);
 int VillagerTalkObject_FossilPartOf(u16 *item);
 int VillagerTalkObject_FossilPart(u16 *item, int kind);
-void VillagerTalkObject_DrawFossil(u16 *out, int unused_object, int unused_villager);
+void VillagerTalkObject_PickFossil(u16 *out, int unused_object, int unused_villager);
 void VillagerTalkObject_PickClothesByStep(u16 *out, VillagerTalk *talk, unsigned int step);
 void VillagerTalkObject_DrawClothes(u16 *out, u8 *data, int clothes);
 void VillagerTalkObject_DrawClothesAnyPlayer(u16 *out, u8 *data, int clothes);

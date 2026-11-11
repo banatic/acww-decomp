@@ -35,7 +35,7 @@ CLEAN_AS(func_020c15bc, SkyWeatherDay_LastWet)
 
 /* func_020c15c8: a pattern drawn for the date by the odds (in 100) of its period of the year;
  * 0 when the odds come to less than a draw. */
-int SkyWeatherDay_DrawPattern(SkyWeatherDay *day, const DateTime *date)
+int SkyWeatherDay_PickPattern(SkyWeatherDay *day, const DateTime *date)
 {
     (void) day;
     int period = Calendar_WeatherPeriodOf(date);
@@ -48,14 +48,14 @@ int SkyWeatherDay_DrawPattern(SkyWeatherDay *day, const DateTime *date)
     }
     return 0;
 }
-CLEAN_AS(func_020c15c8, SkyWeatherDay_DrawPattern)
+CLEAN_AS(func_020c15c8, SkyWeatherDay_PickPattern)
 
 /* Today's pattern, drawn, and tomorrow's: `date` is moved on to tomorrow. */
-static void sky_weather_day_draw_both(SkyWeatherDay *day, DateTime *date)
+static void sky_weather_day_pick_both(SkyWeatherDay *day, DateTime *date)
 {
-    day->pattern = (u8) SkyWeatherDay_DrawPattern(day, date);
+    day->pattern = (u8) SkyWeatherDay_PickPattern(day, date);
     DateTime_AddDays(date, 1);
-    day->next_pattern = (u8) SkyWeatherDay_DrawPattern(day, date);
+    day->next_pattern = (u8) SkyWeatherDay_PickPattern(day, date);
 }
 
 /* func_020c1608: the patterns moved on to the weather's day of `now` (sky_weather_day.h),
@@ -83,18 +83,18 @@ int SkyWeatherDay_Update(SkyWeatherDay *day, const DateTime *now)
         int days = DateTime_MinutesBetween(&kept, &today) / SKY_WEATHER_DAY_MINUTES;
         if (days > 0) {
             if (days >= 2) {
-                sky_weather_day_draw_both(day, &today);
+                sky_weather_day_pick_both(day, &today);
             } else {
                 day->pattern = day->next_pattern;
                 DateTime_AddDays(&today, 1);
-                day->next_pattern = (u8) SkyWeatherDay_DrawPattern(day, &today);
+                day->next_pattern = (u8) SkyWeatherDay_PickPattern(day, &today);
             }
         } else if (days < 0) {
             if (days <= -2) {
-                sky_weather_day_draw_both(day, &today);
+                sky_weather_day_pick_both(day, &today);
             } else {
                 day->next_pattern = day->pattern;
-                day->pattern = (u8) SkyWeatherDay_DrawPattern(day, &today);
+                day->pattern = (u8) SkyWeatherDay_PickPattern(day, &today);
             }
         }
         data_021fbbd8 = day->wet;

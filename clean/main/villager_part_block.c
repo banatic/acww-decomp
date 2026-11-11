@@ -279,7 +279,7 @@ int VillagerPartBlock_SetUpType10(VillagerPartBlock *block)
     u16 item;
     VillagerPartItemList list;
     ItemList_Construct((ItemList *) &list, VILLAGER_PART_BLOCK_LIST_KIND, VILLAGER_PART_BLOCK_LIST_GROUP);
-    ItemLists_Draw(&item, (ItemList *) &list, 0, 0, 1, 1, 0);
+    ItemLists_Pick(&item, (ItemList *) &list, 0, 0, 1, 1, 0);
     ItemList_Destruct(&list);
     VillagerErrand_SetItem((VillagerErrand *) (void *) block->object, &item);
     return 1;

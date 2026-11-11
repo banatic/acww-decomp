@@ -50,12 +50,12 @@ CLEAN_AS(func_0209b5ec, VillagerObject_RecordMode)
 
 /* func_0209b5f0: a new mode drawn for the record (func_0209c334), then its mode read and
  * dropped. */
-void VillagerObject_DrawRecordMode(VillagerRecord *record, int a, int b)
+void VillagerObject_PickRecordMode(VillagerRecord *record, int a, int b)
 {
-    VillagerModeRecord_Redraw(&record->mode, (const u8 *) (uintptr_t) a, b);
+    VillagerModeRecord_Repick(&record->mode, (const u8 *) (uintptr_t) a, b);
     VillagerModeRecord_Mode(&record->mode);
 }
-CLEAN_AS(func_0209b5f0, VillagerObject_DrawRecordMode)
+CLEAN_AS(func_0209b5f0, VillagerObject_PickRecordMode)
 
 /* func_0209b604: the mode record and the object emptied. */
 void VillagerObject_ClearRecord(VillagerRecord *record)

@@ -115,7 +115,7 @@ void BoardNotices_PostDays(void *unused, StateBlock *block, int days, const Date
         if (DateTime_DaysBetween(&day, &pelican) == 0) {
             MI_CpuCopy8(&pelican, &copy, sizeof(DateTime));
             BoardNotices_PostPelican(unused, block, &copy);
-            TownRecord_DrawPelicanDay((TownRecord *) state, (const TownDayStamp *) &state->pelican_day);
+            TownRecord_PickPelicanDay((TownRecord *) state, (const TownDayStamp *) &state->pelican_day);
         }
         if (weekday == BOARD_NOTICES_SLOGAN_WEEKDAY) {
             MI_CpuCopy8(&day, &copy, sizeof(DateTime));
@@ -156,7 +156,7 @@ void BoardNotices_CatchUpPelicanDay(int unused, StateBlock *block, const DateTim
     DateTime pelican;
     board_notices_day_to_date_time(&pelican, &state->pelican_day);
     while (DateTime_DaysBetween(when, &pelican) < 0) {
-        TownRecord_DrawPelicanDay((TownRecord *) state, (const TownDayStamp *) &state->pelican_day);
+        TownRecord_PickPelicanDay((TownRecord *) state, (const TownDayStamp *) &state->pelican_day);
         board_notices_day_to_date_time(&pelican, &state->pelican_day);
     }
 }
@@ -221,7 +221,7 @@ void BoardNotices_PostEvents(int unused, const EventCalendarEvent *events, const
 }
 CLEAN_AS(func_02042798, BoardNotices_PostEvents)
 
-/* The flags board_notices_post_drawn packs: whole bytes of the most messages and one more flag
+/* The flags board_notices_post_picked packs: whole bytes of the most messages and one more flag
  * (for BoardNotices_PostUnused's REQUIRES). */
 #define BOARD_NOTICES_DRAWN_FLAGS ((BOARD_NOTICES_SLOGAN_MESSAGES + 1 + 7) / 8 * 8)
 
@@ -234,7 +234,8 @@ CLEAN_AS(func_02042798, BoardNotices_PostEvents)
  * that word's bytes there too, so the town record gets the ROM's bits (BUGFIX: pack the `count`
  * flags only and keep the byte's other bits).
  * REQUIRES: called from BoardNotices_PostDays, as the ROM's code is. */
-static void board_notices_post_drawn(void *unused, u8 *bits, int count, const char *archive, const DateTime *when, u32 residue)
+static void board_notices_post_picked(void *unused, u8 *bits, int count, const char *archive, const DateTime *when,
+                                      u32 residue)
 {
     u8 used[BOARD_NOTICES_DRAWN_FLAGS] = {0};
     DateTime copy;
@@ -264,8 +265,8 @@ static void board_notices_post_drawn(void *unused, u8 *bits, int count, const ch
 void BoardNotices_PostPelican(void *unused, StateBlock *block, const DateTime *when)
 {
     BoardNoticesState *state = board_notices_state(block);
-    board_notices_post_drawn(unused, state->pelican_used, BOARD_NOTICES_PELICAN_MESSAGES, data_020db870, when,
-                             (u32) (uintptr_t) &state->pelican_day);
+    board_notices_post_picked(unused, state->pelican_used, BOARD_NOTICES_PELICAN_MESSAGES, data_020db870, when,
+                              (u32) (uintptr_t) &state->pelican_day);
 }
 CLEAN_AS(func_0204287c, BoardNotices_PostPelican)
 
@@ -273,8 +274,8 @@ CLEAN_AS(func_0204287c, BoardNotices_PostPelican)
 void BoardNotices_PostSlogan(void *unused, StateBlock *block, const DateTime *when)
 {
     BoardNoticesState *state = board_notices_state(block);
-    board_notices_post_drawn(unused, state->slogan_used, BOARD_NOTICES_SLOGAN_MESSAGES, data_020db87c, when,
-                             (u32) (uintptr_t) &state->pelican_day);
+    board_notices_post_picked(unused, state->slogan_used, BOARD_NOTICES_SLOGAN_MESSAGES, data_020db87c, when,
+                              (u32) (uintptr_t) &state->pelican_day);
 }
 CLEAN_AS(func_020428e8, BoardNotices_PostSlogan)
 

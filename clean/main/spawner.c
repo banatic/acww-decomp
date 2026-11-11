@@ -1221,7 +1221,7 @@ int Spawner_Create(Spawner *self)
                 if (PlayerRecords_Current() != NULL) {
                     player = PlayerRecord_Player(PlayerRecords_Current());
                 }
-                VillagerOutdoors_DrawFleaVillager((const u8 *) town, player);
+                VillagerOutdoors_PickFleaVillager((const u8 *) town, player);
             }
             Spawner_PlaceTownVillagers(self);
         }

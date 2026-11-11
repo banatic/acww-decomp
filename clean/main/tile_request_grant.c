@@ -377,7 +377,7 @@ void TileRequestGrant_DropOne(TileRequestAnswer *answer, const TileRequestMessag
         int drawer[2];
         u16 drawn;
         ItemList_Construct((ItemList *) drawer, 0, 0);
-        ItemLists_Draw(&drawn, (ItemList *) drawer, 0, 0, 1, 1, 0);
+        ItemLists_Pick(&drawn, (ItemList *) drawer, 0, 0, 1, 1, 0);
         item = drawn;
         ItemList_Destruct(drawer);
     }

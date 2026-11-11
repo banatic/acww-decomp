@@ -97,7 +97,7 @@ void BottleMail_DailyCheck(int days)
     if (MainRandom_Below(10) != NEW_BOTTLE_DRAW) {
         return;
     }
-    int message = BottleMail_DrawMessage(bottle);
+    int message = BottleMail_PickMessage(bottle);
     u8 number = (u8) message;
     if (BottleMail_Write(&number) != 0) {
         BottleMail_MarkMessageUsed(bottle, message);
@@ -176,7 +176,7 @@ extern void func_02066694(void *letter); /* a letter's constructor */
 
 /* func_02097e38: one of the messages not used yet, at random; when all are used, all become
  * unused first. */
-int BottleMail_DrawMessage(BottleState *bottle)
+int BottleMail_PickMessage(BottleState *bottle)
 {
     int unused = 0;
     for (int i = 0; i < BOTTLE_MESSAGES; i++) {
@@ -200,7 +200,7 @@ int BottleMail_DrawMessage(BottleState *bottle)
     }
     return 0;
 }
-CLEAN_AS(func_02097e38, BottleMail_DrawMessage)
+CLEAN_AS(func_02097e38, BottleMail_PickMessage)
 
 /* func_02097e94: every message unused. */
 void BottleMail_ClearUsed(BottleState *bottle)

@@ -390,7 +390,7 @@ CLEAN_AS(func_020469f4, TownDay_OnClock)
  * board's notices, the start day expired (while playing), the town moved on by the days
  * (TownDay_Move, with whether the last day was wet) and the stamp set to today. Less than a
  * day: the town started when loaded; when the clock went back before the last day the counted
- * items spoil, the pelican's day is drawn again (TownRecord_DrawPelicanDay) and the house is judged again; the stamp is set
+ * items spoil, the pelican's day is drawn again (TownRecord_PickPelicanDay) and the house is judged again; the stamp is set
  * to today. Either way the turnip prices follow the days and the players' records are
  * updated. */
 void TownDay_Check(int loaded)
@@ -424,7 +424,7 @@ void TownDay_Check(int loaded)
             TownDayStamp today = {now.day, now.month, now.year};
             RoomScoreRoom house;
             TownSpoil_All(&data_021c779c);
-            TownRecord_DrawPelicanDay((TownRecord *) (void *) data_021dc7a8.part_17254, &today);
+            TownRecord_PickPelicanDay((TownRecord *) (void *) data_021dc7a8.part_17254, &today);
             RoomScore_InitRoom(&house);
             RoomScore_JudgeHouse(&house);
             RoomScore_DestructRoom(&house);
@@ -568,7 +568,7 @@ void TownDay_Pass(TownDay *town, const DateTime *from, const DateTime *to, int d
         Sky_RefreshEvents(days);
         BottleMail_DailyCheck(days);
         MomLetters_DailyCheck(&mom_date, days);
-        CafeGuests_Draw(data_021ebcd3);
+        CafeGuests_RollPlan(data_021ebcd3);
         NookStore_Refresh(&data_021f395c, 0);
         RoomCells_ResetOther();
         PairedTown_PassDays(days);
@@ -841,7 +841,7 @@ CLEAN_AS(func_020479e0, TownDay_MarkEvent)
 #define TOWN_DAY_LINE_5D_LAST 0x61
 #define TOWN_DAY_EVENT_0E 0x0e
 #define TOWN_DAY_EVENT_ACORN_FESTIVAL 0x10 /* acorns dropped around the trees each day */
-#define TOWN_DAY_ACORN_FIRST 0x1542        /* the acorns TownDay_DrawAcorn draws, 0x1542-0x1546 */
+#define TOWN_DAY_ACORN_FIRST 0x1542        /* the acorns TownDay_PickAcorn draws, 0x1542-0x1546 */
 #define TOWN_DAY_ACORN_KINDS 5
 #define TOWN_DAY_AROUND_LINE 3
 /* Where in the record of data_021f39fc (the state block's 0x17254) data_021f3a50's day is. */
@@ -1009,19 +1009,19 @@ void TownDay_DropAroundLine(TownDay *town, AcreMap *map, int acre_x, int acre_z)
         int z = line->z + ((offset & 0xf) - 8);
         const u16 *code = TownAcreCount_CodeAt(map, x, z);
         if (code != NULL && *code == ACRE_MAP_ITEM_NONE) {
-            TownTilePut_At(map, x, z, TownDay_DrawAcorn(town), 0);
+            TownTilePut_At(map, x, z, TownDay_PickAcorn(town), 0);
         }
     }
 }
 CLEAN_AS(func_02047c98, TownDay_DropAroundLine)
 
 /* func_02047db8: one of the acorns (0x1542-0x1546), drawn at random. */
-u16 TownDay_DrawAcorn(TownDay *town)
+u16 TownDay_PickAcorn(TownDay *town)
 {
     (void) town;
     return (u16) (TOWN_DAY_ACORN_FIRST + MainRandom_Below(TOWN_DAY_ACORN_KINDS));
 }
-CLEAN_AS(func_02047db8, TownDay_DrawAcorn)
+CLEAN_AS(func_02047db8, TownDay_PickAcorn)
 
 /* func_02047dd4: the days an event that starts now covers: 1 unless loaded; when the record of
  * data_021f39fc already has the event, the days from the day the calendar's buildings were

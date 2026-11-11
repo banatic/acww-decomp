@@ -122,7 +122,7 @@ void TownFamily_FirstDay(TownDay *town, AcreMap *map)
 CLEAN_AS(func_02049ad0, TownFamily_FirstDay)
 
 /* func_02049bc4: the visit of TownGrowth_BreedFlowers: when `near` holds a flower of the
- * kind of the code at `tile`, the code they make (TownFamily_DrawCross) put on a free tile
+ * kind of the code at `tile`, the code they make (TownFamily_PickCross) put on a free tile
  * around `tile`, or else around `near`; whether it was put.
  * REQUIRES: `tile` is on the map (its code is read without a check; the day lists it from the
  * map). */
@@ -137,7 +137,7 @@ int TownFamily_Cross(AcreMap *map, TownGrowthTiles *near, TownGrowthTiles *tile,
     if (kind != TownFamily_Kind(mate)) {
         return 0;
     }
-    int made = TownFamily_DrawCross(code, mate);
+    int made = TownFamily_PickCross(code, mate);
     if (made == ACRE_MAP_ITEM_NONE) {
         return 0;
     }
@@ -195,7 +195,7 @@ CLEAN_AS(func_02049ca0, TownFamily_PutOnFree)
 /* func_02049d04: the code two flowers of a kind make: drawn from the list data_020db7c4 gives for
  * the kind of `code` and the two codes' colors (lower, then higher), each entry by its chance in
  * 100; 0xfff1 when the draw goes past the list or there is none. */
-int TownFamily_DrawCross(const u16 *code, const u16 *mate)
+int TownFamily_PickCross(const u16 *code, const u16 *mate)
 {
     int left = (int) MainRandom_Below(100);
     int made = ACRE_MAP_ITEM_NONE;
@@ -220,7 +220,7 @@ int TownFamily_DrawCross(const u16 *code, const u16 *mate)
     }
     return made;
 }
-CLEAN_AS(func_02049d04, TownFamily_DrawCross)
+CLEAN_AS(func_02049d04, TownFamily_PickCross)
 
 /* func_02049d78: the code's color in its kind (TownFamily_Kind), from 1; 1 for a code that is
  * not a tulip, pansy, cosmos or rose. */

@@ -54,11 +54,11 @@ extern void __register_global_object(void *object, void *destruct, void *record)
 extern void func_02063cc8(VillagerPostItemList *list);
 
 /* An item drawn from a copy of `list` (the copy destroyed after). */
-static u16 draw_from(const VillagerPostItemList *list)
+static u16 pick_from(const VillagerPostItemList *list)
 {
     VillagerPostItemList copy = *list;
     u16 item;
-    ItemLists_Draw(&item, (ItemList *) &copy, 0, 0, 1, 1, (int) (uintptr_t) NULL);
+    ItemLists_Pick(&item, (ItemList *) &copy, 0, 0, 1, 1, (int) (uintptr_t) NULL);
     ItemList_Destruct(&copy);
     return item;
 }
@@ -106,21 +106,21 @@ int VillagerPost_SendQ10Reply(unsigned int present, const DesignCreator *player,
         case 1: {
             VillagerPostItemList list;
             ItemList_Construct((ItemList *) &list, 0, 0);
-            ItemLists_Draw(&item, (ItemList *) &list, 0, 0, 1, 1, (int) (uintptr_t) NULL);
+            ItemLists_Pick(&item, (ItemList *) &list, 0, 0, 1, 1, (int) (uintptr_t) NULL);
             ItemList_Destruct(&list);
             break;
         }
         case 2:
             make_lists_once(&data_021c95f4, data_021c96ec, kinds_2, groups_2, records_2, 3);
-            item = draw_from(&data_021c96ec[MainRandom_Below(3)]);
+            item = pick_from(&data_021c96ec[MainRandom_Below(3)]);
             break;
         case 3:
             make_lists_once(&data_021c95f8, data_021c96d4, kinds_3, groups_3, records_3, 3);
-            item = draw_from(&data_021c96d4[MainRandom_Below(3)]);
+            item = pick_from(&data_021c96d4[MainRandom_Below(3)]);
             break;
         case 4:
             make_lists_once(&data_021c95ec, data_021c972c, kinds_4, groups_4, records_4, 9);
-            item = draw_from(&data_021c972c[MainRandom_Below(9)]);
+            item = pick_from(&data_021c972c[MainRandom_Below(9)]);
             break;
         default: {
             u8 *record = PlayerRecords_Find(data_021dc7bc, (const PlayerRecordsId *) (const void *) player);
@@ -129,7 +129,7 @@ int VillagerPost_SendQ10Reply(unsigned int present, const DesignCreator *player,
             ItemList_Construct((ItemList *) &list, kind, 0);
             VillagerPostItemList copy = list;
             int group;
-            ItemLists_Draw(&item, (ItemList *) &copy, (int) (uintptr_t) record, 0, 1, 1, (int) (uintptr_t) &group);
+            ItemLists_Pick(&item, (ItemList *) &copy, (int) (uintptr_t) record, 0, 1, 1, (int) (uintptr_t) &group);
             ItemList_Destruct(&copy);
             if (item == ITEM_CODE_NONE) {
                 VillagerPostItemList other;

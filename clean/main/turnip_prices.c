@@ -140,11 +140,11 @@ void TurnipPrices_Update(TurnipPrices *prices, int unused)
         int week_weekday = Calendar_Weekday(week.year, week.month, week.day);
         int weekday = Calendar_Weekday(now.year, now.month, now.day);
         if (weekday < week_weekday || DateTime_DaysBetween(&week, &now) >= TURNIP_WEEK_DAYS) {
-            TurnipPrices_Draw(prices, 0);
+            TurnipPrices_Roll(prices, 0);
             TurnipPrices_SetWeek(prices, &now);
         }
     } else if (order == -1) {
-        TurnipPrices_Draw(prices, 1);
+        TurnipPrices_Roll(prices, 1);
         TurnipPrices_SetWeek(prices, &now);
         TurnipPrices_SetBought(prices, &now);
     }
@@ -153,17 +153,17 @@ CLEAN_AS(func_020873b4, TurnipPrices_Update)
 
 /* func_02087480: when the clock was moved (global flag 0x20 or 0x08), falling prices and both
  * dates set to today. */
-void TurnipPrices_RedrawIfClockMoved(TurnipPrices *prices)
+void TurnipPrices_RerollIfClockMoved(TurnipPrices *prices)
 {
     if (StateFlags_Test20() != 0 || StateFlags_Test8() != 0) {
         DateTime now = {0};
         DateTime_Now(&now);
-        TurnipPrices_Draw(prices, 1);
+        TurnipPrices_Roll(prices, 1);
         TurnipPrices_SetWeek(prices, &now);
         TurnipPrices_SetBought(prices, &now);
     }
 }
-CLEAN_AS(func_02087480, TurnipPrices_RedrawIfClockMoved)
+CLEAN_AS(func_02087480, TurnipPrices_RerollIfClockMoved)
 
 /* func_020874c4: the price of this half day (by the calendar's day, not the game's): the
  * peak where the price is 0. */
@@ -186,7 +186,7 @@ CLEAN_AS(func_020874c4, TurnipPrices_Current)
  * 20-64 random, 65-84 falling; falling: 0-44 big spike, 45-69 small spike, 70-94 random; small
  * spike: 0-24 big spike, 25-69 random, 70-84 falling; else the same), or is forced to falling;
  * the first one is drawn 0-3. */
-void TurnipPrices_Draw(TurnipPrices *prices, int falling)
+void TurnipPrices_Roll(TurnipPrices *prices, int falling)
 {
     if (prices->pattern != TURNIP_PATTERN_NONE) {
         int odds = (int) MainRandom_Below(TURNIP_PATTERN_ODDS);
@@ -245,116 +245,116 @@ void TurnipPrices_Draw(TurnipPrices *prices, int falling)
     u8 *p = prices->prices;
     switch (prices->pattern) {
         case TURNIP_PATTERN_RANDOM:
-            p[2] = (u8) TurnipPrices_DrawNormal(prices);
-            p[3] = (u8) TurnipPrices_DrawLow(prices);
-            p[4] = (u8) TurnipPrices_DrawLow(prices);
-            p[5] = (u8) TurnipPrices_DrawLow(prices);
-            p[6] = (u8) TurnipPrices_DrawNormal(prices);
-            p[7] = (u8) TurnipPrices_DrawNormal(prices);
-            p[8] = (u8) TurnipPrices_DrawNormal(prices);
-            p[9] = (u8) TurnipPrices_DrawLow(prices);
-            p[10] = (u8) TurnipPrices_DrawLow(prices);
-            p[11] = (u8) TurnipPrices_DrawNormal(prices);
-            p[12] = (u8) TurnipPrices_DrawNormal(prices);
-            p[13] = (u8) TurnipPrices_DrawNormal(prices);
+            p[2] = (u8) TurnipPrices_RollNormal(prices);
+            p[3] = (u8) TurnipPrices_RollLow(prices);
+            p[4] = (u8) TurnipPrices_RollLow(prices);
+            p[5] = (u8) TurnipPrices_RollLow(prices);
+            p[6] = (u8) TurnipPrices_RollNormal(prices);
+            p[7] = (u8) TurnipPrices_RollNormal(prices);
+            p[8] = (u8) TurnipPrices_RollNormal(prices);
+            p[9] = (u8) TurnipPrices_RollLow(prices);
+            p[10] = (u8) TurnipPrices_RollLow(prices);
+            p[11] = (u8) TurnipPrices_RollNormal(prices);
+            p[12] = (u8) TurnipPrices_RollNormal(prices);
+            p[13] = (u8) TurnipPrices_RollNormal(prices);
             break;
         case TURNIP_PATTERN_BIG_SPIKE: {
             int peak = (int) MainRandom_Below(TURNIP_BIG_PEAK_CHOICES) + TURNIP_BIG_PEAK_FIRST;
-            p[peak] = (u8) TurnipPrices_DrawPeak(prices);
-            TurnipPrices_DrawFalling(prices, TURNIP_FIRST_SALE, peak - 2);
-            p[peak - 1] = (u8) TurnipPrices_DrawHigh(prices);
-            p[peak + 1] = (u8) TurnipPrices_DrawHigh(prices);
-            p[peak - 2] = (u8) TurnipPrices_DrawNormal(prices);
-            p[peak + 2] = (u8) TurnipPrices_DrawNormal(prices);
-            TurnipPrices_DrawFalling(prices, peak + 3, TURNIP_PRICES_HALF_DAYS);
+            p[peak] = (u8) TurnipPrices_RollPeak(prices);
+            TurnipPrices_RollFalling(prices, TURNIP_FIRST_SALE, peak - 2);
+            p[peak - 1] = (u8) TurnipPrices_RollHigh(prices);
+            p[peak + 1] = (u8) TurnipPrices_RollHigh(prices);
+            p[peak - 2] = (u8) TurnipPrices_RollNormal(prices);
+            p[peak + 2] = (u8) TurnipPrices_RollNormal(prices);
+            TurnipPrices_RollFalling(prices, peak + 3, TURNIP_PRICES_HALF_DAYS);
             break;
         }
         case TURNIP_PATTERN_FALLING:
-            TurnipPrices_DrawFalling(prices, TURNIP_FIRST_SALE, TURNIP_PRICES_HALF_DAYS);
+            TurnipPrices_RollFalling(prices, TURNIP_FIRST_SALE, TURNIP_PRICES_HALF_DAYS);
             break;
         case TURNIP_PATTERN_SMALL_SPIKE:
-            TurnipPrices_DrawSmallSpike(prices);
+            TurnipPrices_RollSmallSpike(prices);
             break;
         default:
             break;
     }
 }
-CLEAN_AS(func_02087500, TurnipPrices_Draw)
+CLEAN_AS(func_02087500, TurnipPrices_Roll)
 
 /* func_020876c8: the big spike's peak, 2.0-6.1 times the Sunday price, into `peak`; its price
  * slot gets 0.
  * QUIRK: the peak is cut to 16 bits, which it never fills. */
-int TurnipPrices_DrawPeak(TurnipPrices *prices)
+int TurnipPrices_RollPeak(TurnipPrices *prices)
 {
     int share = (int) MainRandom_BelowB(TURNIP_PEAK_SPREAD) + TURNIP_PEAK_SHARE;
     prices->peak = (u16) ((prices->prices[0] * share) >> 12);
     return 0;
 }
-CLEAN_AS(func_020876c8, TurnipPrices_DrawPeak)
+CLEAN_AS(func_020876c8, TurnipPrices_RollPeak)
 
 /* func_020876f0: the small spike: its peak on half day 7-12; falling before the two normal
  * prices (0.8-1.4) that lead to it, the peak between two of 1.4-1.7, falling after. */
-void TurnipPrices_DrawSmallSpike(TurnipPrices *prices)
+void TurnipPrices_RollSmallSpike(TurnipPrices *prices)
 {
     u8 *p = prices->prices;
     int peak = (int) MainRandom_Below(TURNIP_SMALL_PEAK_CHOICES) + TURNIP_SMALL_PEAK_FIRST;
-    TurnipPrices_DrawFalling(prices, TURNIP_FIRST_SALE, peak - 3);
-    p[peak - 3] = (u8) TurnipPrices_DrawNormal(prices);
-    p[peak - 2] = (u8) TurnipPrices_DrawNormal(prices);
-    p[peak] = (u8) TurnipPrices_DrawShare(prices, TURNIP_SMALL_PEAK_SHARE, TURNIP_SMALL_PEAK_SPREAD);
-    p[peak - 1] = (u8) TurnipPrices_DrawShare(prices, TURNIP_SMALL_SIDE_SHARE, TURNIP_SMALL_SIDE_SPREAD);
-    p[peak + 1] = (u8) TurnipPrices_DrawShare(prices, TURNIP_SMALL_SIDE_SHARE, TURNIP_SMALL_SIDE_SPREAD);
-    TurnipPrices_DrawFalling(prices, peak + 2, TURNIP_PRICES_HALF_DAYS);
+    TurnipPrices_RollFalling(prices, TURNIP_FIRST_SALE, peak - 3);
+    p[peak - 3] = (u8) TurnipPrices_RollNormal(prices);
+    p[peak - 2] = (u8) TurnipPrices_RollNormal(prices);
+    p[peak] = (u8) TurnipPrices_RollShare(prices, TURNIP_SMALL_PEAK_SHARE, TURNIP_SMALL_PEAK_SPREAD);
+    p[peak - 1] = (u8) TurnipPrices_RollShare(prices, TURNIP_SMALL_SIDE_SHARE, TURNIP_SMALL_SIDE_SPREAD);
+    p[peak + 1] = (u8) TurnipPrices_RollShare(prices, TURNIP_SMALL_SIDE_SHARE, TURNIP_SMALL_SIDE_SPREAD);
+    TurnipPrices_RollFalling(prices, peak + 2, TURNIP_PRICES_HALF_DAYS);
 }
-CLEAN_AS(func_020876f0, TurnipPrices_DrawSmallSpike)
+CLEAN_AS(func_020876f0, TurnipPrices_RollSmallSpike)
 
 /* func_02087770: 1.4-2.0 times the Sunday price. */
-int TurnipPrices_DrawHigh(TurnipPrices *prices)
+int TurnipPrices_RollHigh(TurnipPrices *prices)
 {
-    return TurnipPrices_DrawShare(prices, TURNIP_HIGH_SHARE, TURNIP_HIGH_SPREAD);
+    return TurnipPrices_RollShare(prices, TURNIP_HIGH_SHARE, TURNIP_HIGH_SPREAD);
 }
-CLEAN_AS(func_02087770, TurnipPrices_DrawHigh)
+CLEAN_AS(func_02087770, TurnipPrices_RollHigh)
 
 /* func_02087784: 0.8-1.4 times the Sunday price. */
-int TurnipPrices_DrawNormal(TurnipPrices *prices)
+int TurnipPrices_RollNormal(TurnipPrices *prices)
 {
-    return TurnipPrices_DrawShare(prices, TURNIP_NORMAL_SHARE, TURNIP_NORMAL_SPREAD);
+    return TurnipPrices_RollShare(prices, TURNIP_NORMAL_SHARE, TURNIP_NORMAL_SPREAD);
 }
-CLEAN_AS(func_02087784, TurnipPrices_DrawNormal)
+CLEAN_AS(func_02087784, TurnipPrices_RollNormal)
 
 /* func_02087798: 0.4-0.8 times the Sunday price. */
-int TurnipPrices_DrawLow(TurnipPrices *prices)
+int TurnipPrices_RollLow(TurnipPrices *prices)
 {
-    return TurnipPrices_DrawShare(prices, TURNIP_LOW_SHARE, TURNIP_LOW_SPREAD);
+    return TurnipPrices_RollShare(prices, TURNIP_LOW_SHARE, TURNIP_LOW_SPREAD);
 }
-CLEAN_AS(func_02087798, TurnipPrices_DrawLow)
+CLEAN_AS(func_02087798, TurnipPrices_RollLow)
 
 /* func_020877ac: half days `start` to `end` (excluded) falling: 0.79 times the Sunday price for
  * the first, 0.025 less for each next, each with up to 0.01 more. */
-void TurnipPrices_DrawFalling(TurnipPrices *prices, int start, int end)
+void TurnipPrices_RollFalling(TurnipPrices *prices, int start, int end)
 {
     int share = TURNIP_FALLING_SHARE;
     for (int i = start; i < end; i++) {
-        prices->prices[i] = (u8) TurnipPrices_DrawShare(prices, share, TURNIP_FALLING_SPREAD);
+        prices->prices[i] = (u8) TurnipPrices_RollShare(prices, share, TURNIP_FALLING_SPREAD);
         share -= TURNIP_FALLING_STEP;
     }
 }
-CLEAN_AS(func_020877ac, TurnipPrices_DrawFalling)
+CLEAN_AS(func_020877ac, TurnipPrices_RollFalling)
 
 /* func_020877dc: the Sunday price times `share` plus a random part of `spread` (4.12 fixed
  * point), cut to a byte.
  * QUIRK: a price of 256 or more wraps; the shares drawn here stay below. */
-int TurnipPrices_DrawShare(TurnipPrices *prices, int share, int spread)
+int TurnipPrices_RollShare(TurnipPrices *prices, int share, int spread)
 {
     int random = (int) MainRandom_BelowB(spread);
     return (u8) ((prices->prices[0] * (share + random)) >> 12);
 }
-CLEAN_AS(func_020877dc, TurnipPrices_DrawShare)
+CLEAN_AS(func_020877dc, TurnipPrices_RollShare)
 
 /* func_02087800: the town's setting up: new prices, both dates today. */
 void TurnipPrices_SetUp(TurnipPrices *prices)
 {
-    TurnipPrices_Draw(prices, 0);
+    TurnipPrices_Roll(prices, 0);
     DateTime now = {0};
     DateTime_Now(&now);
     TurnipPrices_SetWeek(prices, &now);

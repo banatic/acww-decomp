@@ -101,7 +101,7 @@ void TownSpawn_BuryGyroidsAfterRain(TownDay *town, AcreMap *map, int wide, int h
     int acre_z = (int) MainRandom_Below(high - 1);
     for (int i = 0; i < TOWN_SPAWN_WET_ITEMS; i++) {
         u16 item;
-        ItemLists_DrawRange(&item, TOWN_SPAWN_GYROID_FIRST, TOWN_SPAWN_GYROID_COUNT, 0, 0, NULL, 1, 10, 0, 1);
+        ItemLists_PickRange(&item, TOWN_SPAWN_GYROID_FIRST, TOWN_SPAWN_GYROID_COUNT, 0, 0, NULL, 1, 10, 0, 1);
         acre_x = (acre_x + 1 + (int) MainRandom_Below(wide - 1)) % wide;
         acre_z = (acre_z + 1 + (int) MainRandom_Below(high - 1)) % high;
         TownPlace_PutInAcre(town, map, acre_x + 1, acre_z + 1, item, func_02048e54, 1);

@@ -218,7 +218,7 @@ void GullTalk_OnLineShown(GullTalk *talk)
             ItemList list;
             u16 gift;
             ItemList_Construct(&list, GULL_TALK_GIFT_KIND, GULL_TALK_GIFT_GROUP);
-            ItemLists_Draw(&gift, &list, 0, 0, 1, 1, 0);
+            ItemLists_Pick(&gift, &list, 0, 0, 1, 1, 0);
             ItemList_Destruct(&list);
             SceneCommand_RequestMotion13(gull_talk_command(talk), &gift, 0, GULL_TALK_HAND_MOTION, 0);
             CurrentPockets_Give(&gift, 0);

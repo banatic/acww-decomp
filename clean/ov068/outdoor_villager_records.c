@@ -291,7 +291,7 @@ void OutdoorVillagerRecords_RefreshItem(u8 *villager)
 }
 CLEAN_AS(func_ov068_0226d264, OutdoorVillagerRecords_RefreshItem)
 
-/* func_ov068_0226d374: its activity of the moment redrawn (OutdoorVillagerRecords_RedrawActivity) when
+/* func_ov068_0226d374: its activity of the moment redrawn (OutdoorVillagerRecords_RepickActivity) when
  * it is not one the mode record allows (VillagerModeRecord_IsKindMode, or 8), when it is not the
  * record's mode and the mode is under 3 days old, or during the town events 3 to 5. Only for a
  * town record of a villager. */
@@ -311,7 +311,7 @@ void OutdoorVillagerRecords_CheckActivity(u8 *villager)
     if (!keep || VillagerSceneObject_Event(villager) == RECORDS_EVENT_FISH ||
         VillagerSceneObject_Event(villager) == RECORDS_EVENT_INSECT ||
         VillagerSceneObject_Event(villager) == RECORDS_EVENT_5) {
-        OutdoorVillagerRecords_RedrawActivity(villager);
+        OutdoorVillagerRecords_RepickActivity(villager);
     }
 }
 CLEAN_AS(func_ov068_0226d374, OutdoorVillagerRecords_CheckActivity)
@@ -320,7 +320,7 @@ CLEAN_AS(func_ov068_0226d374, OutdoorVillagerRecords_CheckActivity)
  * 100 when the mode is 3 days old or more a random one of 0 to 7; kept when the mode record
  * allows it (or it is 8), else 8; the town events 3, 4 and 5 give 1, 0 and 5. Only for a town
  * record of a villager. */
-void OutdoorVillagerRecords_RedrawActivity(u8 *villager)
+void OutdoorVillagerRecords_RepickActivity(u8 *villager)
 {
     u8 *record = records_record(villager);
     if (record == NULL || !records_valid(record)) {
@@ -353,7 +353,7 @@ void OutdoorVillagerRecords_RedrawActivity(u8 *villager)
     }
     VillagerState_SetActivity(VillagerStatus_StateEntry(record), kind);
 }
-CLEAN_AS(func_ov068_0226d408, OutdoorVillagerRecords_RedrawActivity)
+CLEAN_AS(func_ov068_0226d408, OutdoorVillagerRecords_RepickActivity)
 
 /* func_ov068_0226d598: its memory of this console's player (VillagerMemory_Of), or null without
  * a current player record whose player is set or without a town record of a villager. The

@@ -28,12 +28,12 @@ typedef struct TownItemListsDraw {
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
 /* An item drawn from the item list of `kind` (group 0). */
-static u16 draw_item(int kind)
+static u16 pick_item(int kind)
 {
     TownItemListsDraw list;
     u16 item;
     ItemList_Construct((ItemList *) &list, kind, 0);
-    ItemLists_Draw(&item, (ItemList *) &list, 0, 0, 1, 1, 0);
+    ItemLists_Pick(&item, (ItemList *) &list, 0, 0, 1, 1, 0);
     ItemList_Destruct(&list);
     return item;
 }
@@ -137,7 +137,7 @@ void TownItemLists_FillLostAndFound(u16 *list, int days)
         } else {
             continue;
         }
-        list[place] = draw_item(kind);
+        list[place] = pick_item(kind);
         taken++;
     }
 }
@@ -149,7 +149,7 @@ void TownItemLists_StartLostAndFound(u16 *list)
 {
     static const int kinds[3] = {1, 0, 2};
     for (int i = 0; i < 3; i++) {
-        list[i] = draw_item(kinds[MainRandom_Below(3)]);
+        list[i] = pick_item(kinds[MainRandom_Below(3)]);
     }
 }
 CLEAN_AS(func_0203a5f4, TownItemLists_StartLostAndFound)

@@ -17,7 +17,7 @@ static_assert(sizeof(ItemList) == 8, "ItemList size");
 extern const ItemListsKind data_020ccab0[ITEM_LISTS_KINDS];
 /* The groups 1-3, in the order ItemLists_GroupOf tries them. */
 extern const int data_020cca90[3];
-/* Which of the groups 1-3 ItemLists_DrawByGroup starts with (1, 1, 0). */
+/* Which of the groups 1-3 ItemLists_PickByGroup starts with (1, 1, 0). */
 extern const u8 data_020de640[3];
 /* The state block's nine bytes at 0x173d4, one per kind: the town's order of the groups. */
 extern u8 data_021f3b7c[];
@@ -31,18 +31,18 @@ extern void func_020051b0(void *item);
 
 /* What ItemLists_GroupOf answers for a code of no kind. */
 #define ITEM_LISTS_NO_GROUP 0x18
-/* Groups ItemLists_DrawRange never draws. */
+/* Groups ItemLists_PickRange never draws. */
 #define ITEM_LISTS_GROUP_18 0x18
 #define ITEM_LISTS_GROUP_19 0x19
 /* The group ItemLists_IsFurnitureGroup4 looks for. */
 #define ITEM_LISTS_GROUP_4 4
 /* An item season that is every season, beside -1. */
 #define ITEM_LISTS_ALL_SEASONS 4
-/* The clothes, whose style ItemLists_DrawRange may ask for; the style that is any. */
+/* The clothes, whose style ItemLists_PickRange may ask for; the style that is any. */
 #define ITEM_LISTS_CLOTHES_FIRST 0x11a8
 #define ITEM_LISTS_CLOTHES_LAST 0x12a7
 #define ITEM_LISTS_ANY_STYLE 0xa
-/* The ranges for which ItemLists_DrawRange drops its filter: the fossils, the gyroids and the
+/* The ranges for which ItemLists_PickRange drops its filter: the fossils, the gyroids and the
  * songs. */
 #define ITEM_LISTS_FOSSIL_FIRST 0x450c
 #define ITEM_LISTS_FOSSIL_LAST 0x45db
@@ -53,7 +53,7 @@ extern void func_020051b0(void *item);
 /* The days after which a season starts in its first month (February's is earlier). */
 #define ITEM_LISTS_FEBRUARY_LAST_WINTER_DAY 24
 #define ITEM_LISTS_LAST_DAY_BEFORE 26
-/* The kinds and groups ItemLists_DrawByGroup draws from. */
+/* The kinds and groups ItemLists_PickByGroup draws from. */
 #define ITEM_LISTS_BY_GROUP_GROUPS 3
 #define ITEM_LISTS_BY_GROUP_KINDS 3
 /* The pile ItemLists_PileCode makes: a full one. */
@@ -161,12 +161,12 @@ int ItemLists_KindOf(u16 *item)
 CLEAN_AS(func_02063084, ItemLists_KindOf)
 
 /* func_020630bc: an item of kind 0, 4 or 3 drawn by group: first one item is drawn (turned,
- * filtered, ItemLists_Draw) for each of the nine pairs of groups 1-3 and kinds 0, 4, 3. Then
+ * filtered, ItemLists_Pick) for each of the nine pairs of groups 1-3 and kinds 0, 4, 3. Then
  * a group is picked among those still in play (1 and 2 at first), weighed by func_02063f40,
  * and one of the group's drawn items that is not nothing picked at random; a group with none
  * is put out of play and the pick made again. Nothing when no group is left. `record` and
  * `source` are handed to the draws; the picks use `source`, else the clock's. */
-void ItemLists_DrawByGroup(u16 *out, int record, DateRandom *source)
+void ItemLists_PickByGroup(u16 *out, int record, DateRandom *source)
 {
     static const int kinds[ITEM_LISTS_BY_GROUP_KINDS] = {0, 4, 3};
     DateRandom clock;
@@ -185,7 +185,7 @@ void ItemLists_DrawByGroup(u16 *out, int record, DateRandom *source)
             ItemList list;
             u16 item;
             ItemList_Construct(&list, kinds[k], group + 1);
-            ItemLists_Draw(&item, &list, record, (int) (uintptr_t) source, 1, 1, 0);
+            ItemLists_Pick(&item, &list, record, (int) (uintptr_t) source, 1, 1, 0);
             drawn[group][k] = item;
             ItemList_Destruct(&list);
         }
@@ -244,9 +244,9 @@ void ItemLists_DrawByGroup(u16 *out, int record, DateRandom *source)
     __cxa_vec_cleanup(drawn, ITEM_LISTS_BY_GROUP_GROUPS * ITEM_LISTS_BY_GROUP_KINDS, sizeof(u16), func_020051b0);
     DateRandom_Destruct(&clock);
 }
-CLEAN_AS(func_020630bc, ItemLists_DrawByGroup)
+CLEAN_AS(func_020630bc, ItemLists_PickByGroup)
 
-/* Whether ItemLists_DrawRange's code passes its rules other than the record: not one of
+/* Whether ItemLists_PickRange's code passes its rules other than the record: not one of
  * `drawn` (unless `skip_drawn`), of the style asked for when it is clothes, not of group 0x18
  * or 0x19, and, when `filter`, refused by func_0204c260. */
 static int range_candidate(u16 *code, u16 *drawn, u32 drawn_count, int skip_drawn, int style, int filter)
@@ -277,7 +277,7 @@ static int range_candidate(u16 *code, u16 *drawn, u32 drawn_count, int skip_draw
     return 1;
 }
 
-/* Whether the code passes ItemLists_DrawRange's record rule: with a record, in it when
+/* Whether the code passes ItemLists_PickRange's record rule: with a record, in it when
  * `in_record`, else not in it. */
 static int range_record_accepts(void *record, int in_record, u16 *code)
 {
@@ -297,7 +297,7 @@ static int range_record_accepts(void *record, int in_record, u16 *code)
  * the same rules but for the drawn codes.
  * QUIRK: that second draw counts every code of the range but keeps the other rules, so the
  * number drawn may fall on no code and the result be nothing. */
-void ItemLists_DrawRange(u16 *out, int first, u32 count, u16 *drawn, u32 drawn_count, void *record, int in_record, int style,
+void ItemLists_PickRange(u16 *out, int first, u32 count, u16 *drawn, u32 drawn_count, void *record, int in_record, int style,
                          DateRandom *source, int filter)
 {
     DateRandom clock;
@@ -349,17 +349,17 @@ void ItemLists_DrawRange(u16 *out, int first, u32 count, u16 *drawn, u32 drawn_c
     *out = ITEM_CODE_NONE;
     DateRandom_Destruct(&clock);
 }
-CLEAN_AS(func_02063414, ItemLists_DrawRange)
+CLEAN_AS(func_02063414, ItemLists_PickRange)
 
-/* func_020637d0: `count` codes drawn into `items` by ItemLists_DrawRange, each one different
+/* func_020637d0: `count` codes drawn into `items` by ItemLists_PickRange, each one different
  * from those before it; whether every draw gave an item (1), else 0 (the draws go on). */
-int ItemLists_DrawRangeMany(u16 *items, unsigned int count, int first, int range, int record, int in_record, int style,
+int ItemLists_PickRangeMany(u16 *items, unsigned int count, int first, int range, int record, int in_record, int style,
                             int source, int filter)
 {
     int all = 1;
     for (u32 i = 0; i < count; i++) {
         u16 item;
-        ItemLists_DrawRange(&item, first, (u32) range, items, i, (void *) (uintptr_t) (u32) record, in_record, style,
+        ItemLists_PickRange(&item, first, (u32) range, items, i, (void *) (uintptr_t) (u32) record, in_record, style,
                             (DateRandom *) (uintptr_t) (u32) source, filter);
         items[i] = item;
         if (is_none(&items[i])) {
@@ -368,38 +368,38 @@ int ItemLists_DrawRangeMany(u16 *items, unsigned int count, int first, int range
     }
     return all;
 }
-CLEAN_AS(func_020637d0, ItemLists_DrawRangeMany)
+CLEAN_AS(func_020637d0, ItemLists_PickRangeMany)
 
 /* func_02063884: an item drawn from a copy of the list, the plain way: no record, the clock's
  * source, filtered, the group not turned. */
 void ItemLists_DrawPlain(u32 out, ItemList *list)
 {
     ItemList copy = *list;
-    ItemLists_Draw((u16 *) (uintptr_t) out, &copy, 0, 0, 1, 0, 0);
+    ItemLists_Pick((u16 *) (uintptr_t) out, &copy, 0, 0, 1, 0, 0);
     ItemList_Destruct(&copy);
 }
 CLEAN_AS(func_02063884, ItemLists_DrawPlain)
 
-/* func_020638b0: ItemLists_DrawMany from the one list at `lists`. */
-int ItemLists_DrawOne(int out, int count, int lists, int record, int source, unsigned char filter, int turn, int group_out)
+/* func_020638b0: ItemLists_PickMany from the one list at `lists`. */
+int ItemLists_PickOne(int out, int count, int lists, int record, int source, unsigned char filter, int turn, int group_out)
 {
-    return ItemLists_DrawMany((u16 *) (uintptr_t) (u32) out, (unsigned int) count, (ItemList *) (uintptr_t) (u32) lists, 1,
+    return ItemLists_PickMany((u16 *) (uintptr_t) (u32) out, (unsigned int) count, (ItemList *) (uintptr_t) (u32) lists, 1,
                               (void *) (uintptr_t) (u32) record, (DateRandom *) (uintptr_t) (u32) source, filter, turn,
                               (int *) (uintptr_t) (u32) group_out);
 }
-CLEAN_AS(func_020638b0, ItemLists_DrawOne)
+CLEAN_AS(func_020638b0, ItemLists_PickOne)
 
-/* func_020638d4: one item drawn from a copy of the list (ItemLists_DrawMany); nothing first. */
-void ItemLists_Draw(unsigned short *out, ItemList *list, int record, int source, unsigned char filter, int turn, int group_out)
+/* func_020638d4: one item drawn from a copy of the list (ItemLists_PickMany); nothing first. */
+void ItemLists_Pick(unsigned short *out, ItemList *list, int record, int source, unsigned char filter, int turn, int group_out)
 {
     *out = ITEM_CODE_NONE;
     ItemList copy = *list;
-    ItemLists_DrawOne((int) (uintptr_t) out, 1, (int) (uintptr_t) &copy, record, source, filter, turn, group_out);
+    ItemLists_PickOne((int) (uintptr_t) out, 1, (int) (uintptr_t) &copy, record, source, filter, turn, group_out);
     ItemList_Destruct(&copy);
 }
-CLEAN_AS(func_020638d4, ItemLists_Draw)
+CLEAN_AS(func_020638d4, ItemLists_Pick)
 
-/* Whether a code of the kind passes ItemLists_DrawMany's rules other than being drawn
+/* Whether a code of the kind passes ItemLists_PickMany's rules other than being drawn
  * already: of the group, in the season, not in the player's record, and when `filter` not
  * refused by func_0204c260. */
 static int many_candidate(const ItemListsKind *kind, u16 *code, int group, int season, void *record, int filter)
@@ -427,7 +427,7 @@ static int many_candidate(const ItemListsKind *kind, u16 *code, int group, int s
  * to each draw's group. When no item passes: 0 at once with a record; else any of the group's
  * items in season is drawn, and when that gives none, the kind's first item. 1 when every
  * item passed, else 0. */
-int ItemLists_DrawMany(u16 *out, unsigned int count, ItemList *lists, int list_count, void *record, DateRandom *source,
+int ItemLists_PickMany(u16 *out, unsigned int count, ItemList *lists, int list_count, void *record, DateRandom *source,
                        int filter, int turn, int *group_out)
 {
     int all = 1;
@@ -507,7 +507,7 @@ int ItemLists_DrawMany(u16 *out, unsigned int count, ItemList *lists, int list_c
     DateRandom_Destruct(&clock);
     return all;
 }
-CLEAN_AS(func_02063914, ItemLists_DrawMany)
+CLEAN_AS(func_02063914, ItemLists_PickMany)
 
 /* func_02063b98: whether the item is in the item record of the player record `record`; 0
  * without one. */

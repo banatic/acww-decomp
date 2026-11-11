@@ -173,7 +173,7 @@ static SceneBase *subjects_base(VillagerTalk *talk)
 
 /* The line drawn for the personality of the talk's villager into the talk's text and
  * message. */
-static void subjects_draw(VillagerTalk *talk, u32 texts, int per_group, int group, int range)
+static void subjects_pick(VillagerTalk *talk, u32 texts, int per_group, int group, int range)
 {
     VillagerTalkScene_DrawLine(talk, talk->text, &talk->message, VILLAGER_TALK_TEXT_SIZE,
                                NpcId_Personality(TownVillager_NpcId(subjects_record(talk))), (int) texts, per_group, group,
@@ -183,7 +183,7 @@ static void subjects_draw(VillagerTalk *talk, u32 texts, int per_group, int grou
 /* A line of a text set, its count the lines per group. */
 static int subjects_say(VillagerTalk *talk, const VillagerTalkSubjectsTexts *texts, int group)
 {
-    subjects_draw(talk, texts->texts, texts->count, group, 0);
+    subjects_pick(talk, texts->texts, texts->count, group, 0);
     return 1;
 }
 
@@ -246,7 +246,7 @@ int VillagerTalkSubjects_SayRoomScore(VillagerTalk *talk)
     if (group >= VILLAGER_TALK_SUBJECTS_FLAG_GROUPS) {
         group = VILLAGER_TALK_SUBJECTS_FLAG_GROUPS;
     }
-    subjects_draw(talk, data_020c8cb0.texts, data_020c8cb0.count, (int) group, 0);
+    subjects_pick(talk, data_020c8cb0.texts, data_020c8cb0.count, (int) group, 0);
     SceneBase_PutValue(subjects_base(talk), value, 0, 6, 0, 0);
     return 1;
 }
@@ -257,7 +257,7 @@ CLEAN_AS(func_020222dc, VillagerTalkSubjects_SayRoomScore)
  * data_020c8960. */
 int VillagerTalkSubjects_SayLast(VillagerTalk *talk)
 {
-    subjects_draw(talk, data_020c8cc0.texts, data_020c8cc0.count, 0, 0);
+    subjects_pick(talk, data_020c8cc0.texts, data_020c8cc0.count, 0, 0);
     for (int slot = 0; slot < VILLAGER_TALK_SUBJECTS_SLOTS; slot++) {
         VillagerTalkGreeting_PutRandomWord(talk, slot, data_020c8960[slot]);
     }
@@ -432,8 +432,8 @@ CLEAN_AS(func_020229a0, VillagerTalkSubjects_SayHoldingShovel)
  * `tool`; then the item drawn by `draw` and, when it is in [first, last], its name put into the
  * talk's slot 0 and a line of `texts` (its count the lines per group): group 0 in mode `mode`,
  * else `other`. */
-static int subjects_say_drawn(VillagerTalk *talk, u16 tool, int mode, int other, void (*draw)(u16 *item), u16 first, u16 last,
-                              const VillagerTalkSubjectsTexts *texts)
+static int subjects_say_picked(VillagerTalk *talk, u16 tool, int mode, int other, void (*draw)(u16 *item), u16 first, u16 last,
+                               const VillagerTalkSubjectsTexts *texts)
 {
     VillagerTalkSubjectsDrawn drawn;
     drawn.held = subjects_held(talk);
@@ -455,8 +455,8 @@ static int subjects_say_drawn(VillagerTalk *talk, u16 tool, int mode, int other,
  * in the mode of a fish caught, else 1. None when no fish was drawn. */
 int VillagerTalkSubjects_SayFishWithRod(VillagerTalk *talk)
 {
-    return subjects_say_drawn(talk, 0x1374, VILLAGER_TALK_SUBJECTS_MODE_FISH, 1, func_0202cac4,
-                              VILLAGER_TALK_SUBJECTS_FISH_FIRST, VILLAGER_TALK_SUBJECTS_FISH_LAST, &data_020c8d40);
+    return subjects_say_picked(talk, 0x1374, VILLAGER_TALK_SUBJECTS_MODE_FISH, 1, func_0202cac4,
+                               VILLAGER_TALK_SUBJECTS_FISH_FIRST, VILLAGER_TALK_SUBJECTS_FISH_LAST, &data_020c8d40);
 }
 CLEAN_AS(func_020229ec, VillagerTalkSubjects_SayFishWithRod)
 
@@ -465,8 +465,8 @@ CLEAN_AS(func_020229ec, VillagerTalkSubjects_SayFishWithRod)
  * the villager is in the mode of an insect caught, else 2. None when no insect was drawn. */
 int VillagerTalkSubjects_SayInsectWithNet(VillagerTalk *talk)
 {
-    return subjects_say_drawn(talk, 0x1376, VILLAGER_TALK_SUBJECTS_MODE_INSECT, 2, func_0202cfa8,
-                              VILLAGER_TALK_SUBJECTS_INSECT_FIRST, VILLAGER_TALK_SUBJECTS_INSECT_LAST, &data_020c8b48);
+    return subjects_say_picked(talk, 0x1376, VILLAGER_TALK_SUBJECTS_MODE_INSECT, 2, func_0202cfa8,
+                               VILLAGER_TALK_SUBJECTS_INSECT_FIRST, VILLAGER_TALK_SUBJECTS_INSECT_LAST, &data_020c8b48);
 }
 CLEAN_AS(func_02022ad4, VillagerTalkSubjects_SayInsectWithNet)
 
@@ -475,7 +475,7 @@ CLEAN_AS(func_02022ad4, VillagerTalkSubjects_SayInsectWithNet)
 void VillagerTalkSubjects_SayForMode(VillagerTalk *talk, int mode, const VillagerTalkSubjectsTexts *texts)
 {
     int group = mode != subjects_mode(subjects_record(talk)) ? 1 : 0;
-    subjects_draw(talk, texts->texts, texts->count, group, 0);
+    subjects_pick(talk, texts->texts, texts->count, group, 0);
 }
 CLEAN_AS(func_02022bbc, VillagerTalkSubjects_SayForMode)
 
