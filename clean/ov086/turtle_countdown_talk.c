@@ -237,13 +237,13 @@ static u8 t6t_zero_or(u8 by)
 void TurtleCountdownTalk_FirstLine(TurtleCountdownTalk *talk, TurtleCountdownLine *out)
 {
     (void) PlayerRecord_VillagerPart(PlayerRecords_Current());
-    out->text = (u32) (uintptr_t) data_ov086_02279448;
+    out->name = (u32) (uintptr_t) data_ov086_02279448;
 
     if (talk->item_slot == TURTLE_COUNTDOWN_TALK_SLOT_UNKNOWN) {
         u16 asked = T6T_MASSAGE_CHAIR;
         talk->item_slot = CurrentPockets_FindItem(&asked);
         if (talk->item_slot >= 0) {
-            out->text = (u32) (uintptr_t) data_ov086_02279438;
+            out->name = (u32) (uintptr_t) data_ov086_02279438;
             out->message = TURTLE_COUNTDOWN_COMMON_LINE_ASK;
             return;
         }

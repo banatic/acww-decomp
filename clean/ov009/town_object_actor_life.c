@@ -176,7 +176,7 @@ CLEAN_AS(func_ov009_02264c40, TownObjectActor_IsNight)
 
 /* func_ov009_02264c64 (vtable slot 0x8c): whether it is open (lit at night, and going in asks
  * for the visit record); always 1 here. Overrides: VillagerHouse_IsOpen, PlayerHouse_IsOpen,
- * SignBoard_IsOpen, StoreFront_LetsIn, Fox_IsAfterSix, Panther_IsAfterSix. */
+ * SignBoard_IsOpen, StoreFront_IsOpen, Fox_IsOpen, Panther_IsOpen. */
 int TownObjectActor_IsOpen(TownObjectActor *actor)
 {
     (void) actor;

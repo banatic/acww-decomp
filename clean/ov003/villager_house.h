@@ -86,7 +86,7 @@ typedef struct VillagerHouse {
 
 int VillagerHouse_Slot98(void);
 int VillagerHouse_Slot90(void);
-int VillagerHouse_Slot9c(VillagerHouse *house);
+int VillagerHouse_LightsOn(VillagerHouse *house);
 int VillagerHouse_IsOpen(VillagerHouse *house);
 void VillagerHouse_PrepareTalk(VillagerHouse *house);
 void VillagerHouse_GetAnimO(void);

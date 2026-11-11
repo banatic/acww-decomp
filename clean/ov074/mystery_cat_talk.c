@@ -183,7 +183,7 @@ CLEAN_AS(func_ov074_02278d44, MysteryCatTalk_OnLineEnded)
  * the face's title (part 3). */
 void MysteryCatTalk_Line(MysteryCatTalk *talk, MysteryCatLine *out)
 {
-    out->text = (u32) (uintptr_t) data_ov074_02279d14;
+    out->name = (u32) (uintptr_t) data_ov074_02279d14;
     DesignInfo info = *mcat_talk_face_info();
     DesignCreator maker = *DesignInfo_Creator(&info);
 

@@ -68,7 +68,7 @@ void VillagerTalkObject_Start(VillagerTalk *talk);
 void VillagerTalkObject_Line8d48(VillagerTalk *talk, VillagerTalkLine *out);
 void VillagerTalkObject_StartForPlayer(VillagerTalk *talk);
 void VillagerTalkObject_Line8d50(VillagerTalk *talk, VillagerTalkLine *out);
-void VillagerTalkObject_StartForPlayerAgain(VillagerTalk *talk);
+void VillagerTalkObject_CallStartForPlayer(VillagerTalk *talk);
 void VillagerTalkObject_OfferChoices1f(VillagerTalk *talk);
 void VillagerTalkObject_PutItemNames(VillagerTalk *talk);
 void VillagerTalkObject_PickByStep(u16 *out, VillagerTalk *talk, unsigned int step);

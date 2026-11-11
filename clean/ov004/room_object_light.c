@@ -23,7 +23,7 @@ extern int func_ov004_0221134c(RoomObject *object);
  * on: SceneLights_RequestOff(0, 1), and when it vanishes also RoomSync_SetLit with 0. */
 void RoomObject_ExitLight(RoomObject *object)
 {
-    if (RoomObject_Check0221134c(object) && Area_CurrentIs1To5() && Switch_Value(&object->on_switch) &&
+    if (RoomObject_Check0221134c(object) && Area_CurrentIsHouseRoom() && Switch_Value(&object->on_switch) &&
         RoomObjects_CountOn(func_ov004_0221134c) == 1) {
         SceneLights_RequestOff(0, 1);
         if (RoomObject_IsVanishing(object)) {
@@ -39,7 +39,7 @@ CLEAN_AS(func_ov004_0220ecec, RoomObject_ExitLight)
  * (SceneLights_RequestOff with 8, then RoomSync_SetLit with 0). The glow is updated for every object. */
 void RoomObject_UpdateLight(RoomObject *object)
 {
-    if (RoomObject_Check0221134c(object) && Area_CurrentIs1To5() &&
+    if (RoomObject_Check0221134c(object) && Area_CurrentIsHouseRoom() &&
         Glow_Switch(&object->glow, Switch_Value(&object->on_switch), 1, object->light_kind == LIGHT_FLASHES)) {
         int lights_on = RoomObjects_CountOn(func_ov004_0221134c);
         if (Switch_Value(&object->on_switch)) {
@@ -67,7 +67,7 @@ void RoomObject_StartLight(RoomObject *object)
     }
     G3dModel *model = object->model_resource;
     Glow_Bind(&object->glow, model, data_ov004_02250010, Switch_Value(&object->on_switch));
-    if (Area_CurrentIs1To5()) {
+    if (Area_CurrentIsHouseRoom()) {
         int lights_on = RoomObjects_CountOn(func_ov004_0221134c);
         if (Switch_Value(&object->on_switch) && lights_on == 1) {
             if (object->placement_mode != 0) {
@@ -81,19 +81,19 @@ void RoomObject_StartLight(RoomObject *object)
 }
 CLEAN_AS(func_ov004_0220ede0, RoomObject_StartLight)
 
-/* func_ov004_0220ee74: Area_Is1To5 of the current area (SceneQuery_Current). */
-int Area_CurrentIs1To5(void)
+/* func_ov004_0220ee74: Area_IsHouseRoom of the current area (SceneQuery_Current). */
+int Area_CurrentIsHouseRoom(void)
 {
-    return Area_Is1To5(SceneQuery_Current());
+    return Area_IsHouseRoom(SceneQuery_Current());
 }
-CLEAN_AS(func_ov004_0220ee74, Area_CurrentIs1To5)
+CLEAN_AS(func_ov004_0220ee74, Area_CurrentIsHouseRoom)
 
 /* func_ov004_0220ee88: whether `area` is one of 1 to 5 (SceneKinds_IsHouseRoom). */
-int Area_Is1To5(unsigned int area)
+int Area_IsHouseRoom(unsigned int area)
 {
     return SceneKinds_IsHouseRoom(area);
 }
-CLEAN_AS(func_ov004_0220ee88, Area_Is1To5)
+CLEAN_AS(func_ov004_0220ee88, Area_IsHouseRoom)
 
 /* The room's lighting (index 0 of SceneLights_RequestOn) for a light of kind 2, and for the others. */
 #define LIGHTING_KIND_2 8

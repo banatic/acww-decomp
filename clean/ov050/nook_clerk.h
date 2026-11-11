@@ -117,7 +117,7 @@ typedef struct NookClerkTalk {
 
 /* What the talk's line function gives: the message file's name and the line. */
 typedef struct NookClerkLine {
-    const char *text;
+    const char *name;
     u8 message;
     u8 unk_05[3];
 } NookClerkLine;

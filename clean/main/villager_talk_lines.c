@@ -802,11 +802,11 @@ void VillagerTalk_LineInsect(VillagerTalk *talk, VillagerTalkLine *out)
 CLEAN_AS(func_0201f858, VillagerTalk_LineInsect)
 
 /* func_0201fa14: as VillagerTalk_NoteAndMarkMemory. */
-void VillagerTalk_NoteAndMarkMemoryAgain(VillagerTalk *talk)
+void VillagerTalk_NoteAndMarkMemoryCopy(VillagerTalk *talk)
 {
     lines_note_and_mark(talk, lines_record(talk));
 }
-CLEAN_AS(func_0201fa14, VillagerTalk_NoteAndMarkMemoryAgain)
+CLEAN_AS(func_0201fa14, VillagerTalk_NoteAndMarkMemoryCopy)
 
 /* func_0201fa58: lines_item_line for the items 0x12e8-0x131f and the set at 0x020c8a60, the
  * size with its fraction; data_020d90e8 at the last message. */

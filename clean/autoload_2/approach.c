@@ -106,11 +106,11 @@ int Approach_S32(int *value, int target, int step)
 CLEAN_AS(func_020e88dc, Approach_S32)
 
 /* func_020e895c: the same as Approach_S32; the game has both. */
-int Approach_S32Again(int *value, int target, int step)
+int Approach_S32Copy(int *value, int target, int step)
 {
     return approach_s32(value, target, step);
 }
-CLEAN_AS(func_020e895c, Approach_S32Again)
+CLEAN_AS(func_020e895c, Approach_S32Copy)
 
 /* func_020e89dc: as Approach_S32 for a 16-bit value.
  * QUIRK: the test for passing the target multiplies in 32 bits, so a target far outside the

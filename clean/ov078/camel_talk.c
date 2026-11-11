@@ -302,7 +302,7 @@ void CamelTalk_FirstLine(CamelTalk *talk, CamelTalkLine *out)
     PlayerIdText name;
 
     PlayerIdText_Construct(&name);
-    out->text = (u32) (uintptr_t) data_ov078_02279bd8;
+    out->name = (u32) (uintptr_t) data_ov078_02279bd8;
     if (talk->pocket == CAMEL_TALK_POCKET_UNKNOWN) {
         u16 wanted = CAMEL_TRADE_TURBAN;
         talk->pocket = CurrentPockets_FindItem(&wanted);

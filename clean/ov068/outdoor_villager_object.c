@@ -29,7 +29,7 @@
 #include "main/villager_status.h"
 #include "ov004/member_pointer.h"
 #include "outdoor_villager.h"
-#include "outdoor_villager_behaviour.h"
+#include "outdoor_villager_behavior.h"
 #include "outdoor_villager_records.h"
 #include "outdoor_villager_walks.h"
 #include "outdoor_villager_watch.h"

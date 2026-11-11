@@ -506,8 +506,8 @@ void OutdoorVillagerHome_Enter2(OutdoorVillagerBehavior *self, u8 *villager)
     Vec3 door;
     AcreTile_TileCenter(&door, home->x, (u32) home->z + 1);
     Vec3 *position = home_position(villager);
-    Approach_S32Again((int *) (void *) &position->x, door.x, HOME_DRAW_STEP);
-    Approach_S32Again((int *) (void *) &position->z, door.z, HOME_DRAW_STEP);
+    Approach_S32Copy((int *) (void *) &position->x, door.x, HOME_DRAW_STEP);
+    Approach_S32Copy((int *) (void *) &position->z, door.z, HOME_DRAW_STEP);
     if (SpeakerAnim_Number(home_anim(villager), 0) == HOME_ANIM_IN) {
         switch (home_frame(villager)) {
             case 8:

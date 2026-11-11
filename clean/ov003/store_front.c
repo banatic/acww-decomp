@@ -82,7 +82,7 @@ CLEAN_AS(func_ov003_0221eb48, StoreFront_IsClosedForUpgrade)
 
 /* func_ov003_0221eb84 (vtable slot 0x8c): whether the player may go in (store_front.h). The
  * player's record may be missing: its flags are then not asked. */
-int StoreFront_LetsIn(StoreFront *store)
+int StoreFront_IsOpen(StoreFront *store)
 {
     Time now;
     Calendar_Now(&now);
@@ -107,7 +107,7 @@ int StoreFront_LetsIn(StoreFront *store)
     }
     return 1;
 }
-CLEAN_AS(func_ov003_0221eb84, StoreFront_LetsIn)
+CLEAN_AS(func_ov003_0221eb84, StoreFront_IsOpen)
 
 /* func_ov003_0221ec24 (vtable slot 0x78, before a talk): names the receiver and picks its
  * message, the first that applies:
@@ -122,7 +122,7 @@ CLEAN_AS(func_ov003_0221eb84, StoreFront_LetsIn)
  *   - else "obj_etc_closed" with the store's level as its message.
  *
  * REQUIRES: this console's player has a record (the flag is asked without a check, unlike in
- * StoreFront_LetsIn). */
+ * StoreFront_IsOpen). */
 void StoreFront_PrepareTalk(StoreFront *store)
 {
     MessageReceiver *receiver = store_front_receiver(store);

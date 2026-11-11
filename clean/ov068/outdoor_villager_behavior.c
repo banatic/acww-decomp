@@ -1,5 +1,5 @@
 /* The behavior member of a villager out walking in the town (outdoor_villager_behavior.h). */
-#include "outdoor_villager_behaviour.h"
+#include "outdoor_villager_behavior.h"
 
 #include <stdint.h>
 

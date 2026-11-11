@@ -366,7 +366,7 @@ void OrderCatalog_ReleaseThumb(OrderCatalog *self)
 CLEAN_AS(func_ov142_02299b94, OrderCatalog_ReleaseThumb)
 
 /* func_ov142_02299ba4: the thumb taken to the touch's y: with `jump` (the bar's track pressed)
- * moved toward it by at most 8 pixels a frame (Approach_S32Again), from the bar's top, else at once, kept where it was grabbed; within its
+ * moved toward it by at most 8 pixels a frame (Approach_S32Copy), from the bar's top, else at once, kept where it was grabbed; within its
  * travel. The scroll follows and the thumb is placed; the scroll cue plays each 4 places moved. */
 void OrderCatalog_DragThumb(OrderCatalog *self, int y, int jump)
 {
@@ -382,7 +382,7 @@ void OrderCatalog_DragThumb(OrderCatalog *self, int y, int jump)
         y = ORDER_CATALOG_THUMB_RANGE;
     }
     if (jump != 0) {
-        Approach_S32Again((int *) (void *) &self->thumb, y, 8);
+        Approach_S32Copy((int *) (void *) &self->thumb, y, 8);
     } else {
         self->thumb = y;
     }

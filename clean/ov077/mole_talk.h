@@ -45,7 +45,7 @@ extern MoleTalkSequence data_ov077_022797d0[MOLE_TALK_SEQUENCES];
 
 /* What its slot 0x78 gives: the message file's name (an address) and the line to say. */
 typedef struct MoleTalkLine {
-    u32 text;
+    u32 name;
     u8 message;
     u8 unk_05[3];
 } MoleTalkLine;

@@ -509,7 +509,7 @@ void MusicList_MoveKnob(MusicList *self, int y, int jump)
         knob = MUSIC_LIST_KNOB_MAX;
     }
     if (jump) {
-        Approach_S32Again((int *) (void *) &self->knob, knob, 8);
+        Approach_S32Copy((int *) (void *) &self->knob, knob, 8);
     } else {
         self->knob = knob;
     }

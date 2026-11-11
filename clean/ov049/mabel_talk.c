@@ -1015,7 +1015,7 @@ void MabelTalk_Line(MabelTalk *talk, MabelTalkLine *out)
     Mabel *owner;
 
     if (StartKind_IsSet() != 0 && MabelTalk_Mode(talk) == MABEL_TALK_MODE_TALKED) {
-        out->text = data_ov049_02263298[MABEL_TALK_FILE_SEQUENCE];
+        out->name = data_ov049_02263298[MABEL_TALK_FILE_SEQUENCE];
         out->message = 6;
         return;
     }
@@ -1023,7 +1023,7 @@ void MabelTalk_Line(MabelTalk *talk, MabelTalkLine *out)
         VillagerPartEntry_Accepts((VillagerPartEntry *) (void *) errand,
                                   (const u16 *) (const void *) (talk->owner->base + 0xea)) != 0) {
         out->message = MABEL_LINE_ERRAND;
-        out->text = data_ov049_02263298[MABEL_TALK_FILE_OWN];
+        out->name = data_ov049_02263298[MABEL_TALK_FILE_OWN];
         return;
     }
     u8 event;
@@ -1031,19 +1031,19 @@ void MabelTalk_Line(MabelTalk *talk, MabelTalkLine *out)
         TalkChecks_TodaysEventOfKind(mtalk_owner(talk), &event, MABEL_TALK_EVENT_KIND) != 0) {
         talk->owner->has_event = 1;
         out->message = data_ov049_02262dd0[((event >> 2) & 7) * MABEL_TALK_DRAMA_PARTS + ((event >> 5) & 7)];
-        out->text = data_ov049_02263298[MABEL_TALK_FILE_DRAMA];
+        out->name = data_ov049_02263298[MABEL_TALK_FILE_DRAMA];
         return;
     }
 
     out->message = data_ov049_02262dc8[talk->mode];
-    out->text = data_ov049_02263298[MABEL_TALK_FILE_OWN];
+    out->name = data_ov049_02263298[MABEL_TALK_FILE_OWN];
 
     if (MabelTalk_Mode(talk) == MABEL_TALK_MODE_ITEM) {
         talk->price = ItemTraits_Price(&talk->owner->item);
         SceneBase_PutValue(&talk->base, talk->price, 0, MABEL_TALK_VALUE_BELLS, 0, 0);
         SceneBase_PutItemName(&talk->base, (int) (uintptr_t) &talk->owner->item, 0, MABEL_TALK_VALUE_ITEM);
         if (StartKind_IsSet() != 0) {
-            out->text = data_ov049_02263298[MABEL_TALK_FILE_SEQUENCE];
+            out->name = data_ov049_02263298[MABEL_TALK_FILE_SEQUENCE];
             out->message = 0x1e;
         }
         return;
@@ -1069,7 +1069,7 @@ void MabelTalk_Line(MabelTalk *talk, MabelTalkLine *out)
     TownName player_town = *PlayerId_Town(&player);
 
     if (StartKind_IsSet() != 0) {
-        out->text = data_ov049_02263298[MABEL_TALK_FILE_SEQUENCE];
+        out->name = data_ov049_02263298[MABEL_TALK_FILE_SEQUENCE];
         out->message = 0x1d;
     } else if (maker_town.number != player_town.number || memcmp(maker_town.name, player_town.name, 12) != 0) {
         SceneBase_PutPlayerName(&talk->base, &maker, 2);

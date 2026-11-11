@@ -590,7 +590,7 @@ CLEAN_AS(func_ov051_02260f94, TaxiDriverTalk_RunAfter)
 void TaxiDriverTalk_Line(int talk, TaxiDriverTalkStart *out)
 {
     (void) talk;
-    out->text = data_ov051_022615c0;
+    out->name = data_ov051_022615c0;
     if (StartKind_IsNewTown() || StartKind_IsMovedIn()) {
         out->message = TDT_LINE_GREETING_0;
     } else {

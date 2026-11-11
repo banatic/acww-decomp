@@ -65,11 +65,11 @@ CLEAN_AS(func_ov003_0221dc08, PlayerHouse_IsOpen)
  * are nonzero.
  * QUIRK: declared without a result; in the ROM the answer is still in r0 when it returns, so
  * the caller of the slot gets it. */
-void PlayerHouse_Slot9c(void)
+void PlayerHouse_LightsOn(void)
 {
     HouseRecord_AnyLit((const HouseRecord *) data_021ebcd4);
 }
-CLEAN_AS(func_ov003_0221dc0c, PlayerHouse_Slot9c)
+CLEAN_AS(func_ov003_0221dc0c, PlayerHouse_LightsOn)
 
 /* func_ov003_0221dc1c (vtable slot 0x90): 1 when the player's index is not one of the four,
  * else 0. */

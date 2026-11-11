@@ -27,7 +27,7 @@ typedef struct PlayerHouse {
 
 int PlayerHouse_Slot98(void);
 int PlayerHouse_IsOpen(void);
-void PlayerHouse_Slot9c(void);
+void PlayerHouse_LightsOn(void);
 int PlayerHouse_Slot90(void);
 void PlayerHouse_BindTextures(PlayerHouse *house);
 void PlayerHouse_LoadTexture(PlayerHouse *house);

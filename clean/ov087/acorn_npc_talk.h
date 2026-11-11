@@ -24,7 +24,7 @@
 
 /* What the first line function gives: the message file's name (an address) and the message. */
 typedef struct AcornNpcLine {
-    u32 text;
+    u32 name;
     u8 message;
     u8 unk_05[3];
 } AcornNpcLine;

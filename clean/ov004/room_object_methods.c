@@ -291,7 +291,7 @@ static int is_settled(const RoomObject *object)
 /* func_ov004_022111f0: for an object neither appearing nor vanishing, whether its unk_780 is
  * 0x10, or is 0x11 or 0x2b and FurnitureSounds_Sound3 has a value for its furniture's number.
  * RoomManager_MarkNearestClock looks for the nearest such object to the player. */
-int RoomObject_Check022111f0(RoomObject *object)
+int RoomObject_IsClock(RoomObject *object)
 {
     if (!is_settled(object)) {
         return 0;
@@ -305,15 +305,15 @@ int RoomObject_Check022111f0(RoomObject *object)
     }
     return 0;
 }
-CLEAN_AS(func_ov004_022111f0, RoomObject_Check022111f0)
+CLEAN_AS(func_ov004_022111f0, RoomObject_IsClock)
 
 /* func_ov004_0221124c: for an object neither appearing nor vanishing, whether its unk_780 is
  * 0x10. */
-int RoomObject_SettledUnk780Is10(RoomObject *object)
+int RoomObject_IsStrikingClock(RoomObject *object)
 {
     return is_settled(object) && object->unk_780 == KIND_780_10;
 }
-CLEAN_AS(func_ov004_0221124c, RoomObject_SettledUnk780Is10)
+CLEAN_AS(func_ov004_0221124c, RoomObject_IsStrikingClock)
 
 /* func_ov004_02211280: whether unk_780 is 0x18 (RoomObject_Unk780Is18 asks through it). */
 int RoomObject_TestUnk780Is18(const RoomObject *object)
@@ -332,14 +332,14 @@ CLEAN_AS(func_ov004_02211294, RoomObject_TestUnk00cIs36Or37)
 
 /* func_ov004_022112c4: whether unk_00c is 0x3b or 0x3c and the switch is on (wanted on).
  * RoomManager_UpdateTvSound looks for the nearest such object to the player. */
-int RoomObject_Unk00cIs3bOr3cAndOn(RoomObject *object)
+int RoomObject_IsTvOn(RoomObject *object)
 {
     if (object->unk_00c != KIND_00C_3B && object->unk_00c != KIND_00C_3C) {
         return 0;
     }
     return Switch_Value(&object->on_switch) != 0;
 }
-CLEAN_AS(func_ov004_022112c4, RoomObject_Unk00cIs3bOr3cAndOn)
+CLEAN_AS(func_ov004_022112c4, RoomObject_IsTvOn)
 
 /* func_ov004_02211308: whether unk_00c is 0x3a (RoomObject_TestUnk00cIs3a) and then the
  * switch's wanted value. */

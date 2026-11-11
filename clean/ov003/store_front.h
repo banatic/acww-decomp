@@ -35,7 +35,7 @@ typedef struct StoreFront {
 
 int StoreFront_Slot98(void);
 int StoreFront_IsClosedForUpgrade(StoreFront *store);
-int StoreFront_LetsIn(StoreFront *store);
+int StoreFront_IsOpen(StoreFront *store);
 void StoreFront_PrepareTalk(StoreFront *store);
 void StoreFront_LightTexturePath(StoreFront *store);
 void StoreFront_TexturePath(StoreFront *store);

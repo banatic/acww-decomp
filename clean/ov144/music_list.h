@@ -208,7 +208,7 @@ void MusicList_LoadScreens(MusicList *self);
 void MusicList_SetUpLayers(void);
 void MusicList_EndFrame(MusicList *self);
 void MusicList_StartFrame(MusicList *self);
-void MusicList_EndFrameAgain(MusicList *self);
+void MusicList_CallEndFrame(MusicList *self);
 void MusicList_StartFrameWithPointer(MusicList *self);
 void MusicList_Release(MusicList *self);
 void MusicList_SetUp(MusicList *self);

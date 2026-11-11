@@ -365,7 +365,7 @@ void InsurerTalk_FirstLine(InsurerTalk *talk, InsurerLine *out)
     if (greet) {
         out->message = (u8) (MainRandom_Below(5) + INSURER_LINE_GREETINGS);
     }
-    out->text = data_ov071_02279fbc[talk->first].text;
+    out->name = data_ov071_02279fbc[talk->first].name;
 }
 CLEAN_AS(func_ov071_02278e40, InsurerTalk_FirstLine)
 

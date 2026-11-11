@@ -860,7 +860,7 @@ void DonationList_MoveHandleTo(DonationList *self, int y, int on_track)
         target = DONATION_HANDLE_RANGE;
     }
     if (on_track) {
-        Approach_S32Again(&self->handle_y, target, DONATION_HANDLE_TRACK_STEP);
+        Approach_S32Copy(&self->handle_y, target, DONATION_HANDLE_TRACK_STEP);
     } else {
         self->handle_y = target;
     }

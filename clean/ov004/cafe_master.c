@@ -993,11 +993,11 @@ void CafeMasterTalk_Line(CafeMasterTalk *talk, CafeMasterLine *out)
     PlayerField2416 *field = cm_current_field();
 
     if (StartKind_IsSet()) {
-        out->text = data_ov004_02254594[CAFE_MASTER_FILE_NEW_START];
+        out->name = data_ov004_02254594[CAFE_MASTER_FILE_NEW_START];
         out->message = CAFE_MASTER_LINE_NEW_START;
         return;
     }
-    out->text = data_ov004_02254594[CAFE_MASTER_FILE_PLAIN];
+    out->name = data_ov004_02254594[CAFE_MASTER_FILE_PLAIN];
     void *guest = Actor_FindNextOfProfile(CAFE_MASTER_GUEST_PROFILE, NULL);
     if (cm_linked_or_variable(data_020ccf94)) {
         out->message = (u8) (MainRandom_Below(3) + CAFE_MASTER_LINE_LINKED);

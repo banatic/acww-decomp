@@ -123,11 +123,11 @@ static int abs32(int value)
     return value < 0 ? (int) (0u - (u32) value) : value;
 }
 
-/* A component stepped towards `target` by `step` (Approach_S32Again); fx32 is the 32-bit int
+/* A component stepped towards `target` by `step` (Approach_S32Copy); fx32 is the 32-bit int
  * it takes. */
 static void approach(fx32 *value, fx32 target, fx32 step)
 {
-    Approach_S32Again((int *) (void *) value, target, step);
+    Approach_S32Copy((int *) (void *) value, target, step);
 }
 
 /* The step that covers `distance` in `frames` frames: |distance / frames|, rounded towards 0. */
@@ -268,7 +268,7 @@ void Obj020dd33c_Mode9Kind1Shrink(Obj020dd33c *obj)
         return;
     }
     Obj020dd33c_HoldPoint(obj, &obj->point);
-    Approach_S32Again(&scale, 0, data_021c9368);
+    Approach_S32Copy(&scale, 0, data_021c9368);
     set_scale(obj, scale);
     hold_offset_to_zero(obj);
     turn_offset(obj, &obj->hold_offset);
@@ -369,7 +369,7 @@ void Obj020dd33c_UpdateMode5Kind1(Obj020dd33c *obj)
         return;
     }
     Obj020dd33c_HoldPoint(obj, &obj->point);
-    Approach_S32Again(&scale, 0, data_021c9360);
+    Approach_S32Copy(&scale, 0, data_021c9360);
     set_scale(obj, scale);
     hold_offset_to_zero(obj);
     turn_offset(obj, &obj->hold_offset);
@@ -522,7 +522,7 @@ void Obj020dd33c_Mode1Kind1Drop(Obj020dd33c *obj)
         return;
     }
     int scale = obj->scale.x;
-    Approach_S32Again(&scale, 0x1000, 0x200);
+    Approach_S32Copy(&scale, 0x1000, 0x200);
     set_scale(obj, scale);
     point_to_target(obj);
     obj->frames++;
@@ -550,7 +550,7 @@ void Obj020dd33c_Mode1Kind1Grow(Obj020dd33c *obj)
     }
     int scale = obj->scale.x;
     Obj020dd33c_HoldPoint(obj, &obj->point);
-    Approach_S32Again(&scale, 0x1000, 0x200);
+    Approach_S32Copy(&scale, 0x1000, 0x200);
     set_scale(obj, scale);
     approach(&obj->hold_offset.x, obj->target.x, obj->speed.x);
     approach(&obj->hold_offset.y, obj->target.y, obj->speed.y);
@@ -640,7 +640,7 @@ void Obj020dd33c_Mode11Kind0Shrink(Obj020dd33c *obj)
         return;
     }
     int scale = obj->scale.x;
-    Approach_S32Again(&scale, 0, obj->scale_step);
+    Approach_S32Copy(&scale, 0, obj->scale_step);
     set_scale(obj, scale);
     Obj020dd33c_HoldPoint(obj, &obj->point);
     VEC_Add(&obj->point, &obj->hold_offset, &obj->point);
@@ -759,7 +759,7 @@ void Obj020dd33c_UpdateMode5Kind0(Obj020dd33c *obj)
         return;
     }
     Obj020dd33c_HoldPoint(obj, &obj->point);
-    Approach_S32Again(&scale, 0, obj->scale_step);
+    Approach_S32Copy(&scale, 0, obj->scale_step);
     set_scale(obj, scale);
     hold_offset_to_zero(obj);
     turn_offset(obj, &obj->hold_offset);

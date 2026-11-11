@@ -259,7 +259,7 @@ void PocketsScreen_FollowTouch(PocketsScreen *self);
 void PocketsScreen_DrawHeld(PocketsScreen *self);
 void PocketsScreen_UpdatePopup(PocketsScreen *self);
 void PocketsScreen_PlacePopup(PocketsScreen *self);
-int PocketsScreen_Byte6c30AtLeast(PocketsScreen *self, int value);
+int PocketsScreen_PenHeldFor(PocketsScreen *self, int frames);
 int PocketsScreen_TouchMoved(PocketsScreen *self);
 void PocketsScreen_HighlightPlace(PocketsScreen *self, unsigned int place);
 void PocketsScreen_ClearHighlights(PocketsScreen *self);

@@ -517,14 +517,14 @@ void PocketsView_PlacePopup(PocketsView *self)
 }
 CLEAN_AS(func_ov099_0229ca34, PocketsView_PlacePopup)
 
-/* func_ov099_0229cac8: whether main's byte data_021f6c30 is at least `value` (the scene asks
- * for 9 before opening a touched place's choice). */
-int PocketsView_Byte6c30AtLeast(PocketsView *self, int value)
+/* func_ov099_0229cac8: whether the pen has been down for at least `frames` frames (main's
+ * data_021f6c30; the scene asks for 9 before opening a touched place's choice). */
+int PocketsView_PenHeldFor(PocketsView *self, int frames)
 {
     (void) self;
-    return data_021f6c30 >= value;
+    return data_021f6c30 >= frames;
 }
-CLEAN_AS(func_ov099_0229cac8, PocketsView_Byte6c30AtLeast)
+CLEAN_AS(func_ov099_0229cac8, PocketsView_PenHeldFor)
 
 /* The distance between two coordinates. */
 static int distance(int a, int b)
@@ -873,8 +873,8 @@ extern const MemberPointer data_ov099_0229df60, data_ov099_0229df68, data_ov099_
 /* What the parent is told when the scene ends. */
 #define PARENT_CODE_END 0x44
 
-/* What data_021f6c30 reaches before a touched place's choice opens. */
-#define OPEN_CHOICE_BYTE 9
+/* The frames the pen is held on a place before its choice opens. */
+#define OPEN_CHOICE_HOLD_FRAMES 9
 
 /* The frames a popup stays after the pen leaves a place. */
 #define POPUP_FRAMES 60
@@ -1314,7 +1314,7 @@ void PocketsView_HoldTouchOnPlace(PocketsView *self)
             PocketsView_PickUpWithTouch(self, self->touch_place);
             return;
         }
-        if (PocketsView_Byte6c30AtLeast(self, OPEN_CHOICE_BYTE) != 0) {
+        if (PocketsView_PenHeldFor(self, OPEN_CHOICE_HOLD_FRAMES) != 0) {
             PocketsView_OpenChoice(self, self->touch_place);
             return;
         }

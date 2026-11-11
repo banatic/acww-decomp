@@ -17,7 +17,7 @@
 
 static_assert(offsetof(MessageRequest, message) == 0x1e, "message");
 static_assert(offsetof(MessageRequest, folder) == 0x20, "folder");
-static_assert(offsetof(MessageRequest, decode_b) == 0x29, "decode b");
+static_assert(offsetof(MessageRequest, nickname) == 0x29, "nickname");
 static_assert(sizeof(MessageRequest) == 0x2c, "request");
 static_assert(offsetof(MessageReader, file) == 0x4c, "file");
 static_assert(offsetof(MessageReader, attributes) == 0xaf0, "attributes");
@@ -104,8 +104,8 @@ MessageRequest *MessageRequest_Construct(MessageRequest *request)
     request->vtable = data_020e5200;
     request->folder = 0;
     request->text = NULL;
-    request->decode_a = 0;
-    request->decode_b = 0;
+    request->expand_tags = 0;
+    request->nickname = 0;
     return request;
 }
 CLEAN_AS(func_020b4044, MessageRequest_Construct)
@@ -258,7 +258,7 @@ int MessageReader_Load(MessageReader *reader, MessageRequest *request)
     BmgFile_Close(reader->file);
     if (ok) {
         void *text = request->text;
-        ok = (ok & MessageDecoder_Decode((MessageDecoder *) reader, request->decode_a, request->decode_b)) != 0;
+        ok = (ok & MessageDecoder_Decode((MessageDecoder *) reader, request->expand_tags, request->nickname)) != 0;
         if (text != NULL) {
             ok = (ok & TextBase_SetChars(text, reader->text)) != 0;
             MessageAttributes_Copy((MessageAttributes *) (void *) ((u8 *) text + 8),
@@ -300,7 +300,7 @@ int MessageReader_LoadNickname(void *text, void *context, unsigned char *message
     MessageReceiver_SetName((MessageReceiver *) &request, data_020e52e8);
     request.message = *message;
     request.text = text;
-    request.decode_b = 1;
+    request.nickname = 1;
     data_021f669c = context;
     MessageReader_Clear(&data_021f4dac);
     int loaded = MessageReader_Load(&data_021f4dac, &request);
@@ -369,7 +369,7 @@ void *MessageReader_LoadDecoded(void *text, unsigned char *message, const char *
     MessageReceiver_SetName((MessageReceiver *) &request, name);
     request.message = *message;
     request.text = text;
-    request.decode_a = 1;
+    request.expand_tags = 1;
     MessageReader_Clear(&data_021f4dac);
     int loaded = MessageReader_Load(&data_021f4dac, &request);
     MessageRequest_Destruct(&request);

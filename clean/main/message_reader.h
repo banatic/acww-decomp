@@ -29,10 +29,10 @@ typedef struct MessageRequest {
     char name[26];      /* 0x04: the file's name */
     u8 message;         /* 0x1e: the message's number in it */
     u8 unk_1f;
-    s32 folder;  /* 0x20: 0 for "/script/KOR/string", 1 for "/script/KOR/2d" */
-    void *text;  /* 0x24: the text the message goes to, or NULL */
-    u8 decode_a; /* 0x28: handed to the decoder (func_020b5350) */
-    u8 decode_b; /* 0x29: likewise */
+    s32 folder;     /* 0x20: 0 for "/script/KOR/string", 1 for "/script/KOR/2d" */
+    void *text;     /* 0x24: the text the message goes to, or NULL */
+    u8 expand_tags; /* 0x28: handed to the decoder (MessageDecoder_Decode) */
+    u8 nickname;    /* 0x29: likewise */
     u8 unk_2a[2];
 } MessageRequest;
 

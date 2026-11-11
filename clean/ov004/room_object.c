@@ -138,7 +138,7 @@ CLEAN_AS(func_ov004_0220c5c8, RoomObject_EnterSpin)
  * is moved, then copied); whether it is there. */
 static int shrink(RoomObject *object)
 {
-    Approach_S32Again(&object->scale_x, 0, SHRINK_SPEED);
+    Approach_S32Copy(&object->scale_x, 0, SHRINK_SPEED);
     object->scale_z = object->scale_x;
     object->scale_y = object->scale_z;
     return object->scale_x == 0;
@@ -341,7 +341,7 @@ CLEAN_AS(func_ov004_0220c9f8, RoomObject_EnterIdle)
  * RoomObject_EffectNearCorner with 0 and 2 in its first frame and with 1 and 3 in its third. */
 void RoomObject_UpdateAppear(RoomObject *object)
 {
-    Approach_S32Again(&object->unk_15c, FX32_ONE, 0x88);
+    Approach_S32Copy(&object->unk_15c, FX32_ONE, 0x88);
 
     if (object->timer < 15) {
         object->timer++;
@@ -508,16 +508,16 @@ CLEAN_AS(func_ov004_0220ce20, RoomObject_IsIdle)
 /* func_ov004_0220ce2c */
 int RoomObject_IsNotIdle(const RoomObject *object)
 {
-    return RoomObject_IsIdleAgain(object) == 0;
+    return RoomObject_IsIdleCopy(object) == 0;
 }
 CLEAN_AS(func_ov004_0220ce2c, RoomObject_IsNotIdle)
 
 /* func_ov004_0220ce44: the same as RoomObject_IsIdle; the game has both. */
-int RoomObject_IsIdleAgain(const RoomObject *object)
+int RoomObject_IsIdleCopy(const RoomObject *object)
 {
     return RoomObject_IsInState(object, ROOM_OBJECT_IDLE);
 }
-CLEAN_AS(func_ov004_0220ce44, RoomObject_IsIdleAgain)
+CLEAN_AS(func_ov004_0220ce44, RoomObject_IsIdleCopy)
 
 /* func_ov004_0220ce50 */
 void RoomObject_Shrink(RoomObject *object)

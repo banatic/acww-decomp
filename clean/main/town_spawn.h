@@ -30,7 +30,7 @@ typedef struct TownSpawnAcre {
 } TownSpawnAcre;
 
 void TownSpawn_GildBuriedShovels(TownDay *town, AcreMap *map, int wide, int high);
-void TownSpawn_AfterWetDay(TownDay *town, AcreMap *map, int wide, int high, u8 wet);
+void TownSpawn_BuryGyroidsAfterRain(TownDay *town, AcreMap *map, int wide, int high, u8 wet);
 void TownSpawn_PutCoconutOnBeach(TownDay *town, AcreMap *map, int wide);
 void TownSpawn_AdvanceCodesD4(TownDay *town, AcreMap *map, int days);
 void TownSpawn_ClearTileAt(TownDay *town, const Position *position);

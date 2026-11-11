@@ -39,7 +39,7 @@ typedef struct PantherText {
 } PantherText;
 
 /* func_ov003_0221d10c (vtable slot 0x78, before a talk): names the receiver "sp_npc_panther",
- * picks PANTHER_MESSAGE_FULL when vtable slot 0x8c (Panther_IsAfterSix) agrees, else
+ * picks PANTHER_MESSAGE_FULL when vtable slot 0x8c (Panther_IsOpen) agrees, else
  * PANTHER_MESSAGE_CLOSED, and sets the speaker to the name PANTHER_NAME_CODE gives (the string
  * object's vtable slot 0x0c gives its characters). */
 void Panther_PrepareTalk(Panther *panther)
@@ -67,13 +67,13 @@ CLEAN_AS(func_ov003_0221d10c, Panther_PrepareTalk)
 
 /* func_ov003_0221d17c (vtable slot 0x8c): whether both the clock's hour now and the hour
  * Panther_KeepHour kept are 6 or later. */
-int Panther_IsAfterSix(Panther *panther)
+int Panther_IsOpen(Panther *panther)
 {
     DateTime now = {0};
     DateTime_Now(&now);
     return now.hour >= PANTHER_HOUR_FROM && panther->hour >= PANTHER_HOUR_FROM;
 }
-CLEAN_AS(func_ov003_0221d17c, Panther_IsAfterSix)
+CLEAN_AS(func_ov003_0221d17c, Panther_IsOpen)
 
 /* func_ov003_0221d1b4 (vtable slot 0x18, its update): always 1. */
 int Panther_Update(void)

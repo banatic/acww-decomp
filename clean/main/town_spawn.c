@@ -88,7 +88,7 @@ CLEAN_AS(func_02047e54, TownSpawn_GildBuriedShovels)
  *
  * QUIRK: the first acre is drawn below wide - 1 and high - 1, the later steps below them too,
  * then taken modulo wide and high. */
-void TownSpawn_AfterWetDay(TownDay *town, AcreMap *map, int wide, int high, u8 wet)
+void TownSpawn_BuryGyroidsAfterRain(TownDay *town, AcreMap *map, int wide, int high, u8 wet)
 {
     if (wet == 0) {
         return;
@@ -107,7 +107,7 @@ void TownSpawn_AfterWetDay(TownDay *town, AcreMap *map, int wide, int high, u8 w
         TownPlace_PutInAcre(town, map, acre_x + 1, acre_z + 1, item, func_02048e54, 1);
     }
 }
-CLEAN_AS(func_02047ee8, TownSpawn_AfterWetDay)
+CLEAN_AS(func_02047ee8, TownSpawn_BuryGyroidsAfterRain)
 
 /* func_02047fac: unless the town has a coconut (item 0x1548), one chance in ten of one on a beach acre
  * drawn at random. */
@@ -306,7 +306,7 @@ void TownSpawn_PutMarkedPitfall(TownDay *town, AcreMap *map, int wide, int high)
 CLEAN_AS(func_020483c4, TownSpawn_PutMarkedPitfall)
 
 /* func_02048418: the marked fossils (item 0x1549) made up to three, each on an acre drawn after the
- * last (see TownSpawn_AfterWetDay's QUIRK). */
+ * last (see TownSpawn_BuryGyroidsAfterRain's QUIRK). */
 void TownSpawn_PutMarkedFossils(TownDay *town, AcreMap *map, int wide, int high)
 {
     int missing = TOWN_SPAWN_MARKED_FOSSILS - TownAcreCount_Totals(&data_021c779c)->marked_fossils;

@@ -187,7 +187,7 @@ CLEAN_AS(func_ov088_02278ba4, ReactionNpcTalk_OnLineEnded)
 void ReactionNpcTalk_FirstLine(ReactionNpcTalk *talk, ReactionNpcLine *out)
 {
     (void) talk;
-    out->text = (u32) (uintptr_t) data_ov088_02279d98;
+    out->name = (u32) (uintptr_t) data_ov088_02279d98;
     out->message = REACTION_NPC_LINE_FIRST;
     if (PlayerRecord_TestFlag(PlayerRecords_Current(), RT_FLAG_TAUGHT) != 1) {
         return;

@@ -143,7 +143,7 @@ void PocketsView_FollowTouch(PocketsView *self);
 void PocketsView_DrawHeld(PocketsView *self);
 void PocketsView_UpdatePopup(PocketsView *self);
 void PocketsView_PlacePopup(PocketsView *self);
-int PocketsView_Byte6c30AtLeast(PocketsView *self, int value);
+int PocketsView_PenHeldFor(PocketsView *self, int frames);
 int PocketsView_TouchMoved(PocketsView *self);
 void PocketsView_HighlightPlace(PocketsView *self, int place);
 void PocketsView_ClearHighlights(PocketsView *self);

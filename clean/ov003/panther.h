@@ -25,7 +25,7 @@ typedef struct Panther {
 } Panther;
 
 void Panther_PrepareTalk(Panther *panther);
-int Panther_IsAfterSix(Panther *panther);
+int Panther_IsOpen(Panther *panther);
 int Panther_Update(void);
 int Panther_KeepHour(Panther *panther);
 Panther *Panther_Delete(Panther *panther);

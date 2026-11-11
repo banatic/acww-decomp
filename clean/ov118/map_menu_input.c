@@ -747,7 +747,7 @@ void MapMenu_SubTrack(MapMenu *self)
         MapMenu_EnterTouch(self);
     }
     int knob = self->knob;
-    Approach_S32Again(&knob, data_021f6c54 - MAP_MENU_TRACK_TOP, 8);
+    Approach_S32Copy(&knob, data_021f6c54 - MAP_MENU_TRACK_TOP, 8);
     MapMenu_DragKnobTo(self, knob);
 }
 CLEAN_AS(func_ov118_0229bc7c, MapMenu_SubTrack)

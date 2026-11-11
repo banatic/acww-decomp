@@ -401,7 +401,7 @@ void ClockSetter_ThumbTowardPen(ClockSetter *self, int pen_y)
     if (target > CLOCK_SETTER_THUMB_BOTTOM) {
         target = CLOCK_SETTER_THUMB_BOTTOM;
     }
-    Approach_S32Again(&self->thumb_y, target, 8);
+    Approach_S32Copy(&self->thumb_y, target, 8);
     ClockSetter_ThumbMoved(self);
 }
 CLEAN_AS(func_ov134_02299af0, ClockSetter_ThumbTowardPen)

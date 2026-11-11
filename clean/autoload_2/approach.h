@@ -12,7 +12,7 @@ u16 Countdown_Tick16(u16 *counter);
 u8 Countdown_Tick8(u8 *counter);
 int Approach_S16Wrapped(s16 *value, int target, s16 step);
 int Approach_S32(int *value, int target, int step);
-int Approach_S32Again(int *value, int target, int step);
+int Approach_S32Copy(int *value, int target, int step);
 int Approach_S16(s16 *value, int target, s16 step);
 int Approach_U8(u8 *value, int target, s16 step);
 void Approach_DivideS16(s16 *value, int target, int divisor, int max_step);

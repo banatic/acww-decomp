@@ -130,13 +130,13 @@ CLEAN_AS(func_ov004_0221385c, Compass_Vfunc0c)
  * sine. */
 int Compass_Update(Compass *compass)
 {
-    Approach_S32Again(&compass->swing, 0, COMPASS_STEP);
+    Approach_S32Copy(&compass->swing, 0, COMPASS_STEP);
     if (compass->swing == 0) {
         compass->phase = 0;
     } else {
         compass->phase = (u16) (compass->phase + COMPASS_PHASE_STEP);
     }
-    Approach_S32Again(&compass->deflection, FX_MulFunc(compass->swing, (s16) compass->phase), COMPASS_STEP);
+    Approach_S32Copy(&compass->deflection, FX_MulFunc(compass->swing, (s16) compass->phase), COMPASS_STEP);
     return 1;
 }
 CLEAN_AS(func_ov004_02213860, Compass_Update)

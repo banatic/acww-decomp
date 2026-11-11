@@ -360,7 +360,7 @@ void AcornNpcTalk_FirstLine(AcornNpcTalk *talk, AcornNpcLine *out)
     (void) talk;
     u8 *record = PlayerRecords_Current();
     (void) PlayerRecord_VillagerPart(record);
-    out->text = (u32) (uintptr_t) data_ov087_02279598;
+    out->name = (u32) (uintptr_t) data_ov087_02279598;
     if (PlayerRecord_TestFlag(record, ACT_FLAG_MET) == 0) {
         out->message = ACORN_NPC_LINE_MEET;
         PlayerRecord_SetFlag(record, ACT_FLAG_MET);

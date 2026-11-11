@@ -238,7 +238,7 @@ needs: unreachable
 match: ov099/pockets_view:PocketsView_ActionChoiceByKeys
   ov099/pockets_view:PocketsView_ActionChoiceByTouch ov099/pockets_view:PocketsView_AddEntries
   ov099/pockets_view:PocketsView_BeginFrame ov099/pockets_view:PocketsView_BeginInteractiveFrame
-  ov099/pockets_view:PocketsView_BeginSubState10 ov099/pockets_view:PocketsView_Byte6c30AtLeast
+  ov099/pockets_view:PocketsView_BeginSubState10 ov099/pockets_view:PocketsView_PenHeldFor
   ov099/pockets_view:PocketsView_CancelChoice ov099/pockets_view:PocketsView_ClearFlags
   ov099/pockets_view:PocketsView_ClearHighlights ov099/pockets_view:PocketsView_ClearSelection
   ov099/pockets_view:PocketsView_Close ov099/pockets_view:PocketsView_CloseChoice
@@ -1784,7 +1784,7 @@ match: ov003/town_insect_kinds:TownInsectKind_Start38 ov003/town_insect_kinds:To
 area: Not attributed to one scene
 group: the special characters' states after a talk ended
 scene: none known: the "talked" or "done" state each character takes when its talk ends through EventQueue_FinishObjectEvent (its update does nothing), and Mr. Resetti's, which he takes on the event's end in the frame he is deleted
-reach: unknown (findings 2026-10-30, talked4): the event is finished in the character's update and ended by the event process in the same frame (Process020daae4_Execute steps the running event, then the ending one), and EventKind_EndObjectEvent tells the character ENDED, which takes it out of the state, unless PlayerActorOps_FinishState answers 0; that answer is the request queue's (FieldActor_QueueRequest), which refuses only with 30 requests queued since the player's last FieldActor_TakeRequests, or no field actor for this console; the drive saw at most 3 queued (gracie, acorn-festival). AcornNpc_UpdateStand is state 2's update by the state table data_ov087_022795c0 (the names of 0227900c and 02279074 are swapped in Clean); besides (findings 2026-11-07, seed5), a driven call checks each of the 25 on its live character in the scene that shows it (runtime/recordings/driven/talked-*.txt; Mr. Resetti: talked-resetti at frame 8801 with Mole_UpdateState0, _MayAct and _Destruct); each update returns 1 and does nothing else
+reach: unknown (findings 2026-10-30, talked4): the event is finished in the character's update and ended by the event process in the same frame (Process020daae4_Execute steps the running event, then the ending one), and EventKind_EndObjectEvent tells the character ENDED, which takes it out of the state, unless PlayerActorOps_FinishState answers 0; that answer is the request queue's (FieldActor_QueueRequest), which refuses only with 30 requests queued since the player's last FieldActor_TakeRequests, or no field actor for this console; the drive saw at most 3 queued (gracie, acorn-festival). AcornNpc_UpdateTalked is state 2's update by the state table data_ov087_022795c0 (func_ov087_0227900c; the two names were swapped in Clean until 2026-11-12); besides (findings 2026-11-07, seed5), a driven call checks each of the 25 on its live character in the scene that shows it (runtime/recordings/driven/talked-*.txt; Mr. Resetti: talked-resetti at frame 8801 with Mole_UpdateState0, _MayAct and _Destruct); each update returns 1 and does nothing else
 needs: unknown
 match: ov004/tailor_sister:TailorSister_UpdateTalked ov004/cafe_master:CafeMaster_UpdateTalked
   ov004/gatekeeper2:Gatekeeper2_UpdateTalked ov046/astro:Astro_UpdateTalked ov047/owl:Owl_UpdateTalked
@@ -1794,7 +1794,7 @@ match: ov004/tailor_sister:TailorSister_UpdateTalked ov004/cafe_master:CafeMaste
   ov078/camel:Camel_UpdateDone ov079/walrus:Walrus_UpdateDone ov080/turtle:Turtle_UpdateTalked
   ov081/turtle_fishing:TurtleFishing_UpdateTalked ov082/turtle_insects:TurtleInsects_UpdateTalked
   ov083/turtle_gardens:TurtleGardens_UpdateTalked ov084/turtle_fireworks:TurtleFireworks_UpdateTalked
-  ov085/turtle_snow_festival:TurtleSnowFestival_UpdateTalked ov086/turtle_countdown:TurtleCountdown_UpdateTalked ov087/acorn_npc:AcornNpc_UpdateStand
+  ov085/turtle_snow_festival:TurtleSnowFestival_UpdateTalked ov086/turtle_countdown:TurtleCountdown_UpdateTalked ov087/acorn_npc:AcornNpc_UpdateTalked
   ov088/reaction_npc:ReactionNpc_UpdateTalked
 
 area: Not attributed to one scene

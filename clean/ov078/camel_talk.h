@@ -38,7 +38,7 @@ typedef struct CamelTalk {
 
 /* What its slot 0x78 gives: the message file's name (an address) and the line to say. */
 typedef struct CamelTalkLine {
-    u32 text;
+    u32 name;
     u8 message;
     u8 unk_05[3];
 } CamelTalkLine;

@@ -1089,7 +1089,7 @@ void CatalogList_Drag(CatalogList *self, int x)
             self->handle_x = was + 2;
             break;
         case CATALOG_LIST_SCROLL_TRACK:
-            Approach_S32Again(&self->handle_x, x - 0x3a, 4);
+            Approach_S32Copy(&self->handle_x, x - 0x3a, 4);
             break;
         default:
             break;

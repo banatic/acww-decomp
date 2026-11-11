@@ -103,7 +103,7 @@ void TownPelicanTalk_Line(TownPelicanTalk *talk, TownPelicanLine *out)
     if (talk->owner->met != 0 && PlayerRecord_TestFlag(PlayerRecords_Current(), TPEL_TALK_FLAG_MET)) {
         out->message = (u8) (MainRandom_Below(4) + TOWN_PELICAN_LINE_BUSY);
     }
-    out->text = (u32) (uintptr_t) data_ov075_02279aa8;
+    out->name = (u32) (uintptr_t) data_ov075_02279aa8;
 }
 CLEAN_AS(func_ov075_02278b24, TownPelicanTalk_Line)
 

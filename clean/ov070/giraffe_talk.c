@@ -623,7 +623,7 @@ void GiraffeTalk_FirstLine(GiraffeTalk *talk, GiraffeLine *out)
         out->message = (u8) (talk->owner->talk_count + GIRAFFE_LINE_AFTER_REMARK);
         talk->owner->talk_count++;
     }
-    out->text = data_ov070_02279ba8[talk->first].text;
+    out->name = data_ov070_02279ba8[talk->first].name;
 }
 CLEAN_AS(func_ov070_02279550, GiraffeTalk_FirstLine)
 

@@ -55,7 +55,7 @@ void VillagerTalk_Line8bd8SinceEvent14(VillagerTalk *talk, VillagerTalkLine *out
 void VillagerTalk_LineRandom1fe4(VillagerTalk *talk, VillagerTalkLine *out);
 void VillagerTalk_NoteAndMarkMemory(VillagerTalk *talk);
 void VillagerTalk_LineInsect(VillagerTalk *talk, VillagerTalkLine *out);
-void VillagerTalk_NoteAndMarkMemoryAgain(VillagerTalk *talk);
+void VillagerTalk_NoteAndMarkMemoryCopy(VillagerTalk *talk);
 void VillagerTalk_LineFish(VillagerTalk *talk, VillagerTalkLine *out);
 int VillagerTalk_GroupForHour(int hour);
 void VillagerTalk_OfferChoices1e14D(VillagerTalk *talk);

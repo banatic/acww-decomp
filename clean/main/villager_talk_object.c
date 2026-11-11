@@ -1293,11 +1293,11 @@ void VillagerTalkObject_Line8d50(VillagerTalk *talk, VillagerTalkLine *out)
 CLEAN_AS(func_02025f78, VillagerTalkObject_Line8d50)
 
 /* func_02025fe4: VillagerTalkObject_StartForPlayer. */
-void VillagerTalkObject_StartForPlayerAgain(VillagerTalk *talk)
+void VillagerTalkObject_CallStartForPlayer(VillagerTalk *talk)
 {
     VillagerTalkObject_StartForPlayer(talk);
 }
-CLEAN_AS(func_02025fe4, VillagerTalkObject_StartForPlayerAgain)
+CLEAN_AS(func_02025fe4, VillagerTalkObject_CallStartForPlayer)
 
 /* func_02025fec: two choices offered with cancel choice 1: message 0x1f running data_021c2ca4
  * and message 0x20 running data_021c2cbc; the reply data_020d9380; the talk's byte 0x18

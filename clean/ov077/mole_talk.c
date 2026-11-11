@@ -227,7 +227,7 @@ void MoleTalk_FirstLine(MoleTalk *talk, MoleTalkLine *out)
         index = MOLE_FIRST_LINES - 1;
     }
     out->message = data_ov077_02279600[index];
-    out->text = (u32) (uintptr_t) data_ov077_02279700;
+    out->name = (u32) (uintptr_t) data_ov077_02279700;
 }
 CLEAN_AS(func_ov077_02278bfc, MoleTalk_FirstLine)
 

@@ -230,7 +230,7 @@ int RoomObject_IsVanishing(const RoomObject *object);
 int RoomObject_IsBusy(RoomObject *object);
 int RoomObject_IsIdle(const RoomObject *object);
 int RoomObject_IsNotIdle(const RoomObject *object);
-int RoomObject_IsIdleAgain(const RoomObject *object);
+int RoomObject_IsIdleCopy(const RoomObject *object);
 void RoomObject_Shrink(RoomObject *object);
 int RoomObject_TryMoveBack(RoomObject *object, u16 angle);
 int RoomObject_TryMove(RoomObject *object, u16 angle);

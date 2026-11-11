@@ -227,7 +227,7 @@ void WfcHostList_DragKnob(WfcHostList *self, int y, int approach)
     }
 
     if (approach != 0) {
-        Approach_S32Again(&self->knob, y, 8);
+        Approach_S32Copy(&self->knob, y, 8);
     } else {
         self->knob = y;
     }

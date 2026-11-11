@@ -59,7 +59,7 @@ typedef struct MabelTalkStep {
 
 /* What its line function gives: the message file's name and the line. */
 typedef struct MabelTalkLine {
-    const char *text;
+    const char *name;
     u8 message;
     u8 unk_05[3];
 } MabelTalkLine;

@@ -41,7 +41,7 @@ static_assert(sizeof(FoxShopText) == 0x34, "text");
 /* The value func_02094ffc gives for a name of another town. */
 #define FOX_OTHER_TOWN 1
 /* The item a town map is searched for (FoxShop_HasTentAfterSix), and from which hour. */
-#define FOX_TOWN_ITEM 0x5012
+#define FOX_TENT_BUILDING 0x5012
 #define FOX_FROM_HOUR 6
 #define FOX_TEXT_CAPACITY 34
 #define FOX_TEXT_BUFFER 18
@@ -271,7 +271,7 @@ int FoxShop_HasTentAfterSix(void)
         return 0;
     }
     if ((data_021f49fc & 1) == 0) {
-        data_021f49f8 = FOX_TOWN_ITEM;
+        data_021f49f8 = FOX_TENT_BUILDING;
         __register_global_object(&data_021f49f8, (void *) func_020051b0, data_021f4a14);
         data_021f49fc |= 1;
     }

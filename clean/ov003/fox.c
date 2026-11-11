@@ -298,7 +298,7 @@ CLEAN_AS(_ZN18Obj_ov003_0223863019func_ov003_0221bd6cEv, Fox_UpdateTalk)
 
 /* _ZN18Obj_ov003_0223863019func_ov003_0221bd90Ev (entry of FOX_TALK): takes the receiver,
  * names it "sp_npc_fox" and picks its message: FOX_MESSAGE_EARLY when vtable slot 0x8c
- * (Fox_IsAfterSix) says no, clearing bit 0 of the tent's flags unless the visit record
+ * (Fox_IsOpen) says no, clearing bit 0 of the tent's flags unless the visit record
  * said 2; else FOX_MESSAGE_FULL when it did, FOX_MESSAGE_MEMBER_AGAIN when func_020ae2c4 agrees,
  * else FOX_MESSAGE_FIRST. The link's request is raised and func_02066914 runs on the receiver.
  * REQUIRES: the receiver has a link once SceneObjectBase_TakeReceiver has taken it. */
@@ -493,13 +493,13 @@ CLEAN_AS(_ZN18Obj_ov003_0223863019func_ov003_0221c128Eji, Fox_OnSceneEvent)
 
 /* func_ov003_0221c16c (vtable slot 0x8c): whether both the clock's hour now and the hour
  * Fox_KeepHour kept are 6 or later. */
-int Fox_IsAfterSix(Fox *fox)
+int Fox_IsOpen(Fox *fox)
 {
     DateTime now = {0};
     DateTime_Now(&now);
     return now.hour >= FOX_HOUR_FROM && fox->hour >= FOX_HOUR_FROM;
 }
-CLEAN_AS(func_ov003_0221c16c, Fox_IsAfterSix)
+CLEAN_AS(func_ov003_0221c16c, Fox_IsOpen)
 
 /* func_ov003_0221c1a4 (vtable slot 0x18): the state's update; always 1. */
 int Fox_Update(Fox *fox)

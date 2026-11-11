@@ -2043,13 +2043,14 @@ void PocketsScreen_PlacePopup(PocketsScreen *self)
 }
 CLEAN_AS(func_ov096_0229eb98, PocketsScreen_PlacePopup)
 
-/* func_ov096_0229ec38: whether main's byte data_021f6c30 is at least `value`. */
-int PocketsScreen_Byte6c30AtLeast(PocketsScreen *self, int value)
+/* func_ov096_0229ec38: whether the pen has been down for at least `frames` frames (main's
+ * data_021f6c30). */
+int PocketsScreen_PenHeldFor(PocketsScreen *self, int frames)
 {
     (void) self;
-    return data_021f6c30 >= value;
+    return data_021f6c30 >= frames;
 }
-CLEAN_AS(func_ov096_0229ec38, PocketsScreen_Byte6c30AtLeast)
+CLEAN_AS(func_ov096_0229ec38, PocketsScreen_PenHeldFor)
 
 /* The distance between two coordinates. */
 static int distance(int a, int b)
@@ -3802,7 +3803,7 @@ void PocketsScreen_HoldBellDigit(PocketsScreen *self)
         PocketsWallet_MarkDigits((PocketsWallet *) (void *) self->unk_de0, 0);
         return;
     }
-    if (PocketsScreen_Byte6c30AtLeast(self, 4) == 0) {
+    if (PocketsScreen_PenHeldFor(self, 4) == 0) {
         return;
     }
     PocketsScreen_TouchPlace(self, POCKETS_PLACE_BELLS);

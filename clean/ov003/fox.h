@@ -12,7 +12,7 @@
  *                  is 2 (too many inside) is kept in bit 1 of the flags and the talk starts
  *                  (state 2).
  *   2 talk:        entering it takes the receiver and gives it a message: 0x34 when
- *                  Fox_IsAfterSix says no (then clearing bit 0 of the tent's flags when
+ *                  Fox_IsOpen says no (then clearing bit 0 of the tent's flags when
  *                  bit 1 is clear), else 0x31 (come back later) when bit 1 is set, 0x32 (a
  *                  member again) when FoxShop_CurrentPlayerMarked agrees, else 0 (asking for the
  *                  password). Once the link opens it moves to state 3.
@@ -116,7 +116,7 @@ void Fox_ReceiverSlot18(Fox *fox);
 void Fox_OnMessageEnd(Fox *fox);
 void Fox_ReceiverSlot10(Fox *fox);
 void Fox_OnSceneEvent(Fox *fox, unsigned int event, int arg);
-int Fox_IsAfterSix(Fox *fox);
+int Fox_IsOpen(Fox *fox);
 int Fox_Update(Fox *fox);
 int Fox_KeepHour(Fox *fox);
 Fox *Fox_Delete(Fox *fox);

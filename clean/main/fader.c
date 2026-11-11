@@ -68,13 +68,13 @@ extern const fx32 data_020d1e90[FADER_FLASH_STEPS];
 
 /* func_020b36c8: a frame of the fader. Flashing, it stays dark (level 0) through the wait,
  * then takes the table's levels one a frame and stops after the last; otherwise the level
- * moves towards the target by the speed (Approach_S32Again), and nothing is called once it is
+ * moves towards the target by the speed (Approach_S32Copy), and nothing is called once it is
  * there. */
 void Fader_Run(Fader *fader)
 {
     if (fader->flashing != 1) {
         if (fader->target != fader->level) {
-            Approach_S32Again((int *) &fader->level, fader->target, fader->speed);
+            Approach_S32Copy((int *) &fader->level, fader->target, fader->speed);
         }
         return;
     }

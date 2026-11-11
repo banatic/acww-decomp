@@ -1106,7 +1106,7 @@ void QuickMessage_BalloonHolding(QuickMessageBalloon *balloon)
     } else {
         step = GameVariables_Tweak(TUNE_OTHER_HOLD, 3) + 6;
     }
-    Approach_S32Again((int *) &balloon->placed_offset, balloon->stack_offset, step);
+    Approach_S32Copy((int *) &balloon->placed_offset, balloon->stack_offset, step);
     balloon->timer--;
     if (balloon->timer <= 0) {
         balloon->unk_b0 = 0;

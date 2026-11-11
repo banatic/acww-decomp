@@ -153,7 +153,7 @@ int CafeRoom_Update(CafeRoom *self)
 {
     CafeRoom_UpdateMode(self);
     if (self->alpha != self->target_alpha) {
-        Approach_S32Again((int *) (void *) &self->alpha, self->target_alpha, CAFE_ROOM_ALPHA_STEP);
+        Approach_S32Copy((int *) (void *) &self->alpha, self->target_alpha, CAFE_ROOM_ALPHA_STEP);
     }
     u8 *model = self->base.body.object.model;
     unsigned int materials = model[CAFE_ROOM_MODEL_MATERIALS];

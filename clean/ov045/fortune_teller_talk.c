@@ -481,7 +481,7 @@ CLEAN_AS(func_ov045_02260978, FortuneTellerTalk_OnLineEnded)
 void FortuneTellerTalk_Line(FortuneTellerTalk *talk, FortuneTellerLine *out)
 {
     (void) talk;
-    out->text = data_ov045_02261380;
+    out->name = data_ov045_02261380;
     int friendship = TalkChecks_TestSetDailyBit(FT_DAILY_FRIENDSHIP, 0);
     int luck = TalkChecks_TestSetDailyBit(FT_DAILY_LUCK, 0);
     int cleared = TalkChecks_TestSetDailyBit(FT_DAILY_CLEARING, 0);

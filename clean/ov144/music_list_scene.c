@@ -404,11 +404,11 @@ void MusicList_StartFrame(MusicList *self)
 CLEAN_AS(func_ov144_0229ad90, MusicList_StartFrame)
 
 /* func_ov144_0229add0: the frame's end, from the interactive phase. */
-void MusicList_EndFrameAgain(MusicList *self)
+void MusicList_CallEndFrame(MusicList *self)
 {
     MusicList_EndFrame(self);
 }
-CLEAN_AS(func_ov144_0229add0, MusicList_EndFrameAgain)
+CLEAN_AS(func_ov144_0229add0, MusicList_CallEndFrame)
 
 /* func_ov144_0229add8: the frame's start, and the pointer updated (slot 3). */
 void MusicList_StartFrameWithPointer(MusicList *self)
@@ -566,7 +566,7 @@ int MusicList_RunInteractive(MusicList *self)
     }
     MusicList_StartFrameWithPointer(self);
     MusicList_RunSubState(self);
-    MusicList_EndFrameAgain(self);
+    MusicList_CallEndFrame(self);
     return 1;
 }
 CLEAN_AS(_ZN18Obj_ov144_0229b3f819func_ov144_0229afccEv, MusicList_RunInteractive)

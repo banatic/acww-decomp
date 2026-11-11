@@ -57,7 +57,7 @@ static int room_object022525cc_switch_to(RoomObject022525cc *object, int state)
  * gives the answer, else the speed. */
 int RoomObject022525cc_UpdateStopping(RoomObject022525cc *object)
 {
-    Approach_S32Again(&object->speed, 0, STOP_STEP);
+    Approach_S32Copy(&object->speed, 0, STOP_STEP);
     if (object->speed == 0) {
         return room_object022525cc_switch_to(object, ROOM_OBJECT_022525CC_OFF);
     }

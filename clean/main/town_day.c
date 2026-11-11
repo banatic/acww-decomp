@@ -551,7 +551,7 @@ void TownDay_Pass(TownDay *town, const DateTime *from, const DateTime *to, int d
         TownSpawn_MakeMoneyRocks(town, map, wide, high);
         TownSpawn_AdvanceCodesD4(town, map, days);
         TownSpawn_PutCoconutOnBeach(town, map, wide);
-        TownSpawn_AfterWetDay(town, map, wide, high, wet);
+        TownSpawn_BuryGyroidsAfterRain(town, map, wide, high, wet);
         TownSpawn_GildBuriedShovels(town, map, wide, high);
         EventWinner_SendLetters(&data_021f3aa4);
         MuseumRecord_CheckLetters(&data_021f38f8);

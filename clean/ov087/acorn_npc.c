@@ -165,12 +165,12 @@ int AcornNpc_MayAct(AcornNpc *npc)
 }
 CLEAN_AS(func_ov087_02278a98, AcornNpc_MayAct)
 
-/* func_ov087_0227900c (state 0's update): nothing. 1. */
-int AcornNpc_UpdateStand(void)
+/* func_ov087_0227900c (state 2's update): nothing. 1. */
+int AcornNpc_UpdateTalked(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov087_0227900c, AcornNpc_UpdateStand)
+CLEAN_AS(func_ov087_0227900c, AcornNpc_UpdateTalked)
 
 /* func_ov087_02279010 (state 1's update): once its action is idle, the object's event ends and
  * state 2 follows. 1. */
@@ -198,12 +198,12 @@ int AcornNpc_EnterTalk(AcornNpc *npc)
 }
 CLEAN_AS(func_ov087_0227903c, AcornNpc_EnterTalk)
 
-/* func_ov087_02279074 (state 2's update): nothing. 1. */
-int AcornNpc_UpdateTalked(void)
+/* func_ov087_02279074 (state 0's update): nothing. 1. */
+int AcornNpc_UpdateStand(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov087_02279074, AcornNpc_UpdateTalked)
+CLEAN_AS(func_ov087_02279074, AcornNpc_UpdateStand)
 
 /* func_ov087_02279078 (state 0's entry): its motion of kind 0 asked for (priority 1). 1. */
 int AcornNpc_EnterStand(AcornNpc *npc)

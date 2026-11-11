@@ -929,11 +929,11 @@ static void ntalk_job_line(NookClerkTalk *talk, NookClerkLine *out, VillagerPart
     VillagerErrand *errand = ntalk_errand(part);
     u16 profile = *(const u16 *) (const void *) (talk->owner->base + 0x0c);
     if (profile == NOOK_CLERK_TWIN_B || profile == NOOK_CLERK_TWIN_A) {
-        out->text = data_ov050_02265804;
+        out->name = data_ov050_02265804;
         out->message = 3;
         return;
     }
-    out->text = data_ov050_02265834;
+    out->name = data_ov050_02265834;
     if (ntalk_is_empty(&talk->owner->item) == 0) {
         talk->owner->item = ITEM_CODE_NONE;
         out->message = 0xb;
@@ -1088,7 +1088,7 @@ void NookClerkTalk_Line(NookClerkTalk *talk, NookClerkLine *out)
         }
         u8 event[4];
         if (!skip && TalkChecks_TodaysEventOfKind(ntalk_owner(talk), event, NOOK_CLERK_TALK_EVENT_KIND) != 0) {
-            out->text = data_ov050_02265814;
+            out->name = data_ov050_02265814;
             out->message = data_ov050_022650c4[(event[0] >> 2) & 7][(event[0] >> 5) & 7];
             NookClerkTalk_SetMode(talk, NOOK_CLERK_MODE_DRAMA);
             return;
@@ -1098,7 +1098,7 @@ void NookClerkTalk_Line(NookClerkTalk *talk, NookClerkLine *out)
     if (talk->mode == NOOK_CLERK_MODE_NOOK_GREET || talk->mode == NOOK_CLERK_MODE_TWIN_GREET) {
         int closing = 0;
         if (talk->mode == NOOK_CLERK_MODE_NOOK_GREET) {
-            out->text = data_ov050_02265824;
+            out->name = data_ov050_02265824;
             if (ntalk_news(talk, out, record, &closing)) {
                 return;
             }
@@ -1147,7 +1147,7 @@ void NookClerkTalk_Line(NookClerkTalk *talk, NookClerkLine *out)
 
     if (talk->mode < NOOK_CLERK_MODES) {
         out->message = data_ov050_02265114[talk->mode].message;
-        out->text = data_ov050_02265114[talk->mode].text;
+        out->name = data_ov050_02265114[talk->mode].name;
         if (talk->mode == NOOK_CLERK_MODE_TWIN_FAREWELL) {
             NookClerk *other = (NookClerk *) Actor_FindNextOfProfile(NookClerk_OtherTwin(talk->owner), NULL);
             if (other != NULL) {
