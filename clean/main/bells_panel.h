@@ -55,7 +55,7 @@ int BellsPanel_Bells(BellsPanel *panel);
 void BellsPanel_SetCounting(BellsPanel *panel, int counting);
 void BellsPanel_FormatBells(BellsPanel *panel);
 int BellsPanel_Count(BellsPanel *panel);
-void BellsPanel_TakeBells(BellsPanel *panel);
+void BellsPanel_SnapToBells(BellsPanel *panel);
 void BellsPanel_FreeTextBox(BellsPanel *panel);
 void BellsPanel_OpenTextBox(BellsPanel *panel);
 void BellsPanel_StepClosing(BellsPanel *panel);

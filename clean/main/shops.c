@@ -260,12 +260,12 @@ int Shops_CanMail(void)
 }
 CLEAN_AS(func_020ada14, Shops_CanMail)
 
-/* func_020ada40: the same as Shops_AllAnsweredFox. */
-int Shops_AllAnsweredC(void)
+/* func_020ada40: the same as Shops_AllAnsweredFox; the game has both. */
+int Shops_AllAnsweredFoxCopy(void)
 {
     return ShopAnswers_AllCameIfLinked();
 }
-CLEAN_AS(func_020ada40, Shops_AllAnsweredC)
+CLEAN_AS(func_020ada40, Shops_AllAnsweredFoxCopy)
 
 /* The flag of a change made here: whether this system's player is of this town. */
 static int shops_player_is_local(void)

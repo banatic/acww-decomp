@@ -56,7 +56,7 @@ static_assert(offsetof(FoxLink, unk_14) == 0x14, "link word 0x14");
 #define FOX_MESSAGE_PASSWORD_WRONG 4  /* the password was wrong */
 #define FOX_MESSAGE_FULL 0x31         /* another customer is inside: come back later */
 #define FOX_MESSAGE_MEMBER_AGAIN 0x32 /* a member back again (FoxShop_CurrentPlayerMarked); its end leaves */
-#define FOX_MESSAGE_EARLY 0x34        /* before six */
+#define FOX_MESSAGE_CLOSED 0x34       /* closed: before six */
 
 #define FOX_LINK_SCREEN 5   /* the link's status FOX_SCREEN_ASK waits for */
 #define FOX_SCREEN_MODE 0xe /* the mode of group 9 it opens */
@@ -297,7 +297,7 @@ void Fox_UpdateTalk(Fox *fox)
 CLEAN_AS(_ZN18Obj_ov003_0223863019func_ov003_0221bd6cEv, Fox_UpdateTalk)
 
 /* _ZN18Obj_ov003_0223863019func_ov003_0221bd90Ev (entry of FOX_TALK): takes the receiver,
- * names it "sp_npc_fox" and picks its message: FOX_MESSAGE_EARLY when vtable slot 0x8c
+ * names it "sp_npc_fox" and picks its message: FOX_MESSAGE_CLOSED when vtable slot 0x8c
  * (Fox_IsOpen) says no, clearing bit 0 of the tent's flags unless the visit record
  * said 2; else FOX_MESSAGE_FULL when it did, FOX_MESSAGE_MEMBER_AGAIN when func_020ae2c4 agrees,
  * else FOX_MESSAGE_FIRST. The link's request is raised and func_02066914 runs on the receiver.
@@ -310,7 +310,7 @@ int Fox_EnterTalk(Fox *fox)
     MessageReceiver_SetName((MessageReceiver *) &fox->receiver_vtable, data_ov003_02238778);
     FoxSlotFn after_six = (FoxSlotFn) (uintptr_t) *(const u32 *) ((const u8 *) fox->vtable + 0x8c);
     if (after_six(fox) == 0) {
-        fox->message = FOX_MESSAGE_EARLY;
+        fox->message = FOX_MESSAGE_CLOSED;
         if (!(fox->flags & FOX_FLAG_FULL)) {
             TownObjects_Leave(fox->code, 0);
         }

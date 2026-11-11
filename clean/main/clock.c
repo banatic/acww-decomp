@@ -111,14 +111,14 @@ CLEAN_AS(func_0209df38, Clock_GetDateTime)
 
 /* func_0209df7c: four bytes, the weekday, hour, day and month, which its callers read as one
  * little-endian word to compare with ranges of month, day and hour. */
-void Clock_GetMonthDayHour(u8 *key)
+void Clock_GetDateKey(u8 *key)
 {
     key[0] = (u8) data_021dc744.weekday;
     key[1] = (u8) data_021dc754.hour;
     key[2] = (u8) data_021dc744.day;
     key[3] = (u8) data_021dc744.month;
 }
-CLEAN_AS(func_0209df7c, Clock_GetMonthDayHour)
+CLEAN_AS(func_0209df7c, Clock_GetDateKey)
 
 /* func_0209df94 */
 void Clock_GetDayMonth(u8 *day_month)

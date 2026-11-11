@@ -1193,14 +1193,14 @@ int NookClerk_EnterTalkLeave(NookClerk *clerk)
 CLEAN_AS(func_ov050_022642b4, NookClerk_EnterTalkLeave)
 
 /* func_ov050_02264304 (state 4's update): once the clerk's action is idle and, with the item on
- * display bought, the shops' answers are all in (Shops_AllAnsweredC): with main's block's flag
+ * display bought, the shops' answers are all in (Shops_AllAnsweredFoxCopy): with main's block's flag
  * 5 the player is put out (exit 0), else the clerk's event ends; then state 6. 1. */
 int NookClerk_UpdateTalk(NookClerk *clerk)
 {
     if (SceneAction_IsBusy(nclerk_action(clerk)) != 0) {
         return 1;
     }
-    if (clerk->bought != 0 && Shops_AllAnsweredC() == 0) {
+    if (clerk->bought != 0 && Shops_AllAnsweredFoxCopy() == 0) {
         return 1;
     }
     if (Block021d27ac_TestFlag((u32 *) Block021d27ac_Global(), NOOK_CLERK_BLOCK_FLAG_EXIT) != 0) {

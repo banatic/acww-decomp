@@ -293,7 +293,7 @@ int SickVillager_EnterPockets(SickVillager *villager)
 CLEAN_AS(func_ov004_02221c84, SickVillager_EnterPockets)
 
 /* func_ov004_02221c88 (state 5's update): once its talk is gone, the player's pockets are opened
- * for the items SickVillager_IsAskedItem takes; when they open, state 6.
+ * for the items SickVillager_IsMedicine takes; when they open, state 6.
  * REQUIRES: it has a talk (the ROM reads it without a check). */
 void SickVillager_UpdateAsk(SickVillager *villager)
 {
@@ -557,7 +557,7 @@ static void sk_say(SickVillager *villager, u8 message)
 /* func_ov004_0222224c (the talk scene's receiver slot 0x18, the player's answer): the answer
  * picked is read, the file ("q12_sick1_2", above stage 1 "q12_sick3_5") written into
  * data_ov004_02257fc4 and the answer noted. Then, when the record's stage named no player at its
- * line: answer 0 gives 7 to 9 with the item in the pockets (SickVillager_IsAskedItem), else 10 to 12;
+ * line: answer 0 gives 7 to 9 with the item in the pockets (SickVillager_IsMedicine), else 10 to 12;
  * answer 1 gives 0 to 3, another 4 to 6. When it named one: answer 0 gives 19 to 21, another 4
  * to 6. */
 void SickVillagerTalk_OnAnswer(SickVillagerTalk *talk)
@@ -1000,7 +1000,7 @@ CLEAN_AS(func_ov004_02222950, SickVillager_Init)
 
 /* func_ov004_02222a30 (the pockets' predicate, handed to Pockets_Select by its symbol): whether a
  * slot in the state 0 holds the item 0x155e, by furniture number when the code is furniture. */
-int SickVillager_IsAskedItem(u16 *item, int state)
+int SickVillager_IsMedicine(u16 *item, int state)
 {
     if (state != 0) {
         return 0;
@@ -1012,7 +1012,7 @@ int SickVillager_IsAskedItem(u16 *item, int state)
     }
     return *item == SICK_VILLAGER_MEDICINE;
 }
-CLEAN_AS(func_ov004_02222a30, SickVillager_IsAskedItem)
+CLEAN_AS(func_ov004_02222a30, SickVillager_IsMedicine)
 
 /* func_ov004_02222a88 (its create function): allocates (zeroed) and builds a villager: the town
  * villager scene object, its talk scene and its tile grid. */

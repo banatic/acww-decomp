@@ -82,7 +82,7 @@ typedef struct AcornNpcFortunePart {
 
 void AcornNpcTalk_OnAnswer(AcornNpcTalk *talk);
 void AcornNpcTalk_OnLineEnded(AcornNpcTalk *talk);
-int AcornNpcTalk_IsItemInState0(u16 *item, int state);
+int AcornNpcTalk_IsPlainAcorn(u16 *item, int state);
 void AcornNpcTalk_FirstLine(AcornNpcTalk *talk, AcornNpcLine *out);
 void AcornNpcTalk_Begin(AcornNpcTalk *talk, AcornNpc *owner);
 void *AcornNpcTalk_Delete(void *talk);

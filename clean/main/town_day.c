@@ -539,7 +539,7 @@ void TownDay_Pass(TownDay *town, const DateTime *from, const DateTime *to, int d
             TownSpawn_PutFlower(town, map, wide, high);
         }
 
-        TownSpawn_HousesForDays(town, map, to, days);
+        TownSpawn_PlantFlowersForDays(town, map, to, days);
         MomDate mom_date = {to->year, to->month, to->day};
         TownObjects_ClearMisplacedFootprints();
         TownDay_UpdateEvents(town, map, wide, high, to, loaded);
@@ -723,7 +723,7 @@ CLEAN_AS(func_02047730, TownDay_RemoveEventBuildings)
 void TownDay_EndEvents(TownDay *town, AcreMap *map, int wide, int high, StateBlock *block)
 {
     EventKey now;
-    Clock_GetMonthDayHour((u8 *) &now);
+    Clock_GetDateKey((u8 *) &now);
     const TownDayEvent *event = (const TownDayEvent *) (uintptr_t) TownRecord_Event(0);
     for (int i = 0; i < TOWN_DAY_EVENTS; i++, event++) {
         u16 id = event->id;
@@ -799,7 +799,7 @@ void TownDay_StartEvents(TownDay *town, AcreMap *map, int wide, int high, const 
 {
     EventCalendarEvent *event = EventCalendar_Today();
     EventKey now;
-    Clock_GetMonthDayHour((u8 *) &now);
+    Clock_GetDateKey((u8 *) &now);
     int started = TownStartDay_IsSet(town_day_start_day_of(block));
     for (int i = 0; i < 7; i++, event++) {
         u16 id = event->id;
@@ -941,12 +941,12 @@ void TownDay_PutCode6dIn(TownDay *town, AcreMap *map, int acre_x, int acre_z)
 CLEAN_AS(func_02047ac0, TownDay_PutCode6dIn)
 
 /* func_02047bc8: when event 0xe starts, flower codes around the house of every villager that
- * counts (TownSpawn_AroundHouses), for the event's days. */
+ * counts (TownSpawn_PlantFlowersAroundHouses), for the event's days. */
 void TownDay_StartEvent0e(TownDay *town, AcreMap *map, EventCalendarEvent *event, const DateTime *today, int loaded,
                           int started, StateBlock *block)
 {
     int days = TownDay_EventDays(town, TOWN_DAY_EVENT_0E, event, today, loaded, started, block);
-    TownSpawn_AroundHouses(town, map, 1, days);
+    TownSpawn_PlantFlowersAroundHouses(town, map, 1, days);
 }
 CLEAN_AS(func_02047bc8, TownDay_StartEvent0e)
 

@@ -44,7 +44,7 @@ extern const u8 data_ov087_022793c0[];
  * AcornNpcTalk_OnLineEnded), so declared without a bound. */
 extern const AcornNpcLevel data_ov087_02279324[];
 
-/* The game's pocket predicate handed to Pockets_Select (AcornNpcTalk_IsItemInState0). */
+/* The game's pocket predicate handed to Pockets_Select (AcornNpcTalk_IsPlainAcorn). */
 extern int func_ov087_02278f04(u16 *item, int state);
 
 /* The daily bits of the current player, and the player record's flag of the first meeting. */
@@ -341,14 +341,14 @@ CLEAN_AS(func_ov087_02278cb0, AcornNpcTalk_OnLineEnded)
 
 /* func_ov087_02278f04 (the predicate AcornNpcTalk_OnLineEnded selects the pockets with): an
  * item 0x1542-0x1546 in state 0. */
-int AcornNpcTalk_IsItemInState0(u16 *item, int state)
+int AcornNpcTalk_IsPlainAcorn(u16 *item, int state)
 {
     if (state != 0) {
         return 0;
     }
     return act_is_taken(*item);
 }
-CLEAN_AS(func_ov087_02278f04, AcornNpcTalk_IsItemInState0)
+CLEAN_AS(func_ov087_02278f04, AcornNpcTalk_IsPlainAcorn)
 
 /* func_ov087_02278f2c (slot 0x78, the line the talk starts with), of "sp_npc_acorn": the first
  * talk ever (the player record's flag 0x0f clear) line 0, the flag and the daily bit 0x19 then

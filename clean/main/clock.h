@@ -32,7 +32,7 @@ int Clock_Second(void);
 int Clock_Year(void);
 void Clock_ReadRtcDateTime(DateTime *now);
 void Clock_GetDateTime(DateTime *now);
-void Clock_GetMonthDayHour(u8 *key);
+void Clock_GetDateKey(u8 *key);
 void Clock_GetDayMonth(u8 *day_month);
 void Clock_Refresh(const void *skip_check);
 void Clock_Init(void);

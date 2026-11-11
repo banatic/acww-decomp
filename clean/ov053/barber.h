@@ -89,7 +89,7 @@ void Barber_SetState(Barber *barber, int state);
 
 /* What it asks about the player (barber.c). */
 int Barber_IsPaid(int unused);
-int Barber_WearsHat(void *unused);
+int Barber_WearsHeadItem(void *unused);
 int Barber_CheckAtExit(Barber *barber);
 int Barber_CheckLeaving(Barber *barber);
 int Barber_CheckSeated(Barber *barber);

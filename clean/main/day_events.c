@@ -60,7 +60,7 @@ int DayEvents_PlayerHas(int year, int month, int day, u8 *event)
     }
 
     u8 marked;
-    DayEvents_MarkEvent((DayEventMark *) PlayerRecord_DayEventMark(record), &marked);
+    DayEvents_GetMarkEvent((DayEventMark *) PlayerRecord_DayEventMark(record), &marked);
     const u8 *date = DayEvents_MarkDate((DayEventMark *) PlayerRecord_DayEventMark(record));
 
     int kind = DAY_EVENT_KIND(*event);
@@ -165,11 +165,11 @@ void DayEvents_SetMark(DayEventMark *mark, const u8 *event)
 CLEAN_AS(func_02088728, DayEvents_SetMark)
 
 /* func_02088748: the marked event byte copied to *event. */
-void DayEvents_MarkEvent(const DayEventMark *mark, u8 *event)
+void DayEvents_GetMarkEvent(const DayEventMark *mark, u8 *event)
 {
     MI_CpuCopy8(&mark->event, event, 1);
 }
-CLEAN_AS(func_02088748, DayEvents_MarkEvent)
+CLEAN_AS(func_02088748, DayEvents_GetMarkEvent)
 
 /* func_02088754: no event marked (the date is kept). */
 void DayEvents_ClearMark(DayEventMark *mark)

@@ -39,7 +39,7 @@ int DayEvents_PlayerHas(int year, int month, int day, u8 *event);
 int DayEvents_Find(int year, u8 month, u8 day, u8 *event);
 u8 *DayEvents_MarkDate(DayEventMark *mark);
 void DayEvents_SetMark(DayEventMark *mark, const u8 *event);
-void DayEvents_MarkEvent(const DayEventMark *mark, u8 *event);
+void DayEvents_GetMarkEvent(const DayEventMark *mark, u8 *event);
 void DayEvents_ClearMark(DayEventMark *mark);
 void DayEvents_MarkDestruct(DayEventMark *mark);
 void DayEvents_MarkConstruct(DayEventMark *mark);

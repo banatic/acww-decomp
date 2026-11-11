@@ -2,7 +2,7 @@
  * "q12_sick3_5" (class vtable 0x022541d8, 0xa94 bytes, made by SickVillager_New): a town
  * villager scene object (main's villager_scene_slots.h) that walks about the room, stops now
  * and then for an act, talks to this console's player and may be offered, from the player's
- * pockets, the item 0x155e (the predicate SickVillager_IsAskedItem).
+ * pockets, the item 0x155e (the predicate SickVillager_IsMedicine).
  *
  * The stage of the town's villager sickness record (main's villager_sickness.h, byte 0xba) is read at
  * its set-up into its talk scene; above stage 1 the base's byte 0x897 is set: its file is then
@@ -123,7 +123,7 @@ int SickVillager_Draw(SickVillager *villager);
 int SickVillager_DrawModel(SickVillager *villager);
 int SickVillager_Start(SickVillager *villager);
 int SickVillager_Init(SickVillager *villager);
-int SickVillager_IsAskedItem(u16 *item, int state);
+int SickVillager_IsMedicine(u16 *item, int state);
 SickVillager *SickVillager_New(void);
 
 #endif

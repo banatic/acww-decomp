@@ -70,7 +70,7 @@ void FoxTentTalk_Sell(FoxTentTalk *talk);
 int FoxTentTalk_ShopSoldOut(FoxTentTalk *talk);
 
 /* Picking one of a set of variants, each once before any again. */
-int FoxTent_PickUnused(int unused, const u8 *used, int count);
-int FoxTent_CountUnused(int unused, const u8 *used, int count);
+int FoxTentTalk_PickUnused(int unused, const u8 *used, int count);
+int FoxTentTalk_CountUnused(int unused, const u8 *used, int count);
 
 #endif

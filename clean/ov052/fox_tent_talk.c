@@ -169,7 +169,7 @@ static int fox_tent_talk_same_player(const DesignCreator *a, const DesignCreator
  * first when that was the last one); when it is noted, `told` (when given) gets `item`. */
 static int fox_tent_talk_pick_variant(FoxTent *fox, u8 *used, u16 *told, const u16 *item)
 {
-    int variant = FoxTent_PickUnused((int) (uintptr_t) fox, used, FOX_TENT_LINE_VARIANTS);
+    int variant = FoxTentTalk_PickUnused((int) (uintptr_t) fox, used, FOX_TENT_LINE_VARIANTS);
     if (told != NULL) {
         if (used[variant] == 0) {
             used[variant] = 1;
@@ -178,7 +178,7 @@ static int fox_tent_talk_pick_variant(FoxTent *fox, u8 *used, u16 *told, const u
     } else {
         used[variant] = 1;
     }
-    if (FoxTent_CountUnused((int) (uintptr_t) fox, used, FOX_TENT_LINE_VARIANTS) == 0) {
+    if (FoxTentTalk_CountUnused((int) (uintptr_t) fox, used, FOX_TENT_LINE_VARIANTS) == 0) {
         MI_CpuFill8(used, 0, FOX_TENT_LINE_VARIANTS);
         used[variant] = 1;
         if (told != NULL) {
@@ -256,9 +256,9 @@ CLEAN_AS(func_ov052_022610cc, FoxTentTalk_SetSequence)
 
 /* func_ov052_02261158: the place of one of the zero bytes among the `count` of `used`, at random
  * (MainRandom_Below of their number); 0 when there is none. */
-int FoxTent_PickUnused(int unused, const u8 *used, int count)
+int FoxTentTalk_PickUnused(int unused, const u8 *used, int count)
 {
-    int left = (int) MainRandom_Below(FoxTent_CountUnused(unused, used, count));
+    int left = (int) MainRandom_Below(FoxTentTalk_CountUnused(unused, used, count));
     for (int i = 0; i < count; i++) {
         if (used[i] == 0) {
             if (left == 0) {
@@ -269,10 +269,10 @@ int FoxTent_PickUnused(int unused, const u8 *used, int count)
     }
     return 0;
 }
-CLEAN_AS(func_ov052_02261158, FoxTent_PickUnused)
+CLEAN_AS(func_ov052_02261158, FoxTentTalk_PickUnused)
 
 /* func_ov052_0226118c: the number of zero bytes among the `count` of `used`. */
-int FoxTent_CountUnused(int unused, const u8 *used, int count)
+int FoxTentTalk_CountUnused(int unused, const u8 *used, int count)
 {
     (void) unused;
     int zeros = 0;
@@ -283,7 +283,7 @@ int FoxTent_CountUnused(int unused, const u8 *used, int count)
     }
     return zeros;
 }
-CLEAN_AS(func_ov052_0226118c, FoxTent_CountUnused)
+CLEAN_AS(func_ov052_0226118c, FoxTentTalk_CountUnused)
 
 /* ---- The line it starts with */
 

@@ -1320,7 +1320,7 @@ What reading the Clean code found about the groups above; counts are of function
   for sale makes Nook offer nothing (line 0x0a), and its answer leaves the listed items
   unconverted (NookClerkTalk_OnAnswerConvert): shop-sell-worthless.
 - A roof paint (0x1521-0x1530) put on the store's shelf in the save is sold by the paint row of
-  the host or a lone player (line 0x1e, then NookClerkTalk_PaintBought); line 0x2e and its
+  the host or a lone player (line 0x1e, then NookClerkTalk_AfterPurchase); line 0x2e and its
   answer NookClerkTalk_OnAnswerPaint belong to the row of a guest of a linked session
   (ov050/nook_clerk.c, TalkChecks_IsHostOrAlone), so they need a second system.
 - Event line tables: on Saturday 19 September at 19:30 (event index 2) villager 0's talks drew

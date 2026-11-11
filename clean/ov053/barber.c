@@ -265,7 +265,7 @@ CLEAN_AS(func_ov053_02260474, Barber_IsPaid)
 
 /* func_ov053_02260488: whether the current player's record has an accessory (its item C) or a
  * hat. */
-int Barber_WearsHat(void *unused)
+int Barber_WearsHeadItem(void *unused)
 {
     (void) unused;
     u8 *record = PlayerRecords_Current();
@@ -274,7 +274,7 @@ int Barber_WearsHat(void *unused)
     }
     return *PlayerRecord_HeadItem(record) != ITEM_CODE_NONE;
 }
-CLEAN_AS(func_ov053_02260488, Barber_WearsHat)
+CLEAN_AS(func_ov053_02260488, Barber_WearsHeadItem)
 
 /* func_ov053_022604bc: when this console's player stands at the shop's exit (the map's object
  * claimed at its start), the farewell topic and an event of kind 6 asked for. Whether it was. */
@@ -333,7 +333,7 @@ int Barber_CheckSeated(Barber *barber)
         return 0;
     }
     if ((tile_x == BARBER_CHAIR_TILE_X0 || tile_x == BARBER_CHAIR_TILE_X1) && tile_z == BARBER_CHAIR_TILE_Z) {
-        if (Barber_WearsHat(barber)) {
+        if (Barber_WearsHeadItem(barber)) {
             BarberTalk_SetTopic(&barber->talk, BARBER_TOPIC_SEATED_HAT);
         } else {
             BarberTalk_SetTopic(&barber->talk, BARBER_TOPIC_SEATED);
@@ -676,7 +676,7 @@ int Barber_UpdateTalk(Barber *barber)
     ScreenPanels_ClearRequest(offsetof(Barber, state));
     if (barber_seated_topic(barber)) {
         Barber_SetState(barber, BARBER_STATE_TO_CUT);
-    } else if (barber->talk.topic == BARBER_TOPIC_CUT && Barber_WearsHat(barber)) {
+    } else if (barber->talk.topic == BARBER_TOPIC_CUT && Barber_WearsHeadItem(barber)) {
         BarberTalk_SetTopic(&barber->talk, BARBER_TOPIC_HAT_BACK);
         Barber_SetState(barber, BARBER_STATE_WALK_B);
         return 1;

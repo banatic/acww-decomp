@@ -813,7 +813,7 @@ CLEAN_AS(func_ov050_02261918, NookClerkTalk_ReactToPurchase)
 
 /* func_ov050_02261bb8 (the end of line 0x22, a purchase thanked for): unless the item is
  * empty, a roof paint gives line 0x2f and becomes the house's look; anything else line 0x23. */
-void NookClerkTalk_PaintBought(NookClerkTalk *talk)
+void NookClerkTalk_AfterPurchase(NookClerkTalk *talk)
 {
     if (ntalk_is_empty(&talk->owner->item)) {
         return;
@@ -828,7 +828,7 @@ void NookClerkTalk_PaintBought(NookClerkTalk *talk)
         talk->line = 0x23;
     }
 }
-CLEAN_AS(func_ov050_02261bb8, NookClerkTalk_PaintBought)
+CLEAN_AS(func_ov050_02261bb8, NookClerkTalk_AfterPurchase)
 
 /* func_ov050_02261c7c (the end of line 0x18): the catalog's screen (mode 0x3e), sequence 1. */
 void NookClerkTalk_OpenOrder(NookClerkTalk *talk)
@@ -886,7 +886,7 @@ void NookClerkTalk_OnLineEnded(NookClerkTalk *talk)
         &data_ov050_022656d0, /* 0x07: NookClerkTalk_OpenSell */
         &data_ov050_02265730, /* 0x13: NookClerkTalk_PaySale */
         &data_ov050_02265770, /* 0x18: NookClerkTalk_OpenOrder */
-        &data_ov050_022655c8, /* 0x22: NookClerkTalk_PaintBought */
+        &data_ov050_022655c8, /* 0x22: NookClerkTalk_AfterPurchase */
         &data_ov050_022655c0, /* 0x23: NookClerkTalk_ReactToPurchase */
         &data_ov050_022655b8, /* 0x49: NookClerkTalk_TakeNextLoan */
         &data_ov050_022655b0, /* 0x4b: NookClerkTalk_TakeNextLoan */

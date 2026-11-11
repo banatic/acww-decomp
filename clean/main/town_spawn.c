@@ -440,7 +440,7 @@ CLEAN_AS(func_020487d8, TownSpawn_PutFlower)
 
 /* func_02048824: unless event 0xe is on at `today` (by the calendar's rules), flower codes
  * around the houses of the villagers in mode 5, for the days that passed (at most 7). */
-void TownSpawn_HousesForDays(TownDay *town, AcreMap *map, const DateTime *today, int days)
+void TownSpawn_PlantFlowersForDays(TownDay *town, AcreMap *map, const DateTime *today, int days)
 {
     DateTime when;
     MI_CpuCopy8(today, &when, sizeof when);
@@ -450,14 +450,14 @@ void TownSpawn_HousesForDays(TownDay *town, AcreMap *map, const DateTime *today,
     if (days > TOWN_SPAWN_HOUSE_DAYS) {
         days = TOWN_SPAWN_HOUSE_DAYS;
     }
-    TownSpawn_AroundHouses(town, map, 0, days);
+    TownSpawn_PlantFlowersAroundHouses(town, map, 0, days);
 }
-CLEAN_AS(func_02048824, TownSpawn_HousesForDays)
+CLEAN_AS(func_02048824, TownSpawn_PlantFlowersForDays)
 
 /* func_0204886c: flower codes around the house of each villager that counts for the calendar
  * (EventCalendar_VillagerCounts, the sick one left out) and has a house; unless `all`,
  * only the villagers whose record is in mode 5. */
-void TownSpawn_AroundHouses(TownDay *town, AcreMap *map, int all, int days)
+void TownSpawn_PlantFlowersAroundHouses(TownDay *town, AcreMap *map, int all, int days)
 {
     int sick = VillagerSickness_VillagerIndex(&data_021e5a2c);
     for (int i = 0; i < TOWN_SPAWN_VILLAGERS; i++) {
@@ -476,17 +476,17 @@ void TownSpawn_AroundHouses(TownDay *town, AcreMap *map, int all, int days)
             continue;
         }
         TownPlaceTile house = {plot->x, plot->z};
-        TownSpawn_AroundHouse(town, map, &house, days);
+        TownSpawn_PlantFlowersAroundHouse(town, map, &house, days);
     }
 }
-CLEAN_AS(func_0204886c, TownSpawn_AroundHouses)
+CLEAN_AS(func_0204886c, TownSpawn_PlantFlowersAroundHouses)
 
 /* func_020488e4: up to two flower codes for each day (data_020cabc4, drawn) put on the free
  * tiles of the ring around the house (data_020cab28) that TownPlace_TestWord06NotNegative accepts, each
  * tile drawn among those left.
  *
  * QUIRK: with `days` 0 or less one code is put all the same. */
-void TownSpawn_AroundHouse(TownDay *town, AcreMap *map, const TownPlaceTile *house, int days)
+void TownSpawn_PlantFlowersAroundHouse(TownDay *town, AcreMap *map, const TownPlaceTile *house, int days)
 {
     TownPlaceTile free_tiles[TOWN_SPAWN_RING];
     int count = 0;
@@ -515,7 +515,7 @@ void TownSpawn_AroundHouse(TownDay *town, AcreMap *map, const TownPlaceTile *hou
         count--;
     }
 }
-CLEAN_AS(func_020488e4, TownSpawn_AroundHouse)
+CLEAN_AS(func_020488e4, TownSpawn_PlantFlowersAroundHouse)
 
 /* func_020489c4: weeds, codes 0x21-0x24 (drawn), put on three different acres of a 4 x 4 grid drawn
  * at random.

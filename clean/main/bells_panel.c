@@ -199,14 +199,14 @@ CLEAN_AS(func_0208b79c, BellsPanel_Count)
 
 /* func_0208b800: the number shown set to the bells at once; the counting and the freeze
  * cleared (the counting sound left as it is). */
-void BellsPanel_TakeBells(BellsPanel *panel)
+void BellsPanel_SnapToBells(BellsPanel *panel)
 {
     panel->bells = BellsPanel_Bells(panel);
     BellsPanel_FormatBells(panel);
     panel->counting = 0;
     panel->frozen = 0;
 }
-CLEAN_AS(func_0208b800, BellsPanel_TakeBells)
+CLEAN_AS(func_0208b800, BellsPanel_SnapToBells)
 
 /* func_0208b824 */
 void BellsPanel_FreeTextBox(BellsPanel *panel)
@@ -302,7 +302,7 @@ void BellsPanel_EnterOpening(BellsPanel *panel)
     CellAnim_SetData(&panel->anim, &data_020d5c54);
     CellAnim_SetHold(&panel->anim, 1);
     CellAnim_Restart(&panel->anim);
-    BellsPanel_TakeBells(panel);
+    BellsPanel_SnapToBells(panel);
     BellsPanel_OpenTextBox(panel);
 }
 CLEAN_AS(func_0208b954, BellsPanel_EnterOpening)
@@ -388,7 +388,7 @@ CLEAN_AS(func_0208ba10, BellsPanel_Rewind)
 void BellsPanel_Reset(BellsPanel *panel)
 {
     panel->shown = 0;
-    BellsPanel_TakeBells(panel);
+    BellsPanel_SnapToBells(panel);
     BellsPanel_ResetShift(panel);
     BellsPanel_EnterClosed(panel);
 }

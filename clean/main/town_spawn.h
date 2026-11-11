@@ -49,9 +49,9 @@ void TownSpawn_PickAcreWithoutLily(TownSpawnAcre *out, TownDay *town, int wide, 
 void TownSpawn_PutClover(TownDay *town, AcreMap *map, int wide, int high);
 void TownSpawn_PutDandelion(TownDay *town, AcreMap *map, int wide, int high);
 void TownSpawn_PutFlower(TownDay *town, AcreMap *map, int wide, int high);
-void TownSpawn_HousesForDays(TownDay *town, AcreMap *map, const DateTime *today, int days);
-void TownSpawn_AroundHouses(TownDay *town, AcreMap *map, int all, int days);
-void TownSpawn_AroundHouse(TownDay *town, AcreMap *map, const TownPlaceTile *house, int days);
+void TownSpawn_PlantFlowersForDays(TownDay *town, AcreMap *map, const DateTime *today, int days);
+void TownSpawn_PlantFlowersAroundHouses(TownDay *town, AcreMap *map, int all, int days);
+void TownSpawn_PlantFlowersAroundHouse(TownDay *town, AcreMap *map, const TownPlaceTile *house, int days);
 void TownSpawn_PutWeeds(TownDay *town, AcreMap *map);
 int TownSpawn_IsListed(TownDay *town, const TownSpawnAcre *acre, const TownSpawnAcre *list, int count);
 
