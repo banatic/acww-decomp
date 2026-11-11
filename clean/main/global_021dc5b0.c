@@ -6,11 +6,11 @@
 extern u8 data_021dc5b0;
 
 /* func_0209d068 */
-unsigned char Global021dc5b0_Get(void)
+unsigned char Global021dc5b0_Value(void)
 {
     return data_021dc5b0;
 }
-CLEAN_AS(func_0209d068, Global021dc5b0_Get)
+CLEAN_AS(func_0209d068, Global021dc5b0_Value)
 
 /* func_0209d074 */
 void Global021dc5b0_Set(unsigned char value)

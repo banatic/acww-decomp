@@ -344,7 +344,7 @@ void SystemPacket_WriteSenderRecord(u8 *payload, u32 length, int sender)
     int offset;
     MI_CpuCopy8(payload, &offset, 4);
     int which = sender + 3;
-    u8 *record = PlayerRecords_Get(which);
+    u8 *record = PlayerRecords_At(which);
     MI_CpuCopy8(payload + 4, record + offset, length - 4);
     SessionPlayers_SetRecordNumber(sender, which);
 }
@@ -488,7 +488,7 @@ CLEAN_AS(func_0207570c, SystemPacket_SendActivityFlag101)
  * record, to the host. */
 int SystemPacket_SendKeptLetters(u8 *chunks_sent)
 {
-    u8 *record = PlayerRecords_Get(SessionPlayers_RecordNumber(data_020ccf94->local_player));
+    u8 *record = PlayerRecords_At(SessionPlayers_RecordNumber(data_020ccf94->local_player));
     u8 *block = (u8 *) PlayerRecord_KeptLetters(record);
     return SystemPacket_SendInChunks(chunks_sent, block, KEPT_LETTERS_SIZE, SYSTEM_WRITE_KEPT_LETTERS, SYSTEM_PACKET_TO_HOST);
 }
@@ -497,7 +497,7 @@ CLEAN_AS(func_02075774, SystemPacket_SendKeptLetters)
 /* func_020757ac: the next chunk of this system's player record, to the host. */
 int SystemPacket_SendOwnRecord(u8 *chunks_sent)
 {
-    u8 *record = PlayerRecords_Get(SessionPlayers_RecordNumber(data_020ccf94->local_player));
+    u8 *record = PlayerRecords_At(SessionPlayers_RecordNumber(data_020ccf94->local_player));
     return SystemPacket_SendInChunks(chunks_sent, record, PLAYER_RECORD_SIZE, SYSTEM_WRITE_OWN_RECORD, SYSTEM_PACKET_TO_HOST);
 }
 CLEAN_AS(func_020757ac, SystemPacket_SendOwnRecord)
@@ -674,7 +674,7 @@ CLEAN_AS(func_02075d9c, SystemPacket_SendSharedRecords)
 /* func_02075dcc: the next chunk of this system's player record (SystemPacket_WriteSenderRecord). */
 int SystemPacket_SendOwnRecordTo(u8 *chunks_sent, u32 to)
 {
-    u8 *record = PlayerRecords_Get(SessionPlayers_RecordNumber(data_020ccf94->local_player));
+    u8 *record = PlayerRecords_At(SessionPlayers_RecordNumber(data_020ccf94->local_player));
     return SystemPacket_SendInChunks(chunks_sent, record, PLAYER_RECORD_SIZE, SYSTEM_WRITE_SENDER_RECORD, (u16) to);
 }
 CLEAN_AS(func_02075dcc, SystemPacket_SendOwnRecordTo)

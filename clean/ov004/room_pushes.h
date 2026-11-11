@@ -1,7 +1,7 @@
 /* The room's two pushes (data_ov004_02259784, RoomPushes_Records): what a room object's push box
  * (push_box.h) records when an actor pushes against a side of it, one record for the objects
  * on the floor and one for those on top of others (by RoomObject_Layer). The objects that can
- * be pushed read theirs back (RoomPushes_FindObject, RoomPushes_Get). The array is a C++
+ * be pushed read theirs back (RoomPushes_FindObject, RoomPushes_At). The array is a C++
  * array of two objects (constructed by the overlay's static initialization) and is reset when
  * the room starts, every frame, and when it ends. */
 #ifndef CLEAN_OV004_ROOM_PUSHES_H
@@ -55,7 +55,7 @@ void RoomPushes_ToggleSwitch(RoomPush *pushes);
 struct RoomObject;
 struct RoomObject *RoomPushes_ObjectOf(RoomPush *pushes, int index);
 RoomPush *RoomPushes_FindObject(RoomPush *pushes, struct RoomObject *object);
-RoomPush *RoomPushes_Get(RoomPush *pushes, int index);
+RoomPush *RoomPushes_At(RoomPush *pushes, int index);
 RoomPush *RoomPushes_Records(void);
 int RoomPushes_Facing(RoomPush *push);
 u32 RoomPushes_Side(RoomPush *push);

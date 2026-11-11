@@ -289,7 +289,7 @@ static unsigned int mtalk_picked_design(u8 *record)
 {
     u8 place = GroupParams_Arg();
     PlayerDesigns *designs = PlayerRecord_Designs(record);
-    return DesignOrder_Get((unsigned char *) (uintptr_t) (u32) PlayerDesigns_Order(designs), place);
+    return DesignOrder_At((unsigned char *) (uintptr_t) (u32) PlayerDesigns_Order(designs), place);
 }
 
 /* After the player's design `index` changed: a player wearing its clothes or its hat (the

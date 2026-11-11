@@ -225,7 +225,7 @@ CLEAN_AS(func_02072f74, DesignInfo_Palette)
 /* func_02072f88: the 16 colors of the design's palette. */
 int DesignInfo_PaletteColors(DesignInfo *info)
 {
-    DesignManager *manager = (DesignManager *) (uintptr_t) DesignManager_Get();
+    DesignManager *manager = (DesignManager *) (uintptr_t) DesignManager_Global();
     return (int) DesignManager_Palette(manager, DesignInfo_Palette(info));
 }
 CLEAN_AS(func_02072f88, DesignInfo_PaletteColors)

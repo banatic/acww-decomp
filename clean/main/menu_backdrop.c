@@ -356,9 +356,9 @@ CLEAN_AS(func_0206eec4, MenuBackdrop_StepIdle)
  * QUIRK: the step is not checked against the table's size. */
 void MenuBackdrop_Update(void)
 {
-    typedef int (*MenuBackdropStep)(void);
+    typedef int (*MenuBackdropStepFn)(void);
 
-    MenuBackdropStep step = (MenuBackdropStep) (uintptr_t) data_020df2a4[data_021cfc20];
+    MenuBackdropStepFn step = (MenuBackdropStepFn) (uintptr_t) data_020df2a4[data_021cfc20];
     if (!step()) {
         return;
     }

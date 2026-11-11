@@ -268,7 +268,7 @@ int Boar_Leave(Boar *self)
     if (SpecialSceneObject_Leave(self) == 0) {
         return 0;
     }
-    TownSpot_Set((TownSpot *) Block021d27ac_Part04(Block021d27ac_Get()), (u32) self->position.x, (u32) self->position.z);
+    TownSpot_Set((TownSpot *) Block021d27ac_Part04(Block021d27ac_Global()), (u32) self->position.x, (u32) self->position.z);
     return 1;
 }
 CLEAN_AS(func_ov073_022796c8, Boar_Leave)

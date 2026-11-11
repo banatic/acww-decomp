@@ -130,11 +130,11 @@ static void clear_slots(BgModels *self)
 }
 
 /* func_0203750c: the address of the background models. */
-int BgModels_Get(void)
+int BgModels_Global(void)
 {
     return (int) (uintptr_t) &data_021c52c0;
 }
-CLEAN_AS(func_0203750c, BgModels_Get)
+CLEAN_AS(func_0203750c, BgModels_Global)
 
 /* func_02037514: mark `index` of a "mgt0" file (`marks` points at its count), its position
  * turned to fx32. The index is not checked; the callers loop up to BgModels_MarkCount. */

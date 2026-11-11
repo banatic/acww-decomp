@@ -203,7 +203,7 @@ static void carry_out(LinkState *state, NetSession *session, int slot)
     ScenePlace_SavePlayer(SceneTables_EntryRecord(), 0);
     if (LinkState_Kind(state) == KIND_JOIN) {
         const StateBlockTown *town = &data_021dc7a8.town;
-        u8 *record = PlayerRecords_Get(LinkState_Chosen(state) + GUEST_RECORD_FIRST);
+        u8 *record = PlayerRecords_At(LinkState_Chosen(state) + GUEST_RECORD_FIRST);
         const StateBlockTown *paired = NULL;
         if (record != NULL && PairedTown_ChildEscorted(PlayerRecord_PairedTown(record)) != 0) {
             paired = (const StateBlockTown *) (void *) PairedTown_Town(PlayerRecord_PairedTown(record));

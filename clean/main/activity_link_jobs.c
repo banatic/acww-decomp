@@ -277,8 +277,8 @@ void ActivityLinkJobs_Step14(Activity *activity)
             int aid = Net_GetMyAid();
             NetSession *session = data_020ccf94;
             session->local_slot = aid;
-            MI_CpuCopy8(PlayerRecords_Get(SessionPlayers_RecordNumber(session->local_player)),
-                        PlayerRecords_Get(session->local_slot + GUEST_RECORD_FIRST), PLAYER_RECORD_SIZE);
+            MI_CpuCopy8(PlayerRecords_At(SessionPlayers_RecordNumber(session->local_player)),
+                        PlayerRecords_At(session->local_slot + GUEST_RECORD_FIRST), PLAYER_RECORD_SIZE);
             data_020e37f8 = SessionPlayers_RecordNumber(session->local_player);
             session->local_player = aid;
             u8 count = 0;

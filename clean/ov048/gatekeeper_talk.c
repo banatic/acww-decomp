@@ -645,7 +645,7 @@ void GatekeeperTalk_WaitStatus0(GatekeeperTalk *talk)
     lost = !Net_UpdateConnection();
     if (GatekeeperTalk_CheckError(talk, lost)) {
         Session_FinishLocalStatus();
-        if (MiddleSpot_HasMark((const MiddleSpot *) (const void *) Block021d27ac_Part0c(Block021d27ac_Get()))) {
+        if (MiddleSpot_HasMark((const MiddleSpot *) (const void *) Block021d27ac_Part0c(Block021d27ac_Global()))) {
             if (PairedTown_ChildEscorted(PlayerRecord_PairedTown(PlayerRecords_Current()))) {
                 PairedTown_ClearChildEscorted(PlayerRecord_PairedTown(PlayerRecords_Current()));
             }
@@ -656,7 +656,7 @@ void GatekeeperTalk_WaitStatus0(GatekeeperTalk *talk)
     status = Session_LocalStatus();
     if (status == GATEKEEPER_STATUS_ACCEPTED) {
         u16 members;
-        if (MiddleSpot_HasMark((const MiddleSpot *) (const void *) Block021d27ac_Part0c(Block021d27ac_Get()))) {
+        if (MiddleSpot_HasMark((const MiddleSpot *) (const void *) Block021d27ac_Part0c(Block021d27ac_Global()))) {
             if (!PairedTown_ChildEscorted(PlayerRecord_PairedTown(PlayerRecords_Current()))) {
                 PairedTown_SetChildEscorted(PlayerRecord_PairedTown(PlayerRecords_Current()));
             }

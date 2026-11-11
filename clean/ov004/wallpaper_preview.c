@@ -53,12 +53,12 @@ CLEAN_AS(func_ov004_022128d4, WallpaperPreview_Update)
  * "m_dummy_wall"; done when the material took it. */
 int WallpaperPreview_Start(WallpaperPreview *object)
 {
-    object->wallpaper = (u16) RoomPreview_Number(RoomPreview_Get());
+    object->wallpaper = (u16) RoomPreview_Number(RoomPreview_Global());
     object->shown_frames = 0;
     u16 item = object->wallpaper < WALLPAPER_COUNT ? (u16) (object->wallpaper + WALLPAPER_FIRST) : WALLPAPER_FIRST;
-    WallpaperFile_Load(RoomPreview_WallpaperFile(RoomPreview_Get()), &item);
+    WallpaperFile_Load(RoomPreview_WallpaperFile(RoomPreview_Global()), &item);
     G3dModel *model = object->base.model_resource;
-    void *texture = (void *) (uintptr_t) WallpaperFile_Texture(RoomPreview_WallpaperFile(RoomPreview_Get()));
+    void *texture = (void *) (uintptr_t) WallpaperFile_Texture(RoomPreview_WallpaperFile(RoomPreview_Global()));
     return VramCopyMaterial_Queue(&object->material_texture, (const u8 *) model, data_ov004_022531a0, texture, 0, 0) != 0;
 }
 CLEAN_AS(func_ov004_022128ec, WallpaperPreview_Start)

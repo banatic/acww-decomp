@@ -396,7 +396,7 @@ void MapMenu_FillMarks(MapMenu *self, TownMapMarker *markers)
 {
     for (int i = 0; i < MAP_MENU_EXTRA_MARKS; i++) {
         MapMenuMark *mark = &self->extra_marks[i];
-        const TownMapMarker *marker = TownMapMarkers_Get(markers, (unsigned int) i);
+        const TownMapMarker *marker = TownMapMarkers_PlacedAt(markers, (unsigned int) i);
         if (marker == NULL) {
             mark->kind = MAP_MENU_MARK_NONE;
             continue;
@@ -424,7 +424,7 @@ void MapMenu_FillMarks(MapMenu *self, TownMapMarker *markers)
     for (int i = 0; i < MAP_MENU_MARKS; i++) {
         unsigned int index = (unsigned int) i + MAP_MENU_EXTRA_MARKS;
         MapMenuMark *mark = &self->marks[i];
-        const TownMapMarker *marker = TownMapMarkers_Get(markers, index);
+        const TownMapMarker *marker = TownMapMarkers_PlacedAt(markers, index);
         if (marker == NULL) {
             mark->kind = MAP_MENU_MARK_NONE;
             continue;

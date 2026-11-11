@@ -144,7 +144,7 @@ int Gatekeeper_IsWaitingInPoseBA(Gatekeeper *self)
     if (SceneFace_AnimB((SceneFace *) (void *) ((u8 *) self + GATEKEEPER_FACE)) != GATEKEEPER_POSE_BA) {
         return 0;
     }
-    if (!MissingNpc1_IsFacingPlayerAtBA()) {
+    if (!MissingNpc1_IsFacingPlayerAtba()) {
         return 0;
     }
     return ((const TalkObject *) (const void *) self->talk.scene.talk)->state == TALK_OBJECT_WAITING;
@@ -410,7 +410,7 @@ int Gatekeeper_Start(Gatekeeper *self)
         }
         return 1;
     }
-    part = (Block021d27acPart20 *) Block021d27ac_Part20(Block021d27ac_Get());
+    part = (Block021d27acPart20 *) Block021d27ac_Part20(Block021d27ac_Global());
     if (Block021d27acPart20_Kind(part) == GATEKEEPER_PART20_KIND_TAKE_CARE ||
         Block021d27acPart20_Kind(part) == GATEKEEPER_PART20_KIND_FAREWELL) {
         if (Block021d27acPart20_Kind(part) == GATEKEEPER_PART20_KIND_TAKE_CARE) {

@@ -72,7 +72,7 @@ void LocalMp_SetMember(int aid, const u8 *mac);
 int LocalMp_Send(const void *buffer, u32 size, int to, void (*on_sent)(void *));
 int LocalMp_CanSend(void);
 u16 LocalMp_ConnectedAids(void);
-int LocalMp_GetAid(void);
+int LocalMp_Aid(void);
 u32 LocalMp_NextRandom(void);
 
 #endif

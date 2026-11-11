@@ -610,7 +610,7 @@ void GiraffeTalk_FirstLine(GiraffeTalk *talk, GiraffeLine *out)
         talk->first = GIRAFFE_TALK_FIRST_LOW;
     }
 
-    Block021d27ac *block = Block021d27ac_Get();
+    Block021d27ac *block = Block021d27ac_Global();
     if (Block021d27ac_TestFlag(&block->flags, GT_FLAG_NOT_PAID) != 0 && talk->first >= GIRAFFE_TALK_FIRST_AFTER_REMARK &&
         talk->first <= GIRAFFE_TALK_FIRST_LOW) {
         talk->first = GIRAFFE_TALK_FIRST_REFUSED;
@@ -735,7 +735,7 @@ void GiraffeTalk_TakePayment(GiraffeTalk *talk)
         SceneBells_Take(gt_owner_word(talk), talk->paid);
     } else {
         ScreenPanels_ClearRequest((unsigned int) confirmed);
-        Block021d27ac_SetFlag(&Block021d27ac_Get()->flags, GT_FLAG_NOT_PAID);
+        Block021d27ac_SetFlag(&Block021d27ac_Global()->flags, GT_FLAG_NOT_PAID);
     }
     gt_say(object, message);
 }

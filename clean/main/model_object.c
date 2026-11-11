@@ -209,7 +209,7 @@ int ModelObject_LoadWithDesign(ModelObject *object, const char *path, int player
         return 0;
     }
     object->model = ModelCache_KeepModel(model_at(func_02107828(file), 0), MODEL_OBJECT_NO_NAME);
-    DesignManager *designs = (DesignManager *) (uintptr_t) DesignManager_Get();
+    DesignManager *designs = (DesignManager *) (uintptr_t) DesignManager_Global();
     void *texture = (void *) (uintptr_t) DesignManager_PlayerTexture(designs, player, index);
     NNS_G3dForceBindMdlTex(object->model, texture, 0, 0);
     NNS_G3dForceBindMdlPltt(object->model, texture, 0, 0);

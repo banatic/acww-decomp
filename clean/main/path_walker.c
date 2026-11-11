@@ -1207,7 +1207,7 @@ CLEAN_AS(func_02013934, PathWalker_KeepTile)
  * route is chosen. Without a picker the walker keeps no goal. */
 void PathWalker_Start(PathWalker *self, Vec3 *position, u32 kind, int state, void *owner)
 {
-    typedef void (*PathWalkerPicker)(PathWalkerTile *out, void *walker, Vec3 *position, void *owner);
+    typedef void (*PathWalkerPickerFn)(PathWalkerTile *out, void *walker, Vec3 *position, void *owner);
 
     if (kind >= PATH_WALKER_KINDS) {
         return;
@@ -1222,7 +1222,7 @@ void PathWalker_Start(PathWalker *self, Vec3 *position, u32 kind, int state, voi
     }
     PathWalkerTile goal;
     void *object = MemberPointer_Object(pick, self);
-    ((PathWalkerPicker) (uintptr_t) MemberPointer_Code(pick, object))(&goal, object, position, owner);
+    ((PathWalkerPickerFn) (uintptr_t) MemberPointer_Code(pick, object))(&goal, object, position, owner);
     self->goal_x = (s32) goal.x;
     self->goal_z = (s32) goal.z;
     self->goal_acre_x = path_walker_asr(self->goal_x, 4);

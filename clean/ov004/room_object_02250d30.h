@@ -1,6 +1,6 @@
 /* A class of overlay 4's room objects (vtable 0x02250d30, receiver part 0x02250ddc, 0x848
  * bytes) that, once its model is bound, keeps the word at 0x10 of data_ov004_022596b0
- * (RoomPreview_Get, RoomPreview_Number) cut to 16 bits. The rest is the base class's
+ * (RoomPreview_Global, RoomPreview_Number) cut to 16 bits. The rest is the base class's
  * (room_object_life.h). */
 #ifndef CLEAN_OV004_ROOM_OBJECT_02250D30_H
 #define CLEAN_OV004_ROOM_OBJECT_02250D30_H

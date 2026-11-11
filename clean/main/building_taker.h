@@ -4,7 +4,7 @@
 #ifndef CLEAN_MAIN_BUILDING_TAKER_H
 #define CLEAN_MAIN_BUILDING_TAKER_H
 
-int BuildingTaker_Get(void);
+int BuildingTaker_Current(void);
 int BuildingTaker_Release(void *taker);
 int BuildingTaker_Claim(void *taker);
 

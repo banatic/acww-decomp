@@ -389,7 +389,7 @@ void SessionPlayers_WriteStateRecord(u8 *record, int id)
         if (SessionPlayers_State(&state, -1, SESSION_PLAYERS_OWN)) {
             built.state = (u8) (state + 1);
         }
-        PackedBytesHalf value = {.value = (u32) (s32) actor->unk_C84};
+        PackedBytesHalf value = {.value = (u32) (s32) actor->unk_c84};
         PackedBytes_WriteHalf(built.value, value);
         MI_CpuCopy8(&actor->saved, built.saved, sizeof(built.saved));
     } else {

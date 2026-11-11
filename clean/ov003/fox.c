@@ -304,11 +304,11 @@ CLEAN_AS(_ZN18Obj_ov003_0223863019func_ov003_0221bd6cEv, Fox_UpdateTalk)
  * REQUIRES: the receiver has a link once SceneObjectBase_TakeReceiver has taken it. */
 int Fox_EnterTalk(Fox *fox)
 {
-    typedef int (*FoxSlot)(Fox *fox);
+    typedef int (*FoxSlotFn)(Fox *fox);
 
     SceneObjectBase_TakeReceiver((SceneObjectBase *) fox, fox_receiver(fox));
     MessageReceiver_SetName((MessageReceiver *) &fox->receiver_vtable, data_ov003_02238778);
-    FoxSlot after_six = (FoxSlot) (uintptr_t) *(const u32 *) ((const u8 *) fox->vtable + 0x8c);
+    FoxSlotFn after_six = (FoxSlotFn) (uintptr_t) *(const u32 *) ((const u8 *) fox->vtable + 0x8c);
     if (after_six(fox) == 0) {
         fox->message = FOX_MESSAGE_EARLY;
         if (!(fox->flags & FOX_FLAG_FULL)) {

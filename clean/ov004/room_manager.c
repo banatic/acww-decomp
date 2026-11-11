@@ -385,7 +385,7 @@ int RoomManager_Release(RoomManager *room)
     if (RoomObjects_Capacity() > 1) {
         TvBroadcast_Release(&room->tv);
     }
-    RoomPreview_FreeFiles(RoomPreview_Get());
+    RoomPreview_FreeFiles(RoomPreview_Global());
     ModelPool_Destroy(&data_ov004_02259698);
     data_ov004_022595c0 = NULL;
     RoomPushes_Reset(RoomPushes_Records());
@@ -457,7 +457,7 @@ int RoomManager_Init(RoomManager *room)
         TvBroadcast_Init(&room->tv);
     }
     FurnitureMover_Load((FurnitureMover *) (void *) room->mover);
-    RoomPreview_AllocFiles(RoomPreview_Get());
+    RoomPreview_AllocFiles(RoomPreview_Global());
     RoomManager_PlaceMapFurniture(room);
     return 1;
 }

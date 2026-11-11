@@ -581,7 +581,7 @@ CLEAN_AS(func_ov123_0229b160, DesignEditor_SetColor)
 /* func_ov123_0229b174: the design palette's colours queued as layer 6's palette 14. */
 int DesignEditor_QueuePalette(DesignEditor *self)
 {
-    DesignManager *manager = (DesignManager *) (uintptr_t) DesignManager_Get();
+    DesignManager *manager = (DesignManager *) (uintptr_t) DesignManager_Global();
     int colors = (int) DesignManager_Palette(manager, self->palette);
     return LayerTask_QueuePalette(de_task(self, 0), colors, DESIGN_EDITOR_LAYER_CANVAS, 0xe);
 }
@@ -678,7 +678,7 @@ void DesignEditor_SavePlayerDesign(DesignEditor *self)
     Design_SetPixels(design, DesignEditor_Pixels(self));
     DesignInfo_SetCreatorLocal((DesignInfo *) (uintptr_t) Design_Info((unsigned int) (uintptr_t) design));
     DesignInfo_SetPalette((DesignInfo *) (uintptr_t) Design_Info((unsigned int) (uintptr_t) design), self->palette);
-    int slot = DesignOrder_Get((unsigned char *) (uintptr_t) PlayerDesigns_Order(designs), place);
+    int slot = DesignOrder_At((unsigned char *) (uintptr_t) PlayerDesigns_Order(designs), place);
     int worn = de_worn_slot(*PlayerRecord_Clothes(record), DESIGN_EDITOR_CLOTHES_FIRST, DESIGN_EDITOR_CLOTHES_LAST);
     if (worn != -1 && worn == slot) {
         DesignEditor_SetFlags(self, DESIGN_EDITOR_FLAG_WORN_CLOTHES);

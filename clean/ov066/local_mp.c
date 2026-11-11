@@ -467,14 +467,14 @@ u16 LocalMp_ConnectedAids(void)
 CLEAN_AS(func_ov066_0226997c, LocalMp_ConnectedAids)
 
 /* func_ov066_022699cc: this DS's AID (0 for the parent); 0xffff without a session. */
-int LocalMp_GetAid(void)
+int LocalMp_Aid(void)
 {
     if (data_ov066_0226bdf4 == NULL) {
         return 0xffff;
     }
     return data_ov066_0226bdf4->aid;
 }
-CLEAN_AS(func_ov066_022699cc, LocalMp_GetAid)
+CLEAN_AS(func_ov066_022699cc, LocalMp_Aid)
 
 /* func_ov066_022699ec: the next of the library's random numbers. */
 u32 LocalMp_NextRandom(void)

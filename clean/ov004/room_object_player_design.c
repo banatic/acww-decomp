@@ -75,7 +75,7 @@ int PlayerDesignObject_Start(PlayerDesignObject *object)
     }
     int player = (design / PLAYER_DESIGNS_PER_PLAYER) & (DESIGN_PLAYERS - 1);
     int index = design % PLAYER_DESIGNS_PER_PLAYER;
-    u8 *record = PlayerRecords_Get(player);
+    u8 *record = PlayerRecords_At(player);
     if (record != NULL) {
         if (PlayerId_Gender((const s8 *) PlayerRecord_Player(record)) == 0) {
             object->hidden_node = G3dRes_NodeIndex((const u8 *) object->base.model_resource, data_ov004_022531cc);
@@ -83,7 +83,7 @@ int PlayerDesignObject_Start(PlayerDesignObject *object)
             object->hidden_node = G3dRes_NodeIndex((const u8 *) object->base.model_resource, data_ov004_022531d0);
         }
     }
-    DesignManager *designs = (DesignManager *) (uintptr_t) DesignManager_Get();
+    DesignManager *designs = (DesignManager *) (uintptr_t) DesignManager_Global();
     int texture = DesignManager_PlayerTexture(designs, (u8) player, (u8) index);
     MaterialBind_BindByIndex((u8 *) object->base.model_resource, data_ov004_022531c8, (G3dResTex *) (uintptr_t) texture, 0, 0);
     return 1;

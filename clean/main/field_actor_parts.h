@@ -129,7 +129,7 @@ static inline Actor *FieldActor_Base(FieldActor *actor)
 #define FIELD_ACTOR_PENDING_X(actor) FIELD_ACTOR_FIELD(actor, int, 0x8fc)
 #define FIELD_ACTOR_PENDING_Z(actor) FIELD_ACTOR_FIELD(actor, int, 0x900)
 #define FIELD_ACTOR_PENDING_BITS(actor) FIELD_ACTOR_FIELD(actor, u8, 0x904)   /* PENDING_ACTION_... */
-#define FIELD_ACTOR_ENTERED_STATE(actor) FIELD_ACTOR_FIELD(actor, int, 0xc88) /* with FieldActor.unk_C84 */
+#define FIELD_ACTOR_ENTERED_STATE(actor) FIELD_ACTOR_FIELD(actor, int, 0xc88) /* with FieldActor.unk_c84 */
 
 /* The control of this console's actor (FieldActor_ReadControl, field_actor_control.c): how far it
  * is pushed (0 to 1.0) and towards which angle, whether it runs, the act of this frame (A

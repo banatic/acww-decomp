@@ -147,7 +147,7 @@ static void t6t_write_fortune(TurtleCountdownTalk *talk, Letter *letter, u8 *rec
         u16 pile = ItemCode_MakePile(T6T_FORTUNE_PILE_ITEM, T6T_FORTUNE_PILE_COUNT);
         ItemRecord_Mark((ItemRecord *) (void *) PlayerRecord_ItemRecord(record), &pile, 0);
     }
-    Block021d27ac_SetFlag(&Block021d27ac_Get()->flags, T6T_FLAG_FORTUNE);
+    Block021d27ac_SetFlag(&Block021d27ac_Global()->flags, T6T_FLAG_FORTUNE);
     u16 letters = T6T_LETTERS_ITEM;
     SceneCommand_RequestMotion13(t6t_scene(talk), &letters, 0, T6T_MOTION_B, 0);
     MessagePart_Destruct(&text);
@@ -275,7 +275,7 @@ void TurtleCountdownTalk_FirstLine(TurtleCountdownTalk *talk, TurtleCountdownLin
     } else {
         if (now.hour < T6T_MORNING_HOUR) {
             out->message = (u8) (MainRandom_Below(3) + TURTLE_COUNTDOWN_LINE_EARLY);
-        } else if (Block021d27ac_TestFlag(&Block021d27ac_Get()->flags, T6T_FLAG_FORTUNE) != 0) {
+        } else if (Block021d27ac_TestFlag(&Block021d27ac_Global()->flags, T6T_FLAG_FORTUNE) != 0) {
             out->message = (u8) (MainRandom_Below(3) + TURTLE_COUNTDOWN_LINE_AFTER_FORTUNE);
         } else {
             out->message = TURTLE_COUNTDOWN_LINE_OFFER_FORTUNE;

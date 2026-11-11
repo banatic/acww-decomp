@@ -18,7 +18,7 @@
 #define ITEM_FORM_FORGERIES 20
 #define ITEM_FORM_REVEALED_FIRST 0x3934
 
-/* The records looked at for pockets (0-6, PlayerRecords_Get), the rooms' maps, and the
+/* The records looked at for pockets (0-6, PlayerRecords_At), the rooms' maps, and the
  * players' storages. */
 #define ITEM_FORM_PLAYER_RECORDS 7
 #define ITEM_FORM_POCKET_SLOTS 15
@@ -108,7 +108,7 @@ void ItemForm_RevealForgeries(void)
     }
 
     for (int number = 0; number < ITEM_FORM_PLAYER_RECORDS; number++) {
-        u8 *player = PlayerRecords_Get(number);
+        u8 *player = PlayerRecords_At(number);
         if (player == NULL) {
             continue;
         }

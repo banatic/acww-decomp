@@ -109,12 +109,12 @@ CLEAN_AS(func_ov003_0221db54, OutdoorClock_Construct)
  * the render object has one. */
 void OutdoorClock_RunNodeHook(G3dRenderState *state)
 {
-    typedef void (*OutdoorClockTurnSlot)(OutdoorClock *clock, int node, G3dRenderState *state);
+    typedef void (*OutdoorClockTurnSlotFn)(OutdoorClock *clock, int node, G3dRenderState *state);
 
     OutdoorClock *clock = state->object->user;
     if (clock != NULL) {
         u32 slot = *(const u32 *) ((const u8 *) clock->vtable + OUTDOOR_CLOCK_SLOT_TURN_HAND);
-        ((OutdoorClockTurnSlot) (uintptr_t) slot)(clock, state->command[1], state);
+        ((OutdoorClockTurnSlotFn) (uintptr_t) slot)(clock, state->command[1], state);
     }
 }
 CLEAN_AS(func_ov003_0221db90, OutdoorClock_RunNodeHook)

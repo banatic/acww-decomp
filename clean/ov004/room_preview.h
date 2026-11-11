@@ -1,4 +1,4 @@
-/* An item shown in the room as a room object (data_ov004_022596b0, RoomPreview_Get): a
+/* An item shown in the room as a room object (data_ov004_022596b0, RoomPreview_Global): a
  * scene of overlay 142 hands it the item picked (RoomPreview_Show) and clears it
  * (RoomPreview_Clear). A wallpaper (0x1100-0x1143) is shown as room object 0x4a64 and a carpet
  * (0x1144-0x1187) as 0x4a60, which read the number noted here (RoomPreview_Number) and load
@@ -28,7 +28,7 @@ typedef struct RoomPreview {
     u8 *carpet_files[ROOM_PREVIEW_SLOTS];    /* 0x1c: CarpetTexture (0x20c4 bytes) */
 } RoomPreview;
 
-RoomPreview *RoomPreview_Get(void);
+RoomPreview *RoomPreview_Global(void);
 u8 *RoomPreview_CarpetFile(RoomPreview *preview);
 u8 *RoomPreview_WallpaperFile(RoomPreview *preview);
 void RoomPreview_Clear(RoomPreview *preview);

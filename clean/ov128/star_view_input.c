@@ -168,7 +168,7 @@ void StarView_ApplyName(StarView *self)
     self->name_state = STAR_VIEW_NAME_RISING;
     if (self->wanted != self->named) {
         u16 text[10];
-        Constellation *constellation = (Constellation *) (uintptr_t) Constellations_Get(self->wanted);
+        Constellation *constellation = (Constellation *) (uintptr_t) Constellations_AtCopy(self->wanted);
         int length;
 
         TextString_ClearChars(text, 8);

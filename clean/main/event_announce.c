@@ -103,7 +103,7 @@ void EventAnnounce_Request(int event, int record, int ending)
     if (Session_IsLinked(session)) {
         return;
     }
-    if (SceneQuery_Current() == 0 && Block021d27acPart30_IsSet(Block021d27ac_Part30(Block021d27ac_Get())) &&
+    if (SceneQuery_Current() == 0 && Block021d27acPart30_IsSet(Block021d27ac_Part30(Block021d27ac_Global())) &&
         !Session_IsSlotTaken(session, session->local_slot)) {
         return;
     }

@@ -63,7 +63,7 @@ static DesignInfo *info_of(unsigned int design)
 
 static RecordFile *archive(void)
 {
-    return (RecordFile *) (uintptr_t) DesignArchive_Get();
+    return (RecordFile *) (uintptr_t) DesignArchive_Global();
 }
 
 /* The bit of a shop design's flag.
@@ -137,11 +137,11 @@ void DesignManager_Reset(DesignManager *manager)
 CLEAN_AS(func_02072808, DesignManager_Reset)
 
 /* func_02072824: the one place a sample is read into. */
-int DesignSample_Get(void)
+int DesignSample_Global(void)
 {
     return (int) address_of(&data_021d0800);
 }
-CLEAN_AS(func_02072824, DesignSample_Get)
+CLEAN_AS(func_02072824, DesignSample_Global)
 
 /* func_0207282c */
 Design *DesignSample_Design(Design *sample)
@@ -286,11 +286,11 @@ ShopDesigns *ShopDesigns_Construct(ShopDesigns *designs)
 CLEAN_AS(func_02072b38, ShopDesigns_Construct)
 
 /* func_02072b64: the design (0-7) at a place, both cut to 0-7. */
-unsigned char DesignOrder_Get(unsigned char *order, int place)
+unsigned char DesignOrder_At(unsigned char *order, int place)
 {
     return order[place & 7] & 7;
 }
-CLEAN_AS(func_02072b64, DesignOrder_Get)
+CLEAN_AS(func_02072b64, DesignOrder_At)
 
 /* func_02072b74: swaps the designs at two places (cut to 0-7). */
 void DesignOrder_Swap(unsigned char *order, int place_a, int place_b)
@@ -334,7 +334,7 @@ CLEAN_AS(func_02072ba4, PlayerDesigns_Order)
 /* func_02072bb0: the design shown at a place (0-7). */
 int PlayerDesigns_InOrder(PlayerDesigns *designs, int place)
 {
-    unsigned char design = DesignOrder_Get(designs->order.design, place);
+    unsigned char design = DesignOrder_At(designs->order.design, place);
     return (int) address_of(&designs->designs[design]);
 }
 CLEAN_AS(func_02072bb0, PlayerDesigns_InOrder)

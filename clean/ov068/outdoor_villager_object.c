@@ -367,7 +367,7 @@ int OutdoorVillagerObject_Start(u8 *villager)
     } else if (VillagerState_BirthdayVillager() == VillagerStatus_Index(record)) {
         OutdoorVillagerBehavior_Start(behavior, villager, OBJECT_DO_12);
     } else {
-        int status = VillagerStatus_Get(record);
+        int status = VillagerStatus_Of(record);
         if (status == OBJECT_STATUS_WALK) {
             OutdoorVillagerBehavior_Start(behavior, villager, OBJECT_DO_WALK);
             u16 item;

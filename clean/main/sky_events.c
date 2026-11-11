@@ -179,7 +179,7 @@ void SkyEvents_AddKind7(SkyObjects *objects)
     if (hour == objects->last_time.hour || (hour != 9 && hour != 17)) {
         return;
     }
-    if (NearSpot_WasServed((const NearSpot *) (void *) Block021d27ac_Part24(Block021d27ac_Get())) ||
+    if (NearSpot_WasServed((const NearSpot *) (void *) Block021d27ac_Part24(Block021d27ac_Global())) ||
         objects->entries[SKY_ENTRY_VISITOR].kind == SKY_OBJECT_KIND_7) {
         return;
     }
@@ -231,7 +231,7 @@ void SkyEvents_AddSpaceship(SkyObjects *objects)
     if (objects->last_time.minute == minute || (ending != 2 && ending != 7)) {
         return;
     }
-    if (BesideSpot_WasServed(Block021d27ac_Part31(Block021d27ac_Get())) ||
+    if (BesideSpot_WasServed(Block021d27ac_Part31(Block021d27ac_Global())) ||
         objects->entries[SKY_ENTRY_VISITOR].kind == SKY_OBJECT_SPACESHIP) {
         return;
     }

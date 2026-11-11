@@ -32,7 +32,7 @@ CLEAN_AS(func_ov004_022126b4, RoomObject02250d30_Vfunc80)
  * data_ov004_022596b0, cut to 16 bits; done at once. */
 int RoomObject02250d30_Start(RoomObject02250d30 *object)
 {
-    object->unk_844 = (u16) RoomPreview_Number(RoomPreview_Get());
+    object->unk_844 = (u16) RoomPreview_Number(RoomPreview_Global());
     return 1;
 }
 CLEAN_AS(func_ov004_022126b8, RoomObject02250d30_Start)

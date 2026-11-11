@@ -117,7 +117,7 @@ CLEAN_AS(func_02052fc0, RoomCells_SetStepIn)
 /* func_02052fd0 */
 int RoomCells_StepIn(RoomCells *cells, int x, int y)
 {
-    return RoomCellSteps_Get(&cells->steps, x, y);
+    return RoomCellSteps_At(&cells->steps, x, y);
 }
 CLEAN_AS(func_02052fd0, RoomCells_StepIn)
 
@@ -174,7 +174,7 @@ CLEAN_AS(func_02053060, RoomCells_SetSwitchIn)
  * REQUIRES: layer is 0 or 1 (the ROM takes the grid at layer * 0x20 unchecked). */
 int RoomCells_SwitchIn(RoomCells *cells, int x, int y, int layer)
 {
-    return RoomSwitchGrid_Get(cells->switches[layer], x, y);
+    return RoomSwitchGrid_At(cells->switches[layer], x, y);
 }
 CLEAN_AS(func_0205307c, RoomCells_SwitchIn)
 
@@ -247,7 +247,7 @@ int RoomCellSteps_Set(RoomCellSteps *steps, int x, int y, unsigned int step)
     if (step >= 16) {
         return 0;
     }
-    if (RoomCellSteps_Get(steps, x, y) == -1) {
+    if (RoomCellSteps_At(steps, x, y) == -1) {
         for (u32 i = 0; i < ROOM_CELLS_STEP_CELLS; i++) {
             if (!step_entry_used(steps, i)) {
                 steps->cells[i] = (u8) ((x & 0xf) | (y & 0xf) << 4);
@@ -284,7 +284,7 @@ int RoomCellSteps_Clear(RoomCellSteps *steps, int x, int y)
 CLEAN_AS(func_020531fc, RoomCellSteps_Clear)
 
 /* func_02053278: the step of cell (x, y), or -1 when it keeps none. */
-int RoomCellSteps_Get(RoomCellSteps *steps, int x, int y)
+int RoomCellSteps_At(RoomCellSteps *steps, int x, int y)
 {
     for (u32 i = 0; i < ROOM_CELLS_STEP_CELLS; i++) {
         if (step_entry_used(steps, i) && step_entry_is(steps, i, x, y)) {
@@ -293,7 +293,7 @@ int RoomCellSteps_Get(RoomCellSteps *steps, int x, int y)
     }
     return -1;
 }
-CLEAN_AS(func_02053278, RoomCellSteps_Get)
+CLEAN_AS(func_02053278, RoomCellSteps_At)
 
 /* func_020532d0: no entry in use and no step (unk_07 is left alone). */
 void RoomCellSteps_Reset(RoomCellSteps *steps)
@@ -337,11 +337,11 @@ void RoomSwitchGrid_Set(u16 *grid, int x, int y, int on)
 CLEAN_AS(func_02053314, RoomSwitchGrid_Set)
 
 /* func_02053340: the bit of cell (x, y), x and y cut to 4 bits. */
-int RoomSwitchGrid_Get(u16 *grid, int x, int y)
+int RoomSwitchGrid_At(u16 *grid, int x, int y)
 {
     return (grid[y & 0xf] >> (x & 0xf)) & 1;
 }
-CLEAN_AS(func_02053340, RoomSwitchGrid_Get)
+CLEAN_AS(func_02053340, RoomSwitchGrid_At)
 
 /* func_02053358: every bit set. */
 void RoomSwitchGrid_SetAll(u16 *grid)

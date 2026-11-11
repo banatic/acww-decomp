@@ -7,7 +7,7 @@
  *   0x08  at the place: animation 0x11 loops. This console's actor, outside the scenes 6 to 8,
  *         pushed to a side asks the overlay whether that side 2.0 away is free: free, state
  *         0x0b that way; not free, state 0x09. The message handler keeps its argument
- *         (FieldActor.unk_C84) when the actor is already in the state. Left for state 0x0a in
+ *         (FieldActor.unk_c84) when the actor is already in the state. Left for state 0x0a in
  *         the scenes 6 to 8 with kind 0, sound 0x4cd or 0x4cc (by the record's flag 0x249a);
  *   0x09  the point 1.0 ahead and 2.0 to the side is claimed (PlaceClaim_Request2) and a
  *         contact body put there; given, state 0x0a that way unless an object was met there

@@ -27,11 +27,11 @@ void SpaceshipParts_Increment(u8 *count)
 CLEAN_AS(func_0208718c, SpaceshipParts_Increment)
 
 /* func_020871a8 */
-int SpaceshipParts_Get(const u8 *count)
+int SpaceshipParts_Count(const u8 *count)
 {
     return *count & SPACESHIP_PARTS_COUNT_MASK;
 }
-CLEAN_AS(func_020871a8, SpaceshipParts_Get)
+CLEAN_AS(func_020871a8, SpaceshipParts_Count)
 
 /* func_020871b0: the town's setting up clears it. */
 void SpaceshipParts_SetUp(u8 *count)

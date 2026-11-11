@@ -188,7 +188,7 @@ void SkyShots_HitEnd9(SkyShotsHit *hit)
     }
     const Position *from = (const Position *) PlayerActorOps_StartPosition(hit->player);
     if (from != NULL) {
-        NearSpot_Pick((NearSpot *) (void *) Block021d27ac_Part24(Block021d27ac_Get()), from, hit->side);
+        NearSpot_Pick((NearSpot *) (void *) Block021d27ac_Part24(Block021d27ac_Global()), from, hit->side);
     }
     FieldActor_PlayerStop();
     CameraControl_SetPreviousMode();

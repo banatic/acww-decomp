@@ -641,7 +641,7 @@ typedef struct FieldActor {
         u8 packed[8];
     } saved;
     u8 unk_8f8[0xc84 - 0x8f8];
-    s16 unk_C84; /* the message handlers of states 0x74, 0x68 and 0x66 store their argument here
+    s16 unk_c84; /* the message handlers of states 0x74, 0x68 and 0x66 store their argument here
                   * when the actor is already in that state */
 } FieldActor;
 

@@ -80,7 +80,7 @@ int RmoObjectSlots_SharedValue(RmoObject *object)
     if (rmo_slots_number(object) == ROOM_OBJECT_STATE_NONE) {
         return 0;
     }
-    return (int) RoomObjectState_Get(rmo_slots_number(object));
+    return (int) RoomObjectState_Value(rmo_slots_number(object));
 }
 CLEAN_AS(func_ov004_0222c574, RmoObjectSlots_SharedValue)
 

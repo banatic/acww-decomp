@@ -44,11 +44,11 @@ int TouchPick_Snowman(int id)
 CLEAN_AS(func_020b735c, TouchPick_Snowman)
 
 /* func_020b7384 (kind 16): in a room, entry `index` of overlay 4's board objects (0x40,
- * RoomEtcBoard_Get). */
+ * RoomEtcBoard_At). */
 int TouchPick_RoomBoard(int index)
 {
     if (data_020e54a8 == TOUCH_PICK_MODE_ROOM) {
-        return (int) (uintptr_t) RoomEtcBoard_Get(index);
+        return (int) (uintptr_t) RoomEtcBoard_At(index);
     }
     return 0;
 }
@@ -75,11 +75,11 @@ int TouchPick_RecycleBin(void)
 CLEAN_AS(func_020b73d4, TouchPick_RecycleBin)
 
 /* func_020b73fc (kind 14): in a room, entry `index` of overlay 4's museum spots (0x20,
- * EtcMuseum_Get). */
+ * EtcMuseum_At). */
 int TouchPick_MuseumSpot(int index)
 {
     if (data_020e54a8 == TOUCH_PICK_MODE_ROOM) {
-        return (int) (uintptr_t) EtcMuseum_Get(index);
+        return (int) (uintptr_t) EtcMuseum_At(index);
     }
     return 0;
 }
@@ -99,7 +99,7 @@ CLEAN_AS(func_020b7424, TouchPick_Atm)
 int TouchPick_VillagerNameplate(int index)
 {
     if (data_020e54a8 == TOUCH_PICK_MODE_OUTDOORS) {
-        return (int) (uintptr_t) VillagerNameplate_Get(index);
+        return (int) (uintptr_t) VillagerNameplate_At(index);
     }
     return 0;
 }

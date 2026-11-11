@@ -50,14 +50,14 @@ static void *receiver_of(VillagerNameplate *board)
 
 /* func_ov003_0220bf00: the board with `index`, or null when there is none or `index` is out of
  * 0-7. */
-VillagerNameplate *VillagerNameplate_Get(int index)
+VillagerNameplate *VillagerNameplate_At(int index)
 {
     if (index >= 0 && index < VILLAGER_NAMEPLATE_MAX) {
         return data_ov003_0223c5f4[index];
     }
     return NULL;
 }
-CLEAN_AS(func_ov003_0220bf00, VillagerNameplate_Get)
+CLEAN_AS(func_ov003_0220bf00, VillagerNameplate_At)
 
 /* func_ov003_0220bf18: state 2's update. Once the link has closed, the receiver is released. */
 void VillagerNameplate_UpdateOpen(VillagerNameplate *board)

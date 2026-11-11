@@ -429,7 +429,7 @@ int OrderCatalog_PickItem(OrderCatalog *self, int category, int row)
         self->order_palette = 6;
         if (data_020e54a8 == 1 && OrderCatalog_TestFlags(self, ORDER_CATALOG_FLAG_PREVIEW) != 0) {
             OrderCatalog_ClearFlags(self, ORDER_CATALOG_FLAG_PREVIEW);
-            RoomPreview_Clear(RoomPreview_Get());
+            RoomPreview_Clear(RoomPreview_Global());
         }
     } else {
         ItemCode item = *OrderCatalog_ItemAt(self, row);
@@ -445,7 +445,7 @@ int OrderCatalog_PickItem(OrderCatalog *self, int category, int row)
         }
         if (data_020e54a8 == 1) {
             OrderCatalog_SetFlags(self, ORDER_CATALOG_FLAG_PREVIEW);
-            RoomPreview_Show(RoomPreview_Get(), &item);
+            RoomPreview_Show(RoomPreview_Global(), &item);
         }
     }
     OrderCatalog_SetFlags(self, ORDER_CATALOG_FLAG_LIST_SCREEN);

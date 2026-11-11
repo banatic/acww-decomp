@@ -503,9 +503,9 @@ CLEAN_AS(func_ov004_0222d624, CheckInGate_LightMaterials)
 int CheckInGate_BindTextures(CheckInGate *self)
 {
     u8 *model = RmoModel_Model(&self->base.body_model);
-    NNS_G3dBindMdlTex(model, (void *) (uintptr_t) BgModels_GroundTexture((const BgModels *) (uintptr_t) BgModels_Get()));
+    NNS_G3dBindMdlTex(model, (void *) (uintptr_t) BgModels_GroundTexture((const BgModels *) (uintptr_t) BgModels_Global()));
     model = RmoModel_Model(&self->base.body_model);
-    NNS_G3dBindMdlPltt(model, (void *) (uintptr_t) BgModels_GroundTexture((const BgModels *) (uintptr_t) BgModels_Get()));
+    NNS_G3dBindMdlPltt(model, (void *) (uintptr_t) BgModels_GroundTexture((const BgModels *) (uintptr_t) BgModels_Global()));
     model = RmoModel_Model(&self->base.body_model);
     NNS_G3dBindMdlTex(model, RmoTexture_Texture(&self->base.body_texture));
     model = RmoModel_Model(&self->base.body_model);
@@ -570,7 +570,7 @@ static void check_in_gate_point_once(u32 *guard, Vec3 *point, u8 *record, fx32 x
  * field. */
 int CheckInGate_Start(CheckInGate *self)
 {
-    Block021d27acPart20 *part = (Block021d27acPart20 *) Block021d27ac_Part20(Block021d27ac_Get());
+    Block021d27acPart20 *part = (Block021d27acPart20 *) Block021d27ac_Part20(Block021d27ac_Global());
     RmoModel_Load(&self->base.body_model, data_ov004_02254eb4);
     RmoTexture_Load(&self->base.body_texture, data_ov004_02254ed0);
     ModelObject_SetModel(&self->base.body.object, RmoModel_Model(&self->base.body_model), NULL);

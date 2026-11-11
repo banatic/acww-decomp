@@ -62,7 +62,7 @@ typedef struct Mailbox {
     const void *vtable; /* data_ov003_0223948c */
     u8 unk_04[0xec - 0x04];
     const void *receiver_vtable; /* data_ov003_02239550 */
-    u8 unk_F0[0x134 - 0xf0];
+    u8 unk_f0[0x134 - 0xf0];
     u8 mode; /* enum MailboxMode */
     u8 unk_135;
     u16 code; /* the town object's code main keeps the mode under */

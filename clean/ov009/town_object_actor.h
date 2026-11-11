@@ -129,7 +129,7 @@ typedef struct TownObjectActor {
     u8 unk_90[0xc4 - 0x90];
     Vec3 pivot; /* the position bent onto the drawn world (TownObjectActor_UpdateModelMatrix) */
     s16 pitch;  /* the angle about x it is drawn at there */
-    u8 unk_D2[0xec - 0xd2];
+    u8 unk_d2[0xec - 0xd2];
     /* The message receiver (Base_02066994) */
     const void *receiver_vtable; /* data_ov009_022659a0 */
     char receiver_name[25];      /* written by func_020a8164 */

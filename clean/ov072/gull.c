@@ -227,7 +227,7 @@ int Gull_Start(Gull *self)
         return 0;
     }
     if (SpaceshipParts_HasMark(data_021ebcd2) != 0) {
-        if (SpaceshipParts_Get(data_021ebcd2) >= GULL_ALL_COUNTED) {
+        if (SpaceshipParts_Count(data_021ebcd2) >= GULL_ALL_COUNTED) {
             self->all_counted = 1;
         }
         Gull_SetState(self, GULL_IDLE);

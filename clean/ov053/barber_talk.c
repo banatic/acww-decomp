@@ -112,7 +112,7 @@ static void barber_talk_say(BarberTalk *talk, int line, const char *name)
 
 static u32 *barber_talk_flags(void)
 {
-    return (u32 *) (void *) Block021d27ac_Get();
+    return (u32 *) (void *) Block021d27ac_Global();
 }
 
 /* ---- The class */

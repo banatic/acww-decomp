@@ -367,7 +367,7 @@ static int nclerk_in(u16 item, u16 first, u16 last)
 /* Main's block's part 0x18, a date. */
 static DateTime *nclerk_part18(void)
 {
-    return (DateTime *) Block021d27ac_Part18(Block021d27ac_Get());
+    return (DateTime *) Block021d27ac_Part18(Block021d27ac_Global());
 }
 
 /* Tom Nook's dated event of kind 3 today. */
@@ -1203,7 +1203,7 @@ int NookClerk_UpdateTalk(NookClerk *clerk)
     if (clerk->bought != 0 && Shops_AllAnsweredC() == 0) {
         return 1;
     }
-    if (Block021d27ac_TestFlag((u32 *) Block021d27ac_Get(), NOOK_CLERK_BLOCK_FLAG_EXIT) != 0) {
+    if (Block021d27ac_TestFlag((u32 *) Block021d27ac_Global(), NOOK_CLERK_BLOCK_FLAG_EXIT) != 0) {
         SceneExit_Take((SceneExit *) (uintptr_t) SceneTables_EntryRecord(), 0);
     } else {
         EventQueue_FinishObjectEvent(clerk);

@@ -29,7 +29,7 @@ typedef struct RoomObjectStateMessage {
 
 int RoomObjectState_Receive(RoomObjectStateMessage *message);
 int RoomObjectState_Set(unsigned int number, unsigned int value);
-unsigned int RoomObjectState_Get(unsigned int number);
+unsigned int RoomObjectState_Value(unsigned int number);
 void RoomObjectState_Clear(void);
 int RoomObjectState_Change(RoomObject *object, unsigned char value);
 

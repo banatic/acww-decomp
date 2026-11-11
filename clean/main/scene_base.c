@@ -118,8 +118,8 @@ static u32 scene_base_slot(const void *object, u32 slot)
 
 static void scene_base_call(void *object, u32 slot)
 {
-    typedef void (*SceneBaseMethod)(void *object);
-    ((SceneBaseMethod) (uintptr_t) scene_base_slot(object, slot))(object);
+    typedef void (*SceneBaseMethodFn)(void *object);
+    ((SceneBaseMethodFn) (uintptr_t) scene_base_slot(object, slot))(object);
 }
 
 static u8 *scene_base_speaker(SceneBase *scene, int number)
@@ -132,14 +132,14 @@ static u8 *scene_base_speaker(SceneBase *scene, int number)
  * kind 3 to the angle from it to the target. */
 static void scene_base_speaker_faces(SceneBase *scene, u8 *speaker, u8 *target, u32 look_slot)
 {
-    typedef int (*SceneBaseTalkStyle)(void *scene, int style);
+    typedef int (*SceneBaseTalkStyleFn)(void *scene, int style);
 
     unsigned int own_scene = SceneObject_Scene(speaker);
     int angle = SceneObject_YawTo(speaker, target);
     scene_base_call(scene, look_slot);
     if (own_scene != 0) {
         void *own = (void *) (uintptr_t) own_scene;
-        ((SceneBaseTalkStyle) (uintptr_t) scene_base_slot(own, SCENE_BASE_SLOT_TALK_STYLE))(own, 0);
+        ((SceneBaseTalkStyleFn) (uintptr_t) scene_base_slot(own, SCENE_BASE_SLOT_TALK_STYLE))(own, 0);
     }
     SceneMotion_Request((SceneMotion *) (void *) (speaker + SCENE_BASE_SPEAKER_MOTION), SCENE_BASE_MOTION_TURN,
                         SCENE_BASE_MOTION_TURN_PRIORITY, 0, 0, 0, (s16) angle, 0, 0, data_020c80f8, 0);
@@ -283,7 +283,7 @@ CLEAN_AS(func_02015c3c, SceneBase_PlayerLooksAt)
  * angle func_0201c2c8 gives toward the player. */
 void SceneBase_FacePlayer(SceneBase *scene)
 {
-    typedef int (*SceneBaseTalkStyle)(void *scene, int style);
+    typedef int (*SceneBaseTalkStyleFn)(void *scene, int style);
 
     u8 *speaker = scene_base_speaker(scene, scene->focus);
     if (speaker == NULL) {
@@ -294,7 +294,7 @@ void SceneBase_FacePlayer(SceneBase *scene)
     void *angle = SceneObject_YawToActor(speaker, (int) (uintptr_t) ((void *) (uintptr_t) actor));
     if (own_scene != 0) {
         void *own = (void *) (uintptr_t) own_scene;
-        ((SceneBaseTalkStyle) (uintptr_t) scene_base_slot(own, SCENE_BASE_SLOT_TALK_STYLE))(own, 0);
+        ((SceneBaseTalkStyleFn) (uintptr_t) scene_base_slot(own, SCENE_BASE_SLOT_TALK_STYLE))(own, 0);
     }
     SceneLook_Request((SceneLook *) (void *) (speaker + SCENE_BASE_SPEAKER_LOOK), SCENE_BASE_LOOK_ACTOR, 0, 0, &data_021fbee8,
                       actor, 0, 0);

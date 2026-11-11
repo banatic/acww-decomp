@@ -13,7 +13,7 @@
 #define REACTION_SLOT_EMPTY 0xff
 
 int ReactionSlots_Find(int number);
-int ReactionSlots_Get(int slot);
+int ReactionSlots_At(int slot);
 void ReactionSlots_Set(int slot, int number);
 int ReactionSlots_FindEmpty(void);
 int ReactionSlots_Count(void);

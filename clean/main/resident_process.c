@@ -6,7 +6,7 @@
 #include "autoload_2/heap.h" /* Heap_FreeAux */
 #include "building_shapes.h" /* BuildingShapes_Load, BuildingShapes_Free */
 #include "clean.h"
-#include "design_assets.h"  /* DesignArchive_Get, DesignArchive_Open, DesignArchive_Close */
+#include "design_assets.h"  /* DesignArchive_Global, DesignArchive_Open, DesignArchive_Close */
 #include "furniture_info.h" /* FurnitureInfo_Open, FurnitureInfo_Close */
 #include "session_link.h"   /* Session_CreateHeap, Session_FreeHeap */
 #include "game_process.h"
@@ -69,7 +69,7 @@ int ResidentProcess_Delete(void)
     AcreKind_Free();
     FurnitureInfo_Close();
     ItemInfo_Close();
-    DesignArchive_Close((RecordFile *) (uintptr_t) DesignArchive_Get());
+    DesignArchive_Close((RecordFile *) (uintptr_t) DesignArchive_Global());
     AcreMap_FreeTemplateSet((int) (uintptr_t) data_021fbe94);
     AcreMap_FreeTown(data_021fbe94);
     AcreMap_FreeRooms((int) (uintptr_t) data_021fbe94);
@@ -88,7 +88,7 @@ int ResidentProcess_Create(Process *self)
     AcreKind_Load();
     FurnitureInfo_Open();
     ItemInfo_Open();
-    DesignArchive_Open((RecordFile *) (uintptr_t) DesignArchive_Get());
+    DesignArchive_Open((RecordFile *) (uintptr_t) DesignArchive_Global());
     AcreMap_CreateTemplateSet((int) (uintptr_t) data_021fbe94);
     AcreMap_CreateTown(data_021fbe94);
     AcreMap_CreateRooms(data_021fbe94);

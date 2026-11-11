@@ -51,7 +51,7 @@ static_assert(offsetof(FieldActor, item) == 0x820, "item");
 static_assert(offsetof(FieldActor, unk_824) == 0x824, "point 0x824");
 static_assert(offsetof(FieldActor, unk_830) == 0x830, "factors");
 static_assert(offsetof(FieldActor, saved) == 0x8f0, "saved");
-static_assert(offsetof(FieldActor, unk_C84) == 0xc84, "0xc84");
+static_assert(offsetof(FieldActor, unk_c84) == 0xc84, "0xc84");
 static_assert(offsetof(StateRequest, payload) == 0xc, "request payload");
 static_assert(sizeof(FieldActorClaimPlaceWork) <= sizeof(FieldActorWork), "state 0x0e's work");
 static_assert(offsetof(FieldActorClaimPlaceWork, side) == 0xa, "state 0x0e's side");
@@ -368,7 +368,7 @@ CLEAN_AS(func_ov004_0222ae34, FieldActorRoomStates2_LeaveTakePlace)
 void FieldActorRoomStates2_TakePlaceMessage(FieldActor *actor, s16 arg)
 {
     if (actor->state == FARS2_TAKE_PLACE) {
-        actor->unk_C84 = arg;
+        actor->unk_c84 = arg;
         return;
     }
     u8 side;

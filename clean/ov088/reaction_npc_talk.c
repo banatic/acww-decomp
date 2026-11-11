@@ -127,7 +127,7 @@ void ReactionNpcTalk_OnAnswer(ReactionNpcTalk *talk)
                 next = REACTION_NPC_LINE_KEPT;
                 break;
             }
-            rt_put_name(rt_talk_object(talk), 1, (u8) ReactionSlots_Get((int) answer));
+            rt_put_name(rt_talk_object(talk), 1, (u8) ReactionSlots_At((int) answer));
             ReactionNpc_PutReaction(talk->owner, (int) answer, talk->chosen);
             rt_put_name(rt_talk_object(talk), 0, talk->chosen);
             next = REACTION_NPC_LINE_REPLACED;
@@ -390,7 +390,7 @@ void ReactionNpcTalk_SetAnswers(ReactionNpcTalk *talk, int way)
 
     talk->known[0] = 1;
     for (int i = 0; i < ReactionSlots_Count(); i++) {
-        *rt_byte(talk->known, (unsigned int) ReactionSlots_Get(i)) = 1;
+        *rt_byte(talk->known, (unsigned int) ReactionSlots_At(i)) = 1;
     }
 
     int i;
@@ -409,7 +409,7 @@ void ReactionNpcTalk_SetAnswers(ReactionNpcTalk *talk, int way)
         } else if (way == REACTION_NPC_ANSWERS_SAME) {
             reaction = talk->offered[i];
         } else {
-            reaction = ReactionSlots_Get(i);
+            reaction = ReactionSlots_At(i);
         }
         TalkAnswer *answer = TalkAnswers_Answer(answers, i);
         u8 message = (u8) reaction;

@@ -71,7 +71,7 @@ static G3dResTex *room_surface_design_texture(const ItemCode *item)
 {
     int player = ItemGroup_DesignPlayer(item);
     int slot = ItemGroup_DesignSlot(item);
-    DesignManager *designs = (DesignManager *) (uintptr_t) DesignManager_Get();
+    DesignManager *designs = (DesignManager *) (uintptr_t) DesignManager_Global();
     return (G3dResTex *) (uintptr_t) DesignManager_PlayerTexture(designs, (u8) player, (u8) slot);
 }
 

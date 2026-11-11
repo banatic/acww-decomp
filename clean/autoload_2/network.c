@@ -977,7 +977,7 @@ int Net_GetMyAid(void)
         if (mode == MODE_LOCAL_PARENT) {
             return 0;
         }
-        return LocalMp_GetAid();
+        return LocalMp_Aid();
     }
     if (is_wfc(mode)) {
         return DWC_GetMyAID();

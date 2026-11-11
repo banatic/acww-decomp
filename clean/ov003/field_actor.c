@@ -124,7 +124,7 @@ static_assert(offsetof(FieldActor, work.s73.effect) == 0x7dc, "state 0x73 effect
 static_assert(offsetof(FieldActor, work.s71.done) == 0x7d8, "state 0x71 done");
 static_assert(offsetof(FieldActor, work.s6d.kind) == 0x7d8, "state 0x6d kind");
 static_assert(offsetof(FieldActor, unk_8e8) == 0x8e8, "0x8e8");
-static_assert(offsetof(FieldActor, unk_C84) == 0xc84, "0xc84");
+static_assert(offsetof(FieldActor, unk_c84) == 0xc84, "0xc84");
 static_assert(offsetof(FieldActor, work.s69.yaw) == 0x7d6, "state 0x69 yaw");
 static_assert(offsetof(FieldActor, work.s69.tile_x) == 0x7d8, "state 0x69 tile");
 static_assert(offsetof(FieldActor, work.s69.then_77) == 0x7e0, "state 0x69 flags");
@@ -1814,7 +1814,7 @@ void FieldActor_State74Message(FieldActor *actor, int arg)
         case 0x73:
             break;
         case 0x74:
-            actor->unk_C84 = (s16) arg;
+            actor->unk_c84 = (s16) arg;
             break;
         default:
             FieldActor_RequestState74(actor, -1, 6, arg);
@@ -2903,7 +2903,7 @@ void FieldActor_State68Message(FieldActor *actor, int arg)
     u8 flags;
 
     if (actor->state == 0x68) {
-        actor->unk_C84 = (s16) arg;
+        actor->unk_c84 = (s16) arg;
         return;
     }
     PackedXZ_Get(actor->saved.packed, &x, &z, &flags);
@@ -3193,7 +3193,7 @@ CLEAN_AS(func_ov003_0220ff40, FieldActor_ExitState66)
 void FieldActor_State66Message(FieldActor *actor, int arg)
 {
     if (actor->state == 0x66) {
-        actor->unk_C84 = (s16) arg;
+        actor->unk_c84 = (s16) arg;
         return;
     }
     int tile[2] = {0, 0};
@@ -7607,7 +7607,7 @@ void FieldActor_ExitState4f(FieldActor *actor, int next)
 CLEAN_AS(func_ov003_02215a70, FieldActor_ExitState4f)
 
 /* func_ov003_02215ac4: state 0x4f's message handler: nothing in state 0x4d; in state 0x4f the
- * argument is kept at unk_C84; otherwise state 0x4f is asked for. */
+ * argument is kept at unk_c84; otherwise state 0x4f is asked for. */
 void FieldActor_State4fMessage(FieldActor *actor, u16 arg)
 {
     int state = actor->state;
@@ -7615,7 +7615,7 @@ void FieldActor_State4fMessage(FieldActor *actor, u16 arg)
         return;
     }
     if (state == 0x4f) {
-        actor->unk_C84 = (s16) arg;
+        actor->unk_c84 = (s16) arg;
     } else {
         FieldActor_RequestState4f(actor, 6, arg);
     }
@@ -9486,8 +9486,8 @@ void FieldActor_EnterState3c(FieldActor *actor, const StateRequest *request, int
         FieldActor_PlayAnimationOnce(actor, 0x35, 0, 0);
     }
     actor->unk_7f8 = 0;
-    if (Block021d27ac_TestFlag((u32 *) Block021d27ac_Get(), BLOCK_021D27AC_FLAG_LOAN_PAID_OFF) ||
-        Block021d27ac_TestFlag((u32 *) Block021d27ac_Get(), BLOCK_021D27AC_FLAG_NOOK_JOB_DONE)) {
+    if (Block021d27ac_TestFlag((u32 *) Block021d27ac_Global(), BLOCK_021D27AC_FLAG_LOAN_PAID_OFF) ||
+        Block021d27ac_TestFlag((u32 *) Block021d27ac_Global(), BLOCK_021D27AC_FLAG_NOOK_JOB_DONE)) {
         if (is_local_player(actor)) {
             Music_AddValue(0x12, 0xf, 0);
         }
@@ -9568,7 +9568,7 @@ void FieldActor_EndState3b(FieldActor *actor)
         case 2: {
             void *session = data_020ccf94;
             if (Session_IsLocalPlayer(session, actor->player)) {
-                Block021d27ac_ClearFlag((u32 *) Block021d27ac_Get(), BLOCK_021D27AC_FLAG_LOAN_PAID_OFF);
+                Block021d27ac_ClearFlag((u32 *) Block021d27ac_Global(), BLOCK_021D27AC_FLAG_LOAN_PAID_OFF);
             }
             if (!Block020b220c_SentOutByClerk()) {
                 FieldActor_RequestState76(actor, 2, 0, 0, 6, -1);
@@ -9590,7 +9590,7 @@ void FieldActor_EndState3b(FieldActor *actor)
         }
         case 3:
             if (is_local_player(actor)) {
-                Block021d27ac_ClearFlag((u32 *) Block021d27ac_Get(), BLOCK_021D27AC_FLAG_NOOK_JOB_DONE);
+                Block021d27ac_ClearFlag((u32 *) Block021d27ac_Global(), BLOCK_021D27AC_FLAG_NOOK_JOB_DONE);
                 PlayerRecord_ClearFlag(PlayerRecords_Current(), PLAYER_FLAG_NOOK_JOB);
                 BoardNotices_Update();
             }
@@ -9651,7 +9651,7 @@ CLEAN_AS(func_ov003_02218108, FieldActor_RunState3b)
 void FieldActor_State3bMessage(FieldActor *actor, int arg)
 {
     if (actor->state == 0x3b) {
-        actor->unk_C84 = (s16) arg;
+        actor->unk_c84 = (s16) arg;
         return;
     }
     u8 alt;
@@ -9691,9 +9691,9 @@ void FieldActor_EnterState3b(FieldActor *actor, const StateRequest *request, int
         if (!SceneQuery_Current() && record != NULL && PlayerRecord_TestFlag(record, PLAYER_FLAG_NEW_RESIDENT) &&
             (SceneKinds_IsHouseRoom(SceneQuery_Previous()) || SceneQuery_Previous() == 6)) {
             kind = 1;
-        } else if (Block021d27ac_TestFlag((u32 *) Block021d27ac_Get(), BLOCK_021D27AC_FLAG_LOAN_PAID_OFF)) {
+        } else if (Block021d27ac_TestFlag((u32 *) Block021d27ac_Global(), BLOCK_021D27AC_FLAG_LOAN_PAID_OFF)) {
             kind = 2;
-        } else if (Block021d27ac_TestFlag((u32 *) Block021d27ac_Get(), BLOCK_021D27AC_FLAG_NOOK_JOB_DONE)) {
+        } else if (Block021d27ac_TestFlag((u32 *) Block021d27ac_Global(), BLOCK_021D27AC_FLAG_NOOK_JOB_DONE)) {
             kind = 3;
         }
     } else {
@@ -9888,7 +9888,7 @@ void FieldActor_State39Message(FieldActor *actor, int arg)
     fx32 at_z;
 
     if ((u32) actor->state - 0x38u <= 2) {
-        actor->unk_C84 = (s16) arg;
+        actor->unk_c84 = (s16) arg;
         return;
     }
     FieldActor_GetState39Saved(&actor->saved.s39, &kind, &x, &z, &yaw);
@@ -10344,7 +10344,7 @@ CLEAN_AS(func_ov003_02218dcc, FieldActor_RunState16Local)
 void FieldActor_State16Message(FieldActor *actor, int arg)
 {
     if (actor->state == 0x16) {
-        actor->unk_C84 = (s16) arg;
+        actor->unk_c84 = (s16) arg;
         return;
     }
     int tile[2] = {0, 0};

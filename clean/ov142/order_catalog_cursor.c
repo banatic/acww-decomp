@@ -583,7 +583,7 @@ void OrderCatalog_StartClose(OrderCatalog *self)
     MenuScene_SetState(catalog_scene(self), ORDER_CATALOG_STATE_START_WIPE_OUT);
     if (data_020e54a8 == 1 && OrderCatalog_TestFlags(self, ORDER_CATALOG_FLAG_PREVIEW) != 0) {
         OrderCatalog_ClearFlags(self, ORDER_CATALOG_FLAG_PREVIEW);
-        RoomPreview_Clear(RoomPreview_Get());
+        RoomPreview_Clear(RoomPreview_Global());
     }
 }
 CLEAN_AS(func_ov142_0229b174, OrderCatalog_StartClose)

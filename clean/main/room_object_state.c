@@ -36,14 +36,14 @@ int RoomObjectState_Set(unsigned int number, unsigned int value)
 CLEAN_AS(func_0209d3bc, RoomObjectState_Set)
 
 /* func_0209d3d0: value `number`; 0 for a number of 3 or more. */
-unsigned int RoomObjectState_Get(unsigned int number)
+unsigned int RoomObjectState_Value(unsigned int number)
 {
     if (number >= ROOM_OBJECT_STATES) {
         return 0;
     }
     return data_021dc6cc[number];
 }
-CLEAN_AS(func_0209d3d0, RoomObjectState_Get)
+CLEAN_AS(func_0209d3d0, RoomObjectState_Value)
 
 /* func_0209d3e4: every value 0. */
 void RoomObjectState_Clear(void)
@@ -63,8 +63,8 @@ int RoomObjectState_Change(RoomObject *object, unsigned char value)
     if (data_020e54a8 != 1) {
         return 0;
     }
-    typedef int SetValue(RoomObject * object, unsigned char value);
-    SetValue *set_value = (SetValue *) (uintptr_t) object->vtable[ROOM_OBJECT_SET_ENTRY];
+    typedef int SetValueFn(RoomObject * object, unsigned char value);
+    SetValueFn *set_value = (SetValueFn *) (uintptr_t) object->vtable[ROOM_OBJECT_SET_ENTRY];
     if (set_value(object, value) == 0) {
         return 0;
     }

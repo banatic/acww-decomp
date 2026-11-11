@@ -111,7 +111,7 @@ void MissingNpc1_SetState(MissingNpc1 *self, int state);
 /* What overlay 48 asks of the one that exists. */
 void MissingNpc1_StartFollowing(void);
 void MissingNpc1_StopToFacePlayer(void);
-int MissingNpc1_IsFacingPlayerAtBA(void);
+int MissingNpc1_IsFacingPlayerAtba(void);
 
 /* The states' entries and updates. */
 int MissingNpc1_EnterFacePlayer(MissingNpc1 *self);

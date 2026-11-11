@@ -37,15 +37,15 @@ extern TextFont data_021c8230;           /* the font of a one-line window */
 /* A line's characters, through its vtable (slot 3). */
 static const char *line_chars(SlidingWindowText *line)
 {
-    typedef char *TextBufferMethod(SlidingWindowText * line);
-    return ((TextBufferMethod *) (uintptr_t) line->vtable->buffer)(line);
+    typedef char *TextBufferMethodFn(SlidingWindowText * line);
+    return ((TextBufferMethodFn *) (uintptr_t) line->vtable->buffer)(line);
 }
 
 /* A text box's text width in pixels, through its vtable (slot 3). */
 static u32 box_text_width(TextDrawBox *box)
 {
-    typedef u32 TextMeasureMethod(TextDrawBox * box);
-    return ((TextMeasureMethod *) (uintptr_t) box->vtable[3])(box);
+    typedef u32 TextMeasureMethodFn(TextDrawBox * box);
+    return ((TextMeasureMethodFn *) (uintptr_t) box->vtable[3])(box);
 }
 
 /* func_0208a490: when `keep_on_screen` is set, the sideways move that brings a window that

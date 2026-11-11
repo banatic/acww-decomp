@@ -200,7 +200,7 @@ int AcreMap_BuildVillager(AcreMapVillager *map, int villager, int heap)
     map->map.world_high = data_020ca0e8;
     AcreTile_TileOfAcre(&map->map.tiles_wide, &map->map.tiles_high, map->map.acres_wide, map->map.acres_high, 0, 0);
     CollisionMap_SetUp(map->map.acres_wide, map->map.acres_high, 0, map->map.slot);
-    void *cache = (void *) (uintptr_t) BgModels_Get();
+    void *cache = (void *) (uintptr_t) BgModels_Global();
     int data = BgModels_Data(cache, source->model);
     Vec3 origin = {0, 0, 0};
     AcreRecord_SetUp((AcreRecord *) (void *) map->map.acres, source->model, &origin, source->items,
@@ -319,7 +319,7 @@ void AcreMap_LoadRoomData(AcreMap *map)
     if (acre != NULL) {
         int model = AcreRecord_Model((const AcreRecord *) (void *) acre);
         Heap *heap = data_021c9b34;
-        BgModels_Get();
+        BgModels_Global();
         AcreRecord_SetBgModel((AcreRecord *) (void *) acre, 0, (int) (uintptr_t) BgModels_LoadData(model, heap), map->slot);
     }
 }
@@ -640,7 +640,7 @@ void AcreMap_LoadTownData(AcreMap *map)
             if (acre != NULL) {
                 int model = AcreRecord_Model((const AcreRecord *) (void *) acre);
                 Heap *heap = data_021c9ab0;
-                BgModels_Get();
+                BgModels_Global();
                 AcreRecord_SetBgModel((AcreRecord *) (void *) acre, 0, (int) (uintptr_t) BgModels_LoadData(model, heap),
                                       map->slot);
             }
@@ -815,7 +815,7 @@ int AcreMap_Build(AcreMap *map, AcreMapSource *sources, const AcreMapSize *size,
         for (int x = 0; x < map->acres_wide; x++) {
             int coordinates[2] = {x, z};
             Vec3 position = {(fx32) ((u32) x << 17), 0, (fx32) ((u32) z << 17)};
-            int data = (int) (uintptr_t) BgModels_Load((BgModels *) (uintptr_t) BgModels_Get(), source->model);
+            int data = (int) (uintptr_t) BgModels_Load((BgModels *) (uintptr_t) BgModels_Global(), source->model);
             AcreRecord_SetUpAt((AcreRecord *) (void *) acre, source->model, &position, source->items,
                                (u16 *) (uintptr_t) source->unk_08, source->extra, (BgModel *) (uintptr_t) data, 0, coordinates,
                                0);

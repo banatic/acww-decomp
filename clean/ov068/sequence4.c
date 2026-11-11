@@ -549,8 +549,8 @@ int Sequence4_EnterState4(Sequence4 *actor)
     ItemCode speaker = SEQUENCE4_SPEAKER;
     NpcLookup_FormatPersonName(&name, &speaker);
     /* the text's characters, through its vtable */
-    typedef const char *(*Sequence4TextChars)(PlayerIdText *text);
-    const char *chars = ((Sequence4TextChars) (uintptr_t) name.vtable->buffer)(&name);
+    typedef const char *(*Sequence4TextCharsFn)(PlayerIdText *text);
+    const char *chars = ((Sequence4TextCharsFn) (uintptr_t) name.vtable->buffer)(&name);
     TalkReceiver_SetSpeaker(receiver, chars, 0);
     PlayerIdText_Destruct(&name);
     return 1;

@@ -26,11 +26,11 @@ int ReactionSlots_Find(int number)
 CLEAN_AS(func_0203f9e0, ReactionSlots_Find)
 
 /* func_0203fa14: what the current player's `slot` holds. */
-int ReactionSlots_Get(int slot)
+int ReactionSlots_At(int slot)
 {
     return ReactionSlots_Read(current_slots(), slot);
 }
-CLEAN_AS(func_0203fa14, ReactionSlots_Get)
+CLEAN_AS(func_0203fa14, ReactionSlots_At)
 
 /* func_0203fa2c: the current player's `slot` set to `number`. */
 void ReactionSlots_Set(int slot, int number)

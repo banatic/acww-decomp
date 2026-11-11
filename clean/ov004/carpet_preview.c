@@ -53,12 +53,12 @@ CLEAN_AS(func_ov004_0221277c, CarpetPreview_Update)
  * "m_dummy_floor"; done when the material took it. */
 int CarpetPreview_Start(CarpetPreview *object)
 {
-    object->carpet = (u16) RoomPreview_Number(RoomPreview_Get());
+    object->carpet = (u16) RoomPreview_Number(RoomPreview_Global());
     object->shown_frames = 0;
     u16 item = object->carpet < CARPET_COUNT ? (u16) (object->carpet + CARPET_FIRST) : CARPET_FIRST;
-    CarpetTexture_Load(RoomPreview_CarpetFile(RoomPreview_Get()), &item);
+    CarpetTexture_Load(RoomPreview_CarpetFile(RoomPreview_Global()), &item);
     G3dModel *model = object->base.model_resource;
-    void *texture = CarpetTexture_Textures(RoomPreview_CarpetFile(RoomPreview_Get()));
+    void *texture = CarpetTexture_Textures(RoomPreview_CarpetFile(RoomPreview_Global()));
     return VramCopyMaterial_Queue(&object->material_texture, (const u8 *) model, data_ov004_02253190, texture, 0, 0) != 0;
 }
 CLEAN_AS(func_ov004_02212794, CarpetPreview_Start)

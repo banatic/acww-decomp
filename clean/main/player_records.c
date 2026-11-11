@@ -52,7 +52,7 @@ int PlayerRecords_Exists(int number)
 CLEAN_AS(func_02098420, PlayerRecords_Exists)
 
 /* func_0209847c: record `number`; NULL outside 0-6. */
-u8 *PlayerRecords_Get(int number)
+u8 *PlayerRecords_At(int number)
 {
     if (PlayerRecords_IsTownNumber((u32) number) == 1) {
         return PlayerRecords_TownRecord(data_021dc7bc, number);
@@ -63,7 +63,7 @@ u8 *PlayerRecords_Get(int number)
     }
     return NULL;
 }
-CLEAN_AS(func_0209847c, PlayerRecords_Get)
+CLEAN_AS(func_0209847c, PlayerRecords_At)
 
 /* func_020984d4: the record number of this system's player. */
 int PlayerRecords_CurrentNumber(void)
@@ -82,7 +82,7 @@ CLEAN_AS(func_020984e8, PlayerRecords_Current)
 /* func_020984fc: the record of session player `player`. */
 u8 *PlayerRecords_OfPlayer(int player)
 {
-    return PlayerRecords_Get(SessionPlayers_RecordNumber(player));
+    return PlayerRecords_At(SessionPlayers_RecordNumber(player));
 }
 CLEAN_AS(func_020984fc, PlayerRecords_OfPlayer)
 

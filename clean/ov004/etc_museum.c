@@ -149,14 +149,14 @@ CLEAN_AS(func_ov004_0221b224, EtcMuseum_Spawn)
 
 /* func_ov004_0221b27c: the one with `index`, or null when there is none or `index` is out of
  * 0-31. */
-EtcMuseum *EtcMuseum_Get(int index)
+EtcMuseum *EtcMuseum_At(int index)
 {
     if (index >= 0 && index < ETC_MUSEUM_MAX) {
         return data_ov004_0225797c[index];
     }
     return NULL;
 }
-CLEAN_AS(func_ov004_0221b27c, EtcMuseum_Get)
+CLEAN_AS(func_ov004_0221b27c, EtcMuseum_At)
 
 /* func_ov004_0221b294: state 3's update: on to state 2 once the talk is up. */
 void EtcMuseum_UpdateLoneTalk(EtcMuseum *museum)

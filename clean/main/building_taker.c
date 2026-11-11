@@ -6,11 +6,11 @@
 extern void *data_021f4b2c; /* the object, or NULL */
 
 /* func_020b3b14: the object, as an address (0 when there is none). */
-int BuildingTaker_Get(void)
+int BuildingTaker_Current(void)
 {
     return (int) (uintptr_t) data_021f4b2c;
 }
-CLEAN_AS(func_020b3b14, BuildingTaker_Get)
+CLEAN_AS(func_020b3b14, BuildingTaker_Current)
 
 /* func_020b3b20: the slot emptied; whether there was an object in it.
  * QUIRK: `taker` is not compared with the object in the slot; whoever asks empties it. */

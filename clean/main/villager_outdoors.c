@@ -482,7 +482,7 @@ void VillagerOutdoors_PickFleaVillager(const u8 *villagers, const void *player)
     for (int i = 0; i < VILLAGERS; i++) {
         const u8 *villager = villager_at(villagers, i);
         if (NpcId_IsValid(TownVillager_NpcId((u8 *) villager)) && VillagerMemory_Of((u8 *) villager, player) != 0 &&
-            VillagerStatus_Get((u8 *) villager) == 0) {
+            VillagerStatus_Of((u8 *) villager) == 0) {
             candidates = (u8) (candidates | (1 << i));
             left++;
         }

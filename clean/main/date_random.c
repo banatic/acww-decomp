@@ -62,7 +62,7 @@ CLEAN_AS(func_02063ce0, DatedRandom_SetDate)
 /* The state block's byte for kind `kind`. */
 static u32 dated_random_byte(int kind)
 {
-    return (u8) ItemGroupOrder_Get(ItemLists_TierByte(data_021f3b7c, kind));
+    return (u8) ItemGroupOrder_Value(ItemLists_TierByte(data_021f3b7c, kind));
 }
 
 /* func_02063d04: the seed of a date: the date's three numbers packed (the year, the month from

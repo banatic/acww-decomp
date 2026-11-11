@@ -123,8 +123,8 @@ static int villager_house_index(const VillagerHouse *house)
  * QUIRK: the status is asked for again for each value compared. */
 static int villager_house_status_refuses(void *villager)
 {
-    return VillagerStatus_Get(villager) == 0 || VillagerStatus_Get(villager) == 3 || VillagerStatus_Get(villager) == 4 ||
-           VillagerStatus_Get(villager) == 5 || VillagerStatus_Get(villager) == 6 || VillagerStatus_Get(villager) == 7;
+    return VillagerStatus_Of(villager) == 0 || VillagerStatus_Of(villager) == 3 || VillagerStatus_Of(villager) == 4 ||
+           VillagerStatus_Of(villager) == 5 || VillagerStatus_Of(villager) == 6 || VillagerStatus_Of(villager) == 7;
 }
 
 /* func_ov003_0221d2a8 (vtable slot 0x98): always 1. */
@@ -161,7 +161,7 @@ int VillagerHouse_LightsOn(VillagerHouse *house)
     if (villager_house_status_refuses(villager)) {
         return 0;
     }
-    if (VillagerStatus_Get(villager) != VILLAGER_HOUSE_STATUS_ASLEEP) {
+    if (VillagerStatus_Of(villager) != VILLAGER_HOUSE_STATUS_ASLEEP) {
         return 1;
     }
     NetSession *session = data_020ccf94;
@@ -234,20 +234,20 @@ CLEAN_AS(func_ov003_0221d43c, VillagerHouse_PrepareTalk)
 /* func_ov003_0221d530 (vtable slot 0x68, overlay 9's second animation file): reads the joint
  * animation "/str/obj_house_o.nsbca" of overlay 3's house set and drops it.
  * QUIRK: declared without a result; in the ROM the animation is still in r0 when it returns, so
- * the caller of the slot gets it. The same holds for VillagerHouse_GetAnimI. */
-void VillagerHouse_GetAnimO(void)
+ * the caller of the slot gets it. The same holds for VillagerHouse_AnimI. */
+void VillagerHouse_AnimO(void)
 {
     HouseTextures_AnimO(HouseFiles_Textures());
 }
-CLEAN_AS(func_ov003_0221d530, VillagerHouse_GetAnimO)
+CLEAN_AS(func_ov003_0221d530, VillagerHouse_AnimO)
 
 /* func_ov003_0221d544 (vtable slot 0x64, overlay 9's first animation file): reads the joint
  * animation "/str/obj_house_i.nsbca" of overlay 3's house set and drops it. */
-void VillagerHouse_GetAnimI(void)
+void VillagerHouse_AnimI(void)
 {
     HouseTextures_AnimI(HouseFiles_Textures());
 }
-CLEAN_AS(func_ov003_0221d544, VillagerHouse_GetAnimI)
+CLEAN_AS(func_ov003_0221d544, VillagerHouse_AnimI)
 
 /* func_ov003_0221d558 (vtable slot 0xac, the path of a second texture): none. */
 int VillagerHouse_LtTexturePath(void)

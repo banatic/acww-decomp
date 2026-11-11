@@ -139,10 +139,10 @@ typedef struct CautionWindowNumber {
 /* The text of a label or of a number text: its vtable slot 0x0c. */
 static const char *caution_window_text(void *object)
 {
-    typedef const char *(*CautionWindowTextMethod)(void *object);
+    typedef const char *(*CautionWindowTextMethodFn)(void *object);
     const u8 *vtable = *(const u8 *const *) object;
     u32 method = *(const u32 *) (vtable + 0x0c);
-    return ((CautionWindowTextMethod) (uintptr_t) method)(object);
+    return ((CautionWindowTextMethodFn) (uintptr_t) method)(object);
 }
 
 /* A box set up to draw `text` once into its RAM buffer, the text's color 0 on color 1. */

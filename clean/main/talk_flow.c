@@ -179,7 +179,7 @@ CLEAN_AS(func_02066be0, TalkFlow_StepClosing)
  * REQUIRES: the talk has a receiver. */
 void TalkFlow_EnterClosing(TalkObject *talk)
 {
-    typedef void TalkFlowReceiverSlot(TalkReceiver * receiver);
+    typedef void TalkFlowReceiverSlotFn(TalkReceiver * receiver);
 
     TalkBox_HideArrow(&talk->window);
     talk->slide = TALK_FLOW_SLIDE_STEPS;
@@ -196,7 +196,7 @@ void TalkFlow_EnterClosing(TalkObject *talk)
     TalkReceiver *receiver = talk->receiver;
     const u8 *vtable = (const u8 *) receiver->base.vtable;
     u32 closing = *(const u32 *) (const void *) (vtable + TALK_FLOW_SLOT_CLOSING);
-    ((TalkFlowReceiverSlot *) (uintptr_t) closing)(receiver);
+    ((TalkFlowReceiverSlotFn *) (uintptr_t) closing)(receiver);
 }
 CLEAN_AS(func_02066c54, TalkFlow_EnterClosing)
 
@@ -389,8 +389,8 @@ CLEAN_AS(func_02066f2c, TalkFlow_StepOpening)
  * A talk that was not kept open is from now on (mode 4). */
 void TalkFlow_EnterOpening(TalkObject *talk)
 {
-    typedef const char *TalkFlowChars(TalkReceiverName * name);
-    typedef void *TalkFlowVillager(TalkReceiver * receiver);
+    typedef const char *TalkFlowCharsFn(TalkReceiverName * name);
+    typedef void *TalkFlowVillagerFn(TalkReceiver * receiver);
 
     TalkObject_TakeInputMode(talk);
     int fresh = talk->mode != TALK_FLOW_MODE_KEPT;
@@ -402,10 +402,11 @@ void TalkFlow_EnterOpening(TalkObject *talk)
 
     int kind = MessageEntry_WindowOfKind(&talk->entry);
     TalkReceiverName *speaker = TalkReceiver_SpeakerName(talk->receiver);
-    const char *name = ((TalkFlowChars *) (uintptr_t) speaker->vtable->buffer)(speaker);
+    const char *name = ((TalkFlowCharsFn *) (uintptr_t) speaker->vtable->buffer)(speaker);
     int style = TalkReceiver_SpeakerStyle(talk->receiver);
     TalkReceiver *receiver = talk->receiver;
-    TalkFlowVillager *villager = (TalkFlowVillager *) (uintptr_t) talk_flow_receiver_slot(receiver, TALK_FLOW_SLOT_VILLAGER);
+    TalkFlowVillagerFn *villager =
+        (TalkFlowVillagerFn *) (uintptr_t) talk_flow_receiver_slot(receiver, TALK_FLOW_SLOT_VILLAGER);
     int no_villager = villager(receiver) == NULL;
     int nameless = TalkReceiver_IsNameless(talk->receiver);
     if (nameless == 0 && kind == 0 && name[0] == 0 && name[1] == 0) {
@@ -541,12 +542,12 @@ CLEAN_AS(func_02067bb8, TalkFlow_NewPage)
  * after the choices, and the receiver told (its slot 0x74). */
 void TalkFlow_SameWindow(TalkObject *talk)
 {
-    typedef void TalkFlowGoesOn(TalkReceiver * receiver);
+    typedef void TalkFlowGoesOnFn(TalkReceiver * receiver);
 
     TalkObject_StopGoingOn(talk);
     TalkFlow_AfterChoices(talk);
     TalkReceiver *receiver = talk->receiver;
-    ((TalkFlowGoesOn *) (uintptr_t) talk_flow_receiver_slot(receiver, TALK_FLOW_SLOT_GOES_ON))(receiver);
+    ((TalkFlowGoesOnFn *) (uintptr_t) talk_flow_receiver_slot(receiver, TALK_FLOW_SLOT_GOES_ON))(receiver);
 }
 CLEAN_AS(func_02067be0, TalkFlow_SameWindow)
 

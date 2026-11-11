@@ -218,7 +218,7 @@ CLEAN_AS(func_02083d1c, Spawner_PlaceOffRequest)
 int Spawner_PlaceFromPart31(Spawner *self, Vec3 *position, u16 *angle, const SpawnerRequest *request)
 {
     (void) self;
-    BesideSpot_Place(Block021d27ac_Part31(Block021d27ac_Get()), position, &angle[1], request);
+    BesideSpot_Place(Block021d27ac_Part31(Block021d27ac_Global()), position, &angle[1], request);
     return 1;
 }
 CLEAN_AS(func_02083d54, Spawner_PlaceFromPart31)
@@ -227,7 +227,7 @@ CLEAN_AS(func_02083d54, Spawner_PlaceFromPart31)
 int Spawner_PlaceFromPart4(Spawner *self, Vec3 *position, u16 *angle)
 {
     (void) self;
-    TownSpot_ToPosition((const TownSpot *) (void *) Block021d27ac_Part04(Block021d27ac_Get()), position);
+    TownSpot_ToPosition((const TownSpot *) (void *) Block021d27ac_Part04(Block021d27ac_Global()), position);
     angle[1] = (u16) MainRandom_Below(RANDOM_ANGLE_BOUND);
     return 1;
 }
@@ -237,7 +237,7 @@ CLEAN_AS(func_02083d78, Spawner_PlaceFromPart4)
 int Spawner_PlaceFromPart24(Spawner *self, Vec3 *position, u16 *angle)
 {
     (void) self;
-    void *part = Block021d27ac_Part24(Block021d27ac_Get());
+    void *part = Block021d27ac_Part24(Block021d27ac_Global());
     NearSpot_ToPosition(part, position);
     angle[1] = (u16) NearSpot_Facing(part);
     return 1;
@@ -388,7 +388,7 @@ CLEAN_AS(func_02084058, Spawner_CheckD020In)
 int Spawner_PlaceFromPartC(Spawner *self, Vec3 *position)
 {
     (void) self;
-    MiddleSpot_ToPosition((const MiddleSpot *) (void *) Block021d27ac_Part0c(Block021d27ac_Get()), position);
+    MiddleSpot_ToPosition((const MiddleSpot *) (void *) Block021d27ac_Part0c(Block021d27ac_Global()), position);
     return 1;
 }
 CLEAN_AS(func_02084160, Spawner_PlaceFromPartC)
@@ -425,7 +425,7 @@ void Spawner_UpdatePartCInSession(Spawner *self)
         return;
     }
     if (outdoors()) {
-        MiddleSpot_Pick((MiddleSpot *) (void *) Block021d27ac_Part0c(Block021d27ac_Get()));
+        MiddleSpot_Pick((MiddleSpot *) (void *) Block021d27ac_Part0c(Block021d27ac_Global()));
     }
 }
 CLEAN_AS(func_02084210, Spawner_UpdatePartCInSession)
@@ -436,7 +436,7 @@ int Spawner_PlaceFromPartCOrRoom(Spawner *self, Vec3 *position)
 {
     (void) self;
     if (outdoors()) {
-        MiddleSpot_ToPosition((const MiddleSpot *) (void *) Block021d27ac_Part0c(Block021d27ac_Get()), position);
+        MiddleSpot_ToPosition((const MiddleSpot *) (void *) Block021d27ac_Part0c(Block021d27ac_Global()), position);
         return 1;
     }
     AcreTile_TileCenter(position, 6, 0x11);
@@ -468,11 +468,11 @@ int Spawner_CheckD022In(int check_mode)
         Spawner_EventOn(EVENT_3D, NULL) == 0) {
         return code_result(0xd022);
     }
-    if (MiddleSpot_HasMark((const MiddleSpot *) (void *) Block021d27ac_Part0c(Block021d27ac_Get())) != 0 &&
+    if (MiddleSpot_HasMark((const MiddleSpot *) (void *) Block021d27ac_Part0c(Block021d27ac_Global())) != 0 &&
         SceneQuery_Current() == SCENE_B && Session_IsLinked(data_020ccf94) == 0) {
         return code_result(0xd022);
     }
-    if (MiddleSpot_HasMark((const MiddleSpot *) (void *) Block021d27ac_Part0c(Block021d27ac_Get())) != 0 &&
+    if (MiddleSpot_HasMark((const MiddleSpot *) (void *) Block021d27ac_Part0c(Block021d27ac_Global())) != 0 &&
         SceneQuery_Current() == SCENE_C) {
         return code_result(0xd022);
     }
@@ -715,7 +715,7 @@ CLEAN_AS(func_02084840, Spawner_CheckProfile56In)
  * data_021d27ac is set, neither arrival flag is set and the player lacks flag 1. */
 int Spawner_Profile56Allowed(void)
 {
-    return !in_session() && Block021d27ac_TestFlag((u32 *) Block021d27ac_Get(), OBJECT_FLAG_GOLDEN_TOOL_DUE) != 0 &&
+    return !in_session() && Block021d27ac_TestFlag((u32 *) Block021d27ac_Global(), OBJECT_FLAG_GOLDEN_TOOL_DUE) != 0 &&
            !Spawner_ArrivalPending() && !Spawner_PlayerInNookJob();
 }
 CLEAN_AS(func_02084890, Spawner_Profile56Allowed)
@@ -792,7 +792,7 @@ CLEAN_AS(func_020849e8, Spawner_PlaceInFrontOfPlayerHouse)
  * accepts part 0x30 of the object at data_021d27ac and this console is not in the session. */
 int Spawner_CheckD011(void)
 {
-    if (SceneQuery_Current() != SCENE_0 || Block021d27acPart30_IsSet(Block021d27ac_Part30(Block021d27ac_Get())) == 0 ||
+    if (SceneQuery_Current() != SCENE_0 || Block021d27acPart30_IsSet(Block021d27ac_Part30(Block021d27ac_Global())) == 0 ||
         in_session()) {
         return 0;
     }
@@ -1197,8 +1197,8 @@ int Spawner_Create(Spawner *self)
     int entries = data_020d0644;
     VillagerTown *town = &data_021e5a2c;
 
-    NearSpot_ClearServed((NearSpot *) (void *) Block021d27ac_Part24(Block021d27ac_Get()));
-    BesideSpot_ClearServed(Block021d27ac_Part31(Block021d27ac_Get()));
+    NearSpot_ClearServed((NearSpot *) (void *) Block021d27ac_Part24(Block021d27ac_Global()));
+    BesideSpot_ClearServed(Block021d27ac_Part31(Block021d27ac_Global()));
     if (SceneQuery_CurrentIs0() != 0) {
         VillagerTown_UpdateBirthdayVillager(town);
         VillagerTown_ApplyBirthdayStates(town);
@@ -1241,10 +1241,10 @@ int Spawner_Create(Spawner *self)
     Spawner_RunChecks(self);
     const SpawnerEntry *served = Spawner_Serve(self, data_020e1d8c, entries);
     if (served != NULL) {
-        BesideSpot_SetServed(Block021d27ac_Part31(Block021d27ac_Get()));
+        BesideSpot_SetServed(Block021d27ac_Part31(Block021d27ac_Global()));
         if (served->code != SPAWNER_CODE_D008 ||
-            NearSpot_Found((const NearSpot *) (void *) Block021d27ac_Part24(Block021d27ac_Get())) != 0) {
-            NearSpot_SetServed((NearSpot *) (void *) Block021d27ac_Part24(Block021d27ac_Get()));
+            NearSpot_Found((const NearSpot *) (void *) Block021d27ac_Part24(Block021d27ac_Global())) != 0) {
+            NearSpot_SetServed((NearSpot *) (void *) Block021d27ac_Part24(Block021d27ac_Global()));
         }
     }
     Spawner_UpdatePartCInSession(self);
@@ -1458,7 +1458,7 @@ void Spawner_KeepOffRaisedGround(u8 *villager, Vec3 *position)
 {
     CollisionGround ground;
     CollisionGround_Init(&ground, position, 0, 0);
-    if (VillagerStatus_Get(villager) == 0 && CollisionGround_Height(&ground, 0) != 0) {
+    if (VillagerStatus_Of(villager) == 0 && CollisionGround_Height(&ground, 0) != 0) {
         spawner_at_door(villager, position);
     }
     CollisionGround_Destroy(&ground);

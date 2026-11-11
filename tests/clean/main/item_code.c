@@ -89,7 +89,7 @@ static void item_and_count(DiffRng *rng, uint32_t args[4])
 
 static uint32_t get(const uint32_t args[4])
 {
-    return (uint32_t) ItemCode_Get(CODE_ARG(0));
+    return (uint32_t) ItemCode_Value(CODE_ARG(0));
 }
 
 static uint32_t set(const uint32_t args[4])

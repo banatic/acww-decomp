@@ -71,7 +71,7 @@ void RoomPlayerBeds_Place(void)
         return;
     }
     for (int player = 0; player < ROOM_PLAYER_BEDS_PLAYERS; player++) {
-        u8 *record = PlayerRecords_Get(player);
+        u8 *record = PlayerRecords_At(player);
         if (record == NULL) {
             continue;
         }

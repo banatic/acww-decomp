@@ -6,7 +6,7 @@
 
 #include "types.h"
 
-unsigned char Global021dc5b0_Get(void);
+unsigned char Global021dc5b0_Value(void);
 void Global021dc5b0_Set(unsigned char value);
 void Global021dc5b0_Destruct(void *object);
 void Global021dc5b0_Construct(void *object);

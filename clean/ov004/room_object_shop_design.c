@@ -40,7 +40,7 @@ static SoundEmitter *shop_design_object_emitter(ShopDesignObject *object)
 
 static DesignManager *shop_design_object_designs(void)
 {
-    return (DesignManager *) (uintptr_t) DesignManager_Get();
+    return (DesignManager *) (uintptr_t) DesignManager_Global();
 }
 
 /* func_ov004_02213984 (vtable slot 0x0c): the emitter's slot 0x10 while it is in use; 1. */

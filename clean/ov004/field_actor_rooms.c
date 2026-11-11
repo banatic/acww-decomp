@@ -189,7 +189,7 @@ CLEAN_AS(func_ov004_02225de0, FieldActorRooms_WalkToward)
 int FieldActorRooms_TryTool(FieldActor *actor)
 {
     if (FIELD_ACTOR_HOLD(actor) != 0) {
-        void *entry = RoomPushes_Get(RoomPushes_Records(), 0);
+        void *entry = RoomPushes_At(RoomPushes_Records(), 0);
         if (entry == NULL) {
             return 0;
         }

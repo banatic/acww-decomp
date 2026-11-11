@@ -39,7 +39,7 @@ void BesideSpot_Place(u8 *spot, Vec3 *position, u16 *angle_y, const SpawnerReque
     Vec3 beside = {request->position.x + offset->x, 0, request->position.z + offset->z};
     AcreTile_SnapToTileCenter(position, &beside);
 
-    if (SpaceshipParts_Get(data_021ebcd2) >= BESIDE_SPOT_SPACESHIP_PARTS_FACE) {
+    if (SpaceshipParts_Count(data_021ebcd2) >= BESIDE_SPOT_SPACESHIP_PARTS_FACE) {
         *angle_y = (u16) data_020d06e4[beside_spot_side(spot)];
     } else if (SpaceshipParts_HasMark(data_021ebcd2) != 0) {
         *angle_y = 0;

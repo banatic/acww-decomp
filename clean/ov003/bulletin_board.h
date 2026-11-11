@@ -25,7 +25,7 @@ typedef struct BulletinBoard {
     s16 yaw; /* the direction it faces */
     u8 unk_90[0xec - 0x90];
     const void *receiver_vtable; /* data_ov003_022384f8 */
-    u8 unk_F0[0x235 - 0xf0];
+    u8 unk_f0[0x235 - 0xf0];
     u8 flags_235; /* BulletinBoard_IsFacedBy needs bit 3 */
     u8 unk_236[0x2b4 - 0x236];
     int state; /* enum BulletinBoardState */

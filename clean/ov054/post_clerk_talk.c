@@ -1245,7 +1245,7 @@ void PostClerkTalk_AfterLoan(PostClerkTalk *talk)
         SceneBase_PutValue(&talk->base, loan, 4, POST_CLERK_TALK_VALUE_BELLS, 0, 0);
         if (loan == 0) {
             line = POST_CLERK_LINE_LOAN_PAID_OFF;
-            Block021d27ac_SetFlag((u32 *) (void *) Block021d27ac_Get(), BLOCK_021D27AC_FLAG_LOAN_PAID_OFF);
+            Block021d27ac_SetFlag((u32 *) (void *) Block021d27ac_Global(), BLOCK_021D27AC_FLAG_LOAN_PAID_OFF);
             StateBlock_ClearFlag(data_021dc7a8, 0x10);
         } else {
             line = POST_CLERK_LINE_LOAN_PAID;

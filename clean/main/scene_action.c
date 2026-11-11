@@ -575,8 +575,8 @@ CLEAN_AS(func_020146cc, SceneAction_StartPending)
  * talk begins (word 8 is 1). */
 void SceneAction_OpenTalk(SceneAction *self, void *object)
 {
-    typedef void (*SceneActionFill)(void *object, void *out);
-    typedef const char *(*SceneActionChars)(SceneActionText *text);
+    typedef void (*SceneActionFillFn)(void *object, void *out);
+    typedef const char *(*SceneActionCharsFn)(SceneActionText *text);
     (void) self;
 
     u8 *scene = scene_action_scene(object);
@@ -585,14 +585,14 @@ void SceneAction_OpenTalk(SceneAction *self, void *object)
     }
     SceneActionText text;
     PlayerIdText_Construct((PlayerIdText *) &text);
-    ((SceneActionFill) (uintptr_t) scene_action_slot(object, SCENE_ACTION_SLOT_NAME))(object, &text);
-    const char *name = ((SceneActionChars) (uintptr_t) scene_action_slot(&text, SCENE_ACTION_TEXT_SLOT_CHARS))(&text);
+    ((SceneActionFillFn) (uintptr_t) scene_action_slot(object, SCENE_ACTION_SLOT_NAME))(object, &text);
+    const char *name = ((SceneActionCharsFn) (uintptr_t) scene_action_slot(&text, SCENE_ACTION_TEXT_SLOT_CHARS))(&text);
     int a = SceneObject_Sort(object);
     TalkReceiver_SetSpeaker((TalkReceiver *) (void *) scene, name, a);
     SceneObjectBase_TakeReceiver(object, (TalkReceiver *) (void *) scene);
 
     SceneActionLine line;
-    ((SceneActionFill) (uintptr_t) scene_action_slot(scene, SCENE_ACTION_SLOT_LINE))(scene, &line);
+    ((SceneActionFillFn) (uintptr_t) scene_action_slot(scene, SCENE_ACTION_SLOT_LINE))(scene, &line);
     MessageReceiver_SetName((MessageReceiver *) (void *) scene, (const char *) (uintptr_t) line.name);
     scene[SCENE_ACTION_SCENE_LINE_BYTE] = line.byte;
     u8 *talk = *(u8 **) (scene + SCENE_ACTION_SCENE_TALK);

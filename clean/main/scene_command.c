@@ -178,12 +178,12 @@ CLEAN_AS(func_02014b14, SceneCommand_SoundWaitStart)
  * QUIRK: without a first speaker the sound is 0, which is played. */
 int SceneCommand_SoundStart(SceneCommandScene *scene)
 {
-    typedef int (*SceneCommandSound)(void *speaker);
+    typedef int (*SceneCommandSoundFn)(void *speaker);
 
     int sound = 0;
     if (scene->speakers[0] != NULL) {
         u32 get_sound = scene_command_slot(scene->speakers[0], SCENE_COMMAND_SLOT_SOUND);
-        sound = ((SceneCommandSound) (uintptr_t) get_sound)(scene->speakers[0]);
+        sound = ((SceneCommandSoundFn) (uintptr_t) get_sound)(scene->speakers[0]);
     }
     if (sound == SCENE_COMMAND_NO_SOUND) {
         scene->state = 3;
@@ -489,7 +489,7 @@ CLEAN_AS(func_02015248, SceneCommand_WaitMotion14)
  * talking and there is a talk). */
 static int scene_command_item_motion_ready(SceneCommandScene *scene)
 {
-    typedef int (*SceneCommandSpeakerTalks)(void *scene, int a);
+    typedef int (*SceneCommandSpeakerTalksFn)(void *scene, int a);
 
     if (scene->speakers[0] == NULL) {
         return 0;
@@ -500,7 +500,7 @@ static int scene_command_item_motion_ready(SceneCommandScene *scene)
     if (SceneMotion_Kind(scene_command_motion(scene)) == SCENE_COMMAND_MOTION_TALK &&
         SceneMotion_IsDone(scene_command_motion(scene)) == 0) {
         u32 speaker_talks = scene_command_slot(scene, SCENE_COMMAND_SLOT_SPEAKER_TALKS);
-        ((SceneCommandSpeakerTalks) (uintptr_t) speaker_talks)(scene, 0);
+        ((SceneCommandSpeakerTalksFn) (uintptr_t) speaker_talks)(scene, 0);
         return 0;
     }
     return scene->talk != NULL;
@@ -854,7 +854,7 @@ CLEAN_AS(func_02015848, SceneCommand_Ended)
  * REQUIRES: `command` is not negative (the original reads before its table then). */
 void SceneCommand_Run(SceneCommandScene *scene)
 {
-    typedef void (*SceneCommandEnded)(SceneCommandScene *scene, int command);
+    typedef void (*SceneCommandEndedFn)(SceneCommandScene *scene, int command);
 
     static const MemberPointer *const commands[SCENE_COMMAND_COUNT] = {
         &data_020d881c, /* SceneCommand_RunScreen */
@@ -881,7 +881,7 @@ void SceneCommand_Run(SceneCommandScene *scene)
     scene->busy = 0;
     scene->command = SCENE_COMMAND_NONE;
     u32 tell_ended = scene_command_slot(scene, SCENE_COMMAND_SLOT_ENDED);
-    ((SceneCommandEnded) (uintptr_t) tell_ended)(scene, ended);
+    ((SceneCommandEndedFn) (uintptr_t) tell_ended)(scene, ended);
 }
 CLEAN_AS(func_0201584c, SceneCommand_Run)
 

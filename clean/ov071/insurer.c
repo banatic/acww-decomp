@@ -808,7 +808,7 @@ int Insurer_Leave(void *insurer)
         return 0;
     }
     if (EventAnnounce_Entered() == 0) {
-        TownSpot_PickRandom((TownSpot *) Block021d27ac_Part04(Block021d27ac_Get()));
+        TownSpot_PickRandom((TownSpot *) Block021d27ac_Part04(Block021d27ac_Global()));
     }
     return 1;
 }

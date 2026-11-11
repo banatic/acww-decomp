@@ -58,7 +58,7 @@ void Constellations_SetCreator(DesignCreator *creator);
 int Constellations_At(int number);
 void Constellations_Remove(int number);
 void Constellations_Put(const Constellation *constellation, int number, int is_new);
-int Constellations_Get(int number);
+int Constellations_AtCopy(int number);
 int Constellations_CountFree(void);
 int Constellations_FreeSlot(void);
 int Constellations_StoreAddress(void);

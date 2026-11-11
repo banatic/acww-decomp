@@ -518,7 +518,7 @@ CLEAN_AS(func_ov129_0229bf88, StarDesigner_MarkDrawn)
  * an empty name and the empty mode. Its pieces marked drawn. */
 void StarDesigner_LoadConstellation(StarDesigner *self)
 {
-    const Constellation *source = (const Constellation *) (uintptr_t) Constellations_Get(GroupParams_Arg());
+    const Constellation *source = (const Constellation *) (uintptr_t) Constellations_AtCopy(GroupParams_Arg());
     int first = STAR_DESIGNER_NO_PIECE;
 
     if (source != NULL) {
@@ -561,7 +561,7 @@ void StarDesigner_MarkTaken(StarDesigner *self)
         if (i == own) {
             continue;
         }
-        other = (const Constellation *) (uintptr_t) Constellations_Get(i);
+        other = (const Constellation *) (uintptr_t) Constellations_AtCopy(i);
         if (other == NULL) {
             continue;
         }

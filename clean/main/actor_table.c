@@ -147,7 +147,7 @@ CLEAN_AS(func_020827dc, ActorTable_RemoveD)
 /* func_02082ab0: puts the actor in a free entry under `code`; FALSE when an entry is already
  * under it or none is free.
  * QUIRK: the kind of the code is not checked; an entry under a code of another kind is never
- * seen by ActorTable_GetE, ActorTable_SlotE or ActorTable_FindEAt. */
+ * seen by ActorTable_ActorE, ActorTable_SlotE or ActorTable_FindEAt. */
 BOOL ActorTable_AddE(ActorTable *table, void *actor, const ItemCode *code)
 {
     ItemCode none = ITEM_CODE_NONE;
@@ -182,7 +182,7 @@ BOOL ActorTable_AddD(ActorTable *table, void *actor, const ItemCode *code)
 CLEAN_AS(func_02082808, ActorTable_AddD)
 
 /* func_020829b8: the actor under a kind 0xe code, or null. */
-void *ActorTable_GetE(const ActorTable *table, const ItemCode *code)
+void *ActorTable_ActorE(const ActorTable *table, const ItemCode *code)
 {
     if (ACTOR_TABLE_ITEM_KIND(*code) != ITEM_KIND_E) {
         return NULL;
@@ -190,10 +190,10 @@ void *ActorTable_GetE(const ActorTable *table, const ItemCode *code)
     int i = ActorTable_FindE(table, code);
     return i >= 0 ? table->kind_e[i].actor : NULL;
 }
-CLEAN_AS(func_020829b8, ActorTable_GetE)
+CLEAN_AS(func_020829b8, ActorTable_ActorE)
 
 /* func_0208270c: the actor under a kind 0xd code, or null. */
-void *ActorTable_GetD(const ActorTable *table, const ItemCode *code)
+void *ActorTable_ActorD(const ActorTable *table, const ItemCode *code)
 {
     if (ACTOR_TABLE_ITEM_KIND(*code) != ITEM_KIND_D) {
         return NULL;
@@ -201,25 +201,25 @@ void *ActorTable_GetD(const ActorTable *table, const ItemCode *code)
     int i = ActorTable_FindD(table, code);
     return i >= 0 ? table->kind_d[i].actor : NULL;
 }
-CLEAN_AS(func_0208270c, ActorTable_GetD)
+CLEAN_AS(func_0208270c, ActorTable_ActorD)
 
 /* func_02082a44: the actor under the kind 0xe code with this index (its low 12 bits). */
-void *ActorTable_GetEByIndex(const ActorTable *table, u16 index)
+void *ActorTable_ActorEByIndex(const ActorTable *table, u16 index)
 {
     ItemCode code = (ItemCode) (ITEM_KIND_E << 12 | (index & ITEM_INDEX_MASK));
     int i = ActorTable_FindE(table, &code);
     return i >= 0 ? table->kind_e[i].actor : NULL;
 }
-CLEAN_AS(func_02082a44, ActorTable_GetEByIndex)
+CLEAN_AS(func_02082a44, ActorTable_ActorEByIndex)
 
 /* func_02082798: the actor under the kind 0xd code with this index (its low 12 bits). */
-void *ActorTable_GetDByIndex(const ActorTable *table, u16 index)
+void *ActorTable_ActorDByIndex(const ActorTable *table, u16 index)
 {
     ItemCode code = (ItemCode) (ITEM_KIND_D << 12 | (index & ITEM_INDEX_MASK));
     int i = ActorTable_FindD(table, &code);
     return i >= 0 ? table->kind_d[i].actor : NULL;
 }
-CLEAN_AS(func_02082798, ActorTable_GetDByIndex)
+CLEAN_AS(func_02082798, ActorTable_ActorDByIndex)
 
 /* func_0208298c: the actor in kind 0xe entry `slot` (0-7), or null. */
 void *ActorTable_SlotE(const ActorTable *table, int slot)
@@ -314,14 +314,14 @@ CLEAN_AS(func_02082578, Actors_AddE)
 /* func_020825c8 */
 void *Actors_GetD(const ItemCode *code)
 {
-    return ActorTable_GetD(&data_021d1d4c, code);
+    return ActorTable_ActorD(&data_021d1d4c, code);
 }
 CLEAN_AS(func_020825c8, Actors_GetD)
 
 /* func_020825d8 */
 void *Actors_GetE(const ItemCode *code)
 {
-    return ActorTable_GetE(&data_021d1d4c, code);
+    return ActorTable_ActorE(&data_021d1d4c, code);
 }
 CLEAN_AS(func_020825d8, Actors_GetE)
 
@@ -342,14 +342,14 @@ CLEAN_AS(func_020825e8, Actors_Get)
 /* func_02082644: QUIRK: only the low 12 bits of `index` count. */
 void *Actors_GetDByIndex(int index)
 {
-    return ActorTable_GetDByIndex(&data_021d1d4c, (u16) index);
+    return ActorTable_ActorDByIndex(&data_021d1d4c, (u16) index);
 }
 CLEAN_AS(func_02082644, Actors_GetDByIndex)
 
 /* func_02082654: QUIRK: only the low 12 bits of `index` count. */
 void *Actors_GetEByIndex(int index)
 {
-    return ActorTable_GetEByIndex(&data_021d1d4c, (u16) index);
+    return ActorTable_ActorEByIndex(&data_021d1d4c, (u16) index);
 }
 CLEAN_AS(func_02082654, Actors_GetEByIndex)
 

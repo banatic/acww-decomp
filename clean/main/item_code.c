@@ -11,11 +11,11 @@ static int shift_right(int value, int bits)
 }
 
 /* func_0204b42c */
-int ItemCode_Get(const ItemCode *item)
+int ItemCode_Value(const ItemCode *item)
 {
     return *item;
 }
-CLEAN_AS(func_0204b42c, ItemCode_Get)
+CLEAN_AS(func_0204b42c, ItemCode_Value)
 
 /* func_0204b79c: QUIRK: keeps the low 16 bits of `code`. */
 void ItemCode_Set(ItemCode *item, int code)
@@ -55,7 +55,7 @@ CLEAN_AS(func_0204bd08, ItemCode_IsKind1)
 /* func_0204bcb4: the code 0xf031, one of the kind 0xf codes next to "nothing". */
 BOOL ItemCode_IsF031(const ItemCode *item)
 {
-    return ItemCode_Get(item) == 0xf031;
+    return ItemCode_Value(item) == 0xf031;
 }
 CLEAN_AS(func_0204bcb4, ItemCode_IsF031)
 
@@ -86,14 +86,14 @@ CLEAN_AS(func_0204bcd4, ItemCode_TestIsFurniture)
  * number, rounded down as the ARM's shift does. */
 int ItemCode_FurnitureNumber(const ItemCode *item)
 {
-    return shift_right(ItemCode_Get(item) - ITEM_CODE_FURNITURE_BASE, 2);
+    return shift_right(ItemCode_Value(item) - ITEM_CODE_FURNITURE_BASE, 2);
 }
 CLEAN_AS(func_0204bc64, ItemCode_FurnitureNumber)
 
 /* func_0204bc7c: the low two bits, whatever the kind. */
 int ItemCode_Side(const ItemCode *item)
 {
-    return ItemCode_Get(item) & 3;
+    return ItemCode_Value(item) & 3;
 }
 CLEAN_AS(func_0204bc7c, ItemCode_Side)
 
@@ -142,7 +142,7 @@ CLEAN_AS(func_0204bd20, ItemCode_MakePile)
  * QUIRK: the range is not checked; any code gives a count from its low two bits. */
 int ItemCode_PileCount(const ItemCode *item)
 {
-    return ((ItemCode_Get(item) - ITEM_CODE_PILE_FIRST) & 3) + 1;
+    return ((ItemCode_Value(item) - ITEM_CODE_PILE_FIRST) & 3) + 1;
 }
 CLEAN_AS(func_0204bd40, ItemCode_PileCount)
 
@@ -152,7 +152,7 @@ int ItemCode_PileItem(const ItemCode *item)
     if (!ItemCode_IsPile(item)) {
         return -1;
     }
-    return (ItemCode_Get(item) - ITEM_CODE_PILE_FIRST) >> 2;
+    return (ItemCode_Value(item) - ITEM_CODE_PILE_FIRST) >> 2;
 }
 CLEAN_AS(func_0204bd5c, ItemCode_PileItem)
 

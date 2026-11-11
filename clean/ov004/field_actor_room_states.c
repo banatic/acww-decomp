@@ -1659,7 +1659,7 @@ CLEAN_AS(func_ov004_0222840c, FieldActorRoomStates_PutAtChestArgs)
 static_assert(offsetof(FieldActor, unk_1c4) == FIELD_ACTOR_CONTACT_B, "second contact body");
 static_assert(offsetof(FieldActor, has_other) == 0x200, "an object met");
 static_assert(offsetof(FieldActor, anim.flags) == 0x2e4, "animation flags");
-static_assert(offsetof(FieldActor, unk_C84) == 0xc84, "0xc84");
+static_assert(offsetof(FieldActor, unk_c84) == 0xc84, "0xc84");
 static_assert(offsetof(Actor, cull_flags) == 0xb0, "cull flags");
 static_assert(offsetof(LayeredModel, base.frames) == 0x2d0 - FIELD_ACTOR_BODY, "the body's animation");
 static_assert(offsetof(FieldActorChestApproach, index) == 0x0a, "the chest's index");
@@ -1962,7 +1962,7 @@ void FieldActorRoomStates_SpotStepOffMessage(FieldActor *actor, int arg)
         return;
     }
     if (state == FARS_SPOT_STEP_OFF) {
-        actor->unk_C84 = (s16) arg;
+        actor->unk_c84 = (s16) arg;
     } else {
         FieldActorRoomStates_RequestSpotStepOff(actor, FARS_PRIORITY, arg);
     }

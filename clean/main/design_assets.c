@@ -224,11 +224,11 @@ void DesignMySheet_Construct(void) {}
 CLEAN_AS(func_0207225c, DesignMySheet_Construct)
 
 /* func_02072260: the file of designs' information. */
-int DesignArchive_Get(void)
+int DesignArchive_Global(void)
 {
     return (int) (uintptr_t) &data_021d04c8;
 }
-CLEAN_AS(func_02072260, DesignArchive_Get)
+CLEAN_AS(func_02072260, DesignArchive_Global)
 
 /* func_02072268: sets a design's information from record `entry` of the file: its title,
  * palette and kind, and as its creator the player and town named there. 0 past the 50 records
@@ -419,11 +419,11 @@ int DesignTextures_Construct(DesignManager *manager)
 CLEAN_AS(func_02072578, DesignTextures_Construct)
 
 /* func_02072588: palette `index` (cut to 0-15), NULL before the file is read. */
-unsigned int DesignPalettes_Get(DesignPalettes *set, unsigned int index)
+unsigned int DesignPalettes_At(DesignPalettes *set, unsigned int index)
 {
     return (unsigned int) (uintptr_t) set->palettes[index & (DESIGN_PALETTES - 1)];
 }
-CLEAN_AS(func_02072588, DesignPalettes_Get)
+CLEAN_AS(func_02072588, DesignPalettes_At)
 
 /* func_02072594: frees the file (from the current heap) and forgets the palettes. */
 void DesignPalettes_Free(DesignPalettes *set)
@@ -477,16 +477,16 @@ void DesignPalettes_Reset(DesignPalettes *set)
 CLEAN_AS(func_02072600, DesignPalettes_Reset)
 
 /* func_02072614 */
-int DesignManager_Get(void)
+int DesignManager_Global(void)
 {
     return (int) (uintptr_t) &data_021d0504;
 }
-CLEAN_AS(func_02072614, DesignManager_Get)
+CLEAN_AS(func_02072614, DesignManager_Global)
 
 /* func_0207261c */
 unsigned int DesignManager_Palette(DesignManager *manager, unsigned int index)
 {
-    return DesignPalettes_Get(&manager->palettes, index);
+    return DesignPalettes_At(&manager->palettes, index);
 }
 CLEAN_AS(func_0207261c, DesignManager_Palette)
 

@@ -236,7 +236,7 @@ static int tpel_is_walking(TownPelican *pelican)
 /* The town's near spot (part 0x24 of the object at data_021d27ac). */
 static NearSpot *tpel_near_spot(void)
 {
-    return (NearSpot *) Block021d27ac_Part24(Block021d27ac_Get());
+    return (NearSpot *) Block021d27ac_Part24(Block021d27ac_Global());
 }
 
 /* ---- The object */

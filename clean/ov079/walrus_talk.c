@@ -439,7 +439,7 @@ void WalrusTalk_GiveDesign(WalrusTalk *talk)
         u8 *player = PlayerRecords_Current();
         int place = GroupParams_Arg();
         unsigned int slot =
-            DesignOrder_Get((unsigned char *) (uintptr_t) (u32) PlayerDesigns_Order(PlayerRecord_Designs(player)), place);
+            DesignOrder_At((unsigned char *) (uintptr_t) (u32) PlayerDesigns_Order(PlayerRecord_Designs(player)), place);
 
         Design_Copy(DESIGN_KIND_SAMPLE, walrus_talk_sample(&talk->item), DESIGN_KIND_LOCAL, (int) slot, 1);
         message = WALRUS_TALK_LINE_GIVEN;

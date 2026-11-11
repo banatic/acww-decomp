@@ -399,7 +399,7 @@ void LocalRelay_Deliver(LocalRelayHeader *relay)
         if ((relay->slices & arm_bit(i)) == 0) {
             continue;
         }
-        if (i == LocalMp_GetAid()) {
+        if (i == LocalMp_Aid()) {
             data_ov066_0226be08->own_pending = (s8) (data_ov066_0226be08->own_pending - 1);
         }
         LocalRelay_ReceiveFragment(i, slice);
@@ -426,7 +426,7 @@ void LocalRelay_ReceiveFragment(int aid, u8 *fragment)
         case LOCAL_FRAGMENT_FIRST: {
             LocalRelayFragment *first = (LocalRelayFragment *) fragment;
             data = fragment + LOCAL_FRAGMENT_FIRST_HEAD;
-            if ((first->to & arm_bit((u32) LocalMp_GetAid())) == 0) {
+            if ((first->to & arm_bit((u32) LocalMp_Aid())) == 0) {
                 break;
             }
             data_ov066_0226be08->receiving |= (u16) arm_bit((u32) aid);

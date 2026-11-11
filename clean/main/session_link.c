@@ -1023,7 +1023,7 @@ void Session_OnPlayersChanged(int change)
 {
     if (change == ALL_PLAYERS) {
         VillagerState_Clear();
-        Block021d27ac_Reset(Block021d27ac_Get());
+        Block021d27ac_Reset(Block021d27ac_Global());
     }
     RoomCells_ResetAll();
     RoomObjectState_Clear();

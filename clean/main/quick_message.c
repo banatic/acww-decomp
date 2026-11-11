@@ -123,9 +123,9 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 /* Entry `slot` of a balloon's vtable called on it. */
 static void balloon_call(QuickMessageBalloon *balloon, int slot)
 {
-    typedef void BalloonMethod(QuickMessageBalloon * balloon);
+    typedef void BalloonMethodFn(QuickMessageBalloon * balloon);
     u32 method = ((const u32 *) balloon->vtable)[slot];
-    ((BalloonMethod *) (uintptr_t) method)(balloon);
+    ((BalloonMethodFn *) (uintptr_t) method)(balloon);
 }
 
 /* The entries from `entries[0]` on moved down over the empty ones, keeping their order. */
@@ -916,16 +916,16 @@ extern int data_021c8c9c;
 /* The address of a text object's characters, through its vtable (slot 3). */
 static int text_buffer(void *object)
 {
-    typedef int TextBufferMethod(void *object);
+    typedef int TextBufferMethodFn(void *object);
     const TextObject *text = object;
-    return ((TextBufferMethod *) (uintptr_t) text->vtable->buffer)(object);
+    return ((TextBufferMethodFn *) (uintptr_t) text->vtable->buffer)(object);
 }
 
 /* A text box's text width in pixels, through its vtable (slot 3). */
 static u32 box_text_width(TextDrawBox *box)
 {
-    typedef u32 TextMeasureMethod(TextDrawBox * box);
-    return ((TextMeasureMethod *) (uintptr_t) box->vtable[3])(box);
+    typedef u32 TextMeasureMethodFn(TextDrawBox * box);
+    return ((TextMeasureMethodFn *) (uintptr_t) box->vtable[3])(box);
 }
 
 /* The animation put on its frame for a text `cells` tiles wide, within its frames. */

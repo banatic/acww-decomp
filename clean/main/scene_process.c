@@ -232,12 +232,12 @@ int SceneProcess_End(void)
     FaceTexture_EndScene();
     ClothSlots_EndScene();
     AnimSlots_EndScene();
-    DesignManager_ShutDown((DesignManager *) (uintptr_t) DesignManager_Get());
+    DesignManager_ShutDown((DesignManager *) (uintptr_t) DesignManager_Global());
     FurnitureInfo_FreeIndoor();
     ItemInfo_FreeIndoor();
     CharaShadow_Unload();
     ObjShadow_FreeAll();
-    BgModels_Release((BgModels *) (uintptr_t) BgModels_Get());
+    BgModels_Release((BgModels *) (uintptr_t) BgModels_Global());
     SceneDisplay_TearDown();
     data_021d3124 = 0;
 
@@ -258,7 +258,7 @@ int SceneProcess_End(void)
     } else if (SceneQuery_Current() == SCENE_PROCESS_SCENE_0E) {
         int player = LinkGlobal_ServedSlot();
         if (player >= SCENE_PROCESS_LINK_PLAYER_FIRST && player <= SCENE_PROCESS_LINK_PLAYER_LAST) {
-            u8 *record = PlayerRecords_Get(player + SCENE_PROCESS_LINK_RECORD_OFFSET);
+            u8 *record = PlayerRecords_At(player + SCENE_PROCESS_LINK_RECORD_OFFSET);
             if (record != NULL) {
                 PlayerRecord_Clear(record);
             }
@@ -389,11 +389,11 @@ static int scene_process_full(void)
  * the shops' pending changes applied; done. */
 int SceneProcess_LoadResources(void)
 {
-    int bg_models = BgModels_Get();
+    int bg_models = BgModels_Global();
     BgModels_SetUp((BgModels *) (uintptr_t) bg_models, scene_process_full());
     FurnitureInfo_LoadIndoor((void *) (uintptr_t) scene_process_full());
     ItemInfo_LoadIndoor(scene_process_full());
-    DesignManager_StartUp((DesignManager *) (uintptr_t) DesignManager_Get());
+    DesignManager_StartUp((DesignManager *) (uintptr_t) DesignManager_Global());
     AnimSlots_StartScene(data_021fbe94);
     ClothSlots_StartScene(data_021fbe94);
     FaceTexture_StartScene(data_021fbe94);

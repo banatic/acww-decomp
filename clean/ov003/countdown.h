@@ -52,7 +52,7 @@ typedef struct CountdownDigit {
     const void *vtable; /* data_ov003_02238b10 */
     u8 unk_04[0xec - 0x04];
     const void *receiver_vtable; /* data_ov003_02238bd4 */
-    u8 unk_F0[0x13c - 0xf0];
+    u8 unk_f0[0x13c - 0xf0];
     u8 model_object[0x198 - 0x13c]; /* main's model object (Obj_020dd05c) */
     void *model;                    /* the model object's */
     u8 unk_19c[0x2b4 - 0x19c];
@@ -75,7 +75,7 @@ typedef struct CountdownBoard {
     Vec3 position;
     u8 unk_68[0xec - 0x68];
     const void *receiver_vtable; /* data_ov003_02238d18 */
-    u8 unk_F0[0x134 - 0xf0];
+    u8 unk_f0[0x134 - 0xf0];
     u8 mode; /* enum CountdownMode */
     u8 unk_135;
     u16 code; /* the town object's code main keeps the mode under */

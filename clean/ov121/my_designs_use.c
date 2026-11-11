@@ -461,7 +461,7 @@ int MyDesigns_DesignAt(MyDesigns *self, int place)
 {
     (void) self;
     PlayerDesigns *designs = PlayerRecord_Designs(PlayerRecords_Current());
-    return DesignOrder_Get((unsigned char *) (uintptr_t) (u32) PlayerDesigns_Order(designs), place);
+    return DesignOrder_At((unsigned char *) (uintptr_t) (u32) PlayerDesigns_Order(designs), place);
 }
 CLEAN_AS(func_ov121_0229abac, MyDesigns_DesignAt)
 

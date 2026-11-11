@@ -110,7 +110,7 @@ enum MapMenuMarkKind {
 #define MAP_MENU_MARKS 14      /* overlay 117's markers 3-16 */
 #define MAP_MENU_EXTRA_MARKS 3 /* markers 0-2 (overlay 117's spots) */
 
-/* Overlay 117's 17 markers of the map (TownMapMarker, TownMapMarkers_Get); overlay 117's own
+/* Overlay 117's 17 markers of the map (TownMapMarker, TownMapMarkers_PlacedAt); overlay 117's own
  * spots are markers 0-2 only. */
 #define MAP_MENU_MARKERS TOWN_MAP_MARKERS
 

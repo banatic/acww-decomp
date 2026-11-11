@@ -63,7 +63,7 @@ typedef struct BgMark {
     fx32 z;
 } BgMark;
 
-int BgModels_Get(void);
+int BgModels_Global(void);
 void BgModels_MarkAt(BgMark *out, const u8 *marks, int index);
 int BgModels_MarkCount(const s16 *marks);
 u32 BgModels_BebTexture(const BgModels *self);

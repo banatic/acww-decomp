@@ -38,7 +38,7 @@ void ItemGroupOrder_InitAll(u8 *orders);
 void *ItemGroupOrder_DestructAll(void *orders);
 void *ItemGroupOrder_ConstructAll(void *orders);
 int ItemGroupOrder_GroupOfWeight(u8 *order, u8 weight);
-int ItemGroupOrder_Get(u8 *order);
+int ItemGroupOrder_Value(u8 *order);
 u8 ItemGroupOrder_Weight(u32 index);
 int ItemGroupOrder_PickGroup(u8 *order, int place, DateRandom *source);
 u8 *ItemGroupOrder_Row(u8 *order);

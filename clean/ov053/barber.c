@@ -259,7 +259,7 @@ CLEAN_AS(func_ov053_02260448, Barber_Delete)
 int Barber_IsPaid(int unused)
 {
     (void) unused;
-    return Block021d27ac_TestFlag((u32 *) Block021d27ac_Get(), BARBER_FLAG_PAID);
+    return Block021d27ac_TestFlag((u32 *) Block021d27ac_Global(), BARBER_FLAG_PAID);
 }
 CLEAN_AS(func_ov053_02260474, Barber_IsPaid)
 

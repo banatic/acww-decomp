@@ -72,8 +72,8 @@ int AcreTile_StampBuildingNoting(AcreMap *map, u16 *building, int x, int z, u8 t
     if (tile != NULL) {
         replaced = *tile;
     }
-    if (to_handler != 0 && BuildingTaker_Get() != 0) {
-        return ObjectActors_Place((ObjectActors *) (uintptr_t) BuildingTaker_Get(), (u16 *) (uintptr_t) building, x, z, 1);
+    if (to_handler != 0 && BuildingTaker_Current() != 0) {
+        return ObjectActors_Place((ObjectActors *) (uintptr_t) BuildingTaker_Current(), (u16 *) (uintptr_t) building, x, z, 1);
     }
     if (AcreTile_StampBuilding(map, building, x, z) == 0) {
         return 0;

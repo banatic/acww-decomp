@@ -54,7 +54,7 @@ int VillagerBond_Compatibility(const s8 *bonds, int first, int second)
     if (a == NULL || !NpcId_IsValid(TownVillager_NpcId(a)) || b == NULL || !NpcId_IsValid(TownVillager_NpcId(b))) {
         return 0;
     }
-    int bond = VillagerBond_Get(bonds, first, second);
+    int bond = VillagerBond_Of(bonds, first, second);
     int affinity = VillagerBond_Affinity(bonds, a, b);
     return affinity + ((int) ((u32) bond * 5u) >> 1);
 }
@@ -172,7 +172,7 @@ CLEAN_AS(func_02079b3c, VillagerBond_PersonalityScore)
 
 /* func_02079b7c: the bond of villagers `first` and `second`, VILLAGER_BOND_NONE unless both are
  * villager indexes and the pair is in the table (see VillagerBond_PairIndex). */
-int VillagerBond_Get(const s8 *bonds, int first, int second)
+int VillagerBond_Of(const s8 *bonds, int first, int second)
 {
     if (!ActorTable_IsKindESlot((u32) first) || !ActorTable_IsKindESlot((u32) second)) {
         return VILLAGER_BOND_NONE;
@@ -183,7 +183,7 @@ int VillagerBond_Get(const s8 *bonds, int first, int second)
     }
     return bonds[index];
 }
-CLEAN_AS(func_02079b7c, VillagerBond_Get)
+CLEAN_AS(func_02079b7c, VillagerBond_Of)
 
 /* func_02079bc4: `amount` added to the bond of villagers `first` and `second` (both villager
  * indexes). */

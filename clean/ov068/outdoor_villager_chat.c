@@ -638,7 +638,7 @@ CLEAN_AS(func_ov068_0226a49c, OutdoorVillagerChat_DefaultClothes)
 /* func_ov068_0226a618: the first's design passed on, when it wears one (else nothing, 0). The
  * second learns from the first. When the second already wears the same design, another
  * villager of the town is drawn instead (neither of the pair, one not wearing that design and
- * with a status, VillagerStatus_Get), or nobody. The design is copied onto the receiver's and
+ * with a status, VillagerStatus_Of), or nobody. The design is copied onto the receiver's and
  * its clothes set to it (0x12a8); the pair's bond is changed (OutdoorVillagerBonds_ChangePair).
  * Given to the second: both moods
  * asked for (1, 2), the speaker (here the second) shows it (kind 20), step 2; else both moods
@@ -679,7 +679,7 @@ int OutdoorVillagerChat_PassDesign(OutdoorVillagerBehavior *self, u8 *villager)
             if (chat_wears_design(entry) && Design_Equals((char *) TownVillager_Design(entry), (char *) design) != 0) {
                 continue;
             }
-            if (VillagerStatus_Get(entry) != 0) {
+            if (VillagerStatus_Of(entry) != 0) {
                 mask = (u8) (mask | (1u << i));
                 count++;
             }

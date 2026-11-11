@@ -249,7 +249,7 @@ static void missing_npc1_set_standard(MissingNpc1 *self, int first, int second)
 /* The middle spot of the town (part 0x0c of data_021d27ac). */
 static MiddleSpot *missing_npc1_spot(void)
 {
-    return (MiddleSpot *) Block021d27ac_Part0c(Block021d27ac_Get());
+    return (MiddleSpot *) Block021d27ac_Part0c(Block021d27ac_Global());
 }
 
 /* The current player's paired town (paired_town.h). */
@@ -276,14 +276,14 @@ static int missing_npc1_add(int a, int b)
  * vtable. */
 static int missing_npc1_call(const MemberFn *fn, MissingNpc1 *self)
 {
-    typedef int (*MissingNpc1Step)(void *self);
+    typedef int (*MissingNpc1StepFn)(void *self);
     uintptr_t object = (uintptr_t) self + (uintptr_t) (intptr_t) ((fn->adj - (fn->adj & 1)) / 2);
     uintptr_t target = fn->ptr;
     if ((fn->adj & 1) != 0) {
         uintptr_t vtable = *(const u32 *) object;
         target = *(const u32 *) (vtable + fn->ptr);
     }
-    return ((MissingNpc1Step) target)((void *) object);
+    return ((MissingNpc1StepFn) target)((void *) object);
 }
 
 /* The talk scene's vtable slot `slot` called with no argument. */
@@ -316,7 +316,7 @@ CLEAN_AS(func_020c189c, MissingNpc1_StopToFacePlayer)
 
 /* func_020c18c4: with one in existence, whether its face plays animation 0xba
  * (SceneFace_AnimB) while it stands facing the player; 1 without one. */
-int MissingNpc1_IsFacingPlayerAtBA(void)
+int MissingNpc1_IsFacingPlayerAtba(void)
 {
     if (data_021fbbe0 == NULL) {
         return 1;
@@ -324,7 +324,7 @@ int MissingNpc1_IsFacingPlayerAtBA(void)
     SceneFace *face = (SceneFace *) (void *) missing_npc1_at(data_021fbbe0, MISSING_NPC1_FACE);
     return SceneFace_AnimB(face) == 0xba && data_021fbbe0->state == MISSING_NPC1_FACE_PLAYER;
 }
-CLEAN_AS(func_020c18c4, MissingNpc1_IsFacingPlayerAtBA)
+CLEAN_AS(func_020c18c4, MissingNpc1_IsFacingPlayerAtba)
 
 /* ---- Its talk scene */
 

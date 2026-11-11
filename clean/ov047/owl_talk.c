@@ -146,12 +146,12 @@ static unsigned int owl_talk_answer(OwlTalk *talk)
 
 static int owl_talk_greeted(void)
 {
-    return Block021d27ac_TestFlag((u32 *) (void *) Block021d27ac_Get(), OWL_TALK_GREETED_FLAG);
+    return Block021d27ac_TestFlag((u32 *) (void *) Block021d27ac_Global(), OWL_TALK_GREETED_FLAG);
 }
 
 static void owl_talk_set_greeted(void)
 {
-    Block021d27ac_SetFlag((u32 *) (void *) Block021d27ac_Get(), OWL_TALK_GREETED_FLAG);
+    Block021d27ac_SetFlag((u32 *) (void *) Block021d27ac_Global(), OWL_TALK_GREETED_FLAG);
 }
 
 /* ---- The class */

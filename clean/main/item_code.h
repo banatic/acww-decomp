@@ -21,7 +21,7 @@
 #define ITEM_CODE_FURNITURE_BASE 0x3000
 
 /* func_0204b42c */
-int ItemCode_Get(const ItemCode *item);
+int ItemCode_Value(const ItemCode *item);
 /* func_0204b79c */
 void ItemCode_Set(ItemCode *item, int code);
 /* func_0204bf18 */

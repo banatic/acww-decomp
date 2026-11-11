@@ -519,21 +519,22 @@ int ItemTraits_Price(const ItemCode *item)
         case ITEM_TRAITS_KIND_CARRIED: {
             ItemCode code;
             if (ItemTraits_IsBellBag(&carried)) {
-                code = (ItemCode) ItemCode_Get(&carried);
+                code = (ItemCode) ItemCode_Value(&carried);
                 return item_traits_times(ItemInfo_Price(&code), ITEM_TRAITS_BAG_FACTOR);
             }
             if (ItemTraits_IsFruit(&carried)) {
                 int record = ItemTraits_StateBlockAddress() + (int) offsetof(StateBlock, part_17254);
                 ItemCode own = ItemTraits_Fruit((u32) TownRecord_OwnFruit((const TownRecord *) (uintptr_t) (u32) record));
                 if (ItemTraits_SameItem(&carried, &own)) {
-                    code = (ItemCode) ItemCode_Get(&carried);
+                    code = (ItemCode) ItemCode_Value(&carried);
                     return ItemInfo_Price(&code) / ITEM_TRAITS_OWN_FRUIT_DIVISOR;
                 }
-            } else if (ItemCode_Get(item) == ITEM_TRAITS_HUNDREDFOLD_A || ItemCode_Get(item) == ITEM_TRAITS_HUNDREDFOLD_B) {
-                code = (ItemCode) ItemCode_Get(&carried);
+            } else if (ItemCode_Value(item) == ITEM_TRAITS_HUNDREDFOLD_A ||
+                       ItemCode_Value(item) == ITEM_TRAITS_HUNDREDFOLD_B) {
+                code = (ItemCode) ItemCode_Value(&carried);
                 return item_traits_times(ItemInfo_Price(&code), ITEM_TRAITS_HUNDREDFOLD);
             }
-            code = (ItemCode) ItemCode_Get(&carried);
+            code = (ItemCode) ItemCode_Value(&carried);
             return ItemInfo_Price(&code);
         }
         case ITEM_TRAITS_KIND_ROOM_A:

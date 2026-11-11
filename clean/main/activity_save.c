@@ -480,7 +480,7 @@ void ActivitySave_LeaveSession(Activity *activity, int record_number, int keep_t
         }
     }
     for (int guest = PLAYER_RECORDS_GUESTS - 1; guest >= 0; guest--) {
-        u8 *record = PlayerRecords_Get(guest + PLAYER_RECORD_FIRST_GUEST);
+        u8 *record = PlayerRecords_At(guest + PLAYER_RECORD_FIRST_GUEST);
         if (record != NULL) {
             PlayerRecord_Clear(record);
         }
@@ -508,7 +508,7 @@ void ActivitySave_LeaveSession(Activity *activity, int record_number, int keep_t
     if (number >= NO_RECORD) {
         return;
     }
-    u8 *record = PlayerRecords_Get(number);
+    u8 *record = PlayerRecords_At(number);
     u8 *sun = SessionPlayers_SunFlags();
     PlayerRecordSunDate date;
     if ((*sun & SUN_BYTE_BITS_12) != 0) {

@@ -20,7 +20,7 @@ typedef struct GiraffeSpot {
     Vec3 position;
     u8 unk_68[0xec - 0x68];
     const void *receiver_vtable; /* data_ov003_0223886c */
-    u8 unk_F0[0x2b4 - 0xf0];
+    u8 unk_f0[0x2b4 - 0xf0];
 } GiraffeSpot;
 
 void GiraffeSpot_ReceiverSlot14(void *receiver);

@@ -157,7 +157,7 @@ void StateBlock_FinishStart(StateBlock *block)
     SceneShareTable_Reset();
     SceneShareTable_PlaceVillagersAtHome();
     VillagerTown_ClearMoods(villagers_of(block));
-    Block021d27ac_Reset(Block021d27ac_Get());
+    Block021d27ac_Reset(Block021d27ac_Global());
     RoomCells_ResetAll();
     RoomObjectState_Clear();
     TownObjects_ResetRecordedModes();
@@ -168,10 +168,10 @@ void StateBlock_FinishStart(StateBlock *block)
     TownDay_Load();
     NookStore_Refresh((NookStore *) block->nook_store, 0);
     TownTune_Load((const TownTunePacked *) (void *) block->part_173c0);
-    MiddleSpot_Pick((MiddleSpot *) (void *) Block021d27ac_Part0c(Block021d27ac_Get()));
-    NearSpot_Clear((NearSpot *) (void *) Block021d27ac_Part24(Block021d27ac_Get()));
-    Block021d27ac_NoteGoldenToolDue(Block021d27ac_Get());
-    TownSpot_PickRandom((TownSpot *) (void *) Block021d27ac_Part04(Block021d27ac_Get()));
+    MiddleSpot_Pick((MiddleSpot *) (void *) Block021d27ac_Part0c(Block021d27ac_Global()));
+    NearSpot_Clear((NearSpot *) (void *) Block021d27ac_Part24(Block021d27ac_Global()));
+    Block021d27ac_NoteGoldenToolDue(Block021d27ac_Global());
+    TownSpot_PickRandom((TownSpot *) (void *) Block021d27ac_Part04(Block021d27ac_Global()));
     CatchPanel_Start((CatchPanel *) (uintptr_t) ScreenPanels_SecondPanel(), 0, 1);
     BatteryWarning_Reset();
     VillagerTown_PickFoxPasswordVillager(villagers_of(block));
@@ -337,7 +337,7 @@ static void finish_villagers(StateBlock *block)
 {
     VillagerState_SetBirthdayGreeter(-1);
     VillagerRoster_UpdateOutdoors(villagers_of(block), 1);
-    Block021d27acPart30_Clear(Block021d27ac_Part30(Block021d27ac_Get()));
+    Block021d27acPart30_Clear(Block021d27ac_Part30(Block021d27ac_Global()));
     VillagerTown_ScoreAllRooms(villagers_of(block));
 }
 
@@ -397,7 +397,7 @@ void StateBlock_StartMode4(StateBlock *block)
     VillagerState_SetBirthdayGreeter(-1);
     VillagerRoster_UpdateOutdoors(villagers_of(block), 1);
     Sky_RedrawRainAngleForMode4();
-    Block021d27acPart30_Clear(Block021d27ac_Part30(Block021d27ac_Get()));
+    Block021d27acPart30_Clear(Block021d27ac_Part30(Block021d27ac_Global()));
     for (int i = 0; i < STATE_BLOCK_PLAYERS; i++) {
         u8 *record = PlayerRecords_TownRecord(data_021dc7a8.players, i);
         if (record != NULL) {
@@ -422,7 +422,7 @@ void StateBlock_StartMode3(StateBlock *block)
     VillagerRoster_UpdateOutdoors(villagers_of(block), 0);
     SaveStamp_Clear((SaveStamp *) (void *) block->part_173f8);
     Sky_RedrawRainAngleForMode3();
-    Block021d27acPart30_Clear(Block021d27ac_Part30(Block021d27ac_Get()));
+    Block021d27acPart30_Clear(Block021d27ac_Part30(Block021d27ac_Global()));
 }
 CLEAN_AS(func_0209ebec, StateBlock_StartMode3)
 
@@ -462,7 +462,7 @@ void StateBlock_StartMode2(StateBlock *block)
         PlayerRecord_TestFlag(record, PLAYER_FLAG_NEW_RESIDENT) == 0 &&
         PlayerRecord_TestFlag(record, PLAYER_FLAG_UNSAVED) != 0) {
         PlayerField2416_RaiseResets((PlayerField2416 *) (void *) PlayerRecord_Field2416(record));
-        Block021d27acPart30_Set(Block021d27ac_Part30(Block021d27ac_Get()), 1);
+        Block021d27acPart30_Set(Block021d27ac_Part30(Block021d27ac_Global()), 1);
     }
     PlayerRecord_SetFlag(record, PLAYER_FLAG_UNSAVED);
     PlayerRecord_SendVillagerLetter(record);

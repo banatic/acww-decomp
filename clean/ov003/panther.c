@@ -44,11 +44,11 @@ typedef struct PantherText {
  * object's vtable slot 0x0c gives its characters). */
 void Panther_PrepareTalk(Panther *panther)
 {
-    typedef int (*PantherSlot)(Panther *panther);
-    typedef const char *(*PantherTextBuffer)(void *text);
+    typedef int (*PantherSlotFn)(Panther *panther);
+    typedef const char *(*PantherTextBufferFn)(void *text);
 
     MessageReceiver_SetName((MessageReceiver *) &panther->receiver_vtable, data_ov003_02238ef8);
-    PantherSlot after_six = (PantherSlot) (uintptr_t) *(const u32 *) ((const u8 *) panther->vtable + 0x8c);
+    PantherSlotFn after_six = (PantherSlotFn) (uintptr_t) *(const u32 *) ((const u8 *) panther->vtable + 0x8c);
     if (after_six(panther) == 0) {
         panther->message = PANTHER_MESSAGE_CLOSED;
     } else {
@@ -59,7 +59,7 @@ void Panther_PrepareTalk(Panther *panther)
     PlayerIdText_Construct((PlayerIdText *) &text);
     u16 code = PANTHER_NAME_CODE;
     NpcLookup_FormatPersonName(&text, &code);
-    const char *name = ((PantherTextBuffer) (uintptr_t) text.vtable->buffer)(&text);
+    const char *name = ((PantherTextBufferFn) (uintptr_t) text.vtable->buffer)(&text);
     TalkReceiver_SetSpeaker((TalkReceiver *) &panther->receiver_vtable, name, 1);
     PlayerIdText_Destruct((PlayerIdText *) &text);
 }

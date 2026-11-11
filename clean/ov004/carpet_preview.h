@@ -1,7 +1,7 @@
 /* A carpet shown in the room (room object 0x4a60, room_preview.h: a scene of overlay 142 hands
  * the room the item picked) on a floor of its own: a class of overlay 4's room objects (vtable 0x02250e5c, receiver part
  * 0x02250f08, 0x870 bytes) whose model has a material named "m_dummy_floor". Once its model is
- * bound it keeps the word at 0x10 of data_ov004_022596b0 (RoomPreview_Get,
+ * bound it keeps the word at 0x10 of data_ov004_022596b0 (RoomPreview_Global,
  * RoomPreview_Number), loads the carpet it names (item 0x1144 plus it, 0x1144 when it is 0x44
  * or more) into the room's floor texture file (RoomPreview_CarpetFile, CarpetTexture_Load) and puts that
  * texture on the material. It is drawn from the second frame after that on. The twin class for

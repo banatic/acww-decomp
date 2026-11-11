@@ -350,7 +350,7 @@ void SoftKeyboard_LoadEmotions(SoftKeyboard *kb)
 
     kb->emotion_count = (u8) ReactionSlots_Count();
     for (i = 0; i < kb->emotion_count; i++) {
-        kb->emotion_numbers[i] = (u8) ReactionSlots_Get(i);
+        kb->emotion_numbers[i] = (u8) ReactionSlots_At(i);
     }
     RomFile_Read(data_ov095_0229edf4, kb->emotion_chars, SOFT_KEYBOARD_EMOTION_CHARS_SIZE);
     for (i = 0; i < kb->emotion_count; i++) {

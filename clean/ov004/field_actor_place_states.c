@@ -31,7 +31,7 @@ static_assert(offsetof(FieldActor, state) == 0x7f0, "state");
 static_assert(offsetof(FieldActor, request_priority) == 0x7fc, "request priority");
 static_assert(offsetof(FieldActor, player) == 0x800, "player");
 static_assert(offsetof(FieldActor, saved) == 0x8f0, "saved");
-static_assert(offsetof(FieldActor, unk_C84) == 0xc84, "the kept argument");
+static_assert(offsetof(FieldActor, unk_c84) == 0xc84, "the kept argument");
 static_assert(offsetof(Actor, last_position) == 0x68, "last position");
 static_assert(offsetof(StateRequest, payload) == 0x0c, "payload");
 static_assert(sizeof(FieldActorPlaceArgs) == 0x0c, "state 0x0e's arguments");
@@ -899,11 +899,11 @@ void FieldActorPlaceStates_LeaveStay(FieldActor *actor, int next)
 CLEAN_AS(func_ov004_0222bcf4, FieldActorPlaceStates_LeaveStay)
 
 /* func_ov004_0222bd40 (state 8's message handler): already in state 8 the argument is kept
- * (FieldActor.unk_C84); else state 8 is asked for (kind 0, priority 6). */
+ * (FieldActor.unk_c84); else state 8 is asked for (kind 0, priority 6). */
 void FieldActorPlaceStates_StayMessage(FieldActor *actor, int arg)
 {
     if (actor->state == FAPS_STAY) {
-        actor->unk_C84 = (s16) arg;
+        actor->unk_c84 = (s16) arg;
     } else {
         FieldActorPlaceStates_RequestStay(actor, 0, FAPS_PRIORITY, arg);
     }

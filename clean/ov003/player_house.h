@@ -18,7 +18,7 @@ typedef struct PlayerHouse {
     const void *vtable; /* data_ov003_02239254 */
     u8 unk_04[0xec - 0x04];
     const void *receiver_vtable; /* data_ov003_02239318 */
-    u8 unk_F0[0x198 - 0xf0];
+    u8 unk_f0[0x198 - 0xf0];
     void *model; /* overlay 9's model object's model */
     u8 unk_19c[0x2b4 - 0x19c];
     void *texture;   /* the house's texture, loaded by PlayerHouse_LoadTexture */

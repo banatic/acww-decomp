@@ -115,7 +115,7 @@ static void t4t_say(TalkObject *object, u8 message, const char *name)
 
 static Block021d27ac *t4t_block(void)
 {
-    return Block021d27ac_Get();
+    return Block021d27ac_Global();
 }
 
 /* Whether the pockets lack `item`. */

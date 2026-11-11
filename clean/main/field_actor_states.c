@@ -727,7 +727,7 @@ void FieldActor_FollowRemoteState(FieldActor *actor)
     if (record != NULL) {
         sequence = PackedBytes_ReadS16Wide((const u8 *) (uintptr_t) record->sequence);
     }
-    if (actor->unk_C84 >= 0 && FIELD_ACTOR_ENTERED_STATE(actor) == state && sequence == actor->unk_C84) {
+    if (actor->unk_c84 >= 0 && FIELD_ACTOR_ENTERED_STATE(actor) == state && sequence == actor->unk_c84) {
         return;
     }
     MemberTable_InitOnce(&data_021bfff8, data_021c0948, message_constants, FIELD_ACTOR_STATES);
@@ -762,11 +762,11 @@ void FieldActor_EnterState(FieldActor *actor, const StateRequest *request)
     if (Session_IsSlotTaken((const NetSession *) (void *) session->slot_taken, session->local_slot)) {
         if (!Session_IsLocalPlayer(session, actor->player)) {
             if (sequence >= 0) {
-                actor->unk_C84 = sequence;
+                actor->unk_c84 = sequence;
                 FIELD_ACTOR_ENTERED_STATE(actor) = state;
             }
         } else {
-            actor->unk_C84 = Session_FrameSequence(session);
+            actor->unk_c84 = Session_FrameSequence(session);
         }
     }
     FieldActor_CallEntry(&entry, actor, request, previous);
@@ -995,7 +995,7 @@ void FieldActor_State86Message(FieldActor *actor, u16 arg)
         return;
     }
     if (actor->state == 0x86) {
-        actor->unk_C84 = (s16) arg;
+        actor->unk_c84 = (s16) arg;
     } else {
         FieldActor_RequestState86(actor, 6, arg);
     }
@@ -3271,7 +3271,7 @@ void FieldActor_State1aMessage(FieldActor *actor, u32 arg)
         return;
     }
     if (actor->state == 0x1a) {
-        actor->unk_C84 = (s16) arg;
+        actor->unk_c84 = (s16) arg;
         return;
     }
     u32 tile[2] = {0, 0};
@@ -4067,7 +4067,7 @@ void FieldActor_State18Message(FieldActor *actor, int arg)
         return;
     }
     if (actor->state == 0x18) {
-        actor->unk_C84 = (s16) arg;
+        actor->unk_c84 = (s16) arg;
         return;
     }
     u32 tile[2] = {0, 0};

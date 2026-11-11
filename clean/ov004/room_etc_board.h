@@ -43,7 +43,7 @@ typedef struct RoomEtcBoard {
 } RoomEtcBoard;
 
 void RoomEtcBoard_Spawn(Vec3 *position, fx32 reach, u16 yaw, u16 message);
-RoomEtcBoard *RoomEtcBoard_Get(int index);
+RoomEtcBoard *RoomEtcBoard_At(int index);
 void RoomEtcBoard_UpdateOpen(RoomEtcBoard *board);
 int RoomEtcBoard_EnterOpen(RoomEtcBoard *board);
 void RoomEtcBoard_UpdateWaiting(RoomEtcBoard *board);

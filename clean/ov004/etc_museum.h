@@ -74,7 +74,7 @@ typedef struct EtcMuseum {
 int EtcMuseum_SpawnLone(void);
 void EtcMuseum_Spawn(int kind, Vec3 *position, int yaw, int face_angle, s16 skeleton_name_message, const u8 *exhibits,
                      int count);
-EtcMuseum *EtcMuseum_Get(int index);
+EtcMuseum *EtcMuseum_At(int index);
 void EtcMuseum_UpdateLoneTalk(EtcMuseum *museum);
 int EtcMuseum_EnterLoneTalk(EtcMuseum *museum);
 void EtcMuseum_UpdateOpen(EtcMuseum *museum);

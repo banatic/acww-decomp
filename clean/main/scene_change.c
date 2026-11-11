@@ -129,7 +129,7 @@ CLEAN_AS(func_020b5be0, SceneChange_Idle)
  * idle. */
 void SceneChange_Start(SceneChange *change)
 {
-    int kept = Global021dc5b0_Get();
+    int kept = Global021dc5b0_Value();
     SceneProcessBase_Request(SCENE_CHANGE_NEXT_CLASS, SCENE_CHANGE_NEXT_PARAM, kept, 1);
     change->step = SCENE_CHANGE_IDLE;
 }

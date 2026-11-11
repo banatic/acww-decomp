@@ -34,11 +34,11 @@ static u8 *block_021d27ac_part(Block021d27ac *self, size_t offset)
 }
 
 /* func_0208602c */
-Block021d27ac *Block021d27ac_Get(void)
+Block021d27ac *Block021d27ac_Global(void)
 {
     return &data_021d27ac;
 }
-CLEAN_AS(func_0208602c, Block021d27ac_Get)
+CLEAN_AS(func_0208602c, Block021d27ac_Global)
 
 /* func_02086034: flag 8 (a golden tool due) set when the current player has a name
  * (func_020951bc), is not working for Nook (player flag 1), and has every fish without having had

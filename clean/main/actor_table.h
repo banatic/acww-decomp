@@ -64,13 +64,13 @@ BOOL ActorTable_AddE(ActorTable *table, void *actor, const ItemCode *code);
 /* func_02082808 */
 BOOL ActorTable_AddD(ActorTable *table, void *actor, const ItemCode *code);
 /* func_020829b8 */
-void *ActorTable_GetE(const ActorTable *table, const ItemCode *code);
+void *ActorTable_ActorE(const ActorTable *table, const ItemCode *code);
 /* func_0208270c */
-void *ActorTable_GetD(const ActorTable *table, const ItemCode *code);
+void *ActorTable_ActorD(const ActorTable *table, const ItemCode *code);
 /* func_02082a44 */
-void *ActorTable_GetEByIndex(const ActorTable *table, u16 index);
+void *ActorTable_ActorEByIndex(const ActorTable *table, u16 index);
 /* func_02082798 */
-void *ActorTable_GetDByIndex(const ActorTable *table, u16 index);
+void *ActorTable_ActorDByIndex(const ActorTable *table, u16 index);
 /* func_0208298c */
 void *ActorTable_SlotE(const ActorTable *table, int slot);
 /* func_020826e0 */

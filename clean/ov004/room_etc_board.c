@@ -70,14 +70,14 @@ CLEAN_AS(func_ov004_0221ad0c, RoomEtcBoard_Spawn)
 
 /* func_ov004_0221ad40: the board with `index`, or null when there is none or `index` is out of
  * 0-63. */
-RoomEtcBoard *RoomEtcBoard_Get(int index)
+RoomEtcBoard *RoomEtcBoard_At(int index)
 {
     if (index >= 0 && index < ROOM_ETC_BOARD_MAX) {
         return data_ov004_02257804[index];
     }
     return NULL;
 }
-CLEAN_AS(func_ov004_0221ad40, RoomEtcBoard_Get)
+CLEAN_AS(func_ov004_0221ad40, RoomEtcBoard_At)
 
 /* func_ov004_0221ad58: state 2's update. Once the talk has closed, the receiver is released and
  * the event ends. */

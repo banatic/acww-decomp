@@ -164,7 +164,7 @@ int Constellations_NameTaken(const u16 *name, int except)
         if (i == except) {
             continue;
         }
-        int constellation = Constellations_Get(i);
+        int constellation = Constellations_AtCopy(i);
         if (constellation == 0) {
             continue;
         }
@@ -231,7 +231,7 @@ void Constellations_PackRandomForExchange(void)
         if (skip > 0) {
             skip--;
         } else {
-            Constellations_Copy(exchanged, (const Constellation *) (uintptr_t) (u32) Constellations_Get(i));
+            Constellations_Copy(exchanged, (const Constellation *) (uintptr_t) (u32) Constellations_AtCopy(i));
             return;
         }
     }
@@ -287,7 +287,7 @@ int Constellations_Nearest(void)
     int nearest = -1;
     int nearest_distance = 0;
     for (int i = 0; i < CONSTELLATIONS_COUNT; i++) {
-        int constellation = Constellations_Get(i);
+        int constellation = Constellations_AtCopy(i);
         if (constellation == 0) {
             continue;
         }
@@ -331,7 +331,7 @@ CLEAN_AS(func_020b12b0, Constellations_InView)
 void Constellations_TimeInView(DateTime *when, int number)
 {
     int x, y;
-    Constellations_Center(constellations_pieces(Constellations_Get(number)), &x, &y);
+    Constellations_Center(constellations_pieces(Constellations_AtCopy(number)), &x, &y);
     Sky_TimeForStarScroll(when, x - CONSTELLATIONS_SCREEN_MIDDLE_X, y - CONSTELLATIONS_SCREEN_MIDDLE_Y);
 }
 CLEAN_AS(func_020b12e0, Constellations_TimeInView)
@@ -376,7 +376,7 @@ int Constellations_NameToText(void *text, int number)
     if (Constellations_IsKept(constellations_store(Constellations_StoreAddress()), number) == 0) {
         return 0;
     }
-    const Constellation *constellation = (const Constellation *) (uintptr_t) (u32) Constellations_Get(number);
+    const Constellation *constellation = (const Constellation *) (uintptr_t) (u32) Constellations_AtCopy(number);
     ConstellationsWideName_Construct((ConstellationsWideName *) wide);
     TextBase_SetWide(wide, constellation->name, CONSTELLATIONS_NAME_LENGTH);
     TextBase_WideToBytes(text, (WideTextBase *) wide, 0, 0);
@@ -411,7 +411,7 @@ void Constellations_SetCreator(DesignCreator *creator)
 }
 CLEAN_AS(func_020b1444, Constellations_SetCreator)
 
-/* func_020b1498: the address of kept constellation `number`, or 0 (as Constellations_Get). */
+/* func_020b1498: the address of kept constellation `number`, or 0 (as Constellations_AtCopy). */
 int Constellations_At(int number)
 {
     int store = Constellations_StoreAddress();
@@ -443,8 +443,8 @@ void Constellations_Put(const Constellation *constellation, int number, int is_n
 }
 CLEAN_AS(func_020b14ec, Constellations_Put)
 
-/* func_020b1530: the address of kept constellation `number`, or 0. */
-int Constellations_Get(int number)
+/* func_020b1530: the same as Constellations_At; the game has both. */
+int Constellations_AtCopy(int number)
 {
     int store = Constellations_StoreAddress();
     if (Constellations_IsKept(constellations_store(store), number) == 0) {
@@ -452,7 +452,7 @@ int Constellations_Get(int number)
     }
     return store + number * (int) sizeof(Constellation);
 }
-CLEAN_AS(func_020b1530, Constellations_Get)
+CLEAN_AS(func_020b1530, Constellations_AtCopy)
 
 /* func_020b1558: the free places. */
 int Constellations_CountFree(void)

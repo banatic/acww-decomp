@@ -188,7 +188,7 @@ CLEAN_AS(func_02071648, Design_FindRecord8)
  * returns it. */
 int Design_FindSample(int index)
 {
-    int sample = DesignSample_Get();
+    int sample = DesignSample_Global();
     DesignSample_Load((void *) (uintptr_t) sample, (unsigned int) index);
     return design_address(DesignSample_Design((void *) (uintptr_t) sample));
 }
@@ -574,7 +574,7 @@ int Design_Changed(int kind, int index)
         case DESIGN_KIND_SHOP:
             if (data_020e54a8 == 1 && SceneQuery_Current() == SHOP_SCENE) {
                 DesignTextures_UpdateShop((unsigned int) index);
-                DesignManager_MarkShopChanged((DesignManager *) (uintptr_t) DesignManager_Get(), index & 7);
+                DesignManager_MarkShopChanged((DesignManager *) (uintptr_t) DesignManager_Global(), index & 7);
             }
             return 1;
         case DESIGN_KIND_TOWN_FLAG:

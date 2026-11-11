@@ -425,7 +425,7 @@ int Mole_UpdateSink(Mole *mole)
     }
     if (mole_animation_done(mole, MOLE_ANIM_SINK)) {
         EventQueue_FinishObjectEvent(mole);
-        Block021d27acPart30_Set(Block021d27ac_Part30(Block021d27ac_Get()), 0);
+        Block021d27acPart30_Set(Block021d27ac_Part30(Block021d27ac_Global()), 0);
         Process_RequestDelete((Process *) (void *) mole);
         mole_end_effect(mole);
     }

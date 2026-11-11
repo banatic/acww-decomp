@@ -14,7 +14,7 @@
 void SpaceshipParts_SetMark(u8 *count);
 int SpaceshipParts_HasMark(const u8 *count);
 void SpaceshipParts_Increment(u8 *count);
-int SpaceshipParts_Get(const u8 *count);
+int SpaceshipParts_Count(const u8 *count);
 void SpaceshipParts_SetUp(u8 *count);
 void SpaceshipParts_Clear(u8 *count);
 void SpaceshipParts_Destruct(u8 *count);

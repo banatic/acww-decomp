@@ -99,7 +99,7 @@ int VillagerStatus_IsFree(u8 *villager)
 {
     u8 *part = PlayerRecord_VillagerPart(PlayerRecords_Current());
     return NpcId_IsValid(TownVillager_NpcId(villager)) && VillagerStatus_Stay(villager) == VILLAGER_STAY_RESIDENT &&
-           VillagerStatus_Get(villager) != VILLAGER_STATUS_ASLEEP && !VillagerStatus_PlayerHolds(villager, part);
+           VillagerStatus_Of(villager) != VILLAGER_STATUS_ASLEEP && !VillagerStatus_PlayerHolds(villager, part);
 }
 CLEAN_AS(func_0207f074, VillagerStatus_IsFree)
 
@@ -175,7 +175,7 @@ static int villager_status_home_or_asleep(const VillagerState *entry)
 }
 
 /* func_0207f1d8: the villager's status (VILLAGER_STATUS_*, 0-7). */
-int VillagerStatus_Get(u8 *villager)
+int VillagerStatus_Of(u8 *villager)
 {
     if (!NpcId_IsValid(TownVillager_NpcId(villager))) {
         return VILLAGER_STATUS_OUTSIDE;
@@ -193,7 +193,7 @@ int VillagerStatus_Get(u8 *villager)
     }
     return VILLAGER_STATUS_OUTSIDE;
 }
-CLEAN_AS(func_0207f1d8, VillagerStatus_Get)
+CLEAN_AS(func_0207f1d8, VillagerStatus_Of)
 
 /* func_0207f270: the villager's entry of the state table, by its place in the town. */
 VillagerState *VillagerStatus_StateEntry(u8 *villager)

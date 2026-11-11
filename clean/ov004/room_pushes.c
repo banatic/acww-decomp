@@ -120,7 +120,7 @@ extern void __register_global_object(void *object, void *destruct, void *record)
  * (RoomObject_TryMoveBack); whether it moves, 0 without a push. */
 int RoomPushes_TryPull(RoomPush *pushes)
 {
-    RoomPush *push = RoomPushes_Get(pushes, ROOM_PUSHES_FLOOR);
+    RoomPush *push = RoomPushes_At(pushes, ROOM_PUSHES_FLOOR);
     RoomObject *object = RoomPushes_ObjectOf(pushes, ROOM_PUSHES_FLOOR);
     if (push != NULL && object != NULL) {
         return RoomObject_TryMoveBack(object, (u16) RoomPushes_Facing(push));
@@ -140,7 +140,7 @@ CLEAN_AS(func_ov004_0223c85c, RoomPushes_CanPull)
  * whether it moves, 0 without a push. */
 int RoomPushes_TryPush(RoomPush *pushes)
 {
-    RoomPush *push = RoomPushes_Get(pushes, ROOM_PUSHES_FLOOR);
+    RoomPush *push = RoomPushes_At(pushes, ROOM_PUSHES_FLOOR);
     RoomObject *object = RoomPushes_ObjectOf(pushes, ROOM_PUSHES_FLOOR);
     if (push != NULL && object != NULL) {
         return RoomObject_TryMove(object, (u16) RoomPushes_Facing(push));
@@ -176,7 +176,7 @@ CLEAN_AS(func_ov004_0223c8b4, RoomPushes_StepAlong)
  * turned by `turn` (RoomObject_CanMove); 0 without a push. */
 int RoomPushes_CanMoveTurned(RoomPush *pushes, int turn)
 {
-    RoomPush *push = RoomPushes_Get(pushes, ROOM_PUSHES_FLOOR);
+    RoomPush *push = RoomPushes_At(pushes, ROOM_PUSHES_FLOOR);
     RoomObject *object = RoomPushes_ObjectOf(pushes, ROOM_PUSHES_FLOOR);
     if (push != NULL && object != NULL) {
         s16 angle = (s16) (turn + RoomPushes_Facing(push));
@@ -244,7 +244,7 @@ CLEAN_AS(func_ov004_0223c9b4, RoomPushes_CanTurn)
 static int toggle_pushed(RoomPush *pushes, int index)
 {
     RoomObject *object = RoomPushes_ObjectOf(pushes, index);
-    RoomPush *push = RoomPushes_Get(pushes, index);
+    RoomPush *push = RoomPushes_At(pushes, index);
     if (object == NULL || push == NULL) {
         return 0;
     }
@@ -271,10 +271,10 @@ CLEAN_AS(func_ov004_0223c9d4, RoomPushes_ToggleSwitch)
 /* The room's two records. */
 extern RoomPush data_ov004_02259784[ROOM_PUSHES_COUNT];
 
-/* func_ov004_0223ca6c: the object of record `index` (RoomPushes_Get), NULL without one. */
+/* func_ov004_0223ca6c: the object of record `index` (RoomPushes_At), NULL without one. */
 RoomObject *RoomPushes_ObjectOf(RoomPush *pushes, int index)
 {
-    RoomPush *push = RoomPushes_Get(pushes, index);
+    RoomPush *push = RoomPushes_At(pushes, index);
     if (push != NULL) {
         RoomObject **table = RoomObjects_Table();
         return RoomObjects_At(table, RoomPushes_Object(push));
@@ -301,7 +301,7 @@ CLEAN_AS(func_ov004_0223ca9c, RoomPushes_FindObject)
 
 /* func_ov004_0223cadc: while pushes are enabled (RoomPushes_Enabled), record `index` (its low
  * bit) when it holds an object; else NULL. */
-RoomPush *RoomPushes_Get(RoomPush *pushes, int index)
+RoomPush *RoomPushes_At(RoomPush *pushes, int index)
 {
     if (RoomPushes_Enabled() != 0) {
         RoomPush *push = &pushes[index & 1];
@@ -311,7 +311,7 @@ RoomPush *RoomPushes_Get(RoomPush *pushes, int index)
     }
     return NULL;
 }
-CLEAN_AS(func_ov004_0223cadc, RoomPushes_Get)
+CLEAN_AS(func_ov004_0223cadc, RoomPushes_At)
 
 /* func_ov004_0223cb10 */
 RoomPush *RoomPushes_Records(void)

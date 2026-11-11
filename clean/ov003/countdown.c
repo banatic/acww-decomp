@@ -305,9 +305,9 @@ static void countdown_board_animate(CountdownBoard *board)
 /* Vtable slot 0x6c: CountdownBoard_SetMode for this class. */
 static void countdown_board_switch_to(CountdownBoard *board, int mode)
 {
-    typedef int (*CountdownSetModeSlot)(CountdownBoard *board, int mode);
+    typedef int (*CountdownSetModeSlotFn)(CountdownBoard *board, int mode);
     u32 slot = *(const u32 *) ((const u8 *) board->vtable + 0x6c);
-    ((CountdownSetModeSlot) (uintptr_t) slot)(board, mode);
+    ((CountdownSetModeSlotFn) (uintptr_t) slot)(board, mode);
 }
 
 /* func_ov003_0221cb60 (run of COUNTDOWN_OVER): the animation goes on. */
@@ -471,11 +471,11 @@ CLEAN_AS(func_ov003_0221cdcc, CountdownBoard_Update)
  * COUNTDOWN_COUNTING (vtable slot 0x6c); always 1. */
 int CountdownBoard_Init(CountdownBoard *board)
 {
-    typedef int (*CountdownUpdateSlot)(CountdownBoard *board);
+    typedef int (*CountdownUpdateSlotFn)(CountdownBoard *board);
 
     TownObjectActorFiles_Of((TownObjectActor *) board);
     u32 update = *(const u32 *) ((const u8 *) board->vtable + 0x18);
-    ((CountdownUpdateSlot) (uintptr_t) update)(board);
+    ((CountdownUpdateSlotFn) (uintptr_t) update)(board);
 
     for (int i = 0; i < COUNTDOWN_PLACES; i++) {
         Vec3 point;

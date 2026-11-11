@@ -665,6 +665,6 @@ void Activity_CurrentRecordToGuest(Activity *activity)
 {
     (void) activity;
     u8 *record = PlayerRecords_Current();
-    MI_CpuCopy8(record, PlayerRecords_Get(data_020e37f8), PLAYER_RECORD_SIZE);
+    MI_CpuCopy8(record, PlayerRecords_At(data_020e37f8), PLAYER_RECORD_SIZE);
 }
 CLEAN_AS(func_020a24ac, Activity_CurrentRecordToGuest)

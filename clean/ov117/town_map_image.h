@@ -90,7 +90,7 @@ void TownMapImage_MarkPlayerHouse(TownMapMarker *markers);
 void TownMapImage_MarkVillagerHouses(TownMapMarker *markers);
 void TownMapImage_MarkSpots(TownMapMarker *markers);
 unsigned char TownMapMarkers_Kind(TownMapMarker *markers, unsigned int index);
-TownMapMarker *TownMapMarkers_Get(TownMapMarker *markers, unsigned int index);
+TownMapMarker *TownMapMarkers_PlacedAt(TownMapMarker *markers, unsigned int index);
 void TownMapMarkers_Set(TownMapMarker *markers, int index, u16 x, u16 y, u8 kind);
 void TownMapMarkers_Clear(TownMapMarker *markers);
 void TownMapMarkers_Destruct(void *markers);

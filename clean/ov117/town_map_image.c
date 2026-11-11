@@ -446,7 +446,7 @@ unsigned char TownMapMarkers_Kind(TownMapMarker *markers, unsigned int index)
 CLEAN_AS(func_ov117_0229a26c, TownMapMarkers_Kind)
 
 /* func_ov117_0229a280: a marker that is set (neither x nor y -1), or NULL. */
-TownMapMarker *TownMapMarkers_Get(TownMapMarker *markers, unsigned int index)
+TownMapMarker *TownMapMarkers_PlacedAt(TownMapMarker *markers, unsigned int index)
 {
     if (index >= TOWN_MAP_MARKERS) {
         return NULL;
@@ -457,7 +457,7 @@ TownMapMarker *TownMapMarkers_Get(TownMapMarker *markers, unsigned int index)
     }
     return marker;
 }
-CLEAN_AS(func_ov117_0229a280, TownMapMarkers_Get)
+CLEAN_AS(func_ov117_0229a280, TownMapMarkers_PlacedAt)
 
 /* func_ov117_0229a2a4: a marker set, for an index below 17.
  * QUIRK: the index is compared signed: a negative one writes before the list (the game passes

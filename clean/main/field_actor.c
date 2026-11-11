@@ -245,7 +245,7 @@ struct FieldActor *FieldActor_Construct(struct FieldActor *actor)
     FIELD_ACTOR_FIELD(actor, int, 0xc8c) = 2;
     FIELD_ACTOR_FIELD(actor, int, 0xc94) = 2;
     FIELD_ACTOR_REMOTE_STATE(actor) = FIELD_ACTOR_STATES;
-    actor->unk_C84 = -1;
+    actor->unk_c84 = -1;
     FIELD_ACTOR_ENTERED_STATE(actor) = FIELD_ACTOR_STATES;
     return actor;
 }

@@ -31,7 +31,7 @@ typedef struct Checkpoint {
     Vec3 position;
     u8 unk_68[0xec - 0x68];
     const void *receiver_vtable; /* data_ov003_022389f8 */
-    u8 unk_F0[0x13c - 0xf0];
+    u8 unk_f0[0x13c - 0xf0];
     u8 model_object[0x198 - 0x13c]; /* main's model object (Obj_020dd05c) */
     void *model;                    /* the model the design is put on: the model object's */
     u8 unk_19c[0x2b4 - 0x19c];

@@ -121,7 +121,7 @@ extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 
 static BgModels *town_ground_bg_models(void)
 {
-    return (BgModels *) (uintptr_t) (u32) BgModels_Get();
+    return (BgModels *) (uintptr_t) (u32) BgModels_Global();
 }
 
 /* A model object's placement: its matrix, 0x64 bytes in. */

@@ -471,14 +471,14 @@ static void missing_npc2_look_at(MissingNpc2 *self, u8 kind)
  * vtable. */
 static int missing_npc2_call(const MemberFn *fn, MissingNpc2 *self)
 {
-    typedef int (*MissingNpc2Step)(void *self);
+    typedef int (*MissingNpc2StepFn)(void *self);
     uintptr_t object = (uintptr_t) self + (uintptr_t) (intptr_t) ((fn->adj - (fn->adj & 1)) / 2);
     uintptr_t target = fn->ptr;
     if ((fn->adj & 1) != 0) {
         uintptr_t vtable = *(const u32 *) object;
         target = *(const u32 *) (vtable + fn->ptr);
     }
-    return ((MissingNpc2Step) target)((void *) object);
+    return ((MissingNpc2StepFn) target)((void *) object);
 }
 
 /* The talk scene's vtable slot `slot` called with no argument. */

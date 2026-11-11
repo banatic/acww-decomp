@@ -16,7 +16,7 @@
  * - 9 and 0xb step through four steps: a visitor arriving is named in line 0x67 ("has come to
  *   visit", 9, the player of the activity's slot 0x3c1c), or a visitor going home in line 0x7b
  *   ("is going home", 0xb, the player the link serves), and the scene's exit 1 is taken
- *   (Gatekeeper_RunState9, Gatekeeper_RunStateB).
+ *   (Gatekeeper_RunState9, Gatekeeper_RunStateb).
  * - 0xc and 0xd leave for scene 0xc or 0x2e once talk 0 is gone, after a connection as a local
  *   child (GatekeeperTalk_WaitStatus0 and GatekeeperTalk_WaitStatus1); 0xe leaves for scene 0x2e.
  * - 0xf and 0x11 wait for the shared slots of the scene object (scene_share.h) to settle after
@@ -31,22 +31,22 @@ int Gatekeeper_RunState10(void);
 int Gatekeeper_EnterState10(void);
 int Gatekeeper_RunState11(Gatekeeper *self);
 int Gatekeeper_EnterState11(void);
-int Gatekeeper_RunStateF(Gatekeeper *self);
-int Gatekeeper_EnterStateF(void);
-int Gatekeeper_RunStateE(Gatekeeper *self);
-int Gatekeeper_EnterStateE(void);
-int Gatekeeper_RunStateD(Gatekeeper *self);
-int Gatekeeper_EnterStateD(void);
-int Gatekeeper_RunStateC(Gatekeeper *self);
-int Gatekeeper_EnterStateC(void);
-int Gatekeeper_RunStateB(Gatekeeper *self);
-int Gatekeeper_EnterStateB(Gatekeeper *self);
-int Gatekeeper_StateBTakeExit(void);
-int Gatekeeper_StateBClearRecord(void);
-int Gatekeeper_StateBMovePlayer(void);
-int Gatekeeper_StateBSayName(Gatekeeper *self);
-void Gatekeeper_RunStateA(Gatekeeper *self);
-void Gatekeeper_EnterStateA(Gatekeeper *self);
+int Gatekeeper_RunStatef(Gatekeeper *self);
+int Gatekeeper_EnterStatef(void);
+int Gatekeeper_RunStatee(Gatekeeper *self);
+int Gatekeeper_EnterStatee(void);
+int Gatekeeper_RunStated(Gatekeeper *self);
+int Gatekeeper_EnterStated(void);
+int Gatekeeper_RunStatec(Gatekeeper *self);
+int Gatekeeper_EnterStatec(void);
+int Gatekeeper_RunStateb(Gatekeeper *self);
+int Gatekeeper_EnterStateb(Gatekeeper *self);
+int Gatekeeper_StatebTakeExit(void);
+int Gatekeeper_StatebClearRecord(void);
+int Gatekeeper_StatebMovePlayer(void);
+int Gatekeeper_StatebSayName(Gatekeeper *self);
+void Gatekeeper_RunStatea(Gatekeeper *self);
+void Gatekeeper_EnterStatea(Gatekeeper *self);
 int Gatekeeper_RunState9(Gatekeeper *self);
 int Gatekeeper_EnterState9(Gatekeeper *self);
 int Gatekeeper_State9TakeExit(void);

@@ -41,7 +41,7 @@ typedef struct Block021d27ac {
     u8 part_31[3];  /* 0x31 */
 } Block021d27ac;
 
-Block021d27ac *Block021d27ac_Get(void);
+Block021d27ac *Block021d27ac_Global(void);
 void Block021d27ac_NoteGoldenToolDue(Block021d27ac *self);
 u8 *Block021d27ac_Part04(Block021d27ac *self);
 u8 *Block021d27ac_Part31(Block021d27ac *self);

@@ -524,7 +524,7 @@ u8 *FieldActor_Record(FieldActor *actor)
 {
     int number = SessionPlayers_RecordNumber(actor->player);
     if (number < 7) {
-        return PlayerRecords_Get(number);
+        return PlayerRecords_At(number);
     }
     return NULL;
 }

@@ -14,7 +14,7 @@
 #define PLAYER_RECORD_FIRST_GUEST 4
 
 int PlayerRecords_Exists(int number);
-u8 *PlayerRecords_Get(int number);
+u8 *PlayerRecords_At(int number);
 int PlayerRecords_CurrentNumber(void);
 u8 *PlayerRecords_Current(void);
 u8 *PlayerRecords_OfPlayer(int player);

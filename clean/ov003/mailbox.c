@@ -77,10 +77,10 @@ extern const MemberPointer data_ov003_022393fc, data_ov003_0223940c, data_ov003_
 /* Joint animation A or B: what vtable slot 0x64 or 0x68 gives. */
 static const MailboxAnimFile *mailbox_anim_file(Mailbox *mailbox, unsigned int slot)
 {
-    typedef const MailboxAnimFile *(*MailboxAnimSlot)(Mailbox *mailbox);
+    typedef const MailboxAnimFile *(*MailboxAnimSlotFn)(Mailbox *mailbox);
 
     u32 code = *(const u32 *) ((const u8 *) mailbox->vtable + slot);
-    return ((MailboxAnimSlot) (uintptr_t) code)(mailbox);
+    return ((MailboxAnimSlotFn) (uintptr_t) code)(mailbox);
 }
 
 /* Plays joint animation A or B from its last frame by `mode`. Its slot is asked twice: once for
@@ -411,10 +411,10 @@ static TouchPickSphere *mailbox_sphere(Mailbox *mailbox)
 /* Sets the mode through vtable slot 0x6c. */
 static void mailbox_set_mode_slot(Mailbox *mailbox, int mode)
 {
-    typedef int (*MailboxSetModeSlot)(Mailbox *mailbox, int mode);
+    typedef int (*MailboxSetModeSlotFn)(Mailbox *mailbox, int mode);
 
     u32 code = *(const u32 *) ((const u8 *) mailbox->vtable + MAILBOX_SLOT_SET_MODE);
-    ((MailboxSetModeSlot) (uintptr_t) code)(mailbox, mode);
+    ((MailboxSetModeSlotFn) (uintptr_t) code)(mailbox, mode);
 }
 
 /* Copies a matrix two words at a time, in the order the original does. */

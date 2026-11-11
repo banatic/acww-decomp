@@ -320,22 +320,22 @@ static uint32_t add_d(const uint32_t args[4])
 
 static uint32_t get_e(const uint32_t args[4])
 {
-    return RESULT(ActorTable_GetE(TABLE_ARG, (const ItemCode *) PTR(1)));
+    return RESULT(ActorTable_ActorE(TABLE_ARG, (const ItemCode *) PTR(1)));
 }
 
 static uint32_t get_d(const uint32_t args[4])
 {
-    return RESULT(ActorTable_GetD(TABLE_ARG, (const ItemCode *) PTR(1)));
+    return RESULT(ActorTable_ActorD(TABLE_ARG, (const ItemCode *) PTR(1)));
 }
 
 static uint32_t get_e_by_index(const uint32_t args[4])
 {
-    return RESULT(ActorTable_GetEByIndex(TABLE_ARG, args[1]));
+    return RESULT(ActorTable_ActorEByIndex(TABLE_ARG, args[1]));
 }
 
 static uint32_t get_d_by_index(const uint32_t args[4])
 {
-    return RESULT(ActorTable_GetDByIndex(TABLE_ARG, args[1]));
+    return RESULT(ActorTable_ActorDByIndex(TABLE_ARG, args[1]));
 }
 
 static uint32_t slot_e(const uint32_t args[4])

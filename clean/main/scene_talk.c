@@ -88,7 +88,7 @@ CLEAN_AS(_ZN12Obj_020d8bd413func_020148a0Ev, SceneTalk_Run)
  * turn passes but nothing else is done). */
 int SceneTalk_PassTurn(void *scene)
 {
-    typedef void (*SceneTalkFill)(void *object, SceneTalkText *text);
+    typedef void (*SceneTalkFillFn)(void *object, SceneTalkText *text);
 
     s32 *talk = scene_talk_talk(scene);
     if (talk == NULL || talk[SCENE_TALK_TALK_STATE / 4] != SCENE_TALK_LINE_SHOWN) {
@@ -112,7 +112,7 @@ int SceneTalk_PassTurn(void *scene)
     PlayerIdText_Construct((PlayerIdText *) &text);
     const u8 *vtable = *(const u8 *const *) next;
     u32 fill_name = *(const u32 *) (vtable + SCENE_TALK_SLOT_NAME);
-    ((SceneTalkFill) (uintptr_t) fill_name)(next, &text);
+    ((SceneTalkFillFn) (uintptr_t) fill_name)(next, &text);
     int a = SceneObject_Sort(next);
     TalkReceiver_NextSpeaker(scene, (TextBase *) &text, a);
     scene_talk_talk(scene)[SCENE_TALK_TALK_NEXT / 4] = 1;

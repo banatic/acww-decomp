@@ -96,7 +96,7 @@ extern const MemberPointer data_ov068_02277120, data_ov068_02277150, data_ov068_
 #define HOME_WAIT_SPREAD 40
 #define HOME_RAISE_FRAMES 900
 #define HOME_PLAYER_NEAR 0x6000
-#define HOME_ASLEEP 2 /* the state entry's byte 0x01, VillagerStatus_Get's 2 */
+#define HOME_ASLEEP 2 /* the state entry's byte 0x01, VillagerStatus_Of's 2 */
 #define HOME_STATE_IN 0
 #define HOME_STATE_OUT 1
 
@@ -389,7 +389,7 @@ void OutdoorVillagerHome_Stay3(OutdoorVillagerBehavior *self, u8 *villager)
     u8 *record = home_record(villager);
     int out = 0;
     *home_at(villager, HOME_ENABLED) = 0;
-    if (VillagerStatus_Get(record) == HOME_ASLEEP) {
+    if (VillagerStatus_Of(record) == HOME_ASLEEP) {
         if (VillagerEntry_IsSleepTime(record, NULL) == 0) {
             if (VillagerStatus_StateEntry(record) != NULL) {
                 VillagerState_SetPlace(VillagerStatus_StateEntry(record), 0);

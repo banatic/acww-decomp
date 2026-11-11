@@ -187,7 +187,7 @@ CLEAN_AS(func_ov048_022627dc, Gatekeeper_EnterState11)
  * have this system as both owner and holder, they are set so again, the talk reset and given
  * the player's object as its motion argument, and state 2; else, when the link holds the scene
  * and there is no holder, this system the owner, no holder, and state 1. Agrees always. */
-int Gatekeeper_RunStateF(Gatekeeper *self)
+int Gatekeeper_RunStatef(Gatekeeper *self)
 {
     u8 *object = gatekeeper_states_object(self);
     int owner;
@@ -209,19 +209,19 @@ int Gatekeeper_RunStateF(Gatekeeper *self)
     }
     return 1;
 }
-CLEAN_AS(func_ov048_022627e0, Gatekeeper_RunStateF)
+CLEAN_AS(func_ov048_022627e0, Gatekeeper_RunStatef)
 
 /* func_ov048_0226287c (state 0xf's entry): agrees. */
-int Gatekeeper_EnterStateF(void)
+int Gatekeeper_EnterStatef(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov048_0226287c, Gatekeeper_EnterStateF)
+CLEAN_AS(func_ov048_0226287c, Gatekeeper_EnterStatef)
 
 /* func_ov048_02262880 (state 0xe's run, after the player's yes to line 0x2c): once talk 0 is
  * gone, the activity's job 2 asked for, the exit set to scene 0x2e (arguments 2 and 3) and
  * state 3. Agrees always. */
-int Gatekeeper_RunStateE(Gatekeeper *self)
+int Gatekeeper_RunStatee(Gatekeeper *self)
 {
     if (gatekeeper_states_talk_gone()) {
         ActivityJob_Ask2();
@@ -230,14 +230,14 @@ int Gatekeeper_RunStateE(Gatekeeper *self)
     }
     return 1;
 }
-CLEAN_AS(func_ov048_02262880, Gatekeeper_RunStateE)
+CLEAN_AS(func_ov048_02262880, Gatekeeper_RunStatee)
 
 /* func_ov048_022628b4 (state 0xe's entry): agrees. */
-int Gatekeeper_EnterStateE(void)
+int Gatekeeper_EnterStatee(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov048_022628b4, Gatekeeper_EnterStateE)
+CLEAN_AS(func_ov048_022628b4, Gatekeeper_EnterStatee)
 
 /* ---- States 0xd and 0xc: leaving after a connection */
 
@@ -245,7 +245,7 @@ CLEAN_AS(func_ov048_022628b4, Gatekeeper_EnterStateE)
  * with the gatekeeper's y angle; the player's place (its position, y angle and tile) saved for
  * scene 0xc; the camera's view kept; the activity's job 0x17 asked for; the exit set to scene
  * 0x2e (arguments 2 and 3); state 3. Agrees always. */
-int Gatekeeper_RunStateD(Gatekeeper *self)
+int Gatekeeper_RunStated(Gatekeeper *self)
 {
     Block021d27acPart20 *part;
     const Actor *player;
@@ -257,7 +257,7 @@ int Gatekeeper_RunStateD(Gatekeeper *self)
     if (!gatekeeper_states_talk_gone()) {
         return 1;
     }
-    part = (Block021d27acPart20 *) (void *) Block021d27ac_Part20(Block021d27ac_Get());
+    part = (Block021d27acPart20 *) (void *) Block021d27ac_Part20(Block021d27ac_Global());
     player = SessionPlayers_ActorOf(GATEKEEPER_STATES_PLAYER);
     position = player->position;
     angle = player->angle[1];
@@ -274,21 +274,21 @@ int Gatekeeper_RunStateD(Gatekeeper *self)
     Gatekeeper_SetState(self, GATEKEEPER_STATE_3);
     return 1;
 }
-CLEAN_AS(func_ov048_022628b8, Gatekeeper_RunStateD)
+CLEAN_AS(func_ov048_022628b8, Gatekeeper_RunStated)
 
 /* func_ov048_02262954 (state 0xd's entry): agrees. */
-int Gatekeeper_EnterStateD(void)
+int Gatekeeper_EnterStated(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov048_02262954, Gatekeeper_EnterStateD)
+CLEAN_AS(func_ov048_02262954, Gatekeeper_EnterStated)
 
 /* func_ov048_02262958 (state 0xc's run): once talk 0 is gone: the block's part 0x20 of kind 1
  * with the gatekeeper's y angle; the camera's view kept; the activity's job 0x14 asked for; the
  * exit set to scene 0xc at the player's position and y angle (arguments 2 and 2); state 3.
  * Agrees always.
  * QUIRK: the player's tile is worked out and not used. */
-int Gatekeeper_RunStateC(Gatekeeper *self)
+int Gatekeeper_RunStatec(Gatekeeper *self)
 {
     Block021d27acPart20 *part;
     const Actor *player;
@@ -300,7 +300,7 @@ int Gatekeeper_RunStateC(Gatekeeper *self)
     if (!gatekeeper_states_talk_gone()) {
         return 1;
     }
-    part = (Block021d27acPart20 *) (void *) Block021d27ac_Part20(Block021d27ac_Get());
+    part = (Block021d27acPart20 *) (void *) Block021d27ac_Part20(Block021d27ac_Global());
     player = SessionPlayers_ActorOf(GATEKEEPER_STATES_PLAYER);
     position = player->position;
     angle = player->angle[1];
@@ -316,53 +316,53 @@ int Gatekeeper_RunStateC(Gatekeeper *self)
     Gatekeeper_SetState(self, GATEKEEPER_STATE_3);
     return 1;
 }
-CLEAN_AS(func_ov048_02262958, Gatekeeper_RunStateC)
+CLEAN_AS(func_ov048_02262958, Gatekeeper_RunStatec)
 
 /* func_ov048_022629e4 (state 0xc's entry): agrees. */
-int Gatekeeper_EnterStateC(void)
+int Gatekeeper_EnterStatec(void)
 {
     return 1;
 }
-CLEAN_AS(func_ov048_022629e4, Gatekeeper_EnterStateC)
+CLEAN_AS(func_ov048_022629e4, Gatekeeper_EnterStatec)
 
 /* ---- State 0xb: the visitor going home sent off */
 
 /* func_ov048_022629e8 (state 0xb's run): its step (Gatekeeper.state_step, 0-3) run until it
- * agrees: Gatekeeper_StateBSayName, Gatekeeper_StateBMovePlayer, Gatekeeper_StateBClearRecord,
- * Gatekeeper_StateBTakeExit; at step 4 nothing. Agrees always. */
-int Gatekeeper_RunStateB(Gatekeeper *self)
+ * agrees: Gatekeeper_StatebSayName, Gatekeeper_StatebMovePlayer, Gatekeeper_StatebClearRecord,
+ * Gatekeeper_StatebTakeExit; at step 4 nothing. Agrees always. */
+int Gatekeeper_RunStateb(Gatekeeper *self)
 {
     static const MemberPointer *const steps[GATEKEEPER_STATES_STEPS] = {
-        &data_ov048_02263f14, /* Gatekeeper_StateBSayName */
-        &data_ov048_02263f0c, /* Gatekeeper_StateBMovePlayer */
-        &data_ov048_02263df4, /* Gatekeeper_StateBClearRecord */
-        &data_ov048_02263efc, /* Gatekeeper_StateBTakeExit */
+        &data_ov048_02263f14, /* Gatekeeper_StatebSayName */
+        &data_ov048_02263f0c, /* Gatekeeper_StatebMovePlayer */
+        &data_ov048_02263df4, /* Gatekeeper_StatebClearRecord */
+        &data_ov048_02263efc, /* Gatekeeper_StatebTakeExit */
     };
     MemberTable_InitOnce(&data_ov048_02264728, data_ov048_02264758, steps, GATEKEEPER_STATES_STEPS);
     gatekeeper_states_step(self, data_ov048_02264758);
     return 1;
 }
-CLEAN_AS(func_ov048_022629e8, Gatekeeper_RunStateB)
+CLEAN_AS(func_ov048_022629e8, Gatekeeper_RunStateb)
 
 /* func_ov048_02262a84 (state 0xb's entry): its steps from the first; agrees. */
-int Gatekeeper_EnterStateB(Gatekeeper *self)
+int Gatekeeper_EnterStateb(Gatekeeper *self)
 {
     self->state_step = 0;
     return 1;
 }
-CLEAN_AS(func_ov048_02262a84, Gatekeeper_EnterStateB)
+CLEAN_AS(func_ov048_02262a84, Gatekeeper_EnterStateb)
 
 /* func_ov048_02262a94 (state 0xb's step 3): the scene's exit 1 taken; agrees. */
-int Gatekeeper_StateBTakeExit(void)
+int Gatekeeper_StatebTakeExit(void)
 {
     SceneExit_Take(gatekeeper_states_exit(), GATEKEEPER_STATES_EXIT);
     return 1;
 }
-CLEAN_AS(func_ov048_02262a94, Gatekeeper_StateBTakeExit)
+CLEAN_AS(func_ov048_02262a94, Gatekeeper_StatebTakeExit)
 
 /* func_ov048_02262aac (state 0xb's step 2): once the visitor's actor is not busy, its
  * player record cleared; whether it was. */
-int Gatekeeper_StateBClearRecord(void)
+int Gatekeeper_StatebClearRecord(void)
 {
     int player = (int) LinkGlobal_ServedSlot();
     u8 *record = PlayerRecords_OfPlayer(player);
@@ -373,11 +373,11 @@ int Gatekeeper_StateBClearRecord(void)
     }
     return 0;
 }
-CLEAN_AS(func_ov048_02262aac, Gatekeeper_StateBClearRecord)
+CLEAN_AS(func_ov048_02262aac, Gatekeeper_StatebClearRecord)
 
 /* func_ov048_02262adc (state 0xb's step 1): once talk 0 is closed, its receiver let go and the
  * served player's actor asked to walk to (16.0, 0, 5.0); whether it was closed. */
-int Gatekeeper_StateBMovePlayer(void)
+int Gatekeeper_StatebMovePlayer(void)
 {
     int player = (int) LinkGlobal_ServedSlot();
     TalkObject *talk = TalkObject_Get(0);
@@ -390,12 +390,12 @@ int Gatekeeper_StateBMovePlayer(void)
     }
     return 0;
 }
-CLEAN_AS(func_ov048_02262adc, Gatekeeper_StateBMovePlayer)
+CLEAN_AS(func_ov048_02262adc, Gatekeeper_StatebMovePlayer)
 
 /* func_ov048_02262b24 (state 0xb's step 0): once the screen is shown, its talk reset and shown
  * through talk 0 with line 0x7b, the visitor's name in part 1, and talk 0 asked to open;
  * whether the screen was shown. */
-int Gatekeeper_StateBSayName(Gatekeeper *self)
+int Gatekeeper_StatebSayName(Gatekeeper *self)
 {
     u8 *record = PlayerRecords_OfPlayer((int) LinkGlobal_ServedSlot());
     TalkObject *talk;
@@ -416,24 +416,24 @@ int Gatekeeper_StateBSayName(Gatekeeper *self)
     PlayerIdText_Destruct(&name);
     return 1;
 }
-CLEAN_AS(func_ov048_02262b24, Gatekeeper_StateBSayName)
+CLEAN_AS(func_ov048_02262b24, Gatekeeper_StatebSayName)
 
 /* ---- States 0xa and 9 */
 
 /* Obj_ov048_02264298::func_ov048_02262bb8 (state 0xa's run): a step of its six
  * (Gatekeeper_RunState8, the same steps as state 8). */
-void Gatekeeper_RunStateA(Gatekeeper *self)
+void Gatekeeper_RunStatea(Gatekeeper *self)
 {
     Gatekeeper_RunState8(self);
 }
-CLEAN_AS(_ZN18Obj_ov048_0226429819func_ov048_02262bb8Ev, Gatekeeper_RunStateA)
+CLEAN_AS(_ZN18Obj_ov048_0226429819func_ov048_02262bb8Ev, Gatekeeper_RunStatea)
 
 /* func_ov048_02262bc0 (state 0xa's entry): Gatekeeper_EnterState8, which resets its steps. */
-void Gatekeeper_EnterStateA(Gatekeeper *self)
+void Gatekeeper_EnterStatea(Gatekeeper *self)
 {
     Gatekeeper_EnterState8(self);
 }
-CLEAN_AS(func_ov048_02262bc0, Gatekeeper_EnterStateA)
+CLEAN_AS(func_ov048_02262bc0, Gatekeeper_EnterStatea)
 
 /* func_ov048_02262bc8 (state 9's run): its step (Gatekeeper.state_step, 0-3) run until it
  * agrees: Gatekeeper_State9WalkIn, Gatekeeper_State9SayName, Gatekeeper_State9CloseTalk,

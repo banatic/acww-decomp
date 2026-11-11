@@ -75,11 +75,11 @@ int ItemGroupOrder_GroupOfWeight(u8 *order, u8 weight)
 CLEAN_AS(func_02063f18, ItemGroupOrder_GroupOfWeight)
 
 /* func_02063f3c: the order's byte. */
-int ItemGroupOrder_Get(u8 *order)
+int ItemGroupOrder_Value(u8 *order)
 {
     return *order;
 }
-CLEAN_AS(func_02063f3c, ItemGroupOrder_Get)
+CLEAN_AS(func_02063f3c, ItemGroupOrder_Value)
 
 /* func_02063f40: the town's value `index` (0-2): 60 - x, 30 or x + 10 (see house_tenth);
  * the first for an index past 2. */

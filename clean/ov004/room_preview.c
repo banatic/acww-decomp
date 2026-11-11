@@ -41,11 +41,11 @@ extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(v
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
 
 /* func_ov004_0223d03c */
-RoomPreview *RoomPreview_Get(void)
+RoomPreview *RoomPreview_Global(void)
 {
     return &data_ov004_022596b0;
 }
-CLEAN_AS(func_ov004_0223d03c, RoomPreview_Get)
+CLEAN_AS(func_ov004_0223d03c, RoomPreview_Global)
 
 /* func_ov004_0223d044: the carpet texture file of the slot shown. */
 u8 *RoomPreview_CarpetFile(RoomPreview *preview)

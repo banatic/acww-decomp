@@ -2,7 +2,7 @@
  * hands the room the item picked) on a wall of its own: a class of overlay 4's room objects (vtable 0x022511e0, receiver part
  * 0x0225128c, 0x870 bytes) whose model has a material named "m_dummy_wall", the twin of the
  * carpet's (carpet_preview.h). Once its model is bound it keeps the word at 0x10 of
- * data_ov004_022596b0 (RoomPreview_Get, RoomPreview_Number), loads the wallpaper it names
+ * data_ov004_022596b0 (RoomPreview_Global, RoomPreview_Number), loads the wallpaper it names
  * (item 0x1100 plus it, 0x1100 when it is 0x44 or more) into the room's wall texture file
  * (RoomPreview_WallpaperFile, WallpaperFile_Load) and puts that texture on the material. It is drawn from
  * the second frame after that on. */

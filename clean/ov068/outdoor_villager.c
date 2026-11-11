@@ -251,7 +251,7 @@ static void ov_start_talk(u8 *object, u32 lines)
 static void ov_ended_greeting(u8 *object)
 {
     OutdoorVillagerBehavior *behavior = ov_behavior(object);
-    int status = VillagerStatus_Get(ov_record(object));
+    int status = VillagerStatus_Of(ov_record(object));
     VillagerPlot *home = VillagerHome_Tile(ov_record(object));
     Vec3 *position = (Vec3 *) (void *) ov_at(object, OUTDOOR_VILLAGER_POSITION);
     Vec3 *last = (Vec3 *) (void *) ov_at(object, OUTDOOR_VILLAGER_LAST_POSITION);

@@ -208,10 +208,10 @@ void GullTalk_OnLineShown(GullTalk *talk)
             break;
         }
         case GULL_TALK_LINE_COUNT:
-            if (SpaceshipParts_Get(data_021ebcd2) >= GULL_TALK_COUNT_MAX) {
+            if (SpaceshipParts_Count(data_021ebcd2) >= GULL_TALK_COUNT_MAX) {
                 line = 0x17;
             } else {
-                line = (u8) (SpaceshipParts_Get(data_021ebcd2) + 0x19);
+                line = (u8) (SpaceshipParts_Count(data_021ebcd2) + 0x19);
             }
             break;
         case GULL_TALK_LINE_GIFT: {
@@ -259,15 +259,15 @@ void GullTalk_Line(GullTalk *talk, GullTalkLine *line)
         } else {
             talk->topic = GULL_TALK_TOPIC_ASLEEP;
         }
-    } else if (SpaceshipParts_Get(data_021ebcd2) >= GULL_TALK_COUNT_MAX) {
+    } else if (SpaceshipParts_Count(data_021ebcd2) >= GULL_TALK_COUNT_MAX) {
         talk->topic = GULL_TALK_TOPIC_ALL_COUNTED;
     } else if (slot < 0) {
-        if (SpaceshipParts_Get(data_021ebcd2) == 0) {
+        if (SpaceshipParts_Count(data_021ebcd2) == 0) {
             talk->topic = GULL_TALK_TOPIC_NONE_YET;
         } else {
             int missing;
             talk->topic = GULL_TALK_TOPIC_MORE_NEEDED;
-            missing = GULL_TALK_COUNT_MAX - SpaceshipParts_Get(data_021ebcd2);
+            missing = GULL_TALK_COUNT_MAX - SpaceshipParts_Count(data_021ebcd2);
             if (missing < 0) {
                 missing = 0;
             }
@@ -282,7 +282,7 @@ void GullTalk_Line(GullTalk *talk, GullTalkLine *line)
         }
         for (taken = 1; taken <= GULL_TALK_POCKET_SLOTS; taken++) {
             CurrentPockets_Empty(slot);
-            if (SpaceshipParts_Get(data_021ebcd2) < GULL_TALK_COUNT_MAX) {
+            if (SpaceshipParts_Count(data_021ebcd2) < GULL_TALK_COUNT_MAX) {
                 SpaceshipParts_Increment(data_021ebcd2);
             }
             slot = gull_talk_find_item();

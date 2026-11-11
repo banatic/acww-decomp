@@ -490,7 +490,7 @@ void TownMap_ReadMarks(TownMap *self, TownMapMarker *places)
 {
     for (unsigned int i = 0; i < TOWN_MAP_EXTRA_MARKS; i++) {
         TownMapMark *mark = &self->extra_marks[i];
-        const TownMapMarker *place = TownMapMarkers_Get(places, i);
+        const TownMapMarker *place = TownMapMarkers_PlacedAt(places, i);
         if (place != NULL) {
             mark->kind = town_map_extra_kind(TownMapMarkers_Kind(places, i));
             mark->x = (u8) (place->x - 8);
@@ -502,7 +502,7 @@ void TownMap_ReadMarks(TownMap *self, TownMapMarker *places)
     for (unsigned int i = 0; i < TOWN_MAP_MARKS; i++) {
         unsigned int index = i + TOWN_MAP_EXTRA_MARKS;
         TownMapMark *mark = &self->marks[i];
-        const TownMapMarker *place = TownMapMarkers_Get(places, index);
+        const TownMapMarker *place = TownMapMarkers_PlacedAt(places, index);
         if (place != NULL) {
             if (i < TOWN_MAP_MARK_PLAYERS_HOUSE) {
                 mark->kind = 0;

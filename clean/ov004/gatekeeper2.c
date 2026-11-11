@@ -305,7 +305,7 @@ static unsigned int gk2_picked_design(u8 *record)
 {
     int place = GroupParams_Arg();
     PlayerDesigns *designs = PlayerRecord_Designs(record);
-    return DesignOrder_Get((unsigned char *) (uintptr_t) (u32) PlayerDesigns_Order(designs), place);
+    return DesignOrder_At((unsigned char *) (uintptr_t) (u32) PlayerDesigns_Order(designs), place);
 }
 
 /* func_ov004_02224ff4 (task 2, after the design screen 9): when the screen gave a choice, the

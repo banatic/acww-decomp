@@ -137,7 +137,7 @@ CLEAN_AS(func_ov127_0229960c, StarScope_CollectStars)
 int StarScope_ConstellationOfPiece(int piece)
 {
     for (int i = 0; i < CONSTELLATIONS_COUNT; i++) {
-        int kept = Constellations_Get(i);
+        int kept = Constellations_AtCopy(i);
         if (kept == 0) {
             continue;
         }

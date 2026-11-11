@@ -108,10 +108,10 @@ static u32 talk_scene_slot(const void *object, u32 slot)
 /* The focus speaker asked for a mood (its slot 0xa4) when there is one. */
 static void talk_scene_ask_mood(VillagerTalk *talk, int mood, int length)
 {
-    typedef void (*AskMood)(void *speaker, int mood, int length);
+    typedef void (*AskMoodFn)(void *speaker, int mood, int length);
     void *speaker = (void *) (uintptr_t) SceneBase_FocusSpeaker(talk_scene_base(talk));
     if (speaker != NULL) {
-        ((AskMood) (uintptr_t) talk_scene_slot(speaker, VILLAGER_TALK_SCENE_SLOT_ASK_MOOD))(speaker, mood, length);
+        ((AskMoodFn) (uintptr_t) talk_scene_slot(speaker, VILLAGER_TALK_SCENE_SLOT_ASK_MOOD))(speaker, mood, length);
     }
 }
 
@@ -269,12 +269,12 @@ CLEAN_AS(func_0202d8f8, VillagerTalkScene_NoteMemory)
 /* func_0202d994 (slot 0x78): the line member at 0xb0 run with `line` when set. */
 void VillagerTalkScene_RunLine(VillagerTalk *talk, VillagerTalkLine *line)
 {
-    typedef void (*LineMember)(void *talk, VillagerTalkLine *line);
+    typedef void (*LineMemberFn)(void *talk, VillagerTalkLine *line);
     if (talk->line.function == 0) {
         return;
     }
     void *self = MemberPointer_Object(&talk->line, talk);
-    ((LineMember) (uintptr_t) MemberPointer_Code(&talk->line, self))(self, line);
+    ((LineMemberFn) (uintptr_t) MemberPointer_Code(&talk->line, self))(self, line);
 }
 CLEAN_AS(func_0202d994, VillagerTalkScene_RunLine)
 
@@ -432,12 +432,12 @@ CLEAN_AS(func_0202dc04, VillagerTalkScene_Step)
  * player or villager); the choices' functions and the bytes at data_021c1e84 cleared. */
 void VillagerTalkScene_Start(VillagerTalk *talk, u8 *villager, unsigned int lines)
 {
-    typedef void (*Reset)(void *scene);
+    typedef void (*ResetFn)(void *scene);
     const DesignCreator *player = NULL;
     if (PlayerRecords_Current() != NULL) {
         player = PlayerRecord_Player(PlayerRecords_Current());
     }
-    ((Reset) (uintptr_t) talk_scene_slot(talk, VILLAGER_TALK_SCENE_SLOT_RESET))(talk);
+    ((ResetFn) (uintptr_t) talk_scene_slot(talk, VILLAGER_TALK_SCENE_SLOT_RESET))(talk);
     talk->villager = villager;
     if (lines < VILLAGER_TALK_SCENE_LINE_TABLES) {
         VillagerTalkScene_SetLines(talk, data_021c283c[lines]);

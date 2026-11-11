@@ -509,7 +509,7 @@ int TownObjects_VillagerAsleep(int villager)
     if (record == NULL) {
         return 0;
     }
-    return VillagerStatus_Get(record) == TOWN_OBJECTS_VILLAGER_ASLEEP;
+    return VillagerStatus_Of(record) == TOWN_OBJECTS_VILLAGER_ASLEEP;
 }
 CLEAN_AS(func_020b27d4, TownObjects_VillagerAsleep)
 

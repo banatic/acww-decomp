@@ -181,11 +181,11 @@ void TurtleGardensTalk_Line(TurtleGardensTalk *talk, TurtleGardensTalkStart *out
         out->message = TURTLE_GARDENS_TALK_LINE_OFF_HOURS;
         return;
     }
-    if (Block021d27ac_TestFlag((u32 *) (void *) Block021d27ac_Get(), TURTLE_GARDENS_TALK_BLOCK_FLAG) != 0) {
+    if (Block021d27ac_TestFlag((u32 *) (void *) Block021d27ac_Global(), TURTLE_GARDENS_TALK_BLOCK_FLAG) != 0) {
         out->message = TURTLE_GARDENS_TALK_LINE_AGAIN;
         return;
     }
-    Block021d27ac_SetFlag((u32 *) (void *) Block021d27ac_Get(), TURTLE_GARDENS_TALK_BLOCK_FLAG);
+    Block021d27ac_SetFlag((u32 *) (void *) Block021d27ac_Global(), TURTLE_GARDENS_TALK_BLOCK_FLAG);
     u8 day = talk->owner->event_day;
     if (day == 0) {
         out->message = TURTLE_GARDENS_TALK_LINE_FIRST_DAY;

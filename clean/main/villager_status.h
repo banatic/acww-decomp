@@ -21,7 +21,7 @@
 #define VILLAGER_STAY_MODE_11 2  /* mode 11 */
 #define VILLAGER_STAY_RESIDENT 3 /* any other mode */
 
-/* VillagerStatus_Get: 0 (outside, or no villager) for no villager or a state entry in state 1
+/* VillagerStatus_Of: 0 (outside, or no villager) for no villager or a state entry in state 1
  * or 7 or above; with this
  * system in a session slot 1 or 2 from the entry's byte 0x01; else 1 or 2 from byte 0x01 for
  * state 0, and 3-7 for states 2-6. */
@@ -44,7 +44,7 @@ int VillagerStatus_Stay(u8 *villager);
 int VillagerStatus_LoadModeText(u8 *villager, void *label);
 VillagerModeRecord *VillagerStatus_ModeRecord(u8 *villager);
 int VillagerStatus_Exists(void *villager);
-int VillagerStatus_Get(u8 *villager);
+int VillagerStatus_Of(u8 *villager);
 VillagerState *VillagerStatus_StateEntry(u8 *villager);
 int VillagerStatus_Index(u8 *villager);
 int VillagerStatus_FindIndex(u8 *villager);

@@ -66,7 +66,7 @@ typedef struct VillagerNameplateViewer {
     s16 yaw; /* the direction it faces */
 } VillagerNameplateViewer;
 
-VillagerNameplate *VillagerNameplate_Get(int index);
+VillagerNameplate *VillagerNameplate_At(int index);
 void VillagerNameplate_UpdateOpen(VillagerNameplate *board);
 int VillagerNameplate_EnterOpen(VillagerNameplate *board);
 void VillagerNameplate_UpdateWaiting(VillagerNameplate *board);

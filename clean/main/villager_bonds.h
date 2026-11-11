@@ -16,7 +16,7 @@
 #include "types.h"
 
 #define VILLAGER_BOND_PAIRS 28
-/* What VillagerBond_Get gives for no pair. */
+/* What VillagerBond_Of gives for no pair. */
 #define VILLAGER_BOND_NONE INT32_MIN
 
 int VillagerBond_Compatibility(const s8 *bonds, int first, int second);
@@ -26,7 +26,7 @@ int VillagerBond_BothHaveData(const s8 *bonds, void *first, void *second);
 int VillagerBond_SpeciesScore(const s8 *bonds, void *first, void *second);
 unsigned char VillagerBond_ElementScore(const s8 *bonds, void *first, void *second);
 int VillagerBond_PersonalityScore(const s8 *bonds, const void *first, const void *second);
-int VillagerBond_Get(const s8 *bonds, int first, int second);
+int VillagerBond_Of(const s8 *bonds, int first, int second);
 void VillagerBond_Add(s8 *bonds, int first, int second, int amount);
 void VillagerBond_AddAt(s8 *bonds, int index, int amount);
 void VillagerBond_ForgetVillager(s8 *bonds, int villager);

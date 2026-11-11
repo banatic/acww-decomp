@@ -10,7 +10,7 @@ BOOL MapItem_IsAnyFlower(const ItemCode *item)
     if (MapItem_IsWiltedFlower(item) || MapItem_IsFlower(item) || MapItem_IsWateredFlower(item)) {
         return TRUE;
     }
-    switch (ItemCode_Get(item)) {
+    switch (ItemCode_Value(item)) {
         case 0x1a:
         case 0x1d:
         case 0x1e:
@@ -198,7 +198,7 @@ CLEAN_AS(func_0204b66c, MapItem_IsShortLine2b)
 /* func_0204b678: the third code of a short line. */
 BOOL MapItem_IsShortStage3(const ItemCode *item)
 {
-    switch (ItemCode_Get(item)) {
+    switch (ItemCode_Value(item)) {
         case 0x2d:
         case 0x64:
         case 0xd2:
@@ -213,7 +213,7 @@ CLEAN_AS(func_0204b678, MapItem_IsShortStage3)
 /* func_0204b6ac: the second code of a short line. */
 BOOL MapItem_IsShortStage2(const ItemCode *item)
 {
-    switch (ItemCode_Get(item)) {
+    switch (ItemCode_Value(item)) {
         case 0x2c:
         case 0x63:
         case 0xd1:
@@ -228,7 +228,7 @@ CLEAN_AS(func_0204b6ac, MapItem_IsShortStage2)
 /* func_0204b6e0: the first code of a short line. */
 BOOL MapItem_IsShortStage1(const ItemCode *item)
 {
-    switch (ItemCode_Get(item)) {
+    switch (ItemCode_Value(item)) {
         case 0x2b:
         case 0x62:
         case 0xd0:
@@ -397,7 +397,7 @@ CLEAN_AS(func_0204b8c8, MapItem_IsLine26)
  * line's last stage. */
 BOOL MapItem_IsEighth(const ItemCode *item)
 {
-    switch (ItemCode_Get(item)) {
+    switch (ItemCode_Value(item)) {
         case 0x36:
         case 0x3e:
         case 0x46:
@@ -414,7 +414,7 @@ CLEAN_AS(func_0204b8d4, MapItem_IsEighth)
 /* func_0204b910: a growth line's last stage (its fifth code), or one of 0x66-0x6d. */
 BOOL MapItem_IsGrown(const ItemCode *item)
 {
-    int code = ItemCode_Get(item);
+    int code = ItemCode_Value(item);
     if (code >= 0x66 && code <= 0x6d) {
         return TRUE;
     }
@@ -439,7 +439,7 @@ CLEAN_AS(func_0204b910, MapItem_IsGrown)
 static BOOL is_stage(const ItemCode *item, int stage)
 {
     static const u8 line_starts[] = {0x26, 0x2f, 0x37, 0x3f, 0x47, 0x4f, 0x57, 0x5d, 0xc8};
-    int code = ItemCode_Get(item);
+    int code = ItemCode_Value(item);
     for (unsigned i = 0; i < sizeof(line_starts); i++) {
         if (code == line_starts[i] + stage) {
             return TRUE;
