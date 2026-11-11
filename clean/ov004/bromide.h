@@ -42,10 +42,10 @@ int Bromide_Vfunc0c(void);
 int Bromide_Update(Bromide *bromide);
 int Bromide_Start(void);
 Bromide *Bromide_Delete(Bromide *bromide);
-Bromide *Bromide_Destroy(Bromide *bromide);
+Bromide *Bromide_Destruct(Bromide *bromide);
 Bromide *Bromide_Construct(Bromide *bromide);
 void Bromide_Create(void);
 Bromide *BromideReceiver_Delete(void *receiver);
-Bromide *BromideReceiver_Destroy(void *receiver);
+Bromide *BromideReceiver_Destruct(void *receiver);
 
 #endif

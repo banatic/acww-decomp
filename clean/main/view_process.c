@@ -13,14 +13,14 @@ extern const u32 data_020da13c[]; /* the game's process class's */
 
 /* func_020b941c (vtable slot 16): the destructor, through the game's process class down to the
  * base's. */
-ViewProcess *ViewProcess_Destroy(ViewProcess *self)
+ViewProcess *ViewProcess_Destruct(ViewProcess *self)
 {
     self->base.vtable = data_020e58cc;
     self->base.vtable = data_020da13c;
     Process_Destruct(&self->base);
     return self;
 }
-CLEAN_AS(func_020b941c, ViewProcess_Destroy)
+CLEAN_AS(func_020b941c, ViewProcess_Destruct)
 
 /* func_020b943c (vtable slot 17): destroyed and freed to the auxiliary heap. */
 ViewProcess *ViewProcess_Delete(ViewProcess *self)

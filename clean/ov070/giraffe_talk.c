@@ -657,7 +657,7 @@ CLEAN_AS(func_ov070_0227968c, GiraffeTalk_Delete)
 
 /* func_ov070_022796c0 (slot 0x00): the three item codes destroyed, then the scene class
  * 0x020d9ff8's destructor. */
-void *GiraffeTalk_Destroy(void *talk)
+void *GiraffeTalk_Destruct(void *talk)
 {
     GiraffeTalk *self = talk;
     self->base.vtable = data_ov070_02279dbc;
@@ -665,7 +665,7 @@ void *GiraffeTalk_Destroy(void *talk)
     Obj020d9ff8_DestructBody(self);
     return self;
 }
-CLEAN_AS(func_ov070_022796c0, GiraffeTalk_Destroy)
+CLEAN_AS(func_ov070_022796c0, GiraffeTalk_Destruct)
 
 /* func_ov070_022796ec: the constructor: a scene of class 0x020d9ff8 given this class's vtable,
  * and its three item codes constructed. */

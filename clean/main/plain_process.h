@@ -8,7 +8,7 @@
 #include "types.h"
 
 Process *PlainProcess_Create(void);
-Process *PlainProcess_Destroy(Process *self);
+Process *PlainProcess_Destruct(Process *self);
 Process *PlainProcess_Delete(Process *self);
 
 #endif

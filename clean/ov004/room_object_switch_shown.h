@@ -38,11 +38,11 @@ int SwitchShown_Vfunc0c(void);
 int SwitchShown_Update(SwitchShownObject *object);
 int SwitchShown_Start(SwitchShownObject *object);
 SwitchShownObject *SwitchShown_Delete(SwitchShownObject *object);
-SwitchShownObject *SwitchShown_Destroy(SwitchShownObject *object);
+SwitchShownObject *SwitchShown_Destruct(SwitchShownObject *object);
 SwitchShownObject *SwitchShown_Construct(SwitchShownObject *object);
 void SwitchShown_Create(void);
 
 SwitchShownObject *SwitchShownReceiver_Delete(void *receiver);
-SwitchShownObject *SwitchShownReceiver_Destroy(void *receiver);
+SwitchShownObject *SwitchShownReceiver_Destruct(void *receiver);
 
 #endif

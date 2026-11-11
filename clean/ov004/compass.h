@@ -34,10 +34,10 @@ int Compass_Vfunc0c(void);
 int Compass_Update(Compass *compass);
 int Compass_Start(Compass *compass);
 Compass *Compass_Delete(Compass *compass);
-Compass *Compass_Destroy(Compass *compass);
+Compass *Compass_Destruct(Compass *compass);
 Compass *Compass_Construct(Compass *compass);
 void Compass_Create(void);
 Compass *CompassReceiver_Delete(void *receiver);
-Compass *CompassReceiver_Destroy(void *receiver);
+Compass *CompassReceiver_Destruct(void *receiver);
 
 #endif

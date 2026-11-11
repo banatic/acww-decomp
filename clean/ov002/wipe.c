@@ -369,20 +369,20 @@ CLEAN_AS(func_ov002_02208780, Wipe_OffsetY)
 Wipe *Wipe_Delete(Wipe *wipe)
 {
     wipe->progress.vtable = data_ov002_0220baf4;
-    Progress_Destroy(&wipe->progress);
+    Progress_Destruct(&wipe->progress);
     Heap_OperatorDeleteB(wipe);
     return wipe;
 }
 CLEAN_AS(func_ov002_0220879c, Wipe_Delete)
 
 /* func_ov002_022087bc */
-Wipe *Wipe_Destroy(Wipe *wipe)
+Wipe *Wipe_Destruct(Wipe *wipe)
 {
     wipe->progress.vtable = data_ov002_0220baf4;
-    Progress_Destroy(&wipe->progress);
+    Progress_Destruct(&wipe->progress);
     return wipe;
 }
-CLEAN_AS(func_ov002_022087bc, Wipe_Destroy)
+CLEAN_AS(func_ov002_022087bc, Wipe_Destruct)
 
 /* func_ov002_022087d4 */
 Wipe *Wipe_Construct(Wipe *wipe)
@@ -436,11 +436,11 @@ void Progress_Start(Progress *progress, unsigned int frames)
 CLEAN_AS(func_ov002_0220882c, Progress_Start)
 
 /* func_ov002_02208844 */
-void Progress_Destroy(Progress *progress)
+void Progress_Destruct(Progress *progress)
 {
     progress->vtable = data_ov002_0220bb04;
 }
-CLEAN_AS(func_ov002_02208844, Progress_Destroy)
+CLEAN_AS(func_ov002_02208844, Progress_Destruct)
 
 /* func_ov002_02208850: the deleting destructor. */
 Progress *Progress_Delete(Progress *progress)
@@ -452,12 +452,12 @@ Progress *Progress_Delete(Progress *progress)
 CLEAN_AS(func_ov002_02208850, Progress_Delete)
 
 /* func_ov002_02208868: the destructor as one of the base's pair (it does what
- * Progress_Destroy does). */
-void Progress_DestroyBase(Progress *progress)
+ * Progress_Destruct does). */
+void Progress_DestructBase(Progress *progress)
 {
     progress->vtable = data_ov002_0220bb04;
 }
-CLEAN_AS(func_ov002_02208868, Progress_DestroyBase)
+CLEAN_AS(func_ov002_02208868, Progress_DestructBase)
 
 /* func_ov002_02208874 */
 void Progress_Construct(Progress *progress)

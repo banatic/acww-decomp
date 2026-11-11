@@ -176,7 +176,7 @@ typedef struct TownMap {
 } TownMap;
 
 /* town_map.c: the scene */
-TownMap *TownMap_Destroy(TownMap *self);
+TownMap *TownMap_Destruct(TownMap *self);
 TownMap *TownMap_Delete(TownMap *self);
 void TownMap_MarkDestruct(void *mark);
 void TownMap_MarkConstruct(void *mark);

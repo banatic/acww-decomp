@@ -354,14 +354,14 @@ void *TurtleFireworksTalk_Delete(void *talk)
 CLEAN_AS(func_ov084_02278f84, TurtleFireworksTalk_Delete)
 
 /* func_ov084_02278fa4 (slot 0x00): the scene class 0x020d9ff8's destructor. */
-void *TurtleFireworksTalk_Destroy(void *talk)
+void *TurtleFireworksTalk_Destruct(void *talk)
 {
     TurtleFireworksTalk *self = talk;
     self->base.vtable = data_ov084_0227941c;
     Obj020d9ff8_DestructBody(self);
     return self;
 }
-CLEAN_AS(func_ov084_02278fa4, TurtleFireworksTalk_Destroy)
+CLEAN_AS(func_ov084_02278fa4, TurtleFireworksTalk_Destruct)
 
 /* func_ov084_02278fbc: the constructor: a scene of class 0x020d9ff8 given this class's vtable,
  * and its item code 0xfff1. */

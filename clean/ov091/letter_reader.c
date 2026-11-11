@@ -103,19 +103,19 @@ static void letter_reader_point_at_button(LetterReader *self)
 static void letter_reader_destroy_members(LetterReader *self)
 {
     self->base.vtable = data_ov091_02299530;
-    Glider1_Destroy(&self->cursor);
-    LabelButton1_Destroy(&self->button);
+    Glider1_Destruct(&self->cursor);
+    LabelButton1_Destruct(&self->button);
     LetterView_Destruct(&self->view);
-    MenuScene_DestroyBase(letter_reader_scene(self));
+    MenuScene_DestructBase(letter_reader_scene(self));
 }
 
 /* func_ov091_02298f20 (vtable slot 0x40) */
-LetterReader *LetterReader_Destroy(LetterReader *self)
+LetterReader *LetterReader_Destruct(LetterReader *self)
 {
     letter_reader_destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov091_02298f20, LetterReader_Destroy)
+CLEAN_AS(func_ov091_02298f20, LetterReader_Destruct)
 
 /* func_ov091_02298f5c (vtable slot 0x44) */
 LetterReader *LetterReader_Delete(LetterReader *self)

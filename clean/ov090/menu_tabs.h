@@ -96,7 +96,7 @@ typedef struct MenuTabs {
     ErrorMessage error;                   /* 0x1164 */
 } MenuTabs;
 
-MenuTabs *MenuTabs_Destroy(MenuTabs *self);
+MenuTabs *MenuTabs_Destruct(MenuTabs *self);
 MenuTabs *MenuTabs_Delete(MenuTabs *self);
 int MenuTabs_IsOpening(MenuTabs *self);
 int MenuTabs_TabAtX(int x);

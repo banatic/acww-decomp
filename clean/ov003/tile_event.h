@@ -51,8 +51,8 @@ void TileEvent_StartKind6(int player, int id, const TileChangesTile *tile, const
 void TileEvent_StartKind5(int player, int id, const TileChangesTile *tile, const Vec3 *position, short angle, int extra);
 int TileEvent_StartKind4(int player, int id, const TileChangesTile *tile);
 void TileEvent_StartKind3(int player, const Vec3 *position);
-TileEventProcess *TileEvent_DestroyProcess(TileEventProcess *process);
-TileEventProcess *TileEvent_DestroyAndFreeProcess(TileEventProcess *process);
+TileEventProcess *TileEvent_DestructProcess(TileEventProcess *process);
+TileEventProcess *TileEvent_DeleteProcess(TileEventProcess *process);
 
 struct AcreMap;
 

@@ -51,7 +51,7 @@ typedef struct Shop3Villager {
     Shop3VillagerTalk talk;            /* 0x89c */
 } Shop3Villager;
 
-Shop3Villager *Shop3Villager_Destroy(Shop3Villager *villager);
+Shop3Villager *Shop3Villager_Destruct(Shop3Villager *villager);
 Shop3Villager *Shop3Villager_Delete(Shop3Villager *villager);
 void Shop3Villager_OnEvent(Shop3Villager *villager, int code);
 int Shop3Villager_MayAct(Shop3Villager *villager);
@@ -60,7 +60,7 @@ void Shop3VillagerTalk_OnMessageEnded(void);
 int Shop3VillagerTalk_Line(Shop3VillagerTalk *talk, VillagerTalkLine *out);
 void Shop3VillagerTalk_Start(Shop3VillagerTalk *talk, Shop3Villager *villager);
 Shop3VillagerTalk *Shop3VillagerTalk_Delete(Shop3VillagerTalk *talk);
-Shop3VillagerTalk *Shop3VillagerTalk_Destroy(Shop3VillagerTalk *talk);
+Shop3VillagerTalk *Shop3VillagerTalk_Destruct(Shop3VillagerTalk *talk);
 Shop3VillagerTalk *Shop3VillagerTalk_Construct(Shop3VillagerTalk *talk);
 int Shop3Villager_UpdateIdle(void);
 int Shop3Villager_UpdateTalk(Shop3Villager *villager);

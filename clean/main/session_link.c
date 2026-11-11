@@ -144,11 +144,11 @@ void Session_Init(NetSession *session)
 CLEAN_AS(func_02073fb4, Session_Init)
 
 /* func_02073fc8: the session's destructor, registered for the global session (data_021d0a44). */
-void Session_Destroy(NetSession *session)
+void Session_Destruct(NetSession *session)
 {
     (void) session;
 }
-CLEAN_AS(func_02073fc8, Session_Destroy)
+CLEAN_AS(func_02073fc8, Session_Destruct)
 
 /* func_02073fcc: the session's constructor. */
 NetSession *Session_Construct(NetSession *session)

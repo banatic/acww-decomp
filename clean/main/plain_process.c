@@ -24,14 +24,14 @@ CLEAN_AS(func_020b920c, PlainProcess_Create)
 
 /* func_020b9238 (vtable slot 16): the destructor, through the game's process class down to the
  * base's. */
-Process *PlainProcess_Destroy(Process *self)
+Process *PlainProcess_Destruct(Process *self)
 {
     self->vtable = data_020e587c;
     self->vtable = data_020da13c;
     Process_Destruct(self);
     return self;
 }
-CLEAN_AS(func_020b9238, PlainProcess_Destroy)
+CLEAN_AS(func_020b9238, PlainProcess_Destruct)
 
 /* func_020b9258 (vtable slot 17): destroyed and freed to the auxiliary heap. */
 Process *PlainProcess_Delete(Process *self)

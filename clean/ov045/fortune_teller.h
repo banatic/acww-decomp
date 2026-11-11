@@ -97,7 +97,7 @@ typedef struct FortuneTellerCard {
 #define FORTUNE_TELLER_LUCK_GOOD 1
 #define FORTUNE_TELLER_LUCK_BAD 2
 
-FortuneTeller *FortuneTeller_Destroy(FortuneTeller *teller);
+FortuneTeller *FortuneTeller_Destruct(FortuneTeller *teller);
 void *FortuneTeller_Delete(void *teller);
 int FortuneTeller_CardLuck(FortuneTeller *teller);
 void FortuneTeller_DrawCard(FortuneTeller *teller);

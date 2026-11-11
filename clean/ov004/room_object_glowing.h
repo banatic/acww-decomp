@@ -40,11 +40,11 @@ int GlowingRoomObject_Vfunc0c(void);
 int GlowingRoomObject_Update(GlowingRoomObject *object);
 int GlowingRoomObject_Start(GlowingRoomObject *object);
 GlowingRoomObject *GlowingRoomObject_Delete(GlowingRoomObject *object);
-GlowingRoomObject *GlowingRoomObject_Destroy(GlowingRoomObject *object);
+GlowingRoomObject *GlowingRoomObject_Destruct(GlowingRoomObject *object);
 GlowingRoomObject *GlowingRoomObject_Construct(GlowingRoomObject *object);
 void GlowingRoomObject_Create(void);
 
 GlowingRoomObject *GlowingRoomObjectReceiver_Delete(void *receiver);
-GlowingRoomObject *GlowingRoomObjectReceiver_Destroy(void *receiver);
+GlowingRoomObject *GlowingRoomObjectReceiver_Destruct(void *receiver);
 
 #endif

@@ -449,7 +449,7 @@ extern const u8 data_ov002_0220bba8[];  /* a row's */
 extern const int data_ov002_0220bb84[]; /* the pop's offsets: -5, 1, 0 */
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
-extern void *func_ov002_02209bf0(void *row); /* ChoiceRow_Destroy, for the array */
+extern void *func_ov002_02209bf0(void *row); /* ChoiceRow_Destruct, for the array */
 extern void *func_ov002_02209c08(void *row); /* ChoiceRow_Construct, for the array */
 
 typedef void (*ObjectMethodFn)(void *self);
@@ -1254,9 +1254,9 @@ CLEAN_AS(func_ov002_02209984, PagedChoice_Init)
 static void destroy_members(PagedChoice *choice)
 {
     choice->vtable = data_ov002_0220bb98;
-    Wipe_Destroy(&choice->wipe);
-    MessageWindow_Destroy((MessageWindow *) (void *) choice->window);
-    LabelButton0_Destroy((LabelButton *) (void *) choice->page_label);
+    Wipe_Destruct(&choice->wipe);
+    MessageWindow_Destruct((MessageWindow *) (void *) choice->window);
+    LabelButton0_Destruct((LabelButton *) (void *) choice->page_label);
     __cxa_vec_cleanup(choice->rows, PAGED_CHOICE_ROWS, sizeof(PagedChoiceRow), (void (*)(void *)) func_ov002_02209bf0);
 }
 
@@ -1270,12 +1270,12 @@ PagedChoice *PagedChoice_Delete(PagedChoice *choice)
 CLEAN_AS(func_ov002_02209a78, PagedChoice_Delete)
 
 /* func_ov002_02209ac8 (vtable entry 0) */
-PagedChoice *PagedChoice_Destroy(PagedChoice *choice)
+PagedChoice *PagedChoice_Destruct(PagedChoice *choice)
 {
     destroy_members(choice);
     return choice;
 }
-CLEAN_AS(func_ov002_02209ac8, PagedChoice_Destroy)
+CLEAN_AS(func_ov002_02209ac8, PagedChoice_Destruct)
 
 /* func_ov002_02209b14 */
 PagedChoice *PagedChoice_Construct(PagedChoice *choice)
@@ -1324,13 +1324,13 @@ PagedChoiceRow *ChoiceRow_Delete(PagedChoiceRow *row)
 CLEAN_AS(func_ov002_02209bd0, ChoiceRow_Delete)
 
 /* func_ov002_02209bf0 (vtable entry 0) */
-PagedChoiceRow *ChoiceRow_Destroy(PagedChoiceRow *row)
+PagedChoiceRow *ChoiceRow_Destruct(PagedChoiceRow *row)
 {
     row->label.vtable = (const TextVtable *) (const void *) data_ov002_0220bba8;
     TextLabel_DestructCopy(&row->label);
     return row;
 }
-CLEAN_AS(func_ov002_02209bf0, ChoiceRow_Destroy)
+CLEAN_AS(func_ov002_02209bf0, ChoiceRow_Destruct)
 
 /* func_ov002_02209c08: an empty label drawn on layer 3 from tile 0 in colors 1 and 9. */
 PagedChoiceRow *ChoiceRow_Construct(PagedChoiceRow *row)

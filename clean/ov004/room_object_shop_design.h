@@ -25,10 +25,10 @@ int ShopDesignObject_Vfunc0c(ShopDesignObject *object);
 int ShopDesignObject_Update(ShopDesignObject *object);
 int ShopDesignObject_Start(ShopDesignObject *object);
 ShopDesignObject *ShopDesignObject_Delete(ShopDesignObject *object);
-ShopDesignObject *ShopDesignObject_Destroy(ShopDesignObject *object);
+ShopDesignObject *ShopDesignObject_Destruct(ShopDesignObject *object);
 ShopDesignObject *ShopDesignObject_Construct(ShopDesignObject *object);
 void ShopDesignObject_Create(void);
 ShopDesignObject *ShopDesignObjectReceiver_Delete(void *receiver);
-ShopDesignObject *ShopDesignObjectReceiver_Destroy(void *receiver);
+ShopDesignObject *ShopDesignObjectReceiver_Destruct(void *receiver);
 
 #endif

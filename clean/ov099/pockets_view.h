@@ -109,7 +109,7 @@ static_assert(offsetof(PocketsView, flags) == 0x27e8 && offsetof(PocketsView, le
 static_assert(offsetof(PocketsView, cursor) == 0x2907 && offsetof(PocketsView, choice_row) == 0x290c, "bytes");
 static_assert(sizeof(PocketsView) == 0x2910, "size (func_ov099_0229deb8)");
 
-PocketsView *PocketsView_Destroy(PocketsView *self);
+PocketsView *PocketsView_Destruct(PocketsView *self);
 PocketsView *PocketsView_Delete(PocketsView *self);
 void PocketsView_ClearFlags(PocketsView *self, unsigned int flags);
 void PocketsView_SetFlags(PocketsView *self, unsigned int flags);

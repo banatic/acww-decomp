@@ -82,7 +82,7 @@ void InsurerTalk_FirstLine(InsurerTalk *talk, InsurerLine *out);
 void InsurerTalk_Begin(InsurerTalk *talk, void *owner);
 void InsurerTalk_Reset(InsurerTalk *talk);
 void *InsurerTalk_Delete(void *talk);
-void *InsurerTalk_Destroy(void *talk);
+void *InsurerTalk_Destruct(void *talk);
 void *InsurerTalk_Construct(void *talk);
 int InsurerTalk_PickQuestion(int unused, unsigned char *said, int count);
 int InsurerTalk_CountUnsaid(int unused, const unsigned char *said, int count);

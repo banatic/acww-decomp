@@ -184,7 +184,7 @@ typedef struct BbsWriteScene {
 } BbsWriteScene;
 
 /* bbs_write_text.c */
-BbsWriteScene *BbsWrite_Destroy(BbsWriteScene *self);
+BbsWriteScene *BbsWrite_Destruct(BbsWriteScene *self);
 BbsWriteScene *BbsWrite_Delete(BbsWriteScene *self);
 int BbsWrite_PostDelivered(BbsWriteScene *self);
 void BbsWrite_SendPost(BbsWriteScene *self);

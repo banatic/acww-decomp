@@ -75,11 +75,11 @@ int Telephone_Vfunc0c(void);
 int Telephone_Update(Telephone *phone);
 int Telephone_Start(Telephone *phone);
 Telephone *Telephone_Delete(Telephone *phone);
-Telephone *Telephone_Destroy(Telephone *phone);
+Telephone *Telephone_Destruct(Telephone *phone);
 Telephone *Telephone_Construct(Telephone *phone);
 void Telephone_Create(void);
 
 Telephone *TelephoneReceiver_Delete(void *receiver);
-Telephone *TelephoneReceiver_Destroy(void *receiver);
+Telephone *TelephoneReceiver_Destruct(void *receiver);
 
 #endif

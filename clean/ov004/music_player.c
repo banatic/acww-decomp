@@ -556,14 +556,14 @@ MusicPlayer *MusicPlayer_Delete(MusicPlayer *player)
 CLEAN_AS(func_ov004_02216820, MusicPlayer_Delete)
 
 /* func_ov004_02216858 (the destructor, vtable slot 0x40) */
-MusicPlayer *MusicPlayer_Destroy(MusicPlayer *player)
+MusicPlayer *MusicPlayer_Destruct(MusicPlayer *player)
 {
     music_player_set_vtables(player);
     GlowSet_Destruct(&player->glows);
     RoomObject_DestructBase(&player->base);
     return player;
 }
-CLEAN_AS(func_ov004_02216858, MusicPlayer_Destroy)
+CLEAN_AS(func_ov004_02216858, MusicPlayer_Destruct)
 
 /* func_ov004_0221688c (the constructor): the base, the vtables and the glows. Its other fields
  * are left as the allocation zeroed them. */
@@ -602,8 +602,8 @@ MusicPlayer *MusicPlayerReceiver_Delete(void *receiver)
 CLEAN_AS(_ZThn236_N18Obj_ov004_022517bcD0Ev, MusicPlayerReceiver_Delete)
 
 /* func_ov004_0221a820: the destructor, entered from the receiver part. */
-MusicPlayer *MusicPlayerReceiver_Destroy(void *receiver)
+MusicPlayer *MusicPlayerReceiver_Destruct(void *receiver)
 {
-    return MusicPlayer_Destroy(music_player_from_receiver(receiver));
+    return MusicPlayer_Destruct(music_player_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov004_022517bcD1Ev, MusicPlayerReceiver_Destroy)
+CLEAN_AS(_ZThn236_N18Obj_ov004_022517bcD1Ev, MusicPlayerReceiver_Destruct)

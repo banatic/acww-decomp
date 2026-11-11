@@ -83,19 +83,19 @@ static void catalog_destroy_members(OrderCatalog *self)
 {
     self->base.vtable = data_ov142_0229c3e8;
     __cxa_vec_cleanup(self->labels, ORDER_CATALOG_LABELS, sizeof(TextLabel), func_02070be8);
-    ButtonPanel_Destroy(&self->panel);
-    PushButton_Destroy(&self->thumb_button);
-    Glider0_Destroy(&self->cursor_sprite);
-    MenuScene_DestroyBase(catalog_base(self));
+    ButtonPanel_Destruct(&self->panel);
+    PushButton_Destruct(&self->thumb_button);
+    Glider0_Destruct(&self->cursor_sprite);
+    MenuScene_DestructBase(catalog_base(self));
 }
 
 /* func_ov142_022995a0 (vtable slot 0x40) */
-OrderCatalog *OrderCatalog_Destroy(OrderCatalog *self)
+OrderCatalog *OrderCatalog_Destruct(OrderCatalog *self)
 {
     catalog_destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov142_022995a0, OrderCatalog_Destroy)
+CLEAN_AS(func_ov142_022995a0, OrderCatalog_Destruct)
 
 /* func_ov142_022995f0 (vtable slot 0x44) */
 OrderCatalog *OrderCatalog_Delete(OrderCatalog *self)

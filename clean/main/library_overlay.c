@@ -96,11 +96,11 @@ void LibraryOverlay_End(LibraryOverlaySlot *slot)
 CLEAN_AS(func_02077b9c, LibraryOverlay_End)
 
 /* func_02077bb4: the slot's destructor, registered when the game starts; it does nothing. */
-void LibraryOverlay_Destroy(LibraryOverlaySlot *slot)
+void LibraryOverlay_Destruct(LibraryOverlaySlot *slot)
 {
     (void) slot;
 }
-CLEAN_AS(func_02077bb4, LibraryOverlay_Destroy)
+CLEAN_AS(func_02077bb4, LibraryOverlay_Destruct)
 
 extern char SDK_OVERLAY_ov068_ID;
 

@@ -348,13 +348,13 @@ void HanPanel_ShowModeMessage(HanPanel *self, int layer, int second_layer)
 CLEAN_AS(func_ov124_0229f398, HanPanel_ShowModeMessage)
 
 /* func_ov124_0229f43c: the sign destroyed, then the label (an array of one). */
-HanPanel *HanPanel_Destroy(HanPanel *self)
+HanPanel *HanPanel_Destruct(HanPanel *self)
 {
-    PanelSprite_Destroy(&self->sign);
+    PanelSprite_Destruct(&self->sign);
     __cxa_vec_cleanup(&self->label, 1, sizeof(TextLabel), (void (*)(void *))(uintptr_t) func_02070be8);
     return self;
 }
-CLEAN_AS(func_ov124_0229f43c, HanPanel_Destroy)
+CLEAN_AS(func_ov124_0229f43c, HanPanel_Destruct)
 
 /* func_ov124_0229f460: the label (an array of one) constructed, then the sign. */
 HanPanel *HanPanel_Construct(HanPanel *self)

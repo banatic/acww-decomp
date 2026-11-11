@@ -155,27 +155,27 @@ static void carried_destroy_members(CarriedLetters *self)
     self->base.vtable = data_ov103_0229e2e0;
     Letter_Destruct(&self->swapped);
     Letter_Destruct(&self->held);
-    LabelButton0_Destroy(&self->button);
+    LabelButton0_Destruct(&self->button);
     LetterView_Destruct(&self->view);
     ErrorMessage_Destruct(&self->error);
-    PagedChoice_Destroy(carried_choice(self));
-    Glider0_Destroy(&self->cursor_sprite);
-    Glide_Destroy(&self->glide);
-    Popup_Destroy(&self->popup);
+    PagedChoice_Destruct(carried_choice(self));
+    Glider0_Destruct(&self->cursor_sprite);
+    Glide_Destruct(&self->glide);
+    Popup_Destruct(&self->popup);
     PocketsWallet_Destruct(&self->wallet);
     /* The ROM calls 0x0229bc30, ov094's function (the overlay loaded with this one). */
     PocketsLetters_Destruct(&self->letters);
     PocketsGrid_Destruct(&self->grid);
-    MenuScene_DestroyBase(carried_scene(self));
+    MenuScene_DestructBase(carried_scene(self));
 }
 
 /* func_ov103_0229c180 (vtable slot 0x40) */
-CarriedLetters *CarriedLetters_Destroy(CarriedLetters *self)
+CarriedLetters *CarriedLetters_Destruct(CarriedLetters *self)
 {
     carried_destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov103_0229c180, CarriedLetters_Destroy)
+CLEAN_AS(func_ov103_0229c180, CarriedLetters_Destruct)
 
 /* func_ov103_0229c228 (vtable slot 0x44) */
 CarriedLetters *CarriedLetters_Delete(CarriedLetters *self)

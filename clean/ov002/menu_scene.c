@@ -449,38 +449,38 @@ int MenuScene_SetUp(MenuScene *scene)
 CLEAN_AS(func_ov002_0220823c, MenuScene_SetUp)
 
 /* func_ov002_0220826c: the destructor as one of the base's pair (it does what
- * MenuScene_Destroy does). */
-MenuScene *MenuScene_DestroyBase(MenuScene *scene)
+ * MenuScene_Destruct does). */
+MenuScene *MenuScene_DestructBase(MenuScene *scene)
 {
     scene->vtable = data_ov002_0220bb24;
-    Wipe_Destroy(&scene->wipe);
-    KeyRepeat_Destroy(&scene->keys);
+    Wipe_Destruct(&scene->wipe);
+    KeyRepeat_Destruct(&scene->keys);
     scene->vtable = data_020da13c;
     Process_Destruct(process_of(scene));
     return scene;
 }
-CLEAN_AS(func_ov002_0220826c, MenuScene_DestroyBase)
+CLEAN_AS(func_ov002_0220826c, MenuScene_DestructBase)
 
 /* func_ov002_022082a0: the deleting destructor. */
 MenuScene *MenuScene_Delete(MenuScene *scene)
 {
-    MenuScene_Destroy(scene);
+    MenuScene_Destruct(scene);
     MenuScene_Free(scene);
     return scene;
 }
 CLEAN_AS(func_ov002_022082a0, MenuScene_Delete)
 
 /* func_ov002_022082d8 */
-MenuScene *MenuScene_Destroy(MenuScene *scene)
+MenuScene *MenuScene_Destruct(MenuScene *scene)
 {
     scene->vtable = data_ov002_0220bb24;
-    Wipe_Destroy(&scene->wipe);
-    KeyRepeat_Destroy(&scene->keys);
+    Wipe_Destruct(&scene->wipe);
+    KeyRepeat_Destruct(&scene->keys);
     scene->vtable = data_020da13c;
     Process_Destruct(process_of(scene));
     return scene;
 }
-CLEAN_AS(func_ov002_022082d8, MenuScene_Destroy)
+CLEAN_AS(func_ov002_022082d8, MenuScene_Destruct)
 
 /* func_ov002_0220830c
  * QUIRK: stores the base's vtable before its own, as a C++ constructor does. */

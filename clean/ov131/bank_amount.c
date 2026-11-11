@@ -93,25 +93,25 @@ static CellLayerSprite *cursor_cells(BankAmount *self)
 
 /* func_ov131_0229acc0 (vtable slot 0x40): the members' destructors, last first, then the
  * base's. */
-BankAmount *BankAmount_Destroy(BankAmount *self)
+BankAmount *BankAmount_Destruct(BankAmount *self)
 {
     self->base.vtable = data_ov131_0229b8f0;
-    BankPad_Destroy(&self->pad);
-    ButtonPanel_Destroy(&self->panel);
-    Glider0_Destroy(&self->cursor);
-    MenuScene_DestroyBase(scene_of(self));
+    BankPad_Destruct(&self->pad);
+    ButtonPanel_Destruct(&self->panel);
+    Glider0_Destruct(&self->cursor);
+    MenuScene_DestructBase(scene_of(self));
     return self;
 }
-CLEAN_AS(func_ov131_0229acc0, BankAmount_Destroy)
+CLEAN_AS(func_ov131_0229acc0, BankAmount_Destruct)
 
-/* func_ov131_0229acf8 (vtable slot 0x44): as BankAmount_Destroy, then the scene freed. */
+/* func_ov131_0229acf8 (vtable slot 0x44): as BankAmount_Destruct, then the scene freed. */
 BankAmount *BankAmount_Delete(BankAmount *self)
 {
     self->base.vtable = data_ov131_0229b8f0;
-    BankPad_Destroy(&self->pad);
-    ButtonPanel_Destroy(&self->panel);
-    Glider0_Destroy(&self->cursor);
-    MenuScene_DestroyBase(scene_of(self));
+    BankPad_Destruct(&self->pad);
+    ButtonPanel_Destruct(&self->panel);
+    Glider0_Destruct(&self->cursor);
+    MenuScene_DestructBase(scene_of(self));
     MenuScene_Free(self);
     return self;
 }

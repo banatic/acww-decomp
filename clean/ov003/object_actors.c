@@ -480,7 +480,7 @@ int ObjectActors_SetUp(ObjectActors *self)
 CLEAN_AS(func_ov003_022207e0, ObjectActors_SetUp)
 
 /* func_ov003_02220848 (vtable slot 17): destroys the process and frees it; returns `self`. */
-ObjectActors *ObjectActors_DestroyAndFree(ObjectActors *self)
+ObjectActors *ObjectActors_Delete(ObjectActors *self)
 {
     self->process.vtable = data_ov003_02239b2c;
     self->process.vtable = data_020da13c;
@@ -488,17 +488,17 @@ ObjectActors *ObjectActors_DestroyAndFree(ObjectActors *self)
     Heap_FreeAux(self);
     return self;
 }
-CLEAN_AS(func_ov003_02220848, ObjectActors_DestroyAndFree)
+CLEAN_AS(func_ov003_02220848, ObjectActors_Delete)
 
 /* func_ov003_02220870 (vtable slot 16): destroys the process; returns it. */
-ObjectActors *ObjectActors_Destroy(ObjectActors *self)
+ObjectActors *ObjectActors_Destruct(ObjectActors *self)
 {
     self->process.vtable = data_ov003_02239b2c;
     self->process.vtable = data_020da13c;
     Process_Destruct(&self->process);
     return self;
 }
-CLEAN_AS(func_ov003_02220870, ObjectActors_Destroy)
+CLEAN_AS(func_ov003_02220870, ObjectActors_Destruct)
 
 /* func_ov003_02220890: the process's constructor; the list is emptied. Returns `self`. */
 ObjectActors *ObjectActors_Construct(ObjectActors *self)

@@ -97,19 +97,19 @@ static MusicVolume *menu_dispatch_music_volume(void)
 }
 
 /* func_ov092_02298f20 (vtable slot 0x40) */
-MenuDispatch *MenuDispatch_Destroy(MenuDispatch *self)
+MenuDispatch *MenuDispatch_Destruct(MenuDispatch *self)
 {
     self->base.vtable = data_ov092_02299508;
-    MenuScene_DestroyBase(menu_dispatch_scene(self));
+    MenuScene_DestructBase(menu_dispatch_scene(self));
     return self;
 }
-CLEAN_AS(func_ov092_02298f20, MenuDispatch_Destroy)
+CLEAN_AS(func_ov092_02298f20, MenuDispatch_Destruct)
 
 /* func_ov092_02298f38 (vtable slot 0x44) */
 MenuDispatch *MenuDispatch_Delete(MenuDispatch *self)
 {
     self->base.vtable = data_ov092_02299508;
-    MenuScene_DestroyBase(menu_dispatch_scene(self));
+    MenuScene_DestructBase(menu_dispatch_scene(self));
     MenuScene_Free(self);
     return self;
 }

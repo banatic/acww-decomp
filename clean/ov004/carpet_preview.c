@@ -81,13 +81,13 @@ CarpetPreview *CarpetPreview_Delete(CarpetPreview *object)
 CLEAN_AS(func_ov004_02212820, CarpetPreview_Delete)
 
 /* func_ov004_0221284c (the destructor, vtable slot 0x40); the same QUIRK. */
-CarpetPreview *CarpetPreview_Destroy(CarpetPreview *object)
+CarpetPreview *CarpetPreview_Destruct(CarpetPreview *object)
 {
     carpet_preview_set_vtables(object);
     RoomObject_DestructBase(&object->base);
     return object;
 }
-CLEAN_AS(func_ov004_0221284c, CarpetPreview_Destroy)
+CLEAN_AS(func_ov004_0221284c, CarpetPreview_Destruct)
 
 /* func_ov004_02212870 (the constructor). Its other fields are left as the allocation zeroed
  * them. */
@@ -126,8 +126,8 @@ CarpetPreview *CarpetPreviewReceiver_Delete(void *receiver)
 CLEAN_AS(_ZThn236_N18Obj_ov004_02250e5cD0Ev, CarpetPreviewReceiver_Delete)
 
 /* func_ov004_0221aba0: the destructor, entered from the receiver part. */
-CarpetPreview *CarpetPreviewReceiver_Destroy(void *receiver)
+CarpetPreview *CarpetPreviewReceiver_Destruct(void *receiver)
 {
-    return CarpetPreview_Destroy(carpet_preview_from_receiver(receiver));
+    return CarpetPreview_Destruct(carpet_preview_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov004_02250e5cD1Ev, CarpetPreviewReceiver_Destroy)
+CLEAN_AS(_ZThn236_N18Obj_ov004_02250e5cD1Ev, CarpetPreviewReceiver_Destruct)

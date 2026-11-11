@@ -854,12 +854,12 @@ void BankPad_SetUp(BankPad *pad, u8 kind, u8 digits_layer, u8 keys_layer)
 CLEAN_AS(func_ov130_0229a6d8, BankPad_SetUp)
 
 /* func_ov130_0229a790: the labels destroyed (the screens' tasks need nothing). */
-BankPad *BankPad_Destroy(BankPad *pad)
+BankPad *BankPad_Destruct(BankPad *pad)
 {
     __cxa_vec_cleanup(pad->labels, BANK_PAD_LABELS, sizeof(TextLabel), (void (*)(void *))(uintptr_t) func_02070be8);
     return pad;
 }
-CLEAN_AS(func_ov130_0229a790, BankPad_Destroy)
+CLEAN_AS(func_ov130_0229a790, BankPad_Destruct)
 
 /* func_ov130_0229a7ac: the labels constructed, then the two screens' tasks. */
 BankPad *BankPad_Construct(BankPad *pad)

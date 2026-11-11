@@ -139,20 +139,20 @@ static void map_menu_destroy_members(MapMenu *self)
     __cxa_vec_cleanup(self->marks, MAP_MENU_MARKS, sizeof(MapMenuMark), func_ov118_0229a438);
     __cxa_vec_cleanup(self->extra_marks, MAP_MENU_EXTRA_MARKS, sizeof(MapMenuMark), func_ov118_0229a438);
     TownMapMarkers_Destruct(self->markers);
-    Glider0_Destroy(&self->cursor);
-    PushButton_Destroy(&self->knob_button);
+    Glider0_Destruct(&self->cursor);
+    PushButton_Destruct(&self->knob_button);
     __cxa_vec_cleanup(self->labels, MAP_MENU_ROWS, sizeof(TextLabel), func_02070be8);
-    MenuScene_DestroyBase(map_menu_scene(self));
+    MenuScene_DestructBase(map_menu_scene(self));
 }
 
 /* func_ov118_0229a340 (vtable slot 0x40): the members' destructors, last first (the layer tasks
  * have none), then the base's. */
-MapMenu *MapMenu_Destroy(MapMenu *self)
+MapMenu *MapMenu_Destruct(MapMenu *self)
 {
     map_menu_destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov118_0229a340, MapMenu_Destroy)
+CLEAN_AS(func_ov118_0229a340, MapMenu_Destruct)
 
 /* func_ov118_0229a3b8 (vtable slot 0x44) */
 MapMenu *MapMenu_Delete(MapMenu *self)

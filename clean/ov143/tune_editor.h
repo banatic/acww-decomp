@@ -114,7 +114,7 @@ typedef struct TuneEditor {
     LayerTask screen_task;                /* 0x119c: `screen` to layer 4 */
 } TuneEditor;
 
-TuneEditor *TuneEditor_Destroy(TuneEditor *self);
+TuneEditor *TuneEditor_Destruct(TuneEditor *self);
 TuneEditor *TuneEditor_Delete(TuneEditor *self);
 void TuneEditor_ClearFlags(TuneEditor *self, u16 flags);
 void TuneEditor_SetFlags(TuneEditor *self, u16 flags);

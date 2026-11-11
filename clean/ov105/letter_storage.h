@@ -135,7 +135,7 @@ typedef struct LetterStorage {
     ButtonPanel panel;                   /* 0x5fb8 */
 } LetterStorage;
 
-LetterStorage *LetterStorage_Destroy(LetterStorage *self);
+LetterStorage *LetterStorage_Destruct(LetterStorage *self);
 LetterStorage *LetterStorage_Delete(LetterStorage *self);
 void LetterStorage_ClearFlags(LetterStorage *self, unsigned int flags);
 void LetterStorage_SetFlags(LetterStorage *self, unsigned int flags);

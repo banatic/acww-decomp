@@ -77,7 +77,7 @@ int Atm_Vfunc24(void);
 int Atm_Update(Atm *atm);
 int Atm_Init(Atm *atm);
 Atm *Atm_Delete(Atm *atm);
-Atm *Atm_Destroy(Atm *atm);
+Atm *Atm_Destruct(Atm *atm);
 Atm *Atm_Construct(Atm *atm);
 Atm *Atm_Current(void);
 void Atm_Create(void);
@@ -85,6 +85,6 @@ Atm *AtmReceiver_Delete(void *receiver);
 void AtmReceiver_PickChoiceMessage(void *receiver);
 void AtmReceiver_PickLevelMessage(void *receiver);
 void AtmReceiver_IgnoreHook(void *receiver);
-Atm *AtmReceiver_Destroy(void *receiver);
+Atm *AtmReceiver_Destruct(void *receiver);
 
 #endif

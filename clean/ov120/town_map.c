@@ -186,19 +186,19 @@ static void town_map_destroy_members(TownMap *self)
     self->base.vtable = data_ov120_0229c650;
     __cxa_vec_cleanup(self->marks, TOWN_MAP_MARKS, sizeof(TownMapMark), func_ov120_0229a420);
     __cxa_vec_cleanup(self->extra_marks, TOWN_MAP_EXTRA_MARKS, sizeof(TownMapMark), func_ov120_0229a420);
-    Glider0_Destroy(&self->pointer);
-    PushButton_Destroy(&self->knob);
+    Glider0_Destruct(&self->pointer);
+    PushButton_Destruct(&self->knob);
     __cxa_vec_cleanup(self->labels, TOWN_MAP_LABELS, sizeof(TextLabel), TOWN_MAP_LABEL_DESTRUCT);
-    MenuScene_DestroyBase(town_map_scene(self));
+    MenuScene_DestructBase(town_map_scene(self));
 }
 
 /* func_ov120_0229a340 (vtable slot 0x40) */
-TownMap *TownMap_Destroy(TownMap *self)
+TownMap *TownMap_Destruct(TownMap *self)
 {
     town_map_destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov120_0229a340, TownMap_Destroy)
+CLEAN_AS(func_ov120_0229a340, TownMap_Destruct)
 
 /* func_ov120_0229a3ac (vtable slot 0x44): the deleting destructor. */
 TownMap *TownMap_Delete(TownMap *self)

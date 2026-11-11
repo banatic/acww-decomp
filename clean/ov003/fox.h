@@ -119,15 +119,15 @@ void Fox_OnSceneEvent(Fox *fox, unsigned int event, int arg);
 int Fox_IsAfterSix(Fox *fox);
 int Fox_Update(Fox *fox);
 int Fox_KeepHour(Fox *fox);
-Fox *Fox_DestroyAndFree(Fox *fox);
-Fox *Fox_Destroy(Fox *fox);
+Fox *Fox_Delete(Fox *fox);
+Fox *Fox_Destruct(Fox *fox);
 Fox *Fox_Construct(Fox *fox);
 void Fox_New(void);
-Fox *Fox_ReceiverDestroyAndFree(void *receiver);
+Fox *Fox_ReceiverDelete(void *receiver);
 int Fox_ReceiverThunk6c(void *receiver);
 void Fox_ReceiverThunk18(void *receiver);
 void Fox_ReceiverThunk14(void *receiver);
 void Fox_ReceiverThunk10(void *receiver);
-Fox *Fox_ReceiverDestroy(void *receiver);
+Fox *Fox_ReceiverDestruct(void *receiver);
 
 #endif

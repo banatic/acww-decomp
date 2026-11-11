@@ -29,10 +29,10 @@ int WallpaperPreview_Vfunc0c(void);
 int WallpaperPreview_Update(WallpaperPreview *object);
 int WallpaperPreview_Start(WallpaperPreview *object);
 WallpaperPreview *WallpaperPreview_Delete(WallpaperPreview *object);
-WallpaperPreview *WallpaperPreview_Destroy(WallpaperPreview *object);
+WallpaperPreview *WallpaperPreview_Destruct(WallpaperPreview *object);
 WallpaperPreview *WallpaperPreview_Construct(WallpaperPreview *object);
 void WallpaperPreview_Create(void);
 WallpaperPreview *WallpaperPreviewReceiver_Delete(void *receiver);
-WallpaperPreview *WallpaperPreviewReceiver_Destroy(void *receiver);
+WallpaperPreview *WallpaperPreviewReceiver_Destruct(void *receiver);
 
 #endif

@@ -179,7 +179,7 @@ void TownObjectActorSound_Play(TownObjectActorSound *sound, int number);
 void TownObjectActorSound_TurnOff(TownObjectActorSound *sound);
 void TownObjectActorSound_UpdateAt(TownObjectActorSound *sound, const Vec3 *pos);
 void TownObjectActorSound_TurnOn(TownObjectActorSound *sound);
-void *TownObjectActorSound_Destroy(TownObjectActorSound *sound);
+void *TownObjectActorSound_Destruct(TownObjectActorSound *sound);
 void *TownObjectActorSound_Construct(TownObjectActorSound *sound);
 int TownObjectActor_LightsLit(TownObjectActor *actor);
 u32 TownObjectActor_TileZ(TownObjectActor *actor);

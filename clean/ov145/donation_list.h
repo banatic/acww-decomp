@@ -155,7 +155,7 @@ typedef struct DonationList {
     u8 pad_2506[2];
 } DonationList;
 
-DonationList *DonationList_Destroy(DonationList *self);
+DonationList *DonationList_Destruct(DonationList *self);
 DonationList *DonationList_Delete(DonationList *self);
 void DonationList_ClearFlags(DonationList *self, unsigned short flags);
 void DonationList_SetFlags(DonationList *self, unsigned short flags);

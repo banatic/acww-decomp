@@ -127,22 +127,22 @@ static u8 *td_part(TaxiDriver *driver, u32 offset)
 
 /* func_ov051_02260420 (vtable slot 0x40): its talk scene's destructor, then the special
  * character's; the object. */
-void *TaxiDriver_Destroy(void *object)
+void *TaxiDriver_Destruct(void *object)
 {
     TaxiDriver *driver = object;
     *(const u8 **) object = data_ov051_0226193c;
-    TaxiDriverTalk_Destroy(&driver->talk);
+    TaxiDriverTalk_Destruct(&driver->talk);
     SpecialSceneObject_DestructBody(driver);
     return driver;
 }
-CLEAN_AS(func_ov051_02260420, TaxiDriver_Destroy)
+CLEAN_AS(func_ov051_02260420, TaxiDriver_Destruct)
 
 /* func_ov051_02260448 (vtable slot 0x44): the same, then the object freed. */
 void *TaxiDriver_Delete(void *object)
 {
     TaxiDriver *driver = object;
     *(const u8 **) object = data_ov051_0226193c;
-    TaxiDriverTalk_Destroy(&driver->talk);
+    TaxiDriverTalk_Destruct(&driver->talk);
     SpecialSceneObject_DestructBody(driver);
     Heap_FreeAux(driver);
     return driver;

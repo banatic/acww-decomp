@@ -226,7 +226,7 @@ void ClockSetter_EndFrame(ClockSetter *self);
 void ClockSetter_TearDown(ClockSetter *self);
 void ClockSetter_UseMinimum(ClockSetter *self);
 void ClockSetter_Init(ClockSetter *self, int mode, int base_layer, int panel_layer, u8 list_layer);
-ClockSetter *ClockSetter_Destroy(ClockSetter *self);
+ClockSetter *ClockSetter_Destruct(ClockSetter *self);
 ClockSetter *ClockSetter_Construct(ClockSetter *self);
 
 /* clock_setter_list.c */

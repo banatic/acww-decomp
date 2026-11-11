@@ -76,7 +76,7 @@ typedef struct MysteryCatStep {
     MemberPointer update; /* 0x08: int (cat) */
 } MysteryCatStep;
 
-MysteryCat *MysteryCat_Destroy(MysteryCat *cat);
+MysteryCat *MysteryCat_Destruct(MysteryCat *cat);
 void *MysteryCat_Delete(void *cat);
 void MysteryCatFace_End(MysteryCatFace *face, const void *heap);
 void MysteryCatFace_Show(MysteryCatFace *face, u8 *model);

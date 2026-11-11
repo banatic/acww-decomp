@@ -182,14 +182,14 @@ FieldLabelWindow *FieldLabelWindow_Delete(FieldLabelWindow *window)
 CLEAN_AS(func_020b9178, FieldLabelWindow_Delete)
 
 /* func_020b91a0 (vtable slot 0): the destructor. */
-FieldLabelWindow *FieldLabelWindow_Destroy(FieldLabelWindow *window)
+FieldLabelWindow *FieldLabelWindow_Destruct(FieldLabelWindow *window)
 {
     window->vtable = data_020e5858;
     CellAnim_Destruct(&window->marker);
     SlidingWindow_DestructBase((SlidingWindow *) window);
     return window;
 }
-CLEAN_AS(func_020b91a0, FieldLabelWindow_Destroy)
+CLEAN_AS(func_020b91a0, FieldLabelWindow_Destruct)
 
 /* func_020b91c4: the constructor (the sliding window's with 1). */
 FieldLabelWindow *FieldLabelWindow_Construct(FieldLabelWindow *window)

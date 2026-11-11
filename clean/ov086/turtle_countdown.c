@@ -108,21 +108,21 @@ static SceneAction *t6_action(TurtleCountdown *turtle)
 
 /* func_ov086_02278a00 (vtable slot 0x40): his talk scene's destructor, then the special
  * character's; the object. */
-TurtleCountdown *TurtleCountdown_Destroy(TurtleCountdown *turtle)
+TurtleCountdown *TurtleCountdown_Destruct(TurtleCountdown *turtle)
 {
     *(const u8 **) (void *) turtle->base = data_ov086_0227938c;
-    TurtleCountdownTalk_Destroy(&turtle->talk);
+    TurtleCountdownTalk_Destruct(&turtle->talk);
     SpecialSceneObject_DestructBody(turtle);
     return turtle;
 }
-CLEAN_AS(func_ov086_02278a00, TurtleCountdown_Destroy)
+CLEAN_AS(func_ov086_02278a00, TurtleCountdown_Destruct)
 
 /* func_ov086_02278a28 (vtable slot 0x44): the same, then the object freed. */
 void *TurtleCountdown_Delete(void *object)
 {
     TurtleCountdown *turtle = object;
     *(const u8 **) (void *) turtle->base = data_ov086_0227938c;
-    TurtleCountdownTalk_Destroy(&turtle->talk);
+    TurtleCountdownTalk_Destruct(&turtle->talk);
     SpecialSceneObject_DestructBody(turtle);
     Heap_FreeAux(turtle);
     return turtle;

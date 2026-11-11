@@ -36,10 +36,10 @@ typedef struct LabelButton {
 } LabelButton;
 
 LabelButton *LabelButton1_Delete(LabelButton *button);
-LabelButton *LabelButton1_Destroy(LabelButton *button);
+LabelButton *LabelButton1_Destruct(LabelButton *button);
 LabelButton *LabelButton1_Construct(LabelButton *button);
 LabelButton *LabelButton0_Delete(LabelButton *button);
-LabelButton *LabelButton0_Destroy(LabelButton *button);
+LabelButton *LabelButton0_Destruct(LabelButton *button);
 LabelButton *LabelButton0_Construct(LabelButton *button);
 int LabelButton_IsTouched(LabelButton *button);
 void LabelButton_ShowAt(LabelButton *button, int message, int x, int y);

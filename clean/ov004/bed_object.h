@@ -144,12 +144,12 @@ int BedObject_Start(BedObject *object);
 int BedObject_Vfunc48(BedObject *object);
 int BedObject_IsPastPushed(BedObject *object);
 BedObject *BedObject_Delete(BedObject *object);
-BedObject *BedObject_Destroy(BedObject *object);
+BedObject *BedObject_Destruct(BedObject *object);
 BedObject *BedObject_Construct(BedObject *object);
 void BedObject_Create(void);
 BedObject *BedObjectReceiver_Delete(void *receiver);
 void BedObjectReceiver_OnChoice(void *receiver);
 void BedObjectReceiver_OnTalkStep(void *receiver);
-BedObject *BedObjectReceiver_Destroy(void *receiver);
+BedObject *BedObjectReceiver_Destruct(void *receiver);
 
 #endif

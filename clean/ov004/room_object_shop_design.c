@@ -113,14 +113,14 @@ ShopDesignObject *ShopDesignObject_Delete(ShopDesignObject *object)
 CLEAN_AS(func_ov004_02213ab8, ShopDesignObject_Delete)
 
 /* func_ov004_02213af0 (the destructor, vtable slot 0x40) */
-ShopDesignObject *ShopDesignObject_Destroy(ShopDesignObject *object)
+ShopDesignObject *ShopDesignObject_Destruct(ShopDesignObject *object)
 {
     shop_design_object_set_vtables(object);
     SoundEmitterClass_DestructBaseB((SoundEmitterObject *) (void *) object->emitter);
     RoomObject_DestructBase(&object->base);
     return object;
 }
-CLEAN_AS(func_ov004_02213af0, ShopDesignObject_Destroy)
+CLEAN_AS(func_ov004_02213af0, ShopDesignObject_Destruct)
 
 /* func_ov004_02213b24 (the constructor): builds the emitter. Its other fields are left as the
  * allocation zeroed them. */
@@ -159,8 +159,8 @@ ShopDesignObject *ShopDesignObjectReceiver_Delete(void *receiver)
 CLEAN_AS(_ZThn236_N18Obj_ov004_02251ec4D0Ev, ShopDesignObjectReceiver_Delete)
 
 /* func_ov004_0221aa18: the destructor, entered from the receiver part. */
-ShopDesignObject *ShopDesignObjectReceiver_Destroy(void *receiver)
+ShopDesignObject *ShopDesignObjectReceiver_Destruct(void *receiver)
 {
-    return ShopDesignObject_Destroy(shop_design_object_from_receiver(receiver));
+    return ShopDesignObject_Destruct(shop_design_object_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov004_02251ec4D1Ev, ShopDesignObjectReceiver_Destroy)
+CLEAN_AS(_ZThn236_N18Obj_ov004_02251ec4D1Ev, ShopDesignObjectReceiver_Destruct)

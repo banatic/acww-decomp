@@ -160,7 +160,7 @@ static_assert(offsetof(SongPockets, held_x) == 0x29c4 && offsetof(SongPockets, h
 static_assert(offsetof(SongPockets, cursor) == 0x29d3 && offsetof(SongPockets, open_delay) == 0x29d9, "bytes");
 static_assert(sizeof(SongPockets) == 0x29dc, "size (func_ov109_0229da60)");
 
-SongPockets *SongPockets_Destroy(SongPockets *self);
+SongPockets *SongPockets_Destruct(SongPockets *self);
 SongPockets *SongPockets_Delete(SongPockets *self);
 void SongPockets_ClearFlags(SongPockets *self, unsigned int flags);
 void SongPockets_SetFlags(SongPockets *self, unsigned int flags);

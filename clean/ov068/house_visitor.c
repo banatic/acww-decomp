@@ -248,14 +248,14 @@ CLEAN_AS(func_ov068_02275228, HouseVisitorTalk_Delete)
 
 /* func_ov068_02275248 (vtable slot 0x40): the destructor, without freeing: its talk scene, then
  * the town villager scene object. */
-HouseVisitor *HouseVisitor_Destroy(HouseVisitor *visitor)
+HouseVisitor *HouseVisitor_Destruct(HouseVisitor *visitor)
 {
     hv_set_vtables(visitor);
     VillagerTalkScene_DestructBody(&visitor->talk.base);
     VillagerSceneObject_DestructBody(visitor->base);
     return visitor;
 }
-CLEAN_AS(func_ov068_02275248, HouseVisitor_Destroy)
+CLEAN_AS(func_ov068_02275248, HouseVisitor_Destruct)
 
 /* func_ov068_02275278 (vtable slot 0x44, the deleting destructor). */
 HouseVisitor *HouseVisitor_Delete(HouseVisitor *visitor)
@@ -269,13 +269,13 @@ HouseVisitor *HouseVisitor_Delete(HouseVisitor *visitor)
 CLEAN_AS(func_ov068_02275278, HouseVisitor_Delete)
 
 /* func_ov068_022752ac (the talk scene's vtable slot 0x00, its destructor). */
-HouseVisitorTalk *HouseVisitorTalk_Destroy(HouseVisitorTalk *talk)
+HouseVisitorTalk *HouseVisitorTalk_Destruct(HouseVisitorTalk *talk)
 {
     talk->base.scene.vtable = data_ov068_022780b0;
     VillagerTalkScene_DestructBody(&talk->base);
     return talk;
 }
-CLEAN_AS(func_ov068_022752ac, HouseVisitorTalk_Destroy)
+CLEAN_AS(func_ov068_022752ac, HouseVisitorTalk_Destruct)
 
 /* func_ov068_022752c4 (vtable slot 0x7c): its action sound is played only until it was once. */
 int HouseVisitor_HasActionSound(HouseVisitor *visitor)

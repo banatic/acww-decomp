@@ -26,11 +26,11 @@ int SignBoard_IsOpen(void);
 void SignBoard_PrepareTalk(SignBoard *board);
 int SignBoard_DrawShadow(SignBoard *board);
 int SignBoard_SetUp(SignBoard *board);
-SignBoard *SignBoard_DestroyAndFree(SignBoard *board);
-SignBoard *SignBoard_Destroy(SignBoard *board);
+SignBoard *SignBoard_Delete(SignBoard *board);
+SignBoard *SignBoard_Destruct(SignBoard *board);
 SignBoard *SignBoard_Construct(SignBoard *board);
 void SignBoard_New(void);
-SignBoard *SignBoard_ReceiverDestroyAndFree(void *receiver);
-SignBoard *SignBoard_ReceiverDestroy(void *receiver);
+SignBoard *SignBoard_ReceiverDelete(void *receiver);
+SignBoard *SignBoard_ReceiverDestruct(void *receiver);
 
 #endif

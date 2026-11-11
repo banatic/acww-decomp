@@ -98,30 +98,30 @@ static void update_cursor_sprite(Glider *sprite)
 static void destroy_members(LetterStorage *self)
 {
     self->base.vtable = data_ov105_0229fad0;
-    ButtonPanel_Destroy(&self->panel);
+    ButtonPanel_Destruct(&self->panel);
     __cxa_vec_cleanup(self->stored, LETTER_STORE_LETTERS, sizeof(Letter), func_02066688);
-    LabelButton0_Destroy(&self->button);
+    LabelButton0_Destruct(&self->button);
     LetterView_Destruct(&self->view);
     ErrorMessage_Destruct(&self->error);
-    PagedChoice_Destroy(choice_of(self));
-    Glider0_Destroy(&self->cursor_sprite);
-    Glide_Destroy(&self->glide);
-    Popup_Destroy(&self->popup);
+    PagedChoice_Destruct(choice_of(self));
+    Glider0_Destruct(&self->cursor_sprite);
+    Glide_Destruct(&self->glide);
+    Popup_Destruct(&self->popup);
     PocketsWallet_Destruct((PocketsWallet *) (void *) self->wallet);
     PocketsLetters_Destruct(&self->letters);
     PocketsGrid_Destruct((PocketsGrid *) (void *) self->grid);
     Letter_Destruct(&self->swapped);
     Letter_Destruct(&self->held);
-    MenuScene_DestroyBase(scene_of(self));
+    MenuScene_DestructBase(scene_of(self));
 }
 
 /* func_ov105_0229c180 */
-LetterStorage *LetterStorage_Destroy(LetterStorage *self)
+LetterStorage *LetterStorage_Destruct(LetterStorage *self)
 {
     destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov105_0229c180, LetterStorage_Destroy)
+CLEAN_AS(func_ov105_0229c180, LetterStorage_Destruct)
 
 /* func_ov105_0229c24c */
 LetterStorage *LetterStorage_Delete(LetterStorage *self)

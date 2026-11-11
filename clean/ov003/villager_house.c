@@ -425,21 +425,21 @@ static void villager_house_destroy_parts(VillagerHouse *house)
 
 /* func_ov003_0221d93c (vtable slot 0x44, the deleting destructor): the destructor's work, then
  * the memory freed. */
-VillagerHouse *VillagerHouse_DestroyAndFree(VillagerHouse *house)
+VillagerHouse *VillagerHouse_Delete(VillagerHouse *house)
 {
     villager_house_destroy_parts(house);
     Heap_FreeAux(house);
     return house;
 }
-CLEAN_AS(func_ov003_0221d93c, VillagerHouse_DestroyAndFree)
+CLEAN_AS(func_ov003_0221d93c, VillagerHouse_Delete)
 
 /* func_ov003_0221d980 (vtable slot 0x40): the destructor. */
-VillagerHouse *VillagerHouse_Destroy(VillagerHouse *house)
+VillagerHouse *VillagerHouse_Destruct(VillagerHouse *house)
 {
     villager_house_destroy_parts(house);
     return house;
 }
-CLEAN_AS(func_ov003_0221d980, VillagerHouse_Destroy)
+CLEAN_AS(func_ov003_0221d980, VillagerHouse_Destruct)
 
 /* func_ov003_0221d9c0: the constructor: overlay 9's, the vtables, the X model's and its
  * animation's; then overlay 3 forgets every house.
@@ -477,16 +477,16 @@ static VillagerHouse *villager_house_from_receiver(void *receiver)
     return (VillagerHouse *) (void *) ((u8 *) receiver - VILLAGER_HOUSE_RECEIVER_OFFSET);
 }
 
-/* _ZThn236_N18Obj_ov003_02238f28D0Ev: VillagerHouse_DestroyAndFree. */
-VillagerHouse *VillagerHouse_ReceiverDestroyAndFree(void *receiver)
+/* _ZThn236_N18Obj_ov003_02238f28D0Ev: VillagerHouse_Delete. */
+VillagerHouse *VillagerHouse_ReceiverDelete(void *receiver)
 {
-    return VillagerHouse_DestroyAndFree(villager_house_from_receiver(receiver));
+    return VillagerHouse_Delete(villager_house_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov003_02238f28D0Ev, VillagerHouse_ReceiverDestroyAndFree)
+CLEAN_AS(_ZThn236_N18Obj_ov003_02238f28D0Ev, VillagerHouse_ReceiverDelete)
 
-/* _ZThn236_N18Obj_ov003_02238f28D1Ev: VillagerHouse_Destroy. */
-VillagerHouse *VillagerHouse_ReceiverDestroy(void *receiver)
+/* _ZThn236_N18Obj_ov003_02238f28D1Ev: VillagerHouse_Destruct. */
+VillagerHouse *VillagerHouse_ReceiverDestruct(void *receiver)
 {
-    return VillagerHouse_Destroy(villager_house_from_receiver(receiver));
+    return VillagerHouse_Destruct(villager_house_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov003_02238f28D1Ev, VillagerHouse_ReceiverDestroy)
+CLEAN_AS(_ZThn236_N18Obj_ov003_02238f28D1Ev, VillagerHouse_ReceiverDestruct)

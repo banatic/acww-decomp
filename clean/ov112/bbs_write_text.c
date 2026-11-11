@@ -118,22 +118,22 @@ static void bbs_write_destroy_members(BbsWriteScene *self)
     self->base.vtable = data_ov112_022a20d0;
     BbsWideText_Destruct(&self->filter_wide);
     BbsLabel_Destruct(bbs_write_filter_text(self));
-    Glider0_Destroy(&self->pointer);
-    ButtonPanel_Destroy(&self->panel);
-    PushButton_Destroy(&self->scroll_button);
+    Glider0_Destruct(&self->pointer);
+    ButtonPanel_Destruct(&self->panel);
+    PushButton_Destruct(&self->scroll_button);
     __cxa_vec_cleanup(self->lines, BBS_WRITE_LINES, sizeof(TextLabel), (void (*)(void *))(uintptr_t) func_02070be8);
     __cxa_vec_cleanup(self->unk_26d4, 2, sizeof(TextLabel), (void (*)(void *))(uintptr_t) func_02070be8);
     ErrorMessage_Destruct(&self->error);
-    MenuScene_DestroyBase(bbs_write_scene(self));
+    MenuScene_DestructBase(bbs_write_scene(self));
 }
 
 /* func_ov112_0229eea0 (vtable slot 0x40): the destructor. */
-BbsWriteScene *BbsWrite_Destroy(BbsWriteScene *self)
+BbsWriteScene *BbsWrite_Destruct(BbsWriteScene *self)
 {
     bbs_write_destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov112_0229eea0, BbsWrite_Destroy)
+CLEAN_AS(func_ov112_0229eea0, BbsWrite_Destruct)
 
 /* func_ov112_0229ef2c (vtable slot 0x44): the deleting destructor. */
 BbsWriteScene *BbsWrite_Delete(BbsWriteScene *self)

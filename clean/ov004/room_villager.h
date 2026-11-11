@@ -66,7 +66,7 @@ typedef struct RoomVillager {
     s32 talk_lines;                   /* 0x8d8: the lines its talk scene starts with */
 } RoomVillager;
 
-RoomVillager *RoomVillager_Destroy(RoomVillager *villager);
+RoomVillager *RoomVillager_Destruct(RoomVillager *villager);
 RoomVillager *RoomVillager_Delete(RoomVillager *villager);
 void RoomVillager_OnEvent(RoomVillager *villager, int code, int participant);
 int RoomVillager_MayAct(RoomVillager *villager);
@@ -88,7 +88,7 @@ int RoomVillagerMachine_TakeNext(RoomVillagerMachine *machine, RoomVillager *vil
 void RoomVillagerMachine_ClearNext(RoomVillagerMachine *machine);
 void RoomVillagerMachine_SetState(RoomVillagerMachine *machine, RoomVillager *villager, int state);
 void RoomVillagerMachine_Update(RoomVillagerMachine *machine, RoomVillager *villager);
-void RoomVillagerMachine_Destroy(RoomVillagerMachine *machine);
+void RoomVillagerMachine_Destruct(RoomVillagerMachine *machine);
 void RoomVillagerMachine_Construct(RoomVillagerMachine *machine);
 int RoomVillager_RunState(RoomVillager *villager);
 RoomVillager *RoomVillager_ActionSoundPlayed(RoomVillager *villager);

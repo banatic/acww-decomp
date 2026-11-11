@@ -79,7 +79,7 @@ typedef struct TimeScreen {
     u8 place;             /* 0x2b77: TimeScreenPlace */
 } TimeScreen;
 
-TimeScreen *TimeScreen_Destroy(TimeScreen *self);
+TimeScreen *TimeScreen_Destruct(TimeScreen *self);
 TimeScreen *TimeScreen_Delete(TimeScreen *self);
 void TimeScreen_ClearFlags(TimeScreen *self, u16 flags);
 void TimeScreen_SetFlags(TimeScreen *self, u16 flags);

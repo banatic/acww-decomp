@@ -35,11 +35,11 @@ char *PlayerHouse_TexturePath(void);
 int PlayerHouse_Look(void);
 int PlayerHouse_Draw(void);
 int PlayerHouse_Init(PlayerHouse *house);
-PlayerHouse *PlayerHouse_DestroyAndFree(PlayerHouse *house);
-PlayerHouse *PlayerHouse_Destroy(PlayerHouse *house);
+PlayerHouse *PlayerHouse_Delete(PlayerHouse *house);
+PlayerHouse *PlayerHouse_Destruct(PlayerHouse *house);
 PlayerHouse *PlayerHouse_Construct(PlayerHouse *house);
 void PlayerHouse_New(void);
-PlayerHouse *PlayerHouse_ReceiverDestroyAndFree(void *receiver);
-PlayerHouse *PlayerHouse_ReceiverDestroy(void *receiver);
+PlayerHouse *PlayerHouse_ReceiverDelete(void *receiver);
+PlayerHouse *PlayerHouse_ReceiverDestruct(void *receiver);
 
 #endif

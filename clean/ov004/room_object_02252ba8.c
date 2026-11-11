@@ -469,13 +469,13 @@ RoomObject02252ba8 *RoomObject02252ba8_Delete(RoomObject02252ba8 *object)
 CLEAN_AS(func_ov004_02215468, RoomObject02252ba8_Delete)
 
 /* func_ov004_02215494 (the destructor, vtable slot 0x40); the same QUIRK. */
-RoomObject02252ba8 *RoomObject02252ba8_Destroy(RoomObject02252ba8 *object)
+RoomObject02252ba8 *RoomObject02252ba8_Destruct(RoomObject02252ba8 *object)
 {
     room_object02252ba8_set_vtables(object);
     RoomObject_DestructBase(&object->base);
     return object;
 }
-CLEAN_AS(func_ov004_02215494, RoomObject02252ba8_Destroy)
+CLEAN_AS(func_ov004_02215494, RoomObject02252ba8_Destruct)
 
 /* func_ov004_022154b8 (the constructor): the base, this class's vtables, and no step. The
  * rest is left as the allocation zeroed it (OFF, the cue not set up). */
@@ -514,8 +514,8 @@ RoomObject02252ba8 *RoomObject02252ba8Receiver_Delete(void *receiver)
 CLEAN_AS(_ZThn236_N18Obj_ov004_02252ba8D0Ev, RoomObject02252ba8Receiver_Delete)
 
 /* func_ov004_0221a900: the destructor, entered from the receiver part. */
-RoomObject02252ba8 *RoomObject02252ba8Receiver_Destroy(void *receiver)
+RoomObject02252ba8 *RoomObject02252ba8Receiver_Destruct(void *receiver)
 {
-    return RoomObject02252ba8_Destroy(room_object02252ba8_from_receiver(receiver));
+    return RoomObject02252ba8_Destruct(room_object02252ba8_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov004_02252ba8D1Ev, RoomObject02252ba8Receiver_Destroy)
+CLEAN_AS(_ZThn236_N18Obj_ov004_02252ba8D1Ev, RoomObject02252ba8Receiver_Destruct)

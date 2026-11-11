@@ -143,27 +143,27 @@ static void donation_update_cursor_sprite(DonationList *self)
 
 /* func_ov145_022995a0 (vtable slot 0x40): the scene's vtable back, the labels, the panel, the
  * handle, the cursor sprite and the base destroyed (the layer tasks have no destructor). */
-DonationList *DonationList_Destroy(DonationList *self)
+DonationList *DonationList_Destruct(DonationList *self)
 {
     self->base.vtable = data_ov145_0229ae00;
     __cxa_vec_cleanup(self->labels, DONATION_LABELS, sizeof(TextLabel), func_02070be8);
-    ButtonPanel_Destroy(&self->panel);
-    PushButton_Destroy(&self->handle);
-    Glider0_Destroy(&self->cursor_sprite);
-    MenuScene_DestroyBase(donation_base(self));
+    ButtonPanel_Destruct(&self->panel);
+    PushButton_Destruct(&self->handle);
+    Glider0_Destruct(&self->cursor_sprite);
+    MenuScene_DestructBase(donation_base(self));
     return self;
 }
-CLEAN_AS(func_ov145_022995a0, DonationList_Destroy)
+CLEAN_AS(func_ov145_022995a0, DonationList_Destruct)
 
 /* func_ov145_022995f0 (vtable slot 0x44): destroyed as above, then freed. */
 DonationList *DonationList_Delete(DonationList *self)
 {
     self->base.vtable = data_ov145_0229ae00;
     __cxa_vec_cleanup(self->labels, DONATION_LABELS, sizeof(TextLabel), func_02070be8);
-    ButtonPanel_Destroy(&self->panel);
-    PushButton_Destroy(&self->handle);
-    Glider0_Destroy(&self->cursor_sprite);
-    MenuScene_DestroyBase(donation_base(self));
+    ButtonPanel_Destruct(&self->panel);
+    PushButton_Destruct(&self->handle);
+    Glider0_Destruct(&self->cursor_sprite);
+    MenuScene_DestructBase(donation_base(self));
     MenuScene_Free(self);
     return self;
 }

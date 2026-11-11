@@ -123,7 +123,7 @@ typedef struct TownList {
     u8 pad_1a8d[3];                               /* 0x1a8d */
 } TownList;
 
-TownList *TownList_Destroy(TownList *self);
+TownList *TownList_Destruct(TownList *self);
 TownList *TownList_Delete(TownList *self);
 void TownList_ClearFlags(TownList *self, u16 flags);
 void TownList_SetFlags(TownList *self, u16 flags);

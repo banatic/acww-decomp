@@ -190,13 +190,13 @@ SwitchShownObject *SwitchShown_Delete(SwitchShownObject *object)
 CLEAN_AS(func_ov004_02212620, SwitchShown_Delete)
 
 /* func_ov004_0221264c (the destructor, vtable slot 0x40) */
-SwitchShownObject *SwitchShown_Destroy(SwitchShownObject *object)
+SwitchShownObject *SwitchShown_Destruct(SwitchShownObject *object)
 {
     set_vtables(object);
     RoomObject_DestructBase(&object->base);
     return object;
 }
-CLEAN_AS(func_ov004_0221264c, SwitchShown_Destroy)
+CLEAN_AS(func_ov004_0221264c, SwitchShown_Destruct)
 
 /* func_ov004_02212670 (the constructor). Its own fields are left as the allocation zeroed
  * them. */
@@ -234,8 +234,8 @@ SwitchShownObject *SwitchShownReceiver_Delete(void *receiver)
 CLEAN_AS(_ZThn236_N18Obj_ov004_02250ad8D0Ev, SwitchShownReceiver_Delete)
 
 /* func_ov004_0221ac10: the destructor, entered from the receiver part. */
-SwitchShownObject *SwitchShownReceiver_Destroy(void *receiver)
+SwitchShownObject *SwitchShownReceiver_Destruct(void *receiver)
 {
-    return SwitchShown_Destroy(switch_shown_from_receiver(receiver));
+    return SwitchShown_Destruct(switch_shown_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov004_02250ad8D1Ev, SwitchShownReceiver_Destroy)
+CLEAN_AS(_ZThn236_N18Obj_ov004_02250ad8D1Ev, SwitchShownReceiver_Destruct)

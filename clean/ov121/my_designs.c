@@ -154,20 +154,20 @@ static int distance(int a, int b)
 static void destroy_members(MyDesigns *self)
 {
     self->base.vtable = data_ov121_0229c3a8;
-    PagedChoice_Destroy(choice(self));
+    PagedChoice_Destruct(choice(self));
     ErrorMessage_Destruct(&self->error);
-    Glider0_Destroy(&self->pointer);
-    Popup_Destroy(&self->popup);
-    MenuScene_DestroyBase(scene(self));
+    Glider0_Destruct(&self->pointer);
+    Popup_Destruct(&self->popup);
+    MenuScene_DestructBase(scene(self));
 }
 
 /* func_ov121_022999a0 */
-MyDesigns *MyDesigns_Destroy(MyDesigns *self)
+MyDesigns *MyDesigns_Destruct(MyDesigns *self)
 {
     destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov121_022999a0, MyDesigns_Destroy)
+CLEAN_AS(func_ov121_022999a0, MyDesigns_Destruct)
 
 /* func_ov121_022999ec */
 MyDesigns *MyDesigns_Delete(MyDesigns *self)

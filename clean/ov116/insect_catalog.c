@@ -94,18 +94,18 @@ static void destroy_members(CatalogScene *self)
 {
     self->base.vtable = data_ov116_0229e8b8;
     __cxa_vec_cleanup(&self->label, 1, sizeof(TextLabel), func_02070be8);
-    CatalogList_Destroy(&self->list);
-    Glider0_Destroy(&self->cursor);
-    MenuScene_DestroyBase(scene_of(self));
+    CatalogList_Destruct(&self->list);
+    Glider0_Destruct(&self->cursor);
+    MenuScene_DestructBase(scene_of(self));
 }
 
 /* func_ov116_0229dd20 (vtable slot 0x40) */
-CatalogScene *InsectCatalog_Destroy(CatalogScene *self)
+CatalogScene *InsectCatalog_Destruct(CatalogScene *self)
 {
     destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov116_0229dd20, InsectCatalog_Destroy)
+CLEAN_AS(func_ov116_0229dd20, InsectCatalog_Destruct)
 
 /* func_ov116_0229dd60 (vtable slot 0x44) */
 CatalogScene *InsectCatalog_Delete(CatalogScene *self)

@@ -73,7 +73,7 @@ void TaxiDriverTalk_Line(int talk, TaxiDriverTalkStart *out);
 void TaxiDriverTalk_OnTag(int talk, int value);
 void TaxiDriverTalk_Begin(TaxiDriverTalk *talk, TaxiDriver *owner);
 void *TaxiDriverTalk_Delete(void *talk);
-TaxiDriverTalk *TaxiDriverTalk_Destroy(TaxiDriverTalk *talk);
+TaxiDriverTalk *TaxiDriverTalk_Destruct(TaxiDriverTalk *talk);
 void *TaxiDriverTalk_Construct(void *talk);
 
 #endif

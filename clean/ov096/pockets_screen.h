@@ -156,7 +156,7 @@ typedef struct PocketsScreen {
     Letter unk_2f28;        /* 0x2f28: a second letter copy (Letter_Assign) */
 } PocketsScreen;
 
-PocketsScreen *PocketsScreen_Destroy(PocketsScreen *self);
+PocketsScreen *PocketsScreen_Destruct(PocketsScreen *self);
 PocketsScreen *PocketsScreen_Delete(PocketsScreen *self);
 void PocketsScreen_ClearFlags(PocketsScreen *self, unsigned int flags);
 void PocketsScreen_SetFlags(PocketsScreen *self, unsigned int flags);

@@ -54,8 +54,8 @@ int ObjectActors_Release(ObjectActors *self);
 int ObjectActors_Draw(void);
 int ObjectActors_Update(void);
 int ObjectActors_SetUp(ObjectActors *self);
-ObjectActors *ObjectActors_DestroyAndFree(ObjectActors *self);
-ObjectActors *ObjectActors_Destroy(ObjectActors *self);
+ObjectActors *ObjectActors_Delete(ObjectActors *self);
+ObjectActors *ObjectActors_Destruct(ObjectActors *self);
 ObjectActors *ObjectActors_Construct(ObjectActors *self);
 void ObjectActors_New(void);
 

@@ -163,7 +163,7 @@ typedef struct StorageScene {
     u8 pad_25ab;
 } StorageScene;
 
-StorageScene *StorageScene_Destroy(StorageScene *self);
+StorageScene *StorageScene_Destruct(StorageScene *self);
 StorageScene *StorageScene_Delete(StorageScene *self);
 void StorageScene_ClearFlags(StorageScene *self, unsigned int flags);
 void StorageScene_SetFlags(StorageScene *self, unsigned int flags);

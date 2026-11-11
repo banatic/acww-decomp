@@ -195,13 +195,13 @@ PeriodicRoomObject *PeriodicRoomObject_Delete(PeriodicRoomObject *object)
 CLEAN_AS(func_ov004_02211fdc, PeriodicRoomObject_Delete)
 
 /* func_ov004_02212008 (the destructor, vtable slot 0x40) */
-PeriodicRoomObject *PeriodicRoomObject_Destroy(PeriodicRoomObject *object)
+PeriodicRoomObject *PeriodicRoomObject_Destruct(PeriodicRoomObject *object)
 {
     set_vtables(object);
     RoomObject_DestructBase(&object->base);
     return object;
 }
-CLEAN_AS(func_ov004_02212008, PeriodicRoomObject_Destroy)
+CLEAN_AS(func_ov004_02212008, PeriodicRoomObject_Destruct)
 
 /* func_ov004_0221202c (the constructor). Its own fields are left as the allocation zeroed
  * them. */
@@ -239,8 +239,8 @@ PeriodicRoomObject *PeriodicRoomObjectReceiver_Delete(void *receiver)
 CLEAN_AS(_ZThn236_N18Obj_ov004_02252a7cD0Ev, PeriodicRoomObjectReceiver_Delete)
 
 /* func_ov004_0221ac80: the destructor, entered from the receiver part. */
-PeriodicRoomObject *PeriodicRoomObjectReceiver_Destroy(void *receiver)
+PeriodicRoomObject *PeriodicRoomObjectReceiver_Destruct(void *receiver)
 {
-    return PeriodicRoomObject_Destroy(periodic_room_object_from_receiver(receiver));
+    return PeriodicRoomObject_Destruct(periodic_room_object_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov004_02252a7cD1Ev, PeriodicRoomObjectReceiver_Destroy)
+CLEAN_AS(_ZThn236_N18Obj_ov004_02252a7cD1Ev, PeriodicRoomObjectReceiver_Destruct)

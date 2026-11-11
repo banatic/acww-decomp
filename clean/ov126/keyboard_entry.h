@@ -185,7 +185,7 @@ typedef struct KeyboardEntry {
 } KeyboardEntry;
 
 /* keyboard_entry.c: the destructors, the flags, the mode's text, the editing. */
-KeyboardEntry *KeyboardEntry_Destroy(KeyboardEntry *self);
+KeyboardEntry *KeyboardEntry_Destruct(KeyboardEntry *self);
 KeyboardEntry *KeyboardEntry_Delete(KeyboardEntry *self);
 void KeyboardEntry_ClearFlags(KeyboardEntry *self, unsigned short mask);
 void KeyboardEntry_SetFlags(KeyboardEntry *self, unsigned short mask);

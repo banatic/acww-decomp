@@ -713,21 +713,21 @@ static void mailbox_destroy_parts(Mailbox *mailbox)
 
 /* func_ov003_0221e8c4 (vtable slot 0x44, the deleting destructor): the destructor's work, then
  * the memory freed. */
-Mailbox *Mailbox_DestroyAndFree(Mailbox *mailbox)
+Mailbox *Mailbox_Delete(Mailbox *mailbox)
 {
     mailbox_destroy_parts(mailbox);
     Heap_FreeAux(mailbox);
     return mailbox;
 }
-CLEAN_AS(func_ov003_0221e8c4, Mailbox_DestroyAndFree)
+CLEAN_AS(func_ov003_0221e8c4, Mailbox_Delete)
 
 /* func_ov003_0221e908 (vtable slot 0x40): the destructor, without freeing. */
-Mailbox *Mailbox_Destroy(Mailbox *mailbox)
+Mailbox *Mailbox_Destruct(Mailbox *mailbox)
 {
     mailbox_destroy_parts(mailbox);
     return mailbox;
 }
-CLEAN_AS(func_ov003_0221e908, Mailbox_Destroy)
+CLEAN_AS(func_ov003_0221e908, Mailbox_Destruct)
 
 /* func_ov003_0221e948: the constructor: overlay 9's, the vtables, then the pattern and the
  * touch sphere. */
@@ -759,16 +759,16 @@ static Mailbox *mailbox_from_receiver(void *receiver)
     return (Mailbox *) (void *) ((u8 *) receiver - MAILBOX_RECEIVER_OFFSET);
 }
 
-/* _ZThn236_N18Obj_ov003_0223948cD0Ev (receiver slot 0x04): Mailbox_DestroyAndFree. */
-Mailbox *Mailbox_ReceiverDestroyAndFree(void *receiver)
+/* _ZThn236_N18Obj_ov003_0223948cD0Ev (receiver slot 0x04): Mailbox_Delete. */
+Mailbox *Mailbox_ReceiverDelete(void *receiver)
 {
-    return Mailbox_DestroyAndFree(mailbox_from_receiver(receiver));
+    return Mailbox_Delete(mailbox_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov003_0223948cD0Ev, Mailbox_ReceiverDestroyAndFree)
+CLEAN_AS(_ZThn236_N18Obj_ov003_0223948cD0Ev, Mailbox_ReceiverDelete)
 
-/* _ZThn236_N18Obj_ov003_0223948cD1Ev (receiver slot 0x00): Mailbox_Destroy. */
-Mailbox *Mailbox_ReceiverDestroy(void *receiver)
+/* _ZThn236_N18Obj_ov003_0223948cD1Ev (receiver slot 0x00): Mailbox_Destruct. */
+Mailbox *Mailbox_ReceiverDestruct(void *receiver)
 {
-    return Mailbox_Destroy(mailbox_from_receiver(receiver));
+    return Mailbox_Destruct(mailbox_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov003_0223948cD1Ev, Mailbox_ReceiverDestroy)
+CLEAN_AS(_ZThn236_N18Obj_ov003_0223948cD1Ev, Mailbox_ReceiverDestruct)

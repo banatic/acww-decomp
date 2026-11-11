@@ -70,7 +70,7 @@ void TurtleCountdownTalk_OnLineEnded(TurtleCountdownTalk *talk);
 void TurtleCountdownTalk_FirstLine(TurtleCountdownTalk *talk, TurtleCountdownLine *out);
 void TurtleCountdownTalk_Begin(TurtleCountdownTalk *talk, TurtleCountdown *owner);
 void *TurtleCountdownTalk_Delete(void *talk);
-void *TurtleCountdownTalk_Destroy(void *talk);
+void *TurtleCountdownTalk_Destruct(void *talk);
 TurtleCountdownTalk *TurtleCountdownTalk_Construct(TurtleCountdownTalk *talk);
 
 #endif

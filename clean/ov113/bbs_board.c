@@ -139,25 +139,25 @@ static void bbs_play(int sound)
 }
 
 /* func_ov113_022995a0 (vtable slot 0x40) */
-BbsBoard *BbsBoard_Destroy(BbsBoard *self)
+BbsBoard *BbsBoard_Destruct(BbsBoard *self)
 {
     self->base.vtable = data_ov113_0229ac00;
-    Glider1_Destroy(&self->cursor_sprite);
+    Glider1_Destruct(&self->cursor_sprite);
     __cxa_vec_cleanup(self->lines, BBS_BOARD_LINES, sizeof(TextLabel), (void (*)(void *))(uintptr_t) func_02070be8);
     __cxa_vec_cleanup(self->labels, BBS_BOARD_DATE_LABELS, sizeof(TextLabel), (void (*)(void *))(uintptr_t) func_02070be8);
-    MenuScene_DestroyBase(bbs_scene(self));
+    MenuScene_DestructBase(bbs_scene(self));
     return self;
 }
-CLEAN_AS(func_ov113_022995a0, BbsBoard_Destroy)
+CLEAN_AS(func_ov113_022995a0, BbsBoard_Destruct)
 
 /* func_ov113_022995f0 (vtable slot 0x44) */
 BbsBoard *BbsBoard_Delete(BbsBoard *self)
 {
     self->base.vtable = data_ov113_0229ac00;
-    Glider1_Destroy(&self->cursor_sprite);
+    Glider1_Destruct(&self->cursor_sprite);
     __cxa_vec_cleanup(self->lines, BBS_BOARD_LINES, sizeof(TextLabel), (void (*)(void *))(uintptr_t) func_02070be8);
     __cxa_vec_cleanup(self->labels, BBS_BOARD_DATE_LABELS, sizeof(TextLabel), (void (*)(void *))(uintptr_t) func_02070be8);
-    MenuScene_DestroyBase(bbs_scene(self));
+    MenuScene_DestructBase(bbs_scene(self));
     MenuScene_Free(self);
     return self;
 }

@@ -222,12 +222,12 @@ static void sk_destruct(SickVillager *villager)
 }
 
 /* func_ov004_02221bbc (vtable slot 0x40): the destructor, without freeing. */
-SickVillager *SickVillager_Destroy(SickVillager *villager)
+SickVillager *SickVillager_Destruct(SickVillager *villager)
 {
     sk_destruct(villager);
     return villager;
 }
-CLEAN_AS(func_ov004_02221bbc, SickVillager_Destroy)
+CLEAN_AS(func_ov004_02221bbc, SickVillager_Destruct)
 
 /* func_ov004_02221bf8 (vtable slot 0x44, the deleting destructor). */
 SickVillager *SickVillager_Delete(SickVillager *villager)
@@ -239,13 +239,13 @@ SickVillager *SickVillager_Delete(SickVillager *villager)
 CLEAN_AS(func_ov004_02221bf8, SickVillager_Delete)
 
 /* func_ov004_02221c38 (the talk scene's vtable slot 0x00, its destructor). */
-SickVillagerTalk *SickVillagerTalk_Destroy(SickVillagerTalk *talk)
+SickVillagerTalk *SickVillagerTalk_Destruct(SickVillagerTalk *talk)
 {
     sk_set_talk_vtable(talk);
     VillagerTalkScene_DestructBody(&talk->base);
     return talk;
 }
-CLEAN_AS(func_ov004_02221c38, SickVillagerTalk_Destroy)
+CLEAN_AS(func_ov004_02221c38, SickVillagerTalk_Destruct)
 
 /* func_ov004_02221c50 (vtable slot 0x7c): its action sound is played only until it was once. */
 int SickVillager_HasActionSound(SickVillager *villager)

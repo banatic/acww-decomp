@@ -318,14 +318,14 @@ void *TurtleCountdownTalk_Delete(void *talk)
 CLEAN_AS(func_ov086_02278e90, TurtleCountdownTalk_Delete)
 
 /* func_ov086_02278eb0 (slot 0x00): the scene class 0x020d9ff8's destructor. */
-void *TurtleCountdownTalk_Destroy(void *talk)
+void *TurtleCountdownTalk_Destruct(void *talk)
 {
     TurtleCountdownTalk *self = talk;
     self->base.vtable = data_ov086_022792fc;
     Obj020d9ff8_DestructBody(self);
     return self;
 }
-CLEAN_AS(func_ov086_02278eb0, TurtleCountdownTalk_Destroy)
+CLEAN_AS(func_ov086_02278eb0, TurtleCountdownTalk_Destruct)
 
 /* func_ov086_02278ec8: the constructor: a scene of class 0x020d9ff8 given this class's
  * vtable. */

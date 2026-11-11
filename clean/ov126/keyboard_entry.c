@@ -64,20 +64,20 @@ static void keyboard_entry_destroy_members(KeyboardEntry *self)
     WideText_Destruct(&self->filter_wide);
     TextLabel_Destruct(&self->filter_text);
     TextLabel_Destruct(&self->hint);
-    Glider0_Destroy(&self->pointer);
-    ButtonPanel_Destroy(&self->panel);
+    Glider0_Destruct(&self->pointer);
+    ButtonPanel_Destruct(&self->panel);
     __cxa_vec_cleanup(self->labels, 2, sizeof(TextLabel), (void (*)(void *))(uintptr_t) func_02070be8);
-    HanPanel_Destroy((HanPanel *) (void *) self->field);
-    MenuScene_DestroyBase(&self->base);
+    HanPanel_Destruct((HanPanel *) (void *) self->field);
+    MenuScene_DestructBase(&self->base);
 }
 
 /* func_ov126_0229f6a0: the destructor. */
-KeyboardEntry *KeyboardEntry_Destroy(KeyboardEntry *self)
+KeyboardEntry *KeyboardEntry_Destruct(KeyboardEntry *self)
 {
     keyboard_entry_destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov126_0229f6a0, KeyboardEntry_Destroy)
+CLEAN_AS(func_ov126_0229f6a0, KeyboardEntry_Destruct)
 
 /* func_ov126_0229f720: the deleting destructor. */
 KeyboardEntry *KeyboardEntry_Delete(KeyboardEntry *self)

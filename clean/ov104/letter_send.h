@@ -153,7 +153,7 @@ typedef struct LetterSendScene {
     ButtonPanel panel;                        /* 0x41b4 */
 } LetterSendScene;
 
-LetterSendScene *LetterSend_Destroy(LetterSendScene *self);
+LetterSendScene *LetterSend_Destruct(LetterSendScene *self);
 LetterSendScene *LetterSend_Delete(LetterSendScene *self);
 void LetterSend_ClearFlags(LetterSendScene *self, unsigned int flags);
 void LetterSend_SetFlags(LetterSendScene *self, unsigned int flags);

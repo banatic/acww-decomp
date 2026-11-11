@@ -657,19 +657,19 @@ static void music_list_destroy_members(MusicList *self)
     self->base.vtable = data_ov144_0229b3f8;
     ErrorMessage_Destruct(&self->error);
     __cxa_vec_cleanup(self->labels, MUSIC_LIST_ROWS, sizeof(TextLabel), (void (*)(void *))(uintptr_t) func_02070be8);
-    ButtonPanel_Destroy(&self->panel);
-    PushButton_Destroy(&self->knob_button);
-    Glider0_Destroy(&self->pointer);
-    MenuScene_DestroyBase(music_list_scene(self));
+    ButtonPanel_Destruct(&self->panel);
+    PushButton_Destruct(&self->knob_button);
+    Glider0_Destruct(&self->pointer);
+    MenuScene_DestructBase(music_list_scene(self));
 }
 
 /* func_ov144_022995a0 (vtable slot 0x40) */
-MusicList *MusicList_Destroy(MusicList *self)
+MusicList *MusicList_Destruct(MusicList *self)
 {
     music_list_destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov144_022995a0, MusicList_Destroy)
+CLEAN_AS(func_ov144_022995a0, MusicList_Destruct)
 
 /* func_ov144_022995fc (vtable slot 0x44) */
 MusicList *MusicList_Delete(MusicList *self)

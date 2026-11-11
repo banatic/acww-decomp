@@ -14,7 +14,7 @@
 #include "member_pointer.h"
 #include "types.h"
 
-u8 *CafeMaster_Destroy(u8 *master);
+u8 *CafeMaster_Destruct(u8 *master);
 u8 *CafeMaster_Delete(u8 *master);
 int CafeMaster_AnimNumber(void);
 u16 CafeMaster_AnimFrame(void);
@@ -135,7 +135,7 @@ void CafeMasterTalk_OnMessageEnded(CafeMasterTalk *talk);
 void CafeMasterTalk_Line(CafeMasterTalk *talk, CafeMasterLine *out);
 void CafeMasterTalk_Begin(CafeMasterTalk *talk, CafeMaster *master);
 CafeMasterTalk *CafeMasterTalk_Delete(CafeMasterTalk *talk);
-CafeMasterTalk *CafeMasterTalk_Destroy(CafeMasterTalk *talk);
+CafeMasterTalk *CafeMasterTalk_Destruct(CafeMasterTalk *talk);
 CafeMasterTalk *CafeMasterTalk_Construct(CafeMasterTalk *talk);
 int CafeMaster_UpdatePaused(void);
 int CafeMaster_EnterPaused(void);

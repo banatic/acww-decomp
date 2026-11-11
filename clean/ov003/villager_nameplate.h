@@ -82,11 +82,11 @@ int VillagerNameplate_Unregister(VillagerNameplate *board);
 int VillagerNameplate_Slot24(void);
 int VillagerNameplate_Run(VillagerNameplate *board);
 int VillagerNameplate_Init(VillagerNameplate *board);
-VillagerNameplate *VillagerNameplate_DestroyAndFree(VillagerNameplate *board);
-VillagerNameplate *VillagerNameplate_Destroy(VillagerNameplate *board);
+VillagerNameplate *VillagerNameplate_Delete(VillagerNameplate *board);
+VillagerNameplate *VillagerNameplate_Destruct(VillagerNameplate *board);
 VillagerNameplate *VillagerNameplate_Construct(VillagerNameplate *board);
 void VillagerNameplate_New(void);
-VillagerNameplate *VillagerNameplate_ReceiverDestroyAndFree(void *receiver);
-VillagerNameplate *VillagerNameplate_ReceiverDestroy(void *receiver);
+VillagerNameplate *VillagerNameplate_ReceiverDelete(void *receiver);
+VillagerNameplate *VillagerNameplate_ReceiverDestruct(void *receiver);
 
 #endif

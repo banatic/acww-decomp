@@ -66,10 +66,10 @@ int RoomObject02252ba8_UpdateUnsettled(RoomObject02252ba8 *object);
 int RoomObject02252ba8_Update(RoomObject02252ba8 *object);
 int RoomObject02252ba8_Start(RoomObject02252ba8 *object);
 RoomObject02252ba8 *RoomObject02252ba8_Delete(RoomObject02252ba8 *object);
-RoomObject02252ba8 *RoomObject02252ba8_Destroy(RoomObject02252ba8 *object);
+RoomObject02252ba8 *RoomObject02252ba8_Destruct(RoomObject02252ba8 *object);
 RoomObject02252ba8 *RoomObject02252ba8_Construct(RoomObject02252ba8 *object);
 void RoomObject02252ba8_Create(void);
 RoomObject02252ba8 *RoomObject02252ba8Receiver_Delete(void *receiver);
-RoomObject02252ba8 *RoomObject02252ba8Receiver_Destroy(void *receiver);
+RoomObject02252ba8 *RoomObject02252ba8Receiver_Destruct(void *receiver);
 
 #endif

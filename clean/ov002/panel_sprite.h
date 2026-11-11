@@ -66,7 +66,7 @@ void PanelSprite_Show(PanelSprite *sprite, int message);
 void PanelSprite_SetMessage(PanelSprite *sprite, int message);
 void PanelSprite_SetCells(PanelSprite *sprite, const PanelCell *cells, u8 text_cells, u8 shadow_cell);
 PanelSprite *PanelSprite_Delete(PanelSprite *sprite);
-PanelSprite *PanelSprite_Destroy(PanelSprite *sprite);
+PanelSprite *PanelSprite_Destruct(PanelSprite *sprite);
 PanelSprite *PanelSprite_Construct(PanelSprite *sprite);
 
 #endif

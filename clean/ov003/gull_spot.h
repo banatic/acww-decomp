@@ -18,11 +18,11 @@ int GullSpot_Slot0c(void);
 int GullSpot_Draw(void);
 int GullSpot_Update(void);
 int GullSpot_SetUp(GullSpot *spot);
-GullSpot *GullSpot_DestroyAndFree(GullSpot *spot);
-GullSpot *GullSpot_Destroy(GullSpot *spot);
+GullSpot *GullSpot_Delete(GullSpot *spot);
+GullSpot *GullSpot_Destruct(GullSpot *spot);
 GullSpot *GullSpot_Construct(GullSpot *spot);
 void GullSpot_New(void);
-GullSpot *GullSpot_ReceiverDestroyAndFree(void *receiver);
-GullSpot *GullSpot_ReceiverDestroy(void *receiver);
+GullSpot *GullSpot_ReceiverDelete(void *receiver);
+GullSpot *GullSpot_ReceiverDestruct(void *receiver);
 
 #endif

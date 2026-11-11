@@ -236,13 +236,13 @@ RoomObject022510b4 *RoomObject022510b4_Delete(RoomObject022510b4 *object)
 CLEAN_AS(func_ov004_02218e98, RoomObject022510b4_Delete)
 
 /* func_ov004_02218ec4 (the destructor, vtable slot 0x40) */
-RoomObject022510b4 *RoomObject022510b4_Destroy(RoomObject022510b4 *object)
+RoomObject022510b4 *RoomObject022510b4_Destruct(RoomObject022510b4 *object)
 {
     room_object022510b4_set_vtables(object);
     RoomObject_DestructBase(&object->base);
     return object;
 }
-CLEAN_AS(func_ov004_02218ec4, RoomObject022510b4_Destroy)
+CLEAN_AS(func_ov004_02218ec4, RoomObject022510b4_Destruct)
 
 /* func_ov004_02218ee8 (the constructor). Its own fields are left as the allocation zeroed
  * them. */
@@ -280,8 +280,8 @@ RoomObject022510b4 *RoomObject022510b4Receiver_Delete(void *receiver)
 CLEAN_AS(_ZThn236_N18Obj_ov004_022510b4D0Ev, RoomObject022510b4Receiver_Delete)
 
 /* func_ov004_0221a6d0: the destructor, entered from the receiver part. */
-RoomObject022510b4 *RoomObject022510b4Receiver_Destroy(void *receiver)
+RoomObject022510b4 *RoomObject022510b4Receiver_Destruct(void *receiver)
 {
-    return RoomObject022510b4_Destroy(room_object022510b4_from_receiver(receiver));
+    return RoomObject022510b4_Destruct(room_object022510b4_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov004_022510b4D1Ev, RoomObject022510b4Receiver_Destroy)
+CLEAN_AS(_ZThn236_N18Obj_ov004_022510b4D1Ev, RoomObject022510b4Receiver_Destruct)

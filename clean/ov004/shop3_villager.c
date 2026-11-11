@@ -96,20 +96,20 @@ static void sv_talk_slot_08(Shop3VillagerTalk *talk)
 
 /* func_ov004_02221850 (vtable slot 0x40): the destructor, without freeing: its talk scene, then
  * the town villager scene object. */
-Shop3Villager *Shop3Villager_Destroy(Shop3Villager *villager)
+Shop3Villager *Shop3Villager_Destruct(Shop3Villager *villager)
 {
     *(const u8 **) (void *) villager->base = data_ov004_02253fd4;
-    Shop3VillagerTalk_Destroy(&villager->talk);
+    Shop3VillagerTalk_Destruct(&villager->talk);
     VillagerSceneObject_DestructBody(villager->base);
     return villager;
 }
-CLEAN_AS(func_ov004_02221850, Shop3Villager_Destroy)
+CLEAN_AS(func_ov004_02221850, Shop3Villager_Destruct)
 
 /* func_ov004_02221878 (vtable slot 0x44, the deleting destructor). */
 Shop3Villager *Shop3Villager_Delete(Shop3Villager *villager)
 {
     *(const u8 **) (void *) villager->base = data_ov004_02253fd4;
-    Shop3VillagerTalk_Destroy(&villager->talk);
+    Shop3VillagerTalk_Destruct(&villager->talk);
     VillagerSceneObject_DestructBody(villager->base);
     Heap_FreeAux(villager);
     return villager;
@@ -187,13 +187,13 @@ Shop3VillagerTalk *Shop3VillagerTalk_Delete(Shop3VillagerTalk *talk)
 CLEAN_AS(func_ov004_02221974, Shop3VillagerTalk_Delete)
 
 /* func_ov004_02221994 (the talk scene's vtable slot 0x00, its destructor). */
-Shop3VillagerTalk *Shop3VillagerTalk_Destroy(Shop3VillagerTalk *talk)
+Shop3VillagerTalk *Shop3VillagerTalk_Destruct(Shop3VillagerTalk *talk)
 {
     talk->base.scene.vtable = data_ov004_02253f44;
     VillagerTalkScene_DestructBody(&talk->base);
     return talk;
 }
-CLEAN_AS(func_ov004_02221994, Shop3VillagerTalk_Destroy)
+CLEAN_AS(func_ov004_02221994, Shop3VillagerTalk_Destruct)
 
 /* func_ov004_022219ac: its talk scene's constructor. */
 Shop3VillagerTalk *Shop3VillagerTalk_Construct(Shop3VillagerTalk *talk)

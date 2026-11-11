@@ -51,7 +51,7 @@ typedef struct AcornNpcStep {
     MemberPointer update; /* 0x08: int (character) */
 } AcornNpcStep;
 
-AcornNpc *AcornNpc_Destroy(AcornNpc *npc);
+AcornNpc *AcornNpc_Destruct(AcornNpc *npc);
 AcornNpc *AcornNpc_Delete(AcornNpc *npc);
 void AcornNpc_OnEvent(AcornNpc *npc, int code);
 int AcornNpc_MayAct(AcornNpc *npc);

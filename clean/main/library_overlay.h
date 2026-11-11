@@ -3,7 +3,7 @@
  * overlay's information (LibraryOverlay_Load loads one, LibraryOverlay_End ends it). The code
  * that needs a library first checks that the slot holds it, and stops the game (OS_Terminate)
  * when it does not. The slot is a global object of the game, set to -1 when the game starts;
- * its destructor (LibraryOverlay_Destroy) does nothing. */
+ * its destructor (LibraryOverlay_Destruct) does nothing. */
 #ifndef CLEAN_MAIN_LIBRARY_OVERLAY_H
 #define CLEAN_MAIN_LIBRARY_OVERLAY_H
 
@@ -22,7 +22,7 @@ void LibraryOverlay_Require66(void);
 void LibraryOverlay_Require65(void);
 int LibraryOverlay_Load(LibraryOverlaySlot *slot, int overlay);
 void LibraryOverlay_End(LibraryOverlaySlot *slot);
-void LibraryOverlay_Destroy(LibraryOverlaySlot *slot);
+void LibraryOverlay_Destruct(LibraryOverlaySlot *slot);
 int LibraryOverlay_Switch68(void);
 void LibraryOverlay_Switch65(void);
 void LibraryOverlay_Switch66(void);

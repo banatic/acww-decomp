@@ -10,7 +10,7 @@
 #include "types.h"
 
 Process *Ov056Process_Create(void);
-Process *Ov056Process_Destroy(Process *self);
+Process *Ov056Process_Destruct(Process *self);
 Process *Ov056Process_Delete(Process *self);
 
 #endif

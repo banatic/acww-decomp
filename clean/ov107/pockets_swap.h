@@ -163,7 +163,7 @@ typedef struct PocketsSwap {
     ButtonPanel panel;      /* 0x2828 */
 } PocketsSwap;
 
-PocketsSwap *PocketsSwap_Destroy(PocketsSwap *self);
+PocketsSwap *PocketsSwap_Destruct(PocketsSwap *self);
 PocketsSwap *PocketsSwap_Delete(PocketsSwap *self);
 void PocketsSwap_ClearFlags(PocketsSwap *self, unsigned int flags);
 void PocketsSwap_SetFlags(PocketsSwap *self, unsigned int flags);

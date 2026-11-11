@@ -183,7 +183,7 @@ typedef struct PublicBox {
     TextLabel labels[PUBLIC_BOX_LABELS]; /* 0x2854: the end place's label (PublicBox_NextLabel) */
 } PublicBox;
 
-PublicBox *PublicBox_Destroy(PublicBox *self);
+PublicBox *PublicBox_Destruct(PublicBox *self);
 PublicBox *PublicBox_Delete(PublicBox *self);
 void PublicBox_ClearFlags(PublicBox *self, unsigned int flags);
 void PublicBox_SetFlags(PublicBox *self, unsigned int flags);

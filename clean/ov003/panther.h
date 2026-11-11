@@ -28,11 +28,11 @@ void Panther_PrepareTalk(Panther *panther);
 int Panther_IsAfterSix(Panther *panther);
 int Panther_Update(void);
 int Panther_KeepHour(Panther *panther);
-Panther *Panther_DestroyAndFree(Panther *panther);
-Panther *Panther_Destroy(Panther *panther);
+Panther *Panther_Delete(Panther *panther);
+Panther *Panther_Destruct(Panther *panther);
 Panther *Panther_Construct(Panther *panther);
 void Panther_New(void);
-Panther *Panther_ReceiverDestroyAndFree(void *receiver);
-Panther *Panther_ReceiverDestroy(void *receiver);
+Panther *Panther_ReceiverDelete(void *receiver);
+Panther *Panther_ReceiverDestruct(void *receiver);
 
 #endif

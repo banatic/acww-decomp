@@ -102,7 +102,7 @@ typedef struct DesignPicker {
     u8 return_sub_state;   /* 0x87f: the sub state to go back to once the sprite stops */
 } DesignPicker;
 
-DesignPicker *DesignPicker_Destroy(DesignPicker *self);
+DesignPicker *DesignPicker_Destruct(DesignPicker *self);
 DesignPicker *DesignPicker_Delete(DesignPicker *self);
 void DesignPicker_ClearFlags(DesignPicker *self, u16 flags);
 void DesignPicker_SetFlags(DesignPicker *self, u16 flags);

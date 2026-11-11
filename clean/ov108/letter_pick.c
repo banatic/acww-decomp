@@ -84,27 +84,27 @@ static int lp_update_cursor_sprite(Glider *sprite)
 static void lp_destroy_members(LetterPick *self)
 {
     self->base.vtable = data_ov108_0229e098;
-    ButtonPanel_Destroy(&self->panel);
+    ButtonPanel_Destruct(&self->panel);
     ErrorMessage_Destruct(&self->error);
-    PagedChoice_Destroy(lp_choice(self));
-    Glider0_Destroy(&self->cursor_sprite);
-    Glide_Destroy(&self->glide);
-    Popup_Destroy(&self->popup);
+    PagedChoice_Destruct(lp_choice(self));
+    Glider0_Destruct(&self->cursor_sprite);
+    Glide_Destruct(&self->glide);
+    Popup_Destruct(&self->popup);
     PocketsWallet_Destruct(&self->wallet);
     PocketsLetters_Destruct(&self->letters);
     PocketsGrid_Destruct(&self->grid);
     Letter_Destruct(&self->swapped);
     Letter_Destruct(&self->held);
-    MenuScene_DestroyBase(lp_scene(self));
+    MenuScene_DestructBase(lp_scene(self));
 }
 
 /* func_ov108_0229c180 (vtable slot 0x40) */
-LetterPick *LetterPick_Destroy(LetterPick *self)
+LetterPick *LetterPick_Destruct(LetterPick *self)
 {
     lp_destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov108_0229c180, LetterPick_Destroy)
+CLEAN_AS(func_ov108_0229c180, LetterPick_Destruct)
 
 /* func_ov108_0229c21c (vtable slot 0x44) */
 LetterPick *LetterPick_Delete(LetterPick *self)

@@ -165,21 +165,21 @@ static void player_house_destroy_parts(PlayerHouse *house)
 
 /* func_ov003_0221dd90 (vtable slot 0x44, the deleting destructor): the destructor's work, then
  * the memory freed. */
-PlayerHouse *PlayerHouse_DestroyAndFree(PlayerHouse *house)
+PlayerHouse *PlayerHouse_Delete(PlayerHouse *house)
 {
     player_house_destroy_parts(house);
     Heap_FreeAux(house);
     return house;
 }
-CLEAN_AS(func_ov003_0221dd90, PlayerHouse_DestroyAndFree)
+CLEAN_AS(func_ov003_0221dd90, PlayerHouse_Delete)
 
 /* func_ov003_0221ddbc (vtable slot 0x40): the destructor. */
-PlayerHouse *PlayerHouse_Destroy(PlayerHouse *house)
+PlayerHouse *PlayerHouse_Destruct(PlayerHouse *house)
 {
     player_house_destroy_parts(house);
     return house;
 }
-CLEAN_AS(func_ov003_0221ddbc, PlayerHouse_Destroy)
+CLEAN_AS(func_ov003_0221ddbc, PlayerHouse_Destruct)
 
 /* func_ov003_0221dde0: the constructor: overlay 9's, then the vtables. */
 PlayerHouse *PlayerHouse_Construct(PlayerHouse *house)
@@ -209,16 +209,16 @@ static PlayerHouse *player_house_from_receiver(void *receiver)
     return (PlayerHouse *) (void *) ((u8 *) receiver - PLAYER_HOUSE_RECEIVER_OFFSET);
 }
 
-/* _ZThn236_N18Obj_ov003_02239254D0Ev: PlayerHouse_DestroyAndFree. */
-PlayerHouse *PlayerHouse_ReceiverDestroyAndFree(void *receiver)
+/* _ZThn236_N18Obj_ov003_02239254D0Ev: PlayerHouse_Delete. */
+PlayerHouse *PlayerHouse_ReceiverDelete(void *receiver)
 {
-    return PlayerHouse_DestroyAndFree(player_house_from_receiver(receiver));
+    return PlayerHouse_Delete(player_house_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov003_02239254D0Ev, PlayerHouse_ReceiverDestroyAndFree)
+CLEAN_AS(_ZThn236_N18Obj_ov003_02239254D0Ev, PlayerHouse_ReceiverDelete)
 
-/* _ZThn236_N18Obj_ov003_02239254D1Ev: PlayerHouse_Destroy. */
-PlayerHouse *PlayerHouse_ReceiverDestroy(void *receiver)
+/* _ZThn236_N18Obj_ov003_02239254D1Ev: PlayerHouse_Destruct. */
+PlayerHouse *PlayerHouse_ReceiverDestruct(void *receiver)
 {
-    return PlayerHouse_Destroy(player_house_from_receiver(receiver));
+    return PlayerHouse_Destruct(player_house_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov003_02239254D1Ev, PlayerHouse_ReceiverDestroy)
+CLEAN_AS(_ZThn236_N18Obj_ov003_02239254D1Ev, PlayerHouse_ReceiverDestruct)

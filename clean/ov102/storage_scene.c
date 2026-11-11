@@ -152,22 +152,22 @@ static void storage_destroy_members(StorageScene *self)
     self->base.vtable = data_ov102_0229ea60;
     __cxa_vec_cleanup(self->labels, STORAGE_SCENE_LABELS, sizeof(TextLabel), func_02070be8);
     ErrorMessage_Destruct(&self->error);
-    Glider0_Destroy(&self->cursor_sprite);
-    Glide_Destroy(&self->glide);
-    Popup_Destroy(&self->popup);
+    Glider0_Destruct(&self->cursor_sprite);
+    Glide_Destruct(&self->glide);
+    Popup_Destruct(&self->popup);
     PocketsWallet_Destruct(&self->wallet);
     PocketsLetters_Destruct(&self->letters);
     PocketsGrid_Destruct(&self->grid);
-    MenuScene_DestroyBase(storage_base(self));
+    MenuScene_DestructBase(storage_base(self));
 }
 
 /* func_ov102_0229c180 (vtable slot 0x40) */
-StorageScene *StorageScene_Destroy(StorageScene *self)
+StorageScene *StorageScene_Destruct(StorageScene *self)
 {
     storage_destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov102_0229c180, StorageScene_Destroy)
+CLEAN_AS(func_ov102_0229c180, StorageScene_Destruct)
 
 /* func_ov102_0229c200 (vtable slot 0x44) */
 StorageScene *StorageScene_Delete(StorageScene *self)

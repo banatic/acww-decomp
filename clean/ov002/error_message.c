@@ -319,7 +319,7 @@ CLEAN_AS(func_ov002_0220b9b8, ErrorMessage_Open)
 ErrorMessage *ErrorMessage_Destruct(ErrorMessage *error)
 {
     TalkReceiver_DestructSlot(&error->receiver);
-    Popup_Destroy(&error->popup);
+    Popup_Destruct(&error->popup);
     return error;
 }
 CLEAN_AS(func_ov002_0220ba0c, ErrorMessage_Destruct)

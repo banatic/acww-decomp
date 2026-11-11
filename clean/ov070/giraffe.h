@@ -66,7 +66,7 @@ typedef struct GiraffeStep {
     MemberPointer update; /* 0x08: int (giraffe) */
 } GiraffeStep;
 
-Giraffe *Giraffe_Destroy(Giraffe *giraffe);
+Giraffe *Giraffe_Destruct(Giraffe *giraffe);
 void *Giraffe_Delete(void *giraffe);
 void Giraffe_OnEvent(Giraffe *giraffe, int code);
 int Giraffe_MayAct(Giraffe *giraffe);

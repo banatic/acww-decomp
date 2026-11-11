@@ -98,19 +98,19 @@ static int date_at_button(DateScreen *self)
 static void date_destroy_members(DateScreen *self)
 {
     self->base.vtable = data_ov138_0229d4e0;
-    ClockSetter_Destroy(&self->clock);
-    ButtonPanel_Destroy(&self->panel);
-    Glider0_Destroy(&self->cursor_sprite);
-    MenuScene_DestroyBase(date_scene(self));
+    ClockSetter_Destruct(&self->clock);
+    ButtonPanel_Destruct(&self->panel);
+    Glider0_Destruct(&self->cursor_sprite);
+    MenuScene_DestructBase(date_scene(self));
 }
 
 /* func_ov138_0229c4e0 (vtable slot 0x40) */
-DateScreen *DateScreen_Destroy(DateScreen *self)
+DateScreen *DateScreen_Destruct(DateScreen *self)
 {
     date_destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov138_0229c4e0, DateScreen_Destroy)
+CLEAN_AS(func_ov138_0229c4e0, DateScreen_Destruct)
 
 /* func_ov138_0229c518 (vtable slot 0x44) */
 DateScreen *DateScreen_Delete(DateScreen *self)

@@ -404,13 +404,13 @@ void *InsurerTalk_Delete(void *talk)
 CLEAN_AS(func_ov071_02278f80, InsurerTalk_Delete)
 
 /* func_ov071_02278fa0 (slot 0x00): the scene class 0x020d9ff8's destructor. */
-void *InsurerTalk_Destroy(void *talk)
+void *InsurerTalk_Destruct(void *talk)
 {
     *(const u8 **) talk = data_ov071_0227a1e8;
     Obj020d9ff8_DestructBody(talk);
     return talk;
 }
-CLEAN_AS(func_ov071_02278fa0, InsurerTalk_Destroy)
+CLEAN_AS(func_ov071_02278fa0, InsurerTalk_Destruct)
 
 /* func_ov071_02278fb8: the constructor: a scene of class 0x020d9ff8 given this class's
  * vtable. */

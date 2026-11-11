@@ -101,11 +101,11 @@ int VillagerHouse_Leave(VillagerHouse *house);
 int VillagerHouse_Draw(VillagerHouse *house);
 int VillagerHouse_Update(VillagerHouse *house);
 int VillagerHouse_Init(VillagerHouse *house);
-VillagerHouse *VillagerHouse_DestroyAndFree(VillagerHouse *house);
-VillagerHouse *VillagerHouse_Destroy(VillagerHouse *house);
+VillagerHouse *VillagerHouse_Delete(VillagerHouse *house);
+VillagerHouse *VillagerHouse_Destruct(VillagerHouse *house);
 VillagerHouse *VillagerHouse_Construct(VillagerHouse *house);
 void VillagerHouse_New(void);
-VillagerHouse *VillagerHouse_ReceiverDestroyAndFree(void *receiver);
-VillagerHouse *VillagerHouse_ReceiverDestroy(void *receiver);
+VillagerHouse *VillagerHouse_ReceiverDelete(void *receiver);
+VillagerHouse *VillagerHouse_ReceiverDestruct(void *receiver);
 
 #endif

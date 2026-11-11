@@ -151,7 +151,7 @@ typedef struct WfcHostList {
 } WfcHostList;
 
 /* wfc_host_list.c */
-WfcHostList *WfcHostList_Destroy(WfcHostList *self);
+WfcHostList *WfcHostList_Destruct(WfcHostList *self);
 WfcHostList *WfcHostList_Delete(WfcHostList *self);
 void WfcHostList_ClearFlags(WfcHostList *self, u16 mask);
 void WfcHostList_SetFlags(WfcHostList *self, u16 mask);

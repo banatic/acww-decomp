@@ -179,7 +179,7 @@ static_assert(offsetof(PocketsBox, box) == 0x28dc && offsetof(PocketsBox, item) 
 static_assert(offsetof(PocketsBox, cursor) == 0x2921 && offsetof(PocketsBox, close_delay) == 0x2928, "bytes");
 static_assert(sizeof(PocketsBox) == 0x292c, "size (func_ov100_0229eaec)");
 
-PocketsBox *PocketsBox_Destroy(PocketsBox *self);
+PocketsBox *PocketsBox_Destruct(PocketsBox *self);
 PocketsBox *PocketsBox_Delete(PocketsBox *self);
 void PocketsBox_ClearFlags(PocketsBox *self, unsigned int flags);
 void PocketsBox_SetFlags(PocketsBox *self, unsigned int flags);

@@ -97,29 +97,29 @@ static void mbx_destroy_members(MailboxScene *self)
     self->base.vtable = data_ov106_0229f6e0;
     Letter_Destruct(&self->swapped);
     Letter_Destruct(&self->held);
-    ButtonPanel_Destroy(&self->panel);
+    ButtonPanel_Destruct(&self->panel);
     __cxa_vec_cleanup(self->unk_35b4, MAILBOX_SCENE_LETTERS, sizeof(Letter), func_02066688);
     __cxa_vec_cleanup(self->mailbox, MAILBOX_SCENE_LETTERS, sizeof(Letter), func_02066688);
-    LabelButton0_Destroy(&self->button);
+    LabelButton0_Destruct(&self->button);
     LetterView_Destruct(&self->view);
     ErrorMessage_Destruct(&self->error);
-    PagedChoice_Destroy(mbx_choice(self));
-    Glider0_Destroy(&self->cursor_sprite);
-    Glide_Destroy(&self->glide);
-    Popup_Destroy(&self->popup);
+    PagedChoice_Destruct(mbx_choice(self));
+    Glider0_Destruct(&self->cursor_sprite);
+    Glide_Destruct(&self->glide);
+    Popup_Destruct(&self->popup);
     PocketsWallet_Destruct(&self->wallet);
     PocketsLetters_Destruct(&self->letters);
     PocketsGrid_Destruct(&self->grid);
-    MenuScene_DestroyBase(mbx_scene(self));
+    MenuScene_DestructBase(mbx_scene(self));
 }
 
 /* func_ov106_0229c180 */
-MailboxScene *MailboxScene_Destroy(MailboxScene *self)
+MailboxScene *MailboxScene_Destruct(MailboxScene *self)
 {
     mbx_destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov106_0229c180, MailboxScene_Destroy)
+CLEAN_AS(func_ov106_0229c180, MailboxScene_Destruct)
 
 /* func_ov106_0229c260 */
 MailboxScene *MailboxScene_Delete(MailboxScene *self)

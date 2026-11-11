@@ -171,20 +171,20 @@ static int fm_item_is(const u16 *item, u16 code)
 
 /* func_ov004_0221eed8 (vtable slot 0x40): the destructor, without freeing: its talk scene, then
  * the town villager scene object. */
-FleaMarketVillager *FleaMarketVillager_Destroy(FleaMarketVillager *villager)
+FleaMarketVillager *FleaMarketVillager_Destruct(FleaMarketVillager *villager)
 {
     *(const u8 **) (void *) villager->base = data_ov004_02253bb4;
-    FleaMarketTalk_Destroy(&villager->talk);
+    FleaMarketTalk_Destruct(&villager->talk);
     VillagerSceneObject_DestructBody(villager->base);
     return villager;
 }
-CLEAN_AS(func_ov004_0221eed8, FleaMarketVillager_Destroy)
+CLEAN_AS(func_ov004_0221eed8, FleaMarketVillager_Destruct)
 
 /* func_ov004_0221ef00 (vtable slot 0x44, the deleting destructor). */
 FleaMarketVillager *FleaMarketVillager_Delete(FleaMarketVillager *villager)
 {
     *(const u8 **) (void *) villager->base = data_ov004_02253bb4;
-    FleaMarketTalk_Destroy(&villager->talk);
+    FleaMarketTalk_Destruct(&villager->talk);
     VillagerSceneObject_DestructBody(villager->base);
     Heap_FreeAux(villager);
     return villager;
@@ -603,13 +603,13 @@ FleaMarketTalk *FleaMarketTalk_Delete(FleaMarketTalk *talk)
 CLEAN_AS(func_ov004_0221f828, FleaMarketTalk_Delete)
 
 /* func_ov004_0221f848 (the talk scene's vtable slot 0x00, its destructor). */
-FleaMarketTalk *FleaMarketTalk_Destroy(FleaMarketTalk *talk)
+FleaMarketTalk *FleaMarketTalk_Destruct(FleaMarketTalk *talk)
 {
     talk->base.scene.vtable = data_ov004_02253b24;
     VillagerTalkScene_DestructBody(&talk->base);
     return talk;
 }
-CLEAN_AS(func_ov004_0221f848, FleaMarketTalk_Destroy)
+CLEAN_AS(func_ov004_0221f848, FleaMarketTalk_Destruct)
 
 /* func_ov004_0221f860: its talk scene's constructor. */
 FleaMarketTalk *FleaMarketTalk_Construct(FleaMarketTalk *talk)

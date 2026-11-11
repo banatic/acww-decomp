@@ -59,21 +59,21 @@ static void spawn_spot_destroy_parts(GullSpot *spot)
 
 /* func_ov003_0221ee74 (vtable slot 0x44, the deleting destructor): the destructor's work, then
  * the memory freed. */
-GullSpot *GullSpot_DestroyAndFree(GullSpot *spot)
+GullSpot *GullSpot_Delete(GullSpot *spot)
 {
     spawn_spot_destroy_parts(spot);
     Heap_FreeAux(spot);
     return spot;
 }
-CLEAN_AS(func_ov003_0221ee74, GullSpot_DestroyAndFree)
+CLEAN_AS(func_ov003_0221ee74, GullSpot_Delete)
 
 /* func_ov003_0221eea0 (vtable slot 0x40): the destructor, without freeing. */
-GullSpot *GullSpot_Destroy(GullSpot *spot)
+GullSpot *GullSpot_Destruct(GullSpot *spot)
 {
     spawn_spot_destroy_parts(spot);
     return spot;
 }
-CLEAN_AS(func_ov003_0221eea0, GullSpot_Destroy)
+CLEAN_AS(func_ov003_0221eea0, GullSpot_Destruct)
 
 /* func_ov003_0221eec4: the constructor: overlay 9's, then the vtables. */
 GullSpot *GullSpot_Construct(GullSpot *spot)
@@ -102,16 +102,16 @@ static GullSpot *spawn_spot_from_receiver(void *receiver)
     return (GullSpot *) (void *) ((u8 *) receiver - SPAWN_SPOT_RECEIVER_OFFSET);
 }
 
-/* _ZThn236_N18Obj_ov003_022398e8D0Ev (receiver slot 0x04): GullSpot_DestroyAndFree. */
-GullSpot *GullSpot_ReceiverDestroyAndFree(void *receiver)
+/* _ZThn236_N18Obj_ov003_022398e8D0Ev (receiver slot 0x04): GullSpot_Delete. */
+GullSpot *GullSpot_ReceiverDelete(void *receiver)
 {
-    return GullSpot_DestroyAndFree(spawn_spot_from_receiver(receiver));
+    return GullSpot_Delete(spawn_spot_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov003_022398e8D0Ev, GullSpot_ReceiverDestroyAndFree)
+CLEAN_AS(_ZThn236_N18Obj_ov003_022398e8D0Ev, GullSpot_ReceiverDelete)
 
-/* _ZThn236_N18Obj_ov003_022398e8D1Ev (receiver slot 0x00): GullSpot_Destroy. */
-GullSpot *GullSpot_ReceiverDestroy(void *receiver)
+/* _ZThn236_N18Obj_ov003_022398e8D1Ev (receiver slot 0x00): GullSpot_Destruct. */
+GullSpot *GullSpot_ReceiverDestruct(void *receiver)
 {
-    return GullSpot_Destroy(spawn_spot_from_receiver(receiver));
+    return GullSpot_Destruct(spawn_spot_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov003_022398e8D1Ev, GullSpot_ReceiverDestroy)
+CLEAN_AS(_ZThn236_N18Obj_ov003_022398e8D1Ev, GullSpot_ReceiverDestruct)

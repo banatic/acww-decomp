@@ -86,19 +86,19 @@ static void time_update_sprite(Glider *sprite)
 static void time_destroy_members(TimeScreen *self)
 {
     self->base.vtable = data_ov136_0229d510;
-    ClockSetter_Destroy(&self->picker);
-    ButtonPanel_Destroy(&self->panel);
-    Glider0_Destroy(&self->cursor_sprite);
-    MenuScene_DestroyBase(time_scene(self));
+    ClockSetter_Destruct(&self->picker);
+    ButtonPanel_Destruct(&self->panel);
+    Glider0_Destruct(&self->cursor_sprite);
+    MenuScene_DestructBase(time_scene(self));
 }
 
 /* func_ov136_0229c4e0 (vtable slot 0x40) */
-TimeScreen *TimeScreen_Destroy(TimeScreen *self)
+TimeScreen *TimeScreen_Destruct(TimeScreen *self)
 {
     time_destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov136_0229c4e0, TimeScreen_Destroy)
+CLEAN_AS(func_ov136_0229c4e0, TimeScreen_Destruct)
 
 /* func_ov136_0229c518 (vtable slot 0x44) */
 TimeScreen *TimeScreen_Delete(TimeScreen *self)

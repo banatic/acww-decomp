@@ -396,13 +396,13 @@ void *AcornNpcTalk_Delete(void *talk)
 CLEAN_AS(func_ov087_02278fbc, AcornNpcTalk_Delete)
 
 /* func_ov087_02278fdc (slot 0x00): the scene class 0x020d9ff8's destructor. */
-void *AcornNpcTalk_Destroy(void *talk)
+void *AcornNpcTalk_Destruct(void *talk)
 {
     *(const u8 **) talk = data_ov087_0227945c;
     Obj020d9ff8_DestructBody(talk);
     return talk;
 }
-CLEAN_AS(func_ov087_02278fdc, AcornNpcTalk_Destroy)
+CLEAN_AS(func_ov087_02278fdc, AcornNpcTalk_Destruct)
 
 /* func_ov087_02278ff4: the constructor: a scene of class 0x020d9ff8 given this class's vtable. */
 void *AcornNpcTalk_Construct(void *talk)

@@ -87,9 +87,9 @@ typedef struct BirthdayVillager {
 } BirthdayVillager;
 
 BirthdayVillagerTalk *BirthdayVillagerTalk_Delete(BirthdayVillagerTalk *talk);
-BirthdayVillager *BirthdayVillager_Destroy(BirthdayVillager *villager);
+BirthdayVillager *BirthdayVillager_Destruct(BirthdayVillager *villager);
 BirthdayVillager *BirthdayVillager_Delete(BirthdayVillager *villager);
-BirthdayVillagerTalk *BirthdayVillagerTalk_Destroy(BirthdayVillagerTalk *talk);
+BirthdayVillagerTalk *BirthdayVillagerTalk_Destruct(BirthdayVillagerTalk *talk);
 int BirthdayVillager_HasActionSound(BirthdayVillager *villager);
 BirthdayVillager *BirthdayVillager_ActionSoundPlayed(BirthdayVillager *villager);
 void BirthdayVillager_UpdateThanks(BirthdayVillager *villager);

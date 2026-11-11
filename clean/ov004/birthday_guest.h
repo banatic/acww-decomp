@@ -68,9 +68,9 @@ typedef struct BirthdayGuest {
 } BirthdayGuest;
 
 BirthdayGuestTalk *BirthdayGuestTalk_Delete(BirthdayGuestTalk *talk);
-BirthdayGuest *BirthdayGuest_Destroy(BirthdayGuest *guest);
+BirthdayGuest *BirthdayGuest_Destruct(BirthdayGuest *guest);
 BirthdayGuest *BirthdayGuest_Delete(BirthdayGuest *guest);
-BirthdayGuestTalk *BirthdayGuestTalk_Destroy(BirthdayGuestTalk *talk);
+BirthdayGuestTalk *BirthdayGuestTalk_Destruct(BirthdayGuestTalk *talk);
 int BirthdayGuest_HasActionSound(BirthdayGuest *guest);
 BirthdayGuest *BirthdayGuest_ActionSoundPlayed(BirthdayGuest *guest);
 void BirthdayGuest_UpdateTalk(BirthdayGuest *guest);

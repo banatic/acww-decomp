@@ -114,20 +114,20 @@ static void wfc_host_list_call_slot(void *object, int slot)
 static void wfc_host_list_destroy_members(WfcHostList *self)
 {
     self->base.vtable = data_ov146_0229b680;
-    PushButton_Destroy(&self->knob_button);
-    MessageWindow_Destroy(&self->window);
+    PushButton_Destruct(&self->knob_button);
+    MessageWindow_Destruct(&self->window);
     __cxa_vec_cleanup(self->labels, WFC_HOST_LIST_LABELS, sizeof(TextLabel), func_02070be8);
-    Glider0_Destroy(&self->pointer);
-    MenuScene_DestroyBase(wfc_host_list_scene(self));
+    Glider0_Destruct(&self->pointer);
+    MenuScene_DestructBase(wfc_host_list_scene(self));
 }
 
 /* func_ov146_022995a0 (vtable slot 0x40) */
-WfcHostList *WfcHostList_Destroy(WfcHostList *self)
+WfcHostList *WfcHostList_Destruct(WfcHostList *self)
 {
     wfc_host_list_destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov146_022995a0, WfcHostList_Destroy)
+CLEAN_AS(func_ov146_022995a0, WfcHostList_Destruct)
 
 /* func_ov146_022995f4 (vtable slot 0x44) */
 WfcHostList *WfcHostList_Delete(WfcHostList *self)

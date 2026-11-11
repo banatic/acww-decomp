@@ -18,7 +18,7 @@ void MessageWindow_Close(MessageWindow *window);
 void MessageWindow_Open(MessageWindow *window, int message, int x, int y);
 void MessageWindow_SetPlace(MessageWindow *window, int x, int y);
 MessageWindow *MessageWindow_Delete(MessageWindow *window);
-MessageWindow *MessageWindow_Destroy(MessageWindow *window);
+MessageWindow *MessageWindow_Destruct(MessageWindow *window);
 MessageWindow *MessageWindow_Construct(MessageWindow *window);
 
 #endif

@@ -43,7 +43,7 @@ typedef struct MenuDispatch {
     MenuScene base; /* 0x00: its byte 0x91 is the mode */
 } MenuDispatch;
 
-MenuDispatch *MenuDispatch_Destroy(MenuDispatch *self);
+MenuDispatch *MenuDispatch_Destruct(MenuDispatch *self);
 MenuDispatch *MenuDispatch_Delete(MenuDispatch *self);
 void MenuDispatch_EndMembers(MenuDispatch *self);
 void MenuDispatch_SetUp(MenuDispatch *self);

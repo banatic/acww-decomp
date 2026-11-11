@@ -65,13 +65,13 @@ LabelButton *LabelButton1_Delete(LabelButton *button)
 CLEAN_AS(func_ov002_0220b3f0, LabelButton1_Delete)
 
 /* func_ov002_0220b410 (vtable entry 0) */
-LabelButton *LabelButton1_Destroy(LabelButton *button)
+LabelButton *LabelButton1_Destruct(LabelButton *button)
 {
     button->vtable = data_ov002_0220bd58;
     LabelButtonBase_Destruct(button);
     return button;
 }
-CLEAN_AS(func_ov002_0220b410, LabelButton1_Destroy)
+CLEAN_AS(func_ov002_0220b410, LabelButton1_Destruct)
 
 /* func_ov002_0220b428 */
 LabelButton *LabelButton1_Construct(LabelButton *button)
@@ -93,13 +93,13 @@ LabelButton *LabelButton0_Delete(LabelButton *button)
 CLEAN_AS(func_ov002_0220b444, LabelButton0_Delete)
 
 /* func_ov002_0220b464 (vtable entry 0) */
-LabelButton *LabelButton0_Destroy(LabelButton *button)
+LabelButton *LabelButton0_Destruct(LabelButton *button)
 {
     button->vtable = data_ov002_0220bd74;
     LabelButtonBase_Destruct(button);
     return button;
 }
-CLEAN_AS(func_ov002_0220b464, LabelButton0_Destroy)
+CLEAN_AS(func_ov002_0220b464, LabelButton0_Destruct)
 
 /* func_ov002_0220b47c */
 LabelButton *LabelButton0_Construct(LabelButton *button)

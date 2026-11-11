@@ -631,13 +631,13 @@ void *TaxiDriverTalk_Delete(void *talk)
 CLEAN_AS(func_ov051_02261038, TaxiDriverTalk_Delete)
 
 /* func_ov051_02261058 (slot 0x00): the scene base's destructor. */
-TaxiDriverTalk *TaxiDriverTalk_Destroy(TaxiDriverTalk *talk)
+TaxiDriverTalk *TaxiDriverTalk_Destruct(TaxiDriverTalk *talk)
 {
     talk->base.vtable = data_ov051_02261804;
     SceneBase_DestructBody(talk);
     return talk;
 }
-CLEAN_AS(func_ov051_02261058, TaxiDriverTalk_Destroy)
+CLEAN_AS(func_ov051_02261058, TaxiDriverTalk_Destruct)
 
 /* func_ov051_02261070: the constructor: a scene base given this class's vtable. */
 void *TaxiDriverTalk_Construct(void *talk)

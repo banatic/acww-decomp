@@ -48,7 +48,7 @@ void MysteryCatTalk_OnLineEnded(MysteryCatTalk *talk);
 void MysteryCatTalk_Line(MysteryCatTalk *talk, MysteryCatLine *out);
 void MysteryCatTalk_Begin(MysteryCatTalk *talk, MysteryCat *owner);
 void *MysteryCatTalk_Delete(void *talk);
-void *MysteryCatTalk_Destroy(void *talk);
+void *MysteryCatTalk_Destruct(void *talk);
 void *MysteryCatTalk_Construct(void *talk);
 void MysteryCatTalk_TakeImpression(MysteryCatTalk *talk);
 void MysteryCatTalk_TakeDesign(MysteryCatTalk *talk);

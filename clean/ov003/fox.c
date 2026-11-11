@@ -529,21 +529,21 @@ static void fox_destroy_parts(Fox *fox)
 
 /* func_ov003_0221c1dc (the deleting destructor): the destructor's work, then the memory
  * freed. */
-Fox *Fox_DestroyAndFree(Fox *fox)
+Fox *Fox_Delete(Fox *fox)
 {
     fox_destroy_parts(fox);
     Heap_FreeAux(fox);
     return fox;
 }
-CLEAN_AS(func_ov003_0221c1dc, Fox_DestroyAndFree)
+CLEAN_AS(func_ov003_0221c1dc, Fox_Delete)
 
 /* func_ov003_0221c208: the destructor, without freeing. */
-Fox *Fox_Destroy(Fox *fox)
+Fox *Fox_Destruct(Fox *fox)
 {
     fox_destroy_parts(fox);
     return fox;
 }
-CLEAN_AS(func_ov003_0221c208, Fox_Destroy)
+CLEAN_AS(func_ov003_0221c208, Fox_Destruct)
 
 /* func_ov003_0221c22c: the constructor: overlay 9's, then the vtables. */
 Fox *Fox_Construct(Fox *fox)
@@ -567,12 +567,12 @@ CLEAN_AS(func_ov003_0221c250, Fox_New)
 
 /* ---- The receiver vtable's thunks: each finds the fox around `receiver`. */
 
-/* _ZThn236_N18Obj_ov003_02238630D0Ev: Fox_DestroyAndFree. */
-Fox *Fox_ReceiverDestroyAndFree(void *receiver)
+/* _ZThn236_N18Obj_ov003_02238630D0Ev: Fox_Delete. */
+Fox *Fox_ReceiverDelete(void *receiver)
 {
-    return Fox_DestroyAndFree(fox_from_receiver(receiver));
+    return Fox_Delete(fox_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov003_02238630D0Ev, Fox_ReceiverDestroyAndFree)
+CLEAN_AS(_ZThn236_N18Obj_ov003_02238630D0Ev, Fox_ReceiverDelete)
 
 /* _ZThn236_N18Obj_ov003_0223863017vfunc_02066994_6cEv: Fox_ReceiverSlot6c. */
 int Fox_ReceiverThunk6c(void *receiver)
@@ -602,9 +602,9 @@ void Fox_ReceiverThunk10(void *receiver)
 }
 CLEAN_AS(_ZThn236_N18Obj_ov003_0223863017vfunc_02066994_10Ev, Fox_ReceiverThunk10)
 
-/* _ZThn236_N18Obj_ov003_02238630D1Ev: Fox_Destroy. */
-Fox *Fox_ReceiverDestroy(void *receiver)
+/* _ZThn236_N18Obj_ov003_02238630D1Ev: Fox_Destruct. */
+Fox *Fox_ReceiverDestruct(void *receiver)
 {
-    return Fox_Destroy(fox_from_receiver(receiver));
+    return Fox_Destruct(fox_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov003_02238630D1Ev, Fox_ReceiverDestroy)
+CLEAN_AS(_ZThn236_N18Obj_ov003_02238630D1Ev, Fox_ReceiverDestruct)

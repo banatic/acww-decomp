@@ -44,7 +44,7 @@ void PushButton_Press(PushButton *button);
 void PushButton_ShowUp(PushButton *button);
 int PushButton_Contains(PushButton *button, int x, int y);
 PushButton *PushButton_Delete(PushButton *button);
-PushButton *PushButton_Destroy(PushButton *button);
+PushButton *PushButton_Destruct(PushButton *button);
 PushButton *PushButton_Construct(PushButton *button);
 
 #endif

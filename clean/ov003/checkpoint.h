@@ -53,11 +53,11 @@ int Checkpoint_Leave(Checkpoint *checkpoint);
 int Checkpoint_Slot24(void);
 int Checkpoint_Update(Checkpoint *checkpoint);
 int Checkpoint_Init(Checkpoint *checkpoint);
-Checkpoint *Checkpoint_DestroyAndFree(Checkpoint *checkpoint);
-Checkpoint *Checkpoint_Destroy(Checkpoint *checkpoint);
+Checkpoint *Checkpoint_Delete(Checkpoint *checkpoint);
+Checkpoint *Checkpoint_Destruct(Checkpoint *checkpoint);
 Checkpoint *Checkpoint_Construct(Checkpoint *checkpoint);
 void Checkpoint_New(void);
-Checkpoint *Checkpoint_ReceiverDestroyAndFree(void *receiver);
-Checkpoint *Checkpoint_ReceiverDestroy(void *receiver);
+Checkpoint *Checkpoint_ReceiverDelete(void *receiver);
+Checkpoint *Checkpoint_ReceiverDestruct(void *receiver);
 
 #endif

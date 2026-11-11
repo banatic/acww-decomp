@@ -128,13 +128,13 @@ void *TownPelicanTalk_Delete(void *talk)
 CLEAN_AS(func_ov075_02278b80, TownPelicanTalk_Delete)
 
 /* func_ov075_02278ba0 (slot 0x00): the scene class 0x020d9ff8's destructor. */
-TownPelicanTalk *TownPelicanTalk_Destroy(TownPelicanTalk *talk)
+TownPelicanTalk *TownPelicanTalk_Destruct(TownPelicanTalk *talk)
 {
     talk->base.vtable = data_ov075_0227996c;
     Obj020d9ff8_DestructBody(talk);
     return talk;
 }
-CLEAN_AS(func_ov075_02278ba0, TownPelicanTalk_Destroy)
+CLEAN_AS(func_ov075_02278ba0, TownPelicanTalk_Destruct)
 
 /* func_ov075_02278bb8: the constructor: a scene of class 0x020d9ff8 given this class's vtable. */
 void *TownPelicanTalk_Construct(void *talk)

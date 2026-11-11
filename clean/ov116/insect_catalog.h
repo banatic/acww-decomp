@@ -7,7 +7,7 @@
 #include "ov115/catalog_scene.h"
 #include "types.h"
 
-CatalogScene *InsectCatalog_Destroy(CatalogScene *self);
+CatalogScene *InsectCatalog_Destruct(CatalogScene *self);
 CatalogScene *InsectCatalog_Delete(CatalogScene *self);
 void InsectCatalog_SetFlags(CatalogScene *self, u16 flags);
 int InsectCatalog_TestFlags(CatalogScene *self, u16 flags);

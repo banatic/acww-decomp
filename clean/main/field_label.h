@@ -73,7 +73,7 @@ void FieldLabel_UpdateGlobal(void);
 void FieldLabel_ResetGlobalWindow(void);
 void FieldLabel_ResetGlobal(void);
 FieldLabel *FieldLabel_Delete(FieldLabel *label);
-FieldLabel *FieldLabel_Destroy(FieldLabel *label);
+FieldLabel *FieldLabel_Destruct(FieldLabel *label);
 FieldLabel *FieldLabel_Construct(FieldLabel *label);
 void FieldLabel_RaiseEndFailure(void);
 void FieldLabel_ShowNotice(int notice);

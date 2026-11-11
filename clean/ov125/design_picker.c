@@ -111,21 +111,21 @@ static void picker_update_sprite(Glider *sprite)
 static void picker_destroy_members(DesignPicker *self)
 {
     self->base.vtable = data_ov125_022a0ab8;
-    ButtonPanel_Destroy(&self->panel);
-    Glider0_Destroy(&self->cursor_sprite);
-    Popup_Destroy(&self->popup);
-    PagedChoice_Destroy(picker_choice(self));
-    HanPanel_Destroy(&self->title);
-    MenuScene_DestroyBase(picker_scene(self));
+    ButtonPanel_Destruct(&self->panel);
+    Glider0_Destruct(&self->cursor_sprite);
+    Popup_Destruct(&self->popup);
+    PagedChoice_Destruct(picker_choice(self));
+    HanPanel_Destruct(&self->title);
+    MenuScene_DestructBase(picker_scene(self));
 }
 
 /* func_ov125_0229f6a0 (vtable slot 0x40) */
-DesignPicker *DesignPicker_Destroy(DesignPicker *self)
+DesignPicker *DesignPicker_Destruct(DesignPicker *self)
 {
     picker_destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov125_0229f6a0, DesignPicker_Destroy)
+CLEAN_AS(func_ov125_0229f6a0, DesignPicker_Destruct)
 
 /* func_ov125_0229f6f4 (vtable slot 0x44) */
 DesignPicker *DesignPicker_Delete(DesignPicker *self)

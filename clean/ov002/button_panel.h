@@ -61,7 +61,7 @@ void ButtonPanel_Draw(ButtonPanel *panel, int wipe_offset);
 void ButtonPanel_CloseTexts(ButtonPanel *panel);
 void ButtonPanel_LoadTextColors(ButtonPanel *panel);
 ButtonPanel *ButtonPanel_Delete(ButtonPanel *panel);
-ButtonPanel *ButtonPanel_Destroy(ButtonPanel *panel);
+ButtonPanel *ButtonPanel_Destruct(ButtonPanel *panel);
 ButtonPanel *ButtonPanel_Construct(ButtonPanel *panel);
 
 #endif

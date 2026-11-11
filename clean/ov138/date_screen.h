@@ -79,7 +79,7 @@ typedef struct DateScreen {
     ClockSetter clock;    /* 0x2c8: overlay 134's clock setter */
 } DateScreen;
 
-DateScreen *DateScreen_Destroy(DateScreen *self);
+DateScreen *DateScreen_Destruct(DateScreen *self);
 DateScreen *DateScreen_Delete(DateScreen *self);
 void DateScreen_ClearFlags(DateScreen *self, u16 flags);
 void DateScreen_SetFlags(DateScreen *self, u16 flags);

@@ -76,7 +76,7 @@ typedef struct BirthdayScreen {
     u8 place;             /* 0x2b77: BirthdayScreenPlace */
 } BirthdayScreen;
 
-BirthdayScreen *BirthdayScreen_Destroy(BirthdayScreen *self);
+BirthdayScreen *BirthdayScreen_Destruct(BirthdayScreen *self);
 BirthdayScreen *BirthdayScreen_Delete(BirthdayScreen *self);
 void BirthdayScreen_ClearFlags(BirthdayScreen *self, u16 flags);
 void BirthdayScreen_SetFlags(BirthdayScreen *self, u16 flags);

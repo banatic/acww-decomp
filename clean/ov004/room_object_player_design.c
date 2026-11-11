@@ -107,13 +107,13 @@ PlayerDesignObject *PlayerDesignObject_Delete(PlayerDesignObject *object)
 CLEAN_AS(func_ov004_02213ce0, PlayerDesignObject_Delete)
 
 /* func_ov004_02213d0c (the destructor, vtable slot 0x40) */
-PlayerDesignObject *PlayerDesignObject_Destroy(PlayerDesignObject *object)
+PlayerDesignObject *PlayerDesignObject_Destruct(PlayerDesignObject *object)
 {
     player_design_object_set_vtables(object);
     RoomObject_DestructBase(&object->base);
     return object;
 }
-CLEAN_AS(func_ov004_02213d0c, PlayerDesignObject_Destroy)
+CLEAN_AS(func_ov004_02213d0c, PlayerDesignObject_Destruct)
 
 /* func_ov004_02213d30 (the constructor). Its node is left as the allocation zeroed it until the
  * start sets it. */
@@ -151,8 +151,8 @@ PlayerDesignObject *PlayerDesignObjectReceiver_Delete(void *receiver)
 CLEAN_AS(_ZThn236_N18Obj_ov004_02251ff0D0Ev, PlayerDesignObjectReceiver_Delete)
 
 /* func_ov004_0221a9e0: the destructor, entered from the receiver part. */
-PlayerDesignObject *PlayerDesignObjectReceiver_Destroy(void *receiver)
+PlayerDesignObject *PlayerDesignObjectReceiver_Destruct(void *receiver)
 {
-    return PlayerDesignObject_Destroy(player_design_object_from_receiver(receiver));
+    return PlayerDesignObject_Destruct(player_design_object_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov004_02251ff0D1Ev, PlayerDesignObjectReceiver_Destroy)
+CLEAN_AS(_ZThn236_N18Obj_ov004_02251ff0D1Ev, PlayerDesignObjectReceiver_Destruct)

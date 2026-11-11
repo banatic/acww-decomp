@@ -16,7 +16,7 @@ typedef struct Block021c5160 {
 void Block021c5160_SetDefaults(Block021c5160 *block);
 void Block021c5160_SetColumn(Block021c5160 *block, int index, int a, int b);
 void Block021c5160_Clear(Block021c5160 *block);
-void Block021c5160_Destroy(Block021c5160 *block);
+void Block021c5160_Destruct(Block021c5160 *block);
 void *Block021c5160_Construct(Block021c5160 *block);
 void RoomScore_SetBonusFlags(u32 flags);
 void RoomScore_SetTotal(u32 total);

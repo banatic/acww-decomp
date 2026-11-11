@@ -232,13 +232,13 @@ void *MysteryCatTalk_Delete(void *talk)
 CLEAN_AS(func_ov074_02278fc4, MysteryCatTalk_Delete)
 
 /* func_ov074_02278fe4 (slot 0x00): the scene class 0x020d9ff8's destructor. */
-void *MysteryCatTalk_Destroy(void *talk)
+void *MysteryCatTalk_Destruct(void *talk)
 {
     *(const u8 **) talk = data_ov074_02279bd8;
     Obj020d9ff8_DestructBody(talk);
     return talk;
 }
-CLEAN_AS(func_ov074_02278fe4, MysteryCatTalk_Destroy)
+CLEAN_AS(func_ov074_02278fe4, MysteryCatTalk_Destruct)
 
 /* func_ov074_02278ffc: the constructor: a scene of class 0x020d9ff8 given this class's vtable. */
 void *MysteryCatTalk_Construct(void *talk)

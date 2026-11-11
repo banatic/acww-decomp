@@ -106,7 +106,7 @@ typedef struct StarView {
 } StarView;
 
 /* star_view.c: the scene */
-StarView *StarView_Destroy(StarView *self);
+StarView *StarView_Destruct(StarView *self);
 StarView *StarView_Delete(StarView *self);
 void StarView_ClearFlags(StarView *self, unsigned short mask);
 void StarView_SetFlags(StarView *self, unsigned short mask);

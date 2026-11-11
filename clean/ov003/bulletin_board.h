@@ -51,11 +51,11 @@ int BulletinBoard_Slot0c(void);
 int BulletinBoard_Slot24(void);
 int BulletinBoard_Update(BulletinBoard *object);
 int BulletinBoard_Reset(BulletinBoard *object);
-BulletinBoard *BulletinBoard_DestroyAndFree(BulletinBoard *object);
-BulletinBoard *BulletinBoard_Destroy(BulletinBoard *object);
+BulletinBoard *BulletinBoard_Delete(BulletinBoard *object);
+BulletinBoard *BulletinBoard_Destruct(BulletinBoard *object);
 BulletinBoard *BulletinBoard_Construct(BulletinBoard *object);
 void BulletinBoard_New(void);
-BulletinBoard *BulletinBoard_ReceiverDestroyAndFree(void *receiver);
-BulletinBoard *BulletinBoard_ReceiverDestroy(void *receiver);
+BulletinBoard *BulletinBoard_ReceiverDelete(void *receiver);
+BulletinBoard *BulletinBoard_ReceiverDestruct(void *receiver);
 
 #endif

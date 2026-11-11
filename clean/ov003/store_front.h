@@ -41,11 +41,11 @@ void StoreFront_LightTexturePath(StoreFront *store);
 void StoreFront_TexturePath(StoreFront *store);
 void StoreFront_ArchivePath(StoreFront *store);
 int StoreFront_SetUp(StoreFront *store);
-StoreFront *StoreFront_DestroyAndFree(StoreFront *store);
-StoreFront *StoreFront_Destroy(StoreFront *store);
+StoreFront *StoreFront_Delete(StoreFront *store);
+StoreFront *StoreFront_Destruct(StoreFront *store);
 StoreFront *StoreFront_Construct(StoreFront *store);
 void StoreFront_New(void);
-StoreFront *StoreFront_ReceiverDestroyAndFree(void *receiver);
-StoreFront *StoreFront_ReceiverDestroy(void *receiver);
+StoreFront *StoreFront_ReceiverDelete(void *receiver);
+StoreFront *StoreFront_ReceiverDestruct(void *receiver);
 
 #endif

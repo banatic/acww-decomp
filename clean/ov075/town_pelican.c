@@ -243,21 +243,21 @@ static NearSpot *tpel_near_spot(void)
 
 /* func_ov075_02278a00 (vtable slot 0x40): his talk scene's destructor, then the special
  * character's; the object. */
-void *TownPelican_Destroy(TownPelican *pelican)
+void *TownPelican_Destruct(TownPelican *pelican)
 {
     *(const u8 **) (void *) pelican->base = data_ov075_022799fc;
-    TownPelicanTalk_Destroy(&pelican->talk);
+    TownPelicanTalk_Destruct(&pelican->talk);
     SpecialSceneObject_DestructBody(pelican);
     return pelican;
 }
-CLEAN_AS(func_ov075_02278a00, TownPelican_Destroy)
+CLEAN_AS(func_ov075_02278a00, TownPelican_Destruct)
 
 /* func_ov075_02278a28 (vtable slot 0x44): the same, then the object freed. */
 void *TownPelican_Delete(void *object)
 {
     TownPelican *pelican = object;
     *(const u8 **) (void *) pelican->base = data_ov075_022799fc;
-    TownPelicanTalk_Destroy(&pelican->talk);
+    TownPelicanTalk_Destruct(&pelican->talk);
     SpecialSceneObject_DestructBody(pelican);
     Heap_FreeAux(pelican);
     return pelican;

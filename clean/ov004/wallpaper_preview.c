@@ -81,13 +81,13 @@ WallpaperPreview *WallpaperPreview_Delete(WallpaperPreview *object)
 CLEAN_AS(func_ov004_02212978, WallpaperPreview_Delete)
 
 /* func_ov004_022129a4 (the destructor, vtable slot 0x40); the same QUIRK. */
-WallpaperPreview *WallpaperPreview_Destroy(WallpaperPreview *object)
+WallpaperPreview *WallpaperPreview_Destruct(WallpaperPreview *object)
 {
     wallpaper_preview_set_vtables(object);
     RoomObject_DestructBase(&object->base);
     return object;
 }
-CLEAN_AS(func_ov004_022129a4, WallpaperPreview_Destroy)
+CLEAN_AS(func_ov004_022129a4, WallpaperPreview_Destruct)
 
 /* func_ov004_022129c8 (the constructor). Its other fields are left as the allocation zeroed
  * them. */
@@ -126,8 +126,8 @@ WallpaperPreview *WallpaperPreviewReceiver_Delete(void *receiver)
 CLEAN_AS(_ZThn236_N18Obj_ov004_022511e0D0Ev, WallpaperPreviewReceiver_Delete)
 
 /* func_ov004_0221ab68: the destructor, entered from the receiver part. */
-WallpaperPreview *WallpaperPreviewReceiver_Destroy(void *receiver)
+WallpaperPreview *WallpaperPreviewReceiver_Destruct(void *receiver)
 {
-    return WallpaperPreview_Destroy(wallpaper_preview_from_receiver(receiver));
+    return WallpaperPreview_Destruct(wallpaper_preview_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov004_022511e0D1Ev, WallpaperPreviewReceiver_Destroy)
+CLEAN_AS(_ZThn236_N18Obj_ov004_022511e0D1Ev, WallpaperPreviewReceiver_Destruct)

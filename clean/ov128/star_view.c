@@ -99,18 +99,18 @@ static void star_view_destroy_members(StarView *self)
     TextLabel_Destruct(&self->name_label);
     StarScope_Destruct(&self->scope);
     StarPalette_Destruct(&self->twinkle);
-    Glider0_Destroy(&self->pointer);
-    PanelSprite_Destroy(&self->button);
-    MenuScene_DestroyBase(star_view_scene(self));
+    Glider0_Destruct(&self->pointer);
+    PanelSprite_Destruct(&self->button);
+    MenuScene_DestructBase(star_view_scene(self));
 }
 
 /* func_ov128_0229b720 (vtable slot 0x40) */
-StarView *StarView_Destroy(StarView *self)
+StarView *StarView_Destruct(StarView *self)
 {
     star_view_destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov128_0229b720, StarView_Destroy)
+CLEAN_AS(func_ov128_0229b720, StarView_Destruct)
 
 /* func_ov128_0229b774 (vtable slot 0x44): the deleting destructor. */
 StarView *StarView_Delete(StarView *self)

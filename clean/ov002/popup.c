@@ -137,13 +137,13 @@ Popup *Popup_Delete(Popup *popup)
 CLEAN_AS(func_ov002_02207e08, Popup_Delete)
 
 /* func_ov002_02207e28 */
-Popup *Popup_Destroy(Popup *popup)
+Popup *Popup_Destruct(Popup *popup)
 {
     popup->vtable = data_ov002_0220baa8;
     SlidingWindow_DestructBase((SlidingWindow *) (void *) popup);
     return popup;
 }
-CLEAN_AS(func_ov002_02207e28, Popup_Destroy)
+CLEAN_AS(func_ov002_02207e28, Popup_Destruct)
 
 /* func_ov002_02207e40 */
 Popup *Popup_Construct(Popup *popup)

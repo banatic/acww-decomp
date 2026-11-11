@@ -510,7 +510,7 @@ static void life_destruct(TownObjectActor *actor)
     actor->vtable = data_ov009_022658dc;
     actor->receiver_vtable = data_ov009_022659a0;
     ModelPoolSlot_Destruct(&actor->model_slot);
-    TownObjectActorSound_Destroy(&actor->sound);
+    TownObjectActorSound_Destruct(&actor->sound);
     BuildingLights_Destruct(life_lights(actor));
     AnimatedModel_DestructComplete(life_model(actor));
     TalkReceiver_Destruct((TalkReceiver *) (void *) &actor->receiver_vtable);

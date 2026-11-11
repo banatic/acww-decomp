@@ -138,13 +138,13 @@ PushButton *PushButton_Delete(PushButton *button)
 CLEAN_AS(func_ov002_0220a5c4, PushButton_Delete)
 
 /* func_ov002_0220a5e4 (vtable entry 0) */
-PushButton *PushButton_Destroy(PushButton *button)
+PushButton *PushButton_Destruct(PushButton *button)
 {
     button->vtable = data_ov002_0220bcec;
     DualCellSprite_DestructCopy((DualCellSprite *) (void *) button);
     return button;
 }
-CLEAN_AS(func_ov002_0220a5e4, PushButton_Destroy)
+CLEAN_AS(func_ov002_0220a5e4, PushButton_Destruct)
 
 /* func_ov002_0220a5fc: main's sprite of kind 0, without an animation. */
 PushButton *PushButton_Construct(PushButton *button)

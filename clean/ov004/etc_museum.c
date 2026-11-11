@@ -774,7 +774,7 @@ EtcMuseum *EtcMuseum_Delete(EtcMuseum *museum)
 CLEAN_AS(func_ov004_0221be28, EtcMuseum_Delete)
 
 /* func_ov004_0221be68 (vtable slot 0x40): the destructor, without freeing. */
-EtcMuseum *EtcMuseum_Destroy(EtcMuseum *museum)
+EtcMuseum *EtcMuseum_Destruct(EtcMuseum *museum)
 {
     set_vtables(museum);
     TouchPickSphere_Destruct2(&museum->sphere);
@@ -782,7 +782,7 @@ EtcMuseum *EtcMuseum_Destroy(EtcMuseum *museum)
     SceneObjectBase_DestructBase(&museum->base);
     return museum;
 }
-CLEAN_AS(func_ov004_0221be68, EtcMuseum_Destroy)
+CLEAN_AS(func_ov004_0221be68, EtcMuseum_Destruct)
 
 /* func_ov004_0221bea4: the constructor: the base and the receiver part, then the vtables and the
  * sphere. Its own fields are left as the allocation zeroed them. */
@@ -842,10 +842,10 @@ void EtcMuseumReceiver_OnMessageBegun(void *receiver)
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_022533e017vfunc_02066994_10Ev, EtcMuseumReceiver_OnMessageBegun)
 
-/* func_ov004_0221bf68 (the receiver vtable's destructor): EtcMuseum_Destroy on the object around
+/* func_ov004_0221bf68 (the receiver vtable's destructor): EtcMuseum_Destruct on the object around
  * `receiver`. */
-EtcMuseum *EtcMuseumReceiver_Destroy(void *receiver)
+EtcMuseum *EtcMuseumReceiver_Destruct(void *receiver)
 {
-    return EtcMuseum_Destroy(museum_of(receiver));
+    return EtcMuseum_Destruct(museum_of(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov004_022533e0D1Ev, EtcMuseumReceiver_Destroy)
+CLEAN_AS(_ZThn236_N18Obj_ov004_022533e0D1Ev, EtcMuseumReceiver_Destruct)

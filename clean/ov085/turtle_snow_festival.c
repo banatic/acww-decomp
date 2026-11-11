@@ -121,21 +121,21 @@ static SceneAction *t5_action(TurtleSnowFestival *turtle)
 
 /* func_ov085_02278a00 (vtable slot 0x40): his talk scene's destructor, then the special
  * character's; the object. */
-TurtleSnowFestival *TurtleSnowFestival_Destroy(TurtleSnowFestival *turtle)
+TurtleSnowFestival *TurtleSnowFestival_Destruct(TurtleSnowFestival *turtle)
 {
     *(const u8 **) (void *) turtle->base = data_ov085_022794f0;
-    TurtleSnowFestivalTalk_Destroy(&turtle->talk);
+    TurtleSnowFestivalTalk_Destruct(&turtle->talk);
     SpecialSceneObject_DestructBody(turtle);
     return turtle;
 }
-CLEAN_AS(func_ov085_02278a00, TurtleSnowFestival_Destroy)
+CLEAN_AS(func_ov085_02278a00, TurtleSnowFestival_Destruct)
 
 /* func_ov085_02278a28 (vtable slot 0x44): the same, then the object freed. */
 void *TurtleSnowFestival_Delete(void *object)
 {
     TurtleSnowFestival *turtle = object;
     *(const u8 **) (void *) turtle->base = data_ov085_022794f0;
-    TurtleSnowFestivalTalk_Destroy(&turtle->talk);
+    TurtleSnowFestivalTalk_Destruct(&turtle->talk);
     SpecialSceneObject_DestructBody(turtle);
     Heap_FreeAux(turtle);
     return turtle;

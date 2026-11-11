@@ -82,13 +82,13 @@ MessageWindow *MessageWindow_Delete(MessageWindow *window)
 CLEAN_AS(func_ov002_0220b0d4, MessageWindow_Delete)
 
 /* func_ov002_0220b0f4 (vtable entry 0) */
-MessageWindow *MessageWindow_Destroy(MessageWindow *window)
+MessageWindow *MessageWindow_Destruct(MessageWindow *window)
 {
     window->vtable = data_ov002_0220bdac;
     SlidingWindow_DestructBase((SlidingWindow *) (void *) window);
     return window;
 }
-CLEAN_AS(func_ov002_0220b0f4, MessageWindow_Destroy)
+CLEAN_AS(func_ov002_0220b0f4, MessageWindow_Destruct)
 
 /* func_ov002_0220b10c */
 MessageWindow *MessageWindow_Construct(MessageWindow *window)

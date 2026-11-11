@@ -187,7 +187,7 @@ void CatalogList_EndFrame(CatalogList *self);
 void CatalogList_BeginFrame(CatalogList *self);
 void CatalogList_TearDown(CatalogList *self);
 void CatalogList_Start(CatalogList *self, u8 layer_a, u8 layer_b, u8 layer_c, u8 kind);
-CatalogList *CatalogList_Destroy(CatalogList *self);
+CatalogList *CatalogList_Destruct(CatalogList *self);
 CatalogList *CatalogList_Construct(CatalogList *self);
 
 #endif

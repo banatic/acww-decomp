@@ -103,7 +103,7 @@ void GiraffeTalk_AddScore(void *talk, unsigned char value);
 void GiraffeTalk_FirstLine(GiraffeTalk *talk, GiraffeLine *out);
 void GiraffeTalk_Begin(GiraffeTalk *talk, Giraffe *owner);
 void *GiraffeTalk_Delete(void *talk);
-void *GiraffeTalk_Destroy(void *talk);
+void *GiraffeTalk_Destruct(void *talk);
 void *GiraffeTalk_Construct(void *talk);
 int GiraffeTalk_PickQuestion(int unused, unsigned char *said, int count);
 int GiraffeTalk_CountUnsaid(int unused, const unsigned char *said, int count);

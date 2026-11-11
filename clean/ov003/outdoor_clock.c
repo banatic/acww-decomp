@@ -76,21 +76,21 @@ static void outdoor_clock_destroy_parts(OutdoorClock *clock)
 
 /* func_ov003_0221db04 (vtable slot 0x44, the deleting destructor): the destructor's work, then
  * the memory freed. */
-OutdoorClock *OutdoorClock_DestroyAndFree(OutdoorClock *clock)
+OutdoorClock *OutdoorClock_Delete(OutdoorClock *clock)
 {
     outdoor_clock_destroy_parts(clock);
     Heap_FreeAux(clock);
     return clock;
 }
-CLEAN_AS(func_ov003_0221db04, OutdoorClock_DestroyAndFree)
+CLEAN_AS(func_ov003_0221db04, OutdoorClock_Delete)
 
 /* func_ov003_0221db30 (vtable slot 0x40): the destructor. */
-OutdoorClock *OutdoorClock_Destroy(OutdoorClock *clock)
+OutdoorClock *OutdoorClock_Destruct(OutdoorClock *clock)
 {
     outdoor_clock_destroy_parts(clock);
     return clock;
 }
-CLEAN_AS(func_ov003_0221db30, OutdoorClock_Destroy)
+CLEAN_AS(func_ov003_0221db30, OutdoorClock_Destruct)
 
 /* func_ov003_0221db54: the constructor: overlay 9's, the vtables; no joints yet. */
 OutdoorClock *OutdoorClock_Construct(OutdoorClock *clock)
@@ -137,16 +137,16 @@ static OutdoorClock *outdoor_clock_from_receiver(void *receiver)
     return (OutdoorClock *) (void *) ((u8 *) receiver - OUTDOOR_CLOCK_RECEIVER_OFFSET);
 }
 
-/* _ZThn236_N18Obj_ov003_022390e8D0Ev: OutdoorClock_DestroyAndFree. */
-OutdoorClock *OutdoorClock_ReceiverDestroyAndFree(void *receiver)
+/* _ZThn236_N18Obj_ov003_022390e8D0Ev: OutdoorClock_Delete. */
+OutdoorClock *OutdoorClock_ReceiverDelete(void *receiver)
 {
-    return OutdoorClock_DestroyAndFree(outdoor_clock_from_receiver(receiver));
+    return OutdoorClock_Delete(outdoor_clock_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov003_022390e8D0Ev, OutdoorClock_ReceiverDestroyAndFree)
+CLEAN_AS(_ZThn236_N18Obj_ov003_022390e8D0Ev, OutdoorClock_ReceiverDelete)
 
-/* _ZThn236_N18Obj_ov003_022390e8D1Ev: OutdoorClock_Destroy. */
-OutdoorClock *OutdoorClock_ReceiverDestroy(void *receiver)
+/* _ZThn236_N18Obj_ov003_022390e8D1Ev: OutdoorClock_Destruct. */
+OutdoorClock *OutdoorClock_ReceiverDestruct(void *receiver)
 {
-    return OutdoorClock_Destroy(outdoor_clock_from_receiver(receiver));
+    return OutdoorClock_Destruct(outdoor_clock_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov003_022390e8D1Ev, OutdoorClock_ReceiverDestroy)
+CLEAN_AS(_ZThn236_N18Obj_ov003_022390e8D1Ev, OutdoorClock_ReceiverDestruct)

@@ -179,7 +179,7 @@ typedef struct LetterWriteScene {
     ErrorMessage error;                                /* 0x4864 */
 } LetterWriteScene;
 
-LetterWriteScene *LetterWrite_Destroy(LetterWriteScene *self);
+LetterWriteScene *LetterWrite_Destruct(LetterWriteScene *self);
 LetterWriteScene *LetterWrite_Delete(LetterWriteScene *self);
 void LetterWrite_ClearFlags(LetterWriteScene *self, unsigned short mask);
 void LetterWrite_SetFlags(LetterWriteScene *self, unsigned short mask);

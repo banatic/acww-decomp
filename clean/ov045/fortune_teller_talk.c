@@ -545,13 +545,13 @@ void *FortuneTellerTalk_Delete(void *talk)
 CLEAN_AS(func_ov045_02260d14, FortuneTellerTalk_Delete)
 
 /* func_ov045_02260d34 (slot 0x00): the scene base's destructor. */
-void *FortuneTellerTalk_Destroy(void *talk)
+void *FortuneTellerTalk_Destruct(void *talk)
 {
     *(const u8 **) talk = data_ov045_02261460;
     SceneBase_DestructBody(talk);
     return talk;
 }
-CLEAN_AS(func_ov045_02260d34, FortuneTellerTalk_Destroy)
+CLEAN_AS(func_ov045_02260d34, FortuneTellerTalk_Destruct)
 
 /* func_ov045_02260d4c: the constructor: a scene base given this class's vtable. */
 FortuneTellerTalk *FortuneTellerTalk_Construct(FortuneTellerTalk *talk)

@@ -37,7 +37,7 @@ enum {
 void Session_Reset(NetSession *session);
 void Session_ResetPlayer(NetSession *session);
 void Session_Init(NetSession *session);
-void Session_Destroy(NetSession *session);
+void Session_Destruct(NetSession *session);
 NetSession *Session_Construct(NetSession *session);
 
 int Session_IsLinkLost(int expected_aids);

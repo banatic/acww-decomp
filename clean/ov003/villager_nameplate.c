@@ -252,7 +252,7 @@ CLEAN_AS(_ZN18Obj_ov003_0223801019func_ov003_0220c1e4Ev, VillagerNameplate_Init)
 
 /* func_ov003_0220c220: the deleting destructor: the member, the receiver part and the base
  * destroyed in turn, then the memory freed. */
-VillagerNameplate *VillagerNameplate_DestroyAndFree(VillagerNameplate *board)
+VillagerNameplate *VillagerNameplate_Delete(VillagerNameplate *board)
 {
     board->vtable = data_ov003_02238010;
     board->receiver_vtable = data_ov003_02238078;
@@ -262,10 +262,10 @@ VillagerNameplate *VillagerNameplate_DestroyAndFree(VillagerNameplate *board)
     Heap_FreeAux(board);
     return board;
 }
-CLEAN_AS(func_ov003_0220c220, VillagerNameplate_DestroyAndFree)
+CLEAN_AS(func_ov003_0220c220, VillagerNameplate_Delete)
 
 /* func_ov003_0220c260: the destructor, without freeing. */
-VillagerNameplate *VillagerNameplate_Destroy(VillagerNameplate *board)
+VillagerNameplate *VillagerNameplate_Destruct(VillagerNameplate *board)
 {
     board->vtable = data_ov003_02238010;
     board->receiver_vtable = data_ov003_02238078;
@@ -274,7 +274,7 @@ VillagerNameplate *VillagerNameplate_Destroy(VillagerNameplate *board)
     SceneObjectBase_DestructBase((SceneObjectBase *) board);
     return board;
 }
-CLEAN_AS(func_ov003_0220c260, VillagerNameplate_Destroy)
+CLEAN_AS(func_ov003_0220c260, VillagerNameplate_Destruct)
 
 /* func_ov003_0220c29c: the constructor: the base and the receiver part, then the vtables and
  * the member at 0x138. */
@@ -305,18 +305,18 @@ static VillagerNameplate *board_of(void *receiver)
     return (VillagerNameplate *) ((u8 *) receiver - offsetof(VillagerNameplate, receiver_vtable));
 }
 
-/* func_ov003_0220c2f0 (the receiver vtable's deleting destructor): VillagerNameplate_DestroyAndFree on
+/* func_ov003_0220c2f0 (the receiver vtable's deleting destructor): VillagerNameplate_Delete on
  * the board around `receiver`. */
-VillagerNameplate *VillagerNameplate_ReceiverDestroyAndFree(void *receiver)
+VillagerNameplate *VillagerNameplate_ReceiverDelete(void *receiver)
 {
-    return VillagerNameplate_DestroyAndFree(board_of(receiver));
+    return VillagerNameplate_Delete(board_of(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov003_02238010D0Ev, VillagerNameplate_ReceiverDestroyAndFree)
+CLEAN_AS(_ZThn236_N18Obj_ov003_02238010D0Ev, VillagerNameplate_ReceiverDelete)
 
-/* func_ov003_0220c30c (the receiver vtable's destructor): VillagerNameplate_Destroy on the board
+/* func_ov003_0220c30c (the receiver vtable's destructor): VillagerNameplate_Destruct on the board
  * around `receiver`. */
-VillagerNameplate *VillagerNameplate_ReceiverDestroy(void *receiver)
+VillagerNameplate *VillagerNameplate_ReceiverDestruct(void *receiver)
 {
-    return VillagerNameplate_Destroy(board_of(receiver));
+    return VillagerNameplate_Destruct(board_of(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov003_02238010D1Ev, VillagerNameplate_ReceiverDestroy)
+CLEAN_AS(_ZThn236_N18Obj_ov003_02238010D1Ev, VillagerNameplate_ReceiverDestruct)

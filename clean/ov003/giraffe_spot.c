@@ -60,21 +60,21 @@ static void giraffe_spot_destroy_parts(GiraffeSpot *object)
 
 /* func_ov003_0221c368 (the deleting destructor): the destructor's work, then the memory
  * freed. */
-GiraffeSpot *GiraffeSpot_DestroyAndFree(GiraffeSpot *object)
+GiraffeSpot *GiraffeSpot_Delete(GiraffeSpot *object)
 {
     giraffe_spot_destroy_parts(object);
     Heap_FreeAux(object);
     return object;
 }
-CLEAN_AS(func_ov003_0221c368, GiraffeSpot_DestroyAndFree)
+CLEAN_AS(func_ov003_0221c368, GiraffeSpot_Delete)
 
 /* func_ov003_0221c394: the destructor, without freeing. */
-GiraffeSpot *GiraffeSpot_Destroy(GiraffeSpot *object)
+GiraffeSpot *GiraffeSpot_Destruct(GiraffeSpot *object)
 {
     giraffe_spot_destroy_parts(object);
     return object;
 }
-CLEAN_AS(func_ov003_0221c394, GiraffeSpot_Destroy)
+CLEAN_AS(func_ov003_0221c394, GiraffeSpot_Destruct)
 
 /* func_ov003_0221c3b8: the constructor: overlay 9's, then the vtables. */
 GiraffeSpot *GiraffeSpot_Construct(GiraffeSpot *object)
@@ -97,17 +97,17 @@ void GiraffeSpot_New(void)
 CLEAN_AS(func_ov003_0221c3dc, GiraffeSpot_New)
 
 /* _ZThn236_N18Obj_ov003_022387a8D0Ev (the receiver vtable's deleting destructor):
- * GiraffeSpot_DestroyAndFree on the object around `receiver`. */
-GiraffeSpot *GiraffeSpot_ReceiverDestroyAndFree(void *receiver)
+ * GiraffeSpot_Delete on the object around `receiver`. */
+GiraffeSpot *GiraffeSpot_ReceiverDelete(void *receiver)
 {
-    return GiraffeSpot_DestroyAndFree((GiraffeSpot *) (void *) ((u8 *) receiver - GIRAFFE_SPOT_RECEIVER_OFFSET));
+    return GiraffeSpot_Delete((GiraffeSpot *) (void *) ((u8 *) receiver - GIRAFFE_SPOT_RECEIVER_OFFSET));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov003_022387a8D0Ev, GiraffeSpot_ReceiverDestroyAndFree)
+CLEAN_AS(_ZThn236_N18Obj_ov003_022387a8D0Ev, GiraffeSpot_ReceiverDelete)
 
-/* _ZThn236_N18Obj_ov003_022387a8D1Ev (the receiver vtable's destructor): GiraffeSpot_Destroy on
+/* _ZThn236_N18Obj_ov003_022387a8D1Ev (the receiver vtable's destructor): GiraffeSpot_Destruct on
  * the object around `receiver`. */
-GiraffeSpot *GiraffeSpot_ReceiverDestroy(void *receiver)
+GiraffeSpot *GiraffeSpot_ReceiverDestruct(void *receiver)
 {
-    return GiraffeSpot_Destroy((GiraffeSpot *) (void *) ((u8 *) receiver - GIRAFFE_SPOT_RECEIVER_OFFSET));
+    return GiraffeSpot_Destruct((GiraffeSpot *) (void *) ((u8 *) receiver - GIRAFFE_SPOT_RECEIVER_OFFSET));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov003_022387a8D1Ev, GiraffeSpot_ReceiverDestroy)
+CLEAN_AS(_ZThn236_N18Obj_ov003_022387a8D1Ev, GiraffeSpot_ReceiverDestruct)

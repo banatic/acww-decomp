@@ -38,7 +38,7 @@ int KeyRepeat_Up(KeyRepeat *keys);
 unsigned char KeyRepeat_Latch(KeyRepeat *keys);
 void KeyRepeat_Update(KeyRepeat *keys);
 KeyRepeat *KeyRepeat_Delete(KeyRepeat *keys);
-void KeyRepeat_Destroy(KeyRepeat *keys);
+void KeyRepeat_Destruct(KeyRepeat *keys);
 void KeyRepeat_Construct(KeyRepeat *keys);
 
 #endif

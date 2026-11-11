@@ -132,11 +132,11 @@ KeyRepeat *KeyRepeat_Delete(KeyRepeat *keys)
 CLEAN_AS(func_ov002_022089bc, KeyRepeat_Delete)
 
 /* func_ov002_022089d4 */
-void KeyRepeat_Destroy(KeyRepeat *keys)
+void KeyRepeat_Destruct(KeyRepeat *keys)
 {
     keys->vtable = data_ov002_0220bb14;
 }
-CLEAN_AS(func_ov002_022089d4, KeyRepeat_Destroy)
+CLEAN_AS(func_ov002_022089d4, KeyRepeat_Destruct)
 
 /* func_ov002_022089e0 */
 void KeyRepeat_Construct(KeyRepeat *keys)

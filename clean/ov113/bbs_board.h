@@ -122,7 +122,7 @@ typedef struct BbsBoard {
     Glider cursor_sprite;                                      /* 0x2b20: a Glider1 */
 } BbsBoard;
 
-BbsBoard *BbsBoard_Destroy(BbsBoard *self);
+BbsBoard *BbsBoard_Destruct(BbsBoard *self);
 BbsBoard *BbsBoard_Delete(BbsBoard *self);
 int BbsBoard_MoveCursor(BbsBoard *self, u32 keys);
 void BbsBoard_ShowCursorFirstOfSet(BbsBoard *self);

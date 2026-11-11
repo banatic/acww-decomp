@@ -216,21 +216,21 @@ static void store_front_destroy_parts(StoreFront *store)
 
 /* func_ov003_0221ed80 (vtable slot 0x44, the deleting destructor): the destructor's work, then
  * the memory freed. */
-StoreFront *StoreFront_DestroyAndFree(StoreFront *store)
+StoreFront *StoreFront_Delete(StoreFront *store)
 {
     store_front_destroy_parts(store);
     Heap_FreeAux(store);
     return store;
 }
-CLEAN_AS(func_ov003_0221ed80, StoreFront_DestroyAndFree)
+CLEAN_AS(func_ov003_0221ed80, StoreFront_Delete)
 
 /* func_ov003_0221edac (vtable slot 0x40): the destructor, without freeing. */
-StoreFront *StoreFront_Destroy(StoreFront *store)
+StoreFront *StoreFront_Destruct(StoreFront *store)
 {
     store_front_destroy_parts(store);
     return store;
 }
-CLEAN_AS(func_ov003_0221edac, StoreFront_Destroy)
+CLEAN_AS(func_ov003_0221edac, StoreFront_Destruct)
 
 /* func_ov003_0221edd0: the constructor: overlay 9's, then the vtables. */
 StoreFront *StoreFront_Construct(StoreFront *store)
@@ -259,16 +259,16 @@ static StoreFront *store_front_from_receiver(void *receiver)
     return (StoreFront *) (void *) ((u8 *) receiver - STORE_FRONT_RECEIVER_OFFSET);
 }
 
-/* _ZThn236_N18Obj_ov003_02239754D0Ev (receiver slot 0x04): StoreFront_DestroyAndFree. */
-StoreFront *StoreFront_ReceiverDestroyAndFree(void *receiver)
+/* _ZThn236_N18Obj_ov003_02239754D0Ev (receiver slot 0x04): StoreFront_Delete. */
+StoreFront *StoreFront_ReceiverDelete(void *receiver)
 {
-    return StoreFront_DestroyAndFree(store_front_from_receiver(receiver));
+    return StoreFront_Delete(store_front_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov003_02239754D0Ev, StoreFront_ReceiverDestroyAndFree)
+CLEAN_AS(_ZThn236_N18Obj_ov003_02239754D0Ev, StoreFront_ReceiverDelete)
 
-/* _ZThn236_N18Obj_ov003_02239754D1Ev (receiver slot 0x00): StoreFront_Destroy. */
-StoreFront *StoreFront_ReceiverDestroy(void *receiver)
+/* _ZThn236_N18Obj_ov003_02239754D1Ev (receiver slot 0x00): StoreFront_Destruct. */
+StoreFront *StoreFront_ReceiverDestruct(void *receiver)
 {
-    return StoreFront_Destroy(store_front_from_receiver(receiver));
+    return StoreFront_Destruct(store_front_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov003_02239754D1Ev, StoreFront_ReceiverDestroy)
+CLEAN_AS(_ZThn236_N18Obj_ov003_02239754D1Ev, StoreFront_ReceiverDestruct)

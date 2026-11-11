@@ -94,10 +94,10 @@ void MusicPlayer_UpdateUnsettled(MusicPlayer *player);
 int MusicPlayer_Update(MusicPlayer *player);
 int MusicPlayer_Start(MusicPlayer *player);
 MusicPlayer *MusicPlayer_Delete(MusicPlayer *player);
-MusicPlayer *MusicPlayer_Destroy(MusicPlayer *player);
+MusicPlayer *MusicPlayer_Destruct(MusicPlayer *player);
 MusicPlayer *MusicPlayer_Construct(MusicPlayer *player);
 void MusicPlayer_Create(void);
 MusicPlayer *MusicPlayerReceiver_Delete(void *receiver);
-MusicPlayer *MusicPlayerReceiver_Destroy(void *receiver);
+MusicPlayer *MusicPlayerReceiver_Destruct(void *receiver);
 
 #endif

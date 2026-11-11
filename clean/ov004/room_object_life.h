@@ -21,7 +21,7 @@ void RoomObject_Vfunc08(RoomObject *object, int mode);
 int RoomObject_Init(RoomObject *object);
 RoomObject *RoomObject_DestructBase(RoomObject *object);
 RoomObject *RoomObject_Delete(RoomObject *object);
-RoomObject *RoomObject_Destroy(RoomObject *object);
+RoomObject *RoomObject_Destruct(RoomObject *object);
 RoomObject *RoomObject_Construct(RoomObject *object);
 RoomObject *RoomObject_ConstructBase(RoomObject *object);
 int RoomObject_Vfunc7c(void);
@@ -29,6 +29,6 @@ void RoomObject_Free(void *block);
 void *RoomObject_Alloc(u32 size);
 void RoomObject_Create(void);
 RoomObject *RoomObjectReceiver_Delete(void *receiver);
-RoomObject *RoomObjectReceiver_Destroy(void *receiver);
+RoomObject *RoomObjectReceiver_Destruct(void *receiver);
 
 #endif

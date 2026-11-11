@@ -43,7 +43,7 @@ void FieldLabelWindow_RequestMarker(FieldLabelWindow *window);
 void FieldLabelWindow_Update(FieldLabelWindow *window);
 void FieldLabelWindow_Draw(FieldLabelWindow *window);
 FieldLabelWindow *FieldLabelWindow_Delete(FieldLabelWindow *window);
-FieldLabelWindow *FieldLabelWindow_Destroy(FieldLabelWindow *window);
+FieldLabelWindow *FieldLabelWindow_Destruct(FieldLabelWindow *window);
 FieldLabelWindow *FieldLabelWindow_Construct(FieldLabelWindow *window);
 
 #endif

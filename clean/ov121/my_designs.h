@@ -170,7 +170,7 @@ typedef struct MyDesigns {
 } MyDesigns;
 
 /* my_designs.c */
-MyDesigns *MyDesigns_Destroy(MyDesigns *self);
+MyDesigns *MyDesigns_Destruct(MyDesigns *self);
 MyDesigns *MyDesigns_Delete(MyDesigns *self);
 void MyDesigns_ClearFlags(MyDesigns *self, unsigned short mask);
 void MyDesigns_SetFlags(MyDesigns *self, unsigned short mask);

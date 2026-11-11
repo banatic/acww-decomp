@@ -113,19 +113,19 @@ static void star_designer_destroy_members(StarDesigner *self)
     self->base.vtable = data_ov129_0229dc38;
     StarScope_Destruct(&self->scope);
     StarPalette_Destruct(&self->palette);
-    Glider0_Destroy(&self->pointer);
-    ButtonPanel_Destroy(&self->panel);
+    Glider0_Destruct(&self->pointer);
+    ButtonPanel_Destruct(&self->panel);
     ErrorMessage_Destruct(&self->error);
-    MenuScene_DestroyBase(star_designer_base(self));
+    MenuScene_DestructBase(star_designer_base(self));
 }
 
 /* func_ov129_0229b720 (vtable slot 0x40) */
-StarDesigner *StarDesigner_Destroy(StarDesigner *self)
+StarDesigner *StarDesigner_Destruct(StarDesigner *self)
 {
     star_designer_destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov129_0229b720, StarDesigner_Destroy)
+CLEAN_AS(func_ov129_0229b720, StarDesigner_Destruct)
 
 /* func_ov129_0229b774 (vtable slot 0x44): the deleting destructor. */
 StarDesigner *StarDesigner_Delete(StarDesigner *self)

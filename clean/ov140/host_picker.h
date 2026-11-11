@@ -113,7 +113,7 @@ typedef struct HostPicker {
                                                        * one shared once all are used */
 } HostPicker;
 
-HostPicker *HostPicker_Destroy(HostPicker *self);
+HostPicker *HostPicker_Destruct(HostPicker *self);
 HostPicker *HostPicker_Delete(HostPicker *self);
 void HostPicker_ClearFlags(HostPicker *self, u16 flags);
 void HostPicker_SetFlags(HostPicker *self, u16 flags);

@@ -59,7 +59,7 @@ typedef struct TurtleCountdownStep {
     MemberPointer update; /* 0x08: int (him) */
 } TurtleCountdownStep;
 
-TurtleCountdown *TurtleCountdown_Destroy(TurtleCountdown *turtle);
+TurtleCountdown *TurtleCountdown_Destruct(TurtleCountdown *turtle);
 void *TurtleCountdown_Delete(void *turtle);
 void TurtleCountdown_OnEvent(TurtleCountdown *turtle, int code);
 int TurtleCountdown_MayAct(TurtleCountdown *turtle);

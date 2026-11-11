@@ -41,20 +41,20 @@ static int sixteenths(int pixels)
 Glider *Glider1_Delete(Glider *glider)
 {
     glider->vtable = data_ov002_0220bc6c;
-    Glider_Destroy(glider);
+    Glider_DestructBase(glider);
     Heap_OperatorDeleteB(glider);
     return glider;
 }
 CLEAN_AS(func_ov002_02209c40, Glider1_Delete)
 
 /* func_ov002_02209c60 (vtable entry 0) */
-Glider *Glider1_Destroy(Glider *glider)
+Glider *Glider1_Destruct(Glider *glider)
 {
     glider->vtable = data_ov002_0220bc6c;
-    Glider_Destroy(glider);
+    Glider_DestructBase(glider);
     return glider;
 }
-CLEAN_AS(func_ov002_02209c60, Glider1_Destroy)
+CLEAN_AS(func_ov002_02209c60, Glider1_Destruct)
 
 /* func_ov002_02209c78 */
 Glider *Glider1_Construct(Glider *glider)
@@ -69,20 +69,20 @@ CLEAN_AS(func_ov002_02209c78, Glider1_Construct)
 Glider *Glider0_Delete(Glider *glider)
 {
     glider->vtable = data_ov002_0220bc50;
-    Glider_Destroy(glider);
+    Glider_DestructBase(glider);
     Heap_OperatorDeleteB(glider);
     return glider;
 }
 CLEAN_AS(func_ov002_02209c94, Glider0_Delete)
 
 /* func_ov002_02209cb4 (vtable entry 0) */
-Glider *Glider0_Destroy(Glider *glider)
+Glider *Glider0_Destruct(Glider *glider)
 {
     glider->vtable = data_ov002_0220bc50;
-    Glider_Destroy(glider);
+    Glider_DestructBase(glider);
     return glider;
 }
-CLEAN_AS(func_ov002_02209cb4, Glider0_Destroy)
+CLEAN_AS(func_ov002_02209cb4, Glider0_Destruct)
 
 /* func_ov002_02209ccc */
 Glider *Glider0_Construct(Glider *glider)
@@ -214,11 +214,11 @@ Glide *Glide_Delete(Glide *glide)
 CLEAN_AS(func_ov002_02209e20, Glide_Delete)
 
 /* func_ov002_02209e38 (vtable entry 0) */
-void Glide_Destroy(Glide *glide)
+void Glide_Destruct(Glide *glide)
 {
     glide->vtable = data_ov002_0220bc40;
 }
-CLEAN_AS(func_ov002_02209e38, Glide_Destroy)
+CLEAN_AS(func_ov002_02209e38, Glide_Destruct)
 
 /* func_ov002_02209e44 */
 void Glide_Construct(Glide *glide)
@@ -509,35 +509,35 @@ void Glider_SetAnim(Glider *glider, int anim)
 CLEAN_AS(func_ov002_0220a374, Glider_SetAnim)
 
 /* func_ov002_0220a39c: the destructor the derived classes call. */
-Glider *Glider_Destroy(Glider *glider)
+Glider *Glider_DestructBase(Glider *glider)
 {
     glider->vtable = data_ov002_0220bc88;
-    Glide_Destroy(&glider->glide);
+    Glide_Destruct(&glider->glide);
     CellLayerSprite_DestructCopy((CellLayerSprite *) (void *) glider);
     return glider;
 }
-CLEAN_AS(func_ov002_0220a39c, Glider_Destroy)
+CLEAN_AS(func_ov002_0220a39c, Glider_DestructBase)
 
 /* func_ov002_0220a3c0 (vtable entry 1) */
 Glider *Glider_Delete(Glider *glider)
 {
     glider->vtable = data_ov002_0220bc88;
-    Glide_Destroy(&glider->glide);
+    Glide_Destruct(&glider->glide);
     CellLayerSprite_DestructCopy((CellLayerSprite *) (void *) glider);
     Heap_OperatorDeleteB(glider);
     return glider;
 }
 CLEAN_AS(func_ov002_0220a3c0, Glider_Delete)
 
-/* func_ov002_0220a3e8 (vtable entry 0): the same as Glider_Destroy. */
-Glider *Glider_DestroyVirtual(Glider *glider)
+/* func_ov002_0220a3e8 (vtable entry 0): the same as Glider_DestructBase. */
+Glider *Glider_Destruct(Glider *glider)
 {
     glider->vtable = data_ov002_0220bc88;
-    Glide_Destroy(&glider->glide);
+    Glide_Destruct(&glider->glide);
     CellLayerSprite_DestructCopy((CellLayerSprite *) (void *) glider);
     return glider;
 }
-CLEAN_AS(func_ov002_0220a3e8, Glider_DestroyVirtual)
+CLEAN_AS(func_ov002_0220a3e8, Glider_Destruct)
 
 /* func_ov002_0220a40c: main's sprite with `kind`, without an animation, standing still. */
 Glider *Glider_Construct(Glider *glider, u8 kind)

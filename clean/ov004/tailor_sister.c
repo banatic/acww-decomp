@@ -248,20 +248,20 @@ static void ts_start_talk(TailorSister *sister)
 
 /* func_ov004_02222ad0 (vtable slot 0x40): its talk scene's destructor, then the special
  * character's; the object. */
-TailorSister *TailorSister_Destroy(TailorSister *sister)
+TailorSister *TailorSister_Destruct(TailorSister *sister)
 {
     *(const u8 **) (void *) sister->base = data_ov004_0225445c;
-    TailorSisterTalk_Destroy(&sister->talk);
+    TailorSisterTalk_Destruct(&sister->talk);
     SpecialSceneObject_DestructBody(sister);
     return sister;
 }
-CLEAN_AS(func_ov004_02222ad0, TailorSister_Destroy)
+CLEAN_AS(func_ov004_02222ad0, TailorSister_Destruct)
 
 /* func_ov004_02222af8 (vtable slot 0x44): the same, then the object freed. */
 TailorSister *TailorSister_Delete(TailorSister *sister)
 {
     *(const u8 **) (void *) sister->base = data_ov004_0225445c;
-    TailorSisterTalk_Destroy(&sister->talk);
+    TailorSisterTalk_Destruct(&sister->talk);
     SpecialSceneObject_DestructBody(sister);
     Heap_FreeAux(sister);
     return sister;
@@ -496,13 +496,13 @@ CLEAN_AS(func_ov004_02222edc, TailorSisterTalk_Delete)
 
 /* func_ov004_02222efc (the talk scene's vtable slot 0x00): the destructor of main's class
  * 0x020d9ff8. */
-TailorSisterTalk *TailorSisterTalk_Destroy(TailorSisterTalk *talk)
+TailorSisterTalk *TailorSisterTalk_Destruct(TailorSisterTalk *talk)
 {
     *(const u8 **) (void *) talk = data_ov004_022543cc;
     Obj020d9ff8_DestructBody(talk);
     return talk;
 }
-CLEAN_AS(func_ov004_02222efc, TailorSisterTalk_Destroy)
+CLEAN_AS(func_ov004_02222efc, TailorSisterTalk_Destruct)
 
 /* func_ov004_02222f14: the constructor: a scene of main's class 0x020d9ff8 given this class's
  * vtable. */

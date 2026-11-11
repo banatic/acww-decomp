@@ -917,13 +917,13 @@ void ClockSetter_Init(ClockSetter *self, int mode, int base_layer, int panel_lay
 CLEAN_AS(func_ov134_0229bd38, ClockSetter_Init)
 
 /* func_ov134_0229beb0: the labels' and the thumb's destructors (the load tasks have none). */
-ClockSetter *ClockSetter_Destroy(ClockSetter *self)
+ClockSetter *ClockSetter_Destruct(ClockSetter *self)
 {
     __cxa_vec_cleanup(self->labels, CLOCK_SETTER_LABELS, sizeof(TextLabel), func_02070be8);
-    PushButton_Destroy(panel_thumb(self));
+    PushButton_Destruct(panel_thumb(self));
     return self;
 }
-CLEAN_AS(func_ov134_0229beb0, ClockSetter_Destroy)
+CLEAN_AS(func_ov134_0229beb0, ClockSetter_Destruct)
 
 /* func_ov134_0229bed4: the thumb, the cells and positions (0x70-0x8f) cleared, the labels and
  * the three load tasks constructed. */

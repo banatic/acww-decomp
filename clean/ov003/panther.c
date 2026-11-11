@@ -103,21 +103,21 @@ static void panther_destroy_parts(Panther *panther)
 
 /* func_ov003_0221d1e0 (vtable slot 0x44, the deleting destructor): the destructor's work, then
  * the memory freed. */
-Panther *Panther_DestroyAndFree(Panther *panther)
+Panther *Panther_Delete(Panther *panther)
 {
     panther_destroy_parts(panther);
     Heap_FreeAux(panther);
     return panther;
 }
-CLEAN_AS(func_ov003_0221d1e0, Panther_DestroyAndFree)
+CLEAN_AS(func_ov003_0221d1e0, Panther_Delete)
 
 /* func_ov003_0221d20c (vtable slot 0x40): the destructor, without freeing. */
-Panther *Panther_Destroy(Panther *panther)
+Panther *Panther_Destruct(Panther *panther)
 {
     panther_destroy_parts(panther);
     return panther;
 }
-CLEAN_AS(func_ov003_0221d20c, Panther_Destroy)
+CLEAN_AS(func_ov003_0221d20c, Panther_Destruct)
 
 /* func_ov003_0221d230: the constructor: overlay 9's, then the vtables. */
 Panther *Panther_Construct(Panther *panther)
@@ -146,16 +146,16 @@ static Panther *panther_from_receiver(void *receiver)
     return (Panther *) (void *) ((u8 *) receiver - PANTHER_RECEIVER_OFFSET);
 }
 
-/* _ZThn236_N18Obj_ov003_02238dbcD0Ev (receiver slot 0x04): Panther_DestroyAndFree. */
-Panther *Panther_ReceiverDestroyAndFree(void *receiver)
+/* _ZThn236_N18Obj_ov003_02238dbcD0Ev (receiver slot 0x04): Panther_Delete. */
+Panther *Panther_ReceiverDelete(void *receiver)
 {
-    return Panther_DestroyAndFree(panther_from_receiver(receiver));
+    return Panther_Delete(panther_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov003_02238dbcD0Ev, Panther_ReceiverDestroyAndFree)
+CLEAN_AS(_ZThn236_N18Obj_ov003_02238dbcD0Ev, Panther_ReceiverDelete)
 
-/* _ZThn236_N18Obj_ov003_02238dbcD1Ev (receiver slot 0x00): Panther_Destroy. */
-Panther *Panther_ReceiverDestroy(void *receiver)
+/* _ZThn236_N18Obj_ov003_02238dbcD1Ev (receiver slot 0x00): Panther_Destruct. */
+Panther *Panther_ReceiverDestruct(void *receiver)
 {
-    return Panther_Destroy(panther_from_receiver(receiver));
+    return Panther_Destruct(panther_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov003_02238dbcD1Ev, Panther_ReceiverDestroy)
+CLEAN_AS(_ZThn236_N18Obj_ov003_02238dbcD1Ev, Panther_ReceiverDestruct)

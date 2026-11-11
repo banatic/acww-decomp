@@ -41,10 +41,10 @@ int RoomObject02252e00_SwitchOff(RoomObject02252e00 *object);
 int RoomObject02252e00_Update(RoomObject02252e00 *object);
 int RoomObject02252e00_Start(RoomObject02252e00 *object);
 RoomObject02252e00 *RoomObject02252e00_Delete(RoomObject02252e00 *object);
-RoomObject02252e00 *RoomObject02252e00_Destroy(RoomObject02252e00 *object);
+RoomObject02252e00 *RoomObject02252e00_Destruct(RoomObject02252e00 *object);
 RoomObject02252e00 *RoomObject02252e00_Construct(RoomObject02252e00 *object);
 void RoomObject02252e00_Create(void);
 RoomObject02252e00 *RoomObject02252e00Receiver_Delete(void *receiver);
-RoomObject02252e00 *RoomObject02252e00Receiver_Destroy(void *receiver);
+RoomObject02252e00 *RoomObject02252e00Receiver_Destruct(void *receiver);
 
 #endif

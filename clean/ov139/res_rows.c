@@ -339,13 +339,13 @@ CLEAN_AS(func_ov139_02299af8, ResRows_Open)
 
 /* func_ov139_02299b30: the labels destructed, then the window.
  * QUIRK: the layer task is not destructed. */
-ResRows *ResRows_Destroy(ResRows *self)
+ResRows *ResRows_Destruct(ResRows *self)
 {
     __cxa_vec_cleanup(self->labels, RES_ROWS_LABELS, sizeof(TextLabel), RES_ROWS_LABEL_DESTRUCT);
-    MessageWindow_Destroy(&self->window);
+    MessageWindow_Destruct(&self->window);
     return self;
 }
-CLEAN_AS(func_ov139_02299b30, ResRows_Destroy)
+CLEAN_AS(func_ov139_02299b30, ResRows_Destruct)
 
 /* func_ov139_02299b54: the window, the labels (by __cxa_vec_ctor) and the layer task
  * constructed. */

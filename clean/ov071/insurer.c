@@ -245,22 +245,22 @@ static int ins_greeting_animation(Insurer *insurer)
 
 /* func_ov071_02278a00 (vtable slot 0x40): his talk scene's destructor, then the special
  * character's; the object. */
-void *Insurer_Destroy(void *object)
+void *Insurer_Destruct(void *object)
 {
     Insurer *insurer = object;
     *(const u8 **) (void *) insurer->base = data_ov071_0227a278;
-    InsurerTalk_Destroy(&insurer->talk);
+    InsurerTalk_Destruct(&insurer->talk);
     SpecialSceneObject_DestructBody(insurer);
     return insurer;
 }
-CLEAN_AS(func_ov071_02278a00, Insurer_Destroy)
+CLEAN_AS(func_ov071_02278a00, Insurer_Destruct)
 
 /* func_ov071_02278a28 (vtable slot 0x44): the same, then the object freed. */
 void *Insurer_Delete(void *object)
 {
     Insurer *insurer = object;
     *(const u8 **) (void *) insurer->base = data_ov071_0227a278;
-    InsurerTalk_Destroy(&insurer->talk);
+    InsurerTalk_Destruct(&insurer->talk);
     SpecialSceneObject_DestructBody(insurer);
     Heap_FreeAux(insurer);
     return insurer;

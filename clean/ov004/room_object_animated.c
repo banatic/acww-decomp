@@ -58,13 +58,13 @@ AnimatedRoomObject *AnimatedRoomObject_Delete(AnimatedRoomObject *object)
 CLEAN_AS(func_ov004_022115ec, AnimatedRoomObject_Delete)
 
 /* func_ov004_02211618 (the destructor, vtable slot 0x40) */
-AnimatedRoomObject *AnimatedRoomObject_Destroy(AnimatedRoomObject *object)
+AnimatedRoomObject *AnimatedRoomObject_Destruct(AnimatedRoomObject *object)
 {
     set_vtables(object);
     RoomObject_DestructBase(&object->base);
     return object;
 }
-CLEAN_AS(func_ov004_02211618, AnimatedRoomObject_Destroy)
+CLEAN_AS(func_ov004_02211618, AnimatedRoomObject_Destruct)
 
 /* func_ov004_0221163c (the constructor). start_frame is left as the allocation zeroed it. */
 AnimatedRoomObject *AnimatedRoomObject_Construct(AnimatedRoomObject *object)
@@ -101,8 +101,8 @@ AnimatedRoomObject *AnimatedRoomObjectReceiver_Delete(void *receiver)
 CLEAN_AS(_ZThn236_N18Obj_ov004_022526f8D0Ev, AnimatedRoomObjectReceiver_Delete)
 
 /* func_ov004_0221acf0: the destructor, entered from the receiver part. */
-AnimatedRoomObject *AnimatedRoomObjectReceiver_Destroy(void *receiver)
+AnimatedRoomObject *AnimatedRoomObjectReceiver_Destruct(void *receiver)
 {
-    return AnimatedRoomObject_Destroy(animated_room_object_from_receiver(receiver));
+    return AnimatedRoomObject_Destruct(animated_room_object_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov004_022526f8D1Ev, AnimatedRoomObjectReceiver_Destroy)
+CLEAN_AS(_ZThn236_N18Obj_ov004_022526f8D1Ev, AnimatedRoomObjectReceiver_Destruct)

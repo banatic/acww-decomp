@@ -25,11 +25,11 @@ typedef struct GiraffeSpot {
 
 void GiraffeSpot_ReceiverSlot14(void *receiver);
 int GiraffeSpot_SetUp(GiraffeSpot *object);
-GiraffeSpot *GiraffeSpot_DestroyAndFree(GiraffeSpot *object);
-GiraffeSpot *GiraffeSpot_Destroy(GiraffeSpot *object);
+GiraffeSpot *GiraffeSpot_Delete(GiraffeSpot *object);
+GiraffeSpot *GiraffeSpot_Destruct(GiraffeSpot *object);
 GiraffeSpot *GiraffeSpot_Construct(GiraffeSpot *object);
 void GiraffeSpot_New(void);
-GiraffeSpot *GiraffeSpot_ReceiverDestroyAndFree(void *receiver);
-GiraffeSpot *GiraffeSpot_ReceiverDestroy(void *receiver);
+GiraffeSpot *GiraffeSpot_ReceiverDelete(void *receiver);
+GiraffeSpot *GiraffeSpot_ReceiverDestruct(void *receiver);
 
 #endif

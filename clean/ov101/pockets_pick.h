@@ -157,7 +157,7 @@ typedef struct PocketsPick {
     ButtonPanel panel;        /* 0x2810: its button 9 closes the scene */
 } PocketsPick;
 
-PocketsPick *PocketsPick_Destroy(PocketsPick *self);
+PocketsPick *PocketsPick_Destruct(PocketsPick *self);
 PocketsPick *PocketsPick_Delete(PocketsPick *self);
 void PocketsPick_ClearFlags(PocketsPick *self, unsigned int flags);
 void PocketsPick_SetFlags(PocketsPick *self, int flags);

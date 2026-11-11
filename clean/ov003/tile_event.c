@@ -346,22 +346,22 @@ static void tile_event_destroy_process(TileEventProcess *process)
 }
 
 /* func_ov003_022208ec (vtable slot 16 of 0x0223bc7c): destroys the process; returns it. */
-TileEventProcess *TileEvent_DestroyProcess(TileEventProcess *process)
+TileEventProcess *TileEvent_DestructProcess(TileEventProcess *process)
 {
     tile_event_destroy_process(process);
     return process;
 }
-CLEAN_AS(func_ov003_022208ec, TileEvent_DestroyProcess)
+CLEAN_AS(func_ov003_022208ec, TileEvent_DestructProcess)
 
 /* func_ov003_02220a14 (vtable slot 17 of 0x0223bc7c): destroys the process and frees it;
  * returns it. */
-TileEventProcess *TileEvent_DestroyAndFreeProcess(TileEventProcess *process)
+TileEventProcess *TileEvent_DeleteProcess(TileEventProcess *process)
 {
     tile_event_destroy_process(process);
     Heap_FreeAux(process);
     return process;
 }
-CLEAN_AS(func_ov003_02220a14, TileEvent_DestroyAndFreeProcess)
+CLEAN_AS(func_ov003_02220a14, TileEvent_DeleteProcess)
 
 /* ---- The events themselves: starting one, each kind's start and step, drawing them. */
 

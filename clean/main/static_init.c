@@ -451,7 +451,7 @@ CLEAN_AS(__sinit_020c4af0, StaticInit_CollisionWorld)
 extern StaticInitColor data_021c513c, data_021c5134, data_021c5138, data_021c5150, data_021c514c, data_021c5148;
 extern Block021c5160 data_021c5160;
 extern StaticInitRecord data_021c5154;
-extern void func_020348c4(void *block); /* Block021c5160_Destroy */
+extern void func_020348c4(void *block); /* Block021c5160_Destruct */
 
 /* __sinit_020c4bdc: the six colors of its source file and the object of block_02034858.h. */
 void StaticInit_Block021c5160(void)
@@ -1241,7 +1241,7 @@ CLEAN_AS(__sinit_020c5cf4, StaticInit_Session)
 
 extern LibraryOverlaySlot data_021d11c4;
 extern StaticInitRecord data_021d11b8;
-extern void func_02077bb4(void *slot); /* LibraryOverlay_Destroy: nothing to do */
+extern void func_02077bb4(void *slot); /* LibraryOverlay_Destruct: nothing to do */
 
 /* __sinit_020c5d1c: the library overlay's slot (library_overlay.h), holding no overlay. */
 void StaticInit_LibraryOverlay(void)

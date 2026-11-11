@@ -249,12 +249,12 @@ RoomObject *RoomObject_Delete(RoomObject *object)
 CLEAN_AS(func_ov004_02210de8, RoomObject_Delete)
 
 /* func_ov004_02210ee4 (the destructor, vtable slot 0x40) */
-RoomObject *RoomObject_Destroy(RoomObject *object)
+RoomObject *RoomObject_Destruct(RoomObject *object)
 {
     destroy(object);
     return object;
 }
-CLEAN_AS(func_ov004_02210ee4, RoomObject_Destroy)
+CLEAN_AS(func_ov004_02210ee4, RoomObject_Destruct)
 
 /* The constructor's body: the two bases, the vtables of the base class, then the members from
  * the first to the last. */
@@ -352,8 +352,8 @@ RoomObject *RoomObjectReceiver_Delete(void *receiver)
 CLEAN_AS(_ZThn236_N10RoomObjectD0Ev, RoomObjectReceiver_Delete)
 
 /* func_ov004_02211590 */
-RoomObject *RoomObjectReceiver_Destroy(void *receiver)
+RoomObject *RoomObjectReceiver_Destruct(void *receiver)
 {
-    return RoomObject_Destroy(object_of(receiver));
+    return RoomObject_Destruct(object_of(receiver));
 }
-CLEAN_AS(_ZThn236_N10RoomObjectD1Ev, RoomObjectReceiver_Destroy)
+CLEAN_AS(_ZThn236_N10RoomObjectD1Ev, RoomObjectReceiver_Destruct)

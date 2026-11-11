@@ -141,23 +141,23 @@ static void destroy_members(PocketsBox *self)
     self->base.vtable = data_ov100_0229ecb8;
     __cxa_vec_cleanup(self->labels, POCKETS_BOX_LABELS, sizeof(TextLabel), (void (*)(void *))(uintptr_t) func_02070be8);
     ErrorMessage_Destruct(&self->error);
-    PagedChoice_Destroy(choice_of(self));
-    Glider0_Destroy(&self->cursor_sprite);
-    Glide_Destroy(&self->glide);
-    Popup_Destroy(&self->popup);
+    PagedChoice_Destruct(choice_of(self));
+    Glider0_Destruct(&self->cursor_sprite);
+    Glide_Destruct(&self->glide);
+    Popup_Destruct(&self->popup);
     PocketsWallet_Destruct((PocketsWallet *) (void *) self->wallet);
     PocketsLetters_Destruct((PocketsLetters *) (void *) self->letters);
     PocketsGrid_Destruct((PocketsGrid *) (void *) self->grid);
-    MenuScene_DestroyBase(scene_of(self));
+    MenuScene_DestructBase(scene_of(self));
 }
 
 /* func_ov100_0229c180 */
-PocketsBox *PocketsBox_Destroy(PocketsBox *self)
+PocketsBox *PocketsBox_Destruct(PocketsBox *self)
 {
     destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov100_0229c180, PocketsBox_Destroy)
+CLEAN_AS(func_ov100_0229c180, PocketsBox_Destruct)
 
 /* func_ov100_0229c20c */
 PocketsBox *PocketsBox_Delete(PocketsBox *self)

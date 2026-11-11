@@ -167,13 +167,13 @@ Compass *Compass_Delete(Compass *compass)
 CLEAN_AS(func_ov004_022138e8, Compass_Delete)
 
 /* func_ov004_02213914 (the destructor, vtable slot 0x40) */
-Compass *Compass_Destroy(Compass *compass)
+Compass *Compass_Destruct(Compass *compass)
 {
     compass_set_vtables(compass);
     RoomObject_DestructBase(&compass->base);
     return compass;
 }
-CLEAN_AS(func_ov004_02213914, Compass_Destroy)
+CLEAN_AS(func_ov004_02213914, Compass_Destruct)
 
 /* func_ov004_02213938 (the constructor): no needle yet. Its other fields are left as the
  * allocation zeroed them. */
@@ -212,8 +212,8 @@ Compass *CompassReceiver_Delete(void *receiver)
 CLEAN_AS(_ZThn236_N18Obj_ov004_02251c6cD0Ev, CompassReceiver_Delete)
 
 /* func_ov004_0221aa50: the destructor, entered from the receiver part. */
-Compass *CompassReceiver_Destroy(void *receiver)
+Compass *CompassReceiver_Destruct(void *receiver)
 {
-    return Compass_Destroy(compass_from_receiver(receiver));
+    return Compass_Destruct(compass_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov004_02251c6cD1Ev, CompassReceiver_Destroy)
+CLEAN_AS(_ZThn236_N18Obj_ov004_02251c6cD1Ev, CompassReceiver_Destruct)

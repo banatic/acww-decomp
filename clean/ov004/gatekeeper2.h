@@ -92,7 +92,7 @@ typedef struct Gatekeeper2 {
     u8 unk_712[2];                  /* 0x712 */
 } Gatekeeper2;
 
-Gatekeeper2 *Gatekeeper2_Destroy(Gatekeeper2 *keeper);
+Gatekeeper2 *Gatekeeper2_Destruct(Gatekeeper2 *keeper);
 Gatekeeper2 *Gatekeeper2_Delete(Gatekeeper2 *keeper);
 void Gatekeeper2_OnEvent(Gatekeeper2 *keeper, unsigned int code, int participant);
 int Gatekeeper2_MayActOrLocal(Gatekeeper2 *keeper);
@@ -108,7 +108,7 @@ void Gatekeeper2Talk_OnMessageEnded(Gatekeeper2Talk *talk);
 void Gatekeeper2Talk_Line(Gatekeeper2Talk *talk, Gatekeeper2Line *out);
 void Gatekeeper2Talk_Begin(Gatekeeper2Talk *talk, Gatekeeper2 *owner);
 Gatekeeper2Talk *Gatekeeper2Talk_Delete(Gatekeeper2Talk *talk);
-Gatekeeper2Talk *Gatekeeper2Talk_Destroy(Gatekeeper2Talk *talk);
+Gatekeeper2Talk *Gatekeeper2Talk_Destruct(Gatekeeper2Talk *talk);
 Gatekeeper2Talk *Gatekeeper2Talk_Construct(Gatekeeper2Talk *talk);
 int Gatekeeper2_UpdatePaused(void);
 

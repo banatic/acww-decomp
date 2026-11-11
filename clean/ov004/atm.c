@@ -353,12 +353,12 @@ Atm *Atm_Delete(Atm *atm)
 CLEAN_AS(func_ov004_0220c3c8, Atm_Delete)
 
 /* func_ov004_0220c414 (the destructor) */
-Atm *Atm_Destroy(Atm *atm)
+Atm *Atm_Destruct(Atm *atm)
 {
     destroy(atm);
     return atm;
 }
-CLEAN_AS(func_ov004_0220c414, Atm_Destroy)
+CLEAN_AS(func_ov004_0220c414, Atm_Destruct)
 
 /* func_ov004_0220c45c (the constructor). It leaves no ATM current until Atm_Init. */
 Atm *Atm_Construct(Atm *atm)
@@ -428,8 +428,8 @@ void AtmReceiver_IgnoreHook(void *receiver)
 CLEAN_AS(_ZThn236_N18Obj_ov004_0224fc4c17vfunc_02066994_10Ev, AtmReceiver_IgnoreHook)
 
 /* func_ov004_0220c544 */
-Atm *AtmReceiver_Destroy(void *receiver)
+Atm *AtmReceiver_Destruct(void *receiver)
 {
-    return Atm_Destroy(atm_of(receiver));
+    return Atm_Destruct(atm_of(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov004_0224fc4cD1Ev, AtmReceiver_Destroy)
+CLEAN_AS(_ZThn236_N18Obj_ov004_0224fc4cD1Ev, AtmReceiver_Destruct)

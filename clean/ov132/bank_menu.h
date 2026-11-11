@@ -80,7 +80,7 @@ typedef struct BankMenu {
     u8 pad_1507;
 } BankMenu;
 
-BankMenu *BankMenu_Destroy(BankMenu *self);
+BankMenu *BankMenu_Destruct(BankMenu *self);
 BankMenu *BankMenu_Delete(BankMenu *self);
 void BankMenu_SetFlags(BankMenu *self, u16 flags);
 int BankMenu_TestFlags(BankMenu *self, int flags);

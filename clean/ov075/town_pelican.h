@@ -78,7 +78,7 @@ typedef struct TownPelicanStep {
     MemberPointer update; /* 0x08: int (pelican) */
 } TownPelicanStep;
 
-void *TownPelican_Destroy(TownPelican *pelican);
+void *TownPelican_Destruct(TownPelican *pelican);
 void *TownPelican_Delete(void *pelican);
 void TownPelican_OnEvent(TownPelican *pelican, int code);
 int TownPelican_MayAct(TownPelican *pelican);

@@ -234,13 +234,13 @@ RoomObject02252374 *RoomObject02252374_Delete(RoomObject02252374 *object)
 CLEAN_AS(func_ov004_02214070, RoomObject02252374_Delete)
 
 /* func_ov004_0221409c (the destructor, vtable slot 0x40); the same QUIRK. */
-RoomObject02252374 *RoomObject02252374_Destroy(RoomObject02252374 *object)
+RoomObject02252374 *RoomObject02252374_Destruct(RoomObject02252374 *object)
 {
     room_object02252374_set_vtables(object);
     RoomObject_DestructBase(&object->base);
     return object;
 }
-CLEAN_AS(func_ov004_0221409c, RoomObject02252374_Destroy)
+CLEAN_AS(func_ov004_0221409c, RoomObject02252374_Destruct)
 
 /* func_ov004_022140c0 (the constructor): builds the material texture binding; no item model;
  * unk_870 and unk_871 cleared. Its other fields are left as the allocation zeroed them. */
@@ -282,8 +282,8 @@ RoomObject02252374 *RoomObject02252374Receiver_Delete(void *receiver)
 CLEAN_AS(_ZThn236_N18Obj_ov004_02252374D0Ev, RoomObject02252374Receiver_Delete)
 
 /* func_ov004_0221a9a8: the destructor, entered from the receiver part. */
-RoomObject02252374 *RoomObject02252374Receiver_Destroy(void *receiver)
+RoomObject02252374 *RoomObject02252374Receiver_Destruct(void *receiver)
 {
-    return RoomObject02252374_Destroy(room_object02252374_from_receiver(receiver));
+    return RoomObject02252374_Destruct(room_object02252374_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov004_02252374D1Ev, RoomObject02252374Receiver_Destroy)
+CLEAN_AS(_ZThn236_N18Obj_ov004_02252374D1Ev, RoomObject02252374Receiver_Destruct)

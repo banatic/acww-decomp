@@ -697,21 +697,21 @@ static void town_ground_destroy(TownGround *ground)
 }
 
 /* func_ov003_0221fca4 (vtable slot 17): destroys the ground and frees it; returns `ground`. */
-TownGround *TownGround_DestroyAndFree(TownGround *ground)
+TownGround *TownGround_Delete(TownGround *ground)
 {
     town_ground_destroy(ground);
     Heap_FreeAux(ground);
     return ground;
 }
-CLEAN_AS(func_ov003_0221fca4, TownGround_DestroyAndFree)
+CLEAN_AS(func_ov003_0221fca4, TownGround_Delete)
 
 /* func_ov003_0221fd04 (vtable slot 16): destroys the ground; returns it. */
-TownGround *TownGround_Destroy(TownGround *ground)
+TownGround *TownGround_Destruct(TownGround *ground)
 {
     town_ground_destroy(ground);
     return ground;
 }
-CLEAN_AS(func_ov003_0221fd04, TownGround_Destroy)
+CLEAN_AS(func_ov003_0221fd04, TownGround_Destruct)
 
 /* func_ov003_0221fd60: the ground's constructor; returns `ground`. */
 TownGround *TownGround_Construct(TownGround *ground)

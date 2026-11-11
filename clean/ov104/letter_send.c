@@ -126,31 +126,31 @@ static void lsend_update_cursor_sprite(Glider *sprite)
 static void lsend_destroy_members(LetterSendScene *self)
 {
     self->base.vtable = data_ov104_0229f6d0;
-    ButtonPanel_Destroy(&self->panel);
+    ButtonPanel_Destruct(&self->panel);
     __cxa_vec_cleanup(self->carried_copy, LETTER_SEND_LETTERS, sizeof(Letter), func_02066688);
     __cxa_vec_cleanup(self->outbox, LETTER_SEND_LETTERS, sizeof(Letter), func_02066688);
-    LabelButton0_Destroy(&self->button);
+    LabelButton0_Destruct(&self->button);
     LetterView_Destruct(&self->view);
     ErrorMessage_Destruct(&self->error);
-    PagedChoice_Destroy(lsend_choice(self));
-    Glider0_Destroy(&self->cursor_sprite);
-    Glide_Destroy(&self->glide);
-    Popup_Destroy(&self->popup);
+    PagedChoice_Destruct(lsend_choice(self));
+    Glider0_Destruct(&self->cursor_sprite);
+    Glide_Destruct(&self->glide);
+    Popup_Destruct(&self->popup);
     PocketsWallet_Destruct(&self->wallet);
     PocketsLetters_Destruct(&self->letters);
     PocketsGrid_Destruct(&self->grid);
     Letter_Destruct(&self->swapped);
     Letter_Destruct(&self->held);
-    MenuScene_DestroyBase(lsend_scene(self));
+    MenuScene_DestructBase(lsend_scene(self));
 }
 
 /* func_ov104_0229c180 */
-LetterSendScene *LetterSend_Destroy(LetterSendScene *self)
+LetterSendScene *LetterSend_Destruct(LetterSendScene *self)
 {
     lsend_destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov104_0229c180, LetterSend_Destroy)
+CLEAN_AS(func_ov104_0229c180, LetterSend_Destruct)
 
 /* func_ov104_0229c260 */
 LetterSendScene *LetterSend_Delete(LetterSendScene *self)

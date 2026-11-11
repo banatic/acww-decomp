@@ -51,11 +51,11 @@ void Block021c5160_Clear(Block021c5160 *block)
 CLEAN_AS(func_02034898, Block021c5160_Clear)
 
 /* func_020348c4: the destructor; nothing to do. */
-void Block021c5160_Destroy(Block021c5160 *block)
+void Block021c5160_Destruct(Block021c5160 *block)
 {
     (void) block;
 }
-CLEAN_AS(func_020348c4, Block021c5160_Destroy)
+CLEAN_AS(func_020348c4, Block021c5160_Destruct)
 
 /* func_020348c8: the constructor: cleared, then the defaults. */
 void *Block021c5160_Construct(Block021c5160 *block)

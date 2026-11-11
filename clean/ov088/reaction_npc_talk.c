@@ -227,13 +227,13 @@ void *ReactionNpcTalk_Delete(void *talk)
 CLEAN_AS(func_ov088_02278cd8, ReactionNpcTalk_Delete)
 
 /* func_ov088_02278cf8 (slot 0x00): the scene class 0x020d9ff8's destructor. */
-void *ReactionNpcTalk_Destroy(void *talk)
+void *ReactionNpcTalk_Destruct(void *talk)
 {
     *(const u8 **) talk = data_ov088_02279c58;
     Obj020d9ff8_DestructBody(talk);
     return talk;
 }
-CLEAN_AS(func_ov088_02278cf8, ReactionNpcTalk_Destroy)
+CLEAN_AS(func_ov088_02278cf8, ReactionNpcTalk_Destruct)
 
 /* func_ov088_02278d10: the constructor: a scene of class 0x020d9ff8 given this class's vtable. */
 void *ReactionNpcTalk_Construct(void *talk)

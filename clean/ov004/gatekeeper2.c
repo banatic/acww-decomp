@@ -164,20 +164,20 @@ static SceneCommandScene *gk2_command_of(Gatekeeper2Talk *talk)
 
 /* func_ov004_02224d80 (vtable slot 0x40): its talk scene's destructor, then the special
  * character's; the object. */
-Gatekeeper2 *Gatekeeper2_Destroy(Gatekeeper2 *keeper)
+Gatekeeper2 *Gatekeeper2_Destruct(Gatekeeper2 *keeper)
 {
     *(const u8 **) (void *) keeper->base = data_ov004_02254918;
-    Gatekeeper2Talk_Destroy(&keeper->talk);
+    Gatekeeper2Talk_Destruct(&keeper->talk);
     SpecialSceneObject_DestructBody(keeper);
     return keeper;
 }
-CLEAN_AS(func_ov004_02224d80, Gatekeeper2_Destroy)
+CLEAN_AS(func_ov004_02224d80, Gatekeeper2_Destruct)
 
 /* func_ov004_02224da8 (vtable slot 0x44): the same, then the object freed. */
 Gatekeeper2 *Gatekeeper2_Delete(Gatekeeper2 *keeper)
 {
     *(const u8 **) (void *) keeper->base = data_ov004_02254918;
-    Gatekeeper2Talk_Destroy(&keeper->talk);
+    Gatekeeper2Talk_Destruct(&keeper->talk);
     SpecialSceneObject_DestructBody(keeper);
     Heap_FreeAux(keeper);
     return keeper;
@@ -556,13 +556,13 @@ Gatekeeper2Talk *Gatekeeper2Talk_Delete(Gatekeeper2Talk *talk)
 CLEAN_AS(func_ov004_0222548c, Gatekeeper2Talk_Delete)
 
 /* func_ov004_022254ac (the talk scene's vtable slot 0x00): the scene base's destructor. */
-Gatekeeper2Talk *Gatekeeper2Talk_Destroy(Gatekeeper2Talk *talk)
+Gatekeeper2Talk *Gatekeeper2Talk_Destruct(Gatekeeper2Talk *talk)
 {
     *(const u8 **) (void *) talk = data_ov004_02254888;
     SceneBase_DestructBody(talk);
     return talk;
 }
-CLEAN_AS(func_ov004_022254ac, Gatekeeper2Talk_Destroy)
+CLEAN_AS(func_ov004_022254ac, Gatekeeper2Talk_Destruct)
 
 /* func_ov004_022254c4: the constructor: a scene base given this class's vtable. */
 Gatekeeper2Talk *Gatekeeper2Talk_Construct(Gatekeeper2Talk *talk)

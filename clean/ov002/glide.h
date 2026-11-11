@@ -71,10 +71,10 @@ typedef struct Glider {
 } Glider;
 
 Glider *Glider1_Delete(Glider *glider);
-Glider *Glider1_Destroy(Glider *glider);
+Glider *Glider1_Destruct(Glider *glider);
 Glider *Glider1_Construct(Glider *glider);
 Glider *Glider0_Delete(Glider *glider);
-Glider *Glider0_Destroy(Glider *glider);
+Glider *Glider0_Destruct(Glider *glider);
 Glider *Glider0_Construct(Glider *glider);
 int Glide_IsMoving(Glide *glide);
 void Glide_EaseTo(Glide *glide, int x, int y, int steps);
@@ -86,7 +86,7 @@ int Glide_X(Glide *glide);
 int Glide_Step(Glide *glide);
 void Glide_Stop(Glide *glide);
 Glide *Glide_Delete(Glide *glide);
-void Glide_Destroy(Glide *glide);
+void Glide_Destruct(Glide *glide);
 void Glide_Construct(Glide *glide);
 void Glider_Update(Glider *glider);
 void Glider_DrawWrapped(Glider *glider);
@@ -109,9 +109,9 @@ void Glider_TurnToSetC(Glider *glider);
 void Glider_TurnToSetA(Glider *glider);
 void Glider_TurnToSetB(Glider *glider);
 void Glider_SetAnim(Glider *glider, int anim);
-Glider *Glider_Destroy(Glider *glider);
+Glider *Glider_DestructBase(Glider *glider);
 Glider *Glider_Delete(Glider *glider);
-Glider *Glider_DestroyVirtual(Glider *glider);
+Glider *Glider_Destruct(Glider *glider);
 Glider *Glider_Construct(Glider *glider, u8 kind);
 
 #endif

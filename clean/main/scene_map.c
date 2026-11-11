@@ -43,14 +43,14 @@ extern u8 data_021ebcd4[]; /* the house rooms' records */
 
 /* func_0204cf14 (vtable slot 16): the destructor, through the game's process class down to the
  * base's. */
-SceneMap *SceneMap_Destroy(SceneMap *self)
+SceneMap *SceneMap_Destruct(SceneMap *self)
 {
     self->process.vtable = data_020db898;
     self->process.vtable = data_020da13c;
     Process_Destruct(&self->process);
     return self;
 }
-CLEAN_AS(func_0204cf14, SceneMap_Destroy)
+CLEAN_AS(func_0204cf14, SceneMap_Destruct)
 
 /* func_0204cf34 (vtable slot 17): destroyed and freed to the auxiliary heap. */
 SceneMap *SceneMap_Delete(SceneMap *self)

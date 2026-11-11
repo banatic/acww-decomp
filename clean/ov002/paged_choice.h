@@ -172,12 +172,12 @@ void PagedChoice_PlaceBeside(PagedChoice *choice, int x, int y);
 void PagedChoice_PlaceCentered(PagedChoice *choice, int x, int y);
 void PagedChoice_Init(PagedChoice *choice, u8 layer, int priority, const char *screen_file);
 PagedChoice *PagedChoice_Delete(PagedChoice *choice);
-PagedChoice *PagedChoice_Destroy(PagedChoice *choice);
+PagedChoice *PagedChoice_Destruct(PagedChoice *choice);
 PagedChoice *PagedChoice_Construct(PagedChoice *choice);
 void ChoiceRow_SetLayer(PagedChoiceRow *row, u8 layer, u16 first_tile, u8 color, u8 color_39);
 void ChoiceRow_Draw(PagedChoiceRow *row, int color);
 PagedChoiceRow *ChoiceRow_Delete(PagedChoiceRow *row);
-PagedChoiceRow *ChoiceRow_Destroy(PagedChoiceRow *row);
+PagedChoiceRow *ChoiceRow_Destruct(PagedChoiceRow *row);
 PagedChoiceRow *ChoiceRow_Construct(PagedChoiceRow *row);
 
 #endif

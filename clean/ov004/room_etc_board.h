@@ -62,10 +62,10 @@ int RoomEtcBoard_Draw(void);
 int RoomEtcBoard_Execute(RoomEtcBoard *board);
 int RoomEtcBoard_OnCreate(RoomEtcBoard *board);
 RoomEtcBoard *RoomEtcBoard_Delete(RoomEtcBoard *board);
-RoomEtcBoard *RoomEtcBoard_Destroy(RoomEtcBoard *board);
+RoomEtcBoard *RoomEtcBoard_Destruct(RoomEtcBoard *board);
 RoomEtcBoard *RoomEtcBoard_Construct(RoomEtcBoard *board);
 void RoomEtcBoard_New(void);
 RoomEtcBoard *RoomEtcBoardReceiver_Delete(void *receiver);
-RoomEtcBoard *RoomEtcBoardReceiver_Destroy(void *receiver);
+RoomEtcBoard *RoomEtcBoardReceiver_Destruct(void *receiver);
 
 #endif

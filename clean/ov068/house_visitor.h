@@ -110,9 +110,9 @@ typedef struct HouseVisitor {
 } HouseVisitor;
 
 HouseVisitorTalk *HouseVisitorTalk_Delete(HouseVisitorTalk *talk);
-HouseVisitor *HouseVisitor_Destroy(HouseVisitor *visitor);
+HouseVisitor *HouseVisitor_Destruct(HouseVisitor *visitor);
 HouseVisitor *HouseVisitor_Delete(HouseVisitor *visitor);
-HouseVisitorTalk *HouseVisitorTalk_Destroy(HouseVisitorTalk *talk);
+HouseVisitorTalk *HouseVisitorTalk_Destruct(HouseVisitorTalk *talk);
 int HouseVisitor_HasActionSound(HouseVisitor *visitor);
 void HouseVisitor_ActionSoundPlayed(HouseVisitor *visitor);
 void HouseVisitor_UpdateLeave(HouseVisitor *visitor);

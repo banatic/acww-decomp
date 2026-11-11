@@ -267,21 +267,21 @@ static void countdown_digit_destroy_parts(CountdownDigit *digit)
 
 /* func_ov003_0221cac4 (digit vtable slot 0x44, the deleting destructor): the destructor's work,
  * then its operator delete, which frees nothing. */
-CountdownDigit *CountdownDigit_DestroyAndFree(CountdownDigit *digit)
+CountdownDigit *CountdownDigit_DestructDelete(CountdownDigit *digit)
 {
     countdown_digit_destroy_parts(digit);
     CountdownDigit_Delete(digit);
     return digit;
 }
-CLEAN_AS(func_ov003_0221cac4, CountdownDigit_DestroyAndFree)
+CLEAN_AS(func_ov003_0221cac4, CountdownDigit_DestructDelete)
 
 /* func_ov003_0221cafc (digit vtable slot 0x40): the destructor. */
-CountdownDigit *CountdownDigit_Destroy(CountdownDigit *digit)
+CountdownDigit *CountdownDigit_Destruct(CountdownDigit *digit)
 {
     countdown_digit_destroy_parts(digit);
     return digit;
 }
-CLEAN_AS(func_ov003_0221cafc, CountdownDigit_Destroy)
+CLEAN_AS(func_ov003_0221cafc, CountdownDigit_Destruct)
 
 /* func_ov003_0221cb30: the digit's constructor: overlay 9's, the vtables, then its
  * animation's. */
@@ -518,21 +518,21 @@ static void countdown_board_destroy_parts(CountdownBoard *board)
 
 /* func_ov003_0221cf54 (vtable slot 0x44, the deleting destructor): the destructor's work, then
  * the memory freed. */
-CountdownBoard *CountdownBoard_DestroyAndFree(CountdownBoard *board)
+CountdownBoard *CountdownBoard_Delete(CountdownBoard *board)
 {
     countdown_board_destroy_parts(board);
     Heap_FreeAux(board);
     return board;
 }
-CLEAN_AS(func_ov003_0221cf54, CountdownBoard_DestroyAndFree)
+CLEAN_AS(func_ov003_0221cf54, CountdownBoard_Delete)
 
 /* func_ov003_0221cf8c (vtable slot 0x40): the destructor. */
-CountdownBoard *CountdownBoard_Destroy(CountdownBoard *board)
+CountdownBoard *CountdownBoard_Destruct(CountdownBoard *board)
 {
     countdown_board_destroy_parts(board);
     return board;
 }
-CLEAN_AS(func_ov003_0221cf8c, CountdownBoard_Destroy)
+CLEAN_AS(func_ov003_0221cf8c, CountdownBoard_Destruct)
 
 /* func_ov003_0221cfc0: the board's constructor: overlay 9's, the vtables, its animation's; no
  * material yet. */
@@ -613,30 +613,30 @@ static CountdownDigit *countdown_digit_from_receiver(void *receiver)
     return (CountdownDigit *) (void *) ((u8 *) receiver - COUNTDOWN_RECEIVER_OFFSET);
 }
 
-/* _ZThn236_N18Obj_ov003_02238c54D0Ev: CountdownBoard_DestroyAndFree. */
-CountdownBoard *CountdownBoard_ReceiverDestroyAndFree(void *receiver)
+/* _ZThn236_N18Obj_ov003_02238c54D0Ev: CountdownBoard_Delete. */
+CountdownBoard *CountdownBoard_ReceiverDelete(void *receiver)
 {
-    return CountdownBoard_DestroyAndFree(countdown_board_from_receiver(receiver));
+    return CountdownBoard_Delete(countdown_board_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov003_02238c54D0Ev, CountdownBoard_ReceiverDestroyAndFree)
+CLEAN_AS(_ZThn236_N18Obj_ov003_02238c54D0Ev, CountdownBoard_ReceiverDelete)
 
-/* _ZThn236_N18Obj_ov003_02238c54D1Ev: CountdownBoard_Destroy. */
-CountdownBoard *CountdownBoard_ReceiverDestroy(void *receiver)
+/* _ZThn236_N18Obj_ov003_02238c54D1Ev: CountdownBoard_Destruct. */
+CountdownBoard *CountdownBoard_ReceiverDestruct(void *receiver)
 {
-    return CountdownBoard_Destroy(countdown_board_from_receiver(receiver));
+    return CountdownBoard_Destruct(countdown_board_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov003_02238c54D1Ev, CountdownBoard_ReceiverDestroy)
+CLEAN_AS(_ZThn236_N18Obj_ov003_02238c54D1Ev, CountdownBoard_ReceiverDestruct)
 
-/* _ZThn236_N18Obj_ov003_02238b10D0Ev: CountdownDigit_DestroyAndFree. */
-CountdownDigit *CountdownDigit_ReceiverDestroyAndFree(void *receiver)
+/* _ZThn236_N18Obj_ov003_02238b10D0Ev: CountdownDigit_DestructDelete. */
+CountdownDigit *CountdownDigit_ReceiverDelete(void *receiver)
 {
-    return CountdownDigit_DestroyAndFree(countdown_digit_from_receiver(receiver));
+    return CountdownDigit_DestructDelete(countdown_digit_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov003_02238b10D0Ev, CountdownDigit_ReceiverDestroyAndFree)
+CLEAN_AS(_ZThn236_N18Obj_ov003_02238b10D0Ev, CountdownDigit_ReceiverDelete)
 
-/* _ZThn236_N18Obj_ov003_02238b10D1Ev: CountdownDigit_Destroy. */
-CountdownDigit *CountdownDigit_ReceiverDestroy(void *receiver)
+/* _ZThn236_N18Obj_ov003_02238b10D1Ev: CountdownDigit_Destruct. */
+CountdownDigit *CountdownDigit_ReceiverDestruct(void *receiver)
 {
-    return CountdownDigit_Destroy(countdown_digit_from_receiver(receiver));
+    return CountdownDigit_Destruct(countdown_digit_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov003_02238b10D1Ev, CountdownDigit_ReceiverDestroy)
+CLEAN_AS(_ZThn236_N18Obj_ov003_02238b10D1Ev, CountdownDigit_ReceiverDestruct)

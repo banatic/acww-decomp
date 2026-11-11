@@ -7,7 +7,7 @@
 #include "catalog_scene.h"
 #include "types.h"
 
-CatalogScene *FishCatalog_Destroy(CatalogScene *self);
+CatalogScene *FishCatalog_Destruct(CatalogScene *self);
 CatalogScene *FishCatalog_Delete(CatalogScene *self);
 void FishCatalog_SetFlags(CatalogScene *self, u16 flags);
 int FishCatalog_TestFlags(CatalogScene *self, u16 flags);

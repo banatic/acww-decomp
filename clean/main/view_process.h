@@ -13,7 +13,7 @@ typedef struct ViewProcess {
     Mtx43 view; /* 0x50 */
 } ViewProcess;
 
-ViewProcess *ViewProcess_Destroy(ViewProcess *self);
+ViewProcess *ViewProcess_Destruct(ViewProcess *self);
 ViewProcess *ViewProcess_Delete(ViewProcess *self);
 int ViewProcess_Draw(ViewProcess *self);
 

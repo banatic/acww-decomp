@@ -117,7 +117,7 @@ void FortuneTellerTalk_Line(FortuneTellerTalk *talk, FortuneTellerLine *out);
 void FortuneTellerTalk_Begin(FortuneTellerTalk *talk, void *owner);
 void FortuneTellerTalk_SetTalkStyle(FortuneTellerTalk *talk, int style);
 void *FortuneTellerTalk_Delete(void *talk);
-void *FortuneTellerTalk_Destroy(void *talk);
+void *FortuneTellerTalk_Destruct(void *talk);
 FortuneTellerTalk *FortuneTellerTalk_Construct(FortuneTellerTalk *talk);
 
 #endif

@@ -170,7 +170,7 @@ typedef struct FriendRoster {
 } FriendRoster;
 
 /* friend_roster.c */
-FriendRoster *FriendRoster_Destroy(FriendRoster *self);
+FriendRoster *FriendRoster_Destruct(FriendRoster *self);
 FriendRoster *FriendRoster_Delete(FriendRoster *self);
 void FriendRoster_ClearFlags(FriendRoster *self, unsigned short flags);
 void FriendRoster_SetFlags(FriendRoster *self, unsigned short flags);

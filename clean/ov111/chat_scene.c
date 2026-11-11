@@ -224,21 +224,21 @@ static void chat_destroy_members(ChatScene *self)
 {
     self->base.vtable = data_ov111_022a1008;
     ErrorMessage_Destruct(&self->error);
-    Glider0_Destroy(&self->pointer);
+    Glider0_Destruct(&self->pointer);
     self->line.vtable = &data_ov111_022a0ff0;
     TextBase_WideDestruct(&self->line);
     QuickMessage_TextDestruct((struct QuickMessageText *) (void *) self->message);
     __cxa_vec_cleanup(self->keyboard.labels, 2, sizeof(TextLabel), (void (*)(void *))(uintptr_t) func_02070be8);
-    MenuScene_DestroyBase(chat_scene(self));
+    MenuScene_DestructBase(chat_scene(self));
 }
 
 /* func_ov111_0229eea0 (vtable slot 0x40): the destructor. */
-ChatScene *ChatScene_Destroy(ChatScene *self)
+ChatScene *ChatScene_Destruct(ChatScene *self)
 {
     chat_destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov111_0229eea0, ChatScene_Destroy)
+CLEAN_AS(func_ov111_0229eea0, ChatScene_Destruct)
 
 /* func_ov111_0229ef08 (vtable slot 0x44): the deleting destructor. */
 ChatScene *ChatScene_Delete(ChatScene *self)

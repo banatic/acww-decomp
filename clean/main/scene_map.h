@@ -33,7 +33,7 @@ typedef struct SceneMapSetupEnd {
     u16 param;        /* 0x06 */
 } SceneMapSetupEnd;
 
-SceneMap *SceneMap_Destroy(SceneMap *self);
+SceneMap *SceneMap_Destruct(SceneMap *self);
 SceneMap *SceneMap_Delete(SceneMap *self);
 int SceneMap_Draw(void);
 int SceneMap_Execute(void);

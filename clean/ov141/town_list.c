@@ -66,19 +66,19 @@ static void town_list_update_sprite(Glider *sprite)
 static void town_list_destroy_members(TownList *self)
 {
     self->base.vtable = data_ov141_0229af48;
-    ButtonPanel_Destroy(&self->panel);
-    Glider0_Destroy(&self->cursor_sprite);
-    ResRows_Destroy((ResRows *) (void *) self->rows);
-    MenuScene_DestroyBase(town_list_scene(self));
+    ButtonPanel_Destruct(&self->panel);
+    Glider0_Destruct(&self->cursor_sprite);
+    ResRows_Destruct((ResRows *) (void *) self->rows);
+    MenuScene_DestructBase(town_list_scene(self));
 }
 
 /* func_ov141_02299ee0 (vtable slot 0x40) */
-TownList *TownList_Destroy(TownList *self)
+TownList *TownList_Destruct(TownList *self)
 {
     town_list_destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov141_02299ee0, TownList_Destroy)
+CLEAN_AS(func_ov141_02299ee0, TownList_Destruct)
 
 /* func_ov141_02299f1c (vtable slot 0x44) */
 TownList *TownList_Delete(TownList *self)

@@ -176,22 +176,22 @@ static int rv_call_int(const MemberPointer *member, RoomVillagerMachine *machine
 
 /* func_ov004_0221e308 (vtable slot 0x40): the destructor, without freeing: its grid, its
  * machine, then the town villager scene object. */
-RoomVillager *RoomVillager_Destroy(RoomVillager *villager)
+RoomVillager *RoomVillager_Destruct(RoomVillager *villager)
 {
     *(const u8 **) (void *) villager->base = data_ov004_022539cc;
     TileGrid_Destruct(&villager->grid);
-    RoomVillagerMachine_Destroy(&villager->machine);
+    RoomVillagerMachine_Destruct(&villager->machine);
     VillagerSceneObject_DestructBody(villager->base);
     return villager;
 }
-CLEAN_AS(func_ov004_0221e308, RoomVillager_Destroy)
+CLEAN_AS(func_ov004_0221e308, RoomVillager_Destruct)
 
 /* func_ov004_0221e33c (vtable slot 0x44, the deleting destructor). */
 RoomVillager *RoomVillager_Delete(RoomVillager *villager)
 {
     *(const u8 **) (void *) villager->base = data_ov004_022539cc;
     TileGrid_Destruct(&villager->grid);
-    RoomVillagerMachine_Destroy(&villager->machine);
+    RoomVillagerMachine_Destruct(&villager->machine);
     VillagerSceneObject_DestructBody(villager->base);
     Heap_FreeAux(villager);
     return villager;
@@ -599,11 +599,11 @@ void RoomVillagerMachine_Update(RoomVillagerMachine *machine, RoomVillager *vill
 CLEAN_AS(func_ov004_0221ebb8, RoomVillagerMachine_Update)
 
 /* func_ov004_0221ebf4: the machine's destructor does nothing. */
-void RoomVillagerMachine_Destroy(RoomVillagerMachine *machine)
+void RoomVillagerMachine_Destruct(RoomVillagerMachine *machine)
 {
     (void) machine;
 }
-CLEAN_AS(func_ov004_0221ebf4, RoomVillagerMachine_Destroy)
+CLEAN_AS(func_ov004_0221ebf4, RoomVillagerMachine_Destruct)
 
 /* func_ov004_0221ebf8: the machine's constructor: no next state, the timer 0. */
 void RoomVillagerMachine_Construct(RoomVillagerMachine *machine)

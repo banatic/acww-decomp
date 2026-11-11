@@ -517,20 +517,20 @@ CLEAN_AS(func_020b8cb8, FieldLabel_ResetGlobal)
 FieldLabel *FieldLabel_Delete(FieldLabel *label)
 {
     set_vtable(label);
-    FieldLabelWindow_Destroy(label_window(label));
+    FieldLabelWindow_Destruct(label_window(label));
     Heap_OperatorDeleteB(label);
     return label;
 }
 CLEAN_AS(func_020b8cc8, FieldLabel_Delete)
 
 /* func_020b8cec (vtable slot 0): the destructor. */
-FieldLabel *FieldLabel_Destroy(FieldLabel *label)
+FieldLabel *FieldLabel_Destruct(FieldLabel *label)
 {
     set_vtable(label);
-    FieldLabelWindow_Destroy(label_window(label));
+    FieldLabelWindow_Destruct(label_window(label));
     return label;
 }
-CLEAN_AS(func_020b8cec, FieldLabel_Destroy)
+CLEAN_AS(func_020b8cec, FieldLabel_Destruct)
 
 /* func_020b8d08: the constructor (the field's label is built at start-up). */
 FieldLabel *FieldLabel_Construct(FieldLabel *label)

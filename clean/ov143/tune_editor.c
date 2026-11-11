@@ -83,18 +83,18 @@ static void tune_destroy_members(TuneEditor *self)
 {
     self->base.vtable = data_ov143_0229b1c0;
     __cxa_vec_cleanup(self->labels, TUNE_EDITOR_LABELS, sizeof(TextLabel), func_02070be8);
-    ButtonPanel_Destroy(&self->panel);
-    Glider0_Destroy(&self->cursor_sprite);
-    MenuScene_DestroyBase(tune_scene(self));
+    ButtonPanel_Destruct(&self->panel);
+    Glider0_Destruct(&self->cursor_sprite);
+    MenuScene_DestructBase(tune_scene(self));
 }
 
 /* func_ov143_022995a0 (vtable slot 0x40) */
-TuneEditor *TuneEditor_Destroy(TuneEditor *self)
+TuneEditor *TuneEditor_Destruct(TuneEditor *self)
 {
     tune_destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov143_022995a0, TuneEditor_Destroy)
+CLEAN_AS(func_ov143_022995a0, TuneEditor_Destruct)
 
 /* func_ov143_022995e4 (vtable slot 0x44) */
 TuneEditor *TuneEditor_Delete(TuneEditor *self)

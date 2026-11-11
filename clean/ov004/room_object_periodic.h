@@ -42,11 +42,11 @@ int PeriodicRoomObject_Vfunc0c(void);
 int PeriodicRoomObject_Update(PeriodicRoomObject *object);
 int PeriodicRoomObject_Start(PeriodicRoomObject *object);
 PeriodicRoomObject *PeriodicRoomObject_Delete(PeriodicRoomObject *object);
-PeriodicRoomObject *PeriodicRoomObject_Destroy(PeriodicRoomObject *object);
+PeriodicRoomObject *PeriodicRoomObject_Destruct(PeriodicRoomObject *object);
 PeriodicRoomObject *PeriodicRoomObject_Construct(PeriodicRoomObject *object);
 void PeriodicRoomObject_Create(void);
 
 PeriodicRoomObject *PeriodicRoomObjectReceiver_Delete(void *receiver);
-PeriodicRoomObject *PeriodicRoomObjectReceiver_Destroy(void *receiver);
+PeriodicRoomObject *PeriodicRoomObjectReceiver_Destruct(void *receiver);
 
 #endif

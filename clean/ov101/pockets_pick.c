@@ -208,25 +208,25 @@ static void pick_close_scene(PocketsPick *self)
 static void pick_destroy_members(PocketsPick *self)
 {
     self->base.vtable = data_ov101_0229e078;
-    ButtonPanel_Destroy(&self->panel);
+    ButtonPanel_Destruct(&self->panel);
     ErrorMessage_Destruct(&self->error);
-    PagedChoice_Destroy(pick_choice(self));
-    Glider0_Destroy(&self->cursor_sprite);
-    Glide_Destroy(&self->glide);
-    Popup_Destroy(&self->popup);
+    PagedChoice_Destruct(pick_choice(self));
+    Glider0_Destruct(&self->cursor_sprite);
+    Glide_Destruct(&self->glide);
+    Popup_Destruct(&self->popup);
     PocketsWallet_Destruct(&self->wallet);
     PocketsLetters_Destruct(&self->letters);
     PocketsGrid_Destruct(&self->grid);
-    MenuScene_DestroyBase(pick_scene(self));
+    MenuScene_DestructBase(pick_scene(self));
 }
 
 /* func_ov101_0229c180 (vtable slot 0x40) */
-PocketsPick *PocketsPick_Destroy(PocketsPick *self)
+PocketsPick *PocketsPick_Destruct(PocketsPick *self)
 {
     pick_destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov101_0229c180, PocketsPick_Destroy)
+CLEAN_AS(func_ov101_0229c180, PocketsPick_Destruct)
 
 /* func_ov101_0229c204 (vtable slot 0x44) */
 PocketsPick *PocketsPick_Delete(PocketsPick *self)

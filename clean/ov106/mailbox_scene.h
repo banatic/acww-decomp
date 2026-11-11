@@ -130,7 +130,7 @@ typedef struct MailboxScene {
     Letter swapped;                         /* 0x4280: the letter a swap took from its place */
 } MailboxScene;
 
-MailboxScene *MailboxScene_Destroy(MailboxScene *self);
+MailboxScene *MailboxScene_Destruct(MailboxScene *self);
 MailboxScene *MailboxScene_Delete(MailboxScene *self);
 void MailboxScene_ClearFlags(MailboxScene *self, unsigned int flags);
 void MailboxScene_SetFlags(MailboxScene *self, unsigned int flags);

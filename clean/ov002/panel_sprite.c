@@ -202,14 +202,14 @@ PanelSprite *PanelSprite_Delete(PanelSprite *sprite)
 CLEAN_AS(func_ov002_0220b37c, PanelSprite_Delete)
 
 /* func_ov002_0220b3a4 (vtable entry 0) */
-PanelSprite *PanelSprite_Destroy(PanelSprite *sprite)
+PanelSprite *PanelSprite_Destruct(PanelSprite *sprite)
 {
     sprite->vtable = data_ov002_0220bd18;
     TextLabel_CloseBox(label_of(sprite));
     TextLabel_Destruct(label_of(sprite));
     return sprite;
 }
-CLEAN_AS(func_ov002_0220b3a4, PanelSprite_Destroy)
+CLEAN_AS(func_ov002_0220b3a4, PanelSprite_Destruct)
 
 /* func_ov002_0220b3c4: an empty label, no cells, up, no flags. The other bytes are left as
  * they were. */

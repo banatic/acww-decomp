@@ -126,28 +126,28 @@ static void destroy_members(PocketsScreen *self)
     self->base.vtable = data_ov096_022a23e8;
     Letter_Destruct(&self->unk_2f28);
     Letter_Destruct(&self->held_letter);
-    LabelButton0_Destroy(&self->button);
+    LabelButton0_Destruct(&self->button);
     LetterView_Destruct((LetterView *) (void *) self->unk_2a74);
     ErrorMessage_Destruct(&self->error);
-    PagedChoice_Destroy(choice_of(self));
-    Glider0_Destroy(&self->cursor_sprite);
-    Glide_Destroy(&self->glide);
-    Popup_Destroy(&self->popup);
+    PagedChoice_Destruct(choice_of(self));
+    Glider0_Destruct(&self->cursor_sprite);
+    Glide_Destruct(&self->glide);
+    Popup_Destruct(&self->popup);
     PocketsWallet_Destruct((PocketsWallet *) (void *) self->unk_de0);
     /* The ROM calls 0x0229bc30, ov094's function (ov094 is the overlay of the objects next to
      * it); the matching source of func_ov096_0229c180 names ov128's at the same address. */
     PocketsLetters_Destruct(&self->letters);
     PocketsGrid_Destruct((PocketsGrid *) (void *) self->grid);
-    MenuScene_DestroyBase(scene_of(self));
+    MenuScene_DestructBase(scene_of(self));
 }
 
 /* func_ov096_0229c180 */
-PocketsScreen *PocketsScreen_Destroy(PocketsScreen *self)
+PocketsScreen *PocketsScreen_Destruct(PocketsScreen *self)
 {
     destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov096_0229c180, PocketsScreen_Destroy)
+CLEAN_AS(func_ov096_0229c180, PocketsScreen_Destruct)
 
 /* func_ov096_0229c22c */
 PocketsScreen *PocketsScreen_Delete(PocketsScreen *self)

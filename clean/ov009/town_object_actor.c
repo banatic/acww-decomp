@@ -259,13 +259,13 @@ CLEAN_AS(func_ov009_02262f54, TownObjectActorSound_TurnOn)
 
 /* func_ov009_02262f74: the destructor of the emitter (overlay 9's copy of func_020f59ec): its
  * vtable set back, then the base class's. */
-void *TownObjectActorSound_Destroy(TownObjectActorSound *sound)
+void *TownObjectActorSound_Destruct(TownObjectActorSound *sound)
 {
     sound->object.vtable = data_0213f090;
     SoundEmitterClass_DestructBase(&sound->object);
     return sound;
 }
-CLEAN_AS(func_ov009_02262f74, TownObjectActorSound_Destroy)
+CLEAN_AS(func_ov009_02262f74, TownObjectActorSound_Destruct)
 
 /* func_ov009_02262f8c: the emitter built (kind 2), off. */
 void *TownObjectActorSound_Construct(TownObjectActorSound *sound)

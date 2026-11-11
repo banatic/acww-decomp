@@ -276,7 +276,7 @@ void MapMenu_SubTouch(MapMenu *self);
 int MapMenu_SelectTab(MapMenu *self, int tab);
 
 /* map_menu_scene.c */
-MapMenu *MapMenu_Destroy(MapMenu *self);
+MapMenu *MapMenu_Destruct(MapMenu *self);
 MapMenu *MapMenu_Delete(MapMenu *self);
 void MapMenu_LoadObjFiles(void);
 void MapMenu_FinishMap(MapMenu *self);

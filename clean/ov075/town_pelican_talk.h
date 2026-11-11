@@ -55,7 +55,7 @@ void TownPelicanTalk_OnLineEnded(TownPelicanTalk *talk);
 void TownPelicanTalk_Line(TownPelicanTalk *talk, TownPelicanLine *out);
 void TownPelicanTalk_Begin(TownPelicanTalk *talk, int owner);
 void *TownPelicanTalk_Delete(void *talk);
-TownPelicanTalk *TownPelicanTalk_Destroy(TownPelicanTalk *talk);
+TownPelicanTalk *TownPelicanTalk_Destruct(TownPelicanTalk *talk);
 void *TownPelicanTalk_Construct(void *talk);
 void TownPelicanTalk_Wake(TownPelicanTalk *talk);
 void TownPelicanTalk_SetSequence(TownPelicanTalk *talk, int sequence);

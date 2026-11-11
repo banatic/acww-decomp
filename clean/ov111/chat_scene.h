@@ -161,7 +161,7 @@ typedef struct ChatScene {
     u16 clipboard[CHAT_SCENE_LINE_CHARS]; /* 0x3eb8: the text copied */
 } ChatScene;
 
-ChatScene *ChatScene_Destroy(ChatScene *self);
+ChatScene *ChatScene_Destruct(ChatScene *self);
 ChatScene *ChatScene_Delete(ChatScene *self);
 ChatLine *ChatLine_Destruct(ChatLine *line);
 ChatLine *ChatLine_Delete(ChatLine *line);

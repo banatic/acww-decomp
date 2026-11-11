@@ -86,19 +86,19 @@ static void birthday_update_sprite(Glider *sprite)
 static void birthday_destroy_members(BirthdayScreen *self)
 {
     self->base.vtable = data_ov137_0229d440;
-    ClockSetter_Destroy(&self->picker);
-    ButtonPanel_Destroy(&self->panel);
-    Glider0_Destroy(&self->cursor_sprite);
-    MenuScene_DestroyBase(birthday_scene(self));
+    ClockSetter_Destruct(&self->picker);
+    ButtonPanel_Destruct(&self->panel);
+    Glider0_Destruct(&self->cursor_sprite);
+    MenuScene_DestructBase(birthday_scene(self));
 }
 
 /* func_ov137_0229c4e0 (vtable slot 0x40) */
-BirthdayScreen *BirthdayScreen_Destroy(BirthdayScreen *self)
+BirthdayScreen *BirthdayScreen_Destruct(BirthdayScreen *self)
 {
     birthday_destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov137_0229c4e0, BirthdayScreen_Destroy)
+CLEAN_AS(func_ov137_0229c4e0, BirthdayScreen_Destruct)
 
 /* func_ov137_0229c518 (vtable slot 0x44) */
 BirthdayScreen *BirthdayScreen_Delete(BirthdayScreen *self)

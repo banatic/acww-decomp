@@ -64,7 +64,7 @@ void TurtleSnowFestivalTalk_OnLineEnded(TurtleSnowFestivalTalk *talk);
 void TurtleSnowFestivalTalk_FirstLine(TurtleSnowFestivalTalk *talk, TurtleSnowFestivalLine *out);
 void TurtleSnowFestivalTalk_Begin(TurtleSnowFestivalTalk *talk, TurtleSnowFestival *owner);
 void *TurtleSnowFestivalTalk_Delete(void *talk);
-void *TurtleSnowFestivalTalk_Destroy(void *talk);
+void *TurtleSnowFestivalTalk_Destruct(void *talk);
 TurtleSnowFestivalTalk *TurtleSnowFestivalTalk_Construct(TurtleSnowFestivalTalk *talk);
 void TurtleSnowFestivalTalk_OfferVillagers(TurtleSnowFestivalTalk *talk);
 

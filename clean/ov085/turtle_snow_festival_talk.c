@@ -377,14 +377,14 @@ void *TurtleSnowFestivalTalk_Delete(void *talk)
 CLEAN_AS(func_ov085_02278edc, TurtleSnowFestivalTalk_Delete)
 
 /* func_ov085_02278efc (slot 0x00): the scene class 0x020d9ff8's destructor. */
-void *TurtleSnowFestivalTalk_Destroy(void *talk)
+void *TurtleSnowFestivalTalk_Destruct(void *talk)
 {
     TurtleSnowFestivalTalk *self = talk;
     self->base.vtable = data_ov085_0227945c;
     Obj020d9ff8_DestructBody(self);
     return self;
 }
-CLEAN_AS(func_ov085_02278efc, TurtleSnowFestivalTalk_Destroy)
+CLEAN_AS(func_ov085_02278efc, TurtleSnowFestivalTalk_Destruct)
 
 /* func_ov085_02278f14: the constructor: a scene of class 0x020d9ff8 given this class's
  * vtable. */

@@ -23,10 +23,10 @@ int RoomObject02251690_Follow(RoomObject02251690 *object);
 int RoomObject02251690_Update(RoomObject02251690 *object);
 int RoomObject02251690_Start(RoomObject02251690 *object);
 RoomObject02251690 *RoomObject02251690_Delete(RoomObject02251690 *object);
-RoomObject02251690 *RoomObject02251690_Destroy(RoomObject02251690 *object);
+RoomObject02251690 *RoomObject02251690_Destruct(RoomObject02251690 *object);
 RoomObject02251690 *RoomObject02251690_Construct(RoomObject02251690 *object);
 void RoomObject02251690_Create(void);
 RoomObject02251690 *RoomObject02251690Receiver_Delete(void *receiver);
-RoomObject02251690 *RoomObject02251690Receiver_Destroy(void *receiver);
+RoomObject02251690 *RoomObject02251690Receiver_Destruct(void *receiver);
 
 #endif

@@ -205,14 +205,14 @@ CLEAN_AS(func_ov004_0221bf84, BirthdayVillagerTalk_Delete)
 
 /* func_ov004_0221bfa4 (vtable slot 0x40): the destructor, without freeing: its talk scene, then
  * the town villager scene object. */
-BirthdayVillager *BirthdayVillager_Destroy(BirthdayVillager *villager)
+BirthdayVillager *BirthdayVillager_Destruct(BirthdayVillager *villager)
 {
     set_vtables(villager);
     VillagerTalkScene_DestructBody(&villager->talk.base);
     VillagerSceneObject_DestructBody(villager->base);
     return villager;
 }
-CLEAN_AS(func_ov004_0221bfa4, BirthdayVillager_Destroy)
+CLEAN_AS(func_ov004_0221bfa4, BirthdayVillager_Destruct)
 
 /* func_ov004_0221bfd4 (vtable slot 0x44, the deleting destructor). */
 BirthdayVillager *BirthdayVillager_Delete(BirthdayVillager *villager)
@@ -226,13 +226,13 @@ BirthdayVillager *BirthdayVillager_Delete(BirthdayVillager *villager)
 CLEAN_AS(func_ov004_0221bfd4, BirthdayVillager_Delete)
 
 /* func_ov004_0221c008 (the talk scene's vtable slot 0x00, its destructor). */
-BirthdayVillagerTalk *BirthdayVillagerTalk_Destroy(BirthdayVillagerTalk *talk)
+BirthdayVillagerTalk *BirthdayVillagerTalk_Destruct(BirthdayVillagerTalk *talk)
 {
     talk->base.scene.vtable = data_ov004_022535e4;
     VillagerTalkScene_DestructBody(&talk->base);
     return talk;
 }
-CLEAN_AS(func_ov004_0221c008, BirthdayVillagerTalk_Destroy)
+CLEAN_AS(func_ov004_0221c008, BirthdayVillagerTalk_Destruct)
 
 /* func_ov004_0221c020 (vtable slot 0x7c): its action sound is played only until it was once. */
 int BirthdayVillager_HasActionSound(BirthdayVillager *villager)

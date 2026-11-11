@@ -86,7 +86,7 @@ typedef struct InsurerStep {
     MemberPointer update; /* 0x08: int (insurer) */
 } InsurerStep;
 
-void *Insurer_Destroy(void *insurer);
+void *Insurer_Destruct(void *insurer);
 void *Insurer_Delete(void *insurer);
 void Insurer_OnEvent(Insurer *insurer, int code);
 int Insurer_MayAct(Insurer *insurer);

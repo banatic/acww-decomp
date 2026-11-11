@@ -80,7 +80,7 @@ void ReactionNpcTalk_OnLineEnded(ReactionNpcTalk *talk);
 void ReactionNpcTalk_FirstLine(ReactionNpcTalk *talk, ReactionNpcLine *out);
 void ReactionNpcTalk_Begin(ReactionNpcTalk *talk, ReactionNpc *owner);
 void *ReactionNpcTalk_Delete(void *talk);
-void *ReactionNpcTalk_Destroy(void *talk);
+void *ReactionNpcTalk_Destruct(void *talk);
 void *ReactionNpcTalk_Construct(void *talk);
 void ReactionNpcTalk_StepPause(ReactionNpcTalk *talk);
 void ReactionNpcTalk_StepWatch(ReactionNpcTalk *talk);

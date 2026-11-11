@@ -134,23 +134,23 @@ static void pbox_destroy_members(PublicBox *self)
     self->base.vtable = data_ov110_0229ecb8;
     __cxa_vec_cleanup(self->labels, PUBLIC_BOX_LABELS, sizeof(TextLabel), (void (*)(void *))(uintptr_t) func_02070be8);
     ErrorMessage_Destruct(&self->error);
-    PagedChoice_Destroy(pbox_choice(self));
-    Glider0_Destroy(&self->cursor_sprite);
-    Glide_Destroy(&self->glide);
-    Popup_Destroy(&self->popup);
+    PagedChoice_Destruct(pbox_choice(self));
+    Glider0_Destruct(&self->cursor_sprite);
+    Glide_Destruct(&self->glide);
+    Popup_Destruct(&self->popup);
     PocketsWallet_Destruct(&self->wallet);
     PocketsLetters_Destruct(&self->letters);
     PocketsGrid_Destruct(&self->grid);
-    MenuScene_DestroyBase(pbox_scene(self));
+    MenuScene_DestructBase(pbox_scene(self));
 }
 
 /* func_ov110_0229c180 (vtable slot 0x40) */
-PublicBox *PublicBox_Destroy(PublicBox *self)
+PublicBox *PublicBox_Destruct(PublicBox *self)
 {
     pbox_destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov110_0229c180, PublicBox_Destroy)
+CLEAN_AS(func_ov110_0229c180, PublicBox_Destruct)
 
 /* func_ov110_0229c210 (vtable slot 0x44) */
 PublicBox *PublicBox_Delete(PublicBox *self)

@@ -41,7 +41,7 @@ typedef struct LetterReader {
     Glider cursor;      /* 0x434: a Glider1 */
 } LetterReader;
 
-LetterReader *LetterReader_Destroy(LetterReader *self);
+LetterReader *LetterReader_Destruct(LetterReader *self);
 LetterReader *LetterReader_Delete(LetterReader *self);
 void LetterReader_UsePad(LetterReader *self);
 void LetterReader_UseTouch(LetterReader *self);

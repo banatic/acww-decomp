@@ -190,7 +190,7 @@ extern const u16 data_ov002_0220ba58[]; /* the two text colors, 14 and 15 */
 extern void GXS_LoadOBJPltt(const void *src, u32 offset, u32 size);
 extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
-extern void *func_ov002_0220b3a4(void *sprite); /* PanelSprite_Destroy, for the array */
+extern void *func_ov002_0220b3a4(void *sprite); /* PanelSprite_Destruct, for the array */
 extern void *func_ov002_0220b3c4(void *sprite); /* PanelSprite_Construct, for the array */
 
 /* The cells the layouts give the sprites, with the text's width and the shadow's cell each
@@ -504,7 +504,7 @@ CLEAN_AS(func_ov002_0220af94, ButtonPanel_LoadTextColors)
 static void destroy(ButtonPanel *panel)
 {
     panel->vtable = data_ov002_0220bd08;
-    MessageWindow_Destroy(&panel->window);
+    MessageWindow_Destruct(&panel->window);
     __cxa_vec_cleanup(panel->sprites, BUTTON_PANEL_SPRITES, sizeof(PanelSprite),
                       (void (*)(void *))(uintptr_t) func_ov002_0220b3a4);
 }
@@ -519,12 +519,12 @@ ButtonPanel *ButtonPanel_Delete(ButtonPanel *panel)
 CLEAN_AS(func_ov002_0220afa8, ButtonPanel_Delete)
 
 /* func_ov002_0220afdc (vtable entry 0) */
-ButtonPanel *ButtonPanel_Destroy(ButtonPanel *panel)
+ButtonPanel *ButtonPanel_Destruct(ButtonPanel *panel)
 {
     destroy(panel);
     return panel;
 }
-CLEAN_AS(func_ov002_0220afdc, ButtonPanel_Destroy)
+CLEAN_AS(func_ov002_0220afdc, ButtonPanel_Destruct)
 
 /* func_ov002_0220b008: the sprites and the window constructed, in layout 0; `selected` is left
  * as it was. */

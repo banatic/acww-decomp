@@ -101,24 +101,24 @@ static void letter_write_destroy_members(LetterWriteScene *self)
 {
     self->base.vtable = data_ov122_022a2738;
     ErrorMessage_Destruct(&self->error);
-    ButtonPanel_Destroy(&self->panel);
-    PagedChoice_Destroy(letter_write_choice(self));
+    ButtonPanel_Destruct(&self->panel);
+    PagedChoice_Destruct(letter_write_choice(self));
     LetterBodyText_Destruct(&self->filter_wide);
     MailMessageText_Destruct(&self->filter_text);
-    Glider0_Destroy(&self->pointer);
-    PushButton_Destroy(&self->scroll_button);
+    Glider0_Destruct(&self->pointer);
+    PushButton_Destruct(&self->scroll_button);
     LetterView_Destruct(&self->view);
     __cxa_vec_cleanup(self->labels, 2, sizeof(TextLabel), (void (*)(void *))(uintptr_t) func_02070be8);
-    MenuScene_DestroyBase(letter_write_scene(self));
+    MenuScene_DestructBase(letter_write_scene(self));
 }
 
 /* func_ov122_0229eea0: the destructor. */
-LetterWriteScene *LetterWrite_Destroy(LetterWriteScene *self)
+LetterWriteScene *LetterWrite_Destruct(LetterWriteScene *self)
 {
     letter_write_destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov122_0229eea0, LetterWrite_Destroy)
+CLEAN_AS(func_ov122_0229eea0, LetterWrite_Destruct)
 
 /* func_ov122_0229ef30: the deleting destructor. */
 LetterWriteScene *LetterWrite_Delete(LetterWriteScene *self)

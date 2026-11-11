@@ -76,7 +76,7 @@ typedef struct TaxiDriverStep {
     MemberPointer update; /* 0x08: int (driver) */
 } TaxiDriverStep;
 
-void *TaxiDriver_Destroy(void *driver);
+void *TaxiDriver_Destruct(void *driver);
 void *TaxiDriver_Delete(void *driver);
 int TaxiDriver_CurrentAnim(void);
 unsigned int TaxiDriver_CurrentFrame(void);

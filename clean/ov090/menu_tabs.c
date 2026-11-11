@@ -123,16 +123,16 @@ static void menu_tabs_destroy_members(MenuTabs *self)
 {
     self->base.vtable = data_ov090_02299820;
     ErrorMessage_Destruct(&self->error);
-    MenuScene_DestroyBase(menu_tabs_scene(self));
+    MenuScene_DestructBase(menu_tabs_scene(self));
 }
 
 /* func_ov090_02298f20 (vtable slot 0x40) */
-MenuTabs *MenuTabs_Destroy(MenuTabs *self)
+MenuTabs *MenuTabs_Destruct(MenuTabs *self)
 {
     menu_tabs_destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov090_02298f20, MenuTabs_Destroy)
+CLEAN_AS(func_ov090_02298f20, MenuTabs_Destruct)
 
 /* func_ov090_02298f48 (vtable slot 0x44) */
 MenuTabs *MenuTabs_Delete(MenuTabs *self)

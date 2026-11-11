@@ -27,14 +27,14 @@ CLEAN_AS(func_ov056_02260420, Ov056Process_Create)
 
 /* func_ov056_0226044c (vtable slot 16): the destructor, through the game's process class down
  * to the base's. */
-Process *Ov056Process_Destroy(Process *self)
+Process *Ov056Process_Destruct(Process *self)
 {
     self->vtable = data_ov056_022604b0;
     self->vtable = data_020da13c;
     Process_Destruct(self);
     return self;
 }
-CLEAN_AS(func_ov056_0226044c, Ov056Process_Destroy)
+CLEAN_AS(func_ov056_0226044c, Ov056Process_Destruct)
 
 /* func_ov056_0226046c (vtable slot 17): destroyed and freed to the auxiliary heap. */
 Process *Ov056Process_Delete(Process *self)

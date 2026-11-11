@@ -82,7 +82,7 @@ typedef struct ReactionNpcStep {
     MemberPointer update; /* 0x08: int (character) */
 } ReactionNpcStep;
 
-void *ReactionNpc_Destroy(void *npc);
+void *ReactionNpc_Destruct(void *npc);
 ReactionNpc *ReactionNpc_Delete(ReactionNpc *npc);
 void ReactionNpc_PutReaction(ReactionNpc *npc, int slot, int reaction);
 int ReactionNpc_MotionNumber(ReactionNpc *npc);

@@ -226,15 +226,15 @@ static int mcat_faces(MysteryCat *cat, const Vec3 *point)
 
 /* func_ov074_02278a00 (vtable slot 0x40): her face's destructor, her talk scene's, then the
  * special character's; the object. */
-MysteryCat *MysteryCat_Destroy(MysteryCat *cat)
+MysteryCat *MysteryCat_Destruct(MysteryCat *cat)
 {
     *(const u8 **) (void *) cat->base = data_ov074_02279c68;
     MysteryCatFace_Destruct(&cat->face);
-    MysteryCatTalk_Destroy(&cat->talk);
+    MysteryCatTalk_Destruct(&cat->talk);
     SpecialSceneObject_DestructBody(cat);
     return cat;
 }
-CLEAN_AS(func_ov074_02278a00, MysteryCat_Destroy)
+CLEAN_AS(func_ov074_02278a00, MysteryCat_Destruct)
 
 /* func_ov074_02278a34 (vtable slot 0x44): the same, then the object freed. */
 void *MysteryCat_Delete(void *object)
@@ -242,7 +242,7 @@ void *MysteryCat_Delete(void *object)
     MysteryCat *cat = object;
     *(const u8 **) (void *) cat->base = data_ov074_02279c68;
     MysteryCatFace_Destruct(&cat->face);
-    MysteryCatTalk_Destroy(&cat->talk);
+    MysteryCatTalk_Destruct(&cat->talk);
     SpecialSceneObject_DestructBody(cat);
     Heap_FreeAux(cat);
     return cat;

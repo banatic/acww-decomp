@@ -63,20 +63,20 @@ static uintptr_t cm_at(u32 offset)
 
 /* func_ov004_02223654 (vtable slot 0x40): its talk scene's destructor, then the special
  * character's; the object. */
-u8 *CafeMaster_Destroy(u8 *master)
+u8 *CafeMaster_Destruct(u8 *master)
 {
     *(const u8 **) (void *) master = data_ov004_022546e0;
-    CafeMasterTalk_Destroy((CafeMasterTalk *) (void *) (master + CAFE_MASTER_TALK));
+    CafeMasterTalk_Destruct((CafeMasterTalk *) (void *) (master + CAFE_MASTER_TALK));
     SpecialSceneObject_DestructBody(master);
     return master;
 }
-CLEAN_AS(func_ov004_02223654, CafeMaster_Destroy)
+CLEAN_AS(func_ov004_02223654, CafeMaster_Destruct)
 
 /* func_ov004_0222367c (vtable slot 0x44): the same, then the object freed. */
 u8 *CafeMaster_Delete(u8 *master)
 {
     *(const u8 **) (void *) master = data_ov004_022546e0;
-    CafeMasterTalk_Destroy((CafeMasterTalk *) (void *) (master + CAFE_MASTER_TALK));
+    CafeMasterTalk_Destruct((CafeMasterTalk *) (void *) (master + CAFE_MASTER_TALK));
     SpecialSceneObject_DestructBody(master);
     Heap_FreeAux(master);
     return master;
@@ -1052,13 +1052,13 @@ CafeMasterTalk *CafeMasterTalk_Delete(CafeMasterTalk *talk)
 CLEAN_AS(func_ov004_02224560, CafeMasterTalk_Delete)
 
 /* func_ov004_02224580 (the talk scene's vtable slot 0x00): the scene base's destructor. */
-CafeMasterTalk *CafeMasterTalk_Destroy(CafeMasterTalk *talk)
+CafeMasterTalk *CafeMasterTalk_Destruct(CafeMasterTalk *talk)
 {
     *(const u8 **) (void *) talk = data_ov004_02254650;
     SceneBase_DestructBody(talk);
     return talk;
 }
-CLEAN_AS(func_ov004_02224580, CafeMasterTalk_Destroy)
+CLEAN_AS(func_ov004_02224580, CafeMasterTalk_Destruct)
 
 /* func_ov004_02224598: the constructor: a scene base given this class's vtable. */
 CafeMasterTalk *CafeMasterTalk_Construct(CafeMasterTalk *talk)

@@ -65,16 +65,16 @@ void Wipe_StepBackVertical(Wipe *wipe, int screen);
 int Wipe_OffsetX(Wipe *wipe);
 int Wipe_OffsetY(Wipe *wipe);
 Wipe *Wipe_Delete(Wipe *wipe);
-Wipe *Wipe_Destroy(Wipe *wipe);
+Wipe *Wipe_Destruct(Wipe *wipe);
 Wipe *Wipe_Construct(Wipe *wipe);
 
 int Progress_ScaleRemaining(Progress *progress, int value);
 int Progress_ScaleRemainingSquared(Progress *progress, int value);
 int Progress_Step(Progress *progress);
 void Progress_Start(Progress *progress, unsigned int frames);
-void Progress_Destroy(Progress *progress);
+void Progress_Destruct(Progress *progress);
 Progress *Progress_Delete(Progress *progress);
-void Progress_DestroyBase(Progress *progress);
+void Progress_DestructBase(Progress *progress);
 void Progress_Construct(Progress *progress);
 
 #endif

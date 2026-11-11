@@ -79,9 +79,9 @@ typedef struct SickVillager {
 } SickVillager;
 
 SickVillagerTalk *SickVillagerTalk_Delete(SickVillagerTalk *talk);
-SickVillager *SickVillager_Destroy(SickVillager *villager);
+SickVillager *SickVillager_Destruct(SickVillager *villager);
 SickVillager *SickVillager_Delete(SickVillager *villager);
-SickVillagerTalk *SickVillagerTalk_Destroy(SickVillagerTalk *talk);
+SickVillagerTalk *SickVillagerTalk_Destruct(SickVillagerTalk *talk);
 int SickVillager_HasActionSound(SickVillager *villager);
 SickVillager *SickVillager_ActionSoundPlayed(SickVillager *villager);
 void SickVillager_UpdateBack(SickVillager *villager);

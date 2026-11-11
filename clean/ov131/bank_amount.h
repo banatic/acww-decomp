@@ -89,7 +89,7 @@ typedef struct BankAmount {
     u8 unk_1557;
 } BankAmount;
 
-BankAmount *BankAmount_Destroy(BankAmount *self);
+BankAmount *BankAmount_Destruct(BankAmount *self);
 BankAmount *BankAmount_Delete(BankAmount *self);
 void BankAmount_SetFlags(BankAmount *self, int flags);
 int BankAmount_TestFlags(BankAmount *self, u16 mask);

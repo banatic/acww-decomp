@@ -164,19 +164,19 @@ static void de_draw_cell(const OamEntry *cell, int x, int y, int priority)
 static void de_destroy_members(DesignEditor *self)
 {
     self->base.vtable = data_ov123_0229d024;
-    ButtonPanel_Destroy(&self->panel);
-    Glider0_Destroy(&self->cursor_sprite);
+    ButtonPanel_Destruct(&self->panel);
+    Glider0_Destruct(&self->cursor_sprite);
     __cxa_vec_cleanup(&self->label, 1, sizeof(TextLabel), (void (*)(void *))(uintptr_t) func_02070be8);
-    MenuScene_DestroyBase(de_scene(self));
+    MenuScene_DestructBase(de_scene(self));
 }
 
 /* func_ov123_022995a0 (vtable slot 0x40) */
-DesignEditor *DesignEditor_Destroy(DesignEditor *self)
+DesignEditor *DesignEditor_Destruct(DesignEditor *self)
 {
     de_destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov123_022995a0, DesignEditor_Destroy)
+CLEAN_AS(func_ov123_022995a0, DesignEditor_Destruct)
 
 /* func_ov123_022995e4 (vtable slot 0x44) */
 DesignEditor *DesignEditor_Delete(DesignEditor *self)

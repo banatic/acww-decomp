@@ -29,12 +29,12 @@ typedef struct OutdoorClock {
 int OutdoorClock_Slot98(void);
 void OutdoorClock_TurnHand(OutdoorClock *clock, int node, G3dRenderState *state);
 int OutdoorClock_Init(OutdoorClock *clock);
-OutdoorClock *OutdoorClock_DestroyAndFree(OutdoorClock *clock);
-OutdoorClock *OutdoorClock_Destroy(OutdoorClock *clock);
+OutdoorClock *OutdoorClock_Delete(OutdoorClock *clock);
+OutdoorClock *OutdoorClock_Destruct(OutdoorClock *clock);
 OutdoorClock *OutdoorClock_Construct(OutdoorClock *clock);
 void OutdoorClock_RunNodeHook(G3dRenderState *state);
 void OutdoorClock_New(void);
-OutdoorClock *OutdoorClock_ReceiverDestroyAndFree(void *receiver);
-OutdoorClock *OutdoorClock_ReceiverDestroy(void *receiver);
+OutdoorClock *OutdoorClock_ReceiverDelete(void *receiver);
+OutdoorClock *OutdoorClock_ReceiverDestruct(void *receiver);
 
 #endif

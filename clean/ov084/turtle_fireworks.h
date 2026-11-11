@@ -64,7 +64,7 @@ typedef struct TurtleFireworksStep {
     MemberPointer update; /* 0x08: int (him) */
 } TurtleFireworksStep;
 
-TurtleFireworks *TurtleFireworks_Destroy(TurtleFireworks *turtle);
+TurtleFireworks *TurtleFireworks_Destruct(TurtleFireworks *turtle);
 void *TurtleFireworks_Delete(void *turtle);
 void TurtleFireworks_OnEvent(TurtleFireworks *turtle, int code);
 int TurtleFireworks_MayAct(TurtleFireworks *turtle);

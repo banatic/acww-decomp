@@ -8,7 +8,7 @@
 #include "order_catalog.h"
 #include "types.h"
 
-OrderCatalog *OrderCatalog_Destroy(OrderCatalog *self);
+OrderCatalog *OrderCatalog_Destruct(OrderCatalog *self);
 OrderCatalog *OrderCatalog_Delete(OrderCatalog *self);
 void OrderCatalog_LoadObjGraphics(OrderCatalog *self);
 void OrderCatalog_LoadBgGraphics(OrderCatalog *self);

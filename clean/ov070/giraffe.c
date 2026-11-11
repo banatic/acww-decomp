@@ -104,21 +104,21 @@ static SceneAction *gr_action(Giraffe *giraffe)
 
 /* func_ov070_02278a00 (vtable slot 0x40): her talk scene's destructor, then the special
  * character's; the object. */
-Giraffe *Giraffe_Destroy(Giraffe *giraffe)
+Giraffe *Giraffe_Destruct(Giraffe *giraffe)
 {
     *(const u8 **) (void *) giraffe->base = data_ov070_02279e4c;
-    GiraffeTalk_Destroy(&giraffe->talk);
+    GiraffeTalk_Destruct(&giraffe->talk);
     SpecialSceneObject_DestructBody(giraffe);
     return giraffe;
 }
-CLEAN_AS(func_ov070_02278a00, Giraffe_Destroy)
+CLEAN_AS(func_ov070_02278a00, Giraffe_Destruct)
 
 /* func_ov070_02278a28 (vtable slot 0x44): the same, then the object freed. */
 void *Giraffe_Delete(void *object)
 {
     Giraffe *giraffe = object;
     *(const u8 **) (void *) giraffe->base = data_ov070_02279e4c;
-    GiraffeTalk_Destroy(&giraffe->talk);
+    GiraffeTalk_Destruct(&giraffe->talk);
     SpecialSceneObject_DestructBody(giraffe);
     Heap_FreeAux(giraffe);
     return giraffe;

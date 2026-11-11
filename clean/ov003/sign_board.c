@@ -90,21 +90,21 @@ static void sign_board_destroy_parts(SignBoard *board)
 
 /* func_ov003_0221ea7c (vtable slot 0x44, the deleting destructor): the destructor's work, then
  * the memory freed. */
-SignBoard *SignBoard_DestroyAndFree(SignBoard *board)
+SignBoard *SignBoard_Delete(SignBoard *board)
 {
     sign_board_destroy_parts(board);
     Heap_FreeAux(board);
     return board;
 }
-CLEAN_AS(func_ov003_0221ea7c, SignBoard_DestroyAndFree)
+CLEAN_AS(func_ov003_0221ea7c, SignBoard_Delete)
 
 /* func_ov003_0221eaa8 (vtable slot 0x40): the destructor, without freeing. */
-SignBoard *SignBoard_Destroy(SignBoard *board)
+SignBoard *SignBoard_Destruct(SignBoard *board)
 {
     sign_board_destroy_parts(board);
     return board;
 }
-CLEAN_AS(func_ov003_0221eaa8, SignBoard_Destroy)
+CLEAN_AS(func_ov003_0221eaa8, SignBoard_Destruct)
 
 /* func_ov003_0221eacc: the constructor: overlay 9's, then the vtables. */
 SignBoard *SignBoard_Construct(SignBoard *board)
@@ -133,16 +133,16 @@ static SignBoard *sign_board_from_receiver(void *receiver)
     return (SignBoard *) (void *) ((u8 *) receiver - SIGN_BOARD_RECEIVER_OFFSET);
 }
 
-/* _ZThn236_N18Obj_ov003_022395e8D0Ev (receiver slot 0x04): SignBoard_DestroyAndFree. */
-SignBoard *SignBoard_ReceiverDestroyAndFree(void *receiver)
+/* _ZThn236_N18Obj_ov003_022395e8D0Ev (receiver slot 0x04): SignBoard_Delete. */
+SignBoard *SignBoard_ReceiverDelete(void *receiver)
 {
-    return SignBoard_DestroyAndFree(sign_board_from_receiver(receiver));
+    return SignBoard_Delete(sign_board_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov003_022395e8D0Ev, SignBoard_ReceiverDestroyAndFree)
+CLEAN_AS(_ZThn236_N18Obj_ov003_022395e8D0Ev, SignBoard_ReceiverDelete)
 
-/* _ZThn236_N18Obj_ov003_022395e8D1Ev (receiver slot 0x00): SignBoard_Destroy. */
-SignBoard *SignBoard_ReceiverDestroy(void *receiver)
+/* _ZThn236_N18Obj_ov003_022395e8D1Ev (receiver slot 0x00): SignBoard_Destruct. */
+SignBoard *SignBoard_ReceiverDestruct(void *receiver)
 {
-    return SignBoard_Destroy(sign_board_from_receiver(receiver));
+    return SignBoard_Destruct(sign_board_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov003_022395e8D1Ev, SignBoard_ReceiverDestroy)
+CLEAN_AS(_ZThn236_N18Obj_ov003_022395e8D1Ev, SignBoard_ReceiverDestruct)

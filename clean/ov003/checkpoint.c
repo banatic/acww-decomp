@@ -206,21 +206,21 @@ static void checkpoint_destroy_parts(Checkpoint *checkpoint)
 
 /* func_ov003_0221c630 (vtable slot 0x44, the deleting destructor): the destructor's work, then
  * the memory freed. */
-Checkpoint *Checkpoint_DestroyAndFree(Checkpoint *checkpoint)
+Checkpoint *Checkpoint_Delete(Checkpoint *checkpoint)
 {
     checkpoint_destroy_parts(checkpoint);
     Heap_FreeAux(checkpoint);
     return checkpoint;
 }
-CLEAN_AS(func_ov003_0221c630, Checkpoint_DestroyAndFree)
+CLEAN_AS(func_ov003_0221c630, Checkpoint_Delete)
 
 /* func_ov003_0221c668 (vtable slot 0x40): the destructor, without freeing. */
-Checkpoint *Checkpoint_Destroy(Checkpoint *checkpoint)
+Checkpoint *Checkpoint_Destruct(Checkpoint *checkpoint)
 {
     checkpoint_destroy_parts(checkpoint);
     return checkpoint;
 }
-CLEAN_AS(func_ov003_0221c668, Checkpoint_Destroy)
+CLEAN_AS(func_ov003_0221c668, Checkpoint_Destruct)
 
 /* func_ov003_0221c69c: the constructor: overlay 9's, the vtables, then the design part's. */
 Checkpoint *Checkpoint_Construct(Checkpoint *checkpoint)
@@ -250,16 +250,16 @@ static Checkpoint *checkpoint_from_receiver(void *receiver)
     return (Checkpoint *) (void *) ((u8 *) receiver - CHECKPOINT_RECEIVER_OFFSET);
 }
 
-/* _ZThn236_N18Obj_ov003_02238934D0Ev (receiver slot 0x04): Checkpoint_DestroyAndFree. */
-Checkpoint *Checkpoint_ReceiverDestroyAndFree(void *receiver)
+/* _ZThn236_N18Obj_ov003_02238934D0Ev (receiver slot 0x04): Checkpoint_Delete. */
+Checkpoint *Checkpoint_ReceiverDelete(void *receiver)
 {
-    return Checkpoint_DestroyAndFree(checkpoint_from_receiver(receiver));
+    return Checkpoint_Delete(checkpoint_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov003_02238934D0Ev, Checkpoint_ReceiverDestroyAndFree)
+CLEAN_AS(_ZThn236_N18Obj_ov003_02238934D0Ev, Checkpoint_ReceiverDelete)
 
-/* _ZThn236_N18Obj_ov003_02238934D1Ev (receiver slot 0x00): Checkpoint_Destroy. */
-Checkpoint *Checkpoint_ReceiverDestroy(void *receiver)
+/* _ZThn236_N18Obj_ov003_02238934D1Ev (receiver slot 0x00): Checkpoint_Destruct. */
+Checkpoint *Checkpoint_ReceiverDestruct(void *receiver)
 {
-    return Checkpoint_Destroy(checkpoint_from_receiver(receiver));
+    return Checkpoint_Destruct(checkpoint_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov003_02238934D1Ev, Checkpoint_ReceiverDestroy)
+CLEAN_AS(_ZThn236_N18Obj_ov003_02238934D1Ev, Checkpoint_ReceiverDestruct)

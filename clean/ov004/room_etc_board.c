@@ -319,7 +319,7 @@ RoomEtcBoard *RoomEtcBoard_Delete(RoomEtcBoard *board)
 CLEAN_AS(func_ov004_0221b0c4, RoomEtcBoard_Delete)
 
 /* func_ov004_0221b104: the destructor, without freeing. */
-RoomEtcBoard *RoomEtcBoard_Destroy(RoomEtcBoard *board)
+RoomEtcBoard *RoomEtcBoard_Destruct(RoomEtcBoard *board)
 {
     set_vtables(board);
     TouchPickSphere_Destruct2(&board->touch_sphere);
@@ -327,7 +327,7 @@ RoomEtcBoard *RoomEtcBoard_Destroy(RoomEtcBoard *board)
     SceneObjectBase_DestructBase(&board->base);
     return board;
 }
-CLEAN_AS(func_ov004_0221b104, RoomEtcBoard_Destroy)
+CLEAN_AS(func_ov004_0221b104, RoomEtcBoard_Destruct)
 
 /* func_ov004_0221b140: the constructor: the base and the receiver part, then the vtables and
  * the sphere. The board's own fields are left as the allocation zeroed them. */
@@ -366,10 +366,10 @@ RoomEtcBoard *RoomEtcBoardReceiver_Delete(void *receiver)
 }
 CLEAN_AS(_ZThn236_N18Obj_ov004_0225328cD0Ev, RoomEtcBoardReceiver_Delete)
 
-/* func_ov004_0221b1b0 (the receiver vtable's destructor): RoomEtcBoard_Destroy on the board
+/* func_ov004_0221b1b0 (the receiver vtable's destructor): RoomEtcBoard_Destruct on the board
  * around `receiver`. */
-RoomEtcBoard *RoomEtcBoardReceiver_Destroy(void *receiver)
+RoomEtcBoard *RoomEtcBoardReceiver_Destruct(void *receiver)
 {
-    return RoomEtcBoard_Destroy(board_of(receiver));
+    return RoomEtcBoard_Destruct(board_of(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov004_0225328cD1Ev, RoomEtcBoardReceiver_Destroy)
+CLEAN_AS(_ZThn236_N18Obj_ov004_0225328cD1Ev, RoomEtcBoardReceiver_Destruct)

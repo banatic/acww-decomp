@@ -113,20 +113,20 @@ static SceneMotion *acn_motion(AcornNpc *npc)
 
 /* func_ov087_02278a00 (vtable slot 0x40): its talk scene's destructor, then the special
  * character's; the object. */
-AcornNpc *AcornNpc_Destroy(AcornNpc *npc)
+AcornNpc *AcornNpc_Destruct(AcornNpc *npc)
 {
     *(const u8 **) (void *) npc->base = data_ov087_022794ec;
-    AcornNpcTalk_Destroy(&npc->talk);
+    AcornNpcTalk_Destruct(&npc->talk);
     SpecialSceneObject_DestructBody(npc);
     return npc;
 }
-CLEAN_AS(func_ov087_02278a00, AcornNpc_Destroy)
+CLEAN_AS(func_ov087_02278a00, AcornNpc_Destruct)
 
 /* func_ov087_02278a28 (vtable slot 0x44): the same, then the object freed. */
 AcornNpc *AcornNpc_Delete(AcornNpc *npc)
 {
     *(const u8 **) (void *) npc->base = data_ov087_022794ec;
-    AcornNpcTalk_Destroy(&npc->talk);
+    AcornNpcTalk_Destruct(&npc->talk);
     SpecialSceneObject_DestructBody(npc);
     Heap_FreeAux(npc);
     return npc;

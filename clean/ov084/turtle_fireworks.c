@@ -116,21 +116,21 @@ static SceneAction *t4_action(TurtleFireworks *turtle)
 
 /* func_ov084_02278a00 (vtable slot 0x40): his talk scene's destructor, then the special
  * character's; the object. */
-TurtleFireworks *TurtleFireworks_Destroy(TurtleFireworks *turtle)
+TurtleFireworks *TurtleFireworks_Destruct(TurtleFireworks *turtle)
 {
     *(const u8 **) (void *) turtle->base = data_ov084_022794ac;
-    TurtleFireworksTalk_Destroy(&turtle->talk);
+    TurtleFireworksTalk_Destruct(&turtle->talk);
     SpecialSceneObject_DestructBody(turtle);
     return turtle;
 }
-CLEAN_AS(func_ov084_02278a00, TurtleFireworks_Destroy)
+CLEAN_AS(func_ov084_02278a00, TurtleFireworks_Destruct)
 
 /* func_ov084_02278a28 (vtable slot 0x44): the same, then the object freed. */
 void *TurtleFireworks_Delete(void *object)
 {
     TurtleFireworks *turtle = object;
     *(const u8 **) (void *) turtle->base = data_ov084_022794ac;
-    TurtleFireworksTalk_Destroy(&turtle->talk);
+    TurtleFireworksTalk_Destruct(&turtle->talk);
     SpecialSceneObject_DestructBody(turtle);
     Heap_FreeAux(turtle);
     return turtle;

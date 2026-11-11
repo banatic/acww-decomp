@@ -94,7 +94,7 @@ typedef struct FleaMarketBuyer {
     s32 wait_to_talk_frames;              /* 0xae8: counted while nonzero */
 } FleaMarketBuyer;
 
-FleaMarketBuyer *FleaMarketBuyer_Destroy(FleaMarketBuyer *buyer);
+FleaMarketBuyer *FleaMarketBuyer_Destruct(FleaMarketBuyer *buyer);
 FleaMarketBuyer *FleaMarketBuyer_Delete(FleaMarketBuyer *buyer);
 void FleaMarketBuyer_SetReach(FleaMarketBuyer *buyer, RoomObject *object);
 void FleaMarketBuyer_Remember(FleaMarketBuyer *buyer, u8 number);
@@ -117,7 +117,7 @@ void FleaMarketBuyerTalk_OnCommandEnd(FleaMarketBuyerTalk *talk);
 void FleaMarketBuyerTalk_BeforeStep(FleaMarketBuyerTalk *talk);
 void FleaMarketBuyerTalk_Start(FleaMarketBuyerTalk *talk, FleaMarketBuyer *buyer);
 FleaMarketBuyerTalk *FleaMarketBuyerTalk_Delete(FleaMarketBuyerTalk *talk);
-FleaMarketBuyerTalk *FleaMarketBuyerTalk_Destroy(FleaMarketBuyerTalk *talk);
+FleaMarketBuyerTalk *FleaMarketBuyerTalk_Destruct(FleaMarketBuyerTalk *talk);
 FleaMarketBuyerTalk *FleaMarketBuyerTalk_Construct(FleaMarketBuyerTalk *talk);
 int FleaMarketBuyer_UpdateDone(void);
 int FleaMarketBuyer_EnterDone(void);

@@ -75,7 +75,7 @@ typedef struct FleaMarketVillager {
     s32 spot_count;                          /* 0xa5c */
 } FleaMarketVillager;
 
-FleaMarketVillager *FleaMarketVillager_Destroy(FleaMarketVillager *villager);
+FleaMarketVillager *FleaMarketVillager_Destruct(FleaMarketVillager *villager);
 FleaMarketVillager *FleaMarketVillager_Delete(FleaMarketVillager *villager);
 int FleaMarketVillager_RequestIfPlayerAtExit(FleaMarketVillager *villager);
 int FleaMarketVillager_RequestItemTalk(FleaMarketVillager *villager);
@@ -91,7 +91,7 @@ void FleaMarketTalk_Line(FleaMarketTalk *talk, VillagerTalkLine *out);
 void FleaMarketTalk_Sell(FleaMarketTalk *talk);
 void FleaMarketTalk_Start(FleaMarketTalk *talk, FleaMarketVillager *villager);
 FleaMarketTalk *FleaMarketTalk_Delete(FleaMarketTalk *talk);
-FleaMarketTalk *FleaMarketTalk_Destroy(FleaMarketTalk *talk);
+FleaMarketTalk *FleaMarketTalk_Destruct(FleaMarketTalk *talk);
 FleaMarketTalk *FleaMarketTalk_Construct(FleaMarketTalk *talk);
 int FleaMarketVillager_UpdateCome(FleaMarketVillager *villager);
 int FleaMarketVillager_EnterCome(FleaMarketVillager *villager);

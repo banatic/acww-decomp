@@ -1181,7 +1181,7 @@ static void destroy_parts(Snowman *snowman)
     snowman->vtable = data_ov003_022382ac;
     snowman->receiver_vtable = data_ov003_02238314;
     SoundEmitterClass_DestructBaseB((SoundEmitterObject *) (void *) snowman->sound);
-    SnowmanBody_Destroy(&snowman->body.body);
+    SnowmanBody_Destruct(&snowman->body.body);
     CollisionContacts_Destroy((CollisionContacts *) snowman->collider);
     ModelObject_DestructComplete((ModelObject *) &snowman->face_model);
     ModelObject_DestructComplete((ModelObject *) &snowman->ball_model);
@@ -1191,21 +1191,21 @@ static void destroy_parts(Snowman *snowman)
 
 /* func_ov003_0221b5f8 (the deleting destructor): the destructor's work, then the memory freed
  * (Snowman_Delete). */
-Snowman *Snowman_DestroyAndFree(Snowman *snowman)
+Snowman *Snowman_DestructDelete(Snowman *snowman)
 {
     destroy_parts(snowman);
     Snowman_Delete(snowman);
     return snowman;
 }
-CLEAN_AS(func_ov003_0221b5f8, Snowman_DestroyAndFree)
+CLEAN_AS(func_ov003_0221b5f8, Snowman_DestructDelete)
 
 /* func_ov003_0221b668: the destructor, without freeing. */
-Snowman *Snowman_Destroy(Snowman *snowman)
+Snowman *Snowman_Destruct(Snowman *snowman)
 {
     destroy_parts(snowman);
     return snowman;
 }
-CLEAN_AS(func_ov003_0221b668, Snowman_Destroy)
+CLEAN_AS(func_ov003_0221b668, Snowman_Destruct)
 
 /* func_ov003_0221b6d4: the constructor: the base and the receiver part, the vtables, the
  * models, the collider, the body and the sound; nothing under it. */
@@ -1237,14 +1237,14 @@ void SnowmanBody_OnContact(SnowmanBody *body, int a, int b, int flags)
 CLEAN_AS(func_ov003_0221b74c, SnowmanBody_OnContact)
 
 /* func_ov003_0221b75c: the body's destructor: its vtable, not hit, then its base's. */
-SnowmanBody *SnowmanBody_Destroy(SnowmanBody *body)
+SnowmanBody *SnowmanBody_Destruct(SnowmanBody *body)
 {
     body->vtable = data_ov003_02238280;
     body->hit = 0;
     FieldOwnedBody_Destruct((FieldOwnedBody *) body);
     return body;
 }
-CLEAN_AS(func_ov003_0221b75c, SnowmanBody_Destroy)
+CLEAN_AS(func_ov003_0221b75c, SnowmanBody_Destruct)
 
 /* func_ov003_0221b77c: the body's constructor: its base's, then its vtable, not hit. */
 SnowmanBody *SnowmanBody_Construct(SnowmanBody *body)
@@ -1272,21 +1272,21 @@ static Snowman *snowman_of(void *receiver)
     return (Snowman *) (void *) ((u8 *) receiver - SNOWMAN_RECEIVER_OFFSET);
 }
 
-/* func_ov003_0221b7b8 (the receiver vtable's deleting destructor): Snowman_DestroyAndFree on the
+/* func_ov003_0221b7b8 (the receiver vtable's deleting destructor): Snowman_DestructDelete on the
  * ball around `receiver`. */
-Snowman *Snowman_ReceiverDestroyAndFree(void *receiver)
+Snowman *Snowman_ReceiverDelete(void *receiver)
 {
-    return Snowman_DestroyAndFree(snowman_of(receiver));
+    return Snowman_DestructDelete(snowman_of(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov003_022382acD0Ev, Snowman_ReceiverDestroyAndFree)
+CLEAN_AS(_ZThn236_N18Obj_ov003_022382acD0Ev, Snowman_ReceiverDelete)
 
-/* func_ov003_0221b7d4 (the receiver vtable's destructor): Snowman_Destroy on the ball around
+/* func_ov003_0221b7d4 (the receiver vtable's destructor): Snowman_Destruct on the ball around
  * `receiver`. */
-Snowman *Snowman_ReceiverDestroy(void *receiver)
+Snowman *Snowman_ReceiverDestruct(void *receiver)
 {
-    return Snowman_Destroy(snowman_of(receiver));
+    return Snowman_Destruct(snowman_of(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov003_022382acD1Ev, Snowman_ReceiverDestroy)
+CLEAN_AS(_ZThn236_N18Obj_ov003_022382acD1Ev, Snowman_ReceiverDestruct)
 
 /* ---- Overlay 3's table of balls */
 

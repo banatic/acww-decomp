@@ -123,19 +123,19 @@ static void friend_code_destroy_members(FriendCodeEntry *self)
 {
     self->base.vtable = data_ov133_0229c908;
     ErrorMessage_Destruct(&self->error);
-    ButtonPanel_Destroy(&self->panel);
-    Glider0_Destroy(&self->pointer);
+    ButtonPanel_Destruct(&self->panel);
+    Glider0_Destruct(&self->pointer);
     __cxa_vec_cleanup(&self->label, 1, sizeof(TextLabel), (void (*)(void *))(uintptr_t) func_02070be8);
-    MenuScene_DestroyBase(friend_code_scene(self));
+    MenuScene_DestructBase(friend_code_scene(self));
 }
 
 /* func_ov133_0229acc0 (vtable slot 0x40) */
-FriendCodeEntry *FriendCodeEntry_Destroy(FriendCodeEntry *self)
+FriendCodeEntry *FriendCodeEntry_Destruct(FriendCodeEntry *self)
 {
     friend_code_destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov133_0229acc0, FriendCodeEntry_Destroy)
+CLEAN_AS(func_ov133_0229acc0, FriendCodeEntry_Destruct)
 
 /* func_ov133_0229ad10 (vtable slot 0x44) */
 FriendCodeEntry *FriendCodeEntry_Delete(FriendCodeEntry *self)

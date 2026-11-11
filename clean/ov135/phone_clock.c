@@ -102,19 +102,19 @@ static int clock_at_button(PhoneClock *self)
 static void clock_destroy_members(PhoneClock *self)
 {
     self->base.vtable = data_ov135_0229d610;
-    ClockSetter_Destroy(&self->editor);
-    ButtonPanel_Destroy(&self->panel);
-    Glider0_Destroy(&self->cursor_sprite);
-    MenuScene_DestroyBase(clock_scene(self));
+    ClockSetter_Destruct(&self->editor);
+    ButtonPanel_Destruct(&self->panel);
+    Glider0_Destruct(&self->cursor_sprite);
+    MenuScene_DestructBase(clock_scene(self));
 }
 
 /* func_ov135_0229c4e0 (vtable slot 0x40) */
-PhoneClock *PhoneClock_Destroy(PhoneClock *self)
+PhoneClock *PhoneClock_Destruct(PhoneClock *self)
 {
     clock_destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov135_0229c4e0, PhoneClock_Destroy)
+CLEAN_AS(func_ov135_0229c4e0, PhoneClock_Destruct)
 
 /* func_ov135_0229c518 (vtable slot 0x44) */
 PhoneClock *PhoneClock_Delete(PhoneClock *self)

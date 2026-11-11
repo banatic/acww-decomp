@@ -111,18 +111,18 @@ static void bank_destroy_members(BankMenu *self)
     self->base.vtable = data_ov132_0229b990;
     ErrorMessage_Destruct(&self->error);
     __cxa_vec_cleanup(self->labels, BANK_MENU_LABELS, sizeof(TextLabel), func_02070be8);
-    ButtonPanel_Destroy(&self->panel);
-    Glider0_Destroy(&self->cursor_sprite);
-    MenuScene_DestroyBase(bank_scene(self));
+    ButtonPanel_Destruct(&self->panel);
+    Glider0_Destruct(&self->cursor_sprite);
+    MenuScene_DestructBase(bank_scene(self));
 }
 
 /* func_ov132_0229acc0 (vtable slot 0x40) */
-BankMenu *BankMenu_Destroy(BankMenu *self)
+BankMenu *BankMenu_Destruct(BankMenu *self)
 {
     bank_destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov132_0229acc0, BankMenu_Destroy)
+CLEAN_AS(func_ov132_0229acc0, BankMenu_Destruct)
 
 /* func_ov132_0229ad0c (vtable slot 0x44) */
 BankMenu *BankMenu_Delete(BankMenu *self)

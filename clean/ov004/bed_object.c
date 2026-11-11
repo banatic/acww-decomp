@@ -984,14 +984,14 @@ CLEAN_AS(func_ov004_02218780, BedObject_Delete)
 
 /* func_ov004_022187b8 (the destructor, vtable slot 0x40): the glows taken down, then the base
  * class's. */
-BedObject *BedObject_Destroy(BedObject *object)
+BedObject *BedObject_Destruct(BedObject *object)
 {
     bed_object_set_vtables(object);
     GlowSet_Destruct(&object->glows);
     RoomObject_DestructBase(&object->base);
     return object;
 }
-CLEAN_AS(func_ov004_022187b8, BedObject_Destroy)
+CLEAN_AS(func_ov004_022187b8, BedObject_Destruct)
 
 /* func_ov004_022187ec (the constructor): no item kept and the glows built. Its other fields are
  * left as the allocation zeroed them. */
@@ -1045,8 +1045,8 @@ void BedObjectReceiver_OnTalkStep(void *receiver)
 CLEAN_AS(_ZThn236_N18Obj_ov004_0225305817vfunc_02066994_14Ev, BedObjectReceiver_OnTalkStep)
 
 /* func_ov004_0221a778: the destructor, entered from the receiver part. */
-BedObject *BedObjectReceiver_Destroy(void *receiver)
+BedObject *BedObjectReceiver_Destruct(void *receiver)
 {
-    return BedObject_Destroy(bed_object_from_receiver(receiver));
+    return BedObject_Destruct(bed_object_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov004_02253058D1Ev, BedObjectReceiver_Destroy)
+CLEAN_AS(_ZThn236_N18Obj_ov004_02253058D1Ev, BedObjectReceiver_Destruct)

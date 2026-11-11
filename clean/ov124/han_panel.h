@@ -51,7 +51,7 @@ void HanPanel_ShowText(HanPanel *self);
 void HanPanel_OpenTextBox(HanPanel *self);
 int HanPanel_LoadStyledBackground(HanPanel *self, int layer);
 void HanPanel_ShowModeMessage(HanPanel *self, int layer, int second_layer);
-HanPanel *HanPanel_Destroy(HanPanel *self);
+HanPanel *HanPanel_Destruct(HanPanel *self);
 HanPanel *HanPanel_Construct(HanPanel *self);
 
 #endif

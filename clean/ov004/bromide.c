@@ -223,13 +223,13 @@ Bromide *Bromide_Delete(Bromide *bromide)
 CLEAN_AS(func_ov004_02213668, Bromide_Delete)
 
 /* func_ov004_02213694 (the destructor, vtable slot 0x40) */
-Bromide *Bromide_Destroy(Bromide *bromide)
+Bromide *Bromide_Destruct(Bromide *bromide)
 {
     bromide_set_vtables(bromide);
     RoomObject_DestructBase(&bromide->base);
     return bromide;
 }
-CLEAN_AS(func_ov004_02213694, Bromide_Destroy)
+CLEAN_AS(func_ov004_02213694, Bromide_Destruct)
 
 /* func_ov004_022136b8 (the constructor). Its state is left as the allocation zeroed it. */
 Bromide *Bromide_Construct(Bromide *bromide)
@@ -266,8 +266,8 @@ Bromide *BromideReceiver_Delete(void *receiver)
 CLEAN_AS(_ZThn236_N18Obj_ov004_02251b40D0Ev, BromideReceiver_Delete)
 
 /* func_ov004_0221aa88: the destructor, entered from the receiver part. */
-Bromide *BromideReceiver_Destroy(void *receiver)
+Bromide *BromideReceiver_Destruct(void *receiver)
 {
-    return Bromide_Destroy(bromide_from_receiver(receiver));
+    return Bromide_Destruct(bromide_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov004_02251b40D1Ev, BromideReceiver_Destroy)
+CLEAN_AS(_ZThn236_N18Obj_ov004_02251b40D1Ev, BromideReceiver_Destruct)

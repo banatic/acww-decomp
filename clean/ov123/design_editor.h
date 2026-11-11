@@ -186,7 +186,7 @@ typedef struct DesignEditor {
     ButtonPanel panel;                          /* 0x5030 */
 } DesignEditor;
 
-DesignEditor *DesignEditor_Destroy(DesignEditor *self);
+DesignEditor *DesignEditor_Destruct(DesignEditor *self);
 DesignEditor *DesignEditor_Delete(DesignEditor *self);
 void DesignEditor_ClearFlags(DesignEditor *self, unsigned int flags);
 void DesignEditor_SetFlags(DesignEditor *self, unsigned int flags);

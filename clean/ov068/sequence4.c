@@ -929,7 +929,7 @@ CLEAN_AS(_ZN18Obj_ov068_0227775019func_ov068_02272e50Ev, Sequence4_SetUp)
 
 /* func_ov068_02272ee8 (vtable slot 0x44, the deleting destructor): its vtables set back,
  * overlay 9's destructor, and the memory freed. */
-Sequence4 *Sequence4_DestroyAndFree(Sequence4 *actor)
+Sequence4 *Sequence4_Delete(Sequence4 *actor)
 {
     actor->base.vtable = data_ov068_02277750;
     actor->base.receiver_vtable = data_ov068_02277814;
@@ -937,17 +937,17 @@ Sequence4 *Sequence4_DestroyAndFree(Sequence4 *actor)
     Heap_FreeAux(actor);
     return actor;
 }
-CLEAN_AS(func_ov068_02272ee8, Sequence4_DestroyAndFree)
+CLEAN_AS(func_ov068_02272ee8, Sequence4_Delete)
 
 /* func_ov068_02272f14 (vtable slot 0x40): the destructor, without freeing. */
-Sequence4 *Sequence4_Destroy(Sequence4 *actor)
+Sequence4 *Sequence4_Destruct(Sequence4 *actor)
 {
     actor->base.vtable = data_ov068_02277750;
     actor->base.receiver_vtable = data_ov068_02277814;
     TownObjectActor_Destruct((TownObjectActor *) actor);
     return actor;
 }
-CLEAN_AS(func_ov068_02272f14, Sequence4_Destroy)
+CLEAN_AS(func_ov068_02272f14, Sequence4_Destruct)
 
 /* func_ov068_02272f38: the constructor: overlay 9's, then its vtables. */
 Sequence4 *Sequence4_Construct(Sequence4 *actor)
@@ -976,12 +976,12 @@ static Sequence4 *sequence4_from_receiver(void *receiver)
     return (Sequence4 *) (void *) ((u8 *) receiver - SEQUENCE4_RECEIVER_OFFSET);
 }
 
-/* _ZThn236_N18Obj_ov068_02277750D0Ev (receiver slot 0x04): Sequence4_DestroyAndFree. */
-Sequence4 *Sequence4_ReceiverDestroyAndFree(void *receiver)
+/* _ZThn236_N18Obj_ov068_02277750D0Ev (receiver slot 0x04): Sequence4_Delete. */
+Sequence4 *Sequence4_ReceiverDelete(void *receiver)
 {
-    return Sequence4_DestroyAndFree(sequence4_from_receiver(receiver));
+    return Sequence4_Delete(sequence4_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov068_02277750D0Ev, Sequence4_ReceiverDestroyAndFree)
+CLEAN_AS(_ZThn236_N18Obj_ov068_02277750D0Ev, Sequence4_ReceiverDelete)
 
 /* _ZThn236_N18Obj_ov068_0227775017vfunc_02066994_6cEv (receiver slot 0x6c):
  * Sequence4_ReceiverSlot6c. */
@@ -999,9 +999,9 @@ void Sequence4_ReceiverOnMessageEnd(void *receiver)
 }
 CLEAN_AS(_ZThn236_N18Obj_ov068_0227775017vfunc_02066994_14Ev, Sequence4_ReceiverOnMessageEnd)
 
-/* _ZThn236_N18Obj_ov068_02277750D1Ev (receiver slot 0x00): Sequence4_Destroy. */
-Sequence4 *Sequence4_ReceiverDestroy(void *receiver)
+/* _ZThn236_N18Obj_ov068_02277750D1Ev (receiver slot 0x00): Sequence4_Destruct. */
+Sequence4 *Sequence4_ReceiverDestruct(void *receiver)
 {
-    return Sequence4_Destroy(sequence4_from_receiver(receiver));
+    return Sequence4_Destruct(sequence4_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov068_02277750D1Ev, Sequence4_ReceiverDestroy)
+CLEAN_AS(_ZThn236_N18Obj_ov068_02277750D1Ev, Sequence4_ReceiverDestruct)

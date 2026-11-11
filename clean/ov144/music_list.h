@@ -226,7 +226,7 @@ int MusicList_RunState(MusicList *self);
 int MusicList_Draw(MusicList *self);
 int MusicList_Close(MusicList *self);
 int MusicList_Start(MusicList *self);
-MusicList *MusicList_Destroy(MusicList *self);
+MusicList *MusicList_Destruct(MusicList *self);
 MusicList *MusicList_Delete(MusicList *self);
 MusicList *MusicList_New(void);
 

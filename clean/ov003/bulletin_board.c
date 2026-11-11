@@ -191,21 +191,21 @@ static void destroy_parts(BulletinBoard *object)
 }
 
 /* func_ov003_0221b9e4 (the deleting destructor): the destructor's work, then the memory freed. */
-BulletinBoard *BulletinBoard_DestroyAndFree(BulletinBoard *object)
+BulletinBoard *BulletinBoard_Delete(BulletinBoard *object)
 {
     destroy_parts(object);
     Heap_FreeAux(object);
     return object;
 }
-CLEAN_AS(func_ov003_0221b9e4, BulletinBoard_DestroyAndFree)
+CLEAN_AS(func_ov003_0221b9e4, BulletinBoard_Delete)
 
 /* func_ov003_0221ba10: the destructor, without freeing. */
-BulletinBoard *BulletinBoard_Destroy(BulletinBoard *object)
+BulletinBoard *BulletinBoard_Destruct(BulletinBoard *object)
 {
     destroy_parts(object);
     return object;
 }
-CLEAN_AS(func_ov003_0221ba10, BulletinBoard_Destroy)
+CLEAN_AS(func_ov003_0221ba10, BulletinBoard_Destruct)
 
 /* func_ov003_0221ba34: the constructor: overlay 9's, then the vtables. */
 BulletinBoard *BulletinBoard_Construct(BulletinBoard *object)
@@ -227,18 +227,18 @@ void BulletinBoard_New(void)
 }
 CLEAN_AS(func_ov003_0221ba58, BulletinBoard_New)
 
-/* func_ov003_0221ba74 (the receiver vtable's deleting destructor): BulletinBoard_DestroyAndFree
+/* func_ov003_0221ba74 (the receiver vtable's deleting destructor): BulletinBoard_Delete
  * on the object around `receiver`. */
-BulletinBoard *BulletinBoard_ReceiverDestroyAndFree(void *receiver)
+BulletinBoard *BulletinBoard_ReceiverDelete(void *receiver)
 {
-    return BulletinBoard_DestroyAndFree((BulletinBoard *) (void *) ((u8 *) receiver - 0xec));
+    return BulletinBoard_Delete((BulletinBoard *) (void *) ((u8 *) receiver - 0xec));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov003_02238434D0Ev, BulletinBoard_ReceiverDestroyAndFree)
+CLEAN_AS(_ZThn236_N18Obj_ov003_02238434D0Ev, BulletinBoard_ReceiverDelete)
 
-/* _ZThn236_N18Obj_ov003_02238434D1Ev (the receiver vtable's destructor): BulletinBoard_Destroy
+/* _ZThn236_N18Obj_ov003_02238434D1Ev (the receiver vtable's destructor): BulletinBoard_Destruct
  * on the object around `receiver`. */
-BulletinBoard *BulletinBoard_ReceiverDestroy(void *receiver)
+BulletinBoard *BulletinBoard_ReceiverDestruct(void *receiver)
 {
-    return BulletinBoard_Destroy((BulletinBoard *) (void *) ((u8 *) receiver - 0xec));
+    return BulletinBoard_Destruct((BulletinBoard *) (void *) ((u8 *) receiver - 0xec));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov003_02238434D1Ev, BulletinBoard_ReceiverDestroy)
+CLEAN_AS(_ZThn236_N18Obj_ov003_02238434D1Ev, BulletinBoard_ReceiverDestruct)

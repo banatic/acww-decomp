@@ -734,14 +734,14 @@ Chest *Chest_Delete(Chest *chest)
 CLEAN_AS(func_ov004_022177a0, Chest_Delete)
 
 /* func_ov004_022177d8 (the destructor, vtable slot 0x40) */
-Chest *Chest_Destroy(Chest *chest)
+Chest *Chest_Destruct(Chest *chest)
 {
     chest_set_vtables(chest);
     Glow_Destruct(&chest->unk_844);
     RoomObject_DestructBase(&chest->base);
     return chest;
 }
-CLEAN_AS(func_ov004_022177d8, Chest_Destroy)
+CLEAN_AS(func_ov004_022177d8, Chest_Destruct)
 
 /* func_ov004_0221780c (the constructor): the lid closed; the talk step is left as the
  * allocation zeroed it (CHEST_TALK_NONE). */
@@ -781,8 +781,8 @@ Chest *ChestReceiver_Delete(void *receiver)
 CLEAN_AS(_ZThn236_N18Obj_ov004_0225211cD0Ev, ChestReceiver_Delete)
 
 /* func_ov004_0221a7b0: the destructor, entered from the receiver part. */
-Chest *ChestReceiver_Destroy(void *receiver)
+Chest *ChestReceiver_Destruct(void *receiver)
 {
-    return Chest_Destroy(chest_from_receiver(receiver));
+    return Chest_Destruct(chest_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov004_0225211cD1Ev, ChestReceiver_Destroy)
+CLEAN_AS(_ZThn236_N18Obj_ov004_0225211cD1Ev, ChestReceiver_Destruct)

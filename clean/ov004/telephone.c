@@ -394,13 +394,13 @@ Telephone *Telephone_Delete(Telephone *phone)
 CLEAN_AS(func_ov004_02211bf0, Telephone_Delete)
 
 /* func_ov004_02211c1c (the destructor, vtable slot 0x40) */
-Telephone *Telephone_Destroy(Telephone *phone)
+Telephone *Telephone_Destruct(Telephone *phone)
 {
     set_vtables(phone);
     RoomObject_DestructBase(&phone->base);
     return phone;
 }
-CLEAN_AS(func_ov004_02211c1c, Telephone_Destroy)
+CLEAN_AS(func_ov004_02211c1c, Telephone_Destruct)
 
 /* func_ov004_02211c40 (the constructor). Its own fields are left as the allocation zeroed
  * them. */
@@ -438,8 +438,8 @@ Telephone *TelephoneReceiver_Delete(void *receiver)
 CLEAN_AS(_ZThn236_N18Obj_ov004_02252950D0Ev, TelephoneReceiver_Delete)
 
 /* func_ov004_0221acb8: the destructor, entered from the receiver part. */
-Telephone *TelephoneReceiver_Destroy(void *receiver)
+Telephone *TelephoneReceiver_Destruct(void *receiver)
 {
-    return Telephone_Destroy(telephone_from_receiver(receiver));
+    return Telephone_Destruct(telephone_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov004_02252950D1Ev, TelephoneReceiver_Destroy)
+CLEAN_AS(_ZThn236_N18Obj_ov004_02252950D1Ev, TelephoneReceiver_Destruct)

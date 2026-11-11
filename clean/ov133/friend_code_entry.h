@@ -133,7 +133,7 @@ typedef struct FriendCodeEntry {
     ErrorMessage error;            /* 0x1394 */
 } FriendCodeEntry;
 
-FriendCodeEntry *FriendCodeEntry_Destroy(FriendCodeEntry *self);
+FriendCodeEntry *FriendCodeEntry_Destruct(FriendCodeEntry *self);
 FriendCodeEntry *FriendCodeEntry_Delete(FriendCodeEntry *self);
 void FriendCodeEntry_ClearFlags(FriendCodeEntry *self, u16 flags);
 void FriendCodeEntry_SetFlags(FriendCodeEntry *self, u16 flags);

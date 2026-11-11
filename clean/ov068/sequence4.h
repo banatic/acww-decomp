@@ -114,13 +114,13 @@ int Sequence4_Release(Sequence4 *actor);
 int Sequence4_Draw(void);
 int Sequence4_Update(Sequence4 *actor);
 int Sequence4_SetUp(Sequence4 *actor);
-Sequence4 *Sequence4_DestroyAndFree(Sequence4 *actor);
-Sequence4 *Sequence4_Destroy(Sequence4 *actor);
+Sequence4 *Sequence4_Delete(Sequence4 *actor);
+Sequence4 *Sequence4_Destruct(Sequence4 *actor);
 Sequence4 *Sequence4_Construct(Sequence4 *actor);
 void Sequence4_New(void);
-Sequence4 *Sequence4_ReceiverDestroyAndFree(void *receiver);
+Sequence4 *Sequence4_ReceiverDelete(void *receiver);
 int Sequence4_ReceiverThunk6c(void *receiver);
 void Sequence4_ReceiverOnMessageEnd(void *receiver);
-Sequence4 *Sequence4_ReceiverDestroy(void *receiver);
+Sequence4 *Sequence4_ReceiverDestruct(void *receiver);
 
 #endif

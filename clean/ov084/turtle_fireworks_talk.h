@@ -70,7 +70,7 @@ void TurtleFireworksTalk_OnLineEnded(TurtleFireworksTalk *talk);
 void TurtleFireworksTalk_FirstLine(TurtleFireworksTalk *talk, TurtleFireworksLine *out);
 void TurtleFireworksTalk_Begin(TurtleFireworksTalk *talk, TurtleFireworks *owner);
 void *TurtleFireworksTalk_Delete(void *talk);
-void *TurtleFireworksTalk_Destroy(void *talk);
+void *TurtleFireworksTalk_Destruct(void *talk);
 TurtleFireworksTalk *TurtleFireworksTalk_Construct(TurtleFireworksTalk *talk);
 
 #endif

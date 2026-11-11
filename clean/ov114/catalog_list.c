@@ -1338,15 +1338,15 @@ void CatalogList_Start(CatalogList *self, u8 layer_a, u8 layer_b, u8 layer_c, u8
 CLEAN_AS(func_ov114_0229d8d0, CatalogList_Start)
 
 /* func_ov114_0229d9d8: the members' destructors, the last first. */
-CatalogList *CatalogList_Destroy(CatalogList *self)
+CatalogList *CatalogList_Destruct(CatalogList *self)
 {
-    PushButton_Destroy(&self->handle);
+    PushButton_Destruct(&self->handle);
     __cxa_vec_cleanup(self->labels, CATALOG_LIST_LABELS, sizeof(TextLabel), (void (*)(void *))(uintptr_t) func_02070be8);
     CatalogText_Destruct(&self->description);
     PocketsIcons_Destruct(&self->icons);
     return self;
 }
-CLEAN_AS(func_ov114_0229d9d8, CatalogList_Destroy)
+CLEAN_AS(func_ov114_0229d9d8, CatalogList_Destruct)
 
 /* func_ov114_0229da18: the members constructed in order, the labels by __cxa_vec_ctor. */
 CatalogList *CatalogList_Construct(CatalogList *self)

@@ -78,7 +78,7 @@ typedef struct PhoneClock {
     ClockSetter editor;   /* 0x2c8: overlay 134's clock setter */
 } PhoneClock;
 
-PhoneClock *PhoneClock_Destroy(PhoneClock *self);
+PhoneClock *PhoneClock_Destruct(PhoneClock *self);
 PhoneClock *PhoneClock_Delete(PhoneClock *self);
 void PhoneClock_ClearFlags(PhoneClock *self, u16 flags);
 void PhoneClock_SetFlags(PhoneClock *self, u16 flags);

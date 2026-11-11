@@ -39,7 +39,7 @@ void Popup_ShowQueued(Popup *popup);
 int Popup_Hide(Popup *popup, int drop_queued);
 int Popup_Update(Popup *popup);
 Popup *Popup_Delete(Popup *popup);
-Popup *Popup_Destroy(Popup *popup);
+Popup *Popup_Destruct(Popup *popup);
 Popup *Popup_Construct(Popup *popup);
 
 #endif

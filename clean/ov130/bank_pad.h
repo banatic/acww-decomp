@@ -131,7 +131,7 @@ int BankPad_LoadPicture(int picture);
 void BankPad_Load(BankPad *pad);
 int BankPad_LoadBackground(int layer);
 void BankPad_SetUp(BankPad *pad, u8 kind, u8 digits_layer, u8 keys_layer);
-BankPad *BankPad_Destroy(BankPad *pad);
+BankPad *BankPad_Destruct(BankPad *pad);
 BankPad *BankPad_Construct(BankPad *pad);
 
 #endif

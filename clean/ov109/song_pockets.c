@@ -79,25 +79,25 @@ static int update_cursor_sprite(SongPockets *self)
 static void destroy_members(SongPockets *self)
 {
     self->base.vtable = data_ov109_0229dbd8;
-    ButtonPanel_Destroy(&self->panel);
+    ButtonPanel_Destruct(&self->panel);
     ErrorMessage_Destruct(&self->error);
-    PagedChoice_Destroy(choice_of(self));
-    Glider0_Destroy(&self->cursor_sprite);
-    Glide_Destroy(&self->glide);
-    Popup_Destroy(&self->popup);
+    PagedChoice_Destruct(choice_of(self));
+    Glider0_Destruct(&self->cursor_sprite);
+    Glide_Destruct(&self->glide);
+    Popup_Destruct(&self->popup);
     PocketsWallet_Destruct(&self->wallet);
     PocketsLetters_Destruct(&self->letters);
     PocketsGrid_Destruct(&self->grid);
-    MenuScene_DestroyBase(scene_of(self));
+    MenuScene_DestructBase(scene_of(self));
 }
 
 /* func_ov109_0229c180 (vtable slot 0x40) */
-SongPockets *SongPockets_Destroy(SongPockets *self)
+SongPockets *SongPockets_Destruct(SongPockets *self)
 {
     destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov109_0229c180, SongPockets_Destroy)
+CLEAN_AS(func_ov109_0229c180, SongPockets_Destruct)
 
 /* func_ov109_0229c204 (vtable slot 0x44) */
 SongPockets *SongPockets_Delete(SongPockets *self)

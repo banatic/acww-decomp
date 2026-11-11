@@ -98,20 +98,20 @@ static void fr_destroy_members(FriendRoster *self)
 {
     self->base.vtable = data_ov119_0229cea0;
     ErrorMessage_Destruct(&self->error);
-    Glider0_Destroy(&self->cursor_sprite);
+    Glider0_Destruct(&self->cursor_sprite);
     BbsLabel_Destruct(&self->header);
     __cxa_vec_cleanup(self->labels, FRIEND_ROSTER_LABELS, sizeof(TextLabel), func_02070be8);
-    PagedChoice_Destroy(fr_choice(self));
-    MenuScene_DestroyBase(fr_scene(self));
+    PagedChoice_Destruct(fr_choice(self));
+    MenuScene_DestructBase(fr_scene(self));
 }
 
 /* func_ov119_0229a340 (vtable slot 0x40): the scene destructed. */
-FriendRoster *FriendRoster_Destroy(FriendRoster *self)
+FriendRoster *FriendRoster_Destruct(FriendRoster *self)
 {
     fr_destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov119_0229a340, FriendRoster_Destroy)
+CLEAN_AS(func_ov119_0229a340, FriendRoster_Destruct)
 
 /* func_ov119_0229a39c (vtable slot 0x44): the scene destructed and freed. */
 FriendRoster *FriendRoster_Delete(FriendRoster *self)

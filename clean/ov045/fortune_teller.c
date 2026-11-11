@@ -188,21 +188,21 @@ static void ft_talk_style(FortuneTellerTalk *talk, int style)
 
 /* func_ov045_02260420 (vtable slot 0x40): her talk scene's destructor, then the special
  * character's; the object. */
-FortuneTeller *FortuneTeller_Destroy(FortuneTeller *teller)
+FortuneTeller *FortuneTeller_Destruct(FortuneTeller *teller)
 {
     *(const u8 **) (void *) teller->base = data_ov045_022614f0;
-    FortuneTellerTalk_Destroy(&teller->talk);
+    FortuneTellerTalk_Destruct(&teller->talk);
     SpecialSceneObject_DestructBody(teller);
     return teller;
 }
-CLEAN_AS(func_ov045_02260420, FortuneTeller_Destroy)
+CLEAN_AS(func_ov045_02260420, FortuneTeller_Destruct)
 
 /* func_ov045_02260448 (vtable slot 0x44): the same, then the object freed. */
 void *FortuneTeller_Delete(void *object)
 {
     FortuneTeller *teller = object;
     *(const u8 **) (void *) teller->base = data_ov045_022614f0;
-    FortuneTellerTalk_Destroy(&teller->talk);
+    FortuneTellerTalk_Destruct(&teller->talk);
     SpecialSceneObject_DestructBody(teller);
     Heap_FreeAux(teller);
     return teller;

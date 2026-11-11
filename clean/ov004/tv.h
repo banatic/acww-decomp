@@ -72,7 +72,7 @@ int TvAnimated_Vfunc0c(void);
 int TvAnimated_Update(TvAnimated *tv);
 int TvAnimated_Start(TvAnimated *tv);
 TvAnimated *TvAnimated_Delete(TvAnimated *tv);
-TvAnimated *TvAnimated_Destroy(TvAnimated *tv);
+TvAnimated *TvAnimated_Destruct(TvAnimated *tv);
 TvAnimated *TvAnimated_Construct(TvAnimated *tv);
 void TvAnimated_Create(void);
 
@@ -88,15 +88,15 @@ int Tv_ShowScreen(Tv *tv, int on);
 int Tv_Vfunc0c(void);
 int Tv_Update(Tv *tv);
 int Tv_Start(Tv *tv);
-Tv *Tv_DestroyBase(Tv *tv);
+Tv *Tv_DestructBase(Tv *tv);
 Tv *Tv_Delete(Tv *tv);
-Tv *Tv_Destroy(Tv *tv);
+Tv *Tv_Destruct(Tv *tv);
 Tv *Tv_Construct(Tv *tv);
 Tv *Tv_ConstructBase(Tv *tv);
 void Tv_Create(void);
 Tv *TvReceiver_Delete(void *receiver);
-Tv *TvReceiver_Destroy(void *receiver);
+Tv *TvReceiver_Destruct(void *receiver);
 TvAnimated *TvAnimatedReceiver_Delete(void *receiver);
-TvAnimated *TvAnimatedReceiver_Destroy(void *receiver);
+TvAnimated *TvAnimatedReceiver_Destruct(void *receiver);
 
 #endif

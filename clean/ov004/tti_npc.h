@@ -35,7 +35,7 @@ typedef struct TtiNpc {
     u8 unk_659[3];              /* 0x659 */
 } TtiNpc;
 
-TtiNpc *TtiNpc_Destroy(TtiNpc *npc);
+TtiNpc *TtiNpc_Destruct(TtiNpc *npc);
 TtiNpc *TtiNpc_Delete(TtiNpc *npc);
 int TtiNpc_IsIdle(void);
 int TtiNpc_UpdateGesture(TtiNpc *npc);

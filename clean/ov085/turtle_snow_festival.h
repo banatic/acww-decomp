@@ -70,7 +70,7 @@ typedef struct TurtleSnowFestivalStep {
     MemberPointer update; /* 0x08: int (him) */
 } TurtleSnowFestivalStep;
 
-TurtleSnowFestival *TurtleSnowFestival_Destroy(TurtleSnowFestival *turtle);
+TurtleSnowFestival *TurtleSnowFestival_Destruct(TurtleSnowFestival *turtle);
 void *TurtleSnowFestival_Delete(void *turtle);
 void TurtleSnowFestival_OnEvent(TurtleSnowFestival *turtle, int code);
 int TurtleSnowFestival_MayAct(TurtleSnowFestival *turtle);

@@ -97,13 +97,13 @@ static u32 tti_whole_frame(TtiNpc *npc, u32 offset)
 }
 
 /* func_ov004_022259dc (vtable slot 0x40): the special character's destructor; the object. */
-TtiNpc *TtiNpc_Destroy(TtiNpc *npc)
+TtiNpc *TtiNpc_Destruct(TtiNpc *npc)
 {
     *(const u8 **) (void *) npc->base = data_ov004_02254a38;
     SpecialSceneObject_DestructBody(npc);
     return npc;
 }
-CLEAN_AS(func_ov004_022259dc, TtiNpc_Destroy)
+CLEAN_AS(func_ov004_022259dc, TtiNpc_Destruct)
 
 /* func_ov004_022259f4 (vtable slot 0x44): the same, then the object freed. */
 TtiNpc *TtiNpc_Delete(TtiNpc *npc)

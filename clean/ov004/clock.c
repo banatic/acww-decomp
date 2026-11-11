@@ -207,13 +207,13 @@ Clock *Clock_Delete(Clock *clock)
 CLEAN_AS(func_ov004_02216bd0, Clock_Delete)
 
 /* func_ov004_02216bfc (the destructor, vtable slot 0x40) */
-Clock *Clock_Destroy(Clock *clock)
+Clock *Clock_Destruct(Clock *clock)
 {
     clock_set_vtables(clock);
     RoomObject_DestructBase(&clock->base);
     return clock;
 }
-CLEAN_AS(func_ov004_02216bfc, Clock_Destroy)
+CLEAN_AS(func_ov004_02216bfc, Clock_Destruct)
 
 /* func_ov004_02216c20 (the constructor). Its own fields are left as the allocation zeroed them
  * until Clock_Start. */
@@ -251,8 +251,8 @@ Clock *ClockReceiver_Delete(void *receiver)
 CLEAN_AS(_ZThn236_N18Obj_ov004_02251d98D0Ev, ClockReceiver_Delete)
 
 /* func_ov004_0221a7e8: the destructor, entered from the receiver part. */
-Clock *ClockReceiver_Destroy(void *receiver)
+Clock *ClockReceiver_Destruct(void *receiver)
 {
-    return Clock_Destroy(clock_from_receiver(receiver));
+    return Clock_Destruct(clock_from_receiver(receiver));
 }
-CLEAN_AS(_ZThn236_N18Obj_ov004_02251d98D1Ev, ClockReceiver_Destroy)
+CLEAN_AS(_ZThn236_N18Obj_ov004_02251d98D1Ev, ClockReceiver_Destruct)

@@ -118,19 +118,19 @@ static void host_destroy_members(HostPicker *self)
 {
     self->base.vtable = data_ov140_0229b404;
     __cxa_vec_cleanup(self->labels, HOST_PICKER_LABELS, sizeof(TextLabel), (void (*)(void *))(uintptr_t) func_02070be8);
-    ButtonPanel_Destroy(&self->panel);
-    Glider0_Destroy(&self->cursor_sprite);
-    ResRows_Destroy(&self->rows);
-    MenuScene_DestroyBase(host_scene(self));
+    ButtonPanel_Destruct(&self->panel);
+    Glider0_Destruct(&self->cursor_sprite);
+    ResRows_Destruct(&self->rows);
+    MenuScene_DestructBase(host_scene(self));
 }
 
 /* func_ov140_02299ee0 (vtable slot 0x40) */
-HostPicker *HostPicker_Destroy(HostPicker *self)
+HostPicker *HostPicker_Destruct(HostPicker *self)
 {
     host_destroy_members(self);
     return self;
 }
-CLEAN_AS(func_ov140_02299ee0, HostPicker_Destroy)
+CLEAN_AS(func_ov140_02299ee0, HostPicker_Destruct)
 
 /* func_ov140_02299f34 (vtable slot 0x44) */
 HostPicker *HostPicker_Delete(HostPicker *self)

@@ -104,13 +104,13 @@ int EtcMuseum_Draw(void);
 int EtcMuseum_Execute(EtcMuseum *museum);
 int EtcMuseum_OnCreate(EtcMuseum *museum);
 EtcMuseum *EtcMuseum_Delete(EtcMuseum *museum);
-EtcMuseum *EtcMuseum_Destroy(EtcMuseum *museum);
+EtcMuseum *EtcMuseum_Destruct(EtcMuseum *museum);
 EtcMuseum *EtcMuseum_Construct(EtcMuseum *museum);
 void EtcMuseum_New(void);
 EtcMuseum *EtcMuseumReceiver_Delete(void *receiver);
 void EtcMuseumReceiver_OnAnswer(void *receiver);
 void EtcMuseumReceiver_OnMessageEnded(void *receiver);
 void EtcMuseumReceiver_OnMessageBegun(void *receiver);
-EtcMuseum *EtcMuseumReceiver_Destroy(void *receiver);
+EtcMuseum *EtcMuseumReceiver_Destruct(void *receiver);
 
 #endif

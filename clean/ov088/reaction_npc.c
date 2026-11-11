@@ -232,21 +232,21 @@ static int rnpc_faces(ReactionNpc *npc, const Vec3 *point)
 
 /* func_ov088_02278a00 (vtable slot 0x40): its talk scene's destructor, then the special
  * character's; the object. */
-void *ReactionNpc_Destroy(void *object)
+void *ReactionNpc_Destruct(void *object)
 {
     ReactionNpc *npc = object;
     *(const u8 **) (void *) npc->base = data_ov088_02279cec;
-    ReactionNpcTalk_Destroy(&npc->talk);
+    ReactionNpcTalk_Destruct(&npc->talk);
     SpecialSceneObject_DestructBody(npc);
     return npc;
 }
-CLEAN_AS(func_ov088_02278a00, ReactionNpc_Destroy)
+CLEAN_AS(func_ov088_02278a00, ReactionNpc_Destruct)
 
 /* func_ov088_02278a28 (vtable slot 0x44): the same, then the object freed. */
 ReactionNpc *ReactionNpc_Delete(ReactionNpc *npc)
 {
     *(const u8 **) (void *) npc->base = data_ov088_02279cec;
-    ReactionNpcTalk_Destroy(&npc->talk);
+    ReactionNpcTalk_Destruct(&npc->talk);
     SpecialSceneObject_DestructBody(npc);
     Heap_FreeAux(npc);
     return npc;

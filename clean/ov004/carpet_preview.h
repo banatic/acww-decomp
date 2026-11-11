@@ -29,11 +29,11 @@ int CarpetPreview_Vfunc0c(void);
 int CarpetPreview_Update(CarpetPreview *object);
 int CarpetPreview_Start(CarpetPreview *object);
 CarpetPreview *CarpetPreview_Delete(CarpetPreview *object);
-CarpetPreview *CarpetPreview_Destroy(CarpetPreview *object);
+CarpetPreview *CarpetPreview_Destruct(CarpetPreview *object);
 CarpetPreview *CarpetPreview_Construct(CarpetPreview *object);
 void CarpetPreview_Create(void);
 
 CarpetPreview *CarpetPreviewReceiver_Delete(void *receiver);
-CarpetPreview *CarpetPreviewReceiver_Destroy(void *receiver);
+CarpetPreview *CarpetPreviewReceiver_Destruct(void *receiver);
 
 #endif

@@ -51,10 +51,10 @@ int RoomObject022510b4_Vfunc0c(void);
 int RoomObject022510b4_Update(RoomObject022510b4 *object);
 int RoomObject022510b4_Start(RoomObject022510b4 *object);
 RoomObject022510b4 *RoomObject022510b4_Delete(RoomObject022510b4 *object);
-RoomObject022510b4 *RoomObject022510b4_Destroy(RoomObject022510b4 *object);
+RoomObject022510b4 *RoomObject022510b4_Destruct(RoomObject022510b4 *object);
 RoomObject022510b4 *RoomObject022510b4_Construct(RoomObject022510b4 *object);
 void RoomObject022510b4_Create(void);
 RoomObject022510b4 *RoomObject022510b4Receiver_Delete(void *receiver);
-RoomObject022510b4 *RoomObject022510b4Receiver_Destroy(void *receiver);
+RoomObject022510b4 *RoomObject022510b4Receiver_Destruct(void *receiver);
 
 #endif

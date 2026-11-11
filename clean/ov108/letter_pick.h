@@ -157,7 +157,7 @@ typedef struct LetterPick {
     ButtonPanel panel;      /* 0x2a0c */
 } LetterPick;
 
-LetterPick *LetterPick_Destroy(LetterPick *self);
+LetterPick *LetterPick_Destruct(LetterPick *self);
 LetterPick *LetterPick_Delete(LetterPick *self);
 void LetterPick_ClearFlags(LetterPick *self, unsigned int flags);
 void LetterPick_SetFlags(LetterPick *self, int flags);

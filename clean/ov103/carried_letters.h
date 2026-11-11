@@ -169,7 +169,7 @@ typedef struct CarriedLetters {
     u8 pad_2daa[2];         /* 0x2daa */
 } CarriedLetters;
 
-CarriedLetters *CarriedLetters_Destroy(CarriedLetters *self);
+CarriedLetters *CarriedLetters_Destruct(CarriedLetters *self);
 CarriedLetters *CarriedLetters_Delete(CarriedLetters *self);
 void CarriedLetters_ClearFlags(CarriedLetters *self, unsigned int flags);
 void CarriedLetters_SetFlags(CarriedLetters *self, unsigned int flags);

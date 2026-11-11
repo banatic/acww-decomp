@@ -169,7 +169,7 @@ typedef struct StarDesigner {
 } StarDesigner;
 
 /* star_designer.c: the scene */
-StarDesigner *StarDesigner_Destroy(StarDesigner *self);
+StarDesigner *StarDesigner_Destruct(StarDesigner *self);
 StarDesigner *StarDesigner_Delete(StarDesigner *self);
 void StarDesigner_ClearFlags(StarDesigner *self, unsigned short mask);
 void StarDesigner_SetFlags(StarDesigner *self, unsigned short mask);

@@ -88,7 +88,7 @@ typedef struct TailorSister {
     u8 unk_713;           /* 0x713 */
 } TailorSister;
 
-TailorSister *TailorSister_Destroy(TailorSister *sister);
+TailorSister *TailorSister_Destruct(TailorSister *sister);
 TailorSister *TailorSister_Delete(TailorSister *sister);
 void TailorSister_SetTalkDays(TailorSister *sister, int days);
 int TailorSister_TalkDays(TailorSister *sister);
@@ -99,7 +99,7 @@ void TailorSisterTalk_OnMessageEnded(void);
 void TailorSisterTalk_Line(TailorSisterTalk *talk, TailorSisterLine *out);
 void TailorSisterTalk_Begin(TailorSisterTalk *talk, TailorSister *owner);
 TailorSisterTalk *TailorSisterTalk_Delete(TailorSisterTalk *talk);
-TailorSisterTalk *TailorSisterTalk_Destroy(TailorSisterTalk *talk);
+TailorSisterTalk *TailorSisterTalk_Destruct(TailorSisterTalk *talk);
 TailorSisterTalk *TailorSisterTalk_Construct(TailorSisterTalk *talk);
 void TailorSister_LookAhead(TailorSister *sister);
 int TailorSister_UpdatePaused(void);

@@ -23,10 +23,10 @@ int PlayerDesignObject_Vfunc0c(void);
 int PlayerDesignObject_Update(void);
 int PlayerDesignObject_Start(PlayerDesignObject *object);
 PlayerDesignObject *PlayerDesignObject_Delete(PlayerDesignObject *object);
-PlayerDesignObject *PlayerDesignObject_Destroy(PlayerDesignObject *object);
+PlayerDesignObject *PlayerDesignObject_Destruct(PlayerDesignObject *object);
 PlayerDesignObject *PlayerDesignObject_Construct(PlayerDesignObject *object);
 void PlayerDesignObject_Create(void);
 PlayerDesignObject *PlayerDesignObjectReceiver_Delete(void *receiver);
-PlayerDesignObject *PlayerDesignObjectReceiver_Destroy(void *receiver);
+PlayerDesignObject *PlayerDesignObjectReceiver_Destruct(void *receiver);
 
 #endif

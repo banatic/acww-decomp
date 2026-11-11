@@ -147,11 +147,11 @@ int Mailbox_MayAct(Mailbox *mailbox, struct SceneObjectBase *other);
 int Mailbox_DrawsModel(void);
 int Mailbox_Update(Mailbox *mailbox);
 int Mailbox_SetUp(Mailbox *mailbox);
-Mailbox *Mailbox_DestroyAndFree(Mailbox *mailbox);
-Mailbox *Mailbox_Destroy(Mailbox *mailbox);
+Mailbox *Mailbox_Delete(Mailbox *mailbox);
+Mailbox *Mailbox_Destruct(Mailbox *mailbox);
 Mailbox *Mailbox_Construct(Mailbox *mailbox);
 void Mailbox_New(void);
-Mailbox *Mailbox_ReceiverDestroyAndFree(void *receiver);
-Mailbox *Mailbox_ReceiverDestroy(void *receiver);
+Mailbox *Mailbox_ReceiverDelete(void *receiver);
+Mailbox *Mailbox_ReceiverDestruct(void *receiver);
 
 #endif
